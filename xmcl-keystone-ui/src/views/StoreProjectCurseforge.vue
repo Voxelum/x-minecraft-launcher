@@ -189,8 +189,8 @@ const onOpen = () => {
 
 const tasks = useTasks((t) => {
   if (t.state !== TaskState.Running) return false
-  if (t.path === 'installCurseforgeFile' && t.param.modId === props.id) return true
-  if (t.path === 'installInstanceFiles' && t.param.instance === existed.value?.path) return true
+  if (t.type === 'installCurseforgeFile' && t.projectId === props.id) return true
+  if (t.type === 'installInstance' && t.instancePath === existed.value?.path) return true
   return false
 })
 const isDownloading = computed(() => tasks.value.length > 0)

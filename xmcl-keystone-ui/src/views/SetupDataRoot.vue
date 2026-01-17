@@ -36,7 +36,7 @@
           style="margin-right: 10px;"
           @click="browse"
         >
-          {{ t('browse') }}
+          {{ t('shared.browse') }}
         </v-btn>
       </v-list-item-action>
     </v-list-item>
@@ -115,7 +115,7 @@ const getDataDirErrorText = useGetDataDirErrorText()
 const errorText = computed(() => getDataDirErrorText(props.error))
 async function browse() {
   const { filePaths } = await showOpenDialog({
-    title: t('browse'),
+    title: t('shared.browse'),
     defaultPath: props.value,
     properties: ['openDirectory', 'createDirectory'],
   })

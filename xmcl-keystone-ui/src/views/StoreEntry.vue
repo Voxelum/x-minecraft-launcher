@@ -33,7 +33,7 @@
           <!-- Sources -->
           <div class="filter-group">
             <h3 class="filter-title">
-              {{ t('mod.sourceUrl' )}}
+              {{ t('modrinth.modpackSource.source' )}}
             </h3>
             <div class="flex gap-2">
               <div

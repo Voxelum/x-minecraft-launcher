@@ -7,12 +7,12 @@
     :class="{ dragover }"
     :refreshing="refreshing"
     :button="shaderPacks.length > 0 ? {
-      text: t('mod.manage'),
+      text: t('shared.manage'),
       icon: 'settings'
      } : undefined"
     :addition-button="{ 
       icon: 'file_download',
-      text: t('install'),
+      text: t('shared.install'),
      }"
     @navigate-addition="push('/shaderpacks?source=remote')"
     @navigate="push('/shaderpacks')"

@@ -289,8 +289,8 @@ const localizedTexts = computed(() => markRaw({
     delete: {
       name: t('delete.name'),
     },
-    enable: t('enable'),
-    disable: t('disable'),
+    enable: t('shared.enable'),
+    disabe: t('shared.disable'),
     denseView: t('mod.denseView'),
     groupInstalled: t('mod.groupInstalled'),
     switchDefaultSource: t('mod.switchDefaultSource'),
@@ -607,7 +607,7 @@ const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
     },
   })
   result.push({
-    text: allEnabled ? t('disable') + ' ' + text : t('enable') + ' ' + text,
+    text: allEnabled ? t('shared.disable') + ' ' + text : t('shared.enable') + ' ' + text,
     icon: allEnabled ? 'flash_off' : 'flash_on',
     color: 'grey',
     onClick: () => {

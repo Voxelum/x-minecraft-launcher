@@ -160,8 +160,8 @@ const onOpen = () => {
 
 const tasks = useTasks((t) => {
   if (t.state !== TaskState.Running) return false
-  if (t.path === 'installModrinthFile' && t.param.projectId === project.value) return true
-  if (t.path === 'installInstanceFiles' && t.param.instance === existed.value?.path) return true
+  if (t.type === 'installModrinthFile' && t.projectId === project.value?.id) return true
+  if (t.type === 'installInstance' && t.instancePath === existed.value?.path) return true
   return false
 })
 const isDownloading = computed(() => tasks.value.length > 0)

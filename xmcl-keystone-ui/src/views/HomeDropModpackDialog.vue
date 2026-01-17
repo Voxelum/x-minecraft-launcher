@@ -6,7 +6,7 @@
     v-model="isShown"
     @confirm="onConfirm"
     @cancel="isShown = false"
-    :confirm="t('yes')"
+    :confirm="t('shared.yes')"
     :confirm-icon="'check'"
     color="primary"
   >

@@ -9,13 +9,13 @@
     }"
     :highlighted="highlight > 0"
     :button="files.length > 0 ? {
-      text: t('mod.manage'),
+      text: t('shared.manage'),
       icon: 'settings'
      } : undefined"
     :refreshing="false"
     :addition-button="{ 
       icon: 'file_download',
-      text: t('install'),
+      text: t('shared.install'),
      }"
     @navigate-addition="push('/resourcepacks?source=remote')"
     @navigate="push('/resourcepacks')"

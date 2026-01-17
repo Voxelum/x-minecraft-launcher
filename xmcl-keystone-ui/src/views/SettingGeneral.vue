@@ -90,7 +90,7 @@
       :description="t('setting.developerModeDescription')"
       icon="code"
     >
-      <v-chip v-if="developerMode" x-small color="warning" class="ml-2">DEV</v-chip>
+      <v-chip v-if="developerMode" x-small color="warning" class="ml-2">{{ t('setting.devModeLabel') }}</v-chip>
     </SettingItemSwitcher>
 
     <!-- Streamer Mode -->
@@ -104,7 +104,7 @@
     />
 
     <v-divider class="my-3" />
-    
+
     <SettingItem :description="t('setting.replaceNativeDescription')">
       <template #title>
         <v-icon left small color="primary">swap_horiz</v-icon>
@@ -154,7 +154,7 @@ const { t } = useI18n()
 const locales = computed(() => rawLocales.value.map(({ locale, name }) => ({ text: name, value: locale })))
 const replaceNativeItems = computed(() => [
   {
-    text: t('disable'),
+    text: t('shared.disable'),
     value: '',
   },
   {

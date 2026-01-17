@@ -39,6 +39,7 @@ import { useTelemetryTrack } from '@/composables/telemetryTrack'
 import { kTheme, useTheme } from '@/composables/theme'
 import { kTutorial, useTutorialModel } from '@/composables/tutorial'
 import { kUIDefaultLayout, useUILayout } from '@/composables/uiLayout'
+import { kNetworkStatus, useNetworkStatus } from '@/composables/useNetworkStatus'
 import { kUserContext, useUserContext } from '@/composables/user'
 import { kLatestMinecraftVersion, useMinecraftLatestRelease } from '@/composables/version'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
@@ -138,6 +139,7 @@ export default defineComponent({
     provide(kModrinthTags, useModrinthTags())
     provide(kCurseforgeCategories, useCurseforgeCategories())
     provide(kModpackExport, useModpackExport())
+    provide(kNetworkStatus, useNetworkStatus())
 
     return () => ctx.slots.default?.()
   },

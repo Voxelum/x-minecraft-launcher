@@ -23,7 +23,7 @@
     <!-- Java Memory Settings Card -->
     <SettingCard :title="t('java.memory')" icon="memory">
       <div class="d-flex align-center mb-3">
-        <span class="font-weight-medium mr-3">{{ t('setting.memoryAssignment') || 'Назначение памяти' }}</span>
+        <span class="font-weight-medium mr-3">{{ t('setting.memoryAssignment') }}</span>
         <v-spacer />
         <SettingJavaMemoryAssign :value="assignMemory" @input="assignMemory = $event" />
       </div>
@@ -60,7 +60,7 @@
         </div>
         <v-btn small color="primary" outlined @click="onAddEnvVar">
           <v-icon left small>add</v-icon>
-          {{ t('add') || 'Добавить' }}
+          {{ t('shared.add') }}
         </v-btn>
       </div>
       <EnvVarTableItem :env="env" @delete="onEnvVarDeleted" />

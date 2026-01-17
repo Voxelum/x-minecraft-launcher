@@ -7,12 +7,12 @@
     :refreshing="false"
     :class="{ dragover }"
     :button="saves.length > 0 ? {
-      text: t('mod.manage'),
+      text: t('shared.manage'),
       icon: 'settings'
      } : undefined"
     :addition-button="{ 
       icon: 'file_download',
-      text: t('install'),
+      text: t('shared.install'),
      }"
     @navigate-addition="push('/save?source=remote')"
     @navigate="push('/save')"
