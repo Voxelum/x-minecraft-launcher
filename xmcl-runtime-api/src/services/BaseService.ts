@@ -1,3 +1,4 @@
+import { GenericEventEmitter } from '../events'
 import { Exception } from '../entities/exception'
 import { LauncherProfile } from '../entities/launcherProfile'
 import { Platform } from '../entities/platform'
@@ -38,6 +39,14 @@ export interface Environment extends Platform {
   gpu: boolean
 }
 
+export interface NetworkStatus {
+  pools: Record<string, PoolStats>
+  /**
+   * Byte per second
+   */
+  downloadSpeed: number
+}
+
 export interface PoolStats {
   connected: number
   free: number
@@ -49,8 +58,12 @@ export interface PoolStats {
 
 export type InvalidDirectoryErrorCode = 'bad' | 'invalidchar' | 'nondictionary' | 'noperm' | 'exists' | undefined
 
-export interface BaseService {
-  getNetworkStatus(): Promise<Record<string, PoolStats>>
+export interface BaseServiceEventMap {
+  'network-status-activity': boolean
+}
+
+export interface BaseService extends GenericEventEmitter<BaseServiceEventMap> {
+  getNetworkStatus(): Promise<NetworkStatus>
 
   destroyPool(origin: string): Promise<void>
 

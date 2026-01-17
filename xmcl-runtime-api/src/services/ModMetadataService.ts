@@ -1,5 +1,16 @@
 import type { ResourceDomain } from '@xmcl/resource'
+import { WithDownload } from '@xmcl/installer'
+import { Task, SubState } from '../task'
 import { ServiceKey } from './Service'
+
+export interface DownloadModMetadataDbTrackerEvents {
+  'download': WithDownload<{ url: string }>
+}
+
+export interface DownloadModMetadataDbTask extends Task {
+  type: 'downloadModMetadataDb'
+  substate: SubState<DownloadModMetadataDbTrackerEvents, 'download'>
+}
 
 export interface ModMetadata {
   sha1: string

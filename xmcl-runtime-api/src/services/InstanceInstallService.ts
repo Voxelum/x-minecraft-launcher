@@ -1,6 +1,26 @@
 import type { InstanceFile, InstanceUpstream } from '@xmcl/instance'
+import type { WithDownload, WithProgress } from '@xmcl/installer'
 import type { SharedState } from '../util/SharedState'
+import type { Task, SubState } from '../task'
 import type { ServiceKey } from './Service'
+
+export interface InstallInstanceTrackerEvents {
+  'install-instance.resolve': {}
+  'install-instance.download': WithDownload<{ count: number }>
+  'install-instance.unzip': WithProgress<{ count: number }>
+  'install-instance.link': WithProgress<{ count: number }>
+}
+
+export interface InstallInstanceTask extends Task {
+  type: 'installInstance'
+  instancePath: string
+  taskId?: string
+  substate:
+    | SubState<InstallInstanceTrackerEvents, 'install-instance.resolve'>
+    | SubState<InstallInstanceTrackerEvents, 'install-instance.download'>
+    | SubState<InstallInstanceTrackerEvents, 'install-instance.unzip'>
+    | SubState<InstallInstanceTrackerEvents, 'install-instance.link'>
+}
 
 export type InstanceFileUpdate = {
   file: InstanceFile
