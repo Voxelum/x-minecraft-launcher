@@ -1,25 +1,34 @@
-import { ServerFSExporter, ServerSSHExporter, parseInstanceFiles, parseLauncherData, type InstanceFile } from '@xmcl/instance'
-import { InstanceIOServiceKey, LockKey, type ExportInstanceAsServerOptions, type ExportInstanceOptions, type InstanceIOService as IInstanceIOService, type InstanceType, type ThirdPartyLauncherManifest } from '@xmcl/runtime-api'
-import { readFile } from 'fs-extra'
-import { basename, join, resolve } from 'path'
-import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
-import { SSHManager, kTaskExecutor, type TaskFn } from '~/infra'
-import { InstanceService } from '~/instance'
-import { AbstractService, ExposeServiceKey } from '~/service'
+import {
+  ServerFSExporter,
+  ServerSSHExporter,
+  parseInstanceFiles,
+  parseLauncherData,
+  type InstanceFile,
+} from '@xmcl/instance'
+import {
+  InstanceIOServiceKey,
+  type ExportInstanceAsServerOptions,
+  type InstanceIOService as IInstanceIOService,
+  type InstanceType,
+  type ThirdPartyLauncherManifest,
+} from '@xmcl/runtime-api'
 import { AnyError, isSystemError } from '@xmcl/utils'
-import { VersionService } from '~/version'
-import { LauncherApp } from '../app/LauncherApp'
-import { copyPassively, exists } from '../util/fs'
-import { requireObject } from '../util/object'
-import { ZipTask } from '../util/zip'
+import { basename, join } from 'path'
+import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
+import { SSHManager } from '~/infra'
+import { InstanceService } from '~/instance'
 import { LaunchService } from '~/launch'
-import { UploadSSHTask } from './utils/UploadSSHTask'
+import { AbstractService, ExposeServiceKey } from '~/service'
+import { VersionService } from '~/launch'
+import { LauncherApp } from '../app/LauncherApp'
+import { copyPassively } from '../util/fs'
+import { uploadSSH } from './utils/uploadSSH'
 
 @ExposeServiceKey(InstanceIOServiceKey)
 export class InstanceIOService extends AbstractService implements IInstanceIOService {
-  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+  constructor(
+    @Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
-    @Inject(kTaskExecutor) protected submit: TaskFn,
     @Inject(kGameDataPath) protected getPath: PathResolver,
     @Inject(VersionService) protected versionService: VersionService,
   ) {
@@ -32,30 +41,34 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     const serverVersion = await versionService.resolveServerVersion(options.options.version)
     const ops = await launchService.generateServerOptions(options.options, serverVersion)
     if (options.output.type === 'folder') {
-      await new ServerFSExporter(this.getPath(), options.output.path).exportInstance(options.options.gameDirectory, ops, options.files.map(f => f.path));
+      await new ServerFSExporter(this.getPath(), options.output.path).exportInstance(
+        options.options.gameDirectory,
+        ops,
+        options.files.map((f) => f.path),
+      )
     } else if (options.output.type === 'ssh') {
-      const manager = await this.app.registry.getOrCreate(SSHManager);
+      const manager = await this.app.registry.getOrCreate(SSHManager)
       const ssh = await manager.open({
         host: options.output.host,
         port: options.output.port,
         username: options.output.username,
         credentials: options.output.credentials,
-      });
-      const sftp = await manager.openSFTP(ssh);
+      })
+      const sftp = await manager.openSFTP(ssh)
       if (!sftp) {
-        throw new Error('Failed to open sftp');
+        throw new Error('Failed to open sftp')
       }
       const exporter = new ServerSSHExporter(this.getPath(), options.output.path, ssh, sftp)
 
-      await this.submit(new UploadSSHTask(
+      await uploadSSH(
         exporter,
         options.options.gameDirectory,
         ops,
-        options.files.map(f => f.path)
-      ))
+        options.files.map((f) => f.path),
+      )
 
-      sftp.end();
-      ssh.end();
+      sftp.end()
+      ssh.end()
     }
   }
 
@@ -74,13 +87,13 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   }
 
   async parseInstanceFiles(path: string, type?: InstanceType): Promise<InstanceFile[]> {
-    const result = await parseInstanceFiles(path, type)
+    const result = await parseInstanceFiles(path, type === 'prism' ? 'mmc' : type)
     return result
   }
 
   async parseLauncherData(path: string, type?: InstanceType): Promise<ThirdPartyLauncherManifest> {
     try {
-      const result = await parseLauncherData(path, (type === 'prism' ? 'mmc' : type) as any)
+      const result = await parseLauncherData(path, type === 'prism' ? 'mmc' : type)
       return result
     } catch (e) {
       if (isSystemError(e)) {
@@ -108,27 +121,29 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       await copyPassively(folder.jre, this.getPath('jre'))
     }
 
-    await Promise.allSettled(instances.map(async ({ path, options }) => {
-      options.name = options.name || basename(path)
-      const instPath = await this.instanceService.createInstance(options)
-      await copyPassively(path, instPath, (name) => {
-        if (name === 'libraries') {
-          return false
-        }
-        if (name === 'assets') {
-          return false
-        }
-        if (name === 'versions') {
-          return false
-        }
-        if (name === 'java_versions') {
-          return false
-        }
-        if (name === 'jre') {
-          return false
-        }
-        return true
-      })
-    }))
+    await Promise.allSettled(
+      instances.map(async ({ path, options }) => {
+        options.name = options.name || basename(path)
+        const instPath = await this.instanceService.createInstance(options)
+        await copyPassively(path, instPath, (name) => {
+          if (name === 'libraries') {
+            return false
+          }
+          if (name === 'assets') {
+            return false
+          }
+          if (name === 'versions') {
+            return false
+          }
+          if (name === 'java_versions') {
+            return false
+          }
+          if (name === 'jre') {
+            return false
+          }
+          return true
+        })
+      }),
+    )
   }
 }
