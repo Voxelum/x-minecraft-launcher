@@ -1,7 +1,7 @@
 import { ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
 import { LauncherApp, LauncherAppPlugin } from '~/app'
 import { kSettings } from '~/settings'
-import { VersionService } from '~/version'
+import { VersionService } from '~/launch'
 
 function replaceLibs(version: ResolvedVersion, replacement: Record<string, Version.Library | null>, app: LauncherApp) {
   const replaced: ResolvedLibrary[] = []
@@ -56,7 +56,6 @@ export const pluginNativeReplacer: LauncherAppPlugin = async (app) => {
           if (process.arch === 'arm64') {
             const natives = (await import('./natives.json')).default['linux-arm64']
             replaceLibs(version, natives, app)
-            // @ts-expect-error
           } else if (process.arch === 'arm' || process.arch === 'mipsel' || process.arch === 'riscv64' || process.arch === 'loong64') {
             const arch = process.arch === 'arm' ? 'arm32' : process.arch === 'mipsel' ? 'mips64el' : process.arch === 'riscv64' ? 'riscv64' : 'loongarch64'
             const target = `linux-${arch}` as const

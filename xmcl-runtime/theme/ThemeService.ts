@@ -6,10 +6,10 @@ import { copyFile, ensureDir, existsSync, readJSON, readdir, remove, unlink, wri
 import { basename, join } from 'path'
 import { pipeline } from 'stream/promises'
 import { Inject, LauncherAppKey } from '~/app'
-import { kTaskExecutor } from '~/infra'
 import { AbstractService, ExposeServiceKey } from '~/service'
-import { ZipTask } from '~/util/zip'
+import { writeZipFile } from '~/util/zip'
 import { LauncherApp } from '../app/LauncherApp'
+import { ZipFile } from 'yazl'
 
 @ExposeServiceKey(ThemeServiceKey)
 export class ThemeService extends AbstractService implements IThemeService {
@@ -69,25 +69,24 @@ export class ThemeService extends AbstractService implements IThemeService {
       destinationFile += '.xtheme'
     }
     const zipPath = destinationFile
-    const zipTask = new ZipTask(zipPath)
+    const zipFile = new ZipFile()
     for (const asset of Object.values(data.assets)) {
       if (asset instanceof Array) {
         for (const media of asset) {
           const url = media.url
           const fileName = url.substring(url.lastIndexOf('/') + 1)
           const realPath = this.getAppDataPath('themes', fileName)
-          zipTask.addFile(realPath, `assets/${fileName}`)
+          zipFile.addFile(realPath, `assets/${fileName}`)
         }
       } else {
         const url = asset.url
         const fileName = url.substring(url.lastIndexOf('/') + 1)
         const realPath = this.getAppDataPath('themes', fileName)
-        zipTask.addFile(realPath, `assets/${fileName}`)
+        zipFile.addFile(realPath, `assets/${fileName}`)
       }
     }
-    zipTask.addBuffer(Buffer.from(JSON.stringify(data, null, 2)), 'theme.json')
-    const submit = await this.app.registry.get(kTaskExecutor)
-    await submit(zipTask)
+    zipFile.addBuffer(Buffer.from(JSON.stringify(data, null, 2)), 'theme.json')
+    await writeZipFile(zipFile, zipPath)
     return zipPath
   }
 

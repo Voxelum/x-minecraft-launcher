@@ -1,4 +1,3 @@
-import { DownloadTask } from '@xmcl/installer'
 import { PeerService as IPeerService, SharedState, PeerServiceKey, PeerState, ShareInstanceOptions } from '@xmcl/runtime-api'
 import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
