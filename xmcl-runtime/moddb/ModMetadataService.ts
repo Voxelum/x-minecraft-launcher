@@ -1,18 +1,19 @@
 import { isNotNull } from '@xmcl/core/utils'
-import { DownloadTask } from '@xmcl/installer'
+import { download } from '@xmcl/file-transfer'
+import { onDownloadSingle, Tracker } from '@xmcl/installer'
 import { ResourceDomain, ResourceManager, type Resource } from '@xmcl/resource'
 import { kResourceManager } from '~/resource'
-import { ModMetadataServiceKey, type ModMetadataService as IModMetadataService, type ModMetadata } from '@xmcl/runtime-api'
+import { ModMetadataServiceKey, type ModMetadataService as IModMetadataService, type ModMetadata, DownloadModMetadataDbTask, DownloadModMetadataDbTrackerEvents } from '@xmcl/runtime-api'
 import { createReadStream } from 'fs'
 import { Kysely } from 'kysely'
 import { Database as SQLDatabase } from 'node-sqlite3-wasm'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
-import { kTaskExecutor, type TaskFn } from '~/infra'
+import { kTasks, type Tasks } from '~/infra'
 import { AbstractService, ExposeServiceKey } from '~/service'
-import { SqliteWASMDialect } from '~/sql'
-import { jsonObjectFrom } from '~/sql/sqlHelper'
+import { jsonObjectFrom, SqliteWASMDialect } from '@xmcl/sqlite'
 import { checksumFromStream } from '~/util/fs'
 import { isNonnull } from '~/util/object'
+import { getTracker } from '~/util/taskHelper'
 
 interface Database {
   file: {
@@ -51,7 +52,7 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
   private db: Kysely<Database> | undefined
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(kTaskExecutor) private submit: TaskFn,
+    @Inject(kTasks) private tasks: Tasks,
   ) {
     super(app, async () => {
       // await this.#ensureDb()
@@ -219,16 +220,27 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
     const dbPath = this.getAppDataPath('db.sqlite')
     const actual = await checksumFromStream(createReadStream(dbPath), 'sha1').catch(() => '')
     if (actual !== sha1) {
-      const task = new DownloadTask({
-        url: 'https://xmcl.blob.core.windows.net/releases/db.sqlite',
-        destination: dbPath,
-        validator: {
-          algorithm: 'sha1',
-          hash: sha1,
-        },
-        skipPrevalidate: true,
+      const url = 'https://xmcl.blob.core.windows.net/releases/db.sqlite'
+      const task = this.tasks.create<DownloadModMetadataDbTask>({
+        type: 'downloadModMetadataDb',
+        key: 'download-mod-metadata-db',
       })
-      await this.submit(task)
+
+      const trackerCallback: Tracker<DownloadModMetadataDbTrackerEvents> = getTracker(task)
+      const tracker = onDownloadSingle(trackerCallback, 'download', { url })
+
+      try {
+        await download({
+          url,
+          destination: dbPath,
+          signal: task.controller.signal,
+          tracker,
+        })
+        task.complete()
+      } catch (error) {
+        task.fail(error)
+        throw error
+      }
     }
     const dialect = new SqliteWASMDialect({
       database: () => new SQLDatabase(dbPath, {

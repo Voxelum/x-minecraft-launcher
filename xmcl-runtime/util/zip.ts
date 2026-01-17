@@ -1,91 +1,82 @@
-import { AbortableTask, CancelledError } from '@xmcl/task'
 import { createWriteStream, promises } from 'fs'
 import { ensureFile, stat } from 'fs-extra'
 import { join } from 'path'
-import { Readable, Writable } from 'stream'
+import { Writable } from 'stream'
 import { promisify } from 'util'
-import { DirectoryOptions, Options, ReadStreamOptions, ZipFile } from 'yazl'
+import { ZipFile } from 'yazl'
 import { gunzip as _gunzip, gzip as _gzip } from 'zlib'
 import { pipeline } from './fs'
+import { Tracker, onProgress } from '@xmcl/installer'
 
 export const gunzip: (data: Buffer) => Promise<Buffer> = promisify(_gunzip)
 export const gzip: (data: Buffer) => Promise<Buffer> = promisify(_gzip)
 
+export interface ZipTrackerEvents {
+  'zip.progress': { progress: { progress: number; total: number }; destination: string }
+}
+
 /**
- * The task to compress a zip file
+ * Recursively include a directory or file into a zip file
+ * @param zipFile The zip file to add to
+ * @param realPath The real directory or file absolute path
+ * @param zipPath The relative zip path that the real path files will be zipped to
  */
-export class ZipTask extends AbortableTask<void> {
-  private writeStream: Writable | undefined
-
-  constructor(readonly destination: string, readonly zipFile: ZipFile = new ZipFile()) {
-    super()
-    this._to = destination
-  }
-
-  /**
-   * Include `realPath` as `zipPath` in to the zip file. The `realPath` is the directory
-   * @param realPath The real directory absolute path
-   * @param zipPath The relative zip path that the real path files will be zipped
-   */
-  async includeAs(realPath: string, zipPath = '') {
-    const fstat = await stat(realPath)
-    if (fstat.isDirectory()) {
-      const files = await promises.readdir(realPath)
-      if (zipPath !== '') {
-        this.zipFile.addEmptyDirectory(zipPath)
-      }
-      await Promise.all(files.map(name => this.includeAs(join(realPath, name), `${zipPath}/${name}`)))
-    } else if (fstat.isFile()) {
-      this.zipFile.addFile(realPath, zipPath)
+export async function includeAs(zipFile: ZipFile, realPath: string, zipPath = ''): Promise<void> {
+  const fstat = await stat(realPath)
+  if (fstat.isDirectory()) {
+    const files = await promises.readdir(realPath)
+    if (zipPath !== '') {
+      zipFile.addEmptyDirectory(zipPath)
     }
+    await Promise.all(files.map(name => includeAs(zipFile, join(realPath, name), `${zipPath}/${name}`)))
+  } else if (fstat.isFile()) {
+    zipFile.addFile(realPath, zipPath)
+  }
+}
+
+/**
+ * Execute the zip and write to the destination file
+ * @param zipFile The zip file to write
+ * @param destination The destination file path
+ * @param signal Optional AbortSignal for cancellation
+ * @param tracker Optional tracker for progress reporting
+ */
+export async function writeZipFile(
+  zipFile: ZipFile,
+  destination: string,
+  signal?: AbortSignal,
+  tracker?: Tracker<ZipTrackerEvents>,
+): Promise<void> {
+  if (signal?.aborted) {
+    throw new Error('Operation aborted')
   }
 
-  addFile(realPath: string, metadataPath: string, options?: Partial<Options>): void {
-    this.zipFile.addFile(realPath, metadataPath, options)
+  await ensureFile(destination)
+  const writeStream: Writable = createWriteStream(destination)
+
+  const progress = onProgress(tracker, 'zip.progress', { destination })
+
+  const abortHandler = () => {
+    zipFile.outputStream.unpipe()
+    writeStream.destroy(new Error('Operation aborted'))
   }
 
-  addReadStream(input: Readable, metadataPath: string, options?: Partial<ReadStreamOptions>): void {
-    this.zipFile.addReadStream(input, metadataPath, options)
-  }
+  signal?.addEventListener('abort', abortHandler, { once: true })
 
-  addBuffer(buffer: Buffer, metadataPath: string, options?: Partial<Options>): void {
-    this.zipFile.addBuffer(buffer, metadataPath, options)
-  }
-
-  addEmptyDirectory(metadataPath: string, options?: Partial<DirectoryOptions>): void {
-    this.zipFile.addEmptyDirectory(metadataPath, options)
-  }
-
-  protected async process(): Promise<void> {
-    if (!this.writeStream) {
-      await ensureFile(this.destination)
-      this.writeStream = createWriteStream(this.destination)
-    }
-    this.zipFile.outputStream.on('data', (buffer) => {
-      this._progress += buffer.length
-      this.update(buffer.length)
+  try {
+    zipFile.outputStream.on('data', (buffer) => {
+      progress.progress += buffer.length
     })
-    const promise = pipeline(this.zipFile.outputStream, this.writeStream)
+    const pipelinePromise = pipeline(zipFile.outputStream, writeStream)
     const fileClose = new Promise<void>((resolve, reject) => {
-      this.writeStream?.on('close', resolve)
-      this.writeStream?.on('error', reject)
+      writeStream.on('close', resolve)
+      writeStream.on('error', reject)
     })
-    this.zipFile.end({ forceZip64Format: false }, (...args: any[]) => {
-      this._total = args[0]
+    zipFile.end({ forceZip64Format: false }, (...args: any[]) => {
+      progress.total = args[0]
     })
-    await Promise.all([fileClose, promise])
-  }
-
-  protected isAbortedError(e: any): boolean {
-    return false
-  }
-
-  protected async abort(isCancelled: boolean): Promise<void> {
-    if (isCancelled) {
-      this.zipFile.outputStream.unpipe()
-      this.writeStream?.destroy(new CancelledError())
-    } else {
-      this.zipFile.outputStream.pause()
-    }
+    await Promise.all([fileClose, pipelinePromise])
+  } finally {
+    signal?.removeEventListener('abort', abortHandler)
   }
 }

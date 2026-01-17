@@ -1,4 +1,16 @@
-import { BaseServiceKey, type Environment, type BaseService as IBaseService, type InvalidDirectoryErrorCode, type MigrateOptions, MigrationException, type PoolStats, Settings, type SharedState } from '@xmcl/runtime-api'
+import {
+  BaseServiceKey,
+  type Environment,
+  type BaseService as IBaseService,
+  type InvalidDirectoryErrorCode,
+  type MigrateOptions,
+  MigrationException,
+  type PoolStats,
+  Settings,
+  type SharedState,
+  DownloadUpdateTask,
+  NetworkStatus,
+} from '@xmcl/runtime-api'
 import { readdir, stat } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
@@ -7,17 +19,19 @@ import { kClientToken, kGFW, kLogRoot } from '~/infra'
 import { kNetworkInterface } from '~/network'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { kSettings } from '~/settings'
-import { type TaskFn, kTaskExecutor } from '~/infra'
+import { type Tasks, kTasks } from '~/infra'
 import { validateDirectory } from '~/util/validate'
+import { writeZipFile } from '../util/zip'
 import { LauncherApp } from '../app/LauncherApp'
 import { HAS_DEV_SERVER } from '../constant'
-import { ZipTask } from '../util/zip'
+import { ZipFile } from 'yazl'
+import { getTracker } from '~/util/taskHelper'
 
 @ExposeServiceKey(BaseServiceKey)
 export class BaseService extends AbstractService implements IBaseService {
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(kTaskExecutor) private submit: TaskFn,
+    @Inject(kTasks) private tasks: Tasks,
   ) {
     super(app, async () => {
       this.checkUpdate()
@@ -29,11 +43,11 @@ export class BaseService extends AbstractService implements IBaseService {
   }
 
   destroyPool(origin: string) {
-    return this.app.registry.get(kNetworkInterface).then(s => s.destroyPool(origin))
+    return this.app.registry.get(kNetworkInterface).then((s) => s.destroyPool(origin))
   }
 
-  getNetworkStatus(): Promise<Record<string, PoolStats>> {
-    return this.app.registry.get(kNetworkInterface).then(s => s.getDownloadAgentStatus())
+  getNetworkStatus(): Promise<NetworkStatus> {
+    return this.app.registry.get(kNetworkInterface).then((s) => s.getNetworkStatus())
   }
 
   getSessionId() {
@@ -41,7 +55,7 @@ export class BaseService extends AbstractService implements IBaseService {
   }
 
   getGameDataDirectory(): Promise<string> {
-    return this.app.registry.get(kGameDataPath).then(f => f())
+    return this.app.registry.get(kGameDataPath).then((f) => f())
   }
 
   async getSettings(): Promise<SharedState<Settings>> {
@@ -49,6 +63,8 @@ export class BaseService extends AbstractService implements IBaseService {
   }
 
   async getEnvironment(): Promise<Environment> {
+    const gfw = await this.app.registry.get(kGFW)
+    await gfw.signal
     return {
       os: this.app.platform.os,
       arch: this.app.platform.arch,
@@ -57,8 +73,15 @@ export class BaseService extends AbstractService implements IBaseService {
       version: this.app.version,
       build: this.app.build,
       region: this.app.systemLocale,
-      gfw: (await this.app.registry.get(kGFW)).inside,
-      gpu: (await this.app.host.getGPUInfo('basic').then(info => info.gpuDevice?.some(g => g.vendorId === 4318 || g.vendorId === 4098 || g.vendorId === 4203) ?? false)),
+      gfw: gfw.inside,
+      gpu: await this.app.host
+        .getGPUInfo('basic')
+        .then(
+          (info) =>
+            info.gpuDevice?.some(
+              (g) => g.vendorId === 4318 || g.vendorId === 4098 || g.vendorId === 4203,
+            ) ?? false,
+        ),
     }
   }
 
@@ -122,7 +145,7 @@ export class BaseService extends AbstractService implements IBaseService {
     try {
       const settings = await this.getSettings()
       this.log('Check update')
-      const info = await this.submit(this.app.updater.checkUpdateTask())
+      const info = await this.app.updater.checkUpdateTask()
       settings.updateInfoSet(info)
       if (info.newUpdate) {
         settings.updateStatusSet('pending')
@@ -145,10 +168,20 @@ export class BaseService extends AbstractService implements IBaseService {
   async downloadUpdate() {
     const settings = await this.getSettings()
     if (!settings.updateInfo) {
-      throw new Error('Cannot download update if we don\'t check the version update!')
+      throw new Error("Cannot download update if we don't check the version update!")
     }
-    this.log(`Start to download update: ${settings.updateInfo.name} operation=${settings.updateInfo.operation}`)
-    await this.submit(this.app.updater.downloadUpdateTask(settings.updateInfo).setName('downloadUpdate'))
+    const updateInfo = settings.updateInfo
+
+    this.log(`Start to download update: ${updateInfo.name} operation=${updateInfo.operation}`)
+    const task = this.tasks.create<DownloadUpdateTask>({
+      type: 'downloaUpdate',
+      key: `download-update-${updateInfo.operation}`,
+      operation: updateInfo.operation as 'autoupdater' | 'asar' | 'appx' | 'manual',
+      version: updateInfo.name,
+    })
+    await task.wrap(this.app.updater.downloadUpdate(updateInfo, {
+      tracker: getTracker(task),
+    }))
     settings.updateStatusSet('ready')
   }
 
@@ -161,28 +194,33 @@ export class BaseService extends AbstractService implements IBaseService {
   }
 
   async reportItNow(options: { destination: string }): Promise<void> {
-    const task = new ZipTask(options.destination)
+    const zipFile = new ZipFile()
     const logsDir = await this.app.registry.get(kLogRoot)
     const files = await readdir(logsDir)
 
     for (const file of files) {
       const fStat = await stat(join(logsDir, file)).catch(() => undefined)
       if (fStat?.isFile()) {
-        task.addFile(join(logsDir, file), join('logs', file))
+        zipFile.addFile(join(logsDir, file), join('logs', file))
       }
     }
 
     const sessionId = await this.app.registry.get(kClientToken)
 
-    task.addBuffer(Buffer.from(JSON.stringify({
-      sessionId,
-      platform: os.platform(),
-      arch: os.arch(),
-      version: os.version(),
-      release: os.release(),
-      type: os.type(),
-    })), 'device.json')
-    await task.startAndWait()
+    zipFile.addBuffer(
+      Buffer.from(
+        JSON.stringify({
+          sessionId,
+          platform: os.platform(),
+          arch: os.arch(),
+          version: os.version(),
+          release: os.release(),
+          type: os.type(),
+        }),
+      ),
+      'device.json',
+    )
+    await writeZipFile(zipFile, options.destination)
 
     this.showItemInDirectory(options.destination)
   }
