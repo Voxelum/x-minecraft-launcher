@@ -689,7 +689,6 @@ modpack:
   descriptionHint: 通用的模組包簡介。在匯出成 Curseforge 模組包或者其他格式時會使用。
   dropHint: 透過拖曳匯入模組包檔案
   emitCurseforge: 匯出 Curseforge 模組包
-  emitMcbbs: 匯出 MCBBS 模組包
   emitModrinth: 匯出 Modrinth 模組包
   emitModrinthStrict: 嚴格遵守 Modrinth 模組包格式
   emitModrinthStrictDescription: 下載連結只允許包含 Modrinth 官網定義的四個網域
@@ -833,6 +832,8 @@ modrinth:
   loginTitle: 登入至 Modrinth
   modLoaders:
     name: 模組載入器
+  modpackSource:
+    source: 來源
   projectId: 專案 ID
   projectMembers: 專案成員
   projectType:
@@ -1063,12 +1064,12 @@ serverStatus:
   timeout: 伺服器響應超時！
 setting:
   about: 關於
+  aboutBmclDescription: BMCL API 為中國地區用戶提供便捷的下載服務
   aboutContributors: 🧑‍💻 貢獻者 🧑‍💻
-  aboutSponsors: 😇 贊助商 😇
+  aboutDenoDescription: XMCL 使用 Deno Deploy 平台提供的無伺服器 JavaScript 應用程式
   aboutLicense: MIT 授權
   aboutLicenseInfo: Windows 代碼簽名由 SignPath.io 免費提供，簽署人為 SignPath Foundation
-  aboutDenoDescription: XMCL 使用 Deno Deploy 平台提供的無伺服器 JavaScript 應用程式
-  aboutBmclDescription: BMCL API 為中國地區用戶提供便捷的下載服務
+  aboutSponsors: 😇 贊助商 😇
   advancedJavaOptions: 進階 Java 選項
   advancedSettings: 進階設定
   advancedSettingsHint: 危險區域 - 重置或管理啟動器資料
@@ -1078,6 +1079,7 @@ setting:
   appearance: 外觀
   appearanceDescription: 自訂啟動器外觀
   appxUpdateHint: 啟動器將下載並執行安裝包，如果安裝包解析失敗，請嘗試自行開啟安裝檔案更新。
+  authenticationSettings: 驗證
   backdropBlur: 背景模糊
   backgroundColorAbove: 將背景顏色顯示為疊加層
   backgroundColorAboveDescription: 這將使背景顏色顯示在背景影象或影片上方。
@@ -1121,9 +1123,9 @@ setting:
     warningColor: 警告顏色
   darkTheme: 主題
   darkThemeDescription: 選擇深色或淺色主題
+  devModeLabel: 開發
   developerMode: 開發者模式
   developerModeDescription: 開發者模式旨在協助您測試自己寫的模組
-  devModeLabel: 開發
   disableTelemetry: 停用遙測
   disableTelemetryDescription: XMCL 會收集遊戲啟動以及使用者登入事件
   enableDedicatedGPUOptimization: 分配專用 GPU
@@ -1131,11 +1133,14 @@ setting:
   enableDiscord: 啟用 Discord Presence
   enableDiscordDescription: 根據 XMCL 實時更新 Discord 的狀態
   enterUrl: 輸入網址
+  exportSettings: 匯出設定
+  exportSettingsHint: 將目前設定儲存到檔案
   general: 基本設定
   githubRelease: Github
   globalSetting: 全域性實例設定
   globalSettingHint: 實例預設情況下會使用這些全域性設定
-  hideNewsHeader: 隱藏最新消息展示
+  importSettings: 匯入設定
+  importSettingsHint: 從先前匯出的檔案中載入設定
   instanceTheme:
     activeDescription: 此實例使用自定義主題。您可以將其刪除以使用全局主題。
     description: 為此實例啟用自定義主題。這將創建當前全局主題的副本。
@@ -1148,11 +1153,11 @@ setting:
     focus: 聚焦佈局
   layoutDescription: 不同佈局有不同的 UI 互動邏輯
   layoutTitle: 佈局
-  livePreview: 實時預覽
   linuxEnableDedicatedGPUOptimization: 指派專用的圖形處理器
   linuxEnableDedicatedGPUOptimizationDescription: 此選項為 Minecraft 程序指定專用 GPU。
   linuxTitlebar: 原生頂端欄
   linuxTitlebarDescription: 使用 Linux 系統原生的頂端欄
+  livePreview: 實時預覽
   location: 資料儲存位置
   manualUpdateHint: 版本無法自動更新。請從官方網站重新下載啟動器！
   maunalUpdateHint: |-
@@ -1162,8 +1167,8 @@ setting:
   maxSocketsDescription: 控制最大的併發 HTTP 連結數量。0 代表不限制數量。
   maxSocketsTitle: 最大 HTTP 連線數量
   memoryAssignment: 記憶體分配
-  minecraftOptions: Minecraft 選項
   migrateFromOther: 從其他啟動器匯入
+  minecraftOptions: Minecraft 選項
   name: 設定
   network: 網路設定
   newsPosition: 移動新聞區域
@@ -1175,6 +1180,7 @@ setting:
     remove: 移除
     repulse: 擊退
   particleModeDescription: 選擇當您按一下粒子時的特效
+  quickLaunchSettings: 快速啟動
   replaceNative: 替換函式庫為 Native (原生)
   replaceNativeDescription: 根據您的電腦架構替換原生函式庫。
   replaceNatives:
@@ -1185,17 +1191,26 @@ setting:
   resetAllSettingsConfirmTitle: 重設所有設定？
   resetAllSettingsHint: 將啟動器重設為出廠預設值（刪除所有資料）
   resetAllSettingsSuccess: 所有設定已重設。啟動器將重新啟動。
+  resetSettingsError: '重置設定時出錯: {error}'
   resetToDefault: 重設到預設配色
-  exportSettings: 匯出設定
-  exportSettingsHint: 將目前設定儲存到檔案
-  importSettings: 匯入設定
-  importSettingsHint: 從先前匯出的檔案中載入設定
   select: 選擇
   settingsExported: 設定匯出成功
   settingsImportError: 匯入設定失敗。請檢查檔案格式。
   settingsImported: 設定匯入成功
+  settingsReloadHint: 啟動器將重新啟動以應用所有設定。
   showNewsHeader: 取消隱藏最新消息展示
   showRoot: 瀏覽
+  sidebarAlign: 側邊欄對齊
+  sidebarAutoHide: 自動隱藏側邊欄
+  sidebarAutoHideHint: 當滑鼠移開時自動隱藏側邊欄
+  sidebarClassic: 經典
+  sidebarNotch: 缺口
+  sidebarPosition: 側邊欄位置
+  sidebarScale: 側邊欄縮放
+  sidebarShowOnlyPinned: 僅顯示已固定
+  sidebarShowOnlyPinnedHint: 僅在側邊欄中顯示已固定的實例
+  sidebarStyle: 側邊欄樣式
+  sidebarStyleHint: 選擇側邊欄的外觀樣式
   streamerMode: 螢幕分享模式
   streamerModeDescription: 此功能可以保護您的隱私。開啟後，您的電子郵件等隱私資訊將會被隱藏。
   theme:
@@ -1210,6 +1225,7 @@ setting:
   themeImport: 匯入主題
   themeResetFont: 重設字體
   themeSelectFont: 選擇字體
+  themeSettings: 主題
   themeShare: 分享主題
   themeShareDescription: 您可以與您的朋友分享主題。
   update: 升級
@@ -1222,23 +1238,6 @@ setting:
   useProxy: HTTP 代理伺服器設定
   useProxyDescription: HTTP 請求的代理伺服器位址
   viewBackgroundMusic: 檢視背景音樂
-  quickLaunchSettings: 快速啟動
-  sidebarAlign: 側邊欄對齊
-  sidebarAutoHide: 自動隱藏側邊欄
-  sidebarAutoHideHint: 當滑鼠移開時自動隱藏側邊欄
-  sidebarClassic: 經典
-  sidebarNotch: 缺口
-  sidebarPosition: 側邊欄位置
-  sidebarScale: 側邊欄縮放
-  sidebarShowOnlyPinned: 僅顯示已固定
-  sidebarShowOnlyPinnedHint: 僅在側邊欄中顯示已固定的實例
-  sidebarStyle: 側邊欄樣式
-  sidebarStyleHint: 選擇側邊欄的外觀樣式
-  themeSettings: 主題
-  authenticationSettings: 驗證
-  advancedMinecraftOptions: 進階 Minecraft 選項
-  resetSettingsError: '重置設定時出錯: {error}'
-  settingsReloadHint: 啟動器將重新啟動以應用所有設定。
 settingLabel:
   global: 全域性設定
   globalHint: 此設定已使用全域性設定
@@ -1323,6 +1322,7 @@ shared:
   previous: 上一步
   refresh: 重新整理
   remove: 移除
+  search: 搜尋
   server: 伺服器
   skipForNow: 暫時跳過
   'yes': 是
@@ -1332,8 +1332,11 @@ sortBy:
   timeAsc: 按修改時間（上升）排序
   timeDesc: 通過修改時間（下降）排序
 store:
+  discover: 發現
   latestMinecraft: 使用近期 Minecraft 版本
   name: 模組包市集
+  searchResult: 搜索結果
+  trending: 流行趨勢
 tag:
   create: 建立標籤
   createSelected: 為所有選中的建立標籤
@@ -1435,8 +1438,7 @@ universalDrop:
   start: 開始匯入
   title: 將檔案拖到這並匯入為
   unknownResource: 無法解析
-update:
-  goOfficialWebDownload: 到官網重新下載
+update: {}
 upstream:
   downgrade: 降級
   onlyShowCurrentVersion: 只顯示適合目前 Minecraft 的版本
@@ -1447,7 +1449,6 @@ user:
   authService: 驗證服務
   email: 電子郵件
   id: 使用者 ID
-  info: 賬戶資訊
   name: 使用者名稱
   nameHint: 遊戲中顯示的名字
   profile: 個人資訊

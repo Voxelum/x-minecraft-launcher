@@ -404,7 +404,6 @@ instanceInstallSkip:
     BE DUE TO DA FACT THAT DA ORIGINAL CHECKSUM IS INCORRECT. PLZ CHECK. IF U
     CONFIRM DA CURREN FILEZ ARE VALID, U CAN SKIP DA VALIDASHUN CHECK.
 instanceLauncher:
-  createNew: MAKE NEW INSTANCE
   search: SEARCH INSTANCES...
   showAll: SHOW ALL INSTANCES
   title: ALL INSTANCES
@@ -656,7 +655,6 @@ mod:
     SOME MODZ DEPENDENCIEZ MITE BE MISSING. OR SOME DEPENDENCIEZ VERSHUNS DO NOT
     MATCHED.
   license: LICENSE
-  links: LINKZ
   maybeCompatible: MAYBE COMPATIBLE.
   modloaderSelectHint: TEH MOD SUPPORT FOLLOWING MOD LOADERZ. PLZ PICK ONE TO INSTALL.
   modloaderSelectNotSupported: NOT FOUND {modloader} FUR MINECWAFT {minecraft}
@@ -674,7 +672,6 @@ mod:
   showDirectory: SHOW MODZ DIRECTORY
   showFile: SHOW DA MOD PATH {file}
   showInModrinth: SHOW {name} IN MODRINTH
-  showUpdates: SHOW UPDATS
   switchDefaultSource: DEFAULT MOD SOURC
   syncGroupRules: SAVE GROUPING RULEZ
   toUpdate: '{count} UPDATS'
@@ -686,7 +683,6 @@ modFilter:
   disabledOnly: ONLY SHOW DISABLED MODZ
   hasUpdateOnly: ONLY SHOW MODZ WITH UPDATS
   incompatibleOnly: ONLY SHOW INCOMPATIBLE OR MISSING DEPENDENCIEZ MISSING MODZ
-  source: SOURC
   unusedOnly: ONLY SHOW UNUSED LIBRAWRIES MODZ
 modInstall:
   archived: >-
@@ -727,7 +723,6 @@ modUpgradePolicy:
   modrinth: MODRINTH
   modrinthOnly: MODRINTH ONLY
   name: UPGRADE POLICY
-  title: UPGRADE POLICY
 modified:
   reset: RESET
   save: SAVE
@@ -744,7 +739,6 @@ modpack:
     MODPACK.
   dropHint: DROP MODPACK ZIP TO HERE TO IMPORT
   emitCurseforge: EXPORT CURSEFORGE MODPACK
-  emitMcbbs: EXPORT MCBBS MODPACK
   emitModrinth: EXPORT MODRINTH MODPACK
   emitModrinthStrict: STRICT MODRINTH FORMAT
   emitModrinthStrictDescription: ONLY DA URLS FROM 4 DOMAINS LISTED IN MODRINTH DOCUMENT ARE ALLOWED
@@ -1148,12 +1142,16 @@ serverStatus:
   timeout: §4CONNECT SERVR TIMEOUT!
 setting:
   about: ABOUT
-  aboutContributors: 🧑‍💻 CONTRUBUTORS 🧑‍💻
-  aboutSponsors: 😇 SPONORZ 😇
-  aboutLicense: MIT LICENSE
-  aboutLicenseInfo: FRU CUD SINING ON WUNDUZ PROVDED BI SIGNPATH.IO, CERTIFICAT BI SIGNPATH FUNDASHUN
-  aboutDenoDescription: XMCL LEVERAGEZ DENO DEPLOY'S HASSEL-FRU PLATFURM FUR SERVERLUS JAVASCRIPT APPLICASHUNZ
   aboutBmclDescription: BMCL API PROVIDEZ CONVENEENT DOWNLODZ FUR USRZ IN CHINEEZ MAINLUND
+  aboutContributors: 🧑‍💻 CONTRUBUTORS 🧑‍💻
+  aboutDenoDescription: >-
+    XMCL LEVERAGEZ DENO DEPLOY'S HASSEL-FRU PLATFURM FUR SERVERLUS JAVASCRIPT
+    APPLICASHUNZ
+  aboutLicense: MIT LICENSE
+  aboutLicenseInfo: >-
+    FRU CUD SINING ON WUNDUZ PROVDED BI SIGNPATH.IO, CERTIFICAT BI SIGNPATH
+    FUNDASHUN
+  aboutSponsors: 😇 SPONORZ 😇
   advancedJavaOptions: ADVANCED JAVA OPSHUNS
   advancedSettings: ADVANCED SETTINGZ
   advancedSettingsHint: DANGR ZONE - RESET OR MANAG LAUNCHER DATA
@@ -1224,7 +1222,6 @@ setting:
   githubRelease: GITHUB RELEASE
   globalSetting: GLOBAL INSTANCE SETTING
   globalSettingHint: INSTANCE WILL USE THESE SETTINGZ BY DEFAULT.
-  hideNewsHeader: HIDE NEWZ SHOWCASE
   importSettings: IMPORT SETTINGZ
   importSettingsHint: LOAD SETTINGZ FROM A PREVIOUSLY EXPORTED FILE
   instanceTheme:
@@ -1286,11 +1283,13 @@ setting:
   resetAllSettingsConfirmTitle: RESET ALL SETTINGZ?
   resetAllSettingsHint: RESET LAUNCHER TO FACTORY DEFAULTS (DELETES EVRYTHING)
   resetAllSettingsSuccess: ALL SETTINGZ HAZ BEEN RESET. TEH LAUNCHER WILL RESTART.
+  resetSettingsError: 'EROR RESETTIN SETTINGS: {error}'
   resetToDefault: RESET TO DEFAULT
   select: PICK
   settingsExported: SETTINGZ EXPORTED SUCCESSFULLY
   settingsImportError: FAILED TO IMPORT SETTINGZ. PLZ CHECK DA FILE FORMAT.
   settingsImported: SETTINGZ IMPORTED SUCCESSFULLY
+  settingsReloadHint: TEH LAUNCHER WILL RESTART 2 APPLY ALL SETTINGS.
   showNewsHeader: UNHIDE NEWZ SHOWCASE
   showRoot: SHOW
   sidebarAlign: SIDEBAR ALIGNMENT
@@ -1327,8 +1326,6 @@ setting:
   useProxy: HTTP PROXY
   useProxyDescription: TEH PROXY SERVR ADDWESS FUR DA HTTP REQUEST
   viewBackgroundMusic: VUE MUSICS
-  resetSettingsError: 'EROR RESETTIN SETTINGS: {error}'
-  settingsReloadHint: TEH LAUNCHER WILL RESTART 2 APPLY ALL SETTINGS.
 settingLabel:
   global: GLOBAL
   globalHint: THIS SETTING WILL FOLLOW DA GLOBAL SETTING
@@ -1419,6 +1416,7 @@ shared:
   previous: PREVIOUS
   refresh: REFRESH
   remove: REMOVE
+  search: Search
   server: SERVR
   skipForNow: SKIP FUR NAO
   'yes': YAS
@@ -1428,8 +1426,11 @@ sortBy:
   timeAsc: SORT BY MODIFICASHUN TIME (ASCENDING)
   timeDesc: SORT BY MODIFICASHUN TIME (DESCENDING)
 store:
+  discover: Discover
   latestMinecraft: LATEST MINECWAFT VERSHUN
   name: MODPACK MARKET
+  searchResult: Search Result
+  trending: Trending
 tag:
   create: MAKE TAG
   createSelected: MAKE TAG FUR SELECTED
@@ -1521,8 +1522,7 @@ universalDrop:
   start: IMPORT STARTED
   title: DROP FILE(S) HERE TO IMPORT AS
   unknownResource: UNKNOWN
-update:
-  goOfficialWebDownload: RE-DOWNLOD ON OFFISHUL WEBSITE
+update: {}
 upstream:
   downgrade: DOWNGRADE
   onlyShowCurrentVersion: ONLY SHOW CURREN MINECWAFT VERSHUN
@@ -1533,7 +1533,6 @@ user:
   authService: AUTHORIZE SERVIC
   email: EMAIL ADDWESS
   id: USER ID
-  info: USER INFORMASHUN
   name: USERNAME
   nameHint: TEH NAME DISPLAY IN GAME
   profile: PROFILE

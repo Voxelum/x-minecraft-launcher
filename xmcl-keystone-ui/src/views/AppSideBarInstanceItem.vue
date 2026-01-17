@@ -7,8 +7,8 @@
       push
       link
       draggable
-      class="non-moveable sidebar-item flex-1 flex-grow-0"
-      :class="{ 'v-list-item--active': isActive, 'px-2': !compact, 'px-0': compact, 'justify-center': compact }"
+      class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
+      :class="{ 'v-list-item--active': isActive }"
       @click="navigate"
       @dragover.prevent
       @dragstart="onDragStart"
@@ -19,15 +19,14 @@
       @drop="onDrop"
     >
       <v-list-item-avatar
-        :size="compact ? 32 : 48"
+        :size="48"
         class="transition-all duration-300 hover:rounded relative"
-        :class="{ 'mx-0': compact }"
         large
       >
         <v-img
           v-if="!dragging"
-          :width="compact ? 32 : 54"
-          :height="compact ? 32 : 54"
+          :width="54"
+          :height="54"
           :src="favicon"
           @dragenter="onDragEnter"
           @dragleave="onDragLeave"
@@ -37,7 +36,7 @@
           type="avatar"
         />
       </v-list-item-avatar>
-      <v-list-item-title v-if="!compact">{{ name }}</v-list-item-title>
+      <v-list-item-title>{{ name }}</v-list-item-title>
     </v-list-item>
     <!-- Pin indicator -->
     <div
@@ -64,7 +63,6 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 const props = defineProps<{
   path: string
   inside?: boolean
-  compact?: boolean
   pinned?: boolean
 }>()
 const emit = defineEmits(['arrange', 'drop-save', 'group', 'toggle-pin'])

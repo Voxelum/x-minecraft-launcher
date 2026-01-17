@@ -601,7 +601,6 @@ modpack:
     modpack de Curseforge.
   dropHint: Arrastra el archivo zip del modpack aquí para importarlo
   emitCurseforge: Emitir Modpack de Curseforge
-  emitMcbbs: Emitir Modpack de MCBBS
   emitModrinth: Emitir Modpack de Modrinth
   emitModrinthStrict: Formato Estricto de Modrinth
   emitModrinthStrictDescription: >-
@@ -753,6 +752,8 @@ modrinth:
   loginTitle: Iniciar sesión en Modrinth
   modLoaders:
     name: Cargadores de Mods
+  modpackSource:
+    source: Fuente
   projectId: ID del Proyecto
   projectMembers: Miembros del Proyecto
   projectType:
@@ -922,12 +923,19 @@ serverStatus:
   timeout: §4¡Conexión al servidor agotada!
 setting:
   about: Acerca de
+  aboutBmclDescription: >-
+    BMCL API proporciona descargas convenientes para usuarios en China
+    continental
   aboutContributors: 🧑‍💻 Contribuyentes 🧑‍💻
-  aboutSponsors: 😇 Patrocinadores 😇
+  aboutDenoDescription: >-
+    XMCL aprovecha la plataforma sin complicaciones de Deno Deploy para
+    aplicaciones JavaScript sin servidor
   aboutLicense: MIT LICENSE
-  aboutLicenseInfo: Firma de código gratuita en Windows proporcionada por SignPath.io, certificado por SignPath Foundation
-  aboutDenoDescription: XMCL aprovecha la plataforma sin complicaciones de Deno Deploy para aplicaciones JavaScript sin servidor
-  aboutBmclDescription: BMCL API proporciona descargas convenientes para usuarios en China continental
+  aboutLicenseInfo: >-
+    Firma de código gratuita en Windows proporcionada por SignPath.io,
+    certificado por SignPath Foundation
+  aboutSponsors: 😇 Patrocinadores 😇
+  advancedJavaOptions: Opciones avanzadas de Java
   advancedSettings: Configuración avanzada
   advancedSettingsHint: Zona de peligro - restablecer o administrar datos del lanzador
   apiSets:
@@ -938,6 +946,7 @@ setting:
   appxUpdateHint: >-
     El lanzador descargará y ejecutará el instalador. Si la ventana emergente
     del instalador falla, ejecútala manualmente.
+  authenticationSettings: Autenticación
   backdropBlur: Flojo de telón de fondo
   backgroundColorAbove: Mostrar color de fondo como superposición
   backgroundColorAboveDescription: >-
@@ -993,11 +1002,14 @@ setting:
   enableDiscord: Habilitar Presencia en Discord
   enableDiscordDescription: Esto mantendrá actualizado tu estado de lanzador en Discord
   enterUrl: Ingrese la URL
+  exportSettings: Exportar configuración
+  exportSettingsHint: Guardar la configuración actual en un archivo
   general: General
   githubRelease: Lanzamiento en GitHub
   globalSetting: Configuración Global de la Instancia
   globalSettingHint: La instancia utilizará estos ajustes por defecto.
-  hideNewsHeader: Ocultar escaparate de noticias
+  importSettings: Importar configuración
+  importSettingsHint: Cargar configuración desde un archivo exportado anteriormente
   instanceTheme:
     activeDescription: |-
       Esta instancia utiliza un tema personalizado.
@@ -1033,8 +1045,8 @@ setting:
     los anfitriones. 0 significa sin límite.
   maxSocketsTitle: Máximo de Conexiones HTTP
   memoryAssignment: Asignación de Memoria
-  minecraftOptions: Opciones de Minecraft
   migrateFromOther: Importar desde otro lanzador
+  minecraftOptions: Opciones de Minecraft
   name: Configuración Global | Configuraciones Globales
   network: Configuración de la red
   newsPosition: Mover sección de noticias
@@ -1045,27 +1057,42 @@ setting:
     remove: Eliminar
     repulse: Repulsar
   particleModeDescription: Selecciona el comportamiento al hacer clic en las partículas
+  quickLaunchSettings: Inicio rápido
   replaceNative: Reemplazar bibliotecas nativas
   replaceNativeDescription: Reemplace las bibliotecas nativas según el arco de su computadora.
   replaceNatives:
     all: Todo
     legacy: Solo versión heredada
   resetAllSettings: Restablecer toda la configuración
-  resetAllSettingsConfirmMessage: Esto eliminará permanentemente todas las configuraciones, cuentas, instancias, grupos y datos en caché. Esta acción no se puede deshacer. ¿Estás seguro?
+  resetAllSettingsConfirmMessage: >-
+    Esto eliminará permanentemente todas las configuraciones, cuentas,
+    instancias, grupos y datos en caché. Esta acción no se puede deshacer.
+    ¿Estás seguro?
   resetAllSettingsConfirmTitle: ¿Restablecer toda la configuración?
   resetAllSettingsHint: Restablecer el lanzador a los valores de fábrica (elimina todo)
   resetAllSettingsSuccess: Toda la configuración ha sido restablecida. El lanzador se reiniciará.
+  resetSettingsError: 'Error al restablecer la configuración: {error}'
   resetToDefault: Restablecer a los Valores Predeterminados
-  exportSettings: Exportar configuración
-  exportSettingsHint: Guardar la configuración actual en un archivo
-  importSettings: Importar configuración
-  importSettingsHint: Cargar configuración desde un archivo exportado anteriormente
   select: seleccionar
   settingsExported: Configuración exportada exitosamente
-  settingsImportError: Error al importar la configuración. Por favor, verifica el formato del archivo.
+  settingsImportError: >-
+    Error al importar la configuración. Por favor, verifica el formato del
+    archivo.
   settingsImported: Configuración importada exitosamente
+  settingsReloadHint: El launcher se reiniciará para aplicar toda la configuración.
   showNewsHeader: Mostrar escaparate de noticias
   showRoot: Mostrar
+  sidebarAlign: Alineación de la barra lateral
+  sidebarAutoHide: Ocultar barra lateral automáticamente
+  sidebarAutoHideHint: Oculta automáticamente la barra lateral cuando el ratón se aleja
+  sidebarClassic: Clásico
+  sidebarNotch: Muesca
+  sidebarPosition: Posición de la barra lateral
+  sidebarScale: Escala de la barra lateral
+  sidebarShowOnlyPinned: Mostrar solo fijados
+  sidebarShowOnlyPinnedHint: Mostrar solo las instancias fijadas en la barra lateral
+  sidebarStyle: Estilo de la barra lateral
+  sidebarStyleHint: Elige el estilo de apariencia de la barra lateral
   streamerMode: Modo de transmisión
   streamerModeDescription: >-
     Esto ocultará su información privada, como el correo electrónico, en el
@@ -1082,6 +1109,7 @@ setting:
   themeImport: Importar un tema
   themeResetFont: Restablecer fuente
   themeSelectFont: Seleccionar fuente
+  themeSettings: Tema
   themeShare: Compartir tema
   themeShareDescription: Puedes compartir el tema con tu amigo.
   update: Actualizar
@@ -1092,24 +1120,6 @@ setting:
   useProxy: Proxy HTTP
   useProxyDescription: La dirección del servidor proxy para las solicitudes HTTP
   viewBackgroundMusic: Ver músicas
-  quickLaunchSettings: Inicio rápido
-  sidebarAlign: Alineación de la barra lateral
-  sidebarAutoHide: Ocultar barra lateral automáticamente
-  sidebarAutoHideHint: Oculta automáticamente la barra lateral cuando el ratón se aleja
-  sidebarClassic: Clásico
-  sidebarNotch: Muesca
-  sidebarPosition: Posición de la barra lateral
-  sidebarScale: Escala de la barra lateral
-  sidebarShowOnlyPinned: Mostrar solo fijados
-  sidebarShowOnlyPinnedHint: Mostrar solo las instancias fijadas en la barra lateral
-  sidebarStyle: Estilo de la barra lateral
-  sidebarStyleHint: Elige el estilo de apariencia de la barra lateral
-  themeSettings: Tema
-  authenticationSettings: Autenticación
-  advancedJavaOptions: Opciones avanzadas de Java
-  advancedMinecraftOptions: Opciones avanzadas de Minecraft
-  resetSettingsError: 'Error al restablecer la configuración: {error}'
-  settingsReloadHint: El launcher se reiniciará para aplicar toda la configuración.
 settingLabel:
   global: Global
   globalHint: Esta configuración seguirá la configuración global
@@ -1184,6 +1194,7 @@ shared:
   previous: Anterior
   refresh: Actualizar
   remove: Eliminar
+  search: Buscar
   server: Servidor
   skipForNow: Saltar por ahora
 sortBy:
@@ -1192,8 +1203,11 @@ sortBy:
   timeAsc: Ordenar por tiempo de modificación (ascendente)
   timeDesc: Ordenar por tiempo de modificación (descendente)
 store:
+  discover: Descubrir
   latestMinecraft: La última versión de Minecraft
   name: Tienda de kits mod
+  searchResult: Resultado de la búsqueda
+  trending: Tendencia
 tag:
   create: Crear Etiqueta
   createSelected: Crear Etiqueta para la Selección
@@ -1258,8 +1272,7 @@ universalDrop:
   start: Importación Iniciada
   title: Suelta el(los) Archivo(s) Aquí para Importar como
   unknownResource: Desconocido
-update:
-  goOfficialWebDownload: Vuelva a descargar en el sitio web oficial.
+update: {}
 upstream:
   downgrade: Bajar la versión
   onlyShowCurrentVersion: Mostrar sólo la versión actual de Minecraft
@@ -1270,7 +1283,6 @@ user:
   authService: Servicio de Autorización
   email: Dirección de Correo Electrónico
   id: ID de Usuario
-  info: Información de Usuario
   name: Nombre de Usuario
   nameHint: El nombre que se mostrará en el juego
   profile: Perfil

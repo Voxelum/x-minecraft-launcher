@@ -13,7 +13,7 @@
            hide-details
            rounded
            height="52"
-           placeholder="Search ModPacks..."
+           :placeholder="t('shared.search')"
            prepend-inner-icon="search"
            class="elevated-search text-lg"
            background-color="surface"
@@ -125,7 +125,8 @@
         <!-- Featured Carousel -->
         <div v-if="!keyword && selectedCount === 0" class="mb-12">
            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-             <v-icon color="orange" large>local_fire_department</v-icon> Trending
+             <v-icon color="orange" large>local_fire_department</v-icon> 
+             {{ t('store.trending') }}
            </h2>
            <v-carousel
              cycle
@@ -163,8 +164,8 @@
         <div class="min-h-screen">
           <div class="flex items-end justify-between mb-6 gap-2">
             <div>
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ hasFilters ? t('modrinth.searchResult') : 'Discover' }}</h2>
-              <p class="text-gray-500 dark:text-gray-400 text-sm mt-1 whitespace-nowrap">Found {{ items.length }} modpacks</p>
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ hasFilters ? t('store.searchResult') : t('store.discover') }}</h2>
+              <p class="text-gray-500 dark:text-gray-400 text-sm mt-1 whitespace-nowrap"> {{ t('modrinth.projects', { count: items.length }) }} </p>
             </div>
             <!-- Active Filters -->
             <div v-if="hasFilters" class="flex justify-end items-center gap-2">
@@ -182,7 +183,7 @@
               </div>
               <v-btn v-if="hasFilters" outlined plain color="red" @click="clearAllFilters" small>
                 <v-icon small left>clear</v-icon>
-                Clear All
+                {{ t('shared.cancel') }}
               </v-btn>
             </div>
           </div>

@@ -6,7 +6,7 @@
       'background-image': `linear-gradient(${appBarColor}, transparent)`
     }">
     </div>
-    <AppSystemBar />
+    <AppSystemBar :back="sidebarStyle === 'notch'" />
     <div 
       class="relative flex h-full overflow-auto" 
       :class="layoutClasses"
@@ -63,7 +63,7 @@ import { kSettingsState } from '@/composables/setting'
 import { kTheme } from '@/composables/theme'
 import { kTutorial } from '@/composables/tutorial'
 import { kInFocusMode, kUIDefaultLayout } from '@/composables/uiLayout'
-import { kSidebarSettings, useSidebarSettings } from '@/composables/sidebarSettings'
+import { kSidebarSettings, useInjectSidebarSettings, useSidebarSettings } from '@/composables/sidebarSettings'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
@@ -91,6 +91,7 @@ import { kInstanceLauncher, useInstanceLauncher } from '@/composables/instanceLa
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
+
 
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 provide(kLocalizedContent, useLocalizedContentControl())

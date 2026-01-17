@@ -423,7 +423,6 @@ instanceInstallSkip:
     be due to the fact that the original checksum is incorrect. Please check. If
     you confirm the current files are valid, you can skip the validation check.
 instanceLauncher:
-  createNew: Create New Instance
   search: Search instances...
   showAll: Show All Instances
   title: All Instances
@@ -686,7 +685,6 @@ mod:
     Some mods dependencies might be missing. Or some dependencies versions do
     not matched.
   license: License
-  links: Links
   maybeCompatible: Maybe Compatible.
   modloaderSelectHint: The mod support following mod loaders. Please select one to install.
   modloaderSelectNotSupported: Not found {modloader} for Minecraft {minecraft}
@@ -704,7 +702,6 @@ mod:
   showDirectory: Show mods directory
   showFile: Show the mod path {file}
   showInModrinth: Show {name} in Modrinth
-  showUpdates: Show Updates
   switchDefaultSource: Default Mod Source
   syncGroupRules: Save grouping rules
   toUpdate: '{count} updates'
@@ -716,7 +713,6 @@ modFilter:
   disabledOnly: Only show disabled mods
   hasUpdateOnly: Only show mods with updates
   incompatibleOnly: Only show incompatible or missing dependencies missing mods
-  source: Source
   unusedOnly: Only show unused libraries mods
 modInstall:
   archived: >-
@@ -760,7 +756,6 @@ modUpgradePolicy:
   modrinth: Modrinth
   modrinthOnly: Modrinth Only
   name: Upgrade Policy
-  title: Upgrade Policy
 modified:
   reset: Reset
   save: Save
@@ -777,7 +772,6 @@ modpack:
     curseforge modpack.
   dropHint: Drop modpack zip to here to import
   emitCurseforge: Export Curseforge Modpack
-  emitMcbbs: Export MCBBS Modpack
   emitModrinth: Export Modrinth Modpack
   emitModrinthStrict: Strict Modrinth Format
   emitModrinthStrictDescription: Only the URLs from 4 domains listed in modrinth document are allowed
@@ -956,7 +950,6 @@ multiplayer:
   complete: Complete
   confirm: Confirm
   connectionError: Connection Error
-  connectionFailed: Connection failed
   connectionFailedHint: >-
     Unable to establish connection. Check if both peers have compatible NAT
     types.
@@ -1014,9 +1007,6 @@ multiplayer:
   localToken: Local Token
   manualConnect: Manually Connect
   name: Multiplayer on LAN
-  natFirewallBlocked: >-
-    Your connection might be blocked by Firewall! Please check your Firewall
-    settings or try to disable it temporarily.
   natWarning: >-
     Your NAT type may prevent direct connections. Try enabling relay server in
     settings or ask your friend to host instead.
@@ -1211,12 +1201,16 @@ serverStatus:
   timeout: §4Connect server timeout!
 setting:
   about: About
-  aboutContributors: 🧑‍💻 Contributors 🧑‍💻
-  aboutSponsors: 😇 Sponsors 😇
-  aboutLicense: MIT LICENSE
-  aboutLicenseInfo: Free code signing on Windows provided by SignPath.io, certificate by SignPath Foundation
-  aboutDenoDescription: XMCL leverages Deno Deploy's hassle-free platform for serverless JavaScript applications
   aboutBmclDescription: BMCL API provides convenient downloads for users in Chinese Mainland
+  aboutContributors: 🧑‍💻 Contributors 🧑‍💻
+  aboutDenoDescription: >-
+    XMCL leverages Deno Deploy's hassle-free platform for serverless JavaScript
+    applications
+  aboutLicense: MIT LICENSE
+  aboutLicenseInfo: >-
+    Free code signing on Windows provided by SignPath.io, certificate by
+    SignPath Foundation
+  aboutSponsors: 😇 Sponsors 😇
   advancedJavaOptions: Advanced Java Options
   advancedSettings: Advanced Settings
   advancedSettingsHint: Danger zone - reset or manage launcher data
@@ -1272,9 +1266,9 @@ setting:
     warningColor: Warning Color
   darkTheme: Theme
   darkThemeDescription: Choose between dark or light theme
+  devModeLabel: DEV
   developerMode: Developer Mode
   developerModeDescription: Developer Mode is for testing your own mods
-  devModeLabel: DEV
   disableTelemetry: Disable Telemetry
   disableTelemetryDescription: XMCL will collect the game launch and user login events.
   enableDedicatedGPUOptimization: Assign Dedicated GPU
@@ -1288,7 +1282,6 @@ setting:
   githubRelease: Github Release
   globalSetting: Global Instance Setting
   globalSettingHint: Instance will use these settings by default.
-  hideNewsHeader: Hide News Showcase
   importSettings: Import Settings
   importSettingsHint: Load settings from a previously exported file
   instanceTheme:
@@ -1307,11 +1300,11 @@ setting:
     focus: Focus Layout
   layoutDescription: Choose your preferred interface style
   layoutTitle: Interface Layout
-  livePreview: Live Preview
   linuxEnableDedicatedGPUOptimization: Assignment of a dedicated graphics processor
   linuxEnableDedicatedGPUOptimizationDescription: This option assigns a dedicated GPU to the Minecraft process.
   linuxTitlebar: Native title bar
   linuxTitlebarDescription: Use native linux title bar for launcher
+  livePreview: Live Preview
   location: Store Location
   manualUpdateHint: >-
     The version cannot be updated automatically. Please download the launcher
@@ -1351,8 +1344,8 @@ setting:
   resetAllSettingsConfirmTitle: Reset All Settings?
   resetAllSettingsHint: Reset launcher to factory defaults (deletes everything)
   resetAllSettingsSuccess: All settings have been reset. The launcher will restart.
-  resetToDefault: Reset to Default
   resetSettingsError: 'Error resetting settings: {error}'
+  resetToDefault: Reset to Default
   select: Select
   settingsExported: Settings exported successfully
   settingsImportError: Failed to import settings. Please check the file format.
@@ -1489,6 +1482,7 @@ shared:
   previous: Previous
   refresh: Refresh
   remove: Remove
+  search: Search
   server: Server
   skipForNow: Skip for now
   'yes': 'Yes'
@@ -1502,8 +1496,11 @@ sortBy:
   timeAsc: Sort by modification time (ascending)
   timeDesc: Sort by modification time (descending)
 store:
+  discover: Discover
   latestMinecraft: Latest Minecraft Version
   name: Modpack Market
+  searchResult: Search Result
+  trending: Trending
 tag:
   create: Create Tag
   createSelected: Create Tag for Selected
@@ -1609,8 +1606,7 @@ universalDrop:
   start: Import Started
   title: Drop File(s) Here to Import as
   unknownResource: Unknown
-update:
-  goOfficialWebDownload: Re-download on official website
+update: {}
 upstream:
   downgrade: Downgrade
   onlyShowCurrentVersion: Only Show Current Minecraft Version
@@ -1621,7 +1617,6 @@ user:
   authService: Authorize Service
   email: Email Address
   id: User Id
-  info: User Information
   name: Username
   nameHint: The name display in game
   profile: Profile

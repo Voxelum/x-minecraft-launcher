@@ -405,8 +405,7 @@ instanceInstallSkip:
     Certains fichiers sont téléchargés plusieurs fois sans que la somme de
     contrôle ne corresponde.
 
-    Cela peut être dû au fait que la somme de contrôle originale est
-    incorrecte.
+    Cela peut être dû au fait que la somme de contrôle originale est incorrecte.
 
     Vérifiez s'il vous plaît.
 
@@ -770,7 +769,6 @@ modpack:
     Peut être utilisé pour l'exportation en tant que modpack curseforge.
   dropHint: Déposez le zip du modpack ici pour l'importer
   emitCurseforge: Émettre le Modpack Curseforge
-  emitMcbbs: Émettre le Modpack MCBBS
   emitModrinth: Emit le Modpack Modrinth
   emitModrinthStrict: Format Modrinth strict
   emitModrinthStrictDescription: >-
@@ -919,6 +917,8 @@ modrinth:
   loginTitle: Connectez-vous à modrinth
   modLoaders:
     name: Mod Loaders
+  modpackSource:
+    source: Source
   projectId: Identifiant du projet
   projectMembers: Membres du projet
   projectType:
@@ -1171,12 +1171,19 @@ serverStatus:
   timeout: §4Timeout de la connexion !
 setting:
   about: À propos
+  aboutBmclDescription: >-
+    L'API BMCL fournit des téléchargements pratiques pour les utilisateurs en
+    Chine continentale
   aboutContributors: 🧑‍💻 Contributeurs 🧑‍💻
-  aboutSponsors: 😇 Sponsors 😇
+  aboutDenoDescription: >-
+    XMCL tire parti de la plateforme sans prise de tête de Deno Deploy pour les
+    applications JavaScript sans serveur
   aboutLicense: MIT LICENSE
-  aboutLicenseInfo: Signature de code gratuite sous Windows fournie par SignPath.io, certificat par SignPath Foundation
-  aboutDenoDescription: XMCL tire parti de la plateforme sans prise de tête de Deno Deploy pour les applications JavaScript sans serveur
-  aboutBmclDescription: L'API BMCL fournit des téléchargements pratiques pour les utilisateurs en Chine continentale
+  aboutLicenseInfo: >-
+    Signature de code gratuite sous Windows fournie par SignPath.io, certificat
+    par SignPath Foundation
+  aboutSponsors: 😇 Sponsors 😇
+  advancedJavaOptions: Options Java avancées
   advancedSettings: Paramètres avancés
   advancedSettingsHint: Zone dangereuse - réinitialiser ou gérer les données du lanceur
   apiSets:
@@ -1188,6 +1195,7 @@ setting:
     Le launcher téléchargera et exécutera le programme d'installation.  Si le
     programme d'installation contextuel a échoué, veuillez l'exécuter
     manuellement.
+  authenticationSettings: Authentification
   backdropBlur: Flou
   backgroundColorAbove: Afficher la couleur d'arrière-plan en superposition
   backgroundColorAboveDescription: >-
@@ -1235,9 +1243,9 @@ setting:
     warningColor: Couleur d'avertissement
   darkTheme: Thème
   darkThemeDescription: Choisissez le thème sombre ou clair
+  devModeLabel: DEVELOPPEMENT
   developerMode: Mode développeur
   developerModeDescription: Le mode développeur vise à tester votre propre mod
-  devModeLabel: DEVELOPPEMENT
   disableTelemetry: Désactiver la télémétrie
   disableTelemetryDescription: >-
     XMCL collectera les événements de lancement du jeu et de connexion de
@@ -1247,11 +1255,14 @@ setting:
   enableDiscord: Activer la présence riche Discord
   enableDiscordDescription: Cela affichera votre activité sur le launcher sur votre statut discord
   enterUrl: Entrez l'URL
+  exportSettings: Exporter les paramètres
+  exportSettingsHint: Enregistrer vos paramètres actuels dans un fichier
   general: Général
   githubRelease: Version Github
   globalSetting: Paramètres d'instances global
   globalSettingHint: Les instances utiliseront ces paramètres par défaut.
-  hideNewsHeader: Masquer la vitrine des actualités
+  importSettings: Importer les paramètres
+  importSettingsHint: Charger les paramètres depuis un fichier précédemment exporté
   instanceTheme:
     activeDescription: |-
       Cette instance utilise un thème personnalisé.
@@ -1270,11 +1281,11 @@ setting:
     La disposition du launcher représentant différentes logiques d'interface
     utilisateur
   layoutTitle: Mise en page
-  livePreview: Aperçu en direct
   linuxEnableDedicatedGPUOptimization: Attribution d'un processeur graphique dédié
   linuxEnableDedicatedGPUOptimizationDescription: Cette option affecte un GPU dédié au processus Minecraft.
   linuxTitlebar: Barre de titre native
   linuxTitlebarDescription: Utiliser la barre de titre Linux native pour le launcher
+  livePreview: Aperçu en direct
   location: Emplacement du magasin
   manualUpdateHint: >-
     La version ne peut pas être mise à jour automatiquement. Veuillez
@@ -1286,8 +1297,8 @@ setting:
     hôtes au total. 0 signifie aucune limite.
   maxSocketsTitle: Sockets HTTP Max
   memoryAssignment: Attribution de mémoire
-  minecraftOptions: Options Minecraft
   migrateFromOther: Importer depuis un autre lanceur
+  minecraftOptions: Options Minecraft
   name: |-
     Paramètre global |
     Paramètres globaux
@@ -1301,6 +1312,7 @@ setting:
     remove: Éliminer
     repulse: Repousser
   particleModeDescription: Sélectionnez le comportement de clic des particules
+  quickLaunchSettings: Lancement rapide
   replaceNative: Remplacer les bibliothèques natives
   replaceNativeDescription: >-
     Remplacez les bibliothèques natives en fonction de l'architecture de votre
@@ -1309,21 +1321,35 @@ setting:
     all: Tous
     legacy: Version héritée uniquement
   resetAllSettings: Réinitialiser tous les paramètres
-  resetAllSettingsConfirmMessage: Cela supprimera définitivement tous les paramètres, comptes, instances, groupes et données en cache. Cette action ne peut pas être annulée. Êtes-vous sûr ?
+  resetAllSettingsConfirmMessage: >-
+    Cela supprimera définitivement tous les paramètres, comptes, instances,
+    groupes et données en cache. Cette action ne peut pas être annulée.
+    Êtes-vous sûr ?
   resetAllSettingsConfirmTitle: Réinitialiser tous les paramètres ?
   resetAllSettingsHint: Réinitialiser le lanceur aux paramètres d'usine (supprime tout)
   resetAllSettingsSuccess: Tous les paramètres ont été réinitialisés. Le lanceur va redémarrer.
+  resetSettingsError: 'Erreur lors de la réinitialisation des paramètres: {error}'
   resetToDefault: Réinitialiser
-  exportSettings: Exporter les paramètres
-  exportSettingsHint: Enregistrer vos paramètres actuels dans un fichier
-  importSettings: Importer les paramètres
-  importSettingsHint: Charger les paramètres depuis un fichier précédemment exporté
   select: sélectionner
   settingsExported: Paramètres exportés avec succès
-  settingsImportError: Échec de l'importation des paramètres. Veuillez vérifier le format du fichier.
+  settingsImportError: >-
+    Échec de l'importation des paramètres. Veuillez vérifier le format du
+    fichier.
   settingsImported: Paramètres importés avec succès
+  settingsReloadHint: Le lanceur redémarrera pour appliquer tous les paramètres.
   showNewsHeader: Afficher la vitrine des actualités
   showRoot: Afficher
+  sidebarAlign: Alignement de la barre latérale
+  sidebarAutoHide: Masquer automatiquement la barre latérale
+  sidebarAutoHideHint: Masquer automatiquement la barre latérale et afficher au survol
+  sidebarClassic: Classique
+  sidebarNotch: Encoche
+  sidebarPosition: Position de la barre latérale
+  sidebarScale: Échelle de la barre latérale
+  sidebarShowOnlyPinned: Afficher uniquement les instances épinglées
+  sidebarShowOnlyPinnedHint: Afficher uniquement les instances épinglées dans la barre latérale
+  sidebarStyle: Style de la barre latérale
+  sidebarStyleHint: Choisissez entre le design classique et moderne Notch
   streamerMode: Mode diffusion
   streamerModeDescription: Cela masquera vos informations privées comme les e-mails dans le lanceur.
   theme:
@@ -1336,6 +1362,7 @@ setting:
   themeFontUrlPlaceholder: Saisissez l'URL HTTP/HTTPS pour la police
   themeResetFont: Réinitialiser la police
   themeSelectFont: Sélectionnez la police
+  themeSettings: Paramètres du thème
   themeShare: Partager le thème
   themeShareDescription: Vous pouvez partager le thème avec votre ami.
   update: Mettre à jour
@@ -1347,24 +1374,6 @@ setting:
   useProxy: Proxy HTTP
   useProxyDescription: L'adresse du serveur proxy pour la requête http
   viewBackgroundMusic: Voir les musiques
-  quickLaunchSettings: Lancement rapide
-  sidebarAlign: Alignement de la barre latérale
-  sidebarAutoHide: Masquer automatiquement la barre latérale
-  sidebarAutoHideHint: Masquer automatiquement la barre latérale et afficher au survol
-  sidebarClassic: Classique
-  sidebarNotch: Encoche
-  sidebarPosition: Position de la barre latérale
-  sidebarScale: Échelle de la barre latérale
-  sidebarShowOnlyPinned: Afficher uniquement les instances épinglées
-  sidebarShowOnlyPinnedHint: Afficher uniquement les instances épinglées dans la barre latérale
-  sidebarStyle: Style de la barre latérale
-  sidebarStyleHint: Choisissez entre le design classique et moderne Notch
-  themeSettings: Paramètres du thème
-  authenticationSettings: Authentification
-  advancedJavaOptions: Options Java avancées
-  advancedMinecraftOptions: Options Minecraft avancées
-  resetSettingsError: 'Erreur lors de la réinitialisation des paramètres: {error}'
-  settingsReloadHint: Le lanceur redémarrera pour appliquer tous les paramètres.
 settingLabel:
   global: Global
   globalHint: Ce réglage sera global
@@ -1457,6 +1466,7 @@ shared:
   previous: Précédent
   refresh: Rafraîchir
   remove: Enlever
+  search: Recherche
   server: Serveur
   skipForNow: Passer pour l'instant
   'yes': Oui
@@ -1465,6 +1475,10 @@ sortBy:
   alphabetDesc: Trier par Alphabet (descendant)
   timeAsc: Trier par temps de modification (ascendant)
   timeDesc: Trier par temps de modification (descendant)
+store:
+  discover: Découvrir
+  searchResult: Résultat de la recherche
+  trending: Tendance
 tag:
   create: Créer un tag
   createSelected: Créer un tag pour la sélection
@@ -1584,8 +1598,7 @@ universalDrop:
   start: Importation commencée
   title: Déposez le ou les fichiers ici pour les importer en tant que
   unknownResource: Inconnu
-update:
-  goOfficialWebDownload: Re-télécharger sur le site officiel
+update: {}
 upstream:
   downgrade: Rétrograder
 user:
@@ -1594,7 +1607,6 @@ user:
   authService: Service d'Autorisation
   email: Adresse e-mail
   id: ID d'utilisateur
-  info: Infos de l'utilisateur
   name: Nom d'utilisateur
   nameHint: Affichage du nom dans le jeu
   profile: Profil

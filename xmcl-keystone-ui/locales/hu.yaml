@@ -731,7 +731,6 @@ modFilter:
   incompatibleOnly: >-
     Csak az összeegyeztethetetlen vagy hiányzó függőségek hiányzó modokat
     mutatnak
-  source: Forrás
   unusedOnly: Csak a fel nem használt könyvtárak modokat mutatják be
 modInstall:
   archived: >-
@@ -789,7 +788,6 @@ modpack:
     exportálásához.
   dropHint: Húzd ide a modcsomag zip fájlát az importáláshoz
   emitCurseforge: Emit Curseforge modcsomag
-  emitMcbbs: Emit MCBBS modcsomag
   emitModrinth: Emit Modrinth modcsomag
   emitModrinthStrict: Szigorú Modrinth formátum
   emitModrinthStrictDescription: Csak a modrinth dokumentumban felsorolt 4 domain URL-je engedélyezett.
@@ -1219,12 +1217,19 @@ serverStatus:
   timeout: §4Szerver csatlakozási időtúllépés!
 setting:
   about: Körülbelül
+  aboutBmclDescription: >-
+    A BMCL API kényelmes letöltéseket biztosít a Kínai Kontinensen lévő
+    felhasználók számára
   aboutContributors: 🧑‍💻 Közreműködők 🧑‍💻
-  aboutSponsors: 😇 Szponzorok 😇
+  aboutDenoDescription: >-
+    Az XMCL a Deno Deploy egyszerű platformját használja kiszolgáló nélküli
+    JavaScript alkalmazásokhoz
   aboutLicense: MIT LICENSE
-  aboutLicenseInfo: Ingyenes kódaláírás Windows alatt a SignPath.io által biztosított, SignPath Foundation által tanúsított
-  aboutDenoDescription: Az XMCL a Deno Deploy egyszerű platformját használja kiszolgáló nélküli JavaScript alkalmazásokhoz
-  aboutBmclDescription: A BMCL API kényelmes letöltéseket biztosít a Kínai Kontinensen lévő felhasználók számára
+  aboutLicenseInfo: >-
+    Ingyenes kódaláírás Windows alatt a SignPath.io által biztosított, SignPath
+    Foundation által tanúsított
+  aboutSponsors: 😇 Szponzorok 😇
+  advancedJavaOptions: Haladó Java beállítások
   advancedSettings: Speciális beállítások
   advancedSettingsHint: Veszélyes zóna - indító adatok visszaállítása vagy kezelése
   apiSets:
@@ -1235,6 +1240,7 @@ setting:
   appxUpdateHint: >-
     A Launcher letölti és futtatja a telepítőt. Ha a felugró telepítő nem
     sikerült, kérlek futtasd manuálisan.
+  authenticationSettings: Hitelesítés
   backdropBlur: Háttérkép elmosódás
   backgroundColorAbove: Háttérszín megjelenítése fedvényként
   backgroundColorAboveDescription: Ezzel a háttérszín jelenik meg a háttérkép vagy a videó felett.
@@ -1291,11 +1297,14 @@ setting:
   enableDiscord: Discord státusz engedélyezése
   enableDiscordDescription: Ez folyamatosan frissíti az launcher állapotát a discordra.
   enterUrl: Írja be az URL-t
+  exportSettings: Beállítások exportálása
+  exportSettingsHint: Jelenlegi beállítások mentése fájlba
   general: Általános
   githubRelease: Github kiadás
   globalSetting: Globális példány beállítás
   globalSettingHint: Az példány alapértelmezés szerint ezeket a beállításokat fogja használni.
-  hideNewsHeader: Hírek kirakat elrejtése
+  importSettings: Beállítások importálása
+  importSettingsHint: Beállítások betöltése korábban exportált fájlból
   instanceTheme:
     activeDescription: |-
       Ez a példány egyéni témát használ.
@@ -1329,8 +1338,8 @@ setting:
     az összes állomáson összesen. A 0 azt jelenti, hogy nincs korlátozás.
   maxSocketsTitle: Max HTTP foglalatok
   memoryAssignment: Memória hozzárendelés
-  minecraftOptions: Minecraft beállítások
   migrateFromOther: Importálás másik indítóból
+  minecraftOptions: Minecraft beállítások
   name: Globális beállítás | Globális beállítások
   network: Hálózati beállítások
   newsPosition: Hírek szekció áthelyezése
@@ -1342,27 +1351,41 @@ setting:
     remove: Eltávolítás
     repulse: Visszaverődés
   particleModeDescription: Jelöld ki a részecske kattintási viselkedését
+  quickLaunchSettings: Gyors indítás
   replaceNative: Natív könyvtárak helyettesítése
   replaceNativeDescription: Cserélje ki a natív könyvtárakat a számítógép archívumának megfelelően.
   replaceNatives:
     all: Összes
     legacy: Csak a Legacy verzió
   resetAllSettings: Összes beállítás visszaállítása
-  resetAllSettingsConfirmMessage: Ez véglegesen törli az összes beállítást, fiókot, példányt, csoportot és gyorsítótárazott adatot. Ez a művelet nem vonható vissza. Biztos vagy benne?
+  resetAllSettingsConfirmMessage: >-
+    Ez véglegesen törli az összes beállítást, fiókot, példányt, csoportot és
+    gyorsítótárazott adatot. Ez a művelet nem vonható vissza. Biztos vagy benne?
   resetAllSettingsConfirmTitle: Visszaállítja az összes beállítást?
   resetAllSettingsHint: Az indító visszaállítása gyári alapértelmezésre (mindent töröl)
   resetAllSettingsSuccess: Az összes beállítás vissza lett állítva. Az indító újraindul.
+  resetSettingsError: 'Hiba a beállítások visszaállítása közben: {error}'
   resetToDefault: Visszaállítás alapértelmezettre
-  exportSettings: Beállítások exportálása
-  exportSettingsHint: Jelenlegi beállítások mentése fájlba
-  importSettings: Beállítások importálása
-  importSettingsHint: Beállítások betöltése korábban exportált fájlból
   select: kiválasztás
   settingsExported: Beállítások sikeresen exportálva
-  settingsImportError: Nem sikerült importálni a beállításokat. Kérjük, ellenőrizze a fájlformátumot.
+  settingsImportError: >-
+    Nem sikerült importálni a beállításokat. Kérjük, ellenőrizze a
+    fájlformátumot.
   settingsImported: Beállítások sikeresen importálva
+  settingsReloadHint: Az indító újraindul az összes beállítás alkalmazásához.
   showNewsHeader: Hírek kirakatának megjelenítése
   showRoot: Megjelenítés
+  sidebarAlign: Oldalsáv igazítása
+  sidebarAutoHide: Oldalsáv automatikus elrejtése
+  sidebarAutoHideHint: Az oldalsáv automatikus elrejtése, amikor az egér eltávozik
+  sidebarClassic: Klasszikus
+  sidebarNotch: Bevágás
+  sidebarPosition: Oldalsáv pozíciója
+  sidebarScale: Oldalsáv méretezése
+  sidebarShowOnlyPinned: Csak rögzítettek megjelenítése
+  sidebarShowOnlyPinnedHint: Csak a rögzített példányok megjelenítése az oldalsávon
+  sidebarStyle: Oldalsáv stílusa
+  sidebarStyleHint: Válassza ki az oldalsáv megjelenési stílusát
   streamerMode: Közvetítés mód
   streamerModeDescription: Ez elrejti a személyes adatait, például az e-mail címét az launcherben.
   theme:
@@ -1377,6 +1400,7 @@ setting:
   themeImport: Téma importálása
   themeResetFont: Betűtípus visszaállítása
   themeSelectFont: Válassza a Betűtípus lehetőséget
+  themeSettings: Téma
   themeShare: Téma megosztása
   themeShareDescription: Megoszthatja a témát a barátjával.
   update: Frissítés
@@ -1387,24 +1411,6 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: A http-kérés proxy-kiszolgálójának címe
   viewBackgroundMusic: Zenék megtekintése
-  quickLaunchSettings: Gyors indítás
-  sidebarAlign: Oldalsáv igazítása
-  sidebarAutoHide: Oldalsáv automatikus elrejtése
-  sidebarAutoHideHint: Az oldalsáv automatikus elrejtése, amikor az egér eltávozik
-  sidebarClassic: Klasszikus
-  sidebarNotch: Bevágás
-  sidebarPosition: Oldalsáv pozíciója
-  sidebarScale: Oldalsáv méretezése
-  sidebarShowOnlyPinned: Csak rögzítettek megjelenítése
-  sidebarShowOnlyPinnedHint: Csak a rögzített példányok megjelenítése az oldalsávon
-  sidebarStyle: Oldalsáv stílusa
-  sidebarStyleHint: Válassza ki az oldalsáv megjelenési stílusát
-  themeSettings: Téma
-  authenticationSettings: Hitelesítés
-  advancedJavaOptions: Haladó Java beállítások
-  advancedMinecraftOptions: Haladó Minecraft beállítások
-  resetSettingsError: 'Hiba a beállítások visszaállítása közben: {error}'
-  settingsReloadHint: Az indító újraindul az összes beállítás alkalmazásához.
 settingLabel:
   global: Globális
   globalHint: Ez a beállítás követi a globális beállítást
@@ -1498,6 +1504,7 @@ shared:
   previous: Előző
   refresh: Frissítés
   remove: Eltávolítás
+  search: Keresés
   server: Szerver
   skipForNow: Most hagyd ki
   'yes': Igen
@@ -1507,8 +1514,11 @@ sortBy:
   timeAsc: Rendezés módosítási idő szerint (növekvő)
   timeDesc: Rendezés módosítási idő szerint (csökkenő)
 store:
+  discover: Fedezze fel
   latestMinecraft: Legfrissebb Minecraft verzió
   name: Modcsomag piac
+  searchResult: Keresés eredménye
+  trending: Felkapott
 tag:
   create: Címke létrehozása
   createSelected: Címke létrehozása a kiválasztotthoz
@@ -1618,8 +1628,7 @@ universalDrop:
   start: Importálás megkezdődött
   title: Húzd ide a fájl(oka)t az importáláshoz
   unknownResource: Ismeretlen
-update:
-  goOfficialWebDownload: Töltse le újra a hivatalos webhelyről
+update: {}
 upstream:
   downgrade: Visszaváltás
   onlyShowCurrentVersion: Csak az aktuális Minecraft verzió megjelenítése
@@ -1630,7 +1639,6 @@ user:
   authService: Szolgáltatás engedélyezése
   email: Email Cím
   id: Felhasználó Id
-  info: Felhaszáló infók
   name: Felhasználónév
   nameHint: A játékban megjelenő név
   profile: Profil

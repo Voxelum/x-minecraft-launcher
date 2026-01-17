@@ -55,7 +55,9 @@
       <v-divider />
     </v-list>
 
-    <AppSideBarContentNext />
+    <div class="flex-1 h-full overflow-y-auto">
+      <AppSideBarInstances />
+    </div>
 
     <v-list
       nav
@@ -175,16 +177,19 @@
         </v-badge>
       </v-btn>
     </div>
+    <AppSideBarGroupSettingDialog :default-color="defaultColor" />
   </div>
 </template>
 
 <script lang=ts setup>
 import { kSettingsState } from '@/composables/setting'
-import { injection } from '@/util/inject'
-import AppSideBarContentNext from './AppSideBarContentNext.vue'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
-import { kTheme } from '@/composables/theme'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
+import { kTheme } from '@/composables/theme'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { injection } from '@/util/inject'
+import AppSideBarInstances from './AppSideBarInstances.vue'
+import AppSideBarGroupSettingDialog from './AppSideBarGroupSettingDialog.vue'
+import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 
 const { blurSidebar } = injection(kTheme)
 const { state } = injection(kSettingsState)
@@ -195,6 +200,7 @@ const isHorizontal = computed(() => position.value === 'top' || position.value =
 const { t } = useI18n()
 const { sideBarColor } = injection(kTheme)
 const { back } = useRouter()
+const defaultColor = useInstanceGroupDefaultColor()
 
 function goBack() {
   back()
@@ -203,7 +209,6 @@ function goBack() {
 function goMultiplayer() {
   windowController.openMultiplayerWindow()
 }
-
 </script>
 
 <style scoped>

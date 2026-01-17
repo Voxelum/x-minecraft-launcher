@@ -747,7 +747,6 @@ modpack:
     modpack.
   dropHint: Upuść modpack zip tutaj, aby zaimportować
   emitCurseforge: Emit Curseforge Modpack
-  emitMcbbs: Emit MCBBS Modpack
   emitModrinth: Emit Modrinth Modpack
   emitModrinthStrict: Ścisły format Modrinth
   emitModrinthStrictDescription: Dozwolone są tylko adresy URL z 4 domen wymienionych w dokumencie modrinth
@@ -894,6 +893,8 @@ modrinth:
     Launcher otworzy okno przeglądarki do logowania Modrinth.
   modLoaders:
     name: Mod Loadery
+  modpackSource:
+    source: Źródło
   projectId: Id projektu
   projectMembers: Członkowie projektu
   projectType:
@@ -1149,6 +1150,7 @@ serverStatus:
   timeout: §4Limit czasu połączenia z serwerem!
 setting:
   about: O
+  advancedJavaOptions: Zaawansowane opcje Java
   advancedSettings: Ustawienia zaawansowane
   advancedSettingsHint: Strefa zagrożenia - resetuj lub zarządzaj danymi launchera
   apiSets:
@@ -1159,6 +1161,7 @@ setting:
   appxUpdateHint: >-
     Program uruchamiający pobierze i uruchomi instalator. Jeśli instalator popup
     nie powiódł się, należy uruchomić go ręcznie.
+  authenticationSettings: Uwierzytelnianie
   backdropBlur: Tło rozmyte
   backgroundColorAbove: Pokaż kolor tła jako nakładkę
   backgroundColorAboveDescription: Spowoduje to wyświetlenie koloru tła nad obrazem tła lub wideo.
@@ -1211,11 +1214,14 @@ setting:
   enableDiscord: Włącz obecność Discord
   enableDiscordDescription: Spowoduje to aktualizację statusu programu uruchamiającego na discord
   enterUrl: Wpisz adres URL
+  exportSettings: Eksportuj ustawienia
+  exportSettingsHint: Zapisz bieżące ustawienia do pliku
   general: Ogólne
   githubRelease: Github Release
   globalSetting: Globalne ustawienia instancji
   globalSettingHint: Instancja będzie używać tych ustawień domyślnie.
-  hideNewsHeader: Ukryj prezentację wiadomości
+  importSettings: Importuj ustawienia
+  importSettingsHint: Wczytaj ustawienia z wcześniej wyeksportowanego pliku
   instanceTheme:
     activeDescription: |-
       Ta instancja używa motywu niestandardowego.
@@ -1251,8 +1257,8 @@ setting:
     łącznie. łącznie. 0 oznacza brak limitu.
   maxSocketsTitle: Max HTTP sockets
   memoryAssignment: Przydzielanie pamięci
-  minecraftOptions: Opcje Minecraft
   migrateFromOther: Importuj z innego launchera
+  minecraftOptions: Opcje Minecraft
   name: Ustawienia globalne | Ustawienia globalne
   network: Ustawienia sieciowe
   newsPosition: Przesuń sekcję aktualności
@@ -1264,27 +1270,41 @@ setting:
     remove: Usunąć
     repulse: Odpychanie
   particleModeDescription: Wybierz zachowanie kliknięcia cząsteczki
+  quickLaunchSettings: Szybkie uruchomienie
   replaceNative: Zastąp biblioteki natywne
   replaceNativeDescription: Zastąp natywne biblioteki zgodnie z architekturą komputera.
   replaceNatives:
     all: All
     legacy: Tylko starsza wersja
   resetAllSettings: Zresetuj wszystkie ustawienia
-  resetAllSettingsConfirmMessage: Spowoduje to trwałe usunięcie wszystkich ustawień, kont, instancji, grup i danych z pamięci podręcznej. Tej czynności nie można cofnąć. Czy na pewno?
+  resetAllSettingsConfirmMessage: >-
+    Spowoduje to trwałe usunięcie wszystkich ustawień, kont, instancji, grup i
+    danych z pamięci podręcznej. Tej czynności nie można cofnąć. Czy na pewno?
   resetAllSettingsConfirmTitle: Zresetować wszystkie ustawienia?
   resetAllSettingsHint: Przywróć launcher do ustawień fabrycznych (usuwa wszystko)
-  resetAllSettingsSuccess: Wszystkie ustawienia zostały zresetowane. Launcher zostanie uruchomiony ponownie.
+  resetAllSettingsSuccess: >-
+    Wszystkie ustawienia zostały zresetowane. Launcher zostanie uruchomiony
+    ponownie.
+  resetSettingsError: 'Błąd podczas resetowania ustawień: {error}'
   resetToDefault: Przywróć ustawienia domyślne
-  exportSettings: Eksportuj ustawienia
-  exportSettingsHint: Zapisz bieżące ustawienia do pliku
-  importSettings: Importuj ustawienia
-  importSettingsHint: Wczytaj ustawienia z wcześniej wyeksportowanego pliku
   select: wybór
   settingsExported: Ustawienia wyeksportowane pomyślnie
   settingsImportError: Nie udało się zaimportować ustawień. Sprawdź format pliku.
   settingsImported: Ustawienia zaimportowane pomyślnie
+  settingsReloadHint: Launcher zostanie ponownie uruchomiony, aby zastosować wszystkie ustawienia.
   showNewsHeader: Odkryj wizytówkę wiadomości
   showRoot: Pokaż
+  sidebarAlign: Wyrównanie paska bocznego
+  sidebarAutoHide: Automatycznie ukryj pasek boczny
+  sidebarAutoHideHint: Automatycznie ukrywa pasek boczny, gdy mysz się oddala
+  sidebarClassic: Klasyczny
+  sidebarNotch: Wycięcie
+  sidebarPosition: Pozycja paska bocznego
+  sidebarScale: Skala paska bocznego
+  sidebarShowOnlyPinned: Pokaż tylko przypięte
+  sidebarShowOnlyPinnedHint: Pokaż tylko przypięte instancje na pasku bocznym
+  sidebarStyle: Styl paska bocznego
+  sidebarStyleHint: Wybierz styl wyglądu paska bocznego
   streamerMode: Tryb przesyłania strumieniowego
   streamerModeDescription: >-
     Spowoduje to ukrycie prywatnych informacji, takich jak adres e-mail, w
@@ -1301,6 +1321,7 @@ setting:
   themeImport: Importuj motyw
   themeResetFont: Resetuj czcionkę
   themeSelectFont: Wybierz czcionkę
+  themeSettings: Motyw
   themeShare: Udostępnij motyw
   themeShareDescription: Możesz udostępnić motyw znajomemu.
   update: Aktualizacja
@@ -1311,24 +1332,6 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: Adres serwera proxy dla żądania http
   viewBackgroundMusic: Wyświetl muzykę
-  quickLaunchSettings: Szybkie uruchomienie
-  sidebarAlign: Wyrównanie paska bocznego
-  sidebarAutoHide: Automatycznie ukryj pasek boczny
-  sidebarAutoHideHint: Automatycznie ukrywa pasek boczny, gdy mysz się oddala
-  sidebarClassic: Klasyczny
-  sidebarNotch: Wycięcie
-  sidebarPosition: Pozycja paska bocznego
-  sidebarScale: Skala paska bocznego
-  sidebarShowOnlyPinned: Pokaż tylko przypięte
-  sidebarShowOnlyPinnedHint: Pokaż tylko przypięte instancje na pasku bocznym
-  sidebarStyle: Styl paska bocznego
-  sidebarStyleHint: Wybierz styl wyglądu paska bocznego
-  themeSettings: Motyw
-  authenticationSettings: Uwierzytelnianie
-  advancedJavaOptions: Zaawansowane opcje Java
-  advancedMinecraftOptions: Zaawansowane opcje Minecraft
-  resetSettingsError: 'Błąd podczas resetowania ustawień: {error}'
-  settingsReloadHint: Launcher zostanie ponownie uruchomiony, aby zastosować wszystkie ustawienia.
 settingLabel:
   global: Globalny
   globalHint: To ustawienie będzie zgodne z ustawieniem globalnym
@@ -1426,6 +1429,7 @@ shared:
   previous: Poprzedni
   refresh: Odświeżanie
   remove: Usunąć
+  search: Szukaj
   server: Serwer
   skipForNow: Pomiń na razie
 sortBy:
@@ -1434,8 +1438,11 @@ sortBy:
   timeAsc: Sortuj według czasu modyfikacji (rosnący)
   timeDesc: Sortuj według czasu modyfikacji (zstępowanie)
 store:
+  discover: Odkryć
   latestMinecraft: Najnowsza wersja Minecrafta
   name: Rynek Modpack
+  searchResult: Wynik wyszukiwania
+  trending: Trendy
 tag:
   create: Utwórz tag
   createSelected: Utwórz znacznik dla wybranych
@@ -1544,8 +1551,7 @@ universalDrop:
   start: Import rozpoczęty
   title: Upuść plik(i) tutaj, aby zaimportować jako
   unknownResource: Nieznany
-update:
-  goOfficialWebDownload: Ponowne pobranie na oficjalnej stronie
+update: {}
 upstream:
   downgrade: Obniżenie oceny
   onlyShowCurrentVersion: Pokazuje tylko aktualną wersję Minecrafta
@@ -1556,7 +1562,6 @@ user:
   authService: Autoryzacja usługi
   email: Email Address
   id: User Id
-  info: Informacje o użytkowniku
   name: Nazwa użytkownika
   nameHint: Nazwa wyświetlana w grze
   profile: Profile

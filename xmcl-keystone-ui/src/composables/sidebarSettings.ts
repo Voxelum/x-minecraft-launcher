@@ -24,7 +24,7 @@ export function useSidebarSettings(): SidebarSettings {
   const style = useLocalStorageCacheStringValue('sidebar_style', 'classic' as SidebarStyle)
   const align = useLocalStorageCacheStringValue('sidebar_align', 'center' as SidebarAlign)
   const scale = useLocalStorageCacheInt('sidebar_scale', 100)
-  const autoHide = useLocalStorageCacheBool('sidebar_autoHide', false)
+  const autoHide = useLocalStorageCacheBool('sidebar_autoHide', true)
   const showOnlyPinned = useLocalStorageCacheBool('sidebar_showOnlyPinned', false)
   const pinnedInstances = useLocalStorage<string[]>('sidebar_pinnedInstances', [])
 

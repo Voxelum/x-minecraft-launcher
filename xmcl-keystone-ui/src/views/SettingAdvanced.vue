@@ -1,6 +1,6 @@
 <!-- src/components/SettingGlobalAdvanced.vue -->
 <template>
-  <div>
+  <div v-if="false">
     <SettingCard
       :title="t('setting.advancedSettings')"
       :subtitle="t('setting.advancedSettingsHint')"
@@ -104,13 +104,11 @@ async function handleResetAllSettings() {
       console.warn('Failed to clear IndexedDB:', e)
     }
 
-    alert(t('setting.resetAllSettingsSuccess'))
     setTimeout(async () => {
       await quit()
     }, 1000)
   } catch (error) {
     console.error('Failed to reset settings:', error)
-    alert(t('setting.resetSettingsError') + ' ' + error)
     resetting.value = false
     showResetDialog.value = false
   }
@@ -159,10 +157,8 @@ async function handleExportSettings() {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
 
-    alert(t('setting.settingsExported'))
   } catch (error) {
     console.error('Failed to export settings:', error)
-    alert(t('setting.settingsImportError'))
   }
 }
 
@@ -198,21 +194,18 @@ async function handleImportSettings() {
           }
         }
 
-        alert(t('setting.settingsImported') + '\n\n' + t('setting.settingsReloadHint'))
 
         setTimeout(() => {
           window.location.reload()
         }, 1000)
       } catch (parseError) {
         console.error('Failed to parse settings file:', parseError)
-        alert(t('setting.settingsImportError') + '\n\n' + parseError)
       }
     }
 
     input.click()
   } catch (error) {
     console.error('Failed to import settings:', error)
-    alert(t('setting.settingsImportError'))
   }
 }
 </script>
