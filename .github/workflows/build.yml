@@ -27,7 +27,7 @@ jobs:
         with:
           version: 9.3.0
       - name: Fix node-gyp and Python
-        if: ${{ runner.os == 'macOS' }}
+        if: ${{ runner.os == 'macOS' || runner.os == 'Windows' }}
         run: python3 -m pip install --break-system-packages --user packaging setuptools
       - name: Use Node.js 20
         uses: actions/setup-node@v4
