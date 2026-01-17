@@ -1,7 +1,8 @@
 import { spawn } from 'child_process'
-import { setHandler } from '../worker/helper'
+import { setHandler } from '@xmcl/worker/helper'
 import { getDiskInfo } from 'node-disk-info'
 import Drive from 'node-disk-info/dist/classes/drive'
+import { getSerializedError } from '~/infra/errors/error_serialize'
 
 setHandler({
   getDiskInfo: async () => {
@@ -32,4 +33,4 @@ setHandler({
       throw e
     }
   }
-})
+}, getSerializedError)

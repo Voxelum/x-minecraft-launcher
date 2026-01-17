@@ -3,13 +3,19 @@ import { join, parse } from 'path'
 import { setTimeout } from 'timers/promises'
 import { isValidPathName } from '~/util/validate'
 import { LauncherAppPlugin } from '../app'
-import { createLazyWorker } from '../worker'
+import { createLazyWorker } from '@xmcl/worker'
 import { SetupWorker } from './setupWorker'
 import createSetupWorker from './setupWorkerEntry?worker'
+import { Exception } from '@xmcl/runtime-api'
 
 export const pluginSetup: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('Setup')
-  const [worker, dispose] = createLazyWorker<SetupWorker>(createSetupWorker, { methods: ['getDiskInfo'] }, logger)
+  const [worker, dispose] = createLazyWorker<SetupWorker>(
+    createSetupWorker,
+    { methods: ['getDiskInfo'] },
+    logger,
+    Exception,
+  )
   app.registryDisposer(dispose)
   logger.log('Setup worker created')
 
@@ -29,7 +35,10 @@ export const pluginSetup: LauncherAppPlugin = async (app) => {
     const defaultPath = join(app.host.getPath('home'), '.minecraftx')
     const getPath = (driveSymbol: string) => {
       const parsedHome = parse(defaultPath)
-      if (isValidPathName(defaultPath) && parsedHome.root.toLocaleLowerCase().startsWith(driveSymbol.toLocaleLowerCase())) {
+      if (
+        isValidPathName(defaultPath) &&
+        parsedHome.root.toLocaleLowerCase().startsWith(driveSymbol.toLocaleLowerCase())
+      ) {
         return defaultPath
       }
       return join(driveSymbol, '.minecraftx')
@@ -37,10 +46,7 @@ export const pluginSetup: LauncherAppPlugin = async (app) => {
     const getAllDrived = async () => {
       try {
         const startTime = Date.now()
-        const drives = await Promise.race([
-          getDiskInfo(),
-          setTimeout(4000).then(() => []),
-        ])
+        const drives = await Promise.race([getDiskInfo(), setTimeout(4000).then(() => [])])
         logger.log(`Get disk info in ${Date.now() - startTime}ms`)
         return drives.map((d) => ({
           filesystem: d.filesystem,

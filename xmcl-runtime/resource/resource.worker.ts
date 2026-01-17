@@ -1,12 +1,13 @@
 import { checksum } from '@xmcl/core'
 import fs from 'fs'
 import { gracefulify } from 'graceful-fs'
-import { setHandler } from '../worker/helper'
+import { setHandler } from '@xmcl/worker/helper'
 import { hashAndFiletypeResource, hashResource, ResourceParser } from '@xmcl/resource'
 import { fingerprint } from './fingerprint'
 import type { ResourceWorker } from './worker'
 import { crc32 } from '@aws-crypto/crc32'
 import { readFile } from 'fs-extra'
+import { getSerializedError } from '~/infra/errors/error_serialize'
 
 gracefulify(fs)
 
@@ -24,4 +25,4 @@ const handlers: ResourceWorker = {
   parse: (args) => parser.parse(args),
   hashAndFileType: (file, size, dir) => hashAndFiletypeResource(file, size, dir),
 }
-setHandler(handlers)
+setHandler(handlers, getSerializedError)

@@ -1,22 +1,38 @@
-import { Database, ResourceContext, ResourceManager, getDomainedPath, migrate } from '@xmcl/resource'
-import { Exception, InstanceServiceKey, InstanceState, ResourceState, SharedState } from '@xmcl/runtime-api'
+import {
+  Database,
+  ResourceContext,
+  ResourceManager,
+  getDomainedPath,
+  migrate,
+} from '@xmcl/resource'
+import {
+  Exception,
+  InstanceServiceKey,
+  InstanceState,
+  ResourceState,
+  SharedState,
+} from '@xmcl/runtime-api'
+import {
+  DatabaseWorker,
+  JSONPlugin,
+  SqliteWASMDialect,
+  SqliteWASMDialectConfig,
+} from '@xmcl/sqlite'
+import { AnyError } from '@xmcl/utils'
+import { createLazyWorker } from '@xmcl/worker'
 import EventEmitter from 'events'
 import { existsSync, rmSync } from 'fs'
 import { rename } from 'fs-extra'
-import { Kysely } from 'kysely'
+import { Kysely, ParseJSONResultsPlugin } from 'kysely'
 import { Database as SQLDatabase } from 'node-sqlite3-wasm'
 import { join } from 'path'
 import { LauncherApp, LauncherAppPlugin, kGameDataPath } from '~/app'
 import { ImageStorage, ZipManager, kFlights } from '~/infra'
 import { ServiceStateManager } from '~/service'
 import { kSettings } from '~/settings'
-import { SqliteWASMDialectConfig, createDatabase } from '~/sql'
-import { DatabaseWorker } from '~/sql/type'
-import { AnyError } from '@xmcl/utils'
-import createDbWorker from '../sql/sqlite.worker?worker'
-import { createLazyWorker } from '../worker'
 import { kResourceContext, kResourceManager } from './index'
 import createResourceWorker from './resource.worker?worker'
+import createDbWorker from './sqlite.worker?worker'
 import { ResourceWorker, kResourceWorker } from './worker'
 
 function loadDatabaseConfig(app: LauncherApp, flights: any) {
@@ -28,13 +44,14 @@ function loadDatabaseConfig(app: LauncherApp, flights: any) {
     if (existsSync(lockPath)) {
       rmSync(lockPath, { recursive: true })
     }
-  } catch { }
+  } catch {}
 
   const onError: SqliteWASMDialectConfig['onError'] = (e) => {
-    if (e.name === 'SQLite3Error') {
-      if (e.message === 'unable to open database file'
-        || e.message.startsWith('no such table')
-        || e.message.startsWith('out of memory')
+    if (e instanceof Error && e.name === 'SQLite3Error') {
+      if (
+        e.message === 'unable to open database file' ||
+        e.message.startsWith('no such table') ||
+        e.message.startsWith('out of memory')
       )
         app.registry.get(kSettings).then((settings) => settings.databaseReadySet(false))
     }
@@ -43,10 +60,16 @@ function loadDatabaseConfig(app: LauncherApp, flights: any) {
   }
   if (flights.enableResourceDatabaseWorker) {
     const dbLogger = app.getLogger('ResourceDbWorker')
-    const [dbWorker, dispose]: [DatabaseWorker, () => void] = createLazyWorker(createDbWorker, {
-      methods: ['executeQuery', 'streamQuery', 'init', 'destroy'],
-      asyncGenerators: ['streamQuery'],
-    }, dbLogger, { workerData: { fileName: dbPath }, name: 'ResourceDBWorker' })
+    const [dbWorker, dispose]: [DatabaseWorker, () => void] = createLazyWorker(
+      createDbWorker,
+      {
+        methods: ['executeQuery', 'streamQuery', 'init', 'destroy'],
+        asyncGenerators: ['streamQuery'],
+      },
+      dbLogger,
+      Exception,
+      { workerData: { fileName: dbPath }, name: 'ResourceDBWorker' },
+    )
     config = {
       worker: dbWorker,
       databasePath: dbPath,
@@ -57,8 +80,8 @@ function loadDatabaseConfig(app: LauncherApp, flights: any) {
       databasePath: dbPath,
       database: () => {
         const db = new SQLDatabase(dbPath)
-        db.run("PRAGMA locking_mode = EXCLUSIVE");
-        db.run("PRAGMA journal_mode = WAL");
+        db.run('PRAGMA locking_mode = EXCLUSIVE')
+        db.run('PRAGMA journal_mode = WAL')
         return db
       },
       onError,
@@ -67,15 +90,20 @@ function loadDatabaseConfig(app: LauncherApp, flights: any) {
 
   return config
 }
-class ParseException extends Exception<{ type: 'parseResourceException'; code: string }> {
-}
+class ParseException extends Exception<{ type: 'parseResourceException'; code: string }> {}
 
 export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   const workerLogger = app.getLogger('ResourceWorker')
 
-  const [resourceWorker, dispose] = createLazyWorker<ResourceWorker>(createResourceWorker, {
-    methods: ['checksum', 'hash', 'hashAndFileType', 'parse', 'fingerprint'],
-  }, workerLogger, { name: 'CPUWorker' })
+  const [resourceWorker, dispose] = createLazyWorker<ResourceWorker>(
+    createResourceWorker,
+    {
+      methods: ['checksum', 'hash', 'hashAndFileType', 'parse', 'fingerprint'],
+    },
+    workerLogger,
+    Exception,
+    { name: 'CPUWorker' },
+  )
   app.registryDisposer(dispose)
   app.registry.register(kResourceWorker, resourceWorker)
 
@@ -88,27 +116,46 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
       db.destroy()
       const dbPath = join(app.appDataPath, 'resources.sqlite')
       const bkPath = dbPath + +'.' + Date.now() + '.bk'
-      await rename(dbPath, bkPath).catch(() => { })
+      await rename(dbPath, bkPath).catch(() => {})
     }
     const config = loadDatabaseConfig(app, flights)
-    const [database, success] = await createDatabase<Database>(config, async (db, logger) => {
-      try {
-        const results = await migrate(db)
-        if (results) {
-          for (const result of results) {
-            if (result.status === 'Error') {
-              logger.error(new AnyError('ResourceDatabaseMigration', `Failed to migrate database: ${result.migrationName}`))
-            }
+    const dialect = new SqliteWASMDialect(config)
+    const database = new Kysely<Database>({
+      dialect,
+      plugins: [new ParseJSONResultsPlugin(), new JSONPlugin()],
+      log: (e) => {
+        if (e.level === 'error') {
+          logger.warn(
+            e.query.sql + '\n[' + e.query.parameters.join(', ') + ']',
+            (e.error as Error).message,
+          )
+        }
+      },
+    })
+    let success = true
+    try {
+      const results = await migrate(database)
+      if (results) {
+        for (const result of results) {
+          if (result.status === 'Error') {
+            logger.error(
+              new AnyError(
+                'ResourceDatabaseMigration',
+                `Failed to migrate database: ${result.migrationName}`,
+              ),
+            )
           }
         }
-        return true
-      } catch (e) {
-        logger.error(Object.assign(e as any, {
-          cause: 'ResourceDatabaseMigration',
-        }))
-        return false
       }
-    }, logger)
+      success = true
+    } catch (e) {
+      logger.error(
+        Object.assign(e as any, {
+          cause: 'ResourceDatabaseMigration',
+        }),
+      )
+      success = false
+    }
     db = database
     if (!success) {
       continue
@@ -120,7 +167,9 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   // Set database ready status to false if initialization failed after all attempts
   if (!db) {
     app.registry.get(kSettings).then((settings) => settings.databaseReadySet(false))
-    logger.warn('Resource database initialization failed after 3 attempts. Some features may not work properly.')
+    logger.warn(
+      'Resource database initialization failed after 3 attempts. Some features may not work properly.',
+    )
   }
 
   const imageStorage = await app.registry.get(ImageStorage)
@@ -142,7 +191,7 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     },
     createResourceState: function (): ResourceState {
       return new ResourceState()
-    }
+    },
   }
   app.registry.register(kResourceContext, context)
   app.registry.register(kResourceManager, new ResourceManager(context))
@@ -155,10 +204,13 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     app.registry.getIfPresent(ZipManager).then((man) => man?.close())
   })
 
-  app.registry.get(ServiceStateManager).then((manager) => manager.get(InstanceServiceKey.toString()))
+  app.registry
+    .get(ServiceStateManager)
+    .then((manager) => manager.get(InstanceServiceKey.toString()))
     .then((state) => {
-      (state as unknown as SharedState<InstanceState>)?.subscribe('instanceRemove', (path) => {
-        context.db.deleteFrom('snapshots')
+      ;(state as unknown as SharedState<InstanceState>)?.subscribe('instanceRemove', (path) => {
+        context.db
+          .deleteFrom('snapshots')
           .where('domainedPath', 'like', `${getDomainedPath(path, context.root)}%`)
           .execute()
       })
