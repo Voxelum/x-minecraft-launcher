@@ -175,8 +175,8 @@ importers:
         specifier: 5.4.5
         version: 5.4.5
       undici:
-        specifier: 7.16.0
-        version: 7.16.0
+        specifier: 7.18.2
+        version: 7.18.2
 
   xmcl-keystone-ui:
     dependencies:
@@ -512,8 +512,8 @@ importers:
         specifier: ^3.1.7
         version: 3.1.7
       undici:
-        specifier: 7.16.0
-        version: 7.16.0
+        specifier: 7.18.2
+        version: 7.18.2
       xxhash-wasm:
         specifier: ^1.0.2
         version: 1.0.2
@@ -798,8 +798,8 @@ importers:
   xmcl/packages/curseforge:
     dependencies:
       undici:
-        specifier: 7.16.0
-        version: 7.16.0
+        specifier: 7.18.2
+        version: 7.18.2
     devDependencies:
       esbuild:
         specifier: ^0.17.16
@@ -817,8 +817,8 @@ importers:
         specifier: ^0.37.39
         version: 0.37.41
       undici:
-        specifier: 7.16.0
-        version: 7.16.0
+        specifier: 7.18.2
+        version: 7.18.2
     devDependencies:
       '@types/node':
         specifier: ^20.19.0
@@ -839,8 +839,8 @@ importers:
   xmcl/packages/file-transfer:
     dependencies:
       undici:
-        specifier: 7.16.0
-        version: 7.16.0
+        specifier: 7.18.2
+        version: 7.18.2
     devDependencies:
       '@types/node':
         specifier: ^20.19.0
@@ -956,8 +956,8 @@ importers:
         specifier: ^3.1.7
         version: 3.1.7
       undici:
-        specifier: 7.16.0
-        version: 7.16.0
+        specifier: 7.18.2
+        version: 7.18.2
       yauzl:
         specifier: ^2.10.0
         version: 2.10.0
@@ -1089,8 +1089,8 @@ importers:
   xmcl/packages/modrinth:
     dependencies:
       undici:
-        specifier: 7.16.0
-        version: 7.16.0
+        specifier: 7.18.2
+        version: 7.18.2
     devDependencies:
       esbuild:
         specifier: ^0.17.16
@@ -1111,8 +1111,8 @@ importers:
         specifier: ^4.3.2
         version: 4.3.2
       undici:
-        specifier: 7.16.0
-        version: 7.16.0
+        specifier: 7.18.2
+        version: 7.18.2
     devDependencies:
       '@achingbrain/nat-port-mapper':
         specifier: 4.0.4
@@ -1368,8 +1368,8 @@ importers:
   xmcl/packages/user:
     dependencies:
       undici:
-        specifier: 7.16.0
-        version: 7.16.0
+        specifier: 7.18.2
+        version: 7.18.2
       uuid:
         specifier: ^9.0.0
         version: 9.0.0
@@ -1399,8 +1399,8 @@ importers:
         specifier: ^20.19.0
         version: 20.19.30
       undici:
-        specifier: 7.16.0
-        version: 7.16.0
+        specifier: 7.18.2
+        version: 7.18.2
 
   xmcl/packages/utils:
     dependencies:
@@ -5823,8 +5823,8 @@ packages:
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
-  undici@7.16.0:
-    resolution: {integrity: sha512-QEg3HPMll0o3t2ourKwOeUAZ159Kn9mx5pnzHRQO8+Wixmh88YdZRiIwat0iNzNNXn0yoEtXJqFpyW7eM8BV7g==}
+  undici@7.18.2:
+    resolution: {integrity: sha512-y+8YjDFzWdQlSE9N5nzKMT3g4a5UBX1HKowfdXh0uvAnTaqqwqB92Jt4UXBAeKekDs5IaDKyJFR4X1gYVCgXcw==}
     engines: {node: '>=20.18.1'}
 
   unimport@3.7.2:
@@ -10768,7 +10768,7 @@ snapshots:
 
   undici-types@6.21.0: {}
 
-  undici@7.16.0: {}
+  undici@7.18.2: {}
 
   unimport@3.7.2(rollup@2.79.1):
     dependencies:
