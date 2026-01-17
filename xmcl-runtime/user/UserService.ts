@@ -1,7 +1,11 @@
 /* eslint-disable quotes */
-import { DownloadTask } from '@xmcl/installer'
+import { download } from '@xmcl/file-transfer'
 import {
   AUTHORITY_MICROSOFT,
+  UserException,
+  UserSchema,
+  UserServiceKey,
+  UserState,
   type AuthorityMetadata,
   type UserService as IUserService,
   type LoginOptions,
@@ -9,34 +13,30 @@ import {
   type SaveSkinOptions,
   type SharedState,
   type UploadSkinOptions,
-  UserException,
-  type UserProfile,
-  UserSchema,
-  UserServiceKey,
-  UserState
+  type UserProfile
 } from '@xmcl/runtime-api'
+import { AnyError } from '@xmcl/utils'
+import { readJson, writeJson } from 'fs-extra'
 import debounce from 'lodash.debounce'
 import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { kDownloadOptions } from '~/network'
 import { ExposeServiceKey, Lock, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { requireObject, requireString } from '~/util/object'
-import { type SafeFile, createSafeFile } from '~/util/persistance'
 import { YggdrasilSeriveRegistry, kYggdrasilSeriveRegistry } from './YggdrasilSeriveRegistry'
 import type { UserAccountSystem } from './accountSystems/AccountSystem'
 import { YggdrasilAccountSystem, kYggdrasilAccountSystem } from './accountSystems/YggdrasilAccountSystem'
-import { ensureLauncherProfile, preprocessUserData } from './utils/userData'
-import { type UserTokenStorage, kUserTokenStorage } from './userTokenStore'
+import { kUserTokenStorage, type UserTokenStorage } from './userTokenStore'
 import { getModrinthAccessToken, loginModrinth } from './utils/loginModrinth'
-import { AnyError } from '@xmcl/utils'
+import { ensureLauncherProfile, preprocessUserData } from './utils/userData'
 
 @ExposeServiceKey(UserServiceKey)
 export class UserService extends StatefulService<UserState> implements IUserService {
-  private userFile: SafeFile<UserSchema>
+  private userJsonPath: string
   private saveUserFile = debounce(async () => {
-    const userData = {
+    const userData = UserSchema.parse({
       users: this.state.users,
-    }
-    await this.userFile.write(userData)
+    })
+    await writeJson(this.userJsonPath, userData, { spaces: 2 })
   }, 1000)
 
   private loginController: AbortController | undefined
@@ -52,7 +52,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     @Inject(kYggdrasilSeriveRegistry) private yggdrasilSeriveRegistry: YggdrasilSeriveRegistry
   ) {
     super(app, () => store.registerStatic(new UserState(), UserServiceKey), async () => {
-      const data = await this.userFile.read()
+      const data = await readJson(this.userJsonPath).catch(() => ({})).then(d => UserSchema.parse(d))
       const userData = {
         users: {},
         yggdrasilServices: [],
@@ -86,7 +86,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       }))
     })
 
-    this.userFile = createSafeFile(this.getAppDataPath('user.json'), UserSchema, this)
+    this.userJsonPath = this.getAppDataPath('user.json')
     this.state.subscribeAll(() => {
       this.saveUserFile()
     })
@@ -186,7 +186,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     requireString(options.path)
     const { path, url } = options
     const downloadOptions = await this.app.registry.get(kDownloadOptions)
-    await new DownloadTask({ url, destination: path, ...downloadOptions }).startAndWait()
+    await download({ url, destination: path, ...downloadOptions })
   }
 
   /**

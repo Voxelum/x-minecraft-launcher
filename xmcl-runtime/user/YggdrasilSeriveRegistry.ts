@@ -1,9 +1,8 @@
 import { YggdrasilApi, YggdrasilSchema } from '@xmcl/runtime-api'
+import { readJson, writeJson } from 'fs-extra'
 import { join } from 'path'
 import { InjectionKey, LauncherApp } from '~/app'
-import { kFlights } from '~/infra'
-import { Logger } from '~/infra'
-import { SafeFile, createSafeFile } from '~/util/persistance'
+import { kFlights, Logger } from '~/infra'
 import { loadYggdrasilApiProfile } from './user'
 
 const BUILTIN_CLIENT = {
@@ -15,21 +14,14 @@ export const kYggdrasilSeriveRegistry: InjectionKey<YggdrasilSeriveRegistry> = S
 export class YggdrasilSeriveRegistry {
   private yggdrasilServices: YggdrasilApi[] = []
 
-  private yggdrasilFile: SafeFile<YggdrasilSchema>
+  private yggdrasilJsonPath: string
 
   private logger: Logger
 
   constructor(private app: LauncherApp) {
     this.logger = app.getLogger('YggdrasilSeriveRegistry')
-    this.yggdrasilFile = createSafeFile(join(app.appDataPath, 'yggdrasil.json'), YggdrasilSchema, this.logger, undefined, async () => {
-      const yggdrasilServices = await Promise.all([
-        loadYggdrasilApiProfile('https://littleskin.cn/api/yggdrasil', app.fetch),
-        loadYggdrasilApiProfile('https://authserver.ely.by/api/authlib-injector', app.fetch),
-      ])
-      return {
-        yggdrasilServices,
-      }
-    })
+    this.yggdrasilJsonPath = join(app.appDataPath, 'yggdrasil.json')
+
     app.protocol.registerHandler('authlib-injector', ({ request, response }) => {
       this.addYggdrasilService(request.url.pathname)
     })
@@ -46,8 +38,18 @@ export class YggdrasilSeriveRegistry {
     })
   }
 
+  private async getDefaultYggdrasilServices(): Promise<YggdrasilSchema> {
+    const yggdrasilServices = await Promise.all([
+      loadYggdrasilApiProfile('https://littleskin.cn/api/yggdrasil', this.app.fetch),
+      loadYggdrasilApiProfile('https://authserver.ely.by/api/authlib-injector', this.app.fetch),
+    ])
+    return { yggdrasilServices }
+  }
+
   async load() {
-    const apis = await this.yggdrasilFile.read()
+    const apis = await readJson(this.yggdrasilJsonPath)
+      .catch(() => this.getDefaultYggdrasilServices())
+      .then(d => YggdrasilSchema.parse(d))
     const litteSkin = apis.yggdrasilServices.find(a => new URL(a.url).host === 'littleskin.cn')
     if (litteSkin && (!litteSkin.authlibInjector || !litteSkin.ocidConfig)) {
       apis.yggdrasilServices.splice(apis.yggdrasilServices.indexOf(litteSkin), 1)
@@ -93,11 +95,13 @@ export class YggdrasilSeriveRegistry {
     }
 
     this.yggdrasilServices.push(api)
-    await this.yggdrasilFile.write({ yggdrasilServices: this.yggdrasilServices })
+    const data = YggdrasilSchema.parse({ yggdrasilServices: this.yggdrasilServices })
+    await writeJson(this.yggdrasilJsonPath, data, { spaces: 2 })
   }
 
   async removeYggdrasilService(url: string): Promise<void> {
     this.yggdrasilServices = this.yggdrasilServices.filter(a => a.url !== url)
-    await this.yggdrasilFile.write({ yggdrasilServices: this.yggdrasilServices })
+    const data = YggdrasilSchema.parse({ yggdrasilServices: this.yggdrasilServices })
+    await writeJson(this.yggdrasilJsonPath, data, { spaces: 2 })
   }
 }

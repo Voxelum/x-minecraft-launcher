@@ -1,18 +1,19 @@
 import { SettingSchema, Settings } from '@xmcl/runtime-api'
+import { AggregateExecutor } from '@xmcl/utils'
+import { readJson, writeJson } from 'fs-extra'
 import { join } from 'path'
 import { LauncherAppPlugin } from '~/app'
 import { ServiceStateManager } from '~/service'
-import { createSafeFile } from '../util/persistance'
 import { kSettings } from './settings'
-import { AggregateExecutor } from '@xmcl/utils'
 
 export const pluginSettings: LauncherAppPlugin = async (app) => {
   const stateManager = await app.registry.get(ServiceStateManager)
   const state = stateManager.registerStatic(new Settings(), 'settings')
   const logger = app.getLogger('Settings')
-  const settingFile = createSafeFile(join(app.appDataPath, 'setting.json'), SettingSchema, logger, [])
-  const saver = new AggregateExecutor<void, void>(() => { }, () =>
-    settingFile.write({
+  const settingJsonPath = join(app.appDataPath, 'setting.json')
+
+  const saver = new AggregateExecutor<void, void>(() => { }, async () => {
+    const data = SettingSchema.parse({
       locale: state.locale,
       autoInstallOnAppQuit: state.autoInstallOnAppQuit,
       autoDownload: state.autoDownload,
@@ -45,19 +46,22 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
       globalEnv: state.globalEnv,
       globalPreExecuteCommand: state.globalPreExecuteCommand,
       globalResolution: state.globalResolution,
-    }), 1000)
+    })
+    await writeJson(settingJsonPath, data, { spaces: 2 })
+  }, 1000)
 
   app.registryDisposer(async () => {
     return saver.flush()
   })
 
-  settingFile.read().then(async () => {
-    const data = await settingFile.read()
+  readJson(settingJsonPath).catch(() => ({})).then(d => SettingSchema.parse(d)).then(async (data) => {
     data.locale = data.locale || app.host.getLocale()
     if (data.locale.startsWith('en')) {
       data.locale = 'en'
     }
     state.config(data)
+  }).catch((e) => {
+    logger.error(e)
   }).finally(() => {
     app.registry.register(kSettings, state)
     state.subscribeAll(() => {
