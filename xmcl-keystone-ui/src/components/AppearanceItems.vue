@@ -498,7 +498,7 @@
             text
             @click="showImageUrlDialog = false"
           >
-            {{ t("cancel") }}
+            {{ t("shared.cancel") }}
           </v-btn>
           <v-btn
             color="primary"
@@ -506,7 +506,7 @@
             :disabled="!imageUrlInput"
             @click="applyImageUrl"
           >
-            {{ t("ok") }}
+           {{ t("shared.ok") }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -534,7 +534,7 @@
             text
             @click="showVideoUrlDialog = false"
           >
-            {{ t("cancel") }}
+            {{ t("shared.cancel") }}
           </v-btn>
           <v-btn
             color="primary"
@@ -542,7 +542,7 @@
             :disabled="!videoUrlInput"
             @click="applyVideoUrl"
           >
-            {{ t("ok") }}
+            {{ t("shared.ok") }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -570,7 +570,7 @@
             text
             @click="showMusicUrlDialog = false"
           >
-            {{ t("cancel") }}
+            {{ t("shared.cancel") }}
           </v-btn>
           <v-btn
             color="primary"
@@ -578,7 +578,7 @@
             :disabled="!musicUrlInput"
             @click="applyMusicUrl"
           >
-            {{ t("ok") }}
+            {{ t("shared.ok") }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -606,7 +606,7 @@
             text
             @click="showFontUrlDialog = false"
           >
-            {{ t("cancel") }}
+            {{ t("shared.cancel") }}
           </v-btn>
           <v-btn
             color="primary"
@@ -614,7 +614,7 @@
             :disabled="!fontUrlInput"
             @click="applyFontUrl"
           >
-            {{ t("ok") }}
+            {{ t("shared.ok") }}
           </v-btn>
         </v-card-actions>
       </v-card>

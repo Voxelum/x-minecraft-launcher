@@ -92,12 +92,12 @@
             >
               file_download
             </v-icon>
-            {{ t('install') }}
+            {{ t('shared.install') }}
           </v-btn>
         </v-list-item-action>
       </StoreProjectInstallVersionDialogVersion>
 
-      <InstanceVersionShiftAlert v-if="!loading" :old-runtime="instance.runtime" :runtime="newRuntime" />
+      <InstanceVersionShiftAlert v-if="!loading && selectedDetail" :old-runtime="instance.runtime" :runtime="newRuntime" />
       <div
         ref="scrollElement"
         class="overflow-auto"

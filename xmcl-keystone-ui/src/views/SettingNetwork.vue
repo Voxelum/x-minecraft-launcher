@@ -1,8 +1,6 @@
 <template>
-  <div>
-    <SettingHeader>
-      🌐 {{ t('setting.network') }}
-    </SettingHeader>
+  <SettingCard>
+    <!-- Download Source -->
     <SettingItemSelect
       :select.sync="apiSetsPreference"
       :title="''"
@@ -22,75 +20,69 @@
         </a>
       </template>
     </SettingItemSelect>
-    <v-list-item>
-      <v-list-item-action class="self-center">
-        <v-checkbox v-model="httpProxyEnabled" />
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.useProxy")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.useProxyDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action class="flex flex-grow-0 flex-row gap-1">
-        <v-text-field
-          v-model="proxy.host"
-          :disabled="!httpProxyEnabled"
-          filled
-          dense
-          hide-details
-          :label="t('proxy.host')"
-        />
-        <v-text-field
-          v-model="proxy.port"
-          :disabled="!httpProxyEnabled"
-          class="w-20"
-          filled
-          dense
-          hide-details
-          type="number"
-          :label="t('proxy.port')"
-        />
-      </v-list-item-action>
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.maxSocketsTitle")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.maxSocketsDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action class="flex flex-grow-0 flex-row gap-1">
+
+    <v-divider class="my-2" />
+
+    <!-- Proxy Settings -->
+    <SettingItemCheckbox
+      :title="t('setting.useProxy')"
+      :description="t('setting.useProxyDescription')"
+      v-model="httpProxyEnabled"
+    />
+    <v-expand-transition>
+      <div v-if="httpProxyEnabled" class="px-4 py-2">
+        <div class="d-flex gap-4">
+          <v-text-field
+            v-model="proxy.host"
+            filled
+            dense
+            hide-details
+            :label="t('proxy.host')"
+            prepend-inner-icon="dns"
+            class="flex-grow-1"
+          />
+          <v-text-field
+            v-model="proxy.port"
+            class="w-24 flex-grow-0"
+            filled
+            dense
+            hide-details
+            type="number"
+            :label="t('proxy.port')"
+            prepend-inner-icon="numbers"
+          />
+        </div>
+      </div>
+    </v-expand-transition>
+
+    <v-divider class="my-2" />
+
+    <SettingItem :title="t('setting.maxSocketsTitle')" :description="t('setting.maxSocketsDescription')">
+      <template #action>
         <v-text-field
           v-model="maxSockets"
-          class="w-40"
+          class="w-32"
           filled
           dense
           hide-details
           type="number"
           :label="t('setting.maxSockets')"
+          prepend-inner-icon="speed"
         />
-      </v-list-item-action>
-    </v-list-item>
-  </div>
+      </template>
+    </SettingItem>
+  </SettingCard>
 </template>
+
 <script lang="ts" setup>
-import SettingHeader from '@/components/SettingHeader.vue'
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n-bridge'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import { useDialog } from '../composables/dialog'
 import { useSettings } from '../composables/setting'
+import SettingCard from '@/components/SettingCard.vue'
+import SettingItem from '@/components/SettingItem.vue'
+import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 
 const {
   proxy, httpProxyEnabled, apiSets,
@@ -118,3 +110,22 @@ const apiSetItems = computed(() =>
 
 const { show } = useDialog('migration')
 </script>
+
+<style scoped>
+:deep(.transparent-list) {
+  background: transparent !important;
+}
+
+.v-card {
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.v-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.gap-4 {
+  gap: 16px;
+}
+</style>

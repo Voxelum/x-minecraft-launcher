@@ -177,7 +177,7 @@
           :disabled="refreshing"
           @click="cancel"
         >
-          {{ t('cancel') }}
+          {{ t('shared.cancel') }}
         </v-btn>
         <v-spacer />
         <v-btn
@@ -426,7 +426,8 @@ const confirm = async () => {
         quiltLoader: instance.runtime?.quiltLoader,
         neoForged: instance.runtime?.neoForged,
       },
-      modpackVersion: instance.modpackVersion,
+      // TODO: We should ensure the modpackVersion is updated
+      // modpackVersion: instance.modpackVersion,
       upstream: instance.upstream,
     })
   }

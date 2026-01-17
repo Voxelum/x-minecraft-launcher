@@ -1,4 +1,3 @@
-import { TaskItem } from '@/entities/task'
 import { basename } from '@/util/basename'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { getCurseforgeModLoaderTypeFromRuntime, getInstanceFileFromCurseforgeFile } from '@/util/curseforge'
@@ -10,7 +9,7 @@ import { notNullish } from '@vueuse/core'
 import { File } from '@xmcl/curseforge'
 import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { TaskState } from '@xmcl/runtime-api'
+import { InstallInstanceTask, isTask, TaskState, Tasks } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from './cache'
 import { useDialog } from './dialog'
@@ -248,9 +247,9 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     })
   }
 
-  function isCurrentTask(task: TaskItem) {
-    return task.path === 'installInstance' && task.param.operationId === operationId &&
-      task.param.instance === operationPath
+  function isCurrentTask(task: Tasks): task is InstallInstanceTask {
+    if (task.type !== 'installInstance') return false
+    return task.taskId === operationId && task.instancePath === operationPath
   }
 
   const { task } = useTask((i) => {

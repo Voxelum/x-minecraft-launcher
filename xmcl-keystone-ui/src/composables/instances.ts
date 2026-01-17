@@ -1,8 +1,8 @@
 import { useEventBus, useLocalStorage } from '@vueuse/core'
 import { InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
 import { DeepPartial } from '@xmcl/runtime-api/src/util/object'
-import type { EditInstanceOptions, Instance, InstanceSchema } from '@xmcl/instance'
-import { InjectionKey, set } from 'vue'
+import type { EditInstanceOptions, Instance } from '@xmcl/instance'
+import { InjectionKey } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
 
@@ -35,7 +35,7 @@ export function useInstances() {
       }
     }
 
-    override instanceEdit(settings: DeepPartial<InstanceSchema> & { path: string }) {
+    override instanceEdit(settings: DeepPartial<EditInstanceOptions> & { path: string }) {
       const inst = this.instances.find(i => i.path === (settings.path))!
       if ('showLog' in settings) {
         inst.showLog = settings.showLog
@@ -80,10 +80,10 @@ export function useInstances() {
   async function edit(options: EditInstanceOptions & { instancePath: string }) {
     await editInstance(options)
   }
-  async function remove(instancePath: string) {
+  async function remove(instancePath: string, deleteData = true) {
     const index = instances.value.findIndex(i => i.path === instancePath)
     const lastSelected = path.value
-    await deleteInstance(instancePath)
+    await deleteInstance(instancePath, deleteData)
     if (instancePath === lastSelected) {
       path.value = instances.value[Math.max(index - 1, 0)]?.path ?? ''
       if (!path.value) {

@@ -8,7 +8,7 @@
       link
       draggable
       class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
-      :class="{ 'v-list-item--active': path === selectedInstance }"
+      :class="{ 'v-list-item--active': isActive }"
       @click="navigate"
       @dragover.prevent
       @dragstart="onDragStart"
@@ -19,14 +19,14 @@
       @drop="onDrop"
     >
       <v-list-item-avatar
-        size="48"
-        class="transition-all duration-300 hover:rounded"
+        :size="48"
+        class="transition-all duration-300 hover:rounded relative"
         large
       >
         <v-img
           v-if="!dragging"
-          width="54"
-          height="54"
+          :width="54"
+          :height="54"
           :src="favicon"
           @dragenter="onDragEnter"
           @dragleave="onDragLeave"
@@ -38,6 +38,13 @@
       </v-list-item-avatar>
       <v-list-item-title>{{ name }}</v-list-item-title>
     </v-list-item>
+    <!-- Pin indicator -->
+    <div
+      v-if="pinned"
+      class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center shadow-md"
+    >
+      <v-icon x-small color="white" style="font-size: 10px;">push_pin</v-icon>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -56,9 +63,11 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 const props = defineProps<{
   path: string
   inside?: boolean
+  pinned?: boolean
 }>()
-const emit = defineEmits(['arrange', 'drop-save', 'group'])
+const emit = defineEmits(['arrange', 'drop-save', 'group', 'toggle-pin'])
 
+const { t } = useI18n()
 const { instances, selectedInstance } = injection(kInstances)
 const instance = computed(() => instances.value.find((i) => i.path === props.path))
 const name = computed(() => {
@@ -94,6 +103,9 @@ const favicon = computed(() => {
 
 const getItems = useInstanceContextMenuItems(instance)
 
+const route = useRoute()
+const isActive = computed(() => props.path === selectedInstance.value && route.path === '/')
+
 const navigate = () => {
   if (router.currentRoute.path !== '/') {
     router.push('/').then(() => {
@@ -125,3 +137,19 @@ const onDragStart = (e: DragEvent) => {
 const { dragging, overState, onDragEnd, onDragEnter, onDragLeave, onDragOver, onDrop } = useGroupDragDropState(emit, computed(() => props.inside))
 
 </script>
+
+<style scoped>
+/* Remove background from instance items in compact (Notch) mode */
+.sidebar-item.px-0::before,
+.sidebar-item.px-0::after {
+  display: none !important;
+}
+
+.sidebar-item.px-0 {
+  background: transparent !important;
+}
+
+.sidebar-item.px-0.v-list-item--active::before {
+  opacity: 0 !important;
+}
+</style>

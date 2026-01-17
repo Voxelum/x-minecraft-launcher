@@ -16,7 +16,7 @@
           <v-icon left>
             edit
           </v-icon>
-          {{ t("browse") }}
+          {{ t("shared.browse") }}
         </v-btn>
       </template>
     </SettingItem>
@@ -24,7 +24,7 @@
       <div class="mx-2">
         <v-text-field
           v-model="filterText"
-          :label="t('filter')"
+          :label="t('shared.filter')"
           dense
           outlined
           hide-details
@@ -88,7 +88,7 @@ import SettingItem from '@/components/SettingItem.vue'
 import SettingSubheader from '@/components/SettingSubheader.vue'
 import { useRefreshable, useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
-import { InstanceFileExportData, InstanceFileNode, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
+import { InstanceFileNode, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
 import { useInstanceModpackMetadata } from '@/composables/instanceModpackMetadata'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kModpackExport } from '@/composables/modpack'
@@ -98,7 +98,7 @@ import { getModSides } from '@/util/modSides'
 import { getExpectedSize } from '@/util/size'
 import { syncRef } from '@vueuse/core'
 import type { InstanceFile } from '@xmcl/instance'
-import { ExportFileDirective, InstanceManifestServiceKey, InstanceModsServiceKey, InstanceResourcePacksServiceKey, InstanceShaderPacksServiceKey, ModMetadataServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
+import { ExportFileDirective, InstanceManifestServiceKey, InstanceModsServiceKey, InstanceResourcePacksServiceKey, InstanceShaderPacksServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
@@ -228,7 +228,7 @@ function getEnvValue(item: InstanceFileNode<any>, side: 'client' | 'server' = 'c
 }
 
 const getEnvText = (item: InstanceFileNode<any>, side: 'client' | 'server' = 'client') => {
-  const prefix = side === 'client' ? t('modrinth.environments.client') : t('modrinth.environments.server')
+  const prefix = side === 'client' ? t('shared.client') : t('shared.server')
   const val = getEnvValue(item, side)
   if (val === 'required') {
     return prefix + ': ' + t('modrinth.environments.required')

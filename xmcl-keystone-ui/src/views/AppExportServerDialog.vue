@@ -391,7 +391,7 @@ const hasError = computed(() => {
           :disabled="exporting || refreshing"
           @click="cancel"
         >
-          {{ t('cancel') }}
+          {{ t('shared.cancel') }}
         </v-btn>
         <v-spacer />
         <div class="flex flex-shrink flex-grow-0 items-center justify-center text-center text-sm text-gray-500">

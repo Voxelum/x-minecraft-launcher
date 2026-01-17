@@ -10,7 +10,7 @@ import { Inject, LauncherAppKey } from '~/app'
 import { kGFW } from '~/infra'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { kSettings } from '~/settings'
-import { SqliteWASMDialect } from '~/sql'
+import { SqliteWASMDialect } from '@xmcl/sqlite'
 import { LauncherApp } from '../app/LauncherApp'
 import { checksum } from '../util/fs'
 

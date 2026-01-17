@@ -10,7 +10,7 @@
       <template #preaction>
         <v-btn
           icon
-          v-shared-tooltip="_ => t('refresh')"
+          v-shared-tooltip="_ => t('shared.refresh')"
           :disabled="mods.length === 0 || checkingDependencies"
           :loading="checkingDependencies"
           @click="checkDependencies"
@@ -33,7 +33,7 @@
             <v-icon left class="material-icons-outlined">
               file_download
             </v-icon>
-            {{ t('install') }}
+            {{ t('shared.install') }}
           </v-btn>
         </div>
       </template>
@@ -46,7 +46,7 @@
       <template #preaction>
         <v-btn
           icon
-          v-shared-tooltip="_ => t('refresh')"
+          v-shared-tooltip="_ => t('shared.refresh')"
           :loading="scanningUnusedMods"
           :disabled="mods.length === 0 || scanningUnusedMods"
           @click="scanUnusedMods"
@@ -67,7 +67,7 @@
             <v-icon left>
               delete
             </v-icon>
-            {{ t('remove') }}
+            {{ t('shared.remove') }}
           </v-btn>
         </div>
       </template>

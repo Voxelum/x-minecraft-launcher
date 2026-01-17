@@ -180,7 +180,7 @@
           text
           @click="isShown = false"
         >
-          {{ t('cancel') }}
+          {{ t('shared.cancel') }}
         </v-btn>
         <v-spacer />
         <v-btn
@@ -200,7 +200,7 @@
           <v-icon left>
             download
           </v-icon>
-          {{ t('download') }}
+          {{ t('shared.download') }}
         </v-btn>
       </v-card-actions>
     </v-card>

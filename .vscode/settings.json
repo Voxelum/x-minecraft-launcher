@@ -10,7 +10,10 @@
     },
     "typescript.preferences.quoteStyle": "single",
     "editor.tabSize": 2,
-    "i18n-ally.enabledFrameworks": ["vue-sfc", "vue"],
+    "i18n-ally.enabledFrameworks": [
+        "vue-sfc",
+        "vue"
+    ],
     "i18n-ally.editor.preferEditor": true,
     "i18n-ally.keystyle": "nested",
     "i18n-ally.sortKeys": true,
@@ -54,5 +57,9 @@
         "dependencies.embedded"
     ],
     "oxc.enable": true,
-    "oxc.configPath": "xmcl/packages/oxlint-config/oxlintrc.json"
+    "oxc.configPath": "xmcl/packages/oxlint-config/oxlintrc.json",
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "[typescript]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
+    }
 }

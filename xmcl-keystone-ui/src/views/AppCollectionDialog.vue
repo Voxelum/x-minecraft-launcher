@@ -1,11 +1,11 @@
 <template>
   <SimpleDialog :width="500" v-model="isShown" :title="t('modrinth.createCollection')" @confirm="confirm"
-    confirm-icon="check" :confirm="t('yes')" color="primary">
+    confirm-icon="check" :confirm="t('shared.yes')" color="primary">
     <v-divider />
     <v-form class="mt-4">
-      <v-text-field small filled v-model="newCollection.name" :label="t('name')"
+      <v-text-field small filled v-model="newCollection.name" :label="t('shared.name')"
         :rules="rules" />
-      <v-text-field small filled v-model="newCollection.description" :label="t('description')" />
+      <v-text-field small filled v-model="newCollection.description" :label="t('shared.description')" />
     </v-form>
   </SimpleDialog>
 </template>

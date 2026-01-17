@@ -58,7 +58,7 @@
               <v-icon left>
                 edit
               </v-icon>
-              {{ t('edit') }}
+              {{ t('shared.edit') }}
             </v-btn>
             <div class="flex-grow" />
             <v-btn v-shared-tooltip="_ => t('env.select.all')" text icon @click="selectAll">
@@ -303,9 +303,9 @@ const sides = computed(() => {
 function getSide(mod: ModFile) {
   const side = sides.value[mod.hash]
   if (!side) return '?'
-  if (side === 'CLIENT') return t('modrinth.environments.client')
-  if (side === 'SERVER') return t('modrinth.environments.server')
-  return t('modrinth.environments.client') + '/' + t('modrinth.environments.server')
+  if (side === 'CLIENT') return t('shared.client')
+  if (side === 'SERVER') return t('shared.client') + '/' + t('shared.server')
+  return t('shared.client') + '/' + t('shared.server')
 }
 
 const sortIndex = markRaw({

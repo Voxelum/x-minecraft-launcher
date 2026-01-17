@@ -1,16 +1,20 @@
-import { ReleaseInfo } from '@xmcl/runtime-api'
-import { Task } from '@xmcl/task'
+import { Tracker } from '@xmcl/installer'
+import { ReleaseInfo, DownloadUpdateTrackerEvents } from '@xmcl/runtime-api'
+export interface DownloadUpdateOptions {
+  tracker?: Tracker<DownloadUpdateTrackerEvents>
+  abortSignal?: AbortSignal
+}
 
 export interface LauncherAppUpdater {
   /**
    * Check update for the x-minecraft-launcher-core
    */
-  checkUpdateTask(): Task<ReleaseInfo>
+  checkUpdateTask(): Promise<ReleaseInfo>
 
   /**
     * Download the update to the disk. You should first call `checkUpdate`
     */
-  downloadUpdateTask(updateInfo: ReleaseInfo): Task<void>
+  downloadUpdate(updateInfo: ReleaseInfo, options?: DownloadUpdateOptions): Promise<void>
 
   /**
     * Install update and quit the app.

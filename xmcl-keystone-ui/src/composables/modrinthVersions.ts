@@ -1,35 +1,49 @@
-import { TaskItem } from '@/entities/task'
 import { clientModrinthV2 } from '@/util/clients'
-import { injection } from '@/util/inject'
 import { getModrinthVersionKey } from '@/util/modrinth'
 import { get, MaybeRef } from '@vueuse/core'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { TaskState } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useSWRVModel } from './swrv'
 import { kSWRVConfig } from './swrvConfig'
-import { kTaskManager } from './taskManager'
+import { useTask } from './task'
 
-export const kModrinthVersions: InjectionKey<ReturnType<typeof useModrinthVersions>> = Symbol('kModrinthVersions')
-export const kModrinthVersionsHolder: InjectionKey<Ref<Record<string, ProjectVersion>>> = Symbol('ModrinthVersionsHolder')
+export const kModrinthVersions: InjectionKey<ReturnType<typeof useModrinthVersions>> =
+  Symbol('kModrinthVersions')
+export const kModrinthVersionsHolder: InjectionKey<Ref<Record<string, ProjectVersion>>> =
+  Symbol('ModrinthVersionsHolder')
 
-export function useModrinthVersions(project: Ref<string>, featured?: boolean, loader?: Ref<string | undefined>, gameVersions?: Ref<string[] | undefined>) {
+export function useModrinthVersions(
+  project: Ref<string>,
+  featured?: boolean,
+  loader?: Ref<string | undefined>,
+  gameVersions?: Ref<string[] | undefined>,
+) {
   const holder = inject(kModrinthVersionsHolder, undefined)
 
-  const { mutate, error, isValidating: refreshing, data } = useSWRVModel(
+  const {
+    mutate,
+    error,
+    isValidating: refreshing,
+    data,
+  } = useSWRVModel(
     getModrinthVersionModel(project, featured, loader, gameVersions),
-    inject(kSWRVConfig))
+    inject(kSWRVConfig),
+  )
 
   if (holder) {
-    watch(data, (result) => {
-      if (holder && result) {
-        const newHolder = { ...holder.value }
-        for (const v of result) {
-          newHolder[v.id] = v
+    watch(
+      data,
+      (result) => {
+        if (holder && result) {
+          const newHolder = { ...holder.value }
+          for (const v of result) {
+            newHolder[v.id] = v
+          }
+          holder.value = newHolder
         }
-        holder.value = newHolder
-      }
-    }, { immediate: true })
+      },
+      { immediate: true },
+    )
   }
 
   return {
@@ -40,36 +54,34 @@ export function useModrinthVersions(project: Ref<string>, featured?: boolean, lo
   }
 }
 
-export function getModrinthVersionModel(project: MaybeRef<string | undefined>, featured?: boolean, loaders?: MaybeRef<string | undefined>, gameVersions?: MaybeRef<string[] | undefined>) {
+export function getModrinthVersionModel(
+  project: MaybeRef<string | undefined>,
+  featured?: boolean,
+  loaders?: MaybeRef<string | undefined>,
+  gameVersions?: MaybeRef<string[] | undefined>,
+) {
   return {
-    key: computed(() => getModrinthVersionKey(get(project) || '', featured, get(loaders), get(gameVersions))),
+    key: computed(() =>
+      getModrinthVersionKey(get(project) || '', featured, get(loaders), get(gameVersions)),
+    ),
     fetcher: async () => {
       const projectId = get(project)
       if (!projectId) {
         return []
       }
       const loader = get(loaders)
-      const result = (await clientModrinthV2.getProjectVersions(projectId, { loaders: loader ? [loader] : undefined, gameVersions: get(gameVersions), featured })).map(markRaw)
+      const result = (
+        await clientModrinthV2.getProjectVersions(projectId, {
+          loaders: loader ? [loader] : undefined,
+          gameVersions: get(gameVersions),
+          featured,
+        })
+      ).map(markRaw)
       return result
     },
   }
 }
 
 export function useModrinthTask(versionId: Ref<string>) {
-  const { tasks } = injection(kTaskManager)
-  return computed(() => {
-    return tasks.value.find(t => t.state === TaskState.Running && t.path === 'installModrinthFile' && t.param.versionId === versionId.value)
-  })
-}
-
-export function useModrintTasks(project: Ref<string>) {
-  const { tasks } = injection(kTaskManager)
-  return computed(() => {
-    const all = tasks.value.filter(t => t.state === TaskState.Running && t.path === 'installModrinthFile' && t.param.projectId === project.value)
-    const dict = {} as Record<string, TaskItem>
-    for (const t of all) {
-      dict[t.param.versionId] = t
-    }
-    return dict
-  })
+  return useTask((t) => t.type === 'installModrinthFile' && t.versionId === versionId.value)
 }

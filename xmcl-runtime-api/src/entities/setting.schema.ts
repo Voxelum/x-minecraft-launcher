@@ -1,158 +1,93 @@
-/* eslint-disable @typescript-eslint/no-redeclare */
-import { Schema } from './schema'
-import _SettingSchema from './SettingSchema.json'
+import { z } from 'zod'
 
-export const SettingSchema: Schema<SettingSchema> = _SettingSchema
+/**
+ * API set configuration.
+ */
+export const ApiSetSchema = z.object({
+  name: z.string(),
+  url: z.string(),
+})
 
-/* eslint-disable import/export  */
-/* eslint-disable @typescript-eslint/no-var-requires */
+/**
+ * Global resolution settings.
+ */
+export const GlobalResolutionSchema = z.object({
+  width: z.number().optional(),
+  height: z.number().optional(),
+  fullscreen: z.boolean().optional(),
+})
 
-export interface SettingSchema {
-  /**
-   * The display language of the launcher
-   * @default ""
-   */
-  locale: string
-  /**
-   * Should launcher auto download new update
-   * @default false
-   */
-  autoDownload: boolean
-  /**
-   * Should launcher auto install new update after app quit
-   * @default false
-   */
-  autoInstallOnAppQuit: boolean
-  /**
-   * Should launcher show the pre-release
-   * @default false
-   */
-  allowPrerelease: boolean
-  /**
-   * The download API set preferences
-   * @default ""
-   */
-  apiSetsPreference: 'mojang' | 'bmcl' | ''
-  /**
-   * The supported unofficial api sets
-   * @default []
-   */
-  apiSets: Array<{ name: string; url: string }>
-  /**
-   * Allow turn server in p2p
-   * @default false
-   */
-  allowTurn: boolean
-  /**
-   * The http proxy address
-   * @default ""
-   */
-  httpProxy: string
-  /**
-   * Is proxy setting enabled
-   * @default false
-   */
-  httpProxyEnabled: boolean
-  /**
-   * The launcher theme
-   * @default "dark"
-   */
-  theme: 'dark' | 'light' | 'system'
-  /**
-   * Maximum number of sockets to allow per host. Default for Node 0.10 is 5, default for Node 0.12 is Infinity
-   * @default 64
-   */
-  maxSockets: number
-  /**
-   * Maximum number of sockets allowed for requesting API. Each request will use a new socket until the maximum is reached. Default: 16.
-   * @default 16
-   */
-  maxAPISockets?: number
-  /**
-   * @default "legacy-only"
-   */
-  replaceNatives: 'all' | 'legacy-only' | false
-  /**
-   * @default 0
-   */
-  globalMinMemory: number
-  /**
-   * @default 0
-   */
-  globalMaxMemory: number
-  /**
-   * @default false
-   */
-  globalAssignMemory: boolean | 'auto'
-  /**
-   * @default []
-   */
-  globalVmOptions: string[]
-  /**
-   * @default []
-   */
-  globalMcOptions: string[]
-  /**
-   * @default false
-   */
-  globalFastLaunch: boolean
-  /**
-   * @default true
-   */
-  globalHideLauncher: boolean
-  /**
-   * @default false
-   */
-  globalShowLog: boolean
-  /**
-   * @default false
-   */
-  globalDisableAuthlibInjector: boolean
-  /**
-   * @default false
-   */
-  globalDisableElyByAuthlib: boolean
-  /**
-   * @default ""
-   */
-  globalPrependCommand: string
-  /**
-   * @default ""
-   */
-  globalPreExecuteCommand: string
-  /**
-   * The launch environment variables
-   * @default {}
-   */
-  globalEnv: Record<string, string>
-  /**
-   * @default true
-   */
-  discordPresence: boolean
-  /**
-   * @default false
-   */
-  developerMode: boolean
-  /**
-   * @default false
-   */
-  disableTelemetry: boolean
-  /**
-   * @default false
-   */
-  linuxTitlebar: boolean
-  /**
-   * @default true
-   */
-  enableDedicatedGPUOptimization: boolean
-  /**
-   * Enable window translucency effect (Mica on Windows 11, Acrylic on Windows 10, Vibrancy on macOS)
-   * @default false
-   */
-  windowTranslucent: boolean
-  /**
-   * Global resolution settings for Minecraft
-   * @default {}
-   */
-  globalResolution: { width?: number; height?: number; fullscreen?: boolean }
-}
+/**
+ * Launcher settings schema.
+ * Zod schema for runtime validation with defaults.
+ */
+export const SettingSchema = z.object({
+  /** The display language of the launcher */
+  locale: z.string().default(''),
+  /** Should launcher auto download new update */
+  autoDownload: z.boolean().default(false),
+  /** Should launcher auto install new update after app quit */
+  autoInstallOnAppQuit: z.boolean().default(false),
+  /** Should launcher show the pre-release */
+  allowPrerelease: z.boolean().default(false),
+  /** The download API set preferences */
+  apiSetsPreference: z.enum(['mojang', 'bmcl', '']).default(''),
+  /** The supported unofficial api sets */
+  apiSets: z.array(ApiSetSchema).default([]),
+  /** Allow turn server in p2p */
+  allowTurn: z.boolean().default(false),
+  /** The http proxy address */
+  httpProxy: z.string().default(''),
+  /** Is proxy setting enabled */
+  httpProxyEnabled: z.boolean().default(false),
+  /** The launcher theme */
+  theme: z.enum(['dark', 'light', 'system']).default('dark'),
+  /** Maximum number of sockets to allow per host */
+  maxSockets: z.number().default(64),
+  /** Maximum number of sockets allowed for requesting API */
+  maxAPISockets: z.number().optional().default(16),
+  /** Replace natives setting */
+  replaceNatives: z.union([z.literal('all'), z.literal('legacy-only'), z.literal(false)]).default('legacy-only'),
+  /** Global minimum memory */
+  globalMinMemory: z.number().default(0),
+  /** Global maximum memory */
+  globalMaxMemory: z.number().default(0),
+  /** Global assign memory setting */
+  globalAssignMemory: z.union([z.boolean(), z.literal('auto')]).default(false),
+  /** Global VM options */
+  globalVmOptions: z.array(z.string()).default([]),
+  /** Global Minecraft options */
+  globalMcOptions: z.array(z.string()).default([]),
+  /** Global fast launch setting */
+  globalFastLaunch: z.boolean().default(false),
+  /** Global hide launcher setting */
+  globalHideLauncher: z.boolean().default(true),
+  /** Global show log setting */
+  globalShowLog: z.boolean().default(false),
+  /** Global disable authlib injector */
+  globalDisableAuthlibInjector: z.boolean().default(false),
+  /** Global disable Ely.by authlib */
+  globalDisableElyByAuthlib: z.boolean().default(false),
+  /** Global prepend command */
+  globalPrependCommand: z.string().default(''),
+  /** Global pre-execute command */
+  globalPreExecuteCommand: z.string().default(''),
+  /** The launch environment variables */
+  globalEnv: z.record(z.string(), z.string()).default({}),
+  /** Discord presence setting */
+  discordPresence: z.boolean().default(true),
+  /** Developer mode setting */
+  developerMode: z.boolean().default(false),
+  /** Disable telemetry setting */
+  disableTelemetry: z.boolean().default(false),
+  /** Linux titlebar setting */
+  linuxTitlebar: z.boolean().default(false),
+  /** Enable dedicated GPU optimization */
+  enableDedicatedGPUOptimization: z.boolean().default(true),
+  /** Window translucency effect */
+  windowTranslucent: z.boolean().default(false),
+  /** Global resolution settings for Minecraft */
+  globalResolution: GlobalResolutionSchema.default({}),
+})
+
+export type SettingSchema = z.infer<typeof SettingSchema>

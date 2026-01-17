@@ -1,8 +1,9 @@
 /* eslint-disable camelcase */
-import { EncodingWorker } from './encodingWorker'
-import { setHandler } from '../worker/helper'
+import { setHandler } from '@xmcl/worker/helper'
 import * as iconv from 'iconv-lite'
 import { detect } from 'jschardet'
+import { getSerializedError } from '~/infra/errors/error_serialize'
+import { EncodingWorker } from './encodingWorker'
 
 const AUTO_ENCODING_GUESS_MAX_BYTES = 512 * 128 // set an upper limit for the number of bytes we pass on to jschardet
 
@@ -10,7 +11,7 @@ const handler: EncodingWorker = {
   async decode(buffer: Buffer, encoding: string): Promise<string> {
     return iconv.decode(buffer, toNodeEncoding(encoding))
   },
-  async guessEncodingByBuffer (buffer: Buffer): Promise<string | null> {
+  async guessEncodingByBuffer(buffer: Buffer): Promise<string | null> {
     const guessed = detect(Buffer.from(buffer).subarray(0, AUTO_ENCODING_GUESS_MAX_BYTES)) // ensure to limit buffer for guessing due to https://github.com/aadsm/jschardet/issues/53
     if (!guessed || !guessed.encoding) {
       return null
@@ -20,7 +21,7 @@ const handler: EncodingWorker = {
   },
 }
 
-setHandler(handler)
+setHandler(handler, getSerializedError)
 
 const UTF8 = 'utf8'
 const UTF8_with_bom = 'utf8bom'

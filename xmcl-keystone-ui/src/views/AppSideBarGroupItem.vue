@@ -1,16 +1,15 @@
 <template>
-  <v-sheet
-    class="relative rounded-xl hover:rounded-lg! transition-all"
-    :color="color"
-  >
+  <div class="relative group-item-wrapper">
     <AppSideBarGroupItemIndicator :state="overState" />
+    <AppSideBarGroupItemIndicator :state="overState" />
+    
     <v-list-item
       v-context-menu="getItems"
       v-shared-tooltip.right="() => group.name ? group.name : { list: instances.map(instance => instance.name || `Minecraft ${instance.runtime.minecraft}`) }"
       push
       link
       draggable
-      class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
+      class="non-moveable sidebar-item flex-1 flex-grow-0 px-2 group-list-item"
       @click="onClick"
       @dragover.prevent
       @dragstart="onDragStart"
@@ -22,7 +21,7 @@
     >
       <v-list-item-avatar
         size="48"
-        class="transition-all duration-300 rounded"
+        class="transition-all duration-300"
         large
       >
         <Transition
@@ -35,23 +34,23 @@
           />
           <div
             v-else-if="!expanded"
-            class="grid cols-2 rows-2 gap-[2px] p-[2px] rounded-xl"
+            class="instance-grid"
           >
             <v-img
               v-for="i in instances.slice(0, 4)"
               :key="i.path"
-              :style="{ maxHeight: '20px', maxWidth: '20px' }"
+              class="instance-grid-item"
               :src="getInstanceIcon(i, i.server ? undefined : undefined)"
               @dragenter="onDragEnter"
               @dragleave="onDragLeave"
             />
           </div>
-          <v-icon v-else>
+          <v-icon v-else size="32">
             folder
           </v-icon>
         </Transition>
       </v-list-item-avatar>
-      <v-list-item-title>123</v-list-item-title>
+      <v-list-item-title>{{ group.name || instances.length }}</v-list-item-title>
     </v-list-item>
     <template v-if="expanded">
       <AppSideBarInstanceItem
@@ -62,7 +61,7 @@
         @arrange="emit('arrange', { ...$event, toPath: instance })"
       />
     </template>
-  </v-sheet>
+  </div>
 </template>
 <script lang="ts" setup>
 import { InstanceGroupData, useGroupDragDropState } from '@/composables/instanceGroup'
@@ -118,3 +117,38 @@ const getItems = () => {
   return items
 }
 </script>
+
+<style scoped>
+/* Clean group wrapper */
+.group-item-wrapper {
+  background: transparent !important;
+}
+
+/* Remove all backgrounds from group items */
+.group-list-item {
+  background: transparent !important;
+}
+
+.group-list-item::before,
+.group-list-item::after {
+  display: none !important;
+}
+
+/* Instance grid for folder icons */
+.instance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 2px;
+  padding: 2px;
+  width: 48px;
+  height: 48px;
+}
+
+.instance-grid-item {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  object-fit: cover;
+}
+</style>

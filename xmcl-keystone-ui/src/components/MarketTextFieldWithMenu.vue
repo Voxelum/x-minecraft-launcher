@@ -22,7 +22,7 @@
       />
     </template>
     <v-card
-      class="overflow-auto max-h-[80vh] flex flex-col"
+      class="overflow-auto max-h-[80vh] flex flex-col modern-filter-card"
       @mousedown.prevent
     >
       <v-tabs v-if="!noTab" v-model="tab" centered fixed-tabs>
@@ -55,6 +55,8 @@
               v-shared-tooltip="tag.text"
               small
               outlined
+              class="transition-all duration-200"
+              :class="{ 'active-btn': sort === tag.value }"
             >
               <v-icon
                 class="material-icons-outlined"
@@ -162,7 +164,7 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-shared-tooltip="t('modrinth.environments.client')"
+                v-shared-tooltip="t('shared.client')"
                 outlined
                 text
                 small
@@ -174,8 +176,7 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-shared-tooltip="t('modrinth.environments.server')"
-                outlined
+                v-shared-tooltip="t('shared.server')"
                 text
                 small
                 value="server"
@@ -189,7 +190,8 @@
           </template>
           <template v-if="curseforgeCategoryFilter">
             <v-subheader class="flex">
-              Curseforge
+              CurseForge
+
 
               <div class="flex-grow" />
               <v-switch
@@ -241,7 +243,7 @@
               </v-icon>
             </v-btn>
           </v-btn-toggle>
-          
+
 
           <slot name="local" />
         </v-tab-item>
@@ -282,7 +284,7 @@ const props = defineProps<{
   enableModrinth?: boolean
   keyword: string
   placeholder?: string
-  sort?: number
+  sort?: number | string
   modrinthSort?: 'relevance'| 'downloads' |'follows' |'newest' |'updated'
   curseforgeSort?: ModsSearchSortField
 
@@ -482,5 +484,34 @@ function getIcon(loader: string) {
 <style scoped>
 .tab {
   @apply px-2 h-120 w-120 max-h-120 max-w-120 overflow-auto
+}
+
+/* Modern Filter Card Styles */
+.modern-filter-card {
+  @apply bg-surface/90 backdrop-blur-md border border-white/10 shadow-2xl;
+}
+
+.modern-filter-card .v-subheader {
+  @apply font-bold uppercase tracking-wider text-gray-400 text-xs mt-2 mb-1;
+}
+
+.modern-filter-card .v-chip {
+  @apply border-white/10 transition-all duration-200;
+}
+
+.modern-filter-card .v-chip.v-chip--active {
+  @apply bg-primary/20 border-primary/50 text-primary shadow-[0_0_10px_rgba(var(--v-theme-primary),0.3)];
+}
+
+.modern-filter-card .v-btn {
+  @apply rounded-lg border-white/10;
+}
+
+.modern-filter-card .v-btn.v-btn--active {
+  @apply bg-primary/10 border-primary/30 text-primary;
+}
+
+.active-btn {
+  @apply ring-2 ring-primary/50 ring-offset-1 ring-offset-transparent;
 }
 </style>

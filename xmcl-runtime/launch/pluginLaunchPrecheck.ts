@@ -1,9 +1,14 @@
-import { LaunchPrecheck, MinecraftFolder, diagnoseJar, diagnoseLibraries } from '@xmcl/core'
-import { LaunchException, protocolToMinecraft, resolveFabricLoaderVersion, resolveForgeVersion, resolveQuiltVersion } from '@xmcl/runtime-api'
+import { LaunchPrecheck, MinecraftFolder } from '@xmcl/core'
+import {
+  LaunchException,
+  protocolToMinecraft,
+  resolveFabricLoaderVersion,
+  resolveForgeVersion,
+  resolveQuiltVersion,
+} from '@xmcl/runtime-api'
 import { ensureDir, move, readlink, stat, unlink } from 'fs-extra'
 import { join } from 'path'
 import { LauncherAppPlugin, kGameDataPath } from '~/app'
-import { InstallService } from '~/install'
 import { InstanceService } from '~/instance'
 import { JavaService, JavaValidation } from '~/java'
 import { LaunchService } from '~/launch'
@@ -23,7 +28,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       // relink
       if (linkTarget !== fromPath) {
         await unlink(toPath)
-        await linkDirectory(fromPath, toPath, launchService).catch(e => {
+        await linkDirectory(fromPath, toPath, launchService).catch((e) => {
           e.name = 'LaunchLinkError'
           e.stage = 'relink'
           launchService.error(e)
@@ -33,7 +38,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
     }
     const fstat = await stat(toPath).catch((e) => undefined)
     if (!fstat) {
-      await linkDirectory(fromPath, toPath, launchService).catch(e => {
+      await linkDirectory(fromPath, toPath, launchService).catch((e) => {
         e.name = 'LaunchLinkError'
         e.stage = 'link'
         launchService.error(e)
@@ -47,7 +52,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
         await move(toPath, join(toPath + Date.now() + '.bk'))
       }
     }
-    await linkDirectory(fromPath, toPath, launchService).catch(e => {
+    await linkDirectory(fromPath, toPath, launchService).catch((e) => {
       e.name = 'LaunchLinkError'
       e.stage = 'after move'
       launchService.error(e)
@@ -73,7 +78,11 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
           throw new LaunchException({ type: 'launchJavaNoPermission', javaPath })
         }
       } catch (e) {
-        throw new LaunchException({ type: 'launchNoProperJava', javaPath }, 'Cannot launch without a valid java', { cause: e })
+        throw new LaunchException(
+          { type: 'launchNoProperJava', javaPath },
+          'Cannot launch without a valid java',
+          { cause: e },
+        )
       }
     },
   })
@@ -83,30 +92,33 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       if (payload.side === 'server') return
       const resolvedVersion = payload.version
       if (!input?.skipAssetsCheck) {
-        const resourceFolder = new MinecraftFolder(getPath())
-        await Promise.all([
-          diagnoseJar(resolvedVersion, resourceFolder, { side: input.side }).then(async (issue) => {
-            if (issue?.type === 'missing') {
-              const installService = await app.registry.getOrCreate(InstallService)
-              return installService.installMinecraftJar(resolvedVersion.id, input.side)
-            }
-          }),
-          diagnoseLibraries(resolvedVersion, resourceFolder).then(async (libs) => {
-            const missing = libs.filter((l) => l.type === 'missing')
-            if (missing.length > 0) {
-              const installService = await app.registry.getOrCreate(InstallService)
-              await installService.installLibraries(libs.map(l => l.library))
-            }
-          }),
-        ])
+        // const resourceFolder = new MinecraftFolder(getPath())
+        // await Promise.all([
+        //   diagnoseJar(resolvedVersion, resourceFolder, { side: input.side }).then(async (issue) => {
+        //     if (issue?.type === 'missing') {
+        //       const installService = await app.registry.getOrCreate(InstallService)
+        //       return installService.installMinecraftJar(resolvedVersion.id, input.side)
+        //     }
+        //   }),
+        //   diagnoseLibraries(resolvedVersion, resourceFolder).then(async (libs) => {
+        //     const missing = libs.filter((l) => l.type === 'missing')
+        //     if (missing.length > 0) {
+        //       const installService = await app.registry.getOrCreate(InstallService)
+        //       await installService.installLibraries(libs.map((l) => l.library))
+        //     }
+        //   }),
+        // ])
       }
 
-      const commonLibs = resolvedVersion.libraries.filter(lib => !lib.isNative)
+      const commonLibs = resolvedVersion.libraries.filter((lib) => !lib.isNative)
       for (const lib of commonLibs) {
         if (!lib.download.path) {
-          (lib.download as any).path = lib.path
+          ;(lib.download as any).path = lib.path
           if (!lib.download.path) {
-            throw new LaunchException({ type: 'launchBadVersion', version: resolvedVersion.id }, JSON.stringify(lib))
+            throw new LaunchException(
+              { type: 'launchBadVersion', version: resolvedVersion.id },
+              JSON.stringify(lib),
+            )
           }
         }
       }

@@ -20,15 +20,7 @@
         class="flex items-center justify-end overflow-visible"
         v-if="!isInFocusMode || !(router.currentRoute.path === '/')"
       >
-        <HomeHeaderInstallStatus
-          v-if="status === 1 || status === 3"
-          class="mr-2"
-          :name="taskName"
-          :total="total"
-          :progress="progress"
-        />
         <HomeLaunchButtonStatus
-          v-else
           :active="active"
         />
         <HomeLaunchButton
@@ -47,18 +39,15 @@ import AvatarItemList from '@/components/AvatarItemList.vue'
 import { useExtensionItemsGamePlay, useExtensionItemsVersion } from '@/composables/extensionItems'
 import { kInstance } from '@/composables/instance'
 import { kInstanceVersion } from '@/composables/instanceVersion'
-import { kLaunchTask } from '@/composables/launchTask'
 import { kCompact } from '@/composables/scrollTop'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
-import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
 import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
 
 const { instance, runtime: version } = injection(kInstance)
 const { versionHeader } = injection(kInstanceVersion)
 const isInFocusMode = useInFocusMode()
-const { total, progress, status, name: taskName } = injection(kLaunchTask)
 const router = useRouter()
 
 const active = ref(false)

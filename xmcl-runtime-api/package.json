@@ -14,19 +14,21 @@
         "url": "https://github.com/voxelum/x-minecraft-launcher"
     },
     "scripts": {
-        "build:schema": "node ./scripts/buildSchema.cjs",
         "build": "pnpm run build:cjs && pnpm run build:esm && pnpm run build:type",
         "build:cjs": "esbuild --bundle --platform=node --outfile=dist/index.js --target=es2020 --format=cjs --external:semver index.ts",
         "build:esm": "esbuild --bundle --platform=node --outfile=dist/index.mjs --target=es2020 --format=esm --external:semver index.ts",
         "build:type": "tsc --project ./tsconfig.json",
         "check": "tsc --noEmit --project ./tsconfig.json",
         "lint": "oxlint -c ./node_modules/@xmcl/oxlint-config/oxlintrc.json .",
+        "fmt": "oxfmt -c .oxfmtrc.json .",
         "lint:fix": "pnpm lint fix"
     },
     "dependencies": {
+        "zod": "^4.1.13",
         "@xmcl/client": "workspace:*",
         "@xmcl/instance": "workspace:*",
         "@xmcl/resource": "workspace:*",
+        "@xmcl/file-transfer": "workspace:*",
         "@xmcl/core": "workspace:*",
         "@xmcl/curseforge": "workspace:*",
         "@xmcl/forge-site-parser": "workspace:*",
@@ -39,17 +41,16 @@
         "@xmcl/nbt": "workspace:*",
         "@xmcl/resourcepack": "workspace:*",
         "@xmcl/system": "workspace:*",
-        "@xmcl/task": "workspace:*",
         "@xmcl/text-component": "workspace:*",
         "@xmcl/unzip": "workspace:*",
         "@xmcl/user": "workspace:*"
     },
     "devDependencies": {
         "@xmcl/oxlint-config": "workspace:*",
+        "oxfmt": "^0.24.0",
         "oxlint": "^0.15.5",
         "esbuild": "^0.17.16",
         "tslib": "^2.5.0",
-        "typescript": "5.4.5",
-        "typescript-json-schema": "^0.65.1"
+        "typescript": "5.4.5"
     }
 }

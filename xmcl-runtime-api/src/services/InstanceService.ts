@@ -1,25 +1,18 @@
-import type { EditInstanceOptions, Instance } from '@xmcl/instance'
-import type { InstanceModpackMetadataSchema, InstanceSchema } from '../entities/instance.schema'
+import type { CreateInstanceOptions, EditInstanceOptions, Instance } from '@xmcl/instance'
+import type { InstanceModpackMetadataSchema } from '../entities/instance.schema'
+import type { Task } from '../task'
 import type { SharedState } from '../util/SharedState'
 import type { DeepPartial } from '../util/object'
 import type { InvalidDirectoryErrorCode } from './BaseService'
 import type { ServiceKey } from './Service'
 
-export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate' | 'creationDate'>> & {
-  path?: string
-  name: string
-  resolution?: InstanceSchema['resolution']
-  runtime?: InstanceSchema['runtime']
-  server?: InstanceSchema['server']
-  /**
-   * Create resourcepacks folder
-   */
-  resourcepacks?: boolean
-  /**
-   * Create shaderpacks folder
-   */
-  shaderpacks?: boolean
+export interface DuplicateInstanceTask extends Task {
+  type: 'duplicateInstance'
+  from: string
+  to: string
 }
+
+export type CreateInstanceOption = CreateInstanceOptions
 
 export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
   /**
@@ -45,11 +38,11 @@ export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
 
   instanceRemove(path: string) {
     delete this.all[path]
-    this.instances = this.instances.filter(i => i.path !== path)
+    this.instances = this.instances.filter((i) => i.path !== path)
   }
 
   instanceMove({ from, to }: { from: string; to: string }) {
-    const inst = this.instances.find(i => i.path === from)
+    const inst = this.instances.find((i) => i.path === from)
     if (inst) {
       inst.path = to
       delete this.all[from]
@@ -62,8 +55,10 @@ export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
    * Don't use this directly. Use `editProfile` action
    * @param settings The modified data
    */
-  instanceEdit(settings: DeepPartial<InstanceSchema> & { path: string }) {
-    const inst = this.instances.find(i => i.path === (settings.path)) /* this.all[settings.path || this.path] */
+  instanceEdit(settings: DeepPartial<EditInstanceOptions> & { path: string }) {
+    const inst = this.instances.find(
+      (i) => i.path === settings.path,
+    ) /* this.all[settings.path || this.path] */
 
     if (!inst) {
       return
@@ -89,7 +84,10 @@ export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
 
     if (settings.runtime) {
       const versions = settings.runtime
-      if (inst.runtime.minecraft !== settings.runtime.minecraft && typeof versions.minecraft === 'string') {
+      if (
+        inst.runtime.minecraft !== settings.runtime.minecraft &&
+        typeof versions.minecraft === 'string'
+      ) {
         // if minecraft version changed, all other related versions are rest.
         inst.runtime.minecraft = versions.minecraft
         inst.runtime.forge = ''
@@ -99,7 +97,7 @@ export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
         inst.version = ''
       }
 
-      for (const versionType of Object.keys(versions).filter(v => v !== 'minecraft')) {
+      for (const versionType of Object.keys(versions).filter((v) => v !== 'minecraft')) {
         const ver = versions[versionType]
         if (typeof ver === 'string') {
           inst.runtime[versionType] = ver
@@ -108,10 +106,16 @@ export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
     }
 
     if ('minMemory' in settings) {
-      inst.minMemory = (typeof settings.minMemory === 'number') && settings.minMemory > 0 ? settings.minMemory : undefined
+      inst.minMemory =
+        typeof settings.minMemory === 'number' && settings.minMemory > 0
+          ? settings.minMemory
+          : undefined
     }
     if ('maxMemory' in settings) {
-      inst.maxMemory = (typeof settings.maxMemory === 'number') && settings.maxMemory > 0 ? settings.maxMemory : undefined
+      inst.maxMemory =
+        typeof settings.maxMemory === 'number' && settings.maxMemory > 0
+          ? settings.maxMemory
+          : undefined
     }
     if ('prependCommand' in settings) {
       inst.prependCommand = settings.prependCommand
@@ -132,7 +136,6 @@ export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
 
     inst.url = settings.url ?? inst.url
     inst.icon = settings.icon ?? inst.icon
-    inst.modpackVersion = settings.modpackVersion ?? inst.modpackVersion
     inst.fileApi = settings.fileApi ?? inst.fileApi
     inst.upstream = settings.upstream ?? inst.upstream
     inst.playtime = settings.playtime ?? inst.playtime
@@ -179,7 +182,7 @@ export interface InstanceService {
    * Delete the managed instance from the disk
    * @param path The instance path
    */
-  deleteInstance(path?: string): Promise<void>
+  deleteInstance(path?: string, deleteData?: boolean): Promise<void>
   /**
    * Duplicate the instance.
    */
@@ -200,7 +203,10 @@ export interface InstanceService {
 
   getInstanceModpackMetadata(path: string): Promise<InstanceModpackMetadataSchema | undefined>
 
-  setInstanceModpackMetadata(path: string, metadata: InstanceModpackMetadataSchema | undefined): Promise<void>
+  setInstanceModpackMetadata(
+    path: string,
+    metadata: InstanceModpackMetadataSchema | undefined,
+  ): Promise<void>
 }
 
 export const InstanceServiceKey: ServiceKey<InstanceService> = 'InstanceService'

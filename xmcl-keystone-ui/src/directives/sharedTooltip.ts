@@ -6,9 +6,10 @@ export type VSharedTooltipParam = {
   items?: Array<{ icon: string; text: string }>
   color?: string
   list?: Array<string>
+  direction?: 'top' | 'bottom' | 'left' | 'right'
 } | string
 
-export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => VSharedTooltipParam) | VSharedTooltipParam> = (el, bindings, node, prevNode) => {
+export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => VSharedTooltipParam) | VSharedTooltipParam | undefined> = (el, bindings, node, prevNode) => {
   if (prevNode.tag) return
   const { blocked, isShown, stack, setValue } = useSharedTooltipData()
   el.addEventListener('mouseenter', (e) => {
@@ -25,13 +26,37 @@ export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => VShare
       items: undefined,
       list: undefined,
     }
+
+    function assign(val: VSharedTooltipParam) {
+      if (typeof val === 'string') {
+        newData.text = val
+      } else {
+        newData.text = val.text || ''
+        newData.items = val.items
+        newData.color = val.color || ''
+        newData.list = val.list
+        newData.direction = val.direction || 'top'
+      }
+    }
+
+    const val = bindings.value
+    if (typeof val === 'string') {
+      newData.text = val
+    } else if (typeof val === 'object') {
+      assign(val)
+    } else if (typeof val === 'function') {
+      assign(val())
+    } else {
+      return
+    }
+
     if (bindings.modifiers.left) {
       newData.direction = 'left'
     } else if (bindings.modifiers.right) {
       newData.direction = 'right'
     } else if (bindings.modifiers.bottom) {
       newData.direction = 'bottom'
-    } else {
+    } else if (bindings.modifiers.top) {
       newData.direction = 'top'
     }
 
@@ -47,26 +72,6 @@ export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => VShare
     } else {
       newData.x = rect.x
       newData.y = rect.y + rect.width / 2
-    }
-
-    function assign(val: VSharedTooltipParam) {
-      if (typeof val === 'string') {
-        newData.text = val
-      } else {
-        newData.text = val.text || ''
-        newData.items = val.items
-        newData.color = val.color || ''
-        newData.list = val.list
-      }
-    }
-
-    const val = bindings.value
-    if (typeof val === 'string') {
-      newData.text = val
-    } else if (typeof val === 'object') {
-      assign(val)
-    } else if (typeof val === 'function') {
-      assign(val())
     }
 
     stack.value = [...stack.value, markRaw(newData)]

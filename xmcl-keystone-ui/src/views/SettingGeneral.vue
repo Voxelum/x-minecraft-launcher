@@ -1,107 +1,140 @@
 <template>
-  <div>
-    <SettingHeader>
-      ⚙️ {{ t("setting.general") }}
-    </SettingHeader>
-    <SettingItemSelect
-      :select.sync="selectedLocale"
-      :title="t('setting.language')"
-      :description="t('setting.languageDescription')"
-      :items="locales"
-    />
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title :color="errorText ? 'red' : ''">
-          {{
-            t("setting.location")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle class="text-red!" v-if="errorText">{{ errorText }}</v-list-item-subtitle>
-        <v-list-item-subtitle v-else>{{ root }}</v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action class="self-center mr-1">
-        <v-btn
+  <SettingCard>
+    <!-- Language Selection -->
+    <SettingItem :description="t('setting.languageDescription')">
+      <template #title>
+        <v-icon left small color="primary">language</v-icon>
+        {{ t('setting.language') }}
+      </template>
+      <template #action>
+        <v-select
+          v-model="selectedLocale"
+          :items="locales"
           outlined
-          text
-          style="margin-right: 10px"
-          @click="onMigrateFromOther"
+          dense
+          hide-details
+          class="language-select"
         >
-          <v-icon left>
-            local_shipping
-          </v-icon>
-          {{ t("setting.migrateFromOther") }}
-        </v-btn>
-      </v-list-item-action>
-      <v-list-item-action class="self-center">
-        <v-btn
-          outlined
-          text
-          @click="browseRootDir"
-        >
-          <v-icon left>
-            edit
-          </v-icon>
-          {{ t("setting.browseRoot") }}
-        </v-btn>
-      </v-list-item-action>
-      <v-list-item-action class="self-center">
-        <v-btn
-          outlined
-          text
-          @click="showGameDirectory()"
-        >
-          <v-icon left>
-            folder
-          </v-icon>
-          {{ t("setting.showRoot") }}
-        </v-btn>
-      </v-list-item-action>
-    </v-list-item>
-    <SettingItemCheckbox
-      v-model="disableTelemetry"
+          <template #selection="{ item }">
+            <span class="font-weight-medium">{{ item.text }}</span>
+          </template>
+        </v-select>
+      </template>
+    </SettingItem>
+
+    <v-divider class="my-3" />
+
+    <!-- Data Directory -->
+    <SettingItem :description="errorText || root" :title-class="`${errorText ? 'error--text' : ''}`" long-action>
+      <template #title>
+        <v-icon left small :color="errorText ? 'error' : 'primary'">folder</v-icon>
+        {{ t("setting.location") }}
+      </template>
+      <template #action>
+        <div class="flex gap-2 justify-end">
+          <v-btn small outlined color="primary" @click="onMigrateFromOther">
+            <v-icon left small>local_shipping</v-icon>
+            {{ t("setting.migrateFromOther") }}
+          </v-btn>
+          <v-btn small outlined color="primary" @click="browseRootDir">
+            <v-icon left small>edit</v-icon>
+            {{ t("setting.browseRoot") }}
+          </v-btn>
+          <v-btn small outlined color="primary" @click="showGameDirectory()">
+            <v-icon left small>folder_open</v-icon>
+            {{ t("setting.showRoot") }}
+          </v-btn>
+        </div>
+      </template>
+    </SettingItem>
+
+    <v-divider class="my-3" />
+
+    <!-- Privacy & Telemetry -->
+    <SettingItemSwitcher
+      :value="disableTelemetry"
+      @input="disableTelemetry = $event"
       :title="t('setting.disableTelemetry')"
       :description="t('setting.disableTelemetryDescription')"
+      icon="privacy_tip"
     />
-    <SettingItemCheckbox
-      v-if="env?.os === 'linux' || env?.os === 'windows'"
-      v-model="enableDedicatedGPUOptimization"
-      :title="t('setting.enableDedicatedGPUOptimization')"
-      :description="t('setting.enableDedicatedGPUOptimizationDescription')"
-    />
-    <SettingItemCheckbox
-      v-model="enableDiscord"
+
+    <!-- GPU Optimization (Windows/Linux only) -->
+    <template v-if="env?.os === 'linux' || env?.os === 'windows'">
+      <v-divider class="my-3" />
+      <SettingItemSwitcher
+        :value="enableDedicatedGPUOptimization"
+        @input="enableDedicatedGPUOptimization = $event"
+        :title="t('setting.enableDedicatedGPUOptimization')"
+        :description="t('setting.enableDedicatedGPUOptimizationDescription')"
+        icon="memory"
+      />
+    </template>
+
+    <!-- Discord Presence -->
+    <v-divider class="my-3" />
+    <SettingItemSwitcher
+      :value="enableDiscord"
+      @input="enableDiscord = $event"
       :title="t('setting.enableDiscord')"
       :description="t('setting.enableDiscordDescription')"
+      icon="discord"
     />
-    <SettingItemCheckbox
-      v-model="developerMode"
+
+    <!-- Developer Mode -->
+    <v-divider class="my-3" />
+    <SettingItemSwitcher
+      :value="developerMode"
+      @input="developerMode = $event"
       :title="t('setting.developerMode')"
       :description="t('setting.developerModeDescription')"
-    />
-    <SettingItemCheckbox
-      v-model="streamerMode"
+      icon="code"
+    >
+      <v-chip v-if="developerMode" x-small color="warning" class="ml-2">{{ t('setting.devModeLabel') }}</v-chip>
+    </SettingItemSwitcher>
+
+    <!-- Streamer Mode -->
+    <v-divider class="my-3" />
+    <SettingItemSwitcher
+      :value="streamerMode"
+      @input="streamerMode = $event"
       :title="t('setting.streamerMode')"
       :description="t('setting.streamerModeDescription')"
+      icon="videocam"
     />
-    <SettingItemSelect
-      :select="replaceNative === false ? '' : replaceNative"
-      :title="t('setting.replaceNative')"
-      :description="t('setting.replaceNativeDescription')"
-      :items="replaceNativeItems"
-      @update:select="replaceNative = !$event ? false : $event"
-    />
-  </div>
+
+    <v-divider class="my-3" />
+
+    <SettingItem :description="t('setting.replaceNativeDescription')">
+      <template #title>
+        <v-icon left small color="primary">swap_horiz</v-icon>
+        {{ t('setting.replaceNative') }}
+      </template>
+      <template #action>
+        <v-select
+          :value="replaceNative === false ? '' : replaceNative"
+          :items="replaceNativeItems"
+          outlined
+          dense
+          hide-details
+          class="native-select"
+          @change="replaceNative = !$event ? false : $event"
+        />
+      </template>
+    </SettingItem>
+  </SettingCard>
 </template>
+
 <script lang="ts" setup>
-import SettingHeader from '@/components/SettingHeader.vue'
-import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
-import SettingItemSelect from '@/components/SettingItemSelect.vue'
+import SettingCard from '@/components/SettingCard.vue'
+import SettingItem from '@/components/SettingItem.vue'
+import { kCriticalStatus } from '@/composables/criticalStatus'
+import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
 import { kEnvironment } from '@/composables/environment'
 import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'
 import { useGameDirectory, useSettings } from '../composables/setting'
-import { kCriticalStatus } from '@/composables/criticalStatus'
-import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
+import SettingItemSwitcher from '@/components/SettingItemSwitcher.vue'
 
 const { isNoEmptySpace, invalidGameDataPath } = injection(kCriticalStatus)
 const getDirErroText = useGetDataDirErrorText()
@@ -121,7 +154,7 @@ const { t } = useI18n()
 const locales = computed(() => rawLocales.value.map(({ locale, name }) => ({ text: name, value: locale })))
 const replaceNativeItems = computed(() => [
   {
-    text: t('disable'),
+    text: t('shared.disable'),
     value: '',
   },
   {
@@ -143,3 +176,27 @@ async function browseRootDir() {
 const { show: onMigrateFromOther } = useDialog('migrate-wizard')
 
 </script>
+
+<style scoped>
+.settings-card {
+  border-radius: 12px;
+}
+
+:deep(.transparent-list) {
+  background: transparent !important;
+}
+
+.language-select,
+.native-select {
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.v-list-item {
+  min-height: 64px;
+}
+
+.v-list-item__action {
+  align-self: center;
+}
+</style>

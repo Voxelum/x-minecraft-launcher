@@ -1,8 +1,8 @@
 <template>
   <div
-    v-if="speed !== 0"
+    v-if="speedText"
     class="flex flex-1 flex-grow-0 items-center"
-    :class="{ 'text-gray-400': speed !== 0, 'text-transparent': speed === 0 }"
+    :class="{ 'text-gray-400': speedText, 'text-transparent': !speedText }"
   >
     <v-icon
       class="mr-1 text-current"
@@ -13,16 +13,11 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { kTaskManager } from '@/composables/taskManager'
+import { kNetworkStatus } from '@/composables/useNetworkStatus'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 
-const { throughput } = injection(kTaskManager)
-const speed = ref(0)
-const speedText = computed(() => getExpectedSize(speed.value) + '/s')
-setInterval(() => {
-  speed.value = throughput.value
-  throughput.value = 0
-}, 1000)
+const { status } = injection(kNetworkStatus)
+const speedText = computed(() => status.value?.downloadSpeed ? getExpectedSize(status.value?.downloadSpeed) + '/s' : '')
 
 </script>

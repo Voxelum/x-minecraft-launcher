@@ -1,5 +1,4 @@
 import { CancelledException, NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
-import { CancelledError } from '@xmcl/task'
 import { isSystemError, type SystemError } from '@xmcl/utils'
 import { Dispatcher, errors } from 'undici'
 export { AnyError, isSystemError } from "@xmcl/utils"
@@ -46,7 +45,7 @@ export async function getSerializedError(e: unknown, context: object): Promise<o
  * @returns The exception or `undefined` if the error is not recognized.
  */
 export async function getNormalizeException(e: unknown) {
-  if (e instanceof CancelledError) {
+  if (e instanceof Error && e.name === 'AbortError') {
     return new CancelledException({
       type: 'cancelled',
     })
@@ -78,7 +77,7 @@ function getNomralizedSystemError(e: SystemError) {
 async function getNormalizedUndiciException(e: errors.UndiciError) {
   const options: Dispatcher.DispatchOptions | undefined = (e as any).options
   let body = '' as string | object
-  if (e instanceof errors.ResponseStatusCodeError) {
+  if (e instanceof errors.ResponseError) {
     body = e.body || ''
   }
   let code: NetworkErrorCode | undefined
@@ -99,7 +98,7 @@ async function getNormalizedUndiciException(e: errors.UndiciError) {
       code,
       method: options?.method || '',
       url: (e as any).url ?? (options ? new URL(options?.path, options.origin as any).toString() : ''),
-      statusCode: e instanceof errors.ResponseStatusCodeError ? e.statusCode : 0,
+      statusCode: e instanceof errors.ResponseError ? e.statusCode : 0,
       body,
     })
     : code

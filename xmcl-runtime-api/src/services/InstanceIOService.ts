@@ -1,8 +1,7 @@
 import { Exception, InstanceNotFoundException } from '../entities/exception'
-import { CreateInstanceOption } from './InstanceService'
 import { ServiceKey } from './Service'
 import { LaunchOptions } from './LaunchService'
-import type { InstanceFile } from '@xmcl/instance'
+import type { CreateInstanceOptions, InstanceFile } from '@xmcl/instance'
 
 export interface ExportInstanceOptions {
   /**
@@ -43,7 +42,7 @@ export interface ExportInstanceOptions {
 export interface ThirdPartyLauncherManifest {
   instances: {
     path: string
-    options: CreateInstanceOption
+    options: CreateInstanceOptions
   }[]
 
   folder: {
@@ -55,12 +54,12 @@ export interface ThirdPartyLauncherManifest {
 }
 
 export interface CreateInstanceManifest {
-  options: CreateInstanceOption
+  options: CreateInstanceOptions
   isIsolated: boolean
   path: string
 }
 
-export type InstanceType = 'mmc' | 'vanilla' | 'modrinth' | 'curseforge'
+export type InstanceType = 'mmc' | 'vanilla' | 'modrinth' | 'curseforge' | 'prism'
 
 
 export type SSHCredentials = {

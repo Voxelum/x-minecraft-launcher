@@ -1,11 +1,11 @@
 import { useService } from '@/composables'
 import { injection } from '@/util/inject'
 import { generateBaseName, generateDistinctName } from '@/util/instanceName'
-import { CreateInstanceOption, InstanceInstallServiceKey, InstanceServiceKey, VersionMetadataServiceKey } from '@xmcl/runtime-api'
+import {  InstanceInstallServiceKey, InstanceServiceKey, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import type { GameProfile } from '@xmcl/user'
 import { InjectionKey, Ref, reactive } from 'vue'
 import { kLatestMinecraftVersion } from './version'
-import { Instance, InstanceData, InstanceFile } from '@xmcl/instance'
+import { CreateInstanceOptions, Instance, InstanceData, InstanceFile } from '@xmcl/instance'
 
 export type InstanceCreation = ReturnType<typeof useInstanceCreation>
 
@@ -49,13 +49,11 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     minMemory: undefined,
     author: gameProfile.value.name,
     fileApi: '',
-    modpackVersion: '',
     description: '',
     resolution: undefined,
     url: '',
     icon: '',
     server: null,
-    tags: [],
     assignMemory: undefined,
     fastLaunch: undefined,
   })
@@ -63,7 +61,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
   const loading = ref(false)
   const error = ref<any>(null)
 
-  async function update(template: CreateInstanceOption, filesPromise: Promise<InstanceFile[]>) {
+  async function update(template: CreateInstanceOptions, filesPromise: Promise<InstanceFile[]>) {
     data.name = template.name
     if (template.runtime) {
       data.runtime = { ...template.runtime }
@@ -79,7 +77,6 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     data.description = template.description ?? ''
     data.url = template.url ?? ''
     data.icon = template.icon ?? ''
-    data.modpackVersion = template.modpackVersion || ''
     data.server = template.server ? { ...template.server } : null
     data.upstream = template.upstream
 
@@ -109,7 +106,6 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     data.url = ''
     data.icon = ''
     data.server = null
-    data.modpackVersion = ''
     data.description = ''
     error.value = null
     files.value = []
@@ -136,7 +132,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
           ...data,
           resourcepacks: pendingFiles.some(f => f.path.startsWith('resourcepacks')),
           shaderpacks: pendingFiles.some(f => f.path.startsWith('shaderpacks')),
-        } as CreateInstanceOption
+        } as CreateInstanceOptions
         if (!payload.minMemory) payload.minMemory = undefined
         if (!payload.maxMemory) payload.maxMemory = undefined
         if (payload.vmOptions?.length === 0) payload.vmOptions = undefined

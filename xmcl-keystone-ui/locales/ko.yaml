@@ -1,8 +1,6 @@
 AppAddInstanceDialog:
   choiceTitle: 여러 개의 실행 프로필이 감지되었습니다. 하나를 선택하여 가져오세요.
-  configTitle: 구성
   createTitle: 게임 생성
-  downloadedNotification: 모드 {name} 가 다운로드 되었습니다. 설치한 모드를 위한 새로운 인스턴스를 생성할까요?
   serverTitle: 서버 주소를 입력하세요.
 AppShareInstanceDialog:
   alterDownloadDescription: >-
@@ -14,52 +12,25 @@ AppShareInstanceDialog:
   downloadDescription: 상대방이 제공한 파일을 확인해주세요. 다운로드할 파일을 선택하면 현재 인스턴스 {name} 에 저장됩니다.
   downloadNotifyTitle: '{user} 에게서 인스턴트 다운로드'
   downloadTitle: 다른 사용자에게서 파일 다운로드
-  downloadToLocal: 현재 인스턴트에 다운로드
   filesToDownload: 다우놀드 받을 파일들을 선택해주세요.
   filesToShare: 공유할 파일들을 선택해주세요.
   instanceShare: '{user} 가 당신에게 현재 인스턴트를 공유했어요.'
   share: 공유
   shareNotifyTitle: 공유 인스턴스
   shareTitle: 다른 플레이어에게 게임 파일들을 공유
-BaseSetting: {}
 BaseSettingGeneral:
   title: 기본
-FeedTheBeast:
-  search: FTB에서 검색
-FeedTheBeastCard: {}
-FeedTheBeastProject:
-  changelog: 변경 사항
-  details: 자세리
-  install: '{version} 설치'
-  overview: 개요
-  versions: 버전들
 HomeJavaIssueDialog:
   incompatibleJava: 호한되지 않는 자바
   incompatibleJavaHint: 현재 자바는 선택된 마인크래프트와 호환되지 않을 거예요.
   missingJava: 자바 없음
   missingJavaHint: '런처가 사용자의 컴퓨터에서 자바를 감지하지 못했어요 시도해보세요:'
-  needDownloadHint: 컴퓨터에서 맞는 자바 버전을 찾을수 없어요. 새로운 것을 다운로드 하세요.
-  optionAutoDownload:
-    message: 런처가 Mojang의 소스에서 자바를 다운로드하여 설치 할게요.
-    name: 자동 다운로드
-  optionManualDownload: {}
-  optionSelectJava:
-    message: 런처가 사용자의 자바를 찾지 못했을 수 있어요. 자바가 어디있는지 직접 알려줄 수 있어요.
-    name: 사용자의 컴퓨터에서 자바를 선택해주세요.
   optionSwitch:
-    disabled: 데이터베이스에서 자바 {version} 를 찾을수 없어요!
-    message: 컴퓨터에 있는 자바 {version} 사용하기
     name: '{version} 로 변경했어요.'
-  recommendedVersionHint: '{version}에서는 자바 {range} 버전을 사용하는 것이 권장됩니다.'
-  selectMatchedHint: 컴퓨터에서 적절한 자바 버전을 찾았어요. 여기서 원하는 버전을 선택해주세요.
-  selectSecondaryHint: >-
-    컴퓨터에서 몇 가지 자바 버전을 찾았지만, 기준에 맞지 않을 수 있어요. 그래도 실행하는 데는 쓸 수 있지만, 문제는 계속 뜰 수
-    있습니다.
 HomeLaunchMultiInstanceDialog:
   confirm: 예, 실행
   description: Minecraft 인스턴스를 여러 개 실행하려고 해요. 계속하시겠습니까?
   title: 다수의 인스턴스
-HomeSyncButton: {}
 HomeSyncDialog:
   pull: 가져오기
   push: 내보내기
@@ -74,7 +45,6 @@ HomeSyncDialogPush:
   upload: 인스턴스 업로드
 SettingMigrationDialog:
   selectRootDirectory: 최상위 경로를 선택
-add: 추가
 ago:
   day: '{duration} 일 전 | {duration} 일 전'
   hour: '{duration} 시간 전 | {duration} 시간 전'
@@ -85,46 +55,26 @@ askAICrash:
   description: AI가 게임 충돌을 이해할 수 있도록 도와줄 거예요! 아래 안내를 따라 게임 충돌에 대해 AI에게 물어보세요
   selectPlatform: AI 플랫폼을 열고, 방금 복사한 프롬프트를 붙여 넣으세요.
 authProfileAddedNotification: 인증 프로필 {name} 이 추가됐어요
-author: 작성자
-back: 뒤로
 baseSetting:
   title: 인스턴스 설정
-browse: 고르기
 browseApp:
   createShortcut: 바로가기 만들기
   default: 기본
   delete: 삭제
   launch: 실행 후 기본으로 설정하기
 browseApps: 런처 UI를 보고 있어요.
-cancel: 취소
-checkUpdate:
-  name: 업데이트 확인
 color: 색
 confirm: 시작
 copyClipboard:
   success: 클립보드에 복사
 create: 만들기
 curseforge:
-  authors: 작성자
   category: 카테고리
   createdDate: 만든 날자
-  downloadOnly: 다운로드
-  file:
-    gameVersion: 게임 버전
-    modLoader: 모드 로더
-  install: 설치
   installTo: '{path} 에 설치'
   installToStorage: 저장공간에 설치
   lastUpdate: 마지막 업데이트 날자
-  project:
-    description: 설명
-    files: 파일
-    images: 이미지
-  recentFiles: 최근 파일
   releasedDate: 출시 날자
-  search: 검색
-  totalDownloads: 총합 다운로드 횟수
-curseforgeCard: {}
 curseforgeCategory:
   API and Library: API와 라이브러리
   Addons: 에드온
@@ -181,9 +131,6 @@ curseforgeCategory:
 dataMigration:
   apply: 설정 적용
   directoryCriteriaHint: 당신의 새로운 경로가 비어있는지 확인해주세요.
-  migrationDestinationIsFile: 이동 대상은 파일입니다! 빈 디렉터리를 선택해주세요.
-  migrationDestinationIsNotEmptyDirectory: 이동 대상 디렉터리가 비어 있지 않아요! 반드시 비어 있는 디렉터리를 선택해주세요.
-  migrationNoPermission: 기존 디렉터리를 새 디렉터리로 이름 변경할 권한이 없습니다! 런처가 두 위치 모두에 접근할 수 있는지 확인하세요!
   placeholder: 여기를 클릭해 디렉터리 선택
   setRootCause: 이 과정에서 런처를 종료하면 데이터(맵, 리소스 팩, 모드)를 잃게 됩니다!
   setRootDescription: 이 작업은 런처와 마인크래프트의 루트 데이터 폴더를 변경합니다.
@@ -200,8 +147,6 @@ dependencies:
   name: 의존성
   optional: 선택
   required: 필수
-description: 설명
-detail: 상세
 diagnosis:
   badInstall:
     message: 클릭하여 이 버전을 재설치해 보세요.
@@ -218,25 +163,13 @@ diagnosis:
   corruptedVersionJar:
     message: 클릭하여 이 버전을 설치하세요
     name: 마인크래프트 %{version} 의 버전 JAR가 손상되었습니다.
-  corruptedVersionJson:
-    message: 클릭하여 이 버전을 설치하세요
-    name: 버전 %{version} 의 JSON이 손상되었습니다.
   incompatibleJava:
-    message: 런처가 대신 다운로드하도록 할 수 있어요.
     name: 자바 {javaVersion} 는 {version} 과(와) 호환되지 않습니다!
   instanceFiles:
     description: 인스턴스 설치에는 {counts}개의 파일이 포함됩니다.
     title: 불완전한 인스턴스 설치
   invalidJava:
-    message: 다른 자바로 실행하도록 클릭하세요.
     name: 잘못된 자바 경로입니다.
-  missingAssets:
-    message: 런처가 에셋을 자동으로 설치합니다
-    name: '누락된 에셋: {name} | 누락된 에셋: {name} | 누락된 에셋 %{count}개'
-  missingAssetsIndex:
-    message: 런처가 에셋 인덱스를 다운로드합니다
-    name: '{version} 의 에셋 인덱스 파일이 없습니다.'
-  missingAuthlibInjector: {}
   missingJava:
     message: 클릭하여 이 문제를 해결하세요
     name: 마인크래프트를 실행할 자바를 찾을 수 없습니다!
@@ -246,36 +179,24 @@ diagnosis:
   missingVersion:
     message: 클릭하여 이 버전을 설치하세요
     name: 버전 {version} 가 설치되어 있지 않습니다!
-  missingVersionJar:
-    message: 클릭하여 이 버전을 설치하세요
-    name: 마인크래프트 %{version} 의 버전 JAR가 없습니다
   unzipFileNotFound:
     description: '{file} 을(를) 찾을 수 없습니다'
     title: 모드팩 파일을 찾을 수 없음
-disable: 비활성화
 disk:
   available: 사용 가능
   used: 사용됨
-download: 다운로드
 downloadCount: '{count} 회 다운로드'
 downloadUpdate: 업데이트 다운로드
 duration:
   day: '{duration }일 | {duration} 일'
   hour: '{duration} 시간 | {duration} 시간'
   minute: '{duration} 분 | {duration} 분'
-  name: '{name} 삭제'
-  'no': 아니오
   second: '{duration} 초 | {duration} 초'
-  'yes': 네
-edit: 편집
-enable: 활성화
 env:
   select:
     all: 모두 선택
     fit: 맞게 선택
     none: 모두 해제
-error:
-  name: 오류 | 오류
 errors:
   BadForgeInstallerJarError: >-
     Forge 설치용 JAR 파일을 파싱할 수 없습니다. Forge 설치 파일 형식이 변경된 것일 수 있습니다. 문제가 계속되면 개발자에게
@@ -298,12 +219,6 @@ exception:
   http: >-
     {url} 로의 HTTP 요청이 실패했습니다. 상태 코드 {statusCode}. {code}. 다시 시도하거나 네트워크를 확인하세요.
     오류가 지속되면 개발팀에 보고서를 보내주세요.
-existed: 이미 존재함
-exportModpackTarget:
-  curseforge: Curseforge 파일
-  github: Github 파일
-  modrinth: Modrinth 파일
-  override: Override(원본) 파일
 extensions:
   mrpack: Modrinth 모드팩
   zip: Zip 파일
@@ -335,22 +250,12 @@ fileDetail:
   fileSize: 파일 크기
   filesize: 파일 크기
   hash: 해시
-filter: 필터
 filterLocalOnly: 설치된 것만 표시
-finish: 완료
-forgeConfig:
-  hint: 이 모드로 게임을 최소 한 번 실행해 주세요. 그래야 설정 파일을 감지할 수 있어요!
 forgeVersion:
-  common: 일반
   disable: Forge 비활성화
   empty: Forge는 마인크래프트 {version} 용 릴리스를 제공하지 않습니다
   latest: 최신
-  name: Forge
   recommended: 권장
-  showBuggy: 불안정 포함 표시
-  showRecommendedAndLatestOnly: 권장 및 최신만
-  version: Forge 버전
-gameSetting: {}
 gameType:
   adventure: 어드벤처 모드
   creative: 크리에이티브 모드
@@ -359,11 +264,7 @@ gameType:
 help: 도움말
 home: 홈
 importModpack:
-  failed: '{modpack} 가져오기에 실패했습니다'
   name: 모드팩 가져오기
-  success: '{modpack} 가져오기에 성공했습니다'
-importResource: 리소스 가져오기
-install: 설치
 installAssets:
   asset: 에셋 {count} 개 설치
   assetIndex: 에셋 인덱스 파일 확인
@@ -374,7 +275,6 @@ installFabric:
   name: Fabric 설치
 installForge:
   downloadInstaller: 인스톨러 다운로드
-  library: 라이브러리 {lib} 설치
   name: Forge 설치
   postProcessing: 후처리
 installInstance:
@@ -388,35 +288,20 @@ installJre:
   download: 압축된 JRE 파일 다운로드
   name: 자바 런타임 설치
 installLabyMod:
-  asset: 에셋 {name} 설치
-  json: JSON {version} 생성
   name: LabyMod 설치
 installLibraries:
   library: 라이브러리 설치
   name: 라이브러리 설치
-installModpack:
-  deploy: 배포
-  download:
-    file: 파일 다운로드
-    name: 다운로드
-  name: 모드팩 설치
-  unpack: 모드팩 압축 풀기
 installModrinthFile:
   name: Modrinth 설치
 installOptifine:
   download: Optifine Universal 다운로드
-  jar: Jar 생성
-  json: Json 생성
   name: Optifine 설치
-installResource:
-  fail: '{file} 설치에 실패했습니다'
-  success: 리소스 {file} 설치 성공
 installVersion:
   jar: 버전 Jar 설치
   json: 버전 Json 설치
   name: 마인크래프트 클라이언트 {version} 설치
 instance:
-  addServer: 서버 추가
   changeIcon: 아이콘 변경
   contents: 콘텐츠
   current: 현재 인스턴스
@@ -429,12 +314,10 @@ instance:
   fileApi: 동기화 파일 서버 API URL
   fileApiHint: 원격 구성 서버에서 인스턴스 파일을 동기화할 URL입니다.
   fullscreen: 전체 화면
-  gameVersion: 게임 버전
   height: 높이
   icon: 프로필 아이콘
   iconHint: 아이콘은 파일이거나 인터넷 URL일 수 있습니다.
   iconUrl: 아이콘 URL
-  includeVersion: 버전 포함
   installModpack: 모드팩으로 인스턴스 업데이트
   lastPlayed: 마지막 플레이
   launchArguments: 실행 인수 미리보기
@@ -456,7 +339,6 @@ instance:
   prependCommandHint: 모든 실행 명령 앞에 이 명령을 추가합니다
   requireName: 이름은 필수입니다
   resolution: 해상도
-  resolutionEnabled: 사용자 지정 해상도 사용
   resolutionPreset: 해상도 프리셋
   showInstance: 게임 폴더 열기
   updates: 업데이트
@@ -464,7 +346,6 @@ instance:
   useSharedOptionsDesc: 인스턴스 간에 공유되는 파일에 options.txt를 링크합니다
   useSharedServersList: 공유 서버 목록 사용
   useSharedServersListDesc: 인스턴스 간에 공유되는 파일에 servers.dat를 링크합니다
-  versionHint: 이 게임의 마인크래프트 버전
   vmOptions: JVM 옵션
   vmOptionsHint: JVM에 전달할 추가 인수
   vmVar: 환경 변수
@@ -502,14 +383,8 @@ instanceSetting:
   showLog: 마인크래프트 로그 표시
   showLogHint: 게임 시작 후 마인크래프트 로그를 스트리밍하는 창이 팝업됩니다
 instanceTemplate:
-  curseforge: 이것은 Curseforge 모드팩입니다
   ftb: 이것은 FTB 모드팩입니다
-  importing: 템플릿 가져오는 중
-  mcbbs: 이것은 MCBBS 모드팩입니다
-  modpack: 이것은 원시 모드팩입니다
-  modrinth: 이것은 Modrinth 모드팩입니다
   preview: 모드팩 미리보기
-  title: 템플릿 설정
 instanceUpdate:
   basic: 설정 업데이트
   files: 파일 업데이트
@@ -532,10 +407,8 @@ instances:
   addTemplateDescription: 다운로드된 모드팩에서 가져오기
   addVanilla: 바닐라 마인크래프트에서 생성
   addVanillaDescription: 일반 .minecraft 폴더에서 가져오기. 원본 게임 프로필을 XMCL로 복제합니다.
-  choose: 게임 선택
   fix: 수리
   folderSetting: 폴더 설정
-  importFolder: 폴더에서 가져오기
   importFolderDescription: 마인크래프트를 런처로 가져오기
   loadingFiles: 모드팩 파일 로딩 중
   refreshServers: 서버 새로고침
@@ -545,7 +418,6 @@ items:
 java:
   allocatedLong: 시스템 기본 자바 사용
   allocatedShort: 자동 할당
-  browse: 자바 실행 파일 찾아보기
   importFromFile: 파일에서 자바 가져오기
   invalid: 잘못된 자바 버전
   location: 자바 버전
@@ -555,7 +427,6 @@ java:
   memoryManual: 수동
   memoryUnassigned: 할당 해제
   minMemory: 최소 메모리
-  modifyInstance: 자바 경로 수정
   noMemory: 메모리 사용량을 제한하지 않음
   refresh: 로컬 자바 새로고침
   systemMemory: '시스템 여유 메모리: {free} / {total}'
@@ -570,7 +441,6 @@ launch:
   launch: 실행
   launchAnyway: 무시하고 실행
 launchBlocked:
-  ignore: 강제 실행
   launchBadVersion:
     description: 버전 {version}의 JSON에 문제가 있습니다. 재설치를 시도해 보세요.
     title: 잘못된 버전 JSON
@@ -596,14 +466,7 @@ launchBlocked:
   launchSpawnProcessFailed:
     description: 자바를 확인하거나 런처에 더 많은 권한을 부여한 뒤 다시 시도하세요. 그래도 되지 않으면 개발자에게 문의하세요.
     title: 게임 프로세스 시작 실패
-  launchUserStatusRefreshFailed:
-    description: 현재 선택된 사용자 상태를 새로고침할 수 없습니다.
-    title: 사용자 상태 검증 실패
   unexpectedText: 예상치 못한 상황입니다. 런처를 재시작하면 문제가 완화될 수 있습니다. 이 문제가 다시 발생하면 개발자에게 문의하세요.
-  userAcquireMicrosoftTokenFailed: Microsoft 토큰을 가져오지 못했습니다. 다시 시도하거나 Microsoft 계정을 확인하세요.
-  userCheckGameOwnershipFailed: 마인크래프트 소유권 확인에 실패했습니다. 다시 시도하거나 네트워크를 확인하세요.
-  userExchangeXboxTokenFailed: Microsoft 토큰으로 Xbox 토큰 교환에 실패했습니다. 다시 시도하거나 네트워크를 확인하세요.
-  userLoginMinecraftByXboxFailed: Xbox 토큰으로 마인크래프트 로그인에 실패했습니다. 다시 시도하거나 네트워크를 확인하세요.
 launchFailed:
   crash: 게임이 크래시되었습니다!!
   description: 크래시 리포트가 없습니다. 아래는 에러 로그와 최신 로그입니다.
@@ -634,10 +497,7 @@ launcherUpdate:
   alreadyLatest: 최신 상태
   installAndQuit: 재시작하여 설치
   noUpdateAvailable: 사용 가능한 업데이트 없음
-  reinstall: 재설치
   updateToThisVersion: 다운로드 및 설치
-liteloader:
-  name: LiteLoader
 localVersion:
   auto: 자동 계산됨
   delete: 로컬 버전 삭제
@@ -692,13 +552,9 @@ logsCrashes:
   placeholder: 파일이 없습니다
   title: 로그 또는 크래시 리포트
 me:
-  games: 내 게임
-  modpacks: 내 모드팩
   news: 뉴스
   recentPlay: 최근 플레이
-  versions: 설치된 버전
 minecraftVersion:
-  empty: 마인크래프트 버전을 불러올 수 없습니다
   name: 마인크래프트 버전
   release: 정식
   showAlpha: 스냅샷 표시
@@ -707,55 +563,49 @@ mod:
   acceptVersion: '{version} 적용'
   applyGroupRules: 저장된 그룹 규칙 적용
   compatible: 호환되는 모드입니다.
+  createGroup: 그룹 생성
   currentVersion: 현재 {current}
-  deletion: 모드 삭제
   deletionHint: >-
     You will lose this mod & its metadata forever. Are you sure you want to
     delete it? | You will lose these mods & their metadata forever. Are you sure
     you want to do that?
   deletionRestHint: 그리고 모드 {rest}개 더...
   denseView: 밀집 보기
+  disableAll: 모두 비활성화
   dropHint: 모드의 .jar/.litemod를 여기로 드래그하여 가져오세요.
   duplicatedDetected: 중복된 모드 {count}개 발견
   duplicatedDetectedDescription: >-
     Found mods with same mod id but different files. This might cause Minecraft
     crash. Please select the file you want to keep.
-  enabled: '{count} 개 모드 활성화됨'
   enableAll: 모두 활성화
-  disableAll: 모두 비활성화
+  enabled: '{count} 개 모드 활성화됨'
   filter: 모드 필터
   group: 그룹화
   groupInstalled: 설치된 모드 그룹화
-  selectOrCreateGroup: 그룹 선택 또는 생성
-  searchGroups: 그룹 검색...
-  newFolder: 새 폴더
-  noGroupsYet: 아직 그룹이 없습니다. 하나 만드세요!
-  noGroupsFound: 그룹을 찾을 수 없음
   groupName: 그룹 이름
   groupNameRequired: 그룹 이름이 필요합니다
-  createGroup: 그룹 생성
   hasUpdate: 새 버전의 모드가 있습니다!
-  hideIncompatible: 호환되지 않는 모드 숨기기
   incompatible: 호환되지 않는 모드입니다.
   incompatibleHint: 모드 호환성 보고서를 확인하세요
   incompatibleHintDescription: >-
     Some mods dependencies might be missing. Or some dependencies versions do
     not matched.
-  manage: 관리
   maybeCompatible: 아마도 호환됨.
   modloaderSelectHint: 이 모드는 다음 모드 로더를 지원합니다. 설치할 항목을 선택하세요.
   modloaderSelectNotSupported: 마인크래프트 {minecraft}에 대한 {modloader}를 찾을 수 없습니다
   mods: 모드 {count} 개
   name: 모드
+  newFolder: 새 폴더
+  noGroupsFound: 그룹을 찾을 수 없음
+  noGroupsYet: 아직 그룹이 없습니다. 하나 만드세요!
   noModLoaderHint: 모드를 사용하려면 모드 로더를 활성화하는 것을 잊지 마세요!
   openLink: 모드 URL 열기 {url}
   search: 모드 검색
-  searchOnCurseforge: '{name} 을(를) Curseforge에서 검색'
+  searchGroups: 그룹 검색...
   searchOnMcWiki: '{name} 을(를) MC 백과사전에서 찾기'
-  searchOnModrinth: '{name} 을(를) Modrinth에서 검색'
+  selectOrCreateGroup: 그룹 선택 또는 생성
   showDirectory: 모드 디렉터리 열기
   showFile: 모드 경로 열기 {file}
-  showInCurseforge: Curseforge에서 모드 보기
   showInModrinth: Modrinth에서 {name} 보기
   switchDefaultSource: 기본 모드 소스
   syncGroupRules: 그룹 규칙 저장
@@ -772,17 +622,21 @@ modInstall:
   archived: >-
     {name}이(가) 보관되었습니다. 제작자가 프로젝트를 보관 해제하기로 결정하지 않는 한 {name}은(는) 더 이상 업데이트를 받지
     않습니다.
+  autoUpgrade:
+    description: >-
+      Minecraft 버전을 변경했습니다. 호환되는 모드를 자동으로 Minecraft {version}에 맞는 버전으로
+      업데이트하시겠습니까?
+    'no': 건너뛰기
+    title: 모드를 업데이트하시겠습니까?
+    'yes': 모드 업데이트
   checkDependencies: 의존성 확인
   checkUpgrade: 모드 업데이트 확인
   checkedDependencies: 확인된 의존성
   checkedUpgrade: 선택 항목 업그레이드
   currentVersion: 선택된 버전
   dependencyHint: 다른 버전이 설치됨 {version}
-  display: 모드 표시
-  install: 설치
   installDependencies: 누락된 의존성 설치
   installHint: '{dependencies} 개의 의존성과 함께 {file} 파일을 설치합니다'
-  installed: 설치됨
   noVersionSupported: 이 모드는 마인크래프트 {supported}만 지원합니다.
   recommendation: '{modrinth} 및 {curseforge}에서 {first} 모드를 탐색하십시오!'
   removeUnusedLibraries: 사용되지 않는 라이브러리 모드 제거
@@ -791,13 +645,6 @@ modInstall:
   source: 모드 소스
   switch: 버전 전환
   upgrade: 모드 업그레이드
-  autoUpgrade:
-    title: 모드를 업데이트하시겠습니까?
-    description: >-
-      Minecraft 버전을 변경했습니다. 호환되는 모드를 자동으로
-      Minecraft {version}에 맞는 버전으로 업데이트하시겠습니까?
-    yes: 모드 업데이트
-    no: 건너뛰기
 modSearch:
   noLocalModsFound: 검색과 일치하는 로컬 모드를 찾을 수 없습니다.
   noModsFound: 모드를 찾을 수 없습니다.
@@ -823,24 +670,17 @@ modpack:
   descriptionHint: 모드팩에 대한 일반적인 설명입니다. Curseforge 모드팩으로 내보낼 때 사용될 수 있습니다.
   dropHint: 모드팩 zip을 여기로 드래그하여 가져오기
   emitCurseforge: Curseforge 모드팩 내보내기
-  emitMcbbs: MCBBS 모드팩 내보내기
   emitModrinth: Modrinth 모드팩 내보내기
   emitModrinthStrict: 엄격한 Modrinth 형식
   emitModrinthStrictDescription: Modrinth 문서에 기재된 4개 도메인의 URL만 허용됩니다
   export: 모드팩으로 내보내기
   exportDirectory: 내보내기 디렉터리
   exportDirectoryDescription: 모드팩은 기본적으로 다운로드 폴더에 내보내집니다.
-  general: 일반 정보
   includeAssets: 에셋 포함
-  includeLibraries: 라이브러리 포함
   includes: 포함할 파일
   modpackVersion: 모드팩 버전
   name: 모드팩
   overrides: 오버라이드
-  showFile: 파일 표시 {file}
-  showInCurseforge: Curseforge에서 {name} 보기
-  showInFtb: FTB에서 {name} 보기
-  showInModrinth: Modrinth에서 {name} 보기
   url: URL
   urlHint: 모드팩의 홈페이지 URL
 modpackImportConfirm:
@@ -949,12 +789,10 @@ modrinth:
   description: 설명
   downloads: 다운로드
   environments:
-    client: 클라이언트
     default: 기본값
     name: 환경
     optional: 선택
     required: 필수
-    server: 서버
     unsupported: 미지원
   externalResources: 외부 리소스
   featuredVersions: 추천 버전
@@ -975,18 +813,13 @@ modrinth:
   loginTitle: Modrinth 로그인
   modLoaders:
     name: 모드 로더
-  perPage: 페이지당
+  modpackSource:
+    source: 원천
   projectId: 프로젝트 ID
   projectMembers: 프로젝트 멤버
   projectType:
-    mod: 모드
     modpack: 모드팩
-    name: 프로젝트 유형
-    resourcePack: 리소스 팩
-    shader: 셰이더
   projects: 프로젝트 {count}개
-  quickSearch: '{title} 검색'
-  searchText: 검색
   serverSide: 서버 측
   sort:
     downloads: 다운로드 수
@@ -1002,10 +835,6 @@ modrinth:
   wikiUrl: 위키
 modrinthCard:
   currentVersion: 현재 버전
-  projectHint: >
-    이 인스턴스는 Modrinth 모드팩 <code class="rounded p-1" style="background:
-    rgba(123,123,123,0.2)">{title}</code>에서 생성되었습니다 (프로젝트 ID:
-          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
   allowTurn: 릴레이 서버 사용
   allowTurnHint: >-
@@ -1045,7 +874,6 @@ multiplayer:
   groupId: 그룹 ID
   illegalTokenDescription: 잘못된 토큰입니다. 상대방의 토큰이 올바른지 확인하세요
   initiateConnection: 연결 시작
-  inviteLink: 초대 링크
   joinConnection: 상대방이 이미 연결을 시작했다면, 연결 참여를 해야 합니다.
   joinManual: 참여
   joinOrCreateGroup: 그룹 참여/생성
@@ -1075,7 +903,6 @@ multiplayer:
   start: 시작
   startNewP2PConnection: 시작 버튼을 클릭하여 새로운 피어 연결을 생성하세요
 myStuff: 내 자료
-name: 이름
 natType:
   blocked: 차단됨
   fullCone: 완전 개방형
@@ -1088,13 +915,9 @@ natType:
 neoForgedVersion:
   disable: NeoForged 비활성화
   empty: NeoForged는 {version}을(를) 지원하지 않습니다
-  name: NeoForged
 news:
   name: 뉴스
   readMore: 더 읽기
-next: 다음
-'no': 아니오
-ok: 확인
 optifineVersion:
   disable: Optifine 비활성화
   empty: Optifine은 마인크래프트 {version} 을(를) 지원하지 않습니다
@@ -1116,32 +939,23 @@ peerIceGatheringState:
   gathering: ICE 서버 수집 중
 peerSignalingState:
   have-local-offer: 피어 설명 대기 중
-popular: 인기도
 presence:
-  curseforge: CurseForge 보는 중
-  curseforgeProject: Curseforge에서 {name} 보는 중
   instance: '{instance} 인스턴스 에서 대기 중'
   instanceSetting: '설정 편집 중: {instance}'
   mod: '{instance} 에서 모드 보는 중'
-  modrinth: Modrinth 보는 중
   modrinthProject: Modrinth에서 {name} 보는 중
   resourcePack: '{instance} 에서 리소스 팩 보는 중'
   save: '{instance} 에서 저장된 월드 보는 중'
   setting: 설정 페이지 보는 중
   shaderPack: '{instance} 에서 셰이더 팩 보는 중'
   version: 버전 페이지 보는 중
-previous: 이전
 proxy:
   host: 호스트
   port: 포트
 quiltVersion:
   disable: Quilt 비활성화
   empty: Quilt는 마인크래프트 {version} 을(를) 지원하지 않습니다
-refresh: 새로고침
-refreshResource: 리소스 새로고침
-remove: 제거
 resourcepack:
-  available: 사용 가능
   compatible: '{version} 과(와) 호환되는 형식 {format}'
   defaultDescription: 마인크래프트의 기본 모양과 느낌
   delete:
@@ -1149,53 +963,33 @@ resourcepack:
     title: 리소스 팩 삭제
   dropHint: 리소스 팩의 폴더/zip을 여기로 드래그하여 가져오세요.
   enable: 리소스 팩 {count}개 활성화됨
-  import: 리소스 팩 가져오기
   incompatible: 호환되지 않는 리소스 팩 형식( {format} ). {accept} 에 맞음. 현재 {actual}.
-  independent: 인스턴스가 독립적인 리소스 팩 폴더를 사용함
-  manage: 리소스 팩 관리
   name: 리소스 팩
-  searchHint: 리소스 팩 검색
   searchOnCurseforge: Curseforge에서 {name} 검색
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selectSearchHint: 리소스 팩 검색 및 선택
   selected: 선택된 리소스 팩
-  shared: 인스턴스가 공유 리소스 팩 폴더를 사용함
   showDirectory: 리소스 팩 디렉터리 열기
   showFile: 폴더에서 리소스 팩 보기 {file}
   showInCurseforge: Curseforge에서 {name} 보기
   unselected: 선택되지 않은 리소스 팩
 save:
-  cheat: 치트
   copy:
     cancel: 복사 취소
     confirm: 복사 시작
     description: 저장된 월드를 이동시킬 대상 프로필을 선택하세요.
     name: 저장된 월드 복사
     title: 다른 프로필로 저장된 월드 복사
-  copyFrom:
-    cancel: 취소
-    confirm: 복사 시작
-    description: 다른 인스턴스나 관리되는 리소스(Curseforge)에서 이 인스턴스로 저장된 월드를 배포할 수 있습니다
-    from: '{src}에서'
-    fromProfile: 다른 인스턴스에서
-    fromResource: 관리되는 리소스에서
-    title: 관리되는 소스에서 저장된 월드 가져오기
   createNew: 새 월드 생성
   createdWorlds: 월드 {count} 개가 있습니다
   deleteHint: 이 작업은 되돌릴 수 없습니다. 저장된 월드 데이터를 영원히 잃게 됩니다. 정말로 이 저장된 월드를 삭제하시겠습니까?
   deleteTitle: 저장된 월드 삭제
-  detail: 더 많은 정보
   dropHint: 저장된 월드 zip을 여기로 드래그하여 가져오기
   export: 저장된 월드 내보내기
   exportMessage: 저장된 월드를 zip으로 내보내기
   exportTitle: 저장된 월드 내보내기
   gameMode: 게임 모드
-  import: 저장된 월드 가져오기
-  importMessage: zip에서 저장된 월드 가져오기
-  importTitle: 저장된 월드 가져오기
   independent: 인스턴스가 독립적인 저장된 월드 폴더를 사용함
   levelName: 레벨 이름
-  manage: 저장된 월드 관리
   name: 저장된 월드
   search: 저장된 월드 검색
   seed: Seed
@@ -1204,12 +998,8 @@ save:
   showDirectory: 저장된 월드 디렉터리 열기
   unselected: 공유 저장된 월드
   useCurrent: 현재 월드 사용
-  viewSeedMap: View Seed Map on Chunkbase
-saves: {}
 screenshots:
   empty: 스크린샷이 없습니다
-  goto: 폴더 열기
-  name: 스크린샷
   playRandom: 무작위 재생
   playSequence: 순서대로 재생
 search:
@@ -1219,8 +1009,6 @@ search:
 server:
   acceptingMinecraftVersion: 허용하는 마인크래프트 버전
   creationHint: 서버 주소를 입력하고 서버에 핑을 보내세요
-  delete: {}
-  error: {}
   expectedVersions: 지원되는 버전
   export: 서버 내보내기
   exportNoFilesHint: 서버 파일을 찾을 수 없습니다. 일부 파일을 생성하려면 로컬에서 서버를 한 번 실행해 보세요.
@@ -1244,7 +1032,6 @@ server:
   pings: 핑들
   players: 플레이어
   port: 포트
-  recommendedMinecraftVersion: 마인크래프트 버전
   status: 서버 상태
   unknown: 알 수 없는 서버
   unknownDescription: 알 수 없는 서버입니다. 새로고침하세요
@@ -1258,23 +1045,26 @@ serverStatus:
   timeout: §4서버 연결 시간 초과!
 setting:
   about: 정보
-  allowPrerelease: 프리릴리즈 다운로드
-  allowPrereleaseDescription: 프리릴리즈는 불안정할 수 있습니다
+  aboutBmclDescription: BMCL API는 중국 본토의 사용자를 위한 편리한 다운로드를 제공합니다
+  aboutContributors: 🧑‍💻 기여자 🧑‍💻
+  aboutDenoDescription: XMCL은 서버리스 JavaScript 애플리케이션을 위해 Deno Deploy의 간편한 플랫폼을 활용합니다
+  aboutLicense: MIT LICENSE
+  aboutLicenseInfo: SignPath.io가 제공하는 Windows의 무료 코드 서명, SignPath Foundation에서 인증
+  aboutSponsors: 😇 스폰서 😇
+  advancedJavaOptions: 고급 Java 옵션
+  advancedSettings: 고급 설정
+  advancedSettingsHint: 위험 구역 - 런처 데이터 재설정 또는 관리
   apiSets:
     auto: 자동 (네트워크에 따라 결정)
     official: 공식 (Mojang)
   appearance: 외관
+  appearanceDescription: 런처 외관 사용자 지정
   appxUpdateHint: 런처가 인스톨러를 다운로드하고 실행합니다. 팝업 인스톨러가 실패하면 수동으로 실행하세요.
-  autoDownload: 자동 다운로드
-  autoDownloadDescription: 사용 가능한 경우 자동으로 업데이트 다운로드
-  autoInstallOnAppQuit: 자동 설치
-  autoInstallOnAppQuitDescription: 앱 종료 시 업데이트 자동 설치
+  authenticationSettings: 인증
   backdropBlur: 배경 블러
   backgroundColorAbove: 배경색을 오버레이로 표시
   backgroundColorAboveDescription: 배경 이미지나 비디오 위에 배경색을 표시합니다.
   backgroundImage: 배경 이미지
-  backgroundImageBlur: 이미지 블러
-  backgroundImageBlurDescription: 드래그하여 블러, 간단합니다
   backgroundImageClear: 지우기
   backgroundImageDescription: 배경으로 이미지 선택 또는 지우기
   backgroundImageFit:
@@ -1300,10 +1090,6 @@ setting:
   backgroundVideoUrlPlaceholder: 동영상의 HTTP/HTTPS URL을 입력하세요.
   backgroundVideoVolume: 볼륨
   backgroundVideoVolumeDescription: 드래그하여 볼륨 조절
-  blurAppBar: 앱 바 블러
-  blurMainBody: 메인 본문 블러
-  blurMainBodyDescription: 런처 오른쪽 패널을 블러 처리할지 여부
-  blurSidebar: 사이드바 블러
   browseRoot: 찾아보기
   checkUpdate: 업데이트 확인
   colorTheme:
@@ -1314,11 +1100,11 @@ setting:
     errorColor: 오류 색상
     name: 테마 색상 및 블러
     primaryColor: 기본 색상
-    secondaryColor: 보조 색상
     sideBarColor: 사이드바
     warningColor: 경고 색상
   darkTheme: 테마
   darkThemeDescription: 다크 또는 라이트 테마 중 선택
+  devModeLabel: 개발
   developerMode: 개발자 모드
   developerModeDescription: 개발자 모드는 자신의 모드를 테스트하기 위한 것입니다
   disableTelemetry: 원격 분석 비활성화
@@ -1328,17 +1114,20 @@ setting:
   enableDiscord: Discord 상태 표시 활성화
   enableDiscordDescription: 런처의 Discord 상태를 업데이트합니다
   enterUrl: URL을 입력하세요
+  exportSettings: 설정 내보내기
+  exportSettingsHint: 현재 설정을 파일로 저장
   general: 일반
   githubRelease: Github 릴리스
   globalSetting: 전체 인스턴스 설정
   globalSettingHint: 인스턴스는 기본적으로 이 설정을 사용합니다.
-  hideNewsHeader: 뉴스 쇼케이스 숨기기
+  importSettings: 설정 가져오기
+  importSettingsHint: 이전에 내보낸 파일에서 설정 로드
   instanceTheme:
     activeDescription: |-
-      이 인스턴스는 맞춤 테마를 사용하고 있습니다. 
+      이 인스턴스는 맞춤 테마를 사용하고 있습니다.
       글로벌테마를 사용하시려면 삭제하시면 됩니다.
     description: |-
-      이 인스턴스에 대한 맞춤 테마를 활성화합니다. 
+      이 인스턴스에 대한 맞춤 테마를 활성화합니다.
       그러면 현재 전역 테마의 복사본이 생성됩니다.
     name: 인스턴스 테마
   language: 언어
@@ -1353,17 +1142,19 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: 이 옵션은 마인크래프트 프로세스에 전용 GPU를 할당합니다.
   linuxTitlebar: 네이티브 제목 표시줄
   linuxTitlebarDescription: 런처에 네이티브 Linux 제목 표시줄 사용
-  windowTranslucent: 창 투명도
-  windowTranslucentDescription: 반투명 창 효과를 활성화합니다 (Windows 11의 Mica, Windows 10의 Acrylic, macOS의 Vibrancy). 재시작이 필요합니다.
+  livePreview: 라이브 미리보기
   location: 저장 위치
   manualUpdateHint: 버전을 자동으로 업데이트할 수 없습니다. 공식 웹사이트에서 런처를 다시 다운로드하세요!
   maunalUpdateHint: 버전을 자동 업데이트할 수 없습니다. 웹사이트에서 런처를 다시 다운로드하세요!
   maxSockets: 호스트당
   maxSocketsDescription: 호스트당 또는 전체 호스트에 대해 허용할 최대 소켓 수를 제한합니다. 0은 제한 없음을 의미합니다.
   maxSocketsTitle: 최대 HTTP 소켓
+  memoryAssignment: 메모리 할당
   migrateFromOther: 다른 런처에서 가져오기
+  minecraftOptions: Minecraft 옵션
   name: 전체 설정
   network: 네트워크 설정
+  newsPosition: 뉴스 섹션 이동
   officialWebsite: 공식 웹사이트
   particleMode:
     bubble: 거품
@@ -1372,15 +1163,37 @@ setting:
     remove: 제거
     repulse: 밀어내기
   particleModeDescription: 파티클 클릭 동작 선택
+  quickLaunchSettings: 빠른 실행
   replaceNative: 시스템 라이브러리
   replaceNativeDescription: '사용 중인 컴퓨터 환경(예: 32비트/64비트)에 맞게 필요한 라이브러리를 교체합니다.'
   replaceNatives:
     all: 모두
     legacy: 레거시 버전만
+  resetAllSettings: 모든 설정 재설정
+  resetAllSettingsConfirmMessage: 이 작업은 모든 설정, 계정, 인스턴스, 그룹 및 캐시 데이터를 영구적으로 삭제합니다. 이 작업은 취소할 수 없습니다. 계속하시겠습니까?
+  resetAllSettingsConfirmTitle: 모든 설정을 재설정하시겠습니까?
+  resetAllSettingsHint: 런처를 공장 기본값으로 재설정 (모든 것 삭제)
+  resetAllSettingsSuccess: 모든 설정이 재설정되었습니다. 런처가 재시작됩니다.
+  resetSettingsError: '설정을 재설정하는 중에 오류가 발생했습니다: {error}'
   resetToDefault: 기본값으로 재설정
   select: 선택
+  settingsExported: 설정이 성공적으로 내보내졌습니다
+  settingsImportError: 설정 가져오기에 실패했습니다. 파일 형식을 확인하세요.
+  settingsImported: 설정이 성공적으로 가져와졌습니다
+  settingsReloadHint: 모든 설정을 적용하기 위해 런처를 다시 시작합니다.
   showNewsHeader: 뉴스 쇼케이스 표시
   showRoot: 표시
+  sidebarAlign: 사이드바 정렬
+  sidebarAutoHide: 사이드바 자동 숨김
+  sidebarAutoHideHint: 사이드바를 자동으로 숨기고 마우스 오버 시 표시
+  sidebarClassic: 클래식
+  sidebarNotch: 노치
+  sidebarPosition: 사이드바 위치
+  sidebarScale: 사이드바 크기
+  sidebarShowOnlyPinned: 고정된 인스턴스만 표시
+  sidebarShowOnlyPinnedHint: 사이드바에 고정된 인스턴스만 표시
+  sidebarStyle: 사이드바 스타일
+  sidebarStyleHint: 클래식과 모던 노치 디자인 중 선택
   streamerMode: 스트리밍 모드
   streamerModeDescription: 런처에서 이메일과 같은 개인 정보를 숨깁니다.
   theme:
@@ -1395,6 +1208,7 @@ setting:
   themeImport: 테마 가져오기
   themeResetFont: 폰트 재설정
   themeSelectFont: 폰트 선택
+  themeSettings: 테마 설정
   themeShare: 테마 공유
   themeShareDescription: 친구와 테마를 공유할 수 있습니다.
   update: 업데이트
@@ -1419,7 +1233,7 @@ setup:
     name: '@:setting.appearance'
   dataRoot:
     description: >-
-      최상위 폴더가 일반적인 .minecraft 디렉터리가 아닙니다.  XMCL 데이터 디렉터리 구조는 기본 버전과 다르기 때문에, 
+      최상위 폴더가 일반적인 .minecraft 디렉터리가 아닙니다.  XMCL 데이터 디렉터리 구조는 기본 버전과 다르기 때문에,
       일반적인 .minecraft 디렉터리를 최상위 폴더로 사용하는 것을 권장하지 않습니다.
     drives: 권장 위치
     name: 데이터 디렉터리 설정
@@ -1435,9 +1249,6 @@ setup:
     nonDictionary: 선택한 경로는 파일입니다! 디렉터리를 선택하세요.
   focusLayoutDescription: 포커스 레이아웃은 마인크래프트 런처의 레거시 레이아웃입니다. 단일 인스턴스 또는 소수의 인스턴스와 함께 사용하도록 설계되었습니다.
   game:
-    description: >-
-      기존 리소스를 가져오기 위해 기존 게임 디렉터리(.minecraft)를 선택하세요. 모드, 리소스 팩 등을 빠르게 구별별할 수
-      있습니다.
     name: 기존 게임 가져오기
   locale:
     description: >-
@@ -1446,7 +1257,6 @@ setup:
     language: 언어
     name: 언어 설정
   path: 현재 경로
-  title: 'X Minecraft Launcher에 오신 것을 환영합니다. 시작하기 전에 다음이 필요합니다: '
 shaderPack:
   deletion: 셰이더 팩 삭제
   deletionHint: 셰이더 팩 파일 {path} 을(를) 삭제하며, 되돌릴 수 없습니다.
@@ -1465,30 +1275,53 @@ shaderPack:
   showDirectory: 셰이더 팩 디렉터리 열기
   showFile: 폴더에서 이 셰이더 팩 보기
 shared:
-  accept: 수락
+  add: 추가
+  author: 작성자
+  back: 뒤로
+  browse: 고르기
+  cancel: 취소
+  client: 클라이언트
+  description: 설명
+  disable: 비활성화
+  download: 다운로드
+  edit: 편집
+  enable: 활성화
+  filter: 필터
+  install: 설치
+  installed: 설치됨
   keepSelected: 선택된 것 유지
+  manage: 관리
+  name: 이름
+  next: 다음
+  'no': 아니오
+  ok: 확인
+  previous: 이전
+  refresh: 새로고침
+  remove: 제거
+  search: 찾다
+  server: 서버
   skipForNow: 지금은 건너뛰기
+  'yes': 예
+sidebar:
+  pin: 고정
+  unpin: 고정 해제
 sortBy:
   alphabetAsc: 알파벳순 정렬 (오름차순)
   alphabetDesc: 알파벳순 정렬 (내림차순)
   timeAsc: 수정 시간순 정렬 (오름차순)
   timeDesc: 수정 시간순 정렬 (내림차순)
 store:
-  explore: 탐색
+  discover: 발견하다
   latestMinecraft: 최신 마인크래프트 버전
   name: 모드팩 마켓
-  popular: 인기 모드팩
-  recentUpdated: 최근 업데이트
-summery: 요약
+  searchResult: 검색결과
+  trending: 인기 급상승
 tag:
   create: 태그 생성
   createSelected: 선택된 항목에 태그 생성
-  newTag: 새 태그
 task:
-  available: 사용 가능
   cancelled: 취소됨
   clear: 완료된 작업 지우기
-  compatible: '{format} 형식은 {version} 과(와) 호환됩니다'
   connection:
     connected: 연결됨
     free: 여유
@@ -1497,26 +1330,12 @@ task:
     running: 연결 실행 중
     size: 총 개수
   connections: 네트워크 연결
-  delete:
-    content: 텍스처팩 파일을 디스크에서 삭제하며, 복구할 수 없습니다. 정말로 복구할 수 있나요?
-    title: 텍스처팩 삭제
-  dropHint: 텍스처 폴더/zip을 여기로 드래그하여 가져오세요.
   empty: 실행 중인 작업 없음
-  enable: '포함된 텍스처팩: {count} 개'
   failed: 실패
-  import: 텍스처팩 가져오기
-  incompatible: 호환되지 않는 텍스처팩 형식( {format} ). {accept} 에 맞음. 현재 {actual}.
-  manage: 텍스처팩
   manager: 작업 관리자
   nTaskRunning: '{count} 개 작업이 실행 중입니다'
   name: 작업
   pause: 일시정지
-  searchOnCurseforge: Curseforge에서 {name} 검색
-  searchOnModrinth: '@:mod.searchOnModrinth'
-  selected: 즐겨찾는 텍스처팩
-  showFile: 폴더에서 텍스처팩 {file} 열기
-  showInCurseforge: Curseforge에서 {name} 보기
-  unselected: 선택되지 않은 텍스처팩
 theme:
   selectImage: 이미지 선택
   selectMusic: 음악 선택
@@ -1580,36 +1399,23 @@ tutorial:
   storeSearchResultDescription: 모든 검색 결과가 여기에 나열됩니다.
   userAccountDescription: 이 아이콘을 클릭하여 마인크래프트 계정을 추가하거나 관리하세요.
 universalDrop:
-  enableModsAfterImport: 가져오기 후 모드 활성화
   start: 가져오기 시작됨
   title: 파일을 여기로 드래그하여 가져오기
   unknownResource: 알 수 없음
-update:
-  goOfficialWebDownload: 공식 웹사이트에서 다시 다운로드
+update: {}
 upstream:
   downgrade: 다운그레이드
-  missingModpackMetadata: |-
-    이전 모드팩 메타데이터를 찾을 수 없습니다.
-    여전히 업그레이드할 수 있지만 결과가 잘못될 수 있습니다. 인스턴스 파일을 백업하세요.
   onlyShowCurrentVersion: 현재 마인크래프트 버전만 표시
   update: 업데이트
 user:
   accessToken: 액세스 토큰
   authMode: 인증 서비스
   authService: 인증 서비스
-  birth: 등록된 생년월일
-  challenges: 아래 질문에 답하여 신원을 확인하세요
   email: 이메일 주소
-  forgetChallenges: 이 질문들을 잊어버렸고 변경하고 싶습니다
   id: 사용자 ID
-  info: 사용자 정보
-  insecureClient: 클라이언트가 안전하지 않습니다! 스킨을 업로드하려면 신원을 확인하세요!
   name: 사용자 이름
   nameHint: 게임에서 표시되는 이름
   profile: 프로필
-  refreshAccount: 계정 새로고침
-  refreshSkin: 스킨 새로고침
-  submitChallenges: 답변 제출
   tokenExpired: 만료됨
   tokenValidUntil: 토큰 유효 기간
 userAccount:
@@ -1624,24 +1430,21 @@ userCape:
   noCape: 망토 없음
 userService:
   add: 더 많은 서비스 추가
-  authLibInjector: auth-lib injector 제안을 따르세요
-  baseUrlHint: 사용자 지정 서비스의 기본 URL
-  manageServices: 서비스 관리
   authlibInjectorMetadata: Authlib-Injector 메타데이터
-  server: 서버
-  implementation: 구현
-  version: 버전
-  skinDomains: 스킨 도메인
+  baseUrlHint: 사용자 지정 서비스의 기본 URL
   homepage: 홈페이지
+  implementation: 구현
+  manageServices: 서비스 관리
   register: 등록
+  server: 서버
+  skinDomains: 스킨 도메인
   title: 서드파티 사용자 서비스
-  validateHint: 사용자의 토큰이 여전히 유효한지 확인하는 데 사용됩니다
+  version: 버전
 userServices:
   microsoft:
     account: Microsoft 계정
     deviceCode: 디바이스 코드
     deviceCodeHint: 로그인을 클릭한 후 디바이스 코드가 생성됩니다
-    fastLogin: 빠른 로그인
     name: Microsoft
     password: 브라우저에서 비밀번호 입력
     useDeviceCode: 디바이스 코드로 로그인
@@ -1676,4 +1479,3 @@ versionType:
   beta: 베타
   name: 상태
   release: 정식
-'yes': 예

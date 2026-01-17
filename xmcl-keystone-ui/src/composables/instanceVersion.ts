@@ -55,7 +55,7 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
       return resolvedVersion
     } catch (e) {
       const err = e as VersionParseError
-      if (err.name === 'MissingVersionJson') {
+      if (err.name === 'MissingVersionJson' || err.name === 'CorruptedVersionJson') {
         return undefined
       }
       throw e

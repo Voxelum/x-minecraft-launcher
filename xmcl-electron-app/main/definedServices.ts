@@ -1,13 +1,27 @@
 import { BaseService } from '@xmcl/runtime/app'
 import { AuthlibInjectorService } from '@xmcl/runtime/authlibInjector'
 import { ElyByService } from '@xmcl/runtime/elyby'
-import { ImportService } from '@xmcl/runtime/import'
-import { DiagnoseService, InstallService, VersionMetadataService } from '@xmcl/runtime/install'
-import { InstanceLogService, InstanceModsService, InstanceOptionsService, InstanceSavesService, InstanceResourcePackService, InstanceScreenshotService, InstanceServerInfoService, InstanceService, InstanceShaderPacksService, InstanceThemeService } from '@xmcl/runtime/instance'
-import { InstanceIOService, InstanceInstallService, InstanceManifestService } from '@xmcl/runtime/instanceIO'
+import { InstallService, VersionMetadataService } from '@xmcl/runtime/install'
+import {
+  InstanceLogService,
+  InstanceModsService,
+  InstanceOptionsService,
+  InstanceSavesService,
+  InstanceResourcePackService,
+  InstanceScreenshotService,
+  InstanceServerInfoService,
+  InstanceService,
+  InstanceShaderPacksService,
+  InstanceThemeService,
+  InstanceModsGroupService,
+} from '@xmcl/runtime/instance'
+import {
+  InstanceIOService,
+  InstanceInstallService,
+  InstanceManifestService,
+} from '@xmcl/runtime/instanceIO'
 import { JavaService } from '@xmcl/runtime/java'
-import { LaunchService } from '@xmcl/runtime/launch'
-import { InstanceModsGroupService } from '@xmcl/runtime/mod'
+import { LaunchService, VersionService } from '@xmcl/runtime/launch'
 import { ProjectMappingService } from '@xmcl/runtime/moddb'
 import { ModMetadataService } from '@xmcl/runtime/moddb/ModMetadataService'
 import { ModpackService } from '@xmcl/runtime/modpack'
@@ -17,13 +31,11 @@ import { ResourcePackPreviewService } from '@xmcl/runtime/resourcePack'
 import { ServerStatusService } from '@xmcl/runtime/serverStatus'
 import { ThemeService } from '@xmcl/runtime/theme'
 import { OfficialUserService, UserService } from '@xmcl/runtime/user'
-import { VersionService } from '@xmcl/runtime/version'
 
 export const definedServices = [
   VersionMetadataService,
   BaseService,
   AuthlibInjectorService,
-  ImportService,
   InstallService,
   ProjectMappingService,
   InstanceIOService,
@@ -38,7 +50,6 @@ export const definedServices = [
   InstanceScreenshotService,
   InstanceShaderPacksService,
   PresenceService,
-  DiagnoseService,
   JavaService,
   LaunchService,
   ModpackService,

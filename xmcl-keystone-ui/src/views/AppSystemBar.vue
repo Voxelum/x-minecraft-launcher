@@ -14,15 +14,16 @@
         v-if="shouldShiftBackControl"
         style="width: 80px"
       />
-      <v-icon
+      <div
         v-ripple
-        small
-        class="non-moveable flex cursor-pointer select-none items-center py-2 after:hidden hover:bg-[rgba(255,255,255,0.2)]"
+        class="non-moveable flex justify-center cursor-pointer select-none rounded py-2 after:hidden hover:bg-[rgba(255,255,255,0.2)]"
         style="width: 80px;"
         @click="onBack"
       >
-        arrow_back
-      </v-icon>
+        <v-icon class="mx-0" small>
+          arrow_back
+        </v-icon>
+      </div>
     </span>
     <slot />
 
@@ -36,6 +37,7 @@
     <AppSystemBarBadge
       v-if="!noTask"
       icon="assignment"
+      :can-hide-text="count === 0"
       :text="count === 0 ? t('task.empty') : t('task.nTaskRunning', { count })"
       @click="showTaskDialog()"
     />

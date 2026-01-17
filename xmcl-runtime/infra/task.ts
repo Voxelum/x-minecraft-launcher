@@ -1,24 +1,26 @@
-import { Task } from '@xmcl/task'
-import { EventEmitter } from 'events'
+import { Task } from '@xmcl/runtime-api'
 import { InjectionKey } from '~/app'
 
 export type TaskEventType = 'update' | 'start' | 'success' | 'fail' | 'pause' | 'cancel' | 'resume'
+export type TaskInstance<T extends Task> = T & {
+  controller: AbortController
+  wrap: (p: Promise<any>) => Promise<any>
+  complete: () => void
+  fail: (error: unknown) => void
+}
 
-export const kTaskExecutor: InjectionKey<TaskFn> = Symbol('kTaskExecutor')
-export const kTasks: InjectionKey<{
-  submit: TaskFn
-  emitter: TaskEventEmitter
-  getActiveTask: () => Task<any> | undefined
-}> = Symbol('kTasks')
+export const kTasks: InjectionKey<Tasks> = Symbol('kTasks')
 
-export type TaskFn = <T>(task: Task<T>) => Promise<T>
+export interface Tasks {
+  /**
+   * Get the currently active task
+   */
+  getActiveTask(): TaskInstance<any> | undefined
 
-export interface TaskEventEmitter extends EventEmitter {
-  on(event: 'update', handler: (uuid: string, task: Task<any>, chunkSize: number) => void): this
-  on(event: 'fail', handler: (uuid: string, task: Task<any>, error: any) => void): this
-  on(event: TaskEventType, handler: (uuid: string, task: Task<any>) => void): this
-
-  emit(event: 'update', uuid: string, task: Task<any>, chunkSize: number): boolean
-  emit(event: 'fail', uuid: string, task: Task<any>, error: any): boolean
-  emit(event: TaskEventType, uuid: string, task: Task<any>): boolean
+  /**
+   * Create and track a task
+   */
+  create<T extends Task>(
+    task: Omit<T, 'id' | 'progress' | 'substate' | 'state' | 'error'>,
+  ): TaskInstance<T>
 }

@@ -13,9 +13,9 @@ export function useTutorialModel() {
     await import('../assets/driver.css')
     const driverObj = driver({
       popoverClass: 'driverjs-theme',
-      nextBtnText: t('next'),
+      nextBtnText: t('shared.next'),
       animate: true,
-      prevBtnText: t('previous'),
+      prevBtnText: t('shared.previous'),
       doneBtnText: 'OK!',
       allowClose: true,
       steps: steps.value,

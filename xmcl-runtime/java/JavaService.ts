@@ -1,54 +1,86 @@
 import type { JavaVersion } from '@xmcl/core'
-import { installJavaRuntimeWithJsonTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
-import { JavaSchema, JavaServiceKey, JavaState, type JavaService as IJavaService, type Java, type JavaRecord, type SharedState } from '@xmcl/runtime-api'
+import type { DownloadBaseOptions } from '@xmcl/file-transfer'
+import {
+  installJavaRuntimeWithJson,
+  parseJavaVersion,
+  resolveJava,
+  scanLocalJava,
+} from '@xmcl/installer'
+import {
+  InstallJavaTask,
+  JavaServiceKey,
+  JavaState,
+  JavasSchema,
+  type JavaService as IJavaService,
+  type Java,
+  type JavaRecord,
+  type SharedState
+} from '@xmcl/runtime-api'
 import { AnyError } from '@xmcl/utils'
-import { chmod, readFile, stat } from 'fs-extra'
+import { chmod, readFile, readJson, stat, writeJson } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
-import { kFlights, kGFW, kTaskExecutor, type TaskFn } from '~/infra'
+import { Tasks, kFlights, kGFW, kTasks } from '~/infra'
 import { JavaValidation, getJavaExeFilePath, validateJavaPath } from '~/java'
 import { kDownloadOptions } from '~/network'
+import { ResourceWorker, kResourceWorker } from '~/resource'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { getApiSets, kSettings, shouldOverrideApiSet } from '~/settings'
+import { getTracker } from '~/util/taskHelper'
 import { LauncherApp } from '../app/LauncherApp'
 import { readdirIfPresent } from '../util/fs'
 import { requireString } from '../util/object'
-import { createSafeFile, type SafeFile } from '../util/persistance'
 import { ensureClass, getJavaArch } from './detectJVMArch'
 import { getOfficialJavaManifest } from './installDefaultJava'
-import { getJavaPathsLinux, getJavaPathsLinuxSDK, getJavaPathsOSX, getMojangJavaPaths, getOpenJdkPaths, getOrcaleJavaPaths, getZuluJdkPath } from './javaPaths'
-import { getZuluJRE, installZuluJavaTask, setupZuluCache } from './zulu'
+import {
+  getJavaPathsLinux,
+  getJavaPathsLinuxSDK,
+  getJavaPathsOSX,
+  getMojangJavaPaths,
+  getOpenJdkPaths,
+  getOrcaleJavaPaths,
+  getZuluJdkPath,
+} from './javaPaths'
+import { getZuluJRE, installZuluJava, setupZuluCache } from './zulu'
 
 @ExposeServiceKey(JavaServiceKey)
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
-  protected readonly config: SafeFile<JavaSchema>
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+  constructor(
+    @Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServiceStateManager) store: ServiceStateManager,
-    @Inject(kTaskExecutor) private submit: TaskFn,
+    @Inject(kTasks) private tasks: Tasks,
     @Inject(kGameDataPath) private getPath: PathResolver,
+    @Inject(kDownloadOptions) private downloadOptions: DownloadBaseOptions,
+    @Inject(kResourceWorker) private resourceWorker: ResourceWorker,
   ) {
-    super(app, () => store.registerStatic(new JavaState(), JavaServiceKey), async () => {
-      ensureClass(this.app).catch((e) => {
-        this.error(e)
-      })
+    super(
+      app,
+      () => store.registerStatic(new JavaState(), JavaServiceKey),
+      async () => {
+        ensureClass(this.app).catch((e) => {
+          this.error(e)
+        })
 
-      const data = await this.config.read()
-      const valid = data.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }))
-      this.log(`Loaded ${valid.length} java from cache.`)
-      this.state.javaUpdate(valid)
+        const javaJsonPath = this.getAppDataPath('java.json')
+        const data = await readJson(javaJsonPath).then(JavasSchema.parse)
+        const valid = data.all
+          .filter((l) => typeof l.path === 'string')
+          .map((a) => ({ ...a, valid: true }))
+        this.log(`Loaded ${valid.length} java from cache.`)
+        this.state.javaUpdate(valid)
 
-      this.refreshLocalJava()
+        this.refreshLocalJava()
 
-      this.state.subscribeAll(() => {
-        this.config.write(this.state)
-      })
+        this.state.subscribeAll(() => {
+          writeJson(javaJsonPath, JavasSchema.parse({ all: this.state.all }), { spaces: 2 })
+        })
 
-      setupZuluCache(app).catch((e) => {
-        this.error(e)
-      })
-    })
-    this.config = createSafeFile(this.getAppDataPath('java.json'), JavaSchema, this, [getPath('java.json')])
+        setupZuluCache(app).catch((e) => {
+          this.error(e)
+        })
+      },
+    )
   }
 
   removeJava(javaPath: string): Promise<void> {
@@ -65,17 +97,23 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
    * Get java preferred java 8 for installing forge or other purpose. (non launching Minecraft)
    */
   getPreferredJava() {
-    return this.state.all.find(j => j.valid && j.majorVersion === 8) || this.state.all.find(j => j.valid)
+    return (
+      this.state.all.find((j) => j.valid && j.majorVersion === 8) ||
+      this.state.all.find((j) => j.valid)
+    )
   }
 
   /**
    * Install a default jdk 8 to the a preserved location. It'll be installed under your launcher root location `jre` folder
    */
   @Singleton()
-  async installJava(target: JavaVersion = {
-    majorVersion: 8,
-    component: 'jre-legacy',
-  }, forceZulu = false) {
+  async installJava(
+    target: JavaVersion = {
+      majorVersion: 8,
+      component: 'jre-legacy',
+    },
+    forceZulu = false,
+  ) {
     this.log(`Try to install java ${target.component} (${target.component})`)
 
     const flights = await this.app.registry.get(kFlights)
@@ -84,59 +122,81 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       forceZulu = true
     }
 
-    const downloadOptions = await this.app.registry.get(kDownloadOptions)
     const settings = await this.app.registry.get(kSettings)
     const gfw = await this.app.registry.get(kGFW)
 
     let apiHost: string[] | undefined
     const apis = getApiSets(settings)
     if (shouldOverrideApiSet(settings, gfw.inside)) {
-      apiHost = apis.map(a => new URL(a.url).hostname)
+      apiHost = apis.map((a) => new URL(a.url).hostname)
     }
 
     const officialManifest = !forceZulu
       ? await getOfficialJavaManifest(this.app, target.component).catch(() => undefined)
       : undefined
 
-    const folder = this.getPath('jre', officialManifest ? target.component : target.component + '-zulu')
+    const folder = this.getPath(
+      'jre',
+      officialManifest ? target.component : target.component + '-zulu',
+    )
     const exeLocation = getJavaExeFilePath(folder, this.app.platform)
 
-    if (!officialManifest) {
-      // use zulu
-      this.log(`Install zulu jre runtime ${target.component} (${target.majorVersion})`)
-      const zuluData = await getZuluJRE(this.app, target.component as any)
-      await this.submit(installZuluJavaTask(zuluData, folder, target.majorVersion, downloadOptions))
-    } else {
-      this.log(`Install official jre runtime ${target.component} (${target.majorVersion}) ${officialManifest.version.name}`)
-      await this.submit(installJavaRuntimeWithJsonTask({
-        target: officialManifest,
-        destination: folder,
-        ...downloadOptions,
-        skipRevalidate: true,
-        apiHost,
-      }).setName('installJre', { version: target.majorVersion }))
-    }
+    const task = this.tasks.create<InstallJavaTask>({
+      type: 'installJre',
+      key: `java-${target.majorVersion}-${target.component}`,
+      version: target.majorVersion,
+    })
 
-    if (this.app.platform.os !== 'windows') {
-      await chmod(exeLocation, 0o765)
-    }
+    try {
+      const tracker = getTracker(task)
 
-    if (officialManifest) {
+      if (!officialManifest) {
+        // use zulu
+        this.log(`Install zulu jre runtime ${target.component} (${target.majorVersion})`)
+        const zuluData = await getZuluJRE(this.app, target.component as any)
+        await installZuluJava(zuluData, {
+          destination: folder,
+          ...this.downloadOptions,
+          tracker,
+          abortSignal: task.controller.signal,
+        })
+      } else {
+        this.log(
+          `Install official jre runtime ${target.component} (${target.majorVersion}) ${officialManifest.version.name}`,
+        )
+        await installJavaRuntimeWithJson({
+          target: officialManifest,
+          destination: folder,
+          ...this.downloadOptions,
+          apiHost,
+          tracker,
+          signal: task.controller.signal,
+          checksum: (file, algorithm) => this.resourceWorker.checksum(file, algorithm),
+        })
+      }
+
+      if (this.app.platform.os !== 'windows') {
+        await chmod(exeLocation, 0o765)
+      }
+
       this.log(`Successfully install java internally ${exeLocation}`)
-    } else {
-
+      const result = await this.resolveJava(exeLocation)
+      if (!result) {
+        throw new AnyError('InstallDefaultJavaError', 'Fail to install java')
+      }
+      task.complete()
+      return result
+    } catch (error) {
+      task.fail(error)
+      this.error(error as any)
+      throw error
     }
-    const result = await this.resolveJava(exeLocation)
-    if (!result) {
-      throw new AnyError('InstallDefaultJavaError', 'Fail to install java')
-    }
-    return result
   }
 
   async validateJavaPath(javaPath: string): Promise<JavaValidation> {
     const result = await validateJavaPath(javaPath)
 
-    const found = this.state.all.find(java => java.path === javaPath)
+    const found = this.state.all.find((java) => java.path === javaPath)
     if (found && result !== JavaValidation.Okay) {
       this.state.javaUpdate({ ...found, valid: false })
     }
@@ -153,7 +213,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     this.log(`Try resolve java ${javaPath}`)
     const validation = await validateJavaPath(javaPath)
 
-    const found = this.state.all.find(java => java.path === javaPath)
+    const found = this.state.all.find((java) => java.path === javaPath)
     if (found) {
       if (validation !== JavaValidation.Okay) {
         // invalidate java
@@ -164,7 +224,9 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         if (!found.valid) {
           this.state.javaUpdate({ ...found, valid: true })
         }
-        this.log(`Found a cached & ${found.valid ? 'valid' : 'invalid'} java ${found.version} in ${javaPath}`)
+        this.log(
+          `Found a cached & ${found.valid ? 'valid' : 'invalid'} java ${found.version} in ${javaPath}`,
+        )
       }
       return found
     }
@@ -183,7 +245,10 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     } else {
       const home = dirname(dirname(javaPath))
       const releaseData = await readFile(join(home, 'release'), 'utf-8')
-      const javaVersion = releaseData.split('\n').map(l => l.split('=')).find(v => (v[0] === 'JAVA_VERSION'))?.[1]
+      const javaVersion = releaseData
+        .split('\n')
+        .map((l) => l.split('='))
+        .find((v) => v[0] === 'JAVA_VERSION')?.[1]
       if (javaVersion) {
         const parsedJavaVersion = parseJavaVersion(javaVersion)
         if (parsedJavaVersion) {
@@ -211,19 +276,21 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       const commonLocations = [] as string[]
       if (this.app.platform.os === 'windows') {
         commonLocations.push(
-          ...await getMojangJavaPaths(),
-          ...await getOrcaleJavaPaths(),
-          ...await getOpenJdkPaths(),
-          ...await getZuluJdkPath(),
+          ...(await getMojangJavaPaths()),
+          ...(await getOrcaleJavaPaths()),
+          ...(await getOpenJdkPaths()),
+          ...(await getZuluJdkPath()),
         )
       } else if (this.app.platform.os === 'linux') {
-        commonLocations.push(...await getJavaPathsLinux())
-        commonLocations.push(...await getJavaPathsLinuxSDK())
+        commonLocations.push(...(await getJavaPathsLinux()))
+        commonLocations.push(...(await getJavaPathsLinuxSDK()))
       } else if (this.app.platform.os === 'osx') {
-        commonLocations.push(...await getJavaPathsOSX())
+        commonLocations.push(...(await getJavaPathsOSX()))
       }
       const javas = await scanLocalJava(commonLocations)
-      const infos = await Promise.all(javas.map(async (j) => ({ ...j, valid: true, arch: await getJavaArch(this, j.path) })))
+      const infos = await Promise.all(
+        javas.map(async (j) => ({ ...j, valid: true, arch: await getJavaArch(this, j.path) })),
+      )
 
       this.log(`Found ${infos.length} java.`)
       this.state.javaUpdate(infos)
@@ -232,7 +299,10 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       const javas: JavaRecord[] = []
       const visited = new Set<number>()
       for (let i = 0; i < this.state.all.length; ++i) {
-        const ino = await stat(this.state.all[i].path).then(s => s.ino, (e) => undefined)
+        const ino = await stat(this.state.all[i].path).then(
+          (s) => s.ino,
+          (e) => undefined,
+        )
         if (!ino) {
           javas.push({ ...this.state.all[i], valid: false })
           continue
@@ -243,15 +313,19 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         visited.add(ino)
         const result = await resolveJava(this.state.all[i].path)
         if (result) {
-          javas.push({ ...result, valid: true, arch: this.state.all[i].arch ?? await getJavaArch(this, result.path) })
+          javas.push({
+            ...result,
+            valid: true,
+            arch: this.state.all[i].arch ?? (await getJavaArch(this, result.path)),
+          })
         } else {
           javas.push({ ...this.state.all[i], valid: false })
         }
       }
-      const invalided = javas.filter(j => !j.valid).length
+      const invalided = javas.filter((j) => !j.valid).length
       if (invalided !== 0) {
         this.log(`Invalidate ${invalided} java!`)
-        for (const i of javas.filter(j => !j.valid)) {
+        for (const i of javas.filter((j) => !j.valid)) {
           this.log(i.path)
         }
       }
@@ -263,7 +337,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     for (const component of cached) {
       if (component.startsWith('.')) continue
       const local = getJavaExeFilePath(join(jreDir, component), this.app.platform)
-      if (!this.state.all.map(j => j.path).some(p => p === local)) {
+      if (!this.state.all.map((j) => j.path).some((p) => p === local)) {
         this.resolveJava(local)
       }
     }

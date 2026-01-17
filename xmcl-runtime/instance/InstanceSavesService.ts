@@ -1,4 +1,3 @@
-import { UnzipTask } from '@xmcl/installer'
 import { ResourceManager } from '@xmcl/resource'
 import {
   ImportSaveException,
@@ -16,25 +15,26 @@ import {
   type ShareSaveOptions,
   type UpdateSaveOptions,
 } from '@xmcl/runtime-api'
-import { open, readAllEntries } from '@xmcl/unzip'
+import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 import { AnyError, isSystemError } from '@xmcl/utils'
 import { FSWatcher } from 'chokidar'
 import filenamify from 'filenamify'
-import { existsSync } from 'fs'
+import { createWriteStream, existsSync } from 'fs'
 import { ensureDir, ensureFile, readdir, rename, rm, rmdir, stat, unlink, writeFile } from 'fs-extra'
 import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from 'path'
+import { ZipFile } from 'yazl'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
 import { LaunchService } from '~/launch'
 import { kMarketProvider } from '~/market'
-import { getInstanceSaveHeader, readInstanceSaveMetadata, updateSaveMetadata, readWorldGenSettings } from '~/save'
+import { kResourceManager } from '~/resource'
+import { getInstanceSaveHeader, readInstanceSaveMetadata, readWorldGenSettings, updateSaveMetadata } from '~/save'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
-import { copyPassively, isDirectory, linkDirectory, missing, readdirIfPresent } from '../util/fs'
+import { copyPassively, isDirectory, linkDirectory, missing, pipeline, readdirIfPresent } from '../util/fs'
 import { isNonnull, requireObject, requireString } from '../util/object'
-import { ZipTask } from '../util/zip'
+import { includeAs, writeZipFile } from '../util/zip'
 import { readlinkSafe } from './utils/readLinkSafe'
-import { kResourceManager } from '~/resource'
 
 /**
  * Provide the ability to preview saves data of an instance
@@ -398,10 +398,14 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
 
       const root = saveRoot
 
-      const task = new UnzipTask(zipFile, entries.filter(e => !e.fileName.endsWith('/') && e.fileName.startsWith(root)), dest, (e) => {
-        return e.fileName.substring(root.length)
-      })
-      await task.startAndWait()
+      const entriesToExtract = entries.filter(e => !e.fileName.endsWith('/') && e.fileName.startsWith(root))
+      for (const entry of entriesToExtract) {
+        const relativePath = entry.fileName.substring(root.length)
+        const destPath = join(dest, relativePath)
+        await ensureDir(dirname(destPath))
+        const stream = await openEntryReadStream(zipFile, entry)
+        await pipeline(stream, createWriteStream(destPath))
+      }
     }
 
     if (curseforge) {
@@ -448,9 +452,9 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     } else {
       // compress to zip
       await ensureFile(destination)
-      const zipTask = new ZipTask(destination)
-      await zipTask.includeAs(source, '')
-      await zipTask.startAndWait()
+      const zipFile = new ZipFile()
+      await includeAs(zipFile, source, '')
+      await writeZipFile(zipFile, destination)
     }
   }
 

@@ -29,7 +29,7 @@ export function usePeerConnections() {
             title: t('multiplayer.sharingNotificationTitle'),
             body: t('multiplayer.sharingNotificationBody', { name }),
             operations: [{
-              text: t('download'),
+              text: t('shared.download'),
               icon: 'download',
               handler() {
                 showShareInstance(manifest)
@@ -157,5 +157,6 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
     drop,
     leaveGroup,
     joinGroup,
+    error,
   }
 }

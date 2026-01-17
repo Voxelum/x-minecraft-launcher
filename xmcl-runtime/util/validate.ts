@@ -39,7 +39,7 @@ export async function validateDirectory(platform: Platform, path: string, skipCh
   }
 
   if (platform.os === 'windows') {
-    if ((/^[a-zA-Z]:\\$/.test(path))) {
+    if (/^[a-zA-Z]:\\$/.test(path)) {
       return 'bad'
     }
     const sysRoot = process.env.SystemRoot
