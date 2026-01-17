@@ -1,10 +1,11 @@
+import { DatabaseWorker } from '@xmcl/sqlite'
+import { setHandler } from '@xmcl/worker/helper'
 import fs from 'fs'
 import { gracefulify } from 'graceful-fs'
 import type { CompiledQuery, DatabaseConnection, QueryResult } from 'kysely'
 import { Database } from 'node-sqlite3-wasm'
-import { setHandler } from '../worker/helper'
-import { workerData, parentPort } from 'worker_threads'
-import { DatabaseWorker } from './type'
+import { workerData } from 'worker_threads'
+import { getSerializedError } from '~/infra/errors'
 
 gracefulify(fs)
 
@@ -97,4 +98,4 @@ const handler: DatabaseWorker = {
   },
 }
 
-setHandler(handler)
+setHandler(handler, getSerializedError)
