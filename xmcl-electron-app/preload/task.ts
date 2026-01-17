@@ -1,28 +1,20 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import EventEmitter from 'events'
-import type { TaskMonitor as ITaskChannel, TaskPayload } from '@xmcl/runtime-api'
+import type { TaskMonitor as ITaskChannel, Tasks } from '@xmcl/runtime-api'
 
 function createTaskMonitor(): ITaskChannel {
   const emitter = new EventEmitter()
 
-  ipcRenderer.on('task-update', (_, event) => {
-    emitter.emit('task-update', event)
+  ipcRenderer.on('task-activated', (_, event) => {
+    emitter.emit('task-activated', event)
   })
   return {
-    subscribe(): Promise<TaskPayload[]> {
-      return ipcRenderer.invoke('task-subscribe')
+    poll(): Promise<Tasks[]> {
+      return ipcRenderer.invoke('task-poll')
     },
 
-    unsubscribe(): Promise<void> {
-      return ipcRenderer.invoke('task-unsubscribe')
-    },
-
-    pause(taskId: string): Promise<void> {
-      return ipcRenderer.invoke('task-operation', { type: 'pause', id: taskId })
-    },
-
-    resume(taskId: string): Promise<void> {
-      return ipcRenderer.invoke('task-operation', { type: 'resume', id: taskId })
+    check(): Promise<boolean> {
+      return ipcRenderer.invoke('task-check')
     },
 
     cancel(taskId: string): Promise<void> {
@@ -42,6 +34,10 @@ function createTaskMonitor(): ITaskChannel {
     removeListener(channel, listener) {
       emitter.removeListener(channel, listener)
       return this
+    },
+
+    clear(): Promise<void> {
+      return ipcRenderer.invoke('task-clear')
     },
   }
 }
