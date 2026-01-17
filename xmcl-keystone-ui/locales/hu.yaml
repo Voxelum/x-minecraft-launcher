@@ -1508,6 +1508,9 @@ shared:
   server: Szerver
   skipForNow: Most hagyd ki
   'yes': Igen
+sidebar:
+  pin: Rögzít
+  unpin: Rögzítés feloldása
 sortBy:
   alphabetAsc: Rendezés ábécé szerint (emelkedő)
   alphabetDesc: Rendezés ábécé szerint (csökkenő)

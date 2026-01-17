@@ -1584,6 +1584,9 @@ shared:
   server: Server.
   skipForNow: Überspringen Sie es vorerst
   'yes': Ja
+sidebar:
+  pin: Anheften
+  unpin: Lösen
 sortBy:
   alphabetAsc: Sortieren Sie nach Alphabet (aufsteigend)
   alphabetDesc: Sortieren Sie nach Alphabet (absteigend)

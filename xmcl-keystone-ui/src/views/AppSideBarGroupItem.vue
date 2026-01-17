@@ -145,11 +145,6 @@ const getItems = () => {
   height: 48px;
 }
 
-.instance-grid-compact {
-  width: 32px;
-  height: 32px;
-}
-
 .instance-grid-item {
   width: 100%;
   height: 100%;

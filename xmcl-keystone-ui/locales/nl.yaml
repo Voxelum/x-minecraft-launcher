@@ -1482,6 +1482,9 @@ shared:
   server: Server
   skipForNow: Nu Overslaan
   'yes': Ja
+sidebar:
+  pin: Vastzetten
+  unpin: Losmaken
 sortBy:
   alphabetAsc: Sorteren op alfabet (oplopend)
   alphabetDesc: Sorteren op alfabet (aflopend)

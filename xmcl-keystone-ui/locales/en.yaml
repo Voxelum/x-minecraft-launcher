@@ -1487,8 +1487,8 @@ shared:
   skipForNow: Skip for now
   'yes': 'Yes'
 sidebar:
-  pin: Pin to Sidebar
-  unpin: Unpin from Sidebar
+  pin: Pin
+  unpin: Unpin
 sortBy:
   alphabetAsc: Sort by alphabet (ascending)
   alphabetDesc: Sort by alphabet (descending)

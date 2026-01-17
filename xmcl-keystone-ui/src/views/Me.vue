@@ -1,19 +1,23 @@
 <script lang="ts" setup>
 import { useLocalStorageCacheBool } from "@/composables/cache";
 import { useDateString } from "@/composables/date";
-import { kInstance } from "@/composables/instance";
-import { kInstances } from "@/composables/instances";
-import { useMojangNews } from "@/composables/mojangNews";
-import { LauncherNews, useLauncherNews } from "@/composables/launcherNews";
-import { injection } from "@/util/inject";
-import { getInstanceIcon } from "@/util/favicon";
-import { ref, computed, Ref } from "vue";
 import { useDialog } from "@/composables/dialog";
-import { AddInstanceDialogKey } from "@/composables/instanceTemplates";
-import { useRouter } from "vue-router/composables";
+import { kInstance } from "@/composables/instance";
+import { useInstanceContextMenuFunc } from '@/composables/instanceContextMenu';
 import { useInstanceGroup } from "@/composables/instanceGroup";
+import { AddInstanceDialogKey } from "@/composables/instanceTemplates";
+import { kInstances } from "@/composables/instances";
+import { LauncherNews, useLauncherNews } from "@/composables/launcherNews";
+import { useMojangNews } from "@/composables/mojangNews";
+import { useInjectSidebarSettings } from '@/composables/sidebarSettings';
+import { useTextFieldBehavior } from '@/composables/textfieldBehavior';
+import { vContextMenu } from '@/directives/contextMenu';
+import { getInstanceIcon } from "@/util/favicon";
+import { injection } from "@/util/inject";
+import { useFocus, useLocalStorage } from '@vueuse/core';
 import { Instance } from "@xmcl/instance";
-import { useLocalStorage } from '@vueuse/core';
+import { Ref, computed, ref } from "vue";
+import { useRouter } from "vue-router/composables";
 
 const { t } = useI18n();
 const { news } = useMojangNews();
@@ -44,6 +48,7 @@ const displayNewsHeader = useLocalStorageCacheBool("displayNewsHeader", true);
 const { instances } = injection(kInstances);
 const { path } = injection(kInstance);
 const { groups } = useInstanceGroup();
+const { pinnedInstances } = useInjectSidebarSettings();
 
 // View mode: folder, date, or plain
 const instanceViewMode = useLocalStorage('instanceViewMode', 'plain' as 'folder' | 'date' | 'plain');
@@ -220,6 +225,11 @@ function selectInstance(instancePath: string) {
   }
 }
 
+const getInstanceContextMenu = useInstanceContextMenuFunc()
+
+const filter = ref<HTMLElement | null>(null);
+useTextFieldBehavior(filter)
+
 function openInBrowser(url: string) {
   window.open(url, "_blank", "noopener,noreferrer");
 }
@@ -316,6 +326,7 @@ function openInBrowser(url: string) {
         </div>
 
         <v-text-field
+          ref="filter"
           v-model="filterKey"
           :placeholder="t('shared.filter')"
           prepend-inner-icon="search"
@@ -336,13 +347,22 @@ function openInBrowser(url: string) {
             <div
               v-for="instance in section.instances"
               :key="instance.path"
+              v-context-menu="getInstanceContextMenu(instance)"
               class="instance-item"
               :class="{ 'instance-item--active': instance.path === path }"
               @click="selectInstance(instance.path)"
             >
-              <v-avatar size="44" class="instance-avatar">
-                <v-img :src="getInstanceIcon(instance, undefined)" />
-              </v-avatar>
+              <div class="instance-avatar-wrapper">
+                <v-avatar size="44" class="instance-avatar">
+                  <v-img :src="getInstanceIcon(instance, undefined)" />
+                </v-avatar>
+                <div
+                  v-if="pinnedInstances.includes(instance.path)"
+                  class="pin-badge"
+                >
+                  <v-icon x-small color="white" style="font-size: 8px;">push_pin</v-icon>
+                </div>
+              </div>
               <div class="instance-info">
                 <div class="instance-name">{{ instance.name }}</div>
                 <div class="instance-version">{{ instance.runtime.minecraft }}</div>
@@ -577,6 +597,26 @@ function openInBrowser(url: string) {
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.instance-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pin-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  background-color: #EAB308;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
 }
 
 .dark .instance-item {

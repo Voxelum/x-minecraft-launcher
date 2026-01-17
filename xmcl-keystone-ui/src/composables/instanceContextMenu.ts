@@ -6,19 +6,39 @@ import { useService } from './service'
 import { injection } from '@/util/inject'
 import { kInstance } from './instance'
 import { Instance } from '@xmcl/instance'
+import { useInjectSidebarSettings } from './sidebarSettings'
 
-export function useInstanceContextMenuItems(instance: Ref<Instance | undefined>) {
+export function useInstanceContextMenuFunc() {
   const { show: showDeleteDialog } = useDialog('delete-instance')
   const { duplicateInstance } = useService(InstanceServiceKey)
   const { showItemInDirectory } = useService(BaseServiceKey)
   const { t } = useI18n()
   const { path } = injection(kInstance)
   const { currentRoute, push } = useRouter()
+  const { pinnedInstances, showOnlyPinned } = useInjectSidebarSettings()
 
-  return () => {
-    const inst = instance.value
+  return (inst?: Instance) => {
     if (!inst) return []
+    const isPinned = pinnedInstances.value.includes(inst.path)
     const result: ContextMenuItem[] = [
+      {
+        text: isPinned ? t('sidebar.unpin') : t('sidebar.pin'),
+        icon: 'push_pin',
+        onClick() {
+          if (isPinned) {
+            pinnedInstances.value = pinnedInstances.value.filter(p => p !== inst.path)
+          } else {
+            pinnedInstances.value = [...pinnedInstances.value, inst.path]
+          }
+        },
+      },
+      {
+        text: t('setting.sidebarShowOnlyPinned'),
+        icon: showOnlyPinned.value ? 'check_box' : 'check_box_outline_blank',
+        onClick() {
+          showOnlyPinned.value = !showOnlyPinned.value
+        },
+      },
       {
         text: t('instance.showInstance', { file: inst.path }),
         onClick: () => {
@@ -67,5 +87,14 @@ export function useInstanceContextMenuItems(instance: Ref<Instance | undefined>)
       },
     ]
     return result
+  }
+}
+
+export function useInstanceContextMenuItems(instance: Ref<Instance | undefined>) {
+  const f = useInstanceContextMenuFunc()
+
+  return () => {
+    const inst = instance.value
+    return f(inst)
   }
 }

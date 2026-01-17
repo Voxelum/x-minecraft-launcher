@@ -1302,6 +1302,9 @@ shared:
   server: 서버
   skipForNow: 지금은 건너뛰기
   'yes': 예
+sidebar:
+  pin: 고정
+  unpin: 고정 해제
 sortBy:
   alphabetAsc: 알파벳순 정렬 (오름차순)
   alphabetDesc: 알파벳순 정렬 (내림차순)

@@ -1326,6 +1326,9 @@ shared:
   server: 伺服器
   skipForNow: 暫時跳過
   'yes': 是
+sidebar:
+  pin: 釘選
+  unpin: 取消釘選
 sortBy:
   alphabetAsc: 按字母（上升）排序
   alphabetDesc: 按字母（下降）排序

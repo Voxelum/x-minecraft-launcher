@@ -106,25 +106,26 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
-import { kSettingsState } from '@/composables/setting'
-import { injection } from '@/util/inject'
-import AppSideBarNotchItem from './AppSideBarNotchItem.vue'
-import { kTheme } from '@/composables/theme'
-import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
-import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { useDialog } from '@/composables/dialog'
 import { useInstanceGroup } from '@/composables/instanceGroup'
-import AppSideBarNotchItemInstance from './AppSideBarNotchItemInstance.vue'
+import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
+import { kInstances } from '@/composables/instances'
+import { kSettingsState } from '@/composables/setting'
+import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
+import { kTheme } from '@/composables/theme'
+import { injection } from '@/util/inject'
+import { computed, ref } from 'vue'
+import AppSideBarNotchItem from './AppSideBarNotchItem.vue'
 import AppSideBarNotchItemGroup from './AppSideBarNotchItemGroup.vue'
+import AppSideBarNotchItemInstance from './AppSideBarNotchItemInstance.vue'
 
 const { blurSidebar, sideBarColor } = injection(kTheme)
+const { instances } = injection(kInstances)
 const { state } = injection(kSettingsState)
 const { position, align, scale, autoHide } = useInjectSidebarSettings()
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
 
 const { t } = useI18n()
-const { back } = useRouter()
 
 // Hover state for auto-hide
 const isHovered = ref(false)
@@ -234,23 +235,60 @@ function goMultiplayer() {
   windowController.openMultiplayerWindow()
 }
 
-const { groups, move, group } = useInstanceGroup()
+watch([autoHide, align, position, scale], ([newAutoHide]) => {
+  if (newAutoHide) {
+    isHovered.value = true
+    if (hideTimeout) clearTimeout(hideTimeout)
+    hideTimeout = setTimeout(() => {
+      isHovered.value = false
+    }, 2500)
+  }
+})
+
+const { groups } = useInstanceGroup()
+const { pinnedInstances, showOnlyPinned } = useInjectSidebarSettings()
+
 const instanceItems = computed(() => {
-  let items = groups.value
+  // Create a map for quick instance lookup
+  const instanceMap = new Map(instances.value.map(inst => [inst.path, inst]))
+  const pinnedSet = new Set(pinnedInstances.value)
   
-  // Apply pinned filter
-  // if (showOnlyPinned.value) {
-  //   items = items.filter(item => {
-  //     if (typeof item === 'string') {
-  //       return isPinned(item)
-  //     } else {
-  //       // For groups, check if any instance in the group is pinned
-  //       return item.instances.some(inst => isPinned(inst))
-  //     }
-  //   })
-  // }
+  // Check if an item (instance or group) is pinned
+  const isPinned = (item: typeof groups.value[0]): boolean => {
+    if (typeof item === 'string') {
+      return pinnedSet.has(item)
+    } else {
+      // For groups, check if any instance in the group is pinned
+      return item.instances.some(path => pinnedSet.has(path))
+    }
+  }
   
-  return items.slice(0, 4)
+  // Get the most recent access time for an item (instance or group)
+  const getAccessTime = (item: typeof groups.value[0]): number => {
+    if (typeof item === 'string') {
+      return instanceMap.get(item)?.lastAccessDate ?? 0
+    } else {
+      // For groups, use the most recent access time among all instances in the group
+      return Math.max(...item.instances.map(path => instanceMap.get(path)?.lastAccessDate ?? 0))
+    }
+  }
+  
+  // Filter by pinned if showOnlyPinned is enabled
+  let items = [...groups.value]
+  if (showOnlyPinned.value) {
+    items = items.filter(isPinned)
+  }
+  
+  // Sort: pinned first, then by most recent access time (descending)
+  return items
+    .sort((a, b) => {
+      const aPinned = isPinned(a)
+      const bPinned = isPinned(b)
+      if (aPinned && !bPinned) return -1
+      if (!aPinned && bPinned) return 1
+      return getAccessTime(b) - getAccessTime(a)
+    })
+    .slice(0, 4)
 })
 </script>
 

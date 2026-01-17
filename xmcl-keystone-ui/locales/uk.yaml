@@ -1453,6 +1453,9 @@ shared:
   server: Сервер
   skipForNow: Пропустити зараз
   'yes': Так
+sidebar:
+  pin: Закріпити
+  unpin: Відкріпити
 sortBy:
   alphabetAsc: Сортувати за алфавітом (за зростанням)
   alphabetDesc: Сортувати за алфавітом (за спаданням)
