@@ -842,7 +842,6 @@ modpack:
     curseforge modpack.
   dropHint: Ziehen Sie das Zip-Archiv des Modpacks zum Importieren hierher
   emitCurseforge: Freigabe des Curseforge Mod Packs
-  emitMcbbs: Freigabe des MCBBS-Modpacks
   emitModrinth: Modrinth Modpack freigeben
   emitModrinthStrict: Strenges Modrinth-Format
   emitModrinthStrictDescription: Nur Links von den 4 im modrinth-Dokument aufgeführten Domains sind erlaubt
@@ -990,6 +989,8 @@ modrinth:
   loginTitle: Melden Sie sich bei Modrinth an
   modLoaders:
     name: Mod-Downloader
+  modpackSource:
+    source: Quelle
   projectId: Projekt-ID
   projectMembers: Projektteilnehmer
   projectType:
@@ -1264,12 +1265,17 @@ serverStatus:
   timeout: §4Es ist Zeit, sich mit dem Server zu verbinden!
 setting:
   about: Um
-  aboutContributors: 🧑‍💻 Mitwirkende 🧑‍💻
-  aboutSponsors: 😇 Sponsoren 😇
-  aboutLicense: MIT LICENSE
-  aboutLicenseInfo: Kostenlose Code-Signierung unter Windows von SignPath.io, Zertifikat von SignPath Foundation
-  aboutDenoDescription: XMCL nutzt die unkomplizierte Plattform von Deno Deploy für serverlose JavaScript-Anwendungen
   aboutBmclDescription: BMCL API bietet bequeme Downloads für Benutzer in der chinesischen Provinz
+  aboutContributors: 🧑‍💻 Mitwirkende 🧑‍💻
+  aboutDenoDescription: >-
+    XMCL nutzt die unkomplizierte Plattform von Deno Deploy für serverlose
+    JavaScript-Anwendungen
+  aboutLicense: MIT LICENSE
+  aboutLicenseInfo: >-
+    Kostenlose Code-Signierung unter Windows von SignPath.io, Zertifikat von
+    SignPath Foundation
+  aboutSponsors: 😇 Sponsoren 😇
+  advancedJavaOptions: Erweiterte Java-Optionen
   advancedSettings: Erweiterte Einstellungen
   advancedSettingsHint: Gefahrenzone - Launcher-Daten zurücksetzen oder verwalten
   apiSets:
@@ -1281,6 +1287,7 @@ setting:
     Der Launcher wird es herunterladen und installieren. Wenn das
     Installations-Pop-up-Fenster nicht erscheint
      Pop-up-Fenster nicht erscheint, führen Sie es manuell aus.
+  authenticationSettings: Authentifizierung
   backdropBlur: Hintergrund Unschärfe
   backgroundColorAbove: Hintergrundfarbe als Overlay anzeigen
   backgroundColorAboveDescription: >-
@@ -1328,11 +1335,11 @@ setting:
     warningColor: Warnfarbe
   darkTheme: Thema.
   darkThemeDescription: Wählen Sie ein dunkles oder helles Thema
+  devModeLabel: ENTWICKLUNG
   developerMode: Entwickler-Modus
   developerModeDescription: >-
     Der Entwicklermodus ist dazu gedacht, die von Ihnen geschriebene Mod zu
     testen.
-  devModeLabel: ENTWICKLUNG
   disableTelemetry: Telemetrie ausschalten
   disableTelemetryDescription: XMCL sammelt die Ereignisse des Spielstarts und der Benutzeranmeldung.
   enableDedicatedGPUOptimization: Weisen Sie eine dedizierte GPU zu
@@ -1342,11 +1349,14 @@ setting:
     Dies führt dazu, dass der Status Ihres Launcher nicht aktualisiert wird
     trotz
   enterUrl: Geben Sie die URL ein
+  exportSettings: Einstellungen exportieren
+  exportSettingsHint: Aktuelle Einstellungen in Datei speichern
   general: Allgemein
   githubRelease: Github Release
   globalSetting: Globale Instanzkonfiguration
   globalSettingHint: Die Instanz wird diese Parameter standardmäßig verwenden.
-  hideNewsHeader: News Showcase ausblenden
+  importSettings: Einstellungen importieren
+  importSettingsHint: Einstellungen aus zuvor exportierter Datei laden
   instanceTheme:
     activeDescription: |-
       Diese Instanz verwendet ein benutzerdefiniertes Design.
@@ -1363,11 +1373,11 @@ setting:
     focus: Layout der Fokussierung
   layoutDescription: Layout des Launcher, der verschiedene Logiken der Benutzeroberfläche anzeigt
   layoutTitle: Layout
-  livePreview: Live-Vorschau
   linuxEnableDedicatedGPUOptimization: Zuweisung eines dedizierten Grafikprozessors
   linuxEnableDedicatedGPUOptimizationDescription: Diese Option weist dem Minecraft-Prozess einen eigenen Grafikprozessor zu.
   linuxTitlebar: Native Titelleiste
   linuxTitlebarDescription: Verwenden Sie die native Linux-Titelleiste für den Launcher
+  livePreview: Live-Vorschau
   location: Speicherort
   manualUpdateHint: >-
     Die Version kann nicht automatisch aktualisiert werden. Bitte laden Sie den
@@ -1382,8 +1392,8 @@ setting:
      insgesamt. 0 bedeutet keine Einschränkungen.
   maxSocketsTitle: Maximale Anzahl von HTTP-Sockets
   memoryAssignment: Speicherzuweisung
-  minecraftOptions: Minecraft-Optionen
   migrateFromOther: Von einem anderen Launcher importieren
+  minecraftOptions: Minecraft-Optionen
   name: Globale Einstellungen | Globale Einstellungen
   network: Netzwerkeinstellungen
   newsPosition: Nachrichtenbereich verschieben
@@ -1395,6 +1405,7 @@ setting:
     remove: entfernen
     repulse: Abwehren
   particleModeDescription: Wählen Sie das Verhalten des Partikels beim Anklicken
+  quickLaunchSettings: Schnellstart
   replaceNative: Ersetzen Sie native Bibliotheken
   replaceNativeDescription: >-
     Ersetzen Sie native Bibliotheken entsprechend der Architektur Ihres
@@ -1403,21 +1414,35 @@ setting:
     all: Alle
     legacy: Nur Legacy-Version
   resetAllSettings: Alle Einstellungen zurücksetzen
-  resetAllSettingsConfirmMessage: Dies löscht dauerhaft alle Einstellungen, Konten, Instanzen, Gruppen und zwischengespeicherte Daten. Diese Aktion kann nicht rückgängig gemacht werden. Sind Sie sicher?
+  resetAllSettingsConfirmMessage: >-
+    Dies löscht dauerhaft alle Einstellungen, Konten, Instanzen, Gruppen und
+    zwischengespeicherte Daten. Diese Aktion kann nicht rückgängig gemacht
+    werden. Sind Sie sicher?
   resetAllSettingsConfirmTitle: Alle Einstellungen zurücksetzen?
   resetAllSettingsHint: Launcher auf Werkseinstellungen zurücksetzen (löscht alles)
   resetAllSettingsSuccess: Alle Einstellungen wurden zurückgesetzt. Der Launcher wird neu gestartet.
+  resetSettingsError: 'Fehler beim Zurücksetzen der Einstellungen: {error}'
   resetToDefault: Zurücksetzen auf den Standardwert
-  exportSettings: Einstellungen exportieren
-  exportSettingsHint: Aktuelle Einstellungen in Datei speichern
-  importSettings: Einstellungen importieren
-  importSettingsHint: Einstellungen aus zuvor exportierter Datei laden
   select: Wählen Sie
   settingsExported: Einstellungen erfolgreich exportiert
-  settingsImportError: Einstellungen konnten nicht importiert werden. Bitte überprüfen Sie das Dateiformat.
+  settingsImportError: >-
+    Einstellungen konnten nicht importiert werden. Bitte überprüfen Sie das
+    Dateiformat.
   settingsImported: Einstellungen erfolgreich importiert
+  settingsReloadHint: Der Launcher wird neu gestartet, um alle Einstellungen anzuwenden.
   showNewsHeader: Nachrichtenpräsentation einblenden
   showRoot: ВідображатиAnzeige
+  sidebarAlign: Seitenleistenausrichtung
+  sidebarAutoHide: Seitenleiste automatisch ausblenden
+  sidebarAutoHideHint: Seitenleiste automatisch ausblenden und beim Hover anzeigen
+  sidebarClassic: Klassisch
+  sidebarNotch: Kerbe
+  sidebarPosition: Seitenleistenposition
+  sidebarScale: Seitenleistenskalierung
+  sidebarShowOnlyPinned: Nur angeheftete Instanzen anzeigen
+  sidebarShowOnlyPinnedHint: Nur angeheftete Instanzen in der Seitenleiste anzeigen
+  sidebarStyle: Seitenleistenstil
+  sidebarStyleHint: Wählen Sie zwischen klassischem und modernem Notch-Design
   streamerMode: Streaming-Modus
   streamerModeDescription: >-
     Dadurch werden Ihre privaten Informationen wie E-Mails im Launcher
@@ -1434,24 +1459,9 @@ setting:
   themeImport: Ein Thema importieren
   themeResetFont: Schriftart zurücksetzen
   themeSelectFont: Wählen Sie Schriftart aus
+  themeSettings: Themeneinstellungen
   themeShare: Thema teilen
   themeShareDescription: Sie können das Thema mit Ihrem Freund teilen.
-  quickLaunchSettings: Schnellstart
-  sidebarAlign: Seitenleistenausrichtung
-  sidebarAutoHide: Seitenleiste automatisch ausblenden
-  sidebarAutoHideHint: Seitenleiste automatisch ausblenden und beim Hover anzeigen
-  sidebarClassic: Klassisch
-  sidebarNotch: Kerbe
-  sidebarPosition: Seitenleistenposition
-  sidebarScale: Seitenleistenskalierung
-  sidebarShowOnlyPinned: Nur angeheftete Instanzen anzeigen
-  sidebarShowOnlyPinnedHint: Nur angeheftete Instanzen in der Seitenleiste anzeigen
-  sidebarStyle: Seitenleistenstil
-  sidebarStyleHint: Wählen Sie zwischen klassischem und modernem Notch-Design
-  themeSettings: Themeneinstellungen
-  authenticationSettings: Authentifizierung
-  advancedJavaOptions: Erweiterte Java-Optionen
-  advancedMinecraftOptions: Erweiterte Minecraft-Optionen
   update: Update
   useBmclAPI: Verwenden Sie die BMCL-API
   useBmclAPIDescription: >-
@@ -1461,8 +1471,6 @@ setting:
   useProxy: HTTP-Proxy
   useProxyDescription: Proxy-Server-Adresse für http-Anfrage
   viewBackgroundMusic: Musik anzeigen
-  resetSettingsError: 'Fehler beim Zurücksetzen der Einstellungen: {error}'
-  settingsReloadHint: Der Launcher wird neu gestartet, um alle Einstellungen anzuwenden.
 settingLabel:
   global: Global
   globalHint: Diese Einstellung entspricht der globalen Einstellung
@@ -1572,6 +1580,7 @@ shared:
   previous: Vorherige
   refresh: Update
   remove: Vidaliti
+  search: Suchen
   server: Server.
   skipForNow: Überspringen Sie es vorerst
   'yes': Ja
@@ -1581,8 +1590,11 @@ sortBy:
   timeAsc: Sortieren nach Änderungszeit (aufsteigend)
   timeDesc: Sortieren nach Änderungszeit (absteigend)
 store:
+  discover: Entdecken
   latestMinecraft: Die neueste Version von Minecraft
   name: Shop für Mod-Kits
+  searchResult: Suchergebnis
+  trending: Im Trend
 tag:
   create: Einen Tag erstellen
   createSelected: Stvoriti-Tag für Inverse
@@ -1721,8 +1733,7 @@ universalDrop:
     Ziehen Sie Ihre Datei(en) per Drag & Drop hierher und importieren Sie sie
     als
   unknownResource: Unbekannt
-update:
-  goOfficialWebDownload: Erneuter Download auf der offiziellen Website
+update: {}
 upstream:
   downgrade: Downgrade der Version
   onlyShowCurrentVersion: Nur die aktuelle Version von Minecraft anzeigen
@@ -1733,7 +1744,6 @@ user:
   authService: Dienstgenehmigung
   email: E-Mail Adresse
   id: Benutzer-ID
-  info: Informationen über den Benutzer
   name: Benutzername
   nameHint: Im Spiel angezeigter Name
   profile: Profil

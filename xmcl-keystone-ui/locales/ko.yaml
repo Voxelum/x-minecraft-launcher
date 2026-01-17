@@ -670,7 +670,6 @@ modpack:
   descriptionHint: 모드팩에 대한 일반적인 설명입니다. Curseforge 모드팩으로 내보낼 때 사용될 수 있습니다.
   dropHint: 모드팩 zip을 여기로 드래그하여 가져오기
   emitCurseforge: Curseforge 모드팩 내보내기
-  emitMcbbs: MCBBS 모드팩 내보내기
   emitModrinth: Modrinth 모드팩 내보내기
   emitModrinthStrict: 엄격한 Modrinth 형식
   emitModrinthStrictDescription: Modrinth 문서에 기재된 4개 도메인의 URL만 허용됩니다
@@ -814,6 +813,8 @@ modrinth:
   loginTitle: Modrinth 로그인
   modLoaders:
     name: 모드 로더
+  modpackSource:
+    source: 원천
   projectId: 프로젝트 ID
   projectMembers: 프로젝트 멤버
   projectType:
@@ -1044,12 +1045,13 @@ serverStatus:
   timeout: §4서버 연결 시간 초과!
 setting:
   about: 정보
+  aboutBmclDescription: BMCL API는 중국 본토의 사용자를 위한 편리한 다운로드를 제공합니다
   aboutContributors: 🧑‍💻 기여자 🧑‍💻
-  aboutSponsors: 😇 스폰서 😇
+  aboutDenoDescription: XMCL은 서버리스 JavaScript 애플리케이션을 위해 Deno Deploy의 간편한 플랫폼을 활용합니다
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: SignPath.io가 제공하는 Windows의 무료 코드 서명, SignPath Foundation에서 인증
-  aboutDenoDescription: XMCL은 서버리스 JavaScript 애플리케이션을 위해 Deno Deploy의 간편한 플랫폼을 활용합니다
-  aboutBmclDescription: BMCL API는 중국 본토의 사용자를 위한 편리한 다운로드를 제공합니다
+  aboutSponsors: 😇 스폰서 😇
+  advancedJavaOptions: 고급 Java 옵션
   advancedSettings: 고급 설정
   advancedSettingsHint: 위험 구역 - 런처 데이터 재설정 또는 관리
   apiSets:
@@ -1058,6 +1060,7 @@ setting:
   appearance: 외관
   appearanceDescription: 런처 외관 사용자 지정
   appxUpdateHint: 런처가 인스톨러를 다운로드하고 실행합니다. 팝업 인스톨러가 실패하면 수동으로 실행하세요.
+  authenticationSettings: 인증
   backdropBlur: 배경 블러
   backgroundColorAbove: 배경색을 오버레이로 표시
   backgroundColorAboveDescription: 배경 이미지나 비디오 위에 배경색을 표시합니다.
@@ -1101,9 +1104,9 @@ setting:
     warningColor: 경고 색상
   darkTheme: 테마
   darkThemeDescription: 다크 또는 라이트 테마 중 선택
+  devModeLabel: 개발
   developerMode: 개발자 모드
   developerModeDescription: 개발자 모드는 자신의 모드를 테스트하기 위한 것입니다
-  devModeLabel: 개발
   disableTelemetry: 원격 분석 비활성화
   disableTelemetryDescription: XMCL이 게임 실행 및 사용자 로그인 이벤트를 수집합니다.
   enableDedicatedGPUOptimization: 전용 GPU 할당
@@ -1111,11 +1114,14 @@ setting:
   enableDiscord: Discord 상태 표시 활성화
   enableDiscordDescription: 런처의 Discord 상태를 업데이트합니다
   enterUrl: URL을 입력하세요
+  exportSettings: 설정 내보내기
+  exportSettingsHint: 현재 설정을 파일로 저장
   general: 일반
   githubRelease: Github 릴리스
   globalSetting: 전체 인스턴스 설정
   globalSettingHint: 인스턴스는 기본적으로 이 설정을 사용합니다.
-  hideNewsHeader: 뉴스 쇼케이스 숨기기
+  importSettings: 설정 가져오기
+  importSettingsHint: 이전에 내보낸 파일에서 설정 로드
   instanceTheme:
     activeDescription: |-
       이 인스턴스는 맞춤 테마를 사용하고 있습니다.
@@ -1132,11 +1138,11 @@ setting:
     focus: 포커스 레이아웃
   layoutDescription: 런처 UI의 레이아웃
   layoutTitle: 레이아웃
-  livePreview: 라이브 미리보기
   linuxEnableDedicatedGPUOptimization: 전용 그래픽 프로세서 할당
   linuxEnableDedicatedGPUOptimizationDescription: 이 옵션은 마인크래프트 프로세스에 전용 GPU를 할당합니다.
   linuxTitlebar: 네이티브 제목 표시줄
   linuxTitlebarDescription: 런처에 네이티브 Linux 제목 표시줄 사용
+  livePreview: 라이브 미리보기
   location: 저장 위치
   manualUpdateHint: 버전을 자동으로 업데이트할 수 없습니다. 공식 웹사이트에서 런처를 다시 다운로드하세요!
   maunalUpdateHint: 버전을 자동 업데이트할 수 없습니다. 웹사이트에서 런처를 다시 다운로드하세요!
@@ -1144,8 +1150,8 @@ setting:
   maxSocketsDescription: 호스트당 또는 전체 호스트에 대해 허용할 최대 소켓 수를 제한합니다. 0은 제한 없음을 의미합니다.
   maxSocketsTitle: 최대 HTTP 소켓
   memoryAssignment: 메모리 할당
-  minecraftOptions: Minecraft 옵션
   migrateFromOther: 다른 런처에서 가져오기
+  minecraftOptions: Minecraft 옵션
   name: 전체 설정
   network: 네트워크 설정
   newsPosition: 뉴스 섹션 이동
@@ -1157,6 +1163,7 @@ setting:
     remove: 제거
     repulse: 밀어내기
   particleModeDescription: 파티클 클릭 동작 선택
+  quickLaunchSettings: 빠른 실행
   replaceNative: 시스템 라이브러리
   replaceNativeDescription: '사용 중인 컴퓨터 환경(예: 32비트/64비트)에 맞게 필요한 라이브러리를 교체합니다.'
   replaceNatives:
@@ -1167,17 +1174,26 @@ setting:
   resetAllSettingsConfirmTitle: 모든 설정을 재설정하시겠습니까?
   resetAllSettingsHint: 런처를 공장 기본값으로 재설정 (모든 것 삭제)
   resetAllSettingsSuccess: 모든 설정이 재설정되었습니다. 런처가 재시작됩니다.
+  resetSettingsError: '설정을 재설정하는 중에 오류가 발생했습니다: {error}'
   resetToDefault: 기본값으로 재설정
-  exportSettings: 설정 내보내기
-  exportSettingsHint: 현재 설정을 파일로 저장
-  importSettings: 설정 가져오기
-  importSettingsHint: 이전에 내보낸 파일에서 설정 로드
   select: 선택
   settingsExported: 설정이 성공적으로 내보내졌습니다
   settingsImportError: 설정 가져오기에 실패했습니다. 파일 형식을 확인하세요.
   settingsImported: 설정이 성공적으로 가져와졌습니다
+  settingsReloadHint: 모든 설정을 적용하기 위해 런처를 다시 시작합니다.
   showNewsHeader: 뉴스 쇼케이스 표시
   showRoot: 표시
+  sidebarAlign: 사이드바 정렬
+  sidebarAutoHide: 사이드바 자동 숨김
+  sidebarAutoHideHint: 사이드바를 자동으로 숨기고 마우스 오버 시 표시
+  sidebarClassic: 클래식
+  sidebarNotch: 노치
+  sidebarPosition: 사이드바 위치
+  sidebarScale: 사이드바 크기
+  sidebarShowOnlyPinned: 고정된 인스턴스만 표시
+  sidebarShowOnlyPinnedHint: 사이드바에 고정된 인스턴스만 표시
+  sidebarStyle: 사이드바 스타일
+  sidebarStyleHint: 클래식과 모던 노치 디자인 중 선택
   streamerMode: 스트리밍 모드
   streamerModeDescription: 런처에서 이메일과 같은 개인 정보를 숨깁니다.
   theme:
@@ -1192,6 +1208,7 @@ setting:
   themeImport: 테마 가져오기
   themeResetFont: 폰트 재설정
   themeSelectFont: 폰트 선택
+  themeSettings: 테마 설정
   themeShare: 테마 공유
   themeShareDescription: 친구와 테마를 공유할 수 있습니다.
   update: 업데이트
@@ -1200,24 +1217,6 @@ setting:
   useProxy: HTTP 프록시
   useProxyDescription: HTTP 요청을 위한 프록시 서버 주소
   viewBackgroundMusic: 음악 보기
-  quickLaunchSettings: 빠른 실행
-  sidebarAlign: 사이드바 정렬
-  sidebarAutoHide: 사이드바 자동 숨김
-  sidebarAutoHideHint: 사이드바를 자동으로 숨기고 마우스 오버 시 표시
-  sidebarClassic: 클래식
-  sidebarNotch: 노치
-  sidebarPosition: 사이드바 위치
-  sidebarScale: 사이드바 크기
-  sidebarShowOnlyPinned: 고정된 인스턴스만 표시
-  sidebarShowOnlyPinnedHint: 사이드바에 고정된 인스턴스만 표시
-  sidebarStyle: 사이드바 스타일
-  sidebarStyleHint: 클래식과 모던 노치 디자인 중 선택
-  themeSettings: 테마 설정
-  authenticationSettings: 인증
-  advancedJavaOptions: 고급 Java 옵션
-  advancedMinecraftOptions: 고급 Minecraft 옵션
-  resetSettingsError: '설정을 재설정하는 중에 오류가 발생했습니다: {error}'
-  settingsReloadHint: 모든 설정을 적용하기 위해 런처를 다시 시작합니다.
 settingLabel:
   global: 전체
   globalHint: 이 설정은 모든 인스턴스에 적용됩니다
@@ -1299,6 +1298,7 @@ shared:
   previous: 이전
   refresh: 새로고침
   remove: 제거
+  search: 찾다
   server: 서버
   skipForNow: 지금은 건너뛰기
   'yes': 예
@@ -1308,8 +1308,11 @@ sortBy:
   timeAsc: 수정 시간순 정렬 (오름차순)
   timeDesc: 수정 시간순 정렬 (내림차순)
 store:
+  discover: 발견하다
   latestMinecraft: 최신 마인크래프트 버전
   name: 모드팩 마켓
+  searchResult: 검색결과
+  trending: 인기 급상승
 tag:
   create: 태그 생성
   createSelected: 선택된 항목에 태그 생성
@@ -1396,8 +1399,7 @@ universalDrop:
   start: 가져오기 시작됨
   title: 파일을 여기로 드래그하여 가져오기
   unknownResource: 알 수 없음
-update:
-  goOfficialWebDownload: 공식 웹사이트에서 다시 다운로드
+update: {}
 upstream:
   downgrade: 다운그레이드
   onlyShowCurrentVersion: 현재 마인크래프트 버전만 표시
@@ -1408,7 +1410,6 @@ user:
   authService: 인증 서비스
   email: 이메일 주소
   id: 사용자 ID
-  info: 사용자 정보
   name: 사용자 이름
   nameHint: 게임에서 표시되는 이름
   profile: 프로필

@@ -686,7 +686,6 @@ modpack:
   descriptionHint: このModpackにおける全般的な説明です。Curseforge Modpackとしてエクスポートする際使われます。
   dropHint: ここにModpackのzipをドロップしてインポートします。
   emitCurseforge: Curseforge modpackをエクスポートします
-  emitMcbbs: MCBBS Modpackをエクスポートします
   emitModrinth: Modrinth Modpackをエクスポートします
   emitModrinthStrict: 厳密なModrinthフォーマット
   emitModrinthStrictDescription: Modrinthのドキュメントに記載された4つのドメインのURLのみ許可します
@@ -834,6 +833,8 @@ modrinth:
   loginTitle: Modrinthにログインします
   modLoaders:
     name: Modローダー
+  modpackSource:
+    source: ソース
   projectId: プロジェクトID
   projectMembers: プロジェクトメンバー
   projectType:
@@ -1065,12 +1066,13 @@ serverStatus:
   timeout: §4サーバーへの接続がタイムアウト!
 setting:
   about: について
+  aboutBmclDescription: BMCL APIは、中国本土のユーザーに便利なダウンロードを提供します
   aboutContributors: 🧑‍💻 コントリビューター 🧑‍💻
-  aboutSponsors: 😇 スポンサー 😇
+  aboutDenoDescription: XMCLはサーバーレスJavaScriptアプリケーション用のDeno Deployの手間のかかからないプラットフォームを活用しています
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: SignPath.ioが提供するWindows上の無料コード署名、SignPath Foundationによる証明書
-  aboutDenoDescription: XMCLはサーバーレスJavaScriptアプリケーション用のDeno Deployの手間のかかからないプラットフォームを活用しています
-  aboutBmclDescription: BMCL APIは、中国本土のユーザーに便利なダウンロードを提供します
+  aboutSponsors: 😇 スポンサー 😇
+  advancedJavaOptions: 高度なJavaオプション
   advancedSettings: 詳細設定
   advancedSettingsHint: 危険ゾーン - ランチャーデータのリセットまたは管理
   apiSets:
@@ -1079,6 +1081,7 @@ setting:
   appearance: 外観
   appearanceDescription: ランチャーの外観をカスタマイズ
   appxUpdateHint: ランチャーがインストーラーをダウンロードし実行します。もしポップアップしたインストーラーが失敗したら手動で実行してください。
+  authenticationSettings: 認証
   backdropBlur: 背景のぼかし
   backgroundColorAbove: 背景画像をオーバーレイとして表示
   backgroundColorAboveDescription: 背景の画像、映像の上に背景色を適用できるようにします
@@ -1122,9 +1125,9 @@ setting:
     warningColor: 警告の色
   darkTheme: テーマ
   darkThemeDescription: ダークテーマかライトテーマを選択してください
+  devModeLabel: 開発
   developerMode: 開発者モード
   developerModeDescription: あなたの作成したModを簡単に試せます
-  devModeLabel: 開発
   disableTelemetry: テレメトリを無効化
   disableTelemetryDescription: XMCLはゲームの立ち上げとユーザーイベントを収集します
   enableDedicatedGPUOptimization: 外部GPUを使用
@@ -1132,11 +1135,14 @@ setting:
   enableDiscord: Discord RPCを有効化
   enableDiscordDescription: XMCLでのリッチプレゼンス
   enterUrl: URLを入力してください
+  exportSettings: 設定をエクスポート
+  exportSettingsHint: 現在の設定をファイルに保存
   general: 一般
   githubRelease: Github リリース
   globalSetting: グローバル設定
   globalSettingHint: 起動構成はこれらの設定をデフォルトとして設定します
-  hideNewsHeader: ニュースを隠す
+  importSettings: 設定をインポート
+  importSettingsHint: 以前エクスポートしたファイルから設定を読み込み
   instanceTheme:
     activeDescription: |-
       このインスタンスはカスタム テーマを使用しています。
@@ -1153,11 +1159,11 @@ setting:
     focus: レイアウトをフォーカス
   layoutDescription: ランチャーUIのレイアウト
   layoutTitle: レイアウト
-  livePreview: ライブプレビュー
   linuxEnableDedicatedGPUOptimization: 外部GPUを使用
   linuxEnableDedicatedGPUOptimizationDescription: Minecraftのプロセスに外部GPUを割り当て、外部GPUをDRI PRIME, Optimusなどで優先的に使用します
   linuxTitlebar: システムのタイトルバー
   linuxTitlebarDescription: ランチャーでシステム標準のタイトルバーを使用します
+  livePreview: ライブプレビュー
   location: 保管場所
   manualUpdateHint: バージョンの自動更新ができません。公式サイトから再度ランチャーをダウンロードしてください！
   maunalUpdateHint: このバージョンを自動アップデートできません。ウェブサイトからランチャーを再ダウンロードしてください!
@@ -1165,8 +1171,8 @@ setting:
   maxSocketsDescription: ホスト毎の最大のソケット、または全ての最大のソケットを制限します。0で無制限。
   maxSocketsTitle: 最大HTTPソケット数
   memoryAssignment: メモリ割り当て
-  minecraftOptions: Minecraftオプション
   migrateFromOther: 他のランチャーからインポートする
+  minecraftOptions: Minecraftオプション
   name: グローバル設定 | グローバル設定
   network: ネットワーク設定
   newsPosition: ニュースセクションを移動
@@ -1178,6 +1184,7 @@ setting:
     remove: 削除
     repulse: リパルス
   particleModeDescription: パーティクルの挙動を選ぶ
+  quickLaunchSettings: クイック起動
   replaceNative: ネイティブライブラリを置き換えます
   replaceNativeDescription: ネイティブライブラリをあなたのコンピューターアーキテクチャに合わせて置き換えます
   replaceNatives:
@@ -1188,17 +1195,26 @@ setting:
   resetAllSettingsConfirmTitle: すべての設定をリセットしますか？
   resetAllSettingsHint: ランチャーを工場出荷時の設定にリセット（すべて削除）
   resetAllSettingsSuccess: すべての設定がリセットされました。ランチャーが再起動します。
+  resetSettingsError: '設定のリセット中にエラーが発生しました: {error}'
   resetToDefault: デフォルトにリセット
-  exportSettings: 設定をエクスポート
-  exportSettingsHint: 現在の設定をファイルに保存
-  importSettings: 設定をインポート
-  importSettingsHint: 以前エクスポートしたファイルから設定を読み込み
   select: 選択
   settingsExported: 設定のエクスポートに成功しました
   settingsImportError: 設定のインポートに失敗しました。ファイル形式を確認してください。
   settingsImported: 設定のインポートに成功しました
+  settingsReloadHint: ランチャーは再起動して、すべての設定を適用します。
   showNewsHeader: ニュースを隠さない
   showRoot: 見る
+  sidebarAlign: サイドバーの配置
+  sidebarAutoHide: サイドバーを自動的に隠す
+  sidebarAutoHideHint: サイドバーを自動的に隠し、ホバー時に表示する
+  sidebarClassic: クラシック
+  sidebarNotch: ノッチ
+  sidebarPosition: サイドバーの位置
+  sidebarScale: サイドバーのスケール
+  sidebarShowOnlyPinned: ピン留めされたインスタンスのみを表示
+  sidebarShowOnlyPinnedHint: サイドバーにピン留めされたインスタンスのみを表示する
+  sidebarStyle: サイドバーのスタイル
+  sidebarStyleHint: クラシックとモダンなノッチデザインから選択
   streamerMode: ストリーミングモード
   streamerModeDescription: ランチャーでメールアドレスのような機密性の高い情報を隠します。
   theme:
@@ -1213,6 +1229,7 @@ setting:
   themeImport: テーマをインポート
   themeResetFont: フォントをリセット
   themeSelectFont: フォントを選択
+  themeSettings: テーマ設定
   themeShare: テーマを共有
   themeShareDescription: レーマをあなたのフレンドと共有できます。
   update: アップデート
@@ -1221,24 +1238,6 @@ setting:
   useProxy: HTTPプロキシ
   useProxyDescription: HTTPリクエストのためのプロキシサーバーのアドレス
   viewBackgroundMusic: BGMフォルダを見る
-  quickLaunchSettings: クイック起動
-  sidebarAlign: サイドバーの配置
-  sidebarAutoHide: サイドバーを自動的に隠す
-  sidebarAutoHideHint: サイドバーを自動的に隠し、ホバー時に表示する
-  sidebarClassic: クラシック
-  sidebarNotch: ノッチ
-  sidebarPosition: サイドバーの位置
-  sidebarScale: サイドバーのスケール
-  sidebarShowOnlyPinned: ピン留めされたインスタンスのみを表示
-  sidebarShowOnlyPinnedHint: サイドバーにピン留めされたインスタンスのみを表示する
-  sidebarStyle: サイドバーのスタイル
-  sidebarStyleHint: クラシックとモダンなノッチデザインから選択
-  themeSettings: テーマ設定
-  authenticationSettings: 認証
-  advancedJavaOptions: 高度なJavaオプション
-  advancedMinecraftOptions: 高度なMinecraftオプション
-  resetSettingsError: '設定のリセット中にエラーが発生しました: {error}'
-  settingsReloadHint: ランチャーは再起動して、すべての設定を適用します。
 settingLabel:
   global: グローバル
   globalHint: グローバル設定に従います
@@ -1319,6 +1318,7 @@ shared:
   previous: 以前の
   refresh: 最新の情報に更新
   remove: 削除
+  search: 検索
   server: サーバー
   skipForNow: 今すぐスキップする
   'yes': はい
@@ -1328,8 +1328,11 @@ sortBy:
   timeAsc: 変更時間ごとにソート（上昇）
   timeDesc: 変更時間ごとにソート（下降）
 store:
+  discover: 発見する
   latestMinecraft: 最新のMinecraftバージョン
   name: Modpack マーケット
+  searchResult: 検索結果
+  trending: トレンド
 tag:
   create: タグを作成
   createSelected: 選択されたもので新しいタグを作る
@@ -1409,8 +1412,7 @@ universalDrop:
   start: インポートが開始されました
   title: ここにファイルをドロップしてインポート
   unknownResource: 未知
-update:
-  goOfficialWebDownload: 公式サイトで再ダウンロード
+update: {}
 upstream:
   downgrade: ダウングレード
   onlyShowCurrentVersion: 現在のMinecraftバージョンのみ表示
@@ -1421,7 +1423,6 @@ user:
   authService: 認証サービス
   email: メールアドレス
   id: ユーザーID
-  info: ユーザー情報
   name: ユーザー名
   nameHint: ゲーム内で表示される名前
   profile: プロファイル

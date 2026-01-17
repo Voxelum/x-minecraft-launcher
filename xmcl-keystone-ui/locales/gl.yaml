@@ -420,7 +420,6 @@ instanceInstallSkip:
     dit aub. Als je bevestigt dat de huidige bestanden geldig zijn, kun je de
     validatiecheck overslaan.
 instanceLauncher:
-  createNew: Nieuwe instantie maken
   search: Zoek instanties...
   showAll: Toon alle instanties
   title: Alle Instanties
@@ -689,7 +688,6 @@ mod:
     Sommige mod-afhankelijkheden ontbreken mogelijk. Of sommige
     afhankelijkheidsversies komen niet overeen.
   license: Licentie
-  links: Links
   maybeCompatible: Misschien Compatibel.
   modloaderSelectHint: >-
     De mod ondersteunt de volgende mod loaders. Selecteer er een om te
@@ -709,7 +707,6 @@ mod:
   showDirectory: Toon mods map
   showFile: Toon het mod pad {file}
   showInModrinth: Toon {name} in Modrinth
-  showUpdates: Toon Updates
   switchDefaultSource: Standaard Mod Bron
   syncGroupRules: Sla groepsregels op
   toUpdate: '{count} updates'
@@ -721,7 +718,6 @@ modFilter:
   disabledOnly: Toon alleen uitgeschakelde mods
   hasUpdateOnly: Toon alleen mods met updates
   incompatibleOnly: Toon alleen incompatibele of mods met ontbrekende afhankelijkheden
-  source: Bron
   unusedOnly: Toon alleen mods met ongebruikte bibliotheken
 modInstall:
   archived: >-
@@ -765,7 +761,6 @@ modUpgradePolicy:
   modrinth: Modrinth
   modrinthOnly: Alleen Modrinth
   name: Upgradebeleid
-  title: Upgradebeleid
 modified:
   reset: Resetten
   save: Opslaan
@@ -784,7 +779,6 @@ modpack:
     als curseforge modpack.
   dropHint: Sleep modpack zip hierheen om te importeren
   emitCurseforge: Exporteer Curseforge Modpack
-  emitMcbbs: Exporteer MCBBS Modpack
   emitModrinth: Exporteer Modrinth Modpack
   emitModrinthStrict: Strikt Modrinth Formaat
   emitModrinthStrictDescription: Alleen URL's van 4 domeinen vermeld in modrinth document zijn toegestaan
@@ -1203,12 +1197,16 @@ serverStatus:
   timeout: §4Verbind server time-out!
 setting:
   about: Over
-  aboutContributors: 🧑‍💻 Colaboradores 🧑‍💻
-  aboutSponsors: 😇 Patrocinadores 😇
-  aboutLicense: MIT LICENSE
-  aboutLicenseInfo: Asinatura de código gratuíta en Windows proporcionada por SignPath.io, certificado por SignPath Foundation
-  aboutDenoDescription: XMCL aproveita a plataforma descomplicada de Deno Deploy para aplicacións JavaScript sen servidor
   aboutBmclDescription: BMCL API fornece descargas convenientes para usuarios en China continental
+  aboutContributors: 🧑‍💻 Colaboradores 🧑‍💻
+  aboutDenoDescription: >-
+    XMCL aproveita a plataforma descomplicada de Deno Deploy para aplicacións
+    JavaScript sen servidor
+  aboutLicense: MIT LICENSE
+  aboutLicenseInfo: >-
+    Asinatura de código gratuíta en Windows proporcionada por SignPath.io,
+    certificado por SignPath Foundation
+  aboutSponsors: 😇 Patrocinadores 😇
   advancedJavaOptions: Geavanceerde Java Opties
   advancedSettings: Geavanceerde Instellingen
   advancedSettingsHint: Gevarenzone - reset of beheer launcherdata
@@ -1279,7 +1277,6 @@ setting:
   githubRelease: Github Release
   globalSetting: Globale Instantie Instelling
   globalSettingHint: Instantie gebruikt deze instellingen standaard.
-  hideNewsHeader: Verberg Nieuws Showcase
   importSettings: Importeer Instellingen
   importSettingsHint: Laad instellingen van een eerder geëxporteerd bestand
   instanceTheme:
@@ -1342,11 +1339,13 @@ setting:
   resetAllSettingsConfirmTitle: Alle Instellingen Resetten?
   resetAllSettingsHint: Reset launcher naar fabrieksinstellingen (verwijdert alles)
   resetAllSettingsSuccess: Alle instellingen zijn gereset. De launcher zal herstarten.
+  resetSettingsError: 'Fout bij het resetten van instellingen: {error}'
   resetToDefault: Reset naar Standaard
   select: Selecteren
   settingsExported: Instellingen succesvol geëxporteerd
   settingsImportError: Importeren instellingen mislukt. Controleer het bestandsformaat.
   settingsImported: Instellingen succesvol geïmporteerd
+  settingsReloadHint: De launcher zal opnieuw starten om alle instellingen toe te passen.
   showNewsHeader: Toon Nieuws showcase
   showRoot: Tonen
   sidebarAlign: Zijbalk Uitlijning
@@ -1384,8 +1383,6 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: Het proxy serveradres voor het http-verzoek
   viewBackgroundMusic: Bekijk Muziek
-  resetSettingsError: 'Fout bij het resetten van instellingen: {error}'
-  settingsReloadHint: De launcher zal opnieuw starten om alle instellingen toe te passen.
 settingLabel:
   global: Globaal
   globalHint: Deze instelling volgt de globale instelling
@@ -1482,6 +1479,7 @@ shared:
   previous: Vorige
   refresh: Verversen
   remove: Verwijderen
+  search: Busca
   server: Server
   skipForNow: Sla voor nu over
   'yes': Ja
@@ -1491,8 +1489,11 @@ sortBy:
   timeAsc: Sorteer op wijzigingstijd (oplopend)
   timeDesc: Sorteer op wijzigingstijd (aflopend)
 store:
+  discover: Descubrir
   latestMinecraft: Laatste Minecraft Versie
   name: Modpack Markt
+  searchResult: Resultado da busca
+  trending: Tendencias
 tag:
   create: Maak Tag
   createSelected: Maak Tag voor Geselecteerde
@@ -1600,8 +1601,7 @@ universalDrop:
   start: Import Gestart
   title: Sleep Bestand(en) Hierheen om te Importeren als
   unknownResource: Onbekend
-update:
-  goOfficialWebDownload: Opnieuw downloaden op officiële website
+update: {}
 upstream:
   downgrade: Downgraden
   onlyShowCurrentVersion: Toon Alleen Huidige Minecraft Versie
@@ -1612,7 +1612,6 @@ user:
   authService: Autoriseer Service
   email: E-mailadres
   id: Gebruiker Id
-  info: Gebruikersinformatie
   name: Gebruikersnaam
   nameHint: De naam weergegeven in game
   profile: Profiel

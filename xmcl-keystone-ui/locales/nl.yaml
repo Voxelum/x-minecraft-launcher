@@ -425,7 +425,6 @@ instanceInstallSkip:
     Controleer dit. Als u bevestigt dat de huidige bestanden geldig zijn, kunt u
     de validatie overslaan.
 instanceLauncher:
-  createNew: Nieuwe Instance Aanmaken
   search: Zoek instances...
   showAll: Toon Alle Instances
   title: Alle Instances
@@ -725,7 +724,6 @@ modFilter:
   disabledOnly: Toon alleen uitgeschakelde mods
   hasUpdateOnly: Toon alleen mods met updates
   incompatibleOnly: Toon alleen incompatibele of mods met missende afhankelijkheden
-  source: Bron
   unusedOnly: Toon alleen ongebruikte bibliotheek mods
 modInstall:
   archived: >-
@@ -785,7 +783,6 @@ modpack:
     curseforge modpack.
   dropHint: Sleep de modpack zip hier om te importeren
   emitCurseforge: Exporteer Curseforge Modpack
-  emitMcbbs: Exporteer MCBBS Modpack
   emitModrinth: Exporteer Modrinth Modpack
   emitModrinthStrict: Strikt Modrinth Formaat
   emitModrinthStrictDescription: >-
@@ -1203,12 +1200,16 @@ serverStatus:
   timeout: §4Verbinden met server timeout!
 setting:
   about: Over
-  aboutContributors: 🧑‍💻 Bijdragers 🧑‍💻
-  aboutSponsors: 😇 Sponsors 😇
-  aboutLicense: MIT LICENSE
-  aboutLicenseInfo: Gratis codetekening op Windows verzorgd door SignPath.io, certificaat door SignPath Foundation
-  aboutDenoDescription: XMCL maakt gebruik van het probleemloze platform van Deno Deploy voor serverloze JavaScript-toepassingen
   aboutBmclDescription: BMCL API biedt handige downloads voor gebruikers in Chinees Vasteland
+  aboutContributors: 🧑‍💻 Bijdragers 🧑‍💻
+  aboutDenoDescription: >-
+    XMCL maakt gebruik van het probleemloze platform van Deno Deploy voor
+    serverloze JavaScript-toepassingen
+  aboutLicense: MIT LICENSE
+  aboutLicenseInfo: >-
+    Gratis codetekening op Windows verzorgd door SignPath.io, certificaat door
+    SignPath Foundation
+  aboutSponsors: 😇 Sponsors 😇
   advancedJavaOptions: Geavanceerde Java Opties
   advancedSettings: Geavanceerde Instellingen
   advancedSettingsHint: Gevaarlijke zone - resetten of beheren van launcher data
@@ -1281,7 +1282,6 @@ setting:
   githubRelease: Github Release
   globalSetting: Globale Instance Instellingen
   globalSettingHint: Instance zal deze instellingen standaard gebruiken.
-  hideNewsHeader: Verberg Nieuws Showcase
   importSettings: Instellingen Importeren
   importSettingsHint: Laad instellingen van een eerder geëxporteerd bestand
   instanceTheme:
@@ -1344,11 +1344,13 @@ setting:
   resetAllSettingsConfirmTitle: Alle Instellingen Resetten?
   resetAllSettingsHint: Reset de launcher naar fabrieksinstellingen (verwijdert alles)
   resetAllSettingsSuccess: Alle instellingen zijn gereset. De launcher zal opnieuw opstarten.
+  resetSettingsError: 'Fout bij het resetten van instellingen: {error}'
   resetToDefault: Reset naar Standaard
   select: Selecteren
   settingsExported: Instellingen succesvol geëxporteerd
   settingsImportError: Importeren van instellingen mislukt. Controleer het bestandsformaat.
   settingsImported: Instellingen succesvol geïmporteerd
+  settingsReloadHint: De launcher zal opnieuw opstarten om alle instellingen toe te passen.
   showNewsHeader: Nieuws showcase tonen
   showRoot: Tonen
   sidebarAlign: Uitlijning van de zijbalk
@@ -1386,8 +1388,6 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: Het adres van de proxyserver voor het http-verzoek
   viewBackgroundMusic: Muziek Bekijken
-  resetSettingsError: 'Fout bij het resetten van instellingen: {error}'
-  settingsReloadHint: De launcher zal opnieuw opstarten om alle instellingen toe te passen.
 settingLabel:
   global: Globaal
   globalHint: Deze instelling volgt de globale instelling
@@ -1478,6 +1478,7 @@ shared:
   previous: Vorige
   refresh: Vernieuwen
   remove: Verwijderen
+  search: Zoekopdracht
   server: Server
   skipForNow: Nu Overslaan
   'yes': Ja
@@ -1487,8 +1488,11 @@ sortBy:
   timeAsc: Sorteren op wijzigingstijd (oplopend)
   timeDesc: Sorteren op wijzigingstijd (aflopend)
 store:
+  discover: Ontdekken
   latestMinecraft: Laatste Minecraft Versie
   name: Modpack Markt
+  searchResult: Zoekresultaat
+  trending: Populair
 tag:
   create: Tag Aanmaken
   createSelected: Tag Aanmaken voor Geselecteerde
@@ -1597,8 +1601,7 @@ universalDrop:
   start: Import Gestart
   title: Sleep Bestand(en) Hier Naar Als
   unknownResource: Onbekend
-update:
-  goOfficialWebDownload: Opnieuw downloaden op officiële website
+update: {}
 upstream:
   downgrade: Downgraden
   onlyShowCurrentVersion: Alleen Huidige Minecraft Versie Tonen
@@ -1609,7 +1612,6 @@ user:
   authService: Autoriseer Service
   email: E-mailadres
   id: Gebruikers Id
-  info: Gebruikersinformatie
   name: Gebruikersnaam
   nameHint: De naam die in het spel wordt weergegeven
   profile: Profiel

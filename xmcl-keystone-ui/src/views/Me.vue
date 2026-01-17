@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from "@/composables/cache";
+import { useLocalStorageCacheBool } from "@/composables/cache";
 import { useDateString } from "@/composables/date";
 import { kInstance } from "@/composables/instance";
 import { kInstances } from "@/composables/instances";
@@ -7,10 +7,9 @@ import { useMojangNews } from "@/composables/mojangNews";
 import { LauncherNews, useLauncherNews } from "@/composables/launcherNews";
 import { injection } from "@/util/inject";
 import { getInstanceIcon } from "@/util/favicon";
-import { ref, computed, onMounted, watch, Ref } from "vue";
+import { ref, computed, Ref } from "vue";
 import { useDialog } from "@/composables/dialog";
 import { AddInstanceDialogKey } from "@/composables/instanceTemplates";
-import { useInjectInstanceLauncher } from "@/composables/instanceLauncher";
 import { useRouter } from "vue-router/composables";
 import { useInstanceGroup } from "@/composables/instanceGroup";
 import { Instance } from "@xmcl/instance";
@@ -20,16 +19,6 @@ const { t } = useI18n();
 const { news } = useMojangNews();
 const { news: launcherNews } = useLauncherNews();
 const { getDateString } = useDateString();
-const { open: openLauncher, isOpen: launcherActive } = useInjectInstanceLauncher();
-
-// My Stuff Style Setting
-const myStuffStyle = useLocalStorageCacheStringValue<'old' | 'new'>('myStuffStyle', 'new');
-const isOldStyle = computed(() => true);
-
-// Handler to open launcher in new style
-function handleOpenLauncher() {
-  openLauncher()
-}
 
 const allNews = computed((): LauncherNews[] => {
   const result: LauncherNews[] = [
@@ -234,39 +223,14 @@ function selectInstance(instancePath: string) {
 function openInBrowser(url: string) {
   window.open(url, "_blank", "noopener,noreferrer");
 }
-
-// Handle New Style (Launcher)
-function handleNewStyle() {
-  if (!isOldStyle.value) {
-    openLauncher();
-  }
-}
-
-onMounted(() => {
-  handleNewStyle();
-});
-
-watch(myStuffStyle, () => {
-  handleNewStyle();
-});
-
-watch(launcherActive, (isActive) => {
-  if (!isActive && !isOldStyle.value) {
-    const currentPath = router.currentRoute.path;
-    if (currentPath === '/' || currentPath === '/me') {
-      router.back();
-    }
-  }
-});
 </script>
 
 <template>
   <div ref="container" class="my-stuff-page h-full overflow-auto">
-    <!-- OLD STYLE: Classic My Stuff Page -->
-    <div v-if="isOldStyle" class="classic-container">
+    <div class="classic-container">
 
       <!-- News Section (Hero Style) -->
-      <section v-if="displayNewsHeader && allNews.length > 0" class="news-section">
+      <section v-if="true && allNews.length > 0" class="news-section">
         <div class="section-header">
           <v-icon class="section-icon" color="primary">article</v-icon>
           <h2 class="section-title">{{ t("news.name") }}</h2>
@@ -325,7 +289,7 @@ watch(launcherActive, (isActive) => {
         <div class="section-header">
           <div class="d-flex align-center">
             <v-icon class="section-icon" color="primary">apps</v-icon>
-            <h2 class="section-title">{{ t("instance.name", 2) }}</h2>
+            <h2 class="section-title">{{ t('instance.current', 2) }}</h2>
           </div>
           <div class="d-flex align-center gap-2">
             <v-btn-toggle
@@ -346,14 +310,14 @@ watch(launcherActive, (isActive) => {
             </v-btn-toggle>
             <v-btn color="primary" @click="openAddInstanceDialog" small depressed>
               <v-icon left small>add</v-icon>
-              {{ t("instanceLauncher.createNew") }}
+              {{ t("instances.add") }}
             </v-btn>
           </div>
         </div>
 
         <v-text-field
           v-model="filterKey"
-          :placeholder="t('instanceLauncher.search')"
+          :placeholder="t('shared.filter')"
           prepend-inner-icon="search"
           outlined
           dense
@@ -387,18 +351,6 @@ watch(launcherActive, (isActive) => {
           </div>
         </div>
       </section>
-    </div>
-
-    <!-- NEW STYLE: Show button to open launcher -->
-    <div
-      v-else
-      class="flex h-full w-full items-center justify-center"
-      :class="{ 'hidden': launcherActive }"
-    >
-      <v-btn large color="primary" @click="handleOpenLauncher">
-        <v-icon left>apps</v-icon>
-        {{ t("instanceLauncher.showAll") }}
-      </v-btn>
     </div>
   </div>
 </template>
@@ -572,6 +524,7 @@ watch(launcherActive, (isActive) => {
 
 .instances-section {
   width: 100%;
+  user-select: none;
 }
 
 .search-field {

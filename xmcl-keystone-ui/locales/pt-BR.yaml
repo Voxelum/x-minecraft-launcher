@@ -779,7 +779,6 @@ modpack:
     do Curseforge.
   dropHint: Solte o arquivo zip do modpack aqui para importar
   emitCurseforge: Exportar Modpack para Curseforge
-  emitMcbbs: Exportar Modpack para MCBBS
   emitModrinth: Exportar Modpack para Modrinth
   emitModrinthStrict: Formato Estrito Modrinth
   emitModrinthStrictDescription: >-
@@ -929,6 +928,8 @@ modrinth:
   loginTitle: Faça login no modrinth
   modLoaders:
     name: Mod Loaders
+  modpackSource:
+    source: Fonte
   projectId: ID do Projeto
   projectMembers: Membros do Projeto
   projectType:
@@ -1180,12 +1181,17 @@ serverStatus:
   timeout: §4Tempo de conexão do servidor expirado!
 setting:
   about: Sobre
-  aboutContributors: 🧑‍💻 Contribuidores 🧑‍💻
-  aboutSponsors: 😇 Patrocinadores 😇
-  aboutLicense: MIT LICENSE
-  aboutLicenseInfo: Assinatura de código gratuita no Windows fornecida por SignPath.io, certificado pela SignPath Foundation
-  aboutDenoDescription: XMCL aproveita a plataforma sem problemas do Deno Deploy para aplicações JavaScript sem servidor
   aboutBmclDescription: BMCL API fornece downloads convenientes para usuários na China continental
+  aboutContributors: 🧑‍💻 Contribuidores 🧑‍💻
+  aboutDenoDescription: >-
+    XMCL aproveita a plataforma sem problemas do Deno Deploy para aplicações
+    JavaScript sem servidor
+  aboutLicense: MIT LICENSE
+  aboutLicenseInfo: >-
+    Assinatura de código gratuita no Windows fornecida por SignPath.io,
+    certificado pela SignPath Foundation
+  aboutSponsors: 😇 Patrocinadores 😇
+  advancedJavaOptions: Opções avançadas do Java
   advancedSettings: Configurações avançadas
   advancedSettingsHint: Zona de perigo - redefinir ou gerenciar dados do launcher
   apiSets:
@@ -1196,6 +1202,7 @@ setting:
   appxUpdateHint: >-
     O launcher fará o download e executará o instalador. Se o pop-up do
     instalador falhar, execute-o manualmente.
+  authenticationSettings: Autenticação
   backdropBlur: Pano de fundo borrão
   backgroundColorAbove: Exibir cor de fundo como sobreposição
   backgroundColorAboveDescription: >-
@@ -1250,11 +1257,14 @@ setting:
   enableDiscord: Compartilhar jogo no Discord
   enableDiscordDescription: Isso atualizará o status no Discord para o launcher
   enterUrl: Insira o URL
+  exportSettings: Exportar configurações
+  exportSettingsHint: Salvar as configurações atuais em um arquivo
   general: Geral
   githubRelease: Lançamento no Github
   globalSetting: Configuração global da instância
   globalSettingHint: A instância usará essas configurações como padrão.
-  hideNewsHeader: Ocultar o destaque de notícias
+  importSettings: Importar configurações
+  importSettingsHint: Carregar configurações de um arquivo exportado anteriormente
   instanceTheme:
     activeDescription: |-
       Esta instância está usando um tema personalizado.
@@ -1288,8 +1298,8 @@ setting:
     hosts em total. 0 significa sem limite.
   maxSocketsTitle: Máx. Sockets HTTP
   memoryAssignment: Atribuição de Memória
-  minecraftOptions: Opções do Minecraft
   migrateFromOther: Importar de outro Launcher
+  minecraftOptions: Opções do Minecraft
   name: Configuração Global | Configurações Globais
   network: Configurações de Rede
   newsPosition: Mover seção de notícias
@@ -1301,6 +1311,7 @@ setting:
     remove: Remover
     repulse: Repulsar
   particleModeDescription: Selecione o comportamento de clique da partícula
+  quickLaunchSettings: Inicialização Rápida
   replaceNative: Substituir Bibliotecas Nativas
   replaceNativeDescription: >-
     Substituir bibliotecas nativas de acordo com a arquitetura do seu
@@ -1309,21 +1320,32 @@ setting:
     all: Todos
     legacy: Somente Versão Legada
   resetAllSettings: Redefinir todas as configurações
-  resetAllSettingsConfirmMessage: Isso excluirá permanentemente todas as configurações, contas, instâncias, grupos e dados em cache. Esta ação não pode ser desfeita. Tem certeza?
+  resetAllSettingsConfirmMessage: >-
+    Isso excluirá permanentemente todas as configurações, contas, instâncias,
+    grupos e dados em cache. Esta ação não pode ser desfeita. Tem certeza?
   resetAllSettingsConfirmTitle: Redefinir todas as configurações?
   resetAllSettingsHint: Redefinir o launcher para os padrões de fábrica (exclui tudo)
   resetAllSettingsSuccess: Todas as configurações foram redefinidas. O launcher será reiniciado.
+  resetSettingsError: 'Erro ao redefinir configurações: {error}'
   resetToDefault: Restaurar Padrão
-  exportSettings: Exportar configurações
-  exportSettingsHint: Salvar as configurações atuais em um arquivo
-  importSettings: Importar configurações
-  importSettingsHint: Carregar configurações de um arquivo exportado anteriormente
   select: Selecionar
   settingsExported: Configurações exportadas com sucesso
   settingsImportError: Falha ao importar configurações. Verifique o formato do arquivo.
   settingsImported: Configurações importadas com sucesso
+  settingsReloadHint: O launcher será reiniciado para aplicar todas as configurações.
   showNewsHeader: Exibir Novidades
   showRoot: Exibir
+  sidebarAlign: Alinhamento da barra lateral
+  sidebarAutoHide: Ocultar barra lateral automaticamente
+  sidebarAutoHideHint: Oculta automaticamente a barra lateral quando o mouse se afasta
+  sidebarClassic: Clássico
+  sidebarNotch: Entalhe
+  sidebarPosition: Posição da barra lateral
+  sidebarScale: Escala da barra lateral
+  sidebarShowOnlyPinned: Mostrar apenas fixados
+  sidebarShowOnlyPinnedHint: Mostrar apenas as instâncias fixadas na barra lateral
+  sidebarStyle: Estilo da barra lateral
+  sidebarStyleHint: Escolha o estilo de aparência da barra lateral
   streamerMode: Modo de Transmissão
   streamerModeDescription: Isso ocultará suas informações privadas, como e-mail, no launcher.
   theme:
@@ -1338,6 +1360,7 @@ setting:
   themeImport: Importar tema
   themeResetFont: Restaurar fonte
   themeSelectFont: Selecionar fonte
+  themeSettings: Tema
   themeShare: Compartilhar tema
   themeShareDescription: Você pode compartilhar o tema com seu amigo.
   update: Atualizar
@@ -1348,24 +1371,6 @@ setting:
   useProxy: Proxy HTTP
   useProxyDescription: Endereço do servidor proxy para a solicitação HTTP
   viewBackgroundMusic: Visualizar Músicas
-  quickLaunchSettings: Inicialização Rápida
-  sidebarAlign: Alinhamento da barra lateral
-  sidebarAutoHide: Ocultar barra lateral automaticamente
-  sidebarAutoHideHint: Oculta automaticamente a barra lateral quando o mouse se afasta
-  sidebarClassic: Clássico
-  sidebarNotch: Entalhe
-  sidebarPosition: Posição da barra lateral
-  sidebarScale: Escala da barra lateral
-  sidebarShowOnlyPinned: Mostrar apenas fixados
-  sidebarShowOnlyPinnedHint: Mostrar apenas as instâncias fixadas na barra lateral
-  sidebarStyle: Estilo da barra lateral
-  sidebarStyleHint: Escolha o estilo de aparência da barra lateral
-  themeSettings: Tema
-  authenticationSettings: Autenticação
-  advancedJavaOptions: Opções avançadas do Java
-  advancedMinecraftOptions: Opções avançadas do Minecraft
-  resetSettingsError: 'Erro ao redefinir configurações: {error}'
-  settingsReloadHint: O launcher será reiniciado para aplicar todas as configurações.
 settingLabel:
   global: Global
   globalHint: Esta configuração seguirá a configuração global
@@ -1463,6 +1468,7 @@ shared:
   previous: Anterior
   refresh: Atualizar
   remove: Remover
+  search: Procurar
   server: Servidor
   skipForNow: Pular por agora
   'yes': Sim
@@ -1472,8 +1478,11 @@ sortBy:
   timeAsc: Classificar por tempo de modificação (ascendente)
   timeDesc: Classificar por tempo de modificação (descendente)
 store:
+  discover: Descobrir
   latestMinecraft: Última Versão do Minecraft
   name: Mercado de Modpacks
+  searchResult: Resultado da pesquisa
+  trending: Tendências
 tag:
   create: Criar uma Tag
   createSelected: Criar uma Tag para os Selecionados
@@ -1580,8 +1589,7 @@ universalDrop:
   start: Importação Iniciada
   title: Solte o(s) Arquivo(s) Aqui para Importar como
   unknownResource: Desconhecido
-update:
-  goOfficialWebDownload: Re-baixar no site oficial
+update: {}
 upstream:
   downgrade: Reverter versão
   onlyShowCurrentVersion: Mostrar Somente a Versão Atual do Minecraft
@@ -1592,7 +1600,6 @@ user:
   authService: Serviço de Autorização
   email: Endereço de E-mail
   id: ID do Usuário
-  info: Informações do Usuário
   name: Nome de Usuário
   nameHint: O nome exibido no jogo
   profile: Perfil

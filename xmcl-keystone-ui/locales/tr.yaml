@@ -419,7 +419,6 @@ instanceInstallSkip:
     kontrol edin. Mevcut dosyaların geçerli olduğunu onaylıyorsanız, doğrulama
     kontrolünü atlayabilirsiniz.
 instanceLauncher:
-  createNew: Yeni Instance Oluştur
   search: Instance ara...
   showAll: Tüm Instance'ları Göster
   title: Tüm Instance'lar
@@ -684,7 +683,6 @@ mod:
     Bazı mod bağımlılıkları eksik olabilir. Veya bazı bağımlılık sürümleri
     eşleşmiyor.
   license: Lisans
-  links: Bağlantılar
   maybeCompatible: Belki Uyumlu.
   modloaderSelectHint: >-
     Mod aşağıdaki mod yükleyicileri destekler. Lütfen yüklemek için birini
@@ -704,7 +702,6 @@ mod:
   showDirectory: Modlar dizinini göster
   showFile: Mod yolunu göster {file}
   showInModrinth: '{name} Modrinth''te göster'
-  showUpdates: Güncellemeleri Göster
   switchDefaultSource: Varsayılan Mod Kaynağı
   syncGroupRules: Gruplama kurallarını kaydet
   toUpdate: '{count} güncelleme'
@@ -716,7 +713,6 @@ modFilter:
   disabledOnly: Sadece devre dışı bırakılan modları göster
   hasUpdateOnly: Sadece güncellemesi olan modları göster
   incompatibleOnly: Sadece uyumsuz veya eksik bağımlılıkları olan modları göster
-  source: Kaynak
   unusedOnly: Sadece kullanılmayan kütüphane modlarını göster
 modInstall:
   archived: >-
@@ -757,7 +753,6 @@ modUpgradePolicy:
   modrinth: Modrinth
   modrinthOnly: Sadece Modrinth
   name: Yükseltme Politikası
-  title: Yükseltme Politikası
 modified:
   reset: Sıfırla
   save: Kaydet
@@ -778,7 +773,6 @@ modpack:
     aktarmak için kullanılabilir.
   dropHint: İçe aktarmak için mod paketi zip dosyasını buraya bırakın
   emitCurseforge: Curseforge Mod Paketini Dışa Aktar
-  emitMcbbs: MCBBS Mod Paketini Dışa Aktar
   emitModrinth: Modrinth Mod Paketini Dışa Aktar
   emitModrinthStrict: Katı Modrinth Formatı
   emitModrinthStrictDescription: Sadece modrinth belgesinde listelenen 4 alandan URL'lere izin verilir
@@ -1263,7 +1257,6 @@ setting:
   githubRelease: Github Yayını
   globalSetting: Global Instance Ayarı
   globalSettingHint: Instance varsayılan olarak bu ayarları kullanacaktır.
-  hideNewsHeader: Haber Vitrinini Gizle
   importSettings: Ayarları İçe Aktar
   importSettingsHint: Daha önce dışa aktarılan bir dosyadan ayarları yükleyin
   instanceTheme:
@@ -1326,11 +1319,13 @@ setting:
   resetAllSettingsConfirmTitle: Tüm Ayarlar Sıfırlansın mı?
   resetAllSettingsHint: Başlatıcıyı fabrika ayarlarına sıfırla (her şeyi siler)
   resetAllSettingsSuccess: Tüm ayarlar sıfırlandı. Başlatıcı yeniden başlatılacak.
+  resetSettingsError: 'Ayarlar sıfırlanırken hata oluştu: {error}'
   resetToDefault: Varsayılana Sıfırla
   select: Seç
   settingsExported: Ayarlar başarıyla dışa aktarıldı
   settingsImportError: Ayarlar içe aktarılamadı. Lütfen dosya formatını kontrol edin.
   settingsImported: Ayarlar başarıyla içe aktarıldı
+  settingsReloadHint: Tüm ayarları uygulamak için başlatıcı yeniden başlatılacak.
   showNewsHeader: Haber vitrinini göster
   showRoot: Göster
   sidebarAlign: Kenar Çubuğu Hizalaması
@@ -1367,8 +1362,6 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: Http isteği için proxy sunucu adresi
   viewBackgroundMusic: Müzikleri Görüntüle
-  resetSettingsError: 'Ayarlar sıfırlanırken hata oluştu: {error}'
-  settingsReloadHint: Tüm ayarları uygulamak için başlatıcı yeniden başlatılacak.
 settingLabel:
   global: Global
   globalHint: Bu ayar global ayarı takip edecektir
@@ -1461,6 +1454,7 @@ shared:
   previous: Önceki
   refresh: Yenile
   remove: Kaldır
+  search: Aramak
   server: Sunucu
   skipForNow: Şimdilik atla
   'yes': Evet
@@ -1470,8 +1464,11 @@ sortBy:
   timeAsc: Değiştirme zamanına göre sırala (artan)
   timeDesc: Değiştirme zamanına göre sırala (azalan)
 store:
+  discover: Keşfetmek
   latestMinecraft: En Son Minecraft Sürümü
   name: Mod Paketi Pazarı
+  searchResult: Arama Sonucu
+  trending: Trend olan
 tag:
   create: Etiket Oluştur
   createSelected: Seçilenler için Etiket Oluştur
@@ -1567,8 +1564,7 @@ universalDrop:
   start: İçe Aktarma Başladı
   title: Olarak İçe Aktarmak İçin Dosya(lar)ı Buraya Bırakın
   unknownResource: Bilinmeyen
-update:
-  goOfficialWebDownload: Resmi web sitesinden yeniden indir
+update: {}
 upstream:
   downgrade: Sürüm Düşür
   onlyShowCurrentVersion: Sadece Mevcut Minecraft Sürümünü Göster
@@ -1579,7 +1575,6 @@ user:
   authService: Yetkilendirme Servisi
   email: E-posta Adresi
   id: Kullanıcı Kimliği
-  info: Kullanıcı Bilgisi
   name: Kullanıcı Adı
   nameHint: Oyunda görüntülenen isim
   profile: Profil

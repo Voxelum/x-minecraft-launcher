@@ -3,124 +3,63 @@
     <AppSideBarGroupItemIndicator :state="overState" />
     <AppSideBarGroupItemIndicator :state="overState" />
     
-    <!-- Compact Mode: Popover Menu -->
-    <v-menu
-      v-if="compact"
-      offset-x
-      open-on-hover
-      close-delay="200"
-      content-class="sidebar-group-menu"
-      transition="slide-x-transition"
+    <v-list-item
+      v-context-menu="getItems"
+      v-shared-tooltip.right="() => group.name ? group.name : { list: instances.map(instance => instance.name || `Minecraft ${instance.runtime.minecraft}`) }"
+      push
+      link
+      draggable
+      class="non-moveable sidebar-item flex-1 flex-grow-0 px-2 group-list-item"
+      @click="onClick"
+      @dragover.prevent
+      @dragstart="onDragStart"
+      @dragend="onDragEnd"
+      @dragover="onDragOver"
+      @dragenter="onDragEnter"
+      @dragleave="onDragLeave"
+      @drop="onDrop"
     >
-      <template #activator="{ on, attrs }">
-        <v-list-item
-          v-bind="attrs"
-          v-on="on"
-          v-context-menu="getItems"
-          push
-          link
-          draggable
-          class="non-moveable sidebar-item flex-1 flex-grow-0 px-2 group-list-item"
-          @dragover.prevent
-          @dragstart="onDragStart"
-          @dragend="onDragEnd"
-          @dragover="onDragOver"
-          @dragenter="onDragEnter"
-          @dragleave="onDragLeave"
-          @drop="onDrop"
-        >
-          <v-list-item-avatar
-            size="32"
-            class="transition-all duration-300"
-          >
-            <div class="instance-grid instance-grid-compact">
-              <v-img
-                v-for="i in instances.slice(0, 4)"
-                :key="i.path"
-                class="instance-grid-item"
-                :src="getInstanceIcon(i, i.server ? undefined : undefined)"
-              />
-            </div>
-          </v-list-item-avatar>
-        </v-list-item>
-      </template>
-      
-      <v-card class="rounded-lg elevation-4">
-        <v-list dense class="py-0">
-          <v-subheader class="text-xs font-bold uppercase tracking-wider text-gray-500 h-8">
-            {{ group.name || t('instances.folder') }}
-          </v-subheader>
-          <AppSideBarInstanceItem
-            v-for="(instance, index) in group.instances"
-            :key="instance + index"
-            :path="instance"
-            inside
-            @arrange="emit('arrange', { ...$event, toPath: instance })"
-          />
-        </v-list>
-      </v-card>
-    </v-menu>
-
-    <!-- Normal Mode: Expandable Item -->
-    <template v-else>
-      <v-list-item
-        v-context-menu="getItems"
-        v-shared-tooltip.right="() => group.name ? group.name : { list: instances.map(instance => instance.name || `Minecraft ${instance.runtime.minecraft}`) }"
-        push
-        link
-        draggable
-        class="non-moveable sidebar-item flex-1 flex-grow-0 px-2 group-list-item"
-        @click="onClick"
-        @dragover.prevent
-        @dragstart="onDragStart"
-        @dragend="onDragEnd"
-        @dragover="onDragOver"
-        @dragenter="onDragEnter"
-        @dragleave="onDragLeave"
-        @drop="onDrop"
+      <v-list-item-avatar
+        size="48"
+        class="transition-all duration-300"
+        large
       >
-        <v-list-item-avatar
-          size="48"
-          class="transition-all duration-300"
-          large
+        <Transition
+          name="scroll-y-reverse-transition"
+          mode="out-in"
         >
-          <Transition
-            name="scroll-y-reverse-transition"
-            mode="out-in"
+          <v-skeleton-loader
+            v-if="dragging"
+            type="avatar"
+          />
+          <div
+            v-else-if="!expanded"
+            class="instance-grid"
           >
-            <v-skeleton-loader
-              v-if="dragging"
-              type="avatar"
+            <v-img
+              v-for="i in instances.slice(0, 4)"
+              :key="i.path"
+              class="instance-grid-item"
+              :src="getInstanceIcon(i, i.server ? undefined : undefined)"
+              @dragenter="onDragEnter"
+              @dragleave="onDragLeave"
             />
-            <div
-              v-else-if="!expanded"
-              class="instance-grid"
-            >
-              <v-img
-                v-for="i in instances.slice(0, 4)"
-                :key="i.path"
-                class="instance-grid-item"
-                :src="getInstanceIcon(i, i.server ? undefined : undefined)"
-                @dragenter="onDragEnter"
-                @dragleave="onDragLeave"
-              />
-            </div>
-            <v-icon v-else size="32">
-              folder
-            </v-icon>
-          </Transition>
-        </v-list-item-avatar>
-        <v-list-item-title>{{ group.name || instances.length }}</v-list-item-title>
-      </v-list-item>
-      <template v-if="expanded">
-        <AppSideBarInstanceItem
-          v-for="(instance, index) in group.instances"
-          :key="instance + index"
-          :path="instance"
-          inside
-          @arrange="emit('arrange', { ...$event, toPath: instance })"
-        />
-      </template>
+          </div>
+          <v-icon v-else size="32">
+            folder
+          </v-icon>
+        </Transition>
+      </v-list-item-avatar>
+      <v-list-item-title>{{ group.name || instances.length }}</v-list-item-title>
+    </v-list-item>
+    <template v-if="expanded">
+      <AppSideBarInstanceItem
+        v-for="(instance, index) in group.instances"
+        :key="instance + index"
+        :path="instance"
+        inside
+        @arrange="emit('arrange', { ...$event, toPath: instance })"
+      />
     </template>
   </div>
 </template>
@@ -137,7 +76,7 @@ import { ContextMenuItem } from '@/composables/contextMenu'
 import { useDialog } from '@/composables/dialog'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 
-const props = defineProps<{ group: InstanceGroupData; color: string; compact?: boolean }>()
+const props = defineProps<{ group: InstanceGroupData; color: string }>()
 const emit = defineEmits(['arrange', 'drop-save', 'group'])
 
 const { instances: allInstances } = injection(kInstances)

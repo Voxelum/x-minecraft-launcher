@@ -680,7 +680,6 @@ mod:
     Деякі залежності модів можуть бути відсутні. Або деякі версії залежностей не
     збігаються.
   license: Ліцензія
-  links: Посилання
   maybeCompatible: Можливо сумісний.
   modloaderSelectHint: >-
     Мод підтримує наступні завантажувачі модів. Будь ласка, виберіть один для
@@ -767,7 +766,6 @@ modpack:
     Curseforge.
   dropHint: Перетягніть сюди zip-файл модпаку для імпорту
   emitCurseforge: Експортувати модпак Curseforge
-  emitMcbbs: Експортувати модпак MCBBS
   emitModrinth: Експортувати модпак Modrinth
   emitModrinthStrict: Суворий формат Modrinth
   emitModrinthStrictDescription: Дозволені лише URL-адреси з 4 доменів, перелічених у документації Modrinth
@@ -915,6 +913,8 @@ modrinth:
   loginTitle: Увійти в Modrinth
   modLoaders:
     name: Завантажувачі модів
+  modpackSource:
+    source: Джерело
   projectId: ID проєкту
   projectMembers: Учасники проєкту
   projectType:
@@ -1178,6 +1178,7 @@ serverStatus:
   timeout: §4Час очікування з'єднання з сервером вичерпано!
 setting:
   about: Про
+  advancedJavaOptions: Розширені параметри Java
   advancedSettings: Розширені налаштування
   advancedSettingsHint: Небезпечна зона - скидання або керування даними лаунчера
   apiSets:
@@ -1188,6 +1189,7 @@ setting:
   appxUpdateHint: >-
     Лаунчер завантажить та виконає інсталятор. Якщо спливаюче вікно інсталятора
     не вдалося, будь ласка, запустіть його вручну.
+  authenticationSettings: Автентифікація
   backdropBlur: Розмиття фонів
   backgroundColorAbove: Показувати колір фону як накладення
   backgroundColorAboveDescription: Це зробить колір фону видимим поверх фонового зображення або відео.
@@ -1246,7 +1248,6 @@ setting:
   githubRelease: Реліз на Github
   globalSetting: Глобальні налаштування екземпляра
   globalSettingHint: Екземпляр використовуватиме ці налаштування за замовчуванням.
-  hideNewsHeader: Приховати вітрину новин
   importSettings: Імпорт налаштувань
   importSettingsHint: Завантажити налаштування з раніше експортованого файлу
   instanceTheme:
@@ -1282,8 +1283,8 @@ setting:
     0 означає без обмежень.
   maxSocketsTitle: Макс. HTTP-сокетів
   memoryAssignment: Призначення пам’яті
-  minecraftOptions: Налаштування Minecraft
   migrateFromOther: Імпортувати з іншого лаунчера
+  minecraftOptions: Налаштування Minecraft
   name: Глобальне налаштування | Глобальні налаштування
   network: Мережеві налаштування
   newsPosition: Перемістити розділ новин
@@ -1295,6 +1296,7 @@ setting:
     remove: Видалення
     repulse: Відштовхування (сильне)
   particleModeDescription: Виберіть поведінку частинок при натисканні
+  quickLaunchSettings: Швидкий запуск
   replaceNative: Замінити нативні бібліотеки
   replaceNativeDescription: Замінити нативні бібліотеки відповідно до архітектури вашого комп'ютера.
   replaceNatives:
@@ -1307,18 +1309,24 @@ setting:
   resetAllSettingsConfirmTitle: Скинути всі налаштування?
   resetAllSettingsHint: Скинути лаунчер до заводських налаштувань (видаляє все)
   resetAllSettingsSuccess: Всі налаштування було скинуто. Лаунчер перезапуститься.
+  resetSettingsError: 'Помилка під час скидання налаштувань: {error}'
   resetToDefault: Скинути до типових
   select: вибрати
   settingsExported: Налаштування успішно експортовано
   settingsImportError: Не вдалося імпортувати налаштування. Перевірте формат файлу.
   settingsImported: Налаштування успішно імпортовано
+  settingsReloadHint: Лаунчер перезавантажиться для застосування всіх налаштувань.
   showNewsHeader: Показати вітрину новин
   showRoot: Показати
   sidebarAlign: Вирівнювання бічної панелі
+  sidebarAutoHide: Автоматично приховувати бічну панель
+  sidebarAutoHideHint: Автоматично приховує бічну панель, коли миша віддаляється
   sidebarClassic: Класичний
   sidebarNotch: Notch
   sidebarPosition: Позиція бічної панелі
   sidebarScale: Масштаб бічної панелі
+  sidebarShowOnlyPinned: Показувати лише закріплені
+  sidebarShowOnlyPinnedHint: Показувати лише закріплені екземпляри на бічній панелі
   sidebarStyle: Стиль бічної панелі
   sidebarStyleHint: Виберіть між класичним та сучасним дизайном
   streamerMode: Режим стрімера
@@ -1335,6 +1343,7 @@ setting:
   themeImport: Імпортувати тему
   themeResetFont: Скинути шрифт
   themeSelectFont: Вибрати шрифт
+  themeSettings: Тема
   themeShare: Поділитися темою
   themeShareDescription: Ви можете поділитися темою з другом.
   update: Оновлення
@@ -1345,17 +1354,6 @@ setting:
   useProxy: HTTP-проксі
   useProxyDescription: Адреса проксі-сервера для HTTP-запитів
   viewBackgroundMusic: Переглянути музику
-  quickLaunchSettings: Швидкий запуск
-  sidebarAutoHide: Автоматично приховувати бічну панель
-  sidebarAutoHideHint: Автоматично приховує бічну панель, коли миша віддаляється
-  sidebarShowOnlyPinned: Показувати лише закріплені
-  sidebarShowOnlyPinnedHint: Показувати лише закріплені екземпляри на бічній панелі
-  themeSettings: Тема
-  authenticationSettings: Автентифікація
-  advancedJavaOptions: Розширені параметри Java
-  advancedMinecraftOptions: Розширені параметри Minecraft
-  resetSettingsError: 'Помилка під час скидання налаштувань: {error}'
-  settingsReloadHint: Лаунчер перезавантажиться для застосування всіх налаштувань.
 settingLabel:
   global: Глобальний
   globalHint: Це налаштування буде слідувати глобальним налаштуванням
@@ -1451,6 +1449,7 @@ shared:
   previous: Назад
   refresh: Оновити
   remove: Видалити
+  search: Пошук
   server: Сервер
   skipForNow: Пропустити зараз
   'yes': Так
@@ -1460,8 +1459,11 @@ sortBy:
   timeAsc: Сортувати за часом модифікації (за зростанням)
   timeDesc: Сортувати за часом модифікації (за спаданням)
 store:
+  discover: Відкрийте для себе
   latestMinecraft: Остання версія Minecraft
   name: Ринок модпаків
+  searchResult: Результат пошуку
+  trending: В тренді
 tag:
   create: Створити тег
   createSelected: Створити тег для вибраного
@@ -1574,8 +1576,7 @@ universalDrop:
   start: Імпорт розпочато
   title: Перетягніть файли сюди, щоб імпортувати як
   unknownResource: Невідомий ресурс
-update:
-  goOfficialWebDownload: Завантажити знову з офіційного вебсайту
+update: {}
 upstream:
   downgrade: Понизити версію
   onlyShowCurrentVersion: Показувати лише поточну версію Minecraft
@@ -1586,7 +1587,6 @@ user:
   authService: Служба авторизації
   email: Адреса електронної пошти
   id: ID користувача
-  info: Інформація про користувача
   name: Ім'я користувача
   nameHint: Ім'я, що відображається в грі
   profile: Профіль

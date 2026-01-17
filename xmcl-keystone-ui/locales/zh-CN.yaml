@@ -697,7 +697,6 @@ modpack:
   descriptionHint: 通用的整合包简介。在导出成 Curseforge 整合包或者其他格式时会使用
   dropHint: 通过拖拽导入整合包文件
   emitCurseforge: 生成 Curseforge 整合包
-  emitMcbbs: 生成 MCBBS 整合包
   emitModrinth: 生成 Modrinth 整合包
   emitModrinthStrict: 严格遵守 Modrinth 整合包格式
   emitModrinthStrictDescription: 下载链接只允许包含 Modrinth 官网定义的四个域名
@@ -845,6 +844,8 @@ modrinth:
   loginTitle: 登录至Modrinth
   modLoaders:
     name: 模组加载器
+  modpackSource:
+    source: 来源
   projectId: 项目 ID
   projectMembers: 项目成员
   projectType:
@@ -1085,12 +1086,12 @@ serverStatus:
   timeout: 服务器响应超时！
 setting:
   about: 关于
+  aboutBmclDescription: BMCL API 为中国地区用户提供便捷的下载服务
   aboutContributors: 🧑‍💻 贡献者 🧑‍💻
-  aboutSponsors: 😇 赞助商 😇
+  aboutDenoDescription: XMCL 使用 Deno Deploy 提供的无服务器 JavaScript 应用平台
   aboutLicense: MIT 许可证
   aboutLicenseInfo: 感谢 SignPath.io 提供免费的 Windows 代码签名
-  aboutDenoDescription: XMCL 使用 Deno Deploy 提供的无服务器 JavaScript 应用平台
-  aboutBmclDescription: BMCL API 为中国地区用户提供便捷的下载服务
+  aboutSponsors: 😇 赞助商 😇
   advancedJavaOptions: 高级 Java 选项
   advancedSettings: 高级设置
   advancedSettingsHint: 危险区域 - 重置或管理启动器数据
@@ -1100,6 +1101,7 @@ setting:
   appearance: 外观
   appearanceDescription: 自定义启动器外观
   appxUpdateHint: 启动器将下载并执行安装包，如果安装包解析失败，请尝试自行打开安装文件更新。
+  authenticationSettings: 身份验证
   backdropBlur: 背景模糊
   backgroundColorAbove: 将背景颜色显示为叠加层
   backgroundColorAboveDescription: 这将使背景颜色显示在背景图像或视频上方。
@@ -1143,9 +1145,9 @@ setting:
     warningColor: 警告颜色
   darkTheme: 主题
   darkThemeDescription: 选择深色或浅色主题
+  devModeLabel: 开发
   developerMode: 开发者模式
   developerModeDescription: 开发者模式旨在帮助您测试自己写的模组
-  devModeLabel: 开发
   disableTelemetry: 关闭遥测
   disableTelemetryDescription: XMCL 会收集游戏启动以及用户登录事件
   enableDedicatedGPUOptimization: 分配专用 GPU
@@ -1153,11 +1155,14 @@ setting:
   enableDiscord: 启用 Discord Presence
   enableDiscordDescription: 根据 XMCL 实时更新 Discord 的状态
   enterUrl: 输入网址
+  exportSettings: 导出设置
+  exportSettingsHint: 将当前设置保存到文件
   general: 基本设置
   githubRelease: Github
   globalSetting: 全局实例设置
   globalSettingHint: 实例默认情况下会使用这些全局设置
-  hideNewsHeader: 隐藏新闻展示
+  importSettings: 导入设置
+  importSettingsHint: 从之前导出的文件中加载设置
   instanceTheme:
     activeDescription: |-
       此实例使用自定义主题。
@@ -1174,11 +1179,11 @@ setting:
     focus: 聚焦布局
   layoutDescription: 不同的布局有不同的 UI 交互逻辑
   layoutTitle: 布局
-  livePreview: 实时预览
   linuxEnableDedicatedGPUOptimization: 分配专用图形处理器
   linuxEnableDedicatedGPUOptimizationDescription: 此选项为 Minecraft 进程分配专用 GPU。
   linuxTitlebar: 原生顶端栏
   linuxTitlebarDescription: 使用 Linux 系统原生的顶端栏
+  livePreview: 实时预览
   location: 数据存储位置
   manualUpdateHint: 版本无法自动更新。请从官方网站重新下载启动器！
   maunalUpdateHint: |-
@@ -1188,8 +1193,8 @@ setting:
   maxSocketsDescription: 控制最大的并发 HTTP 链接数量。0 代表不限制数量。
   maxSocketsTitle: 最大 HTTP 连接数量
   memoryAssignment: 内存分配
-  minecraftOptions: Minecraft 选项
   migrateFromOther: 从其他启动器导入
+  minecraftOptions: Minecraft 选项
   name: 设置
   network: 网络设置
   newsPosition: 移动新闻区域
@@ -1201,6 +1206,7 @@ setting:
     remove: 移除
     repulse: 击退
   particleModeDescription: 选择当您点击粒子时的特效
+  quickLaunchSettings: 快速启动
   replaceNative: 替换库为 Native (原生)
   replaceNativeDescription: 根据您的计算机架构替换本机库。
   replaceNatives:
@@ -1211,17 +1217,26 @@ setting:
   resetAllSettingsConfirmTitle: 重置所有设置？
   resetAllSettingsHint: 将启动器重置为出厂默认值（删除所有数据）
   resetAllSettingsSuccess: 所有设置已重置。启动器将重新启动。
+  resetSettingsError: '重置设置时出错: {error}'
   resetToDefault: 重置到默认配色
-  exportSettings: 导出设置
-  exportSettingsHint: 将当前设置保存到文件
-  importSettings: 导入设置
-  importSettingsHint: 从之前导出的文件中加载设置
   select: 选择
   settingsExported: 设置导出成功
   settingsImportError: 导入设置失败。请检查文件格式。
   settingsImported: 设置导入成功
+  settingsReloadHint: 启动器将重新启动以应用所有设置。
   showNewsHeader: 取消隐藏新闻展示
   showRoot: 浏览
+  sidebarAlign: 侧边栏对齐
+  sidebarAutoHide: 自动隐藏侧边栏
+  sidebarAutoHideHint: 自动隐藏侧边栏，鼠标悬停时显示
+  sidebarClassic: 经典
+  sidebarNotch: 凹槽
+  sidebarPosition: 侧边栏位置
+  sidebarScale: 侧边栏缩放
+  sidebarShowOnlyPinned: 仅显示固定的实例
+  sidebarShowOnlyPinnedHint: 仅在侧边栏中显示固定的实例
+  sidebarStyle: 侧边栏样式
+  sidebarStyleHint: 在经典和现代凹槽设计之间选择
   streamerMode: 屏幕共享屏蔽
   streamerModeDescription: 此功能可以保护您的隐私。打开后，您的邮箱地址等隐私信息将会被隐藏。
   theme:
@@ -1236,23 +1251,9 @@ setting:
   themeImport: 导入主题
   themeResetFont: 重置字体
   themeSelectFont: 选择字体
+  themeSettings: 主题设置
   themeShare: 分享主题
   themeShareDescription: 您可以与您的朋友分享主题。
-  quickLaunchSettings: 快速启动
-  sidebarAlign: 侧边栏对齐
-  sidebarAutoHide: 自动隐藏侧边栏
-  sidebarAutoHideHint: 自动隐藏侧边栏，鼠标悬停时显示
-  sidebarClassic: 经典
-  sidebarNotch: 凹槽
-  sidebarPosition: 侧边栏位置
-  sidebarScale: 侧边栏缩放
-  sidebarShowOnlyPinned: 仅显示固定的实例
-  sidebarShowOnlyPinnedHint: 仅在侧边栏中显示固定的实例
-  sidebarStyle: 侧边栏样式
-  sidebarStyleHint: 在经典和现代凹槽设计之间选择
-  themeSettings: 主题设置
-  authenticationSettings: 身份验证
-  advancedMinecraftOptions: 高级 Minecraft 选项
   update: 升级
   useBmclAPI: 使用 BMCLAPI 镜像
   useBmclAPIDescription: >
@@ -1260,8 +1261,6 @@ setting:
   useProxy: HTTP 代理服务器设置
   useProxyDescription: 使用代理服务器可以某些服务的访问
   viewBackgroundMusic: 查看背景音乐
-  resetSettingsError: '重置设置时出错: {error}'
-  settingsReloadHint: 启动器将重新启动以应用所有设置。
 settingLabel:
   global: 全局配置
   globalHint: 此配置已使用全局配置
@@ -1348,6 +1347,7 @@ shared:
   previous: 上一步
   refresh: 刷新
   remove: 移除
+  search: 搜索
   server: 服务端
   skipForNow: 先跳过
   'yes': 是
@@ -1357,8 +1357,11 @@ sortBy:
   timeAsc: 按修改时间（上升）排序
   timeDesc: 通过修改时间（下降）排序
 store:
+  discover: 发现
   latestMinecraft: 使用近期 Minecraft 版本
   name: 整合包市场
+  searchResult: 搜索结果
+  trending: 流行趋势
 tag:
   create: 创建标签
   createSelected: 为所有选中的创建标签
@@ -1460,8 +1463,7 @@ universalDrop:
   start: 开始导入
   title: 将文件拖到这并导入为
   unknownResource: 无法解析
-update:
-  goOfficialWebDownload: 到官网重新下载
+update: {}
 upstream:
   downgrade: 降级
   onlyShowCurrentVersion: 只显示适合当前 Minecraft 的版本
@@ -1472,7 +1474,6 @@ user:
   authService: 验证服务
   email: 邮箱
   id: 用户 ID
-  info: 账户信息
   name: 用户名
   nameHint: 游戏中显示的名字
   profile: 个人信息

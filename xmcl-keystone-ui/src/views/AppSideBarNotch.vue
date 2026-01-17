@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="wrapper"
     class="sidebar-notch-wrapper"
     :class="wrapperClasses"
     @mouseenter="onMouseEnter"
@@ -13,64 +14,80 @@
     />
     
     <div
-      class="sidebar-notch moveable"
+      class="sidebar-notch"
       :class="sidebarClasses"
       :style="wrapperStyles"
     >
-      <div class="sidebar-notch__container" :style="containerStyles">
-        <!-- Back Button -->
-        <div
-          class="sidebar-notch__item non-moveable"
-          @click="goBack"
-        >
-          <v-icon class="sidebar-notch__icon" :size="iconSize">arrow_back</v-icon>
-        </div>
-
+      <div
+        ref="container"
+        class="sidebar-notch__container"
+        :style="containerStyles"
+      >
         <!-- My Stuff -->
-        <router-link
+        <AppSideBarNotchItem
           id="my-stuff-button"
-          v-shared-tooltip="() => t('myStuff')"
+          icon="widgets"
+          :icon-size="iconSize"
+          :tooltip="() => ({ text: t('myStuff'), direction: tooltipDirection })"
           to="/me"
-          class="sidebar-notch__item sidebar-notch__item--link non-moveable"
-        >
-          <v-icon class="sidebar-notch__icon" :size="iconSize">widgets</v-icon>
-        </router-link>
+        />
 
         <!-- Store -->
-        <router-link
+        <AppSideBarNotchItem
           v-if="true"
-          v-shared-tooltip="() => t('store.name', 2)"
+          icon="store"
+          :icon-size="iconSize"
+          :tooltip="() => ({ text: t('store.name', 2), direction: tooltipDirection })"
           to="/store"
-          class="sidebar-notch__item sidebar-notch__item--link non-moveable"
-        >
-          <v-icon class="sidebar-notch__icon" :size="iconSize">store</v-icon>
-        </router-link>
+        />
 
-        <div class="sidebar-notch__divider" />
+        <div class="sidebar-notch__divider moveable" />
 
         <!-- Instance List (compact mode) -->
         <div class="sidebar-notch__instances">
-          <AppSideBarContentNext :compact="true" :horizontal="isHorizontal" :maxInstances="3" />
+          
         </div>
+        <template v-for="i of instanceItems">
+          <AppSideBarNotchItemInstance
+            v-if="typeof i === 'string'"
+            :key="i"
+            clickable
+            :path="i"
+            :direction="tooltipDirection"
+          />
+          <AppSideBarNotchItemGroup
+            v-else
+            :key="i.id"
+            :group="i"
+            :direction="tooltipDirection"
+          />
+        </template>
+        <AppSideBarNotchItem
+          icon="add"
+          :icon-size="iconSize"
+          :tooltip="() => t('instances.add')"
+          clickable
+          @click="showAddInstance()"
+        />
 
         <div class="sidebar-notch__spacer" />
 
         <!-- Multiplayer -->
-        <div
-          v-shared-tooltip="() => t('multiplayer.name')"
-          class="sidebar-notch__item sidebar-notch__item--link non-moveable"
+        <AppSideBarNotchItem
+          icon="hub"
+          :icon-size="iconSize"
+          :tooltip="() => ({ text: t('multiplayer.name'), direction: tooltipDirection })"
+          clickable
           @click="goMultiplayer"
-        >
-          <v-icon class="sidebar-notch__icon" :size="iconSize">hub</v-icon>
-        </div>
+        />
 
-        <div class="sidebar-notch__divider" />
+        <div class="sidebar-notch__divider moveable" />
 
         <!-- Settings -->
-        <router-link
-          v-shared-tooltip="() => t('setting.name', 2)"
+        <AppSideBarNotchItem
+          :icon-size="iconSize"
+          :tooltip="() => ({ text: t('setting.name', 2), direction: tooltipDirection })"
           to="/setting"
-          class="sidebar-notch__item sidebar-notch__item--link non-moveable"
         >
           <v-badge
             right
@@ -80,9 +97,9 @@
             <template #badge>
               <span>{{ 1 }}</span>
             </template>
-            <v-icon class="sidebar-notch__icon" :size="iconSize">settings</v-icon>
+            <v-icon class="sidebar-notch-item__icon" :size="iconSize">settings</v-icon>
           </v-badge>
-        </router-link>
+        </AppSideBarNotchItem>
       </div>
     </div>
   </div>
@@ -92,14 +109,19 @@
 import { ref, computed } from 'vue'
 import { kSettingsState } from '@/composables/setting'
 import { injection } from '@/util/inject'
-import AppSideBarContentNext from './AppSideBarContentNext.vue'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
+import AppSideBarNotchItem from './AppSideBarNotchItem.vue'
 import { kTheme } from '@/composables/theme'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
+import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
+import { useDialog } from '@/composables/dialog'
+import { useInstanceGroup } from '@/composables/instanceGroup'
+import AppSideBarNotchItemInstance from './AppSideBarNotchItemInstance.vue'
+import AppSideBarNotchItemGroup from './AppSideBarNotchItemGroup.vue'
 
 const { blurSidebar, sideBarColor } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const { position, align, scale, autoHide } = useInjectSidebarSettings()
+const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
 
 const { t } = useI18n()
 const { back } = useRouter()
@@ -121,6 +143,7 @@ const wrapperClasses = computed(() => ({
   'wrapper--top': position.value === 'top',
   'wrapper--bottom': position.value === 'bottom',
   'wrapper--auto-hide': autoHide.value,
+  'wrapper--hovered': isHovered.value,
 }))
 
 // Trigger zone classes
@@ -145,6 +168,7 @@ const containerStyles = computed(() => {
   const styles: any = {
     backgroundColor: sideBarColor.value,
     transform: `scale(${scale.value / 100})`,
+    backdropFilter: blurSidebar.value ? `blur(${blurSidebar.value}px)` : 'none',
   }
   
   let originX = 'center'
@@ -166,7 +190,6 @@ const containerStyles = computed(() => {
 
 const wrapperStyles = computed(() => {
   const styles: any = {
-    'backdrop-filter': `blur(${blurSidebar.value}px)`
   }
 
   if (isVertical.value) {
@@ -182,6 +205,14 @@ const wrapperStyles = computed(() => {
   return styles
 })
 
+const tooltipDirection = computed(() => {
+  if (isVertical.value) {
+    return position.value === 'left' ? 'right' : 'left'
+  } else {
+    return position.value === 'top' ? 'bottom' : 'top'
+  }
+})
+
 function onMouseEnter() {
   if (hideTimeout) {
     clearTimeout(hideTimeout)
@@ -190,21 +221,37 @@ function onMouseEnter() {
   isHovered.value = true
 }
 
-function onMouseLeave() {
-  if (autoHide.value) {
-    hideTimeout = setTimeout(() => {
-      isHovered.value = false
-    }, 500)
-  }
+function onMouseLeave(e: MouseEvent) {
+  if (!autoHide.value) return
+  
+  hideTimeout = setTimeout(() => {
+    isHovered.value = false
+  }, 2500)
 }
 
-function goBack() {
-  back()
-}
 
 function goMultiplayer() {
   windowController.openMultiplayerWindow()
 }
+
+const { groups, move, group } = useInstanceGroup()
+const instanceItems = computed(() => {
+  let items = groups.value
+  
+  // Apply pinned filter
+  // if (showOnlyPinned.value) {
+  //   items = items.filter(item => {
+  //     if (typeof item === 'string') {
+  //       return isPinned(item)
+  //     } else {
+  //       // For groups, check if any instance in the group is pinned
+  //       return item.instances.some(inst => isPinned(inst))
+  //     }
+  //   })
+  // }
+  
+  return items.slice(0, 4)
+})
 </script>
 
 <style scoped>
@@ -213,7 +260,8 @@ function goMultiplayer() {
   position: relative;
   display: flex;
   z-index: 10;
-  pointer-events: none; /* Let clicks pass through wrapper */
+  pointer-events: none;
+   /* Let clicks pass through wrapper */
 }
 
 /* When auto-hide is on, use fixed positioning */
@@ -224,18 +272,18 @@ function goMultiplayer() {
 
 .sidebar-notch-wrapper.wrapper--auto-hide.wrapper--left {
   left: 0;
-  top: 58px; /* Start below window title bar */
+  top: 0; /* Start below window title bar */
   bottom: 0;
 }
 
 .sidebar-notch-wrapper.wrapper--auto-hide.wrapper--right {
   right: 0;
-  top: 58px; /* Start below window title bar */
+  top: 0; /* Start below window title bar */
   bottom: 0;
 }
 
 .sidebar-notch-wrapper.wrapper--auto-hide.wrapper--top {
-  top: 0;
+  top: 24px;
   left: 0;
   right: 0;
   z-index: 102; /* Ensure top sidebar is above window controls if it MUST be there, but might need offset too */
@@ -247,46 +295,116 @@ function goMultiplayer() {
   right: 0;
 }
 
-/* Trigger zone - always visible for hover detection */
+/* Trigger zone - water drop style with hover indicator */
 .sidebar-trigger {
   position: absolute;
-  z-index: 101;
-  pointer-events: auto; /* Re-enable pointer events for trigger */
-  background-color: rgba(255, 255, 255, 0.02); /* Barely visible highlight */
-  transition: background-color 0.3s ease;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.sidebar-trigger:hover {
-  background-color: rgba(255, 255, 255, 0.08); /* Slightly more visible on hover */
+/* Water drop shape - always visible */
+.sidebar-trigger::after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Hover state - grow and glow when wrapper is hovered */
+.wrapper--hovered .sidebar-trigger::after {
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+.wrapper--hovered .trigger--left::after {
+  width: 10px;
+  height: 60px;
+  border-radius: 0 10px 10px 0;
+}
+
+.wrapper--hovered .trigger--right::after {
+  width: 10px;
+  height: 60px;
+  border-radius: 10px 0 0 10px;
+}
+
+.wrapper--hovered .trigger--top::after {
+  width: 60px;
+  height: 10px;
+  border-radius: 0 0 10px 10px;
+}
+
+.wrapper--hovered .trigger--bottom::after {
+  width: 60px;
+  height: 10px;
+  border-radius: 10px 10px 0 0;
+}
 
 .trigger--left {
   left: 0;
-  top: 58px; /* Match safe area */
+  top: 58px;
   bottom: 0;
-  width: 12px;
+  width: 22px;
+}
+
+.trigger--left::after {
+  left: 0;
+  top: 50%;
+  width: 6px;
+  height: 40px;
+  border-radius: 0 6px 6px 0;
+  transform: translateY(-50%);
 }
 
 .trigger--right {
   right: 0;
-  top: 58px; /* Match safe area */
+  top: 58px;
   bottom: 0;
-  width: 12px;
+  width: 22px;
+}
+
+.trigger--right::after {
+  right: 0;
+  top: 50%;
+  width: 6px;
+  height: 40px;
+  border-radius: 6px 0 0 6px;
+  transform: translateY(-50%);
 }
 
 .trigger--top {
   top: 0;
   left: 80px; 
   right: 120px; 
-  height: 12px;
+  height: 52px;
+}
+
+.trigger--top::after {
+  top: 0;
+  left: 50%;
+  width: 40px;
+  height: 6px;
+  border-radius: 0 0 6px 6px;
+  transform: translateX(-50%);
 }
 
 .trigger--bottom {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 12px;
+  height: 22px;
+}
+
+.trigger--bottom::after {
+  bottom: 0;
+  left: 50%;
+  width: 40px;
+  height: 6px;
+  border-radius: 6px 6px 0 0;
+  transform: translateX(-50%);
 }
 
 /* Sidebar base styles */
@@ -296,7 +414,6 @@ function goMultiplayer() {
   align-items: center;
   padding: 8px;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-  pointer-events: none; /* Crucial: Do not block clicks on empty/padding areas */
 }
 
 /* Hidden state animations */
@@ -323,14 +440,14 @@ function goMultiplayer() {
 .sidebar-notch--vertical {
   flex-direction: column;
   min-height: 100%;
-  padding: 12px 8px;
+  padding: 22px 8px;
   /* padding-top removed in favor of top offset on wrapper */
 }
 
 .sidebar-notch--horizontal {
   flex-direction: row;
   width: 100%;
-  padding: 8px 12px;
+  padding: 8px 22px;
 }
 
 .sidebar-notch--right {
@@ -364,56 +481,6 @@ function goMultiplayer() {
   max-height: 56px;
 }
 
-.sidebar-notch__item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.sidebar-notch__item::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: currentColor;
-  opacity: 0;
-  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.sidebar-notch__item:hover::before {
-  opacity: 0.08;
-}
-
-.sidebar-notch__item:active::before {
-  opacity: 0.12;
-}
-
-.sidebar-notch__item--link {
-  text-decoration: none;
-  color: inherit;
-}
-
-.sidebar-notch__icon {
-  position: relative;
-  z-index: 1;
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.sidebar-notch__item:hover .sidebar-notch__icon {
-  transform: scale(1.08);
-}
-
-.sidebar-notch__item:active .sidebar-notch__icon {
-  transform: scale(0.96);
-}
-
 .sidebar-notch__divider {
   background: currentColor;
   opacity: 0.12;
@@ -441,6 +508,7 @@ function goMultiplayer() {
 
 .sidebar-notch__instances {
   display: flex;
+  max-width: 100%;
   gap: 3px;
   flex-shrink: 1;
   overflow: hidden;
@@ -462,63 +530,5 @@ function goMultiplayer() {
 .sidebar-notch__instances::-webkit-scrollbar {
   width: 0;
   height: 0;
-}
-
-.sidebar-notch__instances :deep(.v-list) {
-  background: transparent !important;
-  padding: 0 !important;
-}
-
-.sidebar-notch__instances :deep(.v-list-item) {
-  background: transparent !important;
-  padding: 0 !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  margin: 0 !important;
-}
-
-.sidebar-notch__instances :deep(.v-list-item::before),
-.sidebar-notch__instances :deep(.v-list-item::after) {
-  display: none !important;
-}
-
-.sidebar-notch__instances :deep(.sidebar-item) {
-  background: transparent !important;
-}
-
-/* Remove default Vuetify padding from v-list-item */
-.sidebar-notch__instances :deep(.v-list-item) {
-  min-height: unset;
-  height: 40px;
-}
-
-/* Ensure icons are centered */
-.sidebar-notch__instances :deep(.v-list-item__icon) {
-  margin: 0 !important;
-}
-
-/* Fix for v-list inside sidebar */
-.sidebar-notch__instances :deep(.v-list-item__content) {
-  padding: 0;
-}
-</style>
-
-<style>
-.dark .sidebar-notch__item .theme--dark.v-icon {
-  color: var(--icon-color);
-}
-
-.dark .sidebar-notch__item:hover .theme--dark.v-icon {
-  color: var(--icon-color-hovered);
-}
-
-.sidebar-notch__item.router-link-active,
-.sidebar-notch__item.router-link-active .v-icon {
-  color: var(--color-primary);
-}
-
-.sidebar-notch__item.router-link-active::before {
-  opacity: 0.12;
-  background: var(--color-primary);
 }
 </style>
