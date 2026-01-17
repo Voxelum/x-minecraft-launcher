@@ -1,5 +1,15 @@
 import { Socket } from 'net'
-import { Agent, Client, Dispatcher, RetryHandler, buildConnector, errors, interceptors, util } from 'undici'
+import { setTimeout as timeout } from 'timers/promises'
+import {
+  Agent,
+  Client,
+  Dispatcher,
+  Pool,
+  buildConnector,
+  errors,
+  util
+} from 'undici'
+import { kClients } from 'undici/lib/core/symbols'
 
 type DispatchHandlers = Dispatcher.DispatchHandler
 const { InvalidArgumentError, RequestAbortedError } = errors
@@ -51,7 +61,7 @@ export class NetworkAgent extends Dispatcher {
 
   #dispatcher: Dispatcher
   #userAgent: string
-  #retryOptions: RetryHandler.RetryOptions
+  #activated = false
 
   async setProxy(uri: URL, auth?: string) {
     const oldClient = this.proxyClient
@@ -83,16 +93,17 @@ export class NetworkAgent extends Dispatcher {
     }
   }
 
-  constructor(opts: {
-    userAgent: string
-    retryOptions: RetryHandler.RetryOptions
-    factory: (connect: buildConnector.connector) => Agent
-    requestTls?: buildConnector.BuildOptions
-    proxyTls?: buildConnector.BuildOptions
-  }) {
+  constructor(
+    opts: {
+      userAgent: string
+      factory: (connect: buildConnector.connector) => Agent
+      requestTls?: buildConnector.BuildOptions
+      proxyTls?: buildConnector.BuildOptions
+    },
+    private onActivityChanged: (active: boolean) => void,
+  ) {
     super()
 
-    this.#retryOptions = opts.retryOptions
     this.#userAgent = opts.userAgent
     this.requestTls = opts.requestTls
     this.proxyTls = opts.proxyTls
@@ -119,7 +130,7 @@ export class NetworkAgent extends Dispatcher {
           },
         })
         if (statusCode !== 200) {
-          socket.on('error', () => { }).destroy()
+          socket.on('error', () => {}).destroy()
           callback(new RequestAbortedError('Proxy response !== 200 when HTTP Tunneling'), null)
         }
         if (opts.protocol !== 'https:') {
@@ -127,23 +138,93 @@ export class NetworkAgent extends Dispatcher {
           return
         }
         const servername = opts.servername
-        this.rConnect({
-          ...opts,
-          servername,
-          httpSocket: socket,
-        }, callback)
+        this.rConnect(
+          {
+            ...opts,
+            servername,
+            httpSocket: socket,
+          },
+          callback,
+        )
       } catch (err) {
         callback(err as Error, null)
       }
     }
 
     this.agent = opts.factory(connect as any)
-    this.#dispatcher = this.agent.compose(interceptors.redirect(), interceptors.retry(this.#retryOptions))
+    this.#dispatcher = this.agent
+    this.agent.on('connect', () => {
+      if (!this.#activated) {
+        this.#activated = true
+        this.onActivityChanged(true)
+      }
+    })
+    this.agent.on('drain', (url) => {
+      setTimeout(() => {
+        this.#cleanup(url)
+      }, 60_000)
+    })
+  }
+
+  #cleanup(url: URL) {
+    const clients = this.getClients()
+    const dispatcher = clients.get(url.origin)?.dispatcher
+    if (dispatcher instanceof Pool) {
+      const stats = dispatcher?.stats
+      if (
+        !stats?.connected &&
+        !stats?.pending &&
+        !stats?.running &&
+        !stats?.queued &&
+        !stats?.free
+      ) {
+        dispatcher?.close()
+        clients.delete(url.origin)
+      }
+    } else {
+      // @ts-ignore
+      const running = dispatcher?.[kRunning]
+
+      if (typeof running === 'number' && running === 0) {
+        dispatcher?.close()
+        clients.delete(url.origin)
+      }
+    }
+    if (clients.size === 0 && this.#activated) {
+      this.#activated = false
+      this.onActivityChanged(false)
+    }
+  }
+
+  async destroyClient(origin: string) {
+    const clients = this.getClients()
+    const client = clients.get(origin)
+    await Promise.race([
+      client?.dispatcher?.close().then(() => true),
+      timeout(500).then(() => false),
+    ]).then((closed) => {
+      if (!closed) return client?.dispatcher?.destroy()
+    })
+    clients.delete(origin)
+  }
+
+  getClients() {
+    // @ts-ignore
+    const clients = this.agent[kClients] as Map<string, { dispatcher: Dispatcher }>
+    if (clients.size === 0 && this.#activated) {
+      this.#activated = false
+      this.onActivityChanged(false)
+    }
+    return clients
   }
 
   dispatch(opts: Agent.DispatchOptions, handler: DispatchHandlers) {
     // const { host } = new URL(opts.origin as string)
-    const headers = opts.headers ? opts.headers instanceof Array ? util.parseHeaders(opts.headers as any) : opts.headers as any : {}
+    const headers = opts.headers
+      ? opts.headers instanceof Array
+        ? util.parseHeaders(opts.headers as any)
+        : (opts.headers as any)
+      : {}
     if (!headers['user-agent']) {
       headers['user-agent'] = this.#userAgent
     }
@@ -168,8 +249,8 @@ export class NetworkAgent extends Dispatcher {
  * It should be removed in the next major version for performance reasons
  */
 function throwIfProxyAuthIsSent(headers: Record<string, any>) {
-  const existProxyAuth = headers && Object.keys(headers)
-    .find((key) => key.toLowerCase() === 'proxy-authorization')
+  const existProxyAuth =
+    headers && Object.keys(headers).find((key) => key.toLowerCase() === 'proxy-authorization')
   if (existProxyAuth) {
     throw new InvalidArgumentError('Proxy-Authorization should be sent in ProxyAgent constructor')
   }
