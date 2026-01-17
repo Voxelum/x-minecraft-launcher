@@ -23,28 +23,19 @@ AppShareInstanceDialog:
   share: Поділитися
   shareNotifyTitle: Поділитися екземпляром
   shareTitle: Поділитися файлами гри з іншим гравцем
-BaseSetting: {}
 BaseSettingGeneral:
   title: Загальні
-FeedTheBeast:
-  search: Шукати в FTB
-FeedTheBeastCard: {}
-FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: Несумісна Java
   incompatibleJavaHint: Поточна Java може бути несумісною з обраним Minecraft!
   missingJava: Java відсутня
   missingJavaHint: 'Лаунчер не може виявити жодної Java на вашому комп''ютері. Ви можете:'
-  optionAutoDownload: {}
-  optionManualDownload: {}
-  optionSelectJava: {}
   optionSwitch:
     name: Перемкнутися на {version}
 HomeLaunchMultiInstanceDialog:
   confirm: Так, запустити
   description: Ви запускаєте кілька екземплярів Minecraft. Ви впевнені?
   title: Кілька екземплярів
-HomeSyncButton: {}
 HomeSyncDialog:
   pull: Отримати
   push: Надіслати
@@ -61,7 +52,6 @@ HomeSyncDialogPush:
   upload: Завантажити екземпляр
 SettingMigrationDialog:
   selectRootDirectory: Вибрати кореневий каталог
-add: Додати
 ago:
   day: '{duration} день тому | {duration} дні тому | {duration} днів тому'
   hour: '{duration} годину тому | {duration} години тому | {duration} годин тому'
@@ -70,44 +60,30 @@ ago:
 askAICrash:
   copyPrompt: Скопіюйте підказку, щоб запитати AI
   description: |-
-    Нехай AI допоможе вам зрозуміти краху гри! 
+    Нехай AI допоможе вам зрозуміти краху гри!
     Дотримуйтесь інструкцій нижче, щоб запитати AI про цю гру!
   selectPlatform: Відкрийте платформу AI та вставте підказку, яку ви щойно скопіювали.
 authProfileAddedNotification: Профіль автентифікації {name} додано
-author: Автор
-back: Назад
 baseSetting:
   title: Основні налаштування
-browse: Огляд
 browseApp:
   createShortcut: Створити ярлик
   default: ЗА ЗАМОВЧУВАННЯМ
   delete: Видалити
   launch: Запустити та встановити як типовий
 browseApps: Перегляд користувацького інтерфейсу пускової установки
-cancel: Скасувати
-checkUpdate:
-  name: Перевірити оновлення
 color: Колір
 confirm: Почати
 copyClipboard:
   success: Скопійовано в буфер обміну
 create: Створити
 curseforge:
-  authors: Автори
   category: Категорія
   createdDate: Дата створення
-  downloadOnly: Завантажити
-  file:
-    gameVersion: Версія гри
-    install: встановити
-    modLoader: Завантажувач модів
   installTo: Встановити в {path}
   installToStorage: Встановити в сховище
   lastUpdate: Дата останнього оновлення
-  project: {}
   releasedDate: Дата випуску
-curseforgeCard: {}
 curseforgeCategory:
   API and Library: API та бібліотеки
   Addons: Доповнення
@@ -166,13 +142,6 @@ dataMigration:
   directoryCriteriaHint: >-
     Будь ласка, переконайтеся, що ваше нове розташування каталогу є ПОРОЖНІМ
     каталогом!
-  migrationDestinationIsFile: Місце призначення міграції є файлом! Будь ласка, виберіть порожній каталог!
-  migrationDestinationIsNotEmptyDirectory: >-
-    Місце призначення міграції не є порожнім каталогом! Будь ласка,
-    переконайтеся, що ви вибрали порожній каталог!
-  migrationNoPermission: >-
-    Немає дозволу на перейменування старого каталогу в новий! Будь ласка,
-    переконайтеся, що лаунчер має доступ до обох місць!
   placeholder: Будь ласка, натисніть тут, щоб вибрати каталог
   setRootCause: >-
     Ви втратите свої дані (карти, пакети ресурсів, моди), якщо закриєте лаунчер
@@ -193,8 +162,6 @@ dependencies:
   name: Залежності
   optional: Необов'язкові
   required: Обов'язкові
-description: Опис
-detail: Детально
 diagnosis:
   badInstall:
     message: Натисніть, щоб спробувати перевстановити цю версію.
@@ -215,27 +182,13 @@ diagnosis:
   corruptedVersionJar:
     message: Натисніть, щоб встановити цю версію
     name: Пошкоджено jar-файл версії для Minecraft %{version}.
-  corruptedVersionJson:
-    message: Натисніть, щоб встановити цю версію
-    name: Пошкоджено json версії %{version}.
   incompatibleJava:
-    message: Ви можете попросити лаунчер завантажити її для вас.
     name: Версія Java {javaVersion} не підходить для {version}!
   instanceFiles:
     description: Встановлення екземпляра включає {counts} файлів.
     title: Незавершене встановлення екземпляра
   invalidJava:
-    message: Натисніть, щоб використовувати іншу Java для запуску.
     name: Недійсне розташування Java.
-  missingAssets:
-    message: Лаунчер встановить ресурси для вас
-    name: >-
-      Відсутній ресурс: {name} | Відсутній ресурс: {name} | Відсутні %{count}
-      ресурсів.
-  missingAssetsIndex:
-    message: Лаунчер завантажить для вас індекс ресурсів
-    name: Відсутній індексний файл ресурсів для {version}.
-  missingAuthlibInjector: {}
   missingJava:
     message: Натисніть, щоб вирішити цю проблему
     name: Не вдалося знайти Java для запуску Minecraft!
@@ -247,36 +200,24 @@ diagnosis:
   missingVersion:
     message: Натисніть, щоб встановити цю версію
     name: Версія {version} не встановлена!
-  missingVersionJar:
-    message: Натисніть, щоб встановити цю версію
-    name: Відсутній jar-файл версії для Minecraft %{version}
   unzipFileNotFound:
     description: Не вдалося знайти {file}
     title: Файл модпаку не знайдено
-disable: Вимкнути
 disk:
   available: Доступно
   used: Використано
-download: Завантажити
 downloadCount: '{count} завантажень'
 downloadUpdate: Завантажити оновлення
 duration:
   day: '{duration} день | {duration} дні | {duration} днів'
   hour: '{duration} година | {duration} години | {duration} годин'
   minute: '{duration} хвилина | {duration} хвилини | {duration} хвилин'
-  name: Видалити {name}
-  'no': Ні
   second: '{duration} секунда | {duration} секунди | {duration} секунд'
-  'yes': Так, сер.
-edit: Редагувати
-enable: Увімкнути
 env:
   select:
     all: Вибрати все
     fit: Вибрати відповідні
     none: Нічого не вибирати
-error:
-  name: Помилка | Помилки
 errors:
   BadForgeInstallerJarError: >-
     Не вдалося розібрати jar-файл інсталятора Forge. Можливо, у Forge новий
@@ -308,8 +249,6 @@ exception:
     HTTP-запит до {url} не вдався. Код стану {statusCode}. {code}. Будь ласка,
     спробуйте ще раз або перевірте ваше мережеве з'єднання. Якщо ця помилка не
     зникає, будь ласка, надішліть звіт команді розробників.
-existed: Існує
-exportModpackTarget: {}
 extensions:
   mrpack: Модпак Modrinth
   zip: Zip-файл
@@ -348,24 +287,12 @@ fileDetail:
   fileSize: Розмір файлу
   filesize: Розмір файлу
   hash: Хеш
-filter: Фільтр
 filterLocalOnly: Показувати лише встановлені
-finish: Завершити
-forgeConfig:
-  hint: >-
-    Будь ласка, принаймні один раз запустіть гру з цим модом, щоб ми могли
-    виявити його конфігураційний файл!
 forgeVersion:
-  common: Загальний
   disable: Вимкнути Forge
   empty: Для Minecraft {version} немає жодного випуску Forge
   latest: Останній
-  name: Forge
   recommended: Рекомендований
-  showBuggy: Показати з помилками
-  showRecommendedAndLatestOnly: Лише рекомендовані та останні
-  version: Версія Forge
-gameSetting: {}
 gameType:
   adventure: Режим пригод
   creative: Творчий режим
@@ -375,7 +302,6 @@ help: Допомога
 home: Головна
 importModpack:
   name: Імпортувати модпак
-install: Встановити
 installAssets:
   asset: Встановити {count} ресурсів
   assetIndex: Перевірити індексний файл ресурсів
@@ -386,7 +312,6 @@ installFabric:
   name: Встановити Fabric
 installForge:
   downloadInstaller: Завантажити інсталятор
-  library: Встановити бібліотеку {lib}
   name: Встановити Forge
   postProcessing: Постобробка
 installInstance:
@@ -400,35 +325,20 @@ installJre:
   download: Завантажити стиснутий файл JRE
   name: Встановити бібліотеку виконання Java
 installLabyMod:
-  asset: Встановити ресурс {name}
-  json: Сгенерувати JSON {version}
   name: Встановити LabyMod
 installLibraries:
   library: Встановити бібліотеку
   name: Встановити бібліотеки
-installModpack:
-  deploy: Розгорнути
-  download:
-    file: Завантажити файл
-    name: Завантажити
-  name: Встановити модпак
-  unpack: Розпакувати модпак
 installModrinthFile:
   name: Встановити Modrinth
 installOptifine:
   download: Завантажити універсальний Optifine
-  jar: Сгенерувати Jar
-  json: Сгенерувати Json
   name: Встановити Optifine
-installResource:
-  fail: Не вдалося встановити {file}
-  success: Ресурс {file} успішно встановлено
 installVersion:
   jar: Встановити Jar версії
   json: Встановити Json версії
   name: Встановити клієнт Minecraft {version}
 instance:
-  addServer: Додати сервер
   changeIcon: Змінити іконку
   contents: Зміст
   current: Поточний екземпляр
@@ -443,12 +353,10 @@ instance:
     URL-адреса для синхронізації файлів екземпляра з віддаленого сервера
     конфігурації.
   fullscreen: Повноцінний
-  gameVersion: Версія гри
   height: Висота
   icon: Іконка профілю
   iconHint: Іконка може бути файлом або посиланням на URL в Інтернеті.
   iconUrl: URL іконки
-  includeVersion: Включити версію | Включити версії
   installModpack: Оновити екземпляр з модпаку
   lastPlayed: Востаннє запущенно
   launchArguments: Попередній перегляд аргументів запуску
@@ -472,7 +380,6 @@ instance:
   prependCommandHint: Це додасть цю команду перед усіма командами запуску
   requireName: Назва обов'язкова
   resolution: Роздільна здатність вікон
-  resolutionEnabled: Увімкнути власну роздільну здатність
   resolutionPreset: Позначена роздільна здатність
   showInstance: Показати папку гри
   updates: Оновлення
@@ -480,7 +387,6 @@ instance:
   useSharedOptionsDesc: Це зв'яже options.txt зі спільним файлом для всіх екземплярів
   useSharedServersList: Використовувати спільний список серверів
   useSharedServersListDesc: Це зв'яже servers.dat зі спільним файлом для всіх екземплярів
-  versionHint: Версія Minecraft для цієї гри
   vmOptions: Опції JVM
   vmOptionsHint: Додаткові аргументи для передачі JVM
   vmVar: Змінні середовища
@@ -556,10 +462,8 @@ instances:
   addVanillaDescription: >-
     Імпортувати зі звичайної папки .minecraft. Це продублює оригінальний ігровий
     профіль в XMCL.
-  choose: Вибрати гру
   fix: Відновити
   folderSetting: Налаштування папки
-  importFolder: Імпортувати з папки
   importFolderDescription: Імпортувати Minecraft в лаунчер
   loadingFiles: Завантаження файлів модпаку
   refreshServers: Оновити сервери
@@ -569,7 +473,6 @@ items:
 java:
   allocatedLong: Використовувати системну Java за замовчуванням
   allocatedShort: Автоматично виділено
-  browse: Знайти виконуваний файл Java
   importFromFile: Імпортувати Java з файлу
   invalid: Недійсне розташування Java
   location: Розташування Java
@@ -579,7 +482,6 @@ java:
   memoryManual: Вручну
   memoryUnassigned: Не призначати
   minMemory: Мін. пам'ять
-  modifyInstance: Змінити шлях до Java
   noMemory: Не обмежувати використання пам'яті
   refresh: Оновити локальні Java
   systemMemory: 'Вільна системна пам''ять: {free} / {total}'
@@ -627,24 +529,9 @@ launchBlocked:
       спробуйте ще раз. Якщо це все ще не працює, будь ласка, зв'яжіться з
       розробниками.
     title: Не вдалося запустити ігровий процес
-  launchUserStatusRefreshFailed:
-    description: Не вдалося оновити статус поточного вибраного користувача.
-    title: Не вдалося перевірити статус користувача
   unexpectedText: >-
     Це неочікувано. Ви можете перезапустити лаунчер, щоб вирішити проблему. Будь
     ласка, зв'яжіться з автором, якщо ця проблема виникне знову.
-  userAcquireMicrosoftTokenFailed: >-
-    Не вдалося отримати токен Microsoft. Будь ласка, спробуйте ще раз або
-    перевірте ваш обліковий запис Microsoft.
-  userCheckGameOwnershipFailed: >-
-    Не вдалося перевірити право власності на Minecraft. Будь ласка, спробуйте ще
-    раз або перевірте ваше мережеве з'єднання.
-  userExchangeXboxTokenFailed: >-
-    Не вдалося обміняти токен Xbox з токена Microsoft. Будь ласка, спробуйте ще
-    раз або перевірте ваше мережеве з'єднання.
-  userLoginMinecraftByXboxFailed: >-
-    Не вдалося увійти в Minecraft за допомогою токена Xbox. Будь ласка,
-    спробуйте ще раз або перевірте ваше мережеве з'єднання.
 launchFailed:
   crash: Гра аварійно завершилася!!
   description: Звіту про збій немає. Це лог помилок та останній лог.
@@ -680,10 +567,7 @@ launcherUpdate:
   alreadyLatest: Актуальна версія
   installAndQuit: Перезапустити для встановлення
   noUpdateAvailable: Оновлень немає
-  reinstall: Перевстановити
   updateToThisVersion: Завантажити та встановити
-liteloader:
-  name: LiteLoader
 localVersion:
   auto: Обчислено автоматично
   delete: Видалити локальну версію
@@ -733,7 +617,7 @@ loginError:
     Не вдалося обміняти токен Minecraft за допомогою токена Xbox. Будь ласка,
     переконайтеся, що у вас є Minecraft в Xbox, або спробуйте ще раз.
   loginXboxAgeRestricted: >-
-    Не ввійти в систему xbox через епоху віку. 
+    Не ввійти в систему xbox через епоху віку.
 
     Будь ласка, переконайтеся, що вік встановлений для вашого облікового запису
     Microsoft, а вік перевищує 18.
@@ -757,11 +641,8 @@ logsCrashes:
   placeholder: Файлів не знайдено
   title: Логи або звіти про збої
 me:
-  games: Мої ігри
-  modpacks: Мої модпаки
   news: Новини
   recentPlay: Нещодавно грав
-  versions: Встановлені версії
 minecraftVersion:
   name: Версія Minecraft
   release: Випуск
@@ -770,11 +651,9 @@ minecraftVersion:
 mod:
   acceptVersion: Прийняти {version}
   applyGroupRules: Застосувати збережені правила групування
-  categories: Категорії
   compatible: Сумісний мод.
   createGroup: Створити групу
   currentVersion: Поточна {current}
-  deletion: Видалити мод
   deletionHint: >-
     Ви назавжди втратите цей мод та його метадані. Ви впевнені, що хочете
     видалити його? | Ви назавжди втратите ці моди та їхні метадані. Ви впевнені,
@@ -795,7 +674,6 @@ mod:
   groupName: Назва групи
   groupNameRequired: Назва групи обов'язкова
   hasUpdate: Мод має нову версію!
-  hideIncompatible: Приховати несумісні моди
   incompatible: Несумісний мод.
   incompatibleHint: Перевірте звіт про сумісність ваших модів
   incompatibleHintDescription: >-
@@ -803,7 +681,6 @@ mod:
     збігаються.
   license: Ліцензія
   links: Посилання
-  manage: Керувати модами
   maybeCompatible: Можливо сумісний.
   modloaderSelectHint: >-
     Мод підтримує наступні завантажувачі модів. Будь ласка, виберіть один для
@@ -816,26 +693,18 @@ mod:
   noGroupsYet: Груп поки немає. Створіть одну!
   noModLoaderHint: Не забудьте увімкнути завантажувач модів, щоб використовувати моди!
   openLink: Відкрити посилання на мод {url}
-  projectId: ID Проєкту
   search: Пошук модів
   searchGroups: Пошук груп...
-  searchOnCurseforge: Шукати {name} на Curseforge
   searchOnMcWiki: Знайдіть {name} в енциклопедії MC.
-  searchOnModrinth: Шукати {name} на Modrinth
   selectOrCreateGroup: Вибрати або створити групу
   showDirectory: Показати каталог модів
   showFile: Показати шлях до мода {file}
-  showInCurseforge: Показати мод на Curseforge
   showInModrinth: Показати {name} на Modrinth
-  sourceUrl: Джерело
   switchDefaultSource: Типове джерело модів
   syncGroupRules: Зберегти правила групування
-  technical: Технічна інформація
   toUpdate: '{count} оновлень'
   ungroup: Розгрупувати
-  updateAt: Оновлено
   versions: Версії
-  wikiUrl: Вікіи
 modFilter:
   clear: Очистити фільтр
   dependenciesInstallOnly: Показувати лише відсутні залежності модів
@@ -860,11 +729,8 @@ modInstall:
   checkedUpgrade: Оновлення перевірено
   currentVersion: Обрана версія
   dependencyHint: Встановлено іншу версію {version}
-  display: Відображення модів
-  install: Встановити
   installDependencies: Встановити відсутні залежності
   installHint: Буде встановлено файл {file} з {dependencies} залежностями
-  installed: Встановлено
   noVersionSupported: Мод підтримує лише Minecraft {supported}.
   recommendation: Вивчіть моди {first} в {modrinth} та {curseforge}!
   reinstall: Перевстановити
@@ -908,17 +774,11 @@ modpack:
   export: Експортувати як модпак
   exportDirectory: Експортний каталог
   exportDirectoryDescription: Modpack буде експортований на завантаження папки за замовчуванням
-  general: Загальна інформація
   includeAssets: Включити ресурси
-  includeLibraries: Включити бібліотеки
   includes: Файли для включення
   modpackVersion: Версія модпаку
   name: Модпак | Модпаки
   overrides: Перевизначення
-  showFile: Показати файл {file}
-  showInCurseforge: Показати {name} на Curseforge
-  showInFtb: Показати {name} на FTB
-  showInModrinth: Показати {name} на Modrinth
   url: URL
   urlHint: URL-адреса домашньої сторінки вашого модпаку
 modpackImportConfirm:
@@ -1029,12 +889,10 @@ modrinth:
   description: Опис
   downloads: Завантажень
   environments:
-    client: Клієнт
     default: За замовчуванням
     name: Середовище
     optional: Необов'язково
     required: Обов'язково
-    server: Сервер
     unsupported: Не підтримується
   externalResources: Зовнішні ресурси
   featuredVersions: Рекомендовані версії
@@ -1057,18 +915,11 @@ modrinth:
   loginTitle: Увійти в Modrinth
   modLoaders:
     name: Завантажувачі модів
-  perPage: На сторінку
   projectId: ID проєкту
   projectMembers: Учасники проєкту
   projectType:
-    mod: Мод
     modpack: Модпак
-    name: Тип проєкту
-    resourcePack: Пакет ресурсів
-    shader: Шейдер
   projects: '{count} проєктів'
-  quickSearch: Шукати {title}
-  searchText: Пошук
   serverSide: Серверна сторона
   sort:
     downloads: Кількість завантажень
@@ -1136,7 +987,6 @@ multiplayer:
     Недійсний токен, будь ласка, переконайтеся, що токен від вашого вузла
     правильний
   initiateConnection: Ініціювати з'єднання
-  inviteLink: Посилання-запрошення
   joinConnection: >-
     Якщо ваш вузол вже ініціював з'єднання, вам потрібно приєднатися до
     з'єднання.
@@ -1174,7 +1024,6 @@ multiplayer:
   start: Почати
   startNewP2PConnection: Натисніть кнопку "Почати", щоб створити нове з'єднання з вузлом
 myStuff: Мої речі
-name: Назва
 natType:
   blocked: Заблоковано
   fullCone: Повний конус
@@ -1190,9 +1039,6 @@ neoForgedVersion:
 news:
   name: Новини
   readMore: Читати далі
-next: Далі
-'no': Ні
-ok: OK
 optifineVersion:
   disable: Вимкнути Optifine
   empty: Optifine не підтримує Minecraft {version}
@@ -1214,32 +1060,23 @@ peerIceGatheringState:
   gathering: Збір сервера ICE
 peerSignalingState:
   have-local-offer: Очікування опису вузла
-popular: Популярність
 presence:
-  curseforge: Перегляд CurseForge
-  curseforgeProject: Перегляд {name} на Curseforge
   instance: Бездіяльність в екземплярі {instance}
   instanceSetting: 'Редагування налаштувань екземпляра: {instance}'
   mod: Перегляд модів у {instance}
-  modrinth: Перегляд Modrinth
   modrinthProject: Перегляд {name} на Modrinth
   resourcePack: Перегляд пакетів ресурсів у {instance}
   save: Перегляд збережень у {instance}
   setting: Перегляд сторінки налаштувань
   shaderPack: Перегляд пакетів шейдерів у {instance}
   version: Перегляд сторінки версій
-previous: Назад
 proxy:
   host: Хост
   port: Порт
 quiltVersion:
   disable: Вимкнути Quilt
   empty: Quilt не підтримує Minecraft {version}
-refresh: Оновити
-refreshResource: Оновити ресурси
-remove: Видалити
 resourcepack:
-  available: Доступні
   compatible: Сумісний формат {format} з {version}
   defaultDescription: Типовий вигляд Minecraft
   delete:
@@ -1249,25 +1086,18 @@ resourcepack:
     title: Видалити пакет ресурсів
   dropHint: Перетягніть сюди папку/zip-файл пакета ресурсів для імпорту.
   enable: '{count} пакетів ресурсів увімкнено'
-  import: Імпортувати пакет ресурсів
   incompatible: >-
     Несумісний формат пакета ресурсів ({format}). Підходить {accept}. Поточний
     {actual}.
-  independent: Екземпляр використовує незалежну папку пакетів ресурсів
-  manage: Керувати пакетами ресурсів
   name: Пакет ресурсів | Пакети ресурсів
-  searchHint: Шукати пакети ресурсів
   searchOnCurseforge: Шукати {name} на Curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selectSearchHint: Шукати та вибрати пакет ресурсів
   selected: Вибрані пакети ресурсів
-  shared: Екземпляр використовує спільну папку пакетів ресурсів
   showDirectory: Показати каталог пакетів ресурсів
   showFile: Показати пакет ресурсів у папці {file}
   showInCurseforge: Показати {name} на Curseforge
   unselected: Невибрані пакети ресурсів
 save:
-  cheat: Чітерство
   copy:
     cancel: Скасувати копіювання
     confirm: Почати копіювання
@@ -1276,34 +1106,19 @@ save:
       збереження.
     name: Копіювати збереження
     title: Копіювати збереження в інший профіль
-  copyFrom:
-    cancel: Скасувати
-    confirm: Почати копіювання
-    description: >-
-      Ви можете розгорнути збереження в цьому екземплярі з інших екземплярів або
-      з керованих ресурсів (Curseforge)
-    from: З {src}
-    fromProfile: З інших екземплярів
-    fromResource: З керованих ресурсів
-    title: Імпортувати збереження з керованого джерела
   createNew: Створити новий світ
   createdWorlds: У вас {count} світів
   deleteHint: >-
     Цю операцію неможливо скасувати. Ви назавжди втратите дані збереження. Ви
     впевнені, що хочете видалити це збереження?
   deleteTitle: Видалити збереження
-  detail: Більше інформації
   dropHint: Перетягніть сюди zip-файл збереження для імпорту
   export: Експортувати збереження
   exportMessage: Експортувати збереження як zip-файл
   exportTitle: Експортувати збереження
   gameMode: режим гри
-  import: Імпортувати збереження
-  importMessage: Імпортувати збереження з zip-файлу
-  importTitle: Імпортувати збереження
   independent: Екземпляр використовує незалежну папку збережень
   levelName: Назва рівня
-  manage: Керувати збереженнями
   name: Збереження | Збереження
   search: Шукати збереження
   seed: Seed
@@ -1312,12 +1127,8 @@ save:
   showDirectory: Показати каталог збережень
   unselected: Спільні збереження
   useCurrent: Використовувати поточний світ
-  viewSeedMap: View Seed Map on Chunkbase
-saves: {}
 screenshots:
   empty: У вас немає знімків екрана
-  goto: Відкрити папку
-  name: Знімки екрана
   playRandom: Перемішати
   playSequence: Відтворити по порядку
 search:
@@ -1327,8 +1138,6 @@ search:
 server:
   acceptingMinecraftVersion: Приймає версію Minecraft
   creationHint: Будь ласка, заповніть адресу сервера та пропінгуйте сервер
-  delete: {}
-  error: {}
   expectedVersions: Підтримувані версії
   export: Експортувати сервер
   exportNoFilesHint: >-
@@ -1356,7 +1165,6 @@ server:
   pings: Пінги
   players: Гравці
   port: Порт
-  recommendedMinecraftVersion: Версія Minecraft
   status: Статус сервера
   unknown: Невідомий сервер
   unknownDescription: Невідомий сервер. Будь ласка, оновіть
@@ -1376,6 +1184,7 @@ setting:
     auto: Автоматично (визначається мережею)
     official: Офіційний (Mojang)
   appearance: Зовнішній вигляд
+  appearanceDescription: Налаштування зовнішнього вигляду лаунчера
   appxUpdateHint: >-
     Лаунчер завантажить та виконає інсталятор. Якщо спливаюче вікно інсталятора
     не вдалося, будь ласка, запустіть його вручну.
@@ -1383,8 +1192,6 @@ setting:
   backgroundColorAbove: Показувати колір фону як накладення
   backgroundColorAboveDescription: Це зробить колір фону видимим поверх фонового зображення або відео.
   backgroundImage: Фонове зображення
-  backgroundImageBlur: Розмиття зображення
-  backgroundImageBlurDescription: Перетягніть для розмиття, легко
   backgroundImageClear: очистити
   backgroundImageDescription: Вибрати зображення як фон або очистити
   backgroundImageFit:
@@ -1410,10 +1217,6 @@ setting:
   backgroundVideoUrlPlaceholder: Введіть URL-адресу HTTP/HTTPS для відео
   backgroundVideoVolume: гучність
   backgroundVideoVolumeDescription: перетягніть для налаштування гучності
-  blurAppBar: Розмиття панелі додатків
-  blurMainBody: Розмиття основного тіла
-  blurMainBodyDescription: Чи повинна права панель лаунчера бути розмитою
-  blurSidebar: Розмиття бічної панелі
   browseRoot: Огляд
   checkUpdate: Перевірити оновлення
   colorTheme:
@@ -1424,7 +1227,6 @@ setting:
     errorColor: Колір помилки
     name: Колір теми та розмиття
     primaryColor: Основний колір
-    secondaryColor: Другорядний колір
     sideBarColor: Колір бічної панелі
     warningColor: Колір попередження
   darkTheme: Тема
@@ -1449,10 +1251,10 @@ setting:
   importSettingsHint: Завантажити налаштування з раніше експортованого файлу
   instanceTheme:
     activeDescription: |-
-      Цей екземпляр використовує спеціальну тему. 
+      Цей екземпляр використовує спеціальну тему.
       Ви можете видалити його, щоб використовувати глобальну тему.
     description: |-
-      Увімкніть спеціальну тему для цього екземпляра. 
+      Увімкніть спеціальну тему для цього екземпляра.
       Це створить копію поточної глобальної теми.
     name: Тема екземпляра
   language: Мова
@@ -1479,15 +1281,12 @@ setting:
     Обмежити максимальну кількість сокетів на хост або для всіх хостів загалом.
     0 означає без обмежень.
   maxSocketsTitle: Макс. HTTP-сокетів
+  memoryAssignment: Призначення пам’яті
+  minecraftOptions: Налаштування Minecraft
   migrateFromOther: Імпортувати з іншого лаунчера
-  myStuffStyle: Стиль домашньої сторінки
-  myStuffStyleHint: Виберіть між класичною сторінкою з новинами або сучасним лаунчером
-  myStuffStyleNew: Лаунчер (Сучасний)
-  myStuffStyleOld: Мої речі (Класика)
-  myStuffStyleSubtitle: Виберіть бажаний макет домашньої сторінки
-  myStuffStyleTitle: Дизайн сторінки
   name: Глобальне налаштування | Глобальні налаштування
   network: Мережеві налаштування
+  newsPosition: Перемістити розділ новин
   officialWebsite: Офіційний вебсайт
   particleMode:
     bubble: Бульбашка
@@ -1516,25 +1315,12 @@ setting:
   showNewsHeader: Показати вітрину новин
   showRoot: Показати
   sidebarAlign: Вирівнювання бічної панелі
-  sidebarAlignCenter: Центр
-  sidebarAlignEnd: Кінець
-  sidebarAlignHint: Вирівнювання вмісту бічної панелі
-  sidebarAlignStart: Початок
-  sidebarBottom: Знизу
   sidebarClassic: Класичний
-  sidebarLeft: Зліва
   sidebarNotch: Notch
   sidebarPosition: Позиція бічної панелі
-  sidebarPositionHint: Виберіть, де буде відображатися бічна панель
-  sidebarPositionHintClassic: Класичний стиль підтримує лише ліву та праву позиції
-  sidebarRight: Справа
   sidebarScale: Масштаб бічної панелі
-  sidebarScaleHint: Налаштування розміру бічної панелі
-  sidebarSettings: Налаштування бічної панелі
-  sidebarSettingsHint: Налаштування зовнішнього вигляду та поведінки бічної панелі
   sidebarStyle: Стиль бічної панелі
   sidebarStyleHint: Виберіть між класичним та сучасним дизайном
-  sidebarTop: Зверху
   streamerMode: Режим стрімера
   streamerModeDescription: Це приховає вашу приватну інформацію, таку як електронна пошта, в лаунчері.
   theme:
@@ -1559,10 +1345,17 @@ setting:
   useProxy: HTTP-проксі
   useProxyDescription: Адреса проксі-сервера для HTTP-запитів
   viewBackgroundMusic: Переглянути музику
-  windowTranslucent: Прозорість вікна
-  windowTranslucentDescription: >-
-    Увімкнути ефект напівпрозорого вікна (Mica у Windows 11, Acrylic у Windows
-    10, Vibrancy у macOS). Потрібен перезапуск.
+  quickLaunchSettings: Швидкий запуск
+  sidebarAutoHide: Автоматично приховувати бічну панель
+  sidebarAutoHideHint: Автоматично приховує бічну панель, коли миша віддаляється
+  sidebarShowOnlyPinned: Показувати лише закріплені
+  sidebarShowOnlyPinnedHint: Показувати лише закріплені екземпляри на бічній панелі
+  themeSettings: Тема
+  authenticationSettings: Автентифікація
+  advancedJavaOptions: Розширені параметри Java
+  advancedMinecraftOptions: Розширені параметри Minecraft
+  resetSettingsError: 'Помилка під час скидання налаштувань: {error}'
+  settingsReloadHint: Лаунчер перезавантажиться для застосування всіх налаштувань.
 settingLabel:
   global: Глобальний
   globalHint: Це налаштування буде слідувати глобальним налаштуванням
@@ -1606,9 +1399,6 @@ setup:
     Макет фокусування - це застарілий макет лаунчера Minecraft. Він призначений
     для використання з одним або кількома екземплярами.
   game:
-    description: >-
-      Виберіть наявний каталог гри (.minecraft), щоб імпортувати наявні ресурси.
-      Так ви зможете швидко ідентифікувати моди, пакети ресурсів тощо.
     name: Імпортувати наявну гру
   locale:
     description: >-
@@ -1618,9 +1408,6 @@ setup:
     language: Мова
     name: Встановити мову
   path: Поточний шлях
-  title: >-
-    Ласкаво просимо до X Minecraft Launcher. Перш ніж почати, нам потрібно, щоб
-    ви
 shaderPack:
   deletion: Видалити пакет шейдерів
   deletionHint: Це видалить файл пакета шейдерів {path} і не може бути скасовано.
@@ -1641,25 +1428,43 @@ shaderPack:
   showDirectory: Показати каталог пакетів шейдерів
   showFile: Показати цей пакет шейдерів у папці
 shared:
-  accept: Прийняти
+  add: Додати
+  author: Автор
+  back: Назад
+  browse: Огляд
+  cancel: Скасувати
+  client: Клієнт
+  description: Опис
+  disable: Вимкнути
+  download: Завантажити
+  edit: Редагувати
+  enable: Увімкнути
+  filter: Фільтр
+  install: Встановити
+  installed: Встановлено
   keepSelected: Залишити вибране
+  manage: Керувати модами
+  name: Назва
+  next: Далі
+  'no': Ні
+  ok: OK
+  previous: Назад
+  refresh: Оновити
+  remove: Видалити
+  server: Сервер
   skipForNow: Пропустити зараз
+  'yes': Так
 sortBy:
   alphabetAsc: Сортувати за алфавітом (за зростанням)
   alphabetDesc: Сортувати за алфавітом (за спаданням)
   timeAsc: Сортувати за часом модифікації (за зростанням)
   timeDesc: Сортувати за часом модифікації (за спаданням)
 store:
-  explore: Ознайомитися
   latestMinecraft: Остання версія Minecraft
   name: Ринок модпаків
-  popular: Популярні модпаки
-  recentUpdated: Нещодавно оновлені
-summery: Підсумок
 tag:
   create: Створити тег
   createSelected: Створити тег для вибраного
-  newTag: Новий тег
 task:
   cancelled: Скасовано
   clear: Очистити завершені завдання
@@ -1671,22 +1476,12 @@ task:
     running: Активне з'єднання
     size: загальна кількість
   connections: Мережеві з'єднання
-  delete: {}
   empty: Немає активних завдань
   failed: Невдача
-  incompatible: >-
-    Несумісний формат текступак ({format}). Відповідний {accept}. Поточний
-    {actual}.
-  manage: Текстурпак
   manager: Менеджер завдань
   nTaskRunning: '{count} завдань виконується'
   name: Завдання | Завдання
   pause: Пауза
-  searchOnCurseforge: Шукати {name} на curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
-  showFile: Відкрити текстурпак {file} у папці
-  showInCurseforge: Показати {name} на curseforge
-  unselected: Невибрані текстурпаки
 theme:
   selectImage: Вибрати зображення
   selectMusic: Вибрати музику
@@ -1776,7 +1571,6 @@ tutorial:
     Натисніть цю іконку, щоб додати або керувати вашим обліковим записом
     Minecraft.
 universalDrop:
-  enableModsAfterImport: Увімкнути моди після імпорту
   start: Імпорт розпочато
   title: Перетягніть файли сюди, щоб імпортувати як
   unknownResource: Невідомий ресурс
@@ -1784,32 +1578,18 @@ update:
   goOfficialWebDownload: Завантажити знову з офіційного вебсайту
 upstream:
   downgrade: Понизити версію
-  missingModpackMetadata: >-
-    Старі метадані модпаку не знайдено.
-
-    Ви все ще можете оновити, але результат може бути неправильним. Будь ласка,
-    зробіть резервну копію файлів вашого екземпляра.
   onlyShowCurrentVersion: Показувати лише поточну версію Minecraft
   update: Оновити
 user:
   accessToken: Токен доступу
   authMode: Служба автентифікації
   authService: Служба авторизації
-  birth: Дата народження (реєстрація)
-  challenges: Дайте відповіді на запитання нижче, щоб підтвердити свою особу
   email: Адреса електронної пошти
-  forgetChallenges: Я забув ці запитання і хочу їх змінити
   id: ID користувача
   info: Інформація про користувача
-  insecureClient: >-
-    Клієнт небезпечний! Будь ласка, підтвердьте свою особу, щоб завантажити
-    скін!
   name: Ім'я користувача
   nameHint: Ім'я, що відображається в грі
   profile: Профіль
-  refreshAccount: Оновити обліковий запис
-  refreshSkin: Оновити скін
-  submitChallenges: Надіслати відповіді
   tokenExpired: Термін дії минув
   tokenValidUntil: Токен дійсний до
 userAccount:
@@ -1825,7 +1605,6 @@ userCape:
   noCape: Немає плаща
 userService:
   add: Додати більше служб
-  authLibInjector: Дотримуйтесь рекомендацій інжектора auth-lib
   authlibInjectorMetadata: Метадані Authlib-Injector
   baseUrlHint: Базова URL-адреса вашої власної служби
   homepage: Домашня сторінка
@@ -1835,14 +1614,12 @@ userService:
   server: Сервер
   skinDomains: Домени скіна
   title: Сторонні служби користувачів
-  validateHint: Використовується для перевірки, чи токен користувача все ще дійсний
   version: Версія
 userServices:
   microsoft:
     account: Обліковий запис Microsoft
     deviceCode: Код пристрою
     deviceCodeHint: Код пристрою буде згенеровано після натискання кнопки "Увійти"
-    fastLogin: Швидкий вхід
     name: Microsoft
     password: Введіть пароль у браузері
     useDeviceCode: Увійти за допомогою коду пристрою
@@ -1877,4 +1654,3 @@ versionType:
   beta: Бета
   name: Статус
   release: Випуск
-'yes': Так

@@ -22,28 +22,19 @@ AppShareInstanceDialog:
   share: Share
   shareNotifyTitle: Share Instance
   shareTitle: Share game files to other player
-BaseSetting: {}
 BaseSettingGeneral:
   title: General
-FeedTheBeast:
-  search: Search In FTB
-FeedTheBeastCard: {}
-FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: Incompatible Java
   incompatibleJavaHint: Current Java might be incompatible with selected Minecraft!
   missingJava: Missing Java
   missingJavaHint: 'The Launcher cannot detect any java in your computer. You can:'
-  optionAutoDownload: {}
-  optionManualDownload: {}
-  optionSelectJava: {}
   optionSwitch:
     name: Switch to {version}
 HomeLaunchMultiInstanceDialog:
   confirm: Yes, Launch
   description: You are launching multiple instances of Minecraft. Are you sure?
   title: Multiple Instances
-HomeSyncButton: {}
 HomeSyncDialog:
   pull: Pull
   push: Push
@@ -60,13 +51,11 @@ HomeSyncDialogPush:
   upload: Upload Instance
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
-add: Add
 ago:
   day: '{duration} day ago | {duration} days ago'
   hour: '{duration} hour ago | {duration} hours ago'
   minute: '{duration} minute ago | {duration} minutes ago'
   second: '{duration} second ago | {duration} seconds ago'
-all: All
 askAICrash:
   copyPrompt: Copy the prompt to ask AI
   description: >-
@@ -74,41 +63,26 @@ askAICrash:
     to ask AI about this game crash!
   selectPlatform: Open an AI platform and paste the prompt you just copied.
 authProfileAddedNotification: Auth Profile {name} Added
-author: Author
-back: Back
 baseSetting:
   title: Instance Settings
-browse: Browse
 browseApp:
   createShortcut: Create Shortcut
   default: DEFAULT
   delete: Delete
   launch: Launch and set as Default
 browseApps: Viewing the launcher user interface
-cancel: Cancel
-checkUpdate:
-  name: Check Update
 color: Color
 confirm: Start
 copyClipboard:
   success: Copy to clipboard
 create: Create
 curseforge:
-  authors: Authors
   category: Category
   createdDate: Created Date
-  downloadOnly: Download
-  file:
-    gameVersion: Game Version
-    install: install
-    modLoader: Mod Loader
   installTo: Install to {path}
   installToStorage: Install to Storage
   lastUpdate: Last Update Date
-  name: CurseForge
-  project: {}
   releasedDate: Released Date
-curseforgeCard: {}
 curseforgeCategory:
   API and Library: APIs and libraries
   Addons: Supplements
@@ -165,13 +139,6 @@ curseforgeCategory:
 dataMigration:
   apply: Apply Setting
   directoryCriteriaHint: Please make sure your new directory location is an EMPTY directory!
-  migrationDestinationIsFile: Migration destination is a file! Please select an empty directory!
-  migrationDestinationIsNotEmptyDirectory: >-
-    Migration destination is not an empty directory! Please make sure you select
-    an empty directory!
-  migrationNoPermission: >-
-    No permission to rename the old directory to new directory! Please make sure
-    the launcher has access to both places!
   placeholder: Please click here to select directory
   setRootCause: >-
     You will lose your data (Maps, Resource Packs, Mods) if you close the
@@ -190,8 +157,6 @@ dependencies:
   name: Dependencies
   optional: Optional
   required: Required
-description: Description
-detail: Detail
 diagnosis:
   badInstall:
     message: Click to try to reinstall this version.
@@ -212,25 +177,13 @@ diagnosis:
   corruptedVersionJar:
     message: Click to install this version
     name: Corrupted version jar for Minecraft %{version}.
-  corruptedVersionJson:
-    message: Click to install this version
-    name: Corrupted version %{version} json.
   incompatibleJava:
-    message: You can ask Launcher to download it for you.
     name: The java version {javaVersion} is not suitable for {version}!
   instanceFiles:
     description: The instance installation includes {counts} files.
     title: Incompleted instance installation
   invalidJava:
-    message: Click to use another java to launch.
     name: Invalid java location.
-  missingAssets:
-    message: Launcher will install assets for you
-    name: 'Missing asset: {name} | Missing asset: {name} | Missing %{count} assets.'
-  missingAssetsIndex:
-    message: Launcher will download assets index for you
-    name: Missing assets index file of {version}.
-  missingAuthlibInjector: {}
   missingJava:
     message: Click to resolve this problem
     name: Cannot find Java to launch Minecraft!
@@ -242,9 +195,6 @@ diagnosis:
   missingVersion:
     message: Click to install this version
     name: The version {version} is not installed!
-  missingVersionJar:
-    message: Click to install this version
-    name: Missing version jar for Minecraft %{version}
   unzipFileNotFound:
     description: Cannot find {file}
     title: Modpack file not found
@@ -253,30 +203,26 @@ difficulty:
   hard: Hard
   normal: Normal
   peaceful: Peaceful
-disable: Disable
 disk:
   available: Available
   used: Used
-download: Download
 downloadCount: '{count} downloads'
-downloadUpdate: Download Update
+downloadModMetadataDb:
+  name: Download Mod Metadata Database
+downloadUpdate:
+  name: Download Update {version}
+duplicateInstance:
+  name: Duplicate Instance
 duration:
   day: '{duration} day | {duration} days'
   hour: '{duration} hour | {duration} hours'
   minute: '{duration} minute | {duration} minutes'
-  name: Delete {name}
-  'no': 'No'
   second: '{duration} second | {duration} seconds'
-  'yes': Yes, sir.
-edit: Edit
-enable: Enable
 env:
   select:
     all: Select All
     fit: Select Fit
     none: Select None
-error:
-  name: Error | Errors
 errors:
   BadForgeInstallerJarError: >-
     Cannot parse forge installer jar file. Maybe the forge has new installer
@@ -309,8 +255,8 @@ exception:
     HTTP request to {url} failed. Status code {statusCode}. {code}. Please retry
     or check your network. If this error persists, please send a report to
     developer team.
-existed: Existed
-exportModpackTarget: {}
+exportModpack:
+  name: Export Modpack
 extensions:
   mrpack: Modrinth Modpack
   zip: Zip File
@@ -347,24 +293,12 @@ fileDetail:
   fileSize: File Size
   filesize: File size
   hash: Hash
-filter: Filter
 filterLocalOnly: Only show installed
-finish: Finish
-forgeConfig:
-  hint: >-
-    Please at least launch the game with this mod once, so that we can detect
-    its config file!
 forgeVersion:
-  common: Common
   disable: Disable Forge
   empty: Forge doesn't have any release for Minecraft {version}
   latest: Latest
-  name: Forge
   recommended: Recommended
-  showBuggy: Show Buggy
-  showRecommendedAndLatestOnly: Recommended and Latest Only
-  version: Forge Version
-gameSetting: {}
 gameType:
   adventure: Adventure Mode
   creative: Creative Mode
@@ -374,7 +308,6 @@ help: Help
 home: Home
 importModpack:
   name: Import Modpack
-install: Install
 installAssets:
   asset: Install {count} Assets
   assetIndex: Check Assets Index File
@@ -385,7 +318,6 @@ installFabric:
   name: Install Fabric
 installForge:
   downloadInstaller: Download Installer
-  library: Install Library {lib}
   name: Install Forge
   postProcessing: Post Processing
 installInstance:
@@ -399,35 +331,24 @@ installJre:
   download: Download compressed JRE file
   name: Install Java Runtime Library
 installLabyMod:
-  asset: Install Asset {name}
-  json: Generate JSON {version}
   name: Install LabyMod
 installLibraries:
   library: Install Library
   name: Install Libraries
-installModpack:
-  deploy: Deploy
-  download:
-    file: Download File
-    name: Download
-  name: Install Modpack
-  unpack: Unpack Modpack
 installModrinthFile:
   name: Install Modrinth
 installOptifine:
   download: Download Optifine Universal
-  jar: Generate Jar
-  json: Generate Json
   name: Install Optifine
-installResource:
-  fail: Fail to install {file}
-  success: Install resource {file} succeeded
+installProfile:
+  name: Install Profile {version}
+installQuilt:
+  name: Install Quilt {version}
 installVersion:
   jar: Install Version Jar
   json: Install Version Json
   name: Install Minecraft Client {version}
 instance:
-  addServer: Add Server
   changeIcon: Change Icon
   contents: Content
   current: Current Instance
@@ -441,12 +362,10 @@ instance:
   fileApi: The synchronize file server API url
   fileApiHint: The url to synchronize instance files from a remote config server.
   fullscreen: Fullscreen
-  gameVersion: Game Version
   height: Height
   icon: Profile Icon
   iconHint: The icon could be a file or internet url link.
   iconUrl: Icon Url
-  includeVersion: Include Version | Include Versions
   installModpack: Update instance from modpack
   lastPlayed: Last Played
   launchArguments: Launch Arguments Preview
@@ -470,7 +389,6 @@ instance:
   prependCommandHint: This will prepend this command before all the launch commands
   requireName: The name is required
   resolution: Resolution
-  resolutionEnabled: Enable custom resolution
   resolutionPreset: Resolution Preset
   showInstance: Show game folder
   updates: Updates
@@ -478,7 +396,6 @@ instance:
   useSharedOptionsDesc: This will link the options.txt to a shared file across instance
   useSharedServersList: Use shared servers list
   useSharedServersListDesc: This will link the servers.dat to a shared file across instance
-  versionHint: The Minecraft version of this game
   vmOptions: JVM Options
   vmOptionsHint: Extra arguments to pass to the JVM
   vmVar: Environment Variables
@@ -559,12 +476,9 @@ instances:
   addVanillaDescription: >-
     Import from common .minecraft folder. This will duplciate the original game
     profile to XMCL.
-  choose: Select Game
-  empty: No instances in this folder
   fix: Repair
   folder: Folder
   folderSetting: Folder Settings
-  importFolder: Import from folder
   importFolderDescription: Import Minecraft to Launcher
   loadingFiles: Loading Modpack Files
   refreshServers: Refresh Servers
@@ -574,7 +488,6 @@ items:
 java:
   allocatedLong: Use system default java
   allocatedShort: Auto Allocated
-  browse: Browse Java executable
   importFromFile: Import Java From File
   invalid: Invalid Java Location
   location: Java Location
@@ -584,7 +497,6 @@ java:
   memoryManual: Manual
   memoryUnassigned: Unassign
   minMemory: Min Memory
-  modifyInstance: Modify Java Path
   noMemory: Do not limit memory usage
   refresh: Refresh Local Java
   systemMemory: 'System Free Memory: {free} / {total}'
@@ -629,22 +541,9 @@ launchBlocked:
       Please check your java, or give more permissions to the launcher and
       retry. If this still doesn't work, please contact the developers.
     title: Fail to start game process
-  launchUserStatusRefreshFailed:
-    description: Cannot refresh current selected user status.
-    title: Fail to validate user status
   unexpectedText: >-
     This is unexpected. You can restart the launcher to mitigate the issue.
     Please contact author if this issue happens again.
-  userAcquireMicrosoftTokenFailed: >-
-    Acquire Microsoft token failed. Please check retry or check your Microsoft
-    account.
-  userCheckGameOwnershipFailed: Failed to check Minecraft ownership. Please retry or check your network.
-  userExchangeXboxTokenFailed: >-
-    Failed to exchange xbox token from Microsoft token. Please retry or check
-    your network.
-  userLoginMinecraftByXboxFailed: >-
-    Failed to login Minecraft with xbox token. Please retry or check your
-    network.
 launchFailed:
   crash: Game Crashed!!
   description: There is no crash report. This this the error log and latest log.
@@ -680,10 +579,7 @@ launcherUpdate:
   alreadyLatest: Up To Date
   installAndQuit: Restart to Install
   noUpdateAvailable: No Update Available
-  reinstall: Reinstall
   updateToThisVersion: Download and Install
-liteloader:
-  name: LiteLoader
 localVersion:
   auto: Auto Computed
   delete: Delete Local Version
@@ -748,13 +644,10 @@ logsCrashes:
   placeholder: No Files Found
   title: Logs or Crash Reports
 me:
-  games: My Games
-  modpacks: My Modpacks
   news: News
   recentPlay: Recent Play
-  versions: Installed Versions
-  viewByDate: View by Date
-  viewByFolder: View by Folder
+migrateMinecraft:
+  name: Migrate Minecraft Files
 minecraftVersion:
   name: Minecraft Version
   release: Release
@@ -763,11 +656,9 @@ minecraftVersion:
 mod:
   acceptVersion: Accept {version}
   applyGroupRules: Apply saved grouping rules
-  categories: Categories
   compatible: Compatible Mod.
   createGroup: Create Group
   currentVersion: Current {current}
-  deletion: Delete Mod
   deletionHint: >-
     You will lose this mod & its metadata forever. Are you sure you want to
     delete it? | You will lose these mods & their metadata forever. Are you sure
@@ -784,23 +675,18 @@ mod:
   enableAll: Enable All
   enabled: '{count} Mods enabled'
   filter: Filter Mods
-  filterDisabled: Filter Disabled
   group: Group up
   groupInstalled: Group Installed Mods
   groupName: Group Name
   groupNameRequired: Group name is required
   hasUpdate: Mod has a new version!
-  hideIncompatible: Hide Incompatible Mods
   incompatible: Incompatible Mod.
   incompatibleHint: Show Incompatible
   incompatibleHintDescription: >-
     Some mods dependencies might be missing. Or some dependencies versions do
     not matched.
-  installed: Installed
   license: License
   links: Links
-  manage: Manage
-  manageHint: Select a mod from the list to view details, versions, and install options.
   maybeCompatible: Maybe Compatible.
   modloaderSelectHint: The mod support following mod loaders. Please select one to install.
   modloaderSelectNotSupported: Not found {modloader} for Minecraft {minecraft}
@@ -811,27 +697,19 @@ mod:
   noGroupsYet: No groups yet. Create one!
   noModLoaderHint: Don't forget to enable a modloader to use mods!
   openLink: Open the mod url {url}
-  projectId: Project ID
   search: Search Mods
   searchGroups: Search groups...
-  searchOnCurseforge: Search {name} in curseforge
   searchOnMcWiki: Look up {name} in the MC encyclopedia.
-  searchOnModrinth: Search {name} in Modrinth
   selectOrCreateGroup: Select or Create Group
   showDirectory: Show mods directory
   showFile: Show the mod path {file}
-  showInCurseforge: Show the mod in curseforge
   showInModrinth: Show {name} in Modrinth
   showUpdates: Show Updates
-  sourceUrl: Source
   switchDefaultSource: Default Mod Source
   syncGroupRules: Save grouping rules
-  technical: Technical Information
   toUpdate: '{count} updates'
   ungroup: Ungroup
-  updateAt: Updated
   versions: Versions
-  wikiUrl: Wiki
 modFilter:
   clear: Clear Filter
   dependenciesInstallOnly: Only show missed dependencies mods
@@ -857,11 +735,8 @@ modInstall:
   checkedUpgrade: Upgrade checked
   currentVersion: Selected Version
   dependencyHint: Installed another version {version}
-  display: Mods Display
-  install: Install
   installDependencies: Install Missing Dependencies
   installHint: Will install {file} file with {dependencies} dependencies
-  installed: Installed
   loadingVersions: Loading available versions...
   noVersionSupported: Mod only supports Minecraft {supported}.
   noVersionsAvailable: No compatible versions available for this game version
@@ -909,17 +784,11 @@ modpack:
   export: Export as Modpack
   exportDirectory: Export Directory
   exportDirectoryDescription: The modpack will be exported to Downloads folder by default
-  general: General Information
   includeAssets: Include Assets
-  includeLibraries: Include Libraries
   includes: Files to include
   modpackVersion: Modpack Version
   name: Modpack | Modpacks
   overrides: Overrides
-  showFile: Show File {file}
-  showInCurseforge: Show {name} in Curseforge
-  showInFtb: Show {name} in FTB
-  showInModrinth: Show {name} in Modrinth
   url: URL
   urlHint: The home page url of your modpack
 modpackImportConfirm:
@@ -1031,12 +900,10 @@ modrinth:
   downloads: Downloads
   environments:
     all: All
-    client: Client
     default: Default
     name: Environment
     optional: Optional
     required: Required
-    server: Server
     unsupported: Unsupported
   externalResources: External Resources
   featuredVersions: Featured Versions
@@ -1061,19 +928,11 @@ modrinth:
     name: Mod Loaders
   modpackSource:
     source: Source
-  name: Modrinth
-  perPage: Per Page
   projectId: Project Id
   projectMembers: Project Members
   projectType:
-    mod: Mod
     modpack: Modpack
-    name: Project Type
-    resourcePack: Resource Pack
-    shader: Shader
   projects: '{count} projects'
-  quickSearch: Search {title}
-  searchText: Search
   serverSide: Server Side
   sort:
     downloads: Download counts
@@ -1141,7 +1000,6 @@ multiplayer:
   groupId: Group Id
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
-  inviteLink: Invite Link
   joinConnection: >-
     If your peer has already initiated a connection, you need to Join
     Connection.
@@ -1181,7 +1039,6 @@ multiplayer:
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
 myStuff: My Stuff
-name: Name
 natType:
   blocked: Blocked
   fullCone: Full Cone
@@ -1197,9 +1054,6 @@ neoForgedVersion:
 news:
   name: News
   readMore: Read More
-next: Next
-'no': 'No'
-ok: OK
 optifineVersion:
   disable: Disable Optifine
   empty: Optifine does not support Minecraft {version}
@@ -1221,32 +1075,25 @@ peerIceGatheringState:
   gathering: Gathering Ice Server
 peerSignalingState:
   have-local-offer: Waiting peer description
-popular: Popularity
 presence:
-  curseforge: Viewing CurseForge
-  curseforgeProject: Viewing {name} in curseforge
   instance: Idle in Instance {instance}
   instanceSetting: 'Edit Instance Setting: {instance}'
   mod: Viewing Mods in {instance}
-  modrinth: Viewing Modrinth
   modrinthProject: Viewing {name} in Modrinth
   resourcePack: Viewing Resource Packs in {instance}
   save: Viewing Saves in {instance}
   setting: Viewing Setting Page
   shaderPack: Viewing Shader Packs in {instance}
   version: Viewing Versions Page
-previous: Previous
 proxy:
   host: Host
   port: Port
 quiltVersion:
   disable: Disable Quilt
   empty: Quilt does not support Minecraft {version}
-refresh: Refresh
-refreshResource: Refresh Resources
-remove: Remove
+reinstall:
+  name: Reinstall {version}
 resourcepack:
-  available: Available
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft
   delete:
@@ -1256,84 +1103,49 @@ resourcepack:
     title: Delete the resource pack
   dropHint: Drop Resource Pack's folder/zip here to import.
   enable: '{count} resource packs enabled'
-  import: Import Resource Pack
   incompatible: >-
     Incompatible Resource Pack format({format}). Fitin {accept}. Current
     {actual}.
-  independent: Instance use independent resource pack folder
-  loadMore: Load More Resource Packs
-  manage: Manage Resource Packs
-  market: Resource Market
   name: Resource Pack | Resource Packs
   noPacks: No resource packs found
   search: Search Resource Packs...
-  searchHint: Search for resource packs on Modrinth and CurseForge
   searchOnCurseforge: Search {name} in curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selectSearchHint: Search and select resource pack
   selected: Selected Resource Packs
-  shared: Instance uses shared resource pack folder
   showDirectory: Show resource pack directory
   showFile: Show resource pack in folder {file}
   showInCurseforge: Show {name} in curseforge
   unselected: Unselected Resource Packs
 save:
   allowCheats: Allow Cheats
-  cheat: Cheating
   copy:
     cancel: Cancel Copy
     confirm: Start Copy
     description: Please select destination profile(s) you want the save to go.
     name: Copy Save
     title: Copy Save to Other Profile
-  copyFrom:
-    cancel: Cancel
-    confirm: Start Copy
-    description: >-
-      You can deploy save to this instance from other instances, or from managed
-      resources (curseforge)
-    from: From {src}
-    fromProfile: From Other Instances
-    fromResource: From Managed Resources
-    title: Import Save from Managed Source
   createNew: Create New World
   createdWorlds: You have {count} worlds
   deleteHint: >-
     This operation cannot be reverted. You will lose the save data forever. Are
     you sure you want to delete this save?
   deleteTitle: Delete the Save
-  detail: More Info
   difficulty: Difficulty
   dropHint: Drag save zip here to Import
-  edit:
-    confirm: Save Changes
-    title: Edit World Settings
   export: Export Save
   exportMessage: Export the Save as zip
   exportTitle: Export the Save
   gameMode: game mode
-  import: Import Save
-  importMessage: Import a Save from zip
-  importTitle: Import a Save
   independent: Instance use independent saves folder
   levelName: Level Name
   loadMap: Load Map
-  loadMore: Load More Worlds
-  localOnly: Local Saves Only
-  localOnlyHint: >-
-    World saves are stored locally on your computer and are not available from
-    online markets. You can import, export, and manage your saves in the
-    Installed tab.
-  manage: Manage Saves
   mapError: Map Error
   mapInfo: 'Interactive 3D world preview:'
   mapLoaded: Map Loaded
   mapPreview: Map Preview
   name: Save | Saves
-  noSaves: No saves found
   openFolder: Open Saves Folder
   properties: World Properties
-  rendering: Rendering...
   search: Search Maps...
   searchHint: Search for worlds on CurseForge
   searchSaves: Search Saves
@@ -1345,20 +1157,13 @@ save:
   useCurrent: Use current world
   useMouseRotate: Use mouse to rotate view
   useScrollZoom: Use scroll wheel to zoom
-  viewInstalled: View Your Saves
-  viewSeedMap: View Seed Map on Chunkbase
-saves: {}
 screenshots:
-  count: screenshots
   empty: You don't have any screenshots
   gallery: Screenshot Gallery
-  goto: Open Folder
   hint: Take screenshots in game by pressing F2
-  name: Screenshots
   openFolder: Open Screenshots Folder
   playRandom: Shuffle
   playSequence: Play in order
-  viewAll: View All Screenshots
 search:
   favorate: Collection
   local: Installed
@@ -1366,8 +1171,6 @@ search:
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
   creationHint: Please Fill the server address and ping the server
-  delete: {}
-  error: {}
   expectedVersions: Supported Versions
   export: Export Server
   exportNoFilesHint: >-
@@ -1395,7 +1198,6 @@ server:
   pings: Pings
   players: Players
   port: Port
-  recommendedMinecraftVersion: Minecraft Version
   status: Server Status
   unknown: Unknown Server
   unknownDescription: Unknown Server. Please Refresh
@@ -1409,6 +1211,12 @@ serverStatus:
   timeout: §4Connect server timeout!
 setting:
   about: About
+  aboutContributors: 🧑‍💻 Contributors 🧑‍💻
+  aboutSponsors: 😇 Sponsors 😇
+  aboutLicense: MIT LICENSE
+  aboutLicenseInfo: Free code signing on Windows provided by SignPath.io, certificate by SignPath Foundation
+  aboutDenoDescription: XMCL leverages Deno Deploy's hassle-free platform for serverless JavaScript applications
+  aboutBmclDescription: BMCL API provides convenient downloads for users in Chinese Mainland
   advancedJavaOptions: Advanced Java Options
   advancedSettings: Advanced Settings
   advancedSettingsHint: Danger zone - reset or manage launcher data
@@ -1425,8 +1233,6 @@ setting:
   backgroundColorAbove: Show background color as overlay
   backgroundColorAboveDescription: This will make background color display above the background image or video.
   backgroundImage: Background image
-  backgroundImageBlur: Image blur
-  backgroundImageBlurDescription: Drag to blur, easy
   backgroundImageClear: clear
   backgroundImageDescription: Select an image as background or clear
   backgroundImageFit:
@@ -1452,10 +1258,6 @@ setting:
   backgroundVideoUrlPlaceholder: Enter HTTP/HTTPS URL for video
   backgroundVideoVolume: volume
   backgroundVideoVolumeDescription: drag to adjust volume
-  blurAppBar: Blur app bar
-  blurMainBody: Blur Main Body
-  blurMainBodyDescription: Should the launcher right pane be blurred
-  blurSidebar: Blur sidebar
   browseRoot: Browse
   checkUpdate: Check Update
   colorTheme:
@@ -1466,13 +1268,13 @@ setting:
     errorColor: Error Color
     name: Theme Color and Blur
     primaryColor: Primary Color
-    secondaryColor: Secondary Color
     sideBarColor: Side Bar
     warningColor: Warning Color
   darkTheme: Theme
   darkThemeDescription: Choose between dark or light theme
   developerMode: Developer Mode
   developerModeDescription: Developer Mode is for testing your own mods
+  devModeLabel: DEV
   disableTelemetry: Disable Telemetry
   disableTelemetryDescription: XMCL will collect the game launch and user login events.
   enableDedicatedGPUOptimization: Assign Dedicated GPU
@@ -1489,11 +1291,6 @@ setting:
   hideNewsHeader: Hide News Showcase
   importSettings: Import Settings
   importSettingsHint: Load settings from a previously exported file
-  instanceLauncher:
-    createNew: Create New Instance
-    search: Search instances...
-    showAll: Show All Instances
-    title: All Instances
   instanceTheme:
     activeDescription: >-
       This instance is using a custom theme. You can delete it to use the global
@@ -1510,24 +1307,15 @@ setting:
     focus: Focus Layout
   layoutDescription: Choose your preferred interface style
   layoutTitle: Interface Layout
+  livePreview: Live Preview
   linuxEnableDedicatedGPUOptimization: Assignment of a dedicated graphics processor
   linuxEnableDedicatedGPUOptimizationDescription: This option assigns a dedicated GPU to the Minecraft process.
   linuxTitlebar: Native title bar
   linuxTitlebarDescription: Use native linux title bar for launcher
   location: Store Location
-  manageLayout:
-    classic: Classic
-    description: Choose the layout for management interface
-    modern: Modern
-    name: Manage Style
   manualUpdateHint: >-
     The version cannot be updated automatically. Please download the launcher
     again from the official website!
-  marketLayout:
-    classic: Classic
-    description: Choose the layout for detail page
-    modern: Modern
-    name: Details Layout
   maunalUpdateHint: >-
     The version cannot be auto-updated. Please redownload the launcher from the
     website!
@@ -1539,14 +1327,6 @@ setting:
   memoryAssignment: Memory Assignment
   migrateFromOther: Import from other launcher
   minecraftOptions: Minecraft Options
-  myStuffStyle: Home Page Style
-  myStuffStyleHint: Choose between classic My Stuff with news or modern instance launcher
-  myStuffStyleNew: Launcher (Modern)
-  myStuffStyleNewDescription: Full-screen instance launcher with search and quick access
-  myStuffStyleOld: My Stuff (Classic)
-  myStuffStyleOldDescription: Classic layout with news carousel and instance grid
-  myStuffStyleSubtitle: Select your preferred home page layout
-  myStuffStyleTitle: Page Design
   name: Global Setting | Global Settings
   network: Network Settings
   newsPosition: Move News Section
@@ -1572,38 +1352,25 @@ setting:
   resetAllSettingsHint: Reset launcher to factory defaults (deletes everything)
   resetAllSettingsSuccess: All settings have been reset. The launcher will restart.
   resetToDefault: Reset to Default
+  resetSettingsError: 'Error resetting settings: {error}'
   select: Select
-  setting:
-    title: Settings
   settingsExported: Settings exported successfully
   settingsImportError: Failed to import settings. Please check the file format.
   settingsImported: Settings imported successfully
+  settingsReloadHint: The launcher will restart to apply all settings.
   showNewsHeader: Unhide News showcase
   showRoot: Show
   sidebarAlign: Sidebar Alignment
-  sidebarAlignCenter: Center
-  sidebarAlignEnd: End
-  sidebarAlignHint: Align the sidebar content
-  sidebarAlignStart: Start
   sidebarAutoHide: Auto-hide Sidebar
   sidebarAutoHideHint: Hide sidebar automatically and show on hover
-  sidebarBottom: Bottom
   sidebarClassic: Classic
-  sidebarLeft: Left
   sidebarNotch: Notch
   sidebarPosition: Sidebar Position
-  sidebarPositionHint: Choose where the sidebar appears
-  sidebarPositionHintClassic: Classic style supports Left and Right positions only
-  sidebarRight: Right
   sidebarScale: Sidebar Scale
-  sidebarScaleHint: Adjust the size of the sidebar
-  sidebarSettings: Sidebar Settings
-  sidebarSettingsHint: Customize sidebar appearance and behavior
   sidebarShowOnlyPinned: Show Only Pinned Instances
   sidebarShowOnlyPinnedHint: Only display pinned instances in the sidebar
   sidebarStyle: Sidebar Style
   sidebarStyleHint: Choose between classic and modern notch design
-  sidebarTop: Top
   streamerMode: Streaming Mode
   streamerModeDescription: This will hide your private information like email in launcher.
   theme:
@@ -1621,7 +1388,6 @@ setting:
   themeSettings: Theme Settings
   themeShare: Share Theme
   themeShareDescription: You can share the theme with your friend.
-  title: Settings
   update: Update
   useBmclAPI: Use BMCL API
   useBmclAPIDescription: >-
@@ -1630,12 +1396,6 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
   viewBackgroundMusic: View Musics
-  viewModeScroll: Scroll View
-  viewModeTabs: Tab View
-  windowTranslucent: Window Translucency
-  windowTranslucentDescription: >-
-    Enable translucent window effect (Mica on Windows 11, Acrylic on Windows 10,
-    Vibrancy on macOS). Requires restart.
 settingLabel:
   global: Global
   globalHint: This setting will follow the global setting
@@ -1676,9 +1436,6 @@ setup:
     The focus layout is the legacy layout of the Minecraft Launcher. It is
     designed to be used with a single instance or few instances.
   game:
-    description: >-
-      Choose existing game directory (.minecraft) to import existing resources.
-      So you can quickly identify the mods, resource packs, etc.
     name: Import Existing Game
   locale:
     description: >-
@@ -1688,7 +1445,6 @@ setup:
     language: Language
     name: Set Language
   path: Current Path
-  title: 'Welcome to X Minecraft Launcher. Before start, we need you to '
 shaderPack:
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot be reverted.
@@ -1697,7 +1453,6 @@ shaderPack:
   empty: No shader pack allocated
   enable: Using {name}
   enabled: Enabled Shader Packs
-  loadMore: Load More Shader Packs
   manage: Manage Shader Packs
   market: Shader Market
   name: Shader Pack
@@ -1711,9 +1466,32 @@ shaderPack:
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
 shared:
-  accept: Accept
+  add: Add
+  author: Author
+  back: Back
+  browse: Browse
+  cancel: Cancel
+  client: Client
+  description: Description
+  disable: Disable
+  download: Download
+  edit: Edit
+  enable: Enable
+  filter: Filter
+  install: Install
+  installed: Installed
   keepSelected: Keep Selected
+  manage: Manage
+  name: Name
+  next: Next
+  'no': 'No'
+  ok: OK
+  previous: Previous
+  refresh: Refresh
+  remove: Remove
+  server: Server
   skipForNow: Skip for now
+  'yes': 'Yes'
 sidebar:
   pin: Pin to Sidebar
   unpin: Unpin from Sidebar
@@ -1724,16 +1502,11 @@ sortBy:
   timeAsc: Sort by modification time (ascending)
   timeDesc: Sort by modification time (descending)
 store:
-  explore: Explore
   latestMinecraft: Latest Minecraft Version
   name: Modpack Market
-  popular: Popular Modpacks
-  recentUpdated: Recent Updated
-summery: Summery
 tag:
   create: Create Tag
   createSelected: Create Tag for Selected
-  newTag: New Tag
 task:
   cancelled: Cancelled
   clear: Clear Finished Tasks
@@ -1745,22 +1518,12 @@ task:
     running: Running connection
     size: total count
   connections: Network Connections
-  delete: {}
   empty: No Running Tasks
   failed: Failed
-  incompatible: >-
-    Incompatible textstack format ({format}). Matching {accept}. Current
-    {actual}.
-  manage: Texturepack
   manager: Task Manager
   nTaskRunning: '{count} tasks are running'
   name: Task | Tasks
   pause: Pause
-  searchOnCurseforge: Search {name} on curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
-  showFile: Open the texturepack {file} in the folder
-  showInCurseforge: Show {name} on curseforge
-  unselected: Unselected texturepacks
 theme:
   selectImage: Select Image
   selectMusic: Select Music
@@ -1843,7 +1606,6 @@ tutorial:
   storeSearchResultDescription: You will see all search results listed here.
   userAccountDescription: Click this icon to add or manage your Minecraft account.
 universalDrop:
-  enableModsAfterImport: Enable Mods After Import
   start: Import Started
   title: Drop File(s) Here to Import as
   unknownResource: Unknown
@@ -1851,30 +1613,18 @@ update:
   goOfficialWebDownload: Re-download on official website
 upstream:
   downgrade: Downgrade
-  missingModpackMetadata: >-
-    The old modpack metadata not found.
-
-    You can still upgrade, but the result might be wrong. Please backup your
-    instance files.
   onlyShowCurrentVersion: Only Show Current Minecraft Version
   update: Update
 user:
   accessToken: Access Token
   authMode: Auth Service
   authService: Authorize Service
-  birth: Registered Birthday
-  challenges: Answer questions below to verify your identity
   email: Email Address
-  forgetChallenges: I have forgot these questions and I want to change them
   id: User Id
   info: User Information
-  insecureClient: The Client is insecure! Please validate your identity to upload skin!
   name: Username
   nameHint: The name display in game
   profile: Profile
-  refreshAccount: Refresh Account
-  refreshSkin: Refresh Skin
-  submitChallenges: Submit Answers
   tokenExpired: Expired
   tokenValidUntil: Token Valid Until
 userAccount:
@@ -1890,7 +1640,6 @@ userCape:
   noCape: No Cape
 userService:
   add: Add More Services
-  authLibInjector: Follow the auth-lib injector suggestion
   authlibInjectorMetadata: Authlib-Injector metadata
   baseUrlHint: The base URL of your custom service
   homepage: Homepage
@@ -1900,14 +1649,12 @@ userService:
   server: Server
   skinDomains: Skin Domains
   title: Third-party User Services
-  validateHint: Used to check if user's token is still valid
   version: Version
 userServices:
   microsoft:
     account: Microsoft Account
     deviceCode: Device Code
     deviceCodeHint: Device code will be generated after you click login
-    fastLogin: Fast Login
     name: Microsoft
     password: Enter Password in Browser
     useDeviceCode: Login by Device Code
@@ -1942,4 +1689,3 @@ versionType:
   beta: Beta
   name: Status
   release: Release
-'yes': 'Yes'
