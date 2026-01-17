@@ -1104,6 +1104,7 @@ resourcepack:
     Incompatibel resource pack formaat({format}). Past in {accept}. Huidige
     {actual}.
   name: Resource Pack | Resource Packs
+  searchHint: Zoek naar bronpakketten
   searchOnCurseforge: Zoek {name} in curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Geselecteerde Resource Packs

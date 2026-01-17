@@ -9,7 +9,21 @@
         <AvatarItemList :items="extensionItems" />
       </div>
       <div class="flex-grow" />
-      <div class="flex-grow" />
+      <MarketTextFieldWithMenu
+        :keyword.sync="keyword"
+        :placeholder="t('resourcepack.searchHint')"
+        :modrinth-categories.sync="modrinthCategories"
+        modrinth-category-filter="resourcepack"
+        :local-sort.sync="sortBy"
+        :curseforge-category.sync="curseforgeCategory"
+        curseforge-category-filter="texture-packs"
+        :enable-curseforge.sync="isCurseforgeActive"
+        :enable-modrinth.sync="isModrinthActive"
+        :sort.sync="sort"
+        :game-version.sync="gameVersion"
+        :mode.sync="filterMode"
+        :collection.sync="selectedCollection"
+      />
     </div>
     <MarketExtensions
     />
@@ -20,7 +34,6 @@
 import AvatarItemList from '@/components/AvatarItemList.vue'
 import MarketExtensions from '@/components/MarketExtensions.vue'
 import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
-import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { kInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { kResourcePackSearch } from '@/composables/resourcePackSearch'

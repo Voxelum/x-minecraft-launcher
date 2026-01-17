@@ -6,9 +6,8 @@
     @input="$emit('input', $event)"
   >
     <v-card
-      rounded
       outlined
-      class="visible-scroll max-h-[90vh] overflow-auto flex flex-col"
+      class="visible-scroll max-h-[90vh] overflow-auto flex flex-col py-4 px-2 rounded-2xl! select-none"
     >
       <v-progress-linear
         class="absolute left-0 top-0 z-20 m-0 p-0"
@@ -16,16 +15,9 @@
         height="3"
         :indeterminate="true"
       />
-      <div v-if="loading">
-        <v-skeleton-loader
-          type="list-item-two-line, list-item-two-line"
-        />
-      </div>
-      <div
-        v-else-if="selectedDetail"
-      >
+      <div class="flex justify-between items-center">
         <v-btn
-          v-if="!noBack"
+          v-if="!noBack && selectedDetail"
           text
           large
           @click="selectedDetail = undefined"
@@ -34,10 +26,14 @@
             arrow_back
           </v-icon>
         </v-btn>
+        <v-card-title>
+          <v-icon class="material-icons-outlined" left> download </v-icon>
+          {{ t('shared.install') }}
+        </v-card-title>
       </div>
       <div
-        v-else
-        class="mx-5 mt-3 grid flex-grow-0 grid-cols-3 gap-5"
+        v-if="!selectedDetail"
+        class="mx-5 my-3 grid flex-grow-0 grid-cols-3 gap-5"
       >
         <v-select
           v-model="gameVersion"
@@ -290,12 +286,18 @@ const all = computed(() => {
     }
   }
 
-  return [...result, 'divider', ...originals.filter(v => !result.includes(v))]
+  const otherVersions = originals.filter(v => !result.includes(v))
+
+  if (otherVersions.length === 0) {
+    return result
+  }
+
+  return [...result, 'divider', ...otherVersions]
 })
 
 // Select versions
 const loading = ref(false)
-const selectedDetail = ref<StoreProjectVersionDetail | undefined>()
+const selectedDetail = shallowRef<StoreProjectVersionDetail | undefined>()
 watch(() => props.initialSelectedDetail, (v) => {
   if (v) {
     onVersionClicked(v)
@@ -305,6 +307,11 @@ watch(() => props.initialSelectedDetail, (v) => {
 }, { immediate: true })
 async function onVersionClicked(version: StoreProjectVersion) {
   try {
+    selectedDetail.value = {
+      version,
+      dependencies: [],
+      changelog: '',
+    }
     loading.value = true
     const detail = await props.getVersionDetail(version)
     selectedDetail.value = detail
@@ -365,7 +372,7 @@ function getKey(i: number) {
 }
 
 const virtualizerOptions = computed(() => ({
-  count: selectedDetail.value ? selectedDetail.value.dependencies.length : all.value.length,
+  count: selectedDetail.value ? (loading.value ? 4 : selectedDetail.value.dependencies.length) : all.value.length,
   getScrollElement: () => getEl(scrollElement.value)/* ?.$el */ as any,
   estimateSize: () => selectedDetail.value ? 62 : 79,
   overscan: 10,

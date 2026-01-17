@@ -1082,6 +1082,7 @@ resourcepack:
     Үйлесімсіз ресурс жинағы пішімі({format}). Сәйкес {accept}. Ағымдағы
     {actual}.
   name: Ресурстар жинағы | Ресурстар жинақтары
+  searchHint: Search resource packs
   searchOnCurseforge: '{name} модын curseforge-де іздеу'
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Таңдалған ресурстар жинағы

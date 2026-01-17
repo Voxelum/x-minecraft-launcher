@@ -1099,6 +1099,7 @@ resourcepack:
   name: Resource Pack | Resource Packs
   noPacks: No resource packs found
   search: Search Resource Packs...
+  searchHint: Search resource packs
   searchOnCurseforge: Search {name} in curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Selected Resource Packs

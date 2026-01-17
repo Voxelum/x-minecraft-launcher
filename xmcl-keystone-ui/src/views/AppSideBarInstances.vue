@@ -69,7 +69,7 @@ const props = defineProps<{}>()
 
 const { t } = useI18n()
 
-const { isValidating } = injection(kInstances)
+const { isValidating, selectedInstance } = injection(kInstances)
 
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
 
@@ -97,10 +97,10 @@ const filteredGroups = computed(() => {
   if (showOnlyPinned.value) {
     items = items.filter(item => {
       if (typeof item === 'string') {
-        return isPinned(item)
+        return isPinned(item) || selectedInstance.value === item
       } else {
         // For groups, check if any instance in the group is pinned
-        return item.instances.some(inst => isPinned(inst))
+        return item.instances.some(inst => isPinned(inst) || selectedInstance.value === inst)
       }
     })
   }

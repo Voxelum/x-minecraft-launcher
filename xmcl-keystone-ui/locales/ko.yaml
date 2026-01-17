@@ -965,6 +965,7 @@ resourcepack:
   enable: 리소스 팩 {count}개 활성화됨
   incompatible: 호환되지 않는 리소스 팩 형식( {format} ). {accept} 에 맞음. 현재 {actual}.
   name: 리소스 팩
+  searchHint: 리소스 팩 검색
   searchOnCurseforge: Curseforge에서 {name} 검색
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: 선택된 리소스 팩

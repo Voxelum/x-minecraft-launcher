@@ -1,5 +1,6 @@
 <template>
   <v-list-item
+    class="rounded-2xl"
     :key="version.id"
     :disabled="disabled"
     v-on="!noClick ? { click: () => emit('click', version) } : {}"

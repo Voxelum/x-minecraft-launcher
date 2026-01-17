@@ -1064,6 +1064,7 @@ resourcepack:
     Niezgodny format pakietu zasobów ({format}). Fitin {accept}. Aktualny
     {actual}.
   name: Pakiet zasobów | Pakiety zasobów
+  searchHint: Przeszukaj pakiety zasobów
   searchOnCurseforge: Wyszukaj {name} w curseforgeack
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Wybrane pakiety zasobów

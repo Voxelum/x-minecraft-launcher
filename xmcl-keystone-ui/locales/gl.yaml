@@ -1099,6 +1099,7 @@ resourcepack:
     {actual}.
   name: Resourcepack | Resourcepacks
   noPacks: Geen resourcepacks gevonden
+  searchHint: Busca paquetes de recursos
   searchOnCurseforge: Zoek {name} in curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Geselecteerde Resourcepacks

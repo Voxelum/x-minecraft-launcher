@@ -13,7 +13,6 @@ import { kUIDefaultLayout, useUILayout } from '@/composables/uiLayout'
 import { kUserContext, useUserContext } from '@/composables/user'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { vuetify } from '@/vuetify'
-import 'virtual:uno.css'
 import { provide } from 'vue'
 
 export default defineComponent({

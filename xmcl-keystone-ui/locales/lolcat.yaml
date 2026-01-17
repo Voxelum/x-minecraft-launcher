@@ -1048,6 +1048,7 @@ resourcepack:
   enable: '{count} RESOURC PAKS ENABLED'
   incompatible: INCOMPATIBLE RESOURC PAK FORMAT({format}). FITIN {accept}. CURREN {actual}.
   name: RESOURC PAK | RESOURC PAKS
+  searchHint: Search resource packs
   searchOnCurseforge: SEARCH {name} IN CURSEFORGE
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: SELECTED RESOURC PAKS

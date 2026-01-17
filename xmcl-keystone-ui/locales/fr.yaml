@@ -1080,6 +1080,7 @@ resourcepack:
     Format de pack de ressources incompatible ({format}). Fait pour {accept}.
     Actuel {actual}.
   name: Pack de Ressources | Packs de Ressources
+  searchHint: Rechercher des packs de ressources
   searchOnCurseforge: Rechercher {name} dans curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Packs de ressources sélectionnés

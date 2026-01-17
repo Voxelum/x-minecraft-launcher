@@ -1090,6 +1090,7 @@ resourcepack:
     Несумісний формат пакета ресурсів ({format}). Підходить {accept}. Поточний
     {actual}.
   name: Пакет ресурсів | Пакети ресурсів
+  searchHint: Пошук пакетів ресурсів
   searchOnCurseforge: Шукати {name} на Curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Вибрані пакети ресурсів

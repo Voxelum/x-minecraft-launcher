@@ -7,7 +7,18 @@
     >
       <AvatarItemList :items="extensionItems" />
       <div class="flex-grow" />
-      <div class="flex-grow" />
+      <MarketTextFieldWithMenu
+        :keyword.sync="keyword"
+        :placeholder="t('shaderPack.searchHint')"
+        :modrinth-categories.sync="modrinthCategories"
+        modrinth-category-filter="shader"
+        :enable-modrinth.sync="isModrinthActive"
+        :game-version.sync="gameVersion"
+        :local-sort.sync="sortBy"
+        :sort.sync="sort"
+        :mode.sync="source"
+        :collection.sync="selectedCollection"
+      />
     </div>
     <MarketExtensions
       :modrinth="0"

@@ -187,8 +187,6 @@ import { kTheme } from '@/composables/theme'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import AppSideBarInstances from './AppSideBarInstances.vue'
-import AppSideBarGroupSettingDialog from './AppSideBarGroupSettingDialog.vue'
-import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 
 const { blurSidebar } = injection(kTheme)
 const { state } = injection(kSettingsState)

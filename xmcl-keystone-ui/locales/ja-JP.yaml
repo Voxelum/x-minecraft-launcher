@@ -982,6 +982,7 @@ resourcepack:
   enable: '{count} 個のリソースパックが有効'
   incompatible: 適合しないリソースパックフォーマットです({format}). フィット {accept}, 現在{actual}
   name: リソースパック | リソースパック
+  searchHint: リソースパックを検索する
   searchOnCurseforge: Curseforgeで {name} を検索
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: 選択されたリソースパック

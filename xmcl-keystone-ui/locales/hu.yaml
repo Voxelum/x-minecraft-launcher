@@ -1117,6 +1117,7 @@ resourcepack:
     Nem kompatibilis forráscsomag formátum({format}). Elfogadott {accept}.
     Jelenlegi {actual}.
   name: Forráscsomag | Forráscsomagok
+  searchHint: Keresés az erőforráscsomagokban
   searchOnCurseforge: '{name} keresése curseforge-on'
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Kiválasztott forráscsomagok

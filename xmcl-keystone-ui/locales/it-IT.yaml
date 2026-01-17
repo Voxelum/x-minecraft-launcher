@@ -1077,6 +1077,7 @@ resourcepack:
     Pacchetto risorse incompatibile ({format}). Fitin {accept}. Corrente
     {actual}.
   name: Pacchetto risorse | Pacchetti risorse
+  searchHint: Cerca pacchetti di risorse
   searchOnCurseforge: Ricerca {name} in curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Pacchetti risorse selezionati

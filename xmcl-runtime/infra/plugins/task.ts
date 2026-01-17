@@ -137,7 +137,7 @@ export const pluginTasks: LauncherAppPlugin = (app) => {
         app.controller.broadcast('task-activated', true)
       }
       hasTaskRunning = true
-      active.push(obj)
+      active.unshift(obj)
       return obj
     },
   })

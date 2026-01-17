@@ -980,6 +980,7 @@ resourcepack:
   enable: 一共啟用了 {count} 個資源包
   incompatible: 不相容的資源包格式({format})。適用範圍 {accept}。目前版本 {actual}。
   name: 資源包 | 資源包
+  searchHint: 搜索資源包
   searchOnCurseforge: 在 Curseforge 中查詢 {name}
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: 已選資源包

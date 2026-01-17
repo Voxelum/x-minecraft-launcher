@@ -1174,6 +1174,7 @@ resourcepack:
     Inkompatibles Textformat ({format}). Einschlägige {accept}. Aktuell
     {actual}.
   name: Texturpaket | Texturpakete
+  searchHint: Suchen Sie nach Ressourcenpaketen
   searchOnCurseforge: Suche nach. {name} in curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Ausgewählte Texturpakete

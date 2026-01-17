@@ -1089,6 +1089,7 @@ resourcepack:
   enable: '{count} kaynak paketi etkin'
   incompatible: Uyumsuz Kaynak Paketi formatı({format}). Uyan {accept}. Mevcut {actual}.
   name: Kaynak Paketi | Kaynak Paketleri
+  searchHint: Kaynak paketlerini arayın
   searchOnCurseforge: Curseforge'da {name} ara
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Seçilen Kaynak Paketleri

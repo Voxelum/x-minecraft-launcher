@@ -1,5 +1,5 @@
 import { useInterval } from '@vueuse/core'
-import { Tasks } from '@xmcl/runtime-api'
+import { Tasks, TaskState } from '@xmcl/runtime-api'
 import { InjectionKey, onMounted, Ref, ref } from 'vue'
 
 export type TaskItem = Tasks
@@ -10,8 +10,6 @@ export const kTaskManager: InjectionKey<ReturnType<typeof useTaskManager>> = Sym
  * Create a task manager based on vue reactivity
  */
 export function useTaskManager() {
-  const cache: Record<string, WeakRef<Tasks> | undefined> = {}
-
   const tasks: Ref<Tasks[]> = shallowRef([])
 
   const cancel = (task: Tasks) => {
@@ -46,11 +44,18 @@ export function useTaskManager() {
   })
 
   function clear() {
+    const active = tasks.value
+    tasks.value = active.filter((t) => {
+      return !(
+        t.state === TaskState.Succeed ||
+        t.state === TaskState.Failed ||
+        t.state === TaskState.Cancelled
+      )
+    })
     taskMonitor.clear()
   }
 
   return {
-    dictionary: cache,
     clear,
     tasks,
     cancel,

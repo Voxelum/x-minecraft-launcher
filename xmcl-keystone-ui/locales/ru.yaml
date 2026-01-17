@@ -1111,6 +1111,7 @@ resourcepack:
     Несовместимый формат набора ресурсов ({format}). Подходящий {accept}.
     Текущий {actual}.
   name: Набор ресурсов | Наборы ресурсов
+  searchHint: Поиск пакетов ресурсов
   searchOnCurseforge: Поиск {name} на CurseForge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Выбранные наборы ресурсов

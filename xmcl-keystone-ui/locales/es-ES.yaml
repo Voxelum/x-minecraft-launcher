@@ -837,6 +837,7 @@ resourcepack:
     Formato de Paquete de Recursos incompatible ({format}). Se ajusta a
     {accept}. Actual {actual}.
   name: Paquete de Recursos | Paquetes de Recursos
+  searchHint: Buscar paquetes de recursos
   searchOnCurseforge: Buscar {name} en CurseForge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Paquetes de Recursos Seleccionados
