@@ -1,11 +1,27 @@
-import { Version, type ResolvedServerVersion, type ResolvedVersion, type VersionParseError } from '@xmcl/core'
-import { LocalVersions, VersionServiceKey, filterForgeVersion, findNeoForgedVersion, getResolvedVersionHeader, isFabricLoaderLibrary, isForgeLibrary, isQuiltLibrary, type VersionService as IVersionService, type SharedState } from '@xmcl/runtime-api'
-import { task } from '@xmcl/task'
+import {
+  Version,
+  type ResolvedServerVersion,
+  type ResolvedVersion,
+  type VersionParseError,
+} from '@xmcl/core'
+import {
+  LocalVersions,
+  MigrateMinecraftTask,
+  VersionServiceKey,
+  filterForgeVersion,
+  findNeoForgedVersion,
+  getResolvedVersionHeader,
+  isFabricLoaderLibrary,
+  isForgeLibrary,
+  isQuiltLibrary,
+  type VersionService as IVersionService,
+  type SharedState,
+} from '@xmcl/runtime-api'
 import { FSWatcher, watch } from 'chokidar'
 import { ensureDir, readdir, rm } from 'fs-extra'
 import { basename, dirname, join, relative, sep } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
-import { kTaskExecutor, type TaskFn } from '~/infra'
+import { kTasks, type Tasks } from '~/infra'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, isDirectory, linkOrCopyFile, missing, readdirEnsured } from '../util/fs'
@@ -23,36 +39,39 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
   private watcher: FSWatcher | undefined
   private resolvers: VersionResolver[] = []
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+  constructor(
+    @Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(ServiceStateManager) store: ServiceStateManager,
-    @Inject(kTaskExecutor) private submit: TaskFn,
+    @Inject(kTasks) private tasks: Tasks,
   ) {
-    super(app, () => store.registerStatic(new LocalVersions(), VersionServiceKey), async () => {
-      await this.refreshVersions()
-      const versions = this.getPath('versions')
-      await ensureDir(versions)
-      this.watcher = watch(versions, {
-        ignoreInitial: true,
-        depth: 2,
-        awaitWriteFinish: true,
-        ignorePermissionErrors: true,
-        ignored: (file) => {
-          const depth = relative(versions, file).split(sep).length
-          if (depth <= 1) {
-            // version folders should not be ignored
-            return false
-          }
-          if (depth > 2) {
-            // ignore all nested files
-            return true
-          }
-          // Only watch json files
-          return !file.endsWith('.json')
-        },
-      })
-      this.watcher
-        .on('all', (event, file) => {
+    super(
+      app,
+      () => store.registerStatic(new LocalVersions(), VersionServiceKey),
+      async () => {
+        await this.refreshVersions()
+        const versions = this.getPath('versions')
+        await ensureDir(versions)
+        this.watcher = watch(versions, {
+          ignoreInitial: true,
+          depth: 2,
+          awaitWriteFinish: true,
+          ignorePermissionErrors: true,
+          ignored: (file) => {
+            const depth = relative(versions, file).split(sep).length
+            if (depth <= 1) {
+              // version folders should not be ignored
+              return false
+            }
+            if (depth > 2) {
+              // ignore all nested files
+              return true
+            }
+            // Only watch json files
+            return !file.endsWith('.json')
+          },
+        })
+        this.watcher.on('all', (event, file) => {
           if (event === 'unlink' || event === 'add' || event === 'change') {
             const id = basename(dirname(file))
             if (file.endsWith('server.json')) {
@@ -62,7 +81,8 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
             }
           }
         })
-    })
+      },
+    )
     this.app.registryDisposer(async () => {
       this.watcher?.close()
     })
@@ -86,18 +106,26 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     const root = this.getPath()
     if (mcPath === root) return
     this.log(`Try to migrate the version from ${mcPath}`)
-    const copyTask = task('cloneMinecraft', async () => {
-      await Promise.all([
+
+    const task = this.tasks.create<MigrateMinecraftTask>({
+      type: 'migrateMinecraft',
+      key: `migrate-minecraft-${mcPath}`,
+      from: mcPath,
+    })
+
+    await task.wrap(
+      Promise.all([
         copyPassively(join(mcPath, 'libraries'), join(root, 'libraries')),
         copyPassively(join(mcPath, 'assets'), join(root, 'assets')),
         copyPassively(join(mcPath, 'versions'), join(root, 'versions')),
-      ])
-    })
-    Reflect.set(copyTask, '_from', mcPath)
-    await this.submit(copyTask)
+      ]),
+    )
   }
 
-  public async resolveLocalVersion(versionId: string, root: string = this.getPath()): Promise<ResolvedVersion> {
+  public async resolveLocalVersion(
+    versionId: string,
+    root: string = this.getPath(),
+  ): Promise<ResolvedVersion> {
     try {
       const resolved = await Version.parse(root, versionId)
       for (const resolver of this.resolvers) {
@@ -122,14 +150,14 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
   }
 
   public getLocalVersion(versionId: string) {
-    return this.state.local.find(v => v.id === versionId)
+    return this.state.local.find((v) => v.id === versionId)
   }
 
   /**
    * Refresh a version in the version folder.
    * @param versionFolder The version folder name. It must existed under the `versions` folder.
    */
-  @Singleton(v => v)
+  @Singleton((v) => v)
   async refreshVersion(versionFolder: string) {
     try {
       const version = await this.resolveLocalVersion(versionFolder)
@@ -152,7 +180,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     return result
   }
 
-  @Singleton(v => v)
+  @Singleton((v) => v)
   async refreshServerVersion(id: string) {
     try {
       const profile = await Version.parseServer(this.getPath(), id)
@@ -162,12 +190,15 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
       if (profile.minecraftVersion) {
         const libs = profile.libraries
         const resolved = {
-          neoforge: findNeoForgedVersion(profile.minecraftVersion, { libraries: libs, arguments: profile.arguments as any }),
+          neoforge: findNeoForgedVersion(profile.minecraftVersion, {
+            libraries: libs,
+            arguments: profile.arguments as any,
+          }),
           forge: filterForgeVersion(libs.find(isForgeLibrary)?.version ?? ''),
           fabric: libs.find(isFabricLoaderLibrary)?.version ?? '',
           quilt: libs.find(isQuiltLibrary)?.version ?? '',
         }
-        if (Object.values(resolved).every(v => !v)) {
+        if (Object.values(resolved).every((v) => !v)) {
           const forgeVersionIndex = profile.arguments?.game.indexOf('--fml.forgeVersion')
           if (forgeVersionIndex && forgeVersionIndex !== -1) {
             resolved.forge = profile.arguments!.game[forgeVersionIndex + 1] as string
@@ -195,40 +226,54 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     let files = await readdirEnsured(dir)
     this.log(`Scan ${dir} versions`)
 
-    files = files.filter(f => !f.startsWith('.'))
+    files = files.filter((f) => !f.startsWith('.'))
 
-    const versions: ResolvedVersion[] = (await Promise.all(files.map(async (versionId) => {
-      try {
-        const realPath = join(dir, versionId)
-        if (await isDirectory(realPath)) {
-          const version = await this.resolveLocalVersion(versionId)
+    const versions: ResolvedVersion[] = (
+      await Promise.all(
+        files.map(async (versionId) => {
+          try {
+            const realPath = join(dir, versionId)
+            if (await isDirectory(realPath)) {
+              const version = await this.resolveLocalVersion(versionId)
 
-          if (version.assetIndex) {
-            const assetIndexPath = this.getPath('assets', 'indexes', `${version.assetIndex.id}.json`)
-            const hashIndexPath = this.getPath('assets', 'indexes', `${version.assetIndex.sha1}.json`)
-            missing(hashIndexPath).then(isMissing => {
-              if (isMissing) {
-                return linkOrCopyFile(assetIndexPath, hashIndexPath).catch((e) => {
-                  this.warn(`Failed to link asset index ${version.assetIndex?.id} to ${version.assetIndex?.sha1}.json`)
-                  this.warn(e)
+              if (version.assetIndex) {
+                const assetIndexPath = this.getPath(
+                  'assets',
+                  'indexes',
+                  `${version.assetIndex.id}.json`,
+                )
+                const hashIndexPath = this.getPath(
+                  'assets',
+                  'indexes',
+                  `${version.assetIndex.sha1}.json`,
+                )
+                missing(hashIndexPath).then((isMissing) => {
+                  if (isMissing) {
+                    return linkOrCopyFile(assetIndexPath, hashIndexPath).catch((e) => {
+                      this.warn(
+                        `Failed to link asset index ${version.assetIndex?.id} to ${version.assetIndex?.sha1}.json`,
+                      )
+                      this.warn(e)
+                    })
+                  }
                 })
               }
-            })
-          }
 
-          this.refreshServerVersion(versionId)
-          return version
-        }
-      } catch (e) {
-        const err = e as VersionParseError
-        if ('error' in err && err.name === 'MissingVersionJson') {
-          this.warn(`Missing version json for ${versionId}`)
-        } else {
-          this.warn(`An error occurred during load local version ${versionId}`)
-          this.warn(e)
-        }
-      }
-    }))).filter(isNonnull)
+              this.refreshServerVersion(versionId)
+              return version
+            }
+          } catch (e) {
+            const err = e as VersionParseError
+            if ('error' in err && err.name === 'MissingVersionJson') {
+              this.warn(`Missing version json for ${versionId}`)
+            } else {
+              this.warn(`An error occurred during load local version ${versionId}`)
+              this.warn(e)
+            }
+          }
+        }),
+      )
+    ).filter(isNonnull)
 
     if (versions.length !== 0) {
       this.state.localVersions(versions.map(getResolvedVersionHeader))
@@ -241,7 +286,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
   async deleteVersion(version: string) {
     const path = this.getPath('versions', version)
     await rm(path, { recursive: true, force: true })
-    this.state.localVersions(this.state.local.filter(v => v.id !== version))
+    this.state.localVersions(this.state.local.filter((v) => v.id !== version))
   }
 
   async showVersionsDirectory() {

@@ -1,4 +1,7 @@
-import { VersionMetadataService as IVersionMetadataService, VersionMetadataServiceKey } from '@xmcl/runtime-api'
+import {
+  VersionMetadataService as IVersionMetadataService,
+  VersionMetadataServiceKey,
+} from '@xmcl/runtime-api'
 import { Inject, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
@@ -14,12 +17,8 @@ export class VersionMetadataService extends AbstractService implements IVersionM
     super(app)
   }
 
-  getLatestRelease() {
+  getLatestRelease = () => {
     return this.latest.release
-  }
-
-  getLatestSnapshot() {
-    return this.latest.snapshot
   }
 
   async getLatestMinecraftRelease() {
