@@ -13,7 +13,7 @@
     <v-list
       v-if="members"
       color="transparent"
-      class="xl:(flex-col flex) grid grid-cols-3"
+      class="lg:(flex-col flex) grid grid-cols-3"
     >
       <v-list-item
         v-for="m of members"

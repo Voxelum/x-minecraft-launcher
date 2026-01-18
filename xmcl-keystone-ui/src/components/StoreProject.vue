@@ -40,8 +40,10 @@
         />
       </v-card>
       <v-card class="flex flex-col p-4 rounded-2xl!">
-        <StoreProjectExternal :project="project" />
-        <v-divider class="my-2 w-full" />
+        <template v-if="project.links.length > 0">
+          <StoreProjectExternal :project="project" />
+          <v-divider class="my-2 w-full" />
+        </template>
         <StoreProjectMembers
           :members="members"
           :loading="loadingMembers"

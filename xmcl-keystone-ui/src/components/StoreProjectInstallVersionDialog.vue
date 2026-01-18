@@ -93,7 +93,7 @@
         </v-list-item-action>
       </StoreProjectInstallVersionDialogVersion>
 
-      <InstanceVersionShiftAlert v-if="!loading && selectedDetail" :old-runtime="instance.runtime" :runtime="newRuntime" />
+      <InstanceVersionShiftAlert v-if="!loading && selectedDetail && initialSelectedDetail" :old-runtime="instance.runtime" :runtime="newRuntime" />
       <div
         ref="scrollElement"
         class="overflow-auto"

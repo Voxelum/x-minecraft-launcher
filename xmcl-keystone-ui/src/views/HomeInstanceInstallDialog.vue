@@ -198,21 +198,21 @@
 import ErrorView from '@/components/ErrorView.vue'
 import Hint from '@/components/Hint.vue'
 import InstanceManifestFileTree from '@/components/InstanceManifestFileTree.vue'
+import InstanceVersionShiftAlert from '@/components/InstanceVersionShiftAlert.vue'
 import { useRefreshable, useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { InstanceFileNode, provideFileNodes } from '@/composables/instanceFileNodeData'
 import { InstanceInstallDialog, InstanceInstallOptions } from '@/composables/instanceUpdate'
 import { kInstances } from '@/composables/instances'
-import type { EditInstanceOptions } from '@xmcl/instance'
 import { kJavaContext } from '@/composables/java'
 import { useVuetifyColor } from '@/composables/vuetify'
 import { basename } from '@/util/basename'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
+import type { EditInstanceOptions } from '@xmcl/instance'
 import { InstallInstanceOptions, InstanceFileUpdate, InstanceInstallServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { BuiltinImages } from '../constant'
-import InstanceVersionShiftAlert from '@/components/InstanceVersionShiftAlert.vue'
 
 const selected = ref([] as string[])
 const search = ref('')
@@ -428,8 +428,6 @@ const confirm = async () => {
         optifine: instance.runtime?.optifine,
         labyMod: instance.runtime?.labyMod,
       },
-      // TODO: We should ensure the modpackVersion is updated
-      // modpackVersion: instance.modpackVersion,
       upstream: instance.upstream,
     })
   }

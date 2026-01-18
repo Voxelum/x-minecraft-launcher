@@ -1,5 +1,5 @@
 <template>
-  <div v-if="project.links.length > 0">
+  <div>
     <v-subheader>
       {{ t('modrinth.externalResources') }}
     </v-subheader>
