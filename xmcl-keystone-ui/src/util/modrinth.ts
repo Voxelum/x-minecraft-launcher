@@ -48,9 +48,6 @@ export function getModrinthModLoaders(runtime: RuntimeVersions, allForNoModLoade
     if (runtime.quiltLoader) {
       modLoaders.push('quilt')
     }
-    if (runtime.liteLoader) {
-      modLoaders.push('liteloader')
-    }
     if (runtime.neoForged) {
       modLoaders.push('neoforge')
     }

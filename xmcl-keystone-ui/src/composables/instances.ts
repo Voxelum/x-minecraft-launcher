@@ -1,7 +1,6 @@
 import { useEventBus, useLocalStorage } from '@vueuse/core'
+import type { EditInstanceOptions, Instance, InstanceDataWithTime } from '@xmcl/instance'
 import { InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
-import { DeepPartial } from '@xmcl/runtime-api/src/util/object'
-import type { EditInstanceOptions, Instance } from '@xmcl/instance'
 import { InjectionKey } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
@@ -35,7 +34,7 @@ export function useInstances() {
       }
     }
 
-    override instanceEdit(settings: DeepPartial<EditInstanceOptions> & { path: string }) {
+    override instanceEdit(settings: Partial<InstanceDataWithTime> & { path: string }) {
       const inst = this.instances.find(i => i.path === (settings.path))!
       if ('showLog' in settings) {
         inst.showLog = settings.showLog

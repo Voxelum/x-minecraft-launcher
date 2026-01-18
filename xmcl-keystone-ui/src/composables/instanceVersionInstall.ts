@@ -26,11 +26,11 @@ import {
   getMinecraftVersionsModel,
   getNeoForgedVersionModel,
 } from './version'
-import { Instance, RuntimeVersions } from '@xmcl/instance'
+import { Instance, PartialRuntimeVersions, RuntimeVersions } from '@xmcl/instance'
 
 export interface InstanceInstallInstruction extends InstallIssue {
   instance: string
-  runtime: RuntimeVersions
+  runtime: PartialRuntimeVersions
   java?: JavaVersion
   version: string
   resolvedVersion?: string
@@ -86,7 +86,7 @@ function useInstanceVersionInstall(
     throw e
   }
 
-  async function install(runtime: RuntimeVersions) {
+  async function install(runtime: PartialRuntimeVersions) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
     const mcVersions = await getSWRV(getMinecraftVersionsModel(), cfg)
     const local = versions.value
@@ -475,7 +475,7 @@ export function useInstanceVersionInstallInstruction(
    */
   async function getInstallInstruction(
     instance: string,
-    runtime: RuntimeVersions,
+    runtime: PartialRuntimeVersions,
     version: string,
     resolved: ResolvedVersion | undefined,
     javas: JavaRecord[],

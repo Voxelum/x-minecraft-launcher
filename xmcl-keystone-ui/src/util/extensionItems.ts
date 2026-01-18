@@ -1,7 +1,7 @@
 import { BuiltinImages } from '@/constant'
-import { RuntimeVersions } from '@xmcl/instance'
+import { PartialRuntimeVersions } from '@xmcl/instance'
 
-export function getExtensionItemsFromRuntime(runtime: RuntimeVersions) {
+export function getExtensionItemsFromRuntime(runtime: PartialRuntimeVersions) {
   const items = [
     {
       avatar: BuiltinImages.minecraft,

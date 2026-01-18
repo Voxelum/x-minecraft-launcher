@@ -1,4 +1,4 @@
-import type { InstanceData, InstanceFile, RuntimeVersions } from '@xmcl/instance'
+import type { InstanceData, InstanceFile, ModpackInstallProfile, PartialRuntimeVersions, RuntimeVersions } from '@xmcl/instance'
 import type { ResourceMetadata, ResourceState } from '@xmcl/resource'
 import { Exception } from '../entities/exception'
 import type { InstallMarketOptions } from '../entities/market'
@@ -122,13 +122,6 @@ export interface ImportModpackCreateInstanceOptions {
   mountAfterSucceed?: boolean
 }
 
-export interface ModpackInstallProfile {
-  instance: CreateInstanceOption & {
-    runtime: RuntimeVersions
-  }
-  files: InstanceFile[]
-}
-
 export class ModpackState {
   modpackPath: string = ''
   config!: ModpackInstallProfile['instance']
@@ -176,7 +169,7 @@ export interface ModpackService {
   importModpack(modpackPath: string, iconUrl?: string, upstream?: InstanceData['upstream']): Promise<{
     instancePath: string
     version?: string
-    runtime: RuntimeVersions
+    runtime: PartialRuntimeVersions
   }>
   /**
    * Show the modpack folder

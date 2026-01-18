@@ -50,7 +50,6 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       fabricLoader: instance.value?.runtime.fabricLoader ?? '',
       quiltLoader: instance.value?.runtime.quiltLoader ?? '',
       optifine: instance.value?.runtime.optifine ?? '',
-      liteloader: instance.value?.runtime.liteloader ?? '',
       neoForged: instance.value?.runtime.neoForged ?? '',
       labyMod: instance.value?.runtime.labyMod ?? '',
     } as RuntimeVersions,
@@ -534,7 +533,6 @@ export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 've
     if (v) {
       data.runtime.minecraft = v.minecraft
       data.runtime.forge = v.forge
-      data.runtime.liteloader = v.liteloader
       data.runtime.fabricLoader = v.fabric
       data.runtime.neoForged = v.neoForged
       data.runtime.optifine = v.optifine

@@ -1,15 +1,15 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import {
+  InstanceLockSchema,
+  PartialRuntimeVersions,
   getCurseforgeModpackFromInstance,
-  getMcbbsModpackFromInstance,
   getModrinthModpackFromInstance,
   type CurseforgeModpackManifest,
   type Instance,
   type InstanceData,
   type InstanceFile,
-  type McbbsModpackManifest,
   type ModpackInstallProfile,
-  type ModrinthModpackManifest,
+  type ModrinthModpackManifest
 } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { ResourceManager, ResourceMetadata, UpdateResourcePayload } from '@xmcl/resource'
@@ -27,7 +27,7 @@ import {
   type InstallMarketOptions,
   type SharedState,
 } from '@xmcl/runtime-api'
-import { InstanceLockSchema } from '@xmcl/instance'
+import { readEntry } from '@xmcl/unzip'
 import { AnyError } from '@xmcl/utils'
 import { readJson, stat, unlink } from 'fs-extra'
 import { dirname, join, relative } from 'path'
@@ -37,19 +37,18 @@ import { Inject, LauncherApp, LauncherAppKey, kGameDataPath, type PathResolver }
 import { ZipManager, kTasks, type Tasks } from '~/infra'
 import { InstanceService } from '~/instance'
 import { InstanceInstallService } from '~/instanceIO'
+import { VersionService } from '~/launch'
 import { kMarketProvider } from '~/market'
 import { kResourceManager, kResourceWorker, type ResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
-import { VersionService } from '~/launch'
+import { getTracker } from '~/util/taskHelper'
 import { requireObject } from '../util/object'
 import { ZipTrackerEvents, writeZipFile } from '../util/zip'
 import { createCurseforgeHandler } from './utils/curseforgeHandler'
+import { exportOfflineModpack } from './utils/exportOffline'
 import { createMcbbsHandler } from './utils/mcbbsHandler'
 import { createMmcHandler } from './utils/mmcHandler'
 import { createModrinthHandler } from './utils/modrinthHandler'
-import { exportOfflineModpack } from './utils/exportOffline'
-import { readEntry } from '@xmcl/unzip'
-import { getTracker } from '~/util/taskHelper'
 
 export interface ModpackDownloadableFile {
   destination: string
@@ -133,7 +132,7 @@ export class ModpackService extends AbstractService implements IModpackService {
   ): Promise<{
     instancePath: string
     version?: string
-    runtime: Instance['runtime']
+    runtime: PartialRuntimeVersions
   }> {
     this.log(`Import modpack ${modpackFile}`)
     const zipManager = await this.app.registry.getOrCreate(ZipManager)
@@ -154,9 +153,7 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     const name = instance.name
 
-    const matchedVersion = findMatchedVersion(versionService.state.local, '', {
-      ...instance.runtime,
-    })
+    const matchedVersion = findMatchedVersion(versionService.state.local, '', instance.runtime)
     if (matchedVersion) {
       this.log('Found matched version', matchedVersion, instance.runtime)
     }

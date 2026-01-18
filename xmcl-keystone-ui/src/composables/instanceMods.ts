@@ -158,7 +158,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
       }
     } else if (instanceRuntime.fabricLoader) {
       loaders.push('fabric')
-    } else if (instanceRuntime.neoforge) {
+    } else if (instanceRuntime.neoForged) {
       loaders.push('neoforge')
     } else if (instanceRuntime.quiltLoader) {
       loaders.push('quilt')

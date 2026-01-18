@@ -425,6 +425,8 @@ const confirm = async () => {
         fabricLoader: instance.runtime?.fabricLoader,
         quiltLoader: instance.runtime?.quiltLoader,
         neoForged: instance.runtime?.neoForged,
+        optifine: instance.runtime?.optifine,
+        labyMod: instance.runtime?.labyMod,
       },
       // TODO: We should ensure the modpackVersion is updated
       // modpackVersion: instance.modpackVersion,

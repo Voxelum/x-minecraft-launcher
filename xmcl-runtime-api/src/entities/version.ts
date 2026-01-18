@@ -1,6 +1,6 @@
 import type { LibraryInfo, ResolvedVersion, Version } from '@xmcl/core'
+import type { PartialRuntimeVersions } from '@xmcl/instance'
 import { VersionRange, parseVersion } from '../util/mavenVersion'
-import type { RuntimeVersions } from '@xmcl/instance'
 
 export interface MinecraftVersion {
   id: string
@@ -46,21 +46,6 @@ export interface ForgeVersion {
   type: 'buggy' | 'recommended' | 'common' | 'latest'
 }
 
-interface LiteloaderVersionMeta {
-  version: string
-  url: string
-  file: string
-  mcversion: string
-  type: 'RELEASE' | 'SNAPSHOT'
-  md5: string
-  timestamp: string
-  libraries: Array<{
-    name: string
-    url?: string
-  }>
-  tweakClass: string
-}
-
 export interface MinecraftVersions {
   /**
    * @default { "snapshot": "", "release": "" }
@@ -90,47 +75,6 @@ export interface NeoForgedVersions {
   versions: string[]
 }
 
-export interface LiteloaderVersions {
-  /**
-   * @default ""
-   */
-  timestamp: string
-  /**
-   * @default {}
-   */
-  meta: {
-    /**
-     * @default ""
-     */
-    description: string
-    /**
-     * @default ""
-     */
-    authors: string
-    /**
-     * @default ""
-     */
-    url: string
-    /**
-     * @default ""
-     */
-    updated: string
-    /**
-     * @default ""
-     */
-    updatedTime: number
-  }
-  /**
-   * @default {}
-   */
-  versions: {
-    [version: string]: {
-      snapshot?: LiteloaderVersionMeta
-      release?: LiteloaderVersionMeta
-    }
-  }
-}
-
 export interface FabricArtifactVersion {
   gameVersion?: string
   separator?: string
@@ -140,17 +84,6 @@ export interface FabricArtifactVersion {
   stable: boolean
 }
 
-export interface FabricVersions {
-  /**
-   * @default []
-   */
-  yarns: FabricArtifactVersion[]
-
-  /**
-   * @default []
-   */
-  loaders: FabricArtifactVersion[]
-}
 
 export interface OptifineVersion {
   /**
@@ -202,29 +135,6 @@ export interface QuiltArtifactVersion {
   }
 }
 
-export interface OptifineVersions {
-  /**
-     * @default []
-     */
-  versions: OptifineVersion[]
-  /**
-     * @default ""
-     */
-  etag: string
-}
-
-export interface QuiltVersions {
-  /**
-    * @default []
-    */
-  versions: QuiltArtifactVersion[]
-  /**
-    * @default ""
-    */
-  timestamp: string
-}
-
-export type Status = 'remote' | 'local' | 'loading'
 export interface PartialVersionResolver {
   (version: Version): string
 }
@@ -292,51 +202,15 @@ export function filterOptifineVersion(optifineVersion: string) {
   return optifineVersion.substring(idx + 1)
 }
 
-export const EMPTY_VERSION: VersionHeader = Object.freeze({
-  id: '',
-  inheritances: [],
-  path: '',
-  minecraft: '',
-  forge: '',
-  fabric: '',
-  liteloader: '',
-  quilt: '',
-  neoForged: '',
-  labyMod: '',
-  optifine: '',
-})
-export interface LibrariesRecord {
-  org: string
-  name: string
-  version: string
-}
-
-export function resolveRuntimeVersion(partialVersion: Version, runtime: RuntimeVersions) {
-  const minecraft = resolveMinecraftVersion(partialVersion)
-  const forge = resolveForgeVersion(partialVersion)
-  const liteloader = resolveLiteloaderVersion(partialVersion)
-  const fabricLoader = resolveFabricLoaderVersion(partialVersion)
-  const yarn = resolveFabricYarnVersion(partialVersion)
-  const quilt = resolveQuiltVersion(partialVersion)
-
-  runtime.minecraft = runtime.minecraft || minecraft
-  runtime.forge = forge || runtime.forge
-  runtime.liteloader = liteloader || runtime.liteloader
-  runtime.fabricLoader = fabricLoader || runtime.fabricLoader
-  runtime.yarn = yarn || runtime.yarn
-  runtime.quiltLoader = quilt || runtime.quiltLoader
-}
-
 export function isCompatible(range: string, version: string) {
   if (range === '[*]') return true
   const vRange = VersionRange.createFromVersionSpec(range)
   return vRange?.containsVersion(parseVersion(version)) || false
 }
 
-export function getExpectVersion({ minecraft, forge, liteloader, fabricLoader: fabric, optifine, quiltLoader, neoForged, labyMod }: RuntimeVersions) {
+export function getExpectVersion({ minecraft, forge, fabricLoader: fabric, optifine, quiltLoader, neoForged, labyMod }: PartialRuntimeVersions) {
   let expectedId = minecraft
   if (typeof forge === 'string' && forge.length > 0) expectedId += `-forge${forge}`
-  if (typeof liteloader === 'string' && liteloader.length > 0) expectedId += `-liteloader${liteloader}`
   if (typeof fabric === 'string' && fabric.length > 0) expectedId += `-fabric${fabric}`
   if (typeof optifine === 'string' && optifine.length > 0) expectedId += `-optifine_${optifine}`
   if (typeof quiltLoader === 'string' && quiltLoader.length > 0) expectedId += `-quilt${quiltLoader}`
@@ -358,12 +232,6 @@ export function isSnapshotPreview(version: string) {
   return version.match(/^[0-9]+\.[0-9]+((\.[0-9])?-pre[0-9]+)?$/g) ||
     version.match(/^[0-9]+\.[0-9]+(\.[0-9])? Pre-Release [0-9]+$/g) ||
     version.match(/^[0-9]+w[0-9]+[abcd]$/)
-}
-export function isBetaVersion(version: string) {
-  return version.match(/^b[0-9]+\.[0-9]+(\.[0-9])?(_[0-9]+)?$/g)
-}
-export function isAlphaVersion(version: string) {
-  return version.match(/^a[0-9]+\.[0-9]+(\.[0-9])?(_[0-9]+)?$/g)
 }
 export function isSameForgeVersion(forgeVersion: string, version: string, minecraft: string) {
   if (version.startsWith(`${minecraft}-`)) version = version.substring(`${minecraft}-`.length)
@@ -456,21 +324,9 @@ function isVersionMatched(version: VersionHeader,
 
 export function findMatchedVersion(versions: VersionHeader[],
   id: string,
-  runtime: Partial<RuntimeVersions>,
+  runtime: PartialRuntimeVersions,
 ): VersionHeader | undefined {
   return versions.find(v => v.id === id) || versions.find(ver => isVersionMatched(ver, runtime.minecraft, runtime.forge, runtime.neoForged, runtime.fabricLoader, runtime.optifine, runtime.quiltLoader, runtime.labyMod))
-}
-
-export function getMinecraftVersionFormat(version: string): 'release' | 'snapshot' | 'beta' | 'alpha' | 'unknown' {
-  return isReleaseVersion(version)
-    ? 'release'
-    : isSnapshotPreview(version)
-      ? 'snapshot'
-      : isBetaVersion(version)
-        ? 'beta'
-        : isAlphaVersion(version)
-          ? 'alpha'
-          : 'unknown'
 }
 
 export function getResolvedVersionHeader(ver: ResolvedVersion): VersionHeader {
@@ -520,8 +376,6 @@ export function compareSnapshot(versionA: string, versionB: string) {
   }
   return Number.parseInt(majorA, 10) - Number.parseInt(majorB, 10)
 }
-
-export const LATEST_RELEASE = { id: '1.18.1', type: 'release', url: 'https://launchermeta.mojang.com/v1/packages/6ad09383ac77f75147c38be806961099c02c1ef9/1.18.1.json', time: '2022-01-19T15:56:14+00:00', releaseTime: '2021-12-10T08:23:00+00:00' }
 
 export interface VersionHeader {
   path: string

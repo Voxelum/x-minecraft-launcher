@@ -8,6 +8,12 @@ const EMPTY_INSTANCE: Instance = {
   name: '',
   runtime: {
     minecraft: '',
+    forge: '',
+    fabricLoader: '',
+    quiltLoader: '',
+    neoForged: '',
+    optifine: '',
+    labyMod: '',
   },
   lastAccessDate: 0,
   lastPlayedDate: 0,

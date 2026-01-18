@@ -29,12 +29,11 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
   const getNewRuntime = () => ({
     minecraft: release.value || '',
     forge: '',
-    liteloader: '',
     fabricLoader: '',
-    yarn: '',
     optifine: '',
     quiltLoader: '',
     neoForged: '',
+    labyMod: '',
   })
   const data = reactive<InstanceData>({
     name: '',
@@ -64,7 +63,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
   async function update(template: CreateInstanceOptions, filesPromise: Promise<InstanceFile[]>) {
     data.name = template.name
     if (template.runtime) {
-      data.runtime = { ...template.runtime }
+      data.runtime = { ...data.runtime, ...template.runtime }
     }
     data.java = template.java ?? ''
     data.showLog = template.showLog
