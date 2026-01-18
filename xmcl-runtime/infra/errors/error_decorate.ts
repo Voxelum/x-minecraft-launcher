@@ -31,19 +31,3 @@ export function decorateError(e: unknown) {
   }
   return e
 }
-
-export function shouldLog(e: unknown): e is Error {
-  if (e instanceof Error) {
-    if (e.name === 'WatchCanceledError') {
-      return false
-    }
-    return true
-  }
-
-  if (e instanceof TypeError && e.message === ('fetch failed')
-    || (e instanceof Error && e.name === 'ClientAuthError' && e.message.includes('Network request failed'))
-  ) {
-    return false
-  }
-  return false
-}

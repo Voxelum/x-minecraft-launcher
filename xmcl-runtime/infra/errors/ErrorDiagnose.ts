@@ -8,8 +8,7 @@ export class ErrorDiagnose {
   #noPermissionCount = 0
   #databaseLockedCount = 0
 
-  constructor(private app: LauncherApp) {
-  }
+  constructor(private app: LauncherApp) {}
 
   async #markNoSpace() {
     const settings = await this.app.registry.get(kSettings)
@@ -44,7 +43,15 @@ export class ErrorDiagnose {
       this.#databaseLockedCount++
       return this.#databaseLockedCount > 3
     }
-
+    if (e.name === 'WatchCanceledError') {
+      return true
+    }
+    if (e instanceof TypeError && e.message.startsWith('fetch failed')) {
+      return true
+    }
+    if (e.name === 'ClientAuthError' && e.message.includes('Network request failed')) {
+      return true
+    }
     return false
   }
 }
