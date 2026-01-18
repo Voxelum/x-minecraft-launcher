@@ -8,6 +8,7 @@ import {
 } from '@xmcl/installer'
 import {
   InstallJavaTask,
+  JavaSchema,
   JavaServiceKey,
   JavaState,
   JavasSchema,
@@ -63,7 +64,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         })
 
         const javaJsonPath = this.getAppDataPath('java.json')
-        const data = await readJson(javaJsonPath).then(JavasSchema.parse)
+        const data = await readJson(javaJsonPath).then(JavasSchema.parse).catch(() => ({ all: [] }))
         const valid = data.all
           .filter((l) => typeof l.path === 'string')
           .map((a) => ({ ...a, valid: true }))
@@ -73,7 +74,16 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         this.refreshLocalJava()
 
         this.state.subscribeAll(() => {
-          writeJson(javaJsonPath, JavasSchema.parse({ all: this.state.all }), { spaces: 2 })
+          const all = []
+          for (const j of this.state.all) {
+            const parsed = JavaSchema.safeParse(j)
+            if (parsed.success) {
+              all.push(parsed.data)
+            } else {
+              this.warn(`Invalid java schema detected for ${j.path}, skip it from cache.`)
+            }
+          }
+          writeJson(javaJsonPath, { all }, { spaces: 2 })
         })
 
         setupZuluCache(app).catch((e) => {
