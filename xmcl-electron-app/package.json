@@ -2,7 +2,7 @@
     "name": "xmcl",
     "private": true,
     "main": "./index.js",
-    "version": "0.53.3",
+    "version": "0.54.0",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "X Minecraft Launcher - A modern Minecraft launcher",
     "license": "MIT",
