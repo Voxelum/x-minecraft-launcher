@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "productName": "xmcl",
-    "version": "0.51.3",
+    "version": "0.52.0",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "X Minecraft Launcher - A modern Minecraft launcher",
     "license": "MIT",
