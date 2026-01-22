@@ -3,6 +3,7 @@ import { LaunchService } from '~/launch'
 import { kSettings } from '~/settings'
 
 export const pluginDiscreteGPULinux: LauncherAppPlugin = async (app) => {
+  const logger = app.getLogger('DiscreteGPULinux')
   app.registry.get(LaunchService).then((servi) => {
     servi.registerMiddleware({
       name: 'discrete-gpu-linux',
@@ -12,7 +13,7 @@ export const pluginDiscreteGPULinux: LauncherAppPlugin = async (app) => {
         const ops = payload.options
         const settings = await app.registry.get(kSettings)
         if (settings.enableDedicatedGPUOptimization) {
-          const env = ops.extraExecOption?.env || {
+          const env = {
             ...process.env,
           }
           const info = (await app.host.getGPUInfo('basic'))
@@ -74,10 +75,15 @@ export const pluginDiscreteGPULinux: LauncherAppPlugin = async (app) => {
             // Use DRI_PRIME=vendor_id:device_id format to specify the dedicated GPU
             const gpu = gpus[0]
             env.DRI_PRIME = `${gpu.vendorId.toString(16)}:${gpu.deviceId.toString(16)}`
+            logger.log(`Setting DRI_PRIME=${env.DRI_PRIME} for discrete GPU offloading`)
             if (gpus.some((g) => g.vendorId === 4318)) {
               // NVIDIA-specific environment variables
               env.__NV_PRIME_RENDER_OFFLOAD = '1'
               env.__GLX_VENDOR_LIBRARY_NAME = 'nvidia'
+              logger.log('Setting NVIDIA offloading environment variables')
+            }
+            if (ops.extraExecOption?.env) {
+              Object.assign(env, ops.extraExecOption?.env)
             }
             ops.extraExecOption = { ...ops.extraExecOption, env }
           }
