@@ -544,15 +544,15 @@ export function useInstanceVersionInstallInstruction(
         await commit(version)
         return
       }
+      const version = instruction.resolvedVersion
       if (instruction.jar) {
         await installMinecraftJar({
-          version:
-            instruction.resolvedVersion || instruction.version || instruction.runtime.minecraft,
+          version,
           side: 'client',
         })
       }
       if (instruction.profile) {
-        const resolved = await resolveLocalVersion(instruction.resolvedVersion)
+        const resolved = await resolveLocalVersion(version)
         const java = getJavaPathOrInstall(
           instances.value,
           javas.value,
@@ -568,9 +568,7 @@ export function useInstanceVersionInstallInstruction(
           java: javaPath,
         })
 
-        if (instruction.version) {
-          await installDependencies({ version: instruction.version, side: 'client' })
-        }
+        await installDependencies({ version: version, side: 'client' })
         return
       }
       if (instruction.optifine) {
@@ -614,7 +612,7 @@ export function useInstanceVersionInstallInstruction(
         return
       }
 
-      const resolved = await resolveLocalVersion(instruction.resolvedVersion)
+      const resolved = await resolveLocalVersion(version)
       const java = getJavaPathOrInstall(
         instances.value,
         javas.value,
@@ -625,7 +623,7 @@ export function useInstanceVersionInstallInstruction(
         await installJava(java)
       }
       if (instruction.libraries) {
-        console.log('Installing libraries', instruction.runtime.minecraft)
+        console.log('Installing libraries', version)
         await installLibraries({
           libraries: instruction.libraries,
           version: instruction.runtime.minecraft,
@@ -635,9 +633,9 @@ export function useInstanceVersionInstallInstruction(
       if (instruction.assetsIndex) {
         const list = await getSWRV(getMinecraftVersionsModel(), config)
         await installAssetsForVersion({
-          version: instruction.version,
+          version,
           fallbackVersionMetadata: list.versions.filter(
-            (v) => v.id === instruction.runtime.minecraft || v.id === instruction.assetsIndex?.id,
+            (v) => v.id === version || v.id === instruction.assetsIndex?.id,
           ),
         })
         refreshResolvedVersion()
