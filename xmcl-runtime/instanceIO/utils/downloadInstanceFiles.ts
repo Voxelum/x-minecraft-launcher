@@ -1,6 +1,6 @@
-import { DownloadBaseOptions, DownloadMultipleOption, DownloadOptions, downloadMultiple } from '@xmcl/file-transfer'
-import { InstanceFile } from '@xmcl/instance'
+import { DownloadBaseOptions, DownloadMultipleOption, downloadMultiple } from '@xmcl/file-transfer'
 import { Tracker, onDownloadMultiple } from '@xmcl/installer'
+import { InstanceFile } from '@xmcl/instance'
 import { InstallInstanceTrackerEvents } from '@xmcl/runtime-api'
 
 /**
@@ -21,7 +21,13 @@ export async function downloadInstanceFiles(
       destination: opt.options.destination,
       headers: opt.options.headers,
       pendingFile: opt.options.pendingFile,
-      expectedTotal: opt.options.expectedTotal,
+      expectedTotal: (
+        typeof opt.options.url === 'string'
+          ? opt.options.url.includes('edge.forgecdn.net')
+          : opt.options.url.some((u) => u.includes('edge.forgecdn.net'))
+      )
+        ? undefined
+        : opt.options.expectedTotal,
     })),
     signal: signal,
     tracker: parent,

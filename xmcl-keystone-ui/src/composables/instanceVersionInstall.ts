@@ -685,7 +685,7 @@ export function useInstanceVersionInstallInstruction(
       [inst.instance]: true,
     }
     try {
-      await lock.runExclusive(() => handleInstallInstruction(inst))
+      await lock.runExclusive(() => handleInstallInstruction(inst)).catch(() => {})
       if (last === resolvedVersion.value) {
         await update(last)
       }
