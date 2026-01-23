@@ -137,19 +137,3 @@ const onDragStart = (e: DragEvent) => {
 const { dragging, overState, onDragEnd, onDragEnter, onDragLeave, onDragOver, onDrop } = useGroupDragDropState(emit, computed(() => props.inside))
 
 </script>
-
-<style scoped>
-/* Remove background from instance items in compact (Notch) mode */
-.sidebar-item.px-0::before,
-.sidebar-item.px-0::after {
-  display: none !important;
-}
-
-.sidebar-item.px-0 {
-  background: transparent !important;
-}
-
-.sidebar-item.px-0.v-list-item--active::before {
-  opacity: 0 !important;
-}
-</style>

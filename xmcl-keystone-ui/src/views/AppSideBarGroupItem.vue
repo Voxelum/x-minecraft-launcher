@@ -1,5 +1,5 @@
 <template>
-  <div class="relative group-item-wrapper">
+  <div class="relative">
     <AppSideBarGroupItemIndicator :state="overState" />
     <AppSideBarGroupItemIndicator :state="overState" />
     
@@ -9,7 +9,10 @@
       push
       link
       draggable
-      class="non-moveable sidebar-item flex-1 flex-grow-0 px-2 group-list-item"
+      class="non-moveable group-item flex-1 flex-grow-0 px-2 before:(color-current! opacity-50! rounded-xl!) hover:before:opacity-100!"
+      :style="{
+        color: color
+      }"
       @click="onClick"
       @dragover.prevent
       @dragstart="onDragStart"
@@ -70,7 +73,7 @@ import { getInstanceIcon } from '@/util/favicon'
 import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
 import { injection } from '@/util/inject'
 import AppSideBarGroupItemIndicator from './AppSideBarGroupItemIndicator.vue'
-import { notNullish } from '@vueuse/core'
+import { notNullish, useStyleTag } from '@vueuse/core'
 import { vContextMenu } from '@/directives/contextMenu'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { useDialog } from '@/composables/dialog'
@@ -119,21 +122,6 @@ const getItems = () => {
 </script>
 
 <style scoped>
-/* Clean group wrapper */
-.group-item-wrapper {
-  background: transparent !important;
-}
-
-/* Remove all backgrounds from group items */
-.group-list-item {
-  background: transparent !important;
-}
-
-.group-list-item::before,
-.group-list-item::after {
-  display: none !important;
-}
-
 /* Instance grid for folder icons */
 .instance-grid {
   display: grid;
@@ -151,4 +139,5 @@ const getItems = () => {
   border-radius: 4px;
   object-fit: cover;
 }
+
 </style>
