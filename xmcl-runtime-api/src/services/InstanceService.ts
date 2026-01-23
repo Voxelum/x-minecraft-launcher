@@ -1,5 +1,15 @@
-import { InstanceDataWithTime, applyInstanceChanges, type CreateInstanceOptions, type EditInstanceOptions, type Instance } from '@xmcl/instance'
-import type { InstanceModpackMetadataSchema } from '../entities/instance.schema'
+import {
+  InstanceDataWithTime,
+  applyInstanceChanges,
+  type CreateInstanceOptions,
+  type EditInstanceOptions,
+  type Instance,
+} from '@xmcl/instance'
+import {
+  type InstanceModpackMetadataSchema,
+  type InstanceGroupDataOrString,
+  InstanceGroupDataOrStringArray,
+} from '../entities/instance.schema'
 import type { Task } from '../task'
 import type { SharedState } from '../util/SharedState'
 import type { InvalidDirectoryErrorCode } from './BaseService'
@@ -22,6 +32,14 @@ export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
    * All selected instances.
    */
   instances: Instance[] = []
+  /**
+   * Instance groups
+   */
+  groups: InstanceGroupDataOrString[] = []
+
+  instanceGroupsSet(groups: InstanceGroupDataOrString[]) {
+    this.groups = InstanceGroupDataOrStringArray.parse(groups)
+  }
 
   instanceAdd(instance: Instance) {
     if (!this.all[instance.path]) {
@@ -55,9 +73,7 @@ export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
    * @param settings The modified data
    */
   instanceEdit(settings: Partial<InstanceDataWithTime> & { path: string }) {
-    const inst = this.instances.find(
-      (i) => i.path === settings.path,
-    )
+    const inst = this.instances.find((i) => i.path === settings.path)
 
     if (!inst) {
       return

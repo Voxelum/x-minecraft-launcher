@@ -4,6 +4,7 @@ import { InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
 import { InjectionKey } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
+import { InstanceOrGroupData } from './instanceGroup'
 
 export const kInstances: InjectionKey<ReturnType<typeof useInstances>> = Symbol('Instances')
 
@@ -141,8 +142,14 @@ export function useInstances() {
   })
 
   const ready = computed(() => state.value !== undefined)
+  const groups = computed(() => state.value?.groups ?? [])
+  const groupsSet = (groups: InstanceOrGroupData[]) => {
+    state.value?.instanceGroupsSet(groups)
+  }
   return {
     selectedInstance: path,
+    groups,
+    groupsSet,
     ready,
     instances,
     isValidating,

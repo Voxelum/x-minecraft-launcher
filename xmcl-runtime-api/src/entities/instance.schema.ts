@@ -1,5 +1,17 @@
 import { z } from 'zod'
 
+export const InstanceGroupData = z.object({
+  color: z.string(),
+  name: z.string(),
+  id: z.string(),
+  instances: z.array(z.string()),
+})
+export type InstanceGroupData = z.infer<typeof InstanceGroupData>
+
+export const InstanceGroupDataOrString = z.union([InstanceGroupData, z.string()])
+export type InstanceGroupDataOrString = z.infer<typeof InstanceGroupDataOrString>
+export const InstanceGroupDataOrStringArray = z.array(InstanceGroupDataOrString)
+
 /**
  * Instance selection and import configuration.
  * Zod schema for runtime validation with defaults.
@@ -9,8 +21,9 @@ export const InstancesSchema = z.object({
   selectedInstance: z.string().default(''),
   /** The extra imported instance path */
   instances: z.array(z.string()).default([]),
+  /** The instance groups */
+  groups: InstanceGroupDataOrStringArray.default([]),
 })
-
 export type InstancesSchema = z.infer<typeof InstancesSchema>
 
 /**

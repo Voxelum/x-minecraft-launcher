@@ -40,13 +40,13 @@
 </template>
 
 <script lang="ts" setup>
-import { InstanceGroupData } from '@/composables/instanceGroup'
 import { kInstances } from '@/composables/instances'
 import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
 import { notNullish } from '@vueuse/core'
 import AppSideBarNotchItem from './AppSideBarNotchItem.vue'
 import AppSideBarNotchItemInstance from './AppSideBarNotchItemInstance.vue'
+import { InstanceGroupData } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   group: InstanceGroupData

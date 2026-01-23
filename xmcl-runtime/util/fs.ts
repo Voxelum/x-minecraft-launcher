@@ -119,6 +119,9 @@ export async function linkDirectory(srcPath: string, destPath: string, logger: L
         e.junction = true
         e.srcExists = existsSync(srcPath)
         e.destExists = existsSync(destPath)
+        if (e.srcExists && e.destExists) {
+          return true
+        }
         throw e
       })
       return false

@@ -7,7 +7,7 @@
       push
       link
       draggable
-      class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
+      class="non-moveable sidebar-item flex-1 flex-grow-0 px-2 before:rounded-xl!"
       :class="{ 'v-list-item--active': isActive }"
       @click="navigate"
       @dragover.prevent

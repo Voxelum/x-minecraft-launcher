@@ -26,12 +26,13 @@ import { basename, dirname, isAbsolute, join, relative, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { ImageStorage, kTasks, Tasks } from '~/infra'
 import { VersionMetadataService } from '~/install'
-import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
+import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
 import { ENOENT_ERROR, exists, isDirectory, isPathDiskRootPath, readdirEnsured } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
 import { getTracker } from '~/util/taskHelper'
+import { setTimeout } from 'timers/promises'
 
 const INSTANCES_FOLDER = 'instances'
 
@@ -41,6 +42,7 @@ const INSTANCES_FOLDER = 'instances'
 @ExposeServiceKey(InstanceServiceKey)
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
   #removeHandlers: Record<string, WeakRef<() => Promise<void> | void>[]> = {}
+  #onRenamedInstancePath?: (oldPath: string, newPath: string) => void
 
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
@@ -67,12 +69,16 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         const all = [...new Set([...instanceConfig.instances, ...managed])]
         const staleInstances = new Set<string>()
 
+        const rename: [string, string][] = []
         await Promise.all(
           all.map(async (path) => {
             if (basename(path).startsWith('.')) {
               return
             }
-            if (!(await this.loadInstance(path))) {
+            if (!isAbsolute(path)) {
+              path = this.getPathUnder(path)
+            }
+            if (!(await this.loadInstance(path, (old, newPath) => rename.push([old, newPath])))) {
               staleInstances.add(path)
             }
           }),
@@ -88,14 +94,75 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
         const selectedInstance = instanceConfig.selectedInstance || ''
 
-        if (staleInstances.size > 0) {
+        const groups = instanceConfig.groups.map((g) =>
+          typeof g === 'string'
+            ? this.getPathUnder(g)
+            : {
+                ...g,
+                instances: g.instances.map((s) => this.getPathUnder(s)),
+              },
+        )
+
+        if (rename.length > 0) {
+          // fix the group paths
+          for (const [oldPath, newPath] of rename) {
+            for (const group of groups) {
+              if (typeof group === 'string') {
+                if (group === oldPath) {
+                  const idx = groups.indexOf(group)
+                  groups[idx] = newPath
+                }
+              } else {
+                const idx = group.instances.indexOf(oldPath)
+                if (idx !== -1) {
+                  group.instances[idx] = newPath
+                }
+              }
+            }
+          }
+        }
+
+        this.state.instanceGroupsSet(groups)
+
+        this.#onRenamedInstancePath = (oldPath: string, newPath: string) => {
+          const groups = this.state.groups
+          for (const group of groups) {
+            if (typeof group === 'string') {
+              if (group === oldPath) {
+                const idx = groups.indexOf(group)
+                groups[idx] = newPath
+              }
+            } else {
+              const idx = group.instances.indexOf(oldPath)
+              if (idx !== -1) {
+                group.instances[idx] = newPath
+              }
+            }
+          }
+          this.state.instanceGroupsSet(groups)
+        }
+
+        if (staleInstances.size > 0 || rename.length > 0) {
           await writeJson(instancesPath, {
             selectedInstance: normalizeInstancePath(selectedInstance),
             instances: instanceConfig.instances
               .filter((p) => !staleInstances.has(p))
               .map(normalizeInstancePath),
+            groups,
           })
         }
+
+        this.state.subscribe('instanceGroupsSet', async () => {
+          await writeJson(instancesPath, {
+            selectedInstance,
+            instances: this.state.instances.map((s) => s.path).map(normalizeInstancePath),
+            groups: this.state.groups.map((g) =>
+              typeof g === 'string'
+                ? normalizeInstancePath(g)
+                : { ...g, instances: g.instances.map(normalizeInstancePath) },
+            ),
+          })
+        })
 
         this.state.subscribe('instanceEdit', async ({ path }) => {
           const inst = this.state.all[path]
@@ -155,7 +222,11 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     this.#removeHandlers[path].push(new WeakRef(handler))
   }
 
-  async loadInstance(path: string) {
+  @Singleton((v) => v)
+  async loadInstance(
+    path: string,
+    onRename: ((old: string, newPath: string) => void) | undefined = this.#onRenamedInstancePath,
+  ): Promise<boolean> {
     requireString(path)
 
     // Fix the wrong path if user set the name start/end with space
@@ -197,7 +268,13 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       if (this.isUnderManaged(path) && expectPath !== path && !existsSync(expectPath)) {
         this.log(`Migrate instance ${path} -> ${expectPath}`)
         await rename(path, expectPath)
-        path = expectPath
+        // const failed = await Promise.race([
+        //   await setTimeout(5_500).then(() => true),
+        // ])
+        // if (!failed) {
+        onRename?.(path, expectPath)
+        instance.path = expectPath
+        // }
       }
     } catch (e) {
       this.warn(`Fail to rename instance ${path} -> ${expectPath}`)
@@ -421,6 +498,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if (err && err !== 'exists') {
       return err
     }
+    await this.initialize()
     if (this.state.all[path]) {
       return undefined
     }

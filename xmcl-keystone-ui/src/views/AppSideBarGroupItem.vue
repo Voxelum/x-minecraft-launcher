@@ -67,7 +67,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { InstanceGroupData, useGroupDragDropState } from '@/composables/instanceGroup'
+import { useGroupDragDropState } from '@/composables/instanceGroup'
 import { kInstances } from '@/composables/instances'
 import { getInstanceIcon } from '@/util/favicon'
 import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
@@ -78,6 +78,7 @@ import { vContextMenu } from '@/directives/contextMenu'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { useDialog } from '@/composables/dialog'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { InstanceGroupData } from '@xmcl/runtime-api'
 
 const props = defineProps<{ group: InstanceGroupData; color: string }>()
 const emit = defineEmits(['arrange', 'drop-save', 'group'])

@@ -19,6 +19,8 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   const launchService = await app.registry.get(LaunchService)
   const getPath = await app.registry.get(kGameDataPath)
 
+  const logger = app.getLogger('LaunchPrecheck')
+
   const ensureLinkFolder = async (fromPath: string, toPath: string) => {
     if (await missing(fromPath)) {
       await ensureDir(fromPath)
@@ -27,21 +29,24 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
     if (linkTarget) {
       // relink
       if (linkTarget !== fromPath) {
-        await unlink(toPath)
-        await linkDirectory(fromPath, toPath, launchService).catch((e) => {
+        await unlink(toPath).catch(() => {})
+        await linkDirectory(fromPath, toPath, logger).catch((e) => {
           e.name = 'LaunchLinkError'
           e.stage = 'relink'
-          launchService.error(e)
+          logger.error(e)
         })
       }
       return
     }
-    const fstat = await stat(toPath).catch((e) => undefined)
+    const fstat = await stat(toPath).catch((e) => {
+      if (e.code === 'ENOENT') return undefined
+      throw e
+    })
     if (!fstat) {
-      await linkDirectory(fromPath, toPath, launchService).catch((e) => {
+      await linkDirectory(fromPath, toPath, logger).catch((e) => {
         e.name = 'LaunchLinkError'
         e.stage = 'link'
-        launchService.error(e)
+        logger.error(e)
       })
       return
     }
@@ -52,10 +57,10 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
         await move(toPath, join(toPath + Date.now() + '.bk'))
       }
     }
-    await linkDirectory(fromPath, toPath, launchService).catch((e) => {
+    await linkDirectory(fromPath, toPath, logger).catch((e) => {
       e.name = 'LaunchLinkError'
       e.stage = 'after move'
-      launchService.error(e)
+      logger.error(e)
     })
   }
   const ensureLinkFolderFromRoot = async (gameDirectory: string, folder: string) => {

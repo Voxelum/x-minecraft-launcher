@@ -1,14 +1,9 @@
 import { injection } from '@/util/inject'
-import { get, MaybeRef, useEventBus, useLocalStorage } from '@vueuse/core'
+import { ref, onMounted } from 'vue'
+import { get, MaybeRef, useEventBus } from '@vueuse/core'
+import { InstanceGroupData, InstanceGroupDataOrString } from '@xmcl/runtime-api'
 import { kInstances } from './instances'
 import { kTheme } from './theme'
-
-export interface InstanceGroupData {
-  color: string
-  name: string
-  id: string
-  instances: string[]
-}
 
 export enum OverState {
   TopQuad, // top 1/4
@@ -16,7 +11,7 @@ export enum OverState {
   BottomQuad, // bottom 1/4
 }
 
-export type InstanceOrGroupData = string | InstanceGroupData
+export type InstanceOrGroupData = InstanceGroupDataOrString
 
 export function useGroupDragDropState(emit: (event: 'arrange' | 'group' | 'drop-save', data: any) => void, inside?: MaybeRef<boolean | undefined>) {
   const dragging = ref(false)
@@ -116,18 +111,18 @@ export function useInstanceGroupDefaultColor() {
 }
 
 export function useInstanceGroup() {
-  const { instances, ready } = injection(kInstances)
-  const groupsData = useLocalStorage('instanceGroup', () => [] as InstanceOrGroupData[])
+  const { instances, ready, groups: groupsData, groupsSet } = injection(kInstances)
 
-  const migrationBus = useEventBus<{ oldRoot: string; newRoot: string }>('migration')
-
-  migrationBus.once((e) => {
-    groupsData.value = groupsData.value.map((v) => {
-      if (typeof v === 'string') {
-        return v.replace(e.oldRoot, e.newRoot)
+  onMounted(() => {
+    try {
+      const v: InstanceOrGroupData[] = JSON.parse(localStorage.getItem('instanceGroup')!)
+      if (Array.isArray(v)) {
+        groupsSet(v)
+        localStorage.removeItem('instanceGroup')
       }
-      return { ...v, instances: v.instances.map(v => v.replace(e.oldRoot, e.newRoot)) }
-    })
+    } catch {
+
+    }
   })
 
   watch(instances, (instances) => {
@@ -158,7 +153,7 @@ export function useInstanceGroup() {
       newGroupData.push(i)
     }
 
-    groupsData.value = newGroupData
+    groupsSet(newGroupData)
   }, { immediate: true })
 
   const isEqualGroup = (a: InstanceOrGroupData, b: InstanceOrGroupData) => {
@@ -203,7 +198,7 @@ export function useInstanceGroup() {
       }
     }
 
-    groupsData.value = newOrders
+    groupsSet(newOrders)
   }
 
   const move = (from: InstanceOrGroupData, to: InstanceOrGroupData, previous?: boolean) => {
@@ -268,7 +263,7 @@ export function useInstanceGroup() {
       }
     }
 
-    groupsData.value = newOrders
+    groupsSet(newOrders)
   }
 
   return {

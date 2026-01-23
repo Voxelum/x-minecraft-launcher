@@ -247,15 +247,16 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
                   'indexes',
                   `${version.assetIndex.sha1}.json`,
                 )
-                missing(hashIndexPath).then((isMissing) => {
-                  if (isMissing) {
-                    return linkOrCopyFile(assetIndexPath, hashIndexPath).catch((e) => {
-                      this.warn(
-                        `Failed to link asset index ${version.assetIndex?.id} to ${version.assetIndex?.sha1}.json`,
-                      )
-                      this.warn(e)
-                    })
-                  }
+                missing(hashIndexPath).then(async (isMissing) => {
+                  if (!isMissing) return
+                  const missSrc = await missing(assetIndexPath)
+                  if (missSrc) return
+                  await linkOrCopyFile(assetIndexPath, hashIndexPath).catch((e) => {
+                    this.warn(
+                      `Failed to link asset index ${version.assetIndex?.id} to ${version.assetIndex?.sha1}.json`,
+                    )
+                    this.warn(e)
+                  })
                 })
               }
 
