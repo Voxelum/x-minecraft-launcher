@@ -9,31 +9,31 @@
         v-model="model"
         :disabled="disabled"
         color="primary"
+        @click.stop.prevent.capture="!disabled ? emit('input', !value) : undefined"
       />
     </template>
   </SettingItem>
 </template>
 <script setup lang="ts">
-import { useVModel } from '@vueuse/core'
-import SettingItem from './SettingItem.vue'
+import { useVModel } from "@vueuse/core";
+import SettingItem from "./SettingItem.vue";
 
 const props = defineProps<{
-  value: boolean
-  title: string
-  icon?: string
-  disabled?: boolean
-  titleClass?: string
-  description?: string
-}>()
+  value: boolean;
+  title: string;
+  icon?: string;
+  disabled?: boolean;
+  titleClass?: string;
+  description?: string;
+}>();
 const emit = defineEmits<{
-  (event: 'input', value: boolean): void
-}>()
+  (event: "input", value: boolean): void;
+}>();
 
-const model = useVModel(props, 'value', emit)
+const model = useVModel(props, "value", emit);
 </script>
 
 <style scoped>
-/* Remove gray-black rectangle backgrounds */
 .v-list-item {
   background: transparent !important;
 }
