@@ -7,7 +7,7 @@ export function useDateString() {
     // Without this, the translated string won't update when the locale changes because
     // the date parameter itself hasn't changed. This is needed because getDateString
     // is called directly in templates where Vue needs explicit reactive dependencies.
-    const currentLocale = locale.value
+    void locale.value
     const result = getAgoOrDate(date, format)
     if (typeof result === 'string') {
       return result
