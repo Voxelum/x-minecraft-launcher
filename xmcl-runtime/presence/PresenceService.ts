@@ -4,15 +4,18 @@ import { Inject, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { kSettings } from '~/settings'
 import { LauncherApp } from '../app/LauncherApp'
+import { LaunchService } from '../launch/LaunchService'
 
 @ExposeServiceKey(PresenceServiceKey)
 export class PresenceService extends AbstractService implements IPresenceService {
   private discord: Client
   private current: SetActivity = {
   }
+  private gameRunning = false
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kSettings) private settings: SharedState<Settings>,
+    @Inject(LaunchService) launchService: LaunchService,
   ) {
     super(app, async () => {
       if (settings.discordPresence) {
@@ -26,12 +29,29 @@ export class PresenceService extends AbstractService implements IPresenceService
 
     settings.subscribe('discordPresenceSet', async (state) => {
       if (state) {
-        await this.discord.connect().catch((e) => {
+        await this.discord.connect().catch((e: any) => {
           this.warn('Fail to connect to discord. %o', e)
         })
       } else {
         await this.discord.destroy()
       }
+    })
+
+    // Listen to game launch events to disable presence when game is running
+    launchService.on('minecraft-start', () => {
+      this.gameRunning = true
+      this.log('Game started, disabling Discord presence updates')
+      // Clear the current activity when game starts
+      if (this.discord.isConnected) {
+        this.discord.user?.clearActivity().catch((e: any) => {
+          this.warn('Fail to clear discord presence. %o', e)
+        })
+      }
+    })
+
+    launchService.on('minecraft-exit', () => {
+      this.gameRunning = false
+      this.log('Game exited, re-enabling Discord presence updates')
     })
 
     // TODO: finish this
@@ -72,6 +92,11 @@ export class PresenceService extends AbstractService implements IPresenceService
     if (!this.settings.discordPresence) {
       return
     }
+    // Don't update Discord presence if game is running
+    if (this.gameRunning) {
+      this.log('Game is running, skipping Discord presence update')
+      return
+    }
     if (!this.discord.isConnected) {
       try {
         await this.discord.connect()
@@ -83,7 +108,7 @@ export class PresenceService extends AbstractService implements IPresenceService
     this.current.largeImageKey = 'dark_512'
     this.current.startTimestamp = Date.now()
     this.current.details = activity
-    await this.discord.user?.setActivity(param).catch((e) => {
+    await this.discord.user?.setActivity(param).catch((e: any) => {
       this.warn('Fail to set discord presence. %o', e)
     })
   }
