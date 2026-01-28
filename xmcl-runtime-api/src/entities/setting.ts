@@ -18,11 +18,11 @@ export class Settings implements SettingSchema {
   globalPrependCommand: string = ''
   globalPreExecuteCommand: string = ''
   globalFastLaunch = false
-  globalHideLauncher = false
+  globalHideLauncher = true
   globalShowLog = false
   globalEnv: Record<string, string> = {}
   globalResolution: { width?: number; height?: number; fullscreen?: boolean } = {}
-  discordPresence = false
+  discordPresence = true
   developerMode = false
   disableTelemetry = false
   linuxTitlebar = false
@@ -64,9 +64,9 @@ export class Settings implements SettingSchema {
 
   httpProxyEnabled = false
 
-  maxSockets = 0
+  maxSockets = 64
 
-  maxAPISockets = 0
+  maxAPISockets = 16
 
   diskFullError = false
 
@@ -77,13 +77,13 @@ export class Settings implements SettingSchema {
   config(config: SettingSchema) {
     this.locale = config.locale
     this.autoDownload = config.autoDownload || false
-    this.autoInstallOnAppQuit = config.autoDownload || false
+    this.autoInstallOnAppQuit = config.autoInstallOnAppQuit || false
     this.allowPrerelease = config.allowPrerelease || false
     this.apiSetsPreference = config.apiSetsPreference
     this.httpProxy = config.httpProxy
     this.httpProxyEnabled = config.httpProxyEnabled
-    this.maxSockets = config.maxSockets ?? 16
-    this.maxAPISockets = config.maxAPISockets ?? 0
+    this.maxSockets = config.maxSockets ?? 64
+    this.maxAPISockets = config.maxAPISockets ?? 16
     this.allowTurn = config.allowTurn ?? false
     this.theme = config.theme
     this.globalMinMemory = config.globalMinMemory
