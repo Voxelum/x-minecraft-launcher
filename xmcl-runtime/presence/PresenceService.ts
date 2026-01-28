@@ -27,6 +27,11 @@ export class PresenceService extends AbstractService implements IPresenceService
       }
     })
 
+    // Initialize Discord client first before setting up event listeners
+    this.discord = new Client({
+      clientId: '1075044884400054363',
+    })
+
     settings.subscribe('discordPresenceSet', async (state) => {
       if (state) {
         await this.discord.connect().catch((e: any) => {
@@ -82,10 +87,6 @@ export class PresenceService extends AbstractService implements IPresenceService
     //     this.warn('Fail to set discord presence. %o', e)
     //   })
     // })
-
-    this.discord = new Client({
-      clientId: '1075044884400054363',
-    })
   }
 
   async setActivity(activity: string): Promise<void> {
