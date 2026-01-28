@@ -1,8 +1,11 @@
 import { TimeFormatOptions, TimeUnit, getAgoOrDate } from '@/util/date'
 
 export function useDateString() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const getDateString = (date: string | number, format?: TimeFormatOptions | undefined) => {
+    // Access locale.value to ensure Vue tracks this as a reactive dependency
+    // This ensures the translation updates when locale changes
+    locale.value
     const result = getAgoOrDate(date, format)
     if (typeof result === 'string') {
       return result
