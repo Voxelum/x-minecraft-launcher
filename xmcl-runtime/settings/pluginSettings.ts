@@ -13,40 +13,7 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
   const settingJsonPath = join(app.appDataPath, 'setting.json')
 
   const saver = new AggregateExecutor<void, void>(() => { }, async () => {
-    const data = SettingSchema.parse({
-      locale: state.locale,
-      autoInstallOnAppQuit: state.autoInstallOnAppQuit,
-      autoDownload: state.autoDownload,
-      allowPrerelease: state.allowPrerelease,
-      apiSets: state.apiSets,
-      apiSetsPreference: state.apiSetsPreference,
-      allowTurn: state.allowTurn,
-      httpProxy: state.httpProxy,
-      httpProxyEnabled: state.httpProxyEnabled,
-      theme: state.theme,
-      maxSockets: state.maxSockets,
-      globalMinMemory: state.globalMinMemory,
-      globalMaxMemory: state.globalMaxMemory,
-      globalAssignMemory: state.globalAssignMemory,
-      globalVmOptions: state.globalVmOptions,
-      globalMcOptions: state.globalMcOptions,
-      globalFastLaunch: state.globalFastLaunch,
-      globalHideLauncher: state.globalHideLauncher,
-      globalShowLog: state.globalShowLog,
-      globalPrependCommand: state.globalPrependCommand,
-      discordPresence: state.discordPresence,
-      developerMode: state.developerMode,
-      disableTelemetry: state.disableTelemetry,
-      linuxTitlebar: state.linuxTitlebar,
-      windowTranslucent: state.windowTranslucent,
-      globalDisableAuthlibInjector: state.globalDisableAuthlibInjector,
-      globalDisableElyByAuthlib: state.globalDisableElyByAuthlib,
-      enableDedicatedGPUOptimization: state.enableDedicatedGPUOptimization,
-      replaceNatives: state.replaceNatives,
-      globalEnv: state.globalEnv,
-      globalPreExecuteCommand: state.globalPreExecuteCommand,
-      globalResolution: state.globalResolution,
-    })
+    const data = SettingSchema.parse(state)
     await writeJson(settingJsonPath, data, { spaces: 2 })
   }, 1000)
 
@@ -54,14 +21,25 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
     return saver.flush()
   })
 
-  readJson(settingJsonPath).catch(() => ({})).then(d => SettingSchema.parse(d)).then(async (data) => {
-    data.locale = data.locale || app.host.getLocale()
-    if (data.locale.startsWith('en')) {
-      data.locale = 'en'
+  const normalizeLocale = (locale: string) => {
+    locale = locale || app.host.getLocale()
+    if (locale.startsWith('en')) {
+      locale = 'en'
     }
+    return locale
+  }
+
+  readJson(settingJsonPath).catch(() => ({})).then((rawData) => {
+    // SettingSchema uses .catch() for each field, so invalid fields fallback to defaults automatically
+    const data = SettingSchema.parse(rawData)
+    data.locale = normalizeLocale(data.locale)
     state.config(data)
   }).catch((e) => {
     logger.error(e)
+    // Still normalize locale with defaults when everything fails
+    const data = SettingSchema.parse({})
+    data.locale = normalizeLocale(data.locale)
+    state.config(data)
   }).finally(() => {
     app.registry.register(kSettings, state)
     state.subscribeAll(() => {

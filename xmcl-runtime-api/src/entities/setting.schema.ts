@@ -20,74 +20,75 @@ export const GlobalResolutionSchema = z.object({
 /**
  * Launcher settings schema.
  * Zod schema for runtime validation with defaults.
+ * Uses .catch() to fallback to default values when individual fields are invalid.
  */
 export const SettingSchema = z.object({
   /** The display language of the launcher */
-  locale: z.string().default(''),
+  locale: z.string().catch(''),
   /** Should launcher auto download new update */
-  autoDownload: z.boolean().default(false),
+  autoDownload: z.boolean().catch(false),
   /** Should launcher auto install new update after app quit */
-  autoInstallOnAppQuit: z.boolean().default(false),
+  autoInstallOnAppQuit: z.boolean().catch(false),
   /** Should launcher show the pre-release */
-  allowPrerelease: z.boolean().default(false),
+  allowPrerelease: z.boolean().catch(false),
   /** The download API set preferences */
-  apiSetsPreference: z.enum(['mojang', 'bmcl', '']).default(''),
+  apiSetsPreference: z.enum(['mojang', 'bmcl', '']).catch(''),
   /** The supported unofficial api sets */
-  apiSets: z.array(ApiSetSchema).default([]),
+  apiSets: z.array(ApiSetSchema).catch([]),
   /** Allow turn server in p2p */
-  allowTurn: z.boolean().default(false),
+  allowTurn: z.boolean().catch(false),
   /** The http proxy address */
-  httpProxy: z.string().default(''),
+  httpProxy: z.string().catch(''),
   /** Is proxy setting enabled */
-  httpProxyEnabled: z.boolean().default(false),
+  httpProxyEnabled: z.boolean().catch(false),
   /** The launcher theme */
-  theme: z.enum(['dark', 'light', 'system']).default('dark'),
+  theme: z.enum(['dark', 'light', 'system']).catch('dark'),
   /** Maximum number of sockets to allow per host */
-  maxSockets: z.number().default(64),
+  maxSockets: z.number().catch(64),
   /** Maximum number of sockets allowed for requesting API */
-  maxAPISockets: z.number().optional().default(16),
+  maxAPISockets: z.number().catch(16),
   /** Replace natives setting */
-  replaceNatives: z.union([z.literal('all'), z.literal('legacy-only'), z.literal(false)]).default('legacy-only'),
+  replaceNatives: z.union([z.literal('all'), z.literal('legacy-only'), z.literal(false)]).catch('legacy-only'),
   /** Global minimum memory */
-  globalMinMemory: z.number().default(0),
+  globalMinMemory: z.number().catch(0),
   /** Global maximum memory */
-  globalMaxMemory: z.number().default(0),
+  globalMaxMemory: z.number().catch(0),
   /** Global assign memory setting */
-  globalAssignMemory: z.union([z.boolean(), z.literal('auto')]).default(false),
+  globalAssignMemory: z.union([z.boolean(), z.literal('auto')]).catch(false),
   /** Global VM options */
-  globalVmOptions: z.array(z.string()).default([]),
+  globalVmOptions: z.array(z.string()).catch([]),
   /** Global Minecraft options */
-  globalMcOptions: z.array(z.string()).default([]),
+  globalMcOptions: z.array(z.string()).catch([]),
   /** Global fast launch setting */
-  globalFastLaunch: z.boolean().default(false),
+  globalFastLaunch: z.boolean().catch(false),
   /** Global hide launcher setting */
-  globalHideLauncher: z.boolean().default(true),
+  globalHideLauncher: z.boolean().catch(true),
   /** Global show log setting */
-  globalShowLog: z.boolean().default(false),
+  globalShowLog: z.boolean().catch(false),
   /** Global disable authlib injector */
-  globalDisableAuthlibInjector: z.boolean().default(false),
+  globalDisableAuthlibInjector: z.boolean().catch(false),
   /** Global disable Ely.by authlib */
-  globalDisableElyByAuthlib: z.boolean().default(false),
+  globalDisableElyByAuthlib: z.boolean().catch(false),
   /** Global prepend command */
-  globalPrependCommand: z.string().default(''),
+  globalPrependCommand: z.string().catch(''),
   /** Global pre-execute command */
-  globalPreExecuteCommand: z.string().default(''),
+  globalPreExecuteCommand: z.string().catch(''),
   /** The launch environment variables */
-  globalEnv: z.record(z.string(), z.string()).default({}),
+  globalEnv: z.record(z.string(), z.string()).catch({}),
   /** Discord presence setting */
-  discordPresence: z.boolean().default(true),
+  discordPresence: z.boolean().catch(true),
   /** Developer mode setting */
-  developerMode: z.boolean().default(false),
+  developerMode: z.boolean().catch(false),
   /** Disable telemetry setting */
-  disableTelemetry: z.boolean().default(false),
+  disableTelemetry: z.boolean().catch(false),
   /** Linux titlebar setting */
-  linuxTitlebar: z.boolean().default(false),
+  linuxTitlebar: z.boolean().catch(false),
   /** Enable dedicated GPU optimization */
-  enableDedicatedGPUOptimization: z.boolean().default(true),
+  enableDedicatedGPUOptimization: z.boolean().catch(true),
   /** Window translucency effect */
-  windowTranslucent: z.boolean().default(false),
+  windowTranslucent: z.boolean().catch(false),
   /** Global resolution settings for Minecraft */
-  globalResolution: GlobalResolutionSchema.default({}),
+  globalResolution: GlobalResolutionSchema.catch({}),
 })
 
 export type SettingSchema = z.infer<typeof SettingSchema>
