@@ -3,7 +3,7 @@ import { download } from '@xmcl/file-transfer'
 import {
   AUTHORITY_MICROSOFT,
   UserException,
-  UserSchema,
+  Users,
   UserServiceKey,
   UserState,
   type AuthorityMetadata,
@@ -33,7 +33,7 @@ import { ensureLauncherProfile, preprocessUserData } from './utils/userData'
 export class UserService extends StatefulService<UserState> implements IUserService {
   private userJsonPath: string
   private saveUserFile = debounce(async () => {
-    const userData = UserSchema.parse({
+    const userData = Users.parse({
       users: this.state.users,
     })
     await writeJson(this.userJsonPath, userData, { spaces: 2 })
@@ -52,7 +52,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     @Inject(kYggdrasilSeriveRegistry) private yggdrasilSeriveRegistry: YggdrasilSeriveRegistry
   ) {
     super(app, () => store.registerStatic(new UserState(), UserServiceKey), async () => {
-      const data = await readJson(this.userJsonPath).catch(() => ({})).then(d => UserSchema.parse(d))
+      const data = await readJson(this.userJsonPath).catch(() => ({})).then(d => Users.parse(d))
       const userData = {
         users: {},
         yggdrasilServices: [],

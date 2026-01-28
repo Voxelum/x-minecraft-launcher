@@ -27,7 +27,7 @@ export const CapeInfoSchema = z.object({
   id: z.string(),
   state: z.enum(['ACTIVE', 'INACTIVE']),
   url: z.string(),
-  alias: z.string(),
+  alias: z.string().optional(),
 })
 
 /**
@@ -38,7 +38,7 @@ export const GameProfileAndTextureSchema = z.object({
   name: z.string(),
   properties: z.record(z.string(), z.string()).optional(),
   textures: z.object({
-    SKIN: YggdrasilTextureSchema,
+    SKIN: YggdrasilTextureSchema.catch({ url: '' }),
     CAPE: YggdrasilTextureSchema.optional(),
     ELYTRA: YggdrasilTextureSchema.optional(),
   }),
@@ -51,30 +51,42 @@ export type GameProfileAndTexture = z.infer<typeof GameProfileAndTextureSchema>
 
 /**
  * User profile compatible with legacy format.
- * @deprecated Use UserProfile instead
+ * Uses .catch() to fallback to default values when individual fields are invalid.
+ * Profiles are parsed individually - malformed profiles are skipped without affecting others.
  */
-export const UserProfileCompatibleSchema = z.object({
+export const UserProfileCompatible = z.object({
   /** User id. Also means the localId in new account_json */
   id: z.string(),
   /** The username usually email */
   username: z.string(),
   /** The used auth service name @deprecated */
-  authService: z.string().optional(),
+  authService: z.string().optional().catch(undefined),
   /** If the user profile is invalidated and should be re-login */
-  invalidated: z.boolean(),
+  invalidated: z.boolean().catch(false),
   /** The authority url */
-  authority: z.string().optional(),
+  authority: z.string().optional().catch(undefined),
   /** The expire time */
-  expiredAt: z.number(),
-  /** All available game profiles */
-  profiles: z.record(z.string(), GameProfileAndTextureSchema),
+  expiredAt: z.number().catch(-1),
+  /** All available game profiles - each profile is parsed individually */
+  profiles: z.record(z.string(), z.unknown())
+    .transform((record) => {
+      const result: Record<string, GameProfileAndTexture> = {}
+      for (const [key, value] of Object.entries(record)) {
+        const parsed = GameProfileAndTextureSchema.safeParse(value)
+        if (parsed.success) {
+          result[key] = parsed.data
+        }
+      }
+      return result
+    })
+    .catch({}),
   /** Selected profile uuid */
-  selectedProfile: z.string(),
+  selectedProfile: z.string().catch(''),
   /** The avatar uri. This can be base64 data uri. */
-  avatar: z.string().optional(),
+  avatar: z.string().optional().catch(undefined),
 })
 
-export type UserProfileCompatible = z.infer<typeof UserProfileCompatibleSchema>
+export type UserProfileCompatible = z.infer<typeof UserProfileCompatible>
 
 /**
  * User profile information.
@@ -105,13 +117,25 @@ export type UserProfile = z.infer<typeof UserProfileSchema>
 /**
  * User schema containing all saved user accounts.
  * Zod schema for runtime validation with defaults.
+ * Each user profile is parsed individually - malformed profiles are skipped without affecting others.
  */
-export const UserSchema = z.object({
+export const Users = z.object({
   /** All saved user account through multiple services */
-  users: z.record(z.string(), UserProfileCompatibleSchema).default({}),
+  users: z.record(z.string(), z.unknown())
+    .transform((record) => {
+      const result: Record<string, UserProfileCompatible> = {}
+      for (const [key, value] of Object.entries(record)) {
+        const parsed = UserProfileCompatible.safeParse(value)
+        if (parsed.success) {
+          result[key] = parsed.data
+        }
+      }
+      return result
+    })
+    .catch({}),
 })
 
-export type UserSchema = z.infer<typeof UserSchema>
+export type Users = z.infer<typeof Users>
 
 /**
  * Modrinth user authentication info.
