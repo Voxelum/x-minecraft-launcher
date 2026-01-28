@@ -47,6 +47,10 @@
                     "LAUNCH_BY": "vscode"
                 }
             },
+            "presentation": {
+                "group": "dev",
+                "panel": "dedicated"
+            },
             "problemMatcher": [
                 {
                     "pattern": [
@@ -71,6 +75,10 @@
             "script": "dev:renderer",
             "group": "none",
             "isBackground": true,
+            "presentation": {
+                "group": "dev",
+                "panel": "dedicated"
+            },
             "problemMatcher": [
                 {
                     "pattern": [
