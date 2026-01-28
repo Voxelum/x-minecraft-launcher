@@ -35,6 +35,9 @@ jobs:
     - name: Check
       run: |
         pnpm check
+    - name: Test
+      run: |
+        pnpm vitest run --exclude 'xmcl/**'
     - name: Build
       run: |
         pnpm run --prefix xmcl-keystone-ui build
