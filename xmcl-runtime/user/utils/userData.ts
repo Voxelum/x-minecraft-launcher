@@ -1,5 +1,5 @@
 import { isNotNull } from '@xmcl/core/utils'
-import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserProfile, UserProfileCompatible, UserSchema, normalizeUserId } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserProfile, UserProfileCompatible, Users, normalizeUserId } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
 import { readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
@@ -11,7 +11,7 @@ import { UserTokenStorage } from '../userTokenStore'
  * @param output The output user data
  * @param input The loaded user data
  */
-export async function preprocessUserData(output: Omit<UserSchema, 'users'> & { users: Record<string, UserProfile> }, input: UserSchema, minecraftJsonPath: string, tokenStorage: UserTokenStorage) {
+export async function preprocessUserData(output: Omit<Users, 'users'> & { users: Record<string, UserProfile> }, input: Users, minecraftJsonPath: string, tokenStorage: UserTokenStorage) {
   let mojangSelectedUserId = ''
   try {
     const minecraftProfile = await readFile(minecraftJsonPath, 'utf-8').then(JSON.parse).catch(() => undefined)
@@ -79,7 +79,7 @@ function migrateUserProfile(userProfile: UserProfileCompatible): UserProfile | u
 /**
  * Fit the user data from loaded user data and loaded launcher profile json
  */
-function fillData(output: Omit<UserSchema, 'users'> & { users: Record<string, UserProfile> }, input: UserSchema, launchProfile: LauncherProfile | undefined, tokenStorage: UserTokenStorage) {
+function fillData(output: Omit<Users, 'users'> & { users: Record<string, UserProfile> }, input: Users, launchProfile: LauncherProfile | undefined, tokenStorage: UserTokenStorage) {
   output.users = input.users as any
 
   for (const user of Object.values(output.users)) {
