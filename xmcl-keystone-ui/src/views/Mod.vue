@@ -76,6 +76,7 @@
         :dense="denseView"
         :get-context-menu-items="getContextMenuItems"
         @click="on.click"
+        @click-dependency="onClickDependency"
       />
       <ModGroupEntryItem
         v-else-if="(typeof item === 'object')"
@@ -533,6 +534,12 @@ const onLoad = loadMore
 
 const switchToMarketWithKeyword = () => {
   source.value = 'remote'
+}
+
+const onClickDependency = (modId: string) => {
+  // Switch to remote (market) view and set the keyword to search for the dependency
+  source.value = 'remote'
+  keyword.value = modId
 }
 
 // install / uninstall / enable / disable

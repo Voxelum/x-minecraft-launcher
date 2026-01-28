@@ -23,6 +23,7 @@
         :disabled="item.disabled"
         :compatibility="compatibility"
         :tags="item.installed[0].tags"
+        @click-dependency="emit('click-dependency', $event)"
       />
     </template>
   </MarketItem>
@@ -55,7 +56,7 @@ const props = defineProps<{
   install: (p: ProjectEntry) => Promise<void>
 }>()
 
-const emit = defineEmits(['click', 'checked', 'install'])
+const emit = defineEmits(['click', 'checked', 'install', 'click-dependency'])
 
 const { compatibility: compatibilities } = injection(kInstanceModsContext)
 const compatibility = computed(() => props.item.installed[0] ? compatibilities.value[props.item.installed[0].modId] ?? [] : [])

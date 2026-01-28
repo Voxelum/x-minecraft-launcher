@@ -21,11 +21,13 @@
       v-for="(com, i) in sortedCompatibility"
       :key="com.modId + ' ' + i"
       v-shared-tooltip="getTooltip(com)"
-      class="mod-tag"
+      class="mod-tag cursor-pointer"
       :disabled="disabled"
       small
       label
       outlined
+      @click.stop="emit('click-dependency', com.modId)"
+      @mousedown.stop
     >
       <v-avatar left v-if="com.compatible === true">
         <img
@@ -96,6 +98,7 @@ const sortedCompatibility = computed(() => [...props.compatibility].sort((a, b) 
 const emit = defineEmits<{
   (event: 'edit-tag', e: Event, index: number): void
   (event: 'delete-tag', tag: string): void
+  (event: 'click-dependency', modId: string): void
 }>()
 
 const { modsIconsMap: icons } = injection(kInstanceModsContext)
