@@ -11,7 +11,7 @@ export class PresenceService extends AbstractService implements IPresenceService
   private discord: Client
   private current: SetActivity = {
   }
-  private gameRunning = false
+  private runningGameCount = 0
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kSettings) private settings: SharedState<Settings>,
@@ -39,10 +39,10 @@ export class PresenceService extends AbstractService implements IPresenceService
 
     // Listen to game launch events to disable presence when game is running
     launchService.on('minecraft-start', () => {
-      this.gameRunning = true
-      this.log('Game started, disabling Discord presence updates')
-      // Clear the current activity when game starts
-      if (this.discord.isConnected) {
+      this.runningGameCount++
+      this.log(`Game started, disabling Discord presence updates (running games: ${this.runningGameCount})`)
+      // Clear the current activity when the first game starts
+      if (this.runningGameCount === 1 && this.discord.isConnected) {
         this.discord.user?.clearActivity().catch((e: any) => {
           this.warn('Fail to clear discord presence. %o', e)
         })
@@ -50,8 +50,8 @@ export class PresenceService extends AbstractService implements IPresenceService
     })
 
     launchService.on('minecraft-exit', () => {
-      this.gameRunning = false
-      this.log('Game exited, re-enabling Discord presence updates')
+      this.runningGameCount = Math.max(0, this.runningGameCount - 1)
+      this.log(`Game exited, re-enabling Discord presence updates if no games running (running games: ${this.runningGameCount})`)
     })
 
     // TODO: finish this
@@ -92,8 +92,8 @@ export class PresenceService extends AbstractService implements IPresenceService
     if (!this.settings.discordPresence) {
       return
     }
-    // Don't update Discord presence if game is running
-    if (this.gameRunning) {
+    // Don't update Discord presence if any game is running
+    if (this.runningGameCount > 0) {
       this.log('Game is running, skipping Discord presence update')
       return
     }
