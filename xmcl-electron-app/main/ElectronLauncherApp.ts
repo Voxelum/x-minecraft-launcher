@@ -14,6 +14,7 @@ import defaultApp from './defaultApp'
 import { definedPlugins } from './definedPlugins'
 import { ElectronUpdater } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
+import { setLinuxProtocol } from './utils/protocol'
 
 class ElectronShell implements Shell {
   showItemInFolder = shell.showItemInFolder
@@ -223,6 +224,15 @@ export default class ElectronLauncherApp extends LauncherApp {
     app.whenReady().then(() => {
       Menu.setApplicationMenu(null)
     })
+
+    // Setup Linux protocol handler and desktop file
+    if (this.platform.os === 'linux') {
+      const homePath = app.getPath('home')
+      const exePath = app.getPath('exe')
+      await setLinuxProtocol(homePath, exePath).catch((e) => {
+        this.error(new AnyError('LinuxProtocolError', 'Failed to setup Linux protocol handler', { cause: e }))
+      })
+    }
 
     await super.setup()
   }
