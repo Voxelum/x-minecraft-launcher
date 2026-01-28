@@ -29,6 +29,7 @@ import {
 } from '@xmcl/runtime-api'
 import { readEntry } from '@xmcl/unzip'
 import { AnyError } from '@xmcl/utils'
+import filenamify from 'filenamify'
 import { readJson, stat, unlink } from 'fs-extra'
 import { dirname, join, relative } from 'path'
 import { Entry, ZipFile as YauzlZipFile } from 'yauzl'
@@ -256,12 +257,15 @@ export class ModpackService extends AbstractService implements IModpackService {
     }
 
     const parentDir = destinationDirectory || this.app.host.getPath('downloads')
+    // Sanitize name and version to ensure they are valid for filenames on all platforms
+    const sanitizedName = filenamify(name, { replacement: '_' })
+    const sanitizedVersion = filenamify(version, { replacement: '_' })
     const curseforgeZip = emitCurseforge ? new ZipFile() : undefined
-    const curseforgeZipPath = emitCurseforge ? join(parentDir, `${name}-${version}.zip`) : ''
+    const curseforgeZipPath = emitCurseforge ? join(parentDir, `${sanitizedName}-${sanitizedVersion}.zip`) : ''
     const modrinthZip = emitModrinth ? new ZipFile() : undefined
-    const modrinthZipPath = emitModrinth ? join(parentDir, `${name}-${version}.mrpack`) : ''
+    const modrinthZipPath = emitModrinth ? join(parentDir, `${sanitizedName}-${sanitizedVersion}.mrpack`) : ''
     const offlineZip = emitOffline ? new ZipFile() : undefined
-    const offlineZipPath = emitOffline ? join(parentDir, `${name}-${version}-offline.zip`) : ''
+    const offlineZipPath = emitOffline ? join(parentDir, `${sanitizedName}-${sanitizedVersion}-offline.zip`) : ''
 
     curseforgeZip?.addEmptyDirectory('overrides')
     modrinthZip?.addEmptyDirectory('overrides')
