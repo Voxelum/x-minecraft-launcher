@@ -3,14 +3,13 @@ import { BuiltinImages } from '@/constant'
 import { TimeUnit, getHumanizeDuration } from '@/util/date'
 import { Instance } from '@xmcl/instance'
 import { VersionHeader, VersionServiceKey, getExpectVersion } from '@xmcl/runtime-api'
-import useSWRV from 'swrv'
 import { useDateString } from './date'
 import { useService } from './service'
 
 export function useExtensionItemsGamePlay(instance: Ref<Instance>) {
   const { t } = useI18n()
   const { getDateString } = useDateString()
-  const { data: lastPlayedText } = useSWRV(computed(() => `${instance.value.path}/lastPlay`), () => {
+  const lastPlayedText = computed(() => {
     const i = instance.value
     const date = i.lastPlayedDate
     if (!date) {
@@ -18,7 +17,7 @@ export function useExtensionItemsGamePlay(instance: Ref<Instance>) {
     }
     const result = getDateString(date)
     return result
-  }, { revalidateOnFocus: true })
+  })
 
   const playTimeText = computed(() => {
     if (!instance.value.playtime) {
