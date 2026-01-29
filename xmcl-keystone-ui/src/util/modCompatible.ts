@@ -45,9 +45,19 @@ export function getModCompatiblity(dep: ModDependency, version: string): Compati
   if (dep.versionRange) {
     // Resolve version range compability
     const versionRange = dep.versionRange
-    const range = VersionRange.createFromVersionSpec(versionRange)
-    const currentVersion = parseVersion(version)
-    if (range) {
+    let range: VersionRange | undefined
+    let currentVersion: ReturnType<typeof parseVersion> | undefined
+    try {
+      range = VersionRange.createFromVersionSpec(versionRange)
+    } catch {
+      range = undefined
+    }
+    try {
+      currentVersion = parseVersion(version)
+    } catch {
+      currentVersion = undefined
+    }
+    if (range && currentVersion) {
       compatible = range.containsVersion(currentVersion)
       if (!compatible) {
         const res = range.restrictions[0]
@@ -60,15 +70,19 @@ export function getModCompatiblity(dep: ModDependency, version: string): Compati
     return compatible
   }
   if (dep.semanticVersion) {
-    const verison = parseSemanticVersion(version)
-    const ranges =
-      dep.semanticVersion instanceof Array
-        ? dep.semanticVersion.map(v => parseVersionRange(v))
-        : parseVersionRange(dep.semanticVersion)
-    const compatible = ranges instanceof Array
-      ? ranges.some(r => r?.test(verison))
-      : ranges?.test(verison)
-    return compatible ?? false
+    try {
+      const verison = parseSemanticVersion(version)
+      const ranges =
+        dep.semanticVersion instanceof Array
+          ? dep.semanticVersion.map(v => parseVersionRange(v))
+          : parseVersionRange(dep.semanticVersion)
+      const compatible = ranges instanceof Array
+        ? ranges.some(r => r?.test(verison))
+        : ranges?.test(verison)
+      return compatible ?? false
+    } catch {
+      return 'maybe'
+    }
   }
 
   return compatible
