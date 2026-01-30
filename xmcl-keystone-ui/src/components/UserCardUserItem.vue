@@ -111,15 +111,23 @@ const props = defineProps<{
 const hoverRefresh = ref(false)
 const emit = defineEmits(['remove', 'refresh', 'abort-refresh'])
 
-const maskTheEmail = (email: string) => {
-  const atIndex = email.indexOf('@')
-  if (atIndex === -1) return email
-  const prefix = email.slice(0, atIndex)
-  const suffix = email.slice(atIndex)
+const maskUserName = (input: string) => {
+  // Check if it's a phone number (all digits, optionally with + prefix)
+  const isPhoneNumber = /^\+?\d+$/.test(input)
+  if (isPhoneNumber) {
+    if (input.length <= 4) return input
+    return input.slice(0, 3) + '***' + input.slice(-2)
+  }
+
+  // Mask email
+  const atIndex = input.indexOf('@')
+  if (atIndex === -1) return input
+  const prefix = input.slice(0, atIndex)
+  const suffix = input.slice(atIndex)
   return prefix.slice(0, 2) + '***' + suffix
 }
 
-const userNameText = computed(() => props.hideUserName ? maskTheEmail(props.user.username) : props.user.username)
+const userNameText = computed(() => props.hideUserName ? maskUserName(props.user.username) : props.user.username)
 const { t } = useI18n()
 const { getColorCode } = useVuetifyColor()
 const expired = useUserExpired(computed(() => props.user))
