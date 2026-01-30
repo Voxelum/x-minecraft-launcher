@@ -116,12 +116,17 @@
 
       <!-- Theme Store Management -->
       <v-divider class="my-4" />
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title>{{ t('setting.themeStore.name') }}</v-list-item-title>
-          <v-list-item-subtitle>{{ t('setting.themeStore.description') }}</v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
+      <SettingItem
+        :title="t('setting.themeStore.name')"
+        :description="t('setting.themeStore.description')"
+      >
+        <template #action>
+          <v-btn outlined text @click="showSaveDialog = true">
+            <v-icon left small>save</v-icon>
+            {{ t('setting.themeStore.saveToStore') }}
+          </v-btn>
+        </template>
+      </SettingItem>
 
       <!-- Stored Themes List -->
       <div v-if="storedThemes.length > 0" class="px-4 pb-2">
@@ -143,17 +148,6 @@
       <div v-else class="px-4 pb-2 text-caption grey--text">
         {{ t('setting.themeStore.noSavedThemes') }}
       </div>
-
-      <!-- Save/Load Actions -->
-      <v-list-item>
-        <v-list-item-content />
-        <v-list-item-action class="flex-row gap-2">
-          <v-btn outlined text @click="showSaveDialog = true">
-            <v-icon left small>save</v-icon>
-            {{ t('setting.themeStore.saveToStore') }}
-          </v-btn>
-        </v-list-item-action>
-      </v-list-item>
 
       <!-- Save Theme Dialog -->
       <v-dialog v-model="showSaveDialog" max-width="400">
@@ -196,13 +190,15 @@
         </v-card>
       </v-dialog>
 
-      <v-divider class="my-4" />
-      <SettingItemCheckbox
-        :value="linuxTitlebar"
-        :title="t('setting.linuxTitlebar')"
-        :description="t('setting.linuxTitlebarDescription')"
-        @input="v => linuxTitlebar = v"
-      />
+      <template v-if="env && env.os === 'linux'">
+        <v-divider class="my-4" />
+        <SettingItemCheckbox
+          :value="linuxTitlebar"
+          :title="t('setting.linuxTitlebar')"
+          :description="t('setting.linuxTitlebarDescription')"
+          @input="v => linuxTitlebar = v"
+        />
+      </template>
     </SettingCard>
   </div>
 </template>

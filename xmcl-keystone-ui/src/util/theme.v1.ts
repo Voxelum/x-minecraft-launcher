@@ -6,6 +6,9 @@ export function serialize(theme: UIThemeDataV1) {
   if (theme.backgroundImage) {
     assets.backgroundImage = theme.backgroundImage
   }
+  if (theme.backgroundImageDark) {
+    assets.backgroundImageDark = theme.backgroundImageDark
+  }
   if (theme.backgroundMusic) {
     assets.backgroundMusic = theme.backgroundMusic
   }
@@ -62,8 +65,7 @@ export function serialize(theme: UIThemeDataV1) {
 export function deserialize(data: ThemeData): UIThemeDataV1 {
   const defaultColors = getDefaultTheme().colors
   const theme: UIThemeDataV1 = {
-    name: 'default',
-    dark: !!(data.settings?.dark),
+    dark: data.settings?.dark === 'system' ? 'system' : !!(data.settings?.dark),
     colors: {
       lightAppBarColor: data.colors?.lightAppBarColor ?? defaultColors.lightAppBarColor,
       lightSideBarColor: data.colors?.lightSideBarColor ?? defaultColors.lightSideBarColor,
@@ -95,6 +97,9 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
   }
   if (data.assets.backgroundImage) {
     theme.backgroundImage = data.assets.backgroundImage as MediaData
+  }
+  if (data.assets.backgroundImageDark) {
+    theme.backgroundImageDark = data.assets.backgroundImageDark as MediaData
   }
   if (data.assets.backgroundMusic) {
     theme.backgroundMusic = data.assets.backgroundMusic as MediaData[]

@@ -19,7 +19,7 @@
         />
       </v-list-item-action>
     </v-list-item>
-    <AppearanceItems v-if="instanceTheme" :theme="instanceTheme" :instance-path="instancePath" @save="onSave" />
+    <AppearanceItems v-if="instanceTheme" :theme="instanceTheme" dense :instance-path="instancePath" @save="onSave" />
   </div>
 </template>
 <script lang="ts" setup>

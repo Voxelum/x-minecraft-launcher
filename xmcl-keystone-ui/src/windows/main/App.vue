@@ -87,7 +87,7 @@ import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import InstanceLauncherPage from '@/views/InstanceLauncherPage.vue'
 import Setup from '@/views/Setup.vue'
-import { useLocalStorage, useMediaQuery } from '@vueuse/core'
+import { useLocalStorage, useMediaQuery, usePreferredColorScheme, usePreferredDark } from '@vueuse/core'
 import { kInstanceLauncher, useInstanceLauncher } from '@/composables/instanceLauncher'
 import AppSideBarGroupSettingDialog from '@/views/AppSideBarGroupSettingDialog.vue'
 import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
@@ -148,7 +148,11 @@ provide(kCompact, compact)
 const headerHeight = ref(0)
 provide('headerHeight', headerHeight)
 
-const { appBarColor } = injection(kTheme)
+const { appBarColor, dark } = injection(kTheme)
+
+watch(dark, (newVal) => {
+  state.value?.themeSet(newVal === 'system' ? newVal : newVal ? 'dark' : 'light')
+}, { immediate: true })
 
 const tutor = injection(kTutorial)
 // Set theme and start tutorial

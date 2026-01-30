@@ -662,7 +662,7 @@ const {
   appBarColor, sideBarColor, primaryColor, cardColor, backgroundColor, warningColor, errorColor,
   blurAppBar, blurSidebar, blurCard, blur,
   backgroundColorOverlay, backgroundType, particleMode, backgroundImageFit, volume, fontSize,
-  isDark,
+  dark,
 } = useThemeWritter(computed(() => props.theme), () => emit('save'), { instancePath: props.instancePath })
 
 // URL input refs
@@ -715,14 +715,14 @@ async function applyFontUrl() {
 }
 
 const darkModel = computed({
-  get: () => isDark.value ? 'dark' : 'light',
+  get: () => dark.value === 'system' ? 'system' : dark.value ? 'dark' : 'light',
   set: v => {
     if (v === 'dark') {
-      isDark.value = true
+      dark.value = true
     } else if (v === 'light') {
-      isDark.value = false
+      dark.value = false
     } else {
-      isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches
+      dark.value = 'system'
     }
   },
 })
