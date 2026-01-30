@@ -34,7 +34,7 @@ import { InstanceThemeServiceKey } from '@xmcl/runtime-api'
 const { t } = useI18n()
 const { path: instancePath } = injection(kInstance)
 const { instanceTheme, saveTheme, clearTheme } = injection(kInstanceTheme)
-const { currentTheme, update } = injection(kTheme)
+const { currentTheme } = injection(kTheme)
 const { copyMediaFromGlobal } = useService(InstanceThemeServiceKey)
 
 async function toggleInstanceTheme(enabled: boolean) {
@@ -76,13 +76,10 @@ async function toggleInstanceTheme(enabled: boolean) {
     await saveTheme()
   } else {
     await clearTheme()
-    update()
   }
 }
 
 function onSave() {
-  saveTheme().then(() => {
-    update()
-  })
+  saveTheme()
 }
 </script>

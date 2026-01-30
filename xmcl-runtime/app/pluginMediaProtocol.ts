@@ -35,7 +35,7 @@ export const pluginMediaProtocol: LauncherAppPlugin = (app) => {
     }
     // http://launcher/theme-media/${assetName}
     if (request.url.host === 'launcher' && request.url.pathname.startsWith('/theme-media')) {
-      const pathname = join(app.appDataPath, 'themes', normalizePath(request.url.pathname.substring('/theme-media'.length)))
+      const pathname = join(app.appDataPath, 'theme-media', normalizePath(request.url.pathname.substring('/theme-media'.length)))
       const { fromFile } = await import('file-type')
       await fromFile(pathname).then((type) => {
         if (type && (type.mime.startsWith('image/') || type.mime.startsWith('video/') || type.mime.startsWith('audio/') || type.mime.startsWith('font/'))) {

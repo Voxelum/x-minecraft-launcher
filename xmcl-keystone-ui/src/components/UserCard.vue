@@ -193,7 +193,7 @@ const onBackFromAddService = () => {
 
 watch(() => props.show, (v) => {
   if (v) return
-  login.value = false
+  login.value = users.value.length === 0
   addService.value = false
 })
 

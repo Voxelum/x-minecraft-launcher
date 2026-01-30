@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col overflow-hidden">
     <div class="relative flex items-center pr-4">
       <v-btn
         text
@@ -10,7 +10,7 @@
         </v-icon>
       </v-btn>
     </div>
-    <div class="m-8 flex flex-col gap-6 text-left">
+    <div class="p-8 flex flex-col gap-6 text-left overflow-auto">
       <div
         v-for="(a, i) in items"
         :key="i"

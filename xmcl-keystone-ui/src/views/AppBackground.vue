@@ -33,20 +33,6 @@
         loop
       />
     </transition>
-    <template
-      v-if="backgroundImageOverride"
-    >
-      <transition
-        name="fade-transition"
-      >
-        <img
-          :key="backgroundImageOverride"
-          :src="backgroundImageOverride"
-          class="z-1 absolute h-full w-full"
-        >
-      </transition>
-      <div class="img-container" />
-    </template>
 
     <transition
       name="fade-transition"
@@ -66,7 +52,7 @@ import { injection } from '@/util/inject'
 import { kTheme, BackgroundType } from '@/composables/theme'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
 
-const { sideBarColor, backgroundColorOverlay, backgroundColor, blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, volume, backgroundImageOverride } = injection(kTheme)
+const { sideBarColor, backgroundColorOverlay, backgroundColor, blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, volume } = injection(kTheme)
 const videoRef = ref(null as null | HTMLVideoElement)
 
 const route = useRoute()
@@ -102,7 +88,9 @@ onMounted(() => {
 
 watch(backgroundType, (t) => {
   console.log(t)
+  console.log(backgroundImage.value)
 })
+
 
 </script>
 <style scoped>

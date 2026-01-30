@@ -63,7 +63,7 @@ import { kCompact } from '@/composables/scrollTop'
 import { kSettingsState } from '@/composables/setting'
 import { kTheme } from '@/composables/theme'
 import { kTutorial } from '@/composables/tutorial'
-import { kInFocusMode, kUIDefaultLayout } from '@/composables/uiLayout'
+import { kInFocusMode } from '@/composables/uiLayout'
 import { kSidebarSettings, useInjectSidebarSettings, useSidebarSettings } from '@/composables/sidebarSettings'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
@@ -102,7 +102,6 @@ provide(kInstanceLauncher, useInstanceLauncher())
 
 const defaultColor = useInstanceGroupDefaultColor()
 
-const layout = injection(kUIDefaultLayout)
 const modes = useLocalStorage('instanceEnabledDashboard', {} as Record<string, boolean>)
 const { path } = injection(kInstance)
 const isLessThan490px = useMediaQuery('(max-height: 570px)')
@@ -111,7 +110,7 @@ provide(kInFocusMode, computed({
     const less = isLessThan490px.value
     const isDashboard = modes.value[basename(path.value)]
     if (isDashboard === undefined) {
-      return layout.value === 'focus' ? true : false
+      return true // 'focus' is default
     }
     if (less) {
       return false

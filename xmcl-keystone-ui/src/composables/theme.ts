@@ -2,11 +2,10 @@ import { injection } from '@/util/inject'
 import { loadV1Theme } from '@/util/theme.v0'
 import { deserialize, deserialize as deserializeV0, serialize } from '@/util/theme.v1'
 import { useStyleTag } from '@vueuse/core'
-import { InstanceThemeServiceKey, MediaData, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
+import { InstanceThemeServiceKey, MediaData, StoredTheme, ThemeServiceKey } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref, computed, set } from 'vue'
 import { Framework } from 'vuetify'
-import { useLocalStorageCacheStringValue } from './cache'
 import { useService } from './service'
 
 export const kTheme: InjectionKey<ReturnType<typeof useTheme>> = Symbol('theme')
@@ -118,30 +117,20 @@ export function getDefaultTheme(): UIThemeDataV1 {
   }
 }
 
-export function useThemesItems() {
-  const { themes } = injection(kTheme)
-  const { t } = useI18n()
-  //   const themes = computed(() => [{
-  //   text: t('setting.theme.dark'),
-  //   value: 'dark',
-  // }, {
-  //   text: t('setting.theme.light'),
-  //   value: 'light',
-  // }, {
-  //   text: t('setting.theme.system'),
-  //   value: 'system',
-  // }])
+export function useStoredThemes() {
+  const { getStoredThemes } = useService(ThemeServiceKey)
+  const storedThemes = ref<StoredTheme[]>([])
 
-  const items = computed(() => {
-    return themes.value.map((theme) => {
-      return {
-        text: theme.name === 'default-dark' ? t('setting.theme.dark') : theme.name === 'default-light' ? t('setting.theme.light') : theme.name,
-        value: theme.name,
-      }
-    })
-  })
+  async function refresh() {
+    storedThemes.value = await getStoredThemes()
+  }
 
-  return items
+  onMounted(refresh)
+
+  return {
+    storedThemes,
+    refresh,
+  }
 }
 
 export interface UIThemeData {
@@ -628,9 +617,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
   }
 
   function _exportTheme(filePath: string) {
-    const theme = currentTheme.value
-    const serialized: ThemeData = serialize(theme)
-    return exportTheme(serialized, filePath)
+    return exportTheme(filePath)
   }
 
   async function _importTheme(filePath: string) {
@@ -640,12 +627,10 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     }
     if (data.version === 0) {
       const themeV1 = deserializeV0(data)
-      currentTheme.value = themeV1
-      writeTheme()
+      Object.assign(currentTheme.value, themeV1)
     } else if (data.version === 1) {
       const themeV1 = deserialize(data)
-      currentTheme.value = themeV1
-      writeTheme()
+      Object.assign(currentTheme.value, themeV1)
     }
   }
 
@@ -691,21 +676,80 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
   }
 }
 
-export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Framework, { getThemes, getTheme, setTheme } = useService(ThemeServiceKey)) {
-  const selectedThemeName = useLocalStorageCacheStringValue('selectedThemeName', 'default' as string)
+export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Framework, { getCurrentTheme, setCurrentTheme, saveThemeToStore, loadThemeFromStore, getStoredThemes, deleteStoredTheme } = useService(ThemeServiceKey)) {
   const currentTheme = ref<UIThemeDataV1>(getDefaultTheme())
-  const themes = ref<UIThemeDataV1[]>([])
+  const storedThemes = ref<StoredTheme[]>([])
 
-  function update() {
-    getThemes().then((v) => {
-      themes.value = v.map((theme) => {
-        const t = deserialize(theme)
-        if (!t) return getDefaultTheme()
-        return t
-      })
-    })
+  async function refreshStoredThemes() {
+    storedThemes.value = await getStoredThemes()
   }
-  onMounted(update)
+
+  async function loadCurrentTheme() {
+    // Try to load from localStorage first (v0 migration)
+    let theme = loadV1Theme()
+    if (!theme) {
+      // Load from backend
+      const themeData = await getCurrentTheme()
+      if (themeData) {
+        theme = deserializeV0(themeData)
+      }
+    }
+    if (!theme) {
+      theme = getDefaultTheme()
+    }
+
+    const ensureRGBAHex = (color: string) => {
+      if (color.length === 7) {
+        return color + 'FF'
+      }
+      return color
+    }
+
+    theme.colors.darkAppBarColor = ensureRGBAHex(theme.colors.darkAppBarColor)
+    theme.colors.darkSideBarColor = ensureRGBAHex(theme.colors.darkSideBarColor)
+    theme.colors.darkBackground = ensureRGBAHex(theme.colors.darkBackground)
+    theme.colors.darkCardColor = ensureRGBAHex(theme.colors.darkCardColor)
+
+    theme.colors.lightAppBarColor = ensureRGBAHex(theme.colors.lightAppBarColor)
+    theme.colors.lightSideBarColor = ensureRGBAHex(theme.colors.lightSideBarColor)
+    theme.colors.lightBackground = ensureRGBAHex(theme.colors.lightBackground)
+    theme.colors.lightCardColor = ensureRGBAHex(theme.colors.lightCardColor)
+
+    currentTheme.value = theme
+  }
+
+  async function saveCurrentTheme() {
+    const serialized = serialize(currentTheme.value)
+    await setCurrentTheme(serialized)
+  }
+
+  async function saveToStore(name: string) {
+    // First save current theme
+    await saveCurrentTheme()
+    // Then save to store
+    await saveThemeToStore(name)
+    await refreshStoredThemes()
+  }
+
+  async function loadFromStore(name: string) {
+    const themeData = await loadThemeFromStore(name)
+    if (themeData) {
+      const theme = deserializeV0(themeData)
+      if (theme) {
+        Object.assign(currentTheme.value, theme)
+      }
+    }
+  }
+
+  async function deleteFromStore(name: string) {
+    await deleteStoredTheme(name)
+    await refreshStoredThemes()
+  }
+
+  onMounted(() => {
+    loadCurrentTheme()
+    refreshStoredThemes()
+  })
 
   const suppressed = ref(false)
 
@@ -738,36 +782,6 @@ export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Fr
   const fontSize = computed(() => targetTheme.value.fontSize ?? 16)
   watch(isDark, (dark) => {
     framework.theme.dark = dark
-  }, { immediate: true })
-
-
-  async function readTheme(name: string) {
-    let theme = await getTheme(name).then(v => v ? deserializeV0(v) : loadV1Theme())
-    if (!theme) {
-      return undefined
-    }
-    const ensureRGBAHex = (color: string) => {
-      if (color.length === 7) {
-        return color + 'FF'
-      }
-      return color
-    }
-
-    theme.colors.darkAppBarColor = ensureRGBAHex(theme.colors.darkAppBarColor)
-    theme.colors.darkSideBarColor = ensureRGBAHex(theme.colors.darkSideBarColor)
-    theme.colors.darkBackground = ensureRGBAHex(theme.colors.darkBackground)
-    theme.colors.darkCardColor = ensureRGBAHex(theme.colors.darkCardColor)
-
-    theme.colors.lightAppBarColor = ensureRGBAHex(theme.colors.lightAppBarColor)
-    theme.colors.lightSideBarColor = ensureRGBAHex(theme.colors.lightSideBarColor)
-    theme.colors.lightBackground = ensureRGBAHex(theme.colors.lightBackground)
-    theme.colors.lightCardColor = ensureRGBAHex(theme.colors.lightCardColor)
-
-    currentTheme.value = theme
-  }
-
-  watch(selectedThemeName, async (themeName) => {
-    readTheme(themeName)
   }, { immediate: true })
 
   watch(primaryColor, (newColor) => { framework.theme.currentTheme.primary = newColor }, { immediate: true })
@@ -827,13 +841,9 @@ export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Fr
   }
   `))
 
-  const backgroundImageOverride = ref('')
-  const backgroundImageOverrideOpacity = ref(1)
-
   return {
     suppressed,
-    update,
-    themes,
+    storedThemes,
     isDark,
     currentTheme,
     backgroundImage,
@@ -846,8 +856,6 @@ export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Fr
     blurCard,
     volume,
     blur,
-    backgroundImageOverride,
-    backgroundImageOverrideOpacity,
     backgroundColorOverlay,
     appBarColor,
     sideBarColor,
@@ -861,7 +869,11 @@ export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Fr
     cardColor,
     font,
     fontSize,
-    setTheme,
+    saveCurrentTheme,
+    saveToStore,
+    loadFromStore,
+    deleteFromStore,
+    refreshStoredThemes,
     serialize,
   }
 }

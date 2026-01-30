@@ -118,11 +118,8 @@ const { t } = useI18n()
 const { count } = useTaskCount()
 const tutor = inject(kTutorial, undefined)
 
-let onBack = () => {}
-if (props.back) {
-  const router = useRouter()
-  onBack = () => {
-    router.back()
-  }
+const router = useRouter()
+const onBack = () => {
+  router.back()
 }
 </script>

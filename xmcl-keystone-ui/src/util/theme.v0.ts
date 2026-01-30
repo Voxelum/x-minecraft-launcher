@@ -22,7 +22,7 @@ export function loadV1Theme(): UIThemeDataV1 | undefined {
 
 export function deserialize(data: ThemeData): UIThemeDataV1 {
   const theme: UIThemeDataV1 = {
-    name: data.name,
+    name: 'default',
     backgroundMusic: [],
     colors: {} as any,
     backgroundImageFit: 'cover',

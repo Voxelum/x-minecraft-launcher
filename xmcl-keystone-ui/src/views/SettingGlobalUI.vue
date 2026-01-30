@@ -113,6 +113,90 @@
     </SettingCard>
     <SettingCard class="mb-4" :title="t('setting.themeSettings')" icon="style">
       <AppearanceItems :theme="currentTheme" @save="onSave" />
+
+      <!-- Theme Store Management -->
+      <v-divider class="my-4" />
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>{{ t('setting.themeStore.name') }}</v-list-item-title>
+          <v-list-item-subtitle>{{ t('setting.themeStore.description') }}</v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+
+      <!-- Stored Themes List -->
+      <div v-if="storedThemes.length > 0" class="px-4 pb-2">
+        <div class="text-caption grey--text mb-2">{{ t('setting.themeStore.savedThemes') }}</div>
+        <div class="flex flex-wrap gap-2">
+          <v-chip
+            v-for="theme in storedThemes"
+            :key="theme.name"
+            close
+            outlined
+            @click="onLoadTheme(theme.name)"
+            @click:close="onDeleteTheme(theme.name)"
+          >
+            <v-icon left small>palette</v-icon>
+            {{ theme.name }}
+          </v-chip>
+        </div>
+      </div>
+      <div v-else class="px-4 pb-2 text-caption grey--text">
+        {{ t('setting.themeStore.noSavedThemes') }}
+      </div>
+
+      <!-- Save/Load Actions -->
+      <v-list-item>
+        <v-list-item-content />
+        <v-list-item-action class="flex-row gap-2">
+          <v-btn outlined text @click="showSaveDialog = true">
+            <v-icon left small>save</v-icon>
+            {{ t('setting.themeStore.saveToStore') }}
+          </v-btn>
+        </v-list-item-action>
+      </v-list-item>
+
+      <!-- Save Theme Dialog -->
+      <v-dialog v-model="showSaveDialog" max-width="400">
+        <v-card>
+          <v-card-title>{{ t('setting.themeStore.saveDialogTitle') }}</v-card-title>
+          <v-card-text>
+            <v-text-field
+              v-model="newThemeName"
+              :label="t('setting.themeStore.themeName')"
+              :hint="t('setting.themeStore.themeNameHint')"
+              persistent-hint
+              autofocus
+              @keydown.enter="onSaveToStore"
+            />
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn text @click="showSaveDialog = false">{{ t('cancel') }}</v-btn>
+            <v-btn color="primary" text :disabled="!newThemeName.trim()" @click="onSaveToStore">
+              {{ t('save') }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Load Theme Confirmation Dialog -->
+      <v-dialog v-model="showLoadConfirmDialog" max-width="400">
+        <v-card>
+          <v-card-title>{{ t('setting.themeStore.loadConfirmTitle') }}</v-card-title>
+          <v-card-text>
+            {{ t('setting.themeStore.loadConfirmMessage') }}
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn text @click="showLoadConfirmDialog = false">{{ t('cancel') }}</v-btn>
+            <v-btn color="warning" text @click="confirmLoadTheme">
+              {{ t('setting.themeStore.loadTheme') }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-divider class="my-4" />
       <SettingItemCheckbox
         :value="linuxTitlebar"
         :title="t('setting.linuxTitlebar')"
@@ -139,7 +223,7 @@ import { useI18n } from 'vue-i18n-bridge'
 
 const { t } = useI18n()
 const env = injection(kEnvironment)
-const { currentTheme, update, setTheme, serialize } = injection(kTheme)
+const { currentTheme, saveCurrentTheme, storedThemes, saveToStore, loadFromStore, deleteFromStore, refreshStoredThemes } = injection(kTheme)
 const { state } = injection(kSettingsState)
 
 const linuxTitlebar = computed({
@@ -148,9 +232,35 @@ const linuxTitlebar = computed({
 })
 
 function onSave() {
-  setTheme(currentTheme.value.name, serialize(currentTheme.value)).then(() => {
-    update()
-  })
+  saveCurrentTheme()
+}
+
+// --- Theme Store Management ---
+const showSaveDialog = ref(false)
+const showLoadConfirmDialog = ref(false)
+const newThemeName = ref('')
+const pendingLoadThemeName = ref('')
+
+async function onSaveToStore() {
+  if (!newThemeName.value.trim()) return
+  await saveToStore(newThemeName.value.trim())
+  newThemeName.value = ''
+  showSaveDialog.value = false
+}
+
+function onLoadTheme(name: string) {
+  pendingLoadThemeName.value = name
+  showLoadConfirmDialog.value = true
+}
+
+async function confirmLoadTheme() {
+  await loadFromStore(pendingLoadThemeName.value)
+  showLoadConfirmDialog.value = false
+  pendingLoadThemeName.value = ''
+}
+
+async function onDeleteTheme(name: string) {
+  await deleteFromStore(name)
 }
 
 // --- UI Customization State ---

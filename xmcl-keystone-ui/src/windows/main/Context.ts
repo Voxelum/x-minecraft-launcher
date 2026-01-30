@@ -38,7 +38,7 @@ import { kShaderPackSearch, useShaderPackSearch } from '@/composables/shaderPack
 import { useTelemetryTrack } from '@/composables/telemetryTrack'
 import { kTheme, useTheme } from '@/composables/theme'
 import { kTutorial, useTutorialModel } from '@/composables/tutorial'
-import { kUIDefaultLayout, useUILayout } from '@/composables/uiLayout'
+
 import { kNetworkStatus, useNetworkStatus } from '@/composables/useNetworkStatus'
 import { kUserContext, useUserContext } from '@/composables/user'
 import { kLatestMinecraftVersion, useMinecraftLatestRelease } from '@/composables/version'
@@ -132,7 +132,6 @@ export default defineComponent({
     const router = useRouter()
     useExternalRoute(router)
 
-    provide(kUIDefaultLayout, useUILayout())
     provide(kImageDialog, useImageDialog())
     provide(kSupportedAuthorityMetadata, useSupportedAuthority())
     provide(kTutorial, useTutorialModel())

@@ -50,7 +50,6 @@ export function serialize(theme: UIThemeDataV1) {
   }
   settings.dark = theme.dark
   const serialized: ThemeData = {
-    name: theme.name,
     ui: 'keystone',
     version: 1,
     assets,
@@ -63,7 +62,7 @@ export function serialize(theme: UIThemeDataV1) {
 export function deserialize(data: ThemeData): UIThemeDataV1 {
   const defaultColors = getDefaultTheme().colors
   const theme: UIThemeDataV1 = {
-    name: data.name,
+    name: 'default',
     dark: !!(data.settings?.dark),
     colors: {
       lightAppBarColor: data.colors?.lightAppBarColor ?? defaultColors.lightAppBarColor,
