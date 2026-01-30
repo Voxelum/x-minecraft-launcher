@@ -221,11 +221,20 @@ diagnosis:
   unzipFileNotFound:
     description: Kann {file} nicht finden
     title: Modpack -Datei nicht gefunden
+difficulty:
+  easy: Einfach
+  hard: Schwer
+  normal: Normal
+  peaceful: Friedlich
 disk:
   available: Verfügbar
   used: Gepflegt
 downloadCount: 'Downloads: {count}'
+downloadModMetadataDb:
+  name: Mod-Metadaten Datenbank herunterladen
 downloadUpdate: Aktualisierung herunterladen
+duplicateInstance:
+  name: Instanz duplizieren
 duration:
   day: '{duration} Tag | {duration} Tage'
   hour: '{duration} Stunde  | {duration} Stunden'
@@ -279,6 +288,8 @@ exception:
     Bitte versuchen Sie es erneut oder überprüfen Sie Ihre Internetverbindung.
     Wenn dieser Fehler weiterhin besteht, senden Sie bitte einen einen Bericht
     an das Entwicklungsteam.
+exportModpack:
+  name: Modpack exportieren
 extensions:
   mrpack: Modrinth modpack
   zip: Zip-Datei
@@ -365,6 +376,10 @@ installModrinthFile:
 installOptifine:
   download: Optifine Universal herunterladen
   name: Optifine installieren
+installProfile:
+  name: Profil {version} installieren
+installQuilt:
+  name: Quilt {version} installieren
 installVersion:
   jar: Installieren Sie die Jar-Version
   json: Einstellen der Json-Version
@@ -376,6 +391,7 @@ instance:
   delete: Deinstallieren Sie das Spiel
   deleteFailed: Instanz konnte nicht gelöscht werden
   deleteFailedPermission: Ein anderes Programm hat die Datei belegt
+  deleteFile: Instanz Dateien löschen
   deleteHint: >-
     Die Instanzdaten werden dauerhaft von der Festplatte entfernt. Wie ist dies
     zu tun?
@@ -458,6 +474,10 @@ instanceInstallSkip:
 
     Wenn Sie bestätigen, dass die aktuellen Dateien gültig sind, können Sie die
     Validierungsprüfung überspringen.
+instanceLauncher:
+  search: Instanzen suchen...
+  showAll: Alle Instanzen anzeigen
+  title: Alle Instanzen
 instanceSetting:
   disableAuthlibInjector: Deaktivieren Sie den Authlib-Injektor
   disableAuthlibInjectorDescription: |-
@@ -505,6 +525,7 @@ instances:
   addModrinthDescription: |-
     Vorhandene Modrinth-Instanz importieren.
     Sie müssen den Modrinth-Stammdatenordner auswählen.
+  addPrismDescription: Existierende PrismLauncher Instanz importieren
   addServer: Vom Server aus erstellen
   addServerDescription: Dadurch wird das Spiel direkt auf dem Server gestartet.
   addTemplate: Aus heruntergeladenem Modpack erstellen
@@ -714,6 +735,8 @@ logsCrashes:
 me:
   news: Nachrichten
   recentPlay: Neuestes Spiel
+migrateMinecraft:
+  name: Minecraft Dateien migrieren
 minecraftVersion:
   name: Minecraft-Version
   release: Freigabe
@@ -731,6 +754,7 @@ mod:
     immer verschwinden lassen. Sind Sie sicher, dass Sie dies tun wollen?
   deletionRestHint: Und der {rest} der Mods...
   denseView: Dichte Sicht
+  description: Beschreibung
   disableAll: Alle deaktivieren
   dropHint: Ziehen Sie die .jar/.litemod-Mod hierher und importieren Sie sie.
   duplicatedDetected: '{count} duplizierte Mods'
@@ -751,6 +775,7 @@ mod:
   incompatibleHintDescription: |-
     Möglicherweise fehlen einige Mod-Abhängigkeiten.
     Oder einige Abhängigkeitsversionen stimmen nicht überein.
+  license: Lizenz
   maybeCompatible: Möglicherweise kompatibel.
   modloaderSelectHint: |-
     Der Mod unterstützt folgende Mod-Loader.
@@ -774,6 +799,7 @@ mod:
   syncGroupRules: Gruppierungsregeln speichern
   toUpdate: '{count} zu aktualisieren'
   ungroup: Ungruppierung
+  versions: Versionen
 modFilter:
   clear: Klaren Filter
   dependenciesInstallOnly: Zeigen Sie nur verpasste Abhängigkeiten Mods
@@ -803,10 +829,14 @@ modInstall:
   dependencyHint: Eine andere Version ist installiert {version}
   installDependencies: Fehlende Abhängigkeiten installieren
   installHint: Die Datei wird installiert {file} mit Süchten {dependencies} Abhängigkeiten
+  loadingVersions: Lade verfügbare Versionen...
   noVersionSupported: Mod unterstützt nur Minecraft {supported}.
+  noVersionsAvailable: Keine verfügbare Version für diese Spielversion
   recommendation: Entdecken Sie die {first} Mods in {modrinth} und {curseforge}!
+  reinstall: Neuinstallieren
   removeUnusedLibraries: Entfernen Sie unbenutzte Bibliotheken Mods
   search: Suchergebnis
+  selectVersion: Bitte wähle eine Version zum installieren aus
   skipVersion: Überspringen Sie die Mods mit einer anderen Minecraft-Version
   source: Quelle.
   switch: Version ändern
@@ -963,6 +993,7 @@ modrinth:
   description: Beschreibung
   downloads: Herunterladen
   environments:
+    all: Alle
     default: Standardmäßig
     name: Umwelt
     optional: Optional
@@ -1020,6 +1051,10 @@ multiplayer:
     Vorsicht.
   complete: Bereit
   confirm: Bestätigen Sie
+  connectionError: Verbindungsfehler
+  connectionFailedHint: |-
+    Es konnte keine Verbindung hergestellt werden. 
+    Überprüfen Sie, ob beide Peers kompatible NAT-Typen haben.
   connections: Verbindungen
   copied: Kopiert!
   copy: Kopieren
@@ -1157,6 +1192,8 @@ proxy:
 quiltVersion:
   disable: Ausschalten Quilt
   empty: Quilt unterstützt Minecraft nicht {version}
+reinstall:
+  name: '{Version} neu installieren'
 resourcepack:
   compatible: Format. {format} kompatibel mit {version}
   defaultDescription: kompatibel mit dem Standardbild von Minecraft
@@ -1174,6 +1211,8 @@ resourcepack:
     Inkompatibles Textformat ({format}). Einschlägige {accept}. Aktuell
     {actual}.
   name: Texturpaket | Texturpakete
+  noPacks: Keine Resourcenpakete gefunden
+  search: Resourcenpakete durchsuchen...
   searchHint: Suchen Sie nach Ressourcenpaketen
   searchOnCurseforge: Suche nach. {name} in curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
@@ -1183,6 +1222,7 @@ resourcepack:
   showInCurseforge: anzeigen {name} in curseforge
   unselected: Unausgewählte Texturpakete
 save:
+  allowCheats: Cheats erlauben
   copy:
     cancel: Kopie abbrechen
     confirm: Kopieren beginnen
@@ -1196,6 +1236,7 @@ save:
     dauerhaft verloren.
      Sind Sie sicher, dass Sie diese Speicherung löschen möchten?
   deleteTitle: Löschen
+  difficulty: Schwierigkeit
   dropHint: Ziehen Sie das Zip-Archiv hierher und legen Sie es ab, um es zu importieren.
   export: Ausfuhr von Konservierungsmitteln
   exportMessage: Exportieren und Speichern als Zip
@@ -1211,8 +1252,13 @@ save:
   showDirectory: Speicherverzeichnis anzeigen
   unselected: gemeinsames Archiv
   useCurrent: Aktuelle Welt verwenden
+  useMouseRotate: Verwenden Sie die Maus, um die Ansicht zu drehen
+  useScrollZoom: Nutze das Mausrad um zu zoomen
 screenshots:
   empty: Sie haben keine Bildschirmfotos
+  gallery: Screenshot Gallerie
+  hint: Mache einen Screenshot im Spiel indem du F2 drückst
+  openFolder: Screenshots Ordner öffnen
   playRandom: Spielen Sie zufällig
   playSequence: Spielen Sie der Reihe nach
 search:
@@ -1559,12 +1605,15 @@ shaderPack:
   enable: Verwendung eines Shaders {name}
   enabled: Shader-Pack aktiviert
   manage: Shader verwalten
+  market: Shader Markt
   name: Shader
+  noPacks: Keine Shaderpakete installiert
   noShaderMod: Kein Shader-Mod installiert
   noShaderModHint: Sie können Shader nicht ohne Shader-Mod verwenden
   noShaderModInstallHint: >-
     Sie müssen einen der folgenden Mods installieren, um das Shader-Paket zu
     laden.
+  search: Shaderpakete suchen...
   searchHint: Suche nach einem Shader-Set
   selectSearchHint: Suchen Sie das Shader Pack und wählen Sie es aus
   showDirectory: Öffnen Sie den Ordner mit den Shader-Sets
@@ -1603,6 +1652,7 @@ sidebar:
 sortBy:
   alphabetAsc: Sortieren Sie nach Alphabet (aufsteigend)
   alphabetDesc: Sortieren Sie nach Alphabet (absteigend)
+  name: Sortieren nach
   timeAsc: Sortieren nach Änderungszeit (aufsteigend)
   timeDesc: Sortieren nach Änderungszeit (absteigend)
 store:
