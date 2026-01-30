@@ -778,7 +778,7 @@ export class InstallService extends AbstractService implements IInstallService {
           `Start to install ${side} forge ${options.version} on ${options.mcversion} by ${java.path}`,
         )
         const taskOps = this.getInstallOptions(
-          { side, java: java.path, inheritsFrom: options.base ?? options.mcversion },
+          { side, java: java.path, inheritsFrom: options.base || options.mcversion },
           task,
         )
         version = await installForge(options, mc, taskOps)
