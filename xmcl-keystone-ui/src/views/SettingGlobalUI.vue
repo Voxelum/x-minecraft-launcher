@@ -171,9 +171,9 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn text @click="showSaveDialog = false">{{ t('cancel') }}</v-btn>
+            <v-btn text @click="showSaveDialog = false">{{ t('shared.cancel') }}</v-btn>
             <v-btn color="primary" text :disabled="!newThemeName.trim()" @click="onSaveToStore">
-              {{ t('save') }}
+              {{ t('modified.save') }}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -188,7 +188,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn text @click="showLoadConfirmDialog = false">{{ t('cancel') }}</v-btn>
+            <v-btn text @click="showLoadConfirmDialog = false">{{ t('shared.cancel') }}</v-btn>
             <v-btn color="warning" text @click="confirmLoadTheme">
               {{ t('setting.themeStore.loadTheme') }}
             </v-btn>
@@ -243,9 +243,9 @@ const pendingLoadThemeName = ref('')
 
 async function onSaveToStore() {
   if (!newThemeName.value.trim()) return
-  await saveToStore(newThemeName.value.trim())
   newThemeName.value = ''
   showSaveDialog.value = false
+  await saveToStore(newThemeName.value.trim())
 }
 
 function onLoadTheme(name: string) {

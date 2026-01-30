@@ -1265,6 +1265,18 @@ serverStatus:
   refuse: §4Der Server wurde abgelehnt!
   timeout: §4Es ist Zeit, sich mit dem Server zu verbinden!
 setting:
+  themeStore:
+    name: Theme-Speicher
+    description: Globale Themes speichern und verwalten
+    savedThemes: Gespeicherte Themes
+    noSavedThemes: Noch keine gespeicherten Themes
+    saveToStore: Im Speicher speichern
+    saveDialogTitle: Theme speichern
+    themeName: Theme-Name
+    themeNameHint: Name zum Speichern dieses Themes
+    loadConfirmTitle: Aktuelles Theme ersetzen?
+    loadConfirmMessage: Das Laden eines gespeicherten Themes ersetzt das aktuelle. Bitte vorher sichern.
+    loadTheme: Theme laden
   about: Um
   aboutBmclDescription: BMCL API bietet bequeme Downloads für Benutzer in der chinesischen Provinz
   aboutContributors: 🧑‍💻 Mitwirkende 🧑‍💻

@@ -1197,6 +1197,18 @@ serverStatus:
   refuse: §4Server weigerde!
   timeout: §4Verbind server time-out!
 setting:
+  themeStore:
+    name: Almacén de temas
+    description: Gardar e xestionar temas globais
+    savedThemes: Temas gardados
+    noSavedThemes: Aínda non hai temas gardados
+    saveToStore: Gardar no almacén
+    saveDialogTitle: Gardar tema
+    themeName: Nome do tema
+    themeNameHint: Nome para gardar este tema
+    loadConfirmTitle: Substituír o tema actual?
+    loadConfirmMessage: Cargar un tema gardado substituirá o tema actual. Fai unha copia se é necesario.
+    loadTheme: Cargar tema
   about: Over
   aboutBmclDescription: BMCL API fornece descargas convenientes para usuarios en China continental
   aboutContributors: 🧑‍💻 Colaboradores 🧑‍💻

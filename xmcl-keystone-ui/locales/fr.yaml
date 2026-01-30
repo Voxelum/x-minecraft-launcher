@@ -1171,6 +1171,18 @@ serverStatus:
   refuse: §4Serveur refusé !
   timeout: §4Timeout de la connexion !
 setting:
+  themeStore:
+    name: Bibliothèque de thèmes
+    description: Enregistrer et gérer les thèmes globaux
+    savedThemes: Thèmes enregistrés
+    noSavedThemes: Aucun thème enregistré
+    saveToStore: Enregistrer dans la bibliothèque
+    saveDialogTitle: Enregistrer le thème
+    themeName: Nom du thème
+    themeNameHint: Nom utilisé pour enregistrer ce thème
+    loadConfirmTitle: Remplacer le thème actuel ?
+    loadConfirmMessage: Charger un thème enregistré remplacera le thème actuel. Pensez à sauvegarder.
+    loadTheme: Charger le thème
   about: À propos
   aboutBmclDescription: >-
     L'API BMCL fournit des téléchargements pratiques pour les utilisateurs en

@@ -1142,6 +1142,18 @@ serverStatus:
   refuse: §4SERVER REFUSED!
   timeout: §4CONNECT SERVR TIMEOUT!
 setting:
+  themeStore:
+    name: TEEM STOR
+    description: SAVE N MANAGE GLOBL TEEMZ
+    savedThemes: SAVED TEEMZ
+    noSavedThemes: NO SAVED TEEMZ YET
+    saveToStore: SAVE TO STOR
+    saveDialogTitle: SAVE TEEM
+    themeName: TEEM NAME
+    themeNameHint: NAME USED TO SAVE DIS TEEM
+    loadConfirmTitle: REPLACE CURRENT TEEM?
+    loadConfirmMessage: LOADING SAVED TEEM WILL REPLACE CURRENT TEEM. BACKUP IF U NEED.
+    loadTheme: LOAD TEEM
   about: ABOUT
   aboutBmclDescription: BMCL API PROVIDEZ CONVENEENT DOWNLODZ FUR USRZ IN CHINEEZ MAINLUND
   aboutContributors: 🧑‍💻 CONTRUBUTORS 🧑‍💻

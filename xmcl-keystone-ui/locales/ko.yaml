@@ -1045,6 +1045,18 @@ serverStatus:
   refuse: §4서버가 거부했습니다!
   timeout: §4서버 연결 시간 초과!
 setting:
+  themeStore:
+    name: 테마 저장소
+    description: 전역 테마를 저장하고 관리합니다
+    savedThemes: 저장된 테마
+    noSavedThemes: 저장된 테마가 없습니다
+    saveToStore: 저장소에 저장
+    saveDialogTitle: 테마 저장
+    themeName: 테마 이름
+    themeNameHint: 이 테마를 저장할 이름
+    loadConfirmTitle: 현재 테마를 교체할까요?
+    loadConfirmMessage: 저장된 테마를 불러오면 현재 테마가 교체됩니다. 필요하면 백업하세요.
+    loadTheme: 테마 불러오기
   about: 정보
   aboutBmclDescription: BMCL API는 중국 본토의 사용자를 위한 편리한 다운로드를 제공합니다
   aboutContributors: 🧑‍💻 기여자 🧑‍💻

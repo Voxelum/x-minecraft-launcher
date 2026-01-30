@@ -1064,6 +1064,18 @@ serverStatus:
   refuse: 伺服器中斷了連線！
   timeout: 伺服器響應超時！
 setting:
+  themeStore:
+    name: 主題庫
+    description: 保存並管理全域主題
+    savedThemes: 已保存的主題
+    noSavedThemes: 尚無已保存的主題
+    saveToStore: 保存到主題庫
+    saveDialogTitle: 保存主題
+    themeName: 主題名稱
+    themeNameHint: 用於保存此主題的名稱
+    loadConfirmTitle: 取代目前主題？
+    loadConfirmMessage: 載入已保存的主題將取代目前主題，請先備份。
+    loadTheme: 載入主題
   about: 關於
   aboutBmclDescription: BMCL API 為中國地區用戶提供便捷的下載服務
   aboutContributors: 🧑‍💻 貢獻者 🧑‍💻

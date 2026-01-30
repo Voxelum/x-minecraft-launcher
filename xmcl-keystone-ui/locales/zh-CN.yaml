@@ -1086,6 +1086,18 @@ serverStatus:
   refuse: 服务器断开了连接！
   timeout: 服务器响应超时！
 setting:
+  themeStore:
+    name: 主题库
+    description: 保存并管理全局主题
+    savedThemes: 已保存的主题
+    noSavedThemes: 尚无已保存的主题
+    saveToStore: 保存到主题库
+    saveDialogTitle: 保存主题
+    themeName: 主题名称
+    themeNameHint: 用于存储此主题的名称
+    loadConfirmTitle: 替换当前主题？
+    loadConfirmMessage: 加载已保存的主题将替换当前主题，请先备份。
+    loadTheme: 加载主题
   about: 关于
   aboutBmclDescription: BMCL API 为中国地区用户提供便捷的下载服务
   aboutContributors: 🧑‍💻 贡献者 🧑‍💻

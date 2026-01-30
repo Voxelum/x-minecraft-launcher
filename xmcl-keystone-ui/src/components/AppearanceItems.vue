@@ -114,17 +114,20 @@
         />
       </v-list-item-action>
     </v-list-item>
+    <v-divider v-if="!props.dense" class="my-3" />
     <SettingItemSelect
       :select.sync="backgroundType"
       :title="t('setting.backgroundType')"
       :description="t('setting.backgroundTypeDescription')"
       :items="backgroundTypes"
     />
+    <v-divider v-if="!props.dense" class="my-3" />
     <SettingItemCheckbox
       v-model="backgroundColorOverlay"
       :title="t('setting.backgroundColorAbove')"
       :description="t('setting.backgroundColorAboveDescription')"
     />
+    <v-divider v-if="!props.dense" class="my-3" />
     <SettingItemSelect
       v-if="backgroundType === 'particle'"
       :select.sync="particleMode"
@@ -132,6 +135,7 @@
       :description="t('setting.particleModeDescription')"
       :items="particleModes"
     />
+    <v-divider v-if="!props.dense && backgroundType === 'particle'" class="my-3" />
     <v-list-item v-if="backgroundType === 'image'">
       <v-list-item-content>
         <v-list-item-title>
@@ -191,6 +195,7 @@
         </v-list>
       </v-menu>
     </v-list-item>
+    <v-divider v-if="!props.dense && backgroundType === 'image'" class="my-3" />
     <v-list-item v-if="backgroundType === 'video'">
       <v-list-item-content>
         <v-list-item-title>
@@ -250,6 +255,7 @@
         </v-list>
       </v-menu>
     </v-list-item>
+    <v-divider v-if="!props.dense && backgroundType === 'video'" class="my-3" />
     <v-list-item v-if="backgroundType === BackgroundType.VIDEO">
       <v-list-item-content>
         <v-list-item-title>
@@ -272,6 +278,7 @@
         :always-dirty="true"
       />
     </v-list-item>
+    <v-divider v-if="!props.dense && backgroundType === BackgroundType.VIDEO" class="my-3" />
     <v-list-item>
       <v-list-item-title>
         {{
@@ -350,6 +357,7 @@
         </v-list>
       </v-menu>
     </v-list-item>
+    <v-divider v-if="!props.dense" class="my-3" />
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
@@ -445,6 +453,7 @@
         {{ t("setting.themeResetFont") }}
       </v-btn>
     </v-list-item>
+    <v-divider v-if="!props.dense" class="my-3" />
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
@@ -637,6 +646,8 @@ const props = defineProps<{
    * This keeps instance theme media separate from global theme media.
    */
   instancePath?: string
+
+  dense?: boolean
 }>()
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()

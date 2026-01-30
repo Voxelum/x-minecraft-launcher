@@ -1217,6 +1217,18 @@ serverStatus:
   refuse: §4A szerver elutasítot!
   timeout: §4Szerver csatlakozási időtúllépés!
 setting:
+  themeStore:
+    name: Téma tár
+    description: Globális témák mentése és kezelése
+    savedThemes: Mentett témák
+    noSavedThemes: Még nincs mentett téma
+    saveToStore: Mentés a tárba
+    saveDialogTitle: Téma mentése
+    themeName: Téma neve
+    themeNameHint: A téma mentéséhez használt név
+    loadConfirmTitle: Lecseréled az aktuális témát?
+    loadConfirmMessage: A mentett téma betöltése lecseréli az aktuális témát. Készíts biztonsági mentést.
+    loadTheme: Téma betöltése
   about: Körülbelül
   aboutBmclDescription: >-
     A BMCL API kényelmes letöltéseket biztosít a Kínai Kontinensen lévő

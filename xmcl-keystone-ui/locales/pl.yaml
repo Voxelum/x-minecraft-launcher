@@ -1150,6 +1150,18 @@ serverStatus:
   refuse: §4Serwer odmówił!
   timeout: §4Limit czasu połączenia z serwerem!
 setting:
+  themeStore:
+    name: Magazyn motywów
+    description: Zapisuj i zarządzaj globalnymi motywami
+    savedThemes: Zapisane motywy
+    noSavedThemes: Brak zapisanych motywów
+    saveToStore: Zapisz w magazynie
+    saveDialogTitle: Zapisz motyw
+    themeName: Nazwa motywu
+    themeNameHint: Nazwa używana do zapisania tego motywu
+    loadConfirmTitle: Zastąpić bieżący motyw?
+    loadConfirmMessage: Wczytanie zapisanego motywu zastąpi bieżący. W razie potrzeby zrób kopię zapasową.
+    loadTheme: Wczytaj motyw
   about: O
   advancedJavaOptions: Zaawansowane opcje Java
   advancedSettings: Ustawienia zaawansowane

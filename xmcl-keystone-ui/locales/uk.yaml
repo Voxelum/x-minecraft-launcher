@@ -1178,6 +1178,18 @@ serverStatus:
   refuse: §4Сервер відмовив!
   timeout: §4Час очікування з'єднання з сервером вичерпано!
 setting:
+  themeStore:
+    name: Сховище тем
+    description: Зберігайте й керуйте глобальними темами
+    savedThemes: Збережені теми
+    noSavedThemes: Збережених тем ще немає
+    saveToStore: Зберегти в сховищі
+    saveDialogTitle: Зберегти тему
+    themeName: Назва теми
+    themeNameHint: Назва для збереження цієї теми
+    loadConfirmTitle: Замінити поточну тему?
+    loadConfirmMessage: Завантаження збереженої теми замінить поточну. За потреби зробіть резервну копію.
+    loadTheme: Завантажити тему
   about: Про
   advancedJavaOptions: Розширені параметри Java
   advancedSettings: Розширені налаштування

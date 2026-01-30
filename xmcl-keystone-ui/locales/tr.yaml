@@ -1185,6 +1185,18 @@ serverStatus:
   refuse: §4Sunucu reddetti!
   timeout: §4Sunucu bağlantısı zaman aşımı!
 setting:
+  themeStore:
+    name: Tema Deposu
+    description: Genel temaları kaydedin ve yönetin
+    savedThemes: Kaydedilen temalar
+    noSavedThemes: Henüz kaydedilmiş tema yok
+    saveToStore: Depoya kaydet
+    saveDialogTitle: Tema kaydet
+    themeName: Tema adı
+    themeNameHint: Bu temayı kaydetmek için kullanılacak ad
+    loadConfirmTitle: Mevcut tema değiştirilsin mi?
+    loadConfirmMessage: Kaydedilmiş bir temayı yüklemek mevcut temayı değiştirir. Gerekirse yedekleyin.
+    loadTheme: Tema yükle
   about: Hakkında
   advancedJavaOptions: Gelişmiş Java Seçenekleri
   advancedSettings: Gelişmiş Ayarlar

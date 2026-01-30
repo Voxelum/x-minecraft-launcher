@@ -1253,6 +1253,18 @@ setting:
   backgroundVideoUrlPlaceholder: Enter HTTP/HTTPS URL for video
   backgroundVideoVolume: volume
   backgroundVideoVolumeDescription: drag to adjust volume
+  themeStore:
+    name: Theme Store
+    description: Save and manage global themes
+    savedThemes: Saved Themes
+    noSavedThemes: No saved themes yet
+    saveToStore: Save to Store
+    saveDialogTitle: Save Theme
+    themeName: Theme Name
+    themeNameHint: Name used to store this theme
+    loadConfirmTitle: Replace Current Theme?
+    loadConfirmMessage: Loading a stored theme will replace your current theme. Please back up if needed.
+    loadTheme: Load Theme
   browseRoot: Browse
   checkUpdate: Check Update
   colorTheme:

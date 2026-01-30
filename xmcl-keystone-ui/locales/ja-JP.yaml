@@ -1066,6 +1066,18 @@ serverStatus:
   refuse: §4サーバーが拒否しました!
   timeout: §4サーバーへの接続がタイムアウト!
 setting:
+  themeStore:
+    name: テーマストア
+    description: グローバルテーマを保存・管理します
+    savedThemes: 保存済みテーマ
+    noSavedThemes: 保存済みテーマがありません
+    saveToStore: ストアに保存
+    saveDialogTitle: テーマを保存
+    themeName: テーマ名
+    themeNameHint: このテーマを保存する名前
+    loadConfirmTitle: 現在のテーマを置き換えますか？
+    loadConfirmMessage: 保存済みテーマを読み込むと現在のテーマが置き換わります。必要ならバックアップしてください。
+    loadTheme: テーマを読み込む
   about: について
   aboutBmclDescription: BMCL APIは、中国本土のユーザーに便利なダウンロードを提供します
   aboutContributors: 🧑‍💻 コントリビューター 🧑‍💻

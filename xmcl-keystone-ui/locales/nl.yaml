@@ -1200,6 +1200,18 @@ serverStatus:
   refuse: §4Server weigert!
   timeout: §4Verbinden met server timeout!
 setting:
+  themeStore:
+    name: Thema-opslag
+    description: Globale thema's opslaan en beheren
+    savedThemes: Opgeslagen thema's
+    noSavedThemes: Nog geen opgeslagen thema's
+    saveToStore: Opslaan in opslag
+    saveDialogTitle: Thema opslaan
+    themeName: Themanaam
+    themeNameHint: Naam om dit thema op te slaan
+    loadConfirmTitle: Huidig thema vervangen?
+    loadConfirmMessage: Het laden van een opgeslagen thema vervangt het huidige thema. Maak indien nodig een back-up.
+    loadTheme: Thema laden
   about: Over
   aboutBmclDescription: BMCL API biedt handige downloads voor gebruikers in Chinees Vasteland
   aboutContributors: 🧑‍💻 Bijdragers 🧑‍💻

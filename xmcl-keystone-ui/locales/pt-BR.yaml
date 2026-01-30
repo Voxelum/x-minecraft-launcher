@@ -1181,6 +1181,18 @@ serverStatus:
   refuse: §4Servidor recusado!
   timeout: §4Tempo de conexão do servidor expirado!
 setting:
+  themeStore:
+    name: Biblioteca de temas
+    description: Salvar e gerenciar temas globais
+    savedThemes: Temas salvos
+    noSavedThemes: Nenhum tema salvo
+    saveToStore: Salvar na biblioteca
+    saveDialogTitle: Salvar tema
+    themeName: Nome do tema
+    themeNameHint: Nome usado para salvar este tema
+    loadConfirmTitle: Substituir o tema atual?
+    loadConfirmMessage: Carregar um tema salvo substituirá o tema atual. Faça backup se necessário.
+    loadTheme: Carregar tema
   about: Sobre
   aboutBmclDescription: BMCL API fornece downloads convenientes para usuários na China continental
   aboutContributors: 🧑‍💻 Contribuidores 🧑‍💻

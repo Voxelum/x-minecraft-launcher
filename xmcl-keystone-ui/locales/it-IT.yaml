@@ -1164,6 +1164,18 @@ serverStatus:
   refuse: §4Server rufiutato!
   timeout: §4Tmeout della conessione del server!
 setting:
+  themeStore:
+    name: Archivio temi
+    description: Salva e gestisci i temi globali
+    savedThemes: Temi salvati
+    noSavedThemes: Nessun tema salvato
+    saveToStore: Salva nell'archivio
+    saveDialogTitle: Salva tema
+    themeName: Nome tema
+    themeNameHint: Nome usato per salvare questo tema
+    loadConfirmTitle: Sostituire il tema attuale?
+    loadConfirmMessage: Caricare un tema salvato sostituirà il tema attuale. Fai un backup se necessario.
+    loadTheme: Carica tema
   about: Di
   aboutBmclDescription: >-
     L'API BMCL fornisce download convenienti per gli utenti nella Cina
