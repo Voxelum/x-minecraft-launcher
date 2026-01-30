@@ -132,6 +132,12 @@ export default class ElectronLauncherApp extends LauncherApp {
     app.commandLine?.appendSwitch('ozone-platform-hint', 'auto')
     // Enable Wayland-specific features for better native appearance
     app.commandLine?.appendSwitch('enable-features', 'UseOzonePlatform,WaylandWindowDecorations')
+    
+    // Optimize GPU usage on macOS, especially with vibrancy effects
+    if (process.platform === 'darwin') {
+      // Disable native window occlusion detection to reduce GPU usage
+      app.commandLine?.appendSwitch('disable-features', 'CalculateNativeWinOcclusion')
+    }
   }
 
   get systemLocale(): string {
