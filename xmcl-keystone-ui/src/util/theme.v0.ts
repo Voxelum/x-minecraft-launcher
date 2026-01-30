@@ -22,7 +22,6 @@ export function loadV1Theme(): UIThemeDataV1 | undefined {
 
 export function deserialize(data: ThemeData): UIThemeDataV1 {
   const theme: UIThemeDataV1 = {
-    name: 'default',
     backgroundMusic: [],
     colors: {} as any,
     backgroundImageFit: 'cover',
@@ -83,7 +82,6 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
 
 function getV1Theme(ui: UIThemeData, dark: boolean) {
   const newData: UIThemeDataV1 = {} as any
-  newData.name = ui.name
   newData.colors = ui.colors
   newData.blur = {
     appBar: ui.blurAppBar,

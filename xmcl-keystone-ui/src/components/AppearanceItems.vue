@@ -815,7 +815,6 @@ function clearImage() {
 function onExportTheme() {
   showSaveDialog({
     title: t('setting.themeExport'),
-    defaultPath: props.theme.name,
     filters: [{
       name: 'xtheme',
       extensions: ['xtheme'],
