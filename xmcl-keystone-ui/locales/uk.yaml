@@ -345,6 +345,7 @@ instance:
   delete: Видалити гру
   deleteFailed: Не вдалося видалити екземпляр
   deleteFailedPermission: Інша програма зайняла файл
+  deleteFile: Видалити файли екземпляра
   deleteHint: Дані екземпляра будуть назавжди видалені з диска. Ви впевнені?
   duplicate: Дублювати гру
   duplicatedName: Повторювана назва

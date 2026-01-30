@@ -315,6 +315,7 @@ instance:
   delete: ゲームを削除
   deleteFailed: インスタンスの削除に失敗しました
   deleteFailedPermission: 他のプログラムがファイルを占有しています
+  deleteFile: インスタンスのファイルを削除
   deleteHint: 起動構成はディスクから永久に削除されます。続行しますか?
   duplicate: ゲームを複製
   duplicatedName: 複製された名前

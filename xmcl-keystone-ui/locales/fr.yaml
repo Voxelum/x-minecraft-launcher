@@ -336,6 +336,7 @@ instance:
   delete: Supprimer le jeu
   deleteFailed: Échec de la suppression de l'instance
   deleteFailedPermission: Un autre programme a occupé le fichier
+  deleteFile: Supprimer les fichiers de l'instance
   deleteHint: |-
     Les données d'instance seront définitivement déplacées du disque.
     Tu es sûr de faire ça ?

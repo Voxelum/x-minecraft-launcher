@@ -346,6 +346,7 @@ instance:
   delete: Játék törlése
   deleteFailed: Nem sikerült törölni a példányt
   deleteFailedPermission: Más program foglalta el a fájlt
+  deleteFile: Példányfájlok törlése
   deleteHint: >-
     A példányadatok örökre lekerülnek a lemezről. Biztos vagy benne, hogy ezt
     akarod csinálni?

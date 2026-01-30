@@ -337,6 +337,7 @@ instance:
   delete: DELET GAME
   deleteFailed: FAIL TO DELET INSTANCE
   deleteFailedPermission: OTHR PROGRAM OCCUPIED DA FILE
+  deleteFile: DELET INSTANCE FILEZ
   deleteHint: TEH INSTANCE DATA WILL BE REMOVED FROM DA DISK FOREVR. U SURE?
   duplicate: DUPLICATE GAME
   duplicatedName: DUPLICATED NAME

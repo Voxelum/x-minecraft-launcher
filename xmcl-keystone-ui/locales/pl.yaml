@@ -309,6 +309,7 @@ instance:
   delete: Usuń grę
   deleteFailed: Nie udało się usunąć instancji
   deleteFailedPermission: Plik zajmował inny program
+  deleteFile: Usuń pliki instancji
   deleteHint: >-
     Dane instancji zostaną usunięte z dysku na zawsze. Na pewno chcesz to
     zrobić?

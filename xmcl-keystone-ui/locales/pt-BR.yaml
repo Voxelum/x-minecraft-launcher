@@ -349,6 +349,7 @@ instance:
   delete: Deletar jogo
   deleteFailed: Falha ao deletar instância
   deleteFailedPermission: Outro programa ocupou o arquivo
+  deleteFile: Excluir arquivos da instância
   deleteHint: >-
     Os dados da instância serão deletados para sempre do disco. Você tem
     certeza?

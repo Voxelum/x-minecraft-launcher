@@ -347,6 +347,7 @@ instance:
   delete: Oyunu Sil
   deleteFailed: Instance silinemedi
   deleteFailedPermission: Dosya başka bir program tarafından kullanılıyor
+  deleteFile: Örnek dosyalarını sil
   deleteHint: Instance verileri diskten sonsuza kadar silinecek. Emin misiniz?
   duplicate: Oyunu Çoğalt
   duplicatedName: Çoğaltılmış İsim

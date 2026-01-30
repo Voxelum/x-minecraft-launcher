@@ -288,6 +288,7 @@ instance:
   delete: Eliminar juego
   deleteFailed: No se pudo eliminar la instancia
   deleteFailedPermission: Otro programa ocupó el archivo.
+  deleteFile: Eliminar archivos de la instancia
   deleteHint: >-
     Los datos de la instancia se eliminarán permanentemente del disco. ¿Estás
     seguro de hacer esto?

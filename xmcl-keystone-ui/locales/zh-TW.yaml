@@ -317,6 +317,7 @@ instance:
   delete: 刪除遊戲
   deleteFailed: 刪除實例失敗
   deleteFailedPermission: 其他程式佔用了該檔案
+  deleteFile: 刪除實例檔案
   deleteHint: 遊戲資料將完全被移除。您確定要繼續此操作嗎？
   duplicate: 建立備份
   duplicatedName: 名稱重複！

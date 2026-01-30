@@ -308,6 +308,7 @@ instance:
   delete: 게임 삭제
   deleteFailed: 인스턴스 삭제 실패
   deleteFailedPermission: 다른 프로그램이 파일을 사용 중입니다
+  deleteFile: 인스턴스 파일 삭제
   deleteHint: 인스턴스 데이터는 디스크에서 영구적으로 제거됩니다. 계속하시겠습니까?
   duplicate: 게임 복제
   duplicatedName: 중복된 이름

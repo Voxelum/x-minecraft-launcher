@@ -321,6 +321,7 @@ instance:
   delete: Elimina gioco
   deleteFailed: Impossibile eliminare l'istanza
   deleteFailedPermission: Un altro programma occupava il file
+  deleteFile: Elimina i file dell'istanza
   deleteHint: >-
     I dati dell'istanza verranno rimossi definitivamente dal disco. Sei sicuro
     di volerlerlo fare?

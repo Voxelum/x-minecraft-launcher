@@ -349,6 +349,7 @@ instance:
   delete: Game verwijderen
   deleteFailed: Verwijderen van instantie mislukt
   deleteFailedPermission: Ander programma gebruikt het bestand
+  deleteFile: Instantiebestanden verwijderen
   deleteHint: >-
     De instantiegegevens worden voorgoed van de schijf verwijderd. Weet je het
     zeker?

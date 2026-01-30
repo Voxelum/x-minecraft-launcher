@@ -351,6 +351,7 @@ instance:
   delete: Spel Verwijderen
   deleteFailed: Verwijderen van instance mislukt
   deleteFailedPermission: Bestand is in gebruik door een ander programma
+  deleteFile: Instantiebestanden verwijderen
   deleteHint: De instance-data wordt permanent van de schijf verwijderd. Weet u het zeker?
   duplicate: Spel Dupliceren
   duplicatedName: Gedupliceerde Naam

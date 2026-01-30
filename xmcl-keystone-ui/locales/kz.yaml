@@ -348,6 +348,7 @@ instance:
   delete: Ойынды жою
   deleteFailed: Жеке жағдайды жою сәтсіз аяқталды
   deleteFailedPermission: Файлды басқа бағдарлама иемденіп алған
+  deleteFile: Жеке жағдай файлдарын жою
   deleteHint: Жеке жағдай деректері дискіден мәңгі жойылады. Сенімдісіз бе?
   duplicate: Ойынды қайталау
   duplicatedName: Қайталанатын атау
