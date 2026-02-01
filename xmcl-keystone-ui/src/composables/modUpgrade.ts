@@ -56,6 +56,10 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
   let operationPath = ''
   const checked = ref(false)
   const { show } = useDialog(InstanceInstallDialog)
+  
+  // Store the mapping of old normalized filename to new normalized filename during upgrade
+  // This is used to update group membership after upgrade completes
+  const upgradeFilenameMappings = shallowRef({} as Record<string, string>)
 
   const skipVersion = useLocalStorageCacheBool(computed(() => `modsUpgradeSkipVersion:${path.value}`), false)
   const upgradePolicy = useLocalStorageCacheStringValue(computed(() => `modsUpgradePolicy:${path.value}`), 'modrinth')
@@ -74,6 +78,7 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     operationId = ''
     error.value = null
     operationPath = path.value
+    upgradeFilenameMappings.value = {}
   })
 
   async function checkCurseforgeUpgrade(mods: ModFile[], runtime: RuntimeVersions, skipVersion: boolean, result: Record<string, UpgradePlan>) {
@@ -228,16 +233,35 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
   function upgrade() {
     const oldFiles: InstanceFile[] = []
     const files: InstanceFile[] = []
+    const filenameMappings: Record<string, string> = {}
+    
     for (const plan of Object.values(plans.value)) {
+      // Use the actual filename which may have .disabled suffix to preserve enabled/disabled state
+      const actualFileName = plan.mod.enabled ? plan.mod.fileName : plan.mod.fileName + '.disabled'
       oldFiles.push({
-        path: `mods/${plan.mod.fileName}`,
+        path: `mods/${actualFileName}`,
         hashes: {
           sha1: plan.mod.hash,
         },
         size: plan.mod.size || 0,
       })
-      files.push('file' in plan ? getInstanceFileFromCurseforgeFile(plan.file) : getInstanceFileFromModrinthVersion(plan.version))
+      const newFile = 'file' in plan ? getInstanceFileFromCurseforgeFile(plan.file) : getInstanceFileFromModrinthVersion(plan.version)
+      // Preserve the disabled state: if the old mod was disabled, the new one should also be disabled
+      if (!plan.mod.enabled) {
+        newFile.path = newFile.path + '.disabled'
+      }
+      files.push(newFile)
+      
+      // Build mapping of old normalized filename to new normalized filename for group membership update
+      const oldNormalizedFileName = plan.mod.fileName
+      const newNormalizedFileName = basename(newFile.path).replace(/\.disabled$/, '')
+      if (oldNormalizedFileName !== newNormalizedFileName) {
+        filenameMappings[oldNormalizedFileName] = newNormalizedFileName
+      }
     }
+    
+    // Store the mappings so they can be used to update group membership after upgrade succeeds
+    upgradeFilenameMappings.value = filenameMappings
 
     show({
       type: 'updates',
@@ -262,6 +286,8 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     if (oldV && isCurrentTask(oldV) && !newV) {
       if (oldV.state === TaskState.Succeed) {
         plans.value = {}
+        // Note: upgradeFilenameMappings is intentionally NOT cleared here
+        // It will be cleared after the group membership update is complete
       }
     }
   })
@@ -276,5 +302,6 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     checked,
     upgrade,
     upgrading: computed(() => !!task.value),
+    upgradeFilenameMappings,
   }
 }

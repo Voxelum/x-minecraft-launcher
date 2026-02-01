@@ -354,7 +354,7 @@ const hasActiveFilters = computed(() => {
   return !!localFilter.value
 })
 
-const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, addToGroup, isInGroup, getGroupColor, getContextMenuItemsForGroup, groups, groupsRaw } = useModGroups(isLocalView, path, items, sortBy)
+const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, addToGroup, isInGroup, getGroupColor, getContextMenuItemsForGroup, groups, groupsRaw, groupModCounts, updateGroupFilenames } = useModGroups(isLocalView, path, items, sortBy)
 
 function enableAll(group: ProjectGroup) {
   const files = group.projects.filter(p => p.installed?.[0]).map(p => p.installed?.[0]?.path).filter(Boolean)
@@ -477,7 +477,20 @@ const isOptifineProject = (v: ProjectEntry<ProjectFile> | undefined): v is Proje
   v?.id === 'OptiFine'
 
 // Upgrade
-const { plans, error: upgradeError } = injection(kModUpgrade)
+const { plans, error: upgradeError, upgradeFilenameMappings, upgrading } = injection(kModUpgrade)
+
+// When upgrade completes successfully, update group membership if filenames changed
+watch(upgrading, (isUpgrading, wasUpgrading) => {
+  if (wasUpgrading && !isUpgrading) {
+    // Upgrade just completed
+    const mappings = upgradeFilenameMappings.value
+    if (Object.keys(mappings).length > 0) {
+      updateGroupFilenames(mappings)
+      // Clear the mappings after use
+      upgradeFilenameMappings.value = {}
+    }
+  }
+})
 
 const updateErrorMessage = computed(() => {
   if (upgradeError) return (upgradeError.value as any).message
@@ -578,6 +591,7 @@ function showGroupDialog(fileNames: string[]) {
   console.log(groupsRaw.value)
   showGroupSelectDialog({
     groups: groupsRaw.value,
+    groupModCounts: groupModCounts.value,
     onSelect: (groupName: string | null, newName?: string) => {
       if (groupName) {
         // Add to existing group
