@@ -384,17 +384,23 @@ function isIncompatible(p: ProjectEntry<ModFile>) {
   return false
 }
 
+// Mapping of modloader filter values to modloader names
+const MODLOADER_FILTER_MAP: Record<string, string> = {
+  forgeOnly: 'forge',
+  neoforgeOnly: 'neoforge',
+  fabricOnly: 'fabric',
+  quiltOnly: 'quilt',
+}
+const MODLOADER_FILTERS = Object.keys(MODLOADER_FILTER_MAP)
+
 // Helper function to check if a mod matches the modloader filter
 function matchesModLoaderFilter(item: ProjectEntry<ModFile>, filterValue: string): boolean {
   const mod = item.installed?.[0]
   if (!mod) return true // If no installed mod, don't filter it out
   
   const modLoaders = mod.modLoaders || []
-  if (filterValue === 'forgeOnly') return modLoaders.includes('forge')
-  if (filterValue === 'neoforgeOnly') return modLoaders.includes('neoforge')
-  if (filterValue === 'fabricOnly') return modLoaders.includes('fabric')
-  if (filterValue === 'quiltOnly') return modLoaders.includes('quilt')
-  return true
+  const targetLoader = MODLOADER_FILTER_MAP[filterValue]
+  return targetLoader ? modLoaders.includes(targetLoader) : true
 }
 
 const groupedItems = computed(() => {
@@ -427,7 +433,7 @@ const groupedItems = computed(() => {
               continue
             }
             // Modloader filters
-            if (['forgeOnly', 'neoforgeOnly', 'fabricOnly', 'quiltOnly'].includes(localFilter.value) && !matchesModLoaderFilter(p, localFilter.value)) {
+            if (MODLOADER_FILTERS.includes(localFilter.value) && !matchesModLoaderFilter(p, localFilter.value)) {
               continue
             }
             localResult.push(p)
@@ -450,7 +456,7 @@ const groupedItems = computed(() => {
           continue
         }
         // Modloader filters
-        if (['forgeOnly', 'neoforgeOnly', 'fabricOnly', 'quiltOnly'].includes(localFilter.value) && !matchesModLoaderFilter(i, localFilter.value)) {
+        if (MODLOADER_FILTERS.includes(localFilter.value) && !matchesModLoaderFilter(i, localFilter.value)) {
           continue
         }
         localResult.push(i)
