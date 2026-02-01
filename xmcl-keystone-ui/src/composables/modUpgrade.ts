@@ -253,7 +253,8 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
       files.push(newFile)
       
       // Build mapping of old normalized filename to new normalized filename for group membership update
-      const oldNormalizedFileName = plan.mod.fileName
+      // Normalize by stripping .disabled suffix to match how groups store filenames
+      const oldNormalizedFileName = plan.mod.fileName.replace(/\.disabled$/, '')
       const newNormalizedFileName = basename(newFile.path).replace(/\.disabled$/, '')
       if (oldNormalizedFileName !== newNormalizedFileName) {
         filenameMappings[oldNormalizedFileName] = newNormalizedFileName

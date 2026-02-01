@@ -279,7 +279,8 @@ export function useModGroups(
           hasChanges = true;
           return filenameMappings[normalized];
         }
-        return normalized;
+        // Return original filename if no mapping exists to preserve existing state
+        return fileName;
       });
       group.files = newFiles;
     }
