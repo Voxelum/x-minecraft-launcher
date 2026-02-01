@@ -384,6 +384,19 @@ function isIncompatible(p: ProjectEntry<ModFile>) {
   return false
 }
 
+// Helper function to check if a mod matches the modloader filter
+function matchesModLoaderFilter(item: ProjectEntry<ModFile>, filterValue: string): boolean {
+  const mod = item.installed?.[0]
+  if (!mod) return true // If no installed mod, don't filter it out
+  
+  const modLoaders = mod.modLoaders || []
+  if (filterValue === 'forgeOnly') return modLoaders.includes('forge')
+  if (filterValue === 'neoforgeOnly') return modLoaders.includes('neoforge')
+  if (filterValue === 'fabricOnly') return modLoaders.includes('fabric')
+  if (filterValue === 'quiltOnly') return modLoaders.includes('quilt')
+  return true
+}
+
 const groupedItems = computed(() => {
   const result = items.value
 
@@ -413,6 +426,10 @@ const groupedItems = computed(() => {
             if (p.installed[0] && localFilter.value === 'unusedOnly' && !unusedSet.has(basename(p.installed[0].path))) {
               continue
             }
+            // Modloader filters
+            if (['forgeOnly', 'neoforgeOnly', 'fabricOnly', 'quiltOnly'].includes(localFilter.value) && !matchesModLoaderFilter(p, localFilter.value)) {
+              continue
+            }
             localResult.push(p)
           }
         }
@@ -430,6 +447,10 @@ const groupedItems = computed(() => {
           continue
         }
         if (localFilter.value === 'unusedOnly' && i.installed[0] && !unusedSet.has(basename(i.installed[0].path))) {
+          continue
+        }
+        // Modloader filters
+        if (['forgeOnly', 'neoforgeOnly', 'fabricOnly', 'quiltOnly'].includes(localFilter.value) && !matchesModLoaderFilter(i, localFilter.value)) {
           continue
         }
         localResult.push(i)

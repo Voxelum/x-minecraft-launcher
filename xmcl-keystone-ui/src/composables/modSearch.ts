@@ -334,7 +334,7 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
     loadMoreCurseforge()
   }
 
-  const localFilter = ref('' as '' | 'disabledOnly' | 'incompatibleOnly' | 'hasUpdateOnly' | 'unusedOnly' | 'dependenciesInstallOnly')
+  const localFilter = ref('' as '' | 'disabledOnly' | 'incompatibleOnly' | 'hasUpdateOnly' | 'unusedOnly' | 'dependenciesInstallOnly' | 'forgeOnly' | 'fabricOnly' | 'quiltOnly' | 'neoforgeOnly')
   const sortBy = useLocalStorageCacheStringValue('modSort', '' as '' | 'alpha_asc' | 'alpha_desc' | 'time_asc' | 'time_desc')
   const denseView = useLocalStorageCacheBool('mod-dense-view', false)
   const groupInstalled = useLocalStorageCacheBool('mod-group-installed', true)

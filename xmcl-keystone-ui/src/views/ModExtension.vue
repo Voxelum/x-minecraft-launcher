@@ -30,7 +30,7 @@
             </v-subheader>
             <v-btn-toggle
               background-color="transparent"
-              :value="localFilter === 'disabledOnly' ? 0 : localFilter === 'incompatibleOnly' ? 1 : undefined"
+              :value="getFilterButtonValue()"
               class="bg-transparent px-1"
               @change="onUpdateLocalFilter(filterItems[$event]?.value)"
             >
@@ -46,6 +46,27 @@
                   class="material-icons-outlined"
                   small
                 >
+                  {{ tag.icon }}
+                </v-icon>
+              </v-btn>
+            </v-btn-toggle>
+            <v-subheader class="flex">
+              {{ t('modrinth.modLoaders.name') }}
+            </v-subheader>
+            <v-btn-toggle
+              background-color="transparent"
+              :value="getModLoaderFilterValue()"
+              class="bg-transparent px-1"
+              @change="onUpdateLocalFilter(modLoaderFilterItems[$event]?.value)"
+            >
+              <v-btn
+                v-for="tag in modLoaderFilterItems"
+                :key="tag.value"
+                v-shared-tooltip="_ => tag.text"
+                small
+                outlined
+              >
+                <v-icon small>
                   {{ tag.icon }}
                 </v-icon>
               </v-btn>
@@ -123,6 +144,36 @@ const filterItems = computed(() => {
   })
   return result
 })
+
+const modLoaderFilterItems = computed(() => {
+  return [{
+    icon: '$vuetify.icons.forge',
+    text: t('modrinth.modLoaders.forge'),
+    value: 'forgeOnly',
+  }, {
+    icon: '$vuetify.icons.neoForged',
+    text: t('modrinth.modLoaders.neoforge'),
+    value: 'neoforgeOnly',
+  }, {
+    icon: '$vuetify.icons.fabric',
+    text: t('modrinth.modLoaders.fabric'),
+    value: 'fabricOnly',
+  }, {
+    icon: '$vuetify.icons.quilt',
+    text: t('modrinth.modLoaders.quilt'),
+    value: 'quiltOnly',
+  }]
+})
+
+function getFilterButtonValue() {
+  const idx = filterItems.value.findIndex(i => i.value === localFilter.value)
+  return idx >= 0 ? idx : undefined
+}
+
+function getModLoaderFilterValue() {
+  const idx = modLoaderFilterItems.value.findIndex(i => i.value === localFilter.value)
+  return idx >= 0 ? idx : undefined
+}
 
 function onUpdateLocalFilter(filter: string) {
   localFilter.value = filter as any
