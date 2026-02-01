@@ -160,8 +160,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     try {
       const tracker = getTracker(task)
 
-      if (!officialManifest) {
-        // use zulu
+      const installZulu = async () => {
         this.log(`Install zulu jre runtime ${target.component} (${target.majorVersion})`)
         const zuluData = await getZuluJRE(this.app, target.component as any)
         await installZuluJava(zuluData, {
@@ -170,19 +169,29 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
           tracker,
           abortSignal: task.controller.signal,
         })
+      }
+
+      if (!officialManifest) {
+        // use zulu
+        await installZulu()
       } else {
         this.log(
           `Install official jre runtime ${target.component} (${target.majorVersion}) ${officialManifest.version.name}`,
         )
-        await installJavaRuntimeWithJson({
-          target: officialManifest,
-          destination: folder,
-          ...this.downloadOptions,
-          apiHost,
-          tracker,
-          signal: task.controller.signal,
-          checksum: (file, algorithm) => this.resourceWorker.checksum(file, algorithm),
-        })
+        try {
+          await installJavaRuntimeWithJson({
+            target: officialManifest,
+            destination: folder,
+            ...this.downloadOptions,
+            apiHost,
+            tracker,
+            signal: task.controller.signal,
+            checksum: (file, algorithm) => this.resourceWorker.checksum(file, algorithm),
+          })
+        } catch (e) {
+          this.warn(`Failed to install official jre runtime, fallback to zulu: ${e}`)
+          await installZulu()
+        }
       }
 
       if (this.app.platform.os !== 'windows') {
