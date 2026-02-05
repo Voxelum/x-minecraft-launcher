@@ -78,7 +78,7 @@
               <v-list-item-content>
                 <v-list-item-title>{{ g[0] }}</v-list-item-title>
                 <v-list-item-subtitle>
-                  {{ t('mod.mods', { count: g[1].files.length }) }}
+                  {{ t('mod.mods', { count: groupModCounts[g[0]] || 0 }) }}
                 </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
@@ -141,10 +141,12 @@ const rules = computed(() => [(v: string) => !!v || t('mod.groupNameRequired')])
 
 const { isShown, parameter } = useDialog<{
   groups: Record<string, ModGroupData>
+  groupModCounts?: Record<string, number>
   onSelect: (groupName: string | null, newName?: string) => void
 }>('mod-group-select')
 
 const groups = computed(() => parameter.value?.groups || {})
+const groupModCounts = computed(() => parameter.value?.groupModCounts || {})
 
 // Filter and sort groups alphabetically
 const filteredGroups = computed(() => {

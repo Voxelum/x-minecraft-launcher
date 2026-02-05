@@ -354,7 +354,7 @@ const hasActiveFilters = computed(() => {
   return !!localFilter.value
 })
 
-const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, addToGroup, isInGroup, getGroupColor, getContextMenuItemsForGroup, groups, groupsRaw } = useModGroups(isLocalView, path, items, sortBy)
+const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, addToGroup, isInGroup, getGroupColor, getContextMenuItemsForGroup, groups, groupsRaw, groupModCounts, updateGroupFilenames } = useModGroups(isLocalView, path, items, sortBy)
 
 function enableAll(group: ProjectGroup) {
   const files = group.projects.filter(p => p.installed?.[0]).map(p => p.installed?.[0]?.path).filter(Boolean)
@@ -382,6 +382,25 @@ function isIncompatible(p: ProjectEntry<ModFile>) {
   }
 
   return false
+}
+
+// Mapping of modloader filter values to modloader names
+const MODLOADER_FILTER_MAP: Record<string, string> = {
+  forgeOnly: 'forge',
+  neoforgeOnly: 'neoforge',
+  fabricOnly: 'fabric',
+  quiltOnly: 'quilt',
+}
+const MODLOADER_FILTERS = Object.keys(MODLOADER_FILTER_MAP)
+
+// Helper function to check if a mod matches the modloader filter
+function matchesModLoaderFilter(item: ProjectEntry<ModFile>, filterValue: string): boolean {
+  const mod = item.installed?.[0]
+  if (!mod) return true // If no installed mod, don't filter it out
+  
+  const modLoaders = mod.modLoaders || []
+  const targetLoader = MODLOADER_FILTER_MAP[filterValue]
+  return targetLoader ? modLoaders.includes(targetLoader) : true
 }
 
 const groupedItems = computed(() => {
@@ -413,6 +432,10 @@ const groupedItems = computed(() => {
             if (p.installed[0] && localFilter.value === 'unusedOnly' && !unusedSet.has(basename(p.installed[0].path))) {
               continue
             }
+            // Modloader filters
+            if (MODLOADER_FILTERS.includes(localFilter.value) && !matchesModLoaderFilter(p, localFilter.value)) {
+              continue
+            }
             localResult.push(p)
           }
         }
@@ -430,6 +453,10 @@ const groupedItems = computed(() => {
           continue
         }
         if (localFilter.value === 'unusedOnly' && i.installed[0] && !unusedSet.has(basename(i.installed[0].path))) {
+          continue
+        }
+        // Modloader filters
+        if (MODLOADER_FILTERS.includes(localFilter.value) && !matchesModLoaderFilter(i, localFilter.value)) {
           continue
         }
         localResult.push(i)
@@ -477,7 +504,20 @@ const isOptifineProject = (v: ProjectEntry<ProjectFile> | undefined): v is Proje
   v?.id === 'OptiFine'
 
 // Upgrade
-const { plans, error: upgradeError } = injection(kModUpgrade)
+const { plans, error: upgradeError, upgradeFilenameMappings, upgrading } = injection(kModUpgrade)
+
+// When upgrade completes successfully, update group membership if filenames changed
+watch(upgrading, (isUpgrading, wasUpgrading) => {
+  if (wasUpgrading && !isUpgrading) {
+    // Upgrade just completed
+    const mappings = upgradeFilenameMappings.value
+    if (Object.keys(mappings).length > 0) {
+      updateGroupFilenames(mappings)
+      // Clear the mappings after use
+      upgradeFilenameMappings.value = {}
+    }
+  }
+})
 
 const updateErrorMessage = computed(() => {
   if (upgradeError) return (upgradeError.value as any).message
@@ -578,6 +618,7 @@ function showGroupDialog(fileNames: string[]) {
   console.log(groupsRaw.value)
   showGroupSelectDialog({
     groups: groupsRaw.value,
+    groupModCounts: groupModCounts.value,
     onSelect: (groupName: string | null, newName?: string) => {
       if (groupName) {
         // Add to existing group

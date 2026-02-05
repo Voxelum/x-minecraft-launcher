@@ -262,6 +262,34 @@ export function useModGroups(
     return sortableEntity;
   });
 
+  /**
+   * Update group file memberships when filenames change (e.g., during mod upgrade)
+   * @param filenameMappings - Object mapping old normalized filenames to new normalized filenames
+   */
+  function updateGroupFilenames(filenameMappings: Record<string, string>) {
+    if (Object.keys(filenameMappings).length === 0) return;
+    
+    const newVal = { ...instanceModGroupping.value };
+    let hasChanges = false;
+    
+    for (const group of Object.values(newVal)) {
+      const newFiles = group.files.map(fileName => {
+        const normalized = normalizeFileName(fileName);
+        if (filenameMappings[normalized]) {
+          hasChanges = true;
+          return filenameMappings[normalized];
+        }
+        // Return original filename if no mapping exists to preserve existing state
+        return fileName;
+      });
+      group.files = newFiles;
+    }
+    
+    if (hasChanges) {
+      instanceModGroupping.value = markRaw(newVal);
+    }
+  }
+
   function ungroup(groupName: string) {
     const newVal = { ...instanceModGroupping.value };
     const group = newVal[groupName];
@@ -477,10 +505,31 @@ export function useModGroups(
     }
   }
 
+  // Compute actual mod counts per group based on matching installed mods
+  const groupModCounts = computed(() => {
+    const counts = {} as Record<string, number>;
+    const _groupMap = groupMap.value;
+    
+    for (const i of items.value) {
+      const fileName = i.installed?.[0]?.fileName;
+      if (!fileName) continue;
+      
+      const normalizedFileName = normalizeFileName(fileName);
+      const groupName = _groupMap[normalizedFileName];
+      
+      if (groupName) {
+        counts[groupName] = (counts[groupName] || 0) + 1;
+      }
+    }
+    
+    return counts;
+  });
+
   return {
     isInGroup,
     groups: groupNames,
     groupsRaw: instanceModGroupping,
+    groupModCounts,
     syncGroupRules,
     applySharedGroupRules,
     getGroupColor,
@@ -488,6 +537,7 @@ export function useModGroups(
     addToGroup,
     ungroup,
     renameGroup,
+    updateGroupFilenames,
     localGroupedItems,
     groupCollapsedState,
     toggleGroupCollapsed,
