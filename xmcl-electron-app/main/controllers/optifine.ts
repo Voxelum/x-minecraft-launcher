@@ -18,7 +18,7 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
   const shouldOverride = testShouldOverride()
   async function testShouldOverride() {
     const setting = await app.registry.get(kSettings)
-    const isInside = await gfw.signal === 'cn'
+    const isInside = (await gfw.signal) === 'cn'
     const override = shouldOverrideApiSet(setting, isInside)
     return override
   }
@@ -57,7 +57,8 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
       },
       show: false,
     })
-    win.webContents.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'
+    win.webContents.userAgent =
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'
     return win
   }
 
@@ -84,7 +85,9 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
   async function getDownloadUrl(version: OptifineVersion) {
     const win = createBrowserWindow()
 
-    const fileName = `OptiFine_${version.mcversion}_${version.type}_${version.patch}.jar`
+    const fileName = version.patch.startsWith('pre')
+      ? `preview_OptiFine_${version.mcversion}_${version.type}_${version.patch}.jar`
+      : `OptiFine_${version.mcversion}_${version.type}_${version.patch}.jar`
 
     const url = await new Promise<string>((resolve) => {
       win.loadURL(`https://optifine.net/adloadx?f=${fileName}`)
@@ -106,7 +109,7 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
     }
     let ver = version.mcversion
     if (ver === '1.9' || ver === '1.8') {
-        ver += '.0'
+      ver += '.0'
     }
     return `https://bmclapi2.bangbang93.com/optifine/${ver}/${version.type}/${version.patch}`
   })
@@ -133,19 +136,25 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
         const resp = await this.app.fetch(ctx.request.url.toString(), {
           headers: ctx.request.headers,
           method: ctx.request.method,
-          body: body instanceof Readable ? Readable.toWeb(body) as any : body,
+          body: body instanceof Readable ? (Readable.toWeb(body) as any) : body,
           redirect: 'follow',
         })
         if (resp.ok) {
           ctx.response.status = resp.status
           ctx.response.headers = resp.headers
-          ctx.response.body = resp.body instanceof ReadableStream ? Readable.fromWeb(resp.body as any) : (resp.body ?? undefined)
+          ctx.response.body =
+            resp.body instanceof ReadableStream
+              ? Readable.fromWeb(resp.body as any)
+              : (resp.body ?? undefined)
         } else {
           const result = await Promise.race([getDownloads(), setTimeout(5000)])
           if (!result) {
             ctx.response.status = resp.status
             ctx.response.headers = resp.headers
-            ctx.response.body = resp.body instanceof ReadableStream ? Readable.fromWeb(resp.body as any) : (resp.body ?? undefined)
+            ctx.response.body =
+              resp.body instanceof ReadableStream
+                ? Readable.fromWeb(resp.body as any)
+                : (resp.body ?? undefined)
           } else {
             ctx.response.status = 200
             ctx.response.headers = {
