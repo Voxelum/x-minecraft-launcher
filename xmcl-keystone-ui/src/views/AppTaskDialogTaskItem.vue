@@ -127,7 +127,11 @@ const progress = computed(() => props.item.progress)
 const total = computed(() => progress.value?.total ?? -1)
 const current = computed(() => progress.value?.progress ?? 0)
 const indeterminate = computed(() => !total.value || total.value === -1)
-const percentage = computed(() => current.value / total.value * 100)
+const percentage = computed(() => {
+  if (total.value <= 0) return 0
+  const value = current.value / total.value * 100
+  return Math.min(100, Math.max(0, value))
+})
 
 function onTaskClick() {
   if (props.item.error && typeof props.item.error === 'object' && 'message' in props.item.error && typeof props.item.error.message === 'string') {

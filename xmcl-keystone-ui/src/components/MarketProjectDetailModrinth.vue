@@ -104,7 +104,7 @@ const dependencies = computed(() => {
       parent: parent?.title ?? '',
       installedVersion: computed(() => file.value?.version),
       installedDifferentVersion: computed(() => otherFile.value?.version),
-      progress: computed(() => progress.value / total.value),
+      progress: computed(() => total.value === -1 ? -1 : progress.value / total.value),
     })
     return dep
   }) ?? []
