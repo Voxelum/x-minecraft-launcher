@@ -93,6 +93,12 @@ export function getVersionPreference<T extends object>(
       ? (j) => j.majorVersion >= v.majorVersion
       : (j) => j.majorVersion === v.majorVersion
   }
+  
+  // Helper to format requirement string based on Java version
+  const getRequirement = (version: number) => {
+    return version >= 21 ? `>=${version}` : `=${version}`
+  }
+  
   let versionPref: VersionPreference
   // instance version is not installed
   if (minecraftMinor < 13) {
@@ -100,7 +106,7 @@ export function getVersionPreference<T extends object>(
     versionPref = {
       match: preferredMatchedVersion || ((j) => j.majorVersion === 8),
       okay: j => j.majorVersion < 8 || j.majorVersion < 11,
-      requirement: javaVersion ? (javaVersion.majorVersion >= 21 ? `>=${javaVersion.majorVersion.toString()}` : `=${javaVersion.majorVersion.toString()}`) : '=8',
+      requirement: javaVersion ? getRequirement(javaVersion.majorVersion) : '=8',
     }
     if (!javaVersion) {
       javaVersion = {
@@ -126,7 +132,7 @@ export function getVersionPreference<T extends object>(
     versionPref = {
       match: preferredMatchedVersion || (j => j.majorVersion >= 8 && j.majorVersion <= 16),
       okay: _ => true,
-      requirement: javaVersion ? (javaVersion.majorVersion >= 21 ? `>=${javaVersion.majorVersion.toString()}` : `=${javaVersion.majorVersion.toString()}`) : '>=8,<=16',
+      requirement: javaVersion ? getRequirement(javaVersion.majorVersion) : '>=8,<=16',
     }
     if (!javaVersion) {
       javaVersion = {
@@ -140,7 +146,7 @@ export function getVersionPreference<T extends object>(
     versionPref = {
       match: preferredMatchedVersion || (j => j.majorVersion >= 16),
       okay: _ => true,
-      requirement: javaVersion ? (javaVersion.majorVersion >= 21 ? `>=${javaVersion.majorVersion.toString()}` : `=${javaVersion.majorVersion.toString()}`) : '>=16',
+      requirement: javaVersion ? getRequirement(javaVersion.majorVersion) : '>=16',
     }
     if (!javaVersion) {
       javaVersion = {
