@@ -87,8 +87,11 @@ export function getVersionPreference<T extends object>(
 
   if (javaVersion) {
     const v = javaVersion
-    // if it assign version officially, we need to accept that version or newer
-    preferredMatchedVersion = (j) => j.majorVersion >= v.majorVersion
+    // For Java 21+, accept that version or newer to support forward compatibility
+    // For older versions, require exact match to avoid compatibility issues
+    preferredMatchedVersion = v.majorVersion >= 21
+      ? (j) => j.majorVersion >= v.majorVersion
+      : (j) => j.majorVersion === v.majorVersion
   }
   let versionPref: VersionPreference
   // instance version is not installed
@@ -97,7 +100,7 @@ export function getVersionPreference<T extends object>(
     versionPref = {
       match: preferredMatchedVersion || ((j) => j.majorVersion === 8),
       okay: j => j.majorVersion < 8 || j.majorVersion < 11,
-      requirement: javaVersion ? `>=${javaVersion.majorVersion.toString()}` : '=8',
+      requirement: javaVersion ? (javaVersion.majorVersion >= 21 ? `>=${javaVersion.majorVersion.toString()}` : `=${javaVersion.majorVersion.toString()}`) : '=8',
     }
     if (!javaVersion) {
       javaVersion = {
@@ -123,7 +126,7 @@ export function getVersionPreference<T extends object>(
     versionPref = {
       match: preferredMatchedVersion || (j => j.majorVersion >= 8 && j.majorVersion <= 16),
       okay: _ => true,
-      requirement: javaVersion ? `>=${javaVersion.majorVersion.toString()}` : '>=8,<=16',
+      requirement: javaVersion ? (javaVersion.majorVersion >= 21 ? `>=${javaVersion.majorVersion.toString()}` : `=${javaVersion.majorVersion.toString()}`) : '>=8,<=16',
     }
     if (!javaVersion) {
       javaVersion = {
@@ -137,7 +140,7 @@ export function getVersionPreference<T extends object>(
     versionPref = {
       match: preferredMatchedVersion || (j => j.majorVersion >= 16),
       okay: _ => true,
-      requirement: javaVersion ? `>=${javaVersion.majorVersion.toString()}` : '>=16',
+      requirement: javaVersion ? (javaVersion.majorVersion >= 21 ? `>=${javaVersion.majorVersion.toString()}` : `=${javaVersion.majorVersion.toString()}`) : '>=16',
     }
     if (!javaVersion) {
       javaVersion = {
