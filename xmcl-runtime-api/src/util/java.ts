@@ -73,6 +73,9 @@ export function getVersionPreference<T extends object>(
   forge: string | undefined,
   selectedVersion?: InstanceResolvedVersion<T>,
 ) {
+  // Java 21+ is LTS with improved forward compatibility, so we accept newer versions
+  const JAVA_FORWARD_COMPAT_THRESHOLD = 21
+  
   let javaVersion = selectedVersion && 'javaVersion' in selectedVersion ? selectedVersion?.javaVersion : undefined
   const resolvedMcVersion = parseVersion(minecraft)
   const minecraftMinor = resolvedMcVersion.minorVersion!
@@ -87,16 +90,15 @@ export function getVersionPreference<T extends object>(
 
   if (javaVersion) {
     const v = javaVersion
-    // For Java 21+, accept that version or newer to support forward compatibility
     // For older versions, require exact match to avoid compatibility issues
-    preferredMatchedVersion = v.majorVersion >= 21
+    preferredMatchedVersion = v.majorVersion >= JAVA_FORWARD_COMPAT_THRESHOLD
       ? (j) => j.majorVersion >= v.majorVersion
       : (j) => j.majorVersion === v.majorVersion
   }
   
   // Helper to format requirement string based on Java version
   const getRequirement = (version: number) => {
-    return version >= 21 ? `>=${version}` : `=${version}`
+    return version >= JAVA_FORWARD_COMPAT_THRESHOLD ? `>=${version}` : `=${version}`
   }
   
   let versionPref: VersionPreference
