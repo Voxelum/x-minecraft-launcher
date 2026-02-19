@@ -69,11 +69,11 @@ export function useProjectInstall(runtime: Ref<RuntimeVersions>,
       }
       const file = files.data[0]
       if (!file) {
+        console.warn('Curseforge project has no file to install', { curseforgeId, gameVersion: runtime.value.minecraft, modLoaderType: _loaders[0], fileCount: files.data?.length ?? 0 })
         notify({
           level: 'error',
           title: 'Failed to get curseforge files',
         })
-        // TODO: log this case
         return
       }
       const loaderType = getModLoaderTypesForFile(file)
