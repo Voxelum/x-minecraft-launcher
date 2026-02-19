@@ -111,7 +111,7 @@ const filteredLogs = computed(() => {
   const results = fuzzyFilter(debouncedSearchText.value, props.logs, {
     extract: (log: LogRecord) => `${log.level} ${log.source} ${log.content}`
   })
-  return results.filter(r => r.original != null).map(r => r.original as LogRecord)
+  return results.filter(r => r.original !== null && r.original !== undefined).map(r => r.original as LogRecord)
 })
 
 // Group consecutive logs with identical metadata (level, date, source) to reduce repetition

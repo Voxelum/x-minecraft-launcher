@@ -19,7 +19,7 @@ async function isExistedXMCLDir(path: string) {
 }
 
 export function isValidPathName(pathName: string) {
-  const allowedChars = /^[a-zA-Z0-9\-_\.\s\/\\:\(\)\,\[\]\{\}'"!@#\$%\^&\+=;~`]+$/
+  const allowedChars = /^[a-zA-Z0-9\-_.\s/\\:(),[\]{}'"!@#$%^&+=;~`]+$/
   if (!allowedChars.test(pathName)) {
     return false
   }
