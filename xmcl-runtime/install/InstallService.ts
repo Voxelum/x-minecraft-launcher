@@ -517,6 +517,7 @@ export class InstallService extends AbstractService implements IInstallService {
       version: options.version,
     })
     const ops = this.getInstallOptions({ side: options.side }, task)
+    ops.strict = true
     try {
       this.log(`Reinstall ${options.version} (${options.side})`)
       await installMinecraft({ id: resolvedVersion.minecraftVersion, url: '' }, location, ops)
