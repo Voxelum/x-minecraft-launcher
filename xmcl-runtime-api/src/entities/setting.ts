@@ -77,7 +77,7 @@ export class Settings implements SettingSchema {
   config(config: SettingSchema) {
     this.locale = config.locale
     this.autoDownload = config.autoDownload || false
-    this.autoInstallOnAppQuit = config.autoDownload || false
+    this.autoInstallOnAppQuit = config.autoInstallOnAppQuit || false
     this.allowPrerelease = config.allowPrerelease || false
     this.apiSetsPreference = config.apiSetsPreference
     this.httpProxy = config.httpProxy
