@@ -47,7 +47,7 @@
         "gl-matrix": "^3.4.4",
         "leaflet": "^1.9.4",
         "lodash.debounce": "^4.0.8",
-        "markdown-it": "^13.0.1",
+        "markdown-it": "^14.1.1",
         "markdown-it-link-attributes": "^4.0.1",
         "rollup-plugin-visualizer": "^6.0.3",
         "semver": "^7.5.8",
