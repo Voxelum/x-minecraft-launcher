@@ -76,7 +76,7 @@ const { refresh, refreshing } = useRefreshable(async () => {
 
 const filterText = ref('')
 const scrollElement = ref<HTMLElement | null>(null)
-const { leaves } = provideFileNodes(useInstanceFileNodesFromLocal(computed(() => data.files.filter(f => f.path.toLowerCase().includes(filterText.value.toLowerCase())))))
+const { leaves } = provideFileNodes(useInstanceFileNodesFromLocal(computed(() => data.files.filter(f => f.path.toLowerCase().includes((filterText.value || '').toLowerCase())))))
 const selectedPaths = computed(() => new Set(data.selected))
 
 function selectFit() {
