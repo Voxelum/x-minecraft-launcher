@@ -267,6 +267,42 @@ describe('pluginSettings', () => {
     expect(mockState.developerMode).toBe(false) // default value
   })
 
+  test('should load autoInstallOnAppQuit independently from autoDownload', async () => {
+    // autoInstallOnAppQuit=true while autoDownload=false should preserve both values
+    vi.mocked(fsExtra.readJson).mockResolvedValue({
+      autoInstallOnAppQuit: true,
+      autoDownload: false,
+    })
+
+    const { pluginSettings } = await import('./pluginSettings')
+    await pluginSettings(mockApp, mockManifest)
+
+    await vi.waitFor(() => {
+      expect(mockApp.registry.register).toHaveBeenCalled()
+    })
+
+    expect(mockState.autoInstallOnAppQuit).toBe(true)
+    expect(mockState.autoDownload).toBe(false)
+  })
+
+  test('should not reset autoInstallOnAppQuit when autoDownload is false', async () => {
+    // The opposite case: autoDownload=true, autoInstallOnAppQuit=false
+    vi.mocked(fsExtra.readJson).mockResolvedValue({
+      autoInstallOnAppQuit: false,
+      autoDownload: true,
+    })
+
+    const { pluginSettings } = await import('./pluginSettings')
+    await pluginSettings(mockApp, mockManifest)
+
+    await vi.waitFor(() => {
+      expect(mockApp.registry.register).toHaveBeenCalled()
+    })
+
+    expect(mockState.autoInstallOnAppQuit).toBe(false)
+    expect(mockState.autoDownload).toBe(true)
+  })
+
   test('should use default settings when json has invalid types and parsing throws', async () => {
     // Malformed settings with types that cause zod parsing to fail
     vi.mocked(fsExtra.readJson).mockResolvedValue({

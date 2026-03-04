@@ -73,7 +73,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
   const globalFastLaunch = computed(() => state.value?.globalFastLaunch ?? false)
   const globalHideLauncher = computed(() => state.value?.globalHideLauncher ?? false)
   const globalShowLog = computed(() => state.value?.globalShowLog ?? false)
-  const globalDisableAuthlibInjector = computed(() => state.value?.globalDisableAuthlibInjector ?? true)
+  const globalDisableAuthlibInjector = computed(() => state.value?.globalDisableAuthlibInjector ?? false)
   const globalDisableElyByAuthlib = computed(() => state.value?.globalDisableElyByAuthlib ?? false)
   const globalPrependCommand = computed(() => state.value?.globalPrependCommand ?? '')
   const globalPreExecuteCommand = computed(() => state.value?.globalPreExecuteCommand ?? '')
@@ -203,6 +203,10 @@ export function useSettings() {
     const p = getProxy()
     proxy.value.host = p.host
     proxy.value.port = p.port
+    if (state.value) {
+      maxSockets.value = state.value.maxSockets
+      maxAPISockets.value = state.value.maxAPISockets
+    }
   })
 
   watch(computed(() => state.value?.httpProxy), () => {
@@ -220,10 +224,10 @@ export function useSettings() {
     if (newValue !== state.value?.httpProxy) {
       state.value?.httpProxySet(newValue)
     }
-    if (state.value?.maxSockets !== maxSockets.value) {
+    if (maxSockets.value != null && state.value?.maxSockets !== maxSockets.value) {
       state.value?.maxSocketsSet(Number(maxSockets.value))
     }
-    if (state.value?.maxAPISockets !== maxAPISockets.value) {
+    if (maxAPISockets.value != null && state.value?.maxAPISockets !== maxAPISockets.value) {
       state.value?.maxAPISocketsSet(Number(maxAPISockets.value))
     }
   })
