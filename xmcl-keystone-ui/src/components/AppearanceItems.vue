@@ -754,6 +754,7 @@ const backgroundTypes = computed(() => [
   { value: BackgroundType.PARTICLE, text: t('setting.backgroundTypes.particle') },
   { value: BackgroundType.HALO, text: t('setting.backgroundTypes.halo') },
   { value: BackgroundType.VIDEO, text: t('setting.backgroundTypes.video') },
+  ...(props.instancePath ? [{ value: BackgroundType.SCREENSHOT, text: t('setting.backgroundTypes.screenshot') }] : []),
 ])
 function selectImage() {
   showOpenDialog({

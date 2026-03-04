@@ -23,6 +23,7 @@ export enum BackgroundType {
   HALO = 'halo',
   IMAGE = 'image',
   VIDEO = 'video',
+  SCREENSHOT = 'screenshot',
 }
 
 export interface UIThemeDataV1 {

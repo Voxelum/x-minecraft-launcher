@@ -1138,6 +1138,7 @@ setting:
     image: 图片
     none: 无
     particle: 粒子
+    screenshot: 截图
     video: 视频
   backgroundVideo: 背景视频
   backgroundVideoDescription: 选择一个背景视频或清空当前
