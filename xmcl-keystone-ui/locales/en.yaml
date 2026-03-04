@@ -1246,6 +1246,7 @@ setting:
     image: Image
     none: None
     particle: Particle
+    screenshot: Screenshots
     video: Video
   backgroundVideo: Background Video
   backgroundVideoDescription: Select or clear video
