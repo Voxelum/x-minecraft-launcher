@@ -162,7 +162,8 @@ export class PeerSession {
         console.log(`Receive peer file request: ${channel.label}`)
         this.#channelPool.push(new RTCDuplexChannel(channel, this.createStream, this.connection.sctp?.maxMessageSize ?? 16 * 1024))
       } else {
-        // TODO: emit error for unknown protocol
+        console.error(new Error(`Unknown data channel protocol: ${channel.protocol}`, { cause: { label: channel.label } }))
+        channel.close()
       }
     })
   }

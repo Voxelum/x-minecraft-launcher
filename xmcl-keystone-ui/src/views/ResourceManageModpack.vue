@@ -158,10 +158,8 @@ function getModpackItemByFtb(resource: CachedFTBModpackVersionManifest): Modpack
     type: 'ftb',
   })
 }
-const items: Ref<ModpackItem[]> = computed(() => [
-  // ...(state.value?.files || []).map(getModpackItem),
-  ...ftb.value.map(getModpackItemByFtb),
-].sort((a, b) => a.name.localeCompare(b.name)))
+const items: Ref<ModpackItem[]> = computed(() =>
+  ftb.value.map(getModpackItemByFtb).sort((a, b) => a.name.localeCompare(b.name)))
 onUnmounted(() => {
   // const editedResources = items.value
   //   .filter(i => !!i.resource)

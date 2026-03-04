@@ -30,13 +30,13 @@ export class ZipManager {
    * @returns The managed zip file.
    */
   async open(filePath: string): Promise<ManagedZipFile> {
-    if (!!this.#files[filePath]) {
+    if (filePath in this.#files) {
       return this.#files[filePath]
     }
     const fStat = await stat(filePath)
     const ino = fStat.ino
 
-    if (!!this.#files[ino]) {
+    if (ino in this.#files) {
       return this.#files[filePath]
     }
 

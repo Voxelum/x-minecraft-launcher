@@ -35,7 +35,7 @@ function CallSiteToString(this: any) {
       fileLocation += '<anonymous>'
     }
     const lineNumber = this.getLineNumber()
-    if (lineNumber != null) {
+    if (lineNumber !== null && lineNumber !== undefined) {
       fileLocation += ':' + lineNumber
       const columnNumber = this.getColumnNumber()
       if (columnNumber) {
