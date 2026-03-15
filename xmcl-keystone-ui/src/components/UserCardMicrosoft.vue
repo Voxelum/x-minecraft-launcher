@@ -67,10 +67,15 @@
           </v-list-item>
 
           <v-slide-group
+            ref="slideGroupRef"
             v-model="capeModel"
             mandatory
             show-arrows
-            class="max-w-[400px] overflow-x-auto"
+            class="max-w-[400px] select-none cursor-grab active:cursor-grabbing"
+            @mousedown.native="onDragStart"
+            @mousemove.native="onDragMove"
+            @mouseup.native="onDragEnd"
+            @mouseleave.native="onDragEnd"
           >
             <v-slide-item
               v-slot="{ active, toggle }"
@@ -180,6 +185,39 @@ const capeModel = computed({
     }
   },
 })
+const slideGroupRef = ref<any>(null)
+let isDragging = false
+let startX = 0
+let startScrollOffset = 0
+
+const onDragStart = (e: MouseEvent) => 
+{
+  const sg = slideGroupRef.value
+  if (!sg) return
+  isDragging = true
+  startX = e.pageX
+  startScrollOffset = sg.scrollOffset
+  sg.$refs.content?.style.setProperty('transition', 'none')
+  sg.$refs.content?.style.setProperty('willChange', 'transform')
+}
+
+const onDragMove = (e: MouseEvent) => 
+{
+  if (!isDragging) return
+  e.preventDefault()
+  slideGroupRef.value.scrollOffset = startScrollOffset + (startX - e.pageX)
+}
+
+const onDragEnd = () => 
+{
+  if (!isDragging) return
+  isDragging = false
+  const sg = slideGroupRef.value
+  sg.$refs.content?.style.setProperty('transition', null)
+  sg.$refs.content?.style.setProperty('willChange', null)
+  const max = sg.$refs.content.clientWidth - sg.$refs.wrapper.clientWidth
+  sg.scrollOffset = Math.max(0, Math.min(sg.scrollOffset, max))
+}
 
 const currentCape = computed(() => capes.value.find(v => v.state === 'ACTIVE'))
 const { checkNameAvailability, setName } = useService(OfficialUserServiceKey)
