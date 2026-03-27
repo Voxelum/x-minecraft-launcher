@@ -111,7 +111,7 @@ const cache = shallowReactive({
 })
 const selectedPaths = computed(() => new Set(cache.selected))
 const filterText = ref('')
-const { leaves } = provideFileNodes(useInstanceFileNodesFromLocal(computed(() => cache.files.filter(f => f.path.toLowerCase().includes(filterText.value.toLowerCase())))))
+const { leaves } = provideFileNodes(useInstanceFileNodesFromLocal(computed(() => cache.files.filter(f => f.path.toLowerCase().includes((filterText.value || '').toLowerCase())))))
 
 const { instance } = injection(kInstance)
 const { versionId } = injection(kInstanceVersion)

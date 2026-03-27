@@ -273,6 +273,7 @@ import AppCollectionList from './AppCollectionList.vue'
 import CurseforgeCategoryChip from './CurseforgeCategoryChip.vue'
 import ModrinthCategoryChip from './ModrinthCategoryChip.vue'
 import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
+import { getSelectableGameVersionIds } from '@/util/gameVersion'
 
 const props = defineProps<{
   curseforgeCategory?: number | undefined
@@ -360,12 +361,7 @@ const _modrinthCategories = computed(() => {
 const { t, te } = useI18n()
 
 const { runtime } = injection(kInstance)
-function filterGameVersion(v: string) {
-  if (v.indexOf('-') !== -1) return false
-  if (!v.startsWith('1.')) return false
-  return true
-}
-const versionIds = computed(() => versions.value.map(v => v.id).filter(filterGameVersion))
+const versionIds = computed(() => getSelectableGameVersionIds(versions.value.map(v => v.id), props.gameVersion))
 
 const field = ref(null as any)
 watch(() => props.curseforgeCategory, (v) => {
