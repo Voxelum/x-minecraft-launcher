@@ -245,6 +245,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
   async #editShaderOptions(pack: string, instancePath: string, name: string) {
     const current = await this.#getProperties(instancePath, name)
     current.shaderPack = pack
+    current.enableShaders = pack ? 'true' : 'false'
     const configFile = join(instancePath, 'config', name)
     await ensureDir(join(instancePath, 'config'))
     await writeFile(
