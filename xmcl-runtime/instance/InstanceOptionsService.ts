@@ -1,4 +1,4 @@
-import { type Frame, parse } from '@xmcl/gamesetting'
+import { type Frame, parse, encodeUnicodeEscapes, decodeUnicodeEscapes } from '@xmcl/gamesetting'
 import {
   type EditGameSettingOptions,
   type EditShaderOptions,
@@ -23,6 +23,7 @@ import {
   missing,
   unHardLinkFiles,
 } from '../util/fs'
+
 import { requireString } from '../util/object'
 import { existsSync } from 'fs'
 
@@ -250,7 +251,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
       configFile,
       Object.entries(current)
         .filter(([k, v]) => !!k && !!v)
-        .map(([k, v]) => `${k}=${v}`)
+        .map(([k, v]) => `${k}=${encodeUnicodeEscapes(v)}`)
         .join('\n') + '\n',
     )
   }
@@ -267,6 +268,12 @@ export class InstanceOptionsService extends AbstractService implements IInstance
       string,
       string
     >
+    // Decode Java-style unicode escape sequences
+    for (const key of Object.keys(options)) {
+      if (typeof options[key] === 'string') {
+        options[key] = decodeUnicodeEscapes(options[key])
+      }
+    }
     return options
   }
 
