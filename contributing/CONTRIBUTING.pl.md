@@ -6,7 +6,7 @@ Dla całego projektu mamy:
 
 - [Node.js >=18.17.0](https://nodejs.org/). Podstawowe środowisko bibliotek.
 - [Electron 27](https://electron.atom.io). Faktyczne środowisko wykonawcze launchera.
-- [pnpm](https://pnpm.io/). Używany do zarządzania pakietami w monorepo.
+- [bun](https://bun.sh/). Używany do zarządzania pakietami w monorepo.
 - [TypeScript](https://www.typescriptlang.org/). Cały projekt używa TypeScript w jak największym stopniu.
 
 Dla procesu głównego (Electron) mamy:
@@ -123,18 +123,10 @@ Przejdź do sekcji `Run and Debug`, użyj profilu `Electron: Main (launch)` aby 
 
 #### Dla innych niż VSCode
 
-Otwórz jeden terminal
+Otwórz terminal
 
 ```bash
-# Uruchom serwer dev dla UI
-npm run dev:renderer
-```
-
-Otwórz inny terminal
-
-``` bash
-# Uruchom obserwowanie kodu procesu głównego
-npm run dev:main
+bun run dev
 ```
 
 #### "Gorąca" zmiana kodu

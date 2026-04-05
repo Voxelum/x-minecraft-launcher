@@ -107,12 +107,12 @@ bun install
 <details>
   <summary> 解决中国国内安装依赖（如 Electron）太慢的办法 </summary>
 
-  打开你的 git bash，在 `pnpm i` 前面加上 `registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/"`。使用国内阿里提供的 npm 以及 Electron 的镜像。
+  打开你的 git bash，在 `bun install` 前面加上 `registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/"`。使用国内阿里提供的 npm 以及 Electron 的镜像。
 
   最终输入的 command 也就是
 
   ```bash
-  registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/" pnpm i
+  registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/" bun install
   ```
 </details>
 
@@ -226,3 +226,4 @@ bun build:all
 ```
 
 If you want a debug build, you can use `bun build:dir` which only build the directory result, and won't pack them up to different release format.
+

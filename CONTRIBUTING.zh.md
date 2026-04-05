@@ -7,7 +7,7 @@
 
 - [Node.js >=18.17.0](https://nodejs.org/). 核心库基础环境。
 - [Electron 27](https://electron.atom.io). 启动器实际的运行时。
-- [pnpm](https://pnpm.io/). 用于 monorepo 包管理。
+- [bun](https://bun.sh/). 用于 monorepo 包管理。
 - [TypeScript](https://www.typescriptlang.org/). 整个项目将尽可能使用 TypeScript 代码。
 
 对于主进程（Electron），我们使用：
@@ -90,21 +90,21 @@ git submodule update
 
 #### 安装依赖
 
-使用 [pnpm](https://pnpm.io) 安装项目：
+使用 [bun](https://bun.sh) 安装项目：
 
 ```
-pnpm install
+bun install
 ```
 
 <details>
   <summary> 解决中国国内安装依赖（如 Electron）太慢的办法 </summary>
 
-  打开您的 git bash，在 `pnpm i` 前面加上 `registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/"`。使用国内阿里提供的 npm 以及 Electron 的镜像。
+  打开您的 git bash，在 `bun install` 前面加上 `registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/"`。使用国内阿里提供的 npm 以及 Electron 的镜像。
 
   最终输入的 command 也就是
 
   ```bash
-  registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/" pnpm i
+  registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/" bun install
   ```
 </details>
 
@@ -124,18 +124,10 @@ pnpm install
 
 #### 对于不使用 VSCode 编辑器的开发者
 
-打开任一终端，执行命令：
+打开终端，执行命令：
 
 ```bash
-# 开启一个 UI 的 dev server
-npm run dev:renderer
-```
-
-打开另一终端，执行命令：
-
-``` bash
-# 开始监听主进程
-npm run dev:main
+bun run dev
 ```
 
 #### 代码"热"更新
@@ -214,7 +206,7 @@ commit type: commit description
 首先你需要先编译前端的代码
 
 ```bash
-pnpm build:renderer
+bun build:renderer
 ```
 
 除非你在 `xmcl-keystone-ui` 有新的改动，你已经不需再重新跑这个命令了。
@@ -222,7 +214,7 @@ pnpm build:renderer
 然后你需要构建 Electron，将你刚刚构建的前端代码和 Electron 打包到一起
 
 ```bash
-pnpm build:all
+bun build:all
 ```
 
-如果你需要构建一个 debug 的版本用于临时 debug，你可以使用 `pnpm build:dir`。它只会产生一个包含启动器程序文件夹输出（不用打包很多其他格式了）。
+如果你需要构建一个 debug 的版本用于临时 debug，你可以使用 `bun build:dir`。它只会产生一个包含启动器程序文件夹输出（不用打包很多其他格式了）。

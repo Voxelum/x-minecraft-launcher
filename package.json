@@ -39,5 +39,9 @@
     "electron",
     "node-datachannel",
     "@electron/rebuild"
-  ]
+  ],
+  "dependencies": {
+    "electron": "^41.1.1",
+    "vue-demi": "^0.14.10"
+  }
 }

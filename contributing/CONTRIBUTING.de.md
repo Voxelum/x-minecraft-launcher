@@ -6,7 +6,7 @@ Für das gesamte Projekt verwenden wir:
 
 - [Node.js >=18.17.0](https://nodejs.org/). Die Basisumgebung der Kernbibliotheken.
 - [Electron 27](https://electron.atom.io). Die eigentliche Laufzeitumgebung des Launchers.
-- [pnpm](https://pnpm.io/). Verwendet für die Paketverwaltung im Monorepo.
+- [bun](https://bun.sh/). Verwendet für die Paketverwaltung im Monorepo.
 - [TypeScript](https://www.typescriptlang.org/). Das gesamte Projekt verwendet so viel TypeScript wie möglich.
 
 Für den Hauptprozess (Electron) nutzen wir:
@@ -126,15 +126,7 @@ Nun kannst du den Launcher starten.
 Öffne ein Terminal:
 
 ```bash
-# Starten Sie einen Dev-Server für die UI
-npm run dev:renderer
-```
-
-Nun öffnen ein weiteres Terminal:
-
-``` bash
-# Starten Sie die Überwachung des Hauptprozesscodes
-npm run dev:main
+bun run dev
 ```
 
 #### Code "Hot" Change
@@ -224,3 +216,4 @@ pnpm build:all
 ```
 
 Solltest du einen Debug-Build haben wollen, kannst du stattdessen `pnpm build:dir` verwenden. So wird nur das Verzeichnisergebnis kompiliert, und nichts in die verschiedenen Release-Formate gepackt.
+

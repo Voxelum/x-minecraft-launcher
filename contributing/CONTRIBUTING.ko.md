@@ -6,7 +6,7 @@
 
 - [Node.js >=18.17.0](https://nodejs.org/) — 코어 라이브러리와 기본 실행 환경이에요.
 - [Electron 27](https://electron.atom.io) — 런처의 실제 실행 환경이에요.
-- [pnpm](https://pnpm.io/) — 모노레포 패키지 관리를 위해 사용돼요.
+- [bun](https://bun.sh/) — 모노레포 패키지 관리를 위해 사용돼요.
 - [TypeScript](https://www.typescriptlang.org/) — 프로젝트 전체에서 가능한 한 TypeScript로 작성돼요.
 
 메인 프로세스(Electron) 관련:
@@ -125,18 +125,10 @@ pnpm install
 
 ##### VSCode 외부에서
 
-터미널 하나를 열어 UI용 개발 서버를 시작하세요:
+터미널을 열어 런처를 실행하세요:
 
 ```bash
-# UI용 개발 서버 시작
-npm run dev:renderer
-```
-
-다른 터미널 하나를 열어 메인 프로세스 코드를 워치 모드로 시작하세요:
-
-```bash
-# 메인 프로세스 감시 시작
-npm run dev:main
+bun run dev
 ```
 
 #### 코드 '핫' 변경
@@ -227,3 +219,4 @@ pnpm build:all
 ```
 
 디버그용 빌드를 원하면 `pnpm build:dir`를 사용하세요—이 명령은 디렉터리 결과물만 만들고 여러 릴리스 포맷으로 패키징하지 않아요.
+

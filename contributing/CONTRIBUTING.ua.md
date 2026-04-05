@@ -7,7 +7,7 @@
 
 - [Node.js >=18.17.0](https://nodejs.org/). Базове середовище основних бібліотек.
 - [Electron 27](https://electron.atom.io). Власне середовище виконання запуску.
-- [pnpm](https://pnpm.io/). Використовується для керування пакунками монорепо.
+- [bun](https://bun.sh/). Використовується для керування пакунками монорепо.
 - [TypeScript](https://www.typescriptlang.org/). Весь проект використовує якомога більше TypeScript.
 
 Для основного процесу (Electron) ми маємо
@@ -125,18 +125,10 @@ pnpm install
 
 #### Для не VSCode
 
-Відкрийте один термінал
+Відкрийте термінал
 
 ```bash
-# Start a dev server for UI
-npm run dev:renderer
-```
-
-Відкрийте інший термінал
-
-``` bash
-# Start watching main process code
-npm run dev:main
+bun run dev
 ```
 
 #### «Гаряча» зміна коду

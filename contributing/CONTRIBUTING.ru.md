@@ -7,7 +7,7 @@
 
 - [Node.js >=18.17.0](https://nodejs.org/). Базовая среда библиотек ядра.
 - [Electron 27](https://electron.atom.io). Фактическое время выполнения программы запуска.
-- [pnpm](https://pnpm.io/). Используется для управления пакетами monorepo.
+- [bun](https://bun.sh/). Используется для управления пакетами monorepo.
 - [TypeScript](https://www.typescriptlang.org/). Весь проект использует как можно больше TypeScript.
 
 Для основного процесса (Electron) мы имеем
@@ -125,18 +125,10 @@ pnpm install
 
 #### Для не VSCode
 
-Откройте один терминал
+Откройте терминал
 
 ```bash
-# Start a dev server for UI
-npm run dev:renderer
-```
-
-Откройте другой терминал
-
-``` bash
-# Start watching main process code
-npm run dev:main
+bun run dev
 ```
 
 #### «Горячее» изменение кода
@@ -226,3 +218,4 @@ pnpm build:all
 ```
 
 Если вам нужна отладочная сборка, вы можете использовать `pnpm build:dir`, который соберет только результат сборки директории и не будет упаковывать их в другой релизный формат.
+
