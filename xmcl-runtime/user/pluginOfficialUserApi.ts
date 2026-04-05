@@ -15,7 +15,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
   })
 
   // @ts-ignore
-  const mojangApi = new MojangClient({ fetch: (...args) => app.fetch(...args) })
+  const mojangApi = new MojangClient({ fetch: ((...args) => app.fetch(...args)) as typeof fetch })
   app.registry.register(MojangClient, mojangApi)
 
   const logger = app.getLogger('OfficialUserSystem')
@@ -25,12 +25,12 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
 
   const system = new MicrosoftAccountSystem(logger,
     new MicrosoftAuthenticator({
-      fetch: (...args) => app.fetch(...args),
+      fetch: ((...args) => app.fetch(...args)) as typeof fetch,
     }),
     mojangApi,
     () => app.registry.get(kUserTokenStorage),
     new MicrosoftOAuthClient(
-      (...args) => app.fetch(...args),
+      ((...args) => app.fetch(...args)) as typeof fetch,
       logger,
       CLIENT_ID,
       async (url, signal) => {

@@ -41,7 +41,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     const client = new YggdrasilThirdPartyClient(
       authority,
       {
-        fetch: (...args) => this.app.fetch(...args),
+        fetch: ((...args) => this.app.fetch(...args)) as typeof fetch,
       },
       // eslint-disable-next-line no-template-curly-in-string
       // joinUrl(api.url, api.profile || '/sessionserver/session/minecraft/profile/${uuid}'),

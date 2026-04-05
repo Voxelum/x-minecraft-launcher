@@ -51,7 +51,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
       const filePath = join(instancePath, 'logs', name)
       let buf = await readFile(filePath)
       if (name.endsWith('.gz')) {
-        buf = await gunzip(buf)
+        buf = (await gunzip(buf)) as any
       }
       const encoding = await this.encoder.guessEncodingByBuffer(buf.subarray(0, 512 * 128)).catch(e => undefined)
       const result = await this.encoder.decode(buf, encoding || UTF8)
@@ -103,7 +103,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
     try {
       let buf = await readFile(filePath.trim())
       if (name.endsWith('.gz')) {
-        buf = await gunzip(Buffer.from(buf) as Buffer<ArrayBuffer>)
+        buf = (await gunzip(Buffer.from(buf))) as any
       }
       const encoding = await this.encoder.guessEncodingByBuffer(buf.subarray(0, 512 * 128)).catch(() => undefined)
       const result = await this.encoder.decode(buf, encoding || UTF8)

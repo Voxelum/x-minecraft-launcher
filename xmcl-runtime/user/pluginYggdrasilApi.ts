@@ -48,7 +48,7 @@ export const pluginYggdrasilApi: LauncherAppPlugin = async (app) => {
     tokenStorage,
     yggReg,
     new YggdrasilOCIDAuthClient(
-      (...args) => app.fetch(...args),
+      ((...args) => app.fetch(...args)) as typeof fetch,
       logger,
       (response) => {
         userSerivce.emit('device-code', response)

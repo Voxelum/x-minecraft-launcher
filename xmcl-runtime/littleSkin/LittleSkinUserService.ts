@@ -15,7 +15,7 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app)
-    this.client = new LittleSkinClient((...args) => this.app.fetch(...args))
+    this.client = new LittleSkinClient(((...args) => this.app.fetch(...args)) as typeof fetch)
 
     // const ygg = new YggdrasilAccountSystem(
     //   this,
