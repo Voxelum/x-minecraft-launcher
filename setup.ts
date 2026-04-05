@@ -58,7 +58,12 @@ async function setupNodeDatachannel(electronVersion: string) {
   }
 
   console.log('📦 Installing prebuilt node-datachannel...')
-  run(`bunx prebuild-install -r electron --version ${electronVersion}`, nodeDcPath)
+    try {
+      run(`bunx prebuild-install -r napi`, nodeDcPath)
+    } catch (e) {
+      console.log('⚠️ Failed to download prebuilt binary, attempting to build from source...')
+      run(`bunx cmake-js rebuild --runtime electron --runtime-version ${electronVersion}`, nodeDcPath)
+    }
 
   if (existsSync(binaryPath)) {
     console.log('✅ node_datachannel.node installed')
