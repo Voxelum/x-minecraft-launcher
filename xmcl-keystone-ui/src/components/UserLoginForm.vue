@@ -1,10 +1,9 @@
 <template>
   <Hint v-if="showDropHint" icon="save_alt" :text="t('login.dropHint').toString()" />
-  
+
   <div v-else class="w-full h-full max-w-[360px] mx-auto flex flex-col justify-center items-center py-6 px-2">
     <div class="w-full flex flex-col gap-4 relative">
-      
-      <!-- Authority / Authentication Service Selection (Custom MacOS Dropdown) -->
+
       <div class="w-full text-left self-start relative">
         <label class="block text-xs font-semibold text-gray-500/80 uppercase tracking-widest mb-1.5 px-1">
           {{ t('user.authMode') }}
@@ -14,8 +13,32 @@
           @click.stop="authDropdownOpen = !authDropdownOpen"
         >
           <div class="flex items-center gap-3">
-             <v-img v-if="currentAuthItem?.icon?.startsWith('http')" :src="currentAuthItem?.icon" class="w-5 h-5 flex-shrink-0" />
-             <v-icon v-else size="20">{{ currentAuthItem?.icon || 'vpn_key' }}</v-icon>
+             <template v-if="isElyBy(currentAuthItem?.text) || isElyBy(currentAuthItem?.value)">
+               <div class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] bg-[#0070c9] rounded-md flex items-center justify-center text-white font-bold text-[11px] shadow-sm">E</div>
+             </template>
+             <template v-else-if="isLittleSkin(currentAuthItem?.text) || isLittleSkin(currentAuthItem?.value)">
+               <div class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] bg-[#8b5cf6] rounded-md flex items-center justify-center text-white font-bold text-[11px] shadow-sm">L</div>
+             </template>
+             <template v-else-if="isMicrosoft(currentAuthItem?.value)">
+               <div class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] grid grid-cols-2 grid-rows-2 gap-[2px] p-[2px] bg-white rounded-md shadow-sm">
+                 <div class="bg-[#F25022] rounded-[1px]"></div><div class="bg-[#7FBA00] rounded-[1px]"></div>
+                 <div class="bg-[#00A4EF] rounded-[1px]"></div><div class="bg-[#FFB900] rounded-[1px]"></div>
+               </div>
+             </template>
+             <template v-else-if="isOfflineMode(currentAuthItem?.value)">
+               <div class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] bg-gray-600 dark:bg-gray-700 rounded-md flex items-center justify-center shadow-sm">
+                 <v-icon size="14" color="white">person_off</v-icon>
+               </div>
+             </template>
+             <template v-else-if="currentAuthItem?.icon?.startsWith('http')">
+               <v-img :src="currentAuthItem?.icon" class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] object-contain bg-white/80 dark:bg-white p-[2px] rounded-md shadow-sm" />
+             </template>
+             <template v-else>
+               <div class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/10 rounded-md flex items-center justify-center shadow-sm">
+                 <v-icon size="14" class="opacity-80">{{ currentAuthItem?.icon || 'vpn_key' }}</v-icon>
+               </div>
+             </template>
+
              <span class="font-medium text-sm">{{ currentAuthItem?.text || currentAuthItem?.value }}</span>
           </div>
           <v-icon :class="{'rotate-180': authDropdownOpen}" class="transition-transform duration-200">arrow_drop_down</v-icon>
@@ -29,23 +52,50 @@
               class="w-full px-4 py-3 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 cursor-pointer flex items-center gap-3 transition-colors"
               @click="authority = item.value; authDropdownOpen = false"
             >
-              <v-img v-if="item.icon.startsWith('http')" :src="item.icon" class="w-5 h-5 flex-shrink-0" />
-               <v-icon v-else size="20">{{ item.icon }}</v-icon>
-               <span class="font-medium text-sm">{{ item.text }}</span>
+              <template v-if="isElyBy(item.text) || isElyBy(item.value)">
+                <div class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] bg-[#0070c9] rounded-md flex items-center justify-center text-white font-bold text-[11px] shadow-sm">E</div>
+              </template>
+              <template v-else-if="isLittleSkin(item.text) || isLittleSkin(item.value)">
+                <div class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] bg-[#8b5cf6] rounded-md flex items-center justify-center text-white font-bold text-[11px] shadow-sm">L</div>
+              </template>
+              <template v-else-if="isMicrosoft(item.value)">
+                <div class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] grid grid-cols-2 grid-rows-2 gap-[2px] p-[2px] bg-white rounded-md shadow-sm">
+                  <div class="bg-[#F25022] rounded-[1px]"></div><div class="bg-[#7FBA00] rounded-[1px]"></div>
+                  <div class="bg-[#00A4EF] rounded-[1px]"></div><div class="bg-[#FFB900] rounded-[1px]"></div>
+                </div>
+              </template>
+              <template v-else-if="isOfflineMode(item.value)">
+                <div class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] bg-gray-600 dark:bg-gray-700 rounded-md flex items-center justify-center shadow-sm">
+                  <v-icon size="14" color="white">person_off</v-icon>
+                </div>
+              </template>
+              <template v-else-if="item.icon?.startsWith('http')">
+                <v-img :src="item.icon" class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] object-contain bg-white/80 dark:bg-white p-[2px] rounded-md shadow-sm" />
+              </template>
+              <template v-else>
+                <div class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/10 rounded-md flex items-center justify-center shadow-sm">
+                  <v-icon size="14" class="opacity-80">{{ item.icon || 'vpn_key' }}</v-icon>
+                </div>
+              </template>
+
+              <span class="font-medium text-sm">{{ item.text }}</span>
             </div>
+
             <div class="w-full h-[1px] bg-black/5 dark:bg-white/5 my-1"></div>
+
             <div
               class="w-full px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors text-primary"
               @click="$emit('add-service'); authDropdownOpen = false"
             >
-              <v-icon size="20" color="primary">add</v-icon>
+              <div class="flex-none w-5 h-5 min-w-[20px] max-w-[20px] bg-primary/10 rounded-md flex items-center justify-center shadow-sm">
+                <v-icon size="16" color="primary">add</v-icon>
+              </div>
               <span class="font-medium text-sm">{{ t('userService.add') }}</span>
             </div>
           </div>
         </transition>
       </div>
 
-      <!-- Error message container -->
       <transition name="fade-transition">
         <div v-if="errorMessage" class="w-full bg-red-500/10 border border-red-500/30 text-red-500 text-sm px-4 py-3 rounded-xl flex items-start gap-2 backdrop-blur-sm">
           <v-icon size="18" color="error">error_outline</v-icon>
@@ -53,15 +103,14 @@
         </div>
       </transition>
 
-      <!-- Username Input -->
-      <div class="w-full relative">
-        <v-icon size="18" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">person</v-icon>
+      <div class="w-full flex items-center px-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+        <v-icon size="18" class="text-gray-500 mr-2 flex-shrink-0">person</v-icon>
         <template v-if="!streamerMode">
           <input
             ref="accountInput"
             v-model="data.username"
             list="login-history"
-            class="w-full pl-11 pr-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm dark:text-gray-200"
+            class="w-full bg-transparent text-center outline-none text-sm dark:text-gray-200 placeholder:text-gray-500"
             :placeholder="getUserServiceAccount(authority)"
             @input="error = undefined"
             @keypress="error = undefined"
@@ -77,7 +126,7 @@
             ref="accountInput"
             v-model="data.username"
             type="password"
-            class="w-full pl-11 pr-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm dark:text-gray-200"
+            class="w-full bg-transparent text-center outline-none text-sm dark:text-gray-200 placeholder:text-gray-500"
             :placeholder="getUserServiceAccount(authority)"
             @input="error = undefined"
             @keypress="error = undefined"
@@ -86,34 +135,31 @@
         </template>
       </div>
 
-      <!-- Password Input -->
-      <div v-if="!isOffline" class="w-full relative">
-        <v-icon size="18" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">lock</v-icon>
+      <div v-if="!isOffline" class="w-full flex items-center px-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+        <v-icon size="18" class="text-gray-500 mr-2 flex-shrink-0">lock</v-icon>
         <input
           v-model="data.password"
           :type="passwordType"
           :disabled="isPasswordDisabled"
           :readonly="isPasswordReadonly"
-          class="w-full pl-11 pr-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm dark:text-gray-200 disabled:opacity-50"
+          class="w-full bg-transparent text-center outline-none text-sm dark:text-gray-200 disabled:opacity-50 placeholder:text-gray-500"
           :placeholder="passwordPlaceholder"
           @input="error = undefined"
           @keypress.enter="() => onLogin()"
         />
       </div>
 
-      <!-- Offline UUID Input -->
-      <div v-else class="w-full relative">
-        <v-icon size="18" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">fingerprint</v-icon>
+      <div v-else class="w-full flex items-center px-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+        <v-icon size="18" class="text-gray-500 mr-2 flex-shrink-0">fingerprint</v-icon>
         <input
           v-model="data.uuid"
           type="text"
-          class="w-full pl-11 pr-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm dark:text-gray-200"
+          class="w-full bg-transparent text-center outline-none text-sm dark:text-gray-200 placeholder:text-gray-500"
           :placeholder="uuidLabel"
           @keypress.enter="() => onLogin()"
         />
       </div>
 
-      <!-- Device Code Checkbox -->
       <div v-if="allowDeviceCode" class="w-full flex items-center mt-2">
         <label class="flex items-center gap-3 cursor-pointer text-sm text-gray-700 dark:text-gray-300 group select-none w-max">
           <div
@@ -133,7 +179,6 @@
         </label>
       </div>
 
-      <!-- Login Button -->
       <div class="w-full mt-4" @mouseenter="onMouseEnterLogin" @mouseleave="onMouseLeaveLogin">
         <v-btn
           block
@@ -156,7 +201,6 @@
         <slot />
       </div>
 
-      <!-- Verification URI -->
       <div v-if="data.verificationUri" class="w-full mt-4 text-center">
         <a
           :href="data.verificationUri"
@@ -167,7 +211,6 @@
         </a>
       </div>
 
-      <!-- Footer Links -->
       <div class="w-full mt-2 flex flex-col items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500">
         <a
           v-if="authority === AUTHORITY_MICROSOFT"
@@ -198,17 +241,16 @@
   </div>
 </template>
 
-<script lang=ts setup>
+<script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
 import { useRefreshable, useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kSupportedAuthorityMetadata } from '@/composables/yggrasil'
 import { injection } from '@/util/inject'
 import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserException, UserServiceKey, isException } from '@xmcl/runtime-api'
-import { Ref } from 'vue'
+import { Ref, computed, inject, nextTick, reactive, ref, watch } from 'vue'
 import { useAccountSystemHistory, useAuthorityItems } from '../composables/login'
 import { kUserContext, useLoginValidation } from '../composables/user'
-import UserLoginAuthoritySelect from './UserLoginAuthoritySelect.vue'
 
 const props = defineProps<{
   inside: boolean
@@ -222,7 +264,11 @@ const { t } = useI18n()
 const { select } = injection(kUserContext)
 const { login, abortLogin, on } = useService(UserServiceKey)
 
-// Shared data
+const isElyBy = (val?: string) => !!val && val.toLowerCase().includes('ely.by')
+const isLittleSkin = (val?: string) => !!val && val.toLowerCase().includes('littleskin')
+const isMicrosoft = (val?: string) => val === AUTHORITY_MICROSOFT
+const isOfflineMode = (val?: string) => val === AUTHORITY_DEV
+
 const data = reactive({
   username: '',
   password: '',
@@ -231,10 +277,10 @@ const data = reactive({
   useFast: false,
   verificationUri: '',
 })
+
 const isOffline = computed(() => authority.value === AUTHORITY_DEV)
 const isLogining = ref(false)
 
-// Label
 const getUserServiceAccount = (serv: string) => {
   if (serv === AUTHORITY_MICROSOFT) return t('userServices.microsoft.account')
   if (serv === AUTHORITY_MOJANG) return t('userServices.mojang.account')
@@ -242,11 +288,20 @@ const getUserServiceAccount = (serv: string) => {
   return t('userServices.mojang.account')
 }
 
-// Authority items
 const { data: services } = injection(kSupportedAuthorityMetadata)
-const items = useAuthorityItems(services)
+const rawItems = useAuthorityItems(services)
 
-// Account history
+const items = computed(() => {
+  const unique = new Map()
+  for (const item of rawItems.value) {
+    if (!item.text || item.text.trim() === '') continue
+    if (!unique.has(item.text)) {
+      unique.set(item.text, item)
+    }
+  }
+  return Array.from(unique.values())
+})
+
 const { authority, history } = useAccountSystemHistory()
 
 const authDropdownOpen = ref(false)
@@ -258,7 +313,6 @@ const currentAccountSystem = computed(() => {
   return services.value?.find(a => a.authority === authority.value)
 })
 
-// Sign up link
 const signUpLink = computed(() => {
   const sys = currentAccountSystem.value
   if (sys?.authority === AUTHORITY_MICROSOFT) return 'https://account.live.com/registration'
@@ -268,49 +322,46 @@ const signUpLink = computed(() => {
 
 const manageAuthorityLabel = computed(() => t('userService.manageServices'))
 
-// Password data
 const allowDeviceCode = computed(() => {
   return currentAccountSystem.value?.flow.includes('device-code')
 })
+
 const emailOnly = computed(() => {
   if (!currentAccountSystem.value?.authlibInjector) {
     if (authority.value === AUTHORITY_MICROSOFT) {
-      return true // Microsoft account always has email-only flow
+      return true
     }
   }
   return false
 })
+
 const isPasswordReadonly = computed(() => !currentAccountSystem.value?.flow.includes('password') || data.useDeviceCode)
 const isPasswordDisabled = computed(() => isPasswordReadonly.value && !data.useDeviceCode)
 const passwordType = computed(() => data.useDeviceCode ? 'text' : 'password')
-const passwordLabel = computed(() => getUserServicePassword(authority.value))
-const passwordPlaceholder = computed(() => data.useDeviceCode ? t('userServices.microsoft.deviceCodeHint') : passwordLabel.value)
-const getUserServicePassword = (serv: string) => {
-  if (data.useDeviceCode) return t('userServices.microsoft.deviceCode')
-  if (serv === AUTHORITY_MICROSOFT) return t('userServices.microsoft.password')
-  if (serv === AUTHORITY_DEV) return t('userServices.offline.password')
-  return t('userServices.mojang.password')
-}
 
-// UUID label
+const passwordPlaceholder = computed(() => {
+  if (data.useDeviceCode) return t('userServices.microsoft.deviceCodeHint')
+  if (authority.value === AUTHORITY_MICROSOFT) return t('userServices.microsoft.password')
+  if (authority.value === AUTHORITY_DEV) return t('userServices.offline.password')
+  return t('userServices.mojang.password')
+})
+
 const uuidLabel = computed(() => t('userServices.offline.uuid'))
 
-// Event handler
 on('microsoft-authorize-url', (url) => {
   data.verificationUri = url
 })
+
 on('device-code', (code) => {
   data.password = code.userCode
   data.verificationUri = code.verificationUri
 })
 
-// Rules
 const {
   usernameRules,
   passwordRules,
 } = useLoginValidation(emailOnly)
 
-// Login Error
 const errorMessage = computed(() => {
   const e = error.value
   if (isException(UserException, e)) {
@@ -366,12 +417,12 @@ const errorMessage = computed(() => {
   return e ? t('loginError.requestFailed') : ''
 })
 
-// Login
 const accountInput: Ref<any> = ref(null)
+
 const { refresh: onLogin, error } = useRefreshable(async () => {
   error.value = undefined
   accountInput.value.blur()
-  await nextTick() // wait a tick to make sure username updated.
+  await nextTick()
   if (isLogining.value) {
     await abortLogin()
     return
@@ -415,19 +466,18 @@ const { refresh: onLogin, error } = useRefreshable(async () => {
 
 watch(authority, () => { emit('seed') })
 
-// Hint state
 const showDropHint = computed(() => allowDeviceCode.value && props.inside && isLogining.value)
 
-// Hover state
 const hovered = ref(false)
+
 const onMouseEnterLogin = () => {
   hovered.value = true
 }
+
 const onMouseLeaveLogin = () => {
   hovered.value = false
 }
 
-// Reset
 watch(() => props.options, (options) => {
   if (!options) {
     data.username = history.value[0] ?? ''
