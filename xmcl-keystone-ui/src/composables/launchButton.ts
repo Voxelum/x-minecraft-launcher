@@ -14,7 +14,7 @@ import { kInstances } from './instances'
 import { LaunchStatusDialogKey } from './launch'
 import { kUserContext } from './user'
 import { kLaunchTask } from './launchTask'
-import { TaskState } from '@xmcl/runtime-api'
+import { TaskState, AUTHORITY_DEV } from '@xmcl/runtime-api'
 
 export interface LaunchMenuItem {
   title: string
@@ -31,6 +31,7 @@ export const kLaunchButton: InjectionKey<ReturnType<typeof useLaunchButton>> =
 
 export function useLaunchButton() {
   const { show: showLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)
+  const { show: showUnauthenticatedWarning } = useDialog('unauthenticated-warning')
 
   const { path } = injection(kInstance)
   const { isValidating } = injection(kInstances)
@@ -84,13 +85,7 @@ export function useLaunchButton() {
     color: 'primary',
     leftIcon: 'play_arrow',
     onClick: async () => {
-      await fixInstanceFileIssue()
-      if (javaIssue.value) {
-        showLaunchStatusDialog({ javaIssue: javaIssue.value })
-      } else {
-        launch()
-        showLaunchStatusDialog()
-      }
+      await launchWithWarning()
     },
   })
 
@@ -132,13 +127,7 @@ export function useLaunchButton() {
             color: !javaIssue.value ? 'primary' : 'primary darken-1',
             leftIcon: 'play_arrow',
             onClick: async () => {
-              await fixInstanceFileIssue()
-              if (javaIssue.value) {
-                showLaunchStatusDialog({ javaIssue: javaIssue.value })
-              } else {
-                launch()
-                showLaunchStatusDialog()
-              }
+              await launchWithWarning()
             },
           }
         } else {
@@ -169,13 +158,7 @@ export function useLaunchButton() {
           color: !javaIssue.value ? 'primary' : 'primary darken-1',
           leftIcon: 'play_arrow',
           onClick: async () => {
-            await fixInstanceFileIssue()
-            if (javaIssue.value) {
-              showLaunchStatusDialog({ javaIssue: javaIssue.value })
-            } else {
-              launch()
-              showLaunchStatusDialog()
-            }
+            await launchWithWarning()
           },
         }
       }
@@ -215,6 +198,55 @@ export function useLaunchButton() {
     onBeforeUnmount(() => {
       listeners.delete(listener)
     })
+  }
+
+  /**
+   * Check if user is not authenticated (no user at all)
+   * Note: AUTHORITY_DEV (offline mode) is considered as authenticated
+   */
+  function isUnauthenticated(): boolean {
+    const authority = userProfile.value.authority
+    // Only show warning when there's no user at all (empty authority)
+    // AUTHORITY_DEV (offline mode) is allowed to launch without warning
+    return !authority
+  }
+
+  /**
+   * Handle launch with optional unauthenticated warning
+   */
+  async function launchWithWarning() {
+    // If user is not authenticated, show warning first
+    if (isUnauthenticated()) {
+      showUnauthenticatedWarning({
+        onPlay: () => {
+          // User clicked "Play Anyway" - proceed with launch
+          performLaunch()
+        },
+        onCancel: () => {
+          // User clicked "Cancel" - do nothing
+        },
+        onSupport: () => {
+          // User clicked "Tech Support" - open Discord
+          window.open('https://discord.gg/W5XVwYY7GQ', 'browser')
+        },
+      })
+    } else {
+      // User is authenticated, launch directly
+      performLaunch()
+    }
+  }
+
+  /**
+   * Actually perform the launch
+   */
+  async function performLaunch() {
+    await fixInstanceFileIssue()
+    if (javaIssue.value) {
+      showLaunchStatusDialog({ javaIssue: javaIssue.value })
+    } else {
+      launch()
+      showLaunchStatusDialog()
+    }
   }
 
   /**
