@@ -2,7 +2,7 @@ import { renderMinecraftPlayerTextHead } from '@/util/avatarRenderer'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import type { InstanceFile, ModpackInstallProfile } from '@xmcl/instance'
 import { Resource } from '@xmcl/resource'
-import { CachedFTBModpackVersionManifest, InstanceManifest, JavaRecord, ModpackServiceKey, Peer } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, InstanceManifest, JavaRecord, ModpackServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { DialogKey } from './dialog'
 import { useService } from './service'
@@ -31,7 +31,7 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
   const { t } = useI18n()
   const { openModpack } = useService(ModpackServiceKey)
 
-  const getTemplates = (modpackResources: Resource[], peers: Peer[], ftb: CachedFTBModpackVersionManifest[]) => {
+  const getTemplates = (modpackResources: Resource[], ftb: CachedFTBModpackVersionManifest[]) => {
     const all = [] as Array<Template>
     // for (const resource of modpackResources) {
     //   const config = resolveModpackInstanceConfig(resource)
@@ -51,12 +51,6 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
     //     all.push(result)
     //   }
     // }
-
-    for (const c of peers) {
-      if (c.sharing) {
-        all.push(getPeerTemplate(c.id, c.userInfo.name, c.userInfo.avatar, c.sharing))
-      }
-    }
 
     for (const f of ftb) {
       all.push(getFtbTemplate(f))

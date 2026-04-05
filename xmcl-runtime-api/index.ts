@@ -55,7 +55,7 @@ export * from './src/services/MarketService'
 export * from './src/services/ModMetadataService'
 export * from './src/services/ModpackService'
 export * from './src/services/OfficialUserService'
-export * from './src/services/PeerService'
+
 export * from './src/services/PresenceService'
 export * from './src/services/ProjectMappingService'
 export * from './src/services/ResourcePackPreviewService'
