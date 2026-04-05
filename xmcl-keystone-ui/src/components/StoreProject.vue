@@ -116,6 +116,7 @@ const props = defineProps<{
 
   installed?: boolean
   installing?: boolean
+  autoInstall?: boolean
 
   getVersionDetail: (version: StoreProjectVersion) => Promise<StoreProjectVersionDetail>
 }>()
@@ -130,6 +131,13 @@ const installDialog = ref(false)
 const onInstall = () => {
   installDialog.value = true
 }
+
+// Auto-open install dialog if autoInstall is true and project is not installed
+watch(() => props.autoInstall, (val) => {
+  if (val && !props.installed) {
+    installDialog.value = true
+  }
+}, { immediate: true })
 const onOpen = () => {
   emit('open')
 }

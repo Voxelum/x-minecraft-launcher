@@ -19,7 +19,7 @@ AppShareInstanceDialog:
   downloadTitle: Завантажити файли від інших користувачів
   filesToDownload: Виберіть файли для завантаження
   filesToShare: Виберіть файли для спільного доступу
-  instanceShare: '{user} щойно поділився з вами поточним екземпляром'
+  instanceShare: "{user} щойно поділився з вами поточним екземпляром"
   share: Поділитися
   shareNotifyTitle: Поділитися екземпляром
   shareTitle: Поділитися файлами гри з іншим гравцем
@@ -29,7 +29,7 @@ HomeJavaIssueDialog:
   incompatibleJava: Несумісна Java
   incompatibleJavaHint: Поточна Java може бути несумісною з обраним Minecraft!
   missingJava: Java відсутня
-  missingJavaHint: 'Лаунчер не може виявити жодної Java на вашому комп''ютері. Ви можете:'
+  missingJavaHint: "Лаунчер не може виявити жодної Java на вашому комп'ютері. Ви можете:"
   optionSwitch:
     name: Перемкнутися на {version}
 HomeLaunchMultiInstanceDialog:
@@ -53,10 +53,10 @@ HomeSyncDialogPush:
 SettingMigrationDialog:
   selectRootDirectory: Вибрати кореневий каталог
 ago:
-  day: '{duration} день тому | {duration} дні тому | {duration} днів тому'
-  hour: '{duration} годину тому | {duration} години тому | {duration} годин тому'
-  minute: '{duration} хвилину тому | {duration} хвилини тому | {duration} хвилин тому'
-  second: '{duration} секунду тому | {duration} секунди тому | {duration} секунд тому'
+  day: "{duration} день тому | {duration} дні тому | {duration} днів тому"
+  hour: "{duration} годину тому | {duration} години тому | {duration} годин тому"
+  minute: "{duration} хвилину тому | {duration} хвилини тому | {duration} хвилин тому"
+  second: "{duration} секунду тому | {duration} секунди тому | {duration} секунд тому"
 askAICrash:
   copyPrompt: Скопіюйте підказку, щоб запитати AI
   description: |-
@@ -154,8 +154,8 @@ dataMigration:
     дані.
 delete:
   name: Видалити {name}
-  'no': Ні
-  'yes': Видалити
+  "no": Ні
+  "yes": Видалити
 dependencies:
   embedded: Вбудовані
   incompatible: Несумісні
@@ -206,13 +206,13 @@ diagnosis:
 disk:
   available: Доступно
   used: Використано
-downloadCount: '{count} завантажень'
+downloadCount: "{count} завантажень"
 downloadUpdate: Завантажити оновлення
 duration:
-  day: '{duration} день | {duration} дні | {duration} днів'
-  hour: '{duration} година | {duration} години | {duration} годин'
-  minute: '{duration} хвилина | {duration} хвилини | {duration} хвилин'
-  second: '{duration} секунда | {duration} секунди | {duration} секунд'
+  day: "{duration} день | {duration} дні | {duration} днів"
+  hour: "{duration} година | {duration} години | {duration} годин"
+  minute: "{duration} хвилина | {duration} хвилини | {duration} хвилин"
+  second: "{duration} секунда | {duration} секунди | {duration} секунд"
 env:
   select:
     all: Вибрати все
@@ -223,7 +223,7 @@ errors:
     Не вдалося розібрати jar-файл інсталятора Forge. Можливо, у Forge новий
     формат файлу інсталятора? Зв'яжіться з розробниками, якщо ця проблема не
     зникне.
-  BadInstanceType: 'Недійсний тип екземпляра: {type}'
+  BadInstanceType: "Недійсний тип екземпляра: {type}"
   BodyTimeoutError: Час очікування тіла HTTP-запиту вичерпано
   ChecksumNotMatchError: Контрольна сума не збігається! Очікувалося {expect}. Фактично {actual}.
   ConnectTimeoutError: Час очікування з'єднання з сервером вичерпано.
@@ -469,8 +469,8 @@ instances:
   loadingFiles: Завантаження файлів модпаку
   refreshServers: Оновити сервери
 items:
-  count: '{count} елементів'
-  total: '{total} всього'
+  count: "{count} елементів"
+  total: "{total} всього"
 java:
   allocatedLong: Використовувати системну Java за замовчуванням
   allocatedShort: Автоматично виділено
@@ -485,7 +485,7 @@ java:
   minMemory: Мін. пам'ять
   noMemory: Не обмежувати використання пам'яті
   refresh: Оновити локальні Java
-  systemMemory: 'Вільна системна пам''ять: {free} / {total}'
+  systemMemory: "Вільна системна пам'ять: {free} / {total}"
 labyMod:
   disable: Вимкнути LabyMod
   empty: LabyMod не підтримує поточний Minecraft
@@ -611,7 +611,7 @@ loginError:
     автентифікації не працює!
   checkOwnershipFailed: Не вдалося перевірити право власності на гру. Будь ласка, спробуйте ще раз.
   connectionReset: Не вдалося увійти, оскільки з'єднання було скинуто сервером
-  fetchMinecraftProfileFailed: 'Не вдалося отримати профіль Minecraft: {reason}'
+  fetchMinecraftProfileFailed: "Не вдалося отримати профіль Minecraft: {reason}"
   illegalEmail: Електронна пошта має бути дійсною
   invalidCredentials: Недійсні облікові дані. Неправильне ім'я користувача або пароль.
   loginMinecraftByXboxFailed: >-
@@ -663,12 +663,12 @@ mod:
   denseView: Компактний вигляд
   disableAll: Вимкнути все
   dropHint: Перетягніть сюди .jar/.litemod файли модів для імпорту.
-  duplicatedDetected: '{count} дубльованих модів'
+  duplicatedDetected: "{count} дубльованих модів"
   duplicatedDetectedDescription: >-
     Знайдено моди з однаковим ID, але різними файлами. Це може спричинити збій
     Minecraft. Будь ласка, виберіть файл, який ви хочете залишити.
   enableAll: Увімкнути все
-  enabled: '{count} модів увімкнено'
+  enabled: "{count} модів увімкнено"
   filter: Фільтрувати моди
   group: Згрупувати
   groupInstalled: Згрупувати встановлені моди
@@ -686,7 +686,7 @@ mod:
     Мод підтримує наступні завантажувачі модів. Будь ласка, виберіть один для
     встановлення.
   modloaderSelectNotSupported: Не знайдено {modloader} для Minecraft {minecraft}
-  mods: '{count} Модів'
+  mods: "{count} Модів"
   name: Мод | Моди
   newFolder: Нова папка
   noGroupsFound: Групи не знайдено
@@ -702,7 +702,7 @@ mod:
   showInModrinth: Показати {name} на Modrinth
   switchDefaultSource: Типове джерело модів
   syncGroupRules: Зберегти правила групування
-  toUpdate: '{count} оновлень'
+  toUpdate: "{count} оновлень"
   ungroup: Розгрупувати
   versions: Версії
 modFilter:
@@ -720,9 +720,9 @@ modInstall:
     description: >-
       Ви змінили версію Minecraft. Чи бажаєте автоматично оновити сумісні моди
       до версій, що відповідають Minecraft {version}?
-    'no': Пропустити
+    "no": Пропустити
     title: Оновити моди?
-    'yes': Оновити моди
+    "yes": Оновити моди
   checkDependencies: Перевірити залежності
   checkUpgrade: Перевірити оновлення модів
   checkedDependencies: Залежності перевірено
@@ -920,7 +920,7 @@ modrinth:
   projectMembers: Учасники проєкту
   projectType:
     modpack: Модпак
-  projects: '{count} проєктів'
+  projects: "{count} проєктів"
   serverSide: Серверна сторона
   sort:
     downloads: Кількість завантажень
@@ -959,7 +959,7 @@ multiplayer:
     з'єднань.</span>"
   createLocalToken: Створити локальний токен
   currentIpTitle: Виявлена публічна IP-адреса
-  currentNatTitle: 'Поточна мережа (NAT):'
+  currentNatTitle: "Поточна мережа (NAT):"
   difficultyLevelHint: Рівень складності створення з'єднання
   disconnect: Роз'єднати
   disconnectDescription: Ви впевнені, що хочете роз'єднатися з користувачем {user}({id})?
@@ -1063,7 +1063,7 @@ peerSignalingState:
   have-local-offer: Очікування опису вузла
 presence:
   instance: Бездіяльність в екземплярі {instance}
-  instanceSetting: 'Редагування налаштувань екземпляра: {instance}'
+  instanceSetting: "Редагування налаштувань екземпляра: {instance}"
   mod: Перегляд модів у {instance}
   modrinthProject: Перегляд {name} на Modrinth
   resourcePack: Перегляд пакетів ресурсів у {instance}
@@ -1086,14 +1086,14 @@ resourcepack:
       впевнені, що хочете це зробити?
     title: Видалити пакет ресурсів
   dropHint: Перетягніть сюди папку/zip-файл пакета ресурсів для імпорту.
-  enable: '{count} пакетів ресурсів увімкнено'
+  enable: "{count} пакетів ресурсів увімкнено"
   incompatible: >-
     Несумісний формат пакета ресурсів ({format}). Підходить {accept}. Поточний
     {actual}.
   name: Пакет ресурсів | Пакети ресурсів
   searchHint: Пошук пакетів ресурсів
   searchOnCurseforge: Шукати {name} на Curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selected: Вибрані пакети ресурсів
   showDirectory: Показати каталог пакетів ресурсів
   showFile: Показати пакет ресурсів у папці {file}
@@ -1323,7 +1323,7 @@ setting:
   resetAllSettingsConfirmTitle: Скинути всі налаштування?
   resetAllSettingsHint: Скинути лаунчер до заводських налаштувань (видаляє все)
   resetAllSettingsSuccess: Всі налаштування було скинуто. Лаунчер перезапуститься.
-  resetSettingsError: 'Помилка під час скидання налаштувань: {error}'
+  resetSettingsError: "Помилка під час скидання налаштувань: {error}"
   resetToDefault: Скинути до типових
   select: вибрати
   settingsExported: Налаштування успішно експортовано
@@ -1345,6 +1345,11 @@ setting:
   sidebarStyleHint: Виберіть між класичним та сучасним дизайном
   streamerMode: Режим стрімера
   streamerModeDescription: Це приховає вашу приватну інформацію, таку як електронна пошта, в лаунчері.
+  spotlightShortcut: Комбінація клавіш Spotlight
+  spotlightShortcutDescription: Комбінація клавіш для відкриття пошуку Spotlight
+  changeShortcut: Змінити
+  resetShortcut: Скинути
+  recordingShortcut: Натисніть клавіші...
   theme:
     dark: Темна тема
     light: Світла тема
@@ -1381,7 +1386,7 @@ setup:
     name: Додати ігровий обліковий запис
     skip: Пропустити зараз
   appearance:
-    name: '@:setting.appearance'
+    name: "@:setting.appearance"
   dataRoot:
     description: >-
       Кореневий каталог даних - це не звичайний каталог .minecraft. Оскільки
@@ -1458,7 +1463,7 @@ shared:
   manage: Керувати модами
   name: Назва
   next: Далі
-  'no': Ні
+  "no": Ні
   ok: OK
   previous: Назад
   refresh: Оновити
@@ -1466,7 +1471,7 @@ shared:
   search: Пошук
   server: Сервер
   skipForNow: Пропустити зараз
-  'yes': Так
+  "yes": Так
 sidebar:
   pin: Закріпити
   unpin: Відкріпити
@@ -1498,7 +1503,7 @@ task:
   empty: Немає активних завдань
   failed: Невдача
   manager: Менеджер завдань
-  nTaskRunning: '{count} завдань виконується'
+  nTaskRunning: "{count} завдань виконується"
   name: Завдання | Завдання
   pause: Пауза
 theme:
@@ -1560,7 +1565,7 @@ tutorial:
     searchTitle: Шукати моди
   multiplayer:
     contentDescription: Тут будуть перераховані з'єднання між вами та вашими колегами.
-    contentTitle: '@:multiplayer.connections'
+    contentTitle: "@:multiplayer.connections"
     groupDescription: >-
       Ви можете створити або приєднатися до групи з іншими гравцями. Лаунчер
       спробує створити P2P-з'єднання між вами та вашими друзями відповідно до
@@ -1671,3 +1676,23 @@ versionType:
   beta: Бета
   name: Статус
   release: Випуск
+spotlight:
+  placeholder: Пошук модів, екземплярів...
+  navigate: Навігація
+  select: Вибрати
+  noResults: Результатів не знайдено
+  installing: Встановлення...
+  installed: Встановлено
+  install: Встановити
+  installFailed: Помилка
+  noModLoader: Поточний екземпляр не має завантажувача модів
+  sections:
+    instances: Екземпляри
+    mods: Моди
+    localMods: Встановлені моди
+    quickActions: Швидкі дії
+    recent: Нещодавні
+  globalSettings: Налаштування
+  mods: Моди
+  store: Ринок модпаків
+

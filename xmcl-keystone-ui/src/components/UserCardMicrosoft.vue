@@ -1,141 +1,127 @@
 <template>
-  <div class="flex max-w-full flex-row gap-4">
-    <v-card
-      class="flex grow flex-col overflow-x-hidden p-2 "
-      flat
-      color="transparent"
-    >
-      <div class="flex justify-center">
+  <div class="flex max-w-full flex-col h-full overflow-hidden w-full">
+    <div class="flex-grow flex flex-row gap-12 justify-center overflow-y-auto invisible-scroll">
+      <!-- 3D Skin Renderer -->
+      <div class="flex-shrink-0 flex items-center justify-center p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-black/10 dark:border-white/10 w-80">
         <UserSkin
-          class="z-2 min-w-50 relative flex items-center justify-center overflow-auto overflow-x-hidden"
+          class="relative flex items-center justify-center w-full h-full min-h-[420px]"
           inspect
           :user="user"
           :profile="gameProfile"
         />
-        <div>
-          <v-list-item>
-            <v-list-item-avatar class="md:hidden lg:block">
-              <v-icon>
-                badge
-              </v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ t('user.name') }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ t('user.nameHint') }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action class="flex grow-0 flex-row">
-              <v-text-field
-                v-model="name"
-                dense
-                outlined
-                hide-details
-              />
-            </v-list-item-action>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar class="md:hidden lg:block">
-              <v-icon>
-                accessibility_new
-              </v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ t('userSkin.useSlim') }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ t('userSkin.skinType') }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-switch v-model="slim" />
-            </v-list-item-action>
-          </v-list-item>
+      </div>
 
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ t('userCape.changeTitle') }}
-              </v-list-item-title>
-              <v-list-item-subtitle class="max-w-100 overflow-hidden whitespace-pre-wrap">
-                {{ t('userCape.description') }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
+      <!-- Settings Panel -->
+      <div class="flex-grow flex flex-col gap-6 py-2 min-w-0 pr-2 max-w-[300px]">
+        <!-- Nickname Setting -->
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <v-icon size="18">badge</v-icon>
+            {{ t('user.name') }}
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 m-0">{{ t('user.nameHint') }}</p>
+          <input
+            v-model="name"
+            type="text"
+            class="mt-2 w-full px-4 py-2.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm dark:text-gray-200"
+            :placeholder="t('user.name')"
+          />
+          <p v-if="nameError" class="text-error text-xs mt-1">{{ nameError }}</p>
+        </div>
+
+        <div class="h-px bg-black/10 dark:bg-white/10 w-full"></div>
+
+        <!-- Skin Type Setting (Slim/Classic) -->
+        <div 
+          class="flex items-center justify-between cursor-pointer py-3 px-4 rounded-xl border transition-colors duration-200 select-none"
+          :class="slim ? 'border-primary bg-primary/10' : 'border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10'"
+          @click="slim = !slim"
+        >
+          <div class="flex flex-col">
+            <div class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors" :class="slim ? 'text-primary' : ''">
+              <v-icon size="18" :color="slim ? 'primary' : ''">accessibility_new</v-icon>
+              {{ t('userSkin.useSlim') }}
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 m-0 mt-1">{{ t('userSkin.skinType') }}</p>
+          </div>
+          <div class="w-11 h-6 shrink-0 rounded-full relative transition-colors duration-300" :class="slim ? 'bg-primary' : 'bg-black/20 dark:bg-white/20'">
+            <div class="w-5 h-5 bg-white rounded-full absolute top-[2px] transition-all duration-300 shadow-sm" :class="slim ? 'left-[22px]' : 'left-[2px]'"></div>
+          </div>
+        </div>
+
+        <div class="h-px bg-black/10 dark:bg-white/10 w-full"></div>
+
+        <!-- Cape Selection -->
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-col">
+            <div class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <v-icon size="18">dry_cleaning</v-icon>
+              {{ t('userCape.changeTitle') }}
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 m-0 mt-1">{{ t('userCape.description') }}</p>
+          </div>
 
           <v-slide-group
             v-model="capeModel"
             mandatory
             show-arrows
-            class="max-w-[400px] overflow-x-auto"
+            class="max-w-full overflow-x-auto mt-2"
           >
-            <v-slide-item
-              v-slot="{ active, toggle }"
-            >
-              <v-card
-                :color="active ? 'primary' : 'grey lighten-1'"
-                class="ma-4 py-2"
-                height="200"
-                width="100"
+            <!-- No Cape Option -->
+            <v-slide-item v-slot="{ active, toggle }">
+              <div
+                class="mx-2 my-1 cursor-pointer transition-all duration-200 w-[90px] h-[160px] rounded-2xl flex flex-col items-center justify-center gap-3 border-2"
+                :class="active ? 'border-primary bg-primary/10 shadow-md shadow-primary/20' : 'border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10'"
                 @click="toggle"
               >
-                <div
-                  class="flex flex-col justify-around items-center fill-height"
-                >
-                  <div class="mt-4 min-h-[120px] min-w-[80px] border-2 border-dashed" />
-                  <div class="text-sm font-bold text-white">
-                    {{ t('userCape.noCape') }}
-                  </div>
+                <div class="w-16 h-[90px] border-2 border-dashed border-gray-400 dark:border-gray-500 rounded-lg flex items-center justify-center">
+                  <v-icon color="grey">close</v-icon>
                 </div>
-              </v-card>
+                <div class="text-xs font-semibold text-center w-full px-1 truncate" :class="active ? 'text-primary' : 'text-gray-600 dark:text-gray-400'">
+                  {{ t('userCape.noCape') }}
+                </div>
+              </div>
             </v-slide-item>
+
+            <!-- Cape Options -->
             <v-slide-item
               v-for="c of capes"
               :key="c.id"
               v-slot="{ active, toggle }"
             >
-              <v-card
-                :color="active ? 'primary' : 'grey lighten-1'"
-                class="ma-4 py-2"
-                height="200"
-                width="100"
+              <div
+                class="mx-2 my-1 cursor-pointer transition-all duration-200 w-[90px] h-[160px] rounded-2xl flex flex-col items-center justify-center gap-3 border-2 p-2"
+                :class="active ? 'border-primary bg-primary/10 shadow-md shadow-primary/20' : 'border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10'"
                 @click="toggle"
               >
-                <div
-                  class="flex flex-col justify-around items-center fill-height"
-                >
-                  <PlayerCape
-                    class="mt-4"
-                    :src="c.url"
-                  />
-                  <div class="text-sm font-bold text-white">
-                    {{ c.alias }}
-                  </div>
+                <PlayerCape
+                  class="h-[90px] w-auto drop-shadow-md rounded-lg overflow-hidden flex-shrink-0"
+                  :src="c.url"
+                />
+                <div class="text-xs font-semibold text-center w-full truncate" :class="active ? 'text-primary' : 'text-gray-600 dark:text-gray-400'">
+                  {{ c.alias }}
                 </div>
-              </v-card>
+              </div>
             </v-slide-item>
           </v-slide-group>
         </div>
       </div>
+    </div>
 
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          :disabled="!changed"
-          :loading="saving"
-          text
-          @click="save"
-        >
-          {{ t('userSkin.save') }}
-          <v-icon right>
-            save
-          </v-icon>
-        </v-btn>
-      </v-card-actions>
-    </v-card>
+    <!-- Bottom Actions -->
+    <div class="flex-shrink-0 flex justify-end pt-4 mt-2 border-t border-black/10 dark:border-white/10">
+      <v-btn
+        color="primary"
+        class="rounded-xl font-medium px-6 text-sm flex items-center gap-2"
+        :disabled="!changed"
+        :loading="saving"
+        depressed
+        @click="save"
+      >
+        <v-icon size="18" left>save</v-icon>
+        {{ t('userSkin.save') }}
+      </v-btn>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>

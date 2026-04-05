@@ -1,149 +1,199 @@
 <template>
-  <Hint
-    v-if="showDropHint"
-    icon="save_alt"
-    :text="t('login.dropHint').toString()"
-  />
-  <div
-    v-else
-    class="min-w-100 m-20 text-center"
-  >
-    <UserLoginAuthoritySelect
-      v-model="authority"
-      :items="items"
-      @add-service="$emit('add-service')"
-    />
-    <v-combobox
-      v-if="!streamerMode"
-      ref="accountInput"
-      v-model="data.username"
-      :items="history"
-      prepend-inner-icon="person"
-      outlined
-      required
-      :label="getUserServiceAccount(authority)"
-      :rules="usernameRules"
-      :error="!!errorMessage"
-      :error-messages="errorMessage"
-      @input="error = undefined"
-      @keypress="error = undefined"
-      @keypress.enter="onLogin"
-    />
-    <v-text-field
-      v-else
-      ref="accountInput"
-      v-model="data.username"
-      prepend-inner-icon="person"
-      outlined
-      required
-      type="password"
-      :label="getUserServiceAccount(authority)"
-      :rules="usernameRules"
-      :error="!!errorMessage"
-      :error-messages="errorMessage"
-      @input="error = undefined"
-      @keypress="error = undefined"
-      @keypress.enter="onLogin"
-    />
-    <v-text-field
-      v-if="!isOffline"
-      v-model="data.password"
-      prepend-inner-icon="lock"
-      outlined
-      :type="passwordType"
-      required
-      :label="passwordLabel"
-      :placeholder="passwordPlaceholder"
-      :rules="!isPasswordReadonly ? passwordRules : []"
-      :disabled="isPasswordDisabled"
-      :readonly="isPasswordReadonly"
-      :error="!!errorMessage"
-      :error-messages="errorMessage"
-      @input="error = undefined"
-      @keypress.enter="onLogin"
-    />
-    <v-text-field
-      v-else
-      v-model="data.uuid"
-      outlined
-      prepend-inner-icon="fingerprint"
-      :placeholder="uuidLabel"
-      :label="uuidLabel"
-      @keypress.enter="onLogin"
-    />
-
-    <div
-      v-if="allowDeviceCode"
-      class="flex"
-    >
-      <v-checkbox
-        v-model="data.useDeviceCode"
-        :label="t('userServices.microsoft.useDeviceCode')"
-      />
-    </div>
-
-    <div
-      @mouseenter="onMouseEnterLogin"
-      @mouseleave="onMouseLeaveLogin"
-    >
-      <v-btn
-        block
-        :loading="isLogining && (!hovered)"
-        color="primary"
-        rounded
-        large
-        class="text-white"
-        @click="onLogin"
-      >
-        <span v-if="!isLogining">
-          {{ t("login.login") }}
-        </span>
-        <v-icon v-else>
-          close
-        </v-icon>
-      </v-btn>
-      <slot />
-    </div>
-
-    <div
-      v-if="data.verificationUri"
-      class="mt-6"
-    >
-      <a
-        :href="data.verificationUri"
-        class="border-b border-dashed border-b-current"
-      >
-        {{ t('login.manualLoginUrl') }}
-      </a>
-    </div>
-
-    <div class="mt-4 flex flex-col gap-2 items-center text-sm">
-      <a
-        v-if="authority === AUTHORITY_MICROSOFT"
-        style="padding-right: 10px; z-index: 20"
-        target="browser"
-        href="https://my.minecraft.net/en-us/password/forgot/"
-      >{{
-        t("login.forgetPassword")
-      }}</a>
-      <div
-        v-if="signUpLink"
-        class="flex items-center gap-2 flex-wrap justify-center"
-      >
-        <a
-          target="browser"
-          :href="signUpLink"
+  <Hint v-if="showDropHint" icon="save_alt" :text="t('login.dropHint').toString()" />
+  
+  <div v-else class="w-full h-full max-w-[360px] mx-auto flex flex-col justify-center items-center py-6 px-2">
+    <div class="w-full flex flex-col gap-4 relative">
+      
+      <!-- Authority / Authentication Service Selection (Custom MacOS Dropdown) -->
+      <div class="w-full text-left self-start relative">
+        <label class="block text-xs font-semibold text-gray-500/80 uppercase tracking-widest mb-1.5 px-1">
+          {{ t('user.authMode') }}
+        </label>
+        <div
+          class="w-full px-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl cursor-pointer flex items-center justify-between hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+          @click.stop="authDropdownOpen = !authDropdownOpen"
         >
-          {{ t("login.signupDescription") }}
-          {{ t("login.signup") }}
-        </a>
-        <a
-          style="text-decoration: underline"
-          @click.stop="$emit('add-service')"
+          <div class="flex items-center gap-3">
+             <v-img v-if="currentAuthItem?.icon?.startsWith('http')" :src="currentAuthItem?.icon" class="w-5 h-5 flex-shrink-0" />
+             <v-icon v-else size="20">{{ currentAuthItem?.icon || 'vpn_key' }}</v-icon>
+             <span class="font-medium text-sm">{{ currentAuthItem?.text || currentAuthItem?.value }}</span>
+          </div>
+          <v-icon :class="{'rotate-180': authDropdownOpen}" class="transition-transform duration-200">arrow_drop_down</v-icon>
+        </div>
+
+        <transition name="fade-transition">
+          <div v-show="authDropdownOpen" class="absolute z-[100] mt-2 w-full bg-white/95 dark:bg-[#1e1e1e]/95 backdrop-blur-3xl border border-black/10 dark:border-white/10 rounded-xl shadow-xl overflow-hidden py-1">
+            <div
+              v-for="item in items"
+              :key="item.value"
+              class="w-full px-4 py-3 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 cursor-pointer flex items-center gap-3 transition-colors"
+              @click="authority = item.value; authDropdownOpen = false"
+            >
+              <v-img v-if="item.icon.startsWith('http')" :src="item.icon" class="w-5 h-5 flex-shrink-0" />
+               <v-icon v-else size="20">{{ item.icon }}</v-icon>
+               <span class="font-medium text-sm">{{ item.text }}</span>
+            </div>
+            <div class="w-full h-[1px] bg-black/5 dark:bg-white/5 my-1"></div>
+            <div
+              class="w-full px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer flex items-center gap-3 transition-colors text-primary"
+              @click="$emit('add-service'); authDropdownOpen = false"
+            >
+              <v-icon size="20" color="primary">add</v-icon>
+              <span class="font-medium text-sm">{{ t('userService.add') }}</span>
+            </div>
+          </div>
+        </transition>
+      </div>
+
+      <!-- Error message container -->
+      <transition name="fade-transition">
+        <div v-if="errorMessage" class="w-full bg-red-500/10 border border-red-500/30 text-red-500 text-sm px-4 py-3 rounded-xl flex items-start gap-2 backdrop-blur-sm">
+          <v-icon size="18" color="error">error_outline</v-icon>
+          <span class="flex-1">{{ errorMessage }}</span>
+        </div>
+      </transition>
+
+      <!-- Username Input -->
+      <div class="w-full relative">
+        <v-icon size="18" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">person</v-icon>
+        <template v-if="!streamerMode">
+          <input
+            ref="accountInput"
+            v-model="data.username"
+            list="login-history"
+            class="w-full pl-11 pr-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm dark:text-gray-200"
+            :placeholder="getUserServiceAccount(authority)"
+            @input="error = undefined"
+            @keypress="error = undefined"
+            @keypress.enter="() => onLogin()"
+          />
+          <datalist id="login-history">
+            <option v-for="h in history" :key="h" :value="h" />
+          </datalist>
+        </template>
+
+        <template v-else>
+          <input
+            ref="accountInput"
+            v-model="data.username"
+            type="password"
+            class="w-full pl-11 pr-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm dark:text-gray-200"
+            :placeholder="getUserServiceAccount(authority)"
+            @input="error = undefined"
+            @keypress="error = undefined"
+            @keypress.enter="() => onLogin()"
+          />
+        </template>
+      </div>
+
+      <!-- Password Input -->
+      <div v-if="!isOffline" class="w-full relative">
+        <v-icon size="18" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">lock</v-icon>
+        <input
+          v-model="data.password"
+          :type="passwordType"
+          :disabled="isPasswordDisabled"
+          :readonly="isPasswordReadonly"
+          class="w-full pl-11 pr-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm dark:text-gray-200 disabled:opacity-50"
+          :placeholder="passwordPlaceholder"
+          @input="error = undefined"
+          @keypress.enter="() => onLogin()"
+        />
+      </div>
+
+      <!-- Offline UUID Input -->
+      <div v-else class="w-full relative">
+        <v-icon size="18" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">fingerprint</v-icon>
+        <input
+          v-model="data.uuid"
+          type="text"
+          class="w-full pl-11 pr-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm dark:text-gray-200"
+          :placeholder="uuidLabel"
+          @keypress.enter="() => onLogin()"
+        />
+      </div>
+
+      <!-- Device Code Checkbox -->
+      <div v-if="allowDeviceCode" class="w-full flex items-center mt-2">
+        <label class="flex items-center gap-3 cursor-pointer text-sm text-gray-700 dark:text-gray-300 group select-none w-max">
+          <div
+            class="w-[20px] h-[20px] flex-shrink-0 flex items-center justify-center rounded border transition-all duration-200"
+            :class="data.useDeviceCode ? 'primary border-primary shadow-sm' : 'bg-black/10 border-black/30 dark:bg-white/10 dark:border-white/30 group-hover:border-primary/50'"
+          >
+            <v-icon v-show="data.useDeviceCode" size="16" color="white" class="font-bold">check</v-icon>
+          </div>
+          <input
+            v-model="data.useDeviceCode"
+            type="checkbox"
+            class="hidden"
+          />
+          <span class="font-medium group-hover:text-primary transition-colors duration-200">
+            {{ t('userServices.microsoft.useDeviceCode') }}
+          </span>
+        </label>
+      </div>
+
+      <!-- Login Button -->
+      <div class="w-full mt-4" @mouseenter="onMouseEnterLogin" @mouseleave="onMouseLeaveLogin">
+        <v-btn
+          block
+          :loading="isLogining && !hovered"
+          color="primary"
+          class="text-white rounded-xl font-bold tracking-widest bg-primary px-6"
+          elevation="2"
+          large
+          :disabled="isLogining && !hovered"
+          @click="() => onLogin()"
         >
-          {{ manageAuthorityLabel }}
+          <template v-if="!isLogining">
+            {{ t("login.login") }}
+          </template>
+          <template v-else>
+            <v-icon>close</v-icon>
+            <span v-if="hovered" class="ml-2">Cancel</span>
+          </template>
+        </v-btn>
+        <slot />
+      </div>
+
+      <!-- Verification URI -->
+      <div v-if="data.verificationUri" class="w-full mt-4 text-center">
+        <a
+          :href="data.verificationUri"
+          class="text-sm text-primary hover:text-primary-dark underline decoration-dashed transition-colors font-medium break-all"
+          target="_blank"
+        >
+          {{ t('login.manualLoginUrl') }}
         </a>
       </div>
+
+      <!-- Footer Links -->
+      <div class="w-full mt-2 flex flex-col items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+        <a
+          v-if="authority === AUTHORITY_MICROSOFT"
+          target="browser"
+          href="https://my.minecraft.net/en-us/password/forgot/"
+          class="hover:text-primary transition-colors hover:underline"
+        >
+          {{ t("login.forgetPassword") }}
+        </a>
+        <div v-if="signUpLink" class="flex flex-col items-center gap-1">
+          <a
+            target="browser"
+            :href="signUpLink"
+            class="hover:text-primary transition-colors hover:underline"
+          >
+             {{ t("login.signup") }} / {{ t("login.signupDescription") }}
+          </a>
+          <a
+            @click.stop="$emit('add-service')"
+            class="hover:text-primary transition-colors hover:underline cursor-pointer"
+          >
+            {{ manageAuthorityLabel }}
+          </a>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -198,6 +248,11 @@ const items = useAuthorityItems(services)
 
 // Account history
 const { authority, history } = useAccountSystemHistory()
+
+const authDropdownOpen = ref(false)
+const currentAuthItem = computed(() => {
+  return items.value.find((i) => i.value === authority.value) || items.value[0]
+})
 
 const currentAccountSystem = computed(() => {
   return services.value?.find(a => a.authority === authority.value)

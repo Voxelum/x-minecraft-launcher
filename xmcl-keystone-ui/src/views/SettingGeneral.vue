@@ -103,6 +103,37 @@
       icon="videocam"
     />
 
+    <!-- Spotlight Shortcut -->
+    <v-divider class="my-3" />
+    <SettingItem :description="t('setting.spotlightShortcutDescription')">
+      <template #title>
+        <v-icon left small color="primary">keyboard</v-icon>
+        {{ t('setting.spotlightShortcut') }}
+      </template>
+      <template #action>
+        <div class="flex gap-2 justify-end">
+          <v-chip label color="primary" class="font-mono">
+            <v-icon left x-small>mdi-keyboard</v-icon>
+            {{ shortcutDisplay }}
+          </v-chip>
+          <v-btn 
+            small 
+            outlined 
+            :color="isRecordingShortcut ? 'warning' : 'primary'" 
+            @click="changeShortcut"
+            :loading="isRecordingShortcut"
+          >
+            <v-icon left small>{{ isRecordingShortcut ? 'mdi-timer-sand' : 'mdi-pencil' }}</v-icon>
+            {{ isRecordingShortcut ? t('setting.recordingShortcut') : t('setting.changeShortcut') }}
+          </v-btn>
+          <v-btn small text color="gray" @click="resetShortcut">
+            <v-icon left small>mdi-refresh</v-icon>
+            {{ t('setting.resetShortcut') }}
+          </v-btn>
+        </div>
+      </template>
+    </SettingItem>
+
     <v-divider class="my-3" />
 
     <SettingItem :description="t('setting.replaceNativeDescription')">
@@ -135,6 +166,7 @@ import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'
 import { useGameDirectory, useSettings } from '../composables/setting'
 import SettingItemSwitcher from '@/components/SettingItemSwitcher.vue'
+import { useLocalStorage } from '@vueuse/core'
 
 const { isNoEmptySpace, invalidGameDataPath } = injection(kCriticalStatus)
 const getDirErroText = useGetDataDirErrorText()
@@ -166,6 +198,71 @@ const replaceNativeItems = computed(() => [
     value: 'all',
   },
 ])
+
+// Spotlight shortcut settings
+const spotlightShortcut = useLocalStorage('spotlight-shortcut', 'Ctrl+K')
+const isRecordingShortcut = ref(false)
+
+const shortcutDisplay = computed(() => {
+  return spotlightShortcut.value
+})
+
+function changeShortcut() {
+  isRecordingShortcut.value = true
+  let currentKeys = new Set<string>()
+  
+  const handler = (e: KeyboardEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    // Track all pressed keys
+    if (e.ctrlKey) currentKeys.add('Ctrl')
+    if (e.metaKey) currentKeys.add('Cmd')
+    if (e.altKey) currentKeys.add('Alt')
+    if (e.shiftKey) currentKeys.add('Shift')
+
+    // Add the main key (non-modifier)
+    if (e.key !== 'Control' && e.key !== 'Meta' && e.key !== 'Alt' && e.key !== 'Shift') {
+      currentKeys.add(e.key.toUpperCase())
+    }
+
+    // Wait for key release to confirm
+    const keyupHandler = (upEvent: KeyboardEvent) => {
+      document.removeEventListener('keyup', keyupHandler)
+      
+      // Build the shortcut string
+      const keys = Array.from(currentKeys)
+      const modifiers: string[] = []
+      let mainKey = ''
+      
+      // Separate modifiers from main key
+      for (const key of keys) {
+        if (['CTRL', 'CMD', 'META', 'ALT', 'SHIFT'].includes(key.toUpperCase())) {
+          modifiers.push(key === 'CMD' ? 'Cmd' : key.charAt(0).toUpperCase() + key.slice(1).toLowerCase())
+        } else {
+          mainKey = key
+        }
+      }
+      
+      // Must have at least one modifier and one main key
+      if (modifiers.length > 0 && mainKey) {
+        spotlightShortcut.value = [...modifiers, mainKey].join('+')
+      }
+      
+      currentKeys.clear()
+      isRecordingShortcut.value = false
+      document.removeEventListener('keydown', handler)
+    }
+    
+    document.addEventListener('keyup', keyupHandler, { once: true })
+  }
+
+  document.addEventListener('keydown', handler, { once: false })
+}
+
+function resetShortcut() {
+  spotlightShortcut.value = 'Ctrl+K'
+}
 
 const { show } = useDialog('migration')
 const { root, showGameDirectory } = useGameDirectory()

@@ -158,6 +158,8 @@ const onOpen = () => {
   }
 }
 
+const autoInstall = computed(() => !existed.value)
+
 const tasks = useTasks((t) => {
   if (t.state !== TaskState.Running) return false
   if (t.type === 'installModrinthFile' && t.projectId === project.value?.id) return true
@@ -217,6 +219,7 @@ usePresence(computed(() => t('presence.modrinthProject', { name: project.value?.
     :members="members"
     :installing="isDownloading || _installing"
     :installed="!!existed"
+    :auto-install="autoInstall"
     :loading-members="loadingMembers"
     :team-error="teamError"
     :get-version-detail="getVersionDetail"

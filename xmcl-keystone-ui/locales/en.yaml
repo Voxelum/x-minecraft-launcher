@@ -18,7 +18,7 @@ AppShareInstanceDialog:
   downloadTitle: Download files from other peers
   filesToDownload: Choose files to download
   filesToShare: Choose files to share
-  instanceShare: '{user} just shared the current instance to you'
+  instanceShare: "{user} just shared the current instance to you"
   share: Share
   shareNotifyTitle: Share Instance
   shareTitle: Share game files to other player
@@ -28,7 +28,7 @@ HomeJavaIssueDialog:
   incompatibleJava: Incompatible Java
   incompatibleJavaHint: Current Java might be incompatible with selected Minecraft!
   missingJava: Missing Java
-  missingJavaHint: 'The Launcher cannot detect any java in your computer. You can:'
+  missingJavaHint: "The Launcher cannot detect any java in your computer. You can:"
   optionSwitch:
     name: Switch to {version}
 HomeLaunchMultiInstanceDialog:
@@ -52,10 +52,10 @@ HomeSyncDialogPush:
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 ago:
-  day: '{duration} day ago | {duration} days ago'
-  hour: '{duration} hour ago | {duration} hours ago'
-  minute: '{duration} minute ago | {duration} minutes ago'
-  second: '{duration} second ago | {duration} seconds ago'
+  day: "{duration} day ago | {duration} days ago"
+  hour: "{duration} hour ago | {duration} hours ago"
+  minute: "{duration} minute ago | {duration} minutes ago"
+  second: "{duration} second ago | {duration} seconds ago"
 askAICrash:
   copyPrompt: Copy the prompt to ask AI
   description: >-
@@ -149,8 +149,8 @@ dataMigration:
   waitReload: Migrating data. Please don't close the Launcher or you will lose your data.
 delete:
   name: Delete {name}
-  'no': 'No'
-  'yes': Delete
+  "no": "No"
+  "yes": Delete
 dependencies:
   embedded: Embedded
   incompatible: Incompatible
@@ -206,7 +206,7 @@ difficulty:
 disk:
   available: Available
   used: Used
-downloadCount: '{count} downloads'
+downloadCount: "{count} downloads"
 downloadModMetadataDb:
   name: Download Mod Metadata Database
 downloadUpdate:
@@ -214,10 +214,10 @@ downloadUpdate:
 duplicateInstance:
   name: Duplicate Instance
 duration:
-  day: '{duration} day | {duration} days'
-  hour: '{duration} hour | {duration} hours'
-  minute: '{duration} minute | {duration} minutes'
-  second: '{duration} second | {duration} seconds'
+  day: "{duration} day | {duration} days"
+  hour: "{duration} hour | {duration} hours"
+  minute: "{duration} minute | {duration} minutes"
+  second: "{duration} second | {duration} seconds"
 env:
   select:
     all: Select All
@@ -227,7 +227,7 @@ errors:
   BadForgeInstallerJarError: >-
     Cannot parse forge installer jar file. Maybe the forge has new installer
     file format? Contact developers if this issue persists.
-  BadInstanceType: 'Not a valid instance: {type}'
+  BadInstanceType: "Not a valid instance: {type}"
   BodyTimeoutError: HTTP Body timeout
   ChecksumNotMatchError: Checksum not matched! Expected {expect}. Actual {actual}.
   ConnectTimeoutError: Connection timeout to server.
@@ -482,8 +482,8 @@ instances:
   loadingFiles: Loading Modpack Files
   refreshServers: Refresh Servers
 items:
-  count: '{count} items'
-  total: '{total} total'
+  count: "{count} items"
+  total: "{total} total"
 java:
   allocatedLong: Use system default java
   allocatedShort: Auto Allocated
@@ -498,7 +498,7 @@ java:
   minMemory: Min Memory
   noMemory: Do not limit memory usage
   refresh: Refresh Local Java
-  systemMemory: 'System Free Memory: {free} / {total}'
+  systemMemory: "System Free Memory: {free} / {total}"
 labyMod:
   disable: Disable LabyMod
   empty: LabyMod does not support current Minecraft
@@ -617,7 +617,7 @@ loginError:
     is down!
   checkOwnershipFailed: Fail to check game ownership. Please try again.
   connectionReset: Fail to login since connection is reset by server
-  fetchMinecraftProfileFailed: 'Fail to fetch Minecraft profile: {reason}'
+  fetchMinecraftProfileFailed: "Fail to fetch Minecraft profile: {reason}"
   illegalEmail: E-mail must be valid
   invalidCredentials: Invalid credentials. Invalid username or password.
   loginMinecraftByXboxFailed: >-
@@ -667,12 +667,12 @@ mod:
   description: Description
   disableAll: Disable All
   dropHint: Drop mod's .jar/.litemod here to import.
-  duplicatedDetected: '{count} duplicated mods'
+  duplicatedDetected: "{count} duplicated mods"
   duplicatedDetectedDescription: >-
     Found mods with same mod id but different files. This might cause Minecraft
     crash. Please select the file you want to keep.
   enableAll: Enable All
-  enabled: '{count} Mods enabled'
+  enabled: "{count} Mods enabled"
   filter: Filter Mods
   group: Group up
   groupInstalled: Group Installed Mods
@@ -688,7 +688,7 @@ mod:
   maybeCompatible: Maybe Compatible.
   modloaderSelectHint: The mod support following mod loaders. Please select one to install.
   modloaderSelectNotSupported: Not found {modloader} for Minecraft {minecraft}
-  mods: '{count} Mods'
+  mods: "{count} Mods"
   name: Mod | Mods
   newFolder: New Folder
   noGroupsFound: No groups found
@@ -704,7 +704,7 @@ mod:
   showInModrinth: Show {name} in Modrinth
   switchDefaultSource: Default Mod Source
   syncGroupRules: Save grouping rules
-  toUpdate: '{count} updates'
+  toUpdate: "{count} updates"
   ungroup: Ungroup
   versions: Versions
 modFilter:
@@ -722,9 +722,9 @@ modInstall:
     description: >-
       You have changed the Minecraft version. Would you like to automatically
       update compatible mods to versions that match Minecraft {version}?
-    'no': Skip
+    "no": Skip
     title: Update Mods?
-    'yes': Update Mods
+    "yes": Update Mods
   checkDependencies: Check Dependencies
   checkUpgrade: Check Mods Update
   checkedDependencies: Checked Dependencies
@@ -926,7 +926,7 @@ modrinth:
   projectMembers: Project Members
   projectType:
     modpack: Modpack
-  projects: '{count} projects'
+  projects: "{count} projects"
   serverSide: Server Side
   sort:
     downloads: Download counts
@@ -967,7 +967,7 @@ multiplayer:
     11)">multiple</span> connections.</span>"
   createLocalToken: Create Local Token
   currentIpTitle: Detected Public IP
-  currentNatTitle: 'Current network (NAT):'
+  currentNatTitle: "Current network (NAT):"
   difficultyLevelHint: The level of difficulty creating a connection
   disconnect: Disconnect
   disconnectDescription: Are you sure you want to disconnect with user {user}({id})?
@@ -1067,7 +1067,7 @@ peerSignalingState:
   have-local-offer: Waiting peer description
 presence:
   instance: Idle in Instance {instance}
-  instanceSetting: 'Edit Instance Setting: {instance}'
+  instanceSetting: "Edit Instance Setting: {instance}"
   mod: Viewing Mods in {instance}
   modrinthProject: Viewing {name} in Modrinth
   resourcePack: Viewing Resource Packs in {instance}
@@ -1092,7 +1092,7 @@ resourcepack:
       Are you sure you want to do this?
     title: Delete the resource pack
   dropHint: Drop Resource Pack's folder/zip here to import.
-  enable: '{count} resource packs enabled'
+  enable: "{count} resource packs enabled"
   incompatible: >-
     Incompatible Resource Pack format({format}). Fitin {accept}. Current
     {actual}.
@@ -1101,7 +1101,7 @@ resourcepack:
   search: Search Resource Packs...
   searchHint: Search resource packs
   searchOnCurseforge: Search {name} in curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selected: Selected Resource Packs
   showDirectory: Show resource pack directory
   showFile: Show resource pack in folder {file}
@@ -1131,7 +1131,7 @@ save:
   levelName: Level Name
   loadMap: Load Map
   mapError: Map Error
-  mapInfo: 'Interactive 3D world preview:'
+  mapInfo: "Interactive 3D world preview:"
   mapLoaded: Map Loaded
   mapPreview: Map Preview
   name: Save | Saves
@@ -1357,7 +1357,7 @@ setting:
   resetAllSettingsConfirmTitle: Reset All Settings?
   resetAllSettingsHint: Reset launcher to factory defaults (deletes everything)
   resetAllSettingsSuccess: All settings have been reset. The launcher will restart.
-  resetSettingsError: 'Error resetting settings: {error}'
+  resetSettingsError: "Error resetting settings: {error}"
   resetToDefault: Reset to Default
   select: Select
   settingsExported: Settings exported successfully
@@ -1379,6 +1379,11 @@ setting:
   sidebarStyleHint: Choose between classic and modern notch design
   streamerMode: Streaming Mode
   streamerModeDescription: This will hide your private information like email in launcher.
+  spotlightShortcut: Spotlight Shortcut
+  spotlightShortcutDescription: Keyboard shortcut to open Spotlight search
+  changeShortcut: Change
+  resetShortcut: Reset
+  recordingShortcut: Press keys...
   theme:
     dark: Dark Theme
     light: Light Theme
@@ -1413,7 +1418,7 @@ setup:
     name: Add Game Account
     skip: Skip for now
   appearance:
-    name: '@:setting.appearance'
+    name: "@:setting.appearance"
   dataRoot:
     description: >-
       The data root is not a common .minecraft directory. Since XMCL data
@@ -1490,7 +1495,7 @@ shared:
   manage: Manage
   name: Name
   next: Next
-  'no': 'No'
+  "no": "No"
   ok: OK
   previous: Previous
   refresh: Refresh
@@ -1498,7 +1503,7 @@ shared:
   search: Search
   server: Server
   skipForNow: Skip for now
-  'yes': 'Yes'
+  "yes": "Yes"
 sidebar:
   pin: Pin
   unpin: Unpin
@@ -1531,7 +1536,7 @@ task:
   empty: No Running Tasks
   failed: Failed
   manager: Task Manager
-  nTaskRunning: '{count} tasks are running'
+  nTaskRunning: "{count} tasks are running"
   name: Task | Tasks
   pause: Pause
 theme:
@@ -1588,7 +1593,7 @@ tutorial:
     searchTitle: Search Mods
   multiplayer:
     contentDescription: Connections between you and your peers will be listed here.
-    contentTitle: '@:multiplayer.connections'
+    contentTitle: "@:multiplayer.connections"
     groupDescription: >-
       You can create or join a group with other players. The launcher will try
       to create P2P connections between you and your friends according to the
@@ -1697,3 +1702,23 @@ versionType:
   beta: Beta
   name: Status
   release: Release
+spotlight:
+  placeholder: Search mods, instances...
+  navigate: Navigate
+  select: Select
+  noResults: No results found
+  installing: Installing...
+  installed: Installed
+  install: Install
+  installFailed: Failed
+  noModLoader: Current instance has no mod loader
+  sections:
+    instances: Instances
+    mods: Mods
+    localMods: Installed Mods
+    quickActions: Quick Actions
+    recent: Recent
+  globalSettings: Settings
+  mods: Mods
+  store: Modpack Market
+

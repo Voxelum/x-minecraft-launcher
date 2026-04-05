@@ -1556,3 +1556,23 @@ versionType:
   beta: Beta (测试版)
   name: 类型
   release: 稳定版
+spotlight:
+  placeholder: 搜索模组、实例...
+  navigate: 导航
+  select: 选择
+  noResults: 未找到结果
+  installing: 安装中...
+  installed: 已安装
+  install: 安装
+  installFailed: 失败
+  noModLoader: 当前实例没有模组加载器
+  sections:
+    instances: 实例
+    mods: 模组
+    localMods: 已安装模组
+    quickActions: 快捷操作
+    recent: 最近使用
+  globalSettings: 设置
+  mods: 模组
+  store: 整合包市场
+

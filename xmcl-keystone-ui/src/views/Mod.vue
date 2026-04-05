@@ -75,7 +75,7 @@
         :install="onInstallProject"
         :dense="denseView"
         :get-context-menu-items="getContextMenuItems"
-        @click="on.click"
+        @click="onItemClick($event, item, on.click)"
         @click-dependency="onClickDependency"
       />
       <ModGroupEntryItem
@@ -574,6 +574,17 @@ const onLoad = loadMore
 
 const switchToMarketWithKeyword = () => {
   source.value = 'remote'
+}
+
+// Handle mod item click: auto-install if not installed, otherwise show detail panel
+const onItemClick = (event: MouseEvent, item: ProjectEntry, showDetail: (event: MouseEvent) => void) => {
+  // If mod is not installed, auto-install it
+  if (!item.installed || item.installed.length === 0) {
+    onInstallProject(item)
+  } else {
+    // If mod is installed, show detail panel
+    showDetail(event)
+  }
 }
 
 const onClickDependency = (modId: string) => {

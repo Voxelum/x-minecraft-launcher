@@ -214,6 +214,8 @@ const { t } = useI18n()
 
 const emit = defineEmits(['install', 'input'])
 
+const { instance } = injection(kInstance)
+
 const gameVersions = computed(() => {
   const result = [] as string[]
   for (const v of props.versions) {
@@ -245,6 +247,28 @@ const versionTypes = computed(() => {
 const gameVersion = ref('' as string)
 const loader = ref('' as string)
 const versionType = ref('' as string)
+
+// Auto-select game version and loader from instance runtime
+const instanceGameVersion = computed(() => instance.value?.runtime?.minecraft || '')
+const instanceLoader = computed(() => {
+  const runtime = instance.value?.runtime
+  if (runtime?.fabricLoader) return 'fabric'
+  if (runtime?.forge) return 'forge'
+  if (runtime?.quiltLoader) return 'quilt'
+  if (runtime?.neoForged) return 'neoforge'
+  return ''
+})
+
+// Initialize filters from instance if available
+watch([instanceGameVersion, instanceLoader], ([gv, l]) => {
+  // Only auto-select if user hasn't manually changed the filter
+  if (!gameVersion.value && gv) {
+    gameVersion.value = gv
+  }
+  if (!loader.value && l) {
+    loader.value = l
+  }
+}, { immediate: true })
 
 const all = computed(() => {
   const filtered = [] as StoreProjectVersion[]
@@ -320,13 +344,12 @@ async function onVersionClicked(version: StoreProjectVersion) {
   }
 }
 
-const { instance } = injection(kInstance)
 const newRuntime = computed(() => {
   if (!selectedDetail.value) return {}
   const v = selectedDetail.value
   if (v.version.loaders.includes('fabric')) {
     return { fabricLoader: 1 }
-  } 
+  }
   if (v.version.loaders.includes('forge')) {
     return { forge: 1 }
   } 

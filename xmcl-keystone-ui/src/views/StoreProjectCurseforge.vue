@@ -187,6 +187,8 @@ const onOpen = () => {
   }
 }
 
+const autoInstall = computed(() => !existed.value)
+
 const tasks = useTasks((t) => {
   if (t.state !== TaskState.Running) return false
   if (t.type === 'installCurseforgeFile' && t.projectId === props.id) return true
@@ -239,6 +241,7 @@ async function getVersionDetail(version: StoreProjectVersion) {
     :members="members"
     :installing="isDownloading || _installing"
     :installed="!!existed"
+    :auto-install="autoInstall"
     :loading-members="false"
     :team-error="undefined"
     :get-version-detail="getVersionDetail"

@@ -38,6 +38,7 @@
     <AppModrinthLoginDialog />
     <InstanceLauncherPage />
     <AppSideBarGroupSettingDialog :default-color="defaultColor" />
+    <Spotlight ref="spotlightRef" />
   </v-app>
   <v-app v-else class="h-full max-h-screen overflow-auto overflow-x-hidden" :class="{ 'dark': isDark }">
     <AppSystemBar no-user no-task />
@@ -91,9 +92,18 @@ import { useLocalStorage, useMediaQuery, usePreferredColorScheme, usePreferredDa
 import { kInstanceLauncher, useInstanceLauncher } from '@/composables/instanceLauncher'
 import AppSideBarGroupSettingDialog from '@/views/AppSideBarGroupSettingDialog.vue'
 import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
+import Spotlight from '@/components/Spotlight.vue'
+import { useSpotlightShortcut } from '@/composables/spotlight'
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
+
+const spotlightRef = ref<any>(null)
+
+// Register global keyboard shortcut for Spotlight
+useSpotlightShortcut(() => {
+  spotlightRef.value?.open()
+})
 
 
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
