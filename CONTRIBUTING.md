@@ -14,7 +14,7 @@ For the whole project, we have
 
 - [Node.js >=18.17.0](https://nodejs.org/). The core libraries base environment.
 - [Electron 27](https://electron.atom.io). The actual runtime of the launcher.
-- [pnpm](https://pnpm.io/). Used for monorepo package management.
+- [bun](https://bun.sh/). Used for monorepo package management.
 - [TypeScript](https://www.typescriptlang.org/). The whole project uses as much TypeScript as possible.
 
 For main process (Electron), we have
@@ -98,10 +98,10 @@ git submodule update
 
 #### Install
 
-Install the project using [pnpm](https://pnpm.io):
+Install the project using [bun](https://bun.sh):
 
 ```
-pnpm install
+bun install
 ```
 
 <details>
@@ -132,18 +132,10 @@ Go `Run and Debug` section, use the profile `Electron: Main (launch)` to start t
 
 #### For non VSCode
 
-Open one terminal
+Open terminal
 
 ```bash
-# Start a dev server for UI
-npm run dev:renderer
-```
-
-Open another terminal
-
-``` bash
-# Start watching main process code
-npm run dev:main
+bun run dev
 ```
 
 #### Code "Hot" Change
@@ -222,7 +214,7 @@ The current launcher require to run 2 commands to build
 First, you need to build the frontend code:
 
 ```bash
-pnpm build:renderer
+bun build:renderer
 ```
 
 Unless the code under `xmcl-keystone-ui` changed, you don't need to build this again.
@@ -230,7 +222,7 @@ Unless the code under `xmcl-keystone-ui` changed, you don't need to build this a
 Then, you can build Electron bundling with frontend you just build:
 
 ```bash
-pnpm build:all
+bun build:all
 ```
 
-If you want a debug build, you can use `pnpm build:dir` which only build the directory result, and won't pack them up to different release format.
+If you want a debug build, you can use `bun build:dir` which only build the directory result, and won't pack them up to different release format.

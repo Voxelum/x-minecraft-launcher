@@ -6,7 +6,7 @@
 - [Git](https://git-scm.com/). You **must** install git to getting stared
 - [VSCode](https://code.visualstudio.com/). The highly recommended editor for translator to translate. It have integrated UI tool to help you find the translation key.
 - [Node.js >=18.17.0](https://nodejs.org/). If you want to test your translation locally, you need this. You can just install latest version.
-- [pnpm](https://pnpm.io/installation). If you want to test your translation locally, you need this. You can follow its installation page to install.
+- [bun](https://bun.com/get). If you want to test your translation locally, you need this. You can follow its installation page to install.
 
 ## Getting Started
 
@@ -22,12 +22,12 @@ git clone --recurse-submodules https://github.com/your-id/x-minecraft-launcher
 
 ### Install
 
-**Optional**, install the project using [pnpm](https://pnpm.io):
+**Optional**, install the project using [bun](https://bun.sh):
 
 Under the folder you cloned, e.g. `x-minecraft-launcher`, run command
 
 ```
-pnpm install
+bun install
 ```
 
 ### Install i18n Extension
@@ -88,4 +88,3 @@ adding a new line at the end
 ### Send Pull Request
 
 Please follow the [github guide](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) about how to send pull request.
-
