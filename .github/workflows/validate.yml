@@ -15,37 +15,32 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
-    - uses: pnpm/action-setup@v4
-      with:
-        version: 9.3.0
-    - name: Use Node.js 20
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        cache: 'pnpm'
-    - name: Install
-      run: |
-        pnpm install
-    - name: Lint
-      run: |
-        pnpm lint
-    - name: Check
-      run: |
-        pnpm check
-    - name: Test
-      run: |
-        pnpm vitest run --exclude 'xmcl/**'
-    - name: Build
-      run: |
-        pnpm run --prefix xmcl-keystone-ui build
-        pnpm run --prefix xmcl-electron-app build
-      env:
-        BUILD_NUMBER: ${{ github.run_number }}
-        NODE_ENV: production
-        CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
-        WIN_CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
-        APPX_PUBLISHER: ${{ secrets.APPX_PUBLISHER }}
-        WIN_CSC_KEY_PASSWORD: ${{ secrets.CODE_SIGN_PWD }}
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install
+        run: bun install
+      - name: Lint
+        run: bun run lint
+      - name: Check
+        run: bun run check
+      - name: Test
+        run: bunx vitest run --exclude 'xmcl/**'
+      - name: Build
+        run: |
+          bun run --cwd xmcl-keystone-ui build
+          bun run --cwd xmcl-electron-app build
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+          NODE_ENV: production
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
+          WIN_CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
+          APPX_PUBLISHER: ${{ secrets.APPX_PUBLISHER }}
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.CODE_SIGN_PWD }}

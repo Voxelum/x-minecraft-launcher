@@ -10,7 +10,7 @@ on:
       - "xmcl-keystone-ui/**"
       - "xmcl-electron-app/**"
       - "package.json"
-      - "pnpm-lock.yaml"
+      - "bun.lock"
       - ".github/**"
 
 jobs:
@@ -23,9 +23,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: pnpm/action-setup@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          version: 9.3.0
+          bun-version: latest
       - name: Fix node-gyp and Python
         if: ${{ runner.os == 'macOS' || runner.os == 'Windows' }}
         run: python3 -m pip install --break-system-packages --user packaging setuptools
@@ -33,9 +33,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
       - name: Install
-        run: pnpm install
+        run: bun install
       - name: Setup Linux
         if: ${{ runner.os == 'Linux' }}
         run: |
@@ -48,13 +47,13 @@ jobs:
           path: |
             ~/.cache/electron
             ~/.cache/electron-builder
-          key: ${{ runner.os }}-electron-build-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-electron-build-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
             ${{ runner.os }}-electron-build-
       - name: Build
         run: |
-          pnpm run --prefix xmcl-keystone-ui build
-          pnpm run --prefix xmcl-electron-app build
+          bun run --cwd xmcl-keystone-ui build
+          bun run --cwd xmcl-electron-app build
         env:
           BUILD_NUMBER: ${{ github.run_number }}
           NODE_OPTIONS: --max-old-space-size=32768
@@ -103,8 +102,7 @@ jobs:
           }
       - name: Update Signed Sha256
         if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
-        run: |
-          pnpm postsign
+        run: bun run postsign
       - name: Upload Build
         if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
         uses: actions/upload-artifact@v4
@@ -154,121 +152,27 @@ jobs:
           path: |
             ~/.cache/electron
             ~/.cache/electron-builder
-          key: ${{ runner.os }}-electron-build-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-electron-build-${{ hashFiles('**/bun.lockb') }}
 
-  build-arch:
-    needs: build
-    runs-on: ubuntu-latest
-    if: ${{ false }}
-    strategy:
-      matrix:
-        include:
-          - arch: x86_64
-            pkg_arch: amd64
-          - arch: aarch64
-            pkg_arch: arm64
-    container: archlinux:latest
-    steps:
-      - name: Install Dependencies
-        run: |
-          pacman -Syu --noconfirm base-devel nodejs npm
-      - name: Install Git
-        run: |
-          pacman -S --noconfirm git
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
-      - name: Download Ubuntu Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-Linux
-          path: ./
-      - name: Extract version
-        id: version
-        run: |
-          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-      - name: Build Package
-        run: |
-          mkdir -p build
-          cd build
-          useradd builder -m
-          chown -R builder:builder ./
-
-          if [ "${{ matrix.arch }}" = "x86_64" ]; then
-            cp "../xmcl-${{ steps.version.outputs.version }}-amd64.deb" ./
-            DEB_FILE="xmcl-${{ steps.version.outputs.version }}-amd64.deb"
-          elif [ "${{ matrix.arch }}" = "aarch64" ]; then
-            cp "../xmcl-${{ steps.version.outputs.version }}-arm64.deb" ./
-            DEB_FILE="xmcl-${{ steps.version.outputs.version }}-arm64.deb"
-          fi
-
-          cat > PKGBUILD << EOF
-          pkgname=xmcl-launcher
-          pkgver=${{ steps.version.outputs.version }}
-          pkgrel=1
-          pkgdesc="X Minecraft Launcher - A modern Minecraft launcher"
-          arch=('${{ matrix.arch }}')
-          url="https://xmcl.app/"
-          license=('MIT')
-          provides=("xmcl")
-          conflicts=('xmcl-launcher-bin')
-          options=(!strip !debug)
-          source=("$DEB_FILE")
-          noextract=("$DEB_FILE")
-          sha256sums=('SKIP')
-
-          package() {
-              cd "\${srcdir}"
-              bsdtar -xf "$DEB_FILE" data.tar.xz
-              bsdtar -xf data.tar.xz -C "\${pkgdir}"
-              install -dv "\${pkgdir}/usr/bin"
-          }
-          EOF
-
-          # Create makepkg configuration
-          cat > /etc/makepkg.conf << EOF
-          MAKEFLAGS="-j\$(nproc)"
-          PKGEXT='.pkg.tar.zst'
-          SRCEXT='.src.tar'
-          COMPRESSZST=(zstd -c -T0 -18 -)
-          EOF
-
-          # Set permissions and build
-          chown -R builder:builder .
-          su builder -c "CARCH=${{ matrix.arch }} makepkg -sf --noconfirm"
-          if [ -f *.pkg.tar.zst ]; then
-            for f in *.pkg.tar.zst; do
-              mv "$f" "../xmcl-${{ steps.version.outputs.version }}-${{ matrix.arch }}.pacman"
-            done
-          fi
-
-      - name: Upload Arch Package
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-Arch-${{ matrix.arch }}
-          path: ./*.pacman
   prepare-release:
     runs-on: ubuntu-latest
     needs:
       - build
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
-
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          version: 9.3.0
+          bun-version: latest
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
       - name: Install
-        run: |
-          pnpm install --filter ./.github/actions
+        run: bun install
       - name: Bump Version
         id: version
         uses: Voxelum/semantic-version-bump-action@xmcl
@@ -279,17 +183,9 @@ jobs:
             ./xmcl-runtime-api
           root: "."
           stage: "prepare"
-      # - name: Update Sponsor
-      #   uses: Voxelum/afdian-sponsor-action@master
-      #   with:
-      #     user-id: ${{ secrets.AFDIAN_USER_ID }}
-      #     token: ${{ secrets.AFDIAN_TOKEN }}
-      #     markdown: |
-      #       README.md
-      #       README.zh.md
       - name: Update Lock File
         if: ${{ steps.version.outputs.release == 'true' }}
-        run: pnpm i --lockfile-only
+        run: bun install
       - name: Create Pull Request
         if: ${{ steps.version.outputs.release == 'true' }}
         uses: peter-evans/create-pull-request@v3
@@ -311,7 +207,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: sourcemap
-          path: sourcemap/${{github.run_number}}
+          path: sourcemap/${{ github.run_number }}
       - name: Upload Source Map to Azure
         uses: ci010/upload-blob-to-azure@master
         env:
@@ -326,23 +222,20 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build
-      # - build-arch
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
-      - uses: pnpm/action-setup@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          version: 9.3.0
+          bun-version: latest
       - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
       - name: Install
-        run: |
-          pnpm install --filter action-*
+        run: bun install
       - name: Download Build
         uses: actions/download-artifact@v4
         with:

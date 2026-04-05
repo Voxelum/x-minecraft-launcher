@@ -5,33 +5,28 @@ on:
 
 jobs:
   build-web:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
-    - uses: pnpm/action-setup@v4
-      with:
-        version: 9.3.0
-    - name: Use Node.js 16
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        cache: 'pnpm'
-    - name: Install
-      run: pnpm install --filter=!./xmcl-page --filter=!./electron-app
-    - name: Build
-      run: |
-        pnpm run --prefix xmcl-keystone-ui build
-      env:
-        BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
-    - name: Deploy to vercel
-      uses: amondnet/vercel-action@v20
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-args: '--prod ./xmcl-keystone-ui/dist'
-        vercel-org-id: ${{ secrets.ORG_ID }}
-        vercel-project-id: ${{ secrets.PROJECT_ID }}
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install
+        run: bun install
+      - name: Build
+        run: bun run --cwd xmcl-keystone-ui build
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-args: '--prod ./xmcl-keystone-ui/dist'
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
