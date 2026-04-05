@@ -30,7 +30,7 @@
   "file_scan_exclusions": ["**/.git", "**/.svn", "**/.hg", "**/CVS", "**/.DS_Store"],
   "terminal": {
     "env": {
-      "npm_config_user_agent": "pnpm",
+      "npm_config_user_agent": "bun",
     },
   },
   "format_on_save": "on",
