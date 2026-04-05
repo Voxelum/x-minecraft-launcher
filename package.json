@@ -25,12 +25,12 @@
     "build:all": "bun run --cwd=xmcl-electron-app build:all",
     "build:renderer": "bun run --cwd=xmcl-keystone-ui build",
     "postsign": "bun run --cwd=xmcl-electron-app postsign",
-    "check": "bun run --filter='xmcl-runtime-api|xmcl-runtime|xmcl-electron-app|xmcl-keystone-ui' check",
+    "check": "bun run --filter '@xmcl/*' check",
     "dev:main": "bun run --cwd=xmcl-electron-app dev",
     "dev:renderer": "bun run --cwd=xmcl-keystone-ui dev",
     "dev": "bun dev.ts",
-    "lint": "bun run --filter='xmcl-keystone-ui|xmcl-runtime|xmcl-runtime-api|xmcl-electron-app' lint",
-    "lint:fix": "bun run --filter='xmcl-runtime-api|xmcl-runtime|xmcl-electron-app|xmcl-keystone-ui' lint:fix"
+    "lint": "bun run --filter '@xmcl/*' lint",
+    "lint:fix": "bun run --filter '@xmcl/*' lint:fix"
   },
   "devDependencies": {
     "@types/bun": "latest"
