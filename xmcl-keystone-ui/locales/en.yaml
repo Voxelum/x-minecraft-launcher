@@ -1722,3 +1722,9 @@ spotlight:
   mods: Mods
   store: Modpack Market
 
+unauthenticatedWarning:
+  title: Not Logged In
+  description: You are not logged into any account. The game will launch in demo mode. To access full features, please register an account.
+  playAnyway: Play Anyway
+  cancel: Cancel
+  support: Tech Support
