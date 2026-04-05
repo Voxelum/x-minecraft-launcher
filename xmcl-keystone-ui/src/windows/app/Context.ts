@@ -5,7 +5,6 @@ import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
 import { kInstance, useInstance } from '@/composables/instance'
 import { kInstances, useInstances } from '@/composables/instances'
 import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
-import { kPeerState, usePeerState } from '@/composables/peers'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
 import { kTheme, useTheme } from '@/composables/theme'
@@ -30,7 +29,6 @@ export default defineComponent({
 
     const userContext = useUserContext()
     provide(kUserContext, userContext)
-    provide(kPeerState, usePeerState(userContext.gameProfile))
 
     provide(kLocalVersions, useLocalVersions())
     const instances = useInstances()

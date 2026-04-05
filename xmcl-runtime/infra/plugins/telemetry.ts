@@ -6,7 +6,6 @@ import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '~/constant'
 import { kClientToken, kIsNewClient } from '~/infra'
 import { LaunchService } from '~/launch'
-import { PeerService } from '~/peer'
 import { kResourceManager } from '~/resource'
 import { kSettings } from '~/settings'
 import { UserService } from '~/user'
@@ -246,24 +245,6 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
           properties: {
             authService: authority,
           },
-        })
-      })
-    })
-
-    // Track peer connection quality
-    app.registry.get(PeerService).then(service => {
-      service.getPeerState().then(state => {
-        state.subscribe('connectionStateChange', (state) => {
-          if (state.connectionState === 'connected') {
-            defaultClient.trackEvent({
-              name: 'peer-connection-connected',
-            })
-          }
-        })
-        state.subscribe('connectionAdd', (conn) => {
-          defaultClient.trackEvent({
-            name: 'peer-connection-add',
-          })
         })
       })
     })

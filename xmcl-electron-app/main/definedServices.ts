@@ -25,7 +25,6 @@ import { LaunchService, VersionService } from '@xmcl/runtime/launch'
 import { ProjectMappingService } from '@xmcl/runtime/moddb'
 import { ModMetadataService } from '@xmcl/runtime/moddb/ModMetadataService'
 import { ModpackService } from '@xmcl/runtime/modpack'
-import { PeerService } from '@xmcl/runtime/peer'
 import { PresenceService } from '@xmcl/runtime/presence'
 import { ResourcePackPreviewService } from '@xmcl/runtime/resourcePack'
 import { ServerStatusService } from '@xmcl/runtime/serverStatus'
@@ -62,7 +61,6 @@ export const definedServices = [
   VersionService,
   InstanceInstallService,
   ModMetadataService,
-  PeerService,
   ThemeService,
   InstanceThemeService,
 ]

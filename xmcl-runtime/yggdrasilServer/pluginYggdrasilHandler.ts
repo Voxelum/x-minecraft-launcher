@@ -4,7 +4,6 @@ import { sign } from 'crypto'
 import { Readable } from 'stream'
 import { finished } from 'stream/promises'
 import { LauncherAppPlugin } from '~/app'
-import { kPeerFacade } from '~/peer'
 import { UserService } from '~/user'
 
 export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
@@ -12,7 +11,6 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
 
   const getProfile = async (name: string) => {
     const userService = await app.registry.get(UserService)
-    const peerService = await app.registry.get(kPeerFacade)
     const offline = Object.values(userService.state.users).find(v => v.authority === AUTHORITY_DEV)
     if (offline) {
       const profiles = Object.values(offline.profiles)
@@ -20,10 +18,6 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
       if (founded) {
         return founded
       }
-    }
-    const founded = await peerService.queryGameProfile(name)
-    if (founded) {
-      return founded
     }
     return undefined
   }

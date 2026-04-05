@@ -38,7 +38,6 @@ import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { ZipManager, kTasks, type Tasks } from '~/infra'
 import { InstanceService } from '~/instance/InstanceService'
 import { kDownloadOptions } from '~/network'
-import { kPeerFacade } from '~/peer'
 import { kResourceManager, kResourceWorker, type ResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { downloadInstanceFiles } from './utils/downloadInstanceFiles'
@@ -275,10 +274,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
             .getSnapshotByHash(sha1)
             .then((r) => (r ? this.resourceManager.validateSnapshotFile(r) : undefined))
             .then((r) => r?.path),
-        getPeerActualUrl: (url) =>
-          this.app.registry
-            .getIfPresent(kPeerFacade)
-            .then((peers) => peers?.getHttpDownloadUrl(url)),
+        getPeerActualUrl: () => Promise.resolve(undefined),
         unzipFiles: (payloads, finished, signal) =>
           unzipInstanceFiles(zipManager, payloads, finished, signal, tracker),
         downloadFiles: (payloads, finished, signal) =>

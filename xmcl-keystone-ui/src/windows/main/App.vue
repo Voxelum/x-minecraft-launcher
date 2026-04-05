@@ -25,7 +25,6 @@
     <AppFeedbackDialog />
     <AppTaskDialog />
     <AppAddInstanceDialog />
-    <AppShareInstanceDialog />
     <AppInstanceDeleteDialog />
     <AppGameExitDialog />
     <AppLaunchBlockedDialog />
@@ -81,7 +80,6 @@ import AppLaunchServerDialog from '@/views/AppLaunchServerDialog.vue'
 import AppMigrateWizardDialog from '@/views/AppMigrateWizardDialog.vue'
 import AppModrinthLoginDialog from '@/views/AppModrinthLoginDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
-import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
 import AppSideBarClassic from '@/views/AppSideBarClassic.vue'
 import AppSideBarNotch from '@/views/AppSideBarNotch.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'

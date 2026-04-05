@@ -59,41 +59,6 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
     return all
   }
 
-  function getPeerTemplate(id: string, name: string, icon: string, man: InstanceManifest) {
-    const result: Template = markRaw({
-      filePath: id,
-      name: `${man.name ?? 'Instance'}@${name}`,
-      description: '',
-      instance: {
-        icon,
-        name: `${man.name ?? 'Instance'}@${name}`,
-        description: man.description,
-        runtime: {
-          minecraft: man.runtime.minecraft,
-          forge: man.runtime.forge ?? '',
-          fabricLoader: man.runtime.fabricLoader ?? '',
-          quiltLoader: man.runtime.quiltLoader ?? '',
-          optifine: man.runtime.optifine ?? '',
-          neoForged: man.runtime.neoForged ?? '',
-          yarn: '',
-          liteloader: '',
-        },
-        vmOptions: man.vmOptions,
-        mcOptions: man.mcOptions,
-        minMemory: man.minMemory,
-        maxMemory: man.maxMemory,
-      },
-      loadFiles: () => Promise.resolve(markRaw(man.files.map(markRaw))),
-      type: 'peer',
-    })
-
-    renderMinecraftPlayerTextHead(icon)?.then((rendered) => {
-      result.instance.icon = rendered
-    })
-
-    return result
-  }
-
   function getFtbTemplate(man: CachedFTBModpackVersionManifest): Template {
     const [instanceConfig, files] = getFTBTemplateAndFile(man, javas.value)
     return markRaw({

@@ -28,7 +28,6 @@ import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
 import { kModpackExport, useModpackExport } from '@/composables/modpack'
 import { kModrinthTags, useModrinthTags } from '@/composables/modrinth'
 import { kModrinthAuthenticatedAPI, useModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
-import { kPeerShared, usePeerConnections } from '@/composables/peers'
 import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kSaveSearch, useSavesSearch } from '@/composables/savesSearch'
 import { kSearchModel, useSearchModel } from '@/composables/search'
@@ -59,7 +58,6 @@ export default defineComponent({
     const localVersions = useLocalVersions()
     const instances = useInstances()
     const instance = useInstance(instances.selectedInstance, instances.instances)
-    provide(kPeerShared, usePeerConnections())
 
     const settings = useSettingsState()
     const instanceVersion = useInstanceVersion(instance.instance, localVersions.versions, localVersions.servers)
