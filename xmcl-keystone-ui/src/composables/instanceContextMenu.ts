@@ -42,7 +42,7 @@ export function useInstanceContextMenuFunc() {
       },
       {
         text: t('server.joinServer'),
-        icon: 'mdi-server',
+        icon: 'dns',
         onClick() {
           showJoinServerDialog({
             instance: inst,

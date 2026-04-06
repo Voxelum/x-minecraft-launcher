@@ -1195,6 +1195,11 @@ server:
   upload: Upload Server
   version: Server Requires Version
   versionHint: The Minecraft Version To Ping
+  joinServer: Join Server
+  address: Server Address
+  addressHint: "Enter server address (e.g., play.hypixel.net)"
+  serverName: Server Name
+  nameHint: Optional display name for this server
 serverStatus:
   nohost: §4Cannot find host!
   ping: Ping...
@@ -1500,6 +1505,7 @@ shared:
   previous: Previous
   refresh: Refresh
   remove: Remove
+  save: Save
   search: Search
   server: Server
   skipForNow: Skip for now
@@ -1728,10 +1734,3 @@ unauthenticatedWarning:
   playAnyway: Play Anyway
   cancel: Cancel
   support: Tech Support
-
-server:
-  joinServer: Join Server
-  address: Server Address
-  addressHint: "Enter server address (e.g., play.hypixel.net or 192.168.1.1:25565)"
-  name: Server Name
-  nameHint: Optional display name for this server

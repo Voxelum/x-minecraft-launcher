@@ -33,7 +33,7 @@ export function useLaunchButton() {
   const { show: showLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)
   const { show: showUnauthenticatedWarning } = useDialog('unauthenticated-warning')
 
-  const { path } = injection(kInstance)
+  const { path, instance } = injection(kInstance)
   const { isValidating } = injection(kInstances)
   const { isValidating: refreshingJava } = injection(kInstanceJava)
   const { isValidating: refreshingFiles } = injection(kInstanceFiles)
@@ -244,18 +244,7 @@ export function useLaunchButton() {
     if (javaIssue.value) {
       showLaunchStatusDialog({ javaIssue: javaIssue.value })
     } else {
-      // Check if instance has server configured - if so, launch directly to server
-      const instanceServer = instance.value?.server
-      if (instanceServer?.host) {
-        launch({
-          server: {
-            host: instanceServer.host,
-            port: instanceServer.port,
-          },
-        })
-      } else {
-        launch()
-      }
+      launch()
       showLaunchStatusDialog()
     }
   }
