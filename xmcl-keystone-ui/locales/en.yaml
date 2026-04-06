@@ -1728,3 +1728,10 @@ unauthenticatedWarning:
   playAnyway: Play Anyway
   cancel: Cancel
   support: Tech Support
+
+server:
+  joinServer: Join Server
+  address: Server Address
+  addressHint: "Enter server address (e.g., play.hypixel.net or 192.168.1.1:25565)"
+  name: Server Name
+  nameHint: Optional display name for this server

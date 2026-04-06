@@ -244,7 +244,18 @@ export function useLaunchButton() {
     if (javaIssue.value) {
       showLaunchStatusDialog({ javaIssue: javaIssue.value })
     } else {
-      launch()
+      // Check if instance has server configured - if so, launch directly to server
+      const instanceServer = instance.value?.server
+      if (instanceServer?.host) {
+        launch({
+          server: {
+            host: instanceServer.host,
+            port: instanceServer.port,
+          },
+        })
+      } else {
+        launch()
+      }
       showLaunchStatusDialog()
     }
   }
