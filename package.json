@@ -33,7 +33,7 @@
     "lint:fix": "bun run --filter '@xmcl/*' lint:fix"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "^1.3.11"
   },
   "trustedDependencies": [
     "electron",
@@ -41,7 +41,6 @@
     "@electron/rebuild"
   ],
   "dependencies": {
-    "electron": "^41.1.1",
     "vue-demi": "^0.14.10"
   }
 }

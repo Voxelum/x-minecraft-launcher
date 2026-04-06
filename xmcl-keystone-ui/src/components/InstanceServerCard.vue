@@ -59,12 +59,15 @@
 import { Instance } from "@xmcl/instance";
 import TextComponent from "@/components/TextComponent";
 import { useServerStatus } from "../composables/serverStatus";
+import { useNotifier } from "../composables/notifier";
 import { computed, ref, onMounted, onUnmounted } from "vue";
 import { protocolToMinecraft } from "@xmcl/runtime-api";
 
 const props = defineProps<{
   instance: Instance | undefined;
 }>();
+
+const { notify } = useNotifier();
 
 const minecraftToProtocol: Record<string, number> = {};
 for (const [key, val] of Object.entries(protocolToMinecraft)) {
@@ -111,10 +114,19 @@ const copyAddress = () => {
   navigator.clipboard
     .writeText(address)
     .then(() => {
-      console.log("Copied server address:", address);
+      notify({
+        level: "success",
+        title: "Copied!",
+        body: `Server address copied: ${address}`,
+      });
     })
     .catch((err) => {
       console.error("Failed to copy:", err);
+      notify({
+        level: "error",
+        title: "Copy failed",
+        body: "Could not copy server address to clipboard",
+      });
     });
 };
 </script>
