@@ -9,11 +9,11 @@ export default function createWorkerPlugin(): Plugin {
   return {
     name: 'resolve-worker',
     setup(build) {
-      build.onResolve({ filter: /^.+\?worker$/g }, async ({ path, resolveDir }) => ({
+      build.onResolve({ filter: /^.+\?worker$/ }, async ({ path, resolveDir }) => ({
         path: resolve(resolveDir, path),
         namespace: 'worker',
       }))
-      build.onLoad({ filter: /^.+\?worker$/g, namespace: 'worker' }, async ({ path }) => {
+      build.onLoad({ filter: /^.+\?worker$/, namespace: 'worker' }, async ({ path }) => {
         let absoltePath = cleanUrl(path)
         absoltePath = !absoltePath.endsWith('.ts') ? absoltePath + '.ts' : absoltePath
         const outDir = build.initialOptions.outdir

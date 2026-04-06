@@ -10,11 +10,11 @@ export default function createVueDevtoolsPlugin(extensionLocation: string): Plug
     name: 'resolve-devtools',
     setup(build) {
       if (build.initialOptions) {
-        build.onResolve({ filter: /vue-devtools/g }, async ({ path }) => ({
+        build.onResolve({ filter: /vue-devtools/ }, async ({ path }) => ({
           path,
           namespace: 'devtools',
         }))
-        build.onLoad({ filter: /vue-devtools/g, namespace: 'devtools' }, async () => {
+        build.onLoad({ filter: /vue-devtools/, namespace: 'devtools' }, async () => {
           return {
             contents: `export default ${JSON.stringify(extensionLocation)}`,
             resolveDir: build.initialOptions.outdir,

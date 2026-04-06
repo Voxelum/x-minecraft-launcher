@@ -113,8 +113,6 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
    */
   maximize(): void
 
-  openMultiplayerWindow(): void
-
   queryAudioPermission(): Promise<boolean>
 
   writeClipboard(text: string): void

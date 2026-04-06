@@ -5,6 +5,14 @@
  *  environment.
  */
 
+// Polyfill for Uint8Array.fromBase64 (added in Node 22)
+if (!(Uint8Array as any).fromBase64) {
+  (Uint8Array as any).fromBase64 = function(base64String: string) {
+    const buffer = Buffer.from(base64String, 'base64')
+    return new Uint8Array(buffer)
+  }
+}
+
 // Set environment for development
 import { app } from 'electron'
 import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'

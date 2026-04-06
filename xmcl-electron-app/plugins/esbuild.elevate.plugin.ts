@@ -7,11 +7,11 @@ export default function createElevatePlugin(): Plugin {
   return {
     name: 'provide-elevate',
     setup(build) {
-      build.onResolve({ filter: /^virtual:elevate.exe$/g }, async ({ path }) => ({
+      build.onResolve({ filter: /^virtual:elevate.exe$/ }, async ({ path }) => ({
         path,
         namespace: 'elevate',
       }))
-      build.onLoad({ filter: /^.+$/g, namespace: 'elevate' }, async () => {
+      build.onLoad({ filter: /^.+$/, namespace: 'elevate' }, async () => {
         if (process.platform !== 'win32') {
           // should not bundle elevate.exe on non-windows platform
           return {

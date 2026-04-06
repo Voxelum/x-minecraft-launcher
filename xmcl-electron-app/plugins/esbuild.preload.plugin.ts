@@ -9,12 +9,12 @@ export default function createPreloadPlugin(preloadSrc: string): Plugin {
   return {
     name: 'resolve-preload',
     setup(build) {
-      build.onResolve({ filter: /@preload\/.+/g }, async ({ path }) => ({
+      build.onResolve({ filter: /@preload\/.+/ }, async ({ path }) => ({
         path:
           path.replace('@preload', preloadSrc) +
           '?preload',
       }))
-      build.onLoad({ filter: /^.+\?preload$/g }, async ({ path }) => {
+      build.onLoad({ filter: /^.+\?preload$/ }, async ({ path }) => {
         const absoltePath = cleanUrl(path)
         const result = await esbuild({
           ...build.initialOptions,

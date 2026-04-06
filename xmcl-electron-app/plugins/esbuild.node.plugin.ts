@@ -25,7 +25,7 @@ export default function createNodePlugin(): Plugin {
 
       build.onLoad(
         {
-          filter: /^.+crypto\.node$/g,
+          filter: /^.+crypto\.node$/,
           namespace: 'node-file',
         },
         async ({ path }) => {

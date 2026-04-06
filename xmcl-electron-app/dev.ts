@@ -127,6 +127,14 @@ export async function dev() {
     outdir: resolve(__dirname, './dist'),
     publicPath: '.',
     entryPoints: { index: join(__dirname, './main/index.dev.ts') },
+    banner: {
+      js: `if (!(Uint8Array).fromBase64) {
+  Uint8Array.fromBase64 = function(base64String) {
+    const buffer = Buffer.from(base64String, 'base64');
+    return new Uint8Array(buffer);
+  };
+}`,
+    },
   })
   await esbuild.watch()
 }

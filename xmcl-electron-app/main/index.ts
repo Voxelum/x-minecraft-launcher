@@ -1,3 +1,11 @@
+// Polyfill for Uint8Array.fromBase64 (added in Node 22)
+if (!(Uint8Array as any).fromBase64) {
+  (Uint8Array as any).fromBase64 = function(base64String: string) {
+    const buffer = Buffer.from(base64String, 'base64')
+    return new Uint8Array(buffer)
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('graceful-fs').gracefulify(require('fs'))
 
