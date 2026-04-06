@@ -1,57 +1,57 @@
 {
-    "name": "@xmcl/runtime-api",
-    "version": "0.36.2",
-    "author": "ci010 <cijhn@hotmail.com>",
-    "description": "Shared API for between launcher renderer & main process",
-    "license": "MIT",
-    "main": "index.ts",
-    "type": "module",
-    "engines": {
-        "node": ">=20",
-        "bun": ">=1.3.10"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/voxelum/x-minecraft-launcher"
-    },
-    "scripts": {
-        "build": "bun run build:cjs && bun run build:esm && bun run build:type",
-        "build:cjs": "esbuild --bundle --platform=node --outfile=dist/index.js --target=es2020 --format=cjs --external:semver index.ts",
-        "build:esm": "esbuild --bundle --platform=node --outfile=dist/index.mjs --target=es2020 --format=esm --external:semver index.ts",
-        "build:type": "tsc --project ./tsconfig.json",
-        "check": "tsc --noEmit --project ./tsconfig.json",
-        "lint": "oxlint -c ./node_modules/@xmcl/oxlint-config/oxlintrc.json .",
-        "fmt": "oxfmt -c .oxfmtrc.json .",
-        "lint:fix": "bun run lint --fix"
-    },
-    "dependencies": {
-        "zod": "^4.1.13",
-        "@xmcl/client": "workspace:*",
-        "@xmcl/instance": "workspace:*",
-        "@xmcl/resource": "workspace:*",
-        "@xmcl/file-transfer": "workspace:*",
-        "@xmcl/core": "workspace:*",
-        "@xmcl/curseforge": "workspace:*",
-        "@xmcl/forge-site-parser": "workspace:*",
-        "@xmcl/game-data": "workspace:*",
-        "@xmcl/gamesetting": "workspace:*",
-        "@xmcl/installer": "workspace:*",
-        "@xmcl/mod-parser": "workspace:*",
-        "@xmcl/model": "workspace:*",
-        "@xmcl/modrinth": "workspace:*",
-        "@xmcl/nbt": "workspace:*",
-        "@xmcl/resourcepack": "workspace:*",
-        "@xmcl/system": "workspace:*",
-        "@xmcl/text-component": "workspace:*",
-        "@xmcl/unzip": "workspace:*",
-        "@xmcl/user": "workspace:*"
-    },
-    "devDependencies": {
-        "@xmcl/oxlint-config": "workspace:*",
-        "oxfmt": "^0.24.0",
-        "oxlint": "^0.15.5",
-        "esbuild": "^0.17.16",
-        "tslib": "^2.5.0",
-        "typescript": "5.4.5"
-    }
+  "name": "@xmcl/runtime-api",
+  "version": "0.36.2",
+  "author": "ci010 <cijhn@hotmail.com>",
+  "description": "Shared API for between launcher renderer & main process",
+  "license": "MIT",
+  "main": "index.ts",
+  "type": "module",
+  "engines": {
+    "node": ">=20",
+    "bun": ">=1.3.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/voxelum/x-minecraft-launcher"
+  },
+  "scripts": {
+    "build": "bun run build:cjs && bun run build:esm && bun run build:type",
+    "build:cjs": "esbuild --bundle --platform=node --outfile=dist/index.js --target=es2020 --format=cjs --external:semver index.ts",
+    "build:esm": "esbuild --bundle --platform=node --outfile=dist/index.mjs --target=es2020 --format=esm --external:semver index.ts",
+    "build:type": "tsc --project ./tsconfig.json",
+    "check": "tsc --noEmit --project ./tsconfig.json",
+    "lint": "oxlint -c ../../xmcl/packages/oxlint-config/oxlintrc.json .",
+    "fmt": "oxfmt -c .oxfmtrc.json .",
+    "lint:fix": "bun run lint --fix"
+  },
+  "dependencies": {
+    "zod": "^4.1.13",
+    "@xmcl/client": "workspace:*",
+    "@xmcl/instance": "workspace:*",
+    "@xmcl/resource": "workspace:*",
+    "@xmcl/file-transfer": "workspace:*",
+    "@xmcl/core": "workspace:*",
+    "@xmcl/curseforge": "workspace:*",
+    "@xmcl/forge-site-parser": "workspace:*",
+    "@xmcl/game-data": "workspace:*",
+    "@xmcl/gamesetting": "workspace:*",
+    "@xmcl/installer": "workspace:*",
+    "@xmcl/mod-parser": "workspace:*",
+    "@xmcl/model": "workspace:*",
+    "@xmcl/modrinth": "workspace:*",
+    "@xmcl/nbt": "workspace:*",
+    "@xmcl/resourcepack": "workspace:*",
+    "@xmcl/system": "workspace:*",
+    "@xmcl/text-component": "workspace:*",
+    "@xmcl/unzip": "workspace:*",
+    "@xmcl/user": "workspace:*"
+  },
+  "devDependencies": {
+    "@xmcl/oxlint-config": "workspace:*",
+    "oxfmt": "^0.24.0",
+    "oxlint": "^0.15.5",
+    "esbuild": "^0.17.16",
+    "tslib": "^2.5.0",
+    "typescript": "5.4.5"
+  }
 }

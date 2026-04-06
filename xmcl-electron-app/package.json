@@ -24,7 +24,7 @@
     "fmt": "oxfmt -c ../.oxfmtrc.json .",
     "check": "tsc --noEmit --project tsconfig.json && tsc --noEmit --project preload/tsconfig.json",
     "dev": "cross-env NODE_ENV=development tsx dev.ts",
-    "lint": "oxlint -c ./node_modules/@xmcl/oxlint-config/oxlintrc.json .",
+    "lint": "oxlint -c ../xmcl/packages/oxlint-config/oxlintrc.json .",
     "lint:fix": "bun run lint --fix"
   },
   "devDependencies": {
