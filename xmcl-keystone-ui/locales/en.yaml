@@ -390,6 +390,7 @@ instance:
   requireName: The name is required
   resolution: Resolution
   resolutionPreset: Resolution Preset
+  server: Server
   showInstance: Show game folder
   updates: Updates
   useSharedOptions: Use shared game settings

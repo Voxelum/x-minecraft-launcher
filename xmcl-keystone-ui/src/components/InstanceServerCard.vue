@@ -1,29 +1,35 @@
 <template>
   <div
     v-if="instance?.server?.host"
-    class="server-card mt-2 p-3 bg-[#252525] rounded-lg border border-[#333]"
+    class="server-card mt-2 p-2.5 bg-[#252525]/80 rounded-lg border border-[#333]/50 backdrop-blur-sm overflow-hidden"
   >
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2.5">
       <!-- Server favicon -->
       <img
         v-if="status.favicon"
         :src="status.favicon"
-        class="w-10 h-10 rounded"
+        class="w-9 h-9 rounded-lg flex-shrink-0"
       />
-      <v-icon v-else icon="dns" size="24" color="primary" />
+      <v-icon
+        v-else
+        icon="dns"
+        size="22"
+        color="primary"
+        class="flex-shrink-0"
+      />
 
       <!-- Server info -->
       <div class="flex-1 min-w-0">
         <div class="text-sm font-medium text-white truncate">
           {{ serverName || instance.server.host }}
         </div>
-        <div class="flex items-center gap-2">
-          <span class="text-xs text-gray-400">
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <span class="text-xs text-gray-400 truncate">
             {{ instance.server.host }}:{{ instance.server.port || 25565 }}
           </span>
           <v-icon
-            size="16"
-            class="text-gray-500 cursor-pointer hover:text-primary ml-2"
+            size="14"
+            class="text-gray-500 cursor-pointer hover:text-primary transition-colors flex-shrink-0"
             @click="copyAddress"
           >
             content_copy
@@ -31,25 +37,28 @@
         </div>
       </div>
 
-      <!-- Players count -->
-      <div class="text-right">
-        <div class="text-sm text-gray-300">
-          <v-icon size="14" color="primary">group</v-icon>
-          {{ status.players.online }}/{{ status.players.max }}
+      <!-- Players & Ping -->
+      <div class="flex flex-col items-end gap-0.5 flex-shrink-0">
+        <div class="flex items-center gap-1 text-xs text-gray-300">
+          <v-icon size="12" color="primary" class="flex-shrink-0">group</v-icon>
+          <span class="font-medium"
+            >{{ status.players.online
+            }}<span class="text-gray-500">/{{ status.players.max }}</span></span
+          >
         </div>
         <div class="text-xs text-gray-500">{{ status.ping }}ms</div>
       </div>
     </div>
 
     <!-- MOTD -->
-    <div v-if="status.description" class="mt-2 pt-2 border-t border-[#333]">
+    <div v-if="status.description" class="mt-2 pt-2 border-t border-[#333]/50">
       <text-component
         :source="
           typeof status.description === 'string'
             ? { text: status.description }
             : status.description
         "
-        class="text-xs"
+        class="text-xs leading-relaxed line-clamp-2"
       />
     </div>
   </div>

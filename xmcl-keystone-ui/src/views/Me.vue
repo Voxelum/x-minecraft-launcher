@@ -630,6 +630,7 @@ function openInBrowser(url: string) {
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
+  overflow: hidden;
 }
 
 .instance-avatar-wrapper {
