@@ -55,7 +55,7 @@ export async function downloadInstanceFiles(
   }
 
   // Retry failed downloads
-  for (let attempt = 1; attempt <= MAX_RETRY_COUNT && pending.length > 0; attempt++) {
+  for (let retryAttempt = 0; retryAttempt < MAX_RETRY_COUNT && pending.length > 0; retryAttempt++) {
     signal.throwIfAborted()
 
     const retryResults = await downloadMultiple({
