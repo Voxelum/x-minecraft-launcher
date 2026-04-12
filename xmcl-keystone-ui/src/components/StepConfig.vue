@@ -76,6 +76,7 @@ import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { required } from '@/util/props'
 import { kInstanceCreation } from '../composables/instanceCreation'
+import { validateInstanceName } from '@/util/instanceName'
 import ErrorView from './ErrorView.vue'
 import InstanceManifestFileTree from './InstanceManifestFileTree.vue'
 import StepperAdvanceContent from './StepperAdvanceContent.vue'
@@ -87,12 +88,24 @@ const emit = defineEmits(['update:valid'])
 const { t } = useI18n()
 const { data: content, files, loading, error, placeHolderName } = injection(kInstanceCreation)
 const { instances } = injection(kInstances)
+const nameValidationErrors: Record<string, string> = {
+  invalidChars: 'instance.nameInvalidChars',
+  reservedName: 'instance.nameReservedName',
+  pathTraversal: 'instance.namePathTraversal',
+  whitespaceOnly: 'instance.nameWhitespaceOnly',
+  trailingDotOrSpace: 'instance.nameTrailingDotOrSpace',
+}
 const nameRules = computed(() => [
-  // (v: any) => !!v || t('instance.requireName'),
   (v: any) => {
     const trimmed = v.trim()
     const effectiveName = trimmed || placeHolderName.value
     return !instances.value.some(i => i.name === effectiveName) || t('instance.duplicatedName')
+  },
+  (v: any) => {
+    if (!v) return true // empty is allowed, will use placeholder
+    const result = validateInstanceName(v)
+    if (result === true) return true
+    return t(nameValidationErrors[result] ?? 'instance.nameInvalidChars')
   },
   (v: any) => !/\p{Script=Cyrillic}/u.test(v) || t('instance.nameNoCyrillic'),
 ])

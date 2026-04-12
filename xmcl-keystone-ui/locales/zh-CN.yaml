@@ -347,6 +347,11 @@ instance:
   name: 名称
   nameHint: 名称便于以后识别
   nameNoCyrillic: 无西里尔字母名称
+  nameInvalidChars: '名称不能包含以下字符：< > : " / \\ | ? *'
+  nameReservedName: 此名称是系统保留名称，无法使用
+  namePathTraversal: 名称不能包含路径遍历符号（".."）
+  nameWhitespaceOnly: 名称不能仅由空格或点号组成
+  nameTrailingDotOrSpace: 名称不能以点号或空格结尾
   neverPlayed: 从未游玩
   openCrashReportFolder: 打开包含错误报告的文件夹
   openLogFolder: 打开日志文件夹

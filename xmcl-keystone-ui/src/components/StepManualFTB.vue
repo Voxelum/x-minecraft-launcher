@@ -51,6 +51,7 @@ import { kInstances } from '@/composables/instances'
 import { injection } from '@/util/inject'
 import { required } from '@/util/props'
 import { kInstanceCreation } from '../composables/instanceCreation'
+import { validateInstanceName } from '@/util/instanceName'
 import StepperAdvanceContent from './StepperAdvanceContent.vue'
 
 defineProps({
@@ -60,9 +61,22 @@ const emit = defineEmits(['update:valid'])
 const { t } = useI18n()
 const { data: content } = injection(kInstanceCreation)
 const { instances } = injection(kInstances)
+const nameValidationErrors: Record<string, string> = {
+  invalidChars: 'instance.nameInvalidChars',
+  reservedName: 'instance.nameReservedName',
+  pathTraversal: 'instance.namePathTraversal',
+  whitespaceOnly: 'instance.nameWhitespaceOnly',
+  trailingDotOrSpace: 'instance.nameTrailingDotOrSpace',
+}
 const nameRules = computed(() => [
   (v: any) => !!v || t('instance.requireName'),
   (v: any) => !instances.value.some(i => i.name === v) || t('instance.duplicatedName'),
+  (v: any) => {
+    if (!v) return true
+    const result = validateInstanceName(v)
+    if (result === true) return true
+    return t(nameValidationErrors[result] ?? 'instance.nameInvalidChars')
+  },
 ])
 
 const onUpdate = ($event: any) => {

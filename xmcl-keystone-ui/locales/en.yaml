@@ -379,6 +379,11 @@ instance:
   name: Profile Name
   nameHint: The name of the modpack
   nameNoCyrillic: The name cannot contain Cyrillic characters
+  nameInvalidChars: 'The name cannot contain these characters: < > : " / \\ | ? *'
+  nameReservedName: This name is reserved by the system and cannot be used
+  namePathTraversal: The name cannot contain path traversal ("..")
+  nameWhitespaceOnly: The name cannot be only whitespace or dots
+  nameTrailingDotOrSpace: The name cannot end with a dot or space
   neverPlayed: Never Played
   openCrashReportFolder: Open Crash Report Folder
   openLogFolder: Open Log Folder

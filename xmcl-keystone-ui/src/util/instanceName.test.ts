@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { generateBaseName, generateDistinctName } from './instanceName'
+import { generateBaseName, generateDistinctName, validateInstanceName } from './instanceName'
 import type { RuntimeVersions } from '@xmcl/instance'
 
 const rt = (overrides: Partial<RuntimeVersions>): RuntimeVersions => ({
@@ -112,5 +112,68 @@ describe('instance name validation logic', () => {
     // With the old logic: v.trim() === "" matches instance with name ""  -> false positive!
     // With the fix: effectiveName = placeHolderName = "1.20.1", no conflict -> valid
     expect(validateName('', '1.20.1', [''])).toBe(true)
+  })
+})
+
+describe('validateInstanceName', () => {
+  test('should accept valid names', () => {
+    expect(validateInstanceName('my-instance')).toBe(true)
+    expect(validateInstanceName('1.20.1-forge47.2.0')).toBe(true)
+    expect(validateInstanceName('My Server 2')).toBe(true)
+    expect(validateInstanceName('测试实例')).toBe(true)
+    expect(validateInstanceName('instance_v2')).toBe(true)
+  })
+
+  test('should reject names with invalid characters', () => {
+    expect(validateInstanceName('my<instance')).toBe('invalidChars')
+    expect(validateInstanceName('my>instance')).toBe('invalidChars')
+    expect(validateInstanceName('my:instance')).toBe('invalidChars')
+    expect(validateInstanceName('my"instance')).toBe('invalidChars')
+    expect(validateInstanceName('my/instance')).toBe('invalidChars')
+    expect(validateInstanceName('my\\instance')).toBe('invalidChars')
+    expect(validateInstanceName('my|instance')).toBe('invalidChars')
+    expect(validateInstanceName('my?instance')).toBe('invalidChars')
+    expect(validateInstanceName('my*instance')).toBe('invalidChars')
+  })
+
+  test('should reject Windows reserved device names', () => {
+    expect(validateInstanceName('CON')).toBe('reservedName')
+    expect(validateInstanceName('PRN')).toBe('reservedName')
+    expect(validateInstanceName('AUX')).toBe('reservedName')
+    expect(validateInstanceName('NUL')).toBe('reservedName')
+    expect(validateInstanceName('COM1')).toBe('reservedName')
+    expect(validateInstanceName('COM9')).toBe('reservedName')
+    expect(validateInstanceName('LPT1')).toBe('reservedName')
+    expect(validateInstanceName('con')).toBe('reservedName')
+    expect(validateInstanceName('CON.txt')).toBe('reservedName')
+  })
+
+  test('should allow names that contain but are not reserved names', () => {
+    expect(validateInstanceName('CONTROLLER')).toBe(true)
+    expect(validateInstanceName('my-con')).toBe(true)
+    expect(validateInstanceName('AUXILIARY')).toBe(true)
+  })
+
+  test('should reject path traversal patterns', () => {
+    expect(validateInstanceName('..')).toBe('pathTraversal')
+    expect(validateInstanceName('../etc')).toBe('pathTraversal')
+    expect(validateInstanceName('foo/../bar')).toBe('pathTraversal')
+    expect(validateInstanceName('foo\\..\\bar')).toBe('pathTraversal')
+  })
+
+  test('should reject whitespace-only or dots-only names', () => {
+    expect(validateInstanceName('')).toBe('whitespaceOnly')
+    expect(validateInstanceName('   ')).toBe('whitespaceOnly')
+    expect(validateInstanceName('...')).toBe('whitespaceOnly')
+    expect(validateInstanceName('. .')).toBe('whitespaceOnly')
+  })
+
+  test('should reject names ending with dot or space', () => {
+    expect(validateInstanceName('instance.')).toBe('trailingDotOrSpace')
+    expect(validateInstanceName('instance ')).toBe('trailingDotOrSpace')
+  })
+
+  test('should accept names starting with dot (hidden dirs are ok)', () => {
+    expect(validateInstanceName('.minecraft')).toBe(true)
   })
 })
