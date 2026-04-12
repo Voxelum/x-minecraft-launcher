@@ -89,7 +89,11 @@ const { data: content, files, loading, error, placeHolderName } = injection(kIns
 const { instances } = injection(kInstances)
 const nameRules = computed(() => [
   // (v: any) => !!v || t('instance.requireName'),
-  (v: any) => !instances.value.some(i => i.name === v.trim()) || t('instance.duplicatedName'),
+  (v: any) => {
+    const trimmed = v.trim()
+    const effectiveName = trimmed || placeHolderName.value
+    return !instances.value.some(i => i.name === effectiveName) || t('instance.duplicatedName')
+  },
   (v: any) => !/\p{Script=Cyrillic}/u.test(v) || t('instance.nameNoCyrillic'),
 ])
 
