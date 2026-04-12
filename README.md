@@ -43,7 +43,8 @@ HomeBrew installation also available via tap
 
 ```bash
 brew tap voxelum/xmcl
-brew install --cask --no-quarantine voxelum/xmcl
+brew install --cask voxelum/xmcl/xmcl
+sudo xattr -rd com.apple.quarantine /Applications/X\ Minecraft\ Launcher.app
 ```
 
 <kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](docs/README.uk.md)</kbd>
