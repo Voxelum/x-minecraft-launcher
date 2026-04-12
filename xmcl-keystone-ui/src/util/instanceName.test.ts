@@ -1,37 +1,49 @@
 import { describe, expect, test } from 'vitest'
 import { generateBaseName, generateDistinctName } from './instanceName'
+import type { RuntimeVersions } from '@xmcl/instance'
+
+const rt = (overrides: Partial<RuntimeVersions>): RuntimeVersions => ({
+  minecraft: '',
+  forge: '',
+  neoForged: '',
+  fabricLoader: '',
+  quiltLoader: '',
+  optifine: '',
+  labyMod: '',
+  ...overrides,
+})
 
 describe('generateBaseName', () => {
   test('should return minecraft version as base name', () => {
-    expect(generateBaseName({ minecraft: '1.20.1' })).toBe('1.20.1')
+    expect(generateBaseName(rt({ minecraft: '1.20.1' }))).toBe('1.20.1')
   })
 
   test('should append forge version', () => {
-    expect(generateBaseName({ minecraft: '1.20.1', forge: '47.2.0' })).toBe('1.20.1-forge47.2.0')
+    expect(generateBaseName(rt({ minecraft: '1.20.1', forge: '47.2.0' }))).toBe('1.20.1-forge47.2.0')
   })
 
   test('should append fabric version', () => {
-    expect(generateBaseName({ minecraft: '1.20.1', fabricLoader: '0.14.21' })).toBe('1.20.1-fabric0.14.21')
+    expect(generateBaseName(rt({ minecraft: '1.20.1', fabricLoader: '0.14.21' }))).toBe('1.20.1-fabric0.14.21')
   })
 
   test('should append quilt version', () => {
-    expect(generateBaseName({ minecraft: '1.20.1', quiltLoader: '0.19.0' })).toBe('1.20.1-quilt0.19.0')
+    expect(generateBaseName(rt({ minecraft: '1.20.1', quiltLoader: '0.19.0' }))).toBe('1.20.1-quilt0.19.0')
   })
 
   test('should append neoforge version', () => {
-    expect(generateBaseName({ minecraft: '1.20.1', neoForged: '20.4.0' })).toBe('1.20.1-neoforge20.4.0')
+    expect(generateBaseName(rt({ minecraft: '1.20.1', neoForged: '20.4.0' }))).toBe('1.20.1-neoforge20.4.0')
   })
 
   test('should append labymod version', () => {
-    expect(generateBaseName({ minecraft: '1.20.1', labyMod: '4.0.0' })).toBe('1.20.1-labyMod4.0.0')
+    expect(generateBaseName(rt({ minecraft: '1.20.1', labyMod: '4.0.0' }))).toBe('1.20.1-labyMod4.0.0')
   })
 
   test('should append optifine alongside loader', () => {
-    expect(generateBaseName({ minecraft: '1.20.1', forge: '47.2.0', optifine: 'HD_U_I6' })).toBe('1.20.1-forge47.2.0-optifineHD_U_I6')
+    expect(generateBaseName(rt({ minecraft: '1.20.1', forge: '47.2.0', optifine: 'HD_U_I6' }))).toBe('1.20.1-forge47.2.0-optifineHD_U_I6')
   })
 
   test('should only use first matching loader (forge > fabric > quilt > neoForged > labyMod)', () => {
-    expect(generateBaseName({ minecraft: '1.20.1', forge: '47.2.0', fabricLoader: '0.14.21' })).toBe('1.20.1-forge47.2.0')
+    expect(generateBaseName(rt({ minecraft: '1.20.1', forge: '47.2.0', fabricLoader: '0.14.21' }))).toBe('1.20.1-forge47.2.0')
   })
 })
 
