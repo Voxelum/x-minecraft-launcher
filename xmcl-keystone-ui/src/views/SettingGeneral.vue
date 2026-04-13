@@ -56,6 +56,28 @@
 
     <v-divider class="my-3" />
 
+    <!-- Backup & Restore -->
+    <SettingItem :description="t('setting.backupDescription')">
+      <template #title>
+        <v-icon left small color="primary">backup</v-icon>
+        {{ t("setting.backup") }}
+      </template>
+      <template #action>
+        <div class="flex gap-2 justify-end">
+          <v-btn small outlined color="primary" @click="createBackup">
+            <v-icon left small>backup</v-icon>
+            {{ t("setting.createBackup") }}
+          </v-btn>
+          <v-btn small outlined color="primary" @click="restoreBackup">
+            <v-icon left small>restore</v-icon>
+            {{ t("setting.restoreBackup") }}
+          </v-btn>
+        </div>
+      </template>
+    </SettingItem>
+
+    <v-divider class="my-3" />
+
     <!-- Privacy & Telemetry -->
     <SettingItemSwitcher
       :value="disableTelemetry"
@@ -318,6 +340,18 @@ async function browseRootDir() {
 }
 
 const { show: onMigrateFromOther } = useDialog("migrate-wizard");
+
+// Backup & Restore
+const { show: showBackupDialog } = useDialog("backup");
+const { show: showRestoreDialog } = useDialog("restore");
+
+async function createBackup() {
+  showBackupDialog({});
+}
+
+async function restoreBackup() {
+  showRestoreDialog({});
+}
 </script>
 
 <style scoped>

@@ -43,6 +43,8 @@
     <AppMigrateWizardDialog />
     <AppExportServerDialog />
     <AppModrinthLoginDialog />
+    <AppBackupDialog />
+    <AppRestoreDialog />
     <InstanceLauncherPage />
     <AppSideBarGroupSettingDialog :default-color="defaultColor" />
     <Spotlight ref="spotlightRef" />
@@ -100,6 +102,8 @@ import AppJoinServerDialog from "@/views/AppJoinServerDialog.vue";
 import AppLaunchServerDialog from "@/views/AppLaunchServerDialog.vue";
 import AppMigrateWizardDialog from "@/views/AppMigrateWizardDialog.vue";
 import AppModrinthLoginDialog from "@/views/AppModrinthLoginDialog.vue";
+import AppBackupDialog from "@/views/AppBackupDialog.vue";
+import AppRestoreDialog from "@/views/AppRestoreDialog.vue";
 import AppNotifier from "@/views/AppNotifier.vue";
 import AppSideBarClassic from "@/views/AppSideBarClassic.vue";
 import AppSideBarNotch from "@/views/AppSideBarNotch.vue";
