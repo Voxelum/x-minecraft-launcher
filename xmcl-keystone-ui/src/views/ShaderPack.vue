@@ -60,7 +60,7 @@
         :curseforge="selectedItem?.curseforge?.id || selectedItem?.curseforgeProjectId"
         @uninstall="onUninstall"
         @enable="onEnable"
-        @disable="onUninstall([$event])"
+        @disable="onDisable"
         @category="toggleCategory"
       />
       <MarketProjectDetailCurseforge
@@ -74,7 +74,7 @@
         :modrinth="selectedModrinthId"
         @uninstall="onUninstall"
         @enable="onEnable"
-        @disable="onUninstall([$event])"
+        @disable="onDisable"
         @category="curseforgeCategory = $event"
       />
       <ShaderPackDetailResource
@@ -362,6 +362,9 @@ const { shaderPack } = injection(kInstanceShaderPacks)
 const onUninstall = (files: ProjectFile[]) => {
   shaderPack.value = ''
   uninstall({ path: path.value, files: files.map(f => f.path) })
+}
+const onDisable = () => {
+  shaderPack.value = ''
 }
 const onEnable = async (f: ProjectFile | string) => {
   if (!shaderMod.value && !runtime.value.optifine) {
