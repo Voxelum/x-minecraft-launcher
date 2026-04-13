@@ -364,6 +364,34 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- Backup Complete Dialog -->
+    <v-dialog v-model="showCompleteDialog" max-width="400" persistent>
+      <v-card>
+        <v-card-title class="headline">
+          {{ t("setting.backupCompleteTitle") }}
+        </v-card-title>
+        <v-card-text>
+          <v-icon color="success" size="48" class="mb-2">check_circle</v-icon>
+          <p>{{ t("setting.backupCompleteMessage") }}</p>
+          <p class="text-caption grey--text mt-2">
+            {{ t("setting.backupCompleteHint") }}
+          </p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            @click="
+              showCompleteDialog = false;
+              cancel();
+            "
+          >
+            {{ t("shared.ok") }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -396,6 +424,7 @@ const includeSettings = ref(true);
 const includeScreenshots = ref(false);
 const expanded = ref([0]);
 const showCancelDialog = ref(false);
+const showCompleteDialog = ref(false);
 const instances = ref<Array<{ path: string; name?: string; version?: string }>>(
   []
 );
@@ -483,10 +512,8 @@ watch(
   () => currentTask.value?.state,
   (newState) => {
     if (newState === TaskState.Succeed) {
-      // Task completed successfully, close dialog after a short delay
-      setTimeout(() => {
-        cancel();
-      }, 500);
+      // Task completed successfully
+      showCompleteDialog.value = true;
     } else if (newState === TaskState.Failed) {
       // Task failed, error will be shown
       creating.value = false;
@@ -502,6 +529,7 @@ function resetForm() {
   error.value = "";
   creating.value = false;
   showCancelDialog.value = false;
+  showCompleteDialog.value = false;
   selectedInstances.value = instances.value.map((i) => i.path);
 }
 
@@ -560,7 +588,8 @@ async function onCreateBackup() {
       includeScreenshots: includeScreenshots.value,
     });
 
-    cancel();
+    // We don't call cancel() here because we want to wait for the task to complete
+    // and show the success dialog.
   } catch (e: any) {
     if (e.message === "Backup cancelled by user") {
       // User cancelled, partial backup may have been saved
@@ -568,7 +597,6 @@ async function onCreateBackup() {
     } else {
       error.value = e.message || t("setting.backupFailed");
     }
-  } finally {
     creating.value = false;
   }
 }
