@@ -19,7 +19,7 @@
     "build": "vite build --emptyOutDir",
     "check": "vue-tsc --noEmit --project ./tsconfig.json",
     "dev": "vite",
-    "lint": "oxlint -c ../../xmcl/packages/oxlint-config/oxlintrc.json .",
+    "lint": "oxlint -c ../xmcl-config.json .",
     "lint:fix": "bun run lint --fix"
   },
   "dependencies": {

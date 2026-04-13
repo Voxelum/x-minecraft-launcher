@@ -61,17 +61,25 @@ export class ObjectFactory {
       }
     }
     try {
-      const types = Reflect.get(Type, kParams)
+      const types = typeof Type === 'function' || typeof Type === 'object' ? Reflect.get(Type, kParams) : undefined
       const params: any[] = new Array(types?.length ?? 0)
       if (types) {
         for (let i = 0; i < types.length; i++) {
           const type = types[i]
           if (type) {
+            if (typeof type !== 'function' && typeof type !== 'symbol') {
+              const typeName = typeof Type === 'symbol' ? Type.toString() : (Type as Function).name
+              throw new AnyError('ObjectRegistryError', `Invalid dependency type at index ${i} for ${typeName}: ${typeof type}, value: ${type}. Expected constructor function or symbol`)
+            }
             params[i] = await this.getOrCreate(type)
           } else {
             throw new AnyError('ObjectRegistryError', `Fail to get [${i}](${type}) param type for ${typeof Type === 'symbol' ? Type.toString() : (Type as Function).name} since it's not registered`)
           }
         }
+      }
+
+      if (typeof Type !== 'function') {
+        throw new AnyError('ObjectRegistryError', `Type is not a constructor: ${typeof Type}, value: ${Type}, expected constructor or symbol`)
       }
 
       const service = new (Type as any)(...params)

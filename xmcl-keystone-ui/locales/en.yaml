@@ -390,6 +390,7 @@ instance:
   requireName: The name is required
   resolution: Resolution
   resolutionPreset: Resolution Preset
+  server: Server
   showInstance: Show game folder
   updates: Updates
   useSharedOptions: Use shared game settings
@@ -1337,6 +1338,47 @@ setting:
   maxSocketsTitle: Max HTTP sockets
   memoryAssignment: Memory Assignment
   migrateFromOther: Import from other launcher
+  backup: Backup & Restore
+  backupDescription: Create and restore launcher backups
+  createBackup: Create Backup
+  restoreBackup: Restore Backup
+  backupFileName: Backup File Name
+  backupFileNameRequired: File name is required
+  backupFileNameHint: The backup will be saved as .xmclsettings format
+  includeInstances: Include Instances
+  includeInstancesDesc: Backup all game instances and their data
+  selectInstances: Select Instances to Backup
+  selectedInstances: "Selected: {count} / {total}"
+  includeSettings: Include Settings
+  includeSettingsDesc: Backup launcher settings and configurations
+  includeScreenshots: Include Screenshots
+  includeScreenshotsDesc: Backup instance screenshots
+  saveBackupFile: Save Backup File
+  backupFailed: Failed to create backup
+  selectBackupFile: Select Backup File
+  selectBackupFileHint: Choose a .xmclsettings backup file to restore
+  backupInfo: Backup Information
+  backupInstances: "Instances: {count}"
+  backupCreated: "Created: {date}"
+  backupSize: "Size: {size}"
+  restoreWarning: "Warning: Restoring will overwrite your current data. This action cannot be undone!"
+  restoreFailed: Failed to restore backup
+  restoreComplete: Restore Complete
+  restoreCompleteMessage: Backup has been restored successfully.
+  restoreRestartHint: Please restart the launcher for theme and settings changes to take effect.
+  backupProgress: Backup Progress
+  backupPhaseCopyingInstances: Copying instances
+  backupPhaseCopyingSettings: Copying settings
+  backupPhaseCopyingScreenshots: Copying screenshots
+  backupPhaseCreatingArchive: Creating archive
+  backupPhaseFinalizing: Finalizing
+  backupFilesProgress: "Files: {copied} / {total}"
+  backupLog: Backup Log
+  cancelBackupTitle: Cancel Backup?
+  cancelBackupWarning: Are you sure you want to cancel? A partial backup will be saved with the files copied so far.
+  cancelBackupFinalizingWarning: Cannot cancel during finalization. Please wait for the backup to complete.
+  cancelBackup: Cancel Backup
+  backupCancelled: Backup was cancelled. Partial backup may have been saved.
   minecraftOptions: Minecraft Options
   name: Global Setting | Global Settings
   network: Network Settings
@@ -1488,6 +1530,7 @@ shared:
   browse: Browse
   cancel: Cancel
   client: Client
+  continue: Continue
   description: Description
   disable: Disable
   download: Download
@@ -1505,10 +1548,12 @@ shared:
   previous: Previous
   refresh: Refresh
   remove: Remove
+  restart: Restart
   save: Save
   search: Search
   server: Server
   skipForNow: Skip for now
+  later: Later
   "yes": "Yes"
 sidebar:
   pin: Pin

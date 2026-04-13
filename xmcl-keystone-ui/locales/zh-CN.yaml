@@ -17,7 +17,7 @@ AppShareInstanceDialog:
   downloadTitle: 从其他玩家那获得游戏资源
   filesToDownload: 选择您想下载的文件
   filesToShare: 选择分享的文件
-  instanceShare: '{user} 给您分享了他的游戏配置'
+  instanceShare: "{user} 给您分享了他的游戏配置"
   share: 分享
   shareNotifyTitle: 分享配置
   shareTitle: 分享启动配置给其他玩家
@@ -49,10 +49,10 @@ HomeSyncDialogPush:
 SettingMigrationDialog:
   selectRootDirectory: 选择新的根目录
 ago:
-  day: '{duration} 天前'
-  hour: '{duration} 小时前'
-  minute: '{duration} 分钟前'
-  second: '{duration} 秒前'
+  day: "{duration} 天前"
+  hour: "{duration} 小时前"
+  minute: "{duration} 分钟前"
+  second: "{duration} 秒前"
 askAICrash:
   copyPrompt: 复制提示询问AI
   description: |-
@@ -144,8 +144,8 @@ dataMigration:
   waitReload: 迁移数据中。请不要关闭启动器，否则您可能会丢失一部分数据
 delete:
   name: 删除 {name}
-  'no': 取消
-  'yes': 删除
+  "no": 取消
+  "yes": 删除
 dependencies:
   embedded: 内嵌
   incompatible: 不兼容
@@ -155,13 +155,13 @@ dependencies:
 diagnosis:
   badInstall:
     message: 也许您应该尝试重新安装此版本
-    name: '{version} 版本安装失败'
+    name: "{version} 版本安装失败"
   corruptedAssets:
     message: 启动器将重新下载游戏文件
-    name: 'Assets 文件不完整: {name} | Assets 文件不完整: {name} | {count} 个游戏资源不完整'
+    name: "Assets 文件不完整: {name} | Assets 文件不完整: {name} | {count} 个游戏资源不完整"
   corruptedAssetsIndex:
     message: 启动器将重新下载游戏资源目录
-    name: '{version} 游戏资源目录损坏。'
+    name: "{version} 游戏资源目录损坏。"
   corruptedLibraries:
     message: 启动器将重新下载不完整的文件
     name: >-
@@ -199,13 +199,13 @@ difficulty:
 disk:
   available: 可用
   used: 已用
-downloadCount: '{count} 次下载'
+downloadCount: "{count} 次下载"
 downloadUpdate: 下载更新
 duration:
-  day: '{duration} 天'
-  hour: '{duration} 小时'
-  minute: '{duration} 分钟'
-  second: '{duration} 秒'
+  day: "{duration} 天"
+  hour: "{duration} 小时"
+  minute: "{duration} 分钟"
+  second: "{duration} 秒"
 env:
   select:
     all: 全选
@@ -213,7 +213,7 @@ env:
     none: 全不选
 errors:
   BadForgeInstallerJarError: 无法解析 Forge 安装包 Jar 文件。也许 Forge 有了新的安装包格式？如果经常遇到此问题，请联系开发团队。
-  BadInstanceType: '不是一个合法的实例: {type}'
+  BadInstanceType: "不是一个合法的实例: {type}"
   BodyTimeoutError: 等待 HTTP 数据超时
   ChecksumNotMatchError: 文件校验失败！期望的哈希值是 {expect}，实际获取到的是 {actual}。
   ConnectTimeoutError: 与服务器建立连接超时
@@ -233,7 +233,7 @@ errors:
 eula:
   body: 选中复选框按钮即表示您同意 Minecraft 的 {eula}。
 exception:
-  http: '{url} 的 HTTP 请求失败。状态码 {statusCode}。{code}，请重试或检查您的网络。如果此问题持续出现，请联系开发团队。'
+  http: "{url} 的 HTTP 请求失败。状态码 {statusCode}。{code}，请重试或检查您的网络。如果此问题持续出现，请联系开发团队。"
 extensions:
   mrpack: Modrinth 整合包
   zip: Zip 压缩包
@@ -447,7 +447,7 @@ instances:
   loadingFiles: 加载整合包文件
   refreshServers: 刷新服务器
 items:
-  count: '{count} 个'
+  count: "{count} 个"
   total: 共 {total} 个
 java:
   allocatedLong: 启动器自动选择 Java
@@ -463,7 +463,7 @@ java:
   minMemory: 最小内存
   noMemory: 不设置内存限制
   refresh: 刷新本地 Java
-  systemMemory: '系统空闲内存: {free} / {total}'
+  systemMemory: "系统空闲内存: {free} / {total}"
 labyMod:
   disable: 不使用 LabyMod
   empty: 当前 Minecraft 不支持 LabyMod
@@ -560,7 +560,7 @@ loginError:
   badNetworkOrServer: 请检查您的网络连接！当然也可能是验证服务器挂了:/
   checkOwnershipFailed: 在检查您是否拥有 Minecraft 时发生错误，请重试
   connectionReset: 因为服务端断开了连接导致登录失败，请重试或检查网络
-  fetchMinecraftProfileFailed: '获取 Minecraft 用户信息失败: {reason}'
+  fetchMinecraftProfileFailed: "获取 Minecraft 用户信息失败: {reason}"
   illegalEmail: 当前的邮箱格式不合法
   invalidCredentials: 无法验证。用户名或密码错误。
   loginMinecraftByXboxFailed: 在通过 Xbox 通证交换 Minecraft 通证的过程中发生错误，请确认您的 Xbox 账号拥有 Minecraft。您可以尝试重试登录
@@ -623,7 +623,7 @@ mod:
     该模组支持以下模组加载器。
     请选择一个进行安装。
   modloaderSelectNotSupported: 找不到 Minecraft {minecraft} 的 {modloader}
-  mods: '{count} 个模组'
+  mods: "{count} 个模组"
   name: 模组 | 模组
   newFolder: 新建文件夹
   noGroupsFound: 未找到分组
@@ -639,7 +639,7 @@ mod:
   showInModrinth: 在 Modrinth 中显示 {name}
   switchDefaultSource: 本地模组默认显示为
   syncGroupRules: 将分组规则保存
-  toUpdate: '{count} 个有新版本'
+  toUpdate: "{count} 个有新版本"
   ungroup: 取消分组
 modFilter:
   clear: 清除过滤器
@@ -654,9 +654,9 @@ modInstall:
     除非作者决定取消存档该项目，否则 {name} 将不会收到任何进一步的更新。
   autoUpgrade:
     description: 您已更改 Minecraft 版本。是否要自动将兼容的模组更新到与 Minecraft {version} 匹配的版本？
-    'no': 跳过
+    "no": 跳过
     title: 更新模组？
-    'yes': 更新模组
+    "yes": 更新模组
   checkDependencies: 检查依赖关系
   checkUpgrade: 检查模组更新
   checkedDependencies: 已检查依赖关系
@@ -851,7 +851,7 @@ modrinth:
   projectMembers: 项目成员
   projectType:
     modpack: 整合包
-  projects: '{count}个项目'
+  projects: "{count}个项目"
   serverSide: 服务端
   sort:
     downloads: 下载数量
@@ -916,7 +916,7 @@ multiplayer:
   name: 跨局域网联机
   networkInfo: 当前网络状况
   next: 下一步
-  otherExposedPortDescription: '{user} 暴露给你的端口'
+  otherExposedPortDescription: "{user} 暴露给你的端口"
   placeholder: 和其他玩家建立连接，跨局域网联机 Minecraft！
   previous: 上一步
   receiveHint: 在对方输入您的令牌后，您们之间的连接会自动创建。现在您已经可以点击完成了。
@@ -973,7 +973,7 @@ presence:
   mod: 查看 {instance}中的模式
   modrinthProject: 在 Modrinth 中查看 {name}
   resourcePack: 查看 {instance} 中的资源集
-  save: '{instance}中的世界观'
+  save: "{instance}中的世界观"
   setting: 查看设置页面
   shaderPack: 查看 {instance}中的着色器集
   version: 查看版本页面
@@ -995,7 +995,7 @@ resourcepack:
   name: 资源包 | 资源包
   searchHint: 搜索资源包
   searchOnCurseforge: 在 Curseforge 中查找 {name}
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selected: 已选资源包
   showDirectory: 打开装有资源包的文件夹
   showFile: 在文件夹中显示 {file}
@@ -1208,6 +1208,12 @@ setting:
   maxSocketsTitle: 最大 HTTP 连接数量
   memoryAssignment: 内存分配
   migrateFromOther: 从其他启动器导入
+  selectInstances: 选择要备份的实例
+  selectedInstances: "已选择: {count} / {total}"
+  restoreComplete: 恢复完成
+  restoreCompleteMessage: 备份已成功恢复。
+  restoreRestartHint: 请重启启动器以使主题和设置更改生效。
+  backupLog: 备份日志
   minecraftOptions: Minecraft 选项
   name: 设置
   network: 网络设置
@@ -1231,7 +1237,7 @@ setting:
   resetAllSettingsConfirmTitle: 重置所有设置？
   resetAllSettingsHint: 将启动器重置为出厂默认值（删除所有数据）
   resetAllSettingsSuccess: 所有设置已重置。启动器将重新启动。
-  resetSettingsError: '重置设置时出错: {error}'
+  resetSettingsError: "重置设置时出错: {error}"
   resetToDefault: 重置到默认配色
   select: 选择
   settingsExported: 设置导出成功
@@ -1286,7 +1292,7 @@ setup:
     name: 添加游戏账号
     skip: 先不登录了
   appearance:
-    name: '@:setting.appearance'
+    name: "@:setting.appearance"
   dataRoot:
     description: 数据存储目录不是常规的 .minecraft 目录。因为 XMCL 的数据目录格式特殊，不建议将常规 .minecraft 目录设置为数据目录。
     drives: 推荐路径
@@ -1356,7 +1362,7 @@ shared:
   manage: 配置
   name: 名称
   next: 下一步
-  'no': 否
+  "no": 否
   ok: 好的
   previous: 上一步
   refresh: 刷新
@@ -1364,7 +1370,7 @@ shared:
   search: 搜索
   server: 服务端
   skipForNow: 先跳过
-  'yes': 是
+  "yes": 是
 sidebar:
   pin: 固定
   unpin: 取消固定
@@ -1396,7 +1402,7 @@ task:
   empty: 目前没有运行中的任务
   failed: 失败
   manager: 任务管理器
-  nTaskRunning: '{count} 个任务运行中'
+  nTaskRunning: "{count} 个任务运行中"
   name: 任务 | 任务
   pause: 暂停
 theme:
@@ -1451,7 +1457,7 @@ tutorial:
     searchTitle: 搜索、发现模组
   multiplayer:
     contentDescription: 您和您的同伴之间的联系将在此处列出。
-    contentTitle: '@:multiplayer.connections'
+    contentTitle: "@:multiplayer.connections"
     groupDescription: |-
       您可以与其他玩家创建或加入群组。
       启动器会尝试根据群组在您和您的朋友之间创建 P2P 连接。
@@ -1575,4 +1581,3 @@ spotlight:
   globalSettings: 设置
   mods: 模组
   store: 整合包市场
-

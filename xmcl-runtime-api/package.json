@@ -20,7 +20,7 @@
     "build:esm": "esbuild --bundle --platform=node --outfile=dist/index.mjs --target=es2020 --format=esm --external:semver index.ts",
     "build:type": "tsc --project ./tsconfig.json",
     "check": "tsc --noEmit --project ./tsconfig.json",
-    "lint": "oxlint -c ../../xmcl/packages/oxlint-config/oxlintrc.json .",
+    "lint": "oxlint -c ../xmcl-config.json .",
     "fmt": "oxfmt -c .oxfmtrc.json .",
     "lint:fix": "bun run lint --fix"
   },

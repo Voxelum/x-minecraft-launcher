@@ -4,122 +4,95 @@
     :multi-line="data.operations.length > 0"
     :top="true"
     :right="true"
-    class="select-none"
+    :timeout="data.level === 'success' ? 10000 : -1"
+    class="select-none modern-snackbar"
+    elevation="8"
+    rounded="lg"
   >
-    <v-icon
-      v-if="data.level"
-      :color="colors[data.level]"
-      left
-    >
-      {{ icons[data.level] }}
-    </v-icon>
-
-    <!-- <span v-if="data.level === 'error' || data.level === 'warning'">{{ levelText }}</span> -->
-
-    <span v-if="!data.body && !data.operations">
-      {{ data.title }}
-    </span>
-    <div
-      v-else
-      class="w-full"
-    >
-      <v-card
-        color="transparent"
-        flat
-      >
-        <v-card-title>
+    <div class="snackbar-content">
+      <div class="snackbar-icon">
+        <v-icon v-if="data.level" :color="colors[data.level]" size="24">
+          {{ icons[data.level] }}
+        </v-icon>
+      </div>
+      <div class="snackbar-text">
+        <span v-if="!data.body && !data.operations" class="snackbar-title">
           {{ data.title }}
-        </v-card-title>
-        <v-card-text v-if="data.body">
-          {{ data.body }}
-        </v-card-text>
-        <v-card-actions v-if="data.operations.length > 0">
-          <div class="flex-grow" />
-          <v-btn
-            v-for="op in data.operations"
-            :key="op.text"
-            text
-            small
-            :color="op.color"
-            @click="op.handler(); close()"
-          >
-            <v-icon
-              v-if="op.icon"
-              left
-            >
-              {{ op.icon }}
-            </v-icon>
-            {{ op.text }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+        </span>
+        <template v-else>
+          <div class="snackbar-title">{{ data.title }}</div>
+          <div v-if="data.body" class="snackbar-body">{{ data.body }}</div>
+        </template>
+      </div>
     </div>
     <template #action>
-      <v-btn
-        v-if="data.more"
-        icon
-        text
-        @click="more"
-      >
-        <v-icon>arrow_right</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        color="pink"
-        text
-        @click="close"
-      >
-        <v-icon>close</v-icon>
-      </v-btn>
+      <div class="snackbar-actions">
+        <v-btn v-if="data.more" icon text class="action-btn" @click="more">
+          <v-icon>arrow_right</v-icon>
+        </v-btn>
+        <v-btn icon text class="action-btn close-btn" @click="close">
+          <v-icon>close</v-icon>
+        </v-btn>
+      </div>
     </template>
   </v-snackbar>
 </template>
 
-<script lang=ts setup>
-import { Level, kNotificationQueue } from '../composables/notifier'
-import { injection } from '@/util/inject'
+<script lang="ts" setup>
+import { Level, kNotificationQueue } from "../composables/notifier";
+import { injection } from "@/util/inject";
 
 const data = reactive({
   show: false,
-  level: '' as Level | '',
-  title: '',
-  body: '',
-  more: (() => { }) as ((() => void) | undefined),
+  level: "" as Level | "",
+  title: "",
+  body: "",
+  more: (() => {}) as (() => void) | undefined,
   operations: [] as {
-    text: string
-    icon?: string
-    color?: string
-    handler: () => void
+    text: string;
+    icon?: string;
+    color?: string;
+    handler: () => void;
   }[],
-})
-const queue = injection(kNotificationQueue)
-const queueLength = computed(() => queue.value.length)
-const close = () => { data.show = false }
+});
+const queue = injection(kNotificationQueue);
+const queueLength = computed(() => queue.value.length);
+const close = () => {
+  data.show = false;
+};
 const more = () => {
   if (data.more) {
-    data.more()
-    close()
+    data.more();
+    close();
   }
-}
+};
 function consume() {
-  const not = queue.value.pop()
+  const not = queue.value.pop();
   if (not) {
-    data.level = not.level ?? ''
-    data.title = not.title
-    data.show = true
-    data.more = not.more
-    data.body = not.body ?? ''
-    data.operations = not.operations ?? []
+    data.level = not.level ?? "";
+    data.title = not.title;
+    data.show = true;
+    data.more = not.more;
+    data.body = not.body ?? "";
+    data.operations = not.operations ?? [];
   }
 }
 watch(queueLength, (newLength, oldLength) => {
   if (newLength > oldLength && !data.show) {
-    consume()
+    consume();
   }
-})
-const { t } = useI18n()
+});
+const { t } = useI18n();
 
-const levelText = computed(() => data.level === 'info' ? t('logLevel.info') : data.level === 'error' ? t('logLevel.error') : data.level === 'success' ? t('logLevel.success') : t('logLevel.warning'))
+const levelText = computed(() =>
+  data.level === "info"
+    ? t("logLevel.info")
+    : data.level === "error"
+    ? t("logLevel.error")
+    : data.level === "success"
+    ? t("logLevel.success")
+    : t("logLevel.warning")
+);
 
 // function handleNotification(payload: TaskLifeCyclePayload) {
 //   const handler = registry[payload.type]
@@ -132,29 +105,103 @@ const levelText = computed(() => data.level === 'info' ? t('logLevel.info') : da
 onMounted(() => {
   // taskMonitor.on('task-start', handleNotification)
   // ipc.on('notification', handleNotification)
-})
+});
 onUnmounted(() => {
   // ipc.removeListener('notification', handleNotification)
-})
+});
 
 const icons = {
-  success: 'check_circle',
-  info: 'info',
-  warning: 'priority_high',
-  error: 'warning',
-}
+  success: "check_circle",
+  info: "info",
+  warning: "priority_high",
+  error: "warning",
+};
 const colors = {
-  success: 'green',
-  error: 'red',
-  info: 'white',
-  warning: 'orange',
-}
+  success: "green",
+  error: "red",
+  info: "white",
+  warning: "orange",
+};
 </script>
 
 <style>
+.modern-snackbar {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modern-snackbar .v-snack__wrapper {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+.snackbar-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.snackbar-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.snackbar-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.snackbar-title {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.4;
+  display: block;
+}
+
+.snackbar-body {
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0.9;
+  margin-top: 4px;
+  word-break: break-word;
+}
+
+.snackbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.action-btn {
+  min-width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.close-btn:hover {
+  background: rgba(255, 82, 82, 0.15) !important;
+}
+
+.close-btn .v-icon {
+  color: #ff5252;
+}
+
 .v-snack__content {
   display: flex;
-  padding-top: 0;
-  padding-bottom: 4px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px !important;
+  padding-right: 8px !important;
 }
 </style>
