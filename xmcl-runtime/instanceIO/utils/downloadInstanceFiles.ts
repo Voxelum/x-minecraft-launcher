@@ -11,6 +11,7 @@ function toDownloadOptions(opt: { options: DownloadMultipleOption; file: Instanc
     destination: opt.options.destination,
     headers: opt.options.headers,
     pendingFile: opt.options.pendingFile,
+    validator: opt.options.validator,
     expectedTotal: (
       typeof opt.options.url === 'string'
         ? opt.options.url.includes('edge.forgecdn.net')

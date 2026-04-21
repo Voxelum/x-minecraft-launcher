@@ -1,35 +1,42 @@
 <template>
-  <v-dialog v-model="isShown" :width="480" :persistent="true">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden">
-      <!-- Header -->
-      <div class="bg-orange-500 px-5 py-3">
-        <div class="flex items-center gap-2">
-          <v-icon size="22" color="white"> mdi-alert-circle </v-icon>
-          <h3 class="text-lg font-semibold text-white">
-            {{ t("unauthenticatedWarning.title") }}
-          </h3>
+  <v-dialog
+    v-model="isShown"
+    :width="500"
+    :persistent="true"
+    transition="fade-transition"
+  >
+    <div
+      class="overflow-hidden flex flex-col w-full bg-white/80 dark:bg-[#121212]/80 backdrop-blur-3xl rounded-[24px] border border-white/40 dark:border-white/10 shadow-2xl transition-all duration-300"
+    >
+      <!-- Header with Icon -->
+      <div class="px-6 pt-8 pb-4 flex flex-col items-center text-center">
+        <div
+          class="w-16 h-16 rounded-2xl bg-orange-500/10 flex items-center justify-center mb-4"
+        >
+          <v-icon size="32" color="orange">warning</v-icon>
         </div>
-      </div>
-
-      <!-- Content -->
-      <div class="px-5 py-4">
-        <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          {{ t("unauthenticatedWarning.title") }}
+        </h3>
+        <p
+          class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed max-w-[80%]"
+        >
           {{ t("unauthenticatedWarning.description") }}
         </p>
       </div>
 
-      <!-- Actions -->
+      <!-- Footer Actions -->
       <div
-        class="px-5 py-3 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700"
+        class="px-6 py-6 mt-2 bg-black/5 dark:bg-white/5 border-t border-black/5 dark:border-white/5"
       >
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between gap-4">
+          <!-- Social Icons -->
           <div class="flex items-center gap-1">
             <!-- Discord -->
             <v-btn
               icon
-              variant="text"
+              class="bg-transparent hover:bg-black/5 dark:hover:bg-white/10 text-[#5865F2] transition-colors shadow-none"
               size="small"
-              class="text-gray-500 dark:text-gray-400 hover:text-[#5865F2]"
               @click="onDiscord"
             >
               <svg
@@ -46,9 +53,8 @@
             <!-- GitHub -->
             <v-btn
               icon
-              variant="text"
+              class="bg-transparent hover:bg-black/5 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 transition-colors shadow-none"
               size="small"
-              class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
               @click="onGithub"
             >
               <svg
@@ -63,24 +69,21 @@
               </svg>
             </v-btn>
           </div>
-          <div class="flex items-center gap-2">
-            <v-btn
-              variant="text"
-              size="small"
-              class="text-gray-600 dark:text-gray-400"
+
+          <!-- Buttons -->
+          <div class="flex items-center gap-3">
+            <button
+              class="px-5 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 rounded-xl transition-all active:scale-95"
               @click="onCancel"
             >
               {{ t("unauthenticatedWarning.cancel") }}
-            </v-btn>
-            <v-btn
-              color="orange-500"
-              variant="flat"
-              size="small"
-              class="text-white font-medium"
+            </button>
+            <button
+              class="px-6 py-2.5 text-sm font-bold bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/30 active:scale-95"
               @click="onPlay"
             >
               {{ t("unauthenticatedWarning.playAnyway") }}
-            </v-btn>
+            </button>
           </div>
         </div>
       </div>
@@ -93,7 +96,7 @@ import { useDialog } from "../composables/dialog";
 
 const { t } = useI18n();
 
-const { isShown, hide, parameter, show } = useDialog("unauthenticated-warning");
+const { isShown, hide, parameter } = useDialog("unauthenticated-warning");
 
 const onPlay = () => {
   parameter.value?.onPlay?.();
@@ -116,3 +119,10 @@ const onGithub = () => {
   );
 };
 </script>
+
+<style scoped>
+:deep(.v-dialog) {
+  box-shadow: none !important;
+  border-radius: 24px;
+}
+</style>
