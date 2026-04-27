@@ -1,44 +1,44 @@
 ﻿{
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "downlevelIteration": true,
-    "resolveJsonModule": true,
-    "strict": true,`n    "noImplicitAny": false,
-    "moduleResolution": "node",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "~main/*": [
-        "./src/windows/main/*"
-      ]
-    },
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "jsx": "preserve",
-    "types": [
-      "vite/client",
-      "@xmcl/runtime-api/client",
-      "@xmcl/runtime-api/monitorClient"
-    ]
-  },
-  "vueCompilerOptions": {
-    "target": 2.7,
-    "experimentalSuppressUnknownJsxPropertyErrors": false
-  },
-  "include": [
-    "src/**/*",
-    "src/**/*.vue",
-    "auto-imports.d.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "../xmcl",
-    "../xmcl-runtime-api"
-  ]
+    "exclude":  [
+                    "node_modules",
+                    "../xmcl",
+                    "../xmcl-runtime-api"
+                ],
+    "include":  [
+                    "src/**/*",
+                    "src/**/*.vue",
+                    "auto-imports.d.ts"
+                ],
+    "vueCompilerOptions":  {
+                               "target":  2.7,
+                               "experimentalSuppressUnknownJsxPropertyErrors":  false
+                           },
+    "compilerOptions":  {
+                            "experimentalDecorators":  true,
+                            "forceConsistentCasingInFileNames":  true,
+                            "moduleResolution":  "node",
+                            "noImplicitAny":  false,
+                            "module":  "ESNext",
+                            "paths":  {
+                                          "@/*":  [
+                                                      "./src/*"
+                                                  ],
+                                          "~main/*":  [
+                                                          "./src/windows/main/*"
+                                                      ]
+                                      },
+                            "downlevelIteration":  true,
+                            "types":  [
+                                          "vite/client",
+                                          "@xmcl/runtime-api/client",
+                                          "@xmcl/runtime-api/monitorClient"
+                                      ],
+                            "baseUrl":  ".",
+                            "strict":  true,
+                            "target":  "ESNext",
+                            "resolveJsonModule":  true,
+                            "esModuleInterop":  true,
+                            "jsx":  "preserve",
+                            "skipLibCheck":  true
+                        }
 }
-
