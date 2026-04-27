@@ -76,6 +76,7 @@
     "chalk": "^4.1.2",
     "cross-env": "^5.2.1",
     "oxlint": "^0.15.5",
+    "terser": "^5.46.2",
     "tslib": "^2.5.0",
     "typescript": "5.4.5",
     "unocss": "^66.5.1",
