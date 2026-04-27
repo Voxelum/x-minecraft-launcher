@@ -762,12 +762,12 @@ export class BackupService extends AbstractService implements IBackupService {
       })
       
       archive.on('error', (err: any) => {
-        this.error(new Error(Archive error: ))
+        this.error(new Error(`Archive error: ${err}`))
         reject(err)
       })
 
       archive.on('warning', (warn: any) => {
-        this.warn(Archive warning: )
+        this.warn(`Archive warning: ${warn}`)
       })
 
       archive.on('finish', () => {
@@ -801,5 +801,8 @@ export class BackupService extends AbstractService implements IBackupService {
     }
   }
 }
+
+
+
 
 
