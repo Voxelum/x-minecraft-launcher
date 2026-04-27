@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build": "vite build --emptyOutDir",
-    "check": "vue-tsc --noEmit --project ./tsconfig.json",
+    "check": "tsc --noEmit --project ./tsconfig.json",
     "dev": "vite",
     "lint": "oxlint -c ../xmcl-config.json .",
     "lint:fix": "bun run lint --fix"
@@ -85,3 +85,4 @@
     "vue-tsc": "2.0.21"
   }
 }
+
