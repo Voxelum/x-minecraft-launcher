@@ -15,7 +15,7 @@ export interface ManagedZipFile {
 }
 
 export class ZipManager {
-  #files: Record<string, Promise<ManagedZipFile>> = {}
+  #files: Record<string, Promise<ManagedZipFile> | undefined> = {}
 
   async close() {
     for (const file of Object.values(this.#files)) {
@@ -64,3 +64,4 @@ export class ZipManager {
     return promise
   }
 }
+

@@ -11,7 +11,7 @@ function toDownloadOptions(opt: { options: DownloadMultipleOption; file: Instanc
     destination: opt.options.destination,
     headers: opt.options.headers,
     pendingFile: opt.options.pendingFile,
-    validator: opt.options.validator,
+    validator: (opt.options as any).validator,
     expectedTotal: (
       typeof opt.options.url === 'string'
         ? opt.options.url.includes('edge.forgecdn.net')
@@ -85,3 +85,4 @@ export async function downloadInstanceFiles(
     throw new AggregateError(errors)
   }
 }
+

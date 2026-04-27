@@ -46,6 +46,9 @@ export interface BackupInfo {
   size: number
   instanceCount: number
   launcherVersion: string
+  includeInstances?: boolean
+  includeSettings?: boolean
+  includeScreenshots?: boolean
 }
 
 export interface CreateBackupTask extends Task {
@@ -97,3 +100,4 @@ export interface BackupService {
 }
 
 export const BackupServiceKey: ServiceKey<BackupService> = 'BackupService'
+

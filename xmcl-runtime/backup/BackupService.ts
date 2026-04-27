@@ -41,7 +41,7 @@ export class BackupService extends AbstractService implements IBackupService {
     } else if (type === 'warn') {
       this.warn(message)
     } else {
-      this.error(message)
+      this.error(new Error(message))
     }
   }
   async createBackup(options: BackupOptions): Promise<string> {
@@ -761,13 +761,13 @@ export class BackupService extends AbstractService implements IBackupService {
         resolve()
       })
       
-      archive.on('error', (err) => {
-        this.error('Archive error:', err)
+      archive.on('error', (err: any) => {
+        this.error(new Error(Archive error: ))
         reject(err)
       })
 
-      archive.on('warning', (warn) => {
-        this.warn('Archive warning:', warn)
+      archive.on('warning', (warn: any) => {
+        this.warn(Archive warning: )
       })
 
       archive.on('finish', () => {
@@ -801,3 +801,5 @@ export class BackupService extends AbstractService implements IBackupService {
     }
   }
 }
+
+
