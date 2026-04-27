@@ -31,7 +31,9 @@ import { ImageStorage, ZipManager, kFlights } from '~/infra'
 import { ServiceStateManager } from '~/service'
 import { kSettings } from '~/settings'
 import { kResourceContext, kResourceManager } from './index'
+// eslint-disable-next-line import/default
 import createResourceWorker from './resource.worker?worker'
+// eslint-disable-next-line import/default
 import createDbWorker from './sqlite.worker?worker'
 import { ResourceWorker, kResourceWorker } from './worker'
 

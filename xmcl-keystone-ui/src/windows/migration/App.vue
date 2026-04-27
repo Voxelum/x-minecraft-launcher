@@ -27,14 +27,19 @@
   </v-app>
 </template>
 
-<script lang=ts setup>
+<script lang="ts">
+import { defineComponent } from 'vue'
+export default defineComponent({ name: 'MigrationApp' })
+</script>
+
+<script lang="ts" setup>
 import { Migration } from '@xmcl/runtime-api'
 import '@/assets/common.css'
 
 const { t } = useI18n()
 const { hide, close } = windowController
 
-declare const migration: Migration
+const migration = (window as any).migration as Migration
 
 const errorRef = ref<any | null>(null)
 const progressRef = shallowRef(undefined as undefined | {

@@ -5,6 +5,7 @@ import { isValidPathName } from '~/util/validate'
 import { LauncherAppPlugin } from '../app'
 import { createLazyWorker } from '@xmcl/worker'
 import { SetupWorker } from './setupWorker'
+// eslint-disable-next-line import/default
 import createSetupWorker from './setupWorkerEntry?worker'
 import { Exception } from '@xmcl/runtime-api'
 

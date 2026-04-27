@@ -22,7 +22,7 @@
   </v-app>
 </template>
 
-<script lang=ts setup>
+<script lang="ts" setup>
 import '@/assets/common.css'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'

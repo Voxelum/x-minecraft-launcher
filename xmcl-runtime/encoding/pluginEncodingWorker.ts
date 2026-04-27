@@ -1,6 +1,7 @@
 import { LauncherAppPlugin } from '~/app'
 import { createLazyWorker } from '@xmcl/worker'
 import { EncodingWorker, kEncodingWorker } from './encodingWorker'
+// eslint-disable-next-line import/default
 import createEncodingWorker from './encodingWorkerEntry?worker'
 import { Exception } from '@xmcl/runtime-api'
 

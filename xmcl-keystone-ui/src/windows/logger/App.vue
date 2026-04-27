@@ -62,7 +62,7 @@
   </v-app>
 </template>
 
-<script lang=ts setup>
+<script lang="ts" setup>
 import { set } from 'vue'
 import LogView from '@/components/LogView.vue'
 import { LogRecord, parseLog } from '@/util/log'

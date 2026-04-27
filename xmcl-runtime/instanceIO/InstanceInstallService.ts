@@ -197,7 +197,6 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const downloadOptions = await this.app.registry.get(kDownloadOptions)
 
     const lock = this.mutex.of(LockKey.instance(instancePath))
-    const logger = this
 
     const updateResources = async () => {
       try {
@@ -313,7 +312,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
         if (hasUpdate) {
           // save current state
-          logger.log('Save current state due to refresh', instancePath)
+          this.log('Save current state due to refresh', instancePath)
           await writeJson(
             currentStatePath,
             InstanceInstallLock.parse({
@@ -328,9 +327,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
       try {
         await handlerWithTracker.prepareInstallFiles(fileDelta, task.controller.signal)
-        logger.log('Finished install tasks')
+        this.log('Finished install tasks')
       } catch (e) {
-        logger.warn('Install instance files error', e)
+        this.warn('Install instance files error', e)
         await writeJson(
           currentStatePath,
           InstanceInstallLock.parse({

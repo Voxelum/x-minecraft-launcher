@@ -35,7 +35,6 @@ export default defineConfig({
   },
   define: {
     '__defProp': 'Object.defineProperty',
-    '__name': '((f) => f)',
   },
   resolve: {
     alias: {
