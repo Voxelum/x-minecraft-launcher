@@ -1,6 +1,6 @@
-import { open, readAllEntries } from '@xmcl/unzip'
-import { stat } from 'fs-extra'
-import { ZipFile, Entry } from 'yauzl'
+﻿import { open, readAllEntries } from "@xmcl/unzip"
+import { stat } from "fs-extra"
+import { ZipFile, Entry } from "yauzl"
 
 /**
  * The managed zip.
@@ -19,8 +19,10 @@ export class ZipManager {
 
   async close() {
     for (const file of Object.values(this.#files)) {
-      const f = await file
-      f.file.close()
+      if (file) {
+        const f = await file
+        f.file.close()
+      }
     }
   }
 
@@ -30,14 +32,16 @@ export class ZipManager {
    * @returns The managed zip file.
    */
   async open(filePath: string): Promise<ManagedZipFile> {
-    if (this.#files[filePath]) {
-      return this.#files[filePath]
+    const existing = this.#files[filePath]
+    if (existing) {
+      return existing
     }
     const fStat = await stat(filePath)
     const ino = fStat.ino
 
-    if (this.#files[ino]) {
-      return this.#files[filePath]
+    const existingIno = this.#files[ino]
+    if (existingIno) {
+      return existingIno
     }
 
     const promise = open(filePath).then(async (zip) => {
@@ -48,7 +52,7 @@ export class ZipManager {
         delete this.#files[filePath]
         delete this.#files[ino]
       }
-      zip.once('close', dispose)
+      zip.once("close", dispose)
 
       const file: ManagedZipFile = {
         file: zip,
@@ -64,4 +68,3 @@ export class ZipManager {
     return promise
   }
 }
-
