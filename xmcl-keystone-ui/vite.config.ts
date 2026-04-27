@@ -44,6 +44,7 @@ export default defineConfig({
       '~logger': join(__dirname, './src/windows/logger'),
       '~setup': join(__dirname, './src/windows/setup'),
       '@vue/composition-api': 'vue',
+      'vue-demi': resolve(__dirname, '../node_modules/vue-demi/lib/index.mjs'),
       'vue-i18n-bridge':
         'vue-i18n-bridge/dist/vue-i18n-bridge.runtime.esm-bundler.js',
     },
@@ -92,3 +93,4 @@ export default defineConfig({
     }),
   ],
 })
+

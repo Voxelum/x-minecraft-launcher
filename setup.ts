@@ -12,6 +12,9 @@ async function getElectronVersion(): Promise<string> {
 }
 
 function findNodeDatachannel(): string | null {
+  const nodeDcPath = join(ROOT, "node_modules", "node-datachannel");
+  if (existsSync(nodeDcPath)) return nodeDcPath;
+
   const bunPath = join(ROOT, "node_modules", ".bun");
   if (!existsSync(bunPath)) return null;
   const entry = readdirSync(bunPath).find((e) => e.startsWith("node-datachannel@"));
@@ -20,6 +23,9 @@ function findNodeDatachannel(): string | null {
 }
 
 function findVueDemi(): string | null {
+  const vueDemiPath = join(ROOT, "node_modules", "vue-demi");
+  if (existsSync(vueDemiPath)) return vueDemiPath;
+
   const bunPath = join(ROOT, "node_modules", ".bun");
   if (!existsSync(bunPath)) return null;
   const entry = readdirSync(bunPath).find((e) => e.startsWith("vue-demi@"));
@@ -28,39 +34,39 @@ function findVueDemi(): string | null {
 }
 
 function run(cmd: string, cwd?: string) {
-  console.log(`$ ${cmd}`);
+  console.log($ );
   const [bin, ...args] = cmd.split(" ");
   const result = Bun.spawnSync([bin, ...args], { cwd, stdout: "inherit", stderr: "inherit" });
   if (result.exitCode !== 0) {
-    throw new Error(`Command failed: ${cmd}`);
+    throw new Error(Command failed: );
   }
 }
 
 async function setupNodeDatachannel(electronVersion: string) {
   const nodeDcPath = findNodeDatachannel();
   if (!nodeDcPath) {
-    console.warn("⚠️  node-datachannel not found, skipping");
+    console.warn("??  node-datachannel not found, skipping");
     return;
   }
 
   const binaryPath = join(nodeDcPath, "build", "Release", "node_datachannel.node");
   if (existsSync(binaryPath)) {
-    console.log("✅ node_datachannel.node already exists, skipping");
+    console.log("? node_datachannel.node already exists, skipping");
     return;
   }
 
-  console.log("📦 Installing prebuilt node-datachannel...");
+  console.log("?? Installing prebuilt node-datachannel...");
   try {
-    run(`bunx prebuild-install -r napi`, nodeDcPath);
+    run(unx prebuild-install -r napi, nodeDcPath);
   } catch (e) {
-    console.log("⚠️ Failed to download prebuilt binary, attempting to build from source...");
-    run(`bunx cmake-js rebuild --runtime electron --runtime-version ${electronVersion}`, nodeDcPath);
+    console.log("?? Failed to download prebuilt binary, attempting to build from source...");
+    run(unx cmake-js rebuild --runtime electron --runtime-version , nodeDcPath);
   }
 
   if (existsSync(binaryPath)) {
-    console.log("✅ node_datachannel.node installed");
+    console.log("? node_datachannel.node installed");
   } else {
-    console.error("❌ Failed to install node_datachannel.node");
+    console.error("? Failed to install node_datachannel.node");
     process.exit(1);
   }
 }
@@ -68,17 +74,17 @@ async function setupNodeDatachannel(electronVersion: string) {
 async function setupVueDemi() {
   const vueDemiPath = findVueDemi();
   if (!vueDemiPath) {
-    console.warn("⚠️  vue-demi not found, skipping");
+    console.warn("??  vue-demi not found, skipping");
     return;
   }
 
   const postinstallScript = join(vueDemiPath, "scripts", "postinstall.js");
   if (!existsSync(postinstallScript)) {
-    console.warn("⚠️  vue-demi postinstall script not found, skipping");
+    console.warn("??  vue-demi postinstall script not found, skipping");
     return;
   }
 
-  console.log("🔧 Running vue-demi postinstall (Vue 2 mode)...");
+  console.log(?? Running vue-demi postinstall at  (Vue 2 mode)...);
   const result = Bun.spawnSync(["node", postinstallScript], {
     cwd: vueDemiPath,
     stdout: "inherit",
@@ -86,20 +92,20 @@ async function setupVueDemi() {
   });
 
   if (result.exitCode === 0) {
-    console.log("✅ vue-demi switched to Vue 2 mode");
+    console.log("? vue-demi switched to Vue 2 mode");
   } else {
-    console.warn("⚠️  vue-demi postinstall failed (non-fatal)");
+    console.warn("??  vue-demi postinstall failed (non-fatal)");
   }
 }
 
 async function setup() {
   const electronVersion = await getElectronVersion();
-  console.log(`\n🔧 Electron ${electronVersion}\n`);
+  console.log(\n?? Electron \n);
 
   await setupNodeDatachannel(electronVersion);
   await setupVueDemi();
 
-  console.log("\n✅ Setup complete!\n");
+  console.log("\n? Setup complete!\n");
 }
 
 setup().catch((e) => {

@@ -1,46 +1,47 @@
 {
-  "version": "0.54.4",
-  "private": true,
-  "license": "MIT",
-  "packageManager": "bun@1.3.11",
-  "engines": {
-    "node": ">=20",
-    "bun": ">=1.3.11"
-  },
-  "workspaces": [
-    "xmcl/packages/**",
-    "xmcl-electron-app",
-    "xmcl-runtime-api",
-    "xmcl-runtime",
-    "xmcl-keystone-ui",
-    ".github/actions/*",
-    "packages/**"
-  ],
-  "scripts": {
-    "postinstall": "bun setup.ts",
-    "compile": "bun run --filter='*' compile",
-    "test": "bunx vitest",
-    "build:schema": "bun run --cwd=xmcl-runtime-api build:schema",
-    "build": "bun run --cwd=xmcl-electron-app build",
-    "build:all": "bun run --cwd=xmcl-electron-app build:all",
-    "build:renderer": "bun run --cwd=xmcl-keystone-ui build",
-    "postsign": "bun run --cwd=xmcl-electron-app postsign",
-    "check": "bun run --filter '@xmcl/*' check",
-    "dev:main": "bun run --cwd=xmcl-electron-app dev",
-    "dev:renderer": "bun run --cwd=xmcl-keystone-ui dev",
-    "dev": "bun dev.ts",
-    "lint": "bun run --filter '@xmcl/*' lint",
-    "lint:fix": "bun run --filter '@xmcl/*' lint:fix"
-  },
-  "devDependencies": {
-    "@types/bun": "^1.3.11"
-  },
-  "trustedDependencies": [
-    "electron",
-    "node-datachannel",
-    "@electron/rebuild"
-  ],
-  "dependencies": {
-    "vue-demi": "^0.14.10"
-  }
+    "version":  "0.54.4",
+    "private":  true,
+    "license":  "MIT",
+    "packageManager":  "bun@1.3.11",
+    "engines":  {
+                    "node":  "\u003e=20",
+                    "bun":  "\u003e=1.3.11"
+                },
+    "workspaces":  [
+                       "xmcl/packages/**",
+                       "xmcl-electron-app",
+                       "xmcl-runtime-api",
+                       "xmcl-runtime",
+                       "xmcl-keystone-ui",
+                       ".github/actions/*",
+                       "packages/**"
+                   ],
+    "scripts":  {
+                    "postinstall":  "bun setup.ts",
+                    "compile":  "bun run --filter=\u0027*\u0027 compile",
+                    "test":  "bunx vitest",
+                    "build:schema":  "bun run --cwd=xmcl-runtime-api build:schema",
+                    "build":  "bun run --cwd=xmcl-electron-app build",
+                    "build:all":  "bun run --cwd=xmcl-electron-app build:all",
+                    "build:renderer":  "bun run --cwd=xmcl-keystone-ui build",
+                    "postsign":  "bun run --cwd=xmcl-electron-app postsign",
+                    "check":  "bun run --filter \u0027@xmcl/*\u0027 check",
+                    "dev:main":  "bun run --cwd=xmcl-electron-app dev",
+                    "dev:renderer":  "bun run --cwd=xmcl-keystone-ui dev",
+                    "dev":  "bun dev.ts",
+                    "lint":  "bun run --filter \u0027@xmcl/*\u0027 lint",
+                    "lint:fix":  "bun run --filter \u0027@xmcl/*\u0027 lint:fix"
+                },
+    "devDependencies":  {
+                            "@types/bun":  "^1.3.11"
+                        },
+    "trustedDependencies":  [
+                                "electron",
+                                "node-datachannel",
+                                "@electron/rebuild",
+                                "vue-demi"
+                            ],
+    "dependencies":  {
+                         "vue-demi":  "^0.14.10"
+                     }
 }
