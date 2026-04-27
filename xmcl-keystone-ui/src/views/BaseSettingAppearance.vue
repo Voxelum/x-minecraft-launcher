@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div>
     <v-list-item class="items-center justify-center">
       <v-list-item-content>
@@ -29,7 +29,7 @@ import { kInstanceTheme } from '@/composables/instanceTheme'
 import { useService } from '@/composables/service'
 import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
-import { InstanceThemeServiceKey } from '@xmcl/runtime-api'
+import { InstanceThemeServiceKey, MediaData } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 const { path: instancePath } = injection(kInstance)
@@ -59,7 +59,7 @@ async function toggleInstanceTheme(enabled: boolean) {
       }
     }
     if (themeCopy.backgroundMusic?.length > 0) {
-      const newMusic = []
+      const newMusic: MediaData[] = []
       for (const music of themeCopy.backgroundMusic) {
         if (music?.url?.startsWith('http://launcher/theme-media/')) {
           try {
@@ -83,3 +83,4 @@ function onSave() {
   saveTheme()
 }
 </script>
+

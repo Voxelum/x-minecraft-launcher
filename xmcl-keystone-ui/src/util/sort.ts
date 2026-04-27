@@ -1,4 +1,4 @@
-const firstBigrams = new Map()
+﻿const firstBigrams = new Map()
 export function getDiceCoefficient(first: string, second: string) {
   first = first.replace(/\s+/g, '')
   second = second.replace(/\s+/g, '')
@@ -32,8 +32,13 @@ export function getDiceCoefficient(first: string, second: string) {
   return (2.0 * intersectionSize) / (first.length + second.length - 2)
 }
 
+export interface Rating {
+  target: string
+  rating: number
+}
+
 export function findBestMatch(mainString: string, targetStrings: string[]) {
-  const ratings = []
+  const ratings: Rating[] = []
   let bestMatchIndex = 0
 
   for (let i = 0; i < targetStrings.length; i++) {
