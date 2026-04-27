@@ -98,9 +98,6 @@ async function setupVueDemi() {
   }
 }
 
-/**
- * Patch submodule files to fix type errors
- */
 function patchSubmodule() {
   const files = [
     join(ROOT, "xmcl/packages/curseforge/index.ts"),
@@ -113,27 +110,8 @@ function patchSubmodule() {
       let content = readFileSync(file, "utf8");
       content = content.replace(/fetch\?: typeof fetch/g, "fetch?: any");
       content = content.replace(/private fetch: typeof fetch/g, "private fetch: any");
+      content = content.replace(/\(\.\.\.args\) => fetch\(\.\.\.args\)/g, "(...args: any[]) => (fetch as any)(...args)");
       writeFileSync(file, content);
-    }
-  }
-}
-
-/**
- * Fix vue-tsc issue by patching its detection of TS extensions
- */
-function patchVueTsc() {
-  const vueTscBin = join(ROOT, "xmcl-keystone-ui/node_modules/vue-tsc/bin/vue-tsc.js");
-  if (existsSync(vueTscBin)) {
-    console.log(`[INFO] Patching ${vueTscBin}...`);
-    let content = readFileSync(vueTscBin, "utf8");
-    // Replace the failing regex patch with a no-op or a fix
-    const oldStr = 'supportedTSExtensions = .*(?=;)';
-    if (content.match(new RegExp(oldStr))) {
-        console.log("[INFO] vue-tsc already has the patch string, attempt to fix...");
-    } else {
-        // If not found, it might be the cause of the error. 
-        // We wrap the problematic section in a try-catch in the actual bin file if possible,
-        // but simpler is to just suppress the error in the script.
     }
   }
 }

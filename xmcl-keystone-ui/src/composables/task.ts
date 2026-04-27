@@ -233,6 +233,12 @@ export function useLocalizedTaskFunc() {
       return { title, subtitle: '' }
     }
 
+    // Create Backup Task
+    if (task.type === 'createBackup') {
+      const title = 'Backup Data'
+      return { title, subtitle: '' }
+    }
+
     // Fallback for unknown task types (exhaustive check)
     const _exhaustive: never = task
     return { title: '', subtitle: '' }
@@ -268,3 +274,4 @@ export function useTask(finder: (i: Tasks) => boolean) {
     status,
   }
 }
+
