@@ -75,8 +75,7 @@ export const config = {
     },
   },
   win: {
-    certificateFile: undefined as string | undefined,
-    publisherName: 'CI010',
+    
     icon: 'icons/dark.ico',
     target: [
       {
@@ -92,8 +91,10 @@ export const config = {
   linux: {
     executableName: 'xmcl',
     desktop: {
-      MimeType: 'x-scheme-handler/xmcl',
-      StartupWMClass: 'xmcl',
+      entry: {
+        MimeType: 'x-scheme-handler/xmcl',
+        StartupWMClass: 'xmcl',
+      },
     },
     category: 'Game',
     icon: 'icons/dark.icns',
@@ -112,3 +113,5 @@ export const config = {
     ],
   },
 } satisfies Configuration
+
+
