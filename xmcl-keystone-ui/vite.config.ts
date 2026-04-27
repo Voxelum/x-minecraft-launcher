@@ -1,5 +1,6 @@
-import VueI18n from '@intlify/unplugin-vue-i18n/vite';
-import createVuePlugin from '@vitejs/plugin-vue2';
+﻿import VueI18n from '@intlify/unplugin-vue-i18n/vite';
+import _createVuePlugin from '@vitejs/plugin-vue2';
+const createVuePlugin = (typeof _createVuePlugin === 'function' ? _createVuePlugin : (_createVuePlugin as any).default);
 import { readdirSync } from 'fs';
 import { join, resolve } from 'path';
 import UnoCSS from 'unocss/vite';
@@ -93,4 +94,5 @@ export default defineConfig({
     }),
   ],
 })
+
 
