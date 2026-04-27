@@ -1,10 +1,13 @@
-﻿import VueI18n from '@intlify/unplugin-vue-i18n/vite';
+﻿import _VueI18n from '@intlify/unplugin-vue-i18n/vite';
+const VueI18n = (typeof _VueI18n === 'function' ? _VueI18n : (_VueI18n as any).default);
 import _createVuePlugin from '@vitejs/plugin-vue2';
 const createVuePlugin = (typeof _createVuePlugin === 'function' ? _createVuePlugin : (_createVuePlugin as any).default);
 import { readdirSync } from 'fs';
 import { join, resolve } from 'path';
-import UnoCSS from 'unocss/vite';
-import AutoImport from 'unplugin-auto-import/vite';
+import _UnoCSS from 'unocss/vite';
+const UnoCSS = (typeof _UnoCSS === 'function' ? _UnoCSS : (_UnoCSS as any).default);
+import _AutoImport from 'unplugin-auto-import/vite';
+const AutoImport = (typeof _AutoImport === 'function' ? _AutoImport : (_AutoImport as any).default);
 import { defineConfig } from 'vite';
 
 const entries = readdirSync(join(__dirname, './src'))
@@ -94,5 +97,6 @@ export default defineConfig({
     }),
   ],
 })
+
 
 
