@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div>
     <v-dialog
       v-model="isShown"
@@ -477,7 +477,7 @@ const total = computed(() => {
 });
 
 const phase = computed(() => {
-  return currentTask.value?.substate?.type || "copying-instances";
+  return ((currentTask.value?.substate as any)?.type) || "copying-instances";
 });
 
 const phaseIndex = computed(() => {
@@ -551,7 +551,7 @@ async function confirmCancel() {
   showCancelDialog.value = false;
   // The task will be cancelled and partial backup will be saved
   if (currentTask.value) {
-    const taskManager = window.taskMonitor;
+    const taskManager = (window as any).taskMonitor;
     await taskManager.cancel(currentTask.value.id);
   }
 }
@@ -575,7 +575,7 @@ async function onCreateBackup() {
 
     if (canceled || !filePath) {
       //      error.value = t("setting.backupCancelled");
-      // Тут я просто залишаю комент такий цікавий
+      // РўСѓС‚ СЏ РїСЂРѕСЃС‚Рѕ Р·Р°Р»РёС€Р°СЋ РєРѕРјРµРЅС‚ С‚Р°РєРёР№ С†С–РєР°РІРёР№
       creating.value = false;
       return;
     }
@@ -632,3 +632,4 @@ async function onCreateBackup() {
   animation: spin 1s linear infinite;
 }
 </style>
+

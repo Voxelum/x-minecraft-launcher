@@ -1,10 +1,10 @@
-{
+﻿{
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
     "downlevelIteration": true,
     "resolveJsonModule": true,
-    "strict": true,
+    "strict": true,`n    "noImplicitAny": false,
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
@@ -41,3 +41,4 @@
     "../xmcl-runtime-api"
   ]
 }
+
