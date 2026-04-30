@@ -100,21 +100,20 @@ export function useCurseforgeSearchFunc(
     'LiteLoader',
     'Fabric',
     'Quilt',
-  ]
+    'NeoForge',
+  ] as const
   async function search(index: number) {
-    let modLoaderType = undefined as FileModLoaderType | undefined
     let modLoaderTypes = undefined as string[] | undefined
     const types = get(loaders)
-    if (types.length === 1) {
-      modLoaderType = types[0]
-    } else {
-      modLoaderTypes = types.map(t => mapping[t])
+    if (types.length > 0) {
+      // Use string loader names for all loader filters.
+      // CurseForge's numeric modLoaderType can miss entries across some version branches.
+      modLoaderTypes = types.map(t => mapping[t]).filter(Boolean)
     }
     const result = await clientCurseforgeV1.searchMods({
       classId: get(classId),
       sortField: sort.value,
       modLoaderTypes,
-      modLoaderType,
       gameVersion: gameVersion.value,
       searchFilter: keyword.value,
       categoryId: curseforgeCategory.value,
@@ -138,6 +137,7 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: R
     pageSize: 30,
     totalCount: 0,
   })
+  const hasLoaderFilter = computed(() => modLoaderType.value !== undefined && modLoaderType.value !== FileModLoaderType.Any)
   const { mutate: refresh, isValidating: refreshing, error, data: _data } = useSWRV(
     computed(() => formatKey(`/curseforge/${projectId.value}/files`, {
       gameVersion,
@@ -149,12 +149,16 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: R
         index: data.index,
         gameVersion: gameVersion.value,
         pageSize: data.pageSize,
-        modLoaderType: modLoaderType.value === 0 ? undefined : modLoaderType.value,
+        // Query without loader and apply a client-side loader filter for consistency.
+        modLoaderType: undefined,
       }))
     }, inject(kSWRVConfig))
   watch(_data, (f) => {
     if (f) {
-      files.value = markRaw(f.data.map(markRaw))
+      const filteredFiles = hasLoaderFilter.value
+        ? f.data.filter((file) => isCurseforgeFileForLoader(file, modLoaderType.value!))
+        : f.data
+      files.value = markRaw(filteredFiles.map(markRaw))
       data.index = f.pagination.index
       data.pageSize = f.pagination.pageSize
       data.totalCount = f.pagination.totalCount
@@ -170,6 +174,7 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: R
 }
 
 export function getCurseforgeProjectFilesModel(projectId: Ref<number | undefined>, gameVersion: Ref<string | undefined>, modLoaderType: Ref<FileModLoaderType | undefined>) {
+  const hasLoaderFilter = computed(() => modLoaderType.value !== undefined && modLoaderType.value !== FileModLoaderType.Any)
   return {
     key: computed(() => formatKey(`/curseforge/${projectId.value || ''}/files`, {
       gameVersion,
@@ -185,8 +190,11 @@ export function getCurseforgeProjectFilesModel(projectId: Ref<number | undefined
     }) : clientCurseforgeV1.getModFiles({
       modId: projectId.value,
       gameVersion: gameVersion.value,
-      modLoaderType: modLoaderType.value === 0 ? undefined : modLoaderType.value,
+      modLoaderType: undefined,
     }).then(v => {
+      if (hasLoaderFilter.value) {
+        v.data = v.data.filter((file) => isCurseforgeFileForLoader(file, modLoaderType.value!))
+      }
       for (const d of v.data) {
         markRaw(d)
       }
@@ -194,6 +202,26 @@ export function getCurseforgeProjectFilesModel(projectId: Ref<number | undefined
       return v
     }),
   }
+}
+
+function isCurseforgeFileForLoader(file: File, loader: FileModLoaderType) {
+  const nameByType = {
+    [FileModLoaderType.Forge]: 'Forge',
+    [FileModLoaderType.Cauldron]: 'Cauldron',
+    [FileModLoaderType.LiteLoader]: 'LiteLoader',
+    [FileModLoaderType.Fabric]: 'Fabric',
+    [FileModLoaderType.Quilt]: 'Quilt',
+    [FileModLoaderType.NeoForge]: 'NeoForge',
+  } as const
+
+  const target = nameByType[loader]
+  if (!target) return true
+
+  if (file.sortableGameVersions && file.sortableGameVersions.length > 0) {
+    return file.sortableGameVersions.some(v => v.gameVersionName === target)
+  }
+
+  return file.gameVersions.some(v => v.toLowerCase() === target.toLowerCase())
 }
 
 export function useCurseforgeCategoryI18n() {
