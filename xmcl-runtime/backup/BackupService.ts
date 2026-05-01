@@ -568,7 +568,7 @@ export class BackupService extends AbstractService implements IBackupService {
     } finally {
       // Cleanup temp directory
       if (existsSync(tempDir)) {
-        rmSync(tempDir, { recursive: true, force: true })
+        await this.safeRemoveDir(tempDir)
       }
     }
   }
@@ -581,7 +581,7 @@ export class BackupService extends AbstractService implements IBackupService {
     // Create a temporary directory for extraction
     const tempDir = join(dirname(backupPath), '.backup-info-temp')
     if (existsSync(tempDir)) {
-      rmSync(tempDir, { recursive: true, force: true })
+      await this.safeRemoveDir(tempDir)
     }
     mkdirSync(tempDir, { recursive: true })
 
@@ -607,7 +607,7 @@ export class BackupService extends AbstractService implements IBackupService {
     } finally {
       // Cleanup temp directory
       if (existsSync(tempDir)) {
-        rmSync(tempDir, { recursive: true, force: true })
+        await this.safeRemoveDir(tempDir)
       }
     }
   }
