@@ -62,11 +62,11 @@ export const UserProfileCompatible = z.object({
   /** The used auth service name @deprecated */
   authService: z.string().optional().catch(undefined),
   /** If the user profile is invalidated and should be re-login */
-  invalidated: z.boolean().catch(false),
+  invalidated: z.boolean().catch(false).default(false),
   /** The authority url */
   authority: z.string().optional().catch(undefined),
   /** The expire time */
-  expiredAt: z.number().catch(-1),
+  expiredAt: z.number().catch(-1).default(-1),
   /** All available game profiles - each profile is parsed individually */
   profiles: z.record(z.string(), z.unknown())
     .transform((record) => {
@@ -79,9 +79,10 @@ export const UserProfileCompatible = z.object({
       }
       return result
     })
-    .catch({}),
+    .catch({})
+    .default({}),
   /** Selected profile uuid */
-  selectedProfile: z.string().catch(''),
+  selectedProfile: z.string().catch('').default(''),
   /** The avatar uri. This can be base64 data uri. */
   avatar: z.string().optional().catch(undefined),
 })
