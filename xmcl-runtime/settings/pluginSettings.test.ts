@@ -136,8 +136,8 @@ describe('pluginSettings', () => {
     expect(mockState.autoDownload).toBe(false)
     expect(mockState.httpProxy).toBe('')
     expect(mockState.httpProxyEnabled).toBe(false)
-    expect(mockState.globalHideLauncher).toBe(true)
-    expect(mockState.discordPresence).toBe(true)
+    expect(mockState.globalHideLauncher).toBe(false)
+    expect(mockState.discordPresence).toBe(false)
     expect(mockState.enableDedicatedGPUOptimization).toBe(true)
   })
 
@@ -237,7 +237,7 @@ describe('pluginSettings', () => {
     expect(mockState.maxSockets).toBe(32) // value from file
     expect(mockState.globalVmOptions).toEqual([])
     expect(mockState.developerMode).toBe(false) // default value
-    expect(mockState.discordPresence).toBe(true) // default from Settings class
+    expect(mockState.discordPresence).toBe(false) // default from Settings class
   })
 
   test('should salvage valid fields and use defaults for invalid fields', async () => {
@@ -322,8 +322,8 @@ describe('pluginSettings', () => {
         httpProxy: '',
         httpProxyEnabled: false,
         theme: 'dark',
-        maxSockets: 64,
-        maxAPISockets: 16,
+        maxSockets: 0,
+        maxAPISockets: 0,
         replaceNatives: 'legacy-only',
         globalMinMemory: 0,
         globalMaxMemory: 0,
@@ -331,14 +331,14 @@ describe('pluginSettings', () => {
         globalVmOptions: [],
         globalMcOptions: [],
         globalFastLaunch: false,
-        globalHideLauncher: true,
+        globalHideLauncher: false,
         globalShowLog: false,
         globalDisableAuthlibInjector: false,
         globalDisableElyByAuthlib: false,
         globalPrependCommand: '',
         globalPreExecuteCommand: '',
         globalEnv: {},
-        discordPresence: true,
+        discordPresence: false,
         developerMode: true,
         disableTelemetry: false,
         linuxTitlebar: false,
@@ -389,8 +389,8 @@ describe('pluginSettings', () => {
         httpProxy: '',
         httpProxyEnabled: false,
         theme: 'dark', // default value, not 'invalid-theme'
-        maxSockets: 64, // default value, not 'not-a-number'
-        maxAPISockets: 16,
+        maxSockets: 0, // default value, not 'not-a-number'
+        maxAPISockets: 0,
         replaceNatives: 'legacy-only',
         globalMinMemory: 0,
         globalMaxMemory: 0,
@@ -398,14 +398,14 @@ describe('pluginSettings', () => {
         globalVmOptions: [], // default value, not 'not-an-array'
         globalMcOptions: [],
         globalFastLaunch: false,
-        globalHideLauncher: true,
+        globalHideLauncher: false,
         globalShowLog: false,
         globalDisableAuthlibInjector: false,
         globalDisableElyByAuthlib: false,
         globalPrependCommand: '',
         globalPreExecuteCommand: '',
         globalEnv: {},
-        discordPresence: true,
+        discordPresence: false,
         developerMode: false,
         disableTelemetry: false,
         linuxTitlebar: false,
