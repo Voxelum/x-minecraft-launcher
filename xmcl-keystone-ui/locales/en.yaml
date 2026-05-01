@@ -1379,6 +1379,9 @@ setting:
   cancelBackupFinalizingWarning: Cannot cancel during finalization. Please wait for the backup to complete.
   cancelBackup: Cancel Backup
   backupCancelled: Backup was cancelled. Partial backup may have been saved.
+  backupCompleteTitle: Backup Complete
+  backupCompleteMessage: Your backup has been created successfully.
+  backupCompleteHint: The backup file has been saved to your selected location.
   minecraftOptions: Minecraft Options
   name: Global Setting | Global Settings
   network: Network Settings

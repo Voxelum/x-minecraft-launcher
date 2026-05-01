@@ -1173,6 +1173,9 @@ server:
   upload: Завантажити сервер
   version: Сервер вимагає версію
   versionHint: Версія Minecraft для пінгування
+  joinServer: Приєднатися до сервера
+  address: Адреса сервера
+  addressHint: "Введіть адресу сервера (наприклад, play.hypixel.net)"
 serverStatus:
   nohost: §4Не вдалося знайти хост!
   ping: Пінг...
@@ -1296,8 +1299,52 @@ setting:
     Обмежити максимальну кількість сокетів на хост або для всіх хостів загалом.
     0 означає без обмежень.
   maxSocketsTitle: Макс. HTTP-сокетів
-  memoryAssignment: Призначення пам’яті
+  memoryAssignment: Призначення пам'яті
   migrateFromOther: Імпортувати з іншого лаунчера
+  backup: Резервне копіювання та відновлення
+  backupDescription: Створення та відновлення резервних копій лаунчера
+  createBackup: Створити резервну копію
+  restoreBackup: Відновити резервну копію
+  backupFileName: Назва файлу резервної копії
+  backupFileNameRequired: Назва файлу обов'язкова
+  backupFileNameHint: Резервна копія буде збережена у форматі .xmclsettings
+  includeInstances: Включити інстанси
+  includeInstancesDesc: Резервне копіювання всіх ігрових інстансів та їх даних
+  selectInstances: Вибрати інстанси для резервного копіювання
+  selectedInstances: "Вибрано: {count} / {total}"
+  includeSettings: Включити налаштування
+  includeSettingsDesc: Резервне копіювання налаштувань та конфігурацій лаунчера
+  includeScreenshots: Включити скріншоти
+  includeScreenshotsDesc: Резервне копіювання скріншотів інстансів
+  saveBackupFile: Зберегти файл резервної копії
+  backupFailed: Не вдалося створити резервну копію
+  selectBackupFile: Вибрати файл резервної копії
+  selectBackupFileHint: Виберіть файл резервної копії .xmclsettings для відновлення
+  backupInfo: Інформація про резервну копію
+  backupInstances: "Інстанси: {count}"
+  backupCreated: "Створено: {date}"
+  backupSize: "Розмір: {size}"
+  restoreWarning: "Увага: Відновлення перезапише ваші поточні дані. Цю дію неможливо скасувати!"
+  restoreFailed: Не вдалося відновити резервну копію
+  restoreComplete: Відновлення завершено
+  restoreCompleteMessage: Резервну копію успішно відновлено.
+  restoreRestartHint: Будь ласка, перезапустіть лаунчер, щоб зміни теми та налаштувань набули чинності.
+  backupProgress: Прогрес резервного копіювання
+  backupPhaseCopyingInstances: Копіювання інстансів
+  backupPhaseCopyingSettings: Копіювання налаштувань
+  backupPhaseCopyingScreenshots: Копіювання скріншотів
+  backupPhaseCreatingArchive: Створення архіву
+  backupPhaseFinalizing: Завершення
+  backupFilesProgress: "Файли: {copied} / {total}"
+  backupLog: Журнал резервного копіювання
+  cancelBackupTitle: Скасувати резервне копіювання?
+  cancelBackupWarning: Ви впевнені, що хочете скасувати? Часткова резервна копія буде збережена з файлами, скопійованими до цього моменту.
+  cancelBackupFinalizingWarning: Неможливо скасувати під час завершення. Будь ласка, зачекайте завершення резервного копіювання.
+  cancelBackup: Скасувати резервне копіювання
+  backupCancelled: Резервне копіювання скасовано. Можливо, збережено часткову резервну копію.
+  backupCompleteTitle: Резервне копіювання завершено
+  backupCompleteMessage: Вашу резервну копію успішно створено.
+  backupCompleteHint: Файл резервної копії збережено у вибране вами місце.
   minecraftOptions: Налаштування Minecraft
   name: Глобальне налаштування | Глобальні налаштування
   network: Мережеві налаштування
