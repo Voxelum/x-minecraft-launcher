@@ -40,7 +40,7 @@
     "@types/semver": "^7.7.1",
     "@types/yauzl": "^2.10.3",
     "@types/yazl": "^3.3.0",
-    "@vue/runtime-dom": "latest",
+    "@vue/runtime-dom": "^2.7.16",
     "@xmcl/client": "workspace:*",
     "@xmcl/resource": "workspace:*",
     "@xmcl/core": "workspace:*",
