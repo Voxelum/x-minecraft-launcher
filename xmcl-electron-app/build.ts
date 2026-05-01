@@ -100,8 +100,9 @@ async function start() {
   const config: Configuration = {
     ...electronBuilderConfig,
     async beforeBuild(context) {
+      const buildPath = context.appDir || resolve(__dirname)
       const rebuildProcess = rebuild({
-        buildPath: context.appDir,
+        buildPath,
         electronVersion: context.electronVersion,
         arch: context.arch,
         types: ['dev'],
