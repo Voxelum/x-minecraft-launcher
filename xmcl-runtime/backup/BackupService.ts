@@ -86,7 +86,7 @@ export class BackupService extends AbstractService implements IBackupService {
       // Create a temporary directory for backup content
       tempDir = join(dataRoot, '.backup-temp')
       if (existsSync(tempDir)) {
-        rmSync(tempDir, { recursive: true, force: true })
+        await this.safeRemoveDir(tempDir)
       }
       mkdirSync(tempDir, { recursive: true })
 
@@ -438,18 +438,11 @@ export class BackupService extends AbstractService implements IBackupService {
         throw error
       }
     } finally {
-      // Cleanup temp directory - ignore permission errors
+      // Cleanup temp directory with retries
       const dataRoot = await this.baseService.getGameDataDirectory()
       const cleanupTempDir = join(dataRoot, '.backup-temp')
       if (existsSync(cleanupTempDir)) {
-        try {
-          rmSync(cleanupTempDir, { recursive: true, force: true })
-        } catch (cleanupError: any) {
-          // Ignore EPERM errors during cleanup - some files might be locked
-          if (!cleanupError.message.includes('EPERM') && !cleanupError.message.includes('operation not permitted')) {
-            this.warn('Failed to cleanup temp directory:', cleanupError.message)
-          }
-        }
+        await this.safeRemoveDir(cleanupTempDir)
       }
     }
   }
@@ -756,8 +749,10 @@ export class BackupService extends AbstractService implements IBackupService {
         forceZip64: true, // Support large files
       })
 
-      output.on('close', () => {
+      output.on('close', async () => {
         this.log(`Backup archive created successfully at ${outputPath}`)
+        // Wait a bit to ensure all file handles are released (especially on Windows)
+        await new Promise(resolve => setTimeout(resolve, 500))
         resolve()
       })
       
@@ -778,6 +773,46 @@ export class BackupService extends AbstractService implements IBackupService {
       archive.directory(sourceDir, false)
       archive.finalize()
     })
+  }
+
+  /**
+   * Safely remove directory with retries (especially for Windows)
+   */
+  private async safeRemoveDir(dirPath: string, maxRetries = 5, delayMs = 1000): Promise<void> {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        if (existsSync(dirPath)) {
+          rmSync(dirPath, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 })
+          this.log(`Successfully removed directory: ${dirPath}`)
+        }
+        return
+      } catch (error: any) {
+        const isLastAttempt = attempt === maxRetries
+        const errorCode = error.code || ''
+        const errorMessage = error.message || ''
+
+        // Check for common Windows/filesystem errors
+        if (errorCode === 'ENOTEMPTY' || errorCode === 'EPERM' || errorCode === 'EBUSY' || 
+            errorMessage.includes('ENOTEMPTY') || errorMessage.includes('not empty') ||
+            errorMessage.includes('operation not permitted') || errorMessage.includes('resource busy')) {
+          
+          if (isLastAttempt) {
+            this.warn(`Failed to remove directory after ${maxRetries} attempts: ${dirPath}. Error: ${errorMessage}`)
+            // Don't throw - just log the warning
+            return
+          }
+          
+          this.log(`Attempt ${attempt}/${maxRetries} failed to remove ${dirPath}, retrying in ${delayMs}ms...`)
+          await new Promise(resolve => setTimeout(resolve, delayMs))
+          // Increase delay for next attempt
+          delayMs = Math.min(delayMs * 1.5, 5000)
+        } else {
+          // For other errors, log and return without throwing
+          this.warn(`Unexpected error removing directory ${dirPath}: ${errorMessage}`)
+          return
+        }
+      }
+    }
   }
 
   private countInstances(dataRoot: string): number {
