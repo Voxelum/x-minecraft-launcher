@@ -389,7 +389,7 @@ describe('pluginSettings', () => {
         httpProxy: '',
         httpProxyEnabled: false,
         theme: 'dark', // default value, not 'invalid-theme'
-        maxSockets: 0, // default value, not 'not-a-number'
+        maxSockets: 64, // catch value when 'not-a-number' is invalid
         maxAPISockets: 0,
         replaceNatives: 'legacy-only',
         globalMinMemory: 0,

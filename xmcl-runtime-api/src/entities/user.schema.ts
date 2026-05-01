@@ -132,7 +132,8 @@ export const Users = z.object({
       }
       return result
     })
-    .catch({}),
+    .catch({})
+    .default({}),
 })
 
 export type Users = z.infer<typeof Users>
