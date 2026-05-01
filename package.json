@@ -43,9 +43,5 @@
   ],
   "dependencies": {
     "vue-demi": "^0.14.10"
-  },
-  "overrides": {
-    "@vue/compiler-sfc": "2.7.16",
-    "@vue/runtime-dom": "2.7.16"
   }
 }
