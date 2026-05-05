@@ -34,7 +34,7 @@
       <v-fab-transition>
         <v-btn
           v-show="!inspect && modified"
-          v-shared-tooltip="_ => t('userSkin.reset')"
+          v-shared-tooltip="() => t('userSkin.reset')"
           color="secondary"
           fab
           small

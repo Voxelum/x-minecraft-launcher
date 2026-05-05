@@ -1,0 +1,11 @@
+{
+    "id": "no-assets-json",
+    "mainClass": "Main",
+    "downloads": {
+        "mock": {
+            "sha1": "",
+            "size": 0,
+            "url": ""
+        }
+    }
+}

@@ -1,0 +1,53 @@
+name: Core Pull Request Test
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'packages/**'
+      - 'mock/**'
+      - 'test-setup.ts'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 9.15.3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/setup-java@v4
+      with:
+        java-version: '12.X'
+        architecture: x64
+        distribution: zulu
+    - name: Install
+      run: |
+        pnpm i
+      env:
+        CI: true
+    - name: Lint and Compile
+      run: |
+        pnpm lint
+        pnpm --parallel build:type
+    - name: Test
+      run: |
+        pnpm coverage
+      env:
+        CI: true
+    - name: Upload Coverage
+      uses: actions/upload-artifact@master
+      with:
+        name: coverage
+        path: coverage
+

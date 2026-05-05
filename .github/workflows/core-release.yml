@@ -1,0 +1,64 @@
+name: Core Release
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'packages/**'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.sha	}}
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 9.15.3
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        registry-url: 'https://registry.npmjs.org'
+    - name: Install
+      run: |
+        pnpm install
+      env:
+        CI: true
+    - name: Build
+      run: |
+        pnpm --parallel build:type
+        pnpm --parallel build:cjs
+        pnpm --parallel build:esm
+        pnpm --parallel build:browser
+    - name: Publish
+      run: |
+        pnpm -r --filter './packages/**' publish --access public --no-git-checks
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+    - name: Publish Tag
+      run: |
+        node --eval "console.log(JSON.parse(require('fs').readFileSync('package.json').toString()).version)" > tag.log
+        git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/Voxelum/x-minecraft-launcher.git"
+        git config user.name ci010
+        git config user.email cijhn@hotmail.com
+        git tag -f $(cat tag.log)
+        git push origin tag $(cat tag.log) -f
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build Docs
+      run: |
+        pnpm build:docs
+    - name: Deploy to Github Pages
+      uses: crazy-max/ghaction-github-pages@v4
+      with:
+        target_branch: gh-pages
+        build_dir: docs/
+      env:
+        GITHUB_PAT: ${{ secrets.GITHUB_PAT }}

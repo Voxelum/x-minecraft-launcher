@@ -1,0 +1,35 @@
+{
+  "name": "@xmcl/worker",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Worker utility of the xmcl",
+  "main": "./index.ts",
+  "scripts": {
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
+  },
+  "exports": {
+    ".": {
+      "import": "./index.ts"
+    },
+    "./helper": {
+      "import": "./helper.ts"
+    }
+  },
+  "type": "module",
+  "author": "ci010 <cijhn@hotmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Voxelum/minecraft-launcher-core-node"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "@types/fs-extra": "^11.0.1",
+    "typescript": "^5.9.3",
+    "@vitest/coverage-v8": "^4.0.17",
+    "vitest": "^4.0.17"
+  }
+}

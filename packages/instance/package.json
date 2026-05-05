@@ -1,0 +1,35 @@
+{
+  "name": "@xmcl/instance",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Core instance management functionality for Minecraft launchers",
+  "main": "./index.ts",
+  "module": "./index.ts",
+  "browser": "./index.browser.ts",
+  "keywords": [
+    "minecraft",
+    "instance",
+    "launcher",
+    "modpack"
+  ],
+  "author": "ci010 <cijhn@hotmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Voxelum/minecraft-launcher-core-node"
+  },
+  "dependencies": {
+    "@xmcl/core": "workspace:*",
+    "@xmcl/installer": "workspace:*",
+    "@xmcl/utils": "workspace:*",
+    "@types/ssh2": "^1.15.5",
+    "zod": "^4.1.13",
+    "fs-extra": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/fs-extra": "^11.0.1",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.8"
+  }
+}

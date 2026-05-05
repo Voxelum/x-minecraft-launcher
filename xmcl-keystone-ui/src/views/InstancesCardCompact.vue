@@ -1,6 +1,6 @@
 <template>
   <div
-    v-shared-tooltip="_ => name"
+    v-shared-tooltip="() => name"
     v-context-menu.force="getContextMenuItems"
     class="flex flex-col items-center cursor-pointer rounded-lg p-2 transition-all duration-200 hover:bg-white/10 dark:hover:bg-black/20 flex-shrink-0"
     style="width: 100px;"

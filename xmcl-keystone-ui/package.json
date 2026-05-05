@@ -71,15 +71,16 @@
         "@types/semver": "^7.5.8",
         "@types/three": "^0.150.1",
         "@vitejs/plugin-vue2": "^2.3.3",
+        "@types/node": "^20.19.0",
         "@xmcl/oxlint-config": "workspace:*",
         "chalk": "^4.1.2",
         "cross-env": "^5.2.1",
-        "oxlint": "^0.15.5",
+        "oxlint": "^1.63.0",
         "tslib": "^2.5.0",
-        "typescript": "5.4.5",
+        "typescript": "^5.9.3",
         "unocss": "^66.5.1",
         "unplugin-auto-import": "^0.17.6",
         "vite": "^3.2.11",
-        "vue-tsc": "^1.8.15"
+        "vue-tsc": "^2.2.12"
     }
 }

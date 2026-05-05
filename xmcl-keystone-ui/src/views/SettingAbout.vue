@@ -5,7 +5,7 @@
         <v-card-title class="w-full flex mr-2 title">
           <v-img src="http://launcher/icons/logoDark" alt="XMCL Logo" max-width="64" class="mr-4"></v-img>
           <div>
-            <a class="text-h5" href="https://www.xmcl.app" v-shared-tooltip="_ => 'X Minecraft Launcher'">X Minecraft Launcher</a>
+            <a class="text-h5" href="https://www.xmcl.app" v-shared-tooltip="() => 'X Minecraft Launcher'">X Minecraft Launcher</a>
             <div class="flex justify-center items-center gap-2 pt-1">
               <a href="https://afdian.com/a/ci010" class="flex items-center justify-center">
                 <img
@@ -33,7 +33,7 @@
       <div class="flex flex-wrap gap-1 justify-center overflow-auto py-4">
         <a
           v-for="c in contributors" :key="c.login"
-          v-shared-tooltip="_ => c.login"
+          v-shared-tooltip="() => c.login"
           :href="c.html_url"
           target="_blank"
         >

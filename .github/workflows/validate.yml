@@ -16,8 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-      with:
-        submodules: recursive
     - uses: pnpm/action-setup@v4
       with:
         version: 9.3.0
@@ -37,7 +35,7 @@ jobs:
         pnpm check
     - name: Test
       run: |
-        pnpm vitest run --exclude 'xmcl/**'
+        pnpm vitest run --exclude 'packages/**'
     - name: Build
       run: |
         pnpm run --prefix xmcl-keystone-ui build

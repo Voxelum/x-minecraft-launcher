@@ -1,0 +1,15 @@
+{
+  "files": [
+    "index.ts",
+    "index.browser.ts",
+    "launch.ts",
+    "version.ts",
+    "folder.ts",
+    "platform.ts",
+    "utils.ts",
+  ],
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+  },
+}

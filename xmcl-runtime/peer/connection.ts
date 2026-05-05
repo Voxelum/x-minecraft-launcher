@@ -132,7 +132,7 @@ export class PeerSession {
         channel.onopen = () => {
           console.log(`Game data channel ${port}(${id}) is opened!`)
           for (const buf of buffers) {
-            channel.send(buf)
+            channel.send(buf as any)
           }
           buffers = []
         }
@@ -141,7 +141,7 @@ export class PeerSession {
           socket.destroy()
           channel.close()
         }
-        socket.on('data', (buf) => channel.readyState === 'open' ? channel.send(buf) : buffers.push(buf))
+        socket.on('data', (buf) => channel.readyState === 'open' ? channel.send(buf as any) : buffers.push(buf))
         channel.addEventListener('message', ({ data }) => socket.write(Buffer.from(data)))
         socket.on('close', () => {
           console.log(`Socket ${label} closed and close game channel ${id}`)

@@ -24,7 +24,7 @@
         <div class="flex-grow" />
         <v-btn
           v-if="index === 0"
-          v-shared-tooltip="_ => t('mod.denseView')"
+          v-shared-tooltip="() => t('mod.denseView')"
           icon
           @click="denseView = !denseView"
         >

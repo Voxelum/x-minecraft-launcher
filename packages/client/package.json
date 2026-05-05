@@ -1,0 +1,50 @@
+{
+  "name": "@xmcl/client",
+  "version": "3.2.0",
+  "main": "./index.ts",
+  "description": "Minecraft socket pipeline utilities. Support Minecraft lan server discovery.",
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs"
+  },
+  "scripts": {
+    "build:type": "tsc",
+    "build:cjs": "esbuild --target=node16 --platform=node --external:long --external:@xmcl/* --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
+    "build:esm": "esbuild --target=node16 --platform=node --external:long --external:@xmcl/* --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts"
+  },
+  "dependencies": {
+    "@xmcl/bytebuffer": "workspace:^*",
+    "@xmcl/nbt": "workspace:^*",
+    "@xmcl/text-component": "workspace:^*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+  },
+  "author": "cijhn@hotmail.com",
+  "keywords": [
+    "minecraft",
+    "typescript",
+    "minecraft-launcher",
+    "nodejs",
+    "electron"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Voxelum/minecraft-launcher-core-node/issues"
+  },
+  "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "@xmcl/oxlint-config": "workspace:^*",
+    "esbuild": "^0.17.16",
+    "oxlint": "^1.63.0",
+    "tslib": "^2.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
+  }
+}

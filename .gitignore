@@ -1,5 +1,6 @@
 .DS_Store
 */dist/**/*
+**/dist/
 *.gen
 coverage
 node_modules/
@@ -23,3 +24,4 @@ package-lock.json
 ## CODE EDITORS
 !.vscode/
 !.zed/
+/docs/

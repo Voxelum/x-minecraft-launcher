@@ -81,11 +81,11 @@ export class RTCDuplexChannel {
                 let pivot = 0
                 while (pivot < data.length) {
                   const sub = data.subarray(pivot, pivot + maxChunk)
-                  channel.send(sub)
+                  channel.send(sub as any)
                   pivot += sub.length
                 }
               } else {
-                channel.send(data.buffer)
+                channel.send(data.buffer as any)
               }
               if (channel.bufferedAmount > channel.bufferedAmountLowThreshold) {
                 if (!readable.isPaused()) {

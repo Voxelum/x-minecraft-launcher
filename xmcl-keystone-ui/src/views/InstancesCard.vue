@@ -1,7 +1,7 @@
 <template>
   <v-card
     class="flex flex-col"
-    v-shared-tooltip="_ => name"
+    v-shared-tooltip="() => name"
     :outlined="isSelected"
     :color="isSelected ? 'primary' : ''"
     v-context-menu.force="getContextMenuItems"

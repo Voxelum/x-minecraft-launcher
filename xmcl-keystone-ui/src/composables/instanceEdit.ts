@@ -538,7 +538,7 @@ export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 've
       data.runtime.optifine = v.optifine
       data.runtime.quiltLoader = v.quilt
       data.runtime.labyMod = v.labyMod
-    } else {
+    } else if (version) {
       throw new AnyError('SelectLocalVersionError', `Cannot find version ${version}`)
     }
   }

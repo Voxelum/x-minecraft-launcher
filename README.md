@@ -47,16 +47,16 @@ brew install --cask voxelum/xmcl/xmcl
 sudo xattr -rd com.apple.quarantine /Applications/X\ Minecraft\ Launcher.app
 ```
 
-<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](docs/README.uk.md)</kbd>
-<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](docs/README.ru.md)</kbd>
-<kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png" width="22">](docs/README.de.md)</kbd>
-<kbd>[<img title="China" alt="China" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg" width="22">](docs/README.zh.md)</kbd>
-<kbd>[<img title="Japan" alt="Japan" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png" width="22">](docs/README.jp.md)</kbd>
-<kbd>[<img title="Poland" alt="Poland" src="https://upload.wikimedia.org/wikipedia/commons/1/12/Flag_of_Poland.svg" width="22">](docs/README.pl.md)</kbd>
-<kbd>[<img title="Kazakhstan" alt="Kazakhstan" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Flag_of_Kazakhstan.svg" width="26">](docs/README.kz.md)</kbd>
-<kbd>[<img title="Spain" alt="Spain" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/1280px-Flag_of_Spain.svg.png" width="22">](docs/README.es.md)</kbd>
-<kbd>[<img title="Korean" alt="Korean" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Flag_of_South_Korea.svg/640px-Flag_of_South_Korea.svg.png" width="22">](docs/README.ko.md)</kbd>
-<kbd>[<img title="Hungarian" alt="Hungarian" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Flag_of_Hungary.svg/330px-Flag_of_Hungary.svg.png" width="22">](docs/README.hu.md)</kbd>
+<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](i18n/README.uk.md)</kbd>
+<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](i18n/README.ru.md)</kbd>
+<kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png" width="22">](i18n/README.de.md)</kbd>
+<kbd>[<img title="China" alt="China" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg" width="22">](i18n/README.zh.md)</kbd>
+<kbd>[<img title="Japan" alt="Japan" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png" width="22">](i18n/README.jp.md)</kbd>
+<kbd>[<img title="Poland" alt="Poland" src="https://upload.wikimedia.org/wikipedia/commons/1/12/Flag_of_Poland.svg" width="22">](i18n/README.pl.md)</kbd>
+<kbd>[<img title="Kazakhstan" alt="Kazakhstan" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Flag_of_Kazakhstan.svg" width="26">](i18n/README.kz.md)</kbd>
+<kbd>[<img title="Spain" alt="Spain" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/1280px-Flag_of_Spain.svg.png" width="22">](i18n/README.es.md)</kbd>
+<kbd>[<img title="Korean" alt="Korean" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Flag_of_South_Korea.svg/640px-Flag_of_South_Korea.svg.png" width="22">](i18n/README.ko.md)</kbd>
+<kbd>[<img title="Hungarian" alt="Hungarian" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Flag_of_Hungary.svg/330px-Flag_of_Hungary.svg.png" width="22">](i18n/README.hu.md)</kbd>
 
 
 
@@ -73,6 +73,33 @@ sudo xattr -rd com.apple.quarantine /Applications/X\ Minecraft\ Launcher.app
 - 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](https://littleskin.cn). You can also add third-party authentication servers!
 - 🔗 **Peer to peer connection between users**. You can play multiplayer over LAN even you are not in same physical LAN!
 - 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking messages from your browser or see SmartScreen errors anymore! 😎
+
+## Core Libraries
+
+This repository also includes the **Minecraft Launcher Core** (`@xmcl/*` packages) — a set of npm packages providing useful functions to build a Minecraft launcher. [API Documentation](https://docs.xmcl.app/en/core)
+
+| Package | Description | Version |
+| --- | --- | --- |
+| [@xmcl/core](packages/core) | Launch Minecraft | [![npm](https://img.shields.io/npm/v/@xmcl/core.svg)](https://www.npmjs.com/package/@xmcl/core) |
+| [@xmcl/installer](packages/installer) | Install Minecraft, Forge, Fabric, Quilt, OptiFine, JVM | [![npm](https://img.shields.io/npm/v/@xmcl/installer.svg)](https://www.npmjs.com/package/@xmcl/installer) |
+| [@xmcl/user](packages/user) | User authentication and skin | [![npm](https://img.shields.io/npm/v/@xmcl/user.svg)](https://www.npmjs.com/package/@xmcl/user) |
+| [@xmcl/mod-parser](packages/mod-parser) | Parse Forge/LiteLoader/Fabric mods | [![npm](https://img.shields.io/npm/v/@xmcl/mod-parser.svg)](https://www.npmjs.com/package/@xmcl/mod-parser) |
+| [@xmcl/curseforge](packages/curseforge) | CurseForge API | [![npm](https://img.shields.io/npm/v/@xmcl/curseforge.svg)](https://www.npmjs.com/package/@xmcl/curseforge) |
+| [@xmcl/modrinth](packages/modrinth) | Modrinth API | [![npm](https://img.shields.io/npm/v/@xmcl/modrinth.svg)](https://www.npmjs.com/package/@xmcl/modrinth) |
+| [@xmcl/nbt](packages/nbt) | Parse NBT | [![npm](https://img.shields.io/npm/v/@xmcl/nbt.svg)](https://www.npmjs.com/package/@xmcl/nbt) |
+| [@xmcl/game-data](packages/game-data) | Load level data or servers.dat | [![npm](https://img.shields.io/npm/v/@xmcl/game-data.svg)](https://www.npmjs.com/package/@xmcl/game-data) |
+| [@xmcl/resourcepack](packages/resourcepack) | Parse resource packs | [![npm](https://img.shields.io/npm/v/@xmcl/resourcepack.svg)](https://www.npmjs.com/package/@xmcl/resourcepack) |
+| [@xmcl/gamesetting](packages/gamesetting) | Parse game settings | [![npm](https://img.shields.io/npm/v/@xmcl/gamesetting.svg)](https://www.npmjs.com/package/@xmcl/gamesetting) |
+| [@xmcl/client](packages/client) | Minecraft client network utilities | [![npm](https://img.shields.io/npm/v/@xmcl/client.svg)](https://www.npmjs.com/package/@xmcl/client) |
+| [@xmcl/model](packages/model) | Display player/block models | [![npm](https://img.shields.io/npm/v/@xmcl/model.svg)](https://www.npmjs.com/package/@xmcl/model) |
+| [@xmcl/text-component](packages/text-component) | Parse Minecraft text components | [![npm](https://img.shields.io/npm/v/@xmcl/text-component.svg)](https://www.npmjs.com/package/@xmcl/text-component) |
+| [@xmcl/forge-site-parser](packages/forge-site-parser) | Parse Forge website | [![npm](https://img.shields.io/npm/v/@xmcl/forge-site-parser.svg)](https://www.npmjs.com/package/@xmcl/forge-site-parser) |
+| [@xmcl/file-transfer](packages/file-transfer) | High-performance file downloads | [![npm](https://img.shields.io/npm/v/@xmcl/file-transfer.svg)](https://www.npmjs.com/package/@xmcl/file-transfer) |
+| [@xmcl/nat-api](packages/nat-api) | UPnP and NAT-PMP port mapping | [![npm](https://img.shields.io/npm/v/@xmcl/nat-api.svg)](https://www.npmjs.com/package/@xmcl/nat-api) |
+| [@xmcl/system](packages/system) | FS middleware for browser/Node | [![npm](https://img.shields.io/npm/v/@xmcl/system.svg)](https://www.npmjs.com/package/@xmcl/system) |
+| [@xmcl/unzip](packages/unzip) | yauzl unzip wrapper | [![npm](https://img.shields.io/npm/v/@xmcl/unzip.svg)](https://www.npmjs.com/package/@xmcl/unzip) |
+| [@xmcl/semver](packages/semver) | Fabric semver format | [![npm](https://img.shields.io/npm/v/@xmcl/semver.svg)](https://www.npmjs.com/package/@xmcl/semver) |
+| [@xmcl/bytebuffer](packages/bytebuffer) | ByteBuffer implementation | [![npm](https://img.shields.io/npm/v/@xmcl/bytebuffer.svg)](https://www.npmjs.com/package/@xmcl/bytebuffer) |
 
 ## Contribute
 

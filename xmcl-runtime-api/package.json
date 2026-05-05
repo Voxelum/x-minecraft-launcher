@@ -46,11 +46,12 @@
         "@xmcl/user": "workspace:*"
     },
     "devDependencies": {
+        "@types/node": "^20.19.0",
         "@xmcl/oxlint-config": "workspace:*",
-        "oxfmt": "^0.24.0",
-        "oxlint": "^0.15.5",
+        "oxfmt": "^0.48.0",
+        "oxlint": "^1.63.0",
         "esbuild": "^0.17.16",
         "tslib": "^2.5.0",
-        "typescript": "5.4.5"
+        "typescript": "^5.9.3"
     }
 }

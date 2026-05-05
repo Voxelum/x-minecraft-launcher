@@ -62,13 +62,13 @@
             <div
               class="v-item-group theme--dark v-btn-toggle v-btn-toggle--dense"
             >
-              <v-btn v-shared-tooltip="_ => getEnvText(item, 'client')" text small @click="toggle(item, 'client')">
+              <v-btn v-shared-tooltip="() => getEnvText(item, 'client')" text small @click="toggle(item, 'client')">
                 <v-icon small left>desktop_mac</v-icon>
                 <v-icon small color="green" v-if="getEnvValue(item, 'client') === 'required'"> check </v-icon>
                 <v-icon small color="red" v-else-if="getEnvValue(item, 'client') === 'unsupported'"> close </v-icon>
                 <v-icon small color="orange" v-else> question_mark </v-icon>
               </v-btn>
-              <v-btn v-shared-tooltip="_ => getEnvText(item, 'server')" text small @click="toggle(item, 'server')">
+              <v-btn v-shared-tooltip="() => getEnvText(item, 'server')" text small @click="toggle(item, 'server')">
                 <v-icon class="material-symbols-outlined" left small>hard_drive</v-icon>
                 <v-icon small color="green" v-if="getEnvValue(item, 'server') === 'required'"> check </v-icon>
                 <v-icon small color="red" v-else-if="getEnvValue(item, 'server') === 'unsupported'"> close </v-icon>

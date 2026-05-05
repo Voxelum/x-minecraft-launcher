@@ -1,0 +1,52 @@
+name: Deploy Github Pages
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'docs/**'
+      - README.md
+      - CONTRIBUTE.md
+      - 'packages/*/README.md'
+  workflow_dispatch:
+
+jobs:
+  page-deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20]
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 9.15.3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'pnpm'
+    - name: Install
+      run: |
+        pnpm install
+      env:
+        CI: true
+    - name: Build Docs
+      run: |
+        pnpm build:docs
+    - name: Deploy to Github Pages
+      uses: crazy-max/ghaction-github-pages@v4
+      with:
+        target_branch: gh-pages
+        build_dir: docs/
+      env:
+        GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+    - name: Notify the xmcl-page
+      uses: benc-uk/workflow-dispatch@v1
+      with:
+        token: ${{ secrets.GITHUB_PAT }}
+        repo: Voxelum/xmcl-page
+        workflow: deploy.yaml

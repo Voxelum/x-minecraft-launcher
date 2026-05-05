@@ -1,0 +1,7 @@
+{
+  "include": ["index.ts", "channel.ts", "coders.ts", "packet.ts", "lan.ts", "status.ts"],
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+  },
+}

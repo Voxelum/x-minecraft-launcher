@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="item"
-    v-shared-tooltip="_ => item ? item.description : ''"
+    v-shared-tooltip="() => item ? item.description : ''"
     class="transition-opacity duration-500 select-none flex whitespace-nowrap text-sm font-bold flex-col"
     :style="{
       opacity: active ? '1' : '0.5',

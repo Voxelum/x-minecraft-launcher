@@ -1,0 +1,9 @@
+{
+  "files": ["index.ts", "player.ts", "player-model.ts", "block.ts"],
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["DOM"],
+    "outDir": "./dist",
+    "skipLibCheck": true,
+  },
+}

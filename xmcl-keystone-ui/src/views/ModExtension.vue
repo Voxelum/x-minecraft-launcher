@@ -37,7 +37,7 @@
               <v-btn
                 v-for="tag in filterItems"
                 :key="tag.value"
-                v-shared-tooltip="_ => tag.text"
+                v-shared-tooltip="() => tag.text"
                 :disabled="tag.disabled"
                 small
                 outlined
@@ -62,7 +62,7 @@
               <v-btn
                 v-for="tag in modLoaderFilterItems"
                 :key="tag.value"
-                v-shared-tooltip="_ => tag.text"
+                v-shared-tooltip="() => tag.text"
                 small
                 outlined
               >

@@ -1,0 +1,12 @@
+{
+  "files": [
+    "index.ts",
+    "client.ts",
+    "encoder.ts",
+    "types.ts",
+  ],
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+  },
+}

@@ -1,0 +1,10 @@
+/node_modules
+/.vscode
+/assets
+/src/tests
+/dest/tests
+*.log
+/temp
+*.tsbuildinfo
+tslint.json
+**/.vitepress/cache/**

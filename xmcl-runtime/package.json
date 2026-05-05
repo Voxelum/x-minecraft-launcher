@@ -78,7 +78,7 @@
         "yazl": "^2.5.1"
     },
     "devDependencies": {
-        "oxfmt": "^0.24.0",
+        "oxfmt": "^0.48.0",
         "@types/eventsource": "^1.1.10",
         "@types/fs-extra": "~11",
         "@types/graceful-fs": "^4.1.5",
@@ -94,10 +94,10 @@
         "@types/yazl": "^2.4.2",
         "@xmcl/oxlint-config": "workspace:*",
         "cross-env": "^5.2.1",
-        "oxlint": "^0.15.5",
+        "oxlint": "^1.63.0",
         "source-map-support": "^0.5.21",
         "tslib": "^2.5.0",
         "tsx": "^3.12.6",
-        "typescript": "5.4.5"
+        "typescript": "^5.9.3"
     }
 }

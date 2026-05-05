@@ -1,0 +1,66 @@
+{
+  "name": "@xmcl/bytebuffer",
+  "version": "0.1.1",
+  "main": "./index.ts",
+  "description": "A bytebuffer module ported from bytebuffer.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "exports": {
+      ".": {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.js"
+      },
+      "debug": {
+        "import": "./dist/debug.mjs",
+        "require": "./dist/debug.js"
+      },
+      "hex": {
+        "import": "./dist/hex.mjs",
+        "require": "./dist/hex.js"
+      },
+      "varint32": {
+        "import": "./dist/varint32.mjs",
+        "require": "./dist/varint32.js"
+      },
+      "varint64": {
+        "import": "./dist/varint64.mjs",
+        "require": "./dist/varint64.js"
+      }
+    }
+  },
+  "scripts": {
+    "build:type": "tsc",
+    "build:cjs": "esbuild index.ts debug.ts hex.ts varint32.ts varint64.ts --platform=neutral --sourcemap --format=cjs --target=node16 --outdir=dist",
+    "build:esm": "esbuild index.ts debug.ts hex.ts varint32.ts varint64.ts --platform=neutral --sourcemap --format=esm --out-extension:.js=.mjs --target=node16 --outdir=dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+  },
+  "author": "cijhn@hotmail.com",
+  "keywords": [
+    "typescript",
+    "nodejs",
+    "electron",
+    "bytebuffer"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Voxelum/minecraft-launcher-core-node/issues"
+  },
+  "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "@xmcl/oxlint-config": "workspace:^*",
+    "bytebuffer": "^5.0.1",
+    "esbuild": "^0.17.16",
+    "oxlint": "^1.63.0",
+    "tslib": "^2.5.0",
+    "typescript": "^5.9.3"
+  }
+}

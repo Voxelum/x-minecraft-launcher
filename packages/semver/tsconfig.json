@@ -1,0 +1,7 @@
+{
+  "files": ["index.ts", "range.ts", "operators.ts", "semver.ts"],
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+  },
+}

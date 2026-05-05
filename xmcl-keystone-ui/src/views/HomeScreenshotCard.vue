@@ -10,7 +10,7 @@
     }"
   >
     <v-btn
-      v-shared-tooltip="_ => randomPlayScreenshot ? t('screenshots.playRandom') : t('screenshots.playSequence')"
+      v-shared-tooltip="() => randomPlayScreenshot ? t('screenshots.playRandom') : t('screenshots.playSequence')"
       text
       icon
       color="white"

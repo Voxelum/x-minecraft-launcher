@@ -1,0 +1,54 @@
+{
+  "name": "@xmcl/system",
+  "version": "2.2.9",
+  "main": "./index.ts",
+  "browser": "./index.browser.ts",
+  "description": "An abstract layer for file system on reading zip or plain dictionary/file",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:type": "tsc",
+    "build:cjs": "esbuild --target=node16 --external:yauzl --external:@xmcl/* --platform=node --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
+    "build:esm": "esbuild --target=node16 --external:yauzl --external:@xmcl/* --platform=node --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts",
+    "build:browser": "esbuild --target=es2020 --sourcemap --external:jszip --external:@xmcl/* --format=esm --bundle --outfile=dist/index.browser.mjs index.browser.ts"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "browser": "./dist/index.browser.mjs",
+    "module": "./dist/index.mjs",
+    "access": "public"
+  },
+  "dependencies": {
+    "@xmcl/unzip": "workspace:^*",
+    "yauzl": "^2.10.0",
+    "jszip": "^3.10.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+  },
+  "author": "cijhn@hotmail.com",
+  "keywords": [
+    "minecraft",
+    "typescript",
+    "minecraft-launcher",
+    "nodejs",
+    "file-system",
+    "electron"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "@types/yauzl": "^2.10.0",
+    "@xmcl/oxlint-config": "workspace:^*",
+    "esbuild": "^0.17.16",
+    "oxlint": "^1.63.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Voxelum/minecraft-launcher-core-node/issues"
+  },
+  "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme"
+}

@@ -1,0 +1,51 @@
+{
+  "name": "@xmcl/game-data",
+  "version": "1.2.6",
+  "main": "./index.ts",
+  "description": "Parse minecraft game related data like level.dat, server.dat",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:type": "tsc",
+    "build:cjs": "esbuild --target=es2020 --external:@xmcl/* --platform=neutral --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
+    "build:esm": "esbuild --target=es2020 --external:@xmcl/* --platform=neutral --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "access": "public"
+  },
+  "dependencies": {
+    "@xmcl/nbt": "workspace:^*",
+    "@xmcl/system": "workspace:^*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+  },
+  "author": "cijhn@hotmail.com",
+  "keywords": [
+    "minecraft",
+    "typescript",
+    "minecraft-launcher",
+    "nodejs",
+    "electron",
+    "chunk",
+    "minecraft-level"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Voxelum/minecraft-launcher-core-node/issues"
+  },
+  "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "@xmcl/oxlint-config": "workspace:^*",
+    "tslib": "^2.5.0",
+    "esbuild": "^0.17.16",
+    "oxlint": "^1.63.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
+  }
+}

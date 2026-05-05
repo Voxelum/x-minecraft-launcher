@@ -2,7 +2,7 @@
   <div class="flex items-center justify-end gap-3">
     <v-btn
       v-if="i18nEnabled"
-      v-shared-tooltip="_ => 'Alt'"
+      v-shared-tooltip="() => 'Alt'"
       icon
       large
       :class="{ 'v-btn--active': isEnabledState }"

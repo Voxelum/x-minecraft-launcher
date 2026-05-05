@@ -1,0 +1,13 @@
+{
+  "files": [
+    "index.ts",
+    "helper.ts",
+    "SqliteWASMDialect.ts",
+    "SqliteWASMDialectConfig.ts",
+    "SqliteWASMDriver.ts"
+  ],
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+  },
+}

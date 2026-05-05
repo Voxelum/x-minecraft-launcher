@@ -105,6 +105,7 @@ async function start() {
         electronVersion: context.electronVersion,
         arch: context.arch,
         types: ['dev'],
+        onlyModules: ['node_datachannel'],
       })
       rebuildProcess.lifecycle.on('module-found', (path: string) => {
         console.log(`  ${chalk.blue('•')} rebuild module ${chalk.blue('path')}=${path}`)

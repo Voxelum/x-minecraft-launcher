@@ -1,0 +1,65 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["import", "typescript", "unicorn"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "ignorePatterns": ["**/node_modules/**", "**/dist/**"],
+  "globals": {},
+  "settings": {},
+  "rules": {
+    "eqeqeq": "warn",
+    "import/no-cycle": "error",
+    "@typescript-eslint/no-unsafe-declaration-merging": "off",
+    "@typescript-eslint/ban-types": 0,
+    "@typescript-eslint/ban-ts-comment": 0,
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/explicit-module-boundary-types": 0,
+    "@typescript-eslint/no-empty-function": 0,
+    "@typescript-eslint/no-empty-interface": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "@typescript-eslint/no-unused-expressions": 2,
+    "@typescript-eslint/no-unused-vars": 0,
+    "unicorn/no-new-array": 0,
+    "import/no-absolute-path": 0,
+    "no-useless-constructor": 0,
+    "no-unused-vars": 0,
+    "no-use-before-define": 0,
+    "no-wrapper-object-types": "off",
+    "no-thenable": "off"
+  },
+  "overrides": [
+    {
+      "files": ["*.test.ts", "*.spec.ts"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    },
+    {
+      "files": ["**/xmcl-runtime/**"],
+      "rules": {
+        "import/no-cycle": "off"
+      }
+    },
+    {
+      "files": ["**/xmcl-runtime-api/**"],
+      "rules": {
+        "import/no-cycle": "off"
+      }
+    },
+    {
+      "files": ["**/xmcl-electron-app/**"],
+      "rules": {
+        "import/no-cycle": "off"
+      }
+    },
+    {
+      "files": ["**/xmcl-keystone-ui/**"],
+      "rules": {
+        "import/no-cycle": "off"
+      }
+    }
+  ]
+}

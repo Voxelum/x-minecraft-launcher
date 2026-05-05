@@ -1,0 +1,7 @@
+{
+  "files": ["forge.ts", "forgeConfig.ts", "fabric.ts", "liteloader.ts", "quilt.ts", "index.ts"],
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+  },
+}

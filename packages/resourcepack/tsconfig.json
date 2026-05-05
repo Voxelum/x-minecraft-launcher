@@ -1,0 +1,7 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+  },
+  "files": ["format.ts", "index.ts", "modelLoader.ts", "resourceManager.ts", "resourcePack.ts"],
+}

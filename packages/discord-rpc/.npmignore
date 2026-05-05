@@ -1,0 +1,20 @@
+# Folder
+examples/
+__test__/
+.vscode/
+.github/
+.husky/
+.yarn/
+docs/
+test/
+src/
+
+# File
+tsconfig.json
+.yarnrc.yml
+.prettierrc
+*.tgz
+
+# lockfile
+package-lock.json
+yarn.lock

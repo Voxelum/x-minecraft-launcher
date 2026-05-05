@@ -1,0 +1,39 @@
+{
+  "name": "@xmcl/resource",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Core resource parsing and caching functionality for Minecraft launchers",
+  "main": "./index.ts",
+  "module": "./index.ts",
+  "browser": "./index.browser.ts",
+  "type": "module",
+  "keywords": [
+    "minecraft",
+    "resource",
+    "launcher",
+    "modpack"
+  ],
+  "author": "ci010 <cijhn@hotmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Voxelum/minecraft-launcher-core-node"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "@types/fs-extra": "^11.0.1",
+    "typescript": "^5.9.3",
+    "@xmcl/mod-parser": "workspace:*",
+    "@xmcl/game-data": "workspace:*",
+    "@xmcl/system": "workspace:*",
+    "@xmcl/instance": "workspace:*",
+    "@xmcl/resourcepack": "workspace:*",
+    "@xmcl/utils": "workspace:*",
+    "chokidar": "^4.0.3",
+    "file-type": "^16.5.4",
+    "kysely": "^0.26.1",
+    "fs-extra": "^11.1.0",
+    "vitest": "^2.1.8"
+  }
+}

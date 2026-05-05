@@ -12,7 +12,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        submodules: recursive
     - uses: pnpm/action-setup@v4
       with:
         version: 9.3.0

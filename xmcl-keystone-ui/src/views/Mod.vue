@@ -21,14 +21,14 @@
 
         <v-btn
           id="default-source-button"
-          v-shared-tooltip="_ => t('mod.switchDefaultSource') + ' ' + defaultSource"
+          v-shared-tooltip="() => t('mod.switchDefaultSource') + ' ' + defaultSource"
           icon
           @click="defaultSource = defaultSource === 'curseforge' ? 'modrinth' : 'curseforge'"
         >
           <v-icon> {{ defaultSource === 'modrinth' ? '$vuetify.icons.modrinth' : '$vuetify.icons.curseforge' }} </v-icon>
         </v-btn>
         <v-btn
-          v-shared-tooltip="_ => t('mod.groupInstalled')"
+          v-shared-tooltip="() => t('mod.groupInstalled')"
           :class="{'v-list-item--active': groupInstalled}"
           icon
           @click="groupInstalled = !groupInstalled"
@@ -36,7 +36,7 @@
           <v-icon> layers </v-icon>
         </v-btn>
         <v-btn
-          v-shared-tooltip="_ => t('mod.denseView')"
+          v-shared-tooltip="() => t('mod.denseView')"
           icon
           @click="denseView = !denseView"
         >

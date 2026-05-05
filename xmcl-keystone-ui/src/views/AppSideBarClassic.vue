@@ -24,7 +24,7 @@
 
       <v-list-item
         id="my-stuff-button"
-        v-shared-tooltip.right="_ => t('myStuff')"
+        v-shared-tooltip.right="() => t('myStuff')"
         link
         push
         to="/me"
@@ -37,7 +37,7 @@
       </v-list-item>
       <v-list-item
         v-if="true"
-        v-shared-tooltip.right="_ => t('store.name', 2)"
+        v-shared-tooltip.right="() => t('store.name', 2)"
         link
         push
         to="/store"
@@ -66,7 +66,7 @@
       style=""
     >
       <v-list-item
-        v-shared-tooltip.right="_ => t('multiplayer.name')"
+        v-shared-tooltip.right="() => t('multiplayer.name')"
         link
         class="non-moveable"
         @click="goMultiplayer"
@@ -86,7 +86,7 @@
       />
 
       <v-list-item
-        v-shared-tooltip.right="_ => t('setting.name', 2)"
+        v-shared-tooltip.right="() => t('setting.name', 2)"
         link
         push
         to="/setting"

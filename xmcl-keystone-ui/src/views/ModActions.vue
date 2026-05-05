@@ -2,7 +2,7 @@
   <div class="flex items-center justify-end gap-3">
     <v-btn
       v-if="i18nEnabled"
-      v-shared-tooltip="_ => 'Alt'"
+      v-shared-tooltip="() => 'Alt'"
       icon
       large
       :class="{ 'v-btn--active': isEnabledState }"
@@ -11,7 +11,7 @@
       <v-icon>translate</v-icon>
     </v-btn>
     <v-btn
-      v-shared-tooltip="_ => t('mod.showDirectory')"
+      v-shared-tooltip="() => t('mod.showDirectory')"
       icon
       large
       @click="showDirectory(path)"

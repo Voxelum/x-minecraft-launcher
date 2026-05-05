@@ -61,18 +61,18 @@
               {{ t('shared.edit') }}
             </v-btn>
             <div class="flex-grow" />
-            <v-btn v-shared-tooltip="_ => t('env.select.all')" text icon @click="selectAll">
+            <v-btn v-shared-tooltip="() => t('env.select.all')" text icon @click="selectAll">
               <v-icon>
                 select_all
               </v-icon>
             </v-btn>
-            <v-btn v-shared-tooltip="_ => t('env.select.fit')" text icon @click="selectFit">
+            <v-btn v-shared-tooltip="() => t('env.select.fit')" text icon @click="selectFit">
               <v-icon>
                 tab_unselected
               </v-icon>
             </v-btn>
 
-            <v-btn v-shared-tooltip="_ => t('env.select.none')" text icon @click="selectNone">
+            <v-btn v-shared-tooltip="() => t('env.select.none')" text icon @click="selectNone">
               <v-icon>
                 deselect
               </v-icon>

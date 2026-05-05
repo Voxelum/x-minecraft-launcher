@@ -57,9 +57,10 @@
         "dependencies.embedded"
     ],
     "oxc.enable": true,
-    "oxc.configPath": "xmcl/packages/oxlint-config/oxlintrc.json",
+    "oxc.configPath": "packages/oxlint-config/oxlintrc.json",
     "editor.defaultFormatter": "oxc.oxc-vscode",
     "[typescript]": {
         "editor.defaultFormatter": "oxc.oxc-vscode"
-    }
+    },
+    "js/ts.tsdk.path": "node_modules/typescript/lib"
 }

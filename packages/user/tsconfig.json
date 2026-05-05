@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig",
+  "files": [
+    "index.ts",
+    "offline.ts",
+    "mojang.ts",
+    "gameProfile.ts",
+    "microsoft.ts",
+    "yggdrasil.ts",
+  ],
+  "compilerOptions": {
+    "outDir": "./dist",
+  },
+}

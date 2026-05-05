@@ -13,19 +13,19 @@
         :items="items"
       />
       <v-divider vertical />
-      <v-btn v-shared-tooltip="_ => t('BaseSettingGeneral.title')" text :class="{ 'v-btn--active': !targetQuery }" @click="navigate('')">
+      <v-btn v-shared-tooltip="() => t('BaseSettingGeneral.title')" text :class="{ 'v-btn--active': !targetQuery }" @click="navigate('')">
         <v-icon :left="!targetQuery" class="material-icons-outlined">settings_heart</v-icon>
         <span :style="{ width: !targetQuery ?  '80px' : 0 }" class="overflow-hidden transition-all!">
           {{ t("BaseSettingGeneral.title") }}
         </span>
       </v-btn>
-      <v-btn v-shared-tooltip="_ => t('modpack.name', 1)" text :class="{ 'v-btn--active': targetQuery === 'modpack' }" @click="navigate('modpack')">
+      <v-btn v-shared-tooltip="() => t('modpack.name', 1)" text :class="{ 'v-btn--active': targetQuery === 'modpack' }" @click="navigate('modpack')">
         <v-icon :left="targetQuery === 'modpack'" class="material-icons-outlined">folder_zip</v-icon>
         <span :style="{ width: targetQuery === 'modpack' ?  '80px' : 0 }" class="overflow-hidden transition-all!">
           {{ t("modpack.name", 1) }}
         </span>
       </v-btn>
-      <v-btn v-shared-tooltip="_ => t('setting.appearance')" text :class="{ 'v-btn--active': targetQuery === 'appearance' }" @click="navigate('appearance')">
+      <v-btn v-shared-tooltip="() => t('setting.appearance')" text :class="{ 'v-btn--active': targetQuery === 'appearance' }" @click="navigate('appearance')">
         <v-icon :left="targetQuery === 'appearance'" class="material-icons-outlined">invert_colors</v-icon>
         <span :style="{ width: targetQuery === 'appearance' ?  'auto' : 0 }" class="overflow-hidden transition-all!">
           {{ t('setting.appearance') }}

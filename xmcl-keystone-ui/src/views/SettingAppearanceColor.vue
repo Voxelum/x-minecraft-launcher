@@ -5,7 +5,7 @@
   >
     <template #activator="{ on, attrs }">
       <div
-        v-shared-tooltip="_ => text"
+        v-shared-tooltip="() => text"
         class="color-button min-w-5 max-w-5 dark:border-light-50 rounded-full border-2 p-5 transition-all"
         v-bind="attrs"
         :style="shadowColor"

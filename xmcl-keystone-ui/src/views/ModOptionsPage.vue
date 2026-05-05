@@ -10,7 +10,7 @@
       <template #preaction>
         <v-btn
           icon
-          v-shared-tooltip="_ => t('shared.refresh')"
+          v-shared-tooltip="() => t('shared.refresh')"
           :disabled="mods.length === 0 || checkingDependencies"
           :loading="checkingDependencies"
           @click="checkDependencies"
@@ -46,7 +46,7 @@
       <template #preaction>
         <v-btn
           icon
-          v-shared-tooltip="_ => t('shared.refresh')"
+          v-shared-tooltip="() => t('shared.refresh')"
           :loading="scanningUnusedMods"
           :disabled="mods.length === 0 || scanningUnusedMods"
           @click="scanUnusedMods"

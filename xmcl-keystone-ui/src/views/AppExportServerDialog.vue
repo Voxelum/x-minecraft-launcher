@@ -328,7 +328,7 @@ const hasError = computed(() => {
             <v-spacer />
             <v-btn
               class="z-10"
-              v-shared-tooltip="_ => t('env.select.all')"
+              v-shared-tooltip="() => t('env.select.all')"
               text
               icon
               @click="selectAll"
@@ -339,7 +339,7 @@ const hasError = computed(() => {
             </v-btn>
             <v-btn
               class="z-10"
-              v-shared-tooltip="_ => t('env.select.fit')"
+              v-shared-tooltip="() => t('env.select.fit')"
               text
               icon
               @click="selectFit"
@@ -351,7 +351,7 @@ const hasError = computed(() => {
 
             <v-btn
               class="z-10"
-              v-shared-tooltip="_ => t('env.select.none')"
+              v-shared-tooltip="() => t('env.select.none')"
               text
               icon
               @click="selectNone"

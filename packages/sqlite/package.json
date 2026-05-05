@@ -1,0 +1,29 @@
+{
+  "name": "@xmcl/sqlite",
+  "private": false,
+  "version": "0.0.1",
+  "main": "./index.ts",
+  "author": {
+    "name": "cijhn@hotmail.com"
+  },
+  "description": "WASM SQLite helper",
+  "scripts": {
+    "build:type": "tsc",
+    "build:cjs": "esbuild --target=es2020 --platform=node --external:node-sqlite3-wasm --external:kysely --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
+    "build:esm": "esbuild --target=es2020 --platform=node --external:node-sqlite3-wasm --external:kysely --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "kysely": "^0.26.1",
+    "node-sqlite3-wasm": "^0.8.52",
+    "@xmcl/oxlint-config": "workspace:^*",
+    "esbuild": "^0.17.16",
+    "oxlint": "^1.63.0",
+    "typescript": "^5.9.3"
+  }
+}

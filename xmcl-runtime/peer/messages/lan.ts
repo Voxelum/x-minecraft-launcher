@@ -47,7 +47,7 @@ export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
       if (!opened) {
         buffers.push(buf)
       } else if (gameChannel.readyState === 'open') {
-        gameChannel.send(buf)
+        gameChannel.send(buf as any)
         // if (!gameChannel.send(buf)) {
         //   gameChannel.close()
         // }
@@ -75,7 +75,7 @@ export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
       console.log(`Game channel ${info.port}(${id}) opened!`)
 
       for (const buf of buffers) {
-        gameChannel.send(buf)
+        gameChannel.send(buf as any)
         // if (!gameChannel.send(buf)) {
         //   break
         // }

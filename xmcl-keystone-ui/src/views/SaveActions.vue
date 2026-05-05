@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-end gap-3">
     <v-btn
-      v-shared-tooltip="_ => isInstanceLinked ? t('save.shared') : t('save.independent')"
+      v-shared-tooltip="() => isInstanceLinked ? t('save.shared') : t('save.independent')"
       icon
       :loading="loading"
       large
@@ -10,7 +10,7 @@
       <v-icon>{{ isInstanceLinked ? 'account_tree' : 'looks_one' }}</v-icon>
     </v-btn>
     <v-btn
-      v-shared-tooltip.left="_ => t('save.showDirectory')"
+      v-shared-tooltip.left="() => t('save.showDirectory')"
       icon
       large
       @click="showDirectory(path)"

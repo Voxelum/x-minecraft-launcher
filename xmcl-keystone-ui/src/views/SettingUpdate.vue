@@ -7,7 +7,7 @@
     <SettingItem>
       <template #preaction>
         <v-btn
-          v-shared-tooltip="_ => t('setting.checkUpdate')"
+          v-shared-tooltip="() => t('setting.checkUpdate')"
           icon
           :loading="checkingUpdate"
           @click="checkUpdate"

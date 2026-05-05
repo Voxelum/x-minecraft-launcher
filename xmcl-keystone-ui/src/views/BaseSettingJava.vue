@@ -6,7 +6,7 @@
       Java
       <v-spacer />
       <v-btn
-        v-shared-tooltip.left="_ => t('java.refresh')"
+        v-shared-tooltip.left="() => t('java.refresh')"
         icon
         :loading="refreshing"
         @click="refresh"
@@ -15,7 +15,7 @@
       </v-btn>
       <v-btn
         id="java-import"
-        v-shared-tooltip.left="_ => t('java.importFromFile')"
+        v-shared-tooltip.left="() => t('java.importFromFile')"
         icon
         @click="browseFile"
       >
@@ -84,7 +84,7 @@
           />
         </v-list-item-title>
         <v-list-item-subtitle
-          v-shared-tooltip="_ => t('instance.prependCommandHint')"
+          v-shared-tooltip="() => t('instance.prependCommandHint')"
         >
           <v-text-field
             v-model="prependCommand"

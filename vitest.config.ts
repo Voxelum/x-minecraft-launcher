@@ -3,7 +3,7 @@ import { join } from 'path'
 
 export default defineConfig({
   test: {
-    setupFiles: [join(__dirname, './xmcl/test-setup.ts')],
+    setupFiles: [join(__dirname, './test-setup.ts')],
     sequence: {
     },
     globals: true,

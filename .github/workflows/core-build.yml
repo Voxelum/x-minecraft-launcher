@@ -1,0 +1,82 @@
+name: Core Build
+
+on:
+  push:
+    branches: 
+      - master
+    paths:
+      - 'packages/*/*.ts'
+      - 'packages/*/package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/**'
+
+jobs:
+  automation:
+    runs-on: ubuntu-latest
+
+    if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
+
+    strategy:
+      matrix:
+        node-version: [20]
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 9.15.3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'pnpm'
+    - uses: actions/setup-java@v4
+      with:
+        java-version: '12.X'
+        architecture: x64
+        distribution: zulu
+    - name: Install
+      run: |
+        pnpm install
+      env:
+        CI: true
+    - name: Lint
+      run: |
+        pnpm lint
+    - name: Test
+      run: |
+        pnpm coverage
+    - name: Build
+      run: |
+        pnpm --parallel build:type
+        pnpm --parallel build:cjs
+        pnpm --parallel build:esm
+        pnpm --parallel build:browser
+    - name: Prepare Pull Request
+      id: vars
+      run: |
+        pnpm tsx .github/actions/prepare-pr/index.ts
+      env:
+        CI: true
+    - name: Update lock file
+      run: |
+        pnpm install --frozen-lockfile=false
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v7
+      with:
+        assignees: ci010
+        reviewers: ci010
+        branch: prepare-release
+        title: ${{ steps.vars.outputs.title }}
+        body: ${{ steps.vars.outputs.body }}
+        commit-message: ${{ steps.vars.outputs.message }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload Coverage
+      uses: actions/upload-artifact@master
+      with:
+        name: coverage
+        path: coverage
+
+

@@ -1,0 +1,19 @@
+{
+  "files": ["index.ts"],
+  "engines": {
+    "node": ">=20",
+  },
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "esnext",
+    "lib": ["DOM"],
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "declaration": true,
+    "downlevelIteration": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+  },
+}
