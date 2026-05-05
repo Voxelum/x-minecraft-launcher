@@ -1,7 +1,7 @@
 import { execSync } from 'child_process'
 import { existsSync } from 'fs'
-import { readFile, writeFile } from 'fs-extra'
-import { join } from 'path'
+import { ensureDir, readFile, readlink, symlink, unlink, writeFile } from 'fs-extra'
+import { dirname, join } from 'path'
 
 async function writeMimeList(mimesAppsList: string) {
   if (!existsSync(mimesAppsList)) {
@@ -22,10 +22,56 @@ async function writeMimeList(mimesAppsList: string) {
   }
 }
 
+/**
+ * Ensures a stable symlink for AppImage that persists across updates
+ * @param exePath The current executable path (not used for AppImage, but kept for consistency)
+ * @param homePath The user's home directory
+ * @returns The path to use in desktop file (either the symlink or original path)
+ */
+async function ensureAppImageSymlink(exePath: string, homePath: string): Promise<string> {
+  // Only create symlink for AppImage
+  // process.env.APPIMAGE contains the path to the actual AppImage file
+  const appImagePath = process.env.APPIMAGE
+  if (!appImagePath) {
+    return exePath
+  }
+
+  const binDir = join(homePath, '.local', 'bin')
+  const symlinkPath = join(binDir, 'xmcl')
+  
+  await ensureDir(binDir)
+
+  // Check if symlink exists and points to correct location
+  if (existsSync(symlinkPath)) {
+    try {
+      const currentTarget = await readlink(symlinkPath)
+      if (currentTarget !== appImagePath) {
+        // Update symlink to point to new version
+        await unlink(symlinkPath)
+        await symlink(appImagePath, symlinkPath)
+      }
+    } catch (e) {
+      // If it's not a symlink or there's an error, remove and recreate
+      await unlink(symlinkPath).catch(() => {})
+      await symlink(appImagePath, symlinkPath)
+    }
+  } else {
+    // Create new symlink
+    await symlink(appImagePath, symlinkPath)
+  }
+
+  return symlinkPath
+}
+
 async function ensureDesktopFile(homePath: string, exePath: string, assigned: boolean) {
   const desktopFile = join(homePath, '.local', 'share', 'applications', 'xmcl.desktop')
+  
+  // For AppImage, use a stable symlink instead of the versioned path
+  const execPath = await ensureAppImageSymlink(exePath, homePath)
+  
   if (existsSync(desktopFile) || !assigned) {
-    await writeFile(desktopFile, `[Desktop Entry]\nName=X Minecraft Launcher\nExec=${exePath} %u\nIcon=${exePath}\nType=Application\nMimeType=x-scheme-handler/xmcl;`)
+    await ensureDir(dirname(desktopFile))
+    await writeFile(desktopFile, `[Desktop Entry]\nName=X Minecraft Launcher\nExec=${execPath} %u\nIcon=${execPath}\nType=Application\nMimeType=x-scheme-handler/xmcl;`)
   }
 }
 
