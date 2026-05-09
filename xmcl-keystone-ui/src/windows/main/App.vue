@@ -8,7 +8,7 @@
     </div>
     <AppSystemBar :back="sidebarStyle === 'notch'" />
     <div
-      class="app-layout relative flex overflow-auto"
+      class="app-layout flex-grow relative flex overflow-auto"
       :class="layoutClasses"
     >
       <AppSideBarClassic v-if="sidebarStyle === 'classic'" />
