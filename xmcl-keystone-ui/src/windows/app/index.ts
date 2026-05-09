@@ -22,7 +22,7 @@ const app = createApp(defineComponent({
     provide(kDialogModel, useDialogModel())
     provide(kSWRVConfig, useSWRVConfig())
 
-    return () => h(Context, [h(App)])
+    return () => h(Context, null, { default: () => h(App) })
   },
 }))
 

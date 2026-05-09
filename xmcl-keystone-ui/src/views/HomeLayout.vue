@@ -8,14 +8,16 @@
     <HomeHeader ref="headerEl" class="sticky top-0 z-20" />
 
     <!-- This is to fix strange hover color issue... -->
-    <transition
-      name="fade-transition"
-      mode="out-in"
-      @after-enter="end"
-      @leave="start"
-    >
-      <router-view />
-    </transition>
+    <router-view v-slot="{ Component }">
+      <transition
+        name="fade-transition"
+        mode="out-in"
+        @after-enter="end"
+        @leave="start"
+      >
+        <component :is="Component" />
+      </transition>
+    </router-view>
 
     <HomeLogDialog />
     <HomeDropModpackDialog />

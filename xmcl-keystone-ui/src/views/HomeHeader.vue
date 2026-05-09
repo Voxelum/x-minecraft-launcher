@@ -29,26 +29,30 @@
         >{{ name || `Minecraft ${version.minecraft}` }}</span>
         <router-view name="route" />
         <div class="flex-grow" />
+        <router-view name="actions" v-slot="{ Component }">
+          <transition
+            name="slide-x-transition"
+            mode="out-in"
+          >
+            <component :is="Component" class="flex-shrink-0" />
+          </transition>
+        </router-view>
+      </div>
+      <router-view name="extensions" v-slot="{ Component }">
         <transition
-          name="slide-x-transition"
+          name="slide-y-reverse-transition"
           mode="out-in"
         >
-          <router-view class="flex-shrink-0" name="actions" />
+          <component
+            :is="Component"
+            class="px-4"
+            :class="{
+              'mt-5': !compact,
+              'mt-3': compact,
+            }"
+          />
         </transition>
-      </div>
-      <transition
-        name="slide-y-reverse-transition"
-        mode="out-in"
-      >
-        <router-view
-          name="extensions"
-          class="px-4"
-          :class="{
-            'mt-5': !compact,
-            'mt-3': compact,
-          }"
-        />
-      </transition>
+      </router-view>
     </div>
     <div
       v-if="dragover"

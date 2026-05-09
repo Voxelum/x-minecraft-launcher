@@ -1,15 +1,15 @@
 <template>
   <div class="store visible-scroll relative flex flex-col items-center overflow-auto">
-    <Transition
-      name="slide-y-transition"
-      mode="out-in"
-      @after-enter="end"
-      @leave="start"
-    >
-      <router-view
-        class="flex flex-col"
-      />
-    </Transition>
+    <router-view v-slot="{ Component }">
+      <Transition
+        name="slide-y-transition"
+        mode="out-in"
+        @after-enter="end"
+        @leave="start"
+      >
+        <component :is="Component" class="flex flex-col" />
+      </Transition>
+    </router-view>
   </div>
 </template>
 <script setup lang="ts">

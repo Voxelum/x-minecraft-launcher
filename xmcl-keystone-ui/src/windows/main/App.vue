@@ -14,9 +14,11 @@
       <AppSideBarClassic v-if="sidebarStyle === 'classic'" />
       <AppSideBarNotch v-else />
       <main class="relative flex max-h-full flex-1 flex-col overflow-auto" :class="mainClasses">
-        <transition name="fade-transition" mode="out-in">
-          <router-view class="z-2" />
-        </transition>
+        <router-view v-slot="{ Component }">
+          <transition name="fade-transition" mode="out-in">
+            <component :is="Component" class="z-2" />
+          </transition>
+        </router-view>
       </main>
     </div>
     <AppContextMenu />
