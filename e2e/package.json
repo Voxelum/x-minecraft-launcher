@@ -7,6 +7,7 @@
   "type": "module",
   "scripts": {
     "test": "playwright test",
+    "test:scratch": "playwright test specs/scratch",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "test:update": "playwright test --update-snapshots",
