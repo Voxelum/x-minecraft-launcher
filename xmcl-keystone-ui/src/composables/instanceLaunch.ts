@@ -234,11 +234,11 @@ export function useInstanceLaunch(
     await track(token, _launch(instancePath, user, operationId, side, overrides), 'launching', operationId)
   }
 
-  async function launchAs(user: UserProfile, side = 'client' as 'client' | 'server') {
+  async function launchAs(user: UserProfile, side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>) {
     const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
     const instancePath = instance.value.path
     const token = getLaunchToken(user, instancePath)
-    await track(token, _launch(instancePath, user, operationId, side), 'launching', operationId)
+    await track(token, _launch(instancePath, user, operationId, side, overrides), 'launching', operationId)
   }
 
   async function killGame(side: 'client' | 'server' = 'client', force?: boolean) {

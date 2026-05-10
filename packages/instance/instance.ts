@@ -69,6 +69,20 @@ export const PeerUpstreamSchema = z.object({
 export type PeerUpstream = z.infer<typeof PeerUpstreamSchema>
 
 /**
+ * Server upstream configuration. The instance is bound to a remote Minecraft
+ * server; the launcher follows the server's reported protocol version.
+ */
+export const ServerUpstreamSchema = z.object({
+  type: z.literal('server'),
+  host: z.string(),
+  port: z.number().positive().optional(),
+  /** Display name carried alongside the server in `servers.dat`. */
+  name: z.string().optional(),
+})
+
+export type ServerUpstream = z.infer<typeof ServerUpstreamSchema>
+
+/**
  * Union type for all possible upstream configurations
  */
 export const InstanceUpstreamSchema = z.discriminatedUnion('type', [
@@ -76,6 +90,7 @@ export const InstanceUpstreamSchema = z.discriminatedUnion('type', [
   ModrinthUpstreamSchema,
   FTBUpstreamSchema,
   PeerUpstreamSchema,
+  ServerUpstreamSchema,
 ])
 
 export type InstanceUpstream = z.infer<typeof InstanceUpstreamSchema>
@@ -149,11 +164,17 @@ export const InstanceDataSchema = z.object({
   url: z.string().catch('').default(''),
   icon: z.string().catch('').default(''),
   fileApi: z.string().catch('').default(''),
-  /** The option for instance to launch server directly */
+  /**
+   * The default launch target server. When set, launching this instance joins
+   * the given server directly instead of opening the client title screen.
+   * `name` is the matching entry's display name in `servers.dat`, which
+   * disambiguates pins when two rows share the same host/port.
+   */
   server: z
     .object({
       host: z.string(),
       port: z.number().positive().optional(),
+      name: z.string().optional(),
     })
     .nullable()
     .optional()
@@ -205,5 +226,9 @@ export function isUpstreamSameOrigin(a: InstanceUpstream, b: InstanceUpstream): 
   if (a.type === 'modrinth-modpack') return a.projectId === (b as any).projectId
   if (a.type === 'ftb-modpack') return a.id === (b as any).id
   if (a.type === 'peer') return a.id === (b as any).id
+  if (a.type === 'server') {
+    const bs = b as ServerUpstream
+    return a.host === bs.host && (a.port ?? 25565) === (bs.port ?? 25565)
+  }
   return false
 }

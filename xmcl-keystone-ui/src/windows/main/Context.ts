@@ -14,6 +14,7 @@ import { kInstanceModsContext, useInstanceMods } from '@/composables/instanceMod
 import { kInstanceOptions, useInstanceOptions } from '@/composables/instanceOptions'
 import { kInstanceResourcePacks, useInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { kInstanceSave, useInstanceSaves } from '@/composables/instanceSave'
+import { kInstanceServerInfo, useInstanceServerInfo } from '@/composables/instanceServerInfo'
 import { kInstanceShaderPacks, useInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kInstanceTheme, useInstanceTheme } from '@/composables/instanceTheme'
 import { kInstanceVersion, useInstanceVersion } from '@/composables/instanceVersion'
@@ -68,6 +69,7 @@ export default defineComponent({
     const instanceDefaultSource = useInstanceDefaultSource(instance.path)
     const options = useInstanceOptions(instance.path)
     const saves = useInstanceSaves(instance.path)
+    const serverInfo = useInstanceServerInfo(instance.path)
     const resourcePacks = useInstanceResourcePacks(instance.path, options.gameOptions)
     const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
     const shaderPacks = useInstanceShaderPacks(instance.path, instance.runtime, instanceMods.mods, options.gameOptions)
@@ -105,6 +107,7 @@ export default defineComponent({
     provide(kInstanceJava, instanceJava)
     provide(kInstanceOptions, options)
     provide(kInstanceSave, saves)
+    provide(kInstanceServerInfo, serverInfo)
     provide(kInstanceResourcePacks, resourcePacks)
     provide(kInstanceModsContext, instanceMods)
     provide(kInstanceFiles, files)

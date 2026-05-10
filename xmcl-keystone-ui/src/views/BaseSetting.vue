@@ -10,6 +10,7 @@
         <BaseSettingJava />
         <BaseSettingSync />
         <BaseSettingLaunch />
+        <BaseSettingServer />
       </div>
     </template>
     <template v-else-if="targetQuery === 'modpack'">
@@ -84,6 +85,7 @@ import { templateRef, useMediaQuery } from '@vueuse/core'
 import { kCompact } from '@/composables/scrollTop'
 import { useQuery } from '@/composables/query'
 import BaseSettingModpack from './BaseSettingModpack.vue'
+import BaseSettingServer from './BaseSettingServer.vue'
 import BaseSettingAdvanced from './BaseSettingAdvanced.vue'
 import { useInstanceModpackMetadata } from '@/composables/instanceModpackMetadata'
 import BaseSettingModpackFiles from './BaseSettingModpackFiles.vue'

@@ -8,5 +8,9 @@ export function isUpstreamIsSameOrigin(a: InstanceUpstream, b: InstanceUpstream)
   if (a.type === 'modrinth-modpack') return a.projectId === (b as any).projectId
   if (a.type === 'ftb-modpack') return a.id === (b as any).id
   if (a.type === 'peer') return a.id === (b as any).id
+  if (a.type === 'server') {
+    const bs = b as { host: string; port?: number }
+    return a.host === bs.host && (a.port ?? 25565) === (bs.port ?? 25565)
+  }
   return false
 }
