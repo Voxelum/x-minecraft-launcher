@@ -1166,6 +1166,8 @@ setting:
   linuxTitlebarDescription: 런처에 네이티브 Linux 제목 표시줄 사용
   livePreview: 라이브 미리보기
   location: 저장 위치
+  macosReduceGPUUsage: GPU 사용량 감소
+  macosReduceGPUUsageDescription: 창 가림 감지를 비활성화하여 macOS에서 GPU 사용량을 최적화합니다. 적용하려면 재시작이 필요합니다.
   manualUpdateHint: 버전을 자동으로 업데이트할 수 없습니다. 공식 웹사이트에서 런처를 다시 다운로드하세요!
   maunalUpdateHint: 버전을 자동 업데이트할 수 없습니다. 웹사이트에서 런처를 다시 다운로드하세요!
   maxSockets: 호스트당

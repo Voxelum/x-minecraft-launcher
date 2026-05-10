@@ -1324,6 +1324,8 @@ setting:
   linuxTitlebarDescription: Verwenden Sie die native Linux-Titelleiste für den Launcher
   livePreview: Live-Vorschau
   location: Speicherort
+  macosReduceGPUUsage: GPU-Nutzung reduzieren
+  macosReduceGPUUsageDescription: Optimieren Sie die GPU-Nutzung unter macOS, indem Sie die Fenster-Okklusionserkennung deaktivieren. Erfordert einen Neustart, um wirksam zu werden.
   manualUpdateHint: >-
     Die Version kann nicht automatisch aktualisiert werden. Bitte laden Sie den Launcher erneut von der offiziellen Website herunter!
   maunalUpdateHint: |-

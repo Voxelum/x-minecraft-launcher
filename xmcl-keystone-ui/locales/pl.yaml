@@ -1216,6 +1216,8 @@ setting:
   linuxTitlebar: Natywny pasek tytułu
   linuxTitlebarDescription: Użyj natywnego linuksowego paska tytułu dla programu uruchamiającego
   location: Lokalizacja sklepu
+  macosReduceGPUUsage: Zmniejsz użycie GPU
+  macosReduceGPUUsageDescription: Optymalizuj użycie GPU na macOS, wyłączając wykrywanie zasłaniania okien. Wymaga ponownego uruchomienia, aby zadziałało.
   manualUpdateHint: >-
     Wersja nie może zostać zaktualizowana automatycznie. Prosimy o ponowne pobranie launchera z oficjalnej strony!
   maunalUpdateHint: >-

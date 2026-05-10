@@ -3,7 +3,7 @@ import { LauncherApp, Shell } from '@xmcl/runtime/app'
 import { LAUNCHER_NAME } from '@xmcl/runtime/constant'
 import { AnyError } from '@xmcl/utils'
 import { Menu, app, net, shell } from 'electron'
-import { stat } from 'fs-extra'
+import { readJsonSync, stat } from 'fs-extra'
 import { join } from 'path'
 import { fetch as ufetch } from 'undici'
 import { ElectronController } from './ElectronController'
@@ -147,8 +147,22 @@ export default class ElectronLauncherApp extends LauncherApp {
     
     // Optimize GPU usage on macOS, especially with vibrancy effects
     if (process.platform === 'darwin') {
-      // Disable native window occlusion detection to reduce GPU usage
-      app.commandLine?.appendSwitch('disable-features', 'CalculateNativeWinOcclusion')
+      // Read setting synchronously to apply before app is ready
+      let macosReduceGPUUsage = true // Default to enabled
+      try {
+        const settingPath = join(app.getPath('appData'), LAUNCHER_NAME, 'setting.json')
+        const settings = readJsonSync(settingPath)
+        if (typeof settings.macosReduceGPUUsage === 'boolean') {
+          macosReduceGPUUsage = settings.macosReduceGPUUsage
+        }
+      } catch {
+        // Use default if settings file doesn't exist or can't be read
+      }
+      
+      if (macosReduceGPUUsage) {
+        // Disable native window occlusion detection to reduce GPU usage
+        app.commandLine?.appendSwitch('disable-features', 'CalculateNativeWinOcclusion')
+      }
     }
   }
 

@@ -27,6 +27,7 @@ export class Settings implements SettingSchema {
   disableTelemetry = false
   linuxTitlebar = false
   windowTranslucent = false
+  macosReduceGPUUsage = true
 
   locale = ''
 
@@ -104,6 +105,7 @@ export class Settings implements SettingSchema {
     this.disableTelemetry = config.disableTelemetry
     this.linuxTitlebar = config.linuxTitlebar
     this.windowTranslucent = config.windowTranslucent
+    this.macosReduceGPUUsage = config.macosReduceGPUUsage
     this.enableDedicatedGPUOptimization = config.enableDedicatedGPUOptimization
     this.replaceNatives = config.replaceNatives
     this.globalResolution = config.globalResolution
@@ -204,6 +206,10 @@ export class Settings implements SettingSchema {
 
   windowTranslucentSet(enabled: boolean) {
     this.windowTranslucent = enabled
+  }
+
+  macosReduceGPUUsageSet(enabled: boolean) {
+    this.macosReduceGPUUsage = enabled
   }
 
   replaceNativesSet(replace: 'all' | 'legacy-only' | false) {

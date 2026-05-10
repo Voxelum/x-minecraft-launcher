@@ -1233,6 +1233,8 @@ setting:
   linuxTitlebar: Native titelbalk
   linuxTitlebarDescription: Gebruik native linux titelbalk voor launcher
   location: Opslaglocatie
+  macosReduceGPUUsage: GPU-gebruik verminderen
+  macosReduceGPUUsageDescription: Optimaliseer GPU-gebruik op macOS door vensterocclusidetectie uit te schakelen. Vereist herstart om effect te hebben.
   manualUpdateHint: >-
     De versie kan niet automatisch worden bijgewerkt. Download de launcher opnieuw van de officiële website!
   maunalUpdateHint: >-

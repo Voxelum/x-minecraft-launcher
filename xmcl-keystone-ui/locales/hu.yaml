@@ -1279,6 +1279,8 @@ setting:
   linuxTitlebar: Saját címsáv
   linuxTitlebarDescription: A natív linuxos címsor használata az launcherhez
   location: Áruház helye
+  macosReduceGPUUsage: GPU-használat csökkentése
+  macosReduceGPUUsageDescription: A GPU-használat optimalizálása macOS-en az ablak-takarás észlelésének letiltásával. Újraindítás szükséges a hatályba lépéshez.
   manualUpdateHint: >-
     A verzió nem frissíthető automatikusan. Kérjük, töltse le újra az indítóprogramot a hivatalos honlapról!
   maunalUpdateHint: >-

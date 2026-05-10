@@ -1204,6 +1204,8 @@ setting:
   linuxTitlebarDescription: ランチャーでシステム標準のタイトルバーを使用します
   livePreview: ライブプレビュー
   location: 保管場所
+  macosReduceGPUUsage: GPU使用率を削減
+  macosReduceGPUUsageDescription: ウィンドウオクルージョン検出を無効にして、macOSでのGPU使用率を最適化します。有効にするには再起動が必要です。
   manualUpdateHint: バージョンの自動更新ができません。公式サイトから再度ランチャーをダウンロードしてください！
   maunalUpdateHint: このバージョンを自動アップデートできません。ウェブサイトからランチャーを再ダウンロードしてください!
   maxSockets: ホスト毎

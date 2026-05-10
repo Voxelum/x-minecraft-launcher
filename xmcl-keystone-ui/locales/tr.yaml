@@ -1224,6 +1224,8 @@ setting:
   linuxTitlebar: Yerel başlık çubuğu
   linuxTitlebarDescription: Başlatıcı için yerel linux başlık çubuğunu kullan
   location: Mağaza Konumu
+  macosReduceGPUUsage: GPU kullanımını azalt
+  macosReduceGPUUsageDescription: Pencere örtüşme algılamasını devre dışı bırakarak macOS'ta GPU kullanımını optimize edin. Etkili olması için yeniden başlatma gerektirir.
   manualUpdateHint: >-
     Sürüm otomatik olarak güncellenemez. Lütfen başlatıcıyı resmi web sitesinden tekrar indirin!
   maunalUpdateHint: >-

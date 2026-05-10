@@ -1255,6 +1255,8 @@ setting:
   linuxTitlebarDescription: Utiliser la barre de titre Linux native pour le launcher
   livePreview: Aperçu en direct
   location: Emplacement du magasin
+  macosReduceGPUUsage: Réduire l'utilisation du GPU
+  macosReduceGPUUsageDescription: Optimiser l'utilisation du GPU sur macOS en désactivant la détection d'occlusion des fenêtres. Nécessite un redémarrage pour prendre effet.
   manualUpdateHint: >-
     La version ne peut pas être mise à jour automatiquement. Veuillez télécharger à nouveau le lanceur à partir du site officiel !
   maunalUpdateHint: "La version ne peut pas être mise à jour automatiquement. \nVeuillez retélécharger le lanceur depuis le site Web !"
