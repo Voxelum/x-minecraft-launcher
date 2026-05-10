@@ -156,7 +156,8 @@ export default class ElectronLauncherApp extends LauncherApp {
           macosReduceGPUUsage = settings.macosReduceGPUUsage
         }
       } catch {
-        // Use default if settings file doesn't exist or can't be read
+        // Ignore errors - use default if settings file doesn't exist or can't be read
+        // This is expected on first launch or if the file is corrupted
       }
       
       if (macosReduceGPUUsage) {
