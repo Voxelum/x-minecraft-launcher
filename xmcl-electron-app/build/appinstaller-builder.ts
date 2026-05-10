@@ -5,13 +5,13 @@ function getAppInstallerContent(version: string, publisher: string) {
   <AppInstaller
       xmlns="http://schemas.microsoft.com/appx/appinstaller/2018"
       Version="${version}.0"
-      Uri="https://xmcl.blob.core.windows.net/releases/xmcl.appinstaller" >
+      Uri="https://api.xmcl.app/appinstaller" >
       <MainPackage
           Name="XMCL"
           Publisher="${publisher}"
           Version="${version}.${process.env.BUILD_NUMBER || '0'}"
           ProcessorArchitecture="x64"
-          Uri="https://xmcl-core-api.azurewebsites.net/api/appx?version=${version}" />
+          Uri="https://cdn.xmcl.app/v${version}/xmcl-${version}-win32-x64.appx" />
       <UpdateSettings>
       </UpdateSettings>
   </AppInstaller>`

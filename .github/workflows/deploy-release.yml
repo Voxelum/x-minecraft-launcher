@@ -4,50 +4,39 @@ on:
     types: [published]
 
 jobs:
-  publish:
+  refresh-appinstaller-mirror:
+    # Keep the legacy xmcl.appinstaller blob fresh so older clients that
+    # baked in https://xmcl.blob.core.windows.net/releases/xmcl.appinstaller
+    # before the api.xmcl.app/appinstaller switch keep auto-updating.
+    # Newly-built clients no longer poll the blob.
     runs-on: ubuntu-latest
     steps:
-    - name: Download Releases
-      uses: robinraju/release-downloader@v1.7
-      with:
-        repository: "voxelum/x-minecraft-launcher"
-        tag: ${{ github.event.release.tag_name }}
-        fileName: "*"
-        out-file-path: build
-    - name: Upload to Azure
-      uses: ci010/upload-blob-to-azure@master
-      env:
-        AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
-      with:
-        account: xmcl
-        container: releases
-        directory: ./build
-    - name: Update Web Page
-      uses: benc-uk/workflow-dispatch@v1
-      with:
-        workflow: Deploy
-        token: ${{ secrets.PAT_GITHUB_TOKEN }}
-        ref: 'master'
-        repo: 'voxelum/xmcl-page'
-    - name: Create release version file
-      run: |
-        mkdir releases
-        echo ${{ github.event.release.tag_name }} > ./releases/VERSION
-        cat << EOF > ./releases/latest_version.json
-        ${{ toJSON(github.event.release) }}
-        EOF
-    - name: Upload release version file to Azure
-      uses: ci010/upload-blob-to-azure@master
-      env:
-        AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
-      with:
-        account: xmcl
-        container: releases
-        directory: ./releases
+      - name: Fetch latest manifest from api.xmcl.app
+        run: |
+          mkdir releases
+          curl -fsSL https://api.xmcl.app/appinstaller -o ./releases/xmcl.appinstaller
+      - name: Upload to Azure
+        uses: ci010/upload-blob-to-azure@master
+        env:
+          AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
+        with:
+          account: xmcl
+          container: releases
+          directory: ./releases
+
+  update-page:
+    name: Trigger xmcl-page rebuild
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Web Page
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Deploy
+          token: ${{ secrets.PAT_GITHUB_TOKEN }}
+          ref: 'master'
+          repo: 'voxelum/xmcl-page'
 
   notify:
-    needs:
-      - publish
     name: Notify Kook and discord
     runs-on: ubuntu-latest
     steps:
@@ -59,8 +48,6 @@ jobs:
         discord: ${{ secrets.DISCORD_WEBHOOK }}
 
   update-brew:
-    needs: 
-      - publish
     name: Update Brew
     runs-on: ubuntu-latest
     steps:
@@ -122,8 +109,6 @@ jobs:
         branch: ${{ github.event.release.tag_name }}
 
   update-winget:
-    needs: 
-      - publish
     name: Upload To winget
     runs-on: windows-2019
     defaults:
