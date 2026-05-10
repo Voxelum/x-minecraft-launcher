@@ -1,0 +1,6 @@
+artifacts/
+playwright-report/
+test-results/
+fixtures/sandbox-root/userData/
+fixtures/sandbox-root/gameData/
+node_modules/

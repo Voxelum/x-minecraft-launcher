@@ -7,6 +7,7 @@
     <SettingItem>
       <template #preaction>
         <v-btn
+          data-testid="settings-check-update"
           v-shared-tooltip="() => t('setting.checkUpdate')"
           icon
           variant="text"

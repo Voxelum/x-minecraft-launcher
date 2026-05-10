@@ -32,6 +32,7 @@
 
     <AppSideBarItem
       id="create-instance-button"
+      data-testid="create-instance"
       v-shared-tooltip.right="() => t('instances.add')"
       icon="add"
       clickable

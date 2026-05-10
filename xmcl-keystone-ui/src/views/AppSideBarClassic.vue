@@ -1,6 +1,7 @@
 <template>
   <div
     v-if="!isHorizontal"
+    data-testid="app-sidebar"
     class="sidebar moveable z-10"
     :style="{ 'backdrop-filter': `blur(${blurSidebar}px)`, backgroundColor: sideBarColor }"
   >
@@ -18,12 +19,14 @@
 
       <AppSideBarItem
         id="my-stuff-button"
+        data-testid="nav-accounts"
         v-shared-tooltip.right="() => t('myStuff')"
         icon="widgets"
         to="/me"
       />
 
       <AppSideBarItem
+        data-testid="nav-store"
         v-shared-tooltip.right="() => t('store.name', 2)"
         to="/store"
       >
@@ -46,6 +49,7 @@
 
     <div class="sidebar__section">
       <AppSideBarItem
+        data-testid="nav-multiplayer"
         v-shared-tooltip.right="() => t('multiplayer.name')"
         clickable
         @click="goMultiplayer"
@@ -56,6 +60,7 @@
       </AppSideBarItem>
 
       <AppSideBarItem
+        data-testid="nav-settings"
         v-shared-tooltip.right="() => t('setting.name', 2)"
         to="/setting"
       >
@@ -92,6 +97,7 @@
 
       <v-btn
         id="my-stuff-button"
+        data-testid="nav-accounts"
         v-shared-tooltip.bottom="t('myStuff')"
         icon
         to="/me"
@@ -101,6 +107,7 @@
       </v-btn>
 
       <v-btn
+        data-testid="nav-store"
         v-shared-tooltip.bottom="t('store.name', 2)"
         icon
         to="/store"
@@ -120,6 +127,7 @@
       <v-divider vertical class="mx-2 h-6" />
 
       <v-btn
+        data-testid="nav-multiplayer"
         v-shared-tooltip.bottom="t('multiplayer.name')"
         icon
         class="non-moveable mr-1"
@@ -129,6 +137,7 @@
       </v-btn>
 
       <v-btn
+        data-testid="nav-settings"
         v-shared-tooltip.bottom="t('setting.name', 2)"
         icon
         to="/setting"

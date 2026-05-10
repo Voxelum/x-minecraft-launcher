@@ -1,5 +1,8 @@
 <template>
-  <div class="relative">
+  <div
+    data-testid="setup-account"
+    class="relative"
+  >
     <div class="select-none px-6 pt-6">
       {{ t('setup.account.description') }}
     </div>
@@ -17,6 +20,7 @@
       />
       <v-list-item
         color="primary"
+        data-testid="setup-account-add"
         @click="login = true"
       >
         <template #prepend><v-avatar>
@@ -39,6 +43,7 @@
       >
         <v-btn
           block
+          data-testid="setup-account-skip"
           rounded="pill"
           class="z-10 mt-4 dark:text-white"
           @click="login = false"

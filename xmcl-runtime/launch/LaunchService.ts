@@ -346,6 +346,27 @@ export class LaunchService extends AbstractService implements ILaunchService {
    * @returns Does this launch request success?
    */
   async launch(options: LaunchOptions) {
+    // E2E hook: when XMCL_E2E_NO_LAUNCH is set, never spawn a real Java
+    // process. Emit synthetic minecraft-start / window-ready events so the
+    // renderer reflects a "launched" state, then return a fake pid. The
+    // process is also recorded in #processes so kill() works during tests.
+    if (process.env.XMCL_E2E_NO_LAUNCH) {
+      const fakePid = Math.floor(Math.random() * 100_000) + 100_000
+      const operationId = options.operationId || randomUUID()
+      this.log(`[E2E] XMCL_E2E_NO_LAUNCH set; skipping real Java spawn (pid=${fakePid}).`)
+      this.emit('minecraft-start', {
+        pid: fakePid,
+        operationId,
+        minecraft: 'e2e-stub',
+        ...options,
+        startTime: Date.now(),
+      })
+      // Pretend the window came up after a short delay.
+      setTimeout(500).then(() => {
+        this.emit('minecraft-window-ready', { pid: fakePid, ...options })
+      })
+      return fakePid
+    }
     try {
       const user = options.user
       const javaPath = options.java

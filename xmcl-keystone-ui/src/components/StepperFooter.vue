@@ -1,6 +1,7 @@
 <template>
   <div class="flex gap-4">
     <v-btn
+      data-testid="add-instance-cancel"
       :disabled="creating"
       variant="text"
       rounded="pill"
@@ -12,6 +13,7 @@
     <slot />
     <v-btn
       v-if="next"
+      data-testid="add-instance-next"
       color="primary"
       variant="flat"
       rounded="pill"
@@ -23,6 +25,7 @@
     </v-btn>
     <v-btn
       v-if="create"
+      data-testid="add-instance-create"
       color="primary"
       variant="flat"
       rounded="pill"
