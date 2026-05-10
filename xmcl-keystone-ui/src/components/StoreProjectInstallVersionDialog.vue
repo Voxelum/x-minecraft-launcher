@@ -1,6 +1,7 @@
 <template>
   <v-dialog
     :model-value="modelValue"
+    data-testid="install-version-dialog"
     transition="fade-transition"
     width="760"
     @update:model-value="$emit('update:modelValue', $event)"
@@ -89,6 +90,7 @@
             no-click
           >
             <v-btn
+              data-testid="install-version-confirm"
               color="primary"
               variant="flat"
               rounded="pill"

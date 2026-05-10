@@ -1,5 +1,6 @@
 <template>
   <div
+    data-testid="multiplayer-page"
     style="z-index: 2; overflow: auto"
     class="h-full w-full select-none overflow-auto"
     @dragover.prevent
@@ -73,6 +74,7 @@
           <v-text-field
             id="group-input"
             v-model="groupId"
+            data-testid="multiplayer-group-id"
             hide-details
             density="compact"
             variant="filled"
@@ -82,6 +84,7 @@
           />
           <v-btn
             id="join-group-button"
+            data-testid="multiplayer-join"
             v-shared-tooltip="
               () => (!group ? t('multiplayer.joinOrCreateGroup') : t('multiplayer.leaveGroup'))
             "

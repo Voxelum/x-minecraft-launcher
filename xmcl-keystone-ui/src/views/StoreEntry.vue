@@ -14,6 +14,7 @@
         <v-text-field
           ref="filter"
           v-model="keyword"
+          data-testid="store-search"
           variant="solo"
           flat
           hide-details

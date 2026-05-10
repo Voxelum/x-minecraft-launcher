@@ -1,5 +1,8 @@
 <template>
-  <div class="">
+  <div
+    data-testid="setup-appearance"
+    class=""
+  >
     <v-list class="non-moveable w-full" color="transparent" three-line subheader>
       <v-list-item class="items-center justify-center">
         <v-list-item-title>

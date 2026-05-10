@@ -34,6 +34,7 @@
         <div class="d-flex gap-4">
           <v-text-field
             v-model="proxy.host"
+            data-testid="settings-proxy-host"
             variant="filled"
             density="compact"
             hide-details

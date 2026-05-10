@@ -1,5 +1,8 @@
 <template>
-  <div class="d-flex fill-height setting-page">
+  <div
+    data-testid="settings-page"
+    class="d-flex fill-height setting-page"
+  >
     <!-- Navigation Sidebar (Only in Wide/Scroll Mode) -->
     <div v-if="!isNarrowView" class="setting-sidebar pt-6 pl-4 pr-2">
       <v-card class="rounded-lg" elevation="0" color="transparent">

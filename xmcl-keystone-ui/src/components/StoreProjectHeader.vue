@@ -44,6 +44,7 @@
       </div>
       <div class="flex flex-shrink-0 flex-col gap-2 items-stretch">
         <v-btn
+          data-testid="store-install"
           color="primary"
           variant="flat"
           prepend-icon="file_download"
