@@ -11,7 +11,7 @@ function getAppInstallerContent(version: string, publisher: string) {
           Publisher="${publisher}"
           Version="${version}.${process.env.BUILD_NUMBER || '0'}"
           ProcessorArchitecture="x64"
-          Uri="https://cdn.xmcl.app/v${version}/xmcl-${version}-win32-x64.appx" />
+          Uri="https://api.xmcl.app/appx?version=${version}" />
       <UpdateSettings>
       </UpdateSettings>
   </AppInstaller>`
