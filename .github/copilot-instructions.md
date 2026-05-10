@@ -23,8 +23,16 @@ If your change is visible to the user:
    pnpm test:e2e:scratch        # add `xvfb-run --auto-servernum` on Linux
    ```
 
-5. Surface the resulting PNGs to the reviewer via a PR comment with
-   embedded images — see the **Surface screenshots** section in
-   [`AGENTS.md`](../AGENTS.md) for the exact `gh` commands.
+5. Surface the resulting PNGs to the reviewer with the helper script —
+   it creates a public gist and posts a PR comment with the images
+   embedded inline. Do **not** commit screenshots into the PR diff.
+
+   ```bash
+   scripts/post-screenshots.sh <spec-slug>
+   # e.g. scripts/post-screenshots.sh servers-tab-empty-state-and-add-dialog
+   ```
+
+   See the **Surface screenshots** section of [`AGENTS.md`](../AGENTS.md)
+   for the rationale and a manual fallback if the script fails.
 
 `e2e/specs/scratch/` is gitignored; you do not need to clean it up.

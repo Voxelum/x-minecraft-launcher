@@ -96,44 +96,40 @@ If a `snap()` fails it logs a warning but does not fail the test.
 ### 4. Surface screenshots to the human reviewer
 
 After the spec passes, attach the captured PNGs to the pull request so the
-reviewer sees them inline. Pick **one** of:
-
-**A. Comment with embedded images (preferred)**
+reviewer sees them inline. **Do not commit screenshots into the PR diff.**
+GitHub does not expose its drag-and-drop image-upload endpoint to bots, so
+we host the PNGs in a **public gist** and reference them by raw URL inside
+a PR comment. A helper script does the whole thing:
 
 ```bash
-# Copy artifacts to a stable, branch-local path that GitHub can serve raw.
-mkdir -p .pr-screenshots
-cp -r e2e/artifacts/screenshots/en/* .pr-screenshots/
-git add -f .pr-screenshots
-git commit -m "chore: add visual verification screenshots"
-git push
-
-# Then post a comment that embeds the images.
-gh pr comment --body "$(cat <<'EOF'
-### Visual verification
-
-| Step | Screenshot |
-|---|---|
-| Initial | ![initial](.pr-screenshots/<spec-slug>/01-initial.png) |
-| After click | ![after](.pr-screenshots/<spec-slug>/02-after-click.png) |
-
-Spec: \`e2e/specs/scratch/<your-feature>.spec.ts\`
-EOF
-)"
+scripts/post-screenshots.sh <spec-slug>
+# e.g. scripts/post-screenshots.sh servers-tab-empty-state-and-add-dialog
 ```
 
-GitHub renders `.pr-screenshots/...` paths in PR comments by resolving them
-against the PR's HEAD commit, so no raw-URL gymnastics are needed.
+The slug is the directory name under `e2e/artifacts/screenshots/en/`. The
+script:
 
-**B. Drop the screenshots into the PR body**
+1. Creates a public gist titled `Visual verification for PR #<n> (<slug>)`
+   with every PNG in that directory (using `gh gist create`).
+2. Builds a Markdown table of `gist.githubusercontent.com` raw URLs.
+3. Optionally appends the captions from `manifest.json`.
+4. Posts the comment via `gh pr comment`.
 
-Same `cp` + `git add -f` step, then edit the PR description with the same
-table. Use `gh pr edit --body "..."`.
+Requires `gh` (logged in), `bash`, and `jq`. The Copilot agent's sandbox
+ships all three.
 
-Do **not** commit screenshots into `e2e/artifacts/` — that path stays
-gitignored. The PR-local `.pr-screenshots/` folder exists only to host
-images for review and should be removed in a follow-up clean-up commit
-before merge (or by the merge bot).
+If you must do it by hand:
+
+```bash
+gist=$(gh gist create --public --desc "PR #N visuals" \
+  e2e/artifacts/screenshots/en/<slug>/*.png)
+gh api "gists/$(basename "$gist")" --jq \
+  '.files | to_entries | map("![](\(.value.raw_url))") | .[]'
+gh pr comment --body "$(...paste the URLs into a markdown table...)"
+```
+
+Never commit `e2e/artifacts/` (gitignored) or any `.pr-screenshots/`
+folder. The PR's file diff stays clean.
 
 ---
 
@@ -145,3 +141,32 @@ before merge (or by the merge bot).
   to verify your unrelated feature. Use `specs/scratch/` instead.
 - The full e2e suite (`pnpm test:e2e`) hits live network endpoints and
   takes 10–30 minutes per storyline. Scratch specs are the fast path.
+
+## Network access (Copilot coding agent only)
+
+The Copilot sandbox blocks arbitrary egress. The hosts you'll always have
+are `github.com`, `api.github.com`, `*.githubusercontent.com`,
+`registry.npmjs.org`, and the npm CDN — that's enough to clone, install,
+build, run any scratch spec that doesn't hit external APIs, and post the
+gist + PR comment.
+
+If your scratch spec needs to install Minecraft / Forge / Fabric / Modrinth
+content (i.e. anything in storylines 4 or 5 of the canonical suite), the
+following hosts must be added to **Settings → Code & automation → Copilot
+→ Coding agent → Allowed network access** for the run to succeed:
+
+```
+api.modrinth.com, cdn.modrinth.com,
+api.curseforge.com, edge.forgecdn.net,
+launchermeta.mojang.com, piston-meta.mojang.com, piston-data.mojang.com,
+resources.download.minecraft.net, libraries.minecraft.net,
+meta.fabricmc.net, maven.fabricmc.net,
+files.minecraftforge.net, maven.minecraftforge.net,
+maven.neoforged.net
+```
+
+Without these, your scratch spec must avoid network installs. The
+`Firewall rules blocked me from connecting to one or more addresses`
+warning at the end of a Copilot session is informational — it means egress
+to a non-allowlisted host was attempted and blocked, not that the session
+itself failed.
