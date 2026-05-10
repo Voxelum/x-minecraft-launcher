@@ -66,12 +66,12 @@ watch(height, (h) => {
 
 const { isServer, instance } = injection(kInstance)
 
-const { refresh } = useInstanceServerStatus(instance)
+const { refreshIfStale } = useInstanceServerStatus(instance)
 const containerRef = ref(null as null | HTMLDivElement)
 
 onMounted(() => {
   if (isServer.value) {
-    refresh()
+    refreshIfStale()
   }
 })
 

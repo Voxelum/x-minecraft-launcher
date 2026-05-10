@@ -110,5 +110,21 @@ describe('Instance Templates', () => {
       expect(isUpstreamSameOrigin(upstream1, upstream2)).toBe(true)
       expect(isUpstreamSameOrigin(upstream1, upstream3)).toBe(false)
     })
+
+    it('should match server upstream by host and port (default 25565)', () => {
+      const a: InstanceUpstream = { type: 'server', host: 'mc.hypixel.net' }
+      const b: InstanceUpstream = { type: 'server', host: 'mc.hypixel.net', port: 25565 }
+      const c: InstanceUpstream = { type: 'server', host: 'mc.hypixel.net', port: 19132 }
+
+      expect(isUpstreamSameOrigin(a, b)).toBe(true)
+      expect(isUpstreamSameOrigin(a, c)).toBe(false)
+    })
+
+    it('should not match server upstream against different upstream types', () => {
+      const server: InstanceUpstream = { type: 'server', host: 'mc.hypixel.net' }
+      const peer: InstanceUpstream = { type: 'peer', id: 'mc.hypixel.net' }
+
+      expect(isUpstreamSameOrigin(server, peer)).toBe(false)
+    })
   })
 })

@@ -1,6 +1,6 @@
 <template>
   <v-card
-    v-if="display.length > 0 || persistent"
+    v-if="display.length > 0 || persistent || hasLeading"
     class="screenshot-card w-full h-full items-center justify-center flex relative overflow-hidden"
     :color="cardColor"
     outlined
@@ -48,7 +48,7 @@
       hide-delimiters
       :height="height"
       show-arrows-on-hover
-      :show-arrows="display.length > 1"
+      :show-arrows="display.length + (hasLeading ? 1 : 0) > 1"
       cycle
       interval="5000"
       class="rounded w-full"
@@ -69,6 +69,12 @@
           @click="btnProps.onClick"
         />
       </template>
+      <v-carousel-item
+        v-if="hasLeading"
+        key="leading-slide"
+      >
+        <slot name="leading" />
+      </v-carousel-item>
       <template v-if="display.length > 0">
         <v-carousel-item
           v-for="(i, idx) of display"
@@ -87,7 +93,7 @@
           </div>
         </v-carousel-item>
       </template>
-      <template v-else>
+      <template v-else-if="!hasLeading">
         <v-carousel-item :key="-1">
           <v-sheet
             color="transparent"
@@ -133,6 +139,9 @@ const props = defineProps<{
 
 const { cardColor, blurCard } = injection(kTheme)
 const randomPlayScreenshot = useLocalStorageCacheBool('randomPlayScreenshot', false)
+
+const slots = useSlots()
+const hasLeading = computed(() => !!slots.leading)
 
 const { urls, refreshing } = useInstanceScreenshots(computed(() => props.instance.path))
 

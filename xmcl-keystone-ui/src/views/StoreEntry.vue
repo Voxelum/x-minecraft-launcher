@@ -1,137 +1,139 @@
 <template>
-  <div class="store-entry h-full w-full overflow-hidden flex flex-col bg-background">
+  <div class="store-entry h-full w-full overflow-hidden flex flex-col lg:flex-row bg-background">
     <v-progress-linear
-      class="absolute left-0 top-0 z-10 m-0 p-0"
+      class="absolute left-0 top-0 z-20 m-0 p-0"
       :active="loading"
       height="3"
       :indeterminate="true"
     />
-    <div
-      class="flex-none py-6 pb-3 grid grid-cols-8 px-3 gap-1 lg:(grid-cols-12 gap-6 px-8) w-full z-10 sticky top-0"
+
+    <!--#region Sidebar Filters -->
+    <aside
+      class="store-sidebar w-auto lg:(w-88 h-full overflow-y-auto pb-20) flex-none border-r border-divider/40 px-4 pt-6 flex flex-col gap-6 custom-scrollbar"
     >
-      <div class="hidden lg:(col-span-3 block)"></div>
-      <div class="col-span-5 max-w-2xl relative group">
-        <v-text-field
-          ref="filter"
-          v-model="keyword"
-          data-testid="store-search"
-          variant="solo"
-          flat
-          hide-details
-          rounded="xl"
-          density="comfortable"
-          :placeholder="t('shared.search')"
-          prepend-inner-icon="search"
-          class="elevated-search"
-        >
-          <template #append-inner>
-            <v-slide-x-transition>
-              <v-icon v-if="keyword" class="cursor-pointer" @click="onClose">close</v-icon>
-            </v-slide-x-transition>
-          </template>
-        </v-text-field>
-      </div>
-    </div>
-    <div class="flex-1 flex overflow-y-auto flex-col lg:(overflow-hidden flex-row)">
-      <!--#region Sidebar Filters -->
-      <div
-        class="w-auto lg:(w-88 overflow-y-auto pb-20) flex-none px-4 pt-4 flex flex-col gap-6 custom-scrollbar"
-      >
-        <div class="grid grid-cols-3 lg:(flex flex-col) gap-6 flex-shrink-0">
-          <!-- Sources -->
-          <div class="filter-group">
-            <h3 class="filter-title">
-              {{ t('modrinth.modpackSource.source') }}
-            </h3>
-            <div class="flex gap-2">
+      <div class="grid grid-cols-3 lg:(flex flex-col) gap-6 flex-shrink-0">
+        <!-- Sources -->
+        <div class="filter-group">
+          <h3 class="filter-title">
+            {{ t('modrinth.modpackSource.source') }}
+          </h3>
+          <div class="flex gap-2">
+            <div
+              v-for="source in sourcesList"
+              :key="source.id"
+              class="source-button surface-card-row rounded-xl relative flex-1 flex flex-col items-center justify-center p-3"
+              :class="{ omitted: omitSources.includes(source.id) }"
+              @click="toggleSource(source.id)"
+            >
+              <component :is="source.component" class="w-6 h-6 fill-current" />
+              <span class="text-xs font-bold mt-2">{{ source.text }}</span>
               <div
-                v-for="source in sourcesList"
-                :key="source.id"
-                class="source-button surface-card-row rounded-xl relative flex-1 flex flex-col items-center justify-center p-3"
-                :class="{ omitted: omitSources.includes(source.id) }"
-                @click="toggleSource(source.id)"
+                class="cross-overlay absolute inset-0 flex items-center justify-center rounded-xl transition-opacity duration-200"
               >
-                <component :is="source.component" class="w-6 h-6 fill-current" />
-                <span class="text-xs font-bold mt-2">{{ source.text }}</span>
-                <div
-                  class="cross-overlay absolute inset-0 flex items-center justify-center rounded-xl transition-opacity duration-200"
-                >
-                  <v-icon color="red" size="60">close</v-icon>
-                </div>
+                <v-icon color="red" size="60">close</v-icon>
               </div>
             </div>
           </div>
-          <!-- Sort -->
-          <div class="filter-group">
-            <h3 class="filter-title">{{ t('modrinth.sort.title') }}</h3>
-            <v-autocomplete
-              v-model="sort"
-              :items="sortBy"
-              item-title="text"
-              item-value="value"
-              variant="outlined"
-              density="compact"
-              rounded="lg"
-              clearable
-              hide-details
-              :placeholder="t('modrinth.sort.title')"
-            />
-          </div>
-          <!-- Game Version -->
-          <div class="filter-group">
-            <h3 class="filter-title">{{ t('modrinth.gameVersions.name') }}</h3>
-            <v-autocomplete
-              v-model="gameVersion"
-              :items="gameVersions"
-              item-title="version"
-              item-value="version"
-              variant="outlined"
-              density="compact"
-              rounded="lg"
-              clearable
-              hide-details
-              :placeholder="t('modrinth.gameVersions.name')"
-            />
-          </div>
         </div>
+        <!-- Sort -->
+        <div class="filter-group">
+          <h3 class="filter-title">{{ t('modrinth.sort.title') }}</h3>
+          <v-autocomplete
+            v-model="sort"
+            :items="sortBy"
+            item-title="text"
+            item-value="value"
+            variant="outlined"
+            density="compact"
+            rounded="lg"
+            clearable
+            hide-details
+            :placeholder="t('modrinth.sort.title')"
+          />
+        </div>
+        <!-- Game Version -->
+        <div class="filter-group">
+          <h3 class="filter-title">{{ t('modrinth.gameVersions.name') }}</h3>
+          <v-autocomplete
+            v-model="gameVersion"
+            :items="gameVersions"
+            item-title="version"
+            item-value="version"
+            variant="outlined"
+            density="compact"
+            rounded="lg"
+            clearable
+            hide-details
+            :placeholder="t('modrinth.gameVersions.name')"
+          />
+        </div>
+      </div>
 
-        <!-- ModLoaders -->
-        <FilterCard
-          :title="t('modrinth.modLoaders.name')"
-          :items="
-            catModLoaders.map((loader) => ({
-              id: loader.name,
-              text: loader.name[0].toUpperCase() + loader.name.slice(1),
-              iconHTML: loader.icon,
-            }))
-          "
-          :selected="modLoaders"
-          :selected-count="modLoaders.length"
-          @toggle="toggleModLoader"
-          @clear="modLoaders = []"
-        />
-        <!-- Modrinth Categories -->
-        <FilterCard
-          :title="`${t('curseforge.category')} (Modrinth)`"
-          :items="modrinthCategoriesDisplay"
-          :selected="_modrinthCategories"
-          :selected-count="_modrinthCategories.length"
-          @toggle="toggleModrinthCategory"
-          @clear="_modrinthCategories = []"
-        />
-        <!-- CurseForge Categories -->
-        <FilterCard
-          :title="`${t('curseforge.category')} (CurseForge)`"
-          :items="curseforgeCategoriesDisplay"
-          :selected="curseforgeCategory ? [curseforgeCategory.toString()] : []"
-          :selected-count="curseforgeCategory ? 1 : 0"
-          @toggle="toggleCurseforgeCategory"
-          @clear="curseforgeCategory = undefined"
-        />
+      <!-- ModLoaders -->
+      <FilterCard
+        :title="t('modrinth.modLoaders.name')"
+        :items="
+          catModLoaders.map((loader) => ({
+            id: loader.name,
+            text: loader.name[0].toUpperCase() + loader.name.slice(1),
+            iconHTML: loader.icon,
+          }))
+        "
+        :selected="modLoaders"
+        :selected-count="modLoaders.length"
+        @toggle="toggleModLoader"
+        @clear="modLoaders = []"
+      />
+      <!-- Modrinth Categories -->
+      <FilterCard
+        :title="`${t('curseforge.category')} (Modrinth)`"
+        :items="modrinthCategoriesDisplay"
+        :selected="_modrinthCategories"
+        :selected-count="_modrinthCategories.length"
+        @toggle="toggleModrinthCategory"
+        @clear="_modrinthCategories = []"
+      />
+      <!-- CurseForge Categories -->
+      <FilterCard
+        :title="`${t('curseforge.category')} (CurseForge)`"
+        :items="curseforgeCategoriesDisplay"
+        :selected="curseforgeCategory ? [curseforgeCategory.toString()] : []"
+        :selected-count="curseforgeCategory ? 1 : 0"
+        @toggle="toggleCurseforgeCategory"
+        @clear="curseforgeCategory = undefined"
+      />
+    </aside>
+
+    <!-- Right pane: sticky search header + scrollable content -->
+    <div class="flex-1 flex flex-col overflow-hidden relative">
+      <div
+        class="store-search-bar flex-none px-6 lg:px-10 py-5 sticky top-0 z-10 bg-background/85 backdrop-blur-md border-b border-divider/40"
+      >
+        <div class="max-w-3xl">
+          <v-text-field
+            ref="filter"
+            v-model="keyword"
+            data-testid="store-search"
+            variant="solo"
+            flat
+            hide-details
+            rounded="xl"
+            density="comfortable"
+            :placeholder="t('shared.search')"
+            prepend-inner-icon="search"
+            class="elevated-search"
+          >
+            <template #append-inner>
+              <v-slide-x-transition>
+                <v-icon v-if="keyword" class="cursor-pointer" @click="onClose">close</v-icon>
+              </v-slide-x-transition>
+            </template>
+          </v-text-field>
+        </div>
       </div>
 
       <!-- Main Content -->
-      <div class="flex-1 lg:(overflow-y-auto) p-8 custom-scrollbar relative" ref="container">
+      <div class="flex-1 overflow-y-auto p-6 lg:p-10 custom-scrollbar relative" ref="container">
         <!-- Featured Carousel -->
         <div v-if="!keyword && selectedCount === 0" class="mb-12">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">

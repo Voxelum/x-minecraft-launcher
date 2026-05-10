@@ -45,6 +45,46 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    <v-menu
+      v-if="serverList.length > 0"
+      location="start"
+      :close-on-content-click="true"
+      open-on-hover
+      :open-delay="200"
+      :close-delay="100"
+    >
+      <template #activator="{ props: menuProps }">
+        <v-list-item v-bind="menuProps" data-testid="launch-to-server" :title="t('launch.launchTo')" append-icon="chevron_left">
+          <template #prepend>
+            <v-icon size="20">
+              dns
+            </v-icon>
+          </template>
+        </v-list-item>
+      </template>
+      <v-list v-roving-tabindex role="menu" min-width="220">
+        <v-list-item
+          v-for="server in serverList"
+          :key="server.ip"
+          :title="server.name || server.ip"
+          :subtitle="server.ip"
+          @click="onLaunchToServer(server)"
+        >
+          <template #prepend>
+            <img
+              v-if="server.icon"
+              class="overflow-hidden rounded mr-3"
+              :src="server.icon"
+              width="28"
+              height="28"
+            >
+            <v-icon v-else size="20" class="mr-3">
+              dns
+            </v-icon>
+          </template>
+        </v-list-item>
+      </v-list>
+    </v-menu>
     <v-list-item v-if="env && env.os !== 'osx'" :title="t('launch.createShortcut')" @click="onCreateShortcut">
       <template #prepend>
         <v-icon size="20">
@@ -61,18 +101,24 @@ import { useDialog } from '@/composables/dialog'
 import { kEnvironment } from '@/composables/environment';
 import { kInstance } from '@/composables/instance';
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
+import { kInstanceServerInfo } from '@/composables/instanceServerInfo'
+import { kServerStatusCache } from '@/composables/serverStatus'
 import { kUserContext } from '@/composables/user';
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { join } from '@/util/basename';
 import { getInstanceIcon } from '@/util/favicon';
 import { injection } from '@/util/inject'
-import { BaseServiceKey, LaunchServiceKey, UserProfile } from '@xmcl/runtime-api';
+import { BaseServiceKey, LaunchServiceKey, parseServerAddress, UserProfile } from '@xmcl/runtime-api';
 
 const { t } = useI18n()
 defineProps<{}>()
 
-const { serverCount, kill, launchAs, killPid, gameProcesses } = injection(kInstanceLaunch)
+const { serverCount, kill, launch, launchAs, killPid, gameProcesses } = injection(kInstanceLaunch)
 const { users, userProfile } = injection(kUserContext)
+const { servers } = injection(kInstanceServerInfo)
+const { path, name, instance } = injection(kInstance)
+const serverStatusCache = injection(kServerStatusCache)
+
 
 const otherUsers = computed(() => users.value?.filter((u) => u.id !== userProfile.value.id) ?? [])
 
@@ -95,6 +141,36 @@ function onLaunchAs(user: UserProfile) {
   }
 }
 
+// Only offer the "Launch to server" submenu for non-pinned instances. A
+// pinned instance already auto-joins `instance.server` on a normal launch,
+// so listing the same servers there would be redundant.
+const serverList = computed(() => {
+  if (instance.value?.server) return []
+  return servers.value
+    .map((s) => {
+      const parsed = parseServerAddress(s.ip)
+      if (!parsed) return undefined
+      // Prefer the live favicon from the latest server-status ping (shared
+      // host:port cache) and fall back to the static servers.dat icon.
+      const cached = serverStatusCache.value[`${parsed.host}:${parsed.port ?? 25565}`]?.favicon
+      const rawIcon = cached || s.icon
+      return {
+        ip: s.ip,
+        name: s.name,
+        host: parsed.host,
+        port: parsed.port,
+        icon: rawIcon
+          ? (rawIcon.startsWith('data:') ? rawIcon : `data:image/png;base64,${rawIcon}`)
+          : '',
+      }
+    })
+    .filter((s): s is NonNullable<typeof s> => !!s)
+})
+
+function onLaunchToServer(server: { host: string; port?: number }) {
+  launch('client', { server: { host: server.host, port: server.port } })
+}
+
 const text = computed(() => {
   if (serverCount.value > 0) {
     return t('launch.killServer')
@@ -110,8 +186,8 @@ const onStartLocalhost = async () => {
   }
 }
 
-const { path, name, instance } = injection(kInstance)
 const { createLaunchShortcut } = useService(LaunchServiceKey)
+
 const { getDesktopDirectory } = useService(BaseServiceKey)
 const env = injection(kEnvironment)
 const onCreateShortcut = async () => {

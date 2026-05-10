@@ -33,6 +33,7 @@
     <AppLaunchBlockedDialog />
     <AppUnauthenticatedWarningDialog />
     <AppImageDialog />
+    <AppJoinServerDialog />
     <AppLaunchServerDialog />
     <AppSharedTooltip />
     <AppInstallSkipDialog />
@@ -85,6 +86,7 @@ import AppInstallSkipDialog from '@/views/AppInstallSkipDialog.vue'
 import AppInstanceDeleteDialog from '@/views/AppInstanceDeleteDialog.vue'
 import AppLaunchBlockedDialog from '@/views/AppLaunchBlockedDialog.vue'
 import AppUnauthenticatedWarningDialog from '@/views/AppUnauthenticatedWarningDialog.vue'
+import AppJoinServerDialog from '@/views/AppJoinServerDialog.vue'
 import AppLaunchServerDialog from '@/views/AppLaunchServerDialog.vue'
 import AppMigrateWizardDialog from '@/views/AppMigrateWizardDialog.vue'
 import AppMinecraftFriendsDialog from '@/views/AppMinecraftFriendsDialog.vue'
