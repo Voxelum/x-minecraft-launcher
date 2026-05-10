@@ -117,6 +117,7 @@ const {
     useUserSkin(
       computed(() => props.user.id),
       gameProfile,
+      computed(() => props.user),
     ),
   true,
 )

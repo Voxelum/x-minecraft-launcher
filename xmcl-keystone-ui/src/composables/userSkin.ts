@@ -1,5 +1,5 @@
 import { computed, InjectionKey, onMounted, reactive, Ref, toRefs, watch } from 'vue'
-import { GameProfileAndTexture, UserServiceKey } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, GameProfileAndTexture, UserServiceKey, UserProfile } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 import steveSkin from '@/assets/steve_skin.png'
 
@@ -9,7 +9,7 @@ export function usePlayerName(gameProfile: Ref<GameProfileAndTexture>) {
   return name
 }
 
-export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAndTexture>) {
+export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAndTexture>, user?: Ref<UserProfile | undefined>) {
   const { uploadSkin, saveSkin } = useService(UserServiceKey)
   const data = reactive({
     /**
@@ -29,8 +29,17 @@ export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAnd
   const currentSlim = computed(() => gameProfile.value.textures.SKIN.metadata ? gameProfile.value?.textures.SKIN.metadata.model === 'slim' : false)
   const currentCape = computed(() => gameProfile.value.capes ? gameProfile.value.capes?.find(c => c.state === 'ACTIVE')?.url : gameProfile.value.textures.CAPE?.url)
   const uploadable = computed(() => gameProfile.value.uploadable ? gameProfile.value.uploadable : ['skin', 'cape'])
-  const canUploadSkin = computed(() => uploadable.value.indexOf('skin') !== -1)
-  const canUploadCape = computed(() => uploadable.value.indexOf('cape') !== -1)
+  const isSkinUploadBlocked = computed(() => {
+    if (!user?.value) return false
+    const auth = user.value.authority || ''
+    // Check AUTHORITY_DEV or specific URLs
+    if (auth === AUTHORITY_DEV || auth.includes('ely.by') || auth.includes('littleskin')) {
+      return true
+    }
+    return false
+  })
+  const canUploadSkin = computed(() => !isSkinUploadBlocked.value && uploadable.value.indexOf('skin') !== -1)
+  const canUploadCape = computed(() => !isSkinUploadBlocked.value && uploadable.value.indexOf('cape') !== -1)
 
   function reset() {
     const prof = gameProfile.value
