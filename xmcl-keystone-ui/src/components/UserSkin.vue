@@ -31,7 +31,7 @@
     <div class="absolute bottom-4 flex flex-none flex-shrink gap-4">
       <v-fab-transition>
         <v-btn
-          v-show="!inspect && modified"
+          v-show="!inspect && modified && editable"
           v-shared-tooltip="() => t('userSkin.reset')"
           icon="clear"
           color="secondary"
@@ -42,6 +42,7 @@
         />
       </v-fab-transition>
       <SpeedDial
+        v-if="editable"
         :value="hover || modified"
         :has-skin="canUploadSkin"
         :has-cape="canUploadCape"
@@ -52,7 +53,7 @@
       />
       <v-fab-transition>
         <v-btn
-          v-show="!inspect && modified"
+          v-show="!inspect && modified && editable"
           icon="check"
           color="secondary"
           size="small"
@@ -88,8 +89,17 @@ const props = withDefaults(
     user: UserProfile
     profile: GameProfileAndTexture
     inspect: boolean
+    /**
+     * When false, hide all skin-modification controls (reset, save,
+     * upload SpeedDial). The 3D viewer remains interactive.
+     *
+     * Use this for accounts where uploading a skin would not actually
+     * propagate to the auth provider (e.g. offline or some Yggdrasil
+     * services).
+     */
+    editable?: boolean
   }>(),
-  { inspect: false },
+  { inspect: false, editable: true },
 )
 const { t } = useI18n()
 const hover = ref(false)

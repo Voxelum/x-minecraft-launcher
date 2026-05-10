@@ -13,6 +13,7 @@
         :user="user"
         :profile="profile"
         :inspect="false"
+        :editable="false"
         @wheel.prevent.stop.native
       />
       <div class="my-2 flex items-center justify-center">
