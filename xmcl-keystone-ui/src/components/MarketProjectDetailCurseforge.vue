@@ -330,6 +330,7 @@ const installing = ref(false)
 const { install, installWithDependencies } = injection(kCurseforgeInstaller)
 
 const onInstall = async (mod: ProjectVersion) => {
+  if (installing.value) return
   try {
     installing.value = true
     await installWithDependencies(Number(mod.id), mod.loaders, curseforgeProject.value?.logo.url, props.installed, deps.value ?? [])
@@ -338,6 +339,7 @@ const onInstall = async (mod: ProjectVersion) => {
   }
 }
 const installDependency = async (dep: ProjectDependency) => {
+  if (installing.value || dep.installedVersion || dep.progress >= 0) return
   const d = deps.value?.find(d => d.project.id.toString() === dep.id)
   if (!d) return
   const ver = d.file

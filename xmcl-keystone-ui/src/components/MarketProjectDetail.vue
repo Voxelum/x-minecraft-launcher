@@ -129,9 +129,10 @@
             </v-btn>
             <v-btn
               v-if="!selectedInstalled"
+              data-testid="market-detail-install"
               class="primary"
               :loading="loadingVersions || updating"
-              :disabled="!selectedVersion"
+              :disabled="!selectedVersion || loadingVersions || updating"
               @click="onInstall"
               size="small"
               color="primary"
@@ -314,9 +315,9 @@
                         <v-btn
                           icon
                           variant="text"
-                          :disabled="!!dep.installedVersion"
+                          :disabled="!!dep.installedVersion || dep.progress >= 0 || updating"
                           :loading="dep.progress >= 0"
-                          @click.stop="emit('install-dependency', dep)"
+                          @click.stop="onInstallDependency(dep)"
                         >
                           <v-icon class="material-icons-outlined">
                             file_download
@@ -865,9 +866,14 @@ const notInstalled = computed(() => props.versions.filter((v) => !v.installed))
 const tDepType = (ty: ProjectDependency['type']) => t(`dependencies.${ty}`)
 
 const onInstall = () => {
-  if (selectedVersion.value) {
+  if (!props.updating && !props.loadingVersions && selectedVersion.value) {
     emit('install', selectedVersion.value)
   }
+}
+
+const onInstallDependency = (dep: ProjectDependency) => {
+  if (props.updating || dep.installedVersion || dep.progress >= 0) return
+  emit('install-dependency', dep)
 }
 
 const onScroll = (e: Event) => {

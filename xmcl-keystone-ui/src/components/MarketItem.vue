@@ -37,11 +37,13 @@
         >
         <v-btn
           v-if="install && item.installed.length === 0 && !item.unsupported"
+          data-testid="market-item-install"
           class="absolute"
           icon
           variant="text"
           size="small"
           :loading="installing"
+          :disabled="installing"
           @click.stop="onInstall()"
         >
           <v-icon
@@ -327,6 +329,7 @@ const tags = computed(() => {
 
 const installing = ref(false)
 const onInstall = async () => {
+  if (installing.value) return
   try {
     installing.value = true
     await props.install?.(props.item)
