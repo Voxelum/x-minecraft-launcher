@@ -1,4 +1,4 @@
-import { AppManifest, AppsHost, InstalledAppManifest } from '@xmcl/runtime-api'
+import { AppManifest, AppsService, InstalledAppManifest } from '@xmcl/runtime-api'
 import { XMLParser } from 'fast-xml-parser'
 import filenamifyCombined from 'filenamify'
 import { ensureDir, readFile, readdir, rm, stat, writeFile } from 'fs-extra'
@@ -15,18 +15,11 @@ export interface InstallAppOptions {
   createStartMenuShortcut?: boolean
 }
 
-export class LauncherAppManager implements AppsHost {
+export class LauncherAppManager implements AppsService {
   private logger: Logger
 
   constructor(private app: LauncherApp) {
     this.logger = this.app.getLogger('LauncherAppManager')
-    this.app.controller.handle('get-installed-apps', () => this.getInstalledApps())
-    this.app.controller.handle('install-app', (_, url) => this.installApp(url))
-    this.app.controller.handle('uninstall-app', (_, url) => this.uninstallApp(url))
-    this.app.controller.handle('get-app-info', (_, url) => this.getAppInfo(url))
-    this.app.controller.handle('get-default-app', () => this.getDefaultApp())
-    this.app.controller.handle('launch-app', (_, url) => this.bootAppByUrl(url))
-    this.app.controller.handle('create-app-shortcut', (_, url) => this.createShortcut(url))
 
     app.protocol.registerHandler('xmcl', ({ request, response }) => {
       const parsed = request.url

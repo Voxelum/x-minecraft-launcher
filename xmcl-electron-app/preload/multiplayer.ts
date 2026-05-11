@@ -1,7 +1,6 @@
 import { AUTHORITY_MICROSOFT, PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
 import { createMultiplayer, listen } from '@xmcl/wrtc-multiplayer'
 import { contextBridge, ipcRenderer } from 'electron/renderer'
-import './controller'
 import { serviceChannels } from './service'
 
 let inited = false

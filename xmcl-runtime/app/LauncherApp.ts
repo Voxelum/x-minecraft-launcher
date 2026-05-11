@@ -26,6 +26,7 @@ import { kGameDataPath, kTempDataPath } from './gameDataPath'
 import { InjectionKey, ObjectFactory } from './objectRegistry'
 import { validateDirectory } from '~/util/validate'
 import { kSettings } from '~/settings'
+import { kBootstrap } from '~/bootstrap/bootstrap'
 
 export const LauncherAppKey: InjectionKey<LauncherApp> = Symbol('LauncherAppKey')
 
@@ -320,9 +321,9 @@ export class LauncherApp extends EventEmitter {
         // first launch
         this.#isBootstrapSignal.resolve(true)
         const path = await new Promise<string>((resolve) => {
-          this.controller.handle('bootstrap', (_, path) => {
-            resolve(path)
-          }, true)
+          this.registry.get(kBootstrap).then((bootstrap) => {
+            bootstrap.setAcceptor((p) => resolve(p))
+          })
         })
         gameDataPath = (path)
         await writeFile(join(this.appDataPath, 'root'), path)

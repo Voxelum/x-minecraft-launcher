@@ -100,9 +100,9 @@ export interface InstalledAppManifest extends Required<AppManifest> {
 }
 
 /**
- * The api to manage the installed apps
+ * The api to manage the installed apps (PWA-like sub-launchers).
  */
-export interface AppsHost {
+export interface AppsService {
   /**
    * The all installed app manifests
    */
@@ -140,3 +140,5 @@ export interface AppsHost {
    */
   getAppInfo(url: string): Promise<AppManifest>
 }
+
+export const AppsServiceKey: import('./services/Service').ServiceKey<AppsService> = 'AppsService'

@@ -26,7 +26,7 @@ interface LaunchServiceEventMap {
     elyByMinecraftVersion?: string
   }
   'minecraft-stdout': { pid: number; stdout: string }
-  'minecraft-stderr': { pid: number; stdout: string }
+  'minecraft-stderr': { pid: number; stderr: string }
   'launch-performance-pre': { id: string; name: string }
   'launch-performance': { id: string; name: string; duration: number; success: boolean }
   'error': LaunchException | Error

@@ -114,7 +114,7 @@ import { useService } from '@/composables'
 import { kSettingsState } from '@/composables/setting'
 import { BackgroundType, kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
-import { BaseServiceKey, Drive, InvalidDirectoryErrorCode } from '@xmcl/runtime-api'
+import { BaseServiceKey, BootstrapServiceKey, Drive, InvalidDirectoryErrorCode } from '@xmcl/runtime-api'
 import SetupAccount from './SetupAccount.vue'
 import SetupAppearance from './SetupAppearance.vue'
 import SetDataRoot from './SetupDataRoot.vue'
@@ -123,6 +123,7 @@ import SetLocale from './SetupLocale.vue'
 
 const emit = defineEmits(['ready'])
 const { validateDataDictionary, getEnvironment } = useService(BaseServiceKey)
+const bootstrapService = useService(BootstrapServiceKey)
 
 const next = () => {
   data.step = Number(data.step) + 1
@@ -157,7 +158,7 @@ const data = reactive({
   theme: 'system',
 })
 provide('setup', data)
-bootstrap.preset().then(({ minecraftPath, defaultPath, locale: locale_, drives }) => {
+bootstrapService.getPreset().then(({ minecraftPath, defaultPath, locale: locale_, drives }) => {
   data.fetching = false
   if (locale_.startsWith('en')) {
     locale_ = 'en'
@@ -205,7 +206,7 @@ watch(() => data.theme, () => {
 const { state } = injection(kSettingsState)
 
 async function setup() {
-  await bootstrap.bootstrap(data.path)
+  await bootstrapService.chooseDataRoot(data.path)
   getEnvironment().then((e) => {
     if (e.gpu && isDark.value) {
       currentTheme.value.backgroundType = BackgroundType.HALO

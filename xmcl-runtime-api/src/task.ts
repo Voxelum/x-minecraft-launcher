@@ -21,6 +21,7 @@ import { InstallAuthlibInjectorTask } from './services/AuthlibInjectorService'
 import { DownloadModMetadataDbTask } from './services/ModMetadataService'
 import { DuplicateInstanceTask } from './services/InstanceService'
 import { InstallModrinthFileTask, InstallCurseforgeFileTask } from './services/MarketService'
+import { ServiceKey } from './services/Service'
 
 export enum TaskState {
   Running,
@@ -122,27 +123,38 @@ export function isTask<T extends Tasks>(key: T['type'], task: Tasks): task is T 
   return task.type === key
 }
 
-interface TaskChannelEventMap {
+interface TaskServiceEventMap {
+  /**
+   * Fires when the launcher transitions between "no tasks running" and "at
+   * least one task running". The renderer uses this to start/stop its
+   * polling loop. The next `getTasks()` snapshot is the source of truth for
+   * everything else (added/finished/cancelled), so no per-task lifecycle
+   * events are emitted here — that would just create races.
+   */
   'task-activated': boolean
 }
 
 /**
- * The monitor to watch launcher task progress
+ * The service to monitor and control launcher background tasks.
+ *
+ * Note: progress updates are intentionally **poll-based** (`getTasks`).
+ * Tasks can update at very high frequency, which would overwhelm an
+ * event-sourced `SharedState` channel. The renderer drives the poll
+ * cadence and pauses it when `task-activated` is `false`.
  */
-export interface TaskMonitor extends GenericEventEmitter<TaskChannelEventMap> {
+export interface TaskService extends GenericEventEmitter<TaskServiceEventMap> {
   /**
-   * Poll the current tasks
+   * Snapshot of all live and recently-finished tasks. Renderer polls this.
    */
-  poll(): Promise<Tasks[]>
-
-  check(): Promise<boolean>
+  getTasks(): Promise<Tasks[]>
   /**
-   * Cancel a task
-   * @param taskId The task id to be cancelled
+   * Cancel a running task.
    */
   cancel(taskId: string): Promise<void>
   /**
-   * Remove all finished tasks
+   * Remove all finished (succeed / failed / cancelled) tasks from the list.
    */
-  clear(): void
+  clear(): Promise<void>
 }
+
+export const TaskServiceKey: ServiceKey<TaskService> = 'TaskService'

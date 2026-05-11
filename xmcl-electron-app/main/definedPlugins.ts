@@ -6,6 +6,7 @@ import { pluginPowerMonitor } from './pluginPowerMonitor'
 import { pluginApiFallback } from '@xmcl/runtime/app/pluginApiFallback'
 import { pluginCommonProtocol } from '@xmcl/runtime/app/pluginCommonProtocol'
 import { pluginMediaProtocol } from '@xmcl/runtime/app/pluginMediaProtocol'
+import { pluginBootstrap } from '@xmcl/runtime/bootstrap'
 import { pluginCli } from '@xmcl/runtime/commands/pluginCli'
 import { pluginCommandHost } from '@xmcl/runtime/commands/pluginCommandHost'
 import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
@@ -13,6 +14,7 @@ import { pluginEncodingWorker } from '@xmcl/runtime/encoding/pluginEncodingWorke
 import { pluginClientToken, pluginFlights, pluginGFW, pluginImageStorage, pluginLogConsumer, pluginTasks, pluginTelemetry, pluginUncaughtError } from '@xmcl/runtime/infra/plugins'
 import { pluginLaunchPrecheck } from '@xmcl/runtime/launch/pluginLaunchPrecheck'
 import { pluginMarketProvider } from '@xmcl/runtime/market/pluginMarketProvider'
+import { pluginMigration } from '@xmcl/runtime/migration'
 import { pluginNativeReplacer } from '@xmcl/runtime/nativeReplacer/pluginNativeReplacer'
 import { pluginNetworkInterface } from '@xmcl/runtime/network/pluginNetworkInterface'
 import { pluginUndiciLogger } from '@xmcl/runtime/network/pluginUndiciLogger'
@@ -34,6 +36,7 @@ import { definedServices } from './definedServices'
 
 export const definedPlugins: LauncherAppPlugin[] = [
   pluginCommandHost({ services: definedServices }),
+  pluginBootstrap,
   pluginCli,
   pluginAutoUpdate,
   pluginPowerMonitor,
@@ -46,6 +49,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginDiscreteGPULinux,
   pluginUncaughtError,
   pluginNativeReplacer,
+  pluginMigration,
   elyByPlugin,
   pluginMarketProvider,
   pluginYggdrasilApi,

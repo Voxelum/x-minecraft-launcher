@@ -10,6 +10,7 @@ import { JavaState } from './services/JavaService'
 import { ModpackState } from './services/ModpackService'
 import { PeerState } from './services/PeerService'
 import { UserState } from './services/UserService'
+import { WindowState } from './services/WindowService'
 
 export type Mutations<T> = {
   [K in keyof T as T[K] extends Function ? K : never]: T[K] extends ((payload: infer P) => void) ? P : never
@@ -28,4 +29,5 @@ export const AllStates = [
   PeerState,
   InstanceInstallStatus,
   InstanceModsGroupState,
+  WindowState,
 ]

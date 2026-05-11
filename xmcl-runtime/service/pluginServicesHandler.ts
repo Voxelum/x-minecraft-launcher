@@ -5,6 +5,7 @@ import { ServiceStateManager } from './ServiceStateManager'
 import { isStateObject } from './stateUtils'
 import { AnyError } from '@xmcl/utils'
 import { getNormalizeException, getSerializedError } from '~/infra/errors'
+import { runWithCurrentClient } from './rpcContext'
 
 export const pluginServicesHandler = (services: ServiceConstructor[]): LauncherAppPlugin => (app, manifest) => {
   const logger = app.getLogger('Services')
@@ -91,7 +92,8 @@ export const pluginServicesHandler = (services: ServiceConstructor[]): LauncherA
     }
   }
 
-  app.controller.handle('service-call', (e, service: string, name: string, ...payload: any[]) => handleServiceCall(e.sender, service, name, ...payload))
+  app.controller.handle('service-call', (e, service: string, name: string, ...payload: any[]) =>
+    runWithCurrentClient(e.sender, () => handleServiceCall(e.sender, service, name, ...payload)))
 
   for (const type of services) {
     const key = getServiceKey(type)

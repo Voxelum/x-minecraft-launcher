@@ -1,5 +1,5 @@
 import { useInterval } from '@vueuse/core'
-import { Tasks, TaskState } from '@xmcl/runtime-api'
+import { Tasks, TaskServiceKey, TaskState } from '@xmcl/runtime-api'
 import { InjectionKey, onMounted, Ref, ref } from 'vue'
 
 export type TaskItem = Tasks
@@ -7,13 +7,20 @@ export type TaskItem = Tasks
 export const kTaskManager: InjectionKey<ReturnType<typeof useTaskManager>> = Symbol('TASK_MANAGER')
 
 /**
- * Create a task manager based on vue reactivity
+ * Create a task manager based on vue reactivity.
+ *
+ * Note: this composable is invoked from the root window's `setup()` to be
+ * `provide`d. At that point `kServiceFactory` has been `provide`d but
+ * `inject` does not see it (Vue 3 only walks ancestors, not the current
+ * setup). So we open the service channel directly via the always-present
+ * `serviceChannels` global instead of going through `useService`.
  */
 export function useTaskManager() {
+  const taskService = serviceChannels.open(TaskServiceKey)
   const tasks: Ref<Tasks[]> = shallowRef([])
 
   const cancel = (task: Tasks) => {
-    taskMonitor.cancel(task.id)
+    taskService.call('cancel', task.id)
   }
 
   const { counter, reset, pause, resume } = useInterval(1000, {
@@ -21,8 +28,8 @@ export function useTaskManager() {
     immediate: false,
   })
 
-  onMounted(() => {
-    taskMonitor.on('task-activated', (v) => {
+  onMounted(async () => {
+    taskService.on('task-activated', (v) => {
       if (v) {
         resume()
       } else {
@@ -30,15 +37,17 @@ export function useTaskManager() {
         reset()
       }
     })
-    taskMonitor.check().then((active) => {
-      if (active) {
-        resume()
-      }
-    })
+    // Seed the initial snapshot. If anything is running, kick off the
+    // poll loop; the `task-activated` event handles every later transition.
+    const initial = await taskService.call('getTasks')
+    tasks.value = initial
+    if (initial.some((t) => t.state === TaskState.Running)) {
+      resume()
+    }
   })
 
   watch(counter, () => {
-    taskMonitor.poll().then((ts) => {
+    taskService.call('getTasks').then((ts) => {
       tasks.value = ts
     })
   })
@@ -52,7 +61,7 @@ export function useTaskManager() {
         t.state === TaskState.Cancelled
       )
     })
-    taskMonitor.clear()
+    taskService.call('clear')
   }
 
   return {

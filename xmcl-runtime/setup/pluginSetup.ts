@@ -6,7 +6,8 @@ import { LauncherAppPlugin } from '../app'
 import { createLazyWorker } from '@xmcl/worker'
 import { SetupWorker } from './setupWorker'
 import createSetupWorker from './setupWorkerEntry?worker'
-import { Exception } from '@xmcl/runtime-api'
+import { BootstrapPreset, Exception } from '@xmcl/runtime-api'
+import { kBootstrap } from '../bootstrap'
 
 export const pluginSetup: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('Setup')
@@ -31,7 +32,7 @@ export const pluginSetup: LauncherAppPlugin = async (app) => {
     }
   }
 
-  app.controller.handle('preset', async () => {
+  const presetProvider = async (): Promise<BootstrapPreset> => {
     const defaultPath = join(app.host.getPath('home'), '.minecraftx')
     const getPath = (driveSymbol: string) => {
       const parsedHome = parse(defaultPath)
@@ -70,5 +71,8 @@ export const pluginSetup: LauncherAppPlugin = async (app) => {
       defaultPath,
       drives,
     }
-  })
+  }
+
+  const bootstrap = await app.registry.get(kBootstrap)
+  bootstrap.setPresetProvider(presetProvider)
 }

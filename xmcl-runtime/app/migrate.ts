@@ -3,6 +3,7 @@ import { join } from 'path'
 import { Logger } from '~/infra'
 import type { LauncherApp } from './LauncherApp'
 import { isSystemError } from '@xmcl/utils'
+import { kMigrationReporter } from '~/migration'
 
 async function move(from: string, to: string) {
   await rename(from, to).catch(async (e) => {
@@ -51,13 +52,12 @@ export async function handleMigrateRoot(source: string, logger: Logger, app: Lau
 
     app.controller.startMigrate()
 
+    const reporter = await app.registry.get(kMigrationReporter)
+
     let from = source
     let to = destination
     let progress = 0
     let total = candidates.length
-    app.controller.handle('migration-get-progress', () => {
-      return { from, to, progress, total }
-    })
 
     const files = await readdir(source).then(files => files.filter(file => candidates.includes(file)))
     total = files.length
@@ -67,13 +67,13 @@ export async function handleMigrateRoot(source: string, logger: Logger, app: Lau
       progress = files.indexOf(file)
       try {
         logger.log(`Move ${from} -> ${to}`)
-        app.controller.broadcast('migration-event', { event: 'progress', payload: { from, to, progress, total } })
+        reporter.setProgress({ from, to, progress, total })
         await move(from, to)
         finished.push({ from, to })
-        app.controller.broadcast('migration-event', { event: 'progress', payload: { from, to, progress: progress + 1, total } })
+        reporter.setProgress({ from, to, progress: progress + 1, total })
       } catch (e) {
         logger.warn(`Fail to move ${from} -> ${to}`, e)
-        app.controller.broadcast('migration-event', { event: 'error', payload: { from, to, error: e } })
+        reporter.setError({ from, to, error: e as object })
         throw e
       }
     }

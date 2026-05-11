@@ -1,8 +1,6 @@
 import { HAS_DEV_SERVER, HOST, IS_DEV, WindowsBuild } from '@/constant'
 import browsePreload from '@preload/browse'
 import indexPreload from '@preload/index'
-import migrationPreload from '@preload/migration'
-import monitorPreload from '@preload/monitor'
 import multiplayerPreload from '@preload/multiplayer'
 import browserWinUrl from '@renderer/browser.html'
 import loggerWinUrl from '@renderer/logger.html'
@@ -42,8 +40,11 @@ export class ElectronController implements LauncherAppController {
 
   /**
    * During the app is parking, even if the all windows are closed, the app will keep open.
+   *
+   * Public so {@link WindowService} can decide whether `close()` from the
+   * renderer should hide vs. close the window.
    */
-  protected parking = false
+  parking = false
 
   protected activatedManifest: InstalledAppManifest | undefined
 
@@ -116,10 +117,6 @@ export class ElectronController implements LauncherAppController {
         this.windowsVersion = app.windowsUtils?.getWindowsVersion()
       })
     }
-
-    this.handle('open-multiplayer-window', () => {
-      this.openMultiplayerWindow()
-    })
 
     this.app.on('window-all-closed', () => {
       if (process.platform !== 'darwin' && !this.parking) {
@@ -229,7 +226,7 @@ export class ElectronController implements LauncherAppController {
       width: 600,
       height: 400,
       webPreferences: {
-        preload: migrationPreload,
+        preload: indexPreload,
         session: restoredSession,
       },
     })
@@ -472,7 +469,7 @@ export class ElectronController implements LauncherAppController {
       icon: darkIcon,
       backgroundMaterial: this.getBackgroundMaterial(enableTranslucency), // Windows mica/acrylic
       webPreferences: {
-        preload: monitorPreload,
+        preload: indexPreload,
         session: this.app.session.getSession(this.activatedManifest!.url),
       },
     })

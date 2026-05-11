@@ -5,6 +5,5 @@ import { optifine } from './optifine'
 import { taskProgressPlugin } from './taskProgress'
 import { themePlugin } from './theme'
 import { trayPlugin } from './tray'
-import { windowController } from './windowController'
 
-export const plugins = [optifine, notificationSetupPlugin, i18n, gameLaunch, taskProgressPlugin, trayPlugin, windowController, themePlugin]
+export const plugins = [optifine, notificationSetupPlugin, i18n, gameLaunch, taskProgressPlugin, trayPlugin, themePlugin]

@@ -16,7 +16,21 @@ export interface SyncableStateChannel<T> extends GenericEventEmitter<SyncableEve
 }
 
 /**
+ * Forwards the service's own `on` / `once` / `removeListener` overloads
+ * onto the channel, so consumers get type-safe access to events declared
+ * by the service (e.g. `LaunchServiceEventMap`). Stateless services that
+ * don't extend `GenericEventEmitter` contribute nothing extra.
+ */
+type ServiceEventMethods<T> = T extends { on: any; once: any; removeListener: any }
+  ? Pick<T, 'on' | 'once' | 'removeListener'>
+  : {}
+
+/**
  * The stateless service channel. Since the limitation of the context isolation, you need to build state by yourself.
+ *
+ * Listening to event names declared in the service's `EventEmitter` map
+ * (e.g. `LaunchServiceEventMap`) is type-checked alongside the built-in
+ * `commit` mutation channel.
  */
 export type ServiceChannel<T> = {
   readonly key: ServiceKey<T>
@@ -28,8 +42,8 @@ export type ServiceChannel<T> = {
   call<M extends keyof T, MT = T[M]>(
     method: M,
     ...payload: MT extends (...args: infer A) => any ? A : never
-  ): Promise<MT extends (...args: any) => any ? ReturnType<MT> : never>
-} & GenericEventEmitter<SyncableEventMap>
+  ): Promise<MT extends (...args: any) => any ? Awaited<ReturnType<MT>> : never>
+} & GenericEventEmitter<SyncableEventMap> & ServiceEventMethods<T>
 
 export interface StateMetadata {
   /**

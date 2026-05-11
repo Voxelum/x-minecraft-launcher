@@ -1,5 +1,7 @@
 import { BaseService } from '@xmcl/runtime/app'
+import { AppsService } from '@xmcl/runtime/apps'
 import { AuthlibInjectorService } from '@xmcl/runtime/authlibInjector'
+import { BootstrapService } from '@xmcl/runtime/bootstrap'
 import { ElyByService } from '@xmcl/runtime/elyby'
 import { InstallService, VersionMetadataService } from '@xmcl/runtime/install'
 import {
@@ -29,8 +31,11 @@ import { PeerService } from '@xmcl/runtime/peer'
 import { PresenceService } from '@xmcl/runtime/presence'
 import { ResourcePackPreviewService } from '@xmcl/runtime/resourcePack'
 import { ServerStatusService } from '@xmcl/runtime/serverStatus'
+import { TaskService } from '@xmcl/runtime/task'
+import { MigrationService } from '@xmcl/runtime/migration'
 import { ThemeService } from '@xmcl/runtime/theme'
 import { OfficialUserService, UserService } from '@xmcl/runtime/user'
+import { WindowService } from './services/WindowService'
 
 export const definedServices = [
   VersionMetadataService,
@@ -65,4 +70,9 @@ export const definedServices = [
   PeerService,
   ThemeService,
   InstanceThemeService,
+  TaskService,
+  AppsService,
+  MigrationService,
+  BootstrapService,
+  WindowService,
 ]

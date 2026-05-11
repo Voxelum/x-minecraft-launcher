@@ -1,79 +1,51 @@
 import { Task, TaskState } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
+import { EventEmitter } from 'events'
 import { LauncherAppPlugin } from '~/app'
-import { TaskInstance, kTasks } from '../task'
+import { TaskInstance, Tasks, kTasks } from '../task'
 
 export const pluginTasks: LauncherAppPlugin = (app) => {
-  const logger = app.getLogger('TaskManager')
   /**
    * The dictionary for all root tasks
    */
   const active: TaskInstance<Task>[] = []
+  const emitter = new EventEmitter()
   let hasTaskRunning = false
 
-  app.controller.handle('task-clear', (event) => {
-    // remove finished
-    for (let i = active.length - 1; i >= 0; i--) {
-      if (
-        active[i].state === TaskState.Succeed ||
-        active[i].state === TaskState.Failed ||
-        active[i].state === TaskState.Cancelled
-      ) {
-        active.splice(i, 1)
-      }
-    }
-  })
-  app.controller.handle('task-check', (event) => {
-    return hasTaskRunning
-  })
-  app.controller.handle('task-poll', (event) => {
-    return Object.values(active).map((t) => ({
-      ...t,
-      progress: t.progress
-        ? 'url' in t.progress
-          ? {
-              url: t.progress.url,
-              total: t.progress.total,
-              acceptRanges: t.progress.acceptRanges,
-              progress: t.progress.progress,
-              speed: t.progress.speed,
-            }
-          : {
-              total: t.progress.total,
-              progress: t.progress.progress,
-            }
-        : undefined,
-    } satisfies Task))
-  })
-  app.controller.handle('task-operation', (event, { type, id }) => {
-    const found = active.find((t) => t.id === id)
-    if (!found) {
-      logger.warn(`Cannot ${type} a unknown task id ${id}`)
-      return
-    }
-    switch (type) {
-      case 'cancel':
-        logger.log(`Request ${id} to cancel`)
-        found.controller.abort()
-        break
-      default:
-    }
-  })
-
   const getActiveTask = (): Task | undefined => {
-    return Object.values(active).filter((v) => v.state === TaskState.Running)[0]
+    return active.find((v) => v.state === TaskState.Running)
   }
 
   function checkTaskCompleted() {
     const hasRunning = active.some((t) => t.state === TaskState.Running)
     if (hasRunning !== hasTaskRunning) {
       hasTaskRunning = hasRunning
-      app.controller.broadcast('task-activated', hasRunning)
+      emitter.emit('activated', hasRunning)
     }
   }
 
-  app.registry.register(kTasks, {
+  const tasks: Tasks = {
     getActiveTask,
+    getAll: () => active,
+    clear: () => {
+      for (let i = active.length - 1; i >= 0; i--) {
+        if (
+          active[i].state === TaskState.Succeed ||
+          active[i].state === TaskState.Failed ||
+          active[i].state === TaskState.Cancelled
+        ) {
+          active.splice(i, 1)
+        }
+      }
+    },
+    on: (event, listener) => {
+      emitter.on(event, listener)
+      return tasks
+    },
+    off: (event, listener) => {
+      emitter.off(event, listener)
+      return tasks
+    },
     create: (task) => {
       const obj = {
         ...task,
@@ -134,11 +106,13 @@ export const pluginTasks: LauncherAppPlugin = (app) => {
         },
       })
       if (!hasTaskRunning) {
-        app.controller.broadcast('task-activated', true)
+        hasTaskRunning = true
+        emitter.emit('activated', true)
       }
-      hasTaskRunning = true
       active.unshift(obj)
       return obj
     },
-  })
+  }
+
+  app.registry.register(kTasks, tasks)
 }

@@ -32,29 +32,23 @@
 </template>
 
 <script lang=ts setup>
-import { Migration } from '@xmcl/runtime-api'
+import { MigrationProgress, MigrationServiceKey } from '@xmcl/runtime-api'
 import '@/assets/common.css'
 
 const { t } = useI18n()
 const { hide, close } = windowController
-
-declare const migration: Migration
+const migrationChannel = serviceChannels.open(MigrationServiceKey)
 
 const errorRef = ref<any | null>(null)
-const progressRef = shallowRef(undefined as undefined | {
-  from: string
-  to: string
-  progress: number
-  total: number
-})
+const progressRef = shallowRef<MigrationProgress | undefined>(undefined)
 onMounted(() => {
-  migration.getProgress().then((progress) => {
+  migrationChannel.call('getProgress').then((progress) => {
     progressRef.value = progress
   })
-  migration.on('progress', ({ from, to, progress, total }) => {
-    progressRef.value = { from, to, progress, total }
+  migrationChannel.on('migration-progress', (payload) => {
+    progressRef.value = payload
   })
-  migration.on('error', ({ error }) => {
+  migrationChannel.on('migration-error', ({ error }) => {
     errorRef.value = error
   })
 })

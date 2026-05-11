@@ -67,6 +67,7 @@ declare global {
   const watchEffect: typeof import('vue').watchEffect
   const watchPostEffect: typeof import('vue').watchPostEffect
   const watchSyncEffect: typeof import('vue').watchSyncEffect
+  const windowController: typeof import('@/composables/windowController').windowController
 }
 // for type re-export
 declare global {

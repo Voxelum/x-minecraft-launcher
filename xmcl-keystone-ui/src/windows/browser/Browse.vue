@@ -68,14 +68,15 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
-import { InstalledAppManifest } from '@xmcl/runtime-api'
+import { AppsServiceKey, InstalledAppManifest } from '@xmcl/runtime-api'
 import AppCard from './AppCard.vue'
-import { useRefreshable } from '@/composables'
+import { useRefreshable, useService } from '@/composables'
 
 export default defineComponent({
   components: { AppCard },
   setup() {
     const { maximize, minimize, hide } = windowController
+    const appsService = useService(AppsServiceKey)
 
     const data = reactive({
       url: '',
@@ -88,11 +89,11 @@ export default defineComponent({
       (v: string) => !v ? true : !(isUrl.test(v) || 'Invalid URL!'),
     ])
     const { refresh, refreshing } = useRefreshable(async () => {
-      data.installed = await appsHost.getInstalledApps()
-      data.defaultApp = await appsHost.getDefaultApp()
+      data.installed = await appsService.getInstalledApps()
+      data.defaultApp = await appsService.getDefaultApp()
     })
     const createShortcut = (url: string) => {
-      appsHost.createShortcut(url)
+      appsService.createShortcut(url)
     }
     function close() {
       hide()
@@ -100,7 +101,7 @@ export default defineComponent({
     const { refresh: onEnter, refreshing: loading } = useRefreshable(async () => {
       try {
         data.error = ''
-        await appsHost.installApp(data.url)
+        await appsService.installApp(data.url)
         refresh()
       } catch (e) {
         if (e === 'NonHTML') {
@@ -114,11 +115,11 @@ export default defineComponent({
       }
     })
     const uninstall = async (url: string) => {
-      await appsHost.uninstallApp(url)
+      await appsService.uninstallApp(url)
       refresh()
     }
     const boot = async (url: string) => {
-      await appsHost.bootAppByUrl(url)
+      await appsService.bootAppByUrl(url)
       refresh()
     }
     onMounted(() => {

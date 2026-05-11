@@ -74,6 +74,9 @@ export default defineConfig({
             'useRouter',
             'useRoute',
           ],
+          '@/composables/windowController': [
+            'windowController',
+          ],
         },
       ],
       dts: 'auto-imports.d.ts',

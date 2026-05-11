@@ -66,6 +66,7 @@ import LogView from '@/components/LogView.vue'
 import { LogRecord, parseLog } from '@/util/log'
 import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
+import { LaunchServiceKey } from '@xmcl/runtime-api'
 
 export interface Log extends LogRecord {
   id: number
@@ -73,6 +74,7 @@ export interface Log extends LogRecord {
 
 const { t } = useI18n()
 const { hide } = windowController
+const launchChannel = serviceChannels.open(LaunchServiceKey)
 const logsRecord: Record<number, Log[]> = reactive({})
 const tab = ref(0)
 
@@ -129,11 +131,11 @@ function accept(pid: number, log: string) {
   }
 }
 onMounted(() => {
-  gameMonitor.on('minecraft-stderr', (event) => {
+  launchChannel.on('minecraft-stderr', (event) => {
     const { stderr, pid } = event
     accept(pid, stderr)
   })
-  gameMonitor.on('minecraft-stdout', (event) => {
+  launchChannel.on('minecraft-stdout', (event) => {
     const { stdout, pid } = event
     accept(pid, stdout)
   })

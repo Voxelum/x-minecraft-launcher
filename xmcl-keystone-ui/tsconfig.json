@@ -22,8 +22,7 @@
     "jsx": "preserve",
     "types": [
       "vite/client",
-      "@xmcl/runtime-api/client",
-      "@xmcl/runtime-api/monitorClient"
+      "@xmcl/runtime-api/client"
     ]
   },
   "vueCompilerOptions": {

@@ -11,6 +11,8 @@ export type TaskInstance<T extends Task> = T & {
 
 export const kTasks: InjectionKey<Tasks> = Symbol('kTasks')
 
+export type TaskActivatedListener = (active: boolean) => void
+
 export interface Tasks {
   /**
    * Get the currently active task
@@ -23,4 +25,22 @@ export interface Tasks {
   create<T extends Task>(
     task: Omit<T, 'id' | 'progress' | 'substate' | 'state' | 'error'>,
   ): TaskInstance<T>
+
+  /**
+   * Snapshot of all tracked tasks (live + recently-finished, until cleared).
+   * Consumed by `TaskService.getTasks()` for the renderer poll loop.
+   */
+  getAll(): TaskInstance<any>[]
+
+  /**
+   * Drop finished (succeed / failed / cancelled) tasks from the tracked list.
+   */
+  clear(): void
+
+  /**
+   * Subscribe to "is anything currently running" transitions. Fires only
+   * on the boolean edge — not on each progress tick.
+   */
+  on(event: 'activated', listener: TaskActivatedListener): this
+  off(event: 'activated', listener: TaskActivatedListener): this
 }
