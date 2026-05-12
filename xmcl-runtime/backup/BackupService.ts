@@ -5,6 +5,7 @@ import {
   BackupInfo,
   BackupServiceKey,
   CreateBackupTask,
+  RestoreBackupTask,
 } from '@xmcl/runtime-api'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { existsSync, mkdirSync, readdirSync, statSync, readFileSync, writeFileSync, rmSync } from 'fs'
@@ -386,15 +387,19 @@ export class BackupService extends AbstractService implements IBackupService {
           JSON.stringify(metadata, null, 2),
         )
 
-        // Create zip archive - this is the finalizing phase
-        task.substate = { type: 'finalizing', totalFiles, copiedFiles: totalFiles }
-        task.progress = { total: totalFiles, progress: totalFiles }
+        // Create zip archive - this is the creating-archive phase
+        task.substate = { type: 'creating-archive', totalFiles, copiedFiles: totalFiles }
+        task.progress = { total: 100, progress: 0 }
         
         this.addLog('info', 'Creating compressed archive...', task)
         const archiveStart = Date.now()
-        await this.createZip(tempDir, destinationPath)
+        await this.createZip(tempDir, destinationPath, task, totalFiles)
         const archiveDuration = Date.now() - archiveStart
         this.addLog('info', `Archive created in ${archiveDuration}ms`, task)
+
+        // Finalizing
+        task.substate = { type: 'finalizing', totalFiles, copiedFiles: totalFiles }
+        task.progress = { total: totalFiles, progress: totalFiles }
 
         if (wasCancelled) {
           task.fail(new Error('Backup cancelled by user'))
@@ -454,11 +459,21 @@ export class BackupService extends AbstractService implements IBackupService {
       throw new Error(`Backup file not found: ${backupPath}`)
     }
 
+    // Reset logs
+    this.backupLogs = []
+
     // Get app data path for theme/settings restoration
     const appDataPath = this.app.appDataPath
 
     this.log(`Restoring backup to game data: ${destinationPath}`)
     this.log(`App data path: ${appDataPath}`)
+
+    // Create task for progress tracking
+    const task = this.tasks.create<RestoreBackupTask>({
+      type: 'restoreBackup',
+      key: `restore-backup-${Date.now()}`,
+      phase: 'extracting',
+    })
 
     // Create a temporary directory for extraction
     const tempDir = join(destinationPath, '.restore-temp')
@@ -467,8 +482,16 @@ export class BackupService extends AbstractService implements IBackupService {
     }
     mkdirSync(tempDir, { recursive: true })
 
+    let totalFiles = 0
+    let copiedFiles = 0
+    const skippedInstances: string[] = []
+
     try {
-      // Extract backup
+      // ── Phase: extracting ────────────────────────────────────────────────
+      this.addLog('info', 'Extracting backup archive...', task)
+      task.substate = { type: 'extracting', totalFiles, copiedFiles, logs: [...this.backupLogs] }
+      task.progress = { total: 100, progress: 0 }
+
       await extract(backupPath, { dir: tempDir })
 
       // Read metadata
@@ -481,90 +504,276 @@ export class BackupService extends AbstractService implements IBackupService {
         readFileSync(metadataPath, 'utf-8'),
       )
 
-      // Restore instances
-      if (metadata.includeInstances) {
-        const instancesDir = join(tempDir, 'instances')
-        if (existsSync(instancesDir)) {
-          const destInstancesDir = join(destinationPath, 'instances')
-          await ensureDir(destInstancesDir)
-          await this.copyDirectory(instancesDir, destInstancesDir)
+      // Resolve effective restore flags:
+      // If an option is explicitly provided use it, otherwise fall back to the metadata flag.
+      const shouldRestoreInstances = options.restoreInstances !== undefined
+        ? options.restoreInstances
+        : (metadata.includeInstances ?? true)
+      const shouldRestoreSettings = options.restoreSettings !== undefined
+        ? options.restoreSettings
+        : (metadata.includeSettings ?? true)
+      const shouldRestoreScreenshots = options.restoreScreenshots !== undefined
+        ? options.restoreScreenshots
+        : (metadata.includeScreenshots ?? false)
+
+      // ── Phase: scanning ──────────────────────────────────────────────────
+      this.addLog('info', 'Scanning backup contents...', task)
+      const backupInstancesDir = join(tempDir, 'instances')
+      const scannedInstances: string[] = existsSync(backupInstancesDir)
+        ? readdirSync(backupInstancesDir, { withFileTypes: true })
+          .filter(e => e.isDirectory())
+          .map(e => e.name)
+        : []
+
+      task.substate = {
+        type: 'scanning',
+        totalFiles,
+        copiedFiles,
+        scannedInstances,
+        skippedInstances: [],
+        logs: [...this.backupLogs],
+      }
+      task.progress = { total: 100, progress: 10 }
+
+      // Count total files so progress is meaningful across all phases
+      this.addLog('info', 'Counting files to restore...', task)
+      if (shouldRestoreInstances) {
+        if (existsSync(backupInstancesDir)) {
+          // Only count files for instances that won't be skipped
+          for (const instanceName of scannedInstances) {
+            if (options.skipExistingInstances) {
+              const destInstanceDir = join(destinationPath, 'instances', instanceName)
+              if (existsSync(destInstanceDir)) {
+                // Will be skipped — don't add its files to the total
+                continue
+              }
+            }
+            totalFiles += await this.countFiles(join(backupInstancesDir, instanceName))
+          }
         }
       }
-
-      // Restore settings - to both game data and app data directories
-      if (metadata.includeSettings) {
+      if (shouldRestoreSettings) {
         const settingsDir = join(tempDir, 'settings')
         if (existsSync(settingsDir)) {
-          const settingsItems = readdirSync(settingsDir, { withFileTypes: true })
-          for (const item of settingsItems) {
-            const srcPath = join(settingsDir, item.name)
-            
-            // Determine the correct destination based on the item type
-            // Theme-related files go to appDataPath, instance-related files go to destinationPath
-            let destPath: string
-            
-            // Files that should go to app data directory
-            const appDataItems = [
-              'theme.json',
-              'theme-media',
-              'themes',
-              'settings.json',
-              'setting.json',
-              'plugins',
-              'resources',
-              'caches',
-              'plugin-settings',
-              'resource-images',
-              'user.json',
-              'db.sqlite',
-              'ely-authlib.json',
-            ]
-            
-            if (appDataItems.includes(item.name)) {
-              destPath = join(appDataPath, item.name)
-            } else {
-              destPath = join(destinationPath, item.name)
-            }
-            
-            try {
-              if (item.isDirectory()) {
-                await copy(srcPath, destPath, {
-                  overwrite: true,
-                  dereference: true,
-                })
-              } else {
-                await copy(srcPath, destPath, { overwrite: true })
-              }
-              this.log(`Restored ${item.name} to ${destPath}`)
-            } catch (err: any) {
-              this.warn(`Failed to restore settings item ${item.name}:`, err.message)
+          totalFiles += await this.countFiles(settingsDir)
+        }
+      }
+      if (shouldRestoreScreenshots) {
+        if (existsSync(backupInstancesDir)) {
+          for (const instanceName of scannedInstances) {
+            const screenshotsDir = join(backupInstancesDir, instanceName, 'screenshots')
+            if (existsSync(screenshotsDir)) {
+              totalFiles += await this.countFiles(screenshotsDir)
             }
           }
         }
       }
 
-      // Restore screenshots - from each instance's screenshots folder in backup
-      if (metadata.includeScreenshots) {
-        const backupInstancesDir = join(tempDir, 'instances')
-        if (existsSync(backupInstancesDir)) {
-          const backupInstanceFolders = readdirSync(backupInstancesDir, { withFileTypes: true })
-            .filter(e => e.isDirectory())
-            .map(e => e.name)
+      // Ensure at least 1 to avoid division by zero
+      if (totalFiles === 0) totalFiles = 1
 
-          for (const instanceName of backupInstanceFolders) {
+      // ── Phase: restoring-instances ───────────────────────────────────────
+      task.substate = {
+        type: 'restoring-instances',
+        totalFiles,
+        copiedFiles,
+        scannedInstances,
+        skippedInstances,
+        logs: [...this.backupLogs],
+      }
+      task.progress = { total: totalFiles, progress: copiedFiles }
+      this.addLog('info', 'Restoring instances...', task)
+
+      if (shouldRestoreInstances) {
+        if (existsSync(backupInstancesDir)) {
+          const destInstancesDir = join(destinationPath, 'instances')
+          await ensureDir(destInstancesDir)
+
+          for (const instanceName of scannedInstances) {
+            // Skip existing instances when requested
+            if (options.skipExistingInstances) {
+              const destInstanceDir = join(destInstancesDir, instanceName)
+              if (existsSync(destInstanceDir)) {
+                this.addLog('info', `Skipping existing instance: ${instanceName}`, task)
+                skippedInstances.push(instanceName)
+                task.substate = {
+                  type: 'restoring-instances',
+                  totalFiles,
+                  copiedFiles,
+                  scannedInstances,
+                  skippedInstances: [...skippedInstances],
+                  logs: [...this.backupLogs],
+                }
+                continue
+              }
+            }
+
+            const srcInstanceDir = join(backupInstancesDir, instanceName)
+            const destInstanceDir = join(destInstancesDir, instanceName)
+            await ensureDir(destInstanceDir)
+            await this.copyDirectoryWithProgress(
+              srcInstanceDir,
+              destInstanceDir,
+              (file) => {
+                copiedFiles++
+                task.substate = {
+                  type: 'restoring-instances',
+                  totalFiles,
+                  copiedFiles,
+                  currentFile: file,
+                  scannedInstances,
+                  skippedInstances: [...skippedInstances],
+                  logs: [...this.backupLogs],
+                }
+                task.progress = { total: totalFiles, progress: copiedFiles }
+              },
+              undefined,
+              task,
+            )
+          }
+        }
+      }
+
+      // ── Phase: restoring-settings ────────────────────────────────────────
+      task.substate = {
+        type: 'restoring-settings',
+        totalFiles,
+        copiedFiles,
+        scannedInstances,
+        skippedInstances: [...skippedInstances],
+        logs: [...this.backupLogs],
+      }
+      task.progress = { total: totalFiles, progress: copiedFiles }
+      this.addLog('info', 'Restoring settings...', task)
+
+      if (shouldRestoreSettings) {
+        const settingsDir = join(tempDir, 'settings')
+        if (existsSync(settingsDir)) {
+          // Files that should go to the app data directory
+          const appDataItems = [
+            'theme.json',
+            'theme-media',
+            'themes',
+            'settings.json',
+            'setting.json',
+            'plugins',
+            'resources',
+            'caches',
+            'plugin-settings',
+            'resource-images',
+            'user.json',
+            'db.sqlite',
+            'ely-authlib.json',
+          ]
+
+          const settingsItems = readdirSync(settingsDir, { withFileTypes: true })
+          for (const item of settingsItems) {
+            const srcPath = join(settingsDir, item.name)
+            const destPath = appDataItems.includes(item.name)
+              ? join(appDataPath, item.name)
+              : join(destinationPath, item.name)
+
+            task.substate = {
+              type: 'restoring-settings',
+              totalFiles,
+              copiedFiles,
+              currentFile: item.name,
+              scannedInstances,
+              skippedInstances: [...skippedInstances],
+              logs: [...this.backupLogs],
+            }
+
+            try {
+              if (item.isDirectory()) {
+                await copy(srcPath, destPath, { overwrite: true, dereference: true })
+                const dirCount = await this.countFiles(srcPath)
+                copiedFiles += dirCount
+              } else {
+                await copy(srcPath, destPath, { overwrite: true })
+                copiedFiles++
+              }
+              task.substate = {
+                type: 'restoring-settings',
+                totalFiles,
+                copiedFiles,
+                currentFile: item.name,
+                scannedInstances,
+                skippedInstances: [...skippedInstances],
+                logs: [...this.backupLogs],
+              }
+              task.progress = { total: totalFiles, progress: copiedFiles }
+              this.addLog('info', `Restored ${item.name} to ${destPath}`, task)
+            } catch (err: any) {
+              this.addLog('warn', `Failed to restore settings item ${item.name}: ${err.message}`, task)
+            }
+          }
+        }
+      }
+
+      // ── Phase: restoring-screenshots ─────────────────────────────────────
+      task.substate = {
+        type: 'restoring-screenshots',
+        totalFiles,
+        copiedFiles,
+        scannedInstances,
+        skippedInstances: [...skippedInstances],
+        logs: [...this.backupLogs],
+      }
+      task.progress = { total: totalFiles, progress: copiedFiles }
+      this.addLog('info', 'Restoring screenshots...', task)
+
+      if (shouldRestoreScreenshots) {
+        if (existsSync(backupInstancesDir)) {
+          for (const instanceName of scannedInstances) {
             const backupScreenshotsDir = join(backupInstancesDir, instanceName, 'screenshots')
             if (existsSync(backupScreenshotsDir)) {
               const destScreenshotsDir = join(destinationPath, 'instances', instanceName, 'screenshots')
               await ensureDir(destScreenshotsDir)
               try {
-                await this.copyDirectory(backupScreenshotsDir, destScreenshotsDir)
+                await this.copyDirectoryWithProgress(
+                  backupScreenshotsDir,
+                  destScreenshotsDir,
+                  (file) => {
+                    copiedFiles++
+                    task.substate = {
+                      type: 'restoring-screenshots',
+                      totalFiles,
+                      copiedFiles,
+                      currentFile: file,
+                      scannedInstances,
+                      skippedInstances: [...skippedInstances],
+                      logs: [...this.backupLogs],
+                    }
+                    task.progress = { total: totalFiles, progress: copiedFiles }
+                  },
+                  undefined,
+                  task,
+                )
               } catch (err: any) {
-                this.warn(`Failed to restore screenshots for ${instanceName}:`, err.message)
+                this.addLog('warn', `Failed to restore screenshots for ${instanceName}: ${err.message}`, task)
               }
             }
           }
         }
       }
+
+      // ── Phase: finalizing ────────────────────────────────────────────────
+      task.substate = {
+        type: 'finalizing',
+        totalFiles,
+        copiedFiles,
+        scannedInstances,
+        skippedInstances: [...skippedInstances],
+        logs: [...this.backupLogs],
+      }
+      task.progress = { total: totalFiles, progress: totalFiles }
+      this.addLog('info', 'Restore completed successfully!', task)
+
+      task.complete()
+    } catch (error: any) {
+      this.addLog('error', `Restore failed: ${error.message}`, task)
+      task.fail(error)
+      throw error
     } finally {
       // Cleanup temp directory
       if (existsSync(tempDir)) {
@@ -578,16 +787,17 @@ export class BackupService extends AbstractService implements IBackupService {
       throw new Error(`Backup file not found: ${backupPath}`)
     }
 
-    // Create a temporary directory for extraction
-    const tempDir = join(dirname(backupPath), '.backup-info-temp')
-    if (existsSync(tempDir)) {
-      await this.safeRemoveDir(tempDir)
-    }
-    mkdirSync(tempDir, { recursive: true })
-
+    // Create a temporary directory for extraction in system temp
+    const os = await import('os')
+    const { randomBytes } = await import('crypto')
+    const tempDir = join(os.tmpdir(), `xmcl-backup-info-${randomBytes(8).toString('hex')}`)
+    
     try {
-      // Extract the backup
-      await extract(backupPath, { dir: tempDir })
+      mkdirSync(tempDir, { recursive: true })
+      
+      // Extract the backup with absolute path
+      const absoluteTempDir = require('path').resolve(tempDir)
+      await extract(backupPath, { dir: absoluteTempDir })
 
       const metadataPath = join(tempDir, 'backup.json')
       if (!existsSync(metadataPath)) {
@@ -597,13 +807,25 @@ export class BackupService extends AbstractService implements IBackupService {
       const metadata = JSON.parse(readFileSync(metadataPath, 'utf-8'))
       const stats = statSync(backupPath)
 
+      // Read instance folder names from the backup
+      const instancesDir = join(tempDir, 'instances')
+      const instances: string[] = existsSync(instancesDir)
+        ? readdirSync(instancesDir, { withFileTypes: true })
+          .filter(e => e.isDirectory())
+          .map(e => e.name)
+        : []
+
       return {
         name: basename(backupPath),
         createdAt: metadata.createdAt,
         size: stats.size,
         instanceCount: metadata.instanceCount || 0,
         launcherVersion: metadata.launcherVersion || 'unknown',
+        instances,
       }
+    } catch (error: any) {
+      this.error(new Error(`Failed to get backup info: ${error.message}`))
+      throw error
     } finally {
       // Cleanup temp directory
       if (existsSync(tempDir)) {
@@ -741,12 +963,41 @@ export class BackupService extends AbstractService implements IBackupService {
     }
   }
 
-  private async createZip(sourceDir: string, outputPath: string): Promise<void> {
+  private async createZip(sourceDir: string, outputPath: string, task?: any, totalFiles?: number): Promise<void> {
     return new Promise((resolve, reject) => {
       const output = createWriteStream(outputPath)
       const archive = archiver('zip', {
         zlib: { level: 9 }, // Maximum compression
         forceZip64: true, // Support large files
+      })
+
+      let processedBytes = 0
+      let totalBytes = 0
+      let entriesProcessed = 0
+
+      // Track progress during archiving
+      archive.on('progress', (progress: any) => {
+        if (task && totalFiles) {
+          processedBytes = progress.fs.processedBytes || 0
+          totalBytes = progress.fs.totalBytes || 1
+          entriesProcessed = progress.entries.processed || 0
+          
+          // Update task progress based on bytes processed
+          const archiveProgress = Math.floor((processedBytes / totalBytes) * 100)
+          task.substate = {
+            type: 'creating-archive',
+            totalFiles,
+            copiedFiles: totalFiles,
+            archiveProgress,
+            processedBytes,
+            totalBytes,
+            entriesProcessed,
+          }
+          task.progress = {
+            total: 100,
+            progress: archiveProgress,
+          }
+        }
       })
 
       output.on('close', async () => {

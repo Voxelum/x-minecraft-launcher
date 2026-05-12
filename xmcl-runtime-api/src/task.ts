@@ -21,7 +21,7 @@ import { InstallAuthlibInjectorTask } from './services/AuthlibInjectorService'
 import { DownloadModMetadataDbTask } from './services/ModMetadataService'
 import { DuplicateInstanceTask } from './services/InstanceService'
 import { InstallModrinthFileTask, InstallCurseforgeFileTask } from './services/MarketService'
-import { CreateBackupTask } from './services/BackupService'
+import { CreateBackupTask, RestoreBackupTask } from './services/BackupService'
 
 export enum TaskState {
   Running,
@@ -119,6 +119,7 @@ export type Tasks =
   | InstallModrinthFileTask
   | InstallCurseforgeFileTask
   | CreateBackupTask
+  | RestoreBackupTask
 
 export function isTask<T extends Tasks>(key: T['type'], task: Tasks): task is T {
   return task.type === key

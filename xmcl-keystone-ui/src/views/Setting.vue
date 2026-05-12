@@ -81,6 +81,14 @@
           />
           <SettingNetwork />
         </section>
+        <section id="backup" class="mb-8 scroll-target">
+          <SettingHeader
+            :title="t('setting.backup')"
+            icon="backup"
+            :subtitle="t('setting.backupDescription')"
+          />
+          <SettingBackup />
+        </section>
         <section id="about" class="mb-12 scroll-target">
           <SettingHeader
             :title="t('setting.about')"
@@ -115,6 +123,7 @@ import SettingGlobalUI from './SettingGlobalUI.vue'
 import { useMediaQuery } from '@vueuse/core'
 import SettingAdvanced from './SettingAdvanced.vue'
 import SettingHeader from '@/components/SettingHeader.vue'
+import SettingBackup from './SettingBackup.vue'
 
 const { t } = useI18n()
 usePresence(computed(() => t('presence.setting')))
@@ -144,6 +153,7 @@ const sections = [
   { id: 'appearance', title: 'setting.appearance', icon: 'palette' },
   { id: 'global', title: 'setting.globalSetting', icon: 'videogame_asset' },
   { id: 'network', title: 'setting.network', icon: 'wifi' },
+  { id: 'backup', title: 'setting.backup', icon: 'backup' },
   { id: 'about', title: 'setting.about', icon: 'info' },
 ]
 
