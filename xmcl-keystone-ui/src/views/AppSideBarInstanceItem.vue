@@ -4,6 +4,7 @@
     <div
       v-context-menu="getItems"
       v-shared-tooltip.right="() => ({ text: name, items: runtimes })"
+      data-testid="instance-item"
       class="sidebar-instance non-moveable"
       :class="{ 'sidebar-instance--active': isActive }"
       draggable="true"

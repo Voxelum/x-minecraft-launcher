@@ -13,6 +13,7 @@
       <div class="grid grid-cols-4 gap-4 mb-4">
         <v-text-field
           v-model="content.name"
+          data-testid="add-instance-name"
           variant="outlined"
           autofocus
           class="col-span-2"

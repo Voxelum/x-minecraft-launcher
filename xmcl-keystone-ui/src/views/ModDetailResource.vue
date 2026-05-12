@@ -145,6 +145,7 @@ const { path } = injection(kInstance)
 
 const installDefaultModLoader = useInstanceModLoaderDefault()
 const onDelete = async () => {
+  if (updating.value) return
   updating.value = true
   const file = props.files.find(f => f.path === selectedVersion.value.id)
   if (file) {
@@ -153,6 +154,7 @@ const onDelete = async () => {
 }
 
 const onInstall = async () => {
+  if (updating.value) return
   updating.value = true
 
   const _path = path.value

@@ -39,7 +39,11 @@
 
           <v-divider />
           <v-list density="compact">
-            <v-list-item color="primary" @click="login = true">
+            <v-list-item
+              color="primary"
+              data-testid="accounts-add"
+              @click="login = true"
+            >
               <template #prepend>
                 <v-avatar>
                   <v-icon> person_add </v-icon>

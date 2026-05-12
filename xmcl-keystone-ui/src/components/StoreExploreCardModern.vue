@@ -1,6 +1,7 @@
 <template>
   <div
     ref="el"
+    data-testid="store-project-card"
     class="explore-card group relative bg-surface rounded-2xl overflow-hidden flex flex-col h-full cursor-pointer"
     @click="$emit('click')"
   >

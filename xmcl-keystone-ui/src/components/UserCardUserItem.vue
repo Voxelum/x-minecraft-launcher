@@ -2,6 +2,7 @@
   <v-list-item
     v-if="user"
     :link="link"
+    data-testid="account-item"
     lines="three"
     class="user-card-user-item"
   >

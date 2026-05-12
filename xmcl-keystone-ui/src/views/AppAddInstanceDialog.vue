@@ -1,6 +1,7 @@
 <template>
   <v-dialog
     v-model="isShown"
+    data-testid="add-instance-dialog"
     width="900"
     :persistent="true"
   >
@@ -75,6 +76,7 @@
           class="flex justify-end"
         >
           <v-btn
+            data-testid="add-instance-import"
             :loading="loading"
             variant="text"
             rounded="pill"

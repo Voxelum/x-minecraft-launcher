@@ -1,0 +1,74 @@
+name: e2e
+
+on:
+  workflow_dispatch:
+    inputs:
+      locales:
+        description: 'Comma-separated locales to capture (e.g. "en,zh-CN")'
+        required: false
+        default: 'en'
+
+jobs:
+  e2e:
+    name: e2e (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    timeout-minutes: 45
+    env:
+      XMCL_E2E_LOCALES: ${{ github.event.inputs.locales || 'en' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          # Electron tests use _electron.launch(), which doesn't need any
+          # Playwright-managed browser binary. Skip the ~660 MB browser
+          # download.
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+
+      - name: Install e2e dependencies
+        # `e2e` is intentionally OUTSIDE the workspace so default `pnpm i`
+        # stays lean for UI/runtime contributors. Install it explicitly here.
+        run: pnpm e2e:install --frozen-lockfile
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+
+      - name: Build renderer
+        run: pnpm build:renderer
+        env:
+          NODE_ENV: production
+
+      - name: Compile main process
+        run: pnpm --prefix=xmcl-electron-app compile
+
+      - name: Run e2e
+        # Linux runners are headless; xvfb-run gives Electron an X display.
+        # Other OSes have a real display server.
+        run: ${{ runner.os == 'Linux' && 'xvfb-run --auto-servernum' || '' }} pnpm --prefix=e2e test
+        shell: bash
+
+      - name: Build tutorial (en, ubuntu only)
+        if: runner.os == 'Linux'
+        run: pnpm --prefix=e2e tutorial
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-${{ matrix.os }}
+          path: |
+            e2e/artifacts/**
+            docs/tutorial/**
+          retention-days: 14

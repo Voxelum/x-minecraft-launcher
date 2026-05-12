@@ -8,6 +8,7 @@
     >
       <v-btn
         id="launch-button"
+        data-testid="launch-button"
         :disabled="isValidating"
         :color="color"
         :size="compact ? 'large' : 'x-large'"

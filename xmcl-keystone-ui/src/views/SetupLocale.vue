@@ -11,6 +11,7 @@
       </v-list-item-title>
       <v-list-item-action>
         <v-select
+          data-testid="setup-locale-select"
           :model-value="modelValue"
           filled
           item-title="text"

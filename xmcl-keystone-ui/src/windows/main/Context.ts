@@ -45,7 +45,6 @@ import { kLatestMinecraftVersion, useMinecraftLatestRelease } from '@/composable
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { kSupportedAuthorityMetadata, useSupportedAuthority } from '@/composables/yggrasil'
 import { vuetify } from '@/vuetify'
-import 'virtual:uno.css'
 import { provide } from 'vue'
 
 export default defineComponent({
