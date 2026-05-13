@@ -535,9 +535,9 @@ func fileEntryToWire(e resource.FileEntry) map[string]any {
 			for k, v := range e.Stored.Metadata {
 				md[k] = v
 			}
-			// Normalise so any catalogue blob written by an older
-			// build still ships renderer-iterable arrays (children,
-			// modsToml, dependencies, …).
+			// Belt-and-braces: ensure the merged blob is iterable
+			// even if a caller bypassed the manager's read-path
+			// normaliser (e.g. tests that call structToMap directly).
 			resource.NormaliseMetadata(md)
 			m["metadata"] = md
 		}
@@ -644,6 +644,11 @@ func (s *Service) resourceFromFile(path, name string, info os.FileInfo) (map[str
 			md[k] = v
 		}
 		m["metadata"] = md
+	}
+	if md, ok := m["metadata"].(map[string]any); ok {
+		// Make every iterable / read field the renderer touches
+		// non-nil. Safe to call unconditionally — idempotent.
+		resource.NormaliseMetadata(md)
 	}
 	if len(icons) > 0 {
 		m["icons"] = icons

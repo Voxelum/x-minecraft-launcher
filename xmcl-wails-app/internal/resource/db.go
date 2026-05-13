@@ -217,6 +217,9 @@ func resourceBySHA1(db dbConn, sha1 string) (*Stored, error) {
 }
 
 // resourcesBySHA1s batch-loads multiple sha1s in one query each.
+// Returned blobs are always run through NormaliseMetadata so callers
+// can rely on every renderer-iterable field being present regardless
+// of when the catalogue row was written.
 func resourcesBySHA1s(db dbConn, sha1s []string) ([]Stored, error) {
 	if len(sha1s) == 0 {
 		return nil, nil
@@ -235,6 +238,7 @@ func resourcesBySHA1s(db dbConn, sha1s []string) ([]Stored, error) {
 		if err != nil {
 			return nil, err
 		}
+		NormaliseMetadata(s.Metadata)
 		out = append(out, s)
 	}
 	if err := rows.Err(); err != nil {
@@ -392,6 +396,7 @@ SELECT r.sha1, r.name, `+joinPrefix("r.", metadataColumns)+`
 		if err != nil {
 			return nil, err
 		}
+		NormaliseMetadata(s.Metadata)
 		out = append(out, s)
 	}
 	if err := rows.Err(); err != nil {
