@@ -19,7 +19,7 @@ package resource
 
 import (
 	"encoding/base64"
-	"errors"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -132,12 +132,12 @@ func parseMod(path string) *ParseResult {
 					res.Icons = append(res.Icons, uri)
 				}
 			}
-			res.Metadata["forge"] = forge
+			res.Metadata["forge"] = normaliseForge(forge)
 			return res
 		}
 		if len(forge.ModsToml) > 0 || forge.ManifestMetadata != nil || len(forge.McmodInfo) > 0 {
 			res.FileType = FileTypeForge
-			res.Metadata["forge"] = forge
+			res.Metadata["forge"] = normaliseForge(forge)
 			for _, t := range forge.ModsToml {
 				if t.Modid != "" {
 					res.URIs = append(res.URIs,
@@ -292,7 +292,38 @@ func fabricIconPath(icon any) (string, bool) {
 }
 
 func forgeToNeo(t modparser.ForgeModTOMLData, children []modparser.ForgeModTOMLData) map[string]any {
-	out := map[string]any{
+	if children == nil {
+		children = []modparser.ForgeModTOMLData{}
+	}
+	// Normalise each child so the renderer can iterate `dependencies`
+	// without a nil check.
+	normChildren := make([]map[string]any, 0, len(children))
+	for _, c := range children {
+		normChildren = append(normChildren, neoEntry(c))
+	}
+	out := neoEntry(t)
+	out["children"] = normChildren
+	return out
+}
+
+// neoEntry builds a single neoforge mod object with every renderer-
+// iterable field guaranteed non-nil.
+func neoEntry(t modparser.ForgeModTOMLData) map[string]any {
+	deps := make([]map[string]any, 0, len(t.Dependencies))
+	for _, d := range t.Dependencies {
+		deps = append(deps, map[string]any{
+			"modId":        d.ModId,
+			"versionRange": d.VersionRange,
+			"mandatory":    d.Mandatory,
+			"side":         d.Side,
+			"ordering":     d.Ordering,
+		})
+	}
+	provides := t.Provides
+	if provides == nil {
+		provides = []string{}
+	}
+	return map[string]any{
 		"modid":           t.Modid,
 		"version":         t.Version,
 		"displayName":     t.DisplayName,
@@ -306,12 +337,91 @@ func forgeToNeo(t modparser.ForgeModTOMLData, children []modparser.ForgeModTOMLD
 		"loaderVersion":   t.LoaderVersion,
 		"issueTrackerURL": t.IssueTrackerURL,
 		"clientSideOnly":  t.ClientSideOnly,
-		"dependencies":    t.Dependencies,
+		"dependencies":    deps,
+		"provides":        provides,
 	}
-	if len(children) > 0 {
-		out["children"] = children
+}
+
+// normaliseForge guarantees every renderer-iterated slice on a
+// ForgeModMetadata blob is non-nil. The TS reference keeps these as
+// empty arrays; Go's `encoding/json` would otherwise emit `null` and
+// crash a `for...of` in `getModProvides` / `getLegacyForgeDependencies`.
+func normaliseForge(forge *modparser.ForgeModMetadata) map[string]any {
+	out := map[string]any{}
+	raw, err := jsonRoundtripParse(forge)
+	if err == nil {
+		out = raw
+	}
+	if _, ok := out["mcmodInfo"].([]any); !ok {
+		out["mcmodInfo"] = []any{}
+	}
+	if _, ok := out["modsToml"].([]any); !ok {
+		out["modsToml"] = []any{}
+	}
+	// modAnnotations is the ASM scan output the Go port intentionally
+	// drops; the renderer iterates it so emit an empty array.
+	if _, ok := out["modAnnotations"]; !ok {
+		out["modAnnotations"] = []any{}
+	}
+	if _, ok := out["manifest"].(map[string]any); !ok {
+		out["manifest"] = map[string]any{}
+	}
+	// Ensure each modsToml entry has dependencies + provides arrays.
+	if arr, ok := out["modsToml"].([]any); ok {
+		for i, raw := range arr {
+			if m, ok := raw.(map[string]any); ok {
+				if _, ok := m["dependencies"].([]any); !ok {
+					m["dependencies"] = []any{}
+				}
+				if _, ok := m["provides"].([]any); !ok {
+					m["provides"] = []any{}
+				}
+				arr[i] = m
+			}
+		}
+		out["modsToml"] = arr
+	}
+	// Promote canonical fields so the renderer's
+	// `meta.modid` / `meta.version` reads resolve.
+	if len(forge.ModsToml) > 0 {
+		t := forge.ModsToml[0]
+		if out["modid"] == nil || out["modid"] == "" {
+			out["modid"] = t.Modid
+		}
+		if out["version"] == nil || out["version"] == "" {
+			out["version"] = t.Version
+		}
+	} else if len(forge.McmodInfo) > 0 {
+		i := forge.McmodInfo[0]
+		if out["modid"] == nil || out["modid"] == "" {
+			out["modid"] = i.Modid
+		}
+		if out["version"] == nil || out["version"] == "" {
+			out["version"] = i.Version
+		}
+	} else if forge.ManifestMetadata != nil {
+		if out["modid"] == nil || out["modid"] == "" {
+			out["modid"] = forge.ManifestMetadata.Modid
+		}
+		if out["version"] == nil || out["version"] == "" {
+			out["version"] = forge.ManifestMetadata.Version
+		}
 	}
 	return out
+}
+
+// jsonRoundtripParse marshals + unmarshals via encoding/json so we
+// can poke at the dynamic shape with type assertions.
+func jsonRoundtripParse(v any) (map[string]any, error) {
+	raw, err := jsonEncode(v)
+	if err != nil {
+		return nil, err
+	}
+	var out map[string]any
+	if err := jsonDecode(raw, &out); err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func strDefault(s string) string {
@@ -333,6 +443,7 @@ func isZipLike(path string) bool {
 	return strings.HasSuffix(lower, ".zip")
 }
 
-// errMissingDir is returned by Parse when a directory-only domain
-// is fed a non-directory.
-var errMissingDir = errors.New("resource: expected a directory")
+// jsonEncode / jsonDecode are tiny aliases so the struct-to-map
+// round-trip helpers stay consistent in one place.
+func jsonEncode(v any) ([]byte, error) { return json.Marshal(v) }
+func jsonDecode(b []byte, v any) error { return json.Unmarshal(b, v) }
