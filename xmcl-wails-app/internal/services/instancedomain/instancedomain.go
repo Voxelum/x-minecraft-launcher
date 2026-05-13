@@ -35,6 +35,7 @@ import (
 	"github.com/voxelum/xmcl/wails/internal/market"
 	"github.com/voxelum/xmcl/wails/internal/network"
 	"github.com/voxelum/xmcl/wails/internal/parsers/resourcepack"
+	"github.com/voxelum/xmcl/wails/internal/resource"
 )
 
 // ParseResult bundles the per-file metadata + icon URIs produced by a
@@ -68,11 +69,12 @@ func PNGToDataURI(b []byte) string {
 
 // Service is a re-usable backing for the per-domain services.
 type Service struct {
-	Host       *host.Host
-	States     *bridge.StateManager
-	Subdir     string     // e.g. "resourcepacks" / "shaderpacks"
-	StateScheme string    // e.g. "instance-resourcepacks"
-	Parse      MetaParser // optional per-file parser
+	Host        *host.Host
+	States      *bridge.StateManager
+	Subdir      string     // e.g. "resourcepacks" / "shaderpacks"
+	StateScheme string     // e.g. "instance-resourcepacks"
+	Parse       MetaParser // optional per-file parser
+	Domain      resource.Domain // overrides Subdir → resource.Domain when set
 
 	mu      sync.Mutex
 	watches map[string]*watch
@@ -294,9 +296,84 @@ func (s *Service) populateWatch(instancePath string, w *watch) error {
 }
 
 // scan walks the subdir and produces a Resource map per file. Hidden
-// files (`.foo`) are skipped.
+// files (`.foo`) are skipped. Routes through the SQLite resource
+// manager when one is registered (cached snapshot fast-path);
+// otherwise live-stats every file.
 func (s *Service) scan(instancePath string) ([]any, error) {
 	dir := filepath.Join(instancePath, s.Subdir)
+	if mgr := s.manager(); mgr != nil {
+		return s.scanWithManager(mgr, dir)
+	}
+	return s.scanLive(dir)
+}
+
+// manager returns the registered resource.Manager, or nil when none
+// is wired (tests / dev builds without SQLite).
+func (s *Service) manager() *resource.Manager {
+	if s.Host == nil || s.Host.Registry == nil {
+		return nil
+	}
+	mgr, _ := host.Get[*resource.Manager](s.Host.Registry)
+	return mgr
+}
+
+// scanWithManager drives the catalogue. Each FileEntry is converted
+// into the wire `Resource` map. Cached metadata + icons + uris are
+// merged in directly so a re-scan after the first launch is just
+// stat() + a SQLite read.
+func (s *Service) scanWithManager(mgr *resource.Manager, dir string) ([]any, error) {
+	dom := s.Domain
+	if dom == "" {
+		dom = resource.Domain(s.Subdir)
+	}
+	entries, err := mgr.Scan(context.Background(), dir, dom)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]any, 0, len(entries))
+	for _, e := range entries {
+		res := contract.Resource{
+			Version:  3,
+			Name:     baseName(e.FileName),
+			Hash:     e.Snapshot.SHA1,
+			Path:     e.Path,
+			FileName: e.FileName,
+			Size:     float64(e.Size),
+			Mtime:    float64(e.Mtime),
+			Atime:    float64(e.Atime),
+			Ctime:    float64(e.Ctime),
+			Ino:      float64(e.Ino),
+		}
+		raw, err := json.Marshal(&res)
+		if err != nil {
+			continue
+		}
+		var entryMap map[string]any
+		if err := json.Unmarshal(raw, &entryMap); err != nil {
+			continue
+		}
+		if e.Stored != nil {
+			if e.Stored.Name != "" {
+				entryMap["name"] = e.Stored.Name
+			}
+			if len(e.Stored.Metadata) > 0 {
+				entryMap["metadata"] = e.Stored.Metadata
+			}
+			if len(e.Stored.Icons) > 0 {
+				entryMap["icons"] = e.Stored.Icons
+			}
+			if len(e.Stored.URIs) > 0 {
+				entryMap["uris"] = e.Stored.URIs
+			}
+		}
+		out = append(out, entryMap)
+	}
+	return out, nil
+}
+
+// scanLive is the fallback path used when the resource catalogue
+// isn't wired. Re-stats / re-hashes every file on every call.
+func (s *Service) scanLive(dir string) ([]any, error) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {

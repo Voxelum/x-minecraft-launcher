@@ -1162,6 +1162,11 @@ type ResourceMetadata struct {
 	Name *string `json:"name,omitempty"`
 	Forge *ForgeModCommonMetadata `json:"forge,omitempty"`
 	Neoforge *NeoforgeMetadata `json:"neoforge,omitempty"`
+	Fabric any `json:"fabric,omitempty"`
+	Liteloader *LiteloaderModMetadata `json:"liteloader,omitempty"`
+	Quilt *QuiltModMetadata `json:"quilt,omitempty"`
+	Resourcepack *Pack `json:"resourcepack,omitempty"`
+	Shaderpack map[string]any `json:"shaderpack,omitempty"`
 	Instance *ModpackInstallProfile `json:"instance,omitempty"`
 	Github *ResourceSourceGit `json:"github,omitempty"`
 	Curseforge *ResourceSourceCurseforge `json:"curseforge,omitempty"`
@@ -1295,6 +1300,35 @@ type NeoforgeMetadata struct {
 	ClientSideOnly bool `json:"clientSideOnly"`
 }
 
+// LiteloaderModMetadata mirrors xmcl-runtime-api LiteloaderModMetadata.
+type LiteloaderModMetadata struct {
+	Mcversion string `json:"mcversion"`
+	Name string `json:"name"`
+	Revision float64 `json:"revision"`
+	Author *string `json:"author,omitempty"`
+	Version *string `json:"version,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Url *string `json:"url,omitempty"`
+	TweakClass *string `json:"tweakClass,omitempty"`
+	DependsOn []string `json:"dependsOn,omitempty"`
+	InjectAt *string `json:"injectAt,omitempty"`
+	RequiredAPIs []string `json:"requiredAPIs,omitempty"`
+	ClassTransformerClasses []string `json:"classTransformerClasses,omitempty"`
+}
+
+// QuiltModMetadata mirrors xmcl-runtime-api QuiltModMetadata.
+type QuiltModMetadata struct {
+	Schema_version float64 `json:"schema_version"`
+	Quilt_loader QuiltLoaderData `json:"quilt_loader"`
+	Mixin any `json:"mixin,omitempty"`
+}
+
+// Pack mirrors xmcl-runtime-api Pack.
+type Pack struct {
+	Pack_format float64 `json:"pack_format"`
+	Description any `json:"description"`
+}
+
 // ModpackInstallProfile mirrors xmcl-runtime-api ModpackInstallProfile.
 type ModpackInstallProfile struct {
 	Instance map[string]any `json:"instance"`
@@ -1386,6 +1420,34 @@ type ForgeModAnnotationData struct {
 	ModLanguageAdapter string `json:"modLanguageAdapter"`
 	ClientSideOnly bool `json:"clientSideOnly"`
 	ServerSideOnly bool `json:"serverSideOnly"`
+}
+
+// QuiltLoaderData mirrors xmcl-runtime-api QuiltLoaderData.
+type QuiltLoaderData struct {
+	Group string `json:"group"`
+	Id string `json:"id"`
+	Provides []string `json:"provides,omitempty"`
+	Version string `json:"version"`
+	Metadata map[string]any `json:"metadata,omitempty"`
+	Entrypoints map[string]string `json:"entrypoints,omitempty"`
+	Plugins []string `json:"plugins,omitempty"`
+	Jars []string `json:"jars,omitempty"`
+	Language_adapters map[string]string `json:"language_adapters,omitempty"`
+	Depends []DependencyObject `json:"depends,omitempty"`
+	Breaks []DependencyObject `json:"breaks,omitempty"`
+	Load_type *string `json:"load_type,omitempty"`
+	Repositories []string `json:"repositories,omitempty"`
+	Intermediate_mappings *string `json:"intermediate_mappings,omitempty"`
+	Minecraft map[string]any `json:"minecraft,omitempty"`
+}
+
+// DependencyObject mirrors xmcl-runtime-api DependencyObject.
+type DependencyObject struct {
+	Id string `json:"id"`
+	Versions any `json:"versions,omitempty"`
+	Reason *string `json:"reason,omitempty"`
+	Optional *bool `json:"optional,omitempty"`
+	Unless *DependencyObject `json:"unless,omitempty"`
 }
 
 // Settings mirrors xmcl-runtime-api Settings.

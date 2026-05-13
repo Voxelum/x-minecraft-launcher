@@ -12,6 +12,7 @@ import (
 	"github.com/voxelum/xmcl/wails/internal/contract"
 	"github.com/voxelum/xmcl/wails/internal/host"
 	"github.com/voxelum/xmcl/wails/internal/mediaserver"
+	"github.com/voxelum/xmcl/wails/internal/resource"
 	"github.com/voxelum/xmcl/wails/internal/services"
 	"github.com/voxelum/xmcl/wails/internal/window"
 )
@@ -23,6 +24,21 @@ func main() {
 	h := host.New()
 
 	b := bridge.New(h)
+
+	// Open the SQLite-backed resource catalogue and stash it into the
+	// host registry so per-domain services (instancemods, instancedomain,
+	// instancesaves, …) can pull it via `host.Get[*resource.Manager]`.
+	// Failure here is non-fatal — services degrade to live-scanning the
+	// disk on every Watch call (the legacy fallback).
+	if db, err := h.SQLite.Open("resources"); err == nil {
+		if mgr, err := resource.Open(db, h.Logger); err == nil {
+			host.Set(h.Registry, mgr)
+		} else {
+			h.Logger.Warn("resource: open manager failed", "err", err)
+		}
+	} else {
+		h.Logger.Warn("resource: open db failed", "err", err)
+	}
 
 	// Install "not implemented" adapters for every service first so the
 	// renderer never sees an "unknown service" error. RegisterAll then

@@ -601,6 +601,32 @@ ${registers}
 // Struct emission
 // =============================================================================
 
+// resolveComputedPropName tries to evaluate a TS computed property
+// key (e.g. `[ResourceType.Fabric]`) to its string-literal constant
+// value. Returns the resolved string, or undefined if the expression
+// can't be evaluated statically.
+function resolveComputedPropName(prop: PropertySignature | PropertyDeclaration): string | undefined {
+  const nameNode = prop.getNameNode()
+  if (!nameNode) return undefined
+  if (nameNode.getKind() !== SyntaxKind.ComputedPropertyName) return undefined
+  const expr = (nameNode as any).getExpression?.() as Node | undefined
+  if (!expr) return undefined
+  // The type of the computed expression should resolve to a string
+  // literal type (e.g. "fabric") because TS enums backed by string
+  // literals propagate that literal through PropertyAccessExpression.
+  const t = expr.getType()
+  if (t.isStringLiteral()) {
+    const v = t.getLiteralValue()
+    if (typeof v === 'string') return v
+  }
+  // String-literal expressions like `["fabric"]` are also handled
+  // via getText after stripping quotes.
+  if (expr.getKind() === SyntaxKind.StringLiteral) {
+    return expr.getText().slice(1, -1)
+  }
+  return undefined
+}
+
 function emitStruct(name: string, decl: InterfaceDeclaration | ClassDeclaration, mapper: TypeMapper): string {
   const lines: string[] = [`// ${name} mirrors xmcl-runtime-api ${name}.`]
   lines.push(`type ${name} struct {`)
@@ -673,14 +699,19 @@ function emitStruct(name: string, decl: InterfaceDeclaration | ClassDeclaration,
   // Stable, well-known field names so callers can navigate the
   // generated structs from non-generated code without surprises.
   const knownFields: string[] = []
-  for (const [propName, prop] of propsByName) {
-    // Skip TS computed-property keys like `[ResourceType.Fabric]` — they
-    // would emit invalid Go field names. Lossy but rare; the field name
-    // mostly carries enum-keyed metadata that isn't queried by name on
-    // the renderer side.
-    if (propName.startsWith('[')) {
-      mapper.warnings.push(`Skipped computed key in ${name}: ${propName}`)
-      continue
+  for (const [rawName, prop] of propsByName) {
+    // Resolve TS computed-property keys (e.g. `[ResourceType.Fabric]`)
+    // to their string-literal value via the type-checker. Falls back
+    // to the raw name when the expression isn't a constant we can
+    // evaluate.
+    let propName = rawName
+    if (rawName.startsWith('[')) {
+      const resolved = resolveComputedPropName(prop)
+      if (!resolved) {
+        mapper.warnings.push(`Skipped computed key in ${name}: ${rawName}`)
+        continue
+      }
+      propName = resolved
     }
     // Skip empty / non-identifier names defensively.
     if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(propName)) {

@@ -30,6 +30,7 @@ import (
 	"github.com/voxelum/xmcl/wails/internal/market"
 	"github.com/voxelum/xmcl/wails/internal/network"
 	"github.com/voxelum/xmcl/wails/internal/parsers/modparser"
+	"github.com/voxelum/xmcl/wails/internal/resource"
 )
 
 // modsSubdir is the conventional Minecraft mods folder under each
@@ -358,11 +359,79 @@ func (s *Service) InstallToServerInstance(_ context.Context, options contract.Up
 	})
 }
 
-// SearchInstalled is delegated to the ResourceService (deferred);
-// G6 returns an empty slice so the renderer's search input doesn't
-// crash.
-func (s *Service) SearchInstalled(_ context.Context, _ string) ([]contract.Resource, error) {
-	return []contract.Resource{}, nil
+// SearchInstalled queries the SQLite resource catalogue for mods
+// whose name contains `keyword` (case-insensitive). When the
+// catalogue isn't wired (no SQLite, dev mode), returns an empty
+// slice so the renderer's search input doesn't crash.
+func (s *Service) SearchInstalled(_ context.Context, keyword string) ([]contract.Resource, error) {
+	mgr := s.manager()
+	if mgr == nil {
+		return []contract.Resource{}, nil
+	}
+	hits, err := mgr.SearchByName(keyword, resource.DomainMods)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]contract.Resource, 0, len(hits))
+	for _, h := range hits {
+		out = append(out, contract.Resource{
+			Version:  3,
+			Name:     h.Name,
+			Hash:     h.SHA1,
+			Icons:    h.Icons,
+			Metadata: storedMetadataToContract(h.Metadata),
+		})
+	}
+	return out, nil
+}
+
+// storedMetadataToContract collapses a free-form metadata map into
+// the typed contract.ResourceMetadata where possible. Unknown keys
+// are dropped (they live in the SQLite blob if a caller needs the
+// raw shape).
+func storedMetadataToContract(in map[string]any) contract.ResourceMetadata {
+	out := contract.ResourceMetadata{}
+	if in == nil {
+		return out
+	}
+	if v, ok := in["forge"]; ok {
+		var fmm contract.ForgeModCommonMetadata
+		if jsonRoundtrip(v, &fmm) == nil {
+			out.Forge = &fmm
+		}
+	}
+	if v, ok := in["neoforge"]; ok {
+		var nmm contract.NeoforgeMetadata
+		if jsonRoundtrip(v, &nmm) == nil {
+			out.Neoforge = &nmm
+		}
+	}
+	if v, ok := in["fabric"]; ok {
+		out.Fabric = v
+	}
+	if v, ok := in["quilt"]; ok {
+		var qmm contract.QuiltModMetadata
+		if jsonRoundtrip(v, &qmm) == nil {
+			out.Quilt = &qmm
+		}
+	}
+	if v, ok := in["resourcepack"]; ok {
+		var p contract.Pack
+		if jsonRoundtrip(v, &p) == nil {
+			out.Resourcepack = &p
+		}
+	}
+	return out
+}
+
+// jsonRoundtrip marshals `v` then unmarshals into `out`. Returns
+// nil on success or the first error encountered.
+func jsonRoundtrip(v, out any) error {
+	raw, err := jsonMarshal(v)
+	if err != nil {
+		return err
+	}
+	return jsonUnmarshal(raw, out)
 }
 
 // ============================================================
@@ -399,11 +468,92 @@ func (s *Service) populateWatch(instancePath string, w *watch) error {
 }
 
 // scan walks `<instancePath>/mods/` and produces a Resource per file
-// (jar or jar.disabled). Each resource carries metadata extracted via
-// the modparser package; non-jar / unparseable files get a bare
-// Resource with no Forge/Fabric blocks set.
+// (jar or jar.disabled). Uses the SQLite-backed `resource.Manager`
+// when one is registered (cached snapshot fast-path), otherwise
+// falls back to a live scan via the local jar parsers.
 func (s *Service) scan(instancePath string) ([]any, error) {
 	dir := filepath.Join(instancePath, modsSubdir)
+	if mgr := s.manager(); mgr != nil {
+		return s.scanWithManager(mgr, dir)
+	}
+	return s.scanLive(dir)
+}
+
+// manager returns the registered resource.Manager, or nil when one
+// hasn't been wired (tests / dev builds without SQLite).
+func (s *Service) manager() *resource.Manager {
+	if s.host == nil || s.host.Registry == nil {
+		return nil
+	}
+	mgr, _ := host.Get[*resource.Manager](s.host.Registry)
+	return mgr
+}
+
+// scanWithManager drives the catalogue and converts each FileEntry
+// into the wire map the renderer expects.
+func (s *Service) scanWithManager(mgr *resource.Manager, dir string) ([]any, error) {
+	entries, err := mgr.Scan(context.Background(), dir, resource.DomainMods)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]any, 0, len(entries))
+	for _, e := range entries {
+		out = append(out, fileEntryToWire(e))
+	}
+	return out, nil
+}
+
+// fileEntryToWire converts a resource.FileEntry into the
+// contract.Resource map shape the SharedState ships.
+func fileEntryToWire(e resource.FileEntry) map[string]any {
+	name := strings.TrimSuffix(strings.TrimSuffix(e.FileName, ".disabled"), ".jar")
+	res := contract.Resource{
+		Version:  3,
+		Name:     name,
+		Hash:     e.Snapshot.SHA1,
+		Path:     e.Path,
+		FileName: e.FileName,
+		Size:     float64(e.Size),
+		Mtime:    float64(e.Mtime),
+		Atime:    float64(e.Atime),
+		Ctime:    float64(e.Ctime),
+		Ino:      float64(e.Ino),
+	}
+	m, err := structToMap(&res)
+	if err != nil {
+		m = map[string]any{}
+	}
+	if e.Stored != nil {
+		if e.Stored.Name != "" {
+			m["name"] = e.Stored.Name
+		}
+		if len(e.Stored.Metadata) > 0 {
+			md, _ := m["metadata"].(map[string]any)
+			if md == nil {
+				md = map[string]any{}
+			}
+			for k, v := range e.Stored.Metadata {
+				md[k] = v
+			}
+			m["metadata"] = md
+		}
+		if len(e.Stored.Icons) > 0 {
+			m["icons"] = e.Stored.Icons
+		}
+		if len(e.Stored.URIs) > 0 {
+			m["uris"] = e.Stored.URIs
+		}
+		if len(e.Stored.Tags) > 0 {
+			m["tags"] = e.Stored.Tags
+		}
+	}
+	return m
+}
+
+// scanLive is the legacy path used when the resource catalogue
+// isn't available. Re-hashes and re-parses every file on every call
+// — noticeably slower for large mod folders but functional.
+func (s *Service) scanLive(dir string) ([]any, error) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {

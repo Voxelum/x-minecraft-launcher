@@ -301,31 +301,32 @@ Modrinth/CurseForge, view installed resources.
       against the existing `mock/saves/sample-map/level.dat` and
       `mock/servers.dat` fixtures. Anvil/region chunk parsing is
       out of scope (no current renderer consumer).
-- [ ] ~~`xmcl-runtime/resource/`~~ — **still deferred.** The
-      SQLite-backed resource catalog is the largest single service
-      in the codebase; the renderer's filesystem-fallback path
-      (now wired through every domain service above) keeps the
-      mods / resourcepacks / shaderpacks / saves / servers tabs
-      functional without it. Each per-domain service walks the
-      live `<instance>/<subdir>/` and emits a `ResourceState`
-      with full per-file metadata: forge / neoforge / fabric /
-      quilt parsed off `META-INF/{mods,neoforge.mods}.toml` +
-      `MANIFEST.MF` + `mcmod.info` + `fabric.mod.json` +
-      `quilt.mod.json`; resource packs surface `pack.mcmeta`
-      (with `pack_format`) and the in-jar `pack.png` icon.
-      Mod / pack icons embed as `data:image/png;base64,…` URIs so
-      the renderer's existing `resource.icons[0]` consumers light
-      up without the image-store HTTP handler that lands in G8.
-      `ShowDirectory` (per-domain) and `BaseService.OpenDirectory`
-      / `ShowItemInDirectory` shell out via
-      `host.OpenInFileManager` /
-      `host.SelectInFileManager` (`explorer.exe` /
-      `open` / `xdg-open`). The two surfaces still pinned to a
-      real ResourceService are: `installFromMarket` (returns a
-      not-implemented error pending MarketService) and
-      `searchInstalled` (returns `[]` — fine because the
-      renderer's per-instance Mods / ResourcePacks / ShaderPacks
-      tabs read directly off the watch state).
+- [x] `xmcl-runtime/resource/` → `internal/resource/`. SQLite-backed
+      catalogue mirroring `packages/resource/schema.ts` v2.2:
+      `resources(sha1 PK, name, sha256, forge|fabric|liteloader|
+      quilt|neoforge|resourcepack|save|shaderpack|instance|github|
+      curseforge|modrinth|gitlab|mmcmodpack)`, `uris(sha1, uri)`,
+      `icons(sha1, icon)`, `tags(sha1, tag)`, and the snapshot
+      fast-path `snapshots(domainedPath PK, ino, mtime, fileType,
+      sha1)`. `Manager.Scan(dir, domain)` walks the on-disk
+      directory and skips re-hashing/re-parsing for every entry
+      whose `(ino, mtime)` matches the catalogue — a re-open of an
+      instance with N mods drops to O(N stat()) + a single SELECT.
+      Cold-path runs sha1 + the loader-specific parser
+      (modparser / resourcepack) under a `golang.org/x/sync/semaphore`
+      cap of 8, then upserts snapshot + resources + uris + icons
+      atomically. `SearchByName(keyword, domain)` powers
+      `InstanceModsService.searchInstalled`. `HashesByURIs` lets
+      installers turn an upstream Modrinth/CurseForge URL into the
+      on-disk hash without re-hashing. CurseForge `Murmur2`
+      fingerprint (whitespace-stripped) ported to
+      `resource.Fingerprint(path)`. `InstanceModsService` and
+      `instancedomain.Service` (used by `InstanceResourcePacksService`
+      / `InstanceShaderPacksService` / `InstanceResourcesService`)
+      consult the manager from `host.Registry`; when no SQLite is
+      wired (e.g. unit tests) they fall back to live re-scan +
+      re-parse. 4 manager tests + 4 mod-parser tests + 5 in-place
+      domain-service tests still green.
 
 ---
 
@@ -395,8 +396,17 @@ the Wails build.
       processor). Every loader installer now honours the
       `MirrorPreference` so BMCL kicks in transparently for the
       installer jar, the loader meta endpoint, and every library /
-      asset the install pipeline pulls. Optifine + LabyMod still
-      stubbed.
+      asset the install pipeline pulls. **Optifine + LabyMod
+      now ported too** — `internal/installer/optifine`
+      (BMCL-redirect download → generated version JSON →
+      `java -cp <installer> optifine.Patcher` to produce the
+      patched library jar; `InstallAsMod` variant skips the
+      patcher and hard-links the installer jar into
+      `<instance>/mods/`) and `internal/installer/labymod`
+      (LabyMod 4 manifest → per-env `libraries.json` +
+      `customManifestUrl` merged into a Mojang-style version
+      JSON, then asset cache populated under
+      `labymod-neo/assets/`).
 - [x] `packages/core/` (`@xmcl/core`) → `internal/parsers/core/`.
       Version JSON resolution + inheritance walk, classpath + JVM
       arg assembly (`GenerateArguments`), library rule evaluation,
@@ -417,10 +427,21 @@ the Wails build.
       / `InstallAssets` / `InstallAssetsForVersion` / `InstallDependencies`
       / `Reinstall` go through the vanilla installer. Loader installs
       (`InstallForge`, `InstallNeoForged`, `InstallFabric`,
-      `InstallQuilt`) wired through the per-loader installer
-      packages; `InstallForge` / `InstallNeoForged` pick a JDK from
-      the persisted `javas.json` for post-processor execution.
-      Optifine + LabyMod still stubbed.
+      `InstallQuilt`, `InstallOptifine`,
+      `InstallOptifineAsMod`, `InstallLabyModVersion`) wired
+      through the per-loader installer packages;
+      `InstallForge` / `InstallNeoForged` / `InstallOptifine`
+      pick a JDK from the persisted `javas.json` for the
+      post-processor / patcher execution.
+      `InstallByProfile` decodes the renderer-supplied
+      Forge/NeoForge `install_profile.json`, runs
+      `profile.InstallLibraries` then `profile.Resolve` +
+      `profile.Run` to execute every post-processor.
+      `Diagnose` walks `core.CheckVersion` /
+      `core.CheckLibraries` / asset-index existence and
+      surfaces the renderer-side `InstallIssue` so the
+      "re-install to fix" prompt can fire. 7 test cases
+      across the optifine + labymod packages.
 - [x] `xmcl-runtime/version/` → `internal/services/version/`. Real
       scan that produces full `VersionHeader` rows (loader versions
       via `core.ExtractLoaders`); `RefreshVersions` /
