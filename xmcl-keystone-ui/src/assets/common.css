@@ -9,12 +9,20 @@ p {
 }
 
 .moveable {
+    /* Electron / Chromium native draggable region. */
     -webkit-app-region: drag;
+    /* Wails v3 watches for this custom property at mousedown time
+       (see internal/runtime/desktop/@wailsio/runtime/src/drag.ts) and
+       calls the OS WindowDrag API. WebView2 does not honour
+       `-webkit-app-region`, so without this the titlebar isn't
+       draggable in the Wails build. */
+    --wails-draggable: drag;
     user-select: none;
 }
 
 .non-moveable {
     -webkit-app-region: no-drag;
+    --wails-draggable: no-drag;
 }
 
 .absolute-centered {

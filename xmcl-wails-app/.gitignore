@@ -1,0 +1,10 @@
+bin/
+build/bin/
+build/Windows/installer/tmp/
+build/darwin/
+build/linux/
+node_modules/
+frontend/dist/
+*.exe
+*.app
+.DS_Store

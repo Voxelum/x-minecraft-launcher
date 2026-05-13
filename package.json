@@ -18,6 +18,7 @@
         "check": "pnpm run --prefix=xmcl-runtime-api check && pnpm run --prefix=xmcl-runtime check && pnpm run --prefix=xmcl-electron-app check && pnpm run --prefix=xmcl-keystone-ui check",
         "dev:main": "pnpm run --prefix=xmcl-electron-app dev",
         "dev:renderer": "pnpm run --prefix=xmcl-keystone-ui dev",
+        "dev:wails": "tsx scripts/dev-wails.ts",
         "lint": "oxlint -c ./.oxlintrc.json packages && pnpm run --prefix=xmcl-keystone-ui lint && pnpm run --prefix=xmcl-runtime lint && pnpm run --prefix=xmcl-runtime-api lint && pnpm run --prefix=xmcl-electron-app lint",
         "lint:fix": "oxlint -c ./.oxlintrc.json packages --fix && pnpm run --prefix=xmcl-runtime-api lint:fix && pnpm run --prefix=xmcl-runtime lint:fix && pnpm run --prefix=xmcl-electron-app lint:fix && pnpm run --prefix=xmcl-keystone-ui lint:fix",
         "format": "oxfmt -c ./.oxfmtrc.json packages --write",
@@ -27,13 +28,15 @@
         "test:e2e:scratch": "pnpm --prefix=e2e test:scratch",
         "e2e:install": "pnpm --dir=e2e install --ignore-workspace",
         "build:tutorial": "pnpm --prefix=e2e tutorial",
-        "gen:testids": "tsx scripts/gen-testids.ts"
+        "gen:testids": "tsx scripts/gen-testids.ts",
+        "gen:go": "tsx scripts/gen-go-contract.ts"
     },
     "devDependencies": {
         "@types/node": "^20.19.0",
         "@vitest/coverage-v8": "^4.0.17",
         "oxfmt": "^0.48.0",
         "oxlint": "^1.63.0",
+        "ts-morph": "^28.0.0",
         "tsx": "^4.21.0",
         "typedoc": "^0.28.15",
         "typescript": "^5.9.3",

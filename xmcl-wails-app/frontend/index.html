@@ -1,0 +1,21 @@
+<!doctype html>
+<!--
+  Placeholder embedded fallback for the Wails AssetServer.
+
+  In normal use the renderer is supplied via either:
+    - FRONTEND_DEVSERVER_URL (vite dev server, used by `pnpm dev:wails`); or
+    - XMCL_RENDERER_DIR=../xmcl-keystone-ui/dist (built renderer).
+
+  This file exists only so `//go:embed all:frontend` in main.go has at
+  least one embeddable file to satisfy the compiler when the launcher
+  is built without a bundled renderer.
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>XMCL (Wails)</title>
+  </head>
+  <body>
+    <p>No renderer is bundled in this build. Set <code>XMCL_RENDERER_DIR</code> or <code>FRONTEND_DEVSERVER_URL</code>.</p>
+  </body>
+</html>

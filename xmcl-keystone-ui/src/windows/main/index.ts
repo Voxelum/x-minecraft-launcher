@@ -1,4 +1,9 @@
 /* eslint-disable vue/one-component-per-file */
+// MUST be first: when running under Wails, this installs a
+// `globalThis.serviceChannels` shim before any other module touches it.
+// No-op when the Electron preload already populated `serviceChannels`.
+import '@/wails-bridge/install'
+
 import TextComponent from '@/components/TextComponent'
 import { kServiceFactory, useServiceFactory } from '@/composables'
 import { kDialogModel, useDialogModel } from '@/composables/dialog'
