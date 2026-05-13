@@ -500,10 +500,141 @@ func normaliseForgeMap(out map[string]any) {
 		}
 		out["modsToml"] = arr
 	}
+
+	// Promote canonical fields the renderer's `applyForge` reads
+	// off the top of the metadata object. Mirrors
+	// `packages/resource/mod.ts` `normalizeForgeModMetadata`.
+	promoteForgeCommonFields(out)
+}
+
+// promoteForgeCommonFields mirrors the TS reference's
+// `normalizeForgeModMetadata`: pulls modid / name / version /
+// description / authors / logoFile / acceptMinecraft / acceptForge
+// to the top of the blob using the first available source
+// (modsToml[0] → mcmodInfo[0] → modAnnotations[0] → manifestMetadata).
+//
+// Defaults every missing field to its zero value (`""` for strings,
+// `[]` for `authors`) so the renderer's `applyForge` reads always
+// resolve.
+func promoteForgeCommonFields(out map[string]any) {
+	defaults := map[string]any{
+		"modid":           "",
+		"name":            "",
+		"version":         "",
+		"description":     "",
+		"logoFile":        "",
+		"acceptMinecraft": "",
+		"acceptForge":     "",
+		"authors":         []any{},
+	}
+	for k, v := range defaults {
+		if cur, exists := out[k]; !exists || cur == nil {
+			out[k] = v
+			continue
+		}
+		// Replace empty strings with the typed zero so JSON.null
+		// can't slip past.
+		if k == "authors" {
+			if _, ok := out[k].([]any); !ok {
+				if s, ok := out[k].([]string); ok {
+					arr := make([]any, len(s))
+					for i, x := range s {
+						arr[i] = x
+					}
+					out[k] = arr
+				} else {
+					out[k] = []any{}
+				}
+			}
+		}
+	}
+
+	// Try the first modsToml entry.
+	if arr, ok := out["modsToml"].([]any); ok && len(arr) > 0 {
+		if entry, ok := arr[0].(map[string]any); ok {
+			setIfEmpty(out, "modid", entry["modid"])
+			setIfEmpty(out, "name", entry["displayName"])
+			setIfEmpty(out, "version", entry["version"])
+			setIfEmpty(out, "description", entry["description"])
+			setIfEmpty(out, "logoFile", entry["logoFile"])
+			// `authors` in mods.toml is a single string; wrap it.
+			if cur, _ := out["authors"].([]any); len(cur) == 0 {
+				if a, ok := entry["authors"].(string); ok && a != "" {
+					out["authors"] = []any{a}
+				}
+			}
+			// Pull acceptMinecraft / acceptForge from dependencies.
+			if deps, ok := entry["dependencies"].([]any); ok {
+				for _, raw := range deps {
+					if d, ok := raw.(map[string]any); ok {
+						mid, _ := d["modId"].(string)
+						vr, _ := d["versionRange"].(string)
+						if mid == "minecraft" {
+							setIfEmpty(out, "acceptMinecraft", vr)
+						} else if mid == "forge" {
+							setIfEmpty(out, "acceptForge", vr)
+						}
+					}
+				}
+			}
+		}
+	}
+	// Fallback: mcmodInfo[0]
+	if arr, ok := out["mcmodInfo"].([]any); ok && len(arr) > 0 {
+		if entry, ok := arr[0].(map[string]any); ok {
+			setIfEmpty(out, "modid", entry["modid"])
+			setIfEmpty(out, "name", entry["name"])
+			setIfEmpty(out, "version", entry["version"])
+			setIfEmpty(out, "description", entry["description"])
+			setIfEmpty(out, "logoFile", entry["logoFile"])
+			if cur, _ := out["authors"].([]any); len(cur) == 0 {
+				if al, ok := entry["authorList"].([]any); ok && len(al) > 0 {
+					out["authors"] = al
+				}
+			}
+			if cur, _ := out["acceptMinecraft"].(string); cur == "" {
+				if mc, ok := entry["mcversion"].(string); ok && mc != "" {
+					out["acceptMinecraft"] = "[" + mc + "]"
+				}
+			}
+		}
+	}
+	// Fallback: manifestMetadata
+	if mm, ok := out["manifestMetadata"].(map[string]any); ok && mm != nil {
+		setIfEmpty(out, "modid", mm["modid"])
+		setIfEmpty(out, "name", mm["name"])
+		setIfEmpty(out, "version", mm["version"])
+		setIfEmpty(out, "description", mm["description"])
+		if cur, _ := out["authors"].([]any); len(cur) == 0 {
+			if al, ok := mm["authors"].([]any); ok {
+				out["authors"] = al
+			}
+		}
+	}
+}
+
+// setIfEmpty assigns `v` to out[key] when the existing value is
+// missing, nil, or the empty string. No-op on every other shape.
+func setIfEmpty(out map[string]any, key string, v any) {
+	if v == nil {
+		return
+	}
+	if s, ok := v.(string); ok && s == "" {
+		return
+	}
+	cur, exists := out[key]
+	if !exists || cur == nil {
+		out[key] = v
+		return
+	}
+	if s, ok := cur.(string); ok && s == "" {
+		out[key] = v
+	}
 }
 
 // normaliseNeoMap fills children + dependencies + provides on a
-// stored NeoForge blob.
+// stored NeoForge blob, plus the canonical fields the renderer's
+// `applyNeoforge` reads off the top of the metadata object.
 func normaliseNeoMap(out map[string]any) {
 	if _, ok := out["children"].([]any); !ok {
 		out["children"] = []any{}
@@ -527,5 +658,16 @@ func normaliseNeoMap(out map[string]any) {
 			}
 		}
 		out["children"] = arr
+	}
+	// `applyNeoforge` reads modid / displayName / version / description
+	// / authors directly. Default each to its zero so undefined never
+	// propagates into the renderer's `m.authors[0]`.
+	for _, k := range []string{"modid", "displayName", "version", "description"} {
+		if cur, ok := out[k]; !ok || cur == nil {
+			out[k] = ""
+		}
+	}
+	if cur, ok := out["authors"]; !ok || cur == nil {
+		out["authors"] = ""
 	}
 }
