@@ -535,6 +535,10 @@ func fileEntryToWire(e resource.FileEntry) map[string]any {
 			for k, v := range e.Stored.Metadata {
 				md[k] = v
 			}
+			// Normalise so any catalogue blob written by an older
+			// build still ships renderer-iterable arrays (children,
+			// modsToml, dependencies, …).
+			resource.NormaliseMetadata(md)
 			m["metadata"] = md
 		}
 		if len(e.Stored.Icons) > 0 {

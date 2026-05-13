@@ -357,7 +357,9 @@ func (s *Service) scanWithManager(mgr *resource.Manager, dir string) ([]any, err
 				entryMap["name"] = e.Stored.Name
 			}
 			if len(e.Stored.Metadata) > 0 {
-				entryMap["metadata"] = e.Stored.Metadata
+				// Normalise so any catalogue blob written by an
+				// older build still ships renderer-iterable arrays.
+				entryMap["metadata"] = resource.NormaliseMetadata(e.Stored.Metadata)
 			}
 			if len(e.Stored.Icons) > 0 {
 				entryMap["icons"] = e.Stored.Icons

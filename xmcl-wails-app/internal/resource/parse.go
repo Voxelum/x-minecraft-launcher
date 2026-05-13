@@ -447,3 +447,85 @@ func isZipLike(path string) bool {
 // round-trip helpers stay consistent in one place.
 func jsonEncode(v any) ([]byte, error) { return json.Marshal(v) }
 func jsonDecode(b []byte, v any) error { return json.Unmarshal(b, v) }
+
+// NormaliseMetadata patches a (possibly stale) metadata blob loaded
+// from the SQLite catalogue so the renderer's iteration helpers
+// (`for (const x of meta.children)` etc.) never blow up on a nil /
+// missing field.
+//
+// Idempotent and safe to call on freshly-parsed metadata too — used
+// by the per-domain services on every wire emission so the catalogue
+// can carry whatever shape it likes without coordinating versions
+// with the renderer.
+func NormaliseMetadata(in map[string]any) map[string]any {
+	if in == nil {
+		return nil
+	}
+	if forge, ok := in["forge"].(map[string]any); ok {
+		normaliseForgeMap(forge)
+	}
+	if neo, ok := in["neoforge"].(map[string]any); ok {
+		normaliseNeoMap(neo)
+	}
+	return in
+}
+
+// normaliseForgeMap fills in the iterable fields the renderer
+// touches without nil checks (mcmodInfo, modsToml, modAnnotations,
+// manifest, plus per-modsToml dependencies / provides).
+func normaliseForgeMap(out map[string]any) {
+	if _, ok := out["mcmodInfo"].([]any); !ok {
+		out["mcmodInfo"] = []any{}
+	}
+	if _, ok := out["modsToml"].([]any); !ok {
+		out["modsToml"] = []any{}
+	}
+	if _, ok := out["modAnnotations"].([]any); !ok {
+		out["modAnnotations"] = []any{}
+	}
+	if _, ok := out["manifest"].(map[string]any); !ok {
+		out["manifest"] = map[string]any{}
+	}
+	if arr, ok := out["modsToml"].([]any); ok {
+		for i, raw := range arr {
+			if m, ok := raw.(map[string]any); ok {
+				if _, ok := m["dependencies"].([]any); !ok {
+					m["dependencies"] = []any{}
+				}
+				if _, ok := m["provides"].([]any); !ok {
+					m["provides"] = []any{}
+				}
+				arr[i] = m
+			}
+		}
+		out["modsToml"] = arr
+	}
+}
+
+// normaliseNeoMap fills children + dependencies + provides on a
+// stored NeoForge blob.
+func normaliseNeoMap(out map[string]any) {
+	if _, ok := out["children"].([]any); !ok {
+		out["children"] = []any{}
+	}
+	if _, ok := out["dependencies"].([]any); !ok {
+		out["dependencies"] = []any{}
+	}
+	if _, ok := out["provides"].([]any); !ok {
+		out["provides"] = []any{}
+	}
+	if arr, ok := out["children"].([]any); ok {
+		for i, raw := range arr {
+			if m, ok := raw.(map[string]any); ok {
+				if _, ok := m["dependencies"].([]any); !ok {
+					m["dependencies"] = []any{}
+				}
+				if _, ok := m["provides"].([]any); !ok {
+					m["provides"] = []any{}
+				}
+				arr[i] = m
+			}
+		}
+		out["children"] = arr
+	}
+}
