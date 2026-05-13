@@ -291,8 +291,22 @@ func (s *Service) populateWatch(instancePath string, w *watch) error {
 		ID:        s.stateID(instancePath),
 		StateName: "ResourceState",
 		Payload:   w.payload,
+		// When the renderer drops its last reference, the bridge
+		// calls Dispose. Drop the per-instance cache too so the
+		// next Watch re-registers a fresh state instead of
+		// returning a dead handle that yields UnknownState on
+		// SerializeState.
+		Dispose: func() { s.dropWatch(instancePath) },
 	})
 	return nil
+}
+
+// dropWatch removes the cached watch for an instance. Called from
+// the bridge's Dispose hook (last-client-unref).
+func (s *Service) dropWatch(instancePath string) {
+	s.mu.Lock()
+	delete(s.watches, instancePath)
+	s.mu.Unlock()
 }
 
 // scan walks the subdir and produces a Resource map per file. Hidden
@@ -357,9 +371,7 @@ func (s *Service) scanWithManager(mgr *resource.Manager, dir string) ([]any, err
 				entryMap["name"] = e.Stored.Name
 			}
 			if len(e.Stored.Metadata) > 0 {
-				// Normalise so any catalogue blob written by an
-				// older build still ships renderer-iterable arrays.
-				entryMap["metadata"] = resource.NormaliseMetadata(e.Stored.Metadata)
+				entryMap["metadata"] = e.Stored.Metadata
 			}
 			if len(e.Stored.Icons) > 0 {
 				entryMap["icons"] = e.Stored.Icons

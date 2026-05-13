@@ -124,8 +124,18 @@ func (s *Service) populateWatch(instancePath string, w *watch) error {
 				s.states.Push(stateIDFor(instancePath), "instanceServerInfos", out)
 			},
 		},
+		// Drop the per-instance cache when the renderer drops its
+		// last reference, so the next Watch re-registers a fresh
+		// state instead of returning a dead handle.
+		Dispose: func() { s.dropWatch(instancePath) },
 	})
 	return nil
+}
+
+func (s *Service) dropWatch(instancePath string) {
+	s.mu.Lock()
+	delete(s.watches, instancePath)
+	s.mu.Unlock()
 }
 
 func (s *Service) scan(instancePath string) []serverInfoWithStatus {

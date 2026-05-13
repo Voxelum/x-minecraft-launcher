@@ -463,8 +463,21 @@ func (s *Service) populateWatch(instancePath string, w *watch) error {
 		// has none either — file lists are read-only from the
 		// renderer's POV).
 		Mutators: nil,
+		// When the renderer drops the last reference, the bridge
+		// tears down the SharedState. Drop our cached watch too so
+		// the next Watch call re-registers a fresh state instead of
+		// returning a dead handle that yields UnknownState on
+		// SerializeState.
+		Dispose: func() { s.dropWatch(instancePath) },
 	})
 	return nil
+}
+
+// dropWatch removes the cached watch for an instance.
+func (s *Service) dropWatch(instancePath string) {
+	s.mu.Lock()
+	delete(s.watches, instancePath)
+	s.mu.Unlock()
 }
 
 // scan walks `<instancePath>/mods/` and produces a Resource per file
