@@ -499,4 +499,245 @@ export class MojangClient {
 
     return result
   }
+
+  // ---------- Minecraft Services Friends API ----------
+
+  /**
+   * Fetch the friends list of the current authenticated player.
+   *
+   * Returns `friends`, `incomingRequests` and `outgoingRequests` arrays.
+   *
+   * Throws {@link UnauthorizedError} on 401, {@link MojangFriendsError} on other failures.
+   */
+  async getFriends(token: string, etag?: string, signal?: AbortSignal): Promise<MojangFriendsListResponse | { notModified: true; etag?: string }> {
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    }
+    if (etag) headers['If-None-Match'] = etag
+    const resp = await this.fetch('https://api.minecraftservices.com/friends', {
+      method: 'GET',
+      headers,
+      signal,
+    })
+    if (resp.status === 304) {
+      return { notModified: true, etag: resp.headers.get('etag') ?? etag }
+    }
+    if (resp.status === 401) {
+      throw new UnauthorizedError(await safeJson(resp))
+    }
+    if (!resp.ok) {
+      throw new MojangFriendsError(`Failed to fetch friends list (status ${resp.status})`, resp.status, await safeJson(resp))
+    }
+    const json = (await resp.json()) as MojangFriendsListRaw
+    return normalizeFriendsResponse(json, resp.headers.get('etag') ?? undefined)
+  }
+
+  /**
+   * Add a friend either by Minecraft username or by profile uuid.
+   *
+   * If both are provided, `name` takes precedence.
+   */
+  async addFriend(token: string, target: { name?: string; profileId?: string }, signal?: AbortSignal): Promise<void> {
+    return this.updateFriend(token, { ...target, action: 'ADD' }, signal)
+  }
+
+  /**
+   * Remove a friend (or decline an incoming request, or revoke an outgoing
+   * request) by profile uuid or username.
+   */
+  async removeFriend(token: string, target: { name?: string; profileId?: string }, signal?: AbortSignal): Promise<void> {
+    return this.updateFriend(token, { ...target, action: 'REMOVE' }, signal)
+  }
+
+  private async updateFriend(token: string, options: { name?: string; profileId?: string; action: 'ADD' | 'REMOVE' }, signal?: AbortSignal): Promise<void> {
+    if (!options.name && !options.profileId) {
+      throw new MojangFriendsError('Either name or profileId must be provided', 400, undefined)
+    }
+    const body: Record<string, string> = { updateType: options.action }
+    if (options.name) body.name = options.name
+    if (options.profileId) body.profileId = options.profileId.replace(/-/g, '')
+
+    const resp = await this.fetch('https://api.minecraftservices.com/friends', {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+      signal,
+    })
+    if (resp.status === 200 || resp.status === 204) return
+    if (resp.status === 401) throw new UnauthorizedError(await safeJson(resp))
+    const payload = await safeJson(resp)
+    throw new MojangFriendsError(`Failed to ${options.action.toLowerCase()} friend (status ${resp.status})`, resp.status, payload)
+  }
+
+  /**
+   * Update the player's friend-related preferences.
+   */
+  async updatePlayerAttributes(token: string, prefs: { friendsEnabled?: boolean; acceptInvites?: boolean }, signal?: AbortSignal): Promise<void> {
+    const friendsPreferences: Record<string, 'ENABLED' | 'DISABLED'> = {}
+    if (typeof prefs.friendsEnabled === 'boolean') {
+      friendsPreferences.friends = prefs.friendsEnabled ? 'ENABLED' : 'DISABLED'
+    }
+    if (typeof prefs.acceptInvites === 'boolean') {
+      friendsPreferences.acceptInvites = prefs.acceptInvites ? 'ENABLED' : 'DISABLED'
+    }
+    const resp = await this.fetch('https://api.minecraftservices.com/player/attributes', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ friendsPreferences }),
+      signal,
+    })
+    if (resp.status === 200 || resp.status === 204) return
+    if (resp.status === 401) throw new UnauthorizedError(await safeJson(resp))
+    throw new MojangFriendsError(`Failed to update player attributes (status ${resp.status})`, resp.status, await safeJson(resp))
+  }
+
+  /**
+   * Fetch the player's attributes (including friends preferences).
+   */
+  async getPlayerAttributes(token: string, signal?: AbortSignal): Promise<MojangPlayerAttributes> {
+    const resp = await this.fetch('https://api.minecraftservices.com/player/attributes', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+      signal,
+    })
+    if (resp.status === 401) throw new UnauthorizedError(await safeJson(resp))
+    if (!resp.ok) {
+      throw new MojangFriendsError(`Failed to get player attributes (status ${resp.status})`, resp.status, await safeJson(resp))
+    }
+    return (await resp.json()) as MojangPlayerAttributes
+  }
+}
+
+// ---------- Friends helpers ----------
+
+export interface MojangFriendProfile {
+  /**
+   * The profile uuid (with hyphens stripped, normalized).
+   */
+  profileId: string
+  /**
+   * The Minecraft player name.
+   */
+  name: string
+  /**
+   * Optional ISO-8601 timestamp from the server (when the friendship was added
+   * or when the request was made / expires).
+   */
+  addedAt?: string
+  expiresAt?: string
+}
+
+export interface MojangFriendsListResponse {
+  friends: MojangFriendProfile[]
+  incomingRequests: MojangFriendProfile[]
+  outgoingRequests: MojangFriendProfile[]
+  /**
+   * The etag returned by the server. Used for `If-None-Match` to skip
+   * unchanged responses (the server replies with 304 in that case).
+   */
+  etag?: string
+}
+
+export interface MojangPlayerAttributes {
+  privileges?: Record<string, { enabled: boolean }>
+  profanityFilterPreferences?: { profanityFilterOn: boolean }
+  banStatus?: unknown
+  friendsPreferences?: {
+    friends?: 'ENABLED' | 'DISABLED'
+    acceptInvites?: 'ENABLED' | 'DISABLED'
+  }
+}
+
+export class MojangFriendsError extends Error {
+  name = 'MojangFriendsError'
+  /**
+   * The original error payload returned by the server, when available.
+   */
+  details?: any
+  status: number
+  /**
+   * Sub-status from the `details.status` field on 400 responses (e.g.
+   * `UNKNOWN_PROFILE`, `CANNOT_ADD_SELF`, `DUPLICATED_PROFILES`).
+   */
+  subStatus?: string
+
+  constructor(message: string, status: number, payload: any) {
+    super(message)
+    this.status = status
+    this.details = payload
+    if (payload && typeof payload === 'object') {
+      const details = (payload as any).details
+      if (details && typeof details === 'object' && typeof details.status === 'string') {
+        this.subStatus = details.status
+      }
+      if (typeof (payload as any).errorMessage === 'string') {
+        this.message = (payload as any).errorMessage
+      }
+    }
+  }
+}
+
+interface MojangFriendsListRaw {
+  friends?: MojangFriendProfileRaw[]
+  // Some API revisions use these, others use incomingFriendRequests / outgoingFriendRequests.
+  incomingRequests?: MojangFriendProfileRaw[]
+  outgoingRequests?: MojangFriendProfileRaw[]
+  incomingFriendRequests?: MojangFriendProfileRaw[]
+  outgoingFriendRequests?: MojangFriendProfileRaw[]
+}
+
+interface MojangFriendProfileRaw {
+  profileId?: string
+  uuid?: string
+  id?: string
+  name?: string
+  profileName?: string
+  addedAt?: string
+  added?: string
+  expiresAt?: string
+}
+
+function normalizeFriendsResponse(raw: MojangFriendsListRaw, etag?: string): MojangFriendsListResponse {
+  const incoming = raw.incomingRequests ?? raw.incomingFriendRequests ?? []
+  const outgoing = raw.outgoingRequests ?? raw.outgoingFriendRequests ?? []
+  return {
+    friends: (raw.friends ?? []).map(normalizeFriendProfile),
+    incomingRequests: incoming.map(normalizeFriendProfile),
+    outgoingRequests: outgoing.map(normalizeFriendProfile),
+    etag,
+  }
+}
+
+function normalizeFriendProfile(raw: MojangFriendProfileRaw): MojangFriendProfile {
+  const id = raw.profileId ?? raw.uuid ?? raw.id ?? ''
+  return {
+    profileId: id.replace(/-/g, ''),
+    name: raw.name ?? raw.profileName ?? '',
+    addedAt: raw.addedAt ?? raw.added,
+    expiresAt: raw.expiresAt,
+  }
+}
+
+async function safeJson(resp: { json: () => Promise<any>; text: () => Promise<string> }): Promise<any> {
+  try {
+    return await resp.json()
+  } catch {
+    try {
+      return { errorMessage: await resp.text() }
+    } catch {
+      return undefined
+    }
+  }
 }
