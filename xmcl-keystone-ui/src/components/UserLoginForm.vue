@@ -7,18 +7,20 @@
   />
   <div
     v-else
-    class="login-form mx-auto w-full max-w-md px-6 py-8 flex flex-col gap-5"
+    class="login-form-container overflow-auto mx-auto w-full h-full max-w-md px-6 py-8 flex flex-col"
   >
     <!-- Header / Branding Area -->
-    <div class="flex flex-col items-center mb-2">
-      <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-primary to-primary-light flex items-center justify-center mb-4 shadow-[0_10px_20px_-10px_rgba(var(--v-theme-primary),0.8)] border border-white/20">
+    <div class="login-form-branding flex flex-col items-center mb-2">
+      <div
+        class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-primary to-primary-light flex items-center justify-center mb-4 shadow-[0_10px_20px_-10px_rgba(var(--v-theme-primary),0.8)] border border-white/20"
+      >
         <v-icon size="32" color="white">person</v-icon>
       </div>
-      <h2 class="text-2xl font-bold tracking-tight" style="color: rgba(var(--v-theme-on-surface), 0.9);">{{ t('login.login') }}</h2>
     </div>
 
     <UserLoginAuthoritySelect
       v-model="authority"
+      class="flex-grow-0"
       data-testid="login-authority"
       :items="items"
       density="default"
@@ -28,6 +30,7 @@
     <v-combobox
       v-if="!streamerMode"
       ref="accountInput"
+      class="flex-grow-0"
       v-model="data.username"
       data-testid="login-username"
       :items="history"
@@ -39,7 +42,7 @@
       :label="getUserServiceAccount(authority)"
       :rules="usernameRules"
       :error="!!errorMessage"
-      :error-messages="errorMessage"
+      hide-details="auto"
       @update:model-value="error = undefined"
       @keypress="error = undefined"
       @keypress.enter="onLogin"
@@ -47,6 +50,7 @@
     <v-text-field
       v-else
       ref="accountInput"
+      class="flex-grow-0"
       v-model="data.username"
       data-testid="login-username"
       prepend-inner-icon="person"
@@ -58,7 +62,7 @@
       :label="getUserServiceAccount(authority)"
       :rules="usernameRules"
       :error="!!errorMessage"
-      :error-messages="errorMessage"
+      hide-details="auto"
       @update:model-value="error = undefined"
       @keypress="error = undefined"
       @keypress.enter="onLogin"
@@ -67,6 +71,7 @@
       v-if="!isOffline"
       v-model="data.password"
       data-testid="login-password"
+      class="flex-grow-0"
       prepend-inner-icon="lock"
       variant="outlined"
       density="comfortable"
@@ -79,22 +84,33 @@
       :disabled="isPasswordDisabled"
       :readonly="isPasswordReadonly"
       :error="!!errorMessage"
-      :error-messages="errorMessage"
+      hide-details="auto"
       @update:model-value="error = undefined"
       @keypress.enter="onLogin"
     />
     <v-text-field
       v-else
       v-model="data.uuid"
+      class="flex-grow-0"
       variant="outlined"
       density="comfortable"
-      rounded="lg"
       prepend-inner-icon="fingerprint"
       :placeholder="uuidLabel"
       :label="uuidLabel"
       hide-details
       @keypress.enter="onLogin"
     />
+
+    <v-alert
+      v-if="errorMessage"
+      density="compact"
+      variant="tonal"
+      color="error"
+      rounded="lg"
+      class="text-left text-sm"
+    >
+      {{ errorMessage }}
+    </v-alert>
 
     <v-checkbox
       v-if="allowDeviceCode"
@@ -105,28 +121,32 @@
       :label="t('userServices.microsoft.useDeviceCode')"
     />
 
-    <div
-      class="mt-4"
-      @mouseenter="onMouseEnterLogin"
-      @mouseleave="onMouseLeaveLogin"
-    >
+    <div class="flex-grow" />
+
+    <div @mouseenter="onMouseEnterLogin" @mouseleave="onMouseLeaveLogin">
       <v-btn
         block
         data-testid="login-submit"
         size="x-large"
         rounded="xl"
         class="text-white font-bold tracking-wider shadow-[0_10px_25px_-8px_rgba(var(--v-theme-primary),0.6)] hover:shadow-[0_15px_30px_-8px_rgba(var(--v-theme-primary),0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
-        style="background: linear-gradient(to right, rgb(var(--v-theme-primary)), rgb(var(--v-theme-primary-light), 0.9));"
-        :loading="isLogining && (!hovered)"
+        style="
+          background: linear-gradient(
+            to right,
+            rgb(var(--v-theme-primary)),
+            rgb(var(--v-theme-primary-light), 0.9)
+          );
+        "
+        :loading="isLogining && !hovered"
         :prepend-icon="isLogining ? undefined : 'login'"
         @click="onLogin"
       >
         <template v-if="!isLogining">
-          {{ t("login.login") }}
+          {{ t('login.login') }}
         </template>
         <template v-else>
           <v-icon start>close</v-icon>
-          {{ t("shared.cancel") }}
+          {{ t('shared.cancel') }}
         </template>
       </v-btn>
       <slot />
@@ -155,28 +175,31 @@
         target="browser"
         href="https://my.minecraft.net/en-us/password/forgot/"
         class="hover:underline transition-colors opacity-70 hover:opacity-100"
-        style="color: rgba(var(--v-theme-on-surface), 0.8);"
+        style="color: rgba(var(--v-theme-on-surface), 0.8)"
       >
-        {{ t("login.forgetPassword") }}
+        {{ t('login.forgetPassword') }}
       </a>
       <div
         v-if="signUpLink"
         class="flex items-center gap-3 flex-wrap justify-center py-2 px-4 rounded-xl border w-full backdrop-blur-sm"
-        style="background: rgba(var(--v-theme-on-surface), 0.03); border-color: rgba(var(--v-theme-on-surface), 0.08);"
+        style="
+          background: rgba(var(--v-theme-on-surface), 0.03);
+          border-color: rgba(var(--v-theme-on-surface), 0.08);
+        "
       >
         <a
           target="browser"
           :href="signUpLink"
           class="hover:underline transition-colors opacity-70 hover:opacity-100"
-          style="color: rgba(var(--v-theme-on-surface), 0.8);"
+          style="color: rgba(var(--v-theme-on-surface), 0.8)"
         >
-          {{ t("login.signupDescription") }}
-          {{ t("login.signup") }}
+          {{ t('login.signupDescription') }}
+          {{ t('login.signup') }}
         </a>
-        <span class="opacity-30" style="color: rgba(var(--v-theme-on-surface), 0.5);">|</span>
+        <span class="opacity-30" style="color: rgba(var(--v-theme-on-surface), 0.5)">|</span>
         <a
           class="hover:underline cursor-pointer transition-colors opacity-70 hover:opacity-100"
-          style="color: rgba(var(--v-theme-on-surface), 0.8);"
+          style="color: rgba(var(--v-theme-on-surface), 0.8)"
           @click.stop="$emit('add-service')"
         >
           {{ manageAuthorityLabel }}
@@ -186,13 +209,20 @@
   </div>
 </template>
 
-<script lang=ts setup>
+<script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
 import { useRefreshable, useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kSupportedAuthorityMetadata } from '@/composables/yggrasil'
 import { injection } from '@/util/inject'
-import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserException, UserServiceKey, isException } from '@xmcl/runtime-api'
+import {
+  AUTHORITY_DEV,
+  AUTHORITY_MICROSOFT,
+  AUTHORITY_MOJANG,
+  UserException,
+  UserServiceKey,
+  isException,
+} from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { useAccountSystemHistory, useAuthorityItems } from '../composables/login'
 import { kUserContext, useLoginValidation } from '../composables/user'
@@ -200,7 +230,13 @@ import UserLoginAuthoritySelect from './UserLoginAuthoritySelect.vue'
 
 const props = defineProps<{
   inside: boolean
-  options?: { username?: string; password?: string; microsoftUrl?: string; authority?: string; error?: string }
+  options?: {
+    username?: string
+    password?: string
+    microsoftUrl?: string
+    authority?: string
+    error?: string
+  }
 }>()
 
 const emit = defineEmits(['seed', 'login', 'add-service'])
@@ -238,7 +274,7 @@ const items = useAuthorityItems(services)
 const { authority, history } = useAccountSystemHistory()
 
 const currentAccountSystem = computed(() => {
-  return services.value?.find(a => a.authority === authority.value)
+  return services.value?.find((a) => a.authority === authority.value)
 })
 
 // Sign up link
@@ -263,11 +299,15 @@ const emailOnly = computed(() => {
   }
   return false
 })
-const isPasswordReadonly = computed(() => !currentAccountSystem.value?.flow.includes('password') || data.useDeviceCode)
+const isPasswordReadonly = computed(
+  () => !currentAccountSystem.value?.flow.includes('password') || data.useDeviceCode,
+)
 const isPasswordDisabled = computed(() => isPasswordReadonly.value && !data.useDeviceCode)
-const passwordType = computed(() => data.useDeviceCode ? 'text' : 'password')
+const passwordType = computed(() => (data.useDeviceCode ? 'text' : 'password'))
 const passwordLabel = computed(() => getUserServicePassword(authority.value))
-const passwordPlaceholder = computed(() => data.useDeviceCode ? t('userServices.microsoft.deviceCodeHint') : passwordLabel.value)
+const passwordPlaceholder = computed(() =>
+  data.useDeviceCode ? t('userServices.microsoft.deviceCodeHint') : passwordLabel.value,
+)
 const getUserServicePassword = (serv: string) => {
   if (data.useDeviceCode) return t('userServices.microsoft.deviceCode')
   if (serv === AUTHORITY_MICROSOFT) return t('userServices.microsoft.password')
@@ -288,10 +328,7 @@ on('device-code', (code) => {
 })
 
 // Rules
-const {
-  usernameRules,
-  passwordRules,
-} = useLoginValidation(emailOnly, isOffline)
+const { usernameRules, passwordRules } = useLoginValidation(emailOnly, isOffline)
 
 // Login Error
 const errorMessage = computed(() => {
@@ -313,7 +350,9 @@ const errorMessage = computed(() => {
       if (e.exception.errorType === 'ProfileNotFoundError' && !e.exception.developerMessage) {
         return t('loginError.noProfileForNewUser')
       }
-      return t('loginError.fetchMinecraftProfileFailed', { reason: `${e.exception.errorType}, ${e.exception.developerMessage}` })
+      return t('loginError.fetchMinecraftProfileFailed', {
+        reason: `${e.exception.errorType}, ${e.exception.developerMessage}`,
+      })
     }
     if (e.exception.type === 'userCheckGameOwnershipFailed') {
       return t('loginError.checkOwnershipFailed')
@@ -396,7 +435,9 @@ const { refresh: onLogin, error } = useRefreshable(async () => {
   emit('login', profile)
 })
 
-watch(authority, () => { emit('seed') })
+watch(authority, () => {
+  emit('seed')
+})
 
 // Hint state
 const showDropHint = computed(() => allowDeviceCode.value && props.inside && isLogining.value)
@@ -411,23 +452,56 @@ const onMouseLeaveLogin = () => {
 }
 
 // Reset
-watch(() => props.options, (options) => {
-  if (!options) {
-    data.username = history.value[0] ?? ''
-    data.password = ''
-    data.verificationUri = ''
-    error.value = undefined
-  } else {
-    data.username = options?.username ?? data.username
-    data.verificationUri = ''
-    authority.value = options?.authority ?? authority.value
-    error.value = undefined
-  }
-}, { immediate: true })
-
+watch(
+  () => props.options,
+  (options) => {
+    if (!options) {
+      data.username = history.value[0] ?? ''
+      data.password = ''
+      data.verificationUri = ''
+      error.value = undefined
+    } else {
+      data.username = options?.username ?? data.username
+      data.verificationUri = ''
+      authority.value = options?.authority ?? authority.value
+      error.value = undefined
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <style>
+.login-form-container {
+  container-type: size;
+  container-name: login-form;
+  gap: 1.2rem;
+}
+
+@container login-form (max-height: 480px) {
+  .login-form-branding {
+    display: none;
+  }
+
+  .login-form-container {
+    gap: 0.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+@container login-form (max-height: 450px) {
+  .login-form-branding {
+    display: none;
+  }
+
+  .login-form-container {
+    gap: 0.1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
 .input-group {
   padding-top: 5px;
 }

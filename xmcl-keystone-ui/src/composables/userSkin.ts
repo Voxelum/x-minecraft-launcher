@@ -1,5 +1,5 @@
 import { computed, InjectionKey, onMounted, reactive, Ref, toRefs, watch } from 'vue'
-import { AUTHORITY_DEV, GameProfileAndTexture, UserServiceKey, UserProfile } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, GameProfileAndTexture, UserServiceKey, UserProfile } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 import steveSkin from '@/assets/steve_skin.png'
 
@@ -32,11 +32,11 @@ export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAnd
   const isSkinUploadBlocked = computed(() => {
     if (!user?.value) return false
     const auth = user.value.authority || ''
-    // Check AUTHORITY_DEV or specific URLs
-    if (auth === AUTHORITY_DEV || auth.includes('ely.by') || auth.includes('littleskin')) {
-      return true
+    // Only Microsoft and offline accounts can upload skins
+    if (auth === AUTHORITY_MICROSOFT || auth === AUTHORITY_DEV) {
+      return false
     }
-    return false
+    return true
   })
   const canUploadSkin = computed(() => !isSkinUploadBlocked.value && uploadable.value.indexOf('skin') !== -1)
   const canUploadCape = computed(() => !isSkinUploadBlocked.value && uploadable.value.indexOf('cape') !== -1)

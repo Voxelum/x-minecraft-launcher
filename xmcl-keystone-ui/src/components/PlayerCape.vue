@@ -1,11 +1,13 @@
 <template>
   <div
+    class="rounded-xl"
     style="overflow: hidden"
     :style="{
       'max-width': `${80}px`,
       'max-height': `${120}px`,
       'min-height': `${120}px`,
-      'min-width': `${80}px` }"
+      'min-width': `${80}px`,
+    }"
   >
     <img
       ref="image"
@@ -13,11 +15,11 @@
       style="image-rendering: pixelated; border-radius: 0"
       :style="style"
       @load="onload"
-    >
+    />
   </div>
 </template>
 
-<script lang=ts>
+<script lang="ts">
 import { defineComponent, reactive, ref, toRefs, computed, Ref } from 'vue'
 import steve from '@/assets/steve_skin.png'
 
@@ -57,5 +59,4 @@ export default defineComponent({
 })
 </script>
 
-<style>
-</style>
+<style></style>

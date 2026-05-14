@@ -17,8 +17,36 @@
         />
       </v-fab-transition>
     </div>
+    <!-- Slim/Classic toggle (top-right, hover only) -->
+    <transition name="fade-transition">
+      <v-btn-toggle
+        v-if="hover && canUploadSkin"
+        v-model="slimToggle"
+        mandatory
+        density="compact"
+        class="absolute top-2 right-2 skin-model-toggle"
+        style="z-index: 3;"
+        rounded="lg"
+      >
+        <v-btn
+          v-shared-tooltip.top="() => t('userSkin.classic')"
+          size="x-small"
+          :value="false"
+        >
+          <v-icon size="16">accessibility_new</v-icon>
+        </v-btn>
+        <v-btn
+          v-shared-tooltip.top="() => t('userSkin.slim')"
+          size="x-small"
+          :value="true"
+        >
+          <v-icon size="16">accessibility</v-icon>
+        </v-btn>
+      </v-btn-toggle>
+    </transition>
     <SkinView
       :paused="paused"
+      :height="300"
       :skin="skin"
       :slim="inferModelType ? undefined : slim"
       :cape="cape"
@@ -53,7 +81,7 @@
       <v-fab-transition>
         <v-btn
           v-show="!inspect && modified"
-          icon="check"
+          icon="save"
           color="secondary"
           size="small"
           style="z-index: 3"
@@ -123,6 +151,11 @@ const {
 )
 const paused = inject(UserSkinRenderPaused, () => ref(false), true)
 const pending = computed(() => loading.value)
+
+const slimToggle = computed({
+  get: () => slim.value,
+  set: (v: boolean) => { slim.value = v; inferModelType.value = false },
+})
 const { showOpenDialog, showSaveDialog } = windowController
 const isImportSkinDialogShown = ref(false)
 
@@ -188,5 +221,20 @@ const save_ = watcherTask(save, t('userSkin.upload'))
 
 .my-slider-x-transition-leave-to {
   transform: translateX(100%);
+}
+
+.skin-model-toggle {
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.skin-model-toggle .v-btn {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.skin-model-toggle .v-btn--active {
+  color: rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
 }
 </style>
