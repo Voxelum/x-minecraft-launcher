@@ -447,6 +447,7 @@ instanceUpdate:
   files: File Updates
   loaderChanged: >-
     The modloader of this instance has been changed. The old modloader is {modloader}, and the new modloader is {newModloader}.
+  noFiles: No file changes
   summary: Add {add} files. Remove {remove} files. Keep {keep} files.
   title: Update Instance
   update: Start Update
@@ -1541,6 +1542,42 @@ userAccount:
   add: Add Account
   removeDescription: This will remove all info for this account. Are you sure?
   removeTitle: Remove Account
+minecraftFriends:
+  title: Minecraft Friends
+  add: Add a friend
+  addPlaceholder: Minecraft username
+  send: Send
+  friends: Friends
+  incoming: Incoming requests
+  outgoing: Outgoing requests
+  heroEmptyTitle: Your friends list is empty
+  heroEmptyHint: Add a Minecraft player by username above to send a friend request.
+  scopedTo: 'Signed in as {name}'
+  reconnectAction: Reconnect
+  accept: Accept
+  unsupported: Friends are only available for Microsoft accounts.
+  requiresMicrosoft: Sign in with a Microsoft account to use friends.
+  notifyAdded: Friend request sent to {name}
+  addedRelative: Added {time}
+  expiresRelative: Expires {time}
+  incomingHint: 1 incoming request | {count} incoming requests
+  privacy:
+    friendsEnabled: Friends list enabled
+    acceptInvites: Accept friend invites
+    acceptInvitesHint: When off, other players cannot send you friend requests.
+  errors:
+    unknownProfile: We could not find a player with that name.
+    cannotAddSelf: You cannot send a friend request to yourself.
+    duplicate: That player is already in your list.
+    inviteRejected: That player does not have friends enabled or does not accept invites.
+    tokenExpired: Your Microsoft session expired. Please log in again.
+    generic: Something went wrong. Please try again.
+relative:
+  justNow: just now
+  secondsAgo: '{count} second ago | {count} seconds ago'
+  minutesAgo: '{count} minute ago | {count} minutes ago'
+  hoursAgo: '{count} hour ago | {count} hours ago'
+  daysAgo: '{count} day ago | {count} days ago'
 userCape:
   changeTitle: Change your cape
   description: >-
@@ -1588,6 +1625,8 @@ userSkin:
   urlNotEmpty: Skin URL cannot be empty
   urlNotValid: Skin URL is Invalid
   useSlim: Use Slim Model
+  classic: Classic
+  slim: Slim
 version:
   checkIntegrity: Check Integrity
   name: Version | Versions

@@ -427,6 +427,7 @@ instanceUpdate:
   files: Оновлення файлів
   loaderChanged: >-
     Завантажувач модів цього екземпляра було змінено. Старий завантажувач модів - {modloader}, а новий - {newModloader}.
+  noFiles: Немає змін у файлах
   summary: Додано {add} файлів. Видалено {remove} файлів. Збережено {keep} файлів.
   title: Оновити екземпляр
   update: Почати оновлення
@@ -1560,6 +1561,8 @@ userSkin:
   urlNotEmpty: URL скіна не може бути порожнім
   urlNotValid: URL скіна недійсний
   useSlim: Використовувати тонку модель
+  classic: Класична
+  slim: Тонка
 version:
   checkIntegrity: Перевірте цілісність
   name: Версія | Версії
@@ -1587,3 +1590,39 @@ migrateMinecraft:
   name: Перенести файли Minecraft
 reinstall:
   name: Перевстановити {version}
+minecraftFriends:
+  title: Друзі Minecraft
+  add: Додати друга
+  addPlaceholder: Ім'я гравця Minecraft
+  send: Надіслати
+  friends: Друзі
+  incoming: Вхідні запити
+  outgoing: Вихідні запити
+  heroEmptyTitle: Ваш список друзів порожній
+  heroEmptyHint: Додайте гравця Minecraft за ім'ям, щоб надіслати запит на дружбу.
+  scopedTo: 'Увійдено як {name}'
+  reconnectAction: Перепідключитися
+  accept: Прийняти
+  unsupported: Друзі доступні лише для облікових записів Microsoft.
+  requiresMicrosoft: Увійдіть за допомогою облікового запису Microsoft для використання друзів.
+  notifyAdded: Запит на дружбу надіслано {name}
+  addedRelative: Додано {time}
+  expiresRelative: Закінчується {time}
+  incomingHint: 1 вхідний запит | {count} вхідних запитів
+  privacy:
+    friendsEnabled: Список друзів увімкнено
+    acceptInvites: Приймати запити на дружбу
+    acceptInvitesHint: Якщо вимкнено, інші гравці не зможуть надсилати вам запити на дружбу.
+  errors:
+    unknownProfile: Гравця з таким ім'ям не знайдено.
+    cannotAddSelf: Ви не можете надіслати запит на дружбу собі.
+    duplicate: Цей гравець вже у вашому списку.
+    inviteRejected: Цей гравець не має увімкнених друзів або не приймає запити.
+    tokenExpired: Сесія Microsoft закінчилась. Будь ласка, увійдіть знову.
+    generic: Щось пішло не так. Спробуйте ще раз.
+relative:
+  justNow: щойно
+  secondsAgo: '{count} секунду тому | {count} секунд тому'
+  minutesAgo: '{count} хвилину тому | {count} хвилин тому'
+  hoursAgo: '{count} годину тому | {count} годин тому'
+  daysAgo: '{count} день тому | {count} днів тому'

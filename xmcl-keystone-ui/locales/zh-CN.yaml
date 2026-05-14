@@ -446,6 +446,7 @@ instanceUpdate:
   loaderChanged: |-
     该实例的模组加载器已更改。
     以前的模组加载器是 {modloader}，现在的模组加载器是 {newModloader}。
+  noFiles: 无文件变更
   summary: |-
     添加{add}文件。
     删除{remove}文件。
@@ -1603,6 +1604,8 @@ userSkin:
   urlNotEmpty: 皮肤 URL 不能为空
   urlNotValid: 请输入有效的皮肤 URL
   useSlim: 使用细胳膊模型
+  classic: 经典
+  slim: 纤细
 version:
   checkIntegrity: 检查完整性
   name: 版本 | 版本
@@ -1612,3 +1615,39 @@ versionType:
   beta: Beta (测试版)
   name: 类型
   release: 稳定版
+minecraftFriends:
+  title: Minecraft 好友
+  add: 添加好友
+  addPlaceholder: Minecraft 用户名
+  send: 发送
+  friends: 好友
+  incoming: 收到的请求
+  outgoing: 发出的请求
+  heroEmptyTitle: 你的好友列表为空
+  heroEmptyHint: 输入 Minecraft 用户名以发送好友请求。
+  scopedTo: '已登录为 {name}'
+  reconnectAction: 重新连接
+  accept: 接受
+  unsupported: 好友功能仅适用于 Microsoft 账户。
+  requiresMicrosoft: 请使用 Microsoft 账户登录以使用好友功能。
+  notifyAdded: 已向 {name} 发送好友请求
+  addedRelative: '{time}添加'
+  expiresRelative: '{time}过期'
+  incomingHint: 1 个好友请求 | {count} 个好友请求
+  privacy:
+    friendsEnabled: 启用好友列表
+    acceptInvites: 接受好友邀请
+    acceptInvitesHint: 关闭后，其他玩家无法向你发送好友请求。
+  errors:
+    unknownProfile: 找不到该用户名的玩家。
+    cannotAddSelf: 你不能向自己发送好友请求。
+    duplicate: 该玩家已在你的列表中。
+    inviteRejected: 该玩家未启用好友功能或不接受邀请。
+    tokenExpired: 你的 Microsoft 会话已过期，请重新登录。
+    generic: 出现了一些问题，请重试。
+relative:
+  justNow: 刚刚
+  secondsAgo: '{count} 秒前'
+  minutesAgo: '{count} 分钟前'
+  hoursAgo: '{count} 小时前'
+  daysAgo: '{count} 天前'
