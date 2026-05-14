@@ -126,7 +126,11 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
         if (!data.name) {
           data.name = placeHolderName.value
         }
-        const pendingFiles = [...files.value]
+        // Convert reactive refs into plain serializable objects for service calls.
+        const pendingFiles = JSON.parse(JSON.stringify(files.value)) as InstanceFile[]
+        const pendingUpstream = data.upstream
+          ? JSON.parse(JSON.stringify(data.upstream))
+          : undefined
         const payload = JSON.parse(JSON.stringify({
           ...data,
           resourcepacks: pendingFiles.some(f => f.path.startsWith('resourcepacks')),
@@ -142,10 +146,10 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
         onCreated?.(newPath)
         reset()
         if (pendingFiles.length > 0) {
-          await installInstanceFiles(data.upstream ? {
+          await installInstanceFiles(pendingUpstream ? {
             path: newPath,
             files: pendingFiles,
-            upstream: data.upstream,
+            upstream: pendingUpstream,
           } : {
             path: newPath,
             oldFiles: [],
