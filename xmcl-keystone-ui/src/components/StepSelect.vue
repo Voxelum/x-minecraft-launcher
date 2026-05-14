@@ -9,23 +9,26 @@
       class="rounded-lg"
       @click="emit('select', item.value)"
     >
-      <template #prepend><v-avatar class="self-center">
-        <v-icon
-          :color="item.color"
-        >
-          {{ item.icon }}
-        </v-icon>
-      </v-avatar></template>
+      <template #prepend>
+        <v-avatar class="self-center">
+          <v-icon
+            :color="item.color"
+          >
+            {{ item.icon }}
+          </v-icon>
+        </v-avatar>
+      </template>
 
       <v-list-item-title>{{ item.title }}</v-list-item-title>
-        <v-list-item-subtitle v-if="item.subtitle">
-          {{ item.subtitle }}
-        </v-list-item-subtitle>
-<v-list-item-action class="self-center">
+      <v-list-item-subtitle v-if="item.subtitle">
+        {{ item.subtitle }}
+      </v-list-item-subtitle>
+
+      <template #append>
         <v-icon>
           arrow_right
         </v-icon>
-      </v-list-item-action>
+      </template>
     </v-list-item>
   </v-list>
 </template>

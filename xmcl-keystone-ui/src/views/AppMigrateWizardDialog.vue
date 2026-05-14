@@ -24,18 +24,20 @@
           <v-icon>arrow_drop_down</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-stepper v-model="step">
-        <v-stepper-window class="visible-scroll overflow-y-auto">
-          <v-stepper-window-item
-            class="max-h-[70vh]"
-            :step="1"
-          >
-            <StepSelect @select="onSelectType" />
-          </v-stepper-window-item>
-          <v-stepper-window-item
-            class="max-h-[70vh]"
-            :step="2"
-          >
+      <v-window
+        v-model="step"
+        class="visible-scroll overflow-y-auto"
+      >
+        <v-window-item
+          class="max-h-[70vh]"
+          :value="1"
+        >
+          <StepSelect @select="onSelectType" />
+        </v-window-item>
+        <v-window-item
+          class="max-h-[70vh]"
+          :value="2"
+        >
             <template v-if="manifest">
               <v-list
                 color="transparent"
@@ -49,23 +51,25 @@
                   :key="folder"
                   @click="onEnableFolder(folder)"
                 >
-                  <template #prepend><v-avatar>
-                    <v-icon>
-                      folder
-                    </v-icon>
-                  </v-avatar></template>
+                  <template #prepend>
+                    <v-avatar>
+                      <v-icon>
+                        folder
+                      </v-icon>
+                    </v-avatar>
+                  </template>
                   <v-list-item-title>{{ basename(folder) }}</v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{ folder }}
-                    </v-list-item-subtitle>
-<v-list-item-action>
+                  <v-list-item-subtitle>
+                    {{ folder }}
+                  </v-list-item-subtitle>
+                  <template #append>
                     <v-checkbox
-                      :value="included.includes(folder)"
-                      :input-value="included.includes(folder)"
+                      :model-value="included.includes(folder)"
+                      hide-details
                       readonly
-                      @input="onEnableFolder(folder)"
+                      @click.stop="onEnableFolder(folder)"
                     />
-                  </v-list-item-action>
+                  </template>
                 </v-list-item>
                 <v-list-subheader>
                   {{ t('instanceDiscover.instanceFolder', { count: manifest.instances.length }) }}
@@ -105,11 +109,10 @@
                 </v-alert>
               </div>
             </StepperFooter>
-          </v-stepper-window-item>
-        </v-stepper-window>
-      </v-stepper>
-    </v-card>
-  </v-dialog>
+          </v-window-item>
+        </v-window>
+      </v-card>
+    </v-dialog>
 </template>
 <script setup lang="ts">
 import InstanceItem from '@/components/InstanceItem.vue'

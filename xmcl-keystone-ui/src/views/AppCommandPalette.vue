@@ -94,15 +94,96 @@
           </v-list-item>
         </template>
 
+        <template v-if="settingsResults.length > 0">
+          <v-list-subheader>{{ t('setting.name', 2) }}</v-list-subheader>
+          <v-list-item
+            v-for="(s, idx) in settingsResults"
+            :key="s.id"
+            :active="selectedIndex === recentResults.length + commandResults.length + idx"
+            :data-palette-index="recentResults.length + commandResults.length + idx"
+            @click="invokeSetting(s)"
+            @mouseenter="selectedIndex = recentResults.length + commandResults.length + idx"
+          >
+            <template #prepend>
+              <div class="palette-cmd-icon">
+                <v-icon size="18">{{ s.icon || 'settings' }}</v-icon>
+              </div>
+            </template>
+            <v-list-item-title>
+              <span class="palette-setting-title">
+                <span class="palette-setting-title__text">{{ s.title }}</span>
+                <v-chip
+                  v-if="s.chip"
+                  class="palette-setting-chip"
+                  label
+                  size="x-small"
+                  variant="tonal"
+                  :prepend-icon="s.chip.icon"
+                  :color="s.chip.color"
+                >
+                  {{ s.chip.text }}
+                </v-chip>
+              </span>
+            </v-list-item-title>
+            <v-list-item-subtitle>{{ s.group }} · {{ s.description }}</v-list-item-subtitle>
+            <template #append>
+              <v-switch
+                v-if="s.kind === 'switch'"
+                :model-value="s.value"
+                color="primary"
+                hide-details
+                density="compact"
+                inset
+                class="palette-switch"
+                @click.stop
+                @update:model-value="s.value = !!$event"
+              />
+              <span
+                v-else
+                class="palette-select-current"
+              >
+                <span class="text-caption text-medium-emphasis">
+                  {{ s.items.find((i) => i.value === s.value)?.text ?? s.value }}
+                </span>
+                <v-icon size="small" color="primary">arrow_right</v-icon>
+              </span>
+            </template>
+          </v-list-item>
+        </template>
+
+        <template v-if="pendingSetting && pendingSetting.kind === 'select'">
+          <v-list-subheader>{{ pendingSetting.title }}</v-list-subheader>
+          <v-list-item
+            v-for="(opt, idx) in settingOptionResults"
+            :key="opt.value || '__empty__'"
+            :active="selectedIndex === idx"
+            :data-palette-index="idx"
+            @click="applySettingOption(opt)"
+            @mouseenter="selectedIndex = idx"
+          >
+            <template #prepend>
+              <div class="palette-cmd-icon">
+                <v-icon
+                  size="18"
+                  :color="opt.value === pendingSetting.value ? 'primary' : undefined"
+                >
+                  {{ opt.value === pendingSetting.value ? 'radio_button_checked' : 'radio_button_unchecked' }}
+                </v-icon>
+              </div>
+            </template>
+            <v-list-item-title>{{ opt.text }}</v-list-item-title>
+          </v-list-item>
+        </template>
+
         <template v-if="instanceResults.length > 0">
           <v-list-subheader>{{ t('commandPalette.instances') }}</v-list-subheader>
           <v-list-item
             v-for="(inst, idx) in instanceResults"
             :key="inst.path"
-            :active="selectedIndex === recentResults.length + commandResults.length + idx"
-            :data-palette-index="recentResults.length + commandResults.length + idx"
+            :active="selectedIndex === recentResults.length + commandResults.length + settingsResults.length + idx"
+            :data-palette-index="recentResults.length + commandResults.length + settingsResults.length + idx"
             @click="launchInstance(inst)"
-            @mouseenter="selectedIndex = recentResults.length + commandResults.length + idx"
+            @mouseenter="selectedIndex = recentResults.length + commandResults.length + settingsResults.length + idx"
           >
             <template #prepend>
               <v-avatar size="36" rounded="lg" class="palette-avatar">
@@ -130,10 +211,10 @@
           <v-list-item
             v-for="(p, idx) in modrinthResults"
             :key="p.project_id"
-            :active="selectedIndex === recentResults.length + commandResults.length + instanceResults.length + idx"
-            :data-palette-index="recentResults.length + commandResults.length + instanceResults.length + idx"
+            :active="selectedIndex === recentResults.length + commandResults.length + settingsResults.length + instanceResults.length + idx"
+            :data-palette-index="recentResults.length + commandResults.length + settingsResults.length + instanceResults.length + idx"
             @click="openModrinthProject(p)"
-            @mouseenter="selectedIndex = recentResults.length + commandResults.length + instanceResults.length + idx"
+            @mouseenter="selectedIndex = recentResults.length + commandResults.length + settingsResults.length + instanceResults.length + idx"
           >
             <template #prepend>
               <v-avatar size="36" rounded="lg" class="palette-avatar">
@@ -178,7 +259,7 @@
           <kbd>Enter</kbd>
           <span class="palette-footer__label">{{ t('commandPalette.hintInvoke') }}</span>
         </span>
-        <span v-if="pendingInstanceAction" class="palette-footer__group">
+        <span v-if="pendingInstanceAction || pendingSettingId" class="palette-footer__group">
           <kbd>←</kbd>
           <span class="palette-footer__label">{{ t('commandPalette.hintBack') }}</span>
         </span>
@@ -206,6 +287,8 @@ import { useRendererCommandHost } from '@/composables/commandHost'
 import { kInstance } from '@/composables/instance'
 import { kInstances } from '@/composables/instances'
 import { useModrinthSearchFunc } from '@/composables/modrinth'
+import type { SettingsSearchItem } from '@/composables/settingsSearch'
+import { useSettingsSearchItems } from '@/composables/settingsSearch'
 import { BuiltinImages } from '@/constant'
 import { vFallbackImg } from '@/directives/fallbackImage'
 import { getInstanceIcon } from '@/util/favicon'
@@ -230,6 +313,8 @@ const host = useRendererCommandHost()
 const instanceCtx = injection(kInstance)
 const instancesCtx = injection(kInstances)
 const pendingInstanceAction = ref<'instance.launch' | 'instance.delete' | undefined>(undefined)
+const settingsItems = useSettingsSearchItems()
+const pendingSettingId = ref<string | undefined>(undefined)
 
 bus.on((event) => {
   if (event === 'show') isShown.value = true
@@ -242,12 +327,14 @@ watch(isShown, (v) => {
     query.value = ''
     selectedIndex.value = 0
     pendingInstanceAction.value = undefined
+    pendingSettingId.value = undefined
   }
 })
 
 function hide() {
   isShown.value = false
   pendingInstanceAction.value = undefined
+  pendingSettingId.value = undefined
 }
 
 // ── Internal commands ────────────────────────────────────────────────────────
@@ -268,7 +355,7 @@ function fuzzyMatches(haystack: string, needle: string): boolean {
 }
 
 const commandResults = computed(() => {
-  if (pendingInstanceAction.value) return []
+  if (pendingInstanceAction.value || pendingSettingId.value) return []
   const q = query.value.trim()
   return allCommands.value.filter((c) =>
     fuzzyMatches(c.title, q) || fuzzyMatches(c.id, q),
@@ -277,12 +364,39 @@ const commandResults = computed(() => {
 
 // ── Recent instances ((default view only) ─────────────────────────────────────
 const recentResults = computed(() => {
-  if (pendingInstanceAction.value) return []
+  if (pendingInstanceAction.value || pendingSettingId.value) return []
   if (query.value.trim()) return []
   return [...instancesCtx.instances.value]
     .filter((i) => (i.lastPlayedDate ?? 0) > 0)
     .sort((a, b) => (b.lastPlayedDate ?? 0) - (a.lastPlayedDate ?? 0))
     .slice(0, 5)
+})
+
+// ── Settings results ─────────────────────────────────────────────────────────
+const pendingSetting = computed(() =>
+  settingsItems.value.find((it) => it.id === pendingSettingId.value),
+)
+
+const settingsResults = computed<SettingsSearchItem[]>(() => {
+  if (pendingInstanceAction.value || pendingSettingId.value) return []
+  const q = query.value.trim()
+  if (!q) return []
+  return settingsItems.value.filter((it) =>
+    fuzzyMatches(it.title, q) ||
+    fuzzyMatches(it.id, q) ||
+    fuzzyMatches(it.keywords, q) ||
+    fuzzyMatches(it.description, q),
+  ).slice(0, 8)
+})
+
+const settingOptionResults = computed(() => {
+  const cur = pendingSetting.value
+  if (!cur || cur.kind !== 'select') return [] as { text: string; value: string }[]
+  const q = query.value.trim()
+  if (!q) return cur.items
+  return cur.items.filter((it) =>
+    fuzzyMatches(it.text, q) || fuzzyMatches(it.value, q),
+  )
 })
 
 // ── Instance results ─────────────────────────────────────────────────────────
@@ -294,6 +408,7 @@ const instanceResults = computed(() => {
     return left.name.localeCompare(right.name)
   })
   const q = query.value.trim()
+  if (pendingSettingId.value) return []
   if (!pendingInstanceAction.value && !q) return []
   const filtered = sorted.filter((i) =>
     !q || fuzzyMatches(i.name, q) || fuzzyMatches(i.path, q),
@@ -320,7 +435,7 @@ const isSearchingMarket = ref(false)
 watch(debouncedQuery, async (q) => {
   modrinthResults.value = []
   if (!isShown.value) return
-  if (pendingInstanceAction.value) return
+  if (pendingInstanceAction.value || pendingSettingId.value) return
   if (!q || q.length < 2) return
   isSearchingMarket.value = true
   try {
@@ -334,10 +449,13 @@ watch(debouncedQuery, async (q) => {
 })
 
 // ── Selection / invocation ───────────────────────────────────────────────────
-const totalResultCount = computed(() => recentResults.value.length + commandResults.value.length + instanceResults.value.length + modrinthResults.value.length)
+const totalResultCount = computed(() => {
+  if (pendingSettingId.value) return settingOptionResults.value.length
+  return recentResults.value.length + commandResults.value.length + settingsResults.value.length + instanceResults.value.length + modrinthResults.value.length
+})
 const hasAnyResult = computed(() => totalResultCount.value > 0)
 
-watch([recentResults, commandResults, instanceResults, modrinthResults], () => {
+watch([recentResults, commandResults, settingsResults, instanceResults, modrinthResults, settingOptionResults], () => {
   if (selectedIndex.value >= totalResultCount.value) selectedIndex.value = 0
 })
 
@@ -411,19 +529,44 @@ function localPageForProjectType(type: string): string | undefined {
   }
 }
 
+function invokeSetting(s: SettingsSearchItem) {
+  if (s.kind === 'switch') {
+    s.value = !s.value
+    return
+  }
+  pendingSettingId.value = s.id
+  query.value = ''
+  selectedIndex.value = 0
+}
+
+function applySettingOption(option: { value: string }) {
+  const cur = pendingSetting.value
+  if (!cur || cur.kind !== 'select') return
+  cur.value = option.value
+  hide()
+}
+
 function invokeSelected() {
+  if (pendingSettingId.value) {
+    const opt = settingOptionResults.value[selectedIndex.value]
+    if (opt) applySettingOption(opt)
+    return
+  }
   const recentLen = recentResults.value.length
   const cmdLen = commandResults.value.length
+  const setLen = settingsResults.value.length
   const instLen = instanceResults.value.length
   const idx = selectedIndex.value
   if (idx < recentLen) {
     launchInstance(recentResults.value[idx])
   } else if (idx < recentLen + cmdLen) {
     invoke(commandResults.value[idx - recentLen])
-  } else if (idx < recentLen + cmdLen + instLen) {
-    launchInstance(instanceResults.value[idx - recentLen - cmdLen])
-  } else if (idx < recentLen + cmdLen + instLen + modrinthResults.value.length) {
-    openModrinthProject(modrinthResults.value[idx - recentLen - cmdLen - instLen])
+  } else if (idx < recentLen + cmdLen + setLen) {
+    invokeSetting(settingsResults.value[idx - recentLen - cmdLen])
+  } else if (idx < recentLen + cmdLen + setLen + instLen) {
+    launchInstance(instanceResults.value[idx - recentLen - cmdLen - setLen])
+  } else if (idx < recentLen + cmdLen + setLen + instLen + modrinthResults.value.length) {
+    openModrinthProject(modrinthResults.value[idx - recentLen - cmdLen - setLen - instLen])
   }
 }
 
@@ -455,26 +598,47 @@ const instanceActionIcon = computed(() => pendingInstanceAction.value === 'insta
 const instanceActionColor = computed(() => pendingInstanceAction.value === 'instance.delete' ? 'error' : 'primary')
 
 const isSelectedCommandMultiStep = computed(() => {
-  if (pendingInstanceAction.value) return false
-  const cmd = commandResults.value[selectedIndex.value - recentResults.value.length]
-  return !!cmd && multiStepCommandIds.has(cmd.id)
+  if (pendingInstanceAction.value || pendingSettingId.value) return false
+  const recentLen = recentResults.value.length
+  const cmdLen = commandResults.value.length
+  const localIdx = selectedIndex.value - recentLen
+  if (localIdx >= 0 && localIdx < cmdLen) {
+    const cmd = commandResults.value[localIdx]
+    return !!cmd && multiStepCommandIds.has(cmd.id)
+  }
+  const settingIdx = selectedIndex.value - recentLen - cmdLen
+  const setting = settingsResults.value[settingIdx]
+  return !!setting && setting.kind === 'select'
 })
 
 function onArrowRight(e: KeyboardEvent) {
-  if (pendingInstanceAction.value) return
-  const cmd = commandResults.value[selectedIndex.value - recentResults.value.length]
-  if (!cmd || !multiStepCommandIds.has(cmd.id)) return
-  e.preventDefault()
-  invoke(cmd)
+  if (pendingInstanceAction.value || pendingSettingId.value) return
+  const recentLen = recentResults.value.length
+  const cmdLen = commandResults.value.length
+  const localIdx = selectedIndex.value - recentLen
+  if (localIdx >= 0 && localIdx < cmdLen) {
+    const cmd = commandResults.value[localIdx]
+    if (cmd && multiStepCommandIds.has(cmd.id)) {
+      e.preventDefault()
+      invoke(cmd)
+    }
+    return
+  }
+  const setting = settingsResults.value[selectedIndex.value - recentLen - cmdLen]
+  if (setting && setting.kind === 'select') {
+    e.preventDefault()
+    invokeSetting(setting)
+  }
 }
 
 function onArrowLeft(e: KeyboardEvent) {
-  if (!pendingInstanceAction.value) return
+  if (!pendingInstanceAction.value && !pendingSettingId.value) return
   const target = e.target as HTMLInputElement | null
   // Allow normal cursor movement when there's text and the cursor isn't at the start.
   if (target && target.value && (target.selectionStart ?? 0) > 0) return
   e.preventDefault()
   pendingInstanceAction.value = undefined
+  pendingSettingId.value = undefined
   query.value = ''
   selectedIndex.value = 0
 }
@@ -534,6 +698,46 @@ function onArrowLeft(e: KeyboardEvent) {
   border-radius: 12px;
   background: rgba(125, 125, 125, 0.14);
   color: rgb(var(--v-theme-on-surface));
+}
+
+.palette-switch {
+  margin: 0;
+  padding: 0;
+  flex: none;
+}
+
+.palette-switch :deep(.v-input__control) {
+  min-height: 0;
+}
+
+.palette-setting-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.palette-setting-title__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-setting-chip {
+  flex: none;
+}
+
+.palette-select-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 200px;
+}
+
+.palette-select-current > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .palette-footer {

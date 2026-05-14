@@ -266,7 +266,11 @@ import { BuiltinImages } from '../constant'
 
 const selected = ref([] as string[])
 const search = ref('')
-const upgrade = ref(undefined as undefined | UpgradeValueType)
+// Use shallowRef so the underlying installation payload (which is sent over
+// Electron IPC and must be structured-cloneable) is not wrapped in a deep
+// reactive Proxy. A reactive Proxy throws "An object could not be cloned"
+// when passed through IPC.
+const upgrade = shallowRef(undefined as undefined | UpgradeValueType)
 
 // ref for virtual scrolling
 const scrollRef = ref<HTMLElement | null>(null)
