@@ -10,6 +10,7 @@
   >
     <UserLoginAuthoritySelect
       v-model="authority"
+      data-testid="login-authority"
       :items="items"
       density="default"
       hide-details
@@ -19,6 +20,7 @@
       v-if="!streamerMode"
       ref="accountInput"
       v-model="data.username"
+      data-testid="login-username"
       :items="history"
       prepend-inner-icon="person"
       variant="outlined"
@@ -36,6 +38,7 @@
       v-else
       ref="accountInput"
       v-model="data.username"
+      data-testid="login-username"
       prepend-inner-icon="person"
       variant="outlined"
       density="default"
@@ -52,6 +55,7 @@
     <v-text-field
       v-if="!isOffline"
       v-model="data.password"
+      data-testid="login-password"
       prepend-inner-icon="lock"
       variant="outlined"
       density="default"
@@ -94,6 +98,7 @@
     >
       <v-btn
         block
+        data-testid="login-submit"
         size="large"
         rounded="pill"
         color="primary"

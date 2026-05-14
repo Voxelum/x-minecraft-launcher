@@ -1,0 +1,35 @@
+/**
+ * EXAMPLE scratch spec — copy this file into `e2e/specs/scratch/` (the
+ * `.example` extension means Playwright ignores it) and rename to
+ * `<my-feature>.spec.ts` to start a one-off visual verification of a UI
+ * feature you just added.
+ *
+ * Run with:  pnpm test:e2e:scratch
+ *
+ * Output:    e2e/artifacts/screenshots/en/<test-title-slug>/<step>.png
+ *
+ * Tips:
+ *   - Use selectors from `e2e/TESTIDS.md`. If your feature needs a new
+ *     anchor, add `data-testid="…"` to the Vue component, then re-run
+ *     `pnpm gen:testids`.
+ *   - Call `snap()` after EVERY meaningful visual change.
+ *   - Keep the spec under ~50 lines. If it grows, promote it to a real
+ *     storyline under `specs/NN-name.spec.ts`.
+ */
+import { test, snap, expect } from '../../helpers/scratch'
+
+test('Servers tab — empty state and add dialog', async ({ launcher, shell }) => {
+  // 1. Navigate to the new feature.
+  await shell.goto('/servers')
+  await snap(launcher, '01-empty', 'Empty Servers tab — placeholder hint visible.')
+
+  // 2. Trigger the new control we just added.
+  const addBtn = launcher.main.getByTestId('add-server')
+  await expect(addBtn).toBeVisible()
+  await addBtn.click()
+  await snap(launcher, '02-dialog', 'Add Server dialog opens with the form fields.')
+
+  // 3. Fill it in and screenshot the populated state.
+  await launcher.main.getByTestId('add-server-host').fill('mc.example.com')
+  await snap(launcher, '03-filled', 'Host filled in — Save button enabled.')
+})

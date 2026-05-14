@@ -1,6 +1,7 @@
 <template>
   <div
     ref="wrapper"
+    data-testid="app-sidebar"
     class="sidebar-notch-wrapper"
     :class="wrapperClasses"
     @mouseenter="onMouseEnter"
@@ -26,6 +27,7 @@
         <!-- My Stuff -->
         <AppSideBarNotchItem
           id="my-stuff-button"
+          data-testid="nav-accounts"
           icon="widgets"
           :icon-size="iconSize"
           :tooltip="() => ({ text: t('myStuff'), direction: tooltipDirection })"
@@ -35,6 +37,7 @@
         <!-- Store -->
         <AppSideBarNotchItem
           v-if="true"
+          data-testid="nav-store"
           icon="store"
           :icon-size="iconSize"
           :tooltip="() => ({ text: t('store.name', 2), direction: tooltipDirection })"
@@ -61,6 +64,7 @@
           />
         </template>
         <AppSideBarNotchItem
+          data-testid="nav-add-instance"
           icon="add"
           :icon-size="iconSize"
           :tooltip="() => t('instances.add')"
@@ -72,6 +76,7 @@
 
         <!-- Multiplayer -->
         <AppSideBarNotchItem
+          data-testid="nav-multiplayer"
           icon="hub"
           :icon-size="iconSize"
           :tooltip="() => ({ text: t('multiplayer.name'), direction: tooltipDirection })"
@@ -83,6 +88,7 @@
 
         <!-- Settings -->
         <AppSideBarNotchItem
+          data-testid="nav-settings"
           :icon-size="iconSize"
           :tooltip="() => ({ text: t('setting.name', 2), direction: tooltipDirection })"
           to="/setting"

@@ -1,6 +1,7 @@
 <template>
   <v-card
     v-if="!data.fetching"
+    data-testid="setup-root"
     class="setup flex flex-col overflow-auto"
   >
     <v-stepper

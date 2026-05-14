@@ -222,6 +222,7 @@
         </v-btn>
         <v-spacer />
         <v-btn
+          data-testid="install-instance-confirm"
           color="primary"
           variant="flat"
           size="large"

@@ -124,6 +124,7 @@ watch(() => props.installed, () => {
 const installing = ref(false)
 const { install, installWithDependencies } = injection(kModrinthInstaller)
 const onInstall = async (v: ProjectDetailVersion) => {
+  if (installing.value) return
   try {
     installing.value = true
     await installWithDependencies(v.id, v.loaders, project.value?.icon_url, props.installed, deps.value ?? [])
@@ -132,6 +133,7 @@ const onInstall = async (v: ProjectDetailVersion) => {
   }
 }
 const onInstallDependency = async (dep: ProjectDependency) => {
+  if (installing.value || dep.installedVersion || dep.progress >= 0) return
   const resolvedDep = deps.value?.find(d => d.project.id === dep.id)
   if (!resolvedDep) return
   const version = resolvedDep.recommendedVersion

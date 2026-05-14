@@ -118,6 +118,18 @@ export default class ElectronLauncherApp extends LauncherApp {
   readonly session: ElectronSession
 
   constructor() {
+    // E2E hook: when XMCL_E2E_APP_DATA is set, redirect Electron's appData
+    // (and therefore both `app.getPath('appData')` calls below + the one in
+    // xmcl-runtime/app/LauncherApp.ts) to a per-test temporary directory.
+    // This isolates every Playwright spec on a clean launcher root.
+    if (process.env.XMCL_E2E_APP_DATA) {
+      try {
+        app.setPath('appData', process.env.XMCL_E2E_APP_DATA)
+        app.setPath('userData', join(process.env.XMCL_E2E_APP_DATA, LAUNCHER_NAME))
+      } catch {
+        // Electron may reject if app is already ready; fall back silently.
+      }
+    }
     super(app as any,
       new ElectronShell(),
       new ElectronSecretStorage(join(app.getPath('appData'), LAUNCHER_NAME, IS_DEV ? 'secret-dev' : 'secret')),

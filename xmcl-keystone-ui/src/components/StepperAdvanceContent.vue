@@ -37,6 +37,7 @@
 
     <VersionInputMinecraft
       v-if="showMinecraft"
+      data-testid="version-input-minecraft"
       class="mt-4"
       :value="data.runtime.minecraft"
       :versions="versions"
@@ -44,6 +45,7 @@
     />
     <VersionInputNeoForged
       v-if="isNotSelectingLabyMod"
+      data-testid="version-input-neoforge"
       :value="data.runtime.neoForged"
       :minecraft="data.runtime.minecraft"
       :versions="versions"
@@ -51,6 +53,7 @@
     />
     <VersionInputForge
       v-if="isNotSelectingLabyMod"
+      data-testid="version-input-forge"
       :value="data.runtime.forge"
       :minecraft="data.runtime.minecraft"
       :versions="versions"
@@ -58,6 +61,7 @@
     />
     <VersionInputFabric
       v-if="isNotSelectingLabyMod"
+      data-testid="version-input-fabric"
       :value="data.runtime.fabricLoader"
       :minecraft="data.runtime.minecraft"
       :versions="versions"
@@ -65,6 +69,7 @@
     />
     <VersionInputQuilt
       v-if="isNotSelectingLabyMod"
+      data-testid="version-input-quilt"
       :value="data.runtime.quiltLoader"
       :minecraft="data.runtime.minecraft"
       :versions="versions"

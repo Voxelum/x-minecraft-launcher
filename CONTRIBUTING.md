@@ -104,6 +104,12 @@ Install the project using [pnpm](https://pnpm.io):
 pnpm install
 ```
 
+> **End-to-end tests are opt-in.** The `e2e/` package is intentionally
+> outside the pnpm workspace, so `pnpm install` does not download Playwright
+> for the 95% of contributors who never run e2e. If you want to run them,
+> install once with `pnpm e2e:install` (no Chromium download is needed —
+> the suite drives Electron directly). See `e2e/README.md` for details.
+
 <details>
   <summary> 解决中国国内安装依赖（如 Electron）太慢的办法 </summary>
 

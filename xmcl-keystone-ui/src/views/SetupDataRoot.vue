@@ -1,5 +1,11 @@
 <template>
-  <v-list class="non-moveable" three-line subheader style="background: transparent; width: 100%">
+  <v-list
+    data-testid="setup-data-root"
+    class="non-moveable"
+    three-line
+    subheader
+    style="background: transparent; width: 100%"
+  >
     <v-list-item>
       <v-list-item-title class="whitespace-pre-wrap">
         {{ t('setup.dataRoot.description') }}

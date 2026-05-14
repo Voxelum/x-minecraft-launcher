@@ -1,0 +1,12 @@
+artifacts/
+playwright-report/
+test-results/
+fixtures/sandbox-root/userData/
+fixtures/sandbox-root/gameData/
+node_modules/
+
+# Scratch specs are PR-local visual-verification helpers (see AGENTS.md).
+# The example template and .gitkeep stay tracked; everything else is local.
+specs/scratch/*
+!specs/scratch/.gitkeep
+!specs/scratch/EXAMPLE.spec.ts.example

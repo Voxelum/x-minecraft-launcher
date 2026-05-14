@@ -1,5 +1,8 @@
 <template>
-  <div class="store visible-scroll relative flex flex-col items-center overflow-auto">
+  <div
+    data-testid="store-page"
+    class="store visible-scroll relative flex flex-col items-center overflow-auto"
+  >
     <router-view v-slot="{ Component }">
       <Transition
         name="slide-y-transition"

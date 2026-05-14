@@ -4,6 +4,7 @@
     <div class="flex flex-1 flex-grow-0 p-5 ">
       <v-btn
         v-if="prev"
+        data-testid="setup-prev"
         :disabled="disabled"
         :loading="loading"
         @click="emit('prev')"
@@ -13,6 +14,7 @@
       <div class="flex-grow" />
       <v-btn
         v-if="next"
+        data-testid="setup-next"
         color="primary"
         :disabled="disabled"
         :loading="loading"
