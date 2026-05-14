@@ -4,43 +4,40 @@
     data-testid="add-instance-dialog"
     width="900"
     :persistent="true"
+    transition="fade-transition"
+    content-class="elevation-0"
   >
-    <v-card
-      class="add-instance-card flex flex-col overflow-hidden"
-      rounded="xl"
-      elevation="24"
-    >
-      <v-toolbar
-        elevation="0"
-        color="transparent"
-        density="comfortable"
-        class="px-5"
-      >
-        <v-icon start>add</v-icon>
-        <v-toolbar-title class="flex items-center">
-          <template v-if="steps[step - 1] === 'config'">
-            {{ t('instances.add') }}
-          </template>
-          <template v-if="steps[step - 1] === 'server'">
-            {{ t('AppAddInstanceDialog.serverTitle') }}
-          </template>
-        </v-toolbar-title>
-        <div class="flex-grow" />
+    <div class="flex flex-col overflow-hidden">
+      <!-- Header -->
+      <div class="flex items-center px-6 pt-6 pb-4">
+        <div class="flex items-center gap-3 flex-grow">
+          <div
+            class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-primary-light flex items-center justify-center shadow-[0_6px_14px_-6px_rgba(var(--v-theme-primary),0.7)] border border-white/20"
+          >
+            <v-icon size="20" color="white">add</v-icon>
+          </div>
+          <div class="text-base font-bold tracking-tight" style="color: rgba(var(--v-theme-on-surface), 0.9);">
+            <template v-if="steps[step - 1] === 'config'">
+              {{ t('instances.add') }}
+            </template>
+            <template v-if="steps[step - 1] === 'server'">
+              {{ t('AppAddInstanceDialog.serverTitle') }}
+            </template>
+          </div>
+        </div>
         <v-btn
           color="primary"
           variant="tonal"
           rounded="pill"
-          density="comfortable"
+          size="small"
           @click="onMigrateFromOther"
         >
-          <v-icon start>
-            local_shipping
-          </v-icon>
+          <v-icon start size="16">local_shipping</v-icon>
           {{ t("setting.migrateFromOther") }}
         </v-btn>
-      </v-toolbar>
+      </div>
 
-      <v-divider />
+      <v-divider class="mx-6 opacity-20" />
 
       <v-window v-model="step" class="visible-scroll overflow-y-auto">
         <v-window-item
@@ -60,7 +57,7 @@
           />
         </v-window-item>
       </v-window>
-      <v-divider />
+      <v-divider class="mx-6 opacity-20" />
       <StepperFooter
         class="px-6 pb-6 pt-4"
         :disabled="!valid || loading"
@@ -106,7 +103,7 @@
           </v-alert>
         </div>
       </StepperFooter>
-    </v-card>
+    </div>
   </v-dialog>
 </template>
 

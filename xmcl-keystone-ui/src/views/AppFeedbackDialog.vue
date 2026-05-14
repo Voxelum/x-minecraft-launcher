@@ -1,86 +1,90 @@
 <template>
   <v-dialog
     v-model="isShown"
-    hide-overlay
-    transition="dialog-bottom-transition"
-    width="600"
-    scrollable
+    width="560"
+    :persistent="false"
+    transition="fade-transition"
+    content-class="elevation-0"
   >
-    <v-card class="flex max-h-[85vh] flex-col overflow-hidden">
-      <v-toolbar
-        color="primary"
-        flat
-      >
-        <v-toolbar-title class="flex items-center">
-          <v-icon class="mr-2">feedback</v-icon>
-          {{ t('feedback.name') }}
-        </v-toolbar-title>
-        <v-spacer />
-        <v-btn
-          icon
-          @click="hide"
-        >
-          <v-icon>close</v-icon>
-        </v-btn>
-      </v-toolbar>
-
-      <v-card-text class="flex flex-col gap-4 overflow-x-hidden overflow-y-auto p-4">
-        <v-card flat class="p-4">
-          <div class="mb-2 flex items-center">
-            <v-icon color="primary" class="mr-2">info</v-icon>
-            <span class="text-h6">{{ t('feedback.description') }}</span>
+    <div class="flex w-full max-h-[85vh] flex-col overflow-hidden">
+      <!-- Header -->
+      <div class="flex items-center px-6 pt-6 pb-4">
+        <div class="flex items-center gap-3 flex-grow">
+          <div
+            class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-primary-light flex items-center justify-center shadow-[0_6px_14px_-6px_rgba(var(--v-theme-primary),0.7)] border border-white/20"
+          >
+            <v-icon size="20" color="white">feedback</v-icon>
           </div>
-          <FeedbackCard :icon="false" />
-        </v-card>
-
-        <div>
-          <div class="mb-3 flex items-center">
-            <v-icon color="primary" class="mr-2">forum</v-icon>
-            <span class="text-h6">{{ t('feedback.channel') }}</span>
-          </div>
-
-          <div class="flex flex-col gap-3">
-            <v-card
-              v-for="(channel, index) in feedbackChannels"
-              :key="index"
-              variant="outlined"
-              hover
-            >
-              <v-card-text class="p-4">
-                <div class="flex items-center justify-between gap-3">
-                  <div class="flex min-w-0 flex-grow items-center">
-                    <v-avatar
-                      :color="channel.color"
-                      size="40"
-                      class="mr-3 flex-shrink-0"
-                    >
-                      <v-icon color="white">{{ channel.icon }}</v-icon>
-                    </v-avatar>
-                    <div class="min-w-0 flex-1">
-                      <div class="text-h6">{{ channel.title }}</div>
-                      <div class="text-body-2 text--secondary break-words">
-                        {{ channel.description }}
-                      </div>
-                    </div>
-                  </div>
-                  <v-btn
-                    rounded="pill"
-                    :color="channel.color"
-                    :href="channel.link"
-                    :target="channel.target"
-                    variant="flat"
-                    class="flex-shrink-0"
-                  >
-                    {{ channel.buttonText }}
-                    <v-icon end>open_in_new</v-icon>
-                  </v-btn>
-                </div>
-              </v-card-text>
-            </v-card>
+          <div class="text-base font-bold tracking-tight" style="color: rgba(var(--v-theme-on-surface), 0.9);">
+            {{ t('feedback.name') }}
           </div>
         </div>
-      </v-card-text>
-    </v-card>
+        <v-btn
+          icon="close"
+          variant="text"
+          size="small"
+          @click="hide"
+        />
+      </div>
+
+      <!-- Content -->
+      <div class="flex-1 min-h-0 overflow-y-auto invisible-scroll px-6 pb-6 flex flex-col gap-5">
+        <!-- Description -->
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div class="mb-2 flex items-center gap-2">
+            <v-icon size="18" color="primary">info</v-icon>
+            <span class="text-sm font-semibold opacity-80">{{ t('feedback.description') }}</span>
+          </div>
+          <FeedbackCard :icon="false" />
+        </div>
+
+        <!-- Channels -->
+        <div>
+          <div class="mb-3 flex items-center gap-2">
+            <v-icon size="18" color="primary">forum</v-icon>
+            <span class="text-sm font-semibold opacity-80">{{ t('feedback.channel') }}</span>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <div
+              v-for="(channel, index) in feedbackChannels"
+              :key="index"
+              class="group rounded-2xl border border-white/10 bg-white/5 p-4 transition-all hover:bg-white/10 hover:border-white/20"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex min-w-0 flex-grow items-center gap-3">
+                  <v-avatar
+                    :color="channel.color"
+                    size="36"
+                    class="flex-shrink-0"
+                  >
+                    <v-icon size="18" color="white">{{ channel.icon }}</v-icon>
+                  </v-avatar>
+                  <div class="min-w-0 flex-1">
+                    <div class="text-sm font-semibold">{{ channel.title }}</div>
+                    <div class="text-xs opacity-60 break-words">
+                      {{ channel.description }}
+                    </div>
+                  </div>
+                </div>
+                <v-btn
+                  rounded="pill"
+                  :color="channel.color"
+                  :href="channel.link"
+                  :target="channel.target"
+                  variant="flat"
+                  size="small"
+                  class="flex-shrink-0"
+                >
+                  {{ channel.buttonText }}
+                  <v-icon end size="14">open_in_new</v-icon>
+                </v-btn>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </v-dialog>
 </template>
 

@@ -1,22 +1,29 @@
 <template>
-  <v-dialog v-model="isShown" hide-overlay scrollable width="860">
-    <v-card class="select-none flex max-h-[90vh] flex-col overflow-hidden">
-      <v-toolbar color="primary" flat density="comfortable">
-        <v-app-bar-nav-icon
-          icon="system_update_alt"
-          :ripple="false"
-          style="cursor: default"
-        />
-        <v-toolbar-title class="font-medium">
-          {{ t('instanceUpdate.title') }}
-        </v-toolbar-title>
-        <v-spacer />
+  <v-dialog
+    v-model="isShown"
+    width="860"
+    transition="fade-transition"
+    content-class="elevation-0"
+  >
+    <div class="select-none flex max-h-[90vh] flex-col overflow-hidden">
+      <!-- Header -->
+      <div class="flex items-center px-6 pt-6 pb-4">
+        <div class="flex items-center gap-3 flex-grow">
+          <div
+            class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-primary-light flex items-center justify-center shadow-[0_6px_14px_-6px_rgba(var(--v-theme-primary),0.7)] border border-white/20"
+          >
+            <v-icon size="20" color="white">system_update_alt</v-icon>
+          </div>
+          <div class="text-base font-bold tracking-tight" style="color: rgba(var(--v-theme-on-surface), 0.9);">
+            {{ t('instanceUpdate.title') }}
+          </div>
+        </div>
         <v-chip
           v-if="!refreshing && upgrade"
           size="small"
-          variant="flat"
-          color="white"
-          class="text-primary mr-2 font-medium"
+          variant="tonal"
+          color="primary"
+          class="mr-2 font-medium"
         >
           <v-icon start size="small">summarize</v-icon>
           {{ t('instanceUpdate.summary', {
@@ -28,9 +35,10 @@
         <v-btn
           icon="close"
           variant="text"
+          size="small"
           @click="cancel"
         />
-      </v-toolbar>
+      </div>
 
       <v-skeleton-loader
         v-if="refreshing"
@@ -38,6 +46,15 @@
         type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
       />
       <ErrorView :error="error" />
+
+      <!-- Empty state: no upgrade data -->
+      <div
+        v-if="!upgrade && !refreshing && !error"
+        class="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-16 opacity-60"
+      >
+        <v-icon size="48" color="primary">inventory_2</v-icon>
+        <div class="text-sm">{{ t('instanceUpdate.noFiles') }}</div>
+      </div>
 
       <div
         v-if="upgrade && !refreshing"
@@ -208,11 +225,20 @@
             keep: counts.keep,
           })"
         />
+
+        <!-- Empty state: no file changes at all -->
+        <div
+          v-else-if="fileNodes.length === 0"
+          class="flex flex-col items-center justify-center gap-3 py-12 opacity-60"
+        >
+          <v-icon size="40">check_circle</v-icon>
+          <div class="text-sm">{{ t('instanceUpdate.noFiles') }}</div>
+        </div>
       </div>
 
-      <v-divider />
+      <v-divider class="mx-6 opacity-20" />
 
-      <v-card-actions class="px-6 py-3">
+      <div class="flex items-center px-6 py-4">
         <v-btn
           :disabled="refreshing"
           variant="text"
@@ -234,8 +260,8 @@
         >
           {{ t('instanceUpdate.update') }}
         </v-btn>
-      </v-card-actions>
-    </v-card>
+      </div>
+    </div>
   </v-dialog>
 </template>
 

@@ -548,6 +548,20 @@ a {
     display: flex;
     flex-direction: column;
 }
+
+.v-dialog > .v-overlay__content > *:first-child {
+    backdrop-filter: blur(48px);
+    -webkit-backdrop-filter: blur(48px);
+    background: rgba(var(--v-theme-surface), 0.85) !important;
+    color: rgb(var(--v-theme-on-surface));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 32px !important;
+    box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.5);
+}
+
+.v-dialog > .v-overlay__content {
+    border-radius: 32px !important;
+}
 /* Slim section header used inside filter dropdowns / option panes.
    Mirrors v2's medium-emphasis v-list-subheader without dragging in
    v-list-subheader's surface background and large min-height. */

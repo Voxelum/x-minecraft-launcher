@@ -4,12 +4,10 @@
     data-testid="install-version-dialog"
     transition="fade-transition"
     width="760"
+    content-class="elevation-0"
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <v-card
-      variant="flat"
-      class="visible-scroll flex max-h-[90vh] flex-col overflow-hidden rounded-2xl! select-none"
-    >
+    <div class="visible-scroll flex max-h-[90vh] flex-col overflow-hidden select-none">
       <v-progress-linear
         class="absolute left-0 top-0 z-20 m-0 p-0"
         :active="loading"
@@ -18,28 +16,33 @@
         color="primary"
       />
 
-      <v-toolbar color="primary" flat density="comfortable">
-        <v-app-bar-nav-icon
-          v-if="!noBack && selectedDetail"
-          icon="arrow_back"
-          @click="selectedDetail = undefined"
-        />
-        <v-app-bar-nav-icon
-          v-else
-          icon="download"
-          :ripple="false"
-          style="cursor: default"
-        />
-        <v-toolbar-title class="font-medium">
-          {{ selectedDetail ? selectedDetail.version.name : t('shared.install') }}
-        </v-toolbar-title>
-        <v-spacer />
+      <!-- Header -->
+      <div class="flex items-center px-6 pt-6 pb-4">
+        <div class="flex items-center gap-3 flex-grow">
+          <v-btn
+            v-if="!noBack && selectedDetail"
+            icon="arrow_back"
+            variant="text"
+            size="small"
+            @click="selectedDetail = undefined"
+          />
+          <div
+            v-else
+            class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-primary-light flex items-center justify-center shadow-[0_6px_14px_-6px_rgba(var(--v-theme-primary),0.7)] border border-white/20"
+          >
+            <v-icon size="20" color="white">download</v-icon>
+          </div>
+          <div class="text-base font-bold tracking-tight" style="color: rgba(var(--v-theme-on-surface), 0.9);">
+            {{ selectedDetail ? selectedDetail.version.name : t('shared.install') }}
+          </div>
+        </div>
         <v-btn
           icon="close"
           variant="text"
+          size="small"
           @click="$emit('update:modelValue', false)"
         />
-      </v-toolbar>
+      </div>
 
       <div
         v-if="!selectedDetail"
@@ -209,7 +212,7 @@
           </div>
         </v-list>
       </div>
-    </v-card>
+    </div>
   </v-dialog>
 </template>
 
