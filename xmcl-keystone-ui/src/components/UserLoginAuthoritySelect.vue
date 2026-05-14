@@ -2,6 +2,8 @@
   <v-select
     v-model="selected"
     variant="outlined"
+    density="comfortable"
+    rounded="lg"
     prepend-inner-icon="vpn_key"
     :items="items"
     item-title="text"
@@ -19,7 +21,7 @@
         <template #prepend>
           <v-avatar>
             <v-img
-              v-if="item.icon.startsWith('http')"
+              v-if="item.icon.startsWith('http') || item.icon.startsWith('data:')"
               :src="item.icon"
             />
             <v-icon v-else>

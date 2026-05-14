@@ -8,9 +8,10 @@
   >
     <!-- Main Macos Window Container -->
     <div
-      class="overflow-hidden flex flex-row w-full bg-white/80 dark:bg-[#121212]/80 backdrop-blur-3xl rounded-3xl border border-white/40 dark:border-white/10 shadow-2xl transition-all duration-300"
+      class="overflow-hidden flex flex-row w-full backdrop-blur-3xl rounded-[32px] border border-white/20 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] transition-all duration-500 ease-out"
+      style="background: rgba(var(--v-theme-surface), 0.85); color: rgb(var(--v-theme-on-surface));"
       :class="{
-        'h-[600px]': login || addService,
+        'h-[680px]': login || addService,
         'h-[750px]': !login && !addService,
       }"
     >
@@ -19,7 +20,7 @@
         <template v-if="addService">
           <div
             :key="2"
-            class="flex-grow p-4 relative w-full h-full flex flex-col"
+            class="flex-grow p-6 relative w-full h-full flex flex-col"
           >
             <UserCardAddYggdrasilService
               class="w-full flex-grow"
@@ -28,12 +29,13 @@
           </div>
         </template>
         <template v-else-if="login">
-          <div :key="1" class="flex-grow flex flex-col w-full h-full">
-            <div class="w-full flex justify-between pt-6 px-6 relative z-50">
+          <div :key="1" class="flex flex-col w-full h-full relative overflow-y-auto invisible-scroll">
+            <div class="absolute top-0 left-0 w-full flex justify-between pt-6 px-6 z-50 pointer-events-none">
               <v-btn
                 v-if="users.length > 0"
                 icon
-                class="bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 transition-colors shadow-none"
+                class="transition-colors shadow-none hover:scale-105 active:scale-95 pointer-events-auto"
+                style="background: rgba(var(--v-theme-on-surface), 0.05);"
                 @click="login = false"
               >
                 <v-icon>arrow_back</v-icon>
@@ -42,14 +44,15 @@
 
               <v-btn
                 icon
-                class="bg-black/5 hover:bg-red-500 hover:text-white dark:bg-white/5 transition-colors shadow-none"
+                class="transition-colors shadow-none hover:scale-105 active:scale-95 hover:bg-red-500 hover:text-white pointer-events-auto"
+                style="background: rgba(var(--v-theme-on-surface), 0.05);"
                 @click="isShown = false"
               >
                 <v-icon>close</v-icon>
               </v-btn>
             </div>
             <div
-              class="flex-grow flex flex-col justify-center items-center px-6 pb-6 mt-[-30px]"
+              class="w-full flex justify-center items-start pt-16 px-6 pb-6"
             >
               <UserLoginForm
                 :inside="false"
@@ -67,71 +70,74 @@
           <div :key="0" class="flex flex-row w-full h-full">
             <!-- Left Sidebar: Account List -->
             <div
-              class="w-[280px] flex-shrink-0 flex flex-col bg-black/5 dark:bg-white/5 border-r border-black/10 dark:border-white/10"
+              class="w-[320px] flex-shrink-0 flex flex-col border-r backdrop-blur-md z-10"
+              style="background: rgba(var(--v-theme-on-surface), 0.03); border-color: rgba(var(--v-theme-on-surface), 0.08);"
             >
               <div
                 v-if="te('userAccount.accounts')"
-                class="px-5 py-5 text-sm font-bold text-gray-500/80 dark:text-gray-400/80 uppercase tracking-widest flex justify-between items-center"
+                class="px-6 py-6 text-xs font-bold uppercase tracking-widest flex justify-between items-center"
+                style="color: rgba(var(--v-theme-on-surface), 0.6);"
               >
                 {{ t("userAccount.accounts") }}
               </div>
-              <div v-else class="pt-4"></div>
+              <div v-else class="pt-6"></div>
               <div
-                class="flex-grow overflow-y-auto px-3 invisible-scroll flex flex-col gap-2 pb-4"
+                class="flex-grow overflow-y-auto px-4 invisible-scroll flex flex-col gap-3 pb-4"
               >
                 <div
                   v-for="item of usersToSwitchAndCurrent"
                   :key="item.id"
-                  class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200"
+                  class="group flex items-center gap-4 p-3.5 rounded-2xl cursor-pointer transition-all duration-300 ease-out border"
                   :class="
                     item.id === selected?.id
-                      ? 'bg-primary/10 dark:bg-primary/20 shadow-sm border border-primary/20'
-                      : 'hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'
+                      ? 'bg-gradient-to-r from-primary to-primary-light text-white shadow-lg shadow-primary/30 border-transparent transform scale-[1.02]'
+                      : 'hover:shadow-md'
                   "
+                  :style="item.id !== selected?.id ? 'background: rgba(var(--v-theme-on-surface), 0.05); border-color: rgba(var(--v-theme-on-surface), 0.08);' : ''"
                   @click="onSelectUser(item.id)"
                 >
-                  <img
-                    v-if="item.avatar"
-                    :src="item.avatar"
-                    class="w-[44px] h-[44px] object-cover rounded-full flex-shrink-0"
-                  />
-                  <PlayerAvatar
-                    v-else
-                    class="overflow-hidden rounded-full flex-shrink-0"
-                    :src="
-                      item.profiles[item.selectedProfile]?.textures?.SKIN?.url
-                    "
-                    :dimension="44"
-                  />
+                  <div class="relative flex-shrink-0">
+                    <img
+                      v-if="item.avatar"
+                      :src="item.avatar"
+                      class="w-[48px] h-[48px] object-cover rounded-full shadow-inner"
+                    />
+                    <PlayerAvatar
+                      v-else
+                      class="overflow-hidden rounded-full shadow-inner"
+                      style="background: rgba(var(--v-theme-on-surface), 0.1);"
+                      :src="
+                        item.profiles[item.selectedProfile]?.textures?.SKIN?.url
+                      "
+                      :dimension="48"
+                    />
+                    <div
+                      v-if="item.id === selected?.id"
+                      class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-[3px] border-white dark:border-[#1a1a1a]"
+                    ></div>
+                  </div>
+                  
                   <div class="flex flex-col flex-grow overflow-hidden">
                     <span
-                      class="font-semibold text-sm truncate"
-                      :class="
-                        item.id === selected?.id
-                          ? 'text-primary dark:text-primary-light'
-                          : ''
-                      "
+                      class="font-bold text-[15px] truncate transition-colors duration-200"
+                      :style="item.id === selected?.id ? '' : 'color: rgba(var(--v-theme-on-surface), 0.9);'"
                     >
                       {{ maskUserName(item.username) }}
                     </span>
-                    <div class="flex items-center gap-1 text-xs opacity-70">
-                      <v-icon x-small color="blue">verified</v-icon>
+                    <div class="flex items-center gap-1.5 mt-0.5 text-xs font-medium" :style="item.id === selected?.id ? 'color: rgba(255,255,255,0.8);' : 'color: rgba(var(--v-theme-on-surface), 0.6);'">
+                      <v-icon x-small :style="item.id === selected?.id ? 'color: white;' : 'color: #3b82f6;'">verified</v-icon>
                       <span class="truncate">{{
                         getAuthorityName(item.authority)
                       }}</span>
                     </div>
                   </div>
-                  <div
-                    v-if="item.id === selected?.id"
-                    class="flex-shrink-0 w-2 h-2 rounded-full bg-primary"
-                  ></div>
                 </div>
               </div>
 
               <!-- Add Account Button -->
-              <div class="p-4 border-t border-black/10 dark:border-white/10">
+              <div class="p-5 border-t" style="border-color: rgba(var(--v-theme-on-surface), 0.08); background: rgba(var(--v-theme-on-surface), 0.02);">
                 <button
-                  class="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-primary text-white rounded-xl hover:bg-primary-dark transition-all font-medium shadow-md shadow-primary/30 active:scale-95 duration-100"
+                  class="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-gradient-to-r from-primary to-primary hover:from-primary-light hover:to-primary text-white rounded-2xl transition-all duration-300 font-bold shadow-[0_8px_20px_-6px_rgba(var(--v-theme-primary),0.5)] hover:shadow-[0_12px_25px_-6px_rgba(var(--v-theme-primary),0.6)] active:scale-[0.98] transform hover:-translate-y-0.5"
                   @click="login = true"
                 >
                   <v-icon size="20">person_add</v-icon>
@@ -145,10 +151,11 @@
               class="flex-grow flex flex-col relative bg-transparent overflow-hidden"
             >
               <!-- Top Header Actions -->
-              <div class="absolute top-4 right-5 z-20 flex gap-2">
+              <div class="absolute top-6 right-6 z-20 flex gap-3">
                 <v-btn
                   icon
-                  class="bg-black/5 dark:bg-white/5 backdrop-blur-md hover:bg-black/10 dark:hover:bg-white/10 transition-all shadow-sm"
+                  class="backdrop-blur-xl border transition-all shadow-sm hover:shadow-md hover:scale-105 active:scale-95"
+                  style="background: rgba(var(--v-theme-on-surface), 0.05); border-color: rgba(var(--v-theme-on-surface), 0.1);"
                   :loading="refreshing"
                   @click="onRefresh(true)"
                 >
@@ -157,14 +164,15 @@
                 <v-btn
                   icon
                   color="error"
-                  class="bg-red-500/10 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                  class="transition-all shadow-sm border border-red-500/20 hover:border-red-500 hover:shadow-red-500/30 hover:shadow-lg hover:scale-105 active:scale-95"
+                  style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"
                   @click="deleteDialog.show(true)"
                 >
                   <v-icon size="20">delete</v-icon>
                 </v-btn>
               </div>
 
-              <div class="flex-grow overflow-y-auto invisible-scroll p-8 pb-12">
+              <div class="flex-grow overflow-y-auto invisible-scroll p-10 pb-12">
                 <UserCardMicrosoft
                   v-if="selected && selected.authority === AUTHORITY_MICROSOFT"
                   :user="selected"
@@ -173,10 +181,11 @@
 
                 <div
                   v-if="!selected"
-                  class="w-full h-full flex flex-col items-center justify-center opacity-50"
+                  class="w-full h-full flex flex-col items-center justify-center opacity-40"
+                  style="color: rgba(var(--v-theme-on-surface), 0.5);"
                 >
-                  <v-icon size="64" class="mb-4">person_off</v-icon>
-                  <span class="text-lg font-medium">{{
+                  <v-icon size="80" class="mb-6 drop-shadow-lg">person_off</v-icon>
+                  <span class="text-xl font-bold tracking-wide">{{
                     t("userAccount.noAccount")
                   }}</span>
                 </div>

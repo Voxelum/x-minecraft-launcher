@@ -618,6 +618,8 @@ loginError:
   requireEmail: E-mail is required
   requirePassword: Password is required
   requireUsername: Username is required
+  cyrillicNotAllowed: Cyrillic characters are not allowed
+  illegalOfflineUsername: Username must be 3-16 characters long and contain only English letters, numbers, and underscores
   timeout: Login timeout. Please retry or check your network.
 logsCrashes:
   crashes: Crash Reports

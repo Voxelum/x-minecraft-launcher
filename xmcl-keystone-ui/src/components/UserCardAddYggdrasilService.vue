@@ -1,23 +1,23 @@
 <template>
-  <div class="flex flex-col overflow-hidden">
-    <div class="relative flex items-center px-4 pt-3">
+  <div class="flex flex-col overflow-hidden w-full h-full relative">
+    <div class="relative flex items-center px-4 pt-2 z-10 pointer-events-none pb-2 border-b" style="border-color: rgba(var(--v-theme-on-surface), 0.08);">
       <v-btn
         icon="arrow_back"
-        variant="text"
-        density="comfortable"
+        variant="tonal"
+        class="hover:scale-105 active:scale-95 transition-all pointer-events-auto"
         @click="$emit('back')"
       />
-      <span class="ml-2 text-base font-medium">{{ t('userService.title') }}</span>
+      <span class="ml-4 text-xl font-bold tracking-tight" style="color: rgba(var(--v-theme-on-surface), 0.9);">{{ t('userService.title') }}</span>
     </div>
-    <div class="p-6 flex flex-col gap-4 text-left overflow-auto">
+    <div class="p-6 flex flex-col gap-6 text-left overflow-y-auto invisible-scroll">
       <v-card
         v-for="(a, i) in items"
         :key="i"
-        variant="outlined"
-        rounded="xl"
-        class="overflow-hidden"
+        variant="flat"
+        class="overflow-hidden border backdrop-blur-md rounded-[2rem] transition-all hover:shadow-lg"
+        style="background: rgba(var(--v-theme-surface), 0.6); border-color: rgba(var(--v-theme-on-surface), 0.1);"
       >
-        <div class="flex gap-3 flex-row items-center px-4 pt-4">
+        <div class="flex gap-4 flex-col md:flex-row items-center px-6 pt-6 pb-2">
           <v-text-field
             v-if="a.new"
             v-model="a.url"
@@ -27,73 +27,82 @@
             prepend-inner-icon="link"
             hide-details
             density="comfortable"
+            rounded="lg"
             :label="t('userService.baseUrlHint')"
-            class="flex-1"
+            class="flex-1 w-full"
           />
           <div
             v-else-if="resolvePreview(a.url)"
-            class="flex-grow rounded-lg border border-dashed border-outline-variant px-3 py-2 text-xs text-medium-emphasis"
+            class="flex-grow rounded-xl border border-dashed px-4 py-3 text-sm w-full md:w-auto"
+            style="border-color: rgba(var(--v-theme-on-surface), 0.2); background: rgba(var(--v-theme-on-surface), 0.02);"
           >
-            <div class="text-[11px] uppercase tracking-wide text-disabled">
+            <div class="text-[11px] uppercase tracking-wide opacity-60 font-bold mb-1">
               {{ t('userService.baseUrlHint') }}
             </div>
-            <div class="font-mono break-all text-sm">{{ resolvePreview(a.url) }}</div>
+            <div class="font-mono break-all font-medium opacity-90">{{ resolvePreview(a.url) }}</div>
           </div>
-          <v-btn
-            v-if="a.new"
-            icon="add"
-            variant="tonal"
-            density="comfortable"
-            color="primary"
-            @click="save(a)"
-          />
-          <v-btn
-            v-else
-            icon="delete"
-            variant="tonal"
-            density="comfortable"
-            color="error"
-            @click="remove(a)"
-          />
+          <div class="flex items-center gap-2 self-end md:self-center">
+            <v-btn
+              v-if="a.new"
+              icon="add"
+              variant="tonal"
+              density="comfortable"
+              color="primary"
+              class="hover:scale-110 transition-transform"
+              @click="save(a)"
+            />
+            <v-btn
+              v-else
+              icon="delete"
+              variant="tonal"
+              density="comfortable"
+              color="error"
+              class="hover:scale-110 transition-transform"
+              @click="remove(a)"
+            />
+          </div>
         </div>
 
         <v-card
           variant="tonal"
-          rounded="lg"
-          class="mx-4 my-4 px-4 py-3"
+          rounded="xl"
+          class="mx-6 my-4 px-5 py-4"
+          style="background: rgba(var(--v-theme-on-surface), 0.03);"
         >
           <template v-if="a.authlibInjector">
-            <div class="text-sm font-medium flex items-center gap-2">
+            <div class="text-sm font-bold flex items-center gap-3 mb-4 opacity-90">
               <img
                 v-if="a.favicon"
                 :src="a.favicon"
                 alt="favicon"
-                class="h-5 w-5 rounded-sm"
+                class="h-6 w-6 rounded shadow-sm"
               >
+              <v-icon v-else size="24" class="opacity-50">api</v-icon>
               {{ t('userService.authlibInjectorMetadata') }}
             </div>
-            <div class="mt-3 grid gap-2 text-sm md:grid-cols-2">
-              <div>
-                <div class="text-[11px] uppercase tracking-wide text-disabled">{{ t('userService.server') }}</div>
-                <div class="font-mono">{{ a.authlibInjector.meta?.serverName || '-' }}</div>
+            <div class="grid gap-4 text-sm md:grid-cols-2">
+              <div class="p-3 rounded-lg border" style="background: rgba(var(--v-theme-surface), 0.4); border-color: rgba(var(--v-theme-on-surface), 0.05);">
+                <div class="text-[10px] uppercase tracking-wider opacity-60 font-bold mb-1">{{ t('userService.server') }}</div>
+                <div class="font-mono font-medium">{{ a.authlibInjector.meta?.serverName || '-' }}</div>
               </div>
-              <div>
-                <div class="text-[11px] uppercase tracking-wide text-disabled">{{ t('userService.implementation') }}</div>
-                <div class="font-mono">{{ a.authlibInjector.meta?.implementationName || '-' }}</div>
+              <div class="p-3 rounded-lg border" style="background: rgba(var(--v-theme-surface), 0.4); border-color: rgba(var(--v-theme-on-surface), 0.05);">
+                <div class="text-[10px] uppercase tracking-wider opacity-60 font-bold mb-1">{{ t('userService.implementation') }}</div>
+                <div class="font-mono font-medium">{{ a.authlibInjector.meta?.implementationName || '-' }}</div>
               </div>
-              <div>
-                <div class="text-[11px] uppercase tracking-wide text-disabled">{{ t('userService.version') }}</div>
-                <div class="font-mono">{{ a.authlibInjector.meta?.implementationVersion || '-' }}</div>
+              <div class="p-3 rounded-lg border" style="background: rgba(var(--v-theme-surface), 0.4); border-color: rgba(var(--v-theme-on-surface), 0.05);">
+                <div class="text-[10px] uppercase tracking-wider opacity-60 font-bold mb-1">{{ t('userService.version') }}</div>
+                <div class="font-mono font-medium">{{ a.authlibInjector.meta?.implementationVersion || '-' }}</div>
               </div>
-              <div v-if="a.authlibInjector.skinDomains?.length">
-                <div class="text-[11px] uppercase tracking-wide text-disabled">{{ t('userService.skinDomains') }}</div>
-                <div class="font-mono break-words flex flex-wrap gap-1">
+              <div class="p-3 rounded-lg border" style="background: rgba(var(--v-theme-surface), 0.4); border-color: rgba(var(--v-theme-on-surface), 0.05);" v-if="a.authlibInjector.skinDomains?.length">
+                <div class="text-[10px] uppercase tracking-wider opacity-60 font-bold mb-1">{{ t('userService.skinDomains') }}</div>
+                <div class="font-mono break-words flex flex-wrap gap-1 mt-1">
                   <v-chip
                     v-for="(domain, idx) in getVisibleSkinDomains(a.authlibInjector.skinDomains)"
                     :key="domain + idx"
                     size="x-small"
                     variant="flat"
-                    label
+                    color="primary"
+                    class="font-bold tracking-wide"
                   >
                     {{ domain }}
                   </v-chip>
@@ -102,42 +111,45 @@
                     v-shared-tooltip="() => getHiddenSkinDomains(a.authlibInjector.skinDomains).join('\n')"
                     size="x-small"
                     variant="tonal"
-                    label
+                    color="primary"
+                    class="font-bold"
                   >
                     +{{ getHiddenSkinDomains(a.authlibInjector.skinDomains).length }}
                   </v-chip>
                 </div>
               </div>
             </div>
-            <div class="mt-3 grid gap-2 text-sm md:grid-cols-2">
-              <div>
-                <div class="text-[11px] uppercase tracking-wide text-disabled">{{ t('userService.homepage') }}</div>
+            
+            <div class="mt-4 grid gap-4 text-sm md:grid-cols-2">
+              <div class="p-3 rounded-lg border" style="background: rgba(var(--v-theme-surface), 0.4); border-color: rgba(var(--v-theme-on-surface), 0.05);">
+                <div class="text-[10px] uppercase tracking-wider opacity-60 font-bold mb-1 flex items-center gap-1"><v-icon size="12">home</v-icon> {{ t('userService.homepage') }}</div>
                 <a
                   v-if="a.authlibInjector.meta?.links?.homepage"
                   :href="a.authlibInjector.meta.links.homepage"
                   target="browser"
-                  class="text-primary underline break-all"
+                  class="text-primary hover:text-primary-light hover:underline break-all transition-colors font-medium"
                 >
                   {{ a.authlibInjector.meta.links.homepage }}
                 </a>
-                <span v-else class="text-disabled">-</span>
+                <span v-else class="opacity-40">-</span>
               </div>
-              <div>
-                <div class="text-[11px] uppercase tracking-wide text-disabled">{{ t('userService.register') }}</div>
+              <div class="p-3 rounded-lg border" style="background: rgba(var(--v-theme-surface), 0.4); border-color: rgba(var(--v-theme-on-surface), 0.05);">
+                <div class="text-[10px] uppercase tracking-wider opacity-60 font-bold mb-1 flex items-center gap-1"><v-icon size="12">person_add</v-icon> {{ t('userService.register') }}</div>
                 <a
                   v-if="a.authlibInjector.meta?.links?.register"
                   :href="a.authlibInjector.meta.links.register"
                   target="browser"
-                  class="text-primary underline break-all"
+                  class="text-primary hover:text-primary-light hover:underline break-all transition-colors font-medium"
                 >
                   {{ a.authlibInjector.meta.links.register }}
                 </a>
-                <span v-else class="text-disabled">-</span>
+                <span v-else class="opacity-40">-</span>
               </div>
             </div>
           </template>
           <template v-else>
-            <div class="text-sm text-medium-emphasis">
+            <div class="text-sm font-medium opacity-60 flex items-center justify-center gap-2 py-2">
+              <v-icon>info</v-icon>
               {{ t('userService.title') }}
             </div>
           </template>

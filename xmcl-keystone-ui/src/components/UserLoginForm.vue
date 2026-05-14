@@ -3,11 +3,20 @@
     v-if="showDropHint"
     icon="save_alt"
     :text="t('login.dropHint').toString()"
+    class="text-lg font-medium tracking-wide drop-shadow-md"
   />
   <div
     v-else
-    class="login-form mx-auto w-full max-w-md px-8 py-10 flex flex-col gap-4"
+    class="login-form mx-auto w-full max-w-md px-6 py-8 flex flex-col gap-5"
   >
+    <!-- Header / Branding Area -->
+    <div class="flex flex-col items-center mb-2">
+      <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-primary to-primary-light flex items-center justify-center mb-4 shadow-[0_10px_20px_-10px_rgba(var(--v-theme-primary),0.8)] border border-white/20">
+        <v-icon size="32" color="white">person</v-icon>
+      </div>
+      <h2 class="text-2xl font-bold tracking-tight" style="color: rgba(var(--v-theme-on-surface), 0.9);">{{ t('login.login') }}</h2>
+    </div>
+
     <UserLoginAuthoritySelect
       v-model="authority"
       data-testid="login-authority"
@@ -24,7 +33,8 @@
       :items="history"
       prepend-inner-icon="person"
       variant="outlined"
-      density="default"
+      density="comfortable"
+      rounded="lg"
       required
       :label="getUserServiceAccount(authority)"
       :rules="usernameRules"
@@ -41,7 +51,8 @@
       data-testid="login-username"
       prepend-inner-icon="person"
       variant="outlined"
-      density="default"
+      density="comfortable"
+      rounded="lg"
       required
       type="password"
       :label="getUserServiceAccount(authority)"
@@ -58,7 +69,8 @@
       data-testid="login-password"
       prepend-inner-icon="lock"
       variant="outlined"
-      density="default"
+      density="comfortable"
+      rounded="lg"
       :type="passwordType"
       required
       :label="passwordLabel"
@@ -75,7 +87,8 @@
       v-else
       v-model="data.uuid"
       variant="outlined"
-      density="default"
+      density="comfortable"
+      rounded="lg"
       prepend-inner-icon="fingerprint"
       :placeholder="uuidLabel"
       :label="uuidLabel"
@@ -88,20 +101,22 @@
       v-model="data.useDeviceCode"
       density="compact"
       hide-details
+      color="primary"
       :label="t('userServices.microsoft.useDeviceCode')"
     />
 
     <div
-      class="mt-2"
+      class="mt-4"
       @mouseenter="onMouseEnterLogin"
       @mouseleave="onMouseLeaveLogin"
     >
       <v-btn
         block
         data-testid="login-submit"
-        size="large"
-        rounded="pill"
-        color="primary"
+        size="x-large"
+        rounded="xl"
+        class="text-white font-bold tracking-wider shadow-[0_10px_25px_-8px_rgba(var(--v-theme-primary),0.6)] hover:shadow-[0_15px_30px_-8px_rgba(var(--v-theme-primary),0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+        style="background: linear-gradient(to right, rgb(var(--v-theme-primary)), rgb(var(--v-theme-primary-light), 0.9));"
         :loading="isLogining && (!hovered)"
         :prepend-icon="isLogining ? undefined : 'login'"
         @click="onLogin"
@@ -123,41 +138,45 @@
       variant="tonal"
       color="info"
       rounded="lg"
-      class="mt-2 text-left"
+      class="mt-3 text-left border border-info/30"
     >
       <a
         :href="data.verificationUri"
         target="browser"
-        class="text-info underline break-all text-sm"
+        class="text-info underline break-all text-sm font-medium hover:text-info-dark transition-colors"
       >
         {{ t('login.manualLoginUrl') }}
       </a>
     </v-alert>
 
-    <div class="mt-2 flex flex-col gap-1 items-center text-xs text-medium-emphasis">
+    <div class="mt-4 flex flex-col gap-3 items-center text-sm font-medium">
       <a
         v-if="authority === AUTHORITY_MICROSOFT"
         target="browser"
         href="https://my.minecraft.net/en-us/password/forgot/"
-        class="text-primary hover:underline"
+        class="hover:underline transition-colors opacity-70 hover:opacity-100"
+        style="color: rgba(var(--v-theme-on-surface), 0.8);"
       >
         {{ t("login.forgetPassword") }}
       </a>
       <div
         v-if="signUpLink"
-        class="flex items-center gap-2 flex-wrap justify-center"
+        class="flex items-center gap-3 flex-wrap justify-center py-2 px-4 rounded-xl border w-full backdrop-blur-sm"
+        style="background: rgba(var(--v-theme-on-surface), 0.03); border-color: rgba(var(--v-theme-on-surface), 0.08);"
       >
         <a
           target="browser"
           :href="signUpLink"
-          class="text-primary hover:underline"
+          class="hover:underline transition-colors opacity-70 hover:opacity-100"
+          style="color: rgba(var(--v-theme-on-surface), 0.8);"
         >
           {{ t("login.signupDescription") }}
           {{ t("login.signup") }}
         </a>
-        <span class="text-disabled">·</span>
+        <span class="opacity-30" style="color: rgba(var(--v-theme-on-surface), 0.5);">|</span>
         <a
-          class="text-primary hover:underline cursor-pointer"
+          class="hover:underline cursor-pointer transition-colors opacity-70 hover:opacity-100"
+          style="color: rgba(var(--v-theme-on-surface), 0.8);"
           @click.stop="$emit('add-service')"
         >
           {{ manageAuthorityLabel }}
@@ -272,7 +291,7 @@ on('device-code', (code) => {
 const {
   usernameRules,
   passwordRules,
-} = useLoginValidation(emailOnly)
+} = useLoginValidation(emailOnly, isOffline)
 
 // Login Error
 const errorMessage = computed(() => {

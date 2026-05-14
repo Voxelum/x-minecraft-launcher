@@ -99,16 +99,25 @@ export function useUserExpired(user: Ref<UserProfile | undefined>) {
   return computed(() => !user.value || user.value?.invalidated || user.value.expiredAt < Date.now())
 }
 
-export function useLoginValidation(emailOnly: Ref<boolean>) {
+export function useLoginValidation(emailOnly: Ref<boolean>, isOffline?: Ref<boolean>) {
   const { t } = useI18n()
-  const nameRules = [(v: unknown) => !!v || t('loginError.requireUsername')]
+  const nameRules = computed(() => {
+    const rules: ((v: any) => string | boolean)[] = [
+      (v: unknown) => !!v || t('loginError.requireUsername')
+    ]
+    if (isOffline?.value) {
+      rules.push((v: string) => !/[а-яА-ЯёЁ]/.test(v) || t('loginError.cyrillicNotAllowed'))
+      rules.push((v: string) => /^[a-zA-Z0-9_]{3,16}$/.test(v) || t('loginError.illegalOfflineUsername'))
+    }
+    return rules
+  })
   const emailRules = [
     (v: unknown) => !!v || t('loginError.requireEmail'),
     (v: string) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,6})+$/.test(v) ||
       t('loginError.illegalEmail'),
   ]
   const passwordRules = [(v: unknown) => !!v || t('loginError.requirePassword')]
-  const usernameRules = computed(() => emailOnly.value ? emailRules : nameRules)
+  const usernameRules = computed(() => emailOnly.value ? emailRules : nameRules.value)
   return {
     usernameRules,
     passwordRules }
