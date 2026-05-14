@@ -224,17 +224,17 @@ const save_ = watcherTask(save, t('userSkin.upload'))
 }
 
 .skin-model-toggle {
-  background: rgba(0, 0, 0, 0.45) !important;
+  background: rgba(var(--v-theme-on-surface), 0.08) !important;
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.1) !important;
 }
 
 .skin-model-toggle .v-btn {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: rgba(var(--v-theme-on-surface), 0.5) !important;
 }
 
 .skin-model-toggle .v-btn--active {
-  color: rgba(255, 255, 255, 0.95) !important;
-  background: rgba(255, 255, 255, 0.12) !important;
+  color: rgb(var(--v-theme-on-surface)) !important;
+  background: rgba(var(--v-theme-on-surface), 0.12) !important;
 }
 </style>

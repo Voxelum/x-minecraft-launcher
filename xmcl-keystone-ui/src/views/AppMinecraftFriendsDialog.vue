@@ -37,7 +37,7 @@
           variant="text"
           size="small"
           :loading="loading"
-          :title="t('minecraftFriends.refresh')"
+          :title="t('shared.refresh')"
           @click="refresh(true)"
         >
           <v-icon size="18">refresh</v-icon>
@@ -224,7 +224,7 @@
                 @click="onRevoke(f)"
               >
                 <v-icon start size="16">undo</v-icon>
-                {{ t('minecraftFriends.cancel') }}
+                {{ t('shared.cancel') }}
               </v-btn>
             </div>
           </div>

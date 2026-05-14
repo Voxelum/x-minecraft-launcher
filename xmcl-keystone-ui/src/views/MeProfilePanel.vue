@@ -15,17 +15,25 @@
             style="background: rgba(var(--v-theme-on-surface), 0.04); border-color: rgba(var(--v-theme-on-surface), 0.08);"
             data-testid="me-user-switcher"
           >
-            <PlayerAvatar
-              class="overflow-hidden rounded-full flex-shrink-0"
-              :src="gameProfile?.textures?.SKIN?.url"
-              :dimension="40"
-            />
+            <div class="relative flex-shrink-0 group/avatar">
+              <PlayerAvatar
+                class="overflow-hidden rounded-full"
+                :src="gameProfile?.textures?.SKIN?.url"
+                :dimension="40"
+              />
+              <div
+                class="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer"
+                @click.stop="onRefreshUser"
+              >
+                <v-icon size="18" color="white" :class="{ 'animate-spin': refreshingUser }">refresh</v-icon>
+              </div>
+            </div>
             <div class="flex flex-col flex-grow min-w-0">
               <span class="font-bold text-sm truncate">
                 {{ gameProfile?.name || t('login.login') }}
               </span>
-              <span class="text-xs opacity-60 truncate">
-                {{ authorityLabel }}
+              <span class="text-xs truncate" :class="currentUserExpired ? 'text-error' : 'opacity-60'">
+                {{ currentUserExpired ? t('user.tokenExpired') : authorityLabel }}
               </span>
             </div>
             <v-icon size="18" class="flex-shrink-0 opacity-60">
@@ -54,8 +62,8 @@
               <v-list-item-title class="text-sm font-medium">
                 {{ u.profiles[u.selectedProfile]?.name || u.username }}
               </v-list-item-title>
-              <v-list-item-subtitle class="text-xs">
-                {{ getAuthorityName(u.authority) }}
+              <v-list-item-subtitle class="text-xs" :class="isUserExpired(u) ? 'text-error' : ''">
+                {{ isUserExpired(u) ? t('user.tokenExpired') : getExpiryLabel(u) }}
               </v-list-item-subtitle>
               <template #append>
                 <v-icon v-if="u.id === userProfile.id" size="16" color="primary">check</v-icon>
@@ -113,7 +121,7 @@
             class="cape-thumb flex-shrink-0 cursor-pointer rounded-lg border transition-all flex items-center justify-center hover:scale-110 hover:-translate-y-0.5"
             :class="!skinModel.cape.value
               ? 'border-primary bg-primary/15 shadow-sm shadow-primary/20'
-              : 'border-transparent hover:border-white/15 hover:bg-white/5'"
+              : 'border-transparent hover:border-[rgba(var(--v-theme-on-surface),0.15)] hover:bg-[rgba(var(--v-theme-on-surface),0.05)]'"
             @click="selectCape(undefined)"
           >
             <div class="w-full h-full border border-dashed border-current rounded opacity-30 flex items-center justify-center">
@@ -128,7 +136,7 @@
             class="cape-thumb flex-shrink-0 cursor-pointer rounded-lg border transition-all overflow-hidden hover:scale-110 hover:-translate-y-0.5"
             :class="skinModel.cape.value === c.url
               ? 'border-primary bg-primary/15 shadow-sm shadow-primary/20'
-              : 'border-transparent hover:border-white/15 hover:bg-white/5'"
+              : 'border-transparent hover:border-[rgba(var(--v-theme-on-surface),0.15)] hover:bg-[rgba(var(--v-theme-on-surface),0.05)]'"
             @click="selectCape(c.url)"
           >
             <div class="cape-scale-wrapper">
@@ -138,10 +146,6 @@
         </div>
       </div>
     </div>
-
-    <v-divider class="mx-4 opacity-30" />
-
-    <!-- Friends section -->
     <div class="friends-section flex-grow min-h-0 flex flex-col overflow-hidden px-3 py-3">
       <div class="flex items-center justify-between mb-2 px-1">
         <div class="text-[10px] font-semibold uppercase tracking-widest opacity-50 flex items-center gap-1.5">
@@ -152,7 +156,7 @@
           icon
           variant="text"
           size="x-small"
-          :title="t('minecraftFriends.refresh')"
+          :title="t('shared.refresh')"
           :loading="friendsLoading"
           @click="refreshFriends(true)"
         >
@@ -275,8 +279,8 @@ import { useUserMenuControl } from '@/composables/userMenu'
 import { UserSkinModel, UserSkinRenderPaused, useUserSkin } from '@/composables/userSkin'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, MinecraftFriendsServiceKey } from '@xmcl/runtime-api'
-import type { MinecraftFriend } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, MinecraftFriendsServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import type { MinecraftFriend, UserProfile } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 
@@ -315,6 +319,7 @@ function onCapeWheel(e: WheelEvent) {
 }
 
 const authorityLabel = computed(() => getAuthorityName(userProfile.value.authority))
+const currentUserExpired = computed(() => userProfile.value.invalidated || userProfile.value.expiredAt < Date.now())
 
 const userMenuOpen = ref(false)
 
@@ -327,9 +332,40 @@ function getAuthorityName(authority: string) {
   return authority
 }
 
+function isUserExpired(u: UserProfile) {
+  return u.invalidated || u.expiredAt < Date.now()
+}
+
+function getExpiryLabel(u: UserProfile) {
+  if (u.authority === AUTHORITY_DEV) return t('userServices.offline.name')
+  const diff = u.expiredAt - Date.now()
+  if (diff <= 0) return t('user.tokenExpired')
+  const hours = Math.floor(diff / 3600000)
+  const mins = Math.floor((diff % 3600000) / 60000)
+  if (hours > 24) {
+    const days = Math.floor(hours / 24)
+    return t('user.tokenValidUntil') + ' · ' + t('relative.daysAgo', { count: days }).replace(/ ago$/, '')
+  }
+  if (hours > 0) return t('user.tokenValidUntil') + ' · ' + hours + 'h ' + mins + 'm'
+  return t('user.tokenValidUntil') + ' · ' + mins + 'm'
+}
+
 function onSwitchUser(id: string) {
   select(id)
   userMenuOpen.value = false
+}
+
+const { refreshUser } = useService(UserServiceKey)
+const refreshingUser = ref(false)
+
+async function onRefreshUser() {
+  if (refreshingUser.value) return
+  refreshingUser.value = true
+  try {
+    await refreshUser(userProfile.value.id)
+  } finally {
+    refreshingUser.value = false
+  }
 }
 
 const { show: showUserProfileDialog } = useUserMenuControl()
@@ -360,8 +396,8 @@ async function onRemoveFriend(f: MinecraftFriend) {
 .me-profile-panel {
   width: 280px;
   min-width: 280px;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(0, 0, 0, 0.15);
+  border-right: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  background: rgba(var(--v-theme-surface), 0.6);
   backdrop-filter: blur(12px);
 }
 
@@ -398,7 +434,7 @@ async function onRemoveFriend(f: MinecraftFriend) {
 
 .invisible-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: rgba(var(--v-theme-on-surface), 0.1) transparent;
 }
 
 .invisible-scroll::-webkit-scrollbar {
@@ -406,7 +442,7 @@ async function onRemoveFriend(f: MinecraftFriend) {
 }
 
 .invisible-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(var(--v-theme-on-surface), 0.1);
   border-radius: 3px;
 }
 

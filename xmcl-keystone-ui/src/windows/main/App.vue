@@ -118,7 +118,8 @@ provide(kMinecraftFriends, useMinecraftFriendsImpl())
 const userProfileDialogShown = ref(false)
 const userMenu = useUserMenuControl()
 userMenu.on(() => { userProfileDialogShown.value = true })
-provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value))
+const route = useRoute()
+provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value && route.path !== '/me'))
 
 // Bind Ctrl/Cmd+K to toggle the command palette.
 useCommandPaletteHotkey()
