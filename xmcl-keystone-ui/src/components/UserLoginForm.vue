@@ -363,7 +363,7 @@ const { refresh: onLogin, error } = useRefreshable(async () => {
   for (const rule of usernameRules.value) {
     const err = rule(data.username)
     if (err !== true) {
-      throw new Error(err)
+      throw new Error(typeof err === 'string' ? err : 'Validation failed')
     }
   }
 
@@ -371,7 +371,7 @@ const { refresh: onLogin, error } = useRefreshable(async () => {
     for (const rule of passwordRules) {
       const err = rule(data.password)
       if (err !== true) {
-        throw new Error(err)
+        throw new Error(typeof err === 'string' ? err : 'Validation failed')
       }
     }
   }
