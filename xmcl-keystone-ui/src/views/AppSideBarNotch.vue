@@ -28,11 +28,16 @@
         <AppSideBarNotchItem
           id="my-stuff-button"
           data-testid="nav-accounts"
-          icon="widgets"
           :icon-size="iconSize"
           :tooltip="() => ({ text: t('myStuff'), direction: tooltipDirection })"
           to="/me"
-        />
+        >
+          <PlayerAvatar
+            class="overflow-hidden rounded-full"
+            :src="gameProfile?.textures?.SKIN?.url"
+            :dimension="28"
+          />
+        </AppSideBarNotchItem>
 
         <!-- Store -->
         <AppSideBarNotchItem
@@ -110,6 +115,7 @@
 </template>
 
 <script lang="ts" setup>
+import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import { useDialog } from '@/composables/dialog'
 import { useInstanceGroup } from '@/composables/instanceGroup'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
@@ -117,6 +123,7 @@ import { kInstances } from '@/composables/instances'
 import { kSettingsState } from '@/composables/setting'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 import { kTheme } from '@/composables/theme'
+import { kUserContext } from '@/composables/user'
 import { injection } from '@/util/inject'
 import { computed, ref } from 'vue'
 import AppSideBarNotchItem from './AppSideBarNotchItem.vue'
@@ -126,6 +133,7 @@ import AppSideBarNotchItemInstance from './AppSideBarNotchItemInstance.vue'
 const { blurSidebar, sideBarColor } = injection(kTheme)
 const { instances } = injection(kInstances)
 const { state } = injection(kSettingsState)
+const { gameProfile } = injection(kUserContext)
 const { position, align, scale, autoHide } = useInjectSidebarSettings()
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
 

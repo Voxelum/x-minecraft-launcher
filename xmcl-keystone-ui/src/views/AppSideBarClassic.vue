@@ -21,9 +21,14 @@
         id="my-stuff-button"
         data-testid="nav-accounts"
         v-shared-tooltip.right="() => t('myStuff')"
-        icon="widgets"
         to="/me"
-      />
+      >
+        <PlayerAvatar
+          class="overflow-hidden rounded-full"
+          :src="gameProfile?.textures?.SKIN?.url"
+          :dimension="32"
+        />
+      </AppSideBarItem>
 
       <AppSideBarItem
         data-testid="nav-store"
@@ -103,7 +108,11 @@
         to="/me"
         class="non-moveable mr-1"
       >
-        <v-icon>widgets</v-icon>
+        <PlayerAvatar
+          class="overflow-hidden rounded-full"
+          :src="gameProfile?.textures?.SKIN?.url"
+          :dimension="28"
+        />
       </v-btn>
 
       <v-btn
@@ -159,10 +168,12 @@
 </template>
 
 <script lang="ts" setup>
+import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import { useDragAutoScroll } from '@/composables/dragAutoScroll'
 import { kSettingsState } from '@/composables/setting'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 import { kTheme } from '@/composables/theme'
+import { kUserContext } from '@/composables/user'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import AppSideBarInstances from './AppSideBarInstances.vue'
@@ -170,6 +181,7 @@ import AppSideBarItem from './AppSideBarItem.vue'
 
 const { blurSidebar, sideBarColor } = injection(kTheme)
 const { state } = injection(kSettingsState)
+const { gameProfile } = injection(kUserContext)
 const { position } = useInjectSidebarSettings()
 
 const isHorizontal = computed(() => position.value === 'top' || position.value === 'bottom')

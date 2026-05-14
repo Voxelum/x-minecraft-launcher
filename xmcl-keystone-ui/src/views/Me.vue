@@ -19,6 +19,7 @@ import { useFocus, useLocalStorage } from '@vueuse/core'
 import { Instance } from '@xmcl/instance'
 import { Ref, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import MeProfilePanel from './MeProfilePanel.vue'
 
 const { t } = useI18n()
 const { isDark } = injection(kTheme)
@@ -244,7 +245,12 @@ function openInBrowser(url: string) {
 </script>
 
 <template>
-  <div ref="container" class="my-stuff-page h-full overflow-auto">
+  <div class="me-layout flex h-full overflow-hidden">
+    <!-- Left: User Profile Panel -->
+    <MeProfilePanel />
+
+    <!-- Right: News + Instances (unchanged content) -->
+    <div ref="container" class="my-stuff-page h-full flex-grow overflow-auto min-w-0">
     <div class="classic-container">
       <!-- News Section (Hero Style) -->
       <section v-if="true && allNews.length > 0" class="news-section">
@@ -381,6 +387,7 @@ function openInBrowser(url: string) {
         </div>
       </section>
     </div>
+  </div>
   </div>
 </template>
 

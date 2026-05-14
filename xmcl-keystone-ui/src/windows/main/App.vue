@@ -37,6 +37,8 @@
     <AppSharedTooltip />
     <AppInstallSkipDialog />
     <AppMigrateWizardDialog />
+    <AppMinecraftFriendsDialog />
+    <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
     <AppExportServerDialog />
     <AppModrinthLoginDialog />
     <InstanceLauncherPage />
@@ -84,6 +86,8 @@ import AppLaunchBlockedDialog from '@/views/AppLaunchBlockedDialog.vue'
 import AppUnauthenticatedWarningDialog from '@/views/AppUnauthenticatedWarningDialog.vue'
 import AppLaunchServerDialog from '@/views/AppLaunchServerDialog.vue'
 import AppMigrateWizardDialog from '@/views/AppMigrateWizardDialog.vue'
+import AppMinecraftFriendsDialog from '@/views/AppMinecraftFriendsDialog.vue'
+import UserProfileDialog from '@/components/UserProfileDialog.vue'
 import AppModrinthLoginDialog from '@/views/AppModrinthLoginDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
 import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
@@ -95,6 +99,9 @@ import InstanceLauncherPage from '@/views/InstanceLauncherPage.vue'
 import Setup from '@/views/Setup.vue'
 import { useLocalStorage, useMediaQuery, usePreferredColorScheme, usePreferredDark } from '@vueuse/core'
 import { kInstanceLauncher, useInstanceLauncher } from '@/composables/instanceLauncher'
+import { kMinecraftFriends, useMinecraftFriendsImpl } from '@/composables/minecraftFriends'
+import { useUserMenuControl } from '@/composables/userMenu'
+import { UserSkinRenderPaused } from '@/composables/userSkin'
 import AppSideBarGroupSettingDialog from '@/views/AppSideBarGroupSettingDialog.vue'
 import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 
@@ -105,6 +112,13 @@ const { state } = injection(kSettingsState)
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 provide(kLocalizedContent, useLocalizedContentControl())
 provide(kInstanceLauncher, useInstanceLauncher())
+provide(kMinecraftFriends, useMinecraftFriendsImpl())
+
+// User profile dialog — moved from AppSystemBarUserMenu to App root
+const userProfileDialogShown = ref(false)
+const userMenu = useUserMenuControl()
+userMenu.on(() => { userProfileDialogShown.value = true })
+provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value))
 
 // Bind Ctrl/Cmd+K to toggle the command palette.
 useCommandPaletteHotkey()

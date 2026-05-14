@@ -54,9 +54,6 @@
       :text="taskInlineText"
       @click="showTaskDialog()"
     />
-    <AppSystemBarAvatar
-      v-if="!noUser"
-    />
     <AppSystemBarBadge
       v-if="tutor"
       id="tutor-button"
@@ -107,7 +104,6 @@ import { useTaskCount } from '../composables/task'
 
 import { injection } from '@/util/inject'
 import { useWindowStyle } from '@/composables/windowStyle'
-import AppSystemBarAvatar from './AppSystemBarUserMenu.vue'
 import { kTutorial } from '@/composables/tutorial'
 import AppSystemBarBadge from '@/components/AppSystemBarBadge.vue'
 import AppAudioPlayer from '@/components/AppAudioPlayer.vue'
