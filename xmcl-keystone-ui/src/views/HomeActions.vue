@@ -30,11 +30,12 @@
     </v-btn>
 
     <v-speed-dial
-      :direction="'bottom'"
+      location="bottom center"
       :open-on-hover="true"
     >
-      <template #activator>
+      <template #activator="{ props: activatorProps }">
         <v-btn
+          v-bind="activatorProps"
           v-shared-tooltip="() => t('baseSetting.title', 2)"
           icon
           variant="text"

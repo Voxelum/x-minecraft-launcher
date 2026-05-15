@@ -12,9 +12,10 @@
     <!-- Header / Branding Area -->
     <div class="login-form-branding flex flex-col items-center mb-2">
       <div
-        class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-primary to-primary-light flex items-center justify-center mb-4 shadow-[0_10px_20px_-10px_rgba(var(--v-theme-primary),0.8)] border border-white/20"
+        class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 flex-shrink-0"
+        style="background-color: rgba(var(--v-theme-primary), 0.12)"
       >
-        <v-icon size="32" color="white">person</v-icon>
+        <v-icon size="32" color="primary">person</v-icon>
       </div>
     </div>
 
@@ -134,7 +135,7 @@
           background: linear-gradient(
             to right,
             rgb(var(--v-theme-primary)),
-            rgb(var(--v-theme-primary-light), 0.9)
+            rgba(var(--v-theme-primary), 0.7)
           );
         "
         :loading="isLogining && !hovered"

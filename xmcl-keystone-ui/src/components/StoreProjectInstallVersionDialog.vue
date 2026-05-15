@@ -28,9 +28,10 @@
           />
           <div
             v-else
-            class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-primary-light flex items-center justify-center shadow-[0_6px_14px_-6px_rgba(var(--v-theme-primary),0.7)] border border-white/20"
+            class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            style="background-color: rgba(var(--v-theme-primary), 0.12)"
           >
-            <v-icon size="20" color="white">download</v-icon>
+            <v-icon size="22" color="primary">download</v-icon>
           </div>
           <div class="text-base font-bold tracking-tight" style="color: rgba(var(--v-theme-on-surface), 0.9);">
             {{ selectedDetail ? selectedDetail.version.name : t('shared.install') }}

@@ -220,151 +220,155 @@ const hasError = computed(() => {
 <template>
   <v-dialog
     v-model="isShown"
-    hide-overlay
-    transition="dialog-bottom-transition"
-    scrollable
     width="800"
+    :persistent="false"
+    transition="fade-transition"
+    content-class="elevation-0"
   >
-    <v-card class="rounded-none">
-      <v-toolbar
-        class="moveable flex-1 flex-grow-0 rounded-none"
-        tabs
-        color="green en"
-      >
-        <v-toolbar-title class="text-white">
-          {{ t('server.export') }}
-        </v-toolbar-title>
-
-        <v-spacer />
+    <div class="flex w-full max-h-[85vh] flex-col overflow-hidden">
+      <!-- Header -->
+      <div class="flex items-center px-6 pt-6 pb-4">
+        <div class="flex items-center gap-3 flex-grow">
+          <div
+            class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            style="background-color: rgba(var(--v-theme-primary), 0.12)"
+          >
+            <v-icon size="22" color="primary">ios_share</v-icon>
+          </div>
+          <div class="text-base font-bold tracking-tight" style="color: rgba(var(--v-theme-on-surface), 0.9);">
+            {{ t('server.export') }}
+          </div>
+        </div>
         <v-btn
-          class="non-moveable"
-          icon
+          icon="close"
+          variant="text"
+          size="small"
           @click="cancel"
-        >
-          <v-icon>arrow_drop_down</v-icon>
-        </v-btn>
-      </v-toolbar>
+        />
+      </div>
 
+      <v-divider class="mx-6 opacity-20" />
+
+      <!-- Content -->
       <div
-        class="visible-scroll mx-0 max-h-[60vh] items-center justify-center overflow-y-auto overflow-x-hidden flex-grow px-6 py-2"
         ref="scrollElement"
-
+        class="flex-1 min-h-0 overflow-y-auto invisible-scroll px-6 pb-6 pt-4 flex flex-col gap-5"
       >
-        <v-list-subheader>{{ t('server.exportOption') }}</v-list-subheader>
-        <div
-          class="grid grid-cols-2 gap-4 gap-y-2 z-10"
-        >
-          <v-checkbox
-            :value="!exportToServer"
-            :input-value="!exportToServer"
-            class="z-10"
-            :label="t('server.exportToFolder')"
-            @change="exportToServer = !$event"
-          ></v-checkbox>
-          <v-checkbox
-            class="z-10"
-            :value="exportToServer"
-            :input-value="exportToServer"
-            :label="t('server.upload')"
-            @change="exportToServer = $event"
-          ></v-checkbox>
+        <!-- Export Option -->
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div class="mb-3 flex items-center gap-2">
+            <v-icon size="18" color="green">cloud_upload</v-icon>
+            <span class="text-sm font-semibold opacity-80">{{ t('server.exportOption') }}</span>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <v-checkbox
+              :model-value="!exportToServer"
+              :label="t('server.exportToFolder')"
+              hide-details
+              @update:model-value="exportToServer = !$event"
+            />
+            <v-checkbox
+              :model-value="exportToServer"
+              :label="t('server.upload')"
+              hide-details
+              @update:model-value="exportToServer = !!$event"
+            />
+          </div>
         </div>
-        <v-list-subheader
-          v-if="exportToServer"
-        >
-          {{ t('server.exportSSHOptions') }}
-        </v-list-subheader>
-        <div
-          v-if="exportToServer"
-          class="grid grid-cols-3 gap-4 gap-y-2 z-10"
-        >
-          <v-text-field
-            v-model="cachedUserServer.host"
-            class="col-span-1"
-            prepend-inner-icon="dns"
-            persistent-hint
-            :rules="hostNameRules"
-            :label="t('proxy.host')"
-            required
-          />
-          <v-text-field
-            v-model="cachedUserServer.username"
-            prepend-inner-icon="person"
-            persistent-hint
-            :label="t('user.name')"
-            :rules="usernameRules"
-            required
-          />
-          <v-text-field
-            v-model="cachedUserServer.remotePath"
-            class="col-span-1"
-            prepend-inner-icon="folder"
-            persistent-hint
-            :label="t('server.exportSSHRemotePath')"
-            required
-          />
-          <v-text-field
-            v-model="password"
-            prepend-inner-icon="lock"
-            type="password"
-            persistent-hint
-            :error-messages="authenticateError"
-            :label="!cachedUserServer.privateKeyPath ? t('userServices.mojang.password') : 'Passphrase'"
-          />
-          <v-text-field
-            v-model="cachedUserServer.privateKeyPath"
-            class="col-span-2"
-            prepend-inner-icon="fingerprint"
-            persistent-hint
-            readonly
-            :error-messages="authenticateError"
-            :label="t('server.exportSSHPrivateKeyPath')"
-            @click="onSelectPrivateKey"
-          />
-        </div>
-        <div class="px-6">
-          <v-list-subheader>
-            {{ t('modpack.includes') }}
-            <v-spacer />
-            <v-btn
-              class="z-10"
-              v-shared-tooltip="() => t('env.select.all')"
-              variant="text"
-              icon
-              @click="selectAll"
-            >
-              <v-icon>
-                select_all
-              </v-icon>
-            </v-btn>
-            <v-btn
-              class="z-10"
-              v-shared-tooltip="() => t('env.select.fit')"
-              variant="text"
-              icon
-              @click="selectFit"
-            >
-              <v-icon>
-                tab_unselected
-              </v-icon>
-            </v-btn>
 
-            <v-btn
-              class="z-10"
-              v-shared-tooltip="() => t('env.select.none')"
-              variant="text"
-              icon
-              @click="selectNone"
-            >
-              <v-icon>
-                deselect
-              </v-icon>
-            </v-btn>
-          </v-list-subheader>
-        </div>
+        <!-- SSH Options -->
         <div
-          style="padding: 5px; margin-bottom: 5px"
+          v-if="exportToServer"
+          class="rounded-2xl border border-white/10 bg-white/5 p-4"
         >
+          <div class="mb-3 flex items-center gap-2">
+            <v-icon size="18" color="green">terminal</v-icon>
+            <span class="text-sm font-semibold opacity-80">{{ t('server.exportSSHOptions') }}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-4 gap-y-2">
+            <v-text-field
+              v-model="cachedUserServer.host"
+              class="col-span-1"
+              prepend-inner-icon="dns"
+              persistent-hint
+              :rules="hostNameRules"
+              :label="t('proxy.host')"
+              required
+            />
+            <v-text-field
+              v-model="cachedUserServer.username"
+              prepend-inner-icon="person"
+              persistent-hint
+              :label="t('user.name')"
+              :rules="usernameRules"
+              required
+            />
+            <v-text-field
+              v-model="cachedUserServer.remotePath"
+              class="col-span-1"
+              prepend-inner-icon="folder"
+              persistent-hint
+              :label="t('server.exportSSHRemotePath')"
+              required
+            />
+            <v-text-field
+              v-model="password"
+              prepend-inner-icon="lock"
+              type="password"
+              persistent-hint
+              :error-messages="authenticateError"
+              :label="!cachedUserServer.privateKeyPath ? t('userServices.mojang.password') : 'Passphrase'"
+            />
+            <v-text-field
+              v-model="cachedUserServer.privateKeyPath"
+              class="col-span-2"
+              prepend-inner-icon="fingerprint"
+              persistent-hint
+              readonly
+              :error-messages="authenticateError"
+              :label="t('server.exportSSHPrivateKeyPath')"
+              @click="onSelectPrivateKey"
+            />
+          </div>
+        </div>
+
+        <!-- File Selection -->
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div class="mb-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <v-icon size="18" color="green">folder_open</v-icon>
+              <span class="text-sm font-semibold opacity-80">{{ t('modpack.includes') }}</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <v-btn
+                v-shared-tooltip="() => t('env.select.all')"
+                variant="text"
+                icon
+                size="small"
+                @click="selectAll"
+              >
+                <v-icon size="18">select_all</v-icon>
+              </v-btn>
+              <v-btn
+                v-shared-tooltip="() => t('env.select.fit')"
+                variant="text"
+                icon
+                size="small"
+                @click="selectFit"
+              >
+                <v-icon size="18">tab_unselected</v-icon>
+              </v-btn>
+              <v-btn
+                v-shared-tooltip="() => t('env.select.none')"
+                variant="text"
+                icon
+                size="small"
+                @click="selectNone"
+              >
+                <v-icon size="18">deselect</v-icon>
+              </v-btn>
+            </div>
+          </div>
           <v-skeleton-loader
             v-if="refreshing"
             type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
@@ -376,35 +380,46 @@ const hasError = computed(() => {
             :multiple="false"
           />
         </div>
+
+        <v-alert
+          v-if="noFiles"
+          type="info"
+          variant="tonal"
+          rounded="lg"
+        >
+          {{ t('server.exportNoFilesHint') }}
+        </v-alert>
       </div>
 
-      <v-alert
-        v-if="noFiles"
-        type="info"
-      >
-        {{ t('server.exportNoFilesHint') }}
-      </v-alert>
-      <v-card-actions class="items-baseline gap-5">
+      <v-divider class="mx-6 opacity-20" />
+
+      <!-- Footer -->
+      <div class="flex items-center px-6 py-4 gap-4">
         <v-btn
           :disabled="exporting || refreshing"
+          variant="text"
+          rounded="pill"
           @click="cancel"
-         size="large" variant="text">
+        >
           {{ t('shared.cancel') }}
         </v-btn>
         <v-spacer />
-        <div class="flex flex-shrink flex-grow-0 items-center justify-center text-center text-sm text-gray-500">
+        <span class="text-sm opacity-50">
           ~{{ getExpectedSize(totalSize) }}
-        </div>
+        </span>
         <v-btn
           :disabled="hasError"
-          color="primary"
+          color="green"
+          variant="flat"
+          rounded="pill"
           :loading="exporting || refreshing"
           @click="exportAsFile"
-         size="large" variant="text">
+        >
+          <v-icon start size="16">ios_share</v-icon>
           {{ t('server.export') }}
         </v-btn>
-      </v-card-actions>
-    </v-card>
+      </div>
+    </div>
   </v-dialog>
 </template>
 <style scoped>
