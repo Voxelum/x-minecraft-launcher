@@ -167,6 +167,10 @@ const { t } = useI18n()
 </script>
 
 <style scoped>
+.screenshot-card {
+  border-radius: 10px;
+}
+
 .screenshot-card :deep(.v-window),
 .screenshot-card :deep(.v-window__container) {
   height: 100%;

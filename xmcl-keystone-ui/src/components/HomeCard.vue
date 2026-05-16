@@ -1,11 +1,8 @@
 <template>
   <v-card
-    class="flex h-full flex-col transition-all duration-500 home-card"
+    class="flex h-full flex-col home-card"
     :class="{ highlighted: highlighted }"
-    style="box-sizing: border-box"
-    outlined
     :style="{
-      borderColor: mouse > 0 ? 'white' : '',
       'backdrop-filter': `blur(${blurCard}px)`,
     }"
     :color="highlighted ? 'yellow darken-2' : cardColor"
@@ -163,6 +160,7 @@ const highlighted = computed(() => globalDragover.value && dragover.value > 0)
   /* blur behand */
   container-type: size;
   width: 100%;
+  border-radius: 10px;
 }
 
 .btn {

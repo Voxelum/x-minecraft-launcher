@@ -92,7 +92,7 @@ provide('scrollElement', scrollElement)
 const { t } = useI18n()
 useTutorial(computed(() => {
   const steps: DriveStep[] = [
-    { element: '#user-avatar', popover: { title: t('userAccount.add'), description: t('tutorial.userAccountDescription') } },
+    { element: '#my-stuff-button', popover: { title: t('userAccount.add'), description: t('tutorial.userAccountDescription') } },
     { element: '#create-instance-button', popover: { title: t('instances.add'), description: t('tutorial.instanceAddDescription') } },
     { element: '#launch-button', popover: { title: t('launch.launch'), description: t('tutorial.launchDescription') } },
     { element: '#feedback-button', popover: { title: t('feedback.name'), description: t('tutorial.feedbackDescription') } },
