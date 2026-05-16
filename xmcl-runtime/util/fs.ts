@@ -94,6 +94,11 @@ async function linkPassively(src: string, dest: string, filter: (name: string) =
 
 /**
  * Perform symbolic link from `srcPath` to `destPath`.
+ *
+ * On Windows, falls back through `symlink('junction')` and finally a
+ * per-file hardlink (or byte copy across volumes) when neither symlink
+ * variant is permitted — typically users without admin or Developer Mode
+ * enabled (#1428).
  */
 export async function linkDirectory(srcPath: string, destPath: string, logger: Logger) {
   try {
@@ -101,16 +106,42 @@ export async function linkDirectory(srcPath: string, destPath: string, logger: L
     return true
   } catch (e) {
     if (((e as any).code === EPERM_ERROR || (e as any).code === 'EISDIR') && process.platform === 'win32') {
-      await symlink(srcPath, destPath, 'junction').catch(e => {
-        e.junction = true
-        e.srcExists = existsSync(srcPath)
-        e.destExists = existsSync(destPath)
-        if (e.srcExists && e.destExists) {
-          return true
+      try {
+        await symlink(srcPath, destPath, 'junction')
+        return false
+      } catch (e2: any) {
+        e2.junction = true
+        e2.srcExists = existsSync(srcPath)
+        e2.destExists = existsSync(destPath)
+        if (e2.srcExists && e2.destExists) {
+          // junction call failed but the reparse point was already in place,
+          // treat as success
+          return false
         }
-        throw e
-      })
-      return false
+        // Both symlink('dir') and symlink('junction') failed. Fall back to
+        // a per-file hardlink walk (cheap, same volume) or a byte copy
+        // across volumes, so the launch isn't blocked for users without
+        // Developer Mode / admin (#1428). Mark which strategy was used so
+        // we can measure adoption in telemetry.
+        try {
+          await linkPassively(srcPath, destPath)
+          logger.warn(`linkDirectory: symlink+junction failed for ${srcPath} -> ${destPath}; recovered via per-file hardlink`)
+          return false
+        } catch (e3: any) {
+          if (isSystemError(e3) && (e3.code === 'EXDEV' || e3.code === 'EPERM')) {
+            await copyPassively(srcPath, destPath)
+            logger.warn(`linkDirectory: symlink+junction+hardlink failed for ${srcPath} -> ${destPath}; recovered via copy`)
+            return false
+          }
+          // Annotate with the same junction context as e2 so telemetry can
+          // see which stage failed.
+          e3.junction = true
+          e3.linkFallbackFailed = true
+          e3.srcExists = existsSync(srcPath)
+          e3.destExists = existsSync(destPath)
+          throw e3
+        }
+      }
     }
     throw e
   }
