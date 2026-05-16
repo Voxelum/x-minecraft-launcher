@@ -95,10 +95,21 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
             e.message === 'Database already closed' ||
             e.message === 'unable to open database file'
           ) {
-            // reopen the database
-            this.#db?.close()
+            // The underlying handle is gone. Open a fresh one and swap it in
+            // place — the existing SqliteConnection picks up the new handle
+            // through its getter so callers that already acquired the
+            // connection don't keep hitting the closed db in a tight loop
+            // (root cause of issue #1429).
+            try {
+              this.#db?.close()
+            } catch {}
             this.#db = this.#config.database()
-            this.#connection = new SqliteConnection(this.#db, onError)
+            // Mark the original error as already-handled so the telemetry
+            // sink in xmcl-runtime can skip it instead of re-reporting it
+            // for every subsequent query.
+            if (e instanceof SQLite3Error) {
+              e.isDisposed = true
+            }
           } else {
             this.#config.onError?.(e)
           }
@@ -111,7 +122,7 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
         }
       }
     }
-    this.#connection = new SqliteConnection(this.#db, onError)
+    this.#connection = new SqliteConnection(() => this.#db!, onError)
   }
 
   async acquireConnection(): Promise<DatabaseConnection> {
@@ -131,18 +142,18 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
 }
 
 class SqliteConnection implements DatabaseConnection {
-  readonly #db: Database
+  readonly #getDb: () => Database
 
   constructor(
-    db: Database,
+    getDb: () => Database,
     private onError?: (error: unknown) => void,
   ) {
-    this.#db = db
+    this.#getDb = getDb
   }
 
   executeQuery<O>(compiledQuery: CompiledQuery): Promise<QueryResult<O>> {
     const { sql, parameters } = compiledQuery
-    const stmt = this.#db.prepare(sql)
+    const stmt = this.#getDb().prepare(sql)
 
     try {
       if (stmt.isReader()) {
@@ -176,7 +187,7 @@ class SqliteConnection implements DatabaseConnection {
     _chunkSize: number,
   ): AsyncIterableIterator<QueryResult<R>> {
     const { sql, parameters, query } = compiledQuery
-    const stmt = this.#db.prepare(sql)
+    const stmt = this.#getDb().prepare(sql)
     try {
       if (SelectQueryNode.is(query)) {
         const iter = stmt.iterate(parameters as any) as IterableIterator<R>
