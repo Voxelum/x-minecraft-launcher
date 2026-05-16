@@ -286,6 +286,7 @@ import {
   InstallInstanceOptions,
   InstanceFileUpdate,
   InstanceInstallServiceKey,
+  InstanceServiceKey,
   ModpackServiceKey,
 } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
@@ -334,6 +335,7 @@ const { isShown } = useDialog(
 
 const { openModpack } = useService(ModpackServiceKey)
 const { installInstanceFiles, previewInstanceFiles } = useService(InstanceInstallServiceKey)
+const { getInstanceModpackMetadata, setInstanceModpackMetadata } = useService(InstanceServiceKey)
 
 const { edit } = injection(kInstances)
 const { t } = useI18n()
@@ -518,6 +520,29 @@ const confirm = async () => {
       instanceInstallErrorId: installation.id,
     })
     throw e
+  }
+  // Update emittedFiles in modpack-metadata.json to reflect file changes
+  try {
+    const metadata = await getInstanceModpackMetadata(path)
+    if (metadata && metadata.emittedFiles && metadata.emittedFiles.length > 0) {
+      const delta = up.delta
+      const removedPaths = new Set(delta
+        .filter((f) => f.operation === 'remove' || f.operation === 'backup-remove')
+        .map((f) => f.file.path))
+      const addedPaths = delta
+        .filter((f) => f.operation === 'add' || f.operation === 'backup-add')
+        .map((f) => f.file.path)
+      const updated = metadata.emittedFiles.filter((p) => !removedPaths.has(p))
+      for (const p of addedPaths) {
+        if (!updated.includes(p)) {
+          updated.push(p)
+        }
+      }
+      metadata.emittedFiles = updated
+      await setInstanceModpackMetadata(path, metadata)
+    }
+  } catch {
+    // Non-critical — don't block the upgrade
   }
   if (instance) {
     await edit({

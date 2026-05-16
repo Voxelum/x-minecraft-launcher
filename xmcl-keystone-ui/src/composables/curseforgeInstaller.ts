@@ -3,8 +3,10 @@ import { isNoModLoader } from '@/util/isNoModloader'
 import { ProjectFile } from '@/util/search'
 import { File, FileRelationType, Mod } from '@xmcl/curseforge'
 import { RuntimeVersions } from '@xmcl/instance'
-import { InstallMarketOptionWithInstance, MarketType } from '@xmcl/runtime-api'
+import { InstallMarketOptionWithInstance, InstanceServiceKey, MarketType } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
+import { useService } from './service'
+import { updateEmittedFiles } from './modpackMetadataUpdater'
 
 export const kCurseforgeInstaller: InjectionKey<ReturnType<typeof useCurseforgeInstaller>> = Symbol('curseforgeInstaller')
 
@@ -16,6 +18,8 @@ export function useCurseforgeInstaller(
   uninstallResource: (files: ProjectFile[], path?: string) => void,
   installDefaultModLoader = useInstanceModLoaderDefault(),
 ) {
+  const { getInstanceModpackMetadata, setInstanceModpackMetadata } = useService(InstanceServiceKey)
+
   const install = async (file: { fileId: number; icon?: string } | { fileId: number; icon?: string }[]) => {
     return installResource({
       market: MarketType.CurseForge,
@@ -49,11 +53,12 @@ export function useCurseforgeInstaller(
 
     files.push({ fileId, icon })
 
-    await install(files)
+    const installedPaths: string[] = await install(files)
 
     if (toUninstalls.length > 0) {
       uninstallResource(toUninstalls, _path)
     }
+    updateEmittedFiles(_path, toUninstalls, installedPaths, getInstanceModpackMetadata, setInstanceModpackMetadata)
   }
 
   return {
