@@ -30,9 +30,9 @@
             </div>
             <v-btn-toggle
               density="compact"
-              :value="getFilterButtonValue()"
+              :model-value="getFilterButtonValue()"
               class="bg-transparent px-1"
-              @change="onUpdateLocalFilter(filterItems[$event]?.value)"
+              @update:model-value="onUpdateLocalFilter($event != null ? filterItems[$event]?.value : undefined)"
             >
               <v-btn
                 v-for="tag in filterItems"
@@ -56,9 +56,9 @@
             </div>
             <v-btn-toggle
               density="compact"
-              :value="getModLoaderFilterValue()"
+              :model-value="getModLoaderFilterValue()"
               class="bg-transparent px-1"
-              @change="onUpdateLocalFilter(modLoaderFilterItems[$event]?.value)"
+              @update:model-value="onUpdateLocalFilter($event != null ? modLoaderFilterItems[$event]?.value : undefined)"
             >
               <v-btn
                 v-for="tag in modLoaderFilterItems"
@@ -150,19 +150,19 @@ const filterItems = computed(() => {
 const modLoaderFilterItems = computed(() => {
   return [{
     icon: 'xmcl:forge',
-    text: t('modrinth.modLoaders.forge'),
+    text: 'Forge',
     value: 'forgeOnly',
   }, {
     icon: 'xmcl:neoForged',
-    text: t('modrinth.modLoaders.neoforge'),
+    text: 'NeoForge',
     value: 'neoforgeOnly',
   }, {
     icon: 'xmcl:fabric',
-    text: t('modrinth.modLoaders.fabric'),
+    text: 'Fabric',
     value: 'fabricOnly',
   }, {
     icon: 'xmcl:quilt',
-    text: t('modrinth.modLoaders.quilt'),
+    text: 'Quilt',
     value: 'quiltOnly',
   }]
 })
@@ -177,8 +177,8 @@ function getModLoaderFilterValue() {
   return idx >= 0 ? idx : undefined
 }
 
-function onUpdateLocalFilter(filter: string) {
-  localFilter.value = filter as any
+function onUpdateLocalFilter(filter: string | undefined) {
+  localFilter.value = (filter ?? '') as any
 }
 
 const route = useRoute()

@@ -50,12 +50,12 @@
               {{ t('modrinth.sort.title') }}
             </div>
             <v-btn-toggle
-              :value="sort"
+              :model-value="sort"
               mandatory
               density="compact"
               divided
               class="px-1"
-              @change="emit('update:sort', $event || 'alpha_asc')"
+              @update:model-value="emit('update:sort', $event || 'alpha_asc')"
             >
               <v-btn
                 v-for="tag in sortByItems"
@@ -97,8 +97,8 @@
               class="px-1"
               density="compact"
               divided
-              :value="modloader"
-              @change="emit('update:modloader', $event)"
+              :model-value="modloader"
+              @update:model-value="emit('update:modloader', $event)"
             >
               <v-btn
                 v-for="loader in modLoaders"
@@ -140,9 +140,9 @@
                 class="px-1"
                 variant="outlined"
                 density="compact"
-                :value="modrinthEnvironment"
+                :model-value="modrinthEnvironment"
                 :disabled="!enableModrinth"
-                @change="emit('update:modrinthEnvironment', $event || '')"
+                @update:model-value="emit('update:modrinthEnvironment', $event || '')"
               >
                 <v-btn
                   v-shared-tooltip="t('modrinth.environments.all')"
@@ -200,10 +200,10 @@
               background-color="transparent"
               density="compact"
               :rounded="10"
-              :value="sortByItems.findIndex((i) => i.value === localSort)"
+              :model-value="sortByItems.findIndex((i) => i.value === localSort)"
               variant="outlined"
               class="bg-transparent px-1"
-              @change="updateLocalSort"
+              @update:model-value="updateLocalSort"
             >
               <v-btn
                 v-for="tag in sortByLocalItems"
