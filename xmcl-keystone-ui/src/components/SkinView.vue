@@ -103,7 +103,7 @@ watch(() => props.cape, (v) => {
 })
 
 watch(() => props.name, (v) => {
-  viewer.nameTag = v
+  viewer.nameTag = v || 'Steve'
 })
 
 watch(() => props.paused, (paused) => {

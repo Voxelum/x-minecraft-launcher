@@ -1,39 +1,41 @@
 <template>
   <div
-    class="flex flex-grow-0 items-center rounded pr-2 text-sm"
-    :class="{ 'cursor-pointer': hasClickHandler }"
+    class="avatar-item flex flex-grow-0 items-center rounded-lg px-2 py-1 text-sm transition-colors"
+    :class="{ 'cursor-pointer hover:bg-white/8': hasClickHandler }"
     @click="onclick ? onclick($event) : emit('click', $event)"
   >
     <v-avatar
       class="mr-2 hidden lg:block"
-      :size="34"
+      :size="32"
       color="transparent"
       :class="{ responsive }"
     >
       <v-img
         v-if="avatar"
         :src="avatar"
-        :width="34"
-        :height="34"
+        :width="32"
+        :height="32"
       />
-      <v-icon v-else-if="icon" :size="24">
+      <v-icon v-else-if="icon" :size="20" class="text-medium-emphasis">
         {{ icon }}
       </v-icon>
     </v-avatar>
 
     <div
       v-if="text"
-      class="text overflow-hidden overflow-ellipsis whitespace-nowrap"
+      class="avatar-item__text overflow-hidden overflow-ellipsis whitespace-nowrap"
     >
       <div
-        class="select-none font-semibold dark:text-gray-300"
+        class="select-none text-[0.7rem] font-medium uppercase tracking-wide text-medium-emphasis"
         :style="{
           color: bgColor
         }"
       >
         {{ title }}
       </div>
-      {{ text }}
+      <div class="text-high-emphasis leading-tight">
+        {{ text }}
+      </div>
     </div>
   </div>
 </template>
@@ -61,15 +63,12 @@ const hasClickHandler = computed(() => !!attrs.onClick || !!props.onclick)
 .responsive {
   display: none !important;
 }
-.text {
-  padding-left: 0.5rem;
+.avatar-item__text {
+  line-height: 1.3;
 }
 @media (min-width: 1000px) {
-  /* Use inline-flex (Vuetify 4 v-avatar default) so the icon centers vertically. */
   .responsive {
     display: inline-flex !important;
-  }
-  .text {
   }
 }
 </style>

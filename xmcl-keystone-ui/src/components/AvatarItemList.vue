@@ -1,9 +1,9 @@
 <template>
   <div
-    class="flex flex-grow-0 flex-row items-center justify-center gap-1"
+    class="flex flex-grow-0 flex-row items-center justify-center"
   >
     <template
-      v-for="(i) of items"
+      v-for="(i, idx) of items"
       :key="i.title"
     >
       <AvatarItem
@@ -16,8 +16,9 @@
         :onclick="i.onclick"
       />
       <v-divider
-        v-if="i !== items[items.length - 1]"
+        v-if="idx < items.length - 1"
         vertical
+        class="mx-1 opacity-30"
       />
     </template>
   </div>

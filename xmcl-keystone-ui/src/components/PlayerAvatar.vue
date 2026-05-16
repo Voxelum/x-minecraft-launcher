@@ -31,6 +31,12 @@ const steveSrc = renderMinecraftPlayerTextHead(steve)
 const dataUrlSrc = ref('')
 
 watch(() => props.src, (s) => {
+  if (!s) {
+    steveSrc?.then((v) => {
+      dataUrlSrc.value = v
+    })
+    return
+  }
   renderMinecraftPlayerTextHead(s)?.then((v) => {
     dataUrlSrc.value = v
   }, () => {

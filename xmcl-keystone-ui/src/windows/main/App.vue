@@ -44,11 +44,12 @@
     <InstanceLauncherPage />
     <AppSideBarGroupSettingDialog :default-color="defaultColor" />
   </v-app>
-  <v-app v-else class="h-full max-h-screen overflow-auto overflow-x-hidden" :class="{ 'dark': isDark }">
+  <v-app v-else class="h-full max-h-screen overflow-hidden" :class="{ 'dark': isDark }">
     <AppSystemBar no-user no-task />
-    <div class="app-layout relative flex overflow-auto">
+    <div class="app-layout relative flex min-h-0 flex-1 overflow-hidden">
       <Setup @ready="onReady" />
     </div>
+    <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
     <AppFeedbackDialog />
   </v-app>
 </template>
