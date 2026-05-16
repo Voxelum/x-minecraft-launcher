@@ -803,11 +803,10 @@ const searchModel = injection(kSearchModel)
 
 function onAuthorClicked(name: string) {
   if (searchModel) {
-    // Put author directly into keyword as requested
     searchModel.keyword.value = name
     searchModel.source.value = 'remote'
   }
-  replace({ query: { ...currentRoute.value.query, id: undefined } })
+  replace({ query: { ...currentRoute.value.query, keyword: name, source: 'remote', id: undefined } })
 }
 
 const selectedVersion = inject(

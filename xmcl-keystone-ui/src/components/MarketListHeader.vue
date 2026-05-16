@@ -50,6 +50,7 @@ const { t } = useI18n()
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 0.875rem;
 }
 .market-list-header__count-main {
   display: inline-block;

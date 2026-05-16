@@ -94,7 +94,7 @@
           </v-btn>
         </template>
         <template v-else-if="dense">
-          <v-icon size="small">
+          <v-icon size="x-small">
             {{ getTrailingIcon() }}
           </v-icon>
         </template>
