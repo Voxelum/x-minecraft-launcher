@@ -187,8 +187,9 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
   const { refresh, refreshing, error } = useRefreshable<{ skipVersion: boolean; policy: 'curseforge' | 'modrinth' | 'curseforgeOnly' | 'modrinthOnly' }>(async ({ skipVersion, policy }) => {
     const result: Record<string, UpgradePlan> = {}
 
-    // check modrinth
-    const mods = new Set(instanceMods.value)
+    // Skip manually disabled mods (.disabled), but include incompatible mods (.incompatible)
+    // so they can be re-enabled if an update becomes available
+    const mods = new Set(instanceMods.value.filter(m => !m.path.endsWith('.disabled')))
     const runtimes = runtime.value
     const _path = path.value
 
@@ -236,20 +237,16 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     const filenameMappings: Record<string, string> = {}
     
     for (const plan of Object.values(plans.value)) {
-      // Use the actual filename which may have .disabled suffix to preserve enabled/disabled state
-      const actualFileName = plan.mod.enabled ? plan.mod.fileName : plan.mod.fileName + '.disabled'
+      // fileName already includes .disabled suffix for disabled mods
+      // but disabled mods are filtered out during check, so all plans are for enabled mods
       oldFiles.push({
-        path: `mods/${actualFileName}`,
+        path: `mods/${plan.mod.fileName}`,
         hashes: {
           sha1: plan.mod.hash,
         },
         size: plan.mod.size || 0,
       })
       const newFile = 'file' in plan ? getInstanceFileFromCurseforgeFile(plan.file) : getInstanceFileFromModrinthVersion(plan.version)
-      // Preserve the disabled state: if the old mod was disabled, the new one should also be disabled
-      if (!plan.mod.enabled) {
-        newFile.path = newFile.path + '.disabled'
-      }
       files.push(newFile)
       
       // Build mapping of old normalized filename to new normalized filename for group membership update
@@ -270,6 +267,19 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
       files,
       id: operationId,
     })
+  }
+
+  /**
+   * Get the list of enabled mod file paths that don't have an available upgrade plan.
+   * Used to disable mods without updates when switching MC versions.
+   */
+  function getModsWithoutUpgrade(): string[] {
+    const plansModPaths = new Set(
+      Object.values(plans.value).map(p => p.mod.path),
+    )
+    return instanceMods.value
+      .filter(m => m.enabled && !plansModPaths.has(m.path))
+      .map(m => m.path)
   }
 
   function isCurrentTask(task: Tasks): task is InstallInstanceTask {
@@ -304,5 +314,6 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     upgrade,
     upgrading: computed(() => !!task.value),
     upgradeFilenameMappings,
+    getModsWithoutUpgrade,
   }
 }

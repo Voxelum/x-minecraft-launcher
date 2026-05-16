@@ -71,6 +71,8 @@ import { kModUpgrade } from '@/composables/modUpgrade'
 import { usePresence } from '@/composables/presence'
 import { useTutorial } from '@/composables/tutorial'
 import { injection } from '@/util/inject'
+import { useService } from '@/composables'
+import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import { InstanceEditInjectionKey, useInstanceEdit } from '../composables/instanceEdit'
 import BaseSettingGeneral from './BaseSettingGeneral.vue'
 import BaseSettingJava from './BaseSettingJava.vue'
@@ -93,6 +95,7 @@ const { isServer, name, instance, runtime } = injection(kInstance)
 const { edit: _edit } = injection(kInstances)
 const edit = useInstanceEdit(instance, _edit)
 const { t } = useI18n()
+const { disable: disableMods } = useService(InstanceModsServiceKey)
 provide(InstanceEditInjectionKey, edit)
 useAutoSaveLoad(() => {}, edit.load)
 const { isModified } = edit
@@ -102,7 +105,7 @@ provide('modpackMetadata', useInstanceModpackMetadata())
 
 // Mod upgrade feature
 const { mods } = injection(kInstanceModsContext)
-const { refresh: checkUpgrade, upgrade, upgradePolicy, skipVersion } = injection(kModUpgrade)
+const { refresh: checkUpgrade, upgrade, upgradePolicy, skipVersion, getModsWithoutUpgrade } = injection(kModUpgrade)
 const { show: showModUpgradeDialog } = useDialog(BaseSettingModUpgradeDialogKey)
 
 // Check if the instance is modded (has a mod loader)
@@ -130,6 +133,11 @@ async function onUpgradeMods() {
   // Trigger mod upgrade check with current runtime
   const policy = upgradePolicy.value as 'modrinth' | 'curseforge' | 'modrinthOnly' | 'curseforgeOnly'
   await checkUpgrade({ skipVersion: skipVersion.value, policy })
+  // Disable mods that don't have an available update for the new version
+  const modsToDisable = getModsWithoutUpgrade()
+  if (modsToDisable.length > 0) {
+    disableMods({ path: instance.value.path, files: modsToDisable })
+  }
   upgrade()
 }
 
