@@ -1,9 +1,9 @@
 <template>
   <v-dialog
-    :value="value"
+    :model-value="shown"
     :persistent="persistent"
     :width="width"
-    @input="emit('input', $event)"
+    @update:model-value="onModelUpdate"
   >
     <v-card :title="title">
       <v-card-text
@@ -43,23 +43,36 @@ const props = defineProps<{
   confirmIcon?: string
   persistent?: boolean
   value?: boolean
+  modelValue?: boolean
 }>()
 
 const { t } = useI18n()
 
-const emit = defineEmits(['confirm', 'cancel', 'input'])
+const emit = defineEmits<{
+  (event: 'confirm'): void
+  (event: 'cancel'): void
+  (event: 'input', value: boolean): void
+  (event: 'update:modelValue', value: boolean): void
+}>()
+
+const shown = computed(() => props.modelValue ?? props.value ?? false)
+
+function onModelUpdate(value: boolean) {
+  emit('input', value)
+  emit('update:modelValue', value)
+}
 
 const onConfirm = () => {
   emit('confirm')
 }
 
 const onCancel = () => {
-  emit('input', false)
+  onModelUpdate(false)
   emit('cancel')
 }
 
 const onKeypress = (e: KeyboardEvent) => {
-  if (e.key === 'Escape' && props.value) {
+  if (e.key === 'Escape' && shown.value) {
     onCancel()
   }
 }
