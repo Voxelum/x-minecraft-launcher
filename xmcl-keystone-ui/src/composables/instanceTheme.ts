@@ -34,7 +34,15 @@ export function useInstanceTheme(instancePath: Ref<string>) {
     if (!instancePath.value) return
     const theme = instanceTheme.value
     const themeData = theme ? serialize(theme) : undefined
-    await setInstanceTheme(instancePath.value, themeData)
+    // `themeData` is built from the reactive `instanceTheme.value`, so it
+    // contains nested Vue reactive proxies. Electron's IPC uses
+    // `structuredClone` under the hood and throws
+    // `An object could not be cloned.` on those proxies (issue #1430). The
+    // payload is plain JSON-shaped (`ThemeData`), so a round-trip through
+    // `JSON.parse(JSON.stringify(...))` cheaply deep-unwraps without
+    // affecting semantics.
+    const cloneable = themeData ? JSON.parse(JSON.stringify(themeData)) : undefined
+    await setInstanceTheme(instancePath.value, cloneable)
     instanceTheme.value = theme
   }
 

@@ -450,11 +450,15 @@ const sortByLocalItems = computed(() => {
 
 const chipGroup = ref(null as any)
 const onWheel = (e: WheelEvent) => {
-  if (e.deltaY > 0) {
-    chipGroup.value?.onAffixClick('next')
-  } else {
-    chipGroup.value?.onAffixClick('prev')
-  }
+  // Vuetify 4 renamed/privatized `onAffixClick` on `v-chip-group`, so the
+  // ref no longer reliably exposes a callable. Feature-detect and fall back
+  // to `scrollTo` (the documented public method) before invoking; without
+  // this guard we throw "onAffixClick is not a function" thousands of
+  // times in App Insights (issue #1430).
+  const group = chipGroup.value as { onAffixClick?: (dir: 'next' | 'prev') => void; scrollTo?: (dir: 'next' | 'prev') => void } | null
+  const handler = group?.onAffixClick ?? group?.scrollTo
+  if (typeof handler !== 'function') return
+  handler.call(group, e.deltaY > 0 ? 'next' : 'prev')
   e.preventDefault()
   e.stopPropagation()
 }
