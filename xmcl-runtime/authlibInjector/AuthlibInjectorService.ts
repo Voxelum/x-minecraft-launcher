@@ -54,6 +54,15 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
       const info = LibraryInfo.resolve(name)
       const path = mc.getLibraryByPath(info.path)
 
+      // Skip download if the file already exists with matching checksum
+      if (content.checksums?.sha256) {
+        const valid = await validateSha256(path, content.checksums.sha256)
+        if (valid) {
+          this.log(`Authlib injector ${content.version} already exists and checksum matches, skipping download`)
+          return path
+        }
+      }
+
       const url = new URL(content.download_url)
       const allSets = getApiSets(this.settings)
       const urls = allSets
