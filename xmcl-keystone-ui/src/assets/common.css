@@ -68,7 +68,7 @@ html {
 .v-list-item,
 .v-list-item:hover:before,
 .v-list-item:focus:before {
-    border-radius: 0.25rem;
+    border-radius: 10px;
 }
 
 html ::-webkit-scrollbar {
@@ -147,6 +147,35 @@ html ::-webkit-scrollbar {
 .v-menu {
     /* fix wrong menu width */
     max-width: 0px;
+}
+
+/* ── Modern frosted-glass menus ── */
+.v-menu > .v-overlay__content {
+    border-radius: 16px !important;
+}
+
+.v-menu > .v-overlay__content > .v-list,
+.v-menu > .v-overlay__content > .v-card,
+.v-menu > .v-overlay__content > .v-sheet {
+    -webkit-backdrop-filter: blur(48px);
+    backdrop-filter: blur(48px);
+    background: rgba(var(--v-theme-surface), 0.82) !important;
+    color: rgb(var(--v-theme-on-surface));
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.10);
+    border-radius: 16px !important;
+    box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.35);
+    padding: 6px !important;
+}
+
+.v-menu > .v-overlay__content > .v-list .v-list-item {
+    border-radius: 10px;
+    margin: 1px 0;
+    min-height: 40px;
+    transition: background-color 0.15s ease;
+}
+
+.v-menu > .v-overlay__content > .v-list .v-list-item:hover {
+    background-color: rgba(var(--v-theme-on-surface), 0.08);
 }
 
 .main-body .container h1.flex {
