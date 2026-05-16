@@ -481,6 +481,7 @@ launch:
   killServer: Zabij serwer Localhost
   launch: Uruchomienie
   launchAnyway: Uruchom mimo to
+  launchAs: Uruchom jako
   forceKill: Wymuś zakończenie
 launchBlocked:
   launchBadVersion:

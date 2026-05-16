@@ -520,6 +520,7 @@ launch:
   killServer: Öld meg a Localhost szervert
   launch: Indítás
   launchAnyway: Indítsa el egyébként
+  launchAs: Indítás más felhasználóként
   forceKill: Erőltetett kilépés
 launchBlocked:
   launchBadVersion:

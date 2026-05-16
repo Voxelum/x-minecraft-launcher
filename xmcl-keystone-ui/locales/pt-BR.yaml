@@ -508,6 +508,7 @@ launch:
   killServer: Matar Localhost Server
   launch: Launch
   launchAnyway: Iniciar mesmo assim
+  launchAs: Iniciar como
   forceKill: Forçar encerramento
 launchBlocked:
   launchBadVersion:

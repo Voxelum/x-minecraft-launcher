@@ -489,6 +489,7 @@ launch:
   killServer: Localhost Serverを終了
   launch: 起動
   launchAnyway: どちらでも走れる
+  launchAs: 別のアカウントで起動
   forceKill: 強制終了
 launchBlocked:
   launchBadVersion:

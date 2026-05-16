@@ -7,6 +7,44 @@
         </v-icon>
       </template>
     </v-list-item>
+    <v-menu
+      v-if="otherUsers.length > 0"
+      location="start"
+      :close-on-content-click="true"
+      open-on-hover
+      :open-delay="200"
+      :close-delay="100"
+    >
+      <template #activator="{ props: menuProps }">
+        <v-list-item v-bind="menuProps" :title="t('launch.launchAs')" append-icon="chevron_left">
+          <template #prepend>
+            <v-icon size="20">
+              person
+            </v-icon>
+          </template>
+        </v-list-item>
+      </template>
+      <v-list min-width="220">
+        <v-list-item
+          v-for="user in otherUsers"
+          :key="user.id"
+          :title="isUserRunning(user) ? t('launch.kill') : getGameProfileName(user)"
+          :subtitle="user.username"
+          @click="onLaunchAs(user)"
+        >
+          <template #prepend>
+            <PlayerAvatar
+              class="overflow-hidden rounded-full mr-3"
+              :src="user.profiles[user.selectedProfile]?.textures?.SKIN?.url"
+              :dimension="28"
+            />
+          </template>
+          <template v-if="isUserRunning(user)" #append>
+            <v-icon size="16" color="error">cancel</v-icon>
+          </template>
+        </v-list-item>
+      </v-list>
+    </v-menu>
     <v-list-item v-if="env && env.os !== 'osx'" :title="t('launch.createShortcut')" @click="onCreateShortcut">
       <template #prepend>
         <v-icon size="20">
@@ -17,6 +55,7 @@
   </v-list>
 </template>
 <script lang="ts" setup>
+import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import { useService } from '@/composables';
 import { useDialog } from '@/composables/dialog'
 import { kEnvironment } from '@/composables/environment';
@@ -26,12 +65,34 @@ import { kUserContext } from '@/composables/user';
 import { join } from '@/util/basename';
 import { getInstanceIcon } from '@/util/favicon';
 import { injection } from '@/util/inject'
-import { BaseServiceKey, LaunchServiceKey } from '@xmcl/runtime-api';
+import { BaseServiceKey, LaunchServiceKey, UserProfile } from '@xmcl/runtime-api';
 
 const { t } = useI18n()
 defineProps<{}>()
 
-const { serverCount, kill } = injection(kInstanceLaunch)
+const { serverCount, kill, launchAs, killPid, gameProcesses } = injection(kInstanceLaunch)
+const { users, userProfile } = injection(kUserContext)
+
+const otherUsers = computed(() => users.value?.filter((u) => u.id !== userProfile.value.id) ?? [])
+
+function isUserRunning(user: UserProfile) {
+  return gameProcesses.value.some((p) => p.options.user.selectedProfile === user.selectedProfile)
+}
+
+function getGameProfileName(user: UserProfile) {
+  return user.profiles[user.selectedProfile]?.name || user.username
+}
+
+function onLaunchAs(user: UserProfile) {
+  if (isUserRunning(user)) {
+    const proc = gameProcesses.value.find((p) => p.options.user.selectedProfile === user.selectedProfile)
+    if (proc) {
+      killPid(proc.pid)
+    }
+  } else {
+    launchAs(user)
+  }
+}
 
 const text = computed(() => {
   if (serverCount.value > 0) {
@@ -52,7 +113,6 @@ const { path, name, instance } = injection(kInstance)
 const { createLaunchShortcut } = useService(LaunchServiceKey)
 const { getDesktopDirectory } = useService(BaseServiceKey)
 const env = injection(kEnvironment)
-const { userProfile } = injection(kUserContext)
 const onCreateShortcut = async () => {
   const dir = await getDesktopDirectory()
   const { filePath } = await windowController.showSaveDialog({

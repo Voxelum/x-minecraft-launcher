@@ -232,6 +232,13 @@ export function useInstanceLaunch(
     await track(token, _launch(instancePath, user, operationId, side, overrides), 'launching', operationId)
   }
 
+  async function launchAs(user: UserProfile, side = 'client' as 'client' | 'server') {
+    const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
+    const instancePath = instance.value.path
+    const token = getLaunchToken(user, instancePath)
+    await track(token, _launch(instancePath, user, operationId, side), 'launching', operationId)
+  }
+
   async function killGame(side: 'client' | 'server' = 'client', force?: boolean) {
     if (data.value) {
       for (const p of data.value) {
@@ -254,7 +261,9 @@ export function useInstanceLaunch(
 
   return {
     launch: launchWithTracking,
+    launchAs,
     kill: killGame,
+    killPid: (pid: number) => kill(pid),
     gameProcesses,
     windowReady,
     error,

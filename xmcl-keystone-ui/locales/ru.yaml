@@ -510,6 +510,7 @@ launch:
   killServer: Остановить локальный сервер
   launch: Запустить
   launchAnyway: Запустить в любом случае
+  launchAs: Запустить от имени
   forceKill: Принудительно завершить
 launchBlocked:
   launchBadVersion:

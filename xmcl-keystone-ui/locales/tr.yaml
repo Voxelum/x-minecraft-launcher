@@ -501,6 +501,7 @@ launch:
   killServer: Localhost Sunucusunu Durdur
   launch: Başlat
   launchAnyway: Yine de Başlat
+  launchAs: Farklı hesapla başlat
   forceKill: Zorla kapat
 launchBlocked:
   launchBadVersion:

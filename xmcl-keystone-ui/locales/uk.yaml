@@ -493,6 +493,7 @@ launch:
   killServer: Зупинити локальний сервер
   launch: Запустити
   launchAnyway: Запустити все одно
+  launchAs: Запустити від імені
   forceKill: Примусово завершити
 launchBlocked:
   launchBadVersion:

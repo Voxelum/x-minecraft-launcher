@@ -500,6 +500,7 @@ launch:
   killServer: Жергілікті серверді өшіру
   launch: Іске қосу
   launchAnyway: Сонда да іске қосу
+  launchAs: Басқа аккаунтпен іске қосу
   forceKill: Мәжбүрлеп жабу
 launchBlocked:
   launchBadVersion:

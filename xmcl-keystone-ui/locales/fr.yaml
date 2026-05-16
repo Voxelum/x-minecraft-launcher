@@ -504,6 +504,7 @@ launch:
   killServer: Tuer le serveur Localhost
   launch: Jouer
   launchAnyway: Lancer quand même
+  launchAs: Lancer en tant que
   forceKill: Forcer l'arrêt
 launchBlocked:
   launchGeneralException:

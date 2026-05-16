@@ -468,6 +468,7 @@ launch:
   killServer: 로컬호스트 서버 종료
   launch: 실행
   launchAnyway: 무시하고 실행
+  launchAs: 다른 계정으로 실행
   forceKill: 강제 종료
 launchBlocked:
   launchBadVersion:

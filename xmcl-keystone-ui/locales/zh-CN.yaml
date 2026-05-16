@@ -525,6 +525,7 @@ launch:
   killServer: 停止本地服务器
   launch: 启动
   launchAnyway: 直接启动
+  launchAs: 以其他账号启动
 launchBlocked:
   launchBadVersion:
     description: 版本 {version} 的 JSON 内有无法解析的库，也许您需要重新安装此版本？

@@ -541,6 +541,7 @@ launch:
   killServer: Töte den Localhost-Server
   launch: Los geht's
   launchAnyway: Trotzdem starten
+  launchAs: Starten als
   forceKill: Beenden erzwingen
 launchBlocked:
   launchBadVersion:

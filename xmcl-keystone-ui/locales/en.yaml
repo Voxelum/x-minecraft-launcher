@@ -515,6 +515,7 @@ launch:
   killServer: Kill Localhost Server
   launch: Launch
   launchAnyway: Launch Anyway
+  launchAs: Launch as
 launchBlocked:
   launchBadVersion:
     description: The version {version} json is breaking. Maybe re-install this version?

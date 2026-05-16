@@ -501,6 +501,7 @@ launch:
   killServer: Stop Localhost Server
   launch: Starten
   launchAnyway: Toch starten
+  launchAs: Starten als
   forceKill: Forzar peche
 launchBlocked:
   launchBadVersion:

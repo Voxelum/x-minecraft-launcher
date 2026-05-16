@@ -431,6 +431,7 @@ launch:
   createShortcut: Crear atajo
   killServer: Matar el servidor localhost
   launchAnyway: Lanzar de todos modos
+  launchAs: Lanzar como
   forceKill: Forzar cierre
 launchBlocked:
   launchBadVersion:

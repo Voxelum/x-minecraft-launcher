@@ -495,6 +495,7 @@ launch:
   killServer: KILL LOCALHOST SERVR
   launch: LAUNCH
   launchAnyway: LAUNCH ANYWAY
+  launchAs: LAUNCH AZ
   forceKill: KILLZ HARDIR
 launchBlocked:
   launchBadVersion:
