@@ -261,7 +261,8 @@
             v-model="selectedMods"
             class="launch-server-dialog__mods rounded-lg"
             :disabled="loadingSelectedMods || serverModsLocked"
-            item-key="path"
+            item-value="path"
+            return-object
             :show-select="!serverModsLocked"
             :search="search"
             :headers="headers"
