@@ -1,14 +1,16 @@
 <template>
-  <div class="mt-2">
+  <div class="setup-footer flex-shrink-0">
     <v-divider />
-    <div class="flex flex-1 flex-grow-0 p-5 ">
+    <div class="flex flex-1 flex-grow-0 items-center px-6 py-4">
       <v-btn
         v-if="prev"
         data-testid="setup-prev"
         :disabled="disabled"
         :loading="loading"
         @click="emit('prev')"
-       size="large" variant="text">
+        size="large"
+        variant="tonal"
+      >
         {{ t('shared.previous') }}
       </v-btn>
       <div class="flex-grow" />
@@ -19,14 +21,17 @@
         :disabled="disabled"
         :loading="loading"
         @click="emit('next')"
-       size="large">
+        size="large"
+        rounded="xl"
+        elevation="2"
+      >
         {{ finish ? t('confirm') : t('shared.next') }}
       </v-btn>
     </div>
   </div>
 </template>
 
-<script lang=ts setup>
+<script lang="ts" setup>
 const props = defineProps<{
   disabled?: boolean
   loading: boolean
@@ -40,3 +45,37 @@ const emit = defineEmits<{
 }>()
 const { t } = useI18n()
 </script>
+
+<style scoped>
+.setup-footer {
+  background: color-mix(in srgb, rgb(var(--v-theme-surface)) 82%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.setup-footer :deep(.v-btn) {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
+}
+
+.setup-footer :deep(.v-btn:hover) {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+.setup-footer :deep(.v-btn:active) {
+  transform: translateY(0) scale(0.99);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-footer :deep(.v-btn) {
+    transition: none;
+  }
+
+  .setup-footer :deep(.v-btn:hover),
+  .setup-footer :deep(.v-btn:active) {
+    transform: none;
+  }
+}
+</style>

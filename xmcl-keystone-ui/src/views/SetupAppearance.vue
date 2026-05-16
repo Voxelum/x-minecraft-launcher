@@ -1,26 +1,28 @@
 <template>
   <div
     data-testid="setup-appearance"
-    class=""
+    class="setup-step-content px-6 py-5"
   >
-    <v-list class="non-moveable w-full" color="transparent" three-line subheader>
-      <v-list-item class="items-center justify-center">
+    <div class="text-lg font-semibold mb-1">{{ t('setup.appearance.name') }}</div>
+    <v-list class="w-full pa-0" bg-color="transparent" lines="two">
+      <v-list-item class="px-0">
         <v-list-item-title>
           {{ t('setting.darkTheme') }}
         </v-list-item-title>
         <v-list-item-subtitle>
           {{ t('setting.darkThemeDescription') }}
         </v-list-item-subtitle>
-        <v-list-item-action>
+        <template #append>
           <v-select
             v-model="data.theme"
-            filled
+            variant="outlined"
+            density="comfortable"
             item-title="text"
-            style="max-width: 185px"
+            style="min-width: 220px"
             hide-details
             :items="themes"
           />
-        </v-list-item-action>
+        </template>
       </v-list-item>
     </v-list>
   </div>

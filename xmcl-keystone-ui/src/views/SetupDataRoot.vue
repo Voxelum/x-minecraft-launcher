@@ -1,46 +1,45 @@
 <template>
   <v-list
     data-testid="setup-data-root"
-    class="non-moveable"
-    three-line
-    subheader
-    style="background: transparent; width: 100%"
+    class="setup-step-content"
+    lines="three"
+    bg-color="transparent"
   >
-    <v-list-item>
+    <v-list-item class="px-6 pt-5">
       <v-list-item-title class="whitespace-pre-wrap">
+        <div class="text-lg font-semibold mb-2">{{ t('setup.dataRoot.name') }}</div>
         {{ t('setup.dataRoot.description') }}
       </v-list-item-title>
     </v-list-item>
-    <v-list-item>
+    <v-list-item class="px-6">
       <v-list-item-title>{{ t('setup.path') }}</v-list-item-title>
       <v-list-item-subtitle>{{ modelValue }}</v-list-item-subtitle>
-      <v-list-item-action class="self-center">
-        <v-btn
-          :disabled="modelValue === defaultPath"
-          style="margin-right: 10px"
-          @click="restore"
-          variant="text"
-        >
-          {{ t('setup.defaultPath') }}
-        </v-btn>
-      </v-list-item-action>
-      <v-list-item-action class="self-center">
-        <v-btn color="primary" style="margin-right: 10px" @click="browse" variant="text">
-          {{ t('shared.browse') }}
-        </v-btn>
-      </v-list-item-action>
+      <template #append>
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+          <v-btn
+            :disabled="modelValue === defaultPath"
+            @click="restore"
+            variant="tonal"
+          >
+            {{ t('setup.defaultPath') }}
+          </v-btn>
+          <v-btn color="primary" @click="browse" variant="flat">
+            {{ t('shared.browse') }}
+          </v-btn>
+        </div>
+      </template>
     </v-list-item>
-    <v-alert v-if="error" class="mx-2" :type="error === 'exists' ? 'warning' : 'error'">
+    <v-alert v-if="error" class="mx-6 my-2" :type="error === 'exists' ? 'warning' : 'error'" variant="tonal">
       {{ errorText }}
     </v-alert>
-    <v-list-subheader>
+    <v-list-subheader class="px-6 pt-2">
       {{ t('setup.dataRoot.drives') }}
     </v-list-subheader>
     <v-list-item
       v-for="d of drives"
       :key="d.mounted"
       v-ripple
-      class="m-2 mx-3 cursor-pointer rounded-lg before:rounded-lg hover:bg-[rgba(123,123,123,0.5)]"
+      class="mx-6 mb-2 cursor-pointer rounded-xl border before:rounded-xl"
       :class="{ 'v-list-item--active': d.selectedPath === modelValue }"
       @click="onSelect(d)"
     >
@@ -58,7 +57,7 @@
           {{ d.selectedPath }}
         </span>
       </v-list-item-title>
-      <v-progress-linear class="my-2 p-0" :value="(d.used / (d.available + d.used)) * 100" />
+      <v-progress-linear class="my-2 p-0" :model-value="(d.used / (d.available + d.used)) * 100" />
       <v-list-item-subtitle class="flex">
         <span class="">
           {{ t('disk.available') }}: {{ (d.available / 1024 / 1024 / 1024).toFixed(2) }}G
@@ -108,3 +107,38 @@ function restore() {
   emit('update:modelValue', props.defaultPath)
 }
 </script>
+
+<style scoped>
+.setup-step-content :deep(.v-list-item) {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.setup-step-content :deep(.v-list-item.v-list-item--active) {
+  border-color: rgba(var(--v-theme-primary), 0.45) !important;
+  background: rgba(var(--v-theme-primary), 0.1) !important;
+}
+
+.setup-step-content :deep(.v-list-item:not(.v-list-item--active)) {
+  border-color: rgba(var(--v-theme-on-surface), 0.1);
+}
+
+.setup-step-content :deep(.v-list-item:not(.v-list-item--active):hover) {
+  background: rgba(var(--v-theme-on-surface), 0.05) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.setup-step-content :deep(.v-list-item.v-list-item--active) {
+  box-shadow: 0 8px 24px rgba(var(--v-theme-primary), 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-step-content :deep(.v-list-item) {
+    transition: none;
+  }
+
+  .setup-step-content :deep(.v-list-item:not(.v-list-item--active):hover) {
+    transform: none;
+  }
+}
+</style>

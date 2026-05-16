@@ -1,88 +1,117 @@
 <template>
-  <v-card
+  <AppMoodBackground
     v-if="!data.fetching"
+    variant="ambient"
     data-testid="setup-root"
-    class="setup flex flex-col overflow-auto"
+    class="setup flex h-full w-full flex-col overflow-hidden select-none"
   >
     <v-stepper
       v-model="data.step"
-      class="non-moveable visible-scroll flex h-full flex-col overflow-auto bg-transparent"
+      flat
+      class="setup-stepper non-moveable flex h-full min-h-0 flex-col overflow-hidden bg-transparent"
     >
-      <v-stepper-header>
+      <v-stepper-header class="setup-stepper-header px-4 py-2">
         <v-stepper-item
           :complete="data.step > 1"
           :editable="data.step > 1"
-          step="1"
+          :value="1"
+          color="primary"
+          class="setup-stepper-item"
         >
           {{ t('setup.locale.name') }}
         </v-stepper-item>
 
-        <v-divider />
+        <v-divider class="mx-1" />
 
         <v-stepper-item
           :complete="data.step > 2"
           :editable="data.step > 2"
-          step="2"
+          :value="2"
+          color="primary"
+          class="setup-stepper-item"
         >
           {{ t('setup.appearance.name') }}
         </v-stepper-item>
 
-        <v-divider />
+        <v-divider class="mx-1" />
 
         <v-stepper-item
           :complete="data.step > 3"
           :editable="data.step > 3"
-          step="3"
+          :value="3"
+          color="primary"
+          class="setup-stepper-item"
         >
           {{ t('setup.dataRoot.name') }}
         </v-stepper-item>
 
-        <v-divider />
+        <v-divider class="mx-1" />
 
-        <v-stepper-item step="4">
+        <v-stepper-item :value="4" color="primary" class="setup-stepper-item">
           {{ t('setup.account.name') }}
         </v-stepper-item>
       </v-stepper-header>
 
-      <v-stepper-window class="h-full overflow-auto overflow-x-hidden">
+      <v-stepper-window
+        class="setup-stepper-window"
+        transition="setup-step-forward"
+        reverse-transition="setup-step-back"
+      >
         <v-stepper-window-item
-          class="h-full overflow-auto overflow-x-hidden pt-2"
-          step="1"
+          class="setup-stepper-window-item"
+          :value="1"
         >
-          <SetLocale
-            v-model="localeRef"
-          />
+          <div class="setup-pane-wrap">
+            <AppMoodSurface fill>
+              <SetLocale
+                v-model="localeRef"
+              />
+            </AppMoodSurface>
+          </div>
         </v-stepper-window-item>
         <v-stepper-window-item
-          class="h-full overflow-auto overflow-x-hidden pt-2"
-          step="2"
+          class="setup-stepper-window-item"
+          :value="2"
         >
-          <SetupAppearance
-            v-model="data.path"
-            class="h-full overflow-y-auto px-4"
-            :default-path="data.defaultPath"
-            :drives="data.drives"
-          />
+          <div class="setup-pane-wrap">
+            <AppMoodSurface fill>
+              <SetupAppearance
+                v-model="data.path"
+                class="h-full"
+                :default-path="data.defaultPath"
+                :drives="data.drives"
+              />
+            </AppMoodSurface>
+          </div>
         </v-stepper-window-item>
         <v-stepper-window-item
-          class="h-full overflow-auto overflow-x-hidden pt-2"
-          step="3"
+          class="setup-stepper-window-item"
+          :value="3"
         >
-          <SetDataRoot
-            v-model="data.path"
-            class="h-full overflow-auto"
-            :error="data.pathError"
-            :default-path="data.defaultPath"
-            :drives="data.drives"
-          />
+          <div class="setup-pane-wrap">
+            <AppMoodSurface fill>
+              <SetDataRoot
+                v-model="data.path"
+                class="h-full"
+                :error="data.pathError"
+                :default-path="data.defaultPath"
+                :drives="data.drives"
+              />
+            </AppMoodSurface>
+          </div>
         </v-stepper-window-item>
         <v-stepper-window-item
-          class="h-full overflow-auto overflow-x-hidden pt-2"
-          step="4"
+          class="setup-stepper-window-item"
+          :value="4"
         >
-          <SetupAccount
-            v-model="data.instancePath"
-          />
+          <div class="setup-pane-wrap">
+            <AppMoodSurface fill>
+              <SetupAccount
+                v-model="data.instancePath"
+                @skip="setup"
+              />
+            </AppMoodSurface>
+          </div>
         </v-stepper-window-item>
       </v-stepper-window>
       <slot name="actions">
@@ -97,7 +126,7 @@
         />
       </slot>
     </v-stepper>
-  </v-card>
+  </AppMoodBackground>
   <v-card
     v-else
     class="flex h-full w-full items-center justify-center"
@@ -109,7 +138,9 @@
   </v-card>
 </template>
 
-<script lang=ts setup>
+<script lang="ts" setup>
+import AppMoodBackground from '@/components/AppMoodBackground.vue'
+import AppMoodSurface from '@/components/AppMoodSurface.vue'
 import { useService } from '@/composables'
 import { kSettingsState } from '@/composables/setting'
 import { BackgroundType, kTheme } from '@/composables/theme'
@@ -139,11 +170,6 @@ const localeRef = computed({
   },
 })
 
-const currentTitle = computed(() => {
-  if (data.step === 1) return t('setup.locale.name')
-  if (data.step === 2) return t('setup.dataRoot.name')
-  return t('setup.game.name')
-})
 const data = reactive({
   step: 1,
   fetching: true,
@@ -184,7 +210,7 @@ watch(() => data.path, (newPath) => {
   })
 })
 
-const { isDark, backgroundType, currentTheme } = injection(kTheme)
+const { isDark, currentTheme } = injection(kTheme)
 
 const updateTheme = (theme: 'dark' | 'system' | 'light') => {
   if (theme === 'system') {
@@ -227,16 +253,81 @@ async function setup() {
 </script>
 
 <style>
-.setup .v-list__tile__content {
-  margin-left: 7px;
-}
-.setup .v-list__tile__title {
-  overflow: auto;
-  text-overflow: unset;
+.setup .v-stepper-header {
+  flex: 0 0 auto;
 }
 
-.setup .v-stepper__wrapper {
-  @apply h-full flex flex-col overflow-auto;
+.setup-stepper-header {
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.setup-stepper-item {
+  border-radius: 12px;
+  transition:
+    background-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.setup-stepper-item:hover {
+  background: rgba(var(--v-theme-on-surface), 0.05);
+  transform: translateY(-1px);
+}
+
+.setup .v-stepper-window {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.setup .v-stepper-window .v-window__container {
+  height: 100%;
+}
+
+.setup .v-stepper-window-item {
+  height: 100%;
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.setup-pane-wrap {
+  padding: 12px 16px 16px;
+}
+
+.setup .v-stepper.v-sheet {
+  overflow: hidden;
+}
+
+.setup-step-forward-enter-active,
+.setup-step-forward-leave-active,
+.setup-step-back-enter-active,
+.setup-step-back-leave-active {
+  transition:
+    opacity 0.22s ease,
+    transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.setup-step-forward-enter-from,
+.setup-step-back-leave-to {
+  opacity: 0;
+  transform: translateX(22px) scale(0.985);
+}
+
+.setup-step-forward-leave-to,
+.setup-step-back-enter-from {
+  opacity: 0;
+  transform: translateX(-22px) scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-step-forward-enter-active,
+  .setup-step-forward-leave-active,
+  .setup-step-back-enter-active,
+  .setup-step-back-leave-active,
+  .setup-stepper-item {
+    transition: none;
+  }
 }
 
 </style>
