@@ -24,6 +24,18 @@ export class ErrorDiagnose {
    */
   processError(e: Error): boolean {
     if (e.name === 'SQLite3Error') {
+      // The driver already auto-reopens the handle on these transient
+      // failures (see SqliteWASMDriver). Suppress them from telemetry so we
+      // don't get the per-user storm reported in issue #1429.
+      if ((e as any).isDisposed) {
+        return true
+      }
+      if (
+        e.message === 'Database already closed' ||
+        e.message === 'unable to open database file'
+      ) {
+        return true
+      }
       if (e.message.startsWith('disk I/O error')) {
         this.#sqlDiskIOError = true
       }
