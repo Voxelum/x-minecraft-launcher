@@ -579,8 +579,8 @@ a {
 }
 
 .v-dialog > .v-overlay__content > *:first-child {
-    backdrop-filter: blur(48px);
     -webkit-backdrop-filter: blur(48px);
+    backdrop-filter: blur(48px);
     background: rgba(var(--v-theme-surface), 0.85) !important;
     color: rgb(var(--v-theme-on-surface));
     border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
