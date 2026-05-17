@@ -3,6 +3,7 @@
     v-model="shown"
     :target="[x, y]"
     absolute
+    eager
     z-index="300"
     transition="fade-transition"
     :open-delay="0"
