@@ -22,10 +22,10 @@ export function useCommandPaletteHotkey() {
   function onKeyDown(e: KeyboardEvent) {
     const mod = e.ctrlKey || e.metaKey
     if (!mod) return
-    if (e.key === 'k' || e.key === 'K') {
+    if (e.code === 'KeyK') {
       e.preventDefault()
       bus.emit('toggle')
-    } else if (e.shiftKey && (e.key === 'p' || e.key === 'P')) {
+    } else if (e.shiftKey && e.code === 'KeyP') {
       e.preventDefault()
       bus.emit('toggle')
     }

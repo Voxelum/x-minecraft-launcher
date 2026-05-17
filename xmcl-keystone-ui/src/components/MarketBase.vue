@@ -194,7 +194,7 @@ const { current } = injection(kDialogModel)
 const onKeyPress = (e: KeyboardEvent) => {
   if (current.value.dialog) return
   // ctrl+a
-  if (e.ctrlKey && e.key === 'a') {
+  if (e.ctrlKey && e.code === 'KeyA') {
     e.preventDefault()
     e.stopPropagation()
     emit('update:selectionMode', true)

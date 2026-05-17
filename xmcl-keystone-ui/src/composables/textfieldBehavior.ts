@@ -10,13 +10,13 @@ export function useTextFieldBehavior(
     'keydown',
     (e: KeyboardEvent) => {
       // ctrl+f
-      if (e.ctrlKey && e.key === 'f') {
+      if (e.ctrlKey && e.code === 'KeyF') {
         e.preventDefault()
         // e.stopPropagation()
         searchTextField.value?.focus()
       }
       // ctrl+a
-      if (searchTextFieldFocused.value && e.ctrlKey && e.key === 'a') {
+      if (searchTextFieldFocused.value && e.ctrlKey && e.code === 'KeyA') {
         e.preventDefault()
         e.stopPropagation()
         searchTextField.value?.$el.querySelector('input')?.select()
