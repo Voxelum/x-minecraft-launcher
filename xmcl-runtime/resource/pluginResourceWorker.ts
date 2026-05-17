@@ -9,6 +9,7 @@ import {
   Exception,
   InstanceServiceKey,
   InstanceState,
+  ParseException,
   ResourceState,
   SharedState,
 } from '@xmcl/runtime-api'
@@ -90,7 +91,6 @@ function loadDatabaseConfig(app: LauncherApp, flights: any) {
 
   return config
 }
-class ParseException extends Exception<{ type: 'parseResourceException'; code: string }> {}
 
 export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   const workerLogger = app.getLogger('ResourceWorker')
@@ -186,8 +186,8 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     onError: (e) => {
       logger.error(e)
     },
-    throwException: ({ type, code }) => {
-      throw new ParseException({ type, code })
+    throwException: ({ type, code, path }) => {
+      throw new ParseException({ type, code, path })
     },
     createResourceState: function (): ResourceState {
       return new ResourceState()

@@ -7,6 +7,7 @@ import { InstanceModsServiceKey, JavaRecord, ResourceState, SharedState } from '
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
 import { useLocalStorageCache } from './cache'
+import { useResourceParseErrorNotifier } from './resourceParseError'
 import { useService } from './service'
 import { useState } from './syncableState'
 import { RuntimeVersions } from '@xmcl/instance'
@@ -62,6 +63,8 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     mods.files = mods.files.map(m => markRaw(m))
     return mods as any
   }, ReactiveResourceState)
+
+  useResourceParseErrorNotifier(state)
 
   const modsRaw: Ref<ModFile[]> = shallowRef([])
   const mods = refThrottled(modsRaw, 500)

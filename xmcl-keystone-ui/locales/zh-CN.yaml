@@ -1031,6 +1031,11 @@ quiltVersion:
   empty: Minecraft {version} 不支持 Quilt
 reinstall:
   name: 重新安装 {version}
+resourceError:
+  title: 无法读取 {file}
+  body: >-
+    “{path}” 解析失败（{code}）。该文件可能已损坏、被占用或下载不完整。
+    请尝试重新下载或删除该文件。
 resourcepack:
   compatible: 当前格式({format}) 可用于当前版本 {version}
   defaultDescription: Minecraft 的默认材质

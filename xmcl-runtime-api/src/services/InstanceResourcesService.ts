@@ -1,4 +1,5 @@
 import type { ResourceState } from '@xmcl/resource'
+import { Exception, ExceptionBase } from '../entities/exception'
 import { InstallMarketOptionWithInstance } from '../entities/market'
 import { SharedState } from '../util/SharedState'
 
@@ -45,4 +46,26 @@ export interface InstanceResourcesService {
    */
   refreshMetadata(instancePath: string): Promise<void>
 }
+
+/**
+ * Raised when a resource file (mod/resourcepack/shaderpack/…) cannot be
+ * parsed by `@xmcl/resource`. Carries the on-disk `path` so the UI can
+ * tell the user *which* file is broken, and a `code` identifying the
+ * underlying parser failure (e.g. `InvalidZipFileError`,
+ * `MultiDiskZipFileError`, `PermissionError`).
+ *
+ * This is intentionally an `Exception` (not an `Error`) so the runtime
+ * telemetry sink skips it — see knowledge/runbooks/telemetry-triage.md
+ * for the `Exception` vs `Error` doctrine. A broken jar in the user's
+ * mods folder is environment state, not a launcher defect.
+ */
+export interface ParseResourceException extends ExceptionBase {
+  type: 'parseResourceException'
+  code: string
+  path: string
+}
+
+export type ParseExceptions = ParseResourceException
+
+export class ParseException extends Exception<ParseExceptions> { }
 

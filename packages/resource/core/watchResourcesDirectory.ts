@@ -6,7 +6,7 @@ import { ResourceContext } from '../ResourceContext'
 import { ResourceDomain } from '../ResourceDomain'
 import { ResourceMetadata } from '../ResourceMetadata'
 import { ResourceWorkerQueuePayload } from '../ResourceWorkerQueuePayload'
-import { ResourceAction, ResourceActionTuple, UpdateResourcePayload } from '../ResourcesState'
+import { ResourceAction, ResourceActionTuple, ResourceErrorAction, ResourceErrorActionTuple, UpdateResourcePayload } from '../ResourcesState'
 import { ResourceSnapshotTable } from '../schema'
 import { generateResourceV3, pickMetadata } from './generateResource'
 import { getFile, getFiles } from './getFile'
@@ -273,6 +273,11 @@ export function watchResourcesDirectory({
     (all) => state.filesUpdates(all),
     500,
   )
+  const errorUpdate = new AggregateExecutor<ResourceErrorActionTuple, ResourceErrorActionTuple[]>(
+    (v) => v,
+    (all) => state.errorsUpdates(all),
+    500,
+  )
 
   const state = context.createResourceState()
 
@@ -286,6 +291,7 @@ export function watchResourcesDirectory({
       .catch((e) => {})
 
     update.push([file, ResourceAction.Remove])
+    errorUpdate.push([file, ResourceErrorAction.Remove])
   }
 
   const onResourceEmit: ResouceEmitFunc = (file, record, metadata) => {
@@ -294,6 +300,10 @@ export function watchResourcesDirectory({
       context.onError(new AnyError('ResourcePathError', 'Resource path is not available'))
       return
     }
+    // The file parsed successfully — clear any prior parse-error entry so
+    // the UI stops complaining about it (covers the "user replaced the
+    // broken jar with a working one" flow).
+    errorUpdate.push([resource.path, ResourceErrorAction.Remove])
     update.push([resource, ResourceAction.Upsert])
   }
 
@@ -355,6 +365,16 @@ export function watchResourcesDirectory({
     }
     if (!(e instanceof Error)) {
       e = Object.assign(new Error(), e)
+    }
+    // If the parse failed with a known broken-file signature (the
+    // upstream `getOrParseMetadata.handleParseError` routes those through
+    // `context.throwException` → `ParseException`), surface it on the
+    // state so the UI can toast the user the path of the offending file.
+    // Other errors (logic bugs, IO surprises) still go to `onError` for
+    // telemetry.
+    const ex = (e as any)?.exception
+    if (ex && ex.type === 'parseResourceException' && typeof ex.code === 'string') {
+      errorUpdate.push([{ path: filePath, code: ex.code }, ResourceErrorAction.Upsert])
     }
     context.onError(e)
   }

@@ -1,4 +1,4 @@
-import { ResourceAction, ResourceActionTuple, UpdateResourcePayload } from '@xmcl/resource'
+import { ResourceAction, ResourceActionTuple, ResourceError, ResourceErrorAction, ResourceErrorActionTuple, UpdateResourcePayload } from '@xmcl/resource'
 import { ResourceState, applyUpdateToResource } from '@xmcl/runtime-api'
 
 
@@ -27,5 +27,26 @@ export class ReactiveResourceState extends ResourceState {
       }
     }
     this['files'] = mods
+  }
+
+  override errorsUpdates(ops: ResourceErrorActionTuple[]) {
+    const errors = [...this.errors]
+    for (const [payload, action] of ops) {
+      if (action === ResourceErrorAction.Upsert) {
+        const err = payload as ResourceError
+        if (!err || !err.path) continue
+        const index = errors.findIndex(e => e.path === err.path)
+        if (index === -1) {
+          errors.push(markRaw(err))
+        } else {
+          errors[index] = markRaw(err)
+        }
+      } else {
+        const path = payload as string
+        const index = errors.findIndex(e => e.path === path)
+        if (index !== -1) errors.splice(index, 1)
+      }
+    }
+    this['errors'] = errors
   }
 }
