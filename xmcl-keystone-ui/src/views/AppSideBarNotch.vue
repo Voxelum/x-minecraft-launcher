@@ -101,7 +101,7 @@
           <v-badge
             right
             overlap
-            :value="state?.updateStatus !== 'none'"
+            :model-value="state?.updateStatus !== 'none'"
           >
             <template #badge>
               <span>{{ 1 }}</span>
