@@ -21,5 +21,5 @@ export interface ResourceContext {
 
   onError(e: Error): void
 
-  throwException(exception: { type: 'parseResourceException'; code: string }): never
+  throwException(exception: { type: 'parseResourceException'; code: string; path: string }): never
 }

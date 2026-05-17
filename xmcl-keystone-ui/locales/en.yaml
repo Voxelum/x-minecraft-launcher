@@ -1030,6 +1030,11 @@ quiltVersion:
   empty: Quilt does not support Minecraft {version}
 reinstall:
   name: Reinstall {version}
+resourceError:
+  title: Cannot read {file}
+  body: >-
+    "{path}" could not be parsed ({code}). The file may be corrupted, locked, or
+    incomplete. Try re-downloading or removing it.
 resourcepack:
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft

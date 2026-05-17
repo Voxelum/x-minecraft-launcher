@@ -9,6 +9,7 @@ import {
   packFormatVersionRange,
 } from "@xmcl/runtime-api";
 import { computed, InjectionKey, Ref } from "vue";
+import { useResourceParseErrorNotifier } from "./resourceParseError";
 import { useService } from "./service";
 import { useState } from "./syncableState";
 import { Resource } from "@xmcl/resource";
@@ -104,6 +105,8 @@ export function useInstanceResourcePacks(
     () => (path.value ? watch(path.value) : undefined),
     ReactiveResourceState
   );
+
+  useResourceParseErrorNotifier(state);
 
   const { t } = useI18n();
 

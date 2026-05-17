@@ -6,6 +6,7 @@ import { GameOptionsState, InstanceOptionsServiceKey, InstanceShaderPacksService
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
+import { useResourceParseErrorNotifier } from './resourceParseError'
 import { useService } from './service'
 import { useState } from './syncableState'
 import { ReactiveResourceState } from '@/util/ReactiveResourceState'
@@ -26,6 +27,8 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
   const { editOculusShaderOptions, getOculusShaderOptions, getIrisShaderOptions, editIrisShaderOptions, getShaderOptions, editShaderOptions } = useService(InstanceOptionsServiceKey)
 
   const { state, error, isValidating } = useState(() => instancePath.value ? watchShaderPacks(instancePath.value) : undefined, ReactiveResourceState)
+
+  useResourceParseErrorNotifier(state)
 
   const shaderPacks = computed(() => state.value?.files.map(f => ({
     path: f.path,

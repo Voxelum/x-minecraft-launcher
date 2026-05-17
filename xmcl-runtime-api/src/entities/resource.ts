@@ -1,4 +1,4 @@
-import { ResourceAction, type Resource, type ResourceActionTuple, type UpdateResourcePayload } from '@xmcl/resource'
+import { ResourceAction, ResourceErrorAction, type Resource, type ResourceActionTuple, type ResourceError, type ResourceErrorActionTuple, type UpdateResourcePayload } from '@xmcl/resource'
 
 export function applyUpdateToResource(resource: Resource, update: UpdateResourcePayload) {
   resource.name = update.metadata?.name ?? resource.name
@@ -14,6 +14,15 @@ export class ResourceState {
    * The mods under instance folder
    */
   files = [] as Resource[]
+
+  /**
+   * Files in this directory that could not be parsed (broken zip,
+   * permission, …). See `ResourceState.errors` in
+   * `@xmcl/resource/ResourcesState.ts` for the contract — the runtime
+   * pushes a `ResourceError` per failing file, and the renderer surfaces
+   * them as a user-facing toast.
+   */
+  errors = [] as ResourceError[]
 
   filesUpdates(ops: ResourceActionTuple[]) {
     const files = [...this.files]
@@ -43,5 +52,26 @@ export class ResourceState {
       }
     }
     this.files = files
+  }
+
+  errorsUpdates(ops: ResourceErrorActionTuple[]) {
+    const errors = [...this.errors]
+    for (const [payload, action] of ops) {
+      if (action === ResourceErrorAction.Upsert) {
+        const err = payload as ResourceError
+        if (!err || !err.path) continue
+        const index = errors.findIndex(e => e.path === err.path)
+        if (index === -1) {
+          errors.push(err)
+        } else {
+          errors[index] = err
+        }
+      } else {
+        const path = payload as string
+        const index = errors.findIndex(e => e.path === path)
+        if (index !== -1) errors.splice(index, 1)
+      }
+    }
+    this.errors = errors
   }
 }

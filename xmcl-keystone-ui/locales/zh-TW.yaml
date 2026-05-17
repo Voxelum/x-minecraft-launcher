@@ -1582,6 +1582,11 @@ migrateMinecraft:
   name: 遷移 Minecraft 檔案
 reinstall:
   name: 重新安裝 {version}
+resourceError:
+  title: 無法讀取 {file}
+  body: >-
+    「{path}」解析失敗（{code}）。該檔案可能已損毀、被佔用或下載不完整。
+    請嘗試重新下載或刪除該檔案。
 minecraftFriends:
   title: Minecraft 好友
   add: 新增好友

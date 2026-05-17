@@ -42,7 +42,7 @@ export async function getOrParseMetadata(
       err.name === 'FileNotFoundError' ||
       err.name === 'PermissionError'
     ) {
-      context.throwException({ type: 'parseResourceException', code: err.name })
+      context.throwException({ type: 'parseResourceException', code: err.name, path: file.path })
     }
     throw err
   }
