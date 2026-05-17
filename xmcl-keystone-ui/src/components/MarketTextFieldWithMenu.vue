@@ -284,7 +284,7 @@ const emit = defineEmits<{
   'update:enableCurseforge': [value: boolean]
   'update:enableModrinth': [value: boolean]
   'update:keyword': [value: string | undefined]
-  'update:sort': [value: number]
+  'update:sort': [value: number | string]
   'update:modloader': [value: string]
   'update:localSort': [value: 'alpha_asc' | 'alpha_desc' | 'time_asc' | 'time_desc']
   'update:gameVersion': [value: string]

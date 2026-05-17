@@ -1,4 +1,4 @@
-import { ResourceAction, ResourceErrorAction, type Resource, type ResourceActionTuple, type ResourceError, type ResourceErrorActionTuple, type UpdateResourcePayload } from '@xmcl/resource'
+import { type Resource, type ResourceActionTuple, type ResourceError, type ResourceErrorActionTuple, type UpdateResourcePayload } from '@xmcl/resource'
 
 export function applyUpdateToResource(resource: Resource, update: UpdateResourcePayload) {
   resource.name = update.metadata?.name ?? resource.name
@@ -57,7 +57,7 @@ export class ResourceState {
   errorsUpdates(ops: ResourceErrorActionTuple[]) {
     const errors = [...this.errors]
     for (const [payload, action] of ops) {
-      if (action === ResourceErrorAction.Upsert) {
+      if (action === 0) {
         const err = payload as ResourceError
         if (!err || !err.path) continue
         const index = errors.findIndex(e => e.path === err.path)
