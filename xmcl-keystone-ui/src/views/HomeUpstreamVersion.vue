@@ -172,8 +172,15 @@ watch(() => props.version, () => {
   gap: 10px;
   padding: 14px 16px;
   border-radius: 12px;
+  border: 1px solid transparent;
   border-left: 3px solid var(--release-color);
+  transition: border-color 0.5s ease;
   color: rgba(var(--v-theme-on-surface), 0.85);
+}
+
+.upstream-version:hover {
+  border-color: color-mix(in srgb, var(--release-color) 45%, transparent);
+  border-left-color: var(--release-color);
 }
 
 .upstream-version__header {

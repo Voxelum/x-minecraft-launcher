@@ -168,6 +168,12 @@ const sourceLabel = computed(() => {
 <style scoped>
 .upstream-header {
   border-radius: 16px;
+  border: 1px solid transparent;
+  transition: border-color 0.5s ease;
+}
+
+.upstream-header:hover {
+  border-color: rgba(var(--v-theme-primary), 0.45);
 }
 
 .upstream-header__source {
