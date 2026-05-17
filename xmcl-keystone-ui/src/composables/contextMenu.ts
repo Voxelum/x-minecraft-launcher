@@ -1,4 +1,4 @@
-import { Ref, ref } from 'vue'
+import { nextTick, ref } from 'vue'
 
 export interface ContextMenuItem {
   text: string
@@ -23,10 +23,13 @@ export function useContextMenu() {
   const zitems = citems
   const zshown = cshown
   function open(x: number, y: number, items: ContextMenuItem[]) {
+    zshown.value = false
     zx.value = x
     zy.value = y
     zitems.value = items
-    zshown.value = true
+    nextTick(() => {
+      zshown.value = true
+    })
   }
   return {
     open,
