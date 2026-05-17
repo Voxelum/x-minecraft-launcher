@@ -88,6 +88,19 @@ export class ResourceParser {
       if (e.message.startsWith('compressed/uncompressed size mismatch for stored file')) {
         Object.assign(e, { name: 'CompressedUncompressedSizeMismatchError' })
       }
+      // Malformed EOCD record (truncated/corrupted zip — common for jars
+      // downloaded with a broken transfer). yauzl throws a plain Error
+      // without a discriminating name, so route by message and let the
+      // upstream `handleParseError` map it to `parseResourceException`
+      // (an `Exception`, which the telemetry sink skips). See #1431.
+      if (e.message.startsWith('invalid comment length')) {
+        Object.assign(e, { name: 'InvalidZipFileError' })
+        throw e
+      }
+      if (e.message === 'end of central directory record signature not found') {
+        Object.assign(e, { name: 'InvalidZipFileError' })
+        throw e
+      }
       if ('code' in e) {
         if (e.code === 'ENOENT') {
           Object.assign(e, { name: 'FileNotFoundError' })
