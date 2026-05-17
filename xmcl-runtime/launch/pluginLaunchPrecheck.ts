@@ -13,7 +13,7 @@ import { InstanceService } from '~/instance'
 import { JavaService, JavaValidation } from '~/java'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
-import { linkDirectory, missing } from '~/util/fs'
+import { linkOrCopyDirectory, missing } from '~/util/fs'
 
 export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   const launchService = await app.registry.get(LaunchService)
@@ -30,7 +30,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       // relink
       if (linkTarget !== fromPath) {
         await unlink(toPath).catch(() => {})
-        await linkDirectory(fromPath, toPath, logger).catch((e) => {
+        await linkOrCopyDirectory(fromPath, toPath, logger).catch((e) => {
           e.name = 'LaunchLinkError'
           e.stage = 'relink'
           logger.error(e)
@@ -43,7 +43,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       throw e
     })
     if (!fstat) {
-      await linkDirectory(fromPath, toPath, logger).catch((e) => {
+      await linkOrCopyDirectory(fromPath, toPath, logger).catch((e) => {
         e.name = 'LaunchLinkError'
         e.stage = 'link'
         logger.error(e)
@@ -57,7 +57,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
         await move(toPath, join(toPath + Date.now() + '.bk'))
       }
     }
-    await linkDirectory(fromPath, toPath, logger).catch((e) => {
+    await linkOrCopyDirectory(fromPath, toPath, logger).catch((e) => {
       e.name = 'LaunchLinkError'
       e.stage = 'after move'
       logger.error(e)

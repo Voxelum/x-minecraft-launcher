@@ -8,7 +8,7 @@ import { Resource, ResourceDomain } from '@xmcl/resource'
 import { kResourceManager, kResourceWorker } from '~/resource'
 import { AbstractService, ServiceStateManager } from '~/service'
 import { isSystemError } from '@xmcl/utils'
-import { linkDirectory, linkWithTimeoutOrCopy } from '../util/fs'
+import { linkOrCopyDirectory, linkWithTimeoutOrCopy } from '../util/fs'
 import { readlinkSafe } from './utils/readLinkSafe'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { CurseforgeApiError, CurseforgeV1Client } from '@xmcl/curseforge'
@@ -48,7 +48,7 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
       try {
         if (!destStat) {
           if (srcStat.isDirectory()) {
-            await linkDirectory(src, dest, this.logger)
+            await linkOrCopyDirectory(src, dest, this.logger)
           } else {
             await linkWithTimeoutOrCopy(src, dest)
           }
