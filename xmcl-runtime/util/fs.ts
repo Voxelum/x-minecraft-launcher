@@ -75,7 +75,7 @@ export async function copyPassively(src: string, dest: string, filter: (name: st
 /**
  * This link will not replace existed files.
  */
-async function linkPassively(src: string, dest: string, filter: (name: string) => boolean = () => true) {
+export async function linkPassively(src: string, dest: string, filter: (name: string) => boolean = () => true) {
   const s = await stat(src).catch(() => { })
   if (!s) { return }
   if (!filter(src)) { return }
@@ -95,10 +95,16 @@ async function linkPassively(src: string, dest: string, filter: (name: string) =
 /**
  * Perform symbolic link from `srcPath` to `destPath`.
  *
- * On Windows, falls back through `symlink('junction')` and finally a
- * per-file hardlink (or byte copy across volumes) when neither symlink
- * variant is permitted — typically users without admin or Developer Mode
- * enabled (#1428).
+ * Throws if neither `symlink('dir')` nor (on Windows) `symlink('junction')`
+ * succeeds. The thrown error is annotated with `junction`, `srcExists` and
+ * `destExists` so the runtime telemetry sink can categorise failures.
+ *
+ * Callers that need a non-symlink fallback (hardlink walk / byte copy)
+ * should use {@link linkOrCopyDirectory} instead — but only when the
+ * resulting semantics are acceptable for their use case (e.g. read-mostly
+ * assets). Do *not* use the fallback for live, mutable data such as
+ * Minecraft saves: per-file hardlinks and copies will silently diverge
+ * from the source when the game writes new files (see #1428 / #1434).
  */
 export async function linkDirectory(srcPath: string, destPath: string, logger: Logger) {
   try {
@@ -106,44 +112,63 @@ export async function linkDirectory(srcPath: string, destPath: string, logger: L
     return true
   } catch (e) {
     if (((e as any).code === EPERM_ERROR || (e as any).code === 'EISDIR') && process.platform === 'win32') {
-      try {
-        await symlink(srcPath, destPath, 'junction')
-        return false
-      } catch (e2: any) {
-        e2.junction = true
-        e2.srcExists = existsSync(srcPath)
-        e2.destExists = existsSync(destPath)
-        if (e2.srcExists && e2.destExists) {
-          // junction call failed but the reparse point was already in place,
-          // treat as success
-          return false
+      await symlink(srcPath, destPath, 'junction').catch(e => {
+        e.junction = true
+        e.srcExists = existsSync(srcPath)
+        e.destExists = existsSync(destPath)
+        if (e.srcExists && e.destExists) {
+          return true
         }
-        // Both symlink('dir') and symlink('junction') failed. Fall back to
-        // a per-file hardlink walk (cheap, same volume) or a byte copy
-        // across volumes, so the launch isn't blocked for users without
-        // Developer Mode / admin (#1428). Mark which strategy was used so
-        // we can measure adoption in telemetry.
-        try {
-          await linkPassively(srcPath, destPath)
-          logger.warn(`linkDirectory: symlink+junction failed for ${srcPath} -> ${destPath}; recovered via per-file hardlink`)
-          return false
-        } catch (e3: any) {
-          if (isSystemError(e3) && (e3.code === 'EXDEV' || e3.code === 'EPERM')) {
-            await copyPassively(srcPath, destPath)
-            logger.warn(`linkDirectory: symlink+junction+hardlink failed for ${srcPath} -> ${destPath}; recovered via copy`)
-            return false
-          }
-          // Annotate with the same junction context as e2 so telemetry can
-          // see which stage failed.
-          e3.junction = true
-          e3.linkFallbackFailed = true
-          e3.srcExists = existsSync(srcPath)
-          e3.destExists = existsSync(destPath)
-          throw e3
-        }
-      }
+        throw e
+      })
+      return false
     }
     throw e
+  }
+}
+
+/**
+ * Like {@link linkDirectory} but falls back to a per-file hardlink walk and
+ * finally to a byte copy when symlink + junction are both denied (typically
+ * Windows users without admin / Developer Mode — issue #1428).
+ *
+ * **Only use this for read-mostly content** (e.g. mods, resourcepacks,
+ * launcher-managed asset folders). The hardlink/copy fallbacks do not
+ * propagate newly-created files from `srcPath` to `destPath`, so they are
+ * unsafe for live, mutable data such as Minecraft worlds.
+ *
+ * On success the returned error annotations (`junction`,
+ * `linkFallbackFailed`, `srcExists`, `destExists`) are stamped on the
+ * thrown error so the runtime telemetry sink can distinguish genuine hard
+ * failures from the EPERM noise the fallback neutralises.
+ */
+export async function linkOrCopyDirectory(srcPath: string, destPath: string, logger: Logger) {
+  try {
+    return await linkDirectory(srcPath, destPath, logger)
+  } catch (e: any) {
+    if (process.platform !== 'win32') throw e
+    // Only fall back on the permission-denied family that the symlink path
+    // would have raised. Anything else (ENOENT, EBUSY, ...) is a real bug
+    // and should surface unchanged.
+    if (!isSystemError(e) || (e.code !== EPERM_ERROR && e.code !== 'EISDIR')) {
+      throw e
+    }
+    try {
+      await linkPassively(srcPath, destPath)
+      logger.warn(`linkOrCopyDirectory: symlink+junction failed for ${srcPath} -> ${destPath}; recovered via per-file hardlink`)
+      return false
+    } catch (e2: any) {
+      if (isSystemError(e2) && (e2.code === 'EXDEV' || e2.code === 'EPERM')) {
+        await copyPassively(srcPath, destPath)
+        logger.warn(`linkOrCopyDirectory: symlink+junction+hardlink failed for ${srcPath} -> ${destPath}; recovered via copy`)
+        return false
+      }
+      e2.junction = true
+      e2.linkFallbackFailed = true
+      e2.srcExists = existsSync(srcPath)
+      e2.destExists = existsSync(destPath)
+      throw e2
+    }
   }
 }
 
