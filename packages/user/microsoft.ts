@@ -54,13 +54,41 @@ export interface MicrosoftAuthenticatorOptions {
 }
 
 /**
+  * Thrown by {@link MicrosoftAuthenticator.loginMinecraftWithXBox} when the
+  * Minecraft auth endpoint returns a non-200 response. Carries enough
+  * context that the launcher can tell the user *exactly* what went wrong
+  * instead of a generic "loginMinecraftByXboxFailed" (see issue #1445).
+  *
+  * Retry semantics (for 408/425/429/5xx) are intentionally out of scope of
+  * this module -- compose them on the caller side by wrapping the injected
+  * `fetch` (see ``xmcl-runtime/user/utils/withRetry.ts`` in the launcher).
+  */
+export class MicrosoftMinecraftXboxLoginError extends Error {
+  name = 'MicrosoftMinecraftXboxLoginError'
+  constructor(
+    public status: number,
+    public body: string,
+    /** Effective Retry-After in ms from the response header, if any. */
+    public retryAfter?: number,
+    /**
+     * True when the status is in the transient set a retrying client would
+     * normally retry (408/425/429/5xx). Useful to tell the user "try again
+     * in a moment" vs. "this is a permanent error".
+     */
+    public retryable?: boolean,
+  ) {
+    super(`Failed to login minecraft with xbox, status code: ${status}: ${body}}`)
+  }
+}
+
+/**
  * The microsoft authenticator for Minecraft (Xbox) account.
  */
 export class MicrosoftAuthenticator {
   fetch: typeof fetch
 
-  constructor(options: MicrosoftAuthenticatorOptions) {
-    this.fetch = options.fetch || fetch
+  constructor(options?: MicrosoftAuthenticatorOptions) {
+    this.fetch = options?.fetch || fetch
   }
 
   /**
@@ -214,6 +242,18 @@ export class MicrosoftAuthenticator {
    * @param uhs uhs from {@link XBoxResponse} of {@link acquireXBoxToken}
    * @param xstsToken You need to get this token from {@link acquireXBoxToken}
    */
+  /**
+    * Login Minecraft with an Xbox token. This method does exactly one HTTP
+    * attempt -- if you need retry/backoff for transient failures (408, 425,
+    * 429, 5xx), compose it on the caller side by wrapping the `fetch` you
+    * inject into this authenticator. On any non-200 the method throws a
+    * {@link MicrosoftMinecraftXboxLoginError} that carries `status`,
+    * `body`, parsed `retryAfter` (ms) and a `retryable` flag so the UI can
+    * surface a precise message (see issue #1445).
+    *
+    * @param uhs uhs from {@link XBoxResponse} of {@link acquireXBoxToken}
+    * @param xstsToken You need to get this token from {@link acquireXBoxToken}
+    */
   async loginMinecraftWithXBox(uhs: string, xstsToken: string, signal?: AbortSignal) {
     const mcResponse = await this.fetch(
       'https://api.minecraftservices.com/authentication/login_with_xbox',
@@ -229,14 +269,33 @@ export class MicrosoftAuthenticator {
       },
     )
 
-    if (mcResponse.status !== 200) {
-      throw new Error(
-        `Failed to login minecraft with xbox, status code: ${mcResponse.status}: ${await mcResponse.text()}}`,
-      )
+    if (mcResponse.status === 200) {
+      return (await mcResponse.json()) as MinecraftAuthResponse
     }
 
-    const result = (await mcResponse.json()) as MinecraftAuthResponse
+    const transientStatuses = new Set([408, 425, 429, 500, 502, 503, 504])
+    const body = await mcResponse.text()
+    // Parse Retry-After (seconds or HTTP-date) so the UI can show a sensible
+    // wait hint when the caller's retry budget has been exhausted.
+    let retryAfterMs: number | undefined
+    const retryAfter = mcResponse.headers.get('retry-after')
+    if (retryAfter) {
+      const asInt = parseInt(retryAfter, 10)
+      if (!Number.isNaN(asInt)) {
+        retryAfterMs = asInt * 1000
+      } else {
+        const dateMs = Date.parse(retryAfter)
+        if (!Number.isNaN(dateMs)) {
+          retryAfterMs = Math.max(0, dateMs - Date.now())
+        }
+      }
+    }
 
-    return result
+    throw new MicrosoftMinecraftXboxLoginError(
+      mcResponse.status,
+      body,
+      retryAfterMs,
+      transientStatuses.has(mcResponse.status),
+    )
   }
 }

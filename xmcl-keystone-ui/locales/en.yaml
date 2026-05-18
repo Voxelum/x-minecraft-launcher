@@ -610,10 +610,32 @@ loginError:
   invalidCredentials: Invalid credentials. Invalid username or password.
   loginMinecraftByXboxFailed: >-
     Fail to exchange Minecraft token by Xbox token. Please make sure you have Minecraft in Xbox, or retry.
+  loginMinecraftByXboxRateLimited: >-
+    Microsoft's Minecraft authentication service is currently rate-limiting requests (HTTP 429). Please wait a moment and try again.
+  loginMinecraftByXboxRateLimitedWithRetry: >-
+    Microsoft's Minecraft authentication service is currently rate-limiting requests (HTTP 429). Please wait about {seconds} second(s) and try again.
+  loginMinecraftByXboxServerError: >-
+    Microsoft's Minecraft authentication service returned a server error (HTTP {status}). This is on their side. Please try again in a few minutes.
+  loginMinecraftByXboxStatus: >-
+    Fail to exchange Minecraft token by Xbox token (HTTP {status}). Please make sure you have Minecraft in Xbox, or retry.
   loginXboxAgeRestricted: >-
     Fail to login Xbox due the the age issue. Please make sure the age is set for your Microsoft account and the age is above 18.
+  loginXboxChildAccount: >-
+    Your Microsoft account is a child account and needs to be added to a Microsoft Family before it can sign in to Xbox / Minecraft. Open {url} in your browser to fix it, then try again.
+  loginXboxNoXboxProfile: >-
+    This Microsoft account does not have an Xbox profile yet. Open {url} in your browser to create one, then try again.
+  loginXboxAdultVerification: >-
+    Your Microsoft account requires adult verification (commonly required in some regions) before it can sign in to Xbox. Open {url} in your browser to complete verification, then try again.
+  loginXboxRegionLocked: >-
+    Xbox Live is not available in your account's region. Please change your Microsoft account's country/region in Microsoft account settings and try again.
+  loginXboxBanned: >-
+    This Microsoft / Xbox account has been suspended or banned by Microsoft and cannot sign in to Minecraft. Please contact Microsoft / Xbox support.
+  loginXboxBadXsts: >-
+    Microsoft returned an XSTS response without the expected user claims. This is usually temporary -- please try again in a few minutes.
   loginXboxFailed: >-
     Fail to login Xbox by Microsoft token. Please make sure you have an independent Xbox account to your Microsoft account. Please try again.
+  loginXboxFailedWithCode: >-
+    Fail to login Xbox by Microsoft token (XErr {code}). Please search the code for help, or try again later.
   noProfileForNewUser: >-
     No game profile found! If you are a new Minecraft user, please login at least one time in Minecraft official launcher.
   requestFailed: Login failed, we do not know the exact reason. Please retry.

@@ -611,10 +611,21 @@ loginError:
   illegalEmail: 当前的邮箱格式不合法
   invalidCredentials: 无法验证。用户名或密码错误。
   loginMinecraftByXboxFailed: 在通过 Xbox 通证交换 Minecraft 通证的过程中发生错误，请确认您的 Xbox 账号拥有 Minecraft。您可以尝试重试登录
+  loginMinecraftByXboxRateLimited: 微软的 Minecraft 登录服务当前正在限流（HTTP 429），请稍等片刻后重试。
+  loginMinecraftByXboxRateLimitedWithRetry: 微软的 Minecraft 登录服务当前正在限流（HTTP 429），请等待约 {seconds} 秒后重试。
+  loginMinecraftByXboxServerError: 微软的 Minecraft 登录服务返回了服务器错误（HTTP {status}），这是微软那边的问题，请稍后几分钟再试。
+  loginMinecraftByXboxStatus: '通过 Xbox 通证交换 Minecraft 通证失败（HTTP {status}），请确认您的 Xbox 账号拥有 Minecraft，或稍后重试。'
   loginXboxAgeRestricted: |-
     由于年龄问题，无法登录Xbox。
     请确保为您的Microsoft帐户设定年龄，并且年龄高于18岁。
+  loginXboxChildAccount: '您的微软账号是儿童账号，需要先在 Microsoft 家庭中被添加为家庭成员才能登录 Xbox / Minecraft。请在浏览器中打开 {url} 完成设置后重试。'
+  loginXboxNoXboxProfile: '该微软账号还没有 Xbox 档案。请在浏览器中打开 {url} 创建一个 Xbox 档案后重试。'
+  loginXboxAdultVerification: '您的微软账号需要先完成成人身份验证（部分地区强制要求）才能登录 Xbox。请在浏览器中打开 {url} 完成验证后重试。'
+  loginXboxRegionLocked: Xbox Live 在您账号所在的国家/地区不可用。请到微软账号设置中修改账号的国家/地区后重试。
+  loginXboxBanned: 该微软 / Xbox 账号已被微软封禁或暂停使用，无法登录 Minecraft。请联系微软 / Xbox 客服。
+  loginXboxBadXsts: 微软返回的 XSTS 响应缺少用户身份信息。这通常是临时问题，请稍后几分钟再试。
   loginXboxFailed: 请求 Xbox 通证失败，请确保您的微软账号已经绑定了一个 Xbox 账号！
+  loginXboxFailedWithCode: '请求 Xbox 通证失败（XErr {code}），请根据该错误码搜索解决方案，或稍后重试。'
   noProfileForNewUser: |-
     找不到游戏资料！
     如果您是新的Minecraft用户，请在Minecraft官方启动器中至少登录一次。

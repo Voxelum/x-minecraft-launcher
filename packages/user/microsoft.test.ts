@@ -1,6 +1,6 @@
 import { MockAgent, fetch as _fetch } from 'undici'
 import { describe, expect, it } from 'vitest'
-import { MicrosoftAuthenticator } from './microsoft'
+import { MicrosoftAuthenticator, MicrosoftMinecraftXboxLoginError } from './microsoft'
 
 describe('MicrosoftAuthenticator', () => {
   const agent = new MockAgent()
@@ -68,5 +68,46 @@ describe('MicrosoftAuthenticator', () => {
 
     // Assert
     expect(result.Token).to.equal(expectedToken)
+  })
+
+  describe('#loginMinecraftWithXBox', () => {
+    it('throws MicrosoftMinecraftXboxLoginError with status + body for a non-200 response', async () => {
+      const pool = agent.get('https://api.minecraftservices.com')
+      pool
+        .intercept({
+          method: 'POST',
+          path: '/authentication/login_with_xbox',
+        })
+        .reply(401, 'unauthorized body')
+
+      const client = new MicrosoftAuthenticator({ fetch })
+      await expect(client.loginMinecraftWithXBox('uhs', 'xsts')).rejects.toMatchObject({
+        name: 'MicrosoftMinecraftXboxLoginError',
+        status: 401,
+        body: 'unauthorized body',
+        retryable: false,
+      })
+    })
+
+    it('parses Retry-After (seconds) into retryAfter ms and marks 429 retryable', async () => {
+      const pool = agent.get('https://api.minecraftservices.com')
+      pool
+        .intercept({
+          method: 'POST',
+          path: '/authentication/login_with_xbox',
+        })
+        .reply(429, '', { headers: { 'retry-after': '2' } })
+
+      const client = new MicrosoftAuthenticator({ fetch })
+      try {
+        await client.loginMinecraftWithXBox('uhs', 'xsts')
+        throw new Error('expected throw')
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(MicrosoftMinecraftXboxLoginError)
+        expect(e.status).toBe(429)
+        expect(e.retryable).toBe(true)
+        expect(e.retryAfter).toBe(2000)
+      }
+    })
   })
 })
