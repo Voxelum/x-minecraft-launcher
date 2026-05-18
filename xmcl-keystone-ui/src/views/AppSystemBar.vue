@@ -7,7 +7,7 @@
   >
     <span
       v-if="back"
-      class="flex shrink grow-0 p-0"
+      class="flex shrink grow-0 p-0 h-full items-center"
     >
       <div
         v-if="shouldShiftBackControl"
@@ -16,7 +16,7 @@
       <v-icon
         v-ripple
         size="small"
-        class="non-moveable flex cursor-pointer select-none items-center py-2 after:hidden hover:bg-[rgba(255,255,255,0.2)]"
+        class="non-moveable flex cursor-pointer select-none items-center h-full after:hidden hover:bg-[rgba(255,255,255,0.2)]"
         style="width: 80px;"
         @click="onBack"
       >
