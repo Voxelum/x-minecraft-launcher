@@ -816,6 +816,19 @@ export class CurseforgeV1Client {
     fingerprints: number[],
     signal?: AbortSignal,
   ) {
+    if (!fingerprints || fingerprints.length === 0) {
+      // CurseForge rejects empty arrays with HTTP 400 "Fingerprints are required.".
+      // Short-circuit instead of burning a request + API quota (see issue #1443).
+      const empty: FingerprintsMatchesResult['data'] = {
+        isCacheBuilt: false,
+        exactMatches: [],
+        exactFingerprints: [],
+        partialMatches: [],
+        partialFingerprints: {},
+        unmatchedFingerprints: [],
+      }
+      return empty
+    }
     const url = new URL(this.baseUrl + `/v1/fingerprints/${gameId}`)
     const response = await this.fetch(url, {
       method: 'POST',
@@ -839,6 +852,17 @@ export class CurseforgeV1Client {
     fingerprints: number[],
     signal?: AbortSignal,
   ) {
+    if (!fingerprints || fingerprints.length === 0) {
+      const empty: FingerprintsMatchesResult['data'] = {
+        isCacheBuilt: false,
+        exactMatches: [],
+        exactFingerprints: [],
+        partialMatches: [],
+        partialFingerprints: {},
+        unmatchedFingerprints: [],
+      }
+      return empty
+    }
     const url = new URL(this.baseUrl + `/v1/fingerprints/fuzzy/${gameId}`)
     const response = await this.fetch(url, {
       method: 'POST',
