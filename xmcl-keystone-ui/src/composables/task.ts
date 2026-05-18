@@ -233,6 +233,31 @@ export function useLocalizedTaskFunc() {
       return { title, subtitle: '' }
     }
 
+    // Create Backup Task
+    if (task.type === 'createBackup') {
+      const title = t('setting.backupProgress')
+      let subtitle = ''
+      if (task.phase === 'copying-instances') subtitle = t('setting.backupPhaseCopyingInstances')
+      else if (task.phase === 'copying-settings') subtitle = t('setting.backupPhaseCopyingSettings')
+      else if (task.phase === 'copying-screenshots') subtitle = t('setting.backupPhaseCopyingScreenshots')
+      else if (task.phase === 'creating-archive') subtitle = t('setting.backupPhaseCreatingArchive')
+      else if (task.phase === 'finalizing') subtitle = t('setting.backupPhaseFinalizing')
+      return { title, subtitle }
+    }
+
+    // Restore Backup Task
+    if (task.type === 'restoreBackup') {
+      const title = t('setting.restoreBackup')
+      let subtitle = ''
+      if (task.phase === 'scanning') subtitle = t('setting.restorePhaseScanningInstances')
+      else if (task.phase === 'extracting') subtitle = t('setting.restorePhaseExtracting')
+      else if (task.phase === 'restoring-instances') subtitle = t('setting.restorePhaseRestoringInstances')
+      else if (task.phase === 'restoring-settings') subtitle = t('setting.restorePhaseRestoringSettings')
+      else if (task.phase === 'restoring-screenshots') subtitle = t('setting.restorePhaseRestoringScreenshots')
+      else if (task.phase === 'finalizing') subtitle = t('setting.backupPhaseFinalizing')
+      return { title, subtitle }
+    }
+
     // Fallback for unknown task types (exhaustive check)
     const _exhaustive: never = task
     return { title: '', subtitle: '' }
