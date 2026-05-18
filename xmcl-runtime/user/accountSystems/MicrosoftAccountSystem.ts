@@ -157,8 +157,38 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
   }
 
   protected async loginMicrosoft(microsoftEmailAddress: string, oauthCode: string | undefined, useDeviceCode: boolean, directRedirectToLauncher: boolean, signal: AbortSignal, slientOnly = false) {
+    // XErr codes from XSTS /authorize that are "user state, not a bug" — child
+    // account, missing Xbox profile, age/region issues. See issue #1445. We
+    // still throw a UserException so the UI can deep-link the user to the fix,
+    // but we don't surface these as telemetry exceptions (they are not
+    // actionable for us as developers).
+    const knownXErrCodes = new Set([
+      2148916233, // No Xbox profile — must create one
+      2148916235, // Region locked
+      2148916236, // Adult verification required
+      2148916237, // Adult verification required
+      2148916238, // Child account — must be added to Microsoft Family
+      2148916227, // Banned
+    ])
+    const isKnownXErr = (e: any) => typeof e?.XErr !== 'undefined' && knownXErrCodes.has(Number(e.XErr))
+    const isExpectedAuthFailure = (e: any) => {
+      if (!e) return false
+      if (e.name === 'AbortError') return true
+      // ProfileNotFoundError just means "this MS account doesn't own
+      // Minecraft" — expected, see issue #1442.
+      if (e.name === 'ProfileNotFoundError') return true
+      if (isKnownXErr(e)) return true
+      // 429 from login_with_xbox is transient + retried below; don't drown
+      // telemetry with it. The microsoft.ts retry path already swallows
+      // transient cases before they reach us.
+      if (typeof e?.message === 'string' && /status code: (?:408|429)/.test(e.message)) return true
+      return false
+    }
     const logError = (e: any) => {
-      if (e.name === 'AbortError') {
+      if (isExpectedAuthFailure(e)) {
+        // Still want a local log line for the user / dev tools, but route it
+        // through warn so it never reaches trackException.
+        this.logger.warn(Object.assign(e, { scenario: 'loginMicrosoft', expected: true }))
         return
       }
       if (e.name === 'Error') {

@@ -66,6 +66,23 @@ export class ErrorDiagnose {
     if (e.name === 'ClientAuthError' && e.message.includes('Network request failed')) {
       return true
     }
+    // Issue #1442: 404 from /minecraft/profile just means the user's MS
+    // account doesn't own Minecraft. The login flow now wraps it in a
+    // UserException, but suppress it here too in case any future caller
+    // forgets and bubbles the raw error through logEmitter('failure').
+    if (e.name === 'ProfileNotFoundError') {
+      return true
+    }
+    // Issue #1446: Node WHATWG streams throw ERR_INVALID_STATE
+    // "Controller is already closed" when a ReadableStream we wrap around
+    // an aborted/closed fetch tries to enqueue a late chunk. This is
+    // benign — the consumer is already gone. The renderer/keystone
+    // protocol handlers now guard against it, but suppress here as the
+    // last line of defense (minified async stacks make the call site
+    // unidentifiable anyway).
+    if (e instanceof TypeError && (e as any).code === 'ERR_INVALID_STATE') {
+      return true
+    }
     return false
   }
 }
