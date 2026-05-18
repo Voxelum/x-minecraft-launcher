@@ -43,7 +43,18 @@ const visit = async (current: ResolvedDependency, visited: Set<string>, config: 
         config.cache!, config.dedupingInterval!)
       const recommendedVersion = child.version_id ? versions.find(v => v.id === child.version_id) ?? versions[0] : versions[0]
       if (!recommendedVersion) {
-        throw new TypeError(`Missing ${child.project_id}:${child.version_id} during resolve modrinth deps of ${version.project_id}:${version.id}`)
+        // Issue #1444: Modrinth allows `version_id: null` on a dependency
+        // ("any compatible version"); if our compatibility filter
+        // (loader + game version) returns nothing, we have no concrete
+        // version to install. For non-required deps this is benign --
+        // skip silently. For required deps, log a single warn so the UI
+        // can still surface the parent project; don't throw, otherwise
+        // one missing edge fails the entire dependency tree fetch.
+        if (child.dependency_type !== 'required') {
+          return []
+        }
+        console.warn(`[modrinth deps] No compatible version of ${child.project_id} (requested ${child.version_id ?? 'any'}) for ${version.project_id}:${version.id} on loaders=${JSON.stringify(loaders)} mc=${JSON.stringify(version.game_versions)} -- skipping`)
+        return []
       }
       const result = await visit(markRaw({
         project,
