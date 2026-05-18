@@ -89,11 +89,23 @@ export class ElectronSession {
         headers[key] = value
       })
 
+      const adaptRequestBody = () => {
+        if (!request.body) return undefined
+        const readable = Readable.fromWeb(request.body as any)
+        readable.on('error', (err: any) => {
+          if (err && (err.code === 'ERR_INVALID_STATE' || err.message === 'Invalid state: Controller is already closed')) {
+            return
+          }
+          readable.destroy(err)
+        })
+        return readable
+      }
+
       const response = await this.app.protocol.handle({
         url: new URL(url),
         method: request.method,
         headers: headers,
-        body: request.body ? Readable.fromWeb(request.body as any) : request.body as any,
+        body: adaptRequestBody() as any,
       })
 
       response.headers['access-control-allow-origin'] = ['*']

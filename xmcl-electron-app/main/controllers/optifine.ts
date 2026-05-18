@@ -9,6 +9,20 @@ import { kOptifineInstaller } from '~/install'
 import { kSettings, shouldOverrideApiSet } from '~/settings'
 import { ControllerPlugin } from './plugin'
 
+// See xmcl-runtime/app/pluginCommonProtocol.ts — same rationale for
+// silencing ERR_INVALID_STATE on aborted upstream fetches (issue #1446).
+const adaptWebBody = (body: ReadableStream | Readable | null | undefined) => {
+  if (!(body instanceof ReadableStream)) return body ?? undefined
+  const readable = Readable.fromWeb(body as any)
+  readable.on('error', (err: any) => {
+    if (err && (err.code === 'ERR_INVALID_STATE' || err.message === 'Invalid state: Controller is already closed')) {
+      return
+    }
+    readable.destroy(err)
+  })
+  return readable
+}
+
 export const optifine: ControllerPlugin = async function (this: ElectronController) {
   let pooled: BrowserWindow | undefined
   let clearTimeout: AbortController | undefined
@@ -142,19 +156,13 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
         if (resp.ok) {
           ctx.response.status = resp.status
           ctx.response.headers = resp.headers
-          ctx.response.body =
-            resp.body instanceof ReadableStream
-              ? Readable.fromWeb(resp.body as any)
-              : (resp.body ?? undefined)
+          ctx.response.body = adaptWebBody(resp.body as any)
         } else {
           const result = await Promise.race([getDownloads(), setTimeout(5000)])
           if (!result) {
             ctx.response.status = resp.status
             ctx.response.headers = resp.headers
-            ctx.response.body =
-              resp.body instanceof ReadableStream
-                ? Readable.fromWeb(resp.body as any)
-                : (resp.body ?? undefined)
+            ctx.response.body = adaptWebBody(resp.body as any)
           } else {
             ctx.response.status = 200
             ctx.response.headers = {
