@@ -1,6 +1,7 @@
 import { readdir, stat } from 'fs-extra'
 import { basename, join } from 'path'
 import { File } from '../File'
+import { ResourceDomain } from '../ResourceDomain'
 import { shouldIgnoreFile } from './shouldIgnoreFile'
 
 export async function getFile(path: string, fileName = basename(path)) {
@@ -19,11 +20,11 @@ export async function getFile(path: string, fileName = basename(path)) {
   return entry
 }
 
-export async function getFiles(dir: string) {
+export async function getFiles(dir: string, domain?: ResourceDomain) {
   const files = await readdir(dir)
   const entries = await Promise.all(
     files.map(async (file) => {
-      if (shouldIgnoreFile(file)) return
+      if (shouldIgnoreFile(file, domain)) return
       if (file.endsWith('.txt')) return
       const path = join(dir, file)
       return getFile(path, file)

@@ -17,6 +17,7 @@ import { getDomainedPath, isSnapshotValid, takeSnapshot } from './takeSnapshot'
 
 function createRevalidateFunction(
   dir: string,
+  domain: ResourceDomain,
   context: ResourceContext,
   onResourceRemove: (path: string) => void,
   onResourceQueue: (job: ResourceWorkerQueuePayload) => void,
@@ -24,7 +25,7 @@ function createRevalidateFunction(
   onResourcePostRevalidate: (files: File[]) => void,
 ) {
   async function getFilesStatus() {
-    const entries = await getFiles(dir).catch((e) => {
+    const entries = await getFiles(dir, domain).catch((e) => {
       if (e.code === 'ENOENT') {
         return []
       }
@@ -189,6 +190,7 @@ function createWorkerQueue(
 
 function createWatcher(
   path: string,
+  domain: ResourceDomain,
   onResourceUpdate: (file: File) => void,
   onResourceRemove: (file: string) => void,
   revalidate: () => void,
@@ -202,7 +204,7 @@ function createWatcher(
     ignoreInitial: true,
     ignored: (filePath) => {
       if (resolve(filePath) === path) return false
-      return shouldIgnoreFile(filePath)
+      return shouldIgnoreFile(filePath, domain)
     },
     // @ts-ignore
   }).on('all', async (event, file, stat) => {
@@ -211,7 +213,7 @@ function createWatcher(
     const depth = file.split(sep).length
     if (depth > 1) return
 
-    if (shouldIgnoreFile(file)) return
+    if (shouldIgnoreFile(file, domain)) return
     if (file.endsWith('.txt')) return
     if (event === 'unlink') {
       onResourceRemove(join(path, file))
@@ -324,6 +326,7 @@ export function watchResourcesDirectory({
   const workerQueue = createWorkerQueue(context, domain, processUpdate, onResourceEmit, true)
   const revalidate = createRevalidateFunction(
     directory,
+    domain,
     context,
     onRemove,
     onResourceQueue,
@@ -338,6 +341,7 @@ export function watchResourcesDirectory({
 
   const watcher = createWatcher(
     directory,
+    domain,
     async (file) => {
       if (disposed) return
       const record = await context.db
