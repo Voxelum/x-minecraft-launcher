@@ -254,9 +254,37 @@ export type UserExceptions = {
   type: 'userAcquireMicrosoftTokenFailed'
 } | {
   type: 'userExchangeXboxTokenFailed'
+  /**
+    * The classified reason for the failure. New granular reasons were added
+    * for issue #1445 so the UI can show the user what exactly went wrong
+    * (and, where applicable, deep-link the Microsoft fix-it URL via
+    * {@link xErrRedirect}). `NO_ACCOUNT` / `BAD_AGE` / `BAD_XSTS` are kept
+    * for backwards compatibility with older renderers.
+    */
   reason?: 'NO_ACCOUNT' | 'BAD_AGE' | 'BAD_XSTS'
+    | 'NO_XBOX_PROFILE'
+    | 'CHILD_ACCOUNT'
+    | 'ADULT_VERIFICATION_REQUIRED'
+    | 'REGION_LOCKED'
+    | 'BANNED'
+    | 'RATE_LIMITED'
+    | 'TIMEOUT'
+  /** Raw XErr code from the XSTS /authorize 401 body, if any. */
+  xErr?: number
+  /** The Message field from the XErr body (often empty). */
+  xErrMessage?: string
+  /** The Redirect URL Microsoft returns alongside the XErr (e.g. AddChildToFamily, CreateAccount). */
+  xErrRedirect?: string
 } | {
   type: 'userLoginMinecraftByXboxFailed'
+  /** HTTP status code from /authentication/login_with_xbox, if available. */
+  status?: number
+  /** Raw response body (truncated by the catch site) — useful when debugging. */
+  statusBody?: string
+  /** Whether the failure was a transient HTTP code retried by the client. */
+  retryable?: boolean
+  /** Effective Retry-After (ms) the server asked us to wait, if any. */
+  retryAfter?: number
 } | {
   type: 'userCheckGameOwnershipFailed'
 } | {

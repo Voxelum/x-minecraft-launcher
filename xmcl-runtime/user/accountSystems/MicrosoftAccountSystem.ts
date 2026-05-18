@@ -1,5 +1,5 @@
 import { AUTHORITY_MICROSOFT, AuthorityMetadata, GameProfileAndTexture, LoginOptions, RefreshUserOptions, Skin, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
-import { MicrosoftAuthenticator, MicrosoftMinecraftProfile, MojangClient, MojangError } from '@xmcl/user'
+import { MicrosoftAuthenticator, MicrosoftMinecraftProfile, MicrosoftMinecraftXboxLoginError, MojangClient, MojangError } from '@xmcl/user'
 import { randomUUID } from 'crypto'
 import { LauncherApp } from '~/app'
 import { Logger } from '~/infra'
@@ -157,30 +157,39 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
   }
 
   protected async loginMicrosoft(microsoftEmailAddress: string, oauthCode: string | undefined, useDeviceCode: boolean, directRedirectToLauncher: boolean, signal: AbortSignal, slientOnly = false) {
-    // XErr codes from XSTS /authorize that are "user state, not a bug" — child
-    // account, missing Xbox profile, age/region issues. See issue #1445. We
-    // still throw a UserException so the UI can deep-link the user to the fix,
-    // but we don't surface these as telemetry exceptions (they are not
-    // actionable for us as developers).
-    const knownXErrCodes = new Set([
-      2148916233, // No Xbox profile — must create one
-      2148916235, // Region locked
-      2148916236, // Adult verification required
-      2148916237, // Adult verification required
-      2148916238, // Child account — must be added to Microsoft Family
-      2148916227, // Banned
-    ])
+    // XErr codes from XSTS /authorize that are "user state, not a bug" --
+    // child account, missing Xbox profile, age/region issues, banned, etc.
+    // See issue #1445. We still throw a UserException so the UI can deep-link
+    // the user to the fix (xErrRedirect), but we don't surface these as
+    // telemetry exceptions (they are not actionable for us as developers).
+    //
+    // XErr code -> classified reason for the UI. Mapped from
+    // https://learn.microsoft.com/en-us/gaming/gdk/_content/gc/reference/system/xstsruntimes/enums/xsts_token_error_code
+    // and observed App Insights samples.
+    const xErrReasonMap: Record<number, NonNullable<Extract<UserException['exception'], { type: 'userExchangeXboxTokenFailed' }>['reason']>> = {
+      2148916227: 'BANNED',                       // Account is banned
+      2148916233: 'NO_XBOX_PROFILE',              // No Xbox profile -- must create one (redirect: CreateAccount)
+      2148916235: 'REGION_LOCKED',                // Xbox Live not available in the user's region
+      2148916236: 'ADULT_VERIFICATION_REQUIRED',  // Adult verification required (KR)
+      2148916237: 'ADULT_VERIFICATION_REQUIRED',  // Adult verification required (KR)
+      2148916238: 'CHILD_ACCOUNT',                // Child account -- must be added to Microsoft Family (redirect: AddChildToFamily)
+    }
+    const knownXErrCodes = new Set(Object.keys(xErrReasonMap).map(Number))
     const isKnownXErr = (e: any) => typeof e?.XErr !== 'undefined' && knownXErrCodes.has(Number(e.XErr))
     const isExpectedAuthFailure = (e: any) => {
       if (!e) return false
       if (e.name === 'AbortError') return true
       // ProfileNotFoundError just means "this MS account doesn't own
-      // Minecraft" — expected, see issue #1442.
+      // Minecraft" -- expected, see issue #1442.
       if (e.name === 'ProfileNotFoundError') return true
       if (isKnownXErr(e)) return true
-      // 429 from login_with_xbox is transient + retried below; don't drown
-      // telemetry with it. The microsoft.ts retry path already swallows
-      // transient cases before they reach us.
+      // 429/408 from login_with_xbox is transient. When the authenticator
+      // uses its built-in undici fetch + RetryAgent, undici retries it
+      // before we ever see it. When the caller injected its own fetch (e.g.
+      // the launcher passes Electron's net.fetch in pluginOfficialUserApi),
+      // there is no retry and we'll see the raw status here -- still treat
+      // it as expected/transient so it doesn't pollute telemetry.
+      if (e instanceof MicrosoftMinecraftXboxLoginError && e.retryable) return true
       if (typeof e?.message === 'string' && /status code: (?:408|429)/.test(e.message)) return true
       return false
     }
@@ -214,7 +223,23 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     const { liveXstsResponse, minecraftXstsResponse } = await this.authenticator.acquireXBoxToken(oauthAccessToken, signal).catch((e) => {
       logError(e)
       const xErr = Number(e.XErr)
-      throw new UserException({ type: 'userExchangeXboxTokenFailed', reason: xErr === 2148916233 ? 'NO_ACCOUNT' : [2148916238, 2148916236, 2148916227].includes(xErr) ? 'BAD_AGE' : undefined }, 'Failed to exchange Xbox token', { cause: e })
+      const reason = xErrReasonMap[xErr]
+      // Preserve the legacy `NO_ACCOUNT` / `BAD_AGE` reasons so older UI
+      // builds still pick the right friendly message while the new
+      // granular reasons drive the new code paths.
+      const legacyReason: 'NO_ACCOUNT' | 'BAD_AGE' | undefined =
+        reason === 'NO_XBOX_PROFILE'
+          ? 'NO_ACCOUNT'
+          : (reason === 'CHILD_ACCOUNT' || reason === 'ADULT_VERIFICATION_REQUIRED' || reason === 'BANNED')
+              ? 'BAD_AGE'
+              : undefined
+      throw new UserException({
+        type: 'userExchangeXboxTokenFailed',
+        reason: reason ?? legacyReason,
+        xErr: Number.isFinite(xErr) ? xErr : undefined,
+        xErrMessage: typeof e?.Message === 'string' ? e.Message : undefined,
+        xErrRedirect: typeof e?.Redirect === 'string' ? e.Redirect : undefined,
+      }, 'Failed to exchange Xbox token', { cause: e })
     })
 
     const aquireAccessToken = async (xstsResponse: XBoxResponse) => {
@@ -226,6 +251,18 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
 
       const mcResponse = await this.authenticator.loginMinecraftWithXBox(xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token, signal).catch((e) => {
         logError(e)
+        if (e instanceof MicrosoftMinecraftXboxLoginError) {
+          // Truncate the raw body so it stays useful in UI tooltips but
+          // doesn't blow up the exception payload.
+          const truncatedBody = typeof e.body === 'string' ? e.body.slice(0, 512) : undefined
+          throw new UserException({
+            type: 'userLoginMinecraftByXboxFailed',
+            status: e.status,
+            statusBody: truncatedBody,
+            retryable: e.retryable,
+            retryAfter: e.retryAfter,
+          }, `Failed to login Minecraft with Xbox (HTTP ${e.status})`, { cause: e })
+        }
         throw new UserException({ type: 'userLoginMinecraftByXboxFailed' }, 'Failed to login Minecraft with Xbox', { cause: e })
       })
       this.logger.log('Successfully login Minecraft with Xbox')

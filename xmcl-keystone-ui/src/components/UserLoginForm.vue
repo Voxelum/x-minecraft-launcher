@@ -359,12 +359,49 @@ const errorMessage = computed(() => {
       return t('loginError.checkOwnershipFailed')
     }
     if (e.exception.type === 'userExchangeXboxTokenFailed') {
-      if (e.exception.reason === 'BAD_AGE') {
-        return t('loginError.loginXboxAgeRestricted')
+      const redirect = e.exception.xErrRedirect
+      // New granular reasons take precedence; legacy reasons fall through
+      // to the existing strings. Where Microsoft returns a fix-it URL
+      // (e.g. AddChildToFamily, CreateAccount), pass it through so the
+      // user can click straight to the resolution.
+      switch (e.exception.reason) {
+        case 'CHILD_ACCOUNT':
+          return t('loginError.loginXboxChildAccount', { url: redirect ?? 'https://start.ui.xboxlive.com/AddChildToFamily' })
+        case 'NO_XBOX_PROFILE':
+        case 'NO_ACCOUNT':
+          return t('loginError.loginXboxNoXboxProfile', { url: redirect ?? 'https://start.ui.xboxlive.com/CreateAccount' })
+        case 'ADULT_VERIFICATION_REQUIRED':
+          return t('loginError.loginXboxAdultVerification', { url: redirect ?? '' })
+        case 'REGION_LOCKED':
+          return t('loginError.loginXboxRegionLocked')
+        case 'BANNED':
+          return t('loginError.loginXboxBanned')
+        case 'BAD_AGE':
+          return t('loginError.loginXboxAgeRestricted')
+        case 'BAD_XSTS':
+          return t('loginError.loginXboxBadXsts')
+      }
+      // Surface the raw XErr code if we have one but no classification --
+      // helps users searching the web / opening support tickets.
+      if (typeof e.exception.xErr === 'number') {
+        return t('loginError.loginXboxFailedWithCode', { code: e.exception.xErr })
       }
       return t('loginError.loginXboxFailed')
     }
     if (e.exception.type === 'userLoginMinecraftByXboxFailed') {
+      const { status, retryAfter } = e.exception
+      if (status === 429) {
+        const retrySeconds = typeof retryAfter === 'number' ? Math.ceil(retryAfter / 1000) : undefined
+        return retrySeconds
+          ? t('loginError.loginMinecraftByXboxRateLimitedWithRetry', { seconds: retrySeconds })
+          : t('loginError.loginMinecraftByXboxRateLimited')
+      }
+      if (typeof status === 'number' && status >= 500) {
+        return t('loginError.loginMinecraftByXboxServerError', { status })
+      }
+      if (typeof status === 'number') {
+        return t('loginError.loginMinecraftByXboxStatus', { status })
+      }
       return t('loginError.loginMinecraftByXboxFailed')
     }
     if (e.exception.type === 'loginReset') {

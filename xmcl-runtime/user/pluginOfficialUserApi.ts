@@ -7,6 +7,7 @@ import { UserService } from './UserService'
 import { MicrosoftAccountSystem } from './accountSystems/MicrosoftAccountSystem'
 import { MicrosoftOAuthClient } from './accountSystems/MicrosoftOAuthClient'
 import { kUserTokenStorage } from './userTokenStore'
+import { withRetry } from './utils/withRetry'
 
 const CLIENT_ID = '1363d629-5b06-48a9-a5fb-c65de945f13e'
 
@@ -24,8 +25,13 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
   const headers = {}
 
   const system = new MicrosoftAccountSystem(logger,
+    // app.fetch resolves to Electron's net.fetch (with an undici fallback)
+    // -- neither path applies retry interceptors. Compose retry on top via
+    // withRetry() so that 408/425/429/5xx from Microsoft endpoints are
+    // retried with Retry-After honored, regardless of which underlying
+    // HTTP stack handles the call. See issue #1445 / PR #1447.
     new MicrosoftAuthenticator({
-      fetch: (...args) => app.fetch(...args),
+      fetch: withRetry((...args) => app.fetch(...args)),
     }),
     mojangApi,
     () => app.registry.get(kUserTokenStorage),
