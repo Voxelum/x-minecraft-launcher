@@ -1,10 +1,17 @@
 <template>
-  <div class="flex items-center justify-end gap-3">
+  <div
+    v-roving-tabindex
+    role="toolbar"
+    aria-orientation="horizontal"
+    :aria-label="t('save.name', 2)"
+    class="flex items-center justify-end gap-3"
+  >
     <v-btn
       v-shared-tooltip="() => isInstanceLinked ? t('save.shared') : t('save.independent')"
       icon
       :loading="loading"
       large
+      :aria-pressed="isInstanceLinked"
       @click="onLinkClicked"
     >
       <v-icon>{{ isInstanceLinked ? 'account_tree' : 'looks_one' }}</v-icon>
@@ -23,6 +30,7 @@
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { kInstanceSave } from '@/composables/instanceSave'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { InstanceSavesServiceKey } from '@xmcl/runtime-api'

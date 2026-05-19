@@ -1,5 +1,5 @@
 <template>
-  <v-list min-width="300">
+  <v-list v-roving-tabindex role="menu" min-width="300">
     <v-list-item :title="text" @click="onStartLocalhost">
       <template #prepend>
         <v-icon size="20">
@@ -24,7 +24,7 @@
           </template>
         </v-list-item>
       </template>
-      <v-list min-width="220">
+      <v-list v-roving-tabindex role="menu" min-width="220">
         <v-list-item
           v-for="user in otherUsers"
           :key="user.id"
@@ -62,6 +62,7 @@ import { kEnvironment } from '@/composables/environment';
 import { kInstance } from '@/composables/instance';
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { kUserContext } from '@/composables/user';
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { join } from '@/util/basename';
 import { getInstanceIcon } from '@/util/favicon';
 import { injection } from '@/util/inject'

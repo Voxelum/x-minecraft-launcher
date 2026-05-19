@@ -170,19 +170,30 @@
         </div>
 
         <!-- Latest Minecraft Section -->
-        <div v-if="!keyword && selectedCount === 0" class="mb-12">
-          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-            <v-icon color="green" size="large">xmcl:minecraft</v-icon>
+        <section
+          v-if="!keyword && selectedCount === 0"
+          class="mb-12"
+          role="region"
+          :aria-labelledby="latestMinecraftHeadingId"
+        >
+          <h2 :id="latestMinecraftHeadingId" class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <v-icon color="green" size="large" aria-hidden="true">xmcl:minecraft</v-icon>
             {{ t('store.latestMinecraft') }}
             <v-btn
               class="ml-2"
               icon="refresh"
               variant="text"
               size="small"
+              :aria-label="t('shared.refresh')"
               @click="refreshRecentMinecraft"
             />
           </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div
+            v-roving-tabindex
+            role="group"
+            :aria-labelledby="latestMinecraftHeadingId"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          >
             <StoreExploreCardModern
               v-for="item in recentMinecraftItems"
               :key="`minecraft-${item.id}`"
@@ -190,13 +201,13 @@
               @click="enter(item.type, item.id)"
             />
           </div>
-        </div>
+        </section>
 
         <!-- Grid -->
-        <div class="min-h-screen">
+        <section class="min-h-screen" role="region" :aria-labelledby="discoverHeadingId">
           <div class="flex items-end justify-between mb-6 gap-2">
             <div>
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+              <h2 :id="discoverHeadingId" class="text-2xl font-bold text-gray-900 dark:text-white">
                 {{ hasFilters ? t('store.searchResult') : t('store.discover') }}
               </h2>
               <p class="text-gray-500 dark:text-gray-400 text-sm mt-1 whitespace-nowrap">
@@ -239,6 +250,9 @@
           </div>
           <div
             v-else
+            v-roving-tabindex
+            role="group"
+            :aria-labelledby="discoverHeadingId"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 pb-20"
           >
             <StoreExploreCardModern
@@ -264,7 +278,7 @@
               density="comfortable"
             />
           </div>
-        </div>
+        </section>
       </div>
     </div>
   </div>
@@ -287,13 +301,18 @@ import { kTheme } from '@/composables/theme'
 import { usePopularItems } from '@/composables/usePopularItems'
 import { useRecentMinecraftItems } from '@/composables/useRecentMinecraftItems'
 import { useSearchedItems } from '@/composables/useSearchedItems'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { injection } from '@/util/inject'
 import { useFocus } from '@vueuse/core'
+import { useId } from 'vue'
 
 const { push } = useRouter()
 const { t } = useI18n()
 const { isDark } = injection(kTheme)
 const arrowColor = computed(() => (isDark.value ? 'white' : 'black'))
+
+const latestMinecraftHeadingId = useId()
+const discoverHeadingId = useId()
 
 // --- Query State ---
 function ensureQuery(query: Record<string, string | (string | null)[] | null | undefined>) {

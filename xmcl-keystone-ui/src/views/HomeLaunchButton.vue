@@ -1,5 +1,11 @@
 <template>
-  <div class="flex flex-grow-0 gap-[3px]">
+  <div
+    v-roving-tabindex
+    role="group"
+    aria-orientation="horizontal"
+    :aria-label="text"
+    class="flex flex-grow-0 gap-[3px]"
+  >
     <v-badge
       :model-value="count !== 0"
       location="top start"
@@ -13,6 +19,7 @@
         :color="color"
         :size="compact ? 'large' : 'x-large'"
         class="px-12 text-lg transition-all btn-left"
+        :aria-label="text"
         @click="onClick()"
         @mouseenter="emit('mouseenter')"
         @mouseleave="emit('mouseleave')"
@@ -52,9 +59,12 @@
           class="min-w-unset! max-w-5! px-0! btn-right"
           :color="color"
           :size="compact ? 'large' : 'x-large'"
+          :aria-label="t('launch.launchAs')"
+          :aria-haspopup="'menu'"
+          :aria-expanded="isShown"
           v-bind="activatorProps"
         >
-          <v-icon>
+          <v-icon aria-hidden="true">
             arrow_drop_down
           </v-icon>
         </v-btn>
@@ -68,6 +78,7 @@ import { kLaunchButton } from '@/composables/launchButton'
 import { injection } from '@/util/inject'
 import HomeLaunchButtonMenuList from './HomeLaunchButtonMenuList.vue'
 import { kInstances } from '@/composables/instances'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 
 defineProps<{ compact?: boolean; top?: boolean }>()
 
@@ -75,6 +86,7 @@ const emit = defineEmits(['mouseenter', 'mouseleave'])
 const { isValidating } = injection(kInstances)
 
 const { onClick, color, icon, text, loading, leftIcon, count } = injection(kLaunchButton)
+const { t } = useI18n()
 
 const isShown = ref(false)
 </script>

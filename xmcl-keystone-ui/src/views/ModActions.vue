@@ -1,10 +1,17 @@
 <template>
-  <div class="flex items-center justify-end gap-3">
+  <div
+    v-roving-tabindex
+    role="toolbar"
+    aria-orientation="horizontal"
+    :aria-label="t('mod.name', 2)"
+    class="flex items-center justify-end gap-3"
+  >
     <v-btn
       v-if="i18nEnabled"
       v-shared-tooltip="() => 'Alt'"
       icon
       size="large"
+      :aria-pressed="isEnabledState"
       :class="{ 'v-btn--active': isEnabledState }"
       @click="isEnabledState = !isEnabledState"
     >
@@ -24,6 +31,7 @@
 import { useAutoI18nEnabled, useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { kLocalizedContent } from '@/composables/localizedContent'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'

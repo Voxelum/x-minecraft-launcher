@@ -14,7 +14,14 @@
           v-bind="hasUsers ? menuProps : {}"
           class="user-account-switcher__identity flex items-center gap-3 cursor-pointer rounded-2xl px-3 py-2.5 border transition-all"
           data-testid="me-user-switcher"
+          role="button"
+          tabindex="0"
+          :aria-label="identityAriaLabel"
+          :aria-haspopup="hasUsers ? 'menu' : 'dialog'"
+          :aria-expanded="hasUsers ? userMenuOpen : undefined"
           @click="onIdentityClick"
+          @keydown.enter.prevent="onIdentityActivate"
+          @keydown.space.prevent="onIdentityActivate"
         >
           <div class="relative flex-shrink-0 group/avatar">
             <PlayerAvatar
@@ -22,13 +29,16 @@
               :src="gameProfile?.textures?.SKIN?.url"
               :dimension="avatarDimension"
             />
-            <div
+            <button
               v-if="showRefresh && hasUsers"
-              class="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer"
+              type="button"
+              class="user-account-switcher__avatar-refresh absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer"
+              :aria-label="t('shared.refresh')"
+              :disabled="refreshingUser"
               @click.stop="onRefreshUser"
             >
-              <v-icon size="18" color="white" :class="{ 'animate-spin': refreshingUser }">refresh</v-icon>
-            </div>
+              <v-icon size="18" color="white" aria-hidden="true" :class="{ 'animate-spin': refreshingUser }">refresh</v-icon>
+            </button>
           </div>
           <div class="flex flex-col flex-grow min-w-0">
             <span class="font-bold truncate" :class="comfortable ? 'text-base' : 'text-sm'">
@@ -46,26 +56,28 @@
             size="small"
             color="error"
             class="flex-shrink-0"
+            :aria-label="t('userAccount.removeTitle')"
             :title="t('userAccount.removeTitle')"
             :loading="removingUser"
             @click.stop="openRemoveAccountDialog"
           >
-            <v-icon size="18">delete</v-icon>
+            <v-icon size="18" aria-hidden="true">delete</v-icon>
           </v-btn>
-          <v-icon size="18" class="flex-shrink-0 opacity-60">
+          <v-icon size="18" class="flex-shrink-0 opacity-60" aria-hidden="true">
             {{ hasUsers ? (userMenuOpen ? 'expand_less' : 'expand_more') : 'login' }}
           </v-icon>
         </div>
       </template>
 
       <v-card class="rounded-xl overflow-hidden account-switcher-menu">
-        <v-list density="compact" class="py-1" bg-color="transparent">
+        <v-list density="compact" class="py-1" bg-color="transparent" role="menu" :aria-label="t('userAccount.add')">
           <v-list-item
             v-for="u of users"
             :key="u.id"
             data-testid="account-item"
             :class="{ 'bg-primary/10': u.id === userProfile.id }"
             class="rounded-lg mx-1 my-0.5"
+            :aria-current="u.id === userProfile.id ? 'true' : undefined"
             @click="onSwitchUser(u.id)"
           >
             <template #prepend>
@@ -82,7 +94,7 @@
               {{ isUserExpired(u) ? t('user.tokenExpired') : getExpiryLabel(u) }}
             </v-list-item-subtitle>
             <template #append>
-              <v-icon v-if="u.id === userProfile.id" size="16" color="primary">check</v-icon>
+              <v-icon v-if="u.id === userProfile.id" size="16" color="primary" aria-hidden="true">check</v-icon>
             </template>
           </v-list-item>
         </v-list>
@@ -97,7 +109,7 @@
             class="rounded-lg"
             @click="openAddAccountDialog"
           >
-            <v-icon start size="16">person_add</v-icon>
+            <v-icon start size="16" aria-hidden="true">person_add</v-icon>
             {{ t('userAccount.add') }}
           </v-btn>
         </div>
@@ -144,6 +156,21 @@ const avatarDimension = computed(() => comfortable.value ? 56 : 40)
 const authorityLabel = computed(() => getAuthorityName(userProfile.value.authority))
 const currentUserExpired = computed(() => hasUsers.value && (userProfile.value.invalidated || userProfile.value.expiredAt < Date.now()))
 const userMenuOpen = ref(false)
+
+const identityAriaLabel = computed(() => {
+  if (!hasUsers.value) return t('login.login')
+  const name = gameProfile.value?.name || ''
+  const status = currentUserExpired.value ? t('user.tokenExpired') : authorityLabel.value
+  return `${name} — ${status}`.trim()
+})
+
+function onIdentityActivate() {
+  if (hasUsers.value) {
+    userMenuOpen.value = !userMenuOpen.value
+  } else {
+    openAddAccountDialog()
+  }
+}
 
 function getAuthorityName(authority: string) {
   switch (authority) {
@@ -248,5 +275,19 @@ function openAddAccountDialog() {
 .account-switcher-menu {
   background: rgba(var(--v-theme-surface), 0.95);
   backdrop-filter: blur(20px);
+}
+
+.user-account-switcher__avatar-refresh {
+  background: rgba(0, 0, 0, 0.5);
+  border: 0;
+  padding: 0;
+  color: inherit;
+  appearance: none;
+}
+
+.user-account-switcher__avatar-refresh:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+  opacity: 1;
 }
 </style>

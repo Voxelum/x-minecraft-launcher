@@ -1,5 +1,10 @@
 <template>
-  <v-card class="setting-card" elevation="2">
+  <v-card
+    class="setting-card"
+    elevation="2"
+    role="region"
+    :aria-label="title || subtitle || undefined"
+  >
     <v-card-item v-if="title || subtitle || $slots['header-action']">
       <div class="setting-card__header">
         <div class="setting-card__header-text">

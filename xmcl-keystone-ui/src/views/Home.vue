@@ -1,24 +1,21 @@
 <template>
-  <div
-    ref="scrollElement"
-    class="select-none"
-  >
+  <div ref="scrollElement" class="select-none">
     <HomeCriticalError />
     <transition name="slide-y-reverse-transition" mode="out-in">
-      <div v-if="!isFocus" class="mx-3 relative" >
+      <div v-if="!isFocus" class="mx-3 relative">
         <Transition name="slide-y-reverse-transition">
           <div class="flex items-center justify-center gap-1 sticky top-40 z-3">
-            <v-divider
-              class="divider mx-0"
-            />
-            <v-btn class="z-4" icon variant="text" @click="isFocus = true">
-              <v-icon>
-                keyboard_arrow_down
-              </v-icon>
+            <v-divider class="divider mx-0" />
+            <v-btn
+              class="z-4"
+              icon
+              variant="text"
+              :aria-label="t('setting.layout.focus')"
+              @click="isFocus = true"
+            >
+              <v-icon aria-hidden="true"> keyboard_arrow_down </v-icon>
             </v-btn>
-            <v-divider
-              class="divider mx-0"
-            />
+            <v-divider class="divider mx-0" />
           </div>
         </Transition>
         <HomeGrid />
@@ -35,10 +32,7 @@
           :id="instance.upstream.id"
         />
       </div>
-      <HomeFocusFooter
-        v-else
-        class="absolute bottom-0 left-0 pb-[26px]"
-      />
+      <HomeFocusFooter v-else class="absolute bottom-0 left-0 pb-[26px]" />
     </transition>
     <!-- <ScreenshotGalleryDialog /> -->
   </div>
@@ -63,7 +57,13 @@ import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
 
 const isFocus = useInFocusMode()
 const { instance } = injection(kInstance)
-provide(kUpstream, computed(() => ({ upstream: instance.value.upstream, minecraft: instance.value.runtime.minecraft })))
+provide(
+  kUpstream,
+  computed(() => ({
+    upstream: instance.value.upstream,
+    minecraft: instance.value.runtime.minecraft,
+  })),
+)
 
 const compact = injection(kCompact)
 onMounted(() => {
@@ -90,13 +90,27 @@ const scrollElement = ref(null as HTMLElement | null)
 provide('scrollElement', scrollElement)
 
 const { t } = useI18n()
-useTutorial(computed(() => {
-  const steps: DriveStep[] = [
-    { element: '#my-stuff-button', popover: { title: t('userAccount.add'), description: t('tutorial.userAccountDescription') } },
-    { element: '#create-instance-button', popover: { title: t('instances.add'), description: t('tutorial.instanceAddDescription') } },
-    { element: '#launch-button', popover: { title: t('launch.launch'), description: t('tutorial.launchDescription') } },
-    { element: '#feedback-button', popover: { title: t('feedback.name'), description: t('tutorial.feedbackDescription') } },
-  ]
-  return steps
-}))
+useTutorial(
+  computed(() => {
+    const steps: DriveStep[] = [
+      {
+        element: '#my-stuff-button',
+        popover: { title: t('userAccount.add'), description: t('tutorial.userAccountDescription') },
+      },
+      {
+        element: '#create-instance-button',
+        popover: { title: t('instances.add'), description: t('tutorial.instanceAddDescription') },
+      },
+      {
+        element: '#launch-button',
+        popover: { title: t('launch.launch'), description: t('tutorial.launchDescription') },
+      },
+      {
+        element: '#feedback-button',
+        popover: { title: t('feedback.name'), description: t('tutorial.feedbackDescription') },
+      },
+    ]
+    return steps
+  }),
+)
 </script>

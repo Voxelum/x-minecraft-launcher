@@ -4,7 +4,7 @@
     class="d-flex fill-height setting-page"
   >
     <!-- Navigation Sidebar (Only in Wide/Scroll Mode) -->
-    <div v-if="!isNarrowView" class="setting-sidebar pt-6 pl-4 pr-2">
+    <nav v-if="!isNarrowView" class="setting-sidebar pt-6 pl-4 pr-2" :aria-label="t('setting.name', 2)">
       <v-card class="rounded-lg" elevation="0" color="transparent">
         <v-list nav density="compact" color="transparent" class="rounded-lg" :selected="[activeSectionIndex]" @update:selected="v => activeSectionIndex = (v[0] as number) ?? 0">
           <v-list-subheader class="text-uppercase font-weight-bold grey--text text--darken-1 text-caption pl-4 mb-1">
@@ -25,7 +25,7 @@
           </v-list-item>
         </v-list>
       </v-card>
-    </div>
+    </nav>
 
     <!-- Content Area -->
     <div 
@@ -42,6 +42,7 @@
           bg-color="transparent"
           color="primary"
           show-arrows
+          :aria-label="t('setting.name', 2)"
           class="rounded-lg"
           @update:model-value="onTabChange"
         >
@@ -54,7 +55,7 @@
 
       <div class="content-wrapper mx-auto pa-4 pa-md-6" :class="{ 'tabs-mode': isNarrowView }">
         <!-- All sections rendered vertically in both modes -->
-        <section id="general" class="mb-8 scroll-target">
+        <section id="general" class="mb-8 scroll-target" role="region" :aria-label="t('setting.general')">
           <SettingHeader
             :title="t('setting.general')"
             icon="settings"
@@ -62,7 +63,7 @@
           <SettingGeneral class="mb-4" />
           <SettingAdvanced />
         </section>
-        <section id="appearance" class="mb-8 scroll-target">
+        <section id="appearance" class="mb-8 scroll-target" role="region" :aria-label="t('setting.appearance')">
           <SettingHeader
             icon="brush"
             :title="t('setting.appearance')"
@@ -70,21 +71,21 @@
           />
           <SettingGlobalUI />
         </section>
-        <section id="global" class="mb-8 scroll-target">
+        <section id="global" class="mb-8 scroll-target" role="region" :aria-label="t('setting.globalSetting')">
           <SettingHeader
             :title="'🌍 ' + t('setting.globalSetting')"
             :subtitle="t('setting.globalSettingHint')"
           />
           <SettingGlobal />
         </section>
-        <section id="network" class="mb-8 scroll-target">
+        <section id="network" class="mb-8 scroll-target" role="region" :aria-label="t('setting.network')">
           <SettingHeader
             :title="t('setting.network')"
             icon="public"
           />
           <SettingNetwork />
         </section>
-        <section id="about" class="mb-12 scroll-target">
+        <section id="about" class="mb-12 scroll-target" role="region" :aria-label="t('setting.about')">
           <SettingHeader
             :title="t('setting.about')"
             icon="info"

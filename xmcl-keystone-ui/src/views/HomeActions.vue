@@ -1,5 +1,9 @@
 <template>
   <div
+    v-roving-tabindex
+    role="toolbar"
+    aria-orientation="horizontal"
+    :aria-label="t('baseSetting.title', 2)"
     class="grid xl:gap-4 gap-1 home-actions"
     :style="{
       'grid-template-columns': `repeat(${
@@ -13,6 +17,7 @@
       variant="text"
       density="comfortable"
       :loading="isValidating"
+      :aria-label="t('logsCrashes.title')"
       @click="showLogDialog()"
     >
       <v-icon> subtitles </v-icon>
@@ -24,6 +29,7 @@
       variant="text"
       density="comfortable"
       :loading="isValidating"
+      :aria-label="t('instance.showInstance')"
       @click="showInstanceFolder"
     >
       <v-icon> folder </v-icon>
@@ -41,43 +47,54 @@
           variant="text"
           density="comfortable"
           :loading="isValidating"
+          :aria-label="t('baseSetting.title', 2)"
           to="/base-setting"
           @click.stop
         >
           <v-icon> settings </v-icon>
         </v-btn>
       </template>
-      <v-btn
-        v-shared-tooltip.left="() => t('modpack.export')"
-        icon
-        variant="text"
-        density="comfortable"
-        :loading="isValidating"
-        to="/base-setting?target=modpack"
+      <div
+        v-roving-tabindex
+        role="menu"
+        :aria-label="t('baseSetting.title', 2)"
+        class="contents"
       >
-        <v-icon> share </v-icon>
-      </v-btn>
-      <v-btn
-        v-shared-tooltip.left="() => t('server.export')"
-        icon
-        variant="text"
-        density="comfortable"
-        :loading="isValidating"
-        @click="showExportServer()"
-      >
-        <v-icon> ios_share </v-icon>
-      </v-btn>
-      <v-btn
-        v-if="instance && !instance.upstream"
-        v-shared-tooltip.left="() => t('instance.installModpack')"
-        icon
-        variant="text"
-        density="comfortable"
-        :loading="isValidating || loading"
-        @click="onClickInstallFromModpack()"
-      >
-        <v-icon> drive_folder_upload </v-icon>
-      </v-btn>
+        <v-btn
+          v-shared-tooltip.left="() => t('modpack.export')"
+          icon
+          variant="text"
+          density="comfortable"
+          :loading="isValidating"
+          :aria-label="t('modpack.export')"
+          to="/base-setting?target=modpack"
+        >
+          <v-icon> share </v-icon>
+        </v-btn>
+        <v-btn
+          v-shared-tooltip.left="() => t('server.export')"
+          icon
+          variant="text"
+          density="comfortable"
+          :loading="isValidating"
+          :aria-label="t('server.export')"
+          @click="showExportServer()"
+        >
+          <v-icon> ios_share </v-icon>
+        </v-btn>
+        <v-btn
+          v-if="instance && !instance.upstream"
+          v-shared-tooltip.left="() => t('instance.installModpack')"
+          icon
+          variant="text"
+          density="comfortable"
+          :loading="isValidating || loading"
+          :aria-label="t('instance.installModpack')"
+          @click="onClickInstallFromModpack()"
+        >
+          <v-icon> drive_folder_upload </v-icon>
+        </v-btn>
+      </div>
     </v-speed-dial>
   </div>
 </template>
@@ -87,6 +104,7 @@ import { useService } from "@/composables";
 import { kInstance } from "@/composables/instance";
 import { InstanceInstallDialog } from "@/composables/instanceUpdate";
 import { kInstances } from "@/composables/instances";
+import { vRovingTabindex } from "@/directives/rovingTabindex";
 import { vSharedTooltip } from "@/directives/sharedTooltip";
 import { injection } from "@/util/inject";
 import {

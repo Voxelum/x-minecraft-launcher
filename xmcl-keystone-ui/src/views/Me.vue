@@ -13,6 +13,8 @@ import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { kTheme } from '@/composables/theme'
 import { vContextMenu } from '@/directives/contextMenu'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
 import { useFocus, useLocalStorage } from '@vueuse/core'
@@ -321,23 +323,42 @@ function openInBrowser(url: string) {
       <section class="instances-section">
         <div class="section-header">
           <div class="d-flex align-center">
-            <v-icon class="section-icon" color="primary">apps</v-icon>
+            <v-icon class="section-icon" color="primary" aria-hidden="true">apps</v-icon>
             <h2 class="section-title">{{ t('instance.current', 2) }}</h2>
           </div>
           <div class="d-flex align-center gap-2">
-            <v-btn-toggle density="compact" v-model="instanceViewMode" mandatory class="mr-2">
-              <v-btn value="folder" size="small">
-                <v-icon size="small">folder</v-icon>
+            <v-btn-toggle
+              v-roving-tabindex
+              v-model="instanceViewMode"
+              density="compact"
+              mandatory
+              class="mr-2"
+              aria-label="Instance view mode"
+            >
+              <v-btn
+                v-shared-tooltip="() => 'Group by folder'"
+                value="folder"
+                size="small"
+              >
+                <v-icon size="small" aria-hidden="true">folder</v-icon>
               </v-btn>
-              <v-btn value="date" size="small">
-                <v-icon size="small">schedule</v-icon>
+              <v-btn
+                v-shared-tooltip="() => 'Group by date'"
+                value="date"
+                size="small"
+              >
+                <v-icon size="small" aria-hidden="true">schedule</v-icon>
               </v-btn>
-              <v-btn value="" size="small">
-                <v-icon size="small">view_list</v-icon>
+              <v-btn
+                v-shared-tooltip="() => 'List view'"
+                value=""
+                size="small"
+              >
+                <v-icon size="small" aria-hidden="true">view_list</v-icon>
               </v-btn>
             </v-btn-toggle>
             <v-btn color="primary" @click="openAddInstanceDialog" size="small">
-              <v-icon start size="small">add</v-icon>
+              <v-icon start size="small" aria-hidden="true">add</v-icon>
               {{ t('instances.add') }}
             </v-btn>
           </div>
@@ -355,27 +376,44 @@ function openInBrowser(url: string) {
         />
 
         <!-- Unified Instance Sections -->
-        <div v-for="section in instanceSections" :key="section.id" class="mb-6">
+        <div
+          v-for="section in instanceSections"
+          :key="section.id"
+          class="mb-6"
+          role="region"
+          :aria-label="section.title || t('instances.name', 2)"
+        >
           <div v-if="section.title" class="section-header-item mb-3">
-            <v-icon size="small" class="mr-2">{{ section.icon }}</v-icon>
+            <v-icon size="small" class="mr-2" aria-hidden="true">{{ section.icon }}</v-icon>
             <span class="section-title-item">{{ section.title }}</span>
             <span class="section-count">({{ section.instances.length }})</span>
           </div>
-          <div class="instances-grid">
+          <div
+            v-roving-tabindex
+            role="group"
+            :aria-label="section.title || t('instances.name', 2)"
+            class="instances-grid"
+          >
             <div
               v-for="instance in section.instances"
               :key="instance.path"
               v-context-menu="getInstanceContextMenu(instance)"
               class="instance-item"
               :class="{ 'instance-item--active': instance.path === path }"
+              role="button"
+              tabindex="0"
+              :aria-label="`${instance.name} (Minecraft ${instance.runtime.minecraft})`"
+              :aria-pressed="instance.path === path"
               @click="selectInstance(instance.path)"
+              @keydown.enter.prevent="selectInstance(instance.path)"
+              @keydown.space.prevent="selectInstance(instance.path)"
             >
               <div class="instance-avatar-wrapper">
                 <v-avatar size="44" class="instance-avatar">
                   <v-img :src="getInstanceIcon(instance, undefined)" />
                 </v-avatar>
                 <div v-if="pinnedInstances.includes(instance.path)" class="pin-badge">
-                  <v-icon size="x-small" color="white" style="font-size: 8px">push_pin</v-icon>
+                  <v-icon size="x-small" color="white" style="font-size: 8px" aria-hidden="true">push_pin</v-icon>
                 </div>
               </div>
               <div class="instance-info">

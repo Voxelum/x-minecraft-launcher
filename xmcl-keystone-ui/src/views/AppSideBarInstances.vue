@@ -34,6 +34,7 @@
       id="create-instance-button"
       data-testid="create-instance"
       v-shared-tooltip.right="() => t('instances.add')"
+      :aria-label="t('instances.add')"
       icon="add"
       clickable
       class="add-instance-button"

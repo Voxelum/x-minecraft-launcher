@@ -4,13 +4,15 @@
     class="setting-item-checkbox cursor-pointer"
     @click="model = !model"
   >
-    <template #preaction>
+    <template #preaction="{ titleId, descriptionId }">
       <v-checkbox
         v-bind="$attrs"
         :model-value="model"
         class="mr-2"
         hide-details
         readonly
+        :aria-labelledby="titleId"
+        :aria-describedby="description ? descriptionId : undefined"
       />
     </template>
     <template #title>

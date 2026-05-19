@@ -1,28 +1,30 @@
 <template>
   <div class="setting-item select-none">
     <div v-if="slots.preaction" class="setting-item__preaction">
-      <slot name="preaction" />
+      <slot name="preaction" :title-id="titleId" :description-id="descriptionId" />
     </div>
     <div class="setting-item__content">
-      <div class="setting-item__title font-weight-medium" :class="titleClass">
-        <slot v-if="slots.title" name="title" />
+      <div :id="titleId" class="setting-item__title font-weight-medium" :class="titleClass">
+        <slot v-if="slots.title" name="title" :title-id="titleId" :description-id="descriptionId" />
         <template v-else>
           {{ title }}
         </template>
       </div>
-      <div class="setting-item__subtitle">
-        <slot v-if="slots.subtitle" name="subtitle" />
+      <div :id="descriptionId" class="setting-item__subtitle">
+        <slot v-if="slots.subtitle" name="subtitle" :title-id="titleId" :description-id="descriptionId" />
         <template v-else>
           {{ description }}
         </template>
       </div>
     </div>
     <div class="setting-item__action" :style="longAction ? 'width: 50%' : ''">
-      <slot name="action" />
+      <slot name="action" :title-id="titleId" :description-id="descriptionId" />
     </div>
   </div>
 </template>
 <script setup lang="ts">
+import { useId } from 'vue'
+
 defineProps<{
   title?: string
   description?: string
@@ -31,6 +33,8 @@ defineProps<{
 }>()
 
 const slots = useSlots()
+const titleId = useId()
+const descriptionId = useId()
 </script>
 
 <style scoped>

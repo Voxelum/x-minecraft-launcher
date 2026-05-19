@@ -3,7 +3,16 @@
     class="version-card"
     :class="{ 'version-card--installed': version.installed }"
   >
-    <div class="version-card__row" @click="emit('click', version)">
+    <div
+      class="version-card__row"
+      role="button"
+      tabindex="0"
+      :aria-label="version.name"
+      :aria-pressed="version.installed"
+      @click="emit('click', version)"
+      @keydown.enter.prevent="emit('click', version)"
+      @keydown.space.prevent="emit('click', version)"
+    >
       <!-- Status accent + identity -->
       <div
         class="version-card__accent"

@@ -17,7 +17,13 @@
       </div>
       <div class="flex flex-col flex-grow">
         <v-skeleton-loader v-if="loading" type="heading" class="mb-2" />
-        <span v-else class="inline-flex items-center gap-2 text-2xl font-bold">
+        <span
+          v-else
+          v-roving-tabindex
+          role="toolbar"
+          :aria-label="titleToDisplay"
+          class="inline-flex items-center gap-2 text-2xl font-bold"
+        >
           <a v-if="detail.url" target="browser" :href="detail.url">
             {{ titleToDisplay }}
           </a>
@@ -224,7 +230,7 @@
       </div>
     </div>
 
-    <v-tabs v-model="tab" bg-color="transparent">
+    <v-tabs v-roving-tabindex role="tablist" v-model="tab" bg-color="transparent">
       <v-tab :value="0">
         {{ t('modrinth.description') }}
       </v-tab>
@@ -319,9 +325,7 @@
                           :loading="dep.progress >= 0"
                           @click.stop="onInstallDependency(dep)"
                         >
-                          <v-icon class="material-icons-outlined">
-                            file_download
-                          </v-icon>
+                          <v-icon class="material-icons-outlined"> file_download </v-icon>
                           <template #loader>
                             <v-progress-circular
                               v-if="dep.progress >= 0"
@@ -403,7 +407,12 @@
         </v-tabs-window-item>
         <v-tabs-window-item :value="2" class="h-full p-l-[2px]">
           <v-skeleton-loader v-if="loadingVersions" type="table-thead, table-tbody" />
-          <template v-else-if="versions.length > 0">
+          <div
+            v-else-if="versions.length > 0"
+            v-roving-tabindex
+            role="listbox"
+            :aria-label="t('modrinth.versions')"
+          >
             <v-list-subheader v-if="installed">
               {{ t('shared.installed') }}
             </v-list-subheader>
@@ -422,7 +431,7 @@
               :show-changelog="selectedVersion?.id === version.id"
               @click="onVersionClicked"
             />
-          </template>
+          </div>
           <Hint
             v-else
             class="h-full"
@@ -440,7 +449,7 @@
           <template v-if="loading">
             <v-skeleton-loader type="avatar" />
           </template>
-          <span v-else class="flex flex-wrap gap-2 px-2">
+          <span v-else class="flex flex-wrap gap-2 px-2" v-roving-tabindex role="toolbar">
             <v-btn
               v-if="modrinth"
               icon
@@ -481,7 +490,7 @@
         <v-list-subheader v-if="detail.categories.length > 0">
           {{ t('modrinth.categories.categories') }}
         </v-list-subheader>
-        <span class="flex flex-wrap gap-2">
+        <span class="flex flex-wrap gap-2" v-roving-tabindex role="toolbar">
           <template v-if="loading">
             <v-skeleton-loader type="chip" />
             <v-skeleton-loader type="chip" />
@@ -517,7 +526,7 @@
         <v-list-subheader v-if="detail.externals.length > 0">
           {{ t('modrinth.externalResources') }}
         </v-list-subheader>
-        <div v-if="detail.externals.length > 0 || loading" class="flex flex-col gap-1">
+        <div v-if="detail.externals.length > 0 || loading" class="flex flex-col gap-1" v-roving-tabindex role="toolbar">
           <template v-if="loading">
             <v-skeleton-loader type="list-item, list-item, list-item" />
           </template>
@@ -548,7 +557,7 @@
           <v-list-subheader>
             {{ t('modrinth.technicalInformation') }}
           </v-list-subheader>
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-2" v-roving-tabindex role="toolbar">
             <template v-if="loading">
               <v-skeleton-loader type="list-item-two-line" />
               <v-skeleton-loader type="list-item-two-line" />
@@ -599,6 +608,7 @@ import { useDateString } from '@/composables/date'
 import { kTheme } from '@/composables/theme'
 import { kSearchModel } from '@/composables/search'
 import { clientCurseforgeV1 } from '@/util/clients'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { vFallbackImg } from '@/directives/fallbackImage'
 import { BuiltinImages } from '@/constant'
@@ -806,7 +816,9 @@ function onAuthorClicked(name: string) {
     searchModel.keyword.value = name
     searchModel.source.value = 'remote'
   }
-  replace({ query: { ...currentRoute.value.query, keyword: name, source: 'remote', id: undefined } })
+  replace({
+    query: { ...currentRoute.value.query, keyword: name, source: 'remote', id: undefined },
+  })
 }
 
 const selectedVersion = inject(

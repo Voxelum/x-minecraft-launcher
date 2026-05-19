@@ -47,10 +47,12 @@
             >
               <template #action>
                 <v-btn-toggle
+                  v-roving-tabindex
                   v-model="sidebarStyleIndex"
                   mandatory
                   density="compact"
                   color="primary"
+                  :aria-label="t('setting.sidebarStyle')"
                 >
                   <v-btn size="small">
                     <v-icon start size="small">view_sidebar</v-icon>
@@ -69,10 +71,12 @@
             <SettingItem :title="t('setting.sidebarPosition')">
               <template #action>
                 <v-btn-toggle
+                  v-roving-tabindex
                   v-model="sidebarPositionIndex"
                   mandatory
                   density="compact"
                   color="primary"
+                  :aria-label="t('setting.sidebarPosition')"
                 >
                   <v-btn size="small">
                     <v-icon size="small">arrow_back</v-icon>
@@ -96,11 +100,13 @@
               <SettingItem :title="t('setting.sidebarAlign')">
                 <template #action>
                   <v-btn-toggle
+                    v-roving-tabindex
                     v-model="sidebarAlignIndex"
                     mandatory
                     dense
                     color="primary"
                     rounded="pill"
+                    :aria-label="t('setting.sidebarAlign')"
                   >
                     <v-btn size="small"><v-icon size="small">format_align_left</v-icon></v-btn>
                     <v-btn size="small"><v-icon size="small">format_align_center</v-icon></v-btn>
@@ -254,6 +260,7 @@
 <script setup lang="ts">
 import AppearanceItems from '@/components/AppearanceItems.vue'
 import SettingCard from '@/components/SettingCard.vue'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import { useLocalStorageCacheStringValue } from '@/composables/cache'

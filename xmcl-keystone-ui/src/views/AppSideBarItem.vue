@@ -1,8 +1,9 @@
 <template>
   <component
-    :is="to ? 'router-link' : 'div'"
+    :is="to ? 'router-link' : clickable ? 'button' : 'div'"
     :id="id"
     :to="to"
+    :type="clickable && !to ? 'button' : undefined"
     class="sidebar-item non-moveable"
     :class="{
       'sidebar-item--active': active,
@@ -53,6 +54,9 @@ function onClick(event: MouseEvent) {
   display: block;
   width: 48px;
   height: 48px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   margin: 4px auto;
   flex-shrink: 0;
   text-decoration: none;

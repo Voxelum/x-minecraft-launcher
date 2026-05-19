@@ -1,7 +1,10 @@
 <template>
   <v-system-bar
+    v-roving-tabindex
     topbar
     window
+    role="toolbar"
+    :aria-label="systemBarAriaLabel"
     class="moveable static! flex w-full grow-0 gap-1 p-0 text-[.875rem]! bg-[transparent]! dark:color-[#ffffffb3] pr-0"
     :style="{ 'backdrop-filter': `blur(${blurAppBar}px)` }"
   >
@@ -13,15 +16,18 @@
         v-if="shouldShiftBackControl"
         style="width: 80px"
       />
-      <v-icon
+      <button
+        type="button"
         v-ripple
-        size="small"
-        class="non-moveable flex cursor-pointer select-none items-center h-full after:hidden hover:bg-[rgba(255,255,255,0.2)]"
+        class="system-bar-back-btn non-moveable flex cursor-pointer select-none items-center h-full hover:bg-[rgba(255,255,255,0.2)]"
         style="width: 80px;"
+        :aria-label="backAriaLabel"
         @click="onBack"
       >
-        arrow_back
-      </v-icon>
+        <v-icon size="small" aria-hidden="true">
+          arrow_back
+        </v-icon>
+      </button>
     </span>
     <slot />
 
@@ -37,6 +43,7 @@
       v-shared-tooltip.bottom="() => t('commandPalette.openHint', { shortcut: paletteShortcut })"
       icon="search"
       :text="t('commandPalette.open')"
+      :aria-label="t('commandPalette.openHint', { shortcut: paletteShortcut })"
       can-hide-text
       @click="openPalette"
     >
@@ -71,30 +78,42 @@
       @click="showFeedbackDialog"
     />
 
-    <span class="flex h-full shrink grow-0 p-0">
-      <v-icon
+    <span
+      v-roving-tabindex
+      class="flex h-full shrink grow-0 p-0"
+      role="group"
+      :aria-label="windowControlsAriaLabel"
+    >
+      <button
         v-if="!hideWindowControl"
+        type="button"
         v-ripple
-        tabindex="-1"
+        :aria-label="minimizeAriaLabel"
         class="non-moveable system-btn hover:bg-[rgba(255,255,255,0.5)]"
-        size="small"
         @click="minimize"
-      >minimize</v-icon>
-      <v-icon
+      >
+        <v-icon size="small" aria-hidden="true">minimize</v-icon>
+      </button>
+      <button
         v-if="!hideWindowControl"
+        type="button"
         v-ripple
-        tabindex="-1"
+        :aria-label="maximizeAriaLabel"
         class="non-moveable system-btn hover:bg-[rgba(255,255,255,0.5)]"
-        size="small"
         @click="maximize"
-      >crop_din</v-icon>
-      <v-icon
+      >
+        <v-icon size="small" aria-hidden="true">crop_din</v-icon>
+      </button>
+      <button
         v-if="!hideWindowControl"
+        type="button"
         v-ripple
+        :aria-label="closeAriaLabel"
         class="non-moveable system-btn hover:bg-[rgb(209,12,12)]"
-        size="small"
         @click="close"
-      >close</v-icon>
+      >
+        <v-icon size="small" aria-hidden="true">close</v-icon>
+      </button>
     </span>
   </v-system-bar>
 </template>
@@ -110,6 +129,7 @@ import AppAudioPlayer from '@/components/AppAudioPlayer.vue'
 import { kTheme } from '@/composables/theme'
 import { useCommandPaletteBus } from '@/composables/commandPalette'
 import { kNetworkStatus } from '@/composables/useNetworkStatus'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getExpectedSize } from '@/util/size'
 
@@ -155,12 +175,37 @@ const router = useRouter()
 const onBack = () => {
   router.back()
 }
+
+const systemBarAriaLabel = 'Window'
+const backAriaLabel = computed(() => t('shared.back'))
+const minimizeAriaLabel = 'Minimize'
+const maximizeAriaLabel = 'Maximize'
+const closeAriaLabel = 'Close'
+const windowControlsAriaLabel = 'Window controls'
 </script>
 <style lang="css" scoped>
 .system-btn {
-  @apply  h-full top-0 mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden! w-[40px] min-w-[40px];
+  @apply  h-full top-0 mr-0 flex cursor-pointer select-none items-center justify-center px-3 py-1 after:hidden! w-[40px] min-w-[40px];
   font-size: 16px !important;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+  background: transparent;
+  border: 0;
+  color: inherit;
+  appearance: none;
+}
+
+.system-btn:focus-visible,
+.system-bar-back-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: -2px;
+}
+
+.system-bar-back-btn {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  appearance: none;
+  justify-content: center;
 }
 
 .palette-hotkey {

@@ -18,7 +18,7 @@
     >
       <template #left>
         <div class="flex flex-col h-full overflow-hidden">
-          <div>
+          <div v-roving-tabindex role="toolbar">
             <slot
               name="actions"
             />
@@ -35,8 +35,10 @@
           <slot v-if="$slots.options" name="options" />
           <v-virtual-scroll
             v-else-if="items.length > 0"
+            v-roving-tabindex
             key="market-left"
             id="left-pane"
+            role="listbox"
             :bench="16"
             class="visible-scroll h-full max-h-full w-full overflow-auto pl-1 pt-2"
             :items="items"
@@ -93,6 +95,7 @@ import { kDialogModel } from '@/composables/dialog'
 import { ProjectGroup } from '@/composables/modGroup'
 import { UpgradePlan } from '@/composables/modUpgrade'
 import { useQuery } from '@/composables/query'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'

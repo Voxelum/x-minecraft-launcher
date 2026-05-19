@@ -29,7 +29,7 @@
         icon="import_export"
       >
         <template #action>
-          <div class="flex gap-2">
+          <div v-roving-tabindex role="group" :aria-label="t('setting.exportSettings') + ' / ' + t('setting.importSettings')" class="flex gap-2">
             <v-btn color="primary" @click="handleExportSettings" size="small" variant="text" border>
               <v-icon start size="small">file_download</v-icon>
               {{ t('setting.exportSettings') }}
@@ -75,6 +75,7 @@ import { useI18n } from 'vue-i18n'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 import SettingCard from '@/components/SettingCard.vue'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import SettingItem from '@/components/SettingItem.vue'
 
 const { t } = useI18n()

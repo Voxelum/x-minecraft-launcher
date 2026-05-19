@@ -4,12 +4,14 @@
       <v-icon v-if="icon" start size="small" color="primary">{{ icon }}</v-icon>
       {{ title }}
     </template>
-    <template #action>
+    <template #action="{ titleId, descriptionId }">
       <v-switch
         v-model="model"
         v-bind="$attrs"
         color="primary"
         hide-details
+        :aria-labelledby="titleId"
+        :aria-describedby="description ? descriptionId : undefined"
       />
     </template>
   </SettingItem>

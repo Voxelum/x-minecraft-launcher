@@ -1,5 +1,9 @@
 <template>
   <div
+    v-roving-tabindex
+    role="toolbar"
+    aria-orientation="horizontal"
+    :aria-label="t('baseSetting.title', 2)"
     class="grid xl:gap-4 gap-1 home-actions"
     :style="{
       'grid-template-columns': `repeat(${
@@ -52,6 +56,7 @@ import { useService } from "@/composables";
 import { kInstance } from "@/composables/instance";
 import { InstanceInstallDialog } from "@/composables/instanceUpdate";
 import { kInstances } from "@/composables/instances";
+import { vRovingTabindex } from "@/directives/rovingTabindex";
 import { vSharedTooltip } from "@/directives/sharedTooltip";
 import { injection } from "@/util/inject";
 import {

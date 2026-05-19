@@ -29,6 +29,8 @@
               {{ t('mod.filter') }}
             </div>
             <v-btn-toggle
+              v-roving-tabindex
+              :aria-label="t('mod.filter')"
               density="compact"
               :model-value="getFilterButtonValue()"
               class="bg-transparent px-1"
@@ -55,6 +57,8 @@
               {{ t('modrinth.modLoaders.name') }}
             </div>
             <v-btn-toggle
+              v-roving-tabindex
+              :aria-label="t('modrinth.modLoaders.name')"
               density="compact"
               :model-value="getModLoaderFilterValue()"
               class="bg-transparent px-1"
@@ -96,6 +100,7 @@ import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 import debounce from 'lodash.debounce'
 import ModOptionsPage from './ModOptionsPage.vue'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { kModUpgrade } from '@/composables/modUpgrade'
 import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'

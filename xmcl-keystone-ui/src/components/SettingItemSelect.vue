@@ -7,7 +7,7 @@
         {{ title }}
       </template>
     </template>
-    <template #action>
+    <template #action="{ titleId, descriptionId }">
       <v-select
         v-model="model"
         v-bind="$attrs"
@@ -18,6 +18,8 @@
         class="setting-item-select font-weight-medium"
         hide-details
         :items="items"
+        :aria-labelledby="titleId"
+        :aria-describedby="description ? descriptionId : undefined"
       />
     </template>
   </SettingItem>

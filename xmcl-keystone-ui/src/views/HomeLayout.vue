@@ -47,7 +47,7 @@ import HomeDropModpackDialog from './HomeDropModpackDialog.vue'
 const router = useRouter()
 
 const removeAfterEach = router.afterEach((r) => {
-  document.title = `XMCL KeyStone - ${r.fullPath}`
+  document.title = `X Minecraft Launcher - ${r.fullPath}`
   if (containerRef.value) {
     containerRef.value.scrollTop = 0
   }

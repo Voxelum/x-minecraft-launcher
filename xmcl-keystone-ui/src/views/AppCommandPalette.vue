@@ -49,52 +49,58 @@
         class="palette-list flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2 py-2"
       >
         <template v-if="recentResults.length > 0">
-          <v-list-subheader>{{ t('commandPalette.recent') }}</v-list-subheader>
-          <v-list-item
-            v-for="(inst, idx) in recentResults"
-            :key="`recent-${inst.path}`"
-            :active="selectedIndex === idx"
-            :data-palette-index="idx"
-            @click="launchInstance(inst)"
-            @mouseenter="selectedIndex = idx"
-          >
-            <template #prepend>
-              <v-avatar size="36" rounded="lg" class="palette-avatar">
-                <v-img
-                  v-fallback-img="BuiltinImages.craftingTable"
-                  :src="getInstanceIcon(inst, undefined)"
-                />
-              </v-avatar>
-            </template>
-            <v-list-item-title>{{ inst.name }}</v-list-item-title>
-            <v-list-item-subtitle>{{ inst.runtime.minecraft }} · {{ inst.path }}</v-list-item-subtitle>
-            <template #append>
-              <v-icon size="small" color="primary">play_arrow</v-icon>
-            </template>
-          </v-list-item>
+          <div role="group" :aria-label="t('commandPalette.recent')">
+            <v-list-subheader>{{ t('commandPalette.recent') }}</v-list-subheader>
+            <v-list-item
+              v-for="(inst, idx) in recentResults"
+              :key="`recent-${inst.path}`"
+              :active="selectedIndex === idx"
+              :data-palette-index="idx"
+              :aria-label="`${t('launch.launch')}: ${inst.name} (Minecraft ${inst.runtime.minecraft})`"
+              @click="launchInstance(inst)"
+              @mouseenter="selectedIndex = idx"
+            >
+              <template #prepend>
+                <v-avatar size="36" rounded="lg" class="palette-avatar">
+                  <v-img
+                    v-fallback-img="BuiltinImages.craftingTable"
+                    :src="getInstanceIcon(inst, undefined)"
+                  />
+                </v-avatar>
+              </template>
+              <v-list-item-title>{{ inst.name }}</v-list-item-title>
+              <v-list-item-subtitle>{{ inst.runtime.minecraft }} · {{ inst.path }}</v-list-item-subtitle>
+              <template #append>
+                <v-icon size="small" color="primary" aria-hidden="true">play_arrow</v-icon>
+              </template>
+            </v-list-item>
+          </div>
         </template>
 
         <template v-if="commandResults.length > 0">
-          <v-list-subheader>{{ t('commandPalette.commands') }}</v-list-subheader>
-          <v-list-item
-            v-for="(c, idx) in commandResults"
-            :key="c.id"
-            :active="selectedIndex === recentResults.length + idx"
-            :data-palette-index="recentResults.length + idx"
-            @click="invoke(c)"
-            @mouseenter="selectedIndex = recentResults.length + idx"
-          >
-            <template #prepend>
-              <div class="palette-cmd-icon">
-                <v-icon size="18">{{ c.ui?.icon || 'play_arrow' }}</v-icon>
-              </div>
-            </template>
-            <v-list-item-title>{{ c.title }}</v-list-item-title>
-            <v-list-item-subtitle>{{ c.id }}</v-list-item-subtitle>
-          </v-list-item>
+          <div role="group" :aria-label="t('commandPalette.commands')">
+            <v-list-subheader>{{ t('commandPalette.commands') }}</v-list-subheader>
+            <v-list-item
+              v-for="(c, idx) in commandResults"
+              :key="c.id"
+              :active="selectedIndex === recentResults.length + idx"
+              :data-palette-index="recentResults.length + idx"
+              @click="invoke(c)"
+              @mouseenter="selectedIndex = recentResults.length + idx"
+            >
+              <template #prepend>
+                <div class="palette-cmd-icon">
+                  <v-icon size="18">{{ c.ui?.icon || 'play_arrow' }}</v-icon>
+                </div>
+              </template>
+              <v-list-item-title>{{ c.title }}</v-list-item-title>
+              <v-list-item-subtitle>{{ c.id }}</v-list-item-subtitle>
+            </v-list-item>
+          </div>
         </template>
 
         <template v-if="settingsResults.length > 0">
+          <div role="group" :aria-label="t('setting.name', 2)">
           <v-list-subheader>{{ t('setting.name', 2) }}</v-list-subheader>
           <v-list-item
             v-for="(s, idx) in settingsResults"
@@ -149,6 +155,7 @@
               </span>
             </template>
           </v-list-item>
+          </div>
         </template>
 
         <template v-if="pendingSetting && pendingSetting.kind === 'select'">
@@ -176,37 +183,42 @@
         </template>
 
         <template v-if="instanceResults.length > 0">
-          <v-list-subheader>{{ t('commandPalette.instances') }}</v-list-subheader>
-          <v-list-item
-            v-for="(inst, idx) in instanceResults"
-            :key="inst.path"
-            :active="selectedIndex === recentResults.length + commandResults.length + settingsResults.length + idx"
-            :data-palette-index="recentResults.length + commandResults.length + settingsResults.length + idx"
-            @click="launchInstance(inst)"
-            @mouseenter="selectedIndex = recentResults.length + commandResults.length + settingsResults.length + idx"
-          >
-            <template #prepend>
-              <v-avatar size="36" rounded="lg" class="palette-avatar">
-                <v-img
-                  v-fallback-img="BuiltinImages.craftingTable"
-                  :src="getInstanceIcon(inst, undefined)"
-                />
-              </v-avatar>
-            </template>
-            <v-list-item-title>{{ inst.name }}</v-list-item-title>
-            <v-list-item-subtitle>{{ inst.runtime.minecraft }} · {{ inst.path }}</v-list-item-subtitle>
-            <template #append>
-              <v-icon
-                size="small"
-                :color="instanceActionColor"
-              >
-                {{ instanceActionIcon }}
-              </v-icon>
-            </template>
-          </v-list-item>
+          <div role="group" :aria-label="t('commandPalette.instances')">
+            <v-list-subheader>{{ t('commandPalette.instances') }}</v-list-subheader>
+            <v-list-item
+              v-for="(inst, idx) in instanceResults"
+              :key="inst.path"
+              :active="selectedIndex === recentResults.length + commandResults.length + settingsResults.length + idx"
+              :data-palette-index="recentResults.length + commandResults.length + settingsResults.length + idx"
+              :aria-label="`${instanceActionLabel}: ${inst.name} (Minecraft ${inst.runtime.minecraft})`"
+              @click="launchInstance(inst)"
+              @mouseenter="selectedIndex = recentResults.length + commandResults.length + settingsResults.length + idx"
+            >
+              <template #prepend>
+                <v-avatar size="36" rounded="lg" class="palette-avatar">
+                  <v-img
+                    v-fallback-img="BuiltinImages.craftingTable"
+                    :src="getInstanceIcon(inst, undefined)"
+                  />
+                </v-avatar>
+              </template>
+              <v-list-item-title>{{ inst.name }}</v-list-item-title>
+              <v-list-item-subtitle>{{ inst.runtime.minecraft }} · {{ inst.path }}</v-list-item-subtitle>
+              <template #append>
+                <v-icon
+                  size="small"
+                  :color="instanceActionColor"
+                  aria-hidden="true"
+                >
+                  {{ instanceActionIcon }}
+                </v-icon>
+              </template>
+            </v-list-item>
+          </div>
         </template>
 
         <template v-if="modrinthResults.length > 0">
+          <div role="group" :aria-label="t('commandPalette.modrinth')">
           <v-list-subheader>{{ t('commandPalette.modrinth') }}</v-list-subheader>
           <v-list-item
             v-for="(p, idx) in modrinthResults"
@@ -236,6 +248,7 @@
               </v-chip>
             </template>
           </v-list-item>
+          </div>
         </template>
 
         <v-list-item
@@ -596,6 +609,7 @@ function getProjectTypeLabel(type: string) {
 
 const instanceActionIcon = computed(() => pendingInstanceAction.value === 'instance.delete' ? 'delete' : 'play_arrow')
 const instanceActionColor = computed(() => pendingInstanceAction.value === 'instance.delete' ? 'error' : 'primary')
+const instanceActionLabel = computed(() => pendingInstanceAction.value === 'instance.delete' ? t('delete.yes') : t('launch.launch'))
 
 const isSelectedCommandMultiStep = computed(() => {
   if (pendingInstanceAction.value || pendingSettingId.value) return false

@@ -18,23 +18,45 @@
       dense
     />
     <div
+      v-roving-tabindex
       class="flex h-full flex-col transition-all duration-500 home-card rounded-lg"
       style="box-sizing: border-box"
     >
       <v-card-text class="flex flex-col gap-2 p-3 pt-2">
         <div class="flex gap-4 items-center">
-        <div class="tabs flex gap-4 items-center" :style="{ '--underline-left': underlineLeft + 'px', '--underline-width': underlineWidth + 'px' }">
-          <span ref="contentRef" @click="onSelectContent" class="cursor-pointer" :class="{ 'selected': selected === 0 }">
+        <div class="tabs flex gap-4 items-center" role="tablist" :style="{ '--underline-left': underlineLeft + 'px', '--underline-width': underlineWidth + 'px' }">
+          <span
+            ref="contentRef"
+            role="tab"
+            tabindex="0"
+            :aria-selected="selected === 0"
+            @click="onSelectContent"
+            @keydown.enter.prevent="onSelectContent"
+            @keydown.space.prevent="onSelectContent"
+            class="cursor-pointer"
+            :class="{ 'selected': selected === 0 }"
+          >
             {{ t('instance.contents') }}
           </span>
-          <span v-if="!!upstream" ref="newsRef" @click="onSelectUpdates" class="cursor-pointer" :class="{ 'selected': selected === 1 }">
+          <span
+            v-if="!!upstream"
+            ref="newsRef"
+            role="tab"
+            tabindex="0"
+            :aria-selected="selected === 1"
+            @click="onSelectUpdates"
+            @keydown.enter.prevent="onSelectUpdates"
+            @keydown.space.prevent="onSelectUpdates"
+            class="cursor-pointer"
+            :class="{ 'selected': selected === 1 }"
+          >
             {{ t('instance.updates') }}
           </span>
         </div>
           <div class="flex-grow" />
           <div class="controls" style="margin-right: 0.18rem">
-            <v-btn icon variant="text" density="comfortable" @click="onViewDashboard" size="small">
-              <v-icon size="20" class="rotate-[45deg]">
+            <v-btn icon variant="text" density="comfortable" :aria-label="t('setting.layout.default')" @click="onViewDashboard" size="small">
+              <v-icon size="20" class="rotate-[45deg]" aria-hidden="true">
                 unfold_more
               </v-icon>
             </v-btn>
@@ -82,6 +104,7 @@ import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { getModrinthVersionModel } from '@/composables/modrinthVersions'
 import { useSWRVModel } from '@/composables/swrv'
 import { useInFocusMode } from '@/composables/uiLayout'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { getCurseforgeFileGameVersions, getCursforgeFileModLoaders } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { useElementHover, useElementSize } from '@vueuse/core'

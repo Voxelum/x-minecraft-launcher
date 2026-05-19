@@ -1,5 +1,9 @@
 <template>
-  <div ref="anchor" class="market-text-field-with-menu flex flex-grow justify-end">
+  <div
+    ref="anchor"
+    class="market-text-field-with-menu flex flex-grow justify-end"
+    @keydown.tab.exact="onTabFromField"
+  >
     <MarketTextField
       ref="field"
       :clearable="!!curseforgeCategory || modrinthCategories.length > 0 || !!keyword"
@@ -22,6 +26,7 @@
       :close-on-content-click="false"
     >
       <v-card
+        ref="menuCard"
         class="overflow-auto max-h-[80vh] flex flex-col modern-filter-card"
         @mousedown.prevent
       >
@@ -50,6 +55,8 @@
               {{ t('modrinth.sort.title') }}
             </div>
             <v-btn-toggle
+              v-roving-tabindex
+              :aria-label="t('modrinth.sort.title')"
               :model-value="sort"
               mandatory
               density="compact"
@@ -77,6 +84,8 @@
             </div>
             <v-chip-group
               ref="chipGroup"
+              v-roving-tabindex
+              :aria-label="t('minecraftVersion.name')"
               v-model="gameVersionModel"
               density="compact"
               center-active
@@ -94,6 +103,8 @@
             </div>
             <v-btn-toggle
               v-if="modLoaders"
+              v-roving-tabindex
+              :aria-label="t('modrinth.modLoaders.name')"
               class="px-1"
               density="compact"
               divided
@@ -124,7 +135,13 @@
                   @update:model-value="emit('update:enableModrinth', !!$event)"
                 />
               </div>
-              <v-chip-group v-model="modrinthSelectModel" column multiple>
+              <v-chip-group
+                v-roving-tabindex="'vertical'"
+                :aria-label="t('modrinth.categories.name')"
+                v-model="modrinthSelectModel"
+                column
+                multiple
+              >
                 <ModrinthCategoryChip
                   v-for="tag in _modrinthCategories"
                   :key="tag.name"
@@ -136,6 +153,8 @@
                 {{ t('modrinth.environments.name') }}
               </div>
               <v-btn-toggle
+                v-roving-tabindex
+                :aria-label="t('modrinth.environments.name')"
                 background-color="transparent"
                 class="px-1"
                 variant="outlined"
@@ -182,7 +201,13 @@
                   @update:model-value="emit('update:enableCurseforge', !!$event)"
                 />
               </div>
-              <v-chip-group v-model="curseforgeSelectModel" column :disabled="!enableCurseforge">
+              <v-chip-group
+                v-roving-tabindex="'vertical'"
+                :aria-label="t('modrinth.categories.name')"
+                v-model="curseforgeSelectModel"
+                column
+                :disabled="!enableCurseforge"
+              >
                 <CurseforgeCategoryChip
                   v-for="c of curseforgeCategories"
                   :key="c.id"
@@ -197,6 +222,8 @@
               {{ t('modrinth.sort.title') }}
             </div>
             <v-btn-toggle
+              v-roving-tabindex
+              :aria-label="t('modrinth.sort.title')"
               background-color="transparent"
               density="compact"
               :rounded="10"
@@ -241,6 +268,7 @@ import { kModrinthTags } from '@/composables/modrinth'
 import { useSortByItems } from '@/composables/sortBy'
 import { useMinecraftVersions } from '@/composables/version'
 import { BuiltinImages } from '@/constant'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { useMagicKeys } from '@vueuse/core'
@@ -296,6 +324,32 @@ const emit = defineEmits<{
 const showMenu = ref(false)
 provide('focused', showMenu)
 const anchor = ref(null as any)
+const menuCard = ref(null as any)
+
+/**
+ * When focus is in the search input and the filter menu is open, intercept
+ * the next Tab and move focus into the menu instead of leaving the field
+ * for whatever comes next in the page. Makes the menu the next tab stop.
+ */
+function onTabFromField(e: KeyboardEvent) {
+  const target = e.target as HTMLElement | null
+  if (!target || target.tagName !== 'INPUT') return
+  if (!showMenu.value) return
+  const card = (menuCard.value as any)?.$el as HTMLElement | undefined
+  if (!card) return
+  const selector =
+    'button, a[href], [role="button"], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  const first = Array.from(card.querySelectorAll<HTMLElement>(selector)).find((el) => {
+    if (el.hasAttribute('disabled')) return false
+    if (el.getAttribute('aria-hidden') === 'true') return false
+    if (el.offsetParent === null && getComputedStyle(el).position !== 'fixed') return false
+    return true
+  })
+  if (first) {
+    e.preventDefault()
+    first.focus()
+  }
+}
 
 const { versions } = useMinecraftVersions()
 const tab = computed({
@@ -455,7 +509,10 @@ const onWheel = (e: WheelEvent) => {
   // to `scrollTo` (the documented public method) before invoking; without
   // this guard we throw "onAffixClick is not a function" thousands of
   // times in App Insights (issue #1430).
-  const group = chipGroup.value as { onAffixClick?: (dir: 'next' | 'prev') => void; scrollTo?: (dir: 'next' | 'prev') => void } | null
+  const group = chipGroup.value as {
+    onAffixClick?: (dir: 'next' | 'prev') => void
+    scrollTo?: (dir: 'next' | 'prev') => void
+  } | null
   const handler = group?.onAffixClick ?? group?.scrollTo
   if (typeof handler !== 'function') return
   handler.call(group, e.deltaY > 0 ? 'next' : 'prev')

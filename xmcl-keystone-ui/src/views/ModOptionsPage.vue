@@ -81,21 +81,28 @@
       :description="t(`modUpgradePolicy.${upgradePolicy}`)"
     >
       <template #action>
-        <v-btn-toggle density="compact" v-model="upgradePolicy" mandatory color="primary">
-          <v-btn value="modrinth" size="small" variant="text" border>
+        <v-btn-toggle
+          v-roving-tabindex
+          v-model="upgradePolicy"
+          :aria-label="t('modUpgradePolicy.name')"
+          density="compact"
+          mandatory
+          color="primary"
+        >
+          <v-btn v-shared-tooltip="'Modrinth > Curseforge'" value="modrinth" size="small" variant="text" border>
             <v-icon size="small">xmcl:modrinth</v-icon>
             <v-icon size="small">xmcl:curseforge</v-icon>
           </v-btn>
-          <v-btn value="curseforge" size="small" variant="text" border>
+          <v-btn v-shared-tooltip="'Curseforge > Modrinth'" value="curseforge" size="small" variant="text" border>
             <v-icon size="small">xmcl:curseforge</v-icon>
             <v-icon size="small">xmcl:modrinth</v-icon>
           </v-btn>
 
-          <v-btn value="modrinthOnly" size="small" variant="text" border>
+          <v-btn v-shared-tooltip="'Modrinth'" value="modrinthOnly" size="small" variant="text" border>
             <v-icon size="small">xmcl:modrinth</v-icon>
           </v-btn>
 
-          <v-btn value="curseforgeOnly" size="small" variant="text" border>
+          <v-btn v-shared-tooltip="'Curseforge'" value="curseforgeOnly" size="small" variant="text" border>
             <v-icon size="small">xmcl:curseforge</v-icon>
           </v-btn>
         </v-btn-toggle>
@@ -128,6 +135,7 @@
 <script setup lang="ts">
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModLibCleaner } from '@/composables/modLibCleaner'

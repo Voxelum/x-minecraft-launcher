@@ -1,5 +1,5 @@
 import { SharedTooltipData, pruneTooltipStack, useSharedTooltipData } from '@/composables/sharedTooltip'
-import { Directive, DirectiveBinding, markRaw } from 'vue'
+import { Directive, DirectiveBinding, EffectScope, effectScope, markRaw, watchEffect } from 'vue'
 
 export type VSharedTooltipParam = {
   text?: string
@@ -19,10 +19,14 @@ interface AttachedListeners {
 
 const LISTENERS_KEY = Symbol('vSharedTooltip.listeners')
 const BINDING_KEY = Symbol('vSharedTooltip.binding')
+const ARIA_OWNED_KEY = Symbol('vSharedTooltip.ariaOwned')
+const ARIA_SCOPE_KEY = Symbol('vSharedTooltip.ariaScope')
 
 type AttachedEl = HTMLElement & {
   [LISTENERS_KEY]?: AttachedListeners
   [BINDING_KEY]?: DirectiveBinding<((v?: any) => VSharedTooltipParam) | VSharedTooltipParam | undefined>
+  [ARIA_OWNED_KEY]?: boolean
+  [ARIA_SCOPE_KEY]?: EffectScope
 }
 
 function removeFromStack(el: HTMLElement) {
@@ -155,16 +159,86 @@ function unbind(el: AttachedEl) {
   // FunctionDirective had no unmount hook at all — that was the leak).
   removeFromStack(el)
   setValue(stack.value.length > 0)
+  if (el[ARIA_SCOPE_KEY]) {
+    el[ARIA_SCOPE_KEY]!.stop()
+    delete el[ARIA_SCOPE_KEY]
+  }
+  if (el[ARIA_OWNED_KEY]) {
+    el.removeAttribute('aria-label')
+    delete el[ARIA_OWNED_KEY]
+  }
+}
+
+/**
+ * Mirror the tooltip's text into `aria-label` so screen readers receive the
+ * same hint sighted users get on hover. Skipped when:
+ *  - the element already has an `aria-label` we did NOT set, or
+ *  - the element has `aria-labelledby` (something else names it), or
+ *  - we cannot derive a single readable string from the binding.
+ */
+function applyAriaLabel(
+  el: AttachedEl,
+  bindings: DirectiveBinding<((v?: any) => VSharedTooltipParam) | VSharedTooltipParam | undefined>,
+) {
+  if (el.hasAttribute('aria-labelledby')) return
+  if (el.hasAttribute('aria-label') && !el[ARIA_OWNED_KEY]) return
+
+  let raw: VSharedTooltipParam | undefined
+  try {
+    const val = bindings.value
+    if (typeof val === 'function') raw = val()
+    else raw = val
+  } catch {
+    raw = undefined
+  }
+  if (raw === undefined || raw === null) return
+
+  let text = ''
+  if (typeof raw === 'string') {
+    text = raw
+  } else if (typeof raw === 'object') {
+    if (raw.text) text = raw.text
+    else if (raw.list && raw.list.length) text = raw.list.join(', ')
+    else if (raw.items && raw.items.length) text = raw.items.map((i) => i.text).join(', ')
+  }
+  if (!text) return
+
+  el.setAttribute('aria-label', text)
+  el[ARIA_OWNED_KEY] = true
+}
+
+/**
+ * Run `applyAriaLabel` inside a reactive effect so the rendered `aria-label`
+ * tracks whatever the binding function reads — most importantly the i18n
+ * `locale` ref, so the label refreshes when the user switches language
+ * without needing the parent component to re-render.
+ */
+function scheduleAriaLabel(el: AttachedEl) {
+  // Re-create the scope so it re-evaluates against the latest binding.
+  if (el[ARIA_SCOPE_KEY]) {
+    el[ARIA_SCOPE_KEY]!.stop()
+  }
+  const scope = effectScope()
+  scope.run(() => {
+    watchEffect(() => {
+      const bindings = el[BINDING_KEY]
+      if (!bindings) return
+      applyAriaLabel(el, bindings)
+    })
+  })
+  el[ARIA_SCOPE_KEY] = scope
 }
 
 export const vSharedTooltip: Directive<HTMLElement, ((v?: any) => VSharedTooltipParam) | VSharedTooltipParam | undefined> = {
   mounted(el, bindings) {
     bind(el as AttachedEl, bindings)
+    scheduleAriaLabel(el as AttachedEl)
   },
   updated(el, bindings) {
     // Refresh the cached binding so dynamic tooltip content is picked up
     // on the next mouseenter without rewiring listeners.
     ;(el as AttachedEl)[BINDING_KEY] = bindings
+    scheduleAriaLabel(el as AttachedEl)
   },
   beforeUnmount(el) {
     unbind(el as AttachedEl)
