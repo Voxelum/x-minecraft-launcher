@@ -214,6 +214,15 @@ errors:
   DownloadFileSystemError: >-
     Error during accessing the download file path. Please ensure the launcher has permission to write on it.
   HeadersTimeoutError: HTTP Header timeout
+  InstallInstructionFailed:
+    title: Failed to install Minecraft files
+    body: '{name}: {message}'
+  InstallNetworkError:
+    title: Cannot download Minecraft files
+    body: A network problem interrupted the install. Check your internet connection or proxy and try again.
+  InstallPermissionDenied:
+    title: Cannot write to the launcher folder
+    body: An anti-virus tool or restricted folder permissions blocked the install. Add the launcher to your AV exclusion list, or pick a different data root in the launcher settings.
   NotFoundError: 404 Not Found
   SocketError: Server socket error
 eula:

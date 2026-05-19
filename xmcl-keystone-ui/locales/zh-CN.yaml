@@ -216,6 +216,15 @@ errors:
   DownloadAggregateError: 下载文件失败。
   DownloadFileSystemError: 无法访问下载目标路径，请确认启动器有权写入目标路径。
   HeadersTimeoutError: 等待 HTTP 头信息超时
+  InstallInstructionFailed:
+    title: Minecraft 文件安装失败
+    body: '{name}: {message}'
+  InstallNetworkError:
+    title: 无法下载 Minecraft 文件
+    body: 网络问题中断了安装，请检查您的网络或代理后重试。
+  InstallPermissionDenied:
+    title: 无法写入启动器目录
+    body: 杀毒软件或目录权限阻止了安装。请将启动器加入杀毒软件白名单，或在设置中选择其他数据目录。
   NotFoundError: 404 未找到资源
   SocketError: 服务器连接断开
 eula:

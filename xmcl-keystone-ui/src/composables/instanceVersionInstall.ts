@@ -370,6 +370,7 @@ export function useInstanceVersionInstallInstruction(
   const { resolveLocalVersion } = useService(VersionServiceKey)
   const { installJava } = useService(JavaServiceKey)
   const { notify } = useNotifier()
+  const { t } = useI18n()
 
   const { install, installServer } = useInstanceVersionInstall(
     versions,
@@ -648,21 +649,51 @@ export function useInstanceVersionInstallInstruction(
       }
     } catch (e) {
       const err = e as Error
-      if (err.name) {
+      const code = (typeof e === 'object' && e && 'code' in e && typeof e.code === 'string') ? e.code : undefined
+      const isPermissionError = code === 'EPERM' || code === 'EACCES'
+      const isDiskFull = code === 'ENOSPC'
+      const isNetworkError = err?.name === 'DownloadAggregateError' || err?.name === 'ConnectTimeoutError' ||
+        err?.name === 'BodyTimeoutError' || err?.name === 'HeadersTimeoutError' ||
+        err?.name === 'SocketError' || err?.name === 'DNSNotFoundError' ||
+        (err?.message?.includes('fetch failed') ?? false)
+
+      // Only report unknown failures to telemetry. Environment errors
+      // (anti-virus, disk full, broken network) are not bugs and otherwise
+      // generate per-user storms - the user already gets a clear toast below.
+      if (err.name && !isPermissionError && !isDiskFull && !isNetworkError) {
         if (err.name === 'Error') {
           err.name = 'InstallInstallInstructionError'
         }
         appInsights.trackException({ exception: err })
       }
 
-      if (typeof e === 'object' && e && 'code' in e && typeof e.code === 'string') {
-        if (e.code === 'EPERM') {
-          notify({
-            title: 'Permission Denied',
-            body: 'You do not have permission to download. Please ensure there is no anti-virus software blocking the launcher.',
-            level: 'error',
-          })
-        }
+      // Always tell the user *something* went wrong. Previously only EPERM
+      // produced a (hard-coded English) notification; every other install
+      // failure was silently swallowed and the user just saw the install
+      // button keep failing with no explanation.
+      if (isPermissionError) {
+        notify({
+          title: t('errors.InstallPermissionDenied.title'),
+          body: t('errors.InstallPermissionDenied.body'),
+          level: 'error',
+        })
+      } else if (isDiskFull) {
+        notify({
+          title: t('errors.DiskIsFull'),
+          level: 'error',
+        })
+      } else if (isNetworkError) {
+        notify({
+          title: t('errors.InstallNetworkError.title'),
+          body: t('errors.InstallNetworkError.body'),
+          level: 'error',
+        })
+      } else {
+        notify({
+          title: t('errors.InstallInstructionFailed.title'),
+          body: t('errors.InstallInstructionFailed.body', { name: err?.name ?? 'Error', message: err?.message ?? '' }),
+          level: 'error',
+        })
       }
     }
   }
