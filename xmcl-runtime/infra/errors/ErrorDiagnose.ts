@@ -83,6 +83,32 @@ export class ErrorDiagnose {
     if (e instanceof TypeError && (e as any).code === 'ERR_INVALID_STATE') {
       return true
     }
+    // ---- Expected user-state failures (Runbook section 0: should be ----
+    // `Exception` rather than `Error`). They tell us about user/environment
+    // state, not a defect, so they must not pollute trackException.
+
+    // User closed the browser / window before completing OAuth, or the auth
+    // server simply never returned a code in time.
+    if (e.name === 'AuthCodeTimeoutError') {
+      return true
+    }
+    // Friends panel polled while the user is signed out or the cached token
+    // already expired. Expected, not a bug.
+    if (e.name === 'UserAuthenticationError') {
+      return true
+    }
+    // Mojang Friends API rate-limited us (HTTP 429). The service already
+    // backs off via the cache cooldown; reporting every 429 only generates
+    // a per-user storm of identical exceptions.
+    if (e.name === 'MojangFriendsError' && /\b429\b/.test(e.message)) {
+      return true
+    }
+    // Silent token refresh is *expected* to fail when the refresh token is
+    // expired / revoked — the launcher then falls back to an interactive
+    // login. The user sees the right thing; telemetry should not.
+    if (e.name === 'MicrosoftOAuthSlientFailed') {
+      return true
+    }
     return false
   }
 }
