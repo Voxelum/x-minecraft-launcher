@@ -21,7 +21,7 @@ import { LaunchService } from '~/launch'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { VersionService } from '~/launch'
 import { LauncherApp } from '../app/LauncherApp'
-import { copyPassively } from '../util/fs'
+import { copyPassively, isPathDiskRootPath } from '../util/fs'
 import { uploadSSH } from './utils/uploadSSH'
 
 @ExposeServiceKey(InstanceIOServiceKey)
@@ -92,6 +92,13 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   }
 
   async parseLauncherData(path: string, type?: InstanceType): Promise<ThirdPartyLauncherManifest> {
+    // Refuse drive-root paths up front. The recursive scanners below would
+    // otherwise descend into kernel-locked Windows entries (pagefile.sys,
+    // System Volume Information, …) and surface noisy EBUSY exceptions
+    // during the first-launch migrate wizard.
+    if (isPathDiskRootPath(path)) {
+      throw new AnyError('BadInstance', `Refusing to scan drive root: ${path}`, undefined, { path })
+    }
     try {
       const result = await parseLauncherData(path, type === 'prism' ? 'mmc' : type)
       return result

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isSpecialFile } from './files_discovery'
+import { isSpecialFile, isWindowsReservedName } from './files_discovery'
 
 describe('Instance Discovery Utilities', () => {
   describe('isSpecialFile', () => {
@@ -29,6 +29,39 @@ describe('Instance Discovery Utilities', () => {
       expect(isSpecialFile('/')).toBe(false)
       expect(isSpecialFile('logs')).toBe(false) // Directory, not file
       expect(isSpecialFile('logs/')).toBe(false) // Directory, not file
+    })
+  })
+
+  describe('isWindowsReservedName', () => {
+    it('matches the kernel-locked drive-root files', () => {
+      expect(isWindowsReservedName('pagefile.sys')).toBe(true)
+      expect(isWindowsReservedName('hiberfil.sys')).toBe(true)
+      expect(isWindowsReservedName('swapfile.sys')).toBe(true)
+      expect(isWindowsReservedName('DumpStack.log')).toBe(true)
+      expect(isWindowsReservedName('DumpStack.log.tmp')).toBe(true)
+    })
+
+    it('matches Windows special directories', () => {
+      expect(isWindowsReservedName('System Volume Information')).toBe(true)
+      expect(isWindowsReservedName('$RECYCLE.BIN')).toBe(true)
+      expect(isWindowsReservedName('$WinREAgent')).toBe(true)
+      expect(isWindowsReservedName('$SysReset')).toBe(true)
+      expect(isWindowsReservedName('$GetCurrent')).toBe(true)
+    })
+
+    it('is case-insensitive and works on absolute paths', () => {
+      expect(isWindowsReservedName('PAGEFILE.SYS')).toBe(true)
+      expect(isWindowsReservedName('D:\\pagefile.sys')).toBe(true)
+      expect(isWindowsReservedName('/mnt/d/pagefile.sys')).toBe(true)
+      expect(isWindowsReservedName('C:\\System Volume Information')).toBe(true)
+    })
+
+    it('does not match regular Minecraft files or look-alikes', () => {
+      expect(isWindowsReservedName('mods/test-mod.jar')).toBe(false)
+      expect(isWindowsReservedName('saves/world1/level.dat')).toBe(false)
+      expect(isWindowsReservedName('pagefile.sys.bak')).toBe(false)
+      expect(isWindowsReservedName('mypagefile.sys')).toBe(false)
+      expect(isWindowsReservedName('')).toBe(false)
     })
   })
 })

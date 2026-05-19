@@ -1,6 +1,7 @@
 import { checksum } from '@xmcl/core'
 import { isFileNoFound } from '@xmcl/runtime-api'
 import { AnyError, isSystemError } from '@xmcl/utils'
+import { isWindowsReservedName } from '@xmcl/instance'
 import { createHash } from 'crypto'
 import { constants, existsSync } from 'fs'
 import { access, close, copyFile, ensureDir, ensureFile, link, open, read, readdir, stat, symlink, unlink } from 'fs-extra'
@@ -60,6 +61,10 @@ export function validateSha256(path: string, sha256: string) {
  * This copy will not replace existed files.
  */
 export async function copyPassively(src: string, dest: string, filter: (name: string) => boolean = () => true) {
+  // Skip Windows reserved entries (pagefile.sys, System Volume Information, …).
+  // These are kernel-locked and only ever reachable when src walks a drive
+  // root — copying them is never the user's intent.
+  if (isWindowsReservedName(src)) { return }
   const s = await stat(src).catch(() => { })
   if (!s) { return }
   if (!filter(src)) { return }

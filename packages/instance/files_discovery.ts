@@ -4,6 +4,38 @@ import { InstanceFile } from './files'
 import type { ChecksumWorker, Logger, ResourceManager } from './internal_type'
 
 /**
+ * Windows reserved files / directories that live at a drive root and either
+ * cannot be read at all (kernel-locked) or have no business being copied into
+ * a Minecraft instance. Match is case-insensitive on basename.
+ *
+ * See issue: lstat 'D:\pagefile.sys' EBUSY surfaced via the migrate wizard
+ * when a new user picks a drive root as the source path.
+ */
+const WINDOWS_RESERVED_NAMES = new Set([
+  'pagefile.sys',
+  'hiberfil.sys',
+  'swapfile.sys',
+  'dumpstack.log',
+  'dumpstack.log.tmp',
+  'system volume information',
+  '$recycle.bin',
+  '$winreagent',
+  '$sysreset',
+  '$getcurrent',
+])
+
+export function isWindowsReservedName(name: string): boolean {
+  if (!name) return false
+  // Handle both separators directly so the check works the same on POSIX hosts
+  // (CI / Linux dev) and Windows. path.basename() in cross-platform code only
+  // strips the separator of the *current* platform.
+  const slash = name.lastIndexOf('/')
+  const back = name.lastIndexOf('\\')
+  const base = name.slice(Math.max(slash, back) + 1)
+  return WINDOWS_RESERVED_NAMES.has(base.toLowerCase())
+}
+
+/**
  * Resource metadata interface
  */
 export interface ResourceLike {
@@ -36,6 +68,13 @@ export async function getInstanceFiles(
   const files: Array<[InstanceFile, Stats]> = []
 
   const scan = async (dirOrFile: string) => {
+    // Skip Windows-reserved entries (pagefile.sys, System Volume Information, …).
+    // These appear when an instance path resolves to a drive root, are usually
+    // kernel-locked (EBUSY on lstat) and never contain Minecraft data.
+    if (isWindowsReservedName(dirOrFile)) {
+      return
+    }
+
     let stats: Stats
     try {
       stats = await stat(dirOrFile)
