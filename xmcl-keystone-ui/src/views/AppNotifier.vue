@@ -27,9 +27,15 @@
       <div class="min-w-0 flex-1">
         <div
           v-if="data.title"
-          class="text-sm font-medium leading-snug"
+          class="flex items-center gap-2 text-sm font-medium leading-snug"
         >
-          {{ data.title }}
+          <span class="min-w-0 truncate">{{ data.title }}</span>
+          <span
+            v-if="displayedCount > 1"
+            class="count-badge flex-shrink-0 rounded px-1.5 py-0.5 text-xs font-semibold opacity-80"
+          >
+            × {{ displayedCount }}
+          </span>
         </div>
         <div
           v-if="data.body"
@@ -78,7 +84,7 @@
 
 <script lang="ts" setup>
 import { vSharedTooltip } from '@/directives/sharedTooltip'
-import { Level, kNotificationQueue } from '../composables/notifier'
+import { Level, LocalNotification, kNotificationQueue } from '../composables/notifier'
 import { injection } from '@/util/inject'
 
 const data = reactive({
@@ -96,22 +102,43 @@ const data = reactive({
 })
 const queue = injection(kNotificationQueue)
 const queueLength = computed(() => queue.value.length)
-const close = () => { data.show = false }
+const close = () => {
+  data.show = false
+  // Drop the currently-shown entry from the queue. Without this the watcher
+  // below would immediately re-show the same notification.
+  if (currentRef.value) {
+    const idx = queue.value.indexOf(currentRef.value)
+    if (idx >= 0) queue.value.splice(idx, 1)
+    currentRef.value = null
+  }
+}
 const more = () => {
   if (data.more) {
     data.more()
     close()
   }
 }
+
+// Reference to the notification object currently being shown. Held so that
+// (a) new duplicates can merge into its `count` while it is still visible and
+// (b) `close()` can remove it from the queue.
+const currentRef = shallowRef<LocalNotification | null>(null)
+// Live count from the underlying queue entry — updates reactively when the
+// notifier merges more duplicates into the same record while the toast is up.
+const displayedCount = computed(() => currentRef.value?.count ?? 1)
+
 function consume() {
-  const not = queue.value.pop()
-  if (not) {
-    data.level = not.level ?? ''
-    data.title = not.title
+  // Show the most recently added notification (LIFO) but keep it in the queue
+  // until the user dismisses it, so further duplicates can merge in.
+  const last = queue.value[queue.value.length - 1]
+  if (last) {
+    currentRef.value = last
+    data.level = last.level ?? ''
+    data.title = last.title
     data.show = true
-    data.more = not.more
-    data.body = not.body ?? ''
-    data.operations = not.operations ?? []
+    data.more = last.more
+    data.body = last.body ?? ''
+    data.operations = last.operations ?? []
   }
 }
 watch(queueLength, (newLength, oldLength) => {
@@ -156,5 +183,9 @@ const surfaceColor = computed(() => 'surface')
 
 .app-notifier :deep(.v-snackbar__content) {
   padding: 12px 14px;
+}
+
+.count-badge {
+  background: rgba(var(--v-theme-on-surface), 0.08);
 }
 </style>
