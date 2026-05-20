@@ -322,7 +322,10 @@ class JSZipFileSystem extends FileSystem {
     return this.isDirectory(name)
   }
 
-  readFile(name: any, encoding?: any): Promise<any> {
+  readFile(name: string, encoding: 'utf-8' | 'base64'): Promise<string>
+  readFile(name: string, encoding: undefined): Promise<Uint8Array>
+  readFile(name: string): Promise<Uint8Array>
+  readFile(name: string, encoding?: 'utf-8' | 'base64'): Promise<Uint8Array | string> {
     name = this.normalizePath(name)
     if (!this.zip.files[name]) {
       return Promise.reject(new Error(`Not found file named ${name}`))
@@ -383,8 +386,7 @@ class JSZipFileSystem extends FileSystem {
   }
 
   async walkFiles(startingDir: string, walker: (path: string) => void | Promise<void>) {
-    startingDir = this.normalizePath(startingDir)
-    const root = startingDir.startsWith('/') ? startingDir.substring(1) : startingDir
+    const root = this.normalizePath(startingDir)
     for (const child of Object.keys(this.zip.files).filter((e) => e.startsWith(root))) {
       if (child.endsWith('/')) {
         continue
