@@ -26,6 +26,10 @@ async function openJSZipFileSystem(data: Buffer | Uint8Array): Promise<FileSyste
   return new JSZipFileSystem(zip)
 }
 
+function isMultiDiskZipError(e: any): boolean {
+  return !!(e.message && e.message.startsWith('multi-disk zip files are not supported'))
+}
+
 export async function openFileSystem(basePath: string | Uint8Array): Promise<FileSystem> {
   if (typeof basePath === 'string') {
     const fstat = await stat(basePath)
@@ -54,7 +58,7 @@ export async function openFileSystem(basePath: string | Uint8Array): Promise<Fil
         }
         return new NodeZipFileSystem(basePath, zip, entriesRecord)
       } catch (e: any) {
-        if (e.message && e.message.startsWith('multi-disk zip files are not supported')) {
+        if (isMultiDiskZipError(e)) {
           // PackSquash and some other tools produce ZIP64 files that yauzl rejects as
           // "multi-disk". Fall back to JSZip which handles them correctly.
           const buf = await readFile(basePath)
@@ -73,7 +77,7 @@ export async function openFileSystem(basePath: string | Uint8Array): Promise<Fil
       }
       return new NodeZipFileSystem('', zip, entriesRecord)
     } catch (e: any) {
-      if (e.message && e.message.startsWith('multi-disk zip files are not supported')) {
+      if (isMultiDiskZipError(e)) {
         return openJSZipFileSystem(Buffer.from(basePath))
       }
       throw e
@@ -320,6 +324,9 @@ class JSZipFileSystem extends FileSystem {
 
   readFile(name: any, encoding?: any): Promise<any> {
     name = this.normalizePath(name)
+    if (!this.zip.files[name]) {
+      return Promise.reject(new Error(`Not found file named ${name}`))
+    }
     if (!encoding) {
       return this.zip.files[name].async('uint8array')
     }
