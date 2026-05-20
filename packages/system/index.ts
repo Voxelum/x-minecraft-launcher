@@ -13,6 +13,7 @@ import { promisify } from 'util'
 import { join, sep } from 'path'
 import { FileSystem } from './system'
 import { ZipFile, Entry } from 'yauzl'
+import JSZip from 'jszip'
 
 const access = promisify(saccess)
 const stat = promisify(sstat)
@@ -20,41 +21,63 @@ const writeFile = promisify(swriteFile)
 const readFile = promisify(sreadFile)
 const readdir = promisify(sreaddir)
 
+async function openJSZipFileSystem(data: Buffer | Uint8Array): Promise<FileSystem> {
+  const zip = await JSZip.loadAsync(data)
+  return new JSZipFileSystem(zip)
+}
+
 export async function openFileSystem(basePath: string | Uint8Array): Promise<FileSystem> {
   if (typeof basePath === 'string') {
     const fstat = await stat(basePath)
     if (fstat.isDirectory()) {
       return new NodeFileSystem(basePath)
     } else {
-      const zip = await open(basePath)
-      Object.assign(zip, {
-        validateFileName: (e: Entry) => {
-          const fileName = e.fileName
-          if (/^[a-zA-Z]:/.test(fileName) || fileName.startsWith('/')) {
-            // absolute path convert to relative path
-            e.fileName = fileName.replace(/^[a-zA-Z]:/, '').replace(/^\//, '')
-          }
-          return null
-        },
-      })
-      const entries = await readAllEntries(zip).then((es) =>
-        // ignore entries with '..' in the path
-        es.filter((e) => e.fileName.split('/').indexOf('..') === -1),
-      )
+      try {
+        const zip = await open(basePath)
+        Object.assign(zip, {
+          validateFileName: (e: Entry) => {
+            const fileName = e.fileName
+            if (/^[a-zA-Z]:/.test(fileName) || fileName.startsWith('/')) {
+              // absolute path convert to relative path
+              e.fileName = fileName.replace(/^[a-zA-Z]:/, '').replace(/^\//, '')
+            }
+            return null
+          },
+        })
+        const entries = await readAllEntries(zip).then((es) =>
+          // ignore entries with '..' in the path
+          es.filter((e) => e.fileName.split('/').indexOf('..') === -1),
+        )
+        const entriesRecord: Record<string, Entry> = {}
+        for (const entry of entries) {
+          entriesRecord[entry.fileName] = entry
+        }
+        return new NodeZipFileSystem(basePath, zip, entriesRecord)
+      } catch (e: any) {
+        if (e.message && e.message.startsWith('multi-disk zip files are not supported')) {
+          // PackSquash and some other tools produce ZIP64 files that yauzl rejects as
+          // "multi-disk". Fall back to JSZip which handles them correctly.
+          const buf = await readFile(basePath)
+          return openJSZipFileSystem(buf)
+        }
+        throw e
+      }
+    }
+  } else {
+    try {
+      const zip = await open(basePath as unknown as Buffer)
+      const entries = await readAllEntries(zip)
       const entriesRecord: Record<string, Entry> = {}
       for (const entry of entries) {
         entriesRecord[entry.fileName] = entry
       }
-      return new NodeZipFileSystem(basePath, zip, entriesRecord)
+      return new NodeZipFileSystem('', zip, entriesRecord)
+    } catch (e: any) {
+      if (e.message && e.message.startsWith('multi-disk zip files are not supported')) {
+        return openJSZipFileSystem(Buffer.from(basePath))
+      }
+      throw e
     }
-  } else {
-    const zip = await open(basePath as unknown as Buffer)
-    const entries = await readAllEntries(zip)
-    const entriesRecord: Record<string, Entry> = {}
-    for (const entry of entries) {
-      entriesRecord[entry.fileName] = entry
-    }
-    return new NodeZipFileSystem('', zip, entriesRecord)
   }
 }
 export function resolveFileSystem(base: string | Uint8Array | FileSystem): Promise<FileSystem> {
@@ -246,6 +269,132 @@ class NodeZipFileSystem extends FileSystem {
         await result
       }
     }
+  }
+}
+
+class JSZipFileSystem extends FileSystem {
+  sep = '/'
+  type: 'zip' | 'path' = 'zip'
+  writeable = false
+
+  private zipRoot = ''
+
+  protected normalizePath(path: string): string {
+    if (path.startsWith('/')) {
+      path = path.substring(1)
+    }
+    if (this.zipRoot !== '') {
+      path = [this.zipRoot, path].join('/')
+    }
+    return path
+  }
+
+  join(...paths: string[]): string {
+    return paths.join('/')
+  }
+
+  get root() {
+    return this.zipRoot
+  }
+
+  isDirectory(name: string): Promise<boolean> {
+    name = this.normalizePath(name)
+    if (name === '') {
+      return Promise.resolve(true)
+    }
+    name = name.endsWith('/') ? name : name + '/'
+    return Promise.resolve(Object.keys(this.zip.files).some((e) => e.startsWith(name)))
+  }
+
+  writeFile(_name: string, _data: Uint8Array): Promise<void> {
+    return Promise.reject(new Error('Read-only filesystem'))
+  }
+
+  existsFile(name: string): Promise<boolean> {
+    name = this.normalizePath(name)
+    if (this.zip.files[name] !== undefined) {
+      return Promise.resolve(true)
+    }
+    return this.isDirectory(name)
+  }
+
+  readFile(name: any, encoding?: any): Promise<any> {
+    name = this.normalizePath(name)
+    if (!encoding) {
+      return this.zip.files[name].async('uint8array')
+    }
+    if (encoding === 'utf-8') {
+      return this.zip.files[name].async('text')
+    }
+    if (encoding === 'base64') {
+      return this.zip.files[name].async('base64')
+    }
+    throw new TypeError(`Expect encoding to be utf-8/base64 or empty. Got ${encoding}.`)
+  }
+
+  async listFiles(name: string): Promise<string[]> {
+    if (!(await this.isDirectory(name))) {
+      return Promise.reject(new TypeError('Require a directory!'))
+    }
+    name = this.normalizePath(name)
+    return Promise.resolve(
+      [
+        ...new Set(
+          Object.keys(this.zip.files)
+            .filter((e) => e.startsWith(name))
+            .map((e) => e.substring(name.length))
+            .map((e) => (e.startsWith('/') ? e.substring(1) : e))
+            .map((e) => e.split('/')[0]),
+        ),
+      ].filter(Boolean),
+    )
+  }
+
+  cd(name: string): void {
+    if (name.startsWith('/')) {
+      this.zipRoot = name.substring(1)
+      return
+    }
+    const paths = name.split('/')
+    for (const path of paths) {
+      if (path === '.') {
+        continue
+      } else if (path === '..') {
+        const sub = this.zipRoot.split('/')
+        if (sub.length > 0) {
+          sub.pop()
+          this.zipRoot = sub.join('/')
+        }
+      } else {
+        if (this.zipRoot === '') {
+          this.zipRoot = path
+        } else {
+          this.zipRoot += `/${path}`
+        }
+      }
+    }
+  }
+
+  async walkFiles(startingDir: string, walker: (path: string) => void | Promise<void>) {
+    startingDir = this.normalizePath(startingDir)
+    const root = startingDir.startsWith('/') ? startingDir.substring(1) : startingDir
+    for (const child of Object.keys(this.zip.files).filter((e) => e.startsWith(root))) {
+      if (child.endsWith('/')) {
+        continue
+      }
+      const result = walker(child)
+      if (result instanceof Promise) {
+        await result
+      }
+    }
+  }
+
+  close(): void {
+    // JSZip does not need explicit close
+  }
+
+  constructor(private zip: JSZip) {
+    super()
   }
 }
 

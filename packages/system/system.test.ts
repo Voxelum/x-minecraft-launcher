@@ -128,7 +128,7 @@ describe('FileSystem', () => {
       await fs.walkFiles('/', (path) => {
         paths.push(path)
       })
-      expect(paths).toHaveLength(5)
+      expect(paths).toHaveLength(6)
     })
     test('should walk every files in zip', async ({ mock: mockRoot }) => {
       const fs = await openFileSystem(join(mockRoot, 'resourcepacks', '1.14.4.zip'))
@@ -175,6 +175,15 @@ describe('FileSystem', () => {
     test('should identify wrong nested file', async ({ mock: mockRoot }) => {
       const fs = await openFileSystem(join(mockRoot, 'resourcepacks', '1.14.4.zip'))
       await expect(fs.isDirectory('assets/.mcassetsrootxxx')).resolves.toBeFalsy()
+    })
+  })
+  describe('PackSquash format', () => {
+    test('should open a PackSquash-style ZIP (multi-disk quirk) and read pack.mcmeta', async ({ mock: mockRoot }) => {
+      const fs = await openFileSystem(join(mockRoot, 'resourcepacks', 'sample-pack-squash.zip'))
+      await expect(fs.existsFile('pack.mcmeta')).resolves.toBeTruthy()
+      const content = await fs.readFile('pack.mcmeta', 'utf-8')
+      const parsed = JSON.parse(content)
+      expect(parsed.pack.pack_format).toEqual(15)
     })
   })
 })
