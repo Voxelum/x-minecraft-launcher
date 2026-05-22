@@ -5,7 +5,17 @@ import {
   SqliteWASMDialectDatabaseConfig,
   SqliteWASMDialectWorkerConfig,
 } from './SqliteWASMDialectConfig'
-import { existsSync, rmSync } from 'fs'
+import { existsSync, renameSync, rmSync } from 'fs'
+
+// Messages that indicate the on-disk database file is unrecoverable and
+// will keep producing the same SQLite3Error for every subsequent query.
+// Reopening the same file does not help: we must move the file aside so
+// `database()` creates a fresh one. See issue #1429.
+const CORRUPT_MESSAGES = [
+  'database disk image is malformed',
+  'file is not a database',
+  'file is encrypted or is not a database',
+]
 
 declare module 'node-sqlite3-wasm' {
   interface Statement {
@@ -110,6 +120,46 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
             if (e instanceof SQLite3Error) {
               e.isDisposed = true
             }
+          } else if (CORRUPT_MESSAGES.includes(e.message)) {
+            // The file itself is corrupt. Reopening the same file would
+            // just produce the same error on every query — flood that
+            // turned the original "Database already closed" fix from
+            // #1429 into the 0.56.4 "disk image is malformed" storm
+            // (~1860 events/user). Move the bad file aside, open a
+            // fresh one, and let the higher-level retry loop in
+            // `pluginResourceWorker` re-run migrations on next launch.
+            try {
+              this.#db?.close()
+            } catch {}
+            try {
+              if (this.#config.databasePath && existsSync(this.#config.databasePath)) {
+                const bk = `${this.#config.databasePath}.corrupt.${Date.now()}.bk`
+                renameSync(this.#config.databasePath, bk)
+              }
+            } catch {}
+            try {
+              this.#db = this.#config.database()
+            } catch {
+              // Best-effort: if we can't even open a fresh handle,
+              // leave the existing one in place. Subsequent errors
+              // will still be flagged isDisposed below.
+            }
+            if (e instanceof SQLite3Error) {
+              e.isDisposed = true
+            }
+            // Surface to the consumer exactly once so it can mark the
+            // database as not-ready / show a "please restart" hint.
+            this.#config.onError?.(e)
+          } else if (e.message.startsWith('no such table')) {
+            // Schema isn't present — either the migration never ran on
+            // this file or it ran on a sibling that's since been
+            // swapped out. Don't retry: just flag the error so the
+            // telemetry sink suppresses the per-query repeat, and let
+            // the consumer notice via `databaseReadySet(false)`.
+            if (e instanceof SQLite3Error) {
+              e.isDisposed = true
+            }
+            this.#config.onError?.(e)
           } else {
             this.#config.onError?.(e)
           }
