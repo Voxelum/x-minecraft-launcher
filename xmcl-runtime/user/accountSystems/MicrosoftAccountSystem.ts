@@ -191,6 +191,17 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       // it as expected/transient so it doesn't pollute telemetry.
       if (e instanceof MicrosoftMinecraftXboxLoginError && e.retryable) return true
       if (typeof e?.message === 'string' && /status code: (?:408|429)/.test(e.message)) return true
+      // OAuth-layer error codes returned by MSAL / the Microsoft
+      // identity platform itself (not XBox XErr). `access_denied` =
+      // user denied consent; `server_error` / `invalid_request` /
+      // `consent_required` / `interaction_required` /
+      // `login_required` / `user_cancelled` = transient or user-driven.
+      // Telemetry showed 34 ev / 29 users in 0.56.4 even after #1445
+      // shipped the XErr mapping. Follow-up to that issue.
+      if (typeof e?.message === 'string' &&
+          /\b(access_denied|server_error|invalid_request|consent_required|interaction_required|login_required|user_cancelled)\b/.test(e.message)) {
+        return true
+      }
       return false
     }
     const logError = (e: any) => {

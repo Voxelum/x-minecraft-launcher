@@ -29,9 +29,15 @@ export async function getJavaArch(serv: JavaService, javaPath: string) {
     if (arch === '64') return 'x64'
     return arch
   } catch (e) {
+    // The JavaProxy invocation fails for environments whose JRE is
+    // already broken (Oracle java that can't find `lib/amd64/jvm.cfg`,
+    // SystemPath shim launched with the wrong working dir, etc.) and
+    // also when the JRE itself throws InvocationTargetException. None
+    // of these are launcher defects, so demote from `error` (→
+    // trackException storm in telemetry) to `warn` and skip the JRE.
     if (e instanceof Error) {
       if (!e.stack) e.stack = new Error().stack
-      serv.error(e)
+      serv.warn(`Failed to detect java arch for ${javaPath}: ${e.message}`)
     }
     return undefined
   }
