@@ -43,6 +43,16 @@ export interface ResourceSnapshotTable {
    * The mtime of the file
    */
   mtime: number
+  /**
+   * The last parser error code for this snapshot, if any. Set when the
+   * resource worker fails to parse this file with a known broken-file
+   * signature (e.g. `InvalidZipFileError`). When present, revalidate
+   * skips re-parsing this snapshot — the file is treated as "scanned
+   * and known broken" until its mtime/ino changes (i.e. the user fixes
+   * or replaces it). This avoids spamming the UI with the same parse
+   * error every time the renderer reconnects. See issue #1453.
+   */
+  parseError?: string | null
 }
 
 export interface Database {

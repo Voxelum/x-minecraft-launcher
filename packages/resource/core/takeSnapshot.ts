@@ -25,6 +25,11 @@ export async function takeSnapshot(
     mtime: file.mtime,
     fileType: type,
     sha1,
+    // A fresh snapshot represents the current bytes of the file — any
+    // previously recorded parse error is no longer authoritative. The
+    // worker queue will re-attempt parsing and (re-)set `parseError` if
+    // the file still does not parse.
+    parseError: null as string | null,
   }
 
   if (parse) {
@@ -46,6 +51,7 @@ export async function takeSnapshot(
                 ino: r.ino,
                 fileType: type,
                 sha1,
+                parseError: null,
               })),
             )
             .onConflict((oc) => {
@@ -53,6 +59,7 @@ export async function takeSnapshot(
                 mtime: eb.ref('mtime'),
                 fileType: eb.ref('fileType'),
                 sha1: eb.ref('sha1'),
+                parseError: eb.ref('parseError'),
               }))
             })
         },
@@ -71,6 +78,7 @@ export async function takeSnapshot(
           mtime: record!.mtime,
           fileType: record!.fileType,
           sha1: record!.sha1,
+          parseError: null,
         })
       })
       .execute()
