@@ -134,8 +134,9 @@ export class ErrorDiagnose {
     }
     // `linkOrCopyFile` -> ENOENT when the destination's mods folder
     // hasn't been created yet (e.g. instance points at a freshly
-    // cleaned directory). The installer's outer flow already retries
-    // with a `mkdir -p`; telemetry storm (21/5) is just noise.
+    // cleaned directory). InstallService now ensures the folder
+    // before copying, but keep this guard as a last line of defense
+    // in case any other caller forgets. 21 ev / 5 users in 0.56.4.
     if (e.name === 'OptifineInstallError' && /ENOENT/.test(e.message)) {
       return true
     }
