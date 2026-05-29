@@ -2,7 +2,7 @@
 
 <kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](CODE_OF_CONDUCT/CODE_OF_CONDUCT.ua.md)</kbd>
 <kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](CODE_OF_CONDUCT/CODE_OF_CONDUCT.ru.md)</kbd>
-<kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png" width="22">](CODE_OF_CONDUCT/CODE_OF_CONDUCT.de.md)</kbd>
+<kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/1280px-Flag_of_Germany.svg.png" width="22">](CODE_OF_CONDUCT/CODE_OF_CONDUCT.de.md)</kbd>
 
 ## Our Pledge
 
