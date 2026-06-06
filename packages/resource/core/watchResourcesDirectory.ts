@@ -398,14 +398,18 @@ export function watchResourcesDirectory({
     // upstream `getOrParseMetadata.handleParseError` routes those through
     // `context.throwException` → `ParseException`), surface it on the
     // state so the UI can toast the user the path of the offending file.
-    // Other errors (logic bugs, IO surprises) still go to `onError` for
-    // telemetry.
+    // The cause is the user's file (truncated download, paid pack with
+    // exotic ZIP layout, permission denied, etc.), not a defect in the
+    // launcher, so we deliberately skip `context.onError` to avoid
+    // re-logging the same stack on every revalidate. Other errors
+    // (logic bugs, IO surprises) still go to `onError` for telemetry.
     const ex = (e as any)?.exception
     if (ex && ex.type === 'parseResourceException' && typeof ex.code === 'string') {
       // Reuse the deduped path so the renderer doesn't get a fresh
       // Upsert (and toast) for a file that's already marked broken with
       // the same code. See issue #1453.
       onResourceKnownBroken(filePath, ex.code)
+      return
     }
     context.onError(e)
   }

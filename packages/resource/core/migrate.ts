@@ -10,6 +10,7 @@ export class ResourceMigrateProvider implements MigrationProvider {
       2.1: v21,
       2.2: v22,
       2.3: v23,
+      2.4: v24,
     })
   }
 }
@@ -198,5 +199,22 @@ const v23: Migration = {
       return
     }
     await db.schema.alterTable('snapshots').addColumn('parseError', 'varchar').execute()
+  },
+}
+
+// Wipe cached `parseError` values once so files that the previous
+// (upstream) yauzl rejected — e.g. ZIP64 single-disk packs from
+// PackSquash, lenient-EOCD packs, paid Chinese resource packs that
+// trip "end of central directory record signature not found" — get
+// re-parsed by the new `@xmcl/yauzl` fork. Without this, the snapshot
+// row keeps the stale `InvalidZipFileError` code forever and the UI
+// surfaces the file as broken even though the new parser can read it.
+const v24: Migration = {
+  async up(db: Kysely<Database>): Promise<void> {
+    const columns = await sql`PRAGMA table_info(snapshots)`.execute(db)
+    if (!columns.rows.some((c: any) => c.name === 'parseError')) {
+      return
+    }
+    await sql`UPDATE snapshots SET parseError = NULL WHERE parseError IS NOT NULL`.execute(db)
   },
 }
