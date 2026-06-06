@@ -9,6 +9,7 @@
     <v-btn
       v-shared-tooltip="() => isInstanceLinked ? t('save.shared') : t('save.independent')"
       icon
+      variant="text"
       :loading="loading"
       large
       :aria-pressed="isInstanceLinked"
@@ -19,6 +20,7 @@
     <v-btn
       v-shared-tooltip.left="() => t('save.showDirectory')"
       icon
+      variant="text"
       large
       @click="showDirectory(path)"
     >

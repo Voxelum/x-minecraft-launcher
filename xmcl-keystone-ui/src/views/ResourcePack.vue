@@ -45,6 +45,26 @@
         @click="on.click"
       />
     </template>
+    <template #placeholder>
+      <Hint
+        v-if="currentView === 'local' && !keyword.trim()"
+        key="info"
+        :text="t('resourcepack.noPacksInstalled')"
+        icon="info"
+      />
+      <Hint
+        v-else-if="currentView === 'local'"
+        key="search"
+        :text="t('resourcepack.noLocalPacksFound')"
+        icon="search"
+      />
+      <Hint
+        v-else
+        key="no-packs"
+        :text="t('resourcepack.noPacks')"
+        icon="search"
+      />
+    </template>
     <template #content="{ selectedModrinthId, selectedItem, selectedCurseforgeId }">
       <Hint v-if="dragover" icon="save_alt" :text="t('resourcepack.dropHint')" class="h-full" />
       <MarketProjectDetailModrinth

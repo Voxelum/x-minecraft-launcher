@@ -43,7 +43,12 @@ class JSONTransformer extends OperationNodeTransformer {
   }
 
   protected override transformValue(node: ValueNode): ValueNode {
-    if (typeof node.value === 'object') {
+    // `typeof null === 'object'` — guard against it before JSON.stringify,
+    // otherwise nullable columns get the literal text "null" persisted
+    // instead of SQL NULL (see snapshots.parseError regression where
+    // takeSnapshot writes `parseError: null` and the row comes back as
+    // the string 'null' on the next read).
+    if (node.value !== null && typeof node.value === 'object') {
       return ValueNode.create(JSON.stringify(node.value))
     }
     return node
@@ -52,7 +57,7 @@ class JSONTransformer extends OperationNodeTransformer {
   protected override transformPrimitiveValueList(
     node: PrimitiveValueListNode,
   ): PrimitiveValueListNode {
-    const values = node.values.map((v) => (typeof v === 'object' ? JSON.stringify(v) : v))
+    const values = node.values.map((v) => (v !== null && typeof v === 'object' ? JSON.stringify(v) : v))
     node = PrimitiveValueListNode.create(values)
     return node
   }

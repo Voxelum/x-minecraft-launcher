@@ -11,6 +11,7 @@ export class ResourceMigrateProvider implements MigrationProvider {
       2.2: v22,
       2.3: v23,
       2.4: v24,
+      2.5: v25,
     })
   }
 }
@@ -216,5 +217,23 @@ const v24: Migration = {
       return
     }
     await sql`UPDATE snapshots SET parseError = NULL WHERE parseError IS NOT NULL`.execute(db)
+  },
+}
+
+// Clean up snapshots.parseError rows that were poisoned with the literal
+// text 'null' by the @xmcl/sqlite JSONPlugin bug — `typeof null ===
+// 'object'` made `JSON.stringify(null)` ("null") leak into every
+// nullable column whenever takeSnapshot wrote `parseError: null`. The
+// plugin is fixed in this release; v25 wipes the rows that v24 cannot
+// (they were re-introduced after v24 ran) so the worker re-parses them
+// with the lenient yauzl fork instead of permanently caching a bogus
+// `code: 'null'` and surfacing it to the UI.
+const v25: Migration = {
+  async up(db: Kysely<Database>): Promise<void> {
+    const columns = await sql`PRAGMA table_info(snapshots)`.execute(db)
+    if (!columns.rows.some((c: any) => c.name === 'parseError')) {
+      return
+    }
+    await sql`UPDATE snapshots SET parseError = NULL WHERE parseError = 'null'`.execute(db)
   },
 }

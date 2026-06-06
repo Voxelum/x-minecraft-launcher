@@ -38,6 +38,26 @@
         @click="on.click"
       />
     </template>
+    <template #placeholder>
+      <Hint
+        v-if="currentView === 'local' && !keyword.trim()"
+        key="info"
+        :text="t('shaderPack.noPacksInstalled')"
+        icon="info"
+      />
+      <Hint
+        v-else-if="currentView === 'local'"
+        key="search"
+        :text="t('shaderPack.noLocalPacksFound')"
+        icon="search"
+      />
+      <Hint
+        v-else
+        key="no-packs"
+        :text="t('shaderPack.noPacks')"
+        icon="search"
+      />
+    </template>
     <template #content="{ selectedModrinthId, selectedCurseforgeId, selectedItem }">
       <Hint
         v-if="dragover"
@@ -255,6 +275,7 @@ const {
   modrinthCategories,
   curseforgeCategory,
   currentView,
+  keyword,
 } = injection(kSearchModel)
 
 const {

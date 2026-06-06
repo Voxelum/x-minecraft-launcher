@@ -179,10 +179,20 @@ const surfaceColor = computed(() => 'surface')
 <style scoped>
 .app-notifier :deep(.v-snackbar__wrapper) {
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  /* Keep title + actions on one row; the inner content already truncates. */
+  flex-wrap: nowrap;
 }
 
 .app-notifier :deep(.v-snackbar__content) {
   padding: 12px 14px;
+  /* Allow the flex item to shrink below its intrinsic width so the actions
+     column (close button) is never pushed to the next line. */
+  min-width: 0;
+}
+
+.app-notifier :deep(.v-snackbar__actions) {
+  flex-shrink: 0;
+  flex-wrap: nowrap;
 }
 
 .count-badge {

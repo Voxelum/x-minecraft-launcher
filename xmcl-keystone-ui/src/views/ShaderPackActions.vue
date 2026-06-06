@@ -10,6 +10,7 @@
       v-if="i18nEnabled"
       v-shared-tooltip="() => 'Alt'"
       icon
+      variant="text"
       large
       :aria-pressed="isEnabledState"
       :class="{ 'v-btn--active': isEnabledState }"
@@ -20,6 +21,7 @@
     <v-btn
       v-shared-tooltip="() => t('shaderPack.showDirectory')"
       icon
+      variant="text"
       large
       @click="showDirectory(path)"
     >

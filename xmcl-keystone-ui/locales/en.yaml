@@ -1079,6 +1079,8 @@ resourcepack:
     Incompatible Resource Pack format({format}). Fitin {accept}. Current {actual}.
   name: Resource Pack | Resource Packs
   noPacks: No resource packs found
+  noPacksInstalled: You don't have any resource packs installed.
+  noLocalPacksFound: No local resource packs found matching your search.
   search: Search Resource Packs...
   searchHint: Search resource packs
   searchOnCurseforge: Search {name} in curseforge
@@ -1111,6 +1113,9 @@ save:
   mapLoaded: Map Loaded
   mapPreview: Map Preview
   name: Save | Saves
+  noSavesFound: No saves found
+  noSavesInstalled: You don't have any saves.
+  noLocalSavesFound: No local saves found matching your search.
   openFolder: Open Saves Folder
   properties: World Properties
   search: Search Maps...
@@ -1421,6 +1426,8 @@ shaderPack:
   market: Shader Market
   name: Shader Pack
   noPacks: No shader packs installed
+  noPacksInstalled: You don't have any shader packs installed.
+  noLocalPacksFound: No local shader packs found matching your search.
   noShaderMod: No Shader Mod Installed
   noShaderModHint: You cannot use shader without a shader mod
   noShaderModInstallHint: You need to install one of the following mod to load shader pack.

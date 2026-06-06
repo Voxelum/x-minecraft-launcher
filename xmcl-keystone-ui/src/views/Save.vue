@@ -44,6 +44,26 @@
         @delete="onDelete"
       />
     </template>
+    <template #placeholder>
+      <Hint
+        v-if="currentView === 'local' && !keyword.trim()"
+        key="info"
+        :text="t('save.noSavesInstalled')"
+        icon="info"
+      />
+      <Hint
+        v-else-if="currentView === 'local'"
+        key="search"
+        :text="t('save.noLocalSavesFound')"
+        icon="search"
+      />
+      <Hint
+        v-else
+        key="no-saves"
+        :text="t('save.noSavesFound')"
+        icon="search"
+      />
+    </template>
     <template #content="{ selectedItem, selectedCurseforgeId, updating }">
       <Hint v-if="dragover" icon="save_alt" :text="t('save.dropHint')" class="h-full" />
       <MarketProjectDetailCurseforge
@@ -107,7 +127,7 @@ import { sort } from '@/composables/sortBy'
 const { path } = injection(kInstance)
 const { error, deleteSave } = injection(kInstanceSave)
 
-const { curseforgeCategory, gameVersion } = injection(kSearchModel)
+const { curseforgeCategory, gameVersion, currentView, keyword } = injection(kSearchModel)
 const { effect, items, sortBy, loadMore, loading, error: searchError } = injection(kSaveSearch)
 
 effect()

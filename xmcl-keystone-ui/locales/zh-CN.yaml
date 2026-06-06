@@ -1067,6 +1067,8 @@ resourcepack:
   incompatible: 不兼容的资源包格式({format})。适用范围 {accept}。当前版本 {actual}。
   name: 资源包 | 资源包
   noPacks: 未找到资源包
+  noPacksInstalled: 您尚未安装任何资源包。
+  noLocalPacksFound: 未找到匹配搜索的本地资源包。
   search: 搜索资源包...
   searchHint: 搜索资源包
   searchOnCurseforge: 在 Curseforge 中查找 {name}
@@ -1098,6 +1100,9 @@ save:
   mapLoaded: 地图已加载
   mapPreview: 地图预览
   name: 地图存档 | 地图存档
+  noSavesFound: 未找到存档
+  noSavesInstalled: 您还没有任何存档。
+  noLocalSavesFound: 未找到匹配搜索的本地存档。
   openFolder: 打开存档文件夹
   properties: 世界属性
   search: 搜索地图
@@ -1412,6 +1417,8 @@ shaderPack:
   market: 光影包市场
   name: 光影包
   noPacks: 未安装光影包
+  noPacksInstalled: 您尚未安装任何光影包。
+  noLocalPacksFound: 未找到匹配搜索的本地光影包。
   noShaderMod: 没有安装光影模组
   noShaderModHint: 不装光影模组光影包没法生效
   noShaderModInstallHint: 您需要安装以下 mod 之一来加载着光影包。
