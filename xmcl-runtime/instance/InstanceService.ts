@@ -41,7 +41,12 @@ const INSTANCES_FOLDER = 'instances'
  */
 @ExposeServiceKey(InstanceServiceKey)
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
-  #removeHandlers: Record<string, WeakRef<() => Promise<void> | void>[]> = {}
+  // Strong references so the handler stays alive until removal or
+  // explicit unregister; previously these were `WeakRef`s, which made
+  // inline arrow handlers (e.g. abort-on-delete callbacks registered
+  // by InstanceInstallService) eligible for GC mid-install and break
+  // the install/delete cancellation handshake.
+  #removeHandlers: Record<string, Array<() => Promise<void> | void>> = {}
   #onRenamedInstancePath?: (oldPath: string, newPath: string) => void
 
   constructor(
@@ -215,11 +220,16 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
   }
 
-  registerRemoveHandler(path: string, handler: () => Promise<void> | void) {
+  registerRemoveHandler(path: string, handler: () => Promise<void> | void): () => void {
     if (!this.#removeHandlers[path]) {
       this.#removeHandlers[path] = []
     }
-    this.#removeHandlers[path].push(new WeakRef(handler))
+    const list = this.#removeHandlers[path]
+    list.push(handler)
+    return () => {
+      const idx = list.indexOf(handler)
+      if (idx >= 0) list.splice(idx, 1)
+    }
   }
 
   @Singleton((v) => v)
@@ -380,32 +390,57 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     const instanceLock = this.mutex.of(LockKey.instance(path))
     if (isManaged && (await exists(path))) {
       await lock.runExclusive(async () => {
+        // Reject any install requests currently waiting for the instance
+        // lock so they don't start work that we are about to wipe out.
+        // NOTE: `cancel()` only rejects pending acquires; it does NOT
+        // abort the active holder. The active holder is signalled via
+        // the remove handlers below, and our own `runExclusive` call
+        // (queued synchronously before any `await`) will resolve only
+        // after that holder releases.
         instanceLock.cancel()
-        const oldHandlers = this.#removeHandlers[path]
-        for (const handlerRef of oldHandlers || []) {
-          handlerRef.deref()?.()
-        }
-        if (deleteData) {
-          try {
-            await rm(path, { recursive: true, force: true, maxRetries: 1 })
-          } catch (e) {
-            if (isSystemError(e) && (e.code === ENOENT_ERROR || e.code === 'EPERM')) {
-              this.warn(`Fail to remove instance ${path}`)
-            } else {
-              if ((e as any).name === 'Error') {
-                ;(e as any).name = 'InstanceDeleteError'
-              }
-              throw e
-            }
-          }
-        } else {
-          // Rename to hidden
-          const name = basename(path)
-          const newPath = join(dirname(path), '.' + name)
-          await rename(path, newPath).catch(() => undefined)
-        }
 
-        this.#removeHandlers[path] = []
+        // Snapshot handlers and start them BEFORE awaiting, so they get
+        // a chance to flip an AbortSignal on the currently-running
+        // install. We do not await them out of band here — we await
+        // them inside `runExclusive` so a new caller cannot squeeze
+        // into the lock between handlers finishing and rm starting.
+        const oldHandlers = this.#removeHandlers[path] || []
+        const handlerPromises = oldHandlers.map((fn) => {
+          try {
+            return Promise.resolve(fn())
+          } catch (e) {
+            return Promise.reject(e)
+          }
+        })
+
+        await instanceLock.runExclusive(async () => {
+          // Wait for in-flight cleanup (e.g. install unwinding after
+          // abort) to complete. allSettled so a buggy handler can't
+          // block deletion.
+          await Promise.allSettled(handlerPromises)
+
+          if (deleteData) {
+            try {
+              await rm(path, { recursive: true, force: true, maxRetries: 1 })
+            } catch (e) {
+              if (isSystemError(e) && (e.code === ENOENT_ERROR || e.code === 'EPERM')) {
+                this.warn(`Fail to remove instance ${path}`)
+              } else {
+                if ((e as any).name === 'Error') {
+                  ;(e as any).name = 'InstanceDeleteError'
+                }
+                throw e
+              }
+            }
+          } else {
+            // Rename to hidden
+            const name = basename(path)
+            const newPath = join(dirname(path), '.' + name)
+            await rename(path, newPath).catch(() => undefined)
+          }
+
+          this.#removeHandlers[path] = []
+        })
       })
     }
 
