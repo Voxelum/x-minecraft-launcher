@@ -51,7 +51,26 @@ appInsights.addTelemetryInitializer((envelope) => {
       if (exception.message === 'Key is required') {
         return false
       }
-      if (exception.message.includes('SyntaxError: {"code":24}')) {
+      // Vuetify VChip `isFixedPosition` reads `getComputedStyle` on a
+      // ref that can become null between mount and the next tick. The
+      // resolved stack lives entirely in `VChip-*.js` (no app code), so
+      // there is no patch we can apply -- only suppress here until the
+      // upstream Vuetify fix lands. Issue #1426 (1 490 ev / 747 users
+      // in 7d on 0.56.4, with zero functional impact).
+      if (exception.message ===
+          "Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'.") {
+        return false
+      }
+      // vue-i18n message-compiler error. Production messages come back
+      // as plain `SyntaxError: 24` (no JSON wrapper), so the previous
+      // match string `SyntaxError: {"code":24}` never fired and the
+      // locale/route customDimensions added in 0.56.4 (#1427) came back
+      // empty for all 4 992 ev / 380 users on 0.56.4. Match the raw
+      // shape and attach the dimensions we actually have. We also try
+      // to grab the source snippet vue-i18n stashes on the error so the
+      // next pass can locate the broken translation without leaking
+      // user data.
+      if (/^SyntaxError:\s*(?:\{\s*"code"\s*:\s*)?24\b/.test(exception.message)) {
         const baseData: any = envelope.baseData = envelope.baseData ?? {}
         const properties = baseData.properties = baseData.properties ?? {}
         try {
@@ -63,6 +82,22 @@ appInsights.addTelemetryInitializer((envelope) => {
           // it lets us narrow the broken translation key to a single
           // screen in the next release.
           properties.route = typeof window !== 'undefined' ? window.location.hash : ''
+        } catch {}
+        try {
+          const original: any = exception as any
+          // vue-i18n attaches the offending source string to the error
+          // (CompileErrorCodes 24 = unterminated string literal). Take
+          // the first 80 chars only -- enough to identify the broken
+          // ICU placeholder, short enough to stay below
+          // customDimensions' 8 KB cap and to avoid spilling user
+          // input from format-arguments.
+          const src = original.location?.source ?? original.source ?? original.codeFrame
+          if (typeof src === 'string') {
+            properties.snippet = src.slice(0, 80)
+          }
+          if (typeof original.code === 'number' || typeof original.code === 'string') {
+            properties.compileCode = String(original.code)
+          }
         } catch {}
         // Keep the legacy field for back-compat in case anything else
         // reads it off `envelope.data`.
