@@ -970,7 +970,13 @@ export class InstallService extends AbstractService implements IInstallService {
         }),
       })
     }
-    await linkOrCopyFile(path, join(options.instancePath, 'mods', `OptiFine-${version}.jar`)).catch(
+    const modsDir = join(options.instancePath, 'mods')
+    // Make sure the destination directory exists -- a freshly created
+    // or wiped instance has no `mods/` yet, which previously surfaced
+    // as `OptifineInstallError: Failed to copy OptiFine to mods folder.
+    // ENOENT` (21 ev / 5 users in 0.56.4 telemetry).
+    await ensureDir(modsDir)
+    await linkOrCopyFile(path, join(modsDir, `OptiFine-${version}.jar`)).catch(
       (e) => {
         throw new AnyError(
           'OptifineInstallError',

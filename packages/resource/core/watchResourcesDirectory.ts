@@ -23,6 +23,7 @@ function createRevalidateFunction(
   onResourceQueue: (job: ResourceWorkerQueuePayload) => void,
   onResourceTouched: ResouceEmitFunc,
   onResourcePostRevalidate: (files: File[]) => void,
+  onResourceKnownBroken: (filePath: string, code: string) => void,
 ) {
   async function getFilesStatus() {
     const entries = await getFiles(dir, domain).catch((e) => {
@@ -78,6 +79,15 @@ function createRevalidateFunction(
       .map((jobs) => {
         if (!jobs[1]) {
           onResourceQueue({ filePath: jobs[0].path, file: jobs[0] })
+          return undefined
+        }
+        // The file is already known to be unparseable and its on-disk
+        // bytes haven't changed (mtime+ino still match the snapshot).
+        // Re-running the parser would just re-throw the same exception
+        // and re-toast the user — surface the cached error instead and
+        // drop the file from the worker queue. See issue #1453.
+        if (jobs[1].parseError) {
+          onResourceKnownBroken(jobs[0].path, jobs[1].parseError)
           return undefined
         }
         return jobs
@@ -314,6 +324,19 @@ export function watchResourcesDirectory({
     workerQueue.push(job)
   }
 
+  // Surface a previously recorded parse error for a file whose bytes
+  // have not changed since the worker last failed on it. Deduped
+  // against `state.errors` so the renderer's toast notifier (which
+  // fires on every `Upsert`) only blares once per broken file per
+  // session, instead of every revalidate / focus / reconnect.
+  // See issue #1453.
+  const onResourceKnownBroken = (filePath: string, code: string) => {
+    if (disposed) return
+    const existing = state.errors.find((e) => e.path === filePath)
+    if (existing && existing.code === code) return
+    errorUpdate.push([{ path: filePath, code }, ResourceErrorAction.Upsert])
+  }
+
   const onResourcePostRevalidate = (files: File[]) => {
     const all = Object.fromEntries(files.map((f) => [f.path, f]))
     for (const file of state.files) {
@@ -337,6 +360,7 @@ export function watchResourcesDirectory({
       onResourceEmit(f, r, m)
     },
     onResourcePostRevalidate,
+    onResourceKnownBroken,
   )
 
   const watcher = createWatcher(
@@ -378,7 +402,10 @@ export function watchResourcesDirectory({
     // telemetry.
     const ex = (e as any)?.exception
     if (ex && ex.type === 'parseResourceException' && typeof ex.code === 'string') {
-      errorUpdate.push([{ path: filePath, code: ex.code }, ResourceErrorAction.Upsert])
+      // Reuse the deduped path so the renderer doesn't get a fresh
+      // Upsert (and toast) for a file that's already marked broken with
+      // the same code. See issue #1453.
+      onResourceKnownBroken(filePath, ex.code)
     }
     context.onError(e)
   }

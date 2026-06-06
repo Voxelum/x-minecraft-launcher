@@ -42,6 +42,18 @@ export async function getOrParseMetadata(
       err.name === 'FileNotFoundError' ||
       err.name === 'PermissionError'
     ) {
+      // Persist the failure on the snapshot so a future revalidate
+      // (e.g. renderer reconnect) can skip this file as long as its
+      // mtime/ino haven't changed, instead of re-running the parser and
+      // re-emitting the same error every time. See issue #1453.
+      if (parse && record.parseError !== err.name) {
+        context.db
+          .updateTable('snapshots')
+          .set({ parseError: err.name })
+          .where('domainedPath', '=', record.domainedPath)
+          .execute()
+          .catch((e) => context.onError(e))
+      }
       context.throwException({ type: 'parseResourceException', code: err.name, path: file.path })
     }
     throw err

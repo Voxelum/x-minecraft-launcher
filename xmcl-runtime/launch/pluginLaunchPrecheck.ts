@@ -13,7 +13,7 @@ import { InstanceService } from '~/instance'
 import { JavaService, JavaValidation } from '~/java'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
-import { linkDirectory, missing } from '~/util/fs'
+import { linkOrCopyDirectory, missing } from '~/util/fs'
 
 export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   const launchService = await app.registry.get(LaunchService)
@@ -21,6 +21,16 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
 
   const logger = app.getLogger('LaunchPrecheck')
 
+  // `libraries/` and `versions/` are read-mostly launcher-managed caches
+  // (the game only consumes them, the installer writes the source-of-truth
+  // copy). That matches the safety contract of `linkOrCopyDirectory`, so
+  // we use it here to recover the 2 856 ev / 423 users of `LaunchLinkError`
+  // on 0.56.4 that were caused by users without `SeCreateSymbolicLinkPrivilege`
+  // (no Windows Developer Mode, no admin) where both `symlink('dir')` and
+  // `symlink('junction')` fail with EPERM and the launch never gets the
+  // libraries it needs. See issue #1428 — the v0.56.4 fix was reverted from
+  // this call site (commit d34708ef) out of safety paranoia even though the
+  // doc on `linkOrCopyDirectory` explicitly endorses it for this case.
   const ensureLinkFolder = async (fromPath: string, toPath: string) => {
     if (await missing(fromPath)) {
       await ensureDir(fromPath)
@@ -30,7 +40,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       // relink
       if (linkTarget !== fromPath) {
         await unlink(toPath).catch(() => {})
-        await linkDirectory(fromPath, toPath, logger).catch((e) => {
+        await linkOrCopyDirectory(fromPath, toPath, logger).catch((e) => {
           e.name = 'LaunchLinkError'
           e.stage = 'relink'
           logger.error(e)
@@ -43,7 +53,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       throw e
     })
     if (!fstat) {
-      await linkDirectory(fromPath, toPath, logger).catch((e) => {
+      await linkOrCopyDirectory(fromPath, toPath, logger).catch((e) => {
         e.name = 'LaunchLinkError'
         e.stage = 'link'
         logger.error(e)
@@ -57,7 +67,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
         await move(toPath, join(toPath + Date.now() + '.bk'))
       }
     }
-    await linkDirectory(fromPath, toPath, logger).catch((e) => {
+    await linkOrCopyDirectory(fromPath, toPath, logger).catch((e) => {
       e.name = 'LaunchLinkError'
       e.stage = 'after move'
       logger.error(e)

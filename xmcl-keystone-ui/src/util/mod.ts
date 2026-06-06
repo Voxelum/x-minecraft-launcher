@@ -326,7 +326,17 @@ export function getModFileFromResource(resource: Resource, runtime: RuntimeVersi
     modItem.version = meta.version
     modItem.name = meta.name ?? meta.id
     modItem.description = meta.description ?? ''
-    modItem.authors = meta.authors?.map(a => typeof a === 'string' ? a : a.name) ?? []
+    // Fabric mods in the wild sometimes serialise `authors` as a single
+    // string instead of the spec-mandated array, which crashed the UI
+    // with `TypeError: se.authors?.map is not a function` (telemetry,
+    // 0.56.4). Normalise both shapes before mapping.
+    const fabricAuthorsRaw: any = meta.authors
+    const fabricAuthors: any[] = Array.isArray(fabricAuthorsRaw)
+      ? fabricAuthorsRaw
+      : typeof fabricAuthorsRaw === 'string'
+        ? [fabricAuthorsRaw]
+        : []
+    modItem.authors = fabricAuthors.map(a => typeof a === 'string' ? a : a.name)
     modItem.links = getFabricLikeModLinks(meta.contact)
     modItem.license = typeof meta.license === 'string' ? { name: meta.license } : meta.license ? { name: meta.license?.[0] } : undefined
   }

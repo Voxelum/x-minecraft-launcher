@@ -9,6 +9,7 @@ export class ResourceMigrateProvider implements MigrationProvider {
       2: v2,
       2.1: v21,
       2.2: v22,
+      2.3: v23,
     })
   }
 }
@@ -17,6 +18,12 @@ async function fixSnapshotTable(db: Kysely<Database>) {
   let columns = await sql`PRAGMA table_info(snapshots)`.execute(db)
   if (columns.rows.some((c: any) => c.name === 'ctime')) {
     await v21.up(db)
+  }
+  // Ensure the parseError column exists — older DBs that completed the
+  // initial migration before v2.3 was introduced may be missing it. Run
+  // v23.up defensively (it is a no-op when the column is already present).
+  if (!columns.rows.some((c: any) => c.name === 'parseError')) {
+    await v23.up(db)
   }
   columns = await sql`PRAGMA table_info(snapshots)`.execute(db)
   if (columns.rows.some((c: any) => c.name === 'ctime')) {
@@ -28,9 +35,10 @@ async function fixSnapshotTable(db: Kysely<Database>) {
       .addColumn('mtime', 'integer', (col) => col.notNull())
       .addColumn('fileType', 'varchar', (col) => col.notNull())
       .addColumn('sha1', 'char(40)', (col) => col.notNull())
+      .addColumn('parseError', 'varchar')
       .execute()
     // copy data
-    await sql`insert into snapshots_temp select domainedPath, ino, mtime, fileType, sha1 from snapshots`.execute(
+    await sql`insert into snapshots_temp select domainedPath, ino, mtime, fileType, sha1, parseError from snapshots`.execute(
       db,
     )
     // drop old table
@@ -176,5 +184,19 @@ const v22: Migration = {
       return
     }
     await db.schema.alterTable('resources').addColumn(ResourceType.Neoforge, 'json').execute()
+  },
+}
+
+// Add nullable `parseError` column on snapshots so the resource manager
+// can remember which files were already scanned and known to be
+// unparseable. Used to suppress repeated parse errors when the renderer
+// reconnects and triggers revalidate(). See issue #1453.
+const v23: Migration = {
+  async up(db: Kysely<Database>): Promise<void> {
+    const columns = await sql`PRAGMA table_info(snapshots)`.execute(db)
+    if (columns.rows.some((c: any) => c.name === 'parseError')) {
+      return
+    }
+    await db.schema.alterTable('snapshots').addColumn('parseError', 'varchar').execute()
   },
 }

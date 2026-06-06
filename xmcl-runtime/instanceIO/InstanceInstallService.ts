@@ -178,14 +178,6 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const lockFilePath = join(instancePath, 'instance-lock.json')
     const currentStatePath = join(instancePath, '.install-profile')
 
-    const fileDelta: InstanceFileUpdate[] = await this.#getDelta(
-      instancePath,
-      lockState,
-      targetState.upstream,
-      targetState.files,
-    )
-    this.log('Instance install delta', fileDelta.length)
-
     const curseforgeClient = this.curseforgeClient
     const modrinthClient = this.modrinthClient
     const zipManager = await this.app.registry.getOrCreate(ZipManager)
@@ -199,6 +191,32 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
     const lock = this.mutex.of(LockKey.instance(instancePath))
     const logger = this
+
+    // Track the task at service level. Created BEFORE the lock so the
+    // abort handler below has a stable controller to flip when
+    // deleteInstance fires while we're still waiting for the lock.
+    const task = this.tasks.create<InstallInstanceTask>({
+      type: 'installInstance',
+      key: `install-instance-${instancePath}`,
+      instancePath,
+      taskId: id,
+    })
+
+    // Race fix: deleteInstance and #install used to take different
+    // mutex keys, so `rm -rf <instance>` could run while our install
+    // was still writing files (ENOENT/EPERM/EBUSY storm on
+    // .install-profile / staging-dir rename). We now:
+    //   1. Register a strong-ref abort callback so deleteInstance can
+    //      cancel us fast (held to keep the closure alive — previously
+    //      handlers were WeakRef'd and could be GC'd mid-install).
+    //   2. Move every fs op into a single runExclusive on the same
+    //      LockKey.instance(p) that deleteInstance now waits on.
+    const instanceService = await this.app.registry.get(InstanceService)
+    const abortOnRemove = () => task.controller.abort()
+    const unregisterRemoveHandler = instanceService.registerRemoveHandler(
+      instancePath,
+      abortOnRemove,
+    )
 
     const updateResources = async () => {
       try {
@@ -239,157 +257,197 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
     }
 
-    // Track the task at service level
-    const task = this.tasks.create<InstallInstanceTask>({
-      type: 'installInstance',
-      key: `install-instance-${instancePath}`,
-      instancePath,
-      taskId: id,
-    })
-
     // Create tracker that updates task substate
     const tracker: Tracker<InstallInstanceTrackerEvents> = getTracker(task)
 
-    // Update handler context with tracker
-    const handlerWithTracker = new InstanceFileOperationHandlerV2(
-      instancePath,
-      new Set(targetState.finishedPath),
-      targetState.workspace,
-      targetState.backup,
-      {
-        worker: this.worker,
-        logger: this,
-        onSpecialFile: (file) => {
-          resourceToUpdate.push({
-            hash: file.hashes.sha1,
-            metadata: {
-              modrinth: file.modrinth,
-              curseforge: file.curseforge,
+    try {
+      await lock.runExclusive(async () => {
+        task.controller.signal.throwIfAborted()
+
+        // Persist pending-install marker INSIDE the lock so a
+        // concurrent deleteInstance cannot rm the parent dir
+        // mid-write (caller `installInstanceFiles` used to do this
+        // unlocked, which is one of the ENOENT-on-.install-profile
+        // shapes we saw in telemetry).
+        await writeJson(currentStatePath, InstanceInstallLock.parse(targetState))
+
+        const fileDelta: InstanceFileUpdate[] = await this.#getDelta(
+          instancePath,
+          lockState,
+          targetState.upstream,
+          targetState.files,
+        )
+        this.log('Instance install delta', fileDelta.length)
+        task.controller.signal.throwIfAborted()
+
+        // Update handler context with tracker
+        const handlerWithTracker = new InstanceFileOperationHandlerV2(
+          instancePath,
+          new Set(targetState.finishedPath),
+          targetState.workspace,
+          targetState.backup,
+          {
+            worker: this.worker,
+            logger: this,
+            onSpecialFile: (file) => {
+              resourceToUpdate.push({
+                hash: file.hashes.sha1,
+                metadata: {
+                  modrinth: file.modrinth,
+                  curseforge: file.curseforge,
+                },
+                uris: file.downloads || [],
+                destination: file.path,
+              })
             },
-            uris: file.downloads || [],
-            destination: file.path,
-          })
-        },
-        getCachedResource: (sha1) =>
-          this.resourceManager
-            .getSnapshotByHash(sha1)
-            .then((r) => (r ? this.resourceManager.validateSnapshotFile(r) : undefined))
-            .then((r) => r?.path),
-        getPeerActualUrl: (url) =>
-          this.app.registry
-            .getIfPresent(kPeerFacade)
-            .then((peers) => peers?.getHttpDownloadUrl(url)),
-        unzipFiles: (payloads, finished, signal) =>
-          unzipInstanceFiles(zipManager, payloads, finished, signal, tracker),
-        downloadFiles: (payloads, finished, signal) =>
-          downloadInstanceFiles(
-            payloads.map((v) => ({
-              options: {
-                url: v.options.urls,
-                validator: v.options.sha1 ? { algorithm: 'sha1', hash: v.options.sha1 } : undefined,
-                destination: v.options.destination,
-                expectedTotal: v.options.size,
-              },
-              file: v.file,
-            })),
-            finished,
-            signal,
-            downloadOptions,
-            tracker,
-          ),
-        linkFiles: (payloads, finished, unhandled, signal) =>
-          linkInstanceFiles(payloads, this.app.platform, finished, unhandled, signal, tracker),
-      },
-    )
-
-    const runInstallTasks = async () => {
-      try {
-        const newAddedFiles = fileDelta
-          .filter((f) => f.operation === 'add' || f.operation === 'backup-add')
-          .map((f) => f.file)
-
-        const hasUpdate = await resolveInstanceFiles(
-          newAddedFiles,
-          curseforgeClient,
-          modrinthClient,
-          task.controller.signal,
+            getCachedResource: (sha1) =>
+              this.resourceManager
+                .getSnapshotByHash(sha1)
+                .then((r) => (r ? this.resourceManager.validateSnapshotFile(r) : undefined))
+                .then((r) => r?.path),
+            getPeerActualUrl: (url) =>
+              this.app.registry
+                .getIfPresent(kPeerFacade)
+                .then((peers) => peers?.getHttpDownloadUrl(url)),
+            unzipFiles: (payloads, finished, signal) =>
+              unzipInstanceFiles(zipManager, payloads, finished, signal, tracker),
+            downloadFiles: (payloads, finished, signal) =>
+              downloadInstanceFiles(
+                payloads.map((v) => ({
+                  options: {
+                    url: v.options.urls,
+                    validator: v.options.sha1 ? { algorithm: 'sha1', hash: v.options.sha1 } : undefined,
+                    destination: v.options.destination,
+                    expectedTotal: v.options.size,
+                  },
+                  file: v.file,
+                })),
+                finished,
+                signal,
+                downloadOptions,
+                tracker,
+              ),
+            linkFiles: (payloads, finished, unhandled, signal) =>
+              linkInstanceFiles(payloads, this.app.platform, finished, unhandled, signal, tracker),
+          },
         )
 
-        if (hasUpdate) {
-          // save current state
-          logger.log('Save current state due to refresh', instancePath)
+        const runInstallTasks = async () => {
+          try {
+            const newAddedFiles = fileDelta
+              .filter((f) => f.operation === 'add' || f.operation === 'backup-add')
+              .map((f) => f.file)
+
+            const hasUpdate = await resolveInstanceFiles(
+              newAddedFiles,
+              curseforgeClient,
+              modrinthClient,
+              task.controller.signal,
+            )
+
+            if (hasUpdate) {
+              // save current state
+              logger.log('Save current state due to refresh', instancePath)
+              await writeJson(
+                currentStatePath,
+                InstanceInstallLock.parse({
+                  ...targetState,
+                  mtime: Date.now(),
+                }),
+              )
+            }
+          } catch {
+            // Ignore
+          }
+
+          try {
+            await handlerWithTracker.prepareInstallFiles(fileDelta, task.controller.signal)
+            logger.log('Finished install tasks')
+          } catch (e) {
+            logger.warn('Install instance files error', e)
+            // Guarded: if this writeJson itself fails (e.g. AV held
+            // the file, ENOSPC) we MUST keep the original `e` —
+            // previously the inner throw replaced it, which is why
+            // production telemetry only ever saw the generic
+            // "ENOENT open .install-profile" wrapper and never the
+            // real cause (download/zip/network).
+            await writeJson(
+              currentStatePath,
+              InstanceInstallLock.parse({
+                ...targetState,
+                finishedPath: Array.from(handlerWithTracker.finished),
+                mtime: Date.now(),
+              }),
+            ).catch((writeErr) => {
+              logger.warn('Failed to save partial install state', writeErr)
+            })
+            throw e
+          }
+
+          task.controller.signal.throwIfAborted()
+          await handlerWithTracker.backupAndRename()
+
+          await updateResources()
+        }
+
+        await runInstallTasks()
+
+        task.controller.signal.throwIfAborted()
+
+        // update the lock file
+        if (!noLock) {
           await writeJson(
-            currentStatePath,
-            InstanceInstallLock.parse({
-              ...targetState,
+            lockFilePath,
+            InstanceLockSchema.parse({
+              version: 1,
+              files: targetState.files,
+              upstream: targetState.upstream,
               mtime: Date.now(),
             }),
           )
         }
-      } catch {
-        // Ignore
-      }
 
-      try {
-        await handlerWithTracker.prepareInstallFiles(fileDelta, task.controller.signal)
-        logger.log('Finished install tasks')
-      } catch (e) {
-        logger.warn('Install instance files error', e)
-        await writeJson(
-          currentStatePath,
-          InstanceInstallLock.parse({
-            ...targetState,
-            finishedPath: Array.from(handlerWithTracker.finished),
-            mtime: Date.now(),
-          }),
-        )
-        throw e
-      }
+        // remove the install lock
+        await unlink(currentStatePath).catch(() => {
+          /* ignored */
+        })
 
-      await handlerWithTracker.backupAndRename()
-
-      await updateResources()
-    }
-
-    try {
-      await lock.runExclusive(async () => {
-        await runInstallTasks()
+        if (handlerWithTracker.unresolvable.length > 0) {
+          await writeFile(
+            join(instancePath, 'unresolved-files.json'),
+            JSON.stringify(handlerWithTracker.unresolvable),
+          )
+        }
       })
-
-      // update the lock file
-      if (!noLock) {
-        await writeJson(
-          lockFilePath,
-          InstanceLockSchema.parse({
-            version: 1,
-            files: targetState.files,
-            upstream: targetState.upstream,
-            mtime: Date.now(),
-          }),
-        )
-      }
-
-      // remove the install lock
-      await unlink(currentStatePath).catch(() => {
-        /* ignored */
-      })
-
-      if (handlerWithTracker.unresolvable.length > 0) {
-        await writeFile(
-          join(instancePath, 'unresolved-files.json'),
-          JSON.stringify(handlerWithTracker.unresolvable),
-        )
-      }
 
       task.complete()
     } catch (e) {
       task.fail(e as Error)
+      // AbortError = deleteInstance triggered our remove handler, or
+      // the user cancelled the task. ErrorDiagnose:118 already drops
+      // this from telemetry — DON'T rewrite the name, or it will
+      // resurface as InstallInstanceFilesError.
+      if ((e as any)?.name === 'AbortError') {
+        throw e
+      }
+      // async-mutex E_CANCELED: instanceLock.cancel() rejected us
+      // while we were queued behind a now-deleted instance. Same
+      // semantic as abort — surface as AbortError so the existing
+      // suppression catches it instead of a noisy
+      // InstallInstanceFilesError telemetry event.
+      if ((e as any)?.message === 'request for lock canceled') {
+        const cancelled = new Error('Install canceled by instance removal')
+        ;(cancelled as any).name = 'AbortError'
+        throw cancelled
+      }
       throw Object.assign(e as any, {
         name: (e as any).name === 'Error' ? 'InstallInstanceFilesError' : (e as any).name,
         installInstance: {
           instancePath,
         },
       })
+    } finally {
+      unregisterRemoveHandler()
     }
   }
 
@@ -572,8 +630,6 @@ export class InstanceInstallService extends AbstractService implements IInstance
         .then(InstanceLockSchema.parse)
         .catch(() => undefined)
 
-      const pendingInstallPath = join(instancePath, '.install-profile')
-
       const instanceDir = dirname(instancePath)
       const instanceName = basename(instancePath)
       const currentState: InstanceInstallLock = {
@@ -590,8 +646,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
         finishedPath: [],
       }
 
-      // save current state
-      await writeJson(pendingInstallPath, InstanceInstallLock.parse(currentState))
+      // Note: the .install-profile marker is now written by #install
+      // INSIDE its instance-lock critical section, so a concurrent
+      // deleteInstance cannot rm the parent directory mid-write.
 
       this.log('Install instance files with lock', !!lockState)
       return this.#install(instancePath, lockState, currentState, id).catch((e) => {

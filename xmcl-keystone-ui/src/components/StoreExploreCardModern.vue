@@ -5,7 +5,7 @@
     class="explore-card group relative bg-surface rounded-2xl overflow-hidden flex flex-col h-full cursor-pointer"
     role="button"
     tabindex="0"
-    :aria-label="value?.title || value?.name || ''"
+    :aria-label="value?.title || ''"
     @click="$emit('click')"
     @keydown.enter.prevent="$emit('click')"
     @keydown.space.prevent="$emit('click')"

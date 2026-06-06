@@ -51,6 +51,9 @@ function loadDatabaseConfig(app: LauncherApp, flights: any) {
     if (e instanceof Error && e.name === 'SQLite3Error') {
       if (
         e.message === 'unable to open database file' ||
+        e.message === 'database disk image is malformed' ||
+        e.message === 'file is not a database' ||
+        e.message === 'file is encrypted or is not a database' ||
         e.message.startsWith('no such table') ||
         e.message.startsWith('out of memory')
       )
@@ -115,7 +118,7 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     if (db) {
       db.destroy()
       const dbPath = join(app.appDataPath, 'resources.sqlite')
-      const bkPath = dbPath + +'.' + Date.now() + '.bk'
+      const bkPath = dbPath + '.' + Date.now() + '.bk'
       await rename(dbPath, bkPath).catch(() => {})
     }
     const config = loadDatabaseConfig(app, flights)
