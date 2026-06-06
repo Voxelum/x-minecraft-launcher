@@ -46,17 +46,6 @@ brew tap voxelum/xmcl
 brew install --cask --no-quarantine voxelum/xmcl
 ```
 
-<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](i18n/README.uk.md)</kbd>
-<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](i18n/README.ru.md)</kbd>
-<kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png" width="22">](i18n/README.de.md)</kbd>
-<kbd>[<img title="China" alt="China" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg" width="22">](i18n/README.zh.md)</kbd>
-<kbd>[<img title="Japan" alt="Japan" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png" width="22">](i18n/README.jp.md)</kbd>
-<kbd>[<img title="Poland" alt="Poland" src="https://upload.wikimedia.org/wikipedia/commons/1/12/Flag_of_Poland.svg" width="22">](i18n/README.pl.md)</kbd>
-<kbd>[<img title="Kazakhstan" alt="Kazakhstan" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Flag_of_Kazakhstan.svg" width="26">](i18n/README.kz.md)</kbd>
-<kbd>[<img title="Spain" alt="Spain" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/1280px-Flag_of_Spain.svg.png" width="22">](i18n/README.es.md)</kbd>
-
-
-
 ## Características
 
 - 📥 **Descarga y autocompletado**. Soporta la descarga de `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` desde repositorios oficiales o de terceros.
