@@ -1,5 +1,5 @@
 import { InstanceThemeService as IInstanceThemeService, InstanceThemeServiceKey, MediaData, ThemeData } from '@xmcl/runtime-api'
-import { fromFile } from 'file-type'
+import { fileTypeFromFile as fromFile } from 'file-type'
 import { copyFile, ensureDir, existsSync, readJson, rm, unlink, writeJSON } from 'fs-extra'
 import { basename, join, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, PathResolver } from '~/app'

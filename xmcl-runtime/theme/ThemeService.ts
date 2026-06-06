@@ -1,6 +1,6 @@
 import { ThemeService as IThemeService, MediaData, StoredTheme, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
-import { fromFile } from 'file-type'
+import { fileTypeFromFile as fromFile } from 'file-type'
 import { createWriteStream } from 'fs'
 import { copyFile, emptyDir, ensureDir, existsSync, move, readdir, readJSON, remove, rename, unlink, writeJson } from 'fs-extra'
 import { basename, dirname, join } from 'path'

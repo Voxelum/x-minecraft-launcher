@@ -31,13 +31,13 @@
     },
     "devDependencies": {
         "@types/node": "^20.19.0",
-        "@vitest/coverage-v8": "^4.0.17",
+        "@vitest/coverage-v8": "^4.1.0",
         "oxfmt": "^0.48.0",
         "oxlint": "^1.63.0",
         "tsx": "^4.21.0",
         "typedoc": "^0.28.15",
         "typescript": "^5.9.3",
-        "vitest": "^4.0.17"
+        "vitest": "^4.1.0"
     },
     "pnpm": {
         "onlyBuiltDependencies": [

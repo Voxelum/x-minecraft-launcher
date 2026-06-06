@@ -23,7 +23,8 @@ async function writeHash(algorithm: string, path: string, destination: string) {
 export async function buildElectron(config: Configuration, dir: boolean) {
   console.log(chalk.bold.underline('Build electron'))
   const start = Date.now()
-  const files = await electronBuilder({ publish: 'never', config, dir })
+  // See xmcl-electron-app/build.ts for why this cast is needed.
+  const files = await electronBuilder({ publish: 'never', config, dir } as Parameters<typeof electronBuilder>[0])
 
   for (const file of files) {
     const fstat = await stat(file)

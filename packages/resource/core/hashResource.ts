@@ -46,15 +46,14 @@ export async function hashAndFiletypeResource(path: string, size: number, dir?: 
 
     return [hash.digest('hex'), 'directory'] as [string, string]
   }
-  // @ts-ignore
-  const fileType = await import('file-type')
+  const { fileTypeStream, fileTypeFromBuffer } = await import('file-type')
   if (size > THREASHOLD) {
     const hash = createHash('sha1').setEncoding('hex')
-    const readable = await fileType.stream(createReadStream(path))
+    const readable = await (fileTypeStream as any)(createReadStream(path))
     await pipeline(readable, hash)
     return [hash.read() as string, readable.fileType?.ext ?? ''] as [string, string]
   }
   const buf = await readFile(path)
   const hash = createHash('sha1').update(new Uint8Array(buf)).digest('hex')
-  return [hash, (await fileType.fromBuffer(buf))?.ext ?? ''] as [string, string]
+  return [hash, (await fileTypeFromBuffer(buf))?.ext ?? ''] as [string, string]
 }

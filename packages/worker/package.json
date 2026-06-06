@@ -29,7 +29,7 @@
     "@types/node": "^20.19.0",
     "@types/fs-extra": "^11.0.1",
     "typescript": "^5.9.3",
-    "@vitest/coverage-v8": "^4.0.17",
-    "vitest": "^4.0.17"
+    "@vitest/coverage-v8": "^4.1.0",
+    "vitest": "^4.1.0"
   }
 }

@@ -20,7 +20,7 @@ export const pluginMediaProtocol: LauncherAppPlugin = (app) => {
     if (request.url.host === 'launcher' && request.url.pathname.startsWith('/media')) {
       // Absolute image path
       const pathname = normalizePath(request.url.searchParams.get('path')!)
-      const { fromFile } = await import('file-type')
+      const { fileTypeFromFile: fromFile } = await import('file-type')
       await fromFile(pathname).then((type) => {
         if (type && (type.mime.startsWith('image/') || type.mime.startsWith('video/') || type.mime.startsWith('audio/'))) {
           response.status = 200
@@ -36,7 +36,7 @@ export const pluginMediaProtocol: LauncherAppPlugin = (app) => {
     // http://launcher/theme-media/${assetName}
     if (request.url.host === 'launcher' && request.url.pathname.startsWith('/theme-media')) {
       const pathname = join(app.appDataPath, 'theme-media', normalizePath(request.url.pathname.substring('/theme-media'.length)))
-      const { fromFile } = await import('file-type')
+      const { fileTypeFromFile: fromFile } = await import('file-type')
       await fromFile(pathname).then((type) => {
         if (type && (type.mime.startsWith('image/') || type.mime.startsWith('video/') || type.mime.startsWith('audio/') || type.mime.startsWith('font/'))) {
           response.status = 200
@@ -71,7 +71,7 @@ export const pluginMediaProtocol: LauncherAppPlugin = (app) => {
           response.status = 404
           return
         }
-        const { fromFile } = await import('file-type')
+        const { fileTypeFromFile: fromFile } = await import('file-type')
         await fromFile(pathname).then((type) => {
           if (type && (type.mime.startsWith('image/') || type.mime.startsWith('video/') || type.mime.startsWith('audio/') || type.mime.startsWith('font/'))) {
             response.status = 200

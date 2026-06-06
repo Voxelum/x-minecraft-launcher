@@ -1,4 +1,4 @@
-import { fromBuffer } from 'file-type'
+import { fileTypeFromBuffer as fromBuffer } from 'file-type'
 import { createReadStream } from 'fs'
 import { readFile } from 'fs-extra'
 import { join } from 'path'

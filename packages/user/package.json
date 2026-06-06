@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "undici": "^7.24.0",
-    "uuid": "^9.0.0"
+    "uuid": "^14.0.0"
   },
   "sideEffects": false,
   "repository": {
@@ -49,6 +49,6 @@
     "typescript": "^5.9.3",
     "user-offline-uuid": "workspace:^*",
     "undici-shim": "workspace:^*",
-    "vitest": "^4.0.17"
+    "vitest": "^4.1.0"
   }
 }

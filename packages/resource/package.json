@@ -31,9 +31,9 @@
     "@xmcl/resourcepack": "workspace:*",
     "@xmcl/utils": "workspace:*",
     "chokidar": "^4.0.3",
-    "file-type": "^16.5.4",
+    "file-type": "^21.3.1",
     "kysely": "^0.28.14",
     "fs-extra": "^11.1.0",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.0"
   }
 }

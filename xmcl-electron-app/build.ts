@@ -58,6 +58,10 @@ async function buildElectron(config: Configuration, dir: boolean) {
   console.log(chalk.bold.underline('Build electron'))
   const start = Date.now()
   const files = await electronBuilder({
+    // electron-builder's `CliOptions` extends `PublishOptions` from
+    // `electron-publish`, but that import fails to resolve under pnpm's
+    // strict isolation (electron-builder doesn't declare it as a dep),
+    // so TS erases `publish` from the type. Cast to keep the option.
     publish: 'never',
     config,
     ...(dir ? {
@@ -65,7 +69,7 @@ async function buildElectron(config: Configuration, dir: boolean) {
       x64: true,
       arm64: process.platform !== 'win32'
     } : {}),
-  })
+  } as Parameters<typeof electronBuilder>[0])
 
   for (const file of files) {
     const fstat = await stat(file)
