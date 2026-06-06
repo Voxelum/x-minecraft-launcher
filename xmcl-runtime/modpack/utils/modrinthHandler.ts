@@ -1,7 +1,7 @@
 import { InstanceFile, ModrinthModpackManifest, getInstanceConfigFromModrinthModpack } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { readEntry } from '@xmcl/unzip'
-import { Entry } from 'yauzl'
+import { Entry } from '@xmcl/yauzl'
 import { LauncherApp } from '~/app'
 import { ModpackHandler } from '../ModpackService'
 

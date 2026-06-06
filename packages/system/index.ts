@@ -12,7 +12,7 @@ import {
 import { promisify } from 'util'
 import { join, sep } from 'path'
 import { FileSystem } from './system'
-import { ZipFile, Entry } from 'yauzl'
+import { ZipFile, Entry } from '@xmcl/yauzl'
 
 const access = promisify(saccess)
 const stat = promisify(sstat)

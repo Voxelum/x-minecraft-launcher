@@ -1,6 +1,6 @@
 import { InstanceFile, MMCModpackManifest, getInstanceConfigFromMmcModpack } from '@xmcl/instance'
 import { readEntry } from '@xmcl/unzip'
-import { Entry, ZipFile } from 'yauzl'
+import { Entry, ZipFile } from '@xmcl/yauzl'
 import { LauncherApp } from '~/app'
 import { ModpackHandler } from '../ModpackService'
 import { parseCFG } from './cfg'

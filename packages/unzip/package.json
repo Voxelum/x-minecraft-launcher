@@ -8,8 +8,8 @@
   },
   "scripts": {
     "build:type": "tsc",
-    "build:cjs": "esbuild --target=node16 --platform=node --external:yauzl --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
-    "build:esm": "esbuild --target=node16 --platform=node --external:yauzl --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts"
+    "build:cjs": "esbuild --target=node16 --platform=node --external:@xmcl/yauzl --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
+    "build:esm": "esbuild --target=node16 --platform=node --external:@xmcl/yauzl --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts"
   },
   "publishConfig": {
     "main": "./dist/index.js",
@@ -17,11 +17,10 @@
     "access": "public"
   },
   "peerDependencies": {
-    "yauzl": "^2.10.0"
+    "@xmcl/yauzl": "^2.10.0"
   },
   "dependencies": {
-    "@types/yauzl": "^2.10.0",
-    "yauzl": "^2.10.0"
+    "@xmcl/yauzl": "workspace:^*"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,51 @@
+{
+  "name": "@xmcl/yauzl",
+  "version": "2.10.0",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "description": "Fork of yauzl with ZIP64 single-disk archives (e.g. PackSquash) accepted. API-compatible with yauzl 2.10.0.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:type": "tsc"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "fd-slicer": "~1.1.0",
+    "buffer-crc32": "~0.2.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voxelum/x-minecraft-launcher.git",
+    "directory": "packages/yauzl"
+  },
+  "author": "cijhn@hotmail.com",
+  "sideEffects": false,
+  "keywords": [
+    "yauzl",
+    "unzip",
+    "zip",
+    "zip64",
+    "packsquash",
+    "multi-disk"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Voxelum/x-minecraft-launcher/issues"
+  },
+  "homepage": "https://github.com/Voxelum/x-minecraft-launcher/tree/master/packages/yauzl#readme",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "LICENSE.upstream"
+  ],
+  "devDependencies": {
+    "@xmcl/oxlint-config": "workspace:^*",
+    "@types/node": "^20.19.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
+  }
+}

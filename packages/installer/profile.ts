@@ -9,7 +9,7 @@ import { filterEntries, open, readEntry, walkEntriesGenerator } from '@xmcl/unzi
 import { spawn } from 'child_process'
 import { readFile, writeFile } from 'fs/promises'
 import { delimiter, dirname, join, relative, sep } from 'path'
-import { ZipFile } from 'yauzl'
+import { ZipFile } from '@xmcl/yauzl'
 import { diagnoseFile } from './diagnose'
 import { LibrariesTrackerEvents, LibraryOptions, installResolvedLibraries } from './libraries'
 import { convertClasspathToMaven, parseManifest } from './manifest'

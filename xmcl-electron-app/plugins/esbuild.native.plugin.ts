@@ -77,9 +77,11 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         }
       )
 
-      // node_modules\.pnpm\yauzl@2.10.0\node_modules\yauzl\index.js
+      // Upstream yauzl 2.x: monkey-patch validateFileName to honour
+      // ZipFile#validateFileName. @xmcl/yauzl already ships with this
+      // patch baked in, so we only target the upstream pnpm path here.
       build.onLoad(
-        { filter: /^.+yauzl[\\/]index\.js$/ },
+        { filter: /[\\/]\.pnpm[\\/]yauzl@[^\\/]+[\\/]node_modules[\\/]yauzl[\\/]index\.js$/ },
         async ({ path }) => {
           let content = await readFile(path, 'utf-8')
           content = content.replace(

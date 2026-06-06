@@ -3,7 +3,7 @@ import { InstanceFile, McbbsModpackManifest, ModpackFileInfoCurseforge, getInsta
 import { ResourceDomain } from '@xmcl/resource'
 import { readEntry } from '@xmcl/unzip'
 import { join } from 'path'
-import { Entry } from 'yauzl'
+import { Entry } from '@xmcl/yauzl'
 import { LauncherApp } from '~/app'
 import { ModpackHandler } from '../ModpackService'
 import { getCurseforgeFiles, getCurseforgeProjects } from './getCurseforgeFiles'

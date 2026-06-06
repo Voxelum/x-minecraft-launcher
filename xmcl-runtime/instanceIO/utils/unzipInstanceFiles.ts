@@ -6,7 +6,7 @@ import { createWriteStream } from 'fs'
 import { ensureDir, stat } from 'fs-extra'
 import { dirname } from 'path'
 import { pipeline } from 'stream/promises'
-import { Entry, ZipFile } from 'yauzl'
+import { Entry, ZipFile } from '@xmcl/yauzl'
 import { ZipManager } from '~/infra'
 import { InstallInstanceTrackerEvents } from '@xmcl/runtime-api'
 

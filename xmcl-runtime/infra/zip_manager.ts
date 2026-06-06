@@ -1,6 +1,6 @@
 import { open, readAllEntries } from '@xmcl/unzip'
 import { stat } from 'fs-extra'
-import { ZipFile, Entry } from 'yauzl'
+import { ZipFile, Entry } from '@xmcl/yauzl'
 
 /**
  * The managed zip.

@@ -3,7 +3,7 @@ import { CurseforgeModpackManifest, InstanceFile, getInstanceConfigFromCurseforg
 import { ResourceDomain } from '@xmcl/resource'
 import { readEntry } from '@xmcl/unzip'
 import { join } from 'path'
-import { Entry, ZipFile } from 'yauzl'
+import { Entry, ZipFile } from '@xmcl/yauzl'
 import { LauncherApp } from '~/app'
 import { kResourceWorker } from '~/resource'
 import { ModpackHandler } from '../ModpackService'

@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import * as os from 'os'
 import { ResourcePack, readPackMetaAndIcon, readPackMeta, ResourceLocation } from './index'
 import { describe, test, expect } from 'vitest'
 
@@ -64,6 +65,20 @@ describe('Resourcepack', () => {
       await expect(
         readPackMetaAndIcon(`${root}/resourcepacks/empty-resourcepack.zip`),
       ).rejects.toThrowError(new Error('Illegal Resourcepack: Cannot find pack.mcmeta!'))
+    })
+    test('should accept pack.mcmeta with literal newlines inside string values (Gson-lenient compatibility)', async () => {
+      // Mirrors the Minecraft client behaviour (Gson lenient mode). Some
+      // packs in the wild (e.g. miles's Enchanted Tools) contain raw
+      // newlines inside the `description` field which strict JSON.parse
+      // rejects. We re-escape such control chars as a fallback so the
+      // launcher can preview the same packs the game accepts.
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'xmcl-rp-lenient-'))
+      fs.writeFileSync(path.join(tmp, 'pack.mcmeta'),
+        '{\n   "pack": {\n     "pack_format": 15,\n     "description": "line one\nline two"\n   }\n}',
+        'utf-8')
+      const metadata = await readPackMeta(tmp)
+      expect(metadata.pack_format).toEqual(15)
+      expect(metadata.description).toEqual('line one\nline two')
     })
   })
   describe('#domain', () => {

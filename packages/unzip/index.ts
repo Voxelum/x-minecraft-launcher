@@ -2,7 +2,7 @@
  * @module @xmcl/unzip
  */
 import { Readable } from 'stream'
-import { Entry, fromBuffer, fromFd, open as yopen, ZipFile, ZipFileOptions, Options } from 'yauzl'
+import { Entry, fromBuffer, fromFd, open as yopen, ZipFile, ZipFileOptions, Options } from '@xmcl/yauzl'
 
 export type OpenTarget = string | Buffer | number
 

@@ -37,7 +37,7 @@
         "@types/lodash.throttle": "^4.1.7",
         "@types/node": "^20.19.0",
         "@types/semver": "^7.3.13",
-        "@types/yauzl": "^2.10.0",
+
         "@types/yazl": "^2.4.2",
         "@vue/runtime-dom": "latest",
         "@xmcl/client": "workspace:*",

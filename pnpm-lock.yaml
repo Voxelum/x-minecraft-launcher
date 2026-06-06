@@ -360,15 +360,15 @@ importers:
       '@xmcl/unzip':
         specifier: workspace:^*
         version: link:../unzip
+      '@xmcl/yauzl':
+        specifier: workspace:^*
+        version: link:../yauzl
       tar-stream:
         specifier: ^3.1.7
         version: 3.1.7
       undici:
         specifier: ^7.24.0
         version: 7.25.0
-      yauzl:
-        specifier: ^2.10.0
-        version: 2.10.0
       yazl:
         specifier: ^2.5.1
         version: 2.5.1
@@ -379,9 +379,6 @@ importers:
       '@types/tar-stream':
         specifier: ^3.1.3
         version: 3.1.3
-      '@types/yauzl':
-        specifier: ^2.10.0
-        version: 2.10.0
       '@types/yazl':
         specifier: ^2.4.5
         version: 2.4.5
@@ -693,19 +690,16 @@ importers:
       '@xmcl/unzip':
         specifier: workspace:^*
         version: link:../unzip
+      '@xmcl/yauzl':
+        specifier: workspace:^*
+        version: link:../yauzl
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
-      yauzl:
-        specifier: ^2.10.0
-        version: 2.10.0
     devDependencies:
       '@types/node':
         specifier: ^20.19.0
         version: 20.19.30
-      '@types/yauzl':
-        specifier: ^2.10.0
-        version: 2.10.0
       '@xmcl/oxlint-config':
         specifier: workspace:^*
         version: link:../oxlint-config
@@ -747,12 +741,9 @@ importers:
 
   packages/unzip:
     dependencies:
-      '@types/yauzl':
-        specifier: ^2.10.0
-        version: 2.10.0
-      yauzl:
-        specifier: ^2.10.0
-        version: 2.10.0
+      '@xmcl/yauzl':
+        specifier: workspace:^*
+        version: link:../yauzl
     devDependencies:
       '@types/node':
         specifier: ^20.19.0
@@ -899,6 +890,28 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/yauzl:
+    dependencies:
+      buffer-crc32:
+        specifier: ~0.2.3
+        version: 0.2.13
+      fd-slicer:
+        specifier: ~1.1.0
+        version: 1.1.0
+    devDependencies:
+      '@types/node':
+        specifier: ^20.19.0
+        version: 20.19.30
+      '@xmcl/oxlint-config':
+        specifier: workspace:^*
+        version: link:../oxlint-config
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.17
+        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)
+
   xmcl-electron-app:
     devDependencies:
       '@electron/rebuild':
@@ -925,9 +938,6 @@ importers:
       '@types/semver':
         specifier: ^7.3.13
         version: 7.3.13
-      '@types/yauzl':
-        specifier: ^2.10.0
-        version: 2.10.0
       '@types/yazl':
         specifier: ^2.4.2
         version: 2.4.2
@@ -1328,6 +1338,9 @@ importers:
       '@xmcl/worker':
         specifier: workspace:*
         version: link:../packages/worker
+      '@xmcl/yauzl':
+        specifier: workspace:*
+        version: link:../packages/yauzl
       applicationinsights:
         specifier: ^2.9.1
         version: 2.9.5
@@ -1440,9 +1453,6 @@ importers:
       '@types/ws':
         specifier: ^8.5.3
         version: 8.5.4
-      '@types/yauzl':
-        specifier: ^2.10.0
-        version: 2.10.0
       '@types/yazl':
         specifier: ^2.4.2
         version: 2.4.2
@@ -8861,6 +8871,7 @@ snapshots:
   '@types/yauzl@2.10.0':
     dependencies:
       '@types/node': 20.19.30
+    optional: true
 
   '@types/yazl@2.4.2':
     dependencies:
