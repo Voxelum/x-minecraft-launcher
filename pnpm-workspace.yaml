@@ -11,3 +11,14 @@ packages:
   # with `pnpm --prefix=e2e install`. See e2e/README.md.
   - '.github/actions/*'
 enableGlobalVirtualStore: true
+
+# `cls-hooked` does `require('stack-chain')` but does not declare it in its
+# package.json — upstream relies on `async-hook-jl` hoisting it. pnpm's
+# isolated layout doesn't hoist transitive deps, so esbuild bundling
+# `applicationinsights → cls-hooked` fails with "Could not resolve
+# 'stack-chain'". Declare the missing dep here so it sits next to
+# cls-hooked in node_modules.
+packageExtensions:
+  cls-hooked:
+    dependencies:
+      stack-chain: '^1.3.7'
