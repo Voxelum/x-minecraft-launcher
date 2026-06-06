@@ -49,6 +49,6 @@
     "typescript": "^5.9.3",
     "user-offline-uuid": "workspace:^*",
     "undici-shim": "workspace:^*",
-    "vitest": "^4.0.17"
+    "vitest": "^4.1.0"
   }
 }

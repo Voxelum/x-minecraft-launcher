@@ -44,6 +44,6 @@
     "esbuild": "^0.25.12",
     "oxlint": "^1.63.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.17"
+    "vitest": "^4.1.0"
   }
 }
