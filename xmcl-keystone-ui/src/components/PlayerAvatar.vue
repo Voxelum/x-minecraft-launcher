@@ -30,18 +30,22 @@ const props = withDefaults(
 const steveSrc = renderMinecraftPlayerTextHead(steve)
 const dataUrlSrc = ref('')
 
+// Generation counter discards stale async results so a slow steve resolve
+// (queued while src='') cannot overwrite a real avatar resolved later.
+let generation = 0
 watch(() => props.src, (s) => {
+  const gen = ++generation
   if (!s) {
     steveSrc?.then((v) => {
-      dataUrlSrc.value = v
+      if (gen === generation) dataUrlSrc.value = v
     })
     return
   }
   renderMinecraftPlayerTextHead(s)?.then((v) => {
-    dataUrlSrc.value = v
+    if (gen === generation) dataUrlSrc.value = v
   }, () => {
     steveSrc?.then((v) => {
-      if (!dataUrlSrc.value) {
+      if (gen === generation && !dataUrlSrc.value) {
         dataUrlSrc.value = v
       }
     })
