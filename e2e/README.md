@@ -14,6 +14,7 @@ expected on poor connections — pin the locale matrix down for CI.
 
 | # | Storyline | Spec |
 |---|---|---|
+| 00 | Boot smoke — new + old user, asserts no renderer-level crash | [`specs/00-smoke-boot.spec.ts`](specs/00-smoke-boot.spec.ts) |
 | 01 | Base flow — onboard, login (offline), install vanilla Minecraft | [`specs/01-base-flow.spec.ts`](specs/01-base-flow.spec.ts) |
 | 02 | Mod flow — Fabric instance + Iris / Better3D / Complementary Reimagined | [`specs/02-mod-flow.spec.ts`](specs/02-mod-flow.spec.ts) |
 | 03 | Other modloaders — Forge and NeoForge instances | [`specs/03-other-modloaders.spec.ts`](specs/03-other-modloaders.spec.ts) |

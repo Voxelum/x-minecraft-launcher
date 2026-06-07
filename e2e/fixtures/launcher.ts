@@ -30,6 +30,16 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = resolve(__dirname, '../..')
 const ELECTRON_ENTRY = resolve(REPO_ROOT, 'xmcl-electron-app/dist/index.js')
 
+// e2e/ is intentionally outside the pnpm workspace (see README) so Playwright's
+// auto-resolve via local `node_modules/electron` doesn't find a binary. Point at
+// the workspace electron the launcher itself uses — the same binary `compile`
+// produces output for.
+const ELECTRON_BIN = process.platform === 'win32'
+  ? resolve(REPO_ROOT, 'xmcl-electron-app/node_modules/electron/dist/electron.exe')
+  : process.platform === 'darwin'
+    ? resolve(REPO_ROOT, 'xmcl-electron-app/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron')
+    : resolve(REPO_ROOT, 'xmcl-electron-app/node_modules/electron/dist/electron')
+
 export interface LauncherFixture {
   /** Underlying Playwright Electron application. */
   app: ElectronApplication
@@ -94,7 +104,7 @@ export const test = base.extend<{
     }
 
     const app = await _electron.launch({
-      executablePath: undefined, // Use the workspace electron binary auto-resolved by Playwright.
+      executablePath: ELECTRON_BIN,
       args: [ELECTRON_ENTRY],
       cwd: resolve(REPO_ROOT, 'xmcl-electron-app/dist'),
       env: {
