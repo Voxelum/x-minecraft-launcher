@@ -207,15 +207,30 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     })
 
     if (typeof result.resourcePacks === 'string') {
+      const raw = result.resourcePacks
       try {
-        result.resourcePacks = JSON.parse(result.resourcePacks)
+        result.resourcePacks = JSON.parse(raw)
       } catch (e) {
-        if (e instanceof SyntaxError) {
-          this.error(new AnyError('InvalidOptionsResourcePacks', result.resourcePacks as any))
-        } else {
-          this.error(e as any)
+        // options.txt's `resourcePacks:` line stores a JSON array on a
+        // single line. We've observed truncated values in telemetry
+        // (issue #1469 — partial writes by other launchers / crashes
+        // mid-save: `[`, `["`, `["vanilla","fabric","file/Foo.zip"`).
+        // Salvage what we can with a lenient regex, then silently fall
+        // back to `[]`. The previous explicit telemetry probe was kept
+        // only until we could see the pattern — we now have plenty of
+        // samples; sending it as an exception every time pollutes
+        // App Insights for no operational gain.
+        const recovered: string[] = []
+        const re = /"((?:[^"\\]|\\.)*)"/g
+        let m: RegExpExecArray | null
+        while ((m = re.exec(raw))) {
+          try {
+            recovered.push(JSON.parse('"' + m[1] + '"'))
+          } catch {
+            // ignore individual decode errors
+          }
         }
-        result.resourcePacks = []
+        result.resourcePacks = recovered
       }
     }
 
