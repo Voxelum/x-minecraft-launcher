@@ -816,7 +816,15 @@ export class CurseforgeV1Client {
     fingerprints: number[],
     signal?: AbortSignal,
   ) {
-    if (!fingerprints || fingerprints.length === 0) {
+    // Drop any non-finite / non-positive entries up front. They come from
+    // callers that `parseInt` a non-numeric resource-mapping key, or from
+    // an empty mods folder where `Object.keys(fingerprintMap)` is `[]`.
+    // Either way CurseForge rejects the request with HTTP 400
+    // "Fingerprints are required." (issue #1469 — 234 users in 0.56.4).
+    const cleaned = Array.isArray(fingerprints)
+      ? fingerprints.filter((n) => Number.isFinite(n) && n > 0)
+      : []
+    if (cleaned.length === 0) {
       // CurseForge rejects empty arrays with HTTP 400 "Fingerprints are required.".
       // Short-circuit instead of burning a request + API quota (see issue #1443).
       const empty: FingerprintsMatchesResult['data'] = {
@@ -832,7 +840,7 @@ export class CurseforgeV1Client {
     const url = new URL(this.baseUrl + `/v1/fingerprints/${gameId}`)
     const response = await this.fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ fingerprints }),
+      body: JSON.stringify({ fingerprints: cleaned }),
       headers: {
         ...this.headers,
         'content-type': 'application/json',
