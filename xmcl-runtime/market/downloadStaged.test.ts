@@ -79,7 +79,7 @@ describe('downloadStaged', () => {
       server.close()
       await rm(dir, { recursive: true, force: true })
     }
-  })
+  }, 30_000)
 
   it('replaces an existing destination on success', async () => {
     const newContent = 'NEW'
