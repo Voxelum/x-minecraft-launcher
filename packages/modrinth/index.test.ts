@@ -140,11 +140,11 @@ describe('ModrinthV2Client', () => {
       const mockPool = agent.get('https://api.modrinth.com')
       mockPool
         .intercept({
-          path: '/v2/versions?ids=%5B%22123%22%2C%22345%22%5D',
+          path: '/v2/versions?ids=%5B%22abcd1234%22%2C%22EFGH5678%22%5D',
         })
         .reply(200, { data: 'hello' })
       const client = new ModrinthV2Client({ fetch })
-      await expect(client.getProjectVersionsById(['123', '345'])).resolves.toEqual({
+      await expect(client.getProjectVersionsById(['abcd1234', 'EFGH5678'])).resolves.toEqual({
         data: 'hello',
       })
     })
@@ -152,11 +152,15 @@ describe('ModrinthV2Client', () => {
       const mockPool = agent.get('https://api.modrinth.com')
       mockPool
         .intercept({
-          path: '/v2/versions?ids=%5B%22123%22%2C%22345%22%5D',
+          path: '/v2/versions?ids=%5B%22abcd1234%22%2C%22EFGH5678%22%5D',
         })
         .reply(404, { data: 'hello' })
       const client = new ModrinthV2Client({ fetch })
-      await expect(client.getProjectVersionsById(['123', '345'])).rejects.toThrow(ModerinthApiError)
+      await expect(client.getProjectVersionsById(['abcd1234', 'EFGH5678'])).rejects.toThrow(ModerinthApiError)
+    })
+    it('filters out non-modrinth ids (e.g. leaked file paths) and returns [] if nothing remains', async () => {
+      const client = new ModrinthV2Client({ fetch })
+      await expect(client.getProjectVersionsById(['C:\\path\\to\\file.jar', '123'])).resolves.toEqual([])
     })
   })
   describe('#getProjectVersionsByHash', () => {

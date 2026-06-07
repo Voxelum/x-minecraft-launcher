@@ -17,6 +17,19 @@ import {
 
 export * from './types'
 
+/**
+ * Modrinth IDs (projects, versions, users, …) are 8-character base62
+ * strings (`[0-9A-Za-z]{8}`). Anything else — most commonly a leaked
+ * file path stored in `resource.metadata.modrinth.versionId` after a
+ * manual import — is guaranteed to round-trip through the API as a
+ * 400 "Invalid character in base62 encoding". Filter such ids out at
+ * the client level rather than per-caller.
+ */
+const MODRINTH_ID_RE = /^[0-9A-Za-z]{8}$/
+function isModrinthId(id: string) {
+  return MODRINTH_ID_RE.test(id)
+}
+
 /* eslint-disable camelcase */
 export interface SearchResultHit {
   /**
@@ -315,8 +328,19 @@ export class ModrinthV2Client {
    * @see https://docs.modrinth.com/#tag/versions/operation/getVersions
    */
   async getProjectVersionsById(ids: string[], signal?: AbortSignal) {
+    // Modrinth version ids are 8-character base62. Callers occasionally
+    // leak unrelated strings here — most notably absolute file paths
+    // taken from `resource.metadata.modrinth.versionId` for mods that
+    // were re-imported manually and ended up with the on-disk path in
+    // that field (see telemetry `ModerinthApiError ... getProjectVersionsById`
+    // with ids like `C:\\Users\\...\\oculus-mc1.20.1-1.8.0.jar`). The
+    // server then rejects the whole batch with 400 "Invalid character
+    // ':' in base62 encoding", losing all the *valid* ids in the same
+    // batch. Filter client-side instead.
+    const validIds = ids.filter((v) => typeof v === 'string' && isModrinthId(v))
+    if (validIds.length === 0) return []
     const url = new URL(this.baseUrl + '/v2/versions')
-    url.searchParams.append('ids', JSON.stringify(ids))
+    url.searchParams.append('ids', JSON.stringify(validIds))
     const response = await this.fetch(url, {
       signal,
       headers: this.headers,
