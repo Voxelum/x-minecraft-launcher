@@ -7,9 +7,11 @@ export function useCriticalStatus(settings: Ref<SharedState<Settings> | undefine
   const isOpened = computed(() => settings.value?.databaseReady ?? false)
   const isNoEmptySpace = computed(() => settings.value?.diskFullError ?? false)
   const invalidGameDataPath = computed(() => settings.value?.invalidGameDataPath ?? false)
+  const corruptedResourceCount = computed(() => settings.value?.corruptedResourceCount ?? 0)
   return {
     isOpened,
     isNoEmptySpace,
     invalidGameDataPath,
+    corruptedResourceCount,
   }
 }

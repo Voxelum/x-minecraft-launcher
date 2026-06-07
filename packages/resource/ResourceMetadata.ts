@@ -42,6 +42,30 @@ export interface ResourceSourceModrinth {
   versionId: string
 }
 
+/**
+ * Modrinth project / version / user ids are 8-character base62 strings.
+ * Anything else (most commonly a leaked file path stored under
+ * `resource.metadata.modrinth.versionId` by older builds, third-party
+ * importers or hand-edited json) will round-trip through the API as a
+ * 400 "Invalid character in base62 encoding" and kill the entire batch.
+ * Validate before persisting or forwarding.
+ */
+const MODRINTH_ID_RE = /^[0-9A-Za-z]{8}$/
+export function isValidModrinthId(id: unknown): id is string {
+  return typeof id === 'string' && MODRINTH_ID_RE.test(id)
+}
+export function isValidModrinthRef(m: Partial<ResourceSourceModrinth> | undefined | null): m is ResourceSourceModrinth {
+  return !!m && isValidModrinthId(m.projectId) && isValidModrinthId(m.versionId)
+}
+
+/**
+ * CurseForge project / file ids are positive integers; same class of leak applies.
+ */
+export function isValidCurseforgeRef(c: Partial<ResourceSourceCurseforge> | undefined | null): c is ResourceSourceCurseforge {
+  return !!c && Number.isInteger(c.projectId) && Number.isInteger(c.fileId) &&
+    (c.projectId as number) > 0 && (c.fileId as number) > 0
+}
+
 export interface ResourceMetadata {
   name?: string
   forge?: ForgeModCommonMetadata

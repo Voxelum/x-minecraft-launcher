@@ -1,7 +1,7 @@
 import { isNotNull } from '@xmcl/core/utils'
 import { download } from '@xmcl/file-transfer'
 import { onDownloadSingle, Tracker } from '@xmcl/installer'
-import { ResourceDomain, ResourceManager, type Resource } from '@xmcl/resource'
+import { isValidModrinthId, ResourceDomain, ResourceManager, type Resource } from '@xmcl/resource'
 import { kResourceManager } from '~/resource'
 import { ModMetadataServiceKey, type ModMetadataService as IModMetadataService, type ModMetadata, DownloadModMetadataDbTask, DownloadModMetadataDbTrackerEvents } from '@xmcl/runtime-api'
 import { createReadStream } from 'fs'
@@ -192,14 +192,14 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
       const res = resourceDict[metadata.sha1]
       if (!res) continue
       let dirty = false
-      if (!res.metadata.curseforge && metadata.curseforge) {
+      if (!res.metadata.curseforge && metadata.curseforge && Number.isInteger(metadata.curseforge.id) && Number.isInteger(metadata.curseforge.file)) {
         res.metadata.curseforge = {
           projectId: metadata.curseforge.id,
           fileId: metadata.curseforge.file,
         }
         dirty = true
       }
-      if (!res.metadata.modrinth && metadata.modrinth) {
+      if (!res.metadata.modrinth && metadata.modrinth && isValidModrinthId(metadata.modrinth.id) && isValidModrinthId(metadata.modrinth.version)) {
         res.metadata.modrinth = {
           projectId: metadata.modrinth.id,
           versionId: metadata.modrinth.version,

@@ -213,6 +213,8 @@ errors:
   DiskIsFull: |-
     您的磁盘已满！
     启动器无法将任何内容写入磁盘。赶快换一个数据目录或者清一下你的磁盘吧。
+  CorruptedResourceMetadata: |-
+    检测到并已清理 {count} 个资源的损坏元数据。文件本身仍可使用，但其 Modrinth/CurseForge 关联信息已丢失，将在下次扫描时自动重新识别。
   DownloadAggregateError: 下载文件失败。
   DownloadFileSystemError: 无法访问下载目标路径，请确认启动器有权写入目标路径。
   HeadersTimeoutError: 等待 HTTP 头信息超时

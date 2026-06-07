@@ -9,7 +9,7 @@ import { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { diagnoseFile, onDownloadSingle, Tracker } from '@xmcl/installer'
 import { InstanceFile as _InstanceFile } from '@xmcl/instance'
 import { ModrinthV2Client, ProjectVersion } from '@xmcl/modrinth'
-import { File } from '@xmcl/resource'
+import { File, isValidCurseforgeRef, isValidModrinthRef } from '@xmcl/resource'
 import {
   InstallCurseforgeFileTask,
   InstallCurseforgeFileTrackerEvents,
@@ -114,6 +114,13 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
     domainDir: string,
     downloadOptions: DownloadBaseOptions,
   ) {
+    // Defend against corrupted refs (paths leaked into versionId etc.).
+    if (instFile.modrinth && !isValidModrinthRef(instFile.modrinth)) {
+      instFile.modrinth = undefined
+    }
+    if (instFile.curseforge && !isValidCurseforgeRef(instFile.curseforge)) {
+      instFile.curseforge = undefined
+    }
     const snapshoted = await getSnapshotByUris(instFile, domainDir)
     const filePath = join(domainDir, instFile.path)
     const uris = instFile.downloads

@@ -7,6 +7,11 @@ import { getInstanceFiles } from '../files_discovery'
 import { Logger } from '../internal_type'
 import { CreateInstanceOptions } from '../create'
 
+// Modrinth ids are 8-char base62. Validate user-supplied profile.json before
+// trusting it (third-party exporters have been seen to inject paths).
+const MODRINTH_ID_RE = /^[0-9A-Za-z]{8}$/
+const isModrinthId = (v: unknown): v is string => typeof v === 'string' && MODRINTH_ID_RE.test(v)
+
 /**
  * Modrinth project interface (simplified)
  */
@@ -130,7 +135,7 @@ export async function parseModrinthInstance(instancePath: string): Promise<Creat
     shaderpacks: true,
   }
 
-  if (modrinth.metadata.linked_data) {
+  if (modrinth.metadata.linked_data && isModrinthId(modrinth.metadata.linked_data.project_id) && isModrinthId(modrinth.metadata.linked_data.version_id)) {
     options.upstream = {
       type: 'modrinth-modpack',
       projectId: modrinth.metadata.linked_data.project_id,
@@ -168,9 +173,11 @@ export async function parseModrinthInstanceFiles(
         )
         if (existedFile) {
           file.hashes.sha1 = existedFile.hashes.sha1
-          file.modrinth = {
-            projectId: existedProject.metadata.project.id,
-            versionId: existedProject.metadata.version.id,
+          if (isModrinthId(existedProject.metadata.project.id) && isModrinthId(existedProject.metadata.version.id)) {
+            file.modrinth = {
+              projectId: existedProject.metadata.project.id,
+              versionId: existedProject.metadata.version.id,
+            }
           }
           file.downloads.push(existedFile.url)
         }

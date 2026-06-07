@@ -12,7 +12,7 @@ import {
   type ModrinthModpackManifest
 } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { ResourceManager, ResourceMetadata, UpdateResourcePayload } from '@xmcl/resource'
+import { isValidCurseforgeRef, isValidModrinthRef, ResourceManager, ResourceMetadata, UpdateResourcePayload } from '@xmcl/resource'
 import {
   ModpackException,
   ModpackServiceKey,
@@ -572,14 +572,14 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     if (metadata) {
       this.log(`Get modpack profile by cached ino ${path}`)
-      const upstream: Instance['upstream'] = metadata.curseforge
+      const upstream: Instance['upstream'] = isValidCurseforgeRef(metadata.curseforge)
         ? {
             type: 'curseforge-modpack',
             modId: metadata.curseforge.projectId,
             fileId: metadata.curseforge.fileId,
             sha1,
           }
-        : metadata.modrinth
+        : isValidModrinthRef(metadata.modrinth)
           ? {
               type: 'modrinth-modpack',
               projectId: metadata.modrinth.projectId,

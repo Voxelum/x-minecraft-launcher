@@ -72,6 +72,15 @@ export class Settings implements SettingSchema {
 
   databaseReady = false
 
+  /**
+   * Number of resource DB rows whose curseforge/modrinth metadata was
+   * detected as corrupted (e.g. a file path leaked into modrinth.versionId)
+   * during the startup sweep. The rows have already been healed
+   * (offending fields nulled); this count is purely a UI hint so the
+   * user knows some resource attribution was lost.
+   */
+  corruptedResourceCount = 0
+
   invalidGameDataPath: InvalidDirectoryErrorCode = undefined
 
   config(config: SettingSchema) {
@@ -220,6 +229,10 @@ export class Settings implements SettingSchema {
 
   databaseReadySet(ready: boolean) {
     this.databaseReady = ready
+  }
+
+  corruptedResourceCountSet(count: number) {
+    this.corruptedResourceCount = count
   }
 
   invalidGameDataPathSet(invalid: InvalidDirectoryErrorCode) {

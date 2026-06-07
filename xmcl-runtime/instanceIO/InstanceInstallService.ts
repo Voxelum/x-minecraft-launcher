@@ -12,6 +12,7 @@ import {
   ResourceManager,
   getDomainedPath,
   getFile,
+  isValidModrinthId,
   type File,
   type ResourceMetadata,
 } from '@xmcl/resource'
@@ -241,7 +242,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
             for (const o of options) {
               const modrinth = modrinthMetadata[o.hash]
-              if (modrinth) {
+              if (modrinth && isValidModrinthId(modrinth.project_id) && isValidModrinthId(modrinth.id)) {
                 o.metadata.modrinth = {
                   projectId: modrinth.project_id,
                   versionId: modrinth.id,

@@ -4,6 +4,7 @@ import {
   ResourceManager,
   getDomainedPath,
   migrate,
+  sweepCorruptedRefs,
 } from '@xmcl/resource'
 import {
   Exception,
@@ -164,6 +165,23 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
       continue
     }
     app.registry.get(kSettings).then((settings) => settings.databaseReadySet(true))
+
+    // Fire-and-forget: walk the resources table once and null out any
+    // modrinth/curseforge refs that are obviously corrupted (e.g. a
+    // file path stored in versionId). Surfaces a soft hint on the home
+    // page so the user knows attribution was lost for some files.
+    sweepCorruptedRefs(database).then(async (r) => {
+      if (r.rowsAffected > 0) {
+        logger.warn(
+          `Cleared corrupted resource refs: ${r.rowsAffected} row(s), ` +
+          `${r.modrinthCleared} modrinth + ${r.curseforgeCleared} curseforge.`,
+        )
+        const settings = await app.registry.get(kSettings)
+        settings.corruptedResourceCountSet(r.rowsAffected)
+      }
+    }).catch((e) => {
+      logger.error(Object.assign(e as any, { cause: 'SweepCorruptedRefs' }))
+    })
     break
   }
 
