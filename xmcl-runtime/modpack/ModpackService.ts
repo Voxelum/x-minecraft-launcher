@@ -643,7 +643,16 @@ export class ModpackService extends AbstractService implements IModpackService {
     this.log(`Open modpack profile ${modpackFile}`)
     return store.registerOrGet(`modpack-file://${modpackFile}`, async () => {
       const cached = await this.getCachedInstallProfile(modpackFile)
-      const zip = await zipManager.open(modpackFile)
+      const zip = await zipManager.open(modpackFile).catch((e) => {
+        // User dragged in a non-zip (.rar, .7z, corrupted download).
+        // Convert to a UI-friendly Exception so it doesn't pollute
+        // telemetry (issue #1469 — 79 users in 0.56.4, ~all .rar /
+        // .rar.zip / corrupted Forge installers).
+        if (e?.name === 'InvalidZipFile' || e?.name === 'InvalidZipFileError') {
+          throw new ModpackException({ type: 'invalidModpack', path: modpackFile }, undefined, { cause: e })
+        }
+        throw e
+      })
       this.log(`Opened modpack profile ${modpackFile}`)
       const state = new ModpackState()
       state.modpackPath = modpackFile

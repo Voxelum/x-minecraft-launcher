@@ -804,6 +804,26 @@ export class InstallService extends AbstractService implements IInstallService {
           if (err.message.indexOf('sun.security.validator.ValidatorException') !== -1) {
             continue
           }
+          // The installer jar that we cached locally is corrupted (truncated
+          // download, AV stripping). `@xmcl/installer.installForge` opens it
+          // and yauzl rejects with `InvalidZipFile`. Re-label so it doesn't
+          // pollute telemetry as a generic `InvalidZipFile` (issue #1469).
+          // Delete the cached jar so the next retry redownloads it.
+          if (err.name === 'InvalidZipFile' || err.name === 'InvalidZipFileError') {
+            const installerPath = options.installer?.path
+            if (installerPath && !installerPath.startsWith('http')) {
+              await unlink(installerPath).catch(() => {})
+            }
+            const wrapped = new AnyError(
+              'ForgeInstallError',
+              `Forge installer jar is not a valid zip (will retry on next attempt): ${err.message}`,
+              { cause: err },
+              { mcversion: options.mcversion, version: options.version, installer: options.installer },
+            )
+            this.warn(wrapped)
+            task.fail(wrapped)
+            throw wrapped
+          }
           if (err.message.indexOf('java.util.zip.ZipException: invalid entry size') !== -1) {
             // Some file are not downloaded completely
             if (err instanceof PostProcessFailedError) {
