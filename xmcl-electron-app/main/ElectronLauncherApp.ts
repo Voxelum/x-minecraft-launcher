@@ -88,6 +88,13 @@ const getEnv = () => {
   }
 }
 
+function isLatin1(s: string) {
+  for (let i = 0; i < s.length; i++) {
+    if (s.charCodeAt(i) > 0xff) return false
+  }
+  return true
+}
+
 function getErrorCode(e: Error) {
   let code: NetworkErrorCode | undefined
   if (e.message === 'net::ERR_CONNECTION_CLOSED') {
@@ -116,6 +123,15 @@ function getErrorCode(e: Error) {
 
 export default class ElectronLauncherApp extends LauncherApp {
   readonly session: ElectronSession
+
+  /**
+   * Bug K diagnostic: when we drop a non-Latin1 header value in
+   * `fetch`, we want exactly one trackException per session so the
+   * source of the leak surfaces in App Insights, but we don't want a
+   * trackException storm if the same caller fires on every request.
+   * Track which header names we've already reported.
+   */
+  private readonly reportedNonLatin1Headers = new Set<string>()
 
   constructor() {
     // E2E hook: when XMCL_E2E_APP_DATA is set, redirect Electron's appData
@@ -185,6 +201,39 @@ export default class ElectronLauncherApp extends LauncherApp {
         delete init.headers['sec-ch-ua']
         delete init.headers['sec-ch-ua-mobile']
         delete init.headers['sec-ch-ua-platform']
+        // Headers values are Latin-1 (RFC 9110 / WHATWG ByteString).
+        // Anything outside that range makes Electron's `_Headers.set`
+        // throw `TypeError at webidl.converters.ByteString` ("character
+        // at index N has a value of M which is greater than 255"),
+        // which then surfaces in App Insights as a real exception
+        // although the originating fetch call had no chance to succeed
+        // anyway. Drop offending entries instead — they are virtually
+        // always something like a UI display name that accidentally
+        // ended up in a header.
+        for (const k of Object.keys(init.headers)) {
+          const v = init.headers[k]
+          if (typeof v === 'string' && !isLatin1(v)) {
+            const url = typeof args[0] === 'string' ? args[0] : (args[0] as URL)?.toString?.()
+            const offendingIndex = [...v].findIndex((ch) => ch.charCodeAt(0) > 0xff)
+            const offendingCode = v.charCodeAt(offendingIndex)
+            this.logger.warn(`Dropping non-Latin1 header ${k}=${JSON.stringify(v)} (index ${offendingIndex} char ${offendingCode}) from fetch to ${url}`)
+            // Bug K telemetry breadcrumb: once-per-(header name)
+            // trackException with an Error carrying a real stack so
+            // the upstream caller is identifiable in App Insights.
+            // Cap to one report per header name per session — we
+            // don't want a per-request storm if the same caller leaks
+            // continuously.
+            if (!this.reportedNonLatin1Headers.has(k)) {
+              this.reportedNonLatin1Headers.add(k)
+              const breadcrumb = new Error(
+                `Non-Latin1 fetch header dropped: ${k} (value length ${v.length}, first offending char index ${offendingIndex} = 0x${offendingCode.toString(16)}); url=${url}`,
+              )
+              breadcrumb.name = 'NonLatin1HeaderDropped'
+              this.logger.error(breadcrumb)
+            }
+            delete init.headers[k]
+          }
+        }
       }
       return await net.fetch(args[0], init) as any
     } catch (e) {
