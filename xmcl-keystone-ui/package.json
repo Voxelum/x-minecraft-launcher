@@ -15,7 +15,8 @@
         "url": "https://github.com/voxelum/x-minecraft-launcher"
     },
     "scripts": {
-        "build": "vite build --emptyOutDir",
+        "build": "vite build --emptyOutDir && node ./scripts/verify-bundle.mjs",
+        "verify-bundle": "node ./scripts/verify-bundle.mjs",
         "check": "vue-tsc --noEmit --project ./tsconfig.json",
         "dev": "vite",
         "lint": "oxlint -c ./node_modules/@xmcl/oxlint-config/oxlintrc.json .",

@@ -26,6 +26,14 @@ export default defineConfig({
       input: entries,
       external: ['electron'],
     },
+    // Workaround for vitejs/vite#22583 + vbenjs/vue-vben-admin#7955:
+    // rolldown 1.0.2+ (bundled with vite >= 8.0.14) drops `init_*_esm_bundler`
+    // helpers across chunks in multi-entry Vue builds when its internal
+    // minifier runs. Disabling rolldown's minify and letting terser handle
+    // minification keeps Vue's circular ESM helpers wired correctly.
+    // The `minify` field exists on rolldown's RolldownOptions but isn't
+    // re-exported by vite's type — drop the cast once vite types catch up.
+    rolldownOptions: ({ minify: false } as any),
     minify: 'terser',
     sourcemap: true,
     terserOptions: {
