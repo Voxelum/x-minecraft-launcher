@@ -47,8 +47,8 @@
               <div
                 v-for="source in sourcesList"
                 :key="source.id"
-                class="source-button relative flex-1 flex flex-col items-center justify-center p-3 rounded-xl cursor-pointer transition-all duration-200 border border-transparent"
-                :class="omitSources.includes(source.id) ? 'omitted' : 'bg-surface'"
+                class="source-button surface-card-row rounded-xl relative flex-1 flex flex-col items-center justify-center p-3"
+                :class="{ omitted: omitSources.includes(source.id) }"
                 @click="toggleSource(source.id)"
               >
                 <component :is="source.component" class="w-6 h-6 fill-current" />
@@ -595,13 +595,22 @@ useTextFieldBehavior(filter, focused)
   @apply mb-2;
 }
 
-/* Source Button Styles */
+/* Source Button Styles — shape + border + hover-border come from the
+   shared `.surface-card-row` utility. Only the colour-tone bits and
+   the omitted (off) override live here. */
 .source-button {
   @apply text-gray-600 dark:text-gray-400;
 }
 
 .source-button .cross-overlay {
   opacity: 0;
+}
+
+/* Off-state: transparent shell, no border swap on hover */
+.source-button.omitted,
+.source-button.omitted:hover {
+  background: transparent;
+  border-color: transparent;
 }
 
 .source-button.omitted {

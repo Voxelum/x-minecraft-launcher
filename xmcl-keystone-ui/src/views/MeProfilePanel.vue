@@ -1,11 +1,9 @@
 <template>
-  <div class="me-profile-panel flex flex-col h-full overflow-hidden">
+  <div class="me-profile-panel flex flex-col h-full overflow-hidden select-none">
     <UserAccountSwitcher class="profile-header px-3 pt-3 pb-2 flex-shrink-0" show-inline-delete />
 
     <!-- Skin & Cape Card -->
-    <div class="skin-cape-card mx-3 mt-1 mb-2 flex-shrink-0 rounded-2xl overflow-hidden border"
-      style="background: rgba(var(--v-theme-on-surface), 0.04); border-color: rgba(var(--v-theme-on-surface), 0.08);"
-    >
+    <div class="skin-cape-card surface-panel mx-3 mt-1 mb-2 flex-shrink-0 overflow-hidden">
       <!-- 3D Model with edit controls -->
       <div
         class="flex items-center justify-center py-3 cursor-default"
@@ -82,9 +80,9 @@
     >
       <template v-if="isMicrosoftUser">
         <!-- Settings row -->
-        <div class="friend-control-card rounded-xl overflow-hidden mb-2 border">
+        <div class="surface-card-row rounded-xl overflow-hidden mb-2">
           <div
-            class="flex items-center justify-between px-3 py-2 cursor-pointer transition-colors hover:bg-[rgba(var(--v-theme-on-surface),0.06)]"
+            class="flex items-center justify-between px-3 py-2"
           >
             <label :for="friendsEnabledId" class="flex items-center gap-2 cursor-pointer">
               <v-icon size="14" class="opacity-50" aria-hidden="true">visibility</v-icon>
@@ -137,7 +135,7 @@
             <div
               v-bind="props"
               data-testid="minecraft-friends-menu-activator"
-              class="friend-control-card friends-menu-activator flex items-center justify-between rounded-xl border px-3 py-4.5 cursor-pointer transition-colors"
+              class="surface-card-row friends-menu-activator flex items-center justify-between rounded-xl px-3 py-4.5"
               :class="{ 'opacity-50 pointer-events-none': preferences?.friendsEnabled === false }"
               role="button"
               :tabindex="preferences?.friendsEnabled === false ? -1 : 0"
@@ -375,16 +373,6 @@ async function onRemoveFriend(f: MinecraftFriend) {
 .cape-scroll::-webkit-scrollbar {
   height: 0;
   display: none;
-}
-
-.friend-control-card {
-  min-height: 38px;
-  background: rgba(var(--v-theme-on-surface), 0.03);
-  border-color: rgba(var(--v-theme-on-surface), 0.06);
-}
-
-.friend-control-card:hover {
-  background: rgba(var(--v-theme-on-surface), 0.06);
 }
 
 .profile-friends-menu-list {

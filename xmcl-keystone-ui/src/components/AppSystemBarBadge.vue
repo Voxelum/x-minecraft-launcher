@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    class="system-bar-badge non-moveable flex flex-grow-0 cursor-pointer items-center rounded px-2 py-1 transition-all hover:bg-[rgba(255,255,255,0.2)]"
+    class="system-bar-badge non-moveable flex flex-grow-0 cursor-pointer items-center rounded px-2 py-1 transition-all"
     :aria-label="ariaLabel || text || undefined"
     @click="$emit('click', $event)"
   >
@@ -45,6 +45,10 @@ defineProps<{
   color: inherit;
   font: inherit;
   appearance: none;
+}
+
+.system-bar-badge:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .system-bar-badge:focus-visible {

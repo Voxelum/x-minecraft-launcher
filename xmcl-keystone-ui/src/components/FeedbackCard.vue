@@ -1,22 +1,19 @@
 <template>
   <div class="feedback-card flex flex-col gap-4">
-    <v-card
+    <div
       v-if="icon"
-      elevation="2"
-      variant="outlined"
+      class="surface-panel p-4"
     >
-      <v-card-text class="p-4">
-        <div class="flex items-center">
-          <v-icon
-            color="primary"
-            class="mr-2"
-          >
-            info
-          </v-icon>
-          <span class="text-h6">{{ t('feedback.hint') }}</span>
-        </div>
-      </v-card-text>
-    </v-card>
+      <div class="flex items-center">
+        <v-icon
+          color="primary"
+          class="mr-2"
+        >
+          info
+        </v-icon>
+        <span class="text-h6">{{ t('feedback.hint') }}</span>
+      </div>
+    </div>
 
     <div
       v-else

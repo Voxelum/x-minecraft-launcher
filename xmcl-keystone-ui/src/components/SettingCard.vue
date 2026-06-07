@@ -1,7 +1,7 @@
 <template>
   <v-card
-    class="setting-card"
-    elevation="2"
+    class="surface-card-subsection"
+    :elevation="tokens.cardSubsectionElevation.value"
     role="region"
     :aria-label="title || subtitle || undefined"
   >
@@ -27,17 +27,19 @@
   </v-card>
 </template>
 <script setup lang="ts">
+import { kSurfaceTokens } from '@/composables/surfaceTokens'
+import { injection } from '@/util/inject'
+
 defineProps<{
   title?: string
   color?: string
   subtitle?: string
   icon?: string
 }>()
+
+const tokens = injection(kSurfaceTokens)
 </script>
 <style scoped>
-.setting-card {
-  border-radius: 12px;
-}
 .setting-card__header {
   display: flex;
   align-items: flex-start;

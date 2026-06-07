@@ -119,7 +119,7 @@
   </SettingCard>
 
   <v-dialog v-model="isPreviewShown" :width="720">
-    <v-card class="flex max-h-[85vh] flex-col overflow-hidden rounded-xl">
+    <v-card class="flex max-h-[85vh] flex-col overflow-hidden">
       <v-toolbar color="primary" flat density="comfortable">
         <v-app-bar-nav-icon
           icon="terminal"
@@ -173,7 +173,7 @@
     </v-card>
   </v-dialog>
   <v-dialog v-model="model" width="440">
-    <v-card class="rounded-xl">
+    <v-card>
       <v-card-item>
         <template #prepend>
           <v-avatar color="primary" variant="tonal">

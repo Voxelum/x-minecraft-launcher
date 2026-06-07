@@ -167,10 +167,3 @@ function onClickInstallFromModpack() {
   background: rgba(0, 0, 0, 0.5);
 }
 </style>
-<style>
-.home-actions .v-speed-dial__list {
-  padding: 0.2rem;
-  /* background-color: rgba(0, 0, 0); */
-  /* border-radius: 0.6rem; */
-}
-</style>

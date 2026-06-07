@@ -5,7 +5,7 @@
     :persistent="true"
     transition="fade-transition"
   >
-    <v-card rounded="xl" class="relative select-none">
+    <v-card class="relative select-none">
       <v-btn
         v-shared-tooltip="() => t('unauthenticatedWarning.cancel')"
         icon="close"

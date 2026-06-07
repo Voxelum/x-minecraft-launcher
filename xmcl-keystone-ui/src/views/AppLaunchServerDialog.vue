@@ -4,7 +4,7 @@
     width="820"
     scrollable
   >
-    <v-card class="launch-server-dialog select-none flex flex-col rounded-xl overflow-hidden">
+    <v-card class="launch-server-dialog select-none flex flex-col overflow-hidden">
       <!-- Header -->
       <v-card-item class="launch-server-dialog__header">
         <template #prepend>

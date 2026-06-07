@@ -263,7 +263,7 @@ const saveRowCount = computed(() => getRowCount(containerWidths[CardType.Save]))
 }
 
 .vgl-layout .vgl-item:not(.vgl-item--placeholder):not(.vgl-item--dragging) > .v-card  {
-  border: 1px solid transparent;
+  border: var(--card-subsection-border);
   transition: border-color 0.5s ease;
 }
 /* ── Modern card hover ── */

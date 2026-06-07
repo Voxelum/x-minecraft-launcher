@@ -47,10 +47,7 @@
 
       <div class="flex-1 min-h-0 overflow-y-auto invisible-scroll px-6 pb-6 flex flex-col gap-4">
         <!-- Add friend -->
-        <div
-          class="rounded-2xl border p-4"
-          style="background: rgba(var(--v-theme-on-surface), 0.04); border-color: rgba(var(--v-theme-on-surface), 0.08);"
-        >
+        <div class="surface-panel p-4">
           <div class="text-xs font-semibold uppercase tracking-wide opacity-60 mb-3">
             {{ t('minecraftFriends.add') }}
           </div>
@@ -100,10 +97,7 @@
         </v-alert>
 
         <!-- Accept invites toggle -->
-        <div
-          class="flex items-center justify-between rounded-2xl border px-4 py-3"
-          style="background: rgba(var(--v-theme-on-surface), 0.04); border-color: rgba(var(--v-theme-on-surface), 0.08);"
-        >
+        <div class="surface-panel flex items-center justify-between px-4 py-3">
           <div class="flex flex-col gap-0.5">
             <div class="text-sm font-medium">{{ t('minecraftFriends.privacy.acceptInvites') }}</div>
             <div class="text-xs opacity-50">{{ t('minecraftFriends.privacy.acceptInvitesHint') }}</div>
@@ -137,8 +131,7 @@
         <!-- Incoming requests -->
         <div
           v-if="!isHeroEmpty && data?.incomingRequests.length"
-          class="rounded-2xl border overflow-hidden"
-          style="background: rgba(var(--v-theme-on-surface), 0.04); border-color: rgba(var(--v-theme-on-surface), 0.08);"
+          class="surface-panel overflow-hidden"
         >
           <div class="px-4 pt-3 pb-2 text-xs font-semibold uppercase tracking-wide opacity-60">
             {{ t('minecraftFriends.incoming') }}
@@ -192,8 +185,7 @@
         <!-- Outgoing requests -->
         <div
           v-if="!isHeroEmpty && data?.outgoingRequests.length"
-          class="rounded-2xl border overflow-hidden"
-          style="background: rgba(var(--v-theme-on-surface), 0.04); border-color: rgba(var(--v-theme-on-surface), 0.08);"
+          class="surface-panel overflow-hidden"
         >
           <div class="px-4 pt-3 pb-2 text-xs font-semibold uppercase tracking-wide opacity-60">
             {{ t('minecraftFriends.outgoing') }}

@@ -63,12 +63,77 @@ p {
 
 html {
     --highlight-color: #fbc02d;
+
+    /* ── Shared surface tokens (dialogs, menus, popovers) ──
+       These are the FALLBACKS. The real source of truth lives in
+       `src/composables/surfaceTokens.ts` — `useSurfaceTokens()` is
+       provided at the app root (windows/app/Context.ts) and pushes
+       its reactive refs onto <html> as `--surface-*` properties.
+       Override them programmatically by injecting `kSurfaceTokens`
+       and writing to the refs (a future settings UI will wire here). */
+    --surface-radius: 16px;                                              /* matches Vuetify `rounded="xl"` */
+    --surface-border: 1px solid rgba(var(--v-theme-on-surface), 0.10);
+    --surface-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.35);
+
+    /* Frosted-glass background shared by dialogs, menus and popovers. */
+    --surface-bg: rgba(var(--v-theme-surface), 0.82);
+    --surface-blur: 48px;
+
+    /* Menu-only: inner padding + list-item radius (dialogs don't share). */
+    --surface-menu-padding: 6px;
+    --surface-menu-item-radius: 10px;
+
+    /* Cards — three intentional tiers. Apply with the `.surface-card`,
+       `.surface-card-subsection`, `.surface-card-item` utility classes. */
+    --card-radius: 16px;
+    --card-subsection-radius: 12px;
+    --card-item-radius: 10px;
+    --card-subsection-elevation: 0;  /* Vuetify elevation prop number (read via JS, not CSS) */
+    --card-subsection-bg: rgb(var(--v-theme-surface));
+    --card-subsection-border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+
+    /* Row card — list rows (`.surface-card-row`). Same border-swap
+       interaction as `.surface-card-clickable` but with the small
+       item radius and no lift / shadow. */
+    --card-row-bg: rgb(var(--v-theme-surface));
+    --card-row-border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+    --card-row-border-hover: 1px solid rgba(var(--v-theme-primary), 0.45);
+    --card-row-active-scale: 0.98;
+    --card-row-transition: border-color 0.2s ease, background-color 0.15s ease, transform 0.1s ease;
+    --card-bg: transparent;          /* let Vuetify's surface color show through */
+    --card-border: none;             /* most cards have no border */
+
+    /* Frosted info panels — the `.surface-panel` utility class.
+       Padding is left to callsites (some panels host lists w/ their own). */
+    --panel-radius: 24px;
+    --panel-bg: rgba(var(--v-theme-on-surface), 0.04);
+    --panel-border: 1px solid rgba(var(--v-theme-on-surface), 0.10);
+
+    /* Prominent cards (store detail / large feature). */
+    --card-prominent-radius: 24px;
+
+    /* Clickable card interaction (lift + shadow + primary-tinted border on
+       hover). Apply via the `.surface-card-clickable` utility — it ships
+       a solid surface bg and the prominent 24px radius by default so the
+       Store-style tile language is the default. Pair with inner UnoCSS
+       atomics if a specific tile needs a different padding / layout. */
+    --card-clickable-radius: 24px;
+    --card-clickable-bg: rgb(var(--v-theme-surface));
+    --card-clickable-border: 1px solid rgba(var(--v-theme-on-surface), 0.06);
+    --card-clickable-border-hover: 1px solid rgba(var(--v-theme-primary), 0.35);
+    --card-clickable-shadow-hover: 0 12px 24px -8px rgba(0, 0, 0, 0.25),
+                                    0 4px 12px -4px rgba(0, 0, 0, 0.15);
+    --card-clickable-lift: -4px;
+    --card-clickable-active-scale: 0.98;
+    --card-clickable-transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                                 box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                                 border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .v-list-item,
 .v-list-item:hover:before,
 .v-list-item:focus:before {
-    border-radius: 10px;
+    border-radius: var(--card-item-radius);
 }
 
 html ::-webkit-scrollbar {
@@ -144,6 +209,17 @@ html ::-webkit-scrollbar {
     justify-content: center;
 }
 
+/* ── Default surface for every v-card / v-sheet ──
+   Routes the unstyled defaults through `--card-radius`. Specificity is
+   forced to 0 via `:where()` so any explicit `rounded-*` / `bg-*` class
+   on the callsite (single-class specificity) still wins via source
+   order. Cards inside dialogs/menus already have dedicated, higher-
+   specificity rules below and remain unaffected. v-system-bar opts
+   out — it must stay flat against the window chrome. */
+:where(.v-card, .v-sheet:not(.v-system-bar)) {
+    border-radius: var(--card-radius);
+}
+
 .v-menu {
     /* fix wrong menu width */
     max-width: 0px;
@@ -151,24 +227,24 @@ html ::-webkit-scrollbar {
 
 /* ── Modern frosted-glass menus ── */
 .v-menu > .v-overlay__content {
-    border-radius: 16px !important;
+    border-radius: var(--surface-radius) !important;
 }
 
 .v-menu > .v-overlay__content > .v-list,
 .v-menu > .v-overlay__content > .v-card,
 .v-menu > .v-overlay__content > .v-sheet {
-    -webkit-backdrop-filter: blur(48px);
-    backdrop-filter: blur(48px);
-    background: rgba(var(--v-theme-surface), 0.82) !important;
+    -webkit-backdrop-filter: blur(var(--surface-blur));
+    backdrop-filter: blur(var(--surface-blur));
+    background: var(--surface-bg) !important;
     color: rgb(var(--v-theme-on-surface));
-    border: 1px solid rgba(var(--v-theme-on-surface), 0.10);
-    border-radius: 16px !important;
-    box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.35);
-    padding: 6px !important;
+    border: var(--surface-border);
+    border-radius: var(--surface-radius) !important;
+    box-shadow: var(--surface-shadow);
+    padding: var(--surface-menu-padding) !important;
 }
 
 .v-menu > .v-overlay__content > .v-list .v-list-item {
-    border-radius: 10px;
+    border-radius: var(--surface-menu-item-radius);
     margin: 1px 0;
     min-height: 40px;
     transition: background-color 0.15s ease;
@@ -176,6 +252,114 @@ html ::-webkit-scrollbar {
 
 .v-menu > .v-overlay__content > .v-list .v-list-item:hover {
     background-color: rgba(var(--v-theme-on-surface), 0.08);
+}
+
+/* ── Dialogs share the menu/popover language ──
+   Same radius, border, frosted-glass bg, blur and shadow as menus.
+   Callsites that override via `rounded-*` / `color` props win
+   through normal cascade ordering. */
+.v-dialog > .v-overlay__content > .v-card,
+.v-dialog > .v-overlay__content > .v-sheet {
+    -webkit-backdrop-filter: blur(var(--surface-blur));
+    backdrop-filter: blur(var(--surface-blur));
+    background: var(--surface-bg) !important;
+    border-radius: var(--surface-radius);
+    border: var(--surface-border);
+    box-shadow: var(--surface-shadow);
+}
+
+/* ── Card / panel utility classes ──
+   Opt-in. Apply on `<v-card class="surface-card">` or a plain `<div>` to
+   inherit the shared shape/colour tokens. Existing components that
+   deliberately pick a different radius/border keep working unchanged. */
+.surface-card {
+    border-radius: var(--card-radius);
+    background: var(--card-bg);
+    border: var(--card-border);
+}
+
+/* Subsection card — Setting blocks, HomeFooterCard, any panel that
+   wants the tighter 12px radius + forced surface bg + 1px border.
+   Works on v-card and plain divs alike. Padding / elevation stay
+   with the callsite. */
+.surface-card-subsection {
+    border-radius: var(--card-subsection-radius);
+    background: var(--card-subsection-bg);
+    border: var(--card-subsection-border);
+}
+
+.surface-card-item {
+    border-radius: var(--card-item-radius);
+    background: var(--card-bg);
+    border: var(--card-border);
+}
+
+/* Row card — Me instance items, Friends rows, anywhere a tight list
+   row needs a clickable affordance. Same border-swap idiom as the
+   clickable feature tile but smaller radius and no lift / shadow.
+   Padding stays with the callsite. */
+.surface-card-row {
+    border-radius: var(--card-item-radius);
+    background: var(--card-row-bg);
+    border: var(--card-row-border);
+    cursor: pointer;
+    transition: var(--card-row-transition);
+}
+
+.surface-card-row:hover {
+    border: var(--card-row-border-hover);
+}
+
+.surface-card-row:active {
+    transform: scale(var(--card-row-active-scale));
+}
+
+.surface-card-row:focus-visible {
+    outline: 2px solid rgb(var(--v-theme-primary));
+    outline-offset: 2px;
+}
+
+/* Info / detail panel — the recurring rounded-2xl + subtle bg + 1px
+   border pattern used in Feedback / Export / Friends dialogs. Padding
+   is intentionally NOT included: callsites add `p-4` / `px-4 py-3` /
+   `p-0` themselves so list containers don't fight a default. */
+.surface-panel {
+    border-radius: var(--panel-radius);
+    background: var(--panel-bg);
+    border: var(--panel-border);
+}
+
+/* Prominent card — large feature cards (store project detail, modern
+   tiles). Only sets radius; pair with `.surface-card-clickable` for
+   the interactive variant. */
+.surface-card-prominent {
+    border-radius: var(--card-prominent-radius);
+}
+
+/* Clickable card — Store / market / Me instance language. Solid surface
+   bg, prominent 24px radius, lift + shadow + primary-tinted border on
+   hover. Padding/layout stays with the callsite. */
+.surface-card-clickable {
+    cursor: pointer;
+    background: var(--card-clickable-bg);
+    border-radius: var(--card-clickable-radius);
+    border: var(--card-clickable-border);
+    transition: var(--card-clickable-transition);
+}
+
+.surface-card-clickable:hover {
+    transform: translateY(var(--card-clickable-lift));
+    box-shadow: var(--card-clickable-shadow-hover);
+    border: var(--card-clickable-border-hover);
+}
+
+.surface-card-clickable:active {
+    transform: translateY(var(--card-clickable-lift)) scale(var(--card-clickable-active-scale));
+}
+
+.surface-card-clickable:focus-visible {
+    outline: 2px solid rgb(var(--v-theme-primary));
+    outline-offset: 2px;
 }
 
 .main-body .container h1.flex {

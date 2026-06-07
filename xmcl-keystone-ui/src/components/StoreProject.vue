@@ -25,7 +25,7 @@
       :indeterminate="true"
     />
     <div class="w-full flex flex-col gap-2 lg:(grid grid-cols-3 gap-4 max-w-360)">
-      <v-card class="col-span-2 flex flex-col gap-1 rounded-2xl!">
+      <v-card class="col-span-2 flex flex-col gap-1 surface-card-prominent">
         <StoreProjectGallery
           class="h-full flex-grow"
           :project="project"
@@ -39,7 +39,7 @@
           @install="onInstall"
         />
       </v-card>
-      <v-card class="flex flex-col p-4 rounded-2xl!">
+      <v-card class="flex flex-col p-4 surface-card-prominent">
         <template v-if="project.links.length > 0">
           <StoreProjectExternal :project="project" />
           <v-divider class="my-2 w-full" />

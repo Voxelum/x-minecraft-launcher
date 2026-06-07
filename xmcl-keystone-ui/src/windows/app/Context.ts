@@ -8,6 +8,7 @@ import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier
 import { kPeerState, usePeerState } from '@/composables/peers'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
+import { kSurfaceTokens, useSurfaceTokens } from '@/composables/surfaceTokens'
 import { kTheme, useTheme } from '@/composables/theme'
 
 import { kUserContext, useUserContext } from '@/composables/user'
@@ -22,6 +23,7 @@ export default defineComponent({
     provide(kNotificationQueue, useNotificationQueue())
 
     provide(kTheme, useTheme(ref(undefined)))
+    provide(kSurfaceTokens, useSurfaceTokens())
 
     const settings = useSettingsState()
     provide(kSettingsState, settings)

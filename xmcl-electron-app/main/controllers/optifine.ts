@@ -4,10 +4,13 @@ import { OptifineVersion } from '@xmcl/runtime-api'
 import { BrowserWindow } from 'electron'
 import { Readable } from 'stream'
 import { setTimeout } from 'timers/promises'
+import type { Context } from '~/app'
 import { kGFW } from '~/infra'
 import { kOptifineInstaller } from '~/install'
 import { kSettings, shouldOverrideApiSet } from '~/settings'
 import { ControllerPlugin } from './plugin'
+
+const OPTIFINE_HOST = 'https://optifined.net'
 
 // See xmcl-runtime/app/pluginCommonProtocol.ts — same rationale for
 // silencing ERR_INVALID_STATE on aborted upstream fetches (issue #1446).
@@ -80,7 +83,7 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
     const win = createBrowserWindow()
 
     const versions = await new Promise<OptifineVersion[]>((resolve) => {
-      win.loadURL('https://optifine.net/downloads')
+      win.loadURL(`${OPTIFINE_HOST}/downloads`)
       win.webContents.once('ipc-message', (ev, channel, ...args) => {
         if (channel === 'optifine-downloads') {
           resolve(args[0])
@@ -104,7 +107,7 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
       : `OptiFine_${version.mcversion}_${version.type}_${version.patch}.jar`
 
     const url = await new Promise<string>((resolve) => {
-      win.loadURL(`https://optifine.net/adloadx?f=${fileName}`)
+      win.loadURL(`${OPTIFINE_HOST}/adloadx?f=${fileName}`)
       win.webContents.once('ipc-message', (ev, channel, ...args) => {
         if (channel === 'optifine-download') {
           resolve(args[0])
@@ -128,49 +131,61 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
     return `https://bmclapi2.bangbang93.com/optifine/${ver}/${version.type}/${version.patch}`
   })
 
+  const fetchBmclList = async (ctx: Context) => {
+    const body = ctx.request.body
+    return this.app.fetch(ctx.request.url.toString(), {
+      headers: ctx.request.headers,
+      method: ctx.request.method,
+      body: body instanceof Readable ? (Readable.toWeb(body) as any) : body,
+      redirect: 'follow',
+    })
+  }
+
   this.app.protocol.registerHandler('https', async (ctx) => {
     if (ctx.request.url.toString() === 'https://bmclapi2.bangbang93.com/optifine/versionList') {
+      const tryScrape = async () => {
+        const result = await Promise.race([getDownloads(), setTimeout(15_000)])
+        return result && result.length > 0 ? result : undefined
+      }
+
       if (await shouldOverride) {
-        const result = await Promise.race([getDownloads(), setTimeout(5000)])
-        if (!result) {
-          ctx.response.status = 400
-          ctx.response.headers = {
-            'Content-Type': 'application/json',
-          }
-          ctx.response.body = JSON.stringify({ error: 'Timeout' })
-        } else {
+        const result = await tryScrape()
+        if (result) {
           ctx.response.status = 200
-          ctx.response.headers = {
-            'Content-Type': 'application/json',
-          }
+          ctx.response.headers = { 'Content-Type': 'application/json' }
           ctx.response.body = JSON.stringify(result)
+          return
         }
-      } else {
-        const body = ctx.request.body
-        const resp = await this.app.fetch(ctx.request.url.toString(), {
-          headers: ctx.request.headers,
-          method: ctx.request.method,
-          body: body instanceof Readable ? (Readable.toWeb(body) as any) : body,
-          redirect: 'follow',
-        })
-        if (resp.ok) {
+        // Scrape failed — fall back to BMCL rather than returning a fake timeout.
+        const resp = await fetchBmclList(ctx).catch(() => undefined)
+        if (resp) {
           ctx.response.status = resp.status
           ctx.response.headers = resp.headers
           ctx.response.body = adaptWebBody(resp.body as any)
         } else {
-          const result = await Promise.race([getDownloads(), setTimeout(5000)])
-          if (!result) {
-            ctx.response.status = resp.status
-            ctx.response.headers = resp.headers
-            ctx.response.body = adaptWebBody(resp.body as any)
-          } else {
-            ctx.response.status = 200
-            ctx.response.headers = {
-              'Content-Type': 'application/json',
-            }
-            ctx.response.body = JSON.stringify(result)
-          }
+          ctx.response.status = 504
+          ctx.response.headers = { 'Content-Type': 'application/json' }
+          ctx.response.body = JSON.stringify({ error: 'Timeout' })
         }
+        return
+      }
+
+      const resp = await fetchBmclList(ctx)
+      if (resp.ok) {
+        ctx.response.status = resp.status
+        ctx.response.headers = resp.headers
+        ctx.response.body = adaptWebBody(resp.body as any)
+        return
+      }
+      const result = await tryScrape()
+      if (result) {
+        ctx.response.status = 200
+        ctx.response.headers = { 'Content-Type': 'application/json' }
+        ctx.response.body = JSON.stringify(result)
+      } else {
+        ctx.response.status = resp.status
+        ctx.response.headers = resp.headers
+        ctx.response.body = adaptWebBody(resp.body as any)
       }
     }
   })

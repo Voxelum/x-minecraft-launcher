@@ -5,8 +5,8 @@
   >
     <!-- Navigation Sidebar (Only in Wide/Scroll Mode) -->
     <nav v-if="!isNarrowView" class="setting-sidebar pt-6 pl-4 pr-2" :aria-label="t('setting.name', 2)">
-      <v-card class="rounded-lg" elevation="0" color="transparent">
-        <v-list nav density="compact" color="transparent" class="rounded-lg" :selected="[activeSectionIndex]" @update:selected="v => activeSectionIndex = (v[0] as number) ?? 0">
+      <v-card class="surface-card-subsection" :elevation="tokens.cardSubsectionElevation.value">
+        <v-list nav density="compact" color="transparent" :selected="[activeSectionIndex]" @update:selected="v => activeSectionIndex = (v[0] as number) ?? 0">
           <v-list-subheader class="text-uppercase font-weight-bold grey--text text--darken-1 text-caption pl-4 mb-1">
             {{ t('setting.name') }}
           </v-list-subheader>
@@ -113,6 +113,7 @@ import SettingAbout from './SettingAbout.vue'
 import SettingNetwork from './SettingNetwork.vue'
 import { usePresence } from '@/composables/presence'
 import { kUpdateSettings, useUpdateSettings } from '@/composables/setting'
+import { kSurfaceTokens } from '@/composables/surfaceTokens'
 import { injection } from '@/util/inject'
 import { kTheme } from '@/composables/theme'
 import SettingGlobalUI from './SettingGlobalUI.vue'
@@ -126,6 +127,7 @@ usePresence(computed(() => t('presence.setting')))
 provide(kUpdateSettings, useUpdateSettings())
 
 const { suppressed } = injection(kTheme)
+const tokens = injection(kSurfaceTokens)
 
 onMounted(() => {
   suppressed.value = true

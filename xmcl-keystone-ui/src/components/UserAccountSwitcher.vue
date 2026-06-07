@@ -12,7 +12,7 @@
       <template #activator="{ props: menuProps }">
         <div
           v-bind="hasUsers ? menuProps : {}"
-          class="user-account-switcher__identity flex items-center gap-3 cursor-pointer rounded-2xl px-3 py-2.5 border transition-all"
+          class="user-account-switcher__identity surface-card-row flex items-center gap-3 rounded-2xl px-3 py-2.5"
           data-testid="me-user-switcher"
           role="button"
           tabindex="0"
@@ -69,7 +69,7 @@
         </div>
       </template>
 
-      <v-card class="rounded-xl overflow-hidden account-switcher-menu">
+      <v-card class="overflow-hidden account-switcher-menu">
         <v-list density="compact" class="py-1" bg-color="transparent" role="menu" :aria-label="t('userAccount.add')">
           <v-list-item
             v-for="u of users"
@@ -251,25 +251,11 @@ function openAddAccountDialog() {
 </script>
 
 <style scoped>
-.user-account-switcher__identity {
-  background: rgba(var(--v-theme-on-surface), 0.04);
-  border-color: rgba(var(--v-theme-on-surface), 0.08);
-}
-
-.user-account-switcher__identity:hover {
-  background: rgba(var(--v-theme-on-surface), 0.07) !important;
-  border-color: rgba(var(--v-theme-on-surface), 0.14) !important;
-}
-
 .user-account-switcher--comfortable .user-account-switcher__identity {
   min-height: 92px;
   gap: 16px;
   padding: 18px 20px;
   border-radius: 18px;
-}
-
-.user-account-switcher__identity:active {
-  transform: scale(0.98);
 }
 
 .account-switcher-menu {

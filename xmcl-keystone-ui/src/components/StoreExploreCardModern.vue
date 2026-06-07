@@ -2,7 +2,7 @@
   <div
     ref="el"
     data-testid="store-project-card"
-    class="explore-card group relative bg-surface rounded-2xl overflow-hidden flex flex-col h-full cursor-pointer"
+    class="explore-card surface-card-clickable group relative overflow-hidden flex flex-col h-full"
     role="button"
     tabindex="0"
     :aria-label="value?.title || ''"
@@ -49,17 +49,6 @@
             {{ value.version }}
           </span>
         </div>
-      </div>
-
-      <!-- Hover CTA -->
-      <div
-        class="explore-card__cta absolute inset-x-0 bottom-0 p-3 flex items-center justify-between"
-      >
-        <div class="flex items-center gap-1.5 text-white/95">
-          <v-icon size="14" color="white">visibility</v-icon>
-          <span class="text-xs font-semibold">{{ t('shared.browse') }}</span>
-        </div>
-        <v-icon size="18" color="white">arrow_forward</v-icon>
       </div>
     </div>
 
@@ -203,25 +192,11 @@ export interface ExploreProjectModern {
 </script>
 
 <style scoped>
+/* Card shape + interaction live in the global `.surface-card-prominent`
+   + `.surface-card-clickable` utilities (see assets/common.css). Only
+   keep the component-specific media/CTA/avatar polish here. */
 .explore-card {
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition:
-    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1;
-}
-
-.explore-card:hover {
-  transform: translateY(-4px);
-  box-shadow:
-    0 12px 24px -8px rgba(0, 0, 0, 0.25),
-    0 4px 12px -4px rgba(0, 0, 0, 0.15);
-  border-color: rgba(var(--v-theme-primary), 0.35);
-}
-
-:global(.theme--light) .explore-card {
-  border-color: rgba(0, 0, 0, 0.06);
 }
 
 .explore-card__media {
@@ -254,20 +229,6 @@ export interface ExploreProjectModern {
   font-size: 10px;
   letter-spacing: 0.06em;
   border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.explore-card__cta {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-  opacity: 0;
-  transform: translateY(8px);
-  transition:
-    opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.explore-card:hover .explore-card__cta {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .explore-card__avatar {

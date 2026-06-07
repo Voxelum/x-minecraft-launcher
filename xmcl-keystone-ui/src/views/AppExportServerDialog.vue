@@ -255,7 +255,7 @@ const hasError = computed(() => {
         class="flex-1 min-h-0 overflow-y-auto invisible-scroll px-6 pb-6 pt-4 flex flex-col gap-5"
       >
         <!-- Export Option -->
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <div class="surface-panel p-4">
           <div class="mb-3 flex items-center gap-2">
             <v-icon size="18" color="green">cloud_upload</v-icon>
             <span class="text-sm font-semibold opacity-80">{{ t('server.exportOption') }}</span>
@@ -279,7 +279,7 @@ const hasError = computed(() => {
         <!-- SSH Options -->
         <div
           v-if="exportToServer"
-          class="rounded-2xl border border-white/10 bg-white/5 p-4"
+          class="surface-panel p-4"
         >
           <div class="mb-3 flex items-center gap-2">
             <v-icon size="18" color="green">terminal</v-icon>
@@ -333,7 +333,7 @@ const hasError = computed(() => {
         </div>
 
         <!-- File Selection -->
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <div class="surface-panel p-4">
           <div class="mb-3 flex items-center justify-between">
             <div class="flex items-center gap-2">
               <v-icon size="18" color="green">folder_open</v-icon>

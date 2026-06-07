@@ -19,7 +19,7 @@
       <button
         type="button"
         v-ripple
-        class="system-bar-back-btn non-moveable flex cursor-pointer select-none items-center h-full hover:bg-[rgba(255,255,255,0.2)]"
+        class="system-bar-back-btn non-moveable flex cursor-pointer select-none items-center h-full"
         style="width: 80px;"
         :aria-label="backAriaLabel"
         @click="onBack"
@@ -89,7 +89,7 @@
         type="button"
         v-ripple
         :aria-label="minimizeAriaLabel"
-        class="non-moveable system-btn hover:bg-[rgba(255,255,255,0.5)]"
+        class="non-moveable system-btn"
         @click="minimize"
       >
         <v-icon size="small" aria-hidden="true">minimize</v-icon>
@@ -99,7 +99,7 @@
         type="button"
         v-ripple
         :aria-label="maximizeAriaLabel"
-        class="non-moveable system-btn hover:bg-[rgba(255,255,255,0.5)]"
+        class="non-moveable system-btn"
         @click="maximize"
       >
         <v-icon size="small" aria-hidden="true">crop_din</v-icon>
@@ -109,7 +109,7 @@
         type="button"
         v-ripple
         :aria-label="closeAriaLabel"
-        class="non-moveable system-btn hover:bg-[rgb(209,12,12)]"
+        class="non-moveable system-btn system-btn--close"
         @click="close"
       >
         <v-icon size="small" aria-hidden="true">close</v-icon>
@@ -192,6 +192,18 @@ const windowControlsAriaLabel = 'Window controls'
   border: 0;
   color: inherit;
   appearance: none;
+}
+
+.system-btn:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.system-btn--close:hover {
+  background: rgb(209, 12, 12);
+}
+
+.system-bar-back-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .system-btn:focus-visible,

@@ -8,8 +8,6 @@
   >
     <v-card
       class="palette-card flex max-h-[75vh] flex-col overflow-hidden"
-      rounded="xl"
-      elevation="24"
     >
       <v-text-field
         ref="searchInput"

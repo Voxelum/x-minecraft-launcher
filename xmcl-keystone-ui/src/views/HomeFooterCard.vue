@@ -2,7 +2,7 @@
   <v-card
     ref="root"
     flat
-    class="rounded-lg overflow-hidden tabs-card"
+    class="surface-card-subsection overflow-hidden tabs-card"
   >
     <HomeScreenshotCard
       v-if="selected === 0"
@@ -13,13 +13,13 @@
     />
     <HomeUpstreamHeader
       v-else-if="headerData"
-      class="h-full rounded-t-lg"
+      class="h-full"
       :value="headerData"
       dense
     />
     <div
       v-roving-tabindex
-      class="flex h-full flex-col transition-all duration-500 home-card rounded-lg"
+      class="flex h-full flex-col transition-all duration-500 home-card"
       style="box-sizing: border-box"
     >
       <v-card-text class="flex flex-col gap-2 p-3 pt-2">

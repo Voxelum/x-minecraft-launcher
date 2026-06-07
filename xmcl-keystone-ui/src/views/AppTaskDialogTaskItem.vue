@@ -127,6 +127,18 @@ function onCancel() {
 </script>
 
 <style scoped>
+.task-item {
+  /* Extra breathing room on top of Vuetify's default v-list-item padding:
+     each row carries title + subtitle + url, so it reads dense otherwise. */
+  padding-top: 12px;
+  padding-bottom: 12px;
+  min-height: 64px;
+}
+
+.task-item + .task-item {
+  margin-top: 4px;
+}
+
 .task-item__subtitle {
   font-size: 12px;
   font-style: italic;

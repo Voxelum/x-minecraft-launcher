@@ -31,7 +31,7 @@
       <!-- Content -->
       <div class="flex-1 min-h-0 overflow-y-auto invisible-scroll px-6 pb-6 flex flex-col gap-5">
         <!-- Description -->
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <div class="surface-panel p-4">
           <div class="mb-2 flex items-center gap-2">
             <v-icon size="18" color="primary">info</v-icon>
             <span class="text-sm font-semibold opacity-80">{{ t('feedback.description') }}</span>
@@ -50,7 +50,7 @@
             <div
               v-for="(channel, index) in feedbackChannels"
               :key="index"
-              class="group rounded-2xl border border-white/10 bg-white/5 p-4 transition-all hover:bg-white/10 hover:border-white/20"
+              class="surface-panel group p-4 transition-all hover:bg-[rgba(var(--v-theme-on-surface),0.08)]"
             >
               <div class="flex items-center justify-between gap-3">
                 <div class="flex min-w-0 flex-grow items-center gap-3">

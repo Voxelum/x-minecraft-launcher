@@ -398,7 +398,7 @@ function openInBrowser(url: string) {
               v-for="instance in section.instances"
               :key="instance.path"
               v-context-menu="getInstanceContextMenu(instance)"
-              class="instance-item"
+              class="instance-item surface-card-row"
               :class="{ 'instance-item--active': instance.path === path }"
               role="button"
               tabindex="0"
@@ -641,16 +641,16 @@ function openInBrowser(url: string) {
   gap: 12px;
 }
 
+/* Mirrors the .v-list-item language: 10px radius, neutral hover bg,
+   no lift/shadow. Lives outside the Vuetify list machinery (custom
+   avatar + info layout) so the rules are duplicated here, but the
+   radius pulls from the same token (--card-item-radius). */
 .instance-item {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  /* radius / border / cursor / transition / hover come from .surface-card-row */
 }
 
 .instance-avatar-wrapper {
@@ -671,22 +671,6 @@ function openInBrowser(url: string) {
   justify-content: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   pointer-events: none;
-}
-
-.dark .instance-item {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.instance-item:hover {
-  background: rgba(0, 0, 0, 0.08);
-  border-color: rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-}
-
-.dark .instance-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .section-header-item {

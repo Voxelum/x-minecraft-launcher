@@ -1,8 +1,7 @@
 <template>
   <v-card
-    class="rounded-xl w-full flex-shrink-0"
+    class="surface-card-subsection w-full flex-shrink-0"
     variant="flat"
-    border
     role="region"
     :aria-labelledby="titleId"
   >

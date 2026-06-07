@@ -34,6 +34,7 @@ import { kSaveSearch, useSavesSearch } from '@/composables/savesSearch'
 import { kSearchModel, useSearchModel } from '@/composables/search'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
+import { kSurfaceTokens, useSurfaceTokens } from '@/composables/surfaceTokens'
 import { kShaderPackSearch, useShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useTelemetryTrack } from '@/composables/telemetryTrack'
 import { kTheme, useTheme } from '@/composables/theme'
@@ -124,6 +125,7 @@ export default defineComponent({
     const instanceTheme = useInstanceTheme(instance.path)
     provide(kInstanceTheme, instanceTheme)
     provide(kTheme, useTheme(instanceTheme.instanceTheme))
+    provide(kSurfaceTokens, useSurfaceTokens())
 
 
     useI18nSync(settings.state)

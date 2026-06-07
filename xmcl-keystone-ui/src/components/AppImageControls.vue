@@ -1,5 +1,5 @@
 <template>
-  <v-card class="hover:(opacity-100) flex flex-grow-0 gap-2 rounded-xl px-2 py-1 opacity-60 transition">
+  <v-card class="hover:(opacity-100) flex flex-grow-0 gap-2 px-2 py-1 opacity-60 transition">
     <slot name="left"></slot>
     <v-btn
       icon
