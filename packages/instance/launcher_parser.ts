@@ -199,7 +199,16 @@ export async function parseLauncherData(
     }
   } catch (error) {
     if (isSystemError(error) && error.code === 'ENOENT') {
-      throw new Error(`Bad instance path: ${path}`, { cause: error })
+      // Re-throw with a marker so the upstream service can convert it
+      // to a UI-friendly `AnyError('BadInstance', ...)` and so
+      // ErrorDiagnose can suppress it from telemetry (issue #1469 —
+      // user picked a folder with no instances; 139 users in 0.56.4,
+      // not a defect).
+      throw Object.assign(new Error(`Bad instance path: ${path}`), {
+        name: 'BadInstance',
+        code: 'ENOENT',
+        cause: error,
+      })
     }
     throw error
   }

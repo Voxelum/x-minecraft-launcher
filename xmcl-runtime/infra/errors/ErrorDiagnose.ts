@@ -165,6 +165,21 @@ export class ErrorDiagnose {
     if (typeof e.message === 'string' && /^Failed to open:.*\(0x[0-9A-Fa-f]+\)/.test(e.message)) {
       return true
     }
+    // User picked a folder that doesn't contain a launcher install when
+    // running the migrate wizard (e.g. drive root, plain folder). The
+    // parser surfaces it as `BadInstance` (ENOENT on a well-known path).
+    // 139 users in 0.56.4 — user-driven, not a defect (issue #1469).
+    if (e.name === 'BadInstance') {
+      return true
+    }
+    // User tried to open a non-zip file as a modpack (.rar / .7z /
+    // corrupt download). The renderer now shows a friendly
+    // `ModpackException(invalidModpack)`, but suppress raw `InvalidZipFile`
+    // as a last line of defense in case any other caller bubbles it
+    // through (issue #1469 — 79 users in 0.56.4).
+    if (e.name === 'InvalidZipFile' || e.name === 'InvalidZipFileError') {
+      return true
+    }
     return false
   }
 }
