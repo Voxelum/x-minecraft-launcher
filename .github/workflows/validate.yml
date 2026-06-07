@@ -47,3 +47,52 @@ jobs:
         WIN_CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
         APPX_PUBLISHER: ${{ secrets.APPX_PUBLISHER }}
         WIN_CSC_KEY_PASSWORD: ${{ secrets.CODE_SIGN_PWD }}
+
+  e2e-smoke:
+    name: E2E Smoke (boot)
+    runs-on: ubuntu-latest
+    needs: validate
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.3
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install (root)
+        run: pnpm install
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+
+      - name: Install (e2e)
+        # e2e/ is intentionally outside the workspace; install separately.
+        run: pnpm e2e:install
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+
+      - name: Build renderer
+        run: pnpm build:renderer
+        env:
+          NODE_ENV: production
+
+      - name: Compile electron main
+        run: pnpm --prefix=xmcl-electron-app compile
+
+      - name: Run smoke specs
+        # Only the 00-smoke-boot.spec.ts pair (new user + existing user).
+        # The full e2e suite hits live network and is reserved for the
+        # manual `e2e` workflow.
+        run: xvfb-run --auto-servernum pnpm test:e2e:smoke
+
+      - name: Upload artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-smoke-artifacts
+          path: e2e/artifacts/**
+          retention-days: 7
