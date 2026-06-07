@@ -1,4 +1,4 @@
-import { close as sclose, mkdir as smkdir, open as sopen, unlink } from 'fs'
+import { close as sclose, ftruncate as sftruncate, mkdir as smkdir, open as sopen, unlink } from 'fs'
 import { dirname } from 'path'
 import { Dispatcher } from 'undici'
 import { promisify } from 'util'
@@ -132,15 +132,35 @@ export async function download(options: DownloadOptions): Promise<void> {
             : {}),
         },
       }
-      const handler = new RangeRequestHandler(ops, dispatcher, fd, rangePolicy, tracker)
-      dispatcher.dispatch(ops, handler)
-      const err = await handler.wait().catch((e) => e)
-      if (!err) {
-        errors.length = 0
+      // Allow one rewind+restart per URL: when the connection dies
+      // mid-stream undici's retry interceptor sends a `Range:
+      // bytes=<consumed>-` request to resume, and throws
+      // `RequestRetryError` ("server does not support the range header
+      // and the payload was partially consumed" / "content-range
+      // mismatch") if the origin can't honour it (returns 200 or a
+      // different range). Treat that as a transient failure and retry
+      // this same URL from byte 0 with the file truncated, instead of
+      // skipping to the (often equally broken) next mirror.
+      let restartedForRangeRetry = false
+      while (true) {
+        const handler = new RangeRequestHandler(ops, dispatcher, fd, rangePolicy, tracker)
+        dispatcher.dispatch(ops, handler)
+        const err = await handler.wait().catch((e) => e)
+        if (!err) {
+          errors.length = 0
+          // break out of both loops by setting urls.length = 0 below
+          break
+        }
+        signal?.throwIfAborted()
+        if (!restartedForRangeRetry && isRangeRetryError(err)) {
+          restartedForRangeRetry = true
+          await ftruncateAsync(fd, 0).catch(() => {})
+          continue
+        }
+        errors.push(err)
         break
       }
-      signal?.throwIfAborted()
-      errors.push(err)
+      if (errors.length === 0) break
     }
 
     if (errors.length > 0) {
@@ -160,9 +180,26 @@ export async function download(options: DownloadOptions): Promise<void> {
 }
 
 const unlinkAsync = promisify(unlink)
+const ftruncateAsync = promisify(sftruncate)
 const mkdir = promisify(smkdir)
 const open = promisify(sopen)
 const close = promisify(sclose)
+
+/**
+ * undici's retry interceptor wraps a transient socket failure by
+ * re-issuing the request with `Range: bytes=<bytesConsumed>-` to resume.
+ * If the origin then replies with a fresh 200 (no Range support) or a
+ * Content-Range that doesn't match what we already wrote, it throws
+ * `RequestRetryError` with code `UND_ERR_REQ_RETRY` and one of these
+ * messages. We use this to decide whether to truncate the partial file
+ * and restart the download from scratch on the same URL.
+ */
+function isRangeRetryError(e: any): boolean {
+  if (!e) return false
+  if (e.code === 'UND_ERR_REQ_RETRY') return true
+  const msg = typeof e.message === 'string' ? e.message : ''
+  return msg.includes('range header') || msg.includes('content-range mismatch')
+}
 
 function assignError(e: Error) {
   Error.captureStackTrace(e)

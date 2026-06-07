@@ -134,4 +134,100 @@ describe('@xmcl/file-transfer download', () => {
       await rm(dir, { recursive: true, force: true })
     }
   })
+
+  /**
+   * Regression for f72ae9fc: undici's retry interceptor re-issues a
+   * dropped download with `Range: bytes=<consumed>-`. If the origin
+   * cannot honour that range (replies fresh 200), it throws
+   * `RequestRetryError` and the partial bytes we already wrote to the
+   * destination are stale. We expect download() to truncate the fd and
+   * restart the same URL from byte 0 exactly once, so the file ends
+   * with the correct full content rather than failing or producing a
+   * shifted/duplicated body.
+   */
+  it('rewinds the destination and retries once when undici reports range-retry failure', async () => {
+    const fullBody = Buffer.alloc(2048)
+    for (let i = 0; i < fullBody.length; i++) fullBody[i] = i & 0xff
+    let reqCount = 0
+    const { server, baseUrl } = await startServer({
+      '/flaky': {
+        handle: (req, res) => {
+          reqCount++
+          if (reqCount === 1) {
+            // Promise the full length, write a partial chunk, then kill
+            // the socket so undici observes a body-too-short / socket
+            // error and triggers its retry interceptor.
+            res.writeHead(200, { 'Content-Length': fullBody.length.toString() })
+            res.write(fullBody.subarray(0, 256))
+            setImmediate(() => req.socket.destroy())
+            return
+          }
+          if (reqCount === 2) {
+            // undici retries with `Range: bytes=256-`. Reply with a
+            // fresh 200 (no Range support) — this is exactly the
+            // pattern that surfaces in production telemetry as
+            // UND_ERR_REQ_RETRY "server does not support the range
+            // header and the payload was partially consumed".
+            res.writeHead(200, { 'Content-Length': fullBody.length.toString() })
+            res.end(fullBody)
+            return
+          }
+          // Our rewind dispatches a fresh request — serve the full body.
+          res.writeHead(200, { 'Content-Length': fullBody.length.toString() })
+          res.end(fullBody)
+        },
+      },
+    })
+    const dir = await tempDir()
+    try {
+      const dest = join(dir, 'flaky.bin')
+      await download({ url: `${baseUrl}/flaky`, destination: dest })
+      const written = await readFile(dest)
+      expect(written.length).toBe(fullBody.length)
+      expect(written.equals(fullBody)).toBe(true)
+      // At least: initial attempt + undici's range retry + our rewind.
+      expect(reqCount).toBeGreaterThanOrEqual(3)
+    } finally {
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
+  /**
+   * Companion to the rewind regression: only one rewind is allowed per
+   * URL, so if the range-retry condition keeps reproducing on the same
+   * URL, download() must give up and propagate the error rather than
+   * loop forever.
+   */
+  it('does not loop forever if the range-retry condition repeats on the same URL', async () => {
+    const fullBody = Buffer.alloc(1024, 0xcd)
+    let reqCount = 0
+    const { server, baseUrl } = await startServer({
+      '/always-bad': {
+        handle: (req, res) => {
+          reqCount++
+          // Every attempt: partial body then socket reset.
+          res.writeHead(200, { 'Content-Length': fullBody.length.toString() })
+          res.write(fullBody.subarray(0, 128))
+          setImmediate(() => req.socket.destroy())
+        },
+      },
+    })
+    const dir = await tempDir()
+    try {
+      const dest = join(dir, 'bad.bin')
+      const err = await download({ url: `${baseUrl}/always-bad`, destination: dest }).catch(
+        (e) => e,
+      )
+      expect(err).toBeInstanceOf(Error)
+      // Loose upper bound: initial + undici retries (≤3) + 1 rewind +
+      // its undici retries (≤3) = ≤8. The exact number depends on
+      // undici's retry interceptor; the important thing is it isn't
+      // unbounded.
+      expect(reqCount).toBeLessThanOrEqual(12)
+    } finally {
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
 })
