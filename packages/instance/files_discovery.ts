@@ -4,6 +4,26 @@ import { InstanceFile } from './files'
 import type { ChecksumWorker, Logger, ResourceManager } from './internal_type'
 
 /**
+ * Modrinth ids (project/version/user) are 8-char base62. Some resources in the
+ * wild have a leaked file path stored under `resource.metadata.modrinth.versionId`
+ * (older builds, third-party importers, manual edits). Reject those so they
+ * never propagate into `InstanceFile.modrinth`.
+ */
+const MODRINTH_ID_RE = /^[0-9A-Za-z]{8}$/
+function isValidModrinthRef(m: { projectId?: string; versionId?: string } | undefined): m is { projectId: string; versionId: string } {
+  return !!m && typeof m.projectId === 'string' && typeof m.versionId === 'string' &&
+    MODRINTH_ID_RE.test(m.projectId) && MODRINTH_ID_RE.test(m.versionId)
+}
+
+/**
+ * CurseForge ids are positive integers. Defend against the same class of leak.
+ */
+function isValidCurseforgeRef(c: { projectId?: number; fileId?: number } | undefined): c is { projectId: number; fileId: number } {
+  return !!c && Number.isInteger(c.projectId) && Number.isInteger(c.fileId) &&
+    (c.projectId as number) > 0 && (c.fileId as number) > 0
+}
+
+/**
  * Windows reserved files / directories that live at a drive root and either
  * cannot be read at all (kernel-locked) or have no business being copied into
  * a Minecraft instance. Match is case-insensitive on basename.
@@ -212,14 +232,14 @@ export async function decorateInstanceFiles(
       const sha1 = localFile.hashes.sha1
       const metadata = metadataLookup[sha1]
 
-      if (metadata?.modrinth) {
+      if (isValidModrinthRef(metadata?.modrinth)) {
         localFile.modrinth = {
           projectId: metadata.modrinth.projectId,
           versionId: metadata.modrinth.versionId,
         }
       }
 
-      if (metadata?.curseforge) {
+      if (isValidCurseforgeRef(metadata?.curseforge)) {
         localFile.curseforge = {
           projectId: metadata.curseforge.projectId,
           fileId: metadata.curseforge.fileId,

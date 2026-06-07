@@ -4,6 +4,8 @@ import { ModrinthV2Client } from '@xmcl/modrinth'
 
 export type RequiredPick<T, K extends keyof T> = T & Required<Pick<T, K>>
 
+const MODRINTH_ID_RE = /^[0-9A-Za-z]{8}$/
+
 /**
  * Resolve instance file download link via curseforge and modrinth.
  * This will in-place update the instance file.
@@ -23,6 +25,17 @@ export async function resolveInstanceFiles(
       file.path.startsWith('shaderpacks') ||
       file.path.startsWith('mods')
     ) {
+      // Drop refs that are obviously corrupted (e.g. leaked file paths under
+      // `modrinth.versionId`) so we don't waste a roundtrip and, more
+      // importantly, don't lose the rest of the batch to a 400 from
+      // Modrinth's strict base62 validation.
+      if (file.modrinth && !MODRINTH_ID_RE.test(file.modrinth.versionId)) {
+        file.modrinth = undefined
+      }
+      if (file.curseforge && !(Number.isInteger(file.curseforge.fileId) && file.curseforge.fileId > 0)) {
+        file.curseforge = undefined
+      }
+
       if (file.curseforge) {
         curseforgeProjects.push(file as any)
       }
