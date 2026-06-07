@@ -40,6 +40,42 @@ const ELECTRON_BIN = process.platform === 'win32'
     ? resolve(REPO_ROOT, 'xmcl-electron-app/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron')
     : resolve(REPO_ROOT, 'xmcl-electron-app/node_modules/electron/dist/electron')
 
+/**
+ * Poll `app.windows()` until at least one window's `url()` matches `pattern`,
+ * then return that page. Falls back to `app.firstWindow()` if the timeout
+ * elapses, throwing a descriptive error that enumerates every observed
+ * window URL so CI logs pinpoint which window the launcher stalled on.
+ */
+async function waitForAppWindow(
+  app: ElectronApplication,
+  pattern: RegExp,
+  timeoutMs: number,
+): Promise<Page> {
+  const deadline = Date.now() + timeoutMs
+  const seen = new Set<string>()
+  while (Date.now() < deadline) {
+    for (const win of app.windows()) {
+      const url = win.url()
+      if (url) seen.add(url)
+      if (pattern.test(url)) {
+        try {
+          await win.waitForLoadState('domcontentloaded', { timeout: 5_000 })
+        } catch {
+          // The page reported the target URL but did not reach DOMContentLoaded
+          // within 5s. Return it anyway — downstream `shell.waitReady()` polls
+          // for testids on a longer timeout and will surface a real failure.
+        }
+        return win
+      }
+    }
+    await new Promise((r) => setTimeout(r, 250))
+  }
+  throw new Error(
+    `Timed out after ${timeoutMs}ms waiting for a launcher window matching ${pattern}. ` +
+    `Observed window URLs: ${seen.size ? Array.from(seen).map((u) => JSON.stringify(u)).join(', ') : '<none>'}`,
+  )
+}
+
 export interface LauncherFixture {
   /** Underlying Playwright Electron application. */
   app: ElectronApplication
@@ -122,8 +158,23 @@ export const test = base.extend<{
       recordVideo: { dir: testInfo.outputDir },
     })
 
-    const main = await app.firstWindow()
-    await main.waitForLoadState('domcontentloaded')
+    // Mirror the electron child process stdio into the test output so CI
+    // artifacts capture launcher logs whenever a boot hangs/crashes.
+    const proc = app.process()
+    proc.stdout?.on('data', (b: Buffer) => process.stdout.write(`[electron] ${b}`))
+    proc.stderr?.on('data', (b: Buffer) => process.stderr.write(`[electron] ${b}`))
+
+    // The launcher creates multiple BrowserWindows over the boot sequence
+    // (optional migration window, then the main window via createAppWindow).
+    // Playwright's `firstWindow()` resolves on the *earliest* WebContents
+    // creation, which on Linux/xvfb is sometimes a transient window that
+    // never reaches `domcontentloaded` — waitForLoadState then hangs the
+    // full timeout. Instead, poll `app.windows()` until we find a window
+    // whose URL ends in one of the renderer entry HTMLs the launcher loads
+    // for the actual UI (index.html for normal runs, setup.html for the
+    // first-launch wizard).
+    const ENTRY_PATTERN = /\/(index|setup)\.html(\?|#|$)/
+    const main = await waitForAppWindow(app, ENTRY_PATTERN, 90_000)
 
     const manifest = newJourneyManifest({
       journey: testInfo.titlePath.join(' / '),
@@ -135,6 +186,20 @@ export const test = base.extend<{
       await use({ app, main, gameDataPath, appDataPath, locale, manifest })
     } finally {
       await flushJourneyManifest(manifest)
+      // On failure, copy launcher logs out of the per-test temp before rm,
+      // so CI's upload-artifacts step picks them up.
+      if (testInfo.status !== testInfo.expectedStatus) {
+        try {
+          const { cp } = await import('node:fs/promises')
+          await cp(appDataPath, join(testInfo.outputDir, 'launcher-appdata'), {
+            recursive: true,
+            errorOnExist: false,
+            filter: (src) => /\.(log|json|txt)$/.test(src) || !src.includes('.'),
+          })
+        } catch {
+          // Best-effort; don't mask the real failure.
+        }
+      }
       try {
         await app.close()
       } catch {
