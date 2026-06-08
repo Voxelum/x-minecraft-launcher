@@ -8,6 +8,9 @@ import AutoImport from 'unplugin-auto-import/vite'
 import { defineConfig } from 'vite'
 import vuetify from 'vite-plugin-vuetify'
 
+// Multi-page renderer — one html entry per launcher window (main /
+// app / browser / logger / migration / multiplayer). All html files in
+// `src/` are picked up automatically.
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
   .map((f) => join(__dirname, './src', f))
@@ -22,18 +25,16 @@ export default defineConfig({
   root: join(__dirname, './src'),
   base: '', // has to set to empty string so the html assets path will be relative
   build: {
-    rollupOptions: {
+    // Vite 8 treats `rollupOptions` as an alias of `rolldownOptions` and,
+    // when both are set, the latter wins and silently drops the former's
+    // `input` / `external`. That regression dropped every html entry
+    // except `index.html` from `dist/`, white-screening the multiplayer /
+    // browser / logger / migration windows because the html they load
+    // 404'd. Keep all rolldown inputs in `rolldownOptions`.
+    rolldownOptions: {
       input: entries,
       external: ['electron'],
     },
-    // Workaround for vitejs/vite#22583 + vbenjs/vue-vben-admin#7955:
-    // rolldown 1.0.2+ (bundled with vite >= 8.0.14) drops `init_*_esm_bundler`
-    // helpers across chunks in multi-entry Vue builds when its internal
-    // minifier runs. Disabling rolldown's minify and letting terser handle
-    // minification keeps Vue's circular ESM helpers wired correctly.
-    // The `minify` field exists on rolldown's RolldownOptions but isn't
-    // re-exported by vite's type — drop the cast once vite types catch up.
-    rolldownOptions: ({ minify: false } as any),
     minify: 'terser',
     sourcemap: true,
     terserOptions: {
