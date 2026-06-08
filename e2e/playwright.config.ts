@@ -11,7 +11,12 @@ const locales = (process.env.XMCL_E2E_LOCALES ?? 'en').split(',').map((s) => s.t
 export default defineConfig({
   testDir: './specs',
   outputDir: './artifacts/test-results',
-  timeout: 120_000,
+  // Per-test budget must cover the 180s waitForAppWindow ceiling in the
+  // launcher fixture (Ubuntu CI cold-boots the main process in ~90s) plus
+  // the per-test renderer work. 240s leaves a comfortable margin without
+  // dragging the suite — non-smoke specs that need longer set their own
+  // timeout via test.setTimeout(...) (e.g. specs/05-download-modpack.spec.ts).
+  timeout: 240_000,
   expect: { timeout: 15_000 },
   fullyParallel: false, // Each test launches a real Electron process; serialize to keep CI stable.
   workers: 1,

@@ -173,8 +173,15 @@ export const test = base.extend<{
     // whose URL ends in one of the renderer entry HTMLs the launcher loads
     // for the actual UI (index.html for normal runs, setup.html for the
     // first-launch wizard).
+    //
+    // The 180s budget matches what we observed on github-hosted ubuntu-24
+    // runners: cold-boot of the production main process (services +
+    // ProjectMappingService DB init + setup worker spin-up) takes ~90s
+    // before createAppWindow calls loadURL. The previous 90s ceiling fired
+    // ~1-2s before the URL was loaded on every run, so the smoke job was
+    // permanently red on master. Locally it completes in <10s.
     const ENTRY_PATTERN = /\/(index|setup)\.html(\?|#|$)/
-    const main = await waitForAppWindow(app, ENTRY_PATTERN, 90_000)
+    const main = await waitForAppWindow(app, ENTRY_PATTERN, 180_000)
 
     const manifest = newJourneyManifest({
       journey: testInfo.titlePath.join(' / '),
