@@ -1,0 +1,105 @@
+name: Sign Release
+
+# Manual workflow to sign the .appx in a draft release via SignPath, then
+# re-upload the signed binary (and its .sha256) to the same release.
+#
+# Why a separate workflow?
+#   SignPath signing requires a human to approve the request in the SignPath
+#   web UI. If approval is forgotten while the main `Build` workflow is
+#   waiting, the in-line sign step times out and the appx ends up missing
+#   from the release. Splitting it out lets the release draft be created
+#   immediately (with an unsigned .appx) and signed on demand.
+#
+# Typical flow:
+#   1. Push a `chore(release)` commit. `Build` produces a draft release
+#      containing the unsigned `.appx`.
+#   2. When ready, run this workflow with the release tag (e.g. `v0.56.7`).
+#   3. Approve the request in SignPath when prompted.
+#   4. The signed `.appx` and `.appx.sha256` replace the unsigned ones,
+#      and the draft is automatically flipped to a published release.
+#
+# NOTE: The SignPath project trust config must allow this workflow file
+# path (`.github/workflows/sign-release.yml`) in addition to (or instead
+# of) the old build.yml entry, or signing requests will be rejected.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to sign (e.g. v0.56.7)'
+        required: true
+        type: string
+
+permissions:
+  contents: write  # gh release download / upload
+
+jobs:
+  sign:
+    runs-on: windows-latest
+    # SignPath approval can sit in a queue for a while. Give it room.
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download .appx from release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path signing-input | Out-Null
+          gh release download "${{ inputs.tag }}" --pattern '*.appx' --dir signing-input
+          $appx = Get-ChildItem signing-input -Filter *.appx
+          if ($appx.Count -eq 0) {
+            throw "No .appx asset found on release ${{ inputs.tag }}"
+          }
+          $appx | ForEach-Object { Write-Host "Downloaded $($_.Name) ($([math]::Round($_.Length/1MB,2)) MB)" }
+
+      - name: Upload .appx as workflow artifact
+        id: upload-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: appx
+          path: signing-input/*.appx
+
+      - name: Submit signing request
+        uses: signpath/github-action-submit-signing-request@v0.4
+        with:
+          api-token: ${{ secrets.CODE_SIGN_TOKEN }}
+          organization-id: ab51b40d-a5bd-4d25-ae54-66ccabf86161
+          project-slug: x-minecraft-launcher
+          signing-policy-slug: release-signing
+          github-artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
+          artifact-configuration-slug: appx
+          wait-for-completion: true
+          output-artifact-directory: signed/
+
+      - name: Compute sha256 for signed .appx
+        shell: pwsh
+        run: |
+          Get-ChildItem signed -Filter *.appx | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            $shaFile = "$($_.FullName).sha256"
+            [System.IO.File]::WriteAllText($shaFile, $hash)
+            Write-Host "$($_.Name) -> $hash"
+          }
+
+      - name: Upload signed assets to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          # --clobber replaces existing assets with the same name, so the
+          # unsigned .appx that build.yml uploaded is swapped for the
+          # signed one (and a fresh .appx.sha256 is uploaded alongside).
+          gh release upload "${{ inputs.tag }}" (Get-ChildItem signed -Filter *.appx).FullName --clobber
+          gh release upload "${{ inputs.tag }}" (Get-ChildItem signed -Filter *.appx.sha256).FullName --clobber
+
+      - name: Publish release
+        # Signing succeeded and the signed assets are in place, so flip the
+        # draft off. `gh release edit --draft=false` is a no-op if the
+        # release is already published.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          gh release edit "${{ inputs.tag }}" --draft=false

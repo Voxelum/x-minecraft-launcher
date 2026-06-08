@@ -69,6 +69,7 @@ jobs:
       with:
         repository: Voxelum/homebrew-xmcl
         path: homebrew-xmcl
+        token: ${{ secrets.PAT_GITHUB_TOKEN }}
     - uses: actions/github-script@v6
       name: Update Brew Formula
       with: 
@@ -109,23 +110,25 @@ jobs:
           end
           `
           fs.writeFileSync('./homebrew-xmcl/Casks/xmcl.rb', text);
-    - name: Create Release Note PR
-      uses: peter-evans/create-pull-request@v3
-      with:
-        token: ${{ secrets.PAT_GITHUB_TOKEN }}
-        path: homebrew-xmcl
-        commit-message: "Bump xmcl to ${{ github.event.release.tag_name }}"
-        title: Bump xmcl to ${{ github.event.release.tag_name }}
-        body: Bump xmcl to ${{ github.event.release.tag_name }}
-        reviewers: ci010
-        assignees: ci010
-        branch: ${{ github.event.release.tag_name }}
+    - name: Push to homebrew-xmcl
+      working-directory: homebrew-xmcl
+      run: |
+        if [ -z "$(git status --porcelain)" ]; then
+          echo "Formula already up to date."
+          exit 0
+        fi
+        git config user.name ci010
+        git config user.email cijhn@hotmail.com
+        git add Casks/xmcl.rb
+        git commit -m "Bump xmcl to ${{ github.event.release.tag_name }}"
+        git push origin HEAD:master
 
   update-winget:
     needs: 
       - publish
     name: Upload To winget
-    runs-on: windows-2019
+    runs-on: windows-latest
+    timeout-minutes: 30
     defaults:
       run:
         shell: powershell
@@ -153,6 +156,76 @@ jobs:
         env:
           TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
           URL: ${{ format('https://xmcl-core-api.azurewebsites.net/api/appx?version={0}', steps.version.outputs.result) }}
+
+  update-flatpak:
+    needs:
+      - publish
+    name: Update Flatpak metadata
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
+    steps:
+      - name: Checkout flatpak-metadata
+        uses: actions/checkout@v4
+        with:
+          repository: Voxelum/flatpak-metadata
+          path: flatpak-metadata
+          token: ${{ secrets.PAT_GITHUB_TOKEN }}
+      - name: Update version and metainfo
+        working-directory: flatpak-metadata
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          # `version` file: bare tag, e.g. v0.55.0
+          echo "$TAG" > version
+
+          # Prepend a new <release> entry inside the <releases> block of
+          # the AppStream metainfo. Date format is ISO yyyy-MM-dd, taken
+          # from the GitHub release publish timestamp.
+          export DATE=$(date -u -d "${{ github.event.release.published_at }}" +%Y-%m-%d)
+          node -e '
+            const fs = require("fs");
+            const file = "app.xmcl.voxelum.metainfo.xml";
+            const tag = process.env.TAG;
+            const date = process.env.DATE;
+            const entry =
+              `    <release version="${tag}" date="${date}">\n` +
+              `      <url>https://github.com/Voxelum/x-minecraft-launcher/releases/tag/${tag}</url>\n` +
+              `    </release>`;
+            let xml = fs.readFileSync(file, "utf8");
+            if (xml.includes(`version="${tag}"`)) {
+              console.log("Release entry for " + tag + " already present.");
+              process.exit(0);
+            }
+            // Insert immediately after the opening <releases> tag so the
+            // newest release stays at the top.
+            xml = xml.replace(/(<releases>\s*\n)/, `$1${entry}\n`);
+            fs.writeFileSync(file, xml);
+          '
+      - name: Commit and push
+        working-directory: flatpak-metadata
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Metadata already up to date."
+            exit 0
+          fi
+          git config user.name ci010
+          git config user.email cijhn@hotmail.com
+          git add version app.xmcl.voxelum.metainfo.xml
+          git commit -m "Update metadata for ${{ github.event.release.tag_name }}"
+          git push origin HEAD:main
+      - name: Mirror GitHub release
+        # The flatpak-metadata repo mirrors a release per launcher version,
+        # which is what Flathub watches via the AppStream <releases> feed.
+        working-directory: flatpak-metadata
+        run: |
+          if gh release view "${{ github.event.release.tag_name }}" >/dev/null 2>&1; then
+            echo "Release ${{ github.event.release.tag_name }} already exists."
+            exit 0
+          fi
+          gh release create "${{ github.event.release.tag_name }}" \
+            --title "Release for XMCL - ${{ github.event.release.tag_name }}" \
+            --notes "Update metadata for ${{ github.event.release.tag_name }}"
 
   # publish-msstore:
   #   runs-on: windows-latest

@@ -19,6 +19,10 @@ jobs:
     timeout-minutes: 45
     env:
       XMCL_E2E_LOCALES: ${{ github.event.inputs.locales || 'en' }}
+      # Electron tests use _electron.launch(), which doesn't need any
+      # Playwright-managed browser binary. Skip the ~660 MB browser
+      # download.
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
     steps:
       - uses: actions/checkout@v4
@@ -27,23 +31,16 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        env:
-          # Electron tests use _electron.launch(), which doesn't need any
-          # Playwright-managed browser binary. Skip the ~660 MB browser
-          # download.
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
       - name: Install e2e dependencies
         # `e2e` is intentionally OUTSIDE the workspace so default `pnpm i`
         # stays lean for UI/runtime contributors. Install it explicitly here.
         run: pnpm e2e:install --frozen-lockfile
-        env:
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
       - name: Build renderer
         run: pnpm build:renderer
