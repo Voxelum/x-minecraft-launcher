@@ -175,12 +175,14 @@ export function useInstanceLaunch(
       error.value = undefined
       const options = await generateLaunchOptions(instancePath, user, operationId, side, overrides)
 
-      if (!options.skipAssetsCheck && side === 'client') {
-        console.log('refreshing user')
+      // Always refresh the access token before launching so the game uses
+      // a fresh one. The Singleton lock on refreshUser dedupes with the
+      // startup refresh, and refreshUser is a no-op when the token isn't
+      // close to expiry. Only ping Mojang's joinServer to validate when
+      // the slow asset check is also enabled — fast launch keeps fast.
+      if (user.id && side === 'client') {
         try {
-          if (user.id) {
-            await track(token, refreshUser(user.id, { validate: true }).then((profile) => { user = profile }), 'refreshing-user', operationId)
-          }
+          await track(token, refreshUser(user.id, { validate: !options.skipAssetsCheck }).then((profile) => { user = profile }), 'refreshing-user', operationId)
         } catch (e) {
           console.error(e)
         }
