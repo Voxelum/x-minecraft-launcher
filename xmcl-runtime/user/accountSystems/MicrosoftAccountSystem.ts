@@ -89,9 +89,16 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
         await userTokenStorage.put(user, accessToken)
       } catch (e) {
         this.logger.error(e as any)
+        // Mark the profile as needing attention but keep the cached token
+        // in secret storage. The launcher refreshes on startup (silently)
+        // and a transient network error or sessionserver 5xx would
+        // otherwise wipe a still-valid token and force the user to
+        // re-login. Aligns with YggdrasilAccountSystem.refresh, which
+        // never wipes either. If the next interactive refresh
+        // confirms the credential is gone, the storage will be
+        // overwritten with a fresh one (or the user re-logs in via the
+        // login flow, which calls userTokenStorage.put as well).
         user.invalidated = true
-        const userTokenStorage = await this.getUserTokenStorage()
-        await userTokenStorage.put(user, '')
       }
     }
 

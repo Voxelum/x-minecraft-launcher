@@ -239,8 +239,14 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     await this.initialize()
     const official = Object.values(this.state.users).find(u => u.authority === AUTHORITY_MICROSOFT)
     if (official) {
-      const controller = new AbortController()
-      await this.accountSystems.microsoft?.refresh(official, controller.signal, {})
+      // Route through refreshUser so we share the Singleton lock used by
+      // startup refresh and the UI launch path. A direct call to
+      // accountSystems.microsoft.refresh would bypass the lock and could
+      // trigger two concurrent OAuth refreshes that race when writing the
+      // token to secret storage.
+      await this.refreshUser(official.id, { silent: true }).catch((e) => {
+        this.log(`Failed to refresh official user ${official.id} for getOfficialUserProfile`, e)
+      })
       const accessToken = await this.tokenStorage.get(official)
       return { ...official, accessToken }
     }
