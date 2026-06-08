@@ -110,23 +110,23 @@ function view(modId: string) {
             </v-list-subheader>
             <v-list-item
               v-else
+              :title="item.fileName"
+              :subtitle="item.version"
               :style="{
                 opacity: omitted[item.modId] === item ? 1 : 0.5
               }"
               @click="onSelect(item)"
             >
-              <v-list-item-action>
+              <template #prepend>
                 <v-checkbox-btn
                   :model-value="omitted[item.modId] === item"
                   readonly
                   hide-details
                   density="compact"
-                  @click="onSelect(item)"
+                  @click.stop="onSelect(item)"
                 />
-              </v-list-item-action>
-              <v-list-item-title>{{ item.fileName }}</v-list-item-title>
-                <v-list-item-subtitle>{{ item.version }}</v-list-item-subtitle>
-</v-list-item>
+              </template>
+            </v-list-item>
           </template>
         </v-list>
       </v-card-text>
