@@ -156,7 +156,7 @@ const toggleValue = (item: TreeItem<InstanceFileNode<any>>) => {
 const files = injection(FileNodesSymbol)
 const flattened = ref<TreeItem<InstanceFileNode<any>>[]>([])
 
-const enum CheckedState {
+enum CheckedState {
   Unchecked = 0,
   Checked = 1,
   Partial = 2
