@@ -1,4 +1,4 @@
-import { InstanceFile, MMCModpackManifest, getInstanceConfigFromMmcModpack } from '@xmcl/instance'
+import { InstanceFile, MMCComponentPatch, MMCModpackManifest, getInstanceConfigFromMmcModpack } from '@xmcl/instance'
 import { readEntry } from '@xmcl/unzip'
 import { Entry, ZipFile } from '@xmcl/yauzl'
 import { LauncherApp } from '~/app'
@@ -11,27 +11,68 @@ export function createMmcHandler(app: LauncherApp): ModpackHandler<MMCModpackMan
       return undefined
     },
     resolveUnpackPath: function (manifest, e) {
-      const overridePrefix = '.minecraft/'
-      if (e.fileName.startsWith(overridePrefix)) {
-        return e.fileName.substring(overridePrefix.length)
+      const prefix = manifest.prefix ?? ''
+      if (prefix && !e.fileName.startsWith(prefix)) return
+      const rest = e.fileName.substring(prefix.length)
+      // Prism Launcher exports use `minecraft/`; classic MultiMC uses `.minecraft/`.
+      for (const overridePrefix of ['.minecraft/', 'minecraft/']) {
+        if (rest.startsWith(overridePrefix)) {
+          return rest.substring(overridePrefix.length)
+        }
       }
     },
     readManifest: async (zipFile: ZipFile, entries: Entry[]): Promise<MMCModpackManifest | undefined> => {
-      const man = entries.find(e => e.fileName === 'mmc-pack.json')
-      if (man) {
-        const b = await readEntry(zipFile, man)
-        const cfg = entries.find(e => e.fileName === 'instance.cfg')
-        let parsedCFG
-        try {
-          parsedCFG = cfg ? parseCFG((await readEntry(zipFile, cfg)).toString()) : {}
-        } catch (e) {
-          parsedCFG = {}
+      // Accept both `mmc-pack.json` at the zip root and a single nested root
+      // folder (Prism Launcher's default export layout).
+      let man = entries.find(e => e.fileName === 'mmc-pack.json')
+      let prefix = ''
+      if (!man) {
+        const candidate = entries.find(e => /^[^/]+\/mmc-pack\.json$/.test(e.fileName))
+        if (candidate) {
+          man = candidate
+          prefix = candidate.fileName.substring(0, candidate.fileName.length - 'mmc-pack.json'.length)
         }
-        return {
-          json: JSON.parse(b.toString()),
-          cfg: parsedCFG,
-        } as MMCModpackManifest
       }
+      if (!man) return
+
+      const b = await readEntry(zipFile, man)
+      const cfg = entries.find(e => e.fileName === `${prefix}instance.cfg`)
+      let parsedCFG
+      try {
+        parsedCFG = cfg ? parseCFG((await readEntry(zipFile, cfg)).toString()) : {}
+      } catch (e) {
+        parsedCFG = {}
+      }
+
+      // Prism / MultiMC keep per-component patches under `patches/<uid>.json`.
+      // Read them all so out-of-line `+jvmArgs` / `+tweakers` overrides can be
+      // merged by `getInstanceConfigFromMmcModpack`.
+      const patchPrefix = `${prefix}patches/`
+      const patchEntries = entries.filter(e =>
+        e.fileName.startsWith(patchPrefix) &&
+        e.fileName.endsWith('.json') &&
+        !e.fileName.endsWith('/'),
+      )
+      const patches: Record<string, MMCComponentPatch> = {}
+      for (const pe of patchEntries) {
+        try {
+          const buf = await readEntry(zipFile, pe)
+          const json = JSON.parse(buf.toString()) as MMCComponentPatch
+          if (json && typeof json.uid === 'string') {
+            patches[json.uid] = json
+          }
+        } catch {
+          // Ignore individual unparsable patch files — the rest of the modpack
+          // is still usable.
+        }
+      }
+
+      return {
+        json: JSON.parse(b.toString()),
+        cfg: parsedCFG,
+        prefix: prefix || undefined,
+        patches: Object.keys(patches).length ? patches : undefined,
+      } as MMCModpackManifest
     },
     resolveInstanceOptions: getInstanceConfigFromMmcModpack,
     resolveInstanceFiles: async (): Promise<InstanceFile[]> => {

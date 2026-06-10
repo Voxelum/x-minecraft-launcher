@@ -142,6 +142,37 @@ export interface ModrinthModpackManifest {
 }
 
 /**
+ * A single component patch as stored under `patches/<uid>.json` in a Prism /
+ * MultiMC export. See https://github.com/MultiMC/Launcher/wiki/Instance-File-Format.
+ *
+ * Only the fields xmcl currently consumes are typed; the rest are passed through.
+ */
+export interface MMCComponentPatch {
+  formatVersion?: number
+  name?: string
+  uid: string
+  version?: string
+  order?: number
+  mainClass?: string
+  appletClass?: string
+  minecraftArguments?: string
+  /** Additive JVM args merged on top of the parent component. */
+  '+jvmArgs'?: string[]
+  /** Additive tweaker class names (legacy Forge). */
+  '+tweakers'?: string[]
+  /** Additive traits. */
+  '+traits'?: string[]
+  libraries?: Array<{
+    name: string
+    url?: string
+    /** `"local"` means the jar is bundled inside the modpack zip. */
+    'MMC-hint'?: string
+    [key: string]: any
+  }>
+  [key: string]: any
+}
+
+/**
  * MultiMC modpack manifest format
  */
 export interface MMCModpackManifest {
@@ -153,7 +184,8 @@ export interface MMCModpackManifest {
         | 'net.fabricmc.fabric-loader'
         | 'net.quiltmc.quilt-loader'
         | 'net.neoforge'
-      version: string
+        | string
+      version?: string
     }>
     formatVersion: 1
   }
@@ -171,6 +203,19 @@ export interface MMCModpackManifest {
     // Other instance.cfg keys are passed through but not strongly typed.
     [key: string]: string | undefined
   }
+  /**
+   * Prism Launcher and some MultiMC exports nest the instance under a top-level
+   * folder named after the instance (e.g. `GT New Horizons 2.8.4/mmc-pack.json`).
+   * When present, this prefix (with trailing `/`) is stripped from every entry
+   * path before unpacking.
+   */
+  prefix?: string
+  /**
+   * Optional component patches read from `patches/<uid>.json`. The map key is
+   * the component `uid`. Used to merge `+jvmArgs` / `+tweakers` overrides that
+   * Prism Launcher stores out-of-line.
+   */
+  patches?: Record<string, MMCComponentPatch>
 }
 
 /**
@@ -282,6 +327,7 @@ export function getInstanceConfigFromMmcModpack(manifest: MMCModpackManifest) {
       neoForged?: string
     }
     vmOptions?: string[]
+    mcOptions?: string[]
     minMemory?: number
     maxMemory?: number
     preExecuteCommand?: string
@@ -290,7 +336,7 @@ export function getInstanceConfigFromMmcModpack(manifest: MMCModpackManifest) {
     name: manifest.cfg.name,
     description: manifest.cfg.notes,
     runtime: {
-      minecraft: manifest.json.components.find((c) => c.uid === 'net.minecraft')!.version,
+      minecraft: manifest.json.components.find((c) => c.uid === 'net.minecraft')!.version ?? '',
       forge: forge ? forge.version : undefined,
       fabricLoader: fabric ? fabric.version : undefined,
       quiltLoader: quilt ? quilt.version : undefined,
@@ -298,9 +344,31 @@ export function getInstanceConfigFromMmcModpack(manifest: MMCModpackManifest) {
     },
   }
 
-  if (manifest.cfg.JvmArgs) {
-    result.vmOptions = manifest.cfg.JvmArgs.split(' ').filter(v => !!v)
+  // Merge component patches (Prism stores `+jvmArgs` / `+tweakers` out-of-line
+  // under `patches/<uid>.json`). Iterate in `mmc-pack.json` component order so
+  // overrides apply in a deterministic sequence.
+  const vmArgs: string[] = []
+  const tweakers: string[] = []
+  if (manifest.patches) {
+    for (const comp of manifest.json.components) {
+      const patch = manifest.patches[comp.uid]
+      if (!patch) continue
+      if (patch['+jvmArgs']?.length) vmArgs.push(...patch['+jvmArgs'])
+      if (patch['+tweakers']?.length) tweakers.push(...patch['+tweakers'])
+    }
   }
+
+  if (manifest.cfg.JvmArgs) {
+    vmArgs.unshift(...manifest.cfg.JvmArgs.split(' ').filter(v => !!v))
+  }
+  if (vmArgs.length) {
+    result.vmOptions = vmArgs
+  }
+  if (tweakers.length) {
+    // Forge legacy launches use `--tweakClass <name>` per tweaker.
+    result.mcOptions = tweakers.flatMap((t) => ['--tweakClass', t])
+  }
+
   const minMem = manifest.cfg.MinMemAlloc ? parseInt(manifest.cfg.MinMemAlloc, 10) : NaN
   if (!Number.isNaN(minMem) && minMem > 0) {
     result.minMemory = minMem

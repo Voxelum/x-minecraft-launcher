@@ -168,6 +168,131 @@ describe('Modpack Conversion Functions', () => {
       expect(result.preExecuteCommand).toBeUndefined()
       expect(result.prependCommand).toBeUndefined()
     })
+
+    it('should merge `+jvmArgs` from Prism component patches into vmOptions', () => {
+      // Reproduces the GTNH 2.8.4 layout: lwjgl3ify ships its `--add-opens`
+      // set out-of-line under `patches/me.eigenraven.lwjgl3ify.forgepatches.json`.
+      const manifest: MMCModpackManifest = {
+        json: {
+          formatVersion: 1,
+          components: [
+            { uid: 'net.minecraft', version: '1.7.10' },
+            { uid: 'me.eigenraven.lwjgl3ify.forgepatches', version: '2.1.16' },
+            { uid: 'net.minecraftforge', version: '10.13.4.1614' },
+          ],
+        },
+        cfg: { name: 'GTNH', notes: '', JvmArgs: '-Xmx8G' },
+        patches: {
+          'me.eigenraven.lwjgl3ify.forgepatches': {
+            uid: 'me.eigenraven.lwjgl3ify.forgepatches',
+            '+jvmArgs': [
+              '-Dfile.encoding=UTF-8',
+              '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+            ],
+          },
+          'net.minecraft': {
+            uid: 'net.minecraft',
+            // Patches without `+jvmArgs` must not break the merge.
+          },
+        },
+      }
+
+      const result = getInstanceConfigFromMmcModpack(manifest)
+
+      // cfg JvmArgs precede patch args so user-level tweaks stay first.
+      expect(result.vmOptions).toEqual([
+        '-Xmx8G',
+        '-Dfile.encoding=UTF-8',
+        '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+      ])
+    })
+
+    it('should merge `+jvmArgs` in component (declared) order across patches', () => {
+      const manifest: MMCModpackManifest = {
+        json: {
+          formatVersion: 1,
+          components: [
+            { uid: 'net.minecraft', version: '1.20.1' },
+            { uid: 'a.first', version: '1' },
+            { uid: 'b.second', version: '1' },
+          ],
+        },
+        cfg: { name: 'Order', notes: '' },
+        patches: {
+          'b.second': { uid: 'b.second', '+jvmArgs': ['-Bsecond'] },
+          'a.first': { uid: 'a.first', '+jvmArgs': ['-Afirst'] },
+        },
+      }
+
+      const result = getInstanceConfigFromMmcModpack(manifest)
+
+      expect(result.vmOptions).toEqual(['-Afirst', '-Bsecond'])
+    })
+
+    it('should translate `+tweakers` into Minecraft `--tweakClass` args', () => {
+      const manifest: MMCModpackManifest = {
+        json: {
+          formatVersion: 1,
+          components: [
+            { uid: 'net.minecraft', version: '1.7.10' },
+            { uid: 'net.minecraftforge', version: '10.13.4.1614' },
+          ],
+        },
+        cfg: { name: 'Legacy', notes: '' },
+        patches: {
+          'net.minecraftforge': {
+            uid: 'net.minecraftforge',
+            '+tweakers': [
+              'cpw.mods.fml.common.launcher.FMLTweaker',
+              'optifine.OptiFineForgeTweaker',
+            ],
+          },
+        },
+      }
+
+      const result = getInstanceConfigFromMmcModpack(manifest)
+
+      expect(result.mcOptions).toEqual([
+        '--tweakClass', 'cpw.mods.fml.common.launcher.FMLTweaker',
+        '--tweakClass', 'optifine.OptiFineForgeTweaker',
+      ])
+    })
+
+    it('should leave vmOptions / mcOptions undefined when patches contribute nothing', () => {
+      const manifest: MMCModpackManifest = {
+        json: {
+          formatVersion: 1,
+          components: [{ uid: 'net.minecraft', version: '1.20.1' }],
+        },
+        cfg: { name: 'Plain', notes: '' },
+        patches: {
+          'net.minecraft': { uid: 'net.minecraft' },
+        },
+      }
+
+      const result = getInstanceConfigFromMmcModpack(manifest)
+
+      expect(result.vmOptions).toBeUndefined()
+      expect(result.mcOptions).toBeUndefined()
+    })
+
+    it('should ignore patches whose uid does not appear in mmc-pack.json components', () => {
+      // Defensive: a stale patch file left in the zip should not leak args.
+      const manifest: MMCModpackManifest = {
+        json: {
+          formatVersion: 1,
+          components: [{ uid: 'net.minecraft', version: '1.20.1' }],
+        },
+        cfg: { name: 'Stale', notes: '' },
+        patches: {
+          'stale.uid': { uid: 'stale.uid', '+jvmArgs': ['-Dleaked=true'] },
+        },
+      }
+
+      const result = getInstanceConfigFromMmcModpack(manifest)
+
+      expect(result.vmOptions).toBeUndefined()
+    })
   })
 
   describe('getInstanceConfigFromCurseforgeModpack', () => {
