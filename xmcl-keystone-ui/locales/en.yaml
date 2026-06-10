@@ -34,16 +34,42 @@ HomeLaunchMultiInstanceDialog:
   title: Multiple Instances
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
+agent:
+  title: XMCL Agent
+  statusReady: Ready
+  statusWorking: Working…
+  statusDisabled: Disabled — missing API key
+  reset: Reset conversation
+  notConfiguredTitle: Agent not configured
+  notConfiguredHint: >-
+    Set your API key, model and endpoint in Settings → General → AI Agent to enable the agent.
+  openSettings: Open settings
+  setupGuide: Setup guide
+  emptyHint: >-
+    Ask the agent to inspect your instance, toggle mods, read logs, or diagnose a crash.
+  suggestion1: Upgrade this instance to a newer Minecraft version, and update the mods to match
+  suggestion2: My mods are crashing — find the cause and tell me how to fix it
+  suggestion3: 'Build a modpack: find mods for a feature I want and install them into this instance'
+  thinking: thinking…
+  callingTool: calling {name}…
+  inputPlaceholder: Ask the agent…  (Enter to send, Shift+Enter for newline)
+  disabledPlaceholder: Agent disabled
+  toggleHint: to toggle
 ago:
   day: '{duration} day ago | {duration} days ago'
   hour: '{duration} hour ago | {duration} hours ago'
   minute: '{duration} minute ago | {duration} minutes ago'
   second: '{duration} second ago | {duration} seconds ago'
 askAICrash:
+  agentNotConfigured: >-
+    Add an AI provider and API key in Settings to let the launcher's built-in agent diagnose and fix this for you.
+  askAgent: Diagnose with the built-in AI agent
   copyPrompt: Copy the prompt to ask AI
   description: >-
     Let AI help you to understand the game crash! Follow the instructions below to ask AI about this game crash!
+  orExternal: or use an external AI
   selectPlatform: Open an AI platform and paste the prompt you just copied.
+  setupAgent: Set up the AI agent
 authProfileAddedNotification: Auth Profile {name} Added
 baseSetting:
   title: Instance Settings
@@ -1220,6 +1246,12 @@ setting:
   advancedJavaOptions: Advanced Java Options
   advancedSettings: Advanced Settings
   advancedSettingsHint: Danger zone - reset or manage launcher data
+  aiAgentApiKey: AI Agent API Key
+  aiAgentApiKeyDescription: Stored locally on this device and used for agent requests.
+  aiAgentEndpoint: AI Agent Endpoint
+  aiAgentEndpointDescription: Chat completions endpoint URL.
+  aiAgentModel: AI Agent Model
+  aiAgentModelDescription: Model name to send in chat completion requests.
   apiSets:
     auto: Auto (Determine by network)
     official: Official (Mojang)

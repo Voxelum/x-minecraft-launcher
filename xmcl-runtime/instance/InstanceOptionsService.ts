@@ -10,8 +10,8 @@ import {
   stringifyShaderOptions,
 } from '@xmcl/runtime-api'
 import { FSWatcher } from 'chokidar'
-import { ensureDir, ensureFile, readFile, writeFile } from 'fs-extra'
-import { basename, join } from 'path'
+import { ensureDir, ensureFile, readdir, readFile, writeFile } from 'fs-extra'
+import { basename, dirname, join, resolve, sep } from 'path'
 import { Inject, kGameDataPath, LauncherAppKey, type PathResolver } from '~/app'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
@@ -63,6 +63,50 @@ export class InstanceOptionsService extends AbstractService implements IInstance
         .join('\n') + '\n'
     await ensureFile(path)
     await writeFile(path, content)
+  }
+
+  /**
+   * Resolve a `config/`-relative path to an absolute path, guarding against
+   * path traversal (e.g. `../options.txt`). Throws if the resolved path would
+   * escape the instance `config` directory.
+   */
+  #resolveConfigPath(instancePath: string, filePath: string) {
+    const configDir = resolve(instancePath, 'config')
+    const target = resolve(configDir, filePath)
+    if (target !== configDir && !target.startsWith(configDir + sep)) {
+      throw new AnyError('ConfigPathError', `Invalid config path: ${filePath}`)
+    }
+    return target
+  }
+
+  async getInstanceConfigFiles(instancePath: string): Promise<string[]> {
+    const configDir = join(instancePath, 'config')
+    const result: string[] = []
+    const walk = async (dir: string, prefix: string) => {
+      if (!existsSync(dir)) return
+      const entries = await readdir(dir, { withFileTypes: true })
+      for (const entry of entries) {
+        const rel = prefix ? `${prefix}/${entry.name}` : entry.name
+        if (entry.isDirectory()) {
+          await walk(join(dir, entry.name), rel)
+        } else if (entry.isFile()) {
+          result.push(rel)
+        }
+      }
+    }
+    await walk(configDir, '')
+    return result
+  }
+
+  async getInstanceConfig(instancePath: string, filePath: string): Promise<string> {
+    const target = this.#resolveConfigPath(instancePath, filePath)
+    return readFile(target, 'utf-8')
+  }
+
+  async setInstanceConfig(instancePath: string, filePath: string, content: string): Promise<void> {
+    const target = this.#resolveConfigPath(instancePath, filePath)
+    await ensureDir(dirname(target))
+    await writeFile(target, content)
   }
 
   async getEULA(instancePath: string): Promise<boolean> {

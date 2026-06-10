@@ -44,8 +44,6 @@ export default defineConfig({
     outDir: resolve(__dirname, './dist'),
     assetsInlineLimit: 0,
   },
-  define: {
-  },
   resolve: {
     alias: {
       undici: 'undici-shim',

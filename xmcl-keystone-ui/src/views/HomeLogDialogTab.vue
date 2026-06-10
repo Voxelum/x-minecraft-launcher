@@ -59,7 +59,7 @@
             >{{ content }}</pre
           >
           <div class="visible-scroll col-span-12 lg:col-span-4 min-w-0 min-h-0 max-h-full overflow-auto">
-            <AppCrashAIHint :useCNAI="useCNAI" :getPrompt="getPrompt" />
+            <AppCrashAIHint :useCNAI="useCNAI" :getPrompt="getPrompt" :getAgentPrompt="getAgentPrompt" @close="hideDialog" />
           </div>
         </div>
       </div>
@@ -73,8 +73,10 @@ import LogView from '@/components/LogView.vue'
 import HomeLogDialogTabItem from './HomeLogDialogTabItem.vue'
 import AppCrashAIHint from '@/components/AppCrashAIHint.vue'
 import { kEnvironment } from '@/composables/environment'
+import { kInstance } from '@/composables/instance'
 import { kSettingsState } from '@/composables/setting'
-import { getCrashPrompt } from '@/util/crashPrompt'
+import { useDialog } from '@/composables/dialog'
+import { getCrashPrompt, getCrashAgentPrompt, toVirtualInstancePath } from '@/util/crashPrompt'
 import { injection } from '@/util/inject'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 
@@ -89,6 +91,8 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const { hide: hideDialog } = useDialog('log')
+const { path } = injection(kInstance)
 const content = ref('')
 const loading = ref(false)
 const showedFile = ref('')
@@ -137,6 +141,23 @@ function getPrompt(raw?: boolean) {
     return content.value
   }
   return getCrashPrompt(useCNAI.value, content.value, '', state.value?.locale || 'en-US')
+}
+function getAgentPrompt() {
+  const currentPath = showedFile.value || ''
+  if (!currentPath) return getCrashAgentPrompt(content.value, '')
+
+  const virtualDir = props.log
+    ? 'logs'
+    : currentPath.startsWith('xmcl-abnormal-exit-')
+      ? 'launch-failures'
+      : 'crash-reports'
+
+  const currentFilePath = toVirtualInstancePath(`${path.value}/${currentPath}`, path.value)
+  const virtualPath = currentFilePath === currentPath
+    ? `${virtualDir}/${currentPath}`
+    : currentFilePath
+
+  return getCrashAgentPrompt(content.value, '', virtualPath)
 }
 
 watch(

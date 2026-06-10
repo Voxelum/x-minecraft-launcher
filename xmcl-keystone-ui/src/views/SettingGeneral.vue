@@ -95,6 +95,72 @@
       :items="replaceNativeItems"
       @update:model-value="replaceNative = !$event ? false : $event"
     />
+
+    <template v-if="developerMode">
+      <v-divider class="my-3" />
+      <SettingItem :title="t('setting.aiAgentApiKey')" :description="t('setting.aiAgentApiKeyDescription')">
+        <template #title>
+          <v-icon start size="small" color="primary">key</v-icon>
+          {{ t('setting.aiAgentApiKey') }}
+        </template>
+        <template #action>
+          <v-text-field
+            :model-value="agentApiKey"
+            :type="showAgentApiKey ? 'text' : 'password'"
+            variant="outlined"
+            density="compact"
+            class="setting-item-input"
+            hide-details
+            clearable
+            @update:model-value="agentApiKey = $event ?? ''"
+          >
+            <template #append-inner>
+              <v-btn icon variant="text" size="small" @click="showAgentApiKey = !showAgentApiKey">
+                <v-icon>{{ showAgentApiKey ? 'visibility_off' : 'visibility' }}</v-icon>
+              </v-btn>
+            </template>
+          </v-text-field>
+        </template>
+      </SettingItem>
+
+      <v-divider class="my-3" />
+
+      <SettingItem :title="t('setting.aiAgentModel')" :description="t('setting.aiAgentModelDescription')">
+        <template #title>
+          <v-icon start size="small" color="primary">tune</v-icon>
+          {{ t('setting.aiAgentModel') }}
+        </template>
+        <template #action>
+          <v-text-field
+            v-model="agentModel"
+            variant="outlined"
+            density="compact"
+            class="setting-item-input"
+            hide-details
+            placeholder="agnes-2.0-flash"
+          />
+        </template>
+      </SettingItem>
+
+      <v-divider class="my-3" />
+
+      <SettingItem :title="t('setting.aiAgentEndpoint')" :description="t('setting.aiAgentEndpointDescription')">
+        <template #title>
+          <v-icon start size="small" color="primary">link</v-icon>
+          {{ t('setting.aiAgentEndpoint') }}
+        </template>
+        <template #action>
+          <v-text-field
+            v-model="agentEndpoint"
+            variant="outlined"
+            density="compact"
+            class="setting-item-input"
+            hide-details
+            placeholder="https://apihub.agnes-ai.com/v1/chat/completions"
+          />
+        </template>
+      </SettingItem>
+    </template>
   </SettingCard>
 </template>
 
@@ -108,6 +174,7 @@ import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
 import { kEnvironment } from '@/composables/environment'
 import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'
+import { useAgentSettings } from '../composables/agent/settings'
 import { useGameDirectory, useSettings } from '../composables/setting'
 
 const { isNoEmptySpace, invalidGameDataPath } = injection(kCriticalStatus)
@@ -140,6 +207,12 @@ const replaceNativeItems = computed(() => [
     value: 'all',
   },
 ])
+const {
+  apiKey: agentApiKey,
+  endpoint: agentEndpoint,
+  model: agentModel,
+} = useAgentSettings()
+const showAgentApiKey = ref(false)
 
 const { show } = useDialog('migration')
 const { root, showGameDirectory } = useGameDirectory()
@@ -166,5 +239,10 @@ const { show: onMigrateFromOther } = useDialog('migrate-wizard')
 
 .v-list-item__action {
   align-self: center;
+}
+
+.setting-item-input {
+  min-width: 320px;
+  max-width: 460px;
 }
 </style>
