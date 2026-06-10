@@ -38,3 +38,7 @@ interface File {
    */
   path: string
 }
+
+// Inlined by vite `define` from xmcl-electron-app/.env (AGNES_API_KEY). Empty
+// string when unset — agent composables must treat that as "disabled".
+declare const __AGNES_API_KEY__: string
