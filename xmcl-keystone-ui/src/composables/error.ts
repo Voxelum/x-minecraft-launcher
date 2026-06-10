@@ -1,4 +1,4 @@
-import { isException, NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
+import { isException, ModpackException, NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
 
 export function useLocaleError() {
   const { t } = useI18n()
@@ -15,6 +15,11 @@ export function useLocaleError() {
         if (ex.statusCode === 404) return t('errors.NotFoundError')
         return [(ex.code || ''), ex.statusCode, JSON.stringify(ex.body)].join(' ')
       }
+    }
+    if (isException(ModpackException, e)) {
+      if (e.exception.type === 'invalidModpack') return t('errors.BadInstanceType', {
+        type: e.exception.path
+      })
     }
     if (e.message) return e.message
     const str = JSON.stringify(e, undefined, 4)

@@ -58,7 +58,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
   })
   const files: Ref<InstanceFile[]> = ref([])
   const loading = ref(false)
-  const error = ref<any>(null)
+  const error = shallowRef<any>(null)
 
   async function update(template: CreateInstanceOptions, filesPromise: Promise<InstanceFile[]>) {
     data.name = template.name

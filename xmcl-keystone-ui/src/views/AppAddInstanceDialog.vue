@@ -17,7 +17,10 @@
           >
             <v-icon size="22" color="primary">add</v-icon>
           </div>
-          <div class="text-base font-bold tracking-tight" style="color: rgba(var(--v-theme-on-surface), 0.9);">
+          <div
+            class="text-base font-bold tracking-tight"
+            style="color: rgba(var(--v-theme-on-surface), 0.9)"
+          >
             <template v-if="steps[step - 1] === 'config'">
               {{ t('instances.add') }}
             </template>
@@ -34,28 +37,16 @@
           @click="onMigrateFromOther"
         >
           <v-icon start size="16">local_shipping</v-icon>
-          {{ t("setting.migrateFromOther") }}
+          {{ t('setting.migrateFromOther') }}
         </v-btn>
       </div>
 
       <v-divider class="mx-6 opacity-20" />
 
       <v-window v-model="step" class="visible-scroll overflow-y-auto">
-        <v-window-item
-          v-for="(tStep, i) in steps"
-          :key="tStep"
-          class="max-h-[70vh]"
-          :value="i + 1"
-        >
-          <StepConfig
-            v-if="tStep === 'config'"
-            :loading="loading"
-            v-model:valid="valid"
-          />
-          <StepServer
-            v-if="tStep === 'server'"
-            v-model:valid="valid"
-          />
+        <v-window-item v-for="(tStep, i) in steps" :key="tStep" class="max-h-[70vh]" :value="i + 1">
+          <StepConfig v-if="tStep === 'config'" :loading="loading" v-model:valid="valid" />
+          <StepServer v-if="tStep === 'server'" v-model:valid="valid" />
         </v-window-item>
       </v-window>
       <v-divider class="mx-6 opacity-20" />
@@ -69,10 +60,7 @@
         @next="next"
         @quit="quit"
       >
-        <div
-          v-if="type === 'template' || type === 'manual' || !type"
-          class="flex justify-end"
-        >
+        <div v-if="type === 'template' || type === 'manual' || !type" class="flex justify-end">
           <v-btn
             data-testid="add-instance-import"
             :loading="loading"
@@ -80,27 +68,13 @@
             rounded="pill"
             @click="onImportModpack"
           >
-            <v-icon start>
-              note_add
-            </v-icon>
+            <v-icon start> note_add </v-icon>
             {{ t('importModpack.name') }}
           </v-btn>
         </div>
-        <div
-          v-if="error"
-          class="pointer-events-none absolute left-0 flex w-full justify-center"
-        >
-          <v-alert
-            density="compact"
-            variant="tonal"
-            rounded="lg"
-            class="w-[50%]"
-            type="error"
-          >
+        <div v-if="error" class="pointer-events-none left-0 flex w-full justify-center">
+          <v-alert density="compact" variant="tonal" rounded="lg" class="w-[50%]" type="error">
             {{ errorText }}
-            <div>
-              {{ error?.path }}
-            </div>
           </v-alert>
         </div>
       </StepperFooter>
@@ -108,7 +82,7 @@
   </v-dialog>
 </template>
 
-<script lang=ts setup>
+<script lang="ts" setup>
 import StepConfig from '@/components/StepConfig.vue'
 import StepServer from '@/components/StepServer.vue'
 import StepperFooter from '@/components/StepperFooter.vue'
@@ -122,12 +96,30 @@ import { kPeerShared } from '@/composables/peers'
 import { kUserContext } from '@/composables/user'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
-import { CachedFTBModpackVersionManifest, InstanceManifest, ModpackServiceKey, PeerServiceKey, waitModpackFiles } from '@xmcl/runtime-api'
+import {
+  CachedFTBModpackVersionManifest,
+  InstanceManifest,
+  isException,
+  ModpackException,
+  ModpackServiceKey,
+  PeerServiceKey,
+  waitModpackFiles,
+} from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
 
-const type = ref(undefined as 'modrinth' | 'mmc' | 'server' | 'vanilla' | 'manual' | 'template' | 'prism' | undefined)
+const type = ref(
+  undefined as
+    | 'modrinth'
+    | 'mmc'
+    | 'server'
+    | 'vanilla'
+    | 'manual'
+    | 'template'
+    | 'prism'
+    | undefined,
+)
 
 // Dialog model
 const { openModpack } = useService(ModpackServiceKey)
@@ -136,7 +128,12 @@ const onSelectModpack = async (modpack: string) => {
   try {
     loading.value = true
     const openedModpack = await openModpack(modpack)
-    await update(openedModpack.config, waitModpackFiles(openedModpack))
+    if (openedModpack.error) {
+      error.value = openedModpack.error
+    }
+    if (openedModpack.config) {
+      await update(openedModpack.config, waitModpackFiles(openedModpack))
+    }
   } catch (e) {
     error.value = e
   } finally {
@@ -158,15 +155,18 @@ const onSelectFTB = async (ftb: CachedFTBModpackVersionManifest) => {
 const onSelectManifest = async (man: InstanceManifest) => {
   try {
     loading.value = true
-    await update({
-      name: man.name ?? '',
-      description: man.description,
-      minMemory: man.minMemory,
-      maxMemory: man.maxMemory,
-      vmOptions: man.vmOptions,
-      mcOptions: man.mcOptions,
-      runtime: man.runtime,
-    }, Promise.resolve(man.files))
+    await update(
+      {
+        name: man.name ?? '',
+        description: man.description,
+        minMemory: man.minMemory,
+        maxMemory: man.maxMemory,
+        vmOptions: man.vmOptions,
+        mcOptions: man.mcOptions,
+        runtime: man.runtime,
+      },
+      Promise.resolve(man.files),
+    )
   } catch (e) {
     error.value = e
   } finally {
@@ -174,45 +174,49 @@ const onSelectManifest = async (man: InstanceManifest) => {
   }
 }
 
-const { isShown, show, hide } = useDialog(AddInstanceDialogKey, (param) => {
-  if (loading.value) {
-    return
-  }
-
-  step.value = 1
-  type.value = 'template'
-  valid.value = true
-
-  windowController.focus()
-
-  if (!param) return
-
-  if (typeof param === 'object') {
-    const after = () => {
-      type.value = 'template'
-      nextTick(() => {
-        step.value = 1
-      })
+const { isShown, show, hide } = useDialog(
+  AddInstanceDialogKey,
+  (param) => {
+    if (loading.value) {
+      return
     }
-    if (param.format === 'modpack') {
-      onSelectModpack(param.path).then(after)
-    } else if (param.format === 'ftb') {
-      onSelectFTB(param.manifest).then(after)
-    } else if (param.format === 'manifest') {
-      onSelectManifest(param.manifest).then(after)
-    }
-  }
-}, () => {
-  if (loading.value) {
-    return
-  }
-  setTimeout(() => {
+
     step.value = 1
-    valid.value = true
     type.value = 'template'
-    reset()
-  }, 500)
-})
+    valid.value = true
+
+    windowController.focus()
+
+    if (!param) return
+
+    if (typeof param === 'object') {
+      const after = () => {
+        type.value = 'template'
+        nextTick(() => {
+          step.value = 1
+        })
+      }
+      if (param.format === 'modpack') {
+        onSelectModpack(param.path).then(after)
+      } else if (param.format === 'ftb') {
+        onSelectFTB(param.manifest).then(after)
+      } else if (param.format === 'manifest') {
+        onSelectManifest(param.manifest).then(after)
+      }
+    }
+  },
+  () => {
+    if (loading.value) {
+      return
+    }
+    setTimeout(() => {
+      step.value = 1
+      valid.value = true
+      type.value = 'template'
+      reset()
+    }, 500)
+  },
+)
 watch(isShown, (v) => {
   if (v) {
     windowController.focus()
@@ -248,14 +252,35 @@ const onCreate = async () => {
     hide()
   })
   if (newPath === path.value) {
-    await fix().catch(() => { })
+    await fix().catch(() => {})
   }
 }
 
 // Stepper model
 const valid = ref(false)
 const step = ref(1)
-const errorText = computed(() => t('errors.BadInstanceType', { type: type.value === 'mmc' ? 'MultiMC' : type.value === 'modrinth' ? 'Modrinth' : type.value === 'prism' ? 'PrismLauncher' : '' }))
+const errorText = computed(() => {
+  const err = error.value
+  if (isException(ModpackException, err)) {
+    if (err.exception.type === 'invalidModpack') {
+      return t('errors.BadInstanceType', {
+        type: err.exception.path
+      })
+    } else if (err.exception.type === 'requireModpackAFile') {
+      return 'errors.RequireModpackAFile'
+    }
+  }
+  return t('errors.BadInstanceType', {
+    type:
+      type.value === 'mmc'
+        ? 'MultiMC'
+        : type.value === 'modrinth'
+          ? 'Modrinth'
+          : type.value === 'prism'
+            ? 'PrismLauncher'
+            : '',
+  })
+})
 const steps = computed(() => {
   if (type.value === 'server') {
     return ['server', 'config']
@@ -281,25 +306,27 @@ function onSelectTemplate() {
 
 // Manuall import
 const onImportModpack = () => {
-  windowController.showOpenDialog({
-    properties: ['openFile'],
-    filters: [{ name: t('modpack.name', 2), extensions: ['zip', 'mrpack'] }],
-  }).then(async (res) => {
-    if (res.canceled) return
-    const file = res.filePaths[0]
-    try {
-      loading.value = true
-      await onSelectModpack(file)
-      type.value = 'template'
-      nextTick(() => {
-        step.value = 1
-      })
-    } catch (e) {
-      error.value = e
-    } finally {
-      loading.value = false
-    }
-  })
+  windowController
+    .showOpenDialog({
+      properties: ['openFile'],
+      filters: [{ name: t('modpack.name', 2), extensions: ['zip', 'mrpack'] }],
+    })
+    .then(async (res) => {
+      if (res.canceled) return
+      const file = res.filePaths[0]
+      try {
+        loading.value = true
+        await onSelectModpack(file)
+        type.value = 'template'
+        nextTick(() => {
+          step.value = 1
+        })
+      } catch (e) {
+        error.value = e
+      } finally {
+        loading.value = false
+      }
+    })
 }
 
 // Peer
@@ -310,7 +337,7 @@ onPeerService('share', (event) => {
   if (!event.manifest) {
     return
   }
-  const conn = connections.value.find(c => c.id === event.id)
+  const conn = connections.value.find((c) => c.id === event.id)
   if (conn) {
     notify({
       level: 'info',
