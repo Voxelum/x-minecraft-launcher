@@ -36,17 +36,42 @@ HomeLaunchMultiInstanceDialog:
   title: 多实例启动
 SettingMigrationDialog:
   selectRootDirectory: 选择新的根目录
+agent:
+  title: XMCL Agent
+  statusReady: 就绪
+  statusWorking: 处理中…
+  statusDisabled: 已禁用 — 缺少 API Key
+  reset: 重置对话
+  notConfiguredTitle: Agent 尚未配置
+  notConfiguredHint: >-
+    在设置 → 通用 → AI Agent 中填写 API Key、模型和 Endpoint 以启用 Agent。
+  openSettings: 打开设置
+  setupGuide: 配置指南
+  emptyHint: >-
+    让 Agent 检查你的实例、启用/禁用模组、读取日志或诊断崩溃。
+  suggestion1: 将此实例升级到更新的 Minecraft 版本，并同步更新模组
+  suggestion2: 我的模组崩溃了 — 找出原因并告诉我如何修复
+  suggestion3: 构建一个整合包：为我想要的功能查找模组并安装到此实例
+  thinking: 思考中…
+  callingTool: 正在调用 {name}…
+  inputPlaceholder: 向 Agent 提问…（Enter 发送，Shift+Enter 换行）
+  disabledPlaceholder: Agent 已禁用
+  toggleHint: 切换
 ago:
   day: '{duration} 天前'
   hour: '{duration} 小时前'
   minute: '{duration} 分钟前'
   second: '{duration} 秒前'
 askAICrash:
+  agentNotConfigured: 在设置中配置 AI 提供商和 API 密钥，即可让启动器内置的 AI 助手为你诊断并修复此问题。
+  askAgent: 使用内置 AI 助手诊断
   copyPrompt: 复制提示询问AI
   description: |-
     让AI分析游戏崩溃！
     请按照下面的说明向AI询问有关此游戏崩溃的信息！
+  orExternal: 或使用外部 AI
   selectPlatform: 打开一个AI平台，粘贴您刚刚复制的提示。
+  setupAgent: 设置 AI 助手
 authProfileAddedNotification: 已添加第三方验证 {name}
 baseSetting:
   title: 实例设置
@@ -1218,6 +1243,12 @@ setting:
   advancedJavaOptions: 高级 Java 选项
   advancedSettings: 高级设置
   advancedSettingsHint: 危险区域 - 重置或管理启动器数据
+  aiAgentApiKey: AI Agent API Key
+  aiAgentApiKeyDescription: 仅保存在本地设备，用于 Agent 请求。
+  aiAgentEndpoint: AI Agent Endpoint
+  aiAgentEndpointDescription: 聊天补全（chat completions）的 Endpoint 地址。
+  aiAgentModel: AI Agent 模型
+  aiAgentModelDescription: 请求聊天补全时使用的模型名。
   apiSets:
     auto: 自动 (根据网络决定)
     official: 官方 (Mojang)

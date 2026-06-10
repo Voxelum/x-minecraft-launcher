@@ -34,6 +34,27 @@ HomeLaunchMultiInstanceDialog:
   title: Кілька екземплярів
 SettingMigrationDialog:
   selectRootDirectory: Вибрати кореневий каталог
+agent:
+  title: XMCL Agent
+  statusReady: Готово
+  statusWorking: Працюю…
+  statusDisabled: Вимкнено — немає API key
+  reset: Скинути розмову
+  notConfiguredTitle: Agent не налаштовано
+  notConfiguredHint: >-
+    Вкажіть API key, модель та endpoint у Налаштування → Загальні → AI Agent, щоб увімкнути агента.
+  openSettings: Відкрити налаштування
+  setupGuide: Посібник з налаштування
+  emptyHint: >-
+    Попросіть агента перевірити екземпляр, увімкнути/вимкнути моди, читати логи або діагностувати краш.
+  suggestion1: Оновіть цей екземпляр до новішої версії Minecraft і оновіть моди
+  suggestion2: Мої моди падають — знайдіть причину та підкажіть, як виправити
+  suggestion3: 'Зібрати модпак: знайдіть моди для потрібної функції та встановіть їх у цей екземпляр'
+  thinking: думаю…
+  callingTool: виклик {name}…
+  inputPlaceholder: Запитайте агента… (Enter — надіслати, Shift+Enter — новий рядок)
+  disabledPlaceholder: Agent вимкнено
+  toggleHint: перемкнути
 ago:
   day: '{duration} день тому | {duration} дні тому | {duration} днів тому'
   hour: '{duration} годину тому | {duration} години тому | {duration} годин тому'
@@ -1128,6 +1149,12 @@ setting:
   advancedJavaOptions: Розширені параметри Java
   advancedSettings: Розширені налаштування
   advancedSettingsHint: Небезпечна зона - скидання або керування даними лаунчера
+  aiAgentApiKey: API key AI Agent
+  aiAgentApiKeyDescription: Зберігається локально на цьому пристрої та використовується для запитів агента.
+  aiAgentEndpoint: Endpoint AI Agent
+  aiAgentEndpointDescription: URL endpoint для chat completions.
+  aiAgentModel: Модель AI Agent
+  aiAgentModelDescription: Назва моделі для запитів chat completion.
   apiSets:
     auto: Автоматично (визначається мережею)
     official: Офіційний (Mojang)

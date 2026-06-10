@@ -129,6 +129,27 @@ export interface InstanceOptionsService {
   getServerProperties(instancePath: string): Promise<Record<string, string>>
 
   setServerProperties(instancePath: string, properties: Record<string, string | number | boolean>): Promise<void>
+
+  /**
+   * List the relative paths of every file under the instance `config/` directory.
+   * @param instancePath The instance path
+   */
+  getInstanceConfigFiles(instancePath: string): Promise<string[]>
+
+  /**
+   * Read the raw text content of a file under the instance `config/` directory.
+   * @param instancePath The instance path
+   * @param filePath The file path relative to the `config/` directory
+   */
+  getInstanceConfig(instancePath: string, filePath: string): Promise<string>
+
+  /**
+   * Overwrite the raw text content of a file under the instance `config/` directory.
+   * @param instancePath The instance path
+   * @param filePath The file path relative to the `config/` directory
+   * @param content The new file content
+   */
+  setInstanceConfig(instancePath: string, filePath: string, content: string): Promise<void>
 }
 
 export const InstanceOptionsServiceKey: ServiceKey<InstanceOptionsService> = 'InstanceOptionsService'

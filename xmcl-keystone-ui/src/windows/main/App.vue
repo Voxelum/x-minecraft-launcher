@@ -24,6 +24,7 @@
     <AppContextMenu />
     <AppNotifier />
     <AppCommandPalette />
+    <AppAgentChat v-if="developerMode" />
     <AppFeedbackDialog />
     <AppTaskDialog />
     <AppAddInstanceDialog />
@@ -61,6 +62,8 @@ import AppImageDialog from '@/components/AppImageDialog.vue'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
 import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useAgentChatHotkey } from '@/composables/agentChat'
+import { kAgent, installAgentDevLauncher, useAgent } from '@/composables/agent'
 import { useCommandPaletteHotkey } from '@/composables/commandPalette'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { kInstance } from '@/composables/instance'
@@ -77,6 +80,7 @@ import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
+import AppAgentChat from '@/views/AppAgentChat.vue'
 import AppCommandPalette from '@/views/AppCommandPalette.vue'
 import AppContextMenu from '@/views/AppContextMenu.vue'
 import AppExportServerDialog from '@/views/AppExportServerDialog.vue'
@@ -110,12 +114,20 @@ import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
+const developerMode = computed(() => state.value?.developerMode ?? false)
 
 
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 provide(kLocalizedContent, useLocalizedContentControl())
 provide(kInstanceLauncher, useInstanceLauncher())
 provide(kMinecraftFriends, useMinecraftFriendsImpl())
+
+// Agent must run in App.vue (not Context.ts) because its tool factory
+// injects kInstance/kInstanceMods/... which are provided by Context itself,
+// and `inject` only resolves on descendants.
+const agent = useAgent()
+provide(kAgent, agent)
+installAgentDevLauncher(agent)
 
 // User profile dialog — moved from AppSystemBarUserMenu to App root
 const userProfileDialogShown = ref(false)
@@ -126,6 +138,8 @@ provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value && ro
 
 // Bind Ctrl/Cmd+K to toggle the command palette.
 useCommandPaletteHotkey()
+// Bind Ctrl/Cmd+Shift+A to toggle the agent chat panel.
+useAgentChatHotkey(developerMode)
 
 const defaultColor = useInstanceGroupDefaultColor()
 
