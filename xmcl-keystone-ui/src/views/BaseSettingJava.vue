@@ -118,7 +118,7 @@
           <JavaList
             :value="java"
             :items="javas"
-            :remove="removeJava"
+            :remove="onRemoveJava"
             @input="onPickJava"
           />
         </v-card>
@@ -229,6 +229,7 @@ import { kInstanceJava } from '@/composables/instanceJava'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { BaseServiceKey, JavaRecord, JavaServiceKey } from '@xmcl/runtime-api'
+import { resolvePinChoice, shouldClearPinOnRemove } from '@/util/javaPin'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { kJavaContext } from '../composables/java'
 import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
@@ -250,8 +251,22 @@ function onRefresh() {
 }
 
 function onPickJava(value: JavaRecord) {
-  java.value = value
+  const next = resolvePinChoice(value, isAuto.value, selectedJava.value?.path)
+  if (next === undefined) {
+    java.value = undefined
+  } else {
+    // Preserve the full record so the picker shows correct metadata even
+    // before the next java-status refresh round-trips.
+    java.value = value
+  }
   pickerOpen.value = false
+}
+
+function onRemoveJava(value: JavaRecord) {
+  if (shouldClearPinOnRemove(value.path, javaPath.value)) {
+    java.value = undefined
+  }
+  removeJava(value)
 }
 
 const {

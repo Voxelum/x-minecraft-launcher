@@ -115,7 +115,10 @@ export const launchInstanceCommand = defineCommand({
       (path) => ctx.call(JavaServiceKey, 'resolveJava', path),
       instance.java,
     )
-    const java = javaResult.java || javaResult.auto.java
+    // Prefer the user-pinned Java only when it actually resolves. Otherwise
+    // fall back to the auto-detected one — otherwise a stale pin (deleted /
+    // moved JDK) would crash spawn with ENOENT instead of launching cleanly.
+    const java = (javaResult.java?.valid ? javaResult.java : undefined) || javaResult.auto.java
 
     // Pull global settings (resolved once, read-only).
     const settings = await ctx.call(BaseServiceKey, 'getSettings')

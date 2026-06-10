@@ -56,7 +56,12 @@ export function selectJavaByPreference(allJava: JavaRecord[], { match, okay }: V
   }
   if (bestMatched.length > 0) {
     if (bestMatched.length > 1) {
-      bestMatched.sort((a, b) => a.path.indexOf('openj9') ? 1 : b.path.indexOf('openj9') ? -1 : 0)
+      // Deprioritize OpenJ9 — HotSpot is the de-facto compatibility baseline.
+      bestMatched.sort((a, b) => {
+        const ao = a.path.toLowerCase().includes('openj9')
+        const bo = b.path.toLowerCase().includes('openj9')
+        return ao === bo ? 0 : ao ? 1 : -1
+      })
     }
     return [bestMatched[0], JavaCompatibleState.Matched] as const
   }
@@ -104,10 +109,11 @@ export function getVersionPreference<T extends object>(
   let versionPref: VersionPreference
   // instance version is not installed
   if (minecraftMinor < 13) {
-    // need java 8 for version below 1.13
+    // need java 8 for version below 1.13; tolerate 9–11 as a close-enough
+    // alternative when no Java 8 is installed.
     versionPref = {
       match: preferredMatchedVersion || ((j) => j.majorVersion === 8),
-      okay: j => j.majorVersion < 8 || j.majorVersion < 11,
+      okay: j => j.majorVersion >= 8 && j.majorVersion <= 11,
       requirement: javaVersion ? getRequirement(javaVersion.majorVersion) : '=8',
     }
     if (!javaVersion) {
@@ -233,6 +239,12 @@ export async function getAutoOrManuallJava(
       }
     }
 
+    // Trust the resolver's verdict: if it tells us the record is invalid
+    // (stale cache entry pointing at a deleted JDK, etc.), preserve that.
+    // Lying with `valid: true` here causes launch to spawn a missing
+    // executable instead of falling back to the auto-detected Java.
+    const resolvedValid = (record as Partial<JavaRecord>).valid !== false
+
     let resultQuality: JavaCompatibleState
     // check if this version matched
     if (criteria.preference.match(record)) {
@@ -247,7 +259,7 @@ export async function getAutoOrManuallJava(
       auto: criteria,
       java: {
         ...record,
-        valid: true,
+        valid: resolvedValid,
       } as JavaRecord,
       quality: resultQuality,
     }

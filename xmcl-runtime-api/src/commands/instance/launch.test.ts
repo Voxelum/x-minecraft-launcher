@@ -135,6 +135,45 @@ describe('launchInstanceCommand', () => {
     )).rejects.toThrow(/No local version matches/)
   })
 
+  test('falls back to auto-detected Java when the pinned instance.java path is gone', async () => {
+    // Bug #1 regression: when the user has pinned a Java path that no longer
+    // resolves (uninstalled / moved), launch must NOT spawn with that broken
+    // path. It should silently use the auto-detected Java instead.
+    let spawnedJava: string | undefined
+    const ctx = makeCtx((key, method, _arg) => {
+      if (key === UserServiceKey && method === 'refreshUser') return makeUser()
+      if (key === VersionServiceKey && method === 'getLocalVersions') return { local: [{ id: 'v1', minecraft: '1.21.1' }] }
+      if (key === VersionServiceKey && method === 'resolveLocalVersion') return { id: 'v1', minecraftVersion: '1.21.1', libraries: [], pathChain: ['/v'] }
+      if (key === JavaServiceKey && method === 'getJavaState') {
+        return { all: [{ path: '/usr/local/jdk-21/bin/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }] }
+      }
+      if (key === JavaServiceKey && method === 'resolveJava') {
+        // Pinned path no longer exists on disk.
+        return undefined
+      }
+      if (key === BaseServiceKey && method === 'getSettings') return makeSettings()
+      if (key === LaunchServiceKey && method === 'launch') {
+        spawnedJava = (_arg as any)?.java
+        return 9999
+      }
+      throw new Error(`Unexpected ctx.call(${key}, ${method})`)
+    })
+
+    // Pin a deleted path.
+    ;(ctx.resolveInstance as any).mockImplementationOnce(async (ref: string) => makeInstance({
+      path: ref,
+      java: '/deleted/old-jdk/bin/java',
+    }))
+
+    const pid = await launchInstanceCommand.handler(
+      LaunchInstanceInputSchema.parse({ instance: '/inst/foo' }),
+      ctx,
+    )
+
+    expect(pid).toBe(9999)
+    expect(spawnedJava).toBe('/usr/local/jdk-21/bin/java')
+  })
+
   test('dry mode skips LaunchService.launch', async () => {
     const launchSpy = vi.fn()
     const ctx = makeCtx((key, method) => {

@@ -80,9 +80,19 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
 
   const java = computed(() => data.value?.java)
 
-  watch([all, version, computed(() => instance.value.java), computed(() => instance.value.runtime)], () => {
+  // Only the fields that actually feed selection matter; watching the whole
+  // `runtime` object with { deep: true } makes every unrelated edit
+  // (mod loader switch, optifine tweak, etc.) re-run the resolver and race
+  // with in-flight launch compatibility checks.
+  watch([
+    all,
+    version,
+    computed(() => instance.value.java),
+    computed(() => instance.value.runtime.minecraft),
+    computed(() => instance.value.runtime.forge),
+  ], () => {
     mutate()
-  }, { deep: true })
+  })
 
   return {
     java,

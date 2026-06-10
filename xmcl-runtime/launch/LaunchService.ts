@@ -298,6 +298,9 @@ export class LaunchService extends AbstractService implements ILaunchService {
         if (!javaPath) {
           throw new LaunchException({ type: 'launchNoProperJava', javaPath: javaPath || '' }, 'Cannot launch without a valid java')
         }
+        if (!(await this.#isValidAndExeucatable(javaPath))) {
+          throw new LaunchException({ type: 'launchNoProperJava', javaPath }, 'Java executable is missing or not runnable')
+        }
 
         const accessToken = user ? await this.userTokenStorage.get(user).catch(() => undefined) : undefined
         const _options = await this.#generateOptions(options, version, accessToken)
@@ -390,7 +393,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       this.log(`Will launch with ${version.id} version.`)
 
-      if (!javaPath) {
+      if (!javaPath || !(await this.#isValidAndExeucatable(javaPath))) {
         throw new LaunchException({ type: 'launchNoProperJava', javaPath: javaPath || '' }, 'Cannot launch without a valid java')
       }
 
