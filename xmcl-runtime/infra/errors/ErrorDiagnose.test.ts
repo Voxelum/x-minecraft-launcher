@@ -67,6 +67,25 @@ describe('ErrorDiagnose - new regression suppressions', () => {
     expect(d.processError(err)).toBe(true)
   })
 
+  test('Raw Error EPERM stat .install-profile (chokidar) is fully suppressed (not throttled)', () => {
+    const d = new ErrorDiagnose(makeApp())
+    // The exact production sample from user @range — chokidar's
+    // internal stat surfaced as `name === 'Error'`. Previously fell
+    // into the generic EPERM throttle (3 events visible per session).
+    const err = sysErr(
+      'EPERM',
+      "EPERM: operation not permitted, stat 'C:\\Users\\range\\.minecraftx\\instances\\1.12.2-forge14.23.5.2859\\.install-profile'",
+    )
+    expect(d.processError(err)).toBe(true)
+    expect(d.processError(err)).toBe(true)
+  })
+
+  test('InstanceInstallWatcherError (retagged chokidar error) is suppressed', () => {
+    const d = new ErrorDiagnose(makeApp())
+    const err = namedSysErr('InstanceInstallWatcherError', 'EBUSY', 'EBUSY: resource busy')
+    expect(d.processError(err)).toBe(true)
+  })
+
   test('Third-party API 5xx is suppressed (Modrinth/CurseForge/Yggdrasil)', () => {
     const d = new ErrorDiagnose(makeApp())
     const modrinth: any = new Error('Fail to fetch modrinth api https://api.modrinth.com/v2/version_files. Status=503. no available server')
