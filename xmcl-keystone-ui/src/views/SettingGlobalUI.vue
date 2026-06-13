@@ -253,6 +253,15 @@
           :description="t('setting.linuxTitlebarDescription')"
         />
       </template>
+
+      <template v-if="env && env.os === 'osx'">
+        <v-divider class="my-4" />
+        <SettingItemCheckbox
+          v-model="macosReduceGPUUsage"
+          :title="t('setting.macosReduceGPUUsage')"
+          :description="t('setting.macosReduceGPUUsageDescription')"
+        />
+      </template>
     </SettingCard>
   </div>
 </template>
@@ -288,6 +297,11 @@ const { state } = injection(kSettingsState)
 const linuxTitlebar = computed({
   get: () => state.value?.linuxTitlebar ?? false,
   set: (v) => state.value?.linuxTitlebarSet(v),
+})
+
+const macosReduceGPUUsage = computed({
+  get: () => state.value?.macosReduceGPUUsage ?? true,
+  set: (v) => state.value?.macosReduceGPUUsageSet(v),
 })
 
 function onSave() {

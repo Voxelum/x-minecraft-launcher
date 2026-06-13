@@ -1230,6 +1230,8 @@ setting:
   linuxTitlebar: Түпнұсқалы тақырып тақтасы
   linuxTitlebarDescription: Launcher үшін түпнұсқалы linux тақырып тақтасын қолданыңыз
   location: Сақтау орны
+  macosReduceGPUUsage: GPU пайдалануын азайту
+  macosReduceGPUUsageDescription: Терезе жабылуын анықтауды өшіру арқылы macOS-те GPU пайдалануын оңтайландыру. Әсер ету үшін қайта іске қосу қажет.
   manualUpdateHint: >-
     Нұсқаны автоматты түрде жаңарту мүмкін емес. Launcher-ды ресми веб-сайттан қайта жүктеп алыңыз!
   maunalUpdateHint: >-

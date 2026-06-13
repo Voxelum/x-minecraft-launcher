@@ -87,6 +87,8 @@ export const SettingSchema = z.object({
   enableDedicatedGPUOptimization: z.boolean().catch(true),
   /** Window translucency effect */
   windowTranslucent: z.boolean().catch(false),
+  /** macOS GPU usage optimization */
+  macosReduceGPUUsage: z.boolean().catch(true),
   /** Global resolution settings for Minecraft */
   globalResolution: GlobalResolutionSchema.catch({}),
 })

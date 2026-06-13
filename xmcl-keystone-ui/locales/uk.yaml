@@ -1217,6 +1217,8 @@ setting:
   linuxTitlebar: Нативний заголовок вікна
   linuxTitlebarDescription: Використовувати нативний заголовок вікна Linux для лаунчера
   location: Місце зберігання
+  macosReduceGPUUsage: Зменшити використання GPU
+  macosReduceGPUUsageDescription: Оптимізувати використання GPU на macOS, вимкнувши виявлення перекриття вікон. Потребує перезапуску для набуття чинності.
   manualUpdateHint: >-
     Версія не може бути оновлена автоматично. Будь ласка, завантажте лаунчер ще раз з офіційного сайту!
   maunalUpdateHint: >-

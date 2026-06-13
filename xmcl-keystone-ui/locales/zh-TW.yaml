@@ -1200,6 +1200,8 @@ setting:
   linuxTitlebarDescription: 使用 Linux 系統原生的頂端欄
   livePreview: 實時預覽
   location: 資料儲存位置
+  macosReduceGPUUsage: 降低 GPU 占用
+  macosReduceGPUUsageDescription: 通過禁用視窗遮擋檢測來優化 macOS 上的 GPU 使用率。需要重新啟動啟動器才能生效。
   manualUpdateHint: 版本無法自動更新。請從官方網站重新下載啟動器！
   maunalUpdateHint: |-
     版本無法自動更新。

@@ -1039,6 +1039,8 @@ setting:
   linuxTitlebar: Barra de Título Nativa en Linux
   linuxTitlebarDescription: Usar la barra de título nativa de Linux para el lanzador
   location: Ubicación del Almacenamiento
+  macosReduceGPUUsage: Reducir uso de GPU
+  macosReduceGPUUsageDescription: Optimizar el uso de GPU en macOS desactivando la detección de oclusión de ventanas. Requiere reiniciar para aplicar los cambios.
   manualUpdateHint: >-
     La versión no se puede actualizar automáticamente. Vuelve a descargar el lanzador desde el sitio web oficial.
   maunalUpdateHint: |-

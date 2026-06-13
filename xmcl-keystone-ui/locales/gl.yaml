@@ -1231,9 +1231,11 @@ setting:
   layoutTitle: Interface Lay-out
   linuxEnableDedicatedGPUOptimization: Toewijzing van een toegewijde grafische processor
   linuxEnableDedicatedGPUOptimizationDescription: Deze optie wijst een toegewijde GPU toe aan het Minecraft-proces.
-  linuxTitlebar: Native titelbalk
-  linuxTitlebarDescription: Gebruik native linux titelbalk voor launcher
-  location: Opslaglocatie
+  linuxTitlebar: Barra de título nativa
+  linuxTitlebarDescription: Usar a barra de título nativa de Linux para o lanzador
+  location: Localización do almacenamento
+  macosReduceGPUUsage: Reducir o uso da GPU
+  macosReduceGPUUsageDescription: Optimizar o uso da GPU en macOS desactivando a detección de oclusión de xanelas. Require reiniciar para ter efecto.
   manualUpdateHint: >-
     De versie kan niet automatisch worden bijgewerkt. Download de launcher opnieuw van de officiële website!
   maunalUpdateHint: >-

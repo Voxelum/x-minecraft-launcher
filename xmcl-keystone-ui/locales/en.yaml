@@ -1299,6 +1299,8 @@ setting:
   linuxTitlebarDescription: Use native linux title bar for launcher
   livePreview: Live Preview
   location: Store Location
+  macosReduceGPUUsage: Reduce GPU usage
+  macosReduceGPUUsageDescription: Optimize GPU usage on macOS by disabling window occlusion detection. Requires restart to take effect.
   manualUpdateHint: >-
     The version cannot be updated automatically. Please download the launcher again from the official website!
   maunalUpdateHint: >-

@@ -1287,6 +1287,8 @@ setting:
   linuxTitlebarDescription: 使用 Linux 系统原生的顶端栏
   livePreview: 实时预览
   location: 数据存储位置
+  macosReduceGPUUsage: 降低 GPU 占用
+  macosReduceGPUUsageDescription: 通过禁用窗口遮挡检测来优化 macOS 上的 GPU 使用率。需要重启启动器才能生效。
   manualUpdateHint: 版本无法自动更新。请从官方网站重新下载启动器！
   maunalUpdateHint: |-
     版本无法自动更新。
