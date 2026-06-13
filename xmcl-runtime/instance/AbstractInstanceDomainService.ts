@@ -38,7 +38,15 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
   async install({ files, path }: UpdateInstanceResourcesOptions) {
     this.log(`Install ${files.length} to ${path}/${this.domain}`)
     const dir = join(path, this.domain)
-    return await Promise.all(files.map(async (src) => {
+    // Filter out undefined/null entries before fan-out — telemetry showed
+    // `basename` called with undefined on InstanceModsService.install when
+    // upstream callers passed sparse arrays. Surface the count instead of
+    // throwing a TypeError that obscures the real install result.
+    const validFiles = files.filter((f): f is string => typeof f === 'string' && f.length > 0)
+    if (validFiles.length !== files.length) {
+      this.warn(new Error(`Dropping ${files.length - validFiles.length} invalid (non-string) entries from install request to ${dir}`))
+    }
+    return await Promise.all(validFiles.map(async (src) => {
       const dest = join(dir, basename(src))
       if (src === dest) {
         return dest
@@ -70,7 +78,8 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
 
   async uninstall({ files, path }: UpdateInstanceResourcesOptions) {
     let hasError = false
-    await Promise.all(files.map(async (f) => {
+    const validFiles = files.filter((f): f is string => typeof f === 'string' && f.length > 0)
+    await Promise.all(validFiles.map(async (f) => {
       const dest = join(path, this.domain, basename(f))
       await unlink(dest).catch(() => { 
         hasError = true

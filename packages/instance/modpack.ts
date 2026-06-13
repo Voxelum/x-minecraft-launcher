@@ -396,16 +396,26 @@ export function getInstanceConfigFromMmcModpack(manifest: MMCModpackManifest) {
  * Convert CurseForge modpack manifest to instance configuration
  */
 export function getInstanceConfigFromCurseforgeModpack(manifest: CurseforgeModpackManifest) {
-  const forgeId = manifest.minecraft.modLoaders.find((l) => l.id.startsWith('forge'))
-  const fabricId = manifest.minecraft.modLoaders.find((l) => l.id.startsWith('fabric'))
-  const neoForgeId = manifest.minecraft.modLoaders.find((l) => l.id.startsWith('neoforge'))
-  const quiltId = manifest.minecraft.modLoaders.find((l) => l.id.startsWith('quilt'))
+  // Some user-authored modpacks omit the `minecraft` block (only contains
+  // `manifestType:"minecraftModpack"` plus `files`). Surface a typed error
+  // instead of a generic `Cannot read properties of undefined (reading
+  // 'modLoaders')` (telemetry bucket: `Object.getInstanceConfigFromCurseforgeModpack`).
+  const minecraft = manifest.minecraft
+  if (!minecraft || !Array.isArray(minecraft.modLoaders)) {
+    const err = new Error('Curseforge modpack manifest missing minecraft.modLoaders')
+    err.name = 'InvalidCurseforgeModpackManifestError'
+    throw err
+  }
+  const forgeId = minecraft.modLoaders.find((l) => l.id?.startsWith('forge'))
+  const fabricId = minecraft.modLoaders.find((l) => l.id?.startsWith('fabric'))
+  const neoForgeId = minecraft.modLoaders.find((l) => l.id?.startsWith('neoforge'))
+  const quiltId = minecraft.modLoaders.find((l) => l.id?.startsWith('quilt'))
 
   return {
     name: manifest.version ? `${manifest.name}-${manifest.version}` : manifest.name,
     author: manifest.author,
     runtime: {
-      minecraft: manifest.minecraft.version,
+      minecraft: minecraft.version,
       forge: forgeId ? forgeId.id.substring(6) : undefined,
       fabricLoader: fabricId ? fabricId.id.substring(7) : undefined,
       neoForged: neoForgeId ? neoForgeId.id.substring(9) : undefined,

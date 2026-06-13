@@ -4,6 +4,7 @@ import { Entry, ZipFile } from '@xmcl/yauzl'
 import { LauncherApp } from '~/app'
 import { ModpackHandler } from '../ModpackService'
 import { parseCFG } from './cfg'
+import { parseManifestJson } from './parseManifestJson'
 
 export function createMmcHandler(app: LauncherApp): ModpackHandler<MMCModpackManifest> {
   return {
@@ -57,7 +58,7 @@ export function createMmcHandler(app: LauncherApp): ModpackHandler<MMCModpackMan
       for (const pe of patchEntries) {
         try {
           const buf = await readEntry(zipFile, pe)
-          const json = JSON.parse(buf.toString()) as MMCComponentPatch
+          const json = parseManifestJson<MMCComponentPatch>(buf)
           if (json && typeof json.uid === 'string') {
             patches[json.uid] = json
           }
@@ -68,7 +69,7 @@ export function createMmcHandler(app: LauncherApp): ModpackHandler<MMCModpackMan
       }
 
       return {
-        json: JSON.parse(b.toString()),
+        json: parseManifestJson(b),
         cfg: parsedCFG,
         prefix: prefix || undefined,
         patches: Object.keys(patches).length ? patches : undefined,

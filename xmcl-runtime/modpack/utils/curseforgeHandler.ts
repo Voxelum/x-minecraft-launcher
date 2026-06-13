@@ -8,6 +8,7 @@ import { LauncherApp } from '~/app'
 import { kResourceWorker } from '~/resource'
 import { ModpackHandler } from '../ModpackService'
 import { getCurseforgeFiles, getCurseforgeProjects } from './getCurseforgeFiles'
+import { parseManifestJson } from './parseManifestJson'
 import { resolveHashes } from './resolveHashes'
 
 export function createCurseforgeHandler(app: LauncherApp): ModpackHandler<CurseforgeModpackManifest> {
@@ -47,7 +48,7 @@ export function createCurseforgeHandler(app: LauncherApp): ModpackHandler<Cursef
       const curseforgeManifest = entries.find(e => e.fileName === 'manifest.json')
       if (curseforgeManifest) {
         const b = await readEntry(zipFile, curseforgeManifest)
-        return JSON.parse(b.toString()) as CurseforgeModpackManifest
+        return parseManifestJson<CurseforgeModpackManifest>(b)
       }
     },
     resolveInstanceOptions: getInstanceConfigFromCurseforgeModpack,

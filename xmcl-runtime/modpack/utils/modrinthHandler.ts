@@ -4,6 +4,7 @@ import { readEntry } from '@xmcl/unzip'
 import { Entry } from '@xmcl/yauzl'
 import { LauncherApp } from '~/app'
 import { ModpackHandler } from '../ModpackService'
+import { parseManifestJson } from './parseManifestJson'
 
 export function createModrinthHandler(app: LauncherApp): ModpackHandler<ModrinthModpackManifest> {
   return {
@@ -26,13 +27,13 @@ export function createModrinthHandler(app: LauncherApp): ModpackHandler<Modrinth
       const modrinthManifest = entries.find(e => e.fileName === 'modrinth.index.json')
       if (modrinthManifest) {
         const b = await readEntry(zip, modrinthManifest)
-        return JSON.parse(b.toString()) as ModrinthModpackManifest
+        return parseManifestJson<ModrinthModpackManifest>(b)
       }
       const nonStandard = entries.find(e => e.fileName.endsWith('/modrinth.index.json'))
       if (nonStandard) {
         const b = await readEntry(zip, nonStandard)
         const basePath = nonStandard.fileName.substring(0, nonStandard.fileName.lastIndexOf('/'))
-        return Object.assign(JSON.parse(b.toString()) as ModrinthModpackManifest, {
+        return Object.assign(parseManifestJson<ModrinthModpackManifest>(b), {
           __nonStandard: basePath
         })
       }
