@@ -22,6 +22,19 @@ const readdir = promisify(sreaddir)
 
 export async function openFileSystem(basePath: string | Uint8Array): Promise<FileSystem> {
   if (typeof basePath === 'string') {
+    if (basePath.length === 0) {
+      // Defensive guard: empty string would land in fs.stat('') and surface
+      // as raw `Error: ENOENT no such file or directory, stat ''` (0.56.7
+      // telemetry: 11 distinct users, all untyped). Reject with a typed
+      // name so the next pass can locate the upstream caller passing the
+      // empty value instead of the symptom blending into the generic
+      // `Error` bucket.
+      const err = new Error('openFileSystem called with empty base path') as Error & { code: string; basePath: string }
+      err.name = 'EmptyFileSystemPathError'
+      err.code = 'ENOENT'
+      err.basePath = basePath
+      throw err
+    }
     const fstat = await stat(basePath)
     if (fstat.isDirectory()) {
       return new NodeFileSystem(basePath)

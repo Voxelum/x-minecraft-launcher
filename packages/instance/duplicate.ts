@@ -51,6 +51,25 @@ export async function duplicateInstance(options: DuplicateInstanceOptions): Prom
         progress.progress++
       }
 
+  // Accumulate per-file failures instead of letting each rejected
+  // promise bubble out as an unhandledRejection (the uncaught_error
+  // plugin turns those into one trackException per file — see
+  // telemetry where a single duplicate of an instance with ~850
+  // stale manifest entries produced 850 raw `Error: ENOENT
+  // copyfile …` events on 0.56.7). We tolerate ENOENT silently
+  // (stale entries in the source's `instance.files.json` whose real
+  // files were already deleted), and aggregate every other failure
+  // into a single typed warning at the end.
+  const missingSources: string[] = []
+  const otherFailures: Array<{ src: string; err: unknown }> = []
+  const safe = (src: string, p: Promise<void>) => p.catch((e: any) => {
+    if (e && (e.code === 'ENOENT' || e.code === 'ENOTDIR')) {
+      missingSources.push(src)
+      return
+    }
+    otherFailures.push({ src, err: e })
+  })
+
   const promises = [] as Promise<void>[]
 
   for (const [file] of files) {
@@ -63,11 +82,25 @@ export async function duplicateInstance(options: DuplicateInstanceOptions): Prom
       file.path.startsWith('resourcepacks/') ||
       file.path.startsWith('shaderpacks/')
     ) {
-      promises.push(linkOrCopy(src, dest))
+      promises.push(safe(src, linkOrCopy(src, dest)))
     } else {
-      promises.push(copyFile(src, dest).then(() => { progress.progress++ }))
+      promises.push(safe(src, copyFile(src, dest).then(() => { progress.progress++ })))
     }
   }
 
-  await Promise.allSettled(promises)
+  await Promise.all(promises)
+
+  if (missingSources.length > 0) {
+    logger?.warn(
+      `duplicateInstance: skipped ${missingSources.length} missing source file(s) (stale manifest entries). First: ${missingSources[0]}`,
+    )
+  }
+  if (otherFailures.length > 0) {
+    const err = new Error(
+      `duplicateInstance partially failed: ${otherFailures.length} file(s) could not be copied. First: ${otherFailures[0].src}`,
+    ) as Error & { failures: typeof otherFailures }
+    err.name = 'InstanceDuplicatePartialError'
+    err.failures = otherFailures
+    throw err
+  }
 }
