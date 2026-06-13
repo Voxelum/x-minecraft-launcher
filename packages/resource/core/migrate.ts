@@ -18,6 +18,18 @@ export class ResourceMigrateProvider implements MigrationProvider {
 
 async function fixSnapshotTable(db: Kysely<Database>) {
   let columns = await sql`PRAGMA table_info(snapshots)`.execute(db)
+  // Self-heal: if the `snapshots` table is missing entirely (e.g. an
+  // earlier corruption recovery dropped it but kysely's migration log
+  // still claims v1 ran), recreate it from the v1 schema before any
+  // service query touches it. Production telemetry has shown
+  // `SqliteError: no such table: snapshots` retry-storming for a small
+  // population (3 users × ~2k events in 0.56.7, issue #1429); plain
+  // `migrateToLatest()` won't re-run v1 because the migration log row
+  // is still present, so heal here instead.
+  if (columns.rows.length === 0) {
+    await v1.up(db)
+    return
+  }
   if (columns.rows.some((c: any) => c.name === 'ctime')) {
     await v21.up(db)
   }
