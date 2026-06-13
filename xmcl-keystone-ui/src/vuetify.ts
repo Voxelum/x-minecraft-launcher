@@ -8,7 +8,7 @@ import ZipFileIcon from '@/components/ZipFileIcon.vue'
 import { h } from 'vue'
 import { IconProps, IconSet, createVuetify } from 'vuetify'
 import { aliases, md } from 'vuetify/iconsets/md'
-import { ru, zhHans } from 'vuetify/locale'
+import { ar, ru, zhHans } from 'vuetify/locale'
 import 'vuetify/styles'
 import { BuiltinImages } from './constant'
 
@@ -40,7 +40,10 @@ export const vuetify = createVuetify({
   locale: {
     locale: 'en',
     fallback: 'en',
-    messages: { zhHans, ru },
+    messages: { zhHans, ru, ar },
+    rtl: {
+      ar: true,
+    },
   },
   icons: {
     defaultSet: 'md',
