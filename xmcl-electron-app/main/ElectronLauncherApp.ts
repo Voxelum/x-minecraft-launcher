@@ -156,10 +156,17 @@ export default class ElectronLauncherApp extends LauncherApp {
       definedPlugins,
     )
     this.session = new ElectronSession(this)
-    // Enable native Wayland support with automatic platform detection
-    app.commandLine?.appendSwitch('ozone-platform-hint', 'auto')
-    // Enable Wayland-specific features for better native appearance
-    app.commandLine?.appendSwitch('enable-features', 'UseOzonePlatform,WaylandWindowDecorations')
+    // Wayland/Ozone selection breaks Playwright's CDP page-target tracking
+    // under xvfb on CI (e2e-smoke job sees zero Page targets even though the
+    // BrowserWindow exists and reaches `ready-to-show`). Skip the Ozone
+    // switches whenever the E2E test harness is active so Playwright stays
+    // on the default X11 path.
+    if (!process.env.XMCL_E2E) {
+      // Enable native Wayland support with automatic platform detection
+      app.commandLine?.appendSwitch('ozone-platform-hint', 'auto')
+      // Enable Wayland-specific features for better native appearance
+      app.commandLine?.appendSwitch('enable-features', 'UseOzonePlatform,WaylandWindowDecorations')
+    }
   }
 
   get systemLocale(): string {
