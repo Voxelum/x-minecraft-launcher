@@ -49,7 +49,38 @@ export class ErrorDiagnose {
       this.#foundDiskFullError = true
       this.#markNoSpace()
     }
+    // Modpack install lock file (.install-profile) was deleted or the
+    // installer never wrote one (e.g. user wiped the instance dir
+    // mid-install). The user-facing flow already shows a "no pending
+    // install" notice; suppress the per-file ENOENT spam (91 ev/12
+    // users in 0.56.4). Also covers EPERM/EBUSY on the same path —
+    // OneDrive / antivirus holding the lock file open mid-install
+    // (0.56.7 telemetry: 38 users, mostly Windows users with
+    // `Users\<name>\.minecraftx\instances\<inst>\.install-profile`).
+    // Must come BEFORE the generic EPERM throttle below — otherwise
+    // the first 3 are still reported, which is exactly what we want
+    // to suppress entirely for this well-understood failure mode.
+    if ((e as any).name === 'InstallInstanceFilesError' && isSystemError(e) &&
+        (e.code === 'ENOENT' || e.code === 'EPERM' || e.code === 'EBUSY') &&
+        /\.install-profile/.test(e.message)) {
+      return true
+    }
     if (isSystemError(e) && e.code === 'EPERM') {
+      this.#noPermissionCount++
+      return this.#noPermissionCount > 3
+    }
+    // Same per-user storm dynamic as EPERM but different OS error
+    // classes: file held by Explorer/AV (EBUSY), file already exists
+    // for a symlink target (EEXIST), parent path renamed mid-op
+    // (EINVAL on Windows rename), filesystem unmounted / read-only
+    // (EROFS / EIO), generic "UNKNOWN" wrapper Node uses for
+    // GetFileInformationByHandle failures on Windows. None of these
+    // are defects in the launcher — they're user/AV/filesystem state
+    // we cannot work around — but a single failure can fire dozens of
+    // times during a copy/realpath walk. Bucket them the same way.
+    if (isSystemError(e) && (e.code === 'EBUSY' || e.code === 'EEXIST' ||
+        e.code === 'EINVAL' || e.code === 'EROFS' || e.code === 'EIO' ||
+        e.code === 'UNKNOWN')) {
       this.#noPermissionCount++
       return this.#noPermissionCount > 3
     }
@@ -64,6 +95,22 @@ export class ErrorDiagnose {
       return true
     }
     if (e.name === 'ClientAuthError' && e.message.includes('Network request failed')) {
+      return true
+    }
+    // MSAL surfaces a few more strictly user/network-state failures
+    // that are not defects:
+    //   - `device_code_expired`: user opened the device-code dialog
+    //     and never finished authenticating within MSAL's 15-min
+    //     window. Identical to AuthCodeTimeoutError, just from the
+    //     device-code flow rather than the redirect flow.
+    //   - `endpoints_resolution_error`: MSAL could not reach
+    //     login.microsoftonline.com (DNS / proxy / regional outage).
+    //     Same shape as the existing `Network request failed`
+    //     suppression — just a different MSAL error code.
+    //   - `interaction_required` / `user_cancelled`: silent flows
+    //     that need a UI re-prompt; the launcher already triggers
+    //     one, telemetry would only see the dead-end attempt.
+    if (e.name === 'ClientAuthError' && /\b(device_code_expired|endpoints_resolution_error|interaction_required|user_cancelled)\b/.test(e.message)) {
       return true
     }
     // Issue #1442: 404 from /minecraft/profile just means the user's MS
@@ -118,14 +165,6 @@ export class ErrorDiagnose {
     if (e.name === 'AbortError' || e.message === 'The operation was aborted' || e.message === 'This operation was aborted') {
       return true
     }
-    // Modpack install lock file (.install-profile) was deleted or the
-    // installer never wrote one (e.g. user wiped the instance dir
-    // mid-install). The user-facing flow already shows a "no pending
-    // install" notice; suppress the per-file ENOENT spam (91 ev/12
-    // users in 0.56.4).
-    if ((e as any).name === 'InstallInstanceFilesError' && isSystemError(e) && e.code === 'ENOENT' && /\.install-profile/.test(e.message)) {
-      return true
-    }
     // Version JSON is missing -- user deleted versions/<v>/<v>.json
     // or never finished installing the version. Already handled by
     // the launcher UI (offers re-install); suppress telemetry storm.
@@ -178,6 +217,21 @@ export class ErrorDiagnose {
     // as a last line of defense in case any other caller bubbles it
     // through (issue #1469 — 79 users in 0.56.4).
     if (e.name === 'InvalidZipFile' || e.name === 'InvalidZipFileError') {
+      return true
+    }
+    // Third-party API outages (Modrinth/CurseForge/Mojang/Yggdrasil).
+    // A nginx 502/503/504 affects every launcher session simultaneously
+    // — June 12 2026 Modrinth outage produced 1830 events / 825 users
+    // in a single day, all on `getProjectVersionsByHash`. The launcher
+    // has no fix to apply, the user sees the right empty/error state,
+    // and the alert noise drowns out real bugs. Match on both the
+    // canonical "Status=5xx" prefix our clients prepend and on
+    // standalone status numbers in case the upstream omits a body.
+    const thirdPartyName = e.name === 'ModerinthApiError' || e.name === 'ModrinthApiError' ||
+      e.name === 'CurseforgeApiError' || e.name === 'MojangFriendsError' ||
+      e.name === 'YggdrasilError' || e.name === 'MojangApiError'
+    if (thirdPartyName && typeof e.message === 'string' &&
+        /\b(?:Status=)?5\d{2}\b/.test(e.message)) {
       return true
     }
     return false

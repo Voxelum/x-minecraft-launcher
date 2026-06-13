@@ -14,7 +14,19 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
 
   const saver = new AggregateExecutor<void, void>(() => { }, async () => {
     const data = SettingSchema.parse(state)
-    await writeJson(settingJsonPath, data, { spaces: 2 })
+    try {
+      await writeJson(settingJsonPath, data, { spaces: 2 })
+    } catch (e) {
+      // Best-effort: do NOT propagate as an unhandled rejection.
+      // This saver runs on every state change; if writeJson fails
+      // (EPERM/EBUSY/EROFS because of OneDrive sync, antivirus,
+      // read-only mount on Linux, ...), reporting every retry as a
+      // trackException creates a per-user storm and we still cannot
+      // recover from the underlying environment issue. The next state
+      // change re-triggers the saver, so transient locks self-heal.
+      logger.warn(`Fail to save ${settingJsonPath}`)
+      logger.warn(e as Error)
+    }
   }, 1000)
 
   app.registryDisposer(async () => {

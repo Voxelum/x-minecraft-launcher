@@ -189,14 +189,36 @@ describe('pluginSettings', () => {
     expect(fsExtra.writeJson).toHaveBeenCalled()
   })
 
-  test('should register disposer for cleanup', async () => {
+  test('should not propagate writeJson failure as unhandled rejection', async () => {
+    // Regression: 0.56.7 telemetry showed `Error: EPERM ... open setting.json`
+    // hitting 153 users (1.48%→2.44%). The saver previously let writeJson
+    // errors bubble up as unhandled rejections that landed in trackException.
+    // The fix logs the error and swallows it so the next state change retries.
+    vi.useFakeTimers()
     vi.mocked(fsExtra.readJson).mockResolvedValue({})
+    const epermErr: any = new Error("EPERM: operation not permitted, open 'setting.json'")
+    epermErr.code = 'EPERM'
+    vi.mocked(fsExtra.writeJson).mockRejectedValue(epermErr)
 
-    const { pluginSettings } = await import('./pluginSettings')
-    await pluginSettings(mockApp, mockManifest)
+    const unhandled = vi.fn()
+    process.on('unhandledRejection', unhandled)
+    try {
+      const { pluginSettings } = await import('./pluginSettings')
+      await pluginSettings(mockApp, mockManifest)
+      await vi.waitFor(() => { expect(subscribeCallback).not.toBeNull() })
 
-    expect(mockApp.registryDisposer).toHaveBeenCalled()
+      subscribeCallback!()
+      await vi.advanceTimersByTimeAsync(1100)
+
+      expect(fsExtra.writeJson).toHaveBeenCalled()
+      expect(mockLogger.warn).toHaveBeenCalled()
+      expect(unhandled).not.toHaveBeenCalled()
+    } finally {
+      process.off('unhandledRejection', unhandled)
+    }
   })
+
+
 
   test('should log error when settings parsing fails', async () => {
     vi.mocked(fsExtra.readJson).mockResolvedValue({ invalidField: 'invalid' })
