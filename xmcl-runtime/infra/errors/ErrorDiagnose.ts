@@ -76,6 +76,17 @@ export class ErrorDiagnose {
     if ((e as any).name === 'InstanceInstallWatcherError') {
       return true
     }
+    // Instance duplicate: per-file ENOENT used to bubble up as one
+    // unhandledRejection per file (uncaught_error → trackException).
+    // The per-file copy paths now swallow ENOENT/ENOTDIR and emit ONE
+    // aggregated `InstanceDuplicatePartialError` for the remainder;
+    // suppress the aggregated form here so a partial clone with a few
+    // genuine non-ENOENT failures doesn't keep firing per session.
+    // The error.failures array is still attached for the next pass to
+    // analyse via local logs.
+    if ((e as any).name === 'InstanceDuplicatePartialError') {
+      return true
+    }
     if (e.name === 'Error' && isSystemError(e) &&
         (e.code === 'EPERM' || e.code === 'EBUSY' || e.code === 'EACCES' || e.code === 'ENOENT') &&
         /\.install-profile/.test(e.message)) {

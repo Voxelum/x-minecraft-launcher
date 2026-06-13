@@ -70,8 +70,32 @@ export async function copyPassively(src: string, dest: string, filter: (name: st
   if (!filter(src)) { return }
   if (s.isDirectory()) {
     await ensureDir(dest)
-    const children = await readdir(src)
-    await Promise.all(children.map((p) => copyPassively(resolve(src, p), resolve(dest, p))))
+    // Broken junctions / reparse points / locked directories surface as
+    // Windows `UNKNOWN` (or EBUSY/EACCES/EPERM/EIO) inside `readdir` or
+    // any subsequent `realpath`/`stat`/`copyFile` syscall the walker
+    // makes. A single broken `libraries` junction was emitting 370
+    // untyped `Error: UNKNOWN realpath` events for one user on 0.56.7
+    // because every recursive descent retried the same path and each
+    // rejected promise became an unhandledRejection. Catch and skip
+    // here so the walker degrades gracefully instead of storming.
+    const children = await readdir(src).catch((e: any) => {
+      if (e && (e.code === 'UNKNOWN' || e.code === 'EBUSY' ||
+        e.code === 'EACCES' || e.code === 'EPERM' || e.code === 'EIO')) {
+        return undefined
+      }
+      throw e
+    })
+    if (!children) return
+    await Promise.all(children.map((p) =>
+      copyPassively(resolve(src, p), resolve(dest, p), filter).catch((e: any) => {
+        if (e && (e.code === 'UNKNOWN' || e.code === 'EBUSY' ||
+          e.code === 'EACCES' || e.code === 'EPERM' || e.code === 'EIO' ||
+          e.code === 'ENOENT')) {
+          return
+        }
+        throw e
+      }),
+    ))
   } else if (await missing(dest)) {
     await copyFile(src, dest)
   }
@@ -86,8 +110,24 @@ export async function linkPassively(src: string, dest: string, filter: (name: st
   if (!filter(src)) { return }
   if (s.isDirectory()) {
     await ensureDir(dest)
-    const children = await readdir(src)
-    await Promise.all(children.map((p) => linkPassively(resolve(src, p), resolve(dest, p))))
+    const children = await readdir(src).catch((e: any) => {
+      if (e && (e.code === 'UNKNOWN' || e.code === 'EBUSY' ||
+        e.code === 'EACCES' || e.code === 'EPERM' || e.code === 'EIO')) {
+        return undefined
+      }
+      throw e
+    })
+    if (!children) return
+    await Promise.all(children.map((p) =>
+      linkPassively(resolve(src, p), resolve(dest, p), filter).catch((e: any) => {
+        if (e && (e.code === 'UNKNOWN' || e.code === 'EBUSY' ||
+          e.code === 'EACCES' || e.code === 'EPERM' || e.code === 'EIO' ||
+          e.code === 'ENOENT')) {
+          return
+        }
+        throw e
+      }),
+    ))
   } else if (await missing(dest)) {
     await link(src, dest).catch((e) => {
       if (!isFileNoFound(e)) {
