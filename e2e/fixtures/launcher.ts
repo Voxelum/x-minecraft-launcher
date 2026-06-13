@@ -53,22 +53,54 @@ async function waitForAppWindow(
 ): Promise<Page> {
   const deadline = Date.now() + timeoutMs
   const seen = new Set<string>()
-  while (Date.now() < deadline) {
-    for (const win of app.windows()) {
-      const url = win.url()
-      if (url) seen.add(url)
-      if (pattern.test(url)) {
-        try {
-          await win.waitForLoadState('domcontentloaded', { timeout: 5_000 })
-        } catch {
-          // The page reported the target URL but did not reach DOMContentLoaded
-          // within 5s. Return it anyway — downstream `shell.waitReady()` polls
-          // for testids on a longer timeout and will surface a real failure.
+  const collect = (win: Page) => {
+    const url = win.url()
+    if (url) seen.add(url)
+  }
+  for (const win of app.windows()) collect(win)
+  app.on('window', collect)
+  try {
+    while (Date.now() < deadline) {
+      for (const win of app.windows()) {
+        const url = win.url()
+        if (url) seen.add(url)
+        if (pattern.test(url)) {
+          try {
+            await win.waitForLoadState('domcontentloaded', { timeout: 5_000 })
+          } catch {
+            // The page reported the target URL but did not reach DOMContentLoaded
+            // within 5s. Return it anyway — downstream `shell.waitReady()` polls
+            // for testids on a longer timeout and will surface a real failure.
+          }
+          return win
         }
-        return win
       }
+      // Cross-check by asking the electron main process what BrowserWindows
+      // actually exist. Playwright's `app.windows()` occasionally misses
+      // pages on Linux/xvfb (custom session partition + headless rendering
+      // race the CDP `Target.targetCreated` event). The main-process view is
+      // authoritative — surface its observations into the timeout error so
+      // CI logs explain *why* Playwright couldn't see them.
+      try {
+        const mainViewed: Array<{ id: number; url: string; loading: boolean; destroyed: boolean }> =
+          await app.evaluate(({ BrowserWindow }) =>
+            (BrowserWindow.getAllWindows() as any[]).map((w) => ({
+              id: w.id,
+              url: w.webContents.getURL(),
+              loading: w.webContents.isLoading(),
+              destroyed: w.isDestroyed(),
+            })),
+          )
+        for (const w of mainViewed) {
+          if (w.url) seen.add(`main:${w.url}`)
+        }
+      } catch {
+        // ignore — evaluate can race the app close
+      }
+      await new Promise((r) => setTimeout(r, 250))
     }
-    await new Promise((r) => setTimeout(r, 250))
+  } finally {
+    app.off('window', collect)
   }
   throw new Error(
     `Timed out after ${timeoutMs}ms waiting for a launcher window matching ${pattern}. ` +
