@@ -65,6 +65,22 @@ export class ErrorDiagnose {
         /\.install-profile/.test(e.message)) {
       return true
     }
+    // chokidar's FSWatcher in `InstanceInstallService#watchInstanceInstall`
+    // now retags its 'error' events as `InstanceInstallWatcherError`
+    // before swallowing them — but old releases bubbled raw
+    // `Error: EPERM stat '...\.install-profile'` into telemetry where
+    // they were indistinguishable from every other generic Error.
+    // Suppress the typed form here, and also suppress the raw form
+    // when the message clearly points at `.install-profile` so we
+    // close the gap for users still on those releases.
+    if ((e as any).name === 'InstanceInstallWatcherError') {
+      return true
+    }
+    if (e.name === 'Error' && isSystemError(e) &&
+        (e.code === 'EPERM' || e.code === 'EBUSY' || e.code === 'EACCES' || e.code === 'ENOENT') &&
+        /\.install-profile/.test(e.message)) {
+      return true
+    }
     if (isSystemError(e) && e.code === 'EPERM') {
       this.#noPermissionCount++
       return this.#noPermissionCount > 3

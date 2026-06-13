@@ -555,6 +555,25 @@ export class InstanceInstallService extends AbstractService implements IInstance
         cwd: path,
         depth: 1,
       })
+        // Chokidar internally calls `fs.stat`/`lstat` on each watched
+        // path; failures (EPERM/EBUSY/EACCES from AV/OneDrive, ENOENT
+        // when the file was deleted between scans) become an 'error'
+        // event. Without a listener they bubble as raw `Error` with
+        // `name === 'Error'`, indistinguishable in telemetry from every
+        // other unwrapped throw (#1457). Tag them so the next pass can
+        // see exactly which subsystem is producing the noise — these
+        // are transient and the watcher recovers on its own, so we
+        // swallow after renaming + logging.
+        .on('error', (e: any) => {
+          if (e && typeof e === 'object' && e.name === 'Error') {
+            e.name = 'InstanceInstallWatcherError'
+          }
+          if (isSystemError(e)) {
+            this.warn(e)
+          } else {
+            this.error(e)
+          }
+        })
         .on('all', async (ev, filePath) => {
           if (ev === 'add' || ev === 'change') {
             if (filePath === '.install-profile') {
