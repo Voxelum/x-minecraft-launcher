@@ -141,19 +141,27 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     }
 
     if (newProfile) {
+      // Mojang's PUT /minecraft/profile/skins occasionally returns 200 with an
+      // empty `skins` array (observed in telemetry: ~7 users / 54 events on
+      // 0.56.7). Guard against `skins[0]`/`capes[0]` being undefined instead of
+      // throwing a generic TypeError that leaks to App Insights.
+      const skin = newProfile.skins?.[0]
+      const cape = newProfile.capes?.[0]
       // @ts-ignore
       userProfile.profiles[gameProfile.id] = {
         ...gameProfile,
         ...newProfile,
         uploadable: ['skin', 'cape'],
         textures: {
-          SKIN: {
-            url: newProfile.skins[0].url,
-            metadata: { model: newProfile.skins[0].variant === 'CLASSIC' ? 'steve' : 'slim' },
-          },
-          CAPE: newProfile.capes.length > 0
+          SKIN: skin
             ? {
-              url: newProfile.capes[0].url,
+              url: skin.url,
+              metadata: { model: skin.variant === 'CLASSIC' ? 'steve' : 'slim' },
+            }
+            : gameProfile.textures?.SKIN ?? { url: '' },
+          CAPE: cape
+            ? {
+              url: cape.url,
             }
             : undefined,
         },

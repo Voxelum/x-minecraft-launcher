@@ -7,6 +7,7 @@ import { Entry } from '@xmcl/yauzl'
 import { LauncherApp } from '~/app'
 import { ModpackHandler } from '../ModpackService'
 import { getCurseforgeFiles, getCurseforgeProjects } from './getCurseforgeFiles'
+import { parseManifestJson } from './parseManifestJson'
 import { resolveHashes } from './resolveHashes'
 
 export function createMcbbsHandler(app: LauncherApp): ModpackHandler<McbbsModpackManifest> {
@@ -14,7 +15,7 @@ export function createMcbbsHandler(app: LauncherApp): ModpackHandler<McbbsModpac
     readManifest: async (zip, entries) => {
       const mcbbsManifest = entries.find(e => e.fileName === 'mcbbs.packmeta')
       if (mcbbsManifest) {
-        return readEntry(zip, mcbbsManifest).then(b => JSON.parse(b.toString()) as McbbsModpackManifest)
+        return readEntry(zip, mcbbsManifest).then(b => parseManifestJson<McbbsModpackManifest>(b))
       }
     },
     resolveInstanceOptions: getInstanceConfigFromMcbbsModpack,

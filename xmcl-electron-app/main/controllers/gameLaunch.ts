@@ -9,8 +9,15 @@ export const gameLaunch: ControllerPlugin = function (this: ElectronController) 
   this.app.waitEngineReady().then(() => {
     this.app.registry.get(LaunchService).then((service) => {
       service.on('minecraft-window-ready', ({ hideLauncher }) => {
-        if (this.mainWin && (this.mainWin.isVisible() || this.mainWin.isMinimized())) {
-          this.mainWin.webContents.send('minecraft-window-ready')
+        if (this.mainWin && !this.mainWin.isDestroyed() && (this.mainWin.isVisible() || this.mainWin.isMinimized())) {
+          const wc = this.mainWin.webContents
+          if (wc && !wc.isDestroyed()) {
+            try {
+              wc.send('minecraft-window-ready')
+            } catch {
+              // window torn down mid-send
+            }
+          }
 
           if (hideLauncher) {
             this.mainWin.hide()
@@ -23,7 +30,7 @@ export const gameLaunch: ControllerPlugin = function (this: ElectronController) 
         }
       }).on('minecraft-exit', (status) => {
         this.parking = service.getProcesses().length > 0
-        if (this.mainWin && !this.mainWin.isVisible()) {
+        if (this.mainWin && !this.mainWin.isDestroyed() && !this.mainWin.isVisible()) {
           this.mainWin.show()
         }
         this.app.controller.broadcast('minecraft-exit', status)

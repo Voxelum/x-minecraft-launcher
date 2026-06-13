@@ -17,17 +17,31 @@ export const windowController: ControllerPlugin = function (this: ElectronContro
   const currentPlatform = platform()
 
   app.on('browser-window-created', (_, win: BrowserWindow) => {
+    // Wrap webContents.send with destroyed-guards. Without these, fullscreen /
+    // maximize events fired after the window starts closing throw
+    // "Object has been destroyed" (telemetry: BrowserWindow.<anonymous>
+    // / WebContents._.send buckets on 0.56.7).
+    const safeSend = (channel: string, ...args: unknown[]) => {
+      if (win.isDestroyed()) return
+      const wc = win.webContents
+      if (!wc || wc.isDestroyed()) return
+      try {
+        wc.send(channel, ...args)
+      } catch {
+        // window torn down mid-send — drop quietly
+      }
+    }
     win.on('maximize', () => {
-      win.webContents.send('maximize', win.isMaximized())
+      safeSend('maximize', win.isDestroyed() ? false : win.isMaximized())
     })
     win.on('enter-full-screen', () => {
-      win.webContents.send('maximize', win.fullScreen)
+      safeSend('maximize', win.isDestroyed() ? false : win.fullScreen)
     })
     win.on('leave-full-screen', () => {
-      win.webContents.send('maximize', win.fullScreen)
+      safeSend('maximize', win.isDestroyed() ? false : win.fullScreen)
     })
     win.on('minimize', () => {
-      win.webContents.send('minimize', win.isMaximized())
+      safeSend('minimize', win.isDestroyed() ? false : win.isMaximized())
     })
   })
   ipcMain.handle('focus', (event) => {

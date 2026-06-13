@@ -344,6 +344,42 @@ describe('Modpack Conversion Functions', () => {
       expect(result.runtime?.neoForged).toBe('20.4.109')
       expect(result.runtime?.quiltLoader).toBe('0.19.2')
     })
+
+    it('should throw InvalidCurseforgeModpackManifestError when minecraft block is missing', () => {
+      // Telemetry: 0.56.7 bucket
+      // "TypeError at Object.getInstanceConfigFromCurseforgeModpack: Cannot
+      // read properties of undefined (reading 'modLoaders')". Surface a typed
+      // error so the upstream caller can convert it to a UI Exception.
+      const manifest = {
+        manifestType: 'minecraftModpack',
+        manifestVersion: 1,
+        name: 'Broken Pack',
+        version: '1.0.0',
+        author: 'Author',
+        overrides: 'overrides',
+      } as unknown as CurseforgeModpackManifest
+
+      expect(() => getInstanceConfigFromCurseforgeModpack(manifest)).toThrow(/minecraft\.modLoaders/)
+      try {
+        getInstanceConfigFromCurseforgeModpack(manifest)
+      } catch (e) {
+        expect((e as Error).name).toBe('InvalidCurseforgeModpackManifestError')
+      }
+    })
+
+    it('should throw InvalidCurseforgeModpackManifestError when modLoaders is not an array', () => {
+      const manifest = {
+        manifestType: 'minecraftModpack',
+        manifestVersion: 1,
+        name: 'Broken Pack',
+        version: '1.0.0',
+        author: 'Author',
+        minecraft: { version: '1.20.1' },
+        overrides: 'overrides',
+      } as unknown as CurseforgeModpackManifest
+
+      expect(() => getInstanceConfigFromCurseforgeModpack(manifest)).toThrow(/minecraft\.modLoaders/)
+    })
   })
 
   describe('getInstanceConfigFromModrinthModpack', () => {
