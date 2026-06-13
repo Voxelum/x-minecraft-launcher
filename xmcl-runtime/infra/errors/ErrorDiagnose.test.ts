@@ -88,4 +88,31 @@ describe('ErrorDiagnose - new regression suppressions', () => {
     err.name = 'ModerinthApiError'
     expect(d.processError(err)).toBe(false)
   })
+
+  test('UpdateError with 5xx selfhost message is suppressed (#1456)', () => {
+    const d = new ErrorDiagnose(makeApp())
+    const err: any = new Error('Fail to get update from selfhost: <html>502 Bad Gateway</html>')
+    err.name = 'UpdateError'
+    err.status = 502
+    expect(d.processError(err)).toBe(true)
+  })
+
+  test.each(['ETIMEDOUT', 'ECONNRESET', 'EAI_AGAIN', 'ENETUNREACH'])(
+    'UpdateError with network cause %s is suppressed', (code) => {
+      const d = new ErrorDiagnose(makeApp())
+      const cause: any = new Error(`fetch failed: ${code}`)
+      cause.code = code
+      const err: any = new Error('Fail to get update from selfhost: fetch failed')
+      err.name = 'UpdateError'
+      err.cause = cause
+      expect(d.processError(err)).toBe(true)
+    })
+
+  test('UpdateError on rename/install failure is still reported (real bug)', () => {
+    const d = new ErrorDiagnose(makeApp())
+    const err: any = new Error('Fail to rename update the file: /tmp/foo.asar')
+    err.name = 'UpdateError'
+    err.cause = new Error('EACCES')
+    expect(d.processError(err)).toBe(false)
+  })
 })

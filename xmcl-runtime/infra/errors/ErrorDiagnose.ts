@@ -234,6 +234,27 @@ export class ErrorDiagnose {
         /\b(?:Status=)?5\d{2}\b/.test(e.message)) {
       return true
     }
+    // Self-host updater: Vercel proxy returns intermittent 502/503/504
+    // for the update channel (issue #1456 — 218 users in 0.56.7).
+    // Also covers transient DNS/socket failures while polling for
+    // updates. Real install-side `UpdateError` (rename/copy failure on
+    // disk) lacks a 5xx and has no network code in its cause, so it
+    // continues to bubble through and remain visible in telemetry.
+    if (e.name === 'UpdateError') {
+      const msg = typeof e.message === 'string' ? e.message : ''
+      const has5xx = /\b(?:Status=)?(?:502|503|504)\b/.test(msg)
+      const NET_CODES = ['ETIMEDOUT', 'ECONNRESET', 'EAI_AGAIN', 'ENETUNREACH', 'EHOSTUNREACH', 'ECONNREFUSED']
+      const isNetworkCause = (err: any): boolean => {
+        if (!err) return false
+        if (typeof err.code === 'string' && NET_CODES.includes(err.code)) return true
+        if (typeof err.message === 'string' &&
+            new RegExp(`(?:${NET_CODES.join('|')})`).test(err.message)) return true
+        return isNetworkCause(err.cause)
+      }
+      if (has5xx || isNetworkCause(e)) {
+        return true
+      }
+    }
     return false
   }
 }
