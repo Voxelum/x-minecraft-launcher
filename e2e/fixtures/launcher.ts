@@ -206,14 +206,32 @@ export const test = base.extend<{
     // for the actual UI (index.html for normal runs, setup.html for the
     // first-launch wizard).
     //
-    // The 180s budget matches what we observed on github-hosted ubuntu-24
-    // runners: cold-boot of the production main process (services +
-    // ProjectMappingService DB init + setup worker spin-up) takes ~90s
-    // before createAppWindow calls loadURL. The previous 90s ceiling fired
-    // ~1-2s before the URL was loaded on every run, so the smoke job was
-    // permanently red on master. Locally it completes in <10s.
+    // On github-hosted ubuntu-24 + xvfb the launcher's custom-protocol
+    // BrowserWindow does not surface to Playwright as a CDP page target
+    // (`app.windows()` stays empty even though `BrowserWindow.getAllWindows()`
+    // inside `app.evaluate` lists it with the correct URL). The smoke spec
+    // drives its assertions through `app.evaluate` directly and does not
+    // need `main` — so make the page resolution best-effort: any spec that
+    // *does* touch `main` should fail loudly with a descriptive error
+    // instead of hanging the fixture.
     const ENTRY_PATTERN = /\/(index|setup)\.html(\?|#|$)/
-    const main = await waitForAppWindow(app, ENTRY_PATTERN, 180_000)
+    let main: Page
+    try {
+      main = await waitForAppWindow(app, ENTRY_PATTERN, 30_000)
+    } catch (err) {
+      const message = (err as Error).message
+      const stub = new Proxy({} as Page, {
+        get(_t, prop) {
+          throw new Error(
+            `launcher.main is unavailable: ${message}. ` +
+            `This fixture could not attach a Playwright Page to the launcher's BrowserWindow ` +
+            `(commonly: custom-protocol target on Linux/xvfb). Drive your spec through ` +
+            `\`launcher.app.evaluate(...)\` instead, or attempted property: ${String(prop)}.`,
+          )
+        },
+      })
+      main = stub
+    }
 
     const manifest = newJourneyManifest({
       journey: testInfo.titlePath.join(' / '),
