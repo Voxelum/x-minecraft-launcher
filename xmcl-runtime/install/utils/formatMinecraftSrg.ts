@@ -30,6 +30,13 @@ export async function formatMinecraftSrg(originalMappingPath: string, mappingPat
     const process = spawn(javaPath, args)
     await new Promise<void>((resolve, reject) => {
       const buff = [] as Buffer[]
+      // Without an 'error' listener, a synchronous spawn failure
+      // (`spawn EPERM` from antivirus blocking java.exe; `spawn ENOENT`
+      // if the java binary was moved between detection and use)
+      // bubbles up as an uncaught exception. Reject the install
+      // promise instead so the caller can surface a friendlier
+      // error / fall back to another JRE candidate.
+      process.on('error', reject)
       process.on('close', (code) => {
         if (code === 0) {
           resolve()
