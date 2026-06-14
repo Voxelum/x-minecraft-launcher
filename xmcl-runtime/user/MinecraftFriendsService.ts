@@ -11,6 +11,7 @@ import { AnyError } from '@xmcl/utils'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { kUserTokenStorage } from '~/user'
+import { UserService } from './UserService'
 
 const UserAuthenticationError = AnyError.make('UserAuthenticationError')
 const MinecraftFriendsUnsupportedError = AnyError.make('MinecraftFriendsUnsupportedError')
@@ -35,6 +36,7 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
     @Inject(MojangClient) private mojangApi: MojangClient,
+    @Inject(UserService) private userService: UserService,
   ) {
     super(app)
   }
@@ -47,10 +49,11 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
     if (entry?.inFlight) return entry.inFlight
     if (!force && entry && entry.expiresAt > now) return entry.data
 
-    const token = await this.getToken(user)
     const promise = (async () => {
       try {
-        const result = await this.mojangApi.getFriends(token, force ? undefined : entry?.etag)
+        const result = await this.withFreshToken(user, (token) =>
+          this.mojangApi.getFriends(token, force ? undefined : entry?.etag),
+        )
         if ('notModified' in result) {
           // Server says nothing changed — extend the cache window and reuse
           // the previous data.
@@ -61,7 +64,7 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
           }
           // Fallthrough — should not happen (no cached data + 304) but be
           // defensive: re-fetch without etag.
-          const fresh = await this.mojangApi.getFriends(token)
+          const fresh = await this.withFreshToken(user, (token) => this.mojangApi.getFriends(token))
           if ('notModified' in fresh) {
             const empty: MinecraftFriendsList = {
               friends: [], incomingRequests: [], outgoingRequests: [], fetchedAt: Date.now(),
@@ -112,9 +115,8 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
     if (!trimmed) {
       throw new AnyError('MinecraftFriendsError', 'Player name cannot be empty')
     }
-    const token = await this.getToken(user)
     try {
-      await this.mojangApi.addFriend(token, { name: trimmed })
+      await this.withFreshToken(user, (token) => this.mojangApi.addFriend(token, { name: trimmed }))
     } catch (e) {
       throw this.translateError(e)
     }
@@ -123,9 +125,8 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
 
   async acceptFriendRequest(user: UserProfile, profileId: string): Promise<void> {
     this.assertSupported(user)
-    const token = await this.getToken(user)
     try {
-      await this.mojangApi.addFriend(token, { profileId })
+      await this.withFreshToken(user, (token) => this.mojangApi.addFriend(token, { profileId }))
     } catch (e) {
       throw this.translateError(e)
     }
@@ -146,9 +147,8 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
 
   async getFriendsPreferences(user: UserProfile): Promise<MinecraftFriendsPreferences> {
     this.assertSupported(user)
-    const token = await this.getToken(user)
     try {
-      const attrs = await this.mojangApi.getPlayerAttributes(token)
+      const attrs = await this.withFreshToken(user, (token) => this.mojangApi.getPlayerAttributes(token))
       return {
         friendsEnabled: attrs.friendsPreferences?.friends !== 'DISABLED',
         acceptInvites: attrs.friendsPreferences?.acceptInvites !== 'DISABLED',
@@ -160,13 +160,12 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
 
   async setFriendsPreferences(user: UserProfile, prefs: Partial<MinecraftFriendsPreferences>): Promise<MinecraftFriendsPreferences> {
     this.assertSupported(user)
-    const token = await this.getToken(user)
     try {
       // The API requires both fields; merge with current values when only one is provided.
       let friendsEnabled = prefs.friendsEnabled
       let acceptInvites = prefs.acceptInvites
       if (friendsEnabled === undefined || acceptInvites === undefined) {
-        const attrs = await this.mojangApi.getPlayerAttributes(token)
+        const attrs = await this.withFreshToken(user, (token) => this.mojangApi.getPlayerAttributes(token))
         if (friendsEnabled === undefined) {
           friendsEnabled = attrs.friendsPreferences?.friends !== 'DISABLED'
         }
@@ -174,10 +173,10 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
           acceptInvites = attrs.friendsPreferences?.acceptInvites !== 'DISABLED'
         }
       }
-      await this.mojangApi.updatePlayerAttributes(token, {
+      await this.withFreshToken(user, (token) => this.mojangApi.updatePlayerAttributes(token, {
         friendsEnabled,
         acceptInvites,
-      })
+      }))
       return { friendsEnabled: friendsEnabled!, acceptInvites: acceptInvites! }
     } catch (e) {
       throw this.translateError(e)
@@ -188,9 +187,8 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
 
   private async removeByProfileId(user: UserProfile, profileId: string): Promise<void> {
     this.assertSupported(user)
-    const token = await this.getToken(user)
     try {
-      await this.mojangApi.removeFriend(token, { profileId })
+      await this.withFreshToken(user, (token) => this.mojangApi.removeFriend(token, { profileId }))
     } catch (e) {
       throw this.translateError(e)
     }
@@ -210,13 +208,37 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
     }
   }
 
-  private async getToken(user: UserProfile): Promise<string> {
+  private async getToken(user: UserProfile, force = false): Promise<string> {
+    // Route through UserService.refreshUser so we share its per-user
+    // Singleton lock with the startup refresh and the launch flow. Without
+    // this, the UI's eager `getFriends` call on user-switch can read a
+    // stale token before the background refresh writes the new one,
+    // producing a spurious UnauthorizedError on launcher start.
+    await this.userService.refreshUser(user.id, { silent: true, force }).catch((e) => {
+      this.log(`Failed to refresh user ${user.id} before MinecraftFriends call`, e)
+    })
     const userTokenStorage = await this.app.registry.get(kUserTokenStorage)
     const token = await userTokenStorage.get(user)
     if (!token) {
       throw new UserAuthenticationError('No access token available for user')
     }
     return token
+  }
+
+  /**
+   * Run a Mojang API call with a fresh access token. If the call fails
+   * with UnauthorizedError (server-side invalidation, clock skew, etc.),
+   * force a token refresh and retry once.
+   */
+  private async withFreshToken<T>(user: UserProfile, op: (token: string) => Promise<T>): Promise<T> {
+    const token = await this.getToken(user)
+    try {
+      return await op(token)
+    } catch (e) {
+      if (!(e instanceof UnauthorizedError)) throw e
+      const refreshed = await this.getToken(user, true)
+      return op(refreshed)
+    }
   }
 
   private translateError(e: unknown): unknown {
