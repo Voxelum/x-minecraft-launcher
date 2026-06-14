@@ -1,0 +1,1712 @@
+AppAddInstanceDialog:
+  choiceTitle: 'تم اكتشاف ملفات تعريف تشغيل متعددة. الرجاء تحديد واحد لاستيراده.'
+  createTitle: 'إنشاء لعبة'
+  serverTitle: 'أدخل عنوان الخادم الخاص بك'
+AppShareInstanceDialog:
+  alterDownloadDescription: >-
+    إذا كنت لا ترغب في إفساد المثيل الحالي. يمكنك أيضًا إنشاء مثيل جديد من تكوين نظيرك. انقر فوق الزر أدناه لإنشاء مثيل.
+  baseInfo: 'الإعداد الأساسي'
+  cancelShare: 'إلغاء المشاركة'
+  description: >-
+    بعد مشاركة ملف التعريف، يمكن لمكان آخر تنزيل هذه الملفات من خلال جهاز الكمبيوتر الخاص بك.
+  downloadDescription: >-
+    يرجى التحقق من الملفات التي قدمها لك نظيرك. حدد الملف الذي تريد تنزيله. سيتم وضعه في المثيل الحالي {name}.
+  downloadNotifyTitle: 'تنزيل المثيل من {user}'
+  downloadTitle: 'تنزيل الملفات من أقرانهم الآخرين'
+  filesToDownload: 'اختر الملفات لتنزيلها'
+  filesToShare: 'اختر الملفات لمشاركتها'
+  instanceShare: '{user} شارك للتو المثيل الحالي معك'
+  share: 'يشارك'
+  shareNotifyTitle: 'مشاركة المثيل'
+  shareTitle: 'مشاركة ملفات اللعبة مع لاعب آخر'
+BaseSettingGeneral:
+  title: 'عام'
+HomeJavaIssueDialog:
+  incompatibleJava: 'جافا غير متوافق'
+  incompatibleJavaHint: 'قد تكون Java الحالية غير متوافقة مع لعبة Minecraft المحددة!'
+  missingJava: 'جافا مفقودة'
+  missingJavaHint: 'لا يمكن لـ Launcher اكتشاف أي جافا في جهاز الكمبيوتر الخاص بك. أنت تستطيع:'
+  optionSwitch:
+    name: 'التبديل إلى {version}'
+HomeLaunchMultiInstanceDialog:
+  confirm: 'نعم، إطلاق'
+  description: 'أنت تقوم بتشغيل مثيلات متعددة من Minecraft. هل أنت متأكد؟'
+  title: 'مثيلات متعددة'
+SettingMigrationDialog:
+  selectRootDirectory: 'حدد الدليل الجذر'
+ago:
+  day: '{duration} منذ يوم | {duration} قبل أيام'
+  hour: '{duration} قبل ساعة | {duration} قبل ساعات'
+  minute: '{duration} قبل دقيقة | {duration} قبل دقائق'
+  second: '{duration} قبل ثانية | {duration} قبل ثانية'
+askAICrash:
+  copyPrompt: 'انسخ المطالبة لطرح AI'
+  description: >-
+    دع الذكاء الاصطناعي يساعدك على فهم تعطل اللعبة! اتبع الإرشادات أدناه لسؤال الذكاء الاصطناعي عن تعطل اللعبة!
+  selectPlatform: 'افتح منصة AI والصق المطالبة التي نسختها للتو.'
+authProfileAddedNotification: 'تمت إضافة ملف تعريف المصادقة {name}'
+baseSetting:
+  title: 'إعدادات المثيل'
+browseApp:
+  createShortcut: 'إنشاء اختصار'
+  default: 'تقصير'
+  delete: 'يمسح'
+  launch: 'إطلاق وتعيين كافتراضي'
+browseApps: 'عرض واجهة مستخدم المشغل'
+color: 'لون'
+confirm: 'يبدأ'
+copyClipboard:
+  success: 'نسخ إلى الحافظة'
+create: 'يخلق'
+curseforge:
+  category: 'فئة'
+  createdDate: 'تاريخ الإنشاء'
+  lastUpdate: 'تاريخ التحديث الأخير'
+  releasedDate: 'تاريخ الإصدار'
+curseforgeCategory:
+  API and Library: 'واجهات برمجة التطبيقات والمكتبات'
+  Addons: 'المكملات الغذائية'
+  Adventure: 'مفامرة'
+  Adventure and RPG: 'المغامرة وRPG'
+  Animated: 'الرسوم المتحركة'
+  Armor, Tools, and Weapons: 'الدروع والأدوات والأسلحة'
+  Combat / PvP: 'المسابقات / حماية الأصناف النباتية'
+  Cosmetic: 'المظهر/الديكور'
+  Creation: 'الوضع الإبداعي'
+  Data Packs: 'حزمة البيانات'
+  Education: 'تعليم'
+  Exploration: 'استطلاع'
+  Extra Large: 'حجم كبير'
+  FTB Official Pack: 'حزمة FTB الرسمية'
+  Fabric: 'قماش'
+  FancyMenu: 'قائمة فانسي'
+  Font Packs: 'الخطوط'
+  Food: 'طعام'
+  Game Map: 'بطاقات اللعبة'
+  Hardcore: 'المتشددين'
+  MCreator: 'MCreator'
+  Magic: 'سحر'
+  Map Based: 'بناء على الخريطة'
+  Map and Information: 'الخرائط والمعلومات'
+  Medieval: 'العصور الوسطى'
+  Mini Game: 'ألعاب مصغرة'
+  Miscellaneous: 'متنوع'
+  Mod Support: 'دعم وزارة الدفاع'
+  Modded World: 'نموذج للعوالم'
+  Modern: 'حديث'
+  Multiplayer: 'متعددة اللاعبين'
+  Parkour: 'باركور'
+  Photo Realistic: 'تصوير واقعي'
+  Puzzle: 'الألغاز'
+  QoL: 'جودة الحياة'
+  Quests: 'أسئلة'
+  Redstone: 'ريدستون'
+  Sci-Fi: 'خيال علمي'
+  Server Utility: 'أداة الخادم'
+  Skyblock: 'SkyBlock'
+  Small / Light: 'قليلا'
+  Steampunk: 'ستيمبانك'
+  Storage: 'تخزين'
+  Survival: 'بقاء'
+  Tech: 'تكنولوجيا'
+  Technology: 'تكنولوجيا'
+  Traditional: 'تقليدي'
+  Twitch Integration: 'التكامل نشل'
+  Utility & QoL: 'فائدة وقل'
+  Vanilla+: 'فانيليا+'
+  World Gen: 'مولد السلام'
+dataMigration:
+  apply: 'تطبيق الإعداد'
+  directoryCriteriaHint: 'الرجاء التأكد من أن موقع الدليل الجديد الخاص بك هو دليل فارغ!'
+  placeholder: 'الرجاء الضغط هنا لاختيار الدليل'
+  setRootCause: >-
+    ستفقد بياناتك (الخرائط، وحزم الموارد، والتعديلات) إذا قمت بإغلاق المشغل في هذه العملية!
+  setRootDescription: 'سيؤدي هذا إلى تغيير مجلد البيانات الجذر لهذا المشغل وماين كرافت.'
+  setRootTitle: 'اضبط على موقع تخزين جديد'
+  unknownError: 'خطأ غير معروف! يرجى إعادة المحاولة أو الاتصال بالمطور!'
+  waitReload: 'ترحيل البيانات. من فضلك لا تغلق المشغل وإلا ستفقد بياناتك.'
+delete:
+  name: 'حذف {name}'
+  'no': 'لا'
+  'yes': 'يمسح'
+dependencies:
+  embedded: 'مغروس'
+  incompatible: 'غير متوافق'
+  name: 'التبعيات'
+  optional: 'خياري'
+  required: 'مطلوب'
+diagnosis:
+  badInstall:
+    message: 'انقر لمحاولة إعادة تثبيت هذا الإصدار.'
+    name: 'تثبيت سيء على {version}'
+  corruptedAssets:
+    message: 'سيقوم Launcher بتثبيت الأصول لك'
+    name: >-
+      الأصل التالف: {name} | الأصل التالف {name} | {count} الأصول تالفة
+  corruptedAssetsIndex:
+    message: 'سيقوم Launcher بتنزيل فهرس الأصول لك'
+    name: 'ملف فهرس الأصول التالف لـ {version}.'
+  corruptedLibraries:
+    message: 'سيقوم Launcher بتثبيت المكتبات لك'
+    name: >-
+      المكتبة التالفة: {name} | المكتبة التالفة: {name} | مكتبات {count} تالفة
+  corruptedVersionJar:
+    message: 'انقر لتثبيت هذا الإصدار'
+    name: 'جرة النسخة التالفة للعبة Minecraft %{version}.'
+  incompatibleJava:
+    name: 'إصدار جافا {javaVersion} غير مناسب لـ {version}!'
+  instanceFiles:
+    description: 'يتضمن تثبيت المثيل ملفات {counts}.'
+    title: 'تثبيت المثيل غير مكتمل'
+  invalidJava:
+    name: 'موقع جافا غير صالح.'
+  missingJava:
+    message: 'انقر لحل هذه المشكلة'
+    name: 'لا يمكن العثور على Java لتشغيل Minecraft!'
+  missingLibraries:
+    message: 'سيقوم Launcher بتثبيت المكتبات لك'
+    name: >-
+      مكتبة {name} مفقودة | مكتبة {name} مفقودة | مكتبات {count} مفقودة | مكتبات {count} مفقودة
+  missingVersion:
+    message: 'انقر لتثبيت هذا الإصدار'
+    name: 'الإصدار {version} غير مثبت!'
+  unzipFileNotFound:
+    description: 'لا يمكن العثور على {file}'
+    title: 'لم يتم العثور على ملف Modpack'
+difficulty:
+  easy: 'سهل'
+  hard: 'صعب'
+  normal: 'طبيعي'
+  peaceful: 'سلمي'
+disk:
+  available: 'متاح'
+  used: 'مستخدم'
+downloadCount: '{count} التنزيلات'
+downloadModMetadataDb:
+  name: 'قم بتنزيل قاعدة بيانات البيانات الوصفية Mod'
+downloadUpdate:
+  name: 'تنزيل التحديث {version}'
+duplicateInstance:
+  name: 'مثيل مكرر'
+duration:
+  day: '{duration} يوم | {duration} يوم'
+  hour: '{duration} ساعة | {duration} ساعة'
+  minute: '{duration} دقيقة | {duration} دقيقة'
+  second: '{duration} ثانية | {duration} ثانية'
+env:
+  select:
+    all: 'حدد الكل'
+    fit: 'حدد الملاءمة'
+    none: 'حدد لا شيء'
+errors:
+  BadForgeInstallerJarError: >-
+    لا يمكن تحليل ملف jar المثبت. ربما لدى Forge تنسيق ملف تثبيت جديد؟ اتصل بالمطورين إذا استمرت هذه المشكلة.
+  BadInstanceType: 'مثيل غير صالح: {type}'
+  BodyTimeoutError: 'انتهت مهلة نص HTTP'
+  ChecksumNotMatchError: 'المجموع الاختباري غير متطابق! المتوقع {expect}. الفعلي {actual}.'
+  ConnectTimeoutError: 'انتهت مهلة الاتصال بالخادم.'
+  DNSNotFoundError: 'خطأ في بحث DNS'
+  DatabaseNotOpened: >-
+    قاعدة البيانات ليست مفتوحة! المشغل لن يعمل بشكل صحيح! الرجاء تحديد دليل البيانات الذي يمكن للمشغل الوصول إليه. يمكنك محاولة إعادة تعيين جذر البيانات في صفحة الإعداد.
+  DiskIsFull: >-
+    القرص الخاص بك ممتلئ! لا يمكن كتابة أي شيء على القرص! قد لا تكون كافة الميزات وظيفية!
+  CorruptedResourceMetadata: >-
+    تم اكتشاف ومسح البيانات التعريفية التالفة في {count} من الموارد. لا تزال الملفات تعمل، ولكن تم فقدان إسناد Modrinth/CurseForge وسيتم إعادة اكتشافها تلقائيًا.
+  DownloadAggregateError: 'فشل تنزيل الملف.'
+  DownloadFileSystemError: >-
+    حدث خطأ أثناء الوصول إلى مسار ملف التنزيل. يرجى التأكد من أن المشغل لديه الإذن بالكتابة عليه.
+  HeadersTimeoutError: 'انتهت مهلة رأس HTTP'
+  InstallInstructionFailed:
+    title: 'فشل في تثبيت ملفات ماينكرافت'
+    body: '{name}: {message}'
+  InstallNetworkError:
+    title: 'لا يمكن تنزيل ملفات ماين كرافت'
+    body: 'أدت مشكلة في الشبكة إلى مقاطعة التثبيت. تحقق من اتصالك بالإنترنت أو الخادم الوكيل وحاول مرة أخرى.'
+  InstallPermissionDenied:
+    title: 'لا يمكن الكتابة إلى مجلد المشغل'
+    body: 'قامت أداة مكافحة الفيروسات أو أذونات المجلد المقيدة بحظر التثبيت. أضف المشغل إلى قائمة استبعاد AV، أو اختر جذر بيانات مختلفًا في إعدادات المشغل.'
+  NotFoundError: '404 غير موجود'
+  SocketError: 'خطأ في مأخذ توصيل الخادم'
+eula:
+  body: >-
+    من خلال تحديد زر مربع الاختيار، فإنك تشير إلى موافقتك على {eula} الخاصة بـ Minecraft.
+exception:
+  http: >-
+    فشل طلب HTTP إلى {url}. رمز الحالة {statusCode}. {code}. يرجى إعادة المحاولة أو التحقق من شبكتك. إذا استمر هذا الخطأ، يرجى إرسال تقرير إلى فريق التطوير.
+exportModpack:
+  name: 'تصدير مودباك'
+extensions:
+  mrpack: 'Modrinth Modpack'
+  zip: 'ملف مضغوط'
+fabricVersion:
+  disable: 'تعطيل النسيج'
+  empty: 'لا توجد نسخة قماشية للعبة Minecraft {version}'
+  showSnapshot: 'عرض لقطة'
+  stable: 'مستقر'
+  unstable: 'غير مستقر'
+command:
+  instance:
+    launch:
+      title: 'إطلاق المثيل'
+    create:
+      title: 'إنشاء مثيل'
+    delete:
+      title: 'حذف المثيل'
+  user:
+    login:
+      title: 'مستخدم تسجيل الدخول'
+    refresh:
+      title: 'تحديث المستخدم'
+commandPalette:
+  placeholder: 'أوامر البحث، والمثيلات، والتعديلات...'
+  commands: 'الأوامر'
+  instances: 'المثيلات'
+  modrinth: 'مودرينث'
+  recent: 'مؤخرًا'
+  open: 'العمل السريع'
+  openHint: 'فتح لوحة الأوامر ({shortcut})'
+  empty: 'اكتب للبحث.'
+  noResults: 'لا توجد نتائج مطابقة.'
+  searching: 'البحث…'
+  hintNavigate: 'التنقل'
+  hintInvoke: 'استدعاء'
+  hintEnter: 'يدخل'
+  hintBack: 'خلف'
+  hintClose: 'يغلق'
+feedback:
+  channel: 'القنوات'
+  description: 'لقد وجدت خطأ أو أريد تقديم اقتراح'
+  discord: 'الفتنة'
+  discordDescription: 'انضم إلى قناة الديسكورد'
+  discordJoin: 'ينضم'
+  generateReport: 'إنشاء تقرير'
+  generateSaveAs: 'احفظ التقرير في'
+  github: 'قضية جيثب'
+  githubDescription: 'افتح إصدار Github لتخبر أفكارك'
+  githubOpenIssue: 'جيثب'
+  hint: >-
+    انقر فوق الزر لإنشاء التقرير والاتصال بفريق التطوير. سيحتوي التقرير على معلومات جهازك بما في ذلك نوع نظام التشغيل والإصدار واسم المستخدم (في نظام التشغيل لديك)، وما إلى ذلك.
+  kook: 'كوك'
+  kookDescription: 'Kook هو تطبيق بديل للخلاف لمستخدمي البر الرئيسي الصيني'
+  name: 'تعليق'
+  qq: 'مجموعة كيو كيو'
+  qqDescription: >-
+    أدخل مجموعة التعليقات QQ وتحدث مباشرة مع المؤلفين. رقم المجموعة: {number}
+  qqEnterGroup: 'ينضم'
+fileDetail:
+  fileSize: 'حجم الملف'
+  filesize: 'حجم الملف'
+  hash: 'التجزئة'
+filterLocalOnly: 'عرض التثبيت فقط'
+forgeVersion:
+  disable: 'تعطيل صياغة'
+  empty: 'ليس لدى Forge أي إصدار للعبة Minecraft {version}'
+  latest: 'أحدث'
+  recommended: 'مُستَحسَن'
+gameType:
+  adventure: 'وضع المغامرة'
+  creative: 'الوضع الإبداعي'
+  spectator: 'وضع المتفرج'
+  survival: 'وضع البقاء على قيد الحياة'
+help: 'يساعد'
+home: 'بيت'
+importModpack:
+  name: 'استيراد مودباك'
+installAssets:
+  asset: 'تثبيت {count} الأصول'
+  assetIndex: 'التحقق من ملف فهرس الأصول'
+  name: 'تثبيت ملفات الأصول'
+installAuthlibInjector: 'قم بتثبيت حاقن autlib'
+installCurseforgeFile: 'تثبيت ملف Curseforge'
+installFabric:
+  name: 'تثبيت النسيج'
+installForge:
+  downloadInstaller: 'تنزيل المثبت'
+  name: 'قم بتثبيت فورج'
+  postProcessing: 'معالجة ما بعد'
+installInstance:
+  file: 'تحديث ملف المثيل {file}'
+  link: 'انسخ أو اربط ملفات {count}'
+  name: 'تحديث المثيل'
+  resolve: 'حل تكوين المثيل'
+  unzip: 'قم بفك ضغط ملفات {count}'
+installJre:
+  decompress: 'قم بفك ضغط ملفات JRE إلى المجلد'
+  download: 'قم بتنزيل ملف JRE المضغوط'
+  name: 'تثبيت مكتبة وقت تشغيل جافا'
+installLabyMod:
+  name: 'قم بتثبيت LabyMod'
+installLibraries:
+  library: 'تثبيت المكتبة'
+  name: 'تثبيت المكتبات'
+installModrinthFile:
+  name: 'قم بتثبيت مودرينث'
+installOptifine:
+  download: 'تحميل اوبتيفاين العالمي'
+  name: 'قم بتثبيت أوبتيفاين'
+installProfile:
+  name: 'تثبيت الملف الشخصي {version}'
+installQuilt:
+  name: 'تثبيت اللحاف {version}'
+installVersion:
+  jar: 'تثبيت الإصدار جرة'
+  json: 'تثبيت الإصدار Json'
+  name: 'تثبيت عميل Minecraft {version}'
+instance:
+  changeIcon: 'تغيير الأيقونة'
+  contents: 'محتوى'
+  current: 'المثيل الحالي'
+  delete: 'حذف اللعبة'
+  deleteFailed: 'فشل في حذف المثيل'
+  deleteFailedPermission: 'برنامج آخر احتل الملف'
+  deleteFile: 'حذف ملفات المثيل'
+  deleteHint: 'ستتم إزالة بيانات المثيل من القرص إلى الأبد. هل أنت متأكد؟'
+  duplicate: 'لعبة مكررة'
+  duplicatedName: 'اسم مكرر'
+  fileApi: 'عنوان URL لواجهة برمجة تطبيقات خادم الملفات المتزامنة'
+  fileApiHint: 'عنوان URL لمزامنة ملفات المثيل من خادم التكوين البعيد.'
+  fileApiPlaceholder: 'الرجاء إدخال عنوان URL للمزامنة عن بعد هنا إذا كنت تريد الاحتفاظ بمزامنة المورد'
+  fullscreen: 'ملء الشاشة'
+  height: 'ارتفاع'
+  icon: 'أيقونة الملف الشخصي'
+  iconHint: 'يمكن أن يكون الرمز عبارة عن ملف أو رابط URL للإنترنت.'
+  iconUrl: 'عنوان URL للرمز'
+  installModpack: 'تحديث المثيل من modpack'
+  lastPlayed: 'آخر لعب'
+  launchArguments: 'إطلاق معاينة الوسائط'
+  launchServer: 'قم بتشغيل خادم المضيف المحلي'
+  linkFileDesc: >-
+    سيؤدي هذا إلى استبدال المثيل المحلي {file} بالمثيل {file} العام. هل أنت متأكد من ربطه؟
+  linkFileTitle: 'هل أنت متأكد من ربط {file}؟'
+  mcOptions: 'خيارات ماين كرافت'
+  mcOptionsHint: 'وسائط إطلاق Minecraft الإضافية'
+  name: 'اسم الملف الشخصي'
+  nameHint: 'اسم modpack'
+  nameNoCyrillic: 'لا يمكن أن يحتوي الاسم على أحرف سيريلية'
+  nameInvalidChars: 'لا يمكن أن يحتوي الاسم على هذه الأحرف: < > : " / \\ | ? *'
+  nameReservedName: 'هذا الاسم محجوز من قبل النظام ولا يمكن استخدامه'
+  namePathTraversal: 'لا يمكن أن يحتوي الاسم على اجتياز المسار ("..")'
+  nameWhitespaceOnly: 'لا يمكن أن يتكون الاسم من مسافات بيضاء أو نقاط فقط'
+  nameTrailingDotOrSpace: 'لا يجوز أن ينتهي الاسم بنقطة أو مسافة'
+  neverPlayed: 'لم تلعب قط'
+  openCrashReportFolder: 'افتح مجلد تقرير الأعطال'
+  openLogFolder: 'افتح مجلد السجل'
+  playtime: 'وقت اللعب'
+  preExecCommand: 'أمر ما قبل التنفيذ'
+  preExecCommandHint: 'أمر يجب تنفيذه قبل تشغيل لعبة Minecraft'
+  prependCommand: 'الأمر المسبق'
+  prependCommandHint: 'سيؤدي هذا إلى إضافة هذا الأمر قبل كافة أوامر التشغيل'
+  requireName: 'الاسم مطلوب'
+  resolution: 'دقة'
+  resolutionPreset: 'القرار مسبقا'
+  showInstance: 'إظهار مجلد اللعبة'
+  updates: 'التحديثات'
+  useSharedOptions: 'استخدم إعدادات اللعبة المشتركة'
+  useSharedOptionsDesc: 'سيؤدي هذا إلى ربط ملف options.txt بملف مشترك عبر المثيل'
+  useSharedServersList: 'استخدم قائمة الخوادم المشتركة'
+  useSharedServersListDesc: 'سيؤدي هذا إلى ربط servers.dat بملف مشترك عبر المثيل'
+  vmOptions: 'خيارات JVM'
+  vmOptionsHint: 'وسائط إضافية لتمريرها إلى JVM'
+  vmVar: 'متغيرات البيئة'
+  vmVarHint: 'انقر فوق الزر + لإضافة متغيرات البيئة'
+  envVarKey: 'مفتاح'
+  envVarValue: 'قيمة'
+  envVarKeyPlaceholder: 'MY_VAR'
+  envVarValuePlaceholder: 'قيمة'
+  width: 'عرض'
+instanceAge:
+  older: 'أقدم'
+  threeDay: 'في ثلاثة أيام'
+  today: 'اليوم'
+instanceDiscover:
+  gameFolder: 'اكتشف مجلدات اللعبة {count}'
+  instanceFolder: 'تم العثور على {count} من الحالات'
+instanceFileOperation:
+  add: 'يضيف'
+  backup-add: 'استبدال (النسخ الاحتياطي)'
+  backup-remove: 'إزالة (النسخ الاحتياطي)'
+  keep: 'يحفظ'
+  remove: 'يزيل'
+instanceInstallSkip:
+  ignore: 'يتجاهل'
+  skip: 'يتخطى'
+  title: 'مصدر ملف تالف محتمل'
+  warning: >-
+    يتم تنزيل بعض الملفات عدة مرات مع عدم تطابق المجموع الاختباري. قد يكون هذا بسبب حقيقة أن المجموع الاختباري الأصلي غير صحيح. يرجى المراجعة. إذا تأكدت من صحة الملفات الحالية، فيمكنك تخطي التحقق من الصحة.
+instanceLauncher:
+  search: 'بحث عن الحالات...'
+  showAll: 'إظهار كافة المثيلات'
+  title: 'جميع الحالات'
+instanceSetting:
+  disableAuthlibInjector: 'تعطيل حاقن autlib'
+  disableAuthlibInjectorDescription: >-
+    إذا كنت تستخدم نظام جلد تابع لجهة خارجية. يمكن أن يساعدك حاقن Authlib في عرض الجلد في اللعبة.
+  disableElyByAuthlib: 'تعطيل استبدال autlib الخاص بـ ely.by'
+  disableElyByAuthlibDescription: >-
+    لدى Ely.by بديل Authlib فريد لعرض المظهر عالميًا في أي خادم.
+  fastLaunch: 'إطلاق توربو'
+  fastLaunchHint: 'تجاهل حالة المستخدم والمشكلات الموجودة التي لم يتم إصلاحها'
+  hideLauncher: 'إخفاء المشغل بعد الإطلاق'
+  icon: 'اختر صورة'
+  showLog: 'عرض سجل ماين كرافت'
+  showLogHint: 'سيؤدي هذا إلى ظهور نافذة لدفق سجل Minecraft بعد بدء اللعبة'
+instanceTemplate:
+  ftb: 'هذه حزمة تعديل FTB'
+  preview: 'معاينة مودباك'
+instanceUpdate:
+  basic: 'تحديث الإعداد'
+  files: 'تحديثات الملف'
+  loaderChanged: >-
+    تم تغيير أداة تحميل التعديل لهذا المثيل. أداة تحميل التعديل القديمة هي {modloader}، وأداة تحميل التعديل الجديدة هي {newModloader}.
+  noFiles: 'لا توجد تغييرات الملف'
+  summary: 'أضف {add} ملفات. قم بإزالة ملفات {remove}. احتفظ بملفات {keep}.'
+  title: 'تحديث المثيل'
+  update: 'ابدأ التحديث'
+instances:
+  add: 'إنشاء لعبة'
+  addCurseForgeDescription: >-
+    الاستيراد من مجلد بيانات cursforge. تحتاج إلى تحديد مجلد البيانات الجذر الخاص بـ cursforge
+  addDescription: 'إنشاء مثيل جديد من البداية'
+  addMMCDescription: >-
+    استيراد مثيل MultiMC الموجود. تحتاج إلى تحديد مجلد البيانات من MultiMC.
+  addManually: 'إنشاء يدويا'
+  addModrinthDescription: >-
+    استيراد مثيل Modrinth الموجود. تحتاج إلى تحديد مجلد البيانات الجذر Modrinth.
+  addPrismDescription: 'استيراد مثيل PrismLauncher الموجود.'
+  addServer: 'إنشاء من الخادم'
+  addServerDescription: 'سيؤدي هذا إلى إنشاء لعبة يتم تشغيلها مباشرة على الخادم.'
+  addTemplate: 'قم بالإنشاء من modpack الذي تم تنزيله'
+  addTemplateDescription: 'الاستيراد من Modpack الذي تم تنزيله'
+  addVanilla: 'اصنع من لعبة Minecraft الشبيهة بالفانيليا'
+  addVanillaDescription: >-
+    قم بالاستيراد من مجلد .minecraft المشترك. سيؤدي هذا إلى تكرار ملف تعريف اللعبة الأصلي إلى XMCL.
+  fix: 'بصلح'
+  folder: 'مجلد'
+  folderSetting: 'إعدادات المجلد'
+  importFolderDescription: 'استيراد ماين كرافت إلى قاذفة'
+  loadingFiles: 'تحميل ملفات Modpack'
+items:
+  count: '{count} العناصر'
+  total: '{total} الإجمالي'
+java:
+  allocatedLong: 'استخدم Java الافتراضي للنظام'
+  allocatedShort: 'تخصيص تلقائي'
+  change: 'يتغير'
+  importFromFile: 'استيراد جافا من الملف'
+  invalid: 'موقع جافا غير صالح'
+  location: 'موقع جافا'
+  locationHint: 'لم يتم تحديد Java — باستخدام النظام الافتراضي'
+  maxMemory: 'ماكس الذاكرة'
+  memory: 'ذاكرة جافا'
+  memoryAuto: 'آلي'
+  memoryManual: 'يدوي'
+  memoryUnassigned: 'إلغاء التعيين'
+  minMemory: 'دقيقة الذاكرة'
+  noMemory: 'لا تحد من استخدام الذاكرة'
+  openFolder: 'افتح مجلد جافا'
+  presets: 'الإعدادات المسبقة'
+  refresh: 'تحديث جافا المحلية'
+  allocation: 'المخصصة'
+  autoHint: 'ينمو Min مع عدد التعديلات المثبتة؛ يستخدم الحد الأقصى ذاكرة النظام المتوفرة.'
+  systemMemory: 'الذاكرة الحرة للنظام: {free} / {total}'
+labyMod:
+  disable: 'تعطيل لابي مود'
+  empty: 'LabyMod لا يدعم لعبة Minecraft الحالية'
+unauthenticatedWarning:
+  title: 'لم يتم تسجيل الدخول'
+  description: 'لم تقم بتسجيل الدخول إلى أي حساب. سيتم إطلاق اللعبة في الوضع التجريبي. للوصول إلى الميزات الكاملة، يرجى تسجيل الدخول.'
+  cancel: 'يلغي'
+  login: 'تسجيل الدخول'
+  playAnyway: 'العب على أي حال'
+launch:
+  cancel: 'يلغي'
+  createShortcut: 'إنشاء اختصار'
+  kill: 'قف'
+  forceKill: 'قتل القوة'
+  killServer: 'قتل خادم المضيف المحلي'
+  launch: 'يطلق'
+  launchAnyway: 'إطلاق على أي حال'
+  launchAs: 'إطلاق باسم'
+launchBlocked:
+  launchBadVersion:
+    description: 'الإصدار {version} json معطل. ربما إعادة تثبيت هذا الإصدار؟'
+    title: 'نسخة سيئة JSON'
+  launchGeneralException:
+    description: 'بعض الأخطاء تتسبب في فشل الإطلاق.'
+    title: 'فشل الإطلاق'
+  launchInvalidJavaPath:
+    description: >-
+      جافا المحددة مفقودة أو غير صالحة. الرجاء اختيار واحدة جديدة. <span class="highlight"> {javaPath} </span>
+    title: 'مسار جافا غير صالح'
+  launchJavaNoPermission:
+    description: >-
+      ليس لدى المشغل الإذن بتنفيذ Java <span class="highlight"> {javaPath} </span>. قم إما بتغيير إذن ملف Java أو رفع إذن المشغل.
+    title: 'لا يوجد إذن للانطلاق'
+  launchNoProperJava:
+    description: >-
+      لا يمكن تحديد جافا المناسبة لبدء اللعبة. ({javaPath} غير صالح؟)
+    title: 'لم يتم العثور على جافا المناسبة'
+  launchNoVersionInstalled:
+    description: 'لا يمكن حل الإصدار <span class="highlight">{version}</span> لبدء التشغيل.'
+    title: 'لم يتم تحديد أي إصدار'
+  launchSpawnProcessFailed:
+    description: >-
+      يرجى التحقق من جافا لديك، أو منح المزيد من الأذونات للمشغل وإعادة المحاولة. إذا كان هذا لا يزال لا يعمل، يرجى الاتصال بالمطورين.
+    title: 'فشل في بدء عملية اللعبة'
+  unexpectedText: >-
+    هذا غير متوقع. يمكنك إعادة تشغيل المشغل للتخفيف من المشكلة. يرجى الاتصال بالمؤلف إذا حدثت هذه المشكلة مرة أخرى.
+launchFailed:
+  crash: 'اللعبة تحطمت!!'
+  description: 'لا يوجد تقرير الأعطال. هذا هو سجل الأخطاء وأحدث سجل.'
+  elyByAuthlib:
+    description: >-
+      تم استخدام بديل Ely.by authlib لإصدار Minecraft {version}، لكن هذا الإصدار قد لا يكون متوافقًا تمامًا.
+    suggestion: >-
+      يمكنك تعطيل استبدال Authlib الخاص بـ Ely.by في إعدادات المثيل لتجنب هذه المشكلة.
+    title: 'مشكلة توافق Ely.by Authlib'
+  failedToLaunch: 'فشل الإطلاق في الإطلاق'
+  latestLog: 'أحدث سجل'
+  title: 'تم الخروج من اللعبة برمز غير طبيعي'
+launchPreExecuteCommandFailed:
+  description: >-
+    فشل أمر التنفيذ المسبق مع وجود خطأ: {error}. الرجاء التحقق من الأمر والمحاولة مرة أخرى.
+  title: 'فشل تنفيذ الأمر مسبقًا'
+launchStatus:
+  assigningMemory: 'تخصيص الذاكرة'
+  elyByWarning: >-
+    تم تمكين استبدال Ely.by authlib. قد لا تكون بعض إصدارات Minecraft متوافقة وقد تتعطل. يمكنك تعطيله في إعدادات المثيل في حالة حدوث مشكلات.
+  exit: 'الخروج من اللعبة؟'
+  injectingAuthLib: 'إعداد AuthLib لجهة خارجية'
+  launching: 'جارٍ الإطلاق...'
+  launchingSlow: 'لا يزال قيد التشغيل... يمكن أن يكون بدء تشغيل محرك الرسومات بطيئًا...'
+  refreshingUser: 'تحديث رمز المستخدم'
+  spawningProcess: 'عملية التفريخ'
+launcherUpdate:
+  alreadyLatest: 'حتى الآن'
+  installAndQuit: 'أعد التشغيل للتثبيت'
+  noUpdateAvailable: 'لا يوجد تحديث متاح'
+  updateToThisVersion: 'تحميل وتثبيت'
+localVersion:
+  auto: 'محسوبة تلقائيًا'
+  empty: 'لم يتم تثبيت أي إصدار'
+  hint: 'إطلاق نسخة محلية محددة مباشرة'
+  reinstallDescription: >-
+    إذا كنت تعتقد أن تثبيت هذا الإصدار به بعض المشكلات، فيمكنك محاولة إعادة تثبيته.
+  reinstallTitle: 'أعد تثبيت {version}'
+  title: 'النسخة المحلية | الإصدارات المحلية'
+logLevel:
+  error: 'خطأ'
+  info: 'معلومات'
+  success: 'نجاح'
+  warning: 'تحذير'
+logView:
+  searchPlaceholder: 'سجلات البحث...'
+login:
+  dropHint: 'قم بإسقاط الرابط الذي يحتوي على رمز المصادقة هنا لتسجيل الدخول يدويًا'
+  forgetPassword: 'نسيت كلمة المرور؟'
+  login: 'تسجيل الدخول'
+  manualLoginUrl: 'إذا لم يظهر المتصفح، يرجى النقر على هذا الرابط للمصادقة!'
+  signup: 'اشتراك'
+  signupDescription: 'جديد بالنسبة لنا؟'
+  userRelogin: 'انتهت صلاحية رمز وصول المستخدم. الرجاء إعادة تسجيل الدخول!'
+loginError:
+  acquireMicrosoftTokenFailed: >-
+    فشل في الحصول على رمز Microsoft المميز. قد تكون هذه مشكلة في الشبكة. يرجى إعادة المحاولة.
+  badNetworkOrServer: >-
+    يرجى التحقق من اتصال الشبكة الخاصة بك! أو ربما يكون خادم المصادقة معطلاً!
+  checkOwnershipFailed: 'فشل في التحقق من ملكية اللعبة. يرجى المحاولة مرة أخرى.'
+  connectionReset: 'فشل في تسجيل الدخول حيث تم إعادة تعيين الاتصال بواسطة الخادم'
+  fetchMinecraftProfileFailed: 'فشل في جلب ملف تعريف Minecraft: {reason}'
+  illegalEmail: 'البريد الإلكتروني يجب أن يكون صالحا'
+  invalidCredentials: 'بيانات اعتماد غير صالحة. اسم المستخدم أو كلمة المرور غير صالحة.'
+  loginMinecraftByXboxFailed: >-
+    فشل في استبدال رمز Minecraft المميز برمز Xbox. الرجاء التأكد من وجود لعبة Minecraft في Xbox، أو إعادة المحاولة.
+  loginMinecraftByXboxRateLimited: >-
+    تعمل خدمة مصادقة Minecraft من Microsoft حاليًا على تحديد معدل الطلبات (HTTP 429). الرجاء الانتظار لحظة وحاول مرة أخرى.
+  loginMinecraftByXboxRateLimitedWithRetry: >-
+    تعمل خدمة مصادقة Minecraft من Microsoft حاليًا على تحديد معدل الطلبات (HTTP 429). الرجاء الانتظار حوالي {seconds} ثانية (ثواني) ثم حاول مرة أخرى.
+  loginMinecraftByXboxServerError: >-
+    أعادت خدمة مصادقة Minecraft من Microsoft خطأً في الخادم (HTTP {status}). وهذا من جانبهم. يرجى المحاولة مرة أخرى خلال بضع دقائق.
+  loginMinecraftByXboxStatus: >-
+    فشل في استبدال رمز Minecraft المميز بواسطة رمز Xbox المميز (HTTP {status}). الرجاء التأكد من وجود لعبة Minecraft في Xbox، أو إعادة المحاولة.
+  loginXboxAgeRestricted: >-
+    فشل في تسجيل الدخول إلى Xbox بسبب مشكلة العمر. الرجاء التأكد من تحديد العمر لحساب Microsoft الخاص بك وأن العمر يزيد عن 18 عامًا.
+  loginXboxChildAccount: >-
+    حساب Microsoft الخاص بك هو حساب طفل ويجب إضافته إلى عائلة Microsoft قبل أن يتمكن من تسجيل الدخول إلى Xbox / Minecraft. افتح {url} في متصفحك لإصلاح المشكلة، ثم حاول مرة أخرى.
+  loginXboxNoXboxProfile: >-
+    لا يحتوي حساب Microsoft هذا على ملف تعريف Xbox حتى الآن. افتح {url} في متصفحك لإنشاء واحد، ثم حاول مرة أخرى.
+  loginXboxAdultVerification: >-
+    يتطلب حساب Microsoft الخاص بك التحقق من شخص بالغ (مطلوب عادةً في بعض المناطق) قبل أن يتمكن من تسجيل الدخول إلى Xbox. افتح {url} في متصفحك لإكمال عملية التحقق، ثم حاول مرة أخرى.
+  loginXboxRegionLocked: >-
+    Xbox Live غير متوفر في منطقة حسابك. يرجى تغيير البلد/المنطقة الخاصة بحساب Microsoft الخاص بك في إعدادات حساب Microsoft والمحاولة مرة أخرى.
+  loginXboxBanned: >-
+    تم تعليق حساب Microsoft / Xbox هذا أو حظره بواسطة Microsoft ولا يمكن تسجيل الدخول إلى Minecraft. يرجى الاتصال بدعم Microsoft / Xbox.
+  loginXboxBadXsts: >-
+    أعادت Microsoft استجابة XSTS دون مطالبات المستخدم المتوقعة. عادةً ما يكون هذا مؤقتًا، يرجى المحاولة مرة أخرى خلال بضع دقائق.
+  loginXboxFailed: >-
+    فشل في تسجيل الدخول إلى Xbox بواسطة رمز Microsoft. الرجاء التأكد من أن لديك حساب Xbox مستقلاً لحساب Microsoft الخاص بك. يرجى المحاولة مرة أخرى.
+  loginXboxFailedWithCode: >-
+    فشل في تسجيل الدخول إلى Xbox بواسطة رمز Microsoft المميز (XErr {code}). يرجى البحث عن الرمز للحصول على المساعدة، أو حاول مرة أخرى لاحقًا.
+  noProfileForNewUser: >-
+    لم يتم العثور على ملف تعريف اللعبة! إذا كنت مستخدمًا جديدًا للعبة Minecraft، فيرجى تسجيل الدخول مرة واحدة على الأقل في مشغل Minecraft الرسمي.
+  requestFailed: 'فشل تسجيل الدخول، ولا نعرف السبب الدقيق. يرجى إعادة المحاولة.'
+  requireEmail: 'البريد الإلكتروني مطلوب'
+  requirePassword: 'كلمة المرور مطلوبة'
+  requireUsername: 'اسم المستخدم مطلوب'
+  cyrillicNotAllowed: 'غير مسموح بالأحرف السيريلية'
+  illegalOfflineUsername: 'يجب أن يتكون اسم المستخدم من 3 إلى 16 حرفًا وأن يحتوي فقط على أحرف وأرقام وشرطات سفلية باللغة الإنجليزية'
+  timeout: 'مهلة تسجيل الدخول. يرجى إعادة المحاولة أو التحقق من شبكتك.'
+logsCrashes:
+  crashes: 'تقارير الأعطال'
+  failures: 'فشل الإطلاق'
+  logs: 'سجلات'
+  placeholder: 'لم يتم العثور على ملفات'
+  title: 'السجلات أو تقارير الأعطال'
+me:
+  news: 'أخبار'
+  recentPlay: 'اللعب الأخير'
+migrateMinecraft:
+  name: 'ترحيل ملفات ماين كرافت'
+minecraftVersion:
+  name: 'نسخة ماينكرافت'
+  release: 'يطلق'
+  showAlpha: 'عرض لقطة'
+  snapshot: 'لقطة'
+mod:
+  acceptVersion: 'قبول {version}'
+  applyGroupRules: 'تطبيق قواعد التجميع المحفوظة'
+  compatible: 'مود متوافق.'
+  createGroup: 'إنشاء مجموعة'
+  currentVersion: 'الحالي {current}'
+  denseView: 'منظر كثيف'
+  description: 'وصف'
+  disableAll: 'تعطيل الكل'
+  dropHint: 'قم بإسقاط ملف .jar/.litemod الخاص بـ mod هنا للاستيراد.'
+  duplicatedDetected: '{count} تعديلات مكررة'
+  duplicatedDetectedDescription: >-
+    تم العثور على تعديلات بنفس معرف التعديل ولكن بملفات مختلفة. قد يتسبب هذا في تعطل لعبة Minecraft. الرجاء تحديد الملف الذي تريد الاحتفاظ به.
+  enableAll: 'تمكين الكل'
+  enabled: '{count} تم تمكين التعديلات'
+  filter: 'تعديل التصفية'
+  group: 'المجموعة'
+  groupInstalled: 'تعديلات المجموعة المثبتة'
+  groupName: 'اسم المجموعة'
+  groupNameRequired: 'اسم المجموعة مطلوب'
+  hasUpdate: 'وزارة الدفاع لديها نسخة جديدة!'
+  incompatible: 'مود غير متوافق'
+  incompatibleHint: 'عرض غير متوافق'
+  incompatibleHintDescription: >-
+    قد تكون بعض تبعيات التعديل مفقودة. أو أن بعض إصدارات التبعيات غير متطابقة.
+  maybeCompatible: 'ربما متوافق.'
+  modloaderSelectHint: 'دعم وزارة الدفاع التالية محمل وزارة الدفاع. الرجاء اختيار واحد للتثبيت.'
+  modloaderSelectNotSupported: 'لم يتم العثور على {modloader} للعبة Minecraft {minecraft}'
+  mods: '{count} تعديل'
+  name: 'وزارة الدفاع | تعديل'
+  newFolder: 'مجلد جديد'
+  noGroupsFound: 'لم يتم العثور على مجموعات'
+  noGroupsYet: 'لا توجد مجموعات حتى الآن. إنشاء واحدة!'
+  noModLoaderHint: 'لا تنس تمكين أداة تحميل التعديل لاستخدام التعديلات!'
+  openLink: 'افتح عنوان URL للتعديل {url}'
+  search: 'تعديل البحث'
+  searchGroups: 'مجموعات البحث...'
+  searchOnMcWiki: 'ابحث عن {name} في موسوعة MC.'
+  selectOrCreateGroup: 'حدد أو أنشئ مجموعة'
+  showDirectory: 'إظهار دليل التعديل'
+  showFile: 'إظهار مسار التعديل {file}'
+  showInModrinth: 'اعرض {name} في مودرينث'
+  switchDefaultSource: 'مصدر التعديل الافتراضي'
+  syncGroupRules: 'حفظ قواعد التجميع'
+  toUpdate: '{count} التحديثات'
+  ungroup: 'فك التجميع'
+modFilter:
+  clear: 'مسح التصفية'
+  dependenciesInstallOnly: 'إظهار تعديلات التبعيات المفقودة فقط'
+  disabledOnly: 'إظهار التعديلات المعطلة فقط'
+  hasUpdateOnly: 'عرض التعديلات مع التحديثات فقط'
+  incompatibleOnly: 'إظهار فقط التبعيات غير المتوافقة أو المفقودة التي تفتقد التعديلات'
+  unusedOnly: 'إظهار تعديلات المكتبات غير المستخدمة فقط'
+modInstall:
+  archived: >-
+    تمت أرشفة {name}. {name} لن يتلقى أي تحديثات أخرى ما لم يقرر المؤلف إلغاء أرشفة المشروع.
+  autoUpgrade:
+    description: >-
+      لقد قمت بتغيير إصدار Minecraft. هل ترغب في تحديث التعديلات المتوافقة تلقائيًا إلى الإصدارات التي تطابق لعبة Minecraft {version}؟
+    'no': 'يتخطى'
+    title: 'تحديث المودات؟'
+    'yes': 'تحديث تعديل'
+  checkDependencies: 'التحقق من التبعيات'
+  checkUpgrade: 'تحقق من تحديث التعديلات'
+  checkedDependencies: 'التبعيات التي تم التحقق منها'
+  checkedUpgrade: 'تم فحص الترقية'
+  currentVersion: 'النسخة المختارة'
+  dependencyHint: 'تم تثبيت إصدار آخر {version}'
+  installDependencies: 'تثبيت التبعيات المفقودة'
+  installHint: 'سيتم تثبيت ملف {file} بتبعيات {dependencies}'
+  noVersionSupported: 'يدعم التعديل لعبة Minecraft {supported} فقط.'
+  recommendation: 'استكشف تعديلات {first} في {modrinth} و{curseforge}!'
+  removeUnusedLibraries: 'إزالة غير المستخدمة'
+  search: 'تعديل البحث...'
+  skipVersion: 'تخطي التعديلات مع إصدار Minecraft المختلف'
+  source: 'مصدر وزارة الدفاع'
+  switch: 'تبديل الإصدار'
+  upgrade: 'ترقية تعديل'
+modSearch:
+  noLocalModsFound: 'لم يتم العثور على تعديلات محلية مطابقة لبحثك.'
+  noModsFound: 'لم يتم العثور على تعديلات'
+  noModsInstalled: 'ليس لديك أي تعديلات مثبتة.'
+  searchInMarket: 'ابحث عن {keyword} في السوق'
+modUpgradePolicy:
+  curseforge: 'CurseForge'
+  curseforgeOnly: 'CurseForge فقط'
+  modrinth: 'مودرينث'
+  modrinthOnly: 'مودرينث فقط'
+  name: 'سياسة الترقية'
+modified:
+  reset: 'إعادة ضبط'
+  save: 'يحفظ'
+  unsaved: 'التعديل الخاص بك غير محفوظ!'
+modpack:
+  author: 'اسم المؤلف'
+  authorHint: 'يمكن استخدام هذا للتوقيع على modpack المُصدَّر (Curseforge)'
+  description: 'وصف'
+  descriptionHint: >-
+    وصف عام لك modpack. يمكن استخدامه للتصدير كـ cursforge modpack.
+  dropHint: 'قم بإسقاط modpack zip إلى هنا للاستيراد'
+  emitCurseforge: 'تصدير Curseforge Modpack'
+  emitModrinth: 'تصدير Modrinth Modpack'
+  emitModrinthStrict: 'تنسيق Modrinth الصارم'
+  emitModrinthStrictDescription: 'يُسمح فقط بعناوين URL من 4 نطاقات مدرجة في مستند modrinth'
+  export: 'تصدير كمودباك'
+  exportDirectory: 'دليل التصدير'
+  exportDirectoryDescription: 'سيتم تصدير modpack إلى مجلد التنزيلات بشكل افتراضي'
+  includeAssets: 'تضمين الأصول'
+  includes: 'الملفات المراد تضمينها'
+  modpackVersion: 'نسخة مودباك'
+  name: 'مودباك | حزم التعديل'
+  overrides: 'يتجاوز'
+  url: 'عنوان URL'
+  urlHint: 'عنوان URL للصفحة الرئيسية الخاصة بـ modpack الخاص بك'
+modpackImportConfirm:
+  description: >-
+    اكتشف أنك قمت بإسقاط ملف في المشغل. هل تحاول استيراد modpack؟
+  title: 'هل تحاول استيراد modpack؟'
+modrinth:
+  browseUrl: 'فتح في المتصفح {url}'
+  categories:
+    128x: '128x'
+    16x: '16x'
+    256x: '256x'
+    32x: '32x'
+    48x: '48x'
+    512x+: '512x+'
+    64x: '64x'
+    8x-: '8x-'
+    adventure: 'مفامرة'
+    atmosphere: 'أَجواء'
+    audio: 'صوتي'
+    blocks: 'كتل'
+    bloom: 'يزدهر'
+    bukkit: 'بوكيت'
+    bungeecord: 'بنجيكورد'
+    canvas: 'قماش'
+    cartoon: 'كارتون'
+    categories: 'فئات'
+    challenging: 'تحدي'
+    colored-lighting: 'الإضاءة الملونة'
+    combat: 'القتال'
+    core-shaders: 'تظليل الأساسية'
+    cursed: 'ملعون'
+    datapack: 'حزمة البيانات'
+    decoration: 'زخرفة'
+    economy: 'اقتصاد'
+    entities: 'الكيانات'
+    environment: 'بيئة'
+    equipment: 'معدات'
+    fabric: 'قماش'
+    fantasy: 'خيالي'
+    features: 'سمات'
+    folia: 'فوليا'
+    foliage: 'أوراق الشجر'
+    fonts: 'الخطوط'
+    food: 'طعام'
+    forge: 'صياغة'
+    game-mechanics: 'ميكانيكا اللعبة'
+    gui: 'واجهة المستخدم الرسومية'
+    high: 'عالي'
+    iris: 'قزحية'
+    items: 'أغراض'
+    kitchen-sink: 'حوض المطبخ'
+    library: 'مكتبة'
+    lightweight: 'خفيف الوزن'
+    liteloader: 'LiteLoader'
+    locale: 'لغة'
+    low: 'قليل'
+    magic: 'سحر'
+    management: 'إدارة'
+    medium: 'واسطة'
+    minecraft: 'ماين كرافت'
+    minigame: 'العاب صغيرة'
+    misc: 'متنوعات'
+    mobs: 'الغوغاء'
+    modded: 'معدل'
+    models: 'نماذج'
+    modloader: 'محمل وزارة الدفاع'
+    multiplayer: 'متعددة اللاعبين'
+    name: 'فئات'
+    neoforge: 'نيوفورج'
+    optifine: 'اوبتيفاين'
+    optimization: 'التحسينات'
+    paper: 'ورق'
+    path-tracing: 'تتبع المسار'
+    pbr: 'بر'
+    performance impact: 'تأثير الأداء'
+    potato: 'البطاطس'
+    purpur: 'فرفرية'
+    quests: 'أسئلة'
+    quilt: 'لحاف'
+    realistic: 'حقيقي'
+    reflections: 'تأملات'
+    resolutions: 'القرارات'
+    rift: 'الصدع'
+    screenshot: 'لقطة الشاشة'
+    semi-realistic: 'شبه واقعية'
+    shadows: 'الظلال'
+    simplistic: 'تبسيط'
+    social: 'اجتماعي'
+    spigot: 'حنفية'
+    sponge: 'اسفنجة'
+    storage: 'تخزين'
+    technology: 'تكنولوجيا'
+    themed: 'تحت عنوان'
+    transportation: 'مواصلات'
+    tweaks: 'القرص'
+    utility: 'جدوى'
+    vanilla: 'الفانيليا'
+    vanilla-like: 'تشبه الفانيليا'
+    velocity: 'سرعة'
+    waterfall: 'شلال'
+    worldgen: 'العالم الجنرال'
+  clientSide: 'جانب العميل'
+  copyTitle: 'انسخ النص {title} إلى الحافظة'
+  createAt: 'مخلوق'
+  createCollection: 'إنشاء مجموعة'
+  description: 'وصف'
+  downloads: 'التنزيلات'
+  environments:
+    all: 'الجميع'
+    default: 'تقصير'
+    name: 'بيئة'
+    optional: 'خياري'
+    required: 'مطلوب'
+    unsupported: 'غير مدعوم'
+  externalResources: 'الموارد الخارجية'
+  featuredVersions: 'الإصدارات المميزة'
+  followedProjects: 'المشاريع التي تمت متابعتها'
+  followers: 'المتابعون'
+  gallery: 'معرض'
+  gameVersions:
+    name: 'إصدارات اللعبة'
+  headers:
+    status: 'احصائيات'
+    support: 'يدعم'
+    version: 'إصدار'
+  issueUrl: 'مشكلة'
+  license: 'رخصة'
+  licenses:
+    name: 'التراخيص'
+  loginHint: >-
+    تتطلب العملية إجراء modrinth. سيفتح المشغل نافذة متصفح لتسجيل الدخول إلى modrinth.
+  loginTitle: 'تسجيل الدخول إلى Modrinth'
+  modLoaders:
+    name: 'محمل وزارة الدفاع'
+  modpackSource:
+    source: 'مصدر'
+  projectId: 'معرف المشروع'
+  projectMembers: 'أعضاء المشروع'
+  projectType:
+    mod: 'وزارة الدفاع'
+    modpack: 'Modpack'
+    resourcepack: 'حزمة الموارد'
+    shader: 'شادر'
+    datapack: 'حزمة البيانات'
+    plugin: 'البرنامج المساعد'
+  projects: '{count} المشاريع'
+  serverSide: 'جانب الخادم'
+  sort:
+    downloads: 'تحميل التهم'
+    follows: 'متابعة العد'
+    newest: 'تم إنشاؤها مؤخرًا'
+    relevance: 'الصلة'
+    title: 'فرز حسب'
+    updated: 'تم تحديثها مؤخرا'
+  sourceUrl: 'مصدر'
+  technicalInformation: 'المعلومات الفنية'
+  updateAt: 'تم التحديث'
+  versions: 'الإصدارات'
+  wikiUrl: 'ويكي'
+modrinthCard:
+  currentVersion: 'الإصدار الحالي'
+multiplayer:
+  allowTurn: 'تمكين خادم الترحيل'
+  allowTurnHint: >-
+    السماح بخادم الترحيل إذا لم تتمكن من الاتصال بصديقك. ومع ذلك، فإن استخدام خادم الترحيل قد يؤدي إلى إبطاء اتصالك. استخدامه بحذر.
+  complete: 'مكتمل'
+  confirm: 'يتأكد'
+  connectionError: 'خطأ في الاتصال'
+  connectionFailedHint: >-
+    غير قادر على تأسيس الاتصال. تحقق مما إذا كان لدى كلا النظيرين أنواع NAT متوافقة.
+  connections: 'اتصالات'
+  copied: 'منسوخ!'
+  copy: 'ينسخ'
+  copyGroupToFriendHint: 'اسمح لأصدقائك بالانضمام إلى المجموعة بهذا المعرف'
+  copyLocalHint: >
+    الرجاء نسخ نص SDP المحلي وإرساله إلى كائنك ليقوم كائنك بإدخال هذا النص في اتصال الانضمام <span>لا يمكن استخدام الرمز المميز إلا لـ <span style="color: red;font-weight:old;">نظير واحد</span>! لا يمكنك إرسال نفس الرمز المميز إلى عدة أقران!</span> <br> <span class="hint-text" style="font-style: italic;">إذا كنت بحاجة إلى الاتصال بأقران متعددين، فستحتاج إلى إنشاء <span style="font-weight:old; color: rgba(245, 158, 11)">اتصالات</span> متعددة.</span>
+  createLocalToken: 'إنشاء رمز محلي'
+  currentIpTitle: 'تم اكتشاف IP العام'
+  currentNatTitle: 'الشبكة الحالية (NAT):'
+  difficultyLevelHint: 'مستوى صعوبة إنشاء اتصال'
+  disconnect: 'قطع الاتصال'
+  disconnectDescription: 'هل أنت متأكد من أنك تريد قطع الاتصال بالمستخدم {user}({id})؟'
+  disconnected: 'غير متصل'
+  enterRemoteToken: 'أدخل الرمز البعيد'
+  enterRemoteTokenHint: >-
+    بمجرد قيام زميلك بإدخال الرمز المميز الخاص بك، ستحتاج إلى إدخال الرمز المميز الخاص به في منطقة النص أدناه. انقر فوق تأكيد للاتصال.
+  exposedPortDescription: 'المنفذ الذي كشفته لأقرانك الآخرين'
+  exposedPorts: 'المنافذ المعاد توجيهها'
+  gatheringIce: >
+    يرجى الانتظار حتى يقوم خادم ICE بجمع معلومات كافية حول شبكتك. إذا كنت غير صبور وكانت هناك معلومات كافية، فيمكنك إعطاء SDP الحالي للطرف الآخر مقدمًا والنقر فوق "التالي". يُرجى إرسال <span class="v-chip v-chip--label v-size--small" style="text-font:old" >الرمز المحلي</span> إلى نظيرك، حيث يقوم النظير بإدخال الرمز المميز الخاص بك في <span class="v-chip v-chip--label v-size--small" style="text-font: بولد"> قسم الانضمام إلى الاتصال </span>. <br> قد يحتاج خادم ICE إلى بعض الوقت لجمع معلوماتك لإنشاء <span class="v-chip v-chip--label v-size--small" style="text-font:old">رمز مميز محلي</span>.<br> لا يلزمك الانتظار حتى تكتمل حالة ICE. إذا ظل الرمز المميز أدناه دون تغيير، فيمكنك نسخه وإرساله إلى نظيرك.
+  groupId: 'معرف المجموعة'
+  illegalTokenDescription: 'رمز غير قانوني، يرجى التأكد من صحة الرمز المميز من نظيرك'
+  initiateConnection: 'بدء الاتصال'
+  joinConnection: >-
+    إذا كان نظيرك قد بدأ الاتصال بالفعل، فستحتاج إلى الانضمام إلى الاتصال.
+  joinManual: 'ينضم'
+  joinOrCreateGroup: 'الانضمام/إنشاء المجموعة'
+  joinOrCreateGroupHint: 'احصل على معرف المجموعة من أصدقائك أو أنشئ مجموعة'
+  kernel: 'نواة P2P'
+  kernelDescription: >-
+    استخدم إما WebRTC الأصلي أو قناة بيانات العقدة. قم بتبديل هذا فقط عندما يتعطل اتصال p2p الخاص بك في وقت ما في نافذة المشغل.
+  leaveGroup: 'مغادرة المجموعة'
+  localToken: 'الرمز المحلي'
+  manualConnect: 'الاتصال يدويا'
+  name: 'متعددة اللاعبين على الشبكة المحلية'
+  natWarning: >-
+    قد يمنع نوع NAT الخاص بك الاتصالات المباشرة. حاول تمكين خادم الترحيل في الإعدادات أو اطلب من صديقك الاستضافة بدلاً من ذلك.
+  networkInfo: 'معلومات الشبكة (انقر للتبديل)'
+  next: 'التالي'
+  otherExposedPortDescription: 'تم إعادة توجيه المنفذ بواسطة {user}'
+  placeholder: 'تواصل مع مستخدمين آخرين للعب Minecraft على الشبكة المحلية!'
+  previous: 'سابق'
+  receiveHint: >-
+    بعد قيام الطرف الآخر بإدخال الرمز المميز الخاص بك، سيتم إنشاء اتصالك تلقائيًا. الآن يمكنك إغلاق مربع الحوار.
+  receiveRemoteTokenHint: 'الرجاء إدخال الرمز المميز من نظيرك هنا.'
+  remoteToken: 'الرمز البعيد'
+  routerInfo: 'معلومات جهاز التوجيه'
+  preferredTurn: 'موقع التتابع المفضل'
+  autoPreferredTurn: 'تلقائي (أقل اتصال)'
+  sendTokenToRemote: 'أرسل الرمز المميز إلى جهاز التحكم عن بعد'
+  share: 'مشاركة تكوين المثيل'
+  sharing: 'مشاركة الملفات...'
+  sharingNotificationBody: 'يمكنك تنزيل أو إنشاء مثيل من {name} التكوين المشترك.'
+  sharingNotificationTitle: 'يشارك أحد الأقران تكوين اللعبة الخاص به'
+  start: 'يبدأ'
+  startNewP2PConnection: 'انقر فوق الزر "ابدأ" لإنشاء اتصال نظير جديد'
+  onlinePresenceActive: 'التواجد عبر الإنترنت نشط'
+  onlinePresenceInactive: 'التواجد على الإنترنت غير نشط'
+  friends: 'أصدقاء مايكروسوفت'
+  online: 'متصل'
+  offline: 'غير متصل'
+  microsoftRequired: 'مطلوب حساب Microsoft لميزة الأصدقاء.'
+  licenseRequiredDescription: 'مطلوب حساب Minecraft مرخص لعرض الأصدقاء ومزامنة حالة الاتصال بالإنترنت.'
+  loginMicrosoft: 'تسجيل الدخول مع مايكروسوفت'
+  buyLicense: 'شراء ترخيص ماينكرافت'
+  noFriends: 'لم تتم إضافة أي أصدقاء في Minecraft حتى الآن.'
+  allOffline: 'جميع الأصدقاء غير متصلين حاليًا.'
+  playing: 'اللعب'
+  joinWorld: 'انضم إلى العالم'
+  joinServer: 'الانضمام إلى الخادم'
+  joiningProgress: 'الاتصال ب'
+  groupRoom: 'مجموعة P2P متعددة اللاعبين'
+myStuff: 'أشيائي'
+natType:
+  blocked: 'محظور'
+  fullCone: 'مخروط كامل'
+  openInternet: 'افتح الإنترنت'
+  restrictNat: 'تقييد NAT'
+  restrictPortNat: 'تقييد منفذ NAT'
+  symmetricNat: 'NAT متماثل'
+  symmetricUDPFirewall: 'جدار الحماية UDP المتماثل'
+  unknown: 'مجهول'
+  explanations:
+    openInternet: 'اتصال مثالي! يمكنك استضافة الألعاب متعددة اللاعبين والانضمام إليها دون أي قيود. كل شيء مثالي.'
+    fullCone: 'اتصال ممتاز! يتيح جهاز التوجيه الخاص بك ممارسة الألعاب بسهولة. يمكنك استضافة الأصدقاء والانضمام إليهم دون أي مشاكل.'
+    restrictNat: 'اتصال عادي. يمكنك اللعب بدون مشاكل. إذا لم تتمكن من الاتصال بصديق، فحاول استضافة نفسك أو اطلب منه الاستضافة.'
+    restrictPortNat: 'اتصال آمن. يمكنك اللعب، لكن الاتصال قد يستغرق وقتًا أطول قليلاً. إذا فشلت، فاسمح لصديقك بمضيف أفضل من نوع NAT.'
+    symmetricUDPFirewall: 'جدار الحماية يمنع الاتصال. P2P المباشر أمر صعب. تحقق من جدار حماية Windows أو قم بتشغيل "خادم الترحيل" في علامة تبويب الإعدادات.'
+    symmetricNat: 'جهاز توجيه صارم (شبكة الهاتف المحمول أو شبكة Wi-Fi عامة). الاتصال المباشر مستحيل. للعب، يجب عليك تمكين "خادم الترحيل" في علامة تبويب الإعدادات.'
+    blocked: 'لا يوجد إنترنت أو اتصال محظور. لا يمكنك لعب لعبة متعددة اللاعبين الآن. الرجاء التحقق من اتصال الشبكة الخاصة بك.'
+    unknown: 'لم يتم التحقق من الشبكة بعد. انقر فوق زر التحديث (السهم الدائري) الموجود بجانبه لمعرفة ما إذا كان بإمكانك اللعب.'
+neoForgedVersion:
+  disable: 'تعطيل نيوفورجد'
+  empty: 'NeoForged لا يدعم {version}'
+news:
+  name: 'أخبار'
+  readMore: 'اقرأ المزيد'
+optifineVersion:
+  disable: 'تعطيل أوبتيفاين'
+  empty: 'Optifine لا يدعم لعبة Minecraft {version}'
+optional: 'خياري'
+peerConnectionState:
+  closed: 'مغلق'
+  connected: 'متصل'
+  connecting: 'الاتصال'
+  disconnected: 'غير متصل'
+  failed: 'فشل'
+  name: 'حالة الاتصال'
+  new: 'جديد'
+peerGroupState:
+  closed: 'ليس في المجموعة'
+  closing: 'مغلق'
+  connected: 'انضمت المجموعة'
+  connecting: 'الاتصال'
+peerIceGatheringState:
+  gathering: 'جمع خادم الجليد'
+peerSignalingState:
+  have-local-offer: 'في انتظار وصف الأقران'
+presence:
+  instance: 'خامل في المثيل {instance}'
+  instanceSetting: 'تحرير إعداد المثيل: {instance}'
+  mod: 'عرض التعديلات في {instance}'
+  modrinthProject: 'عرض {name} في Modrinth'
+  resourcePack: 'عرض حزم الموارد في {instance}'
+  save: 'عرض الحفظ في {instance}'
+  setting: 'عرض صفحة الإعداد'
+  shaderPack: 'عرض حزم التظليل في {instance}'
+proxy:
+  host: 'يستضيف'
+  port: 'ميناء'
+quiltVersion:
+  disable: 'تعطيل لحاف'
+  empty: 'اللحاف لا يدعم لعبة ماينكرافت {version}'
+reinstall:
+  name: 'أعد تثبيت {version}'
+resourceError:
+  title: 'لا يمكن قراءة {file}'
+  body: >-
+    تعذر تحليل "{path}" ({code}). قد يكون الملف تالفًا أو مقفلاً أو
+    غير مكتمل. حاول إعادة تنزيله أو إزالته.
+resourcepack:
+  compatible: 'التنسيق المتوافق {format} مع {version}'
+  defaultDescription: 'الشكل والمظهر الافتراضي لـ Minecraft'
+  delete:
+    content: >-
+      سيؤدي هذا إلى إزالة ملف حزمة الموارد من القرص، ولا يمكننا التراجع عنه. هل أنت متأكد أنك تريد أن تفعل هذا؟
+    title: 'احذف حزمة الموارد'
+  dropHint: 'قم بإسقاط المجلد/الملف المضغوط الخاص بـ Resource Pack هنا للاستيراد.'
+  enable: '{count} تم تمكين حزم الموارد'
+  incompatible: >-
+    تنسيق حزمة الموارد غير متوافق ({format}). فيتين {accept}. الحالي {actual}.
+  name: 'حزمة الموارد | حزم الموارد'
+  noPacks: 'لم يتم العثور على حزم الموارد'
+  noPacksInstalled: 'ليس لديك أي حزم موارد مثبتة.'
+  noLocalPacksFound: 'لم يتم العثور على حزم موارد محلية مطابقة لبحثك.'
+  search: 'بحث في حزم الموارد...'
+  searchHint: 'بحث في حزم الموارد'
+  searchOnCurseforge: 'ابحث عن {name} في Curseforge'
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: 'حزم الموارد المحددة'
+  showDirectory: 'إظهار دليل حزمة الموارد'
+  showFile: 'إظهار حزمة الموارد في المجلد {file}'
+  showInCurseforge: 'أظهر {name} في Curseforge'
+  unselected: 'حزم الموارد غير المحددة'
+save:
+  allowCheats: 'السماح بالغش'
+  copy:
+    name: 'نسخ حفظ'
+  createNew: 'خلق عالم جديد'
+  createdWorlds: 'لديك {count} عوالم'
+  deleteHint: >-
+    لا يمكن التراجع عن هذه العملية. سوف تفقد البيانات المحفوظة إلى الأبد. هل أنت متأكد أنك تريد حذف هذا الحفظ؟
+  deleteTitle: 'احذف الحفظ'
+  difficulty: 'صعوبة'
+  dropHint: 'اسحب حفظ الرمز البريدي هنا للاستيراد'
+  export: 'تصدير حفظ'
+  exportMessage: 'قم بتصدير الحفظ بصيغة Zip'
+  exportTitle: 'تصدير الحفظ'
+  gameMode: 'وضع اللعبة'
+  independent: 'مثيل يستخدم مجلد الحفظ المستقل'
+  levelName: 'اسم المستوى'
+  loadMap: 'تحميل الخريطة'
+  mapError: 'خطأ في الخريطة'
+  mapInfo: 'معاينة العالم التفاعلية ثلاثية الأبعاد:'
+  mapLoaded: 'تم تحميل الخريطة'
+  mapPreview: 'معاينة الخريطة'
+  name: 'حفظ | يحفظ'
+  noSavesFound: 'لم يتم العثور على أي حفظات'
+  noSavesInstalled: 'ليس لديك أي عمليات حفظ.'
+  noLocalSavesFound: 'لم يتم العثور على أي محفوظات محلية مطابقة لبحثك.'
+  openFolder: 'افتح مجلد الحفظ'
+  properties: 'خصائص العالم'
+  search: 'بحث في الخرائط...'
+  searchHint: 'ابحث عن عوالم في CurseForge'
+  searchSaves: 'بحث يحفظ'
+  seed: 'بذرة'
+  selected: 'الحفظ المحلي'
+  shared: 'مثيل استخدام مجلد الحفظ المشترك'
+  showDirectory: 'إظهار دليل الحفظ'
+  unselected: 'الحفظ المشترك'
+  useCurrent: 'استخدام العالم الحالي'
+  useMouseRotate: 'استخدم الماوس لتدوير العرض'
+  useScrollZoom: 'استخدم عجلة التمرير للتكبير'
+screenshots:
+  empty: 'ليس لديك أي لقطات شاشة'
+  gallery: 'معرض لقطة الشاشة'
+  hint: 'التقط لقطات شاشة داخل اللعبة بالضغط على F2'
+  openFolder: 'افتح مجلد لقطات الشاشة'
+  playRandom: 'خلط'
+  playSequence: 'العب بالترتيب'
+search:
+  favorate: 'مجموعة'
+  local: 'تم التثبيت'
+  market: 'سوق مود'
+server:
+  acceptingMinecraftVersion: 'قبول نسخة ماينكرافت'
+  creationHint: 'يرجى ملء عنوان الخادم واختبار اتصال الخادم'
+  expectedVersions: 'الإصدارات المدعومة'
+  export: 'خادم التصدير'
+  exportNoFilesHint: >-
+    لم يتم العثور على ملفات الخادم. يمكنك تشغيل الخادم على المستوى المحلي مرة واحدة لإنشاء بعض الملفات.
+  exportOption: 'خيارات تصدير الخادم'
+  exportSSHAuthenticationFailed: >-
+    فشلت كافة طرق المصادقة. يرجى التحقق من اسم المستخدم/كلمة المرور أو المفتاح الخاص.
+  exportSSHOptions: 'خيارات SSH'
+  exportSSHPrivateKeyPath: 'مسار مفتاح SSH الخاص'
+  exportSSHRemotePath: 'مسار الخادم البعيد'
+  exportToFolder: 'تصدير إلى مجلد'
+  filterVersion: 'استجاب خادم التصفية لإصدار Minecraft'
+  host: 'يستضيف'
+  hostHint: 'المضيف (مع المنفذ) للخادم'
+  hostRequired: 'الرجاء إدخال عنوان IP للخادم'
+  ipAddress: 'عنوان IP'
+  maxPlayers: 'ماكس اللاعبين'
+  motd: 'خادم MOTD'
+  nogui: 'لا يوجد خادم واجهة المستخدم الرسومية'
+  onlineMode: 'الوضع على الانترنت'
+  ping: 'بينغ'
+  pings: 'الأصوات'
+  players: 'اللاعبين'
+  port: 'ميناء'
+  unknown: 'خادم غير معروف'
+  unknownDescription: 'خادم غير معروف. يرجى التحديث'
+  upload: 'تحميل الخادم'
+  version: 'يتطلب الخادم الإصدار'
+  versionHint: 'نسخة ماينكرافت إلى Ping'
+serverStatus:
+  nohost: '§4لا يمكن العثور على المضيف!'
+  ping: 'بينغ...'
+  refuse: '§4تم رفض الخادم!'
+  timeout: '§4 مهلة خادم الاتصال!'
+setting:
+  about: 'عن'
+  aboutBmclDescription: 'يوفر BMCL API تنزيلات مريحة للمستخدمين في البر الرئيسي الصيني'
+  aboutContributors: '🧑‍💻 المساهمون 🧑‍💻'
+  aboutDenoDescription: >-
+    تستفيد XMCL من منصة Deno Deploy الخالية من المتاعب لتطبيقات JavaScript بدون خادم
+  aboutLicense: 'رخصة معهد ماساتشوستس للتكنولوجيا'
+  aboutLicenseInfo: >-
+    توقيع رمز مجاني على Windows مقدم من SignPath.io، وشهادة من SignPath Foundation
+  aboutSponsors: '😇 الرعاة 😇'
+  advancedJavaOptions: 'خيارات جافا المتقدمة'
+  advancedSettings: 'الإعدادات المتقدمة'
+  advancedSettingsHint: 'منطقة الخطر - إعادة ضبط بيانات المشغل أو إدارتها'
+  apiSets:
+    auto: 'تلقائي (تحديد بواسطة الشبكة)'
+    official: 'الرسمية (موجانج)'
+  appearance: 'مظهر'
+  appearanceDescription: 'تخصيص مظهر المشغل'
+  appxUpdateHint: >-
+    سيقوم المشغل بتنزيل برنامج التثبيت وتنفيذه. إذا فشل تثبيت النوافذ المنبثقة، فيرجى تشغيله يدويًا.
+  authenticationSettings: 'المصادقة'
+  backdropBlur: 'طمس الخلفية'
+  backgroundColorAbove: 'إظهار لون الخلفية كتراكب'
+  backgroundColorAboveDescription: 'سيؤدي هذا إلى عرض لون الخلفية فوق صورة الخلفية أو الفيديو.'
+  backgroundImage: 'صورة الخلفية'
+  backgroundImageClear: 'واضح'
+  backgroundImageDescription: 'حدد صورة كخلفية أو واضحة'
+  backgroundImageFit:
+    contain: 'يحتوي'
+    cover: 'غطاء'
+    name: 'تناسب الصورة'
+  backgroundImageUrl: 'عنوان URL للصورة'
+  backgroundImageUrlPlaceholder: 'أدخل عنوان URL الخاص بـ HTTP/HTTPS للصورة'
+  backgroundMusic: 'موضوع الموسيقى الخلفية'
+  backgroundMusicUrl: 'عنوان URL للموسيقى'
+  backgroundMusicUrlPlaceholder: 'أدخل عنوان URL HTTP/HTTPS للموسيقى'
+  backgroundType: 'نوع الخلفية'
+  backgroundTypeDescription: 'إظهار تأثير خاص على الخلفية (قد يؤثر هذا على الأداء)'
+  setAsBackground:
+    global: 'تعيين كخلفية قاذفة'
+    instance: 'تعيين كخلفية للمثيل'
+    successGlobal: 'تم تحديث صورة الخلفية.'
+    successInstance: 'تم تحديث صورة خلفية المثيل.'
+    failed: 'فشل في تعيين صورة الخلفية'
+  backgroundTypes:
+    halo: 'هالة'
+    image: 'صورة'
+    none: 'لا أحد'
+    particle: 'جسيم'
+    video: 'فيديو'
+  backgroundVideo: 'فيديو الخلفية'
+  backgroundVideoDescription: 'تحديد أو مسح الفيديو'
+  backgroundVideoUrl: 'عنوان URL للفيديو'
+  backgroundVideoUrlPlaceholder: 'أدخل عنوان URL الخاص بـ HTTP/HTTPS للفيديو'
+  backgroundVideoVolume: 'مقدار'
+  backgroundVideoVolumeDescription: 'اسحب لضبط مستوى الصوت'
+  themeStore:
+    name: 'متجر الموضوع'
+    description: 'حفظ وإدارة المواضيع العالمية'
+    savedThemes: 'السمات المحفوظة'
+    noSavedThemes: 'لا توجد مواضيع محفوظة حتى الآن'
+    saveToStore: 'حفظ في المتجر'
+    saveDialogTitle: 'حفظ الموضوع'
+    themeName: 'اسم الموضوع'
+    themeNameHint: 'الاسم المستخدم لتخزين هذا الموضوع'
+    loadConfirmTitle: 'هل تريد استبدال المظهر الحالي؟'
+    loadConfirmMessage: 'سيؤدي تحميل السمة المخزنة إلى استبدال السمة الحالية. يرجى عمل نسخة احتياطية إذا لزم الأمر.'
+    loadTheme: 'تحميل الموضوع'
+  browseRoot: 'تصفح'
+  checkUpdate: 'التحقق من التحديث'
+  colorTheme:
+    appBarColor: 'شريط التطبيقات'
+    backgroundColor: 'لون الخلفية'
+    cardColor: 'لون البطاقة'
+    description: 'تغيير الألوان في الموضوع'
+    errorColor: 'لون الخطأ'
+    name: 'لون الموضوع وطمس'
+    primaryColor: 'اللون الأساسي'
+    sideBarColor: 'شريط جانبي'
+    warningColor: 'لون التحذير'
+  darkTheme: 'سمة'
+  darkThemeDescription: 'اختر بين المظهر الداكن أو الفاتح'
+  devModeLabel: 'ديف'
+  developerMode: 'وضع المطور'
+  developerModeDescription: 'وضع المطور مخصص لاختبار التعديلات الخاصة بك'
+  disableTelemetry: 'تعطيل القياس عن بعد'
+  disableTelemetryDescription: 'سيقوم XMCL بجمع أحداث إطلاق اللعبة وتسجيل دخول المستخدم.'
+  enableDedicatedGPUOptimization: 'تعيين GPU مخصص'
+  enableDedicatedGPUOptimizationDescription: 'سيقوم هذا الخيار بتعيين GPU مخصص لعملية Minecraft.'
+  enableDiscord: 'تمكين وجود الخلاف'
+  enableDiscordDescription: 'سيؤدي هذا إلى تحديث حالة Discord إلى المشغل'
+  enterUrl: 'أدخل عنوان URL'
+  exportSettings: 'إعدادات التصدير'
+  exportSettingsHint: 'احفظ إعداداتك الحالية في ملف'
+  general: 'عام'
+  githubRelease: 'إصدار جيثب'
+  globalSetting: 'إعداد المثيل العالمي'
+  globalSettingHint: 'سيستخدم المثيل هذه الإعدادات بشكل افتراضي.'
+  importSettings: 'إعدادات الاستيراد'
+  importSettingsHint: 'تحميل الإعدادات من ملف تم تصديره مسبقًا'
+  instanceTheme:
+    activeDescription: >-
+      يستخدم هذا المثيل سمة مخصصة. يمكنك حذفه لاستخدام السمة العالمية.
+    description: >-
+      تمكين سمة مخصصة لهذه الحالة. سيؤدي هذا إلى إنشاء نسخة من السمة العالمية الحالية.
+    name: 'موضوع المثيل'
+  language: 'لغة'
+  languageDescription: 'لغة العرض'
+  latestVersion: 'أحدث نسخة'
+  layout:
+    default: 'التخطيط الافتراضي'
+    focus: 'تخطيط التركيز'
+  layoutDescription: 'اختر نمط الواجهة المفضل لديك'
+  layoutTitle: 'تخطيط الواجهة'
+  linuxEnableDedicatedGPUOptimization: 'تخصيص معالج رسومي خاص'
+  linuxEnableDedicatedGPUOptimizationDescription: 'يقوم هذا الخيار بتعيين وحدة معالجة رسومات مخصصة لعملية Minecraft.'
+  linuxTitlebar: 'شريط العنوان الأصلي'
+  linuxTitlebarDescription: 'استخدم شريط عنوان Linux الأصلي للمشغل'
+  livePreview: 'المعاينة المباشرة'
+  location: 'موقع المتجر'
+  manualUpdateHint: >-
+    لا يمكن تحديث الإصدار تلقائيًا. يرجى تنزيل المشغل مرة أخرى من الموقع الرسمي!
+  maunalUpdateHint: >-
+    لا يمكن تحديث الإصدار تلقائيًا. يرجى إعادة تنزيل المشغل من الموقع!
+  maxSockets: 'لكل مضيف'
+  maxSocketsDescription: >-
+    حدد الحد الأقصى لعدد المقابس المسموح بها لكل مضيف أو لجميع الأجهزة المضيفة بشكل إجمالي. 0 يعني لا يوجد حد.
+  maxSocketsTitle: 'ماكس مآخذ HTTP'
+  memoryAssignment: 'مهمة الذاكرة'
+  migrateFromOther: 'استيراد من قاذفة أخرى'
+  minecraftOptions: 'خيارات ماين كرافت'
+  name: 'الإعداد العالمي | الإعدادات العالمية'
+  network: 'إعدادات الشبكة'
+  newsPosition: 'نقل قسم الأخبار'
+  officialWebsite: 'الموقع الرسمي'
+  particleMode:
+    bubble: 'فقاعة'
+    name: 'وضع الجسيمات'
+    push: 'يدفع'
+    remove: 'يزيل'
+    repulse: 'صد'
+  particleModeDescription: 'حدد سلوك نقر الجسيمات'
+  quickLaunchSettings: 'التشغيل السريع'
+  replaceNative: 'استبدال المكتبات الأصلية'
+  replaceNativeDescription: 'استبدل المكتبات الأصلية وفقًا لقوس جهاز الكمبيوتر الخاص بك.'
+  replaceNatives:
+    all: 'الجميع'
+    legacy: 'الإصدار القديم فقط'
+  resetAllSettings: 'إعادة ضبط كافة الإعدادات'
+  resetAllSettingsConfirmMessage: >-
+    سيؤدي هذا إلى حذف جميع الإعدادات والحسابات والمثيلات والمجموعات والبيانات المخزنة مؤقتًا بشكل دائم. لا يمكن التراجع عن هذا الإجراء. هل أنت متأكد؟
+  resetAllSettingsConfirmTitle: 'إعادة ضبط كافة الإعدادات؟'
+  resetAllSettingsHint: 'إعادة ضبط المشغل على إعدادات المصنع الافتراضية (يحذف كل شيء)'
+  resetAllSettingsSuccess: 'تمت إعادة ضبط كافة الإعدادات. سيتم إعادة تشغيل المشغل.'
+  resetSettingsError: 'خطأ في إعادة ضبط الإعدادات: {error}'
+  resetToDefault: 'إعادة التعيين إلى الافتراضي'
+  select: 'يختار'
+  settingsExported: 'تم تصدير الإعدادات بنجاح'
+  settingsImportError: 'فشل استيراد الإعدادات. يرجى التحقق من تنسيق الملف.'
+  settingsImported: 'تم استيراد الإعدادات بنجاح'
+  settingsReloadHint: 'سيتم إعادة تشغيل المشغل لتطبيق جميع الإعدادات.'
+  showNewsHeader: 'إظهار عرض الأخبار'
+  showRoot: 'يعرض'
+  sidebarAlign: 'محاذاة الشريط الجانبي'
+  sidebarAutoHide: 'إخفاء الشريط الجانبي تلقائيًا'
+  sidebarAutoHideHint: 'إخفاء الشريط الجانبي تلقائيًا وإظهاره عند التمرير'
+  sidebarClassic: 'كلاسيكي'
+  sidebarNotch: 'الشق'
+  sidebarPosition: 'موقف الشريط الجانبي'
+  sidebarScale: 'مقياس الشريط الجانبي'
+  sidebarShowOnlyPinned: 'إظهار المثيلات المثبتة فقط'
+  sidebarShowOnlyPinnedHint: 'عرض المثيلات المثبتة فقط في الشريط الجانبي'
+  sidebarStyle: 'نمط الشريط الجانبي'
+  sidebarStyleHint: 'اختر بين التصميم الكلاسيكي والحديث'
+  streamerMode: 'وضع الدفق'
+  streamerModeDescription: 'سيؤدي هذا إلى إخفاء معلوماتك الخاصة مثل البريد الإلكتروني في المشغل.'
+  theme:
+    dark: 'موضوع الظلام'
+    light: 'موضوع الضوء'
+    system: 'استخدام موضوع النظام'
+  themeExport: 'تصدير الموضوع'
+  themeFont: 'الخط'
+  themeFontDescription: 'تغيير خط المشغل.'
+  themeFontUrl: 'عنوان URL للخط'
+  themeFontUrlPlaceholder: 'أدخل عنوان URL HTTP/HTTPS للخط'
+  themeImport: 'استيراد الموضوع'
+  themeResetFont: 'إعادة تعيين الخط'
+  themeSelectFont: 'حدد الخط'
+  themeSettings: 'إعدادات الموضوع'
+  themeShare: 'مشاركة الموضوع'
+  themeShareDescription: 'يمكنك مشاركة الموضوع مع صديقك.'
+  update: 'تحديث'
+  useBmclAPI: 'استخدم واجهة برمجة تطبيقات BMCL'
+  useBmclAPIDescription: >-
+    استخدم BMCLAPI لتنزيل لعبة Minecraft عندما تكون في البر الرئيسي للصين. (لن يؤثر هذا عليك إذا لم تكن في البر الرئيسي الصيني)
+  useProxy: 'وكيل HTTP'
+  useProxyDescription: 'عنوان الخادم الوكيل لطلب http'
+  viewBackgroundMusic: 'عرض الموسيقى'
+settingLabel:
+  global: 'عالمي'
+  globalHint: 'سيتبع هذا الإعداد الإعداد العام'
+  local: 'محلي'
+  localHint: 'تم تعديل هذا الإعداد بواسطة المثيل الحالي'
+setup:
+  account:
+    description: 'تسجيل الدخول إلى حساب اللعبة الخاص بك. إذا لم يكن لديك واحدة، يمكنك تخطيها الآن.'
+    name: 'إضافة حساب اللعبة'
+    skip: 'تخطي الآن'
+  appearance:
+    name: '@:الإعدادات.المظهر'
+  dataRoot:
+    description: >-
+      جذر البيانات ليس دليلاً شائعًا لـ .minecraft. نظرًا لأن بنية دليل بيانات XMCL تختلف عن الفانيليا، فإننا لا نوصي باستخدام دليل .minecraft الشائع كجذر للبيانات.
+    drives: 'يوصي المواقع'
+    name: 'قم بتعيين دليل البيانات'
+  defaultLayoutDescription: >-
+    يحاول التخطيط الافتراضي تحسين مفهوم "مثيل" اللعبة. يبدو أن تطبيقات مثل Discord. كما أنها مستوحاة أيضًا من تطبيقات تشغيل الألعاب الأخرى مثل Steam وما إلى ذلك.
+  defaultPath: 'المسار الافتراضي'
+  error:
+    badDataRoot: 'دليل غير صالح لبيانات المشغل! الرجاء تجربة دليل آخر!'
+    exists: >-
+      الدليل المحدد ليس فارغا. لا بأس ولكن يرجى التأكد من عمل نسخة احتياطية لبياناتك.
+    invalidChar: >-
+      يحتوي المسار على أحرف غير صالحة! يمكن أن يتسبب ذلك في فشل لعبة Minecraft في البدء! الرجاء استخدام الأحرف الإنجليزية والرمز فقط!
+    noPermission: >-
+      ليس لدى Launcher إذن للوصول إلى الدليل المحدد! يرجى تجربة واحدة أخرى.
+    nonDictionary: 'المسار المحدد هو ملف! الرجاء تحديد الدليل!'
+  focusLayoutDescription: >-
+    تخطيط التركيز هو التخطيط القديم لـ Minecraft Launcher. تم تصميمه ليتم استخدامه مع مثيل واحد أو حالات قليلة.
+  game:
+    name: 'استيراد اللعبة الموجودة'
+  locale:
+    description: >-
+      اختر لغتك المفضلة إذا كانت متوفرة لدينا! إذا كنت لا ترى لغتك الأم وتريد المساعدة، فيمكنك زيارة Github الخاص بنا لإرسال طلبات السحب للترجمة!
+    language: 'لغة'
+    name: 'ضبط اللغة'
+  path: 'المسار الحالي'
+shaderPack:
+  deletion: 'حذف حزمة التظليل'
+  deletionHint: 'سيؤدي هذا إلى حذف ملف حزمة التظليل {path} ولا يمكن التراجع عنه.'
+  disabled: 'حزم تظليل المعوقين'
+  dropHint: 'استيراد حزمة التظليل'
+  empty: 'لم يتم تخصيص حزمة تظليل'
+  enable: 'استخدام {name}'
+  enabled: 'تمكين حزم تظليل'
+  manage: 'إدارة حزم التظليل'
+  market: 'سوق شادر'
+  name: 'حزمة التظليل'
+  noPacks: 'لم يتم تثبيت حزم التظليل'
+  noPacksInstalled: 'ليس لديك أية حزم تظليل مثبتة.'
+  noLocalPacksFound: 'لم يتم العثور على حزم تظليل محلية مطابقة لبحثك.'
+  noShaderMod: 'لم يتم تثبيت تعديل تظليل'
+  noShaderModHint: 'لا يمكنك استخدام التظليل بدون تعديل التظليل'
+  noShaderModInstallHint: 'تحتاج إلى تثبيت أحد التعديلات التالية لتحميل حزمة التظليل.'
+  search: 'البحث في حزم التظليل...'
+  searchHint: 'ابحث عن حزم التظليل على Modrinth وCurseForge'
+  selectSearchHint: 'ابحث وحدد Shader Pack'
+  showDirectory: 'إظهار دليل حزمة التظليل'
+  showFile: 'إظهار حزمة التظليل هذه في المجلد'
+shared:
+  add: 'يضيف'
+  author: 'مؤلف'
+  back: 'خلف'
+  browse: 'تصفح'
+  cancel: 'يلغي'
+  client: 'عميل'
+  description: 'وصف'
+  disable: 'إبطال'
+  download: 'تحميل'
+  edit: 'يحرر'
+  enable: 'يُمكَِن'
+  filter: 'فلتر'
+  install: 'ثَبَّتَ'
+  installed: 'تم التثبيت'
+  keepSelected: 'إبقاء المحدد'
+  manage: 'يدير'
+  name: 'اسم'
+  next: 'التالي'
+  'no': 'لا'
+  ok: 'نعم'
+  previous: 'سابق'
+  refresh: 'ينعش'
+  remove: 'يزيل'
+  search: 'يبحث'
+  server: 'الخادم'
+  skipForNow: 'تخطي الآن'
+  'yes': 'نعم'
+sidebar:
+  pin: 'دبوس'
+  unpin: 'إزالة التثبيت'
+sortBy:
+  alphabetAsc: 'الترتيب حسب الأبجدية (تصاعدي)'
+  alphabetDesc: 'الترتيب حسب الأبجدية (تنازلي)'
+  name: 'فرز حسب'
+  timeAsc: 'الترتيب حسب وقت التعديل (تصاعدي)'
+  timeDesc: 'الترتيب حسب وقت التعديل (تنازلي)'
+store:
+  discover: 'يكتشف'
+  empty: 'لم يتم العثور على حزم Modpacks'
+  emptyHint: 'حاول تعديل عوامل التصفية أو استعلام البحث.'
+  latestMinecraft: 'أحدث نسخة ماين كرافت'
+  name: 'سوق مودباك'
+  searchResult: 'نتيجة البحث'
+  trending: 'تتجه'
+tag:
+  create: 'إنشاء علامة'
+  createSelected: 'إنشاء علامة للتحديد'
+task:
+  cancelled: 'تم الإلغاء'
+  clear: 'مسح المهام المنتهية'
+  connection:
+    connected: 'متصل'
+    free: 'حر'
+    pending: 'قيد الانتظار'
+    queued: 'في قائمة الانتظار'
+    running: 'اتصال قيد التشغيل'
+    size: 'العدد الإجمالي'
+  connections: 'اتصالات الشبكة'
+  empty: 'لا توجد مهام قيد التشغيل'
+  failed: 'فشل'
+  manager: 'مدير المهام'
+  nTaskRunning: 'مهام {count} قيد التشغيل'
+  name: 'مهمة | المهام'
+  pause: 'يوقف'
+theme:
+  selectImage: 'حدد الصورة'
+  selectMusic: 'حدد الموسيقى'
+  selectVideo: 'حدد فيديو'
+  title: 'X ماين كرافت قاذفة'
+title: 'X ماين كرافت قاذفة'
+transportType:
+  host: 'المرشح المضيف'
+  prflx: 'المرشح الانعكاسي'
+  relay: 'ترحيل المرشح'
+  srflx: 'المرشح الانعكاسي للخادم'
+turnRegion:
+  fr: 'فرنسا'
+  guangzhou: 'قوانغتشو، الصين'
+  hk: 'هونج كونج'
+  liaoning: 'لياونينغ، الصين'
+  po: 'بولندا'
+tutorial:
+  feedbackDescription: 'إذا واجهت أي مشاكل، الرجاء الضغط على هذا الزر لإرسال ردود الفعل!'
+  hideNewsHeaderDescription: >-
+    يمكنك رؤية عرض الأخبار على اليسار. يمكن أن يؤدي النقر على هذا الزر إلى إخفاء هذه الواجهة.
+  instance:
+    iconDescription: 'انقر لتغيير الرمز.'
+    iconTitle: 'رمز المثيل'
+    javaDescription: 'اختر أو قم بتبديل إصدار جافا.'
+    javaImportDescription: 'استيراد جافا من التخزين المحلي.'
+    javaImportTitle: 'استيراد جافا'
+    javaTitle: 'قائمة جافا'
+  instanceAddDescription: >-
+    انقر فوق هذا الزر لاستيراد مثيل Minecraft الموجود أو إنشاء مثيل جديد من البداية أو modpack.
+  instanceSelectDescription: 'سيؤدي النقر فوق هذا الزر إلى الانتقال إلى الصفحة لتحديد اللعبة وقراءة الأخبار.'
+  launchDescription: 'انقر فوق هذا الزر لتثبيت اللعبة أو تشغيلها.'
+  mod:
+    defaultSourceDescription: >-
+      يمكنك اختيار مصدر تفاصيل التعديلات هنا. هناك تعديلات تم نشرها لكل من Modrinth وCurseforge. إذا كنت تريد التبديل بين موفري المحتوى هذين، فيمكنك تغيير القيمة هنا.
+    defaultSourceTitle: 'حدد مصدر محتوى التعديل'
+    detailDescription: >-
+      عند تحديد عنصر على اليسار. سترى تفاصيل الوضع. يمكن أن يأتي المحتوى من محتوى Modrinth أو Curseforge أو التعديل الذي تم تحليله.
+    detailTitle: 'تفاصيل التعديل'
+    listDescription: >-
+      سنعرض التعديلات المثبتة عندما لا يكون لديك أي مدخلات. سترى التعديلات التي تم البحث عنها بمجرد تحديد كلمة رئيسية أو فئة لمدخلاتك.
+    listTitle: 'تم التثبيت أو البحث في Mod'
+    searchDescription: >-
+      يمكنك البحث عن التعديلات من Modrinth أو Curseforge أو ذاكرة التخزين المؤقت المحلية باستخدام مربع البحث هذا.
+    searchTitle: 'تعديل البحث'
+  multiplayer:
+    contentDescription: 'سيتم إدراج الاتصالات بينك وبين زملائك هنا.'
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: >-
+      يمكنك إنشاء مجموعة أو الانضمام إليها مع لاعبين آخرين. سيحاول المشغل إنشاء اتصالات P2P بينك وبين أصدقائك وفقًا للمجموعة. يمكنك إدخال اسم المجموعة التي قدمها أصدقائك. أو يمكنك إنشاء اسم فريد.
+    groupTitle: 'انضم إلى مجموعة'
+    joinDescription: >-
+      بمجرد إدخال اسم المجموعة، يمكنك النقر فوق هذا الزر للانضمام إلى المجموعة أو إنشائها. إذا كان اسم المجموعة فارغًا، فسيقوم المشغل بإنشاء اسم لك.
+    manualDescription: >-
+      إذا لم تتمكن أنت أو صديقك من الاتصال بالمجموعة، فيمكنك محاولة تبادل الرمز المميز يدويًا عن طريق النقر فوق الاتصال يدويًا. إذا فشل ذلك أيضًا، فقد تكون المشكلة تتعلق بالإنترنت.
+  recentPlayDescription: >-
+    سيتم إدراج الألعاب التي تم إنشاؤها هنا. يمكنك تبديل طرق العرض هنا لرؤية الإصدارات المثبتة وحزم التعديل التي تم تنزيلها أيضًا.
+  storePoupularModpackDescription: >-
+    سترى حزم التعديل الأكثر شيوعًا في Curseforge وModrinth في هذا القسم.
+  storeSearchCategoryDescription: 'يمكنك أيضًا تبديل الفئات أو المرشحات هنا.'
+  storeSearchDescription: >-
+    يمكنك البحث في Modpacks عن طريق الإدخال في مربع النص هذا. اضغط على Enter للبحث.
+  storeSearchResultDescription: 'سترى جميع نتائج البحث مدرجة هنا.'
+  userAccountDescription: 'انقر فوق هذا الرمز لإضافة حساب Minecraft الخاص بك أو إدارته.'
+universalDrop:
+  unknownResource: 'مجهول'
+upstream:
+  downgrade: 'الرجوع إلى إصدار سابق'
+  onlyShowCurrentVersion: 'عرض إصدار Minecraft الحالي فقط'
+  update: 'تحديث'
+user:
+  accessToken: 'رمز الوصول'
+  authMode: 'خدمة المصادقة'
+  authService: 'تفويض الخدمة'
+  email: 'عنوان البريد الإلكتروني'
+  id: 'معرف المستخدم'
+  name: 'اسم المستخدم'
+  nameHint: 'عرض الاسم في اللعبة'
+  profile: 'حساب تعريفي'
+  info: 'معلومات ملف تعريف المستخدم'
+  tokenExpired: 'منتهي الصلاحية'
+  tokenValidUntil: 'رمز صالح حتى'
+userAccount:
+  add: 'إضافة حساب'
+  removeDescription: 'سيؤدي هذا إلى إزالة كافة المعلومات لهذا الحساب. هل أنت متأكد؟'
+  removeTitle: 'إزالة الحساب'
+minecraftFriends:
+  title: 'أصدقاء ماين كرافت'
+  add: 'إضافة صديق'
+  addPlaceholder: 'اسم مستخدم ماين كرافت'
+  send: 'يرسل'
+  friends: 'أصدقاء'
+  incoming: 'الطلبات الواردة'
+  outgoing: 'الطلبات الصادرة'
+  heroEmptyTitle: 'قائمة أصدقائك فارغة'
+  heroEmptyHint: 'أضف لاعب Minecraft باسم المستخدم أعلاه لإرسال طلب صداقة.'
+  scopedTo: 'تم تسجيل الدخول باسم {name}'
+  reconnectAction: 'أعد الاتصال'
+  accept: 'يقبل'
+  unsupported: 'الأصدقاء متاحون فقط لحسابات Microsoft.'
+  requiresMicrosoft: 'قم بتسجيل الدخول باستخدام حساب Microsoft لاستخدام الأصدقاء.'
+  notifyAdded: 'تم إرسال طلب الصداقة إلى {name}'
+  addedRelative: 'تمت الإضافة {time}'
+  expiresRelative: 'تنتهي الصلاحية {time}'
+  incomingHint: '1 طلب وارد | {count} الطلبات الواردة'
+  privacy:
+    friendsEnabled: 'تم تمكين قائمة الأصدقاء'
+    acceptInvites: 'قبول دعوات الأصدقاء'
+    acceptInvitesHint: 'عند إيقاف التشغيل، لا يمكن للاعبين الآخرين إرسال طلبات صداقة إليك.'
+  errors:
+    unknownProfile: 'لم نتمكن من العثور على لاعب بهذا الاسم.'
+    cannotAddSelf: 'لا يمكنك إرسال طلب صداقة لنفسك.'
+    duplicate: 'هذا اللاعب موجود بالفعل في قائمتك.'
+    inviteRejected: 'هذا اللاعب ليس لديه أصدقاء ممكّنين أو لا يقبل الدعوات.'
+    tokenExpired: 'انتهت صلاحية جلسة Microsoft الخاصة بك. الرجاء تسجيل الدخول مرة أخرى.'
+    generic: 'حدث خطأ ما. يرجى المحاولة مرة أخرى.'
+relative:
+  justNow: 'الآن'
+  secondsAgo: '{count} قبل ثانية | {count} قبل ثانية'
+  minutesAgo: '{count} قبل دقيقة | {count} قبل دقائق'
+  hoursAgo: '{count} قبل ساعة | {count} قبل ساعات'
+  daysAgo: '{count} منذ يوم | {count} قبل أيام'
+userCape:
+  changeTitle: 'تغيير الرأس الخاص بك'
+  description: >-
+    الرؤوس عبارة عن مكافآت خاصة يمكن للاعبين الحصول عليها من خلال أحداث وحملات مختلفة وأحداث سعيدة أخرى. هنا يمكنك الاختيار بين العباءات التي تمتلكها حاليًا:
+  noCape: 'لا كيب'
+userService:
+  add: 'إضافة المزيد من الخدمات'
+  authlibInjectorMetadata: 'البيانات التعريفية لـ Authlib-Injector'
+  baseUrlHint: 'عنوان URL الأساسي لخدمتك المخصصة'
+  homepage: 'الصفحة الرئيسية'
+  implementation: 'تطبيق'
+  manageServices: 'إدارة خدمات المصادقة'
+  register: 'يسجل'
+  server: 'الخادم'
+  skinDomains: 'مجالات الجلد'
+  title: 'خدمات مستخدم الطرف الثالث'
+  version: 'إصدار'
+userServices:
+  microsoft:
+    account: 'حساب مايكروسوفت'
+    deviceCode: 'رمز الجهاز'
+    deviceCodeHint: 'سيتم إنشاء رمز الجهاز بعد النقر فوق تسجيل الدخول'
+    name: 'مايكروسوفت'
+    password: 'أدخل كلمة المرور في المتصفح'
+    useDeviceCode: 'تسجيل الدخول عن طريق رمز الجهاز'
+  mojang:
+    account: 'عنوان البريد الإلكتروني'
+    name: 'موجانج'
+    password: 'كلمة المرور'
+  offline:
+    account: 'اسم المستخدم'
+    name: 'غير متصل'
+    password: 'لا كلمة المرور'
+    uuid: 'UUID للمستخدم (اختياري)'
+userSkin:
+  import: 'استيراد الجلد'
+  importFile: 'فتح من ملف'
+  importLink: 'فتح من الرابط'
+  placeUrlHere: 'ضع عنوان URL للجلد هنا للاستيراد'
+  reset: 'إعادة ضبط'
+  save: 'يحفظ'
+  saveTitle: 'حفظ الجلد على القرص'
+  skinType: 'نوع البشرة'
+  upload: 'تحميل الجلد'
+  urlNotEmpty: 'لا يمكن أن يكون عنوان URL للسطح فارغًا'
+  urlNotValid: 'عنوان URL للسطح غير صالح'
+  useSlim: 'استخدم الطراز النحيف'
+  classic: 'كلاسيكي'
+  slim: 'نحيل'
+version:
+  checkIntegrity: 'التحقق من النزاهة'
+  name: 'النسخة | الإصدارات'
+  notInstalled: 'لم يتم تثبيت الإصدار'
+versionType:
+  alpha: 'ألفا'
+  beta: 'بيتا'
+  name: 'حالة'
+  release: 'يطلق'

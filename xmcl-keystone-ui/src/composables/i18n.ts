@@ -14,8 +14,14 @@ export function useI18nSync(state: Ref<Settings | undefined>) {
       vuetifyLocale.current.value = 'zhHans'
     } else if (newValue === 'ru') {
       vuetifyLocale.current.value = 'ru'
+    } else if (newValue === 'ar') {
+      vuetifyLocale.current.value = 'ar'
     } else {
       vuetifyLocale.current.value = 'en'
+    }
+
+    if (typeof document !== 'undefined') {
+      document.documentElement.dir = newValue === 'ar' ? 'rtl' : 'ltr'
     }
 
     if (!locales[`../../locales/${newValue}.yaml`]) {
