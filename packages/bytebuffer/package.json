@@ -58,7 +58,7 @@
     "@types/node": "^20.19.0",
     "@xmcl/oxlint-config": "workspace:^*",
     "bytebuffer": "^5.0.1",
-    "esbuild": "^0.25.12",
+    "esbuild": "^0.28.1",
     "oxlint": "^1.63.0",
     "tslib": "^2.5.0",
     "typescript": "^5.9.3"

@@ -60,7 +60,7 @@
         "electron-builder": "^24.13.3",
         "electron-devtools-installer": "^3.2.0",
         "electron-updater": "^6.1.7",
-        "esbuild": "^0.25.12",
+        "esbuild": "^0.28.1",
         "esbuild-plugin-yaml": "^0.0.1",
         "fast-xml-parser": "^5.7.3",
         "file-type": "^21.3.1",
