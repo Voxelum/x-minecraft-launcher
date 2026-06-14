@@ -81,7 +81,7 @@ export interface FabricArtifactVersion {
   build?: number
   maven: string
   version: string
-  stable: boolean
+  stable?: boolean
 }
 
 

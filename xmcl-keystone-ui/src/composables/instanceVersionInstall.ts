@@ -1,6 +1,5 @@
 import { appInsights } from '@/telemetry'
 import { AnyError } from '@/util/error'
-import { getSWRV } from '@/util/swrvGet'
 import type { JavaVersion, ResolvedVersion } from '@xmcl/core'
 import type { InstallIssue } from '@xmcl/installer'
 import {
@@ -10,6 +9,7 @@ import {
   JavaServiceKey,
   ServerVersionHeader,
   VersionHeader,
+  VersionMetadataServiceKey,
   VersionServiceKey,
   findMatchedVersion,
   parseOptifineVersion,
@@ -19,13 +19,6 @@ import { InjectionKey, Ref, ShallowRef } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
 import { useNotifier } from './notifier'
 import { useService } from './service'
-import { kSWRVConfig } from './swrvConfig'
-import {
-  getForgeVersionsModel,
-  getLabyModManifestModel,
-  getMinecraftVersionsModel,
-  getNeoForgedVersionModel,
-} from './version'
 import { Instance, PartialRuntimeVersions, RuntimeVersions } from '@xmcl/instance'
 
 export interface InstanceInstallInstruction extends InstallIssue {
@@ -76,8 +69,7 @@ function useInstanceVersionInstall(
   const { refreshVersion, refreshServerVersion, resolveLocalVersion } =
     useService(VersionServiceKey)
   const { installJava } = useService(JavaServiceKey)
-
-  const cfg = inject(kSWRVConfig)
+  const metadata = useService(VersionMetadataServiceKey)
 
   function onInstallForgeError(e: any): never {
     if (e.code === 'ENOENT') {
@@ -88,11 +80,11 @@ function useInstanceVersionInstall(
 
   async function install(runtime: PartialRuntimeVersions) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
-    const mcVersions = await getSWRV(getMinecraftVersionsModel(), cfg)
+    const mcVersions = await metadata.getMinecraftVersions()
     const local = versions.value
-    const metadata = mcVersions.versions.find((v) => v.id === minecraft)
-    if (metadata) {
-      await installMinecraft({ meta: metadata, side: 'client' })
+    const mcMeta = mcVersions.versions.find((v) => v.id === minecraft)
+    if (mcMeta) {
+      await installMinecraft({ meta: mcMeta, side: 'client' })
     } else {
       const exception = new AnyError(
         'InstallMinecraftClientError',
@@ -130,7 +122,7 @@ function useInstanceVersionInstall(
         await refreshVersion(localLabyMod.id)
         labyModBase = localLabyMod.id
       } else {
-        const manifest = await getSWRV(getLabyModManifestModel(), cfg)
+        const manifest = await metadata.getLabyModManifest()
 
         labyModBase = await installLabyModVersion({ manifest, minecraftVersion: minecraft })
       }
@@ -144,7 +136,7 @@ function useInstanceVersionInstall(
         labyMod,
       })
       if (!localForge) {
-        const forgeVersions = await getSWRV(getForgeVersionsModel(minecraft), cfg)
+        const forgeVersions = await metadata.getForgeVersions(minecraft)
         const found = forgeVersions.find((v) => v.version === forge)
         const forgeVersionId = found?.version ?? forge
 
@@ -168,7 +160,7 @@ function useInstanceVersionInstall(
         labyMod,
       })
       if (!localNeoForge) {
-        const neoForgedVersion = await getSWRV(getNeoForgedVersionModel(minecraft), cfg)
+        const neoForgedVersion = await metadata.getNeoForgedVersions(minecraft)
         const found = neoForgedVersion.find((v) => v === neoForged)
         const id = found ?? neoForged
 
@@ -248,10 +240,10 @@ function useInstanceVersionInstall(
   async function installServer(runtime: RuntimeVersions, path: string) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
 
-    const mcVersions = await getSWRV(getMinecraftVersionsModel(), cfg)
-    const metadata = mcVersions.versions.find((v) => v.id === minecraft)
-    if (metadata) {
-      await installMinecraft({ meta: metadata, side: 'server' })
+    const mcVersions = await metadata.getMinecraftVersions()
+    const mcMeta = mcVersions.versions.find((v) => v.id === minecraft)
+    if (mcMeta) {
+      await installMinecraft({ meta: mcMeta, side: 'server' })
     } else {
       const exception = new AnyError(
         'InstallServerError',
@@ -270,7 +262,7 @@ function useInstanceVersionInstall(
         (v) => v.version === forge && v.minecraft === minecraft && v.type === 'forge',
       )
       if (forgeServer) return forgeServer.id
-      const forgeVersions = await getSWRV(getForgeVersionsModel(minecraft), cfg)
+      const forgeVersions = await metadata.getForgeVersions(minecraft)
       const found = forgeVersions.find((v) => v.version === forge)
       const forgeVersionId = found?.version ?? forge
 
@@ -369,6 +361,7 @@ export function useInstanceVersionInstallInstruction(
   const { editInstance } = useService(InstanceServiceKey)
   const { resolveLocalVersion } = useService(VersionServiceKey)
   const { installJava } = useService(JavaServiceKey)
+  const metadata = useService(VersionMetadataServiceKey)
   const { notify } = useNotifier()
   const { t } = useI18n()
 
@@ -383,7 +376,6 @@ export function useInstanceVersionInstallInstruction(
   let abortController = new AbortController()
   const instruction: ShallowRef<InstanceInstallInstruction | undefined> = shallowRef(undefined)
   const loading = ref(0)
-  const config = inject(kSWRVConfig)
 
   const instanceLock: Record<string, Mutex> = {}
 
@@ -632,7 +624,7 @@ export function useInstanceVersionInstallInstruction(
         })
       }
       if (instruction.assetsIndex) {
-        const list = await getSWRV(getMinecraftVersionsModel(), config)
+        const list = await metadata.getMinecraftVersions()
         await installAssetsForVersion({
           version,
           fallbackVersionMetadata: list.versions.filter(

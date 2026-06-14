@@ -1,21 +1,18 @@
 import { useService } from '@/composables'
-import { useSWRVConfig } from '@/composables/swrvConfig'
-import { getFabricGameVersionsModel, getFabricLoaderVersionsModel, getForgeVersionsModel, getLatestNeoforge, getNeoForgedVersionModel, getQuiltGameVersionsModel, getQuiltLoaderVersionsModel } from '@/composables/version'
-import { InstanceServiceKey } from '@xmcl/runtime-api'
-import { getSWRV } from '../util/swrvGet'
+import { getLatestNeoforge } from '@/composables/version'
+import { InstanceServiceKey, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import { RuntimeVersions } from '@xmcl/instance'
 
 export function useInstanceModLoaderDefault() {
-  const config = useSWRVConfig()
   const { editInstance } = useService(InstanceServiceKey)
+  const metadata = useService(VersionMetadataServiceKey)
 
   async function apply(path: string, runtime: RuntimeVersions, loaders: Array<'forge' | 'quilt' | 'neoforge' | 'fabric' | string>) {
     for (const loader of loaders) {
       if (loader === 'fabric') {
-        const fit = await getSWRV(getFabricGameVersionsModel(), config)
-        if (fit.includes(runtime.minecraft)) {
-          const versions = await getSWRV(getFabricLoaderVersionsModel(), config)
-          const version = versions[0]
+        const { gameVersions, loaderVersions } = await metadata.getFabricVersions()
+        if (gameVersions.includes(runtime.minecraft)) {
+          const version = loaderVersions[0]
           await editInstance({
             instancePath: path,
             runtime: {
@@ -28,10 +25,9 @@ export function useInstanceModLoaderDefault() {
         }
         return false
       } else if (loader === 'quilt') {
-        const fit = await getSWRV(getQuiltGameVersionsModel(), config)
-        if (fit.includes(runtime.minecraft)) {
-          const versions = await getSWRV(getQuiltLoaderVersionsModel(), config)
-          const version = versions[0]
+        const { gameVersions, loaderVersions } = await metadata.getQuiltVersions()
+        if (gameVersions.includes(runtime.minecraft)) {
+          const version = loaderVersions[0]
           await editInstance({
             instancePath: path,
             runtime: {
@@ -44,7 +40,7 @@ export function useInstanceModLoaderDefault() {
         }
         return false
       } else if (loader === 'forge') {
-        const forges = await getSWRV(getForgeVersionsModel(runtime.minecraft), config)
+        const forges = await metadata.getForgeVersions(runtime.minecraft)
         const version = forges.find(f => f.type === 'recommended') || forges[0]
         if (version) {
           await editInstance({
@@ -59,7 +55,7 @@ export function useInstanceModLoaderDefault() {
         }
         return false
       } else if (loader === 'neoforge') {
-        const versions = await getSWRV(getNeoForgedVersionModel(runtime.minecraft), config)
+        const versions = await metadata.getNeoForgedVersions(runtime.minecraft)
         const version = getLatestNeoforge(versions)
         if (version) {
           await editInstance({
