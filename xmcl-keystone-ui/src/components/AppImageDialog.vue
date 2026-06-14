@@ -1,15 +1,10 @@
 <template>
-  <v-dialog
-    v-model="isShown"
-    content-class="image-dialog relative min-h-100"
-  >
-    <div
-      class="flex items-center justify-center select-none"
-    >
+  <v-dialog v-model="isShown" content-class="image-dialog relative min-h-100">
+    <div class="flex items-center justify-center select-none">
       <transition name="image-fade" mode="out-in">
         <img
           :key="image"
-          style="max-height: 90vh; min-height: 10rem;"
+          style="max-height: 90vh; min-height: 10rem"
           contain
           draggable="true"
           :src="image"
@@ -17,7 +12,10 @@
         />
       </transition>
       <div class="absolute bottom-10 flex w-full flex-col items-center justify-center gap-2">
-        <div v-if="hasMultipleImages" class="text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+        <div
+          v-if="hasMultipleImages"
+          class="text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded"
+        >
           {{ currentIndex }} / {{ totalImages }}
         </div>
         <div v-if="description" class="text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
@@ -28,11 +26,7 @@
         </div>
         <AppImageControls :image="image">
           <template #left>
-            <v-btn
-              v-if="hasMultipleImages"
-              icon
-              @click.stop="prev"
-             size="small">
+            <v-btn v-if="hasMultipleImages" icon @click.stop="prev" size="small">
               <v-icon>{{ prevIcon }}</v-icon>
             </v-btn>
           </template>
@@ -47,19 +41,12 @@
           >
             <v-icon>wallpaper</v-icon>
           </v-btn>
-          <v-btn
-            icon
-            @click="isShown=false"
-           size="small">
+          <v-btn icon @click="isShown = false" size="small">
             <v-icon>close</v-icon>
           </v-btn>
 
           <template #right>
-            <v-btn
-              v-if="hasMultipleImages"
-              icon
-              @click.stop="next"
-             size="small">
+            <v-btn v-if="hasMultipleImages" icon @click.stop="next" size="small">
               <v-icon>{{ nextIcon }}</v-icon>
             </v-btn>
           </template>
@@ -85,7 +72,17 @@ import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
 import { useRtl } from 'vuetify'
 import { basename } from '@/util/basename'
 
-const { isShown, image, description, date, next, prev, hasMultipleImages, totalImages, currentIndex } = injection(kImageDialog)
+const {
+  isShown,
+  image,
+  description,
+  date,
+  next,
+  prev,
+  hasMultipleImages,
+  totalImages,
+  currentIndex,
+} = injection(kImageDialog)
 const { getDateString } = useDateString()
 const { t } = useI18n()
 const { notify } = useNotifier()
@@ -93,8 +90,8 @@ const { isRtl } = useRtl()
 
 // Mirror prev/next chevrons and arrow-key mapping so the visual layout
 // stays consistent with the reading direction.
-const prevIcon = computed(() => isRtl.value ? 'chevron_right' : 'chevron_left')
-const nextIcon = computed(() => isRtl.value ? 'chevron_left' : 'chevron_right')
+const prevIcon = computed(() => (isRtl.value ? 'chevron_right' : 'chevron_left'))
+const nextIcon = computed(() => (isRtl.value ? 'chevron_left' : 'chevron_right'))
 
 // kTheme + kInstanceTheme + kInstance are only present in the main window.
 // The image dialog is only mounted there today, but we use `inject` (not
@@ -130,17 +127,16 @@ async function setAsBackground() {
     //    kTheme renders takes precedence anyway).
     //  - Otherwise target the global theme.
     const targetInstancePath =
-      hasInstanceTheme.value && instanceCtx?.path.value
-        ? instanceCtx.path.value
-        : undefined
+      hasInstanceTheme.value && instanceCtx?.path.value ? instanceCtx.path.value : undefined
 
     const isInstance = !!targetInstancePath
     const targetTheme = isInstance
       ? instanceThemeCtx!.instanceTheme.value!
       : themeCtx.currentTheme.value
     const isDark = themeCtx.isDark.value
-    const imageKey: 'backgroundImageDark' | 'backgroundImage' =
-      isDark ? 'backgroundImageDark' : 'backgroundImage'
+    const imageKey: 'backgroundImageDark' | 'backgroundImage' = isDark
+      ? 'backgroundImageDark'
+      : 'backgroundImage'
 
     // Local launcher media URLs (e.g. instance screenshots, market gallery
     // already cached locally) carry the underlying file path -- copy via
@@ -200,13 +196,13 @@ async function setAsBackground() {
 
 const onKeydown = (event: KeyboardEvent) => {
   if (!isShown.value) return
-  
+
   if (event.key === 'ArrowLeft' && hasMultipleImages.value) {
     event.preventDefault()
-    isRtl.value ? next() : prev()
+    if (isRtl.value) next(); else prev()
   } else if (event.key === 'ArrowRight' && hasMultipleImages.value) {
     event.preventDefault()
-    isRtl.value ? prev() : next()
+    if (isRtl.value) prev(); else next()
   } else if (event.key === 'Escape') {
     event.preventDefault()
     isShown.value = false
@@ -222,7 +218,6 @@ const onDragStart = async (event: DragEvent, url: string) => {
   const file = new File([blob], filename, { type: blob.type })
   event.dataTransfer!.items.add(file)
 }
-
 
 onMounted(() => {
   document.addEventListener('keydown', onKeydown)

@@ -110,6 +110,7 @@ const filteredLogs = computed(() => {
   const results = fuzzyFilter(debouncedSearchText.value, props.logs, {
     extract: (log: LogRecord) => `${log.level} ${log.source} ${log.content}`
   })
+  // eslint-disable-next-line
   return results.filter(r => r.original != null).map(r => r.original as LogRecord)
 })
 
