@@ -22,7 +22,7 @@
     "kysely": "^0.28.14",
     "node-sqlite3-wasm": "^0.8.52",
     "@xmcl/oxlint-config": "workspace:^*",
-    "esbuild": "^0.25.12",
+    "esbuild": "^0.28.1",
     "oxlint": "^1.63.0",
     "typescript": "^5.9.3"
   }
