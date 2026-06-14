@@ -1161,6 +1161,7 @@ server:
   hostHint: The host (with port) of the server
   hostRequired: Please enter the server ip address
   ipAddress: IP Address
+  joinServer: Join Server
   maxPlayers: Max Players
   motd: Server MOTD
   nogui: No Server Gui

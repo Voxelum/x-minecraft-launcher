@@ -10,6 +10,7 @@ import { useInjectSidebarSettings } from './sidebarSettings'
 
 export function useInstanceContextMenuFunc() {
   const { show: showDeleteDialog } = useDialog('delete-instance')
+  const { show: showJoinServerDialog } = useDialog('join-server')
   const { duplicateInstance } = useService(InstanceServiceKey)
   const { showItemInDirectory } = useService(BaseServiceKey)
   const { t } = useI18n()
@@ -37,6 +38,17 @@ export function useInstanceContextMenuFunc() {
         icon: showOnlyPinned.value ? 'check_box' : 'check_box_outline_blank',
         onClick() {
           showOnlyPinned.value = !showOnlyPinned.value
+        },
+      },
+      {
+        text: t('server.joinServer'),
+        icon: 'dns',
+        onClick() {
+          showJoinServerDialog({
+            instance: inst,
+            serverName: '',
+            onSave: () => {},
+          })
         },
       },
       {
