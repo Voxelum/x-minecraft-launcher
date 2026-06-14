@@ -153,7 +153,6 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
     tray.setContextMenu(createMenu())
 
     if (app.dock) {
-      app.dock.setIcon(nativeTheme.shouldUseDarkColors ? darkIcon : lightIcon)
       app.on('activate', () => {
         if (this.mainWin && !this.mainWin.isDestroyed()) {
           this.mainWin?.show()
@@ -169,9 +168,6 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
   })
 
   this.app.on('app-booted', (man) => {
-    if (app.dock) {
-      app.dock.setIcon(nativeTheme.shouldUseDarkColors ? man.iconSets.darkDockIcon : man.iconSets.dockIcon)
-    }
     this.tray?.setImage(getTrayImage(man.iconSets.darkTrayIcon, man.iconSets.trayIcon))
   })
 }
