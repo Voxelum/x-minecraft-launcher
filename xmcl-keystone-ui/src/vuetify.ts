@@ -50,6 +50,12 @@ export const vuetify = createVuetify({
     aliases,
     sets: { md, xmcl },
   },
+  defaults: {
+    VSwitch: {
+      inset: true,
+      color: 'primary',
+    },
+  },
   theme: {
     defaultTheme: 'dark',
     themes: {
