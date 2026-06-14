@@ -28,7 +28,7 @@
         <div class="col-span-9 flex flex-col overflow-auto mt-4">
           <div
             v-if="data.elyByWarning"
-            class="mb-4 rounded bg-orange-100 dark:bg-orange-900 p-4 border-l-4 border-orange-500"
+            class="mb-4 rounded bg-orange-100 dark:bg-orange-900 p-4 border-s-4 border-orange-500"
           >
             <div class="flex items-center gap-2 mb-2">
               <v-icon color="orange">

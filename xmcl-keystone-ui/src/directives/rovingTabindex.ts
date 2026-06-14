@@ -101,10 +101,16 @@ export const vRovingTabindex: ObjectDirective<HTMLElement, Binding> = {
     function onKeydown(e: KeyboardEvent) {
       const horizontal = options.orientation === 'horizontal' || options.orientation === 'both'
       const vertical = options.orientation === 'vertical' || options.orientation === 'both'
+      // In RTL, ArrowLeft visually moves to the next item, ArrowRight to
+      // the previous. WAI-ARIA Authoring Practices recommends mirroring
+      // horizontal arrow keys so navigation follows the visible layout.
+      const rtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl'
+      const prevHorizontalKey = rtl ? 'ArrowRight' : 'ArrowLeft'
+      const nextHorizontalKey = rtl ? 'ArrowLeft' : 'ArrowRight'
       const isPrev =
-        (horizontal && e.key === 'ArrowLeft') || (vertical && e.key === 'ArrowUp')
+        (horizontal && e.key === prevHorizontalKey) || (vertical && e.key === 'ArrowUp')
       const isNext =
-        (horizontal && e.key === 'ArrowRight') || (vertical && e.key === 'ArrowDown')
+        (horizontal && e.key === nextHorizontalKey) || (vertical && e.key === 'ArrowDown')
       const isHome = e.key === 'Home'
       const isEnd = e.key === 'End'
       if (!isPrev && !isNext && !isHome && !isEnd) return

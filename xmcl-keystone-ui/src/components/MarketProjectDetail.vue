@@ -995,7 +995,7 @@ function onDescriptionLinkClicked(e: MouseEvent, href: string) {
 
 <style>
 .mod-detail .v-badge__badge.primary {
-  right: -10px;
+  inset-inline-end: -10px;
   height: 20px;
   font-size: 12px;
 }

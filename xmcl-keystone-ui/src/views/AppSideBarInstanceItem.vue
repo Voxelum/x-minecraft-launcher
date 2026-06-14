@@ -42,7 +42,7 @@
     <!-- Pin indicator -->
     <div
       v-if="pinned"
-      class="absolute -top-1 right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center shadow-md z-20 pointer-events-none"
+      class="absolute -top-1 end-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center shadow-md z-20 pointer-events-none"
     >
       <v-icon color="white" :size="10">
         push_pin

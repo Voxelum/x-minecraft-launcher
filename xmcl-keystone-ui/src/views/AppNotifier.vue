@@ -1,7 +1,7 @@
 <template>
   <v-snackbar
     v-model="data.show"
-    location="top right"
+    location="top end"
     :timeout="data.level === 'error' ? -1 : 6000"
     :color="surfaceColor"
     rounded="lg"

@@ -45,7 +45,7 @@
                 v-bind="props"
                 @click.stop="item.onClick"
               >
-                <v-icon>arrow_right</v-icon>
+                <v-icon>{{ submenuIcon }}</v-icon>
               </v-list-item-action>
             </template>
 
@@ -87,8 +87,11 @@
 import { injection } from '@/util/inject';
 import { useContextMenuData } from '../composables/contextMenu'
 import { kTheme } from '@/composables/theme';
+import { useRtl } from 'vuetify'
 
 const { isDark } = injection(kTheme)
+const { isRtl } = useRtl()
+const submenuIcon = computed(() => isRtl.value ? 'arrow_left' : 'arrow_right')
 
 const { x, y, items, shown } = useContextMenuData()
 document.addEventListener('keyup', (e) => {

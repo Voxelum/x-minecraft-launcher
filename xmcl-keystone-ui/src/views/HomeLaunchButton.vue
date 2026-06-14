@@ -92,13 +92,15 @@ const isShown = ref(false)
 </script>
 
 <style scoped>
+/* Logical border-radius keeps the seam between the two buttons on the
+   correct (leading) edge in both LTR and RTL layouts. */
 .btn-right {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
 }
 .btn-left {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
 }
 
 @media (max-width: 850px) {

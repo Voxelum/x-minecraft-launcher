@@ -33,7 +33,7 @@
               icon
               @click.stop="prev"
              size="small">
-              <v-icon>chevron_left</v-icon>
+              <v-icon>{{ prevIcon }}</v-icon>
             </v-btn>
           </template>
           <v-btn
@@ -60,7 +60,7 @@
               icon
               @click.stop="next"
              size="small">
-              <v-icon>chevron_right</v-icon>
+              <v-icon>{{ nextIcon }}</v-icon>
             </v-btn>
           </template>
         </AppImageControls>
@@ -82,12 +82,19 @@ import { injection } from '@/util/inject'
 import { InstanceThemeServiceKey, ThemeServiceKey } from '@xmcl/runtime-api'
 import AppImageControls from './AppImageControls.vue'
 import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
+import { useRtl } from 'vuetify'
 import { basename } from '@/util/basename'
 
 const { isShown, image, description, date, next, prev, hasMultipleImages, totalImages, currentIndex } = injection(kImageDialog)
 const { getDateString } = useDateString()
 const { t } = useI18n()
 const { notify } = useNotifier()
+const { isRtl } = useRtl()
+
+// Mirror prev/next chevrons and arrow-key mapping so the visual layout
+// stays consistent with the reading direction.
+const prevIcon = computed(() => isRtl.value ? 'chevron_right' : 'chevron_left')
+const nextIcon = computed(() => isRtl.value ? 'chevron_left' : 'chevron_right')
 
 // kTheme + kInstanceTheme + kInstance are only present in the main window.
 // The image dialog is only mounted there today, but we use `inject` (not
@@ -196,10 +203,10 @@ const onKeydown = (event: KeyboardEvent) => {
   
   if (event.key === 'ArrowLeft' && hasMultipleImages.value) {
     event.preventDefault()
-    prev()
+    isRtl.value ? next() : prev()
   } else if (event.key === 'ArrowRight' && hasMultipleImages.value) {
     event.preventDefault()
-    next()
+    isRtl.value ? prev() : next()
   } else if (event.key === 'Escape') {
     event.preventDefault()
     isShown.value = false

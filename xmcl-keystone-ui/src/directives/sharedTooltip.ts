@@ -92,6 +92,15 @@ function buildData(el: HTMLElement, bindings: DirectiveBinding<any>): SharedTool
     newData.direction = 'top'
   }
 
+  // In RTL the visual left/right axes are mirrored. Flip the physical
+  // direction at the source so both the anchor point computed below AND
+  // the `location` prop in AppSharedTooltip end up on the side the author
+  // visually intended (e.g. `.left` in RTL renders on the right edge).
+  if (typeof document !== 'undefined' && document.documentElement.dir === 'rtl') {
+    if (newData.direction === 'left') newData.direction = 'right'
+    else if (newData.direction === 'right') newData.direction = 'left'
+  }
+
   const rect = el.getBoundingClientRect()
   if (newData.direction === 'top') {
     newData.x = rect.x + rect.width / 2
@@ -104,7 +113,7 @@ function buildData(el: HTMLElement, bindings: DirectiveBinding<any>): SharedTool
     newData.y = rect.y + rect.height / 2
   } else {
     newData.x = rect.x
-    newData.y = rect.y + rect.width / 2
+    newData.y = rect.y + rect.height / 2
   }
 
   return newData

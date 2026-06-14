@@ -24,8 +24,8 @@
         class="pa-3"
         @keydown.down.prevent="moveSelection(1)"
         @keydown.up.prevent="moveSelection(-1)"
-        @keydown.right="onArrowRight"
-        @keydown.left="onArrowLeft"
+        @keydown.right="onArrowForward"
+        @keydown.left="onArrowBack"
         @keydown.enter.prevent="invokeSelected"
         @keydown.esc="hide"
       />
@@ -310,6 +310,7 @@ import type { SearchResultHit } from '@xmcl/modrinth'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import { useRtl } from 'vuetify'
 
 const { t, te, locale } = useI18n()
 const isShown = ref(false)
@@ -653,6 +654,16 @@ function onArrowLeft(e: KeyboardEvent) {
   pendingSettingId.value = undefined
   query.value = ''
   selectedIndex.value = 0
+}
+
+// Mirror drill-in / back-out arrow keys under RTL so the gesture follows
+// the visible reading direction.
+const { isRtl: paletteIsRtl } = useRtl()
+function onArrowForward(e: KeyboardEvent) {
+  return paletteIsRtl.value ? onArrowLeft(e) : onArrowRight(e)
+}
+function onArrowBack(e: KeyboardEvent) {
+  return paletteIsRtl.value ? onArrowRight(e) : onArrowLeft(e)
 }
 </script>
 
