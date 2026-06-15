@@ -106,6 +106,12 @@ const emit = defineEmits<{
 }>()
 
 watch(() => props.items, (newItems) => {
+  // Only auto-clear when we actually have a loaded list to compare against.
+  // An empty `items` array typically means the data is still loading (e.g.
+  // when the component is freshly mounted after switching tabs), and
+  // clearing the value in that case would spuriously mark the instance as
+  // modified.
+  if (newItems.length === 0) return
   if (props.value && !newItems.some((item) => item.name === props.value)) {
     emit('select', '')
   }
