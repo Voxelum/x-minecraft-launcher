@@ -210,7 +210,7 @@ watch(() => data.path, (newPath) => {
   })
 })
 
-const { isDark, currentTheme } = injection(kTheme)
+const { isDark, currentTheme, saveCurrentTheme } = injection(kTheme)
 
 const updateTheme = (theme: 'dark' | 'system' | 'light') => {
   if (theme === 'system') {
@@ -232,11 +232,27 @@ const { state } = injection(kSettingsState)
 
 async function setup() {
   await bootstrap.bootstrap(data.path)
-  getEnvironment().then((e) => {
+  // The wizard mutates `currentTheme` in-place when it picks defaults
+  // (dark mode + Halo background on GPU machines). `useTheme()` does not
+  // auto-persist those mutations, so we must explicitly save here —
+  // otherwise the first launch shows Halo but `theme.json` is never
+  // written and the next launch falls back to `BackgroundType.NONE`.
+  //
+  // Await the environment lookup so the Halo assignment is in place
+  // before we serialize, instead of racing with the wizard unmounting.
+  try {
+    const e = await getEnvironment()
     if (e.gpu && isDark.value) {
       currentTheme.value.backgroundType = BackgroundType.HALO
     }
-  })
+  } catch (err) {
+    console.error('Failed to detect environment during setup', err)
+  }
+  try {
+    await saveCurrentTheme()
+  } catch (err) {
+    console.error('Failed to persist initial theme during setup', err)
+  }
   emit('ready', data)
   if (state.value) {
     state.value.localeSet(locale.value)
