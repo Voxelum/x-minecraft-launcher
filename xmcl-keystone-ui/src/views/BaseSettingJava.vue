@@ -5,8 +5,8 @@
       <v-avatar
         size="48"
         rounded="lg"
-        :color="displayJava.path && displayJava.valid ? 'primary' : (displayJava.path ? 'error' : 'surface-variant')"
-        :variant="displayJava.path && displayJava.valid ? 'flat' : 'tonal'"
+        :color="heroAvatar.color"
+        :variant="heroAvatar.variant"
       >
         <span
           v-if="displayJava.path && displayJava.valid && displayJava.majorVersion"
@@ -15,6 +15,8 @@
           {{ displayJava.majorVersion }}
         </span>
         <v-icon v-else-if="displayJava.path">error_outline</v-icon>
+        <v-icon v-else-if="autoIssue === 'no-java'">error_outline</v-icon>
+        <v-icon v-else-if="autoIssue === 'no-match'">download</v-icon>
         <v-icon v-else>memory</v-icon>
       </v-avatar>
 
@@ -46,6 +48,12 @@
           <template v-else-if="displayJava.path">
             <span class="text-error">{{ t('java.invalid') }}</span>
           </template>
+          <template v-else-if="autoIssue === 'no-java'">
+            <span class="text-error">{{ t('HomeJavaIssueDialog.missingJava') }}</span>
+          </template>
+          <template v-else-if="autoIssue === 'no-match'">
+            <span class="text-warning">{{ t('launchNoProperJava.title') }}</span>
+          </template>
           <template v-else>
             {{ t('java.allocatedLong') }}
           </template>
@@ -56,6 +64,12 @@
           class="text-caption text-medium-emphasis truncate"
         >
           {{ displayJava.path }}
+        </div>
+        <div v-else-if="autoIssue === 'no-java'" class="text-caption text-medium-emphasis">
+          {{ t('HomeJavaIssueDialog.missingJavaHint') }}
+        </div>
+        <div v-else-if="autoIssue === 'no-match'" class="text-caption text-medium-emphasis">
+          {{ t('installJre.name') }}
         </div>
         <div v-else class="text-caption text-medium-emphasis">
           {{ t('java.locationHint') }}
@@ -240,7 +254,7 @@ import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
 const { t } = useI18n()
 const { showOpenDialog } = windowController
 const { all: javas, remove: removeJava, refreshing, refresh } = injection(kJavaContext)
-const { java: selectedJava } = injection(kInstanceJava)
+const { java: selectedJava, status: javaStatus } = injection(kInstanceJava)
 const { resolveJava: add } = useService(JavaServiceKey)
 const { showItemInDirectory } = useService(BaseServiceKey)
 
@@ -328,6 +342,36 @@ const displayJava = computed<JavaRecord & { path: string; valid: boolean; majorV
     } as any
   }
   return java.value as any
+})
+
+// In auto mode the resolver may decide no installed Java is compatible (e.g.
+// the version needs Java 25 but only 18/21 are installed). Surface that to
+// the user instead of pretending we'd "use system default": show a missing
+// state when no Java is installed at all, or an install-pending hint when
+// some Java exists but none satisfies the requirement.
+const autoIssue = computed<'none' | 'no-java' | 'no-match'>(() => {
+  if (!isAuto.value) return 'none'
+  const stat = javaStatus.value
+  if (!stat) return 'none'
+  if (stat.noJava) return 'no-java'
+  if (!stat.java) return 'no-match'
+  return 'none'
+})
+
+const heroAvatar = computed(() => {
+  if (displayJava.value.path && displayJava.value.valid) {
+    return { color: 'primary', variant: 'flat' as const }
+  }
+  if (displayJava.value.path) {
+    return { color: 'error', variant: 'tonal' as const }
+  }
+  if (autoIssue.value === 'no-java') {
+    return { color: 'error', variant: 'tonal' as const }
+  }
+  if (autoIssue.value === 'no-match') {
+    return { color: 'warning', variant: 'tonal' as const }
+  }
+  return { color: 'surface-variant', variant: 'tonal' as const }
 })
 
 const { push } = useRouter()

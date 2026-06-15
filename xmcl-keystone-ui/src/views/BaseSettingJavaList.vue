@@ -15,6 +15,12 @@
         {{ t('java.allocatedLong') }}
       </v-list-item-title>
       <v-list-item-subtitle v-if="java?.path">{{ java.path }}</v-list-item-subtitle>
+      <v-list-item-subtitle v-else-if="autoIssue === 'no-java'" class="text-error">
+        {{ t('HomeJavaIssueDialog.missingJava') }}
+      </v-list-item-subtitle>
+      <v-list-item-subtitle v-else-if="autoIssue === 'no-match'" class="text-warning">
+        {{ t('launchNoProperJava.title') }} — {{ t('installJre.name') }}
+      </v-list-item-subtitle>
     </v-list-item>
 
     <v-divider />
@@ -100,5 +106,15 @@ defineProps<{
 const emit = defineEmits(['input'])
 const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)
-const { java } = injection(kInstanceJava)
+const { java, status: javaStatus } = injection(kInstanceJava)
+
+// Mirror the BaseSettingJava hero: when auto-resolution finds no compatible
+// Java, tell the user instead of leaving the subtitle blank.
+const autoIssue = computed<'none' | 'no-java' | 'no-match'>(() => {
+  const stat = javaStatus.value
+  if (!stat) return 'none'
+  if (stat.noJava) return 'no-java'
+  if (!stat.java) return 'no-match'
+  return 'none'
+})
 </script>

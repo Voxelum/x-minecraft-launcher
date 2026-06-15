@@ -78,9 +78,15 @@ export function getVersionPreference<T extends object>(
   forge: string | undefined,
   selectedVersion?: InstanceResolvedVersion<T>,
 ) {
-  // Java 21+ is LTS with improved forward compatibility, so we accept newer versions
-  const JAVA_FORWARD_COMPAT_THRESHOLD = 21
-  
+  // Java 16 is the first JDK with the modular cleanup Minecraft 1.17+ was
+  // designed against, and the JVM has been broadly forward-compatible from
+  // that point on (Mojang's own bootstrap accepts any newer LTS). Treat any
+  // requirement >= 16 as forward-compatible so that, e.g., Java 25 is a
+  // perfect match for a Java 21 *or* Java 17 requirement instead of being
+  // rejected as "no compatible Java found". Java 8 stays strict because
+  // legacy MC depends on Java 8 internals removed in 9+.
+  const JAVA_FORWARD_COMPAT_THRESHOLD = 16
+
   let javaVersion = selectedVersion && 'javaVersion' in selectedVersion ? selectedVersion?.javaVersion : undefined
   const resolvedMcVersion = parseVersion(minecraft)
   const minecraftMinor = resolvedMcVersion.minorVersion!
@@ -100,12 +106,12 @@ export function getVersionPreference<T extends object>(
       ? (j) => j.majorVersion >= v.majorVersion
       : (j) => j.majorVersion === v.majorVersion
   }
-  
+
   // Helper to format requirement string based on Java version
   const getRequirement = (version: number) => {
     return version >= JAVA_FORWARD_COMPAT_THRESHOLD ? `>=${version}` : `=${version}`
   }
-  
+
   let versionPref: VersionPreference
   // instance version is not installed
   if (minecraftMinor < 13) {

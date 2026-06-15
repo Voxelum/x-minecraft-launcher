@@ -125,3 +125,51 @@ describe('getAutoOrManuallJava - stale / invalid pinned path', () => {
     expect(picked?.valid).toBe(true)
   })
 })
+
+describe('getVersionPreference - forward compatibility from Java 16', () => {
+  // Historical bug: the forward-compat threshold was Java 21, so a Java 25
+  // install was rejected as "no compatible Java" when a version asked for
+  // Java 17 or 16 — even though those JDKs accept any newer LTS in practice.
+  test('Java 25 satisfies a Java 21 requirement', () => {
+    const { versionPref } = getVersionPreference('1.20.5', undefined, {
+      javaVersion: { component: 'java-runtime-delta', majorVersion: 21 },
+    } as any)
+    expect(versionPref.match(rec({ majorVersion: 25 }))).toBe(true)
+  })
+
+  test('Java 25 satisfies a Java 17 requirement', () => {
+    const { versionPref } = getVersionPreference('1.20.1', undefined, {
+      javaVersion: { component: 'java-runtime-gamma', majorVersion: 17 },
+    } as any)
+    expect(versionPref.match(rec({ majorVersion: 25 }))).toBe(true)
+  })
+
+  test('Java 21 satisfies a Java 16 requirement', () => {
+    const { versionPref } = getVersionPreference('1.17.1', undefined, {
+      javaVersion: { component: 'java-runtime-alpha', majorVersion: 16 },
+    } as any)
+    expect(versionPref.match(rec({ majorVersion: 21 }))).toBe(true)
+  })
+
+  test('Java 8 requirement is still strict (no forward-compat for legacy MC)', () => {
+    // MC 1.8 / 1.12 etc. rely on Java 8 internals removed in 9+; auto-mode
+    // must keep refusing newer JDKs as a perfect match.
+    const { versionPref } = getVersionPreference('1.12.2', undefined, {
+      javaVersion: { component: 'jre-legacy', majorVersion: 8 },
+    } as any)
+    expect(versionPref.match(rec({ majorVersion: 8 }))).toBe(true)
+    expect(versionPref.match(rec({ majorVersion: 17 }))).toBe(false)
+    expect(versionPref.match(rec({ majorVersion: 25 }))).toBe(false)
+  })
+
+  test('getAutoSelectedJava picks Java 25 when requirement is Java 17', () => {
+    // End-to-end: confirms the relaxed `match` actually flows through the
+    // auto-selector so the picker UI shows Java 25 instead of "no compatible
+    // Java found / will install".
+    const java25 = rec({ majorVersion: 25, path: '/opt/jdk-25/bin/java' })
+    const result = getAutoSelectedJava([java25], '1.20.1', undefined, {
+      javaVersion: { component: 'java-runtime-gamma', majorVersion: 17 },
+    } as any)
+    expect(result.java?.path).toBe(java25.path)
+  })
+})

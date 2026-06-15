@@ -29,25 +29,27 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
   const { resolveJava } = useService(JavaServiceKey)
 
   const data: Ref<InstanceJavaStatus | undefined> = shallowRef(undefined)
+  // Monotonic generation: every call to `mutate()` claims the next id, and
+  // only the call whose id matches `latestToken` at completion time is
+  // allowed to commit. This is a stricter guard than the previous
+  // field-by-field comparison, which missed in-place mutations to `all`
+  // (`JavaState.javaUpdate` push/edit kept the same array reference, so
+  // `all.value !== _all` was always false even when Java was added).
+  let latestToken = 0
   const { refresh: mutate, refreshing: isValidating, error } = useRefreshable(async () => {
+    const myToken = ++latestToken
     const _version = version.value
     const inst = instance.value
-    const _all = all.value
-
     const path = inst.path
-    const javaPath = inst.java
-    const minecraft = inst.runtime.minecraft
-    const forge = inst.runtime.forge
-    data.value = undefined
-    if (version.value && version.value.instance !== path) {
+    if (_version && _version.instance !== path) {
+      // Resolver is racing a not-yet-loaded version for a different
+      // instance; skip without clobbering the current data.
       return
     }
     const result = await getInstanceJavaStatus(_version, inst)
-    if (version.value !== _version ||
-      instance.value.java !== javaPath ||
-      instance.value.runtime.minecraft !== minecraft ||
-      instance.value.runtime.forge !== forge ||
-      all.value !== _all) {
+    if (myToken !== latestToken) {
+      // A newer `mutate()` superseded us while we were awaiting the
+      // resolver — discard rather than overwriting a fresher snapshot.
       return
     }
     data.value = result
