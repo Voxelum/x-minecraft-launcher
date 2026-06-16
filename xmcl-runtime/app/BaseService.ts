@@ -11,7 +11,7 @@ import {
   DownloadUpdateTask,
   NetworkStatus,
 } from '@xmcl/runtime-api'
-import { readdir, stat } from 'fs-extra'
+import { readFile, readdir, stat } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
@@ -199,9 +199,18 @@ export class BaseService extends AbstractService implements IBaseService {
     const files = await readdir(logsDir)
 
     for (const file of files) {
-      const fStat = await stat(join(logsDir, file)).catch(() => undefined)
+      const filePath = join(logsDir, file)
+      const fStat = await stat(filePath).catch(() => undefined)
       if (fStat?.isFile()) {
-        zipFile.addFile(join(logsDir, file), join('logs', file))
+        // Read the log into a buffer first. Log files may still be written to
+        // while we export, and yazl's addFile defers reading until the zip is
+        // finalized. If the file size changes between stat and read, the entry
+        // becomes corrupt. Snapshotting via addBuffer captures size + content
+        // atomically and avoids producing a broken zip.
+        const content = await readFile(filePath).catch(() => undefined)
+        if (content) {
+          zipFile.addBuffer(content, join('logs', file))
+        }
       }
     }
 
