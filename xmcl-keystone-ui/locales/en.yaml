@@ -1249,6 +1249,9 @@ setting:
     loadTheme: Load Theme
   customCss:
     title: Custom CSS
+    customizationMode: Customization Method
+    customizationModeSimple: Simple (UI Settings)
+    customizationModeCss: Advanced (Custom CSS)
     globalToggle: Toggle Custom CSS
     warning: Custom CSS allows you to customize any aspect of the launcher. Be careful when pasting CSS from untrusted sources, as it can modify the UI layout.
     edit: Edit CSS Entry

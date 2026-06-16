@@ -1,4 +1,5 @@
 import { ServiceKey } from './Service'
+import { GenericEventEmitter } from '../events'
 
 export interface CustomCssEntry {
   /**
@@ -38,7 +39,11 @@ export interface CustomCssState {
   entries: CustomCssEntry[]
 }
 
-export interface CustomCssService {
+export interface CustomCssServiceEventMap {
+  'custom-css-state-changed': CustomCssState
+}
+
+export interface CustomCssService extends GenericEventEmitter<CustomCssServiceEventMap> {
   /**
    * Get all custom CSS entries and the global enabled state
    */
@@ -81,6 +86,10 @@ export interface CustomCssService {
    * @param enabled Whether to enable custom CSS globally
    */
   setGlobalCustomCssEnabled(enabled: boolean): Promise<void>
+  /**
+   * Synchronize the Custom CSS database with the files on disk
+   */
+  syncWithDisk(): Promise<void>
 }
 
 export const CustomCssServiceKey: ServiceKey<CustomCssService> = 'CustomCssService'

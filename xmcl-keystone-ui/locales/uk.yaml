@@ -1126,6 +1126,9 @@ setting:
     loadTheme: Завантажити тему
   customCss:
     title: Власний CSS
+    customizationMode: Спосіб кастомізації
+    customizationModeSimple: Простий (UI налаштування)
+    customizationModeCss: Розширений (Власний CSS)
     globalToggle: Увімкнути власний CSS
     warning: Власний CSS дозволяє налаштувати будь-який аспект лаунчера. Будьте обережні при вставленні CSS з ненадійних джерел, оскільки це може змінити інтерфейс.
     edit: Редагувати запис CSS

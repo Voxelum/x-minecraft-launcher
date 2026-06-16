@@ -115,14 +115,7 @@
       >
         {{ t('setting.customCss.importFile') }}
       </v-btn>
-      <v-btn
-        variant="outlined"
-        size="small"
-        prepend-icon="archive"
-        @click="onImportZip"
-      >
-        {{ t('setting.customCss.importZip') }}
-      </v-btn>
+
     </div>
 
     <!-- CSS Editor -->
@@ -186,7 +179,6 @@ const {
   toggleGlobal,
   addFromText,
   addFromFile,
-  addFromZip,
   updateEntry,
   removeEntry,
   exportEntry,
@@ -291,18 +283,6 @@ async function onImportFile() {
   }
 }
 
-async function onImportZip() {
-  const { filePaths } = await windowController.showOpenDialog({
-    title: t('setting.customCss.importZip'),
-    properties: ['openFile'],
-    filters: [
-      { name: 'ZIP', extensions: ['zip'] },
-    ],
-  })
-  if (filePaths && filePaths[0]) {
-    await addFromZip(filePaths[0])
-  }
-}
 </script>
 
 <style scoped>
