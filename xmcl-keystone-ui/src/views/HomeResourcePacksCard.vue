@@ -1,5 +1,6 @@
 <template>
   <HomeCard
+    class="home-resource-packs-card"
     icon="palette"
     :title="t('resourcepack.name', 2)"
     :text="dragover ? t('resourcepack.dropHint') : t('resourcepack.enable', { count: resourcePackCount })"

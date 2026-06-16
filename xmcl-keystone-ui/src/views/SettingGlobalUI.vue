@@ -254,12 +254,14 @@
         />
       </template>
     </SettingCard>
+    <SettingCustomCss />
   </div>
 </template>
 
 <script setup lang="ts">
 import AppearanceItems from '@/components/AppearanceItems.vue'
 import SettingCard from '@/components/SettingCard.vue'
+import SettingCustomCss from '@/views/SettingCustomCss.vue'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'

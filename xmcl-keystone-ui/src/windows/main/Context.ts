@@ -1,6 +1,7 @@
 import { useExternalRoute, useI18nSync } from '@/composables'
 import { kCriticalStatus, useCriticalStatus } from '@/composables/criticalStatus'
 import { kCurseforgeCategories, useCurseforgeCategories } from '@/composables/curseforge'
+import { kCustomCss, useCustomCss } from '@/composables/customCss'
 import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { kEnvironment, useEnvironment } from '@/composables/environment'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
@@ -126,6 +127,8 @@ export default defineComponent({
     provide(kInstanceTheme, instanceTheme)
     provide(kTheme, useTheme(instanceTheme.instanceTheme))
     provide(kSurfaceTokens, useSurfaceTokens())
+
+    provide(kCustomCss, useCustomCss())
 
 
     useI18nSync(settings.state)

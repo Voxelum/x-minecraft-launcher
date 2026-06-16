@@ -3,8 +3,20 @@
     <transition
       name="fade-transition"
     >
+      <video
+        v-if="customBackgroundVideo"
+        ref="videoRef"
+        :key="`custom-video-${customBackgroundVideo}`"
+        class="absolute z-0 h-full w-full object-cover"
+        :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
+        :src="customBackgroundVideo"
+        autoplay
+        loop
+        playsinline
+        muted
+      />
       <Particles
-        v-if="backgroundType === BackgroundType.PARTICLE"
+        v-else-if="backgroundType === BackgroundType.PARTICLE"
         color="#dedede"
         class="absolute z-0 h-full w-full"
         :style="{ filter: `blur(${blur}px)` }"
@@ -31,6 +43,8 @@
         :src="backgroundImage.url"
         autoplay
         loop
+        playsinline
+        muted
       />
     </transition>
 
@@ -38,7 +52,7 @@
       name="fade-transition"
     >
       <div
-        v-if="(backgroundColorOverlay && !isHome) || backgroundType === BackgroundType.NONE"
+        v-if="((backgroundColorOverlay && !isHome) || backgroundType === BackgroundType.NONE) && !customBackgroundVideo"
         class="z-3 absolute h-full w-full"
         :style="{ 'background': backgroundColor }"
       />
@@ -51,6 +65,11 @@ import Particles from '@/components/Particles.vue'
 import { injection } from '@/util/inject'
 import { kTheme, BackgroundType } from '@/composables/theme'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
+import { kCustomCss } from '@/composables/customCss'
+import { inject } from 'vue'
+
+const customCss = inject(kCustomCss)
+const customBackgroundVideo = computed(() => customCss?.customBackgroundVideo.value || '')
 
 const { sideBarColor, backgroundColorOverlay, backgroundColor, blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, volume } = injection(kTheme)
 const videoRef = ref(null as null | HTMLVideoElement)

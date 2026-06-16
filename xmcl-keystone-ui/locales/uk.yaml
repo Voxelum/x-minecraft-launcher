@@ -1124,6 +1124,22 @@ setting:
     loadConfirmTitle: Замінити поточну тему?
     loadConfirmMessage: Завантаження збереженої теми замінить поточну. За потреби зробіть резервну копію.
     loadTheme: Завантажити тему
+  customCss:
+    title: Власний CSS
+    globalToggle: Увімкнути власний CSS
+    warning: Власний CSS дозволяє налаштувати будь-який аспект лаунчера. Будьте обережні при вставленні CSS з ненадійних джерел, оскільки це може змінити інтерфейс.
+    edit: Редагувати запис CSS
+    delete: Видалити запис CSS
+    export: Експортувати запис CSS
+    exportFile: Експортувати CSS файл
+    noEntries: Немає записів власного CSS. Додайте новий або імпортуйте файл/ZIP.
+    addNew: Додати новий
+    importFile: Імпортувати CSS файл
+    importZip: Імпортувати ZIP
+    entryName: Назва запису
+    editorPlaceholder: "/* Напишіть свій CSS тут */"
+    cancel: Скасувати
+    save: Зберегти
   about: Про
   advancedJavaOptions: Розширені параметри Java
   advancedSettings: Розширені налаштування

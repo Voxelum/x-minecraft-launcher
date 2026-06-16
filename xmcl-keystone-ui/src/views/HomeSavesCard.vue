@@ -1,5 +1,6 @@
 <template>
   <HomeCard
+    class="home-saves-card"
     icon="map"
     :title="t('save.name', 2)"
     :text="dragover ? t('save.dropHint') : t('save.createdWorlds', { count: savesLength })"
