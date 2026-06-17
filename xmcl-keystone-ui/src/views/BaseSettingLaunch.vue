@@ -1,5 +1,5 @@
 <template>
-  <SettingCard title="Minecraft" icon="link">
+  <SettingCard :title="t('setting.minecraftOptions')" icon="videogame_asset">
     <SettingItemCheckbox
       :model-value="!!isGameOptionsLinkedCache"
       :disabled="isGameOptionsLinkedCache === undefined"
@@ -11,21 +11,9 @@
           : unlinkGameOptions(path).then(() => mutateOptions())
       "
     />
-    <v-divider class="my-2" />
-    <SettingItemCheckbox
-      :model-value="!!isServersListLinkedCache"
-      :disabled="isServersListLinkedCache === undefined"
-      :title="t('instance.useSharedServersList')"
-      :description="t('instance.useSharedServersListDesc')"
-      @update:model-value="
-        !isServersListLinkedCache
-          ? show('servers.dat')
-          : unlinkServersList(path).then(() => mutateServers())
-      "
-    />
-  </SettingCard>
 
-  <SettingCard :title="t('setting.minecraftOptions')" icon="videogame_asset">
+    <v-divider class="my-4" />
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <div class="font-weight-medium mb-2 flex items-center">
@@ -216,7 +204,6 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import {
   InstanceOptionsServiceKey,
-  InstanceServerInfoServiceKey,
   LaunchException,
   isException,
 } from '@xmcl/runtime-api'
@@ -265,27 +252,16 @@ const { push } = useRouter()
 const { path } = injection(kInstance)
 const { isGameOptionsLinked, linkGameOptions, unlinkGameOptions } =
   useService(InstanceOptionsServiceKey)
-const {
-  isLinked: isServersListLinked,
-  unlink: unlinkServersList,
-  link: linkServersList,
-} = useService(InstanceServerInfoServiceKey)
 
 const { data: isGameOptionsLinkedCache, mutate: mutateOptions } = useSWRV(
   computed(() => `${path.value}/options.txt`),
   (key) => isGameOptionsLinked(key.substring(0, key.lastIndexOf('/'))),
 )
-const { data: isServersListLinkedCache, mutate: mutateServers } = useSWRV(
-  computed(() => `${path.value}/servers.dat`),
-  (key) => isServersListLinked(key.substring(0, key.lastIndexOf('/'))),
-)
 
-const { model, show, target, confirm, cancel } = useSimpleDialog<'options.txt' | 'servers.dat'>(
+const { model, show, target, confirm, cancel } = useSimpleDialog<'options.txt'>(
   (type) => {
     if (type === 'options.txt') {
       linkGameOptions(path.value).then(() => mutateOptions())
-    } else if (type === 'servers.dat') {
-      linkServersList(path.value).then(() => mutateServers())
     }
   },
 )

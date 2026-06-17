@@ -368,6 +368,7 @@ instance:
   fileApiPlaceholder: Please enter the remote sync url here if you want to keep the resource sync
   fullscreen: Fullscreen
   height: Height
+  hideCard: Hide this card
   icon: Profile Icon
   iconHint: The icon could be a file or internet url link.
   iconUrl: Icon Url
@@ -399,6 +400,7 @@ instance:
   requireName: The name is required
   resolution: Resolution
   resolutionPreset: Resolution Preset
+  showHiddenCards: Show hidden cards
   showInstance: Show game folder
   updates: Updates
   useSharedOptions: Use shared game settings
@@ -527,6 +529,7 @@ launch:
   launch: Launch
   launchAnyway: Launch Anyway
   launchAs: Launch as
+  launchTo: Launch to
 launchBlocked:
   launchBadVersion:
     description: The version {version} json is breaking. Maybe re-install this version?
@@ -1144,7 +1147,16 @@ search:
   market: Mod Market
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
+  addServer: Add Server
+  address: Server Address
+  addressHint: e.g. mc.hypixel.net
+  bindUpstream: Bind as upstream
+  boundUpstream: Server upstream bound
+  boundUpstreamHint: This instance follows the bound server's Minecraft version.
   creationHint: Please Fill the server address and ping the server
+  editServer: Edit Server
+  emptyHint: No servers in this instance's servers.dat yet. Add one to get started.
+  entryCount: '{count} server | {count} servers'
   expectedVersions: Supported Versions
   export: Export Server
   exportNoFilesHint: >-
@@ -1161,17 +1173,33 @@ server:
   hostHint: The host (with port) of the server
   hostRequired: Please enter the server ip address
   ipAddress: IP Address
+  launchClient: Launch client instead
+  launchPinned: Pinned
+  launchTargetHint: This instance launches straight into the pinned server. Switch back to the client?
   maxPlayers: Max Players
   motd: Server MOTD
+  nameHint: Display name shown in the Multiplayer list
   nogui: No Server Gui
   onlineMode: Online Mode
+  pin: Pin server
+  pinAfterSave: Pin as default launch target after save
+  pinnedHeader: 'pinned: {name}'
   ping: Ping
   pings: Pings
   players: Players
   port: Port
+  serverName: Server name
+  serversListTitle: Server List
+  unbindUpstream: Unbind
   unknown: Unknown Server
   unknownDescription: Unknown Server. Please Refresh
+  unpin: Unpin
   upload: Upload Server
+  upstreamUpdateAvailable: 'Server now runs Minecraft {version}. Click to apply.'
+  upstreamUpdateHint: Applies the suggested Minecraft version to this instance.
+  upstreamUpToDate: Your instance matches the server ({version}).
+  upstreamUpToDateHint: No upgrade needed. Click to re-ping the server.
+  useAsUpstreamHint: The instance will follow the server's reported Minecraft version.
   version: Server Requires Version
   versionHint: The Minecraft Version To Ping
 serverStatus:
@@ -1464,6 +1492,10 @@ shared:
   browse: Browse
   cancel: Cancel
   client: Client
+  copy: Copy
+  copied: Copied
+  copyFailed: Copy failed
+  copyFailedHint: Could not copy to clipboard
   description: Description
   disable: Disable
   download: Download
@@ -1481,6 +1513,7 @@ shared:
   previous: Previous
   refresh: Refresh
   remove: Remove
+  save: Save
   search: Search
   server: Server
   skipForNow: Skip for now

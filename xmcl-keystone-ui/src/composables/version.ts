@@ -186,7 +186,6 @@ export function useNeoForgedVersions(minecraft: Ref<string>) {
     error.value = undefined
     try {
       data.value = await service.getNeoForgedVersions(minecraft.value)
-      console.log('Fetched NeoForged versions for Minecraft', minecraft.value, data.value)
     } catch (e) {
       error.value = e
     } finally {

@@ -6,32 +6,54 @@ import { useLocalStorageCache } from '@/composables/cache'
 import { injection } from '@/util/inject'
 import { kInstances } from './instances'
 import { Instance } from '@xmcl/instance'
+import { useMinecraftProtocol } from './protocol'
 
 export const kServerStatusCache: InjectionKey<Ref<Record<string, ServerStatus>>> = Symbol('ServerStatusCache')
 
 export function useInstanceServerStatus(instance: Ref<Instance | undefined>) {
-  return useServerStatus(computed(() => instance.value?.server ?? { host: '' }), ref(25565))
+  const protocol = useMinecraftProtocol(computed(() => instance.value?.runtime.minecraft))
+  return useServerStatus(computed(() => instance.value?.server ?? { host: '' }), protocol)
 }
 
 export function useServerStatusCache() {
   return useLocalStorageCache('serverStatusCache', () => ({}), JSON.stringify, JSON.parse)
 }
 
-function usePinging() {
-  const { t } = useI18n()
-  return computed(() => {
-    return {
-      version: {
-        name: t('server.ping'),
-        protocol: -1 },
-      players: {
-        max: -1,
-        online: -1 },
-      description: t('serverStatus.ping'),
-      favicon: '',
-      ping: 0 }
-  })
-}
+/**
+ * Default freshness window for a cached server status. A ping younger than
+ * this is reused instead of re-querying the server.
+ */
+export const SERVER_STATUS_TTL = 5 * 60 * 1000
+
+/**
+ * Per-`host:port` timestamp (ms epoch) of the last successful ping, shared
+ * across every `useServerStatus` consumer so the same server is not pinged
+ * twice within {@link SERVER_STATUS_TTL}. Persisted to `localStorage` so the
+ * dedup also survives a window reload. Kept separate from the status cache to
+ * avoid changing the serialized `ServerStatus` shape.
+ */
+const pingedAt = (() => {
+  let map: Record<string, number> | undefined
+  const KEY = 'serverStatusCacheTime'
+  const load = () => {
+    if (map) return map
+    try {
+      map = JSON.parse(localStorage.getItem(KEY) || '{}')
+    } catch {
+      map = {}
+    }
+    return map!
+  }
+  return {
+    get(id: string) { return load()[id] ?? 0 },
+    set(id: string, time: number) {
+      const m = load()
+      m[id] = time
+      localStorage.setItem(KEY, JSON.stringify(m))
+    },
+  }
+})()
+
 
 function useUnknown() {
   const { t } = useI18n()
@@ -70,13 +92,20 @@ export function useInstancesServerStatus() {
   const cache = injection(kServerStatusCache)
   const pingServer = usePingServer()
   const pinging = ref(false)
-  const pingingStatus = usePinging()
   async function refreshOne(server: { host: string; port?: number }) {
     const id = `${server.host}:${server.port ?? 25565}`
-    cache.value[id] = pingingStatus.value
-    cache.value[id] = await pingServer({
+    // Stale-while-revalidate: keep the cached status (and favicon) on screen
+    // while the ping is in flight, and preserve the old favicon if the new
+    // ping comes back without one.
+    const result = await pingServer({
       host: server.host,
       port: server.port })
+    const prev = cache.value[id]
+    if (prev?.favicon && !result.favicon) {
+      result.favicon = prev.favicon
+    }
+    cache.value[id] = result
+    pingedAt.set(id, Date.now())
     // Workaround to force save as reactivity is broken
     localStorage.setItem('serverStatusCache', JSON.stringify(cache.value))
   }
@@ -107,27 +136,48 @@ export function useServerStatus(serverRef: Ref<{ host: string; port?: number }>,
       cache.value[serverId.value] = v
       localStorage.setItem('serverStatusCache', JSON.stringify(cache.value))
     } })
-  const pingingStatus = usePinging()
   const pinging = ref(false)
   /**
-     * Refresh the server status. If the server is empty, it will do nothing.
-     */
+   * Refresh the server status using a stale-while-revalidate strategy: the
+   * currently cached status (favicon, MOTD, players) stays on screen while the
+   * ping is in flight, so the row never blanks out to a placeholder. When the
+   * new ping comes back without a favicon (server temporarily unreachable) the
+   * previously cached favicon is preserved — only the live fields (players,
+   * ping, and the failure description) are replaced.
+   */
   async function refresh() {
     const server = serverRef.value
     if (!server.host) return
+    const id = serverId.value
     pinging.value = true
-    status.value = pingingStatus.value
-    status.value = await pingServer({
-      host: server.host,
-      port: server.port,
-      protocol: protocol.value }).finally(() => {
+    try {
+      const result = await pingServer({
+        host: server.host,
+        port: server.port,
+        protocol: protocol.value,
+      })
+      const prev = cache.value[id]
+      if (prev?.favicon && !result.favicon) {
+        result.favicon = prev.favicon
+      }
+      status.value = result
+      pingedAt.set(id, Date.now())
+    } finally {
       pinging.value = false
-    })
+    }
   }
 
-  watch(serverRef, () => {
-    reset()
-  })
+  /**
+   * Refresh only when the cached status is older than `maxAge`. Lets multiple
+   * components mounting the same server share a single ping instead of each
+   * firing its own on mount. Pass `maxAge = 0` to always refresh.
+   */
+  async function refreshIfStale(maxAge = SERVER_STATUS_TTL) {
+    const server = serverRef.value
+    if (!server.host) return
+    if (Date.now() - pingedAt.get(serverId.value) < maxAge) return
+    await refresh()
+  }
 
   function reset() {
     status.value = unknownStatus.value
@@ -137,5 +187,6 @@ export function useServerStatus(serverRef: Ref<{ host: string; port?: number }>,
     status,
     pinging,
     refresh,
+    refreshIfStale,
     reset }
 }

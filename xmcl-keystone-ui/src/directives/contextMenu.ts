@@ -10,12 +10,13 @@ export const vContextMenu: ObjectDirective<HTMLElement, Binding> = {
     const { open } = useContextMenu()
     const handler = (e: MouseEvent) => {
       const value = bindings.value
-      if (value instanceof Array && value.length > 0) {
-        open(e.clientX, e.clientY, value)
-        e.preventDefault()
-        e.stopPropagation()
-      } else if (typeof value === 'function') {
-        open(e.clientX, e.clientY, value())
+      const items = value instanceof Array
+        ? value
+        : typeof value === 'function'
+          ? value()
+          : undefined
+      if (items instanceof Array && items.length > 0) {
+        open(e.clientX, e.clientY, items)
         e.preventDefault()
         e.stopPropagation()
       }

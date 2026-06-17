@@ -338,6 +338,7 @@ instance:
   fileApiHint: 用於遠端同步實例檔案的連結
   fullscreen: 全螢幕
   height: 高度
+  hideCard: 隱藏此卡片
   icon: 實例圖示
   iconHint: 該圖示可以是檔案或網際網路 URL 連結。
   iconUrl: 圖片 URL
@@ -365,6 +366,7 @@ instance:
   requireName: 必須填寫名稱
   resolution: 分辨率
   resolutionPreset: 分辨率預設
+  showHiddenCards: 顯示隱藏的卡片
   showInstance: 開啟資料夾
   updates: 更新
   useSharedOptions: 共享 Minecraft 設定
@@ -500,6 +502,7 @@ launch:
   launch: 啟動
   launchAnyway: 直接啟動
   launchAs: 以其他帳號啟動
+  launchTo: 啟動至伺服器
   forceKill: 強制結束
 launchBlocked:
   launchBadVersion:
@@ -1054,7 +1057,16 @@ search:
   market: 模組市集
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
+  addServer: 新增伺服器
+  address: 伺服器位址
+  addressHint: 例如 mc.hypixel.net
+  bindUpstream: 綁定為上游
+  boundUpstream: 已綁定伺服器上游
+  boundUpstreamHint: 此執行個體將跟隨所綁定伺服器的 Minecraft 版本。
   creationHint: 請填寫伺服器位址並嘗試 Ping 伺服器
+  editServer: 編輯伺服器
+  emptyHint: 此執行個體的 servers.dat 中尚無伺服器，新增一個以開始。
+  entryCount: '{count} 個伺服器'
   expectedVersions: 已支援的版本
   export: 匯出伺服器
   exportNoFilesHint: |-
@@ -1073,17 +1085,33 @@ server:
   hostHint: 伺服器的 IP 位址（和埠號）
   hostRequired: 請輸入伺服器 IP 位址
   ipAddress: IP 位址
+  launchClient: 改為啟動用戶端
+  launchPinned: 已釘選
+  launchTargetHint: 此執行個體會直接啟動進入已釘選的伺服器，要切換回用戶端嗎？
   maxPlayers: 最大玩家數
   motd: 伺服器 MOTD
+  nameHint: 顯示在多人遊戲清單中的名稱
   nogui: 無伺服器 GUI
   onlineMode: 線上模式
+  pin: 釘選伺服器
+  pinAfterSave: 儲存後釘選為預設啟動目標
+  pinnedHeader: '已釘選：{name}'
   ping: Ping 伺服器
   pings: 延遲
   players: 玩家
   port: 埠
+  serverName: 伺服器名稱
+  serversListTitle: 伺服器清單
+  unbindUpstream: 解除綁定
   unknown: 未知伺服器
   unknownDescription: 未知伺服器，請重新整理。
+  unpin: 取消釘選
   upload: 上傳伺服器
+  upstreamUpdateAvailable: '伺服器現在執行 Minecraft {version}，點選套用。'
+  upstreamUpdateHint: 將建議的 Minecraft 版本套用至此執行個體。
+  upstreamUpToDate: 您的執行個體與伺服器版本一致（{version}）。
+  upstreamUpToDateHint: 無需升級，點選可重新 Ping 伺服器。
+  useAsUpstreamHint: 此執行個體將跟隨伺服器所回報的 Minecraft 版本。
   version: 伺服器推薦版本
   versionHint: Ping 使用的 Minecraft 版本
 serverStatus:
@@ -1351,6 +1379,10 @@ shared:
   browse: 瀏覽
   cancel: 取消
   client: 用戶端
+  copy: 複製
+  copied: 已複製
+  copyFailed: 複製失敗
+  copyFailedHint: 無法複製到剪貼簿
   description: 簡介
   disable: 停用
   download: 下載
@@ -1368,6 +1400,7 @@ shared:
   previous: 上一步
   refresh: 重新整理
   remove: 移除
+  save: 儲存
   search: 搜尋
   server: 伺服器
   skipForNow: 暫時跳過

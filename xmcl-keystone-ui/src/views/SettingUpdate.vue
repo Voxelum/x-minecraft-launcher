@@ -73,7 +73,7 @@ import SettingItem from '@/components/SettingItem.vue'
 const { show: showUpdateInfo } = useDialog('update-info')
 const disableUpdate = false // state.env !== 'raw'
 const { updateInfo, installing, updateStatus, checkUpdate, checkingUpdate, version } = injection(kUpdateSettings)
-const hasNewUpdate = computed(() => updateInfo.value?.name !== version.value)
+const hasNewUpdate = computed(() => updateStatus.value !== 'none' && !!updateInfo.value?.newUpdate)
 const { t } = useI18n()
 
 </script>

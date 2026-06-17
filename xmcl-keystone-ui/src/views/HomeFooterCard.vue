@@ -10,6 +10,22 @@
       :height="240"
       :instance="instance"
       :galleries="galleries"
+    >
+      <template v-if="hasPinnedServer" #leading>
+        <div class="flex items-center justify-center h-full w-full px-3">
+          <InstanceServerCard
+            class="w-full mt-0"
+            :instance="instance"
+            :server-name="pinnedServerName"
+          />
+        </div>
+      </template>
+    </HomeScreenshotCard>
+    <InstanceServerCard
+      v-else-if="selected === 1 && upstream?.type === 'server'"
+      class="h-full mt-0"
+      :instance="instance"
+      :server-name="upstream.name"
     />
     <HomeUpstreamHeader
       v-else-if="headerData"
@@ -63,7 +79,30 @@
           </div>
         </div>
         <div class="flex flex-col gap-2 transition-all duration-400" :style="(active || dragover) ? { 'height': '136px', overflow: selected === 1 ? 'auto' : 'unset' } : { 'height': '4rem' }">
+          <template v-if="selected === 1 && upstream?.type === 'server'">
+            <HomeCardListItem
+              v-if="serverUpstream.suggestedMinecraft.value"
+              icon="update"
+              :text="t('server.upstreamUpdateAvailable', { version: serverUpstream.suggestedMinecraft.value })"
+              :tooltip="t('server.upstreamUpdateHint')"
+              highlighted
+              data-testid="server-upstream-update-row"
+              @install="serverUpstream.applyUpdate"
+              @setting="serverUpstream.applyUpdate"
+              @drop="() => {}"
+            />
+            <HomeCardListItem
+              v-else
+              icon="check_circle"
+              :text="t('server.upstreamUpToDate', { version: instance?.runtime.minecraft || '?' })"
+              :tooltip="t('server.upstreamUpToDateHint')"
+              @install="serverUpstream.refresh"
+              @setting="serverUpstream.refresh"
+              @drop="() => {}"
+            />
+          </template>
           <HomeCardListItem
+            v-else
             v-for="item in items"
             :key="item.icon + item.text"
             :icon="item.icon"
@@ -90,6 +129,7 @@
 </template>
 <script lang="ts" setup>
 import HomeCardListItem from '@/components/HomeCardListItem.vue'
+import InstanceServerCard from '@/components/InstanceServerCard.vue'
 import type { StoreProjectVersion, StoreProjectVersionDetail } from '@/components/StoreProjectInstallVersionDialog.vue'
 import StoreProjectInstallVersionDialog from '@/components/StoreProjectInstallVersionDialog.vue'
 import { useService } from '@/composables'
@@ -101,6 +141,7 @@ import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { kInstanceSave } from '@/composables/instanceSave'
 import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
+import { useServerUpstream } from '@/composables/serverUpstream'
 import { getModrinthVersionModel } from '@/composables/modrinthVersions'
 import { useSWRVModel } from '@/composables/swrv'
 import { useInFocusMode } from '@/composables/uiLayout'
@@ -296,19 +337,28 @@ const contentSize = useElementSize(contentRef)
 function noop(v: any) {
 }
 
+/* Underline offsets are computed by summing the widths of the tabs that
+   precede the selected one. */
+function tabAt(idx: number): HTMLElement | undefined {
+  if (idx === 0) return contentRef.value
+  if (idx === 1) return newsRef.value
+  return undefined
+}
+
 const underlineLeft = computed(() => {
-  const current = contentSize.width.value
-  noop(current)
-  if (selected.value === 0) return 0
-  const contentWidth = contentRef.value?.offsetWidth || 0
-  return contentWidth + 16
+  const _ = contentSize.width.value
+  noop(_)
+  let offset = 0
+  for (let i = 0; i < selected.value; i++) {
+    offset += (tabAt(i)?.offsetWidth || 0) + 16
+  }
+  return offset
 })
 
 const underlineWidth = computed(() => {
-  const current = contentSize.width.value
-  noop(current)
-  if (selected.value === 0) return contentRef.value?.offsetWidth || 0
-  return newsRef.value?.offsetWidth || 0
+  const _ = contentSize.width.value
+  noop(_)
+  return tabAt(selected.value)?.offsetWidth || 0
 })
 
 const { install: installMod } = useService(InstanceModsServiceKey)
@@ -484,6 +534,11 @@ function onSelectUpdates() {
 watch(instance, () => {
   selected.value = 0
 })
+
+const serverUpstream = useServerUpstream()
+
+const hasPinnedServer = computed(() => !!instance.value?.server?.host)
+const pinnedServerName = computed(() => instance.value?.server?.name)
 </script>
 <style scoped>
 .tabs-card>.icons, .tabs-card>.tabs-items {

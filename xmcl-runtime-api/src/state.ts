@@ -5,6 +5,7 @@ import { LocalVersions } from './entities/version'
 import { InstanceInstallStatus } from './services/InstanceInstallService'
 import { InstanceModsGroupState } from './services/InstanceModsGroupService'
 import { GameOptionsState } from './services/InstanceOptionsService'
+import { ServerInfoState } from './services/InstanceServerInfoService'
 import { InstanceState } from './services/InstanceService'
 import { JavaState } from './services/JavaService'
 import { ModpackState } from './services/ModpackService'
@@ -28,4 +29,5 @@ export const AllStates = [
   PeerState,
   InstanceInstallStatus,
   InstanceModsGroupState,
+  ServerInfoState,
 ]

@@ -366,6 +366,7 @@ instance:
   fileApiHint: 用于远程同步实例文件的链接
   fullscreen: 全屏
   height: 高度
+  hideCard: 隐藏此卡片
   icon: 实例图标
   iconHint: 该图标可以是文件或互联网 URL 链接。
   iconUrl: 图片 URL
@@ -398,6 +399,7 @@ instance:
   requireName: 必须填写名称
   resolution: 分辨率
   resolutionPreset: 分辨率预设
+  showHiddenCards: 显示隐藏的卡片
   showInstance: 打开文件夹
   updates: 更新
   useSharedOptions: 共享 Minecraft 设置
@@ -537,6 +539,7 @@ launch:
   launch: 启动
   launchAnyway: 直接启动
   launchAs: 以其他账号启动
+  launchTo: 启动至服务器
 launchBlocked:
   launchBadVersion:
     description: 版本 {version} 的 JSON 内有无法解析的库，也许您需要重新安装此版本？
@@ -1131,7 +1134,16 @@ search:
   market: Mod 市场
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
+  addServer: 添加服务器
+  address: 服务器地址
+  addressHint: 例如 mc.hypixel.net
+  bindUpstream: 绑定为上游
+  boundUpstream: 已绑定服务器上游
+  boundUpstreamHint: 此实例将跟随所绑定服务器的 Minecraft 版本。
   creationHint: 请填写服务器地址并尝试 Ping 服务器
+  editServer: 编辑服务器
+  emptyHint: 此实例的 servers.dat 中暂无服务器，添加一个以开始。
+  entryCount: '{count} 个服务器'
   expectedVersions: 已支持的版本
   export: 导出服务器
   exportNoFilesHint: |-
@@ -1150,17 +1162,32 @@ server:
   hostHint: 服务器的 IP 地址（和端口号）
   hostRequired: 请输入服务器IP地址
   ipAddress: IP 地址
+  launchClient: 改为启动客户端
+  launchPinned: 已固定
+  launchTargetHint: 此实例会直接启动进入已固定的服务器，要切换回客户端吗？
   maxPlayers: 最大玩家数
   motd: 服务器 MOTD
   nogui: 隐藏服务器 GUI
   onlineMode: 在线模式 (只允许正版)
+  pin: 固定服务器
+  pinAfterSave: 保存后固定为默认启动目标
+  pinnedHeader: '已固定：{name}'
   ping: Ping 服务器
   pings: 延迟
   players: 玩家
   port: 端口
+  serverName: 服务器名称
+  serversListTitle: 服务器列表
+  unbindUpstream: 解绑
   unknown: 未知服务器
   unknownDescription: 未知服务器，请刷新。
+  unpin: 取消固定
   upload: 上传服务器
+  upstreamUpdateAvailable: '服务器现在运行 Minecraft {version}，点击应用。'
+  upstreamUpdateHint: 将建议的 Minecraft 版本应用到此实例。
+  upstreamUpToDate: 您的实例与服务器版本一致（{version}）。
+  upstreamUpToDateHint: 无需升级，点击可重新 Ping 服务器。
+  useAsUpstreamHint: 此实例将跟随服务器所报告的 Minecraft 版本。
   version: 服务器推荐版本
   versionHint: Ping 使用的 Minecraft 版本
 serverStatus:
@@ -1436,6 +1463,10 @@ shared:
   browse: 浏览
   cancel: 取消
   client: 客户端
+  copy: 复制
+  copied: 已复制
+  copyFailed: 复制失败
+  copyFailedHint: 无法复制到剪贴板
   description: 简介
   disable: 禁用
   download: 下载
@@ -1453,6 +1484,7 @@ shared:
   previous: 上一步
   refresh: 刷新
   remove: 移除
+  save: 保存
   search: 搜索
   server: 服务端
   skipForNow: 先跳过
