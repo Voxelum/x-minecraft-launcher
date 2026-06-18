@@ -248,15 +248,20 @@ command:
   instance:
     launch:
       title: Launch Instance
+      description: Launch a Minecraft instance
     create:
       title: Create Instance
+      description: Create a new instance
     delete:
       title: Delete Instance
+      description: Delete an existing instance
   user:
     login:
       title: Login User
+      description: Log in to your account
     refresh:
       title: Refresh User
+      description: Refresh user session
 commandPalette:
   placeholder: Search commands, instances, mods…
   commands: Commands

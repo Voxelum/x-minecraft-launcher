@@ -31,7 +31,7 @@ import { useI18n } from 'vue-i18n'
  */
 export interface RendererCommandHost {
   registry: CommandRegistry
-  list(): Array<{ id: string; title: string; category: string; ui?: { icon?: string } }>
+  list(): Array<{ id: string; title: string; description: string; category: string; ui?: { icon?: string } }>
   dispatch<O = unknown>(id: string, input: unknown): Promise<O>
 }
 
@@ -157,10 +157,13 @@ export function useRendererCommandHost(registry: CommandRegistry = defaultComman
         .filter((command) => !hiddenRendererCommands.has(command.id))
         .map((command) => {
           const titleKey = `command.${command.id}.title`
+          const descKey = `command.${command.id}.description`
           const translated = t(titleKey)
+          const translatedDesc = t(descKey)
           return {
             id: command.id,
             title: translated !== titleKey ? translated : command.title,
+            description: translatedDesc !== descKey ? translatedDesc : (command.description ?? command.id),
             category: command.category,
             ui: command.ui,
           }

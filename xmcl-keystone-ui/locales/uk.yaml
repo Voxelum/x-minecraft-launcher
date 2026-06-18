@@ -228,15 +228,20 @@ command:
   instance:
     launch:
       title: Запустити збірку
+      description: Запустити збірку Minecraft
     create:
       title: Створити збірку
+      description: Створити нову збірку
     delete:
       title: Видалити збірку
+      description: Видалити існуючу збірку
   user:
     login:
       title: Авторизувати користувача
+      description: Увійти в обліковий запис
     refresh:
       title: Оновити сесію користувача
+      description: Оновити сесію користувача
 commandPalette:
   placeholder: Пошук команд, екземплярів, модів…
   commands: Команди
