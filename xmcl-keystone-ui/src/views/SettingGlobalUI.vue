@@ -158,7 +158,24 @@
         </div>
       </div>
     </SettingCard>
-    <SettingCard class="mb-4" :title="t('setting.themeSettings')" icon="style">
+    <!-- Theme Customization Mode Switcher -->
+    <v-tabs
+      v-model="themeCustomizationMode"
+      color="primary"
+      class="mb-4"
+      align-tabs="start"
+    >
+      <v-tab value="simple" data-testid="theme-customization-tab-simple">
+        <v-icon start>tune</v-icon>
+        {{ t('setting.customCss.customizationModeSimple') }}
+      </v-tab>
+      <v-tab value="css" data-testid="theme-customization-tab-css">
+        <v-icon start>code</v-icon>
+        {{ t('setting.customCss.customizationModeCss') }}
+      </v-tab>
+    </v-tabs>
+
+    <SettingCard v-if="themeCustomizationMode === 'simple'" class="mb-4" :title="t('setting.themeSettings')" icon="style">
       <AppearanceItems :theme="currentTheme" @save="onSave" />
 
       <!-- Theme Store Management -->
@@ -254,12 +271,15 @@
         />
       </template>
     </SettingCard>
+
+    <SettingCustomCss v-else-if="themeCustomizationMode === 'css'" />
   </div>
 </template>
 
 <script setup lang="ts">
 import AppearanceItems from '@/components/AppearanceItems.vue'
 import SettingCard from '@/components/SettingCard.vue'
+import SettingCustomCss from '@/views/SettingCustomCss.vue'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
@@ -331,6 +351,7 @@ const sidebarScale = sidebarSettings.scale
 const sidebarAutoHide = sidebarSettings.autoHide
 const sidebarShowOnlyPinned = sidebarSettings.showOnlyPinned
 const myStuffStyle = useLocalStorageCacheStringValue('myStuffStyle', 'new') as Ref<'old' | 'new'>
+const themeCustomizationMode = useLocalStorageCacheStringValue('themeCustomizationMode', 'simple') as Ref<'simple' | 'css'>
 
 // --- Computed Properties for UI Controls ---
 

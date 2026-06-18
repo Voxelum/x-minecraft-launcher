@@ -3,7 +3,7 @@
     v-model="isShown"
     :width="javaIssue ? 580 : 380"
   >
-    <v-card class="h-full flex select-none flex-col">
+    <v-card class="h-full flex select-none flex-col launch-status-card">
       <v-card-item v-if="exiting">
         <v-card-title>
           {{ t('launchStatus.exit') }}

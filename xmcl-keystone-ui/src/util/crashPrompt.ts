@@ -1,3 +1,27 @@
+function normalizePath(path: string) {
+  return path.replace(/\\/g, '/').replace(/\/+/g, '/')
+}
+
+export function toVirtualInstancePath(filePath: string, instancePath: string) {
+  const normalizedFile = normalizePath(filePath)
+  const normalizedInstance = normalizePath(instancePath)
+
+  if (!normalizedFile || !normalizedInstance) return filePath
+
+  const instanceRoot = normalizedInstance.endsWith('/') ? normalizedInstance : `${normalizedInstance}/`
+  if (!normalizedFile.startsWith(instanceRoot)) return filePath
+
+  const relative = normalizedFile.slice(instanceRoot.length)
+  if (!relative) return filePath
+
+  const [root, ...rest] = relative.split('/')
+  if (root === '.minecraft') {
+    return rest.join('/')
+  }
+
+  return relative
+}
+
 export function getCrashPrompt(useCN: boolean, crash: string, log: string, localeCode: string) {
   if (useCN) {
     return `你是Minecraft 崩溃报告（crash report）助手，帮助我分析crash造成的原因。你应当首先分析出游戏崩溃的主要原因（java，游戏原版library，mod，或者是其他原因）
@@ -38,4 +62,37 @@ ${log}
 \`\`\`
     `
   }
+}
+
+/**
+ * Prompt for the launcher's built-in agent (NOT an external chat).
+ *
+ * Unlike {@link getCrashPrompt}, this deliberately omits the "you are a crash
+ * assistant", locale, and "contact the developers" boilerplate: the agent
+ * already gets that from its system prompt + session-context snapshot, and is
+ * instructed to reply in the user's locale. Here we only hand it the failure
+ * it is looking at and point it at the actions it can actually take.
+ */
+export function getCrashAgentPrompt(
+  crash: string,
+  log: string,
+  crashPath?: string,
+  logPath?: string,
+) {
+  const crashSection = crashPath
+    ? `Crash report file (inspect it via the instance virtual filesystem using vfs_read/vfs_list): ${crashPath}`
+    : `Crash report / launcher error:\n\`\`\`\n${crash || '<none captured>'}\n\`\`\``
+
+  const logSection = logPath
+    ? `Latest log file (inspect it via the instance virtual filesystem using vfs_read/vfs_list): ${logPath}`
+    : `Latest log (supplementary):\n\`\`\`\n${log || '<none captured>'}\n\`\`\``
+
+  return `My Minecraft game crashed or failed to launch. Find the root cause and fix it for me within XMCL.
+
+Investigate before concluding: read the latest log and crash report from the instance virtual filesystem, inspect the installed mods and the resolved version / Java setup, and cross-reference them with the failure details below. When the cause is actionable, apply the fix yourself (disable or uninstall the offending mod, install a missing dependency, switch Java, etc.) and tell me what you changed. If it is a Java or vanilla-library problem, or you cannot pin down the cause, say so plainly.
+
+${crashSection}
+
+${logSection}
+`
 }

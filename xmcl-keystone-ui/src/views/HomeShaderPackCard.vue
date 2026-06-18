@@ -1,5 +1,6 @@
 <template>
   <HomeCard
+    class="home-shader-pack-card"
     icon="gradient"
     :title=" t('shaderPack.name', 2)"
     :text="dragover ? t('shaderPack.dropHint') : shaderPack ? t('shaderPack.enable', { name: shaderPack }) : t('shaderPack.empty')"

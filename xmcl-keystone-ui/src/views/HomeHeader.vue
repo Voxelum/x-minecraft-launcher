@@ -25,7 +25,7 @@
           :style="{
             fontSize: headerFontSize
           }"
-          class="overflow-hidden overflow-ellipsis whitespace-nowrap transition-all"
+          class="home-title overflow-hidden overflow-ellipsis whitespace-nowrap transition-all"
         >{{ name || `Minecraft ${version.minecraft}` }}</span>
         <router-view name="route" />
         <div class="flex-grow" />

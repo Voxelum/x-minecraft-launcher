@@ -10,6 +10,7 @@ import { AbstractService, ExposeServiceKey } from '~/service'
 import { writeZipFile } from '~/util/zip'
 import { LauncherApp } from '../app/LauncherApp'
 import { ZipFile } from 'yazl'
+import { CustomCssService } from '../customCss/CustomCssService'
 
 @ExposeServiceKey(ThemeServiceKey)
 export class ThemeService extends AbstractService implements IThemeService {
@@ -153,6 +154,13 @@ export class ThemeService extends AbstractService implements IThemeService {
       }
     }
     zipFile.addBuffer(Buffer.from(JSON.stringify(data, null, 2)), 'theme.json')
+    const customCssService = await this.app.registry.get(CustomCssService).catch(() => undefined)
+    if (customCssService) {
+      const customCssState = await customCssService.getCustomCssState()
+      for (const entry of customCssState.entries) {
+        zipFile.addBuffer(Buffer.from(entry.css, 'utf-8'), `custom-css/${entry.name}.css`)
+      }
+    }
     await writeZipFile(zipFile, destinationFile)
   }
 
@@ -295,7 +303,10 @@ export class ThemeService extends AbstractService implements IThemeService {
     const mediaFolder = this.getAppDataPath('theme-media')
     await emptyDir(mediaFolder)
 
-    // Extract assets to theme-media folder
+    const customCssFolder = this.getAppDataPath('custom-css')
+    await ensureDir(customCssFolder)
+
+    // Extract assets and custom CSS to their respective folders
     const promises: Promise<void>[] = []
     for (const e of entries) {
       if (e.fileName === 'theme.json') {
@@ -305,6 +316,14 @@ export class ThemeService extends AbstractService implements IThemeService {
         const fileName = e.fileName.substring('assets/'.length)
         if (!fileName) continue
         const filePath = join(mediaFolder, fileName)
+        await ensureDir(dirname(filePath))
+        const entryReadable = await openEntryReadStream(zipFile, e)
+        const writable = createWriteStream(filePath)
+        promises.push(pipeline(entryReadable, writable))
+      } else if (e.fileName.startsWith('custom-css/')) {
+        const fileName = e.fileName.substring('custom-css/'.length)
+        if (!fileName) continue
+        const filePath = join(customCssFolder, fileName)
         await ensureDir(dirname(filePath))
         const entryReadable = await openEntryReadStream(zipFile, e)
         const writable = createWriteStream(filePath)
@@ -323,6 +342,12 @@ export class ThemeService extends AbstractService implements IThemeService {
     await ensureDir(themesPath)
     const destinationFile = join(themesPath, `${themeName}.xtheme`)
     await copyFile(zipFilePath, destinationFile)
+
+    // Sync CustomCssService with the disk files
+    const customCssService = await this.app.registry.get(CustomCssService).catch(() => undefined)
+    if (customCssService) {
+      await customCssService.syncWithDisk()
+    }
 
     return data
   }

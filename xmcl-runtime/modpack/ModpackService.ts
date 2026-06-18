@@ -50,6 +50,7 @@ import { exportOfflineModpack } from './utils/exportOffline'
 import { createMcbbsHandler } from './utils/mcbbsHandler'
 import { createMmcHandler } from './utils/mmcHandler'
 import { createModrinthHandler } from './utils/modrinthHandler'
+import { remapModpackZipDownloads } from './utils/remapZipDownloads'
 
 export interface ModpackDownloadableFile {
   destination: string
@@ -690,7 +691,13 @@ export class ModpackService extends AbstractService implements IModpackService {
 
       if (typeof cached === 'object' && cached.instance) {
         this.log(`Use cached modpack profile ${modpackFile}`)
-        state.files = cached.instance.files
+        // The cached files embed an absolute `zip:///<path>?entry=...` download
+        // URL pointing at the modpack location at cache time. The cache is keyed
+        // by file hash, so if the same file content is later opened from a
+        // different path (e.g. the user moved it into a subfolder), the stale
+        // path no longer exists and the unzip fails with ENOENT ("modpack file
+        // not found"). Re-point the absolute zip URL at the current modpackFile.
+        state.files = cached.instance.files.map((f) => remapModpackZipDownloads(f, modpackFile))
         state.ready = true
         return [state, zip.dispose]
       }

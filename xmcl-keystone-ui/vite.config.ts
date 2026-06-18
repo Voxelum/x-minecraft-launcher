@@ -1,6 +1,6 @@
 import VueI18n from '@intlify/unplugin-vue-i18n/vite'
 import vue from '@vitejs/plugin-vue'
-import { readdirSync } from 'fs'
+import { readdirSync, readFileSync, existsSync } from 'fs'
 import { join, resolve } from 'path'
 import { visualizer } from 'rollup-plugin-visualizer'
 import UnoCSS from 'unocss/vite'
@@ -14,6 +14,22 @@ import vuetify from 'vite-plugin-vuetify'
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
   .map((f) => join(__dirname, './src', f))
+
+// Renderer-side AI agent (composables/agent) talks to an OpenAI-compatible
+// gateway and needs an API key at runtime. The key lives next to the other
+// build-time secrets in `xmcl-electron-app/.env`. We read it here and inline
+// it via `define` so the renderer bundle has it without an extra IPC round
+// trip. The env var name takes precedence so CI can override the file value.
+function readDotEnv(p: string, key: string): string {
+  if (process.env[key]) return process.env[key] as string
+  if (!existsSync(p)) return ''
+  for (const line of readFileSync(p, 'utf-8').split(/\r?\n/)) {
+    const m = /^([A-Z0-9_]+)=(.*)$/.exec(line.trim())
+    if (m && m[1] === key) return m[2]
+  }
+  return ''
+}
+const AGNES_API_KEY = readDotEnv(resolve(__dirname, '../xmcl-electron-app/.env'), 'AGNES_API_KEY')
 
 /**
  * Vite shared config, assign alias and root dir
@@ -45,6 +61,7 @@ export default defineConfig({
     assetsInlineLimit: 0,
   },
   define: {
+    __AGNES_API_KEY__: JSON.stringify(AGNES_API_KEY),
   },
   resolve: {
     alias: {
