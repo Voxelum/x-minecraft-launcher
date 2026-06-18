@@ -1,4 +1,5 @@
 import { useI18nSync } from '@/composables'
+import { kCustomCss, useCustomCss } from '@/composables/customCss'
 import { kEnvironment, useEnvironment } from '@/composables/environment'
 import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
@@ -41,6 +42,7 @@ export default defineComponent({
 
     provide(kImageDialog, useImageDialog())
     provide(kEnvironment, useEnvironment())
+    provide(kCustomCss, useCustomCss())
 
     return () => ctx.slots.default?.()
   },

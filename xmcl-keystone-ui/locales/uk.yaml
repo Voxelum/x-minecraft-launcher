@@ -227,16 +227,16 @@ fabricVersion:
 command:
   instance:
     launch:
-      title: Запустити екземпляр
+      title: Запустити збірку
     create:
-      title: Створити екземпляр
+      title: Створити збірку
     delete:
-      title: Видалити екземпляр
+      title: Видалити збірку
   user:
     login:
-      title: Увійти як користувач
+      title: Авторизувати користувача
     refresh:
-      title: Оновити користувача
+      title: Оновити сесію користувача
 commandPalette:
   placeholder: Пошук команд, екземплярів, модів…
   commands: Команди
