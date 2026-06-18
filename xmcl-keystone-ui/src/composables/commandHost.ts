@@ -157,9 +157,10 @@ export function useRendererCommandHost(registry: CommandRegistry = defaultComman
         .filter((command) => !hiddenRendererCommands.has(command.id))
         .map((command) => {
           const titleKey = `command.${command.id}.title`
+          const translated = t(titleKey)
           return {
             id: command.id,
-            title: te(titleKey) ? t(titleKey) : command.title,
+            title: translated !== titleKey ? translated : command.title,
             category: command.category,
             ui: command.ui,
           }
