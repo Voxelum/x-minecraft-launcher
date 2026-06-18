@@ -1275,6 +1275,25 @@ setting:
     loadConfirmTitle: Replace Current Theme?
     loadConfirmMessage: Loading a stored theme will replace your current theme. Please back up if needed.
     loadTheme: Load Theme
+  customCss:
+    title: Custom CSS
+    customizationMode: Customization Method
+    customizationModeSimple: Simple (UI Settings)
+    customizationModeCss: Advanced (Custom CSS)
+    globalToggle: Toggle Custom CSS
+    warning: Custom CSS allows you to customize any aspect of the launcher. Be careful when pasting CSS from untrusted sources, as it can modify the UI layout.
+    edit: Edit CSS Entry
+    delete: Delete CSS Entry
+    export: Export CSS Entry
+    exportFile: Export CSS File
+    noEntries: No Custom CSS entries yet. Add one or import a file/ZIP.
+    addNew: Add New
+    importFile: Import CSS File
+    importZip: Import ZIP
+    entryName: Entry Name
+    editorPlaceholder: "/* Write your custom CSS here */"
+    cancel: Cancel
+    save: Save
   browseRoot: Browse
   checkUpdate: Check Update
   colorTheme:

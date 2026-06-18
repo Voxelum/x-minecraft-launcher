@@ -1,5 +1,6 @@
 <template>
   <HomeCard
+    class="home-mods-card"
     icon="extension"
     :title="t('mod.name', 2)"
     :class="{
