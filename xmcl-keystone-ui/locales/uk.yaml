@@ -248,16 +248,21 @@ fabricVersion:
 command:
   instance:
     launch:
-      title: Запустити екземпляр
+      title: Запустити збірку
+      description: Запустити збірку Minecraft
     create:
-      title: Створити екземпляр
+      title: Створити збірку
+      description: Створити нову збірку
     delete:
-      title: Видалити екземпляр
+      title: Видалити збірку
+      description: Видалити існуючу збірку
   user:
     login:
-      title: Увійти як користувач
+      title: Авторизувати користувача
+      description: Увійти в обліковий запис
     refresh:
-      title: Оновити користувача
+      title: Оновити сесію користувача
+      description: Оновити сесію користувача
 commandPalette:
   placeholder: Пошук команд, екземплярів, модів…
   commands: Команди
