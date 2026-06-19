@@ -13,7 +13,7 @@ import {
 } from '@xmcl/runtime-api'
 import { readFile, readdir, stat } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
-import { join } from 'path'
+import { join, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
 import { kClientToken, kGFW, kLogRoot } from '~/infra'
 import { kNetworkInterface } from '~/network'
@@ -245,7 +245,28 @@ export class BaseService extends AbstractService implements IBaseService {
       })
     }
 
-    this.app.relaunch([...process.argv.slice(1), '--migrate', destination])
+    // Nothing to do if the destination is already the current root. Without
+    // this guard the launcher would relaunch and re-migrate into itself.
+    const current = await this.app.registry.get(kGameDataPath).then((f) => f())
+    if (resolve(current) === resolve(destination)) {
+      return
+    }
+
+    // Drop any stale `--migrate <path>` left in argv by a previous migration.
+    // The relaunched process reads the migration target from argv, so a
+    // leftover flag would otherwise win over the new destination and make the
+    // migration silently do nothing.
+    const argv = process.argv.slice(1)
+    const cleaned: string[] = []
+    for (let i = 0; i < argv.length; i++) {
+      if (argv[i] === '--migrate') {
+        i++ // also skip its value
+        continue
+      }
+      cleaned.push(argv[i])
+    }
+
+    this.app.relaunch([...cleaned, '--migrate', destination])
     this.app.quit()
   }
 

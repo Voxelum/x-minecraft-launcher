@@ -11,7 +11,7 @@ import { InstalledAppManifest, Settings } from '@xmcl/runtime-api'
 import { Client, LauncherAppController } from '@xmcl/runtime/app'
 import { Logger } from '@xmcl/runtime/infra'
 import { kSettings } from '@xmcl/runtime/settings'
-import { BrowserWindow, Event, HandlerDetails, Session, Tray, WebContents, dialog, ipcMain, nativeTheme, protocol, shell } from 'electron'
+import { BrowserWindow, Event, HandlerDetails, Session, Tray, WebContents, app, dialog, ipcMain, nativeTheme, protocol, shell } from 'electron'
 import ElectronLauncherApp from './ElectronLauncherApp'
 import { plugins } from './controllers'
 import defaultApp from './defaultApp'
@@ -221,6 +221,10 @@ export class ElectronController implements LauncherAppController {
   }
 
   async startMigrate() {
+    // The migration runs from `LauncherApp.setup()`, which races with the
+    // engine becoming ready. Creating a BrowserWindow before the app is ready
+    // throws, so wait for readiness before showing the progress window.
+    await app.whenReady()
     const restoredSession = this.app.session.getSession(defaultApp.url)
     const browser = new BrowserWindow({
       title: 'XMCL Launcher Migrate',

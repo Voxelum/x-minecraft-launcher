@@ -59,6 +59,51 @@ function handleMigrate(from: string, to: string) {
     }))
     localStorage.setItem('remoteSSHServers', JSON.stringify(transformed))
   }
+
+  // The currently selected instance is stored as a plain absolute path.
+  const selectedInstancePath = localStorage.getItem('selectedInstancePath')
+  if (selectedInstancePath) {
+    localStorage.setItem('selectedInstancePath', selectedInstancePath.split(from).join(to))
+  }
+
+  // Java bypass whitelist: { <instancePath>: <javaPath> }. Both the key and the
+  // value (for a managed JRE under the root) may reference the old root.
+  const instanceJavaBypass = localStorage.getItem('instanceJavaBypass')
+  if (instanceJavaBypass) {
+    try {
+      const value = JSON.parse(instanceJavaBypass) as Record<string, string>
+      const transformed = Object.fromEntries(
+        Object.entries(value).map(([k, v]) => [
+          k.split(from).join(to),
+          typeof v === 'string' ? v.split(from).join(to) : v,
+        ]),
+      )
+      localStorage.setItem('instanceJavaBypass', JSON.stringify(transformed))
+    } catch {
+      // ignore malformed cache
+    }
+  }
+
+  // Per-instance settings whose localStorage KEY embeds the absolute instance
+  // path. Rename the keys so the settings stay attached to their instance after
+  // the data root moves. (These keys hold raw, unescaped paths.)
+  const pathKeyedPrefixes = [
+    'instanceDefaultSource?instance=',
+    'instanceUpstreamOnlyShowCurrentVersion/',
+    'modsUpgradeSkipVersion:',
+    'modsUpgradePolicy:',
+    'modGroupsCollapsed:',
+  ]
+  for (const key of Object.keys(localStorage)) {
+    if (!pathKeyedPrefixes.some((prefix) => key.startsWith(prefix))) continue
+    const newKey = key.split(from).join(to)
+    if (newKey === key) continue
+    const value = localStorage.getItem(key)
+    if (value !== null) {
+      localStorage.setItem(newKey, value)
+      localStorage.removeItem(key)
+    }
+  }
 }
 
 const app = createApp(defineComponent({

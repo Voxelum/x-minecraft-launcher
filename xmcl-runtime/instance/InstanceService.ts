@@ -61,7 +61,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       app,
       () => store.registerStatic(new InstanceState(), InstanceServiceKey),
       async () => {
-        const instancesPath = this.getAppDataPath('instances.json')
+        const instancesPath = this.getPath('instances.json')
         const instanceConfig = await readJson(instancesPath)
           .then(InstancesSchema.parse)
           .catch(() => InstancesSchema.parse({}))

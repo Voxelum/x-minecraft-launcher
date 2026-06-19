@@ -27,7 +27,6 @@ import { existsSync, rmSync } from 'fs'
 import { rename } from 'fs-extra'
 import { Kysely, ParseJSONResultsPlugin } from 'kysely'
 import { Database as SQLDatabase } from 'node-sqlite3-wasm'
-import { join } from 'path'
 import { LauncherApp, LauncherAppPlugin, kGameDataPath } from '~/app'
 import { ImageStorage, ZipManager, kFlights } from '~/infra'
 import { ServiceStateManager } from '~/service'
@@ -37,9 +36,8 @@ import createResourceWorker from './resource.worker?worker'
 import createDbWorker from './sqlite.worker?worker'
 import { ResourceWorker, kResourceWorker } from './worker'
 
-function loadDatabaseConfig(app: LauncherApp, flights: any) {
+function loadDatabaseConfig(app: LauncherApp, flights: any, dbPath: string) {
   let config: SqliteWASMDialectConfig
-  const dbPath = join(app.appDataPath, 'resources.sqlite')
 
   try {
     const lockPath = dbPath + '.lock'
@@ -113,16 +111,19 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
 
   const logger = app.getLogger('ResourceContext')
   const flights = await app.registry.get(kFlights)
+  // The resource database lives alongside the game data so it travels with the
+  // root during a migration (it used to sit in appData).
+  const getGamePath = await app.registry.get(kGameDataPath)
+  const dbPath = getGamePath('resources.sqlite')
 
   let db: Kysely<Database> | undefined
   for (let i = 0; i < 3; i++) {
     if (db) {
       db.destroy()
-      const dbPath = join(app.appDataPath, 'resources.sqlite')
       const bkPath = dbPath + '.' + Date.now() + '.bk'
       await rename(dbPath, bkPath).catch(() => {})
     }
-    const config = loadDatabaseConfig(app, flights)
+    const config = loadDatabaseConfig(app, flights, dbPath)
     const dialect = new SqliteWASMDialect(config)
     const database = new Kysely<Database>({
       dialect,
