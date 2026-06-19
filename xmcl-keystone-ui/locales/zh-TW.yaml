@@ -612,6 +612,15 @@ logsCrashes:
 me:
   news: 最新消息
   recentPlay: 最近遊玩
+migrationWindow:
+  title: 資料遷移
+  preparing: 正在準備遷移…
+  scanning: 正在計算…
+  migrating: 正在移動資料
+  done: 遷移完成
+  files: 個檔案
+  warning: 請在遷移完成前保持啟動器開啟，否則資料可能遺失。
+  error: 遷移失敗
 minecraftVersion:
   name: Minecraft 版本
   release: 正式版

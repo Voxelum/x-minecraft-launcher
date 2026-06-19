@@ -667,6 +667,15 @@ me:
   recentPlay: 'اللعب الأخير'
 migrateMinecraft:
   name: 'ترحيل ملفات ماين كرافت'
+migrationWindow:
+  title: نقل البيانات
+  preparing: جارٍ التحضير للنقل…
+  scanning: جارٍ الحساب…
+  migrating: جارٍ نقل بياناتك
+  done: اكتمل النقل
+  files: ملفات
+  warning: أبقِ المشغّل مفتوحًا حتى ينتهي، وإلا فقد تفقد بياناتك.
+  error: فشل النقل
 minecraftVersion:
   name: 'نسخة ماينكرافت'
   release: 'يطلق'

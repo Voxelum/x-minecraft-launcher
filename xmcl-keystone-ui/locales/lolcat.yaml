@@ -608,6 +608,15 @@ logsCrashes:
 me:
   news: NEWZ
   recentPlay: RECENT PLAY
+migrationWindow:
+  title: DATA MUVIN
+  preparing: GETTIN REDY 2 MUV…
+  scanning: COUNTIN STUFFS…
+  migrating: MUVIN UR STUFFS
+  done: ALL DUN MUVIN
+  files: filez
+  warning: KEEP DA LAWNCHER OPEN OR U LOSE UR STUFFS.
+  error: MUVIN BROKE
 minecraftVersion:
   name: MINECWAFT VERSHUN
   release: RELEASE

@@ -618,6 +618,15 @@ logsCrashes:
 me:
   news: Haberler
   recentPlay: Son Oynananlar
+migrationWindow:
+  title: Veri Taşıma
+  preparing: Taşıma hazırlanıyor…
+  scanning: Hesaplanıyor…
+  migrating: Verileriniz taşınıyor
+  done: Taşıma tamamlandı
+  files: dosya
+  warning: İşlem bitene kadar başlatıcıyı açık tutun, yoksa verileriniz kaybolabilir.
+  error: Taşıma başarısız
 minecraftVersion:
   name: Minecraft Sürümü
   release: Sürüm (Release)

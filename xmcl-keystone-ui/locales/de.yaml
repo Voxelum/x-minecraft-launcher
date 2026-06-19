@@ -673,6 +673,15 @@ logsCrashes:
 me:
   news: Nachrichten
   recentPlay: Neuestes Spiel
+migrationWindow:
+  title: Datenmigration
+  preparing: Migration wird vorbereitet…
+  scanning: Wird berechnet…
+  migrating: Daten werden verschoben
+  done: Migration abgeschlossen
+  files: Dateien
+  warning: Lass den Launcher geöffnet, bis dies abgeschlossen ist, sonst gehen deine Daten möglicherweise verloren.
+  error: Migration fehlgeschlagen
 minecraftVersion:
   name: Minecraft-Version
   release: Freigabe

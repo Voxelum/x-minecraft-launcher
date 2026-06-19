@@ -1,4 +1,4 @@
-import { Migration } from '@xmcl/runtime-api/migration'
+import { Migration, MigrationProgress } from '@xmcl/runtime-api/migration'
 import { contextBridge, ipcRenderer } from 'electron'
 import EventEmitter from 'events'
 import './controller'
@@ -13,7 +13,7 @@ const migration: Migration = {
   on(event, func) {
     emitter.on(event, func)
   },
-  getProgress: function (): Promise<{ from: string; to: string; progress: number; total: number }> {
+  getProgress: function (): Promise<MigrationProgress> {
     return ipcRenderer.invoke('migration-get-progress')
   }
 }

@@ -616,6 +616,15 @@ logsCrashes:
 me:
   news: Жаңалықтар
   recentPlay: Соңғы ойналғандар
+migrationWindow:
+  title: Деректерді көшіру
+  preparing: Көшіру дайындалуда…
+  scanning: Есептелуде…
+  migrating: Деректеріңіз жылжытылуда
+  done: Көшіру аяқталды
+  files: файл
+  warning: Аяқталғанша іске қосқышты ашық қалдырыңыз, әйтпесе деректеріңіз жоғалуы мүмкін.
+  error: Көшіру сәтсіз аяқталды
 minecraftVersion:
   name: Minecraft нұсқасы
   release: Шығарылым

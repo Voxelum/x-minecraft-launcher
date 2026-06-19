@@ -802,6 +802,15 @@ minecraftFriends:
   send: Send
   title: Minecraft Friends
   unsupported: Friends are only available for Microsoft accounts.
+migrationWindow:
+  title: Data Migration
+  preparing: Preparing migration…
+  scanning: Calculating…
+  migrating: Moving your data
+  done: Migration complete
+  files: files
+  warning: Keep the launcher open until this finishes, or your data may be lost.
+  error: Migration failed
 minecraftVersion:
   name: Minecraft Version
   release: Release

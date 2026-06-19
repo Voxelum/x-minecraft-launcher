@@ -624,6 +624,15 @@ logsCrashes:
 me:
   news: Nieuws
   recentPlay: Onlangs Gespeeld
+migrationWindow:
+  title: Gegevensmigratie
+  preparing: Migratie voorbereiden…
+  scanning: Berekenen…
+  migrating: Je gegevens worden verplaatst
+  done: Migratie voltooid
+  files: bestanden
+  warning: Houd de launcher open tot dit klaar is, anders kunnen je gegevens verloren gaan.
+  error: Migratie mislukt
 minecraftVersion:
   name: Minecraft Versie
   release: Release

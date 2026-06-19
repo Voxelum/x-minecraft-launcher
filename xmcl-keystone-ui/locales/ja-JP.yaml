@@ -596,6 +596,15 @@ logsCrashes:
 me:
   news: ニュース
   recentPlay: プレイの履歴
+migrationWindow:
+  title: データ移行
+  preparing: 移行を準備しています…
+  scanning: 計算中…
+  migrating: データを移動しています
+  done: 移行が完了しました
+  files: ファイル
+  warning: 完了するまでランチャーを閉じないでください。データが失われる可能性があります。
+  error: 移行に失敗しました
 minecraftVersion:
   name: Minecraft バージョン
   release: リリース

@@ -1,8 +1,17 @@
-import { copy, ensureDir, existsSync, readdir, readlink, remove, rename, rmdir, stat, writeFile } from 'fs-extra'
+import { chmod, copyFile, ensureDir, existsSync, readdir, readlink, remove, rename, rmdir, stat, utimes, writeFile } from 'fs-extra'
 import { join, resolve } from 'path'
 import { Logger } from '~/infra'
 import type { LauncherApp } from './LauncherApp'
 import { isSystemError } from '@xmcl/utils'
+import type { MigrationProgress } from '@xmcl/runtime-api'
+
+/**
+ * Called for every file that is physically copied across volumes, with the
+ * number of bytes copied and the destination path. Same-volume renames are
+ * effectively free and never reported here — the caller reconciles those
+ * against the pre-computed size instead.
+ */
+type OnCopied = (bytes: number, file: string) => void
 
 /**
  * Move `from` to `to`.
@@ -14,9 +23,11 @@ import { isSystemError } from '@xmcl/utils'
  * `newRoot/versions` already exists, which previously caused the whole
  * migration to roll back silently ("nothing happens").
  *
- * Falls back to copy + remove across different volumes (`EXDEV`).
+ * Falls back to copy + remove across different volumes (`EXDEV`). The optional
+ * `onCopied` callback receives byte-level progress for that slow cross-volume
+ * path so the UI can render a smooth, determinate progress bar.
  */
-async function move(from: string, to: string) {
+async function move(from: string, to: string, onCopied?: OnCopied) {
   const fromStat = await stat(from).catch(() => undefined)
   if (!fromStat) return
   const toStat = await stat(to).catch(() => undefined)
@@ -25,7 +36,7 @@ async function move(from: string, to: string) {
   if (fromStat.isDirectory() && toStat?.isDirectory()) {
     const children = await readdir(from)
     for (const child of children) {
-      await move(join(from, child), join(to, child))
+      await move(join(from, child), join(to, child), onCopied)
     }
     // Only removes the source directory once it is empty.
     await rmdir(from).catch(() => { })
@@ -46,21 +57,56 @@ async function move(from: string, to: string) {
         await ensureDir(to)
         const children = await readdir(from)
         for (const child of children) {
-          await move(join(from, child), join(to, child))
+          await move(join(from, child), join(to, child), onCopied)
         }
         await rmdir(from).catch(() => { })
       } else {
         // Skip symlinks: their target may live outside the migrated tree.
         const link = await readlink(from).catch(() => null)
         if (!link) {
-          await copy(from, to, { overwrite: true, preserveTimestamps: true })
+          // The destination directory is guaranteed to exist (the directory
+          // branch above ran `ensureDir`, or this is a top-level file landing
+          // in the migration root). Copying with the low-level `copyFile`
+          // avoids fs-extra's per-file `mkdirs` + `lstat` overhead, which is a
+          // real win for the thousands of tiny files under assets/libraries —
+          // exactly where cross-volume migrations spend most of their time.
+          await copyFile(from, to)
+          // Preserve mode (the JRE ships executable binaries) and timestamps
+          // (resource caches key off mtime); failures here must not abort the
+          // migration on filesystems that ignore these attributes (e.g. NTFS
+          // mounted via ntfs-3g).
+          await chmod(to, fromStat.mode).catch(() => { })
+          await utimes(to, fromStat.atime, fromStat.mtime).catch(() => { })
           await remove(from)
+          onCopied?.(fromStat.size, to)
         }
       }
     } else {
       throw e
     }
   }
+}
+
+/**
+ * Recursively sum the byte size and file count of `path` using metadata only.
+ * Cheap relative to the copy that follows, and lets the progress bar be
+ * determinate instead of an endless spinner.
+ */
+async function computeSize(path: string): Promise<{ bytes: number; files: number }> {
+  const s = await stat(path).catch(() => undefined)
+  if (!s) return { bytes: 0, files: 0 }
+  if (s.isDirectory()) {
+    const children = await readdir(path)
+    let bytes = 0
+    let files = 0
+    for (const child of children) {
+      const r = await computeSize(join(path, child))
+      bytes += r.bytes
+      files += r.files
+    }
+    return { bytes, files }
+  }
+  return { bytes: s.size, files: 1 }
 }
 
 /**
@@ -149,32 +195,79 @@ export async function handleMigrateRoot(source: string, logger: Logger, app: Lau
       logger.warn('Failed to show the migration window', e)
     })
 
-    let from = source
-    let to = destination
-    let progress = 0
-    let total = candidates.length
-    app.controller.handle('migration-get-progress', () => {
-      return { from, to, progress, total }
-    })
+    // The single source of truth for the progress window. Mutated in place and
+    // pushed to the renderer on a throttle so a fast stream of tiny-file copies
+    // cannot flood the IPC channel.
+    const state: MigrationProgress = {
+      from: source,
+      to: destination,
+      file: '',
+      copiedBytes: 0,
+      totalBytes: 0,
+      copiedFiles: 0,
+      totalFiles: 0,
+      phase: 'scanning',
+    }
+    app.controller.handle('migration-get-progress', () => ({ ...state }))
+
+    let lastBroadcast = 0
+    const broadcast = (force = false) => {
+      const now = Date.now()
+      // ~15 fps is plenty for a progress bar and keeps the IPC traffic low even
+      // when copying many tiny files.
+      if (!force && now - lastBroadcast < 64) return
+      lastBroadcast = now
+      app.controller.broadcast('migration-event', { event: 'progress', payload: { ...state } })
+    }
 
     const files = await readdir(source).then(files => files.filter(file => candidates.includes(file)))
-    total = files.length
+
+    // Phase 1: scan sizes so the bar can be determinate. Metadata only, so it
+    // is cheap next to the copy that follows.
+    const sizes = new Map<string, { bytes: number; files: number }>()
     for (const file of files) {
-      from = join(source, file)
-      to = join(destination, file)
-      progress = files.indexOf(file)
+      const size = await computeSize(join(source, file))
+      sizes.set(file, size)
+      state.totalBytes += size.bytes
+      state.totalFiles += size.files
+    }
+    broadcast(true)
+
+    // Phase 2: actually move the data.
+    state.phase = 'migrating'
+    for (const file of files) {
+      const from = join(source, file)
+      const to = join(destination, file)
+      const size = sizes.get(file)!
+      const baseBytes = state.copiedBytes
+      const baseFiles = state.copiedFiles
+      state.file = from
+      broadcast(true)
       try {
         logger.log(`Move ${from} -> ${to}`)
-        app.controller.broadcast('migration-event', { event: 'progress', payload: { from, to, progress, total } })
-        await move(from, to)
+        await move(from, to, (bytes, copiedFile) => {
+          state.copiedBytes += bytes
+          state.copiedFiles += 1
+          state.file = copiedFile
+          broadcast()
+        })
         finished.push({ from, to })
-        app.controller.broadcast('migration-event', { event: 'progress', payload: { from, to, progress: progress + 1, total } })
+        // A same-volume rename moves the whole entry atomically without firing
+        // the per-file callback, so reconcile the counters against the scan to
+        // keep the bar honest (also covers skipped symlinks on the slow path).
+        state.copiedBytes = Math.max(state.copiedBytes, baseBytes + size.bytes)
+        state.copiedFiles = Math.max(state.copiedFiles, baseFiles + size.files)
+        broadcast(true)
       } catch (e) {
         logger.warn(`Fail to move ${from} -> ${to}`, e)
-        app.controller.broadcast('migration-event', { event: 'error', payload: { from, to, error: e } })
+        app.controller.broadcast('migration-event', { event: 'error', payload: { file: from, error: e } })
         throw e
       }
     }
+
+    state.phase = 'done'
+    state.file = ''
+    broadcast(true)
 
     await writeFile(join(app.appDataPath, 'root'), destination)
     app.controller.endMigrate({

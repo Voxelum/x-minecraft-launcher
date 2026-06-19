@@ -32,6 +32,14 @@ export function useI18nSync(state: Ref<Settings | undefined>) {
       setLocaleMessage(newValue, message.default)
       locale.value = newValue
     })
+
+    // Persist for windows that boot before the settings service is ready (e.g.
+    // the migration progress window), which read it straight from localStorage.
+    try {
+      localStorage.setItem('locale', newValue)
+    } catch {
+      // Ignore storage failures — this is only a hint for other windows.
+    }
   })
 }
 

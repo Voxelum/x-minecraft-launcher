@@ -643,6 +643,15 @@ logsCrashes:
 me:
   news: Hírek
   recentPlay: Legutóbbi játék
+migrationWindow:
+  title: Adatáttelepítés
+  preparing: Áttelepítés előkészítése…
+  scanning: Számítás…
+  migrating: Adatok áthelyezése
+  done: Az áttelepítés befejeződött
+  files: fájl
+  warning: Tartsd nyitva az indítót, amíg ez be nem fejeződik, különben elveszhetnek az adataid.
+  error: Az áttelepítés sikertelen
 minecraftVersion:
   name: Minecraft Verzió
   release: Kiadás

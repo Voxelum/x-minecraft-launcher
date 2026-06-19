@@ -603,6 +603,15 @@ logsCrashes:
 me:
   news: Aktualności
   recentPlay: Ostatnia gra
+migrationWindow:
+  title: Migracja danych
+  preparing: Przygotowywanie migracji…
+  scanning: Obliczanie…
+  migrating: Przenoszenie danych
+  done: Migracja zakończona
+  files: plików
+  warning: Nie zamykaj launchera do zakończenia, w przeciwnym razie możesz utracić dane.
+  error: Migracja nie powiodła się
 minecraftVersion:
   name: Wersja Minecraft
   release: Zwolnienie

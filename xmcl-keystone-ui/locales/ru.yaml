@@ -655,6 +655,15 @@ logsCrashes:
 me:
   news: Новости
   recentPlay: Последние игры
+migrationWindow:
+  title: Перенос данных
+  preparing: Подготовка к переносу…
+  scanning: Подсчёт…
+  migrating: Перемещение данных
+  done: Перенос завершён
+  files: файлов
+  warning: Не закрывайте лаунчер до завершения, иначе данные могут быть потеряны.
+  error: Не удалось перенести данные
 minecraftVersion:
   name: Версия Minecraft
   release: Релиз
