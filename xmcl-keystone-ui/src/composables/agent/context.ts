@@ -149,7 +149,7 @@ export function renderSessionContext(ctx: SessionContext): string {
     fileLine('logs/', `${ft.logsTotal} log file${ft.logsTotal === 1 ? '' : 's'}`),
     fileLine('crash-reports/', `${ft.crashReportsTotal} report${ft.crashReportsTotal === 1 ? '' : 's'}`),
     fileLine('launch-failures/', 'launcher-captured abnormal-exit dumps'),
-    fileLine('instance.json', 'instance settings (read via vfs_read)'),
+    fileLine('instance.json', 'instance settings (read via vfs_read, change via edit_instance)'),
     fileLine('options.txt', 'minecraft game options (read via vfs_read)'),
   ].join('\n')
 

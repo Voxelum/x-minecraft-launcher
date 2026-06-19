@@ -10,6 +10,16 @@ import { kInstanceVersion } from '../instanceVersion'
 import { kInstanceVersionInstall } from '../instanceVersionInstall'
 import { kInstances } from '../instances'
 import { kUserContext } from '../user'
+import { kModDependenciesCheck } from '../modDependenciesCheck'
+import { kModLibCleaner } from '../modLibCleaner'
+import { kModUpgrade } from '../modUpgrade'
+import { kJavaContext } from '../java'
+import { kInstanceJavaDiagnose } from '../instanceJavaDiagnose'
+import { useService } from '../service'
+import { InstanceInstallServiceKey, JavaServiceKey } from '@xmcl/runtime-api'
+import { getInstanceFileFromCurseforgeFile } from '@/util/curseforge'
+import { getInstanceFileFromModrinthVersion } from '@/util/modrinth'
+import type { InstanceFile } from '@xmcl/instance'
 import { injection } from '@/util/inject'
 import { useI18n } from 'vue-i18n'
 import type { ChatMessage } from './llm'
@@ -81,6 +91,13 @@ export function useAgent(): AgentSession {
   const { gameOptions } = injection(kInstanceOptions)
   const { userProfile } = injection(kUserContext)
   const { launch, kill } = injection(kInstanceLaunch)
+  const depCheck = injection(kModDependenciesCheck)
+  const libCleaner = injection(kModLibCleaner)
+  const modUpgrade = injection(kModUpgrade)
+  const { all: javaList, refresh: refreshJavaList } = injection(kJavaContext)
+  const { issue: javaIssue } = injection(kInstanceJavaDiagnose)
+  const instanceInstall = useService(InstanceInstallServiceKey)
+  const javaService = useService(JavaServiceKey)
   const agentSettings = useAgentSettings()
 
   const resourcePacks = computed(() => [...rpEnabled.value, ...rpDisabled.value])
@@ -88,6 +105,102 @@ export function useAgent(): AgentSession {
     get: () => selectedShaderPack.value ?? '',
     set: (v: string) => { selectedShaderPack.value = v || undefined },
   })
+
+  function genOpId() {
+    return crypto.getRandomValues(new Uint8Array(8)).join('')
+  }
+
+  async function checkModDependencies() {
+    await depCheck.refresh()
+    const missing = depCheck.installation.value.map(([file, mod]) => ({
+      file: file.path,
+      requiredBy: mod.name || mod.fileName,
+    }))
+    const err = depCheck.error.value
+    return { missing, ...(err ? { error: err instanceof Error ? err.message : String(err) } : {}) }
+  }
+
+  async function installModDependencies() {
+    const path = currentInstancePath()
+    if (!path) return { error: 'no instance selected' }
+    const files = depCheck.installation.value.map(([f]) => f)
+    if (!files.length) return { installed: 0, note: 'No missing dependencies. Run check_mod_dependencies first.' }
+    await instanceInstall.installInstanceFiles({ path, oldFiles: [], files, id: genOpId() })
+    return { installed: files.length, files: files.map((f) => f.path) }
+  }
+
+  async function scanUnusedMods() {
+    await libCleaner.refresh()
+    const unused = libCleaner.unusedMods.value.map((f) => ({ path: f.path }))
+    const err = libCleaner.error.value
+    return { unused, ...(err ? { error: err instanceof Error ? err.message : String(err) } : {}) }
+  }
+
+  async function disableUnusedMods() {
+    const path = currentInstancePath()
+    if (!path) return { error: 'no instance selected' }
+    const oldFiles = libCleaner.unusedMods.value
+    if (!oldFiles.length) return { disabled: 0, note: 'No unused library mods. Run scan_unused_mods first.' }
+    const files = oldFiles.map((f) => ({ ...f, path: f.path + '.disabled' }))
+    await instanceInstall.installInstanceFiles({ path, oldFiles, files, id: genOpId() })
+    return { disabled: oldFiles.length, files: oldFiles.map((f) => f.path) }
+  }
+
+  function normalizeUpgradePolicy(policy?: string): 'curseforge' | 'modrinth' | 'curseforgeOnly' | 'modrinthOnly' {
+    const candidate = policy ?? String(modUpgrade.upgradePolicy.value)
+    if (candidate === 'curseforge' || candidate === 'curseforgeOnly' || candidate === 'modrinthOnly') {
+      return candidate
+    }
+    return 'modrinth'
+  }
+
+  async function checkModUpdates(opts: { policy?: string; skipVersion?: boolean }) {
+    const policy = normalizeUpgradePolicy(opts.policy)
+    const skipVersion = opts.skipVersion ?? modUpgrade.skipVersion.value
+    await modUpgrade.refresh({ policy, skipVersion })
+    const updates = Object.values(modUpgrade.plans.value).map((p) => ({
+      mod: p.mod.name || p.mod.fileName,
+      from: p.mod.version,
+      to: 'version' in p ? (p.version.version_number || p.version.name) : (p.file.displayName || p.file.fileName),
+      source: 'version' in p ? 'modrinth' : 'curseforge',
+    }))
+    const err = modUpgrade.error.value
+    return { updates, ...(err ? { error: err instanceof Error ? err.message : String(err) } : {}) }
+  }
+
+  async function applyModUpdates() {
+    const path = currentInstancePath()
+    if (!path) return { error: 'no instance selected' }
+    const plans = Object.values(modUpgrade.plans.value)
+    if (!plans.length) return { upgraded: 0, note: 'No updates available. Run check_mod_updates first.' }
+    const oldFiles: InstanceFile[] = []
+    const files: InstanceFile[] = []
+    for (const plan of plans) {
+      oldFiles.push({
+        path: `mods/${plan.mod.fileName}`,
+        hashes: { sha1: plan.mod.hash },
+        size: plan.mod.size || 0,
+      })
+      files.push('file' in plan
+        ? getInstanceFileFromCurseforgeFile(plan.file)
+        : getInstanceFileFromModrinthVersion(plan.version))
+    }
+    await instanceInstall.installInstanceFiles({ path, oldFiles, files, id: genOpId() })
+    return { upgraded: plans.length, mods: plans.map((p) => p.mod.name || p.mod.fileName) }
+  }
+
+  async function installJava() {
+    const required = javaStatus.value?.javaVersion
+    const installed = await javaService.installJava(required)
+    await refreshJavaList(true).catch(() => undefined)
+    return {
+      ok: true,
+      requiredMajorVersion: required?.majorVersion,
+      path: installed.path,
+      version: installed.version,
+      majorVersion: installed.majorVersion,
+    }
+  }
 
   const ctx: AgentContext = {
     router,
@@ -111,6 +224,15 @@ export function useAgent(): AgentSession {
     selectShaderPack: (fileName) => { selectedShaderPack.value = fileName },
     launch: () => launch(),
     killGame: (side, force) => kill(side, force),
+    checkModDependencies,
+    installModDependencies,
+    scanUnusedMods,
+    disableUnusedMods,
+    checkModUpdates,
+    applyModUpdates,
+    javaList,
+    javaIssue,
+    installJava,
   }
 
   const registry = createXmclTools(ctx)

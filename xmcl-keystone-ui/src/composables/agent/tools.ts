@@ -5,9 +5,9 @@ import {
   InstanceModsServiceKey,
   InstanceOptionsServiceKey,
   InstanceResourcePacksServiceKey,
+  InstanceServiceKey,
   InstanceShaderPacksServiceKey,
   LaunchServiceKey,
-  MarketType,
   ModpackServiceKey,
 } from '@xmcl/runtime-api'
 import type { Router } from 'vue-router'
@@ -50,6 +50,26 @@ export interface AgentContext {
   selectShaderPack: (fileName: string | undefined) => void
   launch: () => Promise<void>
   killGame: (side?: 'client' | 'server', force?: boolean) => Promise<void>
+  // ── Mod maintenance (mirrors the "Mod options" page) ──────────────────
+  /** Resolve missing *required* dependencies of the installed mods. */
+  checkModDependencies: () => Promise<unknown>
+  /** Download & install the dependencies found by {@link checkModDependencies}. */
+  installModDependencies: () => Promise<unknown>
+  /** Find installed library mods that nothing depends on. */
+  scanUnusedMods: () => Promise<unknown>
+  /** Disable the unused libraries found by {@link scanUnusedMods}. */
+  disableUnusedMods: () => Promise<unknown>
+  /** Look up newer versions of the installed mods. */
+  checkModUpdates: (opts: { policy?: string; skipVersion?: boolean }) => Promise<unknown>
+  /** Apply the updates found by {@link checkModUpdates}. */
+  applyModUpdates: () => Promise<unknown>
+  // ── Java ──────────────────────────────────────────────────────────────
+  /** All Java runtimes the launcher knows about. */
+  javaList: Ref<JavaRecord[]>
+  /** Current instance Java problem, if any (`invalid` / `incompatible`). */
+  javaIssue: Ref<'invalid' | 'incompatible' | undefined>
+  /** Install the Java runtime the current instance requires. */
+  installJava: () => Promise<unknown>
 }
 
 // ── Shape helpers ──────────────────────────────────────────────────────
@@ -175,22 +195,6 @@ type VfsEntry =
   | { type: 'dir'; name: string; description: string }
   | { type: 'file'; name: string; size?: number; description?: string }
 
-function parseInstallUri(uri: string):
-  | { source: 'modrinth' | 'curseforge'; projectId: string; versionOrFileId: string; filename?: string }
-  | { error: string } {
-  // Format: `modrinth:<projectId>:<versionId>[:<filename>]`
-  //         `curseforge:<projectId>:<fileId>[:<filename>]`
-  const parts = uri.split(':')
-  if (parts.length < 3) return { error: `invalid uri (need source:projectId:versionId): ${uri}` }
-  const [source, projectId, versionOrFileId, ...rest] = parts
-  if (source !== 'modrinth' && source !== 'curseforge') {
-    return { error: `unknown source "${source}" (expected modrinth or curseforge)` }
-  }
-  if (!projectId || !versionOrFileId) return { error: `missing projectId or version/fileId in ${uri}` }
-  const filename = rest.length ? rest.join(':') : undefined
-  return { source, projectId, versionOrFileId, filename }
-}
-
 const DISABLED_SUFFIX = '.disabled'
 
 function stripDisabled(name: string): string {
@@ -272,6 +276,7 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
   const shaderPackService = useService(InstanceShaderPacksServiceKey)
   const modpackService = useService(ModpackServiceKey)
   const optionsService = useService(InstanceOptionsServiceKey)
+  const instanceService = useService(InstanceServiceKey)
 
   const tools: Tool[] = []
   const tool = (t: Tool) => { tools.push(t) }
@@ -711,94 +716,77 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
     },
   })
 
-  // ── Install from market URIs ───────────────────────────────────────
+  // ── Instance settings editing ──────────────────────────────────────
 
   tool({
-    name: 'install',
+    name: 'edit_instance',
     description: [
-      'Install resources from a market URI into the current instance.',
-      'URI format: `<source>:<projectId>:<versionOrFileId>[:<filename>]`',
-      '  modrinth: `modrinth:<projectId>:<versionId>[:<filename>]`',
-      '  curseforge: `curseforge:<projectId>:<fileId>[:<filename>]`',
-      'Specify `target` as `mods`, `resourcepacks`, `shaderpacks`, or `modpack`. The `modpack` target downloads but does NOT auto-create the instance.',
+      'Edit the current instance settings (the fields in instance.json). Only the',
+      'properties you pass are changed; omitted properties are left untouched, so',
+      'read the current values first with `vfs_read instance.json`.',
+      'Memory values are in MB. Common fixes: raise `maxMemory` for out-of-memory',
+      'crashes, add JVM flags via `vmOptions`, point `java` at a specific runtime',
+      'path, set `resolution`, or toggle `fastLaunch` / `showLog`.',
+      'This does NOT change the Minecraft / mod-loader version (`runtime`) — that',
+      'needs a reinstall and is out of scope here.',
     ].join('\n'),
     parameters: {
       type: 'object',
       properties: {
-        uris: { type: 'array', items: { type: 'string' } },
-        target: { type: 'string', enum: ['mods', 'resourcepacks', 'shaderpacks', 'modpack'] },
+        name: { type: 'string', description: 'Instance display name' },
+        description: { type: 'string', description: 'Instance description' },
+        java: { type: 'string', description: 'Absolute path to a java executable; empty string to auto-detect' },
+        minMemory: { type: 'number', description: 'Min heap size in MB' },
+        maxMemory: { type: 'number', description: 'Max heap size in MB' },
+        assignMemory: { description: 'Memory auto-assign policy: true, "auto", or false' },
+        vmOptions: { type: 'array', items: { type: 'string' }, description: 'JVM arguments, e.g. ["-XX:+UseG1GC"]' },
+        mcOptions: { type: 'array', items: { type: 'string' }, description: 'Minecraft program arguments' },
+        env: { type: 'object', description: 'Launch environment variables (string -> string map)' },
+        resolution: {
+          type: 'object',
+          properties: {
+            width: { type: 'number' },
+            height: { type: 'number' },
+            fullscreen: { type: 'boolean' },
+          },
+          description: 'Game window resolution',
+        },
+        fastLaunch: { type: 'boolean', description: 'Skip launch pre-checks for a faster start' },
+        showLog: { type: 'boolean', description: 'Show the log window while the game runs' },
+        hideLauncher: { type: 'boolean', description: 'Hide the launcher after the game starts' },
+        prependCommand: { type: 'string', description: 'Command prepended before the java launch command' },
+        preExecuteCommand: { type: 'string', description: 'Command executed before launch' },
       },
-      required: ['uris', 'target'],
     },
     async execute(args) {
-      const uris = (args.uris as string[] | undefined) ?? []
-      const target = String(args.target ?? '')
-      if (!uris.length) return { error: 'uris is empty' }
-      const inst = ctx.instance.value.path
-      if (target !== 'modpack' && !inst) return { error: 'no instance selected' }
-
-      const modrinthVersions: { versionId: string; filename?: string }[] = []
-      const curseforgeFiles: { fileId: number }[] = []
-      const errors: string[] = []
-      for (const uri of uris) {
-        const parsed = parseInstallUri(uri)
-        if ('error' in parsed) { errors.push(parsed.error); continue }
-        if (parsed.source === 'modrinth') {
-          modrinthVersions.push({ versionId: parsed.versionOrFileId, filename: parsed.filename })
-        } else {
-          const id = Number(parsed.versionOrFileId)
-          if (!Number.isFinite(id)) { errors.push(`bad curseforge fileId: ${parsed.versionOrFileId}`); continue }
-          curseforgeFiles.push({ fileId: id })
+      const path = ctx.instance.value.path
+      if (!path) return { error: 'no instance selected' }
+      const editable = [
+        'name', 'description', 'java', 'minMemory', 'maxMemory', 'assignMemory',
+        'vmOptions', 'mcOptions', 'env', 'resolution', 'fastLaunch', 'showLog',
+        'hideLauncher', 'prependCommand', 'preExecuteCommand',
+      ] as const
+      const payload: Record<string, unknown> = { instancePath: path }
+      const edited: string[] = []
+      for (const key of editable) {
+        if (Object.prototype.hasOwnProperty.call(args, key)) {
+          payload[key] = args[key]
+          edited.push(key)
         }
       }
-      if (errors.length && !modrinthVersions.length && !curseforgeFiles.length) {
-        return { errors }
+      if (!edited.length) return { error: 'no editable properties provided' }
+      try {
+        await instanceService.editInstance(payload as Parameters<typeof instanceService.editInstance>[0])
+        return { ok: true, edited }
+      } catch (e) {
+        return { error: `editInstance failed: ${e instanceof Error ? e.message : String(e)}` }
       }
-
-      const results: Record<string, unknown> = {}
-
-      if (target === 'modpack') {
-        if (modrinthVersions.length) {
-          results.modrinth = await modpackService.installModapckFromMarket({
-            market: MarketType.Modrinth,
-            version: modrinthVersions,
-          })
-        }
-        if (curseforgeFiles.length) {
-          results.curseforge = await modpackService.installModapckFromMarket({
-            market: MarketType.CurseForge,
-            file: curseforgeFiles,
-          })
-        }
-      } else {
-        const service = target === 'mods'
-          ? instanceMods
-          : target === 'resourcepacks'
-            ? resourcePackService
-            : target === 'shaderpacks'
-              ? shaderPackService
-              : undefined
-        if (!service) return { error: `unknown target: ${target}` }
-        if (modrinthVersions.length) {
-          results.modrinth = await service.installFromMarket({
-            instancePath: inst,
-            market: MarketType.Modrinth,
-            version: modrinthVersions,
-          })
-        }
-        if (curseforgeFiles.length) {
-          results.curseforge = await service.installFromMarket({
-            instancePath: inst,
-            market: MarketType.CurseForge,
-            file: curseforgeFiles,
-          })
-        }
-      }
-
-      if (errors.length) results.errors = errors
-      return { ok: true, ...results }
     },
   })
+
+  // ── Install from market URIs ───────────────────────────────────────
+  // The `install` tool lives in the lazy `market` pack (see marketTools.ts)
+  // alongside the Modrinth / CurseForge search & metadata tools.
 
   // ── Instance install (diagnose / repair) ────────────────────────────
 
@@ -896,11 +884,25 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
   // ── Lazy-loadable packs ─────────────────────────────────────────────
 
   const loadable: ToolRegistry['loadable'] = {
-    market_search: {
-      description: 'Search Modrinth and CurseForge for mods / resourcepacks / shaderpacks / modpacks, fetch project descriptions, list available versions/files. Load this when the user wants to find new content to install.',
+    market: {
+      description: 'Search Modrinth & CurseForge for mods / resourcepacks / shaderpacks / modpacks, read project descriptions and versions, and `install` them into the current instance. Load this when the user wants to find or add new content.',
       async load() {
         const m = await import('./marketTools')
-        return m.createMarketSearchTools(ctx)
+        return m.createMarketTools(ctx, { instanceMods, resourcePackService, shaderPackService, modpackService })
+      },
+    },
+    mod_maintenance: {
+      description: 'Inspect & fix mod problems: find missing required dependencies and install them, scan for unused library mods and disable them, and check for / apply mod updates. Load this when diagnosing a crash that may be caused by a missing dependency or an outdated mod, or to clean up unused libraries.',
+      async load() {
+        const m = await import('./modMaintenanceTools')
+        return m.createModMaintenanceTools(ctx)
+      },
+    },
+    java: {
+      description: 'Diagnose the instance Java (compatibility / validity) and install a compatible Java runtime. Load this when the game fails to launch or crashes because of a wrong, invalid, or missing Java version.',
+      async load() {
+        const m = await import('./javaTools')
+        return m.createJavaTools(ctx)
       },
     },
   }
@@ -922,13 +924,16 @@ Rules:
 - The launcher session context block below is a snapshot taken when the conversation started. If something has changed since then, you will receive a "[launcher event] context changed" message in the chat — trust it over the snapshot.
 - Be proactive and take action. When the user reports a problem (a crash, a broken mod setup, a wrong setting) and you can identify a concrete fix, apply it immediately with the tools instead of asking whether you should. Do NOT ask for permission to perform a fix you are confident about — just do it, then briefly report what you changed. Only ask the user first when the choice is genuinely ambiguous (several equally valid options) or you are missing information you cannot obtain yourself.
 - Prefer the virtual filesystem tools (vfs_list, vfs_read) for exploration. \`instance.json\` returns the full instance settings; \`options.txt\` returns parsed Minecraft options.
+- To change instance settings (memory, JVM args, java path, resolution, window/launch flags, name/description), use \`edit_instance\` — pass only the properties you want to change. Read \`vfs_read instance.json\` first to see current values. Memory is in MB. For out-of-memory crashes, raise \`maxMemory\` (and \`minMemory\`) or add JVM flags via \`vmOptions\`. \`edit_instance\` does not change the Minecraft / mod-loader version.
 - To enable or disable a mod / resourcepack / shaderpack, use the \`bash\` tool with \`mv\` to toggle a trailing \`.disabled\` suffix on its virtual path: appending \`.disabled\` disables it, stripping the suffix enables it. e.g. \`mv mods/foo.jar mods/foo.jar.disabled\` (disable) or \`mv mods/foo.jar.disabled mods/foo.jar\` (enable). Shaderpacks are exclusive — enabling one disables the previously active pack.
 - To delete a mod / resourcepack / shaderpack, use the \`bash\` tool with \`rm\` on its virtual path (e.g. \`rm mods/foo.jar resourcepacks/bar\`). \`rm\` only works under \`mods/\`, \`resourcepacks/\`, \`shaderpacks/\`; deleting any other path is refused.
-- Use \`install\` with a target and market URIs (\`modrinth:projId:verId\`, \`curseforge:projId:fileId\`) to add new content.
+- To add new content, load the \`market\` pack: find projects with \`modrinth_search\` / \`curseforge_search\`, then \`install\` with a target and market URIs (\`modrinth:projId:verId\`, \`curseforge:projId:fileId\`).
 - If the game fails to launch or files look missing/corrupted, run \`diagnose_instance\` to inspect the instance's version installation, then \`repair_instance\` to download and install whatever is missing (Minecraft jar, libraries, assets, mod loader, required Java). \`repair_instance\` is safe and idempotent — prefer it over telling the user to reinstall manually.
+- When a crash or launch failure looks mod-related, load the \`mod_maintenance\` pack: \`check_mod_dependencies\` finds missing *required* dependencies (a very common crash cause) and \`install_mod_dependencies\` adds them; \`check_mod_updates\` / \`apply_mod_updates\` upgrade outdated mods; \`scan_unused_mods\` / \`disable_unused_mods\` clean up orphan libraries. Always run the matching check before applying.
+- When the failure looks Java-related (wrong major version, invalid runtime, or the snapshot shows the Java is \`mismatch\`), load the \`java\` pack: \`diagnose_java\` reports the problem and \`install_java\` downloads a compatible runtime, which the instance then auto-selects.
 - Mod config files live under \`config/\`. Browse with \`vfs_list config\`, read with \`vfs_read config/<file>\`, search across them via the \`bash\` tool's \`grep [-i] <pattern> [config/...]\`, and modify them with \`edit_config\` (literal \`match_string\` -> \`replace_string\`). Only \`config/\` files can be searched or edited this way.
 - For UI navigation, only use the routes exposed by the navigate tool.
-- Reversible fixes — toggling content with \`mv\`, installing mods or missing dependencies with \`install\`, repairing a broken installation with \`repair_instance\`, and editing config with \`edit_config\` — are safe: perform them directly without asking. Only pause to confirm before truly destructive or irreversible actions: deleting files (\`rm\`) or killing a running game (kill_game).
+- Reversible fixes — toggling content with \`mv\`, installing content or missing dependencies (the \`market\` / \`mod_maintenance\` packs), repairing a broken installation with \`repair_instance\`, editing instance settings with \`edit_instance\`, and editing config with \`edit_config\` — are safe: perform them directly without asking. Only pause to confirm before truly destructive or irreversible actions: deleting files (\`rm\`) or killing a running game (kill_game).
 - For crash analysis: read the most recent crash report or launch failure, determine the root cause, then directly apply the fix when you know it (e.g. re-enable a disabled dependency, install a missing or conflicting mod, correct a config value, or run \`repair_instance\` when the install is incomplete/corrupted). Afterwards report the root cause and exactly what you changed. Only stop to ask if you genuinely cannot determine a safe fix on your own.`
 
 export function buildSystemPrompt(opts: SystemPromptOptions): string {

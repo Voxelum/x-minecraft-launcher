@@ -1,15 +1,46 @@
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
+import { MarketType } from '@xmcl/runtime-api'
+import type { InstanceModsService, InstanceResourcePacksService, InstanceShaderPacksService, ModpackService } from '@xmcl/runtime-api'
 import type { AgentContext } from './tools'
 import type { Tool } from './loop'
 
 /**
- * Lazy-loaded marketplace tools. Triggered by `load_tools(["market_search"])`.
- *
- * Keep responses compact — searches return up to ~10 hits with the smallest
- * useful subset of fields. The agent can ask for full project / version
- * metadata follow-ups via the dedicated read tools.
+ * Install services captured during agent setup and handed to the lazy market
+ * pack. They cannot be obtained with `useService` at load time because the
+ * pack is mounted mid-loop, outside any Vue injection context.
  */
-export function createMarketSearchTools(ctx: AgentContext): Tool[] {
+export interface MarketInstallServices {
+  instanceMods: Pick<InstanceModsService, 'installFromMarket'>
+  resourcePackService: Pick<InstanceResourcePacksService, 'installFromMarket'>
+  shaderPackService: Pick<InstanceShaderPacksService, 'installFromMarket'>
+  modpackService: Pick<ModpackService, 'installModapckFromMarket'>
+}
+
+function parseInstallUri(uri: string):
+  | { source: 'modrinth' | 'curseforge'; projectId: string; versionOrFileId: string; filename?: string }
+  | { error: string } {
+  // Format: `modrinth:<projectId>:<versionId>[:<filename>]`
+  //         `curseforge:<projectId>:<fileId>[:<filename>]`
+  const parts = uri.split(':')
+  if (parts.length < 3) return { error: `invalid uri (need source:projectId:versionId): ${uri}` }
+  const [source, projectId, versionOrFileId, ...rest] = parts
+  if (source !== 'modrinth' && source !== 'curseforge') {
+    return { error: `unknown source "${source}" (expected modrinth or curseforge)` }
+  }
+  if (!projectId || !versionOrFileId) return { error: `missing projectId or version/fileId in ${uri}` }
+  const filename = rest.length ? rest.join(':') : undefined
+  return { source, projectId, versionOrFileId, filename }
+}
+
+/**
+ * Lazy-loaded marketplace tools. Triggered by `load_tools(["market"])`.
+ *
+ * Bundles read tools (search / project / versions) and the `install` action
+ * for Modrinth + CurseForge. Keep responses compact — searches return up to
+ * ~10 hits with the smallest useful subset of fields. The agent can ask for
+ * full project / version metadata follow-ups via the dedicated read tools.
+ */
+export function createMarketTools(ctx: AgentContext, services: MarketInstallServices): Tool[] {
   // Use the current instance runtime when the agent omits a game version,
   // which is the common case for "find me a sodium-like mod" queries.
   function defaultGameVersion(): string | undefined {
@@ -231,6 +262,92 @@ export function createMarketSearchTools(ctx: AgentContext): Tool[] {
           gameVersions: f.gameVersions,
           installUri: `curseforge:${id}:${f.id}:${f.fileName}`,
         }))
+      },
+    },
+    {
+      name: 'install',
+      description: [
+        'Install resources from a market URI into the current instance.',
+        'URI format: `<source>:<projectId>:<versionOrFileId>[:<filename>]`',
+        '  modrinth: `modrinth:<projectId>:<versionId>[:<filename>]`',
+        '  curseforge: `curseforge:<projectId>:<fileId>[:<filename>]`',
+        'Specify `target` as `mods`, `resourcepacks`, `shaderpacks`, or `modpack`. The `modpack` target downloads but does NOT auto-create the instance.',
+      ].join('\n'),
+      parameters: {
+        type: 'object',
+        properties: {
+          uris: { type: 'array', items: { type: 'string' } },
+          target: { type: 'string', enum: ['mods', 'resourcepacks', 'shaderpacks', 'modpack'] },
+        },
+        required: ['uris', 'target'],
+      },
+      async execute(args) {
+        const uris = (args.uris as string[] | undefined) ?? []
+        const target = String(args.target ?? '')
+        if (!uris.length) return { error: 'uris is empty' }
+        const inst = ctx.instance.value.path
+        if (target !== 'modpack' && !inst) return { error: 'no instance selected' }
+
+        const modrinthVersions: { versionId: string; filename?: string }[] = []
+        const curseforgeFiles: { fileId: number }[] = []
+        const errors: string[] = []
+        for (const uri of uris) {
+          const parsed = parseInstallUri(uri)
+          if ('error' in parsed) { errors.push(parsed.error); continue }
+          if (parsed.source === 'modrinth') {
+            modrinthVersions.push({ versionId: parsed.versionOrFileId, filename: parsed.filename })
+          } else {
+            const id = Number(parsed.versionOrFileId)
+            if (!Number.isFinite(id)) { errors.push(`bad curseforge fileId: ${parsed.versionOrFileId}`); continue }
+            curseforgeFiles.push({ fileId: id })
+          }
+        }
+        if (errors.length && !modrinthVersions.length && !curseforgeFiles.length) {
+          return { errors }
+        }
+
+        const results: Record<string, unknown> = {}
+
+        if (target === 'modpack') {
+          if (modrinthVersions.length) {
+            results.modrinth = await services.modpackService.installModapckFromMarket({
+              market: MarketType.Modrinth,
+              version: modrinthVersions,
+            })
+          }
+          if (curseforgeFiles.length) {
+            results.curseforge = await services.modpackService.installModapckFromMarket({
+              market: MarketType.CurseForge,
+              file: curseforgeFiles,
+            })
+          }
+        } else {
+          const service = target === 'mods'
+            ? services.instanceMods
+            : target === 'resourcepacks'
+              ? services.resourcePackService
+              : target === 'shaderpacks'
+                ? services.shaderPackService
+                : undefined
+          if (!service) return { error: `unknown target: ${target}` }
+          if (modrinthVersions.length) {
+            results.modrinth = await service.installFromMarket({
+              instancePath: inst,
+              market: MarketType.Modrinth,
+              version: modrinthVersions,
+            })
+          }
+          if (curseforgeFiles.length) {
+            results.curseforge = await service.installFromMarket({
+              instancePath: inst,
+              market: MarketType.CurseForge,
+              file: curseforgeFiles,
+            })
+          }
+        }
+
+        if (errors.length) results.errors = errors
+        return { ok: true, ...results }
       },
     },
   ]

@@ -27,6 +27,7 @@ import { existsSync, rmSync } from 'fs'
 import { rename } from 'fs-extra'
 import { Kysely, ParseJSONResultsPlugin } from 'kysely'
 import { Database as SQLDatabase } from 'node-sqlite3-wasm'
+import { join } from 'path'
 import { LauncherApp, LauncherAppPlugin, kGameDataPath } from '~/app'
 import { ImageStorage, ZipManager, kFlights } from '~/infra'
 import { ServiceStateManager } from '~/service'
@@ -111,10 +112,11 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
 
   const logger = app.getLogger('ResourceContext')
   const flights = await app.registry.get(kFlights)
-  // The resource database lives alongside the game data so it travels with the
-  // root during a migration (it used to sit in appData).
-  const getGamePath = await app.registry.get(kGameDataPath)
-  const dbPath = getGamePath('resources.sqlite')
+  // The resource database is launcher-level state and stays in appData: it must
+  // NOT travel with the game data root during a migration (its rows hold
+  // absolute paths that are stale at the new location anyway, so the index is
+  // rebuilt rather than moved).
+  const dbPath = join(app.appDataPath, 'resources.sqlite')
 
   let db: Kysely<Database> | undefined
   for (let i = 0; i < 3; i++) {
