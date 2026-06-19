@@ -727,8 +727,10 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
       'Memory values are in MB. Common fixes: raise `maxMemory` for out-of-memory',
       'crashes, add JVM flags via `vmOptions`, point `java` at a specific runtime',
       'path, set `resolution`, or toggle `fastLaunch` / `showLog`.',
-      'This does NOT change the Minecraft / mod-loader version (`runtime`) — that',
-      'needs a reinstall and is out of scope here.',
+      'To change the Minecraft / mod-loader version, pass `runtime` (see its field',
+      'docs). The runtime change is merged over the current one; afterwards run',
+      '`diagnose_instance` then `repair_instance` to download & install the new',
+      'version before launching.',
     ].join('\n'),
     parameters: {
       type: 'object',
@@ -751,6 +753,19 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
           },
           description: 'Game window resolution',
         },
+        runtime: {
+          type: 'object',
+          description: 'Minecraft & mod-loader versions. Merged over the current runtime, so pass only the fields you want to change. Use EXACTLY ONE mod loader: to switch loaders, set the new one and set the others to "" (empty string). When you change the Minecraft version you usually must also pick a loader version built for it. After editing runtime, run repair_instance to install the new version.',
+          properties: {
+            minecraft: { type: 'string', description: 'Minecraft version, e.g. "1.20.1"' },
+            forge: { type: 'string', description: 'Forge version (e.g. "47.2.0"); "" to disable' },
+            neoForged: { type: 'string', description: 'NeoForge version; "" to disable' },
+            fabricLoader: { type: 'string', description: 'Fabric loader version (e.g. "0.16.0"); "" to disable' },
+            quiltLoader: { type: 'string', description: 'Quilt loader version; "" to disable' },
+            optifine: { type: 'string', description: 'OptiFine version (e.g. "HD_U_I7"); "" to disable' },
+            labyMod: { type: 'string', description: 'LabyMod version; "" to disable' },
+          },
+        },
         fastLaunch: { type: 'boolean', description: 'Skip launch pre-checks for a faster start' },
         showLog: { type: 'boolean', description: 'Show the log window while the game runs' },
         hideLauncher: { type: 'boolean', description: 'Hide the launcher after the game starts' },
@@ -759,7 +774,8 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
       },
     },
     async execute(args) {
-      const path = ctx.instance.value.path
+      const inst = ctx.instance.value
+      const path = inst.path
       if (!path) return { error: 'no instance selected' }
       const editable = [
         'name', 'description', 'java', 'minMemory', 'maxMemory', 'assignMemory',
@@ -774,10 +790,27 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
           edited.push(key)
         }
       }
+      // `runtime` is replaced wholesale by the backend, so merge the requested
+      // fields over the current runtime to avoid wiping the others. Reset
+      // `version` to '' so the launcher recomputes the version id from the new
+      // runtime (otherwise the stale version folder would be launched).
+      let runtimeChanged = false
+      if (Object.prototype.hasOwnProperty.call(args, 'runtime') && args.runtime && typeof args.runtime === 'object') {
+        payload.runtime = { ...inst.runtime, ...(args.runtime as Record<string, unknown>) }
+        payload.version = ''
+        edited.push('runtime')
+        runtimeChanged = true
+      }
       if (!edited.length) return { error: 'no editable properties provided' }
       try {
         await instanceService.editInstance(payload as Parameters<typeof instanceService.editInstance>[0])
-        return { ok: true, edited }
+        return {
+          ok: true,
+          edited,
+          ...(runtimeChanged
+            ? { note: 'Runtime changed and version reset. Run diagnose_instance / repair_instance to install the new version before launching.' }
+            : {}),
+        }
       } catch (e) {
         return { error: `editInstance failed: ${e instanceof Error ? e.message : String(e)}` }
       }
@@ -924,7 +957,7 @@ Rules:
 - The launcher session context block below is a snapshot taken when the conversation started. If something has changed since then, you will receive a "[launcher event] context changed" message in the chat — trust it over the snapshot.
 - Be proactive and take action. When the user reports a problem (a crash, a broken mod setup, a wrong setting) and you can identify a concrete fix, apply it immediately with the tools instead of asking whether you should. Do NOT ask for permission to perform a fix you are confident about — just do it, then briefly report what you changed. Only ask the user first when the choice is genuinely ambiguous (several equally valid options) or you are missing information you cannot obtain yourself.
 - Prefer the virtual filesystem tools (vfs_list, vfs_read) for exploration. \`instance.json\` returns the full instance settings; \`options.txt\` returns parsed Minecraft options.
-- To change instance settings (memory, JVM args, java path, resolution, window/launch flags, name/description), use \`edit_instance\` — pass only the properties you want to change. Read \`vfs_read instance.json\` first to see current values. Memory is in MB. For out-of-memory crashes, raise \`maxMemory\` (and \`minMemory\`) or add JVM flags via \`vmOptions\`. \`edit_instance\` does not change the Minecraft / mod-loader version.
+- To change instance settings (memory, JVM args, java path, resolution, window/launch flags, name/description), use \`edit_instance\` — pass only the properties you want to change. Read \`vfs_read instance.json\` first to see current values. Memory is in MB. For out-of-memory crashes, raise \`maxMemory\` (and \`minMemory\`) or add JVM flags via \`vmOptions\`. To change the Minecraft or mod-loader version, pass \`runtime\` to \`edit_instance\` (it merges over the current runtime — use exactly one loader and clear the others with \`""\`), then run \`diagnose_instance\` and \`repair_instance\` to install the new version before launching.
 - To enable or disable a mod / resourcepack / shaderpack, use the \`bash\` tool with \`mv\` to toggle a trailing \`.disabled\` suffix on its virtual path: appending \`.disabled\` disables it, stripping the suffix enables it. e.g. \`mv mods/foo.jar mods/foo.jar.disabled\` (disable) or \`mv mods/foo.jar.disabled mods/foo.jar\` (enable). Shaderpacks are exclusive — enabling one disables the previously active pack.
 - To delete a mod / resourcepack / shaderpack, use the \`bash\` tool with \`rm\` on its virtual path (e.g. \`rm mods/foo.jar resourcepacks/bar\`). \`rm\` only works under \`mods/\`, \`resourcepacks/\`, \`shaderpacks/\`; deleting any other path is refused.
 - To add new content, load the \`market\` pack: find projects with \`modrinth_search\` / \`curseforge_search\`, then \`install\` with a target and market URIs (\`modrinth:projId:verId\`, \`curseforge:projId:fileId\`).
