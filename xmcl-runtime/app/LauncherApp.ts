@@ -10,7 +10,7 @@ import { setTimeout } from 'timers/promises'
 import { Logger } from '~/infra'
 import { IS_DEV, LAUNCHER_NAME } from '../constant'
 import { isSystemError } from '@xmcl/utils'
-import { ensureGameDataFilesInRoot, handleMigrateRoot } from './migrate'
+import { handleMigrateRoot } from './migrate'
 import { listen } from '../util/server'
 import { createDummyLogger } from './DummyLogger'
 import { Host } from './Host'
@@ -344,10 +344,6 @@ export class LauncherApp extends EventEmitter {
 
   async #registerGamePath(gamePath: string) {
     this.#gamePath = gamePath
-    // Move launcher state that used to live in appData (instances.json,
-    // resources.sqlite) into the game root before anything resolves
-    // `kGameDataPath`, so consumers always read from the relocated copy.
-    await ensureGameDataFilesInRoot(this.appDataPath, gamePath, this.logger)
     validateDirectory(this.platform, gamePath).then((code) => {
       if (code) {
         this.registry.get(kSettings).then(s => s.invalidGameDataPathSet(code))

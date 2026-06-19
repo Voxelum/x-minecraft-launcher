@@ -61,8 +61,15 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       app,
       () => store.registerStatic(new InstanceState(), InstanceServiceKey),
       async () => {
-        const instancesPath = this.getPath('instances.json')
+        // instances.json is launcher-level state and stays in appData: it must
+        // not travel with the game data root on a migration. Managed instances
+        // are stored relative to the (movable) instances folder, so they still
+        // resolve after a root change. Fall back once to the legacy game-root
+        // copy so groups/selection survive the move of this file into appData.
+        const instancesPath = join(this.app.appDataPath, 'instances.json')
+        const legacyInstancesPath = this.getPath('instances.json')
         const instanceConfig = await readJson(instancesPath)
+          .catch(() => readJson(legacyInstancesPath))
           .then(InstancesSchema.parse)
           .catch(() => InstancesSchema.parse({}))
         const managed = (await readdirEnsured(this.getPathUnder())).map((p) => this.getPathUnder(p))

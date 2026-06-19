@@ -1,4 +1,4 @@
-import { chmod, copyFile, ensureDir, existsSync, readdir, readlink, remove, rename, rmdir, stat, utimes, writeFile } from 'fs-extra'
+import { chmod, copyFile, ensureDir, lstat, readdir, readlink, remove, rename, rmdir, symlink, utimes, writeFile } from 'fs-extra'
 import { join, resolve } from 'path'
 import { Logger } from '~/infra'
 import type { LauncherApp } from './LauncherApp'
@@ -23,14 +23,36 @@ type OnCopied = (bytes: number, file: string) => void
  * `newRoot/versions` already exists, which previously caused the whole
  * migration to roll back silently ("nothing happens").
  *
+ * Symlinks are recreated as links and never followed. Instances keep their
+ * `versions`/`libraries` folders as symlinks back to the shared root, so
+ * following one (the default `stat` behaviour) would copy the root's contents
+ * into the instance and then `remove()` them *through* the link — silently
+ * wiping the real version jars from the root. That is the "my Minecraft
+ * version jar is gone after moving the data" report.
+ *
  * Falls back to copy + remove across different volumes (`EXDEV`). The optional
  * `onCopied` callback receives byte-level progress for that slow cross-volume
  * path so the UI can render a smooth, determinate progress bar.
  */
 async function move(from: string, to: string, onCopied?: OnCopied) {
-  const fromStat = await stat(from).catch(() => undefined)
+  // `lstat`, never `stat`: we must see a symlink as a link, not as its target.
+  const fromStat = await lstat(from).catch(() => undefined)
   if (!fromStat) return
-  const toStat = await stat(to).catch(() => undefined)
+
+  if (fromStat.isSymbolicLink()) {
+    // Recreate the link itself at the destination rather than its target. The
+    // target is an absolute path into the old root; the instance launch
+    // precheck relinks any stale target to the new root on next launch.
+    const target = await readlink(from).catch(() => null)
+    if (target) {
+      await remove(to).catch(() => { })
+      await symlink(target, to).catch(() => { })
+    }
+    await remove(from).catch(() => { })
+    return
+  }
+
+  const toStat = await lstat(to).catch(() => undefined)
 
   // Both sides are directories: merge child by child instead of failing.
   if (fromStat.isDirectory() && toStat?.isDirectory()) {
@@ -61,25 +83,22 @@ async function move(from: string, to: string, onCopied?: OnCopied) {
         }
         await rmdir(from).catch(() => { })
       } else {
-        // Skip symlinks: their target may live outside the migrated tree.
-        const link = await readlink(from).catch(() => null)
-        if (!link) {
-          // The destination directory is guaranteed to exist (the directory
-          // branch above ran `ensureDir`, or this is a top-level file landing
-          // in the migration root). Copying with the low-level `copyFile`
-          // avoids fs-extra's per-file `mkdirs` + `lstat` overhead, which is a
-          // real win for the thousands of tiny files under assets/libraries —
-          // exactly where cross-volume migrations spend most of their time.
-          await copyFile(from, to)
-          // Preserve mode (the JRE ships executable binaries) and timestamps
-          // (resource caches key off mtime); failures here must not abort the
-          // migration on filesystems that ignore these attributes (e.g. NTFS
-          // mounted via ntfs-3g).
-          await chmod(to, fromStat.mode).catch(() => { })
-          await utimes(to, fromStat.atime, fromStat.mtime).catch(() => { })
-          await remove(from)
-          onCopied?.(fromStat.size, to)
-        }
+        // A regular file across volumes (symlinks were handled above). Copy
+        // with the low-level `copyFile` to avoid fs-extra's per-file `mkdirs`
+        // + `lstat` overhead, which is a real win for the thousands of tiny
+        // files under assets/libraries where cross-volume migrations spend
+        // most of their time. The destination directory is guaranteed to
+        // exist (the directory branch above ran `ensureDir`, or this is a
+        // top-level file landing in the migration root).
+        await copyFile(from, to)
+        // Preserve mode (the JRE ships executable binaries) and timestamps
+        // (resource caches key off mtime); failures here must not abort the
+        // migration on filesystems that ignore these attributes (e.g. NTFS
+        // mounted via ntfs-3g).
+        await chmod(to, fromStat.mode).catch(() => { })
+        await utimes(to, fromStat.atime, fromStat.mtime).catch(() => { })
+        await remove(from)
+        onCopied?.(fromStat.size, to)
       }
     } else {
       throw e
@@ -93,8 +112,14 @@ async function move(from: string, to: string, onCopied?: OnCopied) {
  * determinate instead of an endless spinner.
  */
 async function computeSize(path: string): Promise<{ bytes: number; files: number }> {
-  const s = await stat(path).catch(() => undefined)
+  // `lstat` so a symlink is weighed as a single zero-byte entry instead of its
+  // (possibly huge, possibly shared) target — `move` only recreates the link,
+  // it never copies the target, so counting the target here would both
+  // double-count shared roots reached via instance symlinks and stop the bar
+  // from ever reaching 100%.
+  const s = await lstat(path).catch(() => undefined)
   if (!s) return { bytes: 0, files: 0 }
+  if (s.isSymbolicLink()) return { bytes: 0, files: 1 }
   if (s.isDirectory()) {
     const children = await readdir(path)
     let bytes = 0
@@ -107,45 +132,6 @@ async function computeSize(path: string): Promise<{ bytes: number; files: number
     return { bytes, files }
   }
   return { bytes: s.size, files: 1 }
-}
-
-/**
- * Relocate launcher state that used to live in `appData` into the game data
- * root, so it travels with the data on a migration and so each root is
- * self-contained.
- *
- * This runs once for existing installs: the files are only moved when they
- * exist in `appData` and are not already present in the root. When the root
- * and `appData` are the same directory there is nothing to do.
- */
-export async function ensureGameDataFilesInRoot(appDataPath: string, gameRoot: string, logger: Logger) {
-  if (resolve(appDataPath) === resolve(gameRoot)) return
-
-  const relocate = async (name: string) => {
-    const from = join(appDataPath, name)
-    const to = join(gameRoot, name)
-    try {
-      // Never clobber a copy that already exists at the root.
-      if (existsSync(from) && !existsSync(to)) {
-        logger.log(`Relocate game data file into root: ${from} -> ${to}`)
-        await move(from, to)
-      }
-    } catch (e) {
-      logger.warn(`Failed to relocate ${from} -> ${to}`, e)
-    }
-  }
-
-  await relocate('instances.json')
-
-  // Move the resource database together with its WAL sidecars, gated on the
-  // main file so the database is never split from its journal.
-  const dbFrom = join(appDataPath, 'resources.sqlite')
-  const dbTo = join(gameRoot, 'resources.sqlite')
-  if (existsSync(dbFrom) && !existsSync(dbTo)) {
-    await relocate('resources.sqlite')
-    await relocate('resources.sqlite-wal')
-    await relocate('resources.sqlite-shm')
-  }
 }
 
 export async function handleMigrateRoot(source: string, logger: Logger, app: LauncherApp) {
@@ -180,10 +166,6 @@ export async function handleMigrateRoot(source: string, logger: Logger, app: Lau
     'launcher_profiles.json',
     'options.txt',
     'servers.dat',
-    'instances.json',
-    'resources.sqlite',
-    'resources.sqlite-wal',
-    'resources.sqlite-shm',
   ]
   const finished = [] as Array<{ from: string, to: string }>
   try {
