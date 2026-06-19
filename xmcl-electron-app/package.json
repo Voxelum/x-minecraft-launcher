@@ -2,7 +2,7 @@
     "name": "xmcl",
     "private": true,
     "main": "./index.js",
-    "version": "0.56.8",
+    "version": "0.57.0",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "X Minecraft Launcher - A modern Minecraft launcher",
     "license": "MIT",
@@ -37,7 +37,6 @@
         "@types/lodash.throttle": "^4.1.7",
         "@types/node": "^20.19.0",
         "@types/semver": "^7.3.13",
-
         "@types/yazl": "^2.4.2",
         "@vue/runtime-dom": "latest",
         "@xmcl/client": "workspace:*",
