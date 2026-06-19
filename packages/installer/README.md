@@ -325,8 +325,6 @@ await completeInstallation(resolvedVersion, {
 - **Resumable Downloads**: Uses checkpoint handlers to resume interrupted downloads
 - **Custom Range Policies**: Implement your own `RangePolicy` to control how files are split
 
-````
-
 ### Install Forge
 
 Install Forge mod loader:
