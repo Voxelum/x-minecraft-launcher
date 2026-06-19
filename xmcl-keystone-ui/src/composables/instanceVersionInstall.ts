@@ -662,12 +662,25 @@ export function useInstanceVersionInstallInstruction(
         err?.name === 'BodyTimeoutError' || err?.name === 'HeadersTimeoutError' ||
         err?.name === 'SocketError' || err?.name === 'DNSNotFoundError' ||
         (err?.message?.includes('fetch failed') ?? false)
+      // The main process never replied to a `service-call` IPC invoke even
+      // though this renderer is still alive to catch the rejection. That means
+      // the IPC bridge to the backend is broken - nothing else in the launcher
+      // will work either, and retrying the install in place cannot recover it.
+      // The only real fix is to relaunch, so we surface a clear "please restart"
+      // hint instead of a generic install-failed toast.
+      const isBackendUnresponsiveError = (err?.message?.includes('reply was never sent') ?? false) ||
+        (err?.message?.includes('render frame was disposed') ?? false)
 
       // Only report unknown failures to telemetry. Environment errors
       // (anti-virus, disk full, broken network) are not bugs and otherwise
       // generate per-user storms - the user already gets a clear toast below.
       if (err.name && !isPermissionError && !isDiskFull && !isNetworkError) {
-        if (err.name === 'Error') {
+        if (isBackendUnresponsiveError) {
+          // Otherwise reported as a generic 'Error'. Give it a distinct,
+          // searchable name so the broken-IPC signal is not silently lumped
+          // together with genuine install bugs.
+          err.name = 'LauncherBackendUnresponsiveError'
+        } else if (err.name === 'Error') {
           err.name = 'InstallInstallInstructionError'
         }
         appInsights.trackException({ exception: err })
@@ -677,7 +690,13 @@ export function useInstanceVersionInstallInstruction(
       // produced a (hard-coded English) notification; every other install
       // failure was silently swallowed and the user just saw the install
       // button keep failing with no explanation.
-      if (isPermissionError) {
+      if (isBackendUnresponsiveError) {
+        notify({
+          title: t('errors.InstallBackendUnresponsive.title'),
+          body: t('errors.InstallBackendUnresponsive.body'),
+          level: 'error',
+        })
+      } else if (isPermissionError) {
         notify({
           title: t('errors.InstallPermissionDenied.title'),
           body: t('errors.InstallPermissionDenied.body'),
