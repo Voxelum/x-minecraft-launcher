@@ -92,7 +92,7 @@
                 </div>
               </template>
               <v-list-item-title>{{ c.title }}</v-list-item-title>
-              <v-list-item-subtitle>{{ c.id }}</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ c.description }}</v-list-item-subtitle>
             </v-list-item>
           </div>
         </template>
