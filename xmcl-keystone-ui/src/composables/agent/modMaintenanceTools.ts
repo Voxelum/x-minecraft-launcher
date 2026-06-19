@@ -2,7 +2,8 @@ import type { AgentContext } from './tools'
 import type { Tool } from './loop'
 
 /**
- * Lazy-loaded mod maintenance tools. Triggered by `load_tools(["mod_maintenance"])`.
+ * Lazy-loaded mod maintenance tools. Part of the `troubleshoot` pack
+ * (`load_tools(["troubleshoot"])`), alongside the Java tools.
  *
  * Mirrors the launcher's "Mod options" page (dependency check, unused-library
  * cleaner, update checker) so the agent can fix the most common mod-related

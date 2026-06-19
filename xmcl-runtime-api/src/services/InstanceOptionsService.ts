@@ -131,6 +131,26 @@ export interface InstanceOptionsService {
   setServerProperties(instancePath: string, properties: Record<string, string | number | boolean>): Promise<void>
 
   /**
+   * Read the raw text content of a known top-level file under the instance's
+   * dedicated-server folder (`<instance>/server/`). Allowed files: `server.properties`,
+   * `eula.txt`, `ops.json`, `whitelist.json`, `banned-ips.json`, `banned-players.json`,
+   * `usercache.json`. Returns `''` when the file does not exist. Subpaths and path
+   * traversal are rejected.
+   * @param instancePath The instance path
+   * @param file The server file name (one of the allowed files)
+   */
+  getServerFile(instancePath: string, file: string): Promise<string>
+
+  /**
+   * Overwrite the raw text content of a known top-level server file (see
+   * {@link getServerFile} for the allowed set). Creates the file if missing.
+   * @param instancePath The instance path
+   * @param file The server file name (one of the allowed files)
+   * @param content The new file content
+   */
+  setServerFile(instancePath: string, file: string, content: string): Promise<void>
+
+  /**
    * List the relative paths of every file under the instance `config/` directory.
    * @param instancePath The instance path
    */

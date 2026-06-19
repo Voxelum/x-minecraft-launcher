@@ -8,6 +8,7 @@ import { kInstanceSave } from '../instanceSave'
 import { kInstanceShaderPacks } from '../instanceShaderPack'
 import { kInstanceVersion } from '../instanceVersion'
 import { kInstanceVersionInstall } from '../instanceVersionInstall'
+import { useInstanceVersionServerInstall } from '../instanceVersionServerInstall'
 import { kInstances } from '../instances'
 import { kUserContext } from '../user'
 import { kModDependenciesCheck } from '../modDependenciesCheck'
@@ -16,9 +17,10 @@ import { kModUpgrade } from '../modUpgrade'
 import { kJavaContext } from '../java'
 import { kInstanceJavaDiagnose } from '../instanceJavaDiagnose'
 import { useService } from '../service'
-import { InstanceInstallServiceKey, JavaServiceKey } from '@xmcl/runtime-api'
+import { InstanceInstallServiceKey, InstanceModsServiceKey, InstanceOptionsServiceKey, JavaServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { getInstanceFileFromCurseforgeFile } from '@/util/curseforge'
 import { getInstanceFileFromModrinthVersion } from '@/util/modrinth'
+import { getModSide } from '@/util/mod'
 import type { InstanceFile } from '@xmcl/instance'
 import { injection } from '@/util/inject'
 import { useI18n } from 'vue-i18n'
@@ -60,6 +62,8 @@ export interface AgentSession {
 interface StoredAgentConversation {
   messages: ChatMessage[]
   snapshot?: SessionContext
+  /** Lazy tool packs loaded during this conversation, re-mounted on resume. */
+  loadedPacks?: string[]
   updatedAt: number
 }
 
@@ -81,7 +85,7 @@ export function useAgent(): AgentSession {
   const router = useRouter()
   const { instance } = injection(kInstance)
   const { instances, selectedInstance } = injection(kInstances)
-  const { resolvedVersion } = injection(kInstanceVersion)
+  const { resolvedVersion, serverVersionId } = injection(kInstanceVersion)
   const { instruction: installInstruction, fix: fixInstanceInstall } = injection(kInstanceVersionInstall)
   const { java, status: javaStatus } = injection(kInstanceJava)
   const { mods } = injection(kInstanceModsContext)
@@ -89,15 +93,19 @@ export function useAgent(): AgentSession {
   const { shaderPacks, shaderPack: selectedShaderPack } = injection(kInstanceShaderPacks)
   const { saves } = injection(kInstanceSave)
   const { gameOptions } = injection(kInstanceOptions)
-  const { userProfile } = injection(kUserContext)
-  const { launch, kill } = injection(kInstanceLaunch)
+  const { userProfile, users, select: selectAccount } = injection(kUserContext)
+  const { launch, kill, serverCount } = injection(kInstanceLaunch)
   const depCheck = injection(kModDependenciesCheck)
   const libCleaner = injection(kModLibCleaner)
   const modUpgrade = injection(kModUpgrade)
   const { all: javaList, refresh: refreshJavaList } = injection(kJavaContext)
   const { issue: javaIssue } = injection(kInstanceJavaDiagnose)
   const instanceInstall = useService(InstanceInstallServiceKey)
+  const instanceMods = useService(InstanceModsServiceKey)
+  const instanceOptions = useService(InstanceOptionsServiceKey)
   const javaService = useService(JavaServiceKey)
+  const versionService = useService(VersionServiceKey)
+  const { install: installServerVersion } = useInstanceVersionServerInstall()
   const agentSettings = useAgentSettings()
 
   const resourcePacks = computed(() => [...rpEnabled.value, ...rpDisabled.value])
@@ -202,6 +210,140 @@ export function useAgent(): AgentSession {
     }
   }
 
+  // ── Local server ──────────────────────────────────────────────────────
+
+  /**
+   * The server version id installed during this session. Kept because the
+   * reactive `serverVersionId` (derived by matching the synced server list
+   * against the instance runtime) can miss right after an install — the inner
+   * install fires `refreshServerVersion` without awaiting, and a parsed server
+   * profile whose `minecraft` differs from the runtime never matches. We use it
+   * as an authoritative fallback, verified against disk.
+   */
+  let installedServerVersion: string | undefined
+
+  /** Enabled mods that are not client-only, i.e. safe to deploy to a server. */
+  function serverFitMods() {
+    const rt = instance.value.runtime
+    const loader = rt.neoForged ? 'neoforge' : rt.forge ? 'forge' : rt.quiltLoader ? 'quilt' : 'fabric'
+    return mods.value.filter((m) => m.enabled && getModSide(m, loader) !== 'CLIENT')
+  }
+
+  async function installServer() {
+    if (!currentInstancePath()) return { error: 'no instance selected' }
+    const version = await installServerVersion()
+    installedServerVersion = version || installedServerVersion
+    // The inner install calls refreshServerVersion fire-and-forget; await it
+    // here so the reactive server list (and serverVersionId) catches up.
+    if (version) await versionService.refreshServerVersion(version).catch(() => undefined)
+    return { ok: true, version }
+  }
+
+  /** True if `id` resolves to an installed server version on disk. */
+  async function serverVersionResolves(id: string | undefined): Promise<boolean> {
+    if (!id) return false
+    return versionService.resolveServerVersion(id).then(() => true, () => false)
+  }
+
+  async function getServerStatus() {
+    const path = currentInstancePath()
+    if (!path) return { error: 'no instance selected' }
+    const [eula, properties, deployed] = await Promise.all([
+      instanceOptions.getEULA(path).catch(() => false),
+      instanceOptions.getServerProperties(path).catch(() => ({} as Record<string, string>)),
+      instanceMods.getServerInstanceMods(path).catch(() => [] as Array<{ fileName: string; ino: number }>),
+    ])
+    // Prefer the reactive match; fall back to the id we installed this session,
+    // verified against disk, so a stale/missed match doesn't report a real
+    // server as "not installed".
+    let version = serverVersionId.value || undefined
+    let installed = !!version
+    if (!installed && await serverVersionResolves(installedServerVersion)) {
+      installed = true
+      version = installedServerVersion
+    }
+    return {
+      installed,
+      serverVersion: version ?? null,
+      running: serverCount.value,
+      eula,
+      properties,
+      deployedMods: deployed.map((d) => d.fileName),
+    }
+  }
+
+  async function setServerEula(accepted: boolean) {
+    const path = currentInstancePath()
+    if (!path) return { error: 'no instance selected' }
+    await instanceOptions.setEULA(path, accepted)
+    return { ok: true, eula: accepted }
+  }
+
+  async function setServerProperties(props: Record<string, string | number | boolean>) {
+    const path = currentInstancePath()
+    if (!path) return { error: 'no instance selected' }
+    await instanceOptions.setServerProperties(path, props)
+    const properties = await instanceOptions.getServerProperties(path).catch(() => ({} as Record<string, string>))
+    return { ok: true, properties }
+  }
+
+  async function deployServerMods(paths?: string[]) {
+    const path = currentInstancePath()
+    if (!path) return { error: 'no instance selected' }
+    const files = paths && paths.length ? paths : serverFitMods().map((m) => m.path)
+    if (!files.length) return { deployed: 0, note: 'No server-compatible enabled mods to deploy.' }
+    await instanceMods.installToServerInstance({ path, files })
+    return { ok: true, deployed: files.length, files }
+  }
+
+  async function setServerFile(file: string, content: string) {
+    const path = currentInstancePath()
+    if (!path) return { error: 'no instance selected' }
+    try {
+      await instanceOptions.setServerFile(path, file, content)
+      return { ok: true, file }
+    } catch (e) {
+      return { error: `cannot write server/${file}: ${e instanceof Error ? e.message : String(e)}` }
+    }
+  }
+
+  async function launchServer(opts?: { nogui?: boolean }) {
+    const path = currentInstancePath()
+    if (!path) return { error: 'no instance selected' }
+    const eula = await instanceOptions.getEULA(path).catch(() => false)
+    if (!eula) {
+      return { error: 'EULA not accepted. The user must agree to the Minecraft EULA (https://aka.ms/MinecraftEULA); call set_server_eula({ accepted: true }) once they do, then launch again.' }
+    }
+    let version = serverVersionId.value || installedServerVersion
+    if (!await serverVersionResolves(version)) {
+      version = await installServerVersion()
+      installedServerVersion = version || installedServerVersion
+    }
+    const before = serverCount.value
+    try {
+      await launch('server', { nogui: opts?.nogui, version })
+    } catch (e) {
+      return { ok: false, version, error: `failed to start server: ${e instanceof Error ? e.message : String(e)}` }
+    }
+    // `launch` only spawns the JVM and returns; a broken/incomplete install
+    // (e.g. a missing forge shim jar) makes the server exit within a second, so
+    // a bare `ok: true` would be a lie. Watch the live server-process count
+    // briefly and report the real outcome.
+    let exited = false
+    for (let i = 0; i < 8 && !exited; i++) {
+      await new Promise<void>((r) => setTimeout(r, 400))
+      if (serverCount.value <= before) exited = true
+    }
+    if (exited) {
+      return {
+        ok: false,
+        version,
+        error: 'The server process exited right after launching — the install is likely incomplete or broken (e.g. a missing jar). Read the newest entry under launch-failures/ (or the server logs/) with vfs_read to get the exact error, then reinstall or repair the server before trying again.',
+      }
+    }
+    return { ok: true, version }
+  }
+
   const ctx: AgentContext = {
     router,
     instance,
@@ -233,6 +375,15 @@ export function useAgent(): AgentSession {
     javaList,
     javaIssue,
     installJava,
+    getServerStatus,
+    installServer,
+    setServerEula,
+    setServerProperties,
+    deployServerMods,
+    launchServer,
+    setServerFile,
+    accounts: users,
+    selectAccount,
   }
 
   const registry = createXmclTools(ctx)
@@ -244,6 +395,12 @@ export function useAgent(): AgentSession {
   let abortCtrl: AbortController | undefined
   /** Snapshot frozen on first user message in the current session. */
   let sessionSnapshot: SessionContext | undefined
+  /**
+   * Lazy tool packs loaded so far this session. Each `runAgent` call rebuilds
+   * its tool map from the base set, so we re-mount these every turn (and across
+   * reloads) — otherwise a tool loaded in an earlier turn becomes "unknown".
+   */
+  const loadedPacks = new Set<string>()
   /** Stop watcher for resolved-version / java drift. Disposed on reset. */
   let stopDriftWatch: (() => void) | undefined
 
@@ -294,6 +451,7 @@ export function useAgent(): AgentSession {
     store.byInstance[path] = {
       messages: trimMessagesForStore(messages.value),
       snapshot: sessionSnapshot,
+      loadedPacks: [...loadedPacks],
       updatedAt: Date.now(),
     }
     writeConversationStore(store)
@@ -306,6 +464,7 @@ export function useAgent(): AgentSession {
     stopDriftWatch = undefined
     events.value = []
     sessionSnapshot = undefined
+    loadedPacks.clear()
     if (!path) {
       messages.value = []
       return
@@ -320,6 +479,7 @@ export function useAgent(): AgentSession {
 
     messages.value = saved.messages.slice()
     sessionSnapshot = saved.snapshot
+    for (const p of saved.loadedPacks ?? []) loadedPacks.add(p)
     // Backward compatibility: if an old persisted conversation has a system
     // message but no snapshot metadata, regenerate one so we can continue.
     if (!sessionSnapshot && saved.messages.some((m) => m.role === 'system')) {
@@ -424,8 +584,14 @@ export function useAgent(): AgentSession {
         ...options,
         tools: registry.base,
         loadable: registry.loadable,
+        preloadedPacks: [...loadedPacks],
         signal: abortCtrl.signal,
         onEvent: (e) => {
+          // Remember packs loaded this turn so later turns (and reloads)
+          // re-mount them instead of failing with "unknown tool".
+          if (e.type === 'tools_loaded' && e.loaded) {
+            for (const n of e.loaded) loadedPacks.add(n)
+          }
           events.value = [...events.value, e]
           // `runAgent` mutates `history` in place. `messages` is a shallowRef,
           // so we must hand it a NEW array reference each event — reassigning
@@ -449,6 +615,7 @@ export function useAgent(): AgentSession {
     stopDriftWatch?.()
     stopDriftWatch = undefined
     sessionSnapshot = undefined
+    loadedPacks.clear()
     messages.value = []
     events.value = []
     persistCurrentConversation()

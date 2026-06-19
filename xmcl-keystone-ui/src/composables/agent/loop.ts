@@ -35,6 +35,14 @@ export interface RunAgentOptions extends LLMOptions {
    * rest of the loop.
    */
   loadable?: Record<string, LoadableToolPack>
+  /**
+   * Pack names already loaded earlier in the *session* (across previous user
+   * turns). Each `runAgent` call rebuilds its tool map from `tools`, so without
+   * this the tools a prior turn loaded would be missing — the model would see
+   * them in the history and call one, only to get an "unknown tool" error.
+   * These packs are re-mounted before the first model call.
+   */
+  preloadedPacks?: string[]
   /** Hard cap on tool-call rounds. Each round = one assistant turn. */
   maxIterations?: number
   /** Fired for each LLM/tool event. UI uses this to render the transcript. */
@@ -115,7 +123,7 @@ export async function runAgent(
   messages: ChatMessage[],
   options: RunAgentOptions,
 ): Promise<ChatMessage[]> {
-  const { tools, loadable, maxIterations = DEFAULT_MAX_ITERATIONS, onEvent, ...llm } = options
+  const { tools, loadable, preloadedPacks, maxIterations = DEFAULT_MAX_ITERATIONS, onEvent, ...llm } = options
   const toolMap = new Map<string, Tool>(tools.map((t) => [t.name, t]))
   const loaded = new Set<string>()
 
@@ -126,6 +134,25 @@ export async function runAgent(
       onEvent?.({ type: 'tools_loaded', loaded: names })
     })
     toolMap.set(loadTool.name, loadTool)
+  }
+
+  // Re-mount packs the session loaded in earlier turns so their tools survive
+  // across user messages. Without this, a tool loaded in a previous turn (e.g.
+  // `set_server_eula` from the `server` pack) would be "unknown" the next time
+  // the user replies, since this fresh `runAgent` only knows `tools`.
+  if (loadable && preloadedPacks?.length) {
+    for (const name of preloadedPacks) {
+      if (loaded.has(name)) continue
+      const pack = loadable[name]
+      if (!pack) continue
+      try {
+        const ts = await pack.load()
+        for (const t of ts) toolMap.set(t.name, t)
+        loaded.add(name)
+      } catch (err) {
+        console.error(`[agent] failed to re-mount pack "${name}"`, err)
+      }
+    }
   }
 
   for (let i = 0; i < maxIterations; i++) {

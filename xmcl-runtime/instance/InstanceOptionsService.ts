@@ -28,6 +28,21 @@ import { requireString } from '../util/object'
 import { existsSync } from 'fs'
 
 /**
+ * Top-level files under `<instance>/server/` that the agent / UI may read &
+ * write directly. Restricted to a fixed allowlist so callers cannot read or
+ * overwrite arbitrary paths.
+ */
+const SERVER_FILES = new Set([
+  'server.properties',
+  'eula.txt',
+  'ops.json',
+  'whitelist.json',
+  'banned-ips.json',
+  'banned-players.json',
+  'usercache.json',
+])
+
+/**
  * The service to watch game setting (options.txt) and shader options (optionsshader.txt)
  */
 @ExposeServiceKey(InstanceOptionsServiceKey)
@@ -63,6 +78,30 @@ export class InstanceOptionsService extends AbstractService implements IInstance
         .join('\n') + '\n'
     await ensureFile(path)
     await writeFile(path, content)
+  }
+
+  /**
+   * Resolve a top-level server file to its absolute path, rejecting anything
+   * that is not in the {@link SERVER_FILES} allowlist (including subpaths and
+   * path traversal).
+   */
+  #resolveServerFile(instancePath: string, file: string) {
+    if (basename(file) !== file || !SERVER_FILES.has(file)) {
+      throw new AnyError('ServerFileError', `Invalid or unsupported server file: ${file}`)
+    }
+    return join(instancePath, 'server', file)
+  }
+
+  async getServerFile(instancePath: string, file: string): Promise<string> {
+    const target = this.#resolveServerFile(instancePath, file)
+    const content = await readFile(target, 'utf-8').catch(handleOnlyNotFound)
+    return content ?? ''
+  }
+
+  async setServerFile(instancePath: string, file: string, content: string): Promise<void> {
+    const target = this.#resolveServerFile(instancePath, file)
+    await ensureFile(target)
+    await writeFile(target, content)
   }
 
   /**

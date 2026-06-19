@@ -5,6 +5,7 @@ import {
   InstanceModsServiceKey,
   InstanceOptionsServiceKey,
   InstanceResourcePacksServiceKey,
+  InstanceSavesServiceKey,
   InstanceServiceKey,
   InstanceShaderPacksServiceKey,
   LaunchServiceKey,
@@ -70,6 +71,26 @@ export interface AgentContext {
   javaIssue: Ref<'invalid' | 'incompatible' | undefined>
   /** Install the Java runtime the current instance requires. */
   installJava: () => Promise<unknown>
+  // ── Local server (mirrors the "Launch server" dialog) ─────────────────
+  /** Diagnose the local server: installed version, running count, EULA, server.properties, deployed mods. */
+  getServerStatus: () => Promise<unknown>
+  /** Install the dedicated-server build for the current instance (server version + server jar + dependencies). */
+  installServer: () => Promise<unknown>
+  /** Accept or revoke the Minecraft EULA required to run a server. */
+  setServerEula: (accepted: boolean) => Promise<unknown>
+  /** Patch server.properties (port, motd, max-players, online-mode, ...). */
+  setServerProperties: (props: Record<string, string | number | boolean>) => Promise<unknown>
+  /** Deploy enabled mods into the server folder. Defaults to the server-compatible enabled mods. */
+  deployServerMods: (paths?: string[]) => Promise<unknown>
+  /** Launch the current instance as a local server (installs first if needed). */
+  launchServer: (opts?: { nogui?: boolean }) => Promise<unknown>
+  /** Overwrite a known server-root file (ops.json, whitelist.json, banned-*.json, etc.) with raw text. */
+  setServerFile: (file: string, content: string) => Promise<unknown>
+  // ── Accounts (switch among already-logged-in users; no credential handling) ──
+  /** All user accounts already logged into the launcher. */
+  accounts: Ref<UserProfile[]>
+  /** Select which logged-in account is active by its id. */
+  selectAccount: (id: string) => void
 }
 
 // ── Shape helpers ──────────────────────────────────────────────────────
@@ -256,6 +277,40 @@ function pathKind(path: string): { kind: AssetKind | 'instance.json' | 'options.
   return { kind: 'root', rest: clean }
 }
 
+// ── Local-server virtual subtree (`server/...`) ──────────────────────────
+// The dedicated server lives at `<instance>/server/`. The log & config
+// services join their own subdir to the path they are given, so pointing them
+// at `<instance>/server` reads `<instance>/server/{logs,config,crash-reports}`.
+
+/** Absolute path of the local-server subfolder for an instance. */
+function serverDir(instancePath: string): string {
+  return instancePath.replace(/[\\/]+$/, '') + '/server'
+}
+
+type ServerKind = 'root' | 'mods' | 'config' | 'logs' | 'crash-reports' | 'server.properties' | 'eula.txt' | 'rootfile' | 'unknown'
+
+/** Top-level server admin files exposed as raw text (parallels the backend allowlist). */
+const SERVER_ROOT_FILES = ['ops.json', 'whitelist.json', 'banned-ips.json', 'banned-players.json', 'usercache.json'] as const
+
+/**
+ * Parse a `server/...` virtual path into the local-server subtree, or `null`
+ * when the path is not under `server/` (so callers fall back to the client vfs).
+ */
+function serverPathKind(path: string): { kind: ServerKind; rest: string } | null {
+  const clean = path.replace(/^\.?\/+/, '').replace(/\/+$/, '')
+  if (clean !== 'server' && !clean.startsWith('server/')) return null
+  const sub = clean === 'server' ? '' : clean.slice('server/'.length)
+  if (!sub) return { kind: 'root', rest: '' }
+  if (sub === 'server.properties') return { kind: 'server.properties', rest: '' }
+  if (sub === 'eula.txt') return { kind: 'eula.txt', rest: '' }
+  if ((SERVER_ROOT_FILES as readonly string[]).includes(sub)) return { kind: 'rootfile', rest: sub }
+  const [head, ...rest] = sub.split('/')
+  if (head === 'mods' || head === 'config' || head === 'logs' || head === 'crash-reports') {
+    return { kind: head, rest: rest.join('/') }
+  }
+  return { kind: 'unknown', rest: sub }
+}
+
 // ── Factory ─────────────────────────────────────────────────────────────
 
 export interface ToolRegistry {
@@ -277,12 +332,101 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
   const modpackService = useService(ModpackServiceKey)
   const optionsService = useService(InstanceOptionsServiceKey)
   const instanceService = useService(InstanceServiceKey)
+  const savesService = useService(InstanceSavesServiceKey)
 
   const tools: Tool[] = []
   const tool = (t: Tool) => { tools.push(t) }
 
   function modByPathOrId(needle: string): ModFile | undefined {
     return ctx.mods.value.find((m) => m.path === needle || m.fileName === needle || m.modId === needle)
+  }
+
+  // ── Local-server vfs helpers (read the `<instance>/server/` subtree) ──
+
+  async function listServerVfs(sp: { kind: ServerKind; rest: string }, instPath: string) {
+    const sdir = serverDir(instPath)
+    if (sp.kind === 'root') {
+      const [serverMods, eula, props] = await Promise.all([
+        instanceMods.getServerInstanceMods(instPath).catch(() => [] as Array<{ fileName: string; ino: number }>),
+        optionsService.getEULA(instPath).catch(() => false),
+        optionsService.getServerProperties(instPath).catch(() => ({} as Record<string, string>)),
+      ])
+      const entries: VfsEntry[] = [
+        { type: 'dir', name: 'mods', description: `${serverMods.length} server-deployed mods` },
+        { type: 'dir', name: 'config', description: 'server mod config files' },
+        { type: 'dir', name: 'logs', description: 'server log files (latest.log, ...)' },
+        { type: 'dir', name: 'crash-reports', description: 'server crash reports' },
+        { type: 'file', name: 'server.properties', description: `parsed server.properties${props.port ? ` (port ${props.port})` : ''}` },
+        { type: 'file', name: 'eula.txt', description: `EULA ${eula ? 'accepted' : 'not accepted'}` },
+        { type: 'file', name: 'ops.json', description: 'server operators (raw JSON)' },
+        { type: 'file', name: 'whitelist.json', description: 'server whitelist (raw JSON)' },
+        { type: 'file', name: 'banned-players.json', description: 'banned players (raw JSON)' },
+        { type: 'file', name: 'banned-ips.json', description: 'banned IPs (raw JSON)' },
+        { type: 'file', name: 'usercache.json', description: 'player name/uuid cache (raw JSON)' },
+      ]
+      return { path: sdir, entries }
+    }
+    if (sp.kind === 'mods') {
+      const serverMods = await instanceMods.getServerInstanceMods(instPath).catch(() => [] as Array<{ fileName: string; ino: number }>)
+      return serverMods.map((m) => ({ type: 'file' as const, name: m.fileName, path: `server/mods/${m.fileName}`, ino: m.ino }))
+    }
+    if (sp.kind === 'config') {
+      const files = await optionsService.getInstanceConfigFiles(sdir).catch(() => [] as string[])
+      return files.map((f) => ({ type: 'file' as const, name: f, path: `server/config/${f}` }))
+    }
+    if (sp.kind === 'logs') return await logService.listLogs(sdir)
+    if (sp.kind === 'crash-reports') return await logService.listCrashReports(sdir)
+    return { error: `not a server directory: server/${sp.rest}` }
+  }
+
+  async function readServerVfs(sp: { kind: ServerKind; rest: string }, instPath: string, tailLines: unknown) {
+    const sdir = serverDir(instPath)
+    if (sp.kind === 'server.properties') {
+      try {
+        return await optionsService.getServerProperties(instPath)
+      } catch (e) {
+        return { error: `cannot read server.properties: ${e instanceof Error ? e.message : String(e)}` }
+      }
+    }
+    if (sp.kind === 'eula.txt') {
+      return { accepted: await optionsService.getEULA(instPath).catch(() => false) }
+    }
+    if (sp.kind === 'rootfile') {
+      try {
+        const text = await optionsService.getServerFile(instPath, sp.rest)
+        return text === '' ? { note: `server/${sp.rest} does not exist yet`, content: '' } : text
+      } catch (e) {
+        return { error: `cannot read server/${sp.rest}: ${e instanceof Error ? e.message : String(e)}` }
+      }
+    }
+    if (sp.kind === 'config') {
+      if (!sp.rest) return { error: 'server/config is a directory; use vfs_list' }
+      try {
+        return await optionsService.getInstanceConfig(sdir, sp.rest)
+      } catch (e) {
+        return { error: `cannot read server/config/${sp.rest}: ${e instanceof Error ? e.message : String(e)}` }
+      }
+    }
+    if (sp.kind === 'logs') {
+      if (!sp.rest) return { error: 'server/logs is a directory; use vfs_list' }
+      const full = await logService.getLogContent(sdir, sp.rest)
+      const tail = Math.min(Number(tailLines ?? 200) || 200, 2000)
+      const lines = full.split('\n')
+      return lines.length > tail ? lines.slice(-tail).join('\n') : full
+    }
+    if (sp.kind === 'crash-reports') {
+      if (!sp.rest) return { error: 'server/crash-reports is a directory; use vfs_list' }
+      return await logService.getCrashReportContent(sdir, sp.rest)
+    }
+    if (sp.kind === 'mods') {
+      if (!sp.rest) return { error: 'server/mods is a directory; use vfs_list' }
+      const serverMods = await instanceMods.getServerInstanceMods(instPath).catch(() => [] as Array<{ fileName: string; ino: number }>)
+      const m = serverMods.find((x) => x.fileName === sp.rest)
+      if (!m) return { error: `server mod not found: ${sp.rest}` }
+      return { fileName: m.fileName, ino: m.ino, note: 'Server-deployed mod. Parsed metadata is not available here; if the same file is in the client mods/, read mods/<fileName> for details.' }
+    }
+    if (sp.kind === 'root') return { error: 'server is a directory; use vfs_list server' }
+    return { error: `unknown server path: server/${sp.rest}` }
   }
 
   // ── Context (read) ──────────────────────────────────────────────────
@@ -319,7 +463,7 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
 
   tool({
     name: 'vfs_list',
-    description: 'List entries under a virtual directory rooted at the current instance. Known directories: `mods`, `resourcepacks`, `shaderpacks`, `saves`, `logs`, `crash-reports`, `config`. Use `""` or `"."` for the root.',
+    description: 'List entries under a virtual directory rooted at the current instance. Known directories: `mods`, `resourcepacks`, `shaderpacks`, `saves`, `logs`, `crash-reports`, `config`, and `server` (the LOCAL dedicated server folder: `server/mods`, `server/config`, `server/logs`, `server/crash-reports`). Use `""` or `"."` for the root.',
     readonly: true,
     parameters: {
       type: 'object',
@@ -327,9 +471,13 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
     },
     async execute(args) {
       const path = String(args.path ?? '')
-      const { kind } = pathKind(path)
       const inst = ctx.instance.value
       if (!inst.path) return { error: 'no instance selected' }
+
+      const sp = serverPathKind(path)
+      if (sp) return await listServerVfs(sp, inst.path)
+
+      const { kind } = pathKind(path)
 
       if (kind === 'root') {
         const entries: VfsEntry[] = [
@@ -341,6 +489,7 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
           { type: 'dir', name: 'crash-reports', description: 'minecraft crash reports' },
           { type: 'dir', name: 'launch-failures', description: 'launcher-captured abnormal-exit dumps (xmcl-abnormal-exit-*)' },
           { type: 'dir', name: 'config', description: 'mod config files (grep / edit_config)' },
+          { type: 'dir', name: 'server', description: 'local dedicated server files (mods, config, logs, server.properties); empty until a server is installed' },
           { type: 'file', name: 'instance.json', description: 'full launcher instance settings' },
           { type: 'file', name: 'options.txt', description: 'parsed minecraft options.txt' },
         ]
@@ -379,7 +528,7 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
 
   tool({
     name: 'vfs_read',
-    description: 'Read a virtual file. Examples: `instance.json` (full instance settings), `options.txt` (parsed game options), `mods/<fileName>` (mod metadata), `resourcepacks/<id>` (pack metadata), `shaderpacks/<fileName>`, `saves/<name>`, `logs/<name>` (last 200 lines by default), `crash-reports/<name>`, `config/<file>` (raw config text).',
+    description: 'Read a virtual file. Examples: `instance.json` (full instance settings), `options.txt` (parsed game options), `mods/<fileName>` (mod metadata), `resourcepacks/<id>` (pack metadata), `shaderpacks/<fileName>`, `saves/<name>`, `logs/<name>` (last 200 lines by default), `crash-reports/<name>`, `config/<file>` (raw config text). For the LOCAL dedicated server, prefix with `server/`: `server/server.properties` (parsed), `server/eula.txt`, `server/ops.json`, `server/whitelist.json`, `server/banned-players.json`, `server/banned-ips.json`, `server/usercache.json` (raw JSON text), `server/config/<file>`, `server/logs/<name>`, `server/crash-reports/<name>`, `server/mods/<fileName>`.',
     readonly: true,
     parameters: {
       type: 'object',
@@ -393,6 +542,10 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
       const inst = ctx.instance.value
       if (!inst.path) return { error: 'no instance selected' }
       const path = String(args.path ?? '')
+
+      const sp = serverPathKind(path)
+      if (sp) return await readServerVfs(sp, inst.path, args.tailLines)
+
       const { kind, rest } = pathKind(path)
 
       if (kind === 'instance.json') return inst
@@ -727,8 +880,10 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
       'Memory values are in MB. Common fixes: raise `maxMemory` for out-of-memory',
       'crashes, add JVM flags via `vmOptions`, point `java` at a specific runtime',
       'path, set `resolution`, or toggle `fastLaunch` / `showLog`.',
-      'This does NOT change the Minecraft / mod-loader version (`runtime`) — that',
-      'needs a reinstall and is out of scope here.',
+      'To change the Minecraft / mod-loader version, pass `runtime` (see its field',
+      'docs). The runtime change is merged over the current one; afterwards run',
+      '`diagnose_instance` then `repair_instance` to download & install the new',
+      'version before launching.',
     ].join('\n'),
     parameters: {
       type: 'object',
@@ -751,6 +906,19 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
           },
           description: 'Game window resolution',
         },
+        runtime: {
+          type: 'object',
+          description: 'Minecraft & mod-loader versions. Merged over the current runtime, so pass only the fields you want to change. Use EXACTLY ONE mod loader: to switch loaders, set the new one and set the others to "" (empty string). When you change the Minecraft version you usually must also pick a loader version built for it. After editing runtime, run repair_instance to install the new version.',
+          properties: {
+            minecraft: { type: 'string', description: 'Minecraft version, e.g. "1.20.1"' },
+            forge: { type: 'string', description: 'Forge version (e.g. "47.2.0"); "" to disable' },
+            neoForged: { type: 'string', description: 'NeoForge version; "" to disable' },
+            fabricLoader: { type: 'string', description: 'Fabric loader version (e.g. "0.16.0"); "" to disable' },
+            quiltLoader: { type: 'string', description: 'Quilt loader version; "" to disable' },
+            optifine: { type: 'string', description: 'OptiFine version (e.g. "HD_U_I7"); "" to disable' },
+            labyMod: { type: 'string', description: 'LabyMod version; "" to disable' },
+          },
+        },
         fastLaunch: { type: 'boolean', description: 'Skip launch pre-checks for a faster start' },
         showLog: { type: 'boolean', description: 'Show the log window while the game runs' },
         hideLauncher: { type: 'boolean', description: 'Hide the launcher after the game starts' },
@@ -759,7 +927,8 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
       },
     },
     async execute(args) {
-      const path = ctx.instance.value.path
+      const inst = ctx.instance.value
+      const path = inst.path
       if (!path) return { error: 'no instance selected' }
       const editable = [
         'name', 'description', 'java', 'minMemory', 'maxMemory', 'assignMemory',
@@ -774,10 +943,27 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
           edited.push(key)
         }
       }
+      // `runtime` is replaced wholesale by the backend, so merge the requested
+      // fields over the current runtime to avoid wiping the others. Reset
+      // `version` to '' so the launcher recomputes the version id from the new
+      // runtime (otherwise the stale version folder would be launched).
+      let runtimeChanged = false
+      if (Object.prototype.hasOwnProperty.call(args, 'runtime') && args.runtime && typeof args.runtime === 'object') {
+        payload.runtime = { ...inst.runtime, ...(args.runtime as Record<string, unknown>) }
+        payload.version = ''
+        edited.push('runtime')
+        runtimeChanged = true
+      }
       if (!edited.length) return { error: 'no editable properties provided' }
       try {
         await instanceService.editInstance(payload as Parameters<typeof instanceService.editInstance>[0])
-        return { ok: true, edited }
+        return {
+          ok: true,
+          edited,
+          ...(runtimeChanged
+            ? { note: 'Runtime changed and version reset. Run diagnose_instance / repair_instance to install the new version before launching.' }
+            : {}),
+        }
       } catch (e) {
         return { error: `editInstance failed: ${e instanceof Error ? e.message : String(e)}` }
       }
@@ -881,6 +1067,62 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
     },
   })
 
+  tool({
+    name: 'diagnose_server',
+    description: 'Report the LOCAL dedicated-server state for the current instance: whether the server build is installed (`installed` / `serverVersion`), how many server processes are running, whether the Minecraft EULA is accepted, the current server.properties, and the mods already deployed into the server folder. This is read-only and always available; load the `server` pack to actually install / configure / launch the server.',
+    readonly: true,
+    parameters: { type: 'object', properties: {} },
+    async execute() {
+      if (!ctx.instance.value.path) return { error: 'no instance selected' }
+      return ctx.getServerStatus()
+    },
+  })
+
+  // ── Shader options (which shaderpack the Iris / Oculus / vanilla loader uses) ──
+
+  tool({
+    name: 'get_shader_options',
+    description: 'Read the active shaderpack recorded in the instance shader options (optionsshaders.txt). Returns `{ shaderPack }`. Note: enabling/disabling shaderpack files is done with the `bash` `mv` tool; this reads which pack the shader loader is configured to use.',
+    readonly: true,
+    parameters: { type: 'object', properties: {} },
+    async execute() {
+      const path = ctx.instance.value.path
+      if (!path) return { error: 'no instance selected' }
+      try {
+        return await optionsService.getShaderOptions(path)
+      } catch (e) {
+        return { error: `cannot read shader options: ${e instanceof Error ? e.message : String(e)}` }
+      }
+    },
+  })
+
+  tool({
+    name: 'edit_shader_options',
+    description: 'Set which shaderpack the shader loader uses. `shaderPack` is a shaderpack file name (or `""` to disable). `loader` targets the right config file: `vanilla`/`iris`/`oculus` (default `vanilla`, i.e. optionsshaders.txt). Use `iris` or `oculus` only when the instance runs that specific shader mod.',
+    parameters: {
+      type: 'object',
+      properties: {
+        shaderPack: { type: 'string', description: 'Shaderpack file name, or "" to disable shaders' },
+        loader: { type: 'string', enum: ['vanilla', 'iris', 'oculus'], description: 'Which shader config to write (default vanilla)' },
+      },
+      required: ['shaderPack'],
+    },
+    async execute(args) {
+      const path = ctx.instance.value.path
+      if (!path) return { error: 'no instance selected' }
+      const shaderPack = String(args.shaderPack ?? '')
+      const loader = String(args.loader ?? 'vanilla')
+      try {
+        if (loader === 'iris') await optionsService.editIrisShaderOptions({ instancePath: path, shaderPack })
+        else if (loader === 'oculus') await optionsService.editOculusShaderOptions({ instancePath: path, shaderPack })
+        else await optionsService.editShaderOptions({ instancePath: path, shaderPack })
+        return { ok: true, loader, shaderPack }
+      } catch (e) {
+        return { error: `cannot edit shader options: ${e instanceof Error ? e.message : String(e)}` }
+      }
+    },
+  })
+
   // ── Lazy-loadable packs ─────────────────────────────────────────────
 
   const loadable: ToolRegistry['loadable'] = {
@@ -891,18 +1133,39 @@ export function createXmclTools(ctx: AgentContext): ToolRegistry {
         return m.createMarketTools(ctx, { instanceMods, resourcePackService, shaderPackService, modpackService })
       },
     },
-    mod_maintenance: {
-      description: 'Inspect & fix mod problems: find missing required dependencies and install them, scan for unused library mods and disable them, and check for / apply mod updates. Load this when diagnosing a crash that may be caused by a missing dependency or an outdated mod, or to clean up unused libraries.',
+    troubleshoot: {
+      description: 'Diagnose & fix things that stop the game from launching or running well: missing required mod dependencies (a very common crash cause), outdated mods, unused/orphan library mods, AND Java problems (wrong major version, invalid or missing runtime). Load this for any crash / won\'t-launch / poor-performance investigation. Always run the matching `check_*` / `diagnose_*` before applying a fix.',
       async load() {
-        const m = await import('./modMaintenanceTools')
-        return m.createModMaintenanceTools(ctx)
+        const [maint, java] = await Promise.all([import('./modMaintenanceTools'), import('./javaTools')])
+        return [...maint.createModMaintenanceTools(ctx), ...java.createJavaTools(ctx)]
       },
     },
-    java: {
-      description: 'Diagnose the instance Java (compatibility / validity) and install a compatible Java runtime. Load this when the game fails to launch or crashes because of a wrong, invalid, or missing Java version.',
+    server: {
+      description: 'Manage the LOCAL dedicated server for the current instance: install the server build, accept the Minecraft EULA & edit server.properties, deploy mods into the server folder, edit admin files (ops/whitelist/bans via `write_server_file`), then start / stop the server. Load this when the user wants to set up, configure, run, or stop a local server (as opposed to the normal client game). `diagnose_server` is already in the base toolset; read server files via `vfs_read server/...`.',
       async load() {
-        const m = await import('./javaTools')
-        return m.createJavaTools(ctx)
+        const m = await import('./serverTools')
+        return m.createServerTools(ctx)
+      },
+    },
+    worlds: {
+      description: 'Manage the instance saves / worlds: import a world from a zip or folder, export a world out, clone/duplicate a world, delete a world, and link a singleplayer world as the dedicated-server world. Load this when the user wants to move, copy, back up, or remove worlds.',
+      async load() {
+        const m = await import('./worldsTools')
+        return m.createWorldsTools(ctx, { savesService })
+      },
+    },
+    instance_admin: {
+      description: 'Manage instances themselves (not their contents): create a new instance, duplicate the current one, delete an instance, or import a modpack file from disk as a new instance. Load this when the user wants to add, clone, or remove a whole instance.',
+      async load() {
+        const m = await import('./instanceAdminTools')
+        return m.createInstanceAdminTools(ctx, { instanceService, modpackService })
+      },
+    },
+    account: {
+      description: 'Switch which already-logged-in account is active. Read-only listing plus selecting an existing profile; it never handles passwords or performs a fresh login. Load this when the user wants to play as a different account they already added.',
+      async load() {
+        const m = await import('./accountTools')
+        return m.createAccountTools(ctx)
       },
     },
   }
@@ -923,17 +1186,19 @@ const BASE_RULES = `You are the XMCL (X Minecraft Launcher) assistant. You help 
 Rules:
 - The launcher session context block below is a snapshot taken when the conversation started. If something has changed since then, you will receive a "[launcher event] context changed" message in the chat — trust it over the snapshot.
 - Be proactive and take action. When the user reports a problem (a crash, a broken mod setup, a wrong setting) and you can identify a concrete fix, apply it immediately with the tools instead of asking whether you should. Do NOT ask for permission to perform a fix you are confident about — just do it, then briefly report what you changed. Only ask the user first when the choice is genuinely ambiguous (several equally valid options) or you are missing information you cannot obtain yourself.
-- Prefer the virtual filesystem tools (vfs_list, vfs_read) for exploration. \`instance.json\` returns the full instance settings; \`options.txt\` returns parsed Minecraft options.
-- To change instance settings (memory, JVM args, java path, resolution, window/launch flags, name/description), use \`edit_instance\` — pass only the properties you want to change. Read \`vfs_read instance.json\` first to see current values. Memory is in MB. For out-of-memory crashes, raise \`maxMemory\` (and \`minMemory\`) or add JVM flags via \`vmOptions\`. \`edit_instance\` does not change the Minecraft / mod-loader version.
+- Prefer the virtual filesystem tools (vfs_list, vfs_read) for exploration. \`instance.json\` returns the full instance settings; \`options.txt\` returns parsed Minecraft options. The LOCAL dedicated server's files live under the \`server/\` prefix: browse with \`vfs_list server\` and read \`server/server.properties\`, \`server/eula.txt\`, \`server/config/<file>\`, \`server/logs/<name>\`, \`server/crash-reports/<name>\`, \`server/mods/<fileName>\`. When diagnosing a server crash, read \`server/logs/latest.log\` and \`server/crash-reports/\`.
+- To change instance settings (memory, JVM args, java path, resolution, window/launch flags, name/description), use \`edit_instance\` — pass only the properties you want to change. Read \`vfs_read instance.json\` first to see current values. Memory is in MB. For out-of-memory crashes, raise \`maxMemory\` (and \`minMemory\`) or add JVM flags via \`vmOptions\`. To change the Minecraft or mod-loader version, pass \`runtime\` to \`edit_instance\` (it merges over the current runtime — use exactly one loader and clear the others with \`""\`), then run \`diagnose_instance\` and \`repair_instance\` to install the new version before launching.
 - To enable or disable a mod / resourcepack / shaderpack, use the \`bash\` tool with \`mv\` to toggle a trailing \`.disabled\` suffix on its virtual path: appending \`.disabled\` disables it, stripping the suffix enables it. e.g. \`mv mods/foo.jar mods/foo.jar.disabled\` (disable) or \`mv mods/foo.jar.disabled mods/foo.jar\` (enable). Shaderpacks are exclusive — enabling one disables the previously active pack.
 - To delete a mod / resourcepack / shaderpack, use the \`bash\` tool with \`rm\` on its virtual path (e.g. \`rm mods/foo.jar resourcepacks/bar\`). \`rm\` only works under \`mods/\`, \`resourcepacks/\`, \`shaderpacks/\`; deleting any other path is refused.
 - To add new content, load the \`market\` pack: find projects with \`modrinth_search\` / \`curseforge_search\`, then \`install\` with a target and market URIs (\`modrinth:projId:verId\`, \`curseforge:projId:fileId\`).
 - If the game fails to launch or files look missing/corrupted, run \`diagnose_instance\` to inspect the instance's version installation, then \`repair_instance\` to download and install whatever is missing (Minecraft jar, libraries, assets, mod loader, required Java). \`repair_instance\` is safe and idempotent — prefer it over telling the user to reinstall manually.
-- When a crash or launch failure looks mod-related, load the \`mod_maintenance\` pack: \`check_mod_dependencies\` finds missing *required* dependencies (a very common crash cause) and \`install_mod_dependencies\` adds them; \`check_mod_updates\` / \`apply_mod_updates\` upgrade outdated mods; \`scan_unused_mods\` / \`disable_unused_mods\` clean up orphan libraries. Always run the matching check before applying.
-- When the failure looks Java-related (wrong major version, invalid runtime, or the snapshot shows the Java is \`mismatch\`), load the \`java\` pack: \`diagnose_java\` reports the problem and \`install_java\` downloads a compatible runtime, which the instance then auto-selects.
+- When a crash, launch failure, or performance problem looks mod- or Java-related, load the \`troubleshoot\` pack (it merges the old mod-maintenance + java tools): \`check_mod_dependencies\` finds missing *required* dependencies (a very common crash cause) and \`install_mod_dependencies\` adds them; \`check_mod_updates\` / \`apply_mod_updates\` upgrade outdated mods; \`scan_unused_mods\` / \`disable_unused_mods\` clean up orphan libraries; \`diagnose_java\` / \`install_java\` fix a wrong, invalid, or missing Java runtime (the instance auto-selects the new one). Always run the matching check / diagnose before applying.
+- \`diagnose_server\` (base, read-only) reports the LOCAL dedicated-server state at any time. To actually set up or run a server (distinct from the normal client game), load the \`server\` pack: \`install_server\` installs the server build, \`set_server_properties\` edits server.properties, \`deploy_server_mods\` copies mods into the server folder, \`launch_server\` / \`kill_server\` start and stop it. A server cannot launch until the Minecraft EULA is accepted — only call \`set_server_eula({ accepted: true })\` after the user explicitly agrees to https://aka.ms/MinecraftEULA; never accept it on their behalf. If \`launch_server\` returns \`ok: false\`, the server exited on startup (usually an incomplete/broken install) — read the newest \`launch-failures/\` entry (or server \`logs/\`) with \`vfs_read\` for the exact error, then reinstall or repair before retrying. Do not report a server as running unless \`launch_server\` returned \`ok: true\`.
+- To move, copy, back up, or remove worlds, load the \`worlds\` pack (import / export / clone / delete a save, or link a singleplayer world as the server world). To create, duplicate, delete, or import (from a modpack file) a whole instance, load the \`instance_admin\` pack. To switch to a different already-logged-in account, load the \`account\` pack. Deleting a world or an instance is destructive — confirm with the user first.
+- To change which shaderpack is active, toggle the shaderpack file with \`bash\` \`mv\` (exclusive — enabling one disables the active pack). To read or rewrite the shader loader's configured pack directly use \`get_shader_options\` / \`edit_shader_options\` (target \`vanilla\` / \`iris\` / \`oculus\`).
 - Mod config files live under \`config/\`. Browse with \`vfs_list config\`, read with \`vfs_read config/<file>\`, search across them via the \`bash\` tool's \`grep [-i] <pattern> [config/...]\`, and modify them with \`edit_config\` (literal \`match_string\` -> \`replace_string\`). Only \`config/\` files can be searched or edited this way.
 - For UI navigation, only use the routes exposed by the navigate tool.
-- Reversible fixes — toggling content with \`mv\`, installing content or missing dependencies (the \`market\` / \`mod_maintenance\` packs), repairing a broken installation with \`repair_instance\`, editing instance settings with \`edit_instance\`, and editing config with \`edit_config\` — are safe: perform them directly without asking. Only pause to confirm before truly destructive or irreversible actions: deleting files (\`rm\`) or killing a running game (kill_game).
+- Reversible fixes — toggling content with \`mv\`, installing content or missing dependencies (the \`market\` / \`troubleshoot\` packs), repairing a broken installation with \`repair_instance\`, editing instance settings with \`edit_instance\`, and editing config with \`edit_config\` — are safe: perform them directly without asking. Only pause to confirm before truly destructive or irreversible actions: deleting files (\`rm\`), deleting a world or instance, or killing a running game (kill_game).
 - For crash analysis: read the most recent crash report or launch failure, determine the root cause, then directly apply the fix when you know it (e.g. re-enable a disabled dependency, install a missing or conflicting mod, correct a config value, or run \`repair_instance\` when the install is incomplete/corrupted). Afterwards report the root cause and exactly what you changed. Only stop to ask if you genuinely cannot determine a safe fix on your own.`
 
 export function buildSystemPrompt(opts: SystemPromptOptions): string {

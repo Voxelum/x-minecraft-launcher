@@ -11,7 +11,8 @@ function compatLabel(compatible: number | undefined): string {
 }
 
 /**
- * Lazy-loaded Java tools. Triggered by `load_tools(["java"])`.
+ * Lazy-loaded Java tools. Part of the `troubleshoot` pack
+ * (`load_tools(["troubleshoot"])`), alongside the mod-maintenance tools.
  *
  * Lets the agent inspect the instance's Java setup and install a compatible
  * runtime when the game fails to launch or crashes because of a wrong, invalid,
