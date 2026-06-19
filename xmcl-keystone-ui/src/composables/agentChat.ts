@@ -4,7 +4,7 @@ import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue'
 const AGENT_CHAT_BUS_KEY = 'app:agent-chat'
 
 export function useAgentChatBus() {
-  return useEventBus<'show' | 'hide' | 'toggle'>(AGENT_CHAT_BUS_KEY)
+  return useEventBus<'show' | 'hide' | 'toggle' | 'show-css'>(AGENT_CHAT_BUS_KEY)
 }
 
 /**

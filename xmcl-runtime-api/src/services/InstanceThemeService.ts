@@ -17,6 +17,22 @@ export interface InstanceThemeService {
   setInstanceTheme(instancePath: string, theme: ThemeData | undefined): Promise<void>
 
   /**
+   * Get the instance-specific custom CSS content. The enable/disable state is
+   * stored in the instance theme.json (settings.customCssEnabled), not here.
+   * @param instancePath The instance path
+   * @returns The CSS content, or an empty string if none is set
+   */
+  getInstanceCustomCss(instancePath: string): Promise<string>
+
+  /**
+   * Set the instance-specific custom CSS content (a single file next to the
+   * instance theme.json). Passing an empty string clears it.
+   * @param instancePath The instance path
+   * @param css The CSS content
+   */
+  setInstanceCustomCss(instancePath: string, css: string): Promise<void>
+
+  /**
    * Add a new media (music, picture) to an instance theme.
    * Media will be stored under the instance's theme folder.
    * @param instancePath The instance path

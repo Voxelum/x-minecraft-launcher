@@ -1,32 +1,43 @@
-import { CustomCssEntry, CustomCssServiceKey, CustomCssState } from '@xmcl/runtime-api'
+import { ThemeServiceKey } from '@xmcl/runtime-api'
 import { useStyleTag } from '@vueuse/core'
-import { computed, InjectionKey, ref, Ref, watch, onMounted } from 'vue'
+import { InjectionKey, Ref, computed, onMounted, ref } from 'vue'
 import { useService } from './service'
+import type { UIThemeDataV1 } from './theme'
 
 export const kCustomCss: InjectionKey<ReturnType<typeof useCustomCss>> = Symbol('CustomCss')
 
-export function useCustomCss() {
-  const {
-    getCustomCssState,
-    addCustomCssFromText,
-    addCustomCssFromFile,
-    updateCustomCssEntry,
-    removeCustomCssEntry,
-    exportCustomCssToFile,
-    setGlobalCustomCssEnabled,
-  } = useService(CustomCssServiceKey)
+export interface CustomCssDeps {
+  /** The global theme. Its `customCssEnabled` flag gates the global CSS. */
+  currentTheme: Ref<UIThemeDataV1>
+  /** The active instance theme, if any (overrides the global theme). */
+  instanceTheme: Ref<UIThemeDataV1 | undefined>
+  /** The active instance theme's custom CSS content. */
+  instanceCss: Ref<string>
+  /** Whether the instance theme override is suppressed (so global applies). */
+  suppressed: Ref<boolean>
+}
 
-  const globalEnabled = ref(false)
-  const entries: Ref<CustomCssEntry[]> = ref([])
+/**
+ * Resolves and injects the *effective* custom CSS: the active instance theme's
+ * CSS when an instance theme is in effect, otherwise the global theme's CSS.
+ * Each is only applied while its own `customCssEnabled` flag is on.
+ *
+ * Also exposes the global CSS content + saver, which the global CSS editor and
+ * the CSS agent edit directly.
+ */
+export function useCustomCss(deps: CustomCssDeps) {
+  const service = useService(ThemeServiceKey)
+  const { getCustomCss, setCustomCss } = service
+
+  // Global custom CSS content (kept in sync with ThemeService).
+  const css = ref('')
   const loading = ref(true)
 
   async function refresh() {
     try {
-      const state: CustomCssState = await getCustomCssState()
-      globalEnabled.value = state.globalEnabled
-      entries.value = state.entries
+      css.value = await getCustomCss()
     } catch (e) {
-      console.error('Failed to load custom CSS state', e)
+      console.error('Failed to load custom CSS', e)
     } finally {
       loading.value = false
     }
@@ -34,67 +45,47 @@ export function useCustomCss() {
 
   refresh()
 
-  const service = useService(CustomCssServiceKey)
   onMounted(() => {
-    service.on('custom-css-state-changed', (state: CustomCssState) => {
-      globalEnabled.value = state.globalEnabled
-      entries.value = state.entries
+    service.on('custom-css-changed', (content: string) => {
+      css.value = content
     })
   })
 
-  // Compute the combined CSS string from all enabled entries
-  const combinedCss = computed(() => {
-    if (!globalEnabled.value) return ''
-    return entries.value
-      .filter(e => e.enabled)
-      .map(e => `/* [Custom CSS: ${e.name}] */\n${e.css}`)
-      .join('\n\n')
+  // The instance theme overrides the global theme when present and not suppressed.
+  const instanceActive = computed(() => !!deps.instanceTheme.value && !deps.suppressed.value)
+
+  const effectiveEnabled = computed(() => (instanceActive.value
+    ? !!deps.instanceTheme.value?.customCssEnabled
+    : !!deps.currentTheme.value.customCssEnabled))
+
+  const effectiveCss = computed(() => {
+    if (!effectiveEnabled.value) return ''
+    return instanceActive.value ? deps.instanceCss.value : css.value
   })
 
-  // Compute custom background video URL if defined via --custom-background-video CSS variable
-  const customBackgroundVideo = computed(() => {
-    if (!globalEnabled.value) return ''
-    const match = combinedCss.value.match(/--custom-background-video\s*:\s*url\(\s*['"]?([^'")]+)['"]?\s*\)/)
-    return match ? match[1].trim() : ''
-  })
-
-  // Inject the combined CSS into the DOM
-  useStyleTag(combinedCss, {
+  useStyleTag(effectiveCss, {
     immediate: true,
     id: 'xmcl-custom-css',
   })
 
-  async function toggleGlobal(enabled: boolean) {
-    await setGlobalCustomCssEnabled(enabled)
-  }
+  // Custom background video URL declared via the --custom-background-video variable.
+  const customBackgroundVideo = computed(() => {
+    if (!effectiveEnabled.value) return ''
+    const source = instanceActive.value ? deps.instanceCss.value : css.value
+    const match = source.match(/--custom-background-video\s*:\s*url\(\s*['"]?([^'")]+)['"]?\s*\)/)
+    return match ? match[1].trim() : ''
+  })
 
-  async function addFromText(name: string, css: string) {
-    return await addCustomCssFromText(name, css)
-  }
-
-  async function addFromFile(filePath: string) {
-    return await addCustomCssFromFile(filePath)
-  }
-
-  async function updateEntry(id: string, patch: Partial<Pick<CustomCssEntry, 'name' | 'css' | 'enabled'>>) {
-    return await updateCustomCssEntry(id, patch)
-  }
-
-  async function removeEntry(id: string) {
-    await removeCustomCssEntry(id)
+  async function save(content: string) {
+    css.value = content
+    await setCustomCss(content)
   }
 
   return {
-    globalEnabled,
-    entries,
+    css,
     loading,
     refresh,
-    toggleGlobal,
-    addFromText,
-    addFromFile,
-    updateEntry,
-    removeEntry,
+    save,
     customBackgroundVideo,
-    exportEntry: (id: string, filePath: string) => exportCustomCssToFile(id, filePath),
   }
 }

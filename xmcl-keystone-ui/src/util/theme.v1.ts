@@ -25,7 +25,7 @@ export function serialize(theme: UIThemeDataV1) {
   if (theme.backgroundMusicPlayOrder) {
     settings.backgroundMusicPlayOrder = theme.backgroundMusicPlayOrder
   }
-  if (theme.backgroundVolume) {
+  if (theme.backgroundVolume !== undefined) {
     settings.backgroundVolume = theme.backgroundVolume
   }
   if (theme.particleMode) {
@@ -45,11 +45,14 @@ export function serialize(theme: UIThemeDataV1) {
       settings.blurCard = theme.blur.card;
     }
   }
-  if (theme.backgroundColorOverlay) {
+  if (theme.backgroundColorOverlay !== undefined) {
     settings.backgroundColorOverlay = theme.backgroundColorOverlay
   }
   if (theme.fontSize) {
     settings.fontSize = theme.fontSize
+  }
+  if (theme.customCssEnabled) {
+    settings.customCssEnabled = true
   }
   settings.dark = theme.dark
   const serialized: ThemeData = {
@@ -94,6 +97,7 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
     backgroundType: BackgroundType.NONE,
     backgroundVolume: 1,
     blur: {},
+    customCssEnabled: false,
   }
   if (data.assets.backgroundImage) {
     theme.backgroundImage = data.assets.backgroundImage as MediaData
@@ -108,13 +112,13 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
     theme.font = data.assets.font as MediaData
   }
   if (data.settings) {
-    if (data.settings.backgroundVolume) {
+    if (data.settings.backgroundVolume !== undefined) {
       theme.backgroundVolume = data.settings.backgroundVolume as number
     }
     if (data.settings.backgroundMusicPlayOrder) {
       theme.backgroundMusicPlayOrder = data.settings.backgroundMusicPlayOrder as any
     }
-    if (data.settings.backgroundColorOverlay) {
+    if (data.settings.backgroundColorOverlay !== undefined) {
       theme.backgroundColorOverlay = data.settings.backgroundColorOverlay as any
     }
     if (data.settings.fontSize) {
@@ -129,17 +133,20 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
     if (data.settings.particleMode) {
       theme.particleMode = data.settings.particleMode as any
     }
-    if (data.settings.blur) {
+    if (data.settings.blur !== undefined) {
       theme.blur.background = data.settings.blur as any
     }
-    if (data.settings.blurSidebar) {
+    if (data.settings.blurSidebar !== undefined) {
       theme.blur.sideBar = data.settings.blurSidebar as any
     }
-    if (data.settings.blurAppBar) {
+    if (data.settings.blurAppBar !== undefined) {
       theme.blur.appBar = data.settings.blurAppBar as any
     }
-    if (data.settings.blurCard) {
+    if (data.settings.blurCard !== undefined) {
       theme.blur.card = data.settings.blurCard as any
+    }
+    if (data.settings.customCssEnabled) {
+      theme.customCssEnabled = data.settings.customCssEnabled as boolean
     }
   }
   return theme

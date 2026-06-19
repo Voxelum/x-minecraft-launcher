@@ -1,5 +1,5 @@
 <template>
-  <div class="base-setting px-10 py-6 overflow-auto" ref="root" @wheel.stop>
+  <div class="base-setting px-10 py-6" ref="root" @wheel.stop>
     <template v-if="!targetQuery || targetQuery === 'general'">
       <div class="flex flex-col gap-4">
         <BaseSettingGeneral />

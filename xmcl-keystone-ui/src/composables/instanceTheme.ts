@@ -10,9 +10,11 @@ export const kInstanceTheme: InjectionKey<ReturnType<typeof useInstanceTheme>> =
  * Use instance-level theme data
  */
 export function useInstanceTheme(instancePath: Ref<string>) {
-  const { getInstanceTheme, setInstanceTheme } = useService(InstanceThemeServiceKey)
+  const { getInstanceTheme, setInstanceTheme, getInstanceCustomCss, setInstanceCustomCss } = useService(InstanceThemeServiceKey)
 
   const instanceTheme = ref<UIThemeDataV1 | undefined>(undefined)
+  /** The instance's custom CSS content. Empty when there is no instance theme. */
+  const customCss = ref('')
   const loading = ref(false)
 
   async function loadTheme() {
@@ -22,12 +24,21 @@ export function useInstanceTheme(instancePath: Ref<string>) {
       const theme = await getInstanceTheme(instancePath.value)
       if (!theme) {
         instanceTheme.value = undefined
+        customCss.value = ''
         return
       }
       instanceTheme.value = deserialize(theme)
+      customCss.value = await getInstanceCustomCss(instancePath.value).catch(() => '')
     } finally {
       loading.value = false
     }
+  }
+
+  /** Write the instance's custom CSS content. */
+  async function setCustomCss(css: string) {
+    if (!instancePath.value) return
+    await setInstanceCustomCss(instancePath.value, css)
+    customCss.value = css
   }
 
   async function saveTheme() {
@@ -48,7 +59,9 @@ export function useInstanceTheme(instancePath: Ref<string>) {
 
   function clearTheme() {
     instanceTheme.value = undefined
+    customCss.value = ''
     setInstanceTheme(instancePath.value, undefined)
+    setInstanceCustomCss(instancePath.value, '').catch(() => undefined)
   }
 
   watch(() => instancePath.value, () => {
@@ -57,9 +70,11 @@ export function useInstanceTheme(instancePath: Ref<string>) {
 
   return {
     instanceTheme,
+    customCss,
     loading,
     loadTheme,
     saveTheme,
+    setCustomCss,
     clearTheme,
   }
 }

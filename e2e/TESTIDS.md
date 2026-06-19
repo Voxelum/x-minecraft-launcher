@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 78 (in 253 Vue files)
+**Total anchors:** 82 (in 256 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -20,9 +20,13 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `add-instance-name` | [`xmcl-keystone-ui/src/components/StepConfig.vue#L16`](../xmcl-keystone-ui/src/components/StepConfig.vue#L16) |
 | `add-instance-next` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L16`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L16) |
 | `add-server-button` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L64`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L64) |
+| `agent-switch-common` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L19`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L19) |
+| `agent-switch-css` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L23`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L23) |
 | `app-sidebar` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L4`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L4)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L4`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L4) |
 | `bind-server-upstream` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L29`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L29) |
 | `create-instance` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35) |
+| `custom-css-editor-textarea` | [`xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26`](../xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26) |
+| `custom-css-global-toggle` | [`xmcl-keystone-ui/src/components/AppearanceItems.vue#L296`](../xmcl-keystone-ui/src/components/AppearanceItems.vue#L296) |
 | `home-grid` | [`xmcl-keystone-ui/src/views/HomeGrid.vue#L2`](../xmcl-keystone-ui/src/views/HomeGrid.vue#L2) |
 | `install-instance-confirm` | [`xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L252`](../xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L252) |
 | `install-version-confirm` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L97`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L97) |
@@ -33,8 +37,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `instance-server-edit-name` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L66`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L66) |
 | `instance-server-edit-pin` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L102`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L102) |
 | `instance-server-edit-port` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L91`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L91) |
-| `instance-server-edit-remove` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L125`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L125) |
-| `instance-server-edit-save` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L145`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L145) |
+| `instance-server-edit-remove` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L124`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L124) |
+| `instance-server-edit-save` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L143`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L143) |
 | `launch-button` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L17`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L17) |
 | `launch-target-client` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L99`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L99) |
 | `launch-target-server` | [`xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41`](../xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41) |

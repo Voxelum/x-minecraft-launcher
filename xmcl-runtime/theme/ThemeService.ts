@@ -2,7 +2,7 @@ import { ThemeService as IThemeService, MediaData, StoredTheme, ThemeData, Theme
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 import { fileTypeFromFile as fromFile } from 'file-type'
 import { createWriteStream } from 'fs'
-import { copyFile, emptyDir, ensureDir, existsSync, move, readdir, readJSON, remove, rename, unlink, writeJson } from 'fs-extra'
+import { copyFile, emptyDir, ensureDir, existsSync, move, readdir, readFile, readJSON, unlink, writeFile, writeJson } from 'fs-extra'
 import { basename, dirname, join } from 'path'
 import { pipeline } from 'stream/promises'
 import { Inject, LauncherAppKey } from '~/app'
@@ -10,7 +10,14 @@ import { AbstractService, ExposeServiceKey } from '~/service'
 import { writeZipFile } from '~/util/zip'
 import { LauncherApp } from '../app/LauncherApp'
 import { ZipFile } from 'yazl'
-import { CustomCssService } from '../customCss/CustomCssService'
+
+const MAX_CSS_SIZE = 1024 * 1024 // 1 MB
+/**
+ * The single custom CSS file for the current theme. It lives next to theme.json
+ * and is bundled into / replaced by the theme zip. The enable/disable state is
+ * stored in theme.json (settings.customCssEnabled).
+ */
+const CUSTOM_CSS_FILE = 'theme.css'
 
 @ExposeServiceKey(ThemeServiceKey)
 export class ThemeService extends AbstractService implements IThemeService {
@@ -154,12 +161,11 @@ export class ThemeService extends AbstractService implements IThemeService {
       }
     }
     zipFile.addBuffer(Buffer.from(JSON.stringify(data, null, 2)), 'theme.json')
-    const customCssService = await this.app.registry.get(CustomCssService).catch(() => undefined)
-    if (customCssService) {
-      const customCssState = await customCssService.getCustomCssState()
-      for (const entry of customCssState.entries) {
-        zipFile.addBuffer(Buffer.from(entry.css, 'utf-8'), `custom-css/${entry.name}.css`)
-      }
+    // Bundle the single custom CSS file so it travels with the theme. The
+    // enable/disable state lives in theme.json (settings.customCssEnabled).
+    const css = await this.getCustomCss()
+    if (css) {
+      zipFile.addBuffer(Buffer.from(css, 'utf-8'), CUSTOM_CSS_FILE)
     }
     await writeZipFile(zipFile, destinationFile)
   }
@@ -303,27 +309,26 @@ export class ThemeService extends AbstractService implements IThemeService {
     const mediaFolder = this.getAppDataPath('theme-media')
     await emptyDir(mediaFolder)
 
-    const customCssFolder = this.getAppDataPath('custom-css')
-    await ensureDir(customCssFolder)
-
-    // Extract assets and custom CSS to their respective folders
+    // Extract assets to the media folder and capture the single custom CSS file.
+    let importedCss = ''
     const promises: Promise<void>[] = []
     for (const e of entries) {
       if (e.fileName === 'theme.json') {
+        continue
+      }
+      if (e.fileName === CUSTOM_CSS_FILE) {
+        const entryReadable = await openEntryReadStream(zipFile, e)
+        const buffers: Buffer[] = []
+        for await (const chunk of entryReadable) {
+          buffers.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+        }
+        importedCss = Buffer.concat(buffers).toString('utf-8')
         continue
       }
       if (e.fileName.startsWith('assets/')) {
         const fileName = e.fileName.substring('assets/'.length)
         if (!fileName) continue
         const filePath = join(mediaFolder, fileName)
-        await ensureDir(dirname(filePath))
-        const entryReadable = await openEntryReadStream(zipFile, e)
-        const writable = createWriteStream(filePath)
-        promises.push(pipeline(entryReadable, writable))
-      } else if (e.fileName.startsWith('custom-css/')) {
-        const fileName = e.fileName.substring('custom-css/'.length)
-        if (!fileName) continue
-        const filePath = join(customCssFolder, fileName)
         await ensureDir(dirname(filePath))
         const entryReadable = await openEntryReadStream(zipFile, e)
         const writable = createWriteStream(filePath)
@@ -343,12 +348,26 @@ export class ThemeService extends AbstractService implements IThemeService {
     const destinationFile = join(themesPath, `${themeName}.xtheme`)
     await copyFile(zipFilePath, destinationFile)
 
-    // Sync CustomCssService with the disk files
-    const customCssService = await this.app.registry.get(CustomCssService).catch(() => undefined)
-    if (customCssService) {
-      await customCssService.syncWithDisk()
-    }
+    // Custom CSS lifecycle is bound to the theme: replace the current css file
+    // with whatever the imported theme ships (empty if it ships none).
+    await this.setCustomCss(importedCss)
 
     return data
+  }
+
+  private getCustomCssPath() {
+    return this.getAppDataPath(CUSTOM_CSS_FILE)
+  }
+
+  async getCustomCss(): Promise<string> {
+    return readFile(this.getCustomCssPath(), 'utf-8').catch(() => '')
+  }
+
+  async setCustomCss(css: string): Promise<void> {
+    if (css.length > MAX_CSS_SIZE) {
+      throw new Error('CSS content exceeds maximum size of 1 MB')
+    }
+    await writeFile(this.getCustomCssPath(), css, 'utf-8')
+    this.emit('custom-css-changed', css)
   }
 }

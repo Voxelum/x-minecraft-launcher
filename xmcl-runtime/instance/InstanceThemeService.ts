@@ -1,6 +1,6 @@
 import { InstanceThemeService as IInstanceThemeService, InstanceThemeServiceKey, MediaData, ThemeData } from '@xmcl/runtime-api'
 import { fileTypeFromFile as fromFile } from 'file-type'
-import { copyFile, ensureDir, existsSync, readJson, rm, unlink, writeJSON } from 'fs-extra'
+import { copyFile, ensureDir, existsSync, readFile, readJson, rm, unlink, writeFile, writeJSON } from 'fs-extra'
 import { basename, join, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, PathResolver } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
@@ -26,6 +26,23 @@ export class InstanceThemeService extends AbstractService implements IInstanceTh
       return writeJSON(themePath, theme)
     } else {
       return rm(themePath, { force: true }).catch(() => undefined)
+    }
+  }
+
+  async getInstanceCustomCss(instancePath: string): Promise<string> {
+    const cssPath = join(instancePath, 'theme.css')
+    return readFile(cssPath, 'utf-8').catch(() => '')
+  }
+
+  async setInstanceCustomCss(instancePath: string, css: string): Promise<void> {
+    if (css.length > 1024 * 1024) {
+      throw new Error('CSS content exceeds maximum size of 1 MB')
+    }
+    const cssPath = join(instancePath, 'theme.css')
+    if (css) {
+      await writeFile(cssPath, css, 'utf-8')
+    } else {
+      await rm(cssPath, { force: true }).catch(() => undefined)
     }
   }
 

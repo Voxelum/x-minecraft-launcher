@@ -30,7 +30,6 @@ import { PresenceService } from '@xmcl/runtime/presence'
 import { ResourcePackPreviewService } from '@xmcl/runtime/resourcePack'
 import { ServerStatusService } from '@xmcl/runtime/serverStatus'
 import { ThemeService } from '@xmcl/runtime/theme'
-import { CustomCssService } from '@xmcl/runtime/customCss'
 import { OfficialUserService, UserService, MinecraftFriendsService } from '@xmcl/runtime/user'
 
 export const definedServices = [
@@ -66,6 +65,5 @@ export const definedServices = [
   ModMetadataService,
   PeerService,
   ThemeService,
-  CustomCssService,
   InstanceThemeService,
 ]

@@ -271,6 +271,39 @@
       </template>
     </SettingItem>
     <v-divider v-if="!props.dense" class="my-3" />
+    <SettingItem
+      :title="t('setting.customCss.title')"
+      :description="t('setting.customCss.advancedDescription')"
+    >
+      <template #action>
+        <v-btn
+          v-if="!props.instancePath && developerMode"
+          variant="outlined"
+          size="small"
+          class="mr-2"
+          prepend-icon="auto_awesome"
+          :title="t('setting.customCss.openInDialog')"
+          @click="openAssistant"
+        >
+          {{ t('setting.customCss.assistantTitle') }}
+        </v-btn>
+        <v-switch
+          :model-value="cssEnabled"
+          color="primary"
+          hide-details
+          density="compact"
+          :aria-label="t('setting.customCss.title')"
+          data-testid="custom-css-global-toggle"
+          @update:model-value="onToggleCss"
+        />
+      </template>
+    </SettingItem>
+    <CustomCssEditor
+      v-if="cssEnabled"
+      :css="cssContent"
+      @update:css="saveCss"
+    />
+    <v-divider v-if="!props.dense" class="my-3" />
     <SettingItem :title="t('setting.themeShare')" :description="t('setting.themeShareDescription')">
       <template #action>
         <v-btn variant="outlined" class="mr-2" @click="onExportTheme">
@@ -394,12 +427,18 @@
     </v-dialog>
 </template>
 <script lang="ts" setup>
+import CustomCssEditor from '@/components/CustomCssEditor.vue'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
+import { useAgentChatBus } from '@/composables/agentChat'
+import { kCustomCss } from '@/composables/customCss'
+import { kInstanceTheme } from '@/composables/instanceTheme'
 import { useService } from '@/composables/service'
+import { kSettingsState } from '@/composables/setting'
 import { BackgroundType, UIThemeDataV1, useThemeWritter } from '@/composables/theme'
 import { basename } from '@/util/basename'
+import { injection } from '@/util/inject'
 import { ThemeServiceKey } from '@xmcl/runtime-api'
 import SettingAppearanceColor from '../views/SettingAppearanceColor.vue'
 
@@ -457,6 +496,32 @@ const {
   () => emit('save'),
   { instancePath: props.instancePath },
 )
+
+// ── Custom CSS ─────────────────────────────────────────────────
+// Scoped to the instance when `instancePath` is set, otherwise the global theme.
+const globalCustomCss = injection(kCustomCss)
+const instanceThemeCtx = injection(kInstanceTheme)
+const { state: settingsState } = injection(kSettingsState)
+const developerMode = computed(() => settingsState.value?.developerMode ?? false)
+const chatBus = useAgentChatBus()
+
+const isInstance = computed(() => !!props.instancePath)
+const cssEnabled = computed(() => props.theme.customCssEnabled ?? false)
+const cssContent = computed(() => (isInstance.value ? instanceThemeCtx.customCss.value : globalCustomCss.css.value))
+function saveCss(value: string) {
+  if (isInstance.value) {
+    instanceThemeCtx.setCustomCss(value)
+  } else {
+    globalCustomCss.save(value)
+  }
+}
+function onToggleCss(value: boolean | null) {
+  props.theme.customCssEnabled = value ?? false
+  emit('save')
+}
+function openAssistant() {
+  chatBus.emit('show-css')
+}
 
 // URL input refs
 const imageUrlInput = ref('')

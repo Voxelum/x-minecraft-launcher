@@ -4,13 +4,16 @@ AppAddInstanceDialog:
   serverTitle: Input your server address
 AppShareInstanceDialog:
   alterDownloadDescription: >-
-    If you don't want to mess up current instance. You can also create a new instance from your peer's config. Click the button below to create instance.
+    If you don't want to mess up current instance. You can also create a new
+    instance from your peer's config. Click the button below to create instance.
   baseInfo: Basic Setting
   cancelShare: Cancel Share
   description: >-
-    After you share the profile, other place can download these files through your PC.
+    After you share the profile, other place can download these files through
+    your PC.
   downloadDescription: >-
-    Please verify the files your peer provided to you. Select the file you want to download. It will be placed to current instance {name}.
+    Please verify the files your peer provided to you. Select the file you want
+    to download. It will be placed to current instance {name}.
   downloadNotifyTitle: Download Instance from {user}
   downloadTitle: Download files from other peers
   filesToDownload: Choose files to download
@@ -35,25 +38,31 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 agent:
-  title: XMCL Agent
+  callingTool: calling {name}…
+  disabledPlaceholder: Agent disabled
+  emptyHint: >-
+    Ask the agent to inspect your instance, toggle mods, read logs, or diagnose
+    a crash.
+  inputPlaceholder: Ask the agent…  (Enter to send, Shift+Enter for newline)
+  notConfiguredHint: >-
+    Set your API key, model and endpoint in Settings → General → AI Agent to
+    enable the agent.
+  notConfiguredTitle: Agent not configured
+  openSettings: Open settings
+  reset: Reset conversation
+  setupGuide: Setup guide
+  statusDisabled: Disabled — missing API key
   statusReady: Ready
   statusWorking: Working…
-  statusDisabled: Disabled — missing API key
-  reset: Reset conversation
-  notConfiguredTitle: Agent not configured
-  notConfiguredHint: >-
-    Set your API key, model and endpoint in Settings → General → AI Agent to enable the agent.
-  openSettings: Open settings
-  setupGuide: Setup guide
-  emptyHint: >-
-    Ask the agent to inspect your instance, toggle mods, read logs, or diagnose a crash.
-  suggestion1: Upgrade this instance to a newer Minecraft version, and update the mods to match
+  suggestion1: >-
+    Upgrade this instance to a newer Minecraft version, and update the mods to
+    match
   suggestion2: My mods are crashing — find the cause and tell me how to fix it
-  suggestion3: 'Build a modpack: find mods for a feature I want and install them into this instance'
+  suggestion3: >-
+    Build a modpack: find mods for a feature I want and install them into this
+    instance
   thinking: thinking…
-  callingTool: calling {name}…
-  inputPlaceholder: Ask the agent…  (Enter to send, Shift+Enter for newline)
-  disabledPlaceholder: Agent disabled
+  title: XMCL Agent
   toggleHint: to toggle
 ago:
   day: '{duration} day ago | {duration} days ago'
@@ -62,11 +71,13 @@ ago:
   second: '{duration} second ago | {duration} seconds ago'
 askAICrash:
   agentNotConfigured: >-
-    Add an AI provider and API key in Settings to let the launcher's built-in agent diagnose and fix this for you.
+    Add an AI provider and API key in Settings to let the launcher's built-in
+    agent diagnose and fix this for you.
   askAgent: Diagnose with the built-in AI agent
   copyPrompt: Copy the prompt to ask AI
   description: >-
-    Let AI help you to understand the game crash! Follow the instructions below to ask AI about this game crash!
+    Let AI help you to understand the game crash! Follow the instructions below
+    to ask AI about this game crash!
   orExternal: or use an external AI
   selectPlatform: Open an AI platform and paste the prompt you just copied.
   setupAgent: Set up the AI agent
@@ -146,7 +157,8 @@ dataMigration:
   directoryCriteriaHint: Please make sure your new directory location is an EMPTY directory!
   placeholder: Please click here to select directory
   setRootCause: >-
-    You will lose your data (Maps, Resource Packs, Mods) if you close the Launcher at this process!
+    You will lose your data (Maps, Resource Packs, Mods) if you close the
+    Launcher at this process!
   setRootDescription: This will change the root data folder of this launcher and minecraft.
   setRootTitle: Set to a new storage location
   unknownError: Unknown Error! Please retry or contact the developer!
@@ -168,14 +180,16 @@ diagnosis:
   corruptedAssets:
     message: Launcher will install assets for you
     name: >-
-      Corrupted asset: {name} | Corrupted asset {name} | {count} assets corrupted
+      Corrupted asset: {name} | Corrupted asset {name} | {count} assets
+      corrupted
   corruptedAssetsIndex:
     message: Launcher will download assets index for you
     name: Corrupted assets index file of {version}.
   corruptedLibraries:
     message: Launcher will install libraries for you
     name: >-
-      Corrupted library: {name} | Corrupted library: {name} | {count} libraries corrupted
+      Corrupted library: {name} | Corrupted library: {name} | {count} libraries
+      corrupted
   corruptedVersionJar:
     message: Click to install this version
     name: Corrupted version jar for Minecraft %{version}.
@@ -192,7 +206,8 @@ diagnosis:
   missingLibraries:
     message: Launcher will install libraries for you
     name: >-
-      Missing {name} Library | Missing {name} Library | Missing {count} Libraries | Missing {count} Libraries
+      Missing {name} Library | Missing {name} Library | Missing {count}
+      Libraries | Missing {count} Libraries
   missingVersion:
     message: Click to install this version
     name: The version {version} is not installed!
@@ -226,39 +241,54 @@ env:
     none: Select None
 errors:
   BadForgeInstallerJarError: >-
-    Cannot parse forge installer jar file. Maybe the forge has new installer file format? Contact developers if this issue persists.
+    Cannot parse forge installer jar file. Maybe the forge has new installer
+    file format? Contact developers if this issue persists.
   BadInstanceType: 'Not a valid instance: {type}'
   BodyTimeoutError: HTTP Body timeout
   ChecksumNotMatchError: Checksum not matched! Expected {expect}. Actual {actual}.
   ConnectTimeoutError: Connection timeout to server.
+  CorruptedResourceMetadata: >-
+    Detected and cleared corrupted metadata on {count} resource(s). The files
+    still work, but their Modrinth/CurseForge attribution was lost and will be
+    re-detected automatically.
   DNSNotFoundError: DNS lookup error
   DatabaseNotOpened: >-
-    Database is not opened! The launcher won't work properly! Please select a data directory the launcher can access. You can try to reset the data root in setting page.
+    Database is not opened! The launcher won't work properly! Please select a
+    data directory the launcher can access. You can try to reset the data root
+    in setting page.
   DiskIsFull: >-
-    Your disk is full! Cannot write anything to disk! All features might not be functional!
-  CorruptedResourceMetadata: >-
-    Detected and cleared corrupted metadata on {count} resource(s). The files still work, but their Modrinth/CurseForge attribution was lost and will be re-detected automatically.
+    Your disk is full! Cannot write anything to disk! All features might not be
+    functional!
   DownloadAggregateError: Failed to download file.
   DownloadFileSystemError: >-
-    Error during accessing the download file path. Please ensure the launcher has permission to write on it.
+    Error during accessing the download file path. Please ensure the launcher
+    has permission to write on it.
   HeadersTimeoutError: HTTP Header timeout
   InstallInstructionFailed:
-    title: Failed to install Minecraft files
     body: '{name}: {message}'
+    title: Failed to install Minecraft files
   InstallNetworkError:
+    body: >-
+      A network problem interrupted the install. Check your internet connection
+      or proxy and try again.
     title: Cannot download Minecraft files
-    body: A network problem interrupted the install. Check your internet connection or proxy and try again.
   InstallPermissionDenied:
+    body: >-
+      An anti-virus tool or restricted folder permissions blocked the install.
+      Add the launcher to your AV exclusion list, or pick a different data root
+      in the launcher settings.
     title: Cannot write to the launcher folder
-    body: An anti-virus tool or restricted folder permissions blocked the install. Add the launcher to your AV exclusion list, or pick a different data root in the launcher settings.
   NotFoundError: 404 Not Found
   SocketError: Server socket error
 eula:
   body: >-
-    By checking the checkbox button, you are indicating your agreement to Minecraft's {eula}.
+    By checking the checkbox button, you are indicating your agreement to
+    Minecraft's {eula}.
 exception:
   http: >-
-    HTTP request to {url} failed. Status code {statusCode}. {code}. Please retry or check your network. If this error persists, please send a report to developer team.
+    HTTP request to {url} failed. Status code {statusCode}. {code}. Please retry
+    or check your network. If this error persists, please send a report to
+    developer team.
 exportModpack:
   name: Export Modpack
 extensions:
@@ -316,13 +346,16 @@ feedback:
   githubDescription: Open an Github Issue to tell your thought
   githubOpenIssue: Github
   hint: >-
-    Click the button to create the report and contact the developer team. The report will contain your device info including operating system type, version, user name (in your os), etc.
+    Click the button to create the report and contact the developer team. The
+    report will contain your device info including operating system type,
+    version, user name (in your os), etc.
   kook: Kook
   kookDescription: Kook is an alternate app for discord for Chinese Mainland users
   name: Feedback
   qq: QQ Group
   qqDescription: >-
-    Enter the feedback QQ group and direct talk with authors. Group Number: {number}
+    Enter the feedback QQ group and direct talk with authors. Group Number:
+    {number}
   qqEnterGroup: Join
 fileDetail:
   fileSize: File Size
@@ -394,6 +427,10 @@ instance:
   deleteHint: The instance data will be removed from the disk forever. Are you sure?
   duplicate: Duplicate Game
   duplicatedName: Duplicated Name
+  envVarKey: Key
+  envVarKeyPlaceholder: MY_VAR
+  envVarValue: Value
+  envVarValuePlaceholder: value
   fileApi: The synchronize file server API url
   fileApiHint: The url to synchronize instance files from a remote config server.
   fileApiPlaceholder: Please enter the remote sync url here if you want to keep the resource sync
@@ -408,18 +445,19 @@ instance:
   launchArguments: Launch Arguments Preview
   launchServer: Launch localhost server
   linkFileDesc: >-
-    This will overwrite instance local {file} with the global {file}. Are you sure to link it?
+    This will overwrite instance local {file} with the global {file}. Are you
+    sure to link it?
   linkFileTitle: Are you sure to link {file}?
   mcOptions: Minecraft Options
   mcOptionsHint: Additional Minecraft launch arguments
   name: Profile Name
   nameHint: The name of the modpack
-  nameNoCyrillic: The name cannot contain Cyrillic characters
   nameInvalidChars: 'The name cannot contain these characters: < > : " / \\ | ? *'
-  nameReservedName: This name is reserved by the system and cannot be used
+  nameNoCyrillic: The name cannot contain Cyrillic characters
   namePathTraversal: The name cannot contain path traversal ("..")
-  nameWhitespaceOnly: The name cannot be only whitespace or dots
+  nameReservedName: This name is reserved by the system and cannot be used
   nameTrailingDotOrSpace: The name cannot end with a dot or space
+  nameWhitespaceOnly: The name cannot be only whitespace or dots
   neverPlayed: Never Played
   openCrashReportFolder: Open Crash Report Folder
   openLogFolder: Open Log Folder
@@ -442,10 +480,6 @@ instance:
   vmOptionsHint: Extra arguments to pass to the JVM
   vmVar: Environment Variables
   vmVarHint: Click + button to add environemnt variables
-  envVarKey: Key
-  envVarValue: Value
-  envVarKeyPlaceholder: MY_VAR
-  envVarValuePlaceholder: value
   width: Width
 instanceAge:
   older: Older
@@ -465,7 +499,9 @@ instanceInstallSkip:
   skip: Skip
   title: Potential corrupted file source
   warning: >-
-    Some files are downloaded multiple times with checksum unmatching. This may be due to the fact that the original checksum is incorrect. Please check. If you confirm the current files are valid, you can skip the validation check.
+    Some files are downloaded multiple times with checksum unmatching. This may
+    be due to the fact that the original checksum is incorrect. Please check. If
+    you confirm the current files are valid, you can skip the validation check.
 instanceLauncher:
   search: Search instances...
   showAll: Show All Instances
@@ -473,10 +509,12 @@ instanceLauncher:
 instanceSetting:
   disableAuthlibInjector: Disable authlib injector
   disableAuthlibInjectorDescription: >-
-    If you are using third-party skin system. The authlib injector can help you to display skin in game.
+    If you are using third-party skin system. The authlib injector can help you
+    to display skin in game.
   disableElyByAuthlib: Disable ely.by's authlib replacement
   disableElyByAuthlibDescription: >-
-    Ely.by has a unique authlib replacement to display skin universally in any server.
+    Ely.by has a unique authlib replacement to display skin universally in any
+    server.
   fastLaunch: Turbo Launch
   fastLaunchHint: Ignore the user status and existing unfixed problems
   hideLauncher: Hide the launcher after launch
@@ -490,7 +528,8 @@ instanceUpdate:
   basic: Setting Update
   files: File Updates
   loaderChanged: >-
-    The modloader of this instance has been changed. The old modloader is {modloader}, and the new modloader is {newModloader}.
+    The modloader of this instance has been changed. The old modloader is
+    {modloader}, and the new modloader is {newModloader}.
   noFiles: No file changes
   summary: Add {add} files. Remove {remove} files. Keep {keep} files.
   title: Update Instance
@@ -498,13 +537,16 @@ instanceUpdate:
 instances:
   add: Create Game
   addCurseForgeDescription: >-
-    Import from curseforge data folder. You need to select curseforge's root data folder
+    Import from curseforge data folder. You need to select curseforge's root
+    data folder
   addDescription: Create a new instance from scratch
   addMMCDescription: >-
-    Import existing MultiMC instance. You need to select the data folder from MultiMC.
+    Import existing MultiMC instance. You need to select the data folder from
+    MultiMC.
   addManually: Manually Create
   addModrinthDescription: >-
-    Import existing Modrinth instance. You need to select the Modrinth root data folder.
+    Import existing Modrinth instance. You need to select the Modrinth root data
+    folder.
   addPrismDescription: Import existing PrismLauncher instance.
   addServer: Create from server
   addServerDescription: This will create a game directly launch to the server.
@@ -512,7 +554,8 @@ instances:
   addTemplateDescription: Import from downloaded Modpack
   addVanilla: Create from vanilla-like Minecraft
   addVanillaDescription: >-
-    Import from common .minecraft folder. This will duplciate the original game profile to XMCL.
+    Import from common .minecraft folder. This will duplciate the original game
+    profile to XMCL.
   fix: Repair
   folder: Folder
   folderSetting: Folder Settings
@@ -524,6 +567,8 @@ items:
 java:
   allocatedLong: Use system default java
   allocatedShort: Auto Allocated
+  allocation: Allocated
+  autoHint: Min grows with installed mod count; max uses available system memory.
   change: Change
   importFromFile: Import Java From File
   invalid: Invalid Java Location
@@ -539,23 +584,15 @@ java:
   openFolder: Open Java Folder
   presets: Presets
   refresh: Refresh Local Java
-  allocation: Allocated
-  autoHint: Min grows with installed mod count; max uses available system memory.
   systemMemory: 'System Free Memory: {free} / {total}'
 labyMod:
   disable: Disable LabyMod
   empty: LabyMod does not support current Minecraft
-unauthenticatedWarning:
-  title: Not Logged In
-  description: You are not logged into any account. The game will launch in demo mode. To access full features, please sign in.
-  cancel: Cancel
-  login: Sign In
-  playAnyway: Play Anyway
 launch:
   cancel: Cancel
   createShortcut: Create shortcut
-  kill: Stop
   forceKill: Force Kill
+  kill: Stop
   killServer: Kill Localhost Server
   launch: Launch
   launchAnyway: Launch Anyway
@@ -570,45 +607,56 @@ launchBlocked:
     title: Launch Failed
   launchInvalidJavaPath:
     description: >-
-      The selected java is missing or invalid. Please select a new one. <span class="highlight"> {javaPath} </span>
+      The selected java is missing or invalid. Please select a new one. <span
+      class="highlight"> {javaPath} </span>
     title: Invalid Java Path
   launchJavaNoPermission:
     description: >-
-      The launcher doesn't have permission to execute the java <span class="highlight"> {javaPath} </span>. Either change the permission of the java file or raise the permission of launcher.
+      The launcher doesn't have permission to execute the java <span
+      class="highlight"> {javaPath} </span>. Either change the permission of the
+      java file or raise the permission of launcher.
     title: No permission to launch
   launchNoProperJava:
     description: >-
-      No proper java can be selected to launch the game. ({javaPath} is invalid?)
+      No proper java can be selected to launch the game. ({javaPath} is
+      invalid?)
     title: No proper java found
   launchNoVersionInstalled:
     description: Cannot resolve version <span class="highlight">{version}</span> to launch.
     title: No version selected
   launchSpawnProcessFailed:
     description: >-
-      Please check your java, or give more permissions to the launcher and retry. If this still doesn't work, please contact the developers.
+      Please check your java, or give more permissions to the launcher and
+      retry. If this still doesn't work, please contact the developers.
     title: Fail to start game process
   unexpectedText: >-
-    This is unexpected. You can restart the launcher to mitigate the issue. Please contact author if this issue happens again.
+    This is unexpected. You can restart the launcher to mitigate the issue.
+    Please contact author if this issue happens again.
 launchFailed:
   crash: Game Crashed!!
   description: There is no crash report. This this the error log and latest log.
   elyByAuthlib:
     description: >-
-      The Ely.by authlib replacement was used for Minecraft version {version}, but this version may not be fully compatible.
+      The Ely.by authlib replacement was used for Minecraft version {version},
+      but this version may not be fully compatible.
     suggestion: >-
-      You can disable Ely.by's authlib replacement in the instance settings to avoid this issue.
+      You can disable Ely.by's authlib replacement in the instance settings to
+      avoid this issue.
     title: Ely.by Authlib Compatibility Issue
   failedToLaunch: Launch failed to launch
   latestLog: Latest Log
   title: Game Exited with Abnormal Code
 launchPreExecuteCommandFailed:
   description: >-
-    The pre-execute command failed with an error: {error}. Please check the command and try again.
+    The pre-execute command failed with an error: {error}. Please check the
+    command and try again.
   title: Pre-Execute Command Failed
 launchStatus:
   assigningMemory: Assigning memory
   elyByWarning: >-
-    Ely.by authlib replacement is enabled. Some Minecraft versions may not be compatible and could crash. You can disable it in instance settings if issues occur.
+    Ely.by authlib replacement is enabled. Some Minecraft versions may not be
+    compatible and could crash. You can disable it in instance settings if
+    issues occur.
   exit: Exit Game?
   injectingAuthLib: Setting up Third-party AuthLib
   launching: Launching...
@@ -625,7 +673,8 @@ localVersion:
   empty: No Version Installed
   hint: Launch a specific local version directly
   reinstallDescription: >-
-    If you think this version installation has some problems, you can try to reinstall it.
+    If you think this version installation has some problems, you can try to
+    reinstall it.
   reinstallTitle: Reinstall {version}
   title: Local Version | Local Versions
 logLevel:
@@ -645,50 +694,72 @@ login:
   userRelogin: User access token is expired. Please re-login!
 loginError:
   acquireMicrosoftTokenFailed: >-
-    Fail to acquire Microsoft token. This might be a network issue. Please retry.
+    Fail to acquire Microsoft token. This might be a network issue. Please
+    retry.
   badNetworkOrServer: >-
-    Please check your network connectivity! Or maybe the authentication server is down!
+    Please check your network connectivity! Or maybe the authentication server
+    is down!
   checkOwnershipFailed: Fail to check game ownership. Please try again.
   connectionReset: Fail to login since connection is reset by server
+  cyrillicNotAllowed: Cyrillic characters are not allowed
   fetchMinecraftProfileFailed: 'Fail to fetch Minecraft profile: {reason}'
   illegalEmail: E-mail must be valid
+  illegalOfflineUsername: >-
+    Username must be 3-16 characters long and contain only English letters,
+    numbers, and underscores
   invalidCredentials: Invalid credentials. Invalid username or password.
   loginMinecraftByXboxFailed: >-
-    Fail to exchange Minecraft token by Xbox token. Please make sure you have Minecraft in Xbox, or retry.
+    Fail to exchange Minecraft token by Xbox token. Please make sure you have
+    Minecraft in Xbox, or retry.
   loginMinecraftByXboxRateLimited: >-
-    Microsoft's Minecraft authentication service is currently rate-limiting requests (HTTP 429). Please wait a moment and try again.
+    Microsoft's Minecraft authentication service is currently rate-limiting
+    requests (HTTP 429). Please wait a moment and try again.
   loginMinecraftByXboxRateLimitedWithRetry: >-
-    Microsoft's Minecraft authentication service is currently rate-limiting requests (HTTP 429). Please wait about {seconds} second(s) and try again.
+    Microsoft's Minecraft authentication service is currently rate-limiting
+    requests (HTTP 429). Please wait about {seconds} second(s) and try again.
   loginMinecraftByXboxServerError: >-
-    Microsoft's Minecraft authentication service returned a server error (HTTP {status}). This is on their side. Please try again in a few minutes.
+    Microsoft's Minecraft authentication service returned a server error (HTTP
+    {status}). This is on their side. Please try again in a few minutes.
   loginMinecraftByXboxStatus: >-
-    Fail to exchange Minecraft token by Xbox token (HTTP {status}). Please make sure you have Minecraft in Xbox, or retry.
-  loginXboxAgeRestricted: >-
-    Fail to login Xbox due the the age issue. Please make sure the age is set for your Microsoft account and the age is above 18.
-  loginXboxChildAccount: >-
-    Your Microsoft account is a child account and needs to be added to a Microsoft Family before it can sign in to Xbox / Minecraft. Open {url} in your browser to fix it, then try again.
-  loginXboxNoXboxProfile: >-
-    This Microsoft account does not have an Xbox profile yet. Open {url} in your browser to create one, then try again.
+    Fail to exchange Minecraft token by Xbox token (HTTP {status}). Please make
+    sure you have Minecraft in Xbox, or retry.
   loginXboxAdultVerification: >-
-    Your Microsoft account requires adult verification (commonly required in some regions) before it can sign in to Xbox. Open {url} in your browser to complete verification, then try again.
-  loginXboxRegionLocked: >-
-    Xbox Live is not available in your account's region. Please change your Microsoft account's country/region in Microsoft account settings and try again.
-  loginXboxBanned: >-
-    This Microsoft / Xbox account has been suspended or banned by Microsoft and cannot sign in to Minecraft. Please contact Microsoft / Xbox support.
+    Your Microsoft account requires adult verification (commonly required in
+    some regions) before it can sign in to Xbox. Open {url} in your browser to
+    complete verification, then try again.
+  loginXboxAgeRestricted: >-
+    Fail to login Xbox due the the age issue. Please make sure the age is set
+    for your Microsoft account and the age is above 18.
   loginXboxBadXsts: >-
-    Microsoft returned an XSTS response without the expected user claims. This is usually temporary -- please try again in a few minutes.
+    Microsoft returned an XSTS response without the expected user claims. This
+    is usually temporary -- please try again in a few minutes.
+  loginXboxBanned: >-
+    This Microsoft / Xbox account has been suspended or banned by Microsoft and
+    cannot sign in to Minecraft. Please contact Microsoft / Xbox support.
+  loginXboxChildAccount: >-
+    Your Microsoft account is a child account and needs to be added to a
+    Microsoft Family before it can sign in to Xbox / Minecraft. Open {url} in
+    your browser to fix it, then try again.
   loginXboxFailed: >-
-    Fail to login Xbox by Microsoft token. Please make sure you have an independent Xbox account to your Microsoft account. Please try again.
+    Fail to login Xbox by Microsoft token. Please make sure you have an
+    independent Xbox account to your Microsoft account. Please try again.
   loginXboxFailedWithCode: >-
-    Fail to login Xbox by Microsoft token (XErr {code}). Please search the code for help, or try again later.
+    Fail to login Xbox by Microsoft token (XErr {code}). Please search the code
+    for help, or try again later.
+  loginXboxNoXboxProfile: >-
+    This Microsoft account does not have an Xbox profile yet. Open {url} in your
+    browser to create one, then try again.
+  loginXboxRegionLocked: >-
+    Xbox Live is not available in your account's region. Please change your
+    Microsoft account's country/region in Microsoft account settings and try
+    again.
   noProfileForNewUser: >-
-    No game profile found! If you are a new Minecraft user, please login at least one time in Minecraft official launcher.
+    No game profile found! If you are a new Minecraft user, please login at
+    least one time in Minecraft official launcher.
   requestFailed: Login failed, we do not know the exact reason. Please retry.
   requireEmail: E-mail is required
   requirePassword: Password is required
   requireUsername: Username is required
-  cyrillicNotAllowed: Cyrillic characters are not allowed
-  illegalOfflineUsername: Username must be 3-16 characters long and contain only English letters, numbers, and underscores
   timeout: Login timeout. Please retry or check your network.
 logsCrashes:
   crashes: Crash Reports
@@ -701,6 +772,36 @@ me:
   recentPlay: Recent Play
 migrateMinecraft:
   name: Migrate Minecraft Files
+minecraftFriends:
+  accept: Accept
+  add: Add a friend
+  addPlaceholder: Minecraft username
+  addedRelative: Added {time}
+  errors:
+    cannotAddSelf: You cannot send a friend request to yourself.
+    duplicate: That player is already in your list.
+    generic: Something went wrong. Please try again.
+    inviteRejected: That player does not have friends enabled or does not accept invites.
+    tokenExpired: Your Microsoft session expired. Please log in again.
+    unknownProfile: We could not find a player with that name.
+  expiresRelative: Expires {time}
+  friends: Friends
+  heroEmptyHint: Add a Minecraft player by username above to send a friend request.
+  heroEmptyTitle: Your friends list is empty
+  incoming: Incoming requests
+  incomingHint: 1 incoming request | {count} incoming requests
+  notifyAdded: Friend request sent to {name}
+  outgoing: Outgoing requests
+  privacy:
+    acceptInvites: Accept friend invites
+    acceptInvitesHint: When off, other players cannot send you friend requests.
+    friendsEnabled: Friends list enabled
+  reconnectAction: Reconnect
+  requiresMicrosoft: Sign in with a Microsoft account to use friends.
+  scopedTo: Signed in as {name}
+  send: Send
+  title: Minecraft Friends
+  unsupported: Friends are only available for Microsoft accounts.
 minecraftVersion:
   name: Minecraft Version
   release: Release
@@ -718,7 +819,8 @@ mod:
   dropHint: Drop mod's .jar/.litemod here to import.
   duplicatedDetected: '{count} duplicated mods'
   duplicatedDetectedDescription: >-
-    Found mods with same mod id but different files. This might cause Minecraft crash. Please select the file you want to keep.
+    Found mods with same mod id but different files. This might cause Minecraft
+    crash. Please select the file you want to keep.
   enableAll: Enable All
   enabled: '{count} Mods enabled'
   filter: Filter Mods
@@ -730,7 +832,8 @@ mod:
   incompatible: Incompatible Mod.
   incompatibleHint: Show Incompatible
   incompatibleHintDescription: >-
-    Some mods dependencies might be missing. Or some dependencies versions do not matched.
+    Some mods dependencies might be missing. Or some dependencies versions do
+    not matched.
   maybeCompatible: Maybe Compatible.
   modloaderSelectHint: The mod support following mod loaders. Please select one to install.
   modloaderSelectNotSupported: Not found {modloader} for Minecraft {minecraft}
@@ -761,10 +864,12 @@ modFilter:
   unusedOnly: Only show unused libraries mods
 modInstall:
   archived: >-
-    {name} has been archived. {name} will not receive any further updates unless the author decides to unarchive the project.
+    {name} has been archived. {name} will not receive any further updates unless
+    the author decides to unarchive the project.
   autoUpgrade:
     description: >-
-      You have changed the Minecraft version. Would you like to automatically update compatible mods to versions that match Minecraft {version}?
+      You have changed the Minecraft version. Would you like to automatically
+      update compatible mods to versions that match Minecraft {version}?
     'no': Skip
     title: Update Mods?
     'yes': Update Mods
@@ -804,7 +909,8 @@ modpack:
   authorHint: This might be used to sign an exported modpack (Curseforge)
   description: Description
   descriptionHint: >-
-    General description for you modpack. Might be used for exporting as curseforge modpack.
+    General description for you modpack. Might be used for exporting as
+    curseforge modpack.
   dropHint: Drop modpack zip to here to import
   emitCurseforge: Export Curseforge Modpack
   emitModrinth: Export Modrinth Modpack
@@ -822,7 +928,8 @@ modpack:
   urlHint: The home page url of your modpack
 modpackImportConfirm:
   description: >-
-    Detect you drop a file into the launcher. Are you trying to import a modpack?
+    Detect you drop a file into the launcher. Are you trying to import a
+    modpack?
   title: Are you trying to import a modpack?
 modrinth:
   browseUrl: Open In Browser {url}
@@ -949,7 +1056,8 @@ modrinth:
   licenses:
     name: Licenses
   loginHint: >-
-    The operation requires modrinth to perform. The launcher will open a browser window to login modrinth.
+    The operation requires modrinth to perform. The launcher will open a browser
+    window to login modrinth.
   loginTitle: Login to Modrinth
   modLoaders:
     name: Mod Loaders
@@ -958,12 +1066,12 @@ modrinth:
   projectId: Project Id
   projectMembers: Project Members
   projectType:
+    datapack: Datapack
     mod: Mod
     modpack: Modpack
+    plugin: Plugin
     resourcepack: Resource Pack
     shader: Shader
-    datapack: Datapack
-    plugin: Plugin
   projects: '{count} projects'
   serverSide: Server Side
   sort:
@@ -983,18 +1091,26 @@ modrinthCard:
 multiplayer:
   allowTurn: Enable relay server
   allowTurnHint: >-
-    Allow relay server if you cannot connect with your friend. However, using relay server may slow down your connection. Use it with caution.
+    Allow relay server if you cannot connect with your friend. However, using
+    relay server may slow down your connection. Use it with caution.
   complete: Complete
   confirm: Confirm
   connectionError: Connection Error
   connectionFailedHint: >-
-    Unable to establish connection. Check if both peers have compatible NAT types.
+    Unable to establish connection. Check if both peers have compatible NAT
+    types.
   connections: Connections
   copied: Copied!
   copy: Copy
   copyGroupToFriendHint: Let your friends join the group with this id
   copyLocalHint: >
-    "Please copy the local SDP text and send it to your object to have your object enter this text in the join connection <span>A token can be only used for <span style="color: red; font-weight: bold;">one peer</span>! You cannot send the same token to multiple peers!</span> <br> <span class="hint-text" style="font-style: italic;">If you need to connect multiple peers, you need to create <span style="font-weight: bold; color: rgba(245, 158, 11)">multiple</span> connections.</span>"
+    "Please copy the local SDP text and send it to your object to have your
+    object enter this text in the join connection <span>A token can be only used
+    for <span style="color: red; font-weight: bold;">one peer</span>! You cannot
+    send the same token to multiple peers!</span> <br> <span class="hint-text"
+    style="font-style: italic;">If you need to connect multiple peers, you need
+    to create <span style="font-weight: bold; color: rgba(245, 158,
+    11)">multiple</span> connections.</span>"
   createLocalToken: Create Local Token
   currentIpTitle: Detected Public IP
   currentNatTitle: 'Current network (NAT):'
@@ -1004,35 +1120,50 @@ multiplayer:
   disconnected: disconnected
   enterRemoteToken: Enter Remote Token
   enterRemoteTokenHint: >-
-    Once your peer enters your token, you need to enter his token to the text area below. Click confirm to connect.
+    Once your peer enters your token, you need to enter his token to the text
+    area below. Click confirm to connect.
   exposedPortDescription: The port you exposed to other peers
   exposedPorts: Forwarded Ports
   gatheringIce: >
-    "Please wait for the ICE server to collect enough information about your network. If you are impatient and there is enough information, you can give the current SDP to the other party in advance and click Next Please send the <span class="v-chip v-chip--label v-size--small" style="text-font: bold" >Local Token</span> to your peer, you peer enter your token in <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> Join Connection </span> section. <br> The ICE server might need some time to collect your info to create <span class="v-chip v-chip--label v-size--small" style="text-font: bold">Local token</span>.<br> You do not need to wait until the ICE status is complete. If the token below remains unchanged, you can copy it and send it to your peer."
+    "Please wait for the ICE server to collect enough information about your
+    network. If you are impatient and there is enough information, you can give
+    the current SDP to the other party in advance and click Next Please send the
+    <span class="v-chip v-chip--label v-size--small" style="text-font: bold"
+    >Local Token</span> to your peer, you peer enter your token in <span
+    class="v-chip v-chip--label v-size--small" style="text-font: bold"> Join
+    Connection </span> section. <br> The ICE server might need some time to
+    collect your info to create <span class="v-chip v-chip--label v-size--small"
+    style="text-font: bold">Local token</span>.<br> You do not need to wait
+    until the ICE status is complete. If the token below remains unchanged, you
+    can copy it and send it to your peer."
   groupId: Group Id
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
   joinConnection: >-
-    If your peer has already initiated a connection, you need to Join Connection.
+    If your peer has already initiated a connection, you need to Join
+    Connection.
   joinManual: Join
   joinOrCreateGroup: Join/Create Group
   joinOrCreateGroupHint: Get group id from your friends or create a group
   kernel: P2P Kernel
   kernelDescription: >-
-    Use either native WebRTC or node-datachannel. Only switch this when your p2p connection sometime crashes the launcher window.
+    Use either native WebRTC or node-datachannel. Only switch this when your p2p
+    connection sometime crashes the launcher window.
   leaveGroup: Leave group
   localToken: Local Token
   manualConnect: Manually Connect
   name: Multiplayer on LAN
   natWarning: >-
-    Your NAT type may prevent direct connections. Try enabling relay server in settings or ask your friend to host instead.
+    Your NAT type may prevent direct connections. Try enabling relay server in
+    settings or ask your friend to host instead.
   networkInfo: Network Info (Click to toggle)
   next: Next
   otherExposedPortDescription: The port forwarded by {user}
   placeholder: Connect with other users to play Minecraft on LAN!
   previous: Previous
   receiveHint: >-
-    After the other party enters your token, your connection will be created automatically. Now you can close the dialog.
+    After the other party enters your token, your connection will be created
+    automatically. Now you can close the dialog.
   receiveRemoteTokenHint: Please enter the token from your peer here.
   remoteToken: Remote Token
   routerInfo: Router Info
@@ -1097,26 +1228,34 @@ quiltVersion:
   empty: Quilt does not support Minecraft {version}
 reinstall:
   name: Reinstall {version}
+relative:
+  daysAgo: '{count} day ago | {count} days ago'
+  hoursAgo: '{count} hour ago | {count} hours ago'
+  justNow: just now
+  minutesAgo: '{count} minute ago | {count} minutes ago'
+  secondsAgo: '{count} second ago | {count} seconds ago'
 resourceError:
-  title: Cannot read {file}
   body: >-
     "{path}" could not be parsed ({code}). The file may be corrupted, locked, or
     incomplete. Try re-downloading or removing it.
+  title: Cannot read {file}
 resourcepack:
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft
   delete:
     content: >-
-      This will remove the resource pack file from disk, and we cannot undo it. Are you sure you want to do this?
+      This will remove the resource pack file from disk, and we cannot undo it.
+      Are you sure you want to do this?
     title: Delete the resource pack
   dropHint: Drop Resource Pack's folder/zip here to import.
   enable: '{count} resource packs enabled'
   incompatible: >-
-    Incompatible Resource Pack format({format}). Fitin {accept}. Current {actual}.
+    Incompatible Resource Pack format({format}). Fitin {accept}. Current
+    {actual}.
   name: Resource Pack | Resource Packs
+  noLocalPacksFound: No local resource packs found matching your search.
   noPacks: No resource packs found
   noPacksInstalled: You don't have any resource packs installed.
-  noLocalPacksFound: No local resource packs found matching your search.
   search: Search Resource Packs...
   searchHint: Search resource packs
   searchOnCurseforge: Search {name} in curseforge
@@ -1133,7 +1272,8 @@ save:
   createNew: Create New World
   createdWorlds: You have {count} worlds
   deleteHint: >-
-    This operation cannot be reverted. You will lose the save data forever. Are you sure you want to delete this save?
+    This operation cannot be reverted. You will lose the save data forever. Are
+    you sure you want to delete this save?
   deleteTitle: Delete the Save
   difficulty: Difficulty
   dropHint: Drag save zip here to Import
@@ -1149,9 +1289,9 @@ save:
   mapLoaded: Map Loaded
   mapPreview: Map Preview
   name: Save | Saves
+  noLocalSavesFound: No local saves found matching your search.
   noSavesFound: No saves found
   noSavesInstalled: You don't have any saves.
-  noLocalSavesFound: No local saves found matching your search.
   openFolder: Open Saves Folder
   properties: World Properties
   search: Search Maps...
@@ -1191,10 +1331,12 @@ server:
   expectedVersions: Supported Versions
   export: Export Server
   exportNoFilesHint: >-
-    No server files found. You can run server on local once to generate some files.
+    No server files found. You can run server on local once to generate some
+    files.
   exportOption: Server Export Options
   exportSSHAuthenticationFailed: >-
-    All authentication methods failed. Please check username/password or private key.
+    All authentication methods failed. Please check username/password or private
+    key.
   exportSSHOptions: SSH Options
   exportSSHPrivateKeyPath: SSH Private Key Path
   exportSSHRemotePath: Remote Server Path
@@ -1206,7 +1348,9 @@ server:
   ipAddress: IP Address
   launchClient: Launch client instead
   launchPinned: Pinned
-  launchTargetHint: This instance launches straight into the pinned server. Switch back to the client?
+  launchTargetHint: >-
+    This instance launches straight into the pinned server. Switch back to the
+    client?
   maxPlayers: Max Players
   motd: Server MOTD
   nameHint: Display name shown in the Multiplayer list
@@ -1214,9 +1358,9 @@ server:
   onlineMode: Online Mode
   pin: Pin server
   pinAfterSave: Pin as default launch target after save
-  pinnedHeader: 'pinned: {name}'
   ping: Ping
   pings: Pings
+  pinnedHeader: 'pinned: {name}'
   players: Players
   port: Port
   serverName: Server name
@@ -1226,10 +1370,10 @@ server:
   unknownDescription: Unknown Server. Please Refresh
   unpin: Unpin
   upload: Upload Server
-  upstreamUpdateAvailable: 'Server now runs Minecraft {version}. Click to apply.'
-  upstreamUpdateHint: Applies the suggested Minecraft version to this instance.
   upstreamUpToDate: Your instance matches the server ({version}).
   upstreamUpToDateHint: No upgrade needed. Click to re-ping the server.
+  upstreamUpdateAvailable: Server now runs Minecraft {version}. Click to apply.
+  upstreamUpdateHint: Applies the suggested Minecraft version to this instance.
   useAsUpstreamHint: The instance will follow the server's reported Minecraft version.
   version: Server Requires Version
   versionHint: The Minecraft Version To Ping
@@ -1243,10 +1387,12 @@ setting:
   aboutBmclDescription: BMCL API provides convenient downloads for users in Chinese Mainland
   aboutContributors: 🧑‍💻 Contributors 🧑‍💻
   aboutDenoDescription: >-
-    XMCL leverages Deno Deploy's hassle-free platform for serverless JavaScript applications
+    XMCL leverages Deno Deploy's hassle-free platform for serverless JavaScript
+    applications
   aboutLicense: MIT LICENSE
   aboutLicenseInfo: >-
-    Free code signing on Windows provided by SignPath.io, certificate by SignPath Foundation
+    Free code signing on Windows provided by SignPath.io, certificate by
+    SignPath Foundation
   aboutSponsors: 😇 Sponsors 😇
   advancedJavaOptions: Advanced Java Options
   advancedSettings: Advanced Settings
@@ -1263,7 +1409,8 @@ setting:
   appearance: Appearance
   appearanceDescription: Customize the launcher appearance
   appxUpdateHint: >-
-    The launcher will download and execute installer. If popup installer failed, please run it manually.
+    The launcher will download and execute installer. If popup installer failed,
+    please run it manually.
   authenticationSettings: Authentication
   backdropBlur: Backdrop Blur
   backgroundColorAbove: Show background color as overlay
@@ -1282,12 +1429,6 @@ setting:
   backgroundMusicUrlPlaceholder: Enter HTTP/HTTPS URL for music
   backgroundType: Background Type
   backgroundTypeDescription: Show special effect on background (This may impact performance)
-  setAsBackground:
-    global: Set as launcher background
-    instance: Set as instance background
-    successGlobal: Background image updated.
-    successInstance: Instance background image updated.
-    failed: Failed to set background image
   backgroundTypes:
     halo: Halo
     image: Image
@@ -1300,37 +1441,6 @@ setting:
   backgroundVideoUrlPlaceholder: Enter HTTP/HTTPS URL for video
   backgroundVideoVolume: volume
   backgroundVideoVolumeDescription: drag to adjust volume
-  themeStore:
-    name: Theme Store
-    description: Save and manage global themes
-    savedThemes: Saved Themes
-    noSavedThemes: No saved themes yet
-    saveToStore: Save to Store
-    saveDialogTitle: Save Theme
-    themeName: Theme Name
-    themeNameHint: Name used to store this theme
-    loadConfirmTitle: Replace Current Theme?
-    loadConfirmMessage: Loading a stored theme will replace your current theme. Please back up if needed.
-    loadTheme: Load Theme
-  customCss:
-    title: Custom CSS
-    customizationMode: Customization Method
-    customizationModeSimple: Simple (UI Settings)
-    customizationModeCss: Advanced (Custom CSS)
-    globalToggle: Toggle Custom CSS
-    warning: Custom CSS allows you to customize any aspect of the launcher. Be careful when pasting CSS from untrusted sources, as it can modify the UI layout.
-    edit: Edit CSS Entry
-    delete: Delete CSS Entry
-    export: Export CSS Entry
-    exportFile: Export CSS File
-    noEntries: No Custom CSS entries yet. Add one or import a file/ZIP.
-    addNew: Add New
-    importFile: Import CSS File
-    importZip: Import ZIP
-    entryName: Entry Name
-    editorPlaceholder: "/* Write your custom CSS here */"
-    cancel: Cancel
-    save: Save
   browseRoot: Browse
   checkUpdate: Check Update
   colorTheme:
@@ -1343,6 +1453,20 @@ setting:
     primaryColor: Primary Color
     sideBarColor: Side Bar
     warningColor: Warning Color
+  customCss:
+    advancedDescription: Override the launcher's current styling with your own CSS.
+    assistantHint: Describe the look you want and I'll write the CSS for you.
+    assistantSuggestion1: Make the sidebar translucent
+    assistantSuggestion2: Add a subtle gradient background to cards
+    assistantTitle: CSS Assistant
+    dropHint: Drop a .css file to load it
+    editorPlaceholder: /* Write your custom CSS here */
+    globalToggle: Toggle Custom CSS
+    openInDialog: Open in the agent dialog
+    title: Custom CSS
+    warning: >-
+      Custom CSS allows you to customize any aspect of the launcher. Be careful
+      when pasting CSS from untrusted sources, as it can modify the UI layout.
   darkTheme: Theme
   darkThemeDescription: Choose between dark or light theme
   devModeLabel: DEV
@@ -1365,9 +1489,11 @@ setting:
   importSettingsHint: Load settings from a previously exported file
   instanceTheme:
     activeDescription: >-
-      This instance is using a custom theme. You can delete it to use the global theme.
+      This instance is using a custom theme. You can delete it to use the global
+      theme.
     description: >-
-      Enable a custom theme for this instance. This will create a copy of the current global theme.
+      Enable a custom theme for this instance. This will create a copy of the
+      current global theme.
     name: Instance Theme
   language: Language
   languageDescription: The display language
@@ -1384,12 +1510,15 @@ setting:
   livePreview: Live Preview
   location: Store Location
   manualUpdateHint: >-
-    The version cannot be updated automatically. Please download the launcher again from the official website!
+    The version cannot be updated automatically. Please download the launcher
+    again from the official website!
   maunalUpdateHint: >-
-    The version cannot be auto-updated. Please redownload the launcher from the website!
+    The version cannot be auto-updated. Please redownload the launcher from the
+    website!
   maxSockets: Per Host
   maxSocketsDescription: >-
-    Limit the maximum number of sockets to allow per host or for all hosts in total. 0 means no limit.
+    Limit the maximum number of sockets to allow per host or for all hosts in
+    total. 0 means no limit.
   maxSocketsTitle: Max HTTP sockets
   memoryAssignment: Memory Assignment
   migrateFromOther: Import from other launcher
@@ -1413,13 +1542,20 @@ setting:
     legacy: Legacy Version Only
   resetAllSettings: Reset All Settings
   resetAllSettingsConfirmMessage: >-
-    This will permanently delete all settings, accounts, instances, groups, and cached data. This action cannot be undone. Are you sure?
+    This will permanently delete all settings, accounts, instances, groups, and
+    cached data. This action cannot be undone. Are you sure?
   resetAllSettingsConfirmTitle: Reset All Settings?
   resetAllSettingsHint: Reset launcher to factory defaults (deletes everything)
   resetAllSettingsSuccess: All settings have been reset. The launcher will restart.
   resetSettingsError: 'Error resetting settings: {error}'
   resetToDefault: Reset to Default
   select: Select
+  setAsBackground:
+    failed: Failed to set background image
+    global: Set as launcher background
+    instance: Set as instance background
+    successGlobal: Background image updated.
+    successInstance: Instance background image updated.
   settingsExported: Settings exported successfully
   settingsImportError: Failed to import settings. Please check the file format.
   settingsImported: Settings imported successfully
@@ -1454,10 +1590,25 @@ setting:
   themeSettings: Theme Settings
   themeShare: Share Theme
   themeShareDescription: You can share the theme with your friend.
+  themeStore:
+    description: Save and manage global themes
+    loadConfirmMessage: >-
+      Loading a stored theme will replace your current theme. Please back up if
+      needed.
+    loadConfirmTitle: Replace Current Theme?
+    loadTheme: Load Theme
+    name: Theme Store
+    noSavedThemes: No saved themes yet
+    saveDialogTitle: Save Theme
+    saveToStore: Save to Store
+    savedThemes: Saved Themes
+    themeName: Theme Name
+    themeNameHint: Name used to store this theme
   update: Update
   useBmclAPI: Use BMCL API
   useBmclAPIDescription: >-
-    Use BMCLAPI to download Minecraft when you are in Chinese Mainland. (This won't affect you if you're not in Chinese Mainland)
+    Use BMCLAPI to download Minecraft when you are in Chinese Mainland. (This
+    won't affect you if you're not in Chinese Mainland)
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
   viewBackgroundMusic: View Musics
@@ -1475,28 +1626,38 @@ setup:
     name: '@:setting.appearance'
   dataRoot:
     description: >-
-      The data root is not a common .minecraft directory. Since XMCL data directory structure is different from vanilla, we do not recommend to use the common .minecraft directory as a data root.
+      The data root is not a common .minecraft directory. Since XMCL data
+      directory structure is different from vanilla, we do not recommend to use
+      the common .minecraft directory as a data root.
     drives: Recommend Locations
     name: Set Data Directory
   defaultLayoutDescription: >-
-    The default layout is trying to enhance the game "instance" concept. It looks like apps like Discord. It's also inspired by other game launcher apps like Steam, etc.
+    The default layout is trying to enhance the game "instance" concept. It
+    looks like apps like Discord. It's also inspired by other game launcher apps
+    like Steam, etc.
   defaultPath: Default Path
   error:
     badDataRoot: Invalid directory for launcher data! Please try another directory!
     exists: >-
-      Selected directory is not empty. It's okay but please make sure you backup your data.
+      Selected directory is not empty. It's okay but please make sure you backup
+      your data.
     invalidChar: >-
-      Path contains invalid characters! It could cause Minecraft fail to start! Plaese only use English characters and symbol!
+      Path contains invalid characters! It could cause Minecraft fail to start!
+      Plaese only use English characters and symbol!
     noPermission: >-
-      Launcher does not have permission to access selected directory! Please try another one.
+      Launcher does not have permission to access selected directory! Please try
+      another one.
     nonDictionary: Selected path is a file! Please select a directory!
   focusLayoutDescription: >-
-    The focus layout is the legacy layout of the Minecraft Launcher. It is designed to be used with a single instance or few instances.
+    The focus layout is the legacy layout of the Minecraft Launcher. It is
+    designed to be used with a single instance or few instances.
   game:
     name: Import Existing Game
   locale:
     description: >-
-      Select your preferred language if we have it! If you don't see your native language and you want to help, you can visit our Github to submit pull requests to translate!
+      Select your preferred language if we have it! If you don't see your native
+      language and you want to help, you can visit our Github to submit pull
+      requests to translate!
     language: Language
     name: Set Language
   path: Current Path
@@ -1511,9 +1672,9 @@ shaderPack:
   manage: Manage Shader Packs
   market: Shader Market
   name: Shader Pack
+  noLocalPacksFound: No local shader packs found matching your search.
   noPacks: No shader packs installed
   noPacksInstalled: You don't have any shader packs installed.
-  noLocalPacksFound: No local shader packs found matching your search.
   noShaderMod: No Shader Mod Installed
   noShaderModHint: You cannot use shader without a shader mod
   noShaderModInstallHint: You need to install one of the following mod to load shader pack.
@@ -1529,8 +1690,8 @@ shared:
   browse: Browse
   cancel: Cancel
   client: Client
-  copy: Copy
   copied: Copied
+  copy: Copy
   copyFailed: Copy failed
   copyFailedHint: Could not copy to clipboard
   description: Description
@@ -1612,7 +1773,8 @@ turnRegion:
 tutorial:
   feedbackDescription: If you encounter any problems, please click this button to send feedback!
   hideNewsHeaderDescription: >-
-    You can see the News showcase on the left. Clicking this button can hide this showcase.
+    You can see the News showcase on the left. Clicking this button can hide
+    this showcase.
   instance:
     iconDescription: Click to change icon.
     iconTitle: Instance icon
@@ -1621,41 +1783,65 @@ tutorial:
     javaImportTitle: Import java
     javaTitle: Java list
   instanceAddDescription: >-
-    Click this button to import existing Minecraft instance or create a new one from scratch or modpack.
+    Click this button to import existing Minecraft instance or create a new one
+    from scratch or modpack.
   instanceSelectDescription: Clicking this button will navigate to the page to select game and read news.
   launchDescription: Click this button to install or launch the game.
   mod:
     defaultSourceDescription: >-
-      You can choose the source of mods details here. There are the mods published to both Modrinth and Curseforge. If you want to switch between these two content providers, you can change the value here.
+      You can choose the source of mods details here. There are the mods
+      published to both Modrinth and Curseforge. If you want to switch between
+      these two content providers, you can change the value here.
     defaultSourceTitle: Select Mod Content Source
     detailDescription: >-
-      When you select an item on the left. You will see the details of the mod. The content can come from Modrinth, Curseforge or parsed mod's content.
+      When you select an item on the left. You will see the details of the mod.
+      The content can come from Modrinth, Curseforge or parsed mod's content.
     detailTitle: Mod Detail
     listDescription: >-
-      We will display installed mods when you don't have any input. You will see the searched mods once your input has a keyword or category selected.
+      We will display installed mods when you don't have any input. You will see
+      the searched mods once your input has a keyword or category selected.
     listTitle: Installed or Search Mod
     searchDescription: >-
-      You could search mods from Modrinth, Curseforge or your local cache with this search box.
+      You could search mods from Modrinth, Curseforge or your local cache with
+      this search box.
     searchTitle: Search Mods
   multiplayer:
     contentDescription: Connections between you and your peers will be listed here.
     contentTitle: '@:multiplayer.connections'
     groupDescription: >-
-      You can create or join a group with other players. The launcher will try to create P2P connections between you and your friends according to the group. You can input the group name given by your friends. Or you can create an unique name.
+      You can create or join a group with other players. The launcher will try
+      to create P2P connections between you and your friends according to the
+      group. You can input the group name given by your friends. Or you can
+      create an unique name.
     groupTitle: Join a group
     joinDescription: >-
-      Once you input a group name, you can click this button to join or create the group. If the group name is empty, the launcher will generate a name for you.
+      Once you input a group name, you can click this button to join or create
+      the group. If the group name is empty, the launcher will generate a name
+      for you.
     manualDescription: >-
-      If you or your friend cannot connect to the group, you can try to manually exchange the token by clicking manually connect. If that also failed, it might be an internet issue.
+      If you or your friend cannot connect to the group, you can try to manually
+      exchange the token by clicking manually connect. If that also failed, it
+      might be an internet issue.
   recentPlayDescription: >-
-    The created games will be listed here. You can switch the views here to also see the installed versions and downloaded modpacks.
+    The created games will be listed here. You can switch the views here to also
+    see the installed versions and downloaded modpacks.
   storePoupularModpackDescription: >-
-    You will see the most popular modpacks in Curseforge and Modrinth in this section.
+    You will see the most popular modpacks in Curseforge and Modrinth in this
+    section.
   storeSearchCategoryDescription: You can also toggle the categories or filters here.
   storeSearchDescription: >-
-    You can search Modpacks by inputting in this text box. Press Enter to search.
+    You can search Modpacks by inputting in this text box. Press Enter to
+    search.
   storeSearchResultDescription: You will see all search results listed here.
   userAccountDescription: Click this icon to add or manage your Minecraft account.
+unauthenticatedWarning:
+  cancel: Cancel
+  description: >-
+    You are not logged into any account. The game will launch in demo mode. To
+    access full features, please sign in.
+  login: Sign In
+  playAnyway: Play Anyway
+  title: Not Logged In
 universalDrop:
   unknownResource: Unknown
 upstream:
@@ -1677,46 +1863,12 @@ userAccount:
   add: Add Account
   removeDescription: This will remove all info for this account. Are you sure?
   removeTitle: Remove Account
-minecraftFriends:
-  title: Minecraft Friends
-  add: Add a friend
-  addPlaceholder: Minecraft username
-  send: Send
-  friends: Friends
-  incoming: Incoming requests
-  outgoing: Outgoing requests
-  heroEmptyTitle: Your friends list is empty
-  heroEmptyHint: Add a Minecraft player by username above to send a friend request.
-  scopedTo: 'Signed in as {name}'
-  reconnectAction: Reconnect
-  accept: Accept
-  unsupported: Friends are only available for Microsoft accounts.
-  requiresMicrosoft: Sign in with a Microsoft account to use friends.
-  notifyAdded: Friend request sent to {name}
-  addedRelative: Added {time}
-  expiresRelative: Expires {time}
-  incomingHint: 1 incoming request | {count} incoming requests
-  privacy:
-    friendsEnabled: Friends list enabled
-    acceptInvites: Accept friend invites
-    acceptInvitesHint: When off, other players cannot send you friend requests.
-  errors:
-    unknownProfile: We could not find a player with that name.
-    cannotAddSelf: You cannot send a friend request to yourself.
-    duplicate: That player is already in your list.
-    inviteRejected: That player does not have friends enabled or does not accept invites.
-    tokenExpired: Your Microsoft session expired. Please log in again.
-    generic: Something went wrong. Please try again.
-relative:
-  justNow: just now
-  secondsAgo: '{count} second ago | {count} seconds ago'
-  minutesAgo: '{count} minute ago | {count} minutes ago'
-  hoursAgo: '{count} hour ago | {count} hours ago'
-  daysAgo: '{count} day ago | {count} days ago'
 userCape:
   changeTitle: Change your cape
   description: >-
-    Capes are special rewards players can unlock through different events, campaigns, and other happy happenings. Here you can choose between the capes you currently own:
+    Capes are special rewards players can unlock through different events,
+    campaigns, and other happy happenings. Here you can choose between the capes
+    you currently own:
   noCape: No Cape
 userService:
   add: Add More Services
@@ -1748,6 +1900,7 @@ userServices:
     password: No Password
     uuid: User UUID (Optional)
 userSkin:
+  classic: Classic
   import: Import Skin
   importFile: Open from File
   importLink: Open from Link
@@ -1756,12 +1909,11 @@ userSkin:
   save: Save
   saveTitle: Save Skin To Disk
   skinType: Skin Type
+  slim: Slim
   upload: Upload Skin
   urlNotEmpty: Skin URL cannot be empty
   urlNotValid: Skin URL is Invalid
   useSlim: Use Slim Model
-  classic: Classic
-  slim: Slim
 version:
   checkIntegrity: Check Integrity
   name: Version | Versions

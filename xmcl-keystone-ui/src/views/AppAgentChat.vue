@@ -8,12 +8,25 @@
     <v-card class="agent-card flex h-[85vh] max-h-[85vh] flex-col overflow-hidden">
       <!-- Header -->
       <div class="flex items-center gap-2 px-4 py-3 border-b">
-        <v-icon color="primary">auto_awesome</v-icon>
-        <div class="flex-1">
-          <div class="text-base font-medium">{{ t('agent.title') }}</div>
-          <div class="text-xs text-medium-emphasis">
-            {{ statusLabel }}
-          </div>
+        <v-btn-toggle
+          v-model="selectedAgent"
+          density="compact"
+          variant="outlined"
+          color="primary"
+          mandatory
+          divided
+        >
+          <v-btn value="common" size="small" data-testid="agent-switch-common">
+            <v-icon size="small" start>auto_awesome</v-icon>
+            {{ t('agent.title') }}
+          </v-btn>
+          <v-btn value="css" size="small" data-testid="agent-switch-css">
+            <v-icon size="small" start>code</v-icon>
+            {{ t('setting.customCss.assistantTitle') }}
+          </v-btn>
+        </v-btn-toggle>
+        <div class="flex-1 truncate text-xs text-medium-emphasis">
+          {{ statusLabel }}
         </div>
         <v-btn
           icon="restart_alt"
@@ -68,7 +81,7 @@
           <div class="w-full max-w-sm">
             <v-icon size="48" class="mb-3 opacity-50">forum</v-icon>
             <div class="text-sm">
-              {{ t('agent.emptyHint') }}
+              {{ emptyHint }}
             </div>
             <div class="mt-4 flex flex-col gap-2">
               <button
@@ -200,16 +213,42 @@
 </template>
 
 <script lang="ts" setup>
-import { kAgent } from '@/composables/agent'
+import { kAgent, useCssAgent } from '@/composables/agent'
 import { useAgentChatBus, useAgnesSetupDocUrl } from '@/composables/agentChat'
+import { kCustomCss } from '@/composables/customCss'
+import { kTheme } from '@/composables/theme'
 import { useMarkdown } from '@/composables/markdown'
 import { injection } from '@/util/inject'
 import { computed, nextTick, ref, watch } from 'vue'
 import type { ContentPart } from '@/composables/agent'
 
 const { t } = useI18n()
-const agent = injection(kAgent)
-const { available, running, messages, events } = agent
+
+const commonAgent = injection(kAgent)
+
+// A global-scope CSS assistant shown side-by-side with the common agent and
+// switchable from the dialog header. Reuses the global CSS conversation key so
+// it continues the same thread used on the settings page.
+const globalCustomCss = injection(kCustomCss)
+const themeCtx = injection(kTheme)
+const cssAgent = useCssAgent({
+  context: {
+    getCss: () => globalCustomCss.css.value,
+    setCss: (v) => globalCustomCss.save(v),
+    getEnabled: () => themeCtx.customCssEnabled.value,
+    setEnabled: (v) => { themeCtx.customCssEnabled.value = v },
+  },
+  storageKey: 'cssAgentConversationV1',
+})
+
+const selectedAgent = ref<'common' | 'css'>('common')
+const activeAgent = computed(() => (selectedAgent.value === 'css' ? cssAgent : commonAgent))
+
+const available = computed(() => activeAgent.value.available.value)
+const running = computed(() => activeAgent.value.running.value)
+const messages = computed(() => activeAgent.value.messages.value)
+const events = computed(() => activeAgent.value.events.value)
+
 const { render: renderMd } = useMarkdown()
 const setupDocUrl = useAgnesSetupDocUrl()
 
@@ -221,13 +260,18 @@ const scrollEl = ref<HTMLElement | null>(null)
 const bus = useAgentChatBus()
 bus.on((e) => {
   if (e === 'show') {
-    agent.loadConversationForCurrentInstance()
+    commonAgent.loadConversationForCurrentInstance()
+    isShown.value = true
+  }
+  else if (e === 'show-css') {
+    // Opened from the Custom CSS settings — jump straight to the CSS assistant.
+    selectedAgent.value = 'css'
     isShown.value = true
   }
   else if (e === 'hide') isShown.value = false
   else {
     if (!isShown.value) {
-      agent.loadConversationForCurrentInstance()
+      commonAgent.loadConversationForCurrentInstance()
     }
     isShown.value = !isShown.value
   }
@@ -250,11 +294,23 @@ const liveStatus = computed(() => {
   return t('agent.thinking')
 })
 
-const suggestions = computed(() => [
-  t('agent.suggestion1'),
-  t('agent.suggestion2'),
-  t('agent.suggestion3'),
-])
+const suggestions = computed(() => (selectedAgent.value === 'css'
+  ? [
+    t('setting.customCss.assistantSuggestion1'),
+    t('setting.customCss.assistantSuggestion2'),
+  ]
+  : [
+    t('agent.suggestion1'),
+    t('agent.suggestion2'),
+    t('agent.suggestion3'),
+  ]))
+
+const emptyHint = computed(() => (selectedAgent.value === 'css'
+  ? t('setting.customCss.assistantHint')
+  : t('agent.emptyHint')))
+
+// Clear any transient error when switching agents.
+watch(selectedAgent, () => { lastError.value = '' })
 
 function messageText(content: string | ContentPart[] | null | undefined): string {
   if (!content) return ''
@@ -286,7 +342,7 @@ async function onSend() {
   input.value = ''
   lastError.value = ''
   try {
-    await agent.send(text)
+    await activeAgent.value.send(text)
   } catch (err) {
     lastError.value = err instanceof Error ? err.message : String(err)
   }
@@ -299,10 +355,10 @@ function quickSend(text: string) {
 
 function hide() { isShown.value = false }
 function reset() {
-  agent.reset()
+  activeAgent.value.reset()
   lastError.value = ''
 }
-function abort() { agent.abort() }
+function abort() { activeAgent.value.abort() }
 
 const { push } = useRouter()
 function openSettings() {

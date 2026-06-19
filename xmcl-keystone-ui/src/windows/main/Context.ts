@@ -128,10 +128,16 @@ export default defineComponent({
 
     const instanceTheme = useInstanceTheme(instance.path)
     provide(kInstanceTheme, instanceTheme)
-    provide(kTheme, useTheme(instanceTheme.instanceTheme))
+    const theme = useTheme(instanceTheme.instanceTheme)
+    provide(kTheme, theme)
     provide(kSurfaceTokens, useSurfaceTokens())
 
-    provide(kCustomCss, useCustomCss())
+    provide(kCustomCss, useCustomCss({
+      currentTheme: theme.currentTheme,
+      instanceTheme: instanceTheme.instanceTheme,
+      instanceCss: instanceTheme.customCss,
+      suppressed: theme.suppressed,
+    }))
 
 
     useI18nSync(settings.state)

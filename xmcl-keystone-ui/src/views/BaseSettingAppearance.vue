@@ -1,41 +1,48 @@
 <template>
-  <v-list-item
+  <SettingCard
     :title="t('setting.instanceTheme.name')"
     :subtitle="
       !instanceTheme
         ? t('setting.instanceTheme.description')
         : t('setting.instanceTheme.activeDescription')
     "
-    class="items-center justify-center"
+    icon="palette"
   >
-    <template #append>
-      <v-list-item-action>
-        <v-switch :input-value="!!instanceTheme" @change="toggleInstanceTheme" />
-      </v-list-item-action>
+    <template #header-action>
+      <v-switch
+        :model-value="!!instanceTheme"
+        color="primary"
+        hide-details
+        density="compact"
+        @update:model-value="(v) => toggleInstanceTheme(!!v)"
+      />
     </template>
-  </v-list-item>
-  <AppearanceItems
-    v-if="instanceTheme"
-    :theme="instanceTheme"
-    dense
-    :instance-path="instancePath"
-    @save="onSave"
-  />
+
+    <AppearanceItems
+      v-if="instanceTheme"
+      :theme="instanceTheme"
+      dense
+      :instance-path="instancePath"
+      @save="onSave"
+    />
+  </SettingCard>
 </template>
 <script lang="ts" setup>
+import SettingCard from '@/components/SettingCard.vue'
 import AppearanceItems from '@/components/AppearanceItems.vue'
 import { kInstance } from '@/composables/instance'
 import { kInstanceTheme } from '@/composables/instanceTheme'
 import { useService } from '@/composables/service'
 import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
-import { InstanceThemeServiceKey } from '@xmcl/runtime-api'
+import { InstanceThemeServiceKey, ThemeServiceKey } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 const { path: instancePath } = injection(kInstance)
-const { instanceTheme, saveTheme, clearTheme } = injection(kInstanceTheme)
+const { instanceTheme, saveTheme, clearTheme, setCustomCss } = injection(kInstanceTheme)
 const { currentTheme } = injection(kTheme)
 const { copyMediaFromGlobal } = useService(InstanceThemeServiceKey)
+const { getCustomCss } = useService(ThemeServiceKey)
 
 async function toggleInstanceTheme(enabled: boolean) {
   if (enabled) {
@@ -77,6 +84,13 @@ async function toggleInstanceTheme(enabled: boolean) {
     }
     instanceTheme.value = themeCopy
     await saveTheme()
+    // Seed the instance's custom CSS from the global one so it starts identical.
+    try {
+      const globalCss = await getCustomCss()
+      if (globalCss) await setCustomCss(globalCss)
+    } catch {
+      // ignore — instance simply starts with empty custom CSS
+    }
   } else {
     await clearTheme()
   }

@@ -1303,6 +1303,18 @@ setting:
     primaryColor: 主要颜色
     sideBarColor: 侧边栏
     warningColor: 警告颜色
+  customCss:
+    advancedDescription: 使用你自己的 CSS 覆盖启动器当前的样式。
+    assistantHint: 描述你想要的外观，我会为你编写 CSS。
+    assistantSuggestion1: 让侧边栏半透明
+    assistantSuggestion2: 给卡片添加淡淡的渐变背景
+    assistantTitle: CSS 助手
+    dropHint: 拖入 .css 文件以加载
+    editorPlaceholder: "/* 在此编写你的自定义 CSS */"
+    globalToggle: 开关自定义 CSS
+    openInDialog: 在助手对话框中打开
+    title: 自定义 CSS
+    warning: 自定义 CSS 允许你定制启动器的任何部分。从不可信来源粘贴 CSS 时请务必小心，因为它可能会修改界面布局。
   darkTheme: 主题
   darkThemeDescription: 选择深色或浅色主题
   devModeLabel: 开发

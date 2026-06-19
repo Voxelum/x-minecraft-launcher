@@ -1,9 +1,18 @@
 import { ServiceKey } from './Service'
+import { GenericEventEmitter } from '../events'
 
 export interface MediaData {
   url: string
   type: 'audio' | 'video' | 'image' | 'font'
   mimeType: string
+}
+
+export interface ThemeServiceEventMap {
+  /**
+   * Emitted when the current theme's custom CSS content changes (edited or
+   * replaced by a theme import). Carries the new CSS content.
+   */
+  'custom-css-changed': string
 }
 
 export interface ThemeData {
@@ -25,6 +34,9 @@ export interface ThemeData {
   colors?: Record<string, string>
   /**
    * The other settings of the theme.
+   *
+   * Notable keys:
+   * - `customCssEnabled` (boolean): whether the theme's custom CSS is applied.
    */
   settings?: Record<string, string | number | boolean>
 }
@@ -36,7 +48,7 @@ export interface StoredTheme {
   name: string
 }
 
-export interface ThemeService {
+export interface ThemeService extends GenericEventEmitter<ThemeServiceEventMap> {
   /**
    * Add a new media (music, picture) to the global theme.
    * Media will be stored in the 'theme-media' folder.
@@ -75,6 +87,7 @@ export interface ThemeService {
   getStoredThemes(): Promise<StoredTheme[]>
   /**
    * Save the current theme to the themes store as an .xtheme file.
+   * The current custom CSS (content + enabled state) is bundled into the zip.
    * If a theme with the same name exists, it will be replaced.
    * @param name The name for the stored theme
    */
@@ -85,6 +98,7 @@ export interface ThemeService {
    * 1. Clear current theme-media folder
    * 2. Extract the stored theme's media to theme-media folder
    * 3. Update theme.json with the stored theme's settings
+   * 4. Replace the current custom CSS with the theme's bundled custom CSS
    * @param name The name of the stored theme to load
    */
   loadThemeFromStore(name: string): Promise<ThemeData>
@@ -95,7 +109,8 @@ export interface ThemeService {
   deleteStoredTheme(name: string): Promise<void>
 
   /**
-   * Export current theme to a .xtheme file at specified location
+   * Export current theme to a .xtheme file at specified location.
+   * The current custom CSS (content + enabled state) is bundled into the zip.
    * @param destinationFile The destination file path
    * @returns The actual file path written
    */
@@ -106,10 +121,24 @@ export interface ThemeService {
    * 1. Clear current theme-media folder  
    * 2. Extract the imported theme's media to theme-media folder
    * 3. Update theme.json with the imported theme's settings
+   * 4. Replace the current custom CSS with the theme's bundled custom CSS
    * @param zipFilePath The path to the .xtheme file
    * @returns The imported theme data
    */
   importTheme(zipFilePath: string): Promise<ThemeData>
+
+  /**
+   * Get the current theme's custom CSS content. The enable/disable state is
+   * stored in theme.json (settings.customCssEnabled), not here.
+   * @returns The CSS content, or an empty string if none is set
+   */
+  getCustomCss(): Promise<string>
+  /**
+   * Set the current theme's custom CSS content. This writes a single css file
+   * that is bundled into / replaced by the theme zip.
+   * @param css The CSS content
+   */
+  setCustomCss(css: string): Promise<void>
 }
 
 export const ThemeServiceKey: ServiceKey<ThemeService> = 'ThemeService'

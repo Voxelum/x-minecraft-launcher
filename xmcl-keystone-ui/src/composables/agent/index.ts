@@ -30,6 +30,7 @@ export * from './llm'
 export * from './loop'
 export * from './tools'
 export * from './context'
+export * from './cssAgent'
 
 export interface AgentSession {
   /**

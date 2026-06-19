@@ -67,6 +67,11 @@ export interface UIThemeDataV1 {
   font?: MediaData
   fontSize?: number
   particleMode?: ParticleMode
+  /**
+   * Whether the theme's custom CSS is applied. The CSS content itself is stored
+   * in a single file managed by ThemeService and bundled into the theme zip.
+   */
+  customCssEnabled?: boolean
 }
 
 export function getDefaultTheme(): UIThemeDataV1 {
@@ -104,6 +109,7 @@ export function getDefaultTheme(): UIThemeDataV1 {
     backgroundType: BackgroundType.NONE,
     font: undefined,
     fontSize: 16,
+    customCssEnabled: false,
     blur: {
       background: 3,
       card: 20,
@@ -747,6 +753,24 @@ export function useThemeWritter(
     importTheme: _importTheme }
 }
 
+/**
+ * Normalize 6-digit hex colors to 8-digit (append opaque alpha) so the
+ * alpha-aware CSS variables render consistently. Mutates and returns `theme`.
+ */
+function normalizeThemeColors(theme: UIThemeDataV1) {
+  const ensureRGBAHex = (color: string) => (color.length === 7 ? color + 'FF' : color)
+  const c = theme.colors
+  c.darkAppBarColor = ensureRGBAHex(c.darkAppBarColor)
+  c.darkSideBarColor = ensureRGBAHex(c.darkSideBarColor)
+  c.darkBackground = ensureRGBAHex(c.darkBackground)
+  c.darkCardColor = ensureRGBAHex(c.darkCardColor)
+  c.lightAppBarColor = ensureRGBAHex(c.lightAppBarColor)
+  c.lightSideBarColor = ensureRGBAHex(c.lightSideBarColor)
+  c.lightBackground = ensureRGBAHex(c.lightBackground)
+  c.lightCardColor = ensureRGBAHex(c.lightCardColor)
+  return theme
+}
+
 export function useTheme(
   override: Ref<UIThemeDataV1 | undefined>,
   {
@@ -785,22 +809,7 @@ export function useTheme(
       theme = getDefaultTheme()
     }
 
-    const ensureRGBAHex = (color: string) => {
-      if (color.length === 7) {
-        return color + 'FF'
-      }
-      return color
-    }
-
-    theme.colors.darkAppBarColor = ensureRGBAHex(theme.colors.darkAppBarColor)
-    theme.colors.darkSideBarColor = ensureRGBAHex(theme.colors.darkSideBarColor)
-    theme.colors.darkBackground = ensureRGBAHex(theme.colors.darkBackground)
-    theme.colors.darkCardColor = ensureRGBAHex(theme.colors.darkCardColor)
-
-    theme.colors.lightAppBarColor = ensureRGBAHex(theme.colors.lightAppBarColor)
-    theme.colors.lightSideBarColor = ensureRGBAHex(theme.colors.lightSideBarColor)
-    theme.colors.lightBackground = ensureRGBAHex(theme.colors.lightBackground)
-    theme.colors.lightCardColor = ensureRGBAHex(theme.colors.lightCardColor)
+    normalizeThemeColors(theme)
 
     currentTheme.value = theme
 
@@ -836,7 +845,11 @@ export function useTheme(
     if (themeData) {
       const theme = deserializeV0(themeData)
       if (theme) {
-        Object.assign(currentTheme.value, theme)
+        // Full replace (not Object.assign) so assets absent from the loaded
+        // theme - e.g. background image/font - are cleared instead of lingering
+        // from the previous theme and pointing at now-deleted media files.
+        normalizeThemeColors(theme)
+        currentTheme.value = theme
       }
     }
   }
@@ -907,6 +920,13 @@ export function useTheme(
   )
   const font = computed(() => targetTheme.value.font)
   const fontSize = computed(() => targetTheme.value.fontSize ?? 16)
+  const customCssEnabled = computed({
+    get: () => currentTheme.value.customCssEnabled ?? false,
+    set: (v: boolean) => {
+      currentTheme.value.customCssEnabled = v
+      saveCurrentTheme()
+    },
+  })
   watch(
     isDark,
     (dark) => {
@@ -1049,6 +1069,7 @@ export function useTheme(
     cardColor,
     font,
     fontSize,
+    customCssEnabled,
     saveCurrentTheme,
     saveToStore,
     loadFromStore,
