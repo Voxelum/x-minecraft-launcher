@@ -126,7 +126,7 @@ export function useModrinthSearchFunc(
   projectType: MaybeRef<string>,
   pageSize: MaybeRef<number>,
 ) {
-  async function search(index: number) {
+  async function search(index: number, signal?: AbortSignal) {
     const facets = getFacatsText(get(gameVersion), get(license), get(category), get(modLoader), get(projectType), get(environment))
     return clientModrinthV2.searchProjects({
       query: get(query),
@@ -134,7 +134,7 @@ export function useModrinthSearchFunc(
       offset: index,
       index: get(sortBy),
       facets,
-    }).then(markRaw)
+    }, signal).then(markRaw)
   }
 
   return search

@@ -1,6 +1,6 @@
 import debounce from 'lodash.debounce'
 
-export function useSearchPattern<T>(search: (offset: number) => Promise<{
+export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal) => Promise<{
   data: T[]
   total: number
   offset: number
@@ -16,7 +16,16 @@ export function useSearchPattern<T>(search: (offset: number) => Promise<{
   const loading = ref(false)
   const error = ref(undefined as any)
 
+  let abortController: AbortController | undefined
+
   const doSearch = debounce(async (offset: number, append: boolean) => {
+    // Cancel any in-flight request so its (possibly out-of-order) response
+    // cannot overwrite the result of this newer search.
+    abortController?.abort()
+    const controller = new AbortController()
+    abortController = controller
+    const { signal } = controller
+
     if (!shouldSearch()) {
       error.value = undefined
       loading.value = false
@@ -25,7 +34,8 @@ export function useSearchPattern<T>(search: (offset: number) => Promise<{
     }
     try {
       error.value = undefined
-      const searchResult = await search(offset)
+      const searchResult = await search(offset, signal)
+      if (signal.aborted) return
       if (!append || !result.value) {
         result.value = searchResult as any
       } else {
@@ -35,9 +45,12 @@ export function useSearchPattern<T>(search: (offset: number) => Promise<{
         result.value.limit = searchResult.limit
       }
     } catch (e) {
+      if (signal.aborted) return
       error.value = e
     } finally {
-      loading.value = false
+      if (!signal.aborted) {
+        loading.value = false
+      }
     }
   }, 500)
 

@@ -41,8 +41,8 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(
     20,
   )
 
-  const { error, loadMore, loading, onSearch, hasMore, result } = useSearchPattern(async (offset) => {
-    const result = await search(offset)
+  const { error, loadMore, loading, onSearch, hasMore, result } = useSearchPattern(async (offset, signal) => {
+    const result = await search(offset, signal)
     return {
       data: result.data,
       total: result.pagination.totalCount,

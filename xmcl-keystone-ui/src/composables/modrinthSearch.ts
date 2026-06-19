@@ -36,8 +36,8 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
     hasMore,
     loadMore,
   } = useSearchPattern(
-    async (index) => {
-      const result = await search(index)
+    async (index, signal) => {
+      const result = await search(index, signal)
       return {
         data: result.hits,
         limit: result.limit,

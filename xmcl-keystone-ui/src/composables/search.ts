@@ -51,6 +51,21 @@ export function useSearchModel(runtime: Ref<RuntimeVersions>) {
   const isModrinthDisabled = computed(() => notRemote.value || !isModrinthActive.value)
   const isCurseforgeDisabled = computed(() => notRemote.value || !isCurseforgeActive.value)
 
+  // Keep the game version filter aligned with the selected instance's Minecraft
+  // version. This watcher lives for the whole app lifetime (the model is created
+  // once in the root context), so it fires even when no search view is mounted —
+  // covering instance switches and async instance loads where runtime.minecraft
+  // transitions from '' to the real version. Without this, the mod detail page
+  // could keep filtering files by a stale game version that no longer matches
+  // the instance. Only re-sync when the filter was still tracking the instance
+  // default (empty, or equal to the previous version), so an explicit user
+  // override that intentionally differs from the instance version is preserved.
+  watch(() => runtime.value.minecraft, (minecraft, oldMinecraft) => {
+    if (!gameVersion.value || gameVersion.value === oldMinecraft) {
+      gameVersion.value = minecraft
+    }
+  })
+
   function effect(getModloaders: () => string | undefined) {
     useQueryOverride('keyword', keyword, '', searlizers.string)
     useQueryOverride('gameVersion', gameVersion, computed(() => runtime.value.minecraft), searlizers.string)

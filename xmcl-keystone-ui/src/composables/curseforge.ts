@@ -102,7 +102,7 @@ export function useCurseforgeSearchFunc(
     'Fabric',
     'Quilt',
   ]
-  async function search(index: number) {
+  async function search(index: number, signal?: AbortSignal) {
     let modLoaderType = undefined as FileModLoaderType | undefined
     let modLoaderTypes = undefined as string[] | undefined
     const types = get(loaders)
@@ -121,7 +121,7 @@ export function useCurseforgeSearchFunc(
       categoryId: curseforgeCategory.value,
       pageSize: get(pageSize),
       index,
-    })
+    }, signal)
     return result
   }
 
