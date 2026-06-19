@@ -11,7 +11,34 @@
       </div>
     </div>
 
-    <v-divider />
+    <!-- Primary action: let the built-in launcher agent diagnose the crash -->
+    <div class="flex flex-col gap-2">
+      <v-btn
+        color="primary"
+        size="large"
+        variant="flat"
+        prepend-icon="auto_awesome"
+        :loading="agentRunning"
+        :disabled="agentRunning"
+        block
+        @click="onAskAgent"
+      >
+        {{ agentAvailable ? t('askAICrash.askAgent') : t('askAICrash.setupAgent') }}
+      </v-btn>
+      <div
+        v-if="!agentAvailable"
+        class="flex items-start gap-1 text-xs opacity-70"
+      >
+        <v-icon size="14" class="mt-0.5">info</v-icon>
+        <span>{{ t('askAICrash.agentNotConfigured') }}</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <v-divider class="flex-1" />
+      <span class="text-xs opacity-50">{{ t('askAICrash.orExternal') }}</span>
+      <v-divider class="flex-1" />
+    </div>
 
     <div class="flex flex-col gap-2">
       <div class="flex items-center gap-2 text-sm font-medium opacity-80">
@@ -22,7 +49,7 @@
       </div>
       <v-btn
         :color="copied ? 'success' : 'primary'"
-        :variant="copied ? 'tonal' : 'flat'"
+        :variant="copied ? 'flat' : 'tonal'"
         :prepend-icon="copied ? 'check' : 'content_copy'"
         block
         @click="onCopyPrompt"
@@ -56,11 +83,38 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { kAgent } from '@/composables/agent'
+import { useAgentChatBus, useAgnesSetupDocUrl } from '@/composables/agentChat'
+import { injection } from '@/util/inject'
+
 const { t } = useI18n()
 const props = defineProps<{
   getPrompt: (raw?: boolean) => string
+  getAgentPrompt: () => string
   useCNAI: boolean
 }>()
+const emit = defineEmits<{ (e: 'close'): void }>()
+
+const agent = injection(kAgent)
+const agentAvailable = agent.available
+const agentRunning = agent.running
+const chatBus = useAgentChatBus()
+const { push } = useRouter()
+const setupDocUrl = useAgnesSetupDocUrl()
+
+function onAskAgent() {
+  emit('close')
+  if (!agentAvailable.value) {
+    // Open a single Agnes setup guide when the built-in agent isn't ready.
+    window.open(setupDocUrl.value, 'browser')
+    push('/setting')
+    return
+  }
+  chatBus.emit('show')
+  agent.send(props.getAgentPrompt()).catch((e) => {
+    console.error('[crash-agent]', e)
+  })
+}
 
 const PlatformIcon = defineComponent({
   props: { src: String, name: String },

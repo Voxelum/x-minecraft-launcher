@@ -63,6 +63,8 @@
           class="col-span-3 mt-2"
           :useCNAI="useCNAI"
           :getPrompt="getPrompt"
+          :getAgentPrompt="getAgentPrompt"
+          @close="data.isShown = false"
         />
       </v-card-text>
     </v-card>
@@ -76,7 +78,7 @@ import { kEnvironment } from '@/composables/environment'
 import { kInstance } from '@/composables/instance'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { kSettingsState } from '@/composables/setting'
-import { getCrashPrompt } from '@/util/crashPrompt'
+import { getCrashPrompt, getCrashAgentPrompt, toVirtualInstancePath } from '@/util/crashPrompt'
 import { injection } from '@/util/inject'
 import { BaseServiceKey, InstanceLogServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
@@ -164,6 +166,11 @@ function getPrompt(raw?: boolean) {
     return data.errorLog
   }
   return getCrashPrompt(useCNAI.value, data.log, data.errorLog, state.value?.locale || 'en-US')
+}
+function getAgentPrompt() {
+  const crashPath = data.crashReportLocation ? toVirtualInstancePath(data.crashReportLocation, path.value) : undefined
+  const logPath = toVirtualInstancePath(`${path.value}/logs/latest.log`, path.value)
+  return getCrashAgentPrompt(data.log, data.errorLog, crashPath, logPath)
 }
 </script>
 
