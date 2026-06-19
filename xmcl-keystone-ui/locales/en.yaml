@@ -264,6 +264,12 @@ errors:
     Error during accessing the download file path. Please ensure the launcher
     has permission to write on it.
   HeadersTimeoutError: HTTP Header timeout
+  InstallBackendUnresponsive:
+    body: >-
+      The launcher's background process stopped responding, so the install
+      could not finish. Please fully close and relaunch the launcher, then try
+      again.
+    title: Launcher is not responding
   InstallInstructionFailed:
     body: '{name}: {message}'
     title: Failed to install Minecraft files
