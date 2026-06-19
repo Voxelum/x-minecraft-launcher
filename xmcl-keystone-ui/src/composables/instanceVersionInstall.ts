@@ -427,7 +427,21 @@ export function useInstanceVersionInstallInstruction(
           if (e === kAbort) {
             return
           }
-          throw e
+          // getInstallInstruction can fail when the version is left in an
+          // inconsistent state — e.g. the user killed the install/download
+          // task mid-way, leaving a partially written or corrupted version.
+          // Without a fallback, instruction stays undefined and the launch
+          // button's `transition` flag keeps it loading forever. Fall back to a
+          // base (unresolved) instruction so the button recovers and the user
+          // can retry the install.
+          console.error('Failed to compute install instruction', e)
+          if (version.instance === path.value) {
+            instruction.value = markRaw({
+              instance: version.instance,
+              runtime: { ...version.requirements },
+              version: version.version,
+            })
+          }
         }
       })
       const timeEnd = performance.now()
