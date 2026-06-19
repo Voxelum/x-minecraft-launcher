@@ -10,10 +10,10 @@ import { DEFAULT_AGNES_ENDPOINT, DEFAULT_AGNES_MODEL } from './llm'
  * agent's `available` state.
  */
 export const useAgentSettings = createSharedComposable(() => {
-  const apiKey = useLocalStorageCacheStringValue('agentApiKey', '')
+  const apiKey = useLocalStorageCacheStringValue<string>('agentApiKey', '')
   // Default values are Agnes endpoint/model; users can still override both.
-  const endpoint = useLocalStorageCacheStringValue('agentEndpoint', DEFAULT_AGNES_ENDPOINT)
-  const model = useLocalStorageCacheStringValue('agentModel', DEFAULT_AGNES_MODEL)
+  const endpoint = useLocalStorageCacheStringValue<string>('agentEndpoint', DEFAULT_AGNES_ENDPOINT)
+  const model = useLocalStorageCacheStringValue<string>('agentModel', DEFAULT_AGNES_MODEL)
 
   const resolvedEndpoint = computed(() => {
     const raw = endpoint.value.trim()

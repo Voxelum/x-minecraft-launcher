@@ -58,7 +58,7 @@
 
       <v-fab-transition>
         <v-btn
-          v-if="locked"
+          v-if="!locked"
           class="z-10 absolute right-6 bottom-4"
           elevation="2"
           color="primary"
@@ -212,6 +212,18 @@ watch(() => displayLogs.value.length, () => {
   }
 })
 
+// Follow the end when locked. Watch totalHeight (not displayLogs.length)
+// because consecutive identical logs are merged into a single group: a new log
+// can grow an existing group's content/height without changing the row count,
+// and we still want to track the end in that case.
+watch(totalHeight, () => {
+  if (locked.value) {
+    nextTick(() => {
+      scrollToBottom()
+    })
+  }
+})
+
 function onWheel(e: WheelEvent) {
   if (e.deltaY < 0) {
     locked.value = false
@@ -219,7 +231,7 @@ function onWheel(e: WheelEvent) {
 }
 
 function scrollToBottom() {
-  virtualizer.value.scrollToIndex(displayLogs.value.length - 1)
+  virtualizer.value.scrollToIndex(displayLogs.value.length - 1, { align: 'end' })
 }
 
 </script>

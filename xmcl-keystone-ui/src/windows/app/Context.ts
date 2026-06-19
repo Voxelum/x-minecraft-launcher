@@ -23,7 +23,8 @@ export default defineComponent({
     provide(kServerStatusCache, useServerStatusCache())
     provide(kNotificationQueue, useNotificationQueue())
 
-    provide(kTheme, useTheme(ref(undefined)))
+    const theme = useTheme(ref(undefined))
+    provide(kTheme, theme)
     provide(kSurfaceTokens, useSurfaceTokens())
 
     const settings = useSettingsState()
@@ -42,7 +43,14 @@ export default defineComponent({
 
     provide(kImageDialog, useImageDialog())
     provide(kEnvironment, useEnvironment())
-    provide(kCustomCss, useCustomCss())
+    // The app window has no instance theme, so only the global theme's custom
+    // CSS applies here.
+    provide(kCustomCss, useCustomCss({
+      currentTheme: theme.currentTheme,
+      instanceTheme: ref(undefined),
+      instanceCss: ref(''),
+      suppressed: theme.suppressed,
+    }))
 
     return () => ctx.slots.default?.()
   },
