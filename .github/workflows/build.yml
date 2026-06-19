@@ -26,20 +26,20 @@ jobs:
       ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
       ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v6
       - name: Fix node-gyp and Python
         if: ${{ runner.os == 'macOS' || runner.os == 'Windows' }}
         run: python3 -m pip install --break-system-packages --user packaging setuptools
       - name: Use Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: "pnpm"
       - name: Cache Electron binaries
         # Restored before `pnpm install` so the electron postinstall
         # (@electron/get) sees the cache and skips re-downloading the zip.
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ${{ github.workspace }}/.cache/electron
@@ -48,7 +48,7 @@ jobs:
           # No restore-keys: a partial hit on a different electron version
           # would still force a redownload, so the fallback adds no value.
       - name: Cache Vite deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: xmcl-keystone-ui/node_modules/.vite
           key: ${{ runner.os }}-vite-${{ hashFiles('pnpm-lock.yaml', 'xmcl-keystone-ui/vite.config.ts') }}
@@ -72,7 +72,7 @@ jobs:
           PUBLISHER: CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US
       - name: Upload Source Maps
         if: ${{ runner.os == 'Windows' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sourcemap
           path: |
@@ -83,42 +83,42 @@ jobs:
         # publishes it to a *draft* release; signing happens out-of-band via
         # the manual `Sign Release` workflow before the draft is published.
         if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: build-${{ runner.os }}
           path: |
             xmcl-electron-app/build/output/
       - name: Upload Windows Zip Build
         if: ${{ runner.os == 'Windows' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: win-b${{ github.run_number }}
           path: |
             xmcl-electron-app/build/output/win-unpacked/
       - name: Upload Linux x64 Zip Build
         if: ${{ runner.os == 'Linux' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: linux-b${{ github.run_number }}-x64
           path: |
             xmcl-electron-app/build/output/linux-unpacked/
       - name: Upload Linux arm64 Zip Build
         if: ${{ runner.os == 'Linux' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: linux-b${{ github.run_number }}-arm64
           path: |
             xmcl-electron-app/build/output/linux-arm64-unpacked/
       - name: Upload Mac x64 Zip Build
         if: ${{ runner.os == 'macOS' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: mac-b${{ github.run_number }}-x64
           path: |
             xmcl-electron-app/build/output/mac/
       - name: Upload Mac arm64 Zip Build
         if: ${{ runner.os == 'macOS' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: mac-b${{ github.run_number }}-arm64
           path: |
@@ -143,7 +143,7 @@ jobs:
       - name: Install Git
         run: |
           pacman -S --noconfirm git
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           # build-arch only needs `package.json` from the working tree;
@@ -151,7 +151,7 @@ jobs:
           # with the other jobs. The job is currently disabled (`if: false`).
           filter: blob:none
       - name: Download Ubuntu Build Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: build-Linux
           path: ./
@@ -215,7 +215,7 @@ jobs:
           fi
 
       - name: Upload Arch Package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: build-Arch-${{ matrix.arch }}
           path: ./*.pacman
@@ -226,7 +226,7 @@ jobs:
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           # Treeless clone: full commit graph (needed by
@@ -234,9 +234,9 @@ jobs:
           # but blobs are fetched on demand. Skips downloading every
           # historical file revision.
           filter: blob:none
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
       - name: Use Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: "pnpm"
@@ -266,7 +266,7 @@ jobs:
         run: pnpm i --lockfile-only
       - name: Create Pull Request
         if: ${{ steps.version.outputs.release == 'true' }}
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore(release): version ${{ steps.version.outputs.version }}"
@@ -282,7 +282,7 @@ jobs:
       - build
     steps:
       - name: Download Source Map
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: sourcemap
           path: sourcemap/${{github.run_number}}
@@ -302,14 +302,14 @@ jobs:
       - build
       # - build-arch
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           # Treeless clone — see comment on `prepare-release`.
           filter: blob:none
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
       - name: Use Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: "pnpm"
@@ -317,7 +317,7 @@ jobs:
         run: |
           pnpm install --frozen-lockfile --filter action-*
       - name: Download Build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: build-*
           merge-multiple: true
@@ -361,7 +361,7 @@ jobs:
           body: ${{ steps.release_note.outputs.body }}
           asset_dir_path: ./build
       - name: Checkout Website
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: Voxelum/xmcl-page
           path: xmcl-page

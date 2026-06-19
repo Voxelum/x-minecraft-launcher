@@ -18,13 +18,13 @@ jobs:
         node-version: [22]
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: pnpm/action-setup@v4
+    - uses: actions/checkout@v5
+    - uses: pnpm/action-setup@v6
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v5
       with:
         node-version: ${{ matrix.node-version }}
-    - uses: actions/setup-java@v4
+    - uses: actions/setup-java@v5
       with:
         java-version: '12.X'
         architecture: x64
@@ -44,7 +44,7 @@ jobs:
       env:
         CI: true
     - name: Upload Coverage
-      uses: actions/upload-artifact@master
+      uses: actions/upload-artifact@v6
       with:
         name: coverage
         path: coverage

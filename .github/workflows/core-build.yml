@@ -21,18 +21,18 @@ jobs:
         node-version: [22]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         fetch-depth: 0
         # Treeless clone: commit graph only, blobs on demand.
         filter: blob:none
-    - uses: pnpm/action-setup@v4
+    - uses: pnpm/action-setup@v6
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v5
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'pnpm'
-    - uses: actions/setup-java@v4
+    - uses: actions/setup-java@v5
       with:
         java-version: '12.X'
         architecture: x64
@@ -74,7 +74,7 @@ jobs:
         commit-message: ${{ steps.vars.outputs.message }}
         token: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload Coverage
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: coverage
         path: coverage

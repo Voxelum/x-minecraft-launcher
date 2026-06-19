@@ -14,12 +14,12 @@ jobs:
     if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
       with:
         ref: ${{ github.sha	}}
-    - uses: pnpm/action-setup@v4
+    - uses: pnpm/action-setup@v6
     - name: Use Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v5
       with:
         node-version: 22
         registry-url: 'https://registry.npmjs.org'

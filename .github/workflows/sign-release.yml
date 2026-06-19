@@ -39,7 +39,7 @@ jobs:
     # SignPath approval can sit in a queue for a while. Give it room.
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Download .appx from release
         env:
@@ -56,7 +56,7 @@ jobs:
 
       - name: Upload .appx as workflow artifact
         id: upload-artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: appx
           path: signing-input/*.appx

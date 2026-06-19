@@ -65,12 +65,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         repository: Voxelum/homebrew-xmcl
         path: homebrew-xmcl
         token: ${{ secrets.PAT_GITHUB_TOKEN }}
-    - uses: actions/github-script@v6
+    - uses: actions/github-script@v8
       name: Update Brew Formula
       with: 
         result-encoding: string
@@ -139,7 +139,7 @@ jobs:
           repository: "voxelum/x-minecraft-launcher"
           tag: ${{ github.event.release.tag_name }}
           fileName: "version"
-      - uses: actions/github-script@v6
+      - uses: actions/github-script@v8
         name: Get Release Version
         id: version
         with: 
@@ -166,7 +166,7 @@ jobs:
       GH_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
     steps:
       - name: Checkout flatpak-metadata
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: Voxelum/flatpak-metadata
           path: flatpak-metadata
