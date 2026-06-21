@@ -13,10 +13,22 @@ uniform float shape;
 uniform float ringFactor;
 uniform float rotationFactor;
 uniform float amplitudeFactor;
+// 0.0 = dark theme (default), 1.0 = light theme. The shader always computes and
+// stores its native dark-space colors in the feedback buffer; only the final
+// on-screen pass is remapped for the light theme (gated by iScreenPass).
+uniform float lightTheme;
+// 1.0 while rendering the visible frame, 0.0 while rendering into the feedback
+// buffer. Keeps the accumulation loop in native dark space regardless of theme.
+uniform float iScreenPass;
 
 uniform sampler2D iBuffer;
 uniform sampler2D iTex;
 const float PI = 3.14159265359;
+
+// The feedback buffer always holds native dark-space colors.
+vec3 readBuffer(vec2 coord) {
+  return texture2D(iBuffer, coord).rgb;
+}
 
 // float length2(vec2 p) { return dot(p, p); }
 
@@ -180,8 +192,7 @@ void main() {
   vec2 mouse2 = (iMouse * iDpr / res2 - 0.5) * vec2(1.,-1.);
   vec2 uvBig = (uv - 0.5) * 0.996 + 0.5;
 
-  vec4 oldImage = texture2D(iBuffer, uv);
-  vec3 mixedColor = oldImage.rgb - backgroundColor;
+  vec3 mixedColor = readBuffer(uv) - backgroundColor;
 
   // float spinDist = 0.002 + 0.002 * sin(iTime * 0.4);
   float cropDist = 0.01;
@@ -200,8 +211,8 @@ void main() {
   float timeFrac = mod(iTime, 6.5);
   vec2 offset2 = uvBig + vec2(cos(timeFrac * spinSpeed) * spinDist, sin(timeFrac * spinSpeed) * spinDist);
 
-  mixedColor = texture2D(iBuffer, offset).rgb * 0.4
-    + texture2D(iBuffer, offset2).rgb * 0.6
+  mixedColor = readBuffer(offset) * 0.4
+    + readBuffer(offset2) * 0.6
     - backgroundColor;
 
 
@@ -255,5 +266,28 @@ void main() {
   // float nn = snoise(uv * 10.) * 0.01; // creepy!
   // gl_FragColor = vec4(ring, 0.5);
   // gl_FragColor = vec4(1, 0, 0, 1);
-  gl_FragColor = ring;
+  vec3 outColor = ring.rgb;
+  // Light theme: remap only the visible pass into a colored halo over a white
+  // base. The feedback-buffer pass (iScreenPass == 0) keeps the native
+  // dark-space color so the accumulation loop is unaffected.
+  if (lightTheme > 0.5 && iScreenPass > 0.5) {
+    // ring.rgb lives in [0.05, 0.5] and most of the screen sits just above the
+    // 0.05 dark floor (it only "pops" against black). Use an exponential
+    // response so even tiny intensities lift to a clearly visible coverage,
+    // then paint a darkened, saturated halo color over a white base.
+    vec3 excess = max(ring.rgb - 0.05, 0.0);
+    float intensity = max(excess.r, max(excess.g, excess.b));
+    vec3 hue = excess / max(intensity, 0.001);
+    float a = 1.0 - exp(-intensity * 18.0);
+    // Fade the near-achromatic haze toward white so the colored rings stay the
+    // focus instead of a muddy gray slab.
+    float sat = 1.0 - min(hue.r, min(hue.g, hue.b));
+    a *= mix(0.45, 1.0, sat);
+    outColor = mix(vec3(1.0), hue * 0.5, a);
+  }
+  // Dark theme keeps the original additive look (alpha 0, the canvas is
+  // composited over the app background). The light theme must be opaque,
+  // otherwise additive compositing washes the halo out to white.
+  float outAlpha = (lightTheme > 0.5 && iScreenPass > 0.5) ? 1.0 : ring.a;
+  gl_FragColor = vec4(outColor, outAlpha);
 }

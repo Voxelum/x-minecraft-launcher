@@ -15,6 +15,9 @@ class Halo extends ShaderBase {
       amplitudeFactor: 1.0,
       ringFactor: 1.0,
       rotationFactor: 1.0,
+      // 0 = dark theme, 1 = light theme. Only affects the visible on-screen
+      // pass; the feedback buffer is always kept in native dark space.
+      lightTheme: 0,
       xOffset: 0,
       yOffset: 0,
       size: 1.5,
@@ -41,12 +44,20 @@ class Halo extends ShaderBase {
       type: 't',
       value: this.bufferTarget.texture,
     }
+    // 1 while drawing the visible frame, 0 while drawing into the feedback
+    // buffer. Lets the shader remap colors for the light theme on screen only.
+    this.uniforms.iScreenPass = {
+      type: 'f',
+      value: 1,
+    }
   }
 
   onUpdate() {
     this.uniforms.iBuffer.value = this.bufferFeedback.texture
 
     const renderer = this.renderer
+    // Render the feedback buffer in the shader's native (dark) color space.
+    this.uniforms.iScreenPass.value = 0
     renderer.setRenderTarget(this.bufferTarget)
     // renderer.clear()
     renderer.render(this.scene, this.camera)
@@ -57,6 +68,10 @@ class Halo extends ShaderBase {
     const temp = this.bufferTarget
     this.bufferTarget = this.bufferFeedback
     this.bufferFeedback = temp
+
+    // The subsequent on-screen render (run by the base animation loop) may
+    // remap the color for the light theme.
+    this.uniforms.iScreenPass.value = 1
   }
 
   onResize() {

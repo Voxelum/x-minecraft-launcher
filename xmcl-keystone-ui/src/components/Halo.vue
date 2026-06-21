@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, onMounted, ref, watch } from 'vue'
 import {
   Camera, Color, LinearFilter, Mesh,
   PlaneGeometry, RGBAFormat, Scene,
@@ -36,14 +36,23 @@ window.THREE = {
 // @ts-ignore
 // eslint-disable-next-line import/first
 import initHalo from './halo'
+// eslint-disable-next-line import/first
+import { injection } from '@/util/inject'
+// eslint-disable-next-line import/first
+import { kTheme } from '@/composables/theme'
 
 export default defineComponent({
   setup() {
     const halo = ref(null as any)
+    const { isDark } = injection(kTheme)
     onMounted(() => {
-      initHalo({
+      const effect = initHalo({
         el: halo.value,
         THREE: window.THREE,
+        lightTheme: isDark.value ? 0 : 1,
+      })
+      watch(isDark, (dark) => {
+        effect?.setOptions?.({ lightTheme: dark ? 0 : 1 })
       })
     })
     return { halo }
