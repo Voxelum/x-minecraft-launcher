@@ -30,7 +30,7 @@
     </div>
 
     <!-- Tabs -->
-    <v-tabs v-model="tab" align-tabs="start" density="compact" class="px-3 flex-grow-0">
+    <v-tabs v-model="tab" align-tabs="start" density="compact" class="px-3 flex-grow-0 min-h-10">
       <v-tab :value="0" class="text-none font-semibold">
         <v-icon start size="18">list_alt</v-icon>
         {{ t('task.name', 2) }}
