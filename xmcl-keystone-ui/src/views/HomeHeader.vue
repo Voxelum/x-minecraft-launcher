@@ -2,6 +2,8 @@
   <div
     class="header sticky max-w-full select-none transition-all px-2"
     :style="{
+      '--app-bar-color': appBarColor,
+      '--app-bar-blur': blurAppBar + 'px',
     }"
     :class="{
       compact,
@@ -92,7 +94,7 @@ import { injection } from '@/util/inject'
 
 const { name, runtime: version } = injection(kInstance)
 const isInFocusMode = useInFocusMode()
-const { blurAppBar } = injection(kTheme)
+const { blurAppBar, appBarColor } = injection(kTheme)
 const { t } = useI18n()
 
 const transitioning = ref(false)
@@ -139,18 +141,35 @@ const overcount = ref(0)
   padding-top: 2.5rem;
 }
 
+/*
+ * Faded backdrop so content scrolling underneath the sticky header is masked
+ * instead of bleeding through the (otherwise transparent) header. The gradient
+ * matches the global app-bar overlay color and lives in the header's own
+ * stacking context (z-20), so it sits above the scrolling page content while
+ * staying behind the header text (z-index: -1). The backdrop blur is masked
+ * with the same gradient so it fades out smoothly instead of cutting off.
+ */
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  bottom: -70px;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(var(--app-bar-color, transparent), transparent);
+  -webkit-backdrop-filter: blur(var(--app-bar-blur, 0));
+  backdrop-filter: blur(var(--app-bar-blur, 0));
+  -webkit-mask-image: linear-gradient(black 40%, transparent);
+  mask-image: linear-gradient(black 40%, transparent);
+}
+
+.header.compact::before {
+  bottom: -30px;
+}
+
 .header.compact {
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
-}
-
-.compact {
-  /* background: rgba(255, 255, 255, 0.6); */
-  /* backdrop-filter: blur(10px); */
-}
-
-.dark .compact {
-  /* background: rgba(56, 56, 56, 0.4); */
 }
 
 </style>
