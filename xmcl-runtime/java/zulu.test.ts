@@ -48,9 +48,43 @@ describe('zulu', () => {
     test('error message records which sources were tried', async () => {
       const app = makeApp(() => Promise.resolve(new Response('', { status: 304 })))
       try {
-        // Force selection failure by asking for an unknown component.
-        await expect(getZuluJRE(app as any, 'java-runtime-unknown' as any))
-          .rejects.toThrow(/No zulu jre found.*tried/)
+        // Force selection failure by asking for an unknown component on a
+        // platform that doesn't exist in any fallback.
+        const originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform')
+        const originalArch = Object.getOwnPropertyDescriptor(process, 'arch')
+        Object.defineProperty(process, 'platform', { value: 'freebsd' })
+        Object.defineProperty(process, 'arch', { value: 'mips' })
+        try {
+          await expect(getZuluJRE(app as any, 'java-runtime-unknown' as any))
+            .rejects.toThrow(/No zulu jre found.*tried/)
+        } finally {
+          Object.defineProperty(process, 'platform', originalPlatform!)
+          Object.defineProperty(process, 'arch', originalArch!)
+        }
+      } finally {
+        app.dispose()
+      }
+    })
+
+    test('unknown component falls back to highest known type (future-proofing)', async () => {
+      const app = makeApp(() => Promise.resolve(new Response('', { status: 304 })))
+      try {
+        // java-runtime-zeta doesn't exist in our catalog, but the fallback
+        // chain should resolve to epsilon or delta
+        const jre = await getZuluJRE(app as any, 'java-runtime-zeta' as any)
+        expect(jre).toBeDefined()
+        expect(jre.url).toMatch(/^https?:\/\//)
+      } finally {
+        app.dispose()
+      }
+    })
+
+    test('resolves java-runtime-epsilon from bundled index', async () => {
+      const app = makeApp(() => Promise.resolve(new Response('', { status: 304 })))
+      try {
+        const jre = await getZuluJRE(app as any, 'java-runtime-epsilon')
+        expect(jre).toBeDefined()
+        expect(jre.url).toContain('zulu25')
       } finally {
         app.dispose()
       }
