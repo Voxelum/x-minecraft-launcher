@@ -10,6 +10,7 @@ export class FileHandler implements Dispatcher.DispatchHandler {
   start = 0
   position: number = 0
   contentLength: number = 0
+  protected statusCode = 0
   protected signal: AbortSignal | undefined
   protected resolvers = Promise.withResolvers<void>()
   protected terminated = false
@@ -51,12 +52,16 @@ export class FileHandler implements Dispatcher.DispatchHandler {
   ): boolean {
     const headers = util.parseHeaders(rawHeaders) as Record<string, string>
 
+    this.statusCode = statusCode
+
     if (statusCode < 200) {
       return false
     }
 
     if (statusCode >= 400) {
-      this.resolvers.reject(new Error(`HTTP Error: ${statusCode} ${statusText}`))
+      const err = new Error(`HTTP Error: ${statusCode} ${statusText}`)
+      ;(err as any).statusCode = statusCode
+      this.resolvers.reject(err)
       return false
     }
 

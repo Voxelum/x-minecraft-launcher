@@ -12,7 +12,7 @@ import { Inject, LauncherAppKey, type PathResolver, kGameDataPath } from '~/app'
 import { GFW, kGFW, kTasks, type Tasks } from '~/infra'
 import { kDownloadOptions } from '~/network'
 import { AbstractService, ExposeServiceKey, Lock } from '~/service'
-import { getApiSets, kSettings } from '~/settings'
+import { getApiSets, kSettings, shouldOverrideApiSet } from '~/settings'
 import { AnyError } from '@xmcl/utils'
 import { LauncherApp } from '../app/LauncherApp'
 import { validateSha256 } from '../util/fs'
@@ -33,7 +33,7 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
     @Inject(kSettings) private settings: Settings,
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(kTasks) private tasks: Tasks,
-    @Inject(kGFW) gfw: GFW,
+    @Inject(kGFW) private gfw: GFW,
   ) {
     super(app)
   }
@@ -64,7 +64,12 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
       }
 
       const url = new URL(content.download_url)
-      const allSets = getApiSets(this.settings)
+      // Only fall back to third-party mirrors when the user's api-set
+      // preference allows it (bmcl, or "auto" inside the GFW). Official /
+      // outside-GFW users download straight from the original host.
+      const allSets = shouldOverrideApiSet(this.settings, this.gfw.inside)
+        ? getApiSets(this.settings)
+        : []
       const urls = allSets
         .map(
           (s) =>

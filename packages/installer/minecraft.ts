@@ -10,7 +10,7 @@ import {
   Version as VersionJson,
 } from '@xmcl/core'
 import { download, DownloadBaseOptions, getDownloadBaseOptions } from '@xmcl/file-transfer'
-import { writeFile } from 'fs/promises'
+import { unlink, writeFile } from 'fs/promises'
 import { join, relative, sep } from 'path'
 import { diagnoseFile } from './diagnose'
 import { InstallError } from './error'
@@ -112,6 +112,26 @@ export async function installMinecraftJar(
         }),
         expectedTotal: downloadInfo.size,
         signal: options.signal,
+      }).then(async () => {
+        // A misbehaving CDN mirror can deliver corrupt bytes for the jar
+        // (a short range leaving a zero-filled gap, or simply wrong
+        // bytes). If we don't catch it here, forge post-processing later
+        // fails with a confusing `binarypatcher ... received empty data`.
+        // Re-verify and, on mismatch, delete the jar so the next attempt
+        // redownloads it (likely from a different mirror).
+        const post = await diagnoseFile(
+          {
+            file: jarDestination,
+            expectedChecksum: downloadInfo.sha1,
+            role: 'minecraftJar',
+            hint: 'Minecraft jar is corrupt after download. It will be redownloaded.',
+          },
+          { signal: options.signal, checksum: options.checksum },
+        )
+        if (post) {
+          await unlink(jarDestination).catch(() => {})
+          throw new InstallError({ jar: version.id })
+        }
       })
     })
   }

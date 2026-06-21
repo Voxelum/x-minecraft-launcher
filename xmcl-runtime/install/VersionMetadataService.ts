@@ -12,7 +12,9 @@ import {
 import { unlink } from 'fs-extra'
 import { z } from 'zod'
 import { Inject, LauncherAppKey } from '~/app'
+import { kGFW } from '~/infra'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
+import { kSettings, shouldOverrideApiSet } from '~/settings'
 import { LauncherApp } from '../app/LauncherApp'
 import { fetchVersionMetadata, VersionMetadataSource } from './versionMetadataCache'
 
@@ -120,6 +122,20 @@ export class VersionMetadataService extends AbstractService implements IVersionM
     unlink(this.cachePath('neoforged-.json')).catch(() => {})
   }
 
+  /**
+   * Whether third-party mirror metadata sources (e.g. BMCLAPI) may be
+   * queried at all. False when the user picked the official source, or
+   * picked "auto" and is detected outside the GFW — in which case no
+   * version-list lookup may touch a mirror.
+   */
+  async #useMirror(): Promise<boolean> {
+    const [settings, gfw] = await Promise.all([
+      this.app.registry.get(kSettings),
+      this.app.registry.get(kGFW),
+    ])
+    return shouldOverrideApiSet(settings, gfw.inside)
+  }
+
   getLatestRelease = () => {
     return this.latest.release
   }
@@ -144,11 +160,13 @@ export class VersionMetadataService extends AbstractService implements IVersionM
         url: 'https://launchermeta.mojang.com/mc/game/version_manifest.json',
         parse: (r) => r.json() as Promise<MinecraftVersions>,
       },
-      {
+    ]
+    if (await this.#useMirror()) {
+      sources.push({
         url: 'https://bmclapi2.bangbang93.com/mc/game/version_manifest.json',
         parse: (r) => r.json() as Promise<MinecraftVersions>,
-      },
-    ]
+      })
+    }
     const data = await fetchVersionMetadata({
       app: this.app,
       cachePath: this.cachePath('minecraft.json'),
@@ -191,7 +209,9 @@ export class VersionMetadataService extends AbstractService implements IVersionM
           }))
         },
       },
-      {
+    ]
+    if (await this.#useMirror()) {
+      sources.push({
         url: `https://bmclapi2.bangbang93.com/forge/minecraft/${minecraft}`,
         parse: async (r) => {
           const list = await r.json() as Array<{ mcversion?: string; version?: string; modified?: string }>
@@ -204,8 +224,8 @@ export class VersionMetadataService extends AbstractService implements IVersionM
               date: v.modified ?? '',
             }))
         },
-      },
-    ]
+      })
+    }
     return fetchVersionMetadata({
       app: this.app,
       cachePath: this.cachePath(`forge-${minecraft}.json`),
@@ -229,14 +249,16 @@ export class VersionMetadataService extends AbstractService implements IVersionM
           return data.versions.filter(v => v.startsWith(prefix))
         },
       },
-      {
+    ]
+    if (await this.#useMirror()) {
+      sources.push({
         url: `https://bmclapi2.bangbang93.com/neoforge/list/${minecraft}`,
         parse: async (r) => {
           const list = await r.json() as Array<{ version: string }>
           return list.map(v => v.version)
         },
-      },
-    ]
+      })
+    }
     return fetchVersionMetadata({
       app: this.app,
       cachePath: this.cachePath(`neoforged-${minecraft}.json`),
@@ -250,15 +272,16 @@ export class VersionMetadataService extends AbstractService implements IVersionM
 
   @Singleton((force) => `fabric-${!!force}`)
   async getFabricVersions(force?: boolean): Promise<FabricVersionsResult> {
+    const useMirror = await this.#useMirror()
     return this.#getLoaderVersions({
       name: 'fabric',
       loader: [
         'https://meta.fabricmc.net/v2/versions/loader',
-        'https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/loader',
+        ...(useMirror ? ['https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/loader'] : []),
       ],
       game: [
         'https://meta.fabricmc.net/v2/versions/game',
-        'https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/game',
+        ...(useMirror ? ['https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/game'] : []),
       ],
       force,
       event: 'fabricVersions',
@@ -267,15 +290,16 @@ export class VersionMetadataService extends AbstractService implements IVersionM
 
   @Singleton((force) => `quilt-${!!force}`)
   async getQuiltVersions(force?: boolean): Promise<FabricVersionsResult> {
+    const useMirror = await this.#useMirror()
     return this.#getLoaderVersions({
       name: 'quilt',
       loader: [
         'https://meta.quiltmc.org/v3/versions/loader',
-        'https://bmclapi2.bangbang93.com/quilt-meta/v3/versions/loader',
+        ...(useMirror ? ['https://bmclapi2.bangbang93.com/quilt-meta/v3/versions/loader'] : []),
       ],
       game: [
         'https://meta.quiltmc.org/v3/versions/game',
-        'https://bmclapi2.bangbang93.com/quilt-meta/v3/versions/game',
+        ...(useMirror ? ['https://bmclapi2.bangbang93.com/quilt-meta/v3/versions/game'] : []),
       ],
       force,
       event: 'quiltVersions',
@@ -337,6 +361,13 @@ export class VersionMetadataService extends AbstractService implements IVersionM
 
   @Singleton((force) => `optifine-${!!force}`)
   async getOptifineVersions(force?: boolean): Promise<OptifineVersion[]> {
+    // OptiFine is distributed *only* via BMCLAPI — there is no official
+    // source to fall back to. Honour the "never touch a mirror" contract
+    // for official / outside-GFW users by returning nothing rather than
+    // querying bmcl.
+    if (!(await this.#useMirror())) {
+      return []
+    }
     const sources: VersionMetadataSource<OptifineVersion[]>[] = [
       {
         url: 'https://bmclapi2.bangbang93.com/optifine/versionList',
