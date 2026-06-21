@@ -409,39 +409,70 @@ export async function installByProfile(
   }
 }
 
-function parseArgumentsFromArgsFile(content: string, parentDir: string, serverProfile: Version) {
+/**
+ * JVM options in a forge server args file that consume the following token as
+ * their value (e.g. `-p <module-path>`, `--add-opens <spec>`). Every other
+ * dashed token (e.g. `-Dkey=value`, `-Xmx2G`, `-XX:+UseCompactObjectHeaders`)
+ * is a single, self-contained option.
+ */
+const JVM_VALUE_OPTIONS = new Set([
+  '-p',
+  '-cp',
+  '-classpath',
+  '--class-path',
+  '--module-path',
+  '--add-opens',
+  '--add-exports',
+  '--add-modules',
+  '--add-reads',
+  '--patch-module',
+  '--upgrade-module-path',
+])
+
+/**
+ * Parse a forge server `win_args.txt` / `unix_args.txt` file.
+ *
+ * The file has the shape `[jvm options...] (-jar <jar> | <main-class>) [game
+ * args...]`. The jvm options are collected verbatim, the terminator is either a
+ * `-jar <jar>` pair or a bare main-class token, and everything after it is a
+ * game argument.
+ *
+ * @returns The executable jar path (when the file uses `-jar`), otherwise
+ * `undefined` (the main class is written onto `serverProfile`).
+ */
+export function parseArgumentsFromArgsFile(content: string, parentDir: string, serverProfile: Version) {
   const args = content
     .split('\n')
     .map((v) => v.trim().split(' '))
     .flatMap((v) => v)
     .filter((v) => v)
-  // find the Main class or -jar
-  let mainClass: string = ''
+  let mainClass = ''
   let jar: string | undefined
-  let found = false
-  for (let i = 0; i < args.length; i++) {
-    if (args[i].startsWith('-')) {
-      if (args[i] === '-jar') {
-        jar = join(parentDir, args[i + 1])
-        found = true
-        i++
-        continue
-      }
-    } else if (!mainClass) {
-      mainClass = args[i]
-      found = true
-      continue
+  let i = 0
+  // Phase 1: jvm options, terminated by `-jar <jar>` or a bare main-class token.
+  for (; i < args.length; i++) {
+    const arg = args[i]
+    if (arg === '-jar') {
+      // The executable jar (e.g. the bootstrap shim) terminates the jvm args.
+      jar = join(parentDir, args[i + 1] ?? '')
+      i += 2
+      break
     }
-    if (!found) {
-      if (!args[i].startsWith('-D')) {
-        serverProfile.arguments!.jvm.push(args[i], args[i + 1])
-        i++
-      } else {
-        serverProfile.arguments!.jvm.push(args[i])
-      }
-    } else {
-      serverProfile.arguments!.game.push(args[i])
+    if (!arg.startsWith('-')) {
+      // A bare token is the main class and terminates the jvm args.
+      mainClass = arg
+      i += 1
+      break
     }
+    serverProfile.arguments!.jvm.push(arg)
+    if (JVM_VALUE_OPTIONS.has(arg) && args[i + 1] !== undefined) {
+      serverProfile.arguments!.jvm.push(args[i + 1])
+      i += 1
+    }
+  }
+  // Phase 2: everything remaining is a game/program argument.
+  for (; i < args.length; i++) {
+    serverProfile.arguments!.game.push(args[i])
   }
 
   serverProfile.mainClass = mainClass

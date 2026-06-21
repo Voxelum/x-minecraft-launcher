@@ -381,6 +381,20 @@ export async function unpackForgeInstaller(
       ),
     )
   }
+  if (entries.shimJar) {
+    // The bootstrap shim jar (forge-${forgeVersion}-shim.jar) is the server
+    // launch entrypoint for modern Forge. It is bundled inside the installer
+    // under maven/ but, unlike the universal/forge jar, it is not published as
+    // a downloadable library, so it must be extracted here. Without it the
+    // server fails to start with "unable to access jarfile ...-shim.jar".
+    promises.push(
+      extractEntryTo(
+        zip,
+        entries.shimJar,
+        getLibraryPathWithoutMaven(mc, entries.shimJar.fileName),
+      ),
+    )
+  }
   if (entries.runBat) {
     unpackData(entries.runBat)
   }
