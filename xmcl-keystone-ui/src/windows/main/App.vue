@@ -1,5 +1,5 @@
 <template>
-  <v-app v-if="!showSetup" class="h-full max-h-screen overflow-auto overflow-x-hidden" :class="{ 'dark': isDark }">
+  <v-app v-if="!showSetup" class="h-full max-h-screen overflow-hidden" :class="{ 'dark': isDark }">
     <AppBackground />
     <div class="w-full h-full absolute left-0 header-overlay" :style="{
       height: headerHeight + (compact ? 30 : 70) + 'px',
