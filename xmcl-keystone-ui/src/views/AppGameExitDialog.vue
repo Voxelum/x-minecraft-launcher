@@ -86,6 +86,7 @@ const data = reactive({
   isShown: false,
   log: '',
   isCrash: false,
+  isServer: false,
   launcherError: false,
   crashReportLocation: '',
   errorLog: '',
@@ -96,6 +97,7 @@ watch(() => data.isShown, (isShown) => {
   if (!isShown) {
     data.log = ''
     data.isCrash = false
+    data.isServer = false
     data.launcherError = false
     data.crashReportLocation = ''
     data.errorLog = ''
@@ -105,7 +107,7 @@ watch(() => data.isShown, (isShown) => {
 })
 const { t } = useI18n()
 const { path } = injection(kInstance)
-const { getLogContent, getCrashReportContent, showLog } = useService(InstanceLogServiceKey)
+const { getLogContent, getCrashReportContent, getServerLogContent, showLog, showServerLog } = useService(InstanceLogServiceKey)
 const { on } = useService(LaunchServiceKey)
 const { showItemInDirectory } = useService(BaseServiceKey)
 const { error } = injection(kInstanceLaunch)
@@ -116,7 +118,9 @@ watch(error, (e) => {
   data.errorLog = JSON.stringify(e, null, 2)
 })
 async function displayLog() {
-  const log = await getLogContent(path.value, 'latest.log')
+  const log = data.isServer
+    ? await getServerLogContent(path.value, 'latest.log')
+    : await getLogContent(path.value, 'latest.log')
   data.log = log
   data.isShown = true
 }
@@ -125,12 +129,13 @@ async function displayCrash(crashReport: string | undefined) {
   data.log = log
   data.isShown = true
 }
-on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog, stdLog, elyByAuthlibReplaced, elyByMinecraftVersion }) => {
+on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog, stdLog, side, elyByAuthlibReplaced, elyByMinecraftVersion }) => {
   if (!code && signal === 'SIGTERM') {
     return
   }
   if (code !== 0) {
-    data.errorLog = (errorLog || '' + '\n' + (stdLog || '')).trim()
+    data.isServer = side === 'server'
+    data.errorLog = `${errorLog || ''}\n${stdLog || ''}`.trim()
     
     // Check if Ely.by authlib was used
     if (elyByAuthlibReplaced) {
@@ -150,6 +155,8 @@ on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog
 function openFolder() {
   if (data.isCrash) {
     showItemInDirectory(data.crashReportLocation)
+  } else if (data.isServer) {
+    showServerLog(path.value, 'latest.log')
   } else {
     showLog(path.value, 'latest.log')
   }
@@ -169,7 +176,7 @@ function getPrompt(raw?: boolean) {
 }
 function getAgentPrompt() {
   const crashPath = data.crashReportLocation ? toVirtualInstancePath(data.crashReportLocation, path.value) : undefined
-  const logPath = toVirtualInstancePath(`${path.value}/logs/latest.log`, path.value)
+  const logPath = toVirtualInstancePath(`${path.value}/${data.isServer ? 'server/logs' : 'logs'}/latest.log`, path.value)
   return getCrashAgentPrompt(data.log, data.errorLog, crashPath, logPath)
 }
 </script>

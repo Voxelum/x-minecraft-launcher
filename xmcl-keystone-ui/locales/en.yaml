@@ -772,6 +772,7 @@ logsCrashes:
   failures: Launch Failures
   logs: Logs
   placeholder: No Files Found
+  serverLogs: Server Logs
   title: Logs or Crash Reports
 me:
   news: News

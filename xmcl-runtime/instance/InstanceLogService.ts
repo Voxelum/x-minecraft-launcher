@@ -49,6 +49,58 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
   }
 
   /**
+   * List the dedicated-server logs in `<instance>/server/logs/`.
+   */
+  @Singleton()
+  async listServerLogs(instancePath: string) {
+    const files = await readdirIfPresent(join(instancePath, 'server', 'logs'))
+    return files.filter(f =>
+      (f.endsWith('.gz') || f.endsWith('.txt') || f.endsWith('.log')) &&
+      !f.startsWith(LAUNCH_FAILURE_PREFIX),
+    )
+  }
+
+  /**
+   * Remove a dedicated-server log from disk
+   * @param name The log file name
+   */
+  @Singleton(name => name)
+  async removeServerLog(instancePath: string, name: string) {
+    const filePath = join(instancePath, 'server', 'logs', name)
+    this.log(`Remove server log ${filePath}`)
+    await unlink(filePath).catch(() => {})
+  }
+
+  /**
+   * Get the dedicated-server log content.
+   * @param name The log file name
+   */
+  @Singleton(name => name)
+  async getServerLogContent(instancePath: string, name: string) {
+    try {
+      const filePath = join(instancePath, 'server', 'logs', name)
+      let buf: any = await readFile(filePath)
+      if (name.endsWith('.gz')) {
+        buf = await gunzip(buf)
+      }
+      const encoding = await this.encoder.guessEncodingByBuffer(buf as any).catch(e => undefined)
+      const result = await this.encoder.decode(buf as any, encoding || UTF8)
+      return result
+    } catch (e) {
+      return ''
+    }
+  }
+
+  /**
+   * Show the dedicated-server log file on disk. This will open a file explorer.
+   * @param name The log file name
+   */
+  showServerLog(instancePath: string, name: string) {
+    const filePath = join(instancePath, 'server', 'logs', name)
+    this.app.shell.showItemInFolder(filePath)
+  }
+
+  /**
    * Remove a log from disk
    * @param name The log file name
    */

@@ -29,6 +29,23 @@
                 {{ data.failures.length }}
               </v-chip>
             </v-tab>
+            <v-tab
+              v-if="data.serverLogs.length > 0"
+              :value="3"
+              :disabled="data.loadingList"
+              @click="goServerLogs"
+            >
+              {{ t("logsCrashes.serverLogs") }}
+              <v-chip
+                size="x-small"
+                class="ml-2"
+                color="white"
+                variant="tonal"
+                label
+              >
+                {{ data.serverLogs.length }}
+              </v-chip>
+            </v-tab>
           </v-tabs>
         </template>
       </v-toolbar>
@@ -64,6 +81,17 @@
             :show-file="_showLog"
           />
         </v-tabs-window-item>
+        <v-tabs-window-item :value="3">
+          <TabItem
+            log
+            :visible="data.tab === 3 && isShown"
+            :files="data.serverLogs"
+            :refreshing="data.loadingList"
+            :get-file-content="_getServerLogContent"
+            :remove-file="removeServerLog"
+            :show-file="_showServerLog"
+          />
+        </v-tabs-window-item>
       </v-tabs-window>
     </v-card>
   </v-dialog>
@@ -81,12 +109,16 @@ const {
   listLogs,
   listLaunchFailures,
   listCrashReports,
+  listServerLogs,
   removeLog: rmLog,
   removeCrashReport: rmCrash,
+  removeServerLog: rmServerLog,
   getCrashReportContent,
   getLogContent,
+  getServerLogContent,
   showLog,
   showCrash: showCrashReport,
+  showServerLog: showServerLogFile,
 } = useService(InstanceLogServiceKey);
 const { isShown, hide } = useDialog("log");
 const { t } = useI18n();
@@ -100,12 +132,16 @@ const data = reactive({
   logs: [] as string[],
   crashes: [] as string[],
   failures: [] as string[],
+  serverLogs: [] as string[],
 });
 const _getLogContent = (name: string) => getLogContent(path.value, name);
 const _getCrashReportContent = (name: string) =>
   getCrashReportContent(path.value, name);
+const _getServerLogContent = (name: string) =>
+  getServerLogContent(path.value, name);
 const _showLog = (name: string) => showLog(path.value, name);
 const _showCrashReport = (name: string) => showCrashReport(path.value, name);
+const _showServerLog = (name: string) => showServerLogFile(path.value, name);
 
 function loadLogs() {
   data.loadingList = true;
@@ -137,6 +173,16 @@ function loadFailures() {
       data.loadingList = false;
     });
 }
+function loadServerLogs() {
+  data.loadingList = true;
+  listServerLogs(path.value)
+    .then((l) => {
+      data.serverLogs = l;
+    })
+    .finally(() => {
+      data.loadingList = false;
+    });
+}
 async function removeLog(name: string) {
   await rmLog(path.value, name);
   loadLogs();
@@ -151,6 +197,10 @@ async function removeFailure(name: string) {
   await rmLog(path.value, name);
   loadFailures();
 }
+async function removeServerLog(name: string) {
+  await rmServerLog(path.value, name);
+  loadServerLogs();
+}
 watch(isShown, (s) => {
   if (s) {
     data.tab = 0;
@@ -158,10 +208,14 @@ watch(isShown, (s) => {
     // Eagerly load the failure list so the badge count on the tab is
     // accurate even before the user clicks the tab.
     loadFailures();
+    // Eagerly load the server logs so the Server Logs tab only appears when
+    // the instance has actually produced any (and its badge count is right).
+    loadServerLogs();
   } else {
     data.logs = [];
     data.crashes = [];
     data.failures = [];
+    data.serverLogs = [];
   }
 });
 function goLog() {
@@ -176,6 +230,10 @@ function goCrash() {
 function goFailures() {
   data.tab = 2;
   loadFailures();
+}
+function goServerLogs() {
+  data.tab = 3;
+  loadServerLogs();
 }
 </script>
 

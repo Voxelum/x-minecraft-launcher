@@ -678,6 +678,7 @@ logsCrashes:
   failures: 启动失败
   logs: 日志
   placeholder: 没有找到文件
+  serverLogs: 服务器日志
   title: 日志或崩溃报告
 me:
   news: 新闻

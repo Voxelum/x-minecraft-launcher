@@ -609,6 +609,7 @@ logsCrashes:
   placeholder: 沒有找到檔案
   title: 日誌或當機報告
   failures: 啟動失敗
+  serverLogs: 伺服器日誌
 me:
   news: 最新消息
   recentPlay: 最近遊玩

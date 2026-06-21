@@ -34,6 +34,25 @@ export interface InstanceLogService {
    */
   listLaunchFailures(instancePath: string): Promise<string[]>
   /**
+   * List the dedicated-server logs in `<instance>/server/logs/`.
+   */
+  listServerLogs(instancePath: string): Promise<string[]>
+  /**
+   * Remove a dedicated-server log from disk
+   * @param name The log file name
+   */
+  removeServerLog(instancePath: string, name: string): Promise<void>
+  /**
+   * Get the dedicated-server log content.
+   * @param name The log file name
+   */
+  getServerLogContent(instancePath: string, name: string): Promise<string>
+  /**
+   * Show the dedicated-server log file on disk. This will open a file explorer.
+   * @param name The log file name
+   */
+  showServerLog(instancePath: string, name: string): void
+  /**
    * List crash reports in current instance
    */
   listCrashReports(instancePath: string): Promise<string[]>
