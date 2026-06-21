@@ -72,13 +72,13 @@ import {
 } from '@xmcl/runtime-api'
 import { AnyError } from '@xmcl/utils'
 import { spawn } from 'child_process'
-import { existsSync } from 'fs'
+import { existsSync, statSync } from 'fs'
 import { ensureDir, ensureFile, readFile, stat, unlink, writeFile } from 'fs-extra'
-import { delimiter, dirname, join } from 'path'
+import { delimiter, dirname, join, sep } from 'path'
 import { Inject, kGameDataPath, LauncherApp, LauncherAppKey, type PathResolver } from '~/app'
 import { GFW, kGFW, kTasks, TaskInstance, Tasks } from '~/infra'
 import { JavaService } from '~/java'
-import { kDownloadOptions } from '~/network'
+import { BmclDownloadController, kDownloadController, kDownloadOptions } from '~/network'
 import { AbstractService, ExposeServiceKey, Lock } from '~/service'
 import { getApiSets, kSettings, shouldOverrideApiSet } from '~/settings'
 import { linkOrCopyFile } from '~/util/fs'
@@ -104,6 +104,7 @@ export class InstallService extends AbstractService implements IInstallService {
     @Inject(kGFW) private gfw: GFW,
     @Inject(kSettings) private settings: SharedState<Settings>,
     @Inject(kDownloadOptions) private downloadOptions: DownloadBaseOptions,
+    @Inject(kDownloadController) private downloadController: BmclDownloadController,
     @Inject(kTasks) private tasks: Tasks,
     @Inject(kResourceWorker) private resourceWorker: ResourceWorker,
   ) {
@@ -166,14 +167,18 @@ export class InstallService extends AbstractService implements IInstallService {
     const allSets = getApiSets(this.settings)
 
     if (shouldOverrideApiSet(this.settings, this.gfw.inside)) {
-      const existed = allSets.find((a) => a.name === this.settings.apiSetsPreference)
-      if (existed) {
-        // make bmclapi echo 3 time
-        allSets.push(existed, existed, existed)
-      }
+      // `getApiSets` already puts the preferred (e.g. bmcl) set first.
+      // The adaptive controller drops slow mirror assignments and
+      // re-requests the signed API for a faster one, so the previous
+      // "list bmcl three extra times" fallback trick is no longer
+      // needed. Official is kept as the final hard-failure fallback.
       allSets.push({ name: 'mojang', url: '' })
+      options.controller = this.downloadController
     } else {
-      allSets.unshift({ name: 'mojang', url: '' })
+      // Official / non-bmcl users must never touch third-party mirrors,
+      // even as a fallback — download straight from the official source.
+      allSets.length = 0
+      allSets.push({ name: 'mojang', url: '' })
     }
 
     options.assetsHost = allSets.map((api) =>
@@ -362,8 +367,119 @@ export class InstallService extends AbstractService implements IInstallService {
           skip.push(proc)
         }
       }
+
+      // --- Ensure the base client jar is intact BEFORE post-processing.
+      // Forge's binpatcher reads it as `--clean`; a corrupt base jar
+      // (e.g. a zero-filled gap left by a bad mirror in an earlier
+      // install) makes it fail with the confusing
+      // `binarypatcher ... received empty data`. Forge install reuses the
+      // existing jar and never re-verifies it, so do it here and
+      // re-download from a fresh mirror if needed. ---
+      let clientJar: string | undefined
+      let verJsonPath: string | undefined
+      if (overrides.inheritsFrom) {
+        clientJar = folder.getVersionJar(overrides.inheritsFrom)
+        verJsonPath = folder.getVersionJson(overrides.inheritsFrom)
+      } else {
+        // `installByProfile` does not pass `inheritsFrom`, so recover the
+        // clean jar straight from the binpatcher processor arguments.
+        for (const proc of procs) {
+          const idx = proc.args.indexOf('--clean')
+          if (idx >= 0 && typeof proc.args[idx + 1] === 'string') {
+            clientJar = proc.args[idx + 1]
+            verJsonPath = clientJar.replace(/\.jar$/i, '.json')
+            break
+          }
+        }
+      }
+      if (clientJar && verJsonPath) {
+        let vj: any
+        try {
+          vj = JSON.parse(await readFile(verJsonPath, 'utf-8'))
+        } catch {}
+        const expected: string = vj?.downloads?.client?.sha1 ?? ''
+        const size: number | undefined = vj?.downloads?.client?.size
+        if (expected) {
+          const actual = existsSync(clientJar)
+            ? await this.resourceWorker.checksum(clientJar, 'sha1').catch(() => '')
+            : ''
+          if (actual !== expected) {
+            this.warn(
+              `[forge-pp] base client jar ${
+                existsSync(clientJar)
+                  ? `corrupt (sha1=${actual}, size=${statSync(clientJar).size}, expectedSize=${size ?? '?'})`
+                  : 'missing'
+              }; redownloading before binpatch (expected=${expected})`,
+            )
+            const clientField = options.client
+            const resolvedUrls =
+              typeof clientField === 'function'
+                ? clientField(vj)
+                : clientField ?? vj?.downloads?.client?.url
+            const urls = (Array.isArray(resolvedUrls) ? resolvedUrls : [resolvedUrls]).filter(
+              Boolean,
+            ) as string[]
+            let fixedSha = ''
+            for (let i = 0; i < 3 && fixedSha !== expected; i++) {
+              await unlink(clientJar).catch(() => {})
+              await download({
+                url: urls,
+                destination: clientJar,
+                expectedTotal: size,
+                signal: options.signal,
+                dispatcher: options.dispatcher,
+                controller: options.controller,
+                rangePolicy: options.rangePolicy,
+              })
+              fixedSha = await this.resourceWorker.checksum(clientJar, 'sha1').catch(() => '')
+              if (fixedSha !== expected) {
+                this.warn(`[forge-pp] redownload attempt ${i + 1} still corrupt (sha1=${fixedSha})`)
+              }
+            }
+            if (fixedSha !== expected) {
+              throw new AnyError(
+                'ForgeInstallError',
+                `Base Minecraft client jar is still corrupt after redownload (sha1=${fixedSha}, expected=${expected}): ${clientJar}`,
+              )
+            }
+            this.log('[forge-pp] base client jar redownloaded and verified OK')
+          } else {
+            this.log(`[forge-pp] base client jar OK (sha1=${actual})`)
+          }
+        }
+      }
+
+      // --- Best-effort diagnostics: log every processor's input files so
+      // a corrupt/empty input is obvious in the log. ---
+      try {
+        const seen = new Set<string>()
+        for (const proc of procs) {
+          const jarPath = folder.getLibraryByPath(LibraryInfo.resolve(proc.jar).path)
+          const jarSize = existsSync(jarPath) ? statSync(jarPath).size : -1
+          this.log(
+            `[forge-pp] processor ${proc.jar} jar=${jarSize < 0 ? 'MISSING' : jarSize} args=${proc.args.join(' ')}`,
+          )
+          for (const a of proc.args) {
+            if (typeof a !== 'string') continue
+            if (!(a.includes(sep) || a.includes('/'))) continue
+            if (seen.has(a)) continue
+            seen.add(a)
+            if (existsSync(a)) {
+              const s = statSync(a)
+              if (s.isFile()) {
+                this.log(`[forge-pp]   file ${a} size=${s.size}${s.size === 0 ? ' <<< EMPTY' : ''}`)
+              }
+            }
+          }
+        }
+      } catch (e) {
+        this.warn('[forge-pp] diagnostics failed')
+        this.warn(e as any)
+      }
+
       const clz = join(app.appDataPath, 'MultiJarLauncher.class')
       await writeFile(clz, clazData)
+      let ppOut = ''
       try {
         const pending = procs.filter((p) => !skip.includes(p))
         const classPaths = pending
@@ -384,6 +500,15 @@ export class InstallService extends AbstractService implements IInstallService {
             cwd: app.appDataPath,
           },
         )
+        // Capture the launcher output so the log shows which processor
+        // ran last (it prints `Launching <mainclass> with args:` before
+        // each one) when the binpatcher "received empty data" fires.
+        process.stdout?.on('data', (d) => {
+          ppOut += d
+        })
+        process.stderr?.on('data', (d) => {
+          ppOut += d
+        })
         await waitProcess(process)
       } catch (e) {
         Object.assign(e as any, {
@@ -398,7 +523,9 @@ export class InstallService extends AbstractService implements IInstallService {
           }
         }
         this.error(e as any)
+        this.warn(`[forge-pp] MultiJarLauncher output:\n${ppOut}`)
         // Retry with original postprocess
+        this.log('[forge-pp] falling back to per-processor post-processing')
         await originalPostprocess()
       } finally {
         await unlink(clz).catch(() => undefined)
@@ -1100,7 +1227,10 @@ export class InstallService extends AbstractService implements IInstallService {
       key: options.version ?? options.profile.version,
       version: options.version ?? options.profile.version,
     })
-    const ops = this.getInstallOptions({ side: options.side, java: options.java }, task)
+    const ops = this.getInstallOptions(
+      { side: options.side, java: options.java, inheritsFrom: options.profile.minecraft },
+      task,
+    )
     try {
       this.log(`Install by profile ${options.profile.version} (${options.side})`)
       await installByProfile(options.profile, minecraftFolder, ops)
