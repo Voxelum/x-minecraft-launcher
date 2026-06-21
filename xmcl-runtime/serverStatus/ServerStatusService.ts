@@ -1,8 +1,10 @@
 import { queryStatus } from '@xmcl/client'
 import { createFailureServerStatus, PingServerOptions, protocolToMinecraft, ServerStatusService as IServerStatusService, ServerStatusServiceKey } from '@xmcl/runtime-api'
+import { isSystemError } from '@xmcl/utils'
+import { resolveSrv } from 'dns/promises'
+import { isIP } from 'net'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'
-import { isSystemError } from '@xmcl/utils'
 import { AbstractService, ExposeServiceKey } from '~/service'
 
 @ExposeServiceKey(ServerStatusServiceKey)
@@ -55,8 +57,40 @@ export class ServerStatusService extends AbstractService implements IServerStatu
     return this.versionToProtocols[mcversion]
   }
 
+  /**
+   * Resolve the real connection target for a Minecraft server address.
+   *
+   * When the user did not provide an explicit port and the host is a domain
+   * name (not an IP literal), look up the `_minecraft._tcp.<host>` SRV record,
+   * mirroring the vanilla client. Many servers — especially those behind a
+   * proxy like `je.czumc.cn` — only publish an SRV record and have no A record
+   * on the bare host, so a direct connect would fail with `ENOTFOUND`.
+   *
+   * Falls back to `host:25565` when there is no SRV record or the lookup fails.
+   */
+  private async resolveServerAddress(host: string, port: number | undefined): Promise<{ host: string; port: number }> {
+    if (port === undefined && isIP(host) === 0) {
+      try {
+        const records = await resolveSrv(`_minecraft._tcp.${host}`)
+        if (records.length > 0) {
+          // Prefer the lowest priority, then the highest weight, matching the
+          // SRV record selection rules from RFC 2782.
+          const best = records.reduce((a, b) =>
+            (b.priority < a.priority || (b.priority === a.priority && b.weight > a.weight)) ? b : a)
+          this.log(`Resolved SRV record for ${host}: ${best.name}:${best.port}`)
+          return { host: best.name, port: best.port }
+        }
+      } catch (e) {
+        // No SRV record (ENODATA/ENOTFOUND) or lookup failure — fall back to the
+        // bare host on the default port below.
+      }
+    }
+    return { host, port: port ?? 25565 }
+  }
+
   async pingServer(options: PingServerOptions) {
-    const { host, port = 25565, protocol } = options
+    const { protocol } = options
+    const { host, port } = await this.resolveServerAddress(options.host, options.port)
     this.log(`Ping server ${host}:${port} with protocol: ${protocol}`)
     try {
       const status = await queryStatus({ host, port }, { protocol })

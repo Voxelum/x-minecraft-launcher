@@ -337,11 +337,17 @@ const coders: TagCoder[] = [
         let childContext: ReadContext
         if (knowingType) {
           const valueType = nbtPrototype[key]
-          // skip for undefined field or type not matched!
+          // Field is not in the schema, or its on-disk tag type does not match
+          // the schema's. We still must read and discard the value so the
+          // buffer cursor stays aligned for the following fields; simply
+          // `continue`-ing would desync the stream and corrupt the rest of the
+          // compound (e.g. newer `servers.dat` adds `preventsChatReports` /
+          // `hidden` bytes that older schemas don't know about).
           if (
             typeof valueType === 'undefined' ||
             (typeof valueType === 'number' && valueType !== tag)
           ) {
+            reader.write(buf, context.fork(tag))
             continue
           }
           childContext = context.fork(valueType)

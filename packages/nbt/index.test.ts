@@ -182,4 +182,57 @@ describe('NBT', () => {
       testNBT(true)
     })
   })
+
+  describe('#deserialize with partial schema', () => {
+    class FullServer {
+      @TagType(TagType.Byte)
+      preventsChatReports = 1
+
+      @TagType(TagType.String)
+      icon = 'icon-data'
+
+      @TagType(TagType.String)
+      name = 'My Server'
+
+      @TagType(TagType.String)
+      ip = 'je.czumc.cn'
+
+      @TagType(TagType.Byte)
+      acceptTextures = 1
+
+      @TagType(TagType.Byte)
+      hidden = 0
+    }
+    class PartialServer {
+      @TagType(TagType.String)
+      icon = ''
+
+      @TagType(TagType.String)
+      ip = ''
+
+      @TagType(TagType.String)
+      name = ''
+
+      @TagType(TagType.Byte)
+      acceptTextures = 0
+    }
+
+    test('should skip unknown fields without corrupting following fields', async () => {
+      const buf = await serialize(new FullServer())
+      const result = await deserialize(buf, { type: PartialServer })
+      expect(result.icon).toEqual('icon-data')
+      expect(result.name).toEqual('My Server')
+      expect(result.ip).toEqual('je.czumc.cn')
+      expect(result.acceptTextures).toEqual(1)
+    })
+
+    test('should skip unknown fields synchronously too', () => {
+      const buf = serializeSync(new FullServer())
+      const result = deserializeSync(buf, { type: PartialServer })
+      expect(result.icon).toEqual('icon-data')
+      expect(result.name).toEqual('My Server')
+      expect(result.ip).toEqual('je.czumc.cn')
+      expect(result.acceptTextures).toEqual(1)
+    })
+  })
 })
