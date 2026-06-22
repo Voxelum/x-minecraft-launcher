@@ -700,6 +700,7 @@ modInstall:
   checkedUpgrade: 已重新整理更新列表
   currentVersion: 已選版本
   dependencyHint: 安裝了其他版本 {version}
+  ignoreAlphaBeta: 更新時忽略 alpha 和 beta 版本
   installDependencies: 安裝缺少的相依項
   installHint: 安裝 {file} 個檔案和 {dependencies} 個相依檔案
   noVersionSupported: 模組僅支援 Minecraft {supported}。

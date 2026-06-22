@@ -109,7 +109,7 @@
       </template>
     </SettingItem>
     <SettingItemCheckbox v-model="skipVersion" :title="t('modInstall.skipVersion')" />
-    <SettingItemCheckbox v-model="releaseOnly" :title="t('modInstall.releaseOnly')" />
+    <SettingItemCheckbox v-model="releaseOnly" :title="t('modInstall.ignoreAlphaBeta')" />
     <SettingItem>
       <template #action>
         <div class="flex gap-1">

@@ -701,6 +701,7 @@ modInstall:
   checkedUpgrade: Yükseltme kontrol edildi
   currentVersion: Seçilen Sürüm
   dependencyHint: Başka bir sürüm {version} yüklendi
+  ignoreAlphaBeta: Güncellerken alfa ve beta sürümlerini yoksay
   installDependencies: Eksik Bağımlılıkları Yükle
   installHint: '{file} dosyasını {dependencies} bağımlılıkları ile yükleyecek'
   noVersionSupported: Mod sadece Minecraft {supported} destekler.

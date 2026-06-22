@@ -657,6 +657,7 @@ modInstall:
   checkedUpgrade: 선택 항목 업그레이드
   currentVersion: 선택된 버전
   dependencyHint: 다른 버전이 설치됨 {version}
+  ignoreAlphaBeta: 업데이트 시 알파 및 베타 버전 무시
   installDependencies: 누락된 의존성 설치
   installHint: '{dependencies} 개의 의존성과 함께 {file} 파일을 설치합니다'
   noVersionSupported: 이 모드는 마인크래프트 {supported}만 지원합니다.

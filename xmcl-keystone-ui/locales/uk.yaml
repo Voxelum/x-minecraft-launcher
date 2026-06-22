@@ -726,6 +726,7 @@ modInstall:
   checkedUpgrade: Оновлення перевірено
   currentVersion: Обрана версія
   dependencyHint: Встановлено іншу версію {version}
+  ignoreAlphaBeta: Ігнорувати альфа- та бета-версії під час оновлення
   installDependencies: Встановити відсутні залежності
   installHint: Буде встановлено файл {file} з {dependencies} залежностями
   noVersionSupported: Мод підтримує лише Minecraft {supported}.

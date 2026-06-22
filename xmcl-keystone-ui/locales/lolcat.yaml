@@ -690,6 +690,7 @@ modInstall:
   checkedUpgrade: UPGRADE CHECKED
   currentVersion: SELECTED VERSHUN
   dependencyHint: INSTALLED ANOTHR VERSHUN {version}
+  ignoreAlphaBeta: IGNOR DA ALFA AN BETA VERSHUNS WEN UPDATIN
   installDependencies: INSTALL MISSING DEPENDENCIEZ
   installHint: WILL INSTALL {file} FILE WITH {dependencies} DEPENDENCIEZ
   noVersionSupported: MOD ONLY SUPPORTS MINECWAFT {supported}.

@@ -728,6 +728,7 @@ modInstall:
     'yes': Mettre à jour les mods
   checkDependencies: Vérifier les dépendances
   checkedDependencies: Dépendances vérifiées
+  ignoreAlphaBeta: Ignorer les versions alpha et bêta lors de la mise à jour
   installDependencies: Installer les dépendances manquantes
   noVersionSupported: Le mod prend uniquement en charge Minecraft {supported}.
   recommendation: "Explorez les mods {first} dans {modrinth} et {curseforge} !"

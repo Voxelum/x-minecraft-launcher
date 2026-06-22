@@ -62,7 +62,9 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
   const upgradeFilenameMappings = shallowRef({} as Record<string, string>)
 
   const skipVersion = useLocalStorageCacheBool(computed(() => `modsUpgradeSkipVersion:${path.value}`), false)
-  const releaseOnly = useLocalStorageCacheBool(computed(() => `modsUpgradeReleaseOnly:${path.value}`), false)
+  // Default to ignoring alpha/beta versions so mods upgrade to the latest stable release,
+  // keeping clients in sync with launchers that only ship stable updates.
+  const releaseOnly = useLocalStorageCacheBool(computed(() => `modsUpgradeIgnoreAlphaBeta:${path.value}`), true)
   const upgradePolicy = useLocalStorageCacheStringValue(computed(() => `modsUpgradePolicy:${path.value}`), 'modrinth')
 
   useErrorHandler((e) => {

@@ -682,6 +682,7 @@ modInstall:
   checkedUpgrade: アップデートを確認しました
   currentVersion: 選択されたバージョン
   dependencyHint: 他のバージョン {version} がインストールされています
+  ignoreAlphaBeta: 更新時にアルファ版とベータ版を無視する
   installDependencies: 未インストールの依存関係をインストール
   installHint: '{file} を {dependencies} 個の依存関係とインストール'
   noVersionSupported: このModはMinecraft {supported} のみサポートしています。

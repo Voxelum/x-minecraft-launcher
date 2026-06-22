@@ -895,11 +895,11 @@ modInstall:
   checkedUpgrade: Upgrade checked
   currentVersion: Selected Version
   dependencyHint: Installed another version {version}
+  ignoreAlphaBeta: Ignore alpha and beta versions when updating
   installDependencies: Install Missing Dependencies
   installHint: Will install {file} file with {dependencies} dependencies
   noVersionSupported: Mod only supports Minecraft {supported}.
   recommendation: Explore the {first} mods in {modrinth} and {curseforge}!
-  releaseOnly: Ignore alpha and beta versions when updating
   removeUnusedLibraries: Remove Unused
   search: Search Mods...
   skipVersion: Skip the Mods with different Minecraft version

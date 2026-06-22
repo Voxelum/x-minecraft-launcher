@@ -762,6 +762,7 @@ modInstall:
   checkedUpgrade: Aktualisierung geprüft
   currentVersion: Ausgewählte Version
   dependencyHint: Eine andere Version ist installiert {version}
+  ignoreAlphaBeta: Alpha- und Beta-Versionen beim Aktualisieren ignorieren
   installDependencies: Fehlende Abhängigkeiten installieren
   installHint: Die Datei wird installiert {file} mit Süchten {dependencies} Abhängigkeiten
   noVersionSupported: Mod unterstützt nur Minecraft {supported}.

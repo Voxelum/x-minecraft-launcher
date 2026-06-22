@@ -698,6 +698,7 @@ modInstall:
   checkedUpgrade: Тексерілгендерді жаңарту
   currentVersion: Таңдалған нұсқа
   dependencyHint: Басқа {version} нұсқасы орнатылған
+  ignoreAlphaBeta: Жаңарту кезінде альфа және бета нұсқаларын елемеу
   installDependencies: Жетіспейтін тәуелділіктерді орнату
   installHint: '{dependencies} тәуелділіктерімен {file} файлын орнатады'
   noVersionSupported: Мод тек Minecraft {supported} қолдайды.
