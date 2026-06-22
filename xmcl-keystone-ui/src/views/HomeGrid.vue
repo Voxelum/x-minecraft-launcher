@@ -1,5 +1,5 @@
 <template>
-  <div data-testid="home-grid" v-context-menu="getBackgroundMenu">
+  <div ref="gridRoot" data-testid="home-grid" v-context-menu="getBackgroundMenu">
     <GridLayout
       class="z-1"
       v-model:layout="layout"
@@ -268,6 +268,7 @@ function buildLayout(bp: Breakpoint): GridItemType[] {
   return items
 }
 
+const gridRoot = ref<HTMLElement>()
 const currentBreakpoint = ref<Breakpoint>(getBreakpoint(window.innerWidth))
 const layout = ref<GridItemType[]>(buildLayout(currentBreakpoint.value))
 
@@ -275,6 +276,21 @@ const onBreakpoint = (newBreakpoint: string) => {
   currentBreakpoint.value = newBreakpoint as Breakpoint
   layout.value = buildLayout(newBreakpoint as Breakpoint)
 }
+
+// `grid-layout-plus` derives its breakpoint from the grid *container* width
+// (which excludes the launcher sidebar), while `window.innerWidth` does not.
+// Align our breakpoint with the container so geometry is always saved into and
+// loaded from the same per-breakpoint bucket. Without this, a layout edited at
+// one (window-derived) breakpoint is read back from another after navigation.
+onMounted(() => {
+  const width = gridRoot.value?.offsetWidth
+  if (!width) return
+  const bp = getBreakpoint(width)
+  if (bp !== currentBreakpoint.value) {
+    currentBreakpoint.value = bp
+    layout.value = buildLayout(bp)
+  }
+})
 
 // Rebuild when the pinned server appears or disappears so the Server card
 // shows up / drops out without a reload.
@@ -305,6 +321,14 @@ const persist = debounce(() => {
 function onLayoutUpdated() {
   persist()
 }
+
+// The home view is not kept alive, so navigating away unmounts this component.
+// `persist` is debounced, and lodash does not flush on teardown — without this a
+// drag/resize made shortly before navigation would never reach localStorage and
+// the layout would appear to reset on return.
+onBeforeUnmount(() => {
+  persist.flush()
+})
 
 let screenshotItem = undefined as undefined | HTMLElement
 
