@@ -56,8 +56,23 @@ export async function computeInstanceEditChanges(
   editOptions: EditInstanceOptions,
   getIconUrl: (path: string) => Promise<string>,
 ): Promise<Partial<InstanceDataWithTime>> {
+  // Electron's IPC (structured clone) silently drops object properties whose
+  // value is `undefined`. The renderer therefore cannot use `undefined` to
+  // signal "reset this optional field to the global default" — the key would
+  // never reach the main process and the override would persist in
+  // `instance.json`. Instead the renderer sends `null` for a reset, which
+  // survives IPC. Normalize those `null` markers back to `undefined` before
+  // validation (the partial schema doesn't accept `null` for most fields)
+  // while still iterating the original keys so the reset is captured in the
+  // diff below.
+  const normalizedOptions: Record<string, any> = {}
+  for (const key in editOptions) {
+    const value = (editOptions as any)[key]
+    normalizedOptions[key] = value === null ? undefined : value
+  }
+
   // Validate and parse edit options using Zod
-  const validatedOptions = EditInstanceOptionsSchema.parse(editOptions)
+  const validatedOptions = EditInstanceOptionsSchema.parse(normalizedOptions)
   delete validatedOptions.path
 
   const result: Partial<InstanceDataWithTime> = {}
@@ -121,11 +136,24 @@ export async function computeInstanceEditChanges(
 }
 
 /**
- * Apply computed changes to an instance
+ * Apply computed changes to an instance.
+ *
+ * State mutations are broadcast to renderer processes over Electron IPC, whose
+ * structured clone serialization drops `undefined` object properties. The
+ * service therefore represents a "reset to global" (a removed override) as
+ * `null` in the broadcast payload so it survives IPC. Map those `null` markers
+ * back to `undefined` here so the field is cleared on both the main and
+ * renderer copies of the state (and dropped when the instance is serialized to
+ * `instance.json`).
  */
 export function applyInstanceChanges(
   instance: InstanceDataWithTime,
   changes: Partial<InstanceDataWithTime>,
 ): void {
-  assignShallow(instance, changes)
+  const normalized: Record<string, any> = {}
+  for (const key of Object.keys(changes)) {
+    const value = (changes as any)[key]
+    normalized[key] = value === null ? undefined : value
+  }
+  assignShallow(instance, normalized)
 }

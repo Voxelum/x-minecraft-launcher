@@ -11,6 +11,26 @@ export const InstanceEditInjectionKey: InjectionKey<ReturnType<typeof useInstanc
   Symbol('InstanceEdit')
 
 /**
+ * Convert `undefined` properties to `null` so a "reset to global" edit survives
+ * Electron's IPC boundary.
+ *
+ * Electron serializes IPC payloads with the structured clone algorithm, which
+ * silently drops object properties whose value is `undefined`. The settings UI
+ * resets an instance override to the global default by setting the field to
+ * `undefined`; without this conversion that key would never reach the main
+ * process and the override would stay in `instance.json`. `null` is preserved
+ * by IPC and is treated as an explicit reset by `computeInstanceEditChanges`.
+ */
+function nullifyUndefined<T extends Record<string, any>>(payload: T): T {
+  const result: Record<string, any> = {}
+  for (const key of Object.keys(payload)) {
+    const value = payload[key]
+    result[key] = value === undefined ? null : value
+  }
+  return result as T
+}
+
+/**
  * Edit the instance data model.
  *
  * @param instance The instance to edit
@@ -292,7 +312,7 @@ export function useInstanceEdit(
 
   async function flush() {
     if (buffer) {
-      await edit(buffer)
+      await edit(nullifyUndefined(buffer))
       buffer = undefined
       load()
     }
@@ -361,21 +381,21 @@ export function useInstanceEdit(
       resolution: data.resolution ? { ...data.resolution } : undefined,
     }
     if (!instance.value?.server) {
-      await edit({
+      await edit(nullifyUndefined({
         ...payload,
         instancePath: instance.value?.path,
         author: data.author,
         description: data.description,
-      })
+      }))
     } else {
-      await edit({
+      await edit(nullifyUndefined({
         ...payload,
         instancePath: instance.value?.path,
         server: {
           host: data.host,
           port: Number.parseInt(data.port, 10),
         },
-      })
+      }))
     }
     data.icon = instance.value?.icon
     load()

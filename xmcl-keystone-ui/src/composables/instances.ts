@@ -90,7 +90,10 @@ export function useInstances() {
       env: {
         ...(options.env ? JSON.parse(JSON.stringify(options.env)) : undefined),
       },
-      resolution: options.resolution ? JSON.parse(JSON.stringify(options.resolution)) : undefined,
+      // Keep `null` (the IPC-safe "reset to global" marker) intact instead of
+      // collapsing it back to `undefined` — Electron IPC would drop the latter
+      // and the resolution override would never be removed from instance.json.
+      resolution: options.resolution ? JSON.parse(JSON.stringify(options.resolution)) : options.resolution,
     })
   }
   async function remove(instancePath: string, deleteData = true) {
