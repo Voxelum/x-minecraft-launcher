@@ -154,6 +154,7 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
 
     const loaders = getModrinthModLoaders(runtimes)
     const gameVersions = [runtimes.minecraft]
+    const modrinthByProjectId = new Map(modrinthTarget.map(m => [m.modrinth!.projectId, m]))
     const updates = await clientModrinthV2.getLatestVersionsFromHashes(hashes, {
       algorithm: 'sha1',
       gameVersions,
@@ -171,7 +172,7 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
       return versions.find(v => v.version_type === 'release')
     }
     await Promise.allSettled(Object.values(updates).map(async (version) => {
-      const mod = modrinthTarget.find(m => m.modrinth!.projectId === version.project_id)
+      const mod = modrinthByProjectId.get(version.project_id)
       if (!mod) return
       const resolved = await resolveReleaseVersion(mod, version)
       if (resolved && resolved.id !== mod.modrinth?.versionId) {
