@@ -72,29 +72,29 @@
       <v-card class="overflow-hidden account-switcher-menu">
         <v-list density="compact" class="py-1" bg-color="transparent" role="menu" :aria-label="t('userAccount.add')">
           <v-list-item
-            v-for="u of users"
-            :key="u.id"
+            v-for="entry of accountEntries"
+            :key="entry.key"
             data-testid="account-item"
-            :class="{ 'bg-primary/10': u.id === userProfile.id }"
+            :class="{ 'bg-primary/10': entry.isCurrent }"
             class="rounded-lg mx-1 my-0.5"
-            :aria-current="u.id === userProfile.id ? 'true' : undefined"
-            @click="onSwitchUser(u.id)"
+            :aria-current="entry.isCurrent ? 'true' : undefined"
+            @click="onSwitchAccount(entry)"
           >
             <template #prepend>
               <PlayerAvatar
                 class="overflow-hidden rounded-full mr-3"
-                :src="u.profiles[u.selectedProfile]?.textures?.SKIN?.url"
+                :src="entry.profile?.textures?.SKIN?.url ?? ''"
                 :dimension="32"
               />
             </template>
             <v-list-item-title class="text-sm font-medium">
-              {{ u.profiles[u.selectedProfile]?.name || u.username }}
+              {{ entry.profile?.name || entry.user.username }}
             </v-list-item-title>
-            <v-list-item-subtitle class="text-xs" :class="isUserExpired(u) ? 'text-error' : ''">
-              {{ isUserExpired(u) ? t('user.tokenExpired') : getExpiryLabel(u) }}
+            <v-list-item-subtitle class="text-xs" :class="isUserExpired(entry.user) ? 'text-error' : ''">
+              {{ isUserExpired(entry.user) ? t('user.tokenExpired') : getExpiryLabel(entry.user) }}
             </v-list-item-subtitle>
             <template #append>
-              <v-icon v-if="u.id === userProfile.id" size="16" color="primary" aria-hidden="true">check</v-icon>
+              <v-icon v-if="entry.isCurrent" size="16" color="primary" aria-hidden="true">check</v-icon>
             </template>
           </v-list-item>
         </v-list>
@@ -135,7 +135,7 @@ import { kUserContext } from '@/composables/user'
 import { useUserMenuControl } from '@/composables/userMenu'
 import { injection } from '@/util/inject'
 import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserServiceKey } from '@xmcl/runtime-api'
-import type { UserProfile } from '@xmcl/runtime-api'
+import type { GameProfileAndTexture, UserProfile } from '@xmcl/runtime-api'
 
 const props = withDefaults(defineProps<{
   showRefresh?: boolean
@@ -199,12 +199,47 @@ function getExpiryLabel(u: UserProfile) {
   return t('user.tokenValidUntil') + ' · ' + mins + 'm'
 }
 
-function onSwitchUser(id: string) {
-  select(id)
+interface AccountEntry {
+  key: string
+  user: UserProfile
+  profile: GameProfileAndTexture | undefined
+  isCurrent: boolean
+}
+
+const accountEntries = computed<AccountEntry[]>(() => {
+  const entries: AccountEntry[] = []
+  for (const u of users.value) {
+    const profileIds = Object.keys(u.profiles)
+    if (profileIds.length === 0) {
+      entries.push({
+        key: u.id,
+        user: u,
+        profile: undefined,
+        isCurrent: u.id === userProfile.value.id,
+      })
+      continue
+    }
+    for (const pid of profileIds) {
+      entries.push({
+        key: `${u.id}:${pid}`,
+        user: u,
+        profile: u.profiles[pid],
+        isCurrent: u.id === userProfile.value.id && pid === u.selectedProfile,
+      })
+    }
+  }
+  return entries
+})
+
+async function onSwitchAccount(entry: AccountEntry) {
+  if (entry.profile && entry.user.selectedProfile !== entry.profile.id) {
+    await selectUserGameProfile(entry.user, entry.profile.id)
+  }
+  select(entry.user.id)
   userMenuOpen.value = false
 }
 
-const { refreshUser, removeUser } = useService(UserServiceKey)
+const { refreshUser, removeUser, selectUserGameProfile } = useService(UserServiceKey)
 const refreshingUser = ref(false)
 const removingUser = ref(false)
 const removeDialogShown = ref(false)
