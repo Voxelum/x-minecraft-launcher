@@ -172,6 +172,11 @@ diagnosis:
   missingVersion:
     message: Cliquez pour installer cette version
     name: La version {version} n'est pas installée !
+  unresolvedFiles:
+    description: >-
+      {count} fichier n'a pas pu être résolu lors de l'installation | {count}
+      fichiers n'ont pas pu être résolus lors de l'installation
+    title: Fichiers non résolus
   unzipFileNotFound:
     description: Impossible de trouver {file}
     title: Fichier Modpack introuvable
@@ -1564,6 +1569,24 @@ tutorial:
   userAccountDescription: Cliquez sur cette icône pour ajouter ou gérer votre compte Minecraft.
 universalDrop:
   unknownResource: Inconnu
+unresolvedFiles:
+  description: >-
+    Ces fichiers n'ont pas pu être téléchargés lors de l'installation.
+    Recherchez une source correspondante, installez les correspondances ou
+    ignorez des fichiers pour lancer malgré tout.
+  empty: Tous les fichiers sont résolus.
+  ignoreSelected: 'Ignorer {count}'
+  install: 'Installer {count} correspondances'
+  matched: Trouvé
+  noMatch: Introuvable
+  search: Rechercher des sources
+  source:
+    curseforge-name: CurseForge
+    dependency: Dépendance
+    modrinth-hash: Hash Modrinth
+    modrinth-name: Modrinth
+  title: Fichiers non résolus
+  via: 'via {source}'
 upstream:
   downgrade: Rétrograder
 user:

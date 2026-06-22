@@ -170,6 +170,11 @@ diagnosis:
   missingVersion:
     message: Бұл нұсқаны орнату үшін басыңыз
     name: '{version} нұсқасы орнатылмаған!'
+  unresolvedFiles:
+    description: >-
+      Орнату кезінде {count} файлды шешу мүмкін болмады | Орнату кезінде {count}
+      файлды шешу мүмкін болмады
+    title: Шешілмеген файлдар
   unzipFileNotFound:
     description: '{file} табылмады'
     title: Мод-пак файлы табылмады
@@ -1513,6 +1518,24 @@ tutorial:
   userAccountDescription: Minecraft тіркелгіңізді қосу немесе басқару үшін бұл белгішені басыңыз.
 universalDrop:
   unknownResource: Белгісіз
+unresolvedFiles:
+  description: >-
+    Бұл файлдарды орнату кезінде жүктеп алу мүмкін болмады. Сәйкес дереккөзді
+    іздеңіз, сәйкестіктерді орнатыңыз немесе бәрібір іске қосу үшін файлдарды
+    елемеңіз.
+  empty: Барлық файлдар шешілді.
+  ignoreSelected: '{count} елемеу'
+  install: '{count} сәйкестікті орнату'
+  matched: Сәйкес келді
+  noMatch: Табылмады
+  search: Дереккөздерді іздеу
+  source:
+    curseforge-name: CurseForge
+    dependency: Тәуелділік
+    modrinth-hash: Modrinth хэші
+    modrinth-name: Modrinth
+  title: Шешілмеген файлдар
+  via: '{source} арқылы'
 upstream:
   downgrade: Нұсқасын төмендету
   onlyShowCurrentVersion: Тек ағымдағы Minecraft нұсқасын көрсету

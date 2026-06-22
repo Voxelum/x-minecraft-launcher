@@ -171,6 +171,11 @@ diagnosis:
   missingVersion:
     message: Bu sürümü yüklemek için tıklayın
     name: '{version} sürümü yüklü değil!'
+  unresolvedFiles:
+    description: >-
+      Kurulum sırasında {count} dosya çözümlenemedi | Kurulum sırasında {count}
+      dosya çözümlenemedi
+    title: Çözümlenmemiş dosyalar
   unzipFileNotFound:
     description: '{file} bulunamadı'
     title: Mod paketi dosyası bulunamadı
@@ -1499,6 +1504,23 @@ tutorial:
       Siz veya arkadaşınız gruba bağlanamıyorsanız, manuel bağlan'a tıklayarak belirteci manuel olarak takas etmeyi deneyebilirsiniz. Bu da başarısız olursa, bu bir internet sorunu olabilir.
 universalDrop:
   unknownResource: Bilinmeyen
+unresolvedFiles:
+  description: >-
+    Bu dosyalar kurulum sırasında indirilemedi. Eşleşen bir kaynak arayın,
+    eşleşmeleri yükleyin veya yine de başlatmak için dosyaları yok sayın.
+  empty: Tüm dosyalar çözümlendi.
+  ignoreSelected: '{count} dosyayı yok say'
+  install: '{count} eşleşmeyi yükle'
+  matched: Eşleşti
+  noMatch: Bulunamadı
+  search: Kaynak ara
+  source:
+    curseforge-name: CurseForge
+    dependency: Bağımlılık
+    modrinth-hash: Modrinth karması
+    modrinth-name: Modrinth
+  title: Çözümlenmemiş dosyalar
+  via: '{source} aracılığıyla'
 upstream:
   downgrade: Sürüm Düşür
   onlyShowCurrentVersion: Sadece Mevcut Minecraft Sürümünü Göster

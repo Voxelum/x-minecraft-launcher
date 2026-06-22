@@ -150,6 +150,11 @@ diagnosis:
   missingVersion:
     message: Fare clic per installare questa versione
     name: La versione {version} non è installata!
+  unresolvedFiles:
+    description: >-
+      {count} file non è stato risolto durante l'installazione | {count} file
+      non sono stati risolti durante l'installazione
+    title: File non risolti
   unzipFileNotFound:
     description: Impossibile trovare {file}
     title: File modpack non trovato
@@ -1519,6 +1524,24 @@ tutorial:
   userAccountDescription: Fai clic su questa icona per aggiungere o gestire il tuo account Minecraft.
 universalDrop:
   unknownResource: Sconosciuto
+unresolvedFiles:
+  description: >-
+    Non è stato possibile scaricare questi file durante l'installazione. Cerca
+    una fonte corrispondente, installa le corrispondenze oppure ignora i file
+    per avviare comunque.
+  empty: Tutti i file sono stati risolti.
+  ignoreSelected: 'Ignora {count}'
+  install: 'Installa {count} corrispondenti'
+  matched: Corrispondente
+  noMatch: Non trovato
+  search: Cerca fonti
+  source:
+    curseforge-name: CurseForge
+    dependency: Dipendenza
+    modrinth-hash: Hash Modrinth
+    modrinth-name: Modrinth
+  title: File non risolti
+  via: 'tramite {source}'
 upstream:
   downgrade: Downgrade
   onlyShowCurrentVersion: Mostra solo la versione corrente di Minecraft

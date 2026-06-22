@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 82 (in 256 Vue files)
+**Total anchors:** 87 (in 257 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -86,6 +86,11 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `store-project-card` | [`xmcl-keystone-ui/src/components/StoreExploreCardModern.vue#L4`](../xmcl-keystone-ui/src/components/StoreExploreCardModern.vue#L4) |
 | `store-search` | [`xmcl-keystone-ui/src/views/StoreEntry.vue#L116`](../xmcl-keystone-ui/src/views/StoreEntry.vue#L116) |
 | `unbind-server-upstream` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L41`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L41) |
+| `unresolved-file-item` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L58`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L58) |
+| `unresolved-files-dialog` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L9`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L9) |
+| `unresolved-files-ignore` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L124`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L124) |
+| `unresolved-files-install` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L133`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L133) |
+| `unresolved-files-search` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L111`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L111) |
 | `use-shared-servers-list` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L8`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L8) |
 | `version-input-fabric` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L64`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L64) |
 | `version-input-forge` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L56`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L56) |

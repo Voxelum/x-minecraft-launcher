@@ -165,6 +165,9 @@ diagnosis:
   missingVersion:
     message: クリックしてこのバージョンをインストールします。
     name: バージョン {version} はインストールされていません!
+  unresolvedFiles:
+    description: インストール中に {count} 個のファイルを解決できませんでした
+    title: 未解決のファイル
   unzipFileNotFound:
     description: '{file}が見つかりません'
     title: ModPackファイルが見つかりません
@@ -1473,6 +1476,21 @@ tutorial:
   userAccountDescription: このアイコンをクリックしてMinecraftアカウントを追加/管理できます
 universalDrop:
   unknownResource: 未知
+unresolvedFiles:
+  description: これらのファイルはインストール中にダウンロードできませんでした。一致するソースを検索してインストールするか、ファイルを無視して起動してください。
+  empty: すべてのファイルが解決されました。
+  ignoreSelected: '{count} 件を無視'
+  install: '一致した {count} 件をインストール'
+  matched: 一致
+  noMatch: 見つかりません
+  search: ソースを検索
+  source:
+    curseforge-name: CurseForge
+    dependency: 依存関係
+    modrinth-hash: Modrinth ハッシュ
+    modrinth-name: Modrinth
+  title: 未解決のファイル
+  via: '{source} 経由'
 upstream:
   downgrade: ダウングレード
   onlyShowCurrentVersion: 現在のMinecraftバージョンのみ表示

@@ -104,6 +104,10 @@ export function useLaunchButton() {
 
       javaIssue,
       locale,
+      // Rebuild the facade when the diagnosis items themselves change (e.g. the
+      // unresolved-file count drops from 3 to 1). The `issues` bitmask stays
+      // the same in that case, so without this the cached `menu` text is stale.
+      launchMenuItems,
     ],
     ([launching, hasGameRunning, noUserLaunched, hasTaskRunning, issues]) => {
       console.log('update launch button facade')

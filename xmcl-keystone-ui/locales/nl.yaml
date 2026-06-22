@@ -171,6 +171,11 @@ diagnosis:
   missingVersion:
     message: Klik om deze versie te installeren
     name: De versie {version} is niet geïnstalleerd!
+  unresolvedFiles:
+    description: >-
+      {count} bestand kon tijdens de installatie niet worden gevonden | {count}
+      bestanden konden tijdens de installatie niet worden gevonden
+    title: Niet-opgeloste bestanden
   unzipFileNotFound:
     description: Kan {file} niet vinden
     title: Modpack-bestand niet gevonden
@@ -1522,6 +1527,24 @@ tutorial:
   userAccountDescription: Klik op dit pictogram om uw Minecraft-account toe te voegen of te beheren.
 universalDrop:
   unknownResource: Onbekend
+unresolvedFiles:
+  description: >-
+    Deze bestanden konden tijdens de installatie niet worden gedownload. Zoek
+    een passende bron, installeer de overeenkomsten of negeer bestanden om toch
+    te starten.
+  empty: Alle bestanden zijn opgelost.
+  ignoreSelected: '{count} negeren'
+  install: '{count} overeenkomsten installeren'
+  matched: Gevonden
+  noMatch: Niet gevonden
+  search: Bronnen zoeken
+  source:
+    curseforge-name: CurseForge
+    dependency: Afhankelijkheid
+    modrinth-hash: Modrinth-hash
+    modrinth-name: Modrinth
+  title: Niet-opgeloste bestanden
+  via: 'via {source}'
 upstream:
   downgrade: Downgraden
   onlyShowCurrentVersion: Alleen Huidige Minecraft Versie Tonen

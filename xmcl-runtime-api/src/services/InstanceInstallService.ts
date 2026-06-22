@@ -140,8 +140,12 @@ export interface InstanceInstallService {
    * Dismiss the unresolved files in the instance.
    * 
    * This method is used to remove the unresolved files as user is already handled them.
+   *
+   * @param path The instance path
+   * @param files The relative paths of the unresolved files to dismiss. If not
+   * provided, all unresolved files will be dismissed.
    */
-  dismissUnresolvedFiles(path: string): Promise<void>
+  dismissUnresolvedFiles(path: string, files?: string[]): Promise<void>
 }
 
 export const InstanceInstallServiceKey: ServiceKey<InstanceInstallService> = 'InstanceInstallService'

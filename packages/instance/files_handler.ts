@@ -335,7 +335,7 @@ export class InstanceFileOperationHandler {
    * Handle a file with link. If the file is existed in database, then it can be handled by link, return `true`
    */
   async #handleLink(file: InstanceFile, destination: string, sha1: string) {
-    if (file.downloads) {
+    if (file.downloads && file.downloads.length > 0) {
       if (file.downloads[0].startsWith('file://')) {
         const filePath = fileURLToPath(file.downloads[0])
         const fStat = await stat(filePath).catch(() => undefined)
@@ -421,7 +421,10 @@ export class InstanceFileOperationHandler {
 
     if (await this.#handleLink(file, destination, sha1)) return
 
-    if (!file.downloads) {
+    // An empty `downloads` array is just as unresolvable as a missing one.
+    // Accessing `downloads[0]` on it used to crash `#handleLink`; now it
+    // falls through to here and is reported as unresolvable instead.
+    if (!file.downloads || file.downloads.length === 0) {
       this.unresolvable.push(file)
       return
     }

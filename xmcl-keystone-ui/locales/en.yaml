@@ -211,6 +211,11 @@ diagnosis:
   missingVersion:
     message: Click to install this version
     name: The version {version} is not installed!
+  unresolvedFiles:
+    description: >-
+      {count} file could not be resolved during installation | {count} files
+      could not be resolved during installation
+    title: Unresolved files
   unzipFileNotFound:
     description: Cannot find {file}
     title: Modpack file not found
@@ -1860,6 +1865,23 @@ unauthenticatedWarning:
   title: Not Logged In
 universalDrop:
   unknownResource: Unknown
+unresolvedFiles:
+  description: >-
+    These files could not be downloaded during installation. Search for a
+    matching source, install the matches, or ignore files to launch anyway.
+  empty: All files are resolved.
+  ignoreSelected: 'Ignore {count}'
+  install: 'Install {count} matched'
+  matched: Matched
+  noMatch: Not found
+  search: Search sources
+  source:
+    curseforge-name: CurseForge
+    dependency: Dependency
+    modrinth-hash: Modrinth hash
+    modrinth-name: Modrinth
+  title: Unresolved files
+  via: 'via {source}'
 upstream:
   downgrade: Downgrade
   onlyShowCurrentVersion: Only Show Current Minecraft Version

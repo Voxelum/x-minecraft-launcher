@@ -196,6 +196,9 @@ diagnosis:
   missingVersion:
     message: 启动器将自动安装该版本
     name: 未安装 {version}
+  unresolvedFiles:
+    description: 安装时有 {count} 个文件无法解析
+    title: 未解析的文件
   unzipFileNotFound:
     description: 找不到{file}
     title: 找不到modpack文件
@@ -1658,6 +1661,21 @@ tutorial:
   userAccountDescription: 单击此图标可添加或管理您的 Minecraft 帐户。
 universalDrop:
   unknownResource: 无法解析
+unresolvedFiles:
+  description: 这些文件在安装时无法下载。搜索匹配的来源并安装匹配项，或忽略文件以照常启动。
+  empty: 所有文件均已解析。
+  ignoreSelected: '忽略 {count} 个'
+  install: '安装 {count} 个匹配项'
+  matched: 已匹配
+  noMatch: 未找到
+  search: 搜索来源
+  source:
+    curseforge-name: CurseForge
+    dependency: 依赖
+    modrinth-hash: Modrinth 哈希
+    modrinth-name: Modrinth
+  title: 未解析的文件
+  via: '通过 {source}'
 upstream:
   downgrade: 降级
   onlyShowCurrentVersion: 只显示适合当前 Minecraft 的版本

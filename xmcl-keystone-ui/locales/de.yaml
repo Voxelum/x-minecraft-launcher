@@ -189,6 +189,11 @@ diagnosis:
   missingVersion:
     message: Klicken Sie, um diese Version zu installieren
     name: Version {version} ist nicht installiert!
+  unresolvedFiles:
+    description: >-
+      {count} Datei konnte bei der Installation nicht aufgelöst werden | {count}
+      Dateien konnten bei der Installation nicht aufgelöst werden
+    title: Nicht aufgelöste Dateien
   unzipFileNotFound:
     description: Kann {file} nicht finden
     title: Modpack -Datei nicht gefunden
@@ -1668,6 +1673,24 @@ tutorial:
     Klicken Sie auf dieses Symbol, um ein Minecraft-Konto hinzuzufügen oder zu verwalten. ein Konto.
 universalDrop:
   unknownResource: Unbekannt
+unresolvedFiles:
+  description: >-
+    Diese Dateien konnten während der Installation nicht heruntergeladen
+    werden. Suche nach einer passenden Quelle, installiere die Treffer oder
+    ignoriere Dateien, um trotzdem zu starten.
+  empty: Alle Dateien sind aufgelöst.
+  ignoreSelected: '{count} ignorieren'
+  install: '{count} Treffer installieren'
+  matched: Gefunden
+  noMatch: Nicht gefunden
+  search: Quellen suchen
+  source:
+    curseforge-name: CurseForge
+    dependency: Abhängigkeit
+    modrinth-hash: Modrinth-Hash
+    modrinth-name: Modrinth
+  title: Nicht aufgelöste Dateien
+  via: 'über {source}'
 upstream:
   downgrade: Downgrade der Version
   onlyShowCurrentVersion: Nur die aktuelle Version von Minecraft anzeigen

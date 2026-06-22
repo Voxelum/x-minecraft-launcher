@@ -24,6 +24,7 @@
     <HomeLaunchMultiInstanceDialog />
     <HomeLaunchStatusDialog />
     <HomeInstanceInstallDialog />
+    <HomeUnresolvedFilesDialog />
     <AppCollectionDialog />
   </div>
 </template>
@@ -39,6 +40,7 @@ import { useInstanceServerStatus } from '../composables/serverStatus'
 import HomeHeader from './HomeHeader.vue'
 import HomeInstanceInstallDialog from './HomeInstanceInstallDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
+import HomeUnresolvedFilesDialog from './HomeUnresolvedFilesDialog.vue'
 import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import HomeLogDialog from './HomeLogDialog.vue'
 import AppCollectionDialog from './AppCollectionDialog.vue'

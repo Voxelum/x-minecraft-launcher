@@ -175,6 +175,11 @@ diagnosis:
   missingVersion:
     message: Kattints erre a verzióra a telepítéshez
     name: A {version} verzió nincs telepítve!
+  unresolvedFiles:
+    description: >-
+      {count} fájlt nem sikerült feloldani a telepítés során | {count} fájlt nem
+      sikerült feloldani a telepítés során
+    title: Feloldatlan fájlok
   unzipFileNotFound:
     description: Nem található {file}
     title: A modpack fájl nem található
@@ -1572,6 +1577,24 @@ tutorial:
   userAccountDescription: Erre az ikonra kattintva adhatod hozzá vagy kezelheted Minecraft-fiókodat.
 universalDrop:
   unknownResource: Ismeretlen
+unresolvedFiles:
+  description: >-
+    Ezeket a fájlokat nem sikerült letölteni a telepítés során. Keress
+    megfelelő forrást, telepítsd a találatokat, vagy hagyj figyelmen kívül
+    fájlokat az indításhoz.
+  empty: Minden fájl feloldva.
+  ignoreSelected: '{count} mellőzése'
+  install: '{count} találat telepítése'
+  matched: Találat
+  noMatch: Nem található
+  search: Források keresése
+  source:
+    curseforge-name: CurseForge
+    dependency: Függőség
+    modrinth-hash: Modrinth hash
+    modrinth-name: Modrinth
+  title: Feloldatlan fájlok
+  via: '{source} révén'
 upstream:
   downgrade: Visszaváltás
   onlyShowCurrentVersion: Csak az aktuális Minecraft verzió megjelenítése

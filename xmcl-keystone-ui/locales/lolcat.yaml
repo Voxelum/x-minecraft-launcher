@@ -168,6 +168,11 @@ diagnosis:
   missingVersion:
     message: CLICK TO INSTALL THIS VERSHUN
     name: TEH VERSHUN {version} IS NOT INSTALLED!
+  unresolvedFiles:
+    description: >-
+      {count} fil cudnt b rezolvd durin install | {count} filez cudnt b rezolvd
+      durin install
+    title: Unrezolvd Filez
   unzipFileNotFound:
     description: CANNOT FIND {file}
     title: MODPACK FILE NOT FOUND
@@ -1488,6 +1493,23 @@ tutorial:
       IF U OR UR FREN CANNOT CONNECT TO DA GROUP, U CAN TRY TO MANUALLY EXCHANGE DA TOKEN BY CLICKING MANUALLY CONNECT. IF THAT ALSO FAILED, IT MITE BE AN INTERNET ISSUE.
 universalDrop:
   unknownResource: UNKNOWN
+unresolvedFiles:
+  description: >-
+    Deez filez cudnt b downloaded durin install. Sniff out a matchin sourse,
+    install da matchez, or ignor filez 2 launch anyway.
+  empty: All filez r rezolvd! Yay!
+  ignoreSelected: 'Ignor {count}'
+  install: 'Install {count} matchd'
+  matched: Matchd
+  noMatch: No findz
+  search: Sniff sourcez
+  source:
+    curseforge-name: CurseForge
+    dependency: Dependinsy
+    modrinth-hash: Modrinth hash
+    modrinth-name: Modrinth
+  title: Unrezolvd Filez
+  via: 'via {source}'
 upstream:
   downgrade: DOWNGRADE
   onlyShowCurrentVersion: ONLY SHOW CURREN MINECWAFT VERSHUN

@@ -151,6 +151,11 @@ diagnosis:
     title: Instalación de instancia incompleta
   invalidJava:
     name: Ubicación de Java no válida.
+  unresolvedFiles:
+    description: >-
+      No se pudo resolver {count} archivo durante la instalación | No se
+      pudieron resolver {count} archivos durante la instalación
+    title: Archivos sin resolver
   unzipFileNotFound:
     description: No puedo encontrar {file}
     title: Archivo modpack no encontrado
@@ -1284,6 +1289,24 @@ tutorial:
   storeSearchResultDescription: Verá todos los resultados de búsqueda enumerados aquí.
 universalDrop:
   unknownResource: Desconocido
+unresolvedFiles:
+  description: >-
+    Estos archivos no se pudieron descargar durante la instalación. Busca una
+    fuente coincidente, instala las coincidencias o ignora archivos para
+    iniciar de todos modos.
+  empty: Todos los archivos están resueltos.
+  ignoreSelected: 'Ignorar {count}'
+  install: 'Instalar {count} coincidentes'
+  matched: Coincidente
+  noMatch: No encontrado
+  search: Buscar fuentes
+  source:
+    curseforge-name: CurseForge
+    dependency: Dependencia
+    modrinth-hash: Hash de Modrinth
+    modrinth-name: Modrinth
+  title: Archivos sin resolver
+  via: 'mediante {source}'
 upstream:
   downgrade: Bajar la versión
   onlyShowCurrentVersion: Mostrar sólo la versión actual de Minecraft

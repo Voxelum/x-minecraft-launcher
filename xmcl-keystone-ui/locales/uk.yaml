@@ -194,6 +194,11 @@ diagnosis:
   missingVersion:
     message: Натисніть, щоб встановити цю версію
     name: Версія {version} не встановлена!
+  unresolvedFiles:
+    description: >-
+      Не вдалося розв'язати {count} файл під час встановлення | Не вдалося
+      розв'язати {count} файлів під час встановлення
+    title: Нерозв'язані файли
   unzipFileNotFound:
     description: Не вдалося знайти {file}
     title: Файл модпаку не знайдено
@@ -1549,6 +1554,23 @@ tutorial:
     Натисніть цю іконку, щоб додати або керувати вашим обліковим записом Minecraft.
 universalDrop:
   unknownResource: Невідомий ресурс
+unresolvedFiles:
+  description: >-
+    Ці файли не вдалося завантажити під час встановлення. Знайдіть відповідне
+    джерело, установіть збіги або проігноруйте файли, щоб усе одно запустити.
+  empty: Усі файли розв'язано.
+  ignoreSelected: 'Ігнорувати {count}'
+  install: 'Установити збігів: {count}'
+  matched: Збіг
+  noMatch: Не знайдено
+  search: Шукати джерела
+  source:
+    curseforge-name: CurseForge
+    dependency: Залежність
+    modrinth-hash: Хеш Modrinth
+    modrinth-name: Modrinth
+  title: Нерозв'язані файли
+  via: 'через {source}'
 upstream:
   downgrade: Понизити версію
   onlyShowCurrentVersion: Показувати лише поточну версію Minecraft

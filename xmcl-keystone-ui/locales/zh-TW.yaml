@@ -173,6 +173,9 @@ diagnosis:
   missingVersion:
     message: 按一下以下載此版本
     name: 未安裝 {version}
+  unresolvedFiles:
+    description: 安裝時有 {count} 個檔案無法解析
+    title: 未解析的檔案
   unzipFileNotFound:
     description: 找不到 {file}
     title: 找不到模組包檔案
@@ -1547,6 +1550,21 @@ tutorial:
   userAccountDescription: 按一下此圖示可新增或管理您的 Minecraft 帳戶。
 universalDrop:
   unknownResource: 無法解析
+unresolvedFiles:
+  description: 這些檔案在安裝時無法下載。搜尋符合的來源並安裝相符項目，或忽略檔案以照常啟動。
+  empty: 所有檔案皆已解析。
+  ignoreSelected: '忽略 {count} 個'
+  install: '安裝 {count} 個相符項目'
+  matched: 已符合
+  noMatch: 找不到
+  search: 搜尋來源
+  source:
+    curseforge-name: CurseForge
+    dependency: 相依性
+    modrinth-hash: Modrinth 雜湊
+    modrinth-name: Modrinth
+  title: 未解析的檔案
+  via: '透過 {source}'
 upstream:
   downgrade: 降級
   onlyShowCurrentVersion: 只顯示適合目前 Minecraft 的版本

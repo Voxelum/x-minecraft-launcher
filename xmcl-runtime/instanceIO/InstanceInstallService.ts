@@ -413,11 +413,26 @@ export class InstanceInstallService extends AbstractService implements IInstance
           /* ignored */
         })
 
-        if (handlerWithTracker.unresolvable.length > 0) {
-          await writeFile(
-            join(instancePath, 'unresolved-files.json'),
-            JSON.stringify(handlerWithTracker.unresolvable),
-          )
+        // Reconcile the unresolved-files list. Merge the freshly-computed
+        // unresolvable files with the ones that were already pending from
+        // earlier runs. Every file we attempted in THIS run
+        // (targetState.files) is dropped from the existing list — those either
+        // succeeded (no longer unresolved) or are re-added right below if they
+        // failed again. Files that were not part of this run (e.g. a
+        // partial/diff install that only resolved a subset) are preserved so
+        // they are not silently lost.
+        const unresolvedFilesPath = join(instancePath, 'unresolved-files.json')
+        const attemptedPaths = new Set(targetState.files.map((f) => f.path))
+        const existingUnresolved: InstanceFile[] = await readJSON(unresolvedFilesPath).catch(
+          () => [],
+        )
+        const mergedUnresolved = existingUnresolved
+          .filter((f) => !attemptedPaths.has(f.path))
+          .concat(handlerWithTracker.unresolvable)
+        if (mergedUnresolved.length > 0) {
+          await writeFile(unresolvedFilesPath, JSON.stringify(mergedUnresolved))
+        } else {
+          await unlink(unresolvedFilesPath).catch(() => undefined)
         }
       })
 
@@ -716,7 +731,21 @@ export class InstanceInstallService extends AbstractService implements IInstance
     }
   }
 
-  async dismissUnresolvedFiles(path: string): Promise<void> {
-    await unlink(join(path, 'unresolved-files.json')).catch(() => undefined)
+  async dismissUnresolvedFiles(path: string, files?: string[]): Promise<void> {
+    const unresolvedFilesPath = join(path, 'unresolved-files.json')
+    if (files && files.length > 0) {
+      // Dismiss only the requested files, keeping the rest so the user can
+      // still resolve them later. Drop the file entirely once it is empty.
+      const current: InstanceFile[] = await readJSON(unresolvedFilesPath).catch(() => [])
+      const toDismiss = new Set(files)
+      const remaining = current.filter((f) => !toDismiss.has(f.path))
+      if (remaining.length > 0) {
+        await writeFile(unresolvedFilesPath, JSON.stringify(remaining))
+      } else {
+        await unlink(unresolvedFilesPath).catch(() => undefined)
+      }
+    } else {
+      await unlink(unresolvedFilesPath).catch(() => undefined)
+    }
   }
 }

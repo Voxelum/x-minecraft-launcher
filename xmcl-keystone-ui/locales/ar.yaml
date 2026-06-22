@@ -170,6 +170,10 @@ diagnosis:
   missingVersion:
     message: 'انقر لتثبيت هذا الإصدار'
     name: 'الإصدار {version} غير مثبت!'
+  unresolvedFiles:
+    description: >-
+      تعذّر حلّ {count} ملف أثناء التثبيت | تعذّر حلّ {count} ملفات أثناء التثبيت
+    title: ملفات غير محلولة
   unzipFileNotFound:
     description: 'لا يمكن العثور على {file}'
     title: 'لم يتم العثور على ملف Modpack'
@@ -1605,6 +1609,23 @@ tutorial:
   userAccountDescription: 'انقر فوق هذا الرمز لإضافة حساب Minecraft الخاص بك أو إدارته.'
 universalDrop:
   unknownResource: 'مجهول'
+unresolvedFiles:
+  description: >-
+    تعذّر تنزيل هذه الملفات أثناء التثبيت. ابحث عن مصدر مطابق، وثبّت المطابقات،
+    أو تجاهل الملفات للتشغيل على أي حال.
+  empty: تم حلّ جميع الملفات.
+  ignoreSelected: 'تجاهل {count}'
+  install: 'تثبيت {count} مطابقة'
+  matched: مطابق
+  noMatch: غير موجود
+  search: البحث عن مصادر
+  source:
+    curseforge-name: CurseForge
+    dependency: تبعية
+    modrinth-hash: تجزئة Modrinth
+    modrinth-name: Modrinth
+  title: ملفات غير محلولة
+  via: 'عبر {source}'
 upstream:
   downgrade: 'الرجوع إلى إصدار سابق'
   onlyShowCurrentVersion: 'عرض إصدار Minecraft الحالي فقط'

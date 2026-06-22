@@ -1,6 +1,8 @@
 import { injection } from '@/util/inject'
 import { getExpectVersion } from '@xmcl/runtime-api'
+import { useDialog } from './dialog'
 import { kInstanceFiles } from './instanceFiles'
+import { UnresolvedFilesDialogKey } from './instanceUpdate'
 import { LaunchMenuItem } from './launchButton'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
 
@@ -18,18 +20,23 @@ export const enum LaunchMenuItemIssue {
   BadOptifine = 1 << 9,
   UnzipFileNotFound = 1 << 10,
   PendingFiles = 1 << 11,
+  UnresolvedFiles = 1 << 12,
 }
 
 export function useInstanceLaunchMenuItems() {
   const { t } = useI18n()
   const { instruction } = injection(kInstanceVersionInstall)
+  const { show: showUnresolvedFilesDialog } = useDialog(UnresolvedFilesDialogKey)
   const {
     instanceInstallStatus,
     resumeInstall,
     isResumingInstall,
     isValidating,
     unzipFileNotFound,
+    unresolvedFiles,
   } = injection(kInstanceFiles)
+
+  const hasUnresolvedFiles = computed(() => (unresolvedFiles.value?.length ?? 0) > 0)
 
   const issues = computed(() => {
     let flags = LaunchMenuItemIssue.None
@@ -39,6 +46,10 @@ export function useInstanceLaunchMenuItems() {
       flags |= LaunchMenuItemIssue.UnzipFileNotFound
     } else if ((instanceInstallStatus.value?.pendingFileCount || 0) > 0) {
       flags |= LaunchMenuItemIssue.PendingFiles
+    }
+
+    if (hasUnresolvedFiles.value) {
+      flags |= LaunchMenuItemIssue.UnresolvedFiles
     }
 
     if (!currentInstruction) return flags
@@ -86,6 +97,10 @@ export function useInstanceLaunchMenuItems() {
           throw e
         }
       })
+      return
+    }
+    if (hasUnresolvedFiles.value) {
+      showUnresolvedFilesDialog()
     }
   }
 
@@ -115,6 +130,17 @@ export function useInstanceLaunchMenuItems() {
         description: t('diagnosis.instanceFiles.description', {
           counts: instanceInstallStatus.value?.pendingFileCount,
         }),
+      })
+    }
+
+    if (flags & LaunchMenuItemIssue.UnresolvedFiles) {
+      items.push({
+        title: t('diagnosis.unresolvedFiles.title'),
+        description: t('diagnosis.unresolvedFiles.description', {
+          count: unresolvedFiles.value?.length ?? 0,
+        }, unresolvedFiles.value?.length ?? 0),
+        icon: 'help_outline',
+        onClick: () => showUnresolvedFilesDialog(),
       })
     }
 
@@ -199,6 +225,8 @@ export function useInstanceLaunchMenuItems() {
   return {
     issues,
     fixInstanceFileIssue,
+    hasUnresolvedFiles,
+    showUnresolvedFilesDialog,
     loadingInstanceFiles,
     launchMenuItems,
   }
