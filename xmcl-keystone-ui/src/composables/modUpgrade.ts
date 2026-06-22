@@ -49,7 +49,7 @@ export type UpgradePlan = {
 
 export const kModUpgrade: InjectionKey<ReturnType<typeof useModUpgrade>> = Symbol('kModUpgrade')
 
-export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, instanceMods: Ref<ModFile[]>) {
+export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, instanceMods: Ref<ModFile[]>, updateMetadata: () => Promise<void>) {
   const { cache, dedupingInterval } = injection(kSWRVConfig)
   const plans = shallowRef({} as Record<string, UpgradePlan>)
   let operationId = ''
@@ -185,6 +185,12 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
   }
 
   const { refresh, refreshing, error } = useRefreshable<{ skipVersion: boolean; policy: 'curseforge' | 'modrinth' | 'curseforgeOnly' | 'modrinthOnly' }>(async ({ skipVersion, policy }) => {
+    // Refresh the mod platform metadata (modrinth/curseforge ids) first so that
+    // mods which haven't been resolved yet can be matched against the providers.
+    // Without this, a click on "check update" finds nothing and returns instantly.
+    await updateMetadata()
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
     const result: Record<string, UpgradePlan> = {}
 
     // Skip manually disabled mods (.disabled), but include incompatible mods (.incompatible)
