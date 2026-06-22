@@ -189,6 +189,8 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     // mods which haven't been resolved yet can be matched against the providers.
     // Without this, a click on "check update" finds nothing and returns instantly.
     await updateMetadata()
+    // `instanceMods` is throttled by 500ms (see useInstanceMods), so wait for the
+    // refreshed metadata to propagate into `instanceMods.value` before reading it.
     await new Promise((resolve) => setTimeout(resolve, 500))
 
     const result: Record<string, UpgradePlan> = {}
