@@ -511,7 +511,18 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       this.log(
         `Modify instance ${instancePath} (${options.name}) ${JSON.stringify(result, null, 4)}.`,
       )
-      this.state.instanceEdit({ ...result, path: instancePath })
+      // A reset-to-global field is represented as `undefined` in `result`.
+      // The mutation payload is broadcast to renderer processes over Electron
+      // IPC, whose structured clone serialization silently drops `undefined`
+      // properties — so the renderer would never learn the override was
+      // removed and its in-memory state would stay stale. Send `null` instead;
+      // `applyInstanceChanges` maps it back to `undefined` when applying.
+      const payload: Record<string, any> = { path: instancePath }
+      for (const key of Object.keys(result)) {
+        const value = (result as any)[key]
+        payload[key] = value === undefined ? null : value
+      }
+      this.state.instanceEdit(payload as any)
     }
   }
 

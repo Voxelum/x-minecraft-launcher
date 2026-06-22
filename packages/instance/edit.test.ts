@@ -461,6 +461,77 @@ describe('Instance Assignment Utils', () => {
       expect(Object.keys(changes)).toHaveLength(1)
     })
 
+    it('should treat null as an explicit reset of an optional field (IPC-safe)', async () => {
+      // Electron IPC drops `undefined` object properties, so the renderer sends
+      // `null` to reset an instance override to its global default. `null` must
+      // be handled exactly like `undefined`: the field is cleared.
+      const currentWithOverrides: InstanceDataWithTime = {
+        ...currentInstance,
+        showLog: true,
+        minMemory: 1000,
+        maxMemory: 8000,
+        vmOptions: ['-Xmx4G'],
+      }
+
+      const editOptions = {
+        showLog: null,
+        minMemory: null,
+        maxMemory: null,
+        vmOptions: null,
+      } as unknown as EditInstanceOptions
+
+      const changes = await computeInstanceEditChanges(
+        currentWithOverrides,
+        editOptions,
+        async (s) => s,
+      )
+
+      expect(Object.keys(changes).sort()).toEqual(
+        ['maxMemory', 'minMemory', 'showLog', 'vmOptions'].sort(),
+      )
+      expect(changes.showLog).toBeUndefined()
+      expect(changes.minMemory).toBeUndefined()
+      expect(changes.maxMemory).toBeUndefined()
+      expect(changes.vmOptions).toBeUndefined()
+
+      // Applying the changes must drop the keys so they disappear from instance.json
+      const applied: InstanceDataWithTime = { ...currentWithOverrides }
+      applyInstanceChanges(applied, changes)
+      expect(applied.showLog).toBeUndefined()
+      expect(applied.minMemory).toBeUndefined()
+      expect(applied.maxMemory).toBeUndefined()
+      expect(applied.vmOptions).toBeUndefined()
+      expect(JSON.stringify(applied)).not.toContain('showLog')
+    })
+
+    it('should not report a change when resetting an already-global field via null', async () => {
+      // hideLauncher is already undefined (global). Resetting it again must be a
+      // no-op so we don't write the file needlessly.
+      const editOptions = { hideLauncher: null } as unknown as EditInstanceOptions
+
+      const changes = await computeInstanceEditChanges(currentInstance, editOptions, async (s) => s)
+
+      expect(Object.keys(changes)).toHaveLength(0)
+    })
+
+    it('should treat null resolution as a reset', async () => {
+      const currentWithResolution: InstanceDataWithTime = {
+        ...currentInstance,
+        resolution: { width: 1920, height: 1080, fullscreen: false },
+      }
+
+      const editOptions = { resolution: null } as unknown as EditInstanceOptions
+
+      const changes = await computeInstanceEditChanges(
+        currentWithResolution,
+        editOptions,
+        async (s) => s,
+      )
+
+      expect('resolution' in changes).toBe(true)
+      expect(changes.resolution).toBeUndefined()
+    })
+
     it('should handle icon URL transformation', async () => {
       // Note: launcher:// URLs might not be properly parsed by URL constructor
       // This test documents the current behavior
@@ -626,6 +697,21 @@ describe('Instance Assignment Utils', () => {
       expect(instance.author).toBe('Updated Author')
       expect(instance.maxMemory).toBe(4096)
       expect(instance.description).toBe(instance.description) // unchanged
+    })
+
+    it('should clear a field when the change value is null (IPC reset marker)', () => {
+      // The service broadcasts a reset-to-global as `null` (so it survives
+      // Electron's structured-clone IPC). applyInstanceChanges must map it back
+      // to `undefined` so the override is removed and dropped on serialization.
+      instance.showLog = true
+      instance.maxMemory = 8000
+
+      applyInstanceChanges(instance, { showLog: null, maxMemory: null } as any)
+
+      expect(instance.showLog).toBeUndefined()
+      expect(instance.maxMemory).toBeUndefined()
+      expect(JSON.stringify(instance)).not.toContain('showLog')
+      expect(JSON.stringify(instance)).not.toContain('maxMemory')
     })
 
     it('should merge runtime changes properly', () => {
