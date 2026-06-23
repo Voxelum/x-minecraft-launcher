@@ -62,7 +62,7 @@
       </template>
     </v-card-text>
     <v-card-actions class="justify-between" v-if="button || additionButton">
-      <v-btn v-if="button" ref="btnElem" @click="emit('navigate')" variant="text">
+      <v-btn v-if="button" ref="btnElem" :data-testid="button.testid" @click="emit('navigate')" variant="text">
         <v-icon v-if="button.icon" start>
           {{ button.icon }}
         </v-icon>
@@ -74,6 +74,7 @@
       <v-btn
         v-if="additionButton"
         color="primary"
+        :data-testid="additionButton.testid"
         @click="emit('navigate-addition')"
         variant="text"
       >
@@ -114,8 +115,8 @@ defineProps<{
   title?: string
   subtitle?: string
   text: string
-  button?: { text: string; icon?: string }
-  additionButton?: { text: string; icon?: string }
+  button?: { text: string; icon?: string; testid?: string }
+  additionButton?: { text: string; icon?: string; testid?: string }
   refreshing: boolean
   error?: any
   icons: Array<{ name: string; icon?: string; color?: string }>

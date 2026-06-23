@@ -333,6 +333,18 @@ describe('Launcher', () => {
       expect(args[args.indexOf('--server') + 1]).toEqual('192.168.1.1')
       expect(args[args.indexOf('--port') + 1]).toEqual('25565')
     })
+    test('should generate correct command with quickPlaySingleplayer', async ({ mock }) => {
+      const args = await generateArguments({
+        version: '1.14.4',
+        gamePath: mock,
+        javaPath: '/test/java',
+        quickPlaySingleplayer: 'New World',
+      })
+      expect(args[args.indexOf('--quickPlaySingleplayer') + 1]).toEqual('New World')
+      // Should not contain server arguments
+      expect(args.indexOf('--server')).toBe(-1)
+      expect(args.indexOf('--quickPlayMultiplayer')).toBe(-1)
+    })
   })
 
   describe('#createQuickPlayMultiplayer', () => {

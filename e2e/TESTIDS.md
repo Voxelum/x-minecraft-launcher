@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 87 (in 257 Vue files)
+**Total anchors:** 91 (in 258 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -28,6 +28,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `custom-css-editor-textarea` | [`xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26`](../xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26) |
 | `custom-css-global-toggle` | [`xmcl-keystone-ui/src/components/AppearanceItems.vue#L296`](../xmcl-keystone-ui/src/components/AppearanceItems.vue#L296) |
 | `home-grid` | [`xmcl-keystone-ui/src/views/HomeGrid.vue#L2`](../xmcl-keystone-ui/src/views/HomeGrid.vue#L2) |
+| `home-server-card` | [`xmcl-keystone-ui/src/views/HomeServerCard.vue#L3`](../xmcl-keystone-ui/src/views/HomeServerCard.vue#L3) |
+| `home-world-card` | [`xmcl-keystone-ui/src/views/HomeWorldCard.vue#L3`](../xmcl-keystone-ui/src/views/HomeWorldCard.vue#L3) |
 | `install-instance-confirm` | [`xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L252`](../xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L252) |
 | `install-version-confirm` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L97`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L97) |
 | `install-version-dialog` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L4`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L4) |
@@ -40,9 +42,11 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `instance-server-edit-remove` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L124`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L124) |
 | `instance-server-edit-save` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L143`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L143) |
 | `launch-button` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L17`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L17) |
+| `launch-button-menu` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L59`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L59) |
 | `launch-target-client` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L99`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L99) |
 | `launch-target-server` | [`xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41`](../xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41) |
 | `launch-to-server` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L57`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L57) |
+| `launch-to-world` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L94`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L94) |
 | `login-authority` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L25`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L25) |
 | `login-password` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L74`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L74) |
 | `login-submit` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L130`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L130) |
@@ -88,9 +92,9 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `unbind-server-upstream` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L41`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L41) |
 | `unresolved-file-item` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L58`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L58) |
 | `unresolved-files-dialog` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L9`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L9) |
-| `unresolved-files-ignore` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L124`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L124) |
-| `unresolved-files-install` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L133`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L133) |
-| `unresolved-files-search` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L111`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L111) |
+| `unresolved-files-ignore` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L126`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L126) |
+| `unresolved-files-install` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L135`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L135) |
+| `unresolved-files-search` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L113`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L113) |
 | `use-shared-servers-list` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L8`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L8) |
 | `version-input-fabric` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L64`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L64) |
 | `version-input-forge` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L56`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L56) |

@@ -46,7 +46,7 @@
       </v-list>
     </v-menu>
     <v-menu
-      v-if="serverList.length > 0"
+      v-if="serverList.length > 0 || worldList.length > 0"
       location="start"
       :close-on-content-click="true"
       open-on-hover
@@ -63,26 +63,53 @@
         </v-list-item>
       </template>
       <v-list v-roving-tabindex role="menu" min-width="220">
-        <v-list-item
-          v-for="server in serverList"
-          :key="server.ip"
-          :title="server.name || server.ip"
-          :subtitle="server.ip"
-          @click="onLaunchToServer(server)"
-        >
-          <template #prepend>
-            <img
-              v-if="server.icon"
-              class="overflow-hidden rounded mr-3"
-              :src="server.icon"
-              width="28"
-              height="28"
-            >
-            <v-icon v-else size="20" class="mr-3">
-              dns
-            </v-icon>
-          </template>
-        </v-list-item>
+        <template v-if="serverList.length > 0">
+          <v-list-subheader>{{ t('server.serversListTitle') }}</v-list-subheader>
+          <v-list-item
+            v-for="server in serverList"
+            :key="server.ip"
+            :title="server.name || server.ip"
+            :subtitle="server.ip"
+            @click="onLaunchToServer(server)"
+          >
+            <template #prepend>
+              <img
+                v-if="server.icon"
+                class="overflow-hidden rounded mr-3"
+                :src="server.icon"
+                width="28"
+                height="28"
+              >
+              <v-icon v-else size="20" class="mr-3">
+                dns
+              </v-icon>
+            </template>
+          </v-list-item>
+        </template>
+        <template v-if="worldList.length > 0">
+          <v-list-subheader>{{ t('save.name', 2) }}</v-list-subheader>
+          <v-list-item
+            v-for="world in worldList"
+            :key="world.path"
+            data-testid="launch-to-world"
+            :title="world.title"
+            :subtitle="world.subtitle"
+            @click="onLaunchToWorld(world)"
+          >
+            <template #prepend>
+              <img
+                v-if="world.icon"
+                class="overflow-hidden rounded mr-3"
+                :src="world.icon"
+                width="28"
+                height="28"
+              >
+              <v-icon v-else size="20" class="mr-3">
+                map
+              </v-icon>
+            </template>
+          </v-list-item>
+        </template>
       </v-list>
     </v-menu>
     <v-list-item v-if="env && env.os !== 'osx'" :title="t('launch.createShortcut')" @click="onCreateShortcut">
@@ -101,6 +128,7 @@ import { useDialog } from '@/composables/dialog'
 import { kEnvironment } from '@/composables/environment';
 import { kInstance } from '@/composables/instance';
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
+import { kInstanceSave } from '@/composables/instanceSave'
 import { kInstanceServerInfo } from '@/composables/instanceServerInfo'
 import { kServerStatusCache } from '@/composables/serverStatus'
 import { kUserContext } from '@/composables/user';
@@ -116,6 +144,7 @@ defineProps<{}>()
 const { serverCount, kill, launch, launchAs, killPid, gameProcesses } = injection(kInstanceLaunch)
 const { users, userProfile } = injection(kUserContext)
 const { servers } = injection(kInstanceServerInfo)
+const { saves } = injection(kInstanceSave)
 const { path, name, instance } = injection(kInstance)
 const serverStatusCache = injection(kServerStatusCache)
 
@@ -169,6 +198,24 @@ const serverList = computed(() => {
 
 function onLaunchToServer(server: { host: string; port?: number }) {
   launch('client', { server: { host: server.host, port: server.port } })
+}
+
+// Local worlds the user can jump straight into via quick play, most recently
+// played first.
+const worldList = computed(() => {
+  return [...saves.value]
+    .sort((a, b) => (b.lastPlayed ?? 0) - (a.lastPlayed ?? 0))
+    .map((s) => ({
+      path: s.path,
+      name: s.name,
+      title: s.levelName || s.name,
+      subtitle: s.gameVersion || '',
+      icon: s.icon?.replace(/\\/g, '\\\\') || '',
+    }))
+})
+
+function onLaunchToWorld(world: { name: string }) {
+  launch('client', { world: world.name })
 }
 
 const text = computed(() => {

@@ -56,6 +56,7 @@
       <template #activator="{ props: activatorProps }">
         <v-btn
           :disabled="isValidating"
+          data-testid="launch-button-menu"
           class="min-w-unset! max-w-5! px-0! btn-right"
           :color="color"
           :size="compact ? 'large' : 'x-large'"

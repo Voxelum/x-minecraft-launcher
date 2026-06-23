@@ -112,6 +112,12 @@ export interface LaunchOption {
    */
   quickPlayMultiplayer?: string
   /**
+   * Directly launch into a single player world (for newer Minecraft versions)
+   * The value is the save folder name (the directory name under `saves/`).
+   * This will use --quickPlaySingleplayer.
+   */
+  quickPlaySingleplayer?: string
+  /**
    * Resolution. This will add --height & --width or --fullscreen to the java arguments
    */
   resolution?: { width?: number; height?: number; fullscreen?: boolean }
@@ -929,6 +935,9 @@ export async function generateArguments(options: LaunchOption) {
   }
   if (options.quickPlayMultiplayer) {
     cmd.push('--quickPlayMultiplayer', options.quickPlayMultiplayer)
+  }
+  if (options.quickPlaySingleplayer) {
+    cmd.push('--quickPlaySingleplayer', options.quickPlaySingleplayer)
   }
   if (options.server) {
     cmd.push('--server', options.server.ip)

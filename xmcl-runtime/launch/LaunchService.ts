@@ -267,6 +267,10 @@ export class LaunchService extends AbstractService implements ILaunchService {
       launchOptions.quickPlayMultiplayer = `${options.server.host}${options.server.port ? `:${options.server.port}` : ''}`
     }
 
+    if (options.world) {
+      launchOptions.quickPlaySingleplayer = options.world
+    }
+
     return launchOptions
   }
 

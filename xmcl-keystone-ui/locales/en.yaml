@@ -609,6 +609,7 @@ launch:
   launchAnyway: Launch Anyway
   launchAs: Launch as
   launchTo: Launch to
+  play: Play
 launchBlocked:
   launchBadVersion:
     description: The version {version} json is breaking. Maybe re-install this version?
@@ -1326,6 +1327,7 @@ save:
   useCurrent: Use current world
   useMouseRotate: Use mouse to rotate view
   useScrollZoom: Use scroll wheel to zoom
+  world: World
 screenshots:
   empty: You don't have any screenshots
   gallery: Screenshot Gallery

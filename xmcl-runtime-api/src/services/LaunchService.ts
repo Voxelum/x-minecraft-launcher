@@ -13,7 +13,7 @@ interface LaunchServiceEventMap {
     forge: string
     fabricLoader: string
   } & LaunchOptions
-  'minecraft-exit': LaunchOptions & { 
+  'minecraft-exit': LaunchOptions & {
     pid: number
     code?: number
     signal?: string
@@ -64,6 +64,11 @@ export interface LaunchOptions {
     host: string
     port?: number
   }
+  /**
+   * Override to directly launch into a single player world. The value is the
+   * save folder name (the directory name under the instance's `saves/`).
+   */
+  world?: string
   /**
    * Support yushi's yggdrasil agent https://github.com/to2mbn/authlib-injector/wiki
    */
@@ -136,7 +141,7 @@ export interface LaunchOptions {
   disableElyByAuthlib?: boolean
 
   nogui?: boolean
-  
+
   /**
    * Resolution settings for Minecraft
    */

@@ -54,6 +54,7 @@
           persistent
         />
         <HomeServerCard v-else-if="isType(item.i, CardType.Server)" />
+        <HomeWorldCard v-else-if="isType(item.i, CardType.World)" />
       </GridItem>
     </GridLayout>
   </div>
@@ -73,9 +74,15 @@ import HomeSavesCard from './HomeSavesCard.vue'
 import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeServerCard from './HomeServerCard.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
+import HomeWorldCard from './HomeWorldCard.vue'
+import { kInstanceSave } from '@/composables/instanceSave'
+import { kInstanceServerInfo } from '@/composables/instanceServerInfo'
+import { parseServerAddress } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 const { instance } = injection(kInstance)
+const { saves } = injection(kInstanceSave)
+const { servers } = injection(kInstanceServerInfo)
 
 enum CardType {
   Mod,
@@ -84,6 +91,7 @@ enum CardType {
   Save,
   Screenshots,
   Server,
+  World,
 }
 
 /** The hardcoded, authoritative list of cards. The rendered layout is
@@ -95,6 +103,7 @@ const CARD_TYPES = [
   CardType.Save,
   CardType.Screenshots,
   CardType.Server,
+  CardType.World,
 ]
 
 const cardIcon: Record<number, string> = {
@@ -104,6 +113,7 @@ const cardIcon: Record<number, string> = {
   [CardType.Save]: 'map',
   [CardType.Screenshots]: 'image',
   [CardType.Server]: 'dns',
+  [CardType.World]: 'map',
 }
 
 const cardLabel: Record<number, () => string> = {
@@ -113,6 +123,7 @@ const cardLabel: Record<number, () => string> = {
   [CardType.Save]: () => t('save.name'),
   [CardType.Screenshots]: () => t('screenshots.gallery'),
   [CardType.Server]: () => t('server.serversListTitle'),
+  [CardType.World]: () => t('save.world'),
 }
 
 provide(
@@ -174,6 +185,7 @@ const DEFAULTS: Record<Breakpoint, Partial<Record<CardType, GridGeom>>> = {
     [CardType.ShaderPack]: { x: 6, y: 0, w: 3, h: 4, minW: 2, minH: 4 },
     [CardType.Screenshots]: { x: 3, y: 4, w: 6, h: 5, minW: 3, minH: 4 },
     [CardType.Server]: { x: 0, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.World]: { x: 3, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
   },
   md: {
     [CardType.Mod]: { x: 0, y: 0, w: 3, h: 9, minW: 2, minH: 4 },
@@ -182,6 +194,7 @@ const DEFAULTS: Record<Breakpoint, Partial<Record<CardType, GridGeom>>> = {
     [CardType.ShaderPack]: { x: 6, y: 0, w: 3, h: 4, minW: 2, minH: 4 },
     [CardType.Screenshots]: { x: 3, y: 4, w: 6, h: 5, minW: 3, minH: 4 },
     [CardType.Server]: { x: 0, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.World]: { x: 3, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
   },
   sm: {
     [CardType.Mod]: { x: 0, y: 0, w: 2, h: 6, minW: 2, minH: 4 },
@@ -190,6 +203,7 @@ const DEFAULTS: Record<Breakpoint, Partial<Record<CardType, GridGeom>>> = {
     [CardType.Save]: { x: 0, y: 6, w: 2, h: 4, minW: 2, minH: 4 },
     [CardType.Screenshots]: { x: 4, y: 0, w: 2, h: 10, minW: 2, minH: 4 },
     [CardType.Server]: { x: 0, y: 10, w: 2, h: 5, minW: 2, minH: 4 },
+    [CardType.World]: { x: 2, y: 10, w: 2, h: 5, minW: 2, minH: 4 },
   },
   xs: {
     [CardType.Mod]: { x: 0, y: 0, w: 2, h: 6, minW: 2, minH: 4 },
@@ -198,6 +212,7 @@ const DEFAULTS: Record<Breakpoint, Partial<Record<CardType, GridGeom>>> = {
     [CardType.ShaderPack]: { x: 2, y: 0, w: 2, h: 4, minW: 2, minH: 4 },
     [CardType.Screenshots]: { x: 2, y: 8, w: 2, h: 4, minW: 1, minH: 4 },
     [CardType.Server]: { x: 0, y: 12, w: 2, h: 5, minW: 2, minH: 4 },
+    [CardType.World]: { x: 2, y: 12, w: 2, h: 5, minW: 2, minH: 4 },
   },
   xxs: {
     [CardType.Mod]: { x: 0, y: 0, w: 2, h: 6, minW: 2, minH: 4 },
@@ -206,6 +221,7 @@ const DEFAULTS: Record<Breakpoint, Partial<Record<CardType, GridGeom>>> = {
     [CardType.ShaderPack]: { x: 2, y: 0, w: 2, h: 4, minW: 2, minH: 4 },
     [CardType.Screenshots]: { x: 2, y: 8, w: 2, h: 4, minW: 1, minH: 4 },
     [CardType.Server]: { x: 0, y: 12, w: 2, h: 5, minW: 2, minH: 4 },
+    [CardType.World]: { x: 2, y: 12, w: 2, h: 5, minW: 2, minH: 4 },
   },
 }
 
@@ -231,12 +247,17 @@ function getBreakpoint(width: number): Breakpoint {
 
 /**
  * Whether a card type should be rendered at all, independent of the user's
- * hidden flag. The Server card only exists when the instance has a pinned
- * server to ping.
+ * hidden flag. The Server card needs at least one server (the pinned one or an
+ * entry in `servers.dat`); the World card needs at least one local save.
  */
-const hasPinnedServer = computed(() => !!instance.value?.server?.host)
+const hasServer = computed(() => {
+  if (instance.value?.server?.host) return true
+  return servers.value.some((s) => !!parseServerAddress(s.ip))
+})
+const hasWorld = computed(() => saves.value.length > 0)
 function isAvailable(type: CardType) {
-  if (type === CardType.Server) return hasPinnedServer.value
+  if (type === CardType.Server) return hasServer.value
+  if (type === CardType.World) return hasWorld.value
   return true
 }
 
@@ -292,9 +313,10 @@ onMounted(() => {
   }
 })
 
-// Rebuild when the pinned server appears or disappears so the Server card
-// shows up / drops out without a reload.
-watch(hasPinnedServer, () => {
+// Rebuild when the available cards change (a server appears/disappears, or a
+// local world is added/removed) so the Server/World cards show up or drop out
+// without a reload.
+watch([hasServer, hasWorld], () => {
   layout.value = buildLayout(currentBreakpoint.value)
 })
 
