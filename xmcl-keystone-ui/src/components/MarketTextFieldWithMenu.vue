@@ -11,23 +11,27 @@
       :placeholder="placeholder"
       :game-version="gameVersion !== runtime.minecraft ? gameVersion : undefined"
       :category="!!curseforgeCategory || modrinthCategories.length > 0"
-      :icon="tab === 0 ? 'file_download' : tab === 1 ? 'search' : 'favorite'"
+      :icon="tab === 0 ? 'storefront' : tab === 1 ? 'inventory_2' : 'favorite'"
       @clear="onClear"
       @clear-version="emit('update:gameVersion', runtime.minecraft)"
       @input="emit('update:keyword', $event)"
       @clear-category="onClear"
+      @blur="onFieldBlur"
     />
-    <v-menu
+    <v-overlay
       v-model="showMenu"
-      :target="anchor"
-      location="bottom"
-      min-width="480"
-      :close-on-click="false"
+      attach="#right-pane"
+      contained
+      scrim
+      transition="fade-transition"
       :close-on-content-click="false"
+      class="market-filter-overlay"
+      content-class="market-filter-overlay-content"
     >
       <v-card
         ref="menuCard"
-        class="overflow-auto max-h-[80vh] flex flex-col modern-filter-card"
+        rounded="0"
+        class="market-filter-card overflow-auto flex flex-col modern-filter-card"
         @mousedown.prevent
       >
         <v-tabs
@@ -37,19 +41,20 @@
           slider-color="primary"
           align-tabs="center"
           fixed-tabs
+          style="min-height: 48px;"
         >
-          <v-tab :value="0">
+          <v-tab :value="0" prepend-icon="storefront">
             {{ t('search.market') }}
           </v-tab>
-          <v-tab :value="1">
+          <v-tab :value="1" prepend-icon="inventory_2">
             {{ t('search.local') }}
           </v-tab>
-          <v-tab :value="2">
+          <v-tab :value="2" prepend-icon="favorite">
             {{ t('search.favorate') }}
           </v-tab>
         </v-tabs>
 
-        <v-tabs-window v-model="tab" class="overflow-auto flex">
+        <v-tabs-window v-model="tab" class="overflow-auto flex min-h-0 flex-grow">
           <v-tabs-window-item :value="0" class="tab">
             <div class="filter-subheader flex">
               {{ t('modrinth.sort.title') }}
@@ -257,7 +262,7 @@
           </v-tabs-window-item>
         </v-tabs-window>
       </v-card>
-    </v-menu>
+    </v-overlay>
   </div>
 </template>
 <script setup lang="ts">
@@ -349,6 +354,18 @@ function onTabFromField(e: KeyboardEvent) {
     e.preventDefault()
     first.focus()
   }
+}
+
+/**
+ * Close the filter menu when the search input loses focus, unless focus is
+ * moving into the menu card itself (e.g. via Tab navigation or clicking a
+ * control inside the menu).
+ */
+function onFieldBlur(e: FocusEvent) {
+  const next = e.relatedTarget as HTMLElement | null
+  const card = (menuCard.value as any)?.$el as HTMLElement | undefined
+  if (next && card && card.contains(next)) return
+  showMenu.value = false
 }
 
 const { versions } = useMinecraftVersions()
@@ -534,10 +551,36 @@ function getIcon(loader: string) {
 .v-slide-group__next {
   min-width: 28px;
 }
+.market-filter-overlay-content .v-window__container {
+  width: 100%;
+}
+.market-filter-overlay-content {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  transform: none !important;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.market-filter-card {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-width: 0;
+  overflow: hidden !important;
+}
 </style>
 <style scoped>
 .tab {
-  @apply px-2 h-120 w-120 max-h-120 max-w-120 overflow-auto;
+  @apply px-2 w-full min-w-0 max-h-full overflow-y-auto overflow-x-hidden;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .active-btn {

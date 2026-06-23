@@ -72,7 +72,7 @@
         <div
           key="market-right"
           id="right-pane"
-          class="flex flex-col h-full flex-grow-0 overflow-y-auto overflow-x-hidden market-right"
+          class="relative flex flex-col h-full flex-grow-0 overflow-y-auto overflow-x-hidden market-right"
         >
           <slot
             name="content"

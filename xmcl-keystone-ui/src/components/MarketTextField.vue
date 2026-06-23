@@ -65,6 +65,7 @@ const emit = defineEmits<{
   (event: 'clear'): void
   (event: 'clear-version'): void
   (event: 'clear-category'): void
+  (event: 'blur', e: FocusEvent): void
   (event: 'update:localOnly', v: boolean): void
 }>()
 
@@ -80,7 +81,7 @@ const clear = () => {
 }
 
 function onBlur(e: FocusEvent) {
-  // searchTextFieldFocused.value = false
+  emit('blur', e)
 }
 
 function onClickField(e: MouseEvent) {

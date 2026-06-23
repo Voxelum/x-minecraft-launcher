@@ -210,7 +210,7 @@ const { show } = useDialog('collection')
   justify-content: center;
   text-align: center;
   padding: 32px 16px;
-  min-height: 280px;
+  min-height: 100%;
 }
 
 .modrinth-login-prompt__icon {
