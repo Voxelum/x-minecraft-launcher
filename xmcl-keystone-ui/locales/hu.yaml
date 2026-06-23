@@ -738,6 +738,7 @@ modInstall:
   checkedUpgrade: Frissítés ellenőrizve
   currentVersion: Kiválasztott verzió
   dependencyHint: Egy másik verzió {version} telepítése
+  releaseOnly: Az alfa és béta verziók kihagyása frissítéskor
   installDependencies: Hiányzó függőségek telepítése
   installHint: Telepíti a {file} fájlt a {dependencies} függőségekkel együtt
   noVersionSupported: A Mod csak a Minecraftot támogatja {supported}.

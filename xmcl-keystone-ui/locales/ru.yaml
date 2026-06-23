@@ -750,6 +750,7 @@ modInstall:
   checkedUpgrade: Обновления для модов проверены
   currentVersion: Выбранная версия
   dependencyHint: Установлена ​​другая версия {version}
+  releaseOnly: Игнорировать альфа- и бета-версии при обновлении
   installDependencies: Установить недостающие зависимости
   installHint: Будет установлен файл {file} с зависимостями {dependents}
   noVersionSupported: Мод поддерживает только Minecraft {supported}.

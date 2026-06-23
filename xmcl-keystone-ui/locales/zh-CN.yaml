@@ -773,6 +773,7 @@ modInstall:
   checkedUpgrade: 已刷新更新列表
   currentVersion: 已选版本
   dependencyHint: 安装了其他版本 {version}
+  releaseOnly: 更新时忽略 alpha 和 beta 版本
   installDependencies: 安装缺少的依赖项
   installHint: 安装 {file} 个文件和 {dependencies} 个依赖文件
   noVersionSupported: Mod 仅支持 Minecraft {supported}。

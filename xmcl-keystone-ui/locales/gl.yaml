@@ -707,6 +707,7 @@ modInstall:
   checkedUpgrade: Upgrade gecontroleerd
   currentVersion: Geselecteerde Versie
   dependencyHint: Installeerde andere versie {version}
+  releaseOnly: Ignorar as versións alfa e beta ao actualizar
   installDependencies: Installeer Ontbrekende Afhankelijkheden
   installHint: Zal {file} bestand installeren met {dependencies} afhankelijkheden
   noVersionSupported: Mod ondersteunt alleen Minecraft {supported}.

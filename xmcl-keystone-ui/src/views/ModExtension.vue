@@ -7,7 +7,7 @@
       <div class="flex-grow" />
       <div class="invisible-scroll flex flex-grow justify-end gap-4 overflow-x-auto">
         <MarketTextFieldWithMenu
-          :placeholder="t('mod.search')"
+          :placeholder="t('mod.search') + ' / ' + (source === 'remote' ? t('search.market') : source === 'local' ? t('search.local') : t('search.favorate')) "
           v-model:keyword="keywordBuffer"
           v-model:curseforge-category="curseforgeCategory"
           v-model:modrinth-categories="modrinthCategories"

@@ -83,7 +83,7 @@ export default defineComponent({
     const searchModel = useSearchModel(instance.runtime)
     provide(kSearchModel, searchModel)
     const modsSearch = useModsSearch(instance.path, instance.runtime, instanceMods.mods, instanceMods.isValidating, settings.state, modrinthAPI, searchModel)
-    const modUpgrade = useModUpgrade(instance.path, instance.runtime, instanceMods.mods)
+    const modUpgrade = useModUpgrade(instance.path, instance.runtime, instanceMods.mods, instanceMods.updateMetadata)
 
     const resourcePackSearch = useResourcePackSearch(resourcePacks.enabled, resourcePacks.disabled, modrinthAPI, searchModel)
     const shaderPackSearch = useShaderPackSearch(shaderPacks.shaderPacks, modrinthAPI, searchModel)
@@ -120,7 +120,7 @@ export default defineComponent({
     provide(kResourcePackSearch, resourcePackSearch)
     provide(kShaderPackSearch, shaderPackSearch)
     provide(kModsSearch, modsSearch)
-    provide(kModDependenciesCheck, useModDependenciesCheck(instance.path, instance.runtime, instanceMods.mods, instanceVersion.refreshResolvedVersion))
+    provide(kModDependenciesCheck, useModDependenciesCheck(instance.path, instance.runtime, instanceMods.mods, instanceMods.updateMetadata))
     provide(kModLibCleaner, useModLibCleaner(instanceMods.mods, instanceMods.allowLoaders))
     provide(kSaveSearch, useSavesSearch(saves.saves, saves.sharedSaves, searchModel))
     provide(kModUpgrade, modUpgrade)

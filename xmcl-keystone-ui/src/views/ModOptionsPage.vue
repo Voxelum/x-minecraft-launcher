@@ -109,6 +109,7 @@
       </template>
     </SettingItem>
     <SettingItemCheckbox v-model="skipVersion" :title="t('modInstall.skipVersion')" />
+    <SettingItemCheckbox v-model="releaseOnly" :title="t('modInstall.releaseOnly')" />
     <SettingItem>
       <template #action>
         <div class="flex gap-1">
@@ -161,6 +162,7 @@ const {
   plans,
   error: upgradeError,
   skipVersion,
+  releaseOnly,
   upgradePolicy,
   refresh: checkUpgrade,
   refreshing: checkingUpgrade,
@@ -173,6 +175,7 @@ function onCheckUpgrade() {
   const policy = upgradePolicy.value as any
   checkUpgrade({
     skipVersion: skipVersion.value,
+    releaseOnly: releaseOnly.value,
     policy,
   })
 }

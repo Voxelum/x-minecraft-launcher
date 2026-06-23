@@ -753,6 +753,7 @@ modInstall:
   checkedUpgrade: 'تم فحص الترقية'
   currentVersion: 'النسخة المختارة'
   dependencyHint: 'تم تثبيت إصدار آخر {version}'
+  releaseOnly: تجاهل إصدارات ألفا وبيتا عند التحديث
   installDependencies: 'تثبيت التبعيات المفقودة'
   installHint: 'سيتم تثبيت ملف {file} بتبعيات {dependencies}'
   noVersionSupported: 'يدعم التعديل لعبة Minecraft {supported} فقط.'

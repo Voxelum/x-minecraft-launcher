@@ -704,6 +704,7 @@ modInstall:
   checkedUpgrade: Aggiornamento controllato
   currentVersion: Versione Selezionata
   dependencyHint: Installata un'altra versione {version}
+  releaseOnly: Ignora le versioni alpha e beta durante l'aggiornamento
   installDependencies: Installa le dipendenze mancanti
   installHint: Verrà installato il file {file} con {dependencies} dipendenze
   noVersionSupported: la mod supporta solo Minecraft {supported}.
