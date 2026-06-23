@@ -4,7 +4,7 @@ import { basename, join } from 'path'
 import { LauncherApp } from '~/app'
 import { InstanceService } from '~/instance'
 import { kMarketProvider } from '~/market'
-import { Resource, ResourceDomain } from '@xmcl/resource'
+import { Resource, ResourceDomain, UpdateResourcePayload } from '@xmcl/resource'
 import { kResourceManager, kResourceWorker } from '~/resource'
 import { AbstractService, ServiceStateManager } from '~/service'
 import { isSystemError } from '@xmcl/utils'
@@ -46,7 +46,7 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
     if (validFiles.length !== files.length) {
       this.warn(new Error(`Dropping ${files.length - validFiles.length} invalid (non-string) entries from install request to ${dir}`))
     }
-    return await Promise.all(validFiles.map(async (src) => {
+    const dests = await Promise.all(validFiles.map(async (src) => {
       const dest = join(dir, basename(src))
       if (src === dest) {
         return dest
@@ -74,6 +74,17 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
         throw e
       }
     }))
+
+    // Local file imports carry no market metadata. Only resolve it here when the
+    // instance is NOT being watched (e.g. importing into a non-active instance):
+    // for a watched instance the renderer-driven refresh already resolves
+    // newly-added files, so doing it here too would be a duplicate lookup.
+    const resourceManager = await this.app.registry.get(kResourceManager)
+    if (!resourceManager.getWatched(dir)) {
+      this.resolveMarketMetadata(dests).catch((e) => this.warn(e))
+    }
+
+    return dests
   }
 
   async uninstall({ files, path }: UpdateInstanceResourcesOptions) {
@@ -129,6 +140,80 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
 
   async showDirectory(path: string): Promise<void> {
     await this.app.shell.openDirectory(join(path, this.domain))
+  }
+
+  /**
+   * Actively resolve modrinth/curseforge metadata for the given files by looking
+   * up the modrinth sha1 hash and the curseforge fingerprint, then persist the
+   * result keyed by sha1.
+   *
+   * Manual import (`install`) has no other active trigger, and the metadata is
+   * keyed by sha1 in the resource db, so it is applied even if the file has not
+   * been scanned into a live state yet.
+   */
+  protected async resolveMarketMetadata(filePaths: string[]) {
+    if (filePaths.length === 0) return
+    const worker = await this.app.registry.getOrCreate(kResourceWorker)
+    const entries = (await Promise.all(filePaths.map(async (path) => {
+      try {
+        const [sha1, fingerprint] = await Promise.all([
+          worker.checksum(path, 'sha1'),
+          worker.fingerprint(path),
+        ])
+        return { path, sha1, fingerprint }
+      } catch {
+        // Directory or unreadable file — nothing to fingerprint.
+        return undefined
+      }
+    }))).filter((v): v is { path: string; sha1: string; fingerprint: number } => !!v)
+
+    if (entries.length === 0) return
+
+    const resourceManager = await this.app.registry.get(kResourceManager)
+    const modrinthClient = await this.app.registry.getOrCreate(ModrinthV2Client)
+    const curseforgeClient = await this.app.registry.getOrCreate(CurseforgeV1Client)
+
+    const updates: Record<string, UpdateResourcePayload> = {}
+    const getUpdate = (sha1: string) => updates[sha1] || (updates[sha1] = { hash: sha1, metadata: {} })
+
+    const onModrinth = async () => {
+      try {
+        const versions = await modrinthClient.getProjectVersionsByHash(entries.map(e => e.sha1), 'sha1')
+        for (const [sha1, version] of Object.entries(versions)) {
+          if (!sha1 || !entries.some(e => e.sha1 === sha1)) continue
+          getUpdate(sha1).metadata!.modrinth = { projectId: version.project_id, versionId: version.id }
+        }
+      } catch (e) {
+        this.warn(e as any)
+      }
+    }
+
+    const onCurseforge = async () => {
+      try {
+        const result = await curseforgeClient.getFingerprintsMatchesByGameId(432, entries.map(e => e.fingerprint)).catch((e) => {
+          if (e instanceof CurseforgeApiError && e.status >= 400 && e.status < 500 && e.status !== 404) {
+            this.error(e)
+          }
+          return { exactMatches: [] }
+        })
+        for (const f of result.exactMatches) {
+          const e = entries.find(en => en.fingerprint === f.file.fileFingerprint) ||
+            entries.find(en => en.sha1 === f.file.hashes.find(a => a.algo === 1)?.value)
+          if (!e) continue
+          getUpdate(e.sha1).metadata!.curseforge = { projectId: f.file.modId, fileId: f.file.id }
+        }
+      } catch (e) {
+        this.warn(e as any)
+      }
+    }
+
+    await Promise.allSettled([onModrinth(), onCurseforge()])
+
+    const payloads = Object.values(updates)
+    if (payloads.length > 0) {
+      await resourceManager.updateMetadata(payloads)
+      this.log(`Actively resolved market metadata for ${payloads.length}/${entries.length} imported ${this.domain} files`)
+    }
   }
 
   async refreshMetadata(instancePath: string): Promise<void> {

@@ -20,15 +20,41 @@ function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<Sh
   const { refreshMetadata } = useService(InstanceModsServiceKey)
   const expireTime = 1000 * 30 * 60 // 0.5 hour
 
+  // Resource hashes already accounted for in the current instance. A file whose
+  // hash is not here AND which carries no modrinth/curseforge source yet is a
+  // freshly added local file (the user dropped/copied a jar in) — it must be
+  // resolved right away instead of waiting out the 30-min throttle. Files that
+  // already have a source (installed from market / modpack) never trigger this.
+  let attempted = new Set<string>()
+  let attemptedPath = ''
+
+  function markAllAttempted() {
+    attemptedPath = instancePath.value
+    for (const f of state.value?.files ?? []) {
+      if (f.hash) attempted.add(f.hash)
+    }
+  }
+
   async function checkAndUpdate() {
+    if (attemptedPath !== instancePath.value) {
+      attempted = new Set()
+      markAllAttempted()
+    }
+    const files = state.value?.files ?? []
+    const hasNewLocalFile = files.some((f) =>
+      f.hash && !attempted.has(f.hash) && !f.metadata.modrinth && !f.metadata.curseforge)
     const last = lastUpdateMetadata.value[instancePath.value] || 0
-    if ((Date.now() - last) > expireTime) {
+    if (hasNewLocalFile || (Date.now() - last) > expireTime) {
       await update()
     }
   }
 
   async function update() {
     lastUpdateMetadata.value[instancePath.value] = Date.now()
+    // Mark everything currently present as attempted before refreshing so the
+    // `revalidate()` inside `refreshMetadata` (which re-emits `filesUpdates`)
+    // doesn't loop back into another refresh.
+    markAllAttempted()
     await refreshMetadata(instancePath.value)
   }
 
@@ -36,6 +62,8 @@ function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<Sh
 
   watch(state, (s) => {
     if (!s) return
+    attempted = new Set()
+    markAllAttempted()
     s.subscribe('filesUpdates', () => {
       debounced()
     })
