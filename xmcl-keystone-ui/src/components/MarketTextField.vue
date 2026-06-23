@@ -5,9 +5,8 @@
     v-model="_keyword"
     class="max-w-80 min-w-40 market-search-field"
     :placeholder="placeholder"
-    variant="solo-filled"
+    variant="outlined"
     density="compact"
-    flat
     hide-details
     :prepend-inner-icon="icon"
     @focus="searchTextFieldFocused = true"

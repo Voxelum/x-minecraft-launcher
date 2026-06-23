@@ -609,7 +609,6 @@ launch:
   launchAnyway: Launch Anyway
   launchAs: Launch as
   launchTo: Launch to
-  play: Play
 launchBlocked:
   launchBadVersion:
     description: The version {version} json is breaking. Maybe re-install this version?

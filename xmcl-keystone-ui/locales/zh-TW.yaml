@@ -509,7 +509,7 @@ launch:
   launch: 啟動
   launchAnyway: 直接啟動
   launchAs: 以其他帳號啟動
-  launchTo: 啟動至伺服器
+  launchTo: 啟動至…
   forceKill: 強制結束
 launchBlocked:
   launchBadVersion:

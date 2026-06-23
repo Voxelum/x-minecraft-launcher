@@ -4,14 +4,11 @@
       class="z-1"
       v-model:layout="layout"
       :is-draggable="true"
-      :cols="cols"
-      :col-num="12"
+      :col-num="currentCols"
       :row-height="32"
       :is-resizable="true"
-      :responsive="true"
       :vertical-compact="true"
       :use-css-transforms="true"
-      @breakpoint-changed="onBreakpoint"
       @layout-updated="onLayoutUpdated"
     >
       <GridItem
@@ -53,8 +50,14 @@
           :instance="instance"
           persistent
         />
-        <HomeServerCard v-else-if="isType(item.i, CardType.Server)" />
-        <HomeWorldCard v-else-if="isType(item.i, CardType.World)" />
+        <HomeServerCard
+          v-else-if="isType(item.i, CardType.Server)"
+          :server-key="getParam(item.i)"
+        />
+        <HomeWorldCard
+          v-else-if="isType(item.i, CardType.World)"
+          :world="getParam(item.i)"
+        />
       </GridItem>
     </GridLayout>
   </div>
@@ -63,9 +66,13 @@
 import { useLocalStorageCache } from '@/composables/cache'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kInstance } from '@/composables/instance'
+import { kInstanceSave } from '@/composables/instanceSave'
+import { kInstanceServerInfo } from '@/composables/instanceServerInfo'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { vContextMenu } from '@/directives/contextMenu'
 import { injection } from '@/util/inject'
+import { useResizeObserver } from '@vueuse/core'
+import { formatServerAddress, parseServerAddress } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { GridItem, GridLayout } from 'grid-layout-plus'
 import HomeModCard from './HomeModCard.vue'
@@ -75,14 +82,11 @@ import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeServerCard from './HomeServerCard.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
 import HomeWorldCard from './HomeWorldCard.vue'
-import { kInstanceSave } from '@/composables/instanceSave'
-import { kInstanceServerInfo } from '@/composables/instanceServerInfo'
-import { parseServerAddress } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 const { instance } = injection(kInstance)
+const { servers: datServers } = injection(kInstanceServerInfo)
 const { saves } = injection(kInstanceSave)
-const { servers } = injection(kInstanceServerInfo)
 
 enum CardType {
   Mod,
@@ -94,18 +98,6 @@ enum CardType {
   World,
 }
 
-/** The hardcoded, authoritative list of cards. The rendered layout is
-    derived from this — there is no persisted card list to migrate. */
-const CARD_TYPES = [
-  CardType.Mod,
-  CardType.ResourcePack,
-  CardType.ShaderPack,
-  CardType.Save,
-  CardType.Screenshots,
-  CardType.Server,
-  CardType.World,
-]
-
 const cardIcon: Record<number, string> = {
   [CardType.Mod]: 'extension',
   [CardType.ResourcePack]: 'palette',
@@ -113,7 +105,7 @@ const cardIcon: Record<number, string> = {
   [CardType.Save]: 'map',
   [CardType.Screenshots]: 'image',
   [CardType.Server]: 'dns',
-  [CardType.World]: 'map',
+  [CardType.World]: 'public',
 }
 
 const cardLabel: Record<number, () => string> = {
@@ -123,7 +115,7 @@ const cardLabel: Record<number, () => string> = {
   [CardType.Save]: () => t('save.name'),
   [CardType.Screenshots]: () => t('screenshots.gallery'),
   [CardType.Server]: () => t('server.serversListTitle'),
-  [CardType.World]: () => t('save.world'),
+  [CardType.World]: () => t('save.world', 2),
 }
 
 provide(
@@ -135,8 +127,14 @@ provide(
 )
 
 function isType(id: string, type: CardType) {
-  const [typeString, param] = id.split('@')
+  const [typeString] = id.split('@')
   return Number(typeString) === type
+}
+
+/** Extract the per-instance discriminator from a card id (`type@param`). */
+function getParam(id: string): string | undefined {
+  const idx = id.indexOf('@')
+  return idx >= 0 ? id.slice(idx + 1) : undefined
 }
 
 interface GridGeom {
@@ -154,7 +152,7 @@ interface GridItemType extends GridGeom {
   maxH?: number
 }
 
-type Breakpoint = 'lg' | 'md' | 'sm' | 'xs' | 'xxs'
+type Breakpoint = 'lg' | 'md' | 'sm' | 'xs'
 
 /**
  * Persisted, per-card metadata. Keyed by the card type so adding or removing
@@ -168,60 +166,69 @@ interface CardMeta {
   layout?: Partial<Record<Breakpoint, Partial<GridGeom>>>
 }
 
-const cols = { lg: 12, md: 12, sm: 6, xs: 4, xxs: 4 }
+const cols = { lg: 12, md: 12, sm: 6, xs: 4 }
 
-/** Width thresholds grid-layout-plus uses to pick a breakpoint. */
-const breakpointWidths: Record<Breakpoint, number> = { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }
+/**
+ * Width thresholds (px) that map a container width to a breakpoint. This is the
+ * single source of truth: it is both passed to `GridLayout`'s `breakpoints`
+ * prop (so the grid picks the same breakpoint we do) and consumed by
+ * {@link getBreakpoint}. Tweak these numbers to customize when the layout
+ * switches breakpoints.
+ */
+const breakpointWidths: Record<Breakpoint, number> = { lg: 1600, md: 1280, sm: 1024, xs: 0 }
 
 /**
  * Hardcoded default geometry per breakpoint per card. The set of cards shown
  * is derived from this — there is no persisted "list" of cards to migrate.
+ *
+ * Visible-by-default cards: Mod, ResourcePack, ShaderPack, Save, Screenshots.
+ * Server / World are opt-in (hidden by default); their geometry only applies
+ * once the user shows them, where they tuck in under the visible cards.
+ *
+ * Layout intent (left→right): Mod and ResourcePack are tall list columns on the
+ * edges; Save + ShaderPack sit on top of the wide Screenshots gallery in the
+ * middle. `lg` (>1600px) is deliberately roomier than `md` (1280–1600px).
  */
 const DEFAULTS: Record<Breakpoint, Partial<Record<CardType, GridGeom>>> = {
+  // 12 columns, extra-wide — taller cards, bigger gallery.
   lg: {
-    [CardType.Mod]: { x: 0, y: 0, w: 3, h: 9, minW: 2, minH: 4 },
-    [CardType.ResourcePack]: { x: 9, y: 0, w: 3, h: 9, minW: 2, minH: 4 },
-    [CardType.Save]: { x: 3, y: 0, w: 3, h: 4, minW: 2, minH: 4 },
-    [CardType.ShaderPack]: { x: 6, y: 0, w: 3, h: 4, minW: 2, minH: 4 },
-    [CardType.Screenshots]: { x: 3, y: 4, w: 6, h: 5, minW: 3, minH: 4 },
-    [CardType.Server]: { x: 0, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
-    [CardType.World]: { x: 3, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.Mod]: { x: 0, y: 0, w: 3, h: 11, minW: 2, minH: 4 },
+    [CardType.Save]: { x: 3, y: 0, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.ShaderPack]: { x: 6, y: 0, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.ResourcePack]: { x: 9, y: 0, w: 3, h: 11, minW: 2, minH: 4 },
+    [CardType.Screenshots]: { x: 3, y: 5, w: 6, h: 6, minW: 3, minH: 4 },
+    [CardType.Server]: { x: 0, y: 11, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.World]: { x: 3, y: 11, w: 3, h: 5, minW: 2, minH: 4 },
   },
+  // 12 columns, standard density.
   md: {
     [CardType.Mod]: { x: 0, y: 0, w: 3, h: 9, minW: 2, minH: 4 },
-    [CardType.ResourcePack]: { x: 9, y: 0, w: 3, h: 9, minW: 2, minH: 4 },
     [CardType.Save]: { x: 3, y: 0, w: 3, h: 4, minW: 2, minH: 4 },
     [CardType.ShaderPack]: { x: 6, y: 0, w: 3, h: 4, minW: 2, minH: 4 },
+    [CardType.ResourcePack]: { x: 9, y: 0, w: 3, h: 9, minW: 2, minH: 4 },
     [CardType.Screenshots]: { x: 3, y: 4, w: 6, h: 5, minW: 3, minH: 4 },
     [CardType.Server]: { x: 0, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
     [CardType.World]: { x: 3, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
   },
+  // 6 columns — two list columns, then a full-width gallery underneath.
   sm: {
-    [CardType.Mod]: { x: 0, y: 0, w: 2, h: 6, minW: 2, minH: 4 },
-    [CardType.ResourcePack]: { x: 2, y: 0, w: 2, h: 5, minW: 2, minH: 4 },
-    [CardType.ShaderPack]: { x: 2, y: 5, w: 2, h: 5, minW: 2, minH: 4 },
-    [CardType.Save]: { x: 0, y: 6, w: 2, h: 4, minW: 2, minH: 4 },
-    [CardType.Screenshots]: { x: 4, y: 0, w: 2, h: 10, minW: 2, minH: 4 },
-    [CardType.Server]: { x: 0, y: 10, w: 2, h: 5, minW: 2, minH: 4 },
-    [CardType.World]: { x: 2, y: 10, w: 2, h: 5, minW: 2, minH: 4 },
+    [CardType.Mod]: { x: 0, y: 0, w: 3, h: 8, minW: 2, minH: 4 },
+    [CardType.ResourcePack]: { x: 3, y: 0, w: 3, h: 8, minW: 2, minH: 4 },
+    [CardType.Save]: { x: 0, y: 8, w: 3, h: 4, minW: 2, minH: 4 },
+    [CardType.ShaderPack]: { x: 3, y: 8, w: 3, h: 4, minW: 2, minH: 4 },
+    [CardType.Screenshots]: { x: 0, y: 12, w: 6, h: 6, minW: 3, minH: 4 },
+    [CardType.Server]: { x: 0, y: 18, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.World]: { x: 3, y: 18, w: 3, h: 5, minW: 2, minH: 4 },
   },
+  // 4 columns — two columns, full-width gallery underneath.
   xs: {
-    [CardType.Mod]: { x: 0, y: 0, w: 2, h: 6, minW: 2, minH: 4 },
-    [CardType.Save]: { x: 2, y: 4, w: 2, h: 4, minW: 2, minH: 4 },
-    [CardType.ResourcePack]: { x: 0, y: 6, w: 2, h: 6, minW: 2, minH: 4 },
-    [CardType.ShaderPack]: { x: 2, y: 0, w: 2, h: 4, minW: 2, minH: 4 },
-    [CardType.Screenshots]: { x: 2, y: 8, w: 2, h: 4, minW: 1, minH: 4 },
-    [CardType.Server]: { x: 0, y: 12, w: 2, h: 5, minW: 2, minH: 4 },
-    [CardType.World]: { x: 2, y: 12, w: 2, h: 5, minW: 2, minH: 4 },
-  },
-  xxs: {
-    [CardType.Mod]: { x: 0, y: 0, w: 2, h: 6, minW: 2, minH: 4 },
-    [CardType.Save]: { x: 2, y: 4, w: 2, h: 4, minW: 2, minH: 4 },
-    [CardType.ResourcePack]: { x: 0, y: 6, w: 2, h: 6, minW: 2, minH: 4 },
-    [CardType.ShaderPack]: { x: 2, y: 0, w: 2, h: 4, minW: 2, minH: 4 },
-    [CardType.Screenshots]: { x: 2, y: 8, w: 2, h: 4, minW: 1, minH: 4 },
-    [CardType.Server]: { x: 0, y: 12, w: 2, h: 5, minW: 2, minH: 4 },
-    [CardType.World]: { x: 2, y: 12, w: 2, h: 5, minW: 2, minH: 4 },
+    [CardType.Mod]: { x: 0, y: 0, w: 2, h: 7, minW: 2, minH: 4 },
+    [CardType.ResourcePack]: { x: 2, y: 0, w: 2, h: 7, minW: 2, minH: 4 },
+    [CardType.Save]: { x: 0, y: 7, w: 2, h: 4, minW: 2, minH: 4 },
+    [CardType.ShaderPack]: { x: 2, y: 7, w: 2, h: 4, minW: 2, minH: 4 },
+    [CardType.Screenshots]: { x: 0, y: 11, w: 4, h: 5, minW: 2, minH: 4 },
+    [CardType.Server]: { x: 0, y: 16, w: 2, h: 5, minW: 2, minH: 4 },
+    [CardType.World]: { x: 2, y: 16, w: 2, h: 5, minW: 2, minH: 4 },
   },
 }
 
@@ -241,45 +248,116 @@ function getBreakpoint(width: number): Breakpoint {
   if (width >= breakpointWidths.lg) return 'lg'
   if (width >= breakpointWidths.md) return 'md'
   if (width >= breakpointWidths.sm) return 'sm'
-  if (width >= breakpointWidths.xs) return 'xs'
-  return 'xxs'
+  return 'xs'
 }
 
 /**
- * Whether a card type should be rendered at all, independent of the user's
- * hidden flag. The Server card needs at least one server (the pinned one or an
- * entry in `servers.dat`); the World card needs at least one local save.
+ * A single rendered card. Singleton cards (mods, screenshots, …) have an id
+ * equal to their `CardType`. Multi-instance cards (one per world / per server)
+ * use `type@param`, where `param` uniquely identifies the world (save folder
+ * name) or server (`host[:port]`). The `param` doubles as the per-card key in
+ * {@link cardState}, so each world / server remembers its own geometry and
+ * hidden flag.
  */
-const hasServer = computed(() => {
-  if (instance.value?.server?.host) return true
-  return servers.value.some((s) => !!parseServerAddress(s.ip))
+interface CardDescriptor {
+  id: string
+  type: CardType
+  /** Human-readable label used in the show/hide context menu. */
+  label: string
+}
+
+/** Card types that render exactly once per instance. */
+const SINGLETON_TYPES = [
+  CardType.Mod,
+  CardType.ResourcePack,
+  CardType.ShaderPack,
+  CardType.Save,
+  CardType.Screenshots,
+]
+
+/**
+ * One Server card per distinct server — the pinned server first, then every
+ * `servers.dat` entry, de-duplicated by `host:port`.
+ */
+const serverCards = computed<CardDescriptor[]>(() => {
+  const seen = new Set<string>()
+  const result: CardDescriptor[] = []
+  const pinned = instance.value?.server
+  if (pinned?.host) {
+    const key = formatServerAddress({ host: pinned.host, port: pinned.port })
+    seen.add(key)
+    result.push({ id: `${CardType.Server}@${key}`, type: CardType.Server, label: pinned.name || pinned.host })
+  }
+  for (const s of datServers.value) {
+    const parsed = parseServerAddress(s.ip)
+    if (!parsed) continue
+    const key = formatServerAddress(parsed)
+    if (seen.has(key)) continue
+    seen.add(key)
+    result.push({ id: `${CardType.Server}@${key}`, type: CardType.Server, label: s.name || parsed.host })
+  }
+  return result
 })
-const hasWorld = computed(() => saves.value.length > 0)
-function isAvailable(type: CardType) {
-  if (type === CardType.Server) return hasServer.value
-  if (type === CardType.World) return hasWorld.value
-  return true
+
+/** One World card per save, keyed by the save folder name. */
+const worldCards = computed<CardDescriptor[]>(() =>
+  saves.value.map((s) => ({
+    id: `${CardType.World}@${s.name}`,
+    type: CardType.World,
+    label: s.levelName || s.name,
+  })),
+)
+
+/** The full set of cards to render, before applying the per-card hidden flag. */
+const allCards = computed<CardDescriptor[]>(() => {
+  const result: CardDescriptor[] = SINGLETON_TYPES.map((type) => ({
+    id: String(type),
+    type,
+    label: cardLabel[type](),
+  }))
+  result.push(...worldCards.value)
+  result.push(...serverCards.value)
+  return result
+})
+
+/**
+ * Card types that start hidden. Per-world / per-server cards are opt-in: the
+ * grid would otherwise fill up with one card per save and per server. They only
+ * appear once the user explicitly shows them from the context menu (which sets
+ * `hidden = false`).
+ */
+const DEFAULT_HIDDEN_TYPES = new Set<CardType>([CardType.World, CardType.Server])
+
+/** Whether a card is currently hidden, honouring the per-type default. */
+function isHidden(card: CardDescriptor): boolean {
+  const meta = cardState.value[card.id]
+  if (DEFAULT_HIDDEN_TYPES.has(card.type)) {
+    return meta?.hidden !== false
+  }
+  return !!meta?.hidden
 }
 
 /**
- * Build the live layout array for the given breakpoint. The card *list* is
- * the hardcoded {@link CARD_TYPES}; persisted state only contributes
- * per-card overrides and the hidden flag.
+ * Build the live layout array for the given breakpoint from {@link allCards}.
+ * Persisted state only contributes per-card overrides and the hidden flag.
+ * Multiple cards of the same type (worlds / servers) share one default
+ * geometry, so they're stacked by index until the user rearranges them.
  */
 function buildLayout(bp: Breakpoint): GridItemType[] {
   const defs = DEFAULTS[bp] ?? DEFAULTS.xs
   const items: GridItemType[] = []
-  for (const type of CARD_TYPES) {
-    if (!isAvailable(type)) continue
-    const def = defs[type]
+  const typeIndex: Record<number, number> = {}
+  for (const card of allCards.value) {
+    const def = defs[card.type]
     if (!def) continue
-    const meta = cardState.value[String(type)]
-    if (meta?.hidden) continue
-    const ov = meta?.layout?.[bp] ?? {}
+    if (isHidden(card)) continue
+    const idx = typeIndex[card.type] ?? 0
+    typeIndex[card.type] = idx + 1
+    const ov = cardState.value[card.id]?.layout?.[bp] ?? {}
     items.push({
-      i: String(type),
+      i: card.id,
       x: ov.x ?? def.x,
-      y: ov.y ?? def.y,
+      y: ov.y ?? def.y + idx * def.h,
       w: ov.w ?? def.w,
       h: ov.h ?? def.h,
       minW: def.minW,
@@ -293,30 +371,30 @@ const gridRoot = ref<HTMLElement>()
 const currentBreakpoint = ref<Breakpoint>(getBreakpoint(window.innerWidth))
 const layout = ref<GridItemType[]>(buildLayout(currentBreakpoint.value))
 
-const onBreakpoint = (newBreakpoint: string) => {
-  currentBreakpoint.value = newBreakpoint as Breakpoint
-  layout.value = buildLayout(newBreakpoint as Breakpoint)
+// The grid's column count is driven by our own breakpoint rather than
+// grid-layout-plus' responsive mode, so we stay the single source of truth.
+const currentCols = computed(() => cols[currentBreakpoint.value])
+
+function applyBreakpoint(bp: Breakpoint) {
+  if (bp === currentBreakpoint.value) return
+  currentBreakpoint.value = bp
+  layout.value = buildLayout(bp)
 }
 
-// `grid-layout-plus` derives its breakpoint from the grid *container* width
-// (which excludes the launcher sidebar), while `window.innerWidth` does not.
-// Align our breakpoint with the container so geometry is always saved into and
-// loaded from the same per-breakpoint bucket. Without this, a layout edited at
-// one (window-derived) breakpoint is read back from another after navigation.
-onMounted(() => {
-  const width = gridRoot.value?.offsetWidth
+// Watch the grid *container* width (which excludes the launcher sidebar) and
+// switch breakpoints as the window/sidebar resizes. grid-layout-plus' built-in
+// responsive mode does not reliably surface these changes in this embedding, so
+// we own the breakpoint logic: this fires on mount and on every resize, keeping
+// the layout and column count in sync with the available width.
+useResizeObserver(gridRoot, (entries) => {
+  const width = entries[0]?.contentRect.width
   if (!width) return
-  const bp = getBreakpoint(width)
-  if (bp !== currentBreakpoint.value) {
-    currentBreakpoint.value = bp
-    layout.value = buildLayout(bp)
-  }
+  applyBreakpoint(getBreakpoint(width))
 })
 
-// Rebuild when the available cards change (a server appears/disappears, or a
-// local world is added/removed) so the Server/World cards show up or drop out
-// without a reload.
-watch([hasServer, hasWorld], () => {
+// Rebuild when the set of cards changes (a world or server is added / removed)
+// so the corresponding card shows up / drops out without a reload.
+watch(() => allCards.value.map((c) => c.id).join('|'), () => {
   layout.value = buildLayout(currentBreakpoint.value)
 })
 
@@ -385,13 +463,21 @@ function hideCard(id: string) {
 }
 
 function restoreCard(id: string) {
-  const meta = cardState.value[id]
-  if (meta) meta.hidden = false
+  const meta = cardState.value[id] ?? (cardState.value[id] = {})
+  meta.hidden = false
   saveCardState()
   layout.value = buildLayout(currentBreakpoint.value)
 }
 
-const hiddenTypes = computed(() => CARD_TYPES.filter((type) => isAvailable(type) && cardState.value[String(type)]?.hidden))
+const hiddenCards = computed(() => allCards.value.filter((c) => isHidden(c)))
+
+function getRestoreMenuItems(): ContextMenuItem[] {
+  return hiddenCards.value.map((c) => ({
+    text: t('instance.showHiddenCards') + ': ' + c.label,
+    icon: cardIcon[c.type] ?? 'visibility',
+    onClick: () => restoreCard(c.id),
+  }))
+}
 
 function getCardMenu(id: string): ContextMenuItem[] {
   return [
@@ -400,15 +486,12 @@ function getCardMenu(id: string): ContextMenuItem[] {
       icon: 'visibility_off',
       onClick: () => hideCard(id),
     },
+    ...getRestoreMenuItems(),
   ]
 }
 
 function getBackgroundMenu(): ContextMenuItem[] {
-  return hiddenTypes.value.map((type) => ({
-    text: t('instance.showHiddenCards') + ': ' + cardLabel[type](),
-    icon: cardIcon[type] ?? 'visibility',
-    onClick: () => restoreCard(String(type)),
-  }))
+  return getRestoreMenuItems()
 }
 </script>
 

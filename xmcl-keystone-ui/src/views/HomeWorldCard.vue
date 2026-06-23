@@ -2,12 +2,12 @@
   <HomeCard
     data-testid="home-world-card"
     icon="map"
-    :title="t('save.world')"
+    :title="displayName || t('save.world')"
     :text="t('save.noSavesInstalled')"
     :icons="[]"
     :refreshing="false"
     :button="{ text: t('shared.manage'), icon: 'settings' }"
-    :addition-button="{ text: t('launch.play'), icon: 'play_arrow', testid: 'world-card-play' }"
+    :addition-button="{ text: t('launch.launch'), icon: 'play_arrow', testid: 'world-card-play' }"
     @navigate="push('/save')"
     @navigate-addition="onPlay"
   >
@@ -72,7 +72,6 @@
 import HomeCard from '@/components/HomeCard.vue'
 import { BuiltinImages } from '@/constant'
 import { useDateString } from '@/composables/date'
-import { kInstance } from '@/composables/instance'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { kInstanceSave, InstanceSaveFile } from '@/composables/instanceSave'
 import { vFallbackImg } from '@/directives/fallbackImage'
@@ -84,10 +83,23 @@ const { getDateString } = useDateString()
 const { saves } = injection(kInstanceSave)
 const { launch } = injection(kInstanceLaunch)
 
+const props = defineProps<{
+  /** Save folder name to pin this card to a single world. */
+  world?: string
+}>()
+
 // Most recently played world first.
-const candidates = computed<InstanceSaveFile[]>(() =>
+const sorted = computed<InstanceSaveFile[]>(() =>
   [...saves.value].sort((a, b) => (b.lastPlayed ?? 0) - (a.lastPlayed ?? 0)),
 )
+
+// When pinned to a specific world, show only that one (no switcher). Fall back
+// to the full list if the pinned world no longer exists.
+const candidates = computed<InstanceSaveFile[]>(() => {
+  if (!props.world) return sorted.value
+  const match = sorted.value.filter((s) => s.name === props.world)
+  return match.length ? match : sorted.value
+})
 
 const selectedIndex = ref(0)
 watch(candidates, (list) => {

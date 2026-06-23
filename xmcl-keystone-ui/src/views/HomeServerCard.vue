@@ -7,7 +7,7 @@
     :icons="[]"
     :refreshing="false"
     :button="{ text: t('shared.refresh'), icon: 'refresh' }"
-    :addition-button="{ text: t('launch.play'), icon: 'play_arrow', testid: 'server-card-play' }"
+    :addition-button="{ text: t('launch.launch'), icon: 'play_arrow', testid: 'server-card-play' }"
     @navigate="refresh"
     @navigate-addition="onPlay"
   >
@@ -108,6 +108,11 @@ const { instance } = injection(kInstance)
 const { servers: datServers } = injection(kInstanceServerInfo)
 const { launch } = injection(kInstanceLaunch)
 
+const props = defineProps<{
+  /** `host[:port]` to pin this card to a single server. */
+  serverKey?: string
+}>()
+
 function formatAddress(s: { host: string; port?: number }) {
   if (!s.host) return ''
   return s.port && s.port !== 25565 ? `${s.host}:${s.port}` : s.host
@@ -121,7 +126,7 @@ function toDataUrl(icon?: string) {
 // The card works whether or not the instance has a pinned server: the pinned
 // server (if any) is shown first, followed by the remaining entries from
 // `servers.dat`, de-duplicated by host:port.
-const candidates = computed<CardServer[]>(() => {
+const allCandidates = computed<CardServer[]>(() => {
   const list: CardServer[] = []
   const pinned = instance.value?.server
   if (pinned?.host) {
@@ -136,6 +141,16 @@ const candidates = computed<CardServer[]>(() => {
   return list
 })
 
+// When pinned to a specific server, show only that one (no switcher). Fall back
+// to a bare entry built from the key if it isn't in the known list (yet).
+const candidates = computed<CardServer[]>(() => {
+  if (!props.serverKey) return allCandidates.value
+  const target = parseServerAddress(props.serverKey)
+  if (!target) return allCandidates.value
+  const match = allCandidates.value.find((c) => c.host === target.host && (c.port ?? 25565) === (target.port ?? 25565))
+  return match ? [match] : [{ host: target.host, port: target.port }]
+})
+
 const selectedIndex = ref(0)
 watch(candidates, (list) => {
   if (selectedIndex.value >= list.length) selectedIndex.value = 0
@@ -145,7 +160,9 @@ const current = computed<CardServer>(() => candidates.value[selectedIndex.value]
 const server = computed(() => ({ host: current.value.host, port: current.value.port }))
 const displayName = computed(() => current.value.name || current.value.host || '')
 const address = computed(() => formatAddress(current.value))
-const title = computed(() => t('server.serversListTitle'))
+// The card title is the server's name, falling back to its address, so each
+// per-server card is identifiable at a glance.
+const title = computed(() => current.value.name || address.value || t('server.serversListTitle'))
 
 const protocol = useMinecraftProtocol(computed(() => instance.value?.runtime.minecraft))
 const { status, refresh, refreshIfStale } = useServerStatus(server, protocol)
