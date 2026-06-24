@@ -26,8 +26,8 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag to sign (e.g. v0.56.7)'
-        required: true
+        description: 'Release tag to sign (e.g. v0.56.7). Leave empty to sign the latest draft release.'
+        required: false
         type: string
 
 permissions:
@@ -41,16 +41,41 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Resolve release tag
+        id: resolve-tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        shell: pwsh
+        run: |
+          $tag = "${{ inputs.tag }}"
+          if ([string]::IsNullOrWhiteSpace($tag)) {
+            # No tag supplied: pick the most recent draft release. Builds
+            # publish their drafts here, so the newest draft is the target.
+            $tag = gh release list --limit 30 --json tagName,isDraft,createdAt |
+              ConvertFrom-Json |
+              Where-Object { $_.isDraft } |
+              Sort-Object { [datetime]$_.createdAt } -Descending |
+              Select-Object -First 1 -ExpandProperty tagName
+            if ([string]::IsNullOrWhiteSpace($tag)) {
+              throw "No draft release found to sign. Specify a tag explicitly."
+            }
+            Write-Host "Resolved latest draft release tag: $tag"
+          } else {
+            Write-Host "Using supplied tag: $tag"
+          }
+          "tag=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
       - name: Download .appx from release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path signing-input | Out-Null
-          gh release download "${{ inputs.tag }}" --pattern '*.appx' --dir signing-input
+          gh release download "${{ steps.resolve-tag.outputs.tag }}" --pattern '*.appx' --dir signing-input
           $appx = Get-ChildItem signing-input -Filter *.appx
           if ($appx.Count -eq 0) {
-            throw "No .appx asset found on release ${{ inputs.tag }}"
+            throw "No .appx asset found on release ${{ steps.resolve-tag.outputs.tag }}"
           }
           $appx | ForEach-Object { Write-Host "Downloaded $($_.Name) ($([math]::Round($_.Length/1MB,2)) MB)" }
 
@@ -91,8 +116,8 @@ jobs:
           # --clobber replaces existing assets with the same name, so the
           # unsigned .appx that build.yml uploaded is swapped for the
           # signed one (and a fresh .appx.sha256 is uploaded alongside).
-          gh release upload "${{ inputs.tag }}" (Get-ChildItem signed -Filter *.appx).FullName --clobber
-          gh release upload "${{ inputs.tag }}" (Get-ChildItem signed -Filter *.appx.sha256).FullName --clobber
+          gh release upload "${{ steps.resolve-tag.outputs.tag }}" (Get-ChildItem signed -Filter *.appx).FullName --clobber
+          gh release upload "${{ steps.resolve-tag.outputs.tag }}" (Get-ChildItem signed -Filter *.appx.sha256).FullName --clobber
 
       - name: Publish release
         # Signing succeeded and the signed assets are in place, so flip the
@@ -109,4 +134,4 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          gh release edit "${{ inputs.tag }}" --draft=false
+          gh release edit "${{ steps.resolve-tag.outputs.tag }}" --draft=false
