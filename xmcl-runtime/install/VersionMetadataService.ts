@@ -362,27 +362,35 @@ export class VersionMetadataService extends AbstractService implements IVersionM
   @Singleton((force) => `optifine-${!!force}`)
   async getOptifineVersions(force?: boolean): Promise<OptifineVersion[]> {
     // OptiFine is distributed *only* via BMCLAPI — there is no official
-    // source to fall back to. Honour the "never touch a mirror" contract
-    // for official / outside-GFW users by returning nothing rather than
-    // querying bmcl.
-    if (!(await this.#useMirror())) {
+    // source to fall back to. For official / outside-GFW users we honour the
+    // "never touch a mirror" contract by not querying bmcl, but we still
+    // serve any previously-cached version list from disk so the UI isn't
+    // left permanently empty.
+    const useMirror = await this.#useMirror()
+    const sources: VersionMetadataSource<OptifineVersion[]>[] = useMirror
+      ? [
+        {
+          url: 'https://bmclapi2.bangbang93.com/optifine/versionList',
+          parse: (r) => r.json() as Promise<OptifineVersion[]>,
+        },
+      ]
+      : []
+    try {
+      return await fetchVersionMetadata({
+        app: this.app,
+        cachePath: this.cachePath('optifine.json'),
+        schema: optifineVersionsSchema,
+        sources,
+        logger: this.logger,
+        // Without a permitted source there is nothing to refresh against;
+        // fall back to the stale-while-revalidate cache read.
+        force: force && useMirror,
+        onFresh: (versions) => this.emit('optifineVersions', versions),
+      })
+    } catch {
+      // Cold cache and no permitted source — nothing to show yet.
       return []
     }
-    const sources: VersionMetadataSource<OptifineVersion[]>[] = [
-      {
-        url: 'https://bmclapi2.bangbang93.com/optifine/versionList',
-        parse: (r) => r.json() as Promise<OptifineVersion[]>,
-      },
-    ]
-    return fetchVersionMetadata({
-      app: this.app,
-      cachePath: this.cachePath('optifine.json'),
-      schema: optifineVersionsSchema,
-      sources,
-      logger: this.logger,
-      force,
-      onFresh: (versions) => this.emit('optifineVersions', versions),
-    })
   }
 
   @Singleton((force) => `labymod-${!!force}`)
