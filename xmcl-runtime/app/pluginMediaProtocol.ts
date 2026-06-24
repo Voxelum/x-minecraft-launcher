@@ -26,6 +26,11 @@ export const pluginMediaProtocol: LauncherAppPlugin = (app) => {
           response.status = 200
           response.headers = { 'content-type': type.mime }
           response.body = createReadStream(pathname)
+        } else if (!type && pathname.toLowerCase().endsWith('.svg') && existsSync(pathname)) {
+          // `file-type` cannot sniff SVG (plain XML text). Serve it explicitly.
+          response.status = 200
+          response.headers = { 'content-type': 'image/svg+xml' }
+          response.body = createReadStream(pathname)
         } else {
           response.status = 404
         }

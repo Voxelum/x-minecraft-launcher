@@ -20,16 +20,18 @@ import {
 } from '@xmcl/runtime-api'
 import { AnyError, isSystemError } from '@xmcl/utils'
 import filenamify from 'filenamify'
+import { fileTypeFromFile } from 'file-type'
 import { existsSync } from 'fs'
 import { ensureDir, readJson, rename, rm, writeFile, writeJson } from 'fs-extra'
-import { basename, dirname, isAbsolute, join, relative, resolve } from 'path'
+import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { ImageStorage, kTasks, Tasks } from '~/infra'
 import { VersionMetadataService } from '~/install'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
-import { ENOENT_ERROR, exists, isDirectory, isPathDiskRootPath, readdirEnsured } from '../util/fs'
+import { ENOENT_ERROR, exists, isDirectory, isPathDiskRootPath, linkOrCopyFile, readdirEnsured } from '../util/fs'
+import { getMediaIconPath, resolveInstanceIcon, serializeInstanceIcon, toMediaIconUrl } from './instanceIcon'
 import { requireObject, requireString } from '../util/object'
 import { getTracker } from '~/util/taskHelper'
 import { setTimeout } from 'timers/promises'
@@ -178,7 +180,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
         this.state.subscribe('instanceEdit', async ({ path }) => {
           const inst = this.state.all[path]
-          await writeFile(join(path, 'instance.json'), JSON.stringify(inst, null, 2))
+          const persisted = { ...inst, icon: serializeInstanceIcon(inst.icon, path) }
+          await writeFile(join(path, 'instance.json'), JSON.stringify(persisted, null, 2))
           this.log(`Saved instance ${path}`)
         })
       },
@@ -298,6 +301,11 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       this.warn(e)
     }
 
+    // Icons stored inside the instance folder are persisted as a relative path
+    // for portability. Resolve them against the instance's current absolute
+    // path so the renderer can display them.
+    instance.icon = resolveInstanceIcon(instance.icon, instance.path)
+
     this.state.instanceAdd(instance)
 
     this.log(`Loaded instance ${instance.path}`)
@@ -330,13 +338,72 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       await ensureDir(join(instance.path, 'shaderpacks')).catch(() => undefined)
     }
 
-    await writeJson(join(instance.path, 'instance.json'), instance)
+    // Store the icon inside the instance folder so it is portable and shared
+    // with the instance. Falls back to the original value on failure.
+    instance.icon = await this.#resolveIncomingInstanceIcon(instance.path, instance.icon).catch((e) => {
+      this.error(e)
+      return instance.icon
+    })
+
+    await writeJson(join(instance.path, 'instance.json'), {
+      ...instance,
+      icon: serializeInstanceIcon(instance.icon, instance.path),
+    })
     this.state.instanceAdd(instance)
 
     this.log('Created instance with option')
     this.log(JSON.stringify(instance, null, 4))
 
     return instance.path
+  }
+
+  /**
+   * Ensure an incoming icon value is stored inside the instance folder when it
+   * is a local file, returning the in-memory (absolute) media URL to display
+   * it. External URLs, global image URLs and empty values are returned as-is.
+   */
+  async #resolveIncomingInstanceIcon(instancePath: string, icon: string | undefined): Promise<string> {
+    if (!icon) return ''
+    const mediaPath = getMediaIconPath(icon)
+    if (mediaPath) {
+      // Already inside the instance folder: keep the absolute media URL.
+      const rel = relative(instancePath, mediaPath)
+      if (rel && !rel.startsWith('..') && !isAbsolute(rel)) {
+        return icon
+      }
+      // A local file outside the folder: copy it in.
+      if (existsSync(mediaPath)) {
+        return this.#storeInstanceIcon(instancePath, mediaPath)
+      }
+      return icon
+    }
+    // No scheme: a relative reference resolved against the instance folder.
+    if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(icon)) {
+      return resolveInstanceIcon(icon, instancePath)
+    }
+    return icon
+  }
+
+  /**
+   * Copy the image at `source` into the instance folder as `icon.<ext>` and
+   * return the in-memory media URL used to display it.
+   */
+  async #storeInstanceIcon(instancePath: string, source: string): Promise<string> {
+    let ext = extname(source).replace(/^\./, '').toLowerCase()
+    if (ext !== 'svg') {
+      const fileType = await fileTypeFromFile(source).catch(() => undefined)
+      if (fileType?.ext) {
+        ext = fileType.ext
+      }
+    }
+    if (!ext) ext = 'png'
+    const iconPath = join(instancePath, `icon.${ext}`)
+    if (resolve(source) !== resolve(iconPath)) {
+      await ensureDir(instancePath)
+      await rm(iconPath, { force: true }).catch(() => undefined)
+      await linkOrCopyFile(source, iconPath)
+    }
+    return toMediaIconUrl(iconPath)
   }
 
   async duplicateInstance(path: string) {
@@ -501,7 +568,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     const result = await computeInstanceEditChanges(state, options, async (path: string) =>
-      this.imageStore.addImage(path).catch((e) => {
+      this.#storeInstanceIcon(instancePath, path).catch((e) => {
         this.error(e)
         return ''
       }),
