@@ -634,6 +634,7 @@ migrationWindow:
   error: Taşıma başarısız
 minecraftVersion:
   name: Minecraft Sürümü
+  all: Tüm Sürümler
   release: Sürüm (Release)
   showAlpha: Snapshot Göster
   snapshot: Snapshot

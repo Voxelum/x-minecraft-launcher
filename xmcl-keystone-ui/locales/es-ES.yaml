@@ -497,6 +497,7 @@ migrationWindow:
   error: Error en la migración
 minecraftVersion:
   name: Versión de Minecraft
+  all: Todas las versiones
   release: Versión Estable
   showAlpha: Mostrar Versiones Snapshot
   snapshot: Versión Snapshot

@@ -664,6 +664,7 @@ migrationWindow:
   error: Échec de la migration
 minecraftVersion:
   name: Version Minecraft
+  all: Toutes les versions
   release: Sortie
   showAlpha: Afficher les Snapshots
   snapshot: Snapshot

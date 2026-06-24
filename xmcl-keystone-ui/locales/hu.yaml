@@ -659,6 +659,7 @@ migrationWindow:
   error: Az áttelepítés sikertelen
 minecraftVersion:
   name: Minecraft Verzió
+  all: Összes verzió
   release: Kiadás
   showAlpha: Snapshot mutatása
   snapshot: Snapshot

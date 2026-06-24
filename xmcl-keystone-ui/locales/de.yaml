@@ -689,6 +689,7 @@ migrationWindow:
   error: Migration fehlgeschlagen
 minecraftVersion:
   name: Minecraft-Version
+  all: Alle Versionen
   release: Freigabe
   showAlpha: Schnappschuss snapshot
   snapshot: Snapshot

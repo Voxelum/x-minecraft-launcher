@@ -624,6 +624,7 @@ migrationWindow:
   error: MUVIN BROKE
 minecraftVersion:
   name: MINECWAFT VERSHUN
+  all: ALL VERSHUNZ
   release: RELEASE
   showAlpha: SHOW SNAPSHOT
   snapshot: SNAPSHOT

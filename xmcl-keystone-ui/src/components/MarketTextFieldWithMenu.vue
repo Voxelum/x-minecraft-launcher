@@ -98,6 +98,9 @@
               mandatory
               @wheel.native.stop="onWheel"
             >
+              <v-chip key="__all__" filter variant="outlined" label>
+                {{ t('minecraftVersion.all') }}
+              </v-chip>
               <v-chip v-for="v of versionIds" :key="v" filter variant="outlined" label>
                 {{ v }}
               </v-chip>
@@ -454,10 +457,13 @@ const curseforgeSelectModel = computed({
 })
 const gameVersionModel = computed({
   get() {
-    return versionIds.value.findIndex((v) => v === props.gameVersion)
+    // Index 0 is the "All versions" chip (empty game version = no filter).
+    if (!props.gameVersion) return 0
+    const idx = versionIds.value.findIndex((v) => v === props.gameVersion)
+    return idx === -1 ? 0 : idx + 1
   },
   set(v) {
-    emit('update:gameVersion', versionIds.value[v])
+    emit('update:gameVersion', !v ? '' : versionIds.value[v - 1])
   },
 })
 

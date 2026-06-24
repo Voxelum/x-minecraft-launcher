@@ -619,6 +619,7 @@ migrationWindow:
   error: Migracja nie powiodła się
 minecraftVersion:
   name: Wersja Minecraft
+  all: Wszystkie wersje
   release: Zwolnienie
   showAlpha: Pokaż snapshot
   snapshot: Migawka

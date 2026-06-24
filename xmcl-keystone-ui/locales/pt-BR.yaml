@@ -644,6 +644,7 @@ migrationWindow:
   error: Falha na migração
 minecraftVersion:
   name: Versão do Minecraft
+  all: Todas as Versões
   release: Lançamento
   showAlpha: Mostrar Snapshot
   snapshot: Snapshot

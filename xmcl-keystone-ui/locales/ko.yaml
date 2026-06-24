@@ -589,6 +589,7 @@ migrationWindow:
   error: 마이그레이션 실패
 minecraftVersion:
   name: 마인크래프트 버전
+  all: 모든 버전
   release: 정식
   showAlpha: 스냅샷 표시
   snapshot: 스냅샷

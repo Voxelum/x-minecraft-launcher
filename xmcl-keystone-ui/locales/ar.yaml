@@ -682,6 +682,7 @@ migrationWindow:
   error: فشل النقل
 minecraftVersion:
   name: 'نسخة ماينكرافت'
+  all: 'كل الإصدارات'
   release: 'يطلق'
   showAlpha: 'عرض لقطة'
   snapshot: 'لقطة'

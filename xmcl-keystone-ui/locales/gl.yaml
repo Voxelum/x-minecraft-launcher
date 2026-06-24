@@ -635,6 +635,7 @@ migrationWindow:
   error: Produciuse un erro na migración
 minecraftVersion:
   name: Minecraft-versie
+  all: Todas as versións
   release: Release
   showAlpha: Toon Snapshot
   snapshot: Snapshot

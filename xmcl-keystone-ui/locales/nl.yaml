@@ -640,6 +640,7 @@ migrationWindow:
   error: Migratie mislukt
 minecraftVersion:
   name: Minecraft Versie
+  all: Alle versies
   release: Release
   showAlpha: Toon Snapshots
   snapshot: Snapshot

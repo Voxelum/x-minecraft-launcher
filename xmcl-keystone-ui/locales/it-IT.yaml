@@ -627,6 +627,7 @@ migrationWindow:
   error: Migrazione non riuscita
 minecraftVersion:
   name: Versione Minecraft
+  all: Tutte le versioni
   release: Release
   showAlpha: Mostra snapshot
   snapshot: Snapshot

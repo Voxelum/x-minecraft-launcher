@@ -697,6 +697,7 @@ migrationWindow:
   error: 迁移失败
 minecraftVersion:
   name: Minecraft 版本
+  all: 所有版本
   release: 正式版
   showAlpha: 显示快照版
   snapshot: 快照版

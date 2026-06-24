@@ -632,6 +632,7 @@ migrationWindow:
   error: Көшіру сәтсіз аяқталды
 minecraftVersion:
   name: Minecraft нұсқасы
+  all: Барлық нұсқалар
   release: Шығарылым
   showAlpha: Snapshot-ты көрсету
   snapshot: Snapshot

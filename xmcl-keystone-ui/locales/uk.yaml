@@ -659,6 +659,7 @@ migrationWindow:
   error: Не вдалося перенести дані
 minecraftVersion:
   name: Версія Minecraft
+  all: Усі версії
   release: Випуск
   showAlpha: Показати знімки стану (Snapshot)
   snapshot: Знімок стану (Snapshot)

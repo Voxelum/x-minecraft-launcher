@@ -610,6 +610,7 @@ migrationWindow:
   error: 移行に失敗しました
 minecraftVersion:
   name: Minecraft バージョン
+  all: すべてのバージョン
   release: リリース
   showAlpha: スナップショットを表示
   snapshot: スナップショット
