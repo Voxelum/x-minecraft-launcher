@@ -5,7 +5,7 @@
   "module": "index.ts",
   "browser": "index.browser.ts",
   "dependencies": {
-    "undici": "^7.24.0",
+    "undici": "^7.28.0",
     "@types/node": "^20.19.0"
   }
 }
