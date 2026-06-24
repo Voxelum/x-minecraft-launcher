@@ -50,7 +50,7 @@
         "grid-layout-plus": "^1.1.1",
         "leaflet": "^1.9.4",
         "lodash.debounce": "^4.0.8",
-        "markdown-it": "^14.1.1",
+        "markdown-it": "^14.2.0",
         "markdown-it-link-attributes": "^4.0.1",
         "rollup-plugin-visualizer": "^6.0.3",
         "semver": "^7.5.8",
