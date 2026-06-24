@@ -12,6 +12,41 @@ export enum JavaValidation {
   NoPermission,
 }
 
+/**
+ * The phase at which an internal default-Java install failed, derived from
+ * filesystem probes after `resolveJava` could not resolve the binary. Used to
+ * make `InstallDefaultJavaError` telemetry actionable (download vs parse).
+ */
+export type JavaInstallFailurePhase = 'download-or-extract' | 'permission' | 'parse-or-spawn'
+
+export interface JavaInstallFailureProbe {
+  /** Whether the `java`/`java.exe` binary exists on disk after install. */
+  exeExists: boolean
+  /** `validateJavaPath` result for the binary, if it could be computed. */
+  validation: JavaValidation | undefined
+}
+
+/**
+ * Classify why an internal Java install produced an unresolvable binary.
+ *
+ * - `download-or-extract`: the installer resolved without throwing yet no
+ *   binary landed — the archive never downloaded or extracted to the expected
+ *   layout.
+ * - `permission`: the binary exists but lacks exec permission.
+ * - `parse-or-spawn`: the binary exists and is accessible but the JVM cannot
+ *   be spawned or its version parsed (corrupt download, wrong arch, missing
+ *   native deps).
+ */
+export function classifyJavaInstallFailure({ exeExists, validation }: JavaInstallFailureProbe): JavaInstallFailurePhase {
+  if (!exeExists) {
+    return 'download-or-extract'
+  }
+  if (validation === JavaValidation.NoPermission) {
+    return 'permission'
+  }
+  return 'parse-or-spawn'
+}
+
 export function getJavaExeFilePath(javaPath: string, platform: Platform) {
   return platform.os === 'osx' && !javaPath.endsWith('zulu')
     ? join(javaPath, 'jre.bundle', 'Contents', 'Home', 'bin', 'java')

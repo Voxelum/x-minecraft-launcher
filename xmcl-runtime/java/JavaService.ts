@@ -22,7 +22,7 @@ import { chmod, readFile, readJson, stat, writeJson } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { Tasks, kFlights, kGFW, kTasks } from '~/infra'
-import { JavaValidation, getJavaExeFilePath, validateJavaPath } from '~/java'
+import { JavaValidation, classifyJavaInstallFailure, getJavaExeFilePath, validateJavaPath } from '~/java'
 import { kDownloadOptions } from '~/network'
 import { ResourceWorker, kResourceWorker } from '~/resource'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
@@ -171,6 +171,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         })
       }
 
+      let installSource: 'zulu' | 'official' | 'official-then-zulu' = officialManifest ? 'official' : 'zulu'
       if (!officialManifest) {
         // use zulu
         await installZulu()
@@ -190,6 +191,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
           })
         } catch (e) {
           this.warn(`Failed to install official jre runtime, fallback to zulu: ${e}`)
+          installSource = 'official-then-zulu'
           await installZulu()
         }
       }
@@ -201,7 +203,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       this.log(`Successfully install java internally ${exeLocation}`)
       const result = await this.resolveJava(exeLocation)
       if (!result) {
-        throw new AnyError('InstallDefaultJavaError', 'Fail to install java')
+        throw await this.#createInstallDefaultJavaError(exeLocation, folder, target, installSource)
       }
       task.complete()
       return result
@@ -210,6 +212,91 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       this.error(error as any)
       throw error
     }
+  }
+
+  /**
+   * Build a diagnostic `InstallDefaultJavaError` after an internal Java
+   * install reported success but `resolveJava` could not resolve the binary.
+   *
+   * The legacy message ("Fail to install java") gave no clue whether the
+   * archive failed to download/extract, the binary lacks exec permission, or
+   * the binary is present but cannot be spawned/parsed. We probe the
+   * filesystem here and classify the failure so telemetry (the props are
+   * enumerable own-props and survive `getSerializedError`'s JSON.stringify)
+   * can tell download problems from parse problems.
+   */
+  async #createInstallDefaultJavaError(
+    exeLocation: string,
+    folder: string,
+    target: JavaVersion,
+    installSource: 'zulu' | 'official' | 'official-then-zulu',
+  ) {
+    const safe = async <T>(fn: () => Promise<T>): Promise<T | undefined> => {
+      try {
+        return await fn()
+      } catch {
+        return undefined
+      }
+    }
+
+    const exeStat = await safe(() => stat(exeLocation))
+    const exeExists = !!exeStat
+    const exeSize = exeStat?.size
+    const validation = await safe(() => validateJavaPath(exeLocation))
+    const binDir = dirname(exeLocation)
+    const binFiles = await safe(() => readdirIfPresent(binDir))
+    const folderFiles = await safe(() => readdirIfPresent(folder))
+
+    // The `release` file sits at the JRE home root (two levels up from
+    // `bin/java`). Its presence + JAVA_VERSION is a strong signal the
+    // archive extracted correctly even if the binary won't run.
+    const home = dirname(binDir)
+    const releaseRaw = await safe(() => readFile(join(home, 'release'), 'utf-8'))
+    const releaseJavaVersion = releaseRaw
+      ?.split('\n')
+      .map((l) => l.split('='))
+      .find((v) => v[0] === 'JAVA_VERSION')?.[1]
+      ?.replace(/"/g, '')
+
+    // Re-run the low-level resolver to capture *why* it failed (spawn vs
+    // parse) instead of just knowing it returned undefined.
+    let resolveError: string | undefined
+    if (exeExists) {
+      try {
+        const java = await resolveJava(exeLocation)
+        if (!java) {
+          resolveError = 'resolveJava returned undefined (could not parse java -version output)'
+        }
+      } catch (e) {
+        resolveError = e instanceof Error ? `${e.name}: ${e.message}` : String(e)
+      }
+    }
+
+    // Classify the failure phase so it groups cleanly in telemetry.
+    const phase = classifyJavaInstallFailure({ exeExists, validation })
+
+    return new AnyError(
+      'InstallDefaultJavaError',
+      `Fail to install java: ${phase} (source=${installSource}, component=${target.component}, exeExists=${exeExists})`,
+      undefined,
+      {
+        phase,
+        installSource,
+        component: target.component,
+        majorVersion: target.majorVersion,
+        exeLocation,
+        exeExists,
+        exeSize,
+        validation: validation !== undefined ? JavaValidation[validation] : 'unknown',
+        binFileCount: binFiles?.length,
+        folderFileCount: folderFiles?.length,
+        folderEmpty: folderFiles ? folderFiles.length === 0 : undefined,
+        releaseFilePresent: releaseRaw !== undefined,
+        releaseJavaVersion,
+        resolveError,
+        platform: `${this.app.platform.os} ${this.app.platform.arch}`,
+      },
+    )
   }
 
   async validateJavaPath(javaPath: string): Promise<JavaValidation> {
