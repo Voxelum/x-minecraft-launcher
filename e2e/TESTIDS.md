@@ -6,13 +6,14 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 91 (in 258 Vue files)
+**Total anchors:** 92 (in 258 Vue files)
 
 | Test ID | Defined in |
 |---|---|
 | `account-item` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L77`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L77) |
 | `accounts-add` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L105`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L105) |
 | `accounts-delete` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L53`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L53) |
+| `add-instance-advanced` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L86`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L86) |
 | `add-instance-cancel` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L4`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L4) |
 | `add-instance-create` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L28`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L28) |
 | `add-instance-dialog` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L4`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L4) |
@@ -96,8 +97,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `unresolved-files-install` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L135`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L135) |
 | `unresolved-files-search` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L113`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L113) |
 | `use-shared-servers-list` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L8`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L8) |
-| `version-input-fabric` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L64`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L64) |
-| `version-input-forge` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L56`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L56) |
-| `version-input-minecraft` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L40`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L40) |
-| `version-input-neoforge` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L48`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L48) |
-| `version-input-quilt` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L72`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L72) |
+| `version-input-fabric` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L47`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L47) |
+| `version-input-forge` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L39`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L39) |
+| `version-input-minecraft` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L23`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L23) |
+| `version-input-neoforge` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L31`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L31) |
+| `version-input-quilt` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L55`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L55) |
