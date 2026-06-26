@@ -64,11 +64,12 @@
           <v-btn
             data-testid="add-instance-import"
             :loading="loading"
-            variant="text"
+            variant="tonal"
+            color="primary"
             rounded="pill"
             @click="onImportModpack"
           >
-            <v-icon start> note_add </v-icon>
+            <v-icon start> folder_zip </v-icon>
             {{ t('importModpack.name') }}
           </v-btn>
         </div>
