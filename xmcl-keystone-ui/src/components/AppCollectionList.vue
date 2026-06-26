@@ -131,11 +131,14 @@ async function onDeleteCollection(collectionId: string) {
   }
 }
 
-function onAcceptLogin() {
+async function onAcceptLogin() {
   // Make sure interact() is in-flight so it can pick up the resolved signal.
   // `silent: true` prevents the global login dialog from also opening.
-  interact({ silent: true })
+  const interactPromise = interact({ silent: true })
+  // Yield to ensure interact() has captured the signal before resolving it
+  await Promise.resolve()
   acceptSignal()
+  await interactPromise
 }
 
 function onCancelLogin() {
