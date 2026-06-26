@@ -2,7 +2,6 @@
   <div
     class="header sticky max-w-full select-none transition-all px-2"
     :style="{
-      '--app-bar-color': appBarColor,
       '--app-bar-blur': blurAppBar + 'px',
     }"
     :class="{
@@ -89,12 +88,10 @@ import { kInstance } from '@/composables/instance'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kCompact } from '@/composables/scrollTop'
 import { kTheme } from '@/composables/theme'
-import { useInFocusMode } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
 
 const { name, runtime: version } = injection(kInstance)
-const isInFocusMode = useInFocusMode()
-const { blurAppBar, appBarColor } = injection(kTheme)
+const { blurAppBar } = injection(kTheme)
 const { t } = useI18n()
 
 const transitioning = ref(false)

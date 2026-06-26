@@ -140,7 +140,7 @@ const props = defineProps<{
   back?: boolean
 }>()
 
-const { appBarColor, blurAppBar } = injection(kTheme)
+const { blurAppBar } = injection(kTheme)
 const { maximize, minimize, close, hide } = windowController
 const { shouldShiftBackControl, hideWindowControl } = useWindowStyle()
 const { show: showFeedbackDialog } = useDialog('feedback')
