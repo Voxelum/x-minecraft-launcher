@@ -3,7 +3,7 @@
     
     <!-- Mod Loader Selection -->
     <div class="text-sm font-bold opacity-70 mb-2 mt-4">{{ t('modrinth.categories.modloader') }}</div>
-    <div class="flex flex-wrap gap-3 mb-6">
+    <div class="flex flex-wrap gap-3 mb-6 items-center justify-center">
       <v-card 
         v-for="loader in loaders" :key="loader.id"
         :variant="currentTab === loader.id ? 'outlined' : 'tonal'"
@@ -75,14 +75,15 @@
           :versions="versions"
           @input="onSelectLabyMod"
         />
-        <VersionInputLocal
-          v-else-if="currentTab === 'local'"
-          :value="data.version"
-          :versions="versions"
-          @input="onSelectLocalVersion"
-        />
       </div>
     </v-expand-transition>
+
+    <VersionInputLocal
+      class="mt-4"
+      :value="data.version"
+      :versions="versions"
+      @input="onSelectLocalVersion"
+    />
 
     <!-- Advanced Settings -->
     <v-expansion-panels variant="accordion" class="mt-6 bg-transparent">
@@ -181,14 +182,12 @@ const javaItems = computed(() => javas.value.map(java => ({
 })))
 
 const loaders = [
-  { id: 'vanilla', name: 'Vanilla', icon: BuiltinImages.minecraft },
   { id: 'forge', name: 'Forge', icon: BuiltinImages.forge },
   { id: 'fabric', name: 'Fabric', icon: BuiltinImages.fabric },
   { id: 'quilt', name: 'Quilt', icon: BuiltinImages.quilt },
   { id: 'neoforge', name: 'NeoForged', icon: BuiltinImages.neoForged },
   { id: 'optifine', name: 'OptiFine', icon: BuiltinImages.optifine },
   { id: 'labymod', name: 'LabyMod', icon: BuiltinImages.labyMod },
-  { id: 'local', name: t('localVersion.title'), icon: BuiltinImages.minecraft },
 ]
 
 const currentTab = ref('vanilla')
@@ -204,17 +203,25 @@ watch([() => data.runtime, () => data.version], ([rt, version]) => {
   else currentTab.value = 'vanilla'
 }, { deep: true, immediate: true })
 
+function resetToVanilla() {
+  currentTab.value = 'vanilla'
+  data.runtime.forge = ''
+  data.runtime.fabricLoader = ''
+  data.runtime.quiltLoader = ''
+  data.runtime.neoForged = ''
+  data.runtime.labyMod = ''
+  data.runtime.optifine = ''
+  data.version = ''
+}
+
 function selectLoader(loader: string) {
+  // Toggle off when clicking the already-selected loader, reverting to vanilla.
+  if (currentTab.value === loader) {
+    resetToVanilla()
+    return
+  }
   currentTab.value = loader
-  if (loader === 'vanilla') {
-    data.runtime.forge = ''
-    data.runtime.fabricLoader = ''
-    data.runtime.quiltLoader = ''
-    data.runtime.neoForged = ''
-    data.runtime.labyMod = ''
-    data.runtime.optifine = ''
-    data.version = ''
-  } else if (loader === 'forge') {
+  if (loader === 'forge') {
     onSelectForge('')
   } else if (loader === 'fabric') {
     onSelectFabric('')
@@ -226,8 +233,6 @@ function selectLoader(loader: string) {
     onSelectOptifine('')
   } else if (loader === 'labymod') {
     onSelectLabyMod('')
-  } else if (loader === 'local') {
-    // Local versions are selected directly via VersionInputLocal, so no initial runtime reset is needed here.
   }
 }
 
