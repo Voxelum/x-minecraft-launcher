@@ -200,24 +200,24 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
             return
           }
           if (ctx.mods) {
-            client.trackTrace({
-              message: JSON.stringify({
-                mods: ctx.mods.join(','),
-                runtime: ctx.runtime,
-                java: await javaService?.getJavaState().then((javaState) => {
-                  const javaVersion = javaState.all.find(s => s.path === opt.options.javaPath)
-                  if (javaVersion) {
-                    return {
-                      majorVersion: javaVersion.majorVersion,
-                      version: javaVersion.version,
-                    }
-                  }
-                }),
-              }),
-              properties: {
-                name: 'minecraft-run-record-v2',
-              }
-            })
+            // client.trackTrace({
+            //   message: JSON.stringify({
+            //     mods: ctx.mods.join(','),
+            //     runtime: ctx.runtime,
+            //     java: await javaService?.getJavaState().then((javaState) => {
+            //       const javaVersion = javaState.all.find(s => s.path === opt.options.javaPath)
+            //       if (javaVersion) {
+            //         return {
+            //           majorVersion: javaVersion.majorVersion,
+            //           version: javaVersion.version,
+            //         }
+            //       }
+            //     }),
+            //   }),
+            //   properties: {
+            //     name: 'minecraft-run-record-v2',
+            //   }
+            // })
           }
         },
       })
