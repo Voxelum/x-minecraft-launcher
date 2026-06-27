@@ -55,7 +55,7 @@
         <LogView v-if="log" class="visible-scroll max-h-[60vh] overflow-auto" :logs="logs" />
         <div v-else class="grid grid-cols-12 gap-4 p-4 h-[60vh] overflow-hidden">
           <pre
-            class="visible-scroll col-span-12 lg:col-span-8 overflow-auto rounded-md p-4 m-0 text-xs leading-relaxed log-pre min-w-0 min-h-0 max-h-full"
+            class="visible-scroll surface-rounded-item col-span-12 lg:col-span-8 overflow-auto p-4 m-0 text-xs leading-relaxed log-pre min-w-0 min-h-0 max-h-full"
             >{{ content }}</pre
           >
           <div class="visible-scroll col-span-12 lg:col-span-4 min-w-0 min-h-0 max-h-full overflow-auto">

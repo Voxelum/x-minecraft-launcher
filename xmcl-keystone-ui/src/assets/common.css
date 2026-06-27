@@ -82,6 +82,10 @@ html {
     /* Menu-only: inner padding + list-item radius (dialogs don't share). */
     --surface-menu-padding: 6px;
     --surface-menu-item-radius: 10px;
+    --surface-dialog-radius: 32px;
+    --surface-tooltip-radius: 10px;
+    --surface-pill-radius: 9999px;
+    --surface-button-radius: 4px;
 
     /* Cards — three intentional tiers. Apply with the `.surface-card`,
        `.surface-card-subsection`, `.surface-card-item` utility classes. */
@@ -263,9 +267,30 @@ html ::-webkit-scrollbar {
     -webkit-backdrop-filter: blur(var(--surface-blur));
     backdrop-filter: blur(var(--surface-blur));
     background: var(--surface-bg) !important;
-    border-radius: var(--surface-radius);
+    border-radius: var(--surface-dialog-radius);
     border: var(--surface-border);
     box-shadow: var(--surface-shadow);
+}
+
+.surface-dialog-shell {
+    -webkit-backdrop-filter: blur(var(--surface-blur));
+    backdrop-filter: blur(var(--surface-blur));
+    background: var(--surface-bg);
+    border-radius: var(--surface-dialog-radius);
+    border: var(--surface-border);
+    box-shadow: var(--surface-shadow);
+}
+
+.surface-rounded-item {
+    border-radius: var(--card-item-radius) !important;
+}
+
+.v-btn.rounded-pill {
+    border-radius: var(--surface-pill-radius) !important;
+}
+
+.v-btn:not(.rounded-pill):not(.rounded-0):not(.rounded-sm):not(.rounded-lg):not(.rounded-xl):not(.rounded-circle) {
+    border-radius: var(--surface-button-radius) !important;
 }
 
 /* ── Card / panel utility classes ──
@@ -763,17 +788,17 @@ a {
 }
 
 .v-dialog > .v-overlay__content > *:first-child {
-    -webkit-backdrop-filter: blur(48px);
-    backdrop-filter: blur(48px);
-    background: rgba(var(--v-theme-surface), 0.85) !important;
+    -webkit-backdrop-filter: blur(var(--surface-blur));
+    backdrop-filter: blur(var(--surface-blur));
+    background: var(--surface-bg) !important;
     color: rgb(var(--v-theme-on-surface));
-    border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
-    border-radius: 32px !important;
-    box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.3);
+    border: var(--surface-border);
+    border-radius: var(--surface-dialog-radius) !important;
+    box-shadow: var(--surface-shadow);
 }
 
 .v-dialog > .v-overlay__content {
-    border-radius: 32px !important;
+    border-radius: var(--surface-dialog-radius) !important;
 }
 /* Slim section header used inside filter dropdowns / option panes.
    Mirrors v2's medium-emphasis v-list-subheader without dragging in

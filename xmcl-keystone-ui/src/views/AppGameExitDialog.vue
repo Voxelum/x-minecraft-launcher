@@ -28,7 +28,7 @@
         <div class="col-span-9 flex flex-col overflow-auto mt-4">
           <div
             v-if="data.elyByWarning"
-            class="mb-4 rounded bg-orange-100 dark:bg-orange-900 p-4 border-s-4 border-orange-500"
+            class="surface-rounded-item mb-4 bg-orange-100 dark:bg-orange-900 p-4 border-s-4 border-orange-500"
           >
             <div class="flex items-center gap-2 mb-2">
               <v-icon color="orange">
@@ -50,14 +50,14 @@
           </div>
           <pre
             v-if="data.errorLog"
-            class="overflow-auto min-h-[200px] rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]"
+            class="surface-rounded-item overflow-auto min-h-[200px] bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]"
           >{{ data.errorLog }}</pre>
           <div
             v-if="!data.isCrash"
           >
             {{ t(`launchFailed.latestLog`) }}
           </div>
-          <pre class="overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ data.log }}</pre>
+          <pre class="surface-rounded-item overflow-auto bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ data.log }}</pre>
         </div>
         <AppCrashAIHint
           class="col-span-3 mt-2"

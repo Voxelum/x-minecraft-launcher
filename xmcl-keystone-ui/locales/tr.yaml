@@ -1300,6 +1300,8 @@ setting:
     light: Açık Tema
     system: Sistem Temasını Kullan
   themeExport: Temayı Dışa Aktar
+  themeBorderRadius: Yuvarlatılmış köşeler
+  themeBorderRadiusDescription: Kartlar, diyaloglar, menüler ve paneller için yuvarlatılmış köşeleri açın veya kapatın.
   themeFont: Yazı Tipi
   themeFontDescription: Başlatıcının yazı tipini değiştirin.
   themeFontUrl: Yazı Tipi URL'si

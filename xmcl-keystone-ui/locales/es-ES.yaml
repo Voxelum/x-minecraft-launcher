@@ -1118,6 +1118,8 @@ setting:
     light: Tema Claro
     system: Usar Tema del Sistema
   themeExport: Exportar un tema
+  themeBorderRadius: Esquinas redondeadas
+  themeBorderRadiusDescription: Activa o desactiva las esquinas redondeadas para tarjetas, dialogos, menus y paneles.
   themeFont: Fuente
   themeFontDescription: Cambia la fuente del lanzador.
   themeFontUrl: URL de fuente

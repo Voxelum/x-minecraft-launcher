@@ -51,6 +51,9 @@ export function serialize(theme: UIThemeDataV1) {
   if (theme.fontSize) {
     settings.fontSize = theme.fontSize
   }
+  if (theme.borderRadiusEnabled !== undefined) {
+    settings.borderRadiusEnabled = theme.borderRadiusEnabled
+  }
   if (theme.customCssEnabled) {
     settings.customCssEnabled = true
   }
@@ -123,6 +126,11 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
     }
     if (data.settings.fontSize) {
       theme.fontSize = data.settings.fontSize as number
+    }
+    if (data.settings.borderRadiusEnabled !== undefined) {
+      theme.borderRadiusEnabled = data.settings.borderRadiusEnabled as boolean
+    } else if (data.settings.borderRadiusScale !== undefined) {
+      theme.borderRadiusEnabled = Number(data.settings.borderRadiusScale) > 0
     }
     if (data.settings.backgroundType) {
       theme.backgroundType = data.settings.backgroundType as any

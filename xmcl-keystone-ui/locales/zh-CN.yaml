@@ -1431,6 +1431,8 @@ setting:
     light: 亮色主题
     system: 跟随系统
   themeExport: 导出主题
+  themeBorderRadius: 圆角
+  themeBorderRadiusDescription: 为卡片、对话框、菜单和面板启用或禁用圆角。
   themeFont: 字体
   themeFontDescription: 更改启动器的字体。
   themeFontUrl: 字体网址

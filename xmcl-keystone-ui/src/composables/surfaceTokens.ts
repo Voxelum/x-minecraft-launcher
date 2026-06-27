@@ -17,6 +17,8 @@ import { InjectionKey, Ref, ref, watchEffect } from 'vue'
 
 /** Border radius (px). Matches Vuetify's `rounded="xl"`. */
 export const DEFAULT_SURFACE_RADIUS = 16
+/** Dialog shell radius (px). Keeps legacy 32px look at factor=1. */
+export const DEFAULT_SURFACE_DIALOG_RADIUS = 32
 
 /** Vuetify `rounded` prop value equivalent to `DEFAULT_SURFACE_RADIUS`. */
 export const DEFAULT_SURFACE_RADIUS_PROP = 'xl' as const
@@ -31,6 +33,12 @@ export const DEFAULT_SURFACE_BLUR = 48
 /** Menu-only: inner padding and list-item radius. */
 export const DEFAULT_SURFACE_MENU_PADDING = 6
 export const DEFAULT_SURFACE_MENU_ITEM_RADIUS = 10
+/** Shared tooltip bubble radius. */
+export const DEFAULT_SURFACE_TOOLTIP_RADIUS = 10
+/** Pill button radius. Keep large by default to preserve capsule shape. */
+export const DEFAULT_SURFACE_PILL_RADIUS = 9999
+/** Default button radius (matches previous Vuetify VBtn rounded=4). */
+export const DEFAULT_SURFACE_BUTTON_RADIUS = 4
 
 // Cards — three intentional tiers. Apply via the `.surface-card`,
 // `.surface-card-subsection`, `.surface-card-item` utility classes
@@ -103,6 +111,10 @@ export interface SurfaceTokensInit {
   blur?: number
   menuPadding?: number
   menuItemRadius?: number
+  dialogRadius?: number
+  tooltipRadius?: number
+  pillRadius?: number
+  buttonRadius?: number
   cardRadius?: number
   cardSubsectionRadius?: number
   cardItemRadius?: number
@@ -138,6 +150,10 @@ export interface SurfaceTokens {
   blur: Ref<number>
   menuPadding: Ref<number>
   menuItemRadius: Ref<number>
+  dialogRadius: Ref<number>
+  tooltipRadius: Ref<number>
+  pillRadius: Ref<number>
+  buttonRadius: Ref<number>
   cardRadius: Ref<number>
   cardSubsectionRadius: Ref<number>
   cardItemRadius: Ref<number>
@@ -177,6 +193,10 @@ export function useSurfaceTokens(init: SurfaceTokensInit = {}): SurfaceTokens {
   const blur = ref(init.blur ?? DEFAULT_SURFACE_BLUR)
   const menuPadding = ref(init.menuPadding ?? DEFAULT_SURFACE_MENU_PADDING)
   const menuItemRadius = ref(init.menuItemRadius ?? DEFAULT_SURFACE_MENU_ITEM_RADIUS)
+  const dialogRadius = ref(init.dialogRadius ?? DEFAULT_SURFACE_DIALOG_RADIUS)
+  const tooltipRadius = ref(init.tooltipRadius ?? DEFAULT_SURFACE_TOOLTIP_RADIUS)
+  const pillRadius = ref(init.pillRadius ?? DEFAULT_SURFACE_PILL_RADIUS)
+  const buttonRadius = ref(init.buttonRadius ?? DEFAULT_SURFACE_BUTTON_RADIUS)
 
   const cardRadius = ref(init.cardRadius ?? DEFAULT_CARD_RADIUS)
   const cardSubsectionRadius = ref(init.cardSubsectionRadius ?? DEFAULT_CARD_SUBSECTION_RADIUS)
@@ -217,6 +237,10 @@ export function useSurfaceTokens(init: SurfaceTokensInit = {}): SurfaceTokens {
     root.setProperty('--surface-blur', `${blur.value}px`)
     root.setProperty('--surface-menu-padding', `${menuPadding.value}px`)
     root.setProperty('--surface-menu-item-radius', `${menuItemRadius.value}px`)
+    root.setProperty('--surface-dialog-radius', `${dialogRadius.value}px`)
+    root.setProperty('--surface-tooltip-radius', `${tooltipRadius.value}px`)
+    root.setProperty('--surface-pill-radius', `${pillRadius.value}px`)
+    root.setProperty('--surface-button-radius', `${buttonRadius.value}px`)
 
     root.setProperty('--card-radius', `${cardRadius.value}px`)
     root.setProperty('--card-subsection-radius', `${cardSubsectionRadius.value}px`)
@@ -255,6 +279,10 @@ export function useSurfaceTokens(init: SurfaceTokensInit = {}): SurfaceTokens {
     blur.value = DEFAULT_SURFACE_BLUR
     menuPadding.value = DEFAULT_SURFACE_MENU_PADDING
     menuItemRadius.value = DEFAULT_SURFACE_MENU_ITEM_RADIUS
+    dialogRadius.value = DEFAULT_SURFACE_DIALOG_RADIUS
+    tooltipRadius.value = DEFAULT_SURFACE_TOOLTIP_RADIUS
+    pillRadius.value = DEFAULT_SURFACE_PILL_RADIUS
+    buttonRadius.value = DEFAULT_SURFACE_BUTTON_RADIUS
     cardRadius.value = DEFAULT_CARD_RADIUS
     cardSubsectionRadius.value = DEFAULT_CARD_SUBSECTION_RADIUS
     cardItemRadius.value = DEFAULT_CARD_ITEM_RADIUS
@@ -290,6 +318,10 @@ export function useSurfaceTokens(init: SurfaceTokensInit = {}): SurfaceTokens {
     blur,
     menuPadding,
     menuItemRadius,
+    dialogRadius,
+    tooltipRadius,
+    pillRadius,
+    buttonRadius,
     cardRadius,
     cardSubsectionRadius,
     cardItemRadius,

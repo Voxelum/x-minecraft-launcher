@@ -7,7 +7,7 @@
     transition="fade-transition"
     content-class="elevation-0"
   >
-    <div class="flex flex-col overflow-hidden">
+    <div class="surface-dialog-shell flex flex-col overflow-hidden">
       <!-- Header -->
       <div class="flex items-center px-6 pt-6 pb-4">
         <div class="flex items-center gap-3 flex-grow">

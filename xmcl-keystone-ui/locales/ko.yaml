@@ -1238,6 +1238,8 @@ setting:
     light: 라이트 테마
     system: 시스템 테마 사용
   themeExport: 테마 내보내기
+  themeBorderRadius: 둥근 모서리
+  themeBorderRadiusDescription: 카드, 대화상자, 메뉴, 패널의 둥근 모서리를 켜거나 끕니다.
   themeFont: 폰트
   themeFontDescription: 런처의 폰트를 변경합니다.
   themeFontUrl: 글꼴 URL

@@ -28,6 +28,7 @@ import { kModLibCleaner, useModLibCleaner } from '@/composables/modLibCleaner'
 import { kModsSearch, useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
 import { kModpackExport, useModpackExport } from '@/composables/modpack'
+import { kInstanceServerLaunch, useInstanceServerLaunch } from '@/composables/instanceServerLaunch'
 import { kModrinthTags, useModrinthTags } from '@/composables/modrinth'
 import { kModrinthAuthenticatedAPI, useModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 import { kPeerShared, usePeerConnections } from '@/composables/peers'
@@ -36,7 +37,22 @@ import { kSaveSearch, useSavesSearch } from '@/composables/savesSearch'
 import { kSearchModel, useSearchModel } from '@/composables/search'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
-import { kSurfaceTokens, useSurfaceTokens } from '@/composables/surfaceTokens'
+import {
+  DEFAULT_CARD_CLICKABLE_RADIUS,
+  DEFAULT_CARD_ITEM_RADIUS,
+  DEFAULT_CARD_PROMINENT_RADIUS,
+  DEFAULT_CARD_RADIUS,
+  DEFAULT_CARD_SUBSECTION_RADIUS,
+  DEFAULT_PANEL_RADIUS,
+  DEFAULT_SURFACE_MENU_ITEM_RADIUS,
+  DEFAULT_SURFACE_PILL_RADIUS,
+  DEFAULT_SURFACE_RADIUS,
+  DEFAULT_SURFACE_BUTTON_RADIUS,
+  DEFAULT_SURFACE_DIALOG_RADIUS,
+  DEFAULT_SURFACE_TOOLTIP_RADIUS,
+  kSurfaceTokens,
+  useSurfaceTokens,
+} from '@/composables/surfaceTokens'
 import { kShaderPackSearch, useShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useTelemetryTrack } from '@/composables/telemetryTrack'
 import { kTheme, useTheme } from '@/composables/theme'
@@ -48,7 +64,7 @@ import { kLatestMinecraftVersion, useMinecraftLatestRelease } from '@/composable
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { kSupportedAuthorityMetadata, useSupportedAuthority } from '@/composables/yggrasil'
 import { vuetify } from '@/vuetify'
-import { provide } from 'vue'
+import { provide, watchEffect } from 'vue'
 
 export default defineComponent({
   setup(props, ctx) {
@@ -130,7 +146,24 @@ export default defineComponent({
     provide(kInstanceTheme, instanceTheme)
     const theme = useTheme(instanceTheme.instanceTheme)
     provide(kTheme, theme)
-    provide(kSurfaceTokens, useSurfaceTokens())
+    const surfaceTokens = useSurfaceTokens()
+    provide(kSurfaceTokens, surfaceTokens)
+
+    watchEffect(() => {
+      const enabled = theme.currentTheme.value.borderRadiusEnabled ?? true
+      surfaceTokens.radius.value = enabled ? DEFAULT_SURFACE_RADIUS : 0
+      surfaceTokens.dialogRadius.value = enabled ? DEFAULT_SURFACE_DIALOG_RADIUS : 0
+      surfaceTokens.menuItemRadius.value = enabled ? DEFAULT_SURFACE_MENU_ITEM_RADIUS : 0
+      surfaceTokens.cardRadius.value = enabled ? DEFAULT_CARD_RADIUS : 0
+      surfaceTokens.cardSubsectionRadius.value = enabled ? DEFAULT_CARD_SUBSECTION_RADIUS : 0
+      surfaceTokens.cardItemRadius.value = enabled ? DEFAULT_CARD_ITEM_RADIUS : 0
+      surfaceTokens.panelRadius.value = enabled ? DEFAULT_PANEL_RADIUS : 0
+      surfaceTokens.cardProminentRadius.value = enabled ? DEFAULT_CARD_PROMINENT_RADIUS : 0
+      surfaceTokens.cardClickableRadius.value = enabled ? DEFAULT_CARD_CLICKABLE_RADIUS : 0
+      surfaceTokens.tooltipRadius.value = enabled ? DEFAULT_SURFACE_TOOLTIP_RADIUS : 0
+      surfaceTokens.pillRadius.value = enabled ? DEFAULT_SURFACE_PILL_RADIUS : 0
+      surfaceTokens.buttonRadius.value = enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0
+    })
 
     provide(kCustomCss, useCustomCss({
       currentTheme: theme.currentTheme,
@@ -151,6 +184,7 @@ export default defineComponent({
     provide(kModrinthTags, useModrinthTags())
     provide(kCurseforgeCategories, useCurseforgeCategories())
     provide(kModpackExport, useModpackExport())
+    provide(kInstanceServerLaunch, useInstanceServerLaunch())
     provide(kNetworkStatus, useNetworkStatus())
 
     return () => ctx.slots.default?.()

@@ -1402,6 +1402,8 @@ setting:
     light: 'موضوع الضوء'
     system: 'استخدام موضوع النظام'
   themeExport: 'تصدير الموضوع'
+  themeBorderRadius: 'الزوايا المستديرة'
+  themeBorderRadiusDescription: 'تفعيل أو تعطيل الزوايا المستديرة للبطاقات ومربعات الحوار والقوائم واللوحات.'
   themeFont: 'الخط'
   themeFontDescription: 'تغيير خط المشغل.'
   themeFontUrl: 'عنوان URL للخط'

@@ -1358,6 +1358,8 @@ setting:
     light: Világos téma
     system: Rendszer téma használata
   themeExport: Téma exportálása
+  themeBorderRadius: Lekerekített sarkok
+  themeBorderRadiusDescription: A kártyák, párbeszédablakok, menük és panelek lekerekített sarkainak be- vagy kikapcsolása.
   themeFont: Betűtípus
   themeFontDescription: Módosítsa az indító betűtípusát.
   themeFontUrl: Betűtípus URL-je

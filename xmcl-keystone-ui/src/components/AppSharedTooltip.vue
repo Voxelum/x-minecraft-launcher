@@ -97,6 +97,7 @@ const cached = shallowRef({
 .shared-tooltip > .v-overlay__content {
   background-color: rgba(0, 0, 0, 0.9) !important;
   color: #fff !important;
+  border-radius: var(--surface-tooltip-radius) !important;
 }
 </style>
 

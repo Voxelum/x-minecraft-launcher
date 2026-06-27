@@ -66,6 +66,10 @@ export interface UIThemeDataV1 {
 
   font?: MediaData
   fontSize?: number
+  /**
+    * Whether shared surface/card radii are enabled.
+   */
+    borderRadiusEnabled?: boolean
   particleMode?: ParticleMode
   /**
    * Whether the theme's custom CSS is applied. The CSS content itself is stored
@@ -109,6 +113,7 @@ export function getDefaultTheme(): UIThemeDataV1 {
     backgroundType: BackgroundType.NONE,
     font: undefined,
     fontSize: 16,
+    borderRadiusEnabled: true,
     customCssEnabled: false,
     blur: {
       background: 3,
@@ -552,6 +557,15 @@ export function useThemeWritter(
       currentTheme.value.fontSize = v
       writeTheme()
     } })
+  const borderRadiusEnabled = computed({
+    get() {
+      return currentTheme.value.borderRadiusEnabled ?? true
+    },
+    set(v: boolean) {
+      currentTheme.value.borderRadiusEnabled = v
+      writeTheme()
+    },
+  })
 
   function resetDarkToDefault() {
     const colors = currentTheme.value.colors
@@ -737,6 +751,7 @@ export function useThemeWritter(
     cardColor,
     font,
     fontSize,
+    borderRadiusEnabled,
     resetDarkToDefault,
     resetLightToDefault,
     resetToDefault,
@@ -920,6 +935,7 @@ export function useTheme(
   )
   const font = computed(() => targetTheme.value.font)
   const fontSize = computed(() => targetTheme.value.fontSize ?? 16)
+  const borderRadiusEnabled = computed(() => targetTheme.value.borderRadiusEnabled ?? true)
   const customCssEnabled = computed({
     get: () => currentTheme.value.customCssEnabled ?? false,
     set: (v: boolean) => {
@@ -1069,6 +1085,7 @@ export function useTheme(
     cardColor,
     font,
     fontSize,
+    borderRadiusEnabled,
     customCssEnabled,
     saveCurrentTheme,
     saveToStore,

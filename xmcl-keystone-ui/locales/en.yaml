@@ -1604,6 +1604,8 @@ setting:
     light: Light Theme
     system: Use System Theme
   themeExport: Export Theme
+  themeBorderRadius: Rounded Corners
+  themeBorderRadiusDescription: Enable or disable rounded corners for cards, dialogs, menus, and panels.
   themeFont: Font
   themeFontDescription: Change the font of the launcher.
   themeFontUrl: Font URL

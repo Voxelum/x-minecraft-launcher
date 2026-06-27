@@ -1338,6 +1338,8 @@ setting:
     light: Світла тема
     system: Використовувати системну тему
   themeExport: Експортувати тему
+  themeBorderRadius: Закруглені кути
+  themeBorderRadiusDescription: Увімкнути або вимкнути закруглені кути для карток, діалогів, меню та панелей.
   themeFont: Шрифт
   themeFontDescription: Змінити шрифт лаунчера.
   themeFontUrl: URL-адреса шрифту

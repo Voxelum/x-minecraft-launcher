@@ -225,6 +225,20 @@
     </SettingItem>
     <v-divider v-if="!props.dense" class="my-3" />
     <SettingItem
+      :title="t('setting.themeBorderRadius')"
+      :description="t('setting.themeBorderRadiusDescription')"
+    >
+      <template #action>
+        <v-switch
+          v-model="borderRadiusEnabled"
+          color="primary"
+          hide-details
+          density="compact"
+        />
+      </template>
+    </SettingItem>
+    <v-divider v-if="!props.dense" class="my-3" />
+    <SettingItem
       :title="t('setting.themeFont')"
       :description="t('setting.themeFontDescription')"
       long-action
@@ -490,12 +504,32 @@ const {
   backgroundImageFit,
   volume,
   fontSize,
+  borderRadiusEnabled,
   dark,
 } = useThemeWritter(
   computed(() => props.theme),
   () => emit('save'),
   { instancePath: props.instancePath },
 )
+
+// When switching to an image/video background, enable the color overlay and
+// cap the background color's alpha at 75% so the media stays visible underneath.
+watch(backgroundType, (type) => {
+  if (type !== BackgroundType.IMAGE && type !== BackgroundType.VIDEO) return
+  if (!backgroundColorOverlay.value) {
+    backgroundColorOverlay.value = true
+  }
+  const color = backgroundColor.value
+  if (!color || !color.startsWith('#')) return
+  let hex = color.slice(1)
+  if (hex.length === 6) hex += 'ff'
+  if (hex.length !== 8) return
+  const maxAlpha = Math.round(0.75 * 255)
+  const alpha = parseInt(hex.slice(6, 8), 16)
+  if (alpha > maxAlpha) {
+    backgroundColor.value = '#' + hex.slice(0, 6) + maxAlpha.toString(16).padStart(2, '0')
+  }
+})
 
 // ── Custom CSS ─────────────────────────────────────────────────
 // Scoped to the instance when `instancePath` is set, otherwise the global theme.

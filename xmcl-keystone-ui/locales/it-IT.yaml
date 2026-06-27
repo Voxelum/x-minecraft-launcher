@@ -1307,6 +1307,8 @@ setting:
     light: Tema chiaro
     system: Usa il tema di sistema
   themeExport: Esporta tema
+  themeBorderRadius: Angoli arrotondati
+  themeBorderRadiusDescription: Abilita o disabilita gli angoli arrotondati per carte, finestre di dialogo, menu e pannelli.
   themeFont: Font
   themeFontDescription: Cambia il font del launcher.
   themeFontUrl: URL del carattere

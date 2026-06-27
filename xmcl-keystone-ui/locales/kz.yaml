@@ -1306,6 +1306,8 @@ setting:
     light: Жарық тақырып
     system: Жүйелік тақырыпты қолдану
   themeExport: Тақырыпты экспорттау
+  themeBorderRadius: Дөңгелектелген бұрыштар
+  themeBorderRadiusDescription: Карталар, диалогтар, мәзірлер және панельдер үшін дөңгелектелген бұрыштарды қосу немесе өшіру.
   themeFont: Қаріп
   themeFontDescription: Іске қосқыштың қарібін өзгертіңіз.
   themeFontUrl: Қаріп URL-і

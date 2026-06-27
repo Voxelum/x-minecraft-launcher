@@ -1309,6 +1309,8 @@ setting:
     light: Licht Thema
     system: Gebruik Systeemthema
   themeExport: Exporteer Thema
+  themeBorderRadius: Bordos redondeados
+  themeBorderRadiusDescription: Activa ou desactiva os bordos redondeados para tarxetas, dialogos, menus e paneis.
   themeFont: Lettertype
   themeFontDescription: Verander het lettertype van de launcher.
   themeFontUrl: Lettertype URL

@@ -1360,6 +1360,8 @@ setting:
     light: Светлая тема
     system: Использовать системную тему
   themeExport: Экспортировать тему
+  themeBorderRadius: Скругленные углы
+  themeBorderRadiusDescription: Включить или отключить скругленные углы для карточек, диалогов, меню и панелей.
   themeFont: Шрифт
   themeFontDescription: Изменить шрифт лаунчера.
   themeFontUrl: URL-адрес шрифта

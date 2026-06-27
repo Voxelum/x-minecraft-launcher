@@ -1276,6 +1276,8 @@ setting:
     light: ライトテーマ
     system: システムのテーマを使う
   themeExport: テーマをエクスポート
+  themeBorderRadius: 角丸
+  themeBorderRadiusDescription: カード、ダイアログ、メニュー、パネルの角丸を有効または無効にします。
   themeFont: フォント
   themeFontDescription: ランチャーのフォントを変更します。
   themeFontUrl: フォントURL
