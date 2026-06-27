@@ -113,3 +113,94 @@ test('unpackForgeInstaller extracts the bootstrap shim jar to the library path',
   const extracted = await readFile(shimPath)
   expect(extracted.equals(shimContent)).toBe(true)
 })
+
+// Regression test for modern NeoForge installers (>=26.x / installertools 4.x)
+// which ship a SINGLE `data/client.lzma` bundle used by BOTH sides. The
+// install_profile points `BINPATCH.client` and `BINPATCH.server` at
+// `/data/client.lzma` and there is no `data/server.lzma` entry. If the server
+// BINPATCH is not rewritten to the extracted maven artifact, the
+// `PROCESS_MINECRAFT_JAR` processor fails with
+// `FileNotFoundException: /data/client.lzma`.
+test('unpackForgeInstaller rewrites BINPATCH for both sides when only client.lzma exists', async ({ temp }) => {
+  const minecraftVersion = '26.1.2'
+  const neoforgeVersion = '26.1.2.76'
+  const versionId = `neoforge-${neoforgeVersion}`
+
+  const root = join(temp, `neoforge-binpatch-${Date.now()}`)
+  cleanup = root
+  const mc = MinecraftFolder.from(root)
+
+  const installerPath = mc.getLibraryByPath(
+    `net/neoforged/neoforge/${neoforgeVersion}/neoforge-${neoforgeVersion}-installer.jar`,
+  )
+  await mkdir(dirname(installerPath), { recursive: true })
+
+  const lzmaContent = Buffer.from('NEOFORGE-CLIENT-BINPATCH-BUNDLE')
+  await writeForgeInstallerJar(installerPath, {
+    'install_profile.json': JSON.stringify({
+      spec: 1,
+      profile: 'neoforge',
+      version: versionId,
+      minecraft: minecraftVersion,
+      json: `/${versionId}.json`,
+      path: `net.neoforged:neoforge:${neoforgeVersion}`,
+      data: {
+        BINPATCH: { client: '/data/client.lzma', server: '/data/client.lzma' },
+      },
+      processors: [],
+      libraries: [],
+    }),
+    'version.json': JSON.stringify({
+      id: versionId,
+      inheritsFrom: minecraftVersion,
+      type: 'release',
+      mainClass: '',
+      arguments: { game: [], jvm: [] },
+      libraries: [],
+    }),
+    'data/client.lzma': lzmaContent,
+  })
+
+  const zip = await open(installerPath, { lazyEntries: true, autoClose: false })
+  try {
+    const entries = await walkForgeInstallerEntries(zip, neoforgeVersion)
+
+    expect(entries.clientLzma).toBeDefined()
+    expect(entries.serverLzma).toBeUndefined()
+    if (!isForgeInstallerEntries(entries)) throw new Error('unreachable')
+
+    const profile: InstallProfile = {
+      profile: 'neoforge',
+      version: versionId,
+      json: `/${versionId}.json`,
+      path: `net.neoforged:neoforge:${neoforgeVersion}`,
+      minecraft: minecraftVersion,
+      data: {
+        BINPATCH: { client: '/data/client.lzma', server: '/data/client.lzma' },
+      },
+      processors: [],
+      libraries: [],
+    }
+
+    await unpackForgeInstaller(zip, entries, profile, mc, installerPath, {})
+
+    // Both sides must reference the extracted clientdata maven artifact, not the
+    // in-jar `/data/client.lzma` path.
+    expect(profile.data.BINPATCH.client).toBe(
+      `[net.neoforged:neoforge:${neoforgeVersion}:clientdata@lzma]`,
+    )
+    expect(profile.data.BINPATCH.server).toBe(
+      `[net.neoforged:neoforge:${neoforgeVersion}:clientdata@lzma]`,
+    )
+  } finally {
+    zip.close()
+  }
+
+  // The client bundle must be extracted to its maven library path.
+  const lzmaPath = mc.getLibraryByPath(
+    `net/neoforged/neoforge/${neoforgeVersion}/neoforge-${neoforgeVersion}-clientdata.lzma`,
+  )
+  expect(existsSync(lzmaPath)).toBe(true)
+  const extractedLzma = await readFile(lzmaPath)
+  expect(extractedLzma.equals(lzmaContent)).toBe(true)
+})

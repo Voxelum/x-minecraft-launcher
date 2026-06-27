@@ -350,26 +350,38 @@ export async function unpackForgeInstaller(
     server: `[${installerMaven}]`,
   }
 
-  if (entries.serverLzma) {
+  // The installer ships its binary patch bundles under `data/*.lzma`. Extract
+  // each present bundle to its own maven artifact and remember the mapping from
+  // the in-jar `/data/<name>.lzma` path to that maven reference, so the
+  // BINPATCH data entries (which reference the in-jar path) can be rewritten
+  // below. Modern NeoForge ships a single `data/client.lzma` that BOTH sides
+  // share, so the `server` BINPATCH entry references the client bundle and
+  // there is no `data/server.lzma` entry at all.
+  const lzmaMavenByDataPath: Record<string, string> = {}
+  const extractLzma = async (entry: Entry | undefined, classifier: string) => {
+    if (!entry) return
     // forge version and mavens, compatible with twitch api
-    const serverMaven = `${mavenPath}:serverdata@lzma`
-    // override forge bin patch location
-    profile.data.BINPATCH.server = `[${serverMaven}]`
-
-    const serverBinPath = mc.getLibraryByPath(LibraryInfo.resolve(serverMaven).path)
-    await ensureFile(serverBinPath)
-    promises.push(extractEntryTo(zip, entries.serverLzma, serverBinPath))
+    const maven = `${mavenPath}:${classifier}@lzma`
+    const binPath = mc.getLibraryByPath(LibraryInfo.resolve(maven).path)
+    await ensureFile(binPath)
+    promises.push(extractEntryTo(zip, entry, binPath))
+    lzmaMavenByDataPath[`/${entry.fileName}`] = `[${maven}]`
   }
+  await Promise.all([
+    extractLzma(entries.clientLzma, 'clientdata'),
+    extractLzma(entries.serverLzma, 'serverdata'),
+  ])
 
-  if (entries.clientLzma) {
-    // forge version and mavens, compatible with twitch api
-    const clientMaven = `${mavenPath}:clientdata@lzma`
-    // override forge bin patch location
-    profile.data.BINPATCH.client = `[${clientMaven}]`
-
-    const clientBinPath = mc.getLibraryByPath(LibraryInfo.resolve(clientMaven).path)
-    await ensureFile(clientBinPath)
-    promises.push(extractEntryTo(zip, entries.clientLzma, clientBinPath))
+  if (profile.data.BINPATCH) {
+    // override forge bin patch location for every side that references an
+    // extracted bundle (e.g. `/data/client.lzma` -> `[...:clientdata@lzma]`).
+    for (const side of ['client', 'server'] as const) {
+      const dataPath = profile.data.BINPATCH[side]
+      const maven = lzmaMavenByDataPath[dataPath]
+      if (maven) {
+        profile.data.BINPATCH[side] = maven
+      }
+    }
   }
 
   if (entries.forgeJar) {

@@ -339,31 +339,36 @@ export async function installByProfile(
       await parseJar(minecraftFolder, jar, installProfile, serverProfile)
     }
 
-    const neoForgeVersion = serverProfile.arguments?.game.find(
-      (v, i, arr) => arr[i - 1] === '--fml.neoForgeVersion',
-    )
-    if (neoForgeVersion) {
-      serverProfile.libraries.push(
-        {
-          name: `net.neoforged:neoforge:${neoForgeVersion}:universal`,
-        },
-        {
-          name: `net.neoforged:neoforge:${neoForgeVersion}:server`,
-        },
-      )
-    }
+    // NOTE: the NeoForge `:universal` artifact is intentionally NOT added to
+    // the server libraries. It is already downloaded via
+    // `installProfile.libraries` (so it lives in the library directory), and
+    // the official server `-classpath` does NOT list it — FML discovers both
+    // `:universal` AND the patched minecraft jar at runtime via
+    // `-DlibraryDirectory`. If `:universal` is placed on the server classpath,
+    // FML's `RequiredSystemFiles` check picks it as the minecraft system jar,
+    // fails to find `net/minecraft/DetectedVersion.class` inside it, and aborts
+    // with "The patched Minecraft jar is missing".
     const neoFormVersion = serverProfile.arguments?.game.find(
       (v, i, arr) => arr[i - 1] === '--fml.neoFormVersion',
     )
     if (neoFormVersion) {
-      serverProfile.libraries.push(
-        {
-          name: `net.minecraft:server:${installProfile.minecraft}-${neoFormVersion}:extra`,
-        },
-        {
-          name: `net.minecraft:server:${installProfile.minecraft}-${neoFormVersion}:srg`,
-        },
-      )
+      // The neoForm `:extra` (minecraft resources) and `:srg` (SRG-mapped
+      // server) jars are PROCESSOR OUTPUTS generated locally during
+      // postprocess — they are never published to maven. The legacy MCP
+      // pipeline emits them, but modern NeoForge (the unified
+      // `PROCESS_MINECRAFT_JAR` task) produces only the patched jar and never
+      // these. Reference them only when they actually exist on disk, otherwise
+      // the dependency install tries to download them and 404s.
+      const candidates = [
+        `net.minecraft:server:${installProfile.minecraft}-${neoFormVersion}:extra`,
+        `net.minecraft:server:${installProfile.minecraft}-${neoFormVersion}:srg`,
+      ]
+      for (const name of candidates) {
+        const libPath = minecraftFolder.getLibraryByPath(LibraryInfo.resolve(name).path)
+        if (!(await missing(libPath))) {
+          serverProfile.libraries.push({ name })
+        }
+      }
     }
 
     const forgeShim = serverProfile.libraries.find(
@@ -399,6 +404,54 @@ export async function installByProfile(
       throw new PostProcessNoMainClassError(jar!)
     }
 
+    // Record the full server launch classpath as server.json libraries.
+    //
+    // The launch rebuilds `-cp` purely from server.json libraries
+    // (`Version.parseServer` does NOT inherit the vanilla version), so every jar
+    // on the classpath must be listed here or the server dies with
+    // `ClassNotFoundException` / `NoClassDefFoundError` (e.g.
+    // `net.neoforged.fml.startup.Server` from `loader-*.jar`, or
+    // `org.apache.logging.log4j...` from `log4j-core-*.jar`).
+    //
+    // The authoritative, complete list is the `-classpath` token parsed from
+    // win_args.txt — the same one the official `run.sh`/`run.bat` use. Most of
+    // these libraries are NOT downloadable from maven: the vanilla libs (log4j,
+    // netty, guava, authlib, ...) are EXTRACTED from the minecraft server
+    // "bundler" jar by the `PROCESS_MINECRAFT_JAR` processor
+    // (`--extract-libraries-to libraries/`), which has already run by this point,
+    // so they exist on disk and the dependency install skips them. Where a
+    // library is declared in the installer's version.json we reuse that entry
+    // (it carries the proper download url for the FancyModLoader stack);
+    // otherwise we add a bare name and rely on the on-disk file.
+    const clientVersionJson: VersionJson | undefined = await readFile(
+      minecraftFolder.getVersionJson(installProfile.version),
+    )
+      .then((b) => JSON.parse(b.toString()) as VersionJson)
+      .catch(() => undefined)
+    const versionLibByName = new Map<string, Version['libraries'][number]>()
+    for (const lib of clientVersionJson?.libraries ?? []) {
+      versionLibByName.set(lib.name, lib)
+    }
+
+    const jvmArgs = serverProfile.arguments!.jvm
+    const cpIndex = jvmArgs.findIndex((a) => a === '-classpath' || a === '-cp')
+    const cpValue = cpIndex !== -1 ? jvmArgs[cpIndex + 1] : undefined
+    if (typeof cpValue === 'string') {
+      // Drop the verbatim `-classpath <...>` from the jvm args. Its entries are
+      // paths relative to the minecraft root, but the server process runs from
+      // the `server/` working directory, so they would not resolve. The
+      // launcher rebuilds an absolute `-cp` from the libraries below instead.
+      jvmArgs.splice(cpIndex, 2)
+      const existingNames = new Set(serverProfile.libraries.map((l) => l.name))
+      for (const entry of cpValue.split(delimiter)) {
+        if (!entry) continue
+        const name = classpathEntryToLibraryName(entry)
+        if (!name || existingNames.has(name)) continue
+        existingNames.add(name)
+        serverProfile.libraries.push(versionLibByName.get(name) ?? { name })
+      }
+    }
+
     await writeFile(
       join(minecraftFolder.getVersionRoot(serverProfile.id), 'server.json'),
       JSON.stringify(serverProfile, null, 4),
@@ -407,6 +460,36 @@ export async function installByProfile(
     const resolvedLibraries = VersionJson.resolveLibraries(serverProfile.libraries)
     await installResolvedLibraries(resolvedLibraries, minecraft, options)
   }
+}
+
+/**
+ * Convert a single `-classpath` entry of a forge/neoforge server args file
+ * (a path relative to the minecraft root, e.g.
+ * `libraries/io/netty/netty-transport-native-epoll/4.2.7.Final/netty-transport-native-epoll-4.2.7.Final-linux-x86_64.jar`)
+ * into its maven coordinate (`io.netty:netty-transport-native-epoll:4.2.7.Final:linux-x86_64`).
+ *
+ * Unlike {@link convertClasspathToMaven}, the FULL classifier is preserved
+ * (that helper keeps only the first `-`-separated segment, which would turn
+ * `linux-x86_64` into `linux` and point at a non-existent jar).
+ *
+ * @returns The maven coordinate, or `undefined` if the path is not a
+ * well-formed `libraries/<group>/<artifact>/<version>/<file>.jar` entry.
+ */
+export function classpathEntryToLibraryName(entry: string): string | undefined {
+  const normalized = entry.replace(/^libraries[\\/]/, '')
+  const parts = normalized.split(/[\\/]/)
+  if (parts.length < 4) return undefined
+  const fileName = parts.pop()!.replace(/\.jar$/, '')
+  const version = parts.pop()!
+  const artifactId = parts.pop()!
+  const groupId = parts.join('.')
+  if (!groupId || !artifactId || !version || !fileName) return undefined
+  const base = `${artifactId}-${version}`
+  let name = `${groupId}:${artifactId}:${version}`
+  if (fileName.length > base.length && fileName.startsWith(`${base}-`)) {
+    name += `:${fileName.slice(base.length + 1)}`
+  }
+  return name
 }
 
 /**

@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { expect, test } from 'vitest'
-import { parseArgumentsFromArgsFile } from './profile'
+import { classpathEntryToLibraryName, parseArgumentsFromArgsFile } from './profile'
 
 function emptyServerProfile() {
   return {
@@ -77,4 +77,45 @@ test('parseArgumentsFromArgsFile collects game args after the executable jar', (
   expect(jar).toBe(join(parentDir, 'server.jar'))
   expect(profile.arguments.jvm).toEqual(['-Xmx2G'])
   expect(profile.arguments.game).toEqual(['--nogui', 'extra'])
+})
+
+// `classpathEntryToLibraryName` converts a server `-classpath` entry (a path
+// relative to the minecraft root) back into a maven coordinate so the server
+// launch classpath can be reconstructed from server.json libraries.
+test('classpathEntryToLibraryName converts a plain library path', () => {
+  expect(
+    classpathEntryToLibraryName(
+      'libraries/org/apache/logging/log4j/log4j-core/2.25.2/log4j-core-2.25.2.jar',
+    ),
+  ).toBe('org.apache.logging.log4j:log4j-core:2.25.2')
+})
+
+// Regression: a classified jar must keep its FULL classifier. The native netty
+// transports use multi-segment classifiers like `linux-x86_64`; truncating to
+// the first `-` segment (`linux`) points at a non-existent jar and breaks the
+// launch classpath.
+test('classpathEntryToLibraryName preserves a multi-segment classifier', () => {
+  expect(
+    classpathEntryToLibraryName(
+      'libraries/io/netty/netty-transport-native-epoll/4.2.7.Final/netty-transport-native-epoll-4.2.7.Final-linux-x86_64.jar',
+    ),
+  ).toBe('io.netty:netty-transport-native-epoll:4.2.7.Final:linux-x86_64')
+})
+
+// A single-segment classifier (e.g. the forge `:api` / `:srg` artifacts).
+test('classpathEntryToLibraryName converts a single classifier', () => {
+  expect(
+    classpathEntryToLibraryName(
+      'libraries/net/neoforged/mergetool/2.0.7/mergetool-2.0.7-api.jar',
+    ),
+  ).toBe('net.neoforged:mergetool:2.0.7:api')
+})
+
+// Windows-style separators (the win_args.txt classpath) must parse too.
+test('classpathEntryToLibraryName handles backslash separators', () => {
+  expect(
+    classpathEntryToLibraryName(
+      'libraries\\com\\google\\code\\gson\\gson\\2.13.2\\gson-2.13.2.jar',
+    ),
+  ).toBe('com.google.code.gson:gson:2.13.2')
 })
