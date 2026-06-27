@@ -6,7 +6,7 @@
   >
     <v-card :title="t('instance.delete')">
       <v-card-text>
-        {{ t('instance.deleteHint') }}
+        {{ isBedrock ? t('instance.deleteHintBedrock') : t('instance.deleteHint') }}
         <div style="color: grey">
           {{ t('instance.name') }}: {{ name }}
         </div>
@@ -14,6 +14,7 @@
           {{ path }}
         </div>
         <v-checkbox
+          v-if="!isBedrock"
           v-model="deleteFiles"
           :label="t('instance.deleteFile')"
         />
@@ -50,11 +51,16 @@ const { t } = useI18n()
 const name = ref('')
 const path = ref('')
 const deleteFiles = ref(true)
+const isBedrock = ref(false)
 const { parameter, isShown } = useDialog('delete-instance')
 watch(isShown, (shown) => {
   if (shown) {
     name.value = (typeof parameter.value === 'object') ? (parameter.value).name ?? '' : ''
     path.value = (typeof parameter.value === 'object') ? (parameter.value).path ?? '' : ''
+    isBedrock.value = (typeof parameter.value === 'object') ? (parameter.value).edition === 'bedrock' : false
+    if (isBedrock.value) {
+      deleteFiles.value = true
+    }
   }
 })
 const router = useRouter()

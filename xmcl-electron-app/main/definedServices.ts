@@ -1,5 +1,6 @@
 import { BaseService } from '@xmcl/runtime/app'
 import { AuthlibInjectorService } from '@xmcl/runtime/authlibInjector'
+import { BedrockService } from '@xmcl/runtime/bedrock'
 import { ElyByService } from '@xmcl/runtime/elyby'
 import { InstallService, VersionMetadataService } from '@xmcl/runtime/install'
 import {
@@ -36,6 +37,7 @@ export const definedServices = [
   VersionMetadataService,
   BaseService,
   AuthlibInjectorService,
+  BedrockService,
   InstallService,
   ProjectMappingService,
   InstanceIOService,

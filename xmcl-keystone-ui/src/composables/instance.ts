@@ -22,6 +22,7 @@ const EMPTY_INSTANCE: Instance = {
   author: '',
   description: '',
   version: '',
+  edition: 'java',
   url: '',
   icon: '',
   fileApi: '',

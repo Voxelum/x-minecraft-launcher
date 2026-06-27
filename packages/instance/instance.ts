@@ -24,6 +24,19 @@ export type RuntimeVersions = z.infer<typeof RuntimeVersionsSchema>
 export type PartialRuntimeVersions = Partial<RuntimeVersions> & { minecraft: string }
 
 /**
+ * The edition of Minecraft an instance targets.
+ *
+ * - `java`: the classic Java Edition launched through a JVM (the default).
+ * - `bedrock`: the Bedrock Edition launched through the Microsoft Store UWP
+ *   package. Bedrock is only supported on the Windows build.
+ */
+export const InstanceEditionSchema = z.enum(['java', 'bedrock'])
+
+export type InstanceEdition = z.infer<typeof InstanceEditionSchema>
+
+export const DEFAULT_INSTANCE_EDITION: InstanceEdition = 'java'
+
+/**
  * Modrinth modpack upstream configuration
  */
 export const ModrinthUpstreamSchema = z.object({
@@ -111,6 +124,12 @@ export const InstanceDataSchema = z.object({
   description: z.coerce.string().catch('').default(''),
   /** The target version id to launch. It will be computed from "runtime" */
   version: z.coerce.string().catch('').default(''),
+  /**
+   * The Minecraft edition this instance targets. Defaults to `java`.
+   * `bedrock` instances are launched through the Microsoft Store UWP package
+   * and are only supported on the Windows build.
+   */
+  edition: InstanceEditionSchema.catch(DEFAULT_INSTANCE_EDITION).default(DEFAULT_INSTANCE_EDITION),
   /** The runtime version requirement of the profile */
   runtime: RuntimeVersionsSchema.catch({
     minecraft: '',
@@ -213,6 +232,16 @@ export type InstanceDataWithTime = z.infer<typeof InstanceSchema>
 
 export type Instance = InstanceDataWithTime & {
   path: string
+}
+
+/**
+ * Whether the given instance (or instance data) targets Minecraft Bedrock Edition.
+ *
+ * Instances created before the `edition` field existed have no `edition`
+ * property and are treated as Java Edition.
+ */
+export function isBedrockInstance(instance: Pick<Partial<InstanceData>, 'edition'>): boolean {
+  return instance.edition === 'bedrock'
 }
 
 /**

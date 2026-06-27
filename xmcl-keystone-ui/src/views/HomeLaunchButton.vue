@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="!shouldHideLaunchButton"
     v-roving-tabindex
     role="group"
     aria-orientation="horizontal"
@@ -110,6 +111,9 @@ import { injection } from '@/util/inject'
 import HomeLaunchButtonMenuList from './HomeLaunchButtonMenuList.vue'
 import { kInstances } from '@/composables/instances'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
+import { kInstance } from '@/composables/instance'
+import { useHasMinecraftLicense } from '@/composables/minecraftLicense'
+import { isBedrockInstance } from '@xmcl/instance'
 
 defineProps<{ compact?: boolean; top?: boolean }>()
 
@@ -118,6 +122,11 @@ const { isValidating } = injection(kInstances)
 
 const { onClick, color, icon, text, loading, leftIcon, count } = injection(kLaunchButton)
 const { t } = useI18n()
+
+const { instance } = injection(kInstance)
+const { hasMinecraftLicense } = useHasMinecraftLicense()
+const isBedrock = computed(() => isBedrockInstance(instance.value))
+const shouldHideLaunchButton = computed(() => isBedrock.value && !hasMinecraftLicense.value)
 
 const isShown = ref(false)
 const isSpinning = ref(false)

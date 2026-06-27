@@ -45,13 +45,13 @@
           variant="outlined"
           density="compact"
           hide-details
-          :placeholder="`Minecraft ${data.runtime.minecraft}`"
+          :placeholder="isBedrock ? t('instances.editionBedrock') : `Minecraft ${data.runtime.minecraft}`"
         />
       </template>
     </SettingItem>
   </SettingCard>
 
-  <SettingCard :title="t('setting.quickLaunchSettings')" icon="flash_on">
+  <SettingCard v-if="!isBedrock" :title="t('setting.quickLaunchSettings')" icon="flash_on">
     <SettingItemCheckbox
       v-model="hideLauncher"
       :title="t('instanceSetting.hideLauncher')"
@@ -110,6 +110,7 @@ import SettingCard from '@/components/SettingCard.vue'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import { useQuery } from '@/composables/query'
+import { kInstance } from '@/composables/instance'
 import { kUserContext } from '@/composables/user'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
@@ -137,6 +138,8 @@ const {
   resetDisableElyByAuthlib,
 } = injection(InstanceEditInjectionKey)
 const { userProfile } = injection(kUserContext)
+const { instance } = injection(kInstance)
+const isBedrock = computed(() => instance.value.edition === 'bedrock')
 
 const isThirdparty = computed(() => userProfile.value.authority !== AUTHORITY_MICROSOFT)
 const isElyBy = computed(() => userProfile.value.authority.startsWith('https://authserver.ely.by'))

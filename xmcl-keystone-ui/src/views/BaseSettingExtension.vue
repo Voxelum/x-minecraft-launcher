@@ -32,6 +32,7 @@
         </span>
       </v-btn>
       <v-btn
+        v-if="!isBedrock"
         v-shared-tooltip="() => t('modpack.name', 1)"
         variant="text"
         :aria-pressed="targetQuery === 'modpack'"
@@ -149,8 +150,11 @@ import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { useMediaQuery } from '@vueuse/core'
 
+import { isBedrockInstance } from '@xmcl/instance'
+
 const { instance, runtime: version } = injection(kInstance)
 const { versionHeader } = injection(kInstanceVersion)
+const isBedrock = computed(() => isBedrockInstance(instance.value))
 
 const active = ref(false)
 const { t } = useI18n()

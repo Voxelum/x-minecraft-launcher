@@ -9,6 +9,9 @@ export function getInstanceIcon(instance: InstanceData, status: ServerStatus | u
     return BuiltinImages.unknownServer
   }
   if (!instance.icon) {
+    if (instance.edition === 'bedrock') {
+      return BuiltinImages.bedrock
+    }
     if (instance.runtime.forge) {
       return BuiltinImages.forge
     } else if (instance.runtime.neoForged) {

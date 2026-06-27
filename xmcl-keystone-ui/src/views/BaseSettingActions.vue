@@ -30,7 +30,7 @@
       <v-icon> folder </v-icon>
     </v-btn>
     <v-btn
-      v-if="instance && !instance.upstream"
+      v-if="instance && !instance.upstream && !isBedrock"
       v-shared-tooltip.left="() => t('instance.installModpack')"
       variant="text"
       icon
@@ -56,9 +56,11 @@ import {
   waitModpackFiles,
 } from "@xmcl/runtime-api";
 import { useDialog } from "../composables/dialog";
+import { isBedrockInstance } from "@xmcl/instance";
 
 const { path, instance } = injection(kInstance);
 const { isValidating } = injection(kInstances);
+const isBedrock = computed(() => isBedrockInstance(instance.value));
 const { openDirectory } = useService(BaseServiceKey);
 const { show: showLogDialog } = useDialog("log");
 const { show: showInstanceInstallDialog } = useDialog(InstanceInstallDialog);

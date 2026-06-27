@@ -175,9 +175,10 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   })
 
   app.registry.get(InstanceService).then((serv) => {
-    serv.state.subscribe('instanceAdd', ({ path }) => {
-      ensureLinkFolderFromRoot(path, 'libraries')
-      ensureLinkFolderFromRoot(path, 'versions')
+    serv.state.subscribe('instanceAdd', (instance) => {
+      if (instance.edition === 'bedrock') return
+      ensureLinkFolderFromRoot(instance.path, 'libraries')
+      ensureLinkFolderFromRoot(instance.path, 'versions')
     })
   })
   launchService.registerMiddleware({

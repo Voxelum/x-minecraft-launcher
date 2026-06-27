@@ -122,7 +122,7 @@ export function useInstanceGroupDefaultColor() {
 }
 
 export function useInstanceGroup() {
-  const { instances, ready, groups: groupsData, groupsSet } = injection(kInstances)
+  const { instances, allInstances, ready, groups: groupsData, groupsSet } = injection(kInstances)
 
   onMounted(() => {
     try {
@@ -136,7 +136,7 @@ export function useInstanceGroup() {
     }
   })
 
-  watch(instances, (instances) => {
+  watch(allInstances ?? instances, (instances) => {
     if (!ready.value) { return }
     const groups = groupsData.value
     const newGroupData = [] as InstanceOrGroupData[]

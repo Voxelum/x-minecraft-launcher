@@ -67,6 +67,18 @@ askAICrash:
     Дотримуйтесь інструкцій нижче, щоб запитати AI про цю гру!
   selectPlatform: Відкрийте платформу AI та вставте підказку, яку ви щойно скопіювали.
 authProfileAddedNotification: Профіль автентифікації {name} додано
+bedrock:
+  description: >-
+    Minecraft Bedrock Edition встановлюється та запускається через Microsoft Store.
+    Вам потрібно мати ліцензію Bedrock на вашому обліковому записі Microsoft.
+  install: Завантажити через Microsoft Store
+  installFailed: Не вдалося відкрити Microsoft Store
+  installed: 'Встановлено: {version}'
+  launchHint: Використовуйте кнопку «Запуск», щоб запустити Bedrock Edition.
+  licenseRequired: >-
+    Увійдіть за допомогою облікового запису Microsoft, який володіє Minecraft, щоб установити та грати
+    в Bedrock Edition.
+  refresh: Оновити
 baseSetting:
   title: Основні налаштування
 browseApp:
@@ -219,6 +231,10 @@ env:
     fit: Вибрати відповідні
     none: Нічого не вибирати
 errors:
+  bedrockUnsupportedPlatform: Minecraft Bedrock Edition підтримується лише у Windows.
+  bedrockNotInstalled: Minecraft Bedrock Edition не встановлено.
+  bedrockLaunchFailed: Не вдалося запустити Minecraft Bedrock Edition.
+  bedrockInstallFailed: Не вдалося встановити Minecraft Bedrock Edition.
   BadForgeInstallerJarError: >-
     Не вдалося розібрати jar-файл інсталятора Forge. Можливо, у Forge новий формат файлу інсталятора? Зв'яжіться з розробниками, якщо ця проблема не зникне.
   BadInstanceType: 'Недійсний тип екземпляра: {type}'
@@ -369,6 +385,7 @@ instance:
   deleteFailedPermission: Інша програма зайняла файл
   deleteFile: Видалити файли екземпляра
   deleteHint: Дані екземпляра будуть назавжди видалені з диска. Ви впевнені?
+  deleteHintBedrock: Minecraft Bedrock Edition та всі його дані будуть повністю видалені з вашого комп'ютера. Ви впевнені?
   duplicate: Дублювати гру
   duplicatedName: Повторювана назва
   fileApi: URL-адреса API сервера синхронізації файлів

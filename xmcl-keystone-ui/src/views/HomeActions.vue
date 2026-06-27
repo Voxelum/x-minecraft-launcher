@@ -7,7 +7,7 @@
     class="grid xl:gap-4 gap-1 home-actions"
     :style="{
       'grid-template-columns': `repeat(${
-        instance && !instance.upstream ? 3 : 3
+        isBedrock ? 2 : 3
       }, minmax(0, 1fr))`,
     }"
   >
@@ -36,6 +36,7 @@
     </v-btn>
 
     <v-btn
+      v-if="!isBedrock"
       v-shared-tooltip="() => t('modpack.export')"
       icon
       variant="text"
@@ -57,10 +58,12 @@ import { vRovingTabindex } from "@/directives/rovingTabindex";
 import { vSharedTooltip } from "@/directives/sharedTooltip";
 import { injection } from "@/util/inject";
 import { BaseServiceKey } from "@xmcl/runtime-api";
+import { isBedrockInstance } from "@xmcl/instance";
 import { useDialog } from "../composables/dialog";
 
 const { path, instance } = injection(kInstance);
 const { isValidating } = injection(kInstances);
+const isBedrock = computed(() => isBedrockInstance(instance.value));
 const { openDirectory } = useService(BaseServiceKey);
 const { show: showLogDialog } = useDialog("log");
 const { t } = useI18n();

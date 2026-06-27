@@ -78,7 +78,7 @@
             </v-btn>
           </div>
         </div>
-        <div class="flex flex-col gap-2 transition-all duration-400" :style="(active || dragover) ? { 'height': '136px', overflow: selected === 1 ? 'auto' : 'unset' } : { 'height': '4rem' }">
+        <div class="flex flex-col gap-2 transition-all duration-400" :style="((active || dragover) && !isBedrock) ? { 'height': '136px', overflow: selected === 1 ? 'auto' : 'unset' } : { 'height': '4rem' }">
           <template v-if="selected === 1 && upstream?.type === 'server'">
             <HomeCardListItem
               v-if="serverUpstream.suggestedMinecraft.value"
@@ -171,6 +171,7 @@ const { t } = useI18n()
 
 const { dragover } = injection(kDropHandler)
 const { path, instance } = injection(kInstance)
+const isBedrock = computed(() => instance.value?.edition === 'bedrock')
 
 const upstream = computed(() => instance.value?.upstream)
 const modrinthProjectId = ref<string>()
@@ -441,6 +442,19 @@ async function onInstallVersion(v: StoreProjectVersion) {
 const { getDateString } = useDateString()
 const items = computed(() => {
   if (selected.value === 0) {
+    if (isBedrock.value) {
+      return [
+        {
+          icon: 'map',
+          tooltip: t('save.name'),
+          text: dragover.value ? t('save.dropHint') : t('save.createdWorlds', { count: savesLength.value }),
+          highlighted: false,
+          install: () => push('/save?source=remote'),
+          setting: () => push('/save'),
+          drop: onDropSave
+        }
+      ]
+    }
     return [
       {
         icon: 'extension',
