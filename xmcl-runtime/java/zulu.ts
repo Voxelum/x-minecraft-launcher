@@ -15,6 +15,7 @@ export type ZuluJavaType =
   | 'java-runtime-gamma'
   | 'java-runtime-gamma-snapshot'
   | 'java-runtime-delta'
+  | 'java-runtime-epsilon'
   | 'jre-legacy'
 
 // Required component keys the launcher fetches a Zulu build for.
@@ -29,6 +30,7 @@ const ZULU_TYPES = [
   'java-runtime-gamma',
   'java-runtime-gamma-snapshot',
   'java-runtime-delta',
+  'java-runtime-epsilon',
   'jre-legacy',
 ] as const satisfies readonly ZuluJavaType[]
 
@@ -101,6 +103,17 @@ export async function setupZuluCache(app: LauncherApp) {
 }
 
 /**
+ * Map of component type to fallback types (in priority order).
+ * If a requested component is missing from the catalog, we try fallbacks
+ * before giving up. This handles future Mojang components (e.g. zeta, eta)
+ * gracefully until the catalog is updated.
+ */
+const COMPONENT_FALLBACKS: Record<string, ZuluJavaType[]> = {
+  // Future unknown types fall back to the highest available
+  // (epsilon → delta → gamma → beta → alpha)
+}
+
+/**
  * Get the best matching Zulu JRE for the current platform.
  *
  * Loads from the on-disk cache first; if the cache is missing,
@@ -111,7 +124,7 @@ export async function setupZuluCache(app: LauncherApp) {
  * surfaces again the error message now records exactly which sources
  * were tried and how many entries each one offered.
  */
-export async function getZuluJRE(app: LauncherApp, type: ZuluJavaType): Promise<ZuluJRE> {
+export async function getZuluJRE(app: LauncherApp, type: ZuluJavaType | string): Promise<ZuluJRE> {
   const zuluCachePath = join(app.appDataPath, 'zulu.json')
   const onDisk = await readJson(zuluCachePath).catch(() => undefined)
 
@@ -121,13 +134,40 @@ export async function getZuluJRE(app: LauncherApp, type: ZuluJavaType): Promise<
   }
   sources.push({ source: 'bundled', data: index as ZuluCache })
 
+  // Build the list of component types to try: the requested type first,
+  // then any configured fallbacks, then a generic descending fallback
+  // (highest Java version first).
+  const typesToTry: string[] = [type]
+  if (COMPONENT_FALLBACKS[type]) {
+    typesToTry.push(...COMPONENT_FALLBACKS[type])
+  }
+  // If the requested type isn't one of our known types, add a generic
+  // descending fallback chain so future Mojang components still resolve.
+  if (!ZULU_TYPES.includes(type as ZuluJavaType)) {
+    const descending: ZuluJavaType[] = [
+      'java-runtime-epsilon',
+      'java-runtime-delta',
+      'java-runtime-gamma',
+      'java-runtime-beta',
+      'java-runtime-alpha',
+      'jre-legacy',
+    ]
+    for (const fallback of descending) {
+      if (!typesToTry.includes(fallback)) {
+        typesToTry.push(fallback)
+      }
+    }
+  }
+
   const tried: string[] = []
-  for (const { source, data } of sources) {
-    const array = data[type] as ZuluJRE[] | undefined
-    const count = Array.isArray(array) ? array.length : 0
-    const selected = count > 0 ? selectZuluJRE(array!) : undefined
-    tried.push(`${source}=${count}`)
-    if (selected) return selected
+  for (const componentType of typesToTry) {
+    for (const { source, data } of sources) {
+      const array = data[componentType] as ZuluJRE[] | undefined
+      const count = Array.isArray(array) ? array.length : 0
+      const selected = count > 0 ? selectZuluJRE(array!) : undefined
+      tried.push(`${source}:${componentType}=${count}`)
+      if (selected) return selected
+    }
   }
 
   throw new Error(
