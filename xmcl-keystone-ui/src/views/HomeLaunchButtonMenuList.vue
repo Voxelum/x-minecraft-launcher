@@ -48,6 +48,7 @@
           </template>
         </v-list-item>
         <v-list-item
+          v-if="!isBedrock"
           :title="t('modpack.export')"
           to="/base-setting?target=modpack"
         >
@@ -58,6 +59,7 @@
           </template>
         </v-list-item>
         <v-list-item
+          v-if="!isBedrock"
           :title="t('server.export')"
           to="/base-setting?target=server"
         >
@@ -81,7 +83,7 @@
       </v-list>
     </v-menu>
     <v-list-item
-      v-if="instance && !instance.upstream"
+      v-if="instance && !instance.upstream && !isBedrock"
       :title="t('instance.installModpack')"
       :disabled="installing"
       @click="onClickInstallFromModpack()"
@@ -93,9 +95,9 @@
       </template>
     </v-list-item>
 
-    <v-divider class="my-1" />
+    <v-divider v-if="!isBedrock" class="my-1" />
 
-    <v-list-item :title="text" @click="onStartLocalhost">
+    <v-list-item v-if="!isBedrock" :title="text" @click="onStartLocalhost">
       <template #prepend>
         <v-icon size="20">
           {{ serverCount > 0 ? 'cancel' : 'play_arrow' }}
@@ -103,7 +105,7 @@
       </template>
     </v-list-item>
     <v-menu
-      v-if="otherUsers.length > 0"
+      v-if="otherUsers.length > 0 && !isBedrock"
       location="start"
       :close-on-content-click="true"
       open-on-hover
@@ -227,6 +229,7 @@ import { join } from '@/util/basename';
 import { getInstanceIcon } from '@/util/favicon';
 import { injection } from '@/util/inject'
 import { BaseServiceKey, InstanceOptionsServiceKey, LaunchServiceKey, ModpackServiceKey, parseServerAddress, UserProfile, waitModpackFiles } from '@xmcl/runtime-api';
+import { isBedrockInstance } from '@xmcl/instance';
 
 const { t } = useI18n()
 defineProps<{}>()
@@ -333,6 +336,7 @@ const onStartLocalhost = async () => {
   await launch('server', { version })
 }
 
+const isBedrock = computed(() => isBedrockInstance(instance.value))
 const { createLaunchShortcut } = useService(LaunchServiceKey)
 
 const { getDesktopDirectory, openDirectory } = useService(BaseServiceKey)

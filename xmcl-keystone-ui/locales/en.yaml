@@ -82,6 +82,18 @@ askAICrash:
   selectPlatform: Open an AI platform and paste the prompt you just copied.
   setupAgent: Set up the AI agent
 authProfileAddedNotification: Auth Profile {name} Added
+bedrock:
+  description: >-
+    Minecraft Bedrock Edition is installed and launched through the Microsoft Store.
+    You need to own a Bedrock license on your Microsoft account.
+  install: Get from Microsoft Store
+  installFailed: Failed to open the Microsoft Store
+  installed: 'Installed: {version}'
+  launchHint: Use the Launch button to start Bedrock Edition.
+  licenseRequired: >-
+    Sign in with a Microsoft account that owns Minecraft to install and play
+    Bedrock Edition.
+  refresh: Refresh
 baseSetting:
   title: Instance Settings
 browseApp:
@@ -245,6 +257,10 @@ env:
     fit: Select Fit
     none: Select None
 errors:
+  bedrockUnsupportedPlatform: Minecraft Bedrock Edition is only supported on the Windows build.
+  bedrockNotInstalled: Minecraft Bedrock Edition is not installed.
+  bedrockLaunchFailed: Failed to launch Minecraft Bedrock Edition.
+  bedrockInstallFailed: Failed to install Minecraft Bedrock Edition.
   BadForgeInstallerJarError: >-
     Cannot parse forge installer jar file. Maybe the forge has new installer
     file format? Contact developers if this issue persists.
@@ -436,6 +452,7 @@ instance:
   deleteFailedPermission: Other program occupied the file
   deleteFile: Delete Instance Files
   deleteHint: The instance data will be removed from the disk forever. Are you sure?
+  deleteHintBedrock: Minecraft Bedrock Edition and all its data will be completely deleted from your computer. Are you sure?
   duplicate: Duplicate Game
   duplicatedName: Duplicated Name
   envVarKey: Key
@@ -567,6 +584,13 @@ instances:
   addVanillaDescription: >-
     Import from common .minecraft folder. This will duplciate the original game
     profile to XMCL.
+  edition: Edition
+  editionJava: Java Edition
+  editionBedrock: Bedrock Edition
+  editionBedrockHint: >-
+    Bedrock Edition is launched through the Microsoft Store app. You need to own a Bedrock
+    license. Mods, resource packs and other Java-only features are not available.
+  editionBedrockWindowsOnly: Bedrock Edition is only supported on the Windows build.
   fix: Repair
   folder: Folder
   folderSetting: Folder Settings

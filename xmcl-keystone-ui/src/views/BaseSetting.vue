@@ -1,17 +1,24 @@
 <template>
   <div class="base-setting px-10 py-6" ref="root" @wheel.stop>
     <template v-if="!targetQuery || targetQuery === 'general'">
-      <div class="flex flex-col gap-4">
-        <BaseSettingGeneral />
-        <BaseSettingVersions :isExpanded="isExpanded" />
-        <BaseSettingResolution />
-      </div>
-      <div class="flex flex-col gap-4">
-        <BaseSettingJava />
-        <BaseSettingSync />
-        <BaseSettingLaunch />
-        <BaseSettingServer />
-      </div>
+      <template v-if="isBedrock">
+        <div class="flex flex-col gap-4">
+          <BaseSettingGeneral />
+        </div>
+      </template>
+      <template v-else>
+        <div class="flex flex-col gap-4">
+          <BaseSettingGeneral />
+          <BaseSettingVersions :isExpanded="isExpanded" />
+          <BaseSettingResolution />
+        </div>
+        <div class="flex flex-col gap-4">
+          <BaseSettingJava />
+          <BaseSettingSync />
+          <BaseSettingLaunch />
+          <BaseSettingServer />
+        </div>
+      </template>
     </template>
     <template v-else-if="targetQuery === 'modpack'">
       <div class="flex flex-col gap-4">
@@ -104,6 +111,7 @@ import BaseSettingModUpgradeDialog from './BaseSettingModUpgradeDialog.vue'
 import { BaseSettingModUpgradeDialogKey } from '@/composables/instanceUpdate'
 
 const { isServer, name, instance, runtime } = injection(kInstance)
+const isBedrock = computed(() => instance.value.edition === 'bedrock')
 const { edit: _edit } = injection(kInstances)
 const edit = useInstanceEdit(instance, _edit)
 const { t } = useI18n()
@@ -158,6 +166,12 @@ async function onSkipUpgrade() {
 }
 
 const targetQuery = useQuery('target')
+
+watch([isBedrock, targetQuery], ([bedrock, target]) => {
+  if (bedrock && target === 'modpack') {
+    targetQuery.value = 'general'
+  }
+}, { immediate: true })
 
 function onReset() {
   edit.load()

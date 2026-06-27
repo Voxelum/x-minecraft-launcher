@@ -1,10 +1,11 @@
 import { useEventBus, useLocalStorage } from '@vueuse/core'
 import type { EditInstanceOptions, Instance, InstanceDataWithTime } from '@xmcl/instance'
-import { InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
-import { InjectionKey } from 'vue'
+import { InstanceServiceKey, InstanceState, AUTHORITY_DEV, AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
+import { InjectionKey, inject } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
 import { InstanceOrGroupData } from './instanceGroup'
+import { kUserContext } from './user'
 
 export const kInstances: InjectionKey<ReturnType<typeof useInstances>> = Symbol('Instances')
 
@@ -74,7 +75,20 @@ export function useInstances() {
       ])
     }
   })
-  const instances = computed(() => state.value?.instances ?? [])
+  const userContext = inject(kUserContext)
+  const userProfile = userContext?.userProfile
+
+  const instances = computed(() => {
+    const list = state.value?.instances ?? []
+    const isOffline = userProfile?.value?.authority && userProfile?.value?.authority !== AUTHORITY_MICROSOFT
+    if (isOffline) {
+      return list.filter(i => i.edition !== 'bedrock')
+    }
+    return list
+  })
+
+  const allInstances = computed(() => state.value?.instances ?? [])
+
   const _path = useLocalStorage('selectedInstancePath', '' as string)
   const path = ref('')
 
@@ -115,12 +129,11 @@ export function useInstances() {
     if (!newVal) return
     if (!oldVal) {
       // initialize
-      const instances = [...newVal.instances]
       const lastSelectedPath = _path.value
 
       const selectDefault = async () => {
         // Select the first instance
-        let defaultPath = instances[0]?.path as string | undefined
+        let defaultPath = instances.value[0]?.path as string | undefined
         if (!defaultPath) {
           // Create a default instance
           defaultPath = await createInstance({
@@ -132,7 +145,9 @@ export function useInstances() {
 
       if (lastSelectedPath) {
         // Validate the last selected path
-        if (!instances.some(i => i.path === lastSelectedPath)) {
+        if (!instances.value.some(i => i.path === lastSelectedPath)) {
+          await selectDefault()
+        } else {
           const badInstance = await validateInstancePath(lastSelectedPath)
           if (badInstance) {
             await selectDefault()
@@ -157,8 +172,45 @@ export function useInstances() {
     })
   })
 
+  watch(instances, (newInstances) => {
+    if (ready.value && !newInstances.some(i => i.path === path.value)) {
+      if (newInstances.length > 0) {
+        path.value = newInstances[0].path
+      } else {
+        createInstance({
+          name: 'Minecraft',
+        }).then(p => {
+          path.value = p
+        })
+      }
+    }
+  })
+
   const ready = computed(() => state.value !== undefined)
-  const groups = computed(() => state.value?.groups ?? [])
+  const groups = computed(() => {
+    const rawGroups = state.value?.groups ?? []
+    const isOffline = userProfile?.value?.authority && userProfile?.value?.authority !== AUTHORITY_MICROSOFT
+    if (isOffline && state.value) {
+      const all = state.value.all
+      return rawGroups.map(item => {
+        if (typeof item === 'string') {
+          const inst = all[item]
+          if (inst && inst.edition === 'bedrock') {
+            return null
+          }
+          return item
+        } else {
+          const filtered = item.instances.filter(instPath => {
+            const inst = all[instPath]
+            return !(inst && inst.edition === 'bedrock')
+          })
+          if (filtered.length === 0) return null
+          return { ...item, instances: filtered }
+        }
+      }).filter((v): v is InstanceOrGroupData => v !== null)
+    }
+    return rawGroups
+  })
   const groupsSet = (groups: InstanceOrGroupData[]) => {
     state.value?.instanceGroupsSet(groups)
   }
@@ -168,6 +220,7 @@ export function useInstances() {
     groupsSet,
     ready,
     instances,
+    allInstances,
     isValidating,
     error,
     edit,

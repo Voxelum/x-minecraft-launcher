@@ -1,4 +1,5 @@
 import { injection } from '@/util/inject'
+import { isBedrockInstance } from '@xmcl/instance'
 import { watchOnce } from '@vueuse/core'
 import { InjectionKey } from 'vue'
 import { useDialog } from './dialog'
@@ -14,7 +15,9 @@ import { kInstances } from './instances'
 import { LaunchStatusDialogKey } from './launch'
 import { kUserContext } from './user'
 import { kLaunchTask } from './launchTask'
-import { TaskState } from '@xmcl/runtime-api'
+import { TaskState, BedrockServiceKey } from '@xmcl/runtime-api'
+import { useService } from './service'
+import { useTask } from './task'
 
 export interface LaunchMenuItem {
   title: string
@@ -33,6 +36,84 @@ export function useLaunchButton() {
   const { show: showLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)
 
   const { path } = injection(kInstance)
+  const { instance } = injection(kInstance)
+  const isBedrock = computed(() => isBedrockInstance(instance.value))
+
+  const { getInstallation, install: installBedrock, isRunning: isRunningBedrock, killGame: killBedrock } = useService(BedrockServiceKey)
+  const bedrockInstalled = ref(true)
+  const checkingBedrock = ref(false)
+  const bedrockGameRunning = ref(false)
+
+  async function checkBedrockInstallation() {
+    if (!isBedrock.value) return
+    checkingBedrock.value = true
+    try {
+      const status = await getInstallation()
+      bedrockInstalled.value = status.installed
+    } catch {
+      bedrockInstalled.value = false
+    } finally {
+      checkingBedrock.value = false
+    }
+  }
+
+  async function updateBedrockRunningStatus() {
+    if (!isBedrock.value) {
+      bedrockGameRunning.value = false
+      return
+    }
+    try {
+      const running = await isRunningBedrock()
+      if (bedrockGameRunning.value && !running) {
+        windowController.show()
+      }
+      bedrockGameRunning.value = running
+    } catch {
+      bedrockGameRunning.value = false
+    }
+  }
+
+  let checkInterval: any = null
+
+  watch(instance, () => {
+    checkBedrockInstallation()
+    updateBedrockRunningStatus()
+  }, { immediate: true })
+
+  watch(isBedrock, (active) => {
+    if (checkInterval) {
+      clearInterval(checkInterval)
+      checkInterval = null
+    }
+    if (active) {
+      updateBedrockRunningStatus()
+      checkInterval = setInterval(updateBedrockRunningStatus, 2000)
+    } else {
+      bedrockGameRunning.value = false
+    }
+  }, { immediate: true })
+
+  onBeforeUnmount(() => {
+    if (checkInterval) {
+      clearInterval(checkInterval)
+    }
+  })
+
+  const { task: installTask, progress: installProgress, total: installTotal } = useTask((t) => t.type === 'installBedrock')
+  const isInstalling = computed(() => installTask.value !== undefined)
+  const installPercentage = computed(() => {
+    if (installTotal.value > 0) {
+      return Math.round((installProgress.value / installTotal.value) * 100)
+    }
+    return 0
+  })
+
+  watch(isInstalling, (v) => {
+    if (!v) {
+      checkBedrockInstallation()
+    }
+  })
+
   const { isValidating } = injection(kInstances)
   const { isValidating: refreshingJava } = injection(kInstanceJava)
   const { isValidating: refreshingFiles } = injection(kInstanceFiles)
@@ -104,6 +185,11 @@ export function useLaunchButton() {
 
       javaIssue,
       locale,
+      isBedrock,
+      bedrockInstalled,
+      isInstalling,
+      installPercentage,
+      bedrockGameRunning,
       // Rebuild the facade when the diagnosis items themselves change (e.g. the
       // unresolved-file count drops from 3 to 1). The `issues` bitmask stays
       // the same in that case, so without this the cached `menu` text is stale.
@@ -111,6 +197,69 @@ export function useLaunchButton() {
     ],
     ([launching, hasGameRunning, noUserLaunched, hasTaskRunning, issues]) => {
       console.log('update launch button facade')
+      if (isBedrock.value) {
+        // Bedrock instances have no Java/version/file install pipeline. Always
+        // present a plain launch button (or a cancel button while spawning).
+        if (launching) {
+          launchButtonFacade.value = {
+            icon: 'close',
+            text: t('launch.cancel'),
+            color: 'blue',
+            right: true,
+            menu: [],
+            onClick: () => {
+              abort()
+            },
+          }
+        } else if (isInstalling.value) {
+          launchButtonFacade.value = {
+            text: `${t('shared.install')} ${installPercentage.value}%`,
+            color: 'primary',
+            leftIcon: 'get_app',
+            onClick: () => {},
+          }
+        } else if (bedrockGameRunning.value) {
+          launchButtonFacade.value = {
+            icon: 'close',
+            text: t('launch.kill'),
+            color: 'blue',
+            right: true,
+            menu: [],
+            onClick: async () => {
+              try {
+                await killBedrock()
+                await updateBedrockRunningStatus()
+              } catch (e) {
+                console.error(e)
+              }
+            },
+          }
+        } else if (!bedrockInstalled.value) {
+          launchButtonFacade.value = {
+            text: t('shared.install'),
+            color: 'primary',
+            leftIcon: 'get_app',
+            onClick: async () => {
+              try {
+                await installBedrock()
+                await checkBedrockInstallation()
+              } catch (e) {
+                console.error(e)
+              }
+            },
+          }
+        } else {
+          launchButtonFacade.value = {
+            text: t('launch.launch'),
+            color: 'primary',
+            leftIcon: 'play_arrow',
+            onClick: () => {
+              launch()
+            },
+          }
+        }
+        return
+      }
       if (hasTaskRunning) {
         launchButtonFacade.value = {
           icon: 'pause',
@@ -205,7 +354,8 @@ export function useLaunchButton() {
       loadingInstanceFiles.value ||
       isValidating.value ||
       fixingInstance.value ||
-      transition.value
+      transition.value ||
+      checkingBedrock.value
   )
 
   const leftIcon = computed(() => launchButtonFacade.value.leftIcon)

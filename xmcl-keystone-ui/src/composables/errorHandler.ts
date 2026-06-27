@@ -1,4 +1,4 @@
-import { NetworkException } from '@xmcl/runtime-api'
+import { NetworkException, BedrockException } from '@xmcl/runtime-api'
 import { useDialog } from './dialog'
 import { Notify } from './notifier'
 import { useExceptionHandler } from '@/composables/exception'
@@ -15,6 +15,13 @@ export function useDefaultErrorHandler(notify: Notify) {
       more() {
         show()
       },
+    })
+  })
+  useExceptionHandler(BedrockException, (e) => {
+    const message: string = tError(e)
+    notify({
+      title: message,
+      level: 'error',
     })
   })
 }

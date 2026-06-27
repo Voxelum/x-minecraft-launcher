@@ -18,6 +18,7 @@ import { type EncodingWorker, kEncodingWorker } from '~/encoding'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { type UserTokenStorage, kUserTokenStorage } from '~/user'
 import { kYggdrasilSeriveRegistry } from '~/user/YggdrasilSeriveRegistry'
+import { IS_DEV } from '~/constant'
 import { normalizeCommandLine } from './utils/cmd'
 import { isSystemError } from '@xmcl/utils'
 import { VersionService } from './VersionService'
@@ -800,6 +801,10 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
     const shortcutOptions: ShortcutOptions = {}
 
+    const launchArgs = IS_DEV
+      ? `"${process.argv[1]}" launch "${options.userId}" "${options.instancePath}"`
+      : `launch "${options.userId}" "${options.instancePath}"`
+
     if (process.platform === 'win32') {
       const c = vbTextContent
       const vbPath = join(this.app.appDataPath, 'vbscript.vbs')
@@ -810,7 +815,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         outputPath: dirname(options.destination),
         name: basename(options.destination),
         icon: instanceIcoPath,
-        arguments: `launch "${options.userId}" "${options.instancePath}"`,
+        arguments: launchArgs,
       }
       if (!existsSync(shortcutOptions.windows!.icon!)) {
         delete shortcutOptions.windows.icon
@@ -824,7 +829,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         outputPath: absoluteOutputDir,
         name: basename(options.destination),
         icon: instanceIcoPath,
-        arguments: `launch "${options.userId}" "${options.instancePath}"`,
+        arguments: launchArgs,
       }
       if (!existsSync(shortcutOptions.linux!.icon!)) {
         delete shortcutOptions.linux.icon

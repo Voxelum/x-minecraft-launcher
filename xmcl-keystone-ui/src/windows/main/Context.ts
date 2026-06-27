@@ -73,6 +73,7 @@ export default defineComponent({
     provide(kDropHandler, useDropHandler())
 
     const user = useUserContext()
+    provide(kUserContext, user)
     const java = useJavaContext()
     const localVersions = useLocalVersions()
     const instances = useInstances()
@@ -111,7 +112,6 @@ export default defineComponent({
     provide(kCriticalStatus, useCriticalStatus(settings.state))
 
     provide(kLatestMinecraftVersion, useMinecraftLatestRelease())
-    provide(kUserContext, user)
     provide(kJavaContext, java)
     provide(kSettingsState, settings)
     provide(kInstances, instances)

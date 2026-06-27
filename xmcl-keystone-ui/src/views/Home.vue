@@ -4,7 +4,7 @@
     <transition name="slide-y-reverse-transition" mode="out-in">
       <div v-if="!isFocus" class="mx-3 relative">
         <Transition name="slide-y-reverse-transition">
-          <div class="flex items-center justify-center gap-1 sticky top-40 z-3">
+          <div v-if="!isBedrock" class="flex items-center justify-center gap-1 sticky top-40 z-3">
             <v-divider class="divider mx-0" />
             <v-btn
               class="z-4"
@@ -18,19 +18,22 @@
             <v-divider class="divider mx-0" />
           </div>
         </Transition>
-        <HomeGrid />
-        <HomeUpstreamCurseforge
-          v-if="instance.upstream && instance.upstream.type === 'curseforge-modpack'"
-          :id="instance.upstream.modId"
-        />
-        <HomeUpstreamModrinth
-          v-else-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
-          :id="instance.upstream.projectId"
-        />
-        <HomeUpstreamFeedTheBeast
-          v-else-if="instance.upstream && instance.upstream.type === 'ftb-modpack'"
-          :id="instance.upstream.id"
-        />
+        <HomeBedrock v-if="isBedrock" />
+        <template v-else>
+          <HomeGrid />
+          <HomeUpstreamCurseforge
+            v-if="instance.upstream && instance.upstream.type === 'curseforge-modpack'"
+            :id="instance.upstream.modId"
+          />
+          <HomeUpstreamModrinth
+            v-else-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
+            :id="instance.upstream.projectId"
+          />
+          <HomeUpstreamFeedTheBeast
+            v-else-if="instance.upstream && instance.upstream.type === 'ftb-modpack'"
+            :id="instance.upstream.id"
+          />
+        </template>
       </div>
       <HomeFocusFooter v-else class="absolute bottom-0 left-0 pb-[26px]" />
     </transition>
@@ -46,9 +49,11 @@ import { kCompact } from '@/composables/scrollTop'
 import { useTutorial } from '@/composables/tutorial'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
+import { isBedrockInstance } from '@xmcl/instance'
 import type { DriveStep } from 'driver.js'
 import HomeCriticalError from './HomeCriticalError.vue'
 import HomeFocusFooter from './HomeFocusFooterV2.vue'
+import HomeBedrock from './HomeBedrock.vue'
 import HomeGrid from './HomeGrid.vue'
 import HomeUpstreamCurseforge from './HomeUpstreamCurseforge.vue'
 import HomeUpstreamFeedTheBeast from './HomeUpstreamFeedTheBeast.vue'
@@ -57,6 +62,13 @@ import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
 
 const isFocus = useInFocusMode()
 const { instance } = injection(kInstance)
+const isBedrock = computed(() => isBedrockInstance(instance.value))
+
+watch(isBedrock, (bedrock) => {
+  if (bedrock) {
+    isFocus.value = false
+  }
+}, { immediate: true })
 provide(
   kUpstream,
   computed(() => ({

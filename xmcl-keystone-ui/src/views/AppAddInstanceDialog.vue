@@ -105,10 +105,12 @@ import {
   ModpackServiceKey,
   PeerServiceKey,
   waitModpackFiles,
+  BedrockServiceKey,
 } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
+import { useHasMinecraftLicense } from '@/composables/minecraftLicense'
 
 const type = ref(
   undefined as
@@ -245,14 +247,38 @@ provide(kInstanceCreation, creation)
 
 // Install
 const router = useRouter()
+const { getInstallation, install: installBedrock } = useService(BedrockServiceKey)
 const { fix } = injection(kInstanceVersionInstall)
+const { hasMinecraftLicense } = useHasMinecraftLicense()
 const onCreate = async () => {
+  const isBedrock = creation.data.edition === 'bedrock'
+  if (isBedrock) {
+    if (!hasMinecraftLicense.value) {
+      notify({
+        level: 'error',
+        title: t('bedrock.installFailed'),
+        body: t('bedrock.licenseRequired'),
+      })
+      return
+    }
+  }
   const newPath = await create((newPath) => {
     path.value = newPath
     if (router.currentRoute.value.path !== '/') router.push('/')
     hide()
   })
-  if (newPath === path.value) {
+  if (isBedrock) {
+    try {
+      const instStatus = await getInstallation()
+      if (!instStatus.installed) {
+        installBedrock().catch((err) => {
+          console.error('Failed to auto install Bedrock:', err)
+        })
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  } else if (newPath === path.value) {
     await fix().catch(() => {})
   }
 }

@@ -2,7 +2,7 @@ import { AvatarItemProps } from '@/components/AvatarItem.vue'
 import { BuiltinImages } from '@/constant'
 import { TimeUnit, getHumanizeDuration } from '@/util/date'
 import { Instance } from '@xmcl/instance'
-import { VersionHeader, VersionServiceKey, getExpectVersion } from '@xmcl/runtime-api'
+import { VersionHeader, VersionServiceKey, getExpectVersion, BedrockServiceKey } from '@xmcl/runtime-api'
 import { useDateString } from './date'
 import { useService } from './service'
 
@@ -60,6 +60,28 @@ export function useExtensionItemsGamePlay(instance: Ref<Instance>) {
 export function useExtensionItemsVersion(instance: Ref<Instance>, versionHeader: Ref<VersionHeader | undefined>) {
   const { t } = useI18n()
   const { showVersionDirectory } = useService(VersionServiceKey)
+  const { getInstallation } = useService(BedrockServiceKey)
+
+  const bedrockVersion = ref('')
+  const bedrockInstalled = ref(false)
+
+  const updateBedrockStatus = async () => {
+    try {
+      const status = await getInstallation()
+      bedrockInstalled.value = status.installed
+      bedrockVersion.value = status.version
+    } catch {
+      bedrockInstalled.value = false
+      bedrockVersion.value = ''
+    }
+  }
+
+  watch(instance, () => {
+    if (instance.value.edition === 'bedrock') {
+      updateBedrockStatus()
+    }
+  }, { immediate: true })
+
   const onShowLocalVersion = () => {
     if (versionHeader.value?.id) {
       showVersionDirectory(versionHeader.value.id)
@@ -68,6 +90,16 @@ export function useExtensionItemsVersion(instance: Ref<Instance>, versionHeader:
   const items = computed(() => {
     const items: AvatarItemProps[] = []
     const runtime = instance.value.runtime
+
+    if (instance.value.edition === 'bedrock') {
+      items.push({
+        avatar: BuiltinImages.bedrock,
+        title: bedrockInstalled.value ? t('instances.editionBedrock') : t('version.notInstalled'),
+        text: bedrockInstalled.value ? bedrockVersion.value : 'Bedrock',
+      })
+      return items
+    }
+
     const icon = runtime.forge ? BuiltinImages.forge : runtime.fabricLoader ? BuiltinImages.fabric : runtime.quiltLoader
       ? BuiltinImages.quilt : runtime.neoForged ? BuiltinImages.neoForged : runtime.optifine ? BuiltinImages.optifine : runtime.labyMod ? BuiltinImages.labyMod : BuiltinImages.minecraft
     if (versionHeader.value) {

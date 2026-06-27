@@ -196,6 +196,12 @@ export function useLocalizedTaskFunc() {
       return { title, subtitle: '' }
     }
 
+    // Install Bedrock Task
+    if (task.type === 'installBedrock') {
+      const title = t('bedrock.install')
+      return { title, subtitle: '' }
+    }
+
     // Download Mod Metadata DB Task
     if (task.type === 'downloadModMetadataDb') {
       const title = t('downloadModMetadataDb.name')

@@ -1,7 +1,7 @@
 import { useService } from '@/composables'
 import { ModFile } from '@/util/mod'
-import { Instance } from '@xmcl/instance'
-import { AuthlibInjectorServiceKey, JavaRecord, LaunchOptions, LaunchServiceKey, UserProfile, UserServiceKey, generateLaunchOptionsWithGlobal } from '@xmcl/runtime-api'
+import { Instance, isBedrockInstance } from '@xmcl/instance'
+import { AuthlibInjectorServiceKey, BedrockServiceKey, JavaRecord, LaunchOptions, LaunchServiceKey, UserProfile, UserServiceKey, generateLaunchOptionsWithGlobal } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { InjectionKey, Ref } from 'vue'
 import { useGlobalSettings, useSettingsState } from './setting'
@@ -19,6 +19,7 @@ export function useInstanceLaunch(
 ) {
   const { refreshUser } = useService(UserServiceKey)
   const { launch, kill, on, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
+  const { launch: launchBedrock } = useService(BedrockServiceKey)
   const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalPreExecuteCommand, globalPrependCommand, globalMcOptions, globalVmOptions, globalFastLaunch, globalEnv, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib, globalResolution } = useGlobalSettings(globalState)
   const { getOrInstallAuthlibInjector } = useService(AuthlibInjectorServiceKey)
 
@@ -171,6 +172,23 @@ export function useInstanceLaunch(
 
   async function _launch(instancePath: string, user: UserProfile, operationId: string, side: 'client' | 'server', overrides?: Partial<LaunchOptions>) {
     const token = getLaunchToken(user, instancePath)
+    // Bedrock instances are launched through the Microsoft Store UWP package
+    // (Windows only). They have no JVM, version or asset pipeline, so bypass
+    // the Java launch flow entirely.
+    if (isBedrockInstance(instance.value)) {
+      try {
+        error.value = undefined
+        assignStatus(token, 'spawning-process')
+        await launchBedrock()
+      } catch (e) {
+        console.error(e)
+        error.value = e as any
+        throw e
+      } finally {
+        assignStatus(token, '')
+      }
+      return
+    }
     try {
       error.value = undefined
       const options = await generateLaunchOptions(instancePath, user, operationId, side, overrides)

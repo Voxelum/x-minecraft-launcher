@@ -330,12 +330,15 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       await ensureDir(instance.path).catch(() => undefined)
     }
 
-    const forceFolder = true
-    if (forceFolder || payload.resourcepacks) {
-      await ensureDir(join(instance.path, 'resourcepacks')).catch(() => undefined)
-    }
-    if (forceFolder || payload.shaderpacks) {
-      await ensureDir(join(instance.path, 'shaderpacks')).catch(() => undefined)
+    const isBedrock = instance.edition === 'bedrock'
+    if (!isBedrock) {
+      const forceFolder = true
+      if (forceFolder || payload.resourcepacks) {
+        await ensureDir(join(instance.path, 'resourcepacks')).catch(() => undefined)
+      }
+      if (forceFolder || payload.shaderpacks) {
+        await ensureDir(join(instance.path, 'shaderpacks')).catch(() => undefined)
+      }
     }
 
     // Store the icon inside the instance folder so it is portable and shared
@@ -459,6 +462,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     await this.initialize()
     requireString(path)
 
+    const instance = this.state.instances.find(i => i.path === path)
+    const isBedrock = instance?.edition === 'bedrock'
+
     const isManaged = this.isUnderManaged(path)
     const lock = this.mutex.of(LockKey.instanceRemove(path))
     const instanceLock = this.mutex.of(LockKey.instance(path))
@@ -492,6 +498,21 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           // abort) to complete. allSettled so a buggy handler can't
           // block deletion.
           await Promise.allSettled(handlerPromises)
+
+          if (isBedrock && process.platform === 'win32') {
+            try {
+              const { execFile } = require('child_process')
+              await new Promise<void>((resolve, reject) => {
+                execFile('powershell', ['-Command', 'Get-AppxPackage Microsoft.MinecraftUWP | Remove-AppxPackage'], { windowsHide: true }, (err: any) => {
+                  if (err) reject(err)
+                  else resolve()
+                })
+              })
+              this.log(`Successfully uninstalled Bedrock UWP package for instance ${path}`)
+            } catch (e) {
+              this.warn(`Failed to uninstall Bedrock UWP package: ${e}`)
+            }
+          }
 
           if (deleteData) {
             try {

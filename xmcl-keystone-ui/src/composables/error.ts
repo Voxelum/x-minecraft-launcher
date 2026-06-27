@@ -1,4 +1,4 @@
-import { isException, ModpackException, NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
+import { isException, ModpackException, NetworkErrorCode, NetworkException, BedrockException } from '@xmcl/runtime-api'
 
 export function useLocaleError() {
   const { t } = useI18n()
@@ -20,6 +20,15 @@ export function useLocaleError() {
       if (e.exception.type === 'invalidModpack') return t('errors.BadInstanceType', {
         type: e.exception.path
       })
+    }
+    if (isException(BedrockException, e)) {
+      const ex = e.exception
+      return t(`errors.${ex.type}`)
+    }
+    if (e && typeof e === 'object' && 'type' in e) {
+      if (e.type === 'bedrockUnsupportedPlatform' || e.type === 'bedrockNotInstalled' || e.type === 'bedrockLaunchFailed' || e.type === 'bedrockInstallFailed') {
+        return t(`errors.${e.type}`)
+      }
     }
     if (e.message) return e.message
     const str = JSON.stringify(e, undefined, 4)

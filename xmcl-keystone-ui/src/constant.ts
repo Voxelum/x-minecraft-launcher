@@ -11,6 +11,7 @@ import neoForged from '@/assets/neoforged.webp'
 import craftingTable from '@/assets/craftingtable.webp'
 import oculus from '@/assets/oculus.webp'
 import prism from '@/assets/prism.png'
+import bedrock from '@/assets/LargeLogo.png'
 
 export const BuiltinImages = {
   minecraft,
@@ -26,4 +27,6 @@ export const BuiltinImages = {
   unknownServer,
   oculus,
   prism,
+  bedrock,
 }
+

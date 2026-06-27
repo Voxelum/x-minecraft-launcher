@@ -24,6 +24,9 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     }
   })
   const placeHolderName = computed(() => {
+    if (data.edition === 'bedrock') {
+      return generateDistinctName('Bedrock', instances.value.map(i => i.name))
+    }
     return generateDistinctName(generateBaseName(data.runtime), instances.value.map(i => i.name))
   })
   const getNewRuntime = () => ({
@@ -39,6 +42,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     name: '',
     runtime: getNewRuntime(),
     version: '',
+    edition: 'java',
     java: '',
     showLog: undefined,
     hideLauncher: undefined,
@@ -65,6 +69,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     if (template.runtime) {
       data.runtime = { ...data.runtime, ...template.runtime }
     }
+    data.edition = template.edition ?? 'java'
     data.java = template.java ?? ''
     data.showLog = template.showLog
     data.hideLauncher = template.hideLauncher
@@ -92,6 +97,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
   function reset() {
     data.name = ''
     data.runtime = getNewRuntime()
+    data.edition = 'java'
     data.java = ''
     data.showLog = false
     data.hideLauncher = true
