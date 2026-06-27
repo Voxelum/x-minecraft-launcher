@@ -6,14 +6,14 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 92 (in 258 Vue files)
+**Total anchors:** 96 (in 258 Vue files)
 
 | Test ID | Defined in |
 |---|---|
 | `account-item` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L77`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L77) |
 | `accounts-add` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L105`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L105) |
 | `accounts-delete` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L53`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L53) |
-| `add-instance-advanced` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L86`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L86) |
+| `add-instance-advanced` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L91`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L91) |
 | `add-instance-cancel` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L4`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L4) |
 | `add-instance-create` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L28`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L28) |
 | `add-instance-dialog` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L4`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L4) |
@@ -24,6 +24,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `agent-switch-common` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L19`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L19) |
 | `agent-switch-css` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L23`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L23) |
 | `app-sidebar` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L4`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L4)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L4`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L4) |
+| `base-setting-server-tab` | [`xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L51`](../xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L51) |
 | `bind-server-upstream` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L29`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L29) |
 | `create-instance` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35) |
 | `custom-css-editor-textarea` | [`xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26`](../xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26) |
@@ -42,12 +43,13 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `instance-server-edit-port` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L91`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L91) |
 | `instance-server-edit-remove` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L124`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L124) |
 | `instance-server-edit-save` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L143`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L143) |
-| `launch-button` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L17`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L17) |
-| `launch-button-menu` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L59`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L59) |
+| `launch-button` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L21`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L21) |
+| `launch-button-menu` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L78`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L78) |
+| `launch-button-play` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L38`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L38) |
 | `launch-target-client` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L99`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L99) |
 | `launch-target-server` | [`xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41`](../xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41) |
-| `launch-to-server` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L57`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L57) |
-| `launch-to-world` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L94`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L94) |
+| `launch-to-server` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L152`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L152) |
+| `launch-to-world` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L189`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L189) |
 | `login-authority` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L25`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L25) |
 | `login-password` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L74`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L74) |
 | `login-submit` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L130`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L130) |
@@ -73,6 +75,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `nav-settings` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L77`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L77)<br>[`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L166`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L166)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L96`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L96) |
 | `nav-store` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L39`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L39)<br>[`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L134`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L134)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L45`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L45) |
 | `refresh-all-servers` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L54`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L54) |
+| `server-tab-export` | [`xmcl-keystone-ui/src/views/BaseSettingServerExport.vue#L160`](../xmcl-keystone-ui/src/views/BaseSettingServerExport.vue#L160) |
+| `server-tab-launch` | [`xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L123`](../xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L123) |
 | `server-upstream-update-row` | [`xmcl-keystone-ui/src/views/HomeFooterCard.vue#L89`](../xmcl-keystone-ui/src/views/HomeFooterCard.vue#L89) |
 | `settings-check-update` | [`xmcl-keystone-ui/src/views/SettingUpdate.vue#L10`](../xmcl-keystone-ui/src/views/SettingUpdate.vue#L10) |
 | `settings-page` | [`xmcl-keystone-ui/src/views/Setting.vue#L3`](../xmcl-keystone-ui/src/views/Setting.vue#L3) |
@@ -89,7 +93,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `store-install` | [`xmcl-keystone-ui/src/components/StoreProjectHeader.vue#L47`](../xmcl-keystone-ui/src/components/StoreProjectHeader.vue#L47) |
 | `store-page` | [`xmcl-keystone-ui/src/views/Store.vue#L3`](../xmcl-keystone-ui/src/views/Store.vue#L3) |
 | `store-project-card` | [`xmcl-keystone-ui/src/components/StoreExploreCardModern.vue#L4`](../xmcl-keystone-ui/src/components/StoreExploreCardModern.vue#L4) |
-| `store-search` | [`xmcl-keystone-ui/src/views/StoreEntry.vue#L116`](../xmcl-keystone-ui/src/views/StoreEntry.vue#L116) |
+| `store-search` | [`xmcl-keystone-ui/src/views/StoreEntry.vue#L119`](../xmcl-keystone-ui/src/views/StoreEntry.vue#L119) |
 | `unbind-server-upstream` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L41`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L41) |
 | `unresolved-file-item` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L58`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L58) |
 | `unresolved-files-dialog` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L9`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L9) |
@@ -97,8 +101,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `unresolved-files-install` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L135`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L135) |
 | `unresolved-files-search` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L113`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L113) |
 | `use-shared-servers-list` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L8`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L8) |
-| `version-input-fabric` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L47`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L47) |
-| `version-input-forge` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L39`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L39) |
+| `version-input-fabric` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L49`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L49) |
+| `version-input-forge` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L41`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L41) |
 | `version-input-minecraft` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L23`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L23) |
-| `version-input-neoforge` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L31`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L31) |
-| `version-input-quilt` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L55`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L55) |
+| `version-input-neoforge` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L33`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L33) |
+| `version-input-quilt` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L57`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L57) |

@@ -1,5 +1,100 @@
 <template>
   <v-list v-roving-tabindex role="menu" min-width="300">
+    <v-list-item
+      :title="t('baseSetting.title', 2)"
+      to="/base-setting"
+    >
+      <template #prepend>
+        <v-icon size="20">
+          settings
+        </v-icon>
+      </template>
+    </v-list-item>
+    <v-menu
+      location="start"
+      :close-on-content-click="true"
+      open-on-hover
+      :open-delay="200"
+      :close-delay="100"
+    >
+      <template #activator="{ props: menuProps }">
+        <v-list-item v-bind="menuProps" :title="t('shared.manage')" append-icon="chevron_left">
+          <template #prepend>
+            <v-icon size="20">
+              tune
+            </v-icon>
+          </template>
+        </v-list-item>
+      </template>
+      <v-list v-roving-tabindex role="menu" min-width="220">
+        <v-list-item
+          :title="t('logsCrashes.title')"
+          @click="showLogDialog()"
+        >
+          <template #prepend>
+            <v-icon size="20">
+              subtitles
+            </v-icon>
+          </template>
+        </v-list-item>
+        <v-list-item
+          :title="t('instance.showInstance')"
+          @click="showInstanceFolder"
+        >
+          <template #prepend>
+            <v-icon size="20">
+              folder
+            </v-icon>
+          </template>
+        </v-list-item>
+        <v-list-item
+          :title="t('modpack.export')"
+          to="/base-setting?target=modpack"
+        >
+          <template #prepend>
+            <v-icon size="20">
+              share
+            </v-icon>
+          </template>
+        </v-list-item>
+        <v-list-item
+          :title="t('server.export')"
+          to="/base-setting?target=server"
+        >
+          <template #prepend>
+            <v-icon size="20">
+              ios_share
+            </v-icon>
+          </template>
+        </v-list-item>
+        <v-list-item
+          v-if="env && env.os !== 'osx'"
+          :title="t('launch.createShortcut')"
+          @click="onCreateShortcut"
+        >
+          <template #prepend>
+            <v-icon size="20">
+              rocket_launch
+            </v-icon>
+          </template>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+    <v-list-item
+      v-if="instance && !instance.upstream"
+      :title="t('instance.installModpack')"
+      :disabled="installing"
+      @click="onClickInstallFromModpack()"
+    >
+      <template #prepend>
+        <v-icon size="20">
+          drive_folder_upload
+        </v-icon>
+      </template>
+    </v-list-item>
+
+    <v-divider class="my-1" />
+
     <v-list-item :title="text" @click="onStartLocalhost">
       <template #prepend>
         <v-icon size="20">
@@ -112,13 +207,6 @@
         </template>
       </v-list>
     </v-menu>
-    <v-list-item v-if="env && env.os !== 'osx'" :title="t('launch.createShortcut')" @click="onCreateShortcut">
-      <template #prepend>
-        <v-icon size="20">
-          rocket_launch
-        </v-icon>
-      </template>
-    </v-list-item>
   </v-list>
 </template>
 <script lang="ts" setup>
@@ -132,11 +220,13 @@ import { kInstanceSave } from '@/composables/instanceSave'
 import { kInstanceServerInfo } from '@/composables/instanceServerInfo'
 import { kServerStatusCache } from '@/composables/serverStatus'
 import { kUserContext } from '@/composables/user';
+import { InstanceInstallDialog } from '@/composables/instanceUpdate'
+import { useInstanceVersionServerInstall } from '@/composables/instanceVersionServerInstall'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { join } from '@/util/basename';
 import { getInstanceIcon } from '@/util/favicon';
 import { injection } from '@/util/inject'
-import { BaseServiceKey, LaunchServiceKey, parseServerAddress, UserProfile } from '@xmcl/runtime-api';
+import { BaseServiceKey, InstanceOptionsServiceKey, LaunchServiceKey, ModpackServiceKey, parseServerAddress, UserProfile, waitModpackFiles } from '@xmcl/runtime-api';
 
 const { t } = useI18n()
 defineProps<{}>()
@@ -224,18 +314,28 @@ const text = computed(() => {
   }
   return t('instance.launchServer')
 })
-const { show } = useDialog('launch-server')
+const { getEULA } = useService(InstanceOptionsServiceKey)
+const { install: installServer } = useInstanceVersionServerInstall()
+const router = useRouter()
 const onStartLocalhost = async () => {
   if (serverCount.value > 0) {
     kill('server')
-  } else {
-    show()
+    return
   }
+  // If the local server was never configured (EULA not yet accepted), send the
+  // user to the dedicated server tab to set it up. Otherwise launch directly.
+  const eula = await getEULA(path.value)
+  if (!eula) {
+    router.push({ path: '/base-setting', query: { target: 'server' } })
+    return
+  }
+  const version = await installServer()
+  await launch('server', { version })
 }
 
 const { createLaunchShortcut } = useService(LaunchServiceKey)
 
-const { getDesktopDirectory } = useService(BaseServiceKey)
+const { getDesktopDirectory, openDirectory } = useService(BaseServiceKey)
 const env = injection(kEnvironment)
 const onCreateShortcut = async () => {
   const dir = await getDesktopDirectory()
@@ -279,5 +379,47 @@ const onCreateShortcut = async () => {
     userId: userProfile.value.id,
     icon,
   })
+}
+
+// Instance actions (settings / logs / folder / export / install)
+const { show: showLogDialog } = useDialog('log')
+const { show: showInstanceInstallDialog } = useDialog(InstanceInstallDialog)
+const { openModpack } = useService(ModpackServiceKey)
+
+function showInstanceFolder() {
+  openDirectory(path.value)
+}
+
+const installing = ref(false)
+function onClickInstallFromModpack() {
+  installing.value = true
+  windowController
+    .showOpenDialog({
+      properties: ['openFile'],
+      filters: [
+        {
+          name: 'Modpack',
+          extensions: ['zip', 'mrpack'],
+        },
+      ],
+    })
+    .then(async (result) => {
+      const file = result.canceled ? undefined : result.filePaths[0]
+      if (!file) {
+        return
+      }
+      const modpack = await openModpack(file)
+      const files = await waitModpackFiles(modpack)
+
+      showInstanceInstallDialog({
+        type: 'updates',
+        oldFiles: [],
+        files,
+        id: '',
+      })
+    })
+    .finally(() => {
+      installing.value = false
+    })
 }
 </script>

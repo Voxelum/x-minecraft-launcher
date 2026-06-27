@@ -1,91 +1,44 @@
 <template>
-  <div
-    v-if="currentUrl"
-    class="non-moveable flex flex-grow-0"
-  >
-    <span class="max-w-40  overflow-hidden overflow-ellipsis whitespace-nowrap">
+  <div v-if="currentUrl" class="non-moveable flex flex-grow-0 items-center">
+    <span class="max-w-40 overflow-hidden overflow-ellipsis whitespace-nowrap">
       <span class="bar_content">
         {{ basename(currentUrl, '/') }}
       </span>
     </span>
-    <v-btn
-      icon
-      variant="text"
-      @click="prev"
-     size="x-small">
-      <v-icon class="mr-0">
-        skip_previous
-      </v-icon>
+    <v-btn icon variant="text" size="x-small" @click="prev">
+      <v-icon class="mr-0"> skip_previous </v-icon>
     </v-btn>
-    <v-btn
-      icon
-      variant="text"
-      @click="play"
-     size="x-small">
+    <v-btn icon variant="text" size="x-small" @click="play">
       <v-icon class="mr-0">
         {{ playing ? 'pause' : 'play_arrow' }}
       </v-icon>
     </v-btn>
-    <v-btn
-      icon
-      variant="text"
-      @click="next"
-     size="x-small">
-      <v-icon class="mr-0">
-        skip_next
-      </v-icon>
+    <v-btn icon variant="text" size="x-small" @click="next">
+      <v-icon class="mr-0"> skip_next </v-icon>
     </v-btn>
-    <v-btn
-      icon
-      variant="text"
-      @click="shuffle = !shuffle"
-     size="x-small">
+    <v-btn icon variant="text" size="x-small" @click="shuffle = !shuffle">
       <v-icon class="mr-0">
         {{ shuffle ? 'shuffle' : 'repeat' }}
       </v-icon>
     </v-btn>
-    <!-- <v-slider
-      class="h-5 w-5"
-      hide-details
-      dense
-      max="100"
-      min="0"
-    /> -->
-    <v-menu
-      offset-y
-    >
+    <v-menu location="top">
       <template #activator="{ props }">
-        <v-btn
-          icon
-          variant="text"
-          v-bind="props"
-          @wheel="onWheel"
-         size="x-small">
-          <v-icon class="mr-0">
-            volume_up
-          </v-icon>
+        <v-btn icon variant="text" size="x-small" v-bind="props" @wheel="onWheel">
+          <v-icon class="mr-0"> volume_up </v-icon>
         </v-btn>
       </template>
-      <v-sheet
-        class="w-5 overflow-hidden rounded"
+      <v-slider
+        v-model="volume"
+        direction="vertical"
+        hide-details
+        :step="0.01"
+        :max="1"
+        :min="0"
+        density="compact"
         @wheel="onWheel"
-      >
-        <v-slider
-          v-model="volume"
-          vertical
-          hide-details
-          :step="0.01"
-          :max="1"
-          :min="0"
-          dense
-        />
-      </v-sheet>
+      />
     </v-menu>
-    <audio
-      ref="audio"
-      :src="currentUrl"
-      :type="currentMineType"
-    />
+    <audio ref="audio" :src="currentUrl" :type="currentMineType" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -95,7 +48,7 @@ import { useLocalStorage, useMediaControls } from '@vueuse/core'
 import { kTheme } from '@/composables/theme'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
 
-defineProps<{ }>()
+defineProps<{}>()
 
 const { currentTheme } = injection(kTheme)
 const index = ref(0)
@@ -119,16 +72,19 @@ watch(playing, (v) => {
 const { gameProcesses } = injection(kInstanceLaunch)
 
 let lastState = undefined as boolean | undefined
-watch(computed(() => gameProcesses.value.length), (cur, last) => {
-  if (cur > 0 && last === 0) {
-    lastState = playing.value
-    audio.value?.pause()
-  } else if (cur === 0 && last > 0) {
-    if (lastState) {
-      audio.value?.play()
+watch(
+  computed(() => gameProcesses.value.length),
+  (cur, last) => {
+    if (cur > 0 && last === 0) {
+      lastState = playing.value
+      audio.value?.pause()
+    } else if (cur === 0 && last > 0) {
+      if (lastState) {
+        audio.value?.play()
+      }
     }
-  }
-})
+  },
+)
 
 onMounted(() => {
   const v = localStorage.getItem('audioVolume')
@@ -163,7 +119,8 @@ const next = async () => {
 const prev = async () => {
   audio.value?.pause()
   // play prev
-  index.value = (index.value - 1 + currentBackgroundMusics.value.length) % currentBackgroundMusics.value.length
+  index.value =
+    (index.value - 1 + currentBackgroundMusics.value.length) % currentBackgroundMusics.value.length
   await nextTick()
   audio.value?.play()
 }
@@ -183,7 +140,6 @@ const onWheel = (e: WheelEvent) => {
 }
 </script>
 <style scoped>
-
 .bar_content {
   display: block;
   width: fit-content;
@@ -195,6 +151,8 @@ const onWheel = (e: WheelEvent) => {
 }
 /* Create the animation */
 @keyframes move {
-  to { transform: translateX(-100%); }
+  to {
+    transform: translateX(-100%);
+  }
 }
 </style>

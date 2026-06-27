@@ -7,12 +7,12 @@
     class="grid xl:gap-4 gap-1 home-actions"
     :style="{
       'grid-template-columns': `repeat(${
-        instance && !instance.upstream ? 4 : 3
+        instance && !instance.upstream ? 3 : 2
       }, minmax(0, 1fr))`,
     }"
   >
     <v-btn
-      v-shared-tooltip="() => t('logsCrashes.title')"
+      v-shared-tooltip.left="() => t('logsCrashes.title')"
       variant="text"
       icon
       :loading="isValidating"
@@ -21,22 +21,13 @@
       <v-icon> subtitles </v-icon>
     </v-btn>
     <v-btn
-      v-shared-tooltip="() => t('instance.showInstance')"
+      v-shared-tooltip.left="() => t('instance.showInstance')"
       variant="text"
       icon
       :loading="isValidating"
       @click="showInstanceFolder"
     >
       <v-icon> folder </v-icon>
-    </v-btn>
-    <v-btn
-      v-shared-tooltip.left="() => t('server.export')"
-      icon
-      variant="text"
-      :loading="isValidating"
-      @click="showExportServer()"
-    >
-      <v-icon> ios_share </v-icon>
     </v-btn>
     <v-btn
       v-if="instance && !instance.upstream"
@@ -65,15 +56,11 @@ import {
   waitModpackFiles,
 } from "@xmcl/runtime-api";
 import { useDialog } from "../composables/dialog";
-import {
-  AppExportServerDialogKey,
-} from "../composables/instanceExport";
 
 const { path, instance } = injection(kInstance);
 const { isValidating } = injection(kInstances);
 const { openDirectory } = useService(BaseServiceKey);
 const { show: showLogDialog } = useDialog("log");
-const { show: showExportServer } = useDialog(AppExportServerDialogKey);
 const { show: showInstanceInstallDialog } = useDialog(InstanceInstallDialog);
 const { openModpack } = useService(ModpackServiceKey);
 const { t } = useI18n();

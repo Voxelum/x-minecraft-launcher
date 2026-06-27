@@ -219,7 +219,6 @@ async function handleImportSettings() {
 }
 
 .v-card {
-  border-radius: 12px;
   transition: all 0.2s ease;
 }
 

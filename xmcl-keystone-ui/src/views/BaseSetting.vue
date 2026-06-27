@@ -27,6 +27,14 @@
     <template v-else-if="targetQuery === 'appearance'">
       <BaseSettingAppearance />
     </template>
+    <template v-else-if="targetQuery === 'server'">
+      <div class="flex flex-col gap-4">
+        <BaseSettingServerRun />
+      </div>
+      <div class="flex flex-col gap-4">
+        <BaseSettingServerExport />
+      </div>
+    </template>
     <v-snackbar
       :model-value="isModified"
       :color="snackbarColor"
@@ -86,6 +94,8 @@ import { kCompact } from '@/composables/scrollTop'
 import { useQuery } from '@/composables/query'
 import BaseSettingModpack from './BaseSettingModpack.vue'
 import BaseSettingServer from './BaseSettingServer.vue'
+import BaseSettingServerRun from './BaseSettingServerRun.vue'
+import BaseSettingServerExport from './BaseSettingServerExport.vue'
 import BaseSettingAdvanced from './BaseSettingAdvanced.vue'
 import { useInstanceModpackMetadata } from '@/composables/instanceModpackMetadata'
 import BaseSettingModpackFiles from './BaseSettingModpackFiles.vue'

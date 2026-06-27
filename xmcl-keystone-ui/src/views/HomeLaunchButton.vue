@@ -4,7 +4,7 @@
     role="group"
     aria-orientation="horizontal"
     :aria-label="text"
-    class="flex flex-grow-0 gap-[3px]"
+    class="flex flex-grow-0 items-center"
   >
     <v-badge
       :model-value="count !== 0"
@@ -12,66 +12,96 @@
       color="primary"
       :content="count"
     >
-      <v-btn
-        id="launch-button"
-        data-testid="launch-button"
-        :disabled="isValidating"
-        :color="color"
-        :size="compact ? 'large' : 'x-large'"
-        class="px-12 text-lg transition-all btn-left"
-        :aria-label="text"
-        @click="onClick()"
-        @mouseenter="emit('mouseenter')"
-        @mouseleave="emit('mouseleave')"
+      <div
+        class="relative inline-flex launch-pill"
+        :class="{ short: !top }"
       >
-        <v-icon
-          v-if="leftIcon"
-          start
-          size="large"
-        >
-          {{ leftIcon }}
-        </v-icon>
-        {{ text }}
-        <v-icon
-          v-if="!loading && icon"
-          end
-          size="large"
-        >
-          {{ icon }}
-        </v-icon>
-        <v-progress-circular
-          v-if="loading"
-          class="ml-2"
-          indeterminate
-          :size="20"
-          :width="2"
-        />
-      </v-btn>
-    </v-badge>
-    <v-menu
-      v-model="isShown"
-      :location="top ? 'top end' : 'bottom end'"
-      transition="scroll-y-transition"
-    >
-      <template #activator="{ props: activatorProps }">
         <v-btn
+          id="launch-button"
+          data-testid="launch-button"
           :disabled="isValidating"
-          data-testid="launch-button-menu"
-          class="min-w-unset! max-w-5! px-0! btn-right"
           :color="color"
           :size="compact ? 'large' : 'x-large'"
-          :aria-label="t('launch.launchAs')"
-          :aria-haspopup="'menu'"
-          :aria-expanded="isShown"
-          v-bind="activatorProps"
+          rounded="pill"
+          class="pl-24 pr-24 text-xl transition-all btn-launch"
+          :aria-label="text"
+          @click="onClick()"
+          @mouseenter="onHoverEnter"
+          @mouseleave="onHoverLeave"
         >
-          <v-icon aria-hidden="true">
-            arrow_drop_down
+          {{ text }}
+        </v-btn>
+
+        <!-- Left circular play button: launches the game on click -->
+        <v-btn
+          :disabled="isValidating"
+          data-testid="launch-button-play"
+          icon
+          rounded="circle"
+          :size="compact ? 'small' : 'default'"
+          variant="flat"
+          class="btn-play-inset"
+          :aria-label="text"
+          @click="onPlayClick"
+          @mouseenter="onHoverEnter"
+          @mouseleave="onHoverLeave"
+        >
+          <v-progress-circular
+            v-if="loading"
+            indeterminate
+            :size="20"
+            :width="2"
+          />
+          <v-icon
+            v-else
+            aria-hidden="true"
+            class="nested-icon"
+            :class="{ spin: isSpinning }"
+            @animationend="isSpinning = false"
+          >
+            {{ leftIcon || icon || 'play_arrow' }}
           </v-icon>
         </v-btn>
-      </template>
-      <HomeLaunchButtonMenuList />
-    </v-menu>
+
+        <!-- Right circular settings button: hover opens the unified menu,
+             click navigates to the instance setting page -->
+        <v-menu
+          v-model="isShown"
+          :location="top ? 'top end' : 'bottom end'"
+          :open-on-hover="true"
+          :open-on-click="false"
+          transition="scroll-y-transition"
+        >
+          <template #activator="{ props: activatorProps }">
+            <v-btn
+              :disabled="isValidating"
+              data-testid="launch-button-menu"
+              icon
+              rounded="circle"
+              :size="compact ? 'small' : 'default'"
+              variant="flat"
+              class="btn-menu-inset"
+              :aria-label="t('baseSetting.title', 2)"
+              :aria-haspopup="'menu'"
+              :aria-expanded="isShown"
+              to="/base-setting"
+              v-bind="activatorProps"
+              @mouseenter="onHoverEnter"
+              @mouseleave="onHoverLeave"
+            >
+              <v-icon
+                aria-hidden="true"
+                class="nested-icon"
+                :class="{ 'is-active': isShown }"
+              >
+                settings
+              </v-icon>
+            </v-btn>
+          </template>
+          <HomeLaunchButtonMenuList />
+        </v-menu>
+      </div>
+    </v-badge>
   </div>
 </template>
 <script lang="ts" setup>
@@ -90,23 +120,103 @@ const { onClick, color, icon, text, loading, leftIcon, count } = injection(kLaun
 const { t } = useI18n()
 
 const isShown = ref(false)
+const isSpinning = ref(false)
+
+function onHoverEnter() {
+  emit('mouseenter')
+}
+function onHoverLeave() {
+  emit('mouseleave')
+}
+function onPlayClick() {
+  isSpinning.value = true
+  onClick()
+}
 </script>
 
 <style scoped>
-/* Logical border-radius keeps the seam between the two buttons on the
-   correct (leading) edge in both LTR and RTL layouts. */
-.btn-right {
-  border-start-start-radius: 0;
-  border-end-start-radius: 0;
+.btn-launch {
+  border-radius: 9999px;
+  height: 64px;
 }
-.btn-left {
-  border-start-end-radius: 0;
-  border-end-end-radius: 0;
+
+/* Embed the play button inside the pill at its leading edge. */
+.btn-play-inset {
+  position: absolute;
+  inset-inline-start: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  background-color: rgba(255, 255, 255, 0.22) !important;
+  color: #fff !important;
+}
+
+.btn-play-inset :deep(.v-icon) {
+  font-size: 28px;
+}
+
+/* Embed the menu button inside the pill at its trailing edge. */
+.btn-menu-inset {
+  position: absolute;
+  inset-inline-end: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px !important;
+  height: 52px !important;
+  background-color: rgba(0, 0, 0, 0.32) !important;
+  color: #fff !important;
+}
+
+.btn-menu-inset :deep(.v-icon) {
+  font-size: 28px;
+}
+
+/* Animate the nested-button icons when their menu is open. */
+.nested-icon {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-menu-inset .nested-icon.is-active {
+  transform: rotate(90deg);
+}
+
+/* Play icon does a single full spin when clicked. */
+.btn-play-inset .nested-icon.spin {
+  animation: play-spin 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes play-spin {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.15);
+  }
+  to {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+/* Header (extension) placement: a shorter pill than the focus-mode footer. */
+.launch-pill.short .btn-launch {
+  height: 52px !important;
+}
+
+.launch-pill.short .btn-play-inset,
+.launch-pill.short .btn-menu-inset {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.launch-pill.short .btn-play-inset :deep(.v-icon),
+.launch-pill.short .btn-menu-inset :deep(.v-icon) {
+  font-size: 22px;
 }
 
 @media (max-width: 850px) {
-  .btn-left {
-    max-width: 196px;
+  .btn-launch {
+    max-width: 300px;
   }
 }
 </style>

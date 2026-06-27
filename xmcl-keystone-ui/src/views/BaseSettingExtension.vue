@@ -10,10 +10,10 @@
       v-roving-tabindex
       role="group"
       :aria-label="t('baseSetting.title', 2)"
-      class="flex flex-grow-0 flex-row items-center justify-center gap-2"
+      class="flex flex-grow-0 flex-shrink min-w-0 flex-row items-center justify-center gap-2"
     >
-      <AvatarItemList :items="items" />
-      <v-divider vertical />
+      <AvatarItemList v-if="!isNarrow" :items="items" />
+      <v-divider v-if="!isNarrow" vertical />
       <v-btn
         v-shared-tooltip="() => t('BaseSettingGeneral.title')"
         variant="text"
@@ -21,8 +21,13 @@
         :class="{ 'v-btn--active': !targetQuery }"
         @click="navigate('')"
       >
-        <v-icon :start="!targetQuery" class="material-icons-outlined">settings_heart</v-icon>
-        <span :style="{ width: !targetQuery ? '80px' : 0 }" class="overflow-hidden transition-all!">
+        <v-icon :start="!isNarrow && !targetQuery" class="material-icons-outlined"
+          >settings_heart</v-icon
+        >
+        <span
+          :style="{ width: !isNarrow && !targetQuery ? '80px' : 0 }"
+          class="overflow-hidden transition-all!"
+        >
           {{ t('BaseSettingGeneral.title') }}
         </span>
       </v-btn>
@@ -33,14 +38,30 @@
         :class="{ 'v-btn--active': targetQuery === 'modpack' }"
         @click="navigate('modpack')"
       >
-        <v-icon :start="targetQuery === 'modpack'" class="material-icons-outlined"
+        <v-icon :start="!isNarrow && targetQuery === 'modpack'" class="material-icons-outlined"
           >folder_zip</v-icon
         >
         <span
-          :style="{ width: targetQuery === 'modpack' ? '80px' : 0 }"
+          :style="{ width: !isNarrow && targetQuery === 'modpack' ? '80px' : 0 }"
           class="overflow-hidden transition-all!"
         >
           {{ t('modpack.name', 1) }}
+        </span>
+      </v-btn>
+      <v-btn
+        v-shared-tooltip="() => t('instance.launchServer')"
+        variant="text"
+        :aria-pressed="targetQuery === 'server'"
+        :class="{ 'v-btn--active': targetQuery === 'server' }"
+        data-testid="base-setting-server-tab"
+        @click="navigate('server')"
+      >
+        <v-icon :start="!isNarrow && targetQuery === 'server'" class="material-icons-outlined">dns</v-icon>
+        <span
+          :style="{ width: !isNarrow && targetQuery === 'server' ? 'auto' : 0 }"
+          class="overflow-hidden transition-all!"
+        >
+          {{ t('instance.launchServer') }}
         </span>
       </v-btn>
       <v-btn
@@ -50,11 +71,11 @@
         :class="{ 'v-btn--active': targetQuery === 'appearance' }"
         @click="navigate('appearance')"
       >
-        <v-icon :start="targetQuery === 'appearance'" class="material-icons-outlined"
+        <v-icon :start="!isNarrow && targetQuery === 'appearance'" class="material-icons-outlined"
           >invert_colors</v-icon
         >
         <span
-          :style="{ width: targetQuery === 'appearance' ? 'auto' : 0 }"
+          :style="{ width: !isNarrow && targetQuery === 'appearance' ? 'auto' : 0 }"
           class="overflow-hidden transition-all!"
         >
           {{ t('setting.appearance') }}
@@ -80,9 +101,32 @@
         v-else-if="targetQuery === 'modpack'"
         class="flex items-center justify-end overflow-hidden"
       >
-        <v-btn color="primary" :loading="exporting || loading" @click="exportModpack" size="large">
+        <v-btn
+          rounded="pill"
+          color="primary"
+          :loading="exporting || loading"
+          @click="exportModpack"
+          size="large"
+        >
           <v-icon start> build </v-icon>
           {{ t('modpack.export') }}
+        </v-btn>
+      </div>
+      <div
+        v-else-if="targetQuery === 'server'"
+        class="flex items-center justify-end gap-2 overflow-hidden"
+      >
+        <v-btn
+          :color="serverLaunch.running.value ? 'error' : 'primary'"
+          rounded="pill"
+          :variant="serverLaunch.running.value ? 'tonal' : 'flat'"
+          size="large"
+          :prepend-icon="serverLaunch.running.value ? 'stop' : 'play_arrow'"
+          data-testid="server-tab-launch"
+          :loading="serverLaunch.loading.value"
+          @click="serverLaunch.running.value ? serverLaunch.killServer() : serverLaunch.launchServer()"
+        >
+          {{ serverLaunch.running.value ? t('launch.killServer') : t('instance.launchServer') }}
         </v-btn>
       </div>
     </transition>
@@ -100,8 +144,10 @@ import HomeLaunchButton from './HomeLaunchButton.vue'
 import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
 import { useQuery } from '@/composables/query'
 import { kModpackExport } from '@/composables/modpack'
+import { kInstanceServerLaunch } from '@/composables/instanceServerLaunch'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { useMediaQuery } from '@vueuse/core'
 
 const { instance, runtime: version } = injection(kInstance)
 const { versionHeader } = injection(kInstanceVersion)
@@ -110,14 +156,20 @@ const active = ref(false)
 const { t } = useI18n()
 const compact = injection(kCompact)
 
+// Below this width the expanded active-tab label would push the whole toolbar
+// (tabs + action button) past the container and overflow. Collapse every tab
+// to icon-only there; the shared tooltips keep them discoverable.
+const isNarrow = useMediaQuery('(max-width: 900px)')
+
 const items = useExtensionItemsVersion(instance, versionHeader)
 
 const targetQuery = useQuery('target')
 
 const { exportModpack, exporting, loading } = injection(kModpackExport)
+const serverLaunch = injection(kInstanceServerLaunch)
 
 const router = useRouter()
-function navigate(target: '' | 'modpack' | 'appearance') {
+function navigate(target: '' | 'modpack' | 'appearance' | 'server') {
   if (router.currentRoute.value.query.target === target) {
     return
   }

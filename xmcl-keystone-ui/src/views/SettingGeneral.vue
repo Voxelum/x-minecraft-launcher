@@ -225,10 +225,6 @@ const { show: onMigrateFromOther } = useDialog('migrate-wizard')
 </script>
 
 <style scoped>
-.settings-card {
-  border-radius: 12px;
-}
-
 :deep(.transparent-list) {
   background: transparent !important;
 }

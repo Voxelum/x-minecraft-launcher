@@ -1,5 +1,5 @@
 <template>
-  <div class="store-entry h-full w-full overflow-hidden flex flex-col lg:flex-row bg-background">
+  <div class="store-entry h-full w-full overflow-hidden flex flex-col lg:flex-row">
     <v-progress-linear
       class="absolute left-0 top-0 z-20 m-0 p-0"
       :active="loading"
@@ -11,7 +11,7 @@
     <aside
       class="store-sidebar w-auto lg:(w-88 h-full overflow-y-auto pb-20) flex-none border-r border-divider/40 px-4 pt-6 flex flex-col gap-6 custom-scrollbar"
     >
-      <div class="grid grid-cols-3 lg:(flex flex-col) gap-6 flex-shrink-0">
+      <div class="grid grid-cols-3 lg:(flex flex-col) gap-4 flex-shrink-0">
         <!-- Sources -->
         <div class="filter-group">
           <h3 class="filter-title">
@@ -35,37 +35,40 @@
             </div>
           </div>
         </div>
-        <!-- Sort -->
-        <div class="filter-group">
-          <h3 class="filter-title">{{ t('modrinth.sort.title') }}</h3>
-          <v-autocomplete
-            v-model="sort"
-            :items="sortBy"
-            item-title="text"
-            item-value="value"
-            variant="outlined"
-            density="compact"
-            rounded="lg"
-            clearable
-            hide-details
-            :placeholder="t('modrinth.sort.title')"
-          />
-        </div>
-        <!-- Game Version -->
-        <div class="filter-group">
-          <h3 class="filter-title">{{ t('modrinth.gameVersions.name') }}</h3>
-          <v-autocomplete
-            v-model="gameVersion"
-            :items="gameVersions"
-            item-title="version"
-            item-value="version"
-            variant="outlined"
-            density="compact"
-            rounded="lg"
-            clearable
-            hide-details
-            :placeholder="t('modrinth.gameVersions.name')"
-          />
+
+        <div>
+          <!-- Sort -->
+          <div class="filter-group">
+            <h3 class="filter-title">{{ t('modrinth.sort.title') }}</h3>
+            <v-autocomplete
+              v-model="sort"
+              :items="sortBy"
+              item-title="text"
+              item-value="value"
+              variant="solo"
+              density="compact"
+              rounded="lg"
+              clearable
+              hide-details
+              :placeholder="t('modrinth.sort.title')"
+            />
+          </div>
+          <!-- Game Version -->
+          <div class="filter-group">
+            <h3 class="filter-title">{{ t('modrinth.gameVersions.name') }}</h3>
+            <v-autocomplete
+              v-model="gameVersion"
+              :items="gameVersions"
+              item-title="version"
+              item-value="version"
+              variant="solo"
+              density="compact"
+              rounded="lg"
+              clearable
+              hide-details
+              :placeholder="t('modrinth.gameVersions.name')"
+            />
+          </div>
         </div>
       </div>
 
@@ -107,7 +110,7 @@
     <!-- Right pane: sticky search header + scrollable content -->
     <div class="flex-1 flex flex-col overflow-hidden relative">
       <div
-        class="store-search-bar flex-none px-6 lg:px-10 py-5 sticky top-0 z-10 bg-background/85 backdrop-blur-md border-b border-divider/40"
+        class="store-search-bar flex-none px-6 lg:px-10 py-5 sticky top-0 z-10 backdrop-blur-md border-b border-divider/40"
       >
         <div class="max-w-3xl">
           <v-text-field
@@ -178,7 +181,10 @@
           role="region"
           :aria-labelledby="latestMinecraftHeadingId"
         >
-          <h2 :id="latestMinecraftHeadingId" class="text-2xl font-bold mb-6 flex items-center gap-3">
+          <h2
+            :id="latestMinecraftHeadingId"
+            class="text-2xl font-bold mb-6 flex items-center gap-3"
+          >
             <v-icon color="green" size="large" aria-hidden="true">xmcl:minecraft</v-icon>
             {{ t('store.latestMinecraft') }}
             <v-btn
@@ -209,10 +215,11 @@
         <section class="min-h-screen" role="region" :aria-labelledby="discoverHeadingId">
           <div class="flex items-end justify-between mb-6 gap-2">
             <div>
-              <h2 :id="discoverHeadingId" class="text-2xl font-bold text-gray-900 dark:text-white">
+              <h2 :id="discoverHeadingId" class="text-2xl mb-3 font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                <v-icon color="primary" size="large" aria-hidden="true">{{ hasFilters ? 'search' : 'explore' }}</v-icon>
                 {{ hasFilters ? t('store.searchResult') : t('store.discover') }}
               </h2>
-              <p class="text-gray-500 dark:text-gray-400 text-sm mt-1 whitespace-nowrap">
+              <p class="text-gray-500 dark:text-gray-300 text-sm mt-1 whitespace-nowrap">
                 {{ t('modrinth.projects', { count: items.length }) }}
               </p>
             </div>
@@ -590,7 +597,7 @@ useTextFieldBehavior(filter, focused)
 }
 
 .filter-title {
-  @apply font-bold mb-3 text-xs uppercase text-gray-700 dark:text-gray-300 tracking-wider ml-1;
+  @apply font-bold mb-3 text-xs uppercase text-gray-700 dark:text-gray-200 tracking-wider ml-1;
 }
 
 .filter-group {

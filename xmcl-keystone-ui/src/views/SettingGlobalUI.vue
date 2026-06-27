@@ -392,7 +392,6 @@ watch(sidebarStyle, (newStyle) => {
 
 <style scoped>
 .v-card {
-  border-radius: 12px;
 }
 
 .transparent-bg {
@@ -402,7 +401,6 @@ watch(sidebarStyle, (newStyle) => {
 .style-option-card {
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  border-radius: 12px;
   position: relative;
 }
 
