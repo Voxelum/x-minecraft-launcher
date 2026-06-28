@@ -11,8 +11,10 @@
       class="app-layout flex-grow relative flex overflow-auto"
       :class="layoutClasses"
     >
-      <AppSideBarClassic v-if="sidebarStyle === 'classic'" />
-      <AppSideBarNotch v-else />
+      <transition name="fade-transition" mode="out-in">
+        <AppSideBarClassic v-if="sidebarStyle === 'classic'" />
+        <AppSideBarNotch v-else />
+      </transition>
       <main class="relative flex max-h-full flex-1 flex-col overflow-auto" :class="mainClasses">
         <router-view v-slot="{ Component }">
           <transition name="fade-transition" mode="out-in">

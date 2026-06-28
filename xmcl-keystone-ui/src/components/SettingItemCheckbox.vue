@@ -1,6 +1,8 @@
 <template>
   <SettingItem
+    :title="title"
     :description="description"
+    :search-query="searchQuery"
     class="setting-item-checkbox cursor-pointer"
     @click="model = !model"
   >
@@ -15,8 +17,7 @@
         :aria-describedby="description ? descriptionId : undefined"
       />
     </template>
-    <template #title>
-      {{ title }}
+    <template #title v-if="$slots.default">
       <slot />
     </template>
   </SettingItem>
@@ -31,6 +32,7 @@ const model = defineModel<boolean>({ required: true })
 defineProps<{
   title: string
   description?: string
+  searchQuery?: string
 }>()
 </script>
 

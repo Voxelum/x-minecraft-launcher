@@ -6,9 +6,9 @@
     <template #activator="{ props: activatorProps }">
       <div
         v-shared-tooltip="() => text"
-        class="color-button min-w-5 max-w-5 dark:border-light-50 rounded-full border-2 p-5 transition-all"
+        class="color-button min-w-6 max-w-6 rounded-full border-2 transition-all cursor-pointer"
         v-bind="activatorProps"
-        :style="shadowColor"
+        :style="{ backgroundColor: modelValue }"
       />
     </template>
     <v-card class="overflow-hidden">
@@ -56,22 +56,21 @@ const emit = defineEmits<{
 
 const { isDark } = injection(kTheme)
 
-const shadowColor = computed(() => ({
-  '--shadow-color': isDark.value ? '255 255 255' : '0 0 0',
-  'background-color': props.modelValue,
-}))
-
 </script>
 <style scoped>
-
 .color-button {
-  box-shadow: 0 3px 5px -1px rgb(var(--shadow-color) / 20%), 0 5px 8px 0 rgb(var(--shadow-color) / 14%), 0 1px 14px 0 rgb(var(--shadow-color) / 12%);
+  height: 24px;
+  width: 24px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 .color-button:hover {
-  box-shadow: 0 3px 5px -1px rgb(var(--shadow-color) / 20%), 0 5px 8px 0 rgb(var(--shadow-color) / 14%), 0 1px 14px 0 rgb(var(--shadow-color) / 12%);
+  transform: scale(1.2);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), 0 0 12px rgba(var(--v-theme-primary), 0.5);
+  border-color: rgba(var(--v-theme-primary), 0.6) !important;
 }
 .color-button:active {
-  box-shadow: 0 8px 9px -5px rgb(var(--shadow-color) / 20%), 0 15px 22px 2px rgb(var(--shadow-color) / 14%), 0 6px 28px 5px rgb(var(--shadow-color) / 12%);
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
-
 </style>
