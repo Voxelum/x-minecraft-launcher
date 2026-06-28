@@ -194,7 +194,7 @@ const model = computed(() => {
   const detail: ProjectDetail = {
     id: props.curseforgeId.toString(),
     title: mod?.name ?? '',
-    icon: mod?.logo.url ?? '',
+    icon: mod?.logo?.url ?? '',
     description: mod?.summary ?? '',
     author: mod?.authors.map((a) => a.name).join(', ') ?? '',
     downloadCount: mod?.downloadCount ?? 0,

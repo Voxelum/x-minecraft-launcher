@@ -29,6 +29,7 @@ import { kTheme, useTheme } from '@/composables/theme'
 
 import { kUserContext, useUserContext } from '@/composables/user'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
+import { vuetify } from '@/vuetify'
 import { provide, watchEffect } from 'vue'
 
 export default defineComponent({
@@ -55,7 +56,21 @@ export default defineComponent({
       surfaceTokens.cardClickableRadius.value = enabled ? DEFAULT_CARD_CLICKABLE_RADIUS : 0
       surfaceTokens.tooltipRadius.value = enabled ? DEFAULT_SURFACE_TOOLTIP_RADIUS : 0
       surfaceTokens.pillRadius.value = enabled ? DEFAULT_SURFACE_PILL_RADIUS : 0
-      surfaceTokens.buttonRadius.value = enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0
+      vuetify.defaults.value = {
+        ...vuetify.defaults.value,
+        VBtn: {
+          ...vuetify.defaults.value?.VBtn,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
+        },
+        VChip: {
+          ...vuetify.defaults.value?.VChip,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
+        },
+        VTextField: {
+          ...vuetify.defaults.value?.VTextField,
+          rounded: enabled ? undefined : 0,
+        },
+      }
     })
 
     const settings = useSettingsState()

@@ -32,6 +32,13 @@ export function useSearchModel(runtime: Ref<RuntimeVersions>) {
   const notRemote = computed(() => source.value !== 'remote')
   const selectedCollection = ref(undefined as string | undefined)
   const modrinthEnvironment = ref('' as '' | 'client' | 'server')
+  /**
+   * Whether the filter panel is shown in the market right pane. This is shared
+   * between the search text field (rendered in the page header) and the
+   * MarketBase right pane (rendered in the page body), which live in separate
+   * router-views. Focusing the search field opens it; blurring closes it.
+   */
+  const showFilter = ref(false)
 
   const currentView = computed(() => {
     const sourceValue = source.value
@@ -106,6 +113,7 @@ export function useSearchModel(runtime: Ref<RuntimeVersions>) {
     isModrinthDisabled,
     isCurseforgeDisabled,
     modrinthEnvironment,
+    showFilter,
     effect,
   }
 }

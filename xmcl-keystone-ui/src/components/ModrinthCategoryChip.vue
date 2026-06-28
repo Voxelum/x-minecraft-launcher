@@ -8,7 +8,7 @@
     @click="disabled || $emit('click', tag)"
   >
     <template v-if="tag.icon" #prepend>
-      <v-avatar size="20" class="mr-2 modrinth-category-icon" v-html="tag.icon" />
+      <v-avatar color="transparent" size="20" class="mr-2 modrinth-category-icon" v-html="tag.icon" />
     </template>
     {{ t('modrinth.categories.' + tag.name) }}
   </v-chip>

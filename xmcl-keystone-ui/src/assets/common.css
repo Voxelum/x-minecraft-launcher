@@ -85,7 +85,6 @@ html {
     --surface-dialog-radius: 32px;
     --surface-tooltip-radius: 10px;
     --surface-pill-radius: 9999px;
-    --surface-button-radius: 4px;
 
     /* Cards — three intentional tiers. Apply with the `.surface-card`,
        `.surface-card-subsection`, `.surface-card-item` utility classes. */
@@ -287,10 +286,6 @@ html ::-webkit-scrollbar {
 
 .v-btn.rounded-pill {
     border-radius: var(--surface-pill-radius) !important;
-}
-
-.v-btn:not(.rounded-pill):not(.rounded-0):not(.rounded-sm):not(.rounded-lg):not(.rounded-xl):not(.rounded-circle) {
-    border-radius: var(--surface-button-radius) !important;
 }
 
 /* ── Card / panel utility classes ──

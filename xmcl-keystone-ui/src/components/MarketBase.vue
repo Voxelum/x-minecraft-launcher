@@ -75,6 +75,11 @@
           class="relative flex flex-col h-full flex-grow-0 overflow-y-auto overflow-x-hidden market-right"
         >
           <slot
+            v-if="(showFilter || !selectedId) && $slots.filter"
+            name="filter"
+          />
+          <slot
+            v-else
             name="content"
             :selected-item="selectedItem"
             :selected-id="selectedId"
@@ -99,6 +104,7 @@ import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
+import { kSearchModel } from '@/composables/search'
 
 const props = defineProps<{
   plans: Record<string, UpgradePlan>
@@ -114,21 +120,12 @@ const emit = defineEmits<{
   (event: 'update:selectionMode', v: boolean): void
 }>()
 
+const { showFilter } = injection(kSearchModel)
+
 const selectedId = useQuery('id')
 const selectedItem = computed(() => {
   if (!selectedId.value) return undefined
   return props.items.find((i) => typeof i === 'object' && 'id' in i && i.id === selectedId.value) as ProjectEntry | undefined
-})
-
-watch(() => props.items, (i, old) => {
-  if (!old || old.length === 0) {
-    if (i.length > 0) {
-      const first = i[0]
-      if (typeof first === 'object' && 'id' in first) {
-        selectedId.value = first.id
-      }
-    }
-  }
 })
 
 const selectedModrinthId = computed(() => {
@@ -173,13 +170,18 @@ const onSelect = (event: MouseEvent, i: ProjectEntry) => {
       }
       selections.value = _selections
     } else {
-      selectedId.value = i.id
-      selections.value = {
-        [i.id]: true,
+      if (selectedId.value === i.id) {
+        selectedId.value = ''
+        selections.value = {}
+      } else {
+        selectedId.value = i.id
+        selections.value = {
+          [i.id]: true,
+        }
       }
     }
   } else {
-    selectedId.value = i.id
+    selectedId.value = selectedId.value === i.id ? '' : i.id
     selections.value = {}
   }
 }
