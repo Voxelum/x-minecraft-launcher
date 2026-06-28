@@ -55,6 +55,7 @@ export const vuetify = createVuetify({
       inset: true,
       color: 'primary',
     },
+    VBtn: { rounded: 'pill' }
   },
   theme: {
     defaultTheme: 'dark',
