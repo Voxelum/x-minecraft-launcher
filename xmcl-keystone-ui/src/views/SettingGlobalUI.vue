@@ -16,16 +16,18 @@
                 :style="{ transform: `scale(${sidebarScale / 100})` }"
               >
                 <div class="sidebar-preview-main">
-                  <div v-if="sidebarStyle === 'classic'" class="sidebar-preview-classic">
-                    <div class="preview-sidebar-item"></div>
-                    <div class="preview-sidebar-item"></div>
-                    <div class="preview-sidebar-item"></div>
-                  </div>
-                  <div v-else class="sidebar-preview-notch">
-                    <div class="sidebar-preview-notch-item"></div>
-                    <div class="sidebar-preview-notch-item"></div>
-                    <div class="sidebar-preview-notch-item"></div>
-                  </div>
+                  <transition name="fade-transition" mode="out-in">
+                    <div v-if="sidebarStyle === 'classic'" key="classic" class="sidebar-preview-classic">
+                      <div class="preview-sidebar-item"></div>
+                      <div class="preview-sidebar-item"></div>
+                      <div class="preview-sidebar-item"></div>
+                    </div>
+                    <div v-else key="notch" class="sidebar-preview-notch">
+                      <div class="sidebar-preview-notch-item"></div>
+                      <div class="sidebar-preview-notch-item"></div>
+                      <div class="sidebar-preview-notch-item"></div>
+                    </div>
+                  </transition>
                   <div class="sidebar-preview-content">
                     <div class="sidebar-preview-content-header"></div>
                     <div class="sidebar-preview-content-body"></div>
@@ -44,6 +46,7 @@
             <SettingItem
               :title="t('setting.sidebarStyle')"
               :description="t('setting.sidebarStyleHint')"
+              :search-query="searchQuery"
             >
               <template #action>
                 <v-btn-toggle
@@ -68,7 +71,7 @@
             <v-divider class="my-2" />
 
             <!-- Position -->
-            <SettingItem :title="t('setting.sidebarPosition')">
+            <SettingItem :title="t('setting.sidebarPosition')" :search-query="searchQuery">
               <template #action>
                 <v-btn-toggle
                   v-roving-tabindex
@@ -97,7 +100,7 @@
             <!-- Notch Specific -->
             <template v-if="sidebarStyle === 'notch'">
               <v-divider class="my-2" />
-              <SettingItem :title="t('setting.sidebarAlign')">
+              <SettingItem :title="t('setting.sidebarAlign')" :search-query="searchQuery">
                 <template #action>
                   <v-btn-toggle
                     v-roving-tabindex
@@ -119,6 +122,7 @@
               <SettingItem
                 :title="t('setting.sidebarAutoHide')"
                 :description="t('setting.sidebarAutoHideHint')"
+                :search-query="searchQuery"
               >
                 <template #action>
                   <v-switch v-model="sidebarAutoHide" color="primary" hide-details dense />
@@ -126,7 +130,7 @@
               </SettingItem>
 
               <v-divider class="my-2" />
-              <SettingItem :title="`${t('setting.sidebarScale')} (${sidebarScale}%)`">
+              <SettingItem :title="`${t('setting.sidebarScale')} (${sidebarScale}%)`" :search-query="searchQuery">
                 <template #action>
                   <div class="w-32">
                     <v-slider
@@ -149,6 +153,7 @@
             <SettingItem
               :title="t('setting.sidebarShowOnlyPinned')"
               :description="t('setting.sidebarShowOnlyPinnedHint')"
+              :search-query="searchQuery"
             >
               <template #action>
                 <v-switch v-model="sidebarShowOnlyPinned" color="primary" hide-details dense />
@@ -166,6 +171,7 @@
       <SettingItem
         :title="t('setting.themeStore.name')"
         :description="t('setting.themeStore.description')"
+        :search-query="searchQuery"
       >
         <template #action>
           <v-btn variant="outlined" @click="showSaveDialog = true">
@@ -251,6 +257,7 @@
           v-model="linuxTitlebar"
           :title="t('setting.linuxTitlebar')"
           :description="t('setting.linuxTitlebarDescription')"
+          :search-query="searchQuery"
         />
       </template>
     </SettingCard>
@@ -271,6 +278,10 @@ import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
 import { Ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+
+defineProps<{
+  searchQuery?: string
+}>()
 
 const { t } = useI18n()
 const env = injection(kEnvironment)

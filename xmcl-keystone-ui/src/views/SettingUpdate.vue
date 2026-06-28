@@ -4,7 +4,7 @@
     :title="t('setting.update')"
     icon="rocket_launch"
   >
-    <SettingItem>
+    <SettingItem :search-query="searchQuery">
       <template #preaction>
         <v-btn
           data-testid="settings-check-update"
@@ -63,6 +63,11 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+
+defineProps<{
+  searchQuery?: string
+}>()
+
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'

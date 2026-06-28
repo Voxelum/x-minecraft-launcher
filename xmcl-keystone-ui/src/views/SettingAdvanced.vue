@@ -11,6 +11,7 @@
         :title="t('setting.resetAllSettings')"
         :title-class="'error--text'"
         :description="t('setting.resetAllSettingsHint')"
+        :search-query="searchQuery"
       >
         <template #action>
           <v-btn color="error" @click="showResetDialog = true" size="small" variant="text" border>
@@ -22,11 +23,11 @@
 
       <v-divider class="my-2" />
 
-      <!-- Export/Import Settings -->
       <SettingItem
         :title="t('setting.exportSettings') + ' / ' + t('setting.importSettings')"
         :description="t('setting.exportSettingsHint')"
         icon="import_export"
+        :search-query="searchQuery"
       >
         <template #action>
           <div v-roving-tabindex role="group" :aria-label="t('setting.exportSettings') + ' / ' + t('setting.importSettings')" class="flex gap-2">
@@ -77,6 +78,10 @@ import { useService } from '@/composables'
 import SettingCard from '@/components/SettingCard.vue'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import SettingItem from '@/components/SettingItem.vue'
+
+defineProps<{
+  searchQuery?: string
+}>()
 
 const { t } = useI18n()
 const { quit } = useService(BaseServiceKey)

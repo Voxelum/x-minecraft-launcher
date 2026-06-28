@@ -1,5 +1,5 @@
 <template>
-  <SettingItem :description="description" :title-class="titleClass">
+  <SettingItem :title="title" :description="description" :title-class="titleClass" :search-query="searchQuery">
     <template #title>
       <v-icon v-if="icon" start size="small" color="primary">{{ icon }}</v-icon>
       {{ title }}
@@ -28,6 +28,7 @@ defineProps<{
   icon?: string;
   titleClass?: string;
   description?: string;
+  searchQuery?: string;
 }>();
 </script>
 

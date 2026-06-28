@@ -4,20 +4,20 @@
     <!-- Quick Launch Settings Card -->
     <SettingCard :title="t('setting.quickLaunchSettings')" icon="flash_on">
       <SettingItemCheckbox v-model="fastLaunch" :title="t('instanceSetting.fastLaunch')"
-        :description="t('instanceSetting.fastLaunchHint')" />
-      <v-divider class="my-2" />
-      <SettingItemCheckbox v-model="hideLauncher" :title="t('instanceSetting.hideLauncher')" />
-      <v-divider class="my-2" />
+        :description="t('instanceSetting.fastLaunchHint')" :search-query="searchQuery" />
+      <v-divider class="my-2 opacity-20" />
+      <SettingItemCheckbox v-model="hideLauncher" :title="t('instanceSetting.hideLauncher')" :search-query="searchQuery" />
+      <v-divider class="my-2 opacity-20" />
       <SettingItemCheckbox v-model="showLog" :title="t('instanceSetting.showLog')"
-        :description="t('instanceSetting.showLogHint')" />
+        :description="t('instanceSetting.showLogHint')" :search-query="searchQuery" />
     </SettingCard>
 
     <SettingCard :title="t('setting.authenticationSettings')" icon="security">
       <SettingItemCheckbox v-model="disableAuthlibInjector" :title="t('instanceSetting.disableAuthlibInjector')"
-        :description="t('instanceSetting.disableAuthlibInjectorDescription')" />
-      <v-divider class="my-2" />
+        :description="t('instanceSetting.disableAuthlibInjectorDescription')" :search-query="searchQuery" />
+      <v-divider class="my-2 opacity-20" />
       <SettingItemCheckbox v-model="disableElyByAuthlib" :title="t('instanceSetting.disableElyByAuthlib')"
-        :description="t('instanceSetting.disableElyByAuthlibDescription')" />
+        :description="t('instanceSetting.disableElyByAuthlibDescription')" :search-query="searchQuery" />
     </SettingCard>
 
     <!-- Java Memory Settings Card -->
@@ -116,6 +116,10 @@ import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
 import EnvVarTableItem from '@/components/EnvVarTableItem.vue'
 import EnvVarAddItem from '@/components/EnvVarAddItem.vue'
 import SettingCard from '@/components/SettingCard.vue'
+
+defineProps<{
+  searchQuery?: string
+}>()
 
 const { t } = useI18n()
 const {

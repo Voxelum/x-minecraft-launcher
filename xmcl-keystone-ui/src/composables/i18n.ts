@@ -2,6 +2,7 @@ import { Settings } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { useLocale } from 'vuetify'
 import { useI18nSearchFlights } from './flights'
+import { i18n } from '@/i18n'
 
 const locales = import.meta.glob('../../locales/*.yaml')
 
@@ -29,8 +30,13 @@ export function useI18nSync(state: Ref<Settings | undefined>) {
     }
 
     locales[`../../locales/${newValue}.yaml`]().then((message: any) => {
-      setLocaleMessage(newValue, message.default)
+      setLocaleMessage(newValue, message.default || message)
       locale.value = newValue
+      
+      if (i18n.global) {
+        i18n.global.setLocaleMessage(newValue, message.default || message)
+        ;(i18n.global.locale as any).value = newValue
+      }
     })
 
     // Persist for windows that boot before the settings service is ready (e.g.
