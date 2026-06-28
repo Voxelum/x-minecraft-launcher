@@ -11,6 +11,7 @@ import { aliases, md } from 'vuetify/iconsets/md'
 import { ar, ru, zhHans } from 'vuetify/locale'
 import 'vuetify/styles'
 import { BuiltinImages } from './constant'
+import { DEFAULT_SURFACE_BUTTON_RADIUS } from './composables/surfaceTokens'
 
 const xmcl: IconSet = {
   component: (props: IconProps) => {
@@ -54,6 +55,12 @@ export const vuetify = createVuetify({
     VSwitch: {
       inset: true,
       color: 'primary',
+    },
+    VBtn: {
+      rounded: DEFAULT_SURFACE_BUTTON_RADIUS,
+    },
+    VChip: {
+      rounded: DEFAULT_SURFACE_BUTTON_RADIUS,
     },
   },
   theme: {
