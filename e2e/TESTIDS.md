@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 96 (in 258 Vue files)
+**Total anchors:** 109 (in 264 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -24,11 +24,19 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `agent-switch-common` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L19`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L19) |
 | `agent-switch-css` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L23`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L23) |
 | `app-sidebar` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L4`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L4)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L4`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L4) |
-| `base-setting-server-tab` | [`xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L51`](../xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L51) |
+| `base-setting-server-tab` | [`xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L56`](../xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L56) |
 | `bind-server-upstream` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L29`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L29) |
+| `blueprint-import-btn` | [`xmcl-keystone-ui/src/views/BlueprintActions.vue#L25`](../xmcl-keystone-ui/src/views/BlueprintActions.vue#L25) |
+| `blueprint-item` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L116`](../xmcl-keystone-ui/src/views/Blueprint.vue#L116) |
+| `blueprint-local-tab` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L21`](../xmcl-keystone-ui/src/views/Blueprint.vue#L21) |
+| `blueprint-market-btn` | [`xmcl-keystone-ui/src/views/BlueprintActions.vue#L15`](../xmcl-keystone-ui/src/views/BlueprintActions.vue#L15) |
+| `blueprint-market-item` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L68`](../xmcl-keystone-ui/src/views/Blueprint.vue#L68) |
+| `blueprint-market-tab` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L24`](../xmcl-keystone-ui/src/views/Blueprint.vue#L24) |
+| `blueprint-page` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L4`](../xmcl-keystone-ui/src/views/Blueprint.vue#L4) |
+| `blueprint-search` | [`xmcl-keystone-ui/src/views/BlueprintExtension.vue#L12`](../xmcl-keystone-ui/src/views/BlueprintExtension.vue#L12) |
 | `create-instance` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35) |
 | `custom-css-editor-textarea` | [`xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26`](../xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26) |
-| `custom-css-global-toggle` | [`xmcl-keystone-ui/src/components/AppearanceItems.vue#L296`](../xmcl-keystone-ui/src/components/AppearanceItems.vue#L296) |
+| `custom-css-global-toggle` | [`xmcl-keystone-ui/src/components/AppearanceItems.vue#L310`](../xmcl-keystone-ui/src/components/AppearanceItems.vue#L310) |
 | `home-grid` | [`xmcl-keystone-ui/src/views/HomeGrid.vue#L2`](../xmcl-keystone-ui/src/views/HomeGrid.vue#L2) |
 | `home-server-card` | [`xmcl-keystone-ui/src/views/HomeServerCard.vue#L3`](../xmcl-keystone-ui/src/views/HomeServerCard.vue#L3) |
 | `home-world-card` | [`xmcl-keystone-ui/src/views/HomeWorldCard.vue#L3`](../xmcl-keystone-ui/src/views/HomeWorldCard.vue#L3) |
@@ -75,8 +83,13 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `nav-settings` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L77`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L77)<br>[`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L166`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L166)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L96`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L96) |
 | `nav-store` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L39`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L39)<br>[`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L134`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L134)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L45`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L45) |
 | `refresh-all-servers` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L54`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L54) |
+| `save-world-map-canvas` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L10`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L10) |
+| `save-world-map-delete` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L106`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L106) |
+| `save-world-map-grid-toggle` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L40`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L40) |
+| `save-world-map-height` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L51`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L51) |
+| `save-world-map-legend` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L71`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L71) |
 | `server-tab-export` | [`xmcl-keystone-ui/src/views/BaseSettingServerExport.vue#L160`](../xmcl-keystone-ui/src/views/BaseSettingServerExport.vue#L160) |
-| `server-tab-launch` | [`xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L123`](../xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L123) |
+| `server-tab-launch` | [`xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L125`](../xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L125) |
 | `server-upstream-update-row` | [`xmcl-keystone-ui/src/views/HomeFooterCard.vue#L89`](../xmcl-keystone-ui/src/views/HomeFooterCard.vue#L89) |
 | `settings-check-update` | [`xmcl-keystone-ui/src/views/SettingUpdate.vue#L10`](../xmcl-keystone-ui/src/views/SettingUpdate.vue#L10) |
 | `settings-page` | [`xmcl-keystone-ui/src/views/Setting.vue#L3`](../xmcl-keystone-ui/src/views/Setting.vue#L3) |

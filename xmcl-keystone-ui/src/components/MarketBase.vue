@@ -75,7 +75,7 @@
           class="relative flex flex-col h-full flex-grow-0 overflow-y-auto overflow-x-hidden market-right"
         >
           <slot
-            v-if="(showFilter || !selectedId) && $slots.filter"
+            v-if="!selectedId && $slots.filter"
             name="filter"
           />
           <slot
@@ -104,7 +104,6 @@ import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
-import { kSearchModel } from '@/composables/search'
 
 const props = defineProps<{
   plans: Record<string, UpgradePlan>
@@ -119,8 +118,6 @@ const emit = defineEmits<{
   (event: 'drop', e: DragEvent): void
   (event: 'update:selectionMode', v: boolean): void
 }>()
-
-const { showFilter } = injection(kSearchModel)
 
 const selectedId = useQuery('id')
 const selectedItem = computed(() => {

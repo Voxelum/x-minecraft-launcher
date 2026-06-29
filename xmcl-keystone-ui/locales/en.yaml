@@ -1262,6 +1262,48 @@ resourceError:
     "{path}" could not be parsed ({code}). The file may be corrupted, locked, or
     incomplete. Try re-downloading or removing it.
   title: Cannot read {file}
+blueprint:
+  name: Blueprint | Blueprints
+  searchLocal: Search blueprints...
+  searchOnline: Search online...
+  market: Market
+  local: Local
+  import: Import
+  openFolder: Open folder
+  refresh: Refresh
+  empty: No blueprints found. Import a .litematic / .schem / .nbt file or browse the market.
+  selectHint: Select a blueprint to preview it.
+  blocks: '{count} blocks'
+  materials: Materials
+  delete: Delete
+  cancel: Cancel
+  install: Install
+  goTo: Website
+  loadMore: Load more
+  cmsBrowseOnly: CMS blueprints can be browsed here; open the website to download.
+  formats:
+    structure: Vanilla Structure
+  preview:
+    title: 3D Preview
+    loading: Loading preview...
+    empty: This blueprint has no blocks to display.
+    hint: '{count} blocks · {x}×{y}×{z}'
+  convert:
+    title: Convert format
+    hint: Convert this blueprint to another format. A new file will be created.
+    target: Target format
+    action: Convert
+  replace:
+    title: Replace blocks
+    simple: Simple
+    precise: Precise
+    simpleHint: Match by block id only, keeping the existing block state properties.
+    preciseHint: Match the full block state (id + properties) and replace it entirely.
+    from: From
+    to: To
+    addRule: Add rule
+    newFile: Save as a new file
+    action: Replace
 resourcepack:
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft
@@ -1311,6 +1353,26 @@ save:
   mapInfo: 'Interactive 3D world preview:'
   mapLoaded: Map Loaded
   mapPreview: Map Preview
+  chunkSelectMode: Select Chunks
+  panMode: Pan
+  chunkSelected: '{count} chunks selected'
+  mapHintPan: Drag to pan
+  mapHintSelect: Select
+  mapHintDeselect: Deselect
+  toggleGrid: Toggle region grid
+  heightTop: Top
+  resetView: Reset View
+  clearSelection: Clear Selection
+  deleteChunks: Delete Chunks
+  deleteChunksTitle: Delete Selected Chunks
+  deleteChunksHint: >-
+    Delete {count} selected chunk(s)? This cannot be undone. The chunks will be
+    regenerated the next time the area is loaded in game.
+  mapLoading: Loading map…
+  noRegions: This world has no generated regions to preview.
+  dimOverworld: Overworld
+  dimNether: The Nether
+  dimEnd: The End
   name: Save | Saves
   noLocalSavesFound: No local saves found matching your search.
   noSavesFound: No saves found

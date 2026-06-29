@@ -117,6 +117,45 @@ export interface LinkSaveAsServerWorldOptions {
   saveName: string
 }
 
+export interface SaveRegionInfo {
+  /**
+   * The region x coord. Each region covers 32x32 chunks.
+   */
+  regionX: number
+  /**
+   * The region z coord. Each region covers 32x32 chunks.
+   */
+  regionZ: number
+}
+
+export interface RenderedSaveRegion {
+  regionX: number
+  regionZ: number
+  /**
+   * RGBA pixel buffer of the 512x512 region image (top-down surface colors).
+   */
+  data: Uint8Array
+  /**
+   * Length 1024. Whether a chunk exists at local index `(x & 31) + (z & 31) * 32`.
+   */
+  chunks: boolean[]
+}
+
+export interface DeleteSaveChunksOptions {
+  /**
+   * The save folder path.
+   */
+  savePath: string
+  /**
+   * The dimension id, e.g. `minecraft:overworld`.
+   */
+  dimension: string
+  /**
+   * The absolute chunk coordinates to delete.
+   */
+  chunks: Array<{ chunkX: number; chunkZ: number }>
+}
+
 /**
  * Provide the ability to preview saves data of an instance
  */
@@ -203,6 +242,31 @@ export interface InstanceSavesService {
       }
     }>
   } | undefined>
+
+  /**
+   * List the dimensions that contain region (chunk) data for a save.
+   * @param savePath The save folder path
+   */
+  listSaveDimensions(savePath: string): Promise<string[]>
+  /**
+   * List the available region files (each covers 32x32 chunks) of a dimension.
+   * @param savePath The save folder path
+   * @param dimension The dimension id, e.g. `minecraft:overworld`
+   */
+  getSaveRegions(savePath: string, dimension: string): Promise<SaveRegionInfo[]>
+  /**
+   * Render a region file into a 512x512 RGBA top-down surface map.
+   * @param savePath The save folder path
+   * @param dimension The dimension id
+   * @param regionX The region x coord
+   * @param regionZ The region z coord
+   * @param maxHeight The highest world Y to render; blocks above are peeled away
+   */
+  renderSaveRegion(savePath: string, dimension: string, regionX: number, regionZ: number, maxHeight?: number): Promise<RenderedSaveRegion>
+  /**
+   * Delete the given chunks from a dimension. Empty region files are removed.
+   */
+  deleteSaveChunks(options: DeleteSaveChunksOptions): Promise<void>
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'

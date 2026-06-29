@@ -66,6 +66,37 @@ export function isValidCurseforgeRef(c: Partial<ResourceSourceCurseforge> | unde
     (c.projectId as number) > 0 && (c.fileId as number) > 0
 }
 
+export interface BlueprintMetadata {
+  /**
+   * The blueprint format, e.g. `litematic`, `schem`, `structure`, `buildinggadget`.
+   */
+  format: string
+  size: { x: number; y: number; z: number }
+  /**
+   * The number of non-air blocks.
+   */
+  blockCount: number
+  /**
+   * The number of distinct block ids used.
+   */
+  blockTypeCount: number
+  dataVersion?: number
+  author?: string
+  /**
+   * Material list (block id -> count), sorted descending.
+   */
+  materials: { block: string; count: number }[]
+  /**
+   * Block state palette; index 0 is air.
+   */
+  palette: { name: string; properties?: Record<string, string> }[]
+  /**
+   * Flattened `[x, y, z, paletteIndex]` quadruples for every non-air block,
+   * used by the 3D preview.
+   */
+  voxels: number[]
+}
+
 export interface ResourceMetadata {
   name?: string
   forge?: ForgeModCommonMetadata
@@ -75,6 +106,10 @@ export interface ResourceMetadata {
   [ResourceType.Quilt]?: QuiltModMetadata
   [ResourceType.ResourcePack]?: PackMeta.Pack
   [ResourceType.ShaderPack]?: {}
+  /**
+   * The blueprint/schematic metadata.
+   */
+  [ResourceType.Blueprint]?: BlueprintMetadata
   /**
    * The data to create instance from this resource.
    *

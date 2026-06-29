@@ -69,10 +69,10 @@ export function useSavesSearch(saves: Ref<InstanceSaveFile[]>, sharedSaves: Ref<
     computed(() => {
       const view = currentView.value
       if (view === 'local') {
-        return [instanceSaves.value, _sharedSaves.value]
+        return [[...instanceSaves.value, ..._sharedSaves.value], []]
       }
       if (view === 'favorite') {
-        return [instanceSaves.value, _sharedSaves.value]
+        return [[...instanceSaves.value, ..._sharedSaves.value], []]
       }
       return [
         curseforge.value,

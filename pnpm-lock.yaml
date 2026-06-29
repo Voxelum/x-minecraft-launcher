@@ -605,6 +605,9 @@ importers:
       '@xmcl/resourcepack':
         specifier: workspace:*
         version: link:../resourcepack
+      '@xmcl/schematic':
+        specifier: workspace:*
+        version: link:../schematic
       '@xmcl/system':
         specifier: workspace:*
         version: link:../system
@@ -642,6 +645,31 @@ importers:
       esbuild:
         specifier: ^0.25.12
         version: 0.25.12
+      vitest:
+        specifier: ^4.1.0
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+
+  packages/schematic:
+    dependencies:
+      '@xmcl/nbt':
+        specifier: workspace:^*
+        version: link:../nbt
+    devDependencies:
+      '@types/node':
+        specifier: ^20.19.0
+        version: 20.19.30
+      '@xmcl/oxlint-config':
+        specifier: workspace:^*
+        version: link:../oxlint-config
+      esbuild:
+        specifier: ^0.25.12
+        version: 0.25.12
+      oxlint:
+        specifier: ^1.63.0
+        version: 1.63.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
       vitest:
         specifier: ^4.1.0
         version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
@@ -1320,6 +1348,9 @@ importers:
       '@xmcl/runtime-api':
         specifier: workspace:*
         version: link:../xmcl-runtime-api
+      '@xmcl/schematic':
+        specifier: workspace:*
+        version: link:../packages/schematic
       '@xmcl/sqlite':
         specifier: workspace:*
         version: link:../packages/sqlite

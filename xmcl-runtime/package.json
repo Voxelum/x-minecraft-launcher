@@ -43,6 +43,7 @@
         "@xmcl/resource": "workspace:*",
         "@xmcl/resourcepack": "workspace:*",
         "@xmcl/runtime-api": "workspace:*",
+        "@xmcl/schematic": "workspace:*",
         "@xmcl/worker": "workspace:*",
         "@xmcl/sqlite": "workspace:*",
         "@xmcl/system": "workspace:*",

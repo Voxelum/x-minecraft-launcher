@@ -246,7 +246,8 @@
     <div class="grid w-full grid-cols-4 gap-2">
       <v-tabs-window
         v-model="tab"
-        class="main-content h-full max-h-full max-w-full bg-transparent! p-4"
+        class="main-content h-full max-h-full max-w-full bg-transparent!"
+        :style="{ padding: noPaddingContent ? '0' : '1rem' }"
       >
         <v-tabs-window-item :value="0">
           <v-expansion-panels
@@ -638,6 +639,7 @@ const props = defineProps<{
   following?: boolean
   loadingCollections?: boolean
   collection?: string
+  noPaddingContent?: boolean
 }>()
 
 const emit = defineEmits<{

@@ -29,6 +29,7 @@
     "@xmcl/system": "workspace:*",
     "@xmcl/instance": "workspace:*",
     "@xmcl/resourcepack": "workspace:*",
+    "@xmcl/schematic": "workspace:*",
     "@xmcl/utils": "workspace:*",
     "chokidar": "^4.0.3",
     "file-type": "^21.3.1",

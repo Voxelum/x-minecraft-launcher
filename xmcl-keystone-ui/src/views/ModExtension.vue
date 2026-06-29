@@ -17,7 +17,7 @@
           @clear-version="gameVersion = version.minecraft"
           @input="keywordBuffer = $event ?? ''"
           @clear-category="onClear"
-          @blur="showFilter = false"
+          @blur="focused = false"
         />
       </div>
     </div>
@@ -35,14 +35,19 @@ import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 import debounce from 'lodash.debounce'
 import { kSearchModel } from '@/composables/search'
+import { useQuery } from '@/composables/query'
 
 const { runtime: version } = injection(kInstance)
-const { curseforgeCategory, modrinthCategories, gameVersion, source, showFilter } = injection(kSearchModel)
+const { curseforgeCategory, modrinthCategories, gameVersion, source } = injection(kSearchModel)
 const { mods: modFiles } = injection(kInstanceModsContext)
 const { t } = useI18n()
 
-provide('focused', showFilter)
-onUnmounted(() => { showFilter.value = false })
+// Focusing the search field deselects the current item so the filter panel
+// (the default "nothing selected" right-pane content) is shown.
+const focused = ref(false)
+provide('focused', focused)
+const selectedId = useQuery('id')
+watch(focused, (v) => { if (v) selectedId.value = '' })
 
 const onClear = () => {
   curseforgeCategory.value = undefined

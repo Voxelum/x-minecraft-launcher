@@ -18,7 +18,7 @@
         @clear-version="gameVersion = version.minecraft"
         @input="keyword = $event ?? ''"
         @clear-category="modrinthCategories = []"
-        @blur="showFilter = false"
+        @blur="focused = false"
       />
     </div>
     <MarketExtensions
@@ -39,6 +39,7 @@ import { kSearchModel } from '@/composables/search'
 import { kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
+import { useQuery } from '@/composables/query'
 
 const { runtime: version } = injection(kInstance)
 
@@ -66,9 +67,11 @@ const extensionItems = computed(() => {
   return items
 })
 
-const { keyword, source, gameVersion, selectedCollection, modrinthCategories, sort, isModrinthActive, showFilter } = injection(kSearchModel)
-provide('focused', showFilter)
-onUnmounted(() => { showFilter.value = false })
+const { keyword, source, gameVersion, selectedCollection, modrinthCategories, sort, isModrinthActive } = injection(kSearchModel)
+const focused = ref(false)
+provide('focused', focused)
+const selectedId = useQuery('id')
+watch(focused, (v) => { if (v) selectedId.value = '' })
 const { shaderMod } = injection(kInstanceShaderPacks)
 const { sortBy } = injection(kShaderPackSearch)
 const { t } = useI18n()
