@@ -36,13 +36,13 @@
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-list-subheader
         v-if="typeof item === 'string'"
-        class="flex"
+        class="px-3 flex"
         :style="{ height: itemHeight + 'px' }"
       >
         {{
-          item === 'installed'
+          item === 'enabled'
             ? t('save.selected')
-            : item === 'shared'
+            : item === 'disabled'
               ? t('save.unselected')
               : t('modInstall.search')
         }}
@@ -126,8 +126,8 @@ effect()
 const isSaveProject = (v: ProjectEntry | undefined): v is ProjectEntry<InstanceSaveFile> =>
   !!v?.installed && v.installed.length > 0
 
-const denseView = useLocalStorageCacheBool('savesDenseView', false)
-const itemHeight = computed(() => (denseView.value ? 40 : 68))
+const denseView = useLocalStorage('savesDenseView', false, { writeDefaults: false })
+const itemHeight = computed(() => (denseView.value ? 40 : 88))
 
 const groupedItems = computed(() => {
   const result: (ProjectEntry | string)[] = []

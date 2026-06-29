@@ -15,6 +15,7 @@ import {
   InstanceShaderPacksService,
   InstanceThemeService,
   InstanceModsGroupService,
+  InstanceBlueprintsService,
 } from '@xmcl/runtime/instance'
 import {
   InstanceIOService,
@@ -25,6 +26,7 @@ import { JavaService } from '@xmcl/runtime/java'
 import { LaunchService, VersionService } from '@xmcl/runtime/launch'
 import { ProjectMappingService } from '@xmcl/runtime/moddb'
 import { ModMetadataService } from '@xmcl/runtime/moddb/ModMetadataService'
+import { BlueprintMarketService } from '@xmcl/runtime/market'
 import { ModpackService } from '@xmcl/runtime/modpack'
 import { PeerService } from '@xmcl/runtime/peer'
 import { PresenceService } from '@xmcl/runtime/presence'
@@ -51,6 +53,8 @@ export const definedServices = [
   InstanceService,
   InstanceScreenshotService,
   InstanceShaderPacksService,
+  InstanceBlueprintsService,
+  BlueprintMarketService,
   PresenceService,
   JavaService,
   LaunchService,

@@ -39,6 +39,7 @@
           :row="item.h - 4"
         />
         <HomeShaderPackCard v-else-if="isType(item.i, CardType.ShaderPack)" />
+        <HomeBlueprintCard v-else-if="isType(item.i, CardType.Blueprint)" />
         <HomeSavesCard
           v-else-if="isType(item.i, CardType.Save)"
           :row-count="saveRowCount"
@@ -82,6 +83,7 @@ import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeServerCard from './HomeServerCard.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
 import HomeWorldCard from './HomeWorldCard.vue'
+import HomeBlueprintCard from './HomeBlueprintCard.vue'
 
 const { t } = useI18n()
 const { instance } = injection(kInstance)
@@ -96,6 +98,7 @@ enum CardType {
   Screenshots,
   Server,
   World,
+  Blueprint,
 }
 
 const cardIcon: Record<number, string> = {
@@ -106,6 +109,7 @@ const cardIcon: Record<number, string> = {
   [CardType.Screenshots]: 'image',
   [CardType.Server]: 'dns',
   [CardType.World]: 'public',
+  [CardType.Blueprint]: 'view_in_ar',
 }
 
 const cardLabel: Record<number, () => string> = {
@@ -116,6 +120,7 @@ const cardLabel: Record<number, () => string> = {
   [CardType.Screenshots]: () => t('screenshots.gallery'),
   [CardType.Server]: () => t('server.serversListTitle'),
   [CardType.World]: () => t('save.world', 2),
+  [CardType.Blueprint]: () => t('blueprint.name'),
 }
 
 provide(
@@ -197,8 +202,9 @@ const DEFAULTS: Record<Breakpoint, Partial<Record<CardType, GridGeom>>> = {
     [CardType.ShaderPack]: { x: 6, y: 0, w: 3, h: 5, minW: 2, minH: 4 },
     [CardType.ResourcePack]: { x: 9, y: 0, w: 3, h: 11, minW: 2, minH: 4 },
     [CardType.Screenshots]: { x: 3, y: 5, w: 6, h: 6, minW: 3, minH: 4 },
-    [CardType.Server]: { x: 0, y: 11, w: 3, h: 5, minW: 2, minH: 4 },
-    [CardType.World]: { x: 3, y: 11, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.Blueprint]: { x: 0, y: 11, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.Server]: { x: 3, y: 11, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.World]: { x: 6, y: 11, w: 3, h: 5, minW: 2, minH: 4 },
   },
   // 12 columns, standard density.
   md: {
@@ -207,8 +213,9 @@ const DEFAULTS: Record<Breakpoint, Partial<Record<CardType, GridGeom>>> = {
     [CardType.ShaderPack]: { x: 6, y: 0, w: 3, h: 4, minW: 2, minH: 4 },
     [CardType.ResourcePack]: { x: 9, y: 0, w: 3, h: 9, minW: 2, minH: 4 },
     [CardType.Screenshots]: { x: 3, y: 4, w: 6, h: 5, minW: 3, minH: 4 },
-    [CardType.Server]: { x: 0, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
-    [CardType.World]: { x: 3, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.Blueprint]: { x: 0, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.Server]: { x: 3, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.World]: { x: 6, y: 9, w: 3, h: 5, minW: 2, minH: 4 },
   },
   // 6 columns — two list columns, then a full-width gallery underneath.
   sm: {
@@ -217,8 +224,9 @@ const DEFAULTS: Record<Breakpoint, Partial<Record<CardType, GridGeom>>> = {
     [CardType.Save]: { x: 0, y: 8, w: 3, h: 4, minW: 2, minH: 4 },
     [CardType.ShaderPack]: { x: 3, y: 8, w: 3, h: 4, minW: 2, minH: 4 },
     [CardType.Screenshots]: { x: 0, y: 12, w: 6, h: 6, minW: 3, minH: 4 },
-    [CardType.Server]: { x: 0, y: 18, w: 3, h: 5, minW: 2, minH: 4 },
-    [CardType.World]: { x: 3, y: 18, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.Blueprint]: { x: 0, y: 18, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.Server]: { x: 3, y: 18, w: 3, h: 5, minW: 2, minH: 4 },
+    [CardType.World]: { x: 0, y: 23, w: 3, h: 5, minW: 2, minH: 4 },
   },
   // 4 columns — two columns, full-width gallery underneath.
   xs: {
@@ -227,8 +235,9 @@ const DEFAULTS: Record<Breakpoint, Partial<Record<CardType, GridGeom>>> = {
     [CardType.Save]: { x: 0, y: 7, w: 2, h: 4, minW: 2, minH: 4 },
     [CardType.ShaderPack]: { x: 2, y: 7, w: 2, h: 4, minW: 2, minH: 4 },
     [CardType.Screenshots]: { x: 0, y: 11, w: 4, h: 5, minW: 2, minH: 4 },
-    [CardType.Server]: { x: 0, y: 16, w: 2, h: 5, minW: 2, minH: 4 },
-    [CardType.World]: { x: 2, y: 16, w: 2, h: 5, minW: 2, minH: 4 },
+    [CardType.Blueprint]: { x: 0, y: 16, w: 2, h: 5, minW: 2, minH: 4 },
+    [CardType.Server]: { x: 2, y: 16, w: 2, h: 5, minW: 2, minH: 4 },
+    [CardType.World]: { x: 0, y: 21, w: 2, h: 5, minW: 2, minH: 4 },
   },
 }
 
@@ -273,6 +282,7 @@ const SINGLETON_TYPES = [
   CardType.ShaderPack,
   CardType.Save,
   CardType.Screenshots,
+  CardType.Blueprint,
 ]
 
 /**
@@ -324,9 +334,9 @@ const allCards = computed<CardDescriptor[]>(() => {
  * Card types that start hidden. Per-world / per-server cards are opt-in: the
  * grid would otherwise fill up with one card per save and per server. They only
  * appear once the user explicitly shows them from the context menu (which sets
- * `hidden = false`).
+ * `hidden = false`). Blueprints are likewise opt-in.
  */
-const DEFAULT_HIDDEN_TYPES = new Set<CardType>([CardType.World, CardType.Server])
+const DEFAULT_HIDDEN_TYPES = new Set<CardType>([CardType.World, CardType.Server, CardType.Blueprint])
 
 /** Whether a card is currently hidden, honouring the per-type default. */
 function isHidden(card: CardDescriptor): boolean {

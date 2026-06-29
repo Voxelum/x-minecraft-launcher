@@ -1,0 +1,49 @@
+{
+  "name": "@xmcl/schematic",
+  "version": "1.0.0",
+  "main": "./index.ts",
+  "description": "Read, convert and edit Minecraft blueprint/schematic files (litematic, schem, structure nbt, building gadget)",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:type": "tsc",
+    "build:cjs": "esbuild --target=node16 --platform=node --external:@xmcl/* --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
+    "build:esm": "esbuild --target=node16 --platform=node --external:@xmcl/* --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs"
+  },
+  "dependencies": {
+    "@xmcl/nbt": "workspace:^*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+  },
+  "author": "cijhn@hotmail.com",
+  "keywords": [
+    "minecraft",
+    "typescript",
+    "minecraft-launcher",
+    "nodejs",
+    "electron",
+    "schematic",
+    "litematica"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Voxelum/minecraft-launcher-core-node/issues"
+  },
+  "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "@xmcl/oxlint-config": "workspace:^*",
+    "esbuild": "^0.25.12",
+    "oxlint": "^1.63.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}

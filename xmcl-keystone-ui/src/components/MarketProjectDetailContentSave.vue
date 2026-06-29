@@ -1,117 +1,88 @@
 <template>
   <div class="px-1">
-    <v-list-subheader class="flex items-center">
-      {{ t('save.properties') }}
-      <v-spacer />
-      <v-btn
-        v-if="!isUnlocked"
-        icon
-        @click="unlock"
-       size="small">
-        <v-icon size="small">lock</v-icon>
-      </v-btn>
-      <v-btn
-        v-else
-        icon
-        color="primary"
-        :loading="saving"
-        @click="save"
-       size="small">
-        <v-icon size="small">save</v-icon>
-      </v-btn>
+    <v-list-subheader>
+      <div class="flex items-center flex-nowrap w-full flex-grow gap-1">
+        {{ t('save.properties') }}
+        <v-spacer />
+        <v-btn v-if="!isUnlocked" variant="text" icon size="x-small" @click="unlock">
+          <v-icon size="x-small">edit</v-icon>
+        </v-btn>
+        <v-btn v-else variant="text" icon color="primary" size="x-small" :loading="saving" @click="save">
+          <v-icon size="x-small">save</v-icon>
+        </v-btn>
+      </div>
     </v-list-subheader>
 
-    <div class="grid grid-cols-1 gap-1 gap-y-3 overflow-auto overflow-y-hidden pr-2">
-      <div class="item">
-        <v-icon>badge</v-icon>
-        <div class="overflow-x-auto overflow-y-hidden">
-          <span>{{ t('save.levelName') }}</span>
-          <v-text-field
-            v-if="isUnlocked"
-            v-model="editedLevelName"
-            density="compact"
-            hide-details
-            variant="outlined"
-            class="mt-1"
-          />
-          <AppCopyChip
-            v-else
-            :value="saveFile.levelName"
-            outlined
-          />
+    <div class="flex flex-col gap-2">
+      <div class="prop-row">
+        <div class="prop-row__header">
+          <v-icon size="x-small" class="prop-row__icon">badge</v-icon>
+          <span class="prop-row__label">{{ t('save.levelName') }}</span>
         </div>
+        <v-text-field
+          v-if="isUnlocked"
+          v-model="editedLevelName"
+          density="compact"
+          hide-details
+          variant="outlined"
+        />
+        <AppCopyChip v-else :value="saveFile.levelName" outlined />
       </div>
 
-      <div class="item">
-        <v-icon>apps</v-icon>
-        <div class="overflow-x-auto overflow-y-hidden">
-          <span>{{ t('save.seed') }}</span>
-          <v-text-field
-            v-if="isUnlocked"
-            v-model="editedSeed"
-            density="compact"
-            hide-details
-            variant="outlined"
-            class="mt-1"
-          />
-          <AppCopyChip
-            v-else
-            :value="saveFile.seed"
-            outlined
-          />
+      <div class="prop-row">
+        <div class="prop-row__header">
+          <v-icon size="x-small" class="prop-row__icon">apps</v-icon>
+          <span class="prop-row__label">{{ t('save.seed') }}</span>
         </div>
+        <v-text-field
+          v-if="isUnlocked"
+          v-model="editedSeed"
+          density="compact"
+          hide-details
+          variant="outlined"
+        />
+        <AppCopyChip v-else :value="saveFile.seed" outlined />
       </div>
 
-      <div class="item">
-        <v-icon>shield</v-icon>
-        <div class="overflow-x-auto overflow-y-hidden">
-          <span>{{ t('save.difficulty') }}</span>
-          <v-select
-            v-if="isUnlocked"
-            v-model="editedDifficulty"
-            :items="difficultyOptions"
-            item-title="text"
-            dense
-            hide-details
-            outlined
-            class="mt-1"
-          />
-          <AppCopyChip
-            v-else
-            :value="getDifficultyName(saveFile.difficulty)"
-            outlined
-          />
+      <div class="prop-row">
+        <div class="prop-row__header">
+          <v-icon size="x-small" class="prop-row__icon">shield</v-icon>
+          <span class="prop-row__label">{{ t('save.difficulty') }}</span>
         </div>
+        <v-select
+          v-if="isUnlocked"
+          v-model="editedDifficulty"
+          :items="difficultyOptions"
+          item-title="text"
+          density="compact"
+          hide-details
+          variant="outlined"
+        />
+        <AppCopyChip v-else :value="getDifficultyName(saveFile.difficulty)" outlined />
       </div>
 
-      <div class="item">
-        <v-icon>mode</v-icon>
-        <div class="overflow-x-auto overflow-y-hidden">
-          <span>{{ t('save.allowCheats') }}</span>
-          <v-switch
-            v-if="isUnlocked"
-            v-model="editedCheat"
-            dense
-            hide-details
-            class="mt-1"
-          />
-          <AppCopyChip
-            v-else
-            :value="saveFile.cheat ? t('shared.yes') : t('shared.no')"
-            outlined
-          />
+      <div class="prop-row prop-row--inline">
+        <div class="prop-row__header">
+          <v-icon size="x-small" class="prop-row__icon">mode</v-icon>
+          <span class="prop-row__label">{{ t('save.allowCheats') }}</span>
         </div>
+        <v-switch
+          v-if="isUnlocked"
+          v-model="editedCheat"
+          density="compact"
+          hide-details
+          color="primary"
+          class="prop-row__switch"
+        />
+        <AppCopyChip v-else :value="saveFile.cheat ? t('shared.yes') : t('shared.no')" outlined />
       </div>
 
-      <div class="item">
-        <v-icon>shop</v-icon>
-        <div class="overflow-x-auto overflow-y-hidden">
-          <span>{{ t('save.gameMode') }}</span>
-          <AppCopyChip
-            :value="getLevelMode(saveFile.mode)"
-            outlined
-          />
+      <div class="prop-row prop-row--inline">
+        <div class="prop-row__header">
+          <v-icon size="x-small" class="prop-row__icon">shop</v-icon>
+          <span class="prop-row__label">{{ t('save.gameMode') }}</span>
         </div>
+        <AppCopyChip :value="getLevelMode(saveFile.mode)" outlined />
       </div>
     </div>
   </div>
@@ -122,7 +93,7 @@ import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
 import { useService } from '@/composables'
 import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import AppCopyChip from './AppCopyChip.vue'
-import { injection } from '@/util/inject';
+import { injection } from '@/util/inject'
 
 const props = defineProps<{
   saveFile: InstanceSaveFile
@@ -150,20 +121,29 @@ const difficultyOptions = computed(() => [
 
 const getDifficultyName = (difficulty: number) => {
   switch (difficulty) {
-    case 0: return t('difficulty.peaceful')
-    case 1: return t('difficulty.easy')
-    case 2: return t('difficulty.normal')
-    case 3: return t('difficulty.hard')
-    default: return 'Unknown'
+    case 0:
+      return t('difficulty.peaceful')
+    case 1:
+      return t('difficulty.easy')
+    case 2:
+      return t('difficulty.normal')
+    case 3:
+      return t('difficulty.hard')
+    default:
+      return 'Unknown'
   }
 }
 
 const getLevelMode = (mode: number) => {
   switch (mode) {
-    case 0: return t('gameType.survival')
-    case 1: return t('gameType.creative')
-    case 2: return t('gameType.adventure')
-    case 3: return t('gameType.spectator')
+    case 0:
+      return t('gameType.survival')
+    case 1:
+      return t('gameType.creative')
+    case 2:
+      return t('gameType.adventure')
+    case 3:
+      return t('gameType.spectator')
     case -1:
     default:
       return 'Non'
@@ -171,14 +151,18 @@ const getLevelMode = (mode: number) => {
 }
 
 // Initialize values from props
-watch(() => props.saveFile, (newSave) => {
-  if (newSave) {
-    editedLevelName.value = newSave.levelName
-    editedSeed.value = newSave.seed
-    editedDifficulty.value = newSave.difficulty
-    editedCheat.value = newSave.cheat
-  }
-}, { immediate: true })
+watch(
+  () => props.saveFile,
+  (newSave) => {
+    if (newSave) {
+      editedLevelName.value = newSave.levelName
+      editedSeed.value = newSave.seed
+      editedDifficulty.value = newSave.difficulty
+      editedCheat.value = newSave.cheat
+    }
+  },
+  { immediate: true },
+)
 
 const unlock = () => {
   isUnlocked.value = true
@@ -208,24 +192,43 @@ const save = async () => {
 </script>
 
 <style scoped>
-.item {
+.prop-row {
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
-.item > .v-icon {
-  margin-top: 0.25rem;
-}
-
-.item > div {
-  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background-color: rgba(var(--v-theme-on-surface), 0.03);
   min-width: 0;
 }
 
-.item span {
-  display: block;
+.prop-row__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prop-row__icon {
+  opacity: 0.6;
+}
+
+.prop-row__label {
+  font-size: 0.7rem;
   font-weight: 500;
-  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
+
+/* Rows whose value is short (switch / single chip) read better side-by-side. */
+.prop-row--inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.prop-row__switch {
+  flex: 0 0 auto;
+  margin: 0;
 }
 </style>

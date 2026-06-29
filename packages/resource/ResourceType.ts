@@ -6,4 +6,5 @@ export enum ResourceType {
   Quilt = 'quilt',
   ResourcePack = 'resourcepack',
   ShaderPack = 'shaderpack',
+  Blueprint = 'blueprint',
 }

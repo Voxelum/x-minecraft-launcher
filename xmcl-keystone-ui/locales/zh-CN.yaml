@@ -1101,6 +1101,60 @@ resourceError:
   body: >-
     “{path}” 解析失败（{code}）。该文件可能已损坏、被占用或下载不完整。
     请尝试重新下载或删除该文件。
+blueprint:
+  name: 蓝图 | 蓝图
+  count: '{count} 个蓝图'
+  searchLocal: 搜索蓝图...
+  searchOnline: 在线搜索...
+  market: 市场
+  local: 本地
+  provider: 来源
+  import: 导入
+  openFolder: 打开文件夹
+  refresh: 刷新
+  empty: 未找到蓝图。导入 .litematic / .schem / .nbt 文件或浏览市场。
+  dropHint: 将蓝图文件（.litematic / .schem / .nbt）拖入此处来导入。
+  selectHint: 选择一个蓝图以预览。
+  blocks: '{count} 个方块'
+  materials: 材料
+  allNamespaces: 全部
+  findMod: 查找此命名空间对应的模组
+  compatible: 兼容
+  incompatible: 缺少模组
+  missingNamespaces: '缺少以下模组：{namespaces}'
+  delete: 删除
+  cancel: 取消
+  install: 安装
+  goTo: 网站
+  byAuthor: 作者：{author}
+  noDescription: 暂无描述。
+  loadMore: 加载更多
+  cmsBrowseOnly: 此来源仅供浏览；请打开网站下载。
+  mixedSources: 结果来自所有来源的混合。部分仅供浏览，请打开其网站下载。
+  formats:
+    structure: 原版结构
+  preview:
+    title: 3D 预览
+    loading: 正在加载预览...
+    empty: 此蓝图没有可显示的方块。
+    hint: '{count} 个方块 · {x}×{y}×{z}'
+    controls: 拖动以观察 · WASD 移动 · 空格/Shift 上升/下降
+  convert:
+    title: 转换格式
+    hint: 将此蓝图转换为其他格式。将创建一个新文件。
+    target: 目标格式
+    action: 转换
+  replace:
+    title: 替换方块
+    simple: 简单
+    precise: 精确
+    simpleHint: 仅按方块 ID 匹配，保留现有的方块状态属性。
+    preciseHint: 匹配完整的方块状态（ID + 属性）并整体替换。
+    from: 从
+    to: 到
+    addRule: 添加规则
+    newFile: 另存为新文件
+    action: 替换
 resourcepack:
   compatible: 当前格式({format}) 可用于当前版本 {version}
   defaultDescription: Minecraft 的默认材质
@@ -1124,6 +1178,30 @@ resourcepack:
   showInCurseforge: 在 Curseforge 中显示 {name}
   unselected: 未选资源包
 save:
+  chunkSelectMode: 选择区块
+  panMode: 平移
+  chunkSelected: 已选择 {count} 个区块
+  mapHintPan: 拖动以平移
+  mapHintSelect: 选择
+  mapHintDeselect: 取消选择
+  toggleGrid: 切换区域网格
+  heightTop: 顶部
+  resetView: 重置视图
+  clearSelection: 清除选择
+  copyChunks: 复制区块
+  pasteChunks: 粘贴 {count} 个区块
+  pasteChunksPlaceHint: >-
+    移动鼠标以放置 {count} 个区块，然后点击粘贴。目标位置的现有区块将被覆盖。按 Esc 取消。
+  pasteChunksCancel: 取消
+  deleteChunks: 删除区块
+  deleteChunksTitle: 删除选中的区块
+  deleteChunksHint: >-
+    删除选中的 {count} 个区块？此操作不可撤销。下次在游戏中加载该区域时，这些区块将重新生成。
+  mapLoading: 正在加载地图…
+  noRegions: 该世界没有可预览的已生成区域。
+  dimOverworld: 主世界
+  dimNether: 下界
+  dimEnd: 末地
   allowCheats: 允许作弊
   copy:
     name: 复制存档
@@ -1133,6 +1211,7 @@ save:
   deleteTitle: 删除该存档
   difficulty: 难度
   dropHint: 将地图 Zip 或文件夹拖入此处来导入
+  duplicate: 复制存档
   export: 导出地图
   exportMessage: 将存档导出为 Zip
   exportTitle: 导出存档

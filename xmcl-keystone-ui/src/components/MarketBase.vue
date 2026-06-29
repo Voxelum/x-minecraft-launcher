@@ -12,7 +12,7 @@
     />
     <SplitPane
       flex-left
-      :min-percent="30"
+      :min-percent="minPercentage ?? 30"
       :default-percent="30"
       class="flex h-full w-full overflow-auto py-0"
     >
@@ -42,7 +42,6 @@
             :bench="16"
             class="visible-scroll h-full max-h-full w-full overflow-auto pl-1 pt-2"
             :items="items"
-            :item-height="itemHeight"
             @scroll="onScroll"
           >
             <template #default="{ item, index }">
@@ -75,7 +74,7 @@
           class="relative flex flex-col h-full flex-grow-0 overflow-y-auto overflow-x-hidden market-right"
         >
           <slot
-            v-if="(showFilter || !selectedId) && $slots.filter"
+            v-if="!selectedId && $slots.filter"
             name="filter"
           />
           <slot
@@ -104,7 +103,6 @@ import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
-import { kSearchModel } from '@/composables/search'
 
 const props = defineProps<{
   plans: Record<string, UpgradePlan>
@@ -113,14 +111,13 @@ const props = defineProps<{
   selectionMode?: boolean
   loading?: boolean
   error?: any
+  minPercentage?: number
 }>()
 const emit = defineEmits<{
   (event: 'load'): void
   (event: 'drop', e: DragEvent): void
   (event: 'update:selectionMode', v: boolean): void
 }>()
-
-const { showFilter } = injection(kSearchModel)
 
 const selectedId = useQuery('id')
 const selectedItem = computed(() => {

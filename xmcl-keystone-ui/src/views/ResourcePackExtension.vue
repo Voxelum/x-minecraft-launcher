@@ -20,7 +20,7 @@
         @clear-version="gameVersion = runtime.minecraft"
         @input="keyword = $event ?? ''"
         @clear-category="onClear"
-        @blur="showFilter = false"
+        @blur="focused = false"
       />
     </div>
     <MarketExtensions
@@ -38,6 +38,7 @@ import { kResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kSearchModel } from '@/composables/search'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
+import { useQuery } from '@/composables/query'
 
 const { path, runtime } = injection(kInstance)
 const { enabled } = injection(kInstanceResourcePacks)
@@ -50,11 +51,13 @@ const extensionItems = computed(() => {
 })
 const {
   keyword, modrinthCategories, curseforgeCategory,
-  isCurseforgeActive, isModrinthActive, source: filterMode, selectedCollection,
-  sort, gameVersion, showFilter,
+  source: filterMode,
+  sort, gameVersion,
 } = injection(kSearchModel)
-provide('focused', showFilter)
-onUnmounted(() => { showFilter.value = false })
+const focused = ref(false)
+provide('focused', focused)
+const selectedId = useQuery('id')
+watch(focused, (v) => { if (v) selectedId.value = '' })
 const onClear = () => {
   curseforgeCategory.value = undefined
   modrinthCategories.value = []

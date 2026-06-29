@@ -19,6 +19,7 @@ import { pluginUndiciLogger } from '@xmcl/runtime/network/pluginUndiciLogger'
 import { pluginUserPlaytime } from '@xmcl/runtime/playTime/pluginUserPlaytime'
 import { pluginResourceWorker } from '@xmcl/runtime/resource/pluginResourceWorker'
 import { pluginResourcePackLink } from '@xmcl/runtime/resourcePack/pluginResourcePackLink'
+import { pluginSaveWorker } from '@xmcl/runtime/save/pluginSaveWorker'
 import { pluginServicesHandler } from '@xmcl/runtime/service/pluginServicesHandler'
 import { pluginSettings } from '@xmcl/runtime/settings/pluginSettings'
 import { pluginSetup } from '@xmcl/runtime/setup/pluginSetup'
@@ -41,6 +42,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginApiFallback,
   pluginResourceWorker,
   pluginEncodingWorker,
+  pluginSaveWorker,
   pluginSetup,
   pluginLaunchPrecheck,
   pluginDiscreteGPULinux,

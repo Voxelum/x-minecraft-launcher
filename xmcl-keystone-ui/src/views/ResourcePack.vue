@@ -42,8 +42,7 @@
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-list-subheader
         v-if="typeof item === 'string'"
-        class="flex"
-        :style="{ height: itemHeight + 'px' }"
+        class="flex px-3"
       >
         {{
           item === 'enabled'
@@ -306,7 +305,7 @@ const getInstalledCurseforge = (modId: number | undefined) => {
 
 // dense
 const denseView = useLocalStorageCacheBool('resource-pack-dense-view', false)
-const itemHeight = computed(() => (denseView.value ? 48 : 76))
+const itemHeight = computed(() => (denseView.value ? 48 : 96))
 </script>
 
 <style scoped>

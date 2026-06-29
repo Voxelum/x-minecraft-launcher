@@ -256,7 +256,7 @@ useDragAutoScroll(instancesScrollEl)
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  border-radius: 0.75rem;
+  border-radius: var(--surface-menu-item-radius);
   padding: 8px 0;
   overflow: hidden;
 }

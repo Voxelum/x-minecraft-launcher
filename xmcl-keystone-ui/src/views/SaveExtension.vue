@@ -23,7 +23,7 @@
       @clear-version="gameVersion = version.minecraft"
       @input="keyword = $event ?? ''"
       @clear-category="curseforgeCategory = undefined"
-      @blur="showFilter = false"
+      @blur="focused = false"
     />
   </div>
 </template>
@@ -37,10 +37,13 @@ import { kCompact } from '@/composables/scrollTop'
 import { kSearchModel } from '@/composables/search'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
+import { useQuery } from '@/composables/query'
 
-const { keyword, source, gameVersion, curseforgeCategory, isCurseforgeActive, sort, showFilter } = injection(kSearchModel)
-provide('focused', showFilter)
-onUnmounted(() => { showFilter.value = false })
+const { keyword, source, gameVersion, curseforgeCategory, isCurseforgeActive, sort } = injection(kSearchModel)
+const focused = ref(false)
+provide('focused', focused)
+const selectedId = useQuery('id')
+watch(focused, (v) => { if (v) selectedId.value = '' })
 
 const { runtime: version } = injection(kInstance)
 const { isInstanceLinked } = injection(kInstanceSave)
