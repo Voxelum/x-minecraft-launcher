@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.0",
-    "esbuild": "^0.25.12",
+    "esbuild": "^0.28.1",
     "@achingbrain/nat-port-mapper": "4.0.4",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"

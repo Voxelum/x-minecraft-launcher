@@ -45,7 +45,7 @@
   "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
   "devDependencies": {
     "@types/uuid": "^9.0.1",
-    "esbuild": "^0.25.12",
+    "esbuild": "^0.28.1",
     "typescript": "^5.9.3",
     "user-offline-uuid": "workspace:^*",
     "undici-shim": "workspace:^*",
