@@ -179,8 +179,8 @@
 import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
 import { InstanceSavesServiceKey, SaveRegionInfo } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
-import { useLocalStorageCacheBool } from '@/composables/cache'
 import { useSavesChunkClipboard } from '@/composables/savesChunkClipboard'
+import { useLocalStorage } from '@vueuse/core'
 import SimpleDialog from './SimpleDialog.vue'
 
 const props = defineProps<{
@@ -215,7 +215,7 @@ const selectedCount = ref(0)
 const clipboardCount = computed(() => chunkClipboard.value.length)
 
 // Region (.mca) grid overlay. Persisted so it survives navigation.
-const showGrid = useLocalStorageCacheBool('saveWorldMapGrid', true)
+const showGrid = useLocalStorage('saveWorldMapGrid', true, { writeDefaults: false })
 function toggleGrid() {
   showGrid.value = !showGrid.value
   requestRender()

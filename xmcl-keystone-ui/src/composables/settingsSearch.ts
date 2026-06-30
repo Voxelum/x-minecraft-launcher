@@ -1,7 +1,7 @@
 import { injection } from '@/util/inject'
 import { computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useLocalStorageCacheBool } from './cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kEnvironment } from './environment'
 import { kSettingsState, useGlobalSettings } from './setting'
 
@@ -70,7 +70,7 @@ export function useSettingsSearchItems() {
   // streamerMode is provided at the App root via `provide('streamerMode', …)`.
   // Fall back to a fresh local-storage ref so the composable still works in
   // isolated tests / storybook contexts.
-  const streamerMode = inject('streamerMode', useLocalStorageCacheBool('streamerMode', false)) as { value: boolean }
+  const streamerMode = inject('streamerMode', useLocalStorage('streamerMode', false, { writeDefaults: false })) as { value: boolean }
 
   const groupGeneral = computed(() => t('setting.general'))
   const groupGlobalInstance = computed(() => t('setting.globalSetting'))

@@ -116,7 +116,7 @@
 </template>
 <script lang="ts" setup>
 import AppImageControls from '@/components/AppImageControls.vue'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kImageDialog } from '@/composables/imageDialog'
 import { useInstanceScreenshots } from '@/composables/screenshot'
 import { kTheme } from '@/composables/theme'
@@ -138,7 +138,7 @@ const props = defineProps<{
 }>()
 
 const { cardColor, blurCard } = injection(kTheme)
-const randomPlayScreenshot = useLocalStorageCacheBool('randomPlayScreenshot', false)
+const randomPlayScreenshot = useLocalStorage('randomPlayScreenshot', false, { writeDefaults: false })
 
 const slots = useSlots()
 const hasLeading = computed(() => !!slots.leading)

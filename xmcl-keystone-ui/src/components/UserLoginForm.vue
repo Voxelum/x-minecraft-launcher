@@ -213,7 +213,7 @@
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
 import { useRefreshable, useService } from '@/composables'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kSupportedAuthorityMetadata } from '@/composables/yggrasil'
 import { injection } from '@/util/inject'
 import {
@@ -241,7 +241,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['seed', 'login', 'add-service'])
-const streamerMode = inject('streamerMode', useLocalStorageCacheBool('streamerMode', false))
+const streamerMode = inject('streamerMode', useLocalStorage('streamerMode', false, { writeDefaults: false }))
 
 const { t } = useI18n()
 const { select } = injection(kUserContext)

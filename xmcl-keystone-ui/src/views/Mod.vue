@@ -319,7 +319,7 @@ import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
@@ -933,7 +933,7 @@ const onInstallProject = useProjectInstall(
   },
 )
 
-const updateSearch = debounce(() => {
+const updateSearch = useDebounceFn(() => {
   const buffer = keywordBuffer.value
   if (buffer) {
     const isSuperQuery = buffer.startsWith('@')

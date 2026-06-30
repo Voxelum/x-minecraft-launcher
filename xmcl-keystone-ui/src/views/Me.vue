@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { useLocalStorageCacheBool } from '@/composables/cache'
 import { useDateString } from '@/composables/date'
 import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
@@ -50,7 +49,7 @@ const allNews = computed((): LauncherNews[] => {
 })
 
 const filterKey = ref('')
-const displayNewsHeader = useLocalStorageCacheBool('displayNewsHeader', true)
+const displayNewsHeader = useLocalStorage('displayNewsHeader', true, { writeDefaults: false })
 const { instances } = injection(kInstances)
 const { path } = injection(kInstance)
 const { groups } = useInstanceGroup()

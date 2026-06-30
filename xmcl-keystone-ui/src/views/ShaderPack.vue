@@ -238,7 +238,7 @@ import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useSimpleDialog } from '@/composables/dialog'
 import { useGlobalDrop } from '@/composables/dropHandler'
@@ -460,6 +460,6 @@ const onInstallProject = useProjectInstall(
 )
 
 // dense
-const denseView = useLocalStorageCacheBool('shader-pack-dense-view', false)
+const denseView = useLocalStorage('shader-pack-dense-view', false, { writeDefaults: false })
 const itemHeight = computed(() => denseView.value ? 48 : 80)
 </script>

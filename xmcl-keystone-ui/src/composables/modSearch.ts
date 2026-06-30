@@ -4,10 +4,9 @@ import { injection } from '@/util/inject'
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
 import { getDiceCoefficient, mergeSorted } from '@/util/sort'
-import { notNullish } from '@vueuse/core'
+import { notNullish, useLocalStorage } from '@vueuse/core'
 import { InstanceModsServiceKey, ProjectMapping, ProjectMappingServiceKey, Settings } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
-import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from './cache'
 import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
 import { useI18nSearch } from './i18nSearch'
@@ -335,9 +334,9 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
   }
 
   const localFilter = ref('' as '' | 'disabledOnly' | 'incompatibleOnly' | 'hasUpdateOnly' | 'unusedOnly' | 'dependenciesInstallOnly' | 'forgeOnly' | 'fabricOnly' | 'quiltOnly' | 'neoforgeOnly')
-  const sortBy = useLocalStorageCacheStringValue('modSort', '' as '' | 'alpha_asc' | 'alpha_desc' | 'time_asc' | 'time_desc')
-  const denseView = useLocalStorageCacheBool('mod-dense-view', false)
-  const groupInstalled = useLocalStorageCacheBool('mod-group-installed', true)
+  const sortBy = useLocalStorage<'' | 'alpha_asc' | 'alpha_desc' | 'time_asc' | 'time_desc'>('modSort', '', { writeDefaults: false })
+  const denseView = useLocalStorage('mod-dense-view', false, { writeDefaults: false })
+  const groupInstalled = useLocalStorage('mod-group-installed', true, { writeDefaults: false })
 
   const totalAvailable = computed(() => {
     let total = 0

@@ -10,7 +10,7 @@ import { kModrinthAuthenticatedAPI } from './modrinthAuthenticatedAPI'
 import { useModrinthSearch } from './modrinthSearch'
 import { SearchModel } from './search'
 import { useMergedProjects, useProjectsSort } from './useMergedProjects'
-import { useLocalStorageCacheStringValue } from './cache'
+import { useLocalStorage } from '@vueuse/core'
 import { LocalSort } from './sortBy'
 import { mergeSorted } from '@/util/sort'
 
@@ -102,7 +102,7 @@ export function useResourcePackSearch(_enabled: Ref<InstanceResourcePack[]>, _di
   const loading = computed(() => loadingModrinth.value || loadingCached.value || loadingCurseforge.value)
   const { items: collectionItems, effect: onCollectionsEffect } = useMarketCollectionSearch('resourcepack', searchModel, collections, follows)
   const { currentView } = searchModel
-  const sortBy = useLocalStorageCacheStringValue('resourcePackSort', '' as LocalSort)
+  const sortBy = useLocalStorage<LocalSort>('resourcePackSort', '' as LocalSort, { writeDefaults: false })
 
   const merged = useMergedProjects<ResourcePackProject>(
     computed(() => {

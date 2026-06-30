@@ -125,7 +125,7 @@ import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurse
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
@@ -304,7 +304,7 @@ const getInstalledCurseforge = (modId: number | undefined) => {
 }
 
 // dense
-const denseView = useLocalStorageCacheBool('resource-pack-dense-view', false)
+const denseView = useLocalStorage('resource-pack-dense-view', false, { writeDefaults: false })
 const itemHeight = computed(() => (denseView.value ? 48 : 96))
 </script>
 
