@@ -64,7 +64,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useLocalStorageCache } from '@/composables/cache'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kInstance } from '@/composables/instance'
 import { kInstanceSave } from '@/composables/instanceSave'
@@ -72,9 +71,9 @@ import { kInstanceServerInfo } from '@/composables/instanceServerInfo'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { vContextMenu } from '@/directives/contextMenu'
 import { injection } from '@/util/inject'
-import { useResizeObserver } from '@vueuse/core'
+import { useLocalStorage, useResizeObserver } from '@vueuse/core'
 import { formatServerAddress, parseServerAddress } from '@xmcl/runtime-api'
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 import { GridItem, GridLayout } from 'grid-layout-plus'
 import HomeModCard from './HomeModCard.vue'
 import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
@@ -242,12 +241,7 @@ const DEFAULTS: Record<Breakpoint, Partial<Record<CardType, GridGeom>>> = {
 }
 
 const STORE_KEY = 'homeCardsState'
-const cardState = useLocalStorageCache(
-  STORE_KEY,
-  () => ({} as Record<string, CardMeta>),
-  JSON.stringify,
-  JSON.parse,
-)
+const cardState = useLocalStorage<Record<string, CardMeta>>(STORE_KEY, {}, { deep: false, writeDefaults: false })
 
 function saveCardState() {
   localStorage.setItem(STORE_KEY, JSON.stringify(cardState.value))
@@ -418,7 +412,7 @@ const containerWidths = reactive({
 const screenshotHeight = ref(0)
 
 /** Write the current breakpoint's live geometry back into the per-card store. */
-const persist = debounce(() => {
+const writeLayout = () => {
   const bp = currentBreakpoint.value
   for (const item of layout.value) {
     const meta = cardState.value[item.i] ?? (cardState.value[item.i] = {})
@@ -426,18 +420,20 @@ const persist = debounce(() => {
     byBreakpoint[bp] = { x: item.x, y: item.y, w: item.w, h: item.h }
   }
   saveCardState()
-}, 500)
+}
+const persist = useDebounceFn(writeLayout, 500)
 
 function onLayoutUpdated() {
   persist()
 }
 
 // The home view is not kept alive, so navigating away unmounts this component.
-// `persist` is debounced, and lodash does not flush on teardown — without this a
-// drag/resize made shortly before navigation would never reach localStorage and
-// the layout would appear to reset on return.
+// `persist` is debounced and VueUse's `useDebounceFn` cannot flush on teardown,
+// so we write synchronously here — without it a drag/resize made shortly before
+// navigation would never reach localStorage and the layout would appear to
+// reset on return.
 onBeforeUnmount(() => {
-  persist.flush()
+  writeLayout()
 })
 
 let screenshotItem = undefined as undefined | HTMLElement

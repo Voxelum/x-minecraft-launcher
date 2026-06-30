@@ -33,7 +33,7 @@ import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 import { kSearchModel } from '@/composables/search'
 import { useQuery } from '@/composables/query'
 
@@ -55,7 +55,7 @@ const onClear = () => {
 }
 
 const route = useRoute()
-const updateSearch = debounce(() => {
+const updateSearch = useDebounceFn(() => {
   const buffer = keywordBuffer.value
   if (buffer) {
     const isSuperQuery = buffer.startsWith('@')

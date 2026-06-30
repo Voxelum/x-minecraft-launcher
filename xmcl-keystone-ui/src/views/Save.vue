@@ -97,7 +97,7 @@ import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import { useService } from '@/composables'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
@@ -126,7 +126,7 @@ effect()
 const isSaveProject = (v: ProjectEntry | undefined): v is ProjectEntry<InstanceSaveFile> =>
   !!v?.installed && v.installed.length > 0
 
-const denseView = useLocalStorageCacheBool('savesDenseView', false)
+const denseView = useLocalStorage('savesDenseView', false, { writeDefaults: false })
 const itemHeight = computed(() => (denseView.value ? 40 : 68))
 
 const groupedItems = computed(() => {

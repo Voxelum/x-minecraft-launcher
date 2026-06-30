@@ -5,13 +5,12 @@ import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { getInstanceFileFromModrinthVersion, getModrinthModLoaders, getModrinthVersionKey } from '@/util/modrinth'
 import { swrvGet } from '@/util/swrvGet'
-import { notNullish } from '@vueuse/core'
+import { notNullish, useLocalStorage } from '@vueuse/core'
 import { File } from '@xmcl/curseforge'
 import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
 import { ProjectVersion } from '@xmcl/modrinth'
 import { InstallInstanceTask, isTask, TaskState, Tasks } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
-import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from './cache'
 import { useDialog } from './dialog'
 import { useErrorHandler } from './exception'
 import { InstanceInstallDialog } from './instanceUpdate'
@@ -56,16 +55,16 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
   let operationPath = ''
   const checked = ref(false)
   const { show } = useDialog(InstanceInstallDialog)
-  
+
   // Store the mapping of old normalized filename to new normalized filename during upgrade
   // This is used to update group membership after upgrade completes
   const upgradeFilenameMappings = shallowRef({} as Record<string, string>)
 
-  const skipVersion = useLocalStorageCacheBool(computed(() => `modsUpgradeSkipVersion:${path.value}`), false)
+  const skipVersion = useLocalStorage(computed(() => `modsUpgradeSkipVersion:${path.value}`), false, { writeDefaults: false })
   // Default to ignoring alpha/beta versions so mods upgrade to the latest stable release,
   // keeping clients in sync with launchers that only ship stable updates.
-  const releaseOnly = useLocalStorageCacheBool(computed(() => `modsUpgradeIgnoreAlphaBeta:${path.value}`), true)
-  const upgradePolicy = useLocalStorageCacheStringValue(computed(() => `modsUpgradePolicy:${path.value}`), 'modrinth')
+  const releaseOnly = useLocalStorage(computed(() => `modsUpgradeIgnoreAlphaBeta:${path.value}`), true, { writeDefaults: false })
+  const upgradePolicy = useLocalStorage(computed(() => `modsUpgradePolicy:${path.value}`), 'modrinth', { writeDefaults: false })
 
   useErrorHandler((e) => {
     if (e instanceof Error && 'instanceInstallErrorId' in e && e.instanceInstallErrorId === operationId) {
@@ -262,7 +261,7 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     const oldFiles: InstanceFile[] = []
     const files: InstanceFile[] = []
     const filenameMappings: Record<string, string> = {}
-    
+
     for (const plan of Object.values(plans.value)) {
       // fileName already includes .disabled suffix for disabled mods
       // but disabled mods are filtered out during check, so all plans are for enabled mods
@@ -275,7 +274,7 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
       })
       const newFile = 'file' in plan ? getInstanceFileFromCurseforgeFile(plan.file) : getInstanceFileFromModrinthVersion(plan.version)
       files.push(newFile)
-      
+
       // Build mapping of old normalized filename to new normalized filename for group membership update
       // Normalize by stripping .disabled suffix to match how groups store filenames
       const oldNormalizedFileName = plan.mod.fileName.replace(/\.disabled$/, '')
@@ -284,7 +283,7 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
         filenameMappings[oldNormalizedFileName] = newNormalizedFileName
       }
     }
-    
+
     // Store the mappings so they can be used to update group membership after upgrade succeeds
     upgradeFilenameMappings.value = filenameMappings
 

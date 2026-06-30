@@ -3,7 +3,7 @@ import { ModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
 import { FabricModMetadata } from '@xmcl/mod-parser'
 import { GameOptionsState, InstanceOptionsServiceKey, InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useResourceParseErrorNotifier } from './resourceParseError'
@@ -145,7 +145,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     }
   })
 
-  const debouncedMutateShaderPackOptions = debounce(mutateShaderPackOptions, 300)
+  const debouncedMutateShaderPackOptions = useDebounceFn(mutateShaderPackOptions, 300)
   watch([shaderMod, shaderPackPath], () => debouncedMutateShaderPackOptions())
 
   const shaderPack = computed({

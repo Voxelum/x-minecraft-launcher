@@ -3,7 +3,7 @@ import { clearLegacyThemeStorage, loadV1Theme } from '@/util/theme.v0'
 import { deserialize, deserialize as deserializeV0, serialize } from '@/util/theme.v1'
 import { useDark, usePreferredDark, useStyleTag } from '@vueuse/core'
 import { InstanceThemeServiceKey, MediaData, StoredTheme, ThemeServiceKey } from '@xmcl/runtime-api'
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 import { InjectionKey, Ref, computed } from 'vue'
 import { useTheme as useVuetifyTheme } from 'vuetify'
 import { useService } from './service'
@@ -323,7 +323,7 @@ export function useThemeWritter(
   const _removeMedia = (url: string) =>
     instancePath ? instanceThemeService.removeMedia(instancePath, url) : removeMedia(url)
 
-  const writeTheme = debounce(() => {
+  const writeTheme = useDebounceFn(() => {
     save()
   }, 800)
 

@@ -4,7 +4,7 @@ import { useCurseforgeSearch } from './curseforgeSearch'
 import { InstanceSaveFile } from './instanceSave'
 import { SearchModel } from './search'
 import { useMergedProjects, useProjectsSort } from './useMergedProjects'
-import { useLocalStorageCacheStringValue } from './cache'
+import { useLocalStorage } from '@vueuse/core'
 import { LocalSort } from './sortBy'
 
 export const kSaveSearch: InjectionKey<ReturnType<typeof useSavesSearch>> = Symbol('kSaveSearch')
@@ -92,7 +92,7 @@ export function useSavesSearch(saves: Ref<InstanceSaveFile[]>, sharedSaves: Ref<
     searchModel.effect(() => undefined)
   }
 
-  const sortBy = useLocalStorageCacheStringValue('savesSort', '' as LocalSort)
+  const sortBy = useLocalStorage<LocalSort>('savesSort', '' as LocalSort, { writeDefaults: false })
 
   return {
     sortBy,

@@ -476,7 +476,6 @@ import Hint from '@/components/Hint.vue'
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
-import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from '@/composables/cache'
 import { useDateString } from '@/composables/date'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kPeerState } from '@/composables/peers'
@@ -484,7 +483,7 @@ import { kTheme } from '@/composables/theme'
 import { kUserContext } from '@/composables/user'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { useIntervalFn } from '@vueuse/core'
+import { useIntervalFn, useLocalStorage } from '@vueuse/core'
 import { AUTHORITY_MICROSOFT, BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog, useSimpleDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
@@ -497,7 +496,7 @@ const { show: showReceive } = useDialog('peer-receive')
 const navigation = ref('connections' as 'connections' | 'settings')
 
 const hideIp = ref(true)
-const showNetworkInfo = useLocalStorageCacheBool('peerShowNetworkInfo', true)
+const showNetworkInfo = useLocalStorage('peerShowNetworkInfo', true, { writeDefaults: false })
 
 const open = (...args: any[]) => window.open(...args)
 
@@ -543,10 +542,11 @@ const { users } = injection(kUserContext)
 const hasMicrosoft = computed(() => !!users.value.find((u) => u.authority === AUTHORITY_MICROSOFT))
 const forwardedPort = ref(0)
 
-const allowTurn = useLocalStorageCacheBool('peerAllowTurn', false)
-const kernel = useLocalStorageCacheStringValue(
+const allowTurn = useLocalStorage('peerAllowTurn', false, { writeDefaults: false })
+const kernel = useLocalStorage<'node-datachannel' | 'webrtc'>(
   'peerKernel',
-  'node-datachannel' as 'node-datachannel' | 'webrtc',
+  'node-datachannel',
+  { writeDefaults: false },
 )
 const kernels = computed(() => [
   { value: 'node-datachannel', text: 'node-datachannel' },
@@ -558,7 +558,7 @@ function getIceServerPingText(value: number | 'timeout' | undefined) {
   return ` (${value}ms)`
 }
 
-const preferredTurnserver = useLocalStorageCacheStringValue('peerPreferredTurn', '')
+const preferredTurnserver = useLocalStorage('peerPreferredTurn', '', { writeDefaults: false })
 const turnserversItems = computed(() =>
   Object.entries(turnservers.value).map(([key, value]) => ({
     value: key,

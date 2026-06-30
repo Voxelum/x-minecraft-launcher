@@ -263,7 +263,7 @@ import AppearanceItems from '@/components/AppearanceItems.vue'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
-import { useLocalStorageCacheStringValue } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kEnvironment } from '@/composables/environment'
 import { kSettingsState } from '@/composables/setting'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
@@ -331,7 +331,7 @@ const sidebarAlign = sidebarSettings.align
 const sidebarScale = sidebarSettings.scale
 const sidebarAutoHide = sidebarSettings.autoHide
 const sidebarShowOnlyPinned = sidebarSettings.showOnlyPinned
-const myStuffStyle = useLocalStorageCacheStringValue('myStuffStyle', 'new') as Ref<'old' | 'new'>
+const myStuffStyle = useLocalStorage('myStuffStyle', 'new', { writeDefaults: false }) as Ref<'old' | 'new'>
 
 // --- Computed Properties for UI Controls ---
 

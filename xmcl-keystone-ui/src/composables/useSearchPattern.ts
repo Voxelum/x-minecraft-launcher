@@ -1,4 +1,4 @@
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 
 export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal) => Promise<{
   data: T[]
@@ -18,7 +18,7 @@ export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal
 
   let abortController: AbortController | undefined
 
-  const doSearch = debounce(async (offset: number, append: boolean) => {
+  const doSearch = useDebounceFn(async (offset: number, append: boolean) => {
     // Cancel any in-flight request so its (possibly out-of-order) response
     // cannot overwrite the result of this newer search.
     abortController?.abort()
