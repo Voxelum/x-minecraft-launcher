@@ -15,6 +15,10 @@ import { LauncherApp } from '../app/LauncherApp'
 const MCS_PAGE_SIZE = 15
 const CMS_PAGE_SIZE = 20
 
+// minecraft-schematics.com sits behind a Cloudflare challenge that rejects
+// non-browser clients, so requests must present a realistic browser UA.
+const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+
 const MCS_TYPE_EXT: Record<number, string> = {
   0: 'nbt',
   1: 'litematic',
@@ -24,8 +28,8 @@ const MCS_TYPE_EXT: Record<number, string> = {
 }
 
 /**
- * Browse and install blueprints from mcschematic.top and
- * creativemechanicserver.com.
+ * Browse and install blueprints from mcschematic.top,
+ * creativemechanicserver.com and minecraft-schematics.com.
  */
 @ExposeServiceKey(BlueprintMarketServiceKey)
 export class BlueprintMarketService extends AbstractService implements IBlueprintMarketService {
@@ -36,6 +40,9 @@ export class BlueprintMarketService extends AbstractService implements IBlueprin
   async search(options: BlueprintMarketSearchOptions): Promise<BlueprintMarketSearchResult> {
     if (options.provider === 'cms') {
       return this.searchCms(options)
+    }
+    if (options.provider === 'minecraft-schematics') {
+      return this.searchMinecraftSchematics(options)
     }
     return this.searchMcSchematic(options)
   }
@@ -61,10 +68,13 @@ export class BlueprintMarketService extends AbstractService implements IBlueprin
       provider: 'mcschematic' as const,
       title: it.name ?? it.uuid,
       author: it.nickName || it.author,
+      authorAvatar: typeof it.avatarUrl === 'string' && it.avatarUrl ? it.avatarUrl.replace(/^http:/, 'https:') : undefined,
       description: it.description,
       icon: `https://www.mcschematic.top/api/preview?uuid=${it.uuid}`,
       size: formatSize(it.size),
       downloadCount: typeof it.heat === 'number' ? it.heat : undefined,
+      tags: parseJsonStringArray(it.tags),
+      uploadTime: it.uploadTime || it.updateTime,
       fileType: MCS_TYPE_EXT[it.type] ?? 'schem',
       pageUrl: `https://www.mcschematic.top/home/${it.uuid}`,
       installable: true,
@@ -109,6 +119,35 @@ export class BlueprintMarketService extends AbstractService implements IBlueprin
     const html = await response.text()
     const items = parseCmsHtml(html)
     return { items, page, hasMore: items.length >= CMS_PAGE_SIZE }
+  }
+
+  private async searchMinecraftSchematics(options: BlueprintMarketSearchOptions): Promise<BlueprintMarketSearchResult> {
+    const page = options.page ?? 0
+    // The search results page is not paginated, so only the first page yields
+    // items; further pages are empty. This provider is browse-only.
+    if (page > 0) {
+      return { items: [], page, hasMore: false }
+    }
+    const url = new URL('https://www.minecraft-schematics.com/')
+    url.searchParams.append('search', options.keyword ?? '')
+    url.searchParams.append('category', '')
+    url.searchParams.append('theme', '')
+    url.searchParams.append('size', '')
+    url.searchParams.append('rating', '')
+    url.searchParams.append('order', '')
+
+    const response = await this.app.fetch(url.toString(), {
+      headers: {
+        'User-Agent': BROWSER_UA,
+        Accept: 'text/html',
+      },
+    })
+    if (!response.ok) {
+      throw new Error(`Failed to search minecraft-schematics.com: ${response.status}`)
+    }
+    const html = await response.text()
+    const items = parseMinecraftSchematicsHtml(html)
+    return { items, page, hasMore: false }
   }
 
   async install(options: BlueprintMarketInstallOptions): Promise<string> {
@@ -163,6 +202,17 @@ function parseCmsHtml(html: string): BlueprintMarketItem[] {
     const author = textOf(inner, /class="author"[^>]*>([\s\S]*?)</)?.replace('作者：', '').trim()
     const desc = textOf(inner, /class="desc"[^>]*>([\s\S]*?)</)
     const download = textOf(inner, /class="download"[^>]*>([\s\S]*?)</)
+    const uploadTime = /<time[^>]*datetime="([^"]+)"/.exec(inner)?.[1]
+    // Versions live in `.version .tip_box .t` (Minecraft + mod loader version),
+    // feature labels live in `.io .tag`, and the role lives in `.function .c_box`.
+    const versionBlock = /<div class="f version">([\s\S]*?)<\/div>\s*<div class="download"/.exec(inner)?.[1] ?? ''
+    const allTags = [
+      ...matchAll(versionBlock, /class="t"[^>]*>([\s\S]*?)</g),
+      ...matchAll(inner, /<span class="[^"]*\btag\b[^"]*">([\s\S]*?)<\/span>/g),
+      ...matchAll(inner, /class="c_box[^"]*"[^>]*>([\s\S]*?)<\/span>/g),
+    ]
+      .map((s) => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim())
+      .filter(Boolean)
     items.push({
       id,
       provider: 'cms',
@@ -172,11 +222,80 @@ function parseCmsHtml(html: string): BlueprintMarketItem[] {
       icon: img ? (img.startsWith('http') ? img : `https://www.creativemechanicserver.com${img}`) : undefined,
       size: size?.replace(/✖/g, '×'),
       downloadCount: download ? Number(download.match(/\d+/)?.[0] ?? 0) : undefined,
+      tags: allTags.length ? Array.from(new Set(allTags)) : undefined,
+      uploadTime,
       pageUrl: `https://www.creativemechanicserver.com/detail/${id}/`,
       installable: false,
     })
   }
   return items
+}
+
+/**
+ * Parse the minecraft-schematics.com search results page. The site is
+ * browse-only (downloads require visiting the website), so items only carry
+ * enough metadata to preview and link out.
+ */
+function parseMinecraftSchematicsHtml(html: string): BlueprintMarketItem[] {
+  const items: BlueprintMarketItem[] = []
+  const seen = new Set<string>()
+  // Each result card is a `<div class="span4">` block.
+  for (const block of html.split('<div class="span4">').slice(1)) {
+    const id = /href="\/schematic\/(\d+)\//.exec(block)?.[1]
+    if (!id || seen.has(id)) continue
+    seen.add(id)
+    const imgTag = /<img[^>]*>/.exec(block)?.[0] ?? ''
+    const icon = /src="([^"]+)"/.exec(imgTag)?.[1]
+    const alt = /alt="([^"]*)"/.exec(imgTag)?.[1]?.trim()
+    const heading = textOf(block, /<h3>\s*<a[^>]*>([\s\S]*?)<\/a>/)
+    const fileType = /\bformat_schematic\b/.test(block)
+      ? 'schematic'
+      : /\bformat_world_save\b/.test(block)
+        ? 'world'
+        : undefined
+    const tags: string[] = []
+    if (/\bformat_non_free\b/.test(block)) tags.push('paid')
+    items.push({
+      id,
+      provider: 'minecraft-schematics',
+      title: alt || heading || `#${id}`,
+      icon,
+      fileType,
+      tags: tags.length ? tags : undefined,
+      pageUrl: `https://www.minecraft-schematics.com/schematic/${id}/`,
+      installable: false,
+    })
+  }
+  return items
+}
+
+/**
+ * Collect the first capture group of every match of a global regex.
+ */
+function matchAll(html: string, re: RegExp): string[] {
+  const result: string[] = []
+  let m: RegExpExecArray | null
+  while ((m = re.exec(html))) {
+    result.push(m[1])
+  }
+  return result
+}
+
+/**
+ * Parse a JSON-encoded string array (e.g. mcschematic's `tags` field).
+ */
+function parseJsonStringArray(value: unknown): string[] | undefined {
+  if (typeof value !== 'string') return undefined
+  try {
+    const arr = JSON.parse(value)
+    if (Array.isArray(arr)) {
+      const tags = arr.filter((v): v is string => typeof v === 'string' && !!v.trim())
+      return tags.length ? tags : undefined
+    }
+  } catch {
+    // ignore malformed tag payloads
+  }
+  return undefined
 }
 
 function textOf(html: string, re: RegExp): string | undefined {

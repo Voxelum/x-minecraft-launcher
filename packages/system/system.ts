@@ -16,6 +16,15 @@ export abstract class FileSystem {
   abstract readFile(name: string, encoding?: 'utf-8' | 'base64'): Promise<Uint8Array | string>
 
   /**
+   * Read a whole file into a `Uint8Array` using the fastest available strategy.
+   * Zip-backed file systems override this to bypass the per-entry stream
+   * pipeline; the default simply delegates to {@link readFile}.
+   */
+  readFileBuffered(name: string): Promise<Uint8Array> {
+    return this.readFile(name)
+  }
+
+  /**
    * Get the url for a file entry. If the system does not support get url. This should return an empty string.
    */
   getUrl(name: string): string {

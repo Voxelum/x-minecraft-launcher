@@ -62,9 +62,11 @@ const { t } = useI18n()
 
 const market = useQuery('source')
 const isRemote = computed(() => market.value === 'market')
+const selectedId = useQuery('id')
 const refreshFlag = useQuery('refresh')
 
 function toggleMarket() {
+  selectedId.value = ''
   market.value = isRemote.value ? '' : 'market'
 }
 function refresh() {

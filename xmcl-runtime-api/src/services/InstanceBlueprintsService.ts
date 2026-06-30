@@ -69,13 +69,11 @@ export interface InstanceBlueprintsService extends InstanceResourcesService {
    */
   getBlueprintInfo(instancePath: string, fileName: string): Promise<BlueprintInfo>
   /**
-   * Resolve block textures (base64 PNG) for the given block ids by reading the
-   * instance's installed version jar and resource packs. Blocks that cannot be
-   * resolved are omitted; the renderer should fall back to a solid color.
-   *
-   * Requires the instance's Minecraft version to be installed.
+   * Resolve the localized display names for the given block ids by reading the
+   * lang files from the installed jars. Blocks without a translation are
+   * omitted. `locale` is an app/vue-i18n locale (e.g. `zh-CN`).
    */
-  getBlockTextures(instancePath: string, blocks: string[]): Promise<Record<string, string>>
+  getBlockNames(blocks: string[], locale: string): Promise<Record<string, string>>
   /**
    * Convert a blueprint to another format. Returns the new file path.
    */

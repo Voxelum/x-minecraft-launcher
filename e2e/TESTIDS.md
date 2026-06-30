@@ -27,11 +27,11 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `base-setting-server-tab` | [`xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L56`](../xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L56) |
 | `bind-server-upstream` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L29`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L29) |
 | `blueprint-import-btn` | [`xmcl-keystone-ui/src/views/BlueprintActions.vue#L25`](../xmcl-keystone-ui/src/views/BlueprintActions.vue#L25) |
-| `blueprint-item` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L116`](../xmcl-keystone-ui/src/views/Blueprint.vue#L116) |
-| `blueprint-local-tab` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L21`](../xmcl-keystone-ui/src/views/Blueprint.vue#L21) |
+| `blueprint-item` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L137`](../xmcl-keystone-ui/src/views/Blueprint.vue#L137) |
+| `blueprint-local-tab` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L32`](../xmcl-keystone-ui/src/views/Blueprint.vue#L32) |
 | `blueprint-market-btn` | [`xmcl-keystone-ui/src/views/BlueprintActions.vue#L15`](../xmcl-keystone-ui/src/views/BlueprintActions.vue#L15) |
-| `blueprint-market-item` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L68`](../xmcl-keystone-ui/src/views/Blueprint.vue#L68) |
-| `blueprint-market-tab` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L24`](../xmcl-keystone-ui/src/views/Blueprint.vue#L24) |
+| `blueprint-market-item` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L89`](../xmcl-keystone-ui/src/views/Blueprint.vue#L89) |
+| `blueprint-market-tab` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L29`](../xmcl-keystone-ui/src/views/Blueprint.vue#L29) |
 | `blueprint-page` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L4`](../xmcl-keystone-ui/src/views/Blueprint.vue#L4) |
 | `blueprint-search` | [`xmcl-keystone-ui/src/views/BlueprintExtension.vue#L12`](../xmcl-keystone-ui/src/views/BlueprintExtension.vue#L12) |
 | `create-instance` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35) |

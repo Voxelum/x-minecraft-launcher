@@ -2,6 +2,7 @@
  * @module @xmcl/unzip
  */
 import { Readable } from 'stream'
+import { inflateRawSync } from 'zlib'
 import { Entry, fromBuffer, fromFd, open as yopen, ZipFile, ZipFileOptions, Options } from '@xmcl/yauzl'
 
 export type OpenTarget = string | Buffer | number
@@ -83,6 +84,58 @@ export async function readEntry(zip: ZipFile, entry: Entry, options?: ZipFileOpt
     stream.on('error', reject)
   })
   return Buffer.concat(buffers as unknown as Uint8Array[])
+}
+
+/** Per-entry memo of the resolved absolute offset of the file data. */
+const kDataStart = Symbol('xmcl.dataStart')
+
+function readerRead(reader: { read(b: Buffer, o: number, l: number, p: number, cb: (e: Error | null) => void): void }, buffer: Buffer, position: number, length: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (length === 0) { resolve(); return }
+    reader.read(buffer, 0, length, position, (err) => (err ? reject(err) : resolve()))
+  })
+}
+
+/**
+ * Read an entry into a single `Buffer` using a positional read plus a
+ * synchronous inflate, avoiding the per-entry `ReadStream` + zlib `Transform`
+ * pipeline that {@link readEntry} sets up. For the common case of many small
+ * entries (block textures, models, lang files) this is several times faster.
+ *
+ * Positional reads do not share a file cursor, so concurrent calls on the same
+ * `zip` are safe. Falls back to the streaming {@link readEntry} for encrypted
+ * entries or compression methods other than store/deflate.
+ *
+ * @param zip The zip file object
+ * @param entry The entry to read
+ */
+export async function readEntryBuffered(zip: ZipFile, entry: Entry): Promise<Buffer> {
+  const method = entry.compressionMethod
+  if (entry.isEncrypted() || (method !== 0 && method !== 8)) {
+    return readEntry(zip, entry)
+  }
+  const reader = (zip as unknown as { reader: Parameters<typeof readerRead>[0] }).reader
+
+  // The local file header's name/extra lengths can legally differ from the
+  // central directory, so the data offset must be derived from the 30-byte
+  // local header. It never changes, so memoize it on the entry.
+  let dataStart: number | undefined = (entry as any)[kDataStart]
+  if (dataStart === undefined) {
+    const header = Buffer.allocUnsafe(30)
+    await readerRead(reader, header, entry.relativeOffsetOfLocalHeader, 30)
+    if (header.readUInt32LE(0) !== 0x04034B50) {
+      // Unexpected signature: defer to the robust streaming reader.
+      return readEntry(zip, entry)
+    }
+    const fileNameLength = header.readUInt16LE(26)
+    const extraFieldLength = header.readUInt16LE(28)
+    dataStart = entry.relativeOffsetOfLocalHeader + 30 + fileNameLength + extraFieldLength
+    ;(entry as any)[kDataStart] = dataStart
+  }
+
+  const compressed = Buffer.allocUnsafe(entry.compressedSize)
+  await readerRead(reader, compressed, dataStart, entry.compressedSize)
+  return method === 0 ? compressed : inflateRawSync(compressed)
 }
 
 /**

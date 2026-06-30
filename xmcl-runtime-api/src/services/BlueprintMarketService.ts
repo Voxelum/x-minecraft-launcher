@@ -1,6 +1,6 @@
 import { ServiceKey } from './Service'
 
-export type BlueprintMarketProvider = 'mcschematic' | 'cms'
+export type BlueprintMarketProvider = 'mcschematic' | 'cms' | 'minecraft-schematics'
 
 export interface BlueprintMarketSearchOptions {
   provider: BlueprintMarketProvider
@@ -20,6 +20,10 @@ export interface BlueprintMarketItem {
   provider: BlueprintMarketProvider
   title: string
   author?: string
+  /**
+   * The author's avatar image url, when available.
+   */
+  authorAvatar?: string
   description?: string
   /**
    * Preview image url.
@@ -30,6 +34,15 @@ export interface BlueprintMarketItem {
    */
   size?: string
   downloadCount?: number
+  /**
+   * Tags / categories describing the blueprint, e.g. game version,
+   * structure type or mod loader.
+   */
+  tags?: string[]
+  /**
+   * ISO timestamp of when the blueprint was uploaded or last updated.
+   */
+  uploadTime?: string
   /**
    * The blueprint file extension, e.g. `litematic`, `schem`, `nbt`, `json`.
    */

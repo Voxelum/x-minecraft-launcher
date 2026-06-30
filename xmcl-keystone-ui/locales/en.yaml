@@ -1268,6 +1268,7 @@ blueprint:
   searchOnline: Search online...
   market: Market
   local: Local
+  provider: Provider
   import: Import
   openFolder: Open folder
   refresh: Refresh
@@ -1275,12 +1276,16 @@ blueprint:
   selectHint: Select a blueprint to preview it.
   blocks: '{count} blocks'
   materials: Materials
+  allNamespaces: All
   delete: Delete
   cancel: Cancel
   install: Install
   goTo: Website
+  byAuthor: by {author}
+  noDescription: No description provided.
   loadMore: Load more
-  cmsBrowseOnly: CMS blueprints can be browsed here; open the website to download.
+  cmsBrowseOnly: This source is browse-only; open the website to download.
+  mixedSources: Results are mixed from all sources. Some are browse-only — open their website to download.
   formats:
     structure: Vanilla Structure
   preview:

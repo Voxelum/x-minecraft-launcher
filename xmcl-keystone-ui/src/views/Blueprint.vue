@@ -9,46 +9,63 @@
     :error="errorText"
     @load="loadMoreMarket"
   >
-    <template #actions>
-      <div class="flex items-center gap-2 px-2 py-1">
-        <v-btn-toggle
-          v-model="source"
-          mandatory
-          density="compact"
-          variant="outlined"
-          @update:model-value="selectId('')"
-        >
-          <v-btn value="" data-testid="blueprint-local-tab">
-            {{ t('blueprint.local') }}
-          </v-btn>
-          <v-btn value="market" data-testid="blueprint-market-tab">
-            {{ t('blueprint.market') }}
-          </v-btn>
-        </v-btn-toggle>
-        <v-spacer />
-        <v-btn-toggle
-          v-if="isRemote"
-          v-model="marketProvider"
-          mandatory
-          density="compact"
-          variant="outlined"
-        >
-          <v-btn value="mcschematic">
-            MCS
-          </v-btn>
-          <v-btn value="cms">
-            CMS
-          </v-btn>
-        </v-btn-toggle>
-      </div>
-      <v-alert
-        v-if="isRemote && marketProvider === 'cms'"
-        type="info"
-        density="compact"
-        class="mx-2 mb-1"
+    <template #filter>
+      <v-card
+        rounded="0"
+        flat
+        color="transparent"
+        class="flex flex-col w-full h-full"
+        @mousedown.prevent
       >
-        {{ t('blueprint.cmsBrowseOnly') }}
-      </v-alert>
+        <v-tabs
+          :model-value="isRemote ? 0 : 1"
+          color="primary"
+          slider-color="primary"
+          align-tabs="center"
+          fixed-tabs
+          style="min-height: 48px;"
+          @update:model-value="source = $event === 0 ? 'market' : ''"
+        >
+          <v-tab :value="0" prepend-icon="storefront" data-testid="blueprint-market-tab">
+            {{ t('search.market') }}
+          </v-tab>
+          <v-tab :value="1" prepend-icon="inventory_2" data-testid="blueprint-local-tab">
+            {{ t('search.local') }}
+          </v-tab>
+        </v-tabs>
+
+        <div v-if="isRemote" class="flex flex-col gap-3 px-3 pt-3">
+          <div class="filter-subheader flex items-center">
+            <v-icon size="16" class="mr-1">
+              source
+            </v-icon>
+            {{ t('blueprint.provider') }}
+          </div>
+          <div class="flex flex-wrap gap-1">
+            <v-chip size="small" label>
+              MCS
+            </v-chip>
+            <v-chip size="small" label>
+              CMS
+            </v-chip>
+            <v-chip size="small" label>
+              MS.com
+            </v-chip>
+          </div>
+          <v-alert
+            type="info"
+            density="compact"
+          >
+            {{ t('blueprint.mixedSources') }}
+          </v-alert>
+        </div>
+        <div v-else class="flex flex-1 flex-col items-center justify-center opacity-50">
+          <v-icon size="64">
+            view_in_ar
+          </v-icon>
+          <span class="mt-2">{{ t('blueprint.selectHint') }}</span>
+        </div>
+      </v-card>
     </template>
 
     <template #placeholder>
@@ -65,7 +82,9 @@
         v-if="isMarketEntry(rawItem)"
         :key="asMarket(rawItem).provider + asMarket(rawItem).id"
         class="rounded mx-1 mb-1 bg-[rgba(255,255,255,0.05)]"
+        :active="selected"
         data-testid="blueprint-market-item"
+        v-on="on"
       >
         <template #prepend>
           <v-avatar rounded size="56" class="mr-3">
@@ -77,6 +96,9 @@
         </template>
         <v-list-item-title>{{ asMarket(rawItem).title }}</v-list-item-title>
         <v-list-item-subtitle class="flex items-center gap-2 mt-1">
+          <v-chip size="x-small" label color="primary">
+            {{ providerLabel(asMarket(rawItem).provider) }}
+          </v-chip>
           <v-chip v-if="asMarket(rawItem).fileType" size="x-small" label>
             {{ asMarket(rawItem).fileType }}
           </v-chip>
@@ -84,28 +106,16 @@
           <span v-if="asMarket(rawItem).downloadCount !== undefined">· ↓ {{ asMarket(rawItem).downloadCount }}</span>
         </v-list-item-subtitle>
         <template #append>
-          <div class="flex gap-1">
-            <v-btn
-              v-if="asMarket(rawItem).installable"
-              size="small"
-              variant="tonal"
-              color="primary"
-              prepend-icon="file_download"
-              :loading="installing === asMarket(rawItem).id"
-              @click="installFromMarket(asMarket(rawItem))"
-            >
-              {{ t('blueprint.install') }}
-            </v-btn>
-            <v-btn
-              v-if="asMarket(rawItem).pageUrl"
-              size="small"
-              variant="text"
-              prepend-icon="open_in_new"
-              @click="openLink(asMarket(rawItem).pageUrl!)"
-            >
-              {{ t('blueprint.goTo') }}
-            </v-btn>
-          </div>
+          <v-btn
+            v-if="asMarket(rawItem).installable"
+            size="small"
+            variant="tonal"
+            color="primary"
+            icon="file_download"
+            :title="t('blueprint.install')"
+            :loading="installing === asMarket(rawItem).id"
+            @click.stop="installFromMarket(asMarket(rawItem))"
+          />
         </template>
       </v-list-item>
       <v-list-item
@@ -146,31 +156,136 @@
         </div>
         <div class="rounded overflow-hidden mx-3 my-2" style="height: 55%; min-height: 240px">
           <BlueprintPreview
-            v-if="active.voxels && active.dimensions && active.palette"
             :key="active.path"
             :instance-path="path"
+            :file-name="active.fileName"
             :size="active.dimensions"
             :palette="active.palette"
             :voxels="active.voxels"
           />
-          <div v-else class="flex items-center justify-center h-full opacity-50">
-            {{ t('blueprint.preview.loading') }}
-          </div>
         </div>
         <div class="flex-grow overflow-auto px-3">
-          <div class="text-subtitle-2 mb-1">
-            {{ t('blueprint.materials') }}
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-subtitle-2">{{ t('blueprint.materials') }}</span>
+            <div class="flex-grow" />
+            <v-select
+              v-model="materialNamespace"
+              :items="namespaceOptions"
+              density="compact"
+              variant="plain"
+              hide-details
+              class="blueprint-ns-filter text-sm"
+            />
           </div>
           <v-list density="compact" class="bg-transparent">
-            <v-list-item v-for="m in (active.materials ?? [])" :key="m.block" class="px-0 min-h-0">
+            <v-list-item v-for="m in filteredMaterials" :key="m.block" class="px-0 min-h-0">
+              <template #prepend>
+                <img
+                  :src="blockIconUrl(m.block)"
+                  class="blueprint-mat-icon mr-2"
+                  loading="lazy"
+                  @error="onIconError"
+                >
+              </template>
               <v-list-item-title class="text-sm">
-                {{ m.block }}
+                {{ blockNames[m.block] || prettyBlock(m.block) }}
               </v-list-item-title>
               <template #append>
-                <span class="text-sm opacity-70">{{ m.count }}</span>
+                <span class="text-sm opacity-70">×{{ m.count }}</span>
               </template>
             </v-list-item>
           </v-list>
+        </div>
+      </div>
+      <div v-else-if="activeMarket" class="flex flex-col h-full overflow-hidden">
+        <div
+          class="relative flex items-end p-4"
+          style="min-height: 180px"
+        >
+          <v-img
+            v-if="activeMarket.icon"
+            :src="activeMarket.icon"
+            cover
+            class="absolute inset-0"
+            gradient="to top, rgba(0,0,0,.85), rgba(0,0,0,.25)"
+          />
+          <div v-else class="absolute inset-0 flex items-center justify-center bg-[rgba(255,255,255,0.04)]">
+            <v-icon size="96" class="opacity-30">
+              view_in_ar
+            </v-icon>
+          </div>
+          <div class="relative z-1">
+            <div class="text-h5 font-weight-medium" :class="{ 'text-white': activeMarket.icon }">
+              {{ activeMarket.title }}
+            </div>
+            <div v-if="activeMarket.author" class="flex items-center gap-2 mt-1">
+              <v-avatar v-if="activeMarket.authorAvatar" size="20">
+                <v-img :src="activeMarket.authorAvatar" />
+              </v-avatar>
+              <span class="text-subtitle-2 opacity-90" :class="{ 'text-white': activeMarket.icon }">
+                {{ t('blueprint.byAuthor', { author: activeMarket.author }) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 px-4 pt-3">
+          <v-chip v-if="activeMarket.fileType" size="small" label prepend-icon="description">
+            {{ activeMarket.fileType }}
+          </v-chip>
+          <v-chip v-if="activeMarket.size" size="small" label prepend-icon="straighten">
+            {{ activeMarket.size }}
+          </v-chip>
+          <v-chip v-if="activeMarket.downloadCount !== undefined" size="small" label prepend-icon="download">
+            {{ activeMarket.downloadCount }}
+          </v-chip>
+          <v-chip v-if="activeMarket.uploadTime" size="small" label prepend-icon="schedule">
+            {{ formatDate(activeMarket.uploadTime) }}
+          </v-chip>
+          <v-chip size="small" label prepend-icon="storefront">
+            {{ providerLabel(activeMarket.provider) }}
+          </v-chip>
+        </div>
+
+        <div v-if="activeMarket.tags?.length" class="flex flex-wrap items-center gap-1 px-4 pt-2">
+          <v-chip
+            v-for="tag in activeMarket.tags"
+            :key="tag"
+            size="x-small"
+            variant="outlined"
+          >
+            {{ tag }}
+          </v-chip>
+        </div>
+
+        <div class="flex items-center gap-2 px-4 pt-3">
+          <v-btn
+            v-if="activeMarket.installable"
+            color="primary"
+            variant="flat"
+            prepend-icon="file_download"
+            :loading="installing === activeMarket.id"
+            @click="installFromMarket(activeMarket)"
+          >
+            {{ t('blueprint.install') }}
+          </v-btn>
+          <v-btn
+            v-if="activeMarket.pageUrl"
+            variant="tonal"
+            prepend-icon="open_in_new"
+            @click="openLink(activeMarket.pageUrl!)"
+          >
+            {{ t('blueprint.goTo') }}
+          </v-btn>
+        </div>
+
+        <div class="flex-grow overflow-auto px-4 py-3">
+          <p v-if="activeMarket.description" class="text-body-2 whitespace-pre-line opacity-80">
+            {{ activeMarket.description }}
+          </p>
+          <div v-else class="opacity-50 text-body-2">
+            {{ t('blueprint.noDescription') }}
+          </div>
         </div>
       </div>
       <div v-else class="flex flex-col items-center justify-center h-full opacity-50">
@@ -305,10 +420,10 @@ import {
   InstanceBlueprintsServiceKey,
 } from '@xmcl/runtime-api'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { path } = injection(kInstance)
 const { blueprints, isValidating, revalidate } = useInstanceBlueprints(path)
-const { uninstall, convertBlueprint, replaceBlueprintBlocks } = useService(InstanceBlueprintsServiceKey)
+const { uninstall, convertBlueprint, replaceBlueprintBlocks, getBlueprintInfo, getBlockNames } = useService(InstanceBlueprintsServiceKey)
 const { search: marketSearch, install: marketInstallSvc } = useService(BlueprintMarketServiceKey)
 
 const keyword = useQuery('keyword')
@@ -330,13 +445,28 @@ const items = computed<(BlueprintEntry | MarketEntry)[]>(() =>
 
 const selectedId = useQuery('id')
 const active = computed(() => localItems.value.find((b) => b.id === selectedId.value))
+const activeMarket = computed(() => marketItems.value.find((m) => m.provider + m.id === selectedId.value))
 const asBp = (i: unknown) => i as BlueprintEntry
 const asMarket = (i: unknown) => (i as MarketEntry).market
 const isMarketEntry = (i: unknown) => typeof i === 'object' && i !== null && 'market' in i
-const selectId = (v: string) => { selectedId.value = v }
 
 const refreshFlag = useQuery('refresh')
 watch(refreshFlag, () => revalidate())
+
+function formatDate(value?: string) {
+  if (!value) return ''
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return ''
+  return d.toLocaleDateString()
+}
+
+function providerLabel(provider: BlueprintMarketProvider) {
+  switch (provider) {
+    case 'cms': return 'CMS'
+    case 'minecraft-schematics': return 'MS.com'
+    default: return 'MCS'
+  }
+}
 
 function formatLabel(format?: string) {
   switch (format) {
@@ -356,8 +486,58 @@ const formatOptions = computed(() => [
   { text: 'Building Gadgets (.json)', value: 'buildinggadget' },
 ])
 
-// Selected blueprint detail (right pane)
-const materials = computed(() => active.value?.materials ?? [])
+// Selected blueprint detail (right pane). Prefer the cached material list; fall
+// back to a live parse for entries scanned before materials were cached.
+const materials = ref<{ block: string; count: number }[]>([])
+watch(active, async (bp) => {
+  materials.value = bp?.materials ?? []
+  if (!bp || (bp.materials && bp.materials.length > 0)) return
+  try {
+    const info = await getBlueprintInfo(path.value, bp.fileName)
+    if (active.value?.path === bp.path) materials.value = info.materials
+  } catch {
+    // ignore; keep empty
+  }
+}, { immediate: true })
+
+// Localized block display names (lazily fetched from the jars' lang files).
+const blockNames = ref<Record<string, string>>({})
+watch([materials, locale], async ([list]) => {
+  blockNames.value = {}
+  if (!list || list.length === 0) return
+  try {
+    blockNames.value = await getBlockNames((list as { block: string; count: number }[]).map((m) => m.block), String(locale.value))
+  } catch {
+    // ignore; fall back to prettified ids
+  }
+}, { immediate: true })
+
+// Namespace filter for the material list.
+const materialNamespace = ref('all')
+const namespaceOf = (block: string) => (block.includes(':') ? block.slice(0, block.indexOf(':')) : 'minecraft')
+const namespaceOptions = computed(() => {
+  const namespaces = [...new Set(materials.value.map((m) => namespaceOf(m.block)))].sort()
+  return [
+    { title: t('blueprint.allNamespaces'), value: 'all' },
+    ...namespaces.map((ns) => ({ title: ns, value: ns })),
+  ]
+})
+watch(materials, () => { materialNamespace.value = 'all' })
+const filteredMaterials = computed(() => {
+  if (materialNamespace.value === 'all') return materials.value
+  return materials.value.filter((m) => namespaceOf(m.block) === materialNamespace.value)
+})
+
+function blockIconUrl(block: string) {
+  return `http://launcher/block-texture?block=${encodeURIComponent(block)}`
+}
+function onIconError(e: Event) {
+  (e.target as HTMLImageElement).style.visibility = 'hidden'
+}
+function prettyBlock(block: string) {
+  const name = block.includes(':') ? block.slice(block.indexOf(':') + 1) : block
+  return name.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+}
 
 // Convert
 const convertDialog = ref(false)
@@ -420,35 +600,57 @@ async function remove(bp: InstanceBlueprintFile) {
   }
 }
 
-// Market
-const marketProvider = useQuery('provider') as unknown as Ref<BlueprintMarketProvider>
+// Market — results from every provider are searched together and mixed.
+const PROVIDERS: BlueprintMarketProvider[] = ['mcschematic', 'cms', 'minecraft-schematics']
 const marketItems = ref<BlueprintMarketItem[]>([])
-const marketPage = ref(0)
-const marketHasMore = ref(false)
+const marketState = ref<Record<string, { page: number; hasMore: boolean }>>({})
+const marketHasMore = computed(() => Object.values(marketState.value).some((s) => s.hasMore))
 const marketLoading = ref(false)
 const installing = ref('')
 
 function resetMarket() {
   marketItems.value = []
-  marketPage.value = 0
-  marketHasMore.value = false
+  marketState.value = Object.fromEntries(PROVIDERS.map((p) => [p, { page: 0, hasMore: true }]))
   loadMoreMarket()
 }
 async function loadMoreMarket() {
   if (marketLoading.value || !isRemote.value) return
+  const toLoad = PROVIDERS.filter((p) => marketState.value[p]?.hasMore)
+  if (toLoad.length === 0) return
   marketLoading.value = true
   try {
-    const result = await marketSearch({ provider: marketProvider.value || 'mcschematic', keyword: keyword.value, page: marketPage.value })
-    marketItems.value = [...marketItems.value, ...result.items]
-    marketHasMore.value = result.hasMore
-    marketPage.value += 1
-  } catch (e) {
-    errorText.value = (e as Error).message
+    const results = await Promise.allSettled(toLoad.map((p) =>
+      marketSearch({ provider: p, keyword: keyword.value, page: marketState.value[p].page })))
+    const lists: BlueprintMarketItem[][] = []
+    let failures = 0
+    results.forEach((res, i) => {
+      const p = toLoad[i]
+      const prev = marketState.value[p]
+      if (res.status === 'fulfilled') {
+        lists.push(res.value.items)
+        marketState.value[p] = { page: prev.page + 1, hasMore: res.value.hasMore }
+      } else {
+        failures += 1
+        marketState.value[p] = { page: prev.page, hasMore: false }
+      }
+    })
+    // Interleave provider results so the mixed list alternates between sources.
+    const mixed: BlueprintMarketItem[] = []
+    const maxLen = Math.max(0, ...lists.map((l) => l.length))
+    for (let i = 0; i < maxLen; i++) {
+      for (const l of lists) {
+        if (l[i]) mixed.push(l[i])
+      }
+    }
+    marketItems.value = [...marketItems.value, ...mixed]
+    if (failures === toLoad.length && marketItems.value.length === 0) {
+      errorText.value = 'Failed to search blueprint market.'
+    }
   } finally {
     marketLoading.value = false
   }
 }
-watch([isRemote, marketProvider, keyword], () => { if (isRemote.value) resetMarket() }, { immediate: true })
+watch([isRemote, keyword], () => { if (isRemote.value) resetMarket() }, { immediate: true })
 async function installFromMarket(item: BlueprintMarketItem) {
   installing.value = item.id
   try {
@@ -467,3 +669,17 @@ function openLink(url: string) {
   window.open(url, 'browser')
 }
 </script>
+
+<style scoped>
+.blueprint-mat-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.blueprint-ns-filter {
+  max-width: 160px;
+  flex: 0 0 auto;
+}
+</style>

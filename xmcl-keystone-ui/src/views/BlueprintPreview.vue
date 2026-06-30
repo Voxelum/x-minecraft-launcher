@@ -21,17 +21,19 @@
 import { useService } from '@/composables/service'
 import { InstanceBlueprintsServiceKey } from '@xmcl/runtime-api'
 import * as THREE from 'three'
+import { loadBlockTexture } from '@/util/blockTexture'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 const props = defineProps<{
   instancePath: string
-  size: { x: number; y: number; z: number }
-  palette: { name: string; properties?: Record<string, string> }[]
-  voxels: number[]
+  fileName: string
+  size?: { x: number; y: number; z: number }
+  palette?: { name: string; properties?: Record<string, string> }[]
+  voxels?: number[]
 }>()
 
 const { t } = useI18n()
-const { getBlockTextures } = useService(InstanceBlueprintsServiceKey)
+const { getBlueprintInfo } = useService(InstanceBlueprintsServiceKey)
 
 const container = ref<HTMLDivElement>()
 const loading = ref(true)
@@ -49,7 +51,6 @@ let disposed = false
 
 const sharedGeometry = new THREE.BoxGeometry(1, 1, 1)
 const ownedMaterials: THREE.Material[] = []
-const ownedTextures: THREE.Texture[] = []
 
 const fallbackColor = (name: string) => {
   // Deterministic pleasant color from the block id.
@@ -63,23 +64,24 @@ const fallbackColor = (name: string) => {
 const isTranslucent = (name: string) => /glass|water|ice|bubble|slime|honey|portal|barrier/.test(name)
 const isCutout = (name: string) => /leaves|sapling|rail|_wire|torch|grass|fern|flower|door|pane|fence|sign|ladder|vine|lever|button|_bars/.test(name)
 
-function makeTexture(base64: string): THREE.Texture {
-  const image = new Image()
-  const texture = new THREE.Texture(image)
-  texture.magFilter = THREE.NearestFilter
-  texture.minFilter = THREE.NearestFilter
-  ;(texture as any).colorSpace = (THREE as any).SRGBColorSpace
-  image.onload = () => { texture.needsUpdate = true }
-  image.src = `data:image/png;base64,${base64}`
-  ownedTextures.push(texture)
-  return texture
-}
-
 async function build() {
   loading.value = true
   errorText.value = ''
   try {
-    const preview = { size: props.size, palette: props.palette, voxels: props.voxels }
+    // Prefer the palette/voxels cached on the resource metadata; fall back to a
+    // live parse when they're missing (e.g. files scanned before voxels were
+    // cached, or an older metadata row).
+    let preview: { size: { x: number; y: number; z: number }; palette: { name: string; properties?: Record<string, string> }[]; voxels: number[] }
+    if (props.voxels && props.voxels.length > 0 && props.palette && props.size) {
+      preview = { size: props.size, palette: props.palette, voxels: props.voxels }
+    } else {
+      const info = await getBlueprintInfo(props.instancePath, props.fileName)
+      preview = {
+        size: info.size ?? { x: 0, y: 0, z: 0 },
+        palette: info.palette ?? [],
+        voxels: info.voxels ?? [],
+      }
+    }
     size.x = preview.size.x
     size.y = preview.size.y
     size.z = preview.size.z
@@ -92,30 +94,16 @@ async function build() {
       return
     }
 
-    const usedNames = [...new Set(preview.palette.map((p) => p.name))]
-      .filter((n) => n && n !== 'minecraft:air')
-    const textures = await getBlockTextures(props.instancePath, usedNames).catch(() => ({} as Record<string, string>))
-
-    // Build one material per palette index, using the real jar texture when
-    // available and falling back to a solid color otherwise.
+    // Build one material per palette index with a fallback color first, so the
+    // structure renders immediately. Real jar textures are fetched afterwards
+    // and swapped in — opening the version jar + mod jars can be slow and must
+    // not block the initial render.
     const paletteMaterials = preview.palette.map((state) => {
-      const name = state.name
-      const base64 = textures[name]
-      const material = new THREE.MeshLambertMaterial(
-        base64
-          ? { map: makeTexture(base64) }
-          : { color: fallbackColor(name) },
-      )
-      if (isTranslucent(name)) {
+      const material = new THREE.MeshLambertMaterial({ color: fallbackColor(state.name) })
+      if (isTranslucent(state.name)) {
         material.transparent = true
         material.opacity = 0.7
         material.depthWrite = false
-      } else if (base64 && isCutout(name)) {
-        material.alphaTest = 0.5
-        material.transparent = false
-      } else if (base64) {
-        // Drop fully transparent texels (e.g. pane atlases) without sorting.
-        material.alphaTest = 0.1
       }
       ownedMaterials.push(material)
       return material
@@ -123,11 +111,39 @@ async function build() {
 
     if (disposed) return
     setupScene(preview, paletteMaterials)
+    loading.value = false
+
+    applyTextures(preview.palette, paletteMaterials).catch(() => {})
   } catch (e) {
     errorText.value = (e as Error).message || String(e)
   } finally {
     loading.value = false
   }
+}
+
+/**
+ * Apply textures from the shared block-texture cache onto the already-rendered
+ * fallback-colored materials. Each block id is loaded at most once for the
+ * whole app, so switching back to a blueprint reuses cached textures without a
+ * new request, and 404s keep the fallback color.
+ */
+async function applyTextures(
+  palette: { name: string; properties?: Record<string, string> }[],
+  materials: THREE.MeshLambertMaterial[],
+) {
+  await Promise.all(palette.map(async (state, idx) => {
+    const material = materials[idx]
+    if (!material || !state.name || state.name === 'minecraft:air') return
+    const texture = await loadBlockTexture(state.name)
+    if (disposed || !texture) return
+    material.map = texture
+    // White base color so the texture shows its true colors.
+    material.color = new THREE.Color(0xffffff)
+    if (!isTranslucent(state.name)) {
+      material.alphaTest = isCutout(state.name) ? 0.5 : 0.1
+    }
+    material.needsUpdate = true
+  }))
 }
 
 function setupScene(preview: { size: { x: number; y: number; z: number }; voxels: number[] }, materials: THREE.Material[]) {
@@ -231,9 +247,7 @@ function dispose() {
     renderer.domElement.remove()
   }
   for (const m of ownedMaterials) m.dispose()
-  for (const tx of ownedTextures) tx.dispose()
   ownedMaterials.length = 0
-  ownedTextures.length = 0
   renderer = undefined
   scene = undefined
   camera = undefined
@@ -246,7 +260,7 @@ onBeforeUnmount(() => {
   sharedGeometry.dispose()
 })
 
-watch(() => [props.instancePath, props.voxels], () => {
+watch(() => [props.instancePath, props.fileName], () => {
   dispose()
   disposed = false
   build()
