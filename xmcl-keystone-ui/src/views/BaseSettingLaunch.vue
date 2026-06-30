@@ -211,7 +211,7 @@ import useSWRV from 'swrv'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { useLaunchPreview } from '../composables/launchPreview'
 import { useNotifier } from '../composables/notifier'
-import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
+import BaseSettingGlobalLabel from '@/components/BaseSettingGlobalLabel.vue'
 import { useLaunchException } from '@/composables/launchException'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 

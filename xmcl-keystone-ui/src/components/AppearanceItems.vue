@@ -454,7 +454,7 @@ import { BackgroundType, UIThemeDataV1, useThemeWritter } from '@/composables/th
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ThemeServiceKey } from '@xmcl/runtime-api'
-import SettingAppearanceColor from '../views/SettingAppearanceColor.vue'
+import SettingAppearanceColor from '@/components/SettingAppearanceColor.vue'
 
 const props = defineProps<{
   theme: UIThemeDataV1

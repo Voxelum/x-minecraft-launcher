@@ -37,7 +37,6 @@
       </div>
       <HomeFocusFooter v-else class="absolute bottom-0 left-0 pb-[26px]" />
     </transition>
-    <!-- <ScreenshotGalleryDialog /> -->
   </div>
 </template>
 <script lang="ts" setup>
@@ -58,7 +57,6 @@ import HomeGrid from './HomeGrid.vue'
 import HomeUpstreamCurseforge from './HomeUpstreamCurseforge.vue'
 import HomeUpstreamFeedTheBeast from './HomeUpstreamFeedTheBeast.vue'
 import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
-// import ScreenshotGalleryDialog from '@/components/ScreenshotGalleryDialog.vue'
 
 const isFocus = useInFocusMode()
 const { instance } = injection(kInstance)

@@ -53,7 +53,7 @@
 import SettingCard from '@/components/SettingCard.vue'
 import { injection } from '@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
-import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
+import BaseSettingGlobalLabel from '@/components/BaseSettingGlobalLabel.vue'
 import { ref, computed, watch } from 'vue'
 import { useResolutionPresets } from '@/composables/resolutionPresets'
 

@@ -105,7 +105,7 @@
   >
     <div v-roving-tabindex role="group" class="flex flex-row items-center flex-grow-0">
       <v-btn
-        v-shared-tooltip.bottom="t('back')"
+        v-shared-tooltip.bottom="t('shared.back')"
         icon
         :aria-label="backAriaLabel"
         class="non-moveable mr-1"
