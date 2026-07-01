@@ -40,9 +40,9 @@
         :style="{ height: itemHeight + 'px' }"
       >
         {{
-          item === 'installed'
+          item === 'enabled'
             ? t('save.selected')
-            : item === 'shared'
+            : item === 'disabled'
               ? t('save.unselected')
               : t('modInstall.search')
         }}

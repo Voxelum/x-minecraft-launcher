@@ -1,6 +1,13 @@
 <template>
   <div class="blueprint-preview">
-    <div ref="container" class="blueprint-preview__canvas" />
+    <div
+      ref="container"
+      class="blueprint-preview__canvas"
+      tabindex="0"
+      @keydown="onKeyDown"
+      @keyup="onKeyUp"
+      @blur="pressedKeys.clear()"
+    />
     <div v-if="loading" class="blueprint-preview__overlay">
       <v-progress-circular indeterminate color="primary" />
       <span class="ml-3">{{ t('blueprint.preview.loading') }}</span>
@@ -14,6 +21,9 @@
     <div v-if="!loading && !errorText" class="blueprint-preview__hint">
       {{ t('blueprint.preview.hint', { count: blockCount, x: size.x, y: size.y, z: size.z }) }}
     </div>
+    <div v-if="!loading && !errorText" class="blueprint-preview__controls">
+      {{ t('blueprint.preview.controls') }}
+    </div>
   </div>
 </template>
 
@@ -22,7 +32,6 @@ import { useService } from '@/composables/service'
 import { InstanceBlueprintsServiceKey } from '@xmcl/runtime-api'
 import * as THREE from 'three'
 import { loadBlockTexture } from '@/util/blockTexture'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 const props = defineProps<{
   instancePath: string
@@ -44,10 +53,85 @@ const size = reactive({ x: 0, y: 0, z: 0 })
 let renderer: THREE.WebGLRenderer | undefined
 let scene: THREE.Scene | undefined
 let camera: THREE.PerspectiveCamera | undefined
-let controls: OrbitControls | undefined
 let frame = 0
 let resizeObserver: ResizeObserver | undefined
 let disposed = false
+
+// Minecraft-like first-person fly camera. WASD moves on the horizontal plane
+// relative to where you look, Space/Shift go up/down, and dragging the mouse
+// rotates the view (yaw/pitch) without locking the pointer.
+const pressedKeys = new Set<string>()
+const MOVE_KEYS = new Set(['w', 'a', 's', 'd', ' ', 'shift'])
+let moveSpeed = 0.5
+let yaw = 0
+let pitch = 0
+let dragging = false
+let lastPointerX = 0
+let lastPointerY = 0
+const LOOK_SENSITIVITY = 0.005
+const PITCH_LIMIT = Math.PI / 2 - 0.01
+const tmpMove = new THREE.Vector3()
+
+function applyRotation() {
+  if (camera) camera.rotation.set(pitch, yaw, 0, 'YXZ')
+}
+
+function onKeyDown(e: KeyboardEvent) {
+  const k = e.key.toLowerCase()
+  if (!MOVE_KEYS.has(k)) return
+  pressedKeys.add(k)
+  e.preventDefault()
+}
+function onKeyUp(e: KeyboardEvent) {
+  pressedKeys.delete(e.key.toLowerCase())
+}
+function onPointerDown(e: PointerEvent) {
+  dragging = true
+  lastPointerX = e.clientX
+  lastPointerY = e.clientY
+  container.value?.focus()
+  const el = e.currentTarget as HTMLElement
+  el.setPointerCapture(e.pointerId)
+  el.style.cursor = 'grabbing'
+}
+function onPointerMove(e: PointerEvent) {
+  if (!dragging) return
+  yaw -= (e.clientX - lastPointerX) * LOOK_SENSITIVITY
+  pitch -= (e.clientY - lastPointerY) * LOOK_SENSITIVITY
+  pitch = Math.max(-PITCH_LIMIT, Math.min(PITCH_LIMIT, pitch))
+  lastPointerX = e.clientX
+  lastPointerY = e.clientY
+  applyRotation()
+}
+function onPointerUp(e: PointerEvent) {
+  dragging = false
+  const el = e.currentTarget as HTMLElement
+  el.releasePointerCapture?.(e.pointerId)
+  el.style.cursor = 'grab'
+}
+function onWheel(e: WheelEvent) {
+  if (!camera) return
+  e.preventDefault()
+  // Dolly along the look direction, like creeping forward/back.
+  const step = moveSpeed * 4 * (e.deltaY > 0 ? -1 : 1)
+  camera.position.add(camera.getWorldDirection(tmpMove).multiplyScalar(step))
+}
+function updateMovement() {
+  if (!camera || pressedKeys.size === 0) return
+  // Horizontal forward/right derived from yaw only (Minecraft-style fly).
+  const sinY = Math.sin(yaw)
+  const cosY = Math.cos(yaw)
+  tmpMove.set(0, 0, 0)
+  if (pressedKeys.has('w')) { tmpMove.x -= sinY; tmpMove.z -= cosY }
+  if (pressedKeys.has('s')) { tmpMove.x += sinY; tmpMove.z += cosY }
+  if (pressedKeys.has('d')) { tmpMove.x += cosY; tmpMove.z -= sinY }
+  if (pressedKeys.has('a')) { tmpMove.x -= cosY; tmpMove.z += sinY }
+  if (pressedKeys.has(' ')) tmpMove.y += 1
+  if (pressedKeys.has('shift')) tmpMove.y -= 1
+  if (tmpMove.lengthSq() === 0) return
+  tmpMove.normalize().multiplyScalar(moveSpeed)
+  camera.position.add(tmpMove)
+}
 
 const sharedGeometry = new THREE.BoxGeometry(1, 1, 1)
 const ownedMaterials: THREE.Material[] = []
@@ -209,10 +293,21 @@ function setupScene(preview: { size: { x: number; y: number; z: number }; voxels
   const diagonal = Math.sqrt(sx * sx + sy * sy + sz * sz)
   camera.position.set(diagonal, diagonal * 0.8, diagonal)
   camera.lookAt(0, 0, 0)
+  moveSpeed = Math.max(0.05, diagonal / 120)
 
-  controls = new OrbitControls(camera, renderer.domElement)
-  controls.enableDamping = true
-  controls.target.set(0, 0, 0)
+  // Seed yaw/pitch from the initial look-at so dragging continues smoothly.
+  const initial = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ')
+  yaw = initial.y
+  pitch = initial.x
+  applyRotation()
+
+  const canvas = renderer.domElement
+  canvas.style.cursor = 'grab'
+  canvas.addEventListener('pointerdown', onPointerDown)
+  canvas.addEventListener('pointermove', onPointerMove)
+  canvas.addEventListener('pointerup', onPointerUp)
+  canvas.addEventListener('pointercancel', onPointerUp)
+  canvas.addEventListener('wheel', onWheel, { passive: false })
 
   resizeObserver = new ResizeObserver(() => onResize())
   resizeObserver.observe(el)
@@ -220,7 +315,7 @@ function setupScene(preview: { size: { x: number; y: number; z: number }; voxels
   const animate = () => {
     if (disposed) return
     frame = requestAnimationFrame(animate)
-    controls?.update()
+    updateMovement()
     if (renderer && scene && camera) renderer.render(scene, camera)
   }
   animate()
@@ -239,19 +334,25 @@ function onResize() {
 
 function dispose() {
   disposed = true
+  pressedKeys.clear()
+  dragging = false
   cancelAnimationFrame(frame)
   resizeObserver?.disconnect()
-  controls?.dispose()
   if (renderer) {
+    const canvas = renderer.domElement
+    canvas.removeEventListener('pointerdown', onPointerDown)
+    canvas.removeEventListener('pointermove', onPointerMove)
+    canvas.removeEventListener('pointerup', onPointerUp)
+    canvas.removeEventListener('pointercancel', onPointerUp)
+    canvas.removeEventListener('wheel', onWheel)
     renderer.dispose()
-    renderer.domElement.remove()
+    canvas.remove()
   }
   for (const m of ownedMaterials) m.dispose()
   ownedMaterials.length = 0
   renderer = undefined
   scene = undefined
   camera = undefined
-  controls = undefined
 }
 
 onMounted(build)
@@ -279,6 +380,7 @@ watch(() => [props.instancePath, props.fileName], () => {
 .blueprint-preview__canvas {
   width: 100%;
   height: 100%;
+  outline: none;
 }
 
 .blueprint-preview__overlay {
@@ -296,5 +398,14 @@ watch(() => [props.instancePath, props.fileName], () => {
   bottom: 8px;
   font-size: 12px;
   opacity: 0.7;
+}
+
+.blueprint-preview__controls {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 12px;
+  opacity: 0.5;
+  pointer-events: none;
 }
 </style>

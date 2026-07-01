@@ -1,6 +1,6 @@
-import { pathExists, readdir, readFile, stat, unlink, writeFile } from 'fs-extra'
+import { ensureDir, pathExists, readdir, readFile, stat, unlink, writeFile } from 'fs-extra'
 import { join } from 'path'
-import { gunzipSync, inflateSync } from 'zlib'
+import { deflateSync, gunzipSync, gzipSync, inflateSync } from 'zlib'
 import { getBlockColor, TRANSPARENT_BLOCKS } from './blockColors'
 
 export interface SaveRegionInfo {
@@ -149,6 +149,7 @@ interface DecodedChunk {
 // NBT tag ids.
 const TAG_END = 0
 const TAG_BYTE = 1
+const TAG_INT = 3
 const TAG_STRING = 8
 const TAG_LIST = 9
 const TAG_COMPOUND = 10
@@ -565,4 +566,213 @@ export async function deleteSaveChunks(
       await unlink(file).catch(() => undefined)
     }
   }
+}
+
+/**
+ * The raw, still-compressed payload of a single chunk extracted from a region
+ * file. This is exactly the bytes a region file stores for a chunk (minus the
+ * 4-byte length and 1-byte compression prefix), so it can be written back
+ * verbatim into another region file without re-encoding the NBT.
+ */
+export interface SaveChunkData {
+  /** Absolute chunk x coordinate. */
+  chunkX: number
+  /** Absolute chunk z coordinate. */
+  chunkZ: number
+  /** Region-file compression type (1 = gzip, 2 = zlib, 3 = uncompressed). */
+  compression: number
+  /** The compressed chunk payload. */
+  data: Uint8Array
+}
+
+interface StoredChunk {
+  compression: number
+  data: Uint8Array
+  timestamp: number
+}
+
+/**
+ * Parse every chunk stored in a region-file buffer into a map keyed by the
+ * local chunk index `(x & 31) + (z & 31) * 32`.
+ */
+function parseRegionChunks(buffer: Buffer): Map<number, StoredChunk> {
+  const map = new Map<number, StoredChunk>()
+  if (buffer.length < 8192) return map
+  for (let index = 0; index < 1024; index++) {
+    const headerOffset = index * 4
+    const sectorOffset = (buffer[headerOffset] << 16) | (buffer[headerOffset + 1] << 8) | buffer[headerOffset + 2]
+    if (sectorOffset === 0) continue
+    const start = sectorOffset * 4096
+    if (start + 5 > buffer.length) continue
+    const length = buffer.readUInt32BE(start)
+    if (length <= 0 || start + 4 + length > buffer.length) continue
+    const compression = buffer[start + 4]
+    const data = Uint8Array.from(buffer.subarray(start + 5, start + 4 + length))
+    const timestamp = buffer.readUInt32BE(4096 + headerOffset)
+    map.set(index, { compression, data, timestamp })
+  }
+  return map
+}
+
+/**
+ * Serialize a set of chunks back into a region-file buffer, laying out the
+ * location/timestamp headers and packing each chunk into 4096-byte sectors.
+ */
+function serializeRegionChunks(entries: Map<number, StoredChunk>): Buffer {
+  const locations = Buffer.alloc(4096)
+  const timestamps = Buffer.alloc(4096)
+  const sectors: Buffer[] = []
+  let sectorPointer = 2 // sectors 0 and 1 are the two header tables
+  for (const [index, { compression, data, timestamp }] of entries) {
+    const recordLength = 5 + data.length
+    const sectorCount = Math.ceil(recordLength / 4096)
+    // A region-file location entry stores the sector count in a single byte.
+    if (sectorCount > 255) continue
+    const padded = Buffer.alloc(sectorCount * 4096)
+    padded.writeUInt32BE(1 + data.length, 0) // length covers the compression byte + data
+    padded.writeUInt8(compression, 4)
+    Buffer.from(data.buffer, data.byteOffset, data.byteLength).copy(padded, 5)
+    sectors.push(padded)
+    const headerOffset = index * 4
+    locations.writeUInt8((sectorPointer >> 16) & 0xff, headerOffset)
+    locations.writeUInt8((sectorPointer >> 8) & 0xff, headerOffset + 1)
+    locations.writeUInt8(sectorPointer & 0xff, headerOffset + 2)
+    locations.writeUInt8(sectorCount & 0xff, headerOffset + 3)
+    timestamps.writeUInt32BE(timestamp >>> 0, headerOffset)
+    sectorPointer += sectorCount
+  }
+  return Buffer.concat([locations, timestamps, ...sectors])
+}
+
+function groupChunksByRegion<T extends { chunkX: number; chunkZ: number }>(chunks: T[]): Map<string, T[]> {
+  const byRegion = new Map<string, T[]>()
+  for (const chunk of chunks) {
+    const key = `${chunk.chunkX >> 5}.${chunk.chunkZ >> 5}`
+    const list = byRegion.get(key) ?? []
+    list.push(chunk)
+    byRegion.set(key, list)
+  }
+  return byRegion
+}
+
+/**
+ * Read the raw compressed payload of the given chunks so they can be copied
+ * into another save. Missing chunks are silently skipped.
+ */
+export async function readSaveChunks(
+  savePath: string,
+  dimension: string,
+  chunks: Array<{ chunkX: number; chunkZ: number }>,
+): Promise<SaveChunkData[]> {
+  const dir = getRegionDir(savePath, dimension)
+  const result: SaveChunkData[] = []
+  for (const [key, list] of groupChunksByRegion(chunks)) {
+    const file = join(dir, `r.${key}.mca`)
+    const buffer = await readFile(file).catch(() => undefined)
+    if (!buffer || buffer.length < 8192) continue
+    for (const { chunkX, chunkZ } of list) {
+      const index = (chunkX & 31) + (chunkZ & 31) * 32
+      const headerOffset = index * 4
+      const sectorOffset = (buffer[headerOffset] << 16) | (buffer[headerOffset + 1] << 8) | buffer[headerOffset + 2]
+      if (sectorOffset === 0) continue
+      const start = sectorOffset * 4096
+      if (start + 5 > buffer.length) continue
+      const length = buffer.readUInt32BE(start)
+      if (length <= 0 || start + 4 + length > buffer.length) continue
+      const compression = buffer[start + 4]
+      const data = Uint8Array.from(buffer.subarray(start + 5, start + 4 + length))
+      result.push({ chunkX, chunkZ, compression, data })
+    }
+  }
+  return result
+}
+
+/**
+ * Write the given chunks into a dimension, overwriting any chunk that already
+ * exists at the same coordinates. Region files are created when needed.
+ */
+export async function writeSaveChunks(
+  savePath: string,
+  dimension: string,
+  chunks: SaveChunkData[],
+): Promise<void> {
+  if (chunks.length === 0) return
+  const dir = getRegionDir(savePath, dimension)
+  await ensureDir(dir)
+  const now = Math.floor(Date.now() / 1000)
+  for (const [key, list] of groupChunksByRegion(chunks)) {
+    const file = join(dir, `r.${key}.mca`)
+    const buffer = await readFile(file).catch(() => undefined)
+    const entries = buffer ? parseRegionChunks(buffer) : new Map<number, StoredChunk>()
+    for (const { chunkX, chunkZ, compression, data } of list) {
+      const index = (chunkX & 31) + (chunkZ & 31) * 32
+      entries.set(index, { compression, data, timestamp: now })
+    }
+    await writeFile(file, serializeRegionChunks(entries))
+  }
+}
+
+/**
+ * Overwrite the `xPos`/`zPos` integer tags of a chunk root compound (and the
+ * legacy `Level.xPos`/`Level.zPos`) in place, so a relocated chunk reports the
+ * coordinates of its new home. Without this Minecraft detects a mismatch
+ * between the region-file slot and the stored position and regenerates it.
+ */
+function patchChunkPositionInCompound(r: ChunkNbtReader, chunkX: number, chunkZ: number): void {
+  for (;;) {
+    const t = r.u8()
+    if (t === TAG_END) break
+    const key = r.str()
+    if (t === TAG_INT && key === 'xPos') {
+      r.buf.writeInt32BE(chunkX | 0, r.pos)
+      r.pos += 4
+    } else if (t === TAG_INT && key === 'zPos') {
+      r.buf.writeInt32BE(chunkZ | 0, r.pos)
+      r.pos += 4
+    } else if (t === TAG_COMPOUND && key === 'Level') {
+      // Pre-1.18 worlds nest xPos/zPos inside a `Level` compound.
+      patchChunkPositionInCompound(r, chunkX, chunkZ)
+    } else {
+      r.skip(t)
+    }
+  }
+}
+
+function patchChunkPosition(raw: Buffer, chunkX: number, chunkZ: number): void {
+  const r = new ChunkNbtReader(raw)
+  if (r.u8() !== TAG_COMPOUND) return
+  r.skipStr() // root compound name
+  patchChunkPositionInCompound(r, chunkX, chunkZ)
+}
+
+/**
+ * Return a copy of `chunks` moved by `(offsetX, offsetZ)` chunks. Each chunk's
+ * NBT position is rewritten to match its new coordinates so the game loads it
+ * at the chosen location.
+ *
+ * Block entities keep their original absolute coordinates, so tile entities
+ * (chests, signs, etc.) in relocated chunks may be dropped by the game — the
+ * terrain itself relocates correctly.
+ */
+export function relocateSaveChunks(chunks: SaveChunkData[], offsetX: number, offsetZ: number): SaveChunkData[] {
+  if (offsetX === 0 && offsetZ === 0) return chunks
+  return chunks.map((c) => {
+    const chunkX = c.chunkX + offsetX
+    const chunkZ = c.chunkZ + offsetZ
+    let raw: Buffer
+    try {
+      if (c.compression === 1) raw = gunzipSync(c.data)
+      else if (c.compression === 2) raw = inflateSync(c.data)
+      else raw = Buffer.from(c.data)
+    } catch {
+      // Undecodable payload: relocate the region slot without touching the NBT.
+      return { chunkX, chunkZ, compression: c.compression, data: c.data }
+    }
+    patchChunkPosition(raw, chunkX, chunkZ)
+    let data: Uint8Array
+    if (c.compression === 1) data = gzipSync(raw)
+    else if (c.compression === 2) data = deflateSync(raw)
+    else data = raw
+    return { chunkX, chunkZ, compression: c.compression, data }
+  })
 }

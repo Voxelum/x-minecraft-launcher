@@ -12,7 +12,7 @@
     />
     <SplitPane
       flex-left
-      :min-percent="30"
+      :min-percent="minPercentage ?? 30"
       :default-percent="30"
       class="flex h-full w-full overflow-auto py-0"
     >
@@ -112,6 +112,7 @@ const props = defineProps<{
   selectionMode?: boolean
   loading?: boolean
   error?: any
+  minPercentage?: number
 }>()
 const emit = defineEmits<{
   (event: 'load'): void

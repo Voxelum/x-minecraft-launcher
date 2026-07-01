@@ -98,6 +98,29 @@
         {{ t('save.clearSelection') }}
       </v-btn>
       <v-btn
+        v-if="selectedCount > 0"
+        size="small"
+        variant="flat"
+        data-testid="save-world-map-copy"
+        @click="copySelection"
+      >
+        <v-icon start> content_copy </v-icon>
+        {{ t('save.copyChunks') }}
+      </v-btn>
+      <v-btn
+        v-if="clipboardCount > 0"
+        :loading="pasting"
+        :disabled="pasting || placing"
+        :color="placing ? 'success' : 'primary'"
+        size="small"
+        variant="flat"
+        data-testid="save-world-map-paste"
+        @click="startPlacement"
+      >
+        <v-icon start> content_paste </v-icon>
+        {{ t('save.pasteChunks', { count: clipboardCount }) }}
+      </v-btn>
+      <v-btn
         :disabled="selectedCount === 0 || deleting"
         :loading="deleting"
         color="error"
@@ -126,6 +149,19 @@
       {{ t('save.noRegions') }}
     </div>
 
+    <!-- Paste placement bar -->
+    <div
+      v-if="placing"
+      class="map-place-bar absolute left-1/2 top-3 flex -translate-x-1/2 items-center gap-3 rounded bg-[rgba(0,0,0,0.7)] px-3 py-1.5 text-sm text-gray-100 backdrop-blur"
+      data-testid="save-world-map-place-bar"
+    >
+      <v-icon size="18" color="success">content_paste</v-icon>
+      <span>{{ t('save.pasteChunksPlaceHint', { count: clipboardCount }) }}</span>
+      <v-btn size="x-small" variant="text" @click="cancelPlacement">
+        {{ t('save.pasteChunksCancel') }}
+      </v-btn>
+    </div>
+
     <SimpleDialog
       v-model="confirmDeleteShown"
       :title="t('save.deleteChunksTitle')"
@@ -144,6 +180,7 @@ import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
 import { InstanceSavesServiceKey, SaveRegionInfo } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useSavesChunkClipboard } from '@/composables/savesChunkClipboard'
 import SimpleDialog from './SimpleDialog.vue'
 
 const props = defineProps<{
@@ -151,9 +188,10 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { listSaveDimensions, getSaveRegions, renderSaveRegion, deleteSaveChunks } =
+const { listSaveDimensions, getSaveRegions, renderSaveRegion, deleteSaveChunks, copySaveChunks, pasteSaveChunks } =
   useService(InstanceSavesServiceKey)
-
+// Shared across saves, so chunks copied in one world can be pasted into another.
+const chunkClipboard = useSavesChunkClipboard()
 const root = ref<HTMLDivElement | null>(null)
 const canvas = ref<HTMLCanvasElement | null>(null)
 
@@ -162,10 +200,19 @@ const dimension = ref('minecraft:overworld')
 const regions = shallowRef<SaveRegionInfo[]>([])
 const loading = ref(false)
 const deleting = ref(false)
+const pasting = ref(false)
 const confirmDeleteShown = ref(false)
+// Interactive paste placement. While `placing`, a ghost footprint of the
+// clipboard chunks follows the cursor and clicking commits the paste at the
+// chosen offset. `ghostOrigin` is the destination chunk coord of the
+// footprint's top-left corner.
+const placing = ref(false)
+let ghostOriginX = 0
+let ghostOriginZ = 0
 
 const dragging = ref(false)
 const selectedCount = ref(0)
+const clipboardCount = computed(() => chunkClipboard.value.length)
 
 // Region (.mca) grid overlay. Persisted so it survives navigation.
 const showGrid = useLocalStorageCacheBool('saveWorldMapGrid', true)
@@ -194,6 +241,7 @@ const ctrlKeyLabel = isMac ? '⌘' : 'Ctrl'
 const shiftKeyLabel = isMac ? '⇧' : 'Shift'
 
 const cursorStyle = computed(() => {
+  if (placing.value) return dragging.value ? 'grabbing' : 'copy'
   if (dragging.value) {
     return gestureMode === 'pan' ? 'grabbing' : 'crosshair'
   }
@@ -382,6 +430,26 @@ function draw() {
     ctx.fillRect(x, y, Math.abs(band.x1 - band.x0), Math.abs(band.y1 - band.y0))
     ctx.strokeRect(x, y, Math.abs(band.x1 - band.x0), Math.abs(band.y1 - band.y0))
   }
+
+  // Paste-placement ghost footprint.
+  if (placing.value) {
+    const chunks = chunkClipboard.value
+    const bounds = footprintBounds()
+    if (bounds) {
+      ctx.fillStyle = 'rgba(76, 175, 80, 0.35)'
+      ctx.strokeStyle = 'rgba(76, 175, 80, 0.95)'
+      ctx.lineWidth = 1
+      const chunkSize = 16 * scale
+      for (const c of chunks) {
+        const dx = c.chunkX - bounds.minX
+        const dz = c.chunkZ - bounds.minZ
+        const p = worldToScreen((ghostOriginX + dx) * 16, (ghostOriginZ + dz) * 16)
+        if (p.x + chunkSize < 0 || p.y + chunkSize < 0 || p.x > w || p.y > h) continue
+        ctx.fillRect(p.x, p.y, chunkSize, chunkSize)
+        if (chunkSize > 4) ctx.strokeRect(p.x, p.y, chunkSize, chunkSize)
+      }
+    }
+  }
 }
 
 /**
@@ -476,15 +544,20 @@ function onPointerDown(e: PointerEvent) {
   moved = false
   // The gesture mode is locked in for the whole drag based on the modifier
   // held when the pointer goes down: default pan, Ctrl select, Alt deselect.
-  gestureMode = modeFromEvent(e)
+  // While placing a paste, dragging only ever pans (a click commits instead).
+  gestureMode = placing.value ? 'pan' : modeFromEvent(e)
   if (gestureMode !== 'pan') {
     band = { x0: p.x, y0: p.y, x1: p.x, y1: p.y }
   }
 }
 
 function onPointerMove(e: PointerEvent) {
-  if (!dragging.value) return
   const p = localPoint(e)
+  // The paste footprint tracks the cursor even before the pointer goes down.
+  if (placing.value) {
+    updateGhostFromScreen(p.x, p.y)
+  }
+  if (!dragging.value) return
   if (
     Math.abs(p.x - (pointerStart?.x ?? p.x)) > 2 ||
     Math.abs(p.y - (pointerStart?.y ?? p.y)) > 2
@@ -507,6 +580,16 @@ function onPointerUp(e: PointerEvent) {
   if (!dragging.value) return
   dragging.value = false
   const p = lastPointer
+  if (placing.value) {
+    // A click (no meaningful drag) commits the paste at the ghost location.
+    if (gestureMode === 'pan' && !moved) {
+      confirmPlacement()
+    }
+    band = null
+    pointerStart = null
+    lastPointer = p
+    return
+  }
   if (gestureMode !== 'pan' && band) {
     const add = gestureMode === 'select'
     if (!moved && pointerStart) {
@@ -628,21 +711,109 @@ async function doDelete() {
     })
     await deleteSaveChunks({ savePath: props.savePath, dimension: dimension.value, chunks })
     // Invalidate affected region tiles so they re-render.
-    const affected = new Set<string>()
-    for (const { chunkX, chunkZ } of chunks) {
-      affected.add(regionKey(chunkX >> 5, chunkZ >> 5))
-    }
-    for (const key of affected) {
-      const tile = tileCache.get(key)
-      if (tile && tile !== 'loading' && tile !== 'empty') tile.close()
-      tileCache.delete(key)
-      chunkCache.delete(key)
-    }
+    invalidateChunkTiles(chunks)
     clearSelection()
     // Region list may have shrunk if files were removed.
     await loadRegions()
   } finally {
     deleting.value = false
+  }
+}
+
+// Drop the cached tiles/chunk maps for every region touched by `chunks` so the
+// affected area is rendered fresh on the next draw.
+function invalidateChunkTiles(chunks: Array<{ chunkX: number; chunkZ: number }>) {
+  const affected = new Set<string>()
+  for (const { chunkX, chunkZ } of chunks) {
+    affected.add(regionKey(chunkX >> 5, chunkZ >> 5))
+  }
+  for (const key of affected) {
+    const tile = tileCache.get(key)
+    if (tile && tile !== 'loading' && tile !== 'empty') tile.close()
+    tileCache.delete(key)
+    chunkCache.delete(key)
+  }
+}
+
+async function copySelection() {
+  if (selected.size === 0) return
+  const chunks = Array.from(selected).map((k) => {
+    const [chunkX, chunkZ] = k.split(',').map(Number)
+    return { chunkX, chunkZ }
+  })
+  const copied = await copySaveChunks({ savePath: props.savePath, dimension: dimension.value, chunks })
+  chunkClipboard.value = copied ?? []
+}
+
+/** Bounding box of the clipboard footprint, in absolute chunk coordinates. */
+function footprintBounds() {
+  const chunks = chunkClipboard.value
+  if (chunks.length === 0) return undefined
+  let minX = Infinity
+  let minZ = Infinity
+  let maxX = -Infinity
+  let maxZ = -Infinity
+  for (const c of chunks) {
+    if (c.chunkX < minX) minX = c.chunkX
+    if (c.chunkX > maxX) maxX = c.chunkX
+    if (c.chunkZ < minZ) minZ = c.chunkZ
+    if (c.chunkZ > maxZ) maxZ = c.chunkZ
+  }
+  return { minX, minZ, maxX, maxZ, width: maxX - minX + 1, height: maxZ - minZ + 1 }
+}
+
+/** Center the paste footprint on the chunk under the given screen point. */
+function updateGhostFromScreen(sx: number, sy: number) {
+  const bounds = footprintBounds()
+  if (!bounds) return
+  const world = screenToWorld(sx, sy)
+  const cx = Math.floor(world.x / 16)
+  const cz = Math.floor(world.z / 16)
+  ghostOriginX = cx - Math.floor(bounds.width / 2)
+  ghostOriginZ = cz - Math.floor(bounds.height / 2)
+  requestRender()
+}
+
+function startPlacement() {
+  const bounds = footprintBounds()
+  if (!bounds) return
+  // Default the footprint to its original coordinates.
+  ghostOriginX = bounds.minX
+  ghostOriginZ = bounds.minZ
+  placing.value = true
+  requestRender()
+}
+
+function cancelPlacement() {
+  placing.value = false
+  requestRender()
+}
+
+function confirmPlacement() {
+  const bounds = footprintBounds()
+  if (!bounds) {
+    placing.value = false
+    return
+  }
+  const offsetX = ghostOriginX - bounds.minX
+  const offsetZ = ghostOriginZ - bounds.minZ
+  placing.value = false
+  doPaste(offsetX, offsetZ)
+}
+
+async function doPaste(offsetX = 0, offsetZ = 0) {
+  const chunks = chunkClipboard.value
+  if (chunks.length === 0) return
+  pasting.value = true
+  try {
+    await pasteSaveChunks({ savePath: props.savePath, dimension: dimension.value, chunks, offsetX, offsetZ })
+    // Destination coordinates are the clipboard chunks shifted by the offset.
+    invalidateChunkTiles(chunks.map((c) => ({ chunkX: c.chunkX + offsetX, chunkZ: c.chunkZ + offsetZ })))
+    // Pasting may introduce regions that did not exist before.
+    await loadRegions()
+    requestRender()
+  } finally {
+    pasting.value = false
   }
 }
 
@@ -659,6 +830,7 @@ async function loadDimension() {
   tileCache.clear()
   chunkCache.clear()
   clearSelection()
+  placing.value = false
   // Reset the render height to the top of the new dimension's range.
   renderHeight.value = heightBounds.value.max
   try {
@@ -686,6 +858,11 @@ watch(renderHeight, () => {
 
 async function init() {
   loading.value = true
+  // Drop cached tiles/chunks from the previously shown save so its rendered
+  // regions are not drawn over the new one.
+  invalidateTiles()
+  clearSelection()
+  placing.value = false
   try {
     const dims = await listSaveDimensions(props.savePath).catch(() => [])
     dimensions.value = dims
@@ -714,6 +891,9 @@ watch(
 function syncModifiers(e: KeyboardEvent) {
   ctrlHeld.value = e.ctrlKey || e.metaKey
   shiftHeld.value = e.shiftKey
+  if (e.type === 'keydown' && e.key === 'Escape' && placing.value) {
+    cancelPlacement()
+  }
 }
 
 function resetModifiers() {

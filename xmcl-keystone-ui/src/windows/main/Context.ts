@@ -6,6 +6,7 @@ import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { kEnvironment, useEnvironment } from '@/composables/environment'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
 import { kInstance, useInstance } from '@/composables/instance'
+import { kInstanceBlueprints, useInstanceBlueprints } from '@/composables/instanceBlueprints'
 import { kInstanceDefaultSource, useInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 import { kInstanceFiles, useInstanceFiles } from '@/composables/instanceFiles'
 import { kInstanceJava, useInstanceJava } from '@/composables/instanceJava'
@@ -89,6 +90,7 @@ export default defineComponent({
     const serverInfo = useInstanceServerInfo(instance.path)
     const resourcePacks = useInstanceResourcePacks(instance.path, options.gameOptions)
     const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
+    const blueprints = useInstanceBlueprints(instance.path)
     const shaderPacks = useInstanceShaderPacks(instance.path, instance.runtime, instanceMods.mods, options.gameOptions)
     const files = useInstanceFiles(instance.path)
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionId)
@@ -127,6 +129,7 @@ export default defineComponent({
     provide(kInstanceServerInfo, serverInfo)
     provide(kInstanceResourcePacks, resourcePacks)
     provide(kInstanceModsContext, instanceMods)
+    provide(kInstanceBlueprints, blueprints)
     provide(kInstanceFiles, files)
     provide(kLaunchTask, task)
 

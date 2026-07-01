@@ -334,9 +334,9 @@ const allCards = computed<CardDescriptor[]>(() => {
  * Card types that start hidden. Per-world / per-server cards are opt-in: the
  * grid would otherwise fill up with one card per save and per server. They only
  * appear once the user explicitly shows them from the context menu (which sets
- * `hidden = false`).
+ * `hidden = false`). Blueprints are likewise opt-in.
  */
-const DEFAULT_HIDDEN_TYPES = new Set<CardType>([CardType.World, CardType.Server])
+const DEFAULT_HIDDEN_TYPES = new Set<CardType>([CardType.World, CardType.Server, CardType.Blueprint])
 
 /** Whether a card is currently hidden, honouring the per-type default. */
 function isHidden(card: CardDescriptor): boolean {

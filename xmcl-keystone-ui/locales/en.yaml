@@ -1264,6 +1264,7 @@ resourceError:
   title: Cannot read {file}
 blueprint:
   name: Blueprint | Blueprints
+  count: '{count} blueprints'
   searchLocal: Search blueprints...
   searchOnline: Search online...
   market: Market
@@ -1273,10 +1274,15 @@ blueprint:
   openFolder: Open folder
   refresh: Refresh
   empty: No blueprints found. Import a .litematic / .schem / .nbt file or browse the market.
+  dropHint: Drop blueprint files (.litematic / .schem / .nbt) here to import.
   selectHint: Select a blueprint to preview it.
   blocks: '{count} blocks'
   materials: Materials
   allNamespaces: All
+  findMod: Find the mod for this namespace
+  compatible: Compatible
+  incompatible: Missing mods
+  missingNamespaces: 'Missing mods for: {namespaces}'
   delete: Delete
   cancel: Cancel
   install: Install
@@ -1293,6 +1299,7 @@ blueprint:
     loading: Loading preview...
     empty: This blueprint has no blocks to display.
     hint: '{count} blocks · {x}×{y}×{z}'
+    controls: Drag to look · WASD move · Space/Shift up/down
   convert:
     title: Convert format
     hint: Convert this blueprint to another format. A new file will be created.
@@ -1368,6 +1375,12 @@ save:
   heightTop: Top
   resetView: Reset View
   clearSelection: Clear Selection
+  copyChunks: Copy Chunks
+  pasteChunks: 'Paste {count} Chunks'
+  pasteChunksPlaceHint: >-
+    Move the mouse to position {count} chunk(s), then click to paste. Existing
+    chunks at the target are overwritten. Press Esc to cancel.
+  pasteChunksCancel: Cancel
   deleteChunks: Delete Chunks
   deleteChunksTitle: Delete Selected Chunks
   deleteChunksHint: >-

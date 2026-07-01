@@ -6,7 +6,7 @@ import {
   MarketType,
   Saves,
   getInstanceSaveKey,
-  type CloneSaveOptions, type DeleteSaveOptions, type DeleteSaveChunksOptions, type ExportSaveOptions,
+  type CloneSaveOptions, type DeleteSaveOptions, type DeleteSaveChunksOptions, type CopySaveChunksOptions, type PasteSaveChunksOptions, type ExportSaveOptions,
   type InstanceSavesService as IInstanceSavesService,
   type ImportSaveOptions,
   type InstallMarketOptionWithInstance,
@@ -28,7 +28,7 @@ import { InstanceService } from '~/instance'
 import { LaunchService } from '~/launch'
 import { kMarketProvider } from '~/market'
 import { kResourceManager } from '~/resource'
-import { getInstanceSaveHeader, readInstanceSaveMetadata, readWorldGenSettings, updateSaveMetadata, listSaveDimensions, getSaveRegions, deleteSaveChunks, kSaveWorker, type SaveWorker } from '~/save'
+import { getInstanceSaveHeader, readInstanceSaveMetadata, readWorldGenSettings, updateSaveMetadata, listSaveDimensions, getSaveRegions, deleteSaveChunks, readSaveChunks, writeSaveChunks, relocateSaveChunks, kSaveWorker, type SaveWorker } from '~/save'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, isDirectory, linkDirectory, missing, pipeline, readdirIfPresent } from '../util/fs'
@@ -583,5 +583,24 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     if (!Array.isArray(chunks) || chunks.length === 0) return
     this.log(`Deleting ${chunks.length} chunks from ${savePath} (${dimension})`)
     await deleteSaveChunks(savePath, dimension, chunks)
+  }
+
+  async copySaveChunks(options: CopySaveChunksOptions) {
+    const { savePath, dimension, chunks } = options
+    requireString(savePath)
+    requireString(dimension)
+    if (!Array.isArray(chunks) || chunks.length === 0) return []
+    this.log(`Copying ${chunks.length} chunks from ${savePath} (${dimension})`)
+    return await readSaveChunks(savePath, dimension, chunks)
+  }
+
+  async pasteSaveChunks(options: PasteSaveChunksOptions) {
+    const { savePath, dimension, chunks, offsetX = 0, offsetZ = 0 } = options
+    requireString(savePath)
+    requireString(dimension)
+    if (!Array.isArray(chunks) || chunks.length === 0) return
+    this.log(`Pasting ${chunks.length} chunks into ${savePath} (${dimension}) offset (${offsetX}, ${offsetZ})`)
+    const relocated = relocateSaveChunks(chunks, offsetX, offsetZ)
+    await writeSaveChunks(savePath, dimension, relocated)
   }
 }

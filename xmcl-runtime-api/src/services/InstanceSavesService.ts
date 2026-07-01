@@ -157,6 +157,71 @@ export interface DeleteSaveChunksOptions {
 }
 
 /**
+ * The raw, still-compressed payload of a single chunk extracted from a region
+ * file. It can be written back verbatim into another save's region file.
+ */
+export interface SaveChunkData {
+  /**
+   * Absolute chunk x coordinate.
+   */
+  chunkX: number
+  /**
+   * Absolute chunk z coordinate.
+   */
+  chunkZ: number
+  /**
+   * Region-file compression type (1 = gzip, 2 = zlib, 3 = uncompressed).
+   */
+  compression: number
+  /**
+   * The compressed chunk payload.
+   */
+  data: Uint8Array
+}
+
+export interface CopySaveChunksOptions {
+  /**
+   * The source save folder path.
+   */
+  savePath: string
+  /**
+   * The dimension id, e.g. `minecraft:overworld`.
+   */
+  dimension: string
+  /**
+   * The absolute chunk coordinates to copy.
+   */
+  chunks: Array<{ chunkX: number; chunkZ: number }>
+}
+
+export interface PasteSaveChunksOptions {
+  /**
+   * The destination save folder path.
+   */
+  savePath: string
+  /**
+   * The destination dimension id, e.g. `minecraft:overworld`.
+   */
+  dimension: string
+  /**
+   * The chunks (previously copied via `copySaveChunks`) to write. Existing
+   * chunks at the same coordinates are overwritten.
+   */
+  chunks: SaveChunkData[]
+  /**
+   * Chunk offset applied to every pasted chunk along X. When non-zero the
+   * chunk's stored position is rewritten so the game loads it at the new
+   * location. Defaults to 0 (paste at the original coordinates).
+   */
+  offsetX?: number
+  /**
+   * Chunk offset applied to every pasted chunk along Z.
+   * @see offsetX
+   */
+  offsetZ?: number
+}
+
+/**
  * Provide the ability to preview saves data of an instance
  */
 export interface InstanceSavesService {
@@ -267,6 +332,16 @@ export interface InstanceSavesService {
    * Delete the given chunks from a dimension. Empty region files are removed.
    */
   deleteSaveChunks(options: DeleteSaveChunksOptions): Promise<void>
+  /**
+   * Read the raw payload of the given chunks so they can be pasted into another
+   * save. Missing chunks are skipped.
+   */
+  copySaveChunks(options: CopySaveChunksOptions): Promise<SaveChunkData[]>
+  /**
+   * Write previously copied chunks into a dimension at their original
+   * coordinates, overwriting any existing chunk there.
+   */
+  pasteSaveChunks(options: PasteSaveChunksOptions): Promise<void>
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'
