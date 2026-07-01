@@ -193,7 +193,7 @@
             variant="text"
             color="error"
             icon="delete"
-            :title="t('blueprint.delete')"
+            :title="t('shared.delete')"
             @click="remove(active)"
           />
         </div>
@@ -376,7 +376,7 @@
         <v-card-actions>
           <div class="flex-grow" />
           <v-btn variant="text" @click="convertDialog = false">
-            {{ t('blueprint.cancel') }}
+            {{ t('shared.cancel') }}
           </v-btn>
           <v-btn color="primary" :loading="busy" @click="doConvert">
             {{ t('blueprint.convert.action') }}
@@ -440,7 +440,7 @@
         <v-card-actions>
           <div class="flex-grow" />
           <v-btn variant="text" @click="replaceDialog = false">
-            {{ t('blueprint.cancel') }}
+            {{ t('shared.cancel') }}
           </v-btn>
           <v-btn color="primary" :loading="busy" @click="doReplace">
             {{ t('blueprint.replace.action') }}

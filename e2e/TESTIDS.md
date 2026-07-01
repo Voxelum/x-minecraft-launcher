@@ -29,9 +29,18 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `blueprint-import-btn` | [`xmcl-keystone-ui/src/views/BlueprintActions.vue#L25`](../xmcl-keystone-ui/src/views/BlueprintActions.vue#L25) |
 | `blueprint-item` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L114`](../xmcl-keystone-ui/src/views/Blueprint.vue#L114) |
 | `blueprint-local-tab` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L33`](../xmcl-keystone-ui/src/views/Blueprint.vue#L33) |
+||||||| parent of 4c782f57 (chore: Remove unused deps)
+| `blueprint-item` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L137`](../xmcl-keystone-ui/src/views/Blueprint.vue#L137) |
+| `blueprint-local-tab` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L32`](../xmcl-keystone-ui/src/views/Blueprint.vue#L32) |
+| `blueprint-item` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L126`](../xmcl-keystone-ui/src/views/Blueprint.vue#L126) |
+| `blueprint-local-tab` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L32`](../xmcl-keystone-ui/src/views/Blueprint.vue#L32) |
 | `blueprint-market-btn` | [`xmcl-keystone-ui/src/views/BlueprintActions.vue#L15`](../xmcl-keystone-ui/src/views/BlueprintActions.vue#L15) |
 | `blueprint-market-item` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L74`](../xmcl-keystone-ui/src/views/Blueprint.vue#L74) |
 | `blueprint-market-tab` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L30`](../xmcl-keystone-ui/src/views/Blueprint.vue#L30) |
+| `blueprint-market-item` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L89`](../xmcl-keystone-ui/src/views/Blueprint.vue#L89) |
+| `blueprint-market-tab` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L29`](../xmcl-keystone-ui/src/views/Blueprint.vue#L29) |
+| `blueprint-market-item` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L86`](../xmcl-keystone-ui/src/views/Blueprint.vue#L86) |
+| `blueprint-market-tab` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L29`](../xmcl-keystone-ui/src/views/Blueprint.vue#L29) |
 | `blueprint-page` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L4`](../xmcl-keystone-ui/src/views/Blueprint.vue#L4) |
 | `blueprint-search` | [`xmcl-keystone-ui/src/views/BlueprintExtension.vue#L13`](../xmcl-keystone-ui/src/views/BlueprintExtension.vue#L13) |
 | `create-instance` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35) |
