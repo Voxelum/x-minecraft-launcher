@@ -1990,3 +1990,34 @@ versionType:
   beta: Beta
   name: Status
   release: Release
+
+gamepad:
+  detectedTitle: Gamepad Detected
+  detectedBody: A controller has been connected. Would you like to enable gamepad navigation (useful for Steam Deck / TV)?
+  enableBtn: Enable ({btn})
+  cancelBtn: Cancel ({btn})
+  enabledNotify: Gamepad controls enabled! Use D-pad/Left stick to navigate, {btnA} to select, {btnB} to go back.
+  modSuggestTitle: Controller Mod
+  modSuggestBody: >-
+    To use your gamepad inside Minecraft, a controller mod is recommended.
+    Would you like to install the appropriate mod for your modloader?
+  modLoader: Modloader
+  modInstall: Install Mod
+  modSkip: Skip
+  modDone: Done
+  modInstalled: Controller mod installed successfully! It will be active next time you launch Minecraft.
+  modInstalledNotify: '{name} has been installed for in-game controller support.'
+  modNotFound: 'No compatible version found for {loader} on Minecraft {version}.'
+  settingTitle: Gamepad Settings
+  settingKeyboardTitle: Enable On-Screen Keyboard
+  settingKeyboardDesc: Show virtual keyboard when focusing input fields in gamepad mode
+  settingSteamTitle: Add Launcher to Steam
+  settingSteamDesc: Add X Minecraft Launcher to your Steam Library as a non-Steam game for full Steam overlay and controller integration.
+  settingSteamBtn: Add to Steam
+  steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
+  steamAlreadyAddedNotify: Launcher is already in your Steam Library.
+  steamDeckTitle: Steam Deck Detected
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add X Minecraft Launcher to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckAddBtn: Add to Steam ({btn})
+  steamDeckCancelBtn: Cancel ({btn})
+
