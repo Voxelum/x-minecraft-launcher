@@ -6,107 +6,115 @@
     transition="dialog-bottom-transition"
     scrollable
   >
-    <v-stepper
-      v-model="step"
-      vertical
-    >
-      <v-stepper-item
-        :complete="step > 1"
-        step="1"
-      >
-        {{ t('multiplayer.enterRemoteToken') }}
-      </v-stepper-item>
+    <v-stepper v-model="step">
+      <v-stepper-header>
+        <v-stepper-item
+          :complete="step > 1"
+          :value="1"
+        >
+          {{ t('multiplayer.enterRemoteToken') }}
+        </v-stepper-item>
 
-      <v-stepper-window-item step="1">
-        <div>
-          {{ t('multiplayer.receiveRemoteTokenHint') }}
-        </div>
-        <v-textarea
-          v-model="remoteDescription"
-          class="mt-4 flex-grow-0"
-          outlined
-          :label="t('multiplayer.remoteToken')"
-          :error="error"
-          :error-messages="errorText"
-        />
-        <div class="flex w-full">
-          <div class="flex-grow" />
-          <v-btn
-            color="primary"
-            :loading="answering"
-            @click="answer(); "
-           variant="text">
-            {{ t('multiplayer.next') }}
-          </v-btn>
-        </div>
-      </v-stepper-window-item>
-      <v-stepper-item
-        step="2"
-      >
-        {{ t('multiplayer.sendTokenToRemote') }}
-      </v-stepper-item>
+        <v-divider />
 
-      <v-stepper-window-item
-        step="2"
-      >
-        <div class="flex items-center justify-center gap-4">
-          <div
-            class="max-w-160"
-            v-html="t('multiplayer.gatheringIce')"
-          />
-          <div class="flex-grow" />
-          <div
-            v-if="gatheringState === 'gathering'"
-            class="text-gray-400"
-          >
-            {{ t('peerIceGatheringState.gathering') }}
-            <v-progress-circular
-              class="ml-2"
-              :width="1"
-              :size="20"
-              indeterminate
+        <v-stepper-item
+          :value="2"
+        >
+          {{ t('multiplayer.sendTokenToRemote') }}
+        </v-stepper-item>
+      </v-stepper-header>
+
+      <v-stepper-window>
+        <v-stepper-window-item :value="1">
+          <div class="pa-4">
+            <div>
+              {{ t('multiplayer.receiveRemoteTokenHint') }}
+            </div>
+            <v-textarea
+              v-model="remoteDescription"
+              class="mt-4 flex-grow-0"
+              outlined
+              :label="t('multiplayer.remoteToken')"
+              :error="error"
+              :error-messages="errorText"
             />
+            <div class="flex w-full mt-3">
+              <div class="flex-grow" />
+              <v-btn
+                color="primary"
+                :loading="answering"
+                variant="text"
+                @click="answer(); "
+              >
+                {{ t('multiplayer.next') }}
+              </v-btn>
+            </div>
           </div>
-        </div>
-        <v-textarea
-          :value="localDescription"
-          class="mt-4"
-          outlined
-          readonly
-          :label="t('multiplayer.localToken')"
-          @mousedown="copyLocalDescription"
-        />
-        <div class="mb-4">
-          {{ t('multiplayer.receiveHint') }}
-        </div>
-        <div class="flex">
-          <v-btn
-            @click="copyLocalDescription"
-           variant="text">
-            <v-icon
-              v-if="!copied"
-              start
-            >
-              content_copy
-            </v-icon>
-            <v-icon
-              v-else
-              start
-              color="success"
-            >
-              check
-            </v-icon>
-            {{ t('multiplayer.copy') }}
-          </v-btn>
-          <div class="flex-grow" />
-          <v-btn
-            color="primary"
-            @click="isShown = false"
-          >
-            {{ t('multiplayer.complete') }}
-          </v-btn>
-        </div>
-      </v-stepper-window-item>
+        </v-stepper-window-item>
+
+        <v-stepper-window-item :value="2">
+          <div class="pa-4">
+            <div class="flex items-center justify-center gap-4">
+              <div
+                class="max-w-160"
+                v-html="t('multiplayer.gatheringIce')"
+              />
+              <div class="flex-grow" />
+              <div
+                v-if="gatheringState === 'gathering'"
+                class="text-gray-400"
+              >
+                {{ t('peerIceGatheringState.gathering') }}
+                <v-progress-circular
+                  class="ml-2"
+                  :width="1"
+                  :size="20"
+                  indeterminate
+                />
+              </div>
+            </div>
+            <v-textarea
+              :value="localDescription"
+              class="mt-4"
+              outlined
+              readonly
+              :label="t('multiplayer.localToken')"
+              @mousedown="copyLocalDescription"
+            />
+            <div class="mb-4">
+              {{ t('multiplayer.receiveHint') }}
+            </div>
+            <div class="flex">
+              <v-btn
+                variant="text"
+                @click="copyLocalDescription"
+              >
+                <v-icon
+                  v-if="!copied"
+                  start
+                >
+                  content_copy
+                </v-icon>
+                <v-icon
+                  v-else
+                  start
+                  color="success"
+                >
+                  check
+                </v-icon>
+                {{ t('multiplayer.copy') }}
+              </v-btn>
+              <div class="flex-grow" />
+              <v-btn
+                color="primary"
+                @click="isShown = false"
+              >
+                {{ t('multiplayer.complete') }}
+              </v-btn>
+            </div>
+          </div>
+        </v-stepper-window-item>
+      </v-stepper-window>
     </v-stepper>
   </v-dialog>
 </template>
@@ -162,7 +170,7 @@ const { refresh: answer, refreshing: answering } = useRefreshable(async () => {
     if (remoteDescription.value === localDescription.value) {
       throw new Error('Cannot enter token from yourself!')
     }
-    id.value = await setRemoteDescription('answer', remoteDescription.value)
+    id.value = await setRemoteDescription('offer', remoteDescription.value)
     done.value = true
     step.value++
   } catch (e) {

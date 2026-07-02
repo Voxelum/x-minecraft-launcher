@@ -1,9 +1,10 @@
-import { computed, InjectionKey, onScopeDispose, ref, shallowRef, watch } from 'vue'
+import { computed, InjectionKey, onScopeDispose, ref, Ref, shallowRef, watch } from 'vue'
 import {
   AUTHORITY_MICROSOFT,
   type MinecraftFriendsList,
   type MinecraftFriendsPreferences,
   MinecraftFriendsServiceKey,
+  type UserProfile,
 } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 import { kUserContext } from '@/composables/user'
@@ -21,8 +22,8 @@ export const kMinecraftFriends: InjectionKey<ReturnType<typeof useMinecraftFrien
  * `injection(kMinecraftFriends)` everywhere else so the dialog, the
  * sidebar avatar badge and the user popover all read the same data.
  */
-export function useMinecraftFriendsImpl() {
-  const { userProfile } = injection(kUserContext)
+export function useMinecraftFriendsImpl(userContext?: { userProfile: Ref<UserProfile> }) {
+  const { userProfile } = userContext || injection(kUserContext)
   const friendsService = useService(MinecraftFriendsServiceKey)
 
   const data = shallowRef<MinecraftFriendsList | undefined>()

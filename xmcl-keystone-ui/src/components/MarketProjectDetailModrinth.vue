@@ -15,6 +15,7 @@ import { useService } from '@/composables/service'
 import { useLoading, useSWRVModel } from '@/composables/swrv'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { kTaskManager } from '@/composables/taskManager'
+import { getSWRV } from '@/util/swrvGet'
 import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
 import { SearchResultHit } from '@xmcl/modrinth'
@@ -174,12 +175,24 @@ const onInstall = async (v: ProjectDetailVersion) => {
   if (installing.value) return
   try {
     installing.value = true
+    const config = injection(kSWRVConfig)
+    let resolvedDeps = deps.value
+    if (!resolvedDeps) {
+      resolvedDeps = await getSWRV(
+        getModrinthDependenciesModel(
+          computed(() => versions.value?.find((ver) => ver.id === v.id)),
+          modLoader,
+          config,
+        ),
+        config,
+      )
+    }
     await installWithDependencies(
       v.id,
       v.loaders,
       project.value?.icon_url,
       props.installed,
-      deps.value ?? [],
+      resolvedDeps ?? [],
     )
   } finally {
     installing.value = false
