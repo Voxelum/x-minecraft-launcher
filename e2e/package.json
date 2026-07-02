@@ -15,6 +15,11 @@
     "tutorial": "tsx ../scripts/build-tutorial.ts",
     "report": "playwright show-report"
   },
+  "pnpm": {
+    "overrides": {
+      "esbuild": ">=0.28.1"
+    }
+  },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
     "@types/node": "^20.19.0",
