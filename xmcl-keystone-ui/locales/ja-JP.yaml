@@ -1117,6 +1117,7 @@ save:
   deleteHint: セーブデータを削除します。この操作は取り消せません。続行しますか?
   deleteTitle: このセーブデータを削除
   dropHint: zipをここにドラッグしてインポート
+  duplicate: セーブデータを複製
   export: セーブデータをエクスポート
   exportMessage: セーブデータをZipとしてエクスポート
   exportTitle: セーブデータをエクスポート

@@ -7,7 +7,7 @@
     @click="disabled || $emit('click', value)"
   >
     <template #prepend>
-      <v-avatar color="transparent" size="20" class="mr-2">
+      <v-avatar size="20" class="mr-2">
         <v-img :src="value.iconUrl" />
       </v-avatar>
     </template>

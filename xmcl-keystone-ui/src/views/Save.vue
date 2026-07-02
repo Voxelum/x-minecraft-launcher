@@ -36,7 +36,7 @@
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-list-subheader
         v-if="typeof item === 'string'"
-        class="flex"
+        class="px-3 flex"
         :style="{ height: itemHeight + 'px' }"
       >
         {{
@@ -127,7 +127,7 @@ const isSaveProject = (v: ProjectEntry | undefined): v is ProjectEntry<InstanceS
   !!v?.installed && v.installed.length > 0
 
 const denseView = useLocalStorage('savesDenseView', false, { writeDefaults: false })
-const itemHeight = computed(() => (denseView.value ? 40 : 68))
+const itemHeight = computed(() => (denseView.value ? 40 : 88))
 
 const groupedItems = computed(() => {
   const result: (ProjectEntry | string)[] = []

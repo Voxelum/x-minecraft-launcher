@@ -179,6 +179,10 @@ export default defineComponent({
           ...vuetify.defaults.value?.VTextField,
           rounded: enabled ? undefined : 0,
         },
+        VSwitch: {
+          ...vuetify.defaults.value?.VSwitch,
+          rounded: enabled ? undefined : 0,
+        }
       }
     })
 

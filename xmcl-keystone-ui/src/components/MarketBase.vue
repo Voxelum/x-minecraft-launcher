@@ -42,7 +42,6 @@
             :bench="16"
             class="visible-scroll h-full max-h-full w-full overflow-auto pl-1 pt-2"
             :items="items"
-            :item-height="itemHeight"
             @scroll="onScroll"
           >
             <template #default="{ item, index }">

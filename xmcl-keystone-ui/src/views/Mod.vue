@@ -177,7 +177,7 @@
       <v-list-subheader
         v-else-if="item === 'search'"
         key="search"
-        :style="{ height: `${itemHeight}px` }"
+        class="px-3"
       >
         <v-divider class="mr-4" />
         {{ localizedTexts.mod.search }}
@@ -185,8 +185,8 @@
       </v-list-subheader>
       <v-list-subheader
         v-else-if="item === 'unsupported'"
+        class="px-3"
         key="unsupported"
-        :style="{ height: `${itemHeight}px` }"
       >
         <v-divider class="mr-4" />
         {{ localizedTexts.mod.unsupported }}

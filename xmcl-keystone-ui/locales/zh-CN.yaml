@@ -1211,6 +1211,7 @@ save:
   deleteTitle: 删除该存档
   difficulty: 难度
   dropHint: 将地图 Zip 或文件夹拖入此处来导入
+  duplicate: 复制存档
   export: 导出地图
   exportMessage: 将存档导出为 Zip
   exportTitle: 导出存档

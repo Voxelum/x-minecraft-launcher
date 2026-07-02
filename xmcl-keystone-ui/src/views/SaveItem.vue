@@ -29,7 +29,7 @@ import AvatarChip from '@/components/AvatarChip.vue'
 import MarketItem from '@/components/MarketItem.vue'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kInstance } from '@/composables/instance'
-import { InstanceSaveFile } from '@/composables/instanceSave'
+import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
 import { useService } from '@/composables/service'
 import { BuiltinImages } from '@/constant'
 import { injection } from '@/util/inject'
@@ -53,6 +53,7 @@ const emit = defineEmits(['click', 'checked', 'install', 'delete'])
 const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)
 const { exportSave } = useService(InstanceSavesServiceKey)
+const { duplicateSave } = injection(kInstanceSave)
 const { showSaveDialog } = windowController
 const { path } = injection(kInstance)
 async function doExport(name: string) {
@@ -86,6 +87,13 @@ const _getContextMenuItems = () => {
       onClick: () => doExport(file.path),
       icon: 'map',
     })
+    if (!props.item.disabled) {
+      items.push({
+        text: t('save.duplicate'),
+        onClick: () => duplicateSave(installedOne.value),
+        icon: 'content_copy',
+      })
+    }
   }
   return items
 }

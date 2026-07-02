@@ -1354,6 +1354,7 @@ save:
   deleteTitle: Delete the Save
   difficulty: Difficulty
   dropHint: Drag save zip here to Import
+  duplicate: Duplicate Save
   export: Export Save
   exportMessage: Export the Save as zip
   exportTitle: Export the Save

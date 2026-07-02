@@ -1124,6 +1124,7 @@ save:
   deleteHint: 該操作不可逆，您將永遠失去這個存檔的紀錄，您確定要刪除此存檔嗎？
   deleteTitle: 刪除該存檔
   dropHint: 將地圖 Zip 或資料夾拖入此處來匯入
+  duplicate: 複製存檔
   export: 匯出地圖
   exportMessage: 將存檔匯出為 Zip
   exportTitle: 匯出存檔

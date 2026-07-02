@@ -261,7 +261,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
 
     const destInstancePaths = typeof destInstancePath === 'string' ? [destInstancePath] : destInstancePath
 
-    const srcSavePath = join(srcInstancePath, saveName)
+    const srcSavePath = join(srcInstancePath, 'saves', saveName)
 
     if (await missing(srcSavePath)) {
       throw new AnyError('CloneSaveSaveNotFoundError', `Cannot find save ${saveName}`, undefined, {

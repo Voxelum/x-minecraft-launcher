@@ -62,6 +62,9 @@ export const vuetify = createVuetify({
     VChip: {
       rounded: DEFAULT_SURFACE_BUTTON_RADIUS,
     },
+    VAvatar: {
+      color: 'transparent'
+    }
   },
   theme: {
     defaultTheme: 'dark',
