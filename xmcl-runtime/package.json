@@ -96,7 +96,6 @@
         "oxlint": "^1.63.0",
         "source-map-support": "^0.5.21",
         "tslib": "^2.5.0",
-        "tsx": "^3.12.6",
         "typescript": "^5.9.3"
     }
 }

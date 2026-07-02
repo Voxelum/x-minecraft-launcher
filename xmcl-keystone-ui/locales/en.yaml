@@ -1847,6 +1847,7 @@ shared:
   server: Server
   skipForNow: Skip for now
   'yes': 'Yes'
+  delete: Delete
 sidebar:
   pin: Pin
   unpin: Unpin

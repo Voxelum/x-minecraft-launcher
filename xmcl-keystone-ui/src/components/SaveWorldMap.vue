@@ -347,7 +347,7 @@ async function ensureRegionLoaded(rx: number, rz: number) {
     chunkCache.set(key, chunks)
     const buffer = data instanceof Uint8Array ? data : new Uint8Array(data as ArrayBufferLike)
     const imageData = new ImageData(
-      new Uint8ClampedArray(buffer.buffer, buffer.byteOffset, buffer.byteLength),
+      new Uint8ClampedArray(buffer.buffer, buffer.byteOffset, buffer.byteLength) as any,
       512,
       512,
     )
@@ -864,7 +864,7 @@ async function init() {
   clearSelection()
   placing.value = false
   try {
-    const dims = await listSaveDimensions(props.savePath).catch(() => [])
+    const dims = await listSaveDimensions(props.savePath).catch(() => [] as string[])
     dimensions.value = dims
     if (dims.length > 0 && !dims.includes(dimension.value)) {
       dimension.value = dims[0]
