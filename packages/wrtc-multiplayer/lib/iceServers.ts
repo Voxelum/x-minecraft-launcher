@@ -147,7 +147,7 @@ async function testIceServers(
       return
     }
     const [ips, ping] = await test(factory, server, portBegin).catch(() => [])
-    console.log('Test ice server', server, ips)
+    // console.log('Test ice server', server, ips)
     const key = getKey(server)
     if (ips.length > 0) {
       passed[key] = server
@@ -198,7 +198,7 @@ export function createIceServersProvider(
         for (const a of all) {
           pending[getKey(a)] = a
         }
-        console.log('Start to test ice servers')
+        // console.log('Start to test ice servers')
         testIceServers(factory, Object.values(pending), passed, blocked, onValidIceServer, onIp)
         _resolve()
       }, _resolve)

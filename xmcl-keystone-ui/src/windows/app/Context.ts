@@ -28,6 +28,7 @@ import {
 import { kTheme, useTheme } from '@/composables/theme'
 
 import { kUserContext, useUserContext } from '@/composables/user'
+import { kMinecraftFriends, useMinecraftFriendsImpl } from '@/composables/minecraftFriends'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { provide, watchEffect } from 'vue'
 
@@ -66,6 +67,7 @@ export default defineComponent({
     const userContext = useUserContext()
     provide(kUserContext, userContext)
     provide(kPeerState, usePeerState(userContext.gameProfile))
+    provide(kMinecraftFriends, useMinecraftFriendsImpl(userContext))
 
     provide(kLocalVersions, useLocalVersions())
     const instances = useInstances()

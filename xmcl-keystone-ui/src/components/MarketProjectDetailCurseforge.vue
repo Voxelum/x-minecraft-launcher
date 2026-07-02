@@ -20,6 +20,8 @@ import {
   useCurseforgeTask,
 } from '@/composables/curseforgeDependencies'
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
+import { kSWRVConfig } from '@/composables/swrvConfig'
+import { getSWRV } from '@/util/swrvGet'
 import { useDateString } from '@/composables/date'
 import { useI18nSearchFlights } from '@/composables/flights'
 import { useAutoI18nCommunityContent } from '@/composables/i18n'
@@ -408,12 +410,28 @@ const onInstall = async (mod: ProjectVersion) => {
   if (installing.value) return
   try {
     installing.value = true
+    const config = injection(kSWRVConfig)
+    let resolvedDeps = deps.value
+    if (!resolvedDeps) {
+      const loaderType = curseforgeFile.value
+        ? getModLoaderTypesForFile(curseforgeFile.value).values().next().value!
+        : FileModLoaderType.Any
+      resolvedDeps = await getSWRV(
+        getCurseforgeDependenciesModel(
+          curseforgeFile,
+          computed(() => props.gameVersion),
+          computed(() => loaderType),
+          config,
+        ),
+        config,
+      )
+    }
     await installWithDependencies(
       Number(mod.id),
       mod.loaders,
       curseforgeProject.value?.logo.url,
       props.installed,
-      deps.value ?? [],
+      resolvedDeps ?? [],
     )
   } finally {
     installing.value = false

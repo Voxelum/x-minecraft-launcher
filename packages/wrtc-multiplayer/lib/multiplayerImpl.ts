@@ -414,15 +414,23 @@ export function createMultiplayer() {
   }
 
   async function refreshNat() {
-    const s = await state
-    await Promise.all([
-      s.natDeviceInfo
-        ? Promise.resolve()
-        : getDeviceInfo().then((i) => {
-          if (i) { s.natDeviceSet(i) }
+    try {
+      const s = await state
+      await Promise.all([
+        s.natDeviceInfo
+          ? Promise.resolve()
+          : getDeviceInfo().then((i) => {
+            if (i) { s.natDeviceSet(i) }
+          }).catch(e => {
+            console.error('Failed to get NAT device info:', e)
+          }),
+        raceNatType(s, (await iceServers.get())[0]).catch(e => {
+          console.error('Failed to race NAT type:', e)
         }),
-      raceNatType(s, (await iceServers.get())[0]),
-    ])
+      ])
+    } catch (e) {
+      console.error('Error during NAT refresh:', e)
+    }
   }
 
   const debouncedRefreshNat = debounce(refreshNat, 1000)

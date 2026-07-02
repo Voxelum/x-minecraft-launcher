@@ -143,7 +143,8 @@
               size="small"
               color="primary"
             >
-              <v-icon class="material-icons-outlined" start> file_download </v-icon>
+              <v-icon v-if="!isGamepadActive" class="material-icons-outlined" start> file_download </v-icon>
+              <span v-else class="gp-btn__key gp-btn__key--primary mr-1" style="transform: scale(0.85); vertical-align: middle;">{{ buttonALabel }}</span>
               {{ !hasInstalledVersion ? t('shared.install') : t('modInstall.switch') }}
             </v-btn>
             <div
@@ -183,10 +184,9 @@
             <v-menu open-on-hover :disabled="loadingVersions" offset-y>
               <template #activator="{ props }">
                 <div
-                  class="cursor-pointer items-center"
+                  class="items-center"
                   :class="{ flex: versions.length > 0, hidden: versions.length === 0 }"
                   style="color: var(--color-secondary-text)"
-                  v-bind="props"
                 >
                   <span class="mr-2 whitespace-nowrap font-bold">
                     {{ t('modInstall.currentVersion') }}:
@@ -197,7 +197,7 @@
                     type="text"
                     class="self-center"
                   />
-                  <v-btn v-else hide-details size="small" variant="text" border>
+                  <v-btn v-else hide-details size="small" variant="text" border v-bind="props">
                     <span
                       class="xl:max-w-50 max-w-40 overflow-hidden overflow-ellipsis whitespace-nowrap 2xl:max-w-full"
                     >
@@ -639,6 +639,30 @@ const props = defineProps<{
   loadingCollections?: boolean
   collection?: string
 }>()
+
+const isGamepadActive = ref(
+  localStorage.getItem('gamepad_enabled') === 'true' &&
+  localStorage.getItem('gamepad_connected') === 'true'
+)
+const gamepadType = ref(localStorage.getItem('gamepad_type') || 'xbox')
+const buttonALabel = computed(() => {
+  if (['ps5', 'ps4', 'ps3', 'ps2'].includes(gamepadType.value)) {
+    return '✕'
+  }
+  return 'A'
+})
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'gamepad_enabled' || e.key === 'gamepad_connected') {
+      isGamepadActive.value =
+        localStorage.getItem('gamepad_enabled') === 'true' &&
+        localStorage.getItem('gamepad_connected') === 'true'
+    }
+    if (e.key === 'gamepad_type') {
+      gamepadType.value = localStorage.getItem('gamepad_type') || 'xbox'
+    }
+  })
+}
 
 const emit = defineEmits<{
   (event: 'load-changelog', version: ProjectVersion): void

@@ -120,6 +120,7 @@
 <script lang="ts" setup>
 import { useDialog } from '../composables/dialog'
 import { useTaskCount } from '../composables/task'
+import { useLocalStorage } from '@vueuse/core'
 
 import { injection } from '@/util/inject'
 import { useWindowStyle } from '@/composables/windowStyle'
@@ -168,7 +169,18 @@ const taskTooltip = computed(() => {
 })
 
 const paletteBus = useCommandPaletteBus()
-const paletteShortcut = computed(() => navigator.platform.toLowerCase().includes('mac') ? '⌘K' : 'Ctrl+K')
+const gamepadActive = useLocalStorage('gamepad_enabled', false)
+const gamepadConnected = useLocalStorage('gamepad_connected', false)
+const gamepadType = useLocalStorage('gamepad_type', 'xbox')
+const paletteShortcut = computed(() => {
+  if (gamepadActive.value && gamepadConnected.value) {
+    if (gamepadType.value !== 'xbox') {
+      return 'L1 + R1'
+    }
+    return 'LB + RB'
+  }
+  return navigator.platform.toLowerCase().includes('mac') ? '⌘K' : 'Ctrl+K'
+})
 const openPalette = () => paletteBus.emit('show')
 
 const router = useRouter()

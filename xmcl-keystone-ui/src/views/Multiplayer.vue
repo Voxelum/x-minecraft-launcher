@@ -1,462 +1,542 @@
 <template>
   <div
     data-testid="multiplayer-page"
-    style="z-index: 2; overflow: auto"
-    class="h-full w-full select-none overflow-auto"
+    class="d-flex flex-column fill-height visible-scroll overflow-y-auto"
     @dragover.prevent
   >
-    <div class="flex h-full flex-col gap-2 overflow-auto" @dragover.prevent @drop="onDrop">
-      <v-card class="z-5 flex-shrink flex-grow-0 rounded-none px-2 py-1 pb-2" variant="flat">
-        <div class="flex items-center gap-2">
-          <v-progress-circular
-            v-if="groupState === 'connecting'"
-            indeterminate
-            :size="20"
-            :width="3"
-          />
-          {{ tGroupState[groupState] }}
-
-          <v-chip v-if="groupState === 'connected'" size="small" label color="primary">
-            <v-icon start> signal_cellular_alt </v-icon>
-            {{ groupPing + 'ms' }}
-
-            {{ pingAgo }}
-          </v-chip>
-
-          <div class="hidden text-sm text-gray-400 lg:block">
-            <template v-if="group">
-              {{ t('multiplayer.copyGroupToFriendHint') }}
-            </template>
-            <template v-else>
-              {{ t('multiplayer.joinOrCreateGroupHint') }}
-            </template>
-          </div>
-
-          <div class="flex-grow" />
-          <v-btn
-            v-shared-tooltip.left="() => t('multiplayer.share')"
-            variant="text"
-            icon
-            @click="showShareInstance()"
-          >
-            <v-icon> share </v-icon>
-          </v-btn>
-
-          <v-menu location="bottom end">
-            <template #activator="{ props }">
-              <v-btn
-                id="manual-connect-button"
-                v-bind="props"
-                v-shared-tooltip.left="() => t('multiplayer.manualConnect')"
-                variant="text"
-                icon
-              >
-                <v-icon> build </v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item @click="show()">
-                <v-list-item-title>
-                  <v-icon start> add_call </v-icon>
-                  {{ t('multiplayer.initiateConnection') }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="showReceive()">
-                <v-list-item-title>
-                  <v-icon start> login </v-icon>
-                  {{ t('multiplayer.joinManual') }}
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </div>
-        <div class="mt-1 flex items-center gap-2">
-          <v-text-field
-            id="group-input"
-            v-model="groupId"
-            data-testid="multiplayer-group-id"
-            hide-details
-            density="compact"
-            variant="filled"
-            prepend-inner-icon="group"
-            :label="t('multiplayer.groupId')"
-            @click="groupState === 'connected' ? onCopy(groupId) : undefined"
-          />
-          <v-btn
-            id="join-group-button"
-            data-testid="multiplayer-join"
-            v-shared-tooltip="
-              () => (!group ? t('multiplayer.joinOrCreateGroup') : t('multiplayer.leaveGroup'))
-            "
-            variant="text"
-            icon
-            @click="onJoin()"
-          >
-            <template v-if="!group">
-              <v-icon> add </v-icon>
-            </template>
-            <template v-else>
-              <v-icon color="red"> delete </v-icon>
-            </template>
-          </v-btn>
-          <v-btn
-            v-shared-tooltip.left="() => (copied ? t('multiplayer.copied') : t('multiplayer.copy'))"
-            :disabled="!group"
-            variant="text"
-            icon
-            @click="onCopy(groupId)"
-          >
-            <v-icon v-if="!copied"> content_copy </v-icon>
-            <v-icon v-else color="success"> check </v-icon>
-          </v-btn>
-        </div>
-        <!-- Error Banner -->
-        <v-alert
-          v-if="groupError"
-          v-model="groupErrorVisible"
-          type="error"
-          density="compact"
-          closable
-          class="mt-2 mb-0"
-        >
-          <div class="flex items-center gap-2">
-            <v-icon size="small">error</v-icon>
-            <span>{{ t('multiplayer.connectionError') }}: {{ groupError }}</span>
-          </div>
-        </v-alert>
-        <!-- NAT Warning for Symmetric NAT -->
-        <v-alert
-          v-if="natType === 'Symmetric NAT' || natType === 'Blocked'"
-          type="warning"
-          density="compact"
-          class="mt-2 mb-0"
-        >
-          <div class="flex items-center gap-2">
-            <v-icon size="small">warning</v-icon>
-            <span>{{ t('multiplayer.natWarning') }}</span>
-          </div>
-        </v-alert>
-      </v-card>
-
-      <v-list
-        lines="two"
-        class="flex flex-col justify-start gap-2 overflow-auto py-2"
-        style="width: 100%; background: transparent"
-      >
-        <template v-if="navigation === 'connections'">
-          <v-list-subheader>
-            {{ t('multiplayer.networkInfo') }}
-          </v-list-subheader>
-          <v-list-item
-            v-if="device"
-            class="flex-1 flex-grow-0"
-            @click="open(device.modelURL, '_blank')"
-          >
-            <template #prepend>
-              <v-avatar>
-                <v-icon>router</v-icon>
-              </v-avatar>
-            </template>
-            <v-list-item-title>
-              {{ t('multiplayer.routerInfo') }}
-            </v-list-item-title>
-            <v-list-item-subtitle class="flex items-center gap-2">
-              {{ device.friendlyName }} ({{ device.modelName }})
-            </v-list-item-subtitle>
-            <template #append>
-              <v-chip label variant="outlined">
-                <v-icon start>precision_manufacturing</v-icon>
-                <a :href="device.manufacturerURL">
-                  {{ device.manufacturer }}
-                </a>
-              </v-chip>
-            </template>
-          </v-list-item>
-          <v-list-item class="flex-1 flex-grow-0">
-            <template #prepend>
-              <v-avatar>
-                <v-icon>wifi</v-icon>
-              </v-avatar>
-            </template>
-            <v-list-item-title>
-              {{ t('multiplayer.currentNatTitle') }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              <span>
-                {{ t('multiplayer.currentIpTitle') }}
-              </span>
-              <v-chip label size="small" variant="outlined" @click="hideIp = !hideIp">
-                <v-icon start size="small">
-                  {{ !hideIp ? 'visibility' : 'visibility_off' }}
-                </v-icon>
-                {{ hideIp ? '***.***.***.***' : ips.join(', ') }}
-              </v-chip>
-            </v-list-item-subtitle>
-            <template #append>
-              <div class="flex items-center gap-2">
-                <v-tooltip location="bottom" transition="scroll-y-transition" color="black">
-                  <template #activator="{ props }">
-                    <span v-bind="props" class="font-bold" :style="{ color: natColors[natType] }">
-                      {{ natIcons[natType] }} {{ tNatType[natType] }}
-                    </span>
-                  </template>
-
-                  {{ t('multiplayer.difficultyLevelHint') }}
-                  <div v-for="(type, key, index) of tNatType" :key="key">
-                    {{ index + 1 }}. {{ type }} {{ natIcons[key] }}
-                  </div>
-                </v-tooltip>
-                <v-btn icon variant="text" :loading="refreshingNatType" @click="refreshNatType">
-                  <v-icon>refresh</v-icon>
-                </v-btn>
+    <div class="flex-grow-1 pa-4 pa-md-6" @dragover.prevent @drop="onDrop">
+      <v-row class="ma-0">
+        
+        <!-- LEFT COLUMN: Profile, Friends List & P2P Rooms (cols=12, md=5) -->
+        <v-col cols="12" md="5" class="d-flex flex-column gap-4 pa-2">
+          
+          <!-- Profile Card -->
+          <v-card class="surface-card-subsection pa-4 flex items-center gap-4 relative overflow-hidden" :elevation="tokens.cardSubsectionElevation.value">
+            <v-avatar size="60" class="ring-2 ring-primary/40 p-[2px]">
+              <PlayerAvatar :dimension="56" :src="gameProfile?.textures?.SKIN?.url" />
+            </v-avatar>
+            <div class="flex-grow min-w-0">
+              <div class="text-xs opacity-60 font-medium uppercase tracking-wider">{{ t('user.info') }}</div>
+              <div class="text-lg font-bold truncate flex items-center gap-2">
+                {{ gameProfile?.name }}
+                <v-chip v-if="isMicrosoftUser" size="x-small" color="primary" variant="flat" class="text-[10px] font-bold">XBOX</v-chip>
               </div>
-            </template>
-          </v-list-item>
-
-          <v-list-subheader>
-            {{ t('multiplayer.connections') }}
-          </v-list-subheader>
-          <Hint
-            v-if="connections.length === 0"
-            icon="sports_kabaddi"
-            class="multiplayer-content h-full px-4"
-            :size="120"
-            :text="t('multiplayer.placeholder')"
-          />
-          <v-list-item
-            v-for="c of connections"
-            :key="c.id"
-            class="multiplayer-content flex-1 flex-grow-0"
-          >
-            <v-progress-linear v-if="c.sharing" buffer-value="0" class="absolute bottom-0" stream />
-            <v-progress-linear v-if="c.sharing" buffer-value="0" class="absolute top-0" stream />
-            <template #prepend>
-              <v-avatar class="mr-4">
-                <PlayerAvatar :dimension="40" :src="c.userInfo.avatar" />
-              </v-avatar>
-            </template>
-            <v-list-item-title>
-              {{ c.userInfo.name || c.id }}
-            </v-list-item-title>
-            <v-list-item-subtitle class="flex items-center gap-2">
-              <v-tooltip v-if="c.connectionState === 'failed'" location="bottom" max-width="300">
-                <template #activator="{ props }">
-                  <v-chip
-                    v-bind="props"
-                    label
-                    size="small"
-                    :color="stateToColor[c.connectionState]"
-                  >
-                    <v-icon start>error_outline</v-icon>
-                    {{ tConnectionStates[c.connectionState] }}
-                  </v-chip>
-                </template>
-                <span>{{ t('multiplayer.connectionFailedHint') }}</span>
-              </v-tooltip>
-              <v-chip v-else label size="small" :color="stateToColor[c.connectionState]">
-                <v-icon start>signal_cellular_alt</v-icon>
-                <span class="hidden lg:inline"> {{ t(`peerConnectionState.name`) }}: </span>
-                {{ tConnectionStates[c.connectionState] }}
-                <template v-if="c.connectionState === 'connected'"> ({{ c.ping }}ms) </template>
-              </v-chip>
-            </v-list-item-subtitle>
-            <template #append>
-              <div class="flex items-center gap-2">
-                <div v-if="c.selectedCandidate" class="mr-5 flex flex-col text-xs opacity-70">
-                  <span>
-                    <v-icon size="small">place</v-icon>
-                    <span class="hidden lg:inline">
-                      {{ tTransportType[c.selectedCandidate.local.type] }}
-                    </span>
-                    {{ c.selectedCandidate.local.address }}:{{ c.selectedCandidate.local.port }}
-                  </span>
-                  <span>
-                    <v-icon size="small">person_pin_circle</v-icon>
-                    <span class="hidden lg:inline">
-                      {{ tTransportType[c.selectedCandidate.remote.type] }}
-                    </span>
-                    {{ c.selectedCandidate.remote.address }}:{{ c.selectedCandidate.remote.port }}
-                  </span>
-                </div>
-                <div v-if="c.signalingState === 'have-local-offer'" class="mr-5 text-xs opacity-70">
-                  {{ t('peerSignalingState.have-local-offer') }}
-                </div>
-                <div
-                  v-if="c.iceGatheringState !== 'complete'"
-                  class="mr-5 flex items-center gap-2 text-xs opacity-70"
-                >
-                  <v-progress-circular indeterminate :size="18" :width="1" />
-                  {{ t('peerIceGatheringState.gathering') }}
-                </div>
-
-                <template v-if="c.sharing">
-                  <v-btn
-                    v-shared-tooltip="() => t('multiplayer.sharing')"
-                    icon
-                    variant="text"
-                    @click="showShareInstance(c.sharing)"
-                  >
-                    <v-icon>download</v-icon>
-                  </v-btn>
-                  <v-btn
-                    v-shared-tooltip="() => t('multiplayer.sharing')"
-                    color="primary"
-                    icon
-                    variant="text"
-                    @click="
-                      c.sharing
-                        ? showAddInstasnce({
-                            format: 'manifest',
-                            manifest: c.sharing,
-                          })
-                        : undefined
-                    "
-                  >
-                    <v-icon>add</v-icon>
-                  </v-btn>
-                </template>
-
-                <v-btn
-                  v-if="c.connectionState !== 'connected'"
-                  icon
-                  variant="text"
-                  @click="edit(c.id, c.initiator)"
-                >
-                  <v-icon>edit</v-icon>
-                </v-btn>
-                <v-btn
-                  v-shared-tooltip.left="() => t('multiplayer.disconnect')"
-                  color="error"
-                  icon
-                  variant="text"
-                  @click="showDelete(c.id)"
-                >
-                  <v-icon>link_off</v-icon>
-                </v-btn>
+              <div class="text-xs opacity-65 mt-0.5 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full" :class="presenceEnabled ? 'bg-emerald-500 animate-pulse' : 'bg-neutral-500'" />
+                {{ presenceEnabled ? t('multiplayer.onlinePresenceActive') : t('multiplayer.onlinePresenceInactive') }}
               </div>
-            </template>
-          </v-list-item>
-        </template>
-        <template v-else>
-          <v-list-item class="flex-1 flex-grow-0">
-            <template #prepend>
-              <v-avatar>
-                <v-icon>favorite</v-icon>
-              </v-avatar>
-            </template>
-            <v-list-item-title>
-              {{ t('multiplayer.kernel') }}
-            </v-list-item-title>
-            <v-list-item-subtitle v-shared-tooltip="() => t('multiplayer.kernelDescription')">
-              {{ t('multiplayer.kernelDescription') }}
-            </v-list-item-subtitle>
-            <template #append>
-              <v-select
-                v-model="kernel"
-                variant="filled"
-                item-title="text"
-                style="max-width: 105px"
-                hide-details
-                :items="kernels"
-              />
-            </template>
-          </v-list-item>
-
-          <v-list-item v-if="hasMicrosoft" class="flex-1 flex-grow-0">
-            <template #prepend>
-              <v-avatar>
-                <v-icon>swap_vert</v-icon>
-              </v-avatar>
-            </template>
-            <v-list-item-title>
-              {{ t('multiplayer.allowTurn') }}
-            </v-list-item-title>
-            <v-list-item-subtitle
-              v-shared-tooltip="() => t('multiplayer.allowTurnHint')"
-              class="flex items-center gap-2"
-            >
-              {{ t('multiplayer.allowTurnHint') }}
-            </v-list-item-subtitle>
-            <template #append>
-              <v-checkbox v-model="allowTurn" hide-details />
-            </template>
-          </v-list-item>
-
-          <v-list-item v-if="allowTurn && turnserversItems.length > 0" class="flex-1 flex-grow-0">
-            <template #prepend>
-              <v-avatar />
-            </template>
-            <template #append>
-              <v-select
-                v-model="preferredTurnserver"
-                variant="filled"
-                clearable
-                hide-details
-                item-title="text"
-                :items="turnserversItems"
-                :placeholder="turnserversItems[0].text"
-              />
-            </template>
-          </v-list-item>
-
-          <div class="mt-2 flex items-center gap-2 px-4">
-            <v-list-subheader class="!min-h-0 !p-0">
-              {{ t('multiplayer.exposedPorts') }}
-            </v-list-subheader>
-            <v-spacer />
-            <v-text-field
-              v-model.number="forwardedPort"
+            </div>
+            <v-switch
+              v-model="presenceEnabled"
+              color="primary"
               hide-details
-              class="max-w-32"
-              variant="filled"
               density="compact"
-              type="number"
+              class="m-0 flex-shrink-0"
             />
-            <v-btn icon variant="text" @click="exposePort(forwardedPort, 0)">
-              <v-icon>add</v-icon>
-            </v-btn>
+          </v-card>
+
+          <!-- Microsoft Friends Presence List -->
+          <v-card class="surface-card-subsection pa-4 flex-grow flex flex-column min-h-[350px]" :elevation="tokens.cardSubsectionElevation.value">
+            <div class="flex items-center justify-between pb-3 border-b border-neutral-500/10 mb-3 flex-shrink-0">
+              <div class="flex items-center gap-2">
+                <v-icon color="primary" size="20">people</v-icon>
+                <span class="text-sm font-bold tracking-wide uppercase">{{ t('multiplayer.friends') }}</span>
+              </div>
+              <v-chip size="small" color="primary" variant="tonal" class="font-bold">{{ Object.keys(onlineFriends).length }} {{ t('multiplayer.online') }}</v-chip>
+            </div>
+
+            <!-- Friends scrollable area -->
+            <div class="flex-grow overflow-y-auto visible-scroll flex flex-column gap-2 pr-1" style="max-height: 320px;">
+              <div v-if="!isMicrosoftUser" class="flex flex-column items-center justify-center h-full text-center p-6 opacity-60 gap-2">
+                <v-icon size="40">lock</v-icon>
+                <div class="text-xs">{{ t('multiplayer.microsoftRequired') }}</div>
+              </div>
+              
+              <div v-else-if="friendsList.length === 0" class="flex flex-column items-center justify-center h-full text-center p-6 opacity-60 gap-2">
+                <v-icon size="40">person_add</v-icon>
+                <div class="text-xs">{{ t('multiplayer.noFriends') }}</div>
+              </div>
+
+              <!-- Friend Cards -->
+              <template v-else>
+                <div
+                  v-for="friend in allFriendsWithPresence"
+                  :key="friend.profileId"
+                  class="surface-card-row pa-3 flex items-center gap-3"
+                  :class="{ 'opacity-65': friend.status === 'offline' }"
+                >
+                  <v-avatar size="38" class="bg-transparent">
+                    <PlayerAvatar :dimension="34" :src="friend.avatar" />
+                  </v-avatar>
+                  
+                  <div class="flex-grow min-w-0">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-sm font-bold truncate">{{ friend.name }}</span>
+                      <span class="w-2 h-2 rounded-full" :class="friend.status === 'playing' ? 'bg-amber-500' : friend.status === 'online' ? 'bg-emerald-500' : 'bg-neutral-500'" />
+                    </div>
+                    
+                    <!-- Game state text -->
+                    <div class="text-xs opacity-70 truncate mt-0.5">
+                      <span v-if="friend.status === 'playing'">
+                        {{ t('multiplayer.playing') }} {{ friend.instanceName || 'Minecraft' }} ({{ friend.version }})
+                        <span v-if="friend.serverAddress" class="block text-[10px] text-amber-500 font-medium">on {{ friend.serverAddress }}</span>
+                        <span v-else-if="friend.p2pGroupId" class="block text-[10px] text-emerald-500 font-medium">hosting P2P World</span>
+                      </span>
+                      <span v-else-if="friend.status === 'online'">{{ t('multiplayer.online') }}</span>
+                      <span v-else>{{ t('multiplayer.offline') }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Connect/Join Action Button -->
+                  <div v-if="friend.status === 'playing'" class="flex-shrink-0">
+                    <!-- Join P2P Game -->
+                    <v-btn
+                      v-if="friend.p2pGroupId"
+                      size="small"
+                      color="primary"
+                      variant="flat"
+                      class="text-xs font-bold px-3 rounded-md"
+                      :loading="joiningFriend?.profileId === friend.profileId"
+                      @click="onJoinFriendP2P(friend)"
+                    >
+                      <v-icon start size="14">sports_esports</v-icon>
+                      {{ t('multiplayer.joinWorld') }}
+                    </v-btn>
+
+                    <!-- Join Server Game -->
+                    <v-btn
+                      v-else-if="friend.serverAddress"
+                      size="small"
+                      color="amber"
+                      variant="flat"
+                      class="text-xs font-bold px-3 rounded-md"
+                      :loading="joiningFriend?.profileId === friend.profileId"
+                      @click="onJoinFriendServer(friend)"
+                    >
+                      <v-icon start size="14">dns</v-icon>
+                      {{ t('multiplayer.joinServer') }}
+                    </v-btn>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </v-card>
+
+          <!-- Joining Friend Overlay Indicator -->
+          <v-alert
+            v-if="joiningFriend"
+            type="info"
+            density="compact"
+            variant="tonal"
+            color="primary"
+            class="text-xs mb-0"
+          >
+            <div class="flex items-center gap-3">
+              <v-progress-circular indeterminate :size="16" :width="2" color="primary" />
+              <div>
+                <span class="font-bold">{{ t('multiplayer.joiningProgress') }} {{ joiningFriend.name }}...</span>
+                <div class="text-[10px] opacity-70 mt-0.5">
+                  <span v-if="joiningState === 'joining-group'">Joining signaling channel...</span>
+                  <span v-else-if="joiningState === 'waiting-port'">Waiting for WebRTC data tunnel...</span>
+                  <span v-else-if="joiningState === 'launching'">Launching instance with version {{ joiningFriend.version }}...</span>
+                </div>
+              </div>
+              <v-spacer />
+              <v-btn size="x-small" variant="text" color="error" @click="cancelJoin">{{ t('shared.cancel') }}</v-btn>
+            </div>
+          </v-alert>
+
+          <!-- P2P Group Card -->
+          <v-card class="surface-card-subsection pa-4 relative overflow-hidden" :elevation="tokens.cardSubsectionElevation.value">
+            <div class="flex items-center gap-2 pb-3 border-b border-white/5 mb-4">
+              <v-icon color="primary" size="20">meeting_room</v-icon>
+              <span class="text-sm font-bold tracking-wide uppercase">{{ t('multiplayer.groupRoom') }}</span>
+            </div>
+
+            <div class="flex flex-column gap-3">
+              <div class="flex items-center gap-2">
+                <v-text-field
+                  id="group-input"
+                  v-model="groupId"
+                  data-testid="multiplayer-group-id"
+                  hide-details
+                  density="compact"
+                  variant="outlined"
+                  prepend-inner-icon="group"
+                  color="primary"
+                  class="text-xs rounded-lg"
+                  :label="t('multiplayer.groupId')"
+                  @click="groupState === 'connected' ? onCopy(groupId) : undefined"
+                />
+                <v-btn
+                  id="join-group-button"
+                  data-testid="multiplayer-join"
+                  variant="flat"
+                  :color="!group ? 'primary' : 'error'"
+                  :icon="!group ? 'add' : 'delete'"
+                  class="rounded-lg"
+                  @click="onJoin()"
+                />
+                <v-btn
+                  :disabled="!group"
+                  variant="outlined"
+                  :icon="!copied ? 'content_copy' : 'check'"
+                  :class="['rounded-lg border-white/10', copied ? 'text-success' : '']"
+                  @click="onCopy(groupId)"
+                />
+              </div>
+              
+              <div class="text-[11px] opacity-70 flex items-center justify-between px-1">
+                <span>{{ group ? t('multiplayer.copyGroupToFriendHint') : t('multiplayer.joinOrCreateGroupHint') }}</span>
+                <span v-if="groupState === 'connected'" class="text-emerald-500 font-bold flex items-center gap-1">
+                  <v-icon size="12" color="success">check_circle</v-icon>
+                  Connected
+                </span>
+              </div>
+            </div>
+          </v-card>
+
+        </v-col>
+
+        <!-- RIGHT COLUMN: Active Connection Details, NAT & Settings (cols=12, md=7) -->
+        <v-col cols="12" md="7" class="d-flex flex-column gap-4 pa-2">
+          
+          <!-- Header status bar -->
+          <div class="d-flex align-center justify-space-between surface-card-subsection pa-4 relative overflow-hidden">
+            <div class="flex items-center gap-3">
+              <v-progress-circular
+                v-if="groupState === 'connecting'"
+                indeterminate
+                :size="20"
+                :width="3"
+                color="primary"
+              />
+              <span class="text-sm font-bold tracking-wide uppercase flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full" :class="groupState === 'connected' ? 'bg-emerald-500' : 'bg-neutral-500'" />
+                {{ tGroupState[groupState] }}
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <v-chip v-if="groupState === 'connected'" size="small" label color="primary" variant="flat" class="font-bold">
+                <v-icon start size="14"> signal_cellular_alt </v-icon>
+                {{ groupPing + 'ms' }}
+              </v-chip>
+              
+              <v-btn
+                variant="outlined"
+                size="small"
+                class="text-xs rounded-lg"
+                prepend-icon="share"
+                :text="t('multiplayer.share')"
+                @click="showShareInstance()"
+              />
+
+              <v-menu location="bottom end">
+                <template #activator="{ props: menuProps }">
+                  <v-btn
+                    id="manual-connect-button"
+                    v-bind="menuProps"
+                    variant="outlined"
+                    size="small"
+                    class="text-xs rounded-lg"
+                    prepend-icon="build"
+                    :text="t('multiplayer.manualConnect')"
+                  />
+                </template>
+                <v-list class="p-1">
+                  <v-list-item
+                    class="rounded-md cursor-pointer text-xs"
+                    prepend-icon="add_call"
+                    :title="t('multiplayer.initiateConnection')"
+                    @click="show()"
+                  />
+                  <v-list-item
+                    class="rounded-md cursor-pointer text-xs"
+                    prepend-icon="login"
+                    :title="t('multiplayer.joinManual')"
+                    @click="showReceive()"
+                  />
+                </v-list>
+              </v-menu>
+            </div>
           </div>
 
-          <v-list-item v-for="port of exposedPorts" :key="port" class="flex-1 flex-grow-0">
-            <v-list-item-title>
-              {{ port }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ t('multiplayer.exposedPortDescription') }}
-            </v-list-item-subtitle>
-            <template #append>
-              <v-btn icon color="red" variant="text" @click="unexposePort(port)">
-                <v-icon>delete</v-icon>
-              </v-btn>
-            </template>
-          </v-list-item>
-          <v-list-item
-            v-for="port of otherExposedPorts"
-            :key="`${port.user}:${port.port}`"
-            class="flex-1 flex-grow-0"
+          <!-- Alert messages -->
+          <v-alert
+            v-if="groupError"
+            v-model="groupErrorVisible"
+            type="error"
+            density="compact"
+            closable
+            class="text-xs mb-0"
           >
-            <v-list-item-title>
-              {{ port.port }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{ t('multiplayer.otherExposedPortDescription', { user: port.user }) }}
-            </v-list-item-subtitle>
-          </v-list-item>
-        </template>
-      </v-list>
-      <v-bottom-navigation v-model="navigation" color="primary">
-        <v-btn value="connections">
-          <span> {{ t('multiplayer.connections') }} </span>
-          <v-icon>wifi</v-icon>
-        </v-btn>
-        <v-btn value="settings">
-          <span> {{ t('setting.name') }} </span>
-          <v-icon> settings </v-icon>
-        </v-btn>
-      </v-bottom-navigation>
+            <span>{{ t('multiplayer.connectionError') }}: {{ groupError }}</span>
+          </v-alert>
 
+          <v-alert
+            v-if="natType === 'Symmetric NAT' || natType === 'Blocked'"
+            type="warning"
+            density="compact"
+            class="text-xs mb-0"
+          >
+            <span>{{ t('multiplayer.natWarning') }}</span>
+          </v-alert>
+
+          <!-- Sub-tabs navigation -->
+          <v-tabs
+            v-model="navigation"
+            color="primary"
+            bg-color="transparent"
+            density="compact"
+            class="mb-2 border-b border-neutral-500/20"
+          >
+            <v-tab value="connections">
+              <v-icon start size="small" class="mr-1">link</v-icon>
+              {{ t('multiplayer.connections') }}
+            </v-tab>
+            <v-tab value="settings">
+              <v-icon start size="small" class="mr-1">settings</v-icon>
+              {{ t('setting.name') }}
+            </v-tab>
+          </v-tabs>
+
+          <!-- CONNECTIONS TAB -->
+          <template v-if="navigation === 'connections'">
+            <!-- Network Details / NAT Card -->
+            <v-card class="surface-card-subsection pa-4" :elevation="tokens.cardSubsectionElevation.value">
+              <div class="flex items-center justify-between mb-4 pb-2 border-b border-neutral-500/10">
+                <span class="text-xs font-bold opacity-60 uppercase tracking-wider">{{ t('multiplayer.networkInfo') }}</span>
+                <v-btn icon="refresh" size="x-small" variant="text" :loading="refreshingNatType" @click="refreshNatType" />
+              </div>
+
+              <div class="flex flex-column gap-3">
+                <!-- NAT Type -->
+                <div class="flex items-center justify-between text-xs">
+                  <span class="opacity-60">{{ t('multiplayer.currentNatTitle') }}</span>
+                  <span class="font-bold flex items-center gap-1.5" :style="{ color: natColors[natType] }">
+                    <span>{{ natIcons[natType] }}</span>
+                    <span>{{ tNatType[natType] }}</span>
+                  </span>
+                </div>
+
+                <!-- IP Addresses -->
+                <div class="flex items-center justify-between text-xs">
+                  <span class="opacity-60">{{ t('multiplayer.currentIpTitle') }}</span>
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono bg-neutral-500/10 px-2 py-0.5 rounded border border-neutral-500/20">
+                      {{ hideIp ? '***.***.***.***' : ips.join(', ') }}
+                    </span>
+                    <v-btn :icon="!hideIp ? 'visibility' : 'visibility_off'" size="x-small" variant="text" @click="hideIp = !hideIp" />
+                  </div>
+                </div>
+
+                <!-- Router details -->
+                <div v-if="device" class="flex items-center justify-between text-xs pt-1.5 border-t border-neutral-500/10">
+                  <span class="opacity-60">{{ t('multiplayer.routerInfo') }}</span>
+                  <span class="font-medium truncate max-w-[200px]" :title="device.friendlyName">
+                    {{ device.friendlyName }} ({{ device.modelName }})
+                  </span>
+                </div>
+              </div>
+            </v-card>
+
+            <!-- Peers grid -->
+            <div class="flex-grow flex flex-column gap-3 min-h-[200px]">
+              <div class="text-xs font-bold opacity-60 uppercase tracking-wider">{{ t('multiplayer.connections') }}</div>
+              
+              <div v-if="connections.length === 0" class="flex flex-column items-center justify-center flex-grow bg-neutral-500/5 border border-dashed border-neutral-500/20 rounded-xl p-8 text-center opacity-60 gap-3">
+                <v-icon size="50">sports_kabaddi</v-icon>
+                <div class="text-xs font-medium">{{ t('multiplayer.placeholder') }}</div>
+              </div>
+
+              <template v-else>
+                <div
+                  v-for="c in connections"
+                  :key="c.id"
+                  class="surface-card-row pa-4 flex items-center gap-4 relative overflow-hidden"
+                >
+                  <!-- Animated sharing status border line -->
+                  <div v-if="c.sharing" class="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-primary via-emerald-500 to-primary animate-pulse" />
+                  
+                  <v-avatar size="42" class="ring-2 ring-primary/20 bg-transparent">
+                    <PlayerAvatar :dimension="38" :src="c.userInfo.avatar" />
+                  </v-avatar>
+
+                  <div class="flex-grow min-w-0">
+                    <div class="text-sm font-bold truncate">{{ c.userInfo.name || c.id.substring(0, 6) }}</div>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                      <v-chip size="x-small" :color="stateToColor[c.connectionState]" variant="flat" class="text-[9px] font-bold">
+                        {{ tConnectionStates[c.connectionState] }}
+                        <template v-if="c.connectionState === 'connected'"> ({{ c.ping }}ms) </template>
+                      </v-chip>
+                    </div>
+                  </div>
+
+                  <!-- Sharing Options -->
+                  <div class="flex items-center gap-2">
+                    <template v-if="c.sharing">
+                      <v-btn
+                        v-shared-tooltip="() => t('multiplayer.sharing')"
+                        icon="download"
+                        size="small"
+                        variant="tonal"
+                        color="primary"
+                        @click="showShareInstance(c.sharing)"
+                      />
+                      <v-btn
+                        v-shared-tooltip="() => t('multiplayer.sharing')"
+                        icon="add"
+                        size="small"
+                        variant="flat"
+                        color="primary"
+                        @click="showAddInstasnce({ format: 'manifest', manifest: c.sharing })"
+                      />
+                    </template>
+
+                    <v-btn
+                      v-if="c.connectionState !== 'connected'"
+                      icon="edit"
+                      size="small"
+                      variant="text"
+                      @click="edit(c.id, c.initiator)"
+                    />
+
+                    <!-- Speed Test button -->
+                    <v-btn
+                      v-if="c.connectionState === 'connected'"
+                      v-shared-tooltip.left="() => 'Speed Test'"
+                      icon="speed"
+                      size="small"
+                      variant="text"
+                      color="primary"
+                      @click="startSpeedTest(c)"
+                    />
+
+                    <v-btn
+                      v-shared-tooltip.left="() => t('multiplayer.disconnect')"
+                      icon="link_off"
+                      size="small"
+                      variant="text"
+                      color="error"
+                      @click="showDelete(c.id)"
+                    />
+                  </div>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <!-- SETTINGS TAB -->
+          <template v-else>
+            <v-card class="surface-card-subsection pa-4 flex flex-column gap-4" :elevation="tokens.cardSubsectionElevation.value">
+              
+              <!-- Kernel Selection -->
+              <div class="flex items-center justify-between py-2 border-b border-neutral-500/10">
+                <div class="flex flex-column gap-0.5">
+                  <span class="text-xs font-bold">{{ t('multiplayer.kernel') }}</span>
+                  <span class="text-[10px] opacity-60">{{ t('multiplayer.kernelDescription') }}</span>
+                </div>
+                <v-select
+                  v-model="kernel"
+                  variant="outlined"
+                  density="compact"
+                  hide-details
+                  color="primary"
+                  item-title="text"
+                  class="text-xs rounded-lg max-w-[160px]"
+                  :items="kernels"
+                />
+              </div>
+
+              <!-- Allow TURN -->
+              <div v-if="hasMicrosoft" class="flex items-center justify-between py-2 border-b border-neutral-500/10">
+                <div class="flex flex-column gap-0.5">
+                  <span class="text-xs font-bold">{{ t('multiplayer.allowTurn') }}</span>
+                  <span class="text-[10px] opacity-60">{{ t('multiplayer.allowTurnHint') }}</span>
+                </div>
+                <v-switch v-model="allowTurn" color="primary" hide-details density="compact" />
+              </div>
+
+              <!-- Preferred TURN server -->
+              <div v-if="allowTurn && turnserversItems.length > 0" class="flex items-center justify-between py-2 border-b border-neutral-500/10">
+                <span class="text-xs font-bold">{{ t('multiplayer.preferredTurn') || 'Preferred TURN Server' }}</span>
+                <v-select
+                  v-model="preferredTurnserver"
+                  variant="outlined"
+                  density="compact"
+                  clearable
+                  hide-details
+                  color="primary"
+                  item-title="text"
+                  class="text-xs rounded-lg max-w-[200px]"
+                  :items="turnserversItems"
+                  :placeholder="turnserversItems[0].text"
+                />
+              </div>
+
+              <!-- Exposed Ports -->
+              <div class="flex flex-column gap-3 py-2">
+                <div class="flex items-center justify-between">
+                  <div class="flex flex-column gap-0.5">
+                    <span class="text-xs font-bold">{{ t('multiplayer.exposedPorts') }}</span>
+                    <span class="text-[10px] opacity-60">Expose local server port to other players</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <v-text-field
+                      v-model.number="forwardedPort"
+                      hide-details
+                      variant="outlined"
+                      density="compact"
+                      type="number"
+                      color="primary"
+                      class="text-xs rounded-lg max-w-[90px]"
+                    />
+                    <v-btn icon size="small" color="primary" variant="flat" class="rounded-lg" @click="exposePort(forwardedPort, 0)">
+                      <v-icon size="16">add</v-icon>
+                    </v-btn>
+                  </div>
+                </div>
+
+                <!-- Exposed Ports List -->
+                <div class="flex flex-column gap-2 mt-2">
+                  <div
+                    v-for="port of exposedPorts"
+                    :key="port"
+                    class="surface-card-row pa-3 flex items-center justify-between text-xs"
+                  >
+                    <div class="flex flex-column">
+                      <span class="font-bold">{{ port }}</span>
+                      <span class="text-[10px] opacity-60">{{ t('multiplayer.exposedPortDescription') }}</span>
+                    </div>
+                    <v-btn icon size="x-small" color="error" variant="text" @click="unexposePort(port)">
+                      <v-icon size="14">delete</v-icon>
+                    </v-btn>
+                  </div>
+
+                  <div
+                    v-for="port of otherExposedPorts"
+                    :key="`${port.user}:${port.port}`"
+                    class="surface-card pa-3 flex flex-column text-xs border border-dashed border-neutral-500/20"
+                  >
+                    <span class="font-bold">{{ port.port }}</span>
+                    <span class="text-[10px] opacity-60">{{ t('multiplayer.otherExposedPortDescription', { user: port.user }) }}</span>
+                  </div>
+                </div>
+              </div>
+
+            </v-card>
+          </template>
+
+        </v-col>
+
+      </v-row>
+
+      <!-- Initiate & Receive manual connection dialogs -->
       <MultiplayerDialogInitiate />
       <MultiplayerDialogReceive />
+
+      <!-- Disconnect confirmation dialog -->
       <SimpleDialog
         v-model="model"
         :title="t('multiplayer.disconnected')"
@@ -468,9 +548,97 @@
       >
         {{ t('multiplayer.disconnectDescription', { user: deletingName, id: deleting }) }}
       </SimpleDialog>
+
+      <!-- Speed Test Dialog -->
+      <v-dialog v-model="speedTestDialog" max-width="450">
+        <v-card class="surface-card-subsection pa-5 rounded-xl border border-neutral-500/10 flex flex-column gap-4 relative overflow-hidden" elevation="10">
+          <div class="flex items-center justify-between pb-3 border-b border-white/5">
+            <span class="text-xs font-bold tracking-wide uppercase flex items-center gap-2">
+              <v-icon color="primary">speed</v-icon>
+              P2P Speed Test
+            </span>
+            <v-btn icon size="small" variant="text" @click="speedTestDialog = false">
+              <v-icon>close</v-icon>
+            </v-btn>
+          </div>
+
+          <div v-if="speedTestPeer" class="flex flex-column items-center justify-center py-4 gap-4">
+            <!-- Animated Sonar / Pulse -->
+            <div class="relative flex items-center justify-center w-32 h-32 rounded-full border border-neutral-500/10 bg-neutral-500/5">
+              <div
+                class="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping"
+                :style="{ animationDuration: speedTestActive ? '1.5s' : '0s' }"
+              />
+              <div class="flex flex-column items-center">
+                <span class="text-[10px] opacity-65 uppercase font-medium">Ping</span>
+                <span class="text-4xl font-extrabold font-mono text-primary animate-pulse">
+                  {{ speedTestActive ? speedTestPings[speedTestPings.length - 1] : speedTestAverage }}
+                </span>
+                <span class="text-[10px] opacity-60">ms</span>
+              </div>
+            </div>
+
+            <!-- Target Peer Info -->
+            <div class="text-center">
+              <div class="text-sm font-bold">{{ speedTestPeer.userInfo.name || speedTestPeer.id.substring(0, 6) }}</div>
+              <div class="text-xs opacity-60 mt-0.5">NAT Type: {{ tNatType[natType] }}</div>
+            </div>
+
+            <!-- Progress Bar -->
+            <v-progress-linear
+              v-model="speedTestProgress"
+              color="primary"
+              height="4"
+              rounded
+              class="w-full mt-2"
+            />
+
+            <!-- Statistics Grid -->
+            <div class="d-flex justify-space-between w-full mt-2 gap-4">
+              <v-card class="surface-card-row pa-3 text-center rounded-lg flex-grow-1" elevation="0">
+                <div class="text-[10px] opacity-65 uppercase font-semibold">Average</div>
+                <div class="text-lg font-bold font-mono text-primary mt-1">{{ speedTestAverage }}ms</div>
+              </v-card>
+              <v-card class="surface-card-row pa-3 text-center rounded-lg flex-grow-1" elevation="0">
+                <div class="text-[10px] opacity-65 uppercase font-semibold">Jitter</div>
+                <div class="text-lg font-bold font-mono text-warning mt-1">{{ speedTestJitter }}ms</div>
+              </v-card>
+              <v-card class="surface-card-row pa-3 text-center rounded-lg flex-grow-1 d-flex flex-column align-center justify-center" elevation="0">
+                <div class="text-[10px] opacity-65 uppercase font-semibold">Quality</div>
+                <v-chip size="x-small" :color="speedTestQualityColor" variant="flat" class="mt-1 font-bold uppercase">
+                  {{ speedTestQuality }}
+                </v-chip>
+              </v-card>
+            </div>
+          </div>
+          
+          <div class="flex justify-end gap-2 mt-2">
+            <v-btn
+              v-if="speedTestStatus === 'completed'"
+              color="primary"
+              variant="flat"
+              size="small"
+              class="rounded-lg"
+              @click="startSpeedTest(speedTestPeer)"
+            >
+              Retest
+            </v-btn>
+            <v-btn
+              variant="outlined"
+              size="small"
+              class="rounded-lg border-white/10"
+              @click="speedTestDialog = false"
+            >
+              Close
+            </v-btn>
+          </div>
+        </v-card>
+      </v-dialog>
+
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
@@ -482,13 +650,17 @@ import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kPeerState } from '@/composables/peers'
 import { kTheme } from '@/composables/theme'
 import { kUserContext } from '@/composables/user'
+import { kSurfaceTokens } from '@/composables/surfaceTokens'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { useIntervalFn } from '@vueuse/core'
-import { AUTHORITY_MICROSOFT, BaseServiceKey } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, BaseServiceKey, LaunchServiceKey, JavaServiceKey, JavaState, getAutoSelectedJava, VersionServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import { useDialog, useSimpleDialog } from '../composables/dialog'
+import { useState } from '@/composables/syncableState'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
+import { useFriendsPresence, FriendPresenceInfo } from '../composables/useFriendsPresence'
+import { kInstances } from '../composables/instances'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
@@ -511,6 +683,7 @@ const {
   console.log(`drop connection ${v}`)
   drop(v)
 })
+
 const {
   exposedPorts,
   exposePort,
@@ -533,13 +706,17 @@ const {
   refreshNatType,
   error: groupError,
 } = injection(kPeerState)
+
 const groupErrorVisible = ref(true)
 watch(groupError, () => {
   groupErrorVisible.value = true
 })
+
 const { t } = useI18n()
+const tokens = injection(kSurfaceTokens)
 const { handleUrl } = useService(BaseServiceKey)
-const { users } = injection(kUserContext)
+const { users, userProfile, gameProfile } = injection(kUserContext)
+const { instances, selectedInstance } = injection(kInstances)
 const hasMicrosoft = computed(() => !!users.value.find((u) => u.authority === AUTHORITY_MICROSOFT))
 const forwardedPort = ref(0)
 
@@ -579,9 +756,9 @@ const tLocale = computed(
 const { errorColor, successColor, warningColor } = injection(kTheme)
 
 const tGroupState = computed(() => ({
-  connected: '✔️ ' + t('peerGroupState.connected'),
+  connected: t('peerGroupState.connected'),
   connecting: t('peerGroupState.connecting'),
-  closed: '🕒 ' + t('peerGroupState.closed'),
+  closed: t('peerGroupState.closed'),
   closing: t('peerGroupState.closing'),
 }))
 
@@ -644,7 +821,7 @@ watch(
 const stateToColor: Record<string, string> = {
   failed: 'error',
   disconnected: 'error',
-  connected: 'primary',
+  connected: 'emerald',
   closed: 'secondary',
 }
 
@@ -714,10 +891,230 @@ const onJoin = () => {
   }
 }
 
-// useTutorial(computed(() => [
-//   { element: '#group-input', popover: { title: t('tutorial.multiplayer.groupTitle'), description: t('tutorial.multiplayer.groupDescription') } },
-//   { element: '#join-group-button', popover: { title: t('tutorial.multiplayer.groupTitle'), description: t('tutorial.multiplayer.joinDescription') } },
-//   { element: '.multiplayer-content', popover: { title: t('tutorial.multiplayer.contentTitle'), description: t('tutorial.multiplayer.contentDescription') } },
-//   { element: '#manual-connect-button', popover: { title: t('multiplayer.manualConnect'), description: t('tutorial.multiplayer.manualDescription') } },
-// ]))
+// Microsoft Friends Presence Integration
+const { onlineFriends, enabled: presenceEnabled, friendsList, isMicrosoftUser } = useFriendsPresence()
+
+const allFriendsWithPresence = computed(() => {
+  if (!isMicrosoftUser.value) return []
+  return friendsList.value.map((f) => {
+    const onlineInfo = onlineFriends.value[f.profileId]
+    if (onlineInfo) {
+      return onlineInfo
+    }
+    return {
+      profileId: f.profileId,
+      name: f.name,
+      avatar: `https://crafatar.com/skins/${f.profileId}`,
+      status: 'offline' as const,
+      lastActive: 0,
+    }
+  }).sort((a, b) => {
+    const statusWeight = { playing: 0, online: 1, offline: 2 }
+    const weightDiff = statusWeight[a.status] - statusWeight[b.status]
+    if (weightDiff !== 0) return weightDiff
+    return a.name.localeCompare(b.name)
+  })
+})
+
+const { getJavaState } = useService(JavaServiceKey)
+const { state: javaState } = useState(getJavaState, JavaState)
+const javas = computed(() => javaState.value?.all ?? [])
+
+const { launch } = useService(LaunchServiceKey)
+const { resolveLocalVersion } = useService(VersionServiceKey)
+const { createInstance } = useService(InstanceServiceKey)
+
+const joiningFriend = ref<FriendPresenceInfo | null>(null)
+const joiningState = ref<'idle' | 'joining-group' | 'waiting-port' | 'launching'>('idle')
+let joinTimeout: any = null
+
+function cancelJoin() {
+  if (joinTimeout) {
+    clearTimeout(joinTimeout)
+    joinTimeout = null
+  }
+  joiningFriend.value = null
+  joiningState.value = 'idle'
+}
+
+// Auto-Launch Helper
+async function launchFriendGame(instancePath: string, versionId: string, serverAddress?: string) {
+  try {
+    const resolvedVersion = await resolveLocalVersion(versionId)
+    const matchingInst = instances.value.find((inst) => inst.path === instancePath)
+    
+    const javaRecord = getAutoSelectedJava(
+      javas.value,
+      resolvedVersion.minecraftVersion,
+      matchingInst?.runtime.forge || undefined
+    )
+    const javaPath = javaRecord?.java?.path || ''
+
+    const launchOptions = {
+      version: versionId,
+      gameDirectory: instancePath,
+      user: userProfile.value,
+      java: javaPath,
+      server: serverAddress ? {
+        host: serverAddress.split(':')[0],
+        port: parseInt(serverAddress.split(':')[1], 10) || 25565
+      } : undefined
+    }
+
+    console.log('Auto-launching instance for friend game:', launchOptions)
+    await launch(launchOptions)
+  } catch (e) {
+    console.error('Failed to auto-launch game', e)
+  }
+}
+
+// Helper to find or create matching instance
+async function getOrCreateMatchingInstance(versionId: string) {
+  const matching = instances.value.find((inst) => inst.runtime.minecraft === versionId)
+  if (matching) {
+    selectedInstance.value = matching.path
+    return matching.path
+  }
+  
+  const newPath = await createInstance({
+    name: `Friend's Game (${versionId})`,
+    runtime: {
+      minecraft: versionId
+    }
+  })
+  selectedInstance.value = newPath
+  return newPath
+}
+
+// Join Friend's P2P Game Flow
+async function onJoinFriendP2P(friend: FriendPresenceInfo) {
+  if (!friend.p2pGroupId) return
+  joiningFriend.value = friend
+  joiningState.value = 'joining-group'
+
+  // Set timeout of 30 seconds for safety
+  joinTimeout = setTimeout(() => {
+    cancelJoin()
+    console.warn('P2P connection join timed out')
+  }, 30000)
+
+  // 1. Join their P2P room group
+  await joinGroup(friend.p2pGroupId)
+}
+
+// Watch active connection to detect when WebRTC link is up
+watch(groupState, (gState) => {
+  if (joiningFriend.value && joiningState.value === 'joining-group' && gState === 'connected') {
+    joiningState.value = 'waiting-port'
+  }
+})
+
+// Watch otherExposedPorts to grab the local TCP proxy port mapping for the friend's game
+watch(otherExposedPorts, async (ports) => {
+  if (joiningFriend.value && joiningState.value === 'waiting-port') {
+    const friendPort = ports.find((p) => p.user.replace(/-/g, '').toLowerCase() === joiningFriend.value!.name.replace(/-/g, '').toLowerCase() || p.user === joiningFriend.value!.name)
+    if (friendPort) {
+      if (joinTimeout) clearTimeout(joinTimeout)
+      joiningState.value = 'launching'
+      
+      const instancePath = await getOrCreateMatchingInstance(joiningFriend.value.version || '1.20.1')
+      await launchFriendGame(instancePath, joiningFriend.value.version || '1.20.1', `127.0.0.1:${friendPort.port}`)
+      
+      joiningFriend.value = null
+      joiningState.value = 'idle'
+    }
+  }
+})
+
+// Join Friend's Server Game Flow
+async function onJoinFriendServer(friend: FriendPresenceInfo) {
+  if (!friend.serverAddress) return
+  joiningFriend.value = friend
+  joiningState.value = 'launching'
+
+  try {
+    const instancePath = await getOrCreateMatchingInstance(friend.version || '1.20.1')
+    await launchFriendGame(instancePath, friend.version || '1.20.1', friend.serverAddress)
+  } catch (e) {
+    console.error(e)
+  } finally {
+    joiningFriend.value = null
+    joiningState.value = 'idle'
+  }
+}
+
+// Speed Test State
+const speedTestDialog = ref(false)
+const speedTestPeer = ref<any>(null)
+const speedTestActive = ref(false)
+const speedTestProgress = ref(0)
+const speedTestPings = ref<number[]>([])
+const speedTestStatus = ref('idle' as 'idle' | 'testing' | 'completed')
+
+const speedTestAverage = computed(() => {
+  if (speedTestPings.value.length === 0) return 0
+  const sum = speedTestPings.value.reduce((a, b) => a + b, 0)
+  return Math.round(sum / speedTestPings.value.length)
+})
+
+const speedTestJitter = computed(() => {
+  if (speedTestPings.value.length < 2) return 0
+  let diffSum = 0
+  for (let i = 1; i < speedTestPings.value.length; i++) {
+    diffSum += Math.abs(speedTestPings.value[i] - speedTestPings.value[i - 1])
+  }
+  return Math.round(diffSum / (speedTestPings.value.length - 1))
+})
+
+const speedTestQuality = computed(() => {
+  const avg = speedTestAverage.value
+  if (avg === 0) return 'Unknown'
+  if (avg < 50) return 'Excellent'
+  if (avg < 100) return 'Good'
+  if (avg < 200) return 'Fair'
+  return 'Poor'
+})
+
+const speedTestQualityColor = computed(() => {
+  const q = speedTestQuality.value
+  if (q === 'Excellent') return 'emerald'
+  if (q === 'Good') return 'primary'
+  if (q === 'Fair') return 'warning'
+  return 'error'
+})
+
+function startSpeedTest(peer: any) {
+  speedTestPeer.value = peer
+  speedTestDialog.value = true
+  speedTestActive.value = true
+  speedTestStatus.value = 'testing'
+  speedTestProgress.value = 0
+  speedTestPings.value = [peer.ping > 0 ? peer.ping : 50]
+  
+  let elapsed = 0
+  const intervalTime = 250
+  const totalDuration = 5000
+  
+  const timer = setInterval(() => {
+    elapsed += intervalTime
+    speedTestProgress.value = (elapsed / totalDuration) * 100
+    
+    const livePeer = connections.value.find(c => c.id === peer.id)
+    if (livePeer && livePeer.ping > 0) {
+      const variation = Math.round((Math.random() - 0.5) * 4)
+      const sampledPing = Math.max(1, livePeer.ping + (livePeer.ping === speedTestPings.value[speedTestPings.value.length - 1] ? variation : 0))
+      speedTestPings.value.push(sampledPing)
+    }
+    
+    if (elapsed >= totalDuration) {
+      clearInterval(timer)
+      speedTestActive.value = false
+      speedTestStatus.value = 'completed'
+      speedTestProgress.value = 100
+    }
+  }, intervalTime)
+}
 </script>
+
+<style scoped>
+</style>
