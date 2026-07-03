@@ -281,7 +281,7 @@ const currentAccountSystem = computed(() => {
 // Sign up link
 const signUpLink = computed(() => {
   const sys = currentAccountSystem.value
-  if (sys?.authority === AUTHORITY_MICROSOFT) return 'https://account.live.com/registration'
+  if (sys?.authority === AUTHORITY_MICROSOFT) return 'https://signup.live.com/signup'
   const url = sys?.authlibInjector?.meta.links.register
   return url || ''
 })
