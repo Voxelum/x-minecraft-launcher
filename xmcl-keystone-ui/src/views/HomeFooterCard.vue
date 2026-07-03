@@ -2,6 +2,7 @@
   <v-card
     ref="root"
     flat
+    data-gamepad-section
     class="surface-card-subsection overflow-hidden tabs-card"
   >
     <HomeScreenshotCard
@@ -58,7 +59,7 @@
             v-if="!!upstream"
             ref="newsRef"
             role="tab"
-            tabindex="0"
+            tabindex="-1"
             :aria-selected="selected === 1"
             @click="onSelectUpdates"
             @keydown.enter.prevent="onSelectUpdates"

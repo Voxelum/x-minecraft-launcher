@@ -143,7 +143,8 @@
               size="small"
               color="primary"
             >
-              <v-icon class="material-icons-outlined" start> file_download </v-icon>
+              <v-icon v-if="!isGamepadActive" class="material-icons-outlined" start> file_download </v-icon>
+              <span v-else class="gp-btn__key gp-btn__key--primary mr-1" style="transform: scale(0.85); vertical-align: middle;">{{ buttonALabel }}</span>
               {{ !hasInstalledVersion ? t('shared.install') : t('modInstall.switch') }}
             </v-btn>
             <div
@@ -183,10 +184,9 @@
             <v-menu open-on-hover :disabled="loadingVersions" offset-y>
               <template #activator="{ props }">
                 <div
-                  class="cursor-pointer items-center"
+                  class="items-center"
                   :class="{ flex: versions.length > 0, hidden: versions.length === 0 }"
                   style="color: var(--color-secondary-text)"
-                  v-bind="props"
                 >
                   <span class="mr-2 whitespace-nowrap font-bold">
                     {{ t('modInstall.currentVersion') }}:
@@ -197,7 +197,7 @@
                     type="text"
                     class="self-center"
                   />
-                  <v-btn v-else hide-details size="small" variant="text" border>
+                  <v-btn v-else hide-details size="small" variant="text" border v-bind="props">
                     <span
                       class="xl:max-w-50 max-w-40 overflow-hidden overflow-ellipsis whitespace-nowrap 2xl:max-w-full"
                     >
@@ -605,6 +605,7 @@ import { getExpectedSize } from '@/util/size'
 import ModDetailVersion, { ProjectVersion } from './MarketProjectDetailVersion.vue'
 import AppCopyChip from './AppCopyChip.vue'
 import { kImageDialog } from '@/composables/imageDialog'
+import { useGamepadDisplay } from '@/composables/gamepad'
 import { useDateString } from '@/composables/date'
 import { kTheme } from '@/composables/theme'
 import { kSearchModel } from '@/composables/search'
@@ -641,6 +642,8 @@ const props = defineProps<{
   collection?: string
   noPaddingContent?: boolean
 }>()
+
+const { isActive: isGamepadActive, buttonA: buttonALabel } = useGamepadDisplay()
 
 const emit = defineEmits<{
   (event: 'load-changelog', version: ProjectVersion): void

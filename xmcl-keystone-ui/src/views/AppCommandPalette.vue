@@ -293,7 +293,7 @@
 
 <script lang="ts" setup>
 import { useNotifier } from '@/composables/notifier'
-import { useCommandPaletteBus } from '@/composables/commandPalette'
+import { useCommandPaletteBus, useCommandPaletteVisible } from '@/composables/commandPalette'
 import { useRendererCommandHost } from '@/composables/commandHost'
 import { kInstance } from '@/composables/instance'
 import { kInstances } from '@/composables/instances'
@@ -313,7 +313,7 @@ import { useRouter } from 'vue-router'
 import { useRtl } from 'vuetify'
 
 const { t, te, locale } = useI18n()
-const isShown = ref(false)
+const isShown = useCommandPaletteVisible()
 const query = ref('')
 const debouncedQuery = useDebounce(query, 250)
 const selectedIndex = ref(0)

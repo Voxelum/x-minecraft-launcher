@@ -80,6 +80,7 @@
 import { useAutoSaveLoad } from '@/composables'
 import { useBeforeLeave } from '@/composables/beforeLeave'
 import { useDialog } from '@/composables/dialog'
+import { vibrateGamepad } from '@/composables/gamepad'
 import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kInstances } from '@/composables/instances'
@@ -187,6 +188,7 @@ useBeforeLeave(() => {
     }
     snackbarColor.value = 'error'
     hasAnimation.value = true
+    vibrateGamepad()
     setTimeout(() => {
       snackbarColor.value = 'black'
       hasAnimation.value = false

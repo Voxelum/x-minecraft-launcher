@@ -310,6 +310,7 @@ import { kTheme } from '@/composables/theme'
 import { usePopularItems } from '@/composables/usePopularItems'
 import { useRecentMinecraftItems } from '@/composables/useRecentMinecraftItems'
 import { useSearchedItems } from '@/composables/useSearchedItems'
+import { useGamepadInnerNav } from '@/composables/gamepad'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { injection } from '@/util/inject'
 import { useFocus } from '@vueuse/core'
@@ -366,6 +367,22 @@ const { items, isSearching, searchError, pageCount } = useSearchedItems({
   curseforgeCategory,
   pageSize,
   tCategory,
+})
+
+// Gamepad triggers (L2/R2) turn store result pages.
+useGamepadInnerNav({
+  handler: (dir) => {
+    if (pageCount.value <= 1) return
+    page.value = dir === 'next'
+      ? Math.min(page.value + 1, pageCount.value)
+      : Math.max(page.value - 1, 1)
+    // scroll to top of discoverHeadingId
+    const element = document.getElementById(discoverHeadingId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  },
+  disabled: () => pageCount.value <= 1,
 })
 
 const { popularItems } = usePopularItems(galleryMappings)

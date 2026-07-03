@@ -1723,3 +1723,25 @@ relative:
   minutesAgo: '{count} хвилину тому | {count} хвилин тому'
   hoursAgo: '{count} годину тому | {count} годин тому'
   daysAgo: '{count} день тому | {count} днів тому'
+
+gamepad:
+  detectedTitle: Виявлено геймпад
+  enabledNotify: Керування геймпадом увімкнено! Використовуйте хрестовину/лівий стік для навігації, {btnA} для вибору, {btnB} для повернення.
+  modSuggestTitle: Мод для контролера
+  modSuggestBody: >-
+    Щоб використовувати геймпад безпосередньо в Minecraft, рекомендується встановити мод підтримки контролера.
+    Бажаєте встановити відповідний мод для вашого завантажувача модів?
+  modInstall: Встановити мод
+  modSkip: Пропустити
+  modDone: Готово
+  modInstalled: Мод контролера успішно встановлено! Він буде активний при наступному запуску Minecraft.
+  modInstalledNotify: '{name} встановлено для підтримки контролера в грі.'
+  modNotFound: 'Сумісну версію для {loader} на Minecraft {version} не знайдено.'
+  settingSteamTitle: Додати лаунчер до Steam
+  steamAddedNotify: Лаунчер успішно додано до вашої бібліотеки Steam! Будь ласка, перезапустіть Steam, щоб побачити зміни.
+  steamAlreadyAddedNotify: Лаунчер вже додано до вашої бібліотеки Steam.
+  steamDeckTitle: Виявлено Steam Deck
+  steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати X Minecraft Launcher до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
+  steamDeckAddBtn: Додати до Steam ({btn})
+  steamDeckCancelBtn: Скасувати ({btn})
+

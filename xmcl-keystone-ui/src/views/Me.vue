@@ -9,6 +9,7 @@ import { kInstances } from '@/composables/instances'
 import { LauncherNews, useLauncherNews } from '@/composables/launcherNews'
 import { useMojangNews } from '@/composables/mojangNews'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
+import { useGamepadInnerNav } from '@/composables/gamepad'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { kTheme } from '@/composables/theme'
 import { vContextMenu } from '@/directives/contextMenu'
@@ -56,7 +57,20 @@ const { groups } = useInstanceGroup()
 const { pinnedInstances } = useInjectSidebarSettings()
 
 // View mode: folder, date, or plain
-const instanceViewMode = useLocalStorage('instanceViewMode', 'plain' as 'folder' | 'date' | 'plain')
+const instanceViewMode = useLocalStorage<'folder' | 'date' | 'plain'>('instanceViewMode', 'plain')
+
+// Gamepad triggers (L2/R2) switch the instance grouping tab.
+const VIEW_MODES: Array<'folder' | 'date' | 'plain'> = ['folder', 'date', 'plain']
+useGamepadInnerNav({
+  handler: (dir) => {
+    let idx = VIEW_MODES.indexOf(instanceViewMode.value)
+    if (idx === -1) idx = 0
+    idx = dir === 'next'
+      ? (idx + 1) % VIEW_MODES.length
+      : (idx - 1 + VIEW_MODES.length) % VIEW_MODES.length
+    instanceViewMode.value = VIEW_MODES[idx]
+  },
+})
 
 const filteredInstances = computed(() =>
   [...instances.value]

@@ -254,6 +254,7 @@
         />
       </template>
     </SettingCard>
+
   </div>
 </template>
 
@@ -269,10 +270,11 @@ import { kSettingsState } from '@/composables/setting'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
-import { Ref, computed, watch } from 'vue'
+import { Ref, computed, watch, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
+
 const env = injection(kEnvironment)
 const {
   currentTheme,

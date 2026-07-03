@@ -1,6 +1,12 @@
 <template>
-  <v-list v-roving-tabindex role="menu" min-width="300">
+  <v-list
+    ref="menuRoot"
+    role="menu"
+    :aria-label="t('baseSetting.title', 2)"
+    min-width="300"
+  >
     <v-list-item
+      role="menuitem"
       :title="t('baseSetting.title', 2)"
       to="/base-setting"
     >
@@ -11,14 +17,21 @@
       </template>
     </v-list-item>
     <v-menu
-      location="start"
+      submenu
       :close-on-content-click="true"
       open-on-hover
+      :open-on-focus="false"
       :open-delay="200"
       :close-delay="100"
     >
       <template #activator="{ props: menuProps }">
-        <v-list-item v-bind="menuProps" :title="t('shared.manage')" append-icon="chevron_left">
+        <v-list-item
+          v-bind="menuProps"
+          role="menuitem"
+          tabindex="-2"
+          :title="t('shared.manage')"
+          append-icon="chevron_right"
+        >
           <template #prepend>
             <v-icon size="20">
               tune
@@ -26,8 +39,13 @@
           </template>
         </v-list-item>
       </template>
-      <v-list v-roving-tabindex role="menu" min-width="220">
+      <v-list
+        role="menu"
+        :aria-label="t('shared.manage')"
+        min-width="220"
+      >
         <v-list-item
+          role="menuitem"
           :title="t('logsCrashes.title')"
           @click="showLogDialog()"
         >
@@ -38,6 +56,7 @@
           </template>
         </v-list-item>
         <v-list-item
+          role="menuitem"
           :title="t('instance.showInstance')"
           @click="showInstanceFolder"
         >
@@ -49,6 +68,7 @@
         </v-list-item>
         <v-list-item
           v-if="!isBedrock"
+          role="menuitem"
           :title="t('modpack.export')"
           to="/base-setting?target=modpack"
         >
@@ -60,6 +80,7 @@
         </v-list-item>
         <v-list-item
           v-if="!isBedrock"
+          role="menuitem"
           :title="t('server.export')"
           to="/base-setting?target=server"
         >
@@ -71,6 +92,7 @@
         </v-list-item>
         <v-list-item
           v-if="env && env.os !== 'osx'"
+          role="menuitem"
           :title="t('launch.createShortcut')"
           @click="onCreateShortcut"
         >
@@ -84,6 +106,7 @@
     </v-menu>
     <v-list-item
       v-if="instance && !instance.upstream && !isBedrock"
+      role="menuitem"
       :title="t('instance.installModpack')"
       :disabled="installing"
       @click="onClickInstallFromModpack()"
@@ -95,9 +118,9 @@
       </template>
     </v-list-item>
 
-    <v-divider v-if="!isBedrock" class="my-1" />
+    <v-divider v-if="!isBedrock" role="presentation" class="my-1" />
 
-    <v-list-item v-if="!isBedrock" :title="text" @click="onStartLocalhost">
+    <v-list-item v-if="!isBedrock" role="menuitem" :title="text" @click="onStartLocalhost">
       <template #prepend>
         <v-icon size="20">
           {{ serverCount > 0 ? 'cancel' : 'play_arrow' }}
@@ -106,14 +129,19 @@
     </v-list-item>
     <v-menu
       v-if="otherUsers.length > 0 && !isBedrock"
-      location="start"
+      sub menu
       :close-on-content-click="true"
-      open-on-hover
-      :open-delay="200"
+      open-on-hover      :open-on-focus="false"      :open-delay="200"
       :close-delay="100"
     >
       <template #activator="{ props: menuProps }">
-        <v-list-item v-bind="menuProps" :title="t('launch.launchAs')" append-icon="chevron_left">
+        <v-list-item
+          v-bind="menuProps"
+          role="menuitem"
+          tabindex="-2"
+          :title="t('launch.launchAs')"
+          append-icon="chevron_right"
+        >
           <template #prepend>
             <v-icon size="20">
               person
@@ -121,10 +149,15 @@
           </template>
         </v-list-item>
       </template>
-      <v-list v-roving-tabindex role="menu" min-width="220">
+      <v-list
+        role="menu"
+        :aria-label="t('launch.launchAs')"
+        min-width="220"
+      >
         <v-list-item
           v-for="user in otherUsers"
           :key="user.id"
+          role="menuitem"
           :title="isUserRunning(user) ? t('launch.kill') : getGameProfileName(user)"
           :subtitle="user.username"
           @click="onLaunchAs(user)"
@@ -144,14 +177,22 @@
     </v-menu>
     <v-menu
       v-if="serverList.length > 0 || worldList.length > 0"
-      location="start"
+      submenu
       :close-on-content-click="true"
       open-on-hover
+      :open-on-focus="false"
       :open-delay="200"
       :close-delay="100"
     >
       <template #activator="{ props: menuProps }">
-        <v-list-item v-bind="menuProps" data-testid="launch-to-server" :title="t('launch.launchTo')" append-icon="chevron_left">
+        <v-list-item
+          v-bind="menuProps"
+          data-testid="launch-to-server"
+          role="menuitem"
+          tabindex="-2"
+          :title="t('launch.launchTo')"
+          append-icon="chevron_right"
+        >
           <template #prepend>
             <v-icon size="20">
               dns
@@ -159,12 +200,17 @@
           </template>
         </v-list-item>
       </template>
-      <v-list v-roving-tabindex role="menu" min-width="220">
+      <v-list
+        role="menu"
+        :aria-label="t('launch.launchTo')"
+        min-width="220"
+      >
         <template v-if="serverList.length > 0">
-          <v-list-subheader>{{ t('server.serversListTitle') }}</v-list-subheader>
+          <v-list-subheader role="presentation">{{ t('server.serversListTitle') }}</v-list-subheader>
           <v-list-item
             v-for="server in serverList"
             :key="server.ip"
+            role="menuitem"
             :title="server.name || server.ip"
             :subtitle="server.ip"
             @click="onLaunchToServer(server)"
@@ -184,11 +230,12 @@
           </v-list-item>
         </template>
         <template v-if="worldList.length > 0">
-          <v-list-subheader>{{ t('save.name', 2) }}</v-list-subheader>
+          <v-list-subheader role="presentation">{{ t('save.name', 2) }}</v-list-subheader>
           <v-list-item
             v-for="world in worldList"
             :key="world.path"
             data-testid="launch-to-world"
+            role="menuitem"
             :title="world.title"
             :subtitle="world.subtitle"
             @click="onLaunchToWorld(world)"
@@ -224,7 +271,6 @@ import { kServerStatusCache } from '@/composables/serverStatus'
 import { kUserContext } from '@/composables/user';
 import { InstanceInstallDialog } from '@/composables/instanceUpdate'
 import { useInstanceVersionServerInstall } from '@/composables/instanceVersionServerInstall'
-import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { join } from '@/util/basename';
 import { getInstanceIcon } from '@/util/favicon';
 import { injection } from '@/util/inject'
@@ -234,13 +280,22 @@ import { isBedrockInstance } from '@xmcl/instance';
 const { t } = useI18n()
 defineProps<{}>()
 
+// When the menu opens (this component mounts) Vuetify redirects focus to the
+// overlay content wrapper, which sits *above* the roving-tabindex root, so
+// arrow keys never reach the directive. Move focus onto the first item so the
+// roving group is actually focused and Up/Down navigation works.
+const menuRoot = ref<{ $el: HTMLElement }>()
+onMounted(async () => {
+  await nextTick()
+  menuRoot.value?.$el.querySelector<HTMLElement>('[role="menuitem"]')?.focus()
+})
+
 const { serverCount, kill, launch, launchAs, killPid, gameProcesses } = injection(kInstanceLaunch)
 const { users, userProfile } = injection(kUserContext)
 const { servers } = injection(kInstanceServerInfo)
 const { saves } = injection(kInstanceSave)
 const { path, name, instance } = injection(kInstance)
 const serverStatusCache = injection(kServerStatusCache)
-
 
 const otherUsers = computed(() => users.value?.filter((u) => u.id !== userProfile.value.id) ?? [])
 

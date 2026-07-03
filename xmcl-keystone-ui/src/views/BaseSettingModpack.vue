@@ -191,6 +191,8 @@ import { injection } from '@/util/inject'
 import { inc } from 'semver'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { kUserContext } from '../composables/user'
+import { kModpackExport } from '@/composables/modpack'
+import { useGamepadAction } from '@/composables/gamepad'
 
 const { data } = injection(InstanceEditInjectionKey)
 const { gameProfile } = injection(kUserContext)
@@ -202,6 +204,13 @@ const onIncr = (minor: boolean = false) => {
   modpackMetadata.modpackVersion =
     inc(modpackMetadata.modpackVersion, minor ? 'minor' : 'patch') || modpackMetadata.modpackVersion
 }
+
+// Gamepad X on the modpack tab exports the modpack.
+const { exportModpack } = injection(kModpackExport)
+useGamepadAction('X', {
+  label: () => t('modpack.export'),
+  handler: () => exportModpack(),
+})
 </script>
 
 

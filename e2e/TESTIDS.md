@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 126 (in 258 Vue files)
+**Total anchors:** 129 (in 262 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -45,6 +45,9 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `create-instance` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35) |
 | `custom-css-editor-textarea` | [`xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26`](../xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26) |
 | `custom-css-global-toggle` | [`xmcl-keystone-ui/src/components/AppearanceItems.vue#L310`](../xmcl-keystone-ui/src/components/AppearanceItems.vue#L310) |
+| `gamepad-hints-card` | [`xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L7`](../xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L7) |
+| `gamepad-key-guide` | [`xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L13`](../xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L13) |
+| `gamepad-toggle-card` | [`xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L37`](../xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L37) |
 | `home-bedrock` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L3`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L3) |
 | `home-bedrock-install` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L69`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L69) |
 | `home-bedrock-installed` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L57`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L57) |
@@ -65,13 +68,13 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `instance-server-edit-port` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L91`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L91) |
 | `instance-server-edit-remove` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L124`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L124) |
 | `instance-server-edit-save` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L143`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L143) |
-| `launch-button` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L22`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L22) |
-| `launch-button-menu` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L79`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L79) |
-| `launch-button-play` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L39`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L39) |
+| `launch-button` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L17`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L17) |
+| `launch-button-menu` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L85`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L85) |
+| `launch-button-play` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L41`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L41) |
 | `launch-target-client` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L99`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L99) |
 | `launch-target-server` | [`xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41`](../xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41) |
-| `launch-to-server` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L154`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L154) |
-| `launch-to-world` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L191`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L191) |
+| `launch-to-server` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L190`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L190) |
+| `launch-to-world` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L237`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L237) |
 | `login-authority` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L25`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L25) |
 | `login-password` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L74`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L74) |
 | `login-submit` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L130`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L130) |
@@ -88,8 +91,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `minecraft-friends-menu` | [`xmcl-keystone-ui/src/views/MeProfilePanel.vue#L178`](../xmcl-keystone-ui/src/views/MeProfilePanel.vue#L178) |
 | `minecraft-friends-menu-activator` | [`xmcl-keystone-ui/src/views/MeProfilePanel.vue#L137`](../xmcl-keystone-ui/src/views/MeProfilePanel.vue#L137) |
 | `minecraft-friends-outgoing-list` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L194`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L194) |
-| `multiplayer-group-id` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L77`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L77) |
-| `multiplayer-join` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L87`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L87) |
+| `multiplayer-group-id` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L161`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L161) |
+| `multiplayer-join` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L173`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L173) |
 | `multiplayer-page` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L3`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L3) |
 | `nav-accounts` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L26`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L26)<br>[`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L119`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L119)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L30`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L30) |
 | `nav-add-instance` | [`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L72`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L72) |
@@ -107,7 +110,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `save-world-map-place-bar` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L156`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L156) |
 | `server-tab-export` | [`xmcl-keystone-ui/src/views/BaseSettingServerExport.vue#L160`](../xmcl-keystone-ui/src/views/BaseSettingServerExport.vue#L160) |
 | `server-tab-launch` | [`xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L126`](../xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L126) |
-| `server-upstream-update-row` | [`xmcl-keystone-ui/src/views/HomeFooterCard.vue#L89`](../xmcl-keystone-ui/src/views/HomeFooterCard.vue#L89) |
+| `server-upstream-update-row` | [`xmcl-keystone-ui/src/views/HomeFooterCard.vue#L90`](../xmcl-keystone-ui/src/views/HomeFooterCard.vue#L90) |
 | `settings-check-update` | [`xmcl-keystone-ui/src/views/SettingUpdate.vue#L10`](../xmcl-keystone-ui/src/views/SettingUpdate.vue#L10) |
 | `settings-page` | [`xmcl-keystone-ui/src/views/Setting.vue#L3`](../xmcl-keystone-ui/src/views/Setting.vue#L3) |
 | `settings-proxy-host` | [`xmcl-keystone-ui/src/views/SettingNetwork.vue#L37`](../xmcl-keystone-ui/src/views/SettingNetwork.vue#L37) |

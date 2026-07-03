@@ -43,7 +43,7 @@
           <v-icon class="opacity-70">{{ log ? 'description' : 'bug_report' }}</v-icon>
           <span class="font-medium truncate flex-1">{{ showedFile }}</span>
           <v-btn
-            v-shared-tooltip="() => t('copyClipboard.success')"
+            v-shared-tooltip="() => copied ? t('shared.copied') : t('shared.copy')"
             :icon="copied ? 'check' : 'content_copy'"
             variant="text"
             size="small"

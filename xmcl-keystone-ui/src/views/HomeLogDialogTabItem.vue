@@ -7,10 +7,21 @@
     >
     <template #append>
       <v-list-item-action>
-        <v-btn icon @click.prevent.stop="showFile(source.name)" variant="text">
+        <v-btn
+          v-shared-tooltip="() => t('logsCrashes.showFile')"
+          icon
+          variant="text"
+          @click.prevent.stop="showFile(source.name)"
+        >
           <v-icon>folder</v-icon>
         </v-btn>
-        <v-btn icon color="error" @click.prevent.stop="removeFile(source.name)" variant="text">
+        <v-btn
+          v-shared-tooltip="() => t('shared.delete')"
+          icon
+          color="error"
+          variant="text"
+          @click.prevent.stop="removeFile(source.name)"
+        >
           <v-icon>delete</v-icon>
         </v-btn>
       </v-list-item-action>
@@ -19,6 +30,10 @@
 </template>
 
 <script lang="ts" setup>
+import { vSharedTooltip } from '@/directives/sharedTooltip'
+
+const { t } = useI18n()
+
 defineProps<{
   source: { name: string; id: string }
   disabled: boolean

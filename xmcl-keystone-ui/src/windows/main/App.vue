@@ -42,6 +42,7 @@
     <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
     <AppModrinthLoginDialog />
     <AppSideBarGroupSettingDialog :default-color="defaultColor" />
+    <AppGamepadPrompt />
   </v-app>
   <v-app v-else class="h-full max-h-screen overflow-hidden" :class="{ 'dark': isDark }">
     <AppSystemBar no-user no-task />
@@ -50,6 +51,7 @@
     </div>
     <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
     <AppFeedbackDialog />
+    <AppGamepadPrompt />
   </v-app>
 </template>
 
@@ -103,6 +105,7 @@ import { kMinecraftFriends, useMinecraftFriendsImpl } from '@/composables/minecr
 import { useUserMenuControl } from '@/composables/userMenu'
 import { UserSkinRenderPaused } from '@/composables/userSkin'
 import AppSideBarGroupSettingDialog from '@/views/AppSideBarGroupSettingDialog.vue'
+import AppGamepadPrompt from '@/views/AppGamepadPrompt.vue'
 import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
