@@ -7,102 +7,112 @@
     :aria-label="text"
     class="flex flex-grow-0 items-center"
   >
-    <v-badge
-      :model-value="count !== 0"
-      location="top start"
-      color="primary"
-      :content="count"
+    
+    <div
+      class="relative inline-flex launch-pill"
+      :class="{ short: !top }"
     >
-      <div
-        class="relative inline-flex launch-pill"
-        :class="{ short: !top }"
+      <v-btn
+        id="launch-button"
+        data-testid="launch-button"
+        :disabled="isValidating"
+        :color="color"
+        :size="compact ? 'large' : 'x-large'"
+        rounded="pill"
+        class="pl-24 pr-24 text-xl transition-all btn-launch"
+        :aria-label="text"
+        @click="onClick()"
+        @mouseenter="onHoverEnter"
+        @mouseleave="onHoverLeave"
       >
-        <v-btn
-          id="launch-button"
-          data-testid="launch-button"
-          :disabled="isValidating"
-          :color="color"
-          :size="compact ? 'large' : 'x-large'"
-          rounded="pill"
-          class="pl-24 pr-24 text-xl transition-all btn-launch"
-          :aria-label="text"
-          @click="onClick()"
-          @mouseenter="onHoverEnter"
-          @mouseleave="onHoverLeave"
-        >
-          {{ text }}
-        </v-btn>
+        <span
+          v-if="isGamepadActive"
+          class="gp-btn__key gp-btn__key--primary mr-2"
+          style="transform: scale(0.85); vertical-align: middle;"
+        >{{ buttonX }}</span>
+        {{ text }}
+        <v-badge
+          :model-value="count !== 0"
+          inline
+          class="pb-1 pl-1"
+          color="primary"
+          :content="count"
+        />
+      </v-btn>
 
-        <!-- Left circular play button: launches the game on click -->
-        <v-btn
-          :disabled="isValidating"
-          data-testid="launch-button-play"
-          icon
-          rounded="pill"
-          :size="compact ? 'small' : 'default'"
-          variant="flat"
-          class="btn-play-inset"
-          :aria-label="text"
-          @click="onPlayClick"
-          @mouseenter="onHoverEnter"
-          @mouseleave="onHoverLeave"
+      <!-- Left circular play button: launches the game on click -->
+      <v-btn
+        :disabled="isValidating"
+        data-testid="launch-button-play"
+        data-roving-skip
+        icon
+        tabindex="-1"
+        rounded="pill"
+        inert
+        :size="compact ? 'small' : 'default'"
+        variant="flat"
+        class="btn-play-inset"
+        :aria-label="text"
+        @click="onPlayClick"
+        @mouseenter="onHoverEnter"
+        @mouseleave="onHoverLeave"
+      >
+        <v-progress-circular
+          v-if="loading"
+          indeterminate
+          :size="20"
+          :width="2"
+        />
+        <v-icon
+          v-else
+          aria-hidden="true"
+          class="nested-icon"
+          :class="{ spin: isSpinning }"
+          @animationend="isSpinning = false"
         >
-          <v-progress-circular
-            v-if="loading"
-            indeterminate
-            :size="20"
-            :width="2"
-          />
-          <v-icon
-            v-else
-            aria-hidden="true"
-            class="nested-icon"
-            :class="{ spin: isSpinning }"
-            @animationend="isSpinning = false"
+          {{ leftIcon || icon || 'play_arrow' }}
+        </v-icon>
+      </v-btn>
+
+      <!-- Right circular settings button: hover opens the unified menu,
+            click navigates to the instance setting page -->
+      <v-menu
+        v-model="isShown"
+        :location="top ? 'top end' : 'bottom end'"
+        :open-on-focus="false"
+        :open-on-hover="true"
+        :open-on-click="false"
+        transition="scroll-y-transition"
+      >
+        <template #activator="{ props: activatorProps }">
+          <v-btn
+            :disabled="isValidating"
+            data-testid="launch-button-menu"
+            icon
+            rounded="pill"
+            :size="compact ? 'small' : 'default'"
+            variant="flat"
+            class="btn-menu-inset"
+            :aria-label="t('baseSetting.title', 2)"
+            :aria-haspopup="'menu'"
+            :aria-expanded="isShown"
+            to="/base-setting"
+            v-bind="activatorProps"
+            @mouseenter="onHoverEnter"
+            @mouseleave="onHoverLeave"
           >
-            {{ leftIcon || icon || 'play_arrow' }}
-          </v-icon>
-        </v-btn>
-
-        <!-- Right circular settings button: hover opens the unified menu,
-             click navigates to the instance setting page -->
-        <v-menu
-          v-model="isShown"
-          :location="top ? 'top end' : 'bottom end'"
-          :open-on-hover="true"
-          :open-on-click="false"
-          transition="scroll-y-transition"
-        >
-          <template #activator="{ props: activatorProps }">
-            <v-btn
-              :disabled="isValidating"
-              data-testid="launch-button-menu"
-              icon
-              rounded="pill"
-              :size="compact ? 'small' : 'default'"
-              variant="flat"
-              class="btn-menu-inset"
-              :aria-label="t('baseSetting.title', 2)"
-              :aria-haspopup="'menu'"
-              :aria-expanded="isShown"
-              to="/base-setting"
-              v-bind="activatorProps"
-              @mouseenter="onHoverEnter"
-              @mouseleave="onHoverLeave"
+            <v-icon
+              aria-hidden="true"
+              class="nested-icon"
+              :class="{ 'is-active': isShown }"
             >
-              <v-icon
-                aria-hidden="true"
-                class="nested-icon"
-                :class="{ 'is-active': isShown }"
-              >
-                settings
-              </v-icon>
-            </v-btn>
-          </template>
-          <HomeLaunchButtonMenuList />
-        </v-menu>
-      </div>
-    </v-badge>
+              settings
+            </v-icon>
+          </v-btn>
+        </template>
+        <HomeLaunchButtonMenuList />
+      </v-menu>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -113,6 +123,7 @@ import { kInstances } from '@/composables/instances'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { kInstance } from '@/composables/instance'
 import { useHasMinecraftLicense } from '@/composables/minecraftLicense'
+import { useGamepadDisplay } from '@/composables/gamepad'
 import { isBedrockInstance } from '@xmcl/instance'
 
 defineProps<{ compact?: boolean; top?: boolean }>()
@@ -121,6 +132,7 @@ const emit = defineEmits(['mouseenter', 'mouseleave'])
 const { isValidating } = injection(kInstances)
 
 const { onClick, color, icon, text, loading, leftIcon, count } = injection(kLaunchButton)
+const { isActive: isGamepadActive, buttonX } = useGamepadDisplay()
 const { t } = useI18n()
 
 const { instance } = injection(kInstance)

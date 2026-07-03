@@ -109,7 +109,12 @@
           @click="exportModpack"
           size="large"
         >
-          <v-icon start> build </v-icon>
+          <span
+            v-if="isGamepadActive"
+            class="gp-btn__key gp-btn__key--primary mr-2"
+            style="transform: scale(0.85); vertical-align: middle;"
+          >{{ buttonX }}</span>
+          <v-icon v-else start> build </v-icon>
           {{ t('modpack.export') }}
         </v-btn>
       </div>
@@ -122,11 +127,16 @@
           rounded="pill"
           :variant="serverLaunch.running.value ? 'tonal' : 'flat'"
           size="large"
-          :prepend-icon="serverLaunch.running.value ? 'stop' : 'play_arrow'"
+          :prepend-icon="isGamepadActive ? undefined : (serverLaunch.running.value ? 'stop' : 'play_arrow')"
           data-testid="server-tab-launch"
           :loading="serverLaunch.loading.value"
           @click="serverLaunch.running.value ? serverLaunch.killServer() : serverLaunch.launchServer()"
         >
+          <span
+            v-if="isGamepadActive"
+            class="gp-btn__key gp-btn__key--primary mr-2"
+            style="transform: scale(0.85); vertical-align: middle;"
+          >{{ buttonX }}</span>
           {{ serverLaunch.running.value ? t('launch.killServer') : t('instance.launchServer') }}
         </v-btn>
       </div>
@@ -146,6 +156,8 @@ import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
 import { useQuery } from '@/composables/query'
 import { kModpackExport } from '@/composables/modpack'
 import { kInstanceServerLaunch } from '@/composables/instanceServerLaunch'
+import { useGamepadInnerNav } from '@/composables/gamepad'
+import { useGamepadDisplay } from '@/composables/gamepad'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { useMediaQuery } from '@vueuse/core'
@@ -171,6 +183,7 @@ const targetQuery = useQuery('target')
 
 const { exportModpack, exporting, loading } = injection(kModpackExport)
 const serverLaunch = injection(kInstanceServerLaunch)
+const { isActive: isGamepadActive, buttonX } = useGamepadDisplay()
 
 const router = useRouter()
 function navigate(target: '' | 'modpack' | 'appearance' | 'server') {
@@ -183,4 +196,19 @@ function navigate(target: '' | 'modpack' | 'appearance' | 'server') {
     router.replace({ query: { target } })
   }
 }
+
+// Gamepad triggers (L2/R2) cycle through the base-setting tabs.
+const TAB_GROUP: Array<'' | 'modpack' | 'server' | 'appearance'> = ['', 'modpack', 'server', 'appearance']
+useGamepadInnerNav({
+  handler: (dir) => {
+    const raw = (targetQuery.value || '') as string
+    const cur = raw === 'general' ? '' : raw
+    let idx = TAB_GROUP.indexOf(cur as '' | 'modpack' | 'server' | 'appearance')
+    if (idx === -1) idx = 0
+    const next = dir === 'next'
+      ? (idx + 1) % TAB_GROUP.length
+      : (idx - 1 + TAB_GROUP.length) % TAB_GROUP.length
+    navigate(TAB_GROUP[next])
+  },
+})
 </script>

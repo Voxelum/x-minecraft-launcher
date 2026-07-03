@@ -88,7 +88,7 @@ import { useDateString } from '@/composables/date'
 import { getExpectedSize } from '@/util/size'
 import CategoryChip from './CategoryChip.vue'
 import { StoreProject } from './StoreProject.vue'
-import { ref } from 'vue'
+import { useGamepadDisplay } from '@/composables/gamepad'
 
 const props = defineProps<{
   project: StoreProject
@@ -98,29 +98,7 @@ const props = defineProps<{
 
 defineEmits(['install', 'open'])
 const { t } = useI18n()
-const isGamepadActive = ref(
-  localStorage.getItem('gamepad_enabled') === 'true' &&
-  localStorage.getItem('gamepad_connected') === 'true'
-)
-const gamepadType = ref(localStorage.getItem('gamepad_type') || 'xbox')
-const buttonALabel = computed(() => {
-  if (['ps5', 'ps4', 'ps3', 'ps2'].includes(gamepadType.value)) {
-    return '✕'
-  }
-  return 'A'
-})
-if (typeof window !== 'undefined') {
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'gamepad_enabled' || e.key === 'gamepad_connected') {
-      isGamepadActive.value =
-        localStorage.getItem('gamepad_enabled') === 'true' &&
-        localStorage.getItem('gamepad_connected') === 'true'
-    }
-    if (e.key === 'gamepad_type') {
-      gamepadType.value = localStorage.getItem('gamepad_type') || 'xbox'
-    }
-  })
-}
+const { isActive: isGamepadActive, buttonA: buttonALabel } = useGamepadDisplay()
 
 const { getDateString } = useDateString()
 const items = computed(() => {

@@ -1726,27 +1726,18 @@ relative:
 
 gamepad:
   detectedTitle: Виявлено геймпад
-  detectedBody: Підключено контролер. Бажаєте увімкнути навігацію за допомогою геймпада (корисно для Steam Deck / ТБ)?
-  enableBtn: Увімкнути ({btn})
-  cancelBtn: Скасувати ({btn})
   enabledNotify: Керування геймпадом увімкнено! Використовуйте хрестовину/лівий стік для навігації, {btnA} для вибору, {btnB} для повернення.
   modSuggestTitle: Мод для контролера
   modSuggestBody: >-
     Щоб використовувати геймпад безпосередньо в Minecraft, рекомендується встановити мод підтримки контролера.
     Бажаєте встановити відповідний мод для вашого завантажувача модів?
-  modLoader: Завантажувач модів
   modInstall: Встановити мод
   modSkip: Пропустити
   modDone: Готово
   modInstalled: Мод контролера успішно встановлено! Він буде активний при наступному запуску Minecraft.
   modInstalledNotify: '{name} встановлено для підтримки контролера в грі.'
   modNotFound: 'Сумісну версію для {loader} на Minecraft {version} не знайдено.'
-  settingTitle: Налаштування геймпада
-  settingKeyboardTitle: Увімкнути екранну клавіатуру
-  settingKeyboardDesc: Показувати віртуальну клавіатуру при фокусуванні на полях введення в режимі геймпада
   settingSteamTitle: Додати лаунчер до Steam
-  settingSteamDesc: Додати X Minecraft Launcher до бібліотеки Steam як сторонню гру для повної інтеграції з геймпадом, оверлеєм та Steam Deck.
-  settingSteamBtn: Додати до Steam
   steamAddedNotify: Лаунчер успішно додано до вашої бібліотеки Steam! Будь ласка, перезапустіть Steam, щоб побачити зміни.
   steamAlreadyAddedNotify: Лаунчер вже додано до вашої бібліотеки Steam.
   steamDeckTitle: Виявлено Steam Deck

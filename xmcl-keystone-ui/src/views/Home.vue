@@ -43,6 +43,8 @@
 import { useDialog } from '@/composables/dialog'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
+import { kInstanceLaunch } from '@/composables/instanceLaunch'
+import { useGamepadAction } from '@/composables/gamepad'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { kCompact } from '@/composables/scrollTop'
 import { useTutorial } from '@/composables/tutorial'
@@ -100,6 +102,19 @@ const scrollElement = ref(null as HTMLElement | null)
 provide('scrollElement', scrollElement)
 
 const { t } = useI18n()
+
+// Gamepad face-button actions scoped to the home page (auto-unregister on leave).
+const router = useRouter()
+const { launch: launchGame } = injection(kInstanceLaunch)
+useGamepadAction('X', {
+  label: () => t('gamepad.guide.launch'),
+  handler: () => launchGame(),
+})
+useGamepadAction('Y', {
+  label: () => t('gamepad.guide.instanceSettings'),
+  handler: () => router.push('/base-setting'),
+})
+
 useTutorial(
   computed(() => {
     const steps: DriveStep[] = [

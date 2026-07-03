@@ -111,6 +111,8 @@ import SettingItem from '@/components/SettingItem.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import { useQuery } from '@/composables/query'
 import { kInstance } from '@/composables/instance'
+import { kInstanceLaunch } from '@/composables/instanceLaunch'
+import { useGamepadAction } from '@/composables/gamepad'
 import { kUserContext } from '@/composables/user'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
@@ -146,7 +148,15 @@ const isElyBy = computed(() => userProfile.value.authority.startsWith('https://a
 
 const { t } = useI18n()
 
+// Gamepad X on the base-setting general tab launches the game.
+const { launch: launchGame } = injection(kInstanceLaunch)
+useGamepadAction('X', {
+  label: () => t('gamepad.guide.launch'),
+  handler: () => launchGame(),
+})
+
 const changeIconModel = ref(false)
+
 
 onMounted(() => {
   if (changeIcon.value) {

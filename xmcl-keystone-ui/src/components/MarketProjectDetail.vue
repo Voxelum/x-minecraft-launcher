@@ -605,6 +605,7 @@ import { getExpectedSize } from '@/util/size'
 import ModDetailVersion, { ProjectVersion } from './MarketProjectDetailVersion.vue'
 import AppCopyChip from './AppCopyChip.vue'
 import { kImageDialog } from '@/composables/imageDialog'
+import { useGamepadDisplay } from '@/composables/gamepad'
 import { useDateString } from '@/composables/date'
 import { kTheme } from '@/composables/theme'
 import { kSearchModel } from '@/composables/search'
@@ -642,29 +643,7 @@ const props = defineProps<{
   noPaddingContent?: boolean
 }>()
 
-const isGamepadActive = ref(
-  localStorage.getItem('gamepad_enabled') === 'true' &&
-  localStorage.getItem('gamepad_connected') === 'true'
-)
-const gamepadType = ref(localStorage.getItem('gamepad_type') || 'xbox')
-const buttonALabel = computed(() => {
-  if (['ps5', 'ps4', 'ps3', 'ps2'].includes(gamepadType.value)) {
-    return '✕'
-  }
-  return 'A'
-})
-if (typeof window !== 'undefined') {
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'gamepad_enabled' || e.key === 'gamepad_connected') {
-      isGamepadActive.value =
-        localStorage.getItem('gamepad_enabled') === 'true' &&
-        localStorage.getItem('gamepad_connected') === 'true'
-    }
-    if (e.key === 'gamepad_type') {
-      gamepadType.value = localStorage.getItem('gamepad_type') || 'xbox'
-    }
-  })
-}
+const { isActive: isGamepadActive, buttonA: buttonALabel } = useGamepadDisplay()
 
 const emit = defineEmits<{
   (event: 'load-changelog', version: ProjectVersion): void
