@@ -16,11 +16,33 @@
         :label="`${originalItems.length} ${t('resourcepack.name', originalItems.length)}`"
       />
     </template>
+    <template #filter>
+      <MarketFilterPanel
+        :modrinth-categories="modrinthCategories"
+        modrinth-category-filter="resourcepack"
+        :local-sort="sortBy"
+        :curseforge-category="curseforgeCategory"
+        curseforge-category-filter="texture-packs"
+        :enable-curseforge="isCurseforgeActive"
+        :enable-modrinth="isModrinthActive"
+        v-model:sort="marketSort"
+        :game-version="gameVersion"
+        :mode="source"
+        :collection="selectedCollection"
+        @update:modrinth-categories="modrinthCategories = $event"
+        @update:local-sort="sortBy = $event"
+        @update:curseforge-category="curseforgeCategory = $event"
+        @update:enable-curseforge="isCurseforgeActive = $event"
+        @update:enable-modrinth="isModrinthActive = $event"
+        @update:game-version="gameVersion = $event"
+        @update:mode="source = $event"
+        @update:collection="selectedCollection = $event"
+      />
+    </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-list-subheader
         v-if="typeof item === 'string'"
-        class="flex"
-        :style="{ height: itemHeight + 'px' }"
+        class="flex px-3"
       >
         {{
           item === 'enabled'
@@ -43,26 +65,6 @@
         :install="onInstallProject"
         @drop="onDrop(item as ResourcePackProject, $event)"
         @click="on.click"
-      />
-    </template>
-    <template #placeholder>
-      <Hint
-        v-if="currentView === 'local' && !keyword.trim()"
-        key="info"
-        :text="t('resourcepack.noPacksInstalled')"
-        icon="info"
-      />
-      <Hint
-        v-else-if="currentView === 'local'"
-        key="search"
-        :text="t('resourcepack.noLocalPacksFound')"
-        icon="search"
-      />
-      <Hint
-        v-else
-        key="no-packs"
-        :text="t('resourcepack.noPacks')"
-        icon="search"
       />
     </template>
     <template #content="{ selectedModrinthId, selectedItem, selectedCurseforgeId }">
@@ -107,13 +109,6 @@
         :installed="selectedItem.installed"
         :runtime="runtime"
       />
-      <MarketRecommendation
-        v-else
-        curseforge="texture-packs"
-        modrinth="resourcepack"
-        @modrinth="modrinthCategories.push($event.name)"
-        @curseforge="curseforgeCategory = $event.id"
-      />
     </template>
     <SimpleDialog :title="t('resourcepack.delete.title')">
       {{ t('resourcepack.delete.content') }}
@@ -124,13 +119,13 @@
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
+import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
-import MarketRecommendation from '@/components/MarketRecommendation.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
@@ -152,7 +147,7 @@ import { sort } from '@/composables/sortBy'
 
 const { runtime, path } = injection(kInstance)
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
-const { keyword, curseforgeCategory, modrinthCategories, currentView, gameVersion } =
+const { keyword, curseforgeCategory, modrinthCategories, currentView, gameVersion, isCurseforgeActive, isModrinthActive, sort: marketSort, source, selectedCollection } =
   injection(kSearchModel)
 const {
   error,
@@ -309,8 +304,8 @@ const getInstalledCurseforge = (modId: number | undefined) => {
 }
 
 // dense
-const denseView = useLocalStorageCacheBool('resource-pack-dense-view', false)
-const itemHeight = computed(() => (denseView.value ? 48 : 76))
+const denseView = useLocalStorage('resource-pack-dense-view', false, { writeDefaults: false })
+const itemHeight = computed(() => (denseView.value ? 48 : 96))
 </script>
 
 <style scoped>

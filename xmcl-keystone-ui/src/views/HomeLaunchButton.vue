@@ -38,7 +38,7 @@
           :disabled="isValidating"
           data-testid="launch-button-play"
           icon
-          rounded="circle"
+          rounded="pill"
           :size="compact ? 'small' : 'default'"
           variant="flat"
           class="btn-play-inset"
@@ -78,7 +78,7 @@
               :disabled="isValidating"
               data-testid="launch-button-menu"
               icon
-              rounded="circle"
+              rounded="pill"
               :size="compact ? 'small' : 'default'"
               variant="flat"
               class="btn-menu-inset"

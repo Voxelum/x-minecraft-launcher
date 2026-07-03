@@ -6,7 +6,7 @@ import {
   MarketType,
   Saves,
   getInstanceSaveKey,
-  type CloneSaveOptions, type DeleteSaveOptions, type ExportSaveOptions,
+  type CloneSaveOptions, type DeleteSaveOptions, type DeleteSaveChunksOptions, type CopySaveChunksOptions, type PasteSaveChunksOptions, type ExportSaveOptions,
   type InstanceSavesService as IInstanceSavesService,
   type ImportSaveOptions,
   type InstallMarketOptionWithInstance,
@@ -28,7 +28,7 @@ import { InstanceService } from '~/instance'
 import { LaunchService } from '~/launch'
 import { kMarketProvider } from '~/market'
 import { kResourceManager } from '~/resource'
-import { getInstanceSaveHeader, readInstanceSaveMetadata, readWorldGenSettings, updateSaveMetadata } from '~/save'
+import { getInstanceSaveHeader, readInstanceSaveMetadata, readWorldGenSettings, updateSaveMetadata, listSaveDimensions, getSaveRegions, deleteSaveChunks, readSaveChunks, writeSaveChunks, relocateSaveChunks, kSaveWorker, type SaveWorker } from '~/save'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, isDirectory, linkDirectory, missing, pipeline, readdirIfPresent } from '../util/fs'
@@ -45,6 +45,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(kResourceManager) resourceManager: ResourceManager,
     @Inject(kGameDataPath) private getPath: PathResolver,
+    @Inject(kSaveWorker) private saveWorker: SaveWorker,
   ) {
     super(app, async () => {
       try {
@@ -260,7 +261,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
 
     const destInstancePaths = typeof destInstancePath === 'string' ? [destInstancePath] : destInstancePath
 
-    const srcSavePath = join(srcInstancePath, saveName)
+    const srcSavePath = join(srcInstancePath, 'saves', saveName)
 
     if (await missing(srcSavePath)) {
       throw new AnyError('CloneSaveSaveNotFoundError', `Cannot find save ${saveName}`, undefined, {
@@ -556,5 +557,50 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     this.log(`Reading world generation settings from ${savePath}`)
     
     return await readWorldGenSettings(savePath)
+  }
+
+  async listSaveDimensions(savePath: string) {
+    requireString(savePath)
+    return await listSaveDimensions(savePath)
+  }
+
+  async getSaveRegions(savePath: string, dimension: string) {
+    requireString(savePath)
+    requireString(dimension)
+    return await getSaveRegions(savePath, dimension)
+  }
+
+  async renderSaveRegion(savePath: string, dimension: string, regionX: number, regionZ: number, maxHeight?: number) {
+    requireString(savePath)
+    requireString(dimension)
+    return await this.saveWorker.renderSaveRegion(savePath, dimension, regionX, regionZ, maxHeight)
+  }
+
+  async deleteSaveChunks(options: DeleteSaveChunksOptions) {
+    const { savePath, dimension, chunks } = options
+    requireString(savePath)
+    requireString(dimension)
+    if (!Array.isArray(chunks) || chunks.length === 0) return
+    this.log(`Deleting ${chunks.length} chunks from ${savePath} (${dimension})`)
+    await deleteSaveChunks(savePath, dimension, chunks)
+  }
+
+  async copySaveChunks(options: CopySaveChunksOptions) {
+    const { savePath, dimension, chunks } = options
+    requireString(savePath)
+    requireString(dimension)
+    if (!Array.isArray(chunks) || chunks.length === 0) return []
+    this.log(`Copying ${chunks.length} chunks from ${savePath} (${dimension})`)
+    return await readSaveChunks(savePath, dimension, chunks)
+  }
+
+  async pasteSaveChunks(options: PasteSaveChunksOptions) {
+    const { savePath, dimension, chunks, offsetX = 0, offsetZ = 0 } = options
+    requireString(savePath)
+    requireString(dimension)
+    if (!Array.isArray(chunks) || chunks.length === 0) return
+    this.log(`Pasting ${chunks.length} chunks into ${savePath} (${dimension}) offset (${offsetX}, ${offsetZ})`)
+    const relocated = relocateSaveChunks(chunks, offsetX, offsetZ)
+    await writeSaveChunks(savePath, dimension, relocated)
   }
 }

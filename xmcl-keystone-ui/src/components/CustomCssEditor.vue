@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -80,7 +80,7 @@ watch(() => props.css, (v) => {
   }
 })
 
-const saveDraft = debounce((content: string) => {
+const saveDraft = useDebounceFn((content: string) => {
   emit('update:css', content)
 }, 600)
 

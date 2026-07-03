@@ -1,7 +1,7 @@
 {
     "name": "@xmcl/runtime",
     "private": true,
-    "version": "0.55.1",
+    "version": "0.56.0",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "The runtime for x minecraft launcher in nodejs",
     "license": "MIT",
@@ -43,6 +43,7 @@
         "@xmcl/resource": "workspace:*",
         "@xmcl/resourcepack": "workspace:*",
         "@xmcl/runtime-api": "workspace:*",
+        "@xmcl/schematic": "workspace:*",
         "@xmcl/worker": "workspace:*",
         "@xmcl/sqlite": "workspace:*",
         "@xmcl/system": "workspace:*",
@@ -95,7 +96,6 @@
         "oxlint": "^1.63.0",
         "source-map-support": "^0.5.21",
         "tslib": "^2.5.0",
-        "tsx": "^3.12.6",
         "typescript": "^5.9.3"
     }
 }

@@ -7,17 +7,18 @@
     >
       <AvatarItemList :items="extensionItems" />
       <div class="flex-grow" />
-      <MarketTextFieldWithMenu
-        v-model:keyword="keyword"
+      <MarketTextField
+        :clearable="modrinthCategories.length > 0 || !!keyword"
+        :value="keyword"
         :placeholder="t('shaderPack.searchHint')"
-        v-model:modrinth-categories="modrinthCategories"
-        modrinth-category-filter="shader"
-        v-model:enable-modrinth="isModrinthActive"
-        v-model:game-version="gameVersion"
-        v-model:local-sort="sortBy"
-        v-model:sort="sort"
-        v-model:mode="source"
-        v-model:collection="selectedCollection"
+        :game-version="gameVersion !== version.minecraft ? gameVersion : undefined"
+        :category="modrinthCategories.length > 0"
+        :icon="source === 'remote' ? 'storefront' : source === 'local' ? 'inventory_2' : 'favorite'"
+        @clear="modrinthCategories = []"
+        @clear-version="gameVersion = version.minecraft"
+        @input="keyword = $event ?? ''"
+        @clear-category="modrinthCategories = []"
+        @blur="focused = false"
       />
     </div>
     <MarketExtensions
@@ -31,13 +32,14 @@
 <script lang=ts setup>
 import AvatarItemList from '@/components/AvatarItemList.vue'
 import MarketExtensions from '@/components/MarketExtensions.vue'
-import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
+import MarketTextField from '@/components/MarketTextField.vue'
 import { kInstance } from '@/composables/instance'
 import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kSearchModel } from '@/composables/search'
 import { kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
+import { useQuery } from '@/composables/query'
 
 const { runtime: version } = injection(kInstance)
 
@@ -66,6 +68,10 @@ const extensionItems = computed(() => {
 })
 
 const { keyword, source, gameVersion, selectedCollection, modrinthCategories, sort, isModrinthActive } = injection(kSearchModel)
+const focused = ref(false)
+provide('focused', focused)
+const selectedId = useQuery('id')
+watch(focused, (v) => { if (v) selectedId.value = '' })
 const { shaderMod } = injection(kInstanceShaderPacks)
 const { sortBy } = injection(kShaderPackSearch)
 const { t } = useI18n()

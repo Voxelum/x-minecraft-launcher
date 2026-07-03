@@ -55,6 +55,8 @@
   <v-list
     v-else
     nav
+    bgColor="transparent"
+    class="w-full h-full"
     :selected="[selectedIndex]"
     @update:selected="v => selectedIndex = (v[0] as number) ?? -1"
   >

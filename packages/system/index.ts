@@ -1,7 +1,7 @@
 /**
  * @module @xmcl/system
  */
-import { open, readEntry, readAllEntries } from '@xmcl/unzip'
+import { open, readEntry, readEntryBuffered, readAllEntries } from '@xmcl/unzip'
 import {
   access as saccess,
   stat as sstat,
@@ -207,6 +207,15 @@ class NodeZipFileSystem extends FileSystem {
       return buffer.toString('base64')
     }
     return buffer
+  }
+
+  async readFileBuffered(name: string): Promise<Uint8Array> {
+    name = this.normalizePath(name)
+    const entry = this.entries[name]
+    if (!entry) {
+      throw new Error(`Not found file named ${name}`)
+    }
+    return readEntryBuffered(this.zip, entry)
   }
 
   listFiles(name: string): Promise<string[]> {

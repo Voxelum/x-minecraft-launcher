@@ -1011,6 +1011,60 @@ proxy:
 quiltVersion:
   disable: Quilt を使用しない
   empty: QuiltはMinecraft {version} をサポートしていません
+blueprint:
+  name: 設計図 | 設計図
+  count: '{count} 個の設計図'
+  searchLocal: 設計図を検索...
+  searchOnline: オンライン検索...
+  market: マーケット
+  local: ローカル
+  provider: 提供元
+  import: インポート
+  openFolder: フォルダーを開く
+  refresh: 更新
+  empty: 設計図が見つかりません。.litematic / .schem / .nbt ファイルをインポートするか、マーケットを閲覧してください。
+  dropHint: 設計図ファイル（.litematic / .schem / .nbt）をここにドロップしてインポート。
+  selectHint: プレビューする設計図を選択してください。
+  blocks: '{count} 個のブロック'
+  materials: 材料
+  allNamespaces: すべて
+  findMod: この名前空間に対応する Mod を探す
+  compatible: 互換性あり
+  incompatible: Mod が不足
+  missingNamespaces: '不足している Mod: {namespaces}'
+  delete: 削除
+  cancel: キャンセル
+  install: インストール
+  goTo: ウェブサイト
+  byAuthor: '作者: {author}'
+  noDescription: 説明はありません。
+  loadMore: もっと読み込む
+  cmsBrowseOnly: このソースは閲覧専用です。ダウンロードはウェブサイトを開いてください。
+  mixedSources: 結果はすべてのソースの混合です。一部は閲覧専用のため、ウェブサイトを開いてダウンロードしてください。
+  formats:
+    structure: バニラ構造物
+  preview:
+    title: 3D プレビュー
+    loading: プレビューを読み込み中...
+    empty: この設計図には表示できるブロックがありません。
+    hint: '{count} 個のブロック · {x}×{y}×{z}'
+    controls: ドラッグで視点移動 · WASD で移動 · スペース/Shift で上昇/下降
+  convert:
+    title: フォーマットを変換
+    hint: この設計図を別のフォーマットに変換します。新しいファイルが作成されます。
+    target: 変換先フォーマット
+    action: 変換
+  replace:
+    title: ブロックを置換
+    simple: シンプル
+    precise: 詳細
+    simpleHint: ブロック ID のみで一致させ、既存のブロック状態のプロパティを保持します。
+    preciseHint: ブロック状態全体（ID + プロパティ）を一致させ、完全に置換します。
+    from: 置換前
+    to: 置換後
+    addRule: ルールを追加
+    newFile: 新しいファイルとして保存
+    action: 置換
 resourcepack:
   compatible: 適合するフォーマット {format} バージョン {version}
   defaultDescription: デフォルトのMinecraftのルック＆フィール
@@ -1032,6 +1086,30 @@ resourcepack:
   noPacks: リソースパックが見つかりません
   search: リソースパックを検索...
 save:
+  chunkSelectMode: チャンクを選択
+  panMode: パン
+  chunkSelected: '{count} 個のチャンクを選択中'
+  mapHintPan: ドラッグで移動
+  mapHintSelect: 選択
+  mapHintDeselect: 選択解除
+  toggleGrid: リージョングリッドの切り替え
+  heightTop: 上端
+  resetView: 視点をリセット
+  clearSelection: 選択をクリア
+  copyChunks: チャンクをコピー
+  pasteChunks: '{count} 個のチャンクを貼り付け'
+  pasteChunksPlaceHint: >-
+    マウスを動かして {count} 個のチャンクを配置し、クリックして貼り付けます。配置先の既存のチャンクは上書きされます。Esc でキャンセルします。
+  pasteChunksCancel: キャンセル
+  deleteChunks: チャンクを削除
+  deleteChunksTitle: 選択したチャンクを削除
+  deleteChunksHint: >-
+    選択した {count} 個のチャンクを削除しますか？この操作は取り消せません。次にそのエリアがゲーム内で読み込まれると、チャンクは再生成されます。
+  mapLoading: マップを読み込み中…
+  noRegions: このワールドにはプレビューできる生成済みのリージョンがありません。
+  dimOverworld: オーバーワールド
+  dimNether: ネザー
+  dimEnd: ジ・エンド
   copy:
     name: セーブデータをコピー
   createNew: 新しいワールドを作る
@@ -1039,6 +1117,7 @@ save:
   deleteHint: セーブデータを削除します。この操作は取り消せません。続行しますか?
   deleteTitle: このセーブデータを削除
   dropHint: zipをここにドラッグしてインポート
+  duplicate: セーブデータを複製
   export: セーブデータをエクスポート
   exportMessage: セーブデータをZipとしてエクスポート
   exportTitle: セーブデータをエクスポート

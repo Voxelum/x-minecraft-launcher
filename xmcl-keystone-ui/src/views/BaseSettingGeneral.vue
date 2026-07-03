@@ -117,7 +117,7 @@ import { injection } from '@/util/inject'
 import { useTimeout } from '@vueuse/core'
 import { AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
-import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
+import BaseSettingGlobalLabel from '@/components/BaseSettingGlobalLabel.vue'
 
 const changeIcon = useQuery('changeIcon')
 

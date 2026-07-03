@@ -2,7 +2,7 @@ import { useService } from '@/composables'
 import { injection } from '@/util/inject'
 import { BaseServiceKey, Environment, Settings } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
-import { useLocalStorageCacheBool } from './cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kEnvironment } from './environment'
 import { useState } from './syncableState'
 
@@ -142,7 +142,7 @@ export function useGameDirectory() {
 }
 
 export function useSettings() {
-  const streamerMode = inject('streamerMode', useLocalStorageCacheBool('streamerMode', false))
+  const streamerMode = inject('streamerMode', useLocalStorage('streamerMode', false, { writeDefaults: false }))
   const { state, error, isValidating } = injection(kSettingsState)
 
   const getProxy = () => {

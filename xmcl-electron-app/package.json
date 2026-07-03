@@ -2,7 +2,7 @@
     "name": "xmcl",
     "private": true,
     "main": "./index.js",
-    "version": "0.59.1",
+    "version": "0.60.0",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "X Minecraft Launcher - A modern Minecraft launcher",
     "license": "MIT",
@@ -75,7 +75,7 @@
         "source-map-support": "^0.5.21",
         "node-abi": "3.60.0",
         "tslib": "^2.5.0",
-        "tsx": "^3.13.0",
+        "tsx": "^4.21.0",
         "typescript": "^5.9.3",
         "undici": "^7.24.0"
     }

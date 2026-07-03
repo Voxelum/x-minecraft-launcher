@@ -12,7 +12,7 @@
     />
     <SplitPane
       flex-left
-      :min-percent="30"
+      :min-percent="minPercentage ?? 30"
       :default-percent="30"
       class="flex h-full w-full overflow-auto py-0"
     >
@@ -42,7 +42,6 @@
             :bench="16"
             class="visible-scroll h-full max-h-full w-full overflow-auto pl-1 pt-2"
             :items="items"
-            :item-height="itemHeight"
             @scroll="onScroll"
           >
             <template #default="{ item, index }">
@@ -75,6 +74,11 @@
           class="relative flex flex-col h-full flex-grow-0 overflow-y-auto overflow-x-hidden market-right"
         >
           <slot
+            v-if="!selectedId && $slots.filter"
+            name="filter"
+          />
+          <slot
+            v-else
             name="content"
             :selected-item="selectedItem"
             :selected-id="selectedId"
@@ -107,6 +111,7 @@ const props = defineProps<{
   selectionMode?: boolean
   loading?: boolean
   error?: any
+  minPercentage?: number
 }>()
 const emit = defineEmits<{
   (event: 'load'): void
@@ -118,17 +123,6 @@ const selectedId = useQuery('id')
 const selectedItem = computed(() => {
   if (!selectedId.value) return undefined
   return props.items.find((i) => typeof i === 'object' && 'id' in i && i.id === selectedId.value) as ProjectEntry | undefined
-})
-
-watch(() => props.items, (i, old) => {
-  if (!old || old.length === 0) {
-    if (i.length > 0) {
-      const first = i[0]
-      if (typeof first === 'object' && 'id' in first) {
-        selectedId.value = first.id
-      }
-    }
-  }
 })
 
 const selectedModrinthId = computed(() => {
@@ -173,13 +167,18 @@ const onSelect = (event: MouseEvent, i: ProjectEntry) => {
       }
       selections.value = _selections
     } else {
-      selectedId.value = i.id
-      selections.value = {
-        [i.id]: true,
+      if (selectedId.value === i.id) {
+        selectedId.value = ''
+        selections.value = {}
+      } else {
+        selectedId.value = i.id
+        selections.value = {
+          [i.id]: true,
+        }
       }
     }
   } else {
-    selectedId.value = i.id
+    selectedId.value = selectedId.value === i.id ? '' : i.id
     selections.value = {}
   }
 }

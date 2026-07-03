@@ -11,7 +11,7 @@ import { kModrinthAuthenticatedAPI } from './modrinthAuthenticatedAPI'
 import { useModrinthSearch } from './modrinthSearch'
 import { SearchModel } from './search'
 import { useMergedProjects, useProjectsSort } from './useMergedProjects'
-import { useLocalStorageCacheStringValue } from './cache'
+import { useLocalStorage } from '@vueuse/core'
 import { LocalSort } from './sortBy'
 import { mergeSorted } from '@/util/sort'
 
@@ -102,7 +102,7 @@ export function useShaderPackSearch(shaderPacks: Ref<InstanceShaderFile[]>,
   const loading = computed(() => loadingModrinth.value || loadingCached.value || loadingCurseforge.value)
   const { currentView } = searchModel
   const { items: collectionItems, effect: onCollectionsEffect } = useMarketCollectionSearch('shader', searchModel, collections, follows)
-  const sortBy = useLocalStorageCacheStringValue('shaderPackSort', '' as LocalSort)
+  const sortBy = useLocalStorage<LocalSort>('shaderPackSort', '' as LocalSort, { writeDefaults: false })
 
   const error = computed(() => curseforgeError.value || modrinthError.value)
 

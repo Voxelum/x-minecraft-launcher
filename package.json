@@ -1,5 +1,5 @@
 {
-    "version": "0.59.1",
+    "version": "0.60.0",
     "private": true,
     "license": "MIT",
     "packageManager": "pnpm@10.33.3",
@@ -19,6 +19,11 @@
         "dev:main": "pnpm run --prefix=xmcl-electron-app dev",
         "dev:renderer": "pnpm run --prefix=xmcl-keystone-ui dev",
         "lint": "oxlint -c ./.oxlintrc.json packages && pnpm run --prefix=xmcl-keystone-ui lint && pnpm run --prefix=xmcl-runtime lint && pnpm run --prefix=xmcl-runtime-api lint && pnpm run --prefix=xmcl-electron-app lint",
+        "i18n": "pnpm run --prefix=xmcl-keystone-ui i18n",
+        "lint:i18n": "pnpm run --prefix=xmcl-keystone-ui lint:i18n",
+        "i18n:remove": "pnpm run --prefix=xmcl-keystone-ui i18n:remove",
+        "i18n:rename": "pnpm run --prefix=xmcl-keystone-ui i18n:rename",
+        "i18n:daemon": "pnpm run --prefix=xmcl-keystone-ui i18n:daemon",
         "lint:fix": "oxlint -c ./.oxlintrc.json packages --fix && pnpm run --prefix=xmcl-runtime-api lint:fix && pnpm run --prefix=xmcl-runtime lint:fix && pnpm run --prefix=xmcl-electron-app lint:fix && pnpm run --prefix=xmcl-keystone-ui lint:fix",
         "format": "oxfmt -c ./.oxfmtrc.json packages --write",
         "coverage": "vitest run --coverage",
@@ -42,6 +47,7 @@
     },
     "pnpm": {
         "onlyBuiltDependencies": [
+            "@parcel/watcher",
             "cpu-features",
             "electron",
             "esbuild",

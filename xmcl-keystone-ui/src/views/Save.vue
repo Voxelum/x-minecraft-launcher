@@ -17,16 +17,32 @@
         :label="`${items.length} ${t('save.name', items.length)}`"
       />
     </template>
+    <template #filter>
+      <MarketFilterPanel
+        :curseforge-category="curseforgeCategory"
+        curseforge-category-filter="worlds"
+        :modrinth-categories="[]"
+        :modrinth-category-filter="''"
+        :enable-curseforge="isCurseforgeActive"
+        v-model:sort="marketSort"
+        :mode="source"
+        :game-version="gameVersion"
+        @update:curseforge-category="curseforgeCategory = $event"
+        @update:enable-curseforge="isCurseforgeActive = $event"
+        @update:mode="source = $event"
+        @update:game-version="gameVersion = $event"
+      />
+    </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-list-subheader
         v-if="typeof item === 'string'"
-        class="flex"
+        class="px-3 flex"
         :style="{ height: itemHeight + 'px' }"
       >
         {{
-          item === 'installed'
+          item === 'enabled'
             ? t('save.selected')
-            : item === 'shared'
+            : item === 'disabled'
               ? t('save.unselected')
               : t('modInstall.search')
         }}
@@ -44,26 +60,6 @@
         @delete="onDelete"
       />
     </template>
-    <template #placeholder>
-      <Hint
-        v-if="currentView === 'local' && !keyword.trim()"
-        key="info"
-        :text="t('save.noSavesInstalled')"
-        icon="info"
-      />
-      <Hint
-        v-else-if="currentView === 'local'"
-        key="search"
-        :text="t('save.noLocalSavesFound')"
-        icon="search"
-      />
-      <Hint
-        v-else
-        key="no-saves"
-        :text="t('save.noSavesFound')"
-        icon="search"
-      />
-    </template>
     <template #content="{ selectedItem, selectedCurseforgeId, updating }">
       <Hint v-if="dragover" icon="save_alt" :text="t('save.dropHint')" class="h-full" />
       <MarketProjectDetailCurseforge
@@ -78,11 +74,6 @@
         @category="curseforgeCategory = $event"
       />
       <SaveDetail v-else-if="isSaveProject(selectedItem)" :save="selectedItem" @delete="onDelete" />
-      <MarketRecommendation
-        v-else
-        curseforge="worlds"
-        @curseforge="curseforgeCategory = $event.id"
-      />
     </template>
     <SimpleDialog
       v-model="model"
@@ -102,11 +93,11 @@
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
+import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
-import MarketRecommendation from '@/components/MarketRecommendation.vue'
 import { useService } from '@/composables'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
@@ -127,7 +118,7 @@ import { sort } from '@/composables/sortBy'
 const { path } = injection(kInstance)
 const { error, deleteSave } = injection(kInstanceSave)
 
-const { curseforgeCategory, gameVersion, currentView, keyword } = injection(kSearchModel)
+const { curseforgeCategory, gameVersion, currentView, keyword, source, isCurseforgeActive, sort: marketSort } = injection(kSearchModel)
 const { effect, items, sortBy, loadMore, loading, error: searchError } = injection(kSaveSearch)
 
 effect()
@@ -135,8 +126,8 @@ effect()
 const isSaveProject = (v: ProjectEntry | undefined): v is ProjectEntry<InstanceSaveFile> =>
   !!v?.installed && v.installed.length > 0
 
-const denseView = useLocalStorageCacheBool('savesDenseView', false)
-const itemHeight = computed(() => (denseView.value ? 40 : 68))
+const denseView = useLocalStorage('savesDenseView', false, { writeDefaults: false })
+const itemHeight = computed(() => (denseView.value ? 40 : 88))
 
 const groupedItems = computed(() => {
   const result: (ProjectEntry | string)[] = []

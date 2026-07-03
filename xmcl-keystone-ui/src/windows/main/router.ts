@@ -9,6 +9,9 @@ import Me from '@/views/Me.vue'
 import Mod from '@/views/Mod.vue'
 import ModActions from '@/views/ModActions.vue'
 import ModExtension from '@/views/ModExtension.vue'
+import Blueprint from '@/views/Blueprint.vue'
+import BlueprintActions from '@/views/BlueprintActions.vue'
+import BlueprintExtension from '@/views/BlueprintExtension.vue'
 import Multiplayer from '@/views/Multiplayer.vue'
 import ResourcePack from '@/views/ResourcePack.vue'
 import ResourcePackActions from '@/views/ResourcePackActions.vue'
@@ -72,6 +75,14 @@ export const router = createRouter({
             default: ShaderPack,
             extensions: ShaderPackExtension,
             actions: ShaderPackActions,
+          },
+        },
+        {
+          path: 'blueprints',
+          components: {
+            default: Blueprint,
+            extensions: BlueprintExtension,
+            actions: BlueprintActions,
           },
         },
         {

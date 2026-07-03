@@ -2,11 +2,9 @@ import { ReactiveResourceState } from '@/util/ReactiveResourceState'
 import { basename } from '@/util/basename'
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { CompatibleDetail, getModsCompatiblity, resolveDepsCompatible } from '@/util/modCompatible'
-import { refThrottled, useEventListener } from '@vueuse/core'
+import { refThrottled, useDebounceFn, useEventListener, useLocalStorage } from '@vueuse/core'
 import { InstanceModsServiceKey, JavaRecord, ResourceState, SharedState } from '@xmcl/runtime-api'
-import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
-import { useLocalStorageCache } from './cache'
 import { useResourceParseErrorNotifier } from './resourceParseError'
 import { useService } from './service'
 import { useState } from './syncableState'
@@ -16,7 +14,7 @@ import { Resource } from '@xmcl/resource'
 export const kInstanceModsContext: InjectionKey<ReturnType<typeof useInstanceMods>> = Symbol('instance-mods')
 
 function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<SharedState<ResourceState> | undefined>) {
-  const lastUpdateMetadata = useLocalStorageCache<Record<string, number>>('instanceModsLastRefreshMetadata', () => ({}), JSON.stringify, JSON.parse)
+  const lastUpdateMetadata = useLocalStorage<Record<string, number>>('instanceModsLastRefreshMetadata', {}, { deep: false, writeDefaults: false })
   const { refreshMetadata } = useService(InstanceModsServiceKey)
   const expireTime = 1000 * 30 * 60 // 0.5 hour
 
@@ -58,7 +56,7 @@ function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<Sh
     await refreshMetadata(instancePath.value)
   }
 
-  const debounced = debounce(checkAndUpdate, 1000)
+  const debounced = useDebounceFn(checkAndUpdate, 1000)
 
   watch(state, (s) => {
     if (!s) return

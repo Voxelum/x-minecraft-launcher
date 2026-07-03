@@ -1286,6 +1286,60 @@ resourceError:
     "{path}" could not be parsed ({code}). The file may be corrupted, locked, or
     incomplete. Try re-downloading or removing it.
   title: Cannot read {file}
+blueprint:
+  name: Blueprint | Blueprints
+  count: '{count} blueprints'
+  searchLocal: Search blueprints...
+  searchOnline: Search online...
+  market: Market
+  local: Local
+  provider: Provider
+  import: Import
+  openFolder: Open folder
+  refresh: Refresh
+  empty: No blueprints found. Import a .litematic / .schem / .nbt file or browse the market.
+  dropHint: Drop blueprint files (.litematic / .schem / .nbt) here to import.
+  selectHint: Select a blueprint to preview it.
+  blocks: '{count} blocks'
+  materials: Materials
+  allNamespaces: All
+  findMod: Find the mod for this namespace
+  compatible: Compatible
+  incompatible: Missing mods
+  missingNamespaces: 'Missing mods for: {namespaces}'
+  delete: Delete
+  cancel: Cancel
+  install: Install
+  goTo: Website
+  byAuthor: by {author}
+  noDescription: No description provided.
+  loadMore: Load more
+  cmsBrowseOnly: This source is browse-only; open the website to download.
+  mixedSources: Results are mixed from all sources. Some are browse-only — open their website to download.
+  formats:
+    structure: Vanilla Structure
+  preview:
+    title: 3D Preview
+    loading: Loading preview...
+    empty: This blueprint has no blocks to display.
+    hint: '{count} blocks · {x}×{y}×{z}'
+    controls: Drag to look · WASD move · Space/Shift up/down
+  convert:
+    title: Convert format
+    hint: Convert this blueprint to another format. A new file will be created.
+    target: Target format
+    action: Convert
+  replace:
+    title: Replace blocks
+    simple: Simple
+    precise: Precise
+    simpleHint: Match by block id only, keeping the existing block state properties.
+    preciseHint: Match the full block state (id + properties) and replace it entirely.
+    from: From
+    to: To
+    addRule: Add rule
+    newFile: Save as a new file
+    action: Replace
 resourcepack:
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft
@@ -1324,6 +1378,7 @@ save:
   deleteTitle: Delete the Save
   difficulty: Difficulty
   dropHint: Drag save zip here to Import
+  duplicate: Duplicate Save
   export: Export Save
   exportMessage: Export the Save as zip
   exportTitle: Export the Save
@@ -1335,6 +1390,32 @@ save:
   mapInfo: 'Interactive 3D world preview:'
   mapLoaded: Map Loaded
   mapPreview: Map Preview
+  chunkSelectMode: Select Chunks
+  panMode: Pan
+  chunkSelected: '{count} chunks selected'
+  mapHintPan: Drag to pan
+  mapHintSelect: Select
+  mapHintDeselect: Deselect
+  toggleGrid: Toggle region grid
+  heightTop: Top
+  resetView: Reset View
+  clearSelection: Clear Selection
+  copyChunks: Copy Chunks
+  pasteChunks: 'Paste {count} Chunks'
+  pasteChunksPlaceHint: >-
+    Move the mouse to position {count} chunk(s), then click to paste. Existing
+    chunks at the target are overwritten. Press Esc to cancel.
+  pasteChunksCancel: Cancel
+  deleteChunks: Delete Chunks
+  deleteChunksTitle: Delete Selected Chunks
+  deleteChunksHint: >-
+    Delete {count} selected chunk(s)? This cannot be undone. The chunks will be
+    regenerated the next time the area is loaded in game.
+  mapLoading: Loading map…
+  noRegions: This world has no generated regions to preview.
+  dimOverworld: Overworld
+  dimNether: The Nether
+  dimEnd: The End
   name: Save | Saves
   noLocalSavesFound: No local saves found matching your search.
   noSavesFound: No saves found
@@ -1766,6 +1847,7 @@ shared:
   server: Server
   skipForNow: Skip for now
   'yes': 'Yes'
+  delete: Delete
 sidebar:
   pin: Pin
   unpin: Unpin

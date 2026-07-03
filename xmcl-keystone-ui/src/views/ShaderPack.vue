@@ -16,6 +16,24 @@
         :label="`${originalItems.length} ${t('shaderPack.name', originalItems.length)}`"
       />
     </template>
+    <template #filter>
+      <MarketFilterPanel
+        :modrinth-categories="modrinthCategories"
+        modrinth-category-filter="shader"
+        :enable-modrinth="isModrinthActive"
+        :game-version="gameVersion"
+        :local-sort="sortBy"
+        v-model:sort="marketSort"
+        :mode="source"
+        :collection="selectedCollection"
+        @update:modrinth-categories="modrinthCategories = $event"
+        @update:enable-modrinth="isModrinthActive = $event"
+        @update:game-version="gameVersion = $event"
+        @update:local-sort="sortBy = $event"
+        @update:mode="source = $event"
+        @update:collection="selectedCollection = $event"
+      />
+    </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-list-subheader
         v-if="typeof item === 'string'"
@@ -36,26 +54,6 @@
         :checked="checked"
         :install="onInstallProject"
         @click="on.click"
-      />
-    </template>
-    <template #placeholder>
-      <Hint
-        v-if="currentView === 'local' && !keyword.trim()"
-        key="info"
-        :text="t('shaderPack.noPacksInstalled')"
-        icon="info"
-      />
-      <Hint
-        v-else-if="currentView === 'local'"
-        key="search"
-        :text="t('shaderPack.noLocalPacksFound')"
-        icon="search"
-      />
-      <Hint
-        v-else
-        key="no-packs"
-        :text="t('shaderPack.noPacks')"
-        icon="search"
       />
     </template>
     <template #content="{ selectedModrinthId, selectedCurseforgeId, selectedItem }">
@@ -99,11 +97,6 @@
         :installed="selectedItem.files || []"
         :runtime="runtime"
         @enable="onEnable"
-      />
-      <MarketRecommendation
-        v-else
-        modrinth="shader"
-        @modrinth="modrinthCategories.push($event.name)"
       />
     </template>
     <v-dialog
@@ -241,11 +234,11 @@
 import AvatarChip from '@/components/AvatarChip.vue'
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
+import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
-import MarketRecommendation from '@/components/MarketRecommendation.vue'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useSimpleDialog } from '@/composables/dialog'
 import { useGlobalDrop } from '@/composables/dropHandler'
@@ -276,6 +269,10 @@ const {
   curseforgeCategory,
   currentView,
   keyword,
+  isModrinthActive,
+  sort: marketSort,
+  source,
+  selectedCollection,
 } = injection(kSearchModel)
 
 const {
@@ -463,6 +460,6 @@ const onInstallProject = useProjectInstall(
 )
 
 // dense
-const denseView = useLocalStorageCacheBool('shader-pack-dense-view', false)
+const denseView = useLocalStorage('shader-pack-dense-view', false, { writeDefaults: false })
 const itemHeight = computed(() => denseView.value ? 48 : 80)
 </script>

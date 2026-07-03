@@ -1018,6 +1018,60 @@ proxy:
 quiltVersion:
   disable: 不使用 Quilt
   empty: Minecraft {version} 不支援 Quilt
+blueprint:
+  name: 藍圖 | 藍圖
+  count: '{count} 個藍圖'
+  searchLocal: 搜尋藍圖...
+  searchOnline: 線上搜尋...
+  market: 市集
+  local: 本機
+  provider: 來源
+  import: 匯入
+  openFolder: 開啟資料夾
+  refresh: 重新整理
+  empty: 未找到藍圖。匯入 .litematic / .schem / .nbt 檔案或瀏覽市集。
+  dropHint: 將藍圖檔案（.litematic / .schem / .nbt）拖入此處來匯入。
+  selectHint: 選擇一個藍圖以預覽。
+  blocks: '{count} 個方塊'
+  materials: 材料
+  allNamespaces: 全部
+  findMod: 尋找此命名空間對應的模組
+  compatible: 相容
+  incompatible: 缺少模組
+  missingNamespaces: '缺少以下模組：{namespaces}'
+  delete: 刪除
+  cancel: 取消
+  install: 安裝
+  goTo: 網站
+  byAuthor: 作者：{author}
+  noDescription: 暫無描述。
+  loadMore: 載入更多
+  cmsBrowseOnly: 此來源僅供瀏覽；請開啟網站下載。
+  mixedSources: 結果來自所有來源的混合。部分僅供瀏覽，請開啟其網站下載。
+  formats:
+    structure: 原版結構
+  preview:
+    title: 3D 預覽
+    loading: 正在載入預覽...
+    empty: 此藍圖沒有可顯示的方塊。
+    hint: '{count} 個方塊 · {x}×{y}×{z}'
+    controls: 拖曳以觀察 · WASD 移動 · 空白鍵/Shift 上升/下降
+  convert:
+    title: 轉換格式
+    hint: 將此藍圖轉換為其他格式。將建立一個新檔案。
+    target: 目標格式
+    action: 轉換
+  replace:
+    title: 取代方塊
+    simple: 簡單
+    precise: 精確
+    simpleHint: 僅依方塊 ID 比對，保留現有的方塊狀態屬性。
+    preciseHint: 比對完整的方塊狀態（ID + 屬性）並整體取代。
+    from: 從
+    to: 到
+    addRule: 新增規則
+    newFile: 另存為新檔案
+    action: 取代
 resourcepack:
   compatible: 目前格式({format}) 可用於目前版本 {version}
   defaultDescription: Minecraft 的預設材質
@@ -1039,6 +1093,30 @@ resourcepack:
   noPacks: 未找到資源包
   search: 搜尋資源包...
 save:
+  chunkSelectMode: 選擇區塊
+  panMode: 平移
+  chunkSelected: 已選擇 {count} 個區塊
+  mapHintPan: 拖曳以平移
+  mapHintSelect: 選擇
+  mapHintDeselect: 取消選擇
+  toggleGrid: 切換區域格線
+  heightTop: 頂部
+  resetView: 重置視圖
+  clearSelection: 清除選擇
+  copyChunks: 複製區塊
+  pasteChunks: 貼上 {count} 個區塊
+  pasteChunksPlaceHint: >-
+    移動滑鼠以放置 {count} 個區塊，然後點擊貼上。目標位置的現有區塊將被覆蓋。按 Esc 取消。
+  pasteChunksCancel: 取消
+  deleteChunks: 刪除區塊
+  deleteChunksTitle: 刪除選取的區塊
+  deleteChunksHint: >-
+    刪除選取的 {count} 個區塊？此操作無法復原。下次在遊戲中載入該區域時，這些區塊將重新生成。
+  mapLoading: 正在載入地圖…
+  noRegions: 此世界沒有可預覽的已生成區域。
+  dimOverworld: 主世界
+  dimNether: 地獄
+  dimEnd: 終界
   copy:
     name: 複製存檔
   createNew: 新存檔
@@ -1046,6 +1124,7 @@ save:
   deleteHint: 該操作不可逆，您將永遠失去這個存檔的紀錄，您確定要刪除此存檔嗎？
   deleteTitle: 刪除該存檔
   dropHint: 將地圖 Zip 或資料夾拖入此處來匯入
+  duplicate: 複製存檔
   export: 匯出地圖
   exportMessage: 將存檔匯出為 Zip
   exportTitle: 匯出存檔

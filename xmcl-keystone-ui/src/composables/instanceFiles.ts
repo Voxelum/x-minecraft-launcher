@@ -1,5 +1,5 @@
 import { InstanceInstallServiceKey, InstanceInstallStatus } from '@xmcl/runtime-api'
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 import { InjectionKey, Ref } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
@@ -17,7 +17,7 @@ export function useInstanceFiles(instancePath: Ref<string>) {
   const { error, isValidating, state: instanceFileStatus } = useState(() => watchInstanceInstall(instancePath.value), InstanceInstallStatus)
 
   const _validating = ref(false)
-  const update = debounce(() => {
+  const update = useDebounceFn(() => {
     _validating.value = isValidating.value
   }, 400)
   watch(isValidating, update)

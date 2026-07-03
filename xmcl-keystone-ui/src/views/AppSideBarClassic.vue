@@ -105,7 +105,7 @@
   >
     <div v-roving-tabindex role="group" class="flex flex-row items-center flex-grow-0">
       <v-btn
-        v-shared-tooltip.bottom="t('back')"
+        v-shared-tooltip.bottom="t('shared.back')"
         icon
         :aria-label="backAriaLabel"
         class="non-moveable mr-1"
@@ -256,7 +256,7 @@ useDragAutoScroll(instancesScrollEl)
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  border-radius: 0.75rem;
+  border-radius: var(--surface-menu-item-radius);
   padding: 8px 0;
   overflow: hidden;
 }

@@ -31,10 +31,10 @@
     >
       <template #prepend v-if="com.compatible === true">
         <v-avatar start>
-          <img
+          <v-img
             v-if="getDepIcon(com.modId, icons[com.modId])"
             :src="getDepIcon(com.modId, icons[com.modId])"
-          >
+          />
           <v-icon v-else>
             xmcl:package
           </v-icon>

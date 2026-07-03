@@ -1,5 +1,4 @@
 import { InjectionKey, Ref } from 'vue'
-import { useLocalStorageCacheStringValue, useLocalStorageCacheInt, useLocalStorageCacheBool } from './cache'
 import { useLocalStorage } from '@vueuse/core'
 import { injection } from '@/util/inject'
 
@@ -20,12 +19,12 @@ export interface SidebarSettings {
 export const kSidebarSettings: InjectionKey<SidebarSettings> = Symbol('SidebarSettings')
 
 export function useSidebarSettings(): SidebarSettings {
-  const position = useLocalStorageCacheStringValue('sidebar_position', 'left' as SidebarPosition)
-  const style = useLocalStorageCacheStringValue('sidebar_style', 'classic' as SidebarStyle)
-  const align = useLocalStorageCacheStringValue('sidebar_align', 'center' as SidebarAlign)
-  const scale = useLocalStorageCacheInt('sidebar_scale', 100)
-  const autoHide = useLocalStorageCacheBool('sidebar_autoHide', true)
-  const showOnlyPinned = useLocalStorageCacheBool('sidebar_showOnlyPinned', false)
+  const position = useLocalStorage<SidebarPosition>('sidebar_position', 'left', { writeDefaults: false })
+  const style = useLocalStorage<SidebarStyle>('sidebar_style', 'classic', { writeDefaults: false })
+  const align = useLocalStorage<SidebarAlign>('sidebar_align', 'center', { writeDefaults: false })
+  const scale = useLocalStorage('sidebar_scale', 100, { writeDefaults: false })
+  const autoHide = useLocalStorage('sidebar_autoHide', true, { writeDefaults: false })
+  const showOnlyPinned = useLocalStorage('sidebar_showOnlyPinned', false, { writeDefaults: false })
   const pinnedInstances = useLocalStorage<string[]>('sidebar_pinnedInstances', [])
 
   return {

@@ -6,6 +6,7 @@ import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { kEnvironment, useEnvironment } from '@/composables/environment'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
 import { kInstance, useInstance } from '@/composables/instance'
+import { kInstanceBlueprints, useInstanceBlueprints } from '@/composables/instanceBlueprints'
 import { kInstanceDefaultSource, useInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 import { kInstanceFiles, useInstanceFiles } from '@/composables/instanceFiles'
 import { kInstanceJava, useInstanceJava } from '@/composables/instanceJava'
@@ -90,6 +91,7 @@ export default defineComponent({
     const serverInfo = useInstanceServerInfo(instance.path)
     const resourcePacks = useInstanceResourcePacks(instance.path, options.gameOptions)
     const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
+    const blueprints = useInstanceBlueprints(instance.path)
     const shaderPacks = useInstanceShaderPacks(instance.path, instance.runtime, instanceMods.mods, options.gameOptions)
     const files = useInstanceFiles(instance.path)
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionId)
@@ -127,6 +129,7 @@ export default defineComponent({
     provide(kInstanceServerInfo, serverInfo)
     provide(kInstanceResourcePacks, resourcePacks)
     provide(kInstanceModsContext, instanceMods)
+    provide(kInstanceBlueprints, blueprints)
     provide(kInstanceFiles, files)
     provide(kLaunchTask, task)
 
@@ -162,7 +165,25 @@ export default defineComponent({
       surfaceTokens.cardClickableRadius.value = enabled ? DEFAULT_CARD_CLICKABLE_RADIUS : 0
       surfaceTokens.tooltipRadius.value = enabled ? DEFAULT_SURFACE_TOOLTIP_RADIUS : 0
       surfaceTokens.pillRadius.value = enabled ? DEFAULT_SURFACE_PILL_RADIUS : 0
-      surfaceTokens.buttonRadius.value = enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0
+      vuetify.defaults.value = {
+        ...vuetify.defaults.value,
+        VBtn: {
+          ...vuetify.defaults.value?.VBtn,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
+        },
+        VChip: {
+          ...vuetify.defaults.value?.VChip,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
+        },
+        VTextField: {
+          ...vuetify.defaults.value?.VTextField,
+          rounded: enabled ? undefined : 0,
+        },
+        VSwitch: {
+          ...vuetify.defaults.value?.VSwitch,
+          rounded: enabled ? undefined : 0,
+        }
+      }
     })
 
     provide(kCustomCss, useCustomCss({
