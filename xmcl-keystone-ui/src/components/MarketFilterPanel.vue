@@ -187,6 +187,9 @@
               @update:model-value="emit('update:enableCurseforge', !!$event)"
             />
           </div>
+          <div v-if="curseforgeCategoryLabel" class="filter-subheader filter-subheader--minor flex">
+            {{ curseforgeCategoryLabel }}
+          </div>
           <v-chip-group
             v-roving-tabindex="'vertical'"
             :aria-label="t('modrinth.categories.name')"
@@ -201,6 +204,25 @@
               :value="c"
             />
           </v-chip-group>
+          <template v-if="curseforgeSecondaryCategoryFilter">
+            <div v-if="curseforgeSecondaryCategoryLabel" class="filter-subheader filter-subheader--minor flex">
+              {{ curseforgeSecondaryCategoryLabel }}
+            </div>
+            <v-chip-group
+              v-roving-tabindex="'vertical'"
+              :aria-label="t('modrinth.categories.name')"
+              v-model="curseforgeSecondarySelectModel"
+              column
+              :disabled="!enableCurseforge"
+            >
+              <CurseforgeCategoryChip
+                v-for="c of curseforgeSecondaryCategories"
+                :key="c.id"
+                :disabled="!enableCurseforge"
+                :value="c"
+              />
+            </v-chip-group>
+          </template>
         </template>
       </v-tabs-window-item>
       <v-tabs-window-item :value="1" class="tab">
@@ -277,6 +299,18 @@ const props = defineProps<{
   modrinthSort?: 'relevance' | 'downloads' | 'follows' | 'newest' | 'updated'
   curseforgeSort?: ModsSearchSortField
 
+  /**
+   * Optional sub-label shown above the primary CurseForge category group.
+   * Used when the panel displays two CurseForge category groups.
+   */
+  curseforgeCategoryLabel?: string
+  /**
+   * Optional second CurseForge category group (e.g. data packs alongside worlds).
+   */
+  curseforgeSecondaryCategoryFilter?: string
+  curseforgeSecondaryCategory?: number | undefined
+  curseforgeSecondaryCategoryLabel?: string
+
   noTab?: boolean
   collection?: string
   mode?: 'local' | 'remote' | 'favorite'
@@ -291,6 +325,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:curseforgeCategory': [value: number | undefined]
+  'update:curseforgeSecondaryCategory': [value: number | undefined]
   'update:modrinthCategories': [value: string[]]
   'update:enableCurseforge': [value: boolean]
   'update:enableModrinth': [value: boolean]
@@ -329,19 +364,35 @@ watch(tab, (i) => {
 })
 
 const { categories: cCategories } = injection(kCurseforgeCategories)
-const curseforgeCategories = computed(() => {
-  if (!props.curseforgeCategoryFilter) return []
+// Some slugs are shared between a top-level class and an unrelated subcategory
+// (e.g. `worlds` = class 17 AND an mc-addons subcategory 4560; `data-packs` =
+// class 6945 AND a texture-packs subcategory 5193). Always resolve the class
+// entry (`isClass`) so the child lookup targets the right parent.
+const findCurseforgeClass = (slug: string | undefined) => {
+  if (!slug) return undefined
   const result = cCategories.value
-  if (!result) return []
-  const parent = result.find((c) => c.slug === props.curseforgeCategoryFilter)
-  return result.filter((r) => r.parentCategoryId === parent?.id)
+  if (!result) return undefined
+  return result.find((c) => c.slug === slug && c.isClass) ?? result.find((c) => c.slug === slug)
+}
+const curseforgeCategories = computed(() => {
+  const parent = findCurseforgeClass(props.curseforgeCategoryFilter)
+  if (!parent) return []
+  return (cCategories.value ?? []).filter((r) => r.parentCategoryId === parent.id)
+})
+const curseforgeSecondaryCategories = computed(() => {
+  const parent = findCurseforgeClass(props.curseforgeSecondaryCategoryFilter)
+  if (!parent) return []
+  return (cCategories.value ?? []).filter((r) => r.parentCategoryId === parent.id)
 })
 
 const { categories: mCategories } = injection(kModrinthTags)
 const _modrinthCategories = computed(() => {
   const result = mCategories.value
   if (!result) return []
-  return result.filter((r) => r.project_type === props.modrinthCategoryFilter)
+  // Modrinth has no dedicated `datapack` category set; data packs are indexed
+  // under the `mod` project type and reuse its categories.
+  const filter = props.modrinthCategoryFilter === 'datapack' ? 'mod' : props.modrinthCategoryFilter
+  return result.filter((r) => r.project_type === filter)
 })
 const { t } = useI18n()
 
@@ -370,6 +421,14 @@ const curseforgeSelectModel = computed({
   },
   set(v) {
     emit('update:curseforgeCategory', !v ? v : curseforgeCategories.value[v].id)
+  },
+})
+const curseforgeSecondarySelectModel = computed({
+  get() {
+    return curseforgeSecondaryCategories.value.findIndex((v) => v.id === props.curseforgeSecondaryCategory)
+  },
+  set(v) {
+    emit('update:curseforgeSecondaryCategory', !v ? v : curseforgeSecondaryCategories.value[v].id)
   },
 })
 const gameVersionModel = computed({
@@ -474,6 +533,14 @@ function getIcon(loader: string) {
 }
 .market-filter-card .tab > .filter-subheader:first-child {
   margin-top: 0;
+}
+/* Minor sub-label used to separate two category groups under one source
+   header (e.g. Worlds vs Data Packs under CurseForge). */
+.market-filter-card .filter-subheader--minor {
+  margin-top: 8px;
+  opacity: 0.7;
+  font-size: 0.75rem;
+  padding-left: 4px;
 }
 .v-slide-group__prev {
   min-width: 28px;

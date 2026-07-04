@@ -1379,6 +1379,11 @@ save:
   deleteTitle: Delete the Save
   difficulty: Difficulty
   dropHint: Drag save zip here to Import
+  datapack:
+    name: Data Pack | Data Packs
+    noSaveHint: Create or select a world first to install this data pack
+    packFormat: 'Pack format: {format}'
+    imported: Data pack imported into {save}
   duplicate: Duplicate Save
   export: Export Save
   exportMessage: Export the Save as zip

@@ -119,7 +119,7 @@
           <div class="flex items-end gap-2 flex-wrap">
             <v-btn
               v-if="selectedInstalled && !noEnabled"
-              :disabled="updating"
+              :disabled="updating || disableInstall"
               :loading="loadingVersions"
               hide-details
               @click="_enabled = !_enabled"
@@ -138,7 +138,7 @@
               data-testid="market-detail-install"
               class="primary"
               :loading="loadingVersions || updating"
-              :disabled="!selectedVersion || loadingVersions || updating"
+              :disabled="!selectedVersion || loadingVersions || updating || disableInstall"
               @click="onInstall"
               size="small"
               color="primary"
@@ -180,6 +180,7 @@
           </div>
 
           <div class="flex-grow" />
+          <slot name="install-target" />
           <div v-if="!noVersion" class="text-center">
             <v-menu open-on-hover :disabled="loadingVersions" offset-y>
               <template #activator="{ props }">
@@ -632,6 +633,10 @@ const props = defineProps<{
   noDelete?: boolean
   noEnabled?: boolean
   noVersion?: boolean
+  /**
+   * Force-disable the install / enable actions (e.g. no valid install target).
+   */
+  disableInstall?: boolean
   hasMore: boolean
   curseforge?: number
   modrinth?: string

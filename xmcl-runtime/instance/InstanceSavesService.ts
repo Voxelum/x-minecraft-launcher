@@ -4,18 +4,25 @@ import {
   InstanceSavesServiceKey,
   LockKey,
   MarketType,
+  SaveDatapacks,
   Saves,
+  getInstanceSaveDatapacksKey,
   getInstanceSaveKey,
   type CloneSaveOptions, type DeleteSaveOptions, type DeleteSaveChunksOptions, type CopySaveChunksOptions, type PasteSaveChunksOptions, type ExportSaveOptions,
+  type DeleteDatapackOptions,
+  type ImportDatapackOptions,
+  type InstallDatapackMarketOptions,
   type InstanceSavesService as IInstanceSavesService,
   type ImportSaveOptions,
   type InstallMarketOptionWithInstance,
+  type InstanceDatapack,
   type LaunchOptions,
   type LinkSaveAsServerWorldOptions,
   type ShareSaveOptions,
   type UpdateSaveOptions,
 } from '@xmcl/runtime-api'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
+import { readPackMetaAndIcon } from '@xmcl/resourcepack'
 import { AnyError, isSystemError } from '@xmcl/utils'
 import { FSWatcher } from 'chokidar'
 import filenamify from 'filenamify'
@@ -603,4 +610,155 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     const relocated = relocateSaveChunks(chunks, offsetX, offsetZ)
     await writeSaveChunks(savePath, dimension, relocated)
   }
+
+  private async readDatapack(savePath: string, fileName: string): Promise<InstanceDatapack | undefined> {
+    const fullPath = join(savePath, 'datapacks', fileName)
+    if (fileName.startsWith('.')) return undefined
+    let fstat
+    try {
+      fstat = await stat(fullPath)
+    } catch {
+      return undefined
+    }
+    // Only zip files and directories are valid datapacks
+    if (!fstat.isDirectory() && extname(fileName).toLowerCase() !== '.zip') {
+      return undefined
+    }
+    try {
+      const { metadata, icon } = await readPackMetaAndIcon(fullPath)
+      const description = flattenPackDescription(metadata.description)
+      return {
+        path: fullPath,
+        savePath,
+        fileName,
+        name: fileName.replace(/\.zip$/i, ''),
+        icon: icon ? `data:image/png;base64,${Buffer.from(icon).toString('base64')}` : '',
+        description,
+        packFormat: metadata.pack_format ?? -1,
+        mtime: fstat.mtimeMs,
+      }
+    } catch (e) {
+      this.warn(`Fail to parse datapack ${fullPath}. Skip it.`)
+      this.warn(e as any)
+      return undefined
+    }
+  }
+
+  async watchSaveDatapacks(savePath: string) {
+    requireString(savePath)
+    const stateManager = await this.app.registry.get(ServiceStateManager)
+    return stateManager.registerOrGet(getInstanceSaveDatapacksKey(savePath), async ({ defineAsyncOperation }) => {
+      const datapacksDir = join(savePath, 'datapacks')
+      const state = new SaveDatapacks()
+
+      await ensureDir(datapacksDir).catch(() => undefined)
+
+      const initial = await readdirIfPresent(datapacksDir)
+      const parsed = await Promise.all(initial.filter(f => !f.startsWith('.')).map(f => this.readDatapack(savePath, f)))
+      state.saveDatapacks(parsed.filter(isNonnull))
+
+      const updateDatapack = defineAsyncOperation(async (fileName: string) => {
+        const datapack = await this.readDatapack(savePath, fileName)
+        if (datapack) {
+          state.saveDatapackUpdate(datapack)
+        }
+      })
+
+      const watcher = new FSWatcher({
+        awaitWriteFinish: true,
+        ignorePermissionErrors: true,
+        followSymlinks: true,
+        cwd: datapacksDir,
+        depth: 0,
+      })
+
+      watcher
+        .on('error', (e) => {
+          if ((e as any).code === 'EBUSY' || (e as any).code === 'EPERM') return
+          this.error(e as any)
+        })
+        .on('all', (event, file) => {
+          if (!file || file.startsWith('.')) return
+          const fullPath = join(datapacksDir, file)
+          if (event === 'add' || event === 'change' || event === 'addDir') {
+            updateDatapack(file)
+          } else if (event === 'unlink' || event === 'unlinkDir') {
+            state.saveDatapackRemove(fullPath)
+          }
+        })
+        .add(datapacksDir)
+
+      const dispose = () => {
+        watcher?.close()
+      }
+
+      return [state, dispose, async () => { }]
+    })
+  }
+
+  async importDatapack(options: ImportDatapackOptions) {
+    const { savePath, path } = options
+    requireString(savePath)
+    requireString(path)
+    const datapacksDir = join(savePath, 'datapacks')
+    await ensureDir(datapacksDir)
+    const dest = join(datapacksDir, basename(path))
+    await copyPassively(path, dest)
+    return dest
+  }
+
+  async getInstanceSaveDatapacks(instancePath: string) {
+    requireString(instancePath)
+    const savesDir = join(instancePath, 'saves')
+    const saveNames = await readdirIfPresent(savesDir).then(a => a.filter(s => !s.startsWith('.')))
+    const result: InstanceDatapack[] = []
+    await Promise.all(saveNames.map(async (name) => {
+      const savePath = join(savesDir, name)
+      const fstat = await stat(savePath).catch(() => undefined)
+      if (!fstat?.isDirectory()) return
+      const datapacksDir = join(savePath, 'datapacks')
+      const files = await readdirIfPresent(datapacksDir).then(a => a.filter(f => !f.startsWith('.')))
+      const parsed = await Promise.all(files.map(f => this.readDatapack(savePath, f)))
+      for (const dp of parsed) {
+        if (dp) result.push(dp)
+      }
+    }))
+    return result
+  }
+
+  async deleteDatapack(options: DeleteDatapackOptions) {
+    const { savePath, fileName } = options
+    requireString(savePath)
+    requireString(fileName)
+    const target = join(savePath, 'datapacks', fileName)
+    if (await missing(target)) return
+    await rm(target, { recursive: true, force: true })
+  }
+
+  async installDatapackFromMarket(options: InstallDatapackMarketOptions) {
+    const { savePath } = options
+    requireString(savePath)
+    const datapacksDir = join(savePath, 'datapacks')
+    await ensureDir(datapacksDir)
+    const provider = await this.app.registry.get(kMarketProvider)
+    const results = await provider.installFile({
+      ...options,
+      directory: datapacksDir,
+    })
+    return results.map(r => r.path)
+  }
+}
+
+function flattenPackDescription(description: unknown): string {
+  if (!description) return ''
+  if (typeof description === 'string') return description
+  if (typeof description === 'number' || typeof description === 'boolean') return String(description)
+  if (Array.isArray(description)) return description.map(flattenPackDescription).join('')
+  if (typeof description === 'object') {
+    const obj = description as Record<string, unknown>
+    const text = typeof obj.text === 'string' ? obj.text : ''
+    const extra = Array.isArray(obj.extra) ? obj.extra.map(flattenPackDescription).join('') : ''
+    return text + extra
+  }
+  return ''
 }

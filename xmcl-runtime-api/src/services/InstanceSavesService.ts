@@ -1,6 +1,6 @@
 import { Exception, InstanceNotFoundException } from '../entities/exception'
-import { InstallMarketOptionWithInstance } from '../entities/market'
-import { InstanceSave, InstanceSaveHeader, SaveMetadata, Saves } from '../entities/save'
+import { InstallMarketOptions, InstallMarketOptionWithInstance } from '../entities/market'
+import { InstanceDatapack, InstanceSave, InstanceSaveHeader, SaveDatapacks, SaveMetadata, Saves } from '../entities/save'
 import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
 
@@ -104,6 +104,35 @@ export interface CloneSaveOptions {
 
 export function getInstanceSaveKey(path: string) {
   return `instance-saves://${path}`
+}
+
+export interface ImportDatapackOptions {
+  /**
+   * The owner save folder path.
+   */
+  savePath: string
+  /**
+   * The source datapack zip file or folder path.
+   */
+  path: string
+}
+
+export interface DeleteDatapackOptions {
+  /**
+   * The owner save folder path.
+   */
+  savePath: string
+  /**
+   * The datapack file/folder name to delete.
+   */
+  fileName: string
+}
+
+export type InstallDatapackMarketOptions = InstallMarketOptions & {
+  /**
+   * The owner save folder path to install the datapack into.
+   */
+  savePath: string
 }
 
 export interface LinkSaveAsServerWorldOptions {
@@ -342,6 +371,32 @@ export interface InstanceSavesService {
    * coordinates, overwriting any existing chunk there.
    */
   pasteSaveChunks(options: PasteSaveChunksOptions): Promise<void>
+
+  /**
+   * Watch the datapacks installed under a save's `datapacks/` folder.
+   * @param savePath The save folder path
+   */
+  watchSaveDatapacks(savePath: string): Promise<SharedState<SaveDatapacks>>
+  /**
+   * Read all datapacks installed across every save of an instance.
+   * Each returned datapack carries its owning `savePath`.
+   * @param instancePath The instance folder path
+   */
+  getInstanceSaveDatapacks(instancePath: string): Promise<InstanceDatapack[]>
+  /**
+   * Import a local datapack (zip file or folder) into a save's `datapacks/` folder.
+   * @returns The imported datapack path
+   */
+  importDatapack(options: ImportDatapackOptions): Promise<string>
+  /**
+   * Delete a datapack from a save's `datapacks/` folder.
+   */
+  deleteDatapack(options: DeleteDatapackOptions): Promise<void>
+  /**
+   * Install a datapack from curseforge or modrinth market into a save's `datapacks/` folder.
+   * @returns The installed datapack paths
+   */
+  installDatapackFromMarket(options: InstallDatapackMarketOptions): Promise<string[]>
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'

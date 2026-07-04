@@ -32,6 +32,7 @@ const props = defineProps<{
   allFiles: ProjectFile[]
   updating?: boolean
   curseforge?: number
+  disableInstall?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -171,11 +172,11 @@ watch(
 // Install
 const installing = ref(false)
 const { install, installWithDependencies } = injection(kModrinthInstaller)
+const config = injection(kSWRVConfig)
 const onInstall = async (v: ProjectDetailVersion) => {
   if (installing.value) return
   try {
     installing.value = true
-    const config = injection(kSWRVConfig)
     let resolvedDeps = deps.value
     if (!resolvedDeps) {
       resolvedDeps = await getSWRV(
@@ -302,6 +303,7 @@ const { t } = useI18n()
     :following="following"
     :collection="collectionId"
     :loading-collections="loadingCollections"
+    :disable-install="disableInstall"
     @collection="onAddOrRemove"
     current-target="modrinth"
     @open-dependency="onOpenDependency"
@@ -312,5 +314,9 @@ const { t } = useI18n()
     @select:category="emit('category', $event)"
     @refresh="refresh()"
     @follow="onFollow"
-  />
+  >
+    <template v-for="(_, name) in $slots" #[name]="slotProps">
+      <slot :name="name" v-bind="slotProps ?? {}" />
+    </template>
+  </MarketProjectDetail>
 </template>

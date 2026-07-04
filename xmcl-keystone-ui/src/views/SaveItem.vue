@@ -8,9 +8,27 @@
     :height="itemHeight"
     :get-context-menu-items="getContextMenuItems"
     :dense="dense"
+    :droppable="!isSearchResult"
     @click="emit('click', $event)"
     @checked="emit('checked', $event)"
+    @drop-files="onDropFiles"
   >
+    <template
+      v-if="isSearchResult"
+      #title-chip
+    >
+      <v-chip
+        size="x-small"
+        label
+        variant="tonal"
+        :color="isDatapack ? 'orange' : 'primary'"
+      >
+        <v-icon start size="x-small">
+          {{ isDatapack ? 'layers' : 'public' }}
+        </v-icon>
+        {{ isDatapack ? t('save.datapack.name', 1) : t('save.name', 1) }}
+      </v-chip>
+    </template>
     <template
       v-if="!dense && installedOne"
       #labels
@@ -44,11 +62,19 @@ const props = defineProps<{
   itemHeight: number
   hasUpdate?: boolean
   dense?: boolean
+  isDatapack?: boolean
 }>()
 
 const installedOne = computed(() => props.item.installed[0])
+const isSearchResult = computed(() => props.item.installed.length === 0)
 
-const emit = defineEmits(['click', 'checked', 'install', 'delete'])
+const emit = defineEmits(['click', 'checked', 'install', 'delete', 'import-datapack'])
+
+const onDropFiles = (paths: string[]) => {
+  if (installedOne.value && paths.length > 0) {
+    emit('import-datapack', { save: installedOne.value, paths })
+  }
+}
 
 const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)

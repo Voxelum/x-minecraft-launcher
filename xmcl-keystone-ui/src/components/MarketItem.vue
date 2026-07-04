@@ -66,6 +66,7 @@
         <span class="flex-1 max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap">
           {{ (isEnabled ? item.localizedTitle : '') || title || item.title }}
         </span>
+        <slot name="title-chip" />
         <v-badge
           v-if="hasUpdate"
           color="red"
@@ -173,13 +174,14 @@ const props = defineProps<{
   disabled?: boolean
   height?: number
   draggable?: boolean
+  droppable?: boolean
   indent?: boolean
   indentColor?: string
   install?: (p: ProjectEntry) => Promise<void>
   getContextMenuItems?: () => ContextMenuItem[]
 }>()
 const slots = useSlots()
-const emit = defineEmits(['click', 'checked', 'drop'])
+const emit = defineEmits(['click', 'checked', 'drop', 'drop-files'])
 
 const hover = ref(false)
 const config = injection(kSWRVConfig)
@@ -197,12 +199,12 @@ const { isEnabled } = inject(kLocalizedContent, useLocalizedContentControl())
 
 const dragover = ref(0)
 const onDragEnter = (e: DragEvent) => {
-  if (props.draggable) {
+  if (props.draggable || (props.droppable && isFileDrag(e))) {
     dragover.value += 1
   }
 }
 const onDragLeave = () => {
-  if (props.draggable) {
+  if (props.draggable || props.droppable) {
     dragover.value += -1
   }
 }
@@ -217,12 +219,25 @@ function onDragEnd(e: DragEvent) {
 }
 function onDrop(e: DragEvent) {
   dragover.value = 0
+  const files = e.dataTransfer?.files
+  if (props.droppable && files && files.length > 0) {
+    e.preventDefault()
+    e.stopPropagation()
+    const paths = Array.from(files).map((f) => (f as any).path as string).filter(Boolean)
+    if (paths.length > 0) {
+      emit('drop-files', paths)
+    }
+    return
+  }
   emit('drop', e.dataTransfer?.getData('id'))
 }
 function onDragOver(e: DragEvent) {
-  if (props.draggable) {
+  if (props.draggable || (props.droppable && isFileDrag(e))) {
     e.preventDefault()
   }
+}
+function isFileDrag(e: DragEvent) {
+  return Array.from(e.dataTransfer?.types ?? []).includes('Files')
 }
 
 watch(() => props.item, (newVal, old) => {

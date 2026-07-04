@@ -54,6 +54,7 @@ const props = defineProps<{
   category?: number
   updating?: boolean
   modrinth?: string
+  disableInstall?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -405,12 +406,12 @@ const dependencies = computed(() =>
 const installing = ref(false)
 
 const { install, installWithDependencies } = injection(kCurseforgeInstaller)
+const config = injection(kSWRVConfig)
 
 const onInstall = async (mod: ProjectVersion) => {
   if (installing.value) return
   try {
     installing.value = true
-    const config = injection(kSWRVConfig)
     let resolvedDeps = deps.value
     if (!resolvedDeps) {
       const loaderType = curseforgeFile.value
@@ -506,6 +507,7 @@ const { collectionId, onAddOrRemove, loadingCollections } = useInCollection(modr
     :collection="collectionId"
     :following="following"
     :loading-collections="loadingCollections"
+    :disable-install="disableInstall"
     @load-changelog="loadChangelog"
     @collection="onAddOrRemove"
     @delete="onDelete"
@@ -517,5 +519,9 @@ const { collectionId, onAddOrRemove, loadingCollections } = useInCollection(modr
     @select:category="emit('category', Number($event))"
     @refresh="onRefresh"
     @follow="onFollow"
-  />
+  >
+    <template v-for="(_, name) in $slots" #[name]="slotProps">
+      <slot :name="name" v-bind="slotProps ?? {}" />
+    </template>
+  </MarketProjectDetail>
 </template>
