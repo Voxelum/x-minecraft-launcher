@@ -9,7 +9,7 @@
       <template v-else>
         <div class="flex flex-col gap-4">
           <BaseSettingGeneral />
-          <BaseSettingVersions :isExpanded="isExpanded" />
+          <BaseSettingVersions />
           <BaseSettingResolution />
         </div>
         <div class="flex flex-col gap-4">
@@ -97,7 +97,7 @@ import BaseSettingLaunch from './BaseSettingLaunch.vue'
 import BaseSettingSync from './BaseSettingSync.vue'
 import BaseSettingVersions from './BaseSettingVersions.vue'
 import BaseSettingResolution from './BaseSettingResolution.vue'
-import { templateRef, useMediaQuery } from '@vueuse/core'
+import { templateRef } from '@vueuse/core'
 import { kCompact } from '@/composables/scrollTop'
 import { useQuery } from '@/composables/query'
 import BaseSettingModpack from './BaseSettingModpack.vue'
@@ -203,8 +203,6 @@ const compact = injection(kCompact)
 onMounted(() => {
   compact.value = true
 })
-
-const isExpanded = useMediaQuery('(min-width: 1360px)')
 
 usePresence(computed(() => t('presence.instanceSetting', { instance: name.value })))
 

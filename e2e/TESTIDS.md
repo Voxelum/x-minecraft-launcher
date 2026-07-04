@@ -6,14 +6,14 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 129 (in 262 Vue files)
+**Total anchors:** 129 (in 264 Vue files)
 
 | Test ID | Defined in |
 |---|---|
 | `account-item` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L77`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L77) |
 | `accounts-add` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L105`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L105) |
 | `accounts-delete` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L53`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L53) |
-| `add-instance-advanced` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L91`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L91) |
+| `add-instance-advanced` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L13`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L13) |
 | `add-instance-cancel` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L4`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L4) |
 | `add-instance-create` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L28`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L28) |
 | `add-instance-dialog` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L4`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L4) |
@@ -69,8 +69,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `instance-server-edit-remove` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L124`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L124) |
 | `instance-server-edit-save` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L143`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L143) |
 | `launch-button` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L17`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L17) |
-| `launch-button-menu` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L85`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L85) |
-| `launch-button-play` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L41`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L41) |
+| `launch-button-menu` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L90`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L90) |
+| `launch-button-play` | [`xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L46`](../xmcl-keystone-ui/src/views/HomeLaunchButton.vue#L46) |
 | `launch-target-client` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L99`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L99) |
 | `launch-target-server` | [`xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41`](../xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41) |
 | `launch-to-server` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L190`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L190) |
@@ -91,8 +91,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `minecraft-friends-menu` | [`xmcl-keystone-ui/src/views/MeProfilePanel.vue#L178`](../xmcl-keystone-ui/src/views/MeProfilePanel.vue#L178) |
 | `minecraft-friends-menu-activator` | [`xmcl-keystone-ui/src/views/MeProfilePanel.vue#L137`](../xmcl-keystone-ui/src/views/MeProfilePanel.vue#L137) |
 | `minecraft-friends-outgoing-list` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L194`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L194) |
-| `multiplayer-group-id` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L161`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L161) |
-| `multiplayer-join` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L173`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L173) |
+| `multiplayer-group-id` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L77`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L77) |
+| `multiplayer-join` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L87`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L87) |
 | `multiplayer-page` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L3`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L3) |
 | `nav-accounts` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L26`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L26)<br>[`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L119`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L119)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L30`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L30) |
 | `nav-add-instance` | [`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L72`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L72) |
@@ -109,7 +109,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `save-world-map-paste` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L117`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L117) |
 | `save-world-map-place-bar` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L156`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L156) |
 | `server-tab-export` | [`xmcl-keystone-ui/src/views/BaseSettingServerExport.vue#L160`](../xmcl-keystone-ui/src/views/BaseSettingServerExport.vue#L160) |
-| `server-tab-launch` | [`xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L126`](../xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L126) |
+| `server-tab-launch` | [`xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L131`](../xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L131) |
 | `server-upstream-update-row` | [`xmcl-keystone-ui/src/views/HomeFooterCard.vue#L90`](../xmcl-keystone-ui/src/views/HomeFooterCard.vue#L90) |
 | `settings-check-update` | [`xmcl-keystone-ui/src/views/SettingUpdate.vue#L10`](../xmcl-keystone-ui/src/views/SettingUpdate.vue#L10) |
 | `settings-page` | [`xmcl-keystone-ui/src/views/Setting.vue#L3`](../xmcl-keystone-ui/src/views/Setting.vue#L3) |
@@ -134,8 +134,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `unresolved-files-install` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L135`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L135) |
 | `unresolved-files-search` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L113`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L113) |
 | `use-shared-servers-list` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L8`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L8) |
-| `version-input-fabric` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L49`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L49) |
-| `version-input-forge` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L41`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L41) |
-| `version-input-minecraft` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L23`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L23) |
-| `version-input-neoforge` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L33`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L33) |
-| `version-input-quilt` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L57`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L57) |
+| `version-input-fabric` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L48`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L48) |
+| `version-input-forge` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L40`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L40) |
+| `version-input-minecraft` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L22`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L22) |
+| `version-input-neoforge` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L32`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L32) |
+| `version-input-quilt` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L56`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L56) |
