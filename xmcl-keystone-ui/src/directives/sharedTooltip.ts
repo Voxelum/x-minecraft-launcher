@@ -75,7 +75,9 @@ function buildData(el: HTMLElement, bindings: DirectiveBinding<any>): SharedTool
   if (typeof val === 'string') {
     newData.text = val
   } else if (typeof val === 'function') {
-    assign(val())
+    const result = val()
+    if (result === undefined || result === null) return undefined
+    assign(result)
   } else if (typeof val === 'object' && val !== null) {
     assign(val)
   } else {
