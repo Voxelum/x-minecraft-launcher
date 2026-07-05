@@ -157,7 +157,7 @@ import { useQuery } from '@/composables/query'
 import { kModpackExport } from '@/composables/modpack'
 import { kInstanceServerLaunch } from '@/composables/instanceServerLaunch'
 import { useGamepadInnerNav } from '@/composables/gamepad'
-import { useGamepadDisplay } from '@/composables/gamepad'
+import { useGamepad } from '@/composables/gamepad'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { useMediaQuery } from '@vueuse/core'
@@ -183,7 +183,7 @@ const targetQuery = useQuery('target')
 
 const { exportModpack, exporting, loading } = injection(kModpackExport)
 const serverLaunch = injection(kInstanceServerLaunch)
-const { isActive: isGamepadActive, buttonX } = useGamepadDisplay()
+const { isActive: isGamepadActive, buttonX } = useGamepad()
 
 const router = useRouter()
 function navigate(target: '' | 'modpack' | 'appearance' | 'server') {

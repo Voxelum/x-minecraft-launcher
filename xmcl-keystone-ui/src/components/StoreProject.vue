@@ -78,6 +78,7 @@ import StoreProjectInstallVersionDialog, { StoreProjectVersion, StoreProjectVers
 import StoreProjectMembers, { TeamMember } from './StoreProjectMembers.vue'
 import StoreProjectTags from './StoreProjectTags.vue'
 import { CategoryChipProps } from './CategoryChip.vue'
+import { useGamepadAction } from '@/composables/gamepad'
 
 export interface StoreProject {
   id: string
@@ -136,4 +137,11 @@ const onInstallVersion = (v: StoreProjectVersion) => {
   installDialog.value = false
   emit('install', v)
 }
+
+// Gamepad X installs the project (opens the version picker).
+const { t } = useI18n()
+useGamepadAction('X', {
+  label: () => t('shared.install'),
+  handler: onInstall,
+})
 </script>

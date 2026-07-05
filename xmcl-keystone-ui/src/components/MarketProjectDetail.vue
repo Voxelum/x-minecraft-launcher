@@ -144,7 +144,7 @@
               color="primary"
             >
               <v-icon v-if="!isGamepadActive" class="material-icons-outlined" start> file_download </v-icon>
-              <span v-else class="gp-btn__key gp-btn__key--primary mr-1" style="transform: scale(0.85); vertical-align: middle;">{{ buttonALabel }}</span>
+              <span v-else class="gp-btn__key gp-btn__key--primary mr-1" style="transform: scale(0.85); vertical-align: middle;">{{ buttonX }}</span>
               {{ !hasInstalledVersion ? t('shared.install') : t('modInstall.switch') }}
             </v-btn>
             <div
@@ -606,7 +606,7 @@ import { getExpectedSize } from '@/util/size'
 import ModDetailVersion, { ProjectVersion } from './MarketProjectDetailVersion.vue'
 import AppCopyChip from './AppCopyChip.vue'
 import { kImageDialog } from '@/composables/imageDialog'
-import { useGamepadDisplay } from '@/composables/gamepad'
+import { useGamepad, useGamepadAction } from '@/composables/gamepad'
 import { useDateString } from '@/composables/date'
 import { kTheme } from '@/composables/theme'
 import { kSearchModel } from '@/composables/search'
@@ -648,7 +648,7 @@ const props = defineProps<{
   noPaddingContent?: boolean
 }>()
 
-const { isActive: isGamepadActive, buttonA: buttonALabel } = useGamepadDisplay()
+const { isActive: isGamepadActive, buttonX } = useGamepad()
 
 const emit = defineEmits<{
   (event: 'load-changelog', version: ProjectVersion): void
@@ -891,6 +891,14 @@ const onInstall = () => {
     emit('install', selectedVersion.value)
   }
 }
+
+// Gamepad X installs the selected version (replaces the old A-on-install-button
+// special case in the driver).
+useGamepadAction('X', {
+  label: () => t('shared.install'),
+  handler: onInstall,
+  disabled: () => props.selectedInstalled || !selectedVersion.value || props.loadingVersions || props.updating || !!props.disableInstall,
+})
 
 const onInstallDependency = (dep: ProjectDependency) => {
   if (props.updating || dep.installedVersion || dep.progress >= 0) return

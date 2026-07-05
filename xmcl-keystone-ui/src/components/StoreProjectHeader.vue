@@ -51,7 +51,7 @@
           @click="$emit('install')"
         >
           <v-icon start v-if="!isGamepadActive">file_download</v-icon>
-          <span v-else class="gp-btn__key gp-btn__key--primary mr-1" style="transform: scale(0.85); vertical-align: middle;">{{ buttonALabel }}</span>
+          <span v-else class="gp-btn__key gp-btn__key--primary mr-1" style="transform: scale(0.85); vertical-align: middle;">{{ buttonX }}</span>
           {{ t('shared.install') }}
         </v-btn>
         <v-btn
@@ -88,7 +88,7 @@ import { useDateString } from '@/composables/date'
 import { getExpectedSize } from '@/util/size'
 import CategoryChip from './CategoryChip.vue'
 import { StoreProject } from './StoreProject.vue'
-import { useGamepadDisplay } from '@/composables/gamepad'
+import { useGamepad } from '@/composables/gamepad'
 
 const props = defineProps<{
   project: StoreProject
@@ -98,7 +98,7 @@ const props = defineProps<{
 
 defineEmits(['install', 'open'])
 const { t } = useI18n()
-const { isActive: isGamepadActive, buttonA: buttonALabel } = useGamepadDisplay()
+const { isActive: isGamepadActive, buttonX } = useGamepad()
 
 const { getDateString } = useDateString()
 const items = computed(() => {

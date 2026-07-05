@@ -131,7 +131,7 @@
 <script lang="ts" setup>
 import { useDialog } from '../composables/dialog'
 import { useTaskCount } from '../composables/task'
-import { useGamepadDisplay } from '@/composables/gamepad'
+import { useGamepad } from '@/composables/gamepad'
 
 import { injection } from '@/util/inject'
 import { useWindowStyle } from '@/composables/windowStyle'
@@ -180,7 +180,7 @@ const taskTooltip = computed(() => {
 })
 
 const paletteBus = useCommandPaletteBus()
-const { isActive: gamepadActive, connected: gamepadConnected, name: gamepadName, labels: gamepadLabels } = useGamepadDisplay()
+const { isActive: gamepadActive, connected: gamepadConnected, name: gamepadName, labels: gamepadLabels } = useGamepad()
 const paletteShortcut = computed(() => {
   if (gamepadActive.value) {
     // Start / Menu button opens the palette in gamepad mode.

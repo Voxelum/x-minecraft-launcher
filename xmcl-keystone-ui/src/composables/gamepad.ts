@@ -1,4 +1,5 @@
-import { computed, isRef, onMounted, onScopeDispose, onUnmounted, ref, type InjectionKey, type Ref } from 'vue'
+import { useGamepad as useBrowserGamepad, createGlobalState, useLocalStorage } from '@vueuse/core'
+import { computed, isRef, onScopeDispose, ref, watch, type InjectionKey, type Ref } from 'vue'
 
 /**
  * All gamepad control logic lives here so it can be shared across views and
@@ -125,46 +126,18 @@ export function vibrateGamepad(options?: GamepadRumbleOptions) {
 }
 
 /**
- * Lightweight, read-only view of the shared gamepad state persisted in
- * `localStorage`. Use this in any component that only needs to render button
- * hints (e.g. install buttons). It stays in sync via `storage` events emitted
- * by {@link useGamepad}.
- *
- * Implemented as a lazily-created singleton so that any number of components
- * share one set of refs and a single `storage` listener (registered for the
- * lifetime of the app), instead of allocating fresh refs + a listener per call.
+ * One shared vueuse gamepad instance for the whole app: a single
+ * `requestAnimationFrame` poll loop, one pair of connect/disconnect listeners
+ * and one reactive `gamepads` array. It is created in a detached scope
+ * (`createGlobalState`) so it lives for the app's lifetime no matter which
+ * component or composable touches it first. Every consumer of {@link useGamepad}
+ * shares it, so the Gamepad API is never polled twice.
  */
-function createGamepadDisplay() {
-  const enabled = ref(localStorage.getItem('gamepad_enabled') === 'true')
-  const connected = ref(localStorage.getItem('gamepad_connected') === 'true')
-  const type = ref<GamepadType>((localStorage.getItem('gamepad_type') as GamepadType) || 'xbox')
-  const name = ref(localStorage.getItem('gamepad_name') || '')
+const useSharedGamepads = createGlobalState(() => useBrowserGamepad())
 
-  const isActive = computed(() => enabled.value && connected.value)
-  const labels = computed(() => getGamepadLabels(type.value))
-  const buttonA = computed(() => labels.value.confirm)
-  const buttonB = computed(() => labels.value.cancel)
-  // Face buttons X (left) and Y (top) — used to mark buttons a page binds to them.
-  const buttonX = computed(() => labels.value.backspace)
-  const buttonY = computed(() => labels.value.keyboard)
-  const isPlayStation = computed(() => isPlayStationType(type.value))
-
-  const onStorage = (e: StorageEvent) => {
-    if (e.key === 'gamepad_enabled') enabled.value = localStorage.getItem('gamepad_enabled') === 'true'
-    else if (e.key === 'gamepad_connected') connected.value = localStorage.getItem('gamepad_connected') === 'true'
-    else if (e.key === 'gamepad_type') type.value = (localStorage.getItem('gamepad_type') as GamepadType) || 'xbox'
-    else if (e.key === 'gamepad_name') name.value = localStorage.getItem('gamepad_name') || ''
-  }
-  window.addEventListener('storage', onStorage)
-
-  return { isActive, enabled, connected, type, name, labels, buttonA, buttonB, buttonX, buttonY, isPlayStation }
-}
-
-let gamepadDisplaySingleton: ReturnType<typeof createGamepadDisplay> | undefined
-
-export function useGamepadDisplay() {
-  if (!gamepadDisplaySingleton) gamepadDisplaySingleton = createGamepadDisplay()
-  return gamepadDisplaySingleton
+/** The pad we treat as "the controller": a standard-mapped one, else the first. */
+function pickGamepad(pads: readonly Gamepad[]): Gamepad | undefined {
+  return pads.find((g) => g.mapping === 'standard') ?? pads[0]
 }
 
 /* ------------------------ contextual X / Y actions ------------------------- */
@@ -645,36 +618,66 @@ export interface UseGamepadOptions {
   onEnablePrompt: () => void
 }
 
-export function useGamepad(options: UseGamepadOptions) {
-  const { actions, onEnablePrompt } = options
+/**
+ * The single app-wide gamepad instance: shared read-only state (enabled +
+ * live-derived connection / name / type / labels / button glyphs) *and* the
+ * input driver (per-frame processing, button edge detection, spatial focus
+ * navigation, modal context stack). Created once in a detached scope
+ * (`createGlobalState`) so every consumer — the driver host and the many
+ * components that only render button hints — shares one set of refs and a
+ * single processing loop.
+ *
+ * The high-level `actions` / `onEnablePrompt` can only come from the host that
+ * owns routing + dialogs (AppGamepadPrompt), so they are wired lazily via
+ * `boot()` the first time {@link useGamepad} is called with options.
+ */
+const useGamepadCore = createGlobalState(() => {
+  const { gamepads, onConnected, onDisconnected, pause } = useSharedGamepads()
 
-  const enabled = ref(localStorage.getItem('gamepad_enabled') === 'true')
-  const type = ref<GamepadType>((localStorage.getItem('gamepad_type') as GamepadType) || 'xbox')
-  const name = ref('')
-  const connected = ref(false)
+  // `enabled` is the only persisted state (a user preference). `useLocalStorage`
+  // persists it and keeps it live across windows via storage events.
+  const enabled = useLocalStorage('gamepad_enabled', false)
+  const setEnabled = (value: boolean) => {
+    enabled.value = value
+  }
 
+  // The pad currently driving input: the one most recently interacted with,
+  // else the first standard controller. Everything user-visible is derived live.
+  const preferredIndex = ref<number | null>(null)
+  const activeGamepad = computed<Gamepad | undefined>(() => {
+    const pads = gamepads.value
+    if (preferredIndex.value !== null) {
+      const found = pads.find((g) => g.index === preferredIndex.value)
+      if (found) return found
+    }
+    return pickGamepad(pads)
+  })
+
+  const connected = computed(() => !!activeGamepad.value)
+  const type = computed<GamepadType>(() => (activeGamepad.value ? detectGamepadType(activeGamepad.value.id) : 'xbox'))
+  const name = computed(() => (activeGamepad.value ? cleanGamepadName(activeGamepad.value.id) : ''))
+  const isActive = computed(() => enabled.value && connected.value)
   const labels = computed(() => getGamepadLabels(type.value))
   const buttonA = computed(() => labels.value.confirm)
   const buttonB = computed(() => labels.value.cancel)
+  // Face buttons X (left) and Y (top) — used to mark buttons a page binds to them.
+  const buttonX = computed(() => labels.value.backspace)
+  const buttonY = computed(() => labels.value.keyboard)
   const isPlayStation = computed(() => isPlayStationType(type.value))
 
-  const promptDismissed = ref(sessionStorage.getItem('gamepad_prompt_dismissed') === 'true')
-
-  // Broadcast shared flags via a real storage event so light-weight consumers
-  // (useGamepadDisplay) update live within the same document.
-  const broadcast = (key: string, value: string) => {
-    if (localStorage.getItem(key) === value) return
-    localStorage.setItem(key, value)
-    window.dispatchEvent(new StorageEvent('storage', { key, newValue: value }))
-  }
-
-  const setEnabled = (value: boolean) => {
-    enabled.value = value
-    broadcast('gamepad_enabled', value ? 'true' : 'false')
-  }
+  const promptDismissed = ref(false)
   const dismissPrompt = () => {
     promptDismissed.value = true
-    sessionStorage.setItem('gamepad_prompt_dismissed', 'true')
+  }
+
+  // High-level actions + the enable-prompt callback are owned by the host
+  // (AppGamepadPrompt) and injected lazily via boot(); until then the driver
+  // only does focus/scroll work that needs no app context.
+  let actions: GamepadActions | null = null
+  let onEnablePrompt: (() => void) | null = null
+  const boot = (options: UseGamepadOptions) => {
+    actions = options.actions
+    onEnablePrompt = options.onEnablePrompt
   }
 
   // Modal context stack (dialogs register themselves while open).
@@ -697,9 +700,7 @@ export function useGamepad(options: UseGamepadOptions) {
     return null
   }
 
-  // --- gamepad selection / connection ---
-  let preferredGamepadId: string | null = null
-  let animationFrameId: number | null = null
+  // --- input processing state ---
   let prevButtons: boolean[] = []
   let lastInputTime = 0
 
@@ -740,40 +741,12 @@ export function useGamepad(options: UseGamepadOptions) {
     }
   }
 
-  function pickActiveGamepad(): Gamepad | null {
-    const gamepads = navigator.getGamepads ? navigator.getGamepads() : []
-    for (const gp of gamepads) {
-      if (!gp) continue
-      const anyButtonPressed = gp.buttons.some((b) => b.pressed)
-      const anyAxisMoved = gp.axes.some((a) => Math.abs(a) > 0.5)
-      if (anyButtonPressed || anyAxisMoved) preferredGamepadId = gp.id
-    }
-
-    let active: Gamepad | null = null
-    if (preferredGamepadId) {
-      active = Array.from(gamepads).find((gp) => gp && gp.id === preferredGamepadId) || null
-      if (!active) preferredGamepadId = null
-    }
-    return active
-  }
-
-  function updateConnection(active: Gamepad | null) {
-    const isConnected = active !== null
-    if (isConnected !== connected.value) {
-      connected.value = isConnected
-      broadcast('gamepad_connected', isConnected ? 'true' : 'false')
-    }
-    if (active) {
-      const cleaned = cleanGamepadName(active.id)
-      if (cleaned !== name.value) {
-        name.value = cleaned
-        broadcast('gamepad_name', cleaned)
-      }
-      const detected = detectGamepadType(active.id)
-      if (detected !== type.value) {
-        type.value = detected
-        broadcast('gamepad_type', detected)
-      }
+  /** Remember the most-recently-interacted pad so it wins as the active one. */
+  function updatePreferred() {
+    for (const gp of gamepads.value) {
+      const anyButton = gp.buttons.some((b) => b.pressed)
+      const anyAxis = gp.axes.some((a) => Math.abs(a) > 0.5)
+      if (anyButton || anyAxis) preferredIndex.value = gp.index
     }
   }
 
@@ -805,10 +778,6 @@ export function useGamepad(options: UseGamepadOptions) {
         const field = current.closest('.v-field') as HTMLElement
         if (field && field !== current) field.click()
       }
-    } else {
-      const installBtn = (document.querySelector('[data-testid="market-detail-install"]') ||
-        document.querySelector('[data-testid="store-install"]')) as HTMLElement
-      if (installBtn && !installBtn.hasAttribute('disabled')) installBtn.click()
     }
   }
 
@@ -826,13 +795,13 @@ export function useGamepad(options: UseGamepadOptions) {
       if (activeDialog) {
         window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
       } else {
-        actions.back()
+        actions!.back()
       }
     }
 
     // L1 / R1 (bumpers) -> switch tabs.
-    if (justPressed(buttons, GamepadButtonIndex.L1)) actions.navigateTab('prev')
-    if (justPressed(buttons, GamepadButtonIndex.R1)) actions.navigateTab('next')
+    if (justPressed(buttons, GamepadButtonIndex.L1)) actions!.navigateTab('prev')
+    if (justPressed(buttons, GamepadButtonIndex.R1)) actions!.navigateTab('next')
 
     // L2 / R2 (triggers) -> page-defined inner navigation (see useGamepadInnerNav).
     if (justPressed(buttons, GamepadButtonIndex.L2)) topGamepadInnerNav()?.handler('prev')
@@ -840,8 +809,8 @@ export function useGamepad(options: UseGamepadOptions) {
 
     // Menu (Start) -> open the command palette (with the gamepad cards).
     // Select -> toggle the task dialog.
-    if (justPressed(buttons, GamepadButtonIndex.Start)) actions.quickAction()
-    if (justPressed(buttons, GamepadButtonIndex.Select)) actions.openTasks()
+    if (justPressed(buttons, GamepadButtonIndex.Start)) actions!.quickAction()
+    if (justPressed(buttons, GamepadButtonIndex.Select)) actions!.openTasks()
 
     // D-Pad / left stick -> spatial focus navigation.
     const stickX = axes[0] ?? 0
@@ -893,83 +862,63 @@ export function useGamepad(options: UseGamepadOptions) {
     }
   }
 
-  function poll() {
+  // vueuse keeps `gamepads` fresh via its own rAF loop, replacing the whole
+  // snapshot object for each pad every frame. We watch that object's *identity*
+  // (one reference compare per frame) instead of a `deep` watch that would
+  // re-traverse every button/axis each time. Keyboard/mouse users never fire
+  // `gamepadconnected`, so vueuse's loop stays paused and they pay zero
+  // per-frame cost; we pause it again once the last controller disconnects.
+  function processFrame() {
     const now = performance.now()
     trackFocusRestore(now)
 
-    const active = pickActiveGamepad()
-    updateConnection(active)
-
-    if (active) {
-      // Prompt to enable when a button is pressed and we are not active yet.
-      if (!enabled.value && !promptDismissed.value) {
-        if (active.buttons.some((b) => b.pressed)) onEnablePrompt()
-      }
-
-      const buttons = active.buttons
-      const axes = active.axes
-      if (prevButtons.length === 0) prevButtons = new Array(buttons.length).fill(false)
-
-      const ctx = activeContext()
-      if (ctx) {
-        handleContext(ctx, buttons, axes, now)
-      } else if (enabled.value) {
-        handleMainView(buttons, axes, now)
-      }
-
-      for (let i = 0; i < buttons.length; i++) {
-        prevButtons[i] = buttons[i].pressed
-      }
+    updatePreferred()
+    const active = activeGamepad.value
+    if (!active) {
+      prevButtons = []
+      return
     }
 
-    animationFrameId = requestAnimationFrame(poll)
-  }
+    // Prompt to enable when a button is pressed and we are not active yet.
+    if (!enabled.value && !promptDismissed.value && onEnablePrompt) {
+      if (active.buttons.some((b) => b.pressed)) onEnablePrompt()
+    }
 
-  // The polling loop only runs while a gamepad is present, so keyboard/mouse
-  // users (and idle Steam Decks with no controller) pay zero per-frame cost.
-  function startLoop() {
-    if (animationFrameId === null) animationFrameId = requestAnimationFrame(poll)
-  }
-  function stopLoop() {
-    if (animationFrameId !== null) {
-      cancelAnimationFrame(animationFrameId)
-      animationFrameId = null
+    const buttons = active.buttons
+    const axes = active.axes
+    if (prevButtons.length === 0) prevButtons = new Array(buttons.length).fill(false)
+
+    const ctx = activeContext()
+    if (ctx) {
+      handleContext(ctx, buttons, axes, now)
+    } else if (enabled.value && actions) {
+      handleMainView(buttons, axes, now)
+    }
+
+    for (let i = 0; i < buttons.length; i++) {
+      prevButtons[i] = buttons[i].pressed
     }
   }
 
-  const onGamepadConnected = () => {
+  // Fires once per frame on the snapshot's identity change. The source is
+  // independent of `preferredIndex` (which `processFrame` writes), so the sync
+  // callback can never re-trigger itself.
+  watch(() => pickGamepad(gamepads.value), processFrame, { flush: 'sync' })
+
+  onConnected(() => {
+    // A fresh controller re-opens the enable prompt for this session.
     promptDismissed.value = false
-    sessionStorage.removeItem('gamepad_prompt_dismissed')
-    startLoop()
-  }
-  const onGamepadDisconnected = () => {
-    const pads = navigator.getGamepads ? navigator.getGamepads() : []
-    if (Array.from(pads).some((p) => p)) return
-    // No controllers left: stop polling and reset connection state.
-    stopLoop()
-    preferredGamepadId = null
-    prevButtons = []
-    if (connected.value) {
-      connected.value = false
-      broadcast('gamepad_connected', 'false')
-    }
-  }
-
-  onMounted(() => {
-    window.addEventListener('gamepadconnected', onGamepadConnected)
-    window.addEventListener('gamepaddisconnected', onGamepadDisconnected)
-    // Start immediately if a controller is already present (e.g. after reload).
-    const pads = navigator.getGamepads ? navigator.getGamepads() : []
-    if (Array.from(pads).some((p) => p)) startLoop()
   })
-
-  onUnmounted(() => {
-    stopLoop()
-    window.removeEventListener('gamepadconnected', onGamepadConnected)
-    window.removeEventListener('gamepaddisconnected', onGamepadDisconnected)
+  onDisconnected((index) => {
+    if (preferredIndex.value === index) preferredIndex.value = null
+    prevButtons = []
+    // vueuse leaves its loop running after a disconnect; pause it ourselves
+    // when nothing is left to poll so idle users pay no per-frame cost.
+    if (gamepads.value.length === 0) pause()
   })
 
   return {
+    isActive,
     enabled,
     connected,
     type,
@@ -977,13 +926,27 @@ export function useGamepad(options: UseGamepadOptions) {
     labels,
     buttonA,
     buttonB,
+    buttonX,
+    buttonY,
     isPlayStation,
     promptDismissed,
     setEnabled,
     dismissPrompt,
     registerContext,
     unregisterContext,
+    boot,
   }
+})
+
+/**
+ * Access the single shared gamepad instance. Components that only render button
+ * hints call it with no arguments; the host (AppGamepadPrompt) passes `options`
+ * once to wire the high-level actions and the enable-prompt callback.
+ */
+export function useGamepad(options?: UseGamepadOptions) {
+  const core = useGamepadCore()
+  if (options) core.boot(options)
+  return core
 }
 
 export type UseGamepadReturn = ReturnType<typeof useGamepad>
