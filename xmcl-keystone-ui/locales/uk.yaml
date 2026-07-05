@@ -221,10 +221,10 @@ downloadCount: '{count} завантажень'
 downloadUpdate:
   name: Завантажити оновлення {version}
 duration:
-  day: '{duration} день | {duration} дні | {duration} днів'
-  hour: '{duration} година | {duration} години | {duration} годин'
-  minute: '{duration} хвилина | {duration} хвилини | {duration} хвилин'
-  second: '{duration} секунда | {duration} секунди | {duration} секунд'
+  day: '{duration} день | {duration} дня'
+  hour: '{duration} година | {duration} години'
+  minute: '{duration} хвилина | {duration} хвилини'
+  second: '{duration} секунда | {duration} секунди'
 env:
   select:
     all: Вибрати все
