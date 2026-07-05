@@ -14,6 +14,35 @@ import { SqliteWASMDialect } from '@xmcl/sqlite'
 import { LauncherApp } from '../app/LauncherApp'
 import { checksum } from '../util/fs'
 
+const PROJECT_MAPPING_OPEN_RETRY_DELAYS = [200, 500, 1_000, 2_000]
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+function getErrorMessage(e: unknown) {
+  return e instanceof Error ? e.message : `${e}`
+}
+
+function isDatabaseLockedError(e: unknown) {
+  return getErrorMessage(e).toLowerCase().includes('database is locked')
+}
+
+function isCorruptDatabaseError(e: unknown) {
+  const message = getErrorMessage(e).toLowerCase()
+  return message.includes('database disk image is malformed') ||
+    message.includes('not a database') ||
+    message.includes('file is encrypted or is not a database') ||
+    message.includes('no such table: project')
+}
+
+function isOpenDatabaseError(e: unknown) {
+  const message = getErrorMessage(e).toLowerCase()
+  return message.includes('could not open the database') ||
+    message.includes('unable to open database file') ||
+    message.includes('failed to open')
+}
+
 interface Database {
   project: {
     modrinthId: string
@@ -36,22 +65,31 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
   ) {
     super(app, async () => {
       try {
-        await this.ensureDatabase(true)
+        await this.tryEnsureDatabase(true)
       } catch (e) {
         if (typeof e === 'object' && e) {
           Object.assign(e, { Cause: 'ProjectMappingInitialize' })
         }
-        throw e
+        this.warn('Project mapping database is not ready during initialization. It will be retried lazily.', e)
       }
     })
   }
 
-  private async ensureDatabase(init = false) {
-    const locale = this.settings.locale.toLowerCase() || 'en'
+  private deleteProjectMappingDatabase(filePath: string) {
+    for (const path of [filePath, `${filePath}.lock`, `${filePath}-wal`, `${filePath}-shm`]) {
+      try {
+        if (existsSync(path)) {
+          rmSync(path, { recursive: true })
+        }
+      } catch (e) {
+        this.warn(`Failed to remove project mapping database file ${path}`, e)
+      }
+    }
+  }
+
+  private async ensureDatabaseFile(locale: string, forceDownload = false) {
     const gfw = await this.app.registry.get(kGFW)
     const app = this.app
-
-    if (this.#db?.locale === locale) return this.#db.db
 
     let filePath = join(this.app.appDataPath, `project-mapping-${locale}.sqlite`)
     await this.mutex.of('project-mapping').runExclusive(async () => {
@@ -88,8 +126,8 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
       if (!sha256) {
         return
       }
-      const currentSha256 = await checksum(filePath, 'sha256').catch(() => '')
-      if (currentSha256 !== sha256) {
+      const currentSha256 = forceDownload ? '' : await checksum(filePath, 'sha256').catch(() => '')
+      if (forceDownload || currentSha256 !== sha256) {
         for (const url of urls) {
           try {
             const resp = await this.app.fetch(url)
@@ -117,27 +155,24 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
       }
     })
 
-    const newLocale = this.settings.locale.toLowerCase()
+    return filePath
+  }
 
-    if (this.#db?.locale === locale) return this.#db.db
-    if (newLocale !== locale) return undefined
-
-    if (init) {
-      try {
-        const lockPath = filePath + '.lock'
-        if (existsSync(lockPath)) {
-          rmSync(lockPath, { recursive: true })
-        }
-      } catch { }
-    }
-
+  private async openDatabase(filePath: string, locale: string) {
     const db = new Kysely<Database>({
       dialect: new SqliteWASMDialect({
+        databasePath: filePath,
         database: () => {
           try {
-            return new SQLDatabase(filePath, {
+            const db = new SQLDatabase(filePath, {
               readOnly: true,
             })
+            try {
+              db.run('PRAGMA busy_timeout = 5000')
+            } catch (e) {
+              this.warn('Failed to configure project mapping database busy timeout', e)
+            }
+            return db
           } catch (e) {
             this.#db = undefined
             throw e
@@ -146,7 +181,7 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
         onError: (e) => {
           // @ts-ignore
           e.source = 'ProjectMappingDatabase'
-        }
+        },
       }),
       log: (e) => {
         if (e.level === 'error') {
@@ -154,6 +189,16 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
         }
       },
     })
+
+    try {
+      await db.selectFrom('project')
+        .select('modrinthId')
+        .limit(1)
+        .execute()
+    } catch (e) {
+      await db.destroy().catch(() => {})
+      throw e
+    }
 
     this.#db = {
       db,
@@ -167,8 +212,70 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
     return db
   }
 
+  private async ensureDatabase(init = false) {
+    const locale = this.settings.locale.toLowerCase() || 'en'
+
+    if (this.#db?.locale === locale) return this.#db.db
+
+    let filePath = await this.ensureDatabaseFile(locale)
+
+    const newLocale = this.settings.locale.toLowerCase() || 'en'
+
+    if (this.#db?.locale === locale) return this.#db.db
+    if (newLocale !== locale) return undefined
+
+    if (init) {
+      try {
+        const lockPath = filePath + '.lock'
+        if (existsSync(lockPath)) {
+          rmSync(lockPath, { recursive: true })
+        }
+      } catch { }
+    }
+
+    let shouldRebuild = false
+    for (let attempt = 0; attempt <= PROJECT_MAPPING_OPEN_RETRY_DELAYS.length; attempt++) {
+      try {
+        if (shouldRebuild) {
+          this.deleteProjectMappingDatabase(filePath)
+          filePath = await this.ensureDatabaseFile(locale, true)
+          shouldRebuild = false
+        }
+        return await this.openDatabase(filePath, locale)
+      } catch (e) {
+        this.#db = undefined
+        if (isCorruptDatabaseError(e)) {
+          shouldRebuild = true
+          this.warn('Project mapping database is corrupt. Rebuilding the cache.', e)
+          continue
+        }
+        if (isDatabaseLockedError(e) && attempt < PROJECT_MAPPING_OPEN_RETRY_DELAYS.length) {
+          await sleep(PROJECT_MAPPING_OPEN_RETRY_DELAYS[attempt])
+          continue
+        }
+        if (isOpenDatabaseError(e) && attempt < PROJECT_MAPPING_OPEN_RETRY_DELAYS.length) {
+          await sleep(PROJECT_MAPPING_OPEN_RETRY_DELAYS[attempt])
+          continue
+        }
+        throw e
+      }
+    }
+
+    return undefined
+  }
+
+  private async tryEnsureDatabase(init = false) {
+    try {
+      return await this.ensureDatabase(init)
+    } catch (e) {
+      this.#db = undefined
+      this.warn('Failed to open project mapping database. Project mapping lookup will be disabled until the next retry.', e)
+      return undefined
+    }
+  }
+
   async lookupByKeyword(keyword: string): Promise<ProjectMapping[]> {
-    const db = await this.ensureDatabase()
+    const db = await this.tryEnsureDatabase()
 
     if (!db) return []
 
@@ -179,12 +286,16 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
       ]))
       .selectAll()
       .execute()
+      .catch((e) => {
+        this.warn('Failed to lookup project mapping by keyword', e)
+        return []
+      })
 
     return result
   }
 
   async lookupByModrinth(modrinth: string) {
-    const db = await this.ensureDatabase()
+    const db = await this.tryEnsureDatabase()
 
     if (!db) return undefined
 
@@ -192,11 +303,15 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
       .where('modrinthId', '=', modrinth)
       .selectAll()
       .executeTakeFirst()
+      .catch((e) => {
+        this.warn('Failed to lookup project mapping by Modrinth id', e)
+        return undefined
+      })
     return result
   }
 
   async lookupByCurseforge(curseforge: number) {
-    const db = await this.ensureDatabase()
+    const db = await this.tryEnsureDatabase()
 
     if (!db) return undefined
 
@@ -204,11 +319,15 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
       .where('curseforgeId', '=', curseforge)
       .selectAll()
       .executeTakeFirst()
+      .catch((e) => {
+        this.warn('Failed to lookup project mapping by CurseForge id', e)
+        return undefined
+      })
     return result
   }
 
   async lookupBatch(modrinth: string[], curseforge: number[]) {
-    const db = await this.ensureDatabase()
+    const db = await this.tryEnsureDatabase()
 
     if (!db) return []
 
@@ -219,6 +338,10 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
       ]))
       .selectAll()
       .execute()
+      .catch((e) => {
+        this.warn('Failed to lookup project mappings in batch', e)
+        return []
+      })
     return result
   }
 }
