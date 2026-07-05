@@ -313,7 +313,7 @@ export function useThemeWritter(
   save: () => void,
   options: ThemeWritterOptions = {},
 ) {
-  const { addMedia, removeMedia, exportTheme, importTheme } = useService(ThemeServiceKey)
+  const { addMedia, removeMedia, exportTheme, importTheme, getDesktopWallpaper } = useService(ThemeServiceKey)
   const instanceThemeService = useService(InstanceThemeServiceKey)
   const { instancePath } = options
 
@@ -638,6 +638,13 @@ export function useThemeWritter(
     writeTheme()
   }
 
+  async function setBackgroundToDesktop() {
+    const path = await getDesktopWallpaper()
+    if (!path) return false
+    await setBackgroundImage(path)
+    return true
+  }
+
   async function setBackgroundImageUrl(url: string, type: 'image' | 'video') {
     const media = await resolveMediaFromUrl(url, type)
     const theme = currentTheme.value
@@ -760,6 +767,7 @@ export function useThemeWritter(
     removeMusic,
     setBackgroundImage,
     setBackgroundImageUrl,
+    setBackgroundToDesktop,
     clearBackgroundImage,
     setFont,
     setFontUrl,

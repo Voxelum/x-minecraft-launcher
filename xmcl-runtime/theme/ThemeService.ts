@@ -10,6 +10,7 @@ import { AbstractService, ExposeServiceKey } from '~/service'
 import { writeZipFile } from '~/util/zip'
 import { LauncherApp } from '../app/LauncherApp'
 import { ZipFile } from 'yazl'
+import { getDesktopWallpaper } from './getDesktopWallpaper'
 
 const MAX_CSS_SIZE = 1024 * 1024 // 1 MB
 /**
@@ -176,6 +177,10 @@ export class ThemeService extends AbstractService implements IThemeService {
       return
     }
     this.app.shell.showItemInFolder(path)
+  }
+
+  async getDesktopWallpaper(): Promise<string | undefined> {
+    return getDesktopWallpaper(this.app.platform.os)
   }
 
   async addMedia(filePath: string): Promise<MediaData> {

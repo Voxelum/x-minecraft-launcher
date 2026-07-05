@@ -1556,6 +1556,7 @@ setting:
   backgroundImage: Background image
   backgroundImageClear: clear
   backgroundImageDescription: Select an image as background or clear
+  useDesktopBackground: Use current desktop wallpaper
   backgroundImageFit:
     contain: Contain
     cover: Cover

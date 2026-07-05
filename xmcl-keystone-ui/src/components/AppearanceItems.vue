@@ -91,6 +91,16 @@
       long-action
     >
       <template #action>
+        <v-btn
+          v-shared-tooltip="() => t('setting.useDesktopBackground')"
+          icon
+          variant="text"
+          class="mr-2"
+          :loading="settingDesktopBackground"
+          @click="applyDesktopBackground"
+        >
+          <v-icon>wallpaper</v-icon>
+        </v-btn>
         <v-select
           v-model="backgroundImageFit"
           class="mr-4 w-40"
@@ -477,6 +487,7 @@ const {
   backgroundImage,
   setBackgroundImage,
   setBackgroundImageUrl,
+  setBackgroundToDesktop,
   clearBackgroundImage,
   exportTheme,
   importTheme,
@@ -518,6 +529,11 @@ watch(backgroundType, (type) => {
   if (type !== BackgroundType.IMAGE && type !== BackgroundType.VIDEO) return
   if (!backgroundColorOverlay.value) {
     backgroundColorOverlay.value = true
+  }
+  // When the user first switches to an image background and nothing has been
+  // set before, default to the current OS desktop wallpaper.
+  if (type === BackgroundType.IMAGE && !backgroundImage.value) {
+    applyDesktopBackground()
   }
   const color = backgroundColor.value
   if (!color || !color.startsWith('#')) return
@@ -669,6 +685,16 @@ function selectImage() {
       setBackgroundImage(imagePath)
     }
   })
+}
+const settingDesktopBackground = ref(false)
+async function applyDesktopBackground() {
+  if (settingDesktopBackground.value) return
+  settingDesktopBackground.value = true
+  try {
+    await setBackgroundToDesktop()
+  } finally {
+    settingDesktopBackground.value = false
+  }
 }
 function selectVideo() {
   showOpenDialog({
