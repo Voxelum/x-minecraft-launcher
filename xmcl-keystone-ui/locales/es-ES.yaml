@@ -898,7 +898,10 @@ screenshots:
 search:
   favorate: Recopilación
   local: Instalado
-  market: Mercado Mod
+  market: Mercado
+  emptyInstalled: Aún no hay nada instalado
+  browseMarket: Explorar el mercado
+  noResults: No se encontraron resultados
 server:
   acceptingMinecraftVersion: Aceptando Versión de Minecraft
   creationHint: Por favor, completa la dirección del servidor y realiza un ping al servidor

@@ -1152,7 +1152,10 @@ screenshots:
 search:
   favorate: 收藏
   local: 已安裝
-  market: 模組市集
+  market: 市集
+  emptyInstalled: 尚未安裝任何內容
+  browseMarket: 瀏覽市集
+  noResults: 找不到結果
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   addServer: 新增伺服器

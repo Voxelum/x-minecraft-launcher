@@ -1183,7 +1183,10 @@ screenshots:
 search:
   favorate: 'مجموعة'
   local: 'تم التثبيت'
-  market: 'سوق مود'
+  market: 'سوق'
+  emptyInstalled: 'لا شيء مثبت بعد'
+  browseMarket: 'تصفح السوق'
+  noResults: 'لا توجد نتائج'
 server:
   acceptingMinecraftVersion: 'قبول نسخة ماينكرافت'
   creationHint: 'يرجى ملء عنوان الخادم واختبار اتصال الخادم'

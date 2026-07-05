@@ -1450,7 +1450,10 @@ screenshots:
 search:
   favorate: Collection
   local: Installed
-  market: Mod Market
+  market: Market
+  emptyInstalled: Nothing installed yet
+  browseMarket: Browse Market
+  noResults: No results found
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
   addServer: Add Server

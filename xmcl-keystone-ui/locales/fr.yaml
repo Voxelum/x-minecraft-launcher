@@ -1110,7 +1110,10 @@ screenshots:
 search:
   favorate: Collection
   local: Installé
-  market: Mod Market
+  market: Marché
+  emptyInstalled: Rien d'installé pour le moment
+  browseMarket: Parcourir le marché
+  noResults: Aucun résultat trouvé
 server:
   acceptingMinecraftVersion: Accepter la version Minecraft
   creationHint: Veuillez remplir l'adresse du serveur et envoyer un ping au serveur

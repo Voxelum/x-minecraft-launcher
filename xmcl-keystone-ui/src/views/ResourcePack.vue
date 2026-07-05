@@ -16,6 +16,9 @@
         :label="`${originalItems.length} ${t('resourcepack.name', originalItems.length)}`"
       />
     </template>
+    <template #placeholder>
+      <MarketEmptyPlaceholder />
+    </template>
     <template #filter>
       <MarketFilterPanel
         :modrinth-categories="modrinthCategories"
@@ -121,6 +124,7 @@ import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
+import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'

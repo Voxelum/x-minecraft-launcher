@@ -1145,7 +1145,10 @@ screenshots:
 search:
   favorate: コレクション
   local: 設置済み
-  market: モッドマーケット
+  market: マーケット
+  emptyInstalled: まだ何もインストールされていません
+  browseMarket: マーケットを見る
+  noResults: 結果が見つかりません
 server:
   acceptingMinecraftVersion: Minecraftバージョンを使用中
   creationHint: サーバーアドレスを入力し、pingしてください

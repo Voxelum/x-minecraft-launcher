@@ -1032,7 +1032,10 @@ screenshots:
 search:
   favorate: 컬렉션
   local: 설치됨
-  market: 모드 마켓
+  market: 마켓
+  emptyInstalled: 아직 설치된 항목이 없습니다
+  browseMarket: 마켓 둘러보기
+  noResults: 결과를 찾을 수 없습니다
 server:
   acceptingMinecraftVersion: 허용하는 마인크래프트 버전
   creationHint: 서버 주소를 입력하고 서버에 핑을 보내세요

@@ -1098,7 +1098,10 @@ screenshots:
 search:
   favorate: Koleksiyon
   local: Yüklü
-  market: Mod Pazarı
+  market: Pazar
+  emptyInstalled: Henüz hiçbir şey yüklenmedi
+  browseMarket: Pazara göz at
+  noResults: Sonuç bulunamadı
 server:
   acceptingMinecraftVersion: Kabul Edilen Minecraft Sürümü
   creationHint: Lütfen sunucu adresini doldurun ve sunucuya ping atın

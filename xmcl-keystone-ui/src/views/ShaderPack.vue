@@ -16,11 +16,17 @@
         :label="`${originalItems.length} ${t('shaderPack.name', originalItems.length)}`"
       />
     </template>
+    <template #placeholder>
+      <MarketEmptyPlaceholder />
+    </template>
     <template #filter>
       <MarketFilterPanel
         :modrinth-categories="modrinthCategories"
         modrinth-category-filter="shader"
         :enable-modrinth="isModrinthActive"
+        :curseforge-category="curseforgeCategory"
+        curseforge-category-filter="shaders"
+        :enable-curseforge="isCurseforgeActive"
         :game-version="gameVersion"
         :local-sort="sortBy"
         v-model:sort="marketSort"
@@ -28,6 +34,8 @@
         :collection="selectedCollection"
         @update:modrinth-categories="modrinthCategories = $event"
         @update:enable-modrinth="isModrinthActive = $event"
+        @update:curseforge-category="curseforgeCategory = $event"
+        @update:enable-curseforge="isCurseforgeActive = $event"
         @update:game-version="gameVersion = $event"
         @update:local-sort="sortBy = $event"
         @update:mode="source = $event"
@@ -236,6 +244,7 @@ import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
+import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import { useLocalStorage } from '@vueuse/core'
@@ -270,6 +279,7 @@ const {
   currentView,
   keyword,
   isModrinthActive,
+  isCurseforgeActive,
   sort: marketSort,
   source,
   selectedCollection,

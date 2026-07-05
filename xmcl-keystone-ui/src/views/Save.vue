@@ -17,6 +17,9 @@
         :label="`${items.length} ${t('save.name', items.length)}`"
       />
     </template>
+    <template #placeholder>
+      <MarketEmptyPlaceholder />
+    </template>
     <template #filter>
       <MarketFilterPanel
         :curseforge-category="curseforgeCategory"
@@ -193,6 +196,7 @@ import MarketBase from '@/components/MarketBase.vue'
 import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketItem from '@/components/MarketItem.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
+import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import { useService } from '@/composables'

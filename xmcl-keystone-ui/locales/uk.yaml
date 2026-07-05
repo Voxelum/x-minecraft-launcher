@@ -1132,7 +1132,10 @@ screenshots:
 search:
   favorate: Колекція
   local: Встановлені
-  market: Ринок модів
+  market: Ринок
+  emptyInstalled: Ще нічого не встановлено
+  browseMarket: Переглянути ринок
+  noResults: Нічого не знайдено
 server:
   acceptingMinecraftVersion: Приймає версію Minecraft
   creationHint: Будь ласка, заповніть адресу сервера та пропінгуйте сервер

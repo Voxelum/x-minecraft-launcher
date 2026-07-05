@@ -1086,7 +1086,10 @@ screenshots:
 search:
   favorate: Kolekcja
   local: Zainstalowany
-  market: Rynek modów
+  market: Rynek
+  emptyInstalled: Nic jeszcze nie zainstalowano
+  browseMarket: Przeglądaj rynek
+  noResults: Nie znaleziono wyników
 server:
   acceptingMinecraftVersion: Akceptowanie wersji Minecraft
   creationHint: Wypełnij adres serwera i wykonaj ping do serwera

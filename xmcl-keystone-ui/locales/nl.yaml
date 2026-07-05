@@ -1106,7 +1106,10 @@ screenshots:
 search:
   favorate: Collectie
   local: Geïnstalleerd
-  market: Mod Markt
+  market: Markt
+  emptyInstalled: Nog niets geïnstalleerd
+  browseMarket: Markt bekijken
+  noResults: Geen resultaten gevonden
 server:
   acceptingMinecraftVersion: Accepteert Minecraft Versie
   creationHint: Vul het serveradres in en ping de server

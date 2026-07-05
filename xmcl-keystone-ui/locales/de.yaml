@@ -1178,7 +1178,10 @@ screenshots:
 search:
   favorate: Sammlung
   local: Installiert
-  market: Mod-Markt
+  market: Markt
+  emptyInstalled: Noch nichts installiert
+  browseMarket: Markt durchsuchen
+  noResults: Keine Ergebnisse gefunden
 server:
   acceptingMinecraftVersion: Eine Version von Minecraft adoptieren
   creationHint: Geben Sie die Serveradresse und den Server-Ping an

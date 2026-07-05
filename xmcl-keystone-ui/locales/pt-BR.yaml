@@ -1099,6 +1099,9 @@ screenshots:
   openFolder: Abrir pasta de capturas de tela
 search:
   favorate: Coleção
+  emptyInstalled: Nada instalado ainda
+  browseMarket: Explorar o mercado
+  noResults: Nenhum resultado encontrado
 server:
   acceptingMinecraftVersion: Aceitando Versão do Minecraft
   creationHint: Preencha o endereço do servidor e faça o ping no servidor

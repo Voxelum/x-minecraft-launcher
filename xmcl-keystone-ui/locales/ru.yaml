@@ -1134,7 +1134,10 @@ screenshots:
 search:
   favorate: Коллекция
   local: Установлено
-  market: Мод маркет
+  market: Маркет
+  emptyInstalled: Пока ничего не установлено
+  browseMarket: Открыть маркет
+  noResults: Ничего не найдено
 server:
   acceptingMinecraftVersion: Принятие версии Minecraft
   creationHint: Пожалуйста, заполните адрес сервера и протестируйте сервер

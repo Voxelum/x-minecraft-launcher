@@ -1096,7 +1096,10 @@ screenshots:
 search:
   favorate: Жинақ
   local: Орнатылған
-  market: Мод нарығы
+  market: Нарық
+  emptyInstalled: Әзірге ештеңе орнатылмаған
+  browseMarket: Нарықты шолу
+  noResults: Нәтиже табылмады
 server:
   acceptingMinecraftVersion: Қабылдайтын Minecraft нұсқасы
   creationHint: Сервер мекенжайын толтырып, серверге ping жасаңыз
