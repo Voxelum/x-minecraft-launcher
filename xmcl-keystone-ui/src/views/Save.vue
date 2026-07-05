@@ -42,7 +42,11 @@
         @update:enable-modrinth="isModrinthActive = $event"
         @update:mode="source = $event"
         @update:game-version="gameVersion = $event"
-      />
+      >
+        <template #local>
+          <LinkSharedFolderSetting domain="saves" @changed="revalidate" />
+        </template>
+      </MarketFilterPanel>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-list-subheader
@@ -197,6 +201,7 @@ import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketItem from '@/components/MarketItem.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
 import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
+import LinkSharedFolderSetting from '@/components/LinkSharedFolderSetting.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import { useService } from '@/composables'
@@ -227,7 +232,7 @@ import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
 
 const { path } = injection(kInstance)
-const { error, deleteSave, saves } = injection(kInstanceSave)
+const { error, deleteSave, saves, revalidate } = injection(kInstanceSave)
 
 const { curseforgeCategory, gameVersion, currentView, keyword, source, isCurseforgeActive, isModrinthActive, modrinthCategories, sort: marketSort } = injection(kSearchModel)
 const { effect, items, sortBy, loadMore, loading, error: searchError, curseforgeDatapackCategory } = injection(kSaveSearch)

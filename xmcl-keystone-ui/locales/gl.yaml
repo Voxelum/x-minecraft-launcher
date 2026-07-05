@@ -1033,6 +1033,11 @@ quiltVersion:
   disable: Quilt uitschakelen
   empty: Quilt ondersteunt Minecraft {version} niet
 resourcepack:
+  linkShared: Compartir paquetes de recursos entre instancias
+  linkSharedHint: >-
+    Vincular o cartafol resourcepacks desta instancia co cartafol compartido
+    global para que todas as instancias usen os mesmos paquetes de recursos. Os
+    paquetes existentes fusiónanse no cartafol compartido.
   compatible: Compatibel formaat {format} met {version}
   defaultDescription: De standaard look en feel van Minecraft
   delete:
@@ -1055,6 +1060,11 @@ resourcepack:
   unselected: Niet-geselecteerde Resourcepacks
   search: Buscar paquetes de recursos...
 save:
+  linkShared: Compartir partidas entre instancias
+  linkSharedHint: >-
+    Vincular o cartafol saves desta instancia co cartafol compartido global para
+    que todas as instancias compartan os mesmos mundos. As partidas existentes
+    fusiónanse no cartafol compartido.
   allowCheats: Cheats Toestaan
   copy:
     name: Save Kopiëren
@@ -1378,6 +1388,11 @@ setup:
     name: Stel Taal In
   path: Huidig Pad
 shaderPack:
+  linkShared: Compartir paquetes de shaders entre instancias
+  linkSharedHint: >-
+    Vincular o cartafol shaderpacks desta instancia co cartafol compartido global
+    para que todas as instancias usen os mesmos paquetes de shaders. Os paquetes
+    existentes fusiónanse no cartafol compartido.
   deletion: Verwijder Shader Pack
   deletionHint: >-
     Dit verwijdert het shaderpack-bestand {path} en kan niet ongedaan worden gemaakt.

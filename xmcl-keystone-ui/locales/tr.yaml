@@ -1032,6 +1032,11 @@ quiltVersion:
   disable: Quilt'i Devre Dışı Bırak
   empty: Quilt Minecraft {version} sürümünü desteklemiyor
 resourcepack:
+  linkShared: Kaynak paketlerini örnekler arasında paylaş
+  linkSharedHint: >-
+    Bu örneğin resourcepacks klasörünü genel paylaşılan klasöre bağlayarak tüm
+    örneklerin aynı kaynak paketlerini kullanmasını sağlayın. Mevcut paketler
+    paylaşılan klasörde birleştirilir.
   compatible: '{format} formatı {version} ile uyumlu'
   defaultDescription: Minecraft'ın varsayılan görünümü ve hissi
   delete:
@@ -1053,6 +1058,11 @@ resourcepack:
   noPacks: Kaynak paketi bulunamadı
   search: Kaynak paketleri ara...
 save:
+  linkShared: Kayıtları örnekler arasında paylaş
+  linkSharedHint: >-
+    Bu örneğin saves klasörünü genel paylaşılan klasöre bağlayarak tüm örneklerin
+    aynı dünyaları paylaşmasını sağlayın. Mevcut kayıtlar paylaşılan klasörde
+    birleştirilir.
   allowCheats: Hilelere İzin Ver
   copy:
     name: Kaydı Kopyala
@@ -1368,6 +1378,11 @@ setup:
     name: Dili Ayarla
   path: Mevcut Yol
 shaderPack:
+  linkShared: Shader paketlerini örnekler arasında paylaş
+  linkSharedHint: >-
+    Bu örneğin shaderpacks klasörünü genel paylaşılan klasöre bağlayarak tüm
+    örneklerin aynı shader paketlerini kullanmasını sağlayın. Mevcut paketler
+    paylaşılan klasörde birleştirilir.
   deletion: Gölgelendirici Paketini Sil
   deletionHint: Bu işlem {path} gölgelendirici paketi dosyasını silecek ve geri alınamaz.
   disabled: Devre Dışı Bırakılan Gölgelendirici Paketleri

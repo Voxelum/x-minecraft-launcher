@@ -1073,6 +1073,9 @@ blueprint:
     newFile: 另存為新檔案
     action: 取代
 resourcepack:
+  linkShared: 在實例間共用資源包
+  linkSharedHint: >-
+    將此實例的 resourcepacks 資料夾連結到全域共用資料夾，讓所有實例共用相同的資源包。現有的資源包會被合併到共用資料夾中。
   compatible: 目前格式({format}) 可用於目前版本 {version}
   defaultDescription: Minecraft 的預設材質
   delete:
@@ -1093,6 +1096,9 @@ resourcepack:
   noPacks: 未找到資源包
   search: 搜尋資源包...
 save:
+  linkShared: 在實例間共用存檔
+  linkSharedHint: >-
+    將此實例的 saves 資料夾連結到全域共用資料夾，讓所有實例共用相同的世界存檔。現有的存檔會被合併到共用資料夾中。
   chunkSelectMode: 選擇區塊
   panMode: 平移
   chunkSelected: 已選擇 {count} 個區塊
@@ -1468,6 +1474,9 @@ setup:
     name: 設定語言
   path: 目前位置
 shaderPack:
+  linkShared: 在實例間共用光影包
+  linkSharedHint: >-
+    將此實例的 shaderpacks 資料夾連結到全域共用資料夾，讓所有實例共用相同的光影包。現有的光影包會被合併到共用資料夾中。
   deletion: 刪除光影包
   deletionHint: 這將把光影包檔案 {path} 永久刪除。
   disabled: 未啟用的光影

@@ -1032,6 +1032,11 @@ quiltVersion:
   disable: Disabilita Quilt
   empty: Quilt non supporta Minecraft {version}
 resourcepack:
+  linkShared: Condividi i resource pack tra le istanze
+  linkSharedHint: >-
+    Collega la cartella resourcepacks di questa istanza alla cartella condivisa
+    globale in modo che tutte le istanze usino gli stessi resource pack. I
+    pacchetti esistenti vengono uniti nella cartella condivisa.
   compatible: Formato compatibile {format} con {version}
   defaultDescription: Aspetto e funzionalità predefiniti di Minecraft
   delete:
@@ -1054,6 +1059,11 @@ resourcepack:
   noPacks: Nessun pacchetto risorse trovato
   search: Cerca pacchetti risorse...
 save:
+  linkShared: Condividi i salvataggi tra le istanze
+  linkSharedHint: >-
+    Collega la cartella saves di questa istanza alla cartella condivisa globale
+    in modo che tutte le istanze condividano gli stessi mondi. I salvataggi
+    esistenti vengono uniti nella cartella condivisa.
   copy:
     name: Copia salvataggio
   createNew: Crea un nuovo mondo
@@ -1379,6 +1389,11 @@ setup:
     name: Imposta lingua
   path: Percorso corrente
 shaderPack:
+  linkShared: Condividi gli shader pack tra le istanze
+  linkSharedHint: >-
+    Collega la cartella shaderpacks di questa istanza alla cartella condivisa
+    globale in modo che tutte le istanze usino gli stessi shader pack. I
+    pacchetti esistenti vengono uniti nella cartella condivisa.
   deletion: Elimina Shader Pack
   deletionHint: >-
     Questa azione eliminerà il file del pacchetto shader {path} e non potrà essere annullata.

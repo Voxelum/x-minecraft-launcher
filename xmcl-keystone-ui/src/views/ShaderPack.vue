@@ -40,7 +40,11 @@
         @update:local-sort="sortBy = $event"
         @update:mode="source = $event"
         @update:collection="selectedCollection = $event"
-      />
+      >
+        <template #local>
+          <LinkSharedFolderSetting domain="shaderpacks" @changed="revalidate" />
+        </template>
+      </MarketFilterPanel>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-list-subheader
@@ -245,6 +249,7 @@ import MarketBase from '@/components/MarketBase.vue'
 import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
 import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
+import LinkSharedFolderSetting from '@/components/LinkSharedFolderSetting.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import { useLocalStorage } from '@vueuse/core'
@@ -309,7 +314,7 @@ const shouldDisableOptifine = computed(() => !!runtime.value.fabricLoader || !!r
 
 effect()
 
-const { shaderPacks } = injection(kInstanceShaderPacks)
+const { shaderPacks, revalidate } = injection(kInstanceShaderPacks)
 const getInstalledModrinth = (projectId: string) => {
   const allPacks = shaderPacks.value
   return allPacks.filter((m) => m.modrinth?.projectId === projectId)
