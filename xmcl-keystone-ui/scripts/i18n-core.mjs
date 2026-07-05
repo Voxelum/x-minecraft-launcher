@@ -6,6 +6,7 @@
  * surgical line-based key removal / renaming. No side effects on import.
  */
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { dirname, extname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import yaml from 'js-yaml'
@@ -13,6 +14,29 @@ import yaml from 'js-yaml'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 export const UI_ROOT = resolve(__dirname, '..')
 export const REPO_ROOT = resolve(UI_ROOT, '..')
+
+// ---------------------------------------------------------------------------
+// vue-i18n message compiler — used to validate that every locale string
+// actually compiles, catching the `createCompileError` / SyntaxError class of
+// bugs (e.g. unbalanced braces) that otherwise only surface at runtime in the
+// user's browser. `baseCompile` is the exact compiler vue-i18n uses, pulled in
+// transitively via `vue-i18n`; try normal resolution first, then fall back to
+// pnpm's virtual store. Returns null if it can't be found (validation is then
+// limited to YAML parsing).
+// ---------------------------------------------------------------------------
+const require = createRequire(import.meta.url)
+function loadBaseCompile() {
+  try { return require('@intlify/message-compiler').baseCompile } catch { /* not hoisted */ }
+  try {
+    const pnpmDir = join(REPO_ROOT, 'node_modules', '.pnpm')
+    const entry = readdirSync(pnpmDir).find((n) => n.startsWith('@intlify+message-compiler@'))
+    if (entry) {
+      return require(join(pnpmDir, entry, 'node_modules', '@intlify', 'message-compiler')).baseCompile
+    }
+  } catch { /* store layout differs — give up gracefully */ }
+  return null
+}
+const baseCompile = loadBaseCompile()
 export const LOCALES_DIR = join(UI_ROOT, 'locales')
 export const SRC_DIR = join(UI_ROOT, 'src')
 export const SETTINGS_FILE = join(REPO_ROOT, '.vscode', 'settings.json')
@@ -151,15 +175,22 @@ export function scanSource(file, content) {
 /** Build the full state by reading every locale + source file once. */
 export function buildState() {
   const localeKeys = new Map()
+  const localeErrors = new Map()
   for (const file of readdirSync(LOCALES_DIR).filter((f) => f.endsWith('.yaml'))) {
     const locale = file.replace(/\.yaml$/, '')
-    localeKeys.set(locale, flatten(yaml.load(readFileSync(join(LOCALES_DIR, file), 'utf8'))))
+    try {
+      localeKeys.set(locale, flatten(yaml.load(readFileSync(join(LOCALES_DIR, file), 'utf8'))))
+    } catch (e) {
+      // A malformed YAML must not crash the whole lint — record it so it can be
+      // reported as an `invalid` finding instead.
+      localeErrors.set(locale, String(e?.message || e).split('\n')[0])
+    }
   }
   const fileScans = new Map()
   for (const file of listSourceFiles()) {
     fileScans.set(file, scanSource(file, readFileSync(file, 'utf8')))
   }
-  return { localeKeys, fileScans, allowList: loadAllowList() }
+  return { localeKeys, localeErrors, fileScans, allowList: loadAllowList() }
 }
 
 /** Apply a single changed/added/removed path to an existing state (in place). */
@@ -174,8 +205,17 @@ export function applyChange(state, p) {
   if (inLocales && abs.endsWith('.yaml')) {
     const locale = abs.slice(LOCALES_DIR.length + 1).replace(/\.yaml$/, '')
     if (exists) {
-      try { state.localeKeys.set(locale, flatten(yaml.load(readFileSync(abs, 'utf8')))) } catch { /* keep old */ }
-    } else state.localeKeys.delete(locale)
+      try {
+        state.localeKeys.set(locale, flatten(yaml.load(readFileSync(abs, 'utf8'))))
+        state.localeErrors?.delete(locale)
+      } catch (e) {
+        // Keep the last-good keys, but flag the parse error for the next lint.
+        state.localeErrors?.set(locale, String(e?.message || e).split('\n')[0])
+      }
+    } else {
+      state.localeKeys.delete(locale)
+      state.localeErrors?.delete(locale)
+    }
     return 'locale'
   }
   if (inSrc && isSourceFile(abs)) {
@@ -225,7 +265,37 @@ export function computeLint(state) {
     for (const k of keys.keys()) if (!baseKeys.has(k)) extra.push({ locale, key: k })
   }
   extra.sort((a, b) => a.locale.localeCompare(b.locale) || a.key.localeCompare(b.key))
-  return { missing, unused, extra }
+  return { missing, unused, extra, invalid: computeInvalid(state) }
+}
+
+/**
+ * Validate that every locale file is well-formed: it must parse as YAML AND
+ * every message string must compile with vue-i18n's message compiler. This is
+ * the class of bug that only shows up at runtime (e.g. unbalanced `{}` braces,
+ * a stray `@`/`|`) and previously reached users. Returns an array of
+ * { locale, key, code, message }. `key` is null for whole-file YAML errors.
+ */
+export function computeInvalid(state) {
+  const out = []
+  if (state.localeErrors) {
+    for (const [locale, message] of state.localeErrors) {
+      out.push({ locale, key: null, code: 'yaml', message })
+    }
+  }
+  if (baseCompile) {
+    for (const [locale, keys] of state.localeKeys) {
+      for (const [key, value] of keys) {
+        if (typeof value !== 'string' || value.length === 0) continue
+        try {
+          baseCompile(value, { onError(e) { throw e } })
+        } catch (e) {
+          out.push({ locale, key, code: `compile${e?.code ?? ''}`, message: String(e?.message || e).split('\n')[0] })
+        }
+      }
+    }
+  }
+  out.sort((a, b) => a.locale.localeCompare(b.locale) || String(a.key).localeCompare(String(b.key)))
+  return out
 }
 
 // ---------------------------------------------------------------------------
