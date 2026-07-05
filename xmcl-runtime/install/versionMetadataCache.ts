@@ -1,3 +1,4 @@
+import { VersionMetadataException } from '@xmcl/runtime-api'
 import { ensureDir, readJson, writeJson } from 'fs-extra'
 import { dirname } from 'path'
 import { z } from 'zod'
@@ -224,9 +225,19 @@ async function blockingRefresh<T>(opts: {
     logger?.warn(`All version metadata sources failed for ${cachePath}, returning stale cache`)
     return cached.data
   }
-  throw new AggregateError(
-    failures.map(f => f instanceof Error ? f : new Error(String(f))),
+  throw new VersionMetadataException(
+    {
+      type: 'versionMetadataFetchFailed',
+      cachePath,
+      sources: sources.map(s => s.url),
+    },
     `Failed to fetch version metadata at ${cachePath}`,
+    {
+      cause: new AggregateError(
+        failures.map(f => f instanceof Error ? f : new Error(String(f))),
+        `Failed to fetch version metadata at ${cachePath}`,
+      ),
+    },
   )
 }
 
