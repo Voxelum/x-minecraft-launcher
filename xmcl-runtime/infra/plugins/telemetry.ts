@@ -179,6 +179,14 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     // resource data are enormous, so we need to handle them separately
     setupResourceTelemetryClient(appInsight, app, settings, appInsight.defaultClient.context.tags)
 
+    app.on('install-postprocess-fallback', (payload) => {
+      if (settings.disableTelemetry) return
+      defaultClient.trackEvent({
+        name: 'install-postprocess-fallback',
+        properties: payload,
+      })
+    })
+
     // Track game start and end
     app.registry.get(LaunchService).then((service: ILaunchService) => {
       installLaunchStatusTracker(settings, defaultClient, contract, service)

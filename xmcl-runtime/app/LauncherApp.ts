@@ -36,6 +36,7 @@ export interface LauncherApp {
   on(channel: 'service-call-end', listener: (serviceName: string, serviceMethod: string, duration: number, success: boolean) => void): this
   on(channel: 'service-state-init', listener: (stateKey: string) => void): this
   on(channel: 'download-cdn', listener: (reason: string, file: string) => void): this
+  on(channel: 'install-postprocess-fallback', listener: (payload: Record<string, string | number | boolean>) => void): this
   on(channel: 'second-instance', listener: (argv: string[]) => void): this
   on(channel: 'direct-launch', listener: (data: any) => void): this
 
@@ -45,6 +46,7 @@ export interface LauncherApp {
   once(channel: 'service-call-end', listener: (serviceName: string, serviceMethod: string, duration: number, success: boolean) => void): this
   once(channel: 'service-state-init', listener: (stateKey: string) => void): this
   once(channel: 'download-cdn', listener: (reason: string, file: string) => void): this
+  once(channel: 'install-postprocess-fallback', listener: (payload: Record<string, string | number | boolean>) => void): this
   once(channel: 'second-instance', listener: (argv: string[]) => void): this
   once(channel: 'direct-launch', listener: (data: any) => void): this
 
@@ -54,6 +56,7 @@ export interface LauncherApp {
   emit(channel: 'root-migrated', root: string): this
   emit(channel: 'service-state-init', stateKey: string): this
   emit(channel: 'download-cdn', reason: string, file: string): this
+  emit(channel: 'install-postprocess-fallback', payload: Record<string, string | number | boolean>): this
   emit(channel: 'second-instance', argv: string[]): this
   emit(channel: 'direct-launch', data: any): this
 }
