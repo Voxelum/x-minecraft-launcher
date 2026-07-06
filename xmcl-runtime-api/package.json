@@ -6,6 +6,7 @@
     "license": "MIT",
     "main": "index.ts",
     "type": "module",
+    "sideEffects": false,
     "engines": {
         "node": ">=20"
     },

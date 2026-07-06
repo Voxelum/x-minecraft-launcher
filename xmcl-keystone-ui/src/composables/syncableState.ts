@@ -44,6 +44,18 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
       data = await fetcher(signal)
       if (!data || signal.aborted) { return }
 
+      // The preload is a dumb pipe and no longer knows the mutation method
+      // names (it used to import the state classes, which pulled zod into every
+      // preload bundle). Install the mutation-forwarding methods here from the
+      // `Type` we already hold, so renderer calls like `state.value.localeSet(x)`
+      // still reach the main process via the generic `commit` channel.
+      for (const key of Object.getOwnPropertyNames(Type.prototype)) {
+        if (key === 'constructor') continue
+        if (typeof (Type.prototype as any)[key] === 'function') {
+          (data as any)[key] = (...args: any[]) => (data as any).commit(key, ...args)
+        }
+      }
+
       const func = onMutation(data)
       data.subscribeAll(func)
 

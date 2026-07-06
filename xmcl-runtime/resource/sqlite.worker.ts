@@ -5,7 +5,7 @@ import { gracefulify } from 'graceful-fs'
 import type { CompiledQuery, DatabaseConnection, QueryResult } from 'kysely'
 import { Database } from 'node-sqlite3-wasm'
 import { workerData } from 'worker_threads'
-import { getSerializedError } from '~/infra/errors'
+import { getSerializedError } from '~/infra/errors/error_serialize'
 
 gracefulify(fs)
 
