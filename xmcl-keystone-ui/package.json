@@ -73,7 +73,7 @@
         "@types/node": "^20.19.0",
         "@xmcl/oxlint-config": "workspace:*",
         "chalk": "^4.1.2",
-        "js-yaml": "^4.1.0",
+        "js-yaml": "^4.2.0",
         "@types/js-yaml": "^4.0.9",
         "cross-env": "^5.2.1",
         "oxlint": "^1.63.0",
