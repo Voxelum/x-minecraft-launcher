@@ -20,6 +20,7 @@ import {
   installQuiltVersion,
   installResolvedAssets,
   installResolvedLibraries,
+  diagnoseProcessorOutputs,
   JarOption,
   LibrariesTrackerEvents,
   LibraryOptions,
@@ -534,6 +535,31 @@ export class InstallService extends AbstractService implements IInstallService {
         await originalPostprocess()
       } finally {
         await unlink(clz).catch(() => undefined)
+      }
+
+      // Post-processing (either the batch launcher or the per-processor
+      // fallback) can silently emit a corrupt/empty output — most notably a
+      // 22-byte empty binpatched client jar produced when the installer's lzma
+      // input is corrupt. Validate every declared output so the install fails
+      // loudly instead of caching a broken version that crashes at runtime.
+      const outputIssues = await diagnoseProcessorOutputs(procs, {
+        signal: options.signal,
+        checksum: (file, algorithm) => this.resourceWorker.checksum(file, algorithm),
+      })
+      if (outputIssues.length > 0) {
+        for (const issue of outputIssues) {
+          this.warn(
+            `[forge-pp] invalid post-processor output ${issue.file} (${issue.type}); removing so a reinstall regenerates it`,
+          )
+          // Remove the bad output so a subsequent reinstall regenerates it.
+          await unlink(issue.file).catch(() => {})
+        }
+        throw new AnyError(
+          'ForgeInstallError',
+          `Post-processing produced ${outputIssues.length} invalid output(s): ${outputIssues
+            .map((i) => `${i.file} (${i.type})`)
+            .join(', ')}`,
+        )
       }
     }
 
