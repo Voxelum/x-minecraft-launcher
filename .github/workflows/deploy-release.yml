@@ -45,6 +45,64 @@ jobs:
         container: releases
         directory: ./releases
 
+  publish-asar-npm:
+    name: Publish app.asar to npm
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+    - name: Download asar bundles
+      uses: robinraju/release-downloader@v1.7
+      with:
+        repository: "voxelum/x-minecraft-launcher"
+        tag: ${{ github.event.release.tag_name }}
+        fileName: "app-*.asar.gz"
+        out-file-path: build
+    - name: Download asar checksums
+      uses: robinraju/release-downloader@v1.7
+      with:
+        repository: "voxelum/x-minecraft-launcher"
+        tag: ${{ github.event.release.tag_name }}
+        fileName: "app-*.asar.sha256"
+        out-file-path: build
+    - name: Download manifest
+      uses: robinraju/release-downloader@v1.7
+      with:
+        repository: "voxelum/x-minecraft-launcher"
+        tag: ${{ github.event.release.tag_name }}
+        fileName: "manifest.json"
+        out-file-path: meta
+    - name: Use Node.js
+      uses: actions/setup-node@v5
+      with:
+        node-version: 22
+        registry-url: 'https://registry.npmjs.org'
+    - name: Build and publish per-platform packages
+      run: |
+        set -e
+        VERSION="${{ github.event.release.tag_name }}"; VERSION="${VERSION#v}"
+        ELECTRON=$(node -p "require('./meta/manifest.json').electron")
+        for gz in build/app-"$VERSION"-*.asar.gz; do
+          [ -f "$gz" ] || continue
+          base=$(basename "$gz")                  # app-<ver>-<plat>.asar.gz
+          plat=${base#app-"$VERSION"-}; plat=${plat%.asar.gz}
+          dir="pkg/$plat"
+          mkdir -p "$dir"
+          # Store app.asar uncompressed; the npm tarball's own gzip compresses it.
+          gunzip -c "$gz" > "$dir/app.asar"
+          cp "build/app-$VERSION-$plat.asar.sha256" "$dir/app.asar.sha256"
+          case "$plat" in
+            win*) cp xmcl-electron-app/icons/dark.ico "$dir/icon.ico" ;;
+            mac*) cp xmcl-electron-app/icons/dark.icns "$dir/icon.icns" ;;
+          esac
+          cp xmcl-asar/README.md "$dir/README.md"
+          node -e "const fs=require('fs');const pj=require('./xmcl-asar/package.json');pj.name='@xmcl/app-$plat';pj.version='$VERSION';pj.electron='$ELECTRON';fs.writeFileSync('$dir/package.json',JSON.stringify(pj,null,2))"
+          echo "Publishing @xmcl/app-$plat@$VERSION (electron $ELECTRON)"
+          ( cd "$dir" && npm publish --access public )
+        done
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
   notify:
     needs:
       - publish
