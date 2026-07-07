@@ -156,7 +156,7 @@ const imageDialog = injection(kImageDialog)
 
 const show = (uri: string, idx: number) => {
   if (urls.value.length > 0) {
-    imageDialog.showAll(urls.value, idx)
+    imageDialog.showAll(display.value, idx)
   } else {
     imageDialog.showAll(props.galleries?.map(g => ({ src: g.rawUrl ?? g.url, description: g.title || g.description })) || [], idx)
   }
