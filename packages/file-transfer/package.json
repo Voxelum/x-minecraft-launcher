@@ -17,7 +17,7 @@
     "module": "./dist/index.mjs"
   },
   "dependencies": {
-    "undici": "^7.24.0"
+    "undici": "^7.28.0"
   },
   "repository": {
     "type": "git",
