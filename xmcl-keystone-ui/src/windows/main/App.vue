@@ -28,6 +28,7 @@
     <AppFeedbackDialog />
     <AppTaskDialog />
     <AppAddInstanceDialog />
+    <AppModpackUpdateDialog />
     <AppShareInstanceDialog />
     <AppInstanceDeleteDialog />
     <AppGameExitDialog />
@@ -77,6 +78,7 @@ import { kSidebarSettings, useInjectSidebarSettings, useSidebarSettings } from '
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
+import AppModpackUpdateDialog from '@/views/AppModpackUpdateDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
 import AppAgentChat from '@/views/AppAgentChat.vue'
 import AppCommandPalette from '@/views/AppCommandPalette.vue'
