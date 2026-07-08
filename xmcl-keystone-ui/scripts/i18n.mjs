@@ -90,7 +90,7 @@ function request(req, timeout = 5000) {
 // Lint printing
 // ---------------------------------------------------------------------------
 function printLint(result, opts) {
-  const { missing, unused, extra } = result
+  const { missing, unused, extra, invalid = [] } = result
   const anyFilter = opts.onlyMissing || opts.onlyUnused || opts.onlyExtra
   const showMissing = !anyFilter || opts.onlyMissing
   const showUnused = !anyFilter || opts.onlyUnused
@@ -98,12 +98,22 @@ function printLint(result, opts) {
 
   if (opts.json) {
     console.log(JSON.stringify({
+      invalid,
       missing: showMissing ? missing : undefined,
       unused: showUnused ? unused : undefined,
       extra: showExtra ? extra : undefined,
     }, null, 2))
     return
   }
+  // `invalid` is always reported — a locale that doesn't parse/compile is a
+  // hard error regardless of which filters are active.
+  if (invalid.length) {
+    console.log(c.bold(c.red(`\n✖ ${invalid.length} invalid message(s)`)) + c.dim(' (unparseable YAML or uncompilable vue-i18n message)'))
+    for (const { locale, key, code, message } of invalid) {
+      const where = key ? `${locale}  ${key}` : `${locale}  ${c.dim('(whole file)')}`
+      console.log(`  ${c.red(where)}  ${c.dim(`[${code}] ${message}`)}`)
+    }
+  } else console.log(c.green('✔ all locale messages parse & compile'))
   if (showMissing) {
     if (missing.length) {
       console.log(c.bold(c.red(`\n✖ ${missing.length} missing key(s)`)) + c.dim(' (used in code, absent from en.yaml)'))
@@ -130,6 +140,7 @@ function lintExitCode(result, opts) {
   const showMissing = !anyFilter || opts.onlyMissing
   const showUnused = !anyFilter || opts.onlyUnused
   const showExtra = !anyFilter || opts.onlyExtra
+  if (result.invalid?.length) return 1
   if (showMissing && result.missing.length) return 1
   if (opts.strict && showUnused && result.unused.length) return 1
   if (opts.strict && showExtra && result.extra.length) return 1

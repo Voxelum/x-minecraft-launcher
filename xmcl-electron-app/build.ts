@@ -135,6 +135,15 @@ async function start() {
       await writeHash('sha256', dest)
       await promisify(pipeline)(createReadStream(dest), createGzip(), createWriteStream(gzipDest))
       console.log(`  ${chalk.blue('•')} prepare asar with checksum ${chalk.blue('from')}=${src} ${chalk.blue('to')}=${dest}`)
+
+      // Pin the exact Electron version used for this build. The release
+      // pipeline reads this to tag the `@xmcl/app` npm package, so the
+      // portable script installer knows which Electron prebuilt to fetch from
+      // the mirror. Same value across platforms/arches, so overwriting is fine.
+      await writeFile('build/output/manifest.json', JSON.stringify({
+        version,
+        electron: context.electronVersion,
+      }, null, 2))
     },
     async artifactBuildStarted(context) {
       if (context.targetPresentableName.toLowerCase() === 'appx') {

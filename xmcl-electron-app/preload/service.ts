@@ -1,50 +1,23 @@
 /* eslint-disable no-dupe-class-members */
 
-import { GameOptionsState, InstanceInstallStatus, InstanceModsGroupState, InstanceState, JavaState, LocalVersions, ModpackState, PeerState, ResourceState, Saves, ServerInfoState, ServiceChannels, ServiceKey, Settings, SharedState, StateMetadata, UserState } from '@xmcl/runtime-api'
+import type { ServiceChannels, ServiceKey, SharedState } from '@xmcl/runtime-api'
 import { contextBridge, ipcRenderer } from 'electron'
 import EventEmitter from 'events'
 
-export const AllStates = [
-  Settings,
-  InstanceState,
-  ResourceState,
-  ModpackState,
-  GameOptionsState,
-  Saves,
-  JavaState,
-  UserState,
-  LocalVersions,
-  PeerState,
-  InstanceInstallStatus,
-  InstanceModsGroupState,
-  ServerInfoState,
-]
-
-
-function getPrototypeMetadata(T: { new(): object }, prototype: object, name: string) {
-  const methods = Object.getOwnPropertyNames(prototype)
-    .map((name) => [name, Object.getOwnPropertyDescriptor(prototype, name)?.value] as const)
-    .filter(([, v]) => v instanceof Function)
-  return {
-    name,
-    constructor: () => new T(),
-    methods: methods.map(([name, f]) => [name, (f as Function)] as [string, (this: any, ...args: any[]) => any]),
-    prototype,
-  }
-}
-
-const typeToStatePrototype: Record<string, StateMetadata> = AllStates.reduce((obj, cur) => {
-  obj[cur.name] = getPrototypeMetadata(cur, cur.prototype, cur.name)
-  return obj
-}, {} as Record<string, StateMetadata>)
+// NOTE: this preload is intentionally a "dumb pipe". It does NOT import the
+// state classes from `@xmcl/runtime-api` (doing so drags the whole command
+// registry + zod schemas into every preload bundle). Because the main window
+// uses contextIsolation, the renderer keeps its own copy of each state object
+// and applies mutations itself using the class it already passes to `useState`
+// (see xmcl-keystone-ui/src/composables/syncableState.ts). The renderer also
+// installs the mutation-forwarding methods there, calling the generic
+// `commit(method, ...args)` channel exposed below.
 
 const kEmitter = Symbol('Emitter')
-const kMethods = Symbol('Methods')
 
-function createSharedState<T extends object>(val: T, id: string, methods: StateMetadata['methods']): SharedState<T> {
+function createSharedState<T extends object>(val: T, id: string): SharedState<T> {
   const emitter = new EventEmitter()
   Object.defineProperty(val, kEmitter, { value: emitter })
-  Object.defineProperty(val, kMethods, { value: methods })
   return Object.assign(val, {
     subscribe(key: string, listener: (payload: any) => void) {
       emitter.addListener(key, listener)
@@ -61,6 +34,9 @@ function createSharedState<T extends object>(val: T, id: string, methods: StateM
     unsubscribeAll(listener: (payload: any) => void) {
       emitter.removeListener('*', listener)
       return this
+    },
+    commit(method: string, ...args: any[]) {
+      return ipcRenderer.invoke('commit', id, method, ...args)
     },
     revalidate() {
       ipcRenderer.invoke('revalidate', id)
@@ -96,21 +72,8 @@ async function receive(_result: any, states: Record<string, WeakRef<SharedState<
       return states[id].deref()
     }
 
-    const prototype = typeToStatePrototype[result.__state__]
-    if (!prototype) {
-      // Wrong version of runtime
-      throw new TypeError(`Unknown state object ${result.__state__}!`)
-    }
-
     delete result.__state__
-    const state = createSharedState(result, id, prototype.methods)
-
-    for (const [method, handler] of prototype.methods) {
-      // explictly bind to the state object under electron context isolation
-      state[method] = (...args: any[]) => {
-        ipcRenderer.invoke('commit', id, method, ...args)
-      }
-    }
+    const state = createSharedState(result, id)
 
     gc.register(state, state.id)
 
@@ -121,11 +84,6 @@ async function receive(_result: any, states: Record<string, WeakRef<SharedState<
         for (const mutation of pendingCommits[id]) {
           (state as any)[kEmitter].emit(mutation.type, mutation.payload);
           (state as any)[kEmitter].emit('*', mutation.type, mutation.payload)
-          const methods = (state as any)[kMethods]
-          const method = methods.find(([name]: [string]) => name === mutation.type)
-          if (typeof method?.[1] === 'function') {
-            method[1].call(state, mutation.payload)
-          }
         }
         delete pendingCommits[id]
       }
@@ -166,11 +124,6 @@ function createServiceChannels(): ServiceChannels {
     if (state) {
       (state as any)[kEmitter].emit(type, payload);
       (state as any)[kEmitter].emit('*', type, payload)
-      const methods = (state as any)[kMethods]
-      const method = methods.find(([name]: [string]) => name === type)
-      if (typeof method?.[1] === 'function') {
-        method[1].call(state, payload)
-      }
     } else {
       // pending commit
       if (!pendingCommits[id]) {

@@ -20,6 +20,7 @@ import {
   installQuiltVersion,
   installResolvedAssets,
   installResolvedLibraries,
+  diagnoseProcessorOutputs,
   JarOption,
   LibrariesTrackerEvents,
   LibraryOptions,
@@ -483,8 +484,9 @@ export class InstallService extends AbstractService implements IInstallService {
       const clz = join(app.appDataPath, 'MultiJarLauncher.class')
       await writeFile(clz, clazData)
       let ppOut = ''
+      let pending: PostProcessor[] = []
       try {
-        const pending = procs.filter((p) => !skip.includes(p))
+        pending = procs.filter((p) => !skip.includes(p))
         const classPaths = pending
           .map((p) => p.jar)
           .concat(pending.flatMap((p) => p.classpath))
@@ -514,24 +516,50 @@ export class InstallService extends AbstractService implements IInstallService {
         })
         await waitProcess(process)
       } catch (e) {
-        Object.assign(e as any, {
-          name: 'CustomPostProcessError',
+        const err = e instanceof Error ? e : new Error(String(e))
+        app.emit('install-postprocess-fallback', {
+          java: options.java ?? '',
+          side: overrides.side ?? '',
+          inheritsFrom: overrides.inheritsFrom ?? '',
+          processorCount: pending.length,
+          processors: pending.map((p) => p.jar).join('\n'),
+          errorName: err.name,
+          message: err.message.slice(0, 4096),
+          clzPathExists: existsSync(clz),
         })
-        if (e instanceof Error) {
-          if (e.message.indexOf('Could not find or load main class')) {
-            Object.assign(e, {
-              clzPath: clz,
-              clzPathExists: existsSync(clz),
-            })
-          }
-        }
-        this.error(e as any)
+        this.warn('[forge-pp] MultiJarLauncher post-processing failed; falling back to per-processor post-processing')
+        this.warn(err as any)
         this.warn(`[forge-pp] MultiJarLauncher output:\n${ppOut}`)
         // Retry with original postprocess
         this.log('[forge-pp] falling back to per-processor post-processing')
         await originalPostprocess()
       } finally {
         await unlink(clz).catch(() => undefined)
+      }
+
+      // Post-processing (either the batch launcher or the per-processor
+      // fallback) can silently emit a corrupt/empty output — most notably a
+      // 22-byte empty binpatched client jar produced when the installer's lzma
+      // input is corrupt. Validate every declared output so the install fails
+      // loudly instead of caching a broken version that crashes at runtime.
+      const outputIssues = await diagnoseProcessorOutputs(procs, {
+        signal: options.signal,
+        checksum: (file, algorithm) => this.resourceWorker.checksum(file, algorithm),
+      })
+      if (outputIssues.length > 0) {
+        for (const issue of outputIssues) {
+          this.warn(
+            `[forge-pp] invalid post-processor output ${issue.file} (${issue.type}); removing so a reinstall regenerates it`,
+          )
+          // Remove the bad output so a subsequent reinstall regenerates it.
+          await unlink(issue.file).catch(() => {})
+        }
+        throw new AnyError(
+          'ForgeInstallError',
+          `Post-processing produced ${outputIssues.length} invalid output(s): ${outputIssues
+            .map((i) => `${i.file} (${i.type})`)
+            .join(', ')}`,
+        )
       }
     }
 

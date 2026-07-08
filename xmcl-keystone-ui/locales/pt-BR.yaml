@@ -1043,6 +1043,11 @@ quiltVersion:
   disable: Desabilitar Quilt
   empty: Quilt não suporta Minecraft {version}
 resourcepack:
+  linkShared: Compartilhar pacotes de recursos entre instâncias
+  linkSharedHint: >-
+    Vincular a pasta resourcepacks desta instância à pasta compartilhada global
+    para que todas as instâncias usem os mesmos pacotes de recursos. Os pacotes
+    existentes são mesclados na pasta compartilhada.
   compatible: Formato compatível {format} com {version}
   defaultDescription: A aparência padrão do Minecraft
   delete:
@@ -1065,6 +1070,11 @@ resourcepack:
   noPacks: Nenhum pacote de recursos encontrado
   search: Buscar pacotes de recursos...
 save:
+  linkShared: Compartilhar saves entre instâncias
+  linkSharedHint: >-
+    Vincular a pasta saves desta instância à pasta compartilhada global para que
+    todas as instâncias compartilhem os mesmos mundos. Os saves existentes são
+    mesclados na pasta compartilhada.
   copy:
     name: Copiar Salvar
   createNew: Criar Novo Mundo
@@ -1099,6 +1109,9 @@ screenshots:
   openFolder: Abrir pasta de capturas de tela
 search:
   favorate: Coleção
+  emptyInstalled: Nada instalado ainda
+  browseMarket: Explorar o mercado
+  noResults: Nenhum resultado encontrado
 server:
   acceptingMinecraftVersion: Aceitando Versão do Minecraft
   creationHint: Preencha o endereço do servidor e faça o ping no servidor
@@ -1384,6 +1397,11 @@ setup:
     name: Definir Idioma
   path: Caminho Atual
 shaderPack:
+  linkShared: Compartilhar pacotes de shaders entre instâncias
+  linkSharedHint: >-
+    Vincular a pasta shaderpacks desta instância à pasta compartilhada global
+    para que todas as instâncias usem os mesmos pacotes de shaders. Os pacotes
+    existentes são mesclados na pasta compartilhada.
   deletion: Excluir Shaders Pack
   deletionHint: >-
     Isso excluirá o arquivo do shaders pack em {path} e não poderá ser revertido.

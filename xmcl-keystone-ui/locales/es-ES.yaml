@@ -1268,6 +1268,11 @@ resourceError:
     bloqueado o incompleto. Intenta descargarlo de nuevo o eliminarlo.
   title: No se puede leer {file}
 resourcepack:
+  linkShared: Compartir paquetes de recursos entre instancias
+  linkSharedHint: >-
+    Vincular la carpeta resourcepacks de esta instancia con la carpeta
+    compartida global para que todas las instancias usen los mismos paquetes de
+    recursos. Los paquetes existentes se combinan en la carpeta compartida.
   compatible: Formato compatible {format} con {version}
   defaultDescription: El aspecto y la sensación predeterminados de Minecraft
   delete:
@@ -1293,6 +1298,11 @@ resourcepack:
   search: Buscar paquetes de recursos...
 save:
   allowCheats: Permitir trucos
+  linkShared: Compartir partidas entre instancias
+  linkSharedHint: >-
+    Vincular la carpeta saves de esta instancia con la carpeta compartida global
+    para que todas las instancias compartan los mismos mundos. Las partidas
+    existentes se combinan en la carpeta compartida.
   copy:
     name: Copiar Partida
   createNew: Crear nuevo mundo
@@ -1375,7 +1385,10 @@ screenshots:
 search:
   favorate: Recopilación
   local: Instalado
-  market: Mercado Mod
+  market: Mercado
+  emptyInstalled: Aún no hay nada instalado
+  browseMarket: Explorar el mercado
+  noResults: No se encontraron resultados
 server:
   acceptingMinecraftVersion: Aceptando Versión de Minecraft
   addServer: Añadir servidor
@@ -1721,6 +1734,11 @@ setup:
     name: Establecer Idioma
   path: Ruta Actual
 shaderPack:
+  linkShared: Compartir paquetes de shaders entre instancias
+  linkSharedHint: >-
+    Vincular la carpeta shaderpacks de esta instancia con la carpeta compartida
+    global para que todas las instancias usen los mismos paquetes de shaders. Los
+    paquetes existentes se combinan en la carpeta compartida.
   deletion: Eliminar Pack de Shaders
   deletionHint: Esto eliminará el archivo del pack de shaders {path} y no se podrá deshacer.
   dropHint: Arrastra y suelta el archivo del conjunto de sombreadores (.zip) aquí

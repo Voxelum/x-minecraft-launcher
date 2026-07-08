@@ -1039,6 +1039,11 @@ quiltVersion:
   disable: Quilt Uitschakelen
   empty: Quilt ondersteunt Minecraft {version} niet
 resourcepack:
+  linkShared: Resourcepacks delen tussen instanties
+  linkSharedHint: >-
+    Koppel de map resourcepacks van deze instantie aan de globale gedeelde map
+    zodat alle instanties dezelfde resourcepacks gebruiken. Bestaande packs
+    worden samengevoegd in de gedeelde map.
   compatible: Compatibel formaat {format} met {version}
   defaultDescription: De standaard look and feel van Minecraft
   delete:
@@ -1061,6 +1066,11 @@ resourcepack:
   noPacks: Geen resourcepakketten gevonden
   search: Resourcepakketten zoeken...
 save:
+  linkShared: Werelden delen tussen instanties
+  linkSharedHint: >-
+    Koppel de map saves van deze instantie aan de globale gedeelde map zodat alle
+    instanties dezelfde werelden delen. Bestaande saves worden samengevoegd in de
+    gedeelde map.
   allowCheats: Cheats Toestaan
   copy:
     name: Save Kopiëren
@@ -1106,7 +1116,10 @@ screenshots:
 search:
   favorate: Collectie
   local: Geïnstalleerd
-  market: Mod Markt
+  market: Markt
+  emptyInstalled: Nog niets geïnstalleerd
+  browseMarket: Markt bekijken
+  noResults: Geen resultaten gevonden
 server:
   acceptingMinecraftVersion: Accepteert Minecraft Versie
   creationHint: Vul het serveradres in en ping de server
@@ -1380,6 +1393,11 @@ setup:
     name: Stel Taal In
   path: Huidig Pad
 shaderPack:
+  linkShared: Shaderpacks delen tussen instanties
+  linkSharedHint: >-
+    Koppel de map shaderpacks van deze instantie aan de globale gedeelde map
+    zodat alle instanties dezelfde shaderpacks gebruiken. Bestaande packs worden
+    samengevoegd in de gedeelde map.
   deletion: Shader Pack Verwijderen
   deletionHint: >-
     Dit zal het shader pack bestand {path} verwijderen en kan niet ongedaan worden gemaakt.

@@ -1355,6 +1355,11 @@ resourcepack:
     Incompatible Resource Pack format({format}). Fitin {accept}. Current
     {actual}.
   name: Resource Pack | Resource Packs
+  linkShared: Share resource packs across instances
+  linkSharedHint: >-
+    Link this instance's resourcepacks folder to the global shared folder so all
+    instances see the same resource packs. Existing packs are merged into the
+    shared folder.
   noLocalPacksFound: No local resource packs found matching your search.
   noPacks: No resource packs found
   noPacksInstalled: You don't have any resource packs installed.
@@ -1390,6 +1395,11 @@ save:
   exportTitle: Export the Save
   gameMode: game mode
   independent: Instance use independent saves folder
+  linkShared: Share saves across instances
+  linkSharedHint: >-
+    Link this instance's saves folder to the global shared folder so all
+    instances share the same worlds. Existing saves are merged into the shared
+    folder.
   levelName: Level Name
   loadMap: Load Map
   mapError: Map Error
@@ -1450,7 +1460,10 @@ screenshots:
 search:
   favorate: Collection
   local: Installed
-  market: Mod Market
+  market: Market
+  emptyInstalled: Nothing installed yet
+  browseMarket: Browse Market
+  noResults: No results found
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
   addServer: Add Server
@@ -1553,6 +1566,7 @@ setting:
   backgroundImage: Background image
   backgroundImageClear: clear
   backgroundImageDescription: Select an image as background or clear
+  useDesktopBackground: Use current desktop wallpaper
   backgroundImageFit:
     contain: Contain
     cover: Cover
@@ -1809,6 +1823,11 @@ shaderPack:
   manage: Manage Shader Packs
   market: Shader Market
   name: Shader Pack
+  linkShared: Share shader packs across instances
+  linkSharedHint: >-
+    Link this instance's shaderpacks folder to the global shared folder so all
+    instances see the same shader packs. Existing packs are merged into the
+    shared folder.
   noLocalPacksFound: No local shader packs found matching your search.
   noPacks: No shader packs installed
   noPacksInstalled: You don't have any shader packs installed.

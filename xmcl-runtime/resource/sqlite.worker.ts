@@ -5,7 +5,7 @@ import { gracefulify } from 'graceful-fs'
 import type { CompiledQuery, DatabaseConnection, QueryResult } from 'kysely'
 import { Database } from 'node-sqlite3-wasm'
 import { workerData } from 'worker_threads'
-import { getSerializedError } from '~/infra/errors'
+import { getSerializedError } from '~/infra/errors/error_serialize'
 
 gracefulify(fs)
 
@@ -18,9 +18,14 @@ class SqliteConnection implements DatabaseConnection {
 
   executeQuery<O>(compiledQuery: CompiledQuery): Promise<QueryResult<O>> {
     const { sql, parameters } = compiledQuery
-    const stmt = this.#db.prepare(sql)
+    let stmt: ReturnType<Database['prepare']> | undefined
 
     try {
+      // Prepare inside the try so "no such table" (thrown at prepare
+      // time) is funnelled through the same rejection path as runtime
+      // errors instead of escaping synchronously. Mirrors the
+      // main-thread SqliteWASMDriver.
+      stmt = this.#db.prepare(sql)
       if (stmt.isReader()) {
         return Promise.resolve({
           rows: stmt.all(parameters as any) as O[],
@@ -41,7 +46,11 @@ class SqliteConnection implements DatabaseConnection {
         rows: [],
       })
     } finally {
-      stmt.finalize()
+      // Finalizing an errored statement can throw and mask the real
+      // error; the handle is discarded either way.
+      try {
+        stmt?.finalize()
+      } catch {}
     }
   }
 
@@ -50,8 +59,9 @@ class SqliteConnection implements DatabaseConnection {
     _chunkSize: number,
   ): AsyncIterableIterator<QueryResult<R>> {
     const { sql, parameters, query } = compiledQuery
-    const stmt = this.#db.prepare(sql)
+    let stmt: ReturnType<Database['prepare']> | undefined
     try {
+      stmt = this.#db.prepare(sql)
       if (query.kind === 'SelectQueryNode') {
         const iter = stmt.iterate(parameters as any) as IterableIterator<R>
         for (const row of iter) {
@@ -63,7 +73,9 @@ class SqliteConnection implements DatabaseConnection {
         throw new Error('Sqlite driver only supports streaming of select queries')
       }
     } finally {
-      stmt.finalize()
+      try {
+        stmt?.finalize()
+      } catch {}
     }
   }
 }

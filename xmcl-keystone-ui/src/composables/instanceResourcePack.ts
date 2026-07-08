@@ -224,6 +224,7 @@ export function useInstanceResourcePacks(
     insert,
     enable,
     disable,
+    revalidate,
     refreshing: isValidating,
   };
 }

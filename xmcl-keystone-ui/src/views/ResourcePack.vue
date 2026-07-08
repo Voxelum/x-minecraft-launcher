@@ -16,6 +16,9 @@
         :label="`${originalItems.length} ${t('resourcepack.name', originalItems.length)}`"
       />
     </template>
+    <template #placeholder>
+      <MarketEmptyPlaceholder />
+    </template>
     <template #filter>
       <MarketFilterPanel
         :modrinth-categories="modrinthCategories"
@@ -37,7 +40,11 @@
         @update:game-version="gameVersion = $event"
         @update:mode="source = $event"
         @update:collection="selectedCollection = $event"
-      />
+      >
+        <template #local>
+          <LinkSharedFolderSetting domain="resourcepacks" @changed="revalidate" />
+        </template>
+      </MarketFilterPanel>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-list-subheader
@@ -121,6 +128,8 @@ import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
+import LinkSharedFolderSetting from '@/components/LinkSharedFolderSetting.vue'
+import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
@@ -146,7 +155,7 @@ import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
 
 const { runtime, path } = injection(kInstance)
-const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
+const { files, enable, disable, insert, revalidate } = injection(kInstanceResourcePacks)
 const { keyword, curseforgeCategory, modrinthCategories, currentView, gameVersion, isCurseforgeActive, isModrinthActive, sort: marketSort, source, selectedCollection } =
   injection(kSearchModel)
 const {

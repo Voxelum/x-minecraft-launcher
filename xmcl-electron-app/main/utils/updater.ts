@@ -24,6 +24,7 @@ import { platform } from 'os'
 import { basename, dirname, join } from 'path'
 import { pipeline } from 'stream/promises'
 import { setTimeout } from 'timers/promises'
+import { extract as extractTar } from 'tar-stream'
 import { promisify } from 'util'
 import { createGunzip } from 'zlib'
 import { Logger, kGFW } from '~/infra'
@@ -58,65 +59,140 @@ async function downloadAsarUpdate(
     platformFlag += '-ia32'
   }
   const file = `app-${version}-${platformFlag}.asar`
+  const github = `https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${version}/${file}`
+
+  // Skip the download entirely if the pending file already matches the
+  // published checksum.
+  try {
+    const sha256Response = await app.fetch(github + '.sha256', { signal: options?.abortSignal })
+    const sha256 = sha256Response.ok ? (await sha256Response.text()).trim() : ''
+    const actual = await checksum(destination, 'sha256').catch(() => '')
+    if (sha256 && sha256 === actual) {
+      return
+    }
+  } catch {
+    // Ignore — fall through to download.
+  }
 
   const gfw = await app.registry.get(kGFW)
-  const urls = gfw.inside
-    ? [`https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${version}/${file}`]
-    : [`https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${version}/${file}`]
-
   const errors: Error[] = []
 
-  for (const url of urls) {
+  const isAbort = (e: unknown) => e instanceof Error && e.name === 'AbortError'
+
+  // Inside the GFW, pull the asar from the npmmirror tarball of the
+  // per-platform `@xmcl/app-<platform>` package. npmmirror's per-file
+  // (`/files/`) endpoint is whitelist-only, but package tarballs are
+  // unrestricted, so we download the (small) tarball and extract `app.asar`.
+  if (gfw.inside) {
+    const tarball = `https://registry.npmmirror.com/@xmcl/app-${platformFlag}/-/app-${platformFlag}-${version}.tgz`
     try {
-      // Check if file already exists with correct hash
-      const sha256Response = await app.fetch(url + '.sha256', { signal: options?.abortSignal })
-      const sha256 = sha256Response.ok ? await sha256Response.text() : ''
-      const actual = await checksum(destination, 'sha256').catch(() => '')
-      if (sha256 === actual) {
-        return
-      }
-
-      const gzUrl = url + '.gz'
-      if (url.startsWith('https://files.0x.cn')) {
-        app.emit('download-cdn', 'asar', file)
-      }
-
-      // Try downloading compressed version first
-      const gzResponse = await app
-        .fetch(gzUrl, { method: 'HEAD', signal: options?.abortSignal })
-        .catch(() => null)
-      const downloadUrl = gzResponse?.ok ? gzUrl : url
-
-      // Download to temporary file
-      const tempFile = destination + '.tmp'
-      await download({
-        url: downloadUrl,
-        destination: tempFile,
-        tracker: onDownloadSingle(options?.tracker, 'download-update.asar', { url: downloadUrl }),
-        signal: options?.abortSignal,
-        ...getDownloadBaseOptions(options),
-      })
-
-      // If it's gzipped, decompress it
-      if (downloadUrl === gzUrl) {
-        await pipeline(createReadStream(tempFile), createGunzip(), createWriteStream(destination))
-        await unlinkAsync(tempFile)
-      } else {
-        await renameAsync(tempFile, destination)
-      }
-
+      await downloadAsarFromTarball(app, tarball, destination, options)
       return
     } catch (e) {
-      if (e instanceof Error && e.name === 'AbortError') {
-        return
-      }
-      errors.push(Object.assign(e as Error, { name: 'UpdateAsarError', url }))
+      if (isAbort(e)) return
+      errors.push(Object.assign(e as Error, { name: 'UpdateAsarError', url: tarball }))
     }
   }
+
+  // Fall back to the GitHub release asset (gzipped when available).
+  try {
+    await downloadGzAsar(app, github, destination, options)
+    return
+  } catch (e) {
+    if (isAbort(e)) return
+    errors.push(Object.assign(e as Error, { name: 'UpdateAsarError', url: github }))
+  }
+
   throw new AggregateError(
     errors.flatMap((e) => (e instanceof AggregateError ? e.errors : e)),
     'Fail to download asar update',
   )
+}
+
+/**
+ * Download an npm package tarball and extract its `package/app.asar` entry to
+ * `destination`. Used for the npmmirror mirror path (see `downloadAsarUpdate`).
+ */
+async function downloadAsarFromTarball(
+  app: ElectronLauncherApp,
+  url: string,
+  destination: string,
+  options?: {
+    abortSignal?: AbortSignal
+    tracker?: Tracker<DownloadUpdateTrackerEvents>
+  } & DownloadBaseOptions,
+): Promise<void> {
+  const tempTgz = destination + '.tgz'
+  await download({
+    url,
+    destination: tempTgz,
+    tracker: onDownloadSingle(options?.tracker, 'download-update.asar', { url }),
+    signal: options?.abortSignal,
+    ...getDownloadBaseOptions(options),
+  })
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const tar = extractTar()
+      let found = false
+      tar.on('entry', (header, stream, next) => {
+        if (!found && (header.name === 'package/app.asar' || header.name.endsWith('/app.asar'))) {
+          found = true
+          const out = createWriteStream(destination)
+          out.on('error', reject)
+          out.on('finish', next)
+          stream.pipe(out)
+        } else {
+          stream.on('end', next)
+          stream.on('error', reject)
+          stream.resume()
+        }
+      })
+      tar.on('error', reject)
+      tar.on('finish', () => {
+        if (found) resolve()
+        else reject(new AnyError('UpdateAsarError', `No app.asar found in tarball ${url}`))
+      })
+      createReadStream(tempTgz).pipe(createGunzip()).pipe(tar)
+    })
+  } finally {
+    await unlinkAsync(tempTgz).catch(() => {})
+  }
+}
+
+/**
+ * Download a raw asar (or its `.gz` sibling when present) and write it to
+ * `destination`. Used for the GitHub release-asset path.
+ */
+async function downloadGzAsar(
+  app: ElectronLauncherApp,
+  url: string,
+  destination: string,
+  options?: {
+    abortSignal?: AbortSignal
+    tracker?: Tracker<DownloadUpdateTrackerEvents>
+  } & DownloadBaseOptions,
+): Promise<void> {
+  const gzUrl = url + '.gz'
+  const gzResponse = await app
+    .fetch(gzUrl, { method: 'HEAD', signal: options?.abortSignal })
+    .catch(() => null)
+  const downloadUrl = gzResponse?.ok ? gzUrl : url
+
+  const tempFile = destination + '.tmp'
+  await download({
+    url: downloadUrl,
+    destination: tempFile,
+    tracker: onDownloadSingle(options?.tracker, 'download-update.asar', { url: downloadUrl }),
+    signal: options?.abortSignal,
+    ...getDownloadBaseOptions(options),
+  })
+
+  if (downloadUrl === gzUrl) {
+    await pipeline(createReadStream(tempFile), createGunzip(), createWriteStream(destination))
+    await unlinkAsync(tempFile)
+  } else {
+    await renameAsync(tempFile, destination)
+  }
 }
 
 async function hintUserDownload(): Promise<void> {

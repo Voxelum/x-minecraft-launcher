@@ -1156,6 +1156,9 @@ blueprint:
     newFile: 另存为新文件
     action: 替换
 resourcepack:
+  linkShared: 在实例间共享资源包
+  linkSharedHint: >-
+    将此实例的 resourcepacks 文件夹链接到全局共享文件夹，使所有实例共用相同的资源包。现有资源包会被合并到共享文件夹中。
   compatible: 当前格式({format}) 可用于当前版本 {version}
   defaultDescription: Minecraft 的默认材质
   delete:
@@ -1178,6 +1181,9 @@ resourcepack:
   showInCurseforge: 在 Curseforge 中显示 {name}
   unselected: 未选资源包
 save:
+  linkShared: 在实例间共享存档
+  linkSharedHint: >-
+    将此实例的 saves 文件夹链接到全局共享文件夹，使所有实例共用相同的世界存档。现有存档会被合并到共享文件夹中。
   chunkSelectMode: 选择区块
   panMode: 平移
   chunkSelected: 已选择 {count} 个区块
@@ -1250,7 +1256,10 @@ screenshots:
 search:
   favorate: 收藏
   local: 已安装
-  market: Mod 市场
+  market: 市场
+  emptyInstalled: 尚未安装任何内容
+  browseMarket: 浏览市场
+  noResults: 未找到结果
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   addServer: 添加服务器
@@ -1574,6 +1583,9 @@ setup:
     name: 设置语言
   path: 当前位置
 shaderPack:
+  linkShared: 在实例间共享光影包
+  linkSharedHint: >-
+    将此实例的 shaderpacks 文件夹链接到全局共享文件夹，使所有实例共用相同的光影包。现有光影包会被合并到共享文件夹中。
   deletion: 删除光影包
   deletionHint: 这将把光影包文件 {path} 永久删除。
   disabled: 未启用的光影

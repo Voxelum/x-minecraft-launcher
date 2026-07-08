@@ -978,6 +978,9 @@ quiltVersion:
   disable: Quilt 비활성화
   empty: Quilt는 마인크래프트 {version} 을(를) 지원하지 않습니다
 resourcepack:
+  linkShared: 인스턴스 간 리소스팩 공유
+  linkSharedHint: >-
+    이 인스턴스의 resourcepacks 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 리소스팩을 사용하도록 합니다. 기존 팩은 공유 폴더로 병합됩니다.
   compatible: '{version} 과(와) 호환되는 형식 {format}'
   defaultDescription: 마인크래프트의 기본 모양과 느낌
   delete:
@@ -998,6 +1001,9 @@ resourcepack:
   noPacks: 리소스 팩을 찾을 수 없음
   search: 리소스 팩 검색...
 save:
+  linkShared: 인스턴스 간 세이브 공유
+  linkSharedHint: >-
+    이 인스턴스의 saves 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 월드를 공유하도록 합니다. 기존 세이브는 공유 폴더로 병합됩니다.
   copy:
     name: 저장된 월드 복사
   createNew: 새 월드 생성
@@ -1032,7 +1038,10 @@ screenshots:
 search:
   favorate: 컬렉션
   local: 설치됨
-  market: 모드 마켓
+  market: 마켓
+  emptyInstalled: 아직 설치된 항목이 없습니다
+  browseMarket: 마켓 둘러보기
+  noResults: 결과를 찾을 수 없습니다
 server:
   acceptingMinecraftVersion: 허용하는 마인크래프트 버전
   creationHint: 서버 주소를 입력하고 서버에 핑을 보내세요
@@ -1299,6 +1308,9 @@ setup:
     name: 언어 설정
   path: 현재 경로
 shaderPack:
+  linkShared: 인스턴스 간 셰이더팩 공유
+  linkSharedHint: >-
+    이 인스턴스의 shaderpacks 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 셰이더팩을 사용하도록 합니다. 기존 팩은 공유 폴더로 병합됩니다.
   deletion: 셰이더 팩 삭제
   deletionHint: 셰이더 팩 파일 {path} 을(를) 삭제하며, 되돌릴 수 없습니다.
   disabled: 비활성화된 셰이더 팩

@@ -1071,6 +1071,11 @@ quiltVersion:
   disable: Quilt letiltása
   empty: Quilt nem támogatja a {version} verziót
 resourcepack:
+  linkShared: Erőforráscsomagok megosztása példányok között
+  linkSharedHint: >-
+    Kösse össze ennek a példánynak a resourcepacks mappáját a globális megosztott
+    mappával, hogy minden példány ugyanazokat az erőforráscsomagokat használja. A
+    meglévő csomagok a megosztott mappába kerülnek.
   compatible: Kompatibilis formátum {format} a {version}-vel
   defaultDescription: A Minecraft alapértelmezett megjelenése
   delete:
@@ -1093,6 +1098,11 @@ resourcepack:
   noPacks: Nem található erőforráscsomag
   search: Erőforráscsomagok keresése...
 save:
+  linkShared: Mentések megosztása példányok között
+  linkSharedHint: >-
+    Kösse össze ennek a példánynak a saves mappáját a globális megosztott
+    mappával, hogy minden példány ugyanazokat a világokat használja. A meglévő
+    mentések a megosztott mappába kerülnek.
   allowCheats: Csalások engedélyezése
   copy:
     name: Mentés másolása
@@ -1138,7 +1148,10 @@ screenshots:
 search:
   favorate: Gyűjtemény
   local: Telepített
-  market: Mod Market
+  market: Piac
+  emptyInstalled: Még nincs semmi telepítve
+  browseMarket: Piac böngészése
+  noResults: Nincs találat
 server:
   acceptingMinecraftVersion: Minecraft verzió elfogadása
   creationHint: Kérlek, töltsd ki a szerver címét és pingeld a szervert
@@ -1426,6 +1439,11 @@ setup:
     name: Nyelv beállítása
   path: Jelenlegi útvonal
 shaderPack:
+  linkShared: Árnyékolócsomagok megosztása példányok között
+  linkSharedHint: >-
+    Kösse össze ennek a példánynak a shaderpacks mappáját a globális megosztott
+    mappával, hogy minden példány ugyanazokat az árnyékolócsomagokat használja. A
+    meglévő csomagok a megosztott mappába kerülnek.
   deletion: Shader Pack törlése
   deletionHint: Ez törli a shader pack fájlt {path} és nem lehet visszaállítani.
   disabled: Shader pack kikapcsolása

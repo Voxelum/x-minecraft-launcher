@@ -221,10 +221,10 @@ downloadCount: '{count} завантажень'
 downloadUpdate:
   name: Завантажити оновлення {version}
 duration:
-  day: '{duration} день | {duration} дні | {duration} днів'
-  hour: '{duration} година | {duration} години | {duration} годин'
-  minute: '{duration} хвилина | {duration} хвилини | {duration} хвилин'
-  second: '{duration} секунда | {duration} секунди | {duration} секунд'
+  day: '{duration} день | {duration} дня'
+  hour: '{duration} година | {duration} години'
+  minute: '{duration} хвилина | {duration} хвилини'
+  second: '{duration} секунда | {duration} секунди'
 env:
   select:
     all: Вибрати все
@@ -1075,6 +1075,9 @@ quiltVersion:
   disable: Вимкнути Quilt
   empty: Quilt не підтримує Minecraft {version}
 resourcepack:
+  linkShared: Спільні пакети ресурсів для всіх збірок
+  linkSharedHint: >-
+    Пов'язати папку resourcepacks цієї збірки зі спільною глобальною папкою, щоб усі збірки використовували однакові пакети ресурсів. Наявні пакети буде перенесено до спільної папки.
   compatible: Сумісний формат {format} з {version}
   defaultDescription: Типовий вигляд Minecraft
   delete:
@@ -1097,6 +1100,9 @@ resourcepack:
   noPacks: Ресурспаки не знайдено
   search: Пошук ресурспаків...
 save:
+  linkShared: Спільні збереження для всіх збірок
+  linkSharedHint: >-
+    Пов'язати папку saves цієї збірки зі спільною глобальною папкою, щоб усі збірки використовували однакові світи. Наявні збереження буде перенесено до спільної папки.
   copy:
     name: Копіювати збереження
   createNew: Створити новий світ
@@ -1132,7 +1138,10 @@ screenshots:
 search:
   favorate: Колекція
   local: Встановлені
-  market: Ринок модів
+  market: Ринок
+  emptyInstalled: Ще нічого не встановлено
+  browseMarket: Переглянути ринок
+  noResults: Нічого не знайдено
 server:
   acceptingMinecraftVersion: Приймає версію Minecraft
   creationHint: Будь ласка, заповніть адресу сервера та пропінгуйте сервер
@@ -1421,6 +1430,9 @@ setup:
     name: Встановити мову
   path: Поточний шлях
 shaderPack:
+  linkShared: Спільні пакети шейдерів для всіх збірок
+  linkSharedHint: >-
+    Пов'язати папку shaderpacks цієї збірки зі спільною глобальною папкою, щоб усі збірки використовували однакові пакети шейдерів. Наявні пакети буде перенесено до спільної папки.
   deletion: Видалити пакет шейдерів
   deletionHint: Це видалить файл пакета шейдерів {path} і не може бути скасовано.
   disabled: Вимкнені пакети шейдерів

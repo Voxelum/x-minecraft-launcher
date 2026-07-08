@@ -26,7 +26,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
   const { watch: watchShaderPacks } = useService(InstanceShaderPacksServiceKey)
   const { editOculusShaderOptions, getOculusShaderOptions, getIrisShaderOptions, editIrisShaderOptions, getShaderOptions, editShaderOptions } = useService(InstanceOptionsServiceKey)
 
-  const { state, error, isValidating } = useState(() => instancePath.value ? watchShaderPacks(instancePath.value) : undefined, ReactiveResourceState)
+  const { state, error, isValidating, revalidate } = useState(() => instancePath.value ? watchShaderPacks(instancePath.value) : undefined, ReactiveResourceState)
 
   useResourceParseErrorNotifier(state)
 
@@ -194,6 +194,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     shaderPack,
     shaderPacks,
     refreshing: isValidating,
+    revalidate,
     error,
     effect,
   }

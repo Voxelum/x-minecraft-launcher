@@ -1066,6 +1066,9 @@ blueprint:
     newFile: 新しいファイルとして保存
     action: 置換
 resourcepack:
+  linkShared: リソースパックをインスタンス間で共有
+  linkSharedHint: >-
+    このインスタンスの resourcepacks フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じリソースパックを使用します。既存のパックは共有フォルダーに統合されます。
   compatible: 適合するフォーマット {format} バージョン {version}
   defaultDescription: デフォルトのMinecraftのルック＆フィール
   delete:
@@ -1086,6 +1089,9 @@ resourcepack:
   noPacks: リソースパックが見つかりません
   search: リソースパックを検索...
 save:
+  linkShared: セーブデータをインスタンス間で共有
+  linkSharedHint: >-
+    このインスタンスの saves フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じワールドを共有します。既存のセーブデータは共有フォルダーに統合されます。
   chunkSelectMode: チャンクを選択
   panMode: パン
   chunkSelected: '{count} 個のチャンクを選択中'
@@ -1145,7 +1151,10 @@ screenshots:
 search:
   favorate: コレクション
   local: 設置済み
-  market: モッドマーケット
+  market: マーケット
+  emptyInstalled: まだ何もインストールされていません
+  browseMarket: マーケットを見る
+  noResults: 結果が見つかりません
 server:
   acceptingMinecraftVersion: Minecraftバージョンを使用中
   creationHint: サーバーアドレスを入力し、pingしてください
@@ -1418,6 +1427,9 @@ setup:
     name: 言語を設定
   path: 現在のパス
 shaderPack:
+  linkShared: シェーダーパックをインスタンス間で共有
+  linkSharedHint: >-
+    このインスタンスの shaderpacks フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じシェーダーパックを使用します。既存のパックは共有フォルダーに統合されます。
   deletion: シェーダーパックを削除
   deletionHint: シェーダーパック {path} を削除します。この操作は取り消せません。
   disabled: シェーダーパックが無効です

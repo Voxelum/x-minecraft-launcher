@@ -41,7 +41,7 @@ import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, isDirectory, linkDirectory, missing, pipeline, readdirIfPresent } from '../util/fs'
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { includeAs, writeZipFile } from '../util/zip'
-import { readlinkSafe } from './utils/readLinkSafe'
+import { readlinkSafe, isLinkTo } from './utils/readLinkSafe'
 
 /**
  * Provide the ability to preview saves data of an instance
@@ -469,8 +469,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
   async isSaveLinked(instancePath: string) {
     const sharedSave = this.getPath('saves')
     const instanceSave = join(instancePath, 'saves')
-    const isLinked = await readlinkSafe(instanceSave).catch(() => '') === sharedSave
-    return isLinked
+    return isLinkTo(instanceSave, sharedSave)
   }
 
   async linkSharedSave(instancePath: string) {
@@ -478,7 +477,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     const instanceSaves = join(instancePath, 'saves')
     await ensureDir(sharedSave)
 
-    if (await readlinkSafe(instanceSaves).catch(() => '') === sharedSave) {
+    if (await isLinkTo(instanceSaves, sharedSave)) {
       return
     }
 
@@ -517,7 +516,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
   async unlinkSharedSave(instancePath: string) {
     const sharedSave = this.getPath('saves')
     const instanceSave = join(instancePath, 'saves')
-    if (await readlinkSafe(instanceSave).catch(() => '') !== sharedSave) {
+    if (!(await isLinkTo(instanceSave, sharedSave))) {
       return
     }
 

@@ -123,7 +123,7 @@ import { kInstances } from '@/composables/instances'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { kInstance } from '@/composables/instance'
 import { useHasMinecraftLicense } from '@/composables/minecraftLicense'
-import { useGamepadDisplay } from '@/composables/gamepad'
+import { useGamepad } from '@/composables/gamepad'
 import { isBedrockInstance } from '@xmcl/instance'
 
 defineProps<{ compact?: boolean; top?: boolean }>()
@@ -132,7 +132,7 @@ const emit = defineEmits(['mouseenter', 'mouseleave'])
 const { isValidating } = injection(kInstances)
 
 const { onClick, color, icon, text, loading, leftIcon, count } = injection(kLaunchButton)
-const { isActive: isGamepadActive, buttonX } = useGamepadDisplay()
+const { isActive: isGamepadActive, buttonX } = useGamepad()
 const { t } = useI18n()
 
 const { instance } = injection(kInstance)

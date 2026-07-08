@@ -1028,6 +1028,11 @@ quiltVersion:
   disable: Wyłącz kołdrę
   empty: Quilt nie obsługuje gry Minecraft {version}
 resourcepack:
+  linkShared: Współdziel paczki zasobów między instancjami
+  linkSharedHint: >-
+    Połącz folder resourcepacks tej instancji z globalnym folderem
+    współdzielonym, aby wszystkie instancje używały tych samych paczek zasobów.
+    Istniejące paczki zostaną scalone do folderu współdzielonego.
   compatible: Zgodność formatu {format} z {version}
   defaultDescription: Domyślny wygląd i sposób działania Minecrafta
   delete:
@@ -1051,6 +1056,11 @@ resourcepack:
   noPacks: Nie znaleziono paczek zasobów
   search: Wyszukaj paczki zasobów...
 save:
+  linkShared: Współdziel zapisy między instancjami
+  linkSharedHint: >-
+    Połącz folder saves tej instancji z globalnym folderem współdzielonym, aby
+    wszystkie instancje współdzieliły te same światy. Istniejące zapisy zostaną
+    scalone do folderu współdzielonego.
   copy:
     name: Kopiuj Zapisz
   createNew: Stworzyć nowy świat
@@ -1086,7 +1096,10 @@ screenshots:
 search:
   favorate: Kolekcja
   local: Zainstalowany
-  market: Rynek modów
+  market: Rynek
+  emptyInstalled: Nic jeszcze nie zainstalowano
+  browseMarket: Przeglądaj rynek
+  noResults: Nie znaleziono wyników
 server:
   acceptingMinecraftVersion: Akceptowanie wersji Minecraft
   creationHint: Wypełnij adres serwera i wykonaj ping do serwera
@@ -1364,6 +1377,11 @@ setup:
     name: Ustaw język
   path: Bieżąca ścieżka
 shaderPack:
+  linkShared: Współdziel paczki shaderów między instancjami
+  linkSharedHint: >-
+    Połącz folder shaderpacks tej instancji z globalnym folderem
+    współdzielonym, aby wszystkie instancje używały tych samych paczek shaderów.
+    Istniejące paczki zostaną scalone do folderu współdzielonego.
   deletion: Usuń pakiet shaderów
   deletionHint: >-
     Spowoduje to usunięcie pliku pakietu shaderów {path} i nie będzie można go przywrócić.

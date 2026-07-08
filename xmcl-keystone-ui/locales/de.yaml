@@ -1118,6 +1118,11 @@ quiltVersion:
   disable: Ausschalten Quilt
   empty: Quilt unterstützt Minecraft nicht {version}
 resourcepack:
+  linkShared: Ressourcenpakete zwischen Instanzen teilen
+  linkSharedHint: >-
+    Den Ordner resourcepacks dieser Instanz mit dem globalen gemeinsamen Ordner
+    verknüpfen, damit alle Instanzen dieselben Ressourcenpakete verwenden.
+    Vorhandene Pakete werden in den gemeinsamen Ordner zusammengeführt.
   compatible: Format. {format} kompatibel mit {version}
   defaultDescription: kompatibel mit dem Standardbild von Minecraft
   delete:
@@ -1142,6 +1147,11 @@ resourcepack:
   noPacks: Keine Ressourcenpakete gefunden
   search: Ressourcenpakete suchen...
 save:
+  linkShared: Spielstände zwischen Instanzen teilen
+  linkSharedHint: >-
+    Den Ordner saves dieser Instanz mit dem globalen gemeinsamen Ordner
+    verknüpfen, damit alle Instanzen dieselben Welten verwenden. Vorhandene
+    Spielstände werden in den gemeinsamen Ordner zusammengeführt.
   copy:
     name: Kopieren einer Speicherung
   createNew: Erschaffe eine neue Welt
@@ -1178,7 +1188,10 @@ screenshots:
 search:
   favorate: Sammlung
   local: Installiert
-  market: Mod-Markt
+  market: Markt
+  emptyInstalled: Noch nichts installiert
+  browseMarket: Markt durchsuchen
+  noResults: Keine Ergebnisse gefunden
 server:
   acceptingMinecraftVersion: Eine Version von Minecraft adoptieren
   creationHint: Geben Sie die Serveradresse und den Server-Ping an
@@ -1493,6 +1506,11 @@ setup:
     name: Sprache einstellen
   path: Aktueller Pfad
 shaderPack:
+  linkShared: Shaderpakete zwischen Instanzen teilen
+  linkSharedHint: >-
+    Den Ordner shaderpacks dieser Instanz mit dem globalen gemeinsamen Ordner
+    verknüpfen, damit alle Instanzen dieselben Shaderpakete verwenden.
+    Vorhandene Pakete werden in den gemeinsamen Ordner zusammengeführt.
   deletion: Shader löschen
   deletionHint: >-
     Damit wird die Shader-Datei gelöscht {path} und es wird unmöglich sein, sie wiederherzustellen.

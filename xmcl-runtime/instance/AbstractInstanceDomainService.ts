@@ -1,38 +1,123 @@
 import { InstallMarketOptionWithInstance, LockKey, ResourceState, SharedState, UpdateInstanceResourcesOptions, getInstanceModStateKey } from '@xmcl/runtime-api'
-import { ensureDir, mkdir, stat, unlink } from 'fs-extra'
-import { basename, join } from 'path'
-import { LauncherApp } from '~/app'
+import { ensureDir, mkdir, readdir, rename, rm, stat, unlink } from 'fs-extra'
+import { basename, extname, join } from 'path'
+import { kGameDataPath, LauncherApp } from '~/app'
 import { InstanceService } from '~/instance'
 import { kMarketProvider } from '~/market'
 import { Resource, ResourceDomain, UpdateResourcePayload } from '@xmcl/resource'
 import { kResourceManager, kResourceWorker } from '~/resource'
 import { AbstractService, ServiceStateManager } from '~/service'
 import { isSystemError } from '@xmcl/utils'
-import { linkOrCopyDirectory, linkWithTimeoutOrCopy } from '../util/fs'
-import { readlinkSafe } from './utils/readLinkSafe'
+import { linkDirectory, linkOrCopyDirectory, linkWithTimeoutOrCopy, missing } from '../util/fs'
+import { readlinkSafe, isLinkTo, normalizeLinkTarget } from './utils/readLinkSafe'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { CurseforgeApiError, CurseforgeV1Client } from '@xmcl/curseforge'
 
-function getMigrateLegacy(domain: ResourceDomain) {
-  if (domain === ResourceDomain.ResourcePacks || domain === ResourceDomain.ShaderPacks) {
-    return async (instancePath: string) => {
-      const destPath = join(instancePath, domain)
-      const linkedPath = await readlinkSafe(destPath)
-      if (linkedPath) {
-        await unlink(destPath)
-        await mkdir(destPath)
-      }
-    }
-  }
-  return (_: string) => Promise.resolve()
-}
-
 export abstract class AbstractInstanceDomainService extends AbstractService {
-  onMigrateLegacy: (instancePath: string) => Promise<void>
-
   constructor(app: LauncherApp, protected domain: ResourceDomain) {
     super(app)
-    this.onMigrateLegacy = getMigrateLegacy(domain)
+  }
+
+  /**
+   * Get the global (shared) folder for this domain, e.g. `<gameData>/resourcepacks`.
+   */
+  protected async getSharedDirectory() {
+    const getPath = await this.app.registry.get(kGameDataPath)
+    return getPath(this.domain)
+  }
+
+  /**
+   * Legacy migration hook run on every `watch`.
+   *
+   * Historically the `resourcepacks`/`shaderpacks` folder could be a stale
+   * symlink to an obsolete location. Those are removed and replaced by a real
+   * directory. A link that intentionally points at the current global shared
+   * folder (created by {@link linkShared}) is preserved.
+   */
+  async onMigrateLegacy(instancePath: string): Promise<void> {
+    if (this.domain !== ResourceDomain.ResourcePacks && this.domain !== ResourceDomain.ShaderPacks) {
+      return
+    }
+    const destPath = join(instancePath, this.domain)
+    const linkedPath = await readlinkSafe(destPath).catch(() => '')
+    if (linkedPath) {
+      const shared = await this.getSharedDirectory()
+      // Preserve an intentional link to the global shared folder.
+      if (normalizeLinkTarget(linkedPath) === normalizeLinkTarget(shared)) {
+        return
+      }
+      await unlink(destPath)
+      await mkdir(destPath)
+    }
+  }
+
+  /**
+   * Whether the instance's domain folder is soft-linked to the global shared folder.
+   */
+  async isLinked(instancePath: string): Promise<boolean> {
+    const shared = await this.getSharedDirectory()
+    const instanceDir = join(instancePath, this.domain)
+    return isLinkTo(instanceDir, shared)
+  }
+
+  /**
+   * Link the instance's domain folder to the global shared folder.
+   *
+   * If the folder already exists, its files are merged into the shared folder
+   * first, then the folder is replaced by a link.
+   */
+  async linkShared(instancePath: string): Promise<void> {
+    const shared = await this.getSharedDirectory()
+    const instanceDir = join(instancePath, this.domain)
+    await ensureDir(shared)
+
+    if (await isLinkTo(instanceDir, shared)) {
+      return
+    }
+
+    if (await missing(instanceDir)) {
+      await linkDirectory(shared, instanceDir, this)
+      return
+    }
+
+    // Existing folder: merge its files into the shared folder.
+    const files = await readdir(instanceDir)
+    for (const name of files) {
+      const filePath = join(instanceDir, name)
+      const sharedFilePath = join(shared, name)
+      const linked = await readlinkSafe(filePath).catch(() => '')
+
+      if (linked) {
+        await unlink(filePath)
+        continue
+      }
+
+      if (await missing(sharedFilePath)) {
+        await rename(filePath, sharedFilePath)
+      } else {
+        // Move to shared with a new name, preserving the extension.
+        const ext = extname(name)
+        const base = name.slice(0, name.length - ext.length)
+        await rename(filePath, join(shared, `${base}-${Date.now()}${ext}`))
+      }
+    }
+
+    await rm(instanceDir, { recursive: true })
+    await linkDirectory(shared, instanceDir, this)
+  }
+
+  /**
+   * Unlink the instance's domain folder from the global shared folder,
+   * restoring an empty real directory.
+   */
+  async unlinkShared(instancePath: string): Promise<void> {
+    const shared = await this.getSharedDirectory()
+    const instanceDir = join(instancePath, this.domain)
+    if (!(await isLinkTo(instanceDir, shared))) {
+      return
+    }
+    await unlink(instanceDir)
+    await ensureDir(instanceDir)
   }
 
   async install({ files, path }: UpdateInstanceResourcesOptions) {

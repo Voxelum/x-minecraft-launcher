@@ -1,5 +1,5 @@
 import { CompiledQuery, DatabaseConnection, Driver, QueryResult, SelectQueryNode } from 'kysely'
-import type { Database } from 'node-sqlite3-wasm'
+import type { Database, Statement } from 'node-sqlite3-wasm'
 import { SQLite3Error } from 'node-sqlite3-wasm'
 import {
   SqliteWASMDialectDatabaseConfig,
@@ -46,7 +46,21 @@ export abstract class AbstractSqliteDriver implements Driver {
   }
 
   async rollbackTransaction(connection: DatabaseConnection): Promise<void> {
-    await connection.executeQuery(CompiledQuery.raw('rollback'))
+    try {
+      await connection.executeQuery(CompiledQuery.raw('rollback'))
+    } catch (e) {
+      // After the self-heal swaps in a fresh db handle (issue #1429), the
+      // transaction we opened died with the old handle, so the new
+      // connection has no active transaction and `rollback` fails with
+      // "cannot rollback - no transaction is active". That rollback is
+      // moot — the work is already gone — so swallow it instead of
+      // letting Kysely surface it (and mask the real error that aborted
+      // the transaction). 0.58 telemetry: 1536 events / 3 users.
+      if (e instanceof Error && e.message.includes('no transaction is active')) {
+        return
+      }
+      throw e
+    }
   }
 
   async releaseConnection(): Promise<void> {
@@ -160,6 +174,17 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
               e.isDisposed = true
             }
             this.#config.onError?.(e)
+          } else if (e.message.includes('no transaction is active')) {
+            // Benign fallout of the self-heal: after we swap in a fresh
+            // db handle (issue #1429), Kysely still issues a `rollback`
+            // for the transaction that died with the old handle, which
+            // fails with "cannot rollback - no transaction is active".
+            // The rollback is moot, so flag it for telemetry suppression
+            // instead of storming (0.58: 1536 ev / 3 users). Don't mark
+            // the database not-ready — it's perfectly usable.
+            if (e instanceof SQLite3Error) {
+              e.isDisposed = true
+            }
           } else {
             this.#config.onError?.(e)
           }
@@ -203,9 +228,15 @@ class SqliteConnection implements DatabaseConnection {
 
   executeQuery<O>(compiledQuery: CompiledQuery): Promise<QueryResult<O>> {
     const { sql, parameters } = compiledQuery
-    const stmt = this.#getDb().prepare(sql)
+    let stmt: Statement | undefined
 
     try {
+      // `prepare` must run inside the try: preparing a SELECT against a
+      // missing table throws "no such table" here, and we want that to
+      // reach `onError` (which flags `isDisposed` for telemetry
+      // suppression). Previously prepare ran outside the try, so those
+      // errors bypassed the handler entirely (0.58: 781 ev / 2 users).
+      stmt = this.#getDb().prepare(sql)
       if (stmt.isReader()) {
         const rows = stmt.all(parameters as any) as O[]
         return Promise.resolve({ rows })
@@ -228,7 +259,13 @@ class SqliteConnection implements DatabaseConnection {
       this.onError?.(e)
       return Promise.reject(e)
     } finally {
-      stmt.finalize()
+      // Finalizing a statement that just errored can itself throw, which
+      // would mask the real error (and, since we already created the
+      // rejected promise above, leave it dangling as an unhandled
+      // rejection). The handle is discarded either way, so swallow it.
+      try {
+        stmt?.finalize()
+      } catch {}
     }
   }
 
@@ -237,8 +274,9 @@ class SqliteConnection implements DatabaseConnection {
     _chunkSize: number,
   ): AsyncIterableIterator<QueryResult<R>> {
     const { sql, parameters, query } = compiledQuery
-    const stmt = this.#getDb().prepare(sql)
+    let stmt: Statement | undefined
     try {
+      stmt = this.#getDb().prepare(sql)
       if (SelectQueryNode.is(query)) {
         const iter = stmt.iterate(parameters as any) as IterableIterator<R>
         for (const row of iter) {
@@ -249,8 +287,13 @@ class SqliteConnection implements DatabaseConnection {
       } else {
         throw new Error('Sqlite driver only supports streaming of select queries')
       }
+    } catch (e) {
+      this.onError?.(e)
+      throw e
     } finally {
-      stmt.finalize()
+      try {
+        stmt?.finalize()
+      } catch {}
     }
   }
 }

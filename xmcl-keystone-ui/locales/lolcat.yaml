@@ -1017,6 +1017,10 @@ quiltVersion:
   disable: DISABL QUILT
   empty: QUILT DOES NOT SUPPORT MINECWAFT {version}
 resourcepack:
+  linkShared: SHARE UR RESOURCE PACKZ ACROSS ALL INSTANCEZ
+  linkSharedHint: >-
+    LINKZ DIS INSTANCE resourcepacks FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ
+    CAN HAZ SAME PACKZ. OLD PACKZ GETS MERGD IN2 DA SHARY FOLDR.
   compatible: COMPATIBLE FORMAT {format} WITH {version}
   defaultDescription: TEH DEFAULT LOOK AN FEEL OF MINECWAFT
   delete:
@@ -1038,6 +1042,10 @@ resourcepack:
   noPacks: No reswurz packz fownd
   search: Sniff reswurz packz...
 save:
+  linkShared: SHARE UR SAVEZ ACROSS ALL INSTANCEZ
+  linkSharedHint: >-
+    LINKZ DIS INSTANCE saves FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ CAN HAZ
+    SAME WERLDZ. OLD SAVEZ GETS MERGD IN2 DA SHARY FOLDR.
   allowCheats: ALLOW CHEATS
   copy:
     name: COPY SAVE
@@ -1083,7 +1091,10 @@ screenshots:
 search:
   favorate: COLLEKSHUN
   local: INSTALLED
-  market: MOD MARKET
+  market: MARKET
+  emptyInstalled: NUFFIN INSTALLD YET
+  browseMarket: BROWZE MARKET
+  noResults: NO REZULTS FOUNDZ
 server:
   acceptingMinecraftVersion: ACCEPTING MINECWAFT VERSHUN
   creationHint: PLZ FILL DA SERVR ADDWESS AN PING DA SERVR
@@ -1356,6 +1367,10 @@ setup:
     name: SET LANGUAG
   path: CURREN PATH
 shaderPack:
+  linkShared: SHARE UR SHADR PACKZ ACROSS ALL INSTANCEZ
+  linkSharedHint: >-
+    LINKZ DIS INSTANCE shaderpacks FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ
+    CAN HAZ SAME SHADRZ. OLD PACKZ GETS MERGD IN2 DA SHARY FOLDR.
   deletion: DELET SHADER PAK
   deletionHint: THIS WILL DELET DA SHADER PAK FILE {path} AN CANNOT BE REVERTED.
   disabled: DISABLED SHADER PAKS

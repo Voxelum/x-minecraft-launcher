@@ -1049,6 +1049,11 @@ quiltVersion:
   disable: Désactiver Quilt
   empty: Quilt ne prend pas en charge Minecraft {version}
 resourcepack:
+  linkShared: Partager les packs de ressources entre les instances
+  linkSharedHint: >-
+    Lier le dossier resourcepacks de cette instance au dossier partagé global
+    afin que toutes les instances utilisent les mêmes packs de ressources. Les
+    packs existants sont fusionnés dans le dossier partagé.
   compatible: Format compatible {format} avec {version}
   defaultDescription: L'apparence par défaut de Minecraft
   delete:
@@ -1073,6 +1078,11 @@ resourcepack:
   noPacks: Aucun pack de ressources trouvé
   search: Rechercher des packs de ressources...
 save:
+  linkShared: Partager les sauvegardes entre les instances
+  linkSharedHint: >-
+    Lier le dossier saves de cette instance au dossier partagé global afin que
+    toutes les instances partagent les mêmes mondes. Les sauvegardes existantes
+    sont fusionnées dans le dossier partagé.
   copy:
     name: Copier la sauvegarde
   createNew: Créer un nouveau monde
@@ -1110,7 +1120,10 @@ screenshots:
 search:
   favorate: Collection
   local: Installé
-  market: Mod Market
+  market: Marché
+  emptyInstalled: Rien d'installé pour le moment
+  browseMarket: Parcourir le marché
+  noResults: Aucun résultat trouvé
 server:
   acceptingMinecraftVersion: Accepter la version Minecraft
   creationHint: Veuillez remplir l'adresse du serveur et envoyer un ping au serveur
@@ -1405,6 +1418,11 @@ setup:
     name: choisir la langue
   path: Chemin actuel
 shaderPack:
+  linkShared: Partager les packs de shaders entre les instances
+  linkSharedHint: >-
+    Lier le dossier shaderpacks de cette instance au dossier partagé global afin
+    que toutes les instances utilisent les mêmes packs de shaders. Les packs
+    existants sont fusionnés dans le dossier partagé.
   deletion: Supprimer le shaderpack
   deletionHint: >-
     Cela supprimera le fichier du shaderpack {path} et ne pourra pas être annulé.
