@@ -242,6 +242,11 @@ disk:
   available: Disponible
   used: Usado
 downloadCount: '{count} descargas'
+duration:
+  day: '{duration} día | {duration} días'
+  hour: '{duration} hora | {duration} horas'
+  minute: '{duration} minuto | {duration} minutos'
+  second: '{duration} segundo | {duration} segundos'
 downloadUpdate:
   name: Descargar actualización {version}
 env:
