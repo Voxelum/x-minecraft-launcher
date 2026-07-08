@@ -6,10 +6,12 @@ import {
   resolveForgeVersion,
   resolveQuiltVersion,
 } from '@xmcl/runtime-api'
-import { ensureDir, move, readlink, stat, unlink } from 'fs-extra'
+import { isSystemError } from '@xmcl/utils'
+import { ensureDir, move, stat, unlink } from 'fs-extra'
 import { join } from 'path'
 import { LauncherAppPlugin, kGameDataPath } from '~/app'
 import { InstanceService } from '~/instance'
+import { isLinkTo, readlinkSafe } from '~/instance/utils/readLinkSafe'
 import { JavaService, JavaValidation } from '~/java'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
@@ -35,41 +37,52 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
     if (await missing(fromPath)) {
       await ensureDir(fromPath)
     }
-    const linkTarget = await readlink(toPath).catch(() => undefined)
+
+    // Already a link (symlink or win32 junction) pointing at the shared root:
+    // nothing to do. `isLinkTo` normalizes the `\\?\` prefix / trailing sep a
+    // junction reports through `readlink`, which a raw string compare misses —
+    // that mismatch made every launch needlessly unlink+relink and, when the
+    // unlink of a junction failed (common on Windows/Wine), the following
+    // symlink hit EEXIST and surfaced as `LaunchLinkError` (issue #1428 was
+    // the EPERM cousin; this is the EEXIST long tail).
+    if (await isLinkTo(toPath, fromPath)) {
+      return
+    }
+
+    let stage = 'link'
+    const linkTarget = await readlinkSafe(toPath).catch(() => undefined)
     if (linkTarget) {
-      // relink
-      if (linkTarget !== fromPath) {
-        await unlink(toPath).catch(() => {})
-        await linkOrCopyDirectory(fromPath, toPath, logger).catch((e) => {
-          e.name = 'LaunchLinkError'
-          e.stage = 'relink'
-          logger.error(e)
-        })
-      }
-      return
-    }
-    const fstat = await stat(toPath).catch((e) => {
-      if (e.code === 'ENOENT') return undefined
-      throw e
-    })
-    if (!fstat) {
-      await linkOrCopyDirectory(fromPath, toPath, logger).catch((e) => {
-        e.name = 'LaunchLinkError'
-        e.stage = 'link'
-        logger.error(e)
+      // A link that points elsewhere (or is dangling): drop it, then relink.
+      stage = 'relink'
+      await unlink(toPath).catch(() => {})
+    } else {
+      const fstat = await stat(toPath).catch((e) => {
+        if (e.code === 'ENOENT') return undefined
+        throw e
       })
-      return
-    }
-    try {
-      await move(toPath, join(toPath + '.bk'))
-    } catch (e) {
-      if ((e as any).message === 'dest already exists.') {
-        await move(toPath, join(toPath + Date.now() + '.bk'))
+      if (fstat) {
+        // A real directory sits where the link should be: preserve it.
+        stage = 'after move'
+        try {
+          await move(toPath, join(toPath + '.bk'))
+        } catch (e) {
+          if ((e as any).message === 'dest already exists.') {
+            await move(toPath, join(toPath + Date.now() + '.bk'))
+          }
+        }
       }
     }
-    await linkOrCopyDirectory(fromPath, toPath, logger).catch((e) => {
+
+    await linkOrCopyDirectory(fromPath, toPath, logger).catch(async (e) => {
+      // Idempotent recovery: the destination already links to the shared root
+      // (a concurrent setup won the race, or a stale entry we couldn't remove
+      // is in fact correct). Treat EEXIST as success instead of raising the
+      // `LaunchLinkError` storm that 87/91 of 0.61.0's link failures came from.
+      if (isSystemError(e) && e.code === 'EEXIST' && await isLinkTo(toPath, fromPath)) {
+        return
+      }
       e.name = 'LaunchLinkError'
-      e.stage = 'after move'
+      e.stage = stage
       logger.error(e)
     })
   }
