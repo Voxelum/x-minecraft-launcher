@@ -10,6 +10,14 @@ packages:
   # 95% of contributors who never run end-to-end tests. Install it on demand
   # with `pnpm --prefix=e2e install`. See e2e/README.md.
   - '.github/actions/*'
+allowBuilds:
+  '@parcel/watcher': true
+  cpu-features: true
+  electron: true
+  esbuild: true
+  node-datachannel: true
+  ssh2: true
+  vue-demi: true
 enableGlobalVirtualStore: true
 
 # `cls-hooked` does `require('stack-chain')` but does not declare it in its
