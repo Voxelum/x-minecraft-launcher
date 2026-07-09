@@ -49,11 +49,21 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
       // preload bundle). Install the mutation-forwarding methods here from the
       // `Type` we already hold, so renderer calls like `state.value.localeSet(x)`
       // still reach the main process via the generic `commit` channel.
-      for (const key of Object.getOwnPropertyNames(Type.prototype)) {
-        if (key === 'constructor') continue
-        if (typeof (Type.prototype as any)[key] === 'function') {
-          (data as any)[key] = (...args: any[]) => (data as any).commit(key, ...args)
+      //
+      // Walk the whole prototype chain (not just `Type.prototype`'s own names):
+      // some composables pass a subclass (e.g. `class extends InstanceState`),
+      // so inherited mutation methods like `instanceGroupsSet` live further up
+      // the chain. Stop at `Object.prototype` so we don't forward `toString` etc.
+      let proto = Type.prototype as any
+      while (proto && proto !== Object.prototype) {
+        for (const key of Object.getOwnPropertyNames(proto)) {
+          if (key === 'constructor') continue
+          if ((data as any)[key]) continue
+          if (typeof proto[key] === 'function') {
+            (data as any)[key] = (...args: any[]) => (data as any).commit(key, ...args)
+          }
         }
+        proto = Object.getPrototypeOf(proto)
       }
 
       const func = onMutation(data)
