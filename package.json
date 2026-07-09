@@ -2,7 +2,7 @@
     "version": "0.61.0",
     "private": true,
     "license": "MIT",
-    "packageManager": "pnpm@10.33.3",
+    "packageManager": "pnpm@11.10.0",
     "engines": {
         "node": ">=20"
     },
@@ -46,15 +46,6 @@
         "vitest": "^4.1.0"
     },
     "pnpm": {
-        "onlyBuiltDependencies": [
-            "@parcel/watcher",
-            "cpu-features",
-            "electron",
-            "esbuild",
-            "node-datachannel",
-            "ssh2",
-            "vue-demi"
-        ],
         "overrides": {
             "postcss": ">=8.5.10",
             "rolldown": "1.0.1",
