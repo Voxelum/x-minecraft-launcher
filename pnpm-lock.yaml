@@ -86,8 +86,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -107,8 +107,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -131,8 +131,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -162,8 +162,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -175,7 +175,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/core:
     dependencies:
@@ -190,8 +190,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -200,7 +200,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/curseforge:
     dependencies:
@@ -209,14 +209,14 @@ importers:
         version: 7.28.0
     devDependencies:
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       undici-shim:
         specifier: workspace:^*
         version: link:../undici-shim
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/discord-rpc:
     dependencies:
@@ -234,8 +234,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -256,8 +256,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -278,8 +278,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -288,7 +288,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/game-data:
     dependencies:
@@ -306,8 +306,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -319,7 +319,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/gamesetting:
     devDependencies:
@@ -330,8 +330,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -340,7 +340,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/installer:
     dependencies:
@@ -385,8 +385,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -395,7 +395,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/instance:
     dependencies:
@@ -450,8 +450,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -460,7 +460,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/model:
     dependencies:
@@ -481,8 +481,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -497,14 +497,14 @@ importers:
         version: 7.28.0
     devDependencies:
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       undici-shim:
         specifier: workspace:^*
         version: link:../undici-shim
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/nat-api:
     dependencies:
@@ -522,14 +522,14 @@ importers:
         specifier: ^20.19.0
         version: 20.19.30
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/nbt:
     dependencies:
@@ -550,8 +550,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -560,7 +560,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/nbt/zlib:
     dependencies:
@@ -639,11 +639,11 @@ importers:
         specifier: ^20.19.0
         version: 20.19.30
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/schematic:
     dependencies:
@@ -658,8 +658,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -668,7 +668,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/semver:
     devDependencies:
@@ -679,8 +679,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -697,8 +697,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       kysely:
         specifier: ^0.28.14
         version: 0.28.17
@@ -731,8 +731,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -741,7 +741,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/text-component:
     devDependencies:
@@ -752,8 +752,8 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxlint:
         specifier: ^1.63.0
         version: 1.63.0
@@ -762,7 +762,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/undici-shim: {}
 
@@ -779,14 +779,14 @@ importers:
         specifier: workspace:^*
         version: link:../oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/user:
     dependencies:
@@ -801,8 +801,8 @@ importers:
         specifier: ^9.0.1
         version: 9.0.1
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -814,7 +814,7 @@ importers:
         version: link:../user-offline-uuid
       vitest:
         specifier: ^4.1.0
-        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+        version: 4.1.8(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
 
   packages/user-offline-uuid:
     dependencies:
@@ -1569,8 +1569,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/oxlint-config
       esbuild:
-        specifier: ^0.25.12
-        version: 0.25.12
+        specifier: ^0.28.1
+        version: 0.28.1
       oxfmt:
         specifier: ^0.48.0
         version: 0.48.0
@@ -8277,14 +8277,6 @@ snapshots:
     optionalDependencies:
       vite: 8.0.16(@types/node@18.15.13)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)
 
-  '@vitest/mocker@4.1.8(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))':
-    dependencies:
-      '@vitest/spy': 4.1.8
-      estree-walker: 3.0.3
-      magic-string: 0.30.21
-    optionalDependencies:
-      vite: 8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)
-
   '@vitest/mocker@4.1.8(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))':
     dependencies:
       '@vitest/spy': 4.1.8
@@ -8293,13 +8285,13 @@ snapshots:
     optionalDependencies:
       vite: 8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)
 
-  '@vitest/mocker@4.1.8(vite@8.0.16(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))':
+  '@vitest/mocker@4.1.8(vite@8.0.16(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))':
     dependencies:
       '@vitest/spy': 4.1.8
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.0.16(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)
+      vite: 8.0.16(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)
 
   '@vitest/pretty-format@4.1.8':
     dependencies:
@@ -11443,23 +11435,6 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.4
 
-  vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4):
-    dependencies:
-      lightningcss: 1.32.0
-      picomatch: 4.0.4
-      postcss: 8.5.16
-      rolldown: 1.0.3
-      tinyglobby: 0.2.17
-    optionalDependencies:
-      '@types/node': 20.19.30
-      esbuild: 0.25.12
-      fsevents: 2.3.3
-      jiti: 2.7.0
-      sass: 1.99.0
-      terser: 5.20.0
-      tsx: 4.21.0
-      yaml: 2.8.4
-
   vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4):
     dependencies:
       lightningcss: 1.32.0
@@ -11477,7 +11452,7 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.4
 
-  vite@8.0.16(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4):
+  vite@8.0.16(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -11486,7 +11461,7 @@ snapshots:
       tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 24.13.3
-      esbuild: 0.25.12
+      esbuild: 0.28.1
       fsevents: 2.3.3
       jiti: 2.7.0
       sass: 1.99.0
@@ -11523,35 +11498,6 @@ snapshots:
     transitivePeerDependencies:
       - msw
 
-  vitest@4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)):
-    dependencies:
-      '@vitest/expect': 4.1.8
-      '@vitest/mocker': 4.1.8(vite@8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
-      '@vitest/pretty-format': 4.1.8
-      '@vitest/runner': 4.1.8
-      '@vitest/snapshot': 4.1.8
-      '@vitest/spy': 4.1.8
-      '@vitest/utils': 4.1.8
-      es-module-lexer: 2.1.0
-      expect-type: 1.3.0
-      magic-string: 0.30.21
-      obug: 2.1.1
-      pathe: 2.0.3
-      picomatch: 4.0.4
-      std-env: 4.1.0
-      tinybench: 2.9.0
-      tinyexec: 1.0.2
-      tinyglobby: 0.2.16
-      tinyrainbow: 3.1.0
-      vite: 8.0.16(@types/node@20.19.30)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@opentelemetry/api': 1.9.0
-      '@types/node': 20.19.30
-      '@vitest/coverage-v8': 4.1.8(vitest@4.1.8)
-    transitivePeerDependencies:
-      - msw
-
   vitest@4.1.8(@opentelemetry/api@1.9.0)(@types/node@20.19.30)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@20.19.30)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)):
     dependencies:
       '@vitest/expect': 4.1.8
@@ -11581,10 +11527,10 @@ snapshots:
     transitivePeerDependencies:
       - msw
 
-  vitest@4.1.8(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)):
+  vitest@4.1.8(@opentelemetry/api@1.9.0)(@types/node@24.13.3)(@vitest/coverage-v8@4.1.8)(vite@8.0.16(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)):
     dependencies:
       '@vitest/expect': 4.1.8
-      '@vitest/mocker': 4.1.8(vite@8.0.16(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
+      '@vitest/mocker': 4.1.8(vite@8.0.16(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4))
       '@vitest/pretty-format': 4.1.8
       '@vitest/runner': 4.1.8
       '@vitest/snapshot': 4.1.8
@@ -11601,7 +11547,7 @@ snapshots:
       tinyexec: 1.0.2
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
-      vite: 8.0.16(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)
+      vite: 8.0.16(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.99.0)(terser@5.20.0)(tsx@4.21.0)(yaml@2.8.4)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.0

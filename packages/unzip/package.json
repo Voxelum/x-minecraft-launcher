@@ -43,7 +43,7 @@
   "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
   "devDependencies": {
     "@xmcl/oxlint-config": "workspace:^*",
-    "esbuild": "^0.25.12",
+    "esbuild": "^0.28.1",
     "@types/node": "^20.19.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
