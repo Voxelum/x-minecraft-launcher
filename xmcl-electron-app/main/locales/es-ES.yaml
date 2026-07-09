@@ -1,23 +1,26 @@
-browseApps: Explorar la interfaz de usuario personalizada del iniciador
-checkUpdate: Buscar Actualizaciones
+browseApps: Explorar la interfaz de usuario personalizada del lanzador
+checkUpdate: Buscar actualizaciones
 openUrl:
   cancel: Cancelar
   message: >-
-    El launcher quiere abrir {url} en tu navegador por defecto. Permites esta
+    El lanzador quiere abrir {url} en tu navegador por defecto. ¿Permites esta
     operación?
   title: Abrir en el navegador
   trust: Confiar en este sitio y no volver a preguntar
   'yes': Sí
 quit: Salir
 relaunch: Relanzar
-showDiagnosis: Mostrar diagnostico
+showDiagnosis: Mostrar diagnóstico
+showLauncher: Mostrar lanzador
 showLogsFolder: Mostrar carpeta de registros
 task:
-  continue: Ver en el launcher
-  fail: Una operación falló
-  success: Una operación funcionó
+  continue: Ver en el lanzador
+  fail: Una tarea falló
+  success: Una tarea completada
+title: X Minecraft Launcher
 urlFailed: >-
-  Url no encontrada {url}. Por favor revisa la URL o contacta con el
-  desarrollador
-urlSuccess: Hecho! Ya puedes cerrar la ventana y volver al launcher.
-makeDesktopShortcut: Crear un acceso directo en el escritorio
+  URL no encontrada {url}. Revisa la URL o contacta al desarrollador.
+urlSuccess: '¡Hecho! Ya puedes cerrar esta ventana y volver al lanzador.'
+autoCloseHint: Esta ventana se cerrará en {time} segundos
+multiplayer: Multijugador P2P
+makeDesktopShortcut: Crear acceso directo en el escritorio
