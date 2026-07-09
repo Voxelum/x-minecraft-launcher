@@ -45,6 +45,14 @@ export class ElectronController implements LauncherAppController {
    */
   protected parking = false
 
+  /**
+   * Whether the app is quitting. Once the app is quitting, windows that normally
+   * hide instead of closing (e.g. the multiplayer window) must be allowed to
+   * actually close, otherwise they keep the process (and its WebRTC/pipewire
+   * capturer child processes) alive in the background after the app appears closed.
+   */
+  protected quitting = false
+
   protected activatedManifest: InstalledAppManifest | undefined
 
   protected sharedSession: Session | undefined
@@ -330,9 +338,22 @@ export class ElectronController implements LauncherAppController {
         win.show()
       })
       win.on('close', (e) => {
-        if (this.mainWin && !this.mainWin.isDestroyed()) {
+        if (!this.quitting && this.mainWin && !this.mainWin.isDestroyed()) {
           win.hide()
           e.preventDefault()
+        }
+      })
+      // When the app is quitting, allow this window to actually close instead of
+      // being hidden, otherwise its WebRTC/pipewire capturer child processes keep
+      // the whole app alive in the background after the window appears closed.
+      const onBeforeQuit = () => {
+        this.quitting = true
+      }
+      app.on('before-quit', onBeforeQuit)
+      win.on('closed', () => {
+        app.off('before-quit', onBeforeQuit)
+        if (this.multiplayerRef === win) {
+          this.multiplayerRef = undefined
         }
       })
       this.multiplayerRef = win
