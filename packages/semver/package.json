@@ -22,7 +22,7 @@
     "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
   },
   "devDependencies": {
-    "@types/node": "^20.19.0",
+    "@types/node": "^24.13.3",
     "@xmcl/oxlint-config": "workspace:^*",
     "esbuild": "^0.25.12",
     "oxlint": "^1.63.0",

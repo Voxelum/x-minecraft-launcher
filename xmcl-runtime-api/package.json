@@ -47,7 +47,7 @@
         "@xmcl/user": "workspace:*"
     },
     "devDependencies": {
-        "@types/node": "^20.19.0",
+        "@types/node": "^24.13.3",
         "@xmcl/oxlint-config": "workspace:*",
         "oxfmt": "^0.48.0",
         "oxlint": "^1.63.0",

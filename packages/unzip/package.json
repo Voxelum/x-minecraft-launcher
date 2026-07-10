@@ -44,7 +44,7 @@
   "devDependencies": {
     "@xmcl/oxlint-config": "workspace:^*",
     "esbuild": "^0.25.12",
-    "@types/node": "^20.19.0",
+    "@types/node": "^24.13.3",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
   }

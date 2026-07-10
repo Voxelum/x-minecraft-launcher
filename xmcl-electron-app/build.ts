@@ -142,7 +142,7 @@ async function start() {
       // the mirror. Same value across platforms/arches, so overwriting is fine.
       await writeFile('build/output/manifest.json', JSON.stringify({
         version,
-        electron: context.electronVersion,
+        electron: context.packager.info.framework.version,
       }, null, 2))
     },
     async artifactBuildStarted(context) {

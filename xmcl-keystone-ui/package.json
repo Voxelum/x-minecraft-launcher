@@ -70,7 +70,7 @@
         "@types/semver": "^7.5.8",
         "@types/three": "^0.150.1",
         "@vitejs/plugin-vue": "^6.0.6",
-        "@types/node": "^20.19.0",
+        "@types/node": "^24.13.3",
         "@xmcl/oxlint-config": "workspace:*",
         "chalk": "^4.1.2",
         "js-yaml": "^4.1.0",

@@ -6,6 +6,6 @@
   "browser": "index.browser.ts",
   "dependencies": {
     "undici": "^7.24.0",
-    "@types/node": "^20.19.0"
+    "@types/node": "^24.13.3"
   }
 }

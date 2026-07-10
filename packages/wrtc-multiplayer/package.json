@@ -20,11 +20,11 @@
     "@xmcl/text-component": "workspace:*",
     "@xmcl/utils": "workspace:*",
     "lodash.debounce": "^4.0.8",
-    "node-datachannel": "0.26.0"
+    "node-datachannel": "0.32.3"
   },
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.7",
-    "@types/node": "^20.19.0",
+    "@types/node": "^24.13.3",
     "@xmcl/oxlint-config": "workspace:*",
     "oxlint": "^1.63.0",
     "typescript": "^5.9.3"

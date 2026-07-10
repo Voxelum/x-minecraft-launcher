@@ -40,6 +40,6 @@
   "devDependencies": {
     "esbuild": "^0.25.12",
     "vitest": "^4.1.0",
-    "@types/node": "^20.19.0"
+    "@types/node": "^24.13.3"
   }
 }
