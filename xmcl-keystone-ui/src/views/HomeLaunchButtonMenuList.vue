@@ -45,9 +45,10 @@
         min-width="220"
       >
         <v-list-item
+          v-if="!isBedrock || bedrockStorage"
           role="menuitem"
-          :title="t('logsCrashes.title')"
-          @click="showLogDialog()"
+          :title="isBedrock ? t('instance.openLogFolder') : t('logsCrashes.title')"
+          @click="showLogs"
         >
           <template #prepend>
             <v-icon size="20">
@@ -56,6 +57,7 @@
           </template>
         </v-list-item>
         <v-list-item
+          v-if="!isBedrock || bedrockStorage"
           role="menuitem"
           :title="t('instance.showInstance')"
           @click="showInstanceFolder"
@@ -274,7 +276,7 @@ import { useInstanceVersionServerInstall } from '@/composables/instanceVersionSe
 import { join } from '@/util/basename';
 import { getInstanceIcon } from '@/util/favicon';
 import { injection } from '@/util/inject'
-import { BaseServiceKey, InstanceOptionsServiceKey, LaunchServiceKey, ModpackServiceKey, parseServerAddress, UserProfile, waitModpackFiles } from '@xmcl/runtime-api';
+import { BaseServiceKey, BedrockServiceKey, BedrockStoragePaths, InstanceOptionsServiceKey, LaunchServiceKey, ModpackServiceKey, parseServerAddress, UserProfile, waitModpackFiles } from '@xmcl/runtime-api';
 import { isBedrockInstance } from '@xmcl/instance';
 
 const { t } = useI18n()
@@ -395,6 +397,7 @@ const isBedrock = computed(() => isBedrockInstance(instance.value))
 const { createLaunchShortcut } = useService(LaunchServiceKey)
 
 const { getDesktopDirectory, openDirectory } = useService(BaseServiceKey)
+const { getStoragePaths } = useService(BedrockServiceKey)
 const env = injection(kEnvironment)
 const onCreateShortcut = async () => {
   const dir = await getDesktopDirectory()
@@ -445,8 +448,24 @@ const { show: showLogDialog } = useDialog('log')
 const { show: showInstanceInstallDialog } = useDialog(InstanceInstallDialog)
 const { openModpack } = useService(ModpackServiceKey)
 
+const bedrockStorage = ref<BedrockStoragePaths>()
+watch(isBedrock, async (bedrock) => {
+  bedrockStorage.value = undefined
+  if (bedrock) {
+    bedrockStorage.value = await getStoragePaths()
+  }
+}, { immediate: true })
+
 function showInstanceFolder() {
-  openDirectory(path.value)
+  openDirectory(isBedrock.value ? bedrockStorage.value!.dataPath : path.value)
+}
+
+function showLogs() {
+  if (isBedrock.value) {
+    openDirectory(bedrockStorage.value!.logsPath)
+    return
+  }
+  showLogDialog()
 }
 
 const installing = ref(false)

@@ -73,6 +73,25 @@ askAICrash:
   selectPlatform: 打开一个AI平台，粘贴您刚刚复制的提示。
   setupAgent: 设置 AI 助手
 authProfileAddedNotification: 已添加第三方验证 {name}
+bedrock:
+  installBedrockVersion: '正在下载基岩版 {version}'
+  versionsTitle: 版本管理
+  versionsHint: 从微软服务器下载多个基岩版，并在它们之间切换。Windows 同时只能注册一个版本。
+  versionsError: 无法加载版本列表，请检查网络后重试。
+  channel: 渠道
+  channelRelease: 正式版
+  channelBeta: 测试版
+  channelPreview: 预览版
+  active: 当前版本
+  play: 启动
+  download: 下载
+  installedTag: 已安装
+  developerModeRequired: 注册下载的版本需要开启 Windows 开发者模式。
+  enableDeveloperMode: 开启开发者模式
+  enableDeveloperModeFailed: 开启开发者模式失败
+  downloadFailed: '下载基岩版 {version} 失败'
+  launchFailed: 启动此基岩版失败
+  removeFailed: '移除基岩版 {version} 失败'
 baseSetting:
   title: 实例设置
 browseApp:

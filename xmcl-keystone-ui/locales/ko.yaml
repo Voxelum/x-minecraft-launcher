@@ -42,6 +42,25 @@ askAICrash:
   description: AI가 게임 충돌을 이해할 수 있도록 도와줄 거예요! 아래 안내를 따라 게임 충돌에 대해 AI에게 물어보세요
   selectPlatform: AI 플랫폼을 열고, 방금 복사한 프롬프트를 붙여 넣으세요.
 authProfileAddedNotification: 인증 프로필 {name} 이 추가됐어요
+bedrock:
+  installBedrockVersion: 'Downloading Bedrock {version}'
+  versionsTitle: Version manager
+  versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
+  versionsError: Failed to load the version list. Check your network and try again.
+  channel: Channel
+  channelRelease: Release
+  channelBeta: Beta
+  channelPreview: Preview
+  active: Active
+  play: Play
+  download: Download
+  installedTag: Installed
+  developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
+  enableDeveloperMode: Enable Developer Mode
+  enableDeveloperModeFailed: Failed to enable Developer Mode
+  downloadFailed: 'Failed to download Bedrock {version}'
+  launchFailed: Failed to launch this Bedrock version
+  removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
   title: 인스턴스 설정
 browseApp:

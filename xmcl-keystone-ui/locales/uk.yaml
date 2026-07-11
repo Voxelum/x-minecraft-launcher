@@ -75,10 +75,31 @@ bedrock:
   installFailed: Не вдалося відкрити Microsoft Store
   installed: 'Встановлено: {version}'
   launchHint: Використовуйте кнопку «Запуск», щоб запустити Bedrock Edition.
+  installBedrockVersion: 'Завантаження Bedrock {version}'
   licenseRequired: >-
     Увійдіть за допомогою облікового запису Microsoft, який володіє Minecraft, щоб установити та грати
     в Bedrock Edition.
   refresh: Оновити
+  versionsTitle: Менеджер версій
+  versionsHint: >-
+    Завантажуйте кілька версій Bedrock із серверів Microsoft і перемикайтеся між ними.
+    Windows може зареєструвати лише одну версію одночасно.
+  versionsError: Не вдалося завантажити список версій. Перевірте мережу та спробуйте ще раз.
+  channel: Канал
+  channelRelease: Реліз
+  channelBeta: Бета
+  channelPreview: Попередня версія
+  active: Активна
+  play: Грати
+  download: Завантажити
+  installedTag: Встановлено
+  developerModeRequired: >-
+    Для реєстрації завантаженої версії потрібно ввімкнути режим розробника Windows.
+  enableDeveloperMode: Увімкнути режим розробника
+  enableDeveloperModeFailed: Не вдалося ввімкнути режим розробника
+  downloadFailed: 'Не вдалося завантажити Bedrock {version}'
+  launchFailed: Не вдалося запустити цю версію Bedrock
+  removeFailed: 'Не вдалося видалити Bedrock {version}'
 baseSetting:
   title: Основні налаштування
 browseApp:

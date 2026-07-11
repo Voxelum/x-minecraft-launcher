@@ -50,6 +50,7 @@
         </span>
       </v-btn>
       <v-btn
+        v-if="!isBedrock"
         v-shared-tooltip="() => t('instance.launchServer')"
         variant="text"
         :aria-pressed="targetQuery === 'server'"
@@ -119,7 +120,7 @@
         </v-btn>
       </div>
       <div
-        v-else-if="targetQuery === 'server'"
+        v-else-if="targetQuery === 'server' && !isBedrock"
         class="flex items-center justify-end gap-2 overflow-hidden"
       >
         <v-btn
@@ -198,17 +199,19 @@ function navigate(target: '' | 'modpack' | 'appearance' | 'server') {
 }
 
 // Gamepad triggers (L2/R2) cycle through the base-setting tabs.
-const TAB_GROUP: Array<'' | 'modpack' | 'server' | 'appearance'> = ['', 'modpack', 'server', 'appearance']
+const tabGroup = computed<Array<'' | 'modpack' | 'server' | 'appearance'>>(() =>
+  isBedrock.value ? ['', 'appearance'] : ['', 'modpack', 'server', 'appearance'],
+)
 useGamepadInnerNav({
   handler: (dir) => {
     const raw = (targetQuery.value || '') as string
     const cur = raw === 'general' ? '' : raw
-    let idx = TAB_GROUP.indexOf(cur as '' | 'modpack' | 'server' | 'appearance')
+    let idx = tabGroup.value.indexOf(cur as '' | 'modpack' | 'server' | 'appearance')
     if (idx === -1) idx = 0
     const next = dir === 'next'
-      ? (idx + 1) % TAB_GROUP.length
-      : (idx - 1 + TAB_GROUP.length) % TAB_GROUP.length
-    navigate(TAB_GROUP[next])
+      ? (idx + 1) % tabGroup.value.length
+      : (idx - 1 + tabGroup.value.length) % tabGroup.value.length
+    navigate(tabGroup.value[next])
   },
 })
 </script>

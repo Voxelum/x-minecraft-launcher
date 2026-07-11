@@ -45,6 +45,25 @@ askAICrash:
     LET AI HALP U TO UNDERSTAND DA GAME CRASH! FOLLOW DA INSTRUKSHUNS BELOW TO ASK AI ABOUT THIS GAME CRASH!
   selectPlatform: OPEN AN AI PLATFORM AN PASTE DA PROMPT U JUS COPIED.
 authProfileAddedNotification: AUTH PROFILE {name} ADDED
+bedrock:
+  installBedrockVersion: 'Downloading Bedrock {version}'
+  versionsTitle: Version manager
+  versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
+  versionsError: Failed to load the version list. Check your network and try again.
+  channel: Channel
+  channelRelease: Release
+  channelBeta: Beta
+  channelPreview: Preview
+  active: Active
+  play: Play
+  download: Download
+  installedTag: Installed
+  developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
+  enableDeveloperMode: Enable Developer Mode
+  enableDeveloperModeFailed: Failed to enable Developer Mode
+  downloadFailed: 'Failed to download Bedrock {version}'
+  launchFailed: Failed to launch this Bedrock version
+  removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
   title: INSTANCE SETTINGZ
 browseApp:

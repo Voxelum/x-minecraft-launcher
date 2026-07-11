@@ -4,6 +4,7 @@
       <template v-if="isBedrock">
         <div class="flex flex-col gap-4">
           <BaseSettingGeneral />
+          <BaseSettingBedrockVersions />
         </div>
       </template>
       <template v-else>
@@ -34,7 +35,7 @@
     <template v-else-if="targetQuery === 'appearance'">
       <BaseSettingAppearance />
     </template>
-    <template v-else-if="targetQuery === 'server'">
+    <template v-else-if="targetQuery === 'server' && !isBedrock">
       <div class="flex flex-col gap-4">
         <BaseSettingServerRun />
       </div>
@@ -92,6 +93,7 @@ import { useService } from '@/composables'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import { InstanceEditInjectionKey, useInstanceEdit } from '../composables/instanceEdit'
 import BaseSettingGeneral from './BaseSettingGeneral.vue'
+import BaseSettingBedrockVersions from './BaseSettingBedrockVersions.vue'
 import BaseSettingJava from './BaseSettingJava.vue'
 import BaseSettingLaunch from './BaseSettingLaunch.vue'
 import BaseSettingSync from './BaseSettingSync.vue'
@@ -169,7 +171,7 @@ async function onSkipUpgrade() {
 const targetQuery = useQuery('target')
 
 watch([isBedrock, targetQuery], ([bedrock, target]) => {
-  if (bedrock && target === 'modpack') {
+  if (bedrock && (target === 'modpack' || target === 'server')) {
     targetQuery.value = 'general'
   }
 }, { immediate: true })

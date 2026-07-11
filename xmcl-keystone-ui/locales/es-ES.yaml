@@ -103,10 +103,31 @@ bedrock:
   installFailed: Error al abrir Microsoft Store
   installed: 'Instalado: {version}'
   launchHint: Usa el botón Lanzar para iniciar Bedrock Edition.
+  installBedrockVersion: 'Descargando Bedrock {version}'
   licenseRequired: >-
     Inicia sesión con una cuenta de Microsoft que tenga Minecraft para instalar
     y jugar Bedrock Edition.
   refresh: Actualizar
+  versionsTitle: Gestor de versiones
+  versionsHint: >-
+    Descarga varias versiones de Bedrock desde los servidores de Microsoft y
+    cambia entre ellas. Windows solo puede registrar una versión a la vez.
+  versionsError: No se pudo cargar la lista de versiones. Comprueba la red e inténtalo de nuevo.
+  channel: Canal
+  channelRelease: Lanzamiento
+  channelBeta: Beta
+  channelPreview: Vista previa
+  active: Activa
+  play: Jugar
+  download: Descargar
+  installedTag: Instalada
+  developerModeRequired: >-
+    Para registrar una versión descargada necesitas activar el modo de desarrollador de Windows.
+  enableDeveloperMode: Activar modo de desarrollador
+  enableDeveloperModeFailed: No se pudo activar el modo de desarrollador
+  downloadFailed: 'No se pudo descargar Bedrock {version}'
+  launchFailed: No se pudo iniciar esta versión de Bedrock
+  removeFailed: 'No se pudo eliminar Bedrock {version}'
 browseApps: Ver la interfaz de usuario del lanzador
 color: Color
 confirm: Comenzar
@@ -593,7 +614,6 @@ instances:
   folderSetting: Configuración de carpeta
   importFolderDescription: Importar Minecraft al Lanzador
   loadingFiles: Cargando archivos Modpack
-  addPrismDescription: Importar instancia existente de PrismLauncher.
 items:
   count: '{count} ítems'
   total: '{total} total'
@@ -1376,7 +1396,6 @@ save:
   noSavesFound: No se encontraron partidas
   noSavesInstalled: No tienes ninguna partida guardada
   properties: Propiedades del mundo
-  search: Buscar mapas...
   useMouseRotate: Usar el ratón para rotar la vista
   useScrollZoom: Usar la rueda del ratón para hacer zoom
   world: Mundo
@@ -2159,5 +2178,3 @@ instanceLauncher:
   title: Todas las instancias
 migrateMinecraft:
   name: Migrar archivos de Minecraft
-reinstall:
-  name: Reinstalar {version}

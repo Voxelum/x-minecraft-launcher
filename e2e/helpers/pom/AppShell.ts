@@ -37,7 +37,7 @@ export class AppShell {
     await this.main.evaluate((p) => {
       const win = window as unknown as { __router?: { push: (p: string) => Promise<void> } }
       if (win.__router) return win.__router.push(p)
-      window.location.assign(p)
+      window.location.hash = p
     }, path)
   }
 
