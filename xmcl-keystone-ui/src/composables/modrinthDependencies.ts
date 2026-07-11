@@ -3,10 +3,9 @@ import { injection } from '@/util/inject'
 import { getModrinthProjectKey, getModrinthVersionKey } from '@/util/modrinth'
 import { SWRVModel, swrvGet } from '@/util/swrvGet'
 import { get } from '@vueuse/core'
-import type { MaybeRef } from 'vue'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
 import { IConfig } from 'swrv'
-import { Ref } from 'vue'
+import { computed, markRaw, type MaybeRef, type Ref } from 'vue'
 import { kSWRVConfig } from './swrvConfig'
 
 type ResolvedDependency = {
@@ -34,7 +33,9 @@ const visit = async (current: ResolvedDependency, visited: Set<string>, config: 
     return []
   }
   visited.add(version.project_id)
-  const deps = current.type === 'optional' ? [] : await Promise.all(version.dependencies.map(async (child) => {
+  const deps = current.type === 'optional' ? [] : await Promise.all(version.dependencies
+    .filter(child => child.dependency_type !== 'incompatible')
+    .map(async (child) => {
     try {
       const loaders = version.loaders
       const project = await swrvGet(getModrinthProjectKey(child.project_id), () => clientModrinthV2.getProject(child.project_id), config.cache!, config.dedupingInterval!)
@@ -73,7 +74,7 @@ const visit = async (current: ResolvedDependency, visited: Set<string>, config: 
       }
       throw e
     }
-  }))
+    }))
 
   return [current, ...deps.reduce((a, b) => [...a, ...b], [])]
 }
