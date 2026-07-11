@@ -185,7 +185,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     if (isMMCModpackManifest(manifest)) {
       mmcVersionId = await this.#applyMmcStandaloneVersion(manifest, zip.file, entries, name)
         .catch((e) => {
-          this.warn(new AnyError('ImportModpackError', `Fail to apply MultiMC patches: ${e}`))
+          this.warn(new AnyError('ImportModpackError', `Failed to apply MultiMC patches: ${e}`))
           return undefined
         })
     }
@@ -811,23 +811,30 @@ export class ModpackService extends AbstractService implements IModpackService {
     await ensureFile(jsonPath)
     await writeFile(jsonPath, JSON.stringify(version, null, 2))
 
-    // Copy the bundled local libraries into the shared libraries folder by their
-    // maven path so the version resolver can find them on the classpath.
-    const prefix = manifest.prefix ?? ''
-    for (const libName of getMmcLocalLibraryNames(version)) {
-      const info = LibraryInfo.resolve(libName)
-      const fileName = basename(info.path)
-      const entry =
-        entries.find((e) => e.fileName === `${prefix}libraries/${fileName}`) ??
-        entries.find((e) => e.fileName.startsWith(prefix) && e.fileName.endsWith(`/libraries/${fileName}`)) ??
-        entries.find((e) => e.fileName.startsWith(prefix) && e.fileName.endsWith(`/${fileName}`))
-      if (!entry) {
-        this.warn(`Cannot find local library ${libName} (${fileName}) in the MultiMC modpack`)
-        continue
+    const localLibraries = getMmcLocalLibraryNames(version)
+    if (localLibraries.length) {
+      // Copy the bundled local libraries into the shared libraries folder by
+      // their maven path so the version resolver can find them on the classpath.
+      const prefix = manifest.prefix ?? ''
+      const byName = new Map(entries.map((e) => [e.fileName, e] as const))
+      for (const libName of localLibraries) {
+        const info = LibraryInfo.resolve(libName)
+        const fileName = basename(info.path)
+        const entry =
+          byName.get(`${prefix}libraries/${fileName}`) ??
+          entries.find(
+            (e) =>
+              e.fileName.startsWith(prefix) &&
+              (e.fileName.endsWith(`/libraries/${fileName}`) || e.fileName.endsWith(`/${fileName}`)),
+          )
+        if (!entry) {
+          this.warn(`Cannot find local library ${libName} (${fileName}) in the MultiMC modpack`)
+          continue
+        }
+        const dest = this.getPath('libraries', ...info.path.split('/'))
+        await ensureFile(dest)
+        await writeFile(dest, await readEntry(zip, entry))
       }
-      const dest = this.getPath('libraries', ...info.path.split('/'))
-      await ensureFile(dest)
-      await writeFile(dest, await readEntry(zip, entry))
     }
 
     const versionService = await this.app.registry.get(VersionService)

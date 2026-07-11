@@ -418,11 +418,13 @@ export function getMmcVersionFromManifest(
 ): Version | undefined {
   const patches = manifest.patches
   if (!patches) return undefined
+  const components = manifest.json?.components
+  if (!Array.isArray(components) || components.length === 0) return undefined
 
   // Only consider components declared in mmc-pack.json (defensive against stale
   // patch files) and order them by their patch `order`, falling back to the
   // declaration order for ties / missing `order`.
-  const ordered = manifest.json.components
+  const ordered = components
     .map((component, index) => ({ index, patch: patches[component.uid] }))
     .filter((entry): entry is { index: number; patch: MMCComponentPatch } => !!entry.patch)
     .sort((a, b) => {
@@ -524,8 +526,10 @@ export function getMmcVersionFromManifest(
  */
 export function getMmcLocalLibraryNames(version: Version): string[] {
   const names: string[] = []
-  for (const lib of version.libraries as Array<Version.Library & { 'MMC-hint'?: string }>) {
-    if (lib && lib['MMC-hint'] === 'local' && typeof lib.name === 'string') {
+  if (!Array.isArray(version.libraries)) return names
+  for (const lib of version.libraries) {
+    const hint = (lib as Version.Library & { 'MMC-hint'?: string })?.['MMC-hint']
+    if (hint === 'local' && typeof lib?.name === 'string') {
       names.push(lib.name)
     }
   }
