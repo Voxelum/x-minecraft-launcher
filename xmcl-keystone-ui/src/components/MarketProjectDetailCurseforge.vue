@@ -35,7 +35,6 @@ import {
   getCurseforgeFileGameVersions,
   getCurseforgeRelationType,
   getCursforgeFileModLoaders,
-  getCursforgeModLoadersFromString,
   getModLoaderTypesForFile,
 } from '@/util/curseforge'
 import { injection } from '@/util/inject'
@@ -247,7 +246,7 @@ const {
 } = useCurseforgeProjectFiles(
   curseforgeModId,
   computed(() => props.gameVersion),
-  computed(() => getCursforgeModLoadersFromString(props.loader)[0]),
+  computed(() => undefined),
 )
 
 const modId = ref(0)
