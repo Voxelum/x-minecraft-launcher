@@ -816,6 +816,9 @@ export class ModpackService extends AbstractService implements IModpackService {
       // Copy the bundled local libraries into the shared libraries folder by
       // their maven path so the version resolver can find them on the classpath.
       const prefix = manifest.prefix ?? ''
+      // Prism / MultiMC store bundled local libraries flat as
+      // `<prefix>libraries/<jar-filename>`, so the exact-path lookup below is
+      // deterministic; the linear fallback only covers non-standard layouts.
       const byName = new Map(entries.map((e) => [e.fileName, e] as const))
       for (const libName of localLibraries) {
         const info = LibraryInfo.resolve(libName)
