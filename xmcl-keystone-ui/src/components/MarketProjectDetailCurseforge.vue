@@ -236,6 +236,7 @@ const releaseTypes: Record<string, 'release' | 'beta' | 'alpha'> = {
   2: 'beta',
   3: 'alpha',
 }
+const allModLoaders = computed<FileModLoaderType | undefined>(() => undefined)
 
 const {
   files,
@@ -246,7 +247,7 @@ const {
 } = useCurseforgeProjectFiles(
   curseforgeModId,
   computed(() => props.gameVersion),
-  computed(() => undefined),
+  allModLoaders,
 )
 
 const modId = ref(0)
