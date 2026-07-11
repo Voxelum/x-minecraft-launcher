@@ -44,8 +44,8 @@ export class ElectronSession {
     sess.setProxy(this.proxy ? { proxyRules: this.proxy } : { mode: 'system' })
 
     if (sess !== session.defaultSession) {
-      for (const e of session.defaultSession.getAllExtensions()) {
-        sess.loadExtension(e.path)
+      for (const e of session.defaultSession.extensions.getAllExtensions()) {
+        sess.extensions.loadExtension(e.path)
       }
     }
 

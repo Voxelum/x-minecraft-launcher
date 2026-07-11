@@ -193,15 +193,14 @@ export class ElectronController implements LauncherAppController {
 
   private setupBrowserLogger(ref: BrowserWindow, name: string) {
     const logger = this.app.getLogger(name, name)
-    ref.webContents.on('console-message', (e, level, message, line, id) => {
+    ref.webContents.on('console-message', (e) => {
+      const message = e.message
       if (message.startsWith("Listener added for a synchronous 'DOMNodeRemoved' DOM Mutation Event. This event type is deprecated")) {
         return
       }
-      if (level === 1) {
+      if (e.level === 'info') {
         logger.log(message)
-      } else if (level === 2) {
-        logger.warn(message)
-      } else if (level === 3) {
+      } else if (e.level === 'warning' || e.level === 'error') {
         logger.warn(message)
       }
     })

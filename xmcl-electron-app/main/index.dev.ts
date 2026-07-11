@@ -6,8 +6,9 @@
  */
 
 // Set environment for development
-import { app } from 'electron'
-import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import { app, session } from 'electron'
+import { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import { downloadChromeExtension } from 'electron-devtools-installer/dist/downloadChromeExtension'
 import { autoUpdater } from 'electron-updater'
 import 'source-map-support/register'
 import './index'
@@ -33,11 +34,22 @@ autoUpdater.setFeedURL({
 })
 autoUpdater.logger = null
 
-app.whenReady().then(() => {
-  install(VUEJS_DEVTOOLS).then((v) => {
-    console.log(`Installed vue devtool ${v}`)
-  }, (e) => {
+app.whenReady().then(async () => {
+  // Reimplement `electron-devtools-installer`'s install using the non-deprecated
+  // `session.extensions` API. The published package still calls the deprecated
+  // `session.getAllExtensions`/`session.loadExtension`, which prints trace warnings.
+  try {
+    const extensions = session.defaultSession.extensions
+    const installed = extensions.getAllExtensions().find((e) => e.id === VUEJS_DEVTOOLS.id)
+    if (installed) {
+      console.log(`Vue devtool already loaded ${installed.name}`)
+      return
+    }
+    const extensionFolder = await downloadChromeExtension(VUEJS_DEVTOOLS.id, {})
+    const ext = await extensions.loadExtension(extensionFolder)
+    console.log(`Installed vue devtool ${ext.name}`)
+  } catch (e) {
     console.error('Fail to install vue devtool')
     console.error(e)
-  })
+  }
 })
