@@ -765,6 +765,12 @@ modpack:
 modpackImportConfirm:
   description: DETECT U DROP A FILE INTO DA LAWNCHER. ARE U TRYING TO IMPORT A MODPACK?
   title: ARE U TRYING TO IMPORT A MODPACK?
+modpackUpdateOrCreate:
+  createNew: 'Maek noo wan'
+  description: >-
+    An instance "{name}" fur dis modpak already haz. U wants updat it or maek noo wan?
+  title: 'INSTANCE ALREADY HAZ'
+  update: 'Updat old wan'
 modrinth:
   browseUrl: OPEN IN BROWSR {url}
   categories:

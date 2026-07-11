@@ -1009,12 +1009,12 @@ modpackImportConfirm:
     modpack?
   title: Are you trying to import a modpack?
 modpackUpdateOrCreate:
-  title: Instance already exists
+  createNew: Create new
   description: >-
     An instance "{name}" for this modpack already exists. Do you want to update
     it or create a new one?
+  title: Instance already exists
   update: Update existing
-  createNew: Create new
 modrinth:
   browseUrl: Open In Browser {url}
   categories:

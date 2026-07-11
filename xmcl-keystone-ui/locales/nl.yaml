@@ -785,6 +785,12 @@ modpackImportConfirm:
   description: >-
     U heeft een bestand in de launcher gesleept. Probeert u een modpack te importeren?
   title: Probeert u een modpack te importeren?
+modpackUpdateOrCreate:
+  createNew: 'Nieuwe maken'
+  description: >-
+    Er bestaat al een instantie "{name}" voor dit modpack. Wil je deze bijwerken of een nieuwe maken?
+  title: 'Instantie bestaat al'
+  update: 'Bestaande bijwerken'
 modrinth:
   browseUrl: Openen in Browser {url}
   categories:

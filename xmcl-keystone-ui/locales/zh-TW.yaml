@@ -772,6 +772,12 @@ modpack:
 modpackImportConfirm:
   description: 偵測到您將檔案拖曳到啟動器。您是要匯入模組包嗎？
   title: 您是否要匯入模組包？
+modpackUpdateOrCreate:
+  createNew: '建立新的'
+  description: >-
+    此整合包的執行個體「{name}」已存在。您想要更新它還是建立一個新的？
+  title: '執行個體已存在'
+  update: '更新現有'
 modrinth:
   browseUrl: 在瀏覽器中開啟 {url}
   categories:

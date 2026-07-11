@@ -804,6 +804,12 @@ modpackImportConfirm:
     Détecter que vous déposez un fichier dans le lanceur.
     Essayez-vous d'importer un modpack?
   title: Essayez-vous d'importer un modpack?
+modpackUpdateOrCreate:
+  createNew: 'Créer une nouvelle'
+  description: >-
+    Une instance "{name}" pour ce modpack existe déjà. Voulez-vous la mettre à jour ou en créer une nouvelle ?
+  title: 'L''instance existe déjà'
+  update: 'Mettre à jour l''existante'
 modrinth:
   browseUrl: Ouvrir dans le Navigateur {url}
   categories:

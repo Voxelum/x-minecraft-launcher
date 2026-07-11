@@ -822,6 +822,12 @@ modpackImportConfirm:
     Обнаружите, что вы бросите файл в пусковую установку.
     Вы пытаетесь импортировать Modpack?
   title: Вы пытаетесь импортировать Modpack?
+modpackUpdateOrCreate:
+  createNew: 'Создать новый'
+  description: >-
+    Экземпляр "{name}" для этого модпака уже существует. Хотите обновить его или создать новый?
+  title: 'Экземпляр уже существует'
+  update: 'Обновить существующий'
 modrinth:
   browseUrl: Открыть в браузере {url}
   categories:

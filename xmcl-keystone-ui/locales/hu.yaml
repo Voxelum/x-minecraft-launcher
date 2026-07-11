@@ -811,6 +811,12 @@ modpackImportConfirm:
     Detektálja, hogy egy fájlt dobjon be az indítóba.
     Modpackot próbál importálni?
   title: Modpackot próbál importálni?
+modpackUpdateOrCreate:
+  createNew: 'Új létrehozása'
+  description: >-
+    Már létezik egy "{name}" nevű példány ehhez a modpackhez. Szeretnéd frissíteni, vagy újat létrehozni?
+  title: 'A példány már létezik'
+  update: 'Meglévő frissítése'
 modrinth:
   browseUrl: Megnyitás böngészőben {url}
   categories:

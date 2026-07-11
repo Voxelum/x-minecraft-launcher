@@ -821,6 +821,12 @@ modpackImportConfirm:
   description: >-
     Виявлено, що ви перетягнули файл у лаунчер. Ви намагаєтеся імпортувати модпак?
   title: Ви намагаєтеся імпортувати модпак?
+modpackUpdateOrCreate:
+  createNew: 'Створити новий'
+  description: >-
+    Екземпляр "{name}" для цього модпака вже існує. Бажаєте оновити його чи створити новий?
+  title: 'Екземпляр уже існує'
+  update: 'Оновити наявний'
 modrinth:
   browseUrl: Відкрити в браузері {url}
   categories:

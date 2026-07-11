@@ -778,6 +778,12 @@ modpackImportConfirm:
   description: >-
     Başlatıcıya bir dosya bıraktığınız algılandı. Bir mod paketini içe aktarmaya mı çalışıyorsunuz?
   title: Bir mod paketini içe aktarmaya mı çalışıyorsunuz?
+modpackUpdateOrCreate:
+  createNew: 'Yeni oluştur'
+  description: >-
+    Bu modpaket için "{name}" adlı bir örnek zaten mevcut. Güncellemek mi yoksa yeni bir tane oluşturmak mı istersiniz?
+  title: 'Örnek zaten mevcut'
+  update: 'Mevcut olanı güncelle'
 modrinth:
   browseUrl: Tarayıcıda Aç {url}
   categories:

@@ -756,6 +756,12 @@ modpackImportConfirm:
     ファイルをランチャーにドロップすることを検出します。
     modpackをインポートしようとしていますか？
   title: modpackをインポートしようとしていますか？
+modpackUpdateOrCreate:
+  createNew: '新規作成'
+  description: >-
+    このModパックのインスタンス「{name}」は既に存在します。更新しますか、それとも新規作成しますか？
+  title: 'インスタンスは既に存在します'
+  update: '既存を更新'
 modrinth:
   browseUrl: ブラウザで開く {url}
   categories:

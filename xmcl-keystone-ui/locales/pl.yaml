@@ -768,6 +768,12 @@ modpackImportConfirm:
     Wykryjesz upuszczenie pliku do uruchamiającego.
     Czy próbujesz zaimportować modpack?
   title: Czy próbujesz zaimportować modpack?
+modpackUpdateOrCreate:
+  createNew: 'Utwórz nową'
+  description: >-
+    Instancja "{name}" dla tej paczki modów już istnieje. Czy chcesz ją zaktualizować, czy utworzyć nową?
+  title: 'Instancja już istnieje'
+  update: 'Zaktualizuj istniejącą'
 modrinth:
   browseUrl: Otwórz w przeglądarce {url}
   categories:

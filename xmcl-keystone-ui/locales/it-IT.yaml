@@ -778,6 +778,12 @@ modpackImportConfirm:
     Rilevati rilasciare un file nel lanciatore.
     Stai cercando di importare un modpack?
   title: Stai cercando di importare un modpack?
+modpackUpdateOrCreate:
+  createNew: 'Crea nuova'
+  description: >-
+    Esiste già un'istanza "{name}" per questo modpack. Vuoi aggiornarla o crearne una nuova?
+  title: 'L''istanza esiste già'
+  update: 'Aggiorna esistente'
 modrinth:
   browseUrl: Apri nel browser {url}
   categories:

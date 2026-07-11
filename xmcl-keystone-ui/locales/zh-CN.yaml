@@ -844,6 +844,12 @@ modpackImportConfirm:
     检测您将文件放入启动器中。
     这个文件是不是一个整合包(ModPack)？
   title: 您是否要导入ModPack？
+modpackUpdateOrCreate:
+  createNew: '创建新的'
+  description: >-
+    此整合包的实例“{name}”已存在。你想更新它还是创建一个新的？
+  title: '实例已存在'
+  update: '更新现有'
 modrinth:
   browseUrl: 在浏览器中打开 {url}
   categories:

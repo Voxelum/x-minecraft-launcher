@@ -779,6 +779,12 @@ modpackImportConfirm:
   description: >-
     Gedetecteerd dat je een bestand in de launcher sleept. Probeer je een modpack te importeren?
   title: Probeer je een modpack te importeren?
+modpackUpdateOrCreate:
+  createNew: 'Crear nova'
+  description: >-
+    Xa existe unha instancia "{name}" para este modpack. Queres actualizala ou crear unha nova?
+  title: 'A instancia xa existe'
+  update: 'Actualizar existente'
 modrinth:
   browseUrl: Open in Browser {url}
   categories:
