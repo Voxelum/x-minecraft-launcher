@@ -240,6 +240,7 @@ const releaseTypes: Record<string, 'release' | 'beta' | 'alpha'> = {
 
 const {
   files,
+  refresh,
   refreshing: loadingVersions,
   index,
   totalCount,
@@ -472,8 +473,8 @@ const onOpenDependency = (dep: ProjectDependency) => {
   push({ query: { ...currentRoute.value.query, id: `curseforge:${dep.id}` } })
 }
 
-const onRefresh = () => {
-  mutate()
+const onRefresh = async () => {
+  await Promise.all([mutate(), refresh()])
 }
 
 const modrinthId = computed(
