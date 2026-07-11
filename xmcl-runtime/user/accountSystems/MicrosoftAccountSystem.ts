@@ -235,6 +235,9 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       code: oauthCode,
       useDeviceCode,
       directRedirectToLauncher,
+      // WAM selects the account signed in to Windows/Xbox. If it is
+      // unavailable, MicrosoftOAuthClient falls back to the isolated WebView.
+      useNativeBroker: this.app.platform.os === 'windows',
       signal,
       slientOnly,
     }).catch((e) => {

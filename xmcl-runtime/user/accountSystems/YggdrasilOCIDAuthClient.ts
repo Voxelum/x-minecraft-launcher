@@ -21,7 +21,6 @@ export class YggdrasilOCIDAuthClient {
         authority: authority,
         knownAuthorities: [authority],
         clientId: clientId,
-        protocolMode: 'OIDC',
         azureCloudOptions: {
           azureCloudInstance: 'none',
         }

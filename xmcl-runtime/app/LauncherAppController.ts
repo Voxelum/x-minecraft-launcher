@@ -6,6 +6,14 @@ import { Client } from './Client'
  */
 export interface LauncherAppController {
   /**
+   * Get the native handle of the active launcher window when the platform provides one.
+   */
+  getNativeWindowHandle?(): Buffer | undefined
+  /**
+   * Open an isolated Microsoft authorization window and resolve with its OAuth code.
+   */
+  openMicrosoftLogin?(authorizationUrl: string, redirectUri: string, signal?: AbortSignal): Promise<string>
+  /**
    * Get the login success html content with current locale
    */
   getLoginSuccessHTML(): string

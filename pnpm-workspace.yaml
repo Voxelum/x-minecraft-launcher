@@ -11,10 +11,13 @@ packages:
   # with `pnpm --prefix=e2e install`. See e2e/README.md.
   - '.github/actions/*'
 allowBuilds:
+  '@azure/msal-node-extensions': true
+  '@azure/msal-node-runtime': true
   '@parcel/watcher': true
   cpu-features: true
   electron: true
   esbuild: true
+  keytar: true
   node-datachannel: true
   ssh2: true
   vue-demi: true

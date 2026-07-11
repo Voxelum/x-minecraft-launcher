@@ -41,6 +41,16 @@ async function buildMain(options: BuildOptions, slient = false) {
   if (options.metafile) {
     await writeFile('./meta.json', JSON.stringify(out.metafile, null, 2))
   }
+  const msalRuntimeDir = path.dirname(require.resolve('@azure/msal-node-runtime/package.json'))
+  await Promise.all([
+    ['x64', 'msalruntime.dll'],
+    ['x86', 'msalruntime_x86.dll'],
+  ].map(async ([arch, dll]) => {
+    const source = join(msalRuntimeDir, 'dist', 'windows', arch)
+    const targetArch = arch === 'x86' ? 'ia32' : arch
+    await copyFile(join(source, 'msal-node-runtime.node'), join(__dirname, 'dist', `msal-node-runtime-${targetArch}.node`))
+    await copyFile(join(source, dll), join(__dirname, 'dist', `msalruntime-${targetArch}.dll`))
+  }))
   const time = ((Date.now() - startTime) / 1000).toFixed(2)
   if (!slient) console.log(`Build completed in ${time}s.`)
   await copy(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer'))

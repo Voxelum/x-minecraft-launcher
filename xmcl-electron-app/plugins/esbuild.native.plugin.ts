@@ -52,6 +52,20 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         },
       )
 
+      build.onLoad(
+        { filter: /@azure[\\/]msal-node-runtime[\\/]dist[\\/]index\.cjs$/ },
+        async ({ path }) => {
+          const content = await readFile(path, 'utf-8')
+          return {
+            contents: content.replace(
+              'require("./msal-node-runtime")',
+              'require(process.env.XMCL_MSAL_NODE_RUNTIME_PATH || "./msal-node-runtime")',
+            ),
+            loader: 'js',
+          }
+        },
+      )
+
       // undici ships its llhttp parser as two base64-encoded wasm modules
       // (`llhttp-wasm.js` + `llhttp_simd-wasm.js`, ~70KB base64 each). Both are
       // statically `require`d by client-h1.js, so esbuild inlines BOTH into
