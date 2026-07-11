@@ -24,7 +24,9 @@ type ResolvedDependency = {
   parent: Project
 }
 
-const visit = async (current: ResolvedDependency, visited: Set<string>, config: IConfig, modLoader?: MaybeRef<string | undefined>): Promise<ResolvedDependency[]> => {
+type ModrinthDependenciesConfig = Pick<IConfig, 'cache' | 'dedupingInterval'>
+
+const visit = async (current: ResolvedDependency, visited: Set<string>, config: ModrinthDependenciesConfig, modLoader?: MaybeRef<string | undefined>): Promise<ResolvedDependency[]> => {
   const { recommendedVersion: version } = current
   if (current.relativeType === 'incompatible' || current.type === 'embedded') {
     return []
@@ -79,7 +81,7 @@ const visit = async (current: ResolvedDependency, visited: Set<string>, config: 
   return [current, ...deps.reduce((a, b) => [...a, ...b], [])]
 }
 
-export function getModrinthDependenciesModel(version: Ref<ProjectVersion | undefined>, modLoader?: MaybeRef<string | undefined>, config = injection(kSWRVConfig)): SWRVModel<ResolvedDependency[]> {
+export function getModrinthDependenciesModel(version: Ref<ProjectVersion | undefined>, modLoader?: MaybeRef<string | undefined>, config: ModrinthDependenciesConfig = injection(kSWRVConfig)): SWRVModel<ResolvedDependency[]> {
   const model = {
     key: computed(() => version.value && `/modrinth/version/${version.value.id}/dependencies?${get(modLoader)}`),
     fetcher: async () => {
