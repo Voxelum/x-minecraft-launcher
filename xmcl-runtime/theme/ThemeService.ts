@@ -85,7 +85,7 @@ export class ThemeService extends AbstractService implements IThemeService {
 
     // Collect all media URLs from the theme
     const mediaUrls = new Set<string>()
-    for (const asset of Object.values(themeData.assets)) {
+    for (const asset of Object.values(themeData.assets ?? {})) {
       if (Array.isArray(asset)) {
         for (const media of asset) {
           if (media.url?.startsWith('http://launcher/theme-media/')) {
@@ -142,7 +142,7 @@ export class ThemeService extends AbstractService implements IThemeService {
 
   private async createXTheme(data: ThemeData, mediaSourceFolder: string, destinationFile: string) {
     const zipFile = new ZipFile()
-    for (const asset of Object.values(data.assets)) {
+    for (const asset of Object.values(data.assets ?? {})) {
       if (Array.isArray(asset)) {
         for (const media of asset) {
           const url = media.url
