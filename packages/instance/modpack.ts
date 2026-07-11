@@ -1,3 +1,4 @@
+import type { Version } from '@xmcl/core'
 import { InstanceData, PartialRuntimeVersions, RuntimeVersions } from './instance'
 import { InstanceFile } from './files'
 import { CreateInstanceOptions } from './create'
@@ -390,6 +391,145 @@ export function getInstanceConfigFromMmcModpack(manifest: MMCModpackManifest) {
   }
 
   return result
+}
+
+/**
+ * The set of Minecraft version-JSON fields that a Prism / MultiMC component
+ * patch can override. Merging every `patches/<uid>.json` file (in `order`)
+ * yields a standalone Minecraft version JSON — this is how Prism itself resolves
+ * the launch configuration.
+ *
+ * The result carries the merged `mainClass`, `libraries` (including the
+ * `MMC-hint: "local"` jars bundled under `libraries/` in the modpack) and the
+ * base metadata (`assetIndex`, `arguments`, ...). Writing it to
+ * `versions/<id>/<id>.json` and pinning the instance's `version` to `<id>` lets
+ * xmcl launch the merged result without regenerating the Forge `version.json`
+ * (which would otherwise reset `mainClass` and drop the extra libraries — see
+ * gh #1555 / GTNH 2.8.4).
+ *
+ * Returns `undefined` when the patches do not override the launch behaviour
+ * (no `mainClass` override, or not enough base data to form a launchable
+ * standalone version). In that case the caller should keep the normal
+ * runtime-based install path untouched.
+ */
+export function getMmcVersionFromManifest(
+  manifest: MMCModpackManifest,
+  id: string,
+): Version | undefined {
+  const patches = manifest.patches
+  if (!patches) return undefined
+
+  // Only consider components declared in mmc-pack.json (defensive against stale
+  // patch files) and order them by their patch `order`, falling back to the
+  // declaration order for ties / missing `order`.
+  const ordered = manifest.json.components
+    .map((component, index) => ({ index, patch: patches[component.uid] }))
+    .filter((entry): entry is { index: number; patch: MMCComponentPatch } => !!entry.patch)
+    .sort((a, b) => {
+      const ao = typeof a.patch.order === 'number' ? a.patch.order : a.index
+      const bo = typeof b.patch.order === 'number' ? b.patch.order : b.index
+      return ao !== bo ? ao - bo : a.index - b.index
+    })
+
+  if (ordered.length === 0) return undefined
+
+  let mainClass = ''
+  let minecraftArguments: string | undefined
+  let assetIndex: Version['assetIndex']
+  let assets: string | undefined
+  let type: string | undefined
+  let jar: string | undefined
+  let javaVersion: Version['javaVersion']
+  let downloads: Version['downloads']
+  let time: string | undefined
+  let releaseTime: string | undefined
+  let minimumLauncherVersion: number | undefined
+  const gameArgs: Version.LaunchArgument[] = []
+  const jvmArgs: Version.LaunchArgument[] = []
+  const libraries: Version.Library[] = []
+  let hasLibraries = false
+
+  for (const { patch } of ordered) {
+    // Scalars: the last component (highest `order`) wins.
+    if (patch.mainClass) mainClass = patch.mainClass
+    if (typeof patch.minecraftArguments === 'string') minecraftArguments = patch.minecraftArguments
+    if (patch.assetIndex) assetIndex = patch.assetIndex
+    if (typeof patch.assets === 'string') assets = patch.assets
+    if (typeof patch.type === 'string') type = patch.type
+    if (typeof patch.jar === 'string') jar = patch.jar
+    if (patch.javaVersion) javaVersion = patch.javaVersion
+    if (patch.downloads) downloads = patch.downloads
+    if (typeof patch.time === 'string') time = patch.time
+    if (typeof patch.releaseTime === 'string') releaseTime = patch.releaseTime
+    if (typeof patch.minimumLauncherVersion === 'number') {
+      minimumLauncherVersion = patch.minimumLauncherVersion
+    }
+
+    // Modern (1.13+) argument arrays are additive across components.
+    if (patch.arguments) {
+      if (Array.isArray(patch.arguments.game)) gameArgs.push(...patch.arguments.game)
+      if (Array.isArray(patch.arguments.jvm)) jvmArgs.push(...patch.arguments.jvm)
+    }
+
+    // Libraries accumulate in component order so earlier components appear first
+    // on the classpath, matching Prism / MultiMC. `+libraries` is the additive
+    // form used by some patches.
+    const patchLibraries = [
+      ...(Array.isArray(patch.libraries) ? patch.libraries : []),
+      ...(Array.isArray(patch['+libraries']) ? patch['+libraries'] : []),
+    ] as Version.Library[]
+    if (patchLibraries.length) {
+      hasLibraries = true
+      libraries.push(...patchLibraries)
+    }
+  }
+
+  // Only take over the launch configuration when the patches actually override
+  // `mainClass` AND provide the base version data (libraries + a game-argument
+  // source). Anything less is not a launchable standalone version, so fall back
+  // to the runtime-based install path.
+  const hasGameArgs = !!minecraftArguments || gameArgs.length > 0 || !!assetIndex
+  if (!mainClass || !hasLibraries || !hasGameArgs) {
+    return undefined
+  }
+
+  const version = {
+    id,
+    type: type || 'release',
+    time: time || '1970-01-01T00:00:00+00:00',
+    releaseTime: releaseTime || '1970-01-01T00:00:00+00:00',
+    minimumLauncherVersion: minimumLauncherVersion ?? 0,
+    mainClass,
+    libraries,
+  } as Version
+
+  if (jar) version.jar = jar
+  if (assetIndex) version.assetIndex = assetIndex
+  if (assets) version.assets = assets
+  if (downloads) version.downloads = downloads
+  if (javaVersion) version.javaVersion = javaVersion
+  if (minecraftArguments) version.minecraftArguments = minecraftArguments
+  if (gameArgs.length || jvmArgs.length) {
+    version.arguments = { game: gameArgs, jvm: jvmArgs }
+  }
+
+  return version
+}
+
+/**
+ * Collect the maven coordinates of the `MMC-hint: "local"` libraries declared by
+ * a merged Prism / MultiMC version. These jars are bundled inside the modpack
+ * (under `libraries/`) instead of being downloadable, so the importer must copy
+ * them into the shared `libraries/` folder by their maven path.
+ */
+export function getMmcLocalLibraryNames(version: Version): string[] {
+  const names: string[] = []
+  for (const lib of version.libraries as Array<Version.Library & { 'MMC-hint'?: string }>) {
+    if (lib && lib['MMC-hint'] === 'local' && typeof lib.name === 'string') {
+      names.push(lib.name)
+    }
+  }
+  return names
 }
 
 /**
