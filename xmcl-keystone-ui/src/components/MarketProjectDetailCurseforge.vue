@@ -35,6 +35,7 @@ import {
   getCurseforgeFileGameVersions,
   getCurseforgeRelationType,
   getCursforgeFileModLoaders,
+  getCursforgeModLoadersFromString,
   getModLoaderTypesForFile,
 } from '@/util/curseforge'
 import { injection } from '@/util/inject'
@@ -236,10 +237,10 @@ const releaseTypes: Record<string, 'release' | 'beta' | 'alpha'> = {
   2: 'beta',
   3: 'alpha',
 }
-const noLoaderFilter = computed<FileModLoaderType | undefined>(() => undefined)
 
 const {
   files,
+  refresh,
   refreshing: loadingVersions,
   index,
   totalCount,
@@ -247,7 +248,7 @@ const {
 } = useCurseforgeProjectFiles(
   curseforgeModId,
   computed(() => props.gameVersion),
-  noLoaderFilter,
+  computed(() => getCursforgeModLoadersFromString(props.loader)[0]),
 )
 
 const modId = ref(0)
@@ -472,8 +473,8 @@ const onOpenDependency = (dep: ProjectDependency) => {
   push({ query: { ...currentRoute.value.query, id: `curseforge:${dep.id}` } })
 }
 
-const onRefresh = () => {
-  mutate()
+const onRefresh = async () => {
+  await Promise.all([mutate(), refresh()])
 }
 
 const modrinthId = computed(
