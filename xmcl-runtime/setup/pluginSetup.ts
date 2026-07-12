@@ -8,6 +8,58 @@ import { SetupWorker } from './setupWorker'
 import createSetupWorker from './setupWorkerEntry?worker'
 import { Exception } from '@xmcl/runtime-api'
 
+/**
+ * Returns true if the drive is a real user-accessible filesystem suitable as
+ * a data-root recommendation.  On Linux (including Flatpak) `getDiskInfo()`
+ * surfaces every kernel/virtual mount (`tmpfs`, `proc`, `overlay`, …) and
+ * every Flatpak bind-mount (`/etc/timezone`, `/usr`, `/dev/shm`, …).
+ * We suppress those so the setup wizard only shows sensible choices.
+ */
+function isUserDrive(drive: { filesystem: string; mounted: string }): boolean {
+  if (process.platform === 'linux') {
+    // Virtual / kernel / container filesystem types that are never writable
+    // user-data locations.
+    const VIRTUAL_FS = new Set([
+      'tmpfs', 'devtmpfs', 'devpts', 'sysfs', 'proc', 'procfs',
+      'cgroup', 'cgroup2', 'pstore', 'bpf', 'tracefs', 'debugfs',
+      'securityfs', 'hugetlbfs', 'mqueue', 'fusectl', 'rpc_pipefs',
+      'nfsd', 'configfs', 'autofs', 'efivarfs', 'selinuxfs',
+      'fuse.portal', 'fuse.gvfsd-fuse', 'overlay', 'squashfs',
+    ])
+
+    if (VIRTUAL_FS.has(drive.filesystem.toLowerCase())) {
+      return false
+    }
+
+    const mp = drive.mounted
+
+    // USB / removable media mounted under /run/media or /media are fine.
+    if (mp.startsWith('/run/media/') || mp.startsWith('/media/')) {
+      return true
+    }
+
+    // Network / fuse user mounts under /mnt are also acceptable.
+    if (mp.startsWith('/mnt/')) {
+      return true
+    }
+
+    // Block-list system path prefixes that should never be data roots.
+    const SYSTEM_PREFIXES = [
+      '/dev', '/sys', '/proc', '/run', '/tmp',
+      '/usr', '/etc', '/lib', '/lib32', '/lib64', '/libx32',
+      '/bin', '/sbin', '/boot', '/snap',
+    ]
+
+    for (const prefix of SYSTEM_PREFIXES) {
+      if (mp === prefix || mp.startsWith(prefix + '/')) {
+        return false
+      }
+    }
+  }
+
+  return true
+}
+
 export const pluginSetup: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('Setup')
   const [worker, dispose] = createLazyWorker<SetupWorker>(
@@ -50,7 +102,7 @@ export const pluginSetup: LauncherAppPlugin = async (app) => {
         const startTime = Date.now()
         const drives = await Promise.race([getDiskInfo(), setTimeout(4000).then(() => [])])
         logger.log(`Get disk info in ${Date.now() - startTime}ms`)
-        return drives.map((d) => ({
+        return drives.filter(isUserDrive).map((d) => ({
           filesystem: d.filesystem,
           blocks: d.blocks,
           used: d.used,
