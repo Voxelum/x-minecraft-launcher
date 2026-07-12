@@ -174,10 +174,11 @@ export default class ElectronLauncherApp extends LauncherApp {
     // switches whenever the E2E test harness is active so Playwright stays
     // on the default X11 path.
     if (!process.env.XMCL_E2E) {
-      // Enable native Wayland support with automatic platform detection
+      // Select Wayland when available, otherwise fall back to X11. In Chromium
+      // 140 (Electron 43) `OverrideDefaultOzonePlatformHintToAuto` already makes
+      // `auto` the default on Linux, so this is mostly a safety net that keeps
+      // the behavior explicit regardless of future default changes.
       app.commandLine?.appendSwitch('ozone-platform-hint', 'auto')
-      // Enable Wayland-specific features for better native appearance
-      app.commandLine?.appendSwitch('enable-features', 'UseOzonePlatform,WaylandWindowDecorations')
     }
   }
 

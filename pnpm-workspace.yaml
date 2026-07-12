@@ -21,7 +21,6 @@ allowBuilds:
   node-datachannel: true
   ssh2: true
   vue-demi: true
-enableGlobalVirtualStore: true
 
 overrides:
   postcss: '>=8.5.10'
