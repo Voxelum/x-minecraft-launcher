@@ -35,6 +35,8 @@ export interface CreateInstanceArgs {
 /** Open AddInstanceDialog from the sidebar. */
 export async function openAddInstance(launcher: LauncherFixture): Promise<void> {
   const shell = new AppShell(launcher.main)
+  // The first-launch guided tour overlay can block clicks — close it first.
+  await shell.dismissTutorial()
   // Either the home "+" or the sidebar "add instance" works.
   const addBtn = shell.navAddInstance.or(shell.createInstance).first()
   await addBtn.click()
@@ -89,6 +91,8 @@ export async function createInstance(
   }
 
   if (args.loader) {
+    // The loader version input only renders once its loader tab is selected.
+    await shell.modloaderTab(args.loader).click()
     const loaderInput = shell.versionInput(args.loader)
     await loaderInput.click()
     await launcher.main.waitForTimeout(800) // give the loader meta a moment to load

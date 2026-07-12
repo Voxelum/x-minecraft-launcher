@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 138 (in 267 Vue files)
+**Total anchors:** 139 (in 267 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -69,6 +69,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `install-instance-confirm` | [`xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L252`](../xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L252) |
 | `install-version-confirm` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L97`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L97) |
 | `install-version-dialog` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L4`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L4) |
+| `install-version-item` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L208`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L208) |
 | `instance-item` | [`xmcl-keystone-ui/src/views/AppSideBarInstanceItem.vue#L7`](../xmcl-keystone-ui/src/views/AppSideBarInstanceItem.vue#L7) |
 | `instance-server-edit-dialog` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L3`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L3) |
 | `instance-server-edit-host` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L79`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L79) |
@@ -143,8 +144,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `unresolved-files-install` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L135`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L135) |
 | `unresolved-files-search` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L113`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L113) |
 | `use-shared-servers-list` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L8`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L8) |
-| `version-input-fabric` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L48`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L48) |
-| `version-input-forge` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L40`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L40) |
-| `version-input-minecraft` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L22`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L22) |
-| `version-input-neoforge` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L32`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L32) |
-| `version-input-quilt` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L56`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L56) |
+| `version-input-fabric` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L49`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L49) |
+| `version-input-forge` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L41`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L41) |
+| `version-input-minecraft` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L23`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L23) |
+| `version-input-neoforge` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L33`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L33) |
+| `version-input-quilt` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L57`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L57) |

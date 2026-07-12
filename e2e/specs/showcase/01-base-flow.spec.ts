@@ -6,11 +6,11 @@
  * Hits live launchermeta.mojang.com to populate the Minecraft version list,
  * then accepts the latest release version.
  */
-import { test, expect } from '../fixtures/launcher'
-import { AppShell } from '../helpers/pom/AppShell'
-import { completeOnboarding } from '../helpers/tasks/onboarding'
-import { createInstance } from '../helpers/tasks/createInstance'
-import { shoot } from '../helpers/shoot'
+import { test, expect } from '../../fixtures/launcher'
+import { AppShell } from '../../helpers/pom/AppShell'
+import { completeOnboarding } from '../../helpers/tasks/onboarding'
+import { createInstance } from '../../helpers/tasks/createInstance'
+import { shoot } from '../../helpers/shoot'
 
 test.use({ launcherOptions: { bootstrap: true } })
 
@@ -30,6 +30,10 @@ test('Base flow — onboard, login (offline), install vanilla Minecraft', async 
   await completeOnboarding(launcher, { username: 'TestPlayer' })
   await expect(shell.sidebar).toBeVisible()
 
+  // The launcher may auto-create a default instance on first launch, so assert
+  // the count grows by exactly one rather than a fixed total.
+  const before = await shell.instanceItems.count()
+
   await createInstance(launcher, {
     name: 'Vanilla',
     // Leaving `minecraft` undefined accepts the latest release returned by
@@ -37,7 +41,7 @@ test('Base flow — onboard, login (offline), install vanilla Minecraft', async 
     // releases.
   })
 
-  await expect(shell.instanceItems).toHaveCount(1)
+  await expect(shell.instanceItems).toHaveCount(before + 1)
   await shoot(ctx, '99-done', {
     caption: 'Done — the new vanilla instance is selected and ready to launch.',
   })

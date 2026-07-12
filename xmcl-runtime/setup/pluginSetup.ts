@@ -32,7 +32,9 @@ export const pluginSetup: LauncherAppPlugin = async (app) => {
   }
 
   app.controller.handle('preset', async () => {
-    const defaultPath = join(app.host.getPath('home'), '.minecraftx')
+    // E2E isolation: when the harness provides a game-data root, use it as the
+    // onboarding default so the wizard never points at the real ~/.minecraftx.
+    const defaultPath = process.env.XMCL_E2E_GAME_DATA || join(app.host.getPath('home'), '.minecraftx')
     const getPath = (driveSymbol: string) => {
       const parsedHome = parse(defaultPath)
       if (

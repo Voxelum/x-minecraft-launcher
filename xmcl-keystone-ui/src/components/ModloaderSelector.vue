@@ -5,6 +5,7 @@
     <div class="flex flex-wrap gap-3 mb-6 items-center justify-center">
       <v-card
         v-for="loader in loaders" :key="loader.id"
+        :data-testid="`modloader-tab-${loader.id}`"
         :variant="currentTab === loader.id ? 'outlined' : 'tonal'"
         :color="currentTab === loader.id ? 'primary' : undefined"
         class="flex-1 min-w-[80px] max-w-[120px] flex flex-col items-center justify-center py-4 cursor-pointer hover:bg-white/5 transition-colors border-2"

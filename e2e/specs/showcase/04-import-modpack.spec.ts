@@ -8,13 +8,13 @@
  * avoid committing binary blobs. We pick a small, stable modpack version so
  * the download is fast.
  */
-import { test, expect } from '../fixtures/launcher'
+import { test, expect } from '../../fixtures/launcher'
 import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { AppShell } from '../helpers/pom/AppShell'
-import { importModpack } from '../helpers/tasks/importModpack'
-import { shoot } from '../helpers/shoot'
+import { AppShell } from '../../helpers/pom/AppShell'
+import { importModpack } from '../../helpers/tasks/importModpack'
+import { shoot } from '../../helpers/shoot'
 
 test.setTimeout(10 * 60_000)
 
@@ -51,9 +51,10 @@ test('Import flow — install a Modrinth modpack from disk', async ({ launcher }
   })
 
   const modpackFile = await fetchSampleModpack()
+  const before = await shell.instanceItems.count()
   await importModpack(launcher, { modpackFile, name: 'Imported Pack' })
 
-  await expect(shell.instanceItems).toHaveCount(1)
+  await expect(shell.instanceItems).toHaveCount(before + 1)
   await shoot(ctx, '99-done', {
     caption: 'Done — the imported modpack is selected and installed.',
   })

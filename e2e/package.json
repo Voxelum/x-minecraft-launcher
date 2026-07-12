@@ -6,8 +6,11 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "test": "playwright test",
-    "test:smoke": "playwright test specs/00-smoke-boot.spec.ts",
+    "test": "playwright test specs/ci",
+    "test:ci": "playwright test specs/ci",
+    "test:showcase": "playwright test specs/showcase",
+    "test:all": "playwright test specs/ci specs/showcase",
+    "test:smoke": "playwright test specs/ci/00-smoke-boot.spec.ts",
     "test:scratch": "playwright test specs/scratch",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",

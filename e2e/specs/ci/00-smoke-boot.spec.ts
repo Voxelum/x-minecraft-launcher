@@ -26,7 +26,7 @@
  * meta, or any per-route content. The only contract it asserts is "the
  * launcher window can render its first interactive surface".
  */
-import { test, expect } from '../fixtures/launcher'
+import { test, expect } from '../../fixtures/launcher'
 
 interface MainProcessBootProbe {
   ok: boolean

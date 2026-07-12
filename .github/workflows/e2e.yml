@@ -1,6 +1,28 @@
 name: e2e
 
 on:
+  # Safety-net (兜底) group runs automatically to guarantee the packaged
+  # renderer still boots in a production build (catches bundler / chunk-split
+  # regressions that only reproduce against xmcl-electron-app/dist).
+  push:
+    branches: [master]
+    paths:
+      - 'xmcl-keystone-ui/**'
+      - 'xmcl-electron-app/**'
+      - 'xmcl-runtime/**'
+      - 'xmcl-runtime-api/**'
+      - 'e2e/**'
+      - '.github/workflows/e2e.yml'
+  pull_request:
+    paths:
+      - 'xmcl-keystone-ui/**'
+      - 'xmcl-electron-app/**'
+      - 'xmcl-runtime/**'
+      - 'xmcl-runtime-api/**'
+      - 'e2e/**'
+      - '.github/workflows/e2e.yml'
+  # Showcase group + tutorial capture is manual: it hits live network endpoints
+  # (Mojang / Modrinth / CurseForge / loaders) and takes 10-30 min per journey.
   workflow_dispatch:
     inputs:
       locales:
@@ -9,19 +31,21 @@ on:
         default: 'en'
 
 jobs:
-  e2e:
-    name: e2e (${{ matrix.os }})
+  # ---------------------------------------------------------------------------
+  # 兜底 / safety-net group — deterministic, isolated, no live network installs.
+  # Asserts the launcher renderer boots without a production-only crash.
+  # ---------------------------------------------------------------------------
+  safety-net:
+    name: safety-net (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-    timeout-minutes: 45
+    timeout-minutes: 30
     env:
-      XMCL_E2E_LOCALES: ${{ github.event.inputs.locales || 'en' }}
       # Electron tests use _electron.launch(), which doesn't need any
-      # Playwright-managed browser binary. Skip the ~660 MB browser
-      # download.
+      # Playwright-managed browser binary. Skip the ~660 MB browser download.
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
     steps:
@@ -50,10 +74,62 @@ jobs:
       - name: Compile main process
         run: pnpm --prefix=xmcl-electron-app compile
 
-      - name: Run e2e
+      - name: Run e2e safety-net group
         # Linux runners are headless; xvfb-run gives Electron an X display.
-        # Other OSes have a real display server.
-        run: ${{ runner.os == 'Linux' && 'xvfb-run --auto-servernum' || '' }} pnpm --prefix=e2e test
+        run: ${{ runner.os == 'Linux' && 'xvfb-run --auto-servernum' || '' }} pnpm --prefix=e2e test:ci
+        shell: bash
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: e2e-safety-net-${{ matrix.os }}
+          path: e2e/artifacts/**
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # Showcase group — real live-network journeys that capture the promotional
+  # screenshots compiled into docs/tutorial. Manual only (workflow_dispatch).
+  # ---------------------------------------------------------------------------
+  showcase:
+    name: showcase (${{ matrix.os }})
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    timeout-minutes: 60
+    env:
+      XMCL_E2E_LOCALES: ${{ github.event.inputs.locales || 'en' }}
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install e2e dependencies
+        run: pnpm e2e:install --frozen-lockfile
+
+      - name: Build renderer
+        run: pnpm build:renderer
+        env:
+          NODE_ENV: production
+
+      - name: Compile main process
+        run: pnpm --prefix=xmcl-electron-app compile
+
+      - name: Run e2e showcase group
+        run: ${{ runner.os == 'Linux' && 'xvfb-run --auto-servernum' || '' }} pnpm --prefix=e2e test:showcase
         shell: bash
 
       - name: Build tutorial (en, ubuntu only)
@@ -64,7 +140,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: e2e-${{ matrix.os }}
+          name: e2e-showcase-${{ matrix.os }}
           path: |
             e2e/artifacts/**
             docs/tutorial/**

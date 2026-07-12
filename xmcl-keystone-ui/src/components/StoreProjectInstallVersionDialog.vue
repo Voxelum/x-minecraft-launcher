@@ -205,6 +205,7 @@
               <StoreProjectInstallVersionDialogVersion
                 v-else
                 class="mx-2"
+                data-testid="install-version-item"
                 :disabled="loading"
                 :version="asAny(all[row.index])"
                 @click="onVersionClicked(asAny(all[row.index]))"

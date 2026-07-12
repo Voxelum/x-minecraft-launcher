@@ -5,6 +5,10 @@ fixtures/sandbox-root/userData/
 fixtures/sandbox-root/gameData/
 node_modules/
 
+# Persistent real-environment profile for the showcase group (local promo
+# screenshots / videos). Reused across runs; never committed.
+.showcase-data/
+
 # Scratch specs are PR-local visual-verification helpers (see AGENTS.md).
 # The example template and .gitkeep stay tracked; everything else is local.
 specs/scratch/*

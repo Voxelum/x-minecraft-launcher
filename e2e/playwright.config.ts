@@ -15,7 +15,7 @@ export default defineConfig({
   // launcher fixture (Ubuntu CI cold-boots the main process in ~90s) plus
   // the per-test renderer work. 240s leaves a comfortable margin without
   // dragging the suite — non-smoke specs that need longer set their own
-  // timeout via test.setTimeout(...) (e.g. specs/05-download-modpack.spec.ts).
+  // timeout via test.setTimeout(...) (e.g. specs/showcase/05-download-modpack.spec.ts).
   timeout: 240_000,
   expect: { timeout: 15_000 },
   fullyParallel: false, // Each test launches a real Electron process; serialize to keep CI stable.
@@ -29,7 +29,9 @@ export default defineConfig({
   ],
   use: {
     trace: 'retain-on-failure',
-    video: 'retain-on-failure',
+    // Default keeps videos only for failures. Set XMCL_E2E_VIDEO=all to
+    // record the full run (used for local showcase capture / promo footage).
+    video: process.env.XMCL_E2E_VIDEO === 'all' ? 'on' : 'retain-on-failure',
   },
   projects: locales.map((locale) => ({
     name: `electron-${locale}`,

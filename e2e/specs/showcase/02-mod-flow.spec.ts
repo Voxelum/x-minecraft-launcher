@@ -6,12 +6,12 @@
  *   and shader packs (Complementary Reimagined) → trigger the instance file
  *   install dialog.
  */
-import { test } from '../fixtures/launcher'
-import { AppShell } from '../helpers/pom/AppShell'
-import { addOfflineAccount } from '../helpers/tasks/addAccount'
-import { createInstance } from '../helpers/tasks/createInstance'
-import { browseInstanceContent } from '../helpers/tasks/browseContent'
-import { shoot } from '../helpers/shoot'
+import { test } from '../../fixtures/launcher'
+import { AppShell } from '../../helpers/pom/AppShell'
+import { addOfflineAccount } from '../../helpers/tasks/addAccount'
+import { createInstance } from '../../helpers/tasks/createInstance'
+import { browseInstanceContent } from '../../helpers/tasks/browseContent'
+import { shoot } from '../../helpers/shoot'
 
 test.setTimeout(10 * 60_000)
 

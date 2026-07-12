@@ -6,10 +6,10 @@
  * Each loader fetches its own meta endpoint (Forge XML index, NeoForge maven
  * metadata). No mocks — the test exercises the live install path.
  */
-import { test, expect } from '../fixtures/launcher'
-import { AppShell } from '../helpers/pom/AppShell'
-import { createInstance } from '../helpers/tasks/createInstance'
-import { shoot } from '../helpers/shoot'
+import { test, expect } from '../../fixtures/launcher'
+import { AppShell } from '../../helpers/pom/AppShell'
+import { createInstance } from '../../helpers/tasks/createInstance'
+import { shoot } from '../../helpers/shoot'
 
 test.setTimeout(15 * 60_000)
 
@@ -21,6 +21,10 @@ test('Other modloaders — create Forge and NeoForge instances', async ({ launch
   await shoot(ctx, '00-launcher-opened', {
     caption: 'The launcher opens on the **Home** view.',
   })
+
+  // The persistent showcase profile may already hold instances, so track the
+  // delta rather than an absolute total.
+  const before = await shell.instanceItems.count()
 
   await createInstance(launcher, {
     name: 'Forge Workshop',
@@ -35,7 +39,7 @@ test('Other modloaders — create Forge and NeoForge instances', async ({ launch
   })
 
   await shell.goto('/')
-  await expect(shell.instanceItems).toHaveCount(2)
+  await expect(shell.instanceItems).toHaveCount(before + 2)
   await shoot(ctx, '99-done', {
     caption: 'Done — both **Forge** and **NeoForge** instances appear in the side bar.',
   })

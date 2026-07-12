@@ -137,10 +137,13 @@ folder. The PR's file diff stays clean.
 
 - Dependency updates use `chore:` (not `fix:`). See `CONTRIBUTING.md`.
 - Type-check after edits with `pnpm check`. Lint with `pnpm lint`.
-- Do not modify `e2e/specs/01-..05-...spec.ts` (the canonical storylines)
-  to verify your unrelated feature. Use `specs/scratch/` instead.
-- The full e2e suite (`pnpm test:e2e`) hits live network endpoints and
-  takes 10–30 minutes per storyline. Scratch specs are the fast path.
+- Do not modify `e2e/specs/showcase/01-..05-...spec.ts` (the canonical
+  storylines) or `e2e/specs/ci/**` (the safety-net group) to verify your
+  unrelated feature. Use `specs/scratch/` instead.
+- The showcase suite (`pnpm test:e2e:showcase`) hits live network endpoints
+  and takes 10-30 minutes per storyline. The safety-net group
+  (`pnpm test:e2e:ci`) is deterministic and network-free. Scratch specs are
+  the fast path for visual verification.
 
 ## Network access (Copilot coding agent only)
 

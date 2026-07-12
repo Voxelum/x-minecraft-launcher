@@ -30,6 +30,24 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = resolve(__dirname, '../..')
 const ELECTRON_ENTRY = resolve(REPO_ROOT, 'xmcl-electron-app/dist/index.js')
 
+// Persistent profile root for the **showcase** group (e2e/specs/showcase/**).
+// Unlike the CI safety-net group — which isolates every test into a throwaway
+// temp dir — showcase specs reuse this directory across runs so installed
+// content, versions and instances accumulate into a realistic-looking
+// launcher for promotional screenshots / videos. It lives inside e2e/ and is
+// gitignored. It is NOT the user's real launcher data.
+const SHOWCASE_ROOT = resolve(REPO_ROOT, 'e2e/.showcase-data')
+
+/**
+ * A spec runs in showcase mode when it lives under `e2e/specs/showcase/`.
+ * Showcase specs run against a real, persistent environment on the current
+ * PC (live network, real Java, retained profile). CI safety-net specs under
+ * `e2e/specs/ci/` keep the deterministic, fully-isolated behaviour.
+ */
+function isShowcase(file: string): boolean {
+  return file.replace(/\\/g, '/').includes('/specs/showcase/')
+}
+
 // e2e/ is intentionally outside the pnpm workspace (see README) so Playwright's
 // auto-resolve via local `node_modules/electron` doesn't find a binary. Point at
 // the workspace electron the launcher itself uses — the same binary `compile`
@@ -150,7 +168,17 @@ export const test = base.extend<{
       (testInfo.project.use as { locale?: string } | undefined)?.locale ?? 'en'
     const locale = launcherOptions.locale ?? projectLocale
 
-    const tempRoot = await mkdtemp(join(tmpdir(), 'xmcl-e2e-'))
+    // Showcase specs reuse a persistent, real-environment profile so content
+    // accumulates for promo screenshots. CI specs get a throwaway temp dir.
+    //
+    // Exception: a bootstrap (onboarding) spec always starts from a clean,
+    // throwaway profile — even inside the showcase group — so the first-launch
+    // wizard reliably appears and its assertions stay deterministic. Otherwise
+    // the previous run's persisted `root` file would skip the wizard.
+    const persistent = isShowcase(testInfo.file) && !launcherOptions.bootstrap
+    const tempRoot = persistent
+      ? SHOWCASE_ROOT
+      : await mkdtemp(join(tmpdir(), 'xmcl-e2e-'))
     const appDataPath = join(tempRoot, 'appData')
     const gameDataPath = join(tempRoot, 'gameData')
     await mkdir(appDataPath, { recursive: true })
@@ -180,6 +208,9 @@ export const test = base.extend<{
         // Test-mode flags consumed by main process hooks (see ElectronLauncherApp.ts).
         XMCL_E2E: '1',
         XMCL_E2E_APP_DATA: appDataPath,
+        // Isolate the onboarding data-root default so the bootstrap wizard
+        // never commits the real ~/.minecraftx (see pluginSetup.ts).
+        XMCL_E2E_GAME_DATA: gameDataPath,
         XMCL_E2E_NO_LAUNCH: '1',
         XMCL_E2E_LOCALE: locale,
         // Make the launcher logs deterministic.
@@ -262,7 +293,12 @@ export const test = base.extend<{
       } catch {
         // Electron may already be torn down by a test failure; ignore.
       }
-      await rm(tempRoot, { recursive: true, force: true }).catch(() => {})
+      // Showcase profile is persistent by design (see SHOWCASE_ROOT) — keep it
+      // so installed content accumulates for promotional screenshots. Only the
+      // per-test throwaway temp dir is removed.
+      if (!persistent) {
+        await rm(tempRoot, { recursive: true, force: true }).catch(() => {})
+      }
     }
   },
 })

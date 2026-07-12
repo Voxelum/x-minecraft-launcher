@@ -4,10 +4,10 @@
  *   open launcher → Store → search "fabulously optimized" → open project →
  *   Install → pick latest version → confirm install → return to Home.
  */
-import { test, expect } from '../fixtures/launcher'
-import { AppShell } from '../helpers/pom/AppShell'
-import { installModpackFromStore } from '../helpers/tasks/installFromStore'
-import { shoot } from '../helpers/shoot'
+import { test, expect } from '../../fixtures/launcher'
+import { AppShell } from '../../helpers/pom/AppShell'
+import { installModpackFromStore } from '../../helpers/tasks/installFromStore'
+import { shoot } from '../../helpers/shoot'
 
 test.setTimeout(10 * 60_000)
 
@@ -22,12 +22,13 @@ test('Download modpack flow — install Fabulously Optimized from the Store', as
     caption: 'The launcher opens on the **Home** view.',
   })
 
+  const before = await shell.instanceItems.count()
   await installModpackFromStore(launcher, {
     query: 'fabulously optimized',
     matchTitle: 'Fabulously',
   })
 
-  await expect(shell.instanceItems).toHaveCount(1)
+  await expect(shell.instanceItems).toHaveCount(before + 1)
   await shoot(ctx, '99-done', {
     caption: 'Done — the modpack instance is installed and selected.',
   })

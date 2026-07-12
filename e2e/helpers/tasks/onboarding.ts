@@ -53,12 +53,22 @@ export async function completeOnboarding(
     await shell.setupNext.click()
   } else {
     await shell.setupAccountAdd.click()
+    // The default authority is Microsoft (needs a real email); switch to the
+    // offline account system before entering a plain username.
+    await shell.selectOfflineAuthority()
     await shell.loginUsername.fill(opts.username ?? 'TestPlayer')
     await shell.loginSubmit.click()
+    // Offline login is instant and closes the dialog. Wait for the dialog's
+    // overlay to go away before advancing, or the fading scrim eats the click.
+    await shell.loginSubmit.waitFor({ state: 'hidden', timeout: 30_000 }).catch(() => {})
     await shell.setupNext.click()
   }
 
   await shell.sidebar.waitFor({ state: 'visible', timeout: 30_000 })
+
+  // The first-launch guided tour (driver.js) auto-starts here and its overlay
+  // blocks all subsequent clicks — dismiss it before the storyline continues.
+  await shell.dismissTutorial()
 
   await shoot(ctx, '05-home', {
     caption: 'You are in! The **Home** view is where you launch and manage instances.',
