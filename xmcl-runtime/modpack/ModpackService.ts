@@ -151,6 +151,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     modpackFile: string,
     iconUrl?: string,
     upstream?: InstanceData['upstream'],
+    instancePath?: string,
   ): Promise<{
     instancePath: string
     version?: string
@@ -211,7 +212,28 @@ export class ModpackService extends AbstractService implements IModpackService {
       ;(options.upstream as any).sha1 = cached.sha1
     }
 
-    const path = await this.instanceService.createInstance(options)
+    // If an existing instance is targeted, update it in place instead of
+    // creating a new one. This backs the "update existing instance" choice
+    // shown when a modpack for an already-installed instance is imported.
+    const existing =
+      instancePath &&
+      (this.instanceService.state.all[instancePath] ||
+        this.instanceService.state.instances.find((i) => i.path === instancePath))
+
+    let path: string
+    if (existing) {
+      path = existing.path
+      await this.instanceService.editInstance({
+        instancePath: path,
+        runtime: options.runtime,
+        version: options.version,
+        ...(options.upstream ? { upstream: options.upstream } : {}),
+      }).catch((e) => {
+        this.error(e)
+      })
+    } else {
+      path = await this.instanceService.createInstance(options)
+    }
 
     instanceInstallService
       .installInstanceFiles(

@@ -824,6 +824,12 @@ modpackImportConfirm:
   description: >-
     اكتشف أنك قمت بإسقاط ملف في المشغل. هل تحاول استيراد modpack؟
   title: 'هل تحاول استيراد modpack؟'
+modpackUpdateOrCreate:
+  createNew: 'إنشاء جديد'
+  description: >-
+    يوجد بالفعل مثيل "{name}" لحزمة الوحدات هذه. هل تريد تحديثه أم إنشاء مثيل جديد؟
+  title: 'المثيل موجود بالفعل'
+  update: 'تحديث الموجود'
 modrinth:
   browseUrl: 'فتح في المتصفح {url}'
   categories:

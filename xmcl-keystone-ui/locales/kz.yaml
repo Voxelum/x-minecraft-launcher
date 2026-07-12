@@ -774,6 +774,12 @@ modpackImportConfirm:
   description: >-
     Сіз launcher-ға файл апарғаныңыз анықталды. Сіз мод-пак импорттағыңыз келе ме?
   title: Сіз мод-пак импорттағыңыз келе ме?
+modpackUpdateOrCreate:
+  createNew: 'Жаңасын жасау'
+  description: >-
+    Осы модпакқа арналған "{name}" данасы бұрыннан бар. Оны жаңартқыңыз келе ме, әлде жаңасын жасайсыз ба?
+  title: 'Дана әлдеқашан бар'
+  update: 'Бар данасын жаңарту'
 modrinth:
   browseUrl: Браузерде ашу {url}
   categories:

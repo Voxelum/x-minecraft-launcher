@@ -789,6 +789,12 @@ modpackImportConfirm:
     Detecte que você solta um arquivo no lançador.
     Você está tentando importar um modpack?
   title: Você está tentando importar um modpack?
+modpackUpdateOrCreate:
+  createNew: 'Criar nova'
+  description: >-
+    Já existe uma instância "{name}" para este modpack. Deseja atualizá-la ou criar uma nova?
+  title: 'A instância já existe'
+  update: 'Atualizar existente'
 modrinth:
   browseUrl: Abrir no navegador {url}
   categories:

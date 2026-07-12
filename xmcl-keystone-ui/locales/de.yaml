@@ -840,6 +840,12 @@ modpackImportConfirm:
     Erkennen Sie, dass Sie eine Datei in den Launcher fallen lassen.
     Versuchen Sie, ein Modpack zu importieren?
   title: Versuchen Sie, ein Modpack zu importieren?
+modpackUpdateOrCreate:
+  createNew: 'Neue erstellen'
+  description: >-
+    Eine Instanz "{name}" für dieses Modpack existiert bereits. Möchtest du sie aktualisieren oder eine neue erstellen?
+  title: 'Instanz existiert bereits'
+  update: 'Vorhandene aktualisieren'
 modrinth:
   browseUrl: Im Browser öffnen {url}
   categories:

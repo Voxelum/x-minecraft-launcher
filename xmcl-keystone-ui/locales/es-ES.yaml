@@ -985,6 +985,12 @@ modpackImportConfirm:
     Detecte que suelte un archivo en el lanzador.
     ¿Estás tratando de importar un Modpack?
   title: ¿Estás tratando de importar un Modpack?
+modpackUpdateOrCreate:
+  createNew: 'Crear nueva'
+  description: >-
+    Ya existe una instancia "{name}" para este modpack. ¿Quieres actualizarla o crear una nueva?
+  title: 'La instancia ya existe'
+  update: 'Actualizar existente'
 modrinth:
   browseUrl: Abrir en el Navegador {url}
   categories:

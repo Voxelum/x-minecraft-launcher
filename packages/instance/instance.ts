@@ -261,3 +261,44 @@ export function isUpstreamSameOrigin(a: InstanceUpstream, b: InstanceUpstream): 
   }
   return false
 }
+
+/**
+ * The minimal instance shape required to detect whether an instance already
+ * corresponds to a given modpack.
+ */
+export type InstanceModpackMatchTarget = Pick<Instance, 'path' | 'name'> & {
+  upstream?: InstanceUpstream
+}
+
+/**
+ * Find an existing instance that corresponds to the modpack being imported.
+ *
+ * Detection order:
+ * 1. If the modpack has an `upstream` (e.g. CurseForge/Modrinth), match an
+ *    instance whose upstream is from the same origin via {@link isUpstreamSameOrigin}.
+ *    This is robust against the user renaming the instance.
+ * 2. Otherwise (custom modpacks without upstream), fall back to a
+ *    case-insensitive match on the instance name.
+ *
+ * @param instances The existing instances to search.
+ * @param options The modpack identity (`upstream` and/or `name`).
+ * @returns The matched instance, or `undefined` if none matches.
+ */
+export function findInstanceForModpack<T extends InstanceModpackMatchTarget>(
+  instances: readonly T[],
+  options: { upstream?: InstanceUpstream; name?: string },
+): T | undefined {
+  const { upstream, name } = options
+  if (upstream) {
+    const matched = instances.find(
+      (i) => !!i.upstream && isUpstreamSameOrigin(upstream, i.upstream),
+    )
+    if (matched) return matched
+  }
+  if (name) {
+    const lowered = name.toLowerCase()
+    const matched = instances.find((i) => i.name.toLowerCase() === lowered)
+    if (matched) return matched
+  }
+  return undefined
+}

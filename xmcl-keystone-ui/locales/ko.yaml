@@ -729,6 +729,12 @@ modpack:
 modpackImportConfirm:
   description: 런처에 파일을 드롭한 것을 감지했습니다. 모드팩을 가져오려는 중인가요?
   title: 모드팩을 가져오려는 중인가요?
+modpackUpdateOrCreate:
+  createNew: '새로 만들기'
+  description: >-
+    이 모드팩의 인스턴스 "{name}"이(가) 이미 존재합니다. 업데이트하시겠습니까, 아니면 새로 만드시겠습니까?
+  title: '인스턴스가 이미 존재합니다'
+  update: '기존 업데이트'
 modrinth:
   browseUrl: 브라우저에서 열기 {url}
   categories:

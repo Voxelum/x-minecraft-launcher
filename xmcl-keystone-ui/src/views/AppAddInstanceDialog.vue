@@ -43,6 +43,32 @@
 
       <v-divider class="mx-6 opacity-20" />
 
+      <v-alert
+        v-if="existingInstance"
+        type="info"
+        variant="tonal"
+        density="compact"
+        rounded="lg"
+        class="mx-6 mt-4"
+      >
+        <div class="flex items-center gap-3 flex-wrap">
+          <span class="flex-grow">
+            {{ t('modpackUpdateOrCreate.description', { name: existingInstance.name }) }}
+          </span>
+          <v-btn
+            color="primary"
+            variant="tonal"
+            rounded="pill"
+            size="small"
+            :loading="loading"
+            @click="onUpdateExisting"
+          >
+            <v-icon start size="16">update</v-icon>
+            {{ t('modpackUpdateOrCreate.update') }}
+          </v-btn>
+        </div>
+      </v-alert>
+
       <v-window v-model="step" class="visible-scroll overflow-y-auto">
         <v-window-item v-for="(tStep, i) in steps" :key="tStep" class="max-h-[70vh]" :value="i + 1">
           <StepConfig v-if="tStep === 'config'" :loading="loading" v-model:valid="valid" />
@@ -97,6 +123,7 @@ import { kPeerShared } from '@/composables/peers'
 import { kUserContext } from '@/composables/user'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
+import { findInstanceForModpack } from '@xmcl/instance'
 import {
   CachedFTBModpackVersionManifest,
   InstanceManifest,
@@ -110,6 +137,7 @@ import {
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
+import { useModpackFinishInstall } from '@/composables/modpackInstaller'
 import { useHasMinecraftLicense } from '@/composables/minecraftLicense'
 
 const type = ref(
@@ -127,15 +155,27 @@ const type = ref(
 // Dialog model
 const { openModpack } = useService(ModpackServiceKey)
 const { all: javas } = injection(kJavaContext)
+// The modpack file currently loaded into the creation form (if any), and the
+// existing instance that already corresponds to it. Used to offer updating the
+// existing instance instead of always creating a new one.
+const modpackFilePath = ref('')
+const existingInstance = ref(undefined as { path: string; name: string } | undefined)
 const onSelectModpack = async (modpack: string) => {
   try {
     loading.value = true
+    existingInstance.value = undefined
+    modpackFilePath.value = modpack
     const openedModpack = await openModpack(modpack)
     if (openedModpack.error) {
       error.value = openedModpack.error
     }
     if (openedModpack.config) {
       await update(openedModpack.config, waitModpackFiles(openedModpack))
+      const matched = findInstanceForModpack(instances.value, {
+        upstream: openedModpack.config.upstream,
+        name: openedModpack.config.name,
+      })
+      existingInstance.value = matched ? { path: matched.path, name: matched.name } : undefined
     }
   } catch (e) {
     error.value = e
@@ -146,6 +186,8 @@ const onSelectModpack = async (modpack: string) => {
 const onSelectFTB = async (ftb: CachedFTBModpackVersionManifest) => {
   try {
     loading.value = true
+    existingInstance.value = undefined
+    modpackFilePath.value = ''
     const [config, files] = getFTBTemplateAndFile(ftb, javas.value)
     if (!config) return
     await update(config, Promise.resolve(files))
@@ -158,6 +200,8 @@ const onSelectFTB = async (ftb: CachedFTBModpackVersionManifest) => {
 const onSelectManifest = async (man: InstanceManifest) => {
   try {
     loading.value = true
+    existingInstance.value = undefined
+    modpackFilePath.value = ''
     await update(
       {
         name: man.name ?? '',
@@ -187,6 +231,8 @@ const { isShown, show, hide } = useDialog(
     step.value = 1
     type.value = 'template'
     valid.value = true
+    existingInstance.value = undefined
+    modpackFilePath.value = ''
 
     windowController.focus()
 
@@ -216,6 +262,8 @@ const { isShown, show, hide } = useDialog(
       step.value = 1
       valid.value = true
       type.value = 'template'
+      existingInstance.value = undefined
+      modpackFilePath.value = ''
       reset()
     }, 500)
   },
@@ -280,6 +328,26 @@ const onCreate = async () => {
     }
   } else if (newPath === path.value) {
     await fix().catch(() => {})
+  }
+}
+
+const finishModpackInstall = useModpackFinishInstall()
+const onUpdateExisting = async () => {
+  const existing = existingInstance.value
+  if (!existing || !modpackFilePath.value) return
+  try {
+    loading.value = true
+    await finishModpackInstall(
+      modpackFilePath.value,
+      creation.data.icon || undefined,
+      creation.data.upstream,
+      existing.path,
+    )
+    hide()
+  } catch (e) {
+    error.value = e
+  } finally {
+    loading.value = false
   }
 }
 
