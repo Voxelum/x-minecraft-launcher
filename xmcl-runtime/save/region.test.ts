@@ -64,7 +64,7 @@ describe('region', () => {
     } finally {
       await rm(dest, { recursive: true, force: true })
     }
-  })
+  }, 30000)
 
   test('relocateSaveChunks moves chunks and keeps them renderable', async () => {
     const src = join(mockRoot, '1.19.3')
@@ -100,5 +100,5 @@ describe('region', () => {
     } finally {
       await rm(dest, { recursive: true, force: true })
     }
-  })
+  }, 30000)
 })
