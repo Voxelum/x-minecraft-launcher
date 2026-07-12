@@ -12,6 +12,15 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
   // plugin instance is reused, so `setup` runs multiple times but this closure
   // is created once). Guards the one-time build of the shared iconv-lite chunk.
   let iconvShared: Promise<void> | undefined
+  // Same rationale for the decoded undici wasm files: the main build and every
+  // nested worker build run concurrently and share this plugin instance, so
+  // without a guard they all race to `writeFile` the same `.cache/xmcl-wasm/*`
+  // file. Whenever one build truncates the file (writeFile opens with O_TRUNC)
+  // while another build's esbuild file-loader is reading it to emit the asset,
+  // the read observes a zero-length/half-written file and esbuild aborts with
+  // "Could not resolve …llhttp-wasm.wasm". Decode+write each wasm exactly once
+  // and have every onLoad await that single promise before referencing the file.
+  const wasmShared = new Map<string, Promise<string>>()
   return {
     name: 'resolve-native-module',
     setup(build) {
@@ -82,9 +91,19 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
             return { contents: content, loader: 'js' }
           }
           const cacheDir = join(nodeModules, '.cache', 'xmcl-wasm')
-          await mkdir(cacheDir, { recursive: true })
           const wasmFile = join(cacheDir, basename(path).replace(/\.js$/, '.wasm'))
-          await writeFile(wasmFile, Buffer.from(match[1], 'base64'))
+          // Decode + write the wasm exactly once, even though the main build and
+          // every worker build run this onLoad concurrently. Awaiting the shared
+          // promise guarantees the file is fully written before esbuild's
+          // file-loader resolves the `require(wasmFile)` below in any build.
+          let write = wasmShared.get(wasmFile)
+          if (!write) {
+            write = mkdir(cacheDir, { recursive: true })
+              .then(() => writeFile(wasmFile, Buffer.from(match[1], 'base64')))
+              .then(() => wasmFile)
+            wasmShared.set(wasmFile, write)
+          }
+          await write
           return {
             contents: `'use strict'
 const { readFileSync } = require('node:fs')
