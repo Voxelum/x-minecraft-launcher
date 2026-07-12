@@ -1,25 +1,21 @@
-import { Plugin, build as esbuild } from 'esbuild'
-import { existsSync } from 'fs'
-import { readdir, readFile, link, unlink, stat, writeFile, mkdir } from 'fs/promises'
-import { arch, platform } from 'os'
-import { basename, dirname, join, relative } from 'path'
+import { build as esbuild, Plugin } from 'esbuild'
+import { mkdir, readFile, writeFile } from 'fs/promises'
+import { platform } from 'os'
+import { basename, dirname, join } from 'path'
 
 /**
  * Correctly handle native node import.
  */
-export default function createNativeModulePlugin(nodeModules: string): Plugin {
+export default function createNativeModulePlugin(): Plugin {
   // Shared once across the main build and every nested worker build (the same
   // plugin instance is reused, so `setup` runs multiple times but this closure
   // is created once). Guards the one-time build of the shared iconv-lite chunk.
   let iconvShared: Promise<void> | undefined
   // Same rationale for the decoded undici wasm files: the main build and every
   // nested worker build run concurrently and share this plugin instance, so
-  // without a guard they all race to `writeFile` the same `.cache/xmcl-wasm/*`
-  // file. Whenever one build truncates the file (writeFile opens with O_TRUNC)
-  // while another build's esbuild file-loader is reading it to emit the asset,
-  // the read observes a zero-length/half-written file and esbuild aborts with
-  // "Could not resolve …llhttp-wasm.wasm". Decode+write each wasm exactly once
-  // and have every onLoad await that single promise before referencing the file.
+  // without a guard they all race to `writeFile` the same `dist/*.wasm` file.
+  // Decode+write each wasm exactly once and have every onLoad await that single
+  // promise before referencing the file.
   const wasmShared = new Map<string, Promise<string>>()
   return {
     name: 'resolve-native-module',
@@ -79,8 +75,8 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
       // (`llhttp-wasm.js` + `llhttp_simd-wasm.js`, ~70KB base64 each). Both are
       // statically `require`d by client-h1.js, so esbuild inlines BOTH into
       // every bundle (main + each worker) — ~840KB duplicated across 6 bundles.
-      // Decode each once at build time, emit it as a single shared `.wasm`
-      // (via esbuild's `file` loader), and read it from disk at runtime.
+      // Decode each once at build time, write it as a single shared `.wasm`
+      // directly into the output dir, and read it from disk at runtime.
       build.onLoad(
         { filter: /undici[\\/]lib[\\/]llhttp[\\/]llhttp(_simd)?-wasm\.js$/ },
         async ({ path }) => {
@@ -90,15 +86,25 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
             // Format changed upstream; fall back to the original inlined module.
             return { contents: content, loader: 'js' }
           }
-          const cacheDir = join(nodeModules, '.cache', 'xmcl-wasm')
-          const wasmFile = join(cacheDir, basename(path).replace(/\.js$/, '.wasm'))
+          // Write the decoded wasm straight into esbuild's output dir instead of
+          // routing it through esbuild's `file` loader. The file loader resolves
+          // an absolute path we create *during* the build, but esbuild caches a
+          // negative stat for that path when it first scans (the file does not
+          // exist yet on a clean checkout), so on CI the later `require(wasmFile)`
+          // intermittently fails with "Could not resolve …llhttp-wasm.wasm".
+          // Referencing the file only through a runtime `path.join(__dirname, …)`
+          // (a plain string, never a `require`/`import` specifier) keeps esbuild
+          // out of the resolution entirely — mirroring the iconv-lite stub below.
+          const outDir = build.initialOptions.outdir!
+          const wasmName = basename(path).replace(/\.js$/, '.wasm')
+          const wasmFile = join(outDir, wasmName)
           // Decode + write the wasm exactly once, even though the main build and
-          // every worker build run this onLoad concurrently. Awaiting the shared
-          // promise guarantees the file is fully written before esbuild's
-          // file-loader resolves the `require(wasmFile)` below in any build.
+          // every worker build run this onLoad concurrently and share this
+          // plugin instance. Awaiting the shared promise guarantees the file is
+          // fully written before any build references it.
           let write = wasmShared.get(wasmFile)
           if (!write) {
-            write = mkdir(cacheDir, { recursive: true })
+            write = mkdir(outDir, { recursive: true })
               .then(() => writeFile(wasmFile, Buffer.from(match[1], 'base64')))
               .then(() => wasmFile)
             wasmShared.set(wasmFile, write)
@@ -110,7 +116,7 @@ const { readFileSync } = require('node:fs')
 const { join } = require('node:path')
 let wasmBuffer
 Object.defineProperty(module, 'exports', {
-  get: () => wasmBuffer || (wasmBuffer = readFileSync(join(__dirname, require(${JSON.stringify(wasmFile)}))))
+  get: () => wasmBuffer || (wasmBuffer = readFileSync(join(__dirname, ${JSON.stringify(wasmName)})))
 })`,
             loader: 'js',
           }
