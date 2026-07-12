@@ -54,6 +54,21 @@ describe('YggdrasilClient', () => {
       const client = new YggdrasilClient(API.hostName, { fetch })
       await expect(client.validate('accessToken', clientToken)).resolves.toBeFalsy()
     })
+    it('should throw YggdrasilError when validate receives a 502 error', async () => {
+      const pool = agent.get(API.hostName)
+      pool
+        .intercept({
+          method: 'POST',
+          path: API.validate,
+          body: JSON.stringify({
+            accessToken: 'accessToken',
+            clientToken,
+          }),
+        })
+        .reply(502)
+      const client = new YggdrasilClient(API.hostName, { fetch })
+      await expect(client.validate('accessToken', clientToken)).rejects.toBeInstanceOf(YggdrasilError)
+    })
   })
 
   describe('#invalidate', () => {

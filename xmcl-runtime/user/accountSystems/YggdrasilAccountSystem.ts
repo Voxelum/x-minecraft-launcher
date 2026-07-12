@@ -209,10 +209,21 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
         await this.storage.put(userProfile, result.accessToken)
         userProfile.expiredAt = Date.now() + 86400_000
         userProfile.invalidated = false
-      } catch (e) {
+      } catch (e: any) {
         this.logger.warn(e)
-        this.logger.warn(`Invalid current user ${userProfile.id} accessToken!`)
 
+        const isTransient = (err: any) => {
+          if (err instanceof YggdrasilError) {
+            return err.statusCode >= 500 || err.statusCode === 429 || err.statusCode === 408 || err.statusCode === 404
+          }
+          return true
+        }
+
+        if (isTransient(e)) {
+          throw e
+        }
+
+        this.logger.warn(`Invalid current user ${userProfile.id} accessToken!`)
         userProfile.invalidated = true
       }
     } else {

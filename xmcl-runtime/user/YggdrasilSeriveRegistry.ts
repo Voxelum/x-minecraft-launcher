@@ -39,26 +39,49 @@ export class YggdrasilSeriveRegistry {
   }
 
   private async getDefaultYggdrasilServices(): Promise<YggdrasilSchema> {
+    const loadProfile = async (url: string) => {
+      try {
+        return await loadYggdrasilApiProfile(url, this.app.fetch)
+      } catch (e) {
+        this.logger.warn(`Failed to load default Yggdrasil API profile for ${url}: ${e}`)
+        return { url } as YggdrasilApi
+      }
+    }
     const yggdrasilServices = await Promise.all([
-      loadYggdrasilApiProfile('https://littleskin.cn/api/yggdrasil', this.app.fetch),
-      loadYggdrasilApiProfile('https://authserver.ely.by/api/authlib-injector', this.app.fetch),
+      loadProfile('https://littleskin.cn/api/yggdrasil'),
+      loadProfile('https://authserver.ely.by/api/authlib-injector'),
     ])
     return { yggdrasilServices }
   }
 
   async load() {
-    const apis = await readJson(this.yggdrasilJsonPath)
-      .catch(() => this.getDefaultYggdrasilServices())
-      .then(d => YggdrasilSchema.parse(d))
+    let apis: YggdrasilSchema
+    try {
+      const d = await readJson(this.yggdrasilJsonPath)
+      apis = YggdrasilSchema.parse(d)
+    } catch {
+      apis = await this.getDefaultYggdrasilServices()
+    }
+
     const litteSkin = apis.yggdrasilServices.find(a => new URL(a.url).host === 'littleskin.cn')
     if (litteSkin && (!litteSkin.authlibInjector || !litteSkin.ocidConfig)) {
-      apis.yggdrasilServices.splice(apis.yggdrasilServices.indexOf(litteSkin), 1)
-      apis.yggdrasilServices.push(await loadYggdrasilApiProfile('https://littleskin.cn/api/yggdrasil', this.app.fetch))
+      try {
+        const loaded = await loadYggdrasilApiProfile('https://littleskin.cn/api/yggdrasil', this.app.fetch)
+        apis.yggdrasilServices.splice(apis.yggdrasilServices.indexOf(litteSkin), 1)
+        apis.yggdrasilServices.push(loaded)
+      } catch (e) {
+        this.logger.warn(`Failed to update littleskin.cn profile: ${e}`)
+      }
     }
     const ely = apis.yggdrasilServices.find(a => new URL(a.url).host === 'authserver.ely.by')
     if (ely && !ely.authlibInjector) {
-      apis.yggdrasilServices.splice(apis.yggdrasilServices.indexOf(ely), 1)
-      apis.yggdrasilServices.push(await loadYggdrasilApiProfile('https://authserver.ely.by/api/authlib-injector', this.app.fetch))
+      try {
+        const loaded = await loadYggdrasilApiProfile('https://authserver.ely.by/api/authlib-injector', this.app.fetch)
+        apis.yggdrasilServices.splice(apis.yggdrasilServices.indexOf(ely), 1)
+        apis.yggdrasilServices.push(loaded)
+      } catch (e) {
+        this.logger.warn(`Failed to update authserver.ely.by profile: ${e}`)
+      }
     }
 
     this.yggdrasilServices.push(...apis.yggdrasilServices)

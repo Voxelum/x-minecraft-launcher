@@ -129,7 +129,26 @@ export class YggdrasilClient {
       },
       signal,
     })
-    return response.ok
+    if (response.status === 204 || response.status === 200) {
+      return true
+    }
+    if (response.status === 403 || response.status === 400 || response.status === 401) {
+      return false
+    }
+    const body = await response.text().catch(() => '')
+    let parsedBody: any
+    try {
+      parsedBody = response.headers.get('content-type')?.startsWith('application/json')
+        ? JSON.parse(body)
+        : undefined
+    } catch {
+      // Ignore JSON parse errors
+    }
+    throw new YggdrasilError(
+      response.status,
+      response.status + ':' + body,
+      parsedBody,
+    )
   }
 
   async invalidate(accessToken: string, clientToken: string, signal?: AbortSignal) {
