@@ -418,7 +418,7 @@ instance:
   envVarKey: কী
   envVarKeyPlaceholder: MY_VAR
   envVarValue: মান
-  envVarValuePlaceholder: value
+  envVarValuePlaceholder: মান
   fileApi: ফাইল সিঙ্ক্রোনাইজ সার্ভারের API URL
   fileApiHint: একটি দূরবর্তী কনফিগ সার্ভার থেকে ইনস্ট্যান্স ফাইল সিঙ্ক করার URL।
   fileApiPlaceholder: আপনি যদি রিসোর্স সিঙ্ক চালু রাখতে চান তবে দয়া করে এখানে রিমোট সিঙ্ক URL-টি লিখুন

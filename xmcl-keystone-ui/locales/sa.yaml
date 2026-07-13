@@ -94,7 +94,7 @@ baseSetting:
   title: क्षणविकल्पाः
 browseApp:
   createShortcut: लघुमार्गं सृजतु
-  default: DEFAULT
+  default: पूर्वनिर्धारितम्
   delete: लोपयतु
   launch: प्रवर्तयतु पूर्वनिर्धारितं च करोतु
 browseApps: प्रवर्तकस्य दृश्यं पश्यति
@@ -917,9 +917,9 @@ modrinth:
     optifine: Optifine
     optimization: अनुकूलनानि
     paper: Paper
-    path-tracing: Path Tracing
+    path-tracing: पथ-अनुरेखणम्
     pbr: PBR
-    performance impact: Performance Impact
+    performance impact: कार्यक्षमता-प्रभावः
     potato: आलुकम् (Potato)
     purpur: Purpur
     quests: अन्वेषणानि
@@ -1527,7 +1527,7 @@ setting:
   themeFont: अक्षरमुद्रा
   themeFontDescription: प्रवर्तकस्य अक्षरमुद्रां परिवर्तयतु।
   themeFontUrl: अक्षरमुद्रासङ्केतः
-  themeFontUrlPlaceholder: Enter HTTP/HTTPS URL for font
+  themeFontUrlPlaceholder: लिपि-सज्जाय HTTP/HTTPS URL प्रविशतु
   themeImport: प्रसङ्गं आयातयतु
   themeResetFont: अक्षरमुद्रां पुनः स्थापयतु
   themeSelectFont: अक्षरमुद्रां चिनोतु
@@ -1751,7 +1751,7 @@ unresolvedFiles:
   source:
     curseforge-name: CurseForge
     dependency: अधीनता
-    modrinth-hash: Modrinth hash
+    modrinth-hash: Modrinth हैश
     modrinth-name: Modrinth
   title: अनिर्णीताः सञ्चिकाः
   via: '{source} द्वारा'
@@ -1780,7 +1780,7 @@ userCape:
   noCape: कोऽपि कञ्चुको नास्ति
 userService:
   add: अन्याः सेवाः योजयतु
-  authlibInjectorMetadata: Authlib-Injector metadata
+  authlibInjectorMetadata: Authlib-Injector मेटाडेटा
   baseUrlHint: भवतः विशिष्टसेवाप्रदातुः मूल-URL
   homepage: मुख्यपृष्ठम्
   implementation: कार्यान्वयनम्
@@ -1804,7 +1804,7 @@ userServices:
     password: सङ्केतशब्दः
   offline:
     account: प्रयोक्तृनाम
-    name: Offline
+    name: ऑफलाइन
     password: कोऽपि सङ्केतशब्दो नास्ति
     uuid: प्रयोक्तृ UUID (वैकल्पिकम्)
 userSkin:

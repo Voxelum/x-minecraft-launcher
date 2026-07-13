@@ -418,7 +418,7 @@ instance:
   envVarKey: المفتاح
   envVarKeyPlaceholder: MY_VAR
   envVarValue: القيمة
-  envVarValuePlaceholder: value
+  envVarValuePlaceholder: قيمة
   fileApi: عنوان الـ URL لسيرفر مزامنة الملفات
   fileApiHint: عنوان الـ URL لمزامنة ملفات النسخة من سيرفر إعدادات بعيد.
   fileApiPlaceholder: اكتب عنوان الـ URL للمزامنة البعيدة هنا لو عاوز تحافظ على مزامنة الموارد
@@ -711,6 +711,12 @@ minecraftFriends:
   send: إرسال
   title: أصدقاء ماينكرافت
   unsupported: الأصدقاء متاحين بس لحسابات مايكروسوفت.
+  heroEmptyHint: ضيف لاعب Minecraft بالاسم بالأعلى عشان تبعتله طلب صداقة.
+  heroEmptyTitle: قايمة الأصحاب فاضية
+  incoming: الطلبات الواردة
+  incomingHint: طلب وارد واحد | {count} طلبات واردة
+  notifyAdded: اتبعت طلب صداقة لـ {name}
+  outgoing: الطلبات الصادرة
 migrationWindow:
   title: ترحيل البيانات
   preparing: جاري تجهيز الترحيل…

@@ -427,9 +427,9 @@ instance:
   duplicate: 建立備份
   duplicatedName: 名稱重複！
   envVarKey: 變數名
-  envVarKeyPlaceholder: MY_VAR
+  envVarKeyPlaceholder: 我的變量
   envVarValue: 值
-  envVarValuePlaceholder: value
+  envVarValuePlaceholder: 值
   fileApi: 遠端同步檔案伺服器 API 位址
   fileApiHint: 用於遠端同步實例檔案嘅連結
   fileApiPlaceholder: 若需保持資源同步，請在此處填入遠端同步網址
@@ -984,7 +984,7 @@ modrinth:
     technology: 科技
     themed: 主體化
     transportation: 交通
-    tweaks: Tweaks
+    tweaks: 調整
     utility: 實用工具
     vanilla: 原版
     vanilla-like: 原版風格
@@ -1309,7 +1309,7 @@ save:
   search: 搜尋地圖
   searchHint: 喺 CurseForge 上搜尋世界
   searchSaves: 搜尋存檔
-  seed: Seed
+  seed: 種子碼
   selected: 本地存檔
   shared: 實例使用共享存檔資料夾
   showDirectory: 顯示儲存目錄

@@ -94,7 +94,7 @@ baseSetting:
   title: Pengaturan Instansi
 browseApp:
   createShortcut: Buat Pintasan
-  default: DEFAULT
+  default: BAWAAN
   delete: Hapus
   launch: Luncurkan dan atur sebagai Default
 browseApps: Melihat antarmuka pengguna peluncur
@@ -526,8 +526,8 @@ instances:
   addVanilla: Buat dari Minecraft mirip vanilla
   addVanillaDescription: Impor dari folder .minecraft umum. Ini akan menduplikat profil game asli ke XMCL.
   edition: Edisi
-  editionJava: Java Edition
-  editionBedrock: Bedrock Edition
+  editionJava: Edisi Java
+  editionBedrock: Edisi Bedrock
   editionBedrockHint: Bedrock Edition diluncurkan melalui aplikasi Microsoft Store. Anda harus memiliki lisensi Bedrock. Mod, paket sumber daya, dan fitur khusus Java lainnya tidak tersedia.
   editionBedrockWindowsOnly: Bedrock Edition hanya didukung pada build Windows.
   fix: Perbaiki
@@ -910,7 +910,7 @@ modrinth:
     mobs: Mob
     modded: Dimodifikasi
     models: Model
-    modloader: Mod Loader
+    modloader: Pemuat Mod
     multiplayer: Multipemain
     name: Kategori
     neoforge: NeoForge
@@ -954,7 +954,7 @@ modrinth:
   downloads: Unduhan
   environments:
     all: Semua
-    default: Default
+    default: Bawaan
     name: Lingkungan
     optional: Opsional
     required: Diperlukan
@@ -983,11 +983,11 @@ modrinth:
   projectId: ID Proyek
   projectMembers: Anggota Proyek
   projectType:
-    datapack: Datapack
+    datapack: Paket Data
     mod: Mod
-    modpack: Modpack
+    modpack: Paket Mod
     plugin: Plugin
-    resourcepack: Resource Pack
+    resourcepack: Paket Sumber Daya
     shader: Shader
   projects: '{count} proyek'
   serverSide: Sisi Server
@@ -1250,8 +1250,8 @@ save:
   deleteChunksHint: Hapus {count} chunk terpilih? Tindakan ini tidak dapat dibatalkan. Chunk akan dibuat ulang saat area tersebut dimuat kembali dalam game.
   mapLoading: Memuat peta…
   noRegions: Dunia ini tidak memiliki wilayah yang dibuat untuk pratinjau.
-  dimOverworld: Overworld
-  dimNether: The Nether
+  dimOverworld: Dunia Atas
+  dimNether: Nether
   dimEnd: The End
   name: Simpanan | Simpanan
   noLocalSavesFound: Tidak menemukan simpanan lokal yang cocok dengan pencarian Anda.
@@ -1262,7 +1262,7 @@ save:
   search: Cari Peta...
   searchHint: Cari dunia di CurseForge
   searchSaves: Cari Simpanan
-  seed: Seed
+  seed: Benih
   selected: Simpanan Lokal
   shared: Instansi menggunakan folder simpanan bersama
   showDirectory: Tampilkan direktori simpanan
@@ -1294,7 +1294,7 @@ server:
   boundUpstream: Hulu server terikat
   boundUpstreamHint: Instansi ini mengikuti versi Minecraft server yang terikat.
   creationHint: Silakan isi alamat server dan ping server
-  editServer: Edit Server
+  editServer: Ubah Server
   emptyHint: Belum ada server di servers.dat instansi ini. Tambahkan satu untuk memulai.
   entryCount: '{count} server | {count} server'
   expectedVersions: Versi yang Didukung
@@ -1625,7 +1625,7 @@ shared:
   description: Deskripsi
   disable: Nonaktifkan
   download: Unduh
-  edit: Edit
+  edit: Ubah
   enable: Aktifkan
   filter: Filter
   install: Pasang

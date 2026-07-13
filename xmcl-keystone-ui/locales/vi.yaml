@@ -493,7 +493,7 @@ instanceSetting:
   disableAuthlibInjector: Vô hiệu hóa authlib injector
   disableAuthlibInjectorDescription: Nếu bạn đang sử dụng hệ thống skin của bên thứ ba, authlib injector có thể giúp bạn hiển thị skin trong game.
   disableElyByAuthlib: Vô hiệu hóa thay thế authlib của ely.by
-  disableElyByAuthlibDescription: Ely.by has a unique authlib replacement to display skin universally in any server.
+  disableElyByAuthlibDescription: Ely.by có một authlib thay thế độc đáo để hiển thị skin trên mọi máy chủ.
   fastLaunch: Khởi chạy tăng tốc
   fastLaunchHint: Bỏ qua trạng thái người dùng và các sự cố hiện tại chưa được khắc phục
   hideLauncher: Ẩn trình khởi chạy sau khi khởi chạy game
@@ -731,7 +731,7 @@ minecraftVersion:
   all: Tất cả phiên bản
   release: Chính thức
   showAlpha: Hiển thị Snapshot
-  snapshot: Snapshot
+  snapshot: Bản thử nghiệm
 mod:
   acceptVersion: Chấp nhận {version}
   applyGroupRules: Áp dụng các quy tắc nhóm đã lưu
@@ -985,7 +985,7 @@ modrinth:
   projectType:
     datapack: Gói dữ liệu (Datapack)
     mod: Mod
-    modpack: Modpack
+    modpack: Gói mod
     plugin: Plugin
     resourcepack: Gói tài nguyên (Resource Pack)
     shader: Shader
@@ -1551,7 +1551,7 @@ setting:
   update: Cập nhật
   useBmclAPI: Sử dụng BMCL API
   useBmclAPIDescription: Sử dụng BMCLAPI để tải xuống Minecraft khi bạn ở Trung Quốc Đại Lục. (Điều này không ảnh hưởng đến bạn nếu bạn không ở Trung Quốc Đại Lục)
-  useProxy: HTTP Proxy
+  useProxy: Proxy HTTP
   useProxyDescription: Địa chỉ máy chủ proxy cho các yêu cầu http
   viewBackgroundMusic: Xem danh sách nhạc
 settingLabel:
@@ -1690,9 +1690,9 @@ theme:
 title: X Minecraft Launcher
 transportType:
   host: Ứng viên máy chủ (Host Candidate)
-  prflx: Peer Reflexive Candidate
+  prflx: Ứng viên phản chiếu ngang hàng
   relay: Ứng viên chuyển tiếp (Relay Candidate)
-  srflx: Server Reflexive Candidate
+  srflx: Ứng viên phản chiếu máy chủ
 turnRegion:
   fr: Pháp
   guangzhou: Quảng Châu, Trung Quốc
@@ -1762,7 +1762,7 @@ upstream:
   onlyShowCurrentVersion: Chỉ hiển thị phiên bản Minecraft hiện tại
   update: Cập nhật
 user:
-  accessToken: Access Token
+  accessToken: Mã truy cập
   authMode: Dịch vụ xác thực
   authService: Dịch vụ ủy quyền
   email: Địa chỉ Email

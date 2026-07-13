@@ -94,12 +94,12 @@ baseSetting:
   title: நிகழ்வு அமைப்புகள்
 browseApp:
   createShortcut: குறுக்குவழியை உருவாக்கு
-  default: DEFAULT
+  default: இயல்புநிலை
   delete: அழி
   launch: தொடங்கி இயல்புநிலையாக அமைக்கவும்
 browseApps: லாஞ்சர் பயனர் இடைமுகத்தைப் பார்க்கிறது
 color: வண்ணம்
-confirm: Start
+confirm: தொடங்கு
 copyClipboard:
   success: கிளிப்போர்டுக்கு நகலெடு
 create: உருவாக்கு
@@ -193,7 +193,7 @@ diagnosis:
     message: லாஞ்சர் உங்களுக்காக நூலகங்களை நிறுவும்
     name: 'சிதைந்த நூலகம்: {name} | சிதைந்த நூலகம்: {name} | {count} நூலகங்கள் சிதைந்துள்ளன'
   corruptedVersionJar:
-    message: Click to install this version
+    message: இந்த பதிப்பை நிறுவ கிளிக் செய்யவும்
     name: Minecraft %{version} க்கான சிதைந்த பதிப்பு ஜார் (jar).
   incompatibleJava:
     name: ஜாவா பதிப்பு {javaVersion} {version} பதிப்பிற்குப் பொருத்தமானது அல்ல!
@@ -245,11 +245,11 @@ env:
 errors:
   bedrockUnsupportedPlatform: Minecraft Bedrock பதிப்பு விண்டோஸ் உருவாக்கத்தில் மட்டுமே ஆதரிக்கப்படுகிறது.
   bedrockNotInstalled: Minecraft Bedrock பதிப்பு நிறுவப்படவில்லை.
-  bedrockLaunchFailed: Failed to launch Minecraft Bedrock Edition.
-  bedrockInstallFailed: Failed to install Minecraft Bedrock Edition.
+  bedrockLaunchFailed: Minecraft Bedrock Edition ஐ தொடங்குவதில் தோல்வி.
+  bedrockInstallFailed: Minecraft Bedrock Edition ஐ நிறுவுவதில் தோல்வி.
   bedrockDownloadUrlUnavailable: இந்த பெட்ராக் பதிப்பு தற்போதைய மைக்ரோசாஃப்ட் கணக்கிற்கு கிடைக்கவில்லை. பீட்டா மற்றும் முன்னோட்ட பதிப்புகளுக்கு Minecraft பீட்டா திட்டத்தில் பதிவுசெய்யப்பட்ட கணக்கு தேவை.
   bedrockDeveloperModeRequired: இந்த பெட்ராக் பதிப்பைத் பதிவுசெய்ய விண்டோஸ் டெவலப்பர் பயன்முறை தேவை.
-  bedrockRegisterFailed: Failed to register this Bedrock version with Windows.
+  bedrockRegisterFailed: இந்த Bedrock பதிப்பை Windows உடன் பதிவு செய்வதில் தோல்வி.
   bedrockVersionNotFound: இந்த பெட்ராக் பதிப்பு கணினியில் நிறுவப்படவில்லை.
   BadForgeInstallerJarError: Forge நிறுவி ஜார் கோப்பை பகுப்பாய்வு செய்ய முடியவில்லை. ஒருவேளை Forge புதிய நிறுவி கோப்பு வடிவத்தைக் கொண்டுள்ளதா? இந்த சிக்கல் தொடர்ந்தால் டெவலப்பர்களைத் தொடர்பு கொள்ளவும்.
   BadInstanceType: 'செல்லுபடியாகும் நிகழ்வு அல்ல: {type}'
@@ -335,11 +335,11 @@ feedback:
   generateReport: அறிக்கையை உருவாக்கு
   generateSaveAs: அறிக்கையை இங்கே சேமிக்கவும்
   github: கிட்ஹப் பிரச்சனை (Github Issue)
-  githubDescription: Open an Github Issue to tell your thought
+  githubDescription: உங்கள் கருத்தை தெரிவிக்க Github Issue திறக்கவும்
   githubOpenIssue: கிட்ஹப் (Github)
   hint: அறிக்கையை உருவாக்கி டெவலப்பர் குழுவைத் தொடர்பு கொள்ள பொத்தானைக் கிளிக் செய்யவும். இந்த அறிக்கையில் இயக்க முறைமை வகை, பதிப்பு, பயனர் பெயர் (உங்கள் கணினியில்) உள்ளிட்ட உங்கள் சாதன விவரங்கள் இருக்கும்.
   kook: கூக் (Kook)
-  kookDescription: Kook is an alternate app for discord for Chinese Mainland users
+  kookDescription: Kook என்பது சீன பிரதான நிலப்பரப்பு பயனர்களுக்கு Discord க்கான மாற்று பயன்பாடாகும்
   name: கருத்து
   qq: QQ குழு
   qqDescription: 'கருத்து QQ குழுவில் நுழைந்து ஆசிரியர்களுடன் நேரடியாகப் பேசவும். குழு எண்: {number}'
@@ -532,7 +532,7 @@ instances:
   editionBedrockWindowsOnly: பெட்ராக் பதிப்பு விண்டோஸ் உருவாக்கத்தில் மட்டுமே ஆதரிக்கப்படுகிறது.
   fix: பழுதுபார்க்கவும்
   folder: கோப்புறை
-  folderSetting: Folder Settings
+  folderSetting: கோப்புறை அமைப்புகள்
   importFolderDescription: Minecraft ஐ துவக்கிக்கு இறக்குமதி செய்
   loadingFiles: மாட்பேக் கோப்புகளை ஏற்றுகிறது
 items:
@@ -1186,7 +1186,7 @@ resourcepack:
     title: ஆதாரத் தொகுப்பை அழி
   dropHint: இறக்குமதி செய்ய ஆதாரத் தொகுப்பின் கோப்புறை/ஜிப் கோப்பை இங்கே இழுத்து விடவும்.
   enable: '{count} ஆதாரத் தொகுப்புகள் இயக்கப்பட்டுள்ளன'
-  incompatible: Incompatible Resource Pack format({format}). Fitin {accept}. Current {actual}.
+  incompatible: பொருந்தாத வளப் தொகுப்பு வடிவமைப்பு ({format}). {accept} ஆதரிக்கப்படுகிறது. தற்போதையது {actual}.
   name: ஆதாரத் தொகுப்பு | ஆதாரத் தொகுப்புகள்
   linkShared: இன்ஸ்டன்ஸ்களில் ஆதாரத் தொகுப்புகளைப் பகிரவும்
   linkSharedHint: இந்த இன்ஸ்டன்ஸின் resourcepacks கோப்புறையை உலகளாவிய பகிரப்பட்ட கோப்புறையுடன் இணைக்கவும், இதனால் அனைத்து இன்ஸ்டன்ஸ்களும் ஒரே ஆதாரத் தொகுப்புகளைப் பார்க்கும். தற்போதுள்ள தொகுப்புகள் பகிரப்பட்ட கோப்புறையில் இணைக்கப்படும்.
@@ -1318,7 +1318,7 @@ server:
   motd: சேவையகத்தின் MOTD
   nameHint: மல்டிபிளேயர் பட்டியலில் காட்டப்படும் பெயர்
   nogui: சேவையக வரைகலை இடைமுகம் இல்லை (No Server Gui)
-  onlineMode: Online Mode
+  onlineMode: ஆன்லைன் முறை
   pin: சேவையகத்தைப் பின் செய்
   pinAfterSave: சேமித்த பிறகு இயல்புநிலை தொடக்க இலக்காக பின் செய்
   ping: பிங் (Ping)
@@ -1434,13 +1434,13 @@ setting:
   enableDedicatedGPUOptimizationDescription: இந்த விருப்பம் மைன்கிராஃப்ட் செயல்முறைக்கு பிரத்யேக GPU-வை ஒதுக்கும்.
   enableDiscord: டிஸ்கார்ட் பிரசன்ஸை இயக்கு
   enableDiscordDescription: இது துவக்கியில் டிஸ்கார்ட் நிலையை மேம்படுத்தும்
-  enterUrl: Enter URL
+  enterUrl: URL ஐ உள்ளிடவும்
   exportSettings: அமைப்புகளை ஏற்றுமதி செய்
   exportSettingsHint: உங்கள் தற்போதைய அமைப்புகளை ஒரு கோப்பில் சேமிக்கவும்
   general: பொதுவானது
   githubRelease: கிட்ஹப் வெளியீடு
   globalSetting: உலகளாவிய நிகழ்வு அமைப்பு
-  globalSettingHint: Instance will use these settings by default.
+  globalSettingHint: நிகழ்வு இயல்பாக இந்த அமைப்புகளை பயன்படுத்தும்.
   importSettings: அமைப்புகளை இறக்குமதி செய்
   importSettingsHint: முன்பு ஏற்றுமதி செய்யப்பட்ட கோப்பிலிருந்து அமைப்புகளை ஏற்றவும்
   instanceTheme:
@@ -1496,8 +1496,8 @@ setting:
   select: தேர்ந்தெடு
   setAsBackground:
     failed: பின்னணிப் படத்தை அமைப்பதில் தோல்வி
-    global: Set as launcher background
-    instance: Set as instance background
+    global: துவக்கியின் பின்னணியாக அமைக்கவும்
+    instance: நிகழ்வின் பின்னணியாக அமைக்கவும்
     successGlobal: பின்னணிப் படம் புதுப்பிக்கப்பட்டது.
     successInstance: நிகழ்வு பின்னணிப் படம் புதுப்பிக்கப்பட்டது.
   settingsExported: அமைப்புகள் வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டன
@@ -1527,7 +1527,7 @@ setting:
   themeBorderRadius: வட்டமான மூலைகள்
   themeBorderRadiusDescription: கார்டுகள், உரையாடல்கள், மெனுக்கள் மற்றும் பேனல்களுக்கான வட்டமான மூலைகளை இயக்கவும் அல்லது முடக்கவும்.
   themeFont: எழுத்துரு
-  themeFontDescription: Change the font of the launcher.
+  themeFontDescription: துவக்கியின் எழுத்துருவை மாற்றவும்.
   themeFontUrl: எழுத்துரு URL
   themeFontUrlPlaceholder: எழுத்துருவிற்கான HTTP/HTTPS URL-ஐ உள்ளிடவும்
   themeImport: தீமை இறக்குமதி செய்
@@ -1537,21 +1537,21 @@ setting:
   themeShare: தீமைப் பகிர்
   themeShareDescription: இந்தத் தீமை உங்கள் நண்பருடன் பகிரலாம்.
   themeStore:
-    description: Save and manage global themes
-    loadConfirmMessage: Loading a stored theme will replace your current theme. Please back up if needed.
-    loadConfirmTitle: Replace Current Theme?
+    description: உலகளாவிய கருப்பொருட்களை சேமிக்கவும் மற்றும் நிர்வகிக்கவும்
+    loadConfirmMessage: சேமிக்கப்பட்ட கருப்பொருளை ஏற்றுவது உங்கள் தற்போதைய கருப்பொருளை மாற்றும். தேவைப்பட்டால் காப்புப் பிரதி எடுக்கவும்.
+    loadConfirmTitle: தற்போதைய கருப்பொருளை மாற்றவுமா?
     loadTheme: தீமை ஏற்று
     name: தீம் ஸ்டோர்
-    noSavedThemes: No saved themes yet
+    noSavedThemes: இன்னும் சேமிக்கப்பட்ட கருப்பொருட்கள் எதுவும் இல்லை
     saveDialogTitle: தீமைச் சேமி
-    saveToStore: Save to Store
-    savedThemes: Saved Themes
+    saveToStore: கடையில் சேமிக்கவும்
+    savedThemes: சேமிக்கப்பட்ட கருப்பொருட்கள்
     themeName: தீமின் பெயர்
-    themeNameHint: Name used to store this theme
+    themeNameHint: இந்த கருப்பொருளை சேமிக்க பயன்படுத்தப்படும் பெயர்
   update: புதுப்பி
   useBmclAPI: BMCL API-ஐப் பயன்படுத்து
   useBmclAPIDescription: நீங்கள் சீனப் பெருநிலப்பரப்பில் இருக்கும்போது மைன்கிராஃப்ட்டை தரவிறக்க BMCLAPI-ஐப் பயன்படுத்தவும். (நீங்கள் சீனப் பெருநிலப்பரப்பில் இல்லையென்றால் இது உங்களைப் பாதிக்காது)
-  useProxy: HTTP Proxy
+  useProxy: HTTP பதிலியாளர்
   useProxyDescription: http கோரிக்கைக்கான ப்ராக்ஸி சர்வர் முகவரி
   viewBackgroundMusic: இசைகளைப் பார்
 settingLabel:
@@ -1621,7 +1621,7 @@ shared:
   copy: நகலெடு
   close: மூடு
   copyFailed: நகலெடுப்பது தோல்வியடைந்தது
-  copyFailedHint: Could not copy to clipboard
+  copyFailedHint: கிளிப்போர்டுக்கு நகலெடுக்க முடியவில்லை
   description: விளக்கம்
   disable: முடக்கு
   download: தரவிறக்கம்
@@ -1689,10 +1689,10 @@ theme:
   title: எக்ஸ் மைன்கிராஃப்ட் லாஞ்சர்
 title: எக்ஸ் மைன்கிராஃப்ட் லாஞ்சர்
 transportType:
-  host: Host Candidate
-  prflx: Peer Reflexive Candidate
-  relay: Relay Candidate
-  srflx: Server Reflexive Candidate
+  host: ஹோஸ்ட் வேட்பாளர்
+  prflx: சகன் அனுப்புப் வேட்பாளர்
+  relay: இடைத்தாங்கி வேட்பாளர்
+  srflx: சேவையக அனுப்புப் வேட்பாளர்
 turnRegion:
   fr: பிரான்ஸ்
   guangzhou: குவாங்சோ, சீனா
