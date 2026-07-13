@@ -130,7 +130,7 @@ import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { required } from '@/util/props'
 import { kInstanceCreation } from '../composables/instanceCreation'
-import { validateInstanceName } from '@/util/instanceName'
+import { getEffectiveInstanceName, validateInstanceName } from '@/util/instanceName'
 import { BedrockServiceKey } from '@xmcl/runtime-api'
 import { InstanceEdition } from '@xmcl/instance'
 import ErrorView from './ErrorView.vue'
@@ -178,8 +178,8 @@ const nameValidationErrors: Record<string, string> = {
 }
 const nameRules = computed(() => [
   (v: any) => {
-    const trimmed = v.trim()
-    const effectiveName = trimmed || placeHolderName.value
+    const effectiveName = getEffectiveInstanceName(v, placeHolderName.value)
+    if (!effectiveName) return t('instance.nameWhitespaceOnly')
     return !instances.value.some(i => i.name === effectiveName) || t('instance.duplicatedName')
   },
   (v: any) => {

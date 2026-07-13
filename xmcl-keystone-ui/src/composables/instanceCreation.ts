@@ -1,6 +1,6 @@
 import { useService } from '@/composables'
 import { injection } from '@/util/inject'
-import { generateBaseName, generateDistinctName } from '@/util/instanceName'
+import { generateBaseName, generateDistinctName, getEffectiveInstanceName } from '@/util/instanceName'
 import {  InstanceInstallServiceKey, InstanceServiceKey, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import type { GameProfile } from '@xmcl/user'
 import { InjectionKey, Ref, reactive } from 'vue'
@@ -129,9 +129,12 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     async create(onCreated?: (newPath: string) => void) {
       try {
         loading.value = true
-        if (!data.name) {
-          data.name = placeHolderName.value
+        const name = getEffectiveInstanceName(data.name, placeHolderName.value)
+        if (!name) {
+          error.value = new Error('Instance name is required')
+          return
         }
+        data.name = name
         // Convert reactive refs into plain serializable objects for service calls.
         const pendingFiles = JSON.parse(JSON.stringify(files.value)) as InstanceFile[]
         const pendingUpstream = data.upstream
