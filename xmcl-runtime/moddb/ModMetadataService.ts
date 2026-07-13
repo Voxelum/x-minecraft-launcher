@@ -6,11 +6,11 @@ import { kResourceManager } from '~/resource'
 import { ModMetadataServiceKey, type ModMetadataService as IModMetadataService, type ModMetadata, DownloadModMetadataDbTask, DownloadModMetadataDbTrackerEvents } from '@xmcl/runtime-api'
 import { createReadStream } from 'fs'
 import { Kysely } from 'kysely'
-import { Database as SQLDatabase } from 'node-sqlite3-wasm'
+import { DatabaseSync } from 'node:sqlite'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { kTasks, type Tasks } from '~/infra'
 import { AbstractService, ExposeServiceKey } from '~/service'
-import { jsonObjectFrom, SqliteWASMDialect } from '@xmcl/sqlite'
+import { jsonObjectFrom, NodeSqliteDialect } from '@xmcl/sqlite'
 import { checksumFromStream } from '~/util/fs'
 import { isNonnull } from '~/util/object'
 import { getTracker } from '~/util/taskHelper'
@@ -242,8 +242,8 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
         throw error
       }
     }
-    const dialect = new SqliteWASMDialect({
-      database: () => new SQLDatabase(dbPath, {
+    const dialect = new NodeSqliteDialect({
+      database: () => new DatabaseSync(dbPath, {
         readOnly: true,
       }),
     })

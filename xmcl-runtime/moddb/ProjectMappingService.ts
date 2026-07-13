@@ -2,7 +2,7 @@ import { ProjectMappingService as IProjectMappingService, ProjectMapping, Projec
 import { createHash } from 'crypto'
 import { existsSync, rmSync, writeFile } from 'fs-extra'
 import { Kysely } from 'kysely'
-import { Database as SQLDatabase } from 'node-sqlite3-wasm'
+import { DatabaseSync } from 'node:sqlite'
 import { join } from 'path'
 import { promisify } from 'util'
 import { gunzip } from 'zlib'
@@ -10,7 +10,7 @@ import { Inject, LauncherAppKey } from '~/app'
 import { kGFW } from '~/infra'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { kSettings } from '~/settings'
-import { SqliteWASMDialect } from '@xmcl/sqlite'
+import { NodeSqliteDialect } from '@xmcl/sqlite'
 import { LauncherApp } from '../app/LauncherApp'
 import { checksum } from '../util/fs'
 
@@ -160,15 +160,15 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
 
   private async openDatabase(filePath: string, locale: string) {
     const db = new Kysely<Database>({
-      dialect: new SqliteWASMDialect({
+      dialect: new NodeSqliteDialect({
         databasePath: filePath,
         database: () => {
           try {
-            const db = new SQLDatabase(filePath, {
+            const db = new DatabaseSync(filePath, {
               readOnly: true,
             })
             try {
-              db.run('PRAGMA busy_timeout = 5000')
+              db.exec('PRAGMA busy_timeout = 5000')
             } catch (e) {
               this.warn('Failed to configure project mapping database busy timeout', e)
             }
