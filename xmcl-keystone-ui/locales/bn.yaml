@@ -1,0 +1,1867 @@
+AppAddInstanceDialog:
+  choiceTitle: একাধিক লঞ্চ প্রোফাইল পাওয়া গেছে। অনুগ্রহ করে আমদানি করার জন্য একটি বেছে নিন।
+  createTitle: গেম তৈরি করুন
+  serverTitle: আপনার সার্ভার ঠিকানা লিখুন
+AppShareInstanceDialog:
+  alterDownloadDescription: আপনি যদি বর্তমান ইনস্ট্যান্সটি এলোমেলো করতে না চান, তবে আপনি অন্য পিয়ারের কনফিগারেশন থেকে একটি নতুন ইনস্ট্যান্স তৈরি করতে পারেন। ইনস্ট্যান্স তৈরি করতে নিচের বোতামে ক্লিক করুন।
+  baseInfo: প্রাথমিক সেটিংস
+  cancelShare: শেয়ার করা বাতিল করুন
+  description: আপনি প্রোফাইলটি শেয়ার করার পর, অন্য স্থান থেকে আপনার পিসির মাধ্যমে এই ফাইলগুলো ডাউনলোড করা যাবে।
+  downloadDescription: অনুগ্রহ করে আপনার পিয়ারের প্রদান করা ফাইলগুলো যাচাই করুন। আপনি যে ফাইলটি ডাউনলোড করতে চান তা নির্বাচন করুন। এটি বর্তমান ইনস্ট্যান্স {name}-এ রাখা হবে।
+  downloadNotifyTitle: '{user}-এর থেকে ইনস্ট্যান্স ডাউনলোড করুন'
+  downloadTitle: অন্যান্য পিয়ারদের থেকে ফাইল ডাউনলোড করুন
+  filesToDownload: ডাউনলোড করার জন্য ফাইল বেছে নিন
+  filesToShare: শেয়ার করার জন্য ফাইল বেছে নিন
+  instanceShare: '{user} এইমাত্র আপনার সাথে বর্তমান ইনস্ট্যান্সটি শেয়ার করেছেন'
+  share: শেয়ার করুন
+  shareNotifyTitle: ইনস্ট্যান্স শেয়ার করুন
+  shareTitle: অন্যান্য খেলোয়াড়দের সাথে গেম ফাইল শেয়ার করুন
+BaseSettingGeneral:
+  title: সাধারণ
+HomeJavaIssueDialog:
+  incompatibleJava: অসংগতিপূর্ণ জাভা
+  incompatibleJavaHint: বর্তমান জাভাটি নির্বাচিত মাইনক্রাফটের সাথে অসংগতিপূর্ণ হতে পারে!
+  missingJava: জাভা অনুপস্থিত
+  missingJavaHint: 'লঞ্চারটি আপনার কম্পিউটারে কোনো জাভা সনাক্ত করতে পারছে না। আপনি করতে পারেন:'
+  optionSwitch:
+    name: '{version}-এ পরিবর্তন করুন'
+HomeLaunchMultiInstanceDialog:
+  confirm: হ্যাঁ, চালু করুন
+  description: আপনি মাইনক্রাফটের একাধিক ইনস্ট্যান্স চালু করছেন। আপনি কি নিশ্চিত?
+  title: একাধিক ইনস্ট্যান্স
+SettingMigrationDialog:
+  selectRootDirectory: রুট ডিরেক্টরি নির্বাচন করুন
+agent:
+  callingTool: '{name}-কে কল করা হচ্ছে…'
+  disabledPlaceholder: এজেন্ট নিষ্ক্রিয়
+  emptyHint: এজেন্টকে আপনার ইনস্ট্যান্স পরীক্ষা করতে, মড চালু/বন্ধ করতে, লগ পড়তে অথবা ক্র্যাশ নির্ণয় করতে বলুন।
+  inputPlaceholder: এজেন্টকে জিজ্ঞাসা করুন… (পাঠাতে Enter, নতুন লাইনের জন্য Shift+Enter চাপুন)
+  notConfiguredHint: এজেন্ট চালু করতে Settings → General → AI Agent-এ আপনার API কী, মডেল এবং এন্ডপয়েন্ট সেট করুন।
+  notConfiguredTitle: এজেন্ট কনফিগার করা হয়নি
+  openSettings: সেটিংস খুলুন
+  reset: কথোপকথন রিসেট করুন
+  setupGuide: সেটআপ নির্দেশিকা
+  statusDisabled: নিষ্ক্রিয় — API কী অনুপস্থিত
+  statusReady: প্রস্তুত
+  statusWorking: কাজ করছে…
+  suggestion1: এই ইনস্ট্যান্সটিকে একটি নতুন মাইনক্রাফট সংস্করণে আপগ্রেড করুন এবং তার সাথে সামঞ্জস্য রাখতে মডগুলো আপডেট করুন
+  suggestion2: আমার মডগুলো ক্র্যাশ করছে — কারণটি খুঁজুন এবং কীভাবে এটি ঠিক করা যায় তা আমাকে বলুন
+  suggestion3: 'একটি মডপ্যাক তৈরি করুন: আমার পছন্দের ফিচারের জন্য মড খুঁজুন এবং সেগুলো এই ইনস্ট্যান্সে ইনস্টল করুন'
+  thinking: ভাবছে…
+  title: XMCL এজেন্ট
+  toggleHint: টগল করার জন্য
+ago:
+  day: '{duration} দিন আগে | {duration} দিন আগে'
+  hour: '{duration} ঘণ্টা আগে | {duration} ঘণ্টা আগে'
+  minute: '{duration} মিনিট আগে | {duration} মিনিট আগে'
+  second: '{duration} সেকেন্ড আগে | {duration} সেকেন্ড আগে'
+askAICrash:
+  agentNotConfigured: লঞ্চারের বিল্ট-ইন এজেন্টকে এটি নির্ণয় এবং সমাধান করতে দেওয়ার জন্য সেটিংসে একজন এআই প্রোভাইডার এবং এপিআই কী যুক্ত করুন।
+  askAgent: বিল্ট-ইন এআই এজেন্টের সাহায্যে ক্র্যাশ নির্ণয় করুন
+  copyPrompt: এআই-কে জিজ্ঞাসা করার প্রম্পটটি কপি করুন
+  description: গেম ক্র্যাশ বুঝতে এআই-এর সাহায্য নিন! এই গেম ক্র্যাশ সম্পর্কে এআই-কে জিজ্ঞাসা করতে নিচের নির্দেশাবলী অনুসরণ করুন!
+  orExternal: অথবা একটি এক্সটার্নাল এআই ব্যবহার করুন
+  selectPlatform: একটি এআই প্ল্যাটফর্ম খুলুন এবং এইমাত্র কপি করা প্রম্পটটি পেস্ট করুন।
+  setupAgent: এআই এজেন্ট সেট আপ করুন
+authProfileAddedNotification: অথ প্রোফাইল {name} যোগ করা হয়েছে
+bedrock:
+  description: মাইনক্রাফট বেডরক এডিশন মাইক্রোসফট স্টোরের মাধ্যমে ইনস্টল ও চালু করা হয়। আপনার মাইক্রোসফট অ্যাকাউন্টে একটি বেডরক লাইসেন্স থাকতে হবে।
+  install: মাইক্রোসফট স্টোর থেকে পান
+  installFailed: মাইক্রোসফট স্টোর খুলতে ব্যর্থ হয়েছে
+  installed: 'ইনস্টল করা হয়েছে: {version}'
+  launchHint: বেডরক এডিশন শুরু করতে লঞ্চ বোতামটি ব্যবহার করুন।
+  installBedrockVersion: বেডরক {version} ডাউনলোড করা হচ্ছে
+  licenseRequired: বেডরক এডিশন ইনস্টল করতে এবং খেলতে মাইনক্রাফটের মালিকানাধীন একটি মাইক্রোসফট অ্যাকাউন্ট দিয়ে সাইন ইন করুন।
+  refresh: রিফ্রেশ করুন
+  versionsTitle: সংস্করণ ম্যানেজার
+  versionsHint: মাইক্রোসফটের সার্ভার থেকে একাধিক বেডরক সংস্করণ ডাউনলোড করুন এবং সেগুলির মধ্যে পরিবর্তন করুন। উইন্ডোজে একবারে কেবল একটি সংস্করণই নিবন্ধিত করা যেতে পারে, তাই কোনো সংস্করণ খেললে সেটি পুনরায় নিবন্ধিত হয়।
+  versionsError: সংস্করণ তালিকা লোড করতে ব্যর্থ হয়েছে। আপনার নেটওয়ার্ক পরীক্ষা করে আবার চেষ্টা করুন।
+  channel: চ্যানেল
+  channelRelease: রিলিজ
+  channelBeta: বেটা
+  channelPreview: প্রিভিউ
+  active: সক্রিয়
+  play: খেলুন
+  download: ডাউনলোড করুন
+  installedTag: ইনস্টল করা
+  developerModeRequired: ডাউনলোড করা সংস্করণ নিবন্ধনের জন্য উইন্ডোজ ডেভেলপার মোড প্রয়োজন। এটি সক্রিয় করতে প্রশাসকের (administrator) অনুমতির অনুরোধ করা হবে।
+  enableDeveloperMode: ডেভেলপার মোড সক্রিয় করুন
+  enableDeveloperModeFailed: ডেভেলপার মোড সক্রিয় করতে ব্যর্থ হয়েছে
+  downloadFailed: বেডরক {version} ডাউনলোড করতে ব্যর্থ হয়েছে
+  launchFailed: এই বেডরক সংস্করণটি চালু করতে ব্যর্থ হয়েছে
+  removeFailed: Bedrock {version} অপসারণ করতে ব্যর্থ হয়েছে
+baseSetting:
+  title: ইনস্ট্যান্স সেটিংস
+browseApp:
+  createShortcut: শর্টকাট তৈরি করুন
+  default: ডিফল্ট
+  delete: মুছে ফেলুন
+  launch: লঞ্চ করুন এবং ডিফল্ট হিসেবে সেট করুন
+browseApps: লঞ্চার ইউজার ইন্টারফেস দেখা হচ্ছে
+color: রঙ
+confirm: শুরু করুন
+copyClipboard:
+  success: ক্লিপবোর্ডে কপি করুন
+create: তৈরি করুন
+curseforge:
+  category: বিভাগ
+  createdDate: তৈরি করার তারিখ
+  lastUpdate: সর্বশেষ আপডেটের তারিখ
+  releasedDate: প্রকাশের তারিখ
+curseforgeCategory:
+  API and Library: API এবং লাইব্রেরি
+  Addons: সম্পূরকসমূহ
+  Adventure: অ্যাডভেঞ্চার
+  Adventure and RPG: অ্যাডভেঞ্চার এবং RPG
+  Animated: অ্যানিমেশন
+  Armor, Tools, and Weapons: বর্ম, সরঞ্জাম এবং অস্ত্র
+  Combat / PvP: প্রতিযোগিতা/PVP
+  Cosmetic: চেহারা/সাজসজ্জা
+  Creation: ক্রিয়েটিভ মোড
+  Data Packs: ডেটা প্যাকেট
+  Education: শিক্ষা
+  Exploration: অনুসন্ধান
+  Extra Large: বড় আকার
+  FTB Official Pack: অফিসিয়াল FTB প্যাকেজ
+  Fabric: ফ্যাব্রিক
+  FancyMenu: ফ্যান্সিমেনু
+  Font Packs: ফন্ট
+  Food: খাবার
+  Game Map: গেম কার্ড
+  Hardcore: হার্ডকোর
+  MCreator: MCreator
+  Magic: জাদু
+  Map Based: মানচিত্রের ওপর ভিত্তি করে
+  Map and Information: মানচিত্র এবং তথ্য
+  Medieval: মধ্যযুগীয়
+  Mini Game: মিনি-গেমস
+  Miscellaneous: বিবিধ
+  Mod Support: মড সমর্থন
+  Modded World: বিশ্বের জন্য একটি মড
+  Modern: আধুনিক
+  Multiplayer: মাল্টিপ্লেয়ার
+  Parkour: পারকোর
+  Photo Realistic: বাস্তবধর্মী ফটোগ্রাফি
+  Puzzle: ধাঁধা
+  QoL: QoL
+  Quests: কোয়েস্ট
+  Redstone: রেডস্টোন
+  Sci-Fi: সাই-ফাই
+  Server Utility: সার্ভার টুল
+  Skyblock: স্কাইব্লক
+  Small / Light: অল্প কিছু
+  Steampunk: স্টিম্পাঙ্ক
+  Storage: স্টোরেজ
+  Survival: সার্ভাইভাল
+  Tech: প্রযুক্তি
+  Technology: প্রযুক্তি
+  Traditional: ঐতিহ্যবাহী
+  Twitch Integration: টুইচ ইন্টিগ্রেশন
+  Utility & QoL: ইউটিলিটি এবং QoL
+  Vanilla+: ভ্যানিলা+
+  World Gen: শান্তি জেনারেটর
+dataMigration:
+  apply: সেটিং প্রয়োগ করুন
+  directoryCriteriaHint: অনুগ্রহ করে নিশ্চিত করুন যে আপনার নতুন ডিরেক্টরি অবস্থানটি একটি খালি ডিরেক্টরি!
+  placeholder: ডিরেক্টরি নির্বাচন করতে অনুগ্রহ করে এখানে ক্লিক করুন
+  setRootCause: আপনি যদি এই প্রক্রিয়া চলাকালীন লঞ্চারটি বন্ধ করেন, তবে আপনি আপনার ডেটা (মানচিত্র, রিসোর্স প্যাক, মড) হারাবেন!
+  setRootDescription: এটি এই লঞ্চার এবং মাইনক্রাফ্টের রুট ডেটা ফোল্ডারটি পরিবর্তন করবে।
+  setRootTitle: একটি নতুন স্টোরেজ অবস্থান সেট করুন
+  unknownError: অজানা ত্রুটি! অনুগ্রহ করে পুনরায় চেষ্টা করুন অথবা ডেভেলপারের সাথে যোগাযোগ করুন!
+  waitReload: ডেটা স্থানান্তরিত করা হচ্ছে। অনুগ্রহ করে লঞ্চারটি বন্ধ করবেন না, অন্যথায় আপনি আপনার ডেটা হারাবেন।
+delete:
+  name: '{name} মুছুন'
+  'no': না
+  'yes': মুছে ফেলুন
+dependencies:
+  embedded: এমবেডেড
+  incompatible: অসামঞ্জস্যপূর্ণ
+  name: নির্ভরতা
+  optional: ঐচ্ছিক
+  required: প্রয়োজনীয়
+diagnosis:
+  badInstall:
+    message: এই সংস্করণটি পুনরায় ইনস্টল করার চেষ্টা করতে ক্লিক করুন।
+    name: '{version} এ ত্রুটিপূর্ণ ইনস্টলেশন'
+  corruptedAssets:
+    message: লঞ্চার আপনার জন্য অ্যাসেটগুলি ইনস্টল করবে
+    name: 'ক্ষতিগ্রস্ত অ্যাসেট: {name} | ক্ষতিগ্রস্ত অ্যাসেট {name} | {count} টি অ্যাসেট ক্ষতিগ্রস্ত'
+  corruptedAssetsIndex:
+    message: লঞ্চার আপনার জন্য অ্যাসেটের ইনডেক্স ডাউনলোড করবে
+    name: '{version} এর ক্ষতিগ্রস্ত অ্যাসেট ইনডেক্স ফাইল।'
+  corruptedLibraries:
+    message: লঞ্চার আপনার জন্য লাইব্রেরিগুলি ইনস্টল করবে
+    name: 'ক্ষতিগ্রস্ত লাইব্রেরি: {name} | ক্ষতিগ্রস্ত লাইব্রেরি: {name} | {count} টি লাইব্রেরি ক্ষতিগ্রস্ত'
+  corruptedVersionJar:
+    message: এই সংস্করণটি ইনস্টল করতে ক্লিক করুন
+    name: Minecraft %{version} এর জন্য ক্ষতিগ্রস্ত সংস্করণ জার (jar)।
+  incompatibleJava:
+    name: জাভা সংস্করণ {javaVersion} সংস্করণ {version} এর জন্য উপযুক্ত নয়!
+  instanceFiles:
+    description: ইনস্ট্যান্স ইনস্টলেশনে {counts} টি ফাইল অন্তর্ভুক্ত রয়েছে।
+    title: অসম্পূর্ণ ইনস্ট্যান্স ইনস্টলেশন
+  invalidJava:
+    name: অকার্যকর জাভা অবস্থান।
+  missingJava:
+    message: এই সমস্যাটি সমাধান করতে ক্লিক করুন
+    name: Minecraft চালু করার জন্য জাভা খুঁজে পাওয়া যাচ্ছে না!
+  missingLibraries:
+    message: লঞ্চার আপনার জন্য লাইব্রেরিগুলি ইনস্টল করবে
+    name: অনুপস্থিত {name} লাইব্রেরি | অনুপস্থিত {name} লাইব্রেরি | {count} টি লাইব্রেরি অনুপস্থিত | {count} টি লাইব্রেরি অনুপস্থিত
+  missingVersion:
+    message: এই সংস্করণটি ইনস্টল করতে ক্লিক করুন
+    name: সংস্করণ {version} ইনস্টল করা নেই!
+  unresolvedFiles:
+    description: ইনস্টলেশনের সময় {count} টি ফাইল সমাধান করা যায়নি | ইনস্টলেশনের সময় {count} টি ফাইল সমাধান করা যায়নি
+    title: অমীমাংসিত ফাইলসমূহ
+  unzipFileNotFound:
+    description: '{file} খুঁজে পাওয়া যাচ্ছে না'
+    title: মডপ্যাক ফাইল খুঁজে পাওয়া যায়নি
+difficulty:
+  easy: সহজ
+  hard: কঠিন
+  normal: স্বাভাবিক
+  peaceful: শান্তিপূর্ণ
+disk:
+  available: উপলব্ধ
+  used: ব্যবহৃত
+downloadCount: '{count} বার ডাউনলোড করা হয়েছে'
+downloadModMetadataDb:
+  name: মড মেটাডেটা ডাটাবেস ডাউনলোড করুন
+downloadUpdate:
+  name: হালনাগাদ {version} ডাউনলোড করুন
+duplicateInstance:
+  name: ইনস্ট্যান্সের প্রতিলিপি তৈরি করুন
+duration:
+  day: '{duration} দিন | {duration} দিন'
+  hour: '{duration} ঘণ্টা | {duration} ঘণ্টা'
+  minute: '{duration} মিনিট | {duration} মিনিট'
+  second: '{duration} সেকেন্ড | {duration} সেকেন্ড'
+env:
+  select:
+    all: সব নির্বাচন করুন
+    fit: মানানসই নির্বাচন করুন
+    none: কিছুই নির্বাচন করবেন না
+errors:
+  bedrockUnsupportedPlatform: Minecraft Bedrock Edition শুধুমাত্র Windows বিল্ডে সমর্থিত।
+  bedrockNotInstalled: Minecraft Bedrock Edition ইনস্টল করা নেই।
+  bedrockLaunchFailed: Minecraft Bedrock Edition চালু করতে ব্যর্থ।
+  bedrockInstallFailed: Minecraft Bedrock Edition ইনস্টল করতে ব্যর্থ।
+  bedrockDownloadUrlUnavailable: এই Bedrock সংস্করণটি বর্তমান Microsoft অ্যাকাউন্টের জন্য উপলব্ধ নয়। বিটা এবং প্রিভিউ সংস্করণগুলোর জন্য Minecraft বিটা প্রোগ্রামে নিবন্ধিত একটি অ্যাকাউন্ট প্রয়োজন।
+  bedrockDeveloperModeRequired: এই Bedrock সংস্করণটি নিবন্ধন করতে Windows ডেভলপার মোড প্রয়োজন।
+  bedrockRegisterFailed: Windows এ এই Bedrock সংস্করণটি নিবন্ধন করতে ব্যর্থ।
+  bedrockVersionNotFound: এই Bedrock সংস্করণটি লোকালি ইনস্টল করা নেই।
+  BadForgeInstallerJarError: Forge ইনস্টলার জার (jar) ফাইল পার্স করা যাচ্ছে না। সম্ভবত Forge এর নতুন ইনস্টলার ফাইল ফরম্যাট রয়েছে? সমস্যাটি অব্যাহত থাকলে ডেভেলপারদের সাথে যোগাযোগ করুন।
+  BadInstanceType: 'একটি বৈধ ইনস্ট্যান্স নয়: {type}'
+  BodyTimeoutError: HTTP বডি সময়সীমা অতিবাহিত (timeout)
+  ChecksumNotMatchError: চেকসাম মেলেনি! প্রত্যাশিত {expect}। বাস্তব {actual}।
+  ConnectTimeoutError: সার্ভারের সাথে সংযোগ স্থাপনের সময়সীমা অতিবাহিত হয়েছে।
+  CorruptedResourceMetadata: '{count} টি রিসোর্সে ক্ষতিগ্রস্ত মেটাডেটা সনাক্ত এবং পরিষ্কার করা হয়েছে। ফাইলগুলো এখনও কাজ করছে, তবে তাদের Modrinth/CurseForge অ্যাট্রিবিউশন হারিয়ে গেছে এবং স্বয়ংক্রিয়ভাবে পুনরায় সনাক্ত করা হবে।'
+  DNSNotFoundError: DNS অনুসন্ধান ত্রুটি
+  DatabaseNotOpened: ডাটাবেস খোলা হয়নি! লঞ্চার ঠিকমতো কাজ করবে না! অনুগ্রহ করে এমন একটি ডেটা ডিরেক্টরি নির্বাচন করুন যা লঞ্চার অ্যাক্সেস করতে পারে। আপনি সেটিংস পৃষ্ঠায় ডেটা রুট রিসেট করার চেষ্টা করতে পারেন।
+  DiskIsFull: আপনার ডিস্ক পূর্ণ! ডিস্কে কিছুই লেখা যাচ্ছে না! সমস্ত ফিচার কাজ নাও করতে পারে!
+  DownloadAggregateError: ফাইল ডাউনলোড করতে ব্যর্থ।
+  DownloadFileSystemError: ডাউনলোড ফাইল পাথে অ্যাক্সেস করার সময় ত্রুটি। অনুগ্রহ করে নিশ্চিত করুন লঞ্চারের এটিতে লেখার অনুমতি রয়েছে।
+  HeadersTimeoutError: HTTP হেডার সময়সীমা অতিবাহিত (timeout)
+  InstallBackendUnresponsive:
+    body: লঞ্চারের ব্যাকগ্রাউন্ড প্রসেসটি সাড়া দেওয়া বন্ধ করে দিয়েছে, তাই ইনস্টলেশন সম্পন্ন হতে পারেনি। অনুগ্রহ করে লঞ্চারটি সম্পূর্ণভাবে বন্ধ করে পুনরায় চালু করুন এবং আবার চেষ্টা করুন।
+    title: লঞ্চার সাড়া দিচ্ছে না
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: Minecraft ফাইল ইনস্টল করতে ব্যর্থ
+  InstallNetworkError:
+    body: একটি নেটওয়ার্ক সমস্যার কারণে ইনস্টলেশন ব্যাহত হয়েছে। আপনার ইন্টারনেট সংযোগ বা প্রক্সি পরীক্ষা করুন এবং আবার চেষ্টা করুন।
+    title: Minecraft ফাইল ডাউনলোড করা যাচ্ছে না
+  InstallPermissionDenied:
+    body: একটি অ্যান্টি-ভাইরাস টুল বা ফোল্ডারের সীমিত অনুমতি ইনস্টলেশনকে ব্লক করেছে। লঞ্চারটিকে আপনার অ্যান্টি-ভাইরাস এক্সক্লুশন তালিকায় যুক্ত করুন, অথবা লঞ্চার সেটিংসে একটি ভিন্ন ডেটা রুট বেছে নিন।
+    title: লঞ্চার ফোল্ডারে লেখা যাচ্ছে না
+  NotFoundError: ৪০৪ নট ফাউন্ড (খুঁজে পাওয়া যায়নি)
+  SocketError: সার্ভার সকেট ত্রুটি
+eula:
+  body: চেকবক্স বোতামটি টিক দেওয়ার মাধ্যমে, আপনি Minecraft এর {eula} এর প্রতি সম্মতি জ্ঞাপন করছেন।
+exception:
+  http: '{url} এ HTTP অনুরোধ ব্যর্থ হয়েছে। স্ট্যাটাস কোড {statusCode}। {code}। অনুগ্রহ করে আবার চেষ্টা করুন অথবা আপনার নেটওয়ার্ক পরীক্ষা করুন। এই ত্রুটিটি অব্যাহত থাকলে অনুগ্রহ করে ডেভেলপার টিমকে একটি রিপোর্ট পাঠান।'
+exportModpack:
+  name: মডপ্যাক এক্সপোর্ট করুন
+extensions:
+  mrpack: Modrinth মডপ্যাক
+  zip: জিপ (Zip) ফাইল
+fabricVersion:
+  disable: Fabric নিষ্ক্রিয় করুন
+  empty: Minecraft {version} এর জন্য কোনো Fabric সংস্করণ নেই
+  showSnapshot: স্ন্যাপশট দেখান
+  stable: স্থিতিশীল
+  unstable: অস্থিতিশীল
+command:
+  instance:
+    launch:
+      title: ইনস্ট্যান্স চালু করুন
+      description: একটি মাইনক্রাফ্ট ইনস্ট্যান্স চালু করুন
+    create:
+      title: ইনস্ট্যান্স তৈরি করুন
+      description: একটি নতুন ইনস্ট্যান্স তৈরি করুন
+    delete:
+      title: ইনস্ট্যান্স মুছুন
+      description: একটি বিদ্যমান ইনস্ট্যান্স মুছুন
+  user:
+    login:
+      title: ইউজার লগইন
+      description: আপনার অ্যাকাউন্টে লগইন করুন
+    refresh:
+      title: ইউজার রিফ্রেশ করুন
+      description: ইউজার সেশন রিফ্রেশ করুন
+commandPalette:
+  placeholder: কমান্ড, ইনস্ট্যান্স, মোড খুঁজুন...
+  commands: কমান্ডসমূহ
+  instances: ইনস্ট্যান্সসমূহ
+  modrinth: Modrinth
+  recent: সাম্প্রতিক
+  open: দ্রুত কাজ
+  openHint: কমান্ড প্যালেট খুলুন ({shortcut})
+  empty: খুঁজতে টাইপ করুন।
+  noResults: কোনো মিল পাওয়া যায়নি।
+  searching: অনুসন্ধান করা হচ্ছে...
+  hintNavigate: ন্যাভিগেট করুন
+  hintInvoke: চালু করুন
+  hintEnter: প্রবেশ করুন
+  hintBack: ফিরে যান
+  hintClose: বন্ধ করুন
+feedback:
+  channel: চ্যানেলসমূহ
+  description: আমি একটি বাগ পেয়েছি বা আমি একটি পরামর্শ দিতে চাই
+  discord: Discord
+  discordDescription: ডিসকর্ড চ্যানেলে যোগ দিন
+  discordJoin: যোগ দিন
+  generateReport: রিপোর্ট তৈরি করুন
+  generateSaveAs: রিপোর্টটি এখানে সংরক্ষণ করুন
+  github: Github ইস্যু
+  githubDescription: আপনার মতামত জানাতে একটি Github ইস্যু খুলুন
+  githubOpenIssue: Github
+  hint: রিপোর্ট তৈরি করতে এবং ডেভেলপার টিমের সাথে যোগাযোগ করতে বোতামটিতে ক্লিক করুন। রিপোর্টে আপনার অপারেটিং সিস্টেমের ধরন, সংস্করণ, ব্যবহারকারীর নাম (আপনার ওএস-এ) ইত্যাদি সহ আপনার ডিভাইসের তথ্য থাকবে।
+  kook: Kook
+  kookDescription: চীনা মেইনল্যান্ড ব্যবহারকারীদের জন্য Kook হলো ডিসকর্ডের একটি বিকল্প অ্যাপ
+  name: প্রতিক্রিয়া
+  qq: QQ গ্রুপ
+  qqDescription: 'মতামত জানাতে QQ গ্রুপে প্রবেশ করুন এবং লেখকদের সাথে সরাসরি কথা বলুন। গ্রুপ নম্বর: {number}'
+  qqEnterGroup: যোগ দিন
+fileDetail:
+  fileSize: ফাইলের আকার
+  filesize: ফাইলের আকার
+  hash: হ্যাস (Hash)
+filterLocalOnly: শুধুমাত্র ইনস্টল করাগুলো দেখান
+forgeVersion:
+  disable: Forge নিষ্ক্রিয় করুন
+  empty: মাইনক্রাফ্ট {version}-এর জন্য Forge-এর কোনো রিলিজ নেই
+  latest: সর্বশেষ
+  recommended: প্রস্তাবিত
+gameType:
+  adventure: অ্যাডভেঞ্চার মোড
+  creative: ক্রিয়েটিভ মোড
+  spectator: স্পেক্টেটর মোড
+  survival: সারভাইভাল মোড
+help: সাহায্য
+home: হোম
+importModpack:
+  name: মডপ্যাক ইম্পোর্ট করুন
+installAssets:
+  asset: '{count}টি অ্যাসেট ইনস্টল করুন'
+  assetIndex: অ্যাসেট ইনডেক্স ফাইল পরীক্ষা করুন
+  name: অ্যাসেট ফাইল ইনস্টল করুন
+installAuthlibInjector: authlib-injector ইনস্টল করুন
+installCurseforgeFile: Curseforge ফাইল ইনস্টল করুন
+installFabric:
+  name: Fabric ইনস্টল করুন
+installForge:
+  downloadInstaller: ইনস্টলার ডাউনলোড করুন
+  name: Forge ইনস্টল করুন
+  postProcessing: পোস্ট প্রসেসিং
+installInstance:
+  file: ইনস্ট্যান্স ফাইল {file} আপডেট করুন
+  link: '{count}টি ফাইল কপি বা লিঙ্ক করুন'
+  name: ইনস্ট্যান্স আপডেট করুন
+  resolve: ইনস্ট্যান্স কনফিগারেশন মীমাংসা করুন
+  unzip: '{count}টি ফাইল আনজিপ করুন'
+installJre:
+  decompress: JRE ফাইলগুলো ফোল্ডারে ডিকম্প্রেস করুন
+  download: সংকুচিত JRE ফাইল ডাউনলোড করুন
+  name: জাভা রানটাইম লাইব্রেরি ইনস্টল করুন
+installLabyMod:
+  name: LabyMod ইনস্টল করুন
+installLibraries:
+  library: লাইব্রেরি ইনস্টল করুন
+  name: লাইব্রেরিসমূহ ইনস্টল করুন
+installModrinthFile:
+  name: Modrinth ইনস্টল করুন
+installOptifine:
+  download: Optifine Universal ডাউনলোড করুন
+  name: Optifine ইনস্টল করুন
+installProfile:
+  name: প্রোফাইল {version} ইনস্টল করুন
+installQuilt:
+  name: Quilt {version} ইনস্টল করুন
+installVersion:
+  jar: সংস্করণ Jar ইনস্টল করুন
+  json: সংস্করণ Json ইনস্টল করুন
+  name: Minecraft ক্লায়েন্ট {version} ইনস্টল করুন
+instance:
+  changeIcon: আইকন পরিবর্তন করুন
+  contents: বিষয়বস্তু
+  current: বর্তমান ইনস্ট্যান্স
+  delete: গেমটি মুছে ফেলুন
+  deleteFailed: ইনস্ট্যান্স মুছে ফেলতে ব্যর্থ
+  deleteFailedPermission: অন্য একটি প্রোগ্রাম ফাইলটি ব্যবহার করছে
+  deleteFile: ইনস্ট্যান্সের ফাইলগুলি মুছে ফেলুন
+  deleteHint: ইনস্ট্যান্স ডেটা ডিস্ক থেকে চিরতরে মুছে ফেলা হবে। আপনি কি নিশ্চিত?
+  deleteHintBedrock: Minecraft Bedrock সংস্করণ এবং এর সমস্ত ডেটা আপনার কম্পিউটার থেকে সম্পূর্ণরূপে মুছে ফেলা হবে। আপনি কি নিশ্চিত?
+  duplicate: গেমের অনুলিপি তৈরি করুন
+  duplicatedName: অনুলিপিকৃত নাম
+  envVarKey: কী
+  envVarKeyPlaceholder: MY_VAR
+  envVarValue: মান
+  envVarValuePlaceholder: value
+  fileApi: ফাইল সিঙ্ক্রোনাইজ সার্ভারের API URL
+  fileApiHint: একটি দূরবর্তী কনফিগ সার্ভার থেকে ইনস্ট্যান্স ফাইল সিঙ্ক করার URL।
+  fileApiPlaceholder: আপনি যদি রিসোর্স সিঙ্ক চালু রাখতে চান তবে দয়া করে এখানে রিমোট সিঙ্ক URL-টি লিখুন
+  fullscreen: ফুলস্ক্রিন
+  height: উচ্চতা
+  hideCard: এই কার্ডটি লুকান
+  icon: প্রোফাইল আইকন
+  iconHint: আইকনটি একটি ফাইল অথবা ইন্টারনেটের URL লিঙ্ক হতে পারে।
+  iconUrl: আইকন URL
+  installModpack: মডপ্যাক থেকে ইনস্ট্যান্স আপডেট করুন
+  lastPlayed: সর্বশেষ খেলা হয়েছে
+  launchArguments: লঞ্চ আর্গুমেন্টগুলির প্রিভিউ
+  launchServer: লোকালহোস্ট (localhost) সার্ভার লঞ্চ করুন
+  linkFileDesc: এটি ইনস্ট্যান্সের লোকাল {file}-কে গ্লোবাল {file} দিয়ে ওভাররাইট করবে। আপনি কি এটি লিঙ্ক করতে নিশ্চিত?
+  linkFileTitle: আপনি কি {file} লিঙ্ক করতে নিশ্চিত?
+  mcOptions: Minecraft বিকল্পসমূহ
+  mcOptionsHint: অতিরিক্ত Minecraft লঞ্চ আর্গুমেন্ট
+  name: প্রোফাইলের নাম
+  nameHint: মডপ্যাকের নাম
+  nameInvalidChars: 'নামে এই অক্ষরগুলি থাকতে পারবে না: < > : " / \\ | ? *'
+  nameNoCyrillic: নামে সিরিলিক (Cyrillic) অক্ষর থাকতে পারবে না
+  namePathTraversal: নামে পাথ ট্রাভার্সাল ("..") থাকতে পারবে না
+  nameReservedName: এই নামটি সিস্টেম দ্বারা সংরক্ষিত এবং ব্যবহার করা যাবে না
+  nameTrailingDotOrSpace: নামের শেষে ডট অথবা স্পেস থাকতে পারবে না
+  nameWhitespaceOnly: নামটি শুধুমাত্র স্পেস বা ডট হতে পারবে না
+  neverPlayed: কখনও খেলা হয়নি
+  openCrashReportFolder: ক্র্যাশ রিপোর্টের ফোল্ডার খুলুন
+  openLogFolder: লগ ফোল্ডার খুলুন
+  playtime: খেলার সময়
+  preExecCommand: প্রি-এক্সিকিউট কমান্ড
+  preExecCommandHint: Minecraft লঞ্চ করার আগে চালানোর কমান্ড
+  prependCommand: প্রিপেন্ড (Prepend) কমান্ড
+  prependCommandHint: এটি সমস্ত লঞ্চ কমান্ডের আগে এই কমান্ডটি প্রিপেন্ড করবে
+  requireName: নাম আবশ্যক
+  resolution: রেজোলিউশন
+  resolutionPreset: রেজোলিউশন প্রিসেট
+  showHiddenCards: লুকানো কার্ডগুলি দেখান
+  showInstance: গেমের ফোল্ডার দেখান
+  updates: আপডেটসমূহ
+  useSharedOptions: শেয়ার্ড গেম সেটিংস ব্যবহার করুন
+  useSharedOptionsDesc: এটি options.txt-কে ইনস্ট্যান্স জুড়ে একটি শেয়ার্ড ফাইলের সাথে লিঙ্ক করবে
+  useSharedServersList: শেয়ার্ড সার্ভার তালিকা ব্যবহার করুন
+  useSharedServersListDesc: এটি servers.dat-কে ইনস্ট্যান্স জুড়ে একটি শেয়ার্ড ফাইলের সাথে লিঙ্ক করবে
+  vmOptions: JVM বিকল্পসমূহ
+  vmOptionsHint: JVM-এ পাঠানোর জন্য অতিরিক্ত আর্গুমেন্টসমূহ
+  vmVar: এনভায়রনমেন্ট ভেরিয়েবলসমূহ
+  vmVarHint: এনভায়রনমেন্ট ভেরিয়েবল যোগ করতে + বোতামে ক্লিক করুন
+  width: প্রস্থ
+instanceAge:
+  older: পুরানো
+  threeDay: তিন দিনের মধ্যে
+  today: আজ
+instanceDiscover:
+  gameFolder: '{count}টি গেম ফোল্ডার সনাক্ত করুন'
+  instanceFolder: '{count}টি ইনস্ট্যান্স পাওয়া গেছে'
+instanceFileOperation:
+  add: যোগ করুন
+  backup-add: প্রতিস্থাপন করুন (ব্যাকআপ)
+  backup-remove: সরিয়ে ফেলুন (ব্যাকআপ)
+  keep: রেখে দিন
+  remove: সরান
+instanceInstallSkip:
+  ignore: উপেক্ষা করুন
+  skip: এড়িয়ে যান
+  title: সম্ভাব্য দূষিত ফাইল উৎস
+  warning: কিছু ফাইল চেকসাম অমিল সহ একাধিকবার ডাউনলোড করা হয়েছে। এটি আসল চেকসামটি ভুল হওয়ার কারণে হতে পারে। দয়া করে চেক করুন। আপনি যদি নিশ্চিত করেন যে বর্তমান ফাইলগুলি বৈধ, আপনি বৈধতা পরীক্ষা এড়িয়ে যেতে পারেন।
+instanceLauncher:
+  search: ইন্সট্যান্স অনুসন্ধান করুন...
+  showAll: সব ইন্সট্যান্স দেখান
+  title: সব ইন্সট্যান্স
+instanceSetting:
+  disableAuthlibInjector: authlib ইনজেক্টর নিষ্ক্রিয় করুন
+  disableAuthlibInjectorDescription: আপনি যদি কোনো তৃতীয় পক্ষের স্কিন সিস্টেম ব্যবহার করেন, তবে authlib ইনজেক্টর আপনাকে গেমে স্কিন প্রদর্শন করতে সাহায্য করতে পারে।
+  disableElyByAuthlib: ely.by-এর authlib প্রতিস্থাপন নিষ্ক্রিয় করুন
+  disableElyByAuthlibDescription: যেকোনো সার্ভারে সার্বজনীনভাবে স্কিন প্রদর্শন করার জন্য Ely.by-এর একটি অনন্য authlib প্রতিস্থাপন রয়েছে।
+  fastLaunch: টার্বো লঞ্চ
+  fastLaunchHint: ব্যবহারকারীর স্ট্যাটাস এবং বিদ্যমান অমীমাংসিত সমস্যাগুলি উপেক্ষা করুন
+  hideLauncher: লঞ্চ করার পর লঞ্চারটি লুকান
+  icon: একটি ছবি বেছে নিন
+  showLog: Minecraft লগ দেখান
+  showLogHint: গেম শুরু হওয়ার পর এটি Minecraft লগ স্ট্রিম করার জন্য একটি উইন্ডো পপআপ করবে
+instanceTemplate:
+  ftb: এটি একটি FTB মডপ্যাক
+  preview: মডপ্যাক প্রিভিউ
+instanceUpdate:
+  basic: সেটিং আপডেট
+  files: ফাইল আপডেট
+  loaderChanged: এই ইন্সট্যান্সের মডলোডার পরিবর্তন করা হয়েছে। পুরনো মডলোডারটি হলো {modloader}, এবং নতুন মডলোডারটি হলো {newModloader}।
+  noFiles: কোনো ফাইল পরিবর্তন হয়নি
+  summary: '{add}টি ফাইল যোগ করুন। {remove}টি ফাইল সরান। {keep}টি ফাইল রাখুন।'
+  title: ইন্সট্যান্স আপডেট করুন
+  update: আপডেট শুরু করুন
+instances:
+  add: গেম তৈরি করুন
+  addCurseForgeDescription: curseforge ডেটা ফোল্ডার থেকে ইম্পোর্ট করুন। আপনাকে curseforge-এর রুট ডেটা ফোল্ডারটি নির্বাচন করতে হবে
+  addDescription: নতুন করে একটি নতুন ইন্সট্যান্স তৈরি করুন
+  addMMCDescription: বিদ্যমান MultiMC ইন্সট্যান্স ইম্পোর্ট করুন। আপনাকে MultiMC থেকে ডেটা ফোল্ডারটি নির্বাচন করতে হবে।
+  addManually: ম্যানুয়ালি তৈরি করুন
+  addModrinthDescription: বিদ্যমান Modrinth ইন্সট্যান্স ইম্পোর্ট করুন। আপনাকে Modrinth রুট ডেটা ফোল্ডারটি নির্বাচন করতে হবে।
+  addPrismDescription: বিদ্যমান PrismLauncher ইন্সট্যান্স ইম্পোর্ট করুন।
+  addServer: সার্ভার থেকে তৈরি করুন
+  addServerDescription: এটি সরাসরি সার্ভারে চালু করার জন্য একটি গেম তৈরি করবে।
+  addTemplate: ডাউনলোড করা মডপ্যাক থেকে তৈরি করুন
+  addTemplateDescription: ডাউনলোড করা মডপ্যাক থেকে ইম্পোর্ট করুন
+  addVanilla: ভ্যানিলা-সদৃশ Minecraft থেকে তৈরি করুন
+  addVanillaDescription: সাধারণ .minecraft ফোল্ডার থেকে ইম্পোর্ট করুন। এটি আসল গেম প্রোফাইলটিকে XMCL-এ অনুলিপি (duplicate) করবে।
+  edition: সংস্করণ
+  editionJava: জাভা সংস্করণ
+  editionBedrock: বেডরক সংস্করণ
+  editionBedrockHint: বেডরক সংস্করণটি মাইক্রোসফ্ট স্টোর অ্যাপের মাধ্যমে চালু করা হয়। আপনার একটি বেডরক লাইসেন্স থাকতে হবে। মড, রিসোর্স প্যাক এবং অন্যান্য শুধুমাত্র-জাভা ফিচারগুলো উপলব্ধ নয়।
+  editionBedrockWindowsOnly: বেডরক সংস্করণটি শুধুমাত্র উইন্ডোজ বিল্ডে সমর্থিত।
+  fix: মেরামত করুন
+  folder: ফোল্ডার
+  folderSetting: ফোল্ডার সেটিংস
+  importFolderDescription: লঞ্চারে Minecraft ইম্পোর্ট করুন
+  loadingFiles: মডপ্যাক ফাইল লোড হচ্ছে
+items:
+  count: '{count}টি আইটেম'
+  total: মোট {total}টি
+java:
+  allocatedLong: সিস্টেমের ডিফল্ট জাভা ব্যবহার করুন
+  allocatedShort: স্বয়ংক্রিয়ভাবে বরাদ্দকৃত
+  allocation: বরাদ্দকৃত
+  autoHint: ইন্সটল করা মডের সংখ্যার সাথে সাথে সর্বনিম্ন বরাদ্দ বৃদ্ধি পায়; সর্বোচ্চ বরাদ্দ সিস্টেমের উপলব্ধ মেমরি ব্যবহার করে।
+  change: পরিবর্তন করুন
+  importFromFile: ফাইল থেকে জাভা ইম্পোর্ট করুন
+  invalid: অবৈধ জাভা অবস্থান
+  location: জাভা অবস্থান
+  locationHint: কোনো জাভা নির্বাচিত হয়নি — সিস্টেম ডিফল্ট ব্যবহার করা হচ্ছে
+  maxMemory: সর্বোচ্চ মেমরি
+  memory: জাভা মেমরি
+  memoryAuto: স্বয়ংক্রিয়
+  memoryManual: ম্যানুয়াল
+  memoryUnassigned: অনির্ধারিত করুন
+  minMemory: সর্বনিম্ন মেমরি
+  noMemory: মেমরি ব্যবহার সীমাবদ্ধ করবেন না
+  openFolder: জাভা ফোল্ডার খুলুন
+  presets: প্রিসেট
+  refresh: লোকাল জাভা রিফ্রেশ করুন
+  systemMemory: 'সিস্টেমের খালি মেমরি: {free} / {total}'
+labyMod:
+  disable: LabyMod নিষ্ক্রিয় করুন
+  empty: LabyMod বর্তমান Minecraft সমর্থন করে না
+launch:
+  cancel: বাতিল করুন
+  createShortcut: শর্টকাট তৈরি করুন
+  forceKill: জোরপূর্বক বন্ধ করুন
+  kill: বন্ধ করুন
+  killServer: লোকালহোস্ট সার্ভার বন্ধ করুন
+  launch: চালু করুন
+  launchAnyway: তবুও চালু করুন
+  launchAs: হিসাবে চালু করুন
+  launchTo: এতে চালু করুন
+launchBlocked:
+  launchBadVersion:
+    description: সংস্করণ {version} এর json-টি ত্রুটিযুক্ত। সংস্করণটি সম্ভবত পুনরায় ইনস্টল করা প্রয়োজন?
+    title: ত্রুটিপূর্ণ সংস্করণ JSON
+  launchGeneralException:
+    description: কিছু ত্রুটির কারণে চালু করা ব্যর্থ হয়েছে।
+    title: চালু করতে ব্যর্থ
+  launchInvalidJavaPath:
+    description: নির্বাচিত জাভা (Java) অনুপস্থিত বা অবৈধ। অনুগ্রহ করে একটি নতুন নির্বাচন করুন। <span class="highlight"> {javaPath} </span>
+    title: অবৈধ জাভা পাথ (Java Path)
+  launchJavaNoPermission:
+    description: লঞ্চারের কাছে জাভা <span class="highlight"> {javaPath} </span> চালানোর অনুমতি নেই। জাভা ফাইলের অনুমতি পরিবর্তন করুন অথবা লঞ্চারের অনুমতি বৃদ্ধি করুন।
+    title: চালু করার অনুমতি নেই
+  launchNoProperJava:
+    description: গেমটি চালু করার জন্য সঠিক জাভা নির্বাচন করা যাচ্ছে না। ({javaPath} কি অবৈধ?)
+    title: কোনো সঠিক জাভা পাওয়া যায়নি
+  launchNoVersionInstalled:
+    description: চালু করার জন্য <span class="highlight">{version}</span> সংস্করণটি সমাধান বা খুঁজে পাওয়া যাচ্ছে না।
+    title: কোনো সংস্করণ নির্বাচন করা হয়নি
+  launchSpawnProcessFailed:
+    description: অনুগ্রহ করে আপনার জাভা চেক করুন, অথবা লঞ্চারকে আরও অনুমতি দিয়ে পুনরায় চেষ্টা করুন। যদি এটি তবুও কাজ না করে, তবে অনুগ্রহ করে ডেভলপারদের সাথে যোগাযোগ করুন।
+    title: গেম প্রসেস শুরু করতে ব্যর্থ
+  unexpectedText: এটি অপ্রত্যাশিত। সমস্যাটি প্রশমিত করতে আপনি লঞ্চারটি পুনরায় চালু করতে পারেন। যদি এই সমস্যাটি আবার ঘটে তবে অনুগ্রহ করে লেখকের সাথে যোগাযোগ করুন।
+launchFailed:
+  crash: গেম ক্র্যাশ করেছে!!
+  description: কোনো ক্র্যাশ রিপোর্ট নেই। এটি হচ্ছে ত্রুটি লগ এবং সর্বশেষ লগ।
+  elyByAuthlib:
+    description: মাইনক্রাফ্ট সংস্করণ {version}-এর জন্য Ely.by-এর authlib প্রতিস্থাপন ব্যবহার করা হয়েছিল, কিন্তু এই সংস্করণটি সম্পূর্ণ সামঞ্জস্যপূর্ণ নাও হতে পারে।
+    suggestion: এই সমস্যাটি এড়াতে আপনি ইনস্ট্যান্স সেটিংসে Ely.by-এর authlib প্রতিস্থাপন নিষ্ক্রিয় করতে পারেন।
+    title: Ely.by Authlib সামঞ্জস্যতা সমস্যা
+  failedToLaunch: চালু করতে ব্যর্থ হয়েছে
+  latestLog: সর্বশেষ লগ
+  title: গেমটি অস্বাভাবিক কোড সহ বন্ধ হয়ে গেছে
+launchPreExecuteCommandFailed:
+  description: 'প্রাক-কার্যকরী (pre-execute) কমান্ডটি এই ত্রুটির সাথে ব্যর্থ হয়েছে: {error}। অনুগ্রহ করে কমান্ডটি পরীক্ষা করে আবার চেষ্টা করুন।'
+  title: প্রাক-কার্যকরী কমান্ড ব্যর্থ হয়েছে
+launchStatus:
+  assigningMemory: মেমরি বরাদ্দ করা হচ্ছে
+  elyByWarning: Ely.by authlib প্রতিস্থাপন সক্ষম করা আছে। কিছু মাইনক্রাফ্ট সংস্করণ সামঞ্জস্যপূর্ণ নাও হতে পারে এবং ক্র্যাশ করতে পারে। কোনো সমস্যা হলে আপনি ইনস্ট্যান্স সেটিংসে এটি নিষ্ক্রিয় করতে পারেন।
+  exit: গেম থেকে প্রস্থান করবেন?
+  injectingAuthLib: তৃতীয় পক্ষের AuthLib সেট আপ করা হচ্ছে
+  launching: চালু হচ্ছে...
+  launchingSlow: এখনও চালু হচ্ছে... গ্রাফিক্স ইঞ্জিন শুরু হতে ধীর হতে পারে...
+  refreshingUser: ইউজার টোকেন রিফ্রেশ করা হচ্ছে
+  spawningProcess: প্রসেস তৈরি করা হচ্ছে
+launcherUpdate:
+  alreadyLatest: হালনাগাদ রয়েছে
+  installAndQuit: ইনস্টল করতে পুনরায় চালু করুন
+  noUpdateAvailable: কোনো আপডেট উপলব্ধ নেই
+  updateToThisVersion: ডাউনলোড এবং ইনস্টল করুন
+localVersion:
+  auto: স্বয়ংক্রিয়ভাবে গণনা করা হয়েছে
+  empty: কোনো সংস্করণ ইনস্টল করা নেই
+  hint: সরাসরি একটি নির্দিষ্ট লোকাল সংস্করণ চালু করুন
+  reinstallDescription: যদি আপনি মনে করেন এই সংস্করণটির ইনস্টলেশনে কোনো সমস্যা আছে, তবে আপনি এটি পুনরায় ইনস্টল করার চেষ্টা করতে পারেন।
+  reinstallTitle: '{version} পুনরায় ইনস্টল করুন'
+  title: লোকাল সংস্করণ | লোকাল সংস্করণসমূহ
+logLevel:
+  error: ত্রুটি
+  info: তথ্য
+  success: সফল
+  warning: সতর্কবার্তা
+logView:
+  searchPlaceholder: লগ খুঁজুন...
+login:
+  dropHint: ম্যানুয়ালি লগইন করতে authcode সহ লিঙ্কটি এখানে ড্রপ করুন
+  forgetPassword: পাসওয়ার্ড ভুলে গেছেন?
+  login: লগইন করুন
+  manualLoginUrl: যদি ব্রাউজারটি না খোলে, তবে যাচাইকরণের জন্য অনুগ্রহ করে এই লিঙ্কে ক্লিক করুন!
+  signup: নিবন্ধন করুন
+  signupDescription: আমাদের এখানে নতুন?
+  userRelogin: ইউজার অ্যাক্সেস টোকেনটির মেয়াদ শেষ হয়ে গেছে। অনুগ্রহ করে আবার লগইন করুন!
+loginError:
+  acquireMicrosoftTokenFailed: মাইক্রোসফট টোকেন পেতে ব্যর্থ হয়েছে। এটি একটি নেটওয়ার্ক সমস্যা হতে পারে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।
+  badNetworkOrServer: অনুগ্রহ করে আপনার নেটওয়ার্ক সংযোগ পরীক্ষা করুন! অথবা হতে পারে প্রমাণীকরণ (authentication) সার্ভারটি বন্ধ আছে!
+  checkOwnershipFailed: গেমের মালিকানা পরীক্ষা করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।
+  connectionReset: সার্ভার দ্বারা সংযোগ রিসেট হওয়ার কারণে লগইন করতে ব্যর্থ হয়েছে
+  cyrillicNotAllowed: সিরিলিক (Cyrillic) অক্ষরসমূহ অনুমোদিত নয়
+  fetchMinecraftProfileFailed: 'মাইনক্রাফ্ট প্রোফাইল আনতে ব্যর্থ: {reason}'
+  illegalEmail: ই-মেইলটি অবশ্যই বৈধ হতে হবে
+  illegalOfflineUsername: ব্যবহারকারীর নাম অবশ্যই ৩-১৬ অক্ষরের দীর্ঘ হতে হবে এবং এতে কেবল ইংরেজি অক্ষর, সংখ্যা এবং আন্ডারস্কোর (_) থাকতে পারে
+  invalidCredentials: অবৈধ শংসাপত্র। অবৈধ ব্যবহারকারীর নাম বা পাসওয়ার্ড।
+  loginMinecraftByXboxFailed: এক্সবক্স (Xbox) টোকেন দ্বারা মাইনক্রাফ্ট টোকেন বিনিময় করতে ব্যর্থ। অনুগ্রহ করে নিশ্চিত করুন যে আপনার এক্সবক্সে মাইনক্রাফ্ট রয়েছে, অথবা পুনরায় চেষ্টা করুন।
+  loginMinecraftByXboxRateLimited: মাইক্রোসফটের মাইনক্রাফ্ট প্রমাণীকরণ পরিষেবা বর্তমানে অনুরোধ সীমিত (rate-limiting) করছে (HTTP 429)। অনুগ্রহ করে কিছুক্ষণ অপেক্ষা করুন এবং আবার চেষ্টা করুন।
+  loginMinecraftByXboxRateLimitedWithRetry: মাইক্রোসফটের মাইনক্রাফ্ট প্রমাণীকরণ পরিষেবা বর্তমানে অনুরোধ সীমিত করছে (HTTP 429)। অনুগ্রহ করে প্রায় {seconds} সেকেন্ড অপেক্ষা করুন এবং আবার চেষ্টা করুন।
+  loginMinecraftByXboxServerError: মাইক্রোসফটের মাইনক্রাফ্ট প্রমাণীকরণ পরিষেবা একটি সার্ভার ত্রুটি (HTTP {status}) রিটার্ন করেছে। এটি তাদের প্রান্তের সমস্যা। অনুগ্রহ করে কয়েক মিনিট পর আবার চেষ্টা করুন।
+  loginMinecraftByXboxStatus: এক্সবক্স টোকেন দ্বারা মাইনক্রাফ্ট টোকেন বিনিময় করতে ব্যর্থ (HTTP {status})। অনুগ্রহ করে নিশ্চিত করুন যে আপনার এক্সবক্সে মাইনক্রাফ্ট রয়েছে, অথবা পুনরায় চেষ্টা করুন।
+  loginXboxAdultVerification: এক্সবক্সে সাইন ইন করার আগে আপনার মাইক্রোসф্ট অ্যাকাউন্টের প্রাপ্তবয়স্ক যাচাইকরণ (সাধারণত কিছু অঞ্চলে প্রয়োজনীয়) প্রয়োজন। যাচাইকরণ সম্পন্ন করতে আপনার ব্রাউজারে {url} খুলুন, তারপর আবার চেষ্টা করুন।
+  loginXboxAgeRestricted: বয়সজনিত সমস্যার কারণে এক্সবক্সে লগইন করতে ব্যর্থ। অনুগ্রহ করে নিশ্চিত করুন যে আপনার মাইক্রোসф্ট অ্যাকাউন্টের বয়স নির্ধারণ করা আছে এবং বয়স ১৮ বছরের উপরে।
+  loginXboxBadXsts: মাইক্রোসф্ট প্রত্যাশিত ব্যবহারকারী ক্লেম ছাড়াই একটি XSTS প্রতিক্রিয়া রিটার্ন করেছে। এটি সাধারণত সাময়িক -- অনুগ্রহ করে কয়েক মিনিট পর আবার চেষ্টা করুন।
+  loginXboxBanned: এই মাইক্রোসф্ট / এক্সবক্স অ্যাকাউন্টটি মাইক্রোসф্ট দ্বারা সাময়িকভাবে স্থগিত বা নিষিদ্ধ করা হয়েছে এবং এটি মাইনক্রাফ্টে সাইন ইন করতে পারছে না। অনুগ্রহ করে মাইক্রোসф্ট / এক্সবক্স সহায়তার সাথে যোগাযোগ করুন।
+  loginXboxChildAccount: আপনার মাইক্রোসф্ট অ্যাকাউন্টটি একটি শিশু অ্যাকাউন্ট এবং এক্সবক্স / মাইনক্রাফ্টে সাইন ইন করার আগে এটিকে একটি মাইক্রোসф্ট ফ্যামিলিতে যুক্ত করতে হবে। এটি ঠিক করতে আপনার ব্রাউজারে {url} খুলুন, তারপর আবার চেষ্টা করুন।
+  loginXboxFailed: মাইক্রোসফট টোকেন দ্বারা এক্সবক্সে লগইন করতে ব্যর্থ। অনুগ্রহ করে নিশ্চিত করুন যে আপনার মাইক্রোসফট অ্যাকাউন্টের সাথে একটি স্বতন্ত্র এক্সবক্স অ্যাকাউন্ট রয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।
+  loginXboxFailedWithCode: মাইক্রোসফট টোকেন দ্বারা এক্সবক্সে লগইন করতে ব্যর্থ (XErr {code})। সাহায্যের জন্য কোডটি সার্চ করুন, অথবা পরে আবার চেষ্টা করুন।
+  loginXboxNoXboxProfile: এই মাইক্রোসф্ট অ্যাকাউন্টে এখনও কোনো এক্সবক্স প্রোফাইল নেই। একটি তৈরি করতে আপনার ব্রাউজারে {url} খুলুন, তারপর আবার চেষ্টা করুন।
+  loginXboxRegionLocked: আপনার অ্যাকাউন্টের অঞ্চলে এক্সবক্স লাইভ (Xbox Live) উপলব্ধ নেই। অনুগ্রহ করে আপনার মাইক্রোসফ্ট অ্যাকাউন্টের সেটিংস থেকে দেশ/অঞ্চল পরিবর্তন করুন এবং আবার চেষ্টা করুন।
+  noProfileForNewUser: কোনো গেম প্রোফাইল পাওয়া যায়নি! আপনি যদি একজন নতুন মাইনক্রাফ্ট ব্যবহারকারী হন, তবে অনুগ্রহ করে মাইনক্রাফ্টের অফিসিয়াল লঞ্চারে অন্তত একবার লগইন করুন।
+  requestFailed: লগইন ব্যর্থ হয়েছে, আমরা সঠিক কারণটি জানি না। অনুগ্রহ করে আবার চেষ্টা করুন।
+  requireEmail: ই-মেইল প্রয়োজন
+  requirePassword: পাসওয়ার্ড প্রয়োজন
+  requireUsername: ইউজারনেম প্রয়োজন
+  timeout: লগইনের সময়সীমা পার হয়ে গেছে। অনুগ্রহ করে আবার চেষ্টা করুন বা আপনার নেটওয়ার্ক পরীক্ষা করুন।
+logsCrashes:
+  crashes: ক্র্যাশ রিপোর্ট
+  failures: লঞ্চ ব্যর্থতা
+  logs: লগসমূহ
+  placeholder: কোনো ফাইল পাওয়া যায়নি
+  serverLogs: সার্ভার লগ
+  showFile: ফোল্ডারে দেখান
+  title: লগ অথবা ক্র্যাশ রিপোর্ট
+me:
+  news: খবর
+  recentPlay: সাম্প্রতিক খেলা
+migrateMinecraft:
+  name: মাইনক্রাফ্ট ফাইলগুলি মাইগ্রেট করুন
+minecraftFriends:
+  accept: গ্রহণ করুন
+  add: বন্ধু যোগ করুন
+  addPlaceholder: মাইনক্রাফ্ট ইউজারনেম
+  addedRelative: '{time} যোগ করা হয়েছে'
+  errors:
+    cannotAddSelf: আপনি নিজেকে বন্ধুর অনুরোধ পাঠাতে পারবেন না।
+    duplicate: সেই খেলোয়াড় ইতিমধ্যে আপনার তালিকায় রয়েছেন।
+    generic: কিছু ভুল হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।
+    inviteRejected: সেই খেলোয়াড়ের বন্ধু তালিকা সক্রিয় নেই অথবা তিনি আমন্ত্রণ গ্রহণ করছেন না।
+    tokenExpired: আপনার মাইক্রোসফ্ট সেশনের মেয়াদ শেষ হয়ে গেছে। অনুগ্রহ করে আবার লগইন করুন।
+    unknownProfile: আমরা ওই নামের কোনো খেলোয়াড় খুঁজে পাইনি।
+  expiresRelative: মেয়াদ শেষ হবে {time}
+  friends: বন্ধুরা
+  heroEmptyHint: বন্ধুর অনুরোধ পাঠাতে উপরে ইউজারনেম দিয়ে মাইনক্রাফ্ট খেলোয়াড় যোগ করুন।
+  heroEmptyTitle: আপনার বন্ধুর তালিকা খালি
+  incoming: আগত অনুরোধ
+  incomingHint: ১টি আগত অনুরোধ | {count}টি আগত অনুরোধ
+  notifyAdded: '{name}-কে বন্ধুর অনুরোধ পাঠানো হয়েছে'
+  outgoing: বহির্গামী অনুরোধ
+  privacy:
+    acceptInvites: বন্ধুর আমন্ত্রণ গ্রহণ করুন
+    acceptInvitesHint: বন্ধ থাকলে, অন্য খেলোয়াড়রা আপনাকে বন্ধুর অনুরোধ পাঠাতে পারবে না।
+    friendsEnabled: বন্ধুর তালিকা সক্রিয়
+  reconnectAction: পুনরায় সংযোগ করুন
+  requiresMicrosoft: বন্ধুদের সুবিধা ব্যবহার করতে একটি মাইক্রোসফ্ট অ্যাকাউন্ট দিয়ে সাইন ইন করুন।
+  scopedTo: '{name} হিসেবে সাইন ইন করা আছে'
+  send: পাঠান
+  title: মাইনক্রাফ্ট বন্ধুরা
+  unsupported: বন্ধুদের সুবিধা শুধুমাত্র মাইক্রোসফ্ট অ্যাকাউন্টের জন্য উপলব্ধ।
+migrationWindow:
+  title: ডেটা স্থানান্তর (Migration)
+  preparing: স্থানান্তরের প্রস্তুতি চলছে…
+  scanning: গণনা করা হচ্ছে…
+  migrating: আপনার ডেটা সরানো হচ্ছে
+  done: স্থানান্তর সম্পন্ন হয়েছে
+  files: ফাইল
+  warning: এটি শেষ না হওয়া পর্যন্ত লঞ্চারটি খোলা রাখুন, অন্যথায় আপনার ডেটা হারিয়ে যেতে পারে।
+  error: স্থানান্তর ব্যর্থ হয়েছে
+minecraftVersion:
+  name: মাইনক্রাফ্ট সংস্করণ
+  all: সব সংস্করণ
+  release: রিলিজ (Release)
+  showAlpha: স্ন্যাপশট দেখান
+  snapshot: স্ন্যাপশট (Snapshot)
+mod:
+  acceptVersion: '{version} গ্রহণ করুন'
+  applyGroupRules: সংরক্ষিত গ্রুপিং নিয়ম প্রয়োগ করুন
+  compatible: সামঞ্জস্যপূর্ণ মড।
+  createGroup: গ্রুপ তৈরি করুন
+  currentVersion: বর্তমান {current}
+  denseView: ঘন ভিউ (Dense View)
+  description: বর্ণনা
+  disableAll: সব নিষ্ক্রিয় করুন
+  dropHint: ইম্পোর্ট করতে মডের .jar/.litemod এখানে ড্রপ করুন।
+  duplicatedDetected: '{count}টি ডুপ্লিকেট মড'
+  duplicatedDetectedDescription: একই মড আইডি বিশিষ্ট কিন্তু ভিন্ন ভিন্ন ফাইল পাওয়া গেছে। এর ফলে মাইনক্রাফ্ট ক্র্যাশ হতে পারে। অনুগ্রহ করে আপনি যে ফাইলটি রাখতে চান সেটি নির্বাচন করুন।
+  enableAll: সব সক্রিয় করুন
+  enabled: '{count}টি মড সক্রিয় করা হয়েছে'
+  filter: মড ফিল্টার করুন
+  group: গ্রুপ করুন
+  groupInstalled: ইনস্টল করা মড গ্রুপ করুন
+  groupName: গ্রুপের নাম
+  groupNameRequired: গ্রুপের নাম প্রয়োজন
+  hasUpdate: মডের একটি নতুন সংস্করণ উপলব্ধ!
+  incompatible: অসামঞ্জস্যপূর্ণ মড।
+  incompatibleHint: অসামঞ্জস্যপূর্ণ দেখান
+  incompatibleHintDescription: কিছু মডের ডিপেন্ডেন্সি অনুপস্থিত থাকতে পারে। অথবা কিছু ডিপেন্ডেন্সির সংস্করণ মেলেনি।
+  maybeCompatible: সামঞ্জস্যপূর্ণ হতে পারে।
+  modloaderSelectHint: এই মডটি নিম্নলিখিত মড লোডারগুলো সমর্থন করে। অনুগ্রহ করে ইনস্টল করার জন্য একটি নির্বাচন করুন।
+  modloaderSelectNotSupported: Minecraft {minecraft}-এর জন্য {modloader} পাওয়া যায়নি
+  mods: '{count}টি মড'
+  name: মড | মডসমূহ
+  newFolder: নতুন ফোল্ডার
+  noGroupsFound: কোনো গ্রুপ পাওয়া যায়নি
+  noGroupsYet: এখনো কোনো গ্রুপ নেই। একটি তৈরি করুন!
+  noModLoaderHint: মড ব্যবহার করতে একটি মডলোডার সক্রিয় করতে ভুলবেন না!
+  openLink: মডের ইউআরএল {url} খুলুন
+  search: মড অনুসন্ধান করুন
+  searchGroups: গ্রুপ অনুসন্ধান করুন...
+  searchOnMcWiki: MC বিশ্বকোষে {name} খুঁজুন।
+  selectOrCreateGroup: গ্রুপ নির্বাচন বা তৈরি করুন
+  showDirectory: মড ডিরেক্টরি দেখান
+  showFile: মড পাথ {file} দেখান
+  showInModrinth: Modrinth-এ {name} দেখান
+  switchDefaultSource: ডিফল্ট মড উৎস
+  syncGroupRules: গ্রুপ করার নিয়মাবলী সংরক্ষণ করুন
+  toUpdate: '{count}টি আপডেট'
+  ungroup: গ্রুপ মুক্ত করুন
+modFilter:
+  clear: ফিল্টার মুছে ফেলুন
+  dependenciesInstallOnly: শুধুমাত্র বাদ পড়া ডিপেন্ডেন্সি মডগুলো দেখান
+  disabledOnly: শুধুমাত্র নিষ্ক্রিয় মডগুলো দেখান
+  hasUpdateOnly: শুধুমাত্র আপডেট থাকা মডগুলো দেখান
+  incompatibleOnly: শুধুমাত্র অসঙ্গতিপূর্ণ বা বাদ পড়া ডিপেন্ডেন্সি মডগুলো দেখান
+  unusedOnly: শুধুমাত্র অব্যবহৃত লাইব্রেরি মডগুলো দেখান
+modInstall:
+  archived: '{name} আর্কাইভ করা হয়েছে। লেখক প্রজেক্টটি পুনরায় আর্কাইভ মুক্ত না করা পর্যন্ত {name} আর কোনো আপডেট পাবে না।'
+  autoUpgrade:
+    description: আপনি Minecraft সংস্করণ পরিবর্তন করেছেন। আপনি কি সামঞ্জস্যপূর্ণ মডগুলো স্বয়ংক্রিয়ভাবে Minecraft {version} সংস্করণের সাথে মিলিয়ে আপডেট করতে চান?
+    'no': এড়িয়ে যান
+    title: মডগুলো আপডেট করবেন?
+    'yes': মডগুলো আপডেট করুন
+  checkDependencies: ডিপেন্ডেন্সি যাচাই করুন
+  checkUpgrade: মড আপডেট যাচাই করুন
+  checkedDependencies: ডিপেন্ডেন্সি যাচাই করা হয়েছে
+  checkedUpgrade: আপডেট যাচাই করা হয়েছে
+  currentVersion: নির্বাচিত সংস্করণ
+  dependencyHint: অন্য একটি সংস্করণ {version} ইনস্টল করা হয়েছে
+  releaseOnly: আপডেট করার সময় আলফা এবং বিটা সংস্করণগুলো উপেক্ষা করুন
+  installDependencies: অনুপস্থিত ডিপেন্ডেন্সিগুলো ইনস্টল করুন
+  installHint: '{dependencies}টি ডিপেন্ডেন্সি সহ {file} ফাইল ইনস্টল করা হবে'
+  noVersionSupported: মডটি শুধুমাত্র Minecraft {supported} সমর্থন করে।
+  recommendation: '{modrinth} এবং {curseforge}-এ থাকা প্রথম {first}টি মড এক্সপ্লোর করুন!'
+  removeUnusedLibraries: অব্যবহৃতগুলো সরান
+  search: মড অনুসন্ধান করুন...
+  skipVersion: ভিন্ন Minecraft সংস্করণের মডগুলো এড়িয়ে যান
+  source: মডের উৎস
+  switch: সংস্করণ পরিবর্তন করুন
+  upgrade: মড আপগ্রেড করুন
+modSearch:
+  noLocalModsFound: আপনার অনুসন্ধানের সাথে মিলে যায় এমন কোনো স্থানীয় মড পাওয়া যায়নি।
+  noModsFound: কোনো মড পাওয়া যায়নি
+  noModsInstalled: আপনার কোনো মড ইনস্টল করা নেই।
+  searchInMarket: মার্কেটে {keyword} অনুসন্ধান করুন
+modUpgradePolicy:
+  curseforge: CurseForge
+  curseforgeOnly: শুধুমাত্র CurseForge
+  modrinth: Modrinth
+  modrinthOnly: শুধুমাত্র Modrinth
+  name: আপগ্রেড পলিসি
+modified:
+  reset: রিসেট করুন
+  save: সংরক্ষণ করুন
+  unsaved: আপনার পরিবর্তন সংরক্ষিত হয়নি!
+modpack:
+  author: লেখকের নাম
+  authorHint: এটি এক্সপোর্ট করা মডপ্যাক (Curseforge) সাইন করতে ব্যবহৃত হতে পারে
+  description: বিবরণ
+  descriptionHint: আপনার মডপ্যাকের সাধারণ বিবরণ। এটি Curseforge মডপ্যাক হিসেবে এক্সপোর্ট করার জন্য ব্যবহৃত হতে পারে।
+  dropHint: ইম্পোর্ট করতে এখানে মডপ্যাক জিপ (zip) ফাইলটি ড্রপ করুন
+  emitCurseforge: Curseforge মডপ্যাক এক্সপোর্ট করুন
+  emitModrinth: Modrinth মডপ্যাক এক্সপোর্ট করুন
+  emitModrinthStrict: কঠোর Modrinth ফরম্যাট
+  emitModrinthStrictDescription: শুধুমাত্র Modrinth নথিতে তালিকাভুক্ত ৪টি ডোমেইনের ইউআরএল অনুমোদিত
+  export: মডপ্যাক হিসেবে এক্সপোর্ট করুন
+  exportDirectory: ডিরেক্টরি এক্সপোর্ট করুন
+  exportDirectoryDescription: মডপ্যাকটি ডিফল্টরূপে ডাউনলোড ফোল্ডারে এক্সপোর্ট করা হবে
+  includeAssets: রিসোর্স অন্তর্ভুক্ত করুন
+  includes: অন্তর্ভুক্ত করার মতো ফাইলসমূহ
+  modpackVersion: মডপ্যাক সংস্করণ
+  name: মডপ্যাক | মডপ্যাকসমূহ
+  overrides: ওভাররাইড
+  url: ইউআরএল
+  urlHint: আপনার মডপ্যাকের হোম পেজ ইউআরএল
+modpackImportConfirm:
+  description: লঞ্চারে একটি ফাইল ড্রপ করার বিষয়টি সনাক্ত করা গেছে। আপনি কি একটি মডপ্যাক ইম্পোর্ট করার চেষ্টা করছেন?
+  title: আপনি কি একটি মডপ্যাক ইম্পোর্ট করার চেষ্টা করছেন?
+modpackUpdateOrCreate:
+  createNew: নতুন তৈরি করুন
+  description: এই মডপ্যাকের জন্য "{name}" নামের একটি ইনস্ট্যান্স ইতিমধ্যে বিদ্যমান। আপনি কি এটি আপডেট করতে চান নাকি একটি নতুন তৈরি করতে চান?
+  title: ইনস্ট্যান্স ইতিমধ্যে বিদ্যমান
+  update: বিদ্যমানটি আপডেট করুন
+modrinth:
+  browseUrl: ব্রাউজারে খুলুন {url}
+  categories:
+    128x: 128x
+    16x: 16x
+    256x: 256x
+    32x: 32x
+    48x: 48x
+    512x+: 512x+
+    64x: 64x
+    8x-: 8x-
+    adventure: অ্যাডভেঞ্চার
+    atmosphere: আবহ
+    audio: অডিও
+    blocks: ব্লকসমূহ
+    bloom: ব্লুম
+    bukkit: বুকিট
+    bungeecord: বাঞ্জিকর্ড
+    canvas: ক্যানভাস
+    cartoon: কার্টুন
+    categories: বিভাগসমূহ
+    challenging: চ্যালেঞ্জিং
+    colored-lighting: রঙিন আলো
+    combat: লড়াই
+    core-shaders: কোর শেডার্স
+    cursed: অভিশপ্ত
+    datapack: ডাটা প্যাক
+    decoration: সজ্জা
+    economy: অর্থনীতি
+    entities: এনটিটিসমূহ
+    environment: পরিবেশ
+    equipment: সরঞ্জাম
+    fabric: ফ্যাব্রিক
+    fantasy: ফ্যান্টাসি
+    features: বৈশিষ্ট্যসমূহ
+    folia: ফোলিয়া
+    foliage: গাছপালা
+    fonts: ফন্টসমূহ
+    food: খাদ্য
+    forge: ফোর্জ
+    game-mechanics: গেম মেকানিক্স
+    gui: জিইউআই
+    high: উচ্চ
+    iris: আইরিস
+    items: আইটেমসমূহ
+    kitchen-sink: কিচেন সিঙ্ক
+    library: লাইব্রেরি
+    lightweight: হালকা
+    liteloader: লাইটলোডার
+    locale: লোকেল
+    low: নিম্ন
+    magic: জাদু
+    management: ব্যবস্থাপনা
+    medium: মাঝারি
+    minecraft: মাইনক্রাফট
+    minigame: মিনি গেমস
+    misc: বিবিধ
+    mobs: মবস
+    modded: মড করা
+    models: মডেলসমূহ
+    modloader: মড লোডার
+    multiplayer: মাল্টিপ্লেয়ার
+    name: বিভাগসমূহ
+    neoforge: নিওফোর্জ
+    optifine: অপটিফাইন
+    optimization: অপ্টিমাইজেশান
+    paper: পেপার
+    path-tracing: পাথ ট্রেসিং
+    pbr: পিবিআর
+    performance impact: পারফরম্যান্সের প্রভাব
+    potato: পটেটো
+    purpur: পারপার
+    quests: কোয়েস্টসমূহ
+    quilt: কুইল্ট
+    realistic: বাস্তবধর্মী
+    reflections: প্রতিফলন
+    resolutions: রেজোলিউশনসমূহ
+    rift: রিফট
+    screenshot: স্ক্রিনশট
+    semi-realistic: আধা-বাস্তবসম্মত
+    shadows: শ্যাডো
+    simplistic: সরলীকৃত
+    social: সামাজিক
+    spigot: স্পিগট
+    sponge: স্পঞ্জ
+    storage: স্টোরেজ
+    technology: প্রযুক্তি
+    themed: থিমযুক্ত
+    transportation: পরিবহন
+    tweaks: টুইকস
+    utility: ইউটিলিটি
+    vanilla: ভ্যানিলা
+    vanilla-like: ভ্যানিলার মতো
+    velocity: ভেলোসিটি
+    waterfall: ওয়াটারফল
+    worldgen: ওয়ার্ল্ড জেন
+  clientSide: ক্লায়েন্ট সাইড
+  copyTitle: ক্লিপবোর্ডে {title} টেক্সট কপি করুন
+  createAt: তৈরি করা হয়েছে
+  createCollection: সংগ্রহ তৈরি করুন
+  description: বর্ণনা
+  downloads: ডাউনলোড
+  environments:
+    all: সব
+    default: ডিফল্ট
+    name: পরিবেশ
+    optional: ঐচ্ছিক
+    required: প্রয়োজনীয়
+    unsupported: অসমর্থিত
+  externalResources: বাহ্যিক সম্পদ
+  featuredVersions: ফিচারযুক্ত সংস্করণসমূহ
+  followedProjects: অনুসরণ করা প্রজেক্টসমূহ
+  followers: অনুসরণকারী
+  gallery: গ্যালারি
+  gameVersions:
+    name: গেম সংস্করণ
+  headers:
+    status: পরিসংখ্যান
+    support: সমর্থন করে
+    version: সংস্করণ
+  issueUrl: সমস্যা
+  license: লাইসেন্স
+  licenses:
+    name: লাইসেন্সসমূহ
+  loginHint: এই অপারেশনটি সম্পাদন করার জন্য Modrinth প্রয়োজন। লঞ্চারটি Modrinth-এ লগইন করার জন্য একটি ব্রাউজার উইন্ডো খুলবে।
+  loginTitle: Modrinth-এ লগইন করুন
+  modLoaders:
+    name: মড লোডারসমূহ
+  modpackSource:
+    source: উৎস
+  projectId: প্রজেক্ট আইডি
+  projectMembers: প্রজেক্টের সদস্যবৃন্দ
+  projectType:
+    datapack: ডেটাপ্যাক
+    mod: মড
+    modpack: মডপ্যাক
+    plugin: প্লাগইন
+    resourcepack: রিসোর্স প্যাক
+    shader: শেডার
+  projects: '{count}টি প্রজেক্ট'
+  serverSide: সার্ভার সাইড
+  sort:
+    downloads: ডাউনলোড সংখ্যা
+    follows: অনুসরণের সংখ্যা
+    newest: সম্প্রতি তৈরি
+    relevance: প্রাসঙ্গিকতা
+    title: ক্রমানুসারে সাজান
+    updated: সম্প্রতি আপডেট করা
+  sourceUrl: উৎস
+  technicalInformation: প্রযুক্তিগত তথ্য
+  updateAt: আপডেট করা হয়েছে
+  versions: সংস্করণসমূহ
+  wikiUrl: উইকি
+modrinthCard:
+  currentVersion: বর্তমান সংস্করণ
+multiplayer:
+  allowTurn: রিলে সার্ভার সক্ষম করুন
+  allowTurnHint: আপনি যদি আপনার বন্ধুর সাথে সংযোগ করতে না পারেন তবে রিলে সার্ভার অনুমোদন করুন। তবে, রিলে সার্ভার ব্যবহার করলে আপনার সংযোগ ধীর হতে পারে। এটি সতর্কতার সাথে ব্যবহার করুন।
+  complete: সম্পন্ন
+  confirm: নিশ্চিত করুন
+  connectionError: সংযোগ ত্রুটি
+  connectionFailedHint: সংযোগ স্থাপন করা সম্ভব হয়নি। উভয় পিয়ারের সামঞ্জস্যপূর্ণ NAT প্রকার রয়েছে কিনা তা পরীক্ষা করুন।
+  connections: সংযোগসমূহ
+  copied: কপি করা হয়েছে!
+  copy: কপি করুন
+  copyGroupToFriendHint: আপনার বন্ধুদের এই আইডি দিয়ে গ্রুপে যোগ দিতে দিন
+  copyLocalHint: |
+    দয়া করে স্থানীয় SDP টেক্সটটি কপি করুন এবং আপনার অন্য পক্ষকে পাঠান যাতে সে জয়েন কানেকশনে এই টেক্সটটি প্রবেশ করাতে পারে। <span>একটি টোকেন শুধুমাত্র <span style="color: red; font-weight: bold;">একজন পিয়ার</span>-এর জন্য ব্যবহার করা যেতে পারে! আপনি একই টোকেন একাধিক পিয়ারকে পাঠাতে পারবেন না!</span> <br> <span class="hint-text" style="font-style: italic;">আপনার যদি একাধিক পিয়ারের সাথে সংযোগ করার প্রয়োজন হয়, তবে আপনাকে <span style="font-weight: bold; color: rgba(245, 158, 11)">একাধিক</span> সংযোগ তৈরি করতে হবে।</span>
+  createLocalToken: লোকাল টোকেন তৈরি করুন
+  currentIpTitle: শনাক্তকৃত পাবলিক আইপি
+  currentNatTitle: 'বর্তমান নেটওয়ার্ক (NAT):'
+  difficultyLevelHint: একটি সংযোগ তৈরি করার জটিলতার মাত্রা
+  disconnect: সংযোগ বিচ্ছিন্ন করুন
+  disconnectDescription: আপনি কি নিশ্চিত যে আপনি ব্যবহারকারী {user}({id}) এর সাথে সংযোগ বিচ্ছিন্ন করতে চান?
+  disconnected: সংযোগ বিচ্ছিন্ন
+  enterRemoteToken: রিমোট টোকেন লিখুন
+  enterRemoteTokenHint: আপনার পিয়ার (peer) আপনার টোকেনটি প্রবেশ করানোর পর, আপনাকে নিচের পাঠ্য ক্ষেত্রে তার টোকেনটি লিখতে হবে। সংযোগ স্থাপন করতে নিশ্চিত করুন ক্লিক করুন।
+  exposedPortDescription: অন্যান্য পিয়ারদের জন্য আপনার উন্মুক্ত করা পোর্ট
+  exposedPorts: ফরওয়ার্ড করা পোর্টসমূহ
+  gatheringIce: |
+    অনুগ্রহ করে অপেক্ষা করুন যাতে ICE সার্ভার আপনার নেটওয়ার্ক সম্পর্কে পর্যাপ্ত তথ্য সংগ্রহ করতে পারে। আপনি যদি অধৈর্য হন এবং পর্যাপ্ত তথ্য থাকে, তবে আপনি আগেই অন্য পক্ষকে বর্তমান SDP প্রদান করতে পারেন এবং পরবর্তীতে ক্লিক করতে পারেন। অনুগ্রহ করে আপনার পিয়ারকে <span class="v-chip v-chip--label v-size--small" style="text-font: bold" >Local Token</span> পাঠান, আপনার পিয়ার আপনার টোকেনটি <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> Join Connection </span> বিভাগে প্রবেশ করাবেন। <br> আপনার তথ্য সংগ্রহ করে <span class="v-chip v-chip--label v-size--small" style="text-font: bold">Local token</span> তৈরি করতে ICE সার্ভারের কিছু সময় লাগতে পারে।<br> আপনাকে ICE এর স্থিতি সম্পূর্ণ হওয়া পর্যন্ত অপেক্ষা করতে হবে না। নিচের টোকেনটি অপরিবর্তিত থাকলে, আপনি এটি কপি করে আপনার পিয়ারকে পাঠাতে পারেন।
+  groupId: গ্রুপ আইডি
+  illegalTokenDescription: অবৈধ টোকেন, অনুগ্রহ করে নিশ্চিত করুন যে আপনার পিয়ারের দেওয়া টোকেনটি সঠিক
+  initiateConnection: সংযোগ শুরু করুন
+  joinConnection: আপনার পিয়ার যদি ইতিমধ্যেই একটি সংযোগ শুরু করে থাকে, তবে আপনাকে সংযোগে যোগ দিতে (Join Connection) হবে।
+  joinManual: যোগ দিন
+  joinOrCreateGroup: গ্রুপে যোগ দিন/তৈরি করুন
+  joinOrCreateGroupHint: আপনার বন্ধুদের থেকে গ্রুপ আইডি নিন অথবা একটি গ্রুপ তৈরি করুন
+  kernel: P2P কার্নেল
+  kernelDescription: নেটিভ WebRTC অথবা node-datachannel ব্যবহার করুন। এটি কেবল তখনই পরিবর্তন করুন যখন আপনার p2p সংযোগের কারণে কখনও কখনও লঞ্চার উইন্ডোটি ক্র্যাশ করে।
+  leaveGroup: গ্রুপ ত্যাগ করুন
+  localToken: লোকাল টোকেন
+  manualConnect: ম্যানুয়ালি সংযোগ করুন
+  name: ল্যান (LAN) এ মাল্টিপ্লেয়ার
+  natWarning: আপনার NAT এর ধরন সরাসরি সংযোগ করতে বাধা দিতে পারে। সেটিংসে রিলে সার্ভার সক্রিয় করার চেষ্টা করুন অথবা এর পরিবর্তে আপনার বন্ধুকে হোস্ট করতে বলুন।
+  networkInfo: নেটওয়ার্ক তথ্য (টগল করতে ক্লিক করুন)
+  next: পরবর্তী
+  otherExposedPortDescription: '{user} দ্বারা ফরওয়ার্ড করা পোর্ট'
+  placeholder: ল্যান (LAN) এ মাইনক্রাফট খেলতে অন্যান্য ব্যবহারকারীদের সাথে সংযোগ করুন!
+  previous: পূর্ববর্তী
+  receiveHint: অন্য পক্ষ আপনার টোকেনটি প্রবেশ করানোর পর, আপনার সংযোগটি স্বয়ংক্রিয়ভাবে তৈরি হয়ে যাবে। এখন আপনি ডায়ালগটি বন্ধ করতে পারেন।
+  receiveRemoteTokenHint: অনুগ্রহ করে আপনার পিয়ারের থেকে প্রাপ্ত টোকেনটি এখানে প্রবেশ করান।
+  remoteToken: রিমোট টোকেন
+  routerInfo: রাউটার তথ্য
+  sendTokenToRemote: রিমোটে টোকেন পাঠান
+  share: ইনস্ট্যান্স কনফিগারেশন শেয়ার করুন
+  sharing: ফাইল শেয়ার করা হচ্ছে...
+  sharingNotificationBody: আপনি {name} এর শেয়ার করা কনফিগারেশন থেকে একটি ইনস্ট্যান্স ডাউনলোড বা তৈরি করতে পারেন।
+  sharingNotificationTitle: একজন পিয়ার তাদের গেম কনফিগারেশন শেয়ার করছেন
+  start: শুরু করুন
+  startNewP2PConnection: একটি নতুন পিয়ার সংযোগ তৈরি করতে শুরু করুন বোতামে ক্লিক করুন
+myStuff: আমার জিনিসপত্র
+natType:
+  blocked: অবরুদ্ধ
+  fullCone: ফুল কোন
+  openInternet: উন্মুক্ত ইন্টারনেট
+  restrictNat: সীমাবদ্ধ NAT
+  restrictPortNat: সীমাবদ্ধ পোর্ট NAT
+  symmetricNat: সিমেট্রিক NAT
+  symmetricUDPFirewall: সিমেট্রিক UDP ফায়ারওয়াল
+  unknown: অজানা
+neoForgedVersion:
+  disable: NeoForged নিষ্ক্রিয় করুন
+  empty: NeoForged {version} সমর্থন করে না
+news:
+  name: সংবাদ
+  readMore: আরও পড়ুন
+optifineVersion:
+  disable: Optifine নিষ্ক্রিয় করুন
+  empty: Optifine মাইনক্রাফট {version} সমর্থন করে না
+optional: ঐচ্ছিক
+peerConnectionState:
+  closed: বন্ধ
+  connected: সংযুক্ত
+  connecting: সংযোগ করা হচ্ছে
+  disconnected: সংযোগ বিচ্ছিন্ন
+  failed: ব্যর্থ
+  name: সংযোগের অবস্থা
+  new: নতুন
+peerGroupState:
+  closed: গ্রুপে নেই
+  closing: বন্ধ
+  connected: গ্রুপে যোগদান করা হয়েছে
+  connecting: সংযোগ করা হচ্ছে
+peerIceGatheringState:
+  gathering: আইস সার্ভার সংগ্রহ করা হচ্ছে
+peerSignalingState:
+  have-local-offer: পিয়ারের বিবরণের জন্য অপেক্ষা করা হচ্ছে
+presence:
+  instance: '{instance} ইনস্ট্যান্সে নিষ্ক্রিয়'
+  instanceSetting: 'ইনস্ট্যান্স সেটিং সম্পাদনা: {instance}'
+  mod: '{instance} এ মডসমূহ দেখা হচ্ছে'
+  modrinthProject: Modrinth-এ {name} দেখা হচ্ছে
+  resourcePack: '{instance} এ রিসোর্স প্যাকসমূহ দেখা হচ্ছে'
+  save: '{instance} এ সেভ ফাইলসমূহ দেখা হচ্ছে'
+  setting: সেটিংস পৃষ্ঠা দেখা হচ্ছে
+  shaderPack: '{instance} এ শেডার প্যাকসমূহ দেখা হচ্ছে'
+proxy:
+  host: হোস্ট
+  port: পোর্ট
+quiltVersion:
+  disable: কুইল্ট নিষ্ক্রিয় করুন
+  empty: কুইল্ট মাইনক্রাফ্ট {version} সমর্থন করে না
+reinstall:
+  name: '{version} পুনরায় ইনস্টল করুন'
+relative:
+  daysAgo: '{count} দিন আগে | {count} দিন আগে'
+  hoursAgo: '{count} ঘণ্টা আগে | {count} ঘণ্টা আগে'
+  justNow: এইমাত্র
+  minutesAgo: '{count} মিনিট আগে | {count} মিনিট আগে'
+  secondsAgo: '{count} সেকেন্ড আগে | {count} সেকেন্ড আগে'
+resourceError:
+  body: '"{path}" পার্স করা যায়নি ({code})। ফাইলটি ক্ষতিগ্রস্ত, লক করা বা অসম্পূর্ণ হতে পারে। এটি আবার ডাউনলোড করার বা মুছে ফেলার চেষ্টা করুন।'
+  title: '{file} পড়া যাচ্ছে না'
+blueprint:
+  name: ব্লুপ্রিন্ট | ব্লুপ্রিন্টসমূহ
+  count: '{count}টি ব্লুপ্রিন্ট'
+  searchLocal: ব্লুপ্রিন্ট খুঁজুন...
+  searchOnline: অনলাইনে খুঁজুন...
+  market: মার্কেট
+  local: স্থানীয়
+  provider: সরবরাহকারী
+  import: আমদানি করুন
+  openFolder: ফোল্ডার খুলুন
+  refresh: রিফ্রেশ করুন
+  empty: কোনো ব্লুপ্রিন্ট পাওয়া যায়নি। একটি .litematic / .schem / .nbt ফাইল আমদানি করুন অথবা মার্কেট ব্রাউজ করুন।
+  dropHint: আমদানি করতে এখানে ব্লুপ্রিন্ট ফাইল (.litematic / .schem / .nbt) ড্রপ করুন।
+  selectHint: পূর্বরূপ দেখতে একটি ব্লুপ্রিন্ট নির্বাচন করুন।
+  blocks: '{count}টি ব্লক'
+  materials: উপকরণসমূহ
+  allNamespaces: সব
+  findMod: এই নেমস্পেসের জন্য মড খুঁজুন
+  compatible: সামঞ্জস্যপূর্ণ
+  incompatible: অনুপস্থিত মডসমূহ
+  missingNamespaces: 'অনুপস্থিত মডসমূহ: {namespaces}'
+  delete: মুছে ফেলুন
+  cancel: বাতিল করুন
+  install: ইনস্টল করুন
+  goTo: ওয়েবসাইট
+  byAuthor: '{author} দ্বারা'
+  noDescription: কোনো বিবরণ প্রদান করা হয়নি।
+  loadMore: আরো লোড করুন
+  cmsBrowseOnly: এই উৎসটি শুধুমাত্র ব্রাউজ করার জন্য; ডাউনলোড করতে ওয়েবসাইটটি খুলুন।
+  mixedSources: ফলাফলগুলো সব উৎস থেকে মিশ্রিত। কিছু শুধুমাত্র ব্রাউজ করার জন্য — ডাউনলোড করতে তাদের ওয়েবসাইট খুলুন।
+  formats:
+    structure: ভ্যানিলা স্ট্রাকচার
+  preview:
+    title: ত্রিমাত্রিক (3D) পূর্বরূপ
+    loading: পূর্বরূপ লোড হচ্ছে...
+    empty: প্রদর্শনের জন্য এই ব্লুপ্রিন্টে কোনো ব্লক নেই।
+    hint: '{count}টি ব্লক · {x}×{y}×{z}'
+    controls: দেখতে ড্র্যাগ করুন · WASD দিয়ে নড়াচড়া করুন · Space/Shift দিয়ে উপরে/নিচে যান
+  convert:
+    title: বিন্যাস পরিবর্তন করুন
+    hint: এই ব্লুপ্রিন্টটিকে অন্য একটি বিন্যাসে পরিবর্তন করুন। একটি নতুন ফাইল তৈরি করা হবে।
+    target: লক্ষ্য বিন্যাস
+    action: রূপান্তর করুন
+  replace:
+    title: ব্লক প্রতিস্থাপন করুন
+    simple: সহজ
+    precise: সুনির্দিষ্ট
+    simpleHint: বিদ্যমান ব্লকের অবস্থার বৈশিষ্ট্যগুলো বজায় রেখে শুধুমাত্র ব্লক আইডি দিয়ে মেলান।
+    preciseHint: সম্পূর্ণ ব্লকের অবস্থা (আইডি + বৈশিষ্ট্য) মিলিয়ে তা সম্পূর্ণভাবে প্রতিস্থাপন করুন।
+    from: থেকে
+    to: এতে
+    addRule: নিয়ম যোগ করুন
+    newFile: নতুন ফাইল হিসেবে সংরক্ষণ করুন
+    action: প্রতিস্থাপন করুন
+resourcepack:
+  compatible: '{version}-এর সাথে সামঞ্জস্যপূর্ণ বিন্যাস {format}'
+  defaultDescription: মাইনক্রাফ্ট-এর ডিফল্ট রূপ ও অনুভূতি
+  delete:
+    content: এটি ডিস্ক থেকে রিসোর্স প্যাক ফাইলটি মুছে ফেলবে এবং আমরা এটি পূর্বাবস্থায় ফিরিয়ে আনতে পারব না। আপনি কি নিশ্চিত যে এটি করতে চান?
+    title: রিসোর্স প্যাকটি মুছে ফেলুন
+  dropHint: আমদানি করতে রিসোর্স প্যাকের ফোল্ডার/জিপ ফাইল এখানে ড্রপ করুন।
+  enable: '{count}টি রিসোর্স প্যাক সক্রিয় করা হয়েছে'
+  incompatible: অসামঞ্জস্যপূর্ণ রিসোর্স প্যাক বিন্যাস ({format})। গ্রহণযোগ্য {accept}। বর্তমান {actual}।
+  name: রিসোর্স প্যাক | রিসোর্স প্যাকসমূহ
+  linkShared: বিভিন্ন ইনস্ট্যান্সের মধ্যে রিসোর্স প্যাক শেয়ার করুন
+  linkSharedHint: এই ইনস্ট্যান্সের রিসোর্স প্যাক ফোল্ডারটিকে বৈশ্বিক শেয়ার করা ফোল্ডারের সাথে লিঙ্ক করুন যাতে সমস্ত ইনস্ট্যান্স একই রিসোর্স প্যাক দেখতে পায়। বিদ্যমান প্যাকগুলো শেয়ার করা ফোল্ডারে একত্রিত করা হবে।
+  noLocalPacksFound: আপনার অনুসন্ধানের সাথে মেলে এমন কোনো স্থানীয় রিসোর্স প্যাক পাওয়া যায়নি।
+  noPacks: কোনো রিসোর্স প্যাক পাওয়া যায়নি
+  noPacksInstalled: আপনার কোনো রিসোর্স প্যাক ইনস্টল করা নেই।
+  search: রিসোর্স প্যাক খুঁজুন...
+  searchHint: রিসোর্স প্যাক খুঁজুন
+  searchOnCurseforge: Curseforge-এ {name} খুঁজুন
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: নির্বাচিত রিসোর্স প্যাকসমূহ
+  showDirectory: রিসোর্স প্যাক ডিরেক্টরি দেখান
+  showFile: ফোল্ডারে রিসোর্স প্যাক দেখান {file}
+  showInCurseforge: CurseForge-এ {name} দেখান
+  unselected: অনির্বাচিত রিসোর্স প্যাকসমূহ
+save:
+  allowCheats: চিট ব্যবহারের অনুমতি দিন
+  copy:
+    name: সেভ কপি করুন
+  createNew: নতুন জগৎ তৈরি করুন
+  createdWorlds: আপনার {count}টি জগৎ আছে
+  deleteHint: এই কাজটি আর ফিরিয়ে আনা যাবে না। আপনি এই সেভ ডাটা চিরতরে হারাবেন। আপনি কি নিশ্চিত যে আপনি এই সেভটি মুছে ফেলতে চান?
+  deleteTitle: সেভটি মুছে ফেলুন
+  difficulty: কঠিনতা
+  dropHint: ইম্পোর্ট করতে এখানে সেভ জিপ (zip) টেনে আনুন
+  datapack:
+    name: ডাটা প্যাক | ডাটা প্যাকসমূহ
+    noSaveHint: এই ডাটা প্যাকটি ইনস্টল করতে প্রথমে একটি জগৎ তৈরি বা নির্বাচন করুন
+    packFormat: 'প্যাক ফরম্যাট: {format}'
+    imported: ডাটা প্যাক {save}-এ ইম্পোর্ট করা হয়েছে
+  duplicate: সেভের প্রতিলিপি তৈরি করুন
+  export: সেভ এক্সপোর্ট করুন
+  exportMessage: সেভটিকে জিপ (zip) ফাইল হিসেবে এক্সপোর্ট করুন
+  exportTitle: সেভ এক্সপোর্ট করুন
+  gameMode: গেম মোড
+  independent: ইনস্ট্যান্সটি স্বাধীন সেভ ফোল্ডার ব্যবহার করে
+  linkShared: বিভিন্ন ইনস্ট্যান্সের মধ্যে সেভ শেয়ার করুন
+  linkSharedHint: এই ইনস্ট্যান্সের সেভ ফোল্ডারটিকে গলোবাল শেয়ার্ড ফোল্ডারের সাথে লিঙ্ক করুন যাতে সমস্ত ইনস্ট্যান্স একই জগৎ শেয়ার করে। বিদ্যমান সেভগুলো শেয়ার্ড ফোল্ডারে মার্জ করা হবে।
+  levelName: লেভেলের নাম
+  loadMap: ম্যাপ লোড করুন
+  mapError: ম্যাপ ত্রুটি
+  mapInfo: 'ইন্টারেক্টিভ 3D জগতের প্রাকদর্শন:'
+  mapLoaded: ম্যাপ লোড হয়েছে
+  mapPreview: ম্যাপের প্রাকদর্শন
+  chunkSelectMode: চাঙ্ক নির্বাচন করুন
+  panMode: প্যান
+  chunkSelected: '{count}টি চাঙ্ক নির্বাচিত হয়েছে'
+  mapHintPan: প্যান করতে টেনে আনুন
+  mapHintSelect: নির্বাচন করুন
+  mapHintDeselect: নির্বাচন বাতিল করুন
+  toggleGrid: অঞ্চলের গ্রিড টগল করুন
+  heightTop: উপর
+  resetView: ভিউ রিসেট করুন
+  clearSelection: নির্বাচন পরিষ্কার করুন
+  copyChunks: চাঙ্ক কপি করুন
+  pasteChunks: '{count}টি চাঙ্ক পেস্ট করুন'
+  pasteChunksPlaceHint: '{count}টি চাঙ্ক স্থাপন করতে মাউস সরান, তারপর পেস্ট করতে ক্লিক করুন। লক্ষ্যস্থলের বিদ্যমান চাঙ্কগুলো ওভাররাইট হয়ে যাবে। বাতিল করতে Esc টিপুন।'
+  pasteChunksCancel: বাতিল করুন
+  deleteChunks: চাঙ্ক মুছে ফেলুন
+  deleteChunksTitle: নির্বাচিত চাঙ্কগুলো মুছে ফেলুন
+  deleteChunksHint: '{count}টি নির্বাচিত চাঙ্ক কি মুছে ফেলতে চান? এটি আর পূর্বাবস্থায় ফেরানো যাবে না। গেমটিতে পরবর্তী সময়ে এই অঞ্চলটি লোড করা হলে চাঙ্কগুলো পুনরায় তৈরি হবে।'
+  mapLoading: ম্যাপ লোড হচ্ছে…
+  noRegions: প্রাকদর্শনের জন্য এই জগতের কোনো জেনারেট হওয়া অঞ্চল নেই।
+  dimOverworld: ওভারওয়ার্ল্ড
+  dimNether: নেদার
+  dimEnd: এন্ড
+  name: সেভ | সেভসমূহ
+  noLocalSavesFound: আপনার অনুসন্ধানের সাথে মেলে এমন কোনো স্থানীয় সেভ পাওয়া যায়নি।
+  noSavesFound: কোনো সেভ পাওয়া যায়নি
+  noSavesInstalled: আপনার কোনো সেভ নেই।
+  openFolder: সেভ ফোল্ডার খুলুন
+  properties: জগতের বৈশিষ্ট্যসমূহ
+  search: ম্যাপ খুঁজুন...
+  searchHint: CurseForge-এ জগৎ খুঁজুন
+  searchSaves: সেভ খুঁজুন
+  seed: সীড
+  selected: স্থানীয় সেভসমূহ
+  shared: ইনস্ট্যান্সটি শেয়ার্ড সেভ ফোল্ডার ব্যবহার করে
+  showDirectory: সেভ ডিরেক্টরি দেখান
+  unselected: শেয়ার করা সেভসমূহ
+  useCurrent: বর্তমান জগৎটি ব্যবহার করুন
+  useMouseRotate: ভিউ ঘোরানোর জন্য মাউস ব্যবহার করুন
+  useScrollZoom: জুম করার জন্য স্ক্রল হুইল ব্যবহার করুন
+  world: জগৎ
+screenshots:
+  empty: আপনার কোনো স্ক্রিনশট নেই
+  gallery: স্ক্রিনশট গ্যালারি
+  hint: গেমে থাকাকালীন F2 চেপে স্ক্রিনশট নিন
+  openFolder: স্ক্রিনশট ফোল্ডার খুলুন
+  playRandom: এলোমেলো করুন
+  playSequence: ক্রমানুসারে চালান
+search:
+  favorate: সংগ্রহ
+  local: ইনস্টল করা হয়েছে
+  market: মার্কেট
+  emptyInstalled: এখনও কিছু ইনস্টল করা হয়নি
+  browseMarket: মার্কেট ব্রাউজ করুন
+  noResults: কোনো ফলাফল পাওয়া যায়নি
+server:
+  acceptingMinecraftVersion: মাইনক্রাফট সংস্করণ গ্রহণ করা হচ্ছে
+  addServer: সার্ভার যোগ করুন
+  address: সার্ভার ঠিকানা
+  addressHint: 'যেমন: mc.hypixel.net'
+  bindUpstream: আপস্ট্রিম হিসেবে বাইন্ড করুন
+  boundUpstream: সার্ভার আপস্ট্রিম বাইন্ড করা হয়েছে
+  boundUpstreamHint: এই ইনস্ট্যান্সটি বাইন্ড করা সার্ভারের মাইনক্রাফট সংস্করণ অনুসরণ করে।
+  creationHint: অনুগ্রহ করে সার্ভারের ঠিকানাটি পূরণ করুন এবং সার্ভারে পিং করুন
+  editServer: সার্ভার সম্পাদনা করুন
+  emptyHint: এই ইনস্ট্যান্সের servers.dat-এ এখনও কোনো সার্ভার নেই। শুরু করতে একটি যোগ করুন।
+  entryCount: '{count}টি সার্ভার | {count}টি সার্ভার'
+  expectedVersions: সমর্থিত সংস্করণসমূহ
+  export: সার্ভার এক্সপোর্ট করুন
+  exportNoFilesHint: কোনো সার্ভার ফাইল পাওয়া যায়নি। কিছু ফাইল তৈরি করতে আপনি লোকালভাবে সার্ভারটি একবার চালাতে পারেন।
+  exportOption: সার্ভার এক্সপোর্ট অপশন
+  exportSSHAuthenticationFailed: সমস্ত প্রমাণীকরণ পদ্ধতি ব্যর্থ হয়েছে। অনুগ্রহ করে ব্যবহারকারীর নাম/পাসওয়ার্ড বা প্রাইভেট কী পরীক্ষা করুন।
+  exportSSHOptions: SSH অপশনসমূহ
+  exportSSHPrivateKeyPath: SSH প্রাইভেট কী পাথ
+  exportSSHRemotePath: রিমোট সার্ভার পাথ
+  exportToFolder: ফোল্ডারে এক্সপোর্ট করুন
+  filterVersion: সার্ভারের প্রতিক্রিয়া জানানো মাইনক্রাফট সংস্করণ ফিল্টার করুন
+  host: হোস্ট
+  hostHint: সার্ভারের হোস্ট (পোর্ট সহ)
+  hostRequired: অনুগ্রহ করে সার্ভারের আইপি ঠিকানাটি লিখুন
+  ipAddress: আইপি ঠিকানা
+  launchClient: পরিবর্তে ক্লায়েন্ট চালু করুন
+  launchPinned: পিন করা
+  launchTargetHint: এই ইনস্ট্যান্সটি সরাসরি পিন করা সার্ভারে চালু হয়। পুনরায় ক্লায়েন্টে ফিরে যাবেন?
+  maxPlayers: সর্বোচ্চ খেলোয়াড়
+  motd: সার্ভারের MOTD
+  nameHint: মাল্টিপ্লেয়ার তালিকায় প্রদর্শিত নাম
+  nogui: কোনো সার্ভার GUI নেই
+  onlineMode: অনলাইন মোড
+  pin: সার্ভার পিন করুন
+  pinAfterSave: সংরক্ষণের পর ডিফল্ট লঞ্চ টার্গেট হিসেবে পিন করুন
+  ping: পিং
+  pings: পিংসমূহ
+  pinnedHeader: 'পিন করা: {name}'
+  players: খেলোয়াড়বৃন্দ
+  port: পোর্ট
+  serverName: সার্ভারের নাম
+  serversListTitle: সার্ভার তালিকা
+  unbindUpstream: আনবাইন্ড করুন
+  unknown: অজানা সার্ভার
+  unknownDescription: অজানা সার্ভার। অনুগ্রহ করে রিফ্রেশ করুন
+  unpin: আনপিন করুন
+  upload: সার্ভার আপলোড করুন
+  upstreamUpToDate: আপনার ইনস্ট্যান্সটি সার্ভারের সাথে মিলে গেছে ({version})।
+  upstreamUpToDateHint: কোনো আপগ্রেডের প্রয়োজন নেই। সার্ভারটি পুনরায় পিং করতে ক্লিক করুন।
+  upstreamUpdateAvailable: সার্ভারে এখন মাইনক্রাফট {version} চলছে। প্রয়োগ করতে ক্লিক করুন।
+  upstreamUpdateHint: প্রস্তাবিত মাইনক্রাফট সংস্করণটি এই ইনস্ট্যান্সে প্রয়োগ করে।
+  useAsUpstreamHint: ইনস্ট্যান্সটি সার্ভারের রিপোর্ট করা মাইনক্রাফট সংস্করণটি অনুসরণ করবে।
+  version: সার্ভারের জন্য প্রয়োজনীয় সংস্করণ
+  versionHint: পিং করার জন্য মাইনক্রাফট সংস্করণ
+serverStatus:
+  nohost: §4হোস্ট খুঁজে পাওয়া যাচ্ছে না!
+  ping: পিং করা হচ্ছে...
+  refuse: §4সার্ভার প্রত্যাখ্যান করেছে!
+  timeout: §4সার্ভারে সংযোগের সময়সীমা পার হয়ে গেছে!
+setting:
+  about: সম্পর্কে
+  aboutBmclDescription: BMCL API চীনের মূল ভূখণ্ডের ব্যবহারকারীদের জন্য সুবিধাজনক ডাউনলোডের সুবিধা প্রদান করে
+  aboutContributors: 🧑‍💻 অবদানকারীগণ 🧑‍💻
+  aboutDenoDescription: সার্ভারহীন জাভাস্ক্রিপ্ট অ্যাপ্লিকেশনের জন্য XMCL ডেনো ডিপ্লয় (Deno Deploy)-এর ঝামেলামুক্ত প্ল্যাটফর্ম ব্যবহার করে
+  aboutLicense: MIT লাইসেন্স
+  aboutLicenseInfo: SignPath.io দ্বারা উইন্ডোজে বিনামূল্যে কোড সাইনিং এবং SignPath ফাউন্ডেশন দ্বারা সার্টিফিকেট প্রদান করা হয়েছে
+  aboutSponsors: 😇 পৃষ্ঠপোষকগণ 😇
+  advancedJavaOptions: উন্নত জাভা অপশনসমূহ
+  advancedSettings: উন্নত সেটিংস
+  advancedSettingsHint: বিপদ অঞ্চল - লঞ্চারের ডেটা রিসেট বা পরিচালনা করুন
+  aiAgentApiKey: এআই এজেন্ট এপিআই কী (AI Agent API Key)
+  aiAgentApiKeyDescription: এই ডিভাইসে স্থানীয়ভাবে সংরক্ষিত এবং এজেন্টের অনুরোধের জন্য ব্যবহৃত হয়।
+  aiAgentEndpoint: এআই এজেন্ট এন্ডপয়েন্ট (AI Agent Endpoint)
+  aiAgentEndpointDescription: চ্যাট সমাপ্তির এন্ডপয়েন্ট ইউআরএল (Endpoint URL)।
+  aiAgentModel: এআই এজেন্ট মডেল
+  aiAgentModelDescription: চ্যাট সমাপ্তির অনুরোধে পাঠানোর জন্য মডেলের নাম।
+  apiSets:
+    auto: স্বয়ংক্রিয় (নেটওয়ার্ক দ্বারা নির্ধারিত)
+    official: অফিসিয়াল (Mojang)
+  appearance: বাহ্যিক রূপ
+  appearanceDescription: লঞ্চারের বাহ্যিক রূপ কাস্টমাইজ করুন
+  appxUpdateHint: লঞ্চারটি ইনস্টলার ডাউনলোড এবং এক্সিকিউট করবে। পপআপ ইনস্টলার ব্যর্থ হলে, অনুগ্রহ করে এটি ম্যানুয়ালি চালান।
+  authenticationSettings: প্রমাণীকরণ
+  backdropBlur: ব্যাকড্রপ ব্লার
+  backgroundColorAbove: ব্যাকগ্রাউন্ড কালার ওভারলে হিসেবে দেখান
+  backgroundColorAboveDescription: এটি ব্যাকগ্রাউন্ড ইমেজ বা ভিডিওর উপরে ব্যাকগ্রাউন্ড কালার প্রদর্শন করবে।
+  backgroundImage: ব্যাকগ্রাউন্ড ইমেজ
+  backgroundImageClear: সাফ করুন
+  backgroundImageDescription: ব্যাকগ্রাউন্ড হিসেবে একটি ইমেজ নির্বাচন করুন অথবা সাফ করুন
+  useDesktopBackground: বর্তমান ডেস্কটপ ওয়ালপেপার ব্যবহার করুন
+  backgroundImageFit:
+    contain: কন্টেইন
+    cover: কভার
+    name: ইমেজ ফিট
+  backgroundImageUrl: ইমেজ ইউআরএল
+  backgroundImageUrlPlaceholder: ইমেজের জন্য HTTP/HTTPS ইউআরএল প্রবেশ করান
+  backgroundMusic: থিম ব্যাকগ্রাউন্ড মিউজিক
+  backgroundMusicUrl: মিউজিক ইউআরএল
+  backgroundMusicUrlPlaceholder: মিউজিকের জন্য HTTP/HTTPS ইউআরএল প্রবেশ করান
+  backgroundType: ব্যাকগ্রাউন্ড টাইপ
+  backgroundTypeDescription: ব্যাকগ্রাউন্ডে বিশেষ ইফেক্ট দেখান (এটি কর্মক্ষমতা প্রভাবিত করতে পারে)
+  backgroundTypes:
+    halo: হ্যালো
+    image: ইমেজ
+    none: কোনোটিই নয়
+    particle: পার্টিকেল
+    video: ভিডিও
+  backgroundVideo: ব্যাকগ্রাউন্ড ভিডিও
+  backgroundVideoDescription: ভিডিও নির্বাচন করুন বা সাফ করুন
+  backgroundVideoUrl: ভিডিও ইউআরএল
+  backgroundVideoUrlPlaceholder: ভিডিওর জন্য HTTP/HTTPS ইউআরএল প্রবেশ করান
+  backgroundVideoVolume: ভলিউম
+  backgroundVideoVolumeDescription: ভলিউম সামঞ্জস্য করতে ড্র্যাগ করুন
+  browseRoot: ব্রাউজ করুন
+  checkUpdate: আপডেট চেক করুন
+  colorTheme:
+    appBarColor: অ্যাপ বার
+    backgroundColor: ব্যাকগ্রাউন্ড কালার
+    cardColor: কার্ড কালার
+    description: থিমের কালার পরিবর্তন করুন
+    errorColor: এরর কালার
+    name: থিম কালার এবং ব্লার
+    primaryColor: প্রাইমারি কালার
+    sideBarColor: সাইড বার
+    warningColor: ওয়ার্নিং কালার
+  customCss:
+    advancedDescription: আপনাক নিজস্ব সিএসএস (CSS) দিয়ে লঞ্চারের বর্তমান স্টাইলিং ওভাররাইড করুন।
+    assistantHint: আপনি যে রূপ চান তা বর্ণনা করুন এবং আমি আপনার জন্য সিএসএস লিখে দেব।
+    assistantSuggestion1: সাইডবারটিকে আধা-স্বচ্ছ করুন
+    assistantSuggestion2: কার্ডগুলিতে একটি হালকা গ্রেডিয়েন্ট ব্যাকগ্রাউন্ড যুক্ত করুন
+    assistantTitle: সিএসএস অ্যাসিস্ট্যান্ট
+    dropHint: একটি .css ফাইল লোড করতে এখানে ড্রপ করুন
+    editorPlaceholder: /* আপনার কাস্টম সিএসএস এখানে লিখুন */
+    globalToggle: কাস্টম সিএসএস টগল করুন
+    openInDialog: এজেন্ট ডায়ালগে খুলুন
+    title: কাস্টম সিএসএস
+    warning: কাস্টম সিএসএস আপনাকে লঞ্চারের যেকোনো অংশ কাস্টমাইজ করতে দেয়। বিশ্বস্ত নয় এমন উৎস থেকে সিএসএস পেস্ট করার সময় সতর্ক থাকুন, কারণ এটি ইউআই (UI) লেআউট পরিবর্তন করতে পারে।
+  darkTheme: থিম
+  darkThemeDescription: ডার্ক বা লাইট থিমের মধ্যে নির্বাচন করুন
+  devModeLabel: DEV
+  developerMode: ডেভেলপার মোড
+  developerModeDescription: ডেভেলপার মোড আপনার নিজস্ব মড পরীক্ষার জন্য
+  disableTelemetry: টেলিমেট্রি নিষ্ক্রিয় করুন
+  disableTelemetryDescription: XMCL গেম চালু এবং ব্যবহারকারীর লগইন ইভেন্টগুলি সংগ্রহ করবে।
+  enableDedicatedGPUOptimization: ডেডিকেটেড জিপিইউ বরাদ্দ করুন
+  enableDedicatedGPUOptimizationDescription: এই বিকল্পটি মাইনক্রাফ্ট প্রসেসের জন্য ডেডিকেটেড জিপিইউ বরাদ্দ করবে।
+  enableDiscord: ডিসকর্ড প্রেসেন্স সক্ষম করুন
+  enableDiscordDescription: এটি লঞ্চারে ডিসকর্ড স্ট্যাটাস আপডেট করবে
+  enterUrl: ইউআরএল প্রবেশ করান
+  exportSettings: সেটিংস এক্সপোর্ট করুন
+  exportSettingsHint: আপনার বর্তমান সেটিংস একটি ফাইলে সংরক্ষণ করুন
+  general: সাধারণ
+  githubRelease: গিটহাব রিলিজ
+  globalSetting: গ্লোবাল ইনস্ট্যান্স সেটিংস
+  globalSettingHint: ইনস্ট্যান্স ডিফল্টরূপে এই সেটিংস ব্যবহার করবে।
+  importSettings: সেটিংস ইম্পোর্ট করুন
+  importSettingsHint: পূর্বে এক্সপোর্ট করা ফাইল থেকে সেটিংস লোড করুন
+  instanceTheme:
+    activeDescription: এই ইনস্ট্যান্সটি একটি কাস্টম থিম ব্যবহার করছে। গ্লোবাল থিম ব্যবহার করতে আপনি এটি মুছে ফেলতে পারেন।
+    description: এই ইনস্ট্যান্সের জন্য একটি কাস্টম থিম সক্ষম করুন। এটি বর্তমান গ্লোবাল থিমের একটি অনুলিপি তৈরি করবে।
+    name: ইনস্ট্যান্স থিম
+  language: ভাষা
+  languageDescription: প্রদর্শনের ভাষা
+  latestVersion: সর্বশেষ সংস্করণ
+  layout:
+    default: ডিফল্ট লেআউট
+    focus: ফোকাস লেআউট
+  layoutDescription: আপনার পছন্দের ইন্টারফেস শৈলী নির্বাচন করুন
+  layoutTitle: ইন্টারফেস লেআউট
+  linuxEnableDedicatedGPUOptimization: একটি ডেডিকেটেড গ্রাফিক্স প্রসেসর বরাদ্দ করা
+  linuxEnableDedicatedGPUOptimizationDescription: এই বিকল্পটি মাইনক্রাফ্ট (Minecraft) প্রক্রিয়ার জন্য একটি ডেডিকেটেড জিপিইউ (GPU) বরাদ্দ করে।
+  linuxTitlebar: নেティブ টাইটেল বার
+  linuxTitlebarDescription: লঞ্চারের জন্য নেティブ লিনাক্স টাইটেল বার ব্যবহার করুন
+  livePreview: লাইভ প্রিভিউ
+  location: সংরক্ষণের স্থান
+  manualUpdateHint: এই সংস্করণটি স্বয়ংক্রিয়ভাবে আপডেট করা যাবে না। অনুগ্রহ করে অফিসিয়াল ওয়েবসাইট থেকে লঞ্চারটি আবার ডাউনলোড করুন!
+  maunalUpdateHint: সংস্করণটি স্বয়ংক্রিয়ভাবে আপডেট করা যাবে না। অনুগ্রহ করে ওয়েবসাইট থেকে লঞ্চারটি আবার ডাউনলোড করুন!
+  maxSockets: প্রতি হোস্ট
+  maxSocketsDescription: প্রতি হোস্ট বা সামগ্রিকভাবে সমস্ত হোস্টের জন্য অনুমোদিত সর্বোচ্চ সকেটের সংখ্যা সীমাবদ্ধ করুন। ০ মানে কোনো সীমাবদ্ধতা নেই।
+  maxSocketsTitle: সর্বোচ্চ এইচটিটিপি (HTTP) সকেট
+  memoryAssignment: মেমরি বরাদ্দ
+  migrateFromOther: অন্য লঞ্চার থেকে ইম্পোর্ট করুন
+  minecraftOptions: মাইনক্রাফ্ট অপশন
+  name: গ্লোবাল সেটিং | গ্লোবাল সেটিংস
+  network: নেটওয়ার্ক সেটিংস
+  newsPosition: খবর বিভাগ স্থানান্তর করুন
+  officialWebsite: অফিসিয়াল ওয়েবসাইট
+  particleMode:
+    bubble: বাবল
+    name: পার্টিকেল মোড
+    push: পুশ
+    remove: রিমুভ
+    repulse: রিপালস
+  particleModeDescription: পার্টিকেল ক্লিক আচরণ নির্বাচন করুন
+  quickLaunchSettings: কুইক লঞ্চ
+  replaceNative: নেটিভ লাইব্রেরি প্রতিস্থাপন করুন
+  replaceNativeDescription: আপনার কম্পিউটারের আর্কিটেকচার অনুযায়ী নেটিভ লাইব্রেরি প্রতিস্থাপন করুন।
+  replaceNatives:
+    all: সব
+    legacy: শুধুমাত্র লেগাসি সংস্করণ
+  resetAllSettings: সব সেটিংস রিসেট করুন
+  resetAllSettingsConfirmMessage: এটি স্থায়ীভাবে সমস্ত সেটিংস, অ্যাকাউন্ট, ইনস্ট্যান্স, গ্রুপ এবং ক্যাশে করা ডেটা মুছে ফেলবে। এই কাজটি আর পূর্বাবস্থায় ফিরিয়ে আনা যাবে না। আপনি কি নিশ্চিত?
+  resetAllSettingsConfirmTitle: সব সেটিংস রিসেট করবেন?
+  resetAllSettingsHint: লঞ্চারটিকে ফ্যাক্টরি ডিফল্ট এ রিসেট করুন (সবকিছু মুছে ফেলে)
+  resetAllSettingsSuccess: সব সেটিংস রিসেট করা হয়েছে। লঞ্চারটি পুনরায় চালু হবে।
+  resetSettingsError: 'সেটিংস রিসেট করতে ত্রুটি: {error}'
+  resetToDefault: ডিফল্ট এ রিসেট করুন
+  select: নির্বাচন করুন
+  setAsBackground:
+    failed: ব্যাকগ্রাউন্ড ইমেজ সেট করতে ব্যর্থ হয়েছে
+    global: লঞ্চারের ব্যাকগ্রাউন্ড হিসেবে সেট করুন
+    instance: ইনস্ট্যান্সের ব্যাকগ্রাউন্ড হিসেবে সেট করুন
+    successGlobal: ব্যাকগ্রাউন্ড ইমেজ আপডেট করা হয়েছে।
+    successInstance: ইনস্ট্যান্সের ব্যাকগ্রাউন্ড ইমেজ আপডেট করা হয়েছে।
+  settingsExported: সেটিংস সফলভাবে এক্সপোর্ট করা হয়েছে
+  settingsImportError: সেটিংস ইম্পোর্ট করতে ব্যর্থ হয়েছে। অনুগ্রহ করে ফাইলের বিন্যাস পরীক্ষা করুন।
+  settingsImported: সেটিংস সফলভাবে ইম্পোর্ট করা হয়েছে
+  settingsReloadHint: সব সেটিংস প্রয়োগ করতে লঞ্চারটি পুনরায় চালু হবে।
+  showNewsHeader: খবরের শোকেস আনহাইড করুন
+  showRoot: দেখান
+  sidebarAlign: সাইডবার অ্যালাইনমেন্ট
+  sidebarAutoHide: সাইডবার অটো-হাইড করুন
+  sidebarAutoHideHint: সাইডবার স্বয়ংক্রিয়ভাবে হাইড করুন এবং কার্সার উপরে আনলে দেখান
+  sidebarClassic: ক্লাসিক
+  sidebarNotch: নচ
+  sidebarPosition: সাইডবারের অবস্থান
+  sidebarScale: সাইডবার স্কেল
+  sidebarShowOnlyPinned: শুধুমাত্র পিন করা ইনস্ট্যান্সগুলো দেখান
+  sidebarShowOnlyPinnedHint: সাইডবারে শুধুমাত্র পিন করা ইনস্ট্যান্সগুলো প্রদর্শন করুন
+  sidebarStyle: সাইডবারের স্টাইল
+  sidebarStyleHint: ক্লাসিক এবং আধুনিক নচ ডিজাইনের মধ্যে বেছে নিন
+  streamerMode: স্ট্রিমিং মোড
+  streamerModeDescription: এটি লঞ্চারে আপনার ইমেলের মতো ব্যক্তিগত তথ্য লুকিয়ে রাখবে।
+  theme:
+    dark: ডার্ক থিম
+    light: লাইট থিম
+    system: সিস্টেম থিম ব্যবহার করুন
+  themeExport: থিম এক্সপোর্ট করুন
+  themeBorderRadius: গোলাকার কোণ
+  themeBorderRadiusDescription: কার্ড, ডায়ালগ, মেনু এবং প্যানেলের জন্য গোলাকার কোণ সক্রিয় বা নিষ্ক্রিয় করুন।
+  themeFont: ফন্ট
+  themeFontDescription: লঞ্চারের ফন্ট পরিবর্তন করুন।
+  themeFontUrl: ফন্ট ইউআরএল (URL)
+  themeFontUrlPlaceholder: ফন্টের জন্য HTTP/HTTPS ইউআরএল লিখুন
+  themeImport: থিম ইম্পোর্ট করুন
+  themeResetFont: ফন্ট রিসেট করুন
+  themeSelectFont: ফন্ট নির্বাচন করুন
+  themeSettings: থিম সেটিংস
+  themeShare: থিম শেয়ার করুন
+  themeShareDescription: আপনি আপনার বন্ধুর সাথে থিমটি শেয়ার করতে পারেন।
+  themeStore:
+    description: গ্লোবাল থিম সংরক্ষণ ও পরিচালনা করুন
+    loadConfirmMessage: একটি সংরক্ষিত থিম লোড করলে তা আপনার বর্তমান থিমটিকে প্রতিস্থাপন করবে। প্রয়োজন হলে ব্যাকআপ নিন।
+    loadConfirmTitle: বর্তমান থিম প্রতিস্থাপন করবেন?
+    loadTheme: থিম লোড করুন
+    name: থিম স্টোর
+    noSavedThemes: এখনও কোনো থিম সংরক্ষিত হয়নি
+    saveDialogTitle: থিম সংরক্ষণ করুন
+    saveToStore: স্টোরে সংরক্ষণ করুন
+    savedThemes: সংরক্ষিত থিমসমূহ
+    themeName: থিমের নাম
+    themeNameHint: এই থিমটি সংরক্ষণ করার জন্য ব্যবহৃত নাম
+  update: আপডেট
+  useBmclAPI: BMCL API ব্যবহার করুন
+  useBmclAPIDescription: আপনি যখন চীনের মূল ভূখণ্ডে থাকবেন তখন মাইনক্রাফ্ট ডাউনলোড করতে BMCLAPI ব্যবহার করুন। (আপনি চীনের মূল ভূখণ্ডে না থাকলে এটি আপনাকে প্রভাবিত করবে না)
+  useProxy: HTTP প্রক্সি
+  useProxyDescription: http অনুরোধের জন্য প্রক্সি সার্ভার ঠিকানা
+  viewBackgroundMusic: মিউজিক দেখুন
+settingLabel:
+  global: গ্লোবাল
+  globalHint: এই সেটিংটি গ্লোবাল সেটিং অনুসরণ করবে
+  local: লোকাল
+  localHint: এই সেটিংটি বর্তমান ইনস্ট্যান্স দ্বারা পরিবর্তিত হয়েছে
+setup:
+  account:
+    description: আপনার গেম অ্যাকাউন্টে লগইন করুন। আপনার যদি কোনো অ্যাকাউন্ট না থাকে তবে আপনি আপাতত এটি এড়িয়ে যেতে পারেন।
+    name: গেম অ্যাকাউন্ট যোগ করুন
+    skip: আপাতত এড়িয়ে যান
+  appearance:
+    name: '@:setting.appearance'
+  dataRoot:
+    description: ডাটা রুট কোনো সাধারণ .minecraft ডিরেক্টরি নয়। যেহেতু XMCL ডাটা ডিরেক্টরি গঠন ভ্যানিলা থেকে আলাদা, তাই আমরা ডাটা রুট হিসেবে সাধারণ .minecraft ডিরেক্টরি ব্যবহার করার পরামর্শ দিই না।
+    drives: সুপারিশকৃত অবস্থানসমূহ
+    name: ডাটা ডিরেক্টরি সেট করুন
+  defaultLayoutDescription: ডিফল্ট লেআউটটি গেমের "ইনস্ট্যান্স" ধারণাকে উন্নত করার চেষ্টা করে। এটি ডিসকর্ড এর মতো অ্যাপের মতো দেখায়। এটি স্টিম ইত্যাদি অন্যান্য গেম লঞ্চার অ্যাপ দ্বারাও অনুপ্রাণিত।
+  defaultPath: ডিফল্ট পাথ
+  error:
+    badDataRoot: লঞ্চার ডাটার জন্য অবৈধ ডিরেক্টরি! অনুগ্রহ করে অন্য ডিরেক্টরি চেষ্টা করুন!
+    exists: নির্বাচিত ডিরেক্টরি খালি নয়। এটি ঠিক আছে তবে অনুগ্রহ করে আপনার ডাটার ব্যাকআপ নিশ্চিত করুন।
+    invalidChar: পাথ-এ অবৈধ অক্ষর রয়েছে! এর কারণে মাইনক্রাফ্ট শুরু হতে ব্যর্থ হতে পারে! অনুগ্রহ করে শুধুমাত্র ইংরেজি অক্ষর এবং প্রতীক ব্যবহার করুন!
+    noPermission: নির্বাচিত ডিরেক্টরি অ্যাক্সেস করার জন্য লঞ্চারের অনুমতি নেই! অনুগ্রহ করে অন্য একটি চেষ্টা করুন।
+    nonDictionary: নির্বাচিত পাথটি একটি ফাইল! অনুগ্রহ করে একটি ডিরেক্টরি নির্বাচন করুন!
+  focusLayoutDescription: ফোকাস লেআউটটি হলো মাইনক্রাফ্ট লঞ্চারের পূর্ববর্তী লেআউট। এটি একক ইনস্ট্যান্স বা কয়েকটি ইনস্ট্যান্সের সাথে ব্যবহার করার জন্য ডিজাইন করা হয়েছে।
+  game:
+    name: বিদ্যমান গেম ইম্পোর্ট করুন
+  locale:
+    description: আমাদের কাছে থাকলে আপনার পছন্দের ভাষা নির্বাচন করুন! আপনি যদি আপনার মাতৃভাষা দেখতে না পান এবং সাহায্য করতে চান, তাহলে অনুবাদ করার জন্য পুল রিকোয়েস্ট পাঠাতে আমাদের গিটহাব ভিজিট করতে পারেন!
+    language: ভাষা
+    name: ভাষা সেট করুন
+  path: বর্তমান পাথ
+shaderPack:
+  deletion: শেডার প্যাক মুছুন
+  deletionHint: এটি শেডার প্যাক ফাইল {path} মুছে ফেলবে এবং এটি পূর্বাবস্থায় ফেরানো যাবে না।
+  disabled: নিষ্ক্রিয় শেডার প্যাকসমূহ
+  dropHint: শেডার প্যাক ইম্পোর্ট করুন
+  empty: কোনো শেডার প্যাক বরাদ্দ করা হয়নি
+  enable: '{name} ব্যবহার করা হচ্ছে'
+  enabled: সক্রিয় শেডার প্যাকসমূহ
+  manage: শেডার প্যাকসমূহ পরিচালনা করুন
+  market: শেডার মার্কেট
+  name: শেডার প্যাক
+  linkShared: ইনস্ট্যান্স জুড়ে শেডার প্যাক শেয়ার করুন
+  linkSharedHint: এই ইনস্ট্যান্সের শেডারপ্যাক ফোল্ডারটিকে গ্লোবাল শেয়ার্ড ফোল্ডারের সাথে লিঙ্ক করুন যাতে সব ইনস্ট্যান্স একই শেডার প্যাক দেখতে পায়। বিদ্যমান প্যাকগুলো শেয়ার্ড ফোল্ডারে মার্জ করা হবে।
+  noLocalPacksFound: আপনার অনুসন্ধানের সাথে মেলে এমন কোনো স্থানীয় শেডার প্যাক পাওয়া যায়নি।
+  noPacks: কোনো শেডার প্যাক ইনস্টল করা নেই
+  noPacksInstalled: আপনার কোনো শেডার প্যাক ইনস্টল করা নেই।
+  noShaderMod: কোনো শেডার মড ইনস্টল করা নেই
+  noShaderModHint: শেডার মড ছাড়া আপনি শেডার ব্যবহার করতে পারবেন না
+  noShaderModInstallHint: শেডার প্যাক লোড করতে আপনাকে নিচের যেকোনো একটি মড ইনস্টল করতে হবে।
+  search: শেডার প্যাক অনুসন্ধান করুন...
+  searchHint: Modrinth এবং CurseForge-এ শেডার প্যাক অনুসন্ধান করুন
+  selectSearchHint: শেডার প্যাক অনুসন্ধান করুন এবং নির্বাচন করুন
+  showDirectory: শেডার প্যাক ডিরেক্টরি দেখান
+  showFile: ফোল্ডারে এই শেডার প্যাকটি দেখান
+shared:
+  add: যোগ করুন
+  author: লেখক
+  back: ফিরে যান
+  browse: ব্রাউজ করুন
+  cancel: বাতিল করুন
+  client: ক্লায়েন্ট
+  copied: কপি করা হয়েছে
+  copy: কপি করুন
+  close: বন্ধ করুন
+  copyFailed: কপি ব্যর্থ হয়েছে
+  copyFailedHint: ক্লিপবোর্ডে কপি করা যায়নি
+  description: বর্ণনা
+  disable: নিষ্ক্রিয় করুন
+  download: ডাউনলোড করুন
+  edit: সম্পাদনা করুন
+  enable: সক্রিয় করুন
+  filter: ফিল্টার
+  install: ইনস্টল করুন
+  installed: ইনস্টল করা হয়েছে
+  keepSelected: নির্বাচিত অংশ রাখুন
+  manage: পরিচালনা করুন
+  name: নাম
+  next: পরবর্তী
+  'no': না
+  ok: ঠিক আছে
+  previous: পূর্ববর্তী
+  refresh: রিফ্রেশ করুন
+  remove: সরিয়ে ফেলুন
+  save: সংরক্ষণ করুন
+  search: অনুসন্ধান করুন
+  server: সার্ভার
+  skipForNow: আপাতত এড়িয়ে যান
+  'yes': হ্যাঁ
+  delete: মুছে ফেলুন
+sidebar:
+  pin: পিন করুন
+  unpin: আনপিন করুন
+sortBy:
+  alphabetAsc: বর্ণানুক্রমে সাজান (আরোহী)
+  alphabetDesc: বর্ণানুক্রমে সাজান (অবরোহী)
+  name: সাজানোর ধরণ
+  timeAsc: পরিবর্তনের সময় অনুযায়ী সাজান (আরোহী)
+  timeDesc: পরিবর্তনের সময় অনুযায়ী সাজান (অবরোহী)
+store:
+  discover: আবিষ্কার করুন
+  empty: কোনো মডপ্যাক পাওয়া যায়নি
+  emptyHint: আপনার ফিল্টার বা অনুসন্ধানের শব্দ পরিবর্তন করে চেষ্টা করুন।
+  latestMinecraft: সর্বশেষ মাইনক্রাফ্ট সংস্করণ
+  name: মডপ্যাক মার্কেট
+  searchResult: অনুসন্ধানের ফলাফল
+  trending: ট্রেন্ডিং
+tag:
+  create: ট্যাগ তৈরি করুন
+  createSelected: নির্বাচিত অংশের জন্য ট্যাগ তৈরি করুন
+task:
+  cancelled: বাতিল করা হয়েছে
+  clear: সমাপ্ত কাজগুলো সাফ করুন
+  connection:
+    connected: সংযুক্ত
+    free: মুক্ত
+    pending: পেন্ডিং
+    queued: সারিবদ্ধ
+    running: চলমান সংযোগ
+    size: মোট সংখ্যা
+  connections: নেটওয়ার্ক সংযোগসমূহ
+  empty: কোনো চলমান কাজ নেই
+  failed: ব্যর্থ হয়েছে
+  manager: টাস্ক ম্যানেজার
+  nTaskRunning: '{count}টি কাজ চলছে'
+  name: টাস্ক | টাস্কসমূহ
+  pause: বিরতি দিন
+theme:
+  selectImage: ছবি নির্বাচন করুন
+  selectMusic: সঙ্গীত নির্বাচন করুন
+  selectVideo: ভিডিও নির্বাচন করুন
+  title: এক্স মাইনক্রাফ্ট লঞ্চার
+title: এক্স মাইনক্রাফ্ট লঞ্চার
+transportType:
+  host: হোস্ট ক্যান্ডিডেট
+  prflx: পিয়ার রিফ্লেক্সিভ ক্যান্ডিডেট
+  relay: রিলে ক্যান্ডিডেট
+  srflx: সার্ভার রিফ্লেক্সিভ ক্যান্ডিডেট
+turnRegion:
+  fr: ফ্রান্স
+  guangzhou: গুয়াংজু, চীন
+  hk: হংকং
+  liaoning: লিয়াওনিং, চীন
+  po: পোল্যান্ড
+tutorial:
+  feedbackDescription: আপনি যদি কোনো সমস্যার সম্মুখীন হন, অনুগ্রহ করে প্রতিক্রিয়া পাঠাতে এই বোতামটিতে ক্লিক করুন!
+  hideNewsHeaderDescription: আপনি বাম দিকে খবরের প্রদর্শনী দেখতে পাচ্ছেন। এই বোতামে ক্লিক করে এই প্রদর্শনীটি লুকানো যাবে।
+  instance:
+    iconDescription: আইকন পরিবর্তন করতে ক্লিক করুন।
+    iconTitle: ইন্সট্যান্স আইকন
+    javaDescription: জাভা সংস্করণ চয়ন বা পরিবর্তন করুন।
+    javaImportDescription: স্থানীয় স্টোরেজ থেকে জাভা ইমপোর্ট করুন।
+    javaImportTitle: জাভা ইমপোর্ট করুন
+    javaTitle: জাভা তালিকা
+  instanceAddDescription: বিদ্যমান মাইনক্রাফ্ট ইন্সট্যান্স ইমপোর্ট করতে বা স্ক্র্যাচ অথবা মডপ্যাক থেকে নতুন একটি তৈরি করতে এই বোতামটিতে ক্লিক করুন।
+  instanceSelectDescription: এই বোতামটিতে ক্লিক করলে গেম নির্বাচন এবং খবর পড়ার পৃষ্ঠায় নিয়ে যাওয়া হবে।
+  launchDescription: গেমটি ইনস্টল বা চালু করতে এই বোতামটিতে ক্লিক করুন।
+  mod:
+    defaultSourceDescription: আপনি এখানে মডের বিস্তারিত তথ্যের উৎস চয়ন করতে পারেন। এখানে Modrinth এবং Curseforge উভয় জায়গায় প্রকাশিত মডগুলো রয়েছে। আপনি যদি এই দুটি কন্টেন্ট প্রোভাইডারের মধ্যে পরিবর্তন করতে চান, তবে আপনি এখানকার মানটি পরিবর্তন করতে পারেন।
+    defaultSourceTitle: মড কন্টেন্টের উৎস নির্বাচন করুন
+    detailDescription: যখন আপনি বাম দিকে কোনো আইটেম নির্বাচন করবেন, তখন আপনি মডের বিবরণ দেখতে পাবেন। কন্টেন্টটি Modrinth, Curseforge অথবা পার্স করা মডের বিষয়বস্তু থেকে আসতে পারে।
+    detailTitle: মডের বিবরণ
+    listDescription: আপনার কোনো ইনপুট না থাকলে আমরা ইনস্টল করা মডগুলো প্রদর্শন করব। আপনার ইনপুটে কোনো কিওয়ার্ড বা বিভাগ নির্বাচিত হলে আপনি অনুসন্ধান করা মডগুলো দেখতে পাবেন।
+    listTitle: ইনস্টলকৃত বা অনুসন্ধান করা মড
+    searchDescription: আপনি এই অনুসন্ধান বক্সটির সাহায্যে Modrinth, Curseforge বা আপনার স্থানীয় ক্যাশ থেকে মড অনুসন্ধান করতে পারেন।
+    searchTitle: মড অনুসন্ধান করুন
+  multiplayer:
+    contentDescription: আপনার এবং আপনার সহকর্মীদের (পিয়ার) মধ্যকার সংযোগগুলো এখানে তালিকাভুক্ত করা হবে।
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: আপনি অন্য খেলোয়াড়দের সাথে একটি গ্রুপ তৈরি করতে বা যোগ দিতে পারেন। গ্রুপ অনুযায়ী লঞ্চার আপনার এবং আপনার বন্ধুদের মধ্যে P2P সংযোগ তৈরি করার চেষ্টা করবে। আপনি আপনার বন্ধুদের দেওয়া গ্রুপের নাম লিখতে পারেন। অথবা আপনি একটি অনন্য নাম তৈরি করতে পারেন।
+    groupTitle: একটি গ্রুপে যোগ দিন
+    joinDescription: গ্রুপের নাম দেওয়ার পর, আপনি গ্রুপে যোগ দিতে বা তৈরি করতে এই বোতামটিতে ক্লিক করতে পারেন। যদি গ্রুপের নাম খালি থাকে, তবে লঞ্চার আপনার জন্য একটি নাম তৈরি করবে।
+    manualDescription: যদি আপনি বা আপনার বন্ধু গ্রুপে সংযোগ করতে না পারেন, তবে ম্যানুয়ালি কানেক্ট-এ ক্লিক করে ম্যানুয়ালি টোকেন বিনিময় করার চেষ্টা করতে পারেন। যদি সেটিও ব্যর্থ হয়, তবে এটি একটি ইন্টারনেট সমস্যা হতে পারে।
+  recentPlayDescription: তৈরি করা গেমগুলি এখানে তালিকাভুক্ত করা হবে। ইনস্টল করা সংস্করণ এবং ডাউনলোড করা মডপ্যাকগুলি দেখতে আপনি এখানে ভিউ পরিবর্তন করতে পারেন।
+  storePoupularModpackDescription: আপনি এই বিভাগে Curseforge এবং Modrinth-এর সবচেয়ে জনপ্রিয় মডপ্যাকগুলি দেখতে পাবেন।
+  storeSearchCategoryDescription: আপনি এখানে বিভাগ বা ফিল্টারগুলিও পরিবর্তন করতে পারেন।
+  storeSearchDescription: আপনি এই টেক্সট বক্সে লিখে মডপ্যাকগুলি অনুসন্ধান করতে পারেন। অনুসন্ধান করতে এন্টার চাপুন।
+  storeSearchResultDescription: আপনি এখানে সমস্ত অনুসন্ধান ফলাফল তালিকাভুক্ত দেখতে পাবেন।
+  userAccountDescription: আপনার মাইনক্রাফ্ট অ্যাকাউন্ট যোগ করতে বা পরিচালনা করতে এই আইকনটিতে ক্লিক করুন।
+unauthenticatedWarning:
+  cancel: বাতিল
+  description: আপনি কোনো অ্যাকাউন্টে লগ ইন করেননি। গেমটি ডেমো মোডে চালু হবে। সম্পূর্ণ বৈশিষ্ট্য অ্যাক্সেস করতে, দয়া করে সাইন ইন করুন।
+  login: সাইন ইন
+  playAnyway: যেকোনো উপায়ে খেলুন
+  title: লগ ইন করা নেই
+universalDrop:
+  unknownResource: অজানা
+unresolvedFiles:
+  description: ইনস্টলেশনের সময় এই ফাইলগুলি ডাউনলোড করা যায়নি। একটি ম্যাচিং উৎস অনুসন্ধান করুন, ম্যাচগুলি ইনস্টল করুন, অথবা যেকোনো উপায়ে চালু করতে ফাইলগুলি উপেক্ষা করুন।
+  empty: সব ফাইল সমাধান করা হয়েছে।
+  ignoreSelected: '{count} উপেক্ষা করুন'
+  install: ম্যাচ করা {count}টি ইনস্টল করুন
+  matched: মিলেছে
+  noMatch: পাওয়া যায়নি
+  search: উৎস অনুসন্ধান করুন
+  source:
+    curseforge-name: CurseForge
+    dependency: নির্ভরতা
+    modrinth-hash: Modrinth হ্যাশ
+    modrinth-name: Modrinth
+  title: অমীমাংসিত ফাইলসমূহ
+  via: '{source}-এর মাধ্যমে'
+upstream:
+  downgrade: ডাউনগ্রেড
+  onlyShowCurrentVersion: শুধুমাত্র বর্তমান মাইনক্রাফ্ট সংস্করণ দেখান
+  update: আপডেট
+user:
+  accessToken: অ্যাক্সেস টোকেন
+  authMode: প্রমাণীকরণ পরিষেবা
+  authService: অনুমোদন পরিষেবা
+  email: ইমেল ঠিকানা
+  id: ব্যবহারকারী আইডি
+  name: ব্যবহারকারীর নাম
+  nameHint: গেমটিতে প্রদর্শিত নাম
+  profile: প্রোফাইল
+  tokenExpired: মেয়াদোত্তীর্ণ
+  tokenValidUntil: টোকেনটি কার্যকর থাকবে
+userAccount:
+  add: অ্যাকাউন্ট যোগ করুন
+  removeDescription: এটি এই অ্যাকাউন্টের সমস্ত তথ্য মুছে ফেলবে। আপনি কি নিশ্চিত?
+  removeTitle: অ্যাকাউন্ট সরান
+userCape:
+  changeTitle: আপনার কেপ পরিবর্তন করুন
+  description: 'কেপ হল বিশেষ পুরস্কার যা খেলোয়াড়রা বিভিন্ন ইভেন্ট, ক্যাম্পেইন এবং অন্যান্য আনন্দদায়ক ঘটনার মাধ্যমে আনলক করতে পারে। এখানে আপনি বর্তমানে আপনার মালিকানাধীন কেপগুলির মধ্যে বেছে নিতে পারেন:'
+  noCape: কোনো কেপ নেই
+userService:
+  add: আরও পরিষেবা যোগ করুন
+  authlibInjectorMetadata: Authlib-Injector মেটাডেটা
+  baseUrlHint: আপনার কাস্টম পরিষেবার বেস ইউআরএল
+  homepage: হোমপেজ
+  implementation: বাস্তবায়ন
+  manageServices: প্রমাণীকরণ পরিষেবাগুলি পরিচালনা করুন
+  register: নিবন্ধন করুন
+  server: সার্ভার
+  skinDomains: স্কিন ডোমেন
+  title: তৃতীয় পক্ষের ব্যবহারকারী পরিষেবা
+  version: সংস্করণ
+userServices:
+  microsoft:
+    account: মাইক্রোসফট অ্যাকাউন্ট
+    deviceCode: ডিভাইস কোড
+    deviceCodeHint: লগইন এ ক্লিক করার পর ডিভাইস কোড তৈরি করা হবে
+    name: Microsoft
+    password: ব্রাউজারে পাসওয়ার্ড লিখুন
+    useDeviceCode: ডিভাইস কোডের মাধ্যমে লগইন করুন
+  mojang:
+    account: ইমেল ঠিকানা
+    name: Mojang
+    password: পাসওয়ার্ড
+  offline:
+    account: ব্যবহারকারীর নাম
+    name: অফলাইন
+    password: কোনো পাসওয়ার্ড নেই
+    uuid: ব্যবহারকারী ইউইউআইডি (ঐচ্ছিক)
+userSkin:
+  classic: ক্লাসিক
+  import: স্কিন ইম্পোর্ট করুন
+  importFile: ফাইল থেকে খুলুন
+  importLink: লিঙ্ক থেকে খুলুন
+  placeUrlHere: ইম্পোর্ট করতে এখানে স্কিন ইউআরএল দিন
+  reset: রিসেট করুন
+  save: সংরক্ষণ করুন
+  saveTitle: ডিস্কে স্কিন সংরক্ষণ করুন
+  skinType: স্কিনের ধরন
+  slim: স্লিম
+  upload: স্কিন আপলোড করুন
+  urlNotEmpty: স্কিন URL খালি হতে পারে না
+  urlNotValid: স্কিন URL বৈধ নয়
+  useSlim: স্লিম মডেল ব্যবহার করুন
+version:
+  checkIntegrity: অখণ্ডতা যাচাই করুন
+  name: সংস্করণ | সংস্করণসমূহ
+  notInstalled: সংস্করণটি ইনস্টল করা নেই
+versionType:
+  alpha: আলফা
+  beta: বেটা
+  name: অবস্থা
+  release: রিলিজ
+gamepad:
+  detectedTitle: গেমপ্যাড শনাক্ত হয়েছে
+  connected: কন্ট্রোলার সংযুক্ত হয়েছে
+  guideTitle: কন্ট্রোলার নিয়ন্ত্রণসমূহ
+  enableSwitchLabel: গেমপ্যাড নিয়ন্ত্রণসমূহ
+  enabledState: সক্রিয়
+  disabledState: নিষ্ক্রিয়
+  toggle: টগল করুন
+  disabledNotify: গেমপ্যাড নিয়ন্ত্রণসমূহ নিষ্ক্রিয় করা হয়েছে।
+  enabledNotify: গেমপ্যাড নিয়ন্ত্রণসমূহ সক্রিয় করা হয়েছে! নেভিগেট করতে D-pad/Left stick, নির্বাচন করতে {btnA}, এবং ফিরে যেতে {btnB} ব্যবহার করুন।
+  guide:
+    confirm: নির্বাচন করুন
+    navigate: নেভিগেট করুন
+    tabs: ট্যাব পরিবর্তন করুন
+    sections: সেকশন পরিবর্তন করুন
+    launch: গেম চালু করুন
+    instanceSettings: ইন্সট্যান্স সেটিংস
+  modSuggestTitle: কন্ট্রোলার মড
+  modSuggestBody: মাইক্রাফটের ভেতরে আপনার গেমপ্যাড ব্যবহার করতে, একটি কন্ট্রোলার মড সাজেস্ট করা হচ্ছে। আপনি কি আপনার মডলোডারের জন্য উপযুক্ত মডটি ইনস্টল করতে চান?
+  modInstall: মড ইনস্টল করুন
+  modSkip: এড়িয়ে যান
+  modDone: সম্পন্ন
+  modInstalled: কন্ট্রোলার মড সফলভাবে ইনস্টল করা হয়েছে! পরের বার মাইক্রাফট চালু করার সময় এটি সক্রিয় হবে।
+  modInstalledNotify: ইন-গেম কন্ট্রোলার সমর্থনের জন্য {name} ইনস্টল করা হয়েছে।
+  modNotFound: মাইক্রাফট {version}-এ {loader}-এর জন্য কোনো সামঞ্জস্যপূর্ণ সংস্করণ পাওয়া যায়নি।
+  settingSteamTitle: স্টিমে লঞ্চার যোগ করুন
+  steamAddedNotify: লঞ্চার সফলভাবে স্টিম লাইব্রেরিতে যোগ করা হয়েছে! এটি দেখতে দয়া করে স্টিম পুনরায় চালু করুন।
+  steamAlreadyAddedNotify: লঞ্চারটি ইতিমধ্যেই আপনার স্টিম লাইব্রেরিতে রয়েছে।
+  steamDeckTitle: স্টিম ডেক শনাক্ত হয়েছে
+  steamDeckDesc: আমরা শনাক্ত করেছি যে আপনি স্টিম ডেকে চালাচ্ছেন। গেমিং মোডে সম্পূর্ণ স্টিম ওভারলে এবং কন্ট্রোলার ইন্টিগ্রেশনের জন্য আপনি কি এক্স মাইক্রাফট লঞ্চারকে একটি নন-স্টিম গেম হিসেবে আপনার স্টিম লাইব্রেরিতে যোগ করতে চান?
+  steamDeckAddBtn: স্টিমে যোগ করুন ({btn})
+  steamDeckCancelBtn: বাতিল করুন ({btn})

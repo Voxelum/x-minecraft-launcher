@@ -1,0 +1,1867 @@
+AppAddInstanceDialog:
+  choiceTitle: कई लॉन्च प्रोफाइल पाए गए। कृपया आयात करने के लिए एक का चयन करें।
+  createTitle: गेम बनाएं
+  serverTitle: अपना सर्वर पता दर्ज करें
+AppShareInstanceDialog:
+  alterDownloadDescription: यदि आप वर्तमान इंस्टेंस को खराब नहीं करना चाहते हैं। आप अपने साथी (peer) के कॉन्फ़िग से एक नया इंस्टेंस भी बना सकते हैं। इंस्टेंस बनाने के लिए नीचे दिए गए बटन पर क्लिक करें।
+  baseInfo: मूल सेटिंग
+  cancelShare: साझा करना रद्द करें
+  description: प्रोफ़ाइल साझा करने के बाद, अन्य लोग आपके पीसी के माध्यम से इन फ़ाइलों को डाउनलोड कर सकते हैं।
+  downloadDescription: कृपया अपने साथी द्वारा प्रदान की गई फ़ाइलों को सत्यापित करें। वह फ़ाइल चुनें जिसे आप डाउनलोड करना चाहते हैं। इसे वर्तमान इंस्टेंस {name} में रखा जाएगा।
+  downloadNotifyTitle: '{user} से इंस्टेंस डाउनलोड करें'
+  downloadTitle: अन्य साथियों (peers) से फ़ाइलें डाउनलोड करें
+  filesToDownload: डाउनलोड करने के लिए फ़ाइलें चुनें
+  filesToShare: साझा करने के लिए फ़ाइलें चुनें
+  instanceShare: '{user} ने अभी आपके साथ वर्तमान इंस्टेंस साझा किया है'
+  share: साझा करें
+  shareNotifyTitle: इंस्टेंस साझा करें
+  shareTitle: अन्य खिलाड़ी के साथ गेम फ़ाइलें साझा करें
+BaseSettingGeneral:
+  title: सामान्य
+HomeJavaIssueDialog:
+  incompatibleJava: असंगत जावा
+  incompatibleJavaHint: वर्तमान जावा चयनित माइनक्राफ्ट के साथ असंगत हो सकता है!
+  missingJava: लापता जावा
+  missingJavaHint: 'लॉन्चर आपके कंप्यूटर में किसी भी जावा का पता नहीं लगा सकता है। आप:'
+  optionSwitch:
+    name: '{version} पर स्विच करें'
+HomeLaunchMultiInstanceDialog:
+  confirm: हाँ, लॉन्च करें
+  description: आप माइनक्राफ्ट के कई इंस्टेंस लॉन्च कर रहे हैं। क्या आप सुनिश्चित हैं?
+  title: एकाधिक इंस्टेंस
+SettingMigrationDialog:
+  selectRootDirectory: रूट निर्देशिका चुनें
+agent:
+  callingTool: '{name} को कॉल किया जा रहा है...'
+  disabledPlaceholder: एजेंट अक्षम
+  emptyHint: एजेंट से अपने इंस्टेंस का निरीक्षण करने, मॉड टॉगल करने, लॉग पढ़ने या क्रैश का निदान करने के लिए कहें।
+  inputPlaceholder: एजेंट से पूछें... (भेजने के लिए Enter, नई लाइन के लिए Shift+Enter)
+  notConfiguredHint: एजेंट को सक्षम करने के लिए सेटिंग्स → सामान्य → एआई एजेंट में अपनी एपीआई कुंजी, मॉडल और एंडपॉइंट सेट करें।
+  notConfiguredTitle: एजेंट कॉन्फ़िगर नहीं किया गया है
+  openSettings: सेटिंग्स खोलें
+  reset: बातचीत रीसेट करें
+  setupGuide: सेटअप गाइड
+  statusDisabled: अक्षम — एपीआई कुंजी गायब है
+  statusReady: तैयार
+  statusWorking: काम कर रहा है...
+  suggestion1: इस इंस्टेंस को एक नए माइनक्राफ्ट संस्करण में अपग्रेड करें, और उससे मेल खाने के लिए मॉड अपडेट करें
+  suggestion2: मेरे मॉड क्रैश हो रहे हैं — कारण ढूंढें और मुझे बताएं कि इसे कैसे ठीक किया जाए
+  suggestion3: 'एक मॉडपैक बनाएं: अपनी पसंद की सुविधा के लिए मॉड ढूंढें और उन्हें इस इंस्टेंस में इंस्टॉल करें'
+  thinking: सोच रहा है...
+  title: XMCL एजेंट
+  toggleHint: टॉगल करने के लिए
+ago:
+  day: '{duration} दिन पहले | {duration} दिन पहले'
+  hour: '{duration} घंटे पहले | {duration} घंटे पहले'
+  minute: '{duration} मिनट पहले | {duration} मिनट पहले'
+  second: '{duration} सेकंड पहले | {duration} सेकंड पहले'
+askAICrash:
+  agentNotConfigured: लॉन्चर के अंतर्निहित एजेंट को आपके लिए इसका निदान और सुधार करने देने के लिए सेटिंग्स में एक एआई प्रदाता और एपीआई कुंजी जोड़ें।
+  askAgent: अंतर्निहित एआई एजेंट के साथ निदान करें
+  copyPrompt: एआई से पूछने के लिए प्रॉम्प्ट कॉपी करें
+  description: एआई को गेम क्रैश समझने में आपकी मदद करने दें! इस गेम क्रैश के बारे में एआई से पूछने के लिए नीचे दिए गए निर्देशों का पालन करें!
+  orExternal: या बाहरी एआई का उपयोग करें
+  selectPlatform: एक एआई प्लेटफॉर्म खोलें और वह प्रॉम्प्ट पेस्ट करें जिसे आपने अभी कॉपी किया है।
+  setupAgent: एआई एजेंट सेट करें
+authProfileAddedNotification: प्रमाणीकरण प्रोफ़ाइल {name} जोड़ी गई
+bedrock:
+  description: माइनक्राफ्ट बेडरोक संस्करण माइक्रोसॉफ्ट स्टोर के माध्यम से स्थापित और लॉन्च किया जाता है। आपके पास अपने माइक्रोसॉफ्ट खाते पर एक बेडरोक लाइसेंस होना चाहिए।
+  install: माइक्रोसॉफ्ट स्टोर से प्राप्त करें
+  installFailed: माइक्रोसॉफ्ट स्टोर खोलने में विफल
+  installed: 'स्थापित: {version}'
+  launchHint: बेडरोक संस्करण शुरू करने के लिए लॉन्च बटन का उपयोग करें।
+  installBedrockVersion: बेडरोक {version} डाउनलोड किया जा रहा है
+  licenseRequired: बेडरोक संस्करण स्थापित करने और खेलने के लिए एक माइक्रोसॉफ्ट खाते के साथ साइन इन करें जिसके पास माइनक्राफ्ट है।
+  refresh: रिफ्रेश करें
+  versionsTitle: संस्करण प्रबंधक
+  versionsHint: माइक्रोसॉफ्ट के सर्वर से कई बेडरोक संस्करण डाउनलोड करें और उनके बीच स्विच करें। विंडोज के साथ एक समय में केवल एक ही संस्करण पंजीकृत किया जा सकता है, इसलिए किसी संस्करण को चलाने से वह फिर से पंजीकृत हो जाता है।
+  versionsError: संस्करण सूची लोड करने में विफल। अपना नेटवर्क जांचें और पुनः प्रयास करें।
+  channel: चैनल
+  channelRelease: रिलीज़
+  channelBeta: बीटा
+  channelPreview: पूर्वावलोकन
+  active: सक्रिय
+  play: खेलें
+  download: डाउनलोड
+  installedTag: स्थापित
+  developerModeRequired: डाउनलोड किए गए संस्करण को पंजीकृत करने के लिए विंडोज डेवलपर मोड की आवश्यकता होती है। इसे सक्षम करने पर व्यवस्थापक (administrator) अनुमति मांगी जाती है।
+  enableDeveloperMode: डेवलपर मोड सक्षम करें
+  enableDeveloperModeFailed: डेवलपर मोड सक्षम करने में विफल
+  downloadFailed: बेडरोक {version} डाउनलोड करने में विफल
+  launchFailed: इस बेडरोक संस्करण को लॉन्च करने में विफल
+  removeFailed: बेडरोक {version} को हटाने में विफल
+baseSetting:
+  title: इंस्टेंस सेटिंग्स
+browseApp:
+  createShortcut: शॉर्टकट बनाएं
+  default: डिफ़ॉल्ट
+  delete: हटाएं
+  launch: लॉन्च करें और डिफ़ॉल्ट के रूप में सेट करें
+browseApps: लॉन्चर यूज़र इंटरफ़ेस देखना
+color: रंग
+confirm: शुरू करें
+copyClipboard:
+  success: क्लिपबोर्ड पर कॉपी करें
+create: बनाएं
+curseforge:
+  category: श्रेणी
+  createdDate: निर्माण तिथि
+  lastUpdate: अंतिम अपडेट तिथि
+  releasedDate: रिलीज़ तिथि
+curseforgeCategory:
+  API and Library: एपीआई और लाइब्रेरीज़
+  Addons: पूरक
+  Adventure: साहसिक (Adventure)
+  Adventure and RPG: साहसिक कार्य और आरपीजी
+  Animated: एनिमेशन
+  Armor, Tools, and Weapons: कवच, उपकरण और हथियार
+  Combat / PvP: लड़ाई / पीवीपी
+  Cosmetic: कॉस्मेटिक / सजावट
+  Creation: निर्माण (Creation)
+  Data Packs: डेटा पैक
+  Education: शिक्षा
+  Exploration: अन्वेषण
+  Extra Large: अतिरिक्त बड़ा
+  FTB Official Pack: आधिकारिक एफटीबी पैक
+  Fabric: फैब्रिक (Fabric)
+  FancyMenu: फैंसी मेनू
+  Font Packs: फ़ॉन्ट पैक
+  Food: भोजन
+  Game Map: गेम मैप
+  Hardcore: हार्डकोर
+  MCreator: MCreator
+  Magic: जादू
+  Map Based: नक्शे पर आधारित
+  Map and Information: मानचित्र और जानकारी
+  Medieval: मध्ययुगीन
+  Mini Game: मिनी गेम
+  Miscellaneous: विविध
+  Mod Support: मॉड समर्थन
+  Modded World: मॉड किया हुआ संसार
+  Modern: आधुनिक
+  Multiplayer: मल्टीप्लेयर
+  Parkour: पारकोर
+  Photo Realistic: यथार्थवादी चित्र
+  Puzzle: पहेली
+  QoL: QoL
+  Quests: खोज (Quests)
+  Redstone: रेडस्टोन
+  Sci-Fi: विज्ञान-कथा (Sci-Fi)
+  Server Utility: सर्वर उपयोगिता
+  Skyblock: स्काईब्लॉक
+  Small / Light: छोटा / हल्का
+  Steampunk: स्टीमपंक
+  Storage: भंडारण (Storage)
+  Survival: जीवन रक्षा (Survival)
+  Tech: तकनीक
+  Technology: प्रौद्योगिकी
+  Traditional: पारंपरिक
+  Twitch Integration: ट्विच एकीकरण
+  Utility & QoL: उपयोगिता और QoL
+  Vanilla+: वेनिला+
+  World Gen: विश्व जनरेशन
+dataMigration:
+  apply: सेटिंग लागू करें
+  directoryCriteriaHint: कृपया सुनिश्चित करें कि आपका नया निर्देशिका स्थान एक खाली निर्देशिका है!
+  placeholder: निर्देशिका का चयन करने के लिए कृपया यहाँ क्लिक करें
+  setRootCause: यदि आप इस प्रक्रिया में लॉन्चर बंद करते हैं तो आप अपना डेटा (नक्शे, रिसोर्स पैक, मॉड) खो देंगे!
+  setRootDescription: यह इस लॉन्चर और माइनक्राफ्ट के रूट डेटा फ़ोल्डर को बदल देगा।
+  setRootTitle: एक नए संग्रहण स्थान पर सेट करें
+  unknownError: अअज्ञात त्रुटि! कृपया पुनः प्रयास करें या डेवलपर से संपर्क करें!
+  waitReload: डेटा स्थानांतरित किया जा रहा है। कृपया लॉन्चर को बंद न करें अन्यथा आप अपना डेटा खो देंगे।
+delete:
+  name: '{name} हटाएं'
+  'no': नहीं
+  'yes': हटाएं
+dependencies:
+  embedded: एम्बेडेड
+  incompatible: असंगत
+  name: निर्भरताएँ
+  optional: वैकल्पिक
+  required: आवश्यक
+diagnosis:
+  badInstall:
+    message: इस संस्करण को पुनर्स्थापित करने का प्रयास करने के लिए क्लिक करें।
+    name: '{version} पर खराब स्थापना'
+  corruptedAssets:
+    message: लॉन्चर आपके लिए संपत्तियां (assets) स्थापित करेगा
+    name: 'दूषित संपत्ति: {name} | दूषित संपत्ति {name} | {count} संपत्तियां दूषित'
+  corruptedAssetsIndex:
+    message: लॉन्चर आपके लिए एसेट इंडेक्स डाउनलोड करेगा
+    name: '{version} की दूषित एसेट इंडेक्स फ़ाइल।'
+  corruptedLibraries:
+    message: लॉन्चर आपके लिए लाइब्रेरी स्थापित करेगा
+    name: 'दूषित लाइब्रेरी: {name} | दूषित लाइब्रेरी: {name} | {count} लाइब्रेरी दूषित'
+  corruptedVersionJar:
+    message: इस संस्करण को स्थापित करने के लिए क्लिक करें
+    name: माइनक्राफ्ट %{version} के लिए दूषित संस्करण जार।
+  incompatibleJava:
+    name: जावा संस्करण {javaVersion} {version} के लिए उपयुक्त नहीं है!
+  instanceFiles:
+    description: इंस्टेंस स्थापना में {counts} फ़ाइलें शामिल हैं।
+    title: अधूरी इंस्टेंस स्थापना
+  invalidJava:
+    name: अमान्य जावा स्थान।
+  missingJava:
+    message: इस समस्या को हल करने के लिए क्लिक करें
+    name: माइनक्राफ्ट लॉन्च करने के लिए जावा नहीं मिल रहा है!
+  missingLibraries:
+    message: लॉन्चर आपके लिए लाइब्रेरी स्थापित करेगा
+    name: लापता {name} लाइब्रेरी | लापता {name} लाइब्रेरी | लापता {count} लाइब्रेरीज़ | लापता {count} लाइब्रेरीज़
+  missingVersion:
+    message: इस संस्करण को स्थापित करने के लिए क्लिक करें
+    name: संस्करण {version} स्थापित नहीं है!
+  unresolvedFiles:
+    description: स्थापना के दौरान {count} फ़ाइल का समाधान नहीं किया जा सका | स्थापना के दौरान {count} फ़ाइलों का समाधान नहीं किया जा सका
+    title: अनसुलझी फ़ाइलें
+  unzipFileNotFound:
+    description: '{file} नहीं मिल रहा'
+    title: मॉडपैक फ़ाइल नहीं मिली
+difficulty:
+  easy: आसान
+  hard: कठिन
+  normal: सामान्य
+  peaceful: शांतिपूर्ण
+disk:
+  available: उपलब्ध
+  used: उपयोग की गई
+downloadCount: '{count} डाउनलोड'
+downloadModMetadataDb:
+  name: मॉड मेटाडेटा डेटाबेस डाउनलोड करें
+downloadUpdate:
+  name: अपडेट {version} डाउनलोड करें
+duplicateInstance:
+  name: इंस्टेंस की प्रतिलिपि बनाएँ
+duration:
+  day: '{duration} दिन | {duration} दिन'
+  hour: '{duration} घंटा | {duration} घंटे'
+  minute: '{duration} मिनट | {duration} मिनट'
+  second: '{duration} सेकंड | {duration} सेकंड'
+env:
+  select:
+    all: सभी चुनें
+    fit: फिट चुनें
+    none: कोई नहीं चुनें
+errors:
+  bedrockUnsupportedPlatform: माइनक्राफ्ट बेडरोक संस्करण केवल विंडोज बिल्ड पर समर्थित है।
+  bedrockNotInstalled: माइनक्राफ्ट बेडरोक संस्करण स्थापित नहीं है।
+  bedrockLaunchFailed: माइनक्राफ्ट बेडरोक संस्करण लॉन्च करने में विफल।
+  bedrockInstallFailed: माइनक्राफ्ट बेडरोक संस्करण स्थापित करने में विफल।
+  bedrockDownloadUrlUnavailable: यह बेडरोक संस्करण वर्तमान माइक्रोसॉफ्ट खाते के लिए उपलब्ध नहीं है। बीटा और पूर्वावलोकन संस्करणों के लिए माइनक्राफ्ट बीटा कार्यक्रम में नामांकित खाते की आवश्यकता होती है।
+  bedrockDeveloperModeRequired: इस बेडरोक संस्करण को पंजीकृत करने के लिए विंडोज डेवलपर मोड की आवश्यकता है।
+  bedrockRegisterFailed: इस बेडरोक संस्करण को विंडोज के साथ पंजीकृत करने में विफल।
+  bedrockVersionNotFound: यह बेडरोक संस्करण स्थानीय रूप से स्थापित नहीं है।
+  BadForgeInstallerJarError: फोर्ज इंस्टॉलर जार फ़ाइल का विश्लेषण नहीं किया जा सकता। शायद फोर्ज का नया इंस्टॉलर फ़ाइल प्रारूप है? यदि यह समस्या बनी रहती है तो डेवलपर्स से संपर्क करें।
+  BadInstanceType: 'कोई मान्य इंस्टेंस नहीं है: {type}'
+  BodyTimeoutError: HTTP बॉडी टाइमआउट
+  ChecksumNotMatchError: चेकसम मेल नहीं खाया! अपेक्षित {expect}। वास्तविक {actual}।
+  ConnectTimeoutError: सर्वर से कनेक्शन टाइमआउट।
+  CorruptedResourceMetadata: '{count} संसाधन(संसाधनों) पर दूषित मेटाडेटा का पता चला और उसे साफ़ किया गया। फ़ाइलें अभी भी काम करती हैं, लेकिन उनके मोडरिंथ/कर्सफोर्ज एट्रिब्यूशन खो गए थे और स्वचालित रूप से फिर से खोजे जाएंगे।'
+  DNSNotFoundError: DNS लुकअप त्रुटि
+  DatabaseNotOpened: डेटाबेस नहीं खुला है! लॉन्चर ठीक से काम नहीं करेगा! कृपया एक ऐसी डेटा निर्देशिका चुनें जिसे लॉन्चर एक्सेस कर सके। आप सेटिंग पेज में डेटा रूट को रीसेट करने का प्रयास कर सकते हैं।
+  DiskIsFull: आपकी डिस्क भरी हुई है! डिस्क पर कुछ भी नहीं लिखा जा सकता! सभी सुविधाएँ काम नहीं कर सकती हैं!
+  DownloadAggregateError: फ़ाइल डाउनलोड करने में विफल।
+  DownloadFileSystemError: डाउनलोड फ़ाइल पथ तक पहुँचने के दौरान त्रुटि। कृपया सुनिश्चित करें कि लॉन्चर के पास इस पर लिखने की अनुमति है।
+  HeadersTimeoutError: HTTP हेडर टाइमआउट
+  InstallBackendUnresponsive:
+    body: लॉन्चर की पृष्ठभूमि प्रक्रिया ने प्रतिक्रिया देना बंद कर दिया, इसलिए स्थापना समाप्त नहीं हो सकी। कृपया लॉन्चर को पूरी तरह से बंद करें और फिर से खोलें, फिर पुनः प्रयास करें।
+    title: लॉन्चर प्रतिक्रिया नहीं दे रहा है
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: माइनक्राफ्ट फ़ाइलें स्थापित करने में विफल
+  InstallNetworkError:
+    body: नेटवर्क समस्या के कारण स्थापना बाधित हुई। अपना इंटरनेट कनेक्शन या प्रॉक्सी जांचें और पुनः प्रयास करें।
+    title: माइनक्राफ्ट फ़ाइलें डाउनलोड नहीं की जा सकतीं
+  InstallPermissionDenied:
+    body: एक एंटी-वायरस टूल या प्रतिबंधित फ़ोल्डर अनुमतियों ने स्थापना को अवरुद्ध कर दिया। लॉन्चर को अपनी एंटी-वायरस अपवाद सूची में जोड़ें, या लॉन्चर सेटिंग्स में एक अलग डेटा रूट चुनें।
+    title: लॉन्चर फ़ोल्डर में नहीं लिखा जा सकता
+  NotFoundError: 404 नहीं मिला
+  SocketError: सर्वर सॉकेट त्रुटि
+eula:
+  body: चेकबॉक्स बटन पर टिक करके, आप माइनक्राफ्ट के {eula} के प्रति अपनी सहमति व्यक्त कर रहे हैं।
+exception:
+  http: '{url} पर HTTP अनुरोध विफल रहा। स्टेटस कोड {statusCode}। {code}। कृपया पुनः प्रयास करें या अपना नेटवर्क जांचें। यदि यह त्रुटि बनी रहती है, तो कृपया डेवलपर टीम को एक रिपोर्ट भेजें।'
+exportModpack:
+  name: मॉडपैक निर्यात करें
+extensions:
+  mrpack: मोडरिंथ मॉडपैक
+  zip: ज़िप फ़ाइल
+fabricVersion:
+  disable: फैब्रिक अक्षम करें
+  empty: माइनक्राफ्ट {version} के लिए कोई फैब्रिक संस्करण नहीं है
+  showSnapshot: स्नैपशॉट दिखाएं
+  stable: स्थिर
+  unstable: अस्थिर
+command:
+  instance:
+    launch:
+      title: इंस्टेंस लॉन्च करें
+      description: माइनक्राफ्ट इंस्टेंस लॉन्च करें
+    create:
+      title: इंस्टेंस बनाएं
+      description: एक नया इंस्टेंस बनाएं
+    delete:
+      title: इंस्टेंस हटाएं
+      description: एक मौजूदा इंस्टेंस हटाएं
+  user:
+    login:
+      title: यूज़र लॉग इन
+      description: अपने खाते में लॉग इन करें
+    refresh:
+      title: यूज़र रिफ्रेश करें
+      description: यूज़र सत्र रिफ्रेश करें
+commandPalette:
+  placeholder: कमांड, इंस्टेंस, मॉड खोजें...
+  commands: कमांड
+  instances: इंस्टेंस
+  modrinth: मोडरिंथ
+  recent: हालिया
+  open: त्वरित कार्रवाई
+  openHint: कमांड पैलेट खोलें ({shortcut})
+  empty: खोजने के लिए टाइप करें।
+  noResults: कोई मेल खाते परिणाम नहीं मिले।
+  searching: खोजा जा रहा है...
+  hintNavigate: नेविगेट करें
+  hintInvoke: लागू करें
+  hintEnter: प्रवेश करें
+  hintBack: पीछे
+  hintClose: बंद करें
+feedback:
+  channel: चैनल
+  description: मुझे एक बग मिला है या मैं एक सुझाव देना चाहता हूँ
+  discord: डिस्कॉर्ड
+  discordDescription: डिस्कॉर्ड चैनल से जुड़ें
+  discordJoin: जुड़ें
+  generateReport: रिपोर्ट तैयार करें
+  generateSaveAs: रिपोर्ट को इसमें सहेजें
+  github: गिटहब समस्या (Issue)
+  githubDescription: अपने विचार बताने के लिए गिटहब पर एक समस्या खोलें
+  githubOpenIssue: गिटहब
+  hint: रिपोर्ट बनाने और डेवलपर टीम से संपर्क करने के लिए बटन पर क्लिक करें। रिपोर्ट में आपके डिवाइस की जानकारी शामिल होगी जैसे ऑपरेटिंग सिस्टम का प्रकार, संस्करण, उपयोगकर्ता का नाम (आपके ओएस में) आदि।
+  kook: कुक (Kook)
+  kookDescription: कुक चीनी मुख्य भूमि के उपयोगकर्ताओं के लिए डिस्कॉर्ड का एक वैकल्पिक ऐप है
+  name: प्रतिक्रिया (Feedback)
+  qq: QQ समूह
+  qqDescription: 'प्रतिक्रिया QQ समूह में प्रवेश करें और लेखकों से सीधे बात करें। समूह संख्या: {number}'
+  qqEnterGroup: जुड़ें
+fileDetail:
+  fileSize: फ़ाइल का आकार
+  filesize: फ़ाइल का आकार
+  hash: हैश
+filterLocalOnly: केवल स्थापित दिखाएं
+forgeVersion:
+  disable: फोर्ज अक्षम करें
+  empty: फोर्ज के पास माइनक्राफ्ट {version} के लिए कोई रिलीज़ नहीं है
+  latest: नवीनतम
+  recommended: अनुशंसित
+gameType:
+  adventure: साहसिक मोड
+  creative: रचनात्मक मोड
+  spectator: दर्शक मोड
+  survival: उत्तरजीविता मोड
+help: सहायता
+home: होम
+importModpack:
+  name: मॉडपैक आयात करें
+installAssets:
+  asset: '{count} संपत्तियां स्थापित करें'
+  assetIndex: एसेट इंडेक्स फ़ाइल की जाँच करें
+  name: एसेट फ़ाइलें स्थापित करें
+installAuthlibInjector: authlib-injector स्थापित करें
+installCurseforgeFile: कर्सफ़ोर्ज फ़ाइल स्थापित करें
+installFabric:
+  name: फैब्रिक स्थापित करें
+installForge:
+  downloadInstaller: इंस्टॉलर डाउनलोड करें
+  name: फोर्ज स्थापित करें
+  postProcessing: पोस्ट प्रोसेसिंग
+installInstance:
+  file: इंस्टेंस फ़ाइल {file} को अपडेट करें
+  link: '{count} फ़ाइलों की प्रतिलिपि बनाएँ या लिंक करें'
+  name: इंस्टेंस अपडेट करें
+  resolve: इंस्टेंस कॉन्फ़िगरेशन का समाधान करें
+  unzip: '{count} फ़ाइलों को अनज़िप करें'
+installJre:
+  decompress: जेआरई फ़ाइलों को फ़ोल्डर में डीकंप्रेस करें
+  download: संपीड़ित जेआरई फ़ाइल डाउनलोड करें
+  name: जावा रनटाइम लाइब्रेरी स्थापित करें
+installLabyMod:
+  name: LabyMod स्थापित करें
+installLibraries:
+  library: लाइब्रेरी स्थापित करें
+  name: लाइब्रेरी स्थापित करें
+installModrinthFile:
+  name: मोडरिंथ स्थापित करें
+installOptifine:
+  download: ऑप्टिफाइन यूनिवर्सल डाउनलोड करें
+  name: ऑप्टिफाइन स्थापित करें
+installProfile:
+  name: प्रोफ़ाइल {version} स्थापित करें
+installQuilt:
+  name: क्विल्ट {version} स्थापित करें
+installVersion:
+  jar: संस्करण जार स्थापित करें
+  json: संस्करण जेसन स्थापित करें
+  name: माइनक्राफ्ट क्लाइंट {version} स्थापित करें
+instance:
+  changeIcon: आिकन बदलें
+  contents: सामग्री
+  current: वर्तमान इंस्टेंस
+  delete: गेम हटाएं
+  deleteFailed: इंस्टेंस को हटाने में विफल
+  deleteFailedPermission: अन्य प्रोग्राम ने फ़ाइल पर कब्ज़ा कर रखा है
+  deleteFile: इंस्टेंस फ़ाइलें हटाएं
+  deleteHint: इंस्टेंस डेटा हमेशा के लिए डिस्क से हटा दिया जाएगा। क्या आप सुनिश्चित हैं?
+  deleteHintBedrock: माइनक्राफ्ट बेडरोक संस्करण और उसका सारा डेटा आपके कंप्यूटर से पूरी तरह से हटा दिया जाएगा। क्या आप सुनिश्चित हैं?
+  duplicate: गेम की प्रतिलिपि बनाएँ
+  duplicatedName: डुप्लिकेट नाम
+  envVarKey: कुंजी (Key)
+  envVarKeyPlaceholder: MY_VAR
+  envVarValue: मान (Value)
+  envVarValuePlaceholder: मान
+  fileApi: फ़ाइल सर्वर एपीआई यूआरएल को सिंक्रनाइज़ करें
+  fileApiHint: रिमोट कॉन्फ़िगरेशन सर्वर से इंस्टेंस फ़ाइलों को सिंक्रनाइज़ करने का यूआरएल।
+  fileApiPlaceholder: यदि आप संसाधन सिंक रखना चाहते हैं तो कृपया यहाँ रिमोट सिंक यूआरएल दर्ज करें
+  fullscreen: फ़ुलस्क्रीन
+  height: ऊंचाई
+  hideCard: इस कार्ड को छिपाएं
+  icon: प्रोफ़ाइल आइकन
+  iconHint: आइकन एक फ़ाइल या इंटरनेट यूआरएल लिंक हो सकता है।
+  iconUrl: आइकन यूआरएल
+  installModpack: मॉडपैक से इंस्टेंस अपडेट करें
+  lastPlayed: पिछली बार खेला गया
+  launchArguments: लॉन्च तर्कों (Arguments) का पूर्वावलोकन
+  launchServer: लोकलहोस्ट सर्वर लॉन्च करें
+  linkFileDesc: यह वैश्विक {file} के साथ इंस्टेंस स्थानीय {file} को अधिलेखित (overwrite) कर देगा। क्या आप इसे लिंक करना सुनिश्चित करते हैं?
+  linkFileTitle: क्या आप {file} को लिंक करना सुनिश्चित करते हैं?
+  mcOptions: माइनक्राफ्ट विकल्प
+  mcOptionsHint: अअतिरिक्त माइनक्राफ्ट लॉन्च तर्क (arguments)
+  name: प्रोफ़ाइल नाम
+  nameHint: मॉडपैक का नाम
+  nameInvalidChars: 'नाम में ये वर्ण नहीं हो सकते: < > : " / \\ | ? *'
+  nameNoCyrillic: नाम में सिरिलिक वर्ण नहीं हो सकते
+  namePathTraversal: नाम में पथ ट्रैवर्सल ("..") नहीं हो सकता
+  nameReservedName: यह नाम सिस्टम द्वारा सुरक्षित है और इसका उपयोग नहीं किया जा सकता है
+  nameTrailingDotOrSpace: नाम किसी बिंदु या स्थान के साथ समाप्त नहीं हो सकता
+  nameWhitespaceOnly: नाम केवल रिक्त स्थान या बिंदु नहीं हो सकता
+  neverPlayed: कभी नहीं खेला गया
+  openCrashReportFolder: क्रैश रिपोर्ट फ़ोल्डर खोलें
+  openLogFolder: लॉग फ़ोल्डर खोलें
+  playtime: खेलने का समय
+  preExecCommand: प्री-एग्जीक्यूट कमांड
+  preExecCommandHint: माइनक्राफ्ट लॉन्च करने से पहले निष्पादित (execute) की जाने वाली कमांड
+  prependCommand: प्रिपेंड कमांड
+  prependCommandHint: यह सभी लॉन्च कमांड से पहले इस कमांड को जोड़ेगा
+  requireName: नाम आवश्यक है
+  resolution: रिज़ॉल्यूशन
+  resolutionPreset: रिज़ॉल्यूशन प्रीसेट
+  showHiddenCards: छिपे हुए कार्ड दिखाएं
+  showInstance: गेम फ़ोल्डर दिखाएं
+  updates: अपडेट
+  useSharedOptions: साझा की गई गेम सेटिंग्स का उपयोग करें
+  useSharedOptionsDesc: यह options.txt को सभी इंस्टेंस में एक साझा फ़ाइल से लिंक करेगा
+  useSharedServersList: साझा सर्वर सूची का उपयोग करें
+  useSharedServersListDesc: यह servers.dat को सभी इंस्टेंस में एक साझा फ़ाइल से लिंक करेगा
+  vmOptions: JVM विकल्प
+  vmOptionsHint: JVM को पास करने के लिए अतिरिक्त तर्क (arguments)
+  vmVar: पर्यावरण चर (Environment Variables)
+  vmVarHint: पर्यावरण चर जोड़ने के लिए + बटन पर क्लिक करें
+  width: चौड़ाई
+instanceAge:
+  older: पुराना
+  threeDay: तीन दिनों में
+  today: आज
+instanceDiscover:
+  gameFolder: '{count} गेम फ़ोल्डर खोजें'
+  instanceFolder: '{count} इंस्टेंस मिले'
+instanceFileOperation:
+  add: जोड़ें
+  backup-add: बदलें (बैकअप)
+  backup-remove: हटाएं (बैकअप)
+  keep: रखें
+  remove: हटाएं
+instanceInstallSkip:
+  ignore: अनदेखा करें
+  skip: छोड़ें
+  title: संभावित दूषित फ़ाइल स्रोत
+  warning: कुछ फ़ाइलें चेकसम बेमेल होने के साथ कई बार डाउनलोड की गई हैं। यह इस तथ्य के कारण हो सकता है कि मूल चेकसम गलत है। कृपया जांचें। यदि आप पुष्टि करते हैं कि वर्तमान फ़ाइलें वैध हैं, तो आप सत्यापन जांच छोड़ सकते हैं।
+instanceLauncher:
+  search: इंस्टेंस खोजें...
+  showAll: सभी इंस्टेंस दिखाएं
+  title: सभी इंस्टेंस
+instanceSetting:
+  disableAuthlibInjector: authlib इंजेक्टर को अक्षम करें
+  disableAuthlibInjectorDescription: यदि आप तृतीय-पक्ष त्वचा (skin) प्रणाली का उपयोग कर रहे हैं। authlib इंजेक्टर आपको गेम में त्वचा प्रदर्शित करने में मदद कर सकता है।
+  disableElyByAuthlib: ely.by के authlib प्रतिस्थापन को अक्षम करें
+  disableElyByAuthlibDescription: किसी भी सर्वर में सार्वभौमिक रूप से त्वचा प्रदर्शित करने के लिए Ely.by में एक अनूठा authlib प्रतिस्थापन है।
+  fastLaunch: टर्बो लॉन्च
+  fastLaunchHint: उपयोगकर्ता की स्थिति और मौजूदा अनसुलझी समस्याओं को अनदेखा करें
+  hideLauncher: लॉन्च के बाद लॉन्चर छुपाएं
+  icon: एक छवि चुनें
+  showLog: माइनक्राफ्ट लॉग दिखाएं
+  showLogHint: यह गेम शुरू होने के बाद माइनक्राफ्ट लॉग स्ट्रीम करने के लिए एक विंडो पॉपअप करेगा
+instanceTemplate:
+  ftb: यह एक FTB मॉडपैक है
+  preview: मॉडपैक पूर्वावलोकन
+instanceUpdate:
+  basic: सेटिंग अपडेट
+  files: फ़ाइल अपडेट
+  loaderChanged: इस इंस्टेंस के मॉडलोडर को बदल दिया गया है। पुराना मॉडलोडर {modloader} है, और नया मॉडलोडर {newModloader} है।
+  noFiles: कोई फ़ाइल परिवर्तन नहीं
+  summary: Add {add} files. Remove {remove} files. Keep {keep} files.
+  title: इंस्टेंस अपडेट करें
+  update: अपडेट शुरू करें
+instances:
+  add: गेम बनाएं
+  addCurseForgeDescription: कर्सफ़ोर्ज डेटा फ़ोल्डर से आयात करें। आपको कर्सफ़ोर्ज के रूट डेटा फ़ोल्डर का चयन करना होगा
+  addDescription: शुरुआत से एक नया इंस्टेंस बनाएं
+  addMMCDescription: मौजूदा MultiMC इंस्टेंस आयात करें। आपको MultiMC से डेटा फ़ोल्डर का चयन करना होगा।
+  addManually: मैन्युअल रूप से बनाएं
+  addModrinthDescription: मौजूदा मोडरिंथ इंस्टेंस आयात करें। आपको मोडरिंथ रूट डेटा फ़ोल्डर का चयन करना होगा।
+  addPrismDescription: मौजूदा PrismLauncher इंस्टेंस आयात करें।
+  addServer: सर्वर से बनाएं
+  addServerDescription: यह सीधे सर्वर पर लॉन्च करने के लिए एक गेम बनाएगा।
+  addTemplate: डाउनलोड किए गए मॉडपैक से बनाएं
+  addTemplateDescription: डाउनलोड किए गए मॉडपैक से आयात करें
+  addVanilla: वेनिला जैसे माइनक्राफ्ट से बनाएं
+  addVanillaDescription: सामान्य .minecraft फ़ोल्डर से आयात करें। यह मूल गेम प्रोफ़ाइल को XMCL में डुप्लिकेट कर देगा।
+  edition: संस्करण (Edition)
+  editionJava: Java संस्करण
+  editionBedrock: Bedrock संस्करण
+  editionBedrockHint: बेडरोक संस्करण माइक्रोसॉफ्ट स्टोर ऐप के माध्यम से लॉन्च किया गया है। आपके पास बेडरोक लाइसेंस होना चाहिए। मॉड, रिसोर्स पैक और अन्य केवल-जावा सुविधाएं उपलब्ध नहीं हैं।
+  editionBedrockWindowsOnly: बेडरोक संस्करण केवल विंडोज बिल्ड पर समर्थित है।
+  fix: मरम्मत करें
+  folder: फ़ोल्डर
+  folderSetting: फ़ोल्डर सेटिंग्स
+  importFolderDescription: माइनक्राफ्ट को लॉन्चर में आयात करें
+  loadingFiles: मॉडपैक फ़ाइलें लोड हो रही हैं
+items:
+  count: '{count} आइटम'
+  total: '{total} कुल'
+java:
+  allocatedLong: सिस्टम डिफ़ॉल्ट जावा का उपयोग करें
+  allocatedShort: स्वचालित रूप से आवंटित
+  allocation: आवंटित
+  autoHint: न्यूनतम मेमोरी स्थापित मॉड की संख्या के साथ बढ़ती है; अधिकतम उपलब्ध सिस्टम मेमोरी का उपयोग करती है।
+  change: बदलें
+  importFromFile: फ़ाइल से जावा आयात करें
+  invalid: अमान्य जावा स्थान
+  location: जावा स्थान
+  locationHint: कोई जावा चयनित नहीं — सिस्टम डिफ़ॉल्ट का उपयोग कर रहे हैं
+  maxMemory: अधिकतम मेमोरी
+  memory: जावा मेमोरी
+  memoryAuto: Auto
+  memoryManual: Manual
+  memoryUnassigned: Unassign
+  minMemory: न्यूनतम मेमोरी
+  noMemory: मेमोरी उपयोग को सीमित न करें
+  openFolder: जावा फ़ोल्डर खोलें
+  presets: प्रीसेट
+  refresh: स्थानीय जावा रिफ्रेश करें
+  systemMemory: 'सिस्टम मुक्त मेमोरी: {free} / {total}'
+labyMod:
+  disable: LabyMod अक्षम करें
+  empty: LabyMod वर्तमान माइनक्राफ्ट का समर्थन नहीं करता है
+launch:
+  cancel: रद्द करें
+  createShortcut: शॉर्टकट बनाएं
+  forceKill: जबरन बंद करें
+  kill: रोकें
+  killServer: लोकलहोस्ट सर्वर बंद करें
+  launch: लॉन्च करें
+  launchAnyway: फिर भी लॉन्च करें
+  launchAs: के रूप में लॉन्च करें
+  launchTo: में लॉन्च करें
+launchBlocked:
+  launchBadVersion:
+    description: '{version} संस्करण की json खराब है। शायद इस संस्करण को फिर से स्थापित करें?'
+    title: खराब संस्करण JSON
+  launchGeneralException:
+    description: कुछ त्रुटियों के कारण लॉन्च विफल हो गया।
+    title: लॉन्च विफल
+  launchInvalidJavaPath:
+    description: चयनित जावा अनुपलब्ध या अमान्य है। कृपया एक नया चुनें। <span class="highlight"> {javaPath} </span>
+    title: अमान्य जावा पथ
+  launchJavaNoPermission:
+    description: लॉन्चर के पास जावा <span class="highlight"> {javaPath} </span> को निष्पादित करने की अनुमति नहीं है। या तो जावा फ़ाइल की अनुमति बदलें या लॉन्चर की अनुमति बढ़ाएं।
+    title: लॉन्च करने की अनुमति नहीं है
+  launchNoProperJava:
+    description: गेम लॉन्च करने के लिए कोई उचित जावा नहीं चुना जा सकता। (क्या {javaPath} अमान्य है?)
+    title: कोई उचित जावा नहीं मिला
+  launchNoVersionInstalled:
+    description: लॉन्च करने के लिए संस्करण <span class="highlight">{version}</span> का समाधान नहीं किया जा सकता।
+    title: कोई संस्करण चयनित नहीं
+  launchSpawnProcessFailed:
+    description: कृपया अपना जावा जांचें, या लॉन्चर को अधिक अनुमतियां दें और पुनः प्रयास करें। यदि यह अभी भी काम नहीं करता है, तो कृपया डेवलपर्स से संपर्क करें।
+    title: गेम प्रक्रिया शुरू करने में विफल
+  unexpectedText: यह अप्रत्याशित है। आप इस समस्या को कम करने के लिए लॉन्चर को पुनरारंभ कर सकते हैं। यदि यह समस्या दोबारा आती है तो कृपया लेखक से संपर्क करें।
+launchFailed:
+  crash: गेम क्रैश हो गया!!
+  description: कोई क्रैश रिपोर्ट नहीं है। यह त्रुटि लॉग और नवीनतम लॉग है।
+  elyByAuthlib:
+    description: माइनक्राफ्ट संस्करण {version} के लिए Ely.by authlib प्रतिस्थापन का उपयोग किया गया था, लेकिन यह संस्करण पूरी तरह से संगत नहीं हो सकता है।
+    suggestion: इस समस्या से बचने के लिए आप इंस्टेंस सेटिंग्स में Ely.by के authlib प्रतिस्थापन को अक्षम कर सकते हैं।
+    title: Ely.by Authlib अनुकूलता समस्या
+  failedToLaunch: लॉन्च शुरू होने में विफल रहा
+  latestLog: नवीनतम लॉग
+  title: गेम असामान्य कोड के साथ बंद हुआ
+launchPreExecuteCommandFailed:
+  description: 'प्री-एग्जीक्यूट कमांड त्रुटि के साथ विफल रही: {error}। कृपया कमांड की जांच करें और पुनः प्रयास करें।'
+  title: प्री-एग्जीक्यूट कमांड विफल
+launchStatus:
+  assigningMemory: मेमोरी आवंटित की जा रही है
+  elyByWarning: Ely.by authlib प्रतिस्थापन सक्षम है। कुछ माइनक्राफ्ट संस्करण संगत नहीं हो सकते हैं और क्रैश हो सकते हैं। यदि समस्याएं आती हैं तो आप इसे इंस्टेंस सेटिंग्स में अक्षम कर सकते हैं।
+  exit: गेम से बाहर निकलें?
+  injectingAuthLib: तृतीय-पक्ष AuthLib सेट किया जा रहा है
+  launching: लॉन्च हो रहा है...
+  launchingSlow: अभी भी लॉन्च हो रहा है... ग्राफिक्स इंजन शुरू करना धीमा हो सकता है...
+  refreshingUser: यूज़र टोकन रिफ्रेश किया जा रहा है
+  spawningProcess: प्रक्रिया शुरू की जा रही है
+launcherUpdate:
+  alreadyLatest: अद्यतित (Up to date)
+  installAndQuit: स्थापित करने के लिए पुनरारंभ करें
+  noUpdateAvailable: कोई अपडेट उपलब्ध नहीं
+  updateToThisVersion: डाउनलोड और इंस्टॉल करें
+localVersion:
+  auto: स्वचालित रूप से गणना की गई
+  empty: कोई संस्करण स्थापित नहीं
+  hint: सीधे एक विशिष्ट स्थानीय संस्करण लॉन्च करें
+  reinstallDescription: यदि आपको लगता है कि इस संस्करण की स्थापना में कुछ समस्याएं हैं, तो आप इसे पुनः स्थापित करने का प्रयास कर सकते हैं।
+  reinstallTitle: '{version} को पुनः स्थापित करें'
+  title: स्थानीय संस्करण | स्थानीय संस्करण
+logLevel:
+  error: त्रुटि
+  info: जानकारी
+  success: सफलता
+  warning: चेतावनी
+logView:
+  searchPlaceholder: लॉग खोजें...
+login:
+  dropHint: मैन्युअल रूप से लॉग इन करने के लिए प्रमाणीकरण कोड वाले लिंक को यहाँ छोड़ें
+  forgetPassword: पासवर्ड भूल गए?
+  login: लॉग इन
+  manualLoginUrl: यदि ब्राउज़र दिखाई नहीं देता है, तो कृपया प्रमाणित करने के लिए इस लिंक पर क्लिक करें!
+  signup: साइन अप करें
+  signupDescription: हमारे लिए नए हैं?
+  userRelogin: यूज़र एक्सेस टोकन समाप्त हो गया है। कृपया पुनः लॉग इन करें!
+loginError:
+  acquireMicrosoftTokenFailed: माइक्रोसॉफ्ट टोकन प्राप्त करने में विफल। यह एक नेटवर्क समस्या हो सकती है। कृपया पुनः प्रयास करें।
+  badNetworkOrServer: कृपया अपनी नेटवर्क कनेक्टिविटी जांचें! या हो सकता है कि प्रमाणीकरण सर्वर बंद हो!
+  checkOwnershipFailed: गेम के स्वामित्व की जांच करने में विफल। कृपया पुनः प्रयास करें।
+  connectionReset: लॉग इन करने में विफल क्योंकि सर्वर द्वारा कनेक्शन रीसेट कर दिया गया है
+  cyrillicNotAllowed: सिरिलिक वर्णों की अनुमति नहीं है
+  fetchMinecraftProfileFailed: 'माइनक्राफ्ट प्रोफ़ाइल प्राप्त करने में विफल: {reason}'
+  illegalEmail: ईमेल वैध होना चाहिए
+  illegalOfflineUsername: यूज़रनेम 3-16 वर्णों का होना चाहिए और इसमें केवल अंग्रेजी अक्षर, संख्याएं और अंडरस्कोर होने चाहिए
+  invalidCredentials: अमान्य क्रेडेंशियल। अमान्य यूज़रनेम या पासवर्ड।
+  loginMinecraftByXboxFailed: एक्सबॉक्स टोकन द्वारा माइनक्राफ्ट टोकन का आदान-प्रदान करने में विफल। कृपया सुनिश्चित करें कि आपके पास एक्सबॉक्स में माइनक्राफ्ट है, या पुनः प्रयास करें।
+  loginMinecraftByXboxRateLimited: माइक्रोसॉफ्ट की माइनक्राफ्ट प्रमाणीकरण सेवा वर्तमान में अनुरोधों को सीमित (rate-limiting) कर रही है (HTTP 429)। कृपया कुछ समय प्रतीक्षा करें और पुनः प्रयास करें।
+  loginMinecraftByXboxRateLimitedWithRetry: माइक्रोसॉफ्ट की माइनक्राफ्ट प्रमाणीकरण सेवा वर्तमान में अनुरोधों को सीमित कर रही है (HTTP 429)। कृपया लगभग {seconds} सेकंड प्रतीक्षा करें और पुनः प्रयास करें।
+  loginMinecraftByXboxServerError: माइक्रोसॉफ्ट की माइनक्राफ्ट प्रमाणीकरण सेवा ने एक सर्वर त्रुटि (HTTP {status}) लौटाई है। यह उनकी तरफ से है। कृपया कुछ मिनटों में पुनः प्रयास करें।
+  loginMinecraftByXboxStatus: एक्सबॉक्स टोकन द्वारा माइनक्राफ्ट टोकन का आदान-प्रदान करने में विफल (HTTP {status})। कृपया सुनिश्चित करें कि आपके पास एक्सबॉक्स में माइनक्राफ्ट है, या पुनः प्रयास करें।
+  loginXboxAdultVerification: आपके माइक्रोसॉफ्ट खाते को एक्सबॉक्स में साइन इन करने से पहले वयस्क सत्यापन (आमतौर पर कुछ क्षेत्रों में आवश्यक) की आवश्यकता होती है। सत्यापन पूरा करने के लिए अपने ब्राउज़र में {url} खोलें, फिर पुनः प्रयास करें।
+  loginXboxAgeRestricted: आयु संबंधी समस्या के कारण एक्सबॉक्स में लॉग इन करने में विफल। कृपया सुनिश्चित करें कि आपके माइक्रोसॉफ्ट खाते के लिए आयु निर्धारित है और आयु 18 से अधिक है।
+  loginXboxBadXsts: माइक्रोसॉफ्ट ने अपेक्षित यूज़र दावों के बिना एक XSTS प्रतिक्रिया लौटाई। यह आमतौर पर अस्थायी है -- कृपया कुछ मिनटों में पुनः प्रयास करें।
+  loginXboxBanned: यह माइक्रोसॉफ्ट / एक्सबॉक्स खाता माइक्रोसॉफ्ट द्वारा निलंबित या प्रतिबंधित कर दिया गया है और माइनक्राफ्ट में साइन इन नहीं कर सकता है। कृपया माइक्रोसॉफ्ट / एक्सबॉक्स समर्थन से संपर्क करें।
+  loginXboxChildAccount: आपका माइक्रोसॉफ्ट खाता एक बाल खाता है और एक्सबॉक्स / माइनक्राफ्ट में साइन इन करने से पहले इसे माइक्रोसॉफ्ट फैमिली में जोड़ा जाना चाहिए। इसे ठीक करने के लिए अपने ब्राउज़र में {url} खोलें, फिर पुनः प्रयास करें।
+  loginXboxFailed: माइक्रोसॉफ्ट टोकन द्वारा एक्सबॉक्स में लॉग इन करने में विफल। कृपया सुनिश्चित करें कि आपके माइक्रोसॉफ्ट खाते में एक स्वतंत्र एक्सबॉक्स खाता है। कृपया पुनः प्रयास करें।
+  loginXboxFailedWithCode: माइक्रोसॉफ्ट टोकन द्वारा एक्सबॉक्स में लॉग इन करने में विफल (XErr {code})। सहायता के लिए कोड खोजें, या बाद में पुनः प्रयास करें।
+  loginXboxNoXboxProfile: इस माइक्रोसॉफ्ट खाते में अभी तक कोई एक्सबॉक्स प्रोफ़ाइल नहीं है। एक बनाने के लिए अपने ब्राउज़र में {url} खोलें, फिर पुनः प्रयास करें।
+  loginXboxRegionLocked: एक्सबॉक्स लाइव आपके खाते के क्षेत्र में उपलब्ध नहीं है। कृपया माइक्रोसॉफ्ट खाता सेटिंग्स में अपने माइक्रोसॉफ्ट खाते का देश/क्षेत्र बदलें और पुनः प्रयास करें।
+  noProfileForNewUser: कोई गेम प्रोफ़ाइल नहीं मिली! यदि आप एक नए माइनक्राफ्ट उपयोगकर्ता हैं, तो कृपया माइनक्राफ्ट के आधिकारिक लॉन्चर में कम से कम एक बार लॉग इन करें।
+  requestFailed: लॉग इन विफल रहा, हम सटीक कारण नहीं जानते हैं। कृपया पुनः प्रयास करें।
+  requireEmail: ईमेल आवश्यक है
+  requirePassword: पासवर्ड आवश्यक है
+  requireUsername: यूज़रनेम आवश्यक है
+  timeout: लॉग इन टाइमआउट। कृपया पुनः प्रयास करें या अपना नेटवर्क जांचें।
+logsCrashes:
+  crashes: क्रैश रिपोर्ट
+  failures: लॉन्च की विफलताएं
+  logs: लॉग
+  placeholder: कोई फ़ाइल नहीं मिली
+  serverLogs: सर्वर लॉग
+  showFile: फ़ोल्डर में दिखाएं
+  title: लॉग या क्रैश रिपोर्ट
+me:
+  news: समाचार
+  recentPlay: हालिया खेल
+migrateMinecraft:
+  name: माइनक्राफ्ट फ़ाइलें स्थानांतरित करें
+minecraftFriends:
+  accept: स्वीकार करें
+  add: एक मित्र जोड़ें
+  addPlaceholder: माइनक्राफ्ट यूज़रनेम
+  addedRelative: '{time} जोड़ा गया'
+  errors:
+    cannotAddSelf: आप खुद को मित्र अनुरोध नहीं भेज सकते।
+    duplicate: वह खिलाड़ी पहले से ही आपकी सूची में है।
+    generic: कुछ गलत हो गया। कृपया पुनः प्रयास करें।
+    inviteRejected: उस खिलाड़ी के पास मित्र सुविधा सक्षम नहीं है या वह निमंत्रण स्वीकार नहीं करता है।
+    tokenExpired: आपका माइक्रोसॉफ्ट सत्र समाप्त हो गया। कृपया पुनः लॉग इन करें।
+    unknownProfile: हमें उस नाम का कोई खिलाड़ी नहीं मिला।
+  expiresRelative: '{time} समाप्त हो रहा है'
+  friends: मित्र
+  heroEmptyHint: मित्र अनुरोध भेजने के लिए ऊपर यूज़रनेम द्वारा एक माइनक्राफ्ट खिलाड़ी जोड़ें।
+  heroEmptyTitle: आपकी मित्र सूची खाली है
+  incoming: आने वाले अनुरोध
+  incomingHint: 1 आने वाला अनुरोध | {count} आने वाले अनुरोध
+  notifyAdded: '{name} को मित्र अनुरोध भेजा गया'
+  outgoing: बाहर जाने वाले अनुरोध
+  privacy:
+    acceptInvites: मित्र निमंत्रण स्वीकार करें
+    acceptInvitesHint: बंद होने पर, अन्य खिलाड़ी आपको मित्र अनुरोध नहीं भेज सकते।
+    friendsEnabled: मित्र सूची सक्षम
+  reconnectAction: पुनः कनेक्ट करें
+  requiresMicrosoft: मित्रों का उपयोग करने के लिए माइक्रोसॉफ्ट खाते से साइन इन करें।
+  scopedTo: '{name} के रूप में साइन इन हैं'
+  send: भेजें
+  title: माइनक्राफ्ट मित्र
+  unsupported: मित्र केवल माइक्रोसॉफ्ट खातों के लिए उपलब्ध हैं।
+migrationWindow:
+  title: डेटा स्थानांतरण
+  preparing: स्थानांतरण की तैयारी हो रही है...
+  scanning: गणना की जा रही है...
+  migrating: आपका डेटा स्थानांतरित किया जा रहा है
+  done: स्थानांतरण पूरा हुआ
+  files: फ़ाइलें
+  warning: समाप्त होने तक लॉन्चर को खुला रखें, अन्यथा आपका डेटा खो सकता है।
+  error: स्थानांतरण विफल
+minecraftVersion:
+  name: माइनक्राफ्ट संस्करण
+  all: सभी संस्करण
+  release: रिलीज़
+  showAlpha: स्नैपशॉट दिखाएं
+  snapshot: स्नैपशॉट
+mod:
+  acceptVersion: '{version} स्वीकार करें'
+  applyGroupRules: सहेजे गए समूहीकरण नियम लागू करें
+  compatible: संगत मॉड।
+  createGroup: समूह बनाएं
+  currentVersion: वर्तमान {current}
+  denseView: सघन दृश्य
+  description: विवरण
+  disableAll: सभी अक्षम करें
+  dropHint: आयात करने के लिए मॉड की .jar/.litemod फ़ाइल को यहाँ छोड़ें।
+  duplicatedDetected: '{count} डुप्लिकेट मॉड मिले'
+  duplicatedDetectedDescription: समान मॉड आईडी लेकिन अलग-अलग फ़ाइलों वाले मॉड मिले। इससे माइनक्राफ्ट क्रैश हो सकता है। कृपया वह फ़ाइल चुनें जिसे आप रखना चाहते हैं।
+  enableAll: सभी सक्षम करें
+  enabled: '{count} मॉड सक्षम'
+  filter: फ़िल्टर मॉड
+  group: समूह बनाएं
+  groupInstalled: स्थापित मॉड का समूह बनाएं
+  groupName: समूह का नाम
+  groupNameRequired: समूह का नाम आवश्यक है
+  hasUpdate: मॉड का नया संस्करण उपलब्ध है!
+  incompatible: असंगत मॉड।
+  incompatibleHint: असंगत दिखाएं
+  incompatibleHintDescription: कुछ मॉड की निर्भरताएं गायब हो सकती हैं। या कुछ निर्भरता संस्करण मेल नहीं खाते।
+  maybeCompatible: शायद संगत।
+  modloaderSelectHint: यह मॉड निम्नलिखित मॉड लोडर्स का समर्थन करता है। कृपया स्थापित करने के लिए एक चुनें।
+  modloaderSelectNotSupported: माइनक्राफ्ट {minecraft} के लिए {modloader} नहीं मिला
+  mods: '{count} मॉड'
+  name: मॉड | मॉड
+  newFolder: नया फ़ोल्डर
+  noGroupsFound: कोई समूह नहीं मिला
+  noGroupsYet: अभी तक कोई समूह नहीं है। एक बनाएं!
+  noModLoaderHint: मॉड का उपयोग करने के लिए मॉडलोडर सक्षम करना न भूलें!
+  openLink: मॉड यूआरएल {url} खोलें
+  search: मॉड खोजें
+  searchGroups: समूह खोजें...
+  searchOnMcWiki: एमसी विश्वकोश में {name} को खोजें।
+  selectOrCreateGroup: समूह चुनें या बनाएं
+  showDirectory: मॉड निर्देशिका दिखाएं
+  showFile: मॉड पथ {file} दिखाएं
+  showInModrinth: मोडरिंथ में {name} दिखाएं
+  switchDefaultSource: डिफ़ॉल्ट मॉड स्रोत
+  syncGroupRules: समूहीकरण नियम सहेजें
+  toUpdate: '{count} अपडेट'
+  ungroup: समूह से बाहर करें
+modFilter:
+  clear: फ़िल्टर साफ़ करें
+  dependenciesInstallOnly: केवल छूटे हुए निर्भरता वाले मॉड दिखाएं
+  disabledOnly: केवल अक्षम मॉड दिखाएं
+  hasUpdateOnly: केवल अपडेट वाले मॉड दिखाएं
+  incompatibleOnly: केवल असंगत या गायब निर्भरता वाले मॉड दिखाएं
+  unusedOnly: केवल अप्रयुक्त लाइब्रेरी मॉड दिखाएं
+modInstall:
+  archived: '{name} को संग्रहीत (archive) कर दिया गया है। {name} को आगे कोई अपडेट प्राप्त नहीं होगा जब तक कि लेखक परियोजना को संग्रहीत न करने का निर्णय नहीं लेता।'
+  autoUpgrade:
+    description: आपने माइनक्राफ्ट संस्करण बदल दिया है। क्या आप संगत मॉड को स्वचालित रूप से उन संस्करणों में अपडेट करना चाहेंगे जो माइनक्राफ्ट {version} से मेल खाते हैं?
+    'no': छोड़ें
+    title: मॉड अपडेट करें?
+    'yes': मॉड अपडेट करें
+  checkDependencies: निर्भरताएँ जांचें
+  checkUpgrade: मॉड अपडेट जांचें
+  checkedDependencies: निर्भरताएँ जांची गईं
+  checkedUpgrade: अपग्रेड जांचा गया
+  currentVersion: चयनित संस्करण
+  dependencyHint: एक अन्य संस्करण {version} स्थापित है
+  releaseOnly: अपडेट करते समय अल्फा और बीटा संस्करणों को अनदेखा करें
+  installDependencies: लापता निर्भरताएँ स्थापित करें
+  installHint: यह {dependencies} निर्भरता के साथ {file} फ़ाइल स्थापित करेगा
+  noVersionSupported: मॉड केवल माइनक्राफ्ट {supported} का समर्थन करता है।
+  recommendation: '{modrinth} और {curseforge} में {first} मॉड का अन्वेषण करें!'
+  removeUnusedLibraries: अप्रयुक्त को हटाएं
+  search: मॉड खोजें...
+  skipVersion: विभिन्न माइनक्राफ्ट संस्करण वाले मॉड छोड़ें
+  source: मॉड स्रोत
+  switch: संस्करण बदलें
+  upgrade: मॉड अपग्रेड करें
+modSearch:
+  noLocalModsFound: आपकी खोज से मेल खाने वाले कोई स्थानीय मॉड नहीं मिले।
+  noModsFound: कोई मॉड नहीं मिला
+  noModsInstalled: आपके पास कोई मॉड स्थापित नहीं है।
+  searchInMarket: मार्केट में {keyword} खोजें
+modUpgradePolicy:
+  curseforge: CurseForge
+  curseforgeOnly: केवल CurseForge
+  modrinth: Modrinth
+  modrinthOnly: केवल Modrinth
+  name: अपग्रेड नीति
+modified:
+  reset: रीसेट
+  save: सहेजें
+  unsaved: आपका संशोधन सहेजा नहीं गया है!
+modpack:
+  author: लेखक का नाम
+  authorHint: इसका उपयोग निर्यात किए गए मॉडपैक (Curseforge) पर हस्ताक्षर करने के लिए किया जा सकता है
+  description: विवरण
+  descriptionHint: आपके मॉडपैक के लिए सामान्य विवरण। इसका उपयोग कर्सफोर्ज मॉडपैक के रूप में निर्यात करने के लिए किया जा सकता है।
+  dropHint: आयात करने के लिए मॉडपैक ज़िप फ़ाइल यहाँ छोड़ें
+  emitCurseforge: कर्सफ़ोर्ज मॉडपैक निर्यात करें
+  emitModrinth: मोडरिंथ मॉडपैक निर्यात करें
+  emitModrinthStrict: सख्त मोडरिंथ प्रारूप
+  emitModrinthStrictDescription: केवल मोडरिंथ दस्तावेज़ में सूचीबद्ध 4 डोमेन के यूआरएल की अनुमति है
+  export: मॉडपैक के रूप में निर्यात करें
+  exportDirectory: निर्देशिका निर्यात करें
+  exportDirectoryDescription: मॉडपैक डिफ़ॉल्ट रूप से डाउनलोड फ़ोल्डर में निर्यात किया जाएगा
+  includeAssets: एसेट शामिल करें
+  includes: शामिल करने के लिए फ़ाइलें
+  modpackVersion: मॉडपैक संस्करण
+  name: मॉडपैक | मॉडपैक
+  overrides: ओवरराइड्स
+  url: यूआरएल
+  urlHint: आपके मॉडपैक का होम पेज यूआरएल
+modpackImportConfirm:
+  description: पता चला कि आपने लॉन्चर में एक फ़ाइल छोड़ी है। क्या आप एक मॉडपैक आयात करने का प्रयास कर रहे हैं?
+  title: क्या आप एक मॉडपैक आयात करने का प्रयास कर रहे हैं?
+modpackUpdateOrCreate:
+  createNew: नया बनाएं
+  description: इस मॉडपैक के लिए एक इंस्टेंस "{name}" पहले से मौजूद है। क्या आप इसे अपडेट करना चाहते हैं या एक नया बनाना चाहते हैं?
+  title: इंस्टेंस पहले से मौजूद है
+  update: मौजूदा को अपडेट करें
+modrinth:
+  browseUrl: ब्राउज़र में खोलें {url}
+  categories:
+    128x: 128x
+    16x: 16x
+    256x: 256x
+    32x: 32x
+    48x: 48x
+    512x+: 512x+
+    64x: 64x
+    8x-: 8x-
+    adventure: साहसिक (Adventure)
+    atmosphere: वातावरण
+    audio: ऑडियो
+    blocks: ब्लॉक
+    bloom: ब्लूम
+    bukkit: बुक्किट (Bukkit)
+    bungeecord: बंजीकॉर्ड
+    canvas: कैनवास
+    cartoon: कार्टून
+    categories: श्रेणियां
+    challenging: चुनौतीपूर्ण
+    colored-lighting: रंगीन रोशनी
+    combat: लड़ाई (Combat)
+    core-shaders: कोर शेडर्स
+    cursed: शापित
+    datapack: डेटा पैक
+    decoration: सजावट
+    economy: अर्थव्यवस्था
+    entities: इकाईयाँ (Entities)
+    environment: पर्यावरण
+    equipment: उपकरण
+    fabric: फैब्रिक (Fabric)
+    fantasy: काल्पनिक (Fantasy)
+    features: सुविधाएँ
+    folia: फोलिया
+    foliage: पत्ते (Foliage)
+    fonts: फ़ॉन्ट
+    food: भोजन
+    forge: फोर्ज (Forge)
+    game-mechanics: गेम यांत्रिकी
+    gui: GUI
+    high: उच्च
+    iris: आइरिस
+    items: आइटम
+    kitchen-sink: किचन सिंक
+    library: लाइब्रेरी
+    lightweight: हल्का
+    liteloader: लाइटलोडर
+    locale: स्थानीय
+    low: कम
+    magic: जादू
+    management: प्रबंधन
+    medium: मध्यम
+    minecraft: माइनक्राफ्ट
+    minigame: मिनी गेम्स
+    misc: विविध
+    mobs: मब्स (Mobs)
+    modded: मॉड किया हुआ
+    models: मॉडल
+    modloader: मॉड लोडर
+    multiplayer: मल्टीप्लेयर
+    name: श्रेणियां
+    neoforge: NeoForge
+    optifine: ऑप्टिफाइन
+    optimization: अनुकूलन (Optimizations)
+    paper: पेपर (Paper)
+    path-tracing: पथ अनुरेखण
+    pbr: PBR
+    performance impact: प्रदर्शन प्रभाव
+    potato: आलू (Potato)
+    purpur: पुरपुर
+    quests: खोज (Quests)
+    quilt: क्विल्ट
+    realistic: यथार्थवादी
+    reflections: प्रतिबिंब
+    resolutions: रिज़ॉल्यूशन
+    rift: रिफ्ट
+    screenshot: स्क्रीनशॉट
+    semi-realistic: अर्ध-यथार्थवादी
+    shadows: परछाइयां (Shadows)
+    simplistic: सरल
+    social: सामाजिक
+    spigot: स्पिगोट (Spigot)
+    sponge: स्पंज (Sponge)
+    storage: भंडारण
+    technology: प्रौद्योगिकी
+    themed: थीम आधारित
+    transportation: परिवहन
+    tweaks: ट्वीक्स (Tweaks)
+    utility: उपयोगिता
+    vanilla: वेनिला (Vanilla)
+    vanilla-like: वेनिला जैसी
+    velocity: वेग
+    waterfall: झरना (Waterfall)
+    worldgen: विश्व जनरेशन
+  clientSide: क्लाइंट पक्ष (Client Side)
+  copyTitle: Copy Text {title} to clipboard
+  createAt: बनाया गया
+  createCollection: संग्रह बनाएं
+  description: विवरण
+  downloads: डाउनलोड
+  environments:
+    all: सभी
+    default: डिफ़ॉल्ट
+    name: वातावरण (Environment)
+    optional: वैकल्पिक
+    required: आवश्यक
+    unsupported: असमर्थित
+  externalResources: बाहरी संसाधन
+  featuredVersions: विशेष रुप से प्रदर्शित संस्करण
+  followedProjects: अनुसरण किए गए प्रोजेक्ट
+  followers: अनुयायी
+  gallery: गैलरी
+  gameVersions:
+    name: Game Versions
+  headers:
+    status: Stats
+    support: Supports
+    version: Version
+  issueUrl: Issue
+  license: License
+  licenses:
+    name: Licenses
+  loginHint: इस ऑपरेशन के लिए मोडरिंथ की आवश्यकता है। लॉन्चर मोडरिंथ में लॉग इन करने के लिए एक ब्राउज़र विंडो खोलेगा।
+  loginTitle: Login to Modrinth
+  modLoaders:
+    name: Mod Loaders
+  modpackSource:
+    source: Source
+  projectId: Project Id
+  projectMembers: Project Members
+  projectType:
+    datapack: Datapack
+    mod: Mod
+    modpack: Modpack
+    plugin: Plugin
+    resourcepack: Resource Pack
+    shader: Shader
+  projects: '{count} projects'
+  serverSide: Server Side
+  sort:
+    downloads: Download counts
+    follows: Follow count
+    newest: Recently created
+    relevance: Relevance
+    title: Sort By
+    updated: Recently updated
+  sourceUrl: Source
+  technicalInformation: Technical Information
+  updateAt: Updated
+  versions: Versions
+  wikiUrl: Wiki
+modrinthCard:
+  currentVersion: Current Version
+multiplayer:
+  allowTurn: Enable relay server
+  allowTurnHint: यदि आप अपने मित्र से कनेक्ट नहीं हो पाते हैं तो रिले सर्वर की अनुमति दें। हालाँकि, रिले सर्वर का उपयोग करने से आपका कनेक्शन धीमा हो सकता है। सावधानी से इसका प्रयोग करें।
+  complete: Complete
+  confirm: Confirm
+  connectionError: Connection Error
+  connectionFailedHint: Unable to establish connection. Check if both peers have compatible NAT types.
+  connections: Connections
+  copied: Copied!
+  copy: Copy
+  copyGroupToFriendHint: अपने दोस्तों को इस आईडी से समूह में शामिल होने दें
+  copyLocalHint: |
+    कृपया स्थानीय SDP टेक्स्ट को कॉपी करें और अपने साथी को भेजें ताकि वे इसे जॉइन कनेक्शन में डाल सकें। <span>एक टोकन का उपयोग केवल <span style="color: red; font-weight: bold;">एक साथी (peer)</span> के लिए किया जा सकता है! आप एक ही टोकन कई साथियों को नहीं भेज सकते!</span> <br> <span class="hint-text" style="font-style: italic;">यदि आपको कई साथियों से जुड़ने की आवश्यकता है, तो आपको <span style="font-weight: bold; color: rgba(245, 158, 11)">एकाधिक</span> कनेक्शन बनाने होंगे।</span>
+  createLocalToken: Create Local Token
+  currentIpTitle: Detected Public IP
+  currentNatTitle: 'Current network (NAT):'
+  difficultyLevelHint: The level of difficulty creating a connection
+  disconnect: Disconnect
+  disconnectDescription: Are you sure you want to disconnect with user {user}({id})?
+  disconnected: disconnected
+  enterRemoteToken: Enter Remote Token
+  enterRemoteTokenHint: एक बार जब आपका साथी आपका टोकन दर्ज कर लेता है, तो आपको नीचे दिए गए टेक्स्ट क्षेत्र में उसका टोकन दर्ज करना होगा। कनेक्ट करने के लिए पुष्टि करें पर क्लिक करें।
+  exposedPortDescription: The port you exposed to other peers
+  exposedPorts: Forwarded Ports
+  gatheringIce: |
+    कृपया ICE सर्वर द्वारा आपके नेटवर्क के बारे में पर्याप्त जानकारी एकत्र करने की प्रतीक्षा करें। यदि आप अधीर हैं और पर्याप्त जानकारी है, तो आप अन्य पार्टी को पहले ही वर्तमान SDP दे सकते हैं और आगे बढ़ सकते हैं। कृपया अपने साथी को <span class="v-chip v-chip--label v-size--small" style="text-font: bold">स्थानीय टोकन</span> भेजें, और आपका साथी आपके टोकन को <span class="v-chip v-chip--label v-size--small" style="text-font: bold">कनेक्शन शामिल करें</span> अनुभाग में दर्ज करे। <br> ICE सर्वर को <span class="v-chip v-chip--label v-size--small" style="text-font: bold">स्थानीय टोकन</span> बनाने के लिए आपकी जानकारी एकत्र करने में कुछ समय लग सकता है।<br> आपको ICE स्थिति पूर्ण होने तक प्रतीक्षा करने की आवश्यकता नहीं है। यदि नीचे दिया गया टोकन अपरिवर्तित रहता है, तो आप इसे कॉपी कर सकते हैं और अपने साथी को भेज सकते हैं।
+  groupId: Group Id
+  illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
+  initiateConnection: Initiate Connection
+  joinConnection: यदि आपके साथी ने पहले ही कनेक्शन शुरू कर दिया है, तो आपको कनेक्शन में शामिल होना होगा।
+  joinManual: Join
+  joinOrCreateGroup: Join/Create Group
+  joinOrCreateGroupHint: अपने दोस्तों से समूह आईडी प्राप्त करें या एक समूह बनाएं
+  kernel: P2P Kernel
+  kernelDescription: Use either native WebRTC or node-datachannel. Only switch this when your p2p connection sometime crashes the launcher window.
+  leaveGroup: Leave group
+  localToken: Local Token
+  manualConnect: Manually Connect
+  name: Multiplayer on LAN
+  natWarning: आपका NAT प्रकार सीधे कनेक्शन को रोक सकता है। सेटिंग्स में रिले सर्वर को सक्षम करने का प्रयास करें या अपने मित्र से होस्ट करने के लिए कहें।
+  networkInfo: Network Info (Click to toggle)
+  next: Next
+  otherExposedPortDescription: The port forwarded by {user}
+  placeholder: लैन पर माइनक्राफ्ट खेलने के लिए अन्य उपयोगकर्ताओं से जुड़ें!
+  previous: Previous
+  receiveHint: दूसरी पार्टी द्वारा आपका टोकन दर्ज करने के बाद, आपका कनेक्शन स्वचालित रूप से बन जाएगा। अब आप संवाद बंद कर सकते हैं।
+  receiveRemoteTokenHint: कृपया यहाँ अपने साथी का टोकन दर्ज करें।
+  remoteToken: Remote Token
+  routerInfo: Router Info
+  sendTokenToRemote: Send Token to Remote
+  share: Share Instance Config
+  sharing: Sharing files...
+  sharingNotificationBody: You can download or create an instance from {name} shared config.
+  sharingNotificationTitle: A peer is sharing their game config
+  start: Start
+  startNewP2PConnection: नया पीयर कनेक्शन बनाने के लिए स्टार्ट बटन पर क्लिक करें
+myStuff: My Stuff
+natType:
+  blocked: Blocked
+  fullCone: Full Cone
+  openInternet: Open Internet
+  restrictNat: Restrict NAT
+  restrictPortNat: Restrict Port NAT
+  symmetricNat: Symmetric NAT
+  symmetricUDPFirewall: Symmetric UDP Firewall
+  unknown: Unknown
+neoForgedVersion:
+  disable: Disable NeoForged
+  empty: NeoForged does not support {version}
+news:
+  name: News
+  readMore: Read More
+optifineVersion:
+  disable: Disable Optifine
+  empty: Optifine does not support Minecraft {version}
+optional: Optional
+peerConnectionState:
+  closed: Closed
+  connected: Connected
+  connecting: Connecting
+  disconnected: Disconnected
+  failed: Failed
+  name: Connection State
+  new: New
+peerGroupState:
+  closed: Not in Group
+  closing: Closed
+  connected: Group Joined
+  connecting: Connecting
+peerIceGatheringState:
+  gathering: Gathering Ice Server
+peerSignalingState:
+  have-local-offer: Waiting peer description
+presence:
+  instance: Idle in Instance {instance}
+  instanceSetting: 'Edit Instance Setting: {instance}'
+  mod: Viewing Mods in {instance}
+  modrinthProject: Viewing {name} in Modrinth
+  resourcePack: Viewing Resource Packs in {instance}
+  save: Viewing Saves in {instance}
+  setting: Viewing Setting Page
+  shaderPack: Viewing Shader Packs in {instance}
+proxy:
+  host: Host
+  port: Port
+quiltVersion:
+  disable: Disable Quilt
+  empty: Quilt does not support Minecraft {version}
+reinstall:
+  name: Reinstall {version}
+relative:
+  daysAgo: '{count} दिन पहले | {count} दिन पहले'
+  hoursAgo: '{count} घंटा पहले | {count} घंटे पहले'
+  justNow: अभी-अभी
+  minutesAgo: '{count} मिनट पहले | {count} मिनट पहले'
+  secondsAgo: '{count} सेकंड पहले | {count} सेकंड पहले'
+resourceError:
+  body: '"{path}" का विश्लेषण नहीं किया जा सका ({code})। फ़ाइल दूषित, लॉक या अपूर्ण हो सकती है। इसे पुन: डाउनलोड करने या हटाने का प्रयास करें।'
+  title: '{file} को पढ़ा नहीं जा सकता'
+blueprint:
+  name: ब्लूप्रिंट | ब्लूप्रिंट
+  count: '{count} ब्लूप्रिंट'
+  searchLocal: ब्लूप्रिंट खोजें...
+  searchOnline: ऑनलाइन खोजें...
+  market: मार्केट
+  local: स्थानीय
+  provider: प्रदाता
+  import: आयात करें
+  openFolder: फ़ोल्डर खोलें
+  refresh: रिफ्रेश करें
+  empty: कोई ब्लूप्रिंट नहीं मिला। एक .litematic / .schem / .nbt फ़ाइल आयात करें या मार्केट ब्राउज़ करें।
+  dropHint: आयात करने के लिए ब्लूप्रिंट फ़ाइलें (.litematic / .schem / .nbt) यहाँ छोड़ें।
+  selectHint: पूर्वावलोकन देखने के लिए एक ब्लूप्रिंट का चयन करें।
+  blocks: '{count} ब्लॉक'
+  materials: सामग्री
+  allNamespaces: सभी
+  findMod: इस नेमस्पेस के लिए मॉड खोजें
+  compatible: संगत
+  incompatible: लापता मॉड
+  missingNamespaces: 'इसके लिए लापता मॉड: {namespaces}'
+  delete: Delete
+  cancel: Cancel
+  install: Install
+  goTo: Website
+  byAuthor: '{author} द्वारा'
+  noDescription: No description provided.
+  loadMore: Load more
+  cmsBrowseOnly: यह स्रोत केवल ब्राउज़ करने के लिए है; डाउनलोड करने के लिए वेबसाइट खोलें।
+  mixedSources: परिणाम सभी स्रोतों से मिश्रित हैं। कुछ केवल ब्राउज़ करने योग्य हैं — डाउनलोड करने के लिए उनकी वेबसाइट खोलें।
+  formats:
+    structure: वेनिला संरचना
+  preview:
+    title: 3D पूर्वावलोकन
+    loading: पूर्वावलोकन लोड किया जा रहा है...
+    empty: इस ब्लूप्रिंट में प्रदर्शित करने के लिए कोई ब्लॉक नहीं है।
+    hint: '{count} ब्लॉक · {x}×{y}×{z}'
+    controls: देखने के लिए खींचें · WASD स्थानांतरित करें · Space/Shift ऊपर/नीचे
+  convert:
+    title: प्रारूप बदलें
+    hint: Convert this blueprint to another format. A new file will be created.
+    target: लक्ष्य प्रारूप
+    action: Convert
+  replace:
+    title: Replace blocks
+    simple: Simple
+    precise: Precise
+    simpleHint: Match by block id only, keeping the existing block state properties.
+    preciseHint: Match the full block state (id + properties) and replace it entirely.
+    from: From
+    to: To
+    addRule: Add rule
+    newFile: Save as a new file
+    action: Replace
+resourcepack:
+  compatible: '{version} के साथ संगत प्रारूप {format}'
+  defaultDescription: माइनक्राफ्ट का डिफ़ॉल्ट रूप और अनुभव
+  delete:
+    content: यह डिस्क से रिसोर्स पैक फ़ाइल को हटा देगा, और हम इसे पूर्ववत नहीं कर सकते। क्या आप वाकई ऐसा करना चाहते हैं?
+    title: रिसोर्स पैक हटाएं
+  dropHint: आयात करने के लिए रिसोर्स पैक के फ़ोल्डर/ज़िप को यहाँ छोड़ें।
+  enable: '{count} रिसोर्स पैक सक्षम'
+  incompatible: असंगत रिसोर्स पैक प्रारूप ({format})। आवश्यक {accept}। वर्तमान {actual}।
+  name: रिसोर्स पैक | रिसोर्स पैक
+  linkShared: Share resource packs across instances
+  linkSharedHint: इस इंस्टेंस के resourcepacks फ़ोल्डर को वैश्विक साझा फ़ोल्डर से लिंक करें ताकि सभी इंस्टेंस समान रिसोर्स पैक देखें। मौजूदा पैक साझा फ़ोल्डर में विलय कर दिए जाते हैं।
+  noLocalPacksFound: आपकी खोज से मेल खाने वाले कोई स्थानीय रिसोर्स पैक नहीं मिले।
+  noPacks: No resource packs found
+  noPacksInstalled: You don't have any resource packs installed.
+  search: रिसोर्स पैक खोजें...
+  searchHint: रिसोर्स पैक खोजें
+  searchOnCurseforge: कर्सफोर्ज में {name} खोजें
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: चयनित रिसोर्स पैक
+  showDirectory: Show resource pack directory
+  showFile: फ़ोल्डर {file} में रिसोर्स पैक दिखाएं
+  showInCurseforge: Show {name} in curseforge
+  unselected: गैर-चयनित रिसोर्स पैक
+save:
+  allowCheats: Allow Cheats
+  copy:
+    name: वर्ल्ड कॉपी करें
+  createNew: নया वर्ल्ड बनाएं
+  createdWorlds: आपके पास {count} वर्ल्ड हैं
+  deleteHint: यह ऑपरेशन वापस नहीं लिया जा सकता। आप वर्ल्ड का डेटा हमेशा के लिए खो देंगे। क्या आप वाकई इस वर्ल्ड को हटाना चाहते हैं?
+  deleteTitle: वर्ल्ड हटाएं
+  difficulty: Difficulty
+  dropHint: Drag save zip here to Import
+  datapack:
+    name: डेटा पैक | डेटा पैक
+    noSaveHint: इस डेटा पैक को स्थापित करने के लिए पहले एक वर्ल्ड बनाएं या चुनें
+    packFormat: 'Pack format: {format}'
+    imported: डेटा पैक {save} में आयात किया गया
+  duplicate: Duplicate Save
+  export: वर्ल्ड निर्यात करें
+  exportMessage: Export the Save as zip
+  exportTitle: Export the Save
+  gameMode: game mode
+  independent: Instance use independent saves folder
+  linkShared: Share saves across instances
+  linkSharedHint: इस इंस्टेंस के सेव फ़ोल्डर को वैश्विक साझा फ़ोल्डर से लिंक करें ताकि सभी इंस्टेंस समान वर्ल्ड साझा करें। मौजूदा सेव साझा फ़ोल्डर में विलय कर दिए जाते हैं।
+  levelName: Level Name
+  loadMap: नक्शा लोड करें
+  mapError: Map Error
+  mapInfo: 'इंटरैक्टिव 3D वर्ल्ड पूर्वावलोकन:'
+  mapLoaded: Map Loaded
+  mapPreview: Map Preview
+  chunkSelectMode: चंक (Chunks) चुनें
+  panMode: Pan
+  chunkSelected: '{count} चंक चयनित'
+  mapHintPan: Drag to pan
+  mapHintSelect: Select
+  mapHintDeselect: Deselect
+  toggleGrid: Toggle region grid
+  heightTop: Top
+  resetView: Reset View
+  clearSelection: Clear Selection
+  copyChunks: Copy Chunks
+  pasteChunks: '{count} चंक पेस्ट करें'
+  pasteChunksPlaceHint: माउस को {count} चंक की स्थिति में ले जाएं, फिर पेस्ट करने के लिए क्लिक करें। लक्ष्य पर मौजूद चंक अधिलेखित हो जाएंगे। रद्द करने के लिए Esc दबाएं।
+  pasteChunksCancel: Cancel
+  deleteChunks: Delete Chunks
+  deleteChunksTitle: Delete Selected Chunks
+  deleteChunksHint: Delete {count} selected chunk(s)? This cannot be undone. The chunks will be regenerated the next time the area is loaded in game.
+  mapLoading: Loading map…
+  noRegions: This world has no generated regions to preview.
+  dimOverworld: ओवरवर्ल्ड (Overworld)
+  dimNether: नेदर (The Nether)
+  dimEnd: द एंड (The End)
+  name: सेव | सेव
+  noLocalSavesFound: No local saves found matching your search.
+  noSavesFound: No saves found
+  noSavesInstalled: You don't have any saves.
+  openFolder: Open Saves Folder
+  properties: World Properties
+  search: मानचित्र खोजें...
+  searchHint: कर्सफ़ोर्ज पर वर्ल्ड खोजें
+  searchSaves: Search Saves
+  seed: Seed
+  selected: स्थानीय सेव
+  shared: Instance use shared saves folder
+  showDirectory: Show saves directory
+  unselected: Shared Saves
+  useCurrent: Use current world
+  useMouseRotate: Use mouse to rotate view
+  useScrollZoom: Use scroll wheel to zoom
+  world: World
+screenshots:
+  empty: You don't have any screenshots
+  gallery: Screenshot Gallery
+  hint: Take screenshots in game by pressing F2
+  openFolder: Open Screenshots Folder
+  playRandom: Shuffle
+  playSequence: Play in order
+search:
+  favorate: Collection
+  local: Installed
+  market: Market
+  emptyInstalled: Nothing installed yet
+  browseMarket: Browse Market
+  noResults: No results found
+server:
+  acceptingMinecraftVersion: माइनक्राफ्ट संस्करण स्वीकार कर रहा है
+  addServer: सर्वर जोड़ें
+  address: सर्वर पता
+  addressHint: जैसे mc.hypixel.net
+  bindUpstream: Bind as upstream
+  boundUpstream: Server upstream bound
+  boundUpstreamHint: यह इंस्टेंस बाध्य सर्वर के माइनक्राफ्ट संस्करण का अनुसरण करता है।
+  creationHint: कृपया सर्वर पता भरें और सर्वर को पिंग करें
+  editServer: सर्वर संपादित करें
+  emptyHint: इस इंस्टेंस के servers.dat में अभी तक कोई सर्वर नहीं है। शुरू करने के लिए एक जोड़ें।
+  entryCount: '{count} सर्वर | {count} सर्वर'
+  expectedVersions: Supported Versions
+  export: Export Server
+  exportNoFilesHint: No server files found. You can run server on local once to generate some files.
+  exportOption: Server Export Options
+  exportSSHAuthenticationFailed: सभी प्रमाणीकरण विधियाँ विफल रहीं। कृपया यूज़रनेम/पासवर्ड या निजी कुंजी की जाँच करें।
+  exportSSHOptions: SSH Options
+  exportSSHPrivateKeyPath: SSH Private Key Path
+  exportSSHRemotePath: Remote Server Path
+  exportToFolder: Export To Folder
+  filterVersion: Filter server responded Minecraft version
+  host: Host
+  hostHint: The host (with port) of the server
+  hostRequired: Please enter the server ip address
+  ipAddress: IP Address
+  launchClient: Launch client instead
+  launchPinned: Pinned
+  launchTargetHint: This instance launches straight into the pinned server. Switch back to the client?
+  maxPlayers: Max Players
+  motd: Server MOTD
+  nameHint: Display name shown in the Multiplayer list
+  nogui: No Server Gui
+  onlineMode: Online Mode
+  pin: Pin server
+  pinAfterSave: Pin as default launch target after save
+  ping: Ping
+  pings: Pings
+  pinnedHeader: 'pinned: {name}'
+  players: Players
+  port: Port
+  serverName: Server name
+  serversListTitle: Server List
+  unbindUpstream: Unbind
+  unknown: Unknown Server
+  unknownDescription: Unknown Server. Please Refresh
+  unpin: Unpin
+  upload: Upload Server
+  upstreamUpToDate: Your instance matches the server ({version}).
+  upstreamUpToDateHint: No upgrade needed. Click to re-ping the server.
+  upstreamUpdateAvailable: Server now runs Minecraft {version}. Click to apply.
+  upstreamUpdateHint: Applies the suggested Minecraft version to this instance.
+  useAsUpstreamHint: The instance will follow the server's reported Minecraft version.
+  version: Server Requires Version
+  versionHint: The Minecraft Version To Ping
+serverStatus:
+  nohost: §4Cannot find host!
+  ping: पिंग किया जा रहा है...
+  refuse: §4Server refused!
+  timeout: §4Connect server timeout!
+setting:
+  about: के बारे में
+  aboutBmclDescription: BMCL API चीनी मुख्य भूमि के उपयोगकर्ताओं के लिए सुविधाजनक डाउनलोड प्रदान करता है
+  aboutContributors: 🧑‍💻 योगदानकर्ता 🧑‍💻
+  aboutDenoDescription: XMCL Deno Deploy के सरल प्लेटफॉर्म का उपयोग करता है
+  aboutLicense: MIT LICENSE
+  aboutLicenseInfo: विंडोज पर मुफ्त कोड हस्ताक्षर SignPath.io द्वारा प्रदान किया गया है, प्रमाणपत्र SignPath Foundation द्वारा प्रदान किया गया है
+  aboutSponsors: 😇 प्रायोजक 😇
+  advancedJavaOptions: Advanced Java Options
+  advancedSettings: Advanced Settings
+  advancedSettingsHint: Danger zone - reset or manage launcher data
+  aiAgentApiKey: AI Agent API Key
+  aiAgentApiKeyDescription: Stored locally on this device and used for agent requests.
+  aiAgentEndpoint: AI Agent Endpoint
+  aiAgentEndpointDescription: Chat completions endpoint URL.
+  aiAgentModel: AI Agent Model
+  aiAgentModelDescription: Model name to send in chat completion requests.
+  apiSets:
+    auto: स्वचालित (नेटवर्क द्वारा निर्धारित)
+    official: Official (Mojang)
+  appearance: सजावट (Appearance)
+  appearanceDescription: लॉन्चर की उपस्थिति को अनुकूलित करें
+  appxUpdateHint: The launcher will download and execute installer. If popup installer failed, please run it manually.
+  authenticationSettings: Authentication
+  backdropBlur: पृष्ठभूमि धुंधलापन (Backdrop Blur)
+  backgroundColorAbove: पृष्ठभूमि रंग को ओवरले के रूप में दिखाएं
+  backgroundColorAboveDescription: यह पृष्ठभूमि छवि या वीडियो के ऊपर पृष्ठभूमि रंग प्रदर्शित करेगा।
+  backgroundImage: पृष्ठभूमि छवि
+  backgroundImageClear: साफ़ करें
+  backgroundImageDescription: पृष्ठभूमि के रूप में एक छवि चुनें या साफ़ करें
+  useDesktopBackground: वर्तमान डेस्कटॉप वॉलपेपर का उपयोग करें
+  backgroundImageFit:
+    contain: Contain
+    cover: Cover
+    name: Image Fit
+  backgroundImageUrl: छवि यूआरएल
+  backgroundImageUrlPlaceholder: छवि के लिए HTTP/HTTPS यूआरएल दर्ज करें
+  backgroundMusic: थीम पृष्ठभूमि संगीत
+  backgroundMusicUrl: संगीत यूआरएल
+  backgroundMusicUrlPlaceholder: संगीत के लिए HTTP/HTTPS यूआरएल दर्ज करें
+  backgroundType: पृष्ठभूमि प्रकार
+  backgroundTypeDescription: पृष्ठभूमि पर विशेष प्रभाव दिखाएं (यह प्रदर्शन को प्रभावित कर सकता है)
+  backgroundTypes:
+    halo: हेलो (Halo)
+    image: छवि
+    none: कोई नहीं
+    particle: कण (Particle)
+    video: वीडियो
+  backgroundVideo: पृष्ठभूमि वीडियो
+  backgroundVideoDescription: वीडियो चुनें या साफ़ करें
+  backgroundVideoUrl: वीडियो यूआरएल
+  backgroundVideoUrlPlaceholder: वीडियो के लिए HTTP/HTTPS यूआरएल दर्ज करें
+  backgroundVideoVolume: आवाज
+  backgroundVideoVolumeDescription: आवाज को समायोजित करने के लिए खींचें
+  browseRoot: Browse
+  checkUpdate: अपडेट जांचें
+  colorTheme:
+    appBarColor: App Bar
+    backgroundColor: Background Color
+    cardColor: Card Color
+    description: थीम में रंग बदलें
+    errorColor: Error Color
+    name: Theme Color and Blur
+    primaryColor: Primary Color
+    sideBarColor: Side Bar
+    warningColor: Warning Color
+  customCss:
+    advancedDescription: लॉन्चर की वर्तमान शैली को अपने स्वयं के सीएसएस (CSS) से ओवरराइड करें।
+    assistantHint: उस लुक का वर्णन करें जिसे आप चाहते हैं और मैं आपके लिए सीएसएस लिखूँगा।
+    assistantSuggestion1: साइडबार को पारभासी (translucent) बनाएं
+    assistantSuggestion2: कार्ड्स में एक सूक्ष्म ढाल (gradient) पृष्ठभूमि जोड़ें
+    assistantTitle: CSS Assistant
+    dropHint: इसे लोड करने के लिए एक .css फ़ाइल छोड़ें
+    editorPlaceholder: /* Write your custom CSS here */
+    globalToggle: Toggle Custom CSS
+    openInDialog: Open in the agent dialog
+    title: Custom CSS
+    warning: Custom CSS allows you to customize any aspect of the launcher. Be careful when pasting CSS from untrusted sources, as it can modify the UI layout.
+  darkTheme: Theme
+  darkThemeDescription: Choose between dark or light theme
+  devModeLabel: DEV
+  developerMode: Developer Mode
+  developerModeDescription: Developer Mode is for testing your own mods
+  disableTelemetry: Disable Telemetry
+  disableTelemetryDescription: XMCL will collect the game launch and user login events.
+  enableDedicatedGPUOptimization: Assign Dedicated GPU
+  enableDedicatedGPUOptimizationDescription: This option will assign dedicated GPU to Minecraft process.
+  enableDiscord: Enable Discord Presence
+  enableDiscordDescription: This will update Discord status to the launcher
+  enterUrl: Enter URL
+  exportSettings: Export Settings
+  exportSettingsHint: Save your current settings to a file
+  general: General
+  githubRelease: Github Release
+  globalSetting: Global Instance Setting
+  globalSettingHint: Instance will use these settings by default.
+  importSettings: Import Settings
+  importSettingsHint: Load settings from a previously exported file
+  instanceTheme:
+    activeDescription: यह इंस्टेंस एक कस्टम थीम का उपयोग कर रहा है। आप वैश्विक थीम का उपयोग करने के लिए इसे हटा सकते हैं।
+    description: इस इंस्टेंस के लिए एक कस्टम थीम सक्षम करें। यह वर्तमान वैश्विक थीम की एक प्रति बनाएगा।
+    name: Instance Theme
+  language: Language
+  languageDescription: प्रदर्शन भाषा
+  latestVersion: Latest Version
+  layout:
+    default: Default Layout
+    focus: Focus Layout
+  layoutDescription: Choose your preferred interface style
+  layoutTitle: Interface Layout
+  linuxEnableDedicatedGPUOptimization: समर्पित ग्राफिक्स प्रोसेसर सौंपना
+  linuxEnableDedicatedGPUOptimizationDescription: यह विकल्प माइनक्राफ्ट प्रक्रिया को एक समर्पित GPU सौंपता है।
+  linuxTitlebar: मूल शीर्षक बार (Native title bar)
+  linuxTitlebarDescription: लॉन्चर के लिए मूल लिनक्स शीर्षक बार का उपयोग करें
+  livePreview: Live Preview
+  location: Store Location
+  manualUpdateHint: संस्करण स्वचालित रूप से अपडेट नहीं किया जा सकता। कृपया आधिकारिक वेबसाइट से लॉन्चर दोबारा डाउनलोड करें!
+  maunalUpdateHint: संस्करण स्वचालित रूप से अपडेट नहीं किया जा सकता। कृपया वेबसाइट से लॉन्चर को दोबारा डाउनलोड करें!
+  maxSockets: प्रति होस्ट
+  maxSocketsDescription: Limit the maximum number of sockets to allow per host or for all hosts in total. 0 means no limit.
+  maxSocketsTitle: Max HTTP sockets
+  memoryAssignment: Memory Assignment
+  migrateFromOther: Import from other launcher
+  minecraftOptions: Minecraft Options
+  name: वैश्विक सेटिंग | वैश्विक सेटिंग्स
+  network: Network Settings
+  newsPosition: Move News Section
+  officialWebsite: Official Website
+  particleMode:
+    bubble: बुलबुला
+    name: कण (Particle) मोड
+    push: धकेलें (Push)
+    remove: हटाएं
+    repulse: प्रतिकर्षित करें
+  particleModeDescription: Select the particle click behavior
+  quickLaunchSettings: Quick Launch
+  replaceNative: Replace Native Libraries
+  replaceNativeDescription: Replace native libraries according to your computer's arch.
+  replaceNatives:
+    all: All
+    legacy: Legacy Version Only
+  resetAllSettings: Reset All Settings
+  resetAllSettingsConfirmMessage: यह सभी सेटिंग्स, खातों, इंस्टेंस, समूहों और कैश्ड डेटा को स्थायी रूप से हटा देगा। इस कार्रवाई को पूर्ववत नहीं किया जा सकता है। क्या आप सुनिश्चित हैं?
+  resetAllSettingsConfirmTitle: Reset All Settings?
+  resetAllSettingsHint: Reset launcher to factory defaults (deletes everything)
+  resetAllSettingsSuccess: All settings have been reset. The launcher will restart.
+  resetSettingsError: 'Error resetting settings: {error}'
+  resetToDefault: Reset to Default
+  select: Select
+  setAsBackground:
+    failed: Failed to set background image
+    global: Set as launcher background
+    instance: Set as instance background
+    successGlobal: Background image updated.
+    successInstance: Instance background image updated.
+  settingsExported: Settings exported successfully
+  settingsImportError: Failed to import settings. Please check the file format.
+  settingsImported: Settings imported successfully
+  settingsReloadHint: The launcher will restart to apply all settings.
+  showNewsHeader: Unhide News showcase
+  showRoot: Show
+  sidebarAlign: Sidebar Alignment
+  sidebarAutoHide: Sidebar Auto-hide
+  sidebarAutoHideHint: Hide sidebar automatically and show on hover
+  sidebarClassic: Classic
+  sidebarNotch: Notch
+  sidebarPosition: Sidebar Position
+  sidebarScale: Sidebar Scale
+  sidebarShowOnlyPinned: Show Only Pinned Instances
+  sidebarShowOnlyPinnedHint: Only display pinned instances in the sidebar
+  sidebarStyle: Sidebar Style
+  sidebarStyleHint: Choose between classic and modern notch design
+  streamerMode: Streaming Mode
+  streamerModeDescription: यह लॉन्चर में आपकी निजी जानकारी जैसे ईमेल को छुपा देगा।
+  theme:
+    dark: Dark Theme
+    light: Light Theme
+    system: Use System Theme
+  themeExport: Export Theme
+  themeBorderRadius: Rounded Corners
+  themeBorderRadiusDescription: Enable or disable rounded corners for cards, dialogs, menus, and panels.
+  themeFont: Font
+  themeFontDescription: Change the font of the launcher.
+  themeFontUrl: Font URL
+  themeFontUrlPlaceholder: Enter HTTP/HTTPS URL for font
+  themeImport: Import Theme
+  themeResetFont: Reset Font
+  themeSelectFont: Select Font
+  themeSettings: Theme Settings
+  themeShare: Share Theme
+  themeShareDescription: You can share the theme with your friend.
+  themeStore:
+    description: Save and manage global themes
+    loadConfirmMessage: Loading a stored theme will replace your current theme. Please back up if needed.
+    loadConfirmTitle: Replace Current Theme?
+    loadTheme: Load Theme
+    name: Theme Store
+    noSavedThemes: No saved themes yet
+    saveDialogTitle: Save Theme
+    saveToStore: Save to Store
+    savedThemes: Saved Themes
+    themeName: Theme Name
+    themeNameHint: Name used to store this theme
+  update: Update
+  useBmclAPI: Use BMCL API
+  useBmclAPIDescription: जब आप चीनी मुख्य भूमि में हों तो माइनक्राफ्ट डाउनलोड करने के लिए BMCLAPI का उपयोग करें। (यदि आप चीनी मुख्य भूमि में नहीं हैं तो यह आपको प्रभावित नहीं करेगा)
+  useProxy: HTTP Proxy
+  useProxyDescription: The proxy server address for the http request
+  viewBackgroundMusic: View Musics
+settingLabel:
+  global: Global
+  globalHint: This setting will follow the global setting
+  local: Local
+  localHint: This setting is modified by current instance
+setup:
+  account:
+    description: अपना गेम खाता लॉग इन करें। यदि आपके पास कोई नहीं है, तो आप इसे अभी के लिए छोड़ सकते हैं।
+    name: गेम खाता जोड़ें
+    skip: अभी के लिए छोड़ें
+  appearance:
+    name: '@:setting.appearance'
+  dataRoot:
+    description: डेटा रूट एक सामान्य .minecraft निर्देशिका नहीं है। चूंकि XMCL डेटा निर्देशिका संरचना वेनिला से भिन्न है, इसलिए हम डेटा रूट के रूप में सामान्य .minecraft निर्देशिका का उपयोग करने की अनुशंसा नहीं करते हैं।
+    drives: Recommend Locations
+    name: डेटा निर्देशिका सेट करें
+  defaultLayoutDescription: डिफ़ॉल्ट लेआउट गेम "इंस्टेंस" अवधारणा को बढ़ाने का प्रयास कर रहा है। यह डिस्कॉर्ड जैसे ऐप जैसा दिखता है। यह स्टीम आदि जैसे अन्य गेम लॉन्चर ऐप से भी प्रेरित है।
+  defaultPath: Default Path
+  error:
+    badDataRoot: Invalid directory for launcher data! Please try another directory!
+    exists: चयनित निर्देशिका खाली नहीं है। यह ठीक है लेकिन कृपया सुनिश्चित करें कि आप अपने डेटा का बैकअप लें।
+    invalidChar: Path contains invalid characters! It could cause Minecraft fail to start! Plaese only use English characters and symbol!
+    noPermission: Launcher does not have permission to access selected directory! Please try another one.
+    nonDictionary: Selected path is a file! Please select a directory!
+  focusLayoutDescription: फोकस लेआउट माइनक्राफ्ट लॉन्चर का पुराना लेआउट है। इसे एक ही इंस्टेंस या कुछ इंस्टेंस के साथ उपयोग करने के लिए डिज़ाइन किया गया है।
+  game:
+    name: मौजूदा गेम आयात करें
+  locale:
+    description: यदि हमारे पास उपलब्ध है तो अपनी पसंदीदा भाषा चुनें! यदि आपको अपनी मूल भाषा नहीं दिखाई देती है और आप सहायता करना चाहते हैं, तो अनुवाद के लिए पुल अनुरोध सबमिट करने के लिए आप हमारे गिटहब पर जा सकते हैं!
+    language: Language
+    name: Set Language
+  path: Current Path
+shaderPack:
+  deletion: Delete Shader Pack
+  deletionHint: This will delete the shader pack file {path} and cannot be reverted.
+  disabled: Disabled Shader Packs
+  dropHint: Import Shader Pack
+  empty: No shader pack allocated
+  enable: Using {name}
+  enabled: Enabled Shader Packs
+  manage: Manage Shader Packs
+  market: Shader Market
+  name: Shader Pack
+  linkShared: Share shader packs across instances
+  linkSharedHint: Link this instance's shaderpacks folder to the global shared folder so all instances see the same shader packs. Existing packs are merged into the shared folder.
+  noLocalPacksFound: No local shader packs found matching your search.
+  noPacks: No shader packs installed
+  noPacksInstalled: You don't have any shader packs installed.
+  noShaderMod: No Shader Mod Installed
+  noShaderModHint: You cannot use shader without a shader mod
+  noShaderModInstallHint: You need to install one of the following mod to load shader pack.
+  search: Search Shader Packs...
+  searchHint: Search for shader packs on Modrinth and CurseForge
+  selectSearchHint: Search and select Shader Pack
+  showDirectory: Show shader pack directory
+  showFile: Show this shader pack in folder
+shared:
+  add: Add
+  author: Author
+  back: Back
+  browse: Browse
+  cancel: Cancel
+  client: Client
+  copied: Copied
+  copy: Copy
+  close: Close
+  copyFailed: Copy failed
+  copyFailedHint: Could not copy to clipboard
+  description: Description
+  disable: Disable
+  download: Download
+  edit: Edit
+  enable: Enable
+  filter: Filter
+  install: Install
+  installed: Installed
+  keepSelected: Keep Selected
+  manage: Manage
+  name: Name
+  next: Next
+  'no': 'No'
+  ok: OK
+  previous: Previous
+  refresh: Refresh
+  remove: Remove
+  save: Save
+  search: Search
+  server: Server
+  skipForNow: Skip for now
+  'yes': 'Yes'
+  delete: Delete
+sidebar:
+  pin: Pin
+  unpin: Unpin
+sortBy:
+  alphabetAsc: Sort by alphabet (ascending)
+  alphabetDesc: Sort by alphabet (descending)
+  name: Sort By
+  timeAsc: Sort by modification time (ascending)
+  timeDesc: Sort by modification time (descending)
+store:
+  discover: Discover
+  empty: No Modpacks Found
+  emptyHint: Try adjusting your filters or search query.
+  latestMinecraft: Latest Minecraft Version
+  name: Modpack Market
+  searchResult: Search Result
+  trending: Trending
+tag:
+  create: Create Tag
+  createSelected: Create Tag for Selected
+task:
+  cancelled: Cancelled
+  clear: Clear Finished Tasks
+  connection:
+    connected: Connected
+    free: Free
+    pending: Pending
+    queued: Queued
+    running: Running connection
+    size: total count
+  connections: Network Connections
+  empty: No Running Tasks
+  failed: Failed
+  manager: Task Manager
+  nTaskRunning: '{count} tasks are running'
+  name: Task | Tasks
+  pause: Pause
+theme:
+  selectImage: Select Image
+  selectMusic: Select Music
+  selectVideo: Select Video
+  title: X Minecraft Launcher
+title: X Minecraft Launcher
+transportType:
+  host: Host Candidate
+  prflx: Peer Reflexive Candidate
+  relay: Relay Candidate
+  srflx: Server Reflexive Candidate
+turnRegion:
+  fr: फ्रांस
+  guangzhou: Guangzhou, China
+  hk: Hong Kong
+  liaoning: Liaoning, China
+  po: Poland
+tutorial:
+  feedbackDescription: यदि आपको कोई समस्या आती है, तो कृपया प्रतिक्रिया भेजने के लिए इस बटन पर क्लिक करें!
+  hideNewsHeaderDescription: आप बाईं ओर समाचार शोकेस देख सकते हैं। इस बटन पर क्लिक करने से यह शोकेस छिप सकता है।
+  instance:
+    iconDescription: Click to change icon.
+    iconTitle: Instance icon
+    javaDescription: Choose or switch java version.
+    javaImportDescription: Import java from local storage.
+    javaImportTitle: Import java
+    javaTitle: Java list
+  instanceAddDescription: मौजूदा माइनक्राफ्ट इंस्टेंस को आयात करने या शुरुआत से या मॉडपैक से एक नया बनाने के लिए इस बटन पर क्लिक करें।
+  instanceSelectDescription: इस बटन पर क्लिक करने से गेम चुनने और समाचार पढ़ने के लिए पेज पर नेविगेट किया जाएगा।
+  launchDescription: गेम इंस्टॉल करने या लॉन्च करने के लिए इस बटन पर क्लिक करें।
+  mod:
+    defaultSourceDescription: आप यहाँ मॉड विवरण का स्रोत चुन सकते हैं। ऐसे मॉड हैं जो मोडरिंथ और कर्सफोर्ज दोनों पर प्रकाशित हैं। यदि आप इन दोनों सामग्री प्रदाताओं के बीच स्विच करना चाहते हैं, तो आप यहाँ मान बदल सकते हैं।
+    defaultSourceTitle: Select Mod Content Source
+    detailDescription: जब आप बाईं ओर कोई आइटम चुनते हैं। आपको मॉड का विवरण दिखाई देगा। सामग्री मोडरिंथ, कर्सफोर्ज या पार्स किए गए मॉड की सामग्री से आ सकती है।
+    detailTitle: Mod Detail
+    listDescription: जब आपका कोई इनपुट नहीं होगा तो हम स्थापित मॉड प्रदर्शित करेंगे। जैसे ही आपके इनपुट में कोई कीवर्ड या श्रेणी चुनी जाएगी, आपको खोजे गए मॉड दिखाई देंगे।
+    listTitle: Installed or Search Mod
+    searchDescription: आप इस खोज बॉक्स से मोडरिंथ, कर्सफोर्ज या अपने स्थानीय कैश से मॉड खोज सकते हैं।
+    searchTitle: Search Mods
+  multiplayer:
+    contentDescription: Connections between you and your peers will be listed here.
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: आप अन्य खिलाड़ियों के साथ एक समूह बना सकते हैं या उसमें शामिल हो सकते हैं। लॉन्चर समूह के अनुसार आपके और आपके दोस्तों के बीच P2P कनेक्शन बनाने का प्रयास करेगा। आप अपने दोस्तों द्वारा दिए गए समूह का नाम दर्ज कर सकते हैं। या आप एक अनूठा नाम बना सकते हैं।
+    groupTitle: Join a group
+    joinDescription: एक बार आप समूह का नाम दर्ज कर लेते हैं, तो आप समूह में शामिल होने या बनाने के लिए इस बटन पर क्लिक कर सकते हैं। यदि समूह का नाम खाली है, तो लॉन्चर आपके लिए एक नाम तैयार करेगा।
+    manualDescription: यदि आप या आपका मित्र समूह से कनेक्ट नहीं हो सकते हैं, तो आप मैन्युअल रूप से कनेक्ट पर क्लिक करके मैन्युअल रूप से टोकन का आदान-प्रदान करने का प्रयास कर सकते हैं। यदि वह भी विफल रहा, तो यह एक इंटरनेट समस्या हो सकती है।
+  recentPlayDescription: बनाए गए गेम यहाँ सूचीबद्ध होंगे। आप यहाँ विचारों को स्विच करके स्थापित संस्करणों और डाउनलोड किए गए मॉडपैक को भी देख सकते हैं।
+  storePoupularModpackDescription: आप इस अनुभाग में कर्सफोर्ज और मोडरिंथ के सबसे लोकप्रिय मॉडपैक देखेंगे।
+  storeSearchCategoryDescription: आप यहाँ श्रेणियों या फ़िल्टर को भी टॉगल कर सकते हैं।
+  storeSearchDescription: आप इस टेक्स्ट बॉक्स में इनपुट करके मॉडपैक खोज सकते हैं। खोजने के लिए Enter दबाएं।
+  storeSearchResultDescription: आपको यहाँ सूचीबद्ध सभी खोज परिणाम दिखाई देंगे।
+  userAccountDescription: अपना माइनक्राफ्ट खाता जोड़ने या प्रबंधित करने के लिए इस आइकन पर क्लिक करें।
+unauthenticatedWarning:
+  cancel: Cancel
+  description: You are not logged into any account. The game will launch in demo mode. To access full features, please sign in.
+  login: Sign In
+  playAnyway: Play Anyway
+  title: लॉग इन नहीं हैं
+universalDrop:
+  unknownResource: Unknown
+unresolvedFiles:
+  description: स्थापना के दौरान ये फ़ाइलें डाउनलोड नहीं की जा सकीं। एक मिलान स्रोत खोजें, मिलान स्थापित करें, या फिर भी लॉन्च करने के लिए फ़ाइलों को अनदेखा करें।
+  empty: All files are resolved.
+  ignoreSelected: Ignore {count}
+  install: Install {count} matched
+  matched: Matched
+  noMatch: Not found
+  search: Search sources
+  source:
+    curseforge-name: CurseForge
+    dependency: Dependency
+    modrinth-hash: Modrinth hash
+    modrinth-name: Modrinth
+  title: Unresolved files
+  via: via {source}
+upstream:
+  downgrade: Downgrade
+  onlyShowCurrentVersion: Only Show Current Minecraft Version
+  update: Update
+user:
+  accessToken: Access Token
+  authMode: प्रमाणीकरण सेवा
+  authService: Authorize Service
+  email: ईमेल पता
+  id: यूज़र आईडी
+  name: यूज़रनेम
+  nameHint: गेम में प्रदर्शित होने वाला नाम
+  profile: Profile
+  tokenExpired: Expired
+  tokenValidUntil: Token Valid Until
+userAccount:
+  add: Add Account
+  removeDescription: यह इस खाते की सभी जानकारी हटा देगा। क्या आप सुनिश्चित हैं?
+  removeTitle: Remove Account
+userCape:
+  changeTitle: अपना केप (cape) बदलें
+  description: 'केप विशेष पुरस्कार हैं जिन्हें खिलाड़ी विभिन्न आयोजनों, अभियानों और अन्य खुशियों के माध्यम से अनलॉक कर सकते हैं। यहाँ आप उन केपों के बीच चयन कर सकते हैं जो आपके पास वर्तमान में हैं:'
+  noCape: No Cape
+userService:
+  add: Add More Services
+  authlibInjectorMetadata: Authlib-Injector metadata
+  baseUrlHint: आपकी कस्टम सेवा का आधार यूआरएल
+  homepage: Homepage
+  implementation: Implementation
+  manageServices: Manage Auth Services
+  register: पंजीकरण करें
+  server: Server
+  skinDomains: Skin Domains
+  title: Third-party User Services
+  version: Version
+userServices:
+  microsoft:
+    account: Microsoft Account
+    deviceCode: Device Code
+    deviceCodeHint: लॉगिन पर क्लिक करने के बाद डिवाइस कोड जेनरेट होगा
+    name: Microsoft
+    password: Enter Password in Browser
+    useDeviceCode: Login by Device Code
+  mojang:
+    account: ईमेल पता
+    name: Mojang
+    password: Password
+  offline:
+    account: Username
+    name: Offline
+    password: No Password
+    uuid: User UUID (Optional)
+userSkin:
+  classic: Classic
+  import: त्वचा (Skin) आयात करें
+  importFile: Open from File
+  importLink: Open from Link
+  placeUrlHere: आयात करने के लिए त्वचा का यूआरएल यहाँ रखें
+  reset: Reset
+  save: Save
+  saveTitle: त्वचा (Skin) डिस्क पर सहेजें
+  skinType: त्वचा का प्रकार
+  slim: स्लिम
+  upload: त्वचा अपलोड करें
+  urlNotEmpty: त्वचा यूआरएल खाली नहीं हो सकता
+  urlNotValid: त्वचा यूआरएल अमान्य है
+  useSlim: स्लिम मॉडल का उपयोग करें
+version:
+  checkIntegrity: अखंडता की जाँच करें
+  name: संस्करण | संस्करण
+  notInstalled: संस्करण स्थापित नहीं है
+versionType:
+  alpha: अल्फा (Alpha)
+  beta: बीटा (Beta)
+  name: स्थिति (Status)
+  release: रिलीज़ (Release)
+gamepad:
+  detectedTitle: गेमपैड का पता चला
+  connected: कंट्रोलर जुड़ा हुआ है
+  guideTitle: कंट्रोलर नियंत्रण
+  enableSwitchLabel: गेमपैड नियंत्रण
+  enabledState: सक्षम
+  disabledState: अक्षम
+  toggle: टॉगल
+  disabledNotify: गेमपैड नियंत्रण अक्षम।
+  enabledNotify: गेमपैड नियंत्रण सक्षम! नेविगेट करने के लिए D-pad/Left stick का उपयोग करें, चुनने के लिए {btnA}, पीछे जाने के लिए {btnB} का उपयोग करें।
+  guide:
+    confirm: चुनें
+    navigate: नेविगेट करें
+    tabs: टैब स्विच करें
+    sections: अनुभाग स्विच करें
+    launch: गेम लॉन्च करें
+    instanceSettings: इंस्टेंस सेटिंग्स
+  modSuggestTitle: कंट्रोलर मॉड
+  modSuggestBody: माइनक्राफ्ट के अंदर अपने गेमपैड का उपयोग करने के लिए, एक कंट्रोलर मॉड की सिफारिश की जाती है। क्या आप अपने मॉडलोडर के लिए उपयुक्त मॉड स्थापित करना चाहते हैं?
+  modInstall: मॉड स्थापित करें
+  modSkip: छोड़ें
+  modDone: हो गया
+  modInstalled: कंट्रोलर मॉड सफलतापूर्वक स्थापित हो गया! अगली बार जब आप माइनक्राफ्ट लॉन्च करेंगे तो यह सक्रिय हो जाएगा।
+  modInstalledNotify: '{name} इन-गेम कंट्रोलर समर्थन के लिए स्थापित किया गया है।'
+  modNotFound: माइनक्राफ्ट {version} पर {loader} के लिए कोई संगत संस्करण नहीं मिला।
+  settingSteamTitle: लॉन्चर को स्टीम (Steam) में जोड़ें
+  steamAddedNotify: लॉन्चर स्टीम लाइब्रेरी में सफलतापूर्वक जुड़ गया! कृपया इसे देखने के लिए स्टीम को रीस्टार्ट करें।
+  steamAlreadyAddedNotify: लॉन्चर पहले से ही आपकी स्टीम लाइब्रेरी में है।
+  steamDeckTitle: स्टीम डेक (Steam Deck) का पता चला
+  steamDeckDesc: 'हमें पता चला कि आप स्टीम डेक पर चल रहे हैं। क्या आप गेमिंग मोड में पूर्ण स्टीम ओवरले और कंट्रोलर एकीकरण के लिए X माइनक्राफ्ट लॉन्चर को एक गैर-स्टीम गेम के रूप में अपनी स्टीम लाइब्रेरी में जोड़ना चाहेंगे? '
+  steamDeckAddBtn: स्टीम में जोड़ें ({btn})
+  steamDeckCancelBtn: रद्द करें ({btn})
