@@ -104,7 +104,12 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
     const onError = (e: unknown) => {
       if (!this.#destroyed) {
         if (e instanceof Error) {
-          if (e.message === 'Database is locked') {
+          // SQLite reports these messages in lowercase (e.g. "database is
+          // locked"). Normalize before matching so the recovery below is not
+          // skipped and every resource-worker retry does not reach telemetry.
+          const message = e.message.toLowerCase()
+          const isLocked = message === 'database is locked'
+          if (isLocked) {
             try {
               if (this.#config.databasePath) {
                 const lockPath = this.#config.databasePath + '.lock'
@@ -115,9 +120,9 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
             } catch {}
           }
           if (
-            e.message === 'Database is locked' ||
-            e.message === 'Database already closed' ||
-            e.message === 'unable to open database file'
+            isLocked ||
+            message === 'database already closed' ||
+            message === 'unable to open database file'
           ) {
             // The underlying handle is gone. Open a fresh one and swap it in
             // place — the existing SqliteConnection picks up the new handle
@@ -134,7 +139,7 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
             if (e instanceof SQLite3Error) {
               e.isDisposed = true
             }
-          } else if (CORRUPT_MESSAGES.includes(e.message)) {
+          } else if (CORRUPT_MESSAGES.includes(message)) {
             // The file itself is corrupt. Reopening the same file would
             // just produce the same error on every query — flood that
             // turned the original "Database already closed" fix from
@@ -164,7 +169,7 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
             // Surface to the consumer exactly once so it can mark the
             // database as not-ready / show a "please restart" hint.
             this.#config.onError?.(e)
-          } else if (e.message.startsWith('no such table')) {
+          } else if (message.startsWith('no such table')) {
             // Schema isn't present — either the migration never ran on
             // this file or it ran on a sibling that's since been
             // swapped out. Don't retry: just flag the error so the
@@ -174,7 +179,7 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
               e.isDisposed = true
             }
             this.#config.onError?.(e)
-          } else if (e.message.includes('no transaction is active')) {
+          } else if (message.includes('no transaction is active')) {
             // Benign fallout of the self-heal: after we swap in a fresh
             // db handle (issue #1429), Kysely still issues a `rollback`
             // for the transaction that died with the old handle, which
