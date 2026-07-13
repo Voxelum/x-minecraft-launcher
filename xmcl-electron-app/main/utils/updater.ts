@@ -322,19 +322,22 @@ export class ElectronUpdater implements LauncherAppUpdater {
     this.logger.log('Try get update from selfhost')
     const { allowPrerelease, locale } = await app.registry.get(kSettings)
     const queryString = `version=v${app.version}&prerelease=${allowPrerelease || false}`
-    const response = await this.app
+    const primary = await this.app
       .fetch(`https://api.xmcl.app/latest?${queryString}`, {
         headers: {
           'Accept-Language': locale,
         },
       })
-      .catch(() =>
-        this.app.fetch(`https://xmcl-core-api.azurewebsites.net/api/latest?${queryString}`, {
-          headers: {
-            'Accept-Language': locale,
-          },
-        }),
-      )
+      .catch(() => undefined)
+    // The Deno edge may return a regional 404. Fall back for any non-success
+    // response as well as a transport failure.
+    const response = primary?.ok
+      ? primary
+      : await this.app.fetch(`https://xmcl-core-api.azurewebsites.net/api/latest?${queryString}`, {
+        headers: {
+          'Accept-Language': locale,
+        },
+      })
     if (!response.ok) {
       throw new AnyError(
         'UpdateError',

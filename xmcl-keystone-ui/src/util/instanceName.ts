@@ -28,6 +28,10 @@ export function generateDistinctName(baseName: string, names: string[]) {
   return name
 }
 
+export function getEffectiveInstanceName(name: string, placeholder: string) {
+  return name.trim() || placeholder
+}
+
 /**
  * Characters that are invalid in Windows file/directory names.
  * Also includes path separators which are dangerous on all platforms.
