@@ -61,6 +61,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install Electron binary
+        run: pnpm --prefix=xmcl-electron-app exec install-electron
+
       - name: Install e2e dependencies
         # `e2e` is intentionally OUTSIDE the workspace so default `pnpm i`
         # stays lean for UI/runtime contributors. Install it explicitly here.
@@ -116,6 +119,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Install Electron binary
+        run: pnpm --prefix=xmcl-electron-app exec install-electron
 
       - name: Install e2e dependencies
         run: pnpm e2e:install --frozen-lockfile

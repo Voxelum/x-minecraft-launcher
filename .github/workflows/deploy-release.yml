@@ -51,6 +51,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v5
+    - uses: pnpm/action-setup@v6
     - name: Download asar bundles
       uses: robinraju/release-downloader@v1.7
       with:
@@ -121,13 +122,20 @@ jobs:
       - publish
     name: Update Brew
     runs-on: ubuntu-latest
+    concurrency:
+      group: update-brew-formula
+      cancel-in-progress: false
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v5
       with:
         repository: Voxelum/homebrew-xmcl
         path: homebrew-xmcl
+        ref: master
         token: ${{ secrets.PAT_GITHUB_TOKEN }}
+    - name: Synchronize formula repository
+      working-directory: homebrew-xmcl
+      run: git pull --ff-only origin master
     - uses: actions/github-script@v8
       name: Update Brew Formula
       with: 
@@ -212,7 +220,7 @@ jobs:
           iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
           .\wingetcreate.exe update CI010.XMinecraftLauncher -u $Env:URL -v $Env:VERSION -t $Env:TOKEN --submit
         env:
-          TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
+          TOKEN: ${{ secrets.WINGET_GITHUB_TOKEN }}
           URL: ${{ format('https://xmcl-core-api.azurewebsites.net/api/appx?version={0}', steps.version.outputs.result) }}
 
   update-flatpak:
