@@ -45,7 +45,7 @@ const versions = computed(() => {
 })
 
 const installedVersions = versions
-const selectedVersion = ref(installedVersions.value[0] ?? versions.value[0])
+const selectedVersion = shallowRef(installedVersions.value[0] ?? versions.value[0])
 provide('selectedVersion', selectedVersion)
 watch(installedVersions, (v) => {
   if (v) {

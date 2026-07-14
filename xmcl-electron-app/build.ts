@@ -5,7 +5,7 @@ import { Configuration, build as electronBuilder } from 'electron-builder'
 import { BuildOptions, build as esbuild } from 'esbuild'
 import { createReadStream, createWriteStream, existsSync } from 'fs'
 import { copy, emptyDir, ensureFile } from 'fs-extra'
-import { copyFile, readdir, stat, writeFile } from 'fs/promises'
+import { copyFile, readdir, stat, unlink, writeFile } from 'fs/promises'
 import path, { join, resolve } from 'path'
 import createPrintPlugin from 'plugins/esbuild.print.plugin'
 import { createGzip } from 'zlib'
@@ -130,6 +130,12 @@ async function start() {
       console.log(`  ${chalk.blue('•')} compiled main process & preload in ${chalk.blue('time')}=${time}s`)
     },
     async afterPack(context) {
+      const chromiumLicense = join(context.appOutDir, 'LICENSES.chromium.html')
+      if (existsSync(chromiumLicense)) {
+        await unlink(chromiumLicense)
+        console.log(`  ${chalk.blue('•')} removed Chromium license ${chalk.blue('path')}=${chromiumLicense}`)
+      }
+
       const suffix = context.arch === 3 ? '-arm64' : context.arch === 0 ? '-ia32' : ''
       const platformName = (process.platform === 'win32' ? 'win' : process.platform === 'darwin' ? 'mac' : 'linux') + suffix
 
@@ -137,8 +143,7 @@ async function start() {
       const gzipDest = dest + '.gz'
       let src = join(context.appOutDir, 'resources/app.asar')
       if (!existsSync(src)) {
-        src = join(context.appOutDir, 'X Minecraft Launcher.app/Contents/Resources/app.asar')
-      } else if (!existsSync(src)) {
+        src = join(context.appOutDir, `${context.packager.appInfo.productFilename}.app/Contents/Resources/app.asar`)
         console.log(`  ${chalk.yellow('•')} fallback to ${chalk.yellow('Resources/app.asar')} for ${chalk.yellow('resources/app.asar')} not found`)
       }
       await copyFile(src, dest)

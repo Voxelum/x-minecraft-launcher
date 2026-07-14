@@ -120,7 +120,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     return gameOptions.value?.shaderPack
   })
 
-  const shaderPackStatus = ref(undefined as [string, string | undefined] | undefined)
+  const shaderPackStatus = shallowRef(undefined as [string, string | undefined] | undefined)
   const { refresh: mutateShaderPackOptions } = useRefreshable(async () => {
     const mod = shaderMod.value
     const inst = instancePath.value

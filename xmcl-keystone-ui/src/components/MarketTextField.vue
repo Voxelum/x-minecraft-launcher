@@ -89,7 +89,7 @@ function onClickField(e: MouseEvent) {
 
 const { t } = useI18n()
 
-const searchTextField = ref(undefined as any | undefined)
+const searchTextField = shallowRef(undefined as any | undefined)
 const searchTextFieldFocused = inject('focused', ref(false))
 
 const transitioning = inject('transitioning', ref(false))

@@ -9,7 +9,6 @@ import { constants, existsSync } from 'fs'
 import { access, writeFile } from 'fs-extra'
 import { EOL } from 'os'
 import { basename, dirname, join } from 'path'
-import { createICO } from 'png2icons'
 import { Readable } from 'stream'
 import { finished } from 'stream/promises'
 import { setTimeout } from 'timers/promises'
@@ -790,6 +789,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
           buffer = Buffer.from(body)
         }
         if (process.platform === 'win32') {
+          const { createICO } = await import('png2icons')
           const result = createICO(buffer, 0, 0, true, true)
           if (result) {
             buffer = result

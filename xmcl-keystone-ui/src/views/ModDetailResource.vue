@@ -44,7 +44,7 @@ const installedVersions = computed(() => {
   const ver = props.mod.installed.map(v => versions.value.find(f => f.id === v.modId)).filter((v): v is ProjectVersion => !!v)
   return ver
 })
-const selectedVersion = ref(installedVersions.value[0] ?? versions.value[0])
+const selectedVersion = shallowRef(installedVersions.value[0] ?? versions.value[0])
 provide('selectedVersion', selectedVersion)
 watch(installedVersions, (v) => {
   if (v) {

@@ -83,7 +83,7 @@ const { t } = useI18n()
 
 const { isShown, hide } = useDialog('migration')
 const errorText = ref('')
-const error = ref(undefined as undefined | Error)
+const error = shallowRef(undefined as undefined | Error)
 const root = ref('')
 
 const getErrorText = useGetDataDirErrorText()

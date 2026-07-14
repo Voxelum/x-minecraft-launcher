@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Mod Loader Selection -->
-    <div class="text-sm font-bold opacity-70 mb-2 mt-4">{{ t('modrinth.categories.modloader') }}</div>
+    <div class="text-sm font-bold opacity-70 my-4">{{ t('modrinth.categories.modloader') }}</div>
     <div class="flex flex-wrap gap-3 mb-6 items-center justify-center">
       <v-card
         v-for="loader in loaders" :key="loader.id"
