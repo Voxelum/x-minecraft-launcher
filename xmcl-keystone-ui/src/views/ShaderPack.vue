@@ -14,7 +14,14 @@
       <MarketListHeader
         v-model:dense="denseView"
         :label="`${originalItems.length} ${t('shaderPack.name', originalItems.length)}`"
-      />
+      >
+        <AppCollectionInstallAll
+          v-if="showInstallAll"
+          :items="collectionItems"
+          content-type="shaderpacks"
+          :runtime="runtime"
+        />
+      </MarketListHeader>
     </template>
     <template #placeholder>
       <MarketEmptyPlaceholder />
@@ -84,6 +91,7 @@
         :categories="modrinthCategories"
         :all-files="shaderPacks"
         :curseforge="selectedItem?.curseforge?.id || selectedItem?.curseforgeProjectId"
+        collection-content-type="shaderpacks"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -98,6 +106,7 @@
         :category="curseforgeCategory"
         :all-files="shaderPacks"
         :modrinth="selectedModrinthId"
+        collection-content-type="shaderpacks"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -252,6 +261,7 @@ import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import LinkSharedFolderSetting from '@/components/LinkSharedFolderSetting.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
+import AppCollectionInstallAll from '@/components/AppCollectionInstallAll.vue'
 import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useSimpleDialog } from '@/composables/dialog'
@@ -296,6 +306,7 @@ const {
   loadMore,
   effect,
   items: originalItems,
+  collectionItems,
   sortBy,
 } = injection(kShaderPackSearch)
 
@@ -315,6 +326,10 @@ const shouldDisableOptifine = computed(() => !!runtime.value.fabricLoader || !!r
 effect()
 
 const { shaderPacks, revalidate } = injection(kInstanceShaderPacks)
+
+// Install-all works for any collection open in the Favorites view (local or
+// Modrinth collections/follows).
+const showInstallAll = computed(() => source.value === 'favorite')
 const getInstalledModrinth = (projectId: string) => {
   const allPacks = shaderPacks.value
   return allPacks.filter((m) => m.modrinth?.projectId === projectId)

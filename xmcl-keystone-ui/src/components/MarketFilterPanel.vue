@@ -21,7 +21,7 @@
       <v-tab :value="1" prepend-icon="inventory_2">
         {{ t('search.local') }}
       </v-tab>
-      <v-tab :value="2" prepend-icon="favorite">
+      <v-tab :value="2" prepend-icon="favorite" data-testid="market-filter-favorite-tab">
         {{ t('search.favorate') }}
       </v-tab>
     </v-tabs>
@@ -258,7 +258,15 @@
 
         <slot name="local" />
       </v-tabs-window-item>
-      <v-tabs-window-item :value="2" class="tab">
+      <v-tabs-window-item :value="2" class="tab h-full overflow-y-auto">
+        <AppLocalCollectionList
+          :select="collection"
+          @update:select="emit('update:collection', $event)"
+        />
+        <div class="filter-subheader flex">
+          <ModrinthIcon class="mr-1 h-4 w-4" />
+          {{ t('localCollection.modrinthSection') }}
+        </div>
         <AppCollectionList
           :select="collection"
           @update:select="emit('update:collection', $event)"
@@ -282,6 +290,7 @@ import { injection } from '@/util/inject'
 import { useMagicKeys } from '@vueuse/core'
 import { ModsSearchSortField } from '@xmcl/curseforge'
 import AppCollectionList from './AppCollectionList.vue'
+import AppLocalCollectionList from './AppLocalCollectionList.vue'
 import CurseforgeCategoryChip from './CurseforgeCategoryChip.vue'
 import ModrinthCategoryChip from './ModrinthCategoryChip.vue'
 import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'

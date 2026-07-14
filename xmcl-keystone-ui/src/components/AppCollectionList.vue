@@ -56,7 +56,7 @@
     v-else
     nav
     bgColor="transparent"
-    class="w-full h-full"
+    class="w-full"
     :selected="[selectedIndex]"
     @update:selected="v => selectedIndex = (v[0] as number) ?? -1"
   >
@@ -153,9 +153,17 @@ const selectedIndex = computed({
     if (noOffset) {
       return collections.value?.findIndex(c => c.id === props.select) || -1
     }
-    const idx = collections.value?.findIndex(c => c.id === props.select)
-    if (idx === -1 || idx === undefined) {
+    const select = props.select
+    // No selection or an explicit "followed" selection highlights the
+    // "Followed" entry (index 0).
+    if (!select || select === 'followed') {
       return 0
+    }
+    const idx = collections.value?.findIndex(c => c.id === select)
+    // A selection that is not a Modrinth collection (e.g. a launcher-owned
+    // local collection, `local:...`) must not highlight anything here.
+    if (idx === -1 || idx === undefined) {
+      return -1
     }
     return idx + 1
   },

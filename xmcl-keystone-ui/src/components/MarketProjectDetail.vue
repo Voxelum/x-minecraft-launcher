@@ -43,25 +43,48 @@
           </v-btn>
 
           <div class="flex-grow" />
-          <template v-if="modrinth">
-            <v-menu>
-              <template #activator="{ props }">
-                <v-btn
-                  :variant="!collection ? 'plain' : 'text'"
-                  icon
-                  :loading="loadingCollections"
-                  size="small"
-                >
-                  <v-icon :class="!collection ? 'material-icons-outlined' : ''"> label </v-icon>
-                </v-btn>
-              </template>
-              <AppCollectionList
-                :project-id="modrinth"
-                no-favorite
-                :select="collection"
-                @update:select="emit('collection', $event)"
+          <!-- Add to collection: launcher-owned local collections (both
+               providers) plus the Modrinth collection list when applicable. -->
+          <v-menu
+            v-if="collectionContentType && collectionProjectId"
+            :close-on-content-click="false"
+          >
+            <template #activator="{ props: menu }">
+              <v-btn
+                v-bind="menu"
+                variant="plain"
+                icon
+                :loading="loadingCollections"
+                size="small"
+                data-testid="market-detail-collection-menu"
+                :aria-label="t('localCollection.addToCollection')"
+              >
+                <v-icon class="material-icons-outlined"> bookmark_add </v-icon>
+              </v-btn>
+            </template>
+            <v-card min-width="360" width="420" max-width="90vw" class="overflow-y-auto" style="max-height: 60vh">
+              <AppLocalCollectionList
+                mode="add"
+                :provider="collectionProvider"
+                :project-id="collectionProjectId"
+                :content-type="collectionContentType"
               />
-            </v-menu>
+              <template v-if="modrinth">
+                <v-divider />
+                <div class="filter-subheader flex items-center">
+                  <v-icon size="16" class="mr-1">xmcl:modrinth</v-icon>
+                  {{ t('localCollection.modrinthSection') }}
+                </div>
+                <AppCollectionList
+                  :project-id="modrinth"
+                  no-favorite
+                  :select="collection"
+                  @update:select="emit('collection', $event)"
+                />
+              </template>
+            </v-card>
+          </v-menu>
+          <template v-if="modrinth">
             <v-btn
               :variant="!followed ? 'plain' : 'text'"
               icon
@@ -616,7 +639,9 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { vFallbackImg } from '@/directives/fallbackImage'
 import { BuiltinImages } from '@/constant'
 import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
+import { CollectionContentType, CollectionProvider } from '@xmcl/runtime-api'
 import AppCollectionList from './AppCollectionList.vue'
+import AppLocalCollectionList from './AppLocalCollectionList.vue'
 
 const props = defineProps<{
   detail: ProjectDetail
@@ -646,6 +671,12 @@ const props = defineProps<{
   loadingCollections?: boolean
   collection?: string
   noPaddingContent?: boolean
+  /**
+   * When set, shows an "add to collection" menu for the currently shown
+   * provider's project. Enables adding both Modrinth and CurseForge projects
+   * to launcher-owned local collections offline.
+   */
+  collectionContentType?: CollectionContentType
 }>()
 
 const { isActive: isGamepadActive, buttonX } = useGamepad()
@@ -849,6 +880,14 @@ watch(
   { immediate: true },
 )
 const { t } = useI18n()
+
+// The currently shown provider's project, used by the add-to-collection menu.
+const collectionProvider = computed<CollectionProvider>(() => props.currentTarget === 'curseforge' ? 'curseforge' : 'modrinth')
+const collectionProjectId = computed<string | undefined>(() =>
+  collectionProvider.value === 'curseforge'
+    ? (props.curseforge !== undefined ? String(props.curseforge) : undefined)
+    : props.modrinth)
+
 watch(
   () => props.detail,
   (d, o) => {

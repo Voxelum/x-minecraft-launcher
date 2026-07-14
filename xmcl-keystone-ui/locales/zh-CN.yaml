@@ -1285,6 +1285,18 @@ search:
   emptyInstalled: 尚未安装任何内容
   browseMarket: 浏览市场
   noResults: 未找到结果
+localCollection:
+  title: 启动器收藏夹
+  newCollection: 新建收藏夹
+  namePlaceholder: 收藏夹名称
+  addToCollection: 添加到收藏夹
+  empty: 还没有启动器收藏夹
+  corrupted: 无法读取已保存的收藏夹，已重置。备份已保存在数据文件旁边。
+  modrinthSection: Modrinth 账户
+  installAll: 全部安装
+  installAllHint: 安装此收藏夹中与当前 Minecraft 版本和加载器兼容的所有项目。
+  incompatibleAlert: '有 {count} 个项目与当前实例不兼容，已跳过：'
+  projects: '无项目 | {count} 个项目 | {count} 个项目'
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   addServer: 添加服务器

@@ -1187,6 +1187,18 @@ search:
   emptyInstalled: 尚未安裝任何內容
   browseMarket: 瀏覽市集
   noResults: 找不到結果
+localCollection:
+  title: 啟動器收藏夾
+  newCollection: 新增收藏夾
+  namePlaceholder: 收藏夾名稱
+  addToCollection: 加入收藏夾
+  empty: 還沒有啟動器收藏夾
+  corrupted: 無法讀取已儲存的收藏夾，已重設。備份已儲存在資料檔案旁邊。
+  modrinthSection: Modrinth 帳戶
+  installAll: 全部安裝
+  installAllHint: 安裝此收藏夾中與目前 Minecraft 版本和載入器相容的所有項目。
+  incompatibleAlert: '有 {count} 個項目與目前執行個體不相容，已略過：'
+  projects: '無項目 | {count} 個項目 | {count} 個項目'
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   addServer: 新增伺服器

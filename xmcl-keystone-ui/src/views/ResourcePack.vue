@@ -14,7 +14,14 @@
       <MarketListHeader
         v-model:dense="denseView"
         :label="`${originalItems.length} ${t('resourcepack.name', originalItems.length)}`"
-      />
+      >
+        <AppCollectionInstallAll
+          v-if="showInstallAll"
+          :items="collectionItems"
+          content-type="resourcepacks"
+          :runtime="runtime"
+        />
+      </MarketListHeader>
     </template>
     <template #placeholder>
       <MarketEmptyPlaceholder />
@@ -88,6 +95,7 @@
         :categories="modrinthCategories"
         :all-files="files"
         :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
+        collection-content-type="resourcepacks"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -105,6 +113,7 @@
         :category="curseforgeCategory"
         :all-files="files"
         :modrinth="selectedItem?.modrinth?.project_id || selectedModrinthId"
+        collection-content-type="resourcepacks"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -132,6 +141,7 @@ import LinkSharedFolderSetting from '@/components/LinkSharedFolderSetting.vue'
 import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
+import AppCollectionInstallAll from '@/components/AppCollectionInstallAll.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
 import { useLocalStorage } from '@vueuse/core'
@@ -158,14 +168,20 @@ const { runtime, path } = injection(kInstance)
 const { files, enable, disable, insert, revalidate } = injection(kInstanceResourcePacks)
 const { keyword, curseforgeCategory, modrinthCategories, currentView, gameVersion, isCurseforgeActive, isModrinthActive, sort: marketSort, source, selectedCollection } =
   injection(kSearchModel)
+
 const {
   error,
   loading,
   loadMore,
   items: originalItems,
+  collectionItems,
   effect,
   sortBy,
 } = injection(kResourcePackSearch)
+
+// Install-all works for any collection open in the Favorites view (local or
+// Modrinth collections/follows).
+const showInstallAll = computed(() => source.value === 'favorite')
 
 // Register the resource pack search effect
 effect()

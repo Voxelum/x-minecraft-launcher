@@ -359,6 +359,7 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
     error,
     loading,
     items: localizedItems,
+    collectionItems,
     totalAvailable,
     effect,
   }
