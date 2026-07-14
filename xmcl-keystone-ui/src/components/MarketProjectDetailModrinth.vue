@@ -33,6 +33,7 @@ const props = defineProps<{
   updating?: boolean
   curseforge?: number
   disableInstall?: boolean
+  collectionContentType?: import('@xmcl/runtime-api').CollectionContentType
 }>()
 
 const emit = defineEmits<{
@@ -89,7 +90,7 @@ const modVersions = useModrinthProjectDetailVersions(
   computed(() => props.installed),
 )
 
-const selectedVersion = ref(
+const selectedVersion = shallowRef(
   modVersions.value.find((v) => v.installed) ??
     (modVersions.value[0] as ProjectDetailVersion | undefined),
 )
@@ -304,6 +305,7 @@ const { t } = useI18n()
     :collection="collectionId"
     :loading-collections="loadingCollections"
     :disable-install="disableInstall"
+    :collection-content-type="collectionContentType"
     @collection="onAddOrRemove"
     current-target="modrinth"
     @open-dependency="onOpenDependency"

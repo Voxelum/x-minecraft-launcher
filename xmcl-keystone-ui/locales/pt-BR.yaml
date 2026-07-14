@@ -491,6 +491,22 @@ instances:
   folderSetting: Configurações de Pasta
   importFolderDescription: Importar Minecraft para o Launcher
   loadingFiles: Carregando arquivos do modpack
+  edition: Edição
+  editionJava: Edição Java
+  editionBedrock: Edição Bedrock
+  editionBedrockHint: >-
+    A Edição Bedrock é iniciada pelo aplicativo da Microsoft Store. Você precisa
+    possuir uma licença Bedrock. Mods, pacotes de recursos e outros recursos
+    exclusivos do Java não estão disponíveis.
+  editionBedrockWindowsOnly: A Edição Bedrock só é compatível com a versão para Windows.
+  linkSharedFolders: Compartilhar pastas entre instâncias
+  linkSharedFoldersHint: >-
+    Crie estas pastas como links para as pastas compartilhadas do launcher,
+    para que esta instância compartilhe o conteúdo delas com todas as outras
+    instâncias vinculadas. Isto não é uma cópia — alterações feitas em uma
+    instância aparecem em todas. Pastas não marcadas permanecem privadas desta
+    instância.
+  linkFailed: Falha ao vincular a pasta {folder} à pasta compartilhada
   addPrismDescription: Importar instância existente do PrismLauncher.
 items:
   count: '{count} itens'

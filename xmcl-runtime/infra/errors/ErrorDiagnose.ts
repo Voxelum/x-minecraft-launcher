@@ -23,20 +23,29 @@ export class ErrorDiagnose {
    * @returns `true` to ignore error
    */
   processError(e: Error): boolean {
-    if (e.name === 'SQLite3Error') {
+    // node:sqlite raises plain `Error`s tagged with `code: 'ERR_SQLITE_ERROR'`
+    // (or `ERR_INVALID_STATE` for a closed handle). Older builds used
+    // node-sqlite3-wasm's `SQLite3Error`; accept both so telemetry suppression
+    // keeps working across the engine change.
+    const code = (e as any).code
+    const isSqliteError =
+      e.name === 'SQLite3Error' || code === 'ERR_SQLITE_ERROR' || code === 'ERR_INVALID_STATE'
+    if (isSqliteError) {
       // The driver already auto-reopens the handle on these transient
-      // failures (see SqliteWASMDriver). Suppress them from telemetry so we
+      // failures (see NodeSqliteDriver). Suppress them from telemetry so we
       // don't get the per-user storm reported in issue #1429.
       if ((e as any).isDisposed) {
         return true
       }
+      const message = e.message.toLowerCase()
       if (
-        e.message === 'Database already closed' ||
-        e.message === 'unable to open database file'
+        message === 'database already closed' ||
+        message === 'database is not open' ||
+        message === 'unable to open database file'
       ) {
         return true
       }
-      if (e.message.startsWith('disk I/O error')) {
+      if (message.startsWith('disk i/o error')) {
         this.#sqlDiskIOError = true
       }
       // Ignore sqlite error if the disk is full

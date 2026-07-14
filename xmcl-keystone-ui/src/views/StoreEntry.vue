@@ -1,5 +1,5 @@
 <template>
-  <div class="store-entry h-full w-full overflow-hidden flex flex-col lg:flex-row">
+  <div class="store-entry h-full w-full flex flex-col overflow-y-auto custom-scrollbar lg:(flex-row overflow-hidden)">
     <v-progress-linear
       class="absolute left-0 top-0 z-20 m-0 p-0"
       :active="loading"
@@ -9,9 +9,9 @@
 
     <!--#region Sidebar Filters -->
     <aside
-      class="store-sidebar w-auto lg:(w-88 h-full overflow-y-auto pb-20) flex-none border-r border-divider/40 px-4 pt-6 flex flex-col gap-6 custom-scrollbar"
+      class="store-sidebar w-auto lg:(w-88 h-full overflow-y-auto pb-20) flex-none border-b lg:(border-b-0 border-r) border-divider/40 px-4 pt-6 flex flex-col gap-6 custom-scrollbar"
     >
-      <div class="grid grid-cols-3 lg:(flex flex-col) gap-4 flex-shrink-0">
+      <div class="flex flex-col gap-4 flex-shrink-0">
         <!-- Sources -->
         <div class="filter-group">
           <h3 class="filter-title">
@@ -107,10 +107,12 @@
       />
     </aside>
 
-    <!-- Right pane: sticky search header + scrollable content -->
-    <div class="flex-1 flex flex-col overflow-hidden relative">
+    <!-- Right pane: on narrow it collapses (display:contents) so the search
+         bar and content become direct children of store-entry, letting the
+         search bar sit above the filters and stick to the top. -->
+    <div class="contents lg:(flex flex-col flex-1 overflow-hidden relative)">
       <div
-        class="store-search-bar flex-none px-6 lg:px-10 py-5 sticky top-0 z-10 backdrop-blur-md border-b border-divider/40"
+        class="store-search-bar order-first lg:order-none flex-none px-6 lg:px-10 py-5 sticky top-0 z-10 backdrop-blur-md border-b border-divider/40"
       >
         <div class="max-w-3xl">
           <v-text-field
@@ -136,7 +138,7 @@
       </div>
 
       <!-- Main Content -->
-      <div class="flex-1 overflow-y-auto p-6 lg:p-10 custom-scrollbar relative" ref="container">
+      <div class="p-6 lg:(flex-1 overflow-y-auto p-10) custom-scrollbar relative" ref="container">
         <!-- Featured Carousel -->
         <div v-if="!keyword && selectedCount === 0" class="mb-12">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">

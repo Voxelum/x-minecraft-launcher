@@ -486,6 +486,16 @@ instances:
   folderSetting: 資料夾設定
   importFolderDescription: 匯入 Minecraft 到啟動器
   loadingFiles: 載入模組包檔案
+  edition: 版本
+  editionJava: Java 版
+  editionBedrock: 基岩版
+  editionBedrockHint: >-
+    基岩版透過 Microsoft Store 應用程式啟動。你需要擁有基岩版授權。模組、資源包及其他 Java 版專屬功能無法使用。
+  editionBedrockWindowsOnly: 基岩版僅在 Windows 版本中受支援。
+  linkSharedFolders: 在多個實例間共享資料夾
+  linkSharedFoldersHint: >-
+    將這些資料夾建立為指向啟動器共享資料夾的連結，使此實例與其他所有已連結的實例共享其內容。這不是複製——在一個實例中所做的變更會顯示在所有實例中。未勾選的資料夾將保持此實例私有。
+  linkFailed: 無法將 {folder} 資料夾連結到共享資料夾
   addPrismDescription: 匯入現有的 PrismLauncher 實例。
 items:
   count: '{count} 個'
@@ -1187,6 +1197,18 @@ search:
   emptyInstalled: 尚未安裝任何內容
   browseMarket: 瀏覽市集
   noResults: 找不到結果
+localCollection:
+  title: 啟動器收藏夾
+  newCollection: 新增收藏夾
+  namePlaceholder: 收藏夾名稱
+  addToCollection: 加入收藏夾
+  empty: 還沒有啟動器收藏夾
+  corrupted: 無法讀取已儲存的收藏夾，已重設。備份已儲存在資料檔案旁邊。
+  modrinthSection: Modrinth 帳戶
+  installAll: 全部安裝
+  installAllHint: 安裝此收藏夾中與目前 Minecraft 版本和載入器相容的所有項目。
+  incompatibleAlert: '有 {count} 個項目與目前執行個體不相容，已略過：'
+  projects: '無項目 | {count} 個項目 | {count} 個項目'
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   addServer: 新增伺服器

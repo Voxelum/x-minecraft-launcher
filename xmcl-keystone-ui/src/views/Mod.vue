@@ -39,6 +39,12 @@
         >
           <v-icon> layers </v-icon>
         </v-btn>
+        <AppCollectionInstallAll
+          v-if="showInstallAll"
+          :items="collectionItems"
+          content-type="mods"
+          :runtime="runtime"
+        />
       </MarketListHeader>
       <v-alert v-if="upgradeError" dense type="error">
         {{ updateErrorMessage }}
@@ -217,6 +223,7 @@
         :updating="updating"
         :game-version="gameVersion"
         :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
+        collection-content-type="mods"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -234,6 +241,7 @@
         :all-files="mods"
         :updating="updating"
         :modrinth="selectedModrinthId"
+        collection-content-type="mods"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -299,6 +307,7 @@ import MarketListHeader from '@/components/MarketListHeader.vue'
 import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
+import AppCollectionInstallAll from '@/components/AppCollectionInstallAll.vue'
 import { useService } from '@/composables'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
@@ -401,6 +410,7 @@ const {
   error,
   loading,
   items,
+  collectionItems,
   effect,
   denseView,
   sortBy,
@@ -748,6 +758,10 @@ const shouldShowCurseforge = (
 
 const { mods, conflicted, revalidate, incompatible, compatibility } =
   injection(kInstanceModsContext)
+
+// Install-all is available for any collection open in the Favorites view —
+// launcher-owned local collections as well as Modrinth collections/follows.
+const showInstallAll = computed(() => source.value === 'favorite')
 
 const { show: showDuplicatedDialog } = useDialog('mod-duplicated')
 const { show: showIncompatibleDialog } = useDialog('mod-incompatible')

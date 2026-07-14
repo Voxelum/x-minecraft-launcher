@@ -55,6 +55,7 @@ const props = defineProps<{
   updating?: boolean
   modrinth?: string
   disableInstall?: boolean
+  collectionContentType?: import('@xmcl/runtime-api').CollectionContentType
 }>()
 
 const emit = defineEmits<{
@@ -509,6 +510,7 @@ const { collectionId, onAddOrRemove, loadingCollections } = useInCollection(modr
     :following="following"
     :loading-collections="loadingCollections"
     :disable-install="disableInstall"
+    :collection-content-type="collectionContentType"
     @load-changelog="loadChangelog"
     @collection="onAddOrRemove"
     @delete="onDelete"

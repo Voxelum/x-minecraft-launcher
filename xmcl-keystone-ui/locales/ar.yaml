@@ -508,6 +508,19 @@ instances:
   folderSetting: 'إعدادات المجلد'
   importFolderDescription: 'استيراد ماين كرافت إلى قاذفة'
   loadingFiles: 'تحميل ملفات Modpack'
+  edition: الإصدار
+  editionJava: إصدار Java
+  editionBedrock: إصدار Bedrock
+  editionBedrockHint: >-
+    يتم تشغيل إصدار Bedrock من خلال تطبيق Microsoft Store. يجب أن تمتلك ترخيص
+    Bedrock. الوحدات وحزم الموارد والميزات الأخرى الخاصة بـ Java غير متوفرة.
+  editionBedrockWindowsOnly: إصدار Bedrock مدعوم فقط في إصدار Windows.
+  linkSharedFolders: مشاركة المجلدات بين النسخ
+  linkSharedFoldersHint: >-
+    أنشئ هذه المجلدات كروابط إلى المجلدات المشتركة للمشغّل حتى تشارك هذه النسخة
+    محتواها مع جميع النسخ المرتبطة الأخرى. هذه ليست نسخة — التغييرات التي تُجرى في
+    نسخة واحدة تظهر في جميع النسخ. تبقى المجلدات غير المحددة خاصة بهذه النسخة.
+  linkFailed: 'فشل ربط المجلد {folder} بالمجلد المشترك'
 items:
   count: '{count} العناصر'
   total: '{total} الإجمالي'

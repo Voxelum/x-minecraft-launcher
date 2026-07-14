@@ -470,6 +470,17 @@ instances:
   folderSetting: フォルダーの設定
   importFolderDescription: Minecraftをランチャーにインポート
   loadingFiles: Modpackファイルを読み込み中
+  edition: エディション
+  editionJava: Java Edition
+  editionBedrock: Bedrock Edition
+  editionBedrockHint: >-
+    Bedrock Edition は Microsoft Store アプリを通じて起動します。Bedrock のライセンスを所有している必要があります。Mod、リソースパックなどの
+    Java 専用機能は利用できません。
+  editionBedrockWindowsOnly: Bedrock Edition は Windows ビルドでのみサポートされています。
+  linkSharedFolders: インスタンス間でフォルダーを共有
+  linkSharedFoldersHint: >-
+    これらのフォルダーをランチャーの共有フォルダーへのリンクとして作成し、このインスタンスがリンクされた他のすべてのインスタンスと内容を共有するようにします。これはコピーではありません。1つのインスタンスで加えた変更はすべてのインスタンスに反映されます。チェックしていないフォルダーはこのインスタンス専用のままです。
+  linkFailed: '{folder} フォルダーを共有フォルダーにリンクできませんでした'
   addPrismDescription: 既存のPrismLauncherインスタンスをインポート。
 items:
   count: '{count} 個'

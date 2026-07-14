@@ -799,8 +799,7 @@ a {
    Mirrors v2's medium-emphasis v-list-subheader without dragging in
    v-list-subheader's surface background and large min-height. */
 .filter-subheader {
-  min-height: 32px;
-  padding: 4px 8px;
+  padding: 6px 8px;
   font-size: 0.75rem;
   font-weight: 500;
   text-transform: uppercase;

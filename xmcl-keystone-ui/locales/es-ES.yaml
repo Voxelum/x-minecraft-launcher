@@ -614,6 +614,14 @@ instances:
   folderSetting: Configuración de carpeta
   importFolderDescription: Importar Minecraft al Lanzador
   loadingFiles: Cargando archivos Modpack
+  linkSharedFolders: Compartir carpetas entre instancias
+  linkSharedFoldersHint: >-
+    Crea estas carpetas como enlaces a las carpetas compartidas del launcher
+    para que esta instancia comparta su contenido con todas las demás
+    instancias enlazadas. Esto no es una copia: los cambios hechos en una
+    instancia aparecen en todas. Las carpetas no marcadas permanecen privadas
+    de esta instancia.
+  linkFailed: No se pudo enlazar la carpeta {folder} con la carpeta compartida
 items:
   count: '{count} ítems'
   total: '{total} total'

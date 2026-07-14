@@ -490,6 +490,18 @@ instances:
   folderSetting: 폴더 설정
   importFolderDescription: 마인크래프트를 런처로 가져오기
   loadingFiles: 모드팩 파일 로딩 중
+  edition: 에디션
+  editionJava: 자바 에디션
+  editionBedrock: 베드락 에디션
+  editionBedrockHint: >-
+    베드락 에디션은 Microsoft Store 앱을 통해 실행됩니다. 베드락 라이선스를 소유해야 합니다. 모드, 리소스 팩 및 기타 자바
+    전용 기능은 사용할 수 없습니다.
+  editionBedrockWindowsOnly: 베드락 에디션은 Windows 빌드에서만 지원됩니다.
+  linkSharedFolders: 인스턴스 간에 폴더 공유
+  linkSharedFoldersHint: >-
+    이 폴더들을 런처의 공유 폴더에 대한 링크로 만들어 이 인스턴스가 연결된 다른 모든 인스턴스와 내용을 공유하도록 합니다. 이것은 복사가
+    아닙니다. 한 인스턴스에서 변경한 내용이 모든 인스턴스에 나타납니다. 선택하지 않은 폴더는 이 인스턴스 전용으로 유지됩니다.
+  linkFailed: '{folder} 폴더를 공유 폴더에 연결하지 못했습니다'
   addPrismDescription: 기존 PrismLauncher 인스턴스 가져오기.
   edition: 에디션
   editionJava: 자바 에디션

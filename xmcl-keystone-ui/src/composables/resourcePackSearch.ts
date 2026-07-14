@@ -149,6 +149,7 @@ export function useResourcePackSearch(_enabled: Ref<InstanceResourcePack[]>, _di
     loadMore,
     error,
     items,
+    collectionItems,
     loading,
     effect,
   }

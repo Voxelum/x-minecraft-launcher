@@ -488,6 +488,21 @@ instances:
   folderSetting: Map Instellingen
   importFolderDescription: Importeer Minecraft naar Launcher
   loadingFiles: Modpack Bestanden Laden
+  edition: Editie
+  editionJava: Java-editie
+  editionBedrock: Bedrock-editie
+  editionBedrockHint: >-
+    De Bedrock-editie wordt gestart via de Microsoft Store-app. Je moet een
+    Bedrock-licentie bezitten. Mods, resourcepacks en andere Java-exclusieve
+    functies zijn niet beschikbaar.
+  editionBedrockWindowsOnly: De Bedrock-editie wordt alleen ondersteund in de Windows-build.
+  linkSharedFolders: Mappen delen tussen instanties
+  linkSharedFoldersHint: >-
+    Maak deze mappen als koppelingen naar de gedeelde mappen van de launcher,
+    zodat deze instantie hun inhoud deelt met alle andere gekoppelde
+    instanties. Dit is geen kopie — wijzigingen in één instantie verschijnen in
+    alle. Niet-aangevinkte mappen blijven privé voor deze instantie.
+  linkFailed: Kan de map {folder} niet koppelen aan de gedeelde map
   addPrismDescription: Bestaande PrismLauncher-instantie importeren.
 items:
   count: '{count} items'

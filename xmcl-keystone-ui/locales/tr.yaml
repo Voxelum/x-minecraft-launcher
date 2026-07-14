@@ -500,6 +500,21 @@ instances:
   folderSetting: Klasör Ayarları
   importFolderDescription: Minecraft'ı Başlatıcıya İçe Aktar
   loadingFiles: Mod Paketi Dosyaları Yükleniyor
+  edition: Sürüm
+  editionJava: Java Sürümü
+  editionBedrock: Bedrock Sürümü
+  editionBedrockHint: >-
+    Bedrock Sürümü, Microsoft Store uygulaması üzerinden başlatılır. Bir Bedrock
+    lisansına sahip olmanız gerekir. Modlar, kaynak paketleri ve diğer Java'ya
+    özgü özellikler kullanılamaz.
+  editionBedrockWindowsOnly: Bedrock Sürümü yalnızca Windows yapımında desteklenir.
+  linkSharedFolders: Klasörleri örnekler arasında paylaş
+  linkSharedFoldersHint: >-
+    Bu klasörleri başlatıcının paylaşılan klasörlerine bağlantı olarak
+    oluşturun, böylece bu örnek içeriklerini bağlı diğer tüm örneklerle
+    paylaşır. Bu bir kopya değildir — bir örnekte yapılan değişiklikler tümünde
+    görünür. İşaretlenmemiş klasörler bu örneğe özel kalır.
+  linkFailed: '{folder} klasörü paylaşılan klasöre bağlanamadı'
   addPrismDescription: Mevcut PrismLauncher örneğini içe aktar.
   edition: Sürüm
   editionJava: Java Sürümü

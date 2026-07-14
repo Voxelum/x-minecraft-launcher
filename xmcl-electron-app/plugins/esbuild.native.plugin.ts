@@ -36,28 +36,6 @@ export default function createNativeModulePlugin(): Plugin {
       }
 
       build.onLoad(
-        { filter: /^.+node-sqlite3-wasm[\\/]dist[\\/]node-sqlite3-wasm\.js$/ },
-        async ({ path }) => {
-          let content = (await readFile(path, 'utf-8'))
-          content = content.replace('get isFinalized(){return this._ptr===null}',
-            'get isFinalized(){return this._ptr===null}' +
-            'isReader(){return sqlite3.column_count(this._ptr)>=1}',
-          )
-          // Emit the wasm as a single shared file (via esbuild's `file` loader)
-          // and load it from disk at runtime, instead of inlining ~1.6MB of
-          // base64 into every bundle (main + each worker). All esbuild builds
-          // write `node-sqlite3-wasm.wasm` (assetNames: '[name]') into the same
-          // `dist` outdir, so the copies collapse into one file. Electron's asar
-          // fs shim lets the runtime `fs.readFileSync` it from inside app.asar.
-          content = content.replace('"node-sqlite3-wasm.wasm"', 'require("./node-sqlite3-wasm.wasm")')
-          return {
-            contents: content,
-            loader: 'js',
-          }
-        },
-      )
-
-      build.onLoad(
         { filter: /@azure[\\/]msal-node-runtime[\\/]dist[\\/]index\.cjs$/ },
         async ({ path }) => {
           const content = await readFile(path, 'utf-8')

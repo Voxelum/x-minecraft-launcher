@@ -6,22 +6,26 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 139 (in 267 Vue files)
+**Total anchors:** 157 (in 270 Vue files)
 
 | Test ID | Defined in |
 |---|---|
 | `account-item` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L77`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L77) |
 | `accounts-add` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L105`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L105) |
 | `accounts-delete` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L53`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L53) |
-| `add-instance-advanced` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L13`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L13) |
+| `add-instance-advanced` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L5`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L5) |
 | `add-instance-cancel` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L4`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L4) |
+| `add-instance-collection` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L131`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L131) |
 | `add-instance-create` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L28`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L28) |
 | `add-instance-dialog` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L4`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L4) |
-| `add-instance-edition` | [`xmcl-keystone-ui/src/components/StepConfig.vue#L15`](../xmcl-keystone-ui/src/components/StepConfig.vue#L15) |
-| `add-instance-edition-bedrock` | [`xmcl-keystone-ui/src/components/StepConfig.vue#L39`](../xmcl-keystone-ui/src/components/StepConfig.vue#L39) |
-| `add-instance-edition-java` | [`xmcl-keystone-ui/src/components/StepConfig.vue#L31`](../xmcl-keystone-ui/src/components/StepConfig.vue#L31) |
-| `add-instance-import` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L65`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L65) |
-| `add-instance-name` | [`xmcl-keystone-ui/src/components/StepConfig.vue#L60`](../xmcl-keystone-ui/src/components/StepConfig.vue#L60) |
+| `add-instance-edition` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L35`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L35) |
+| `add-instance-edition-bedrock` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L55`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L55) |
+| `add-instance-edition-java` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L46`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L46) |
+| `add-instance-import` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L153`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L153) |
+| `add-instance-link-resourcepacks` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L61`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L61) |
+| `add-instance-link-saves` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L51`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L51) |
+| `add-instance-link-shaderpacks` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L71`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L71) |
+| `add-instance-name` | [`xmcl-keystone-ui/src/components/StepConfig.vue#L16`](../xmcl-keystone-ui/src/components/StepConfig.vue#L16) |
 | `add-instance-next` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L16`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L16) |
 | `add-server-button` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L64`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L64) |
 | `agent-switch-common` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L19`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L19) |
@@ -49,6 +53,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `blueprint-replace-from` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L417`](../xmcl-keystone-ui/src/views/Blueprint.vue#L417) |
 | `blueprint-replace-to` | [`xmcl-keystone-ui/src/views/Blueprint.vue#L429`](../xmcl-keystone-ui/src/views/Blueprint.vue#L429) |
 | `blueprint-search` | [`xmcl-keystone-ui/src/views/BlueprintExtension.vue#L13`](../xmcl-keystone-ui/src/views/BlueprintExtension.vue#L13) |
+| `collection-install-all` | [`xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L2`](../xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L2) |
+| `collection-install-all-button` | [`xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L10`](../xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L10) |
 | `create-instance` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35) |
 | `custom-css-editor-textarea` | [`xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26`](../xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26) |
 | `custom-css-global-toggle` | [`xmcl-keystone-ui/src/components/AppearanceItems.vue#L320`](../xmcl-keystone-ui/src/components/AppearanceItems.vue#L320) |
@@ -66,7 +72,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `home-log-action` | [`xmcl-keystone-ui/src/views/HomeActions.vue#L16`](../xmcl-keystone-ui/src/views/HomeActions.vue#L16) |
 | `home-server-card` | [`xmcl-keystone-ui/src/views/HomeServerCard.vue#L3`](../xmcl-keystone-ui/src/views/HomeServerCard.vue#L3) |
 | `home-world-card` | [`xmcl-keystone-ui/src/views/HomeWorldCard.vue#L3`](../xmcl-keystone-ui/src/views/HomeWorldCard.vue#L3) |
-| `install-instance-confirm` | [`xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L252`](../xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L252) |
+| `install-incompatible-alert` | [`xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L70`](../xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L70) |
+| `install-instance-confirm` | [`xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L267`](../xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L267) |
 | `install-version-confirm` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L97`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L97) |
 | `install-version-dialog` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L4`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L4) |
 | `install-version-item` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L208`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L208) |
@@ -85,11 +92,22 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `launch-target-server` | [`xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41`](../xmcl-keystone-ui/src/views/BaseSettingServerItem.vue#L41) |
 | `launch-to-server` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L192`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L192) |
 | `launch-to-world` | [`xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L239`](../xmcl-keystone-ui/src/views/HomeLaunchButtonMenuList.vue#L239) |
+| `local-collection-corrupted` | [`xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L14`](../xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L14) |
+| `local-collection-create-confirm` | [`xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L87`](../xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L87) |
+| `local-collection-create-row` | [`xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L69`](../xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L69) |
+| `local-collection-delete` | [`xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L60`](../xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L60) |
+| `local-collection-empty` | [`xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L22`](../xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L22) |
+| `local-collection-item` | [`xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L39`](../xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L39) |
+| `local-collection-list` | [`xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L2`](../xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L2) |
+| `local-collection-name-input` | [`xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L77`](../xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L77) |
+| `local-collection-new` | [`xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L99`](../xmcl-keystone-ui/src/components/AppLocalCollectionList.vue#L99) |
 | `login-authority` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L25`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L25) |
 | `login-password` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L74`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L74) |
 | `login-submit` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L130`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L130) |
 | `login-username` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L36`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L36)<br>[`xmcl-keystone-ui/src/components/UserLoginForm.vue#L56`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L56) |
-| `market-detail-install` | [`xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L138`](../xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L138) |
+| `market-detail-collection-menu` | [`xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L59`](../xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L59) |
+| `market-detail-install` | [`xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L161`](../xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L161) |
+| `market-filter-favorite-tab` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24) |
 | `market-item-install` | [`xmcl-keystone-ui/src/components/MarketItem.vue#L40`](../xmcl-keystone-ui/src/components/MarketItem.vue#L40) |
 | `me-user-switcher` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16) |
 | `minecraft-friends-add-button` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68) |
@@ -136,7 +154,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `store-install` | [`xmcl-keystone-ui/src/components/StoreProjectHeader.vue#L47`](../xmcl-keystone-ui/src/components/StoreProjectHeader.vue#L47) |
 | `store-page` | [`xmcl-keystone-ui/src/views/Store.vue#L3`](../xmcl-keystone-ui/src/views/Store.vue#L3) |
 | `store-project-card` | [`xmcl-keystone-ui/src/components/StoreExploreCardModern.vue#L4`](../xmcl-keystone-ui/src/components/StoreExploreCardModern.vue#L4) |
-| `store-search` | [`xmcl-keystone-ui/src/views/StoreEntry.vue#L119`](../xmcl-keystone-ui/src/views/StoreEntry.vue#L119) |
+| `store-search` | [`xmcl-keystone-ui/src/views/StoreEntry.vue#L121`](../xmcl-keystone-ui/src/views/StoreEntry.vue#L121) |
 | `unbind-server-upstream` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L41`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L41) |
 | `unresolved-file-item` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L58`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L58) |
 | `unresolved-files-dialog` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L9`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L9) |

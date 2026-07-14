@@ -464,6 +464,22 @@ instances:
   folderSetting: Ustawienia folderów
   importFolderDescription: Importowanie Minecrafta do programu uruchamiającego
   loadingFiles: Ładowanie plików Modpack
+  edition: Edycja
+  editionJava: Edycja Java
+  editionBedrock: Edycja Bedrock
+  editionBedrockHint: >-
+    Edycja Bedrock jest uruchamiana przez aplikację Microsoft Store. Musisz
+    posiadać licencję Bedrock. Mody, pakiety zasobów i inne funkcje dostępne
+    tylko w Javie nie są dostępne.
+  editionBedrockWindowsOnly: Edycja Bedrock jest obsługiwana tylko w wersji dla Windows.
+  linkSharedFolders: Udostępniaj foldery między instancjami
+  linkSharedFoldersHint: >-
+    Utwórz te foldery jako łącza do folderów współdzielonych launchera, aby ta
+    instancja współdzieliła ich zawartość ze wszystkimi innymi połączonymi
+    instancjami. To nie jest kopia — zmiany wprowadzone w jednej instancji
+    pojawiają się we wszystkich. Niezaznaczone foldery pozostają prywatne dla
+    tej instancji.
+  linkFailed: Nie udało się połączyć folderu {folder} z folderem współdzielonym
   addPrismDescription: Importuj istniejącą instancję PrismLauncher.
 items:
   count: '{count} pozycje'

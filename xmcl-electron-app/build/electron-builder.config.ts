@@ -78,6 +78,7 @@ export const config = {
     certificateFile: undefined as string | undefined,
     publisherName: 'CI010',
     icon: 'icons/dark.ico',
+    electronLanguages: ['en-US'],
     target: [
       {
         target: 'zip',
@@ -91,6 +92,7 @@ export const config = {
   },
   linux: {
     executableName: 'xmcl',
+    electronLanguages: ['en-US'],
     desktop: {
       MimeType: 'x-scheme-handler/xmcl',
       StartupWMClass: 'xmcl',

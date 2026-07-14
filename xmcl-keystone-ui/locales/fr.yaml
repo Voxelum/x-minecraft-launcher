@@ -492,6 +492,22 @@ instances:
   folderSetting: Paramètres du dossier
   importFolderDescription: Importer Minecraft au launcher
   loadingFiles: Chargement des fichiers Modpack
+  edition: Édition
+  editionJava: Édition Java
+  editionBedrock: Édition Bedrock
+  editionBedrockHint: >-
+    L'édition Bedrock est lancée via l'application Microsoft Store. Vous devez
+    posséder une licence Bedrock. Les mods, packs de ressources et autres
+    fonctionnalités propres à Java ne sont pas disponibles.
+  editionBedrockWindowsOnly: L'édition Bedrock n'est prise en charge que sur la version Windows.
+  linkSharedFolders: Partager les dossiers entre les instances
+  linkSharedFoldersHint: >-
+    Créez ces dossiers comme des liens vers les dossiers partagés du lanceur
+    afin que cette instance partage leur contenu avec toutes les autres
+    instances liées. Ce n'est pas une copie — les modifications faites dans une
+    instance apparaissent dans toutes. Les dossiers non cochés restent privés à
+    cette instance.
+  linkFailed: Échec de la liaison du dossier {folder} au dossier partagé
   addPrismDescription: Importer une instance PrismLauncher existante.
 items:
   count: '{count} éléments'

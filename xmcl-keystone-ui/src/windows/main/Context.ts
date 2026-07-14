@@ -32,6 +32,7 @@ import { kModpackExport, useModpackExport } from '@/composables/modpack'
 import { kInstanceServerLaunch, useInstanceServerLaunch } from '@/composables/instanceServerLaunch'
 import { kModrinthTags, useModrinthTags } from '@/composables/modrinth'
 import { kModrinthAuthenticatedAPI, useModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
+import { kLocalCollections, useLocalCollections } from '@/composables/localCollections'
 import { kPeerShared, usePeerConnections } from '@/composables/peers'
 import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kSaveSearch, useSavesSearch } from '@/composables/savesSearch'
@@ -99,6 +100,7 @@ export default defineComponent({
 
     const modrinthAPI = useModrinthAuthenticatedAPI()
     provide(kModrinthAuthenticatedAPI, modrinthAPI)
+    provide(kLocalCollections, useLocalCollections())
     const searchModel = useSearchModel(instance.runtime)
     provide(kSearchModel, searchModel)
     const modsSearch = useModsSearch(instance.path, instance.runtime, instanceMods.mods, instanceMods.isValidating, settings.state, modrinthAPI, searchModel)

@@ -483,6 +483,21 @@ instances:
   folderSetting: Қалта баптаулары
   importFolderDescription: Minecraft-ты іске қосқышқа импорттау
   loadingFiles: Мод-пак файлдары жүктелуде
+  edition: Басылым
+  editionJava: Java басылымы
+  editionBedrock: Bedrock басылымы
+  editionBedrockHint: >-
+    Bedrock басылымы Microsoft Store қолданбасы арқылы іске қосылады. Сізде
+    Bedrock лицензиясы болуы керек. Модтар, ресурс жинақтары және басқа Java-ға
+    ғана тән мүмкіндіктер қолжетімсіз.
+  editionBedrockWindowsOnly: Bedrock басылымы тек Windows нұсқасында қолдау көрсетіледі.
+  linkSharedFolders: Даналар арасында қалталарды ортақ пайдалану
+  linkSharedFoldersHint: >-
+    Бұл қалталарды іске қосу бағдарламасының ортақ қалталарына сілтеме ретінде
+    жасаңыз, осылайша бұл дана олардың мазмұнын барлық басқа байланысқан
+    даналармен бөліседі. Бұл көшірме емес — бір данадағы өзгерістер барлығында
+    көрінеді. Белгіленбеген қалталар осы дана үшін жеке болып қалады.
+  linkFailed: '{folder} қалтасын ортақ қалтаға байланыстыру мүмкін болмады'
   addPrismDescription: Бар PrismLauncher данасын импорттау.
 items:
   count: '{count} элемент'

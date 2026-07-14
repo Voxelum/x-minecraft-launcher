@@ -484,6 +484,22 @@ instances:
   folderSetting: Mapinstellingen
   importFolderDescription: Importeer Minecraft naar Launcher
   loadingFiles: Modpack-bestanden laden
+  edition: Edición
+  editionJava: Edición Java
+  editionBedrock: Edición Bedrock
+  editionBedrockHint: >-
+    A edición Bedrock iníciase a través da aplicación Microsoft Store. Debes
+    posuír unha licenza de Bedrock. Os mods, paquetes de recursos e outras
+    funcións exclusivas de Java non están dispoñibles.
+  editionBedrockWindowsOnly: A edición Bedrock só é compatible coa versión de Windows.
+  linkSharedFolders: Compartir cartafoles entre instancias
+  linkSharedFoldersHint: >-
+    Crea estes cartafoles como ligazóns aos cartafoles compartidos do iniciador
+    para que esta instancia comparta o seu contido con todas as demais
+    instancias ligadas. Isto non é unha copia: os cambios feitos nunha
+    instancia aparecen en todas. Os cartafoles non marcados permanecen privados
+    desta instancia.
+  linkFailed: Non se puido ligar o cartafol {folder} ao cartafol compartido
   addPrismDescription: Importar unha instancia de PrismLauncher existente.
 items:
   count: '{count} items'

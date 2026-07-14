@@ -1,12 +1,37 @@
 import { ElectronController } from '@/ElectronController'
 import { darkIcon, darkTray, lightIcon, lightTray } from '@/utils/icons'
 import { BaseService } from '@xmcl/runtime/app'
-import { app, Menu, Tray, nativeTheme, nativeImage, MenuItemConstructorOptions } from 'electron'
+import { app, contentTracing, dialog, Menu, Tray, nativeTheme, nativeImage, MenuItemConstructorOptions, shell } from 'electron'
+import { join } from 'path'
 import { ControllerPlugin } from './plugin'
 import { kSettings } from '@xmcl/runtime/settings'
 
 export const trayPlugin: ControllerPlugin = function (this: ElectronController) {
   const { t } = this.i18n
+  let isTracing = false
+  const toggleTracing = async () => {
+    if (!isTracing) {
+      try {
+        await contentTracing.startRecording({
+          included_categories: ['*'],
+        })
+        isTracing = true
+      } catch (e) {
+        dialog.showErrorBox('Content tracing', `Failed to start recording: ${(e as Error).message}`)
+      }
+    } else {
+      const out = join(app.getPath('logs'), `trace-${Date.now()}.json`)
+      try {
+        const file = await contentTracing.stopRecording(out)
+        isTracing = false
+        shell.showItemInFolder(file)
+      } catch (e) {
+        isTracing = false
+        dialog.showErrorBox('Content tracing', `Failed to stop recording: ${(e as Error).message}`)
+      }
+    }
+    this.tray?.setContextMenu(createMenu())
+  }
   // nativeTheme.addListener('updated', () => {
   //   if (nativeTheme.shouldUseDarkColors) {
 
@@ -71,6 +96,13 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
           diagnose()
         },
         role: 'toggleDevTools',
+      },
+      {
+        label: isTracing ? 'Stop CPU trace' : 'Start CPU trace',
+        type: 'normal',
+        click: () => {
+          toggleTracing()
+        },
       },
       {
         label: t('relaunch'),
