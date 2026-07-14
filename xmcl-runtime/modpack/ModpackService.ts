@@ -732,6 +732,15 @@ export class ModpackService extends AbstractService implements IModpackService {
       this.log(`Parse modpack profile ${modpackFile} with handler ${handler.constructor.name}`)
       const instance = handler.resolveInstanceOptions(manifest)
 
+      let mmcVersionId: string | undefined
+      if (isMMCModpackManifest(manifest)) {
+        mmcVersionId = await this.#applyMmcStandaloneVersion(manifest, zip.file, entries, instance.name)
+          .catch((e) => {
+            this.warn(new AnyError('OpenModpackError', `Failed to apply MultiMC patches: ${e}`))
+            return undefined
+          })
+      }
+
       let xmclCache: SelectedXMCLFields | undefined
       if (zip.entries['xmcl.json']) {
         try {
@@ -744,6 +753,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         ...instance,
         ...xmclCache,
         upstream: cached.upstream,
+        ...(mmcVersionId ? { version: mmcVersionId } : {}),
       }
 
       if (typeof cached === 'object' && cached.instance) {

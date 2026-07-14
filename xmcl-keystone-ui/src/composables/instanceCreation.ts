@@ -158,6 +158,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
   async function update(template: CreateInstanceOptions, filesPromise: Promise<InstanceFile[]>) {
     isManual.value = false
     data.name = template.name
+    data.version = template.version ?? ''
     if (template.runtime) {
       data.runtime = { ...data.runtime, ...template.runtime }
     }
@@ -189,6 +190,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
   function reset() {
     data.name = ''
     data.runtime = getNewRuntime()
+    data.version = ''
     data.edition = 'java'
     data.java = ''
     data.showLog = false
