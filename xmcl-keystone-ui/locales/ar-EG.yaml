@@ -1,0 +1,1865 @@
+AppAddInstanceDialog:
+  choiceTitle: تم اكتشاف ملفات تعريف تشغيل متعددة. يرجى اختيار واحد لاستيراده.
+  createTitle: إنشاء لعبة
+  serverTitle: أدخل عنوان السيرفر بتاعك
+AppShareInstanceDialog:
+  alterDownloadDescription: لو مش عاوز تلخبط النسخة الحالية، تقدر برضه تعمل نسخة جديدة من إعدادات زميلك. اضغط على الزرار اللي تحت لإنشاء نسخة جديدة.
+  baseInfo: الإعدادات الأساسية
+  cancelShare: إلغاء المشاركة
+  description: بعد ما تشارك ملف التعريف، الأجهزة التانية هتقدر تنزل الملفات دي من خلال كمبيوترك.
+  downloadDescription: يرجى التحقق من الملفات اللي زميلك بعتها لك. حدد الملفات اللي عاوز تنزلها. هيتم وضعها في النسخة الحالية {name}.
+  downloadNotifyTitle: تنزيل النسخة من {user}
+  downloadTitle: تنزيل الملفات من أجهزة الزملاء التانية
+  filesToDownload: اختر الملفات المراد تنزيلها
+  filesToShare: اختر الملفات المراد مشاركتها
+  instanceShare: '{user} لسه مشارك النسخة الحالية معاك حالا'
+  share: مشاركة
+  shareNotifyTitle: مشاركة النسخة
+  shareTitle: مشاركة ملفات اللعبة مع لاعبين تانيين
+BaseSettingGeneral:
+  title: عام
+HomeJavaIssueDialog:
+  incompatibleJava: نسخة جافا غير متوافقة
+  incompatibleJavaHint: نسخة جافا الحالية ممكن متكونش متوافقة مع نسخة ماينكرافت المحددة!
+  missingJava: جافا مش موجودة
+  missingJavaHint: 'اللانشر مش قادر يكتشف وجود جافا على كمبيوترك. تقدر:'
+  optionSwitch:
+    name: التحويل إلى {version}
+HomeLaunchMultiInstanceDialog:
+  confirm: أيوة، شغل اللعبة
+  description: أنت هتشغل كذا نسخة من ماينكرافت في نفس الوقت. هل أنت متأكد؟
+  title: نسخ متعددة
+SettingMigrationDialog:
+  selectRootDirectory: اختر المجلد الرئيسي
+agent:
+  callingTool: بيستدعي {name}…
+  disabledPlaceholder: العميل معطل
+  emptyHint: اطلب من العميل يفحص النسخة بتاعتك، أو يفعل/يعطل المودات، أو يقرأ السجلات، أو يشخص سبب الكراش.
+  inputPlaceholder: اسأل العميل… (اضغط Enter للإرسال، Shift+Enter لسطر جديد)
+  notConfiguredHint: اضبط مفتاح الـ API والـ model والـ endpoint في الإعدادات ← عام ← عميل الذكاء الاصطناعي لتفعيل العميل.
+  notConfiguredTitle: العميل مش مهيأ
+  openSettings: افتح الإعدادات
+  reset: إعادة ضبط المحادثة
+  setupGuide: دليل الإعداد
+  statusDisabled: معطل — مفتاح الـ API مش موجود
+  statusReady: جاهز
+  statusWorking: شغال…
+  suggestion1: ترقية النسخة دي لإصدار أحدث من ماينكرافت، وتحديث المودات عشان تتوافق معاها
+  suggestion2: المودات بتاعتي بتعمل كراش — اعرف لي السبب وقول لي أصلحه إزاي
+  suggestion3: 'عمل حزمة مودات (Modpack): دور على مودات بمميزات معينة وثبتها في النسخة دي'
+  thinking: بيفكر…
+  title: عميل XMCL
+  toggleHint: للتبديل
+ago:
+  day: من {duration} يوم | من {duration} يوم
+  hour: من {duration} ساعة | من {duration} ساعة
+  minute: من {duration} دقيقة | من {duration} دقيقة
+  second: من {duration} ثانية | من {duration} ثانية
+askAICrash:
+  agentNotConfigured: ضيف موفر ذكاء اصطناعي ومفتاح API في الإعدادات عشان تخلي عميل الذكاء الاصطناعي المدمج في اللانشر يشخص المشكلة دي ويصلحها لك.
+  askAgent: التشخيص بواسطة عميل الذكاء الاصطناعي المدمج
+  copyPrompt: نسخ النص الموجه للذكاء الاصطناعي
+  description: خلي الذكاء الاصطناعي يساعدك تفهم كراش اللعبة! اتبع التعليمات اللي تحت عشان تسأل الذكاء الاصطناعي عن الكراش ده!
+  orExternal: أو استخدم ذكاء اصطناعي خارجي
+  selectPlatform: افتح منصة ذكاء اصطناعي والزق النص اللي لسه ناسخه.
+  setupAgent: إعداد عميل الذكاء الاصطناعي
+authProfileAddedNotification: تم إضافة ملف تعريف المصادقة {name}
+bedrock:
+  description: نسخة ماينكرافت بيدروك (Bedrock Edition) بتتثبت وتشتغل من خلال متجر مايكروسوفت. لازم يكون عندك ترخيص بيدروك على حساب مايكروسوفت بتاعك.
+  install: الحصول عليها من متجر مايكروسوفت
+  installFailed: فشل فتح متجر مايكروسوفت
+  installed: 'مثبت: {version}'
+  launchHint: استخدم زرار التشغيل لتشغيل نسخة بيدروك.
+  installBedrockVersion: تنزيل نسخة بيدروك {version}
+  licenseRequired: سجل الدخول بحساب مايكروسوفت بيمتلك ماينكرافت عشان تثبت وتشغل نسخة بيدروك.
+  refresh: تحديث
+  versionsTitle: مدير الإصدارات
+  versionsHint: نزل إصدارات بيدروك متعددة من سيرفرات مايكروسوفت وبدل بينها. بيتم تسجيل إصدار واحد بس في نظام ويندوز في المرة الواحدة، فتشغيل أي إصدار بيسجله تلقائياً.
+  versionsError: فشل تحميل قائمة الإصدارات. اتأكد من الشبكة وجرب تاني.
+  channel: القناة
+  channelRelease: مستقرة (Release)
+  channelBeta: بيتا (Beta)
+  channelPreview: معاينة (Preview)
+  active: نشط
+  play: لعب
+  download: تنزيل
+  installedTag: مثبت
+  developerModeRequired: تسجيل نسخة متنزلة بيحتاج تفعيل وضع المطور في ويندوز (Developer Mode). تفعيله بيطلب صلاحيات المسؤول.
+  enableDeveloperMode: تفعيل وضع المطور
+  enableDeveloperModeFailed: فشل تفعيل وضع المطور
+  downloadFailed: فشل تنزيل نسخة بيدروك {version}
+  launchFailed: فشل تشغيل نسخة بيدروك دي
+  removeFailed: فشل إزالة نسخة بيدروك {version}
+baseSetting:
+  title: إعدادات النسخة
+browseApp:
+  createShortcut: إنشاء اختصار
+  default: افتراضي
+  delete: حذف
+  launch: تشغيل وتعيين كافتراضي
+browseApps: عرض واجهة مستخدم اللانشر
+color: اللون
+confirm: ابدأ
+copyClipboard:
+  success: نسخ إلى الحافظة
+create: إنشاء
+curseforge:
+  category: الفئة
+  createdDate: تاريخ الإنشاء
+  lastUpdate: تاريخ آخر تحديث
+  releasedDate: تاريخ الإصدار
+curseforgeCategory:
+  API and Library: واجهات برمجة التطبيقات والمكتبات (APIs)
+  Addons: إضافات ملحقة
+  Adventure: مغامرة
+  Adventure and RPG: مغامرة وتقمص أدوار (RPG)
+  Animated: رسوم متحركة
+  Armor, Tools, and Weapons: دروع وأدوات وأسلحة
+  Combat / PvP: قتال ونزالات (PvP)
+  Cosmetic: جماليات وزينة
+  Creation: وضع إبداعي
+  Data Packs: حزم بيانات (Data packs)
+  Education: تعليم
+  Exploration: استكشاف
+  Extra Large: حجم ضخم
+  FTB Official Pack: حزمة FTB الرسمية
+  Fabric: Fabric
+  FancyMenu: قائمة طعام فاخرة (FancyMenu)
+  Font Packs: حزم الخطوط
+  Food: أكل وطعام
+  Game Map: خرائط اللعبة
+  Hardcore: صعب جداً (Hardcore)
+  MCreator: MCreator
+  Magic: سحر
+  Map Based: معتمد على الخريطة
+  Map and Information: خرائط ومعلومات
+  Medieval: العصور الوسطى
+  Mini Game: ألعاب مصغرة
+  Miscellaneous: متنوعات
+  Mod Support: دعم المودات
+  Modded World: عالم معدل بالمودات
+  Modern: حديث
+  Multiplayer: لعب جماعي
+  Parkour: باركور
+  Photo Realistic: واقعي جداً
+  Puzzle: ألغاز
+  QoL: تحسين جودة اللعب (QoL)
+  Quests: مهام
+  Redstone: ريدستون (Redstone)
+  Sci-Fi: خيال علمي
+  Server Utility: أدوات السيرفر
+  Skyblock: سكاي بلوك (Skyblock)
+  Small / Light: خفيف/صغير
+  Steampunk: ستيم بانك (Steampunk)
+  Storage: تخزين
+  Survival: بقاء على قيد الحياة
+  Tech: تكنولوجيا
+  Technology: تكنولوجيا
+  Traditional: تقليدي
+  Twitch Integration: تكامل تويتش (Twitch)
+  Utility & QoL: أدوات وتحسين جودة اللعب
+  Vanilla+: فانيلا إضافية (Vanilla+)
+  World Gen: توليد العالم
+dataMigration:
+  apply: تطبيق الإعدادات
+  directoryCriteriaHint: تأكد إن مجلد الوجهة الجديد مجلد فاضي تماماً!
+  placeholder: اضغط هنا لاختيار المجلد
+  setRootCause: هتخسر بياناتك (الخرائط، حزم الموارد، المودات) لو قفلت اللانشر أثناء العملية دي!
+  setRootDescription: العملية دي هتغير المجلد الرئيسي لبيانات اللانشر وماينكرافت.
+  setRootTitle: تحديد موقع تخزين جديد
+  unknownError: خطأ غير معروف! يرجى إعادة المحاولة أو التواصل مع المطور!
+  waitReload: جاري نقل البيانات. يرجى عدم إغلاق اللانشر وإلا هتخسر بياناتك.
+delete:
+  name: حذف {name}
+  'no': لا
+  'yes': حذف
+dependencies:
+  embedded: مدمج
+  incompatible: غير متوافق
+  name: المتطلبات والتبعيات
+  optional: اختياري
+  required: مطلوب
+diagnosis:
+  badInstall:
+    message: اضغط لمحاولة إعادة تثبيت الإصدار ده.
+    name: تثبيت تالف في {version}
+  corruptedAssets:
+    message: اللانشر هيثبت الموارد التالفة بالنيابة عنك
+    name: 'مورد تالف: {name} | مورد تالف: {name} | عدد {count} موارد تالفة'
+  corruptedAssetsIndex:
+    message: اللانشر هينزل ملف مؤشر الموارد بالنيابة عنك
+    name: ملف مؤشر موارد تالف للإصدار {version}.
+  corruptedLibraries:
+    message: اللانشر هيثبت المكتبات بالنيابة عنك
+    name: 'مكتبة تالفة: {name} | مكتبة تالفة: {name} | عدد {count} مكتبات تالفة'
+  corruptedVersionJar:
+    message: اضغط لتثبيت الإصدار ده
+    name: ملف jar تالف للإصدار {version} من ماينكرافت.
+  incompatibleJava:
+    name: نسخة جافا {javaVersion} مش مناسبة للإصدار {version}!
+  instanceFiles:
+    description: تثبيت النسخة بيحتوي على {counts} ملفات.
+    title: تثبيت نسخة غير مكتمل
+  invalidJava:
+    name: مسار جافا غير صحيح.
+  missingJava:
+    message: اضغط لحل المشكلة دي
+    name: مش عارفين نلاقي جافا عشان نشغل ماينكرافت!
+  missingLibraries:
+    message: اللانشر هيثبت المكتبات بالنيابة عنك
+    name: مكتبة {name} مفقودة | مكتبة {name} مفقودة | عدد {count} مكتبات مفقودة | عدد {count} مكتبات مفقودة
+  missingVersion:
+    message: اضغط لتثبيت الإصدار ده
+    name: الإصدار {version} مش متثبت!
+  unresolvedFiles:
+    description: ملف {count} مقدرناش نحله أثناء التثبيت | {count} ملفات مقدرناش نحلها أثناء التثبيت
+    title: ملفات لم يتم حلها
+  unzipFileNotFound:
+    description: مش قادرين نلاقي ملف {file}
+    title: ملف حزمة المودات (Modpack) مش موجود
+difficulty:
+  easy: سهل
+  hard: صعب
+  normal: عادي
+  peaceful: سلمي
+disk:
+  available: المساحة الفاضية
+  used: المساحة المستخدمة
+downloadCount: '{count} تنزيل | {count} تنزيلات'
+downloadModMetadataDb:
+  name: تنزيل قاعدة بيانات معلومات المودات
+downloadUpdate:
+  name: تنزيل التحديث {version}
+duplicateInstance:
+  name: تكرار النسخة
+duration:
+  day: '{duration} يوم | {duration} يوم'
+  hour: '{duration} ساعة | {duration} ساعة'
+  minute: '{duration} دقيقة | {duration} دقيقة'
+  second: '{duration} ثانية | {duration} ثانية'
+env:
+  select:
+    all: تحديد الكل
+    fit: تحديد الأنسب
+    none: إلغاء التحديد
+errors:
+  bedrockUnsupportedPlatform: نسخة ماينكرافت بيدروك مدعومة بس على نظام التشغيل ويندوز.
+  bedrockNotInstalled: نسخة ماينكرافت بيدروك مش متثبتة.
+  bedrockLaunchFailed: فشل تشغيل نسخة ماينكرافت بيدروك.
+  bedrockInstallFailed: فشل تثبيت نسخة ماينكرافت بيدروك.
+  bedrockDownloadUrlUnavailable: إصدار بيدروك ده مش متوفر لحساب مايكروسوفت الحالي. الإصدارات التجريبية والمعاينة بتحتاج حساب مشترك في برنامج ماينكرافت التجريبي.
+  bedrockDeveloperModeRequired: مطلوب تفعيل وضع المطور في ويندوز لتسجيل إصدار بيدروك ده.
+  bedrockRegisterFailed: فشل تسجيل إصدار بيدروك ده في نظام ويندوز.
+  bedrockVersionNotFound: إصدار بيدروك ده مش متثبت محلياً.
+  BadForgeInstallerJarError: مش قادرين نحلل ملف jar لتثبيت فورج (Forge). ممكن فورج غير صيغة ملف التثبيت؟ تواصل مع المطورين لو المشكلة استمرت.
+  BadInstanceType: 'نسخة غير صالحة: {type}'
+  BodyTimeoutError: انتهت مهلة استلام محتوى الـ HTTP
+  ChecksumNotMatchError: رمز التحقق (Checksum) مش متطابق! المتوقع {expect}، والفعلي {actual}.
+  ConnectTimeoutError: انتهت مهلة الاتصال بالسيرفر.
+  CorruptedResourceMetadata: تم اكتشاف وتنظيف معلومات تالفة لـ {count} من الموارد. الملفات لسه شغالة عادي، بس بيانات نسبها لـ Modrinth/CurseForge ضاعت وهيتم اكتشافها تاني تلقائياً.
+  DNSNotFoundError: خطأ في البحث عن عنوان الـ DNS
+  DatabaseNotOpened: قاعدة البيانات مش مفتوحة! اللانشر مش هيشتغل كويس! يرجى اختيار مجلد بيانات يقدر اللانشر يوصل له. تقدر تعيد ضبط موقع البيانات الرئيسي من صفحة الإعدادات.
+  DiskIsFull: القرص الصلب بتاعك مليان! مش عارفين نكتب أي حاجة على الهارد! ممكن بعض المميزات متشتغلش خالص!
+  DownloadAggregateError: فشل تنزيل الملف.
+  DownloadFileSystemError: حصل خطأ أثناء الوصول لمسار تنزيل الملف. اتأكد إن اللانشر بيمتلك صلاحيات الكتابة فيه.
+  HeadersTimeoutError: انتهت مهلة استلام ترويسة (Header) الـ HTTP
+  InstallBackendUnresponsive:
+    body: العملية الخلفية للانشر وقفت عن الاستجابة، عشان كده التثبيت مقدرش يكمل. يرجى إغلاق اللانشر بالكامل وإعادة تشغيله، وجرب تاني.
+    title: اللانشر مش بيستجيب
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: فشل تثبيت ملفات ماينكرافت
+  InstallNetworkError:
+    body: مشكلة في الشبكة قطعت عملية التثبيت. اتأكد من اتصالك بالإنترنت أو البروكسي وجرب تاني.
+    title: مش قادرين ننزل ملفات ماينكرافت
+  InstallPermissionDenied:
+    body: برنامج مكافحة الفيروسات أو قيود صلاحيات المجلد منعت التثبيت. ضيف اللانشر لقائمة الاستثناءات في الأنتي فيرس، أو اختار مجلد بيانات رئيسي تاني في إعدادات اللانشر.
+    title: مش قادرين نكتب في مجلد اللانشر
+  NotFoundError: الصفحة غير موجودة (404 Not Found)
+  SocketError: خطأ في سوكيت (Socket) السيرفر
+eula:
+  body: بتحديد مربع الاختيار، أنت بتأكد موافقتك على اتفاقية ترخيص المستخدم النهائي (EULA) الخاصة بماينكرافت {eula}.
+exception:
+  http: فشل طلب الـ HTTP لـ {url}. رمز الحالة {statusCode}. الكود {code}. يرجى إعادة المحاولة أو فحص الشبكة. لو المشكلة استمرت، يرجى إرسال تقرير للمطورين.
+exportModpack:
+  name: تصدير حزمة مودات (Modpack)
+extensions:
+  mrpack: حزمة مودات Modrinth (.mrpack)
+  zip: ملف مضغوط (.zip)
+fabricVersion:
+  disable: تعطيل فابريك (Fabric)
+  empty: مفيش إصدار فابريك (Fabric) متوفر لماينكرافت {version}
+  showSnapshot: عرض التجريبية (Snapshot)
+  stable: مستقر
+  unstable: غير مستقر
+command:
+  instance:
+    launch:
+      title: تشغيل النسخة
+      description: شغل نسخة ماينكرافت المحددة
+    create:
+      title: إنشاء نسخة جديدة
+      description: أنشئ نسخة جديدة تماماً
+    delete:
+      title: حذف النسخة
+      description: امسح نسخة موجودة بالفعل
+  user:
+    login:
+      title: تسجيل دخول المستخدم
+      description: سجل الدخول لحسابك
+    refresh:
+      title: تحديث المستخدم
+      description: تحديث جلسة المستخدم
+commandPalette:
+  placeholder: ابحث عن الأوامر، والنسخ، والمودات…
+  commands: الأوامر
+  instances: النسخ
+  modrinth: Modrinth
+  recent: الأخيرة
+  open: إجراء سريع
+  openHint: افتح لوحة الأوامر ({shortcut})
+  empty: اكتب للبحث.
+  noResults: مفيش نتائج مطابقة.
+  searching: جاري البحث…
+  hintNavigate: تنقل
+  hintInvoke: تشغيل
+  hintEnter: دخول
+  hintBack: رجوع
+  hintClose: إغلاق
+feedback:
+  channel: القنوات
+  description: لقيت مشكلة (Bug) أو عاوز أقول اقتراح
+  discord: ديسكورد
+  discordDescription: انضم لقناة الديسكورد
+  discordJoin: انضم
+  generateReport: إنشاء تقرير
+  generateSaveAs: حفظ التقرير في
+  github: مشكلة على جيت هاب
+  githubDescription: افتح تذكرة مشكلة (Issue) على جيت هاب وقول لنا رأيك
+  githubOpenIssue: جيت هاب
+  hint: اضغط على الزرار لعمل التقرير والتواصل مع فريق التطوير. التقرير بيحتوي على معلومات جهازك زي نوع نظام التشغيل وإصداره، واسم المستخدم (في النظام)، إلخ.
+  kook: Kook
+  kookDescription: تطبيق Kook هو بديل لديسكورد للمستخدمين في الصين
+  name: الآراء والشكاوى
+  qq: جروب QQ
+  qqDescription: 'ادخل جروب QQ وتكلم مع المطورين مباشرة. رقم الجروب: {number}'
+  qqEnterGroup: انضم
+fileDetail:
+  fileSize: حجم الملف
+  filesize: حجم الملف
+  hash: الهاش (Hash)
+filterLocalOnly: عرض المثبت فقط
+forgeVersion:
+  disable: تعطيل فورج (Forge)
+  empty: فورج ملوش أي إصدار لماينكرافت {version}
+  latest: الأحدث
+  recommended: الموصى به
+gameType:
+  adventure: وضع المغامرة
+  creative: الوضع الإبداعي
+  spectator: وضع المشاهدة
+  survival: وضع البقاء
+help: المساعدة
+home: الرئيسية
+importModpack:
+  name: استيراد حزمة مودات (Modpack)
+installAssets:
+  asset: تثبيت {count} موارد
+  assetIndex: التحقق من ملف مؤشر الموارد
+  name: تثبيت ملفات الموارد
+installAuthlibInjector: تثبيت authlib-injector
+installCurseforgeFile: تثبيت ملف Curseforge
+installFabric:
+  name: تثبيت فابريك (Fabric)
+installForge:
+  downloadInstaller: تنزيل برنامج التثبيت
+  name: تثبيت فورج (Forge)
+  postProcessing: المعالجة اللاحقة
+installInstance:
+  file: تحديث ملف النسخة {file}
+  link: نسخ أو ربط {count} ملفات
+  name: تحديث النسخة
+  resolve: تحديد إعدادات النسخة
+  unzip: فك ضغط {count} ملفات
+installJre:
+  decompress: فك ضغط ملفات جافا JRE للمجلد
+  download: تنزيل ملف JRE المضغوط
+  name: تثبيت بيئة تشغيل جافا (Java Runtime)
+installLabyMod:
+  name: تثبيت LabyMod
+installLibraries:
+  library: تثبيت المكتبة
+  name: تثبيت المكتبات
+installModrinthFile:
+  name: تثبيت Modrinth
+installOptifine:
+  download: تنزيل أوبتي فاين العالمي (Optifine Universal)
+  name: تثبيت أوبتي فاين (Optifine)
+installProfile:
+  name: تثبيت ملف التعريف {version}
+installQuilt:
+  name: تثبيت كويلت {version}
+installVersion:
+  jar: تثبيت ملف jar للإصدار
+  json: تثبيت ملف json للإصدار
+  name: تثبيت عميل ماينكرافت {version}
+instance:
+  changeIcon: تغيير الأيقونة
+  contents: المحتوى
+  current: النسخة الحالية
+  delete: حذف اللعبة
+  deleteFailed: فشل حذف النسخة
+  deleteFailedPermission: ملف مستخدم بواسطة برنامج تاني حالياً
+  deleteFile: مسح ملفات النسخة
+  deleteHint: بيانات النسخة دي هتتمسح من القرص الصلب نهائياً. هل أنت متأكد؟
+  deleteHintBedrock: نسخة ماينكرافت بيدروك وكل بياناتها هتتمسح نهائياً من كمبيوترك. هل أنت متأكد؟
+  duplicate: نسخ اللعبة
+  duplicatedName: الاسم مكرر
+  envVarKey: المفتاح
+  envVarKeyPlaceholder: MY_VAR
+  envVarValue: القيمة
+  envVarValuePlaceholder: قيمة
+  fileApi: عنوان الـ URL لسيرفر مزامنة الملفات
+  fileApiHint: عنوان الـ URL لمزامنة ملفات النسخة من سيرفر إعدادات بعيد.
+  fileApiPlaceholder: اكتب عنوان الـ URL للمزامنة البعيدة هنا لو عاوز تحافظ على مزامنة الموارد
+  fullscreen: ملء الشاشة
+  height: الارتفاع
+  hideCard: إخفاء الكارت ده
+  icon: أيقونة الملف الشخصي
+  iconHint: الأيقونة ممكن تكون ملف محلي أو رابط إنترنت.
+  iconUrl: رابط الأيقونة
+  installModpack: تحديث النسخة من حزمة مودات
+  lastPlayed: آخر لعب
+  launchArguments: معاينة وسيطات التشغيل (Arguments)
+  launchServer: تشغيل سيرفر محلي (localhost)
+  linkFileDesc: العملية دي هتستبدل الملف المحلي للنسخة {file} بالملف العالمي المشترك {file}. متأكد إنك عاوز تربطهم؟
+  linkFileTitle: هل أنت متأكد إنك عاوز تربط {file}؟
+  mcOptions: خيارات ماينكرافت
+  mcOptionsHint: وسيطات (Arguments) إضافية لتشغيل ماينكرافت
+  name: اسم ملف التعريف
+  nameHint: اسم حزمة المودات
+  nameInvalidChars: 'الاسم ما ينفعش يحتوي على الرموز دي: < > : " / \\ | ? *'
+  nameNoCyrillic: الاسم ما ينفعش يحتوي على حروف سريلية (Cyrillic)
+  namePathTraversal: الاسم ما ينفعش يحتوي على مسار رجوع ("..")
+  nameReservedName: الاسم ده محجوز للنظام وما ينفعش تستخدمه
+  nameTrailingDotOrSpace: الاسم ما ينفعش ينتهي بنقطة أو مسافة
+  nameWhitespaceOnly: الاسم ما ينفعش يتكون من مسافات أو نقط بس
+  neverPlayed: لم تلعبها من قبل
+  openCrashReportFolder: افتح مجلد تقارير الكراش
+  openLogFolder: افتح مجلد السجلات (Logs)
+  playtime: وقت اللعب
+  preExecCommand: أمر ما قبل التشغيل
+  preExecCommandHint: الأمر اللي هيتنفذ قبل تشغيل ماينكرافت مباشرة
+  prependCommand: أمر بادئ (Prepend)
+  prependCommandHint: الأمر ده هيتضاف في الأول خالص قبل كل أوامر التشغيل التانية
+  requireName: الاسم مطلوب
+  resolution: دقة الشاشة
+  resolutionPreset: إعدادات الدقة الجاهزة
+  showHiddenCards: عرض الكروت المخفية
+  showInstance: افتح مجلد اللعبة
+  updates: التحديثات
+  useSharedOptions: استخدام إعدادات اللعبة المشتركة
+  useSharedOptionsDesc: الخيار ده هيربط ملف options.txt بملف مشترك بين النسخ التانية
+  useSharedServersList: استخدام قائمة سيرفرات مشتركة
+  useSharedServersListDesc: الخيار ده هيربط ملف servers.dat بملف مشترك بين النسخ التانية
+  vmOptions: خيارات جافا (JVM Options)
+  vmOptionsHint: وسيطات إضافية لتمريرها لماكينة جافا الافتراضية (JVM)
+  vmVar: متغيرات البيئة
+  vmVarHint: اضغط على زرار + لإضافة متغيرات البيئة
+  width: العرض
+instanceAge:
+  older: قديمة
+  threeDay: خلال 3 أيام
+  today: اليوم
+instanceDiscover:
+  gameFolder: تم اكتشاف {count} مجلدات لعبة
+  instanceFolder: تم العثور على {count} نسخ
+instanceFileOperation:
+  add: إضافة
+  backup-add: استبدال (مع نسخة احتياطية)
+  backup-remove: إزالة (مع نسخة احتياطية)
+  keep: احتفاظ
+  remove: إزالة
+instanceInstallSkip:
+  ignore: تجاهل
+  skip: تخطي
+  title: مصدر ملفات تالف محتمل
+  warning: بعض الملفات اتنزلت كذا مرة برموز تحقق (checksum) مش متطابقة. ممكن يكون السبب إن رمز التحقق الأصلي مش صح. يرجى المراجعة. لو متأكد إن الملفات الحالية سليمة، تقدر تتخطى فحص التحقق.
+instanceLauncher:
+  search: البحث في النسخ...
+  showAll: عرض كل النسخ
+  title: كل النسخ
+instanceSetting:
+  disableAuthlibInjector: تعطيل حاقن authlib
+  disableAuthlibInjectorDescription: لو بتستخدم نظام سكنات خارجي (طرف تالت)، حاقن authlib هيساعدك تعرض السكنات بتاعتك جوة اللعبة.
+  disableElyByAuthlib: تعطيل بديل authlib الخاص بـ ely.by
+  disableElyByAuthlibDescription: موقع Ely.by بيمتلك بديل authlib فريد لعرض السكن بشكل عالمي في أي سيرفر.
+  fastLaunch: تشغيل نفاث (Turbo Launch)
+  fastLaunchHint: تجاهل حالة المستخدم والمشاكل الحالية اللي متحلتش
+  hideLauncher: إخفاء اللانشر بعد تشغيل اللعبة
+  icon: اختر صورة
+  showLog: عرض سجل ماينكرافت (Minecraft Log)
+  showLogHint: الخيار ده هيفتح نافذة منبثقة لعرض سجل اللعبة مباشرة بعد تشغيلها
+instanceTemplate:
+  ftb: دي حزمة مودات FTB
+  preview: معاينة حزمة المودات
+instanceUpdate:
+  basic: تحديث الإعدادات
+  files: تحديثات الملفات
+  loaderChanged: لودر المودات (modloader) للنسخة دي اتغير. اللودر القديم كان {modloader}، واللودر الجديد هو {newModloader}.
+  noFiles: مفيش تغييرات في الملفات
+  summary: إضافة {add} ملفات. إزالة {remove} ملفات. الاحتفاظ بـ {keep} ملفات.
+  title: تحديث النسخة
+  update: بدء التحديث
+instances:
+  add: إنشاء لعبة
+  addCurseForgeDescription: استيراد من مجلد بيانات CurseForge. لازم تختار مجلد البيانات الرئيسي لـ CurseForge
+  addDescription: إنشاء نسخة جديدة من الصفر
+  addMMCDescription: استيراد نسخة MultiMC موجودة. لازم تختار مجلد البيانات الخاص بـ MultiMC.
+  addManually: إنشاء يدوي
+  addModrinthDescription: استيراد نسخة Modrinth موجودة. لازم تختار مجلد البيانات الرئيسي لـ Modrinth.
+  addPrismDescription: استيراد نسخة PrismLauncher موجودة.
+  addServer: إنشاء من سيرفر
+  addServerDescription: الخيار ده هيعمل نسخة تدخل على السيرفر مباشرة عند التشغيل.
+  addTemplate: إنشاء من حزمة مودات متنزلة
+  addTemplateDescription: استيراد من حزمة مودات (Modpack) متنزلة
+  addVanilla: إنشاء من لعبة ماينكرافت فانيلا
+  addVanillaDescription: استيراد من مجلد .minecraft المعتاد. العملية دي هتكرر ملف اللعبة الأصلي لـ XMCL.
+  edition: الإصدار (Edition)
+  editionJava: نسخة الجافا (Java Edition)
+  editionBedrock: نسخة البيدروك (Bedrock Edition)
+  editionBedrockHint: نسخة البيدروك بتشتغل عن طريق متجر مايكروسوفت. لازم يكون عندك ترخيص بيدروك. المودات وحزم الموارد والميزات الخاصة بنسخة الجافا مش هتكون متوفرة.
+  editionBedrockWindowsOnly: نسخة البيدروك مدعومة بس على نظام التشغيل ويندوز.
+  fix: إصلاح
+  folder: المجلد
+  folderSetting: إعدادات المجلد
+  importFolderDescription: استيراد ماينكرافت للانشر
+  loadingFiles: جاري تحميل ملفات حزمة المودات
+items:
+  count: '{count} عنصر | {count} عناصر'
+  total: الإجمالي {total}
+java:
+  allocatedLong: استخدام نسخة جافا الافتراضية للنظام
+  allocatedShort: مخصصة تلقائياً
+  allocation: مخصصة
+  autoHint: الحد الأدنى بيزيد مع زيادة المودات المتثبتة؛ الحد الأقصى بيستخدم ذاكرة النظام المتاحة.
+  change: تغيير
+  importFromFile: استيراد جافا من ملف
+  invalid: موقع جافا غير صحيح
+  location: موقع جافا
+  locationHint: مفيش جافا محددة — بيتم استخدام الافتراضية للنظام
+  maxMemory: الحد الأقصى للذاكرة
+  memory: ذاكرة جافا
+  memoryAuto: تلقائي
+  memoryManual: يدوي
+  memoryUnassigned: غير محدد
+  minMemory: الحد الأدنى للذاكرة
+  noMemory: عدم تقييد استهلاك الذاكرة
+  openFolder: افتح مجلد جافا
+  presets: الإعدادات المسبقة
+  refresh: تحديث الجافا المحلية
+  systemMemory: 'ذاكرة النظام الفاضية: {free} / {total}'
+labyMod:
+  disable: تعطيل LabyMod
+  empty: LabyMod مش بتدعم نسخة ماينكرافت الحالية
+launch:
+  cancel: إلغاء
+  createShortcut: إنشاء اختصار
+  forceKill: إنهاء إجباري
+  kill: إيقاف
+  killServer: إيقاف السيرفر المحلي (localhost)
+  launch: تشغيل اللعبة
+  launchAnyway: تشغيل على أي حال
+  launchAs: تشغيل كـ
+  launchTo: تشغيل إلى
+launchBlocked:
+  launchBadVersion:
+    description: ملف json للإصدار {version} تالف أو مكسور. ممكن تجرب تعيد تثبيت الإصدار ده؟
+    title: ملف JSON للإصدار غير صالح
+  launchGeneralException:
+    description: بعض الأخطاء تسببت في فشل تشغيل اللعبة.
+    title: فشل التشغيل
+  launchInvalidJavaPath:
+    description: نسخة جافا المحددة مش موجودة أو غير صالحة. يرجى اختيار نسخة تانية. <span class="highlight"> {javaPath} </span>
+    title: مسار جافا غير صالح
+  launchJavaNoPermission:
+    description: اللانشر معندوش صلاحيات لتشغيل جافا من المسار ده <span class="highlight"> {javaPath} </span>. يا تغير صلاحيات ملف جافا أو ترفع صلاحيات اللانشر.
+    title: مفيش صلاحية للتشغيل
+  launchNoProperJava:
+    description: مش عارفين نحدد نسخة جافا مناسبة لتشغيل اللعبة. (هل مسار جافا {javaPath} غير صحيح؟)
+    title: ملقناش نسخة جافا مناسبة
+  launchNoVersionInstalled:
+    description: مش عارفين نحدد الإصدار <span class="highlight">{version}</span> للتشغيل.
+    title: مفيش إصدار محدد
+  launchSpawnProcessFailed:
+    description: يرجى فحص الجافا، أو إعطاء صلاحيات أكبر للانشر وإعادة المحاولة. لو المشكلة استمرت، يرجى الاتصال بالمطورين.
+    title: فشل بدء عملية اللعبة
+  unexpectedText: ده أمر غير متوقع. تقدر ترستر اللانشر عشان تخفف المشكلة. يرجى التواصل مع المطور لو المشكلة دي اتكررت.
+launchFailed:
+  crash: اللعبة عملت كراش!!
+  description: مفيش تقرير كراش (crash report) متوفر. ده سجل الأخطاء والسجل الأخير.
+  elyByAuthlib:
+    description: تم استخدام بديل authlib الخاص بـ Ely.by لإصدار ماينكرافت {version}، بس الإصدار ده ممكن ميكونش متوافق بالكامل.
+    suggestion: تقدر تعطيل بديل authlib الخاص بـ Ely.by من إعدادات النسخة عشان تتجنب المشكلة دي.
+    title: مشكلة توافق Ely.by Authlib
+  failedToLaunch: فشل تشغيل اللعبة
+  latestLog: السجل الأخير
+  title: اللعبة قفلت بكود غير طبيعي
+launchPreExecuteCommandFailed:
+  description: 'فشل أمر ما قبل التشغيل مع الخطأ: {error}. يرجى فحص الأمر وجرب تاني.'
+  title: فشل أمر ما قبل التشغيل
+launchStatus:
+  assigningMemory: جاري تخصيص الذاكرة
+  elyByWarning: بديل authlib الخاص بـ Ely.by مفعّل. بعض إصدارات ماينكرافت ممكن متكونش متوافقة وتعمل كراش. تقدر تعطله من إعدادات النسخة لو واجهتك مشاكل.
+  exit: إغلاق اللعبة؟
+  injectingAuthLib: إعداد AuthLib الخارجي (طرف تالت)
+  launching: جاري التشغيل...
+  launchingSlow: لسه بيحمل... تشغيل محرك الرسوميات ممكن ياخد وقت...
+  refreshingUser: جاري تحديث رمز أمان المستخدم (Token)
+  spawningProcess: جاري بدء عملية اللعبة
+launcherUpdate:
+  alreadyLatest: اللانشر محدث بالكامل
+  installAndQuit: إعادة التشغيل للتثبيت
+  noUpdateAvailable: مفيش تحديثات متاحة
+  updateToThisVersion: تنزيل وتثبيت
+localVersion:
+  auto: محسوب تلقائياً
+  empty: مفيش إصدارات متثبتة
+  hint: تشغيل إصدار محلي محدد مباشرة
+  reinstallDescription: لو حاسس إن تثبيت الإصدار ده فيه مشاكل، تقدر تعيد تثبيته.
+  reinstallTitle: إعادة تثبيت {version}
+  title: إصلار محلي | إصدارات محلية
+logLevel:
+  error: خطأ
+  info: معلومات
+  success: نجاح
+  warning: تحذير
+logView:
+  searchPlaceholder: البحث في السجلات...
+login:
+  dropHint: اسحب رابط كود المصادقة هنا لتسجيل الدخول يدوياً
+  forgetPassword: نسيت الباسورد؟
+  login: تسجيل الدخول
+  manualLoginUrl: لو المتصفح مفتحش، اضغط على الرابط ده للمصادقة!
+  signup: إنشاء حساب جديد
+  signupDescription: جديد معانا؟
+  userRelogin: رمز وصول المستخدم منتهي الصلاحية. يرجى إعادة تسجيل الدخول!
+loginError:
+  acquireMicrosoftTokenFailed: فشل الحصول على رمز أمان مايكروسوفت. ممكن يكون خطأ في الشبكة. جرب تاني.
+  badNetworkOrServer: اتأكد من اتصالك بالشبكة! أو ممكن سيرفر المصادقة واقف حالياً!
+  checkOwnershipFailed: فشل التحقق من ملكية اللعبة. جرب تاني.
+  connectionReset: فشل تسجيل الدخول بسبب إعادة تعيين الاتصال من السيرفر
+  cyrillicNotAllowed: الحروف السريلية مش مسموح بيها
+  fetchMinecraftProfileFailed: 'فشل الحصول على ملف تعريف ماينكرافت الشخصي: {reason}'
+  illegalEmail: لازم البريد الإلكتروني يكون صالح
+  illegalOfflineUsername: اسم المستخدم لازم يكون طوله بين 3 لـ 16 حرف ويحتوي بس على حروف إنجليزي، وأرقام، وشرطة سفلية
+  invalidCredentials: بيانات الدخول مش صحيحة. اسم المستخدم أو الباسورد غلط.
+  loginMinecraftByXboxFailed: فشل استبدال رمز ماينكرافت برمز إكس بوكس. اتأكد إن عندك ماينكرافت على إكس بوكس، أو جرب تاني.
+  loginMinecraftByXboxRateLimited: خدمة مصادقة ماينكرافت من مايكروسوفت بتواجه ضغط طلبات حالياً (HTTP 429). استنى شوية وجرب تاني.
+  loginMinecraftByXboxRateLimitedWithRetry: خدمة مصادقة ماينكرافت من مايكروسوفت بتواجه ضغط طلبات حالياً (HTTP 429). يرجى الانتظار حوالي {seconds} ثانية والمحاولة مرة تانية.
+  loginMinecraftByXboxServerError: خدمة مصادقة ماينكرافت رجعت خطأ في السيرفر (HTTP {status}). دي مشكلة من جهتهم. جرب تاني كمان كام دقيقة.
+  loginMinecraftByXboxStatus: فشل استبدال رمز ماينكرافت برمز إكس بوكس (HTTP {status}). اتأكد إن عندك ماينكرافت على إكس بوكس، أو جرب تاني.
+  loginXboxAdultVerification: حساب مايكروسوفت بتاعك بيحتاج تأكيد بلوغ السن (مطلوب عادة في بعض المناطق) قبل ما يقدر يسجل في إكس بوكس. افتح {url} في المتصفح عشان تكمل التحقق، وجرب تاني.
+  loginXboxAgeRestricted: فشل تسجيل الدخول لإكس بوكس بسبب قيود السن. اتأكد إن السن مضبوط في حساب مايكروسوفت وإنه فوق 18 سنة.
+  loginXboxBadXsts: مايكروسوفت رجعت استجابة XSTS بدون معلومات المستخدم المتوقعة. ده خطأ مؤقت في الغالب -- جرب تاني كمان كام دقيقة.
+  loginXboxBanned: حساب مايكروسوفت / إكس بوكس ده تم تجميده أو حظره من مايكروسوفت وما ينفعش يسجل دخول في ماينكرافت. يرجى التواصل مع دعم مايكروسوفت / إكس بوكس.
+  loginXboxChildAccount: حساب مايكروسوفت بتاعك حساب طفل وبيحتاج ينضاف لعائلة مايكروسوفت قبل ما يقدر يسجل دخول لإكس بوكس / ماينكرافت. افتح {url} في المتصفح لإصلاح المشكلة، وجرب تاني.
+  loginXboxFailed: فشل تسجيل الدخول لإكس بوكس باستخدام رمز مايكروسوفت. اتأكد إن عندك حساب إكس بوكس مستقل مرتبط بحساب مايكروسوفت. جرب تاني.
+  loginXboxFailedWithCode: فشل تسجيل الدخول لإكس بوكس باستخدام رمز مايكروسوفت (رمز الخطأ XErr {code}). ابحث عن رمز الخطأ ده للمساعدة، أو جرب تاني بعدين.
+  loginXboxNoXboxProfile: حساب مايكروسوفت ده معندوش ملف تعريف إكس بوكس لسه. افتح {url} في المتصفح لإنشاء واحد، وجرب تاني.
+  loginXboxRegionLocked: خدمة إكس بوكس لايف (Xbox Live) مش متاحة في منطقة حسابك. يرجى تغيير بلد/منطقة حساب مايكروسوفت في إعدادات الحساب وجرب تاني.
+  noProfileForNewUser: ملقناش أي ملف تعريف للعبة! لو أنت مستخدم ماينكرافت جديد، يرجى تسجيل الدخول مرة واحدة على الأقل في لانشر ماينكرافت الرسمي.
+  requestFailed: فشل تسجيل الدخول، مش عارفين السبب بالظبط. يرجى إعادة المحاولة.
+  requireEmail: البريد الإلكتروني مطلوب
+  requirePassword: الباسورد مطلوب
+  requireUsername: اسم المستخدم مطلوب
+  timeout: انتهت مهلة تسجيل الدخول. يرجى إعادة المحاولة أو فحص الشبكة.
+logsCrashes:
+  crashes: تقارير الكراش
+  failures: أخطاء التشغيل
+  logs: السجلات (Logs)
+  placeholder: ملقناش أي ملفات
+  serverLogs: سجلات السيرفر
+  showFile: عرض في المجلد
+  title: السجلات وتقارير الكراش
+me:
+  news: الأخبار
+  recentPlay: لعبت مؤخراً
+migrateMinecraft:
+  name: ترحيل ملفات ماينكرافت
+minecraftFriends:
+  accept: قبول
+  add: إضافة صديق
+  addPlaceholder: اسم مستخدم ماينكرافت
+  addedRelative: انضاف {time}
+  errors:
+    cannotAddSelf: ما ينفعش تبعت طلب صداقة لنفسك.
+    duplicate: اللاعب ده موجود بالفعل في قائمتك.
+    generic: حصل خطأ ما. يرجى المحاولة مرة تانية.
+    inviteRejected: اللاعب ده مش مفعل ميزة الأصدقاء أو مش بيقبل الدعوات.
+    tokenExpired: انتهت صلاحية جلسة مايكروسوفت الخاصة بك. يرجى تسجيل الدخول مرة تانية.
+    unknownProfile: ملقناش لاعب بالاسم ده.
+  expiresRelative: ينتهي {time}
+  friends: الأصدقاء
+  privacy:
+    acceptInvites: قبول دعوات الأصدقاء
+    acceptInvitesHint: لما تقفلها، اللاعبين التانيين مش هيقدروا يبعتوا لك طلبات صداقة.
+    friendsEnabled: قائمة الأصدقاء مفعلة
+  reconnectAction: إعادة الاتصال
+  requiresMicrosoft: سجل الدخول بحساب مايكروسوفت عشان تستخدم الأصدقاء.
+  scopedTo: مسجل الدخول كـ {name}
+  send: إرسال
+  title: أصدقاء ماينكرافت
+  unsupported: الأصدقاء متاحين بس لحسابات مايكروسوفت.
+  heroEmptyHint: ضيف لاعب Minecraft بالاسم بالأعلى عشان تبعتله طلب صداقة.
+  heroEmptyTitle: قايمة الأصحاب فاضية
+  incoming: الطلبات الواردة
+  incomingHint: طلب وارد واحد | {count} طلبات واردة
+  notifyAdded: اتبعت طلب صداقة لـ {name}
+  outgoing: الطلبات الصادرة
+migrationWindow:
+  title: ترحيل البيانات
+  preparing: جاري تجهيز الترحيل…
+  scanning: جاري الحساب…
+  migrating: جاري نقل بياناتك
+  done: اكتمل الترحيل
+  files: ملفات
+  warning: سيب اللانشر مفتوح لحد ما يخلص، وإلا ممكن تخسر بياناتك.
+  error: فشل الترحيل
+minecraftVersion:
+  name: نسخة ماينكرافت
+  all: كل النسخ
+  release: النسخ المستقرة
+  showAlpha: عرض التجريبية (Snapshot)
+  snapshot: نسخة تجريبية (Snapshot)
+mod:
+  acceptVersion: قبول {version}
+  applyGroupRules: تطبيق قواعد التجميع المحفوظة
+  compatible: مود متوافق.
+  createGroup: إنشاء مجموعة
+  currentVersion: الحالي {current}
+  denseView: عرض مضغوط
+  description: الوصف
+  disableAll: تعطيل الكل
+  dropHint: اسحب ملف المود بصيغة .jar أو .litemod هنا لاستيراده.
+  duplicatedDetected: عدد {count} مودات مكررة
+  duplicatedDetectedDescription: لقينا مودات بنفس الـ ID بس بملفات مختلفة. ده ممكن يسبب كراش لماينكرافت. يرجى اختيار الملف اللي عاوز تحتفظ بيه.
+  enableAll: تفعيل الكل
+  enabled: تم تفعيل {count} مودات
+  filter: تصفية المودات
+  group: تجميع
+  groupInstalled: تجميع المودات المثبتة
+  groupName: اسم المجموعة
+  groupNameRequired: اسم المجموعة مطلوب
+  hasUpdate: فيه إصدار جديد للمود ده!
+  incompatible: مود غير متوافق.
+  incompatibleHint: عرض غير المتوافقة
+  incompatibleHintDescription: بعض متطلبات المودات ممكن تكون مفقودة، أو إصدارات المتطلبات مش متطابقة.
+  maybeCompatible: ممكن يكون متوافق.
+  modloaderSelectHint: المود ده بيدعم لودرات المودات دي. اختر واحد لتثبيته.
+  modloaderSelectNotSupported: ملقناش {modloader} لماينكرافت {minecraft}
+  mods: '{count} مودات'
+  name: مود | مودات
+  newFolder: مجلد جديد
+  noGroupsFound: ملقناش أي مجموعات
+  noGroupsYet: مفيش مجموعات لسه. اعمل واحدة!
+  noModLoaderHint: ما تنساش تفعل لودر مودات (Modloader) عشان تقدر تشغل المودات!
+  openLink: افتح رابط المود {url}
+  search: البحث في المودات
+  searchGroups: البحث في المجموعات...
+  searchOnMcWiki: ابحث عن {name} في موسوعة ماينكرافت (MC Wiki).
+  selectOrCreateGroup: اختر أو أنشئ مجموعة
+  showDirectory: عرض مجلد المودات
+  showFile: عرض مسار المود {file}
+  showInModrinth: عرض {name} على Modrinth
+  switchDefaultSource: مصدر المودات الافتراضي
+  syncGroupRules: حفظ قواعد التجميع
+  toUpdate: '{count} تحديثات'
+  ungroup: فك التجميع
+modFilter:
+  clear: مسح الفلاتر
+  dependenciesInstallOnly: عرض المودات اللي ناقصها متطلبات بس
+  disabledOnly: عرض المودات المعطلة بس
+  hasUpdateOnly: عرض المودات اللي ليها تحديثات بس
+  incompatibleOnly: عرض المودات غير المتوافقة أو اللي ناقصها متطلبات بس
+  unusedOnly: عرض مكتبات المودات غير المستخدمة بس
+modInstall:
+  archived: تم أرشفة المود {name}. مش هيستلم أي تحديثات تانية إلا لو صاحب المشروع قرر يرجعه تاني.
+  autoUpgrade:
+    description: أنت غيرت نسخة ماينكرافت. تحب نحدث المودات المتوافقة تلقائياً لإصدارات تناسب ماينكرافت {version}؟
+    'no': تخطي
+    title: تحديث المودات؟
+    'yes': تحديث المودات
+  checkDependencies: فحص المتطلبات
+  checkUpgrade: التحقق من تحديثات المودات
+  checkedDependencies: تم التحقق من المتطلبات
+  checkedUpgrade: تم التحقق من التحديثات
+  currentVersion: الإصدار المختار
+  dependencyHint: تم تثبيت إصدار آخر {version}
+  releaseOnly: تجاهل إصدارات ألفا وبيتا عند التحديث
+  installDependencies: تثبيت المتطلبات المفقودة
+  installHint: هيثبت ملف {file} مع {dependencies} من المتطلبات
+  noVersionSupported: المود بيدعم بس ماينكرافت {supported}.
+  recommendation: استكشف أول {first} مودات في {modrinth} و {curseforge}!
+  removeUnusedLibraries: إزالة غير المستخدمة
+  search: البحث عن مودات...
+  skipVersion: تخطي المودات اللي ليها نسخ ماينكرافت تانية
+  source: مصدر المود
+  switch: تبديل الإصدار
+  upgrade: ترقية المودات
+modSearch:
+  noLocalModsFound: ملقناش مودات محلية مطابقة للبحث.
+  noModsFound: ملقناش مودات
+  noModsInstalled: معندكش أي مودات متثبتة.
+  searchInMarket: ابحث عن {keyword} في المتجر
+modUpgradePolicy:
+  curseforge: CurseForge
+  curseforgeOnly: CurseForge فقط
+  modrinth: Modrinth
+  modrinthOnly: Modrinth فقط
+  name: سياسة التحديث
+modified:
+  reset: إعادة ضبط
+  save: حفظ
+  unsaved: التعديلات بتاعتك مش محفوظة!
+modpack:
+  author: اسم الكاتب/المطور
+  authorHint: الاسم ده ممكن يستخدم للتوقيع على حزمة مودات مصدرة (Curseforge)
+  description: الوصف
+  descriptionHint: وصف عام لحزمة المودات بتاعتك. ممكن يستخدم عند التصدير كحزمة مودات لـ Curseforge.
+  dropHint: اسحب ملف حزمة المودات المضغوط (.zip) هنا لاستيراده
+  emitCurseforge: تصدير كحزمة مودات Curseforge
+  emitModrinth: تصدير كحزمة مودات Modrinth
+  emitModrinthStrict: صيغة Modrinth الصارمة
+  emitModrinthStrictDescription: بيتم السماح بس بعناوين الـ URL من النطاقات الأربعة المذكورة في وثيقة modrinth
+  export: تصدير كحزمة مودات
+  exportDirectory: مجلد التصدير
+  exportDirectoryDescription: حزمة المودات هتتصدر لمجلد التنزيلات (Downloads) افتراضياً
+  includeAssets: تضمين الموارد والـ Assets
+  includes: الملفات المراد تضمينها
+  modpackVersion: نسخة حزمة المودات
+  name: حزمة مودات | حزم مودات
+  overrides: التجاوزات (Overrides)
+  url: رابط الويب (URL)
+  urlHint: رابط الصفحة الرئيسية لحزمة المودات بتاعتك
+modpackImportConfirm:
+  description: اكتشفنا إنك سحبت ملف للانشر. هل بتحاول تستورد حزمة مودات (Modpack)؟
+  title: هل بتحاول تستورد حزمة مودات؟
+modpackUpdateOrCreate:
+  createNew: إنشاء نسخة جديدة
+  description: النسخة "{name}" الخاصة بحزمة المودات دي موجودة بالفعل. عاوز تحدثها ولا تعمل واحدة جديدة؟
+  title: النسخة موجودة بالفعل
+  update: تحديث النسخة الحالية
+modrinth:
+  browseUrl: افتح في المتصفح {url}
+  categories:
+    128x: 128x
+    16x: 16x
+    256x: 256x
+    32x: 32x
+    48x: 48x
+    512x+: 512x+
+    64x: 64x
+    8x-: 8x-
+    adventure: مغامرة
+    atmosphere: أجواء وبصريات
+    audio: صوتيات
+    blocks: بلوكات
+    bloom: توهج وإضاءة
+    bukkit: Bukkit
+    bungeecord: Bungeecord
+    canvas: كانفاس (Canvas)
+    cartoon: كارتون
+    categories: الفئات
+    challenging: تحدي وصعوبة
+    colored-lighting: إضاءة ملونة
+    combat: قتال
+    core-shaders: شيدرات أساسية
+    cursed: ملعون/غريب
+    datapack: حزم بيانات
+    decoration: ديكور وزينة
+    economy: اقتصاد
+    entities: كائنات ومخلوقات
+    environment: بيئة وعوالم
+    equipment: أدوات ومعدات
+    fabric: Fabric
+    fantasy: خيال وأساطير
+    features: ميزات وإضافات
+    folia: Folia
+    foliage: أوراق شجر ونباتات
+    fonts: خطوط
+    food: أكل
+    forge: Forge
+    game-mechanics: آليات اللعبة
+    gui: واجهة المستخدم (GUI)
+    high: عالي
+    iris: Iris
+    items: أدوات وعناصر
+    kitchen-sink: متنوع وشامل (Kitchen Sink)
+    library: مكتبة برمجية
+    lightweight: خفيف الوزن
+    liteloader: LiteLoader
+    locale: اللغات والترجمة
+    low: منخفض
+    magic: سحر
+    management: إدارة وتحكم
+    medium: متوسط
+    minecraft: ماينكرافت
+    minigame: ألعاب مصغرة
+    misc: متفرقات
+    mobs: وحوش ومخلوقات
+    modded: معدل
+    models: مجسمات وموديلات
+    modloader: لودر المودات
+    multiplayer: لعب جماعي
+    name: الفئات
+    neoforge: NeoForge
+    optifine: Optifine
+    optimization: تحسينات الأداء
+    paper: Paper
+    path-tracing: تتبع الأشعة
+    pbr: خامات PBR
+    performance impact: تأثير الأداء
+    potato: للأجهزة الضعيفة (Potato)
+    purpur: Purpur
+    quests: مهام
+    quilt: Quilt
+    realistic: واقعي
+    reflections: انعكاسات
+    resolutions: دقة الشاشة
+    rift: ريفت (Rift)
+    screenshot: لقطات شاشة (Screenshot)
+    semi-realistic: شبه واقعي
+    shadows: ظلال
+    simplistic: بسيط وسهل
+    social: تواصل واجتماعي
+    spigot: Spigot
+    sponge: Sponge
+    storage: تخزين
+    technology: تكنولوجيا
+    themed: ذو طابع خاص
+    transportation: المواصلات والنقل
+    tweaks: تعديلات وتحسينات
+    utility: أدوات ومرافق
+    vanilla: فانيلا (Vanilla)
+    vanilla-like: شبيه بالفانيلا
+    velocity: Velocity
+    waterfall: Waterfall
+    worldgen: توليد العالم
+  clientSide: جانب العميل (Client)
+  copyTitle: نسخ النص {title} إلى الحافظة
+  createAt: تاريخ الإنشاء
+  createCollection: إنشاء مجموعة
+  description: الوصف
+  downloads: التنزيلات
+  environments:
+    all: الكل
+    default: الافتراضي
+    name: البيئة
+    optional: اختياري
+    required: مطلوب
+    unsupported: غير مدعوم
+  externalResources: الموارد الخارجية
+  featuredVersions: الإصدارات المميزة
+  followedProjects: المشاريع المتابعة
+  followers: المتابعون
+  gallery: المعرض
+  gameVersions:
+    name: إصدارات اللعبة
+  headers:
+    status: الإحصائيات
+    support: الدعم والتوافق
+    version: الإصدار
+  issueUrl: المشكلات والشكاوى
+  license: الترخيص
+  licenses:
+    name: التراخيص
+  loginHint: العملية دي محتاجة حساب Modrinth. اللانشر هيفتح صفحة متصفح عشان تسجل دخول لـ Modrinth.
+  loginTitle: تسجيل الدخول إلى Modrinth
+  modLoaders:
+    name: لودرات المودات (Mod Loaders)
+  modpackSource:
+    source: المصدر
+  projectId: معرف المشروع (Project ID)
+  projectMembers: أعضاء المشروع
+  projectType:
+    datapack: حزمة بيانات (Datapack)
+    mod: مود (Mod)
+    modpack: حزمة مودات (Modpack)
+    plugin: إضافة (Plugin)
+    resourcepack: حزمة موارد (Resource Pack)
+    shader: شيدر (Shader)
+  projects: '{count} مشروع | {count} مشاريع'
+  serverSide: جانب السيرفر (Server)
+  sort:
+    downloads: عدد التنزيلات
+    follows: عدد المتابعات
+    newest: الأحدث إنشاءً
+    relevance: الأكثر ملاءمة
+    title: ترتيب حسب
+    updated: الأحدث تحديثاً
+  sourceUrl: الكود المصدري
+  technicalInformation: المعلومات التقنية
+  updateAt: تاريخ التحديث
+  versions: الإصدارات
+  wikiUrl: الويكي (Wiki)
+modrinthCard:
+  currentVersion: الإصدار الحالي
+multiplayer:
+  allowTurn: تفعيل سيرفر الترحيل (relay)
+  allowTurnHint: فعل سيرفر الترحيل لو مش عارف تتصل بصاحبك. بس خد بالك، استخدامه ممكن يبطأ الاتصال شوية. استخدمه بحذر.
+  complete: اكتمل
+  confirm: تأكيد
+  connectionError: خطأ في الاتصال
+  connectionFailedHint: مش قادرين نعمل اتصال. اتأكد إن نوع الـ NAT متوافق عند الطرفين.
+  connections: الاتصالات
+  copied: تم النسخ!
+  copy: نسخ
+  copyGroupToFriendHint: خلي أصحابك يدخلوا الجروب بالـ ID ده
+  copyLocalHint: 'يا ريت تنسخ نص الـ SDP المحلي وتبعته لصاحبك عشان يدخل النص ده في خانة الانضمام للاتصال. <span>الرمز (Token) الواحد بيستخدم بس لـ <span style="color: red; font-weight: bold;">صديق واحد</span>! ما ينفعش تبعت نفس الرمز لكذا صديق!</span> <br> <span class="hint-text" style="font-style: italic;">لو عاوز تتصل بأكتر من صديق، هتحتاج تعمل اتصالات <span style="font-weight: bold; color: rgba(245, 158, 11)">متعددة</span>.</span>'
+  createLocalToken: إنشاء رمز محلي (Token)
+  currentIpTitle: عنوان الـ IP العام المكتشف
+  currentNatTitle: 'شبكتك الحالية (NAT):'
+  difficultyLevelHint: مستوى صعوبة إنشاء الاتصال
+  disconnect: قطع الاتصال
+  disconnectDescription: هل أنت متأكد إنك عاوز تقطع الاتصال بالمستخدم {user} ({id})؟
+  disconnected: مفصول
+  enterRemoteToken: أدخل الرمز البعيد (Token)
+  enterRemoteTokenHint: بمجرد ما صديقك يكتب الرمز بتاعك، هتحتاج تكتب الرمز بتاعه في الخانة اللي تحت. اضغط تأكيد للاتصال.
+  exposedPortDescription: المنفذ (Port) اللي فتحته للاعبين التانيين
+  exposedPorts: المنافذ المحولة (Forwarded)
+  gatheringIce: 'يرجى الانتظار لحد ما سيرفر ICE يجمع معلومات كافية عن شبكتك. لو مستعجل وفيه معلومات كافية، تقدر تبعت نص الـ SDP الحالي للطرف التاني وتضغط التالي. يرجى إرسال <span class="v-chip v-chip--label v-size--small" style="text-font: bold">الرمز المحلي</span> لصديقك عشان يكتبه في قسم <span class="v-chip v-chip--label v-size--small" style="text-font: bold">الانضمام للاتصال</span>. <br> سيرفر ICE ممكن ياخد شوية وقت لتجميع معلوماتك وإنشاء <span class="v-chip v-chip--label v-size--small" style="text-font: bold">الرمز المحلي</span>.<br> مش لازم تستنى لحد ما حالة ICE تكتمل. لو الرمز اللي تحت متغيرش، تقدر تنسخه وتبعته لصاحبك.'
+  groupId: معرف المجموعة (Group ID)
+  illegalTokenDescription: رمز غير صالح، اتأكد إن الرمز المنسوخ من صديقك صح ومظبوط
+  initiateConnection: بدء الاتصال
+  joinConnection: لو صديقك بدأ الاتصال بالفعل، هتحتاج تعمل انضمام للاتصال.
+  joinManual: انضمام
+  joinOrCreateGroup: انضمام/إنشاء مجموعة
+  joinOrCreateGroupHint: احصل على معرف المجموعة من أصحابك أو أنشئ مجموعة جديدة
+  kernel: نواة P2P (P2P Kernel)
+  kernelDescription: استخدم إما WebRTC الأصلي أو node-datachannel. غير ده بس لو اتصال الـ p2p بيخلي نافذة اللانشر تهنج أحياناً.
+  leaveGroup: مغادرة المجموعة
+  localToken: الرمز المحلي (Token)
+  manualConnect: اتصال يدوي
+  name: لعب جماعي عبر الشبكة المحلية (LAN)
+  natWarning: نوع الـ NAT بتاعك ممكن يمنع الاتصال المباشر. جرب تفعل سيرفر الترحيل (relay) في الإعدادات أو اطلب من صديقك يستضيف اللعبة بدالك.
+  networkInfo: معلومات الشبكة (اضغط للتبديل)
+  next: التالي
+  otherExposedPortDescription: المنفذ المحول بواسطة {user}
+  placeholder: اتصل باللاعبين التانيين للعب ماينكرافت سوا على الشبكة المحلية!
+  previous: السابق
+  receiveHint: بعد ما الطرف التاني يكتب الرمز بتاعك، هيتم إنشاء الاتصال تلقائياً. تقدر تقفل النافذة دي دلوقتي.
+  receiveRemoteTokenHint: يرجى كتابة الرمز المستلم من صديقك هنا.
+  remoteToken: الرمز البعيد (Token)
+  routerInfo: معلومات الراوتر
+  sendTokenToRemote: إرسال الرمز للطرف الآخر
+  share: مشاركة إعدادات النسخة
+  sharing: جاري مشاركة الملفات...
+  sharingNotificationBody: تقدر تنزل أو تعمل نسخة جديدة من ملفات الإعدادات المشتركة لـ {name}.
+  sharingNotificationTitle: لاعب يشارك إعدادات اللعبة بتاعته
+  start: البدء
+  startNewP2PConnection: اضغط على زرار البدء لإنشاء اتصال جديد
+myStuff: حاجاتي
+natType:
+  blocked: محظور
+  fullCone: مفتوح بالكامل (Full Cone)
+  openInternet: إنترنت مفتوح
+  restrictNat: NAT مقيد
+  restrictPortNat: NAT مقيد المنافذ
+  symmetricNat: NAT متماثل
+  symmetricUDPFirewall: جدار حماية UDP متماثل
+  unknown: غير معروف
+neoForgedVersion:
+  disable: تعطيل NeoForged
+  empty: NeoForged مش بتدعم النسخة {version}
+news:
+  name: الأخبار
+  readMore: اقرأ المزيد
+optifineVersion:
+  disable: تعطيل Optifine
+  empty: Optifine مش بتدعم ماينكرافت {version}
+optional: اختياري
+peerConnectionState:
+  closed: مغلق
+  connected: متصل
+  connecting: جاري الاتصال
+  disconnected: مفصول
+  failed: فشل
+  name: حالة الاتصال
+  new: جديد
+peerGroupState:
+  closed: ليس في مجموعة
+  closing: جاري الإغلاق
+  connected: تم الانضمام للمجموعة
+  connecting: جاري الاتصال
+peerIceGatheringState:
+  gathering: جاري تجميع سيرفر Ice
+peerSignalingState:
+  have-local-offer: في انتظار وصف الطرف الآخر
+presence:
+  instance: خامل في النسخة {instance}
+  instanceSetting: 'تعديل إعدادات النسخة: {instance}'
+  mod: عرض المودات في {instance}
+  modrinthProject: عرض {name} على Modrinth
+  resourcePack: عرض حزم الموارد في {instance}
+  save: عرض العوالم المحفوظة في {instance}
+  setting: عرض صفحة الإعدادات
+  shaderPack: عرض حزم الشيدر في {instance}
+proxy:
+  host: المضيف (Host)
+  port: المنفذ (Port)
+quiltVersion:
+  disable: تعطيل Quilt
+  empty: Quilt مش بتدعم ماينكرافت {version}
+reinstall:
+  name: إعادة تثبيت {version}
+relative:
+  daysAgo: من {count} يوم | من {count} يوم
+  hoursAgo: من {count} ساعة | من {count} ساعة
+  justNow: حالا
+  minutesAgo: من {count} دقيقة | من {count} دقيقة
+  secondsAgo: من {count} ثانية | من {count} ثانية
+resourceError:
+  body: مش عارفين نحلل الملف "{path}" ({code}). ممكن يكون الملف تالف أو مقفول أو مش كامل. جرب تنزله تاني أو امسحه.
+  title: مش قادرين نقرأ {file}
+blueprint:
+  name: مخطط بناء | مخططات بناء (Blueprint)
+  count: '{count} مخطط بناء | {count} مخططات بناء'
+  searchLocal: البحث في المخططات المحلية...
+  searchOnline: البحث على الإنترنت...
+  market: المتجر
+  local: المحلي
+  provider: الموفر
+  import: استيراد
+  openFolder: افتح المجلد
+  refresh: تحديث
+  empty: ملقناش مخططات بناء. استورد ملف .litematic / .schem / .nbt أو تصفح المتجر.
+  dropHint: اسحب ملفات المخططات (.litematic / .schem / .nbt) هنا لاستيرادها.
+  selectHint: اختر مخطط بناء لمعاينته.
+  blocks: '{count} بلوكة | {count} بلوكات'
+  materials: المواد والمستلزمات
+  allNamespaces: الكل
+  findMod: البحث عن المود الخاص بهذا النطاق
+  compatible: متوافق
+  incompatible: مودات مفقودة
+  missingNamespaces: 'مودات مفقودة لـ: {namespaces}'
+  delete: حذف
+  cancel: إلغاء
+  install: تثبيت
+  goTo: الموقع الإلكتروني
+  byAuthor: بواسطة {author}
+  noDescription: مفيش وصف متوفر.
+  loadMore: تحميل المزيد
+  cmsBrowseOnly: المصدر ده للتصفح بس؛ افتح الموقع للتنزيل.
+  mixedSources: النتائج مدمجة من كل المصادر. بعضها للتصفح بس — افتح موقعهم للتنزيل.
+  formats:
+    structure: هيكل الفانيلا (Vanilla Structure)
+  preview:
+    title: معاينة ثلاثية الأبعاد (3D)
+    loading: جاري تحميل المعاينة...
+    empty: المخطط ده ملوش بلوكات لعرضها.
+    hint: '{count} بلوكة · {x}×{y}×{z}'
+    controls: اسحب للالتفاف · WASD للحركة · Space/Shift للصعود/الهبوط
+  convert:
+    title: تحويل الصيغة
+    hint: تحويل مخطط البناء ده لصيغة تانية. هيتم إنشاء ملف جديد.
+    target: الصيغة المستهدفة
+    action: تحويل
+  replace:
+    title: استبدال البلوكات
+    simple: بسيط
+    precise: دقيق
+    simpleHint: المطابقة حسب الـ ID بس، مع الاحتفاظ بخصائص حالة البلوكة الحالية.
+    preciseHint: مطابقة حالة البلوكة كاملة (الـ ID + الخصائص) واستبدالها بالكامل.
+    from: من
+    to: إلى
+    addRule: إضافة قاعدة
+    newFile: حفظ كملف جديد
+    action: استبدال
+resourcepack:
+  compatible: صيغة متوافقة {format} مع {version}
+  defaultDescription: المظهر والأسلوب الافتراضي لماينكرافت
+  delete:
+    content: العملية دي هتمسح حزمة الموارد من الهارد ديسك، وما ينفعش نرجع فيها. متأكد إنك عاوز تعمل كده؟
+    title: حذف حزمة الموارد
+  dropHint: اسحب مجلد أو ملف zip لحزمة الموارد هنا لاستيرادها.
+  enable: تم تفعيل {count} حزم موارد
+  incompatible: صيغة حزمة موارد غير متوافقة ({format}). المناسب هو {accept}. الحالي {actual}.
+  name: حزمة موارد | حزم موارد
+  linkShared: مشاركة حزم الموارد بين النسخ
+  linkSharedHint: اربط مجلد حزم الموارد للنسخة دي بالمجلد العالمي المشترك عشان كل النسخ تشوف نفس حزم الموارد. الحزم الحالية هتتدمج في المجلد المشترك.
+  noLocalPacksFound: ملقناش حزم موارد محلية مطابقة لبحثك.
+  noPacks: ملقناش حزم موارد
+  noPacksInstalled: معندكش أي حزم موارد متثبتة.
+  search: البحث في حزم الموارد...
+  searchHint: البحث في حزم الموارد
+  searchOnCurseforge: البحث عن {name} في CurseForge
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: حزم الموارد المحددة
+  showDirectory: عرض مجلد حزم الموارد
+  showFile: عرض حزمة الموارد في المجلد {file}
+  showInCurseforge: عرض {name} في CurseForge
+  unselected: حزم الموارد غير المحددة
+save:
+  allowCheats: السماح بالغش (Cheats)
+  copy:
+    name: نسخ العالم
+  createNew: إنشاء عالم جديد
+  createdWorlds: عندك {count} عالم | عندك {count} عوالم
+  deleteHint: العملية دي ما ينفعش تتراجع عنها. هتخسر بيانات العالم المحفوظة للأبد. متأكد إنك عاوز تمسحه؟
+  deleteTitle: حذف العالم
+  difficulty: الصعوبة
+  dropHint: اسحب ملف العالم المضغوط (zip) هنا لاستيراده
+  datapack:
+    name: حزمة بيانات | حزم بيانات (Data Pack)
+    noSaveHint: أنشئ عالم أو اختر واحد الأول عشان تثبت حزمة البيانات دي
+    packFormat: 'صيغة الحزمة: {format}'
+    imported: تم استيراد حزمة البيانات في {save}
+  duplicate: تكرار العالم
+  export: تصدير العالم
+  exportMessage: تصدير العالم كملف zip
+  exportTitle: تصدير العالم المحفوظ
+  gameMode: وضع اللعبة
+  independent: النسخة بتستخدم مجلد عوالم مستقل
+  linkShared: مشاركة العوالم بين النسخ
+  linkSharedHint: اربط مجلد عوالم النسخة دي بالمجلد العالمي المشترك عشان كل النسخ تشارك نفس العوالم. العوالم الحالية هتتدمج في المجلد المشترك.
+  levelName: اسم العالم
+  loadMap: تحميل الخريطة
+  mapError: خطأ في الخريطة
+  mapInfo: 'معاينة ثلاثية الأبعاد تفاعلية للعالم:'
+  mapLoaded: تم تحميل الخريطة
+  mapPreview: معاينة الخريطة
+  chunkSelectMode: تحديد التشونكات (Chunks)
+  panMode: تحريك
+  chunkSelected: تم تحديد {count} تشونك
+  mapHintPan: اسحب للتحريك
+  mapHintSelect: تحديد
+  mapHintDeselect: إلغاء التحديد
+  toggleGrid: تبديل شبكة المنطقة
+  heightTop: الأعلى
+  resetView: إعادة ضبط المنظور
+  clearSelection: مسح التحديد
+  copyChunks: نسخ التشونكات
+  pasteChunks: لصق {count} تشونك
+  pasteChunksPlaceHint: حرك الماوس لتحديد موقع {count} تشونك، واضغط للصق. التشونكات الحالية في الوجهة هيتم استبدالها. اضغط Esc للإلغاء.
+  pasteChunksCancel: إلغاء
+  deleteChunks: حذف التشونكات
+  deleteChunksTitle: حذف التشونكات المحددة
+  deleteChunksHint: هل عاوز تمسح {count} تشونك محددين؟ ما ينفعش نتراجع عن ده. التشونكات دي هيعاد توليدها المرة الجاية لما تدخل المنطقة دي في اللعبة.
+  mapLoading: جاري تحميل الخريطة…
+  noRegions: العالم ده ملوش مناطق مولدة لمعاينتها.
+  dimOverworld: العالم العادي (Overworld)
+  dimNether: النذر (Nether)
+  dimEnd: الإند (End)
+  name: عالم محفوظ | عوالم محفوظة (Saves)
+  noLocalSavesFound: ملقناش عوالم محلية مطابقة لبحثك.
+  noSavesFound: ملقناش عوالم
+  noSavesInstalled: معندكش أي عوالم محفوظة.
+  openFolder: افتح مجلد العوالم
+  properties: خصائص العالم
+  search: البحث في الخرائط...
+  searchHint: البحث عن عوالم على CurseForge
+  searchSaves: البحث في العوالم المحفوظة
+  seed: السيد (Seed)
+  selected: العوالم المحلية
+  shared: النسخة بتستخدم مجلد عوالم مشترك
+  showDirectory: عرض مجلد العوالم
+  unselected: العوالم المشتركة
+  useCurrent: استخدام العالم الحالي
+  useMouseRotate: استخدم الماوس لتدوير المنظور
+  useScrollZoom: استخدم بكرة الماوس للتكبير والتصغير
+  world: العالم
+screenshots:
+  empty: معندكش أي لقطات شاشة
+  gallery: معرض لقطات الشاشة
+  hint: خد لقطات شاشة جوة اللعبة بالضغط على زرار F2
+  openFolder: افتح مجلد لقطات الشاشة
+  playRandom: خلط وتشغيل عشوائي
+  playSequence: تشغيل بالترتيب
+search:
+  favorate: المجموعة المفضلة
+  local: المثبتة
+  market: المتجر
+  emptyInstalled: مفيش حاجة متثبتة لسه
+  browseMarket: تصفح المتجر
+  noResults: ملقناش نتائج للبحث
+server:
+  acceptingMinecraftVersion: يقبل نسخة ماينكرافت
+  addServer: إضافة سيرفر
+  address: عنوان السيرفر
+  addressHint: 'مثال: mc.hypixel.net'
+  bindUpstream: ربطه كسيرفر رئيسي (upstream)
+  boundUpstream: تم ربط السيرفر الرئيسي
+  boundUpstreamHint: النسخة دي هتتبع إصدار ماينكرافت الخاص بالسيرفر المربوط.
+  creationHint: يرجى كتابة عنوان السيرفر وعمل بينج (ping) ليه
+  editServer: تعديل السيرفر
+  emptyHint: مفيش سيرفرات في ملف servers.dat للنسخة دي لسه. ضيف واحد للبدء.
+  entryCount: '{count} سيرفر | {count} سيرفرات'
+  expectedVersions: الإصدارات المدعومة
+  export: تصدير السيرفر
+  exportNoFilesHint: ملقناش ملفات سيرفر. تقدر تشغل السيرفر محلياً مرة واحدة عشان تولد الملفات دي.
+  exportOption: خيارات تصدير السيرفر
+  exportSSHAuthenticationFailed: كل طرق المصادقة فشلت. يرجى مراجعة اسم المستخدم/الباسورد أو المفتاح الخاص.
+  exportSSHOptions: خيارات SSH
+  exportSSHPrivateKeyPath: مسار مفتاح SSH الخاص
+  exportSSHRemotePath: مسار السيرفر البعيد
+  exportToFolder: تصدير إلى مجلد
+  filterVersion: تصفية حسب إصدار ماينكرافت المستجاب من السيرفر
+  host: المضيف (Host)
+  hostHint: مضيف السيرفر (مع المنفذ)
+  hostRequired: يرجى كتابة عنوان IP السيرفر
+  ipAddress: عنوان الـ IP
+  launchClient: تشغيل العميل بدلاً من ذلك
+  launchPinned: مثبت
+  launchTargetHint: النسخة دي بتدخل مباشرة على السيرفر المثبت. تحب ترجع للعميل العادي؟
+  maxPlayers: الحد الأقصى للاعبين
+  motd: رسالة السيرفر اليومية (MOTD)
+  nameHint: الاسم المعروض في قائمة اللعب الجماعي
+  nogui: بدون واجهة رسومية للسيرفر
+  onlineMode: الوضع المتصل (Online Mode)
+  pin: تثبيت السيرفر
+  pinAfterSave: تثبيت كهدف تشغيل افتراضي بعد الحفظ
+  ping: عمل بينج (Ping)
+  pings: عمليات البينج
+  pinnedHeader: 'مثبت: {name}'
+  players: اللاعبين
+  port: المنفذ
+  serverName: اسم السيرفر
+  serversListTitle: قائمة السيرفرات
+  unbindUpstream: فك الارتباط
+  unknown: سيرفر غير معروف
+  unknownDescription: سيرفر غير معروف. يرجى التحديث
+  unpin: إلغاء التثبيت
+  upload: رفع السيرفر
+  upstreamUpToDate: نسختك متوافقة مع السيرفر ({version}).
+  upstreamUpToDateHint: مش محتاج ترقية. اضغط لإعادة عمل بينج للسيرفر.
+  upstreamUpdateAvailable: السيرفر شغال دلوقتي على نسخة ماينكرافت {version}. اضغط للتطبيق.
+  upstreamUpdateHint: هيطبق نسخة ماينكرافت المقترحة على النسخة دي.
+  useAsUpstreamHint: النسخة دي هتتبع إصدار ماينكرافت المعلن من السيرفر.
+  version: السيرفر بيتطلب نسخة
+  versionHint: إصدار ماينكرافت المراد عمل بينج ليه
+serverStatus:
+  nohost: §4مش قادرين نلاقي المضيف!
+  ping: جاري البينج...
+  refuse: §4السيرفر رفض الاتصال!
+  timeout: §4انتهت مهلة الاتصال بالسيرفر!
+setting:
+  about: حول البرنامج
+  aboutBmclDescription: خدمة BMCL API بتوفر تنزيلات سريعة للمستخدمين في الصين
+  aboutContributors: 🧑‍💻 المساهمون 🧑‍💻
+  aboutDenoDescription: XMCL بيستخدم منصة Deno Deploy المستقرة لتشغيل تطبيقات الجافا سكريبت بدون خوادم
+  aboutLicense: ترخيص MIT
+  aboutLicenseInfo: توقيع كود مجاني على ويندوز مقدم من SignPath.io، والشهادة من SignPath Foundation
+  aboutSponsors: 😇 الداعمون والرعاة 😇
+  advancedJavaOptions: خيارات جافا المتقدمة
+  advancedSettings: الإعدادات المتقدمة
+  advancedSettingsHint: منطقة خطر - إعادة ضبط أو إدارة بيانات اللانشر
+  aiAgentApiKey: مفتاح API لعميل الذكاء الاصطناعي
+  aiAgentApiKeyDescription: بيتم حفظه محلياً على جهازك وبيستخدم لطلبات العميل.
+  aiAgentEndpoint: نقطة اتصال (Endpoint) عميل الذكاء الاصطناعي
+  aiAgentEndpointDescription: عنوان URL لنقطة اتصال إكمال الدردشة (Chat completions).
+  aiAgentModel: موديل (Model) عميل الذكاء الاصطناعي
+  aiAgentModelDescription: اسم الموديل اللي بيتبعت في طلبات الدردشة.
+  apiSets:
+    auto: تلقائي (يتحدد حسب الشبكة)
+    official: الرسمي (Mojang)
+  appearance: المظهر
+  appearanceDescription: تخصيص مظهر اللانشر
+  appxUpdateHint: اللانشر هينزل ويشغل ملف التثبيت. لو برنامج التثبيت مفتحش، يا ريت تشغله يدوياً.
+  authenticationSettings: المصادقة وحسابات الدخول
+  backdropBlur: تغبيش الخلفية (Backdrop Blur)
+  backgroundColorAbove: عرض لون الخلفية كطبقة فوقية (overlay)
+  backgroundColorAboveDescription: الخيار ده هيخلي لون الخلفية يظهر فوق صورة أو فيديو الخلفية.
+  backgroundImage: صورة الخلفية
+  backgroundImageClear: مسح
+  backgroundImageDescription: اختر صورة كخلفية أو امسحها
+  useDesktopBackground: استخدام خلفية سطح المكتب الحالية
+  backgroundImageFit:
+    contain: احتواء (Contain)
+    cover: تغطية (Cover)
+    name: ملاءمة الصورة
+  backgroundImageUrl: رابط الصورة
+  backgroundImageUrlPlaceholder: اكتب رابط HTTP/HTTPS للصورة
+  backgroundMusic: موسيقى الخلفية للمظهر
+  backgroundMusicUrl: رابط الموسيقى
+  backgroundMusicUrlPlaceholder: اكتب رابط HTTP/HTTPS للموسيقى
+  backgroundType: نوع الخلفية
+  backgroundTypeDescription: عرض تأثيرات خاصة على الخلفية (ده ممكن يؤثر على الأداء)
+  backgroundTypes:
+    halo: توهج (Halo)
+    image: صورة
+    none: بدون
+    particle: جزيئات متحركة (Particle)
+    video: فيديو
+  backgroundVideo: فيديو الخلفية
+  backgroundVideoDescription: اختر فيديو أو امسحه
+  backgroundVideoUrl: رابط الفيديو
+  backgroundVideoUrlPlaceholder: اكتب رابط HTTP/HTTPS للفيديو
+  backgroundVideoVolume: مستوى الصوت
+  backgroundVideoVolumeDescription: اسحب لضبط مستوى الصوت
+  browseRoot: تصفح
+  checkUpdate: التحقق من وجود تحديثات
+  colorTheme:
+    appBarColor: شريط التطبيق (App Bar)
+    backgroundColor: لون الخلفية
+    cardColor: لون الكروت
+    description: تغيير الألوان في المظهر
+    errorColor: لون الخطأ
+    name: ألوان المظهر والتغبيش
+    primaryColor: اللون الأساسي
+    sideBarColor: الشريط الجانبي (Side Bar)
+    warningColor: لون التحذير
+  customCss:
+    advancedDescription: تجاوز التصميم الحالي للانشر باستخدام كود CSS الخاص بك.
+    assistantHint: اوصف الشكل اللي عاوزه وأنا هكتب لك كود الـ CSS.
+    assistantSuggestion1: خلي الشريط الجانبي شبه شفاف
+    assistantSuggestion2: ضيف تدرج لوني خفيف لخلفية الكروت
+    assistantTitle: مساعد CSS
+    dropHint: اسحب ملف .css هنا لتحميله
+    editorPlaceholder: /* اكتب كود الـ CSS المخصص بتاعك هنا */
+    globalToggle: تفعيل كود CSS المخصص
+    openInDialog: افتح في نافذة العميل
+    title: كود CSS مخصص
+    warning: كود الـ CSS المخصص بيسمح لك تعدل أي حاجة في اللانشر. خلي بالك وأنت بتلزق أكواد CSS من مصادر مش موثوقة، لأنها ممكن تبوظ شكل الواجهة.
+  darkTheme: المظهر
+  darkThemeDescription: اختر بين المظهر الداكن أو الفاتح
+  devModeLabel: تطوير (DEV)
+  developerMode: وضع المطور
+  developerModeDescription: وضع المطور مخصص لاختبار المودات الخاصة بك
+  disableTelemetry: تعطيل إرسال بيانات التشخيص (Telemetry)
+  disableTelemetryDescription: XMCL بيجمع بيانات تشغيل اللعبة وأحداث تسجيل دخول المستخدمين لتحسين الأداء.
+  enableDedicatedGPUOptimization: تخصيص كارت الشاشة الخارجي (Dedicated GPU)
+  enableDedicatedGPUOptimizationDescription: الخيار ده هيخصص كارت الشاشة الخارجي القوي لعملية تشغيل ماينكرافت.
+  enableDiscord: تفعيل التواجد على ديسكورد (Discord Presence)
+  enableDiscordDescription: الخيار ده هيحدث حالتك على ديسكورد لتظهر إنك بتلعب ماينكرافت من اللانشر
+  enterUrl: اكتب رابط الـ URL
+  exportSettings: تصدير الإعدادات
+  exportSettingsHint: حفظ إعداداتك الحالية في ملف
+  general: عام
+  githubRelease: إصدارات جيت هاب (Github Release)
+  globalSetting: إعدادات النسخ العالمية
+  globalSettingHint: النسخ هتستخدم الإعدادات دي بشكل افتراضي.
+  importSettings: استيراد الإعدادات
+  importSettingsHint: تحميل الإعدادات من ملف تم تصديره سابقاً
+  instanceTheme:
+    activeDescription: النسخة دي بتستخدم مظهر مخصص حالياً. تقدر تمسحه عشان تستخدم المظهر العالمي المشترك.
+    description: تفعيل مظهر مخصص للنسخة دي. ده هيعمل نسخة من المظهر العالمي الحالي ويخصصها للنسخة دي بس.
+    name: مظهر النسخة
+  language: اللغة
+  languageDescription: لغة عرض الواجهة
+  latestVersion: أحدث إصدار
+  layout:
+    default: التخطيط الافتراضي
+    focus: تخطيط التركيز
+  layoutDescription: اختر نمط الواجهة المفضل ليك
+  layoutTitle: تخطيط الواجهة
+  linuxEnableDedicatedGPUOptimization: تخصيص معالج رسوميات (GPU) مخصص
+  linuxEnableDedicatedGPUOptimizationDescription: الخيار ده بيخصص كارت شاشة خارجي لعملية ماينكرافت على لينكس.
+  linuxTitlebar: شريط العنوان الأصلي للنظام
+  linuxTitlebarDescription: استخدام شريط العنوان الأصلي لنظام لينكس للانشر
+  livePreview: المعاينة الحية
+  location: موقع التخزين
+  manualUpdateHint: مش قادرين نحدث الإصدار ده تلقائياً. يا ريت تنزل اللانشر تاني من الموقع الرسمي!
+  maunalUpdateHint: مش قادرين نحدث اللانشر تلقائياً. يا ريت تعيد تنزيل اللانشر من الموقع!
+  maxSockets: لكل مضيف (Per Host)
+  maxSocketsDescription: تحديد الحد الأقصى لاتصالات سوكيت المقبولة لكل مضيف أو للإجمالي. 0 يعني بلا حدود.
+  maxSocketsTitle: أقصى اتصالات HTTP سوكيت
+  memoryAssignment: تخصيص الذاكرة (RAM)
+  migrateFromOther: استيراد من لانشر تاني
+  minecraftOptions: خيارات ماينكرافت
+  name: إعداد عالمي | إعدادات عالمية
+  network: إعدادات الشبكة
+  newsPosition: نقل قسم الأخبار
+  officialWebsite: الموقع الرسمي
+  particleMode:
+    bubble: فقاعات (Bubble)
+    name: نمط الجزيئات
+    push: دفع (Push)
+    remove: إزالة
+    repulse: تنافر (Repulse)
+  particleModeDescription: اختر سلوك الجزيئات عند الضغط بالماوس
+  quickLaunchSettings: التشغيل السريع
+  replaceNative: استبدال المكتبات الأصلية (Natives)
+  replaceNativeDescription: استبدال المكتبات الأصلية بناءً على معمارية كمبيوترك.
+  replaceNatives:
+    all: الكل
+    legacy: الإصدارات القديمة بس
+  resetAllSettings: إعادة ضبط كل الإعدادات
+  resetAllSettingsConfirmMessage: العملية دي هتمسح نهائياً كل الإعدادات، والحسابات، والنسخ، والمجموعات، والبيانات المؤقتة. ما ينفعش نرجع في الخطوة دي. متأكد؟
+  resetAllSettingsConfirmTitle: إعادة ضبط كل الإعدادات؟
+  resetAllSettingsHint: إعادة اللانشر لضبط المصنع (هيمسح كل حاجة)
+  resetAllSettingsSuccess: تم إعادة ضبط كل الإعدادات. اللانشر هيرستر دلوقتي.
+  resetSettingsError: 'حصل خطأ أثناء إعادة ضبط الإعدادات: {error}'
+  resetToDefault: إعادة تعيين للافتراضي
+  select: اختر
+  setAsBackground:
+    failed: فشل تعيين صورة الخلفية
+    global: تعيين كخلفية للانشر
+    instance: تعيين كخلفية للنسخة
+    successGlobal: تم تحديث صورة الخلفية.
+    successInstance: تم تحديث صورة خلفية النسخة.
+  settingsExported: تم تصدير الإعدادات بنجاح
+  settingsImportError: فشل استيراد الإعدادات. اتأكد من صيغة الملف.
+  settingsImported: تم استيراد الإعدادات بنجاح
+  settingsReloadHint: اللانشر هيرستر لتطبيق كل الإعدادات الجديدة.
+  showNewsHeader: إظهار قسم الأخبار
+  showRoot: عرض
+  sidebarAlign: محاذاة الشريط الجانبي
+  sidebarAutoHide: إخفاء الشريط الجانبي تلقائياً
+  sidebarAutoHideHint: إخفاء الشريط الجانبي تلقائياً وإظهاره عند تمرير الماوس فوقه
+  sidebarClassic: كلاسيكي
+  sidebarNotch: نوتش حديث (Notch)
+  sidebarPosition: مكان الشريط الجانبي
+  sidebarScale: حجم الشريط الجانبي
+  sidebarShowOnlyPinned: عرض النسخ المثبتة بس
+  sidebarShowOnlyPinnedHint: عرض النسخ المثبتة بس في الشريط الجانبي
+  sidebarStyle: نمط الشريط الجانبي
+  sidebarStyleHint: اختر بين التصميم الكلاسيكي أو النوتش الحديث
+  streamerMode: وضع البث (Streamer Mode)
+  streamerModeDescription: الخيار ده هيخفي معلوماتك الخاصة زي الإيميل جوة اللانشر.
+  theme:
+    dark: المظهر الداكن
+    light: المظهر الفاتح
+    system: استخدام مظهر النظام الافتراضي
+  themeExport: تصدير المظهر
+  themeBorderRadius: حواف مستديرة
+  themeBorderRadiusDescription: تفعيل أو تعطيل الحواف المستديرة للكروت، والنوافذ، والقوائم، واللوحات.
+  themeFont: الخط
+  themeFontDescription: تغيير خط اللانشر.
+  themeFontUrl: رابط الخط
+  themeFontUrlPlaceholder: اكتب رابط HTTP/HTTPS للخط
+  themeImport: استيراد المظهر
+  themeResetFont: إعادة ضبط الخط
+  themeSelectFont: اختر الخط
+  themeSettings: إعدادات المظهر
+  themeShare: مشاركة المظهر
+  themeShareDescription: تقدر تشارك المظهر ده مع صاحبك.
+  themeStore:
+    description: حفظ وإدارة المظاهر العالمية
+    loadConfirmMessage: تحميل مظهر محفوظ هيستبدل المظهر الحالي بتاعك. يا ريت تاخد نسخة احتياطية لو محتاجها.
+    loadConfirmTitle: استبدال المظهر الحالي؟
+    loadTheme: تحميل المظهر
+    name: متجر المظاهر
+    noSavedThemes: مفيش مظاهر محفوظة لسه
+    saveDialogTitle: حفظ المظهر
+    saveToStore: حفظ في المتجر
+    savedThemes: المظاهر المحفوظة
+    themeName: اسم المظهر
+    themeNameHint: الاسم المستخدم لحفظ المظهر ده
+  update: التحديث
+  useBmclAPI: استخدام BMCL API
+  useBmclAPIDescription: استخدم BMCLAPI لتنزيل ماينكرافت لو أنت في الصين. (الخيار ده مش هيؤثر عليك لو برة الصين)
+  useProxy: بروكسي HTTP (Proxy)
+  useProxyDescription: عنوان سيرفر البروكسي لطلبات الـ HTTP
+  viewBackgroundMusic: عرض الأغاني والموسيقى
+settingLabel:
+  global: عالمي
+  globalHint: الإعداد ده هيتبع الإعداد العالمي المشترك
+  local: محلي
+  localHint: الإعداد ده تم تعديله في النسخة الحالية بس
+setup:
+  account:
+    description: سجل الدخول بحساب اللعبة بتاعك. لو معندكش حساب حالياً، تقدر تتخطى الخطوة دي دلوقتي.
+    name: إضافة حساب لعبة
+    skip: تخطي في الوقت الحالي
+  appearance:
+    name: '@:setting.appearance'
+  dataRoot:
+    description: مجلد البيانات الرئيسي مش هو مجلد .minecraft المعتاد. عشان هيكل مجلد بيانات XMCL مختلف عن الفانيلا، مش بننصح باستخدام مجلد .minecraft المعتاد كمجلد رئيسي للبيانات.
+    drives: المواقع المقترحة
+    name: تحديد مجلد البيانات
+  defaultLayoutDescription: التخطيط الافتراضي بيحاول يعزز مفهوم "النسخة" للعبة. تصميمه قريب من تطبيقات زي ديسكورد، ومستوحى برضه من لانشرات ألعاب تانية زي Steam وغيره.
+  defaultPath: المسار الافتراضي
+  error:
+    badDataRoot: مجلد غير صالح لبيانات اللانشر! يرجى اختيار مجلد تاني!
+    exists: المجلد المختار مش فاضي. عادي بس اتأكد إنك واخد نسخة احتياطية من بياناتك.
+    invalidChar: المسار بيحتوي على رموز غير صالحة! ده ممكن يخلي ماينكرافت تفشل في التشغيل! يرجى استخدام الحروف والرموز الإنجليزية بس!
+    noPermission: اللانشر معندوش صلاحية للوصول للمجلد المختار! يرجى اختيار مجلد تاني.
+    nonDictionary: المسار المختار ده ملف! اختر مجلد (Directory)!
+  focusLayoutDescription: تخطيط التركيز هو التخطيط الكلاسيكي للانشر ماينكرافت. مصمم للاستخدام مع نسخة واحدة بس أو نسخ قليلة.
+  game:
+    name: استيراد لعبة موجودة بالفعل
+  locale:
+    description: اختر لغتك المفضلة لو متوفرة! لو مش شايف لغتك وجمهورية بلدك وعاوز تساعد، تقدر تزور صفحتنا على جيت هاب وتبعث طلب سحب (Pull Request) للترجمة!
+    language: اللغة
+    name: تحديد اللغة
+  path: المسار الحالي
+shaderPack:
+  deletion: حذف حزمة الشيدر
+  deletionHint: العملية دي هتمسح ملف حزمة الشيدر {path} نهائياً وما ينفعش نرجع فيها.
+  disabled: حزم الشيدر المعطلة
+  dropHint: استيراد حزمة شيدر
+  empty: مفيش حزم شيدر مخصصة
+  enable: استخدام {name}
+  enabled: حزم الشيدر المفعلة
+  manage: إدارة حزم الشيدر
+  market: سوق الشيدر
+  name: حزمة شيدر (Shader Pack)
+  linkShared: مشاركة حزم الشيدر بين النسخ
+  linkSharedHint: اربط مجلد حزم الشيدر للنسخة دي بالمجلد العالمي المشترك عشان كل النسخ تشوف نفس حزم الشيدر. الحزم الحالية هتتدمج في المجلد المشترك.
+  noLocalPacksFound: ملقناش حزم شيدر محلية مطابقة لبحثك.
+  noPacks: مفيش حزم شيدر مثبتة
+  noPacksInstalled: معندكش أي حزم شيدر متثبتة.
+  noShaderMod: مفيش مود شيدر مثبت
+  noShaderModHint: ما ينفعش تشغل شيدر من غير ما يكون عندك مود شيدر متثبت
+  noShaderModInstallHint: لازم تثبت واحد من المودات دي عشان تقدر تشغل حزم الشيدر.
+  search: البحث في حزم الشيدر...
+  searchHint: البحث عن حزم شيدر على Modrinth و CurseForge
+  selectSearchHint: ابحث واختر حزمة الشيدر
+  showDirectory: عرض مجلد حزم الشيدر
+  showFile: عرض حزمة الشيدر دي في المجلد
+shared:
+  add: إضافة
+  author: المؤلف
+  back: رجوع
+  browse: تصفح
+  cancel: إلغاء
+  client: العميل (Client)
+  copied: تم النسخ
+  copy: نسخ
+  close: إغلاق
+  copyFailed: فشل النسخ
+  copyFailedHint: مش قادرين ننسخ للحافظة
+  description: الوصف
+  disable: تعطيل
+  download: تنزيل
+  edit: تعديل
+  enable: تفعيل
+  filter: تصفية
+  install: تثبيت
+  installed: مثبت
+  keepSelected: الاحتفاظ بالمحدد
+  manage: إدارة
+  name: الاسم
+  next: التالي
+  'no': لا
+  ok: موافق
+  previous: السابق
+  refresh: تحديث
+  remove: إزالة
+  save: حفظ
+  search: البحث
+  server: السيرفر (Server)
+  skipForNow: تخطي في الوقت الحالي
+  'yes': أيوة
+  delete: حذف
+sidebar:
+  pin: تثبيت
+  unpin: إلغاء التثبيت
+sortBy:
+  alphabetAsc: ترتيب أبجدي (تصاعدي)
+  alphabetDesc: ترتيب أبجدي (تنازلي)
+  name: ترتيب حسب
+  timeAsc: ترتيب حسب وقت التعديل (تصاعدي)
+  timeDesc: ترتيب حسب وقت التعديل (تنازلي)
+store:
+  discover: اكتشاف
+  empty: ملقناش حزم مودات
+  emptyHint: جرب تغير الفلاتر أو كلمة البحث بتاعتك.
+  latestMinecraft: أحدث نسخة ماينكرافت
+  name: سوق حزم المودات (Modpack Market)
+  searchResult: نتائج البحث
+  trending: الأكثر رواجاً (Trending)
+tag:
+  create: إنشاء وسم (Tag)
+  createSelected: إنشاء وسم للمحدد
+task:
+  cancelled: ملغاة
+  clear: مسح المهام المنتهية
+  connection:
+    connected: متصل
+    free: خالٍ
+    pending: معلق
+    queued: في الانتظار
+    running: الاتصال شغال
+    size: الإجمالي
+  connections: اتصالات الشبكة
+  empty: مفيش مهام شغالة حالياً
+  failed: فشلت
+  manager: مدير المهام
+  nTaskRunning: فيه {count} مهام شغالة حالياً
+  name: مهمة | مهام
+  pause: إيقاف مؤقت
+theme:
+  selectImage: اختر صورة
+  selectMusic: اختر موسيقى
+  selectVideo: اختر فيديو
+  title: لانشر ماينكرافت X
+title: لانشر ماينكرافت X
+transportType:
+  host: مرشح مضيف (Host Candidate)
+  prflx: مرشح انعكاسي للطرف الآخر (Peer Reflexive)
+  relay: مرشح ترحيلي (Relay Candidate)
+  srflx: مرشح انعكاسي للسيرفر (Server Reflexive)
+turnRegion:
+  fr: فرنسا
+  guangzhou: جوانزو، الصين
+  hk: هونج كونج
+  liaoning: لياونينغ، الصين
+  po: بولندا
+tutorial:
+  feedbackDescription: لو واجهتك أي مشكلة، اضغط على الزرار ده لإرسال الشكاوى والآراء!
+  hideNewsHeaderDescription: تقدر تشوف قسم الأخبار على الشمال. الضغط على الزرار ده هيخفي القسم ده.
+  instance:
+    iconDescription: اضغط لتغيير الأيقونة.
+    iconTitle: أيقونة النسخة
+    javaDescription: اختر أو بدل نسخة جافا.
+    javaImportDescription: استورد نسخة جافا من على جهازك.
+    javaImportTitle: استيراد جافا
+    javaTitle: قائمة الجافا
+  instanceAddDescription: اضغط على الزرار ده لاستيراد نسخة ماينكرافت موجودة أو إنشاء نسخة جديدة تماماً من الصفر أو من حزمة مودات.
+  instanceSelectDescription: الضغط على الزرار ده هيوديك لصفحة اختيار اللعبة وقراءة الأخبار.
+  launchDescription: اضغط على الزرار ده لتثبيت أو تشغيل اللعبة.
+  mod:
+    defaultSourceDescription: تقدر تختار مصدر معلومات وتفاصيل المودات من هنا. المودات دي منشورة على Modrinth و Curseforge. لو عاوز تبدل بين المنصتين دول، تقدر تغير الخيار من هنا.
+    defaultSourceTitle: اختر مصدر محتوى المودات
+    detailDescription: لما تختار عنصر على الشمال، هتشوف تفاصيل المود ده. المحتوى ممكن ييجي من Modrinth أو Curseforge أو معلومات المود المحلية بعد تحليلها.
+    detailTitle: تفاصيل المود
+    listDescription: هنعرض المودات المتثبتة لما متكتبش حاجة في البحث. أول ما تكتب كلمة بحث أو تختار فئة معينة، هتشوف المودات اللي لقيناها.
+    listTitle: المودات المثبتة أو نتائج البحث
+    searchDescription: تقدر تبحث عن المودات من Modrinth، أو Curseforge، أو من الكاش المحلي بتاعك باستخدام صندوق البحث ده.
+    searchTitle: البحث في المودات
+  multiplayer:
+    contentDescription: الاتصالات بينك وبين اللاعبين التانيين هتظهر هنا في القائمة.
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: تقدر تنشئ أو تنضم لمجموعة مع لاعبين تانيين. اللانشر هيحاول يعمل اتصال P2P بينك وبين أصحابك بناءً على المجموعة دي. تقدر تكتب اسم المجموعة اللي أصحابك عملوها، أو تعمل اسم فريد خاص بيك.
+    groupTitle: الانضمام لمجموعة
+    joinDescription: أول ما تكتب اسم المجموعة، تقدر تضغط على الزرار ده للانضمام أو لإنشائها. لو اسم المجموعة فاضي، اللانشر هيولد لك اسم عشوائي تلقائياً.
+    manualDescription: لو أنت أو صديقك مش عارفين تتصلوا بالمجموعة، تقدروا تجربوا تبادل الرموز (Tokens) يدوياً بالضغط على اتصال يدوياً. لو ده برضه فشل، فالمشكلة غالباً من مزود الإنترنت عندك أو عنده.
+  recentPlayDescription: الألعاب والنسخ اللي عملتها هتظهر هنا في القائمة. تقدر تبدل طريقة العرض عشان تشوف برضه الإصدارات المثبتة وحزم المودات المتنزلة.
+  storePoupularModpackDescription: هتشوف حزم المودات الأكثر شعبية ورواجاً على Curseforge و Modrinth في القسم ده.
+  storeSearchCategoryDescription: تقدر برضه تبدل الفئات والتصنيفات أو الفلاتر من هنا.
+  storeSearchDescription: تقدر تبحث عن حزم المودات بالكتابة في الصندوق ده. اضغط Enter للبحث.
+  storeSearchResultDescription: هتشوف كل نتائج البحث معروضة هنا في القائمة.
+  userAccountDescription: اضغط على الأيقونة دي لإضافة أو إدارة حساب ماينكرافت بتاعك.
+unauthenticatedWarning:
+  cancel: إلغاء
+  description: أنت مش مسجل دخول بأي حساب. اللعبة هتشتغل في وضع التجربة (Demo). لتجربة كل الميزات واللعب بحرية، يرجى تسجيل الدخول بحسابك.
+  login: تسجيل الدخول
+  playAnyway: اللعب على أي حال
+  title: غير مسجل الدخول
+universalDrop:
+  unknownResource: مورد غير معروف
+unresolvedFiles:
+  description: الملفات دي مقدرناش ننزلها أثناء التثبيت. ابحث عن مصدر مطابق، أو ثبت الملفات المتطابقة، أو تجاهلها لتشغيل اللعبة على أي حال.
+  empty: تم حل وتنزيل كل الملفات بنجاح.
+  ignoreSelected: تجاهل {count}
+  install: تثبيت {count} ملف مطابق
+  matched: مطابق
+  noMatch: ملقناش مطابقة
+  search: البحث في المصادر
+  source:
+    curseforge-name: CurseForge
+    dependency: متطلب/تبعية
+    modrinth-hash: رمز هاش Modrinth
+    modrinth-name: Modrinth
+  title: ملفات لم يتم حلها
+  via: بواسطة {source}
+upstream:
+  downgrade: تخفيض الإصدار
+  onlyShowCurrentVersion: عرض إصدار ماينكرافت الحالي بس
+  update: تحديث
+user:
+  accessToken: رمز الوصول (Access Token)
+  authMode: خدمة المصادقة
+  authService: خدمة التحقق والمصادقة
+  email: البريد الإلكتروني
+  id: معرف المستخدم (User ID)
+  name: اسم المستخدم
+  nameHint: الاسم المعروض جوة اللعبة
+  profile: الملف الشخصي
+  tokenExpired: منتهي الصلاحية
+  tokenValidUntil: الرمز صالح حتى
+userAccount:
+  add: إضافة حساب
+  removeDescription: العملية دي هتمسح كل البيانات والمعلومات الخاصة بالحساب ده. متأكد؟
+  removeTitle: إزالة الحساب
+userCape:
+  changeTitle: تغيير العباءة (Cape) بتاعتك
+  description: 'العباءات هي مكافآت خاصة بيحصل عليها اللاعبون في المناسبات والحملات والأحداث المختلفة السعيدة. تقدر تختار من العباءات اللي بتمتلكها حالياً من هنا:'
+  noCape: بدون عباءة
+userService:
+  add: إضافة المزيد من الخدمات
+  authlibInjectorMetadata: معلومات (Metadata) حاقن Authlib-Injector
+  baseUrlHint: العنوان الأساسي (Base URL) لخدمتك المخصصة
+  homepage: الصفحة الرئيسية
+  implementation: البرمجة والتنفيذ
+  manageServices: إدارة خدمات المصادقة
+  register: تسجيل حساب
+  server: السيرفر
+  skinDomains: نطاقات السكنات (Skin Domains)
+  title: خدمات مستخدمين خارجية (طرف تالت)
+  version: الإصدار
+userServices:
+  microsoft:
+    account: حساب مايكروسوفت
+    deviceCode: كود الجهاز
+    deviceCodeHint: كود الجهاز هيتم توليده تلقائياً بعد ما تضغط تسجيل دخول
+    name: مايكروسوفت
+    password: اكتب الباسورد في المتصفح
+    useDeviceCode: تسجيل دخول بكود الجهاز
+  mojang:
+    account: البريد الإلكتروني
+    name: موجانج (Mojang)
+    password: الباسورد
+  offline:
+    account: اسم المستخدم
+    name: بدون إنترنت (Offline)
+    password: بدون باسورد
+    uuid: معرف UUID للمستخدم (اختياري)
+userSkin:
+  classic: كلاسيكي
+  import: استيراد سكن
+  importFile: فتح من ملف
+  importLink: فتح من رابط ويب
+  placeUrlHere: ضع رابط الـ URL للسكن هنا لاستيراده
+  reset: إعادة ضبط
+  save: حفظ
+  saveTitle: حفظ السكن على الكمبيوتر
+  skinType: نوع السكن
+  slim: نحيف (Slim)
+  upload: رفع السكن
+  urlNotEmpty: عنوان الـ URL للسكن ما ينفعش يكون فاضي
+  urlNotValid: عنوان الـ URL للسكن مش صالح
+  useSlim: استخدام موديل نحيف (Slim)
+version:
+  checkIntegrity: التحقق من سلامة الملفات
+  name: إصدار | إصدارات
+  notInstalled: الإصدار ده مش متثبت
+versionType:
+  alpha: ألفا (Alpha)
+  beta: بيتا (Beta)
+  name: الحالة
+  release: نسخة مستقرة (Release)
+gamepad:
+  detectedTitle: تم اكتشاف دراع ألعاب
+  connected: الدراع اتوصل
+  guideTitle: أزرار التحكم للدراع
+  enableSwitchLabel: التحكم بالدراع
+  enabledState: مفعّل
+  disabledState: معطل
+  toggle: تبديل الحالة
+  disabledNotify: تم تعطيل التحكم بالدراع.
+  enabledNotify: تم تفعيل التحكم بالدراع! استخدم أزرار الاتجاهات (D-pad) أو العصاية الشمال للتنقل، و {btnA} للتحديد، و {btnB} للرجوع.
+  guide:
+    confirm: تحديد
+    navigate: تنقل
+    tabs: تبديل التبويبات
+    sections: تبديل الأقسام
+    launch: تشغيل اللعبة
+    instanceSettings: إعدادات النسخة
+  modSuggestTitle: مود دراع التحكم
+  modSuggestBody: عشان تستخدم الدراع بتاعك جوة ماينكرافت، بننصحك تثبت مود دراع. تحب تثبت المود المناسب للودر بتاعك (modloader)؟
+  modInstall: تثبيت المود
+  modSkip: تخطي
+  modDone: تم
+  modInstalled: تم تثبيت مود الدراع بنجاح! هيشتغل المرة الجاية لما تشغل ماينكرافت.
+  modInstalledNotify: تم تثبيت {name} لدعم دراع التحكم جوة اللعبة.
+  modNotFound: ملقناش إصدار متوافق لـ {loader} على ماينكرافت {version}.
+  settingSteamTitle: إضافة اللانشر لـ Steam
+  steamAddedNotify: اللانشر انضاف لمكتبة Steam بنجاح! يا ريت ترستر Steam عشان تشوفه.
+  steamAlreadyAddedNotify: اللانشر موجود بالفعل في مكتبة Steam بتاعتك.
+  steamDeckTitle: تم اكتشاف جهاز Steam Deck
+  steamDeckDesc: اكتشفنا إنك بتشغل اللعبة على Steam Deck. تحب تضيف X Minecraft Launcher لمكتبة Steam كأداة مش من Steam عشان تستمتع بمميزات الـ Steam overlay ودعم الدراع الكامل في Gaming Mode؟
+  steamDeckAddBtn: إضافة لـ Steam ({btn})
+  steamDeckCancelBtn: إلغاء ({btn})

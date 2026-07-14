@@ -1,0 +1,1867 @@
+AppAddInstanceDialog:
+  choiceTitle: Beberapa profil peluncuran terdeteksi. Silakan pilih salah satu untuk diimpor.
+  createTitle: Buat Game
+  serverTitle: Masukkan alamat server Anda
+AppShareInstanceDialog:
+  alterDownloadDescription: Jika Anda tidak ingin mengacaukan instansi saat ini, Anda juga dapat membuat instansi baru dari konfigurasi rekan Anda. Klik tombol di bawah untuk membuat instansi.
+  baseInfo: Pengaturan Dasar
+  cancelShare: Batal Bagikan
+  description: Setelah Anda membagikan profil, tempat lain dapat mengunduh berkas-berkas ini melalui PC Anda.
+  downloadDescription: Silakan verifikasi berkas yang diberikan oleh rekan Anda. Pilih berkas yang ingin Anda unduh. Berkas tersebut akan ditempatkan di instansi saat ini {name}.
+  downloadNotifyTitle: Unduh Instansi dari {user}
+  downloadTitle: Unduh berkas dari rekan lain
+  filesToDownload: Pilih berkas untuk diunduh
+  filesToShare: Pilih berkas untuk dibagikan
+  instanceShare: '{user} baru saja membagikan instansi saat ini kepada Anda'
+  share: Bagikan
+  shareNotifyTitle: Bagikan Instansi
+  shareTitle: Bagikan berkas game ke pemain lain
+BaseSettingGeneral:
+  title: Umum
+HomeJavaIssueDialog:
+  incompatibleJava: Java Tidak Kompatibel
+  incompatibleJavaHint: Java saat ini mungkin tidak kompatibel dengan Minecraft yang dipilih!
+  missingJava: Java Tidak Ditemukan
+  missingJavaHint: 'Peluncur tidak dapat mendeteksi Java di komputer Anda. Anda dapat:'
+  optionSwitch:
+    name: Beralih ke {version}
+HomeLaunchMultiInstanceDialog:
+  confirm: Ya, Luncurkan
+  description: Anda meluncurkan beberapa instansi Minecraft. Apakah Anda yakin?
+  title: Beberapa Instansi
+SettingMigrationDialog:
+  selectRootDirectory: Pilih Direktori Utama
+agent:
+  callingTool: memanggil {name}…
+  disabledPlaceholder: Agen dinonaktifkan
+  emptyHint: Minta agen untuk memeriksa instansi Anda, mengaktifkan/menonaktifkan mod, membaca log, atau mendiagnosis crash.
+  inputPlaceholder: Tanya agen… (Tekan Enter untuk mengirim, Shift+Enter untuk baris baru)
+  notConfiguredHint: Atur kunci API, model, dan endpoint Anda di Pengaturan → Umum → Agen AI untuk mengaktifkan agen.
+  notConfiguredTitle: Agen belum dikonfigurasi
+  openSettings: Buka pengaturan
+  reset: Atur ulang percakapan
+  setupGuide: Panduan penyiapan
+  statusDisabled: Dinonaktifkan — kunci API tidak ditemukan
+  statusReady: Siap
+  statusWorking: Sedang bekerja…
+  suggestion1: Tingkatkan instansi ini ke versi Minecraft yang lebih baru, dan perbarui mod agar cocok
+  suggestion2: Mod saya mengalami crash — cari penyebabnya dan beri tahu saya cara memperbaikinya
+  suggestion3: 'Buat modpack: cari mod untuk fitur yang saya inginkan dan pasang ke dalam instansi ini'
+  thinking: berpikir…
+  title: Agen XMCL
+  toggleHint: untuk beralih
+ago:
+  day: '{duration} hari yang lalu | {duration} hari yang lalu'
+  hour: '{duration} jam yang lalu | {duration} jam yang lalu'
+  minute: '{duration} menit yang lalu | {duration} menit yang lalu'
+  second: '{duration} detik yang lalu | {duration} detik yang lalu'
+askAICrash:
+  agentNotConfigured: Tambahkan penyedia AI dan kunci API di Pengaturan agar agen bawaan peluncur mendiagnosis dan memperbaikinya untuk Anda.
+  askAgent: Diagnosis dengan agen AI bawaan
+  copyPrompt: Salin perintah untuk bertanya kepada AI
+  description: Biarkan AI membantu Anda memahami crash game! Ikuti petunjuk di bawah untuk bertanya kepada AI tentang crash game ini!
+  orExternal: atau gunakan AI eksternal
+  selectPlatform: Buka platform AI dan tempel perintah yang baru saja Anda salin.
+  setupAgent: Siapkan agen AI
+authProfileAddedNotification: Profil Autentikasi {name} Ditambahkan
+bedrock:
+  description: Minecraft Bedrock Edition dipasang dan diluncurkan melalui Microsoft Store. Anda harus memiliki lisensi Bedrock di akun Microsoft Anda.
+  install: Dapatkan dari Microsoft Store
+  installFailed: Gagal membuka Microsoft Store
+  installed: 'Terpasang: {version}'
+  launchHint: Gunakan tombol Luncurkan untuk memulai Bedrock Edition.
+  installBedrockVersion: Mengunduh Bedrock {version}
+  licenseRequired: Masuk dengan akun Microsoft yang memiliki Minecraft untuk memasang dan memainkan Bedrock Edition.
+  refresh: Segarkan
+  versionsTitle: Pengelola versi
+  versionsHint: Unduh beberapa versi Bedrock dari server Microsoft dan beralih di antaranya. Hanya satu versi dapat didaftarkan dengan Windows pada satu waktu, jadi memainkan suatu versi akan mendaftarkannya kembali.
+  versionsError: Gagal memuat daftar versi. Periksa jaringan Anda dan coba lagi.
+  channel: Saluran
+  channelRelease: Rilis
+  channelBeta: Beta
+  channelPreview: Pratinjau
+  active: Aktif
+  play: Mainkan
+  download: Unduh
+  installedTag: Terpasang
+  developerModeRequired: Mendaftarkan versi yang diunduh memerlukan Mode Pengembang Windows. Mengaktifkannya memerlukan izin administrator.
+  enableDeveloperMode: Aktifkan Mode Pengembang
+  enableDeveloperModeFailed: Gagal mengaktifkan Mode Pengembang
+  downloadFailed: Gagal mengunduh Bedrock {version}
+  launchFailed: Gagal meluncurkan versi Bedrock ini
+  removeFailed: Gagal menghapus Bedrock {version}
+baseSetting:
+  title: Pengaturan Instansi
+browseApp:
+  createShortcut: Buat Pintasan
+  default: BAWAAN
+  delete: Hapus
+  launch: Luncurkan dan atur sebagai Default
+browseApps: Melihat antarmuka pengguna peluncur
+color: Warna
+confirm: Mulai
+copyClipboard:
+  success: Salin ke papan klip
+create: Buat
+curseforge:
+  category: Kategori
+  createdDate: Tanggal Dibuat
+  lastUpdate: Tanggal Pembaruan Terakhir
+  releasedDate: Tanggal Dirilis
+curseforgeCategory:
+  API and Library: API dan pustaka
+  Addons: Suplemen
+  Adventure: Petualangan
+  Adventure and RPG: Petualangan dan RPG
+  Animated: Animasi
+  Armor, Tools, and Weapons: Zirah, alat, dan senjata
+  Combat / PvP: Kompetisi/PVP
+  Cosmetic: Tampilan/dekorasi
+  Creation: Mode kreatif
+  Data Packs: Paket data
+  Education: Pendidikan
+  Exploration: Pengintaian
+  Extra Large: Ukuran besar
+  FTB Official Pack: Paket resmi FTB
+  Fabric: Fabric
+  FancyMenu: FancyMenu
+  Font Packs: Font
+  Food: Makanan
+  Game Map: Kartu Game
+  Hardcore: Hardcore
+  MCreator: MCreator
+  Magic: Sihir
+  Map Based: Berdasarkan peta
+  Map and Information: Peta dan informasi
+  Medieval: Abad Pertengahan
+  Mini Game: Game mini
+  Miscellaneous: Rupa-rupa
+  Mod Support: Dukungan mod
+  Modded World: Mod untuk dunia
+  Modern: Modern
+  Multiplayer: Multipemain
+  Parkour: Parkour
+  Photo Realistic: Fotografi realistis
+  Puzzle: Teka-teki
+  QoL: QoL
+  Quests: Misi
+  Redstone: Redstone
+  Sci-Fi: Fiksi Ilmiah
+  Server Utility: Alat server
+  Skyblock: SkyBlock
+  Small / Light: Sedikit
+  Steampunk: Steampunk
+  Storage: Penyimpanan
+  Survival: Kelangsungan Hidup
+  Tech: Teknologi
+  Technology: Teknologi
+  Traditional: Tradisional
+  Twitch Integration: Integrasi Twitch
+  Utility & QoL: Utilitas dan QoL
+  Vanilla+: Vanilla+
+  World Gen: Generasi Dunia
+dataMigration:
+  apply: Terapkan Pengaturan
+  directoryCriteriaHint: Pastikan lokasi direktori baru Anda adalah direktori KOSONG!
+  placeholder: Silakan klik di sini untuk memilih direktori
+  setRootCause: Anda akan kehilangan data Anda (Peta, Paket Sumber Daya, Mod) jika Anda menutup Peluncur pada proses ini!
+  setRootDescription: Ini akan mengubah folder data utama dari peluncur ini dan minecraft.
+  setRootTitle: Atur ke lokasi penyimpanan baru
+  unknownError: Kesalahan Tidak Dikenal! Silakan coba lagi atau hubungi pengembang!
+  waitReload: Memigrasikan data. Harap jangan tutup Peluncur atau Anda akan kehilangan data Anda.
+delete:
+  name: Hapus {name}
+  'no': Tidak
+  'yes': Hapus
+dependencies:
+  embedded: Tertanam
+  incompatible: Tidak Kompatibel
+  name: Dependensi
+  optional: Opsional
+  required: Diperlukan
+diagnosis:
+  badInstall:
+    message: Klik untuk mencoba memasang ulang versi ini.
+    name: Instalasi Buruk pada {version}
+  corruptedAssets:
+    message: Peluncur akan memasang aset untuk Anda
+    name: 'Aset rusak: {name} | Aset rusak {name} | {count} aset rusak'
+  corruptedAssetsIndex:
+    message: Peluncur akan mengunduh indeks aset untuk Anda
+    name: Berkas indeks aset {version} rusak.
+  corruptedLibraries:
+    message: Peluncur akan memasang pustaka untuk Anda
+    name: 'Pustaka rusak: {name} | Pustaka rusak: {name} | {count} pustaka rusak'
+  corruptedVersionJar:
+    message: Klik untuk memasang versi ini
+    name: Jar versi rusak untuk Minecraft %{version}.
+  incompatibleJava:
+    name: Versi Java {javaVersion} tidak cocok untuk {version}!
+  instanceFiles:
+    description: Instalasi instansi mencakup {counts} berkas.
+    title: Instalasi instansi belum selesai
+  invalidJava:
+    name: Lokasi Java tidak valid.
+  missingJava:
+    message: Klik untuk menyelesaikan masalah ini
+    name: Tidak dapat menemukan Java untuk meluncurkan Minecraft!
+  missingLibraries:
+    message: Peluncur akan memasang pustaka untuk Anda
+    name: Pustaka {name} Hilang | Pustaka {name} Hilang | {count} Pustaka Hilang | {count} Pustaka Hilang
+  missingVersion:
+    message: Klik untuk memasang versi ini
+    name: Versi {version} belum terpasang!
+  unresolvedFiles:
+    description: '{count} berkas tidak dapat diselesaikan selama instalasi | {count} berkas tidak dapat diselesaikan selama instalasi'
+    title: Berkas yang belum diselesaikan
+  unzipFileNotFound:
+    description: Tidak dapat menemukan {file}
+    title: Berkas modpack tidak ditemukan
+difficulty:
+  easy: Mudah
+  hard: Sulit
+  normal: Normal
+  peaceful: Damai
+disk:
+  available: Tersedia
+  used: Digunakan
+downloadCount: '{count} unduhan'
+downloadModMetadataDb:
+  name: Unduh Database Metadata Mod
+downloadUpdate:
+  name: Unduh Pembaruan {version}
+duplicateInstance:
+  name: Duplikat Instansi
+duration:
+  day: '{duration} hari | {duration} hari'
+  hour: '{duration} jam | {duration} jam'
+  minute: '{duration} menit | {duration} menit'
+  second: '{duration} detik | {duration} detik'
+env:
+  select:
+    all: Pilih Semua
+    fit: Pilih yang Cocok
+    none: Pilih Tidak Ada
+errors:
+  bedrockUnsupportedPlatform: Minecraft Bedrock Edition hanya didukung pada build Windows.
+  bedrockNotInstalled: Minecraft Bedrock Edition belum terpasang.
+  bedrockLaunchFailed: Gagal meluncurkan Minecraft Bedrock Edition.
+  bedrockInstallFailed: Gagal memasang Minecraft Bedrock Edition.
+  bedrockDownloadUrlUnavailable: Versi Bedrock ini tidak tersedia untuk akun Microsoft saat ini. Versi Beta dan Pratinjau memerlukan akun yang terdaftar dalam program beta Minecraft.
+  bedrockDeveloperModeRequired: Mode Pengembang Windows diperlukan untuk mendaftarkan versi Bedrock ini.
+  bedrockRegisterFailed: Gagal mendaftarkan versi Bedrock ini dengan Windows.
+  bedrockVersionNotFound: Versi Bedrock ini tidak terpasang secara lokal.
+  BadForgeInstallerJarError: Tidak dapat mengurai berkas jar penginstal Forge. Mungkin Forge memiliki format berkas penginstal baru? Hubungi pengembang jika masalah ini berlanjut.
+  BadInstanceType: 'Bukan instansi yang valid: {type}'
+  BodyTimeoutError: Batas waktu HTTP Body habis
+  ChecksumNotMatchError: Checksum tidak cocok! Diharapkan {expect}. Aktual {actual}.
+  ConnectTimeoutError: Batas waktu koneksi ke server habis.
+  CorruptedResourceMetadata: Mendeteksi dan menghapus metadata yang rusak pada {count} sumber daya. Berkas masih berfungsi, tetapi atribusi Modrinth/CurseForge mereka hilang dan akan dideteksi ulang secara otomatis.
+  DNSNotFoundError: Kesalahan pencarian DNS
+  DatabaseNotOpened: Database tidak dibuka! Peluncur tidak akan berfungsi dengan baik! Silakan pilih direktori data yang dapat diakses oleh peluncur. Anda dapat mencoba mengatur ulang folder data utama di halaman pengaturan.
+  DiskIsFull: Disk Anda penuh! Tidak dapat menulis apa pun ke disk! Semua fitur mungkin tidak berfungsi!
+  DownloadAggregateError: Gagal mengunduh berkas.
+  DownloadFileSystemError: Kesalahan saat mengakses jalur berkas unduhan. Pastikan peluncur memiliki izin untuk menulis padanya.
+  HeadersTimeoutError: Batas waktu HTTP Header habis
+  InstallBackendUnresponsive:
+    body: Proses latar belakang peluncur berhenti merespons, sehingga instalasi tidak dapat selesai. Silakan tutup sepenuhnya dan luncurkan kembali peluncur, lalu coba lagi.
+    title: Peluncur tidak merespons
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: Gagal memasang berkas Minecraft
+  InstallNetworkError:
+    body: Masalah jaringan menginterupsi instalasi. Periksa koneksi internet atau proksi Anda dan coba lagi.
+    title: Tidak dapat mengunduh berkas Minecraft
+  InstallPermissionDenied:
+    body: Alat anti-virus atau izin folder terbatas memblokir instalasi. Tambahkan peluncur ke daftar pengecualian AV Anda, atau pilih folder data utama yang berbeda di pengaturan peluncur.
+    title: Tidak dapat menulis ke folder peluncur
+  NotFoundError: 404 Tidak Ditemukan
+  SocketError: Kesalahan soket server
+eula:
+  body: Dengan mencentang kotak pilihan, Anda menunjukkan persetujuan Anda terhadap {eula} Minecraft.
+exception:
+  http: Permintaan HTTP ke {url} gagal. Kode status {statusCode}. {code}. Silakan coba lagi atau periksa jaringan Anda. Jika kesalahan ini berlanjut, silakan kirim laporan ke tim pengembang.
+exportModpack:
+  name: Ekspor Modpack
+extensions:
+  mrpack: Modpack Modrinth
+  zip: Berkas Zip
+fabricVersion:
+  disable: Nonaktifkan Fabric
+  empty: Tidak Ada Versi Fabric untuk Minecraft {version}
+  showSnapshot: Tampilkan Snapshot
+  stable: Stabil
+  unstable: Tidak Stabil
+command:
+  instance:
+    launch:
+      title: Luncurkan Instansi
+      description: Luncurkan instansi Minecraft
+    create:
+      title: Buat Instansi
+      description: Buat instansi baru
+    delete:
+      title: Hapus Instansi
+      description: Hapus instansi yang ada
+  user:
+    login:
+      title: Masuk Pengguna
+      description: Masuk ke akun Anda
+    refresh:
+      title: Segarkan Pengguna
+      description: Segarkan sesi pengguna
+commandPalette:
+  placeholder: Cari perintah, instansi, mod…
+  commands: Perintah
+  instances: Instansi
+  modrinth: Modrinth
+  recent: Baru-baru ini
+  open: Tindakan Cepat
+  openHint: Buka palet perintah ({shortcut})
+  empty: Ketik untuk mencari.
+  noResults: Tidak ada hasil yang cocok.
+  searching: Mencari…
+  hintNavigate: navigasi
+  hintInvoke: jalankan
+  hintEnter: masuk
+  hintBack: kembali
+  hintClose: tutup
+feedback:
+  channel: Saluran
+  description: Saya menemukan Bug atau saya ingin memberikan saran
+  discord: Discord
+  discordDescription: Bergabung ke Saluran Discord
+  discordJoin: Gabung
+  generateReport: Buat Laporan
+  generateSaveAs: Simpan laporan ke
+  github: Masalah Github
+  githubDescription: Buka Masalah Github untuk menyampaikan pendapat Anda
+  githubOpenIssue: Github
+  hint: Klik tombol untuk membuat laporan dan hubungi tim pengembang. Laporan akan berisi info perangkat Anda termasuk jenis sistem operasi, versi, nama pengguna (di sistem operasi Anda), dll.
+  kook: Kook
+  kookDescription: Kook adalah aplikasi alternatif untuk Discord bagi pengguna di Tiongkok Daratan
+  name: Umpan Balik
+  qq: Grup QQ
+  qqDescription: 'Masuk ke grup QQ umpan balik dan bicara langsung dengan pembuat. Nomor Grup: {number}'
+  qqEnterGroup: Gabung
+fileDetail:
+  fileSize: Ukuran Berkas
+  filesize: Ukuran berkas
+  hash: Hash
+filterLocalOnly: Hanya tunjukkan yang terpasang
+forgeVersion:
+  disable: Nonaktifkan Forge
+  empty: Forge tidak memiliki rilis untuk Minecraft {version}
+  latest: Terbaru
+  recommended: Direkomendasikan
+gameType:
+  adventure: Mode Petualangan
+  creative: Mode Kreatif
+  spectator: Mode Penonton
+  survival: Mode Kelangsungan Hidup
+help: Bantuan
+home: Beranda
+importModpack:
+  name: Impor Modpack
+installAssets:
+  asset: Pasang {count} Aset
+  assetIndex: Periksa Berkas Indeks Aset
+  name: Pasang Berkas Aset
+installAuthlibInjector: Pasang authlib-injector
+installCurseforgeFile: Pasang Berkas CurseForge
+installFabric:
+  name: Pasang Fabric
+installForge:
+  downloadInstaller: Unduh Penginstal
+  name: Pasang Forge
+  postProcessing: Pasca Pemrosesan
+installInstance:
+  file: Perbarui Berkas Instansi {file}
+  link: Salin atau Hubungkan {count} Berkas
+  name: Perbarui Instansi
+  resolve: Selesaikan Konfigurasi Instansi
+  unzip: Ekstrak {count} Berkas
+installJre:
+  decompress: Dekompresi berkas JRE ke folder
+  download: Unduh berkas JRE terkompresi
+  name: Pasang Pustaka Java Runtime
+installLabyMod:
+  name: Pasang LabyMod
+installLibraries:
+  library: Pasang Pustaka
+  name: Pasang Pustaka
+installModrinthFile:
+  name: Pasang Modrinth
+installOptifine:
+  download: Unduh Optifine Universal
+  name: Pasang Optifine
+installProfile:
+  name: Pasang Profil {version}
+installQuilt:
+  name: Pasang Quilt {version}
+installVersion:
+  jar: Pasang Jar Versi
+  json: Pasang Json Versi
+  name: Pasang Klien Minecraft {version}
+instance:
+  changeIcon: Ubah Ikon
+  contents: Konten
+  current: Instansi Saat Ini
+  delete: Hapus Game
+  deleteFailed: Gagal menghapus instansi
+  deleteFailedPermission: Program lain sedang menggunakan berkas ini
+  deleteFile: Hapus Berkas Instansi
+  deleteHint: Data instansi akan dihapus dari disk selamanya. Apakah Anda yakin?
+  deleteHintBedrock: Minecraft Bedrock Edition dan semua datanya akan sepenuhnya dihapus dari komputer Anda. Apakah Anda yakin?
+  duplicate: Duplikat Game
+  duplicatedName: Nama Duplikat
+  envVarKey: Kunci
+  envVarKeyPlaceholder: MY_VAR
+  envVarValue: Nilai
+  envVarValuePlaceholder: nilai
+  fileApi: URL API server berkas sinkronisasi
+  fileApiHint: URL untuk menyinkronkan berkas instansi dari server konfigurasi jarak jauh.
+  fileApiPlaceholder: Silakan masukkan URL sinkronisasi jarak jauh di sini jika Anda ingin mempertahankan sinkronisasi sumber daya
+  fullscreen: Layar Penuh
+  height: Tinggi
+  hideCard: Sembunyikan kartu ini
+  icon: Ikon Profil
+  iconHint: Ikon dapat berupa berkas atau tautan URL internet.
+  iconUrl: URL Ikon
+  installModpack: Perbarui instansi dari modpack
+  lastPlayed: Terakhir Dimainkan
+  launchArguments: Pratinjau Argumen Peluncuran
+  launchServer: Luncurkan server localhost
+  linkFileDesc: Ini akan menimpa {file} lokal instansi dengan {file} global. Apakah Anda yakin ingin menghubungkannya?
+  linkFileTitle: Apakah Anda yakin ingin menghubungkan {file}?
+  mcOptions: Opsi Minecraft
+  mcOptionsHint: Argumen peluncuran Minecraft tambahan
+  name: Nama Profil
+  nameHint: Nama modpack
+  nameInvalidChars: 'Nama tidak boleh mengandung karakter berikut: < > : " / \\ | ? *'
+  nameNoCyrillic: Nama tidak boleh mengandung karakter Sirilik
+  namePathTraversal: Nama tidak boleh mengandung traversal jalur ("..")
+  nameReservedName: Nama ini dicadangkan oleh sistem dan tidak dapat digunakan
+  nameTrailingDotOrSpace: Nama tidak boleh diakhiri dengan titik atau spasi
+  nameWhitespaceOnly: Nama tidak boleh hanya berupa spasi kosong atau titik
+  neverPlayed: Belum Pernah Dimainkan
+  openCrashReportFolder: Buka Folder Laporan Crash
+  openLogFolder: Buka Folder Log
+  playtime: Waktu Bermain
+  preExecCommand: Perintah Pra-Eksekusi
+  preExecCommandHint: Perintah untuk dieksekusi sebelum meluncurkan Minecraft
+  prependCommand: Perintah Awal
+  prependCommandHint: Ini akan menambahkan perintah ini di depan semua perintah peluncuran
+  requireName: Nama diperlukan
+  resolution: Resolusi
+  resolutionPreset: Preset Resolusi
+  showHiddenCards: Tampilkan kartu tersembunyi
+  showInstance: Tampilkan folder game
+  updates: Pembaruan
+  useSharedOptions: Gunakan pengaturan game bersama
+  useSharedOptionsDesc: Ini akan menghubungkan options.txt ke berkas bersama di seluruh instansi
+  useSharedServersList: Gunakan daftar server bersama
+  useSharedServersListDesc: Ini akan menghubungkan servers.dat ke berkas bersama di seluruh instansi
+  vmOptions: Opsi JVM
+  vmOptionsHint: Argumen tambahan untuk diteruskan ke JVM
+  vmVar: Variabel Lingkungan
+  vmVarHint: Klik tombol + untuk menambahkan variabel lingkungan
+  width: Lebar
+instanceAge:
+  older: Lebih Lama
+  threeDay: Dalam Tiga Hari
+  today: Hari Ini
+instanceDiscover:
+  gameFolder: Temukan {count} folder game
+  instanceFolder: Menemukan {count} instansi
+instanceFileOperation:
+  add: Tambah
+  backup-add: Ganti (Cadangan)
+  backup-remove: Hapus (Cadangan)
+  keep: Pertahankan
+  remove: Hapus
+instanceInstallSkip:
+  ignore: Abaikan
+  skip: Lewati
+  title: Sumber berkas berpotensi rusak
+  warning: Beberapa berkas diunduh beberapa kali dengan checksum yang tidak cocok. Ini mungkin karena checksum asli salah. Silakan periksa. Jika Anda mengonfirmasi berkas saat ini valid, Anda dapat melewati pemeriksaan validasi.
+instanceLauncher:
+  search: Cari instansi...
+  showAll: Tampilkan Semua Instansi
+  title: Semua Instansi
+instanceSetting:
+  disableAuthlibInjector: Nonaktifkan authlib-injector
+  disableAuthlibInjectorDescription: Jika Anda menggunakan sistem skin pihak ketiga, authlib-injector dapat membantu Anda menampilkan skin dalam game.
+  disableElyByAuthlib: Nonaktifkan pengganti authlib ely.by
+  disableElyByAuthlibDescription: Ely.by memiliki pengganti authlib unik untuk menampilkan skin secara universal di server mana pun.
+  fastLaunch: Peluncuran Turbo
+  fastLaunchHint: Abaikan status pengguna dan masalah yang ada yang belum diperbaiki
+  hideLauncher: Sembunyikan peluncur setelah meluncurkan game
+  icon: Pilih gambar
+  showLog: Tampilkan Log Minecraft
+  showLogHint: Ini akan memunculkan jendela untuk mengalirkan log Minecraft setelah game dimulai
+instanceTemplate:
+  ftb: Ini adalah modpack FTB
+  preview: Pratinjau Modpack
+instanceUpdate:
+  basic: Pembaruan Pengaturan
+  files: Pembaruan Berkas
+  loaderChanged: Modloader instansi ini telah diubah. Modloader lama adalah {modloader}, dan modloader baru adalah {newModloader}.
+  noFiles: Tidak ada perubahan berkas
+  summary: Tambah {add} berkas. Hapus {remove} berkas. Pertahankan {keep} berkas.
+  title: Perbarui Instansi
+  update: Mulai Pembaruan
+instances:
+  add: Buat Game
+  addCurseForgeDescription: Impor dari folder data CurseForge. Anda perlu memilih folder data utama CurseForge
+  addDescription: Buat instansi baru dari awal
+  addMMCDescription: Impor instansi MultiMC yang ada. Anda perlu memilih folder data dari MultiMC.
+  addManually: Buat Manual
+  addModrinthDescription: Impor instansi Modrinth yang ada. Anda perlu memilih folder data utama Modrinth.
+  addPrismDescription: Impor instansi PrismLauncher yang ada.
+  addServer: Buat dari server
+  addServerDescription: Ini akan membuat game yang langsung meluncur ke server.
+  addTemplate: Buat dari modpack yang diunduh
+  addTemplateDescription: Impor dari Modpack yang diunduh
+  addVanilla: Buat dari Minecraft mirip vanilla
+  addVanillaDescription: Impor dari folder .minecraft umum. Ini akan menduplikat profil game asli ke XMCL.
+  edition: Edisi
+  editionJava: Edisi Java
+  editionBedrock: Edisi Bedrock
+  editionBedrockHint: Bedrock Edition diluncurkan melalui aplikasi Microsoft Store. Anda harus memiliki lisensi Bedrock. Mod, paket sumber daya, dan fitur khusus Java lainnya tidak tersedia.
+  editionBedrockWindowsOnly: Bedrock Edition hanya didukung pada build Windows.
+  fix: Perbaiki
+  folder: Folder
+  folderSetting: Pengaturan Folder
+  importFolderDescription: Impor Minecraft ke Peluncur
+  loadingFiles: Memuat Berkas Modpack
+items:
+  count: '{count} item'
+  total: total {total}
+java:
+  allocatedLong: Gunakan Java default sistem
+  allocatedShort: Dialokasikan Otomatis
+  allocation: Dialokasikan
+  autoHint: Min bertambah seiring jumlah mod terpasang; maks menggunakan memori sistem yang tersedia.
+  change: Ubah
+  importFromFile: Impor Java Dari Berkas
+  invalid: Lokasi Java Tidak Valid
+  location: Lokasi Java
+  locationHint: Tidak ada Java yang dipilih — menggunakan default sistem
+  maxMemory: Memori Maks
+  memory: Memori Java
+  memoryAuto: Otomatis
+  memoryManual: Manual
+  memoryUnassigned: Batalkan Alokasi
+  minMemory: Memori Min
+  noMemory: Jangan batasi penggunaan memori
+  openFolder: Buka Folder Java
+  presets: Preset
+  refresh: Segarkan Java Lokal
+  systemMemory: 'Memori Bebas Sistem: {free} / {total}'
+labyMod:
+  disable: Nonaktifkan LabyMod
+  empty: LabyMod tidak mendukung Minecraft saat ini
+launch:
+  cancel: Batal
+  createShortcut: Buat pintasan
+  forceKill: Hentikan Paksa
+  kill: Hentikan
+  killServer: Hentikan Server Localhost
+  launch: Luncurkan
+  launchAnyway: Luncurkan Saja
+  launchAs: Luncurkan sebagai
+  launchTo: Luncurkan ke
+launchBlocked:
+  launchBadVersion:
+    description: Json versi {version} rusak. Mungkin pasang ulang versi ini?
+    title: JSON Versi Buruk
+  launchGeneralException:
+    description: Beberapa kesalahan menyebabkan peluncuran gagal.
+    title: Peluncuran Gagal
+  launchInvalidJavaPath:
+    description: Java yang dipilih hilang atau tidak valid. Silakan pilih yang baru. <span class="highlight"> {javaPath} </span>
+    title: Jalur Java Tidak Valid
+  launchJavaNoPermission:
+    description: Peluncur tidak memiliki izin untuk mengeksekusi Java <span class="highlight"> {javaPath} </span>. Ubah izin berkas Java atau tingkatkan izin peluncur.
+    title: Tidak ada izin untuk meluncurkan
+  launchNoProperJava:
+    description: Tidak ada Java yang tepat yang dapat dipilih untuk meluncurkan game. ({javaPath} tidak valid?)
+    title: Tidak menemukan Java yang tepat
+  launchNoVersionInstalled:
+    description: Tidak dapat menyelesaikan versi <span class="highlight">{version}</span> untuk meluncurkan.
+    title: Tidak ada versi yang dipilih
+  launchSpawnProcessFailed:
+    description: Silakan periksa Java Anda, atau berikan lebih banyak izin ke peluncur dan coba lagi. Jika ini masih tidak berfungsi, silakan hubungi pengembang.
+    title: Gagal memulai proses game
+  unexpectedText: Ini tidak terduga. Anda dapat memulai ulang peluncur untuk mengurangi masalah. Silakan hubungi pembuat jika masalah ini terjadi lagi.
+launchFailed:
+  crash: Game Crash!!
+  description: Tidak ada laporan crash. Ini adalah log kesalahan dan log terbaru.
+  elyByAuthlib:
+    description: Pengganti authlib Ely.by digunakan untuk Minecraft versi {version}, tetapi versi ini mungkin tidak sepenuhnya kompatibel.
+    suggestion: Anda dapat menonaktifkan pengganti authlib Ely.by di pengaturan instansi untuk menghindari masalah ini.
+    title: Masalah Kompatibilitas Authlib Ely.by
+  failedToLaunch: Gagal meluncurkan game
+  latestLog: Log Terbaru
+  title: Game Keluar dengan Kode Tidak Normal
+launchPreExecuteCommandFailed:
+  description: 'Perintah pra-eksekusi gagal dengan kesalahan: {error}. Periksa perintah dan coba lagi.'
+  title: Perintah Pra-Eksekusi Gagal
+launchStatus:
+  assigningMemory: Mengalokasikan memori
+  elyByWarning: Pengganti authlib Ely.by diaktifkan. Beberapa versi Minecraft mungkin tidak kompatibel dan dapat crash. Anda dapat menonaktifkannya di pengaturan instansi jika terjadi masalah.
+  exit: Keluar Game?
+  injectingAuthLib: Menyiapkan AuthLib Pihak Ketiga
+  launching: Meluncurkan...
+  launchingSlow: Masih meluncurkan... Memulai mesin grafis bisa lambat...
+  refreshingUser: Segarkan Token Pengguna
+  spawningProcess: Memulai Proses
+launcherUpdate:
+  alreadyLatest: Sudah Terbaru
+  installAndQuit: Mulai Ulang untuk Memasang
+  noUpdateAvailable: Tidak Ada Pembaruan Tersedia
+  updateToThisVersion: Unduh dan Pasang
+localVersion:
+  auto: Dihitung Otomatis
+  empty: Tidak Ada Versi Terpasang
+  hint: Luncurkan versi lokal tertentu secara langsung
+  reinstallDescription: Jika Anda berpikir instalasi versi ini bermasalah, Anda dapat mencoba memasang ulang.
+  reinstallTitle: Pasang Ulang {version}
+  title: Versi Lokal | Versi Lokal
+logLevel:
+  error: Kesalahan
+  info: Info
+  success: Sukses
+  warning: Peringatan
+logView:
+  searchPlaceholder: Cari log...
+login:
+  dropHint: Letakkan tautan dengan kode autentikasi di sini untuk masuk secara manual
+  forgetPassword: Lupa Kata Sandi?
+  login: Masuk
+  manualLoginUrl: Jika browser tidak muncul, silakan klik tautan ini untuk melakukan autentikasi!
+  signup: Daftar
+  signupDescription: Baru di sini?
+  userRelogin: Token akses pengguna kedaluwarsa. Silakan masuk kembali!
+loginError:
+  acquireMicrosoftTokenFailed: Gagal memperoleh token Microsoft. Ini mungkin masalah jaringan. Silakan coba lagi.
+  badNetworkOrServer: Periksa koneksi jaringan Anda! Atau mungkin server autentikasi sedang mati!
+  checkOwnershipFailed: Gagal memeriksa kepemilikan game. Silakan coba lagi.
+  connectionReset: Gagal masuk karena koneksi disetel ulang oleh server
+  cyrillicNotAllowed: Karakter Sirilik tidak diperbolehkan
+  fetchMinecraftProfileFailed: 'Gagal mengambil profil Minecraft: {reason}'
+  illegalEmail: Email harus valid
+  illegalOfflineUsername: Nama pengguna harus sepanjang 3-16 karakter dan hanya berisi huruf Inggris, angka, dan garis bawah
+  invalidCredentials: Kredensial tidak valid. Nama pengguna atau kata sandi tidak valid.
+  loginMinecraftByXboxFailed: Gagal menukar token Minecraft dengan token Xbox. Pastikan Anda memiliki Minecraft di Xbox, atau coba lagi.
+  loginMinecraftByXboxRateLimited: Layanan autentikasi Minecraft Microsoft saat ini sedang membatasi tingkat permintaan (HTTP 429). Silakan tunggu sebentar dan coba lagi.
+  loginMinecraftByXboxRateLimitedWithRetry: Layanan autentikasi Minecraft Microsoft saat ini sedang membatasi tingkat permintaan (HTTP 429). Silakan tunggu sekitar {seconds} detik dan coba lagi.
+  loginMinecraftByXboxServerError: Layanan autentikasi Minecraft Microsoft mengembalikan kesalahan server (HTTP {status}). Ini adalah masalah dari pihak mereka. Silakan coba lagi dalam beberapa menit.
+  loginMinecraftByXboxStatus: Gagal menukar token Minecraft dengan token Xbox (HTTP {status}). Pastikan Anda memiliki Minecraft di Xbox, atau coba lagi.
+  loginXboxAdultVerification: Akun Microsoft Anda memerlukan verifikasi dewasa (umumnya diperlukan di beberapa wilayah) sebelum dapat masuk ke Xbox. Buka {url} di browser Anda untuk menyelesaikan verifikasi, lalu coba lagi.
+  loginXboxAgeRestricted: Gagal masuk ke Xbox karena masalah usia. Pastikan usia diatur untuk akun Microsoft Anda dan usianya di atas 18 tahun.
+  loginXboxBadXsts: Microsoft mengembalikan respons XSTS tanpa klaim pengguna yang diharapkan. Ini biasanya bersifat sementara -- silakan coba lagi dalam beberapa menit.
+  loginXboxBanned: Akun Microsoft / Xbox ini telah ditangguhkan atau diblokir oleh Microsoft dan tidak dapat masuk ke Minecraft. Silakan hubungi dukungan Microsoft / Xbox.
+  loginXboxChildAccount: Akun Microsoft Anda adalah akun anak-anak dan harus ditambahkan ke Microsoft Family sebelum dapat masuk ke Xbox / Minecraft. Buka {url} di browser Anda untuk memperbaikinya, lalu coba lagi.
+  loginXboxFailed: Gagal masuk ke Xbox dengan token Microsoft. Pastikan Anda memiliki akun Xbox yang terpisah untuk akun Microsoft Anda. Silakan coba lagi.
+  loginXboxFailedWithCode: Gagal masuk ke Xbox dengan token Microsoft (XErr {code}). Silakan cari kode untuk bantuan, atau coba lagi nanti.
+  loginXboxNoXboxProfile: Akun Microsoft ini belum memiliki profil Xbox. Buka {url} di browser Anda untuk membuatnya, lalu coba lagi.
+  loginXboxRegionLocked: Xbox Live tidak tersedia di wilayah akun Anda. Silakan ubah negara/wilayah akun Microsoft Anda di pengaturan akun Microsoft dan coba lagi.
+  noProfileForNewUser: Tidak menemukan profil game! Jika Anda adalah pengguna baru Minecraft, silakan masuk setidaknya satu kali di peluncur resmi Minecraft.
+  requestFailed: Masuk gagal, kami tidak tahu alasan pastinya. Silakan coba lagi.
+  requireEmail: Email diperlukan
+  requirePassword: Kata sandi diperlukan
+  requireUsername: Nama pengguna diperlukan
+  timeout: Masuk habis waktu. Silakan coba lagi atau periksa jaringan Anda.
+logsCrashes:
+  crashes: Laporan Crash
+  failures: Kegagalan Peluncuran
+  logs: Log
+  placeholder: Tidak Menemukan Berkas
+  serverLogs: Log Server
+  showFile: Tampilkan di Folder
+  title: Log atau Laporan Crash
+me:
+  news: Berita
+  recentPlay: Baru Saja Dimainkan
+migrateMinecraft:
+  name: Migrasikan Berkas Minecraft
+minecraftFriends:
+  accept: Terima
+  add: Tambah teman
+  addPlaceholder: Nama pengguna Minecraft
+  addedRelative: Ditambahkan {time}
+  errors:
+    cannotAddSelf: Anda tidak dapat mengirim permintaan pertemanan ke diri sendiri.
+    duplicate: Pemain tersebut sudah ada di daftar Anda.
+    generic: Terjadi kesalahan. Silakan coba lagi.
+    inviteRejected: Pemain tersebut tidak mengaktifkan fitur pertemanan atau tidak menerima undangan.
+    tokenExpired: Sesi Microsoft Anda kedaluwarsa. Silakan masuk lagi.
+    unknownProfile: Kami tidak dapat menemukan pemain dengan nama tersebut.
+  expiresRelative: Kedaluwarsa {time}
+  friends: Teman
+  heroEmptyHint: Tambahkan pemain Minecraft berdasarkan nama pengguna di atas untuk mengirim permintaan pertemanan.
+  heroEmptyTitle: Daftar teman Anda kosong
+  incoming: Permintaan masuk
+  incomingHint: 1 permintaan masuk | {count} permintaan masuk
+  notifyAdded: Permintaan pertemanan dikirim ke {name}
+  outgoing: Permintaan keluar
+  privacy:
+    acceptInvites: Terima undangan pertemanan
+    acceptInvitesHint: Saat nonaktif, pemain lain tidak dapat mengirimkan permintaan pertemanan kepada Anda.
+    friendsEnabled: Daftar teman diaktifkan
+  reconnectAction: Hubungkan Kembali
+  requiresMicrosoft: Masuk dengan akun Microsoft untuk menggunakan fitur pertemanan.
+  scopedTo: Masuk sebagai {name}
+  send: Kirim
+  title: Teman Minecraft
+  unsupported: Fitur pertemanan hanya tersedia untuk akun Microsoft.
+migrationWindow:
+  title: Migrasi Data
+  preparing: Menyiapkan migrasi…
+  scanning: Menghitung…
+  migrating: Memindahkan data Anda
+  done: Migrasi selesai
+  files: berkas
+  warning: Biarkan peluncur tetap terbuka hingga selesai, jika tidak, data Anda mungkin hilang.
+  error: Migrasi gagal
+minecraftVersion:
+  name: Versi Minecraft
+  all: Semua Versi
+  release: Rilis
+  showAlpha: Tampilkan Snapshot
+  snapshot: Snapshot
+mod:
+  acceptVersion: Terima {version}
+  applyGroupRules: Terapkan aturan pengelompokan tersimpan
+  compatible: Mod Kompatibel.
+  createGroup: Buat Grup
+  currentVersion: Saat Ini {current}
+  denseView: Tampilan Padat
+  description: Deskripsi
+  disableAll: Nonaktifkan Semua
+  dropHint: Letakkan berkas .jar/.litemod mod di sini untuk diimpor.
+  duplicatedDetected: '{count} mod duplikat terdeteksi'
+  duplicatedDetectedDescription: Menemukan mod dengan ID mod yang sama tetapi berkas berbeda. Ini mungkin menyebabkan Minecraft crash. Silakan pilih berkas yang ingin Anda pertahankan.
+  enableAll: Aktifkan Semua
+  enabled: '{count} Mod diaktifkan'
+  filter: Filter Mod
+  group: Kelompokkan
+  groupInstalled: Kelompokkan Mod Terpasang
+  groupName: Nama Grup
+  groupNameRequired: Nama grup diperlukan
+  hasUpdate: Mod memiliki versi baru!
+  incompatible: Mod Tidak Kompatibel.
+  incompatibleHint: Tampilkan yang Tidak Kompatibel
+  incompatibleHintDescription: Beberapa dependensi mod mungkin hilang, atau beberapa versi dependensi tidak cocok.
+  maybeCompatible: Mungkin Kompatibel.
+  modloaderSelectHint: Mod mendukung modloader berikut. Silakan pilih satu untuk dipasang.
+  modloaderSelectNotSupported: Tidak menemukan {modloader} untuk Minecraft {minecraft}
+  mods: '{count} Mod'
+  name: Mod | Mod
+  newFolder: Folder Baru
+  noGroupsFound: Tidak menemukan grup
+  noGroupsYet: Belum ada grup. Buat satu!
+  noModLoaderHint: Jangan lupa untuk mengaktifkan modloader untuk menggunakan mod!
+  openLink: Buka URL mod {url}
+  search: Cari Mod
+  searchGroups: Cari grup...
+  searchOnMcWiki: Cari {name} di ensiklopedia MC.
+  selectOrCreateGroup: Pilih atau Buat Grup
+  showDirectory: Tampilkan direktori mod
+  showFile: Tampilkan jalur mod {file}
+  showInModrinth: Tampilkan {name} di Modrinth
+  switchDefaultSource: Sumber Mod Default
+  syncGroupRules: Simpan aturan pengelompokan
+  toUpdate: '{count} pembaruan'
+  ungroup: Batalkan Pengelompokan
+modFilter:
+  clear: Bersihkan Filter
+  dependenciesInstallOnly: Hanya tunjukkan mod yang kehilangan dependensi
+  disabledOnly: Hanya tunjukkan mod yang dinonaktifkan
+  hasUpdateOnly: Hanya tunjukkan mod dengan pembaruan
+  incompatibleOnly: Hanya tunjukkan mod yang tidak kompatibel atau kehilangan dependensi
+  unusedOnly: Hanya tunjukkan mod pustaka yang tidak digunakan
+modInstall:
+  archived: '{name} telah diarsipkan. {name} tidak akan menerima pembaruan lebih lanjut kecuali pembuatnya memutuskan untuk membatalkan pengarsipan proyek tersebut.'
+  autoUpgrade:
+    description: Anda telah mengubah versi Minecraft. Apakah Anda ingin memperbarui secara otomatis mod yang kompatibel ke versi yang cocok dengan Minecraft {version}?
+    'no': Lewati
+    title: Perbarui Mod?
+    'yes': Perbarui Mod
+  checkDependencies: Periksa Dependensi
+  checkUpgrade: Periksa Pembaruan Mod
+  checkedDependencies: Dependensi Diperiksa
+  checkedUpgrade: Pembaruan diperiksa
+  currentVersion: Versi Terpilih
+  dependencyHint: Memasang versi lain {version}
+  releaseOnly: Abaikan versi alfa dan beta saat memperbarui
+  installDependencies: Pasang Dependensi yang Hilang
+  installHint: Akan memasang berkas {file} dengan dependensi {dependencies}
+  noVersionSupported: Mod hanya mendukung Minecraft {supported}.
+  recommendation: Jelajahi mod {first} di {modrinth} dan {curseforge}!
+  removeUnusedLibraries: Hapus yang Tidak Digunakan
+  search: Cari Mod...
+  skipVersion: Lewati mod dengan versi Minecraft yang berbeda
+  source: Sumber Mod
+  switch: Beralih Versi
+  upgrade: Perbarui Mod
+modSearch:
+  noLocalModsFound: Tidak menemukan mod lokal yang cocok dengan pencarian Anda.
+  noModsFound: Tidak menemukan mod
+  noModsInstalled: Anda tidak memiliki mod terpasang.
+  searchInMarket: Cari {keyword} di Pasar
+modUpgradePolicy:
+  curseforge: CurseForge
+  curseforgeOnly: Hanya CurseForge
+  modrinth: Modrinth
+  modrinthOnly: Hanya Modrinth
+  name: Kebijakan Pembaruan
+modified:
+  reset: Atur Ulang
+  save: Simpan
+  unsaved: Perubahan Anda belum disimpan!
+modpack:
+  author: Nama Pembuat
+  authorHint: Ini mungkin digunakan untuk menandatangani modpack yang diekspor (CurseForge)
+  description: Deskripsi
+  descriptionHint: Deskripsi umum untuk modpack Anda. Mungkin digunakan untuk mengekspor sebagai modpack CurseForge.
+  dropHint: Letakkan berkas zip modpack di sini untuk diimpor
+  emitCurseforge: Ekspor Modpack CurseForge
+  emitModrinth: Ekspor Modpack Modrinth
+  emitModrinthStrict: Format Ketat Modrinth
+  emitModrinthStrictDescription: Hanya URL dari 4 domain yang terdaftar di dokumen Modrinth yang diizinkan
+  export: Ekspor sebagai Modpack
+  exportDirectory: Ekspor Direktori
+  exportDirectoryDescription: Modpack akan diekspor ke folder Unduhan secara default
+  includeAssets: Sertakan Aset
+  includes: Berkas yang akan disertakan
+  modpackVersion: Versi Modpack
+  name: Modpack | Modpack
+  overrides: Pengesampingan
+  url: URL
+  urlHint: URL beranda modpack Anda
+modpackImportConfirm:
+  description: Mendeteksi Anda meletakkan berkas ke dalam peluncur. Apakah Anda mencoba mengimpor modpack?
+  title: Apakah Anda mencoba mengimpor modpack?
+modpackUpdateOrCreate:
+  createNew: Buat baru
+  description: Instansi "{name}" untuk modpack ini sudah ada. Apakah Anda ingin memperbaruinya atau membuat yang baru?
+  title: Instansi sudah ada
+  update: Perbarui yang sudah ada
+modrinth:
+  browseUrl: Buka di Browser {url}
+  categories:
+    128x: 128x
+    16x: 16x
+    256x: 256x
+    32x: 32x
+    48x: 48x
+    512x+: 512x+
+    64x: 64x
+    8x-: 8x-
+    adventure: Petualangan
+    atmosphere: Atmosfer
+    audio: Audio
+    blocks: Blok
+    bloom: Bloom
+    bukkit: Bukkit
+    bungeecord: Bungeecord
+    canvas: Kanvas
+    cartoon: Kartun
+    categories: Kategori
+    challenging: Menantang
+    colored-lighting: Pencahayaan Berwarna
+    combat: Pertarungan
+    core-shaders: Shader Inti
+    cursed: Terkutuk
+    datapack: Paket Data
+    decoration: Dekorasi
+    economy: Ekonomi
+    entities: Entitas
+    environment: Lingkungan
+    equipment: Peralatan
+    fabric: Fabric
+    fantasy: Fantasi
+    features: Fitur
+    folia: Folia
+    foliage: Dedaunan
+    fonts: Font
+    food: Makanan
+    forge: Forge
+    game-mechanics: Mekanika Game
+    gui: GUI
+    high: Tinggi
+    iris: Iris
+    items: Item
+    kitchen-sink: Serba Ada
+    library: Pustaka
+    lightweight: Ringan
+    liteloader: LiteLoader
+    locale: Bahasa
+    low: Rendah
+    magic: Sihir
+    management: Manajemen
+    medium: Sedang
+    minecraft: Minecraft
+    minigame: Game Mini
+    misc: Rupa-rupa
+    mobs: Mob
+    modded: Dimodifikasi
+    models: Model
+    modloader: Pemuat Mod
+    multiplayer: Multipemain
+    name: Kategori
+    neoforge: NeoForge
+    optifine: Optifine
+    optimization: Optimalisasi
+    paper: Paper
+    path-tracing: Pelacakan Jalur
+    pbr: PBR
+    performance impact: Dampak Kinerja
+    potato: Kentang
+    purpur: Purpur
+    quests: Misi
+    quilt: Quilt
+    realistic: Realistis
+    reflections: Refleksi
+    resolutions: Resolusi
+    rift: Rift
+    screenshot: Tangkapan Layar
+    semi-realistic: Semi Realistis
+    shadows: Bayangan
+    simplistic: Sederhana
+    social: Sosial
+    spigot: Spigot
+    sponge: Sponge
+    storage: Penyimpanan
+    technology: Teknologi
+    themed: Bertema
+    transportation: Transportasi
+    tweaks: Tweak
+    utility: Utilitas
+    vanilla: Vanilla
+    vanilla-like: Mirip Vanilla
+    velocity: Velocity
+    waterfall: Waterfall
+    worldgen: Generasi Dunia
+  clientSide: Sisi Klien
+  copyTitle: Salin teks {title} ke papan klip
+  createAt: Dibuat
+  createCollection: Buat Koleksi
+  description: Deskripsi
+  downloads: Unduhan
+  environments:
+    all: Semua
+    default: Bawaan
+    name: Lingkungan
+    optional: Opsional
+    required: Diperlukan
+    unsupported: Tidak Didukung
+  externalResources: Sumber Daya Eksternal
+  featuredVersions: Versi Unggulan
+  followedProjects: Proyek yang Diikuti
+  followers: Pengikut
+  gallery: Galeri
+  gameVersions:
+    name: Versi Game
+  headers:
+    status: Statistik
+    support: Mendukung
+    version: Versi
+  issueUrl: Masalah
+  license: Lisensi
+  licenses:
+    name: Lisensi
+  loginHint: Operasi ini memerlukan Modrinth. Peluncur akan membuka jendela browser untuk masuk ke Modrinth.
+  loginTitle: Masuk ke Modrinth
+  modLoaders:
+    name: Mod Loader
+  modpackSource:
+    source: Sumber
+  projectId: ID Proyek
+  projectMembers: Anggota Proyek
+  projectType:
+    datapack: Paket Data
+    mod: Mod
+    modpack: Paket Mod
+    plugin: Plugin
+    resourcepack: Paket Sumber Daya
+    shader: Shader
+  projects: '{count} proyek'
+  serverSide: Sisi Server
+  sort:
+    downloads: Jumlah unduhan
+    follows: Jumlah pengikut
+    newest: Baru dibuat
+    relevance: Relevansi
+    title: Urutkan Berdasarkan
+    updated: Baru diperbarui
+  sourceUrl: Sumber
+  technicalInformation: Informasi Teknis
+  updateAt: Diperbarui
+  versions: Versi
+  wikiUrl: Wiki
+modrinthCard:
+  currentVersion: Versi Saat Ini
+multiplayer:
+  allowTurn: Aktifkan server relai
+  allowTurnHint: Izinkan server relai jika Anda tidak dapat terhubung dengan teman Anda. Namun, menggunakan server relai dapat memperlambat koneksi Anda. Gunakan dengan hati-hati.
+  complete: Selesai
+  confirm: Konfirmasi
+  connectionError: Kesalahan Koneksi
+  connectionFailedHint: Tidak dapat membuat koneksi. Periksa apakah kedua rekan memiliki tipe NAT yang kompatibel.
+  connections: Koneksi
+  copied: Tersalin!
+  copy: Salin
+  copyGroupToFriendHint: Biarkan teman Anda bergabung dengan grup menggunakan ID ini
+  copyLocalHint: |
+    Silakan salin teks SDP lokal dan kirimkan ke rekan Anda agar rekan Anda memasukkan teks ini di bagian gabung koneksi. <span>Satu token hanya dapat digunakan untuk <span style="color: red; font-weight: bold;">satu rekan</span>! Anda tidak dapat mengirim token yang sama ke beberapa rekan!</span> <br> <span class="hint-text" style="font-style: italic;">Jika Anda perlu menghubungkan beberapa rekan, Anda perlu membuat <span style="font-weight: bold; color: rgba(245, 158, 11)">beberapa</span> koneksi.</span>
+  createLocalToken: Buat Token Lokal
+  currentIpTitle: IP Publik Terdeteksi
+  currentNatTitle: 'Jaringan saat ini (NAT):'
+  difficultyLevelHint: Tingkat kesulitan membuat koneksi
+  disconnect: Putuskan Koneksi
+  disconnectDescription: Apakah Anda yakin ingin memutuskan koneksi dengan pengguna {user}({id})?
+  disconnected: terputus
+  enterRemoteToken: Masukkan Token Jarak Jauh
+  enterRemoteTokenHint: Setelah rekan Anda memasukkan token Anda, Anda perlu memasukkan token miliknya ke area teks di bawah ini. Klik konfirmasi untuk menghubungkan.
+  exposedPortDescription: Port yang Anda ekspos ke rekan lain
+  exposedPorts: Port yang Diteruskan
+  gatheringIce: |
+    Harap tunggu server ICE mengumpulkan cukup informasi tentang jaringan Anda. Jika Anda tidak sabar dan informasi sudah cukup, Anda dapat memberikan SDP saat ini ke pihak lain terlebih dahulu dan klik Berikutnya. Silakan kirim <span class="v-chip v-chip--label v-size--small" style="text-font: bold" >Token Lokal</span> ke rekan Anda, rekan Anda memasukkan token Anda di bagian <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> Gabung Koneksi </span>. <br> Server ICE mungkin memerlukan waktu untuk mengumpulkan info Anda guna membuat <span class="v-chip v-chip--label v-size--small" style="text-font: bold">Token lokal</span>.<br> Anda tidak perlu menunggu hingga status ICE selesai. Jika token di bawah ini tetap tidak berubah, Anda dapat menyalinnya dan mengirimkannya ke rekan Anda.
+  groupId: ID Grup
+  illegalTokenDescription: Token tidak valid, pastikan token dari rekan Anda benar
+  initiateConnection: Mulai Koneksi
+  joinConnection: Jika rekan Anda telah memulai koneksi, Anda perlu bergabung ke Koneksi.
+  joinManual: Gabung
+  joinOrCreateGroup: Gabung/Buat Grup
+  joinOrCreateGroupHint: Dapatkan ID grup dari teman Anda atau buat grup
+  kernel: Kernel P2P
+  kernelDescription: Gunakan WebRTC bawaan atau node-datachannel. Hanya beralih jika koneksi P2P terkadang menyebabkan jendela peluncur crash.
+  leaveGroup: Tinggalkan grup
+  localToken: Token Lokal
+  manualConnect: Hubungkan Manual
+  name: Multipemain di LAN
+  natWarning: Tipe NAT Anda dapat mencegah koneksi langsung. Coba aktifkan server relai di pengaturan atau minta teman Anda untuk menjadi host.
+  networkInfo: Info Jaringan (Klik untuk beralih)
+  next: Berikutnya
+  otherExposedPortDescription: Port yang diteruskan oleh {user}
+  placeholder: Hubungkan dengan pengguna lain untuk bermain Minecraft di LAN!
+  previous: Sebelumnya
+  receiveHint: Setelah pihak lain memasukkan token Anda, koneksi Anda akan dibuat secara otomatis. Sekarang Anda dapat menutup dialog.
+  receiveRemoteTokenHint: Silakan masukkan token dari rekan Anda di sini.
+  remoteToken: Token Jarak Jauh
+  routerInfo: Info Router
+  sendTokenToRemote: Kirim Token ke Jarak Jauh
+  share: Bagikan Konfigurasi Instansi
+  sharing: Membagikan berkas...
+  sharingNotificationBody: Anda dapat mengunduh atau membuat instansi dari konfigurasi bersama {name}.
+  sharingNotificationTitle: Rekan membagikan konfigurasi game mereka
+  start: Mulai
+  startNewP2PConnection: Klik tombol Mulai untuk membuat koneksi rekan baru
+myStuff: Barang Saya
+natType:
+  blocked: Diblokir
+  fullCone: Full Cone
+  openInternet: Internet Terbuka
+  restrictNat: NAT Terbatas
+  restrictPortNat: NAT Port Terbatas
+  symmetricNat: NAT Simetris
+  symmetricUDPFirewall: Firewall UDP Simetris
+  unknown: Tidak Diketahui
+neoForgedVersion:
+  disable: Nonaktifkan NeoForged
+  empty: NeoForged tidak mendukung {version}
+news:
+  name: Berita
+  readMore: Baca Selengkapnya
+optifineVersion:
+  disable: Nonaktifkan Optifine
+  empty: Optifine tidak mendukung Minecraft {version}
+optional: Opsional
+peerConnectionState:
+  closed: Ditutup
+  connected: Terhubung
+  connecting: Menghubungkan
+  disconnected: Terputus
+  failed: Gagal
+  name: Status Koneksi
+  new: Baru
+peerGroupState:
+  closed: Tidak dalam Grup
+  closing: Ditutup
+  connected: Grup Bergabung
+  connecting: Menghubungkan
+peerIceGatheringState:
+  gathering: Mengumpulkan Server ICE
+peerSignalingState:
+  have-local-offer: Menunggu deskripsi rekan
+presence:
+  instance: Menganggur di Instansi {instance}
+  instanceSetting: 'Edit Pengaturan Instansi: {instance}'
+  mod: Melihat Mod di {instance}
+  modrinthProject: Melihat {name} di Modrinth
+  resourcePack: Melihat Paket Sumber Daya di {instance}
+  save: Melihat Save di {instance}
+  setting: Melihat Halaman Pengaturan
+  shaderPack: Melihat Paket Shader di {instance}
+proxy:
+  host: Host
+  port: Port
+quiltVersion:
+  disable: Nonaktifkan Quilt
+  empty: Quilt tidak mendukung Minecraft {version}
+reinstall:
+  name: Pasang Ulang {version}
+relative:
+  daysAgo: '{count} hari yang lalu | {count} hari yang lalu'
+  hoursAgo: '{count} jam yang lalu | {count} jam yang lalu'
+  justNow: baru saja
+  minutesAgo: '{count} menit yang lalu | {count} menit yang lalu'
+  secondsAgo: '{count} detik yang lalu | {count} detik yang lalu'
+resourceError:
+  body: '"{path}" tidak dapat diurai ({code}). Berkas mungkin rusak, terkunci, atau tidak lengkap. Coba unduh ulang atau hapus berkas tersebut.'
+  title: Tidak dapat membaca {file}
+blueprint:
+  name: Cetak Biru | Cetak Biru
+  count: '{count} cetak biru'
+  searchLocal: Cari cetak biru...
+  searchOnline: Cari online...
+  market: Pasar
+  local: Lokal
+  provider: Penyedia
+  import: Impor
+  openFolder: Buka folder
+  refresh: Segarkan
+  empty: Tidak menemukan cetak biru. Impor berkas .litematic / .schem / .nbt atau telusuri pasar.
+  dropHint: Letakkan berkas cetak biru (.litematic / .schem / .nbt) di sini untuk diimpor.
+  selectHint: Pilih cetak biru untuk melihat pratinjaunya.
+  blocks: '{count} blok'
+  materials: Bahan
+  allNamespaces: Semua
+  findMod: Cari mod untuk namespace ini
+  compatible: Kompatibel
+  incompatible: Mod yang hilang
+  missingNamespaces: 'Mod yang hilang untuk: {namespaces}'
+  delete: Hapus
+  cancel: Batal
+  install: Pasang
+  goTo: Situs Web
+  byAuthor: oleh {author}
+  noDescription: Tidak ada deskripsi yang diberikan.
+  loadMore: Muat lebih banyak
+  cmsBrowseOnly: Sumber ini hanya untuk dilihat; buka situs web untuk mengunduh.
+  mixedSources: Hasil dicampur dari semua sumber. Beberapa hanya untuk dilihat — buka situs web mereka untuk mengunduh.
+  formats:
+    structure: Struktur Vanilla
+  preview:
+    title: Pratinjau 3D
+    loading: Memuat pratinjau...
+    empty: Cetak biru ini tidak memiliki blok untuk ditampilkan.
+    hint: '{count} blok · {x}×{y}×{z}'
+    controls: Tarik untuk melihat · Tombol WASD untuk bergerak · Space/Shift untuk naik/turun
+  convert:
+    title: Ubah format
+    hint: Ubah cetak biru ini ke format lain. Berkas baru akan dibuat.
+    target: Format target
+    action: Ubah
+  replace:
+    title: Ganti blok
+    simple: Sederhana
+    precise: Tepat
+    simpleHint: Cocokkan dengan ID blok saja, mempertahankan properti status blok yang ada.
+    preciseHint: Cocokkan seluruh status blok (ID + properti) dan ganti sepenuhnya.
+    from: Dari
+    to: Ke
+    addRule: Tambah aturan
+    newFile: Simpan sebagai berkas baru
+    action: Ganti
+resourcepack:
+  compatible: Format kompatibel {format} dengan {version}
+  defaultDescription: Tampilan dan nuansa default Minecraft
+  delete:
+    content: Ini akan menghapus berkas paket sumber daya dari disk, dan tindakan ini tidak dapat dibatalkan. Apakah Anda yakin ingin melakukan ini?
+    title: Hapus paket sumber daya
+  dropHint: Letakkan folder/zip Paket Sumber Daya di sini untuk diimpor.
+  enable: '{count} paket sumber daya diaktifkan'
+  incompatible: Format Paket Sumber Daya tidak kompatibel ({format}). Cocok {accept}. Saat ini {actual}.
+  name: Paket Sumber Daya | Paket Sumber Daya
+  linkShared: Bagikan paket sumber daya di seluruh instansi
+  linkSharedHint: Hubungkan folder paket sumber daya instansi ini ke folder bersama global sehingga semua instansi melihat paket sumber daya yang sama. Paket yang ada akan digabungkan ke folder bersama.
+  noLocalPacksFound: Tidak menemukan paket sumber daya lokal yang cocok dengan pencarian Anda.
+  noPacks: Tidak menemukan paket sumber daya
+  noPacksInstalled: Anda tidak memiliki paket sumber daya terpasang.
+  search: Cari Paket Sumber Daya...
+  searchHint: Cari paket sumber daya
+  searchOnCurseforge: Cari {name} di CurseForge
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: Paket Sumber Daya Terpilih
+  showDirectory: Tampilkan direktori paket sumber daya
+  showFile: Tampilkan paket sumber daya di folder {file}
+  showInCurseforge: Tampilkan {name} di CurseForge
+  unselected: Paket Sumber Daya Tidak Terpilih
+save:
+  allowCheats: Izinkan Cheat
+  copy:
+    name: Salin Save
+  createNew: Buat Dunia Baru
+  createdWorlds: Anda memiliki {count} dunia
+  deleteHint: Operasi ini tidak dapat dibatalkan. Anda akan kehilangan data simpanan selamanya. Apakah Anda yakin ingin menghapus simpanan ini?
+  deleteTitle: Hapus Simpanan
+  difficulty: Kesulitan
+  dropHint: Seret zip simpanan di sini untuk Mengimpor
+  datapack:
+    name: Paket Data | Paket Data
+    noSaveHint: Buat atau pilih dunia terlebih dahulu untuk memasang paket data ini
+    packFormat: 'Format paket: {format}'
+    imported: Paket data diimpor ke {save}
+  duplicate: Duplikat Simpanan
+  export: Ekspor Simpanan
+  exportMessage: Ekspor Simpanan sebagai zip
+  exportTitle: Ekspor Simpanan
+  gameMode: mode game
+  independent: Instansi menggunakan folder simpanan terpisah
+  linkShared: Bagikan simpanan di seluruh instansi
+  linkSharedHint: Hubungkan folder simpanan instansi ini ke folder bersama global sehingga semua instansi berbagi dunia yang sama. Simpanan yang ada akan digabungkan ke folder bersama.
+  levelName: Nama Tingkat
+  loadMap: Muat Peta
+  mapError: Kesalahan Peta
+  mapInfo: 'Pratinjau dunia 3D interaktif:'
+  mapLoaded: Peta Dimuat
+  mapPreview: Pratinjau Peta
+  chunkSelectMode: Pilih Chunk
+  panMode: Geser
+  chunkSelected: '{count} chunk terpilih'
+  mapHintPan: Seret untuk menggeser
+  mapHintSelect: Pilih
+  mapHintDeselect: Batalkan Pilihan
+  toggleGrid: Aktifkan/nonaktifkan kisi wilayah
+  heightTop: Atas
+  resetView: Atur Ulang Tampilan
+  clearSelection: Bersihkan Pilihan
+  copyChunks: Salin Chunk
+  pasteChunks: Tempel {count} Chunk
+  pasteChunksPlaceHint: Pindahkan mouse untuk memposisikan {count} chunk, lalu klik untuk menempelkan. Chunk yang ada di target akan ditimpa. Tekan Esc to membatalkan.
+  pasteChunksCancel: Batal
+  deleteChunks: Hapus Chunk
+  deleteChunksTitle: Hapus Chunk Terpilih
+  deleteChunksHint: Hapus {count} chunk terpilih? Tindakan ini tidak dapat dibatalkan. Chunk akan dibuat ulang saat area tersebut dimuat kembali dalam game.
+  mapLoading: Memuat peta…
+  noRegions: Dunia ini tidak memiliki wilayah yang dibuat untuk pratinjau.
+  dimOverworld: Dunia Atas
+  dimNether: Nether
+  dimEnd: The End
+  name: Simpanan | Simpanan
+  noLocalSavesFound: Tidak menemukan simpanan lokal yang cocok dengan pencarian Anda.
+  noSavesFound: Tidak menemukan simpanan
+  noSavesInstalled: Anda tidak memiliki simpanan.
+  openFolder: Buka Folder Simpanan
+  properties: Properti Dunia
+  search: Cari Peta...
+  searchHint: Cari dunia di CurseForge
+  searchSaves: Cari Simpanan
+  seed: Benih
+  selected: Simpanan Lokal
+  shared: Instansi menggunakan folder simpanan bersama
+  showDirectory: Tampilkan direktori simpanan
+  unselected: Simpanan Bersama
+  useCurrent: Gunakan dunia saat ini
+  useMouseRotate: Gunakan mouse untuk memutar tampilan
+  useScrollZoom: Gunakan roda gulir untuk memperbesar
+  world: Dunia
+screenshots:
+  empty: Anda tidak memiliki tangkapan layar
+  gallery: Galeri Tangkapan Layar
+  hint: Ambil tangkapan layar dalam game dengan menekan F2
+  openFolder: Buka Folder Tangkapan Layar
+  playRandom: Acak
+  playSequence: Putar berurutan
+search:
+  favorate: Koleksi
+  local: Terpasang
+  market: Pasar
+  emptyInstalled: Belum ada yang terpasang
+  browseMarket: Telusuri Pasar
+  noResults: Tidak menemukan hasil
+server:
+  acceptingMinecraftVersion: Menerima Versi Minecraft
+  addServer: Tambah Server
+  address: Alamat Server
+  addressHint: mis. mc.hypixel.net
+  bindUpstream: Ikat sebagai hulu
+  boundUpstream: Hulu server terikat
+  boundUpstreamHint: Instansi ini mengikuti versi Minecraft server yang terikat.
+  creationHint: Silakan isi alamat server dan ping server
+  editServer: Ubah Server
+  emptyHint: Belum ada server di servers.dat instansi ini. Tambahkan satu untuk memulai.
+  entryCount: '{count} server | {count} server'
+  expectedVersions: Versi yang Didukung
+  export: Ekspor Server
+  exportNoFilesHint: Tidak menemukan berkas server. Anda dapat menjalankan server secara lokal sekali untuk menghasilkan beberapa berkas.
+  exportOption: Opsi Ekspor Server
+  exportSSHAuthenticationFailed: Semua metode autentikasi gagal. Silakan periksa nama pengguna/kata sandi atau kunci privat.
+  exportSSHOptions: Opsi SSH
+  exportSSHPrivateKeyPath: Jalur Kunci Privat SSH
+  exportSSHRemotePath: Jalur Server Jarak Jauh
+  exportToFolder: Ekspor Ke Folder
+  filterVersion: Filter versi Minecraft yang direspons server
+  host: Host
+  hostHint: Host (dengan port) dari server
+  hostRequired: Silakan masukkan alamat IP server
+  ipAddress: Alamat IP
+  launchClient: Luncurkan klien saja
+  launchPinned: Disematkan
+  launchTargetHint: Instansi ini meluncur langsung ke server yang disematkan. Beralih kembali ke klien?
+  maxPlayers: Pemain Maks
+  motd: MOTD Server
+  nameHint: Nama tampilan yang ditunjukkan di daftar Multipemain
+  nogui: Tanpa GUI Server
+  onlineMode: Mode Online
+  pin: Sematkan server
+  pinAfterSave: Sematkan sebagai target peluncuran default setelah disimpan
+  ping: Ping
+  pings: Ping
+  pinnedHeader: 'disematkan: {name}'
+  players: Pemain
+  port: Port
+  serverName: Nama server
+  serversListTitle: Daftar Server
+  unbindUpstream: Lepas Ikatan
+  unknown: Server Tidak Dikenal
+  unknownDescription: Server Tidak Dikenal. Silakan Segarkan
+  unpin: Batal Sematkan
+  upload: Unggah Server
+  upstreamUpToDate: Instansi Anda cocok dengan server ({version}).
+  upstreamUpToDateHint: Tidak perlu peningkatan. Klik untuk melakukan ping ulang server.
+  upstreamUpdateAvailable: Server sekarang menjalankan Minecraft {version}. Klik untuk menerapkan.
+  upstreamUpdateHint: Terapkan versi Minecraft yang disarankan ke instansi ini.
+  useAsUpstreamHint: Instansi akan mengikuti versi Minecraft yang dilaporkan server.
+  version: Server Memerlukan Versi
+  versionHint: Versi Minecraft Untuk Di-ping
+serverStatus:
+  nohost: §4Tidak dapat menemukan host!
+  ping: Ping...
+  refuse: §4Server menolak!
+  timeout: §4Batas waktu koneksi server habis!
+setting:
+  about: Tentang
+  aboutBmclDescription: BMCL API menyediakan unduhan yang nyaman bagi pengguna di Tiongkok Daratan
+  aboutContributors: 🧑‍💻 Kontributor 🧑‍💻
+  aboutDenoDescription: XMCL memanfaatkan platform bebas repot Deno Deploy untuk aplikasi JavaScript serverless
+  aboutLicense: LISENSI MIT
+  aboutLicenseInfo: Penandatanganan kode gratis di Windows disediakan oleh SignPath.io, sertifikat oleh SignPath Foundation
+  aboutSponsors: 😇 Sponsor 😇
+  advancedJavaOptions: Opsi Java Lanjutan
+  advancedSettings: Pengaturan Lanjutan
+  advancedSettingsHint: Zona bahaya - atur ulang atau kelola data peluncur
+  aiAgentApiKey: Kunci API Agen AI
+  aiAgentApiKeyDescription: Disimpan secara lokal di perangkat ini dan digunakan untuk permintaan agen.
+  aiAgentEndpoint: Endpoint Agen AI
+  aiAgentEndpointDescription: URL endpoint pelengkap obrolan.
+  aiAgentModel: Model Agen AI
+  aiAgentModelDescription: Nama model untuk dikirim dalam permintaan pelengkap obrolan.
+  apiSets:
+    auto: Otomatis (Tentukan berdasarkan jaringan)
+    official: Resmi (Mojang)
+  appearance: Tampilan
+  appearanceDescription: Sesuaikan tampilan peluncur
+  appxUpdateHint: Peluncur akan mengunduh dan mengeksekusi penginstal. Jika penginstal pop-up gagal, silakan jalankan secara manual.
+  authenticationSettings: Autentikasi
+  backdropBlur: Kabur Latar Belakang
+  backgroundColorAbove: Tampilkan warna latar belakang sebagai hamparan
+  backgroundColorAboveDescription: Ini akan membuat warna latar belakang ditampilkan di atas gambar atau video latar belakang.
+  backgroundImage: Gambar latar belakang
+  backgroundImageClear: bersihkan
+  backgroundImageDescription: Pilih gambar sebagai latar belakang atau bersihkan
+  useDesktopBackground: Gunakan wallpaper desktop saat ini
+  backgroundImageFit:
+    contain: Paskan
+    cover: Penuhi
+    name: Kesesuaian Gambar
+  backgroundImageUrl: URL Gambar
+  backgroundImageUrlPlaceholder: Masukkan URL HTTP/HTTPS untuk gambar
+  backgroundMusic: Musik Latar Belakang Tema
+  backgroundMusicUrl: URL Musik
+  backgroundMusicUrlPlaceholder: Masukkan URL HTTP/HTTPS untuk musik
+  backgroundType: Tipe Latar Belakang
+  backgroundTypeDescription: Tampilkan efek khusus pada latar belakang (Ini dapat memengaruhi kinerja)
+  backgroundTypes:
+    halo: Halo
+    image: Gambar
+    none: Tidak Ada
+    particle: Partikel
+    video: Video
+  backgroundVideo: Video Latar Belakang
+  backgroundVideoDescription: Pilih atau bersihkan video
+  backgroundVideoUrl: URL Video
+  backgroundVideoUrlPlaceholder: Masukkan URL HTTP/HTTPS untuk video
+  backgroundVideoVolume: volume
+  backgroundVideoVolumeDescription: seret untuk menyesuaikan volume
+  browseRoot: Telusuri
+  checkUpdate: Periksa Pembaruan
+  colorTheme:
+    appBarColor: Bilah Aplikasi
+    backgroundColor: Warna Latar Belakang
+    cardColor: Warna Kartu
+    description: Ubah warna dalam tema
+    errorColor: Warna Kesalahan
+    name: Warna Tema dan Kabur
+    primaryColor: Warna Utama
+    sideBarColor: Bilah Samping
+    warningColor: Warna Peringatan
+  customCss:
+    advancedDescription: Tindih gaya peluncur saat ini dengan CSS Anda sendiri.
+    assistantHint: Jelaskan tampilan yang Anda inginkan dan saya akan menulis CSS-nya untuk Anda.
+    assistantSuggestion1: Buat bilah samping tembus cahaya
+    assistantSuggestion2: Tambahkan latar belakang gradien halus ke kartu
+    assistantTitle: Asisten CSS
+    dropHint: Letakkan berkas .css untuk memuatnya
+    editorPlaceholder: /* Tulis CSS kustom Anda di sini */
+    globalToggle: Aktifkan/Nonaktifkan CSS Kustom
+    openInDialog: Buka di dialog agen
+    title: CSS Kustom
+    warning: CSS Kustom memungkinkan Anda untuk menyesuaikan aspek apa pun dari peluncur. Hati-hati saat menempelkan CSS dari sumber yang tidak dipercaya, karena dapat mengubah tata letak antarmuka.
+  darkTheme: Tema
+  darkThemeDescription: Pilih antara tema gelap atau terang
+  devModeLabel: DEV
+  developerMode: Mode Pengembang
+  developerModeDescription: Mode Pengembang adalah untuk menguji mod Anda sendiri
+  disableTelemetry: Nonaktifkan Telemetri
+  disableTelemetryDescription: XMCL akan mengumpulkan peristiwa peluncuran game dan masuk pengguna.
+  enableDedicatedGPUOptimization: Tetapkan GPU Khusus
+  enableDedicatedGPUOptimizationDescription: Opsi ini akan menetapkan GPU khusus ke proses Minecraft.
+  enableDiscord: Aktifkan Discord Presence
+  enableDiscordDescription: Ini akan memperbarui status Discord ke peluncur
+  enterUrl: Masukkan URL
+  exportSettings: Ekspor Pengaturan
+  exportSettingsHint: Simpan pengaturan saat ini ke berkas
+  general: Umum
+  githubRelease: Rilis GitHub
+  globalSetting: Pengaturan Instansi Global
+  globalSettingHint: Instansi akan menggunakan pengaturan ini secara default.
+  importSettings: Impor Pengaturan
+  importSettingsHint: Muat pengaturan dari berkas yang diekspor sebelumnya
+  instanceTheme:
+    activeDescription: Instansi ini menggunakan tema kustom. Anda dapat menghapusnya untuk menggunakan tema global.
+    description: Aktifkan tema kustom untuk instansi ini. Ini akan membuat salinan tema global saat ini.
+    name: Tema Instansi
+  language: Bahasa
+  languageDescription: Bahasa tampilan
+  latestVersion: Versi Terbaru
+  layout:
+    default: Tata Letak Default
+    focus: Tata Letak Fokus
+  layoutDescription: Pilih gaya antarmuka yang Anda sukai
+  layoutTitle: Tata Letak Antarmuka
+  linuxEnableDedicatedGPUOptimization: Penetapan prosesor grafis khusus
+  linuxEnableDedicatedGPUOptimizationDescription: Opsi ini menetapkan GPU khusus ke proses Minecraft.
+  linuxTitlebar: Bilah judul bawaan
+  linuxTitlebarDescription: Gunakan bilah judul linux bawaan untuk peluncur
+  livePreview: Pratinjau Langsung
+  location: Lokasi Penyimpanan
+  manualUpdateHint: Versi tidak dapat diperbarui secara otomatis. Silakan unduh peluncur kembali dari situs web resmi!
+  maunalUpdateHint: Versi tidak dapat diperbarui otomatis. Silakan unduh ulang peluncur dari situs web!
+  maxSockets: Per Host
+  maxSocketsDescription: Batasi jumlah maksimum soket yang diizinkan per host atau untuk semua host secara total. 0 berarti tanpa batas.
+  maxSocketsTitle: Soket HTTP Maksimum
+  memoryAssignment: Penetapan Memori
+  migrateFromOther: Impor dari peluncur lain
+  minecraftOptions: Opsi Minecraft
+  name: Pengaturan Global | Pengaturan Global
+  network: Pengaturan Jaringan
+  newsPosition: Pindahkan Bagian Berita
+  officialWebsite: Situs Web Resmi
+  particleMode:
+    bubble: Gelembung
+    name: Mode Partikel
+    push: Dorong
+    remove: Hapus
+    repulse: Tolak
+  particleModeDescription: Pilih perilaku klik partikel
+  quickLaunchSettings: Peluncuran Cepat
+  replaceNative: Ganti Pustaka Bawaan
+  replaceNativeDescription: Ganti pustaka bawaan sesuai dengan arsitektur komputer Anda.
+  replaceNatives:
+    all: Semua
+    legacy: Hanya Versi Warisan
+  resetAllSettings: Atur Ulang Semua Pengaturan
+  resetAllSettingsConfirmMessage: Ini akan menghapus secara permanen semua pengaturan, akun, instansi, grup, dan data cache. Tindakan ini tidak dapat dibatalkan. Apakah Anda yakin?
+  resetAllSettingsConfirmTitle: Atur Ulang Semua Pengaturan?
+  resetAllSettingsHint: Atur ulang peluncur ke default pabrik (menghapus segalanya)
+  resetAllSettingsSuccess: Semua pengaturan telah diatur ulang. Peluncur akan dimulai ulang.
+  resetSettingsError: 'Kesalahan saat mengatur ulang pengaturan: {error}'
+  resetToDefault: Atur Ulang ke Default
+  select: Pilih
+  setAsBackground:
+    failed: Gagal menetapkan gambar latar belakang
+    global: Tetapkan sebagai latar belakang peluncur
+    instance: Tetapkan sebagai latar belakang instansi
+    successGlobal: Gambar latar belakang diperbarui.
+    successInstance: Gambar latar belakang instansi diperbarui.
+  settingsExported: Pengaturan berhasil diekspor
+  settingsImportError: Gagal mengimpor pengaturan. Silakan periksa format berkas.
+  settingsImported: Pengaturan berhasil diimpor
+  settingsReloadHint: Peluncur akan dimulai ulang untuk menerapkan semua pengaturan.
+  showNewsHeader: Tampilkan kembali bagian Berita
+  showRoot: Tampilkan
+  sidebarAlign: Penyelarasan Bilah Samping
+  sidebarAutoHide: Sembunyikan Otomatis Bilah Samping
+  sidebarAutoHideHint: Sembunyikan bilah samping secara otomatis dan tampilkan saat didekati mouse
+  sidebarClassic: Klasik
+  sidebarNotch: Notch
+  sidebarPosition: Posisi Bilah Samping
+  sidebarScale: Skala Bilah Samping
+  sidebarShowOnlyPinned: Hanya Tampilkan Instansi yang Disematkan
+  sidebarShowOnlyPinnedHint: Hanya tampilkan instansi yang disematkan di bilah samping
+  sidebarStyle: Gaya Bilah Samping
+  sidebarStyleHint: Pilih antara desain notch klasik dan modern
+  streamerMode: Mode Streaming
+  streamerModeDescription: Ini akan menyembunyikan informasi pribadi Anda seperti email di peluncur.
+  theme:
+    dark: Tema Gelap
+    light: Tema Terang
+    system: Gunakan Tema Sistem
+  themeExport: Ekspor Tema
+  themeBorderRadius: Sudut Membulat
+  themeBorderRadiusDescription: Aktifkan atau nonaktifkan sudut membulat untuk kartu, dialog, menu, dan panel.
+  themeFont: Font
+  themeFontDescription: Ubah font peluncur.
+  themeFontUrl: URL Font
+  themeFontUrlPlaceholder: Masukkan URL HTTP/HTTPS untuk font
+  themeImport: Impor Tema
+  themeResetFont: Atur Ulang Font
+  themeSelectFont: Pilih Font
+  themeSettings: Pengaturan Tema
+  themeShare: Bagikan Tema
+  themeShareDescription: Anda dapat membagikan tema dengan teman Anda.
+  themeStore:
+    description: Simpan dan kelola tema global
+    loadConfirmMessage: Memuat tema yang disimpan akan menggantikan tema Anda saat ini. Silakan buat cadangan jika diperlukan.
+    loadConfirmTitle: Ganti Tema Saat Ini?
+    loadTheme: Muat Tema
+    name: Toko Tema
+    noSavedThemes: Belum ada tema yang disimpan
+    saveDialogTitle: Simpan Tema
+    saveToStore: Simpan ke Toko
+    savedThemes: Tema yang Disimpan
+    themeName: Nama Tema
+    themeNameHint: Nama yang digunakan untuk menyimpan tema ini
+  update: Perbarui
+  useBmclAPI: Gunakan BMCL API
+  useBmclAPIDescription: Gunakan BMCLAPI untuk mengunduh Minecraft saat Anda berada di Tiongkok Daratan (Ini tidak akan memengaruhi Anda jika tidak berada di Tiongkok Daratan).
+  useProxy: Proksi HTTP
+  useProxyDescription: Alamat server proksi untuk permintaan HTTP
+  viewBackgroundMusic: Lihat Musik
+settingLabel:
+  global: Global
+  globalHint: Pengaturan ini akan mengikuti pengaturan global
+  local: Lokal
+  localHint: Pengaturan ini dimodifikasi oleh instansi saat ini
+setup:
+  account:
+    description: Masuk ke akun game Anda. Jika Anda tidak memilikinya, Anda dapat melewatinya untuk saat ini.
+    name: Tambah Akun Game
+    skip: Lewati untuk saat ini
+  appearance:
+    name: '@:setting.appearance'
+  dataRoot:
+    description: Folder data utama bukanlah direktori .minecraft umum. Karena struktur direktori data XMCL berbeda dari vanilla, kami tidak menyarankan menggunakan direktori .minecraft umum sebagai folder data utama.
+    drives: Lokasi yang Direkomendasikan
+    name: Atur Direktori Data
+  defaultLayoutDescription: Tata letak default mencoba untuk meningkatkan konsep "instansi" game. Terlihat seperti aplikasi seperti Discord. Ini juga terinspirasi oleh aplikasi peluncur game lain seperti Steam, dll.
+  defaultPath: Jalur Default
+  error:
+    badDataRoot: Direktori tidak valid untuk data peluncur! Silakan coba direktori lain!
+    exists: Direktori terpilih tidak kosong. Tidak apa-apa tetapi pastikan Anda mencadangkan data Anda.
+    invalidChar: Jalur berisi karakter tidak valid! Ini dapat menyebabkan Minecraft gagal memulai! Harap hanya gunakan karakter dan simbol bahasa Inggris!
+    noPermission: Peluncur tidak memiliki izin untuk mengakses direktori terpilih! Silakan coba yang lain.
+    nonDictionary: Jalur terpilih adalah berkas! Silakan pilih direktori!
+  focusLayoutDescription: Tata letak fokus adalah tata letak warisan dari Peluncur Minecraft. Ini dirancang untuk digunakan dengan instansi tunggal atau beberapa instansi.
+  game:
+    name: Impor Game yang Ada
+  locale:
+    description: Pilih bahasa pilihan Anda jika kami memilikinya! Jika Anda tidak melihat bahasa asli Anda dan ingin membantu, Anda dapat mengunjungi GitHub kami untuk mengirimkan pull request terjemahan!
+    language: Bahasa
+    name: Atur Bahasa
+  path: Jalur Saat Ini
+shaderPack:
+  deletion: Hapus Paket Shader
+  deletionHint: Ini akan menghapus berkas paket shader {path} dan tidak dapat dibatalkan.
+  disabled: Paket Shader Dinonaktifkan
+  dropHint: Impor Paket Shader
+  empty: Tidak ada paket shader yang dialokasikan
+  enable: Menggunakan {name}
+  enabled: Paket Shader Diaktifkan
+  manage: Kelola Paket Shader
+  market: Pasar Shader
+  name: Paket Shader
+  linkShared: Bagikan paket shader di seluruh instansi
+  linkSharedHint: Hubungkan folder paket shader instansi ini ke folder bersama global sehingga semua instansi melihat paket shader yang sama. Paket yang ada akan digabungkan ke folder bersama.
+  noLocalPacksFound: Tidak menemukan paket shader lokal yang cocok dengan pencarian Anda.
+  noPacks: Tidak ada paket shader terpasang
+  noPacksInstalled: Anda tidak memiliki paket shader terpasang.
+  noShaderMod: Tidak Ada Mod Shader Terpasang
+  noShaderModHint: Anda tidak dapat menggunakan shader tanpa mod shader
+  noShaderModInstallHint: Anda perlu memasang salah satu mod berikut untuk memuat paket shader.
+  search: Cari Paket Shader...
+  searchHint: Cari paket shader di Modrinth dan CurseForge
+  selectSearchHint: Cari dan pilih Paket Shader
+  showDirectory: Tampilkan direktori paket shader
+  showFile: Tampilkan paket shader ini di folder
+shared:
+  add: Tambah
+  author: Pembuat
+  back: Kembali
+  browse: Telusuri
+  cancel: Batal
+  client: Klien
+  copied: Tersalin
+  copy: Salin
+  close: Tutup
+  copyFailed: Salin gagal
+  copyFailedHint: Tidak dapat menyalin ke papan klip
+  description: Deskripsi
+  disable: Nonaktifkan
+  download: Unduh
+  edit: Ubah
+  enable: Aktifkan
+  filter: Filter
+  install: Pasang
+  installed: Terpasang
+  keepSelected: Pertahankan yang Terpilih
+  manage: Kelola
+  name: Nama
+  next: Berikutnya
+  'no': Tidak
+  ok: OK
+  previous: Sebelumnya
+  refresh: Segarkan
+  remove: Hapus
+  save: Simpan
+  search: Cari
+  server: Server
+  skipForNow: Lewati untuk saat ini
+  'yes': Ya
+  delete: Hapus
+sidebar:
+  pin: Sematkan
+  unpin: Batal Sematkan
+sortBy:
+  alphabetAsc: Urutkan berdasarkan alfabet (naik)
+  alphabetDesc: Urutkan berdasarkan alfabet (turun)
+  name: Urutkan Berdasarkan
+  timeAsc: Urutkan berdasarkan waktu modifikasi (naik)
+  timeDesc: Urutkan berdasarkan waktu modifikasi (turun)
+store:
+  discover: Temukan
+  empty: Tidak Menemukan Modpack
+  emptyHint: Coba sesuaikan filter atau kueri pencarian Anda.
+  latestMinecraft: Versi Minecraft Terbaru
+  name: Pasar Modpack
+  searchResult: Hasil Pencarian
+  trending: Tren
+tag:
+  create: Buat Tag
+  createSelected: Buat Tag untuk yang Terpilih
+task:
+  cancelled: Dibatalkan
+  clear: Bersihkan Tugas yang Selesai
+  connection:
+    connected: Terhubung
+    free: Bebas
+    pending: Tertunda
+    queued: Antre
+    running: Koneksi berjalan
+    size: jumlah total
+  connections: Koneksi Jaringan
+  empty: Tidak Ada Tugas Berjalan
+  failed: Gagal
+  manager: Pengelola Tugas
+  nTaskRunning: '{count} tugas sedang berjalan'
+  name: Tugas | Tugas
+  pause: Jeda
+theme:
+  selectImage: Pilih Gambar
+  selectMusic: Pilih Musik
+  selectVideo: Pilih Video
+  title: X Minecraft Launcher
+title: X Minecraft Launcher
+transportType:
+  host: Kandidat Host
+  prflx: Kandidat Peer Reflexive
+  relay: Kandidat Relai
+  srflx: Kandidat Server Reflexive
+turnRegion:
+  fr: Prancis
+  guangzhou: Guangzhou, Tiongkok
+  hk: Hong Kong
+  liaoning: Liaoning, Tiongkok
+  po: Polandia
+tutorial:
+  feedbackDescription: Jika Anda mengalami masalah, silakan klik tombol ini untuk mengirim umpan balik!
+  hideNewsHeaderDescription: Anda dapat melihat Berita di sebelah kiri. Mengklik tombol ini dapat menyembunyikan tampilan tersebut.
+  instance:
+    iconDescription: Klik untuk mengubah ikon.
+    iconTitle: Ikon instansi
+    javaDescription: Pilih atau beralih versi Java.
+    javaImportDescription: Impor Java dari penyimpanan lokal.
+    javaImportTitle: Impor Java
+    javaTitle: Daftar Java
+  instanceAddDescription: Klik tombol ini untuk mengimpor instansi Minecraft yang ada atau membuat yang baru dari awal atau modpack.
+  instanceSelectDescription: Mengklik tombol ini akan mengarahkan ke halaman untuk memilih game dan membaca berita.
+  launchDescription: Klik tombol ini untuk memasang atau meluncurkan game.
+  mod:
+    defaultSourceDescription: Anda dapat memilih sumber detail mod di sini. Ada mod yang dipublikasikan ke Modrinth dan CurseForge. Jika Anda ingin beralih di antara kedua penyedia konten ini, Anda dapat mengubah nilainya di sini.
+    defaultSourceTitle: Pilih Sumber Konten Mod
+    detailDescription: Saat Anda memilih item di sebelah kiri, Anda akan melihat detail mod. Konten dapat berasal dari Modrinth, CurseForge, atau konten mod yang diurai.
+    detailTitle: Detail Mod
+    listDescription: Kami akan menampilkan mod yang terpasang ketika Anda tidak memiliki input. Anda akan melihat mod yang dicari setelah input Anda memiliki kata kunci atau kategori yang dipilih.
+    listTitle: Mod Terpasang atau Cari
+    searchDescription: Anda dapat mencari mod dari Modrinth, CurseForge, atau cache lokal Anda dengan kotak pencarian ini.
+    searchTitle: Cari Mod
+  multiplayer:
+    contentDescription: Koneksi antara Anda dan rekan-rekan Anda akan terdaftar di sini.
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: Anda dapat membuat atau bergabung dengan grup dengan pemain lain. Peluncur akan mencoba membuat koneksi P2P antara Anda dan teman-teman Anda sesuai dengan grup. Anda dapat memasukkan nama grup yang diberikan oleh teman Anda, atau membuat nama yang unik.
+    groupTitle: Bergabung dengan grup
+    joinDescription: Setelah Anda memasukkan nama grup, Anda dapat mengklik tombol ini untuk bergabung atau membuat grup. Jika nama grup kosong, peluncur akan menghasilkan nama untuk Anda.
+    manualDescription: Jika Anda atau teman Anda tidak dapat terhubung ke grup, Anda dapat mencoba menukar token secara manual dengan mengklik hubungkan secara manual. Jika itu juga gagal, mungkin ini masalah internet.
+  recentPlayDescription: Game yang dibuat akan terdaftar di sini. Anda dapat beralih tampilan di sini untuk melihat versi terpasang dan modpack yang diunduh.
+  storePoupularModpackDescription: Anda akan melihat modpack paling populer di CurseForge dan Modrinth di bagian ini.
+  storeSearchCategoryDescription: Anda juga dapat beralih kategori atau filter di sini.
+  storeSearchDescription: Anda dapat mencari Modpack dengan memasukkan teks di kotak ini. Tekan Enter untuk mencari.
+  storeSearchResultDescription: Anda akan melihat semua hasil pencarian terdaftar di sini.
+  userAccountDescription: Klik ikon ini untuk menambahkan atau mengelola akun Minecraft Anda.
+unauthenticatedWarning:
+  cancel: Batal
+  description: Anda tidak masuk ke akun apa pun. Game akan diluncurkan dalam mode demo. Untuk mengakses fitur lengkap, silakan masuk.
+  login: Masuk
+  playAnyway: Mainkan Saja
+  title: Tidak Masuk
+universalDrop:
+  unknownResource: Tidak Diketahui
+unresolvedFiles:
+  description: Berkas-berkas ini tidak dapat diunduh selama instalasi. Cari sumber yang cocok, pasang yang cocok, atau abaikan berkas untuk tetap meluncurkan game.
+  empty: Semua berkas telah diselesaikan.
+  ignoreSelected: Abaikan {count}
+  install: Pasang {count} yang cocok
+  matched: Cocok
+  noMatch: Tidak ditemukan
+  search: Cari sumber
+  source:
+    curseforge-name: CurseForge
+    dependency: Dependensi
+    modrinth-hash: Hash Modrinth
+    modrinth-name: Modrinth
+  title: Berkas yang belum diselesaikan
+  via: melalui {source}
+upstream:
+  downgrade: Turunkan Versi
+  onlyShowCurrentVersion: Hanya Tampilkan Versi Minecraft Saat Ini
+  update: Perbarui
+user:
+  accessToken: Token Akses
+  authMode: Layanan Autentikasi
+  authService: Layanan Otorisasi
+  email: Alamat Email
+  id: ID Pengguna
+  name: Nama Pengguna
+  nameHint: Nama yang ditampilkan dalam game
+  profile: Profil
+  tokenExpired: Kedaluwarsa
+  tokenValidUntil: Token Valid Hingga
+userAccount:
+  add: Tambah Akun
+  removeDescription: Ini akan menghapus semua informasi untuk akun ini. Apakah Anda yakin?
+  removeTitle: Hapus Akun
+userCape:
+  changeTitle: Ubah jubah Anda
+  description: 'Jubah adalah hadiah khusus yang dapat dibuka pemain melalui berbagai acara, kampanye, dan kejadian menyenangkan lainnya. Di sini Anda dapat memilih di antara jubah yang saat ini Anda miliki:'
+  noCape: Tanpa Jubah
+userService:
+  add: Tambah Layanan Lainnya
+  authlibInjectorMetadata: Metadata Authlib-Injector
+  baseUrlHint: URL dasar layanan kustom Anda
+  homepage: Beranda
+  implementation: Implementasi
+  manageServices: Kelola Layanan Autentikasi
+  register: Daftar
+  server: Server
+  skinDomains: Domain Skin
+  title: Layanan Pengguna Pihak Ketiga
+  version: Versi
+userServices:
+  microsoft:
+    account: Akun Microsoft
+    deviceCode: Kode Perangkat
+    deviceCodeHint: Kode perangkat akan dibuat setelah Anda mengklik masuk
+    name: Microsoft
+    password: Masukkan Kata Sandi di Browser
+    useDeviceCode: Masuk dengan Kode Perangkat
+  mojang:
+    account: Alamat Email
+    name: Mojang
+    password: Kata Sandi
+  offline:
+    account: Nama Pengguna
+    name: Offline
+    password: Tanpa Kata Sandi
+    uuid: UUID Pengguna (Opsional)
+userSkin:
+  classic: Klasik
+  import: Impor Skin
+  importFile: Buka dari Berkas
+  importLink: Buka dari Tautan
+  placeUrlHere: Letakkan URL Skin di sini untuk diimpor
+  reset: Atur Ulang
+  save: Simpan
+  saveTitle: Simpan Skin ke Disk
+  skinType: Tipe Skin
+  slim: Slim
+  upload: Unggah Skin
+  urlNotEmpty: URL Skin tidak boleh kosong
+  urlNotValid: URL Skin tidak valid
+  useSlim: Gunakan Model Slim
+version:
+  checkIntegrity: Periksa Integritas
+  name: Versi | Versi
+  notInstalled: Versi belum terpasang
+versionType:
+  alpha: Alfa
+  beta: Beta
+  name: Status
+  release: Rilis
+gamepad:
+  detectedTitle: Gamepad Terdeteksi
+  connected: Pengontrol Terhubung
+  guideTitle: Kontrol Pengontrol
+  enableSwitchLabel: Kontrol Gamepad
+  enabledState: Diaktifkan
+  disabledState: Dinonaktifkan
+  toggle: Beralih
+  disabledNotify: Kontrol gamepad dinonaktifkan.
+  enabledNotify: Kontrol gamepad diaktifkan! Gunakan D-pad/Stik kiri untuk navigasi, {btnA} untuk memilih, {btnB} untuk kembali.
+  guide:
+    confirm: Pilih
+    navigate: Navigasi
+    tabs: Beralih tab
+    sections: Beralih bagian
+    launch: Luncurkan game
+    instanceSettings: Pengaturan instansi
+  modSuggestTitle: Mod Pengontrol
+  modSuggestBody: Untuk menggunakan gamepad Anda di dalam Minecraft, mod pengontrol direkomendasikan. Apakah Anda ingin memasang mod yang sesuai untuk modloader Anda?
+  modInstall: Pasang Mod
+  modSkip: Lewati
+  modDone: Selesai
+  modInstalled: Mod pengontrol berhasil dipasang! Ini akan aktif saat berikutnya Anda meluncurkan Minecraft.
+  modInstalledNotify: '{name} telah dipasang untuk dukungan pengontrol dalam game.'
+  modNotFound: Tidak menemukan versi kompatibel untuk {loader} di Minecraft {version}.
+  settingSteamTitle: Tambahkan Peluncur ke Steam
+  steamAddedNotify: Peluncur berhasil ditambahkan ke Perpustakaan Steam! Silakan mulai ulang Steam untuk melihatnya.
+  steamAlreadyAddedNotify: Peluncur sudah ada di Perpustakaan Steam Anda.
+  steamDeckTitle: Steam Deck Terdeteksi
+  steamDeckDesc: Kami mendeteksi bahwa Anda berjalan di Steam Deck. Apakah Anda ingin menambahkan X Minecraft Launcher ke Perpustakaan Steam Anda sebagai game non-Steam untuk integrasi overlay Steam dan pengontrol penuh dalam Mode Game?
+  steamDeckAddBtn: Tambahkan ke Steam ({btn})
+  steamDeckCancelBtn: Batal ({btn})

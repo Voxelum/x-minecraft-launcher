@@ -3,8 +3,7 @@ AppAddInstanceDialog:
   createTitle: 게임 생성
   serverTitle: 서버 주소를 입력하세요.
 AppShareInstanceDialog:
-  alterDownloadDescription: >-
-    현재 인스턴스를 망가트리고 싶지 않다면, 다른 사용자의 설정으로 새 인스턴스를 생성할 수도 있습니다.  아래 버튼을 눌러 인스턴스를 생성하세요.
+  alterDownloadDescription: 현재 인스턴스를 망가트리고 싶지 않다면, 다른 사용자의 설정으로 새 인스턴스를 생성할 수도 있습니다.  아래 버튼을 눌러 인스턴스를 생성하세요.
   baseInfo: 기본 설정
   cancelShare: 공유 취소
   description: 프로필을 공유하면 다른 곳에서 이 파일들을 사용자의 PC를  통해 다운로드 할 수 있습니다.
@@ -41,9 +40,13 @@ askAICrash:
   copyPrompt: AI에게 물어볼 프롬프트 복사
   description: AI가 게임 충돌을 이해할 수 있도록 도와줄 거예요! 아래 안내를 따라 게임 충돌에 대해 AI에게 물어보세요
   selectPlatform: AI 플랫폼을 열고, 방금 복사한 프롬프트를 붙여 넣으세요.
+  agentNotConfigured: 런처의 내장 에이전트가 이를 진단하고 수정할 수 있도록 설정에서 AI 제공업체와 API 키를 추가해 주세요.
+  askAgent: 내장 AI 에이전트로 진단하기
+  orExternal: 또는 외부 AI 사용하기
+  setupAgent: AI 에이전트 설정하기
 authProfileAddedNotification: 인증 프로필 {name} 이 추가됐어요
 bedrock:
-  installBedrockVersion: 'Downloading Bedrock {version}'
+  installBedrockVersion: Downloading Bedrock {version}
   versionsTitle: Version manager
   versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
   versionsError: Failed to load the version list. Check your network and try again.
@@ -58,9 +61,16 @@ bedrock:
   developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
   enableDeveloperMode: Enable Developer Mode
   enableDeveloperModeFailed: Failed to enable Developer Mode
-  downloadFailed: 'Failed to download Bedrock {version}'
+  downloadFailed: Failed to download Bedrock {version}
   launchFailed: Failed to launch this Bedrock version
-  removeFailed: 'Failed to remove Bedrock {version}'
+  removeFailed: Failed to remove Bedrock {version}
+  description: 마인크래프트 베드락 에디션은 Microsoft Store를 통해 설치 및 실행됩니다. Microsoft 계정에 베드락 라이선스를 소유하고 있어야 합니다.
+  install: Microsoft Store에서 다운로드
+  installFailed: Microsoft Store 열기 실패
+  installed: '설치됨: {version}'
+  launchHint: 베드락 에디션을 시작하려면 실행 버튼을 누르세요.
+  licenseRequired: 베드락 에디션을 설치하고 플레이하려면 마인크래프트를 소유한 Microsoft 계정으로 로그인하세요.
+  refresh: 새로고침
 baseSetting:
   title: 인스턴스 설정
 browseApp:
@@ -205,8 +215,7 @@ env:
     fit: 맞게 선택
     none: 모두 해제
 errors:
-  BadForgeInstallerJarError: >-
-    Forge 설치용 JAR 파일을 파싱할 수 없습니다. Forge 설치 파일 형식이 변경된 것일 수 있습니다. 문제가 계속되면 개발자에게 문의하세요.
+  BadForgeInstallerJarError: Forge 설치용 JAR 파일을 파싱할 수 없습니다. Forge 설치 파일 형식이 변경된 것일 수 있습니다. 문제가 계속되면 개발자에게 문의하세요.
   BadInstanceType: '{type} 은(는) 잘못된 인스턴스 유형입니다!'
   BodyTimeoutError: HTTP 시간 초과
   ChecksumNotMatchError: '체크섬이 일치하지 않습니다! 예상: {expect}. 실제: {actual}.'
@@ -219,11 +228,31 @@ errors:
   HeadersTimeoutError: HTTP 헤더 시간 초과
   NotFoundError: 404 찾을 수 없음
   SocketError: 서버 소켓 오류
+  bedrockUnsupportedPlatform: 마인크래프트 베드락 에디션은 Windows 빌드에서만 지원됩니다.
+  bedrockNotInstalled: 마인크래프트 베드락 에디션이 설치되어 있지 않습니다.
+  bedrockLaunchFailed: 마인크래프트 베드락 에디션 실행 실패.
+  bedrockInstallFailed: 마인크래프트 베드락 에디션 설치 실패.
+  bedrockDownloadUrlUnavailable: 현재 Microsoft 계정에서는 이 베드락 버전을 사용할 수 없습니다. 베타 및 프리뷰 버전은 마인크래프트 베타 프로그램에 등록된 계정이 필요합니다.
+  bedrockDeveloperModeRequired: 이 베드락 버전을 등록하려면 Windows 개발자 모드가 필요합니다.
+  bedrockRegisterFailed: 이 베드락 버전을 Windows에 등록하지 못했습니다.
+  bedrockVersionNotFound: 이 베드락 버전이 로컬에 설치되어 있지 않습니다.
+  CorruptedResourceMetadata: '{count}개의 리소스에서 손상된 메타데이터를 감지하고 제거했습니다. 파일은 여전히 작동하지만 Modrinth/CurseForge 정보가 유실되었으며, 자동으로 다시 감지됩니다.'
+  InstallBackendUnresponsive:
+    body: 런처의 백그라운드 프로세스가 응답하지 않아 설치를 완료할 수 없습니다. 런처를 완전히 종료하고 다시 시작한 다음 다시 시도해 주세요.
+    title: 런처가 응답하지 않음
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: 마인크래프트 파일 설치 실패
+  InstallNetworkError:
+    body: 네트워크 문제로 인해 설치가 중단되었습니다. 인터넷 연결이나 프록시 설정을 확인하고 다시 시도해 주세요.
+    title: 마인크래프트 파일을 다운로드할 수 없음
+  InstallPermissionDenied:
+    body: 백신 프로그램 또는 폴더 권한 제한으로 인해 설치가 차단되었습니다. 백신의 제외 목록에 런처를 추가하거나 런처 설정에서 다른 데이터 루트를 선택해 주세요.
+    title: 런처 폴더에 쓸 수 없음
 eula:
   body: 체크박스를 선택하면 마인크래프트 {eula}에 동의하게 됩니다.
 exception:
-  http: >-
-    {url} 로의 HTTP 요청이 실패했습니다. 상태 코드 {statusCode}. {code}. 다시 시도하거나 네트워크를 확인하세요. 오류가 지속되면 개발팀에 보고서를 보내주세요.
+  http: '{url} 로의 HTTP 요청이 실패했습니다. 상태 코드 {statusCode}. {code}. 다시 시도하거나 네트워크를 확인하세요. 오류가 지속되면 개발팀에 보고서를 보내주세요.'
 extensions:
   mrpack: Modrinth 모드팩
   zip: Zip 파일
@@ -237,15 +266,20 @@ command:
   instance:
     launch:
       title: 인스턴스 실행
+      description: 마인크래프트 인스턴스 실행
     create:
       title: 인스턴스 생성
+      description: 새 인스턴스 생성
     delete:
       title: 인스턴스 삭제
+      description: 기존 인스턴스 삭제
   user:
     login:
       title: 사용자 로그인
+      description: 계정 로그인
     refresh:
       title: 사용자 새로 고침
+      description: 사용자 세션 새로고침
 commandPalette:
   placeholder: 명령, 인스턴스, 모드 검색…
   commands: 명령
@@ -391,6 +425,14 @@ instance:
   envVarKeyPlaceholder: MY_VAR
   envVarValuePlaceholder: 값
   fileApiPlaceholder: 리소스 동기화를 유지하려면 여기에 원격 동기화 URL을 입력하세요
+  deleteHintBedrock: 마인크래프트 베드락 에디션과 모든 데이터가 컴퓨터에서 완전히 삭제됩니다. 정말 삭제하시겠습니까?
+  hideCard: 이 카드 숨기기
+  nameInvalidChars: '이름에는 다음 문자를 포함할 수 없습니다: < > : " / \\ | ? *'
+  namePathTraversal: 이름에는 경로 탐색("..")을 포함할 수 없습니다.
+  nameReservedName: 이 이름은 시스템에서 예약한 이름이므로 사용할 수 없습니다.
+  nameTrailingDotOrSpace: 이름은 마침표나 공백으로 끝날 수 없습니다.
+  nameWhitespaceOnly: 이름은 공백이나 마침표로만 구성될 수 없습니다.
+  showHiddenCards: 숨겨진 카드 표시
 instanceAge:
   older: 이전
   threeDay: 3일 이내
@@ -408,8 +450,7 @@ instanceInstallSkip:
   ignore: 무시
   skip: 건너뛰기
   title: 손상된 파일 소스 가능성
-  warning: >-
-    일부 파일이 여러 번 다운로드되었고 체크섬이 일치하지 않습니다. 원본 체크섬이 잘못되었을 수 있습니다. 확인해 주세요. 현재 파일이 유효하다고 확신한다면 유효성 검사를 건너뛸 수 있습니다.
+  warning: 일부 파일이 여러 번 다운로드되었고 체크섬이 일치하지 않습니다. 원본 체크섬이 잘못되었을 수 있습니다. 확인해 주세요. 현재 파일이 유효하다고 확신한다면 유효성 검사를 건너뛸 수 있습니다.
 instanceSetting:
   disableAuthlibInjector: authlib injector 비활성화
   disableAuthlibInjectorDescription: 서드파티 스킨 시스템을 사용하는 경우. authlib injector가 게임에서 스킨을 표시하는 데 도움이 될 수 있습니다.
@@ -427,11 +468,11 @@ instanceTemplate:
 instanceUpdate:
   basic: 설정 업데이트
   files: 파일 업데이트
-  loaderChanged: >-
-    이 인스턴스의 모드 로더가 변경되었습니다. 이전 모드 로더는 {modloader} 이고, 새로운 모드 로더는 {newModloader} 입니다.
+  loaderChanged: 이 인스턴스의 모드 로더가 변경되었습니다. 이전 모드 로더는 {modloader} 이고, 새로운 모드 로더는 {newModloader} 입니다.
   summary: '{add} 개 파일 추가. {remove} 개 파일 제거. {keep} 개 파일 유지.'
   title: 인스턴스 업데이트
   update: 업데이트 시작
+  noFiles: 파일 변경 사항 없음
 instances:
   add: 게임 생성
   addCurseForgeDescription: Curseforge 데이터 폴더에서 가져오기. Curseforge의 루트 데이터 폴더를 선택해야 합니다
@@ -462,6 +503,7 @@ instances:
     아닙니다. 한 인스턴스에서 변경한 내용이 모든 인스턴스에 나타납니다. 선택하지 않은 폴더는 이 인스턴스 전용으로 유지됩니다.
   linkFailed: '{folder} 폴더를 공유 폴더에 연결하지 못했습니다'
   addPrismDescription: 기존 PrismLauncher 인스턴스 가져오기.
+  folder: 폴더
 items:
   count: '{count} 아이템'
   total: '{total} 총합'
@@ -504,6 +546,7 @@ launch:
   launchAnyway: 무시하고 실행
   launchAs: 다른 계정으로 실행
   forceKill: 강제 종료
+  launchTo: 다음으로 실행
 launchBlocked:
   launchBadVersion:
     description: 버전 {version}의 JSON에 문제가 있습니다. 재설치를 시도해 보세요.
@@ -512,12 +555,10 @@ launchBlocked:
     description: 몇 가지 오류로 인해 실행에 실패했습니다.
     title: 실행 실패
   launchInvalidJavaPath:
-    description: >-
-      선택한 자바가 없거나 잘못되었습니다. 새로 선택해주세요. <span class="highlight"> {javaPath} </span>
+    description: 선택한 자바가 없거나 잘못되었습니다. 새로 선택해주세요. <span class="highlight"> {javaPath} </span>
     title: 잘못된 자바 경로
   launchJavaNoPermission:
-    description: >-
-      런처가 자바 <span class="highlight"> {javaPath} </span>를 실행할 권한이 없습니다. 자바 파일의 권한을 변경하거나 런처 권한을 상승시키세요.
+    description: 런처가 자바 <span class="highlight"> {javaPath} </span>를 실행할 권한이 없습니다. 자바 파일의 권한을 변경하거나 런처 권한을 상승시키세요.
     title: 실행 권한 없음
   launchNoProperJava:
     description: 게임을 실행할 적절한 자바를 선택할 수 없습니다. ({javaPath}가 잘못되었나요?)
@@ -533,8 +574,7 @@ launchFailed:
   crash: 게임이 크래시되었습니다!!
   description: 크래시 리포트가 없습니다. 아래는 에러 로그와 최신 로그입니다.
   elyByAuthlib:
-    description: >-
-      Minecraft 버전 {version}에 대해 Ely.by의 Authlib 대체가 사용되었지만, 이 버전은 완전히 호환되지 않을 수 있습니다.
+    description: Minecraft 버전 {version}에 대해 Ely.by의 Authlib 대체가 사용되었지만, 이 버전은 완전히 호환되지 않을 수 있습니다.
     suggestion: 이 문제를 피하려면 인스턴스 설정에서 Ely.by의 Authlib 대체를 비활성화할 수 있습니다.
     title: Ely.by Authlib 호환성 문제
   failedToLaunch: 실행에 실패했습니다
@@ -545,8 +585,7 @@ launchPreExecuteCommandFailed:
   title: 사전 실행 명령 실패
 launchStatus:
   assigningMemory: 메모리 할당 중
-  elyByWarning: >-
-    Ely.by Authlib 대체가 활성화되어 있습니다. 일부 Minecraft 버전은 호환되지 않아 크래시가 발생할 수 있습니다. 문제가 발생하면 인스턴스 설정에서 비활성화하세요.
+  elyByWarning: Ely.by Authlib 대체가 활성화되어 있습니다. 일부 Minecraft 버전은 호환되지 않아 크래시가 발생할 수 있습니다. 문제가 발생하면 인스턴스 설정에서 비활성화하세요.
   exit: 게임을 종료할까요?
   injectingAuthLib: 서드파티 AuthLib 설정 중
   launching: 실행 중...
@@ -581,10 +620,8 @@ login:
   signupDescription: 처음 오셨나요?
   userRelogin: 사용자 액세스 토큰이 만료되었습니다. 다시 로그인하세요!
 loginError:
-  acquireMicrosoftTokenFailed: >-
-    Fail to acquire Microsoft token. This might be a network issue. Please retry.
-  badNetworkOrServer: >-
-    Please check your network connectivity! Or maybe the authentication server is down!
+  acquireMicrosoftTokenFailed: Fail to acquire Microsoft token. This might be a network issue. Please retry.
+  badNetworkOrServer: Please check your network connectivity! Or maybe the authentication server is down!
   checkOwnershipFailed: 게임 소유권 확인에 실패했습니다. 다시 시도하세요.
   connectionReset: 서버가 연결을 재설정했기 때문에 로그인에 실패했습니다
   fetchMinecraftProfileFailed: '마인크래프트 프로필 가져오기 실패: {reason}'
@@ -592,20 +629,34 @@ loginError:
   invalidCredentials: 잘못된 자격 증명입니다. 잘못된 사용자 이름 또는 비밀번호입니다.
   loginMinecraftByXboxFailed: Xbox 토큰으로 마인크래프트 토큰 교환에 실패했습니다. Xbox에 마인크래프트가 있는지 확인하거나 다시 시도하세요.
   loginXboxAgeRestricted: 나이 문제로 인해 Xbox 로그인에 실패했습니다. Microsoft 계정에 나이가 설정되어 있고 18세 이상인지 확인하세요.
-  loginXboxFailed: >-
-    Microsoft 토큰으로 Xbox 로그인에 실패했습니다. Microsoft 계정과 독립적인 Xbox 계정이 있는지 확인하세요. 다시 시도하세요.
+  loginXboxFailed: Microsoft 토큰으로 Xbox 로그인에 실패했습니다. Microsoft 계정과 독립적인 Xbox 계정이 있는지 확인하세요. 다시 시도하세요.
   noProfileForNewUser: 게임 프로필을 찾을 수 없습니다! 새로운 마인크래프트 사용자라면, 마인크래프트 공식 런처에서 최소 한 번은 로그인하세요.
   requestFailed: 로그인에 실패했습니다. 정확한 이유를 알 수 없습니다. 다시 시도하세요.
   requireEmail: 이메일이 필요합니다
   requirePassword: 비밀번호가 필요합니다
   requireUsername: 사용자 이름이 필요합니다
   timeout: 로그인 시간 초과. 다시 시도하거나 네트워크를 확인하세요.
+  cyrillicNotAllowed: 키릴 문자는 허용되지 않습니다.
+  illegalOfflineUsername: 사용자 이름은 영문자, 숫자, 밑줄(_)만 포함하여 3~16자여야 합니다.
+  loginMinecraftByXboxRateLimited: Microsoft의 마인크래프트 인증 서비스 요청이 현재 제한되고 있습니다(HTTP 429). 잠시 후 다시 시도해 주세요.
+  loginMinecraftByXboxRateLimitedWithRetry: Microsoft의 마인크래프트 인증 서비스 요청이 현재 제한되고 있습니다(HTTP 429). 약 {seconds}초 후에 다시 시도해 주세요.
+  loginMinecraftByXboxServerError: Microsoft의 마인크래프트 인증 서비스에서 서버 오류를 반환했습니다(HTTP {status}). 이는 서비스 제공사 측의 오류입니다. 몇 분 후에 다시 시도해 주세요.
+  loginMinecraftByXboxStatus: Xbox 토큰으로 마인크래프트 토큰을 교환하는 데 실패했습니다(HTTP {status}). Xbox에 마인크래프트를 소유하고 있는지 확인하거나 다시 시도해 주세요.
+  loginXboxAdultVerification: 이 Microsoft 계정은 Xbox에 로그인하기 전에 성인 인증(일부 지역에서 필요)이 필요합니다. 브라우저에서 {url}을(를) 열어 인증을 완료한 후 다시 시도해 주세요.
+  loginXboxBadXsts: Microsoft에서 예상된 사용자 클레임이 없는 XSTS 응답을 반환했습니다. 이는 보통 일시적인 현상입니다. 몇 분 후에 다시 시도해 주세요.
+  loginXboxBanned: 이 Microsoft / Xbox 계정은 Microsoft에 의해 정지 또는 차단되어 마인크래프트에 로그인할 수 없습니다. Microsoft / Xbox 고객 지원에 문의해 주세요.
+  loginXboxChildAccount: 귀하의 Microsoft 계정은 자녀 계정이며 Xbox / 마인크래프트에 로그인하려면 Microsoft 가족 설정에 추가되어야 합니다. 브라우저에서 {url}을(를) 열어 문제를 해결한 후 다시 시도해 주세요.
+  loginXboxFailedWithCode: Microsoft 토큰으로 Xbox에 로그인하지 못했습니다(XErr {code}). 해당 코드를 검색하여 도움을 받거나 나중에 다시 시도해 주세요.
+  loginXboxNoXboxProfile: 이 Microsoft 계정에는 아직 Xbox 프로필이 없습니다. 브라우저에서 {url}을(를) 열어 프로필을 생성한 후 다시 시도해 주세요.
+  loginXboxRegionLocked: 귀하의 계정 지역에서는 Xbox Live를 사용할 수 없습니다. Microsoft 계정 설정에서 국가/지역을 변경한 후 다시 시도해 주세요.
 logsCrashes:
   crashes: 크래시 리포트
   logs: 로그
   placeholder: 파일이 없습니다
   title: 로그 또는 크래시 리포트
   failures: 실행 실패
+  serverLogs: 서버 로그
+  showFile: 폴더에 표시
 me:
   news: 뉴스
   recentPlay: 최근 플레이
@@ -634,8 +685,7 @@ mod:
   disableAll: 모두 비활성화
   dropHint: 모드의 .jar/.litemod를 여기로 드래그하여 가져오세요.
   duplicatedDetected: 중복된 모드 {count}개 발견
-  duplicatedDetectedDescription: >-
-    Found mods with same mod id but different files. This might cause Minecraft crash. Please select the file you want to keep.
+  duplicatedDetectedDescription: Found mods with same mod id but different files. This might cause Minecraft crash. Please select the file you want to keep.
   enableAll: 모두 활성화
   enabled: '{count} 개 모드 활성화됨'
   filter: 모드 필터
@@ -646,8 +696,7 @@ mod:
   hasUpdate: 새 버전의 모드가 있습니다!
   incompatible: 호환되지 않는 모드입니다.
   incompatibleHint: 모드 호환성 보고서를 확인하세요
-  incompatibleHintDescription: >-
-    Some mods dependencies might be missing. Or some dependencies versions do not matched.
+  incompatibleHintDescription: Some mods dependencies might be missing. Or some dependencies versions do not matched.
   maybeCompatible: 아마도 호환됨.
   modloaderSelectHint: 이 모드는 다음 모드 로더를 지원합니다. 설치할 항목을 선택하세요.
   modloaderSelectNotSupported: 마인크래프트 {minecraft}에 대한 {modloader}를 찾을 수 없습니다
@@ -678,11 +727,9 @@ modFilter:
   incompatibleOnly: 호환 불가/의존성 누락 모드만 표시
   unusedOnly: 사용되지 않는 라이브러리 모드만 표시
 modInstall:
-  archived: >-
-    {name}이(가) 보관되었습니다. 제작자가 프로젝트를 보관 해제하기로 결정하지 않는 한 {name}은(는) 더 이상 업데이트를 받지 않습니다.
+  archived: '{name}이(가) 보관되었습니다. 제작자가 프로젝트를 보관 해제하기로 결정하지 않는 한 {name}은(는) 더 이상 업데이트를 받지 않습니다.'
   autoUpgrade:
-    description: >-
-      Minecraft 버전을 변경했습니다. 호환되는 모드를 자동으로 Minecraft {version}에 맞는 버전으로 업데이트하시겠습니까?
+    description: Minecraft 버전을 변경했습니다. 호환되는 모드를 자동으로 Minecraft {version}에 맞는 버전으로 업데이트하시겠습니까?
     'no': 건너뛰기
     title: 모드를 업데이트하시겠습니까?
     'yes': 모드 업데이트
@@ -742,11 +789,10 @@ modpackImportConfirm:
   description: 런처에 파일을 드롭한 것을 감지했습니다. 모드팩을 가져오려는 중인가요?
   title: 모드팩을 가져오려는 중인가요?
 modpackUpdateOrCreate:
-  createNew: '새로 만들기'
-  description: >-
-    이 모드팩의 인스턴스 "{name}"이(가) 이미 존재합니다. 업데이트하시겠습니까, 아니면 새로 만드시겠습니까?
-  title: '인스턴스가 이미 존재합니다'
-  update: '기존 업데이트'
+  createNew: 새로 만들기
+  description: 이 모드팩의 인스턴스 "{name}"이(가) 이미 존재합니다. 업데이트하시겠습니까, 아니면 새로 만드시겠습니까?
+  title: 인스턴스가 이미 존재합니다
+  update: 기존 업데이트
 modrinth:
   browseUrl: 브라우저에서 열기 {url}
   categories:
@@ -904,15 +950,14 @@ modrinthCard:
   currentVersion: 현재 버전
 multiplayer:
   allowTurn: 릴레이 서버 사용
-  allowTurnHint: >-
-    친구와 연결할 수 없을 때 릴레이 서버를 허용합니다. 하지만 릴레이 서버 사용은 연결 속도를 느리게 할 수 있습니다. 주의해서 사용하세요.
+  allowTurnHint: 친구와 연결할 수 없을 때 릴레이 서버를 허용합니다. 하지만 릴레이 서버 사용은 연결 속도를 느리게 할 수 있습니다. 주의해서 사용하세요.
   complete: 완료
   confirm: 확인
   connections: 연결
   copied: 복사됨!
   copy: 복사
   copyGroupToFriendHint: 친구들이 이 ID로 그룹에 참여할 수 있도록 하세요
-  copyLocalHint: >
+  copyLocalHint: |
     "로컬 SDP 텍스트를 복사하여 상대방에게 보내고, 상대방이 이 텍스트를 연결 참여 섹션에 입력하도록 하세요. <span>토큰은 <span style="color: red; font-weight: bold;">한 명의 피어</span>에게만 사용할 수 있습니다! 같은 토큰을 여러 피어에게 보낼 수 없습니다!</span> <br> <span class="hint-text" style="font-style: italic;">여러 피어와 연결해야 한다면 <span style="font-weight: bold; color: rgba(245, 158, 11)">여러 개의</span> 연결을 생성해야 합니다.</span>"
   createLocalToken: 로컬 토큰 생성
   currentIpTitle: 감지된 외부 IP
@@ -925,7 +970,7 @@ multiplayer:
   enterRemoteTokenHint: 상대방이 당신의 토큰을 입력하면, 아래 텍스트 영역에 상대방의 토큰을 입력해야 합니다. 연결하려면 확인을 클릭하세요.
   exposedPortDescription: 다른 플레이어에게 노출된 포트
   exposedPorts: 포워딩된 포트
-  gatheringIce: >
+  gatheringIce: |
     "ICE 서버가 네트워크에 대한 충분한 정보를 수집할 때까지 기다려 주세요. 참을 수 없고 충분한 정보가 있다면, 현재 SDP를 미리 상대방에게 주고 다음을 클릭하세요. <span class="v-chip v-chip--label v-size--small" style="text-font: bold" >로컬 토큰</span>을 상대방에게 보내고, 상대방이 <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> 연결 참여 </span> 섹션에 토큰을 입력하도록 하세요. <br> ICE 서버가 <span class="v-chip v-chip--label v-size--small" style="text-font: bold">로컬 토큰</span>을 생성하기 위해 정보를 수집하는 데 시간이 걸릴 수 있습니다.<br> ICE 상태가 완료될 때까지 기다릴 필요는 없습니다. 아래 토큰이 변경되지 않으면 복사해서 상대방에게 보낼 수 있습니다."
   groupId: 그룹 ID
   illegalTokenDescription: 잘못된 토큰입니다. 상대방의 토큰이 올바른지 확인하세요
@@ -935,8 +980,7 @@ multiplayer:
   joinOrCreateGroup: 그룹 참여/생성
   joinOrCreateGroupHint: 친구들로부터 그룹 ID를 받거나 그룹을 생성하세요
   kernel: P2P 커널
-  kernelDescription: >-
-    네이티브 WebRTC 또는 node-datachannel을 사용합니다. P2P 연결이 때때로 런처 창을 크래시시킬 때만 이 설정을 변경하세요.
+  kernelDescription: 네이티브 WebRTC 또는 node-datachannel을 사용합니다. P2P 연결이 때때로 런처 창을 크래시시킬 때만 이 설정을 변경하세요.
   leaveGroup: 그룹 떠나기
   localToken: 로컬 토큰
   manualConnect: 수동 연결
@@ -958,10 +1002,8 @@ multiplayer:
   start: 시작
   startNewP2PConnection: 시작 버튼을 클릭하여 새로운 피어 연결을 생성하세요
   connectionError: 연결 오류
-  connectionFailedHint: >-
-    연결을 설정할 수 없습니다. 양쪽 피어의 NAT 유형이 호환되는지 확인하세요.
-  natWarning: >-
-    NAT 유형이 직접 연결을 방해할 수 있습니다. 설정에서 릴레이 서버를 활성화하거나 친구에게 호스트를 부탁하세요.
+  connectionFailedHint: 연결을 설정할 수 없습니다. 양쪽 피어의 NAT 유형이 호환되는지 확인하세요.
+  natWarning: NAT 유형이 직접 연결을 방해할 수 있습니다. 설정에서 릴레이 서버를 활성화하거나 친구에게 호스트를 부탁하세요.
 myStuff: 내 자료
 natType:
   blocked: 차단됨
@@ -1016,8 +1058,7 @@ quiltVersion:
   empty: Quilt는 마인크래프트 {version} 을(를) 지원하지 않습니다
 resourcepack:
   linkShared: 인스턴스 간 리소스팩 공유
-  linkSharedHint: >-
-    이 인스턴스의 resourcepacks 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 리소스팩을 사용하도록 합니다. 기존 팩은 공유 폴더로 병합됩니다.
+  linkSharedHint: 이 인스턴스의 resourcepacks 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 리소스팩을 사용하도록 합니다. 기존 팩은 공유 폴더로 병합됩니다.
   compatible: '{version} 과(와) 호환되는 형식 {format}'
   defaultDescription: 마인크래프트의 기본 모양과 느낌
   delete:
@@ -1037,10 +1078,11 @@ resourcepack:
   unselected: 선택되지 않은 리소스 팩
   noPacks: 리소스 팩을 찾을 수 없음
   search: 리소스 팩 검색...
+  noLocalPacksFound: 검색어와 일치하는 로컬 리소스 팩을 찾을 수 없습니다.
+  noPacksInstalled: 설치된 리소스 팩이 없습니다.
 save:
   linkShared: 인스턴스 간 세이브 공유
-  linkSharedHint: >-
-    이 인스턴스의 saves 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 월드를 공유하도록 합니다. 기존 세이브는 공유 폴더로 병합됩니다.
+  linkSharedHint: 이 인스턴스의 saves 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 월드를 공유하도록 합니다. 기존 세이브는 공유 폴더로 병합됩니다.
   copy:
     name: 저장된 월드 복사
   createNew: 새 월드 생성
@@ -1065,6 +1107,48 @@ save:
   openFolder: 저장 폴더 열기
   searchHint: CurseForge에서 월드 검색
   searchSaves: 저장 검색
+  allowCheats: 치트 허용
+  difficulty: 난이도
+  datapack:
+    name: 데이터 팩 | 데이터 팩
+    noSaveHint: 이 데이터 팩을 설치하려면 먼저 월드를 생성하거나 선택하세요.
+    packFormat: '팩 포맷: {format}'
+    imported: 데이터 팩이 {save}(으)로 가져오기되었습니다.
+  duplicate: 월드 복사
+  loadMap: 지도 불러오기
+  mapError: 지도 오류
+  mapInfo: '인터랙티브 3D 월드 미리보기:'
+  mapLoaded: 지도 불러옴
+  mapPreview: 지도 미리보기
+  chunkSelectMode: 청크 선택
+  panMode: 화면 이동
+  chunkSelected: '{count}개 청크 선택됨'
+  mapHintPan: 드래그하여 화면 이동
+  mapHintSelect: 선택
+  mapHintDeselect: 선택 해제
+  toggleGrid: 지역 그리드 토글
+  heightTop: 맨 위
+  resetView: 보기 초기화
+  clearSelection: 선택 해제
+  copyChunks: 청크 복사
+  pasteChunks: '{count}개 청크 붙여넣기'
+  pasteChunksPlaceHint: 마우스를 움직여 {count}개의 청크를 배치한 다음 클릭하여 붙여넣으세요. 대상의 기존 청크는 덮어씌워집니다. 취소하려면 Esc를 누르세요.
+  pasteChunksCancel: 취소
+  deleteChunks: 청크 삭제
+  deleteChunksTitle: 선택한 청크 삭제
+  deleteChunksHint: 선택한 청크 {count}개를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다. 청크는 다음 번에 해당 지역이 인게임에서 로드될 때 다시 생성됩니다.
+  mapLoading: 지도 불러오는 중…
+  noRegions: 이 월드에는 미리 볼 수 있도록 생성된 지역이 없습니다.
+  dimOverworld: 오버월드
+  dimNether: 네더
+  dimEnd: 엔드
+  noLocalSavesFound: 검색어와 일치하는 로컬 월드 세이브를 찾을 수 없습니다.
+  noSavesFound: 세이브를 찾을 수 없음
+  noSavesInstalled: 세이브파일이 없습니다.
+  properties: 월드 속성
+  useMouseRotate: 마우스로 화면 회전
+  useScrollZoom: 마우스 휠로 확대/축소
+  world: 월드
 screenshots:
   empty: 스크린샷이 없습니다
   playRandom: 무작위 재생
@@ -1109,6 +1193,31 @@ server:
   upload: 서버 업로드
   version: 서버가 요구하는 버전
   versionHint: 핑을 보낼 마인크래프트 버전
+  addServer: 서버 추가
+  address: 서버 주소
+  addressHint: '예: mc.hypixel.net'
+  bindUpstream: 업스트림으로 결합
+  boundUpstream: 서버 업스트림 결합됨
+  boundUpstreamHint: 이 인스턴스는 결합된 서버의 마인크래프트 버전을 따릅니다.
+  editServer: 서버 편집
+  emptyHint: 이 인스턴스의 servers.dat에 아직 서버가 없습니다. 시작하려면 서버를 추가하세요.
+  entryCount: 서버 {count}개 | 서버 {count}개
+  launchClient: 대신 클라이언트 실행
+  launchPinned: 고정됨
+  launchTargetHint: 이 인스턴스는 고정된 서버로 바로 실행됩니다. 클라이언트로 돌아가시겠습니까?
+  nameHint: 멀티플레이어 목록에 표시될 이름
+  pin: 서버 고정
+  pinAfterSave: 저장 후 기본 실행 대상으로 고정
+  pinnedHeader: '고정됨: {name}'
+  serverName: 서버 이름
+  serversListTitle: 서버 목록
+  unbindUpstream: 결합 해제
+  unpin: 고정 해제
+  upstreamUpToDate: 인스턴스가 서버 버전({version})과 일치합니다.
+  upstreamUpToDateHint: 업그레이드가 필요하지 않습니다. 서버 핑을 다시 확인하려면 클릭하세요.
+  upstreamUpdateAvailable: 서버가 현재 마인크래프트 {version} 버전을 실행 중입니다. 적용하려면 클릭하세요.
+  upstreamUpdateHint: 이 인스턴스에 제안된 마인크래프트 버전을 적용합니다.
+  useAsUpstreamHint: 인스턴스가 서버에서 보고한 마인크래프트 버전을 따릅니다.
 serverStatus:
   nohost: §4호스트를 찾을 수 없습니다!
   ping: 핑 중...
@@ -1308,6 +1417,25 @@ setting:
     successGlobal: 배경 이미지가 업데이트되었습니다.
     successInstance: 인스턴스 배경 이미지가 업데이트되었습니다.
     failed: 배경 이미지 설정에 실패했습니다
+  aiAgentApiKey: AI 에이전트 API 키
+  aiAgentApiKeyDescription: 이 기기에 로컬로 저장되며 에이전트 요청에 사용됩니다.
+  aiAgentEndpoint: AI 에이전트 엔드포인트
+  aiAgentEndpointDescription: 채팅 완성 엔드포인트 URL입니다.
+  aiAgentModel: AI 에이전트 모델
+  aiAgentModelDescription: 채팅 완성 요청 시 전송할 모델 이름입니다.
+  useDesktopBackground: 현재 바탕화면 배경 이미지 사용
+  customCss:
+    advancedDescription: 사용자 지정 CSS로 런처의 현재 스타일을 덮어씁니다.
+    assistantHint: 원하는 외형을 설명해 주시면 CSS를 작성해 드리겠습니다.
+    assistantSuggestion1: 사이드바를 반투명하게 만들기
+    assistantSuggestion2: 카드에 은은한 그라데이션 배경 추가
+    assistantTitle: CSS 어시스턴트
+    dropHint: .css 파일을 끌어다 놓아 불러오기
+    editorPlaceholder: /* 여기에 사용자 지정 CSS를 입력하세요 */
+    globalToggle: 사용자 지정 CSS 토글
+    openInDialog: 에이전트 대화창에서 열기
+    title: 사용자 지정 CSS
+    warning: 사용자 지정 CSS를 사용하여 런처의 모든 요소를 커스터마이징할 수 있습니다. 신뢰할 수 없는 출처의 CSS를 붙여넣을 때 UI 레이아웃이 깨지거나 변형될 수 있으니 주의하세요.
 settingLabel:
   global: 전체
   globalHint: 이 설정은 모든 인스턴스에 적용됩니다
@@ -1315,19 +1443,16 @@ settingLabel:
   localHint: 이 설정은 현재 인스턴스에만 적용됩니다
 setup:
   account:
-    description: >-
-      게임 계정을 추가하여 Minecraft Java Edition을 플레이하세요. Microsoft 계정과 Mojang 계정이 모두 지원됩니다.
+    description: 게임 계정을 추가하여 Minecraft Java Edition을 플레이하세요. Microsoft 계정과 Mojang 계정이 모두 지원됩니다.
     name: 계정 추가
     skip: 지금은 건너뛰기
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: >-
-      최상위 폴더가 일반적인 .minecraft 디렉터리가 아닙니다.  XMCL 데이터 디렉터리 구조는 기본 버전과 다르기 때문에, 일반적인 .minecraft 디렉터리를 최상위 폴더로 사용하는 것을 권장하지 않습니다.
+    description: 최상위 폴더가 일반적인 .minecraft 디렉터리가 아닙니다.  XMCL 데이터 디렉터리 구조는 기본 버전과 다르기 때문에, 일반적인 .minecraft 디렉터리를 최상위 폴더로 사용하는 것을 권장하지 않습니다.
     drives: 권장 위치
     name: 데이터 디렉터리 설정
-  defaultLayoutDescription: >-
-    기본 레이아웃은 게임 "인스턴스" 개념을 향상시키려고 합니다. Discord와 같은 앱처럼 보입니다. Steam과 같은 다른 게임 런처 앱에서도 영감을 받았습니다.
+  defaultLayoutDescription: 기본 레이아웃은 게임 "인스턴스" 개념을 향상시키려고 합니다. Discord와 같은 앱처럼 보입니다. Steam과 같은 다른 게임 런처 앱에서도 영감을 받았습니다.
   defaultPath: 기본 경로
   error:
     badDataRoot: 런처 데이터에 유효하지 않은 디렉터리입니다! 다른 디렉터리를 시도하세요!
@@ -1339,15 +1464,13 @@ setup:
   game:
     name: 기존 게임 가져오기
   locale:
-    description: >-
-      지원하는 언어가 있다면 선호하는 언어를 선택하세요! 모국어가 보이지 않고 도움을 주고 싶다면 Github를 방문하여 번역 풀 리퀘스트를 제출하세요!
+    description: 지원하는 언어가 있다면 선호하는 언어를 선택하세요! 모국어가 보이지 않고 도움을 주고 싶다면 Github를 방문하여 번역 풀 리퀘스트를 제출하세요!
     language: 언어
     name: 언어 설정
   path: 현재 경로
 shaderPack:
   linkShared: 인스턴스 간 셰이더팩 공유
-  linkSharedHint: >-
-    이 인스턴스의 shaderpacks 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 셰이더팩을 사용하도록 합니다. 기존 팩은 공유 폴더로 병합됩니다.
+  linkSharedHint: 이 인스턴스의 shaderpacks 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 셰이더팩을 사용하도록 합니다. 기존 팩은 공유 폴더로 병합됩니다.
   deletion: 셰이더 팩 삭제
   deletionHint: 셰이더 팩 파일 {path} 을(를) 삭제하며, 되돌릴 수 없습니다.
   disabled: 비활성화된 셰이더 팩
@@ -1367,6 +1490,8 @@ shaderPack:
   market: 셰이더 마켓
   noPacks: 셰이더 팩이 설치되지 않음
   search: 셰이더 팩 검색...
+  noLocalPacksFound: 검색어와 일치하는 로컬 셰이더 팩을 찾을 수 없습니다.
+  noPacksInstalled: 설치된 셰이더 팩이 없습니다.
 shared:
   add: 추가
   author: 작성자
@@ -1395,6 +1520,13 @@ shared:
   server: 서버
   skipForNow: 지금은 건너뛰기
   'yes': 예
+  copied: 복사됨
+  copy: 복사
+  close: 닫기
+  copyFailed: 복사 실패
+  copyFailedHint: 클립보드에 복사할 수 없음
+  save: 저장
+  delete: 삭제
 sidebar:
   pin: 고정
   unpin: 고정 해제
@@ -1463,11 +1595,9 @@ tutorial:
   instanceSelectDescription: 이 버튼을 클릭하면 게임을 선택하고 뉴스를 읽을 수 있는 페이지로 이동합니다.
   launchDescription: 이 버튼을 클릭하여 게임을 설치하거나 실행하세요.
   mod:
-    defaultSourceDescription: >-
-      여기서 모드 세부 정보의 소스를 선택할 수 있습니다. Modrinth와 Curseforge 모두에 게시된 모드들이 있습니다. 이 두 콘텐츠 제공자 간에 전환하려면 여기서 값을 변경할 수 있습니다.
+    defaultSourceDescription: 여기서 모드 세부 정보의 소스를 선택할 수 있습니다. Modrinth와 Curseforge 모두에 게시된 모드들이 있습니다. 이 두 콘텐츠 제공자 간에 전환하려면 여기서 값을 변경할 수 있습니다.
     defaultSourceTitle: 모드 콘텐츠 소스 선택
-    detailDescription: >-
-      왼쪽에서 항목을 선택하면 모드의 세부 정보를 볼 수 있습니다. 콘텐츠는 Modrinth, Curseforge 또는 파싱된 모드 콘텐츠에서 올 수 있습니다.
+    detailDescription: 왼쪽에서 항목을 선택하면 모드의 세부 정보를 볼 수 있습니다. 콘텐츠는 Modrinth, Curseforge 또는 파싱된 모드 콘텐츠에서 올 수 있습니다.
     detailTitle: 모드 세부 정보
     listDescription: 입력이 없을 때는 설치된 모드를 표시합니다. 키워드나 카테고리를 선택하면 검색된 모드를 볼 수 있습니다.
     listTitle: 설치된 모드 또는 모드 검색
@@ -1476,13 +1606,10 @@ tutorial:
   multiplayer:
     contentDescription: 당신과 피어 간의 연결이 여기에 나열됩니다.
     contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      다른 플레이어와 그룹을 생성하거나 참여할 수 있습니다. 런처는 그룹에 따라 당신과 친구들 간에 P2P 연결을 생성하려고 시도합니다. 친구들이 준 그룹 이름을 입력하거나 고유한 이름을 만들 수 있습니다.
+    groupDescription: 다른 플레이어와 그룹을 생성하거나 참여할 수 있습니다. 런처는 그룹에 따라 당신과 친구들 간에 P2P 연결을 생성하려고 시도합니다. 친구들이 준 그룹 이름을 입력하거나 고유한 이름을 만들 수 있습니다.
     groupTitle: 그룹 참여
-    joinDescription: >-
-      그룹 이름을 입력하면 이 버튼을 클릭하여 그룹에 참여하거나 생성할 수 있습니다. 그룹 이름이 비어 있으면 런처가 이름을 생성해 줍니다.
-    manualDescription: >-
-      당신이나 친구가 그룹에 연결할 수 없다면, 수동 연결을 클릭하여 토큰을 수동으로 교환해 볼 수 있습니다. 그것도 실패한다면 인터넷 문제일 수 있습니다.
+    joinDescription: 그룹 이름을 입력하면 이 버튼을 클릭하여 그룹에 참여하거나 생성할 수 있습니다. 그룹 이름이 비어 있으면 런처가 이름을 생성해 줍니다.
+    manualDescription: 당신이나 친구가 그룹에 연결할 수 없다면, 수동 연결을 클릭하여 토큰을 수동으로 교환해 볼 수 있습니다. 그것도 실패한다면 인터넷 문제일 수 있습니다.
   recentPlayDescription: 생성된 게임들이 여기에 나열됩니다. 여기서 뷰를 전환하여 설치된 버전과 다운로드된 모드팩도 볼 수 있습니다.
   storePoupularModpackDescription: 이 섹션에서 Curseforge와 Modrinth의 가장 인기 있는 모드팩을 볼 수 있습니다.
   storeSearchCategoryDescription: 여기서 카테고리나 필터를 토글할 수도 있습니다.
@@ -1495,7 +1622,7 @@ unresolvedFiles:
   description: 설치 중에 이 파일들을 다운로드할 수 없었습니다. 일치하는 소스를 검색하여 설치하거나, 파일을 무시하고 실행하세요.
   empty: 모든 파일이 확인되었습니다.
   ignoreSelected: '{count}개 무시'
-  install: '일치 항목 {count}개 설치'
+  install: 일치 항목 {count}개 설치
   matched: 일치
   noMatch: 찾을 수 없음
   search: 소스 검색
@@ -1527,8 +1654,7 @@ userAccount:
   removeTitle: 계정 제거
 userCape:
   changeTitle: 망토 변경
-  description: >-
-    망토는 플레이어가 다양한 이벤트, 캠페인 및 기타 행사를 통해 잠금 해제할 수 있는 특별한 보상입니다. 여기서 현재 소유한 망토 중에서 선택할 수 있습니다:
+  description: '망토는 플레이어가 다양한 이벤트, 캠페인 및 기타 행사를 통해 잠금 해제할 수 있는 특별한 보상입니다. 여기서 현재 소유한 망토 중에서 선택할 수 있습니다:'
   noCape: 망토 없음
 userService:
   add: 더 많은 서비스 추가
@@ -1572,6 +1698,8 @@ userSkin:
   urlNotEmpty: 스킨 URL은 비어있을 수 없습니다
   urlNotValid: 스킨 URL이 유효하지 않습니다
   useSlim: 슬림 모델 사용
+  classic: 클래식
+  slim: 슬림
 version:
   checkIntegrity: 무결성을 확인하십시오
   name: 버전
@@ -1599,3 +1727,152 @@ migrateMinecraft:
   name: Minecraft 파일 마이그레이션
 reinstall:
   name: '{version} 재설치'
+agent:
+  callingTool: '{name} 호출 중…'
+  disabledPlaceholder: 에이전트 비활성화됨
+  emptyHint: 에이전트에게 인스턴스 검사, 모드 활성화/비활성화, 로그 읽기 또는 충돌 진단을 요청하세요.
+  inputPlaceholder: 에이전트에게 질문하기… (전송하려면 Enter, 줄바꿈은 Shift+Enter)
+  notConfiguredHint: 에이전트를 활성화하려면 설정 → 일반 → AI 에이전트에서 API 키, 모델 및 엔드포인트를 설정하세요.
+  notConfiguredTitle: 에이전트가 설정되지 않음
+  openSettings: 설정 열기
+  reset: 대화 초기화
+  setupGuide: 설정 가이드
+  statusDisabled: 비활성화됨 — API 키 누락
+  statusReady: 준비됨
+  statusWorking: 작업 중…
+  suggestion1: 이 인스턴스를 더 최신 마인크래프트 버전으로 업그레이드하고, 그에 맞게 모드를 업데이트하세요.
+  suggestion2: 모드가 충돌합니다 — 원인을 찾고 해결 방법을 알려주세요.
+  suggestion3: '모드팩 빌드: 원하는 기능이 있는 모드를 찾아 이 인스턴스에 설치해 주세요.'
+  thinking: 생각 중…
+  title: XMCL 에이전트
+  toggleHint: 토글하려면
+difficulty:
+  easy: 쉬움
+  hard: 어려움
+  normal: 보통
+  peaceful: 평화로움
+minecraftFriends:
+  accept: 수락
+  add: 친구 추가
+  addPlaceholder: 마인크래프트 사용자 이름
+  addedRelative: '{time}에 추가됨'
+  errors:
+    cannotAddSelf: 자기 자신에게는 친구 요청을 보낼 수 없습니다.
+    duplicate: 해당 플레이어는 이미 친구 목록에 있습니다.
+    generic: 오류가 발생했습니다. 다시 시도해 주세요.
+    inviteRejected: 해당 플레이어가 친구 기능을 활성화하지 않았거나 초대를 수락하지 않습니다.
+    tokenExpired: Microsoft 세션이 만료되었습니다. 다시 로그인해 주세요.
+    unknownProfile: 해당 이름의 플레이어를 찾을 수 없습니다.
+  expiresRelative: '{time}에 만료됨'
+  friends: 친구
+  heroEmptyHint: 위의 사용자 이름으로 마인크래프트 플레이어를 추가하여 친구 요청을 보내세요.
+  heroEmptyTitle: 친구 목록이 비어 있습니다
+  incoming: 받은 요청
+  incomingHint: 받은 요청 1개 | 받은 요청 {count}개
+  notifyAdded: '{name}님에게 친구 요청을 보냈습니다'
+  outgoing: 보낸 요청
+  privacy:
+    acceptInvites: 친구 초대 수락
+    acceptInvitesHint: 비활성화 시 다른 플레이어가 나에게 친구 요청을 보낼 수 없습니다.
+    friendsEnabled: 친구 목록 활성화됨
+  reconnectAction: 재연결
+  requiresMicrosoft: 친구 기능을 사용하려면 Microsoft 계정으로 로그인하세요.
+  scopedTo: '{name}(으)로 로그인됨'
+  send: 전송
+  title: 마인크래프트 친구
+  unsupported: 친구 기능은 Microsoft 계정에서만 사용할 수 있습니다.
+relative:
+  daysAgo: '{count}일 전 | {count}일 전'
+  hoursAgo: '{count}시간 전 | {count}시간 전'
+  justNow: 방금
+  minutesAgo: '{count}분 전 | {count}분 전'
+  secondsAgo: '{count}초 전 | {count}초 전'
+resourceError:
+  body: '"{path}"을(를) 파싱할 수 없습니다 ({code}). 파일이 손상되었거나 잠겨 있거나 불완전할 수 있습니다. 다시 다운로드하거나 삭제해 보세요.'
+  title: '{file}을(를) 읽을 수 없음'
+blueprint:
+  name: 설계도 | 설계도
+  count: '{count}개의 설계도'
+  searchLocal: 설계도 검색...
+  searchOnline: 온라인 검색...
+  market: 마켓
+  local: 로컬
+  provider: 제공처
+  import: 가져오기
+  openFolder: 폴더 열기
+  refresh: 새로고침
+  empty: 설계도를 찾을 수 없습니다. .litematic / .schem / .nbt 파일을 가져오거나 마켓을 찾아보세요.
+  dropHint: 가져올 설계도 파일(.litematic / .schem / .nbt)을 여기에 끌어다 놓으세요.
+  selectHint: 설계도를 선택하여 미리보세요.
+  blocks: '{count}개의 블록'
+  materials: 재료
+  allNamespaces: 전체
+  findMod: 이 네임스페이스의 모드 찾기
+  compatible: 호환됨
+  incompatible: 모드 누락됨
+  missingNamespaces: '누락된 모드: {namespaces}'
+  delete: 삭제
+  cancel: 취소
+  install: 설치
+  goTo: 웹사이트
+  byAuthor: '작성자: {author}'
+  noDescription: 설명이 제공되지 않았습니다.
+  loadMore: 더 보기
+  cmsBrowseOnly: 이 출처는 열람 전용입니다. 다운로드하려면 웹사이트를 여세요.
+  mixedSources: 결과에 모든 출처가 혼합되어 있습니다. 일부는 열람 전용이므로 다운로드하려면 웹사이트를 여세요.
+  formats:
+    structure: 바닐라 구조물
+  preview:
+    title: 3D 미리보기
+    loading: 미리보기 로딩 중...
+    empty: 이 설계도에는 표시할 블록이 없습니다.
+    hint: '{count}개 블록 · {x}×{y}×{z}'
+    controls: 드래그하여 둘러보기 · WASD 이동 · Space/Shift 위/아래
+  convert:
+    title: 포맷 변환
+    hint: 이 설계도를 다른 포맷으로 변환합니다. 새 파일이 생성됩니다.
+    target: 대상 포맷
+    action: 변환
+  replace:
+    title: 블록 교체
+    simple: 간단히
+    precise: 정밀하게
+    simpleHint: 블록 ID만 매칭하여 기존 블록 상태 속성을 유지합니다.
+    preciseHint: 전체 블록 상태(ID + 속성)를 매칭하고 완전히 교체합니다.
+    from: 대상 블록
+    to: 교체할 블록
+    addRule: 규칙 추가
+    newFile: 새 파일로 저장
+    action: 교체
+gamepad:
+  detectedTitle: 게임패드 감지됨
+  connected: 컨트롤러 연결됨
+  guideTitle: 컨트롤러 조작법
+  enableSwitchLabel: 게임패드 컨트롤
+  enabledState: 활성화됨
+  disabledState: 비활성화됨
+  toggle: 토글
+  disabledNotify: 게임패드 컨트롤이 비활성화되었습니다.
+  enabledNotify: 게임패드 컨트롤이 활성화되었습니다! 방향패드(D-pad)/왼쪽 스틱으로 이동하고, {btnA}로 선택, {btnB}로 뒤로 가세요.
+  guide:
+    confirm: 선택
+    navigate: 이동
+    tabs: 탭 전환
+    sections: 섹션 전환
+    launch: 게임 실행
+    instanceSettings: 인스턴스 설정
+  modSuggestTitle: 컨트롤러 모드
+  modSuggestBody: 마인크래프트 내에서 게임패드를 사용하려면 컨트롤러 모드를 설치하는 것이 좋습니다. 모드로더에 적합한 모드를 설치하시겠습니까?
+  modInstall: 모드 설치
+  modSkip: 건너뛰기
+  modDone: 완료
+  modInstalled: 컨트롤러 모드가 성공적으로 설치되었습니다! 다음 번에 마인크래프트를 실행할 때 활성화됩니다.
+  modInstalledNotify: 인게임 컨트롤러 지원을 위해 {name}이(가) 설치되었습니다.
+  modNotFound: 마인크래프트 {version} 버전의 {loader}와(과) 호환되는 버전을 찾을 수 없습니다.
+  settingSteamTitle: Steam에 런처 추가
+  steamAddedNotify: Steam 라이브러리에 런처를 추가했습니다! 라이브러리에서 확인하려면 Steam을 다시 시작해 주세요.
+  steamAlreadyAddedNotify: 런처가 이미 Steam 라이브러리에 있습니다.
+  steamDeckTitle: Steam Deck 감지됨
+  steamDeckDesc: Steam Deck에서 실행 중임이 감지되었습니다. 게이밍 모드에서 온전한 Steam 오버레이 및 컨트롤러 연동을 위해 X Minecraft 런처를 Steam 라이브러리에 비 Steam 게임으로 추가하시겠습니까?
+  steamDeckAddBtn: Steam에 추가 ({btn})
+  steamDeckCancelBtn: 취소 ({btn})
