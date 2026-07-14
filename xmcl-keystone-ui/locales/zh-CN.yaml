@@ -540,6 +540,16 @@ instances:
   importFolderDescription: 导入 Minecraft 到启动器
   addPrismDescription: 导入现有的 PrismLauncher 实例。
   loadingFiles: 加载整合包文件
+  edition: 版本
+  editionJava: Java 版
+  editionBedrock: 基岩版
+  editionBedrockHint: >-
+    基岩版通过 Microsoft Store 应用启动。你需要拥有基岩版许可。模组、资源包及其他 Java 版专属功能不可用。
+  editionBedrockWindowsOnly: 基岩版仅在 Windows 版本中受支持。
+  linkSharedFolders: 在多个实例间共享文件夹
+  linkSharedFoldersHint: >-
+    将这些文件夹创建为指向启动器共享文件夹的链接，使此实例与其他所有已链接的实例共享其内容。这不是复制——在一个实例中所做的更改会显示在所有实例中。未勾选的文件夹将保持此实例私有。
+  linkFailed: 无法将 {folder} 文件夹链接到共享文件夹
 items:
   count: '{count} 个'
   total: 共 {total} 个

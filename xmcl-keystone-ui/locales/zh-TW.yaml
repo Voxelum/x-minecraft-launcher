@@ -486,6 +486,16 @@ instances:
   folderSetting: 資料夾設定
   importFolderDescription: 匯入 Minecraft 到啟動器
   loadingFiles: 載入模組包檔案
+  edition: 版本
+  editionJava: Java 版
+  editionBedrock: 基岩版
+  editionBedrockHint: >-
+    基岩版透過 Microsoft Store 應用程式啟動。你需要擁有基岩版授權。模組、資源包及其他 Java 版專屬功能無法使用。
+  editionBedrockWindowsOnly: 基岩版僅在 Windows 版本中受支援。
+  linkSharedFolders: 在多個實例間共享資料夾
+  linkSharedFoldersHint: >-
+    將這些資料夾建立為指向啟動器共享資料夾的連結，使此實例與其他所有已連結的實例共享其內容。這不是複製——在一個實例中所做的變更會顯示在所有實例中。未勾選的資料夾將保持此實例私有。
+  linkFailed: 無法將 {folder} 資料夾連結到共享資料夾
   addPrismDescription: 匯入現有的 PrismLauncher 實例。
 items:
   count: '{count} 個'

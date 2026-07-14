@@ -503,6 +503,22 @@ instances:
   folderSetting: Mappa beállításai
   importFolderDescription: Minecraft importálása a Launcherbe
   loadingFiles: Modcsomag fájlok betöltése
+  edition: Kiadás
+  editionJava: Java kiadás
+  editionBedrock: Bedrock kiadás
+  editionBedrockHint: >-
+    A Bedrock kiadás a Microsoft Store alkalmazáson keresztül indul. Rendelkezned
+    kell Bedrock licenccel. A modok, erőforráscsomagok és egyéb, csak Java alatt
+    elérhető funkciók nem használhatók.
+  editionBedrockWindowsOnly: A Bedrock kiadás csak a Windows-változatban támogatott.
+  linkSharedFolders: Mappák megosztása példányok között
+  linkSharedFoldersHint: >-
+    Hozza létre ezeket a mappákat az indító megosztott mappáira mutató
+    hivatkozásként, hogy ez a példány megossza a tartalmukat az összes többi
+    összekapcsolt példánnyal. Ez nem másolás — az egyik példányban végzett
+    módosítások az összesben megjelennek. A be nem jelölt mappák a példány
+    számára priváttak maradnak.
+  linkFailed: Nem sikerült a(z) {folder} mappát a megosztott mappához kapcsolni
   addPrismDescription: Meglévő PrismLauncher-példány importálása.
 items:
   count: '{count} elem'

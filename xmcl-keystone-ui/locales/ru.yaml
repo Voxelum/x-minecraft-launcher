@@ -514,6 +514,21 @@ instances:
   folderSetting: Настройки папки
   importFolderDescription: Импортировать Minecraft в лаунчер
   loadingFiles: Загрузка файлов сборки модов
+  edition: Издание
+  editionJava: Java-издание
+  editionBedrock: Bedrock-издание
+  editionBedrockHint: >-
+    Издание Bedrock запускается через приложение Microsoft Store. У вас должна
+    быть лицензия Bedrock. Моды, наборы ресурсов и другие функции, доступные
+    только в Java, недоступны.
+  editionBedrockWindowsOnly: Издание Bedrock поддерживается только в сборке для Windows.
+  linkSharedFolders: Общий доступ к папкам между сборками
+  linkSharedFoldersHint: >-
+    Создайте эти папки как ссылки на общие папки лаунчера, чтобы эта сборка
+    делила их содержимое со всеми другими связанными сборками. Это не
+    копирование — изменения в одной сборке появляются во всех. Неотмеченные
+    папки остаются приватными для этой сборки.
+  linkFailed: Не удалось связать папку {folder} с общей папкой
   addPrismDescription: Импортировать существующий инстанс PrismLauncher.
 items:
   count: '{count} элементов'

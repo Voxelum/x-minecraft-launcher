@@ -470,6 +470,22 @@ instances:
   folderSetting: Impostazioni della cartella
   importFolderDescription: Importa Minecraft nel launcher
   loadingFiles: Caricamento file Modpack
+  edition: Edizione
+  editionJava: Edizione Java
+  editionBedrock: Edizione Bedrock
+  editionBedrockHint: >-
+    L'edizione Bedrock viene avviata tramite l'app Microsoft Store. Devi
+    possedere una licenza Bedrock. Mod, pacchetti risorse e altre funzionalità
+    esclusive di Java non sono disponibili.
+  editionBedrockWindowsOnly: L'edizione Bedrock è supportata solo nella build per Windows.
+  linkSharedFolders: Condividi le cartelle tra le istanze
+  linkSharedFoldersHint: >-
+    Crea queste cartelle come collegamenti alle cartelle condivise del launcher
+    in modo che questa istanza condivida il loro contenuto con tutte le altre
+    istanze collegate. Questa non è una copia: le modifiche fatte in un'istanza
+    compaiono in tutte. Le cartelle non selezionate restano private di questa
+    istanza.
+  linkFailed: Impossibile collegare la cartella {folder} alla cartella condivisa
   addPrismDescription: Importa un'istanza PrismLauncher esistente.
 items:
   count: '{count} elementi'

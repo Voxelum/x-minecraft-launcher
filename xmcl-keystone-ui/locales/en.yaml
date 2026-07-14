@@ -625,6 +625,13 @@ instances:
   folderSetting: Folder Settings
   importFolderDescription: Import Minecraft to Launcher
   loadingFiles: Loading Modpack Files
+  linkSharedFolders: Share folders across instances
+  linkSharedFoldersHint: >-
+    Create these folders as links to the launcher's shared folders so this
+    instance shares their content with every other linked instance. This is not
+    a copy — changes made in one instance appear in all of them. Unchecked
+    folders stay private to this instance.
+  linkFailed: Failed to link the {folder} folder to the shared folder
 items:
   count: '{count} items'
   total: '{total} total'
