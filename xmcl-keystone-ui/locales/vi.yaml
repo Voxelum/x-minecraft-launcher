@@ -1,0 +1,1867 @@
+AppAddInstanceDialog:
+  choiceTitle: Đã phát hiện nhiều hồ sơ khởi chạy. Vui lòng chọn một hồ sơ để nhập.
+  createTitle: Tạo game
+  serverTitle: Nhập địa chỉ máy chủ của bạn
+AppShareInstanceDialog:
+  alterDownloadDescription: Nếu bạn không muốn làm xáo trộn phiên bản hiện tại. Bạn cũng có thể tạo một phiên bản mới từ cấu hình của bạn bè. Nhấp vào nút bên dưới để tạo phiên bản.
+  baseInfo: Thiết lập cơ bản
+  cancelShare: Hủy chia sẻ
+  description: Sau khi bạn chia sẻ hồ sơ, các thiết bị khác có thể tải các tệp này xuống thông qua PC của bạn.
+  downloadDescription: Vui lòng xác minh các tệp mà bạn bè đã cung cấp cho bạn. Chọn tệp bạn muốn tải xuống. Tệp sẽ được đặt vào phiên bản hiện tại {name}.
+  downloadNotifyTitle: Tải xuống phiên bản từ {user}
+  downloadTitle: Tải xuống các tệp từ các máy khác
+  filesToDownload: Chọn tệp cần tải xuống
+  filesToShare: Chọn tệp cần chia sẻ
+  instanceShare: '{user} vừa chia sẻ phiên bản hiện tại cho bạn'
+  share: Chia sẻ
+  shareNotifyTitle: Chia sẻ phiên bản
+  shareTitle: Chia sẻ tệp game cho người chơi khác
+BaseSettingGeneral:
+  title: Chung
+HomeJavaIssueDialog:
+  incompatibleJava: Java không tương thích
+  incompatibleJavaHint: Phiên bản Java hiện tại có thể không tương thích với Minecraft đã chọn!
+  missingJava: Thiếu Java
+  missingJavaHint: 'Trình khởi chạy không thể phát hiện bất kỳ phiên bản Java nào trên máy tính của bạn. Bạn có thể:'
+  optionSwitch:
+    name: Chuyển sang {version}
+HomeLaunchMultiInstanceDialog:
+  confirm: Có, Khởi chạy
+  description: Bạn đang khởi chạy nhiều phiên bản Minecraft cùng lúc. Bạn có chắc chắn không?
+  title: Nhiều phiên bản
+SettingMigrationDialog:
+  selectRootDirectory: Chọn thư mục gốc
+agent:
+  callingTool: đang gọi {name}…
+  disabledPlaceholder: Trợ lý đã bị vô hiệu hóa
+  emptyHint: Yêu cầu trợ lý kiểm tra phiên bản của bạn, bật/tắt mod, đọc nhật ký hoạt động hoặc chẩn đoán sự cố crash.
+  inputPlaceholder: Hỏi trợ lý… (Nhấn Enter để gửi, Shift+Enter để xuống dòng)
+  notConfiguredHint: Đặt khóa API, mô hình và máy chủ (endpoint) trong Cài đặt → Chung → Trợ lý AI để kích hoạt trợ lý.
+  notConfiguredTitle: Trợ lý chưa được cấu hình
+  openSettings: Mở cài đặt
+  reset: Đặt lại cuộc hội thoại
+  setupGuide: Hướng dẫn thiết lập
+  statusDisabled: Đã vô hiệu hóa — thiếu khóa API
+  statusReady: Sẵn sàng
+  statusWorking: Đang xử lý…
+  suggestion1: Nâng cấp phiên bản Minecraft của hồ sơ này và cập nhật các mod tương thích
+  suggestion2: Các mod của tôi đang bị crash — hãy tìm nguyên nhân và chỉ tôi cách khắc phục
+  suggestion3: 'Tạo một modpack: tìm các mod có tính năng tôi muốn và cài đặt chúng vào phiên bản này'
+  thinking: đang suy nghĩ…
+  title: Trợ lý XMCL
+  toggleHint: để bật/tắt
+ago:
+  day: '{duration} ngày trước | {duration} ngày trước'
+  hour: '{duration} giờ trước | {duration} giờ trước'
+  minute: '{duration} phút trước | {duration} phút trước'
+  second: '{duration} giây trước | {duration} giây trước'
+askAICrash:
+  agentNotConfigured: Thêm nhà cung cấp AI và khóa API trong Cài đặt để trợ lý tích hợp của trình khởi chạy chẩn đoán và khắc phục sự cố này cho bạn.
+  askAgent: Chẩn đoán bằng trợ lý AI tích hợp
+  copyPrompt: Sao chép gợi ý để hỏi AI
+  description: Để AI giúp bạn hiểu lỗi crash game! Làm theo hướng dẫn dưới đây để hỏi AI về lỗi crash game này!
+  orExternal: hoặc sử dụng AI bên ngoài
+  selectPlatform: Mở một nền tảng AI và dán gợi ý bạn vừa sao chép.
+  setupAgent: Thiết lập trợ lý AI
+authProfileAddedNotification: Đã thêm hồ sơ xác thực {name}
+bedrock:
+  description: Minecraft Bedrock Edition được cài đặt và khởi chạy thông qua Microsoft Store. Bạn cần có bản quyền Bedrock trên tài khoản Microsoft của mình.
+  install: Tải từ Microsoft Store
+  installFailed: Không thể mở Microsoft Store
+  installed: 'Đã cài đặt: {version}'
+  launchHint: Sử dụng nút Khởi chạy để bắt đầu Bedrock Edition.
+  installBedrockVersion: Đang tải xuống Bedrock {version}
+  licenseRequired: Đăng nhập bằng tài khoản Microsoft có sở hữu Minecraft để cài đặt và chơi Bedrock Edition.
+  refresh: Làm mới
+  versionsTitle: Quản lý phiên bản
+  versionsHint: Tải xuống nhiều phiên bản Bedrock từ máy chủ của Microsoft và chuyển đổi giữa chúng. Chỉ có một phiên bản có thể đăng ký với Windows tại một thời điểm, vì vậy việc chơi một phiên bản sẽ đăng ký lại phiên bản đó.
+  versionsError: Không tải được danh sách phiên bản. Kiểm tra mạng của bạn và thử lại.
+  channel: Kênh
+  channelRelease: Chính thức
+  channelBeta: Thử nghiệm (Beta)
+  channelPreview: Bản xem trước (Preview)
+  active: Đang hoạt động
+  play: Chơi
+  download: Tải xuống
+  installedTag: Đã cài đặt
+  developerModeRequired: Đăng ký phiên bản đã tải xuống yêu cầu Chế độ nhà phát triển của Windows. Kích hoạt chế độ này yêu cầu quyền quản trị viên.
+  enableDeveloperMode: Bật Chế độ nhà phát triển
+  enableDeveloperModeFailed: Không thể bật Chế độ nhà phát triển
+  downloadFailed: Không tải được Bedrock {version}
+  launchFailed: Không thể khởi chạy phiên bản Bedrock này
+  removeFailed: Không thể xóa Bedrock {version}
+baseSetting:
+  title: Cài đặt phiên bản
+browseApp:
+  createShortcut: Tạo lối tắt (Shortcut)
+  default: MẶC ĐỊNH
+  delete: Xóa
+  launch: Khởi chạy và đặt làm Mặc định
+browseApps: Xem giao diện người dùng trình khởi chạy
+color: Màu sắc
+confirm: Bắt đầu
+copyClipboard:
+  success: Đã sao chép vào khay nhớ tạm
+create: Tạo
+curseforge:
+  category: Danh mục
+  createdDate: Ngày tạo
+  lastUpdate: Ngày cập nhật gần nhất
+  releasedDate: Ngày phát hành
+curseforgeCategory:
+  API and Library: API và thư viện
+  Addons: Tiện ích mở rộng
+  Adventure: Phiêu lưu
+  Adventure and RPG: Phiêu lưu và RPG
+  Animated: Hoạt họa
+  Armor, Tools, and Weapons: Giáp, Công cụ và Vũ khí
+  Combat / PvP: Chiến đấu / PvP
+  Cosmetic: Trang trí / Thẩm mỹ
+  Creation: Sáng tạo
+  Data Packs: Gói dữ liệu (Data Pack)
+  Education: Giáo dục
+  Exploration: Khám phá
+  Extra Large: Siêu lớn
+  FTB Official Pack: Gói FTB chính thức
+  Fabric: Fabric
+  FancyMenu: FancyMenu
+  Font Packs: Gói phông chữ
+  Food: Thức ăn
+  Game Map: Bản đồ trò chơi
+  Hardcore: Chế độ sinh tồn khó (Hardcore)
+  MCreator: MCreator
+  Magic: Ma thuật
+  Map Based: Dựa trên bản đồ
+  Map and Information: Bản đồ và thông tin
+  Medieval: Trung cổ
+  Mini Game: Trò chơi nhỏ (Mini Game)
+  Miscellaneous: Hỗn hợp
+  Mod Support: Hỗ trợ Mod
+  Modded World: Thế giới đã chỉnh sửa
+  Modern: Hiện đại
+  Multiplayer: Chơi mạng
+  Parkour: Parkour
+  Photo Realistic: Ảnh chân thực
+  Puzzle: Giải đố
+  QoL: Cải thiện chất lượng trải nghiệm (QoL)
+  Quests: Nhiệm vụ
+  Redstone: Đá đỏ
+  Sci-Fi: Khoa học viễn tưởng
+  Server Utility: Tiện ích máy chủ
+  Skyblock: Skyblock
+  Small / Light: Nhỏ / Nhẹ
+  Steampunk: Steampunk
+  Storage: Kho chứa
+  Survival: Sinh tồn
+  Tech: Công nghệ
+  Technology: Công nghệ
+  Traditional: Truyền thống
+  Twitch Integration: Tích hợp Twitch
+  Utility & QoL: Tiện ích & QoL
+  Vanilla+: Vanilla+
+  World Gen: Tạo thế giới
+dataMigration:
+  apply: Áp dụng cài đặt
+  directoryCriteriaHint: Vui lòng đảm bảo vị trí thư mục mới của bạn là một thư mục TRỐNG!
+  placeholder: Vui lòng nhấp vào đây để chọn thư mục
+  setRootCause: Bạn sẽ mất dữ liệu của mình (Bản đồ, Gói tài nguyên, Mod) nếu bạn đóng Trình khởi chạy trong quá trình này!
+  setRootDescription: Thao tác này sẽ thay đổi thư mục dữ liệu gốc của trình khởi chạy này và minecraft.
+  setRootTitle: Đặt vị trí lưu trữ mới
+  unknownError: Lỗi không xác định! Vui lòng thử lại hoặc liên hệ với nhà phát triển!
+  waitReload: Đang di chuyển dữ liệu. Vui lòng không đóng Trình khởi chạy, nếu không bạn sẽ mất dữ liệu.
+delete:
+  name: Xóa {name}
+  'no': Không
+  'yes': Xóa
+dependencies:
+  embedded: Đã tích hợp
+  incompatible: Không tương thích
+  name: Phụ thuộc
+  optional: Tùy chọn
+  required: Bắt buộc
+diagnosis:
+  badInstall:
+    message: Nhấp để thử cài đặt lại phiên bản này.
+    name: Cài đặt bị lỗi trên {version}
+  corruptedAssets:
+    message: Trình khởi chạy sẽ cài đặt các tài nguyên cho bạn
+    name: 'Tài nguyên bị hỏng: {name} | Tài nguyên bị hỏng {name} | {count} tài nguyên bị hỏng'
+  corruptedAssetsIndex:
+    message: Trình khởi chạy sẽ tải xuống tệp chỉ mục tài nguyên cho bạn
+    name: Tệp chỉ mục tài nguyên của {version} bị hỏng.
+  corruptedLibraries:
+    message: Trình khởi chạy sẽ cài đặt các thư viện cho bạn
+    name: 'Thư viện bị hỏng: {name} | Thư viện bị hỏng: {name} | {count} thư viện bị hỏng'
+  corruptedVersionJar:
+    message: Nhấp để cài đặt phiên bản này
+    name: Tệp jar phiên bản bị hỏng đối với Minecraft %{version}.
+  incompatibleJava:
+    name: Phiên bản Java {javaVersion} không phù hợp với {version}!
+  instanceFiles:
+    description: Cài đặt phiên bản bao gồm {counts} tệp.
+    title: Cài đặt phiên bản chưa hoàn tất
+  invalidJava:
+    name: Vị trí Java không hợp lệ.
+  missingJava:
+    message: Nhấp để giải quyết vấn đề này
+    name: Không thể tìm thấy Java để chạy Minecraft!
+  missingLibraries:
+    message: Trình khởi chạy sẽ cài đặt các thư viện cho bạn
+    name: Thiếu thư viện {name} | Thiếu thư viện {name} | Thiếu {count} thư viện | Thiếu {count} thư viện
+  missingVersion:
+    message: Nhấp để cài đặt phiên bản này
+    name: Phiên bản {version} chưa được cài đặt!
+  unresolvedFiles:
+    description: Không thể giải quyết {count} tệp trong quá trình cài đặt | Không thể giải quyết {count} tệp trong quá trình cài đặt
+    title: Các tệp chưa được giải quyết
+  unzipFileNotFound:
+    description: Không thể tìm thấy {file}
+    title: Không tìm thấy tệp modpack
+difficulty:
+  easy: Dễ
+  hard: Khó
+  normal: Bình thường
+  peaceful: Bình yên
+disk:
+  available: Còn trống
+  used: Đã dùng
+downloadCount: '{count} lượt tải xuống'
+downloadModMetadataDb:
+  name: Tải xuống cơ sở dữ liệu siêu dữ liệu Mod (Mod Metadata Database)
+downloadUpdate:
+  name: Tải xuống bản cập nhật {version}
+duplicateInstance:
+  name: Sao chép phiên bản
+duration:
+  day: '{duration} ngày | {duration} ngày'
+  hour: '{duration} giờ | {duration} giờ'
+  minute: '{duration} phút | {duration} phút'
+  second: '{duration} giây | {duration} giây'
+env:
+  select:
+    all: Chọn tất cả
+    fit: Chọn phù hợp
+    none: Bỏ chọn tất cả
+errors:
+  bedrockUnsupportedPlatform: Minecraft Bedrock Edition chỉ được hỗ trợ trên nền tảng Windows.
+  bedrockNotInstalled: Minecraft Bedrock Edition chưa được cài đặt.
+  bedrockLaunchFailed: Không thể khởi chạy Minecraft Bedrock Edition.
+  bedrockInstallFailed: Không thể cài đặt Minecraft Bedrock Edition.
+  bedrockDownloadUrlUnavailable: Phiên bản Bedrock này không khả dụng cho tài khoản Microsoft hiện tại. Phiên bản Beta và Preview yêu cầu tài khoản đã đăng ký chương trình thử nghiệm Minecraft beta.
+  bedrockDeveloperModeRequired: Yêu cầu Chế độ nhà phát triển Windows để đăng ký phiên bản Bedrock này.
+  bedrockRegisterFailed: Không thể đăng ký phiên bản Bedrock này với Windows.
+  bedrockVersionNotFound: Phiên bản Bedrock này chưa được cài đặt cục bộ.
+  BadForgeInstallerJarError: Không thể phân tích cú pháp tệp jar trình cài đặt Forge. Có thể Forge đã đổi định dạng tệp cài đặt mới? Liên hệ với nhà phát triển nếu sự cố vẫn tiếp diễn.
+  BadInstanceType: 'Không phải phiên bản hợp lệ: {type}'
+  BodyTimeoutError: Lỗi hết thời gian nhận phản hồi HTTP (HTTP Body timeout)
+  ChecksumNotMatchError: Mã tổng kiểm (Checksum) không khớp! Dự kiến {expect}. Thực tế {actual}.
+  ConnectTimeoutError: Hết thời gian kết nối đến máy chủ.
+  CorruptedResourceMetadata: Đã phát hiện và xóa siêu dữ liệu bị hỏng của {count} tài nguyên. Các tệp vẫn hoạt động, nhưng thông tin ghi nhận nguồn Modrinth/CurseForge đã bị mất và sẽ được phát hiện lại tự động.
+  DNSNotFoundError: Lỗi tra cứu DNS
+  DatabaseNotOpened: Cơ sở dữ liệu chưa được mở! Trình khởi chạy sẽ không hoạt động bình thường! Vui lòng chọn một thư mục dữ liệu mà trình khởi chạy có quyền truy cập. Bạn có thể thử đặt lại thư mục gốc của dữ liệu trong trang cài đặt.
+  DiskIsFull: Đĩa của bạn đã đầy! Không thể ghi bất cứ thứ gì vào đĩa! Tất cả các tính năng có thể không hoạt động!
+  DownloadAggregateError: Tải tệp xuống thất bại.
+  DownloadFileSystemError: Lỗi khi truy cập đường dẫn tải tệp xuống. Vui lòng đảm bảo trình khởi chạy có quyền ghi trên đó.
+  HeadersTimeoutError: Lỗi hết thời gian nhận tiêu đề HTTP (HTTP Header timeout)
+  InstallBackendUnresponsive:
+    body: Tiến trình nền của trình khởi chạy đã ngừng phản hồi, do đó quá trình cài đặt không thể hoàn tất. Vui lòng đóng hoàn toàn và khởi động lại trình khởi chạy, sau đó thử lại.
+    title: Trình khởi chạy không phản hồi
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: Không thể cài đặt các tệp Minecraft
+  InstallNetworkError:
+    body: Sự cố mạng đã làm gián đoạn quá trình cài đặt. Hãy kiểm tra kết nối internet hoặc proxy của bạn rồi thử lại.
+    title: Không thể tải xuống các tệp Minecraft
+  InstallPermissionDenied:
+    body: Công cụ chống vi-rút hoặc quyền hạn chế đối với thư mục đã chặn cài đặt. Hãy thêm trình khởi chạy vào danh sách loại trừ AV của bạn hoặc chọn một thư mục gốc dữ liệu khác trong cài đặt trình khởi chạy.
+    title: Không thể ghi vào thư mục trình khởi chạy
+  NotFoundError: 404 Không tìm thấy
+  SocketError: Lỗi socket máy chủ
+eula:
+  body: Bằng cách tích vào hộp kiểm, bạn đồng ý với {eula} của Minecraft.
+exception:
+  http: Yêu cầu HTTP tới {url} thất bại. Mã trạng thái {statusCode}. {code}. Vui lòng thử lại hoặc kiểm tra mạng của bạn. Nếu lỗi này vẫn tiếp diễn, vui lòng gửi báo cáo cho nhóm phát triển.
+exportModpack:
+  name: Xuất Modpack
+extensions:
+  mrpack: Modpack Modrinth
+  zip: Tệp Zip
+fabricVersion:
+  disable: Vô hiệu hóa Fabric
+  empty: Không có phiên bản Fabric nào cho Minecraft {version}
+  showSnapshot: Hiển thị Snapshot
+  stable: Ổn định
+  unstable: Không ổn định
+command:
+  instance:
+    launch:
+      title: Khởi chạy phiên bản
+      description: Khởi chạy một phiên bản Minecraft
+    create:
+      title: Tạo phiên bản
+      description: Tạo một phiên bản mới
+    delete:
+      title: Xóa phiên bản
+      description: Xóa một phiên bản hiện có
+  user:
+    login:
+      title: Đăng nhập người dùng
+      description: Đăng nhập vào tài khoản của bạn
+    refresh:
+      title: Làm mới người dùng
+      description: Làm mới phiên làm việc của người dùng
+commandPalette:
+  placeholder: Tìm kiếm lệnh, phiên bản, mod…
+  commands: Lệnh
+  instances: Phiên bản
+  modrinth: Modrinth
+  recent: Gần đây
+  open: Hành động nhanh
+  openHint: Mở bảng lệnh ({shortcut})
+  empty: Nhập để tìm kiếm.
+  noResults: Không có kết quả phù hợp.
+  searching: Đang tìm kiếm…
+  hintNavigate: di chuyển
+  hintInvoke: gọi lệnh
+  hintEnter: chọn
+  hintBack: quay lại
+  hintClose: đóng
+feedback:
+  channel: Các kênh phản hồi
+  description: Tôi đã tìm thấy lỗi hoặc tôi muốn đưa ra đề xuất
+  discord: Discord
+  discordDescription: Tham gia Kênh Discord
+  discordJoin: Tham gia
+  generateReport: Tạo báo cáo
+  generateSaveAs: Lưu báo cáo vào
+  github: Sự cố Github (Github Issue)
+  githubDescription: Mở một Github Issue để cho biết ý kiến của bạn
+  githubOpenIssue: Github
+  hint: Nhấp vào nút để tạo báo cáo và liên hệ với nhóm phát triển. Báo cáo sẽ chứa thông tin thiết bị của bạn bao gồm loại hệ điều hành, phiên bản, tên người dùng (trong hệ điều hành của bạn), v.v.
+  kook: Kook
+  kookDescription: Kook là một ứng dụng thay thế cho discord dành cho người dùng Trung Quốc Đại Lục
+  name: Phản hồi
+  qq: Nhóm QQ
+  qqDescription: 'Tham gia nhóm QQ phản hồi và nói chuyện trực tiếp với tác giả. Số nhóm: {number}'
+  qqEnterGroup: Tham gia
+fileDetail:
+  fileSize: Dung lượng tệp
+  filesize: Dung lượng tệp
+  hash: Mã Hash
+filterLocalOnly: Chỉ hiển thị tệp đã cài đặt
+forgeVersion:
+  disable: Vô hiệu hóa Forge
+  empty: Forge không có bất kỳ bản phát hành nào cho Minecraft {version}
+  latest: Mới nhất
+  recommended: Khuyên dùng
+gameType:
+  adventure: Chế độ phiêu lưu
+  creative: Chế độ sáng tạo
+  spectator: Chế độ khán giả
+  survival: Chế độ sinh tồn
+help: Trợ giúp
+home: Trang chủ
+importModpack:
+  name: Nhập Modpack
+installAssets:
+  asset: Cài đặt {count} tài nguyên
+  assetIndex: Kiểm tra tệp chỉ mục tài nguyên
+  name: Cài đặt các tệp tài nguyên
+installAuthlibInjector: Cài đặt authlib-injector
+installCurseforgeFile: Cài đặt tệp Curseforge
+installFabric:
+  name: Cài đặt Fabric
+installForge:
+  downloadInstaller: Tải xuống trình cài đặt
+  name: Cài đặt Forge
+  postProcessing: Hậu xử lý
+installInstance:
+  file: Cập nhật tệp phiên bản {file}
+  link: Sao chép hoặc liên kết {count} tệp
+  name: Cập nhật phiên bản
+  resolve: Giải quyết cấu hình phiên bản
+  unzip: Giải nén {count} tệp
+installJre:
+  decompress: Giải nén tệp JRE vào thư mục
+  download: Tải xuống tệp nén JRE
+  name: Cài đặt thư viện môi trường thực thi Java (Java Runtime Library)
+installLabyMod:
+  name: Cài đặt LabyMod
+installLibraries:
+  library: Cài đặt thư viện
+  name: Cài đặt các thư viện
+installModrinthFile:
+  name: Cài đặt Modrinth
+installOptifine:
+  download: Tải xuống Optifine Universal
+  name: Cài đặt Optifine
+installProfile:
+  name: Cài đặt hồ sơ {version}
+installQuilt:
+  name: Cài đặt Quilt {version}
+installVersion:
+  jar: Cài đặt tệp Jar phiên bản
+  json: Cài đặt tệp Json phiên bản
+  name: Cài đặt game Minecraft {version}
+instance:
+  changeIcon: Thay đổi biểu tượng
+  contents: Nội dung
+  current: Phiên bản hiện tại
+  delete: Xóa game
+  deleteFailed: Xóa phiên bản thất bại
+  deleteFailedPermission: Chương trình khác đang sử dụng tệp này
+  deleteFile: Xóa các tệp phiên bản
+  deleteHint: Dữ liệu phiên bản sẽ bị xóa vĩnh viễn khỏi đĩa. Bạn có chắc không?
+  deleteHintBedrock: Minecraft Bedrock Edition và tất cả dữ liệu của nó sẽ bị xóa hoàn toàn khỏi máy tính của bạn. Bạn có chắc không?
+  duplicate: Sao chép game
+  duplicatedName: Tên bị trùng lặp
+  envVarKey: Khóa
+  envVarKeyPlaceholder: MY_VAR
+  envVarValue: Giá trị
+  envVarValuePlaceholder: giá trị
+  fileApi: URL API máy chủ đồng bộ hóa tệp
+  fileApiHint: URL để đồng bộ hóa các tệp phiên bản từ máy chủ cấu hình từ xa.
+  fileApiPlaceholder: Vui lòng nhập URL đồng bộ hóa từ xa tại đây nếu bạn muốn duy trì đồng bộ hóa tài nguyên
+  fullscreen: Toàn màn hình
+  height: Chiều cao
+  hideCard: Ẩn thẻ này
+  icon: Biểu tượng hồ sơ
+  iconHint: Biểu tượng có thể là một tệp hoặc liên kết URL internet.
+  iconUrl: URL biểu tượng
+  installModpack: Cập nhật phiên bản từ modpack
+  lastPlayed: Chơi lần cuối
+  launchArguments: Xem trước đối số khởi chạy
+  launchServer: Khởi chạy máy chủ nội bộ (localhost)
+  linkFileDesc: Thao tác này sẽ ghi đè tệp cục bộ {file} bằng tệp chung {file}. Bạn có chắc chắn muốn liên kết không?
+  linkFileTitle: Bạn có chắc chắn muốn liên kết {file} không?
+  mcOptions: Tùy chọn Minecraft
+  mcOptionsHint: Các đối số khởi chạy Minecraft bổ sung
+  name: Tên hồ sơ
+  nameHint: Tên của modpack
+  nameInvalidChars: 'Tên không được chứa các ký tự này: < > : " / \\ | ? *'
+  nameNoCyrillic: Tên không được chứa các ký tự Cyrillic
+  namePathTraversal: Tên không được chứa ký tự điều hướng đường dẫn ("..")
+  nameReservedName: Tên này đã được hệ thống giữ trước và không thể sử dụng
+  nameTrailingDotOrSpace: Tên không được kết thúc bằng dấu chấm hoặc khoảng trắng
+  nameWhitespaceOnly: Tên không được chỉ chứa khoảng trắng hoặc dấu chấm
+  neverPlayed: Chưa từng chơi
+  openCrashReportFolder: Mở thư mục báo cáo sự cố (Crash Report)
+  openLogFolder: Mở thư mục nhật ký (Log)
+  playtime: Thời gian chơi
+  preExecCommand: Lệnh thực thi trước (Pre-Execute)
+  preExecCommandHint: Lệnh cần thực thi trước khi khởi chạy Minecraft
+  prependCommand: Lệnh thêm vào trước (Prepend)
+  prependCommandHint: Thao tác này sẽ thêm lệnh này vào trước tất cả các lệnh khởi chạy
+  requireName: Tên là bắt buộc
+  resolution: Độ phân giải
+  resolutionPreset: Độ phân giải cài sẵn
+  showHiddenCards: Hiển thị các thẻ ẩn
+  showInstance: Hiển thị thư mục game
+  updates: Cập nhật
+  useSharedOptions: Sử dụng cài đặt game chia sẻ
+  useSharedOptionsDesc: Liên kết options.txt với một tệp chia sẻ giữa các phiên bản
+  useSharedServersList: Sử dụng danh sách máy chủ chia sẻ
+  useSharedServersListDesc: Liên kết servers.dat với một tệp chia sẻ giữa các phiên bản
+  vmOptions: Đối số JVM (JVM Options)
+  vmOptionsHint: Các đối số bổ sung để truyền vào JVM
+  vmVar: Biến môi trường
+  vmVarHint: Nhấp nút + để thêm biến môi trường
+  width: Chiều rộng
+instanceAge:
+  older: Cũ hơn
+  threeDay: Trong vòng ba ngày
+  today: Hôm nay
+instanceDiscover:
+  gameFolder: Phát hiện {count} thư mục game
+  instanceFolder: Tìm thấy {count} phiên bản
+instanceFileOperation:
+  add: Thêm
+  backup-add: Thay thế (Sao lưu)
+  backup-remove: Xóa (Sao lưu)
+  keep: Giữ lại
+  remove: Xóa
+instanceInstallSkip:
+  ignore: Bỏ qua
+  skip: Bỏ qua
+  title: Nguồn tệp có khả năng bị hỏng
+  warning: Một số tệp được tải xuống nhiều lần có mã tổng kiểm không khớp. Điều này có thể do mã tổng kiểm gốc không chính xác. Vui lòng kiểm tra. Nếu bạn xác nhận các tệp hiện tại là hợp lệ, bạn có thể bỏ qua bước kiểm tra xác thực.
+instanceLauncher:
+  search: Tìm kiếm phiên bản...
+  showAll: Hiển thị tất cả phiên bản
+  title: Tất cả phiên bản
+instanceSetting:
+  disableAuthlibInjector: Vô hiệu hóa authlib injector
+  disableAuthlibInjectorDescription: Nếu bạn đang sử dụng hệ thống skin của bên thứ ba, authlib injector có thể giúp bạn hiển thị skin trong game.
+  disableElyByAuthlib: Vô hiệu hóa thay thế authlib của ely.by
+  disableElyByAuthlibDescription: Ely.by có một authlib thay thế độc đáo để hiển thị skin trên mọi máy chủ.
+  fastLaunch: Khởi chạy tăng tốc
+  fastLaunchHint: Bỏ qua trạng thái người dùng và các sự cố hiện tại chưa được khắc phục
+  hideLauncher: Ẩn trình khởi chạy sau khi khởi chạy game
+  icon: Chọn một ảnh
+  showLog: Hiển thị nhật ký Minecraft
+  showLogHint: Thao tác này sẽ hiển thị một cửa sổ để truyền nhật ký Minecraft sau khi game bắt đầu
+instanceTemplate:
+  ftb: Đây là một modpack FTB
+  preview: Xem trước Modpack
+instanceUpdate:
+  basic: Cập nhật cài đặt
+  files: Cập nhật tệp
+  loaderChanged: Modloader của phiên bản này đã bị thay đổi. Modloader cũ là {modloader}, và modloader mới là {newModloader}.
+  noFiles: Không có tệp thay đổi
+  summary: Thêm {add} tệp. Xóa {remove} tệp. Giữ lại {keep} tệp.
+  title: Cập nhật phiên bản
+  update: Bắt đầu cập nhật
+instances:
+  add: Tạo game
+  addCurseForgeDescription: Nhập từ thư mục dữ liệu Curseforge. Bạn cần chọn thư mục dữ liệu gốc của Curseforge
+  addDescription: Tạo một phiên bản mới từ đầu
+  addMMCDescription: Nhập phiên bản MultiMC hiện có. Bạn cần chọn thư mục dữ liệu từ MultiMC.
+  addManually: Tạo thủ công
+  addModrinthDescription: Nhập phiên bản Modrinth hiện có. Bạn cần chọn thư mục dữ liệu gốc của Modrinth.
+  addPrismDescription: Nhập phiên bản PrismLauncher hiện có.
+  addServer: Tạo từ máy chủ
+  addServerDescription: Thao tác này sẽ tạo một game để kết nối trực tiếp vào máy chủ.
+  addTemplate: Tạo từ modpack đã tải xuống
+  addTemplateDescription: Nhập từ Modpack đã tải xuống
+  addVanilla: Tạo từ Minecraft vanilla
+  addVanillaDescription: Nhập từ thư mục .minecraft thông thường. Thao tác này sẽ sao chép hồ sơ game gốc sang XMCL.
+  edition: Phiên bản
+  editionJava: Phiên bản Java
+  editionBedrock: Phiên bản Bedrock
+  editionBedrockHint: Phiên bản Bedrock được khởi chạy thông qua ứng dụng Microsoft Store. Bạn cần có bản quyền Bedrock. Mod, gói tài nguyên và các tính năng chỉ dành cho Java khác sẽ không khả dụng.
+  editionBedrockWindowsOnly: Phiên bản Bedrock chỉ được hỗ trợ trên Windows.
+  fix: Sửa chữa
+  folder: Thư mục
+  folderSetting: Cài đặt thư mục
+  importFolderDescription: Nhập Minecraft vào trình khởi chạy
+  loadingFiles: Đang tải các tệp Modpack
+items:
+  count: '{count} mục'
+  total: Tổng cộng {total}
+java:
+  allocatedLong: Sử dụng Java mặc định của hệ thống
+  allocatedShort: Tự động phân bổ
+  allocation: Được phân bổ
+  autoHint: Bộ nhớ tối thiểu tăng theo số lượng mod đã cài đặt; tối đa sử dụng bộ nhớ hệ thống khả dụng.
+  change: Thay đổi
+  importFromFile: Nhập Java từ tệp
+  invalid: Vị trí Java không hợp lệ
+  location: Vị trí Java
+  locationHint: Chưa chọn Java — sử dụng mặc định hệ thống
+  maxMemory: Bộ nhớ tối đa
+  memory: Bộ nhớ Java
+  memoryAuto: Tự động
+  memoryManual: Thủ công
+  memoryUnassigned: Hủy phân bổ
+  minMemory: Bộ nhớ tối thiểu
+  noMemory: Không giới hạn sử dụng bộ nhớ
+  openFolder: Mở thư mục Java
+  presets: Thiết lập sẵn
+  refresh: Làm mới Java cục bộ
+  systemMemory: 'Bộ nhớ hệ thống còn trống: {free} / {total}'
+labyMod:
+  disable: Vô hiệu hóa LabyMod
+  empty: LabyMod không hỗ trợ phiên bản Minecraft hiện tại
+launch:
+  cancel: Hủy
+  createShortcut: Tạo lối tắt
+  forceKill: Buộc dừng
+  kill: Dừng
+  killServer: Dừng máy chủ nội bộ (localhost)
+  launch: Khởi chạy
+  launchAnyway: Vẫn khởi chạy
+  launchAs: Khởi chạy dưới dạng
+  launchTo: Khởi chạy vào
+launchBlocked:
+  launchBadVersion:
+    description: Tệp JSON phiên bản {version} bị lỗi. Có lẽ nên cài đặt lại phiên bản này?
+    title: Tệp JSON phiên bản bị lỗi
+  launchGeneralException:
+    description: Một số lỗi đã khiến việc khởi chạy thất bại.
+    title: Khởi chạy thất bại
+  launchInvalidJavaPath:
+    description: Đường dẫn Java đã chọn bị thiếu hoặc không hợp lệ. Vui lòng chọn một đường dẫn mới. <span class="highlight"> {javaPath} </span>
+    title: Đường dẫn Java không hợp lệ
+  launchJavaNoPermission:
+    description: Trình khởi chạy không có quyền thực thi Java <span class="highlight"> {javaPath} </span>. Hãy thay đổi quyền của tệp Java hoặc nâng cao quyền của trình khởi chạy.
+    title: Không có quyền khởi chạy
+  launchNoProperJava:
+    description: Không thể chọn Java thích hợp để khởi chạy trò chơi. ({javaPath} không hợp lệ?)
+    title: Không tìm thấy Java thích hợp
+  launchNoVersionInstalled:
+    description: Không thể giải quyết phiên bản <span class="highlight">{version}</span> để khởi chạy.
+    title: Chưa chọn phiên bản
+  launchSpawnProcessFailed:
+    description: Vui lòng kiểm tra Java của bạn, hoặc cấp thêm quyền cho trình khởi chạy và thử lại. Nếu vẫn không hoạt động, vui lòng liên hệ với nhà phát triển.
+    title: Khởi chạy tiến trình game thất bại
+  unexpectedText: Lỗi không mong muốn. Bạn có thể khởi động lại trình khởi chạy để giảm thiểu sự cố. Vui lòng liên hệ với tác giả nếu sự cố này tái diễn.
+launchFailed:
+  crash: Trò chơi đã bị crash!!
+  description: Không có báo cáo crash. Dưới đây là nhật ký lỗi và nhật ký mới nhất.
+  elyByAuthlib:
+    description: Bản thay thế authlib của Ely.by đã được sử dụng cho Minecraft phiên bản {version}, nhưng phiên bản này có thể không hoàn toàn tương thích.
+    suggestion: Bạn có thể vô hiệu hóa bản thay thế authlib của Ely.by trong cài đặt phiên bản để tránh sự cố này.
+    title: Sự cố tương thích Ely.by Authlib
+  failedToLaunch: Khởi chạy thất bại
+  latestLog: Nhật ký mới nhất
+  title: Trò chơi thoát với mã bất thường
+launchPreExecuteCommandFailed:
+  description: 'Lệnh thực thi trước thất bại với lỗi: {error}. Vui lòng kiểm tra lệnh và thử lại.'
+  title: Lệnh thực thi trước thất bại
+launchStatus:
+  assigningMemory: Đang phân bổ bộ nhớ
+  elyByWarning: Bản thay thế authlib của Ely.by đang được bật. Một số phiên bản Minecraft có thể không tương thích và bị crash. Bạn có thể tắt nó trong cài đặt phiên bản nếu xảy ra sự cố.
+  exit: Thoát trò chơi?
+  injectingAuthLib: Đang thiết lập AuthLib bên thứ ba
+  launching: Đang khởi chạy...
+  launchingSlow: Vẫn đang khởi chạy... Khởi động công cụ đồ họa có thể tốn thời gian...
+  refreshingUser: Đang làm mới token người dùng
+  spawningProcess: Đang tạo tiến trình
+launcherUpdate:
+  alreadyLatest: Đã là phiên bản mới nhất
+  installAndQuit: Khởi động lại để cài đặt
+  noUpdateAvailable: Không có bản cập nhật nào khả dụng
+  updateToThisVersion: Tải xuống và cài đặt
+localVersion:
+  auto: Tự động tính toán
+  empty: Chưa cài đặt phiên bản nào
+  hint: Khởi chạy trực tiếp một phiên bản cục bộ cụ thể
+  reinstallDescription: If bạn nghĩ rằng việc cài đặt phiên bản này có vấn đề, bạn có thể thử cài đặt lại.
+  reinstallTitle: Cài đặt lại {version}
+  title: Phiên bản cục bộ | Các phiên bản cục bộ
+logLevel:
+  error: Lỗi
+  info: Thông tin
+  success: Thành công
+  warning: Cảnh báo
+logView:
+  searchPlaceholder: Tìm kiếm nhật ký...
+login:
+  dropHint: Thả liên kết chứa mã xác thực vào đây để đăng nhập thủ công
+  forgetPassword: Quên mật khẩu?
+  login: Đăng nhập
+  manualLoginUrl: Nếu trình duyệt không hiển thị, vui lòng nhấp vào liên kết này để xác thực!
+  signup: Đăng ký
+  signupDescription: Bạn mới sử dụng?
+  userRelogin: Token truy cập của người dùng đã hết hạn. Vui lòng đăng nhập lại!
+loginError:
+  acquireMicrosoftTokenFailed: Nhận token Microsoft thất bại. Đây có thể là sự cố mạng. Vui lòng thử lại.
+  badNetworkOrServer: Vui lòng kiểm tra kết nối mạng của bạn! Hoặc có thể máy chủ xác thực đang ngoại tuyến!
+  checkOwnershipFailed: Kiểm tra quyền sở hữu trò chơi thất bại. Vui lòng thử lại.
+  connectionReset: Đăng nhập thất bại do kết nối bị đặt lại bởi máy chủ
+  cyrillicNotAllowed: Ký tự Cyrillic không được phép
+  fetchMinecraftProfileFailed: 'Không thể lấy hồ sơ Minecraft: {reason}'
+  illegalEmail: Email phải hợp lệ
+  illegalOfflineUsername: Tên người dùng phải dài từ 3-16 ký tự và chỉ chứa chữ cái tiếng Anh, chữ số và dấu gạch dưới
+  invalidCredentials: Thông tin xác thực không hợp lệ. Tên người dùng hoặc mật khẩu không đúng.
+  loginMinecraftByXboxFailed: Không thể đổi token Xbox lấy token Minecraft. Vui lòng đảm bảo bạn có Minecraft trong Xbox, hoặc thử lại.
+  loginMinecraftByXboxRateLimited: Dịch vụ xác thực Minecraft của Microsoft hiện đang giới hạn tần suất yêu cầu (HTTP 429). Vui lòng đợi một lát rồi thử lại.
+  loginMinecraftByXboxRateLimitedWithRetry: Dịch vụ xác thực Minecraft của Microsoft hiện đang giới hạn tần suất yêu cầu (HTTP 429). Vui lòng đợi khoảng {seconds} giây rồi thử lại.
+  loginMinecraftByXboxServerError: Dịch vụ xác thực Minecraft của Microsoft đã trả về lỗi máy chủ (HTTP {status}). Đây là lỗi từ phía họ. Vui lòng thử lại sau vài phút.
+  loginMinecraftByXboxStatus: Không thể đổi token Xbox lấy token Minecraft (HTTP {status}). Vui lòng đảm bảo bạn đã sở hữu Minecraft trên Xbox, hoặc thử lại.
+  loginXboxAdultVerification: Tài khoản Microsoft của bạn yêu cầu xác minh độ tuổi người lớn (thường yêu cầu ở một số khu vực) trước khi có thể đăng nhập vào Xbox. Hãy mở {url} trên trình duyệt để hoàn tất xác minh, sau đó thử lại.
+  loginXboxAgeRestricted: Không thể đăng nhập Xbox do vấn đề độ tuổi. Vui lòng đảm bảo độ tuổi được đặt cho tài khoản Microsoft của bạn là trên 18 tuổi.
+  loginXboxBadXsts: Microsoft đã trả về phản hồi XSTS không có các xác nhận người dùng mong đợi. Điều này thường là tạm thời -- vui lòng thử lại sau vài phút.
+  loginXboxBanned: Tài khoản Microsoft / Xbox này đã bị đình chỉ hoặc cấm bởi Microsoft và không thể đăng nhập vào Minecraft. Vui lòng liên hệ với bộ phận hỗ trợ của Microsoft / Xbox.
+  loginXboxChildAccount: Tài khoản Microsoft của bạn là tài khoản trẻ em và cần được thêm vào Gia đình Microsoft trước khi có thể đăng nhập vào Xbox / Minecraft. Hãy mở {url} trên trình duyệt để khắc phục, sau đó thử lại.
+  loginXboxFailed: Đăng nhập Xbox bằng token Microsoft thất bại. Vui lòng đảm bảo tài khoản Microsoft của bạn có liên kết với tài khoản Xbox độc lập. Hãy thử lại.
+  loginXboxFailedWithCode: Đăng nhập Xbox bằng token Microsoft thất bại (Mã lỗi XErr {code}). Vui lòng tìm kiếm mã lỗi này để được trợ giúp, hoặc thử lại sau.
+  loginXboxNoXboxProfile: Tài khoản Microsoft này chưa có hồ sơ Xbox. Hãy mở {url} trên trình duyệt để tạo hồ sơ, sau đó thử lại.
+  loginXboxRegionLocked: Xbox Live không khả dụng ở khu vực của tài khoản bạn. Vui lòng thay đổi quốc gia/khu vực của tài khoản Microsoft trong cài đặt và thử lại.
+  noProfileForNewUser: Không tìm thấy hồ sơ trò chơi! Nếu bạn là người dùng Minecraft mới, vui lòng đăng nhập ít nhất một lần bằng trình khởi chạy chính thức của Minecraft.
+  requestFailed: Đăng nhập thất bại, chúng tôi không biết lý do chính xác. Vui lòng thử lại.
+  requireEmail: Email là bắt buộc
+  requirePassword: Mật khẩu là bắt buộc
+  requireUsername: Tên người dùng là bắt buộc
+  timeout: Hết thời gian đăng nhập. Vui lòng thử lại hoặc kiểm tra kết nối mạng của bạn.
+logsCrashes:
+  crashes: Báo cáo sự cố (Crash Reports)
+  failures: Khởi chạy thất bại
+  logs: Nhật ký (Logs)
+  placeholder: Không tìm thấy tệp nào
+  serverLogs: Nhật ký máy chủ
+  showFile: Hiển thị trong thư mục
+  title: Nhật ký hoặc Báo cáo sự cố
+me:
+  news: Tin tức
+  recentPlay: Chơi gần đây
+migrateMinecraft:
+  name: Di chuyển tệp Minecraft
+minecraftFriends:
+  accept: Chấp nhận
+  add: Thêm bạn bè
+  addPlaceholder: Tên người dùng Minecraft
+  addedRelative: Đã thêm {time}
+  errors:
+    cannotAddSelf: Bạn không thể gửi yêu cầu kết bạn cho chính mình.
+    duplicate: Người chơi đó đã có trong danh sách của bạn.
+    generic: Đã xảy ra lỗi. Vui lòng thử lại.
+    inviteRejected: Người chơi đó chưa bật tính năng kết bạn hoặc không nhận lời mời.
+    tokenExpired: Phiên làm việc Microsoft của bạn đã hết hạn. Vui lòng đăng nhập lại.
+    unknownProfile: Chúng tôi không thể tìm thấy người chơi có tên đó.
+  expiresRelative: Hết hạn {time}
+  friends: Bạn bè
+  heroEmptyHint: Thêm một người chơi Minecraft bằng tên người dùng ở trên để gửi yêu cầu kết bạn.
+  heroEmptyTitle: Danh sách bạn bè trống
+  incoming: Yêu cầu đến
+  incomingHint: 1 yêu cầu đến | {count} yêu cầu đến
+  notifyAdded: Yêu cầu kết bạn đã gửi tới {name}
+  outgoing: Yêu cầu đi
+  privacy:
+    acceptInvites: Nhận lời mời kết bạn
+    acceptInvitesHint: Khi tắt, người chơi khác không thể gửi yêu cầu kết bạn cho bạn.
+    friendsEnabled: Đã bật danh sách bạn bè
+  reconnectAction: Kết nối lại
+  requiresMicrosoft: Đăng nhập bằng tài khoản Microsoft để sử dụng tính năng bạn bè.
+  scopedTo: Đăng nhập dưới tên {name}
+  send: Gửi
+  title: Bạn bè Minecraft
+  unsupported: Bạn bè chỉ khả dụng đối với tài khoản Microsoft.
+migrationWindow:
+  title: Di chuyển dữ liệu
+  preparing: Đang chuẩn bị di chuyển…
+  scanning: Đang tính toán…
+  migrating: Đang di chuyển dữ liệu của bạn
+  done: Di chuyển hoàn tất
+  files: tệp
+  warning: Giữ trình khởi chạy mở cho đến khi hoàn tất, nếu không bạn có thể bị mất dữ liệu.
+  error: Di chuyển thất bại
+minecraftVersion:
+  name: Phiên bản Minecraft
+  all: Tất cả phiên bản
+  release: Chính thức
+  showAlpha: Hiển thị Snapshot
+  snapshot: Bản thử nghiệm
+mod:
+  acceptVersion: Chấp nhận {version}
+  applyGroupRules: Áp dụng các quy tắc nhóm đã lưu
+  compatible: Mod tương thích.
+  createGroup: Tạo nhóm
+  currentVersion: Hiện tại {current}
+  denseView: Chế độ xem gọn
+  description: Mô tả
+  disableAll: Vô hiệu hóa tất cả
+  dropHint: Thả tệp .jar/.litemod của mod vào đây để nhập.
+  duplicatedDetected: Phát hiện {count} mod bị trùng lặp
+  duplicatedDetectedDescription: Tìm thấy các mod có cùng mod ID nhưng khác tệp. Điều này có thể gây crash Minecraft. Vui lòng chọn tệp bạn muốn giữ lại.
+  enableAll: Bật tất cả
+  enabled: Đã bật {count} Mod
+  filter: Lọc Mod
+  group: Nhóm lại
+  groupInstalled: Nhóm các mod đã cài đặt
+  groupName: Tên nhóm
+  groupNameRequired: Tên nhóm là bắt buộc
+  hasUpdate: Mod có phiên bản mới!
+  incompatible: Mod không tương thích.
+  incompatibleHint: Hiển thị không tương thích
+  incompatibleHintDescription: Một số mod có thể bị thiếu phụ thuộc. Hoặc phiên bản phụ thuộc không khớp.
+  maybeCompatible: Có thể tương thích.
+  modloaderSelectHint: Mod này hỗ trợ các modloader sau. Vui lòng chọn một cái để cài đặt.
+  modloaderSelectNotSupported: Không tìm thấy {modloader} cho Minecraft {minecraft}
+  mods: '{count} Mod'
+  name: Mod | Mod
+  newFolder: Thư mục mới
+  noGroupsFound: Không tìm thấy nhóm nào
+  noGroupsYet: Chưa có nhóm nào. Hãy tạo một nhóm!
+  noModLoaderHint: Đừng quên bật một modloader để sử dụng mod!
+  openLink: Mở URL của mod {url}
+  search: Tìm kiếm Mod
+  searchGroups: Tìm kiếm nhóm...
+  searchOnMcWiki: Tra cứu {name} trong từ điển bách khoa Minecraft.
+  selectOrCreateGroup: Chọn hoặc Tạo Nhóm
+  showDirectory: Hiển thị thư mục mod
+  showFile: Hiển thị đường dẫn mod {file}
+  showInModrinth: Hiển thị {name} trên Modrinth
+  switchDefaultSource: Nguồn Mod mặc định
+  syncGroupRules: Lưu các quy tắc nhóm
+  toUpdate: '{count} bản cập nhật'
+  ungroup: Hủy nhóm
+modFilter:
+  clear: Xóa bộ lọc
+  dependenciesInstallOnly: Chỉ hiển thị các mod bị thiếu phụ thuộc
+  disabledOnly: Chỉ hiển thị các mod bị tắt
+  hasUpdateOnly: Chỉ hiển thị các mod có bản cập nhật
+  incompatibleOnly: Chỉ hiển thị các mod không tương thích hoặc bị thiếu phụ thuộc
+  unusedOnly: Chỉ hiển thị các mod thư viện không sử dụng
+modInstall:
+  archived: '{name} đã bị lưu trữ. {name} sẽ không nhận được bất kỳ bản cập nhật nào nữa trừ khi tác giả quyết định hủy lưu trữ dự án.'
+  autoUpgrade:
+    description: Bạn đã thay đổi phiên bản Minecraft. Bạn có muốn tự động cập nhật các mod tương thích sang các phiên bản khớp với Minecraft {version} không?
+    'no': Bỏ qua
+    title: Cập nhật Mod?
+    'yes': Cập nhật Mod
+  checkDependencies: Kiểm tra phụ thuộc
+  checkUpgrade: Kiểm tra cập nhật Mod
+  checkedDependencies: Đã kiểm tra phụ thuộc
+  checkedUpgrade: Đã kiểm tra nâng cấp
+  currentVersion: Phiên bản đã chọn
+  dependencyHint: Đã cài đặt một phiên bản khác {version}
+  releaseOnly: Bỏ qua các phiên bản alpha và beta khi cập nhật
+  installDependencies: Cài đặt các phụ thuộc bị thiếu
+  installHint: Sẽ cài đặt tệp {file} với {dependencies} phụ thuộc
+  noVersionSupported: Mod chỉ hỗ trợ Minecraft {supported}.
+  recommendation: Khám phá {first} mod hàng đầu trên {modrinth} và {curseforge}!
+  removeUnusedLibraries: Xóa các thư viện không dùng
+  search: Tìm kiếm Mod...
+  skipVersion: Bỏ qua các mod có phiên bản Minecraft khác
+  source: Nguồn Mod
+  switch: Chuyển đổi phiên bản
+  upgrade: Nâng cấp Mod
+modSearch:
+  noLocalModsFound: Không tìm thấy mod cục bộ nào khớp với tìm kiếm của bạn.
+  noModsFound: Không tìm thấy mod
+  noModsInstalled: Bạn chưa cài đặt mod nào.
+  searchInMarket: Tìm kiếm {keyword} trên chợ ứng dụng
+modUpgradePolicy:
+  curseforge: CurseForge
+  curseforgeOnly: Chỉ CurseForge
+  modrinth: Modrinth
+  modrinthOnly: Chỉ Modrinth
+  name: Chính sách nâng cấp
+modified:
+  reset: Đặt lại
+  save: Lưu
+  unsaved: Các thay đổi của bạn chưa được lưu!
+modpack:
+  author: Tên tác giả
+  authorHint: Điều này có thể được sử dụng để ký một modpack được xuất (Curseforge)
+  description: Mô tả
+  descriptionHint: Mô tả chung cho modpack của bạn. Có thể được sử dụng để xuất dưới dạng modpack Curseforge.
+  dropHint: Thả tệp zip của modpack vào đây để nhập
+  emitCurseforge: Xuất Modpack Curseforge
+  emitModrinth: Xuất Modpack Modrinth
+  emitModrinthStrict: Định dạng Modrinth nghiêm ngặt
+  emitModrinthStrictDescription: Chỉ cho phép các URL từ 4 miền được liệt kê trong tài liệu Modrinth
+  export: Xuất dưới dạng Modpack
+  exportDirectory: Thư mục xuất
+  exportDirectoryDescription: Modpack sẽ được xuất vào thư mục Tải xuống theo mặc định
+  includeAssets: Bao gồm các tài nguyên
+  includes: Các tệp cần bao gồm
+  modpackVersion: Phiên bản Modpack
+  name: Modpack | Modpack
+  overrides: Ghi đè
+  url: URL
+  urlHint: URL trang chủ của modpack của bạn
+modpackImportConfirm:
+  description: Phát hiện bạn thả một tệp vào trình khởi chạy. Bạn có đang cố gắng nhập một modpack không?
+  title: Bạn có đang cố gắng nhập một modpack không?
+modpackUpdateOrCreate:
+  createNew: Tạo mới
+  description: Một phiên bản "{name}" cho modpack này đã tồn tại. Bạn muốn cập nhật nó hay tạo một phiên bản mới?
+  title: Phiên bản đã tồn tại
+  update: Cập nhật phiên bản hiện có
+modrinth:
+  browseUrl: Mở trong trình duyệt {url}
+  categories:
+    128x: 128x
+    16x: 16x
+    256x: 256x
+    32x: 32x
+    48x: 48x
+    512x+: 512x+
+    64x: 64x
+    8x-: 8x-
+    adventure: Phiêu lưu
+    atmosphere: Môi trường / Không khí
+    audio: Âm thanh
+    blocks: Khối
+    bloom: Bloom (Hiệu ứng phát sáng)
+    bukkit: Bukkit
+    bungeecord: Bungeecord
+    canvas: Canvas
+    cartoon: Hoạt hình
+    categories: Danh mục
+    challenging: Thử thách
+    colored-lighting: Ánh sáng màu
+    combat: Chiến đấu
+    core-shaders: Shader cốt lõi
+    cursed: Cursed (Kỳ lạ / Hài hước)
+    datapack: Gói dữ liệu (Datapack)
+    decoration: Trang trí
+    economy: Kinh tế
+    entities: Thực thể
+    environment: Môi trường
+    equipment: Trang bị
+    fabric: Fabric
+    fantasy: Kỳ ảo
+    features: Tính năng
+    folia: Folia
+    foliage: Tán lá / Thực vật
+    fonts: Phông chữ
+    food: Thức ăn
+    forge: Forge
+    game-mechanics: Cơ chế trò chơi
+    gui: Giao diện (Gui)
+    high: Cao
+    iris: Iris
+    items: Vật phẩm
+    kitchen-sink: Kitchen Sink (Tổng hợp)
+    library: Thư viện
+    lightweight: Trọng lượng nhẹ
+    liteloader: LiteLoader
+    locale: Bản địa hóa
+    low: Thấp
+    magic: Ma thuật
+    management: Quản lý
+    medium: Trung bình
+    minecraft: Minecraft
+    minigame: Trò chơi nhỏ (Minigame)
+    misc: Khác
+    mobs: Sinh vật (Mobs)
+    modded: Đã cài mod
+    models: Mô hình
+    modloader: Modloader
+    multiplayer: Chơi mạng
+    name: Danh mục
+    neoforge: NeoForge
+    optifine: Optifine
+    optimization: Tối ưu hóa
+    paper: Paper
+    path-tracing: Dò tia (Path Tracing)
+    pbr: PBR
+    performance impact: Tác động hiệu năng
+    potato: Máy yếu (Potato)
+    purpur: Purpur
+    quests: Nhiệm vụ
+    quilt: Quilt
+    realistic: Thực tế
+    reflections: Phản chiếu
+    resolutions: Độ phân giải
+    rift: Rift
+    screenshot: Ảnh chụp màn hình
+    semi-realistic: Bán chân thực
+    shadows: Bóng đổ
+    simplistic: Đơn giản
+    social: Mạng xã hội
+    spigot: Spigot
+    sponge: Sponge
+    storage: Kho chứa
+    technology: Công nghệ
+    themed: Theo chủ đề
+    transportation: Giao thông / Vận chuyển
+    tweaks: Tinh chỉnh (Tweaks)
+    utility: Tiện ích
+    vanilla: Vanilla
+    vanilla-like: Dạng Vanilla
+    velocity: Velocity
+    waterfall: Waterfall
+    worldgen: Tạo thế giới
+  clientSide: Phía máy khách (Client Side)
+  copyTitle: Sao chép văn bản {title} vào khay nhớ tạm
+  createAt: Đã tạo
+  createCollection: Tạo bộ sưu tập
+  description: Mô tả
+  downloads: Lượt tải xuống
+  environments:
+    all: Tất cả
+    default: Mặc định
+    name: Môi trường
+    optional: Tùy chọn
+    required: Bắt buộc
+    unsupported: Không hỗ trợ
+  externalResources: Tài nguyên bên ngoài
+  featuredVersions: Các phiên bản nổi bật
+  followedProjects: Dự án đang theo dõi
+  followers: Người theo dõi
+  gallery: Bộ sưu tập ảnh
+  gameVersions:
+    name: Phiên bản trò chơi
+  headers:
+    status: Thống kê
+    support: Hỗ trợ
+    version: Phiên bản
+  issueUrl: Báo cáo lỗi (Issue)
+  license: Giấy phép
+  licenses:
+    name: Giấy phép
+  loginHint: Thao tác này yêu cầu tài khoản Modrinth. Trình khởi chạy sẽ mở một cửa sổ trình duyệt để đăng nhập vào Modrinth.
+  loginTitle: Đăng nhập vào Modrinth
+  modLoaders:
+    name: Mod Loader
+  modpackSource:
+    source: Nguồn
+  projectId: ID Dự án
+  projectMembers: Thành viên dự án
+  projectType:
+    datapack: Gói dữ liệu (Datapack)
+    mod: Mod
+    modpack: Gói mod
+    plugin: Plugin
+    resourcepack: Gói tài nguyên (Resource Pack)
+    shader: Shader
+  projects: '{count} dự án'
+  serverSide: Phía máy chủ (Server Side)
+  sort:
+    downloads: Số lượt tải xuống
+    follows: Số lượt theo dõi
+    newest: Được tạo gần đây
+    relevance: Độ liên quan
+    title: Sắp xếp theo
+    updated: Được cập nhật gần đây
+  sourceUrl: Mã nguồn
+  technicalInformation: Thông tin kỹ thuật
+  updateAt: Đã cập nhật
+  versions: Các phiên bản
+  wikiUrl: Wiki
+modrinthCard:
+  currentVersion: Phiên bản hiện tại
+multiplayer:
+  allowTurn: Bật máy chủ chuyển tiếp (Relay server)
+  allowTurnHint: Cho phép máy chủ chuyển tiếp nếu bạn không thể kết nối trực tiếp với bạn bè. Tuy nhiên, việc sử dụng máy chủ chuyển tiếp có thể làm chậm kết nối của bạn. Hãy sử dụng cẩn thận.
+  complete: Hoàn tất
+  confirm: Xác nhận
+  connectionError: Lỗi kết nối
+  connectionFailedHint: Không thể thiết lập kết nối. Hãy kiểm tra xem cả hai máy có loại NAT tương thích hay không.
+  connections: Các kết nối
+  copied: Đã sao chép!
+  copy: Sao chép
+  copyGroupToFriendHint: Cho bạn bè tham gia nhóm bằng ID này
+  copyLocalHint: |
+    "Vui lòng sao chép văn bản SDP cục bộ và gửi cho đối tác của bạn để họ nhập văn bản này vào mục tham gia kết nối. Một token chỉ có thể được sử dụng cho một máy duy nhất! Bạn không thể gửi cùng một token cho nhiều máy khác nhau! <br> Nếu bạn cần kết nối với nhiều máy, bạn cần tạo nhiều kết nối khác nhau."
+  createLocalToken: Tạo token cục bộ
+  currentIpTitle: IP công cộng phát hiện được
+  currentNatTitle: 'Mạng hiện tại (NAT):'
+  difficultyLevelHint: Mức độ khó khăn khi tạo kết nối
+  disconnect: Ngắt kết nối
+  disconnectDescription: Bạn có chắc chắn muốn ngắt kết nối với người dùng {user}({id}) không?
+  disconnected: đã ngắt kết nối
+  enterRemoteToken: Nhập token từ xa
+  enterRemoteTokenHint: Sau khi đối tác nhập token của bạn, bạn cần nhập token của họ vào vùng văn bản bên dưới. Nhấp xác nhận để kết nối.
+  exposedPortDescription: Cổng bạn đã mở cho các máy khác
+  exposedPorts: Các cổng đã chuyển tiếp
+  gatheringIce: |
+    "Vui lòng đợi máy chủ ICE thu thập đủ thông tin về mạng của bạn. Nếu bạn không muốn chờ và đã có đủ thông tin, bạn có thể gửi SDP hiện tại cho đối tác trước và nhấp Tiếp tục. Vui lòng gửi Token cục bộ cho bạn bè của bạn, họ sẽ nhập token của bạn vào phần Tham gia kết nối. <br> Máy chủ ICE có thể mất chút thời gian để thu thập thông tin của bạn nhằm tạo ra Token cục bộ. <br> Bạn không cần đợi cho đến khi trạng thái ICE hoàn tất. Nếu token bên dưới vẫn không đổi, bạn có thể sao chép nó và gửi cho bạn bè."
+  groupId: ID Nhóm
+  illegalTokenDescription: Token không hợp lệ, vui lòng đảm bảo token từ bạn bè của bạn là chính xác
+  initiateConnection: Khởi tạo kết nối
+  joinConnection: Nếu bạn bè của bạn đã khởi tạo kết nối, bạn cần Tham gia kết nối.
+  joinManual: Tham gia
+  joinOrCreateGroup: Tham gia/Tạo nhóm
+  joinOrCreateGroupHint: Nhận ID nhóm từ bạn bè của bạn hoặc tự tạo một nhóm
+  kernel: Nhân P2P (P2P Kernel)
+  kernelDescription: Sử dụng WebRTC gốc hoặc node-datachannel. Chỉ chuyển đổi tùy chọn này khi kết nối P2P thỉnh thoảng làm sập cửa sổ trình khởi chạy.
+  leaveGroup: Rời nhóm
+  localToken: Token cục bộ
+  manualConnect: Kết nối thủ công
+  name: Chơi mạng qua mạng LAN
+  natWarning: Loại NAT của bạn có thể ngăn cản kết nối trực tiếp. Try bật máy chủ chuyển tiếp trong cài đặt hoặc yêu cầu bạn bè làm máy chủ lưu trữ (host) thay thế.
+  networkInfo: Thông tin mạng (Nhấp để bật/tắt)
+  next: Tiếp theo
+  otherExposedPortDescription: Cổng được chuyển tiếp bởi {user}
+  placeholder: Kết nối với những người dùng khác để chơi Minecraft qua mạng LAN!
+  previous: Quay lại
+  receiveHint: Sau khi đối tác nhập token của bạn, kết nối sẽ tự động được tạo. Bây giờ bạn có thể đóng hộp thoại.
+  receiveRemoteTokenHint: Vui lòng nhập token của đối tác tại đây.
+  remoteToken: Token từ xa
+  routerInfo: Thông tin bộ định tuyến (Router)
+  sendTokenToRemote: Gửi token đến máy từ xa
+  share: Chia sẻ cấu hình phiên bản
+  sharing: Đang chia sẻ tệp...
+  sharingNotificationBody: Bạn có thể tải xuống hoặc tạo một phiên bản từ cấu hình chia sẻ của {name}.
+  sharingNotificationTitle: Một người bạn đang chia sẻ cấu hình game của họ
+  start: Bắt đầu
+  startNewP2PConnection: Nhấp vào nút Bắt đầu để tạo một kết nối ngang hàng (peer connection) mới
+myStuff: Kho của tôi
+natType:
+  blocked: Bị chặn (Blocked)
+  fullCone: Full Cone
+  openInternet: Internet mở
+  restrictNat: NAT hạn chế (Restrict NAT)
+  restrictPortNat: NAT hạn chế cổng (Restrict Port NAT)
+  symmetricNat: Symmetric NAT
+  symmetricUDPFirewall: Tường lửa UDP đối xứng
+  unknown: Không rõ
+neoForgedVersion:
+  disable: Vô hiệu hóa NeoForged
+  empty: NeoForged không hỗ trợ phiên bản {version}
+news:
+  name: Tin tức
+  readMore: Đọc thêm
+optifineVersion:
+  disable: Vô hiệu hóa Optifine
+  empty: Optifine không hỗ trợ Minecraft {version}
+optional: Tùy chọn
+peerConnectionState:
+  closed: Đã đóng
+  connected: Đã kết nối
+  connecting: Đang kết nối
+  disconnected: Đã ngắt kết nối
+  failed: Thất bại
+  name: Trạng thái kết nối
+  new: Mới
+peerGroupState:
+  closed: Không ở trong nhóm
+  closing: Đang đóng
+  connected: Đã tham gia nhóm
+  connecting: Đang kết nối
+peerIceGatheringState:
+  gathering: Đang thu thập máy chủ Ice
+peerSignalingState:
+  have-local-offer: Đang đợi mô tả của bạn bè
+presence:
+  instance: Đang rảnh trong Phiên bản {instance}
+  instanceSetting: 'Chỉnh sửa Cài đặt Phiên bản: {instance}'
+  mod: Đang xem các Mod trong {instance}
+  modrinthProject: Đang xem {name} trên Modrinth
+  resourcePack: Đang xem các Gói tài nguyên trong {instance}
+  save: Đang xem các Thế giới đã lưu trong {instance}
+  setting: Đang xem trang Cài đặt
+  shaderPack: Đang xem các Gói Shader trong {instance}
+proxy:
+  host: Máy chủ proxy
+  port: Cổng
+quiltVersion:
+  disable: Vô hiệu hóa Quilt
+  empty: Quilt không hỗ trợ Minecraft {version}
+reinstall:
+  name: Cài đặt lại {version}
+relative:
+  daysAgo: '{count} ngày trước | {count} ngày trước'
+  hoursAgo: '{count} giờ trước | {count} giờ trước'
+  justNow: vừa xong
+  minutesAgo: '{count} phút trước | {count} phút trước'
+  secondsAgo: '{count} giây trước | {count} giây trước'
+resourceError:
+  body: '"{path}" không thể phân tích cú pháp ({code}). Tệp có thể bị hỏng, bị khóa hoặc chưa hoàn tất. Thử tải lại hoặc xóa nó đi.'
+  title: Không thể đọc {file}
+blueprint:
+  name: Bản thiết kế | Bản thiết kế
+  count: '{count} bản thiết kế'
+  searchLocal: Tìm kiếm bản thiết kế...
+  searchOnline: Tìm kiếm trực tuyến...
+  market: Chợ thiết kế
+  local: Cục bộ
+  provider: Nhà cung cấp
+  import: Nhập
+  openFolder: Mở thư mục
+  refresh: Làm mới
+  empty: Không tìm thấy bản thiết kế nào. Hãy nhập một tệp .litematic / .schem / .nbt hoặc duyệt qua chợ.
+  dropHint: Thả các tệp bản thiết kế (.litematic / .schem / .nbt) vào đây để nhập.
+  selectHint: Chọn một bản thiết kế để xem trước.
+  blocks: '{count} khối'
+  materials: Nguyên liệu
+  allNamespaces: Tất cả
+  findMod: Tìm mod cho không gian tên này
+  compatible: Tương thích
+  incompatible: Thiếu mod
+  missingNamespaces: 'Thiếu mod cho: {namespaces}'
+  delete: Xóa
+  cancel: Hủy
+  install: Cài đặt
+  goTo: Trang web
+  byAuthor: bởi {author}
+  noDescription: Không có mô tả nào được cung cấp.
+  loadMore: Tải thêm
+  cmsBrowseOnly: Nguồn này chỉ hỗ trợ duyệt xem; hãy mở trang web để tải xuống.
+  mixedSources: Kết quả được tổng hợp từ tất cả các nguồn. Một số nguồn chỉ hỗ trợ duyệt xem — hãy mở trang web của họ để tải xuống.
+  formats:
+    structure: Cấu trúc Vanilla
+  preview:
+    title: Xem trước 3D
+    loading: Đang tải xem trước...
+    empty: Bản thiết kế này không có khối nào để hiển thị.
+    hint: '{count} khối · {x}×{y}×{z}'
+    controls: Kéo để nhìn · Di chuyển bằng WASD · Lên/Xuống bằng Space/Shift
+  convert:
+    title: Chuyển đổi định dạng
+    hint: Chuyển đổi bản thiết kế này sang định dạng khác. Một tệp mới sẽ được tạo.
+    target: Định dạng đích
+    action: Chuyển đổi
+  replace:
+    title: Thay thế các khối
+    simple: Đơn giản
+    precise: Chính xác
+    simpleHint: Chỉ so khớp theo ID khối, giữ nguyên các thuộc tính trạng thái khối hiện có.
+    preciseHint: So khớp toàn bộ trạng thái khối (ID + thuộc tính) và thay thế hoàn toàn.
+    from: Từ
+    to: Đến
+    addRule: Thêm quy tắc
+    newFile: Lưu thành tệp mới
+    action: Thay thế
+resourcepack:
+  compatible: Định dạng tương thích {format} với {version}
+  defaultDescription: Diện mạo mặc định của Minecraft
+  delete:
+    content: Thao tác này sẽ xóa tệp gói tài nguyên khỏi đĩa và không thể hoàn tác. Bạn có chắc chắn muốn làm điều này không?
+    title: Xóa gói tài nguyên
+  dropHint: Thả thư mục/tệp zip của Gói tài nguyên vào đây để nhập.
+  enable: Đã bật {count} gói tài nguyên
+  incompatible: Định dạng gói tài nguyên không tương thích ({format}). Phù hợp với {accept}. Hiện tại là {actual}.
+  name: Gói tài nguyên | Gói tài nguyên
+  linkShared: Chia sẻ các gói tài nguyên giữa các phiên bản
+  linkSharedHint: Liên kết thư mục resourcepacks của phiên bản này với thư mục chia sẻ chung để tất cả các phiên bản đều nhìn thấy cùng một gói tài nguyên. Các gói hiện có sẽ được gộp vào thư mục chia sẻ.
+  noLocalPacksFound: Không tìm thấy gói tài nguyên cục bộ nào khớp với tìm kiếm của bạn.
+  noPacks: Không tìm thấy gói tài nguyên nào
+  noPacksInstalled: Bạn chưa cài đặt gói tài nguyên nào.
+  search: Tìm kiếm gói tài nguyên...
+  searchHint: Tìm kiếm gói tài nguyên
+  searchOnCurseforge: Tìm kiếm {name} trên CurseForge
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: Các gói tài nguyên đã chọn
+  showDirectory: Hiển thị thư mục gói tài nguyên
+  showFile: Hiển thị gói tài nguyên trong thư mục {file}
+  showInCurseforge: Hiển thị {name} trên CurseForge
+  unselected: Các gói tài nguyên chưa chọn
+save:
+  allowCheats: Cho phép gian lận (Cheats)
+  copy:
+    name: Sao chép thế giới
+  createNew: Tạo thế giới mới
+  createdWorlds: Bạn có {count} thế giới
+  deleteHint: Thao tác này không thể hoàn tác. Bạn sẽ mất dữ liệu thế giới vĩnh viễn. Bạn có chắc chắn muốn xóa thế giới này không?
+  deleteTitle: Xóa thế giới
+  difficulty: Độ khó
+  dropHint: Thả tệp zip của thế giới vào đây để nhập
+  datapack:
+    name: Gói dữ liệu | Gói dữ liệu
+    noSaveHint: Tạo hoặc chọn một thế giới trước để cài đặt gói dữ liệu này
+    packFormat: 'Định dạng gói: {format}'
+    imported: Gói dữ liệu đã được nhập vào {save}
+  duplicate: Sao chép thế giới
+  export: Xuất thế giới
+  exportMessage: Xuất thế giới dưới dạng tệp zip
+  exportTitle: Xuất thế giới
+  gameMode: Chế độ chơi
+  independent: Phiên bản sử dụng thư mục lưu trữ độc lập
+  linkShared: Chia sẻ thế giới giữa các phiên bản
+  linkSharedHint: Liên kết thư mục saves của phiên bản này với thư mục chia sẻ chung để tất cả các phiên bản dùng chung thế giới. Các thế giới hiện có sẽ được gộp vào thư mục chia sẻ.
+  levelName: Tên thế giới (Level Name)
+  loadMap: Tải bản đồ
+  mapError: Lỗi bản đồ
+  mapInfo: 'Xem trước thế giới 3D tương tác:'
+  mapLoaded: Bản đồ đã tải
+  mapPreview: Xem trước bản đồ
+  chunkSelectMode: Chọn Chunk
+  panMode: Kéo (Pan)
+  chunkSelected: Đã chọn {count} chunk
+  mapHintPan: Kéo để di chuyển bản đồ
+  mapHintSelect: Chọn
+  mapHintDeselect: Bỏ chọn
+  toggleGrid: Bật/Tắt lưới phân vùng
+  heightTop: Cao nhất
+  resetView: Đặt lại góc nhìn
+  clearSelection: Xóa vùng chọn
+  copyChunks: Sao chép Chunk
+  pasteChunks: Dán {count} Chunk
+  pasteChunksPlaceHint: Di chuyển chuột để định vị {count} chunk, sau đó nhấp để dán. Các chunk hiện tại tại đích sẽ bị ghi đè. Nhấn Esc để hủy.
+  pasteChunksCancel: Hủy
+  deleteChunks: Xóa Chunk
+  deleteChunksTitle: Xóa các chunk đã chọn
+  deleteChunksHint: Xóa {count} chunk đã chọn? Thao tác này không thể hoàn tác. Các chunk này sẽ được tái tạo lại vào lần tới khi khu vực được tải trong game.
+  mapLoading: Đang tải bản đồ…
+  noRegions: Thế giới này không có phân vùng nào được tạo ra để xem trước.
+  dimOverworld: Thế giới thường (Overworld)
+  dimNether: Địa ngục (Nether)
+  dimEnd: Kích thước cuối (The End)
+  name: Thế giới lưu | Các thế giới lưu
+  noLocalSavesFound: Không tìm thấy thế giới cục bộ nào khớp với tìm kiếm của bạn.
+  noSavesFound: Không tìm thấy thế giới nào
+  noSavesInstalled: Bạn không có thế giới nào.
+  openFolder: Mở thư mục thế giới
+  properties: Thuộc tính thế giới
+  search: Tìm kiếm bản đồ...
+  searchHint: Tìm kiếm thế giới trên CurseForge
+  searchSaves: Tìm kiếm các thế giới đã lưu
+  seed: Hạt giống (Seed)
+  selected: Thế giới cục bộ
+  shared: Phiên bản sử dụng thư mục lưu trữ chia sẻ
+  showDirectory: Hiển thị thư mục thế giới
+  unselected: Thế giới chia sẻ
+  useCurrent: Sử dụng thế giới hiện tại
+  useMouseRotate: Sử dụng chuột để xoay góc nhìn
+  useScrollZoom: Sử dụng bánh xe cuộn để thu phóng
+  world: Thế giới
+screenshots:
+  empty: Bạn chưa có ảnh chụp màn hình nào
+  gallery: Thư viện ảnh chụp màn hình
+  hint: Chụp ảnh màn hình trong game bằng cách nhấn F2
+  openFolder: Mở thư mục ảnh chụp màn hình
+  playRandom: Phát ngẫu nhiên
+  playSequence: Phát theo thứ tự
+search:
+  favorate: Bộ sưu tập
+  local: Đã cài đặt
+  market: Chợ
+  emptyInstalled: Chưa cài đặt gì cả
+  browseMarket: Duyệt qua chợ
+  noResults: Không tìm thấy kết quả
+server:
+  acceptingMinecraftVersion: Chấp nhận phiên bản Minecraft
+  addServer: Thêm máy chủ
+  address: Địa chỉ máy chủ
+  addressHint: 'ví dụ: mc.hypixel.net'
+  bindUpstream: Liên kết làm máy chủ gốc (Upstream)
+  boundUpstream: Đã liên kết máy chủ gốc
+  boundUpstreamHint: Phiên bản này sẽ tuân theo phiên bản Minecraft của máy chủ được liên kết.
+  creationHint: Vui lòng điền địa chỉ máy chủ và ping máy chủ
+  editServer: Chỉnh sửa máy chủ
+  emptyHint: Chưa có máy chủ nào trong tệp servers.dat của phiên bản này. Hãy thêm một cái để bắt đầu.
+  entryCount: '{count} máy chủ | {count} máy chủ'
+  expectedVersions: Phiên bản được hỗ trợ
+  export: Xuất máy chủ
+  exportNoFilesHint: Không tìm thấy tệp máy chủ nào. Bạn có thể chạy máy chủ cục bộ một lần để tạo một số tệp.
+  exportOption: Tùy chọn xuất máy chủ
+  exportSSHAuthenticationFailed: Tất cả các phương thức xác thực đều thất bại. Vui lòng kiểm tra tên đăng nhập/mật khẩu hoặc khóa riêng tư.
+  exportSSHOptions: Tùy chọn SSH
+  exportSSHPrivateKeyPath: Đường dẫn khóa riêng tư SSH
+  exportSSHRemotePath: Đường dẫn máy chủ từ xa
+  exportToFolder: Xuất vào thư mục
+  filterVersion: Lọc phiên bản Minecraft máy chủ phản hồi
+  host: Địa chỉ host
+  hostHint: Địa chỉ host (kèm cổng) của máy chủ
+  hostRequired: Vui lòng nhập địa chỉ IP máy chủ
+  ipAddress: Địa chỉ IP
+  launchClient: Thay vào đó khởi chạy client
+  launchPinned: Đã ghim
+  launchTargetHint: Phiên bản này sẽ khởi chạy thẳng vào máy chủ được ghim. Quay lại khởi chạy client thông thường?
+  maxPlayers: Số người chơi tối đa
+  motd: MOTD của máy chủ
+  nameHint: Tên hiển thị trong danh sách Chơi mạng
+  nogui: Không hiển thị giao diện máy chủ
+  onlineMode: Chế độ chơi mạng bản quyền (Online Mode)
+  pin: Ghim máy chủ
+  pinAfterSave: Ghim làm mục tiêu khởi chạy mặc định sau khi lưu
+  ping: Ping
+  pings: Ping
+  pinnedHeader: 'Đã ghim: {name}'
+  players: Người chơi
+  port: Cổng
+  serverName: Tên máy chủ
+  serversListTitle: Danh sách máy chủ
+  unbindUpstream: Hủy liên kết
+  unknown: Máy chủ không xác định
+  unknownDescription: Máy chủ không xác định. Vui lòng làm mới
+  unpin: Bỏ ghim
+  upload: Tải lên máy chủ
+  upstreamUpToDate: Phiên bản của bạn phù hợp với máy chủ ({version}).
+  upstreamUpToDateHint: Không cần nâng cấp. Nhấp để ping lại máy chủ.
+  upstreamUpdateAvailable: Máy chủ hiện chạy Minecraft {version}. Nhấp để áp dụng.
+  upstreamUpdateHint: Áp dụng phiên bản Minecraft được gợi ý cho phiên bản này.
+  useAsUpstreamHint: Phiên bản này sẽ tuân theo phiên bản Minecraft được báo cáo từ máy chủ.
+  version: Phiên bản yêu cầu của máy chủ
+  versionHint: Phiên bản Minecraft cần Ping
+serverStatus:
+  nohost: §4Không tìm thấy máy chủ!
+  ping: Đang ping...
+  refuse: §4Máy chủ từ chối!
+  timeout: §4Kết nối máy chủ hết thời gian!
+setting:
+  about: Giới thiệu
+  aboutBmclDescription: BMCL API cung cấp các bản tải xuống thuận tiện cho người dùng tại Trung Quốc Đại Lục
+  aboutContributors: 🧑‍💻 Những người đóng góp 🧑‍💻
+  aboutDenoDescription: XMCL tận dụng nền tảng tiện lợi của Deno Deploy cho các ứng dụng JavaScript không máy chủ (serverless)
+  aboutLicense: GIẤY PHÉP MIT
+  aboutLicenseInfo: Ký mã Windows miễn phí được cung cấp bởi SignPath.io, chứng chỉ bởi SignPath Foundation
+  aboutSponsors: 😇 Nhà tài trợ 😇
+  advancedJavaOptions: Tùy chọn Java nâng cao
+  advancedSettings: Cài đặt nâng cao
+  advancedSettingsHint: Vùng nguy hiểm - đặt lại hoặc quản lý dữ liệu trình khởi chạy
+  aiAgentApiKey: Khóa API trợ lý AI
+  aiAgentApiKeyDescription: Được lưu trữ cục bộ trên thiết bị này và dùng cho các yêu cầu trợ lý.
+  aiAgentEndpoint: Máy chủ trợ lý AI (Endpoint)
+  aiAgentEndpointDescription: URL endpoint cho việc hoàn thành chat.
+  aiAgentModel: Mô hình trợ lý AI
+  aiAgentModelDescription: Tên mô hình gửi trong các yêu cầu hoàn thành chat.
+  apiSets:
+    auto: Tự động (Xác định theo mạng)
+    official: Chính thức (Mojang)
+  appearance: Giao diện
+  appearanceDescription: Tùy chỉnh giao diện của trình khởi chạy
+  appxUpdateHint: Trình khởi chạy sẽ tải xuống và chạy trình cài đặt. Nếu xuất hiện lỗi khi cài đặt, vui lòng chạy nó thủ công.
+  authenticationSettings: Xác thực
+  backdropBlur: Làm mờ nền hậu cảnh
+  backgroundColorAbove: Hiển thị màu nền dưới dạng lớp phủ
+  backgroundColorAboveDescription: Điều này sẽ khiến màu nền hiển thị đè lên trên hình ảnh hoặc video nền.
+  backgroundImage: Hình nền
+  backgroundImageClear: xóa
+  backgroundImageDescription: Chọn một hình ảnh làm hình nền hoặc xóa nó
+  useDesktopBackground: Sử dụng hình nền máy tính hiện tại
+  backgroundImageFit:
+    contain: Chứa (Contain)
+    cover: Phủ kín (Cover)
+    name: Chế độ vừa màn hình
+  backgroundImageUrl: URL hình ảnh
+  backgroundImageUrlPlaceholder: Nhập URL HTTP/HTTPS cho hình ảnh
+  backgroundMusic: Nhạc nền chủ đề
+  backgroundMusicUrl: URL âm nhạc
+  backgroundMusicUrlPlaceholder: Nhập URL HTTP/HTTPS cho nhạc
+  backgroundType: Loại hình nền
+  backgroundTypeDescription: Hiển thị hiệu ứng đặc biệt trên nền (Điều này có thể ảnh hưởng đến hiệu năng)
+  backgroundTypes:
+    halo: Hào quang (Halo)
+    image: Hình ảnh
+    none: Không có
+    particle: Hạt (Particle)
+    video: Video
+  backgroundVideo: Video nền
+  backgroundVideoDescription: Chọn hoặc xóa video
+  backgroundVideoUrl: URL video
+  backgroundVideoUrlPlaceholder: Nhập URL HTTP/HTTPS cho video
+  backgroundVideoVolume: âm lượng
+  backgroundVideoVolumeDescription: kéo để điều chỉnh âm lượng
+  browseRoot: Duyệt tìm
+  checkUpdate: Kiểm tra cập nhật
+  colorTheme:
+    appBarColor: Thanh ứng dụng
+    backgroundColor: Màu nền
+    cardColor: Màu thẻ (Card)
+    description: Thay đổi màu sắc trong chủ đề
+    errorColor: Màu lỗi
+    name: Màu sắc chủ đề và Độ mờ
+    primaryColor: Màu chính
+    sideBarColor: Thanh bên (Sidebar)
+    warningColor: Màu cảnh báo
+  customCss:
+    advancedDescription: Ghi đè phong cách hiện tại của trình khởi chạy bằng mã CSS của riêng bạn.
+    assistantHint: Mô tả giao diện bạn muốn và tôi sẽ viết CSS cho bạn.
+    assistantSuggestion1: Làm thanh bên bán trong suốt
+    assistantSuggestion2: Thêm nền chuyển màu (gradient) tinh tế cho các thẻ
+    assistantTitle: Trợ lý CSS
+    dropHint: Kéo thả một tệp .css để tải nó
+    editorPlaceholder: /* Viết mã CSS tùy chỉnh của bạn tại đây */
+    globalToggle: Bật/Tắt CSS tùy chỉnh
+    openInDialog: Mở trong hộp thoại trợ lý
+    title: CSS tùy chỉnh
+    warning: CSS tùy chỉnh cho phép bạn tùy biến bất kỳ khía cạnh nào của trình khởi chạy. Hãy cẩn thận khi dán mã CSS từ các nguồn không đáng tin cậy, vì nó có thể thay đổi bố cục giao diện.
+  darkTheme: Chủ đề
+  darkThemeDescription: Chọn giữa chủ đề tối hoặc sáng
+  devModeLabel: DEV
+  developerMode: Chế độ nhà phát triển
+  developerModeDescription: Chế độ nhà phát triển dùng để thử nghiệm các bản mod của riêng bạn
+  disableTelemetry: Vô hiệu hóa đo lường từ xa (Telemetry)
+  disableTelemetryDescription: XMCL sẽ thu thập dữ liệu về các sự kiện khởi chạy trò chơi và đăng nhập của người dùng.
+  enableDedicatedGPUOptimization: Chỉ định GPU rời
+  enableDedicatedGPUOptimizationDescription: Tùy chọn này sẽ chỉ định GPU rời (Dedicated GPU) cho tiến trình Minecraft.
+  enableDiscord: Bật trạng thái hoạt động Discord (Rich Presence)
+  enableDiscordDescription: Điều này sẽ cập nhật trạng thái Discord của trình khởi chạy
+  enterUrl: Nhập URL
+  exportSettings: Xuất cài đặt
+  exportSettingsHint: Lưu các cài đặt hiện tại của bạn vào một tệp
+  general: Chung
+  githubRelease: Bản phát hành Github
+  globalSetting: Cài đặt phiên bản toàn cục
+  globalSettingHint: Các phiên bản game sẽ sử dụng các cài đặt này theo mặc định.
+  importSettings: Nhập cài đặt
+  importSettingsHint: Tải các cài đặt từ một tệp đã xuất trước đó
+  instanceTheme:
+    activeDescription: Phiên bản này đang sử dụng chủ đề tùy chỉnh. Bạn có thể xóa nó để sử dụng chủ đề toàn cục.
+    description: Bật chủ đề tùy chỉnh cho phiên bản này. Điều này sẽ tạo một bản sao từ chủ đề toàn cục hiện tại.
+    name: Chủ đề phiên bản
+  language: Ngôn ngữ
+  languageDescription: Ngôn ngữ hiển thị
+  latestVersion: Phiên bản mới nhất
+  layout:
+    default: Bố cục mặc định
+    focus: Bố cục tập trung
+  layoutDescription: Chọn phong cách giao diện ưa thích của bạn
+  layoutTitle: Bố cục giao diện
+  linuxEnableDedicatedGPUOptimization: Chỉ định bộ xử lý đồ họa rời
+  linuxEnableDedicatedGPUOptimizationDescription: Tùy chọn này chỉ định một GPU rời cho tiến trình Minecraft.
+  linuxTitlebar: Thanh tiêu đề hệ thống
+  linuxTitlebarDescription: Sử dụng thanh tiêu đề mặc định của hệ điều hành Linux cho trình khởi chạy
+  livePreview: Xem trước trực tiếp
+  location: Vị trí lưu trữ
+  manualUpdateHint: Phiên bản này không thể cập nhật tự động. Vui lòng tải lại trình khởi chạy từ trang web chính thức!
+  maunalUpdateHint: Phiên bản này không thể cập nhật tự động. Vui lòng tải lại trình khởi chạy từ trang web!
+  maxSockets: Mỗi máy chủ
+  maxSocketsDescription: Giới hạn số lượng socket tối đa được phép trên mỗi máy chủ hoặc tổng số tất cả máy chủ. 0 có nghĩa là không giới hạn.
+  maxSocketsTitle: Số lượng socket HTTP tối đa
+  memoryAssignment: Phân bổ bộ nhớ
+  migrateFromOther: Nhập dữ liệu từ trình khởi chạy khác
+  minecraftOptions: Tùy chọn Minecraft
+  name: Cài đặt toàn cục | Cài đặt toàn cục
+  network: Cài đặt mạng
+  newsPosition: Di chuyển phần Tin tức
+  officialWebsite: Trang web chính thức
+  particleMode:
+    bubble: Bong bóng (Bubble)
+    name: Chế độ hạt
+    push: Đẩy (Push)
+    remove: Xóa (Remove)
+    repulse: Đẩy ra (Repulse)
+  particleModeDescription: Chọn hành vi khi nhấp chuột vào các hạt
+  quickLaunchSettings: Khởi chạy nhanh
+  replaceNative: Thay thế thư viện gốc (Native Libraries)
+  replaceNativeDescription: Thay thế các thư viện gốc tùy thuộc vào kiến trúc máy tính của bạn.
+  replaceNatives:
+    all: Tài cả
+    legacy: Chỉ phiên bản Legacy
+  resetAllSettings: Đặt lại tất cả cài đặt
+  resetAllSettingsConfirmMessage: Thao tác này sẽ xóa vĩnh viễn tất cả cài đặt, tài khoản, phiên bản game, nhóm và dữ liệu bộ nhớ đệm. Thao tác này không thể hoàn tác. Bạn có chắc chắn không?
+  resetAllSettingsConfirmTitle: Đặt lại tất cả cài đặt?
+  resetAllSettingsHint: Đặt lại trình khởi chạy về mặc định nhà sản xuất (xóa sạch mọi dữ liệu)
+  resetAllSettingsSuccess: Tất cả cài đặt đã được đặt lại. Trình khởi chạy sẽ khởi động lại.
+  resetSettingsError: 'Lỗi khi đặt lại cài đặt: {error}'
+  resetToDefault: Đặt lại về mặc định
+  select: Chọn
+  setAsBackground:
+    failed: Không thể đặt hình ảnh làm hình nền
+    global: Đặt làm hình nền trình khởi chạy
+    instance: Đặt làm hình nền phiên bản
+    successGlobal: Đã cập nhật hình nền.
+    successInstance: Đã cập nhật hình nền của phiên bản.
+  settingsExported: Đã xuất cài đặt thành công
+  settingsImportError: Không thể nhập cài đặt. Vui lòng kiểm tra định dạng tệp.
+  settingsImported: Đã nhập cài đặt thành công
+  settingsReloadHint: Trình khởi chạy sẽ khởi động lại để áp dụng toàn bộ cài đặt.
+  showNewsHeader: Hiện phần hiển thị Tin tức
+  showRoot: Hiển thị
+  sidebarAlign: Căn chỉnh thanh bên
+  sidebarAutoHide: Tự động ẩn thanh bên
+  sidebarAutoHideHint: Tự động ẩn thanh bên và hiện khi di chuột lên
+  sidebarClassic: Cổ điển
+  sidebarNotch: Tai thỏ (Notch)
+  sidebarPosition: Vị trí thanh bên
+  sidebarScale: Tỷ lệ thanh bên
+  sidebarShowOnlyPinned: Chỉ hiển thị phiên bản đã ghim
+  sidebarShowOnlyPinnedHint: Chỉ hiển thị các phiên bản đã ghim trên thanh bên
+  sidebarStyle: Kiểu thanh bên
+  sidebarStyleHint: Chọn giữa thiết kế cổ điển và thiết kế tai thỏ (notch) hiện đại
+  streamerMode: Chế độ phát trực tuyến (Streamer)
+  streamerModeDescription: Điều này sẽ ẩn thông tin cá nhân của bạn như email trên trình khởi chạy.
+  theme:
+    dark: Chủ đề tối
+    light: Chủ đề sáng
+    system: Sử dụng chủ đề hệ thống
+  themeExport: Xuất chủ đề
+  themeBorderRadius: Góc bo tròn
+  themeBorderRadiusDescription: Bật hoặc tắt các góc bo tròn cho thẻ, hộp thoại, menu và bảng điều khiển.
+  themeFont: Phông chữ (Font)
+  themeFontDescription: Thay đổi phông chữ của trình khởi chạy.
+  themeFontUrl: Đường dẫn phông chữ
+  themeFontUrlPlaceholder: Nhập URL HTTP/HTTPS cho phông chữ
+  themeImport: Nhập chủ đề
+  themeResetFont: Đặt lại phông chữ
+  themeSelectFont: Chọn phông chữ
+  themeSettings: Cài đặt chủ đề
+  themeShare: Chia sẻ chủ đề
+  themeShareDescription: Bạn có thể chia sẻ chủ đề này với bạn bè của mình.
+  themeStore:
+    description: Lưu và quản lý chủ đề toàn cục
+    loadConfirmMessage: Tải một chủ đề đã lưu sẽ thay thế chủ đề hiện tại của bạn. Vui lòng sao lưu nếu cần.
+    loadConfirmTitle: Thay thế chủ đề hiện tại?
+    loadTheme: Tải chủ đề
+    name: Cửa hàng chủ đề
+    noSavedThemes: Chưa có chủ đề nào được lưu
+    saveDialogTitle: Lưu chủ đề
+    saveToStore: Lưu vào cửa hàng
+    savedThemes: Chủ đề đã lưu
+    themeName: Tên chủ đề
+    themeNameHint: Tên được sử dụng để lưu trữ chủ đề này
+  update: Cập nhật
+  useBmclAPI: Sử dụng BMCL API
+  useBmclAPIDescription: Sử dụng BMCLAPI để tải xuống Minecraft khi bạn ở Trung Quốc Đại Lục. (Điều này không ảnh hưởng đến bạn nếu bạn không ở Trung Quốc Đại Lục)
+  useProxy: Proxy HTTP
+  useProxyDescription: Địa chỉ máy chủ proxy cho các yêu cầu http
+  viewBackgroundMusic: Xem danh sách nhạc
+settingLabel:
+  global: Toàn cục
+  globalHint: Cài đặt này sẽ áp dụng theo cài đặt toàn cục
+  local: Cục bộ
+  localHint: Cài đặt này được sửa đổi riêng bởi phiên bản hiện tại
+setup:
+  account:
+    description: Đăng nhập tài khoản game của bạn. Nếu chưa có, bạn có thể tạm thời bỏ qua bước này.
+    name: Thêm tài khoản game
+    skip: Tạm thời bỏ qua
+  appearance:
+    name: '@:setting.appearance'
+  dataRoot:
+    description: Thư mục gốc của dữ liệu không phải là thư mục .minecraft thông thường. Vì cấu trúc thư mục dữ liệu của XMCL khác với phiên bản gốc (vanilla), chúng tôi khuyên bạn không nên sử dụng thư mục .minecraft thông thường làm thư mục gốc dữ liệu.
+    drives: Vị trí được khuyên dùng
+    name: Thiết lập thư mục dữ liệu
+  defaultLayoutDescription: Bố cục mặc định nhằm tối ưu hóa khái niệm "phiên bản" trò chơi. Nó trông giống như các ứng dụng như Discord và cũng được truyền cảm hứng từ các trình khởi chạy game khác như Steam, v.v.
+  defaultPath: Đường dẫn mặc định
+  error:
+    badDataRoot: Thư mục chứa dữ liệu trình khởi chạy không hợp lệ! Vui lòng thử thư mục khác!
+    exists: Thư mục được chọn không trống. Không sao cả nhưng vui lòng đảm bảo rằng bạn đã sao lưu dữ liệu của mình.
+    invalidChar: Đường dẫn chứa ký tự không hợp lệ! Điều này có thể khiến Minecraft không khởi động được! Vui lòng chỉ sử dụng các ký tự tiếng Anh và biểu tượng!
+    noPermission: Trình khởi chạy không có quyền truy cập thư mục đã chọn! Vui lòng thử một thư mục khác.
+    nonDictionary: Đường dẫn được chọn là một tệp! Vui lòng chọn một thư mục!
+  focusLayoutDescription: Bố cục tập trung là bố cục cũ của Minecraft Launcher. Nó được thiết kế để sử dụng với một hoặc một số ít phiên bản game.
+  game:
+    name: Nhập trò chơi đã có
+  locale:
+    description: Chọn ngôn ngữ ưu thích của bạn nếu có! Nếu bạn không thấy ngôn ngữ mẹ đẻ của mình và muốn giúp đỡ, bạn có thể truy cập Github của chúng tôi để gửi các yêu cầu kéo (pull request) dịch thuật!
+    language: Ngôn ngữ
+    name: Đặt ngôn ngữ
+  path: Đường dẫn hiện tại
+shaderPack:
+  deletion: Xóa gói Shader
+  deletionHint: Thao tác này sẽ xóa tệp gói shader {path} và không thể hoàn tác.
+  disabled: Gói Shader đã vô hiệu hóa
+  dropHint: Nhập gói Shader
+  empty: Không có gói shader nào được phân bổ
+  enable: Đang dùng {name}
+  enabled: Gói Shader đã bật
+  manage: Quản lý gói Shader
+  market: Chợ Shader
+  name: Gói Shader
+  linkShared: Chia sẻ các gói shader giữa các phiên bản
+  linkSharedHint: Liên kết thư mục shaderpacks của phiên bản này với thư mục chia sẻ toàn cục để tất cả phiên bản đều có thể thấy cùng các gói shader. Các gói shader hiện tại sẽ được gộp vào thư mục chia sẻ.
+  noLocalPacksFound: Không tìm thấy gói shader cục bộ nào khớp với tìm kiếm của bạn.
+  noPacks: Chưa cài đặt gói shader nào
+  noPacksInstalled: Bạn chưa cài đặt bất kỳ gói shader nào.
+  noShaderMod: Chưa cài đặt Mod Shader nào
+  noShaderModHint: Bạn không thể dùng shader nếu không cài đặt mod hỗ trợ shader
+  noShaderModInstallHint: Bạn cần cài đặt một trong các mod sau để tải gói shader.
+  search: Tìm kiếm gói Shader...
+  searchHint: Tìm kiếm các gói shader trên Modrinth và CurseForge
+  selectSearchHint: Tìm kiếm và chọn gói Shader
+  showDirectory: Hiển thị thư mục gói shader
+  showFile: Hiển thị gói shader này trong thư mục
+shared:
+  add: Thêm
+  author: Tác giả
+  back: Quay lại
+  browse: Duyệt
+  cancel: Hủy
+  client: Máy khách (Client)
+  copied: Đã sao chép
+  copy: Sao chép
+  close: Đóng
+  copyFailed: Sao chép thất bại
+  copyFailedHint: Không thể sao chép vào khay nhớ tạm
+  description: Mô tả
+  disable: Vô hiệu hóa
+  download: Tải xuống
+  edit: Chỉnh sửa
+  enable: Bật
+  filter: Bộ lọc
+  install: Cài đặt
+  installed: Đã cài đặt
+  keepSelected: Giữ phần đã chọn
+  manage: Quản lý
+  name: Tên
+  next: Tiếp theo
+  'no': Không
+  ok: OK
+  previous: Trước đó
+  refresh: Làm mới
+  remove: Xóa
+  save: Lưu
+  search: Tìm kiếm
+  server: Máy chủ (Server)
+  skipForNow: Bỏ qua lúc này
+  'yes': Có
+  delete: Xóa
+sidebar:
+  pin: Ghim
+  unpin: Bỏ ghim
+sortBy:
+  alphabetAsc: Sắp xếp theo bảng chữ cái (tăng dần)
+  alphabetDesc: Sắp xếp theo bảng chữ cái (giảm dần)
+  name: Sắp xếp theo
+  timeAsc: Sắp xếp theo thời gian chỉnh sửa (tăng dần)
+  timeDesc: Sắp xếp theo thời gian chỉnh sửa (giảm dần)
+store:
+  discover: Khám phá
+  empty: Không tìm thấy Modpack nào
+  emptyHint: Hãy thử điều chỉnh bộ lọc hoặc truy vấn tìm kiếm của bạn.
+  latestMinecraft: Phiên bản Minecraft mới nhất
+  name: Chợ Modpack
+  searchResult: Kết quả tìm kiếm
+  trending: Xu hướng
+tag:
+  create: Tạo thẻ (Tag)
+  createSelected: Tạo thẻ cho phần đã chọn
+task:
+  cancelled: Đã hủy
+  clear: Xóa các tác vụ đã hoàn thành
+  connection:
+    connected: Đã kết nối
+    free: Rảnh
+    pending: Đang chờ xử lý
+    queued: Đang xếp hàng
+    running: Kết nối đang chạy
+    size: tổng số
+  connections: Kết nối mạng
+  empty: Không có tác vụ nào đang chạy
+  failed: Thất bại
+  manager: Trình quản lý tác vụ
+  nTaskRunning: Có {count} tác vụ đang chạy
+  name: Tác vụ | Tác vụ
+  pause: Tạm dừng
+theme:
+  selectImage: Chọn hình ảnh
+  selectMusic: Chọn nhạc
+  selectVideo: Chọn video
+  title: X Minecraft Launcher
+title: X Minecraft Launcher
+transportType:
+  host: Ứng viên máy chủ (Host Candidate)
+  prflx: Ứng viên phản chiếu ngang hàng
+  relay: Ứng viên chuyển tiếp (Relay Candidate)
+  srflx: Ứng viên phản chiếu máy chủ
+turnRegion:
+  fr: Pháp
+  guangzhou: Quảng Châu, Trung Quốc
+  hk: Hồng Kông
+  liaoning: Liêu Ninh, Trung Quốc
+  po: Ba Lan
+tutorial:
+  feedbackDescription: Nếu bạn gặp bất kỳ sự cố nào, vui lòng nhấp vào nút này để gửi phản hồi!
+  hideNewsHeaderDescription: Bạn có thể thấy phần tin tức hiển thị ở bên trái. Nhấp vào nút này có thể ẩn phần hiển thị này.
+  instance:
+    iconDescription: Nhấp để thay đổi biểu tượng.
+    iconTitle: Biểu tượng phiên bản
+    javaDescription: Chọn hoặc chuyển đổi phiên bản Java.
+    javaImportDescription: Nhập Java từ bộ nhớ cục bộ.
+    javaImportTitle: Nhập Java
+    javaTitle: Danh sách Java
+  instanceAddDescription: Nhấp vào nút này để nhập phiên bản Minecraft hiện có hoặc tạo một phiên bản mới từ đầu hoặc từ modpack.
+  instanceSelectDescription: Nhấp vào nút này sẽ chuyển hướng đến trang để chọn trò chơi và đọc tin tức.
+  launchDescription: Nhấp vào nút này để cài đặt hoặc khởi chạy trò chơi.
+  mod:
+    defaultSourceDescription: Bạn có thể chọn nguồn chi tiết của mod tại đây. Đó là các mod được xuất bản trên cả Modrinth và Curseforge. Nếu muốn chuyển đổi giữa hai nhà cung cấp nội dung này, bạn có thể thay đổi giá trị tại đây.
+    defaultSourceTitle: Chọn nguồn nội dung mod
+    detailDescription: Khi bạn chọn một mục bên trái, bạn sẽ thấy thông tin chi tiết về bản mod đó. Nội dung có thể đến từ Modrinth, Curseforge hoặc nội dung mod được phân tích cục bộ.
+    detailTitle: Chi tiết Mod
+    listDescription: Chúng tôi sẽ hiển thị các mod đã cài đặt khi bạn không nhập bất kỳ thông tin nào. Bạn sẽ thấy các mod được tìm kiếm khi từ khóa nhập vào của bạn hoặc danh mục được chọn.
+    listTitle: Mod đã cài đặt hoặc Tìm kiếm
+    searchDescription: Bạn có thể tìm kiếm mod từ Modrinth, Curseforge hoặc bộ đệm cục bộ của bạn bằng hộp tìm kiếm này.
+    searchTitle: Tìm kiếm Mod
+  multiplayer:
+    contentDescription: Các kết nối giữa bạn và những người chơi khác sẽ được liệt kê tại đây.
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: Bạn có thể tạo hoặc tham gia một nhóm với những người chơi khác. Trình khởi chạy sẽ cố gắng tạo kết nối P2P giữa bạn và bạn bè của bạn tùy thuộc vào nhóm. Bạn có thể nhập tên nhóm do bạn bè cung cấp hoặc tạo một tên duy nhất.
+    groupTitle: Tham gia một nhóm
+    joinDescription: Khi bạn đã nhập tên nhóm, bạn có thể nhấp vào nút này để tham gia hoặc tạo nhóm. Nếu tên nhóm để trống, trình khởi chạy sẽ tự động tạo một tên cho bạn.
+    manualDescription: Nếu bạn hoặc bạn bè của bạn không thể kết nối vào nhóm, bạn có thể thử trao đổi mã token thủ công bằng cách nhấp vào kết nối thủ công. Nếu việc này cũng thất bại, đó có thể là do sự cố kết nối Internet.
+  recentPlayDescription: Các trò chơi đã tạo sẽ được liệt kê tại đây. Bạn có thể chuyển đổi các chế độ xem tại đây để xem cả các phiên bản đã cài đặt và các modpack đã tải xuống.
+  storePoupularModpackDescription: Bạn sẽ thấy các modpack phổ biến nhất trên Curseforge và Modrinth trong phần này.
+  storeSearchCategoryDescription: Bạn cũng có thể bật tắt các danh mục hoặc bộ lọc tại đây.
+  storeSearchDescription: Bạn có thể tìm kiếm các Modpack bằng cách nhập vào hộp văn bản này. Nhấn Enter để tìm kiếm.
+  storeSearchResultDescription: Bạn sẽ thấy tất cả kết quả tìm kiếm được liệt kê tại đây.
+  userAccountDescription: Nhấp vào biểu tượng này để thêm hoặc quản lý tài khoản Minecraft của bạn.
+unauthenticatedWarning:
+  cancel: Hủy
+  description: Bạn chưa đăng nhập vào bất kỳ tài khoản nào. Trò chơi sẽ khởi chạy ở chế độ chơi thử (demo). Để trải nghiệm đầy đủ các tính năng, vui lòng đăng nhập.
+  login: Đăng nhập
+  playAnyway: Vẫn chơi
+  title: Chưa đăng nhập
+universalDrop:
+  unknownResource: Không xác định
+unresolvedFiles:
+  description: Không thể tải xuống các tệp này trong quá trình cài đặt. Hãy tìm kiếm một nguồn phù hợp, cài đặt các tệp khớp, hoặc bỏ qua để tiếp tục khởi chạy trò chơi.
+  empty: Mọi tệp đã được giải quyết.
+  ignoreSelected: Bỏ qua {count}
+  install: Cài đặt {count} tệp đã khớp
+  matched: Đã khớp
+  noMatch: Không tìm thấy
+  search: Tìm kiếm nguồn
+  source:
+    curseforge-name: CurseForge
+    dependency: Phụ thuộc (Dependency)
+    modrinth-hash: Mã băm Modrinth
+    modrinth-name: Modrinth
+  title: Các tệp chưa giải quyết
+  via: thông qua {source}
+upstream:
+  downgrade: Hạ cấp
+  onlyShowCurrentVersion: Chỉ hiển thị phiên bản Minecraft hiện tại
+  update: Cập nhật
+user:
+  accessToken: Mã truy cập
+  authMode: Dịch vụ xác thực
+  authService: Dịch vụ ủy quyền
+  email: Địa chỉ Email
+  id: ID người dùng
+  name: Tên người dùng
+  nameHint: Tên hiển thị trong trò chơi
+  profile: Hồ sơ
+  tokenExpired: Đã hết hạn
+  tokenValidUntil: Token có hiệu lực đến
+userAccount:
+  add: Thêm tài khoản
+  removeDescription: Thao tác này sẽ xóa mọi thông tin của tài khoản này. Bạn có chắc chắn không?
+  removeTitle: Xóa tài khoản
+userCape:
+  changeTitle: Thay đổi áo choàng của bạn
+  description: 'Áo choàng là phần thưởng đặc biệt mà người chơi có thể mở khóa thông qua các sự kiện, chiến dịch và các dịp vui vẻ khác nhau. Tại đây, bạn có thể chọn từ những áo choàng hiện có của mình:'
+  noCape: Không có áo choàng
+userService:
+  add: Thêm dịch vụ khác
+  authlibInjectorMetadata: Siêu dữ liệu Authlib-Injector
+  baseUrlHint: URL cơ sở của dịch vụ tùy chỉnh của bạn
+  homepage: Trang chủ
+  implementation: Triển khai
+  manageServices: Quản lý dịch vụ xác thực
+  register: Đăng ký
+  server: Máy chủ
+  skinDomains: Tên miền Skin
+  title: Dịch vụ người dùng bên thứ ba
+  version: Phiên bản
+userServices:
+  microsoft:
+    account: Tài khoản Microsoft
+    deviceCode: Mã thiết bị
+    deviceCodeHint: Mã thiết bị sẽ được tạo sau khi bạn nhấp vào đăng nhập
+    name: Microsoft
+    password: Nhập mật khẩu trong trình duyệt
+    useDeviceCode: Đăng nhập bằng mã thiết bị
+  mojang:
+    account: Địa chỉ Email
+    name: Mojang
+    password: Mật khẩu
+  offline:
+    account: Tên người dùng
+    name: Ngoại tuyến (Offline)
+    password: Không có mật khẩu
+    uuid: UUID người dùng (Tùy chọn)
+userSkin:
+  classic: Cổ điển (Classic)
+  import: Nhập trang phục (Skin)
+  importFile: Mở từ tệp
+  importLink: Mở từ liên kết
+  placeUrlHere: Dán URL skin vào đây để nhập
+  reset: Đặt lại
+  save: Lưu
+  saveTitle: Lưu skin vào đĩa
+  skinType: Loại trang phục (Skin)
+  slim: Thon gọn (Slim)
+  upload: Tải lên skin
+  urlNotEmpty: URL skin không được để trống
+  urlNotValid: URL skin không hợp lệ
+  useSlim: Sử dụng mô hình thon gọn (Slim)
+version:
+  checkIntegrity: Kiểm tra tính toàn vẹn
+  name: Phiên bản | Các phiên bản
+  notInstalled: Phiên bản chưa được cài đặt
+versionType:
+  alpha: Alpha
+  beta: Beta
+  name: Trạng thái
+  release: Bản phát hành chính thức (Release)
+gamepad:
+  detectedTitle: Phát hiện Tay cầm chơi game (Gamepad)
+  connected: Đã kết nối bộ điều khiển
+  guideTitle: Nút điều khiển tay cầm
+  enableSwitchLabel: Điều khiển tay cầm chơi game
+  enabledState: Đã bật
+  disabledState: Đã tắt
+  toggle: Bật/Tắt
+  disabledNotify: Đã tắt điều khiển bằng tay cầm.
+  enabledNotify: Đã bật điều khiển bằng tay cầm! Sử dụng D-pad/Cần gạt trái để di chuyển, nút {btnA} để chọn, nút {btnB} để quay lại.
+  guide:
+    confirm: Chọn
+    navigate: Di chuyển
+    tabs: Chuyển thẻ
+    sections: Chuyển vùng
+    launch: Khởi chạy trò chơi
+    instanceSettings: Cài đặt phiên bản
+  modSuggestTitle: Mod điều khiển tay cầm
+  modSuggestBody: Để sử dụng tay cầm chơi game trong Minecraft, bạn nên cài đặt mod hỗ trợ tay cầm. Bạn có muốn cài đặt mod phù hợp với bộ nạp mod (modloader) của mình không?
+  modInstall: Cài đặt Mod
+  modSkip: Bỏ qua
+  modDone: Hoàn thành
+  modInstalled: Đã cài đặt mod hỗ trợ tay cầm thành công! Nó sẽ hoạt động trong lần khởi chạy Minecraft tiếp theo.
+  modInstalledNotify: '{name} đã được cài đặt để hỗ trợ tay cầm trong game.'
+  modNotFound: Không tìm thấy phiên bản tương thích nào cho {loader} trên phiên bản Minecraft {version}.
+  settingSteamTitle: Thêm trình khởi chạy vào Steam
+  steamAddedNotify: Đã thêm trình khởi chạy vào Thư viện Steam thành công! Vui lòng khởi động lại Steam để áp dụng.
+  steamAlreadyAddedNotify: Trình khởi chạy đã có sẵn trong Thư viện Steam của bạn.
+  steamDeckTitle: Phát hiện Steam Deck
+  steamDeckDesc: Chúng tôi phát hiện bạn đang chạy trên Steam Deck. Bạn có muốn thêm X Minecraft Launcher vào Thư viện Steam của mình dưới dạng trò chơi ngoài Steam để tích hợp đầy đủ lớp phủ Steam và điều khiển trong Gaming Mode không?
+  steamDeckAddBtn: Thêm vào Steam ({btn})
+  steamDeckCancelBtn: Hủy ({btn})

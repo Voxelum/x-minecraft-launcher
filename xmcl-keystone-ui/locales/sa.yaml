@@ -1,0 +1,1865 @@
+AppAddInstanceDialog:
+  choiceTitle: अनेकाः क्रीडाप्रवृत्तयः दृष्टाः। कृपया आयातनाय एकं चिनोतु।
+  createTitle: क्रीडां सृजतु
+  serverTitle: स्वकीय-सेवाप्रदाता-सङ्केतम् लिखतु
+AppShareInstanceDialog:
+  alterDownloadDescription: यदि भवान् वर्तमानक्षणं न नाशयितुम् इच्छति, तर्हि भवान् स्वसहयोगिनः संरचनया नूतनक्षणं निर्मातुं शक्नोति। क्षणनिर्माणाय अधः नुदतु।
+  baseInfo: मूलसंरचना
+  cancelShare: सहभाजनं निरस्यतु
+  description: प्रोफाइल-सहभाजनात् परं, अन्ये जनाः भवतः सङ्गणकद्वारा एतान् सञ्चिकान् अवतारेतुं शक्नुवन्ति।
+  downloadDescription: कृपया स्वसहयोगिना प्रदत्तानां सञ्चिकानां सत्यापनं करोतु। यां सञ्चिकाम् अवतारेतुम् इच्छति तां चिनोतु। इयं वर्तमानक्षणे {name} स्थापयिष्यते।
+  downloadNotifyTitle: '{user} तः क्षणम् अवतारयतु'
+  downloadTitle: सहयोगिभ्यः सञ्चिकाः अवतारयतु
+  filesToDownload: अवतारेतुं सञ्चिकाः चिनोतु
+  filesToShare: सहभाजनाय सञ्चिकाः चिनोतु
+  instanceShare: '{user} इदानीमेव वर्तमानक्षणं भवता सह साझितवान्'
+  share: सहभाजनं करोतु
+  shareNotifyTitle: क्षणसहभाजनं करोतु
+  shareTitle: क्रीडासञ्चिकाः अन्यक्रीडकेन सह साझयतु
+BaseSettingGeneral:
+  title: सामान्यम्
+HomeJavaIssueDialog:
+  incompatibleJava: असुसङ्गतं जावा (Java)
+  incompatibleJavaHint: वर्तमान-जावा चयनितेन माइनक्राफ्ट्-क्रीडया सह असुसङ्गतं भवितुं शक्नोति!
+  missingJava: जावा न लब्धम्
+  missingJavaHint: 'प्रवर्तकः भवतः सङ्गणके किमपि जावा अन्वेष्टुं न शक्नोति। भवान् कर्तुं शक्नोति:'
+  optionSwitch:
+    name: '{version} प्रति परिवर्तयतु'
+HomeLaunchMultiInstanceDialog:
+  confirm: आम्, प्रवर्तयतु
+  description: भवान् माइनक्राफ्ट्-क्रीडायाः अनेकानि रूपानि प्रवर्तयति। किं भवान् निश्चितः अस्ति?
+  title: अनेकाः क्षणाः (Instances)
+SettingMigrationDialog:
+  selectRootDirectory: मूलनिर्देशिकां चिनोतु
+agent:
+  callingTool: '{name} आह्वयति...'
+  disabledPlaceholder: प्रतिनिधिः असमर्थितः
+  emptyHint: स्वक्षणं परीक्षितुं, मोड्स परिवर्तयितुं, वृत्तलेखं पठितुं, अथवा पतनस्य निदानं कर्तुं प्रतिनिधिं पृच्छतु।
+  inputPlaceholder: प्रतिनिधिं पृच्छतु... (प्रेषणाय Enter, नूतनपङ्क्तये Shift+Enter)
+  notConfiguredHint: प्रतिनिधिं सक्रियं कर्तुं विकल्पाः → सामान्याः → एआय (AI) प्रतिनिधिः इत्यत्र स्वकीयं API कुञ्जी, प्रारूपं, अन्त्यबिन्दुं च निर्धारयतु।
+  notConfiguredTitle: प्रतिनिधिः न विन्यस्तः
+  openSettings: विकल्पान् उद्घाटयतु
+  reset: वार्तालापं पुनः स्थापयतु
+  setupGuide: स्थापनमार्गदर्शिका
+  statusDisabled: असमर्थितः — API कुञ्जी नास्ति
+  statusReady: सज्जः
+  statusWorking: कार्यं करोति...
+  suggestion1: इमं क्षणम् नूतनतर-माइनक्राफ्ट्-संस्करणं प्रति प्रवृद्धं करोतु, मेलनाय च मोड्स नवीकरोतु
+  suggestion2: मम मोड्स पतन्ति — कारणम् अन्विष्य परिहारमार्गं वदतु
+  suggestion3: 'मोडप्याक् (Modpack) रचयतु: मम इच्छितसुविधानां कृते मोड्स अन्विष्य अस्मिन् क्षणम् संस्थापयतु'
+  thinking: विचिन्तयति...
+  title: XMCL प्रतिनिधिः
+  toggleHint: परिवर्तनाय
+ago:
+  day: '{duration} दिनं पूर्वम् | {duration} दिनानि पूर्वम्'
+  hour: '{duration} होरा पूर्वम् | {duration} होराः पूर्वम्'
+  minute: '{duration} निमेषः पूर्वम् | {duration} निमेषाः पूर्वम्'
+  second: '{duration} क्षणः पूर्वम् | {duration} क्षणाः पूर्वम्'
+askAICrash:
+  agentNotConfigured: प्रवर्तकस्य अन्तर्निर्मितः प्रतिनिधिः एतस्य निदानं कर्तुं शक्नोति इति कृते विकल्पेषु एआय (AI) प्रदाता तथा API कुञ्जी योजयतु।
+  askAgent: अन्तर्निर्मित-एआय-प्रतिनिधिना निदानं करोतु
+  copyPrompt: एआय (AI) प्रष्टुं सङ्केतं प्रतिलिप्य करोतु
+  description: क्रीडापतनं अवगन्तुं एआय (AI) सहायं करोतु! एतस्य क्रीडापतनस्य विषये एआय प्रष्टुं अधस्तननिर्देशाः पालयतु!
+  orExternal: अथवा बाह्य-एआय (AI) इत्यस्य प्रयोगं करोतु
+  selectPlatform: एआय (AI) मञ्चम् उद्घाटयतु तथा सङ्केतं यत् भवान् इदानीमेव प्रतिलिपीकृतवान् तत्र लेपयतु।
+  setupAgent: एआय (AI) प्रतिनिधिं स्थापयतु
+authProfileAddedNotification: प्रमाणीकरण-प्रोफाइल {name} योजिता
+bedrock:
+  description: माइनक्राफ्ट् बेडरॉक् संस्करणं (Bedrock Edition) संस्थाप्य माइक्रोसॉफ्ट स्टोर (Microsoft Store) द्वारा प्रवर्तते। भवतः माइक्रोसॉफ्ट लेखायां बेडरॉक् अनुज्ञापत्रं भवितव्यम्।
+  install: माइक्रोसॉफ्ट स्टोर तः प्राप्नोतु
+  installFailed: माइक्रोसॉफ्ट स्टोर उद्घाटयितुं न शक्तम्
+  installed: 'संस्थापितम्: {version}'
+  launchHint: बेडरॉक् संस्करणं आरब्धुं प्रवर्तन-नुदं प्रयुङ्क्त।
+  installBedrockVersion: बेडरॉक् {version} अवतारयति
+  licenseRequired: बेडरॉक् संस्करणं संस्थाप्य क्रीडितुं माइनक्राफ्ट् स्वामित्वं धारयता माइक्रोसॉफ्ट लेखाना प्रवेशं करोतु।
+  refresh: पुनश्चर्या
+  versionsTitle: संस्करणप्रबन्धकः
+  versionsHint: माइक्रोसॉफ्ट-सेवाप्रदातृभ्यः अनेकानि बेडरॉक्-संस्करणाणि अवतारयतु तेषां मध्ये च परिवर्तयतु। एकस्मिन् समये एकमेव संस्करणं विण्डोज (Windows) सह पञ्जीकृतं भवितुं शक्नोति।
+  versionsError: संस्करणसूचीं भारयितुं न शक्तम्। स्वकीयं जालं परीक्ष्य पुनः प्रयतताम्।
+  channel: वाहिनी
+  channelRelease: विमोचनम्
+  channelBeta: बीटा (Beta)
+  channelPreview: पूर्वावलोकनम्
+  active: सक्रियः
+  play: क्रीडतु
+  download: अवतारयतु
+  installedTag: संस्थापितम्
+  developerModeRequired: अवतारीकृतं संस्करणं पञ्जीकर्तुं विण्डोज विकासक-प्रणाली आवश्यकी। एतद् सक्रियं कर्तुं प्रशासकस्य अनुमतिः अपेक्षते।
+  enableDeveloperMode: विकासकप्रणालीं समर्थयतु
+  enableDeveloperModeFailed: विकासकप्रणालीं समर्थयितुं न शक्तम्
+  downloadFailed: बेडरॉक् {version} अवतारेतुं न शक्तम्
+  launchFailed: एतत् बेडरॉक् संस्करणं प्रवर्तयितुं न शक्तम्
+  removeFailed: बेडरॉक् {version} निष्कासयितुं न शक्तम्
+baseSetting:
+  title: क्षणविकल्पाः
+browseApp:
+  createShortcut: लघुमार्गं सृजतु
+  default: पूर्वनिर्धारितम्
+  delete: लोपयतु
+  launch: प्रवर्तयतु पूर्वनिर्धारितं च करोतु
+browseApps: प्रवर्तकस्य दृश्यं पश्यति
+color: वर्णः
+confirm: आरम्भः
+copyClipboard:
+  success: सञ्चिका फलके प्रतिलिपीकृता
+create: सृजतु
+curseforge:
+  category: वर्गः
+  createdDate: निर्माणतिथिः
+  lastUpdate: अन्तिम-नवीकरणतिथिः
+  releasedDate: प्रकाशनतिथिः
+curseforgeCategory:
+  API and Library: APIs तथा ग्रन्थालयाः
+  Addons: परिशिष्टानि
+  Adventure: साहसिकम्
+  Adventure and RPG: साहसिकं तथा RPG
+  Animated: सजीवता
+  Armor, Tools, and Weapons: कवचः, उपकरणानि, शस्त्राणि च
+  Combat / PvP: युद्धं / PvP
+  Cosmetic: प्रसाधनम् / अलङ्कारः
+  Creation: सृजनात्मकम्
+  Data Packs: दत्त-सञ्चयाः (Data Packs)
+  Education: शिक्षा
+  Exploration: अन्वेषणम्
+  Extra Large: अतिबृहत्
+  FTB Official Pack: आधिकारिकं FTB सञ्चयः
+  Fabric: फैब्रिक (Fabric)
+  FancyMenu: फैंसीमेन्यू (FancyMenu)
+  Font Packs: अक्षरमुद्राः
+  Food: भोजनम्
+  Game Map: क्रीडाचित्रम् (Game Map)
+  Hardcore: अति कठिनम् (Hardcore)
+  MCreator: MCreator
+  Magic: माया (Magic)
+  Map Based: मानचित्राधारितम्
+  Map and Information: मानचित्रं सूचना च
+  Medieval: मध्यकालीनम्
+  Mini Game: लघुक्रीडाः
+  Miscellaneous: विविधम्
+  Mod Support: मोड-समर्थनम्
+  Modded World: परिवर्तितसंसाराः
+  Modern: आधुनिकम्
+  Multiplayer: बहुक्रीडकम्
+  Parkour: पार्कोर (Parkour)
+  Photo Realistic: वास्तविक-चित्रणम्
+  Puzzle: प्रहेलिका
+  QoL: जीवनगुणवत्ता (QoL)
+  Quests: अन्वेषणानि (Quests)
+  Redstone: रेडस्टोन (Redstone)
+  Sci-Fi: वैज्ञानिक-कल्पना (Sci-Fi)
+  Server Utility: सेवाप्रदाता-उपयोगिता
+  Skyblock: स्काईब्लॉक (Skyblock)
+  Small / Light: लघु / भारहीनम्
+  Steampunk: स्टीमपङ्क (Steampunk)
+  Storage: सङ्ग्रहः
+  Survival: अतिजीवनम्
+  Tech: तन्त्रज्ञानम् (Tech)
+  Technology: तन्त्रज्ञानम्
+  Traditional: पारम्परिकम्
+  Twitch Integration: ट्विट्च् एकीकरणम्
+  Utility & QoL: उपयोगिता तथा QoL
+  Vanilla+: वेनिला+
+  World Gen: संसारजननम्
+dataMigration:
+  apply: विकल्पं प्रयुङ्क्त
+  directoryCriteriaHint: कृपया निश्चितं करोतु यत् भवतः नूतननिर्देशिका स्थानं रिक्ता निर्देशिका अस्ति!
+  placeholder: निर्देशिकां चितुं कृपया अत्र नुदतु
+  setRootCause: यदि भवान् एतस्यां प्रक्रियायां प्रवर्तकं बन्दं करोति, तर्हि स्वकीयं दत्तं (मानचित्राणि, संसाधनसञ्चयाः, मोड्स च) हारयिष्यति!
+  setRootDescription: एतेन अस्याः प्रवर्तकस्य माइनक्राफ्ट् क्रीडायाः च मूलदत्तकोशः परिवर्तयिष्यते।
+  setRootTitle: नूतन-सङ्ग्रहस्थाने स्थापयतु
+  unknownError: अज्ञातदोषः! कृपया पुनः प्रयतताम् अथवा विकासकेन सह सम्पर्कं करोतु!
+  waitReload: दत्तस्थानं स्थानान्तरयति। कृपया प्रवर्तकक्रीडां न पिदधातु, अन्यथा भवतः दत्तं नष्टं भवेत्।
+delete:
+  name: '{name} लोपयतु'
+  'no': न
+  'yes': लोपयतु
+dependencies:
+  embedded: अन्तर्निहितम्
+  incompatible: असुसङ्गतम्
+  name: अधीनताः
+  optional: वैकल्पिकम्
+  required: आवश्यकम्
+diagnosis:
+  badInstall:
+    message: अस्य संस्करणस्य पुनः संस्थापनाय नुदतु।
+    name: '{version} इत्यत्र दोषपूर्णसंस्थापनम्'
+  corruptedAssets:
+    message: प्रवर्तकः भवतः कृते संपदः संस्थापयिष्यति
+    name: 'विकृता सम्पद्: {name} | विकृता सम्पद् {name} | {count} विकृतसंपदः'
+  corruptedAssetsIndex:
+    message: प्रवर्तकः भवतः कृते संपत्-अनुक्रमणिकां अवतारेष्यति
+    name: '{version} इत्यस्य विकृतसंपत्-अनुक्रमणिकासञ्चिका।'
+  corruptedLibraries:
+    message: प्रवर्तकः भवतः कृते ग्रन्थालयान् संस्थापयिष्यति
+    name: 'विकृतग्रन्थालयः: {name} | विकृतग्रन्थालयः: {name} | {count} विकृतग्रन्थालयाः'
+  corruptedVersionJar:
+    message: अस्य संस्करणस्य संस्थापनाय नुदतु
+    name: माइनक्राफ्ट् संस्करणस्य %{version} कृते विकृतं जार (jar) सञ्चिका।
+  incompatibleJava:
+    name: जावा संस्करणं {javaVersion} {version} कृते सुसङ्गतं नास्ति!
+  instanceFiles:
+    description: क्षणसंस्थापने {counts} सञ्चिकाः सन्ति।
+    title: अपूर्णं क्षणसंस्थापनम्
+  invalidJava:
+    name: अमान्यं जावा (Java) स्थानम्।
+  missingJava:
+    message: अस्याः समस्यायाः समाधानाय नुदतु
+    name: माइनक्राफ्ट् प्रवर्तयितुं जावा न लब्धम्!
+  missingLibraries:
+    message: प्रवर्तकः भवतः कृते ग्रन्थालयान् संस्थापयिष्यति
+    name: अनुपस्थितः {name} ग्रन्थालयः | अनुपस्थितः {name} ग्रन्थालयः | अनुपस्थिताः {count} ग्रन्थालयाः | अनुपस्थिताः {count} ग्रन्थालयाः
+  missingVersion:
+    message: अस्य संस्करणस्य संस्थापनाय नुदतु
+    name: '{version} संस्करणं न संस्थापितम्!'
+  unresolvedFiles:
+    description: संस्थापनकाले {count} सञ्चिका निर्णेतुं न शक्ता | संस्थापनकाले {count} सञ्चिकाः निर्णेतुं न शक्ताः
+    title: अनिर्णीताः सञ्चिकाः
+  unzipFileNotFound:
+    description: '{file} न लब्धम्'
+    title: मोडप्याक् (Modpack) सञ्चिका न लब्धा
+difficulty:
+  easy: सरलम्
+  hard: कठिनम्
+  normal: सामान्यम्
+  peaceful: शान्तम्
+disk:
+  available: उपलब्धम्
+  used: प्रयुक्तम्
+downloadCount: '{count} अवतरणानि'
+downloadModMetadataDb:
+  name: मोड-मेटाडेटा-दत्तकोशम् अवतारयतु
+downloadUpdate:
+  name: नवीकरणं {version} अवतारयतु
+duplicateInstance:
+  name: क्षणस्य प्रतिकृतिं करोतु
+duration:
+  day: '{duration} दिनम् | {duration} दिनानि'
+  hour: '{duration} होरा | {duration} होराः'
+  minute: '{duration} निमेषः | {duration} निमेषाः'
+  second: '{duration} क्षणः | {duration} क्षणाः'
+env:
+  select:
+    all: सर्वं चिनोतु
+    fit: योग्यं चिनोतु
+    none: कदापि मा चिनोतु
+errors:
+  bedrockUnsupportedPlatform: माइनक्राफ्ट् बेडरॉक् संस्करणं केवलं विण्डोज निर्मिते समर्थितम् अस्ति।
+  bedrockNotInstalled: माइनक्राफ्ट् बेडरॉक् संस्करणं न संस्थापितम्।
+  bedrockLaunchFailed: माइनक्राफ्ट् बेडरॉक् संस्करणं प्रवर्तयितुं न शक्तम्।
+  bedrockInstallFailed: माइनक्राफ्ट् बेडरॉक् संस्करणं संस्थापयितुं न शक्तम्।
+  bedrockDownloadUrlUnavailable: एतत् बेडरॉक् संस्करणं वर्तमान-माइक्रोसॉफ्ट-लेखायाः कृते उपलब्धं नास्ति।
+  bedrockDeveloperModeRequired: अस्य बेडरॉक् संस्करणस्य पञ्जीकरणाय विण्डोज विकासक-प्रणाली आवश्यकी।
+  bedrockRegisterFailed: विण्डोज सह अस्य बेडरॉक् संस्करणस्य पञ्जीकरणं कर्तुं न शक्तम्।
+  bedrockVersionNotFound: एतत् बेडरॉक् संस्करणं स्थानिकरूपेण न संस्थापितम्।
+  BadForgeInstallerJarError: फॉर्ज (Forge) स्थापकस्य जार सञ्चिकां विश्लेषयितुं न शक्तम्।
+  BadInstanceType: 'वैधः क्षणः नास्ति: {type}'
+  BodyTimeoutError: HTTP कलेवर-कालसमाप्तिः (Body timeout)
+  ChecksumNotMatchError: चेकसम (Checksum) न मिलितम्! अपेक्षितम् {expect}। वास्तविकम् {actual}।
+  ConnectTimeoutError: सेवाप्रदात्रा सह सम्पर्क-कालसमाप्तिः।
+  CorruptedResourceMetadata: '{count} संसाधनेषु विकृतं मेटाडेटा अन्विष्य मार्जितम्।'
+  DNSNotFoundError: DNS अन्वेषणदोषः
+  DatabaseNotOpened: दत्तकोशः न उद्घाटितः!
+  DiskIsFull: भवतः डिस्क (disk) पूर्णा अस्ति! किमपि लेखितुं न शक्यते!
+  DownloadAggregateError: सञ्चिकाम् अवतारेतुं न शक्तम्।
+  DownloadFileSystemError: अवतरणसञ्चिकापथस्य प्रवेशे दोषः।
+  HeadersTimeoutError: HTTP शीर्षक-कालसमाप्तिः
+  InstallBackendUnresponsive:
+    body: प्रवर्तकस्य पृष्ठभूमिप्रक्रिया प्रतिक्रियाहीना जाता।
+    title: प्रवर्तकः प्रतिक्रिया न ददाति
+  InstallInstructionFailed:
+    body: '{name}: {message}'
+    title: माइनक्राफ्ट् सञ्चिकाः संस्थापयितुं न शक्तम्
+  InstallNetworkError:
+    body: जालसमस्यया संस्थापनं बाधितम्।
+    title: माइनक्राफ्ट् सञ्चिकाः अवतारेतुं न शक्तम्
+  InstallPermissionDenied:
+    body: अवरुद्धम् संस्थापनम्।
+    title: प्रवर्तककोशे लेखितुं न शक्यते
+  NotFoundError: 404 न लब्धम्
+  SocketError: सेवाप्रदाता सॉकेट दोषः
+eula:
+  body: मञ्जूषां चिह्नयित्वा भवान् माइनक्राफ्ट् इत्यस्य {eula} प्रति सहमतिं प्रकटयति।
+exception:
+  http: '{url} प्रति HTTP अभ्यर्थना विफला जाता। स्थितिः {statusCode}। {code}।'
+exportModpack:
+  name: मोडप्याक् (Modpack) निर्यातनं करोतु
+extensions:
+  mrpack: Modrinth मोडप्याक्
+  zip: जिप (Zip) सञ्चिका
+fabricVersion:
+  disable: फैब्रिक (Fabric) असमर्थं करोतु
+  empty: माइनक्राफ्ट् {version} कृते किमपि फैब्रिक संस्करणं नास्ति
+  showSnapshot: पूर्वावलोकनं दर्शयतु
+  stable: स्थिरम्
+  unstable: अस्थिरम्
+command:
+  instance:
+    launch:
+      title: क्षणं प्रवर्तयतु
+      description: माइनक्राफ्ट् क्षणस्य प्रवर्तनं करोतु
+    create:
+      title: क्षणं सृजतु
+      description: नूतनक्षणं सृजतु
+    delete:
+      title: क्षणं लोपयतु
+      description: विद्यमानक्षणं लोपयतु
+  user:
+    login:
+      title: प्रयोक्तुः प्रवेशः
+      description: स्वलेखायां प्रवेशं करोतु
+    refresh:
+      title: प्रयोक्तारं नवीकरोतु
+      description: प्रयोक्तृसत्रं नवीकरोतु
+commandPalette:
+  placeholder: निर्देशान्, क्षणान्, मोड्स च अन्विषतु...
+  commands: निर्देशाः
+  instances: क्षणाः
+  modrinth: Modrinth
+  recent: सद्यः प्रयुक्तम्
+  open: शीघ्रक्रिया
+  openHint: निर्देशफलकम् उद्घाटयतु ({shortcut})
+  empty: अन्वेषणाय लिखतु।
+  noResults: कोऽपि परिणामः न मिलितः।
+  searching: अन्विष्यति...
+  hintNavigate: सञ्चरणम्
+  hintInvoke: आह्वानम्
+  hintEnter: प्रवेशः
+  hintBack: प्रतिगमनम्
+  hintClose: पिधानम्
+feedback:
+  channel: वाहिन्यः
+  description: मया त्रुटिः लब्धा अथवा अहं परामर्शं दातुम् इच्छामि
+  discord: Discord
+  discordDescription: Discord वाहिनीं संयुजतु
+  discordJoin: संयुजतु
+  generateReport: विवरणं जनयतु
+  generateSaveAs: विवरणम् अत्र रक्षतु
+  github: Github समस्या
+  githubDescription: स्वविचारान् वक्तुं Github समस्यां पञ्जीकरोतु
+  githubOpenIssue: Github
+  hint: विवरणं निर्मातुं विकासकदलेन सह सम्पर्कं कर्तुं च नुदतु।
+  kook: Kook
+  kookDescription: चीनदेशस्य प्रयोक्तृणां कृते Kook इति Discord इत्यस्य विकल्पः अस्ति
+  name: प्रतिपुष्टिः
+  qq: QQ समूहः
+  qqDescription: 'QQ समूहे संयुज्य लेखकैः सह साक्षात् भाषताम्। समूहसङ्ख्या: {number}'
+  qqEnterGroup: संयुजतु
+fileDetail:
+  fileSize: सञ्चिकाकारः
+  filesize: सञ्चिकाकारः
+  hash: हैश (Hash)
+filterLocalOnly: केवलम् संस्थापितानि दर्शयतु
+forgeVersion:
+  disable: फॉर्ज (Forge) असमर्थं करोतु
+  empty: माइनक्राफ्ट {version} कृते फॉर्ज संस्करणं नास्ति
+  latest: अद्यतनम्
+  recommended: अनुशंसितम्
+gameType:
+  adventure: साहसिकप्रणाली
+  creative: सृजनात्मकप्रणाली
+  spectator: दर्शकप्रणाली
+  survival: अतिजीवनप्रणाली
+help: सहायता
+home: मुख्यम्
+importModpack:
+  name: मोडप्याक् (Modpack) आयातयतु
+installAssets:
+  asset: '{count} सम्पदः संस्थापयतु'
+  assetIndex: संपत्-अनुक्रमणिकासञ्चिकां परीक्षताम्
+  name: सम्पत्सञ्चिकाः संस्थापयतु
+installAuthlibInjector: authlib-injector संस्थापयतु
+installCurseforgeFile: Curseforge सञ्चिकां संस्थापयतु
+installFabric:
+  name: Fabric संस्थापयतु
+installForge:
+  downloadInstaller: स्थापकम् अवतारयतु
+  name: Forge संस्थापयतु
+  postProcessing: पश्चात्-संसाधनम्
+installInstance:
+  file: क्षणसञ्चिकां {file} नवीकरोतु
+  link: '{count} सञ्चिकाः प्रतिलिप्यतु अथवा शृङ्खलां करोतु'
+  name: क्षणं नवीकरोतु
+  resolve: क्षणसंरचनां निर्णेतु
+  unzip: '{count} सञ्चिकाः अनजिप (Unzip) करोतु'
+installJre:
+  decompress: JRE सञ्चिकाः कोशे विमुञ्चतु
+  download: सङ्कुचितां JRE सञ्चिकाम् अवतारयतु
+  name: जावा रनटाइम ग्रन्थालयं संस्थापयतु
+installLabyMod:
+  name: LabyMod संस्थापयतु
+installLibraries:
+  library: ग्रन्थालयम् संस्थापयतु
+  name: ग्रन्थालयान् संस्थापयतु
+installModrinthFile:
+  name: Modrinth संस्थापयतु
+installOptifine:
+  download: Optifine Universal अवतारयतु
+  name: Optifine संस्थापयतु
+installProfile:
+  name: '{version} प्रोफाइल संस्थापयतु'
+installQuilt:
+  name: Quilt {version} संस्थापयतु
+installVersion:
+  jar: संस्करण-जार संस्थापयतु
+  json: संस्करण-जेसन संस्थापयतु
+  name: माइनक्राफ्ट् ग्राहक {version} संस्थापयतु
+instance:
+  changeIcon: चिह्नं परिवर्तयतु
+  contents: सामग्री
+  current: वर्तमानक्षणः
+  delete: क्रीडाम् लोपयतु
+  deleteFailed: क्षणं लोपयितुं विफला जाती
+  deleteFailedPermission: अन्येन कार्यक्रमेण सञ्चिका व्यापृता
+  deleteFile: क्षणसञ्चिकाः लोपयतु
+  deleteHint: क्षणदत्तं डिस्क तः सदा कृते निष्कास्यते। किं भवान् निश्चितः?
+  deleteHintBedrock: माइनक्राफ्ट् बेडरॉक् संस्करणं तस्य सर्वं दत्तं च सङ्गणकात् पूर्णतया विनश्यति। किं भवान् निश्चितः?
+  duplicate: क्रीडायाः प्रतिकृतिं करोतु
+  duplicatedName: पुनरावृत्तं नाम
+  envVarKey: कुञ्जी
+  envVarKeyPlaceholder: MY_VAR
+  envVarValue: मूल्यम्
+  envVarValuePlaceholder: मूल्यम्
+  fileApi: सञ्चिका-तादात्म्य-सेवाप्रदाता API सङ्केतः
+  fileApiHint: दूरस्थसंरचना-सेवाप्रदातुः क्षणसञ्चिकानां तादात्म्यं कर्तुं सङ्केतः।
+  fileApiPlaceholder: कृपया अत्र दूरस्थतादात्म्यसङ्केतं लिखतु
+  fullscreen: पूर्णपटलः
+  height: औन्नत्यम्
+  hideCard: एतत् पत्रं गोपयतु
+  icon: प्रोफाइल चिह्नम्
+  iconHint: चिह्नं सञ्चिका अथवा अन्तर्जालसङ्केतः भवितुं शक्नोति।
+  iconUrl: चिह्न-सङ्केतः
+  installModpack: मोडप्याक् तः क्षणस्य नवीकरणं करोतु
+  lastPlayed: अन्तिमवारं क्रीडितम्
+  launchArguments: प्रवर्तन-युक्तीनां पूर्वावलोकनम्
+  launchServer: स्थानीयसेवाप्रदाता प्रवर्तयतु
+  linkFileDesc: एतेन क्षणस्य स्थानिकी {file} वैश्विक्या {file} द्वारा पुनर्लेखिष्यते।
+  linkFileTitle: किं भवान् {file} शृङ्खलितुं निश्चितः?
+  mcOptions: माइनक्राफ्ट् विकल्पाः
+  mcOptionsHint: अतिरिक्ताः माइनक्राफ्ट् प्रवर्तनयुक्तयः
+  name: प्रोफाइल नाम
+  nameHint: मोडप्याक् इत्यस्य नाम
+  nameInvalidChars: 'नाम्नि एते वर्णाः न भवेयुः: < > : " / \\ | ? *'
+  nameNoCyrillic: नाम्नि सिरिलिक (Cyrillic) वर्णाः न भवेयुः
+  namePathTraversal: नाम्नि पथ-सञ्चरणं ("..") न भवेत्
+  nameReservedName: एतन्नाम तन्त्रेण आरक्षितम् अस्ति अतः प्रयोक्तुं न शक्यते
+  nameTrailingDotOrSpace: नाम बिन्दुना अथवा रिक्तेन समाप्तं न भवेत्
+  nameWhitespaceOnly: नाम केवलं रिक्तस्थानं वा बिन्दवः वा न भवेत्
+  neverPlayed: कदापि न क्रीडितम्
+  openCrashReportFolder: पतन-विवरणकोशं उद्घाटयतु
+  openLogFolder: वृत्तलेखकोशं उद्घाटयतु
+  playtime: क्रीडासमयः
+  preExecCommand: पूर्वनिष्पादननिर्देशः
+  preExecCommandHint: माइनक्राफ्ट् प्रवर्तनात् पूर्वं निष्पादनीयः निर्देशः
+  prependCommand: पूर्वतः योज्य निर्देशः
+  prependCommandHint: एतेन सर्वप्रवर्तननिर्देशेभ्यः पूर्वं एषः निर्देशः योक्ष्यते
+  requireName: नाम आवश्यकम् अस्ति
+  resolution: विभेदनम् (Resolution)
+  resolutionPreset: विभेदनपूर्वनिर्धारणम्
+  showHiddenCards: गुप्तानि पत्राणि दर्शयतु
+  showInstance: क्रीडाकोशं दर्शयतु
+  updates: नवीकरणानि
+  useSharedOptions: साझित-क्रीडाविकल्पाः प्रयुङ्क्त
+  useSharedOptionsDesc: एतेन options.txt सञ्चिका क्षणेषु साझितसञ्चिकया शृङ्खलिष्यते
+  useSharedServersList: साझित-सेवाप्रदातासूचीं प्रयुङ्क्त
+  useSharedServersListDesc: एतेन servers.dat सञ्चिका क्षणेषु साझितसञ्चिकया शृङ्खलिष्यते
+  vmOptions: JVM विकल्पाः
+  vmOptionsHint: JVM कृते अतिरिक्ताः युक्तयः
+  vmVar: पर्यावरणचराः
+  vmVarHint: पर्यावरणचरानां योजनाय + नुदतु
+  width: विस्तारः
+instanceAge:
+  older: पुरातनम्
+  threeDay: दिनत्रये
+  today: अद्य
+instanceDiscover:
+  gameFolder: '{count} क्रीडाकोशान् अन्वेषयतु'
+  instanceFolder: '{count} क्षणाः लब्धाः'
+instanceFileOperation:
+  add: योजयतु
+  backup-add: प्रतिस्थापयतु (आरक्षितम्)
+  backup-remove: निष्कासयतु (आरक्षितम्)
+  keep: रक्षतु
+  remove: निष्कासयतु
+instanceInstallSkip:
+  ignore: उपेक्षताम्
+  skip: त्यजतु
+  title: संभावित-विकृतसञ्चिका-स्रोतः
+  warning: काश्चन सञ्चिकाः बहुवारं जालान्तरतः अवतीर्णाः सन्ति चेदपि तासां चेकसम न मिलति। एतत् असत्यस्य चेकसम-कारणतः भवितुं शक्नोति।
+instanceLauncher:
+  search: क्षणान् अन्विषतु...
+  showAll: सर्वान् क्षणान् दर्शयतु
+  title: सर्वे क्षणाः
+instanceSetting:
+  disableAuthlibInjector: authlib-injector निष्क्रियं करोतु
+  disableAuthlibInjectorDescription: यदि भवान् तृतीयपक्षस्य त्वचा-प्रणालीं प्रयुङ्क्ते, तर्हि authlib injector क्रीडायां त्वचां प्रदर्शयितुं साहाय्यं कर्तुं शक्नोति।
+  disableElyByAuthlib: ely.by इत्यस्य authlib प्रतिस्थापनं निष्क्रियं करोतु
+  disableElyByAuthlibDescription: Ely.by इत्यस्य विशिष्टं authlib प्रतिस्थापनं कस्मिन्नपि सेवाप्रदातरि त्वचां प्रदर्शयितुं साहाय्यं करोति।
+  fastLaunch: त्वरितप्रवर्तनम्
+  fastLaunchHint: प्रयोक्तुः स्थितिं तथा अनिर्णीताः समस्याः उपेक्षताम्
+  hideLauncher: प्रवर्तनात् परं प्रवर्तकं गोपयतु
+  icon: चित्रं चिनोतु
+  showLog: माइनक्राफ्ट् वृत्तलेखं दर्शयतु
+  showLogHint: एतेन क्रीडारम्भात् परं माइनक्राफ्ट् वृत्तलेखं प्रदर्शयितुं नूतनं गवाक्षम् उद्घाटयिष्यते
+instanceTemplate:
+  ftb: एतत् FTB मोडप्याक् अस्ति
+  preview: मोडप्याक् पूर्वावलोकनम्
+instanceUpdate:
+  basic: विकल्प-नवीकरणम्
+  files: सञ्चिका-नवीकरणानि
+  loaderChanged: अस्य क्षणस्य मोडलोडर परिवर्तितम्। पुरातनं मोडलोडर {modloader} अस्ति, नूतनं च {newModloader} अस्ति।
+  noFiles: कोऽपि सञ्चिकापरिवर्तनः नास्ति
+  summary: '{add} सञ्चिकाः योजयतु। {remove} सञ्चिकाः निष्कासयतु। {keep} सञ्चिकाः रक्षतु।'
+  title: क्षणं नवीकरोतु
+  update: नवीकरणम् आरभताम्
+instances:
+  add: क्रीडां सृजतु
+  addCurseForgeDescription: Curseforge दत्तकोशात् आयातयतु। भवतः Curseforge इत्यस्य मूलदत्तकोशः चितव्यः
+  addDescription: शून्यात् नूतनं क्षणम् सृजतु
+  addMMCDescription: विद्यमानं MultiMC क्षणम् आयातयतु।
+  addManually: हस्तेन सृजतु
+  addModrinthDescription: विद्यमानं Modrinth क्षणम् आयातयतु।
+  addPrismDescription: विद्यमानं PrismLauncher क्षणम् आयातयतु।
+  addServer: सेवाप्रदातुः सृजतु
+  addServerDescription: एतेन क्रीडा साक्षात् सेवाप्रदातरि प्रवर्तयितुं निर्मीयते।
+  addTemplate: अवतारीकृत-मोडप्याक् तः सृजतु
+  addTemplateDescription: अवतारीकृतात् मोडप्याक् तः आयातयतु
+  addVanilla: वेनिला-सदृशात् माइनक्राफ्ट् तः सृजतु
+  addVanillaDescription: साधारणात् .minecraft कोशात् आयातयतु।
+  edition: संस्करणरूपम्
+  editionJava: जावा संस्करणम्
+  editionBedrock: बेडरॉक् संस्करणम्
+  editionBedrockHint: बेडरॉक् संस्करणं माइक्रोसॉफ्ट स्टोर द्वारा प्रवर्तते।
+  editionBedrockWindowsOnly: बेडरॉक् संस्करणं केवलं विण्डोज निर्मिते समर्थितम् अस्ति।
+  fix: दोषनिवारणम्
+  folder: कोशः
+  folderSetting: कोशविकल्पाः
+  importFolderDescription: माइनक्राफ्ट् प्रवर्तके आयातयतु
+  loadingFiles: मोडप्याक् सञ्चिकाः भारयति
+items:
+  count: '{count} वस्तूनि'
+  total: '{total} आहत्य'
+java:
+  allocatedLong: तन्त्रस्य पूर्वनिर्धारित-जावा प्रयुङ्क्त
+  allocatedShort: स्वयं विनिहितम्
+  allocation: विनिहितम्
+  autoHint: न्यूनतमं संस्थापित-मोड-सङ्ख्यया वर्धते; अधिकतमं तन्त्रस्मृतिं प्रयुङ्क्ते।
+  change: परिवर्तयतु
+  importFromFile: सञ्चिकातः जावा आयातयतु
+  invalid: अमान्यं जावा स्थानम्
+  location: जावा स्थानम्
+  locationHint: किमपि जावा न चितम् — तन्त्रस्य पूर्वनिर्धारितं प्रयुज्यते
+  maxMemory: अधिकतमा स्मृतिः
+  memory: जावा स्मृतिः
+  memoryAuto: स्वयम्
+  memoryManual: हस्तकृतम्
+  memoryUnassigned: अविनिहितं करोतु
+  minMemory: न्यूनतमा स्मृतिः
+  noMemory: स्मृतिप्रयोगं मा सीमन्तायतु
+  openFolder: जावा कोशं उद्घाटयतु
+  presets: पूर्वनिर्धारणानि
+  refresh: स्थानिक-जावा पुनः पश्यतु
+  systemMemory: 'तन्त्रस्य मुक्ता स्मृतिः: {free} / {total}'
+labyMod:
+  disable: LabyMod निष्क्रियं करोतु
+  empty: LabyMod वर्तमान-माइनक्राफ्ट् प्रति समर्थं नास्ति
+launch:
+  cancel: निरस्यतु
+  createShortcut: लघुमार्गं सृजतु
+  forceKill: बलेन मारयतु
+  kill: विरामयतु
+  killServer: स्थानिकसेवाप्रदातां विरामयतु
+  launch: प्रवर्तयतु
+  launchAnyway: कथमपि प्रवर्तयतु
+  launchAs: इति रूपेण प्रवर्तयतु
+  launchTo: प्रति प्रवर्तयतु
+launchBlocked:
+  launchBadVersion:
+    description: संस्करणस्य {version} जेसन सञ्चिका विकृता अस्ति। एतत् संस्करणं पुनः संस्थापयतु?
+    title: दोषपूर्णा संस्करण-जेसन सञ्चिका
+  launchGeneralException:
+    description: केचन दोषाः प्रवर्तनं विफलमकुर्वन्।
+    title: प्रवर्तनं विफलम्
+  launchInvalidJavaPath:
+    description: चितं जावा अनुपस्थितम् अमान्यं वा अस्ति। कृपया नूतनं चिनोतु। <span class="highlight"> {javaPath} </span>
+    title: अमान्यः जावा पथः
+  launchJavaNoPermission:
+    description: प्रवर्तकस्य जावा निष्पादयितुं अनुमतिः नास्ति <span class="highlight"> {javaPath} </span>।
+    title: प्रवर्तनाय अनुमतिः नास्ति
+  launchNoProperJava:
+    description: क्रीडां प्रवर्तयितुं योग्यं जावा न चितम्।
+    title: योग्यं जावा न लब्धम्
+  launchNoVersionInstalled:
+    description: प्रवर्तनाय संस्करणं <span class="highlight">{version}</span> अन्वेष्टुं न शक्यते।
+    title: किमपि संस्करणं न चितम्
+  launchSpawnProcessFailed:
+    description: कृपया स्वकीयं जावा परीक्षताम्, अथवा प्रवर्तकाय अधिकाः अनुमतीः दत्त्वा पुनः प्रयतताम्।
+    title: क्रीडाप्रक्रियाम् आरब्धुं न शक्तम्
+  unexpectedText: क्रीडाप्रक्रियाम् आरब्धुं न शक्तम्।
+launchFailed:
+  crash: क्रीडा पतिता!!
+  description: कोऽपि पतनविवरणं नास्ति। एषः दोषवृत्तलेखः अद्यतनवृत्तलेखः च अस्ति।
+  elyByAuthlib:
+    description: माइनक्राफ्ट् संस्करणस्य {version} कृते Ely.by authlib प्रतिस्थापनं प्रयुक्तम्, परन्तु एतत् संस्करणं पूर्णतया सुसङ्गतं न भवेत्।
+    suggestion: अस्याः समस्यायाः निवारणाय भवान् क्षणविकल्पेषु Ely.by authlib प्रतिस्थापनं निष्क्रियं कर्तुं शक्नोति।
+    title: Ely.by Authlib सुसङ्गतता समस्या
+  failedToLaunch: प्रवर्तनं प्रवर्तयितुं विफलम्
+  latestLog: अद्यतनः वृत्तलेखः
+  title: क्रीडा अपूर्वेण सङ्केतेन सह समाप्ता
+launchPreExecuteCommandFailed:
+  description: 'पूर्वनिष्पादननिर्देशः दोषेण विफलीभूतः: {error}।'
+  title: पूर्वनिष्पादननिर्देशः विफलः
+launchStatus:
+  assigningMemory: स्मृतिं वितरति
+  elyByWarning: Ely.by authlib प्रतिस्थापनं सक्रियम् अस्ति। केचन माइनक्राफ्ट् संस्करणाणि असुसङ्गतानि भवितुं शक्नुवन्ति।
+  exit: क्रीडायाः बहिर्गन्तुम् इच्छति?
+  injectingAuthLib: तृतीयपक्ष-AuthLib व्यवस्थापयति
+  launching: प्रवर्तयति...
+  launchingSlow: अद्यापि प्रवर्तयति... रेखाचित्र-इञ्जिन-आरम्भः मन्दः भवितुं शक्नोति...
+  refreshingUser: प्रयोक्तुः प्रतीकं नवीकरोतु
+  spawningProcess: प्रक्रियां जनयति
+launcherUpdate:
+  alreadyLatest: अद्यतनम्
+  installAndQuit: संस्थापनाय पुनः आरभताम्
+  noUpdateAvailable: किमपि नवीकरणं न उपलब्धम्
+  updateToThisVersion: अवतीर्य संस्थापयतु
+localVersion:
+  auto: स्वयं गणितम्
+  empty: किमपि संस्करणं न संस्थापितम्
+  hint: विशिष्टं स्थानिकसंस्करणं साक्षात् प्रवर्तयतु
+  reinstallDescription: यदि भवान् मन्यते यत् अस्य संस्करणस्य संस्थापने काश्चन समस्याः सन्ति, तर्हि पुनः संस्थापनं कर्तुं शक्नोति।
+  reinstallTitle: '{version} पुनः संस्थापयतु'
+  title: स्थानिकसंस्करणम् | स्थानिकसंस्करणाणि
+logLevel:
+  error: दोषः
+  info: सूचना
+  success: सफलता
+  warning: चेतावनी
+logView:
+  searchPlaceholder: वृत्तलेखान् अन्विषतु...
+login:
+  dropHint: हस्तेन प्रवेशार्थं प्रमाणीकरणसङ्केतयुक्तां कडीम् अत्र क्षिपतु
+  forgetPassword: सङ्केतशब्दं विस्मृतवान्?
+  login: प्रवेशः
+  manualLoginUrl: यदि जालगवाक्षः न दृश्यते, तर्हि प्रमाणीकरणाय एतां कडीं नुदतु!
+  signup: पञ्जीकरणम्
+  signupDescription: अस्माकं कृते नूतनः अस्ति वा?
+  userRelogin: प्रयोक्तुः प्रवेशप्रतीकस्य कालः समाप्तः। कृपया पुनः प्रविशतु!
+loginError:
+  acquireMicrosoftTokenFailed: माइक्रोसॉफ्ट प्रतीकं प्राप्तुं न शक्तम्। एषा जालसमस्या भवितुं शक्नोति।
+  badNetworkOrServer: कृपया स्वजालसम्पर्कं परीक्षताम्! अथवा प्रमाणीकरणसेवाप्रदाता निष्क्रियः अस्ति!
+  checkOwnershipFailed: क्रीडास्वामित्वं परीक्षितुं न शक्तम्। कृपया पुनः प्रयतताम्।
+  connectionReset: सेवाप्रदात्रा सम्पर्कः निरस्तः इति कारणतः प्रवेशः विफलः
+  cyrillicNotAllowed: सिरिलिक (Cyrillic) वर्णाः न मन्ताः
+  fetchMinecraftProfileFailed: 'माइनक्राफ्ट् प्रोफाइल प्राप्तुं न शक्तम्: {reason}'
+  illegalEmail: विद्युत्पत्रं वैधं भवितव्यम्
+  illegalOfflineUsername: प्रयोक्तृनाम ३-१६ वर्णात्मकं भवेत् केवलं च आङ्ग्लवर्णाः, सङ्ख्याः, रेखाः च भवेयुः
+  invalidCredentials: अमान्यानि विवरणानि। अमान्यं प्रयोक्तृनाम वा सङ्केतशब्दः वा।
+  loginMinecraftByXboxFailed: Xbox प्रतीकद्वारा माइनक्राफ्ट् प्रतीकं विनिमयितुं न शक्तम्।
+  loginMinecraftByXboxRateLimited: माइक्रोसॉफ्ट माइनक्राफ्ट् प्रमाणीकरणसेवा इदानीं अनुरोधं सीमन्तायति (HTTP 429)।
+  loginMinecraftByXboxRateLimitedWithRetry: माइक्रोसॉफ्ट माइनक्राफ्ट् प्रमाणीकरणसेवा इदानीं अनुरोधं सीमन्तायति (HTTP 429)। कृपया {seconds} क्षणान् प्रतीक्ष्य पुनः प्रयतताम्।
+  loginMinecraftByXboxServerError: माइक्रोसॉफ्ट माइनक्राफ्ट् प्रमाणीकरणसेवया दोषः प्रेषितः (HTTP {status})।
+  loginMinecraftByXboxStatus: Xbox प्रतीकद्वारा माइनक्राफ्ट् प्रतीकं विनिमयितुं न शक्तम् (HTTP {status})।
+  loginXboxAdultVerification: भवतः माइक्रोसॉफ्ट लेखायाः कृते वयस्कसत्यापनं आवश्यकम् अस्ति। सत्यापनं पूर्णं कर्तुं जालगवाक्षे {url} उद्घाटयतु।
+  loginXboxAgeRestricted: वयःसमस्यायाः कारणतः Xbox प्रवेशः विफलः। वयः १८ वर्षाणाम् उपरि भवेत्।
+  loginXboxBadXsts: माइक्रोसॉफ्ट XSTS प्रतिक्रियायां प्रयोक्तृदावाः न प्राप्ताः।
+  loginXboxBanned: एषा माइक्रोसॉफ्ट / Xbox लेखा माइक्रोसॉफ्ट द्वारा प्रतिबन्धिता अस्ति।
+  loginXboxChildAccount: भवतः लेखा बाललेखा अस्ति। एतस्य निवारणाय जालगवाक्षे {url} उद्घाटयतु।
+  loginXboxFailed: माइक्रोसॉफ्ट प्रतीकेन Xbox प्रवेशः विफलः।
+  loginXboxFailedWithCode: माइक्रोसॉफ्ट प्रतीकेन Xbox प्रवेशः विफलः (XErr {code})।
+  loginXboxNoXboxProfile: अस्याः माइक्रोसॉफ्ट लेखायाः कृते अद्यापि कोऽपि Xbox प्रोफाइल नास्ति। निर्माणाय जालगवाक्षे {url} उद्घाटयतु।
+  loginXboxRegionLocked: भवतः क्षेत्रे Xbox Live सेवा न उपलभ्यते।
+  noProfileForNewUser: क्रीडाप्रोफाइल न लब्धा! यदि भवान् नूतनः अस्ति तर्हि आधिकारिकप्रवर्तके एकवारं प्रविशतु।
+  requestFailed: प्रवेशः विफलः, वयं कारणं न जानीमः। कृपया पुनः प्रयतताम्।
+  requireEmail: विद्युत्पत्रम् आवश्यकम्
+  requirePassword: सङ्केतशब्दः आवश्यकः
+  requireUsername: प्रयोक्तृनाम आवश्यकम्
+  timeout: प्रवेश-कालसमाप्तिः। कृपया पुनः प्रयतताम् अथवा जालं परीक्षताम्।
+logsCrashes:
+  crashes: पतन-विवरणानि
+  failures: प्रवर्तन-विफलताः
+  logs: वृत्तलेखाः
+  placeholder: कोऽपि सञ्चिका न लब्धा
+  serverLogs: सेवाप्रदाता-वृत्तलेखाः
+  showFile: कोशे दर्शयतु
+  title: वृत्तलेखाः पतनविवरणानि च
+me:
+  news: वृत्तान्ताः
+  recentPlay: सद्यः क्रीडितम्
+migrateMinecraft:
+  name: माइनक्राफ्ट् सञ्चिकाः स्थानान्तरयतु
+minecraftFriends:
+  accept: स्वीकरोतु
+  add: मित्रं योजयतु
+  addPlaceholder: माइनक्राफ्ट् प्रयोक्तृनाम
+  addedRelative: '{time} पूर्वं योजितम्'
+  errors:
+    cannotAddSelf: भवान् स्वस्मै मित्रानुरोधं प्रेषयितुं न शक्नोति।
+    duplicate: क्रीडकः भवतः सूच्यां पूर्वमेव अस्ति।
+    generic: किमपि त्रुटिः जाती। कृपया पुनः प्रयतताम्।
+    inviteRejected: तस्य क्रीडकस्य मित्रसक्रियता नास्ति अथवा सः अनुरोधं न स्वीकरोति।
+    tokenExpired: भवतः माइक्रोसॉफ्ट सत्रं समाप्तम्। कृपया पुनः प्रविशतु।
+    unknownProfile: वयम् एतेन नाम्ना क्रीडकं न लब्धवन्तः।
+  expiresRelative: समाप्तिः {time}
+  friends: मित्राणि
+  heroEmptyHint: मित्रानुरोधं प्रेषयितुं उपरि माइनक्राफ्ट् प्रयोक्तृनाम्ना मित्रं योजयतु।
+  heroEmptyTitle: भवतः मित्रसूची रिक्ता अस्ति
+  incoming: आगताः अनुरोधाः
+  incomingHint: १ आगतः अनुरोधः | {count} आगताः अनुरोधाः
+  notifyAdded: '{name} कृते मित्रानुरोधः प्रेषितः'
+  outgoing: प्रेषिताः अनुरोधाः
+  privacy:
+    acceptInvites: मित्रानुरोधं स्वीकरोतु
+    acceptInvitesHint: निष्क्रिये सति अन्ये क्रीडकाः भवतः कृते मित्रानुरोधं प्रेषयितुं न शक्नुवन्ति।
+    friendsEnabled: मित्रसूची समर्थिता
+  reconnectAction: पुनः सन्धत्ताम्
+  requiresMicrosoft: मित्राणां प्रयोगाय माइक्रोसॉफ्ट लेखाया प्रवेशं करोतु।
+  scopedTo: '{name} इति रूपेण प्रविष्टः'
+  send: प्रेषयतु
+  title: माइनक्राफ्ट् मित्राणि
+  unsupported: मित्राणि केवलं माइक्रोसॉफ्ट लेखानां कृते उपलभ्यन्ते।
+migrationWindow:
+  title: दत्त-स्थानान्तरणम्
+  preparing: स्थानान्तरणस्य सज्जतां करोति...
+  scanning: गणयति...
+  migrating: दत्तं स्थानान्तरयति
+  done: स्थानान्तरणं पूर्णम्
+  files: सञ्चिकाः
+  warning: समाप्तिपर्यन्तं प्रवर्तकम् उद्घाटितं रक्षतु, अन्यथा दत्तं नष्टं भवेत्।
+  error: स्थानान्तरणं विफलम्
+minecraftVersion:
+  name: माइनक्राफ्ट् संस्करणम्
+  all: सर्वाणि संस्करणाणि
+  release: विमोचनम्
+  showAlpha: पूर्वावलोकनं दर्शयतु
+  snapshot: पूर्वावलोकनम् (Snapshot)
+mod:
+  acceptVersion: '{version} स्वीकरोतु'
+  applyGroupRules: रक्षितान् समूहनिर्देशान् प्रयुङ्क्त
+  compatible: सुसङ्गतः मोडः।
+  createGroup: समूहं सृजतु
+  currentVersion: वर्तमानः {current}
+  denseView: सघनदृश्यम्
+  description: विवरणम्
+  disableAll: सर्वं निष्क्रियं करोतु
+  dropHint: आयातनाय मोडस्य .jar/.litemod सञ्चिकाम् अत्र क्षिपतु।
+  duplicatedDetected: '{count} पुनरावृत्ताः मोड्स'
+  duplicatedDetectedDescription: समान-मोड-सङ्केतयुक्ताः परन्तु भिन्नाः सञ्चिकाः दृष्टाः। एतेन माइनक्राफ्ट् पतितुं शक्नोति। कृपया रक्षणीयां सञ्चिकाम् चिनोतु।
+  enableAll: सर्वं सक्रियं करोतु
+  enabled: '{count} मोड्स सक्रियाः'
+  filter: मोड्स शोधयतु
+  group: समूहं करोतु
+  groupInstalled: संस्थापितान् मोड्स समूहीकरोतु
+  groupName: समूहनाम
+  groupNameRequired: समूहनाम आवश्यकम्
+  hasUpdate: मोडस्य नूतनं संस्करणं उपलब्धम् अस्ति!
+  incompatible: असुसङ्गतः मोडः।
+  incompatibleHint: असुसङ्गतान् दर्शयतु
+  incompatibleHintDescription: केषाञ्चित् मोड्स अधीनताः अनुपस्थिताः भवितुं शक्नुवन्ति।
+  maybeCompatible: संभवतः सुसङ्गतः।
+  modloaderSelectHint: एषः मोडः एतेषां मोडलोडराणां समर्थनं करोति। कृपया संस्थापनाय एकं चिनोतु।
+  modloaderSelectNotSupported: माइनक्राफ्ट् {minecraft} कृते {modloader} न लब्धम्
+  mods: '{count} मोड्स'
+  name: मोडः | मोड्स
+  newFolder: नूतनकोशः
+  noGroupsFound: कोऽपि समूहः न लब्धः
+  noGroupsYet: अद्यापि कोऽपि समूहः नास्ति। एकं सृजतु!
+  noModLoaderHint: मोड्स प्रयोक्तुं मोडलोडर सक्रियं कर्तुं मा विस्मरतु!
+  openLink: मोड-सङ्केतम् {url} उद्घाटयतु
+  search: मोड्स अन्विषतु
+  searchGroups: समूहान् अन्विषतु...
+  searchOnMcWiki: माइनक्राफ्ट् विश्वकोशे {name} अन्विषतु।
+  selectOrCreateGroup: समूहं चिनोतु अथवा सृजतु
+  showDirectory: मोडनिर्देशिकां दर्शयतु
+  showFile: मोडपथं {file} दर्शयतु
+  showInModrinth: Modrinth इत्यत्र {name} दर्शयतु
+  switchDefaultSource: पूर्वनिर्धारित-मोड-स्रोतः
+  syncGroupRules: समूहनिर्देशान् रक्षतु
+  toUpdate: '{count} नवीकरणानि'
+  ungroup: समूहात् बहिः करोतु
+modFilter:
+  clear: शोधकम् मार्जयतु
+  dependenciesInstallOnly: केवलम् अनुपस्थिताधीनतायुक्तान् मोड्स दर्शयतु
+  disabledOnly: केवलम् निष्क्रिय मोड्स दर्शयतु
+  hasUpdateOnly: केवलम् नवीकरणयुक्तान् मोड्स दर्शयतु
+  incompatibleOnly: केवलम् असुसङ्गतान् मोड्स दर्शयतु
+  unusedOnly: केवलम् अप्रयुक्तान् ग्रन्थालयान् दर्शयतु
+modInstall:
+  archived: '{name} आरक्षितं (archived) कृतम् अस्ति।'
+  autoUpgrade:
+    description: भवान् माइनक्राफ्ट् संस्करणं परिवर्तितवान्। किं भवान् सुसङ्गतान् मोड्स माइनक्राफ्ट् {version} सदृशं कर्तुं स्वयं नवीकर्तुम् इच्छति?
+    'no': त्यजतु
+    title: मोड्स नवीकर्तव्यम्?
+    'yes': मोड्स नवीकरोतु
+  checkDependencies: अधीनताः परीक्षताम्
+  checkUpgrade: मोडनवीकरणं परीक्षताम्
+  checkedDependencies: अधीनताः परीक्षिताः
+  checkedUpgrade: नवीकरणं परीक्षितम्
+  currentVersion: चयिनतं संस्करणम्
+  dependencyHint: अन्यत् संस्करणं {version} संस्थापितम्
+  releaseOnly: नवीकरणकाले अल्फा (alpha) बीटा (beta) च संस्करणानि उपेक्षताम्
+  installDependencies: अनुपस्थिताः अधीनताः संस्थापयतु
+  installHint: '{dependencies} अधीनताभिः सह {file} सञ्चिकां संस्थापयिष्यति'
+  noVersionSupported: मोडः केवलं माइनक्राफ्ट् {supported} समर्थयति।
+  recommendation: '{modrinth} तथा {curseforge} इत्यत्र {first} मोड्स अन्वेषयतु!'
+  removeUnusedLibraries: अप्रयुक्तान् निष्कासयतु
+  search: मोड्स अन्विषतु...
+  skipVersion: भिन्न-माइनक्राफ्ट्-संस्करणयुक्तान् मोड्स त्यजतु
+  source: मोड-स्रोतः
+  switch: संस्करणं परिवर्तयतु
+  upgrade: मोड्स नवीकरोतु
+modSearch:
+  noLocalModsFound: अन्वेषणसदृशाः स्थानिकाः मोड्स न लब्धाः।
+  noModsFound: कोऽपि मोडः न लब्धः
+  noModsInstalled: भवता कोऽपि मोडः न संस्थापितः।
+  searchInMarket: विपणे {keyword} अन्विषतु
+modUpgradePolicy:
+  curseforge: CurseForge
+  curseforgeOnly: केवलं CurseForge
+  modrinth: Modrinth
+  modrinthOnly: केवलं Modrinth
+  name: नवीकरणनीतिः
+modified:
+  reset: पुनः स्थापयतु
+  save: रक्षतु
+  unsaved: भवतः परिवर्तनं न रक्षितम्!
+modpack:
+  author: लेखकनाम
+  authorHint: एतस्य प्रयोगः निर्यातित-मोडप्याक् (Curseforge) कृते भवितुं शक्नोति
+  description: विवरणम्
+  descriptionHint: मोडप्याक् कृते सामान्यं विवरणम्।
+  dropHint: आयातनाय मोडप्याक् जिप (zip) सञ्चिकाम् अत्र क्षिपतु
+  emitCurseforge: Curseforge मोडप्याक् निर्यातयतु
+  emitModrinth: Modrinth मोडप्याक् निर्यातयतु
+  emitModrinthStrict: कठोरं Modrinth प्रारूपम्
+  emitModrinthStrictDescription: केवलम् ४ क्षेत्राणां सङ्केताः एव अनुमताः सन्ति
+  export: मोडप्याक् रूपेण निर्यातयतु
+  exportDirectory: निर्देशिकां निर्यातयतु
+  exportDirectoryDescription: पूर्वनिर्धारितरूपेण मोडप्याक् अवतरणकोशे निर्यातयिष्यते
+  includeAssets: सम्पदः योजयतु
+  includes: योजनीयाः सञ्चिकाः
+  modpackVersion: मोडप्याक् संस्करणम्
+  name: मोडप्याक् | मोडप्याक्स्
+  overrides: अतिलेखनानि (Overrides)
+  url: URL
+  urlHint: भवतः मोडप्याक् इत्यस्य मुख्यपृष्ठसङ्केतः
+modpackImportConfirm:
+  description: भवता सञ्चिका प्रवर्तके क्षिप्यते। किं भवान् मोडप्याक् आयातयितुं प्रयतते?
+  title: किं भवान् मोडप्याक् आयातयितुं प्रयतते?
+modpackUpdateOrCreate:
+  createNew: नूतनं सृजतु
+  description: अस्य मोडप्याक् कृते "{name}" क्षणः पूर्वमेव अस्ति। किं भवान् नवीकर्तुम् इच्छति अथवा नूतनं सृजति?
+  title: क्षणः पूर्वमेव अस्ति
+  update: विद्यमानं नवीकरोतु
+modrinth:
+  browseUrl: जालगवाक्षे {url} उद्घाटयतु
+  categories:
+    128x: 128x
+    16x: 16x
+    256x: 256x
+    32x: 32x
+    48x: 48x
+    512x+: 512x+
+    64x: 64x
+    8x-: 8x-
+    adventure: साहसिकम्
+    atmosphere: वातावरणम्
+    audio: ध्वनिः
+    blocks: खण्डाः (Blocks)
+    bloom: प्रकाशः (Bloom)
+    bukkit: Bukkit
+    bungeecord: Bungeecord
+    canvas: कैनवास (Canvas)
+    cartoon: व्यङ्ग्यचित्रम् (Cartoon)
+    categories: वर्गाः
+    challenging: चुनौतीपूर्णम्
+    colored-lighting: वर्णदीप्तिः
+    combat: युद्धम्
+    core-shaders: मूलच्छायाकाराः (Core Shaders)
+    cursed: शापितम् (Cursed)
+    datapack: दत्त-सञ्चयः
+    decoration: अलङ्कारः
+    economy: अर्थव्यवस्था
+    entities: सत्ताः (Entities)
+    environment: पर्यावरणम्
+    equipment: सज्जीकरणम्
+    fabric: Fabric
+    fantasy: काल्पनिकम् (Fantasy)
+    features: सुविधाः
+    folia: Folia
+    foliage: पर्णसमूहः (Foliage)
+    fonts: अक्षरमुद्राः
+    food: भोजनम्
+    forge: Forge
+    game-mechanics: क्रीडातन्त्रम्
+    gui: GUI
+    high: उच्चम्
+    iris: Iris
+    items: वस्तूनि
+    kitchen-sink: पाकशालाद्रोणी (Kitchen Sink)
+    library: ग्रन्थालयः
+    lightweight: लघुभारम्
+    liteloader: LiteLoader
+    locale: स्थानिकभाषा
+    low: न्यूनम्
+    magic: इन्द्रजालः
+    management: प्रबन्धनम्
+    medium: मध्यमम्
+    minecraft: Minecraft
+    minigame: लघुक्रीडाः
+    misc: विविधम्
+    mobs: जीवाः (Mobs)
+    modded: मोडयुतम्
+    models: प्रारूपाणि (Models)
+    modloader: मोडलोडर
+    multiplayer: बहुक्रीडकम्
+    name: वर्गाः
+    neoforge: NeoForge
+    optifine: Optifine
+    optimization: अनुकूलनानि
+    paper: Paper
+    path-tracing: पथ-अनुरेखणम्
+    pbr: PBR
+    performance impact: कार्यक्षमता-प्रभावः
+    potato: आलुकम् (Potato)
+    purpur: Purpur
+    quests: अन्वेषणानि
+    quilt: Quilt
+    realistic: यथार्थवादी
+    reflections: प्रतिविम्बानि
+    resolutions: विभेदनानि (Resolutions)
+    rift: Rift
+    screenshot: छायाचित्रम् (Screenshot)
+    semi-realistic: अर्ध-यथार्थवादी
+    shadows: छायाः
+    simplistic: सरलम्
+    social: सामाजिकम्
+    spigot: Spigot
+    sponge: Sponge
+    storage: सङ्ग्रहः
+    technology: तन्त्रज्ञानम्
+    themed: विषयाधारितम्
+    transportation: परिवहनम्
+    tweaks: लघुसंशोधनानि
+    utility: उपयोगिता
+    vanilla: वेनिला (Vanilla)
+    vanilla-like: वेनिला-सदृशम्
+    velocity: Velocity
+    waterfall: Waterfall
+    worldgen: संसारजननम्
+  clientSide: ग्राहकपक्षः
+  copyTitle: '{title} सञ्चिका फलके प्रतिलिप्यतु'
+  createAt: सृष्टम्
+  createCollection: सङ्ग्रहं सृजतु
+  description: विवरणम्
+  downloads: अवतरणानि
+  environments:
+    all: सर्वे
+    default: पूर्वनिर्धारितम्
+    name: पर्यावरणम्
+    optional: वैकल्पिकम्
+    required: आवश्यकम्
+    unsupported: असमर्थितम्
+  externalResources: बाह्यसंसाधनानि
+  featuredVersions: विशेषसंस्करणाणि
+  followedProjects: अनुसृताः प्रकलपाः
+  followers: अनुयायिनः
+  gallery: दीर्घिका
+  gameVersions:
+    name: क्रीडासंस्करणाणि
+  headers:
+    status: आँकडा (Stats)
+    support: समर्थनम्
+    version: संस्करणम्
+  issueUrl: समस्या
+  license: अनुज्ञापत्रम्
+  licenses:
+    name: अनुज्ञापत्राणि
+  loginHint: अस्य कार्यस्य कृते Modrinth आवश्यकम् अस्ति।
+  loginTitle: Modrinth इत्यत्र प्रविशतु
+  modLoaders:
+    name: मोडलोडर
+  modpackSource:
+    source: स्रोतः
+  projectId: प्रकल्प ID
+  projectMembers: प्रकल्पसदस्याः
+  projectType:
+    datapack: दत्त-सञ्चयः
+    mod: मोडः
+    modpack: मोडप्याक्
+    plugin: प्लगिन् (Plugin)
+    resourcepack: संसाधनसञ्चयः
+    shader: छायाकारः (Shader)
+  projects: '{count} प्रकल्पाः'
+  serverSide: सेवाप्रदातापक्षः
+  sort:
+    downloads: अवतरणसङ्ख्या
+    follows: अनुयायिसङ्ख्या
+    newest: सद्यः सृष्टम्
+    relevance: प्रासङ्गिकता
+    title: अनेन क्रम्यताम्
+    updated: सद्यः नवीकृतम्
+  sourceUrl: स्रोतः
+  technicalInformation: तान्त्रिकी सूचना
+  updateAt: नवीकृतम्
+  versions: संस्करणाणि
+  wikiUrl: विकि (Wiki)
+modrinthCard:
+  currentVersion: वर्तमानसंस्करणम्
+multiplayer:
+  allowTurn: रिले (relay) सेवाप्रदाता समर्थं करोतु
+  allowTurnHint: यदि भवान् मित्रैः सह सन्धितुं न शक्नोति तर्हि रिले सेवाप्रदातुः अनुमतिं ददातु।
+  complete: पूर्णम्
+  confirm: दृढीकरोतु
+  connectionError: सम्पर्कदोषः
+  connectionFailedHint: सम्पर्कं स्थापितुं न शक्तम्।
+  connections: सम्पर्काः
+  copied: प्रतिलिपीकृतम्!
+  copy: प्रतिलिपिं करोतु
+  copyGroupToFriendHint: मित्रान् एतेन ID समूहे योजयितुं ददातु
+  copyLocalHint: कृपया स्थानिकं SDP पाठं प्रतिलिप्य स्वमित्राय प्रेषयतु।
+  createLocalToken: स्थानिकं प्रतीकं सृजतु
+  currentIpTitle: लब्धः सार्वजनिकः IP
+  currentNatTitle: 'वर्तमानं जालम् (NAT):'
+  difficultyLevelHint: सम्पर्कनिर्माण काठिन्यस्तरः
+  disconnect: सम्पर्कं विच्छिन्दतु
+  disconnectDescription: किं भवान् प्रयोक्ता {user}({id}) सह सम्पर्कं विच्छेत्तुं निश्चितः?
+  disconnected: सम्पर्कः विच्छिन्नः
+  enterRemoteToken: दूरस्थं प्रतीकं लिखतु
+  enterRemoteTokenHint: यदा भवतः मित्रं भवतः प्रतीकं लिखति, तदा भवान् तस्य प्रतीकं अधः लिखेत्।
+  exposedPortDescription: भवता अन्येषां कृते उद्घाटितः पोर्ट (port)
+  exposedPorts: प्रेषिताः पोर्ट्स (ports)
+  gatheringIce: कृपया जालविवरणसङ्ग्रहाय प्रतीक्षताम्।
+  groupId: समूह ID
+  illegalTokenDescription: अवैधं प्रतीकम्, कृपया मित्रस्य प्रतीकं परीक्षताम्
+  initiateConnection: सम्पर्कम् आरभताम्
+  joinConnection: यदि भवतः मित्रं पूर्वमेव सम्पर्कम् आरब्धवान्, तर्हि भवान् तत्र संयुज्येत।
+  joinManual: संयुजतु
+  joinOrCreateGroup: समूहं संयुजतु / सृजतु
+  joinOrCreateGroupHint: मित्रतः समूह ID प्राप्नोतु अथवा स्वयं समूहं सृजतु
+  kernel: P2P अन्तर्भागः (Kernel)
+  kernelDescription: WebRTC अथवा node-datachannel प्रयुङ्क्त।
+  leaveGroup: समूहं त्यजतु
+  localToken: स्थानिकं प्रतीकम्
+  manualConnect: हस्तेन सम्पर्कं करोतु
+  name: LAN इत्यत्र बहुक्रीडकम्
+  natWarning: भवतः NAT प्रकारः साक्षात्सम्पर्कं बाधितुं शक्नोति।
+  networkInfo: जालसूचना (परिवर्तनाय नुदतु)
+  next: अग्रिमम्
+  otherExposedPortDescription: '{user} द्वारा प्रेषितः पोर्ट (port)'
+  placeholder: LAN इत्यत्र माइनक्राफ्ट् क्रीडितुं अन्यप्रयोक्तृभिः सह सन्धत्ताम्!
+  previous: पूर्वतनम्
+  receiveHint: मित्रस्य प्रतीकलेखनात् परं सम्पर्कः स्वयमेव निर्मीयते।
+  receiveRemoteTokenHint: कृपया अत्र मित्रस्य प्रतीकं लिखतु।
+  remoteToken: दूरस्थं प्रतीकम्
+  routerInfo: राउटर (Router) सूचना
+  sendTokenToRemote: दूरस्थाय प्रतीकं प्रेषयतु
+  share: क्षणसंरचनां साझयतु
+  sharing: सञ्चिकाः साझयति...
+  sharingNotificationBody: भवान् {name} इत्यस्य साझितसंरचनातः क्षणम् अवतारेतुं सृजितुं च शक्नोति।
+  sharingNotificationTitle: एकः क्रीडकः स्वकीयां क्रीडासंरचनां साझयति
+  start: आरम्भः
+  startNewP2PConnection: नूतन-सहयोगि-सम्पर्कं निर्मातुं आरम्भ-नुदं नुदतु
+myStuff: मम सामग्री
+natType:
+  blocked: अवरुद्धम्
+  fullCone: पूर्ण-कोण (Full Cone)
+  openInternet: मुक्त-अन्तर्जालम्
+  restrictNat: प्रतिबन्धित-NAT
+  restrictPortNat: प्रतिबन्धित-पोर्ट-NAT
+  symmetricNat: सममित-NAT
+  symmetricUDPFirewall: सममित-UDP-अग्निभित्तिः
+  unknown: अज्ञातम्
+neoForgedVersion:
+  disable: NeoForged निष्क्रियं करोतु
+  empty: NeoForged {version} समर्थयति
+news:
+  name: वृत्तान्ताः
+  readMore: अधिकं पठतु
+optifineVersion:
+  disable: Optifine निष्क्रियं करोतु
+  empty: Optifine माइनक्राफ्ट् {version} समर्थयति
+optional: वैकल्पिकम्
+peerConnectionState:
+  closed: पिहितम्
+  connected: सन्धितम्
+  connecting: सन्धत्ते...
+  disconnected: विच्छिन्नम्
+  failed: विफलम्
+  name: सम्पर्कस्थितिः
+  new: नूतनम्
+peerGroupState:
+  closed: समूहे नास्ति
+  closing: पिहितम्
+  connected: समूहे सम्मिलितः
+  connecting: सन्धत्ते...
+peerIceGatheringState:
+  gathering: ICE सेवाप्रदातारं सङ्गृह्णाति
+peerSignalingState:
+  have-local-offer: मित्रविवरणस्य प्रतीक्षां करोति
+presence:
+  instance: क्षणे {instance} निष्क्रियः
+  instanceSetting: 'क्षणविकल्पं संस्करोतु: {instance}'
+  mod: '{instance} मध्ये मोड्स पश्यति'
+  modrinthProject: Modrinth मध्ये {name} पश्यति
+  resourcePack: '{instance} मध्ये संसाधनसञ्चयान् पश्यति'
+  save: '{instance} मध्ये रक्षितक्रीडाः पश्यति'
+  setting: विकल्पपृष्ठं पश्यति
+  shaderPack: '{instance} मध्ये छायाकारसञ्चयान् पश्यति'
+proxy:
+  host: यजमानः (Host)
+  port: पोर्ट (Port)
+quiltVersion:
+  disable: Quilt निष्क्रियं करोतु
+  empty: Quilt माइनक्राफ्ट {version} न समर्थयति
+reinstall:
+  name: '{version} पुनः संस्थापयतु'
+relative:
+  daysAgo: '{count} दिनं पूर्वम् | {count} दिनानि पूर्वम्'
+  hoursAgo: '{count} होरा पूर्वम् | {count} होराः पूर्वम्'
+  justNow: इदानीमेव
+  minutesAgo: '{count} निमेषः पूर्वम् | {count} निमेषाः पूर्वम्'
+  secondsAgo: '{count} क्षणः पूर्वम् | {count} क्षणाः पूर्वम्'
+resourceError:
+  body: '"{path}" विश्लेषितुं न शक्तम् ({code})।'
+  title: '{file} पठितुं न शक्यते'
+blueprint:
+  name: रेखाचित्रम् | रेखाचित्राणि
+  count: '{count} रेखाचित्राणि'
+  searchLocal: स्थानिकरेखाचित्राणि अन्विषतु...
+  searchOnline: अन्तर्जाले अन्विषतु...
+  market: विपणिः
+  local: स्थानिकम्
+  provider: प्रदाता
+  import: आयातयतु
+  openFolder: कोशं उद्घाटयतु
+  refresh: पुनश्चर्या
+  empty: किमपि रेखाचित्रं न लब्धम्।
+  dropHint: रेखाचित्राणि आयातयितुं अत्र क्षिपतु।
+  selectHint: पूर्वावलोकनाय रेखाचित्रं चिनोतु।
+  blocks: '{count} खण्डाः (blocks)'
+  materials: सामग्र्यः
+  allNamespaces: सर्वे
+  findMod: अस्य कृते मोडम् अन्विषतु
+  compatible: सुसङ्गतम्
+  incompatible: अनुपस्थिताः मोड्स
+  missingNamespaces: 'एतेषां कृते मोड्स नास्ति: {namespaces}'
+  delete: लोपयतु
+  cancel: निरस्यतु
+  install: संस्थापयतु
+  goTo: जालस्थानम्
+  byAuthor: लेखकः {author}
+  noDescription: किमपि विवरणं न दत्तम्।
+  loadMore: अधिकं भारयतु
+  cmsBrowseOnly: एषः स्रोतः केवलं दर्शनाय अस्ति।
+  mixedSources: परिणामाः मिश्रिताः सन्ति।
+  formats:
+    structure: वेनिला संरचना
+  preview:
+    title: 3D पूर्वावलोकनम्
+    loading: पूर्वावलोकनं भारयति...
+    empty: दर्शयितुं कोऽपि खण्डः नास्ति।
+    hint: '{count} खण्डाः · {x}×{y}×{z}'
+    controls: सञ्चरणाय WASD, उपरि/अधः गन्तुं Space/Shift
+  convert:
+    title: प्रारूपं परिवर्तयतु
+    hint: रेखाचित्रम् अन्यप्रारूपे परिवर्तयतु।
+    target: लक्ष्यप्रारूपम्
+    action: परिवर्तयतु
+  replace:
+    title: खण्डान् प्रतिस्थापयतु
+    simple: सरलम्
+    precise: सूक्ष्मम्
+    simpleHint: केवलम् खण्ड-ID आधारेण मेलयतु।
+    preciseHint: पूर्णखण्डस्थितिं मेलयित्वा प्रतिस्थापयतु।
+    from: इतः
+    to: प्रति
+    addRule: नियमं योजयतु
+    newFile: नूतनसञ्चिकारूपेण रक्षतु
+    action: प्रतिस्थापयतु
+resourcepack:
+  compatible: '{version} सह सुसङ्गतं प्रारूपम् {format}'
+  defaultDescription: माइनक्राफ्ट् इत्यस्य पूर्वनिर्धारितं रूपम्
+  delete:
+    content: एतेन संसाधनसञ्चयः डिस्क तः विनश्यति। किं भवान् निश्चितः?
+    title: संसाधनसञ्चयं लोपयतु
+  dropHint: आयातनाय संसाधनकोशं/जिप-सञ्चिकाम् अत्र क्षिपतु।
+  enable: '{count} संसाधनसञ्चयाः सक्रियाः'
+  incompatible: असुसङ्गतं संसाधनप्रारूपम् ({format})।
+  name: संसाधनसञ्चयः | संसाधनसञ्चयाः
+  linkShared: क्षणेषु संसाधनसञ्चयान् साझयतु
+  linkSharedHint: क्षणस्य संसाधनकोशं वैश्विक-साझितकोशेन सह शृङ्खलयतु।
+  noLocalPacksFound: अन्वेषणसदृशाः संसाधनसञ्चयाः न लब्धाः।
+  noPacks: कोऽपि संसाधनसञ्चयः न लब्धः
+  noPacksInstalled: भवता कोऽपि संसाधनसञ्चयः न संस्थापितः।
+  search: संसाधनसञ्चयान् अन्विषतु...
+  searchHint: संसाधनसञ्चयान् अन्विषतु
+  searchOnCurseforge: Curseforge मध्ये {name} अन्विषतु
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: चयनित-संसाधनसञ्चयाः
+  showDirectory: संसाधनकोशं दर्शयतु
+  showFile: '{file} कोशे संसाधनसञ्चयं दर्शयतु'
+  showInCurseforge: Curseforge मध्ये {name} दर्शयतु
+  unselected: अचयनिताः संसाधनसञ्चयाः
+save:
+  allowCheats: छलसङ्केतानां (Cheats) अनुमतिं ददातु
+  copy:
+    name: रक्षितक्रीडां प्रतिलिप्यतु
+  createNew: नूतनसंसारं सृजतु
+  createdWorlds: भवतः समीपे {count} संसाराः सन्ति
+  deleteHint: क्रीडासञ्चयः विलोपयिष्यते। एतद् अपरिवर्तनीयम् अस्ति। भवान् रक्षितक्रीडादत्तं सदा कृते हारयिष्यति।
+  deleteTitle: रक्षितक्रीडां लोपयतु
+  difficulty: काठिन्यम्
+  dropHint: आयातनाय रक्षितजिपसञ्चिकाम् अत्र क्षिपतु
+  datapack:
+    name: दत्तसञ्चयः | दत्तसञ्चयाः
+    noSaveHint: दत्तसञ्चयसंस्थापनाय प्रथमं संसारं सृजतु चिनोतु वा
+    packFormat: 'सञ्चयप्रारूपम्: {format}'
+    imported: दत्तसञ्चयः {save} मध्ये आयातितः
+  duplicate: रक्षितक्रीडायाः प्रतिकृतिं करोतु
+  export: रक्षितक्रीडां निर्यातयतु
+  exportMessage: रक्षितक्रीडां जिपरूपेण निर्यातयतु
+  exportTitle: रक्षितक्रीडां निर्यातयतु
+  gameMode: क्रीडाप्रणाली
+  independent: क्षणः स्वतन्त्र-रक्षितकोशं प्रयुङ्क्ते
+  linkShared: क्षणेषु रक्षितक्रीडाः साझयतु
+  linkSharedHint: क्षणस्य रक्षितकोशं वैश्विक-साझितकोशेन सह शृङ्खलयतु।
+  levelName: स्तरनाम
+  loadMap: मानचित्रं भारयतु
+  mapError: मानचित्रदोषः
+  mapInfo: 'परस्परसंवादात्मकं 3D पूर्वावलोकनम्:'
+  mapLoaded: मानचित्रं भारितम्
+  mapPreview: मानचित्रपूर्वावलोकनम्
+  chunkSelectMode: चङ्क्स् (Chunks) चिनोतु
+  panMode: सञ्चरणम् (Pan)
+  chunkSelected: '{count} चङ्क्स् चयनमभवन्'
+  mapHintPan: सञ्चरणाय कर्षतु
+  mapHintSelect: चिनोतु
+  mapHintDeselect: अचयनं करोतु
+  toggleGrid: क्षेत्रजालाग्रिड् परिवर्तयतु
+  heightTop: उपरि
+  resetView: दृश्यं पुनः स्थापयतु
+  clearSelection: चयनं मार्जयतु
+  copyChunks: चङ्क्स् प्रतिलिप्यतु
+  pasteChunks: '{count} चङ्क्स् लेपयतु'
+  pasteChunksPlaceHint: लेपनाय मूषकं चालयित्वा नुदतु।
+  pasteChunksCancel: निरस्यतु
+  deleteChunks: चङ्क्स् लोपयतु
+  deleteChunksTitle: चयनितचङ्क्स् लोपयतु
+  deleteChunksHint: किं चयनितचङ्क्स् लोपयितुम् इच्छति? एतद् अपरिवर्तनीयम्।
+  mapLoading: मानचित्रं भारयति...
+  noRegions: अस्मिन् संसारे पूर्वावलोकनाय किमपि क्षेत्रं न जनितम्।
+  dimOverworld: मुख्यधरा (Overworld)
+  dimNether: पातालः (Nether)
+  dimEnd: अन्तः (End)
+  name: रक्षितक्रीडा | रक्षितक्रीडाः
+  noLocalSavesFound: अन्वेषणसदृशाः स्थानिकरक्षितक्रीडाः न लब्धाः।
+  noSavesFound: कापि रक्षितक्रीडा न लब्धा
+  noSavesInstalled: भवतः समीपे कापि रक्षितक्रीडा नास्ति।
+  openFolder: रक्षितकोशं उद्घाटयतु
+  properties: संसारगुणाः
+  search: मानचित्राणि अन्विषतु...
+  searchHint: CurseForge मध्ये संसारानाम् अन्वेषणं करोतु
+  searchSaves: रक्षितक्रीडाः अन्विषतु
+  seed: बीजम् (Seed)
+  selected: स्थानिकरक्षितक्रीडाः
+  shared: क्षणः साझित-रक्षितकोशं प्रयुङ्क्ते
+  showDirectory: रक्षितनिर्देशिकां दर्शयतु
+  unselected: साझित-रक्षितक्रीडाः
+  useCurrent: वर्तमानसंसारं प्रयुङ्क्त
+  useMouseRotate: घूर्णनाय मूषकं प्रयुङ्क्त
+  useScrollZoom: आकारपरिवर्तनाय स्क्रॉल-चक्रं प्रयुङ्क्त
+  world: संसारः
+screenshots:
+  empty: भवतः समीपे किमपि छायाचित्रं नास्ति
+  gallery: छायाचित्रदीर्घिका
+  hint: क्रीडायां F2 नुदित्वा छायाचित्राणि गृह्यताम्
+  openFolder: छायाचित्रकोशं उद्घाटयतु
+  playRandom: क्रमहीनं क्रीडतु
+  playSequence: क्रमेण क्रीडतु
+search:
+  favorate: सङ्ग्रहः
+  local: संस्थापितम्
+  market: विपणिः
+  emptyInstalled: अद्यापि किमपि न संस्थापितम्
+  browseMarket: विपणिं पश्यतु
+  noResults: कोऽपि परिणामः न मिलितः
+server:
+  acceptingMinecraftVersion: स्वीक्रियमाणं संस्करणम्
+  addServer: सेवाप्रदातां योजयतु
+  address: सेवाप्रदातासङ्केतः
+  addressHint: यथा mc.hypixel.net
+  bindUpstream: अपस्ट्रीम (upstream) रूपेण बध्नातु
+  boundUpstream: अपस्ट्रीम बद्धम्
+  boundUpstreamHint: एषः क्षणः बद्धसेवाप्रदातुः संस्करणम् अनुसरति।
+  creationHint: कृपया सेवाप्रदातासङ्केतं लिखत्वा पिङ्ग् (ping) करोतु
+  editServer: सेवाप्रदातां संस्करोतु
+  emptyHint: अस्मिन् क्षणे अद्यापि कोऽपि सेवाप्रदाता नास्ति।
+  entryCount: '{count} सेवाप्रदाता | {count} सेवाप्रदातारः'
+  expectedVersions: समर्थितसंस्करणाणि
+  export: सेवाप्रदातां निर्यातयतु
+  exportNoFilesHint: कोऽपि सेवाप्रदातासञ्चिका न लब्धा।
+  exportOption: सेवाप्रदातानिर्यातनविकल्पाः
+  exportSSHAuthenticationFailed: सर्वप्रमाणीकरणपद्धतयः विफलाः।
+  exportSSHOptions: SSH विकल्पाः
+  exportSSHPrivateKeyPath: SSH निजीकुञ्जीपथः
+  exportSSHRemotePath: दूरस्थसेवाप्रदातापथः
+  exportToFolder: कोशे निर्यातयतु
+  filterVersion: सेवाप्रदातासंस्करणाणि शोधयतु
+  host: यजमानः (Host)
+  hostHint: सेवाप्रदातुः यजमानः (पोर्ट युक्तः)
+  hostRequired: कृपया सेवाप्रदातुः IP सङ्केतं लिखतु
+  ipAddress: IP सङ्केतः
+  launchClient: ' may take client'
+  launchPinned: कीलितम्
+  launchTargetHint: एषः क्षणः कीलितसेवाप्रदातरि साक्षात् प्रवर्तते।
+  maxPlayers: अधिकतमाः क्रीडकाः
+  motd: सेवाप्रदाता MOTD
+  nameHint: बहुक्रीडकसूच्यां प्रदर्श्यमानं नाम
+  nogui: GUI विना सेवाप्रदाता
+  onlineMode: सङ्गतिप्रणाली (Online Mode)
+  pin: सेवाप्रदातां कीलयतु
+  pinAfterSave: रक्षणानन्तरं पूर्वनिर्धारितरूपेण कीलयतु
+  ping: पिङ्ग् (Ping)
+  pings: पिङ्ग्स्
+  pinnedHeader: 'कीलितम्: {name}'
+  players: क्रीडकाः
+  port: पोर्ट (Port)
+  serverName: सेवाप्रदातानाम
+  serversListTitle: सेवाप्रदातासूची
+  unbindUpstream: विबन्धयतु
+  unknown: अज्ञातसेवाप्रदाता
+  unknownDescription: अज्ञातसेवाप्रदाता। कृपया पुनः पश्यतु
+  unpin: अकीलनं करोतु
+  upload: सेवाप्रदाताम् आरोपयतु
+  upstreamUpToDate: भवतः क्षणः सेवाप्रदात्रा ({version}) सह मिलति।
+  upstreamUpToDateHint: नवीकरणं मा अपेक्षते।
+  upstreamUpdateAvailable: सेवाप्रदाता इदानीं माइनक्राफ्ट् {version} चालयति।
+  upstreamUpdateHint: सूचितां माइनक्राफ्ट् संस्करणं क्षणे प्रयुङ्क्ते।
+  useAsUpstreamHint: क्षणः सेवाप्रदातुः माइनक्राफ्ट् संस्करणम् अनुसरिष्यति।
+  version: सेवाप्रदातुः आवश्यकं संस्करणम्
+  versionHint: पिङ्ग् कर्तुं माइनक्राफ्ट् संस्करणम्
+serverStatus:
+  nohost: §4यजमानः न लब्धः!
+  ping: पिङ्ग्...
+  refuse: §4सेवाप्रदाता अस्वीकृतवान्!
+  timeout: §4सम्पर्ककालः समाप्तः!
+setting:
+  about: विषये
+  aboutBmclDescription: BMCL API प्रदान करोति अवतरणानि चीनदेशे।
+  aboutContributors: 🧑‍💻 योगदानकर्तारः 🧑‍💻
+  aboutDenoDescription: XMCL Deno Deploy इत्यस्य उपयोगं करोति।
+  aboutLicense: MIT अनुज्ञापत्रम्
+  aboutLicenseInfo: विण्डोज इत्यत्र निःशुल्कं सङ्केत-हस्ताक्षरम् SignPath.io द्वारा दत्तम्।
+  aboutSponsors: 😇 प्रायोजकाः 😇
+  advancedJavaOptions: प्रौढ-जावा-विकल्पाः
+  advancedSettings: प्रौढविकल्पाः
+  advancedSettingsHint: सङ्कटक्षेत्रम् - प्रवर्तकदत्तं पुनः स्थापयतु प्रबन्धयतु वा
+  aiAgentApiKey: एआय (AI) प्रतिनिधि-API-कुञ्जी
+  aiAgentApiKeyDescription: अस्मिन् यन्त्रे स्थानिकरूपेण रक्षिता।
+  aiAgentEndpoint: एआय (AI) प्रतिनिधि-अन्त्यबिन्दुः
+  aiAgentEndpointDescription: वार्तालापपूर्णतायाः अन्त्यबिन्दुः सङ्केतः।
+  aiAgentModel: एआय (AI) प्रतिनिधिप्रारूपम्
+  aiAgentModelDescription: वार्तालापप्रार्थनासु प्रेषणीयं प्रारूपनाम।
+  apiSets:
+    auto: स्वयम् (जालेनाधृतम्)
+    official: आधिकारिकम् (Mojang)
+  appearance: स्वरूपम्
+  appearanceDescription: प्रवर्तकस्वरूपं संस्कुरुत
+  appxUpdateHint: प्रवर्तकः संस्थापकम् अवतारेष्यति निष्पादयेच्च।
+  authenticationSettings: प्रमाणीकरणम्
+  backdropBlur: पृष्ठभूमि-अस्पष्टता
+  backgroundColorAbove: पृष्ठभूमिवर्णं लेपरूपेण दर्शयतु
+  backgroundColorAboveDescription: एतेन पृष्ठभूमिवर्णः चित्रस्य भित्तेः वा उपरि दृश्यते।
+  backgroundImage: पृष्ठभूमिचित्रम्
+  backgroundImageClear: मार्जयतु
+  backgroundImageDescription: पृष्ठभूमिरूपेण चित्रं चिनोतु अथवा मार्जयतु
+  useDesktopBackground: वर्तमान-पटलभित्तिचित्रं प्रयुङ्क्त
+  backgroundImageFit:
+    contain: अन्तरभावयतु
+    cover: आच्छादयतु
+    name: चित्रसमायोजनम्
+  backgroundImageUrl: चित्रसङ्केतः
+  backgroundImageUrlPlaceholder: चित्राय HTTP/HTTPS सङ्केतं लिखतु
+  backgroundMusic: प्रसङ्ग-पृष्ठभूमिध्वनिः
+  backgroundMusicUrl: ध्वनिसङ्केतः
+  backgroundMusicUrlPlaceholder: ध्वनये HTTP/HTTPS सङ्केतं लिखतु
+  backgroundType: पृष्ठभूमिप्रकारः
+  backgroundTypeDescription: पृष्ठभूमौ विशिष्टप्रभावान् दर्शयतु
+  backgroundTypes:
+    halo: मण्डलम् (Halo)
+    image: चित्रम्
+    none: किमपि न
+    particle: कणः (Particle)
+    video: चलचित्रम्
+  backgroundVideo: पृष्ठभूमिचलचित्रम्
+  backgroundVideoDescription: चलचित्रं चिनोतु मार्जयतु वा
+  backgroundVideoUrl: चलचित्रसङ्केतः
+  backgroundVideoUrlPlaceholder: चलचित्राय HTTP/HTTPS सङ्केतं लिखतु
+  backgroundVideoVolume: ध्वनिप्रमाणम्
+  backgroundVideoVolumeDescription: ध्वनिप्रमाणसमायोजनाय कर्षतु
+  browseRoot: अन्वेषणम्
+  checkUpdate: नवीकरणं परीक्षताम्
+  colorTheme:
+    appBarColor: अनुप्रयोगपट्टिका
+    backgroundColor: पृष्ठभूमिवर्णः
+    cardColor: पत्रवर्णः
+    description: प्रसङ्गे वर्णान् परिवर्तयतु
+    errorColor: दोषवर्णः
+    name: प्रसङ्गवर्णः अस्पष्टता च
+    primaryColor: मुख्यवर्णः
+    sideBarColor: पार्श्वपट्टिका
+    warningColor: चेतावनीवर्णः
+  customCss:
+    advancedDescription: स्वकीयेन CSS द्वारा प्रवर्तकस्य शैल्याः अतिलेखनं करोतु।
+    assistantHint: भवतः इच्छितं रूपं वर्णयतु, अहं भवतः कृते CSS लेखिष्यामि।
+    assistantSuggestion1: पार्श्वपट्टिकाम् अर्धपारदर्शिकां करोतु
+    assistantSuggestion2: पत्रेषु मन्दं वर्णक्रमं योजयतु
+    assistantTitle: CSS सहायकः
+    dropHint: भारयितुं .css सञ्चिकाम् अत्र क्षिपतु
+    editorPlaceholder: /* स्वकीयं CSS अत्र लिखतु */
+    globalToggle: प्रथा-CSS परिवर्तयतु
+    openInDialog: प्रतिनिधि-संवादे उद्घाटयतु
+    title: प्रथा-CSS
+    warning: प्रथा-CSS भवतः कृते सर्वं परिवर्तयितुं मार्गं ददाति। अविश्वसनीयस्रोतेभ्यः CSS मा लेपयतु।
+  darkTheme: प्रसङ्गः
+  darkThemeDescription: तमिस्रः अथवा श्वेतः प्रसङ्गः चिनोतु
+  devModeLabel: DEV
+  developerMode: विकासकप्रणाली
+  developerModeDescription: विकासकप्रणाली स्वकीयमोड्स परीक्षणाय अस्ति
+  disableTelemetry: टेलीमेट्री (Telemetry) निष्क्रियं करोतु
+  disableTelemetryDescription: XMCL क्रीडाप्रवर्तनस्य प्रवेशस्य च घटनाः सङ्ग्रहीष्यति।
+  enableDedicatedGPUOptimization: विशिष्टं GPU विनियुङ्क्त
+  enableDedicatedGPUOptimizationDescription: एषः विकल्पः माइनक्राफ्ट् प्रप्रक्रिये विशिष्टं GPU विनियुङ्क्ते।
+  enableDiscord: Discord सक्रियं करोतु
+  enableDiscordDescription: एतेन Discord स्थितिः प्रवर्तके नवीक्रियते
+  enterUrl: URL लिखतु
+  exportSettings: विकल्पान् निर्यातयतु
+  exportSettingsHint: वर्तमानविकल्पान् सञ्चिकायां रक्षतु
+  general: सामान्यम्
+  githubRelease: Github विमोचनम्
+  globalSetting: वैश्विकक्षणविकल्पाः
+  globalSettingHint: क्षणाः पूर्वनिर्धारितरूपेण एतान् विकल्पान् प्रयुञ्जते।
+  importSettings: विकल्पान् आयातयतु
+  importSettingsHint: पूर्वरक्षितसञ्चिकातः विकल्पान् आयातयतु
+  instanceTheme:
+    activeDescription: एषः क्षणः प्रथाप्रसङ्गं प्रयुङ्क्ते। वैश्विकप्रसङ्गप्रयोगाय भवान् एतत् लोपयितुं शक्नोति।
+    description: क्षणाय विशिष्टं प्रसङ्गं सक्रियं करोतु।
+    name: क्षणप्रसङ्गः
+  language: भाषा
+  languageDescription: प्रदर्शनी भाषा
+  latestVersion: अद्यतनसंस्करणम्
+  layout:
+    default: पूर्वनिर्धारितं विन्यासम्
+    focus: केन्द्रितं विन्यासम्
+  layoutDescription: इच्छितं विन्यासप्रकारं चिनोतु
+  layoutTitle: अन्तराफलकविन्यासः
+  linuxEnableDedicatedGPUOptimization: विशिष्टस्य चित्रसंसाधकस्य (GPU) विनियोगः
+  linuxEnableDedicatedGPUOptimizationDescription: एषः विकल्पः माइनक्राफ्ट् प्रक्रिये विशिष्टं GPU विनियुङ्क्ते।
+  linuxTitlebar: प्राकृतिकशीर्षकपट्टिका
+  linuxTitlebarDescription: प्रवर्तके लिनक्स शीर्षकपट्टिकां प्रयुङ्क्त
+  livePreview: सजीवपूर्वावलोकनम्
+  location: सङ्ग्रहस्थानम्
+  manualUpdateHint: संस्करणं स्वयमेव नवीकर्तुं न शक्यते। कृपया मुख्यजालस्थानात् पुनः प्रवर्तकम् अवतारयतु!
+  maunalUpdateHint: संस्करणं स्वयं नवीकृतं न भवितुं शक्नोति। जालस्थानात् पुनः अवतारयतु!
+  maxSockets: प्रति यजमानः
+  maxSocketsDescription: प्रति यजमानं सॉकेट्स सङ्ख्यां सीमन्तायतु। ० इत्युक्ते कोऽपि प्रतिबन्धः नास्ति।
+  maxSocketsTitle: अधिकतमाः HTTP सॉकेट्स
+  memoryAssignment: स्मृतिविनियोगः
+  migrateFromOther: अन्यप्रवर्तकात् आयातयतु
+  minecraftOptions: माइनक्राफ्ट् विकल्पाः
+  name: वैश्विकविकल्पः | वैश्विकविकल्पाः
+  network: जालविकल्पाः
+  newsPosition: वृत्तान्तभागं स्थानान्तरयतु
+  officialWebsite: आधिकारिकं जालस्थानम्
+  particleMode:
+    bubble: बुद्बुदः (Bubble)
+    name: कणप्रणाली
+    push: नुदतु (Push)
+    remove: निष्कासयतु
+    repulse: प्रतिकर्षतु (Repulse)
+  particleModeDescription: कण-नुदन-व्यवहारं चिनोतु
+  quickLaunchSettings: त्वरितप्रवर्तनम्
+  replaceNative: स्थानिकग्रन्थालयान् प्रतिस्थापयतु
+  replaceNativeDescription: सङ्गणकस्य वास्तुकला आधारेण स्थानिकग्रन्थालयान् प्रतिस्थापयतु।
+  replaceNatives:
+    all: सर्वम्
+    legacy: केवलम् पुरातनसंस्करणानि
+  resetAllSettings: सर्वान् विकल्पान् पुनः स्थापयतु
+  resetAllSettingsConfirmMessage: एतेन सर्वे विकल्पाः, लेखाः, क्षणाः, समूहाः च समूलं विनश्यन्ति। एतत् अपरिवर्तनीयम् अस्ति। किं भवान् निश्चितः?
+  resetAllSettingsConfirmTitle: सर्वान् विकल्पान् पुनः स्थापयतु?
+  resetAllSettingsHint: प्रवर्तकं पूर्वनिर्धारितरूपेण पुनः स्थापयतु (सर्वं विलोपयति)
+  resetAllSettingsSuccess: सर्वे विकल्पाः पुनः स्थापिताः। प्रवर्तकः पुनः आरप्स्यते।
+  resetSettingsError: 'विकल्पपुनःस्थापने दोषः: {error}'
+  resetToDefault: पूर्वनिर्धारितरूपेण पुनः स्थापयतु
+  select: चिनोतु
+  setAsBackground:
+    failed: पृष्ठभूमिचित्रव्यवस्थापने विफलीभूतम्
+    global: प्रवर्तकपृष्ठभूमिरूपेण स्थापयतु
+    instance: क्षणपृष्ठभूमिरूपेण स्थापयतु
+    successGlobal: पृष्ठभूमिचित्रं नवीकृतम्।
+    successInstance: क्षणपृष्ठभूमिचित्रं नवीकृतम्।
+  settingsExported: विकल्पाः सफलीभूतं निर्यातिताः
+  settingsImportError: विकल्पायातने विफलीभूतम्। कृपया प्रारूपं परीक्षताम्।
+  settingsImported: विकल्पाः सफलीभूतं आयातिताः
+  settingsReloadHint: सर्वविकल्पप्रयोगाय प्रवर्तकः पुनः आरप्स्यते।
+  showNewsHeader: वृत्तान्तप्रदर्शनं दर्शयतु
+  showRoot: दर्शयतु
+  sidebarAlign: पार्श्वपट्टिकासमायोजनम्
+  sidebarAutoHide: पार्श्वपट्टिकां स्वयमेव गोपयतु
+  sidebarAutoHideHint: पार्श्वपट्टिकां स्वयं गोपयित्वा स्पर्शकाले दर्शयतु
+  sidebarClassic: पारम्परिकम्
+  sidebarNotch: नॉच (Notch)
+  sidebarPosition: पार्श्वपट्टिकास्थानम्
+  sidebarScale: पार्श्वपट्टिकामानम्
+  sidebarShowOnlyPinned: केवलम् कीलितान् क्षणान् दर्शयतु
+  sidebarShowOnlyPinnedHint: पार्श्वपट्टिकां केवलं कीलितान् क्षणान् दर्शयतु
+  sidebarStyle: पार्श्वपट्टिकाशैली
+  sidebarStyleHint: पारम्परिक-आधुनिकयोः मध्ये चिनोतु
+  streamerMode: प्रसारणप्रणाली (Streamer Mode)
+  streamerModeDescription: एतेन भवतः व्यक्तिगतसूचना (यथा विद्युत्पत्रम्) गोप्यते।
+  theme:
+    dark: तमिस्रप्रसङ्गः
+    light: श्वेतप्रसङ्गः
+    system: तन्त्रप्रसङ्गं प्रयुङ्क्त
+  themeExport: प्रसङ्गं निर्यातयतु
+  themeBorderRadius: गोलाकार-कोणाः
+  themeBorderRadiusDescription: पत्राणां संवादानां च कोणानां गोलाकारत्वं सक्रियं निष्क्रियं वा करोतु।
+  themeFont: अक्षरमुद्रा
+  themeFontDescription: प्रवर्तकस्य अक्षरमुद्रां परिवर्तयतु।
+  themeFontUrl: अक्षरमुद्रासङ्केतः
+  themeFontUrlPlaceholder: लिपि-सज्जाय HTTP/HTTPS URL प्रविशतु
+  themeImport: प्रसङ्गं आयातयतु
+  themeResetFont: अक्षरमुद्रां पुनः स्थापयतु
+  themeSelectFont: अक्षरमुद्रां चिनोतु
+  themeSettings: प्रसङ्गविकल्पाः
+  themeShare: प्रसङ्गं साझयतु
+  themeShareDescription: भवान् प्रसङ्गं मित्रेण सह साझयितुं शक्नोति।
+  themeStore:
+    description: वैश्विकप्रसङ्गान् रक्षतु प्रबन्धयतु च
+    loadConfirmMessage: रक्षितप्रसङ्गभारेण भवतः वर्तमानप्रसङ्गः प्रतिस्थापयिष्यते।
+    loadConfirmTitle: वर्तमानप्रसङ्गं प्रतिस्थापयतु?
+    loadTheme: प्रसङ्गं भारयतु
+    name: प्रसङ्गविपणिः
+    noSavedThemes: अद्यापि कोऽपि रक्षितप्रसङ्गः नास्ति
+    saveDialogTitle: प्रसङ्गं रक्षतु
+    saveToStore: विपणौ रक्षतु
+    savedThemes: रक्षिताः प्रसङ्गाः
+    themeName: प्रसङ्गनाम
+    themeNameHint: प्रसङ्गरक्षणाय प्रयुक्तं नाम
+  update: नवीकरोतु
+  useBmclAPI: BMCL API प्रयुङ्क्त
+  useBmclAPIDescription: माइनक्राफ्ट् अवतारेतुं BMCLAPI प्रयुङ्क्त।
+  useProxy: HTTP प्रॉक्सी
+  useProxyDescription: HTTP अनुरोधाय प्रॉक्सीसङ्केतः
+  viewBackgroundMusic: ध्वनीन् पश्यतु
+settingLabel:
+  global: वैश्विकम्
+  globalHint: एषः विकल्पः वैश्विकविकल्पम् अनुसरेत्
+  local: स्थानिकम्
+  localHint: एषः विकल्पः वर्तमानक्षणेन परिवर्तितः
+setup:
+  account:
+    description: क्रीडालेखायां प्रविशतु। यदि भवतः पार्श्वे नास्ति, तर्हि इदानीं त्यजतु।
+    name: क्रीडालेखां योजयतु
+    skip: इदानीं त्यजतु
+  appearance:
+    name: '@:setting.appearance'
+  dataRoot:
+    description: मूलदत्तकोशः साधारणः .minecraft कोशः नास्ति।
+    drives: अनुशंसितस्थानानि
+    name: दत्तनिर्देशिकां निर्धारयतु
+  defaultLayoutDescription: पूर्वनिर्धारितविन्यासः "क्षणम्" संकल्पनां वर्धयितुं प्रयतते।
+  defaultPath: पूर्वनिर्धारितः पथः
+  error:
+    badDataRoot: प्रवर्तकदत्ताय अमान्या निर्देशिका! कृपया अन्या निर्देशिकां प्रयतताम्!
+    exists: चयनिता निर्देशिका रिक्ता नास्ति।
+    invalidChar: पथे अमान्याः वर्णाः सन्ति!
+    noPermission: प्रवर्तकस्य निर्देशिकाप्रवेशाय अनुमतिः नास्ति!
+    nonDictionary: चयिनतः पन्थाः सञ्चिका अस्ति! कृपया निर्देशिकां चिनोतु!
+  focusLayoutDescription: केन्द्रितविन्यासः माइनक्राफ्ट् प्रवर्तकस्य पुरातनः विन्यासः अस्ति।
+  game:
+    name: विद्यमानक्रीडाम् आयातयतु
+  locale:
+    description: इच्छितां भाषां चिनोतु!
+    language: भाषा
+    name: भाषां निर्धारयतु
+  path: वर्तमानपथः
+shaderPack:
+  deletion: छायाकारसञ्चयम् लोपयतु
+  deletionHint: एतेन छायाकारसञ्चिका {path} विनश्यति।
+  disabled: निष्क्रियाः छायाकारसञ्चयाः
+  dropHint: छायाकारसञ्चयम् आयातयतु
+  empty: कोऽपि छायाकारसञ्चयः न विनियुक्तः
+  enable: '{name} प्रयुज्यते'
+  enabled: सक्रियाः छायाकारसञ्चयाः
+  manage: छायाकारसञ्चयान् प्रबन्धयतु
+  market: छायाकारविपणिः
+  name: छायाकारसञ्चयः
+  linkShared: क्षणेषु छायाकारसञ्चयान् साझयतु
+  linkSharedHint: क्षणस्य छायाकारकोशं वैश्विक-साझितकोशेन सह शृङ्खलयतु।
+  noLocalPacksFound: अन्वेषणसदृशाः स्थानिकाः छायाकारसञ्चयाः न लब्धाः।
+  noPacks: कोऽपि छायाकारसञ्चयः न संस्थापितः
+  noPacksInstalled: भवता कोऽपि छायाकारसञ्चयः न संस्थापितः।
+  noShaderMod: कोऽपि छायाकारमोडः न संस्थापितः
+  noShaderModHint: छायाकारमोडं विना भवान् छायाकारं प्रयोक्तुं न शक्नोति
+  noShaderModInstallHint: छायाकारसञ्चयभाराय अधस्तनेषु एकं मोडं संस्थापयितुं आवश्यकम्।
+  search: छायाकारसञ्चयान् अन्विषतु...
+  searchHint: Modrinth तथा CurseForge इत्यत्र छायाकारसञ्चयान् अन्विषतु
+  selectSearchHint: छायाकारसञ्चयं अन्विष्य चिनोतु
+  showDirectory: छायाकारनिर्देशिकां दर्शयतु
+  showFile: कोशे एतं छायाकारसञ्चयं दर्शयतु
+shared:
+  add: योजयतु
+  author: लेखकः
+  back: पृष्ठतः
+  browse: अन्वेषणम्
+  cancel: निरस्यतु
+  client: ग्राहकः
+  copied: प्रतिलिपीकृतम्
+  copy: प्रतिलिपिं करोतु
+  close: पिदधातु
+  copyFailed: प्रतिलिपिः विफला
+  copyFailedHint: सञ्चिकाफलके प्रतिलिपिं कर्तुं न शक्तम्
+  description: विवरणम्
+  disable: निष्क्रियं करोतु
+  download: अवतारयतु
+  edit: संस्करोतु
+  enable: सक्रियं करोतु
+  filter: शोधकम्
+  install: संस्थापयतु
+  installed: संस्थापितम्
+  keepSelected: क्रीडासञ्चयः रक्षितः
+  manage: प्रबन्धयतु
+  name: नाम
+  next: अग्रिमम्
+  'no': न
+  ok: अस्तु (OK)
+  previous: पूर्वतनम्
+  refresh: पुनश्चर्या
+  remove: निष्कासयतु
+  save: रक्षतु
+  search: अन्वेषणम्
+  server: सेवाप्रदाता
+  skipForNow: इदानीं त्यजतु
+  'yes': आम्
+  delete: लोपयतु
+sidebar:
+  pin: कीलयतु
+  unpin: अकीलनं करोतु
+sortBy:
+  alphabetAsc: वर्णक्रमेण (आरोही)
+  alphabetDesc: वर्णक्रमेण (अवरोही)
+  name: अनेन क्रम्यताम्
+  timeAsc: परिवर्तनसमयेन (आरोही)
+  timeDesc: परिवर्तनसमयेन (अवरोही)
+store:
+  discover: अन्वेषणम्
+  empty: कोऽपि मोडप्याक् न लब्धः
+  emptyHint: शोधकान् परिवर्तयितुं प्रयतताम्।
+  latestMinecraft: अद्यतनं माइनक्राफ्ट् संस्करणम्
+  name: मोडप्याक् विपणिः
+  searchResult: अन्वेषणपरिणामः
+  trending: लोकप्रियम्
+tag:
+  create: ट्याग् (Tag) सृजतु
+  createSelected: चयनितस्य कृते ट्याग् सृजतु
+task:
+  cancelled: निरस्तम्
+  clear: समाप्तानि कार्याणि मार्जयतु
+  connection:
+    connected: सन्धितम्
+    free: मुक्तम्
+    pending: अनिर्णितम्
+    queued: पङ्क्तिबद्धम्
+    running: चलन् सम्पर्कः
+    size: आहत्य सङ्ख्या
+  connections: जालसम्पर्काः
+  empty: किमपि चलत् कार्यं नास्ति
+  failed: विफलम्
+  manager: कार्यप्रबन्धकः
+  nTaskRunning: '{count} कार्याणि चलन्ति'
+  name: कार्यम् | कार्याणि
+  pause: विरामयतु
+theme:
+  selectImage: चित्रं चिनोतु
+  selectMusic: ध्वनिं चिनोतु
+  selectVideo: चलचित्रं चिनोतु
+  title: X माइनक्राफ्ट् प्रवर्तकः
+title: X माइनक्राफ्ट् प्रवर्तकः
+transportType:
+  host: यजमानपदप्रार्थी
+  prflx: सहयोगि-प्रतिवर्ती-प्रार्थी
+  relay: रिले-प्रार्थी
+  srflx: सेवाप्रदाता-प्रतिवर्ती-प्रार्थी
+turnRegion:
+  fr: फ्रान्सदेशः
+  guangzhou: ग्वाङ्गझू, चीन
+  hk: हाङ्काङ्
+  liaoning: लियाओनिङ्ग्, चीन
+  po: पोलैण्डदेशः
+tutorial:
+  feedbackDescription: यदि कापि समस्या भवेत् तर्हि प्रतिपुष्टिं प्रेषयितुं अत्र नुदतु!
+  hideNewsHeaderDescription: भवान् वामतः वृत्तान्तप्रदर्शनं द्रष्टुं शक्नोति।
+  instance:
+    iconDescription: चिह्नपरिवर्तनाय नुदतु।
+    iconTitle: क्षणचिह्नम्
+    javaDescription: जावा संस्करणं चिनोतु परिवर्तयतु वा।
+    javaImportDescription: स्थानिकसङ्ग्रहात् जावा आयातयतु।
+    javaImportTitle: जावा आयातयतु
+    javaTitle: जावासूची
+  instanceAddDescription: विद्यमानं क्षणम् आयातुम् नूतनं वा निर्मातुं एतत् नुदतु।
+  instanceSelectDescription: क्रीडाचयनपृष्ठे वृत्तान्तपृष्ठे च गमनं भविष्यति।
+  launchDescription: क्रीडासंस्थापनाय प्रवर्तनाय च एतत् नुदतु।
+  mod:
+    defaultSourceDescription: अत्र मोड्सस्रोतः चिन्ताम्।
+    defaultSourceTitle: मोडसामग्रीस्रोतः चिनोतु
+    detailDescription: मोडविवरणं दक्षिणतः दृश्यते।
+    detailTitle: मोडविवरणम्
+    listDescription: संस्थापिताः मोड्स प्रदर्श्यन्ते।
+    listTitle: संस्थापितः अन्विष्यमाणः वा मोडः
+    searchDescription: अनेन अन्वेषणपेटिकया मोड्स अन्वेष्टुं शक्यते।
+    searchTitle: मोड्स अन्विषतु
+  multiplayer:
+    contentDescription: सम्पर्काः अत्र दर्शिताः।
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: भवान् अन्यक्रीडकैः सह समूहं निर्मातुं संयुजितुं च शक्नोति।
+    groupTitle: समूहे संयुजतु
+    joinDescription: समूहयोगार्थं नुदतु।
+    manualDescription: हस्तेन प्रतीकविनिमयं कर्तुं शक्यते।
+  recentPlayDescription: सृष्टाः क्रीडाः अत्र दर्शिताः।
+  storePoupularModpackDescription: लोकप्रियाः मोडप्याक्स् अत्र दर्शिताः।
+  storeSearchCategoryDescription: वर्गाः शोधकाः च परिवर्तयितुं शक्यन्ते।
+  storeSearchDescription: अन्वेषणाय अत्र लिखत्वा Enter नुदतु।
+  storeSearchResultDescription: परिणामाः अत्र प्रदर्शिताः।
+  userAccountDescription: माइनक्राफ्ट् लेखाप्रबन्धनाय एतच्चिह्नं नुदतु।
+unauthenticatedWarning:
+  cancel: निरस्यतु
+  description: भवान् कस्मिन्नपि लेखायां न प्रविष्टः। क्रीडा पूर्वावलोकनप्रणाल्यां (demo mode) प्रवर्तते।
+  login: प्रविशतु
+  playAnyway: कथमपि क्रीडतु
+  title: न प्रविष्टः
+universalDrop:
+  unknownResource: अज्ञातम्
+unresolvedFiles:
+  description: एताः सञ्चिकाः संस्थापनकाले अवतारेतुं न शक्ताः।
+  empty: सर्वासञ्चिकाः निर्णीताः।
+  ignoreSelected: '{count} उपेक्षताम्'
+  install: '{count} सदृशान् संस्थापयतु'
+  matched: सदृशम्
+  noMatch: न लब्धम्
+  search: स्रोतांसि अन्विषतु
+  source:
+    curseforge-name: CurseForge
+    dependency: अधीनता
+    modrinth-hash: Modrinth हैश
+    modrinth-name: Modrinth
+  title: अनिर्णीताः सञ्चिकाः
+  via: '{source} द्वारा'
+upstream:
+  downgrade: अपकर्षतु (Downgrade)
+  onlyShowCurrentVersion: केवलम् वर्तमानं माइनक्राफ्ट् संस्करणं दर्शयतु
+  update: नवीकरोतु
+user:
+  accessToken: प्रवेशप्रतीकम् (Access Token)
+  authMode: प्रमाणीकरणसेवा
+  authService: प्रमाणीकरणसेवा
+  email: विद्युत्पत्रम्
+  id: प्रयोक्ता ID
+  name: प्रयोक्तृनाम
+  nameHint: क्रीडायां प्रदर्श्यमानं नाम
+  profile: प्रोफाइल
+  tokenExpired: कालोत्क्रान्तम् (Expired)
+  tokenValidUntil: प्रतीकवैधता
+userAccount:
+  add: लेखां योजयतु
+  removeDescription: अनेन लेखायाः सर्वाः सूचनाः विलोपयिष्यन्ते। किं भवान् निश्चितः?
+  removeTitle: लेखां निष्कासयतु
+userCape:
+  changeTitle: कञ्चुकं (Cape) परिवर्तयतु
+  description: कञ्चुकाः क्रीडकानां कृते विशिष्टोपहाराः सन्ति।
+  noCape: कोऽपि कञ्चुको नास्ति
+userService:
+  add: अन्याः सेवाः योजयतु
+  authlibInjectorMetadata: Authlib-Injector मेटाडेटा
+  baseUrlHint: भवतः विशिष्टसेवाप्रदातुः मूल-URL
+  homepage: मुख्यपृष्ठम्
+  implementation: कार्यान्वयनम्
+  manageServices: प्रमाणीकरणसेवाः प्रबन्धयतु
+  register: पञ्जीकरणं करोतु
+  server: सेवाप्रदाता
+  skinDomains: त्वचा-क्षेत्राणि
+  title: तृतीयपक्षप्रयोक्तृसेवाः
+  version: संस्करणम्
+userServices:
+  microsoft:
+    account: Microsoft लेखा
+    deviceCode: यन्त्रसङ्केतः (Device Code)
+    deviceCodeHint: प्रवेशमुद्रणानन्तरं यन्त्रसङ्केतः जनिष्यते
+    name: Microsoft
+    password: जालगवाक्षे सङ्केतशब्दं लिखतु
+    useDeviceCode: यन्त्रसङ्केतेन प्रविशतु
+  mojang:
+    account: विद्युत्पत्रम्
+    name: Mojang
+    password: सङ्केतशब्दः
+  offline:
+    account: प्रयोक्तृनाम
+    name: ऑफलाइन
+    password: कोऽपि सङ्केतशब्दो नास्ति
+    uuid: प्रयोक्तृ UUID (वैकल्पिकम्)
+userSkin:
+  classic: पारम्परिकम्
+  import: त्वचां आयातयतु
+  importFile: सञ्चिकातः उद्घाटयतु
+  importLink: कडीतः उद्घाटयतु
+  placeUrlHere: आयातनाय अत्र त्वचासङ्केतं लिखतु
+  reset: पुनः स्थापयतु
+  save: रक्षतु
+  saveTitle: त्वचां डिस्क मध्ये रक्षतु
+  skinType: त्वचाप्रकारः
+  slim: सूक्ष्मम् (Slim)
+  upload: त्वचाम् आरोपयतु
+  urlNotEmpty: त्वचा URL रिक्तं न भवेत्
+  urlNotValid: त्वचा URL अमान्यम् अस्ति
+  useSlim: सूक्ष्मरूपं प्रयुङ्क्त
+version:
+  checkIntegrity: अखण्डतां परीक्षताम्
+  name: संस्करणम् | संस्करणाणि
+  notInstalled: संस्करणं न संस्थापितम्
+versionType:
+  alpha: अल्फा (Alpha)
+  beta: बीटा (Beta)
+  name: स्थितिः
+  release: विमोचनम्
+gamepad:
+  detectedTitle: क्रीडाफलकम् (Gamepad) लब्धम्
+  connected: नियन्त्रकः सन्धितः
+  guideTitle: नियन्त्रकनियन्त्रणानि
+  enableSwitchLabel: क्रीडाफलकनियन्त्रणानि
+  enabledState: सक्रियम्
+  disabledState: निष्क्रियम्
+  toggle: परिवर्तयतु
+  disabledNotify: क्रीडाफलकनियन्त्रणानि निष्कृतानि।
+  enabledNotify: क्रीडाफलकनियन्त्रणानि सक्रियाणि!
+  guide:
+    confirm: चिनोतु
+    navigate: सञ्चरतु
+    tabs: पत्रकाणि परिवर्तयतु
+    sections: भागान् परिवर्तयतु
+    launch: क्रीडां प्रवर्तयतु
+    instanceSettings: क्षणविकल्पाः
+  modSuggestTitle: नियन्त्रकमोडः (Controller Mod)
+  modSuggestBody: माइनक्राफ्ट् मध्ये क्रीडाफलकप्रयोगाय नियन्त्रकमोडः अनुशंसितः अस्ति।
+  modInstall: मोडं संस्थापयतु
+  modSkip: त्यजतु
+  modDone: पूर्णम्
+  modInstalled: नियन्त्रकमोडः सफलीभूतं संस्थापितः!
+  modInstalledNotify: क्रीडायां नियन्त्रकसमर्थनाय {name} संस्थापितम्।
+  modNotFound: माइनक्राफ्ट् {version} इत्यत्र {loader} कृते कोऽपि सुसङ्गतः मोडः न लब्धः।
+  settingSteamTitle: प्रवर्तकक्रीडां स्टीम (Steam) मध्ये योजयतु
+  steamAddedNotify: प्रवर्तकः स्टीम ग्रन्थालये योज्यते।
+  steamAlreadyAddedNotify: प्रवर्तकः पूर्वमेव स्टीम ग्रन्थालये अस्ति।
+  steamDeckTitle: Steam Deck लब्धम्
+  steamDeckDesc: भवान् Steam Deck चालयति इति ज्ञातम्।
+  steamDeckAddBtn: Steam मध्ये योजयतु ({btn})
+  steamDeckCancelBtn: निरस्यतु ({btn})
