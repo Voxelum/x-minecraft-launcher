@@ -5,6 +5,12 @@ export interface ContextMenuItem {
   icon: string
   color?: string
   children?: ContextMenuItem[]
+  /**
+   * Group items into sections. A divider is only rendered between items that
+   * belong to different sections. If no item declares a section, the menu
+   * falls back to rendering a divider between every item.
+   */
+  section?: string
   onClick: () => void
 }
 

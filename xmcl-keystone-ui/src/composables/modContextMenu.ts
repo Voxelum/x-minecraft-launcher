@@ -73,6 +73,9 @@ export function useModItemContextMenuItems(entry: Ref<ProjectEntry<ModFile>>, on
         icon: 'search',
       })
     }
+    for (const item of items) {
+      item.section = 'mod'
+    }
     return items
   }
 }

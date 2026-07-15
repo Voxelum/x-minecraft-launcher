@@ -27,6 +27,7 @@ export function useInstanceContextMenuFunc() {
       {
         text: isPinned ? t('sidebar.unpin') : t('sidebar.pin'),
         icon: 'push_pin',
+        section: 'sidebar',
         onClick() {
           if (isPinned) {
             pinnedInstances.value = pinnedInstances.value.filter(p => p !== inst.path)
@@ -38,20 +39,15 @@ export function useInstanceContextMenuFunc() {
       {
         text: t('setting.sidebarShowOnlyPinned'),
         icon: showOnlyPinned.value ? 'check_box' : 'check_box_outline_blank',
+        section: 'sidebar',
         onClick() {
           showOnlyPinned.value = !showOnlyPinned.value
         },
       },
       {
-        text: t('instance.showInstance', { file: inst.path }),
-        onClick: () => {
-          showItemInDirectory(inst.path)
-        },
-        icon: 'folder',
-      },
-      {
         text: t('mod.group'),
         icon: 'folder_open',
+        section: 'group',
         onClick() {
           const groupRecord: Record<string, ModGroupData> = {}
           const counts: Record<string, number> = {}
@@ -79,16 +75,17 @@ export function useInstanceContextMenuFunc() {
         },
       },
       {
-        text: t('instance.delete'),
-        color: 'red',
-        icon: 'delete',
-        onClick() {
-          showDeleteDialog({ name: inst.name, path: inst.path })
+        text: t('instance.showInstance', { file: inst.path }),
+        section: 'action',
+        onClick: () => {
+          showItemInDirectory(inst.path)
         },
+        icon: 'folder',
       },
       {
         text: t('instance.duplicate'),
         icon: 'file_copy',
+        section: 'action',
         onClick() {
           duplicateInstance(inst.path).then((newPath) => {
             try {
@@ -108,6 +105,7 @@ export function useInstanceContextMenuFunc() {
       {
         text: t('instance.changeIcon'),
         icon: 'image',
+        section: 'action',
         onClick() {
           if (path.value !== inst.path) {
             path.value = inst.path
@@ -115,6 +113,15 @@ export function useInstanceContextMenuFunc() {
           if (currentRoute.value.fullPath !== '/base-setting') {
             push('/base-setting?changeIcon=true')
           }
+        },
+      },
+      {
+        text: t('instance.delete'),
+        color: 'red',
+        icon: 'delete',
+        section: 'danger',
+        onClick() {
+          showDeleteDialog({ name: inst.name, path: inst.path })
         },
       },
     ]

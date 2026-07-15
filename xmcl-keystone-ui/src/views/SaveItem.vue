@@ -98,28 +98,33 @@ const _getContextMenuItems = () => {
   const file = props.item.files?.[0]
   if (file) {
     items.push({
-      text: t('delete.name', { name: file.path }),
-      icon: 'delete',
-      onClick: () => emit('delete', file),
-      color: 'red',
-    }, {
       text: t('mod.showFile', { file: file.path }),
       onClick: () => {
         showItemInDirectory(file.path)
       },
       icon: 'folder',
+      section: 'action',
     }, {
       text: t('save.export'),
       onClick: () => doExport(file.path),
       icon: 'map',
+      section: 'action',
     })
     if (!props.item.disabled) {
       items.push({
         text: t('save.duplicate'),
         onClick: () => duplicateSave(installedOne.value),
         icon: 'content_copy',
+        section: 'action',
       })
     }
+    items.push({
+      text: t('delete.name', { name: file.path }),
+      icon: 'delete',
+      onClick: () => emit('delete', file),
+      color: 'red',
+      section: 'danger',
+    })
   }
   return items
 }

@@ -89,6 +89,7 @@ function getContextMenu() {
     {
       icon: 'settings',
       text: t('instances.folderSetting'),
+      section: 'config',
       onClick: () => {
         show(mutableState)
       },
@@ -100,6 +101,7 @@ function getContextMenu() {
     items.push({
       icon: 'flash_on',
       text: t('mod.enableAll'),
+      section: 'action',
       onClick: () => {
         emit('enable-all')
       },
@@ -110,6 +112,7 @@ function getContextMenu() {
     items.push({
       icon: 'flash_off',
       text: t('mod.disableAll'),
+      section: 'action',
       onClick: () => {
         emit('disable-all')
       },
@@ -119,6 +122,7 @@ function getContextMenu() {
   items.push({
     icon: 'label_off',
     text: t('mod.ungroup'),
+    section: 'group',
     onClick: () => {
       emit('ungroup')
     },

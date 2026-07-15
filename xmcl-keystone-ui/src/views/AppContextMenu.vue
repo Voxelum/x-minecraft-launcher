@@ -76,7 +76,7 @@
           </v-menu>
         </v-list-item>
         <v-divider
-          v-if="index !== items.length - 1"
+          v-if="index !== items.length - 1 && showDividerAfter(index)"
         />
       </template>
     </v-list>
@@ -94,6 +94,16 @@ const { isRtl } = useRtl()
 const submenuIcon = computed(() => isRtl.value ? 'arrow_left' : 'arrow_right')
 
 const { x, y, items, shown } = useContextMenuData()
+
+// When at least one item declares a section, only render a divider between
+// items belonging to different sections. Otherwise fall back to the legacy
+// behavior of a divider between every item.
+const hasSections = computed(() => items.value.some((i) => i.section !== undefined))
+function showDividerAfter(index: number) {
+  if (!hasSections.value) return true
+  return items.value[index].section !== items.value[index + 1].section
+}
+
 document.addEventListener('keyup', (e) => {
   if (e.key === 'Escape' && shown.value) {
     shown.value = false

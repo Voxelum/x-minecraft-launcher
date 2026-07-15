@@ -481,6 +481,7 @@ function getRestoreMenuItems(): ContextMenuItem[] {
   return hiddenCards.value.map((c) => ({
     text: t('instance.showHiddenCards') + ': ' + c.label,
     icon: cardIcon[c.type] ?? 'visibility',
+    section: 'restore',
     onClick: () => restoreCard(c.id),
   }))
 }
@@ -490,6 +491,7 @@ function getCardMenu(id: string): ContextMenuItem[] {
     {
       text: t('instance.hideCard'),
       icon: 'visibility_off',
+      section: 'card',
       onClick: () => hideCard(id),
     },
     ...getRestoreMenuItems(),

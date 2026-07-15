@@ -343,6 +343,9 @@ export function useModGroups(
           }
         },
       });
+      for (const item of result) {
+        item.section = "group";
+      }
       return result;
     }
 
@@ -399,6 +402,9 @@ export function useModGroups(
       });
     }
 
+    for (const item of result) {
+      item.section = "group";
+    }
     return result;
   }
 

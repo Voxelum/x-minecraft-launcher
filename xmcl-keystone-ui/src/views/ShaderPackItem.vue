@@ -49,18 +49,20 @@ const getContextMenuItems = () => {
   // const id = props.pack.modrinth?.project_id || props.pack.modrinthProjectId
   if (props.pack.installed.length > 0) {
     all.push({
+      text: t('shaderPack.showFile', { file: props.pack.installed[0].path }),
+      onClick: () => {
+        showItemInDirectory(props.pack.installed[0].path)
+      },
+      icon: 'folder',
+      section: 'action',
+    }, {
       text: t('delete.name', { name: props.pack.title }),
       onClick: () => {
         uninstall({ path: path.value, files: props.pack.installed.map(f => f.path) })
       },
       icon: 'delete',
       color: 'error',
-    }, {
-      text: t('shaderPack.showFile', { file: props.pack.installed[0].path }),
-      onClick: () => {
-        showItemInDirectory(props.pack.installed[0].path)
-      },
-      icon: 'folder',
+      section: 'danger',
     })
   }
   // if (id) {
