@@ -573,6 +573,7 @@ java:
   memoryManual: 手动指定
   memoryUnassigned: 不指定内存
   minMemory: 最小内存
+  name: Java
   noMemory: 不设置内存限制
   openFolder: 打开 Java 所在文件夹
   presets: 预设
@@ -1481,6 +1482,8 @@ setting:
   exportSettingsHint: 将当前设置保存到文件
   general: 基本设置
   githubRelease: Github
+  globalJava: 首选 Java
+  globalJavaHint: "在自动模式下会优先尝试此 Java，仅当其与游戏版本不兼容时才回退到自动检测。"
   globalSetting: 全局实例设置
   globalSettingHint: 实例默认情况下会使用这些全局设置
   importSettings: 导入设置

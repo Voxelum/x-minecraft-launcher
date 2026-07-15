@@ -84,7 +84,7 @@ export default defineComponent({
 
     const settings = useSettingsState()
     const instanceVersion = useInstanceVersion(instance.instance, localVersions.versions, localVersions.servers)
-    const instanceJava = useInstanceJava(instance.instance, instanceVersion.resolvedVersion, java.all)
+    const instanceJava = useInstanceJava(instance.instance, instanceVersion.resolvedVersion, java.all, computed(() => settings.state.value?.globalJava))
     provide(kInstanceJavaDiagnose, useInstanceJavaDiagnose(instanceJava))
     const instanceDefaultSource = useInstanceDefaultSource(instance.path)
     const options = useInstanceOptions(instance.path)

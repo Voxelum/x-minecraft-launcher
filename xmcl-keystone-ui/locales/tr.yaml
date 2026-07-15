@@ -531,6 +531,7 @@ java:
   memoryManual: Manuel
   memoryUnassigned: Atanmamış
   minMemory: Min Bellek
+  name: Java
   noMemory: Bellek kullanımını sınırlama
   refresh: Yerel Java'yı Yenile
   systemMemory: 'Sistem Boş Belleği: {free} / {total}'
@@ -1315,6 +1316,8 @@ setting:
   exportSettingsHint: Mevcut ayarlarınızı bir dosyaya kaydedin
   general: Genel
   githubRelease: Github Yayını
+  globalJava: Tercih edilen Java
+  globalJavaHint: "Otomatik modda önce bu Java denenir ve yalnızca oyun sürümüyle uyumlu olmadığında otomatik algılamaya geri dönülür."
   globalSetting: Global Instance Ayarı
   globalSettingHint: Instance varsayılan olarak bu ayarları kullanacaktır.
   importSettings: Ayarları İçe Aktar

@@ -641,6 +641,7 @@ java:
   memoryManual: Manual
   memoryUnassigned: Sin asignar
   minMemory: Memoria Mínima
+  name: Java
   noMemory: No limitar el uso de memoria
   openFolder: Abrir carpeta de Java
   presets: Predeterminados
@@ -1606,6 +1607,8 @@ setting:
   exportSettingsHint: Guardar la configuración actual en un archivo
   general: General
   githubRelease: Lanzamiento en GitHub
+  globalJava: Java preferido
+  globalJavaHint: "En modo automático se prueba primero este Java y solo se recurre a la detección automática cuando no es compatible con la versión del juego."
   globalSetting: Configuración Global de la Instancia
   globalSettingHint: La instancia utilizará estos ajustes por defecto.
   importSettings: Importar configuración

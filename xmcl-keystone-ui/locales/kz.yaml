@@ -514,6 +514,7 @@ java:
   memoryManual: Қолмен
   memoryUnassigned: Бөлінбеген
   minMemory: Минимал жады
+  name: Java
   noMemory: Жады қолданысын шектеуді болдырмау
   refresh: Жергілікті Java-ны жаңарту
   systemMemory: 'Жүйелік бос жады: {free} / {total}'
@@ -1276,6 +1277,8 @@ setting:
   exportSettingsHint: Ағымдағы баптауларыңызды файлға сақтаңыз
   general: Жалпы
   githubRelease: Github шығарылымы
+  globalJava: Таңдаулы Java
+  globalJavaHint: "Автоматты режимде алдымен осы Java қолданылады, ол ойын нұсқасымен үйлеспеген жағдайда ғана автоанықтауға оралады."
   globalSetting: Глобалды жеке жағдай баптаулары
   globalSettingHint: Жеке жағдайлар әдепкі бұл баптауларды қолданады.
   importSettings: Баптауларды импорттау

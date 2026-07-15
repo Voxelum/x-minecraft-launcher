@@ -25,7 +25,7 @@ export interface InstanceJavaStatus extends AutoDetectedJava {
   preferredJava?: JavaRecord
 }
 
-export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceResolveVersion | undefined>, all: Ref<JavaRecord[]>) {
+export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceResolveVersion | undefined>, all: Ref<JavaRecord[]>, globalJava?: Ref<string | undefined>) {
   const { resolveJava } = useService(JavaServiceKey)
 
   const data: Ref<InstanceJavaStatus | undefined> = shallowRef(undefined)
@@ -61,6 +61,7 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
       instance.runtime.minecraft,
       instance.runtime.forge,
       version,
+      globalJava?.value || undefined,
     )
   }
 
@@ -92,6 +93,7 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
     computed(() => instance.value.java),
     computed(() => instance.value.runtime.minecraft),
     computed(() => instance.value.runtime.forge),
+    ...(globalJava ? [globalJava] : []),
   ], () => {
     mutate()
   })

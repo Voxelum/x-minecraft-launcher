@@ -556,6 +556,7 @@ java:
   memoryManual: Manuell
   memoryUnassigned: Den Termin absagen
   minMemory: Min. Speicherkapazität
+  name: Java
   noMemory: Speichernutzung nicht einschränken
   refresh: Lokales Java aktualisieren
   systemMemory: 'Freier Systemspeicher: {free} / {total}'
@@ -1369,6 +1370,8 @@ setting:
   exportSettingsHint: Aktuelle Einstellungen in Datei speichern
   general: Allgemein
   githubRelease: Github Release
+  globalJava: Bevorzugtes Java
+  globalJavaHint: "Im Automatikmodus wird zuerst dieses Java versucht und nur dann auf die automatische Erkennung zurückgegriffen, wenn es mit der Spielversion nicht kompatibel ist."
   globalSetting: Globale Instanzkonfiguration
   globalSettingHint: Die Instanz wird diese Parameter standardmäßig verwenden.
   importSettings: Einstellungen importieren

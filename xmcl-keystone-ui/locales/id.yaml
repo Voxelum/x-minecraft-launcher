@@ -554,6 +554,7 @@ java:
   memoryManual: Manual
   memoryUnassigned: Batalkan Alokasi
   minMemory: Memori Min
+  name: Java
   noMemory: Jangan batasi penggunaan memori
   openFolder: Buka Folder Java
   presets: Preset
@@ -1439,6 +1440,8 @@ setting:
   exportSettingsHint: Simpan pengaturan saat ini ke berkas
   general: Umum
   githubRelease: Rilis GitHub
+  globalJava: Java pilihan
+  globalJavaHint: "Dalam mode otomatis, Java ini dicoba terlebih dahulu dan hanya beralih ke deteksi otomatis jika tidak kompatibel dengan versi gim."
   globalSetting: Pengaturan Instansi Global
   globalSettingHint: Instansi akan menggunakan pengaturan ini secara default.
   importSettings: Impor Pengaturan

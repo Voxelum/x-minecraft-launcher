@@ -554,6 +554,7 @@ java:
   memoryManual: ম্যানুয়াল
   memoryUnassigned: অনির্ধারিত করুন
   minMemory: সর্বনিম্ন মেমরি
+  name: Java
   noMemory: মেমরি ব্যবহার সীমাবদ্ধ করবেন না
   openFolder: জাভা ফোল্ডার খুলুন
   presets: প্রিসেট
@@ -1439,6 +1440,8 @@ setting:
   exportSettingsHint: আপনার বর্তমান সেটিংস একটি ফাইলে সংরক্ষণ করুন
   general: সাধারণ
   githubRelease: গিটহাব রিলিজ
+  globalJava: পছন্দের Java
+  globalJavaHint: "স্বয়ংক্রিয় মোডে প্রথমে এই Java চেষ্টা করা হয়, এবং গেম সংস্করণের সাথে অসামঞ্জস্যপূর্ণ হলেই কেবল স্বয়ংক্রিয় শনাক্তকরণে ফিরে যায়।"
   globalSetting: গ্লোবাল ইনস্ট্যান্স সেটিংস
   globalSettingHint: ইনস্ট্যান্স ডিফল্টরূপে এই সেটিংস ব্যবহার করবে।
   importSettings: সেটিংস ইম্পোর্ট করুন

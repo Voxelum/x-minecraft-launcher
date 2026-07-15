@@ -508,6 +508,7 @@ java:
   memoryManual: MANUAL
   memoryUnassigned: UNASSIGN
   minMemory: MIN MEMRY
+  name: Java
   noMemory: DO NOT LIMIT MEMRY USAG
   refresh: REFRESH LOCAL JAVA
   systemMemory: 'SYSTEM FREE MEMRY: {free} / {total}'
@@ -1259,6 +1260,8 @@ setting:
   exportSettingsHint: SAVE UR CURREN SETTINGZ TO A FILE
   general: GENERAL
   githubRelease: GITHUB RELEASE
+  globalJava: Favrit Java
+  globalJavaHint: "In auto moad dis Java getz tride furst, an only fallz bak to auto-detekshun when it no can play nice wif teh gaem verzhun."
   globalSetting: GLOBAL INSTANCE SETTING
   globalSettingHint: INSTANCE WILL USE THESE SETTINGZ BY DEFAULT.
   importSettings: IMPORT SETTINGZ

@@ -552,6 +552,7 @@ java:
   memoryManual: Вручну
   memoryUnassigned: Не призначати
   minMemory: Мін. пам'ять
+  name: Java
   noMemory: Не обмежувати використання пам'яті
   refresh: Оновити локальні Java
   systemMemory: 'Вільна системна пам''ять: {free} / {total}'
@@ -1320,6 +1321,8 @@ setting:
   exportSettingsHint: Зберегти поточні налаштування у файл
   general: Загальні
   githubRelease: Реліз на Github
+  globalJava: Бажана Java
+  globalJavaHint: "В автоматичному режимі спочатку використовується ця Java, і лише за несумісності з версією гри відбувається перехід до автовизначення."
   globalSetting: Глобальні налаштування екземпляра
   globalSettingHint: Екземпляр використовуватиме ці налаштування за замовчуванням.
   importSettings: Імпорт налаштувань

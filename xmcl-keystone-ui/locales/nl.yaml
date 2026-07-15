@@ -519,6 +519,7 @@ java:
   memoryManual: Handmatig
   memoryUnassigned: Niet Toegewezen
   minMemory: Min Geheugen
+  name: Java
   noMemory: Geheugengebruik niet beperken
   refresh: Ververs Lokale Java
   systemMemory: 'Systeem Vrij Geheugen: {free} / {total}'
@@ -1287,6 +1288,8 @@ setting:
   exportSettingsHint: Sla uw huidige instellingen op naar een bestand
   general: Algemeen
   githubRelease: Github Release
+  globalJava: Voorkeurs-Java
+  globalJavaHint: "In de automatische modus wordt eerst deze Java geprobeerd en wordt alleen teruggevallen op automatische detectie als deze niet compatibel is met de spelversie."
   globalSetting: Globale Instance Instellingen
   globalSettingHint: Instance zal deze instellingen standaard gebruiken.
   importSettings: Instellingen Importeren

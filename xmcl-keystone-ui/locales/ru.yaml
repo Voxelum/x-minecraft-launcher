@@ -545,6 +545,7 @@ java:
   memoryManual: Вручную
   memoryUnassigned: Не назначено
   minMemory: Минимальная память
+  name: Java
   noMemory: Не ограничивать использование памяти
   refresh: Обновить локальный Java
   systemMemory: 'Свободная память системы: {free} / {total}'
@@ -1320,6 +1321,8 @@ setting:
   exportSettingsHint: Сохранить текущие настройки в файл
   general: Общее
   githubRelease: Релиз GitHub
+  globalJava: Предпочитаемая Java
+  globalJavaHint: "В автоматическом режиме сначала используется эта Java и только при несовместимости с версией игры выполняется переход к автоопределению."
   globalSetting: Глобальные настройки экземпляра
   globalSettingHint: Экземпляр будет использовать эти настройки по умолчанию.
   importSettings: Импорт настроек

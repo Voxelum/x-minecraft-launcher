@@ -554,6 +554,7 @@ java:
   memoryManual: يدوي
   memoryUnassigned: غير محدد
   minMemory: الحد الأدنى للذاكرة
+  name: Java
   noMemory: عدم تقييد استهلاك الذاكرة
   openFolder: افتح مجلد جافا
   presets: الإعدادات المسبقة
@@ -1437,6 +1438,8 @@ setting:
   exportSettingsHint: حفظ إعداداتك الحالية في ملف
   general: عام
   githubRelease: إصدارات جيت هاب (Github Release)
+  globalJava: Java المفضلة
+  globalJavaHint: "في الوضع التلقائي تتم تجربة Java هذه أولاً ولا يتم الرجوع إلى الاكتشاف التلقائي إلا عندما لا تكون متوافقة مع إصدار اللعبة."
   globalSetting: إعدادات النسخ العالمية
   globalSettingHint: النسخ هتستخدم الإعدادات دي بشكل افتراضي.
   importSettings: استيراد الإعدادات

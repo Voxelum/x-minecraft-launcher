@@ -554,6 +554,7 @@ java:
   memoryManual: Thủ công
   memoryUnassigned: Hủy phân bổ
   minMemory: Bộ nhớ tối thiểu
+  name: Java
   noMemory: Không giới hạn sử dụng bộ nhớ
   openFolder: Mở thư mục Java
   presets: Thiết lập sẵn
@@ -1439,6 +1440,8 @@ setting:
   exportSettingsHint: Lưu các cài đặt hiện tại của bạn vào một tệp
   general: Chung
   githubRelease: Bản phát hành Github
+  globalJava: Java ưu tiên
+  globalJavaHint: "Ở chế độ tự động, Java này được thử trước và chỉ quay lại dò tìm tự động khi nó không tương thích với phiên bản trò chơi."
   globalSetting: Cài đặt phiên bản toàn cục
   globalSettingHint: Các phiên bản game sẽ sử dụng các cài đặt này theo mặc định.
   importSettings: Nhập cài đặt

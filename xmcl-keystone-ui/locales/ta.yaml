@@ -554,6 +554,7 @@ java:
   memoryManual: கைமுறை
   memoryUnassigned: ஒதுக்காதே
   minMemory: குறைந்தபட்ச நினைவகம்
+  name: Java
   noMemory: நினைவக பயன்பாட்டை கட்டுப்படுத்த வேண்டாம்
   openFolder: ஜாவா கோப்புறையைத் திற
   presets: முன்னமைப்புகள்
@@ -1439,6 +1440,8 @@ setting:
   exportSettingsHint: உங்கள் தற்போதைய அமைப்புகளை ஒரு கோப்பில் சேமிக்கவும்
   general: பொதுவானது
   githubRelease: கிட்ஹப் வெளியீடு
+  globalJava: விருப்பமான Java
+  globalJavaHint: "தானியங்கு பயன்முறையில் இந்த Java முதலில் முயற்சிக்கப்படும், விளையாட்டு பதிப்புடன் பொருந்தாதபோது மட்டுமே தானியங்கு கண்டறிதலுக்கு மாறும்."
   globalSetting: உலகளாவிய நிகழ்வு அமைப்பு
   globalSettingHint: நிகழ்வு இயல்பாக இந்த அமைப்புகளை பயன்படுத்தும்.
   importSettings: அமைப்புகளை இறக்குமதி செய்

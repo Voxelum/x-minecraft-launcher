@@ -644,6 +644,7 @@ java:
   memoryManual: Manual
   memoryUnassigned: Unassign
   minMemory: Min Memory
+  name: Java
   noMemory: Do not limit memory usage
   openFolder: Open Java Folder
   presets: Presets
@@ -1668,6 +1669,8 @@ setting:
   exportSettingsHint: Save your current settings to a file
   general: General
   githubRelease: Github Release
+  globalJava: Preferred Java
+  globalJavaHint: "In auto mode this Java is tried first, and only falls back to auto-detection when it is not compatible with the game version."
   globalSetting: Global Instance Setting
   globalSettingHint: Instance will use these settings by default.
   importSettings: Import Settings

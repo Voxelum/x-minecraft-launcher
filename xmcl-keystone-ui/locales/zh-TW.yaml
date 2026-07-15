@@ -512,6 +512,7 @@ java:
   memoryManual: 手動指定
   memoryUnassigned: 不指定記憶體
   minMemory: 最小記憶體
+  name: Java
   noMemory: 不設定記憶體限制
   refresh: 重新整理本地 Java
   systemMemory: '系統可用記憶體: {free} / {total}'
@@ -1372,6 +1373,8 @@ setting:
   exportSettingsHint: 將目前設定儲存到檔案
   general: 基本設定
   githubRelease: Github
+  globalJava: 首選 Java
+  globalJavaHint: "在自動模式下會優先嘗試此 Java，僅當其與遊戲版本不相容時才回退到自動偵測。"
   globalSetting: 全域性實例設定
   globalSettingHint: 實例預設情況下會使用這些全域性設定
   importSettings: 匯入設定

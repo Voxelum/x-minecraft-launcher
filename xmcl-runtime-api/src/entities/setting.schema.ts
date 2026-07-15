@@ -55,6 +55,12 @@ export const SettingSchema = z.object({
   globalMaxMemory: z.number().catch(0),
   /** Global assign memory setting */
   globalAssignMemory: z.union([z.boolean(), z.literal('auto')]).catch(false),
+  /**
+   * Globally preferred Java executable path. In auto mode the launcher tries
+   * this Java first and only falls back to auto-detection when it is not
+   * compatible with the instance. Empty string means no preference.
+   */
+  globalJava: z.string().catch(''),
   /** Global VM options */
   globalVmOptions: z.array(z.string()).catch([]),
   /** Global Minecraft options */

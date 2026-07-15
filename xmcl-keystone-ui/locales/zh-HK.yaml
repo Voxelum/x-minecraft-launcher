@@ -586,6 +586,7 @@ java:
   memoryManual: 手動指定
   memoryUnassigned: 唔指定記憶體
   minMemory: 最小記憶體
+  name: Java
   noMemory: 唔設定記憶體限制
   openFolder: 開啟 Java 所喺資料夾
   presets: 預設
@@ -1490,6 +1491,8 @@ setting:
   exportSettingsHint: 將目前設定儲存到檔案
   general: 基本設定
   githubRelease: Github
+  globalJava: 首選 Java
+  globalJavaHint: "在自動模式下會優先嘗試此 Java，僅當其與遊戲版本不相容時才回退到自動偵測。"
   globalSetting: 全域實例設定
   globalSettingHint: 實例預設情況下會使用呢啲全域設定
   importSettings: 匯入設定

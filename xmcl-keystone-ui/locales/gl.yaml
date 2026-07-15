@@ -516,6 +516,7 @@ java:
   memoryManual: Handmatig
   memoryUnassigned: Niet toewijzen
   minMemory: Min Geheugen
+  name: Java
   noMemory: Geheugengebruik niet beperken
   refresh: Ververs Lokale Java
   systemMemory: 'Systeem Vrij Geheugen: {free} / {total}'
@@ -1281,6 +1282,8 @@ setting:
   exportSettingsHint: Sla je huidige instellingen op in een bestand
   general: Algemeen
   githubRelease: Github Release
+  globalJava: Java preferido
+  globalJavaHint: "No modo automático próbase primeiro este Java e só se recorre á detección automática cando non é compatible coa versión do xogo."
   globalSetting: Globale Instantie Instelling
   globalSettingHint: Instantie gebruikt deze instellingen standaard.
   importSettings: Importeer Instellingen

@@ -535,6 +535,7 @@ java:
   memoryManual: Mannuális
   memoryUnassigned: Nem használt
   minMemory: Min Memória
+  name: Java
   noMemory: Ne korlátozza a memória használatát
   refresh: Helyi Java frissítése
   systemMemory: 'Rendszermentes memória: {free} / {total}'
@@ -1325,6 +1326,8 @@ setting:
   exportSettingsHint: Jelenlegi beállítások mentése fájlba
   general: Általános
   githubRelease: Github kiadás
+  globalJava: Előnyben részesített Java
+  globalJavaHint: "Automatikus módban először ezt a Java-t próbálja meg, és csak akkor tér vissza az automatikus felismeréshez, ha az nem kompatibilis a játékverzióval."
   globalSetting: Globális példány beállítás
   globalSettingHint: Az példány alapértelmezés szerint ezeket a beállításokat fogja használni.
   importSettings: Beállítások importálása

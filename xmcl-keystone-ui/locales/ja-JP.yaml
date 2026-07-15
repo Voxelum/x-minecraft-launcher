@@ -497,6 +497,7 @@ java:
   memoryManual: 手動
   memoryUnassigned: 未割り当て
   minMemory: 最低メモリー割り当て
+  name: Java
   noMemory: メモリの使用を制限しない
   refresh: ローカルのJavaをリフレッシュする
   systemMemory: 'システム空きメモリ: {free} / {total}'
@@ -1317,6 +1318,8 @@ setting:
   exportSettingsHint: 現在の設定をファイルに保存
   general: 一般
   githubRelease: Github リリース
+  globalJava: 優先する Java
+  globalJavaHint: "自動モードではまずこの Java を試し、ゲームバージョンと互換性がない場合のみ自動検出にフォールバックします。"
   globalSetting: グローバル設定
   globalSettingHint: 起動構成はこれらの設定をデフォルトとして設定します
   importSettings: 設定をインポート

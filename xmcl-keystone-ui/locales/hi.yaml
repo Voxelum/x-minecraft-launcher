@@ -554,6 +554,7 @@ java:
   memoryManual: मैन्युअल
   memoryUnassigned: असाइन न करें
   minMemory: न्यूनतम मेमोरी
+  name: Java
   noMemory: मेमोरी उपयोग को सीमित न करें
   openFolder: जावा फ़ोल्डर खोलें
   presets: प्रीसेट
@@ -1439,6 +1440,8 @@ setting:
   exportSettingsHint: अपनी वर्तमान सेटिंग को एक फ़ाइल में सहेजें
   general: सामान्य
   githubRelease: Github रिलीज़
+  globalJava: पसंदीदा Java
+  globalJavaHint: "ऑटो मोड में पहले यह Java आज़माया जाता है, और गेम संस्करण के साथ असंगत होने पर ही ऑटो-डिटेक्शन पर वापस जाता है।"
   globalSetting: वैश्विक इंस्टेंस सेटिंग
   globalSettingHint: इंस्टेंस डिफ़ॉल्ट रूप से इन सेटिंग का उपयोग करेगा।
   importSettings: सेटिंग आयात करें

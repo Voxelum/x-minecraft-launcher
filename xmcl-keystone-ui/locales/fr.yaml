@@ -524,6 +524,7 @@ java:
   memoryManual: Manuel
   memoryUnassigned: Désattribuer
   minMemory: Mémoire Minimum
+  name: Java
   noMemory: Ne pas limiter l'utilisation de la mémoire
   refresh: Actualiser l'exécutable Java Local
   systemMemory: "Mémoire libre du système : {free} / {total}"
@@ -1299,6 +1300,8 @@ setting:
   exportSettingsHint: Enregistrer vos paramètres actuels dans un fichier
   general: Général
   githubRelease: Version Github
+  globalJava: Java préféré
+  globalJavaHint: "En mode automatique, ce Java est essayé en premier et ne revient à la détection automatique que s'il n'est pas compatible avec la version du jeu."
   globalSetting: Paramètres d'instances global
   globalSettingHint: Les instances utiliseront ces paramètres par défaut.
   importSettings: Importer les paramètres

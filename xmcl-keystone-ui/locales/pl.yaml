@@ -496,6 +496,7 @@ java:
   memoryManual: Podręcznik
   memoryUnassigned: Usuń przypisanie
   minMemory: Pamięć min.
+  name: Java
   noMemory: Nie ograniczaj użycia pamięci
   refresh: Odśwież lokalną Javę
   systemMemory: 'Wolna pamięć systemowa: {free} / {total}'
@@ -1261,6 +1262,8 @@ setting:
   exportSettingsHint: Zapisz bieżące ustawienia do pliku
   general: Ogólne
   githubRelease: Github Release
+  globalJava: Preferowana Java
+  globalJavaHint: "W trybie automatycznym najpierw próbowana jest ta Java, a do automatycznego wykrywania system wraca tylko wtedy, gdy nie jest ona zgodna z wersją gry."
   globalSetting: Globalne ustawienia instancji
   globalSettingHint: Instancja będzie używać tych ustawień domyślnie.
   importSettings: Importuj ustawienia

@@ -554,6 +554,7 @@ java:
   memoryManual: हस्तकृतम्
   memoryUnassigned: अविनिहितं करोतु
   minMemory: न्यूनतमा स्मृतिः
+  name: Java
   noMemory: स्मृतिप्रयोगं मा सीमन्तायतु
   openFolder: जावा कोशं उद्घाटयतु
   presets: पूर्वनिर्धारणानि
@@ -1437,6 +1438,8 @@ setting:
   exportSettingsHint: वर्तमानविकल्पान् सञ्चिकायां रक्षतु
   general: सामान्यम्
   githubRelease: Github विमोचनम्
+  globalJava: अभिमतं Java
+  globalJavaHint: "स्वचालितविधौ प्रथमम् एतत् Java प्रयुज्यते, क्रीडासंस्करणेन असङ्गतत्वे एव स्वचालितसंज्ञानं प्रति प्रत्यागच्छति।"
   globalSetting: वैश्विकक्षणविकल्पाः
   globalSettingHint: क्षणाः पूर्वनिर्धारितरूपेण एतान् विकल्पान् प्रयुञ्जते।
   importSettings: विकल्पान् आयातयतु

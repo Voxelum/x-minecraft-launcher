@@ -538,6 +538,7 @@ java:
   memoryManual: 'يدوي'
   memoryUnassigned: 'إلغاء التعيين'
   minMemory: 'دقيقة الذاكرة'
+  name: Java
   noMemory: 'لا تحد من استخدام الذاكرة'
   openFolder: 'افتح مجلد جافا'
   presets: 'الإعدادات المسبقة'
@@ -1366,6 +1367,8 @@ setting:
   exportSettingsHint: 'احفظ إعداداتك الحالية في ملف'
   general: 'عام'
   githubRelease: 'إصدار جيثب'
+  globalJava: Java المفضلة
+  globalJavaHint: "في الوضع التلقائي تتم تجربة Java هذه أولاً ولا يتم الرجوع إلى الاكتشاف التلقائي إلا عندما لا تكون متوافقة مع إصدار اللعبة."
   globalSetting: 'إعداد المثيل العالمي'
   globalSettingHint: 'سيستخدم المثيل هذه الإعدادات بشكل افتراضي.'
   importSettings: 'إعدادات الاستيراد'

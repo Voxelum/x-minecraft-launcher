@@ -350,6 +350,7 @@ describe('pluginSettings', () => {
         globalMinMemory: 0,
         globalMaxMemory: 0,
         globalAssignMemory: false,
+        globalJava: '',
         globalVmOptions: [],
         globalMcOptions: [],
         globalFastLaunch: false,
@@ -417,6 +418,7 @@ describe('pluginSettings', () => {
         globalMinMemory: 0,
         globalMaxMemory: 0,
         globalAssignMemory: false,
+        globalJava: '',
         globalVmOptions: [], // default value, not 'not-an-array'
         globalMcOptions: [],
         globalFastLaunch: false,

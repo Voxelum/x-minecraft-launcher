@@ -13,6 +13,7 @@ export class Settings implements SettingSchema {
   globalMinMemory = 0
   globalMaxMemory = 0
   globalAssignMemory: 'auto' | boolean = false
+  globalJava: string = ''
   globalVmOptions: string[] = []
   globalMcOptions: string[] = []
   globalPrependCommand: string = ''
@@ -98,6 +99,7 @@ export class Settings implements SettingSchema {
     this.globalMinMemory = config.globalMinMemory
     this.globalMaxMemory = config.globalMaxMemory
     this.globalAssignMemory = config.globalAssignMemory
+    this.globalJava = config.globalJava
     this.globalVmOptions = config.globalVmOptions
     this.globalMcOptions = config.globalMcOptions
     this.globalFastLaunch = config.globalFastLaunch
@@ -243,6 +245,7 @@ export class Settings implements SettingSchema {
     globalMinMemory: number
     globalMaxMemory: number
     globalAssignMemory: boolean | 'auto'
+    globalJava: string
     globalVmOptions: string[]
     globalMcOptions: string[]
     globalFastLaunch: boolean
@@ -258,6 +261,7 @@ export class Settings implements SettingSchema {
     this.globalMinMemory = settings.globalMinMemory
     this.globalMaxMemory = settings.globalMaxMemory
     this.globalAssignMemory = settings.globalAssignMemory
+    this.globalJava = settings.globalJava
     this.globalVmOptions = settings.globalVmOptions
     this.globalMcOptions = settings.globalMcOptions
     this.globalFastLaunch = settings.globalFastLaunch
