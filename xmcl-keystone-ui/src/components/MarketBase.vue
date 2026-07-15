@@ -167,14 +167,10 @@ const onSelect = (event: MouseEvent, i: ProjectEntry) => {
       }
       selections.value = _selections
     } else {
-      if (selectedId.value === i.id) {
-        selectedId.value = ''
-        selections.value = {}
-      } else {
-        selectedId.value = i.id
-        selections.value = {
-          [i.id]: true,
-        }
+      // Plain left click toggles the selection in selection mode
+      selections.value = {
+        ...selections.value,
+        [i.id]: !selections.value[i.id],
       }
     }
   } else {

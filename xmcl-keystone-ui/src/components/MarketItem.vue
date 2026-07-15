@@ -27,7 +27,22 @@
     @click="emit('click', $event)"
   >
     <template #prepend>
-      <v-avatar :size="dense ? 30 : 40">
+      <v-avatar
+        v-if="selectionMode"
+        :size="dense ? 30 : 40"
+        class="flex items-center justify-center"
+      >
+        <v-checkbox-btn
+          :model-value="checked"
+          density="comfortable"
+          :ripple="false"
+          class="market-item__checkbox pointer-events-none"
+        />
+      </v-avatar>
+      <v-avatar
+        v-else
+        :size="dense ? 30 : 40"
+      >
         <img
           ref="iconImage"
           v-fallback-img="BuiltinImages.unknownServer"

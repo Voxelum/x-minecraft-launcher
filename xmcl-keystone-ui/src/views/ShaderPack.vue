@@ -4,17 +4,30 @@
     :item-height="itemHeight"
     :plans="{}"
     :error="error"
+    :selection-mode="currentView === 'local' && selectionMode"
     :class="{
       dragover,
     }"
     :loading="loading"
     @load="loadMore"
+    @update:selection-mode="onUpdateSelectionMode"
   >
     <template #actions>
       <MarketListHeader
         v-model:dense="denseView"
         :label="`${originalItems.length} ${t('shaderPack.name', originalItems.length)}`"
       >
+        <v-btn
+          v-if="currentView === 'local'"
+          :class="{ 'v-btn--active': selectionMode }"
+          icon
+          variant="text"
+          density="comfortable"
+          data-testid="market-multi-select-toggle"
+          @click="onUpdateSelectionMode(!selectionMode)"
+        >
+          <v-icon> checklist </v-icon>
+        </v-btn>
         <AppCollectionInstallAll
           v-if="showInstallAll"
           :items="collectionItems"
@@ -477,6 +490,18 @@ const curseforgeInstaller = useCurseforgeInstaller(
   installModloaders,
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
+
+const selections = ref({} as Record<string, boolean>)
+provide('selections', selections)
+
+const selectionMode = ref(false)
+function onUpdateSelectionMode(v: boolean) {
+  selectionMode.value = v
+  if (!v) selections.value = {}
+}
+watch(currentView, (view) => {
+  if (view !== 'local') onUpdateSelectionMode(false)
+})
 
 const onInstallProject = useProjectInstall(
   runtime,

@@ -2,7 +2,7 @@
   <MarketBase
     :plans="plans"
     :items="groupedItems"
-    :selection-mode="true"
+    :selection-mode="isLocalView && selectionMode"
     :item-height="itemHeight"
     :loading="loading"
     :error="error"
@@ -10,6 +10,7 @@
       dragover,
     }"
     @load="onLoad"
+    @update:selection-mode="onUpdateSelectionMode"
   >
     <template #actions>
       <MarketListHeader
@@ -17,6 +18,17 @@
         :label="t('mod.mods', { count: items.length })"
         :total="!isLocalView ? totalAvailable : undefined"
       >
+        <v-btn
+          v-if="isLocalView"
+          :class="{ 'v-btn--active': selectionMode }"
+          icon
+          variant="text"
+          density="comfortable"
+          data-testid="market-multi-select-toggle"
+          @click="onUpdateSelectionMode(!selectionMode)"
+        >
+          <v-icon> checklist </v-icon>
+        </v-btn>
         <v-btn
           v-if="!isLocalView"
           v-shared-tooltip="() => t('mod.groupInstalled')"
@@ -820,6 +832,15 @@ const itemHeight = computed(() => (denseView.value ? 40 : 90))
 const selections = ref({} as Record<string, boolean>)
 
 provide('selections', selections)
+
+const selectionMode = ref(false)
+function onUpdateSelectionMode(v: boolean) {
+  selectionMode.value = v
+  if (!v) selections.value = {}
+}
+watch(isLocalView, (local) => {
+  if (!local) onUpdateSelectionMode(false)
+})
 
 const { show: showGroupSelectDialog } = useDialog('mod-group-select')
 

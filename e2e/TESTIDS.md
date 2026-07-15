@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 157 (in 270 Vue files)
+**Total anchors:** 158 (in 270 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -109,6 +109,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `market-detail-install` | [`xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L161`](../xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L161) |
 | `market-filter-favorite-tab` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24) |
 | `market-item-install` | [`xmcl-keystone-ui/src/components/MarketItem.vue#L40`](../xmcl-keystone-ui/src/components/MarketItem.vue#L40) |
+| `market-multi-select-toggle` | [`xmcl-keystone-ui/src/views/Mod.vue#L28`](../xmcl-keystone-ui/src/views/Mod.vue#L28)<br>[`xmcl-keystone-ui/src/views/ResourcePack.vue#L27`](../xmcl-keystone-ui/src/views/ResourcePack.vue#L27)<br>[`xmcl-keystone-ui/src/views/ShaderPack.vue#L27`](../xmcl-keystone-ui/src/views/ShaderPack.vue#L27) |
 | `me-user-switcher` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16) |
 | `minecraft-friends-add-button` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68) |
 | `minecraft-friends-add-input` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L58`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L58) |
