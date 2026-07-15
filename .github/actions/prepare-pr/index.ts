@@ -254,58 +254,6 @@ function getCommitInfoText(packages: Package[]) {
     return body;
 }
 
-/**
- * @param {string} version 
- * @param {Package[]} packages 
- */
-function writeChangelog(version: string, packages: Package[]) {
-    let body = `\n## ${version}\n`;
-
-    function log(reason: Commit) {
-        return `- ${reason.header} ([${reason.hash}](https://github.com/Voxelum/x-minecraft-launcher/commit/${reason.hash}))\n`
-    }
-
-    for (const pkg of packages.sort((a, b) => a.passive && !b.passive ? 1 : !a.passive && b.passive ? -1 : 0)) {
-        const packageJSON = pkg.content;
-        if (!pkg.newVersion) continue;
-        body += `### ${packageJSON.name}@${pkg.newVersion}\n`;
-        if (pkg.reasons) {
-            let { breakings, feats, fixes, reasons } = pkg;
-
-            if (breakings && breakings.length !== 0) {
-                body += '#### BREAKING CHANGES\n\n';
-                breakings.map(log).forEach(l => body += l);
-            }
-            if (feats && feats.length !== 0) {
-                body += '#### Features\n\n';
-                feats.map(log).forEach(l => body += l);
-            }
-            if (fixes && fixes.length !== 0) {
-                body += '#### Bug Fixes\n\n';
-                fixes.map(log).forEach(l => body += l);
-            }
-
-            let texts = reasons.filter(r => typeof r === 'string');
-
-            texts.forEach(l => body += `- ${l}\n`);
-        }
-    }
-
-    let changelog = fs.readFileSync('CHANGELOG.md').toString();
-
-    let logs = changelog.split('\n');
-
-    let head = logs.shift();
-    logs.unshift(body);
-    logs.unshift(head!);
-
-    changelog = logs.join('\n');
-    console.log(changelog);
-    if (!DRY) {
-        fs.writeFileSync('CHANGELOG.md', changelog);
-    }
-}
-
 function getPrTitle(version: string) {
     return `Prepare Release ${version}`
 }
@@ -358,7 +306,6 @@ async function main(output: (k: string, v: any) => void) {
                 fs.writeFileSync(`package.json`, JSON.stringify(packageJSON, null, 4));
             }
             writeAllNewVersionsToPackageJson(packages, dependencies);
-            writeChangelog(newVersion, packages);
 
             output('title', getPrTitle(newVersion));
             output('body', getPRBody(packages));
