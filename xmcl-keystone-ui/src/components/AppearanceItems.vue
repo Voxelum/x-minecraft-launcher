@@ -457,6 +457,7 @@ import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import { useAgentChatBus } from '@/composables/agentChat'
 import { kCustomCss } from '@/composables/customCss'
+import { kEnvironment } from '@/composables/environment'
 import { kInstanceTheme } from '@/composables/instanceTheme'
 import { useService } from '@/composables/service'
 import { kSettingsState } from '@/composables/setting'
@@ -478,6 +479,21 @@ const props = defineProps<{
 }>()
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
+const env = injection(kEnvironment)
+
+// Default folder to open in the font picker: the OS system font directory.
+const defaultFontFolder = computed(() => {
+  switch (env.value?.os) {
+    case 'windows':
+      return 'C:\\Windows\\Fonts'
+    case 'osx':
+      return '/System/Library/Fonts'
+    case 'linux':
+      return '/usr/share/fonts'
+    default:
+      return undefined
+  }
+})
 
 const emit = defineEmits<{
   (e: 'save'): void
@@ -788,6 +804,7 @@ function onFontSizeDecrease() {
 function onSelectFont() {
   showOpenDialog({
     title: t('setting.themeSelectFont'),
+    defaultPath: defaultFontFolder.value,
     properties: ['openFile'],
     filters: [
       {
