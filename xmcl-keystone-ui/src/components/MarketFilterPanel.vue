@@ -80,150 +80,160 @@
           </v-chip>
         </v-chip-group>
 
-        <div class="filter-subheader" v-if="modLoaders">
-          <v-icon size="16" class="mr-1">extension</v-icon>
-          {{ t('modrinth.modLoaders.name') }}
+        <div v-if="modLoaders || modrinthCategoryFilter" class="filter-loader-env-row">
+          <div v-if="modLoaders" class="min-w-0">
+            <div class="filter-subheader">
+              <v-icon size="16" class="mr-1">extension</v-icon>
+              {{ t('modrinth.modLoaders.name') }}
+            </div>
+            <v-btn-toggle
+              v-roving-tabindex
+              :aria-label="t('modrinth.modLoaders.name')"
+              class="px-1"
+              density="compact"
+              divided
+              :model-value="modloader"
+              @update:model-value="emit('update:modloader', $event)"
+            >
+              <v-btn
+                v-for="loader in modLoaders"
+                :key="loader"
+                :value="loader"
+                size="small"
+                variant="text"
+                border
+              >
+                <img height="24" :src="getIcon(loader)" />
+              </v-btn>
+            </v-btn-toggle>
+          </div>
+          <div v-if="modrinthCategoryFilter" class="min-w-0">
+            <div class="filter-subheader flex">
+              <v-icon size="16" class="mr-1">devices</v-icon>
+              {{ t('modrinth.environments.name') }}
+            </div>
+            <v-btn-toggle
+              v-roving-tabindex
+              :aria-label="t('modrinth.environments.name')"
+              background-color="transparent"
+              class="px-1"
+              variant="outlined"
+              density="compact"
+              :model-value="modrinthEnvironment"
+              :disabled="!enableModrinth"
+              @update:model-value="emit('update:modrinthEnvironment', $event || '')"
+            >
+              <v-btn
+                v-shared-tooltip="t('modrinth.environments.all')"
+                value=""
+                :disabled="!enableModrinth"
+                size="small"
+              >
+                <v-icon size="small"> devices </v-icon>
+              </v-btn>
+              <v-btn
+                v-shared-tooltip="t('shared.client')"
+                value="client"
+                :disabled="!enableModrinth"
+                size="small"
+              >
+                <v-icon size="small"> computer </v-icon>
+              </v-btn>
+              <v-btn
+                v-shared-tooltip="t('shared.server')"
+                value="server"
+                :disabled="!enableModrinth"
+                size="small"
+              >
+                <v-icon size="small"> dns </v-icon>
+              </v-btn>
+            </v-btn-toggle>
+          </div>
         </div>
-        <v-btn-toggle
-          v-if="modLoaders"
-          v-roving-tabindex
-          :aria-label="t('modrinth.modLoaders.name')"
-          class="px-1"
-          density="compact"
-          divided
-          :model-value="modloader"
-          @update:model-value="emit('update:modloader', $event)"
-        >
-          <v-btn
-            v-for="loader in modLoaders"
-            :key="loader"
-            :value="loader"
-            size="small"
-            variant="text"
-            border
-          >
-            <img height="24" :src="getIcon(loader)" />
-          </v-btn>
-        </v-btn-toggle>
 
-        <template v-if="modrinthCategoryFilter">
-          <div class="filter-subheader flex gap-1">
-            <ModrinthIcon class="mr-1 h-4 w-4" />
-            Modrinth
-            <div class="flex-grow" />
-            <v-switch
-              density="compact"
-              hide-details
-              color="primary"
-              :model-value="enableModrinth"
-              @update:model-value="emit('update:enableModrinth', !!$event)"
-            />
-          </div>
-          <v-chip-group
-            v-roving-tabindex="'vertical'"
-            :aria-label="t('modrinth.categories.name')"
-            v-model="modrinthSelectModel"
-            column
-            multiple
-          >
-            <ModrinthCategoryChip
-              v-for="tag in _modrinthCategories"
-              :key="tag.name"
-              :tag="tag"
-              :disabled="!enableModrinth"
-            />
-          </v-chip-group>
-          <div class="filter-subheader flex">
-            <v-icon size="16" class="mr-1">devices</v-icon>
-            {{ t('modrinth.environments.name') }}
-          </div>
-          <v-btn-toggle
-            v-roving-tabindex
-            :aria-label="t('modrinth.environments.name')"
-            background-color="transparent"
-            class="px-1"
-            variant="outlined"
-            density="compact"
-            :model-value="modrinthEnvironment"
-            :disabled="!enableModrinth"
-            @update:model-value="emit('update:modrinthEnvironment', $event || '')"
-          >
-            <v-btn
-              v-shared-tooltip="t('modrinth.environments.all')"
-              value=""
-              :disabled="!enableModrinth"
-              size="small"
-            >
-              <v-icon size="small"> devices </v-icon>
-            </v-btn>
-            <v-btn
-              v-shared-tooltip="t('shared.client')"
-              value="client"
-              :disabled="!enableModrinth"
-              size="small"
-            >
-              <v-icon size="small"> computer </v-icon>
-            </v-btn>
-            <v-btn
-              v-shared-tooltip="t('shared.server')"
-              value="server"
-              :disabled="!enableModrinth"
-              size="small"
-            >
-              <v-icon size="small"> dns </v-icon>
-            </v-btn>
-          </v-btn-toggle>
-        </template>
-        <template v-if="curseforgeCategoryFilter">
-          <div class="filter-subheader flex">
-            <CurseforgeIcon class="mr-1 h-4 w-4" />
-            CurseForge
-            <div class="flex-grow" />
-            <v-switch
-              density="compact"
-              hide-details
-              color="primary"
-              :model-value="enableCurseforge"
-              @update:model-value="emit('update:enableCurseforge', !!$event)"
-            />
-          </div>
-          <div v-if="curseforgeCategoryLabel" class="filter-subheader filter-subheader--minor flex">
-            {{ curseforgeCategoryLabel }}
-          </div>
-          <v-chip-group
-            v-roving-tabindex="'vertical'"
-            :aria-label="t('modrinth.categories.name')"
-            v-model="curseforgeSelectModel"
-            column
-            :disabled="!enableCurseforge"
-          >
-            <CurseforgeCategoryChip
-              v-for="c of curseforgeCategories"
-              :key="c.id"
-              :disabled="!enableCurseforge"
-              :value="c"
-            />
-          </v-chip-group>
-          <template v-if="curseforgeSecondaryCategoryFilter">
-            <div v-if="curseforgeSecondaryCategoryLabel" class="filter-subheader filter-subheader--minor flex">
-              {{ curseforgeSecondaryCategoryLabel }}
+        <div
+          class="filter-category-groups"
+          :class="{ 'filter-category-groups--dual': modrinthCategoryFilter && curseforgeCategoryFilter }"
+        >
+          <div v-if="modrinthCategoryFilter" class="filter-category-column">
+            <div class="filter-subheader flex gap-1">
+              <ModrinthIcon class="mr-1 h-4 w-4" style="color: #1bd96a" />
+              Modrinth
+              <div class="flex-grow" />
+              <v-switch
+                density="compact"
+                hide-details
+                color="primary"
+                :model-value="enableModrinth"
+                @update:model-value="emit('update:enableModrinth', !!$event)"
+              />
             </div>
             <v-chip-group
               v-roving-tabindex="'vertical'"
               :aria-label="t('modrinth.categories.name')"
-              v-model="curseforgeSecondarySelectModel"
+              v-model="modrinthSelectModel"
+              column
+              multiple
+            >
+              <ModrinthCategoryChip
+                v-for="tag in _modrinthCategories"
+                :key="tag.name"
+                :tag="tag"
+                :disabled="!enableModrinth"
+              />
+            </v-chip-group>
+          </div>
+          <div v-if="curseforgeCategoryFilter" class="filter-category-column">
+            <div class="filter-subheader flex">
+              <CurseforgeIcon class="mr-1 h-4 w-4" style="color: #f16436" />
+              CurseForge
+              <div class="flex-grow" />
+              <v-switch
+                density="compact"
+                hide-details
+                color="primary"
+                :model-value="enableCurseforge"
+                @update:model-value="emit('update:enableCurseforge', !!$event)"
+              />
+            </div>
+            <div v-if="curseforgeCategoryLabel" class="filter-subheader filter-subheader--minor flex">
+              {{ curseforgeCategoryLabel }}
+            </div>
+            <v-chip-group
+              v-roving-tabindex="'vertical'"
+              :aria-label="t('modrinth.categories.name')"
+              v-model="curseforgeSelectModel"
               column
               :disabled="!enableCurseforge"
             >
               <CurseforgeCategoryChip
-                v-for="c of curseforgeSecondaryCategories"
+                v-for="c of curseforgeCategories"
                 :key="c.id"
                 :disabled="!enableCurseforge"
                 :value="c"
               />
             </v-chip-group>
-          </template>
-        </template>
+            <template v-if="curseforgeSecondaryCategoryFilter">
+              <div v-if="curseforgeSecondaryCategoryLabel" class="filter-subheader filter-subheader--minor flex">
+                {{ curseforgeSecondaryCategoryLabel }}
+              </div>
+              <v-chip-group
+                v-roving-tabindex="'vertical'"
+                :aria-label="t('modrinth.categories.name')"
+                v-model="curseforgeSecondarySelectModel"
+                column
+                :disabled="!enableCurseforge"
+              >
+                <CurseforgeCategoryChip
+                  v-for="c of curseforgeSecondaryCategories"
+                  :key="c.id"
+                  :disabled="!enableCurseforge"
+                  :value="c"
+                />
+              </v-chip-group>
+            </template>
+          </div>
+        </div>
       </v-tabs-window-item>
       <v-tabs-window-item :value="1" class="tab">
         <div class="filter-subheader flex">
@@ -568,5 +578,22 @@ function getIcon(loader: string) {
 <style scoped>
 .tab {
   @apply px-2 w-full min-w-0 max-h-full overflow-x-hidden gap-2;
+}
+/* When both Modrinth and CurseForge category groups are present, lay them out
+   side by side as two columns. With a single source the column just takes the
+   full width (default block flow). */
+.filter-category-groups--dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.filter-category-column {
+  min-width: 0;
+}
+/* Modloader (left) and environment (right) share one row as two equal columns. */
+.filter-loader-env-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 </style>
