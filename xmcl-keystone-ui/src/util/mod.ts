@@ -253,6 +253,106 @@ export function getModMinecraftVersion(mod: ModFile) {
   }
 }
 
+/**
+ * Get the required (non-optional) dependency mod ids of a mod across all runtimes.
+ */
+export function getRequiredModDependencyIds(mod: ModFile): string[] {
+  const result = new Set<string>()
+  for (const deps of Object.values(mod.dependencies)) {
+    for (const dep of deps) {
+      if (dep.optional) continue
+      result.add(dep.modId)
+    }
+  }
+  return [...result]
+}
+
+/**
+ * Build an index mapping a provided mod id to the mods that provide it.
+ */
+function buildModProviderIndex(mods: ModFile[]) {
+  const providers = new Map<string, ModFile[]>()
+  for (const mod of mods) {
+    for (const id of Object.keys(mod.provideRuntime)) {
+      const arr = providers.get(id)
+      if (arr) arr.push(mod)
+      else providers.set(id, [mod])
+    }
+  }
+  return providers
+}
+
+/**
+ * Resolve the full set of mods that should be disabled together with the given mods.
+ *
+ * When a mod is disabled, its dependency mods are disabled as well, but only if they
+ * are no longer required by any other mod that stays enabled. Dependencies are matched
+ * by mod id via each mod's provided runtime.
+ */
+export function resolveModsToDisable(toDisable: ModFile[], allMods: ModFile[]): ModFile[] {
+  const providers = buildModProviderIndex(allMods)
+  const disabled = new Set(toDisable)
+  const queue = [...toDisable]
+
+  const isStillNeeded = (dep: ModFile) => {
+    const providedIds = Object.keys(dep.provideRuntime)
+    if (providedIds.length === 0) return false
+    const providedSet = new Set(providedIds)
+    for (const mod of allMods) {
+      if (mod === dep || disabled.has(mod) || !mod.enabled) continue
+      for (const depId of getRequiredModDependencyIds(mod)) {
+        if (providedSet.has(depId)) return true
+      }
+    }
+    return false
+  }
+
+  while (queue.length) {
+    const mod = queue.pop()!
+    for (const depId of getRequiredModDependencyIds(mod)) {
+      const provs = providers.get(depId)
+      if (!provs) continue
+      for (const dep of provs) {
+        if (disabled.has(dep) || !dep.enabled) continue
+        if (isStillNeeded(dep)) continue
+        disabled.add(dep)
+        queue.push(dep)
+      }
+    }
+  }
+
+  return [...disabled]
+}
+
+/**
+ * Resolve the full set of mods that should be enabled together with the given mods.
+ *
+ * When a mod is enabled, its dependency mods are enabled as well, if they exist and are
+ * not already enabled. Dependencies are matched by mod id via each mod's provided runtime.
+ */
+export function resolveModsToEnable(toEnable: ModFile[], allMods: ModFile[]): ModFile[] {
+  const providers = buildModProviderIndex(allMods)
+  const enabled = new Set(toEnable)
+  const queue = [...toEnable]
+
+  while (queue.length) {
+    const mod = queue.pop()!
+    for (const depId of getRequiredModDependencyIds(mod)) {
+      const provs = providers.get(depId)
+      if (!provs) continue
+      // Already satisfied by a provider that is (or will be) enabled
+      if (provs.some(p => p.enabled || enabled.has(p))) continue
+      for (const dep of provs) {
+        if (enabled.has(dep)) continue
+        enabled.add(dep)
+        queue.push(dep)
+      }
+    }
+  }
+
+  return [...enabled]
+}
+
 export function getModFileFromResource(resource: Resource, runtime: RuntimeVersions): ModFile {
   const modItem: ModFile = markRaw({
     path: resource.path,

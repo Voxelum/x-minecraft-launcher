@@ -60,7 +60,8 @@ const emit = defineEmits(['click', 'checked', 'install', 'click-dependency'])
 
 const { compatibility: compatibilities } = injection(kInstanceModsContext)
 const compatibility = computed(() => props.item.installed[0] ? compatibilities.value[props.item.installed[0].modId] ?? [] : [])
-const { uninstall, disable, enable } = useService(InstanceModsServiceKey)
+const { uninstall } = useService(InstanceModsServiceKey)
+const { disable, enable } = injection(kInstanceModsContext)
 const { path } = injection(kInstance)
 const _getContextMenuItems = useModItemContextMenuItems(computed(() => props.item), () => {
   if (props.item.installed) {
