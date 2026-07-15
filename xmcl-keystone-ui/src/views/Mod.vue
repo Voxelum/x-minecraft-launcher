@@ -18,20 +18,9 @@
         :total="!isLocalView ? totalAvailable : undefined"
       >
         <v-btn
-          id="default-source-button"
-          v-shared-tooltip="() => t('mod.switchDefaultSource') + ' ' + defaultSource"
-          icon
-          variant="text"
-          density="comfortable"
-          @click="defaultSource = defaultSource === 'curseforge' ? 'modrinth' : 'curseforge'"
-        >
-          <v-icon>
-            {{ defaultSource === 'modrinth' ? 'xmcl:modrinth' : 'xmcl:curseforge' }}
-          </v-icon>
-        </v-btn>
-        <v-btn
+          v-if="!isLocalView"
           v-shared-tooltip="() => t('mod.groupInstalled')"
-          :class="{ 'v-list-item--active': groupInstalled }"
+          :class="{ 'v-btn--active': groupInstalled }"
           icon
           variant="text"
           density="comfortable"
@@ -294,7 +283,6 @@
       </v-card>
     </v-dialog>
     <ModDuplicatedDialog />
-    <ModGroupSelectDialog />
     <ModIncompatibileDialog />
   </MarketBase>
 </template>
@@ -337,7 +325,6 @@ import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
 import ModGroupEntryItem from './ModGroupEntryItem.vue'
-import ModGroupSelectDialog from './ModGroupSelectDialog.vue'
 import ModIncompatibileDialog from './ModIncompatibileDialog.vue'
 import ModItem from './ModItem.vue'
 import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
@@ -358,7 +345,6 @@ const localizedTexts = computed(() =>
       disabe: t('shared.disable'),
       denseView: t('mod.denseView'),
       groupInstalled: t('mod.groupInstalled'),
-      switchDefaultSource: t('mod.switchDefaultSource'),
       checkDependencies: t('modInstall.checkDependencies'),
       checkedDependencies: t('modInstall.checkedDependencies'),
       installDependencies: t('modInstall.installDependencies'),
@@ -756,7 +742,7 @@ const shouldShowCurseforge = (
   return true
 }
 
-const { mods, conflicted, revalidate, incompatible, compatibility } =
+const { mods, conflicted, revalidate, incompatible, compatibility, enable, disable } =
   injection(kInstanceModsContext)
 
 // Install-all is available for any collection open in the Favorites view —
@@ -782,6 +768,20 @@ watch(
   { immediate: true },
 )
 
+// Remember the source the user explicitly picks in the detail view so the next
+// mod that has both providers defaults to the same source.
+watch(
+  computed(() => route.query.id as string | undefined),
+  (id) => {
+    if (!id) return
+    if (id.startsWith('curseforge:')) {
+      defaultSource.value = 'curseforge'
+    } else if (id.startsWith('modrinth:')) {
+      defaultSource.value = 'modrinth'
+    }
+  },
+)
+
 const onLoad = loadMore
 
 const onClickDependency = (modId: string) => {
@@ -791,7 +791,7 @@ const onClickDependency = (modId: string) => {
 }
 
 // install / uninstall / enable / disable
-const { install, uninstall, enable, disable, installFromMarket } =
+const { install, uninstall, installFromMarket } =
   useService(InstanceModsServiceKey)
 const onUninstall = (f: ProjectFile[], _path?: string) => {
   uninstall({ path: _path ?? path.value, files: f.map((f) => f.path) }).then(() => {
@@ -1017,13 +1017,6 @@ useTutorial(
       popover: {
         title: t('tutorial.mod.detailTitle'),
         description: t('tutorial.mod.detailDescription'),
-      },
-    },
-    {
-      element: '#default-source-button',
-      popover: {
-        title: t('tutorial.mod.defaultSourceTitle'),
-        description: t('tutorial.mod.defaultSourceDescription'),
       },
     },
   ]),
