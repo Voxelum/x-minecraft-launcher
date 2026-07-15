@@ -1,4 +1,4 @@
-import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, InstanceServiceKey, ModGroupData } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { ContextMenuItem } from './contextMenu'
 import { useDialog } from './dialog'
@@ -7,15 +7,18 @@ import { injection } from '@/util/inject'
 import { kInstance } from './instance'
 import { Instance } from '@xmcl/instance'
 import { useInjectSidebarSettings } from './sidebarSettings'
+import { useInstanceGroupOps } from './instanceGroup'
 
 export function useInstanceContextMenuFunc() {
   const { show: showDeleteDialog } = useDialog('delete-instance')
+  const { show: showGroupSelectDialog } = useDialog('mod-group-select')
   const { duplicateInstance } = useService(InstanceServiceKey)
   const { showItemInDirectory } = useService(BaseServiceKey)
   const { t } = useI18n()
   const { path } = injection(kInstance)
   const { currentRoute, push } = useRouter()
   const { pinnedInstances, showOnlyPinned } = useInjectSidebarSettings()
+  const { groups, group, createGroup } = useInstanceGroupOps()
 
   return (inst?: Instance) => {
     if (!inst) return []
@@ -45,6 +48,35 @@ export function useInstanceContextMenuFunc() {
           showItemInDirectory(inst.path)
         },
         icon: 'folder',
+      },
+      {
+        text: t('mod.group'),
+        icon: 'folder_open',
+        onClick() {
+          const groupRecord: Record<string, ModGroupData> = {}
+          const counts: Record<string, number> = {}
+          for (const g of groups.value) {
+            if (typeof g !== 'string' && g.name) {
+              groupRecord[g.name] = { color: g.color, files: [] }
+              counts[g.name] = g.instances.length
+            }
+          }
+          showGroupSelectDialog({
+            groups: groupRecord,
+            groupModCounts: counts,
+            countLabel: (count: number) => t('instances.instanceCount', { count }),
+            onSelect: (groupName: string | null, newName?: string) => {
+              if (groupName) {
+                const target = groups.value.find(g => typeof g !== 'string' && g.name === groupName)
+                if (target) {
+                  group(inst.path, target)
+                }
+              } else if (newName) {
+                createGroup(inst.path, newName)
+              }
+            },
+          })
+        },
       },
       {
         text: t('instance.delete'),

@@ -593,6 +593,7 @@ instanceUpdate:
   update: Start Update
 instances:
   add: Create Game
+  instanceCount: '{count} instances'
   addCurseForgeDescription: >-
     Import from curseforge data folder. You need to select curseforge's root
     data folder
