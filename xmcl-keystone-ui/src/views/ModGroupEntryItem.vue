@@ -60,7 +60,7 @@ const props = defineProps<{
 
 const avatars = computed(() => props.items.map((i) => i.icon).filter((v) => !!v))
 
-const emit = defineEmits(['expand', 'setting', 'ungroup', 'enable-all', 'disable-all'])
+const emit = defineEmits(['expand', 'setting', 'ungroup', 'enable-all', 'disable-all', 'apply-group-rules', 'save-group-rules'])
 
 const { t } = useI18n()
 
@@ -125,6 +125,24 @@ function getContextMenu() {
     section: 'group',
     onClick: () => {
       emit('ungroup')
+    },
+  })
+
+  items.push({
+    icon: 'bookmarks',
+    text: t('mod.applyGroupRules'),
+    section: 'rules',
+    onClick: () => {
+      emit('apply-group-rules')
+    },
+  })
+
+  items.push({
+    icon: 'book',
+    text: t('mod.syncGroupRules'),
+    section: 'rules',
+    onClick: () => {
+      emit('save-group-rules')
     },
   })
 

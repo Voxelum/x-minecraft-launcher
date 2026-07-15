@@ -183,6 +183,8 @@
         @setting="renameGroup(item.name, $event.name)"
         @enable-all="enableAll(item)"
         @disable-all="disableAll(item)"
+        @apply-group-rules="applySharedGroupRules()"
+        @save-group-rules="syncGroupRules()"
       />
       <v-list-subheader
         v-else-if="item === 'search'"
@@ -511,6 +513,8 @@ const {
   groups,
   groupsRaw,
   groupModCounts,
+  syncGroupRules,
+  applySharedGroupRules,
   updateGroupFilenames,
 } = useModGroups(isLocalView, path, items, sortBy)
 
@@ -858,6 +862,7 @@ function showGroupDialog(fileNames: string[]) {
         group(fileNames, newName)
       }
     },
+    onApplyShared: () => applySharedGroupRules(),
   })
 }
 

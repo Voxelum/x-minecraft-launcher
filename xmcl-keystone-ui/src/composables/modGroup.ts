@@ -9,7 +9,7 @@ import {
 import { ContextMenuItem } from "./contextMenu";
 import { useService } from "./service";
 import { useState } from "./syncableState";
-import { Ref, computed, ref, shallowRef, watch, onMounted, markRaw } from "vue";
+import { Ref, computed, ref, shallowRef, watch, onMounted, onBeforeUnmount, markRaw } from "vue";
 
 export type ProjectGroup<T extends ProjectFile = ProjectFile> = {
   name: string;
@@ -422,9 +422,7 @@ export function useModGroups(
     return group.color;
   }
 
-  async function syncGroupRules() {
-    const rules = await getSharedGroupRules();
-
+  function computeCurrentGroupRules() {
     const currentRules = {} as Record<string, string[]>;
     const result = items.value;
     for (const mod of result) {
@@ -437,21 +435,66 @@ export function useModGroups(
         if (!currentRules[group]) {
           currentRules[group] = [];
         }
-        currentRules[group].push(file.modId);
+        if (!currentRules[group].includes(file.modId)) {
+          currentRules[group].push(file.modId);
+        }
+      }
+    }
+    return currentRules;
+  }
+
+  /**
+   * Save the current instance grouping into the shared group rules.
+   *
+   * Merge rules:
+   * - By default items in the same group are unioned. If the shared group X has
+   *   [a, b, c] and the current instance group X has [c, d], the resulting shared
+   *   group X is [a, b, c, d].
+   * - However, if a mod is present in the current instance but is NOT assigned to
+   *   that group in the instance, it is removed from the shared group. E.g. if the
+   *   shared group X has [a, b, c], the instance group X has [c, d] and the mod `a`
+   *   is installed in the current instance (but no longer grouped under X), then the
+   *   resulting shared group X is [b, c, d].
+   * - Shared mods that are not installed in the current instance are always kept,
+   *   since we have no information to remove them.
+   * - Groups that end up empty are removed from the shared rules.
+   */
+  async function syncGroupRules() {
+    const shared = await getSharedGroupRules();
+    const currentRules = computeCurrentGroupRules();
+
+    // All mod ids installed in the current instance, regardless of their group
+    const instanceModIds = new Set<string>();
+    for (const mod of items.value) {
+      const file = mod.installed?.[0];
+      if (file) instanceModIds.add(file.modId);
+    }
+
+    const result = {} as Record<string, string[]>;
+    const allGroupNames = new Set([
+      ...Object.keys(shared),
+      ...Object.keys(currentRules),
+    ]);
+
+    for (const name of allGroupNames) {
+      const current = currentRules[name] ?? [];
+      const existing = shared[name] ?? [];
+      const set = new Set<string>(current);
+      for (const modId of existing) {
+        // Keep an existing shared mod unless the instance has it but moved it out
+        // of this group (present in the instance and not in the current group).
+        if (!instanceModIds.has(modId) || current.includes(modId)) {
+          set.add(modId);
+        }
+      }
+      if (set.size > 0) {
+        result[name] = [...set];
       }
     }
 
-    // merge rules
-    for (const [groupName, group] of Object.entries(currentRules)) {
-      if (!rules[groupName]) {
-        rules[groupName] = [];
-      }
-      // merge with dedup
-      rules[groupName] = [...new Set([...rules[groupName], ...group])];
-    }
-
-    // update shared group rules
-    await updateSharedGroupRules(rules);
+    // Replace every considered group so that removals and emptied groups take
+    // effect. Groups from other instances that are not touched here are preserved.
+    await updateSharedGroupRules(result, [...allGroupNames]);
   }
 
   async function applySharedGroupRules() {
