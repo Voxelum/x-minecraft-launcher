@@ -14,13 +14,24 @@
   <a href="https://conventionalcommits.org">
     <img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Commit">
   </a>
-  <br>
+  <a href="https://flathub.org/en/apps/app.xmcl.voxelum">
+    <img src="https://img.shields.io/flathub/v/app.xmcl.voxelum?logo=flathub&label=Flathub" alt="Flathub">
+  </a>
+</p>
+
+<p align="center">
   <a href="https://discord.gg/W5XVwYY7GQ">
-    <img src="https://discord.com/api/guilds/405213567118213121/widget.png" alt="Discord">
+    <img src="https://img.shields.io/discord/405213567118213121?logo=discord&logoColor=white&label=Discord&color=5865F2" alt="Discord">
+  </a>
+  <a href="https://www.reddit.com/r/XMCL/">
+    <img src="https://img.shields.io/badge/Reddit-r%2FXMCL-FF4500?logo=reddit&logoColor=white" alt="Reddit">
   </a>
   <a href="https://kook.top/gqjSHh">
     <img src="https://img.shields.io/endpoint?url=https://api.xmcl.app/kook-badge" alt="Kook">
   </a>
+</p>
+
+<p align="center">
   <a href="https://afdian.com/@ci010">
     <img src="https://img.shields.io/endpoint?url=https://api.xmcl.app/afdian-badge" alt="afdian">
   </a>
@@ -45,6 +56,12 @@ HomeBrew installation also available via tap
 brew tap voxelum/xmcl
 brew install --cask voxelum/xmcl/xmcl
 sudo xattr -rd com.apple.quarantine /Applications/X\ Minecraft\ Launcher.app
+```
+
+On Linux, XMCL is also available on Flathub:
+
+```bash
+flatpak install flathub app.xmcl.voxelum
 ```
 
 <kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](i18n/README.uk.md)</kbd>
@@ -144,8 +161,8 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 
 ### 🌍 Community & Localization
 
-**[BANSAFAn](https://github.com/BANSAFAn)**
-Community support and moderation for RU/UK regions · Ukrainian translation
+**[BANSAFAn/Baneronetwo](https://github.com/BANSAFAn)**
+Community support and moderation
 
 **[Marmur2020](https://github.com/Marmur2020)**
 Complete Ukrainian language translation
