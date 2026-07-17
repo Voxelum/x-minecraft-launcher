@@ -603,7 +603,7 @@ export class InstallService extends AbstractService implements IInstallService {
     }
   }
 
-  @Lock((v) => [LockKey.version(v.version), LockKey.assets, LockKey.libraries])
+  @Lock([LockKey.assets, LockKey.libraries])
   async installDependencies(options: InstallDependenciesOptions) {
     const location = this.getPath()
     const side = options.side ?? 'client'
@@ -616,8 +616,10 @@ export class InstallService extends AbstractService implements IInstallService {
       this.log(`Install dependencies for ${options.version} (${side})`)
       if (side === 'client') {
         const resolvedVersion = await Version.parse(location, options.version)
-        await installLibraries(resolvedVersion, ops)
-        await installAssets(resolvedVersion, ops)
+        await Promise.all([
+          installLibraries(resolvedVersion, ops),
+          installAssets(resolvedVersion, ops),
+        ])
       } else {
         const resolvedVersion = await this.versionService.resolveServerVersion(options.version)
 
@@ -766,7 +768,10 @@ export class InstallService extends AbstractService implements IInstallService {
     const ops = this.getInstallOptions({ side: options.side }, task)
     try {
       this.log(`Install Minecraft ${id} (${options.side})`)
-      await installMinecraft(options.meta, this.getPath(), ops)
+      await installMinecraft(options.meta, this.getPath(), {
+        ...ops,
+        installJar: options.installJar,
+      })
       this.log(`Successfully installed Minecraft ${id} (${options.side})`)
       task.complete()
     } catch (e) {
