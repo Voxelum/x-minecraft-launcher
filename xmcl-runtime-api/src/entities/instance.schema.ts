@@ -59,6 +59,26 @@ export const InstanceModpackMetadataSchema = z.object({
       }),
     )
     .default({}),
+  modrinth: z.object({
+    projectId: z.string().default(''),
+    profile: z.enum(['universal', 'client', 'server', 'split']).default('client'),
+    versionType: z.enum(['release', 'beta', 'alpha']).default('release'),
+    pendingProjectStatus: z.enum(['approved', 'unlisted', 'private']).optional(),
+    lastVersionId: z.string().default(''),
+    lastPublishedAt: z.number().default(0),
+    artifacts: z.array(z.object({
+      profile: z.enum(['universal', 'client', 'server']),
+      path: z.string(),
+    })).default([]),
+  }).default({
+    projectId: '',
+    profile: 'client',
+    versionType: 'release',
+    pendingProjectStatus: undefined,
+    lastVersionId: '',
+    lastPublishedAt: 0,
+    artifacts: [],
+  }),
 })
 
 /**

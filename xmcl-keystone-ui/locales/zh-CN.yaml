@@ -866,8 +866,77 @@ modpack:
   includeAssets: 是否包含游戏资源 (Assets) 文件
   includes: 打包文件
   modpackVersion: 整合包版本
+  modrinthProject: Modrinth 项目
   name: 整合包
   overrides: 整合包打包覆盖 (overrides)
+  selectDefaultFiles: 选择默认文件
+  bindProject: 绑定项目
+  bindProjectHint: 选择当前 Modrinth 账号有权管理的整合包项目。
+  editProject: 编辑项目
+  projectDiscovery: 发现与兼容性
+  projectGallery: 项目图库
+  projectGalleryAdd: 添加图片
+  projectGalleryEmpty: 暂无图库图片。
+  projectGalleryFeatured: 设为主图
+  projectGalleryHint: 可添加不超过 5 MiB 的图片，并设置项目主图。
+  projectIdentity: 标识与介绍
+  projectLinks: 项目链接
+  projectLoadFailed: 无法加载已绑定的 Modrinth 项目。
+  projectNoChanges: 项目没有未保存的修改。
+  projectNotBound: 尚未绑定 Modrinth 项目
+  projectNotBoundHint: 可绑定已有项目，或创建新的 Modrinth 项目。
+  projectUnsavedChanges: 已修改 {count} 个项目字段
+  projectLatestDraft: 草稿
+  projectVersions: 个版本
+  publish: 发布
+  publishCategories: 分类（用逗号分隔）
+  publishChannel: 发布通道
+  publishChangelog: 更新日志
+  publishConfirmProjectChanges: 确认项目修改
+  publishCreateProject: 创建项目
+  publishCreateDraft: 构建并创建草稿
+  publishCustomVersion: 自定义
+  publishDescription: 项目详细介绍
+  publishDiscordUrl: Discord 地址
+  publishDraftCreated: 草稿版本已上传。
+  publishSubmitted: 版本已提交审核。
+  publishExistingProject: 已有项目
+  publishIcon: 项目图标
+  publishIconHint: 支持 PNG、JPEG 或 WebP
+  publishIconKeep: 未选择新图片时保持现有图标
+  publishIssuesUrl: 问题反馈地址
+  publishLicense: 许可证 ID
+  publishLogin: 登录 Modrinth
+  publishFiles: 个已选文件
+  publishModrinth: 发布到 Modrinth
+  publishNewProject: 新建项目
+  publishOpenProject: 打开项目
+  publishOpenVersion: 打开版本
+  publishProfile: MRPack 类型
+  publishProfileClient: 仅客户端
+  publishProfileServer: 仅服务端
+  publishProfileSplit: 通用包及独立客户端/服务端包
+  publishProfileUniversal: 通用包
+  publishProject: 项目
+  publishProjectDetailsTab: 项目详情
+  publishProjectName: 项目名称
+  publishProjectRequired: 请先选择要发布的项目。
+  publishProjectSlug: 项目标识
+  publishProjectUrl: 项目 URL（可选）
+  publishProjectUrlHint: 留空将自动使用 {slug}。
+  publishProjectSaved: 项目详情已更新。
+  publishSourceUrl: 源代码地址
+  publishSubmit: 提交草稿审核
+  publishSummary: 简短摘要
+  publishSummaryMinWords: 摘要至少需要包含 3 个词。
+  publishVersionTitle: 版本标题
+  publishVersionTab: 发布版本
+  publishVersion: 发布版本
+  publishVisibility: 可见性
+  publishWikiUrl: Wiki 地址
+  visibilityPrivate: 私有
+  visibilityPublic: 公开
+  visibilityUnlisted: 不公开列出
   url: URL
   urlHint: 整合包的主页 URL 地址
 modpackImportConfirm:

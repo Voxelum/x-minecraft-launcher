@@ -42,6 +42,9 @@
     <AppMinecraftFriendsDialog />
     <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
     <AppModrinthLoginDialog />
+    <AppModrinthProjectCreateDialog />
+    <AppModrinthProjectBindDialog />
+    <AppModrinthVersionPublishDialog />
     <AppSideBarGroupSettingDialog :default-color="defaultColor" />
     <ModGroupSelectDialog />
     <AppGamepadPrompt />
@@ -95,6 +98,9 @@ import AppMigrateWizardDialog from '@/views/AppMigrateWizardDialog.vue'
 import AppMinecraftFriendsDialog from '@/views/AppMinecraftFriendsDialog.vue'
 import UserProfileDialog from '@/components/UserProfileDialog.vue'
 import AppModrinthLoginDialog from '@/views/AppModrinthLoginDialog.vue'
+import AppModrinthProjectCreateDialog from '@/views/AppModrinthProjectCreateDialog.vue'
+import AppModrinthProjectBindDialog from '@/views/AppModrinthProjectBindDialog.vue'
+import AppModrinthVersionPublishDialog from '@/views/AppModrinthVersionPublishDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
 import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
 import AppSideBarClassic from '@/views/AppSideBarClassic.vue'

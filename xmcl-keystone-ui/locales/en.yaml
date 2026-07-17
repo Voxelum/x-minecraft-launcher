@@ -1058,8 +1058,77 @@ modpack:
   includeAssets: Include Assets
   includes: Files to include
   modpackVersion: Modpack Version
+  modrinthProject: Modrinth project
   name: Modpack | Modpacks
   overrides: Overrides
+  selectDefaultFiles: Select default files
+  bindProject: Bind project
+  bindProjectHint: Select a Modrinth modpack project managed by the current account.
+  editProject: Edit project
+  projectDiscovery: Discovery and compatibility
+  projectGallery: Gallery
+  projectGalleryAdd: Add image
+  projectGalleryEmpty: No gallery images yet.
+  projectGalleryFeatured: Featured
+  projectGalleryHint: Add up to 5 MiB images and choose the featured project image.
+  projectIdentity: Identity and description
+  projectLinks: Project links
+  projectLoadFailed: Failed to load the bound Modrinth project.
+  projectNoChanges: No unsaved project changes.
+  projectNotBound: No Modrinth project is bound
+  projectNotBoundHint: Bind an existing project, or create a new Modrinth project.
+  projectUnsavedChanges: '{count} project field(s) changed'
+  projectLatestDraft: Draft
+  projectVersions: versions
+  publish: Publish
+  publishCategories: Categories (comma separated)
+  publishChannel: Release channel
+  publishChangelog: Changelog
+  publishConfirmProjectChanges: Confirm project changes
+  publishCreateProject: Create project
+  publishCreateDraft: Build and create draft
+  publishCustomVersion: Custom
+  publishDescription: Project description
+  publishDiscordUrl: Discord URL
+  publishDraftCreated: Draft version uploaded.
+  publishSubmitted: Version submitted for review.
+  publishExistingProject: Existing project
+  publishIcon: Project icon
+  publishIconHint: PNG, JPEG, or WebP
+  publishIconKeep: Leave unchanged unless a new image is selected
+  publishIssuesUrl: Issues URL
+  publishLicense: License ID
+  publishLogin: Sign in to Modrinth
+  publishFiles: selected files
+  publishModrinth: Publish to Modrinth
+  publishNewProject: New project
+  publishOpenProject: Open project
+  publishOpenVersion: Open version
+  publishProfile: MRPack profile
+  publishProfileClient: Client only
+  publishProfileServer: Server only
+  publishProfileSplit: Universal + separate client/server files
+  publishProfileUniversal: Universal
+  publishProject: Project
+  publishProjectDetailsTab: Project details
+  publishProjectName: Project name
+  publishProjectRequired: Select a project before publishing.
+  publishProjectSlug: Project slug
+  publishProjectUrl: Project URL (optional)
+  publishProjectUrlHint: Leave blank to use {slug}.
+  publishProjectSaved: Project details updated.
+  publishSourceUrl: Source URL
+  publishSubmit: Submit draft for review
+  publishSummary: Short summary
+  publishSummaryMinWords: Summary must contain at least 3 words.
+  publishVersionTitle: Version title
+  publishVersionTab: Publish version
+  publishVersion: Publish version
+  publishVisibility: Visibility
+  publishWikiUrl: Wiki URL
+  visibilityPrivate: Private
+  visibilityPublic: Public
+  visibilityUnlisted: Unlisted
   url: URL
   urlHint: The home page url of your modpack
 modpackImportConfirm:

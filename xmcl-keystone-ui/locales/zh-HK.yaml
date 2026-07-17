@@ -883,6 +883,7 @@ modpack:
   modpackVersion: 模組包版本
   name: 模組包
   overrides: 模組包打包覆蓋 (overrides)
+  selectDefaultFiles: 選擇預設檔案
   url: URL
   urlHint: 模組包嘅主頁 URL 位址
 modpackImportConfirm:

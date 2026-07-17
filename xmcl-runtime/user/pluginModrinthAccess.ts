@@ -1,6 +1,7 @@
 import { LauncherAppPlugin } from '~/app'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { UserService } from './UserService'
+import { formatModrinthAuthorization, getModrinthAccessToken } from './utils/loginModrinth'
 
 export const pluginModrinthAccess: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('ModrinthAccess')
@@ -45,9 +46,7 @@ export const pluginModrinthAccess: LauncherAppPlugin = async (app) => {
 
     const token = await credentials.getValidAccessToken('modrinth')
     if (token.status === 'valid') {
-      // Modrinth's API accepts both `Bearer <token>` and the raw token; we
-      // use the raw form to match the original behavior.
-      request.headers['Authorization'] = token.accessToken
+  request.headers['Authorization'] = formatModrinthAuthorization(token.accessToken)
     }
   })
 }

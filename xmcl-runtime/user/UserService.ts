@@ -128,7 +128,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   // can still proceed even while a non-invalidating call is in flight.
   @Singleton((invalidate?: boolean) => `loginModrinth-${invalidate ? '1' : '0'}`)
   async loginModrinth(invalidate = false): Promise<void> {
-    await loginModrinth(this.app, this, ['USER_READ_EMAIL', 'USER_READ', 'USER_WRITE', 'COLLECTION_CREATE', 'COLLECTION_READ', 'COLLECTION_WRITE', 'COLLECTION_DELETE'], invalidate, this.loginController?.signal, this.externalCredentials)
+  await loginModrinth(this.app, this, ['USER_READ_EMAIL', 'USER_READ', 'USER_WRITE', 'COLLECTION_CREATE', 'COLLECTION_READ', 'COLLECTION_WRITE', 'COLLECTION_DELETE', 'PROJECT_CREATE', 'PROJECT_READ', 'PROJECT_WRITE', 'VERSION_CREATE', 'VERSION_READ', 'VERSION_WRITE'], invalidate, this.loginController?.signal, this.externalCredentials)
   }
 
   addYggdrasilService(url: string): Promise<void> {

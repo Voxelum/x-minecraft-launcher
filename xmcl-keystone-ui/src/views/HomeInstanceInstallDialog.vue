@@ -303,6 +303,7 @@ import {
   InstanceInstallServiceKey,
   InstanceServiceKey,
   ModpackServiceKey,
+  waitModpackFiles,
 } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { BuiltinImages } from '../constant'
@@ -482,7 +483,11 @@ async function getUpgradeValueFromParam(
     const modpack = param.modpack
 
     const state = await openModpack(modpack)
-    const files = state.files
+    // Files are populated asynchronously after `openModpack` resolves. Reading
+    // `state.files` directly returns an empty list on the first open (right
+    // after the zip download), which makes the preview mark every existing
+    // instance file for removal. Wait until the files are ready.
+    const files = await waitModpackFiles(state)
     const config = state.config
 
     return markRaw({

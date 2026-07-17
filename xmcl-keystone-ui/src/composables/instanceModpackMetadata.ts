@@ -16,16 +16,29 @@ export function useInstanceModpackMetadata() {
     emitModrinthStrict: true,
     emitOffline: false,
     emittedFiles: [],
+    emittedServerFiles: [],
     filesEnvironments: {},
+    modrinth: {
+      projectId: '',
+      profile: 'client',
+      versionType: 'release',
+      pendingProjectStatus: undefined,
+      lastVersionId: '',
+      lastPublishedAt: 0,
+      lastPublishedFiles: [],
+      artifacts: [],
+    },
   })
 
-  onMounted(() => {
-    getInstanceModpackMetadata(path.value).then((metadata) => {
-      if (metadata) {
-        Object.assign(modpackMetadata, metadata)
-      }
-    })
-  })
+  let loadVersion = 0
+  watch(path, async (instancePath) => {
+    const version = ++loadVersion
+    if (!instancePath) return
+    const metadata = await getInstanceModpackMetadata(instancePath)
+    if (version === loadVersion && metadata) {
+      Object.assign(modpackMetadata, metadata)
+    }
+  }, { immediate: true })
 
   const saveMetadata = useDebounceFn(() => {
     setInstanceModpackMetadata(path.value, JSON.parse(JSON.stringify(modpackMetadata)))

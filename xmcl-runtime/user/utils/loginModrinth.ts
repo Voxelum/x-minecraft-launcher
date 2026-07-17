@@ -14,6 +14,11 @@ interface ModrinthOAuthResponse {
   scope?: string
 }
 
+export function formatModrinthAuthorization(accessToken: string, tokenType = 'Bearer') {
+  if (/^[A-Za-z][\w-]*\s+/.test(accessToken)) return accessToken
+  return `${tokenType || 'Bearer'} ${accessToken}`
+}
+
 export async function getModrinthAccessToken(
   app: LauncherApp,
   credentials?: ExternalCredentialService,
@@ -21,6 +26,16 @@ export async function getModrinthAccessToken(
   const service = credentials ?? (await app.registry.getOrCreate(ExternalCredentialService))
   const result = await service.getValidAccessToken('modrinth')
   return result.status === 'valid' ? result.accessToken : undefined
+}
+
+export function createModrinthAuthenticatedFetch(app: LauncherApp): typeof fetch {
+  return async (input, init) => {
+    const headers = new Headers(input instanceof Request ? input.headers : undefined)
+    new Headers(init?.headers).forEach((value, key) => headers.set(key, value))
+    const token = await getModrinthAccessToken(app)
+    if (token) headers.set('Authorization', formatModrinthAuthorization(token))
+    return await app.fetch(input, { ...init, headers })
+  }
 }
 
 export async function loginModrinth(
@@ -34,6 +49,8 @@ export async function loginModrinth(
   const credentialService =
     credentials ?? (await app.registry.getOrCreate(ExternalCredentialService))
   const token = invalidate ? undefined : await getModrinthAccessToken(app, credentialService)
+
+  if (token) return
 
   if (!token) {
     const redirect_uri = `http://127.0.0.1:${await app.serverPort}/modrinth-auth`
