@@ -90,11 +90,22 @@ export default function createNativeModulePlugin(): Plugin {
           await write
           return {
             contents: `'use strict'
-const { readFileSync } = require('node:fs')
-const { join } = require('node:path')
+const { readFileSync, existsSync } = require('node:fs')
+const { join, resolve } = require('node:path')
 let wasmBuffer
+function findFile(name) {
+  let dir = __dirname
+  while (dir) {
+    const candidate = join(dir, name)
+    if (existsSync(candidate)) return candidate
+    const parent = resolve(dir, '..')
+    if (parent === dir) break
+    dir = parent
+  }
+  return join(__dirname, name)
+}
 Object.defineProperty(module, 'exports', {
-  get: () => wasmBuffer || (wasmBuffer = readFileSync(join(__dirname, ${JSON.stringify(wasmName)})))
+  get: () => wasmBuffer || (wasmBuffer = readFileSync(findFile(${JSON.stringify(wasmName)})))
 })`,
             loader: 'js',
           }
@@ -127,7 +138,21 @@ Object.defineProperty(module, 'exports', {
           }
           await iconvShared
           return {
-            contents: "module.exports = require(require('path').join(__dirname, 'iconv-lite.js'))",
+            contents: `'use strict'
+const { existsSync } = require('node:fs')
+const { join, resolve } = require('node:path')
+function findFile(name) {
+  let dir = __dirname
+  while (dir) {
+    const candidate = join(dir, name)
+    if (existsSync(candidate)) return candidate
+    const parent = resolve(dir, '..')
+    if (parent === dir) break
+    dir = parent
+  }
+  return join(__dirname, name)
+}
+module.exports = require(findFile('iconv-lite.js'))`,
             loader: 'js',
           }
         },
