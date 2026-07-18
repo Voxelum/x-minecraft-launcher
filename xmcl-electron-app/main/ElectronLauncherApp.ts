@@ -13,6 +13,7 @@ import { ElectronSession } from './ElectronSession'
 import { IS_DEV } from './constant'
 import defaultApp from './defaultApp'
 import { definedPlugins } from './definedPlugins'
+import { getOzonePlatform } from './ozonePlatform'
 import { ElectronUpdater } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
 
@@ -173,12 +174,14 @@ export default class ElectronLauncherApp extends LauncherApp {
     // BrowserWindow exists and reaches `ready-to-show`). Skip the Ozone
     // switches whenever the E2E test harness is active so Playwright stays
     // on the default X11 path.
-    if (!process.env.XMCL_E2E) {
-      // Select Wayland when available, otherwise fall back to X11. In Chromium
-      // 140 (Electron 43) `OverrideDefaultOzonePlatformHintToAuto` already makes
-      // `auto` the default on Linux, so this is mostly a safety net that keeps
-      // the behavior explicit regardless of future default changes.
-      app.commandLine?.appendSwitch('ozone-platform-hint', 'auto')
+    if (!process.env.XMCL_E2E &&
+      !app.commandLine.hasSwitch('ozone-platform') &&
+      !app.commandLine.hasSwitch('ozone-platform-hint')) {
+      const ozonePlatform = getOzonePlatform(process.env)
+      app.commandLine.appendSwitch(
+        ozonePlatform === 'auto' ? 'ozone-platform-hint' : 'ozone-platform',
+        ozonePlatform,
+      )
     }
   }
 
