@@ -16,9 +16,11 @@ export const pluginDiscreteGPULinux: LauncherAppPlugin = async (app) => {
         if (settings.enableDedicatedGPUOptimization) {
           const info = (await app.host.getGPUInfo('basic'))
           const gpuEnv = getDiscreteGPUEnvironment((info as any)?.gpuDevice ?? [], (info as any)?.auxAttributes?.multiGpuStyle)
-          if (gpuEnv.DRI_PRIME) {
+          if (Object.keys(gpuEnv).length > 0) {
             const env = { ...process.env, ...gpuEnv }
-            logger.log(`Setting DRI_PRIME=${env.DRI_PRIME} for discrete GPU offloading`)
+            if (gpuEnv.DRI_PRIME) {
+              logger.log(`Setting DRI_PRIME=${env.DRI_PRIME} for discrete GPU offloading`)
+            }
             if (gpuEnv.__NV_PRIME_RENDER_OFFLOAD) {
               logger.log('Setting NVIDIA offloading environment variables')
             }
