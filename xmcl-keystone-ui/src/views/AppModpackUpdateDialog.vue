@@ -43,6 +43,7 @@
   </v-dialog>
 </template>
 <script setup lang="ts">
+import { toRaw } from 'vue'
 import { useDialog } from '@/composables/dialog'
 import {
   ModpackUpdateDialogKey,
@@ -75,7 +76,8 @@ async function run(instancePath?: string) {
   if (!p) return
   installing.value = true
   try {
-    await finishModpackInstall(p.modpackFile, p.icon, p.upstream, instancePath)
+    const rawUpstream = p.upstream ? JSON.parse(JSON.stringify(toRaw(p.upstream))) : undefined
+    await finishModpackInstall(p.modpackFile, p.icon, rawUpstream, instancePath)
     isShown.value = false
   } finally {
     installing.value = false
