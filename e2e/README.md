@@ -6,19 +6,29 @@ It is **also the source of truth for the user tutorial** under
 screenshots that are compiled into Markdown by
 [`scripts/build-tutorial.ts`](../scripts/build-tutorial.ts).
 
-## Two groups
+## Groups
 
-The suite is split into two groups with different goals and environments:
+The suite is split into groups with different goals and environments:
 
 | Group | Folder | Environment | Runs |
 |---|---|---|---|
-| **Safety-net (兜底)** | [`specs/ci/`](specs/ci) | Isolated, deterministic — a throwaway temp profile per test, no live-network installs, Java launch stubbed | Automatically in CI/CD on every push / PR |
+| **Safety-net (兜底)** | [`specs/ci/`](specs/ci) | Isolated, deterministic — a throwaway temp profile per test, no live-network installs, Java launch stubbed. Launches the flat `xmcl-electron-app/dist/`. | Automatically in CI/CD on every push / PR |
+| **Packaged-boot** | [`specs/release/`](specs/release) | The REAL `electron-builder --dir` artifact (packed `app.asar`). Boots it and drives one loopback HTTP request through the bundled `undici`. | Automatically, but ONLY for the `Prepare Release` PR (branch `prepare-release`) + manual dispatch |
 | **Showcase (promo)** | [`specs/showcase/`](specs/showcase) | Real — a persistent profile on the current PC (`e2e/.showcase-data`), live network, real Java, content accumulates across runs | Manually, locally, to capture screenshots for promo posts / videos |
 
 The **safety-net** group's only contract is *"the packaged renderer boots
 without a production-only crash"* — it catches bundler / chunk-split
 regressions (like the rolldown `init_runtime_dom_esm_bundler is not defined`
 bug) that never reproduce in dev mode. Keep it thin, fast and network-free.
+
+The **packaged-boot** group is the only one that runs the genuine packed
+`app.asar`, so it is the only one that can catch packaging / asar-layout
+regressions — e.g. #1576, where the extracted `llhttp-wasm.wasm` couldn't be
+resolved from inside the macOS asar and every download crashed with `ENOENT`.
+The flat `dist/` the other groups launch can never reproduce it (there every
+bundle's `__dirname` IS the output root). It needs a full pack, so it stays
+off basic per-PR validation and only guards the release PR. See
+[`.github/workflows/e2e.yml`](../.github/workflows/e2e.yml).
 
 The **showcase** group drives the launcher through the common user journeys
 against the real environment and captures a captioned screenshot at each
@@ -32,6 +42,12 @@ realistic-looking launcher over successive runs.
 | # | Storyline | Spec |
 |---|---|---|
 | 00 | Boot smoke — new + old user, asserts no renderer-level crash | [`specs/ci/00-smoke-boot.spec.ts`](specs/ci/00-smoke-boot.spec.ts) |
+
+### Packaged-boot storylines (`specs/release/`)
+
+| # | Storyline | Spec |
+|---|---|---|
+| 00 | Boots the packed `app.asar` + one loopback request through bundled `undici` (guards #1576 llhttp-wasm ENOENT) | [`specs/release/00-packaged-boot.spec.ts`](specs/release/00-packaged-boot.spec.ts) |
 
 ### Showcase storylines (`specs/showcase/`)
 
@@ -57,6 +73,7 @@ pnpm install                      # repo root — no Playwright pulled
 pnpm e2e:install                  # one-time — Playwright into e2e/node_modules
 pnpm build:renderer && pnpm --prefix=xmcl-electron-app compile
 pnpm test:e2e:ci         # safety-net group (fast, deterministic — the CI gate)
+pnpm test:e2e:release    # packaged-boot group (needs `xmcl-electron-app build` first)
 pnpm test:e2e:showcase   # showcase group (real env, screenshots — run locally)
 pnpm test:e2e:scratch    # scratch / visual-verification specs only
 pnpm test:e2e:ui         # Playwright UI mode (interactive)
