@@ -32,7 +32,7 @@ export class ServiceFactoryImpl implements ServiceFactory {
     } as any, {
       get(o, key, r) {
         if (key in o) return o[key]
-        const f = (...payload: any[]) => channel.call(key as any, ...payload.map(sanitizePayload))
+        const f = (...payload: any[]) => channel.call(key as any, ...(payload.map(sanitizePayload) as any))
         o[key] = f
         return f
       },
