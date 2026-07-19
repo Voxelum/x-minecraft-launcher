@@ -9,7 +9,6 @@ describe('getDiscreteGPUEnvironment', () => {
     ], 'nvidia_optimus')
 
     expect(env).toEqual({
-      DRI_PRIME: '10de:2684',
       __NV_PRIME_RENDER_OFFLOAD: '1',
       __GLX_VENDOR_LIBRARY_NAME: 'nvidia',
     })
@@ -22,5 +21,9 @@ describe('getDiscreteGPUEnvironment', () => {
     ])
 
     expect(env).toEqual({ DRI_PRIME: '1002:73df' })
+  })
+
+  it('does not set GPU variables without a detected device', () => {
+    expect(getDiscreteGPUEnvironment([])).toEqual({})
   })
 })
