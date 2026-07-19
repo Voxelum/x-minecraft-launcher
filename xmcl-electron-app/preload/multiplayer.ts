@@ -1,4 +1,4 @@
-import { AUTHORITY_MICROSOFT, PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, PeerServiceKey, PeerState, UserServiceKey } from '@xmcl/runtime-api'
 import { createMultiplayer, listen } from '@xmcl/wrtc-multiplayer'
 import { contextBridge, ipcRenderer } from 'electron/renderer'
 import './controller'
@@ -18,6 +18,15 @@ ipcRenderer.on('peer-instance-shared', (_, options) => {
 let stateReady = false
 const peerServ = serviceChannels.open(PeerServiceKey)
 peerServ.call('getPeerState').then((state) => state).then(state => {
+  for (const key of Object.getOwnPropertyNames(PeerState.prototype)) {
+    if (key === 'constructor' || (state as any)[key]) continue
+    if (typeof (PeerState.prototype as any)[key] === 'function') {
+      (state as any)[key] = (...args: any[]) => (state as any).commit(key, ...args)
+    }
+  }
+  state.subscribeAll((mutation, payload) => {
+    ((PeerState.prototype as any)[mutation] as Function | undefined)?.call(state, payload)
+  })
   setState(state)
   stateReady = true
 })
