@@ -1,5 +1,5 @@
 {
-    "version": "0.63.0",
+    "version": "0.63.1",
     "private": true,
     "license": "MIT",
     "packageManager": "pnpm@11.10.0",
@@ -30,6 +30,7 @@
         "test:e2e": "pnpm --prefix=e2e test",
         "test:e2e:ci": "pnpm --prefix=e2e test:ci",
         "test:e2e:showcase": "pnpm --prefix=e2e test:showcase",
+        "test:e2e:release": "pnpm --prefix=e2e test:release",
         "test:e2e:smoke": "pnpm --prefix=e2e test:smoke",
         "test:e2e:ui": "pnpm --prefix=e2e test:ui",
         "test:e2e:scratch": "pnpm --prefix=e2e test:scratch",

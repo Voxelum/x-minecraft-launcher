@@ -144,7 +144,14 @@ export class ModpackService extends AbstractService implements IModpackService {
       ...options,
       directory: this.getPath('modpacks'),
     })
-    return result.map((r) => r.path)
+    const paths = result.map((r) => r.path)
+    if (paths.length === 0) {
+      throw new ModpackException(
+        { type: 'invalidModpack', path: '' },
+        'The marketplace did not return a modpack file.',
+      )
+    }
+    return paths
   }
 
   async importModpack(
@@ -157,6 +164,9 @@ export class ModpackService extends AbstractService implements IModpackService {
     version?: string
     runtime: PartialRuntimeVersions
   }> {
+    if (typeof modpackFile !== 'string' || modpackFile.length === 0) {
+      throw new ModpackException({ type: 'invalidModpack', path: '' })
+    }
     this.log(`Import modpack ${modpackFile}`)
     const zipManager = await this.app.registry.getOrCreate(ZipManager)
     const cached = await this.getCachedInstallProfile(modpackFile)
@@ -695,6 +705,9 @@ export class ModpackService extends AbstractService implements IModpackService {
   }
 
   async openModpack(modpackFile: string): Promise<SharedState<ModpackState>> {
+    if (typeof modpackFile !== 'string' || modpackFile.length === 0) {
+      throw new ModpackException({ type: 'invalidModpack', path: '' })
+    }
     const store = await this.app.registry.get(ServiceStateManager)
     const zipManager = await this.app.registry.getOrCreate(ZipManager)
 

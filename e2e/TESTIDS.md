@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 158 (in 270 Vue files)
+**Total anchors:** 162 (in 270 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -70,6 +70,10 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `home-folder-action` | [`xmcl-keystone-ui/src/views/HomeActions.vue#L29`](../xmcl-keystone-ui/src/views/HomeActions.vue#L29) |
 | `home-grid` | [`xmcl-keystone-ui/src/views/HomeGrid.vue#L2`](../xmcl-keystone-ui/src/views/HomeGrid.vue#L2) |
 | `home-log-action` | [`xmcl-keystone-ui/src/views/HomeActions.vue#L16`](../xmcl-keystone-ui/src/views/HomeActions.vue#L16) |
+| `home-screenshot-carousel` | [`xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L49`](../xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L49) |
+| `home-screenshot-next` | [`xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L76`](../xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L76) |
+| `home-screenshot-prev` | [`xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L64`](../xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L64) |
+| `home-screenshot-slide` | [`xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L92`](../xmcl-keystone-ui/src/views/HomeScreenshotCard.vue#L92) |
 | `home-server-card` | [`xmcl-keystone-ui/src/views/HomeServerCard.vue#L3`](../xmcl-keystone-ui/src/views/HomeServerCard.vue#L3) |
 | `home-world-card` | [`xmcl-keystone-ui/src/views/HomeWorldCard.vue#L3`](../xmcl-keystone-ui/src/views/HomeWorldCard.vue#L3) |
 | `install-incompatible-alert` | [`xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L70`](../xmcl-keystone-ui/src/views/HomeInstanceInstallDialog.vue#L70) |
@@ -108,8 +112,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `market-detail-collection-menu` | [`xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L59`](../xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L59) |
 | `market-detail-install` | [`xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L161`](../xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L161) |
 | `market-filter-favorite-tab` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24) |
-| `market-item-install` | [`xmcl-keystone-ui/src/components/MarketItem.vue#L40`](../xmcl-keystone-ui/src/components/MarketItem.vue#L40) |
-| `market-multi-select-toggle` | [`xmcl-keystone-ui/src/views/Mod.vue#L28`](../xmcl-keystone-ui/src/views/Mod.vue#L28)<br>[`xmcl-keystone-ui/src/views/ResourcePack.vue#L27`](../xmcl-keystone-ui/src/views/ResourcePack.vue#L27)<br>[`xmcl-keystone-ui/src/views/ShaderPack.vue#L27`](../xmcl-keystone-ui/src/views/ShaderPack.vue#L27) |
+| `market-item-install` | [`xmcl-keystone-ui/src/components/MarketItem.vue#L55`](../xmcl-keystone-ui/src/components/MarketItem.vue#L55) |
+| `market-multi-select-toggle` | [`xmcl-keystone-ui/src/views/Mod.vue#L27`](../xmcl-keystone-ui/src/views/Mod.vue#L27)<br>[`xmcl-keystone-ui/src/views/ResourcePack.vue#L26`](../xmcl-keystone-ui/src/views/ResourcePack.vue#L26)<br>[`xmcl-keystone-ui/src/views/ShaderPack.vue#L26`](../xmcl-keystone-ui/src/views/ShaderPack.vue#L26) |
 | `me-user-switcher` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16) |
 | `minecraft-friends-add-button` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68) |
 | `minecraft-friends-add-input` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L58`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L58) |

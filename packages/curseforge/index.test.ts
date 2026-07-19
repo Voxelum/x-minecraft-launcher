@@ -1,6 +1,6 @@
 import { MockAgent, fetch as _fetch } from 'undici'
 import { describe, expect, test } from 'vitest'
-import { CurseforgeV1Client } from './index'
+import { CurseforgeV1Client, getCurseforgeFileDownloadUrls } from './index'
 
 describe('CurseforgeV1Client', () => {
   const agent = new MockAgent()
@@ -147,5 +147,20 @@ describe('CurseforgeV1Client', () => {
     const client = new CurseforgeV1Client('key', { fetch })
     const result = await client.searchMods({})
     expect(result).toStrictEqual({ data: [] })
+  })
+})
+
+describe('getCurseforgeFileDownloadUrls', () => {
+  test('keeps fallback mirrors when the API returns an edge URL', () => {
+    expect(
+      getCurseforgeFileDownloadUrls(
+        8169164,
+        'create_things_and_misc-4.1.1-neoforge-1.21.1.jar',
+        'https://edge.forgecdn.net/files/8169/164/create_things_and_misc-4.1.1-neoforge-1.21.1.jar',
+      ),
+    ).toEqual([
+      'https://edge.forgecdn.net/files/8169/164/create_things_and_misc-4.1.1-neoforge-1.21.1.jar',
+      'https://mediafiles.forgecdn.net/files/8169/164/create_things_and_misc-4.1.1-neoforge-1.21.1.jar',
+    ])
   })
 })

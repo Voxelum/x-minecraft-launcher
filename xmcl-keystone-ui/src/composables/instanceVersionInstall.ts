@@ -61,6 +61,8 @@ function useInstanceVersionInstall(
     installForge,
     installNeoForged,
     installMinecraft,
+    installMinecraftJar,
+    installDependencies,
     installOptifine,
     installFabric,
     installQuilt,
@@ -84,7 +86,7 @@ function useInstanceVersionInstall(
     const local = versions.value
     const mcMeta = mcVersions.versions.find((v) => v.id === minecraft)
     if (mcMeta) {
-      await installMinecraft({ meta: mcMeta, side: 'client' })
+      await installMinecraft({ meta: mcMeta, side: 'client', installJar: false })
     } else {
       const exception = new AnyError(
         'InstallMinecraftClientError',
@@ -106,11 +108,33 @@ function useInstanceVersionInstall(
       throw e
     })
 
+    const capture = <T>(promise: Promise<T>) => promise.then(
+      (value) => ({ value } as const),
+      (error: unknown) => ({ error } as const),
+    )
+    const unwrap = <T>(result: { value: T } | { error: unknown }) => {
+      if ('error' in result) {
+        throw result.error
+      }
+      return result.value
+    }
+
     const javaOrInstall = getJavaPathOrInstall(instances.value, javas.value, resolvedMcVersion, '')
-    const javaPath =
+    const jarResult = capture(installMinecraftJar({ version: minecraft, side: 'client' }))
+    const dependenciesResult = capture(installDependencies({ version: minecraft, side: 'client' }))
+    const javaResult = capture(
       typeof javaOrInstall === 'string'
-        ? javaOrInstall
-        : await installJava(javaOrInstall).then((r) => r.path)
+        ? Promise.resolve(javaOrInstall)
+        : installJava(javaOrInstall).then((result) => result.path),
+    )
+    const [jar, java] = await Promise.all([jarResult, javaResult])
+    unwrap(jar)
+    const javaPath = unwrap(java)
+
+    const finishInstall = async (version: string) => {
+      unwrap(await dependenciesResult)
+      return version
+    }
 
     let labyModBase = ''
     if (labyMod) {
@@ -188,7 +212,7 @@ function useInstanceVersionInstall(
       })
       if (localOptifine) {
         await refreshVersion(localOptifine.id)
-        return localOptifine.id
+        return await finishInstall(localOptifine.id)
       }
       const { type, patch } = parseOptifineVersion(optifineVersion)
 
@@ -199,9 +223,9 @@ function useInstanceVersionInstall(
         inheritFrom: forgeVersion,
         java: javaPath,
       })
-      return ver
+      return await finishInstall(ver)
     } else if (forgeVersion) {
-      return forgeVersion
+      return await finishInstall(forgeVersion)
     }
 
     if (fabricLoader) {
@@ -212,9 +236,10 @@ function useInstanceVersionInstall(
       })
       if (localFabric) {
         await refreshVersion(localFabric.id)
-        return localFabric.id
+        return await finishInstall(localFabric.id)
       }
-      return await installFabric({ loader: fabricLoader, minecraft, base: labyModBase })
+      const version = await installFabric({ loader: fabricLoader, minecraft, base: labyModBase })
+      return await finishInstall(version)
     }
 
     if (quiltLoader) {
@@ -225,16 +250,17 @@ function useInstanceVersionInstall(
       })
       if (localQuilt) {
         await refreshVersion(localQuilt.id)
-        return localQuilt.id
+        return await finishInstall(localQuilt.id)
       }
-      return await installQuilt({
+      const version = await installQuilt({
         version: quiltLoader,
         minecraftVersion: minecraft,
         base: labyModBase,
       })
+      return await finishInstall(version)
     }
 
-    return minecraft
+    return await finishInstall(minecraft)
   }
 
   async function installServer(runtime: RuntimeVersions, path: string) {

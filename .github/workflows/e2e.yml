@@ -94,6 +94,90 @@ jobs:
   # Showcase group — real live-network journeys that capture the promotional
   # screenshots compiled into docs/tutorial. Manual only (workflow_dispatch).
   # ---------------------------------------------------------------------------
+  # Packaged-boot group — boots the REAL electron-builder --dir artifact (a
+  # packed app.asar) and asserts the bundled undici can make an HTTP request
+  # from inside the asar. This is the only group that can catch packaging /
+  # asar-layout regressions like #1576 (llhttp-wasm.wasm ENOENT), which never
+  # reproduce against the flat xmcl-electron-app/dist the other groups launch.
+  #
+  # It requires a full pack (heavy), so it runs ONLY for the automated
+  # "Prepare Release" PR (head branch `prepare-release`, opened by the Build
+  # workflow's prepare-release job) or on manual dispatch — never on basic PRs.
+  # ---------------------------------------------------------------------------
+  packaged-boot:
+    name: packaged-boot (${{ matrix.os }})
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'prepare-release'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    timeout-minutes: 60
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+      ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+      ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+
+      - name: Fix node-gyp and Python
+        if: ${{ runner.os == 'macOS' || runner.os == 'Windows' }}
+        run: python3 -m pip install --break-system-packages --user packaging setuptools
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Cache Electron binaries
+        uses: actions/cache@v5
+        with:
+          path: |
+            ${{ github.workspace }}/.cache/electron
+            ${{ github.workspace }}/.cache/electron-builder
+          key: ${{ runner.os }}-electron-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Linux
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools
+
+      - name: Install e2e dependencies
+        run: pnpm e2e:install --frozen-lockfile
+
+      - name: Build renderer
+        run: pnpm run --prefix xmcl-keystone-ui build
+        env:
+          NODE_ENV: production
+
+      - name: Package app (electron-builder --dir)
+        run: pnpm run --prefix xmcl-electron-app build
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+          NODE_ENV: production
+          NODE_OPTIONS: --max-old-space-size=32768
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
+
+      - name: Run e2e packaged-boot group
+        run: ${{ runner.os == 'Linux' && 'xvfb-run --auto-servernum' || '' }} pnpm test:e2e:release
+        shell: bash
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: e2e-packaged-boot-${{ matrix.os }}
+          path: e2e/artifacts/**
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
   showcase:
     name: showcase (${{ matrix.os }})
     if: github.event_name == 'workflow_dispatch'

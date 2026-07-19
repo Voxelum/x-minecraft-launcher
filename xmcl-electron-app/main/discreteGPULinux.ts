@@ -38,12 +38,12 @@ export function getDiscreteGPUEnvironment(devices: GPUDevice[], multiGpuStyle?: 
   const gpu = gpus[0]?.device
   if (!gpu) return {}
 
-  const env: Record<string, string> = {
-    DRI_PRIME: `${gpu.vendorId.toString(16)}:${gpu.deviceId.toString(16)}`,
-  }
+  const env: Record<string, string> = {}
   if (gpu.vendorId === 0x10de) {
     env.__NV_PRIME_RENDER_OFFLOAD = '1'
     env.__GLX_VENDOR_LIBRARY_NAME = 'nvidia'
+  } else {
+    env.DRI_PRIME = `${gpu.vendorId.toString(16)}:${gpu.deviceId.toString(16)}`
   }
   return env
 }
