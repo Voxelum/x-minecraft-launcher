@@ -8,7 +8,6 @@ describe('CurseforgeV1Client', () => {
     init = Object.assign(init || {}, {
       dispatcher: agent,
     })
-
     return _fetch(input as any, init as any) as any
   }
 
