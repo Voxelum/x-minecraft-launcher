@@ -1,4 +1,4 @@
-import { CurseforgeV1Client, guessCurseforgeFileUrl } from '@xmcl/curseforge'
+import { CurseforgeV1Client, getCurseforgeFileDownloadUrls } from '@xmcl/curseforge'
 import { InstanceFile } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 
@@ -70,7 +70,7 @@ export async function resolveInstanceFiles(
         if (!p.downloads) {
           p.downloads = []
         }
-        const url = r.downloadUrl ? [r.downloadUrl] : guessCurseforgeFileUrl(r.id, r.fileName)
+        const url = getCurseforgeFileDownloadUrls(r.id, r.fileName, r.downloadUrl)
         for (const u of url) {
           if (p.downloads.indexOf(u) === -1) {
             p.downloads.push(u)
