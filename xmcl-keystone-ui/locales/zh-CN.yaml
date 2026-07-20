@@ -1192,6 +1192,8 @@ blueprint:
     newFile: 另存为新文件
     action: 替换
 resourcepack:
+  checkUpgrade: 检查资源包更新
+  upgrade: 更新资源包
   linkShared: 在实例间共享资源包
   linkSharedHint: >-
     将此实例的 resourcepacks 文件夹链接到全局共享文件夹，使所有实例共用相同的资源包。现有资源包会被合并到共享文件夹中。
@@ -1633,6 +1635,8 @@ setup:
     name: 设置语言
   path: 当前位置
 shaderPack:
+  checkUpgrade: 检查光影包更新
+  upgrade: 更新光影包
   linkShared: 在实例间共享光影包
   linkSharedHint: >-
     将此实例的 shaderpacks 文件夹链接到全局共享文件夹，使所有实例共用相同的光影包。现有光影包会被合并到共享文件夹中。

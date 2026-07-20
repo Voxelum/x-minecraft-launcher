@@ -2,7 +2,7 @@
   <MarketBase
     :items="items"
     :item-height="itemHeight"
-    :plans="{}"
+    :plans="plans"
     :selection-mode="currentView === 'local' && selectionMode"
     :class="{
       dragover,
@@ -27,6 +27,28 @@
           @click="onUpdateSelectionMode(!selectionMode)"
         >
           <v-icon> checklist </v-icon>
+        </v-btn>
+        <v-btn
+          v-if="currentView === 'local'"
+          v-shared-tooltip="() => t('resourcepack.checkUpgrade')"
+          icon
+          variant="text"
+          density="comfortable"
+          :loading="refreshing"
+          @click="refresh({ skipVersion: false, policy: upgradePolicy as any })"
+        >
+          <v-icon> sync </v-icon>
+        </v-btn>
+        <v-btn
+          v-if="currentView === 'local' && checked && Object.keys(plans).length > 0"
+          v-shared-tooltip="() => t('resourcepack.upgrade')"
+          icon
+          variant="text"
+          density="comfortable"
+          color="primary"
+          @click="upgrade"
+        >
+          <v-icon> update </v-icon>
         </v-btn>
         <AppCollectionInstallAll
           v-if="showInstallAll"
@@ -177,10 +199,20 @@ import ResourcePackItem from './ResourcePackItem.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
 
+import { useModUpgrade } from '@/composables/modUpgrade'
+
 const { runtime, path } = injection(kInstance)
 const { files, enable, disable, insert, revalidate } = injection(kInstanceResourcePacks)
 const { keyword, curseforgeCategory, modrinthCategories, currentView, gameVersion, isCurseforgeActive, isModrinthActive, sort: marketSort, source, selectedCollection } =
   injection(kSearchModel)
+
+const { refresh, refreshing, upgrade, plans, checked, upgradePolicy } = useModUpgrade(
+  path,
+  runtime,
+  files,
+  revalidate,
+  'resourcepacks',
+)
 
 const {
   error,

@@ -6,7 +6,7 @@ import { ModFile } from '@/util/mod'
 import { getInstanceFileFromModrinthVersion, getModrinthModLoaders, getModrinthVersionKey } from '@/util/modrinth'
 import { swrvGet } from '@/util/swrvGet'
 import { notNullish, useLocalStorage } from '@vueuse/core'
-import { File } from '@xmcl/curseforge'
+import { File, FileModLoaderType } from '@xmcl/curseforge'
 import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
 import { ProjectVersion } from '@xmcl/modrinth'
 import { InstallInstanceTask, isTask, TaskState, Tasks } from '@xmcl/runtime-api'
@@ -48,7 +48,13 @@ export type UpgradePlan = {
 
 export const kModUpgrade: InjectionKey<ReturnType<typeof useModUpgrade>> = Symbol('kModUpgrade')
 
-export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, instanceMods: Ref<ModFile[]>, updateMetadata: () => Promise<void>) {
+export function useModUpgrade(
+  path: Ref<string>,
+  runtime: Ref<RuntimeVersions>,
+  instanceMods: Ref<any[]>,
+  updateMetadata: () => Promise<void>,
+  destinationPrefix: 'mods' | 'resourcepacks' | 'shaderpacks' = 'mods',
+) {
   const { cache, dedupingInterval } = injection(kSWRVConfig)
   const plans = shallowRef({} as Record<string, UpgradePlan>)
   let operationId = ''
@@ -60,11 +66,11 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
   // This is used to update group membership after upgrade completes
   const upgradeFilenameMappings = shallowRef({} as Record<string, string>)
 
-  const skipVersion = useLocalStorage(computed(() => `modsUpgradeSkipVersion:${path.value}`), false, { writeDefaults: false })
+  const skipVersion = useLocalStorage(computed(() => `${destinationPrefix}UpgradeSkipVersion:${path.value}`), false, { writeDefaults: false })
   // Default to ignoring alpha/beta versions so mods upgrade to the latest stable release,
   // keeping clients in sync with launchers that only ship stable updates.
-  const releaseOnly = useLocalStorage(computed(() => `modsUpgradeIgnoreAlphaBeta:${path.value}`), true, { writeDefaults: false })
-  const upgradePolicy = useLocalStorage(computed(() => `modsUpgradePolicy:${path.value}`), 'modrinth', { writeDefaults: false })
+  const releaseOnly = useLocalStorage(computed(() => `${destinationPrefix}UpgradeIgnoreAlphaBeta:${path.value}`), true, { writeDefaults: false })
+  const upgradePolicy = useLocalStorage<'modrinth' | 'curseforge' | 'curseforgeOnly' | 'modrinthOnly'>(computed(() => `${destinationPrefix}UpgradePolicy:${path.value}`), 'modrinth', { writeDefaults: false })
 
   useErrorHandler((e) => {
     if (e instanceof Error && 'instanceInstallErrorId' in e && e.instanceInstallErrorId === operationId) {
@@ -102,7 +108,7 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     for (let i = 0; i < mods.length; i += batch) {
       await Promise.allSettled(mods.slice(i, i + batch).map(async (mod) => {
         const gameVersion = runtime.minecraft
-        const modLoaderType = getCurseforgeModLoaderTypeFromRuntime(runtime)
+        const modLoaderType = destinationPrefix === 'mods' ? getCurseforgeModLoaderTypeFromRuntime(runtime) : FileModLoaderType.Any
         // this is a curseforge project and installed
         const files = await swrvGet(`/curseforge/${mod.curseforge!.projectId}/files?gameVersion=${gameVersion}&modLoaderType=${modLoaderType}&index=0`, () => clientCurseforgeV1.getModFiles({
           modId: mod.curseforge!.projectId!,
@@ -153,7 +159,7 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
       return modrinthTarget
     }
 
-    const loaders = getModrinthModLoaders(runtimes)
+    const loaders = destinationPrefix === 'mods' ? getModrinthModLoaders(runtimes) : undefined
     const gameVersions = [runtimes.minecraft]
     const modrinthByProjectId = new Map(modrinthTarget.map(m => [m.modrinth!.projectId, m]))
     const updates = await clientModrinthV2.getLatestVersionsFromHashes(hashes, {
@@ -266,13 +272,13 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
       // fileName already includes .disabled suffix for disabled mods
       // but disabled mods are filtered out during check, so all plans are for enabled mods
       oldFiles.push({
-        path: `mods/${plan.mod.fileName}`,
+        path: `${destinationPrefix}/${plan.mod.fileName}`,
         hashes: {
           sha1: plan.mod.hash,
         },
         size: plan.mod.size || 0,
       })
-      const newFile = 'file' in plan ? getInstanceFileFromCurseforgeFile(plan.file) : getInstanceFileFromModrinthVersion(plan.version)
+      const newFile = 'file' in plan ? getInstanceFileFromCurseforgeFile(plan.file, destinationPrefix) : getInstanceFileFromModrinthVersion(plan.version, destinationPrefix)
       files.push(newFile)
 
       // Build mapping of old normalized filename to new normalized filename for group membership update

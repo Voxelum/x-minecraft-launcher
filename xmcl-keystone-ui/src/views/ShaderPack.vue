@@ -2,7 +2,7 @@
   <MarketBase
     :items="all"
     :item-height="itemHeight"
-    :plans="{}"
+    :plans="plans"
     :error="error"
     :selection-mode="currentView === 'local' && selectionMode"
     :class="{
@@ -27,6 +27,28 @@
           @click="onUpdateSelectionMode(!selectionMode)"
         >
           <v-icon> checklist </v-icon>
+        </v-btn>
+        <v-btn
+          v-if="currentView === 'local'"
+          v-shared-tooltip="() => t('shaderPack.checkUpgrade')"
+          icon
+          variant="text"
+          density="comfortable"
+          :loading="refreshing"
+          @click="refresh({ skipVersion: false, policy: upgradePolicy as any })"
+        >
+          <v-icon> sync </v-icon>
+        </v-btn>
+        <v-btn
+          v-if="currentView === 'local' && checked && Object.keys(plans).length > 0"
+          v-shared-tooltip="() => t('shaderPack.upgrade')"
+          icon
+          variant="text"
+          density="comfortable"
+          color="primary"
+          @click="upgrade"
+        >
+          <v-icon> update </v-icon>
         </v-btn>
         <AppCollectionInstallAll
           v-if="showInstallAll"
@@ -275,6 +297,7 @@ import LinkSharedFolderSetting from '@/components/LinkSharedFolderSetting.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import AppCollectionInstallAll from '@/components/AppCollectionInstallAll.vue'
+import { useModUpgrade } from '@/composables/modUpgrade'
 import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useSimpleDialog } from '@/composables/dialog'
@@ -339,6 +362,14 @@ const shouldDisableOptifine = computed(() => !!runtime.value.fabricLoader || !!r
 effect()
 
 const { shaderPacks, revalidate } = injection(kInstanceShaderPacks)
+
+const { refresh, refreshing, upgrade, plans, checked, upgradePolicy } = useModUpgrade(
+  path,
+  runtime,
+  shaderPacks,
+  revalidate,
+  'shaderpacks',
+)
 
 // Install-all works for any collection open in the Favorites view (local or
 // Modrinth collections/follows).

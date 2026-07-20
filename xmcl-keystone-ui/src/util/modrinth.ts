@@ -64,10 +64,10 @@ export function getModrinthProjectKey(projectId: string) {
   return `/modrinth/${projectId}`
 }
 
-export function getInstanceFileFromModrinthVersion(version: ProjectVersion): InstanceFile {
+export function getInstanceFileFromModrinthVersion(version: ProjectVersion, destinationPrefix = 'mods'): InstanceFile {
   const primary = version.files.find(f => f.primary) || version.files[0]
   return {
-    path: `mods/${(primary.filename)}`,
+    path: `${destinationPrefix}/${(primary.filename)}`,
     hashes: primary.hashes,
     size: 0,
     modrinth: {

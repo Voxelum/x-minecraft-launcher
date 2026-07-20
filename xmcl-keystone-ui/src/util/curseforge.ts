@@ -70,9 +70,9 @@ export function getCurseforgeModLoaderTypeFromRuntime(runtime: RuntimeVersions, 
   return modLoaderType
 }
 
-export function getInstanceFileFromCurseforgeFile(file: File): InstanceFile {
+export function getInstanceFileFromCurseforgeFile(file: File, destinationPrefix = 'mods'): InstanceFile {
   return {
-    path: `mods/${(file.fileName)}`,
+    path: `${destinationPrefix}/${(file.fileName)}`,
     hashes: {
       sha1: file.hashes.find(f => f.algo === HashAlgo.Sha1)?.value as string,
     },
