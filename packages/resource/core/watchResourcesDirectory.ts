@@ -208,7 +208,7 @@ function createWatcher(
 ) {
   const watcher = new FSWatcher({
     cwd: path,
-    depth: 1,
+    depth: domain === ResourceDomain.Blueprints ? undefined : 1,
     followSymlinks: true,
     alwaysStat: true,
     ignorePermissionErrors: true,
@@ -221,8 +221,7 @@ function createWatcher(
   }).on('all', async (event, file, stat) => {
     if (!file) return
 
-    const depth = file.split(sep).length
-    if (depth > 1) return
+    if (domain !== ResourceDomain.Blueprints && file.split(sep).length > 1) return
 
     if (shouldIgnoreFile(file, domain)) return
     if (file.endsWith('.txt')) return
@@ -232,6 +231,7 @@ function createWatcher(
       if (!stat) {
         return
       }
+      if (domain === ResourceDomain.Blueprints && stat.isDirectory()) return
       const fileObj: File = {
         path: join(path, file),
         fileName: basename(file),
