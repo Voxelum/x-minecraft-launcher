@@ -272,7 +272,7 @@ describe('pluginSettings', () => {
       maxSockets: 128, // valid - should be preserved
       developerMode: 'yes', // invalid - should be boolean, will use default
       httpProxy: 'http://proxy.example.com', // valid - should be preserved
-      uiScale: 3, // invalid - should be between 0.75 and 2
+      uiScale: 3, // invalid - outside the inclusive 0.75–2 range
     })
 
     const { pluginSettings } = await import('./pluginSettings')
