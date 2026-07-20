@@ -1388,8 +1388,6 @@ blueprint:
     newFile: Save as a new file
     action: Replace
 resourcepack:
-  checkUpgrade: Check Resource Packs Update
-  upgrade: Upgrade Resource Packs
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft
   delete:
@@ -1882,8 +1880,6 @@ setup:
     name: Set Language
   path: Current Path
 shaderPack:
-  checkUpgrade: Check Shader Packs Update
-  upgrade: Upgrade Shader Packs
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot be reverted.
   disabled: Disabled Shader Packs
@@ -1916,6 +1912,7 @@ shared:
   back: Back
   browse: Browse
   cancel: Cancel
+  checkUpgrade: Check for Updates
   client: Client
   copied: Copied
   copy: Copy
@@ -1943,6 +1940,7 @@ shared:
   search: Search
   server: Server
   skipForNow: Skip for now
+  upgrade: Upgrade
   'yes': 'Yes'
   delete: Delete
 sidebar:

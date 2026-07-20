@@ -30,7 +30,7 @@
         </v-btn>
         <v-btn
           v-if="currentView === 'local'"
-          v-shared-tooltip="() => t('shaderPack.checkUpgrade')"
+          v-shared-tooltip="() => t('shared.checkUpgrade')"
           icon
           variant="text"
           density="comfortable"
@@ -41,7 +41,7 @@
         </v-btn>
         <v-btn
           v-if="currentView === 'local' && checked && Object.keys(plans).length > 0"
-          v-shared-tooltip="() => t('shaderPack.upgrade')"
+          v-shared-tooltip="() => t('shared.upgrade')"
           icon
           variant="text"
           density="comfortable"
