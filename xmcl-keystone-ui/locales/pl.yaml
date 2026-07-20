@@ -728,9 +728,7 @@ modInstall:
     title: Zaktualizować mody?
     'yes': Zaktualizuj mody
   checkDependencies: Sprawdź zależności
-  checkUpgrade: Sprawdź aktualizację modów
   checkedDependencies: Sprawdzone zależności
-  checkedUpgrade: Aktualizacja sprawdzona
   currentVersion: Wybrana wersja
   dependencyHint: Zainstalowana inna wersja {version}
   releaseOnly: Ignoruj wersje alpha i beta podczas aktualizacji
@@ -743,7 +741,6 @@ modInstall:
   skipVersion: Pomiń mody z inną wersją Minecrafta
   source: Mod Source
   switch: Wersja Swtich
-  upgrade: Ulepszenia modów
 modSearch:
   noLocalModsFound: Nie znaleziono lokalnych modów pasujących do wyszukiwania.
   noModsFound: Nie znaleziono modów.
@@ -1452,6 +1449,7 @@ shared:
   back: Powrót
   browse: Przeglądaj
   cancel: Anuluj
+  checkUpgrade: Sprawdź aktualizacje
   client: Klient
   description: Opis
   disable: Wyłącz
@@ -1473,6 +1471,7 @@ shared:
   search: Szukaj
   server: Serwer
   skipForNow: Pomiń na razie
+  upgrade: Aktualizuj
 sidebar:
   pin: Przypnij
   unpin: Odepnij

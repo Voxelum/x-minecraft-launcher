@@ -734,9 +734,7 @@ modInstall:
     title: Модтарды жаңарту керек пе?
     'yes': Модтарды жаңарту
   checkDependencies: Тәуелділіктерді тексеру
-  checkUpgrade: Мод жаңартуларын тексеру
   checkedDependencies: Тәуелділіктер тексерілді
-  checkedUpgrade: Тексерілгендерді жаңарту
   currentVersion: Таңдалған нұсқа
   dependencyHint: Басқа {version} нұсқасы орнатылған
   releaseOnly: Жаңарту кезінде альфа және бета нұсқаларын елемеу
@@ -749,7 +747,6 @@ modInstall:
   skipVersion: Әртүрлі Minecraft нұсқасы бар модтарды өткізіп жіберу
   source: Мод көзі
   switch: Нұсқаны ауыстыру
-  upgrade: Модтарды жаңарту
 modSearch:
   noLocalModsFound: Сіздің іздеуіңізге сәйкес жергілікті модтар табылмады.
   noModsFound: Модтар табылмады.
@@ -1457,6 +1454,7 @@ shared:
   back: Артқа
   browse: Шолу
   cancel: Болдырмау
+  checkUpgrade: Жаңартуларды тексеру
   client: Клиент
   description: Сипаттама
   disable: Өшіру
@@ -1478,6 +1476,7 @@ shared:
   search: Search
   server: Сервер
   skipForNow: Қазір өткізіп жіберу
+  upgrade: Жаңарту
   'yes': Иә
 sidebar:
   pin: Бекіту

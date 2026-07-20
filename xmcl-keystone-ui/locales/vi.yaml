@@ -792,9 +792,7 @@ modInstall:
     title: Cập nhật Mod?
     'yes': Cập nhật Mod
   checkDependencies: Kiểm tra phụ thuộc
-  checkUpgrade: Kiểm tra cập nhật Mod
   checkedDependencies: Đã kiểm tra phụ thuộc
-  checkedUpgrade: Đã kiểm tra nâng cấp
   currentVersion: Phiên bản đã chọn
   dependencyHint: Đã cài đặt một phiên bản khác {version}
   releaseOnly: Bỏ qua các phiên bản alpha và beta khi cập nhật
@@ -807,7 +805,6 @@ modInstall:
   skipVersion: Bỏ qua các mod có phiên bản Minecraft khác
   source: Nguồn Mod
   switch: Chuyển đổi phiên bản
-  upgrade: Nâng cấp Mod
 modSearch:
   noLocalModsFound: Không tìm thấy mod cục bộ nào khớp với tìm kiếm của bạn.
   noModsFound: Không tìm thấy mod
@@ -1619,6 +1616,7 @@ shared:
   back: Quay lại
   browse: Duyệt
   cancel: Hủy
+  checkUpgrade: Kiểm tra cập nhật
   client: Máy khách (Client)
   copied: Đã sao chép
   copy: Sao chép
@@ -1646,6 +1644,7 @@ shared:
   search: Tìm kiếm
   server: Máy chủ (Server)
   skipForNow: Bỏ qua lúc này
+  upgrade: Nâng cấp
   'yes': Có
   delete: Xóa
 sidebar:

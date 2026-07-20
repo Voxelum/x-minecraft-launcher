@@ -2,7 +2,7 @@
   <MarketBase
     :items="items"
     :item-height="itemHeight"
-    :plans="{}"
+    :plans="plans"
     :selection-mode="currentView === 'local' && selectionMode"
     :class="{
       dragover,
@@ -63,6 +63,14 @@
       >
         <template #local>
           <LinkSharedFolderSetting domain="resourcepacks" @changed="revalidate" />
+          <MarketUpgradePanel
+            :plans="plans"
+            v-model:upgrade-policy="upgradePolicy"
+            :refreshing="refreshing"
+            :upgrading="upgrading"
+            @check-upgrade="refresh({ skipVersion: false, policy: upgradePolicy as any })"
+            @upgrade="upgrade"
+          />
         </template>
       </MarketFilterPanel>
     </template>
@@ -150,6 +158,7 @@ import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
+import MarketUpgradePanel from '@/components/MarketUpgradePanel.vue'
 import LinkSharedFolderSetting from '@/components/LinkSharedFolderSetting.vue'
 import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
@@ -168,7 +177,6 @@ import { useProjectInstall } from '@/composables/projectInstall'
 import { ResourcePackProject, kResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
@@ -177,10 +185,20 @@ import ResourcePackItem from './ResourcePackItem.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
 
+import { useModUpgrade } from '@/composables/modUpgrade'
+
 const { runtime, path } = injection(kInstance)
 const { files, enable, disable, insert, revalidate } = injection(kInstanceResourcePacks)
 const { keyword, curseforgeCategory, modrinthCategories, currentView, gameVersion, isCurseforgeActive, isModrinthActive, sort: marketSort, source, selectedCollection } =
   injection(kSearchModel)
+
+const { refresh, refreshing, upgrade, plans, upgradePolicy, upgrading } = useModUpgrade(
+  path,
+  runtime,
+  files,
+  revalidate,
+  'resourcepacks',
+)
 
 const {
   error,

@@ -725,9 +725,7 @@ modInstall:
     title: UPDAT MODZ?
     'yes': UPDAT MODZ
   checkDependencies: CHECK DEPENDENCIEZ
-  checkUpgrade: CHECK MODZ UPDAT
   checkedDependencies: CHECKED DEPENDENCIEZ
-  checkedUpgrade: UPGRADE CHECKED
   currentVersion: SELECTED VERSHUN
   dependencyHint: INSTALLED ANOTHR VERSHUN {version}
   releaseOnly: IGNOR DA ALFA AN BETA VERSHUNS WEN UPDATIN
@@ -740,7 +738,6 @@ modInstall:
   skipVersion: SKIP DA MODZ WITH DIFFERENT MINECWAFT VERSHUN
   source: MOD SOURC
   switch: SWITCH VERSHUN
-  upgrade: UPGRADE MODZ
 modSearch:
   noLocalModsFound: NO LOCAL MODZ FOUND MATCHING UR SEARCH.
   noModsFound: NO MODZ FOUND
@@ -1438,6 +1435,7 @@ shared:
   back: BACK
   browse: BROWSE
   cancel: CANCEL
+  checkUpgrade: CHECK UPDATEZ
   client: CLIENT
   description: DESCRIPSHUN
   disable: DISABL
@@ -1459,6 +1457,7 @@ shared:
   search: Search
   server: SERVR
   skipForNow: SKIP FUR NAO
+  upgrade: UPGRAYDD
   'yes': YAS
 sidebar:
   pin: STIK IT

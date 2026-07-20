@@ -792,9 +792,7 @@ modInstall:
     title: मॉड अपडेट करें?
     'yes': मॉड अपडेट करें
   checkDependencies: निर्भरताएँ जांचें
-  checkUpgrade: मॉड अपडेट जांचें
   checkedDependencies: निर्भरताएँ जांची गईं
-  checkedUpgrade: अपग्रेड जांचा गया
   currentVersion: चयनित संस्करण
   dependencyHint: एक अन्य संस्करण {version} स्थापित है
   releaseOnly: अपडेट करते समय अल्फा और बीटा संस्करणों को अनदेखा करें
@@ -807,7 +805,6 @@ modInstall:
   skipVersion: विभिन्न माइनक्राफ्ट संस्करण वाले मॉड छोड़ें
   source: मॉड स्रोत
   switch: संस्करण बदलें
-  upgrade: मॉड अपग्रेड करें
 modSearch:
   noLocalModsFound: आपकी खोज से मेल खाने वाले कोई स्थानीय मॉड नहीं मिले।
   noModsFound: कोई मॉड नहीं मिला
@@ -1619,6 +1616,7 @@ shared:
   back: वापस
   browse: ब्राउज़ करें
   cancel: रद्द करें
+  checkUpgrade: अपडेट जांचें
   client: क्लाइंट
   copied: कॉपी हो गया
   copy: कॉपी करें
@@ -1646,6 +1644,7 @@ shared:
   search: खोजें
   server: सर्वर
   skipForNow: अभी छोड़ें
+  upgrade: अपग्रेड करें
   'yes': 'Yes'
   delete: हटाएँ
 sidebar:

@@ -729,9 +729,7 @@ modInstall:
     title: 更新模組？
     'yes': 更新模組
   checkDependencies: 檢查相依性
-  checkUpgrade: 檢查模組更新
   checkedDependencies: 已檢查相依性
-  checkedUpgrade: 已重新整理更新列表
   currentVersion: 已選版本
   dependencyHint: 安裝了其他版本 {version}
   releaseOnly: 更新時忽略 alpha 和 beta 版本
@@ -744,7 +742,6 @@ modInstall:
   skipVersion: 忽略不同 Minecraft 版本的 Mod
   source: 模組來源
   switch: 切換版本
-  upgrade: 更新模組
 modSearch:
   noLocalModsFound: 未找到符合搜尋的本機模組。
   noModsFound: 未找到模組。
@@ -1552,6 +1549,7 @@ shared:
   back: 返回
   browse: 瀏覽
   cancel: 取消
+  checkUpgrade: 檢查更新
   client: 用戶端
   copy: 複製
   copied: 已複製
@@ -1578,6 +1576,7 @@ shared:
   search: 搜尋
   server: 伺服器
   skipForNow: 暫時跳過
+  upgrade: 更新
   'yes': 是
 sidebar:
   pin: 釘選

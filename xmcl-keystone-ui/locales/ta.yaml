@@ -792,9 +792,7 @@ modInstall:
     title: மாட்களைப் புதுப்பிக்கவா?
     'yes': மாட்களைப் புதுப்பி
   checkDependencies: சார்புகளைச் சரிபார்
-  checkUpgrade: மாட்ஸ் புதுப்பிப்பைச் சரிபார்
   checkedDependencies: சார்புகள் சரிபார்க்கப்பட்டன
-  checkedUpgrade: புதுப்பிப்பு சரிபார்க்கப்பட்டது
   currentVersion: தேர்ந்தெடுக்கப்பட்ட பதிப்பு
   dependencyHint: மற்றொரு பதிப்பு {version} நிறுவப்பட்டுள்ளது
   releaseOnly: புதுப்பிக்கும்போது ஆல்ஃபா மற்றும் பீட்டா பதிப்புகளைப் புறக்கணிக்கவும்
@@ -807,7 +805,6 @@ modInstall:
   skipVersion: வேறுபட்ட Minecraft பதிப்பைக் கொண்ட மாட்களைத் தவிர்க்கவும்
   source: மாட் ஆதாரம்
   switch: பதிப்பை மாற்று
-  upgrade: மாட்களை மேம்படுத்து
 modSearch:
   noLocalModsFound: உங்கள் தேடலுக்குப் பொருந்தும் உள்ளூர் மாட்கள் எதுவும் காணப்படவில்லை.
   noModsFound: மாட்கள் எதுவும் காணப்படவில்லை
@@ -1619,6 +1616,7 @@ shared:
   back: பின்னால்
   browse: உலாவு
   cancel: ரத்துசெய்
+  checkUpgrade: புதுப்பிப்பைச் சரிபார்
   client: கிளையண்ட்
   copied: நகலெடுக்கப்பட்டது
   copy: நகலெடு
@@ -1646,6 +1644,7 @@ shared:
   search: தேடு
   server: சர்வர்
   skipForNow: இப்போதைக்குத் தவிர்
+  upgrade: மேம்படுத்து
   'yes': ஆம்
   delete: நீக்கு
 sidebar:

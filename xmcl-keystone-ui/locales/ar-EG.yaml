@@ -792,9 +792,7 @@ modInstall:
     title: تحديث المودات؟
     'yes': تحديث المودات
   checkDependencies: فحص المتطلبات
-  checkUpgrade: التحقق من تحديثات المودات
   checkedDependencies: تم التحقق من المتطلبات
-  checkedUpgrade: تم التحقق من التحديثات
   currentVersion: الإصدار المختار
   dependencyHint: تم تثبيت إصدار آخر {version}
   releaseOnly: تجاهل إصدارات ألفا وبيتا عند التحديث
@@ -807,7 +805,6 @@ modInstall:
   skipVersion: تخطي المودات اللي ليها نسخ ماينكرافت تانية
   source: مصدر المود
   switch: تبديل الإصدار
-  upgrade: ترقية المودات
 modSearch:
   noLocalModsFound: ملقناش مودات محلية مطابقة للبحث.
   noModsFound: ملقناش مودات
@@ -1617,6 +1614,7 @@ shared:
   back: رجوع
   browse: تصفح
   cancel: إلغاء
+  checkUpgrade: التحقق من التحديثات
   client: العميل (Client)
   copied: تم النسخ
   copy: نسخ
@@ -1644,6 +1642,7 @@ shared:
   search: البحث
   server: السيرفر (Server)
   skipForNow: تخطي في الوقت الحالي
+  upgrade: ترقية
   'yes': أيوة
   delete: حذف
 sidebar:

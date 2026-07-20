@@ -2,7 +2,7 @@
   <MarketBase
     :items="all"
     :item-height="itemHeight"
-    :plans="{}"
+    :plans="plans"
     :error="error"
     :selection-mode="currentView === 'local' && selectionMode"
     :class="{
@@ -63,6 +63,14 @@
       >
         <template #local>
           <LinkSharedFolderSetting domain="shaderpacks" @changed="revalidate" />
+          <MarketUpgradePanel
+            :plans="plans"
+            v-model:upgrade-policy="upgradePolicy"
+            :refreshing="refreshing"
+            :upgrading="upgrading"
+            @check-upgrade="refresh({ skipVersion: false, policy: upgradePolicy as any })"
+            @upgrade="upgrade"
+          />
         </template>
       </MarketFilterPanel>
     </template>
@@ -270,11 +278,13 @@ import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
+import MarketUpgradePanel from '@/components/MarketUpgradePanel.vue'
 import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import LinkSharedFolderSetting from '@/components/LinkSharedFolderSetting.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import AppCollectionInstallAll from '@/components/AppCollectionInstallAll.vue'
+import { useModUpgrade } from '@/composables/modUpgrade'
 import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useSimpleDialog } from '@/composables/dialog'
@@ -290,7 +300,6 @@ import { useService } from '@/composables/service'
 import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { BuiltinImages } from '@/constant'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
@@ -339,6 +348,14 @@ const shouldDisableOptifine = computed(() => !!runtime.value.fabricLoader || !!r
 effect()
 
 const { shaderPacks, revalidate } = injection(kInstanceShaderPacks)
+
+const { refresh, refreshing, upgrade, plans, upgradePolicy, upgrading } = useModUpgrade(
+  path,
+  runtime,
+  shaderPacks,
+  revalidate,
+  'shaderpacks',
+)
 
 // Install-all works for any collection open in the Favorites view (local or
 // Modrinth collections/follows).

@@ -743,9 +743,7 @@ modInstall:
     title: Mods Upgraden?
     'yes': Mods Upgraden
   checkDependencies: Controleer Afhankelijkheden
-  checkUpgrade: Controleer Mods Updates
   checkedDependencies: Afhankelijkheden Gecontroleerd
-  checkedUpgrade: Gecontroleerde Upgraden
   currentVersion: Geselecteerde Versie
   dependencyHint: Andere versie {version} geïnstalleerd
   releaseOnly: Negeer alfa- en bètaversies bij het bijwerken
@@ -758,7 +756,6 @@ modInstall:
   skipVersion: Sla de Mods met andere Minecraft versie over
   source: Mod Bron
   switch: Versie Wisselen
-  upgrade: Mods Upgraden
 modSearch:
   noLocalModsFound: Geen lokale mods gevonden die overeenkomen met uw zoekopdracht.
   noModsFound: Geen mods gevonden.
@@ -1467,6 +1464,7 @@ shared:
   back: Terug
   browse: Bladeren
   cancel: Annuleren
+  checkUpgrade: Controleer op Updates
   client: Client
   description: Beschrijving
   disable: Uitschakelen
@@ -1488,6 +1486,7 @@ shared:
   search: Zoekopdracht
   server: Server
   skipForNow: Nu Overslaan
+  upgrade: Bijwerken
   'yes': Ja
 sidebar:
   pin: Vastzetten

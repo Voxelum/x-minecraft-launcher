@@ -71,95 +71,25 @@
       </div>
     </template>
   </SettingItem>
-  <div class="filter-subheader">
-    <v-icon size="16" class="mr-1">upgrade</v-icon>
-    {{ t('modInstall.checkUpgrade') }}
-  </div>
-  <SettingItem
-    :title="t('modUpgradePolicy.name')"
-    :description="t(`modUpgradePolicy.${upgradePolicy}`)"
+  <MarketUpgradePanel
+    :plans="plans"
+    v-model:upgrade-policy="upgradePolicy"
+    :refreshing="checkingUpgrade"
+    :upgrading="upgrading"
+    @check-upgrade="onCheckUpgrade"
+    @upgrade="upgrade"
   >
-    <template #action>
-      <v-btn-toggle
-        v-roving-tabindex
-        v-model="upgradePolicy"
-        :aria-label="t('modUpgradePolicy.name')"
-        density="compact"
-        mandatory
-        color="primary"
-      >
-        <v-btn
-          v-shared-tooltip="'Modrinth > Curseforge'"
-          value="modrinth"
-          size="small"
-          variant="text"
-          border
-        >
-          <v-icon size="small">xmcl:modrinth</v-icon>
-          <v-icon size="small">xmcl:curseforge</v-icon>
-        </v-btn>
-        <v-btn
-          v-shared-tooltip="'Curseforge > Modrinth'"
-          value="curseforge"
-          size="small"
-          variant="text"
-          border
-        >
-          <v-icon size="small">xmcl:curseforge</v-icon>
-          <v-icon size="small">xmcl:modrinth</v-icon>
-        </v-btn>
-
-        <v-btn
-          v-shared-tooltip="'Modrinth'"
-          value="modrinthOnly"
-          size="small"
-          variant="text"
-          border
-        >
-          <v-icon size="small">xmcl:modrinth</v-icon>
-        </v-btn>
-
-        <v-btn
-          v-shared-tooltip="'Curseforge'"
-          value="curseforgeOnly"
-          size="small"
-          variant="text"
-          border
-        >
-          <v-icon size="small">xmcl:curseforge</v-icon>
-        </v-btn>
-      </v-btn-toggle>
+    <template #extra>
+      <SettingItemCheckbox v-model="skipVersion" :title="t('modInstall.skipVersion')" />
+      <SettingItemCheckbox v-model="releaseOnly" :title="t('modInstall.releaseOnly')" />
     </template>
-  </SettingItem>
-  <SettingItemCheckbox v-model="skipVersion" :title="t('modInstall.skipVersion')" />
-  <SettingItemCheckbox v-model="releaseOnly" :title="t('modInstall.releaseOnly')" />
-  <SettingItem>
-    <template #action>
-      <div class="flex gap-1">
-        <v-btn :loading="checkingUpgrade" @click="onCheckUpgrade" size="large" variant="text">
-          <v-icon start> refresh </v-icon>
-          {{ t('modInstall.checkUpgrade') }}
-        </v-btn>
-        <v-spacer />
-        <v-btn
-          color="primary"
-          :loading="upgrading"
-          :disabled="Object.keys(plans).length === 0"
-          @click="upgrade"
-          size="large"
-        >
-          <v-icon start> upgrade </v-icon>
-          {{ t('modInstall.upgrade') }}
-        </v-btn>
-      </div>
-    </template>
-  </SettingItem>
+  </MarketUpgradePanel>
 </template>
 
 <script setup lang="ts">
+import MarketUpgradePanel from '@/components/MarketUpgradePanel.vue'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
-import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModLibCleaner } from '@/composables/modLibCleaner'
