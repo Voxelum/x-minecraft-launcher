@@ -198,6 +198,7 @@ function onScroll() {
 <style scoped>
 .setting-page {
   background: transparent;
+  user-select: none;
 }
 
 .setting-sidebar {

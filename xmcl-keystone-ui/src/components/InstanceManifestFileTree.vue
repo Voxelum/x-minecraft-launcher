@@ -11,6 +11,7 @@
   >
     <v-skeleton-loader
       v-if="loading"
+      class="mt-1.5"
       type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
     />
     <div

@@ -479,6 +479,7 @@ function openInBrowser(url: string) {
 }
 
 .news-section {
+  user-select: none;
   width: 100%;
 }
 

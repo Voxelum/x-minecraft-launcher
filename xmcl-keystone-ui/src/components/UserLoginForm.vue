@@ -108,7 +108,7 @@
       variant="tonal"
       color="error"
       rounded="lg"
-      class="text-left text-sm"
+      class="text-left text-sm min-h-[min-content]"
     >
       {{ errorMessage }}
     </v-alert>
@@ -159,7 +159,7 @@
       variant="tonal"
       color="info"
       rounded="lg"
-      class="mt-3 text-left border border-info/30"
+      class="mt-3 text-left border border-info/30 min-h-[min-content]"
     >
       <a
         :href="data.verificationUri"

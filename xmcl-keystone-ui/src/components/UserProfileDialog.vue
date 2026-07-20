@@ -45,6 +45,8 @@
 </template>
 
 <script lang="ts" setup>
+import { useService } from "@/composables";
+import { UserServiceKey } from "@xmcl/runtime-api";
 import UserCardAddYggdrasilService from "./UserCardAddYggdrasilService.vue";
 import UserLoginForm from "./UserLoginForm.vue";
 
@@ -56,6 +58,7 @@ const isShown = computed({
   set: (val) => emit("input", val),
 });
 
+const { abortLogin } = useService(UserServiceKey);
 
 const options = ref(undefined as any);
 const addService = ref(false);
@@ -77,6 +80,11 @@ watch(isShown, (v) => {
   if (!v) {
     addService.value = false;
     options.value = undefined;
+    // Dismissing the dialog while a login (e.g. device code / OAuth flow)
+    // is in-flight would otherwise leave the backend login blocked
+    // waiting for user interaction that will never come. Abort it so
+    // the lock is released. No-op if no login is in progress.
+    abortLogin();
   }
 });
 </script>
