@@ -143,39 +143,53 @@ const selectedCurseforgeId = computed(() => {
   return selectedItem.value?.curseforgeProjectId || selectedItem.value?.curseforge?.id || undefined
 })
 
+// Anchor item for shift-click range selection. Unlike `selectedId` (which only
+// reflects the item selected outside of selection mode), this is updated on
+// every click while in selection mode so range-selecting a new chunk doesn't
+// require leaving and re-entering selection mode.
+const anchorId = ref<string | undefined>()
+
+watch(() => props.selectionMode, (v) => {
+  anchorId.value = v ? (selectedId.value || undefined) : undefined
+})
+
 const onSelect = (event: MouseEvent, i: ProjectEntry) => {
   if (props.selectionMode && i.installed.length > 0) {
-    // if ctrl is pressed
-    if (event.ctrlKey) {
+    if (event.shiftKey) {
+      // Select all items between the anchor item and this item
+      const list = props.items
+      const anchor = anchorId.value ?? selectedId.value
+      const anchorIndex = list.findIndex((item) => typeof item === 'object' && 'id' in item && item.id === anchor)
+      const currentIndex = list.findIndex((item) => typeof item === 'object' && 'id' in item && item.id === i.id)
+      const start = Math.min(anchorIndex, currentIndex)
+      const end = Math.max(anchorIndex, currentIndex)
+      const range: Record<string, boolean> = {}
+      for (let idx = start; idx <= end; idx++) {
+        const item = list[idx]
+        if (typeof item === 'object' && 'id' in item) {
+          range[item.id] = true
+        }
+      }
+      // ctrl+shift adds the range to the existing selection instead of replacing it
+      selections.value = event.ctrlKey ? { ...selections.value, ...range } : range
+    } else if (event.ctrlKey) {
       selections.value = {
         ...selections.value,
         [i.id]: !selections.value[i.id],
       }
-    } else if (event.shiftKey) {
-      // Select all items between the last selected item and this item
-      const list = props.items
-      const lastIndex = list.findIndex((item) => typeof item === 'object' && 'id' in item && item.id === selectedId.value)
-      const currentIndex = list.findIndex((item) => typeof item === 'object' && 'id' in item && item.id === i.id)
-      const start = Math.min(lastIndex, currentIndex)
-      const end = Math.max(lastIndex, currentIndex)
-      const _selections: Record<string, boolean> = {}
-      for (let i = start; i <= end; i++) {
-        const item = list[i]
-        if (typeof item === 'object' && 'id' in item) {
-          _selections[item.id] = true
-        }
-      }
-      selections.value = _selections
+      anchorId.value = i.id
     } else {
       // Plain left click toggles the selection in selection mode
       selections.value = {
         ...selections.value,
         [i.id]: !selections.value[i.id],
       }
+      anchorId.value = i.id
     }
   } else {
     selectedId.value = selectedId.value === i.id ? '' : i.id
     selections.value = {}
+    anchorId.value = selectedId.value || undefined
   }
 }
 
