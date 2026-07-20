@@ -792,9 +792,7 @@ modInstall:
     title: মডগুলো আপডেট করবেন?
     'yes': মডগুলো আপডেট করুন
   checkDependencies: ডিপেন্ডেন্সি যাচাই করুন
-  checkUpgrade: মড আপডেট যাচাই করুন
   checkedDependencies: ডিপেন্ডেন্সি যাচাই করা হয়েছে
-  checkedUpgrade: আপডেট যাচাই করা হয়েছে
   currentVersion: নির্বাচিত সংস্করণ
   dependencyHint: অন্য একটি সংস্করণ {version} ইনস্টল করা হয়েছে
   releaseOnly: আপডেট করার সময় আলফা এবং বিটা সংস্করণগুলো উপেক্ষা করুন
@@ -807,7 +805,6 @@ modInstall:
   skipVersion: ভিন্ন Minecraft সংস্করণের মডগুলো এড়িয়ে যান
   source: মডের উৎস
   switch: সংস্করণ পরিবর্তন করুন
-  upgrade: মড আপগ্রেড করুন
 modSearch:
   noLocalModsFound: আপনার অনুসন্ধানের সাথে মিলে যায় এমন কোনো স্থানীয় মড পাওয়া যায়নি।
   noModsFound: কোনো মড পাওয়া যায়নি
@@ -1619,6 +1616,7 @@ shared:
   back: ফিরে যান
   browse: ব্রাউজ করুন
   cancel: বাতিল করুন
+  checkUpgrade: আপডেট যাচাই করুন
   client: ক্লায়েন্ট
   copied: কপি করা হয়েছে
   copy: কপি করুন

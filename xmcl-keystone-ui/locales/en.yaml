@@ -959,9 +959,7 @@ modInstall:
     title: Update Mods?
     'yes': Update Mods
   checkDependencies: Check Dependencies
-  checkUpgrade: Check Mods Update
   checkedDependencies: Checked Dependencies
-  checkedUpgrade: Upgrade checked
   currentVersion: Selected Version
   dependencyHint: Installed another version {version}
   releaseOnly: Ignore alpha and beta versions when updating
@@ -975,7 +973,6 @@ modInstall:
   skipVersion: Skip the Mods with different Minecraft version
   source: Mod Source
   switch: Switch Version
-  upgrade: Upgrade Mods
 modSearch:
   noLocalModsFound: No local mods found matching your search.
   noModsFound: No mods found

@@ -28,28 +28,6 @@
         >
           <v-icon> checklist </v-icon>
         </v-btn>
-        <v-btn
-          v-if="currentView === 'local'"
-          v-shared-tooltip="() => t('shared.checkUpgrade')"
-          icon
-          variant="text"
-          density="comfortable"
-          :loading="refreshing"
-          @click="refresh({ skipVersion: false, policy: upgradePolicy as any })"
-        >
-          <v-icon> sync </v-icon>
-        </v-btn>
-        <v-btn
-          v-if="currentView === 'local' && checked && Object.keys(plans).length > 0"
-          v-shared-tooltip="() => t('shared.upgrade')"
-          icon
-          variant="text"
-          density="comfortable"
-          color="primary"
-          @click="upgrade"
-        >
-          <v-icon> update </v-icon>
-        </v-btn>
         <AppCollectionInstallAll
           v-if="showInstallAll"
           :items="collectionItems"
@@ -85,6 +63,14 @@
       >
         <template #local>
           <LinkSharedFolderSetting domain="resourcepacks" @changed="revalidate" />
+          <MarketUpgradePanel
+            :plans="plans"
+            v-model:upgrade-policy="upgradePolicy"
+            :refreshing="refreshing"
+            :upgrading="upgrading"
+            @check-upgrade="refresh({ skipVersion: false, policy: upgradePolicy as any })"
+            @upgrade="upgrade"
+          />
         </template>
       </MarketFilterPanel>
     </template>
@@ -172,6 +158,7 @@ import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
+import MarketUpgradePanel from '@/components/MarketUpgradePanel.vue'
 import LinkSharedFolderSetting from '@/components/LinkSharedFolderSetting.vue'
 import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
@@ -190,7 +177,6 @@ import { useProjectInstall } from '@/composables/projectInstall'
 import { ResourcePackProject, kResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
@@ -206,7 +192,7 @@ const { files, enable, disable, insert, revalidate } = injection(kInstanceResour
 const { keyword, curseforgeCategory, modrinthCategories, currentView, gameVersion, isCurseforgeActive, isModrinthActive, sort: marketSort, source, selectedCollection } =
   injection(kSearchModel)
 
-const { refresh, refreshing, upgrade, plans, checked, upgradePolicy } = useModUpgrade(
+const { refresh, refreshing, upgrade, plans, upgradePolicy, upgrading } = useModUpgrade(
   path,
   runtime,
   files,

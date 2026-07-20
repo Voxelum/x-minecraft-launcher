@@ -736,9 +736,7 @@ modInstall:
     title: Aggiornare le Mod?
     'yes': Aggiorna le Mod
   checkDependencies: Controlla le dipendenze
-  checkUpgrade: Controlla Aggiornamento delle Mod
   checkedDependencies: Dipendenze controllate
-  checkedUpgrade: Aggiornamento controllato
   currentVersion: Versione Selezionata
   dependencyHint: Installata un'altra versione {version}
   releaseOnly: Ignora le versioni alpha e beta durante l'aggiornamento
@@ -751,7 +749,6 @@ modInstall:
   skipVersion: Salta le Mod con diverse versioni di Minecraft
   source: Sorgente Mod
   switch: Cambia versione
-  upgrade: Aggiorna le Mod
 modSearch:
   noLocalModsFound: Nessuna mod locale trovata corrispondente alla tua ricerca.
   noModsFound: Nessuna mod trovata.
@@ -1464,6 +1461,7 @@ shared:
   back: Indietro
   browse: Sfoglia
   cancel: Annulla
+  checkUpgrade: Controlla Aggiornamenti
   client: Client
   description: Descrizione
   disable: Disabilita
@@ -1485,6 +1483,7 @@ shared:
   search: Ricerca
   server: Server
   skipForNow: Salta per ora
+  upgrade: Aggiorna
   'yes': Si
 sidebar:
   pin: Fissa

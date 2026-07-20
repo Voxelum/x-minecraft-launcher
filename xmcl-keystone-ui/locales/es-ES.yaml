@@ -934,9 +934,7 @@ modInstall:
     title: ¿Actualizar Mods?
     'yes': Actualizar Mods
   checkDependencies: Verificar dependencias
-  checkUpgrade: Verificar Actualizaciones de Mods
   checkedDependencies: Dependencias comprobadas
-  checkedUpgrade: Actualizaciones verificadas
   currentVersion: Versión Seleccionada
   dependencyHint: 'Otra versión instalada: {version}'
   releaseOnly: Ignorar versiones alfa y beta al actualizar
@@ -949,7 +947,6 @@ modInstall:
   skipVersion: Salta los Mods con diferentes versiones de Minecraft
   source: Fuente de Mods
   switch: Cambiar Versión
-  upgrade: Actualizar Mods
 modSearch:
   noLocalModsFound: No se encontraron mods locales que coincidan con tu búsqueda.
   noModsFound: No se encontraron mods.
@@ -1808,6 +1805,7 @@ shared:
   back: Atrás
   browse: Explorar
   cancel: Cancelar
+  checkUpgrade: Buscar Actualizaciones
   client: Cliente
   close: Cerrar
   copied: Copiado
@@ -1836,6 +1834,7 @@ shared:
   search: Buscar
   server: Servidor
   skipForNow: Saltar por ahora
+  upgrade: Actualizar
   'yes': Sí
 sidebar:
   pin: Fijar

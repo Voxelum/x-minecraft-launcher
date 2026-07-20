@@ -28,28 +28,6 @@
         >
           <v-icon> checklist </v-icon>
         </v-btn>
-        <v-btn
-          v-if="currentView === 'local'"
-          v-shared-tooltip="() => t('shared.checkUpgrade')"
-          icon
-          variant="text"
-          density="comfortable"
-          :loading="refreshing"
-          @click="refresh({ skipVersion: false, policy: upgradePolicy as any })"
-        >
-          <v-icon> sync </v-icon>
-        </v-btn>
-        <v-btn
-          v-if="currentView === 'local' && checked && Object.keys(plans).length > 0"
-          v-shared-tooltip="() => t('shared.upgrade')"
-          icon
-          variant="text"
-          density="comfortable"
-          color="primary"
-          @click="upgrade"
-        >
-          <v-icon> update </v-icon>
-        </v-btn>
         <AppCollectionInstallAll
           v-if="showInstallAll"
           :items="collectionItems"
@@ -85,6 +63,14 @@
       >
         <template #local>
           <LinkSharedFolderSetting domain="shaderpacks" @changed="revalidate" />
+          <MarketUpgradePanel
+            :plans="plans"
+            v-model:upgrade-policy="upgradePolicy"
+            :refreshing="refreshing"
+            :upgrading="upgrading"
+            @check-upgrade="refresh({ skipVersion: false, policy: upgradePolicy as any })"
+            @upgrade="upgrade"
+          />
         </template>
       </MarketFilterPanel>
     </template>
@@ -292,6 +278,7 @@ import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
+import MarketUpgradePanel from '@/components/MarketUpgradePanel.vue'
 import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import LinkSharedFolderSetting from '@/components/LinkSharedFolderSetting.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
@@ -313,7 +300,6 @@ import { useService } from '@/composables/service'
 import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { BuiltinImages } from '@/constant'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
@@ -363,7 +349,7 @@ effect()
 
 const { shaderPacks, revalidate } = injection(kInstanceShaderPacks)
 
-const { refresh, refreshing, upgrade, plans, checked, upgradePolicy } = useModUpgrade(
+const { refresh, refreshing, upgrade, plans, upgradePolicy, upgrading } = useModUpgrade(
   path,
   runtime,
   shaderPacks,

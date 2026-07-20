@@ -792,9 +792,7 @@ modInstall:
     title: Perbarui Mod?
     'yes': Perbarui Mod
   checkDependencies: Periksa Dependensi
-  checkUpgrade: Periksa Pembaruan Mod
   checkedDependencies: Dependensi Diperiksa
-  checkedUpgrade: Pembaruan diperiksa
   currentVersion: Versi Terpilih
   dependencyHint: Memasang versi lain {version}
   releaseOnly: Abaikan versi alfa dan beta saat memperbarui
@@ -807,7 +805,6 @@ modInstall:
   skipVersion: Lewati mod dengan versi Minecraft yang berbeda
   source: Sumber Mod
   switch: Beralih Versi
-  upgrade: Perbarui Mod
 modSearch:
   noLocalModsFound: Tidak menemukan mod lokal yang cocok dengan pencarian Anda.
   noModsFound: Tidak menemukan mod
@@ -1619,6 +1616,7 @@ shared:
   back: Kembali
   browse: Telusuri
   cancel: Batal
+  checkUpgrade: Periksa Pembaruan
   client: Klien
   copied: Tersalin
   copy: Salin
@@ -1646,6 +1644,7 @@ shared:
   search: Cari
   server: Server
   skipForNow: Lewati untuk saat ini
+  upgrade: Perbarui
   'yes': Ya
   delete: Hapus
 sidebar:

@@ -792,9 +792,7 @@ modInstall:
     title: मोड्स नवीकर्तव्यम्?
     'yes': मोड्स नवीकरोतु
   checkDependencies: अधीनताः परीक्षताम्
-  checkUpgrade: मोडनवीकरणं परीक्षताम्
   checkedDependencies: अधीनताः परीक्षिताः
-  checkedUpgrade: नवीकरणं परीक्षितम्
   currentVersion: चयिनतं संस्करणम्
   dependencyHint: अन्यत् संस्करणं {version} संस्थापितम्
   releaseOnly: नवीकरणकाले अल्फा (alpha) बीटा (beta) च संस्करणानि उपेक्षताम्
@@ -807,7 +805,6 @@ modInstall:
   skipVersion: भिन्न-माइनक्राफ्ट्-संस्करणयुक्तान् मोड्स त्यजतु
   source: मोड-स्रोतः
   switch: संस्करणं परिवर्तयतु
-  upgrade: मोड्स नवीकरोतु
 modSearch:
   noLocalModsFound: अन्वेषणसदृशाः स्थानिकाः मोड्स न लब्धाः।
   noModsFound: कोऽपि मोडः न लब्धः
@@ -1617,6 +1614,7 @@ shared:
   back: पृष्ठतः
   browse: अन्वेषणम्
   cancel: निरस्यतु
+  checkUpgrade: नवीकरणं परीक्षताम्
   client: ग्राहकः
   copied: प्रतिलिपीकृतम्
   copy: प्रतिलिपिं करोतु
@@ -1644,6 +1642,7 @@ shared:
   search: अन्वेषणम्
   server: सेवाप्रदाता
   skipForNow: इदानीं त्यजतु
+  upgrade: नवीकरोतु
   'yes': आम्
   delete: लोपयतु
 sidebar:

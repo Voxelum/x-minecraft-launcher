@@ -781,9 +781,7 @@ modInstall:
     title: Обновить моды?
     'yes': Обновить моды
   checkDependencies: Проверить недостающие зависимости
-  checkUpgrade: Проверить обновления для модов
   checkedDependencies: Недостающие зависимости проверены
-  checkedUpgrade: Обновления для модов проверены
   currentVersion: Выбранная версия
   dependencyHint: Установлена ​​другая версия {version}
   releaseOnly: Игнорировать альфа- и бета-версии при обновлении
@@ -796,7 +794,6 @@ modInstall:
   skipVersion: Пропустите моды с другой версией Minecraft
   source: Источник контента мода
   switch: Переключить версию
-  upgrade: Обновить моды
 modSearch:
   noLocalModsFound: Локальные моды, соответствующие вашему поиску, не найдены.
   noModsFound: Моды не найдены.

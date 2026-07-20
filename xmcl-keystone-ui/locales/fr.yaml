@@ -777,7 +777,6 @@ modInstall:
   removeUnusedLibraries: Supprimer les mods de bibliothèques inutilisées
   search: Résultats
   skipVersion: Ignorez les mods avec une version différente de Minecraft
-  upgrade: Mettre à jour les mods
 modSearch:
   noLocalModsFound: Aucun mod local trouvé correspondant à votre recherche.
   noModsFound: Aucun mod trouvé.
@@ -1490,6 +1489,7 @@ shared:
   back: Revenir
   browse: Parcourir
   cancel: Annuler
+  checkUpgrade: Rechercher les mises à jour
   client: Client
   description: Description
   disable: Désactiver
@@ -1511,6 +1511,7 @@ shared:
   search: Recherche
   server: Serveur
   skipForNow: Passer pour l'instant
+  upgrade: Mettre à jour
   'yes': Oui
 sidebar:
   pin: Épingler

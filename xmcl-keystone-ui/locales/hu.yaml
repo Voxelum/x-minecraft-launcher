@@ -770,9 +770,7 @@ modInstall:
     title: Modok frissítése?
     'yes': Modok frissítése
   checkDependencies: Ellenőrizze a függőségeket
-  checkUpgrade: Modok frissítésének ellenőrzése
   checkedDependencies: Ellenőrzött függőségek
-  checkedUpgrade: Frissítés ellenőrizve
   currentVersion: Kiválasztott verzió
   dependencyHint: Egy másik verzió {version} telepítése
   releaseOnly: Az alfa és béta verziók kihagyása frissítéskor
@@ -785,7 +783,6 @@ modInstall:
   skipVersion: Hagyd ki a modokat a különböző Minecraft verziókkal
   source: Mod forrása
   switch: Verzió váltás
-  upgrade: Modok frissítése
 modSearch:
   noLocalModsFound: Nem található helyi mod, amely megfelel a keresésnek.
   noModsFound: Nem található mod.
@@ -1513,6 +1510,7 @@ shared:
   back: Vissza
   browse: Böngészés
   cancel: Mégsem
+  checkUpgrade: Frissítések ellenőrzése
   client: Kliens
   description: Leírás
   disable: Letiltás
@@ -1534,6 +1532,7 @@ shared:
   search: Keresés
   server: Szerver
   skipForNow: Most hagyd ki
+  upgrade: Frissítés
   'yes': Igen
 sidebar:
   pin: Rögzít
