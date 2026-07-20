@@ -769,6 +769,7 @@ loginError:
   acquireMicrosoftTokenFailed: >-
     Fail to acquire Microsoft token. This might be a network issue. Please
     retry.
+  loginCanceled: Microsoft sign-in was canceled.
   badNetworkOrServer: >-
     Please check your network connectivity! Or maybe the authentication server
     is down!
@@ -2199,4 +2200,3 @@ gamepad:
   steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add X Minecraft Launcher to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
-

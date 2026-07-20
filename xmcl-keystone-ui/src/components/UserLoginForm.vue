@@ -389,7 +389,10 @@ const errorMessage = computed(() => {
       return t('loginError.loginXboxFailed')
     }
     if (e.exception.type === 'userLoginMinecraftByXboxFailed') {
-      const { status, retryAfter } = e.exception
+      const { status, retryAfter, reason } = e.exception
+      if (reason === 'ACCOUNT_SUSPENDED') {
+        return t('loginError.loginXboxBanned')
+      }
       if (status === 429) {
         const retrySeconds = typeof retryAfter === 'number' ? Math.ceil(retryAfter / 1000) : undefined
         return retrySeconds
@@ -411,6 +414,9 @@ const errorMessage = computed(() => {
       return t('loginError.timeout')
     }
     if (e.exception.type === 'userAcquireMicrosoftTokenFailed') {
+      if (e.exception.reason === 'USER_CANCELED') {
+        return t('loginError.loginCanceled')
+      }
       return t('loginError.acquireMicrosoftTokenFailed')
     }
 

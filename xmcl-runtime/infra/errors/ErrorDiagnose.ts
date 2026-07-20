@@ -146,7 +146,7 @@ export class ErrorDiagnose {
     //   - `interaction_required` / `user_cancelled`: silent flows
     //     that need a UI re-prompt; the launcher already triggers
     //     one, telemetry would only see the dead-end attempt.
-    if (e.name === 'ClientAuthError' && /\b(device_code_expired|endpoints_resolution_error|interaction_required|user_cancelled)\b/.test(e.message)) {
+    if (e.name === 'ClientAuthError' && /\b(device_code_expired|endpoints_resolution_error|interaction_required|user_cancel(?:led|ed))\b/.test(e.message)) {
       return true
     }
     // Issue #1442: 404 from /minecraft/profile just means the user's MS
@@ -154,6 +154,13 @@ export class ErrorDiagnose {
     // UserException, but suppress it here too in case any future caller
     // forgets and bubbles the raw error through logEmitter('failure').
     if (e.name === 'ProfileNotFoundError') {
+      return true
+    }
+    // Minecraft's token-exchange endpoint reports a suspended account as a
+    // 403 JSON body. MicrosoftAccountSystem turns it into a UserException for
+    // a friendly support message; keep this as a last-line safeguard if a
+    // future caller logs the raw error instead.
+    if (e.name === 'MicrosoftMinecraftXboxLoginError' && /\bACCOUNT_SUSPENDED\b/.test(e.message)) {
       return true
     }
     // Issue #1446: Node WHATWG streams throw ERR_INVALID_STATE
@@ -227,7 +234,7 @@ export class ErrorDiagnose {
     // the XBox numeric XErr codes but not the OAuth-layer codes that
     // come back from MSAL itself.
     if (e.name === 'MicrosoftOLoginMicrosoftError' && typeof e.message === 'string' &&
-        /\b(access_denied|server_error|invalid_request|consent_required|interaction_required|login_required|user_cancelled)\b/.test(e.message)) {
+        /\b(access_denied|server_error|invalid_request|consent_required|interaction_required|login_required|user_cancel(?:led|ed))\b/.test(e.message)) {
       return true
     }
     // node-sqlite3-wasm surfaces native open failures as plain `Error`

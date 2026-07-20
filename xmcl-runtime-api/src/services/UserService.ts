@@ -252,6 +252,8 @@ export type UserExceptions = {
   type: 'loginInternetNotConnected' | 'loginInvalidCredentials' | 'loginGeneral' | 'loginTimeout' | 'loginReset'
 } | {
   type: 'userAcquireMicrosoftTokenFailed'
+  /** The user closed the Windows native-broker account picker. */
+  reason?: 'USER_CANCELED'
 } | {
   type: 'userExchangeXboxTokenFailed'
   /**
@@ -285,6 +287,8 @@ export type UserExceptions = {
   retryable?: boolean
   /** Effective Retry-After (ms) the server asked us to wait, if any. */
   retryAfter?: number
+  /** A permanent account-state failure returned by Minecraft authentication. */
+  reason?: 'ACCOUNT_SUSPENDED'
 } | {
   type: 'userCheckGameOwnershipFailed'
 } | {

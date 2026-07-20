@@ -7,6 +7,7 @@ import { toRecord } from '~/util/object'
 import { XBoxResponse, normalizeSkinData } from '../user'
 import { UserTokenStorage } from '../userTokenStore'
 import { UserAccountSystem } from './AccountSystem'
+import { isAccountSuspendedError, isUserCanceledError } from './MicrosoftAuthErrors'
 import { MicrosoftOAuthClient } from './MicrosoftOAuthClient'
 
 export class MicrosoftAccountSystem implements UserAccountSystem {
@@ -214,9 +215,11 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       // Telemetry showed 34 ev / 29 users in 0.56.4 even after #1445
       // shipped the XErr mapping. Follow-up to that issue.
       if (typeof e?.message === 'string' &&
-          /\b(access_denied|server_error|invalid_request|consent_required|interaction_required|login_required|user_cancelled)\b/.test(e.message)) {
+          /\b(access_denied|server_error|invalid_request|consent_required|interaction_required|login_required)\b/.test(e.message)) {
         return true
       }
+      if (isUserCanceledError(e)) return true
+      if (isAccountSuspendedError(e)) return true
       return false
     }
     const logError = (e: any) => {
@@ -242,7 +245,10 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       slientOnly,
     }).catch((e) => {
       logError(e)
-      throw new UserException({ type: 'userAcquireMicrosoftTokenFailed' }, 'Failed to acquire Microsoft access token', { cause: e })
+      throw new UserException({
+        type: 'userAcquireMicrosoftTokenFailed',
+        reason: isUserCanceledError(e) ? 'USER_CANCELED' : undefined,
+      }, 'Failed to acquire Microsoft access token', { cause: e })
     })
 
     const isBadXstsResponse = (xstsResponse: XBoxResponse) => !xstsResponse.DisplayClaims || !xstsResponse.DisplayClaims.xui
@@ -290,6 +296,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
             statusBody: truncatedBody,
             retryable: e.retryable,
             retryAfter: e.retryAfter,
+            reason: isAccountSuspendedError(e) ? 'ACCOUNT_SUSPENDED' : undefined,
           }, `Failed to login Minecraft with Xbox (HTTP ${e.status})`, { cause: e })
         }
         throw new UserException({ type: 'userLoginMinecraftByXboxFailed' }, 'Failed to login Minecraft with Xbox', { cause: e })
