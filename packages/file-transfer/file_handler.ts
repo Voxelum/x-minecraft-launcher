@@ -1,5 +1,6 @@
 import { write } from 'fs'
 import { Dispatcher, util } from 'undici'
+import { decorateHttpError } from './error'
 
 export class FileHandler implements Dispatcher.DispatchHandler {
   private abort?: (err?: Error) => void
@@ -21,6 +22,8 @@ export class FileHandler implements Dispatcher.DispatchHandler {
   constructor(
     signal: AbortSignal | undefined,
     readonly fd: number,
+    private readonly requestUrl?: string,
+    protected readonly destinationExtension?: string,
   ) {
     this.signal = signal
     this.resolvers.promise
@@ -61,6 +64,7 @@ export class FileHandler implements Dispatcher.DispatchHandler {
     if (statusCode >= 400) {
       const err = new Error(`HTTP Error: ${statusCode} ${statusText}`)
       ;(err as any).statusCode = statusCode
+      decorateHttpError(err, this.requestUrl, this.context?.history, this.destinationExtension)
       this.resolvers.reject(err)
       return false
     }

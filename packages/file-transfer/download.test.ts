@@ -85,9 +85,16 @@ describe('@xmcl/file-transfer download', () => {
     try {
       const dest = join(dir, 'missing.bin')
       const tracker = new ProgressTrackerSingle()
-      await expect(
-        download({ url: `${baseUrl}/missing`, destination: dest, tracker }),
-      ).rejects.toThrow()
+      const error = await download({ url: `${baseUrl}/missing`, destination: dest, tracker }).catch((error) => error)
+      expect(error).toBeInstanceOf(Error)
+      expect((error as any).downloadUrl).toBe(`${baseUrl}/missing`)
+      expect((error as any).downloadHosts).toBe(JSON.stringify(['127.0.0.1:' + new URL(baseUrl).port]))
+      expect((error as any).downloadDestinationExtension).toBe('.bin')
+      expect(Object.keys(error)).toEqual(expect.arrayContaining([
+        'downloadUrl',
+        'downloadHost',
+        'downloadDestinationExtension',
+      ]))
 
       // Give microtasks a chance to flush the .finally
       await new Promise((r) => setImmediate(r))
@@ -636,7 +643,5 @@ describe('@xmcl/file-transfer download (controller range-split)', () => {
     }
   })
 })
-
-
 
 

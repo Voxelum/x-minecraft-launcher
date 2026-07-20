@@ -13,7 +13,7 @@ import {
 import { ProgressTrackerMultiple, ProgressTrackerSingle } from './progress'
 import { RangeRequestHandler } from './range_handler'
 import { RangePolicy, resolveRangePolicy } from './range_policy'
-import { decorateError } from './error'
+import { decorateError, getDestinationExtension } from './error'
 
 export interface DownloadBaseOptions {
   rangePolicy?: RangePolicy
@@ -175,7 +175,14 @@ export async function download(options: DownloadOptions): Promise<void> {
       // skipping to the (often equally broken) next mirror.
       let restartedForRangeRetry = false
       while (true) {
-        const handler = new RangeRequestHandler(ops, dispatcher, fd, rangePolicy, tracker)
+        const handler = new RangeRequestHandler(
+          ops,
+          dispatcher,
+          fd,
+          rangePolicy,
+          tracker,
+          getDestinationExtension(destination),
+        )
         dispatcher.dispatch(ops, handler)
         const err = await handler.wait().catch((e) => e)
         if (!err) {

@@ -95,7 +95,7 @@ export class ControlledFileHandler extends FileHandler {
     private readonly controller: DownloadController,
     params: ControlledHandlerParams = {},
   ) {
-    super(options.signal, fd)
+    super(options.signal, fd, `${options.origin}${options.path}`)
     this.origin = options.origin as string
     this.path = options.path as string
     this.segStart = params.segment?.start ?? 0
