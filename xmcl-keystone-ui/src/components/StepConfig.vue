@@ -1,7 +1,7 @@
 <template>
   <div
     ref="scrollElement"
-    style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px;"
+    class="overflow-auto max-h-[70vh] px-[24px] pt-[24px] pb-[16px]"
   >
     <v-form
       lazy-validation

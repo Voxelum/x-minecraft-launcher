@@ -426,7 +426,7 @@ function openInBrowser(url: string) {
                   <v-img :src="getInstanceIcon(instance, undefined)" />
                 </v-avatar>
                 <div v-if="pinnedInstances.includes(instance.path)" class="pin-badge">
-                  <v-icon size="x-small" color="white" style="font-size: 8px" aria-hidden="true">push_pin</v-icon>
+                  <v-icon size="x-small" color="white" class="text-[8px]" aria-hidden="true">push_pin</v-icon>
                 </div>
               </div>
               <div class="instance-info">

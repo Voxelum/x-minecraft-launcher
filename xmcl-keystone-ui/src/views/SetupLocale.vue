@@ -15,7 +15,7 @@
             variant="outlined"
             density="comfortable"
             item-title="text"
-            style="min-width: 220px"
+            class="min-w-[220px]"
             hide-details
             :items="locales"
             @update:model-value="emit('update:modelValue', $event)"

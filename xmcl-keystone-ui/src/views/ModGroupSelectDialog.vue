@@ -73,8 +73,7 @@
           <!-- Existing groups (filtered and sorted) -->
           <div
             v-if="filteredGroups.length > 0"
-            class="overflow-auto"
-            style="max-height: 300px"
+            class="overflow-auto max-h-[300px]"
           >
             <v-list-item
               v-for="g of filteredGroups"

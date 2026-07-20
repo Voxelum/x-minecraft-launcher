@@ -25,8 +25,7 @@
           <v-img
             v-for="i in avatars.slice(0, 4)"
             :key="`avatar-${i}`"
-            class="rounded-lg"
-            :style="{ maxHeight: '20px', maxWidth: '20px', minHeight: '20px', minWidth: '20px' }"
+            class="rounded-lg max-h-[20px] max-w-[20px] min-h-[20px] min-w-[20px]"
             :src="i"
           />
         </div>

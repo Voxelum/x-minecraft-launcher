@@ -13,7 +13,7 @@
       slider-color="primary"
       align-tabs="center"
       fixed-tabs
-      style="min-height: 48px;"
+      class="min-h-[48px]"
     >
       <v-tab :value="0" prepend-icon="storefront">
         {{ t('search.market') }}

@@ -503,7 +503,7 @@
             {{ t('modrinth.modLoaders.name') }}
           </v-list-subheader>
           <span class="flex flex-wrap gap-2 px-2">
-            <div v-for="l of validModLoaders" :key="l" style="width: 36px; height: 36px">
+            <div v-for="l of validModLoaders" :key="l" class="w-[36px] h-[36px]">
               <v-icon v-shared-tooltip="l" size="32px">
                 {{ iconMapping[l] }}
               </v-icon>

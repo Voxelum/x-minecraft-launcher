@@ -355,7 +355,7 @@
                 v-model="kernel"
                 variant="filled"
                 item-title="text"
-                style="max-width: 105px"
+                class="max-w-[105px]"
                 hide-details
                 :items="kernels"
               />

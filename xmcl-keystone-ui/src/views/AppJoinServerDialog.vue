@@ -89,7 +89,7 @@
             variant="outlined"
             density="compact"
             data-testid="instance-server-edit-port"
-            style="max-width: 100px"
+            class="max-w-[100px]"
             @keydown.enter="refresh"
           />
         </div>

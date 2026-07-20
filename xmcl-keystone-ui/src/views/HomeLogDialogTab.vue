@@ -19,7 +19,7 @@
           />
         </template>
       </v-virtual-scroll>
-      <div v-else-if="content === '' && files.length === 0" :key="2" style="height: 420px">
+      <div v-else-if="content === '' && files.length === 0" :key="2" class="h-[420px]">
         <div class="flex h-full items-center justify-center">
           <h1 v-if="!pending" class="opacity-60">
             {{ t('logsCrashes.placeholder') }}

@@ -76,6 +76,7 @@
         "js-yaml": "^4.1.0",
         "@types/js-yaml": "^4.0.9",
         "cross-env": "^5.2.1",
+        "lightningcss": "^1.32.0",
         "oxlint": "^1.63.0",
         "sass": "^1.81.0",
         "tslib": "^2.5.0",

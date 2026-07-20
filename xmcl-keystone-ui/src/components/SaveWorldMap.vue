@@ -26,8 +26,7 @@
         density="compact"
         hide-details
         variant="solo"
-        class="dim-select"
-        style="min-width: 160px"
+        class="dim-select min-w-[160px]"
       />
       <v-chip v-if="selectedCount > 0" size="small" color="primary">
         {{ t('save.chunkSelected', { count: selectedCount }) }}

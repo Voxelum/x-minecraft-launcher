@@ -25,7 +25,7 @@
           >settings_heart</v-icon
         >
         <span
-          :style="{ width: !isNarrow && !targetQuery ? '80px' : 0 }"
+          :class="!isNarrow && !targetQuery ? 'w-[80px]' : 'w-0'"
           class="overflow-hidden transition-all!"
         >
           {{ t('BaseSettingGeneral.title') }}
@@ -43,7 +43,7 @@
           >folder_zip</v-icon
         >
         <span
-          :style="{ width: !isNarrow && targetQuery === 'modpack' ? '80px' : 0 }"
+          :class="!isNarrow && targetQuery === 'modpack' ? 'w-[80px]' : 'w-0'"
           class="overflow-hidden transition-all!"
         >
           {{ t('modpack.name', 1) }}

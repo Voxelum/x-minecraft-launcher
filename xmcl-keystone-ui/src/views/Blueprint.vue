@@ -24,7 +24,7 @@
           slider-color="primary"
           align-tabs="center"
           fixed-tabs
-          style="min-height: 48px"
+          class="min-h-[48px]"
           @update:model-value="source = $event === 0 ? 'market' : ''"
         >
           <v-tab :value="0" prepend-icon="storefront" data-testid="blueprint-market-tab">
@@ -262,7 +262,7 @@
         </SplitPane>
       </div>
       <div v-else-if="activeMarket" class="flex flex-col h-full overflow-hidden">
-        <div class="relative flex items-end p-4" style="min-height: 180px">
+        <div class="relative flex items-end p-4 min-h-[180px]">
           <v-img
             v-if="activeMarket.icon"
             :src="activeMarket.icon"

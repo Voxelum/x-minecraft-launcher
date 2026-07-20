@@ -1,6 +1,6 @@
 <template>
   <div
-    style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
+    class="overflow-auto max-h-[70vh] px-[24px] pt-[24px] pb-[16px]"
   >
     <v-form
       lazy-validation
@@ -26,8 +26,7 @@
                 <img
                   v-fallback-img="BuiltinImages.unknownServer"
                   :src="status.favicon || BuiltinImages.unknownServer"
-                  class="rounded-lg p-1"
-                  style="max-width: 80px; max-height: 80px; min-height: 80px;"
+                  class="rounded-lg p-1 max-w-[80px] max-h-[80px] min-h-[80px]"
                 >
                 <span class="flex flex-grow justify-center">
                   <text-component
@@ -36,7 +35,7 @@
                   />
                   <div
                     v-else
-                    style="font-size: 18px; font-weight: bold;"
+                    class="text-[18px] font-bold"
                   >{{ t('server.creationHint') }}</div>
                 </span>
                 <text-component

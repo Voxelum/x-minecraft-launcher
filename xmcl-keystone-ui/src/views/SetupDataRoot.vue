@@ -53,7 +53,7 @@
         {{ d.mounted }}
         <div class="flex-grow" />
 
-        <span class="whitespace-normal text-[hsla(0,0%,100%,.7)]" style="font-size: 14px">
+        <span class="whitespace-normal text-[hsla(0,0%,100%,.7)] text-[14px]">
           {{ d.selectedPath }}
         </span>
       </v-list-item-title>

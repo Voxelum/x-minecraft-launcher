@@ -14,13 +14,12 @@
     >
       <div
         v-if="shouldShiftBackControl"
-        style="width: 80px"
+        class="w-[80px]"
       />
       <button
         type="button"
         v-ripple
-        class="system-bar-back-btn non-moveable flex cursor-pointer select-none items-center h-full"
-        style="width: 80px;"
+        class="system-bar-back-btn non-moveable flex cursor-pointer select-none items-center h-full w-[80px]"
         :aria-label="backAriaLabel"
         @click="onBack"
       >
