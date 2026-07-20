@@ -839,7 +839,10 @@ export class InstallService extends AbstractService implements IInstallService {
     }
   }
 
-  @Lock((v: InstallNeoForgedOptions) => LockKey.version(`neoforged-${v.minecraft}-${v.version}`))
+  @Lock((v: InstallNeoForgedOptions) => [
+    LockKey.version(`neoforged-${v.minecraft}-${v.version}`),
+    LockKey.libraries,
+  ])
   async installNeoForged(options: InstallNeoForgedOptions) {
     const validJavaPaths = this.javaService.state.all.filter((v) => v.valid)
 
@@ -920,7 +923,10 @@ export class InstallService extends AbstractService implements IInstallService {
     return version
   }
 
-  @Lock((v: _InstallForgeOptions) => LockKey.version(`forge-${v.mcversion}-${v.version}`))
+  @Lock((v: _InstallForgeOptions) => [
+    LockKey.version(`forge-${v.mcversion}-${v.version}`),
+    LockKey.libraries,
+  ])
   async installForge(options: _InstallForgeOptions) {
     const validJavaPaths = this.javaService.state.all.filter((v) => v.valid)
     const side = options.side ?? 'client'
