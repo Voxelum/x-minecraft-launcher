@@ -127,6 +127,11 @@ export class MicrosoftOAuthClient {
           result = await app.acquireTokenInteractive({
             scopes,
             loginHint: username || undefined,
+            // Force the WAM account picker so the user can pick/add a
+            // different account instead of silently logging in with the
+            // account signed in to Windows. Without this, adding a second
+            // Microsoft account always resolves to the Windows account.
+            prompt: 'select_account',
             openBrowser: async () => {},
             windowHandle: this.getWindowHandle?.(),
           })
