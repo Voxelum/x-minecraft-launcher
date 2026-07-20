@@ -1,4 +1,4 @@
-import { computed, InjectionKey, Ref, ref, ShallowRef } from 'vue'
+import { computed, InjectionKey, Ref, ref, ShallowRef, toRaw } from 'vue'
 
 import { injection } from '@/util/inject'
 
@@ -49,10 +49,16 @@ export function useDialogModel(): DialogModel {
     model.value = e.data
   })
   watch(model, (value) => {
-    channel.postMessage({
-      dialog: value.dialog,
-      parameter: value.parameter ? JSON.parse(JSON.stringify(value.parameter)) : value.parameter,
-    })
+    try {
+      const rawParam = value.parameter ? toRaw(value.parameter) : undefined
+      const cleanParam = rawParam ? JSON.parse(JSON.stringify(rawParam)) : undefined
+      channel.postMessage({
+        dialog: value.dialog,
+        parameter: cleanParam,
+      })
+    } catch (e) {
+      console.warn('Failed to postMessage for dialog:', e)
+    }
   })
   return {
     current: model,
