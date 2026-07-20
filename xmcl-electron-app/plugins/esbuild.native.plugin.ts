@@ -1,7 +1,36 @@
 import { build as esbuild, Plugin } from 'esbuild'
+import { existsSync } from 'fs'
 import { mkdir, readFile, writeFile } from 'fs/promises'
 import { platform } from 'os'
 import { basename, dirname, join } from 'path'
+
+/**
+ * Runs `run()` once and caches the result, but re-runs it if `outFile` is
+ * missing by the time a caller awaits the cached promise. This plugin's
+ * closures (and their caches) are reused across every nested worker build AND
+ * across separate top-level `esbuild()` invocations for each mac arch
+ * (electron-builder's `beforeBuild` calls `buildMain()` — which does
+ * `emptyDir(dist)` — once per arch, sequentially, in the same process). A
+ * bare "already ran" flag would let a later arch's `emptyDir` silently delete
+ * the file an earlier arch's cached promise already resolved for, shipping a
+ * bundle that requires a file nothing ever recreates (macOS 0.63.0-0.63.2,
+ * issue #1576). Checking `existsSync` before trusting the cache keeps the
+ * "write/bundle this shared chunk once" dedup intact within a single build
+ * while staying correct across `emptyDir` wipes between builds.
+ */
+function createOnceCache() {
+  let promise: Promise<void> | undefined
+  return async (outFile: string, run: () => Promise<unknown>) => {
+    if (!promise) {
+      promise = run().then(() => undefined)
+    }
+    await promise
+    if (!existsSync(outFile)) {
+      promise = run().then(() => undefined)
+      await promise
+    }
+  }
+}
 
 /**
  * Correctly handle native node import.
@@ -10,13 +39,13 @@ export default function createNativeModulePlugin(): Plugin {
   // Shared once across the main build and every nested worker build (the same
   // plugin instance is reused, so `setup` runs multiple times but this closure
   // is created once). Guards the one-time build of the shared iconv-lite chunk.
-  let iconvShared: Promise<void> | undefined
+  const iconvShared = createOnceCache()
   // Same rationale for the decoded undici wasm files: the main build and every
   // nested worker build run concurrently and share this plugin instance, so
   // without a guard they all race to `writeFile` the same `dist/*.wasm` file.
-  // Decode+write each wasm exactly once and have every onLoad await that single
-  // promise before referencing the file.
-  const wasmShared = new Map<string, Promise<string>>()
+  // Keyed by wasm file path since `llhttp-wasm.wasm` and `llhttp_simd-wasm.wasm`
+  // each need their own cache.
+  const wasmShared = new Map<string, ReturnType<typeof createOnceCache>>()
   return {
     name: 'resolve-native-module',
     setup(build) {
@@ -52,9 +81,10 @@ export default function createNativeModulePlugin(): Plugin {
       // undici ships its llhttp parser as two base64-encoded wasm modules
       // (`llhttp-wasm.js` + `llhttp_simd-wasm.js`, ~70KB base64 each). Both are
       // statically `require`d by client-h1.js, so esbuild inlines BOTH into
-      // every bundle (main + each worker) — ~840KB duplicated across 6 bundles.
-      // Decode each once at build time, write it as a single shared `.wasm`
-      // directly into the output dir, and read it from disk at runtime.
+      // every bundle that pulls in undici — decode each once at build time,
+      // write it as a single shared `.wasm` directly into the output dir, and
+      // read it from disk at runtime, to avoid duplicating ~840KB across
+      // bundles.
       build.onLoad(
         { filter: /undici[\\/]lib[\\/]llhttp[\\/]llhttp(_simd)?-wasm\.js$/ },
         async ({ path }) => {
@@ -76,18 +106,13 @@ export default function createNativeModulePlugin(): Plugin {
           const outDir = build.initialOptions.outdir!
           const wasmName = basename(path).replace(/\.js$/, '.wasm')
           const wasmFile = join(outDir, wasmName)
-          // Decode + write the wasm exactly once, even though the main build and
-          // every worker build run this onLoad concurrently and share this
-          // plugin instance. Awaiting the shared promise guarantees the file is
-          // fully written before any build references it.
-          let write = wasmShared.get(wasmFile)
-          if (!write) {
-            write = mkdir(outDir, { recursive: true })
-              .then(() => writeFile(wasmFile, Buffer.from(match[1], 'base64')))
-              .then(() => wasmFile)
-            wasmShared.set(wasmFile, write)
+          let ensure = wasmShared.get(wasmFile)
+          if (!ensure) {
+            ensure = createOnceCache()
+            wasmShared.set(wasmFile, ensure)
           }
-          await write
+          await ensure(wasmFile, () => mkdir(outDir, { recursive: true })
+            .then(() => writeFile(wasmFile, Buffer.from(match[1], 'base64'))))
           return {
             contents: `'use strict'
 const { readFileSync, existsSync } = require('node:fs')
@@ -123,20 +148,18 @@ Object.defineProperty(module, 'exports', {
         { filter: /iconv-lite[\\/]lib[\\/]index\.js$/ },
         async ({ path }) => {
           const outDir = build.initialOptions.outdir!
-          if (!iconvShared) {
-            iconvShared = esbuild({
-              bundle: true,
-              platform: 'node',
-              format: 'cjs',
-              target: 'es2020',
-              entryPoints: [path],
-              outfile: join(outDir, 'iconv-lite.js'),
-              minifyWhitespace: build.initialOptions.minifyWhitespace,
-              minifySyntax: build.initialOptions.minifySyntax,
-              keepNames: true,
-            }).then(() => undefined)
-          }
-          await iconvShared
+          const outFile = join(outDir, 'iconv-lite.js')
+          await iconvShared(outFile, () => esbuild({
+            bundle: true,
+            platform: 'node',
+            format: 'cjs',
+            target: 'es2020',
+            entryPoints: [path],
+            outfile: outFile,
+            minifyWhitespace: build.initialOptions.minifyWhitespace,
+            minifySyntax: build.initialOptions.minifySyntax,
+            keepNames: true,
+          }))
           return {
             contents: `'use strict'
 const { existsSync } = require('node:fs')
@@ -148,6 +171,7 @@ function findFile(name) {
     if (existsSync(candidate)) return candidate
     const parent = resolve(dir, '..')
     if (parent === dir) break
+
     dir = parent
   }
   return join(__dirname, name)

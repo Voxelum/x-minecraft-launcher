@@ -1,7 +1,7 @@
 import { rebuild } from '@electron/rebuild'
 import chalk from 'chalk'
 import { createHash } from 'crypto'
-import { Configuration, build as electronBuilder } from 'electron-builder'
+import { Configuration, Platform, build as electronBuilder } from 'electron-builder'
 import { BuildOptions, build as esbuild } from 'esbuild'
 import { createReadStream, createWriteStream, existsSync } from 'fs'
 import { copy, emptyDir, ensureFile } from 'fs-extra'
@@ -26,8 +26,15 @@ async function writeHash(algorithm: string, path: string) {
 
 /**
  * Use esbuild to build main process
+ *
+ * @param copyMsalRuntime Whether to copy the Windows-only `@azure/msal-node-runtime`
+ * native binaries (`msal-node-runtime.node` + `msalruntime.dll`) into `dist`.
+ * These are only ever loaded on Windows (the native broker plugin bails out on
+ * other platforms), so they are pure dead weight in mac/linux asars (issue: mac
+ * build shipped msal node/dll files). Defaults to the host platform for local
+ * (`BUILD_TARGET=none`) builds.
  */
-async function buildMain(options: BuildOptions, slient = false) {
+async function buildMain(options: BuildOptions, slient = false, copyMsalRuntime = process.platform === 'win32') {
   await emptyDir(path.join(__dirname, './dist'))
   if (!slient) console.log(chalk.bold.underline('Build main process & preload'))
   const startTime = Date.now()
@@ -41,16 +48,18 @@ async function buildMain(options: BuildOptions, slient = false) {
   if (options.metafile) {
     await writeFile('./meta.json', JSON.stringify(out.metafile, null, 2))
   }
-  const msalRuntimeDir = path.dirname(require.resolve('@azure/msal-node-runtime/package.json'))
-  await Promise.all([
-    ['x64', 'msalruntime.dll'],
-    ['x86', 'msalruntime_x86.dll'],
-  ].map(async ([arch, dll]) => {
-    const source = join(msalRuntimeDir, 'dist', 'windows', arch)
-    const targetArch = arch === 'x86' ? 'ia32' : arch
-    await copyFile(join(source, 'msal-node-runtime.node'), join(__dirname, 'dist', `msal-node-runtime-${targetArch}.node`))
-    await copyFile(join(source, dll), join(__dirname, 'dist', `msalruntime-${targetArch}.dll`))
-  }))
+  if (copyMsalRuntime) {
+    const msalRuntimeDir = path.dirname(require.resolve('@azure/msal-node-runtime/package.json'))
+    await Promise.all([
+      ['x64', 'msalruntime.dll'],
+      ['x86', 'msalruntime_x86.dll'],
+    ].map(async ([arch, dll]) => {
+      const source = join(msalRuntimeDir, 'dist', 'windows', arch)
+      const targetArch = arch === 'x86' ? 'ia32' : arch
+      await copyFile(join(source, 'msal-node-runtime.node'), join(__dirname, 'dist', `msal-node-runtime-${targetArch}.node`))
+      await copyFile(join(source, dll), join(__dirname, 'dist', `msalruntime-${targetArch}.dll`))
+    }))
+  }
   const time = ((Date.now() - startTime) / 1000).toFixed(2)
   if (!slient) console.log(`Build completed in ${time}s.`)
   await copy(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer'))
@@ -126,7 +135,7 @@ async function start() {
       })
       await rebuildProcess
       console.log(`  ${chalk.blue('•')} rebuilt native modules ${chalk.blue('electron')}=${context.electronVersion} ${chalk.blue('arch')}=${context.arch}`)
-      const time = await buildMain({ ...esbuildConfig, metafile: true }, true)
+      const time = await buildMain({ ...esbuildConfig, metafile: true }, true, context.platform === Platform.WINDOWS)
       console.log(`  ${chalk.blue('•')} compiled main process & preload in ${chalk.blue('time')}=${time}s`)
     },
     async afterPack(context) {
