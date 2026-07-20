@@ -113,6 +113,8 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
    */
   maximize(): void
 
+  setZoomFactor(factor: number): void
+
   openMultiplayerWindow(): void
 
   queryAudioPermission(): Promise<boolean>

@@ -43,6 +43,8 @@ export const SettingSchema = z.object({
   httpProxyEnabled: z.boolean().catch(false),
   /** The launcher theme */
   theme: z.enum(['dark', 'light', 'system']).catch('dark'),
+  /** The launcher UI scale factor */
+  uiScale: z.number().min(0.75).max(2).catch(1),
   /** Maximum number of sockets to allow per host */
   maxSockets: z.number().catch(64),
   /** Maximum number of sockets allowed for requesting API */

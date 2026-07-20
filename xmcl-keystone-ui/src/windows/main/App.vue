@@ -114,6 +114,8 @@ import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
+const uiScale = computed(() => state.value?.uiScale ?? 1)
+watch(uiScale, (scale) => windowController.setZoomFactor(scale), { immediate: true })
 const developerMode = computed(() => state.value?.developerMode ?? false)
 
 

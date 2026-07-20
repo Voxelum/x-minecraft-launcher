@@ -159,6 +159,25 @@
       </div>
     </SettingCard>
     <SettingCard class="mb-4" :title="t('setting.themeSettings')" icon="style">
+      <SettingItem
+        :title="`${t('setting.uiScale')} (${uiScalePercent}%)`"
+        :description="t('setting.uiScaleDescription')"
+      >
+        <template #action>
+          <v-slider
+            v-model="uiScalePercent"
+            class="w-40"
+            :min="75"
+            :max="200"
+            :step="5"
+            hide-details
+            thumb-label
+            color="primary"
+            data-testid="ui-scale-slider"
+          />
+        </template>
+      </SettingItem>
+      <v-divider class="my-3" />
       <AppearanceItems :theme="currentTheme" @save="onSave" />
 
       <!-- Theme Store Management (always shown) -->
@@ -290,6 +309,10 @@ const { state } = injection(kSettingsState)
 const linuxTitlebar = computed({
   get: () => state.value?.linuxTitlebar ?? false,
   set: (v) => state.value?.linuxTitlebarSet(v),
+})
+const uiScalePercent = computed({
+  get: () => Math.round((state.value?.uiScale ?? 1) * 100),
+  set: (v) => state.value?.uiScaleSet(v / 100),
 })
 
 function onSave() {

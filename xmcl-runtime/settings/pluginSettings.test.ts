@@ -77,6 +77,7 @@ describe('pluginSettings', () => {
       autoDownload: true,
       theme: 'light',
       maxSockets: 32,
+      uiScale: 1.5,
     })
 
     vi.mocked(fsExtra.readJson).mockResolvedValue(mockSettings)
@@ -90,6 +91,7 @@ describe('pluginSettings', () => {
     })
 
     expect(fsExtra.readJson).toHaveBeenCalledWith(join('/mock/app/data', 'setting.json'))
+    expect(mockState.uiScale).toBe(1.5)
   })
 
   test('should use host locale when no locale is set', async () => {
@@ -270,6 +272,7 @@ describe('pluginSettings', () => {
       maxSockets: 128, // valid - should be preserved
       developerMode: 'yes', // invalid - should be boolean, will use default
       httpProxy: 'http://proxy.example.com', // valid - should be preserved
+      uiScale: 3, // invalid - should be between 0.75 and 2
     })
 
     const { pluginSettings } = await import('./pluginSettings')
@@ -287,6 +290,7 @@ describe('pluginSettings', () => {
     // Invalid fields should use defaults (locale normalized from host)
     expect(mockState.locale).toBe('en') // default normalized from host locale
     expect(mockState.developerMode).toBe(false) // default value
+    expect(mockState.uiScale).toBe(1)
   })
 
   test('should use default settings when json has invalid types and parsing throws', async () => {
@@ -344,6 +348,7 @@ describe('pluginSettings', () => {
         httpProxy: '',
         httpProxyEnabled: false,
         theme: 'dark',
+        uiScale: 1,
         maxSockets: 64,
         maxAPISockets: 16,
         replaceNatives: 'legacy-only',
@@ -412,6 +417,7 @@ describe('pluginSettings', () => {
         httpProxy: '',
         httpProxyEnabled: false,
         theme: 'dark', // default value, not 'invalid-theme'
+        uiScale: 1,
         maxSockets: 64, // default value, not 'not-a-number'
         maxAPISockets: 16,
         replaceNatives: 'legacy-only',

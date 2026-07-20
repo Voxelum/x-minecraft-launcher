@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 162 (in 270 Vue files)
+**Total anchors:** 163 (in 270 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -160,6 +160,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `store-page` | [`xmcl-keystone-ui/src/views/Store.vue#L3`](../xmcl-keystone-ui/src/views/Store.vue#L3) |
 | `store-project-card` | [`xmcl-keystone-ui/src/components/StoreExploreCardModern.vue#L4`](../xmcl-keystone-ui/src/components/StoreExploreCardModern.vue#L4) |
 | `store-search` | [`xmcl-keystone-ui/src/views/StoreEntry.vue#L121`](../xmcl-keystone-ui/src/views/StoreEntry.vue#L121) |
+| `ui-scale-slider` | [`xmcl-keystone-ui/src/views/SettingGlobalUI.vue#L176`](../xmcl-keystone-ui/src/views/SettingGlobalUI.vue#L176) |
 | `unbind-server-upstream` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L41`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L41) |
 | `unresolved-file-item` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L58`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L58) |
 | `unresolved-files-dialog` | [`xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L9`](../xmcl-keystone-ui/src/views/HomeUnresolvedFilesDialog.vue#L9) |

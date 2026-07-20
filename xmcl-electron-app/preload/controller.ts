@@ -1,5 +1,5 @@
 import type { WindowController } from '@xmcl/runtime-api'
-import { contextBridge, ipcRenderer, clipboard } from 'electron'
+import { contextBridge, ipcRenderer, clipboard, webFrame } from 'electron'
 import EventEmitter from 'events'
 
 export enum Operation {
@@ -73,6 +73,9 @@ function createController(): WindowController {
     flashFrame,
     minimize,
     maximize,
+    setZoomFactor(factor) {
+      webFrame.setZoomFactor(factor)
+    },
     show,
     close,
     hide,

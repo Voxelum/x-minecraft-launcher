@@ -32,6 +32,7 @@ export class Settings implements SettingSchema {
   locale = ''
 
   theme = 'dark' as 'dark' | 'light' | 'system'
+  uiScale = 1
   /**
    * All supported languages of the launcher
    */
@@ -96,6 +97,7 @@ export class Settings implements SettingSchema {
     this.maxAPISockets = config.maxAPISockets ?? 0
     this.allowTurn = config.allowTurn ?? false
     this.theme = config.theme
+    this.uiScale = config.uiScale
     this.globalMinMemory = config.globalMinMemory
     this.globalMaxMemory = config.globalMaxMemory
     this.globalAssignMemory = config.globalAssignMemory
@@ -130,6 +132,12 @@ export class Settings implements SettingSchema {
 
   themeSet(theme: 'dark' | 'light' | 'system') {
     this.theme = theme
+  }
+
+  uiScaleSet(scale: number) {
+    if (Number.isFinite(scale)) {
+      this.uiScale = Math.min(2, Math.max(0.75, scale))
+    }
   }
 
   localeSet(language: string) {

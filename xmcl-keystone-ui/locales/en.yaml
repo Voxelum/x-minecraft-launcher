@@ -1800,6 +1800,8 @@ setting:
   themeBorderRadiusDescription: Enable or disable rounded corners for cards, dialogs, menus, and panels.
   themeFont: Font
   themeFontDescription: Change the font of the launcher.
+  uiScale: UI Scale
+  uiScaleDescription: Scale all launcher text, icons, and controls.
   themeFontUrl: Font URL
   themeFontUrlPlaceholder: Enter HTTP/HTTPS URL for font
   themeImport: Import Theme
@@ -2200,4 +2202,3 @@ gamepad:
   steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add X Minecraft Launcher to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
-
