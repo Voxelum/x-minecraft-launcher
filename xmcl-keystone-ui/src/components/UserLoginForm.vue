@@ -113,40 +113,6 @@
       {{ errorMessage }}
     </v-alert>
 
-    <div
-      v-if="errorMessage && isMicrosoftAuthError"
-      class="mt-2 flex flex-col gap-2 rounded-lg bg-error/10 p-3 text-sm text-left border border-error/20"
-      data-testid="microsoft-error-help"
-    >
-      <div class="text-xs opacity-90 font-medium">
-        {{ t('loginError.xboxErrorGuideHint') }}
-      </div>
-      <div class="flex flex-col gap-1.5 pt-1">
-        <v-btn
-          size="small"
-          variant="tonal"
-          color="warning"
-          class="justify-start text-none font-medium"
-          href="https://xmcl.app/en/guide/microsoft-login-issues"
-          target="browser"
-        >
-          <v-icon start size="16">help_outline</v-icon>
-          {{ t('loginError.openLoginGuide') }}
-        </v-btn>
-        <v-btn
-          size="small"
-          variant="tonal"
-          color="primary"
-          class="justify-start text-none font-medium"
-          href="https://discord.gg/r7Sz9cAUSu"
-          target="browser"
-        >
-          <v-icon start size="16">xmcl:discord</v-icon>
-          {{ t('loginError.openDiscordSupport') }}
-        </v-btn>
-      </div>
-    </div>
-
     <v-checkbox
       v-if="allowDeviceCode"
       v-model="data.useDeviceCode"
@@ -205,6 +171,37 @@
     </v-alert>
 
     <div class="mt-4 flex flex-col gap-3 items-center text-sm font-medium">
+      <div
+        v-if="errorMessage && isMicrosoftAuthError"
+        class="flex flex-col gap-2 rounded-xl p-3 text-sm text-left border w-full backdrop-blur-sm"
+        style="
+          background: rgba(var(--v-theme-error), 0.08);
+          border-color: rgba(var(--v-theme-error), 0.2);
+        "
+        data-testid="microsoft-error-help"
+      >
+        <div class="text-xs opacity-90 font-medium">
+          {{ t('loginError.xboxErrorGuideHint') }}
+        </div>
+        <div class="flex flex-col gap-1.5 pt-1">
+          <a
+            target="browser"
+            href="https://xmcl.app/en/guide/microsoft-login-issues"
+            class="flex items-center gap-1.5 text-xs text-amber-500 hover:underline font-medium"
+          >
+            <v-icon size="14">help_outline</v-icon>
+            {{ t('loginError.openLoginGuide') }}
+          </a>
+          <a
+            target="browser"
+            href="https://discord.gg/r7Sz9cAUSu"
+            class="flex items-center gap-1.5 text-xs text-primary hover:underline font-medium"
+          >
+            <v-icon size="14">xmcl:discord</v-icon>
+            {{ t('loginError.openDiscordSupport') }}
+          </a>
+        </div>
+      </div>
       <a
         v-if="authority === AUTHORITY_MICROSOFT"
         target="browser"
@@ -258,7 +255,8 @@ import {
   UserServiceKey,
   isException,
 } from '@xmcl/runtime-api'
-import { Ref } from 'vue'
+import { Ref, watch } from 'vue'
+import { useNotifier } from '@/composables/notifier'
 import { useAccountSystemHistory, useAuthorityItems } from '../composables/login'
 import { kUserContext, useLoginValidation } from '../composables/user'
 import UserLoginAuthoritySelect from './UserLoginAuthoritySelect.vue'
@@ -466,29 +464,6 @@ const errorMessage = computed(() => {
   return e ? t('loginError.requestFailed') : ''
 })
 
-const isMicrosoftAuthError = computed(() => {
-  if (authority.value === AUTHORITY_MICROSOFT && error.value) return true
-  if (!error.value) return false
-  const e = error.value as any
-  const type = e?.exception?.type
-  if (
-    type === 'userExchangeXboxTokenFailed' ||
-    type === 'userLoginMinecraftByXboxFailed' ||
-    type === 'userAcquireMicrosoftTokenFailed'
-  ) {
-    return true
-  }
-  const str = (e?.message || e?.exception?.message || String(e || '')).toLowerCase()
-  return (
-    str.includes('xbox') ||
-    str.includes('microsoft') ||
-    str.includes('canceled') ||
-    str.includes('cancelled') ||
-    str.includes('xerr') ||
-    str.includes('exchange')
-  )
-})
-
 // Login
 const accountInput: Ref<any> = ref(null)
 const { refresh: onLogin, error } = useRefreshable(async () => {
@@ -534,6 +509,58 @@ const { refresh: onLogin, error } = useRefreshable(async () => {
   })
   select(profile.id)
   emit('login', profile)
+})
+
+const isMicrosoftAuthError = computed(() => {
+  if (authority.value === AUTHORITY_MICROSOFT && error.value) return true
+  if (!error.value) return false
+  const e = error.value as any
+  const type = e?.exception?.type
+  if (
+    type === 'userExchangeXboxTokenFailed' ||
+    type === 'userLoginMinecraftByXboxFailed' ||
+    type === 'userAcquireMicrosoftTokenFailed'
+  ) {
+    return true
+  }
+  const str = (e?.message || e?.exception?.message || String(e || '')).toLowerCase()
+  return (
+    str.includes('xbox') ||
+    str.includes('microsoft') ||
+    str.includes('canceled') ||
+    str.includes('cancelled') ||
+    str.includes('xerr') ||
+    str.includes('exchange')
+  )
+})
+
+const { notify } = useNotifier()
+
+watch(error, (err) => {
+  if (err && isMicrosoftAuthError.value) {
+    notify({
+      level: 'error',
+      title: errorMessage.value || t('loginError.requestFailed'),
+      body: t('loginError.xboxErrorGuideHint'),
+      key: 'microsoft-login-error-help',
+      operations: [
+        {
+          text: t('loginError.openLoginGuide'),
+          icon: 'help_outline',
+          handler() {
+            window.open('https://xmcl.app/en/guide/microsoft-login-issues', 'browser')
+          },
+        },
+        {
+          text: t('loginError.openDiscordSupport'),
+          icon: 'xmcl:discord',
+          handler() {
+            window.open('https://discord.gg/r7Sz9cAUSu', 'browser')
+          },
+        },
+      ],
+    })
+  }
 })
 
 watch(authority, () => {
