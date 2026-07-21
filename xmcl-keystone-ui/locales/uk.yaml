@@ -686,6 +686,9 @@ loginError:
   noProfileForNewUser: >-
     Профіль гри не знайдено! Якщо ви новий користувач Minecraft, будь ласка, увійдіть принаймні один раз в офіційному лаунчері Minecraft.
   requestFailed: Помилка входу, точна причина невідома. Будь ласка, спробуйте ще раз.
+  xboxErrorGuideHint: Виникла проблема із входом? Подивіться як це виправити.
+  openLoginGuide: Як це виправити (Гайд)
+  openDiscordSupport: Не допомогло? Наш Discord
   requireEmail: Електронна пошта обов'язкова
   requirePassword: Пароль обов'язковий
   requireUsername: Ім'я користувача обов'язкове

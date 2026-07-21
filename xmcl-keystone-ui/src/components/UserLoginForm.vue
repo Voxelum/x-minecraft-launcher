@@ -113,6 +113,40 @@
       {{ errorMessage }}
     </v-alert>
 
+    <div
+      v-if="errorMessage && isMicrosoftAuthError"
+      class="mt-2 flex flex-col gap-2 rounded-lg bg-error/10 p-3 text-sm text-left border border-error/20"
+      data-testid="microsoft-error-help"
+    >
+      <div class="text-xs opacity-90 font-medium">
+        {{ t('loginError.xboxErrorGuideHint') }}
+      </div>
+      <div class="flex flex-col gap-1.5 pt-1">
+        <v-btn
+          size="small"
+          variant="tonal"
+          color="warning"
+          class="justify-start text-none font-medium"
+          href="https://xmcl.app/en/guide/microsoft-login-issues"
+          target="browser"
+        >
+          <v-icon start size="16">help_outline</v-icon>
+          {{ t('loginError.openLoginGuide') }}
+        </v-btn>
+        <v-btn
+          size="small"
+          variant="tonal"
+          color="primary"
+          class="justify-start text-none font-medium"
+          href="https://discord.gg/r7Sz9cAUSu"
+          target="browser"
+        >
+          <v-icon start size="16">xmcl:discord</v-icon>
+          {{ t('loginError.openDiscordSupport') }}
+        </v-btn>
+      </div>
+    </div>
+
     <v-checkbox
       v-if="allowDeviceCode"
       v-model="data.useDeviceCode"
@@ -430,6 +464,29 @@ const errorMessage = computed(() => {
   }
 
   return e ? t('loginError.requestFailed') : ''
+})
+
+const isMicrosoftAuthError = computed(() => {
+  if (authority.value === AUTHORITY_MICROSOFT && error.value) return true
+  if (!error.value) return false
+  const e = error.value as any
+  const type = e?.exception?.type
+  if (
+    type === 'userExchangeXboxTokenFailed' ||
+    type === 'userLoginMinecraftByXboxFailed' ||
+    type === 'userAcquireMicrosoftTokenFailed'
+  ) {
+    return true
+  }
+  const str = (e?.message || e?.exception?.message || String(e || '')).toLowerCase()
+  return (
+    str.includes('xbox') ||
+    str.includes('microsoft') ||
+    str.includes('canceled') ||
+    str.includes('cancelled') ||
+    str.includes('xerr') ||
+    str.includes('exchange')
+  )
 })
 
 // Login
