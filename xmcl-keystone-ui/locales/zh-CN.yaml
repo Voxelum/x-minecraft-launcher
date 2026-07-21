@@ -702,6 +702,9 @@ loginError:
     找不到游戏资料！
     如果您是新的Minecraft用户，请在Minecraft官方启动器中至少登录一次。
   requestFailed: 由于未知原因登录失败，请重试
+  xboxErrorGuideHint: 登录遇到问题？查看如何修复 Microsoft 和 Xbox 登录问题。
+  openLoginGuide: 如何修复此问题
+  openDiscordSupport: 仍需要帮助？加入 Discord
   requireEmail: 必须使用邮箱登录
   requirePassword: 请输入密码
   requireUsername: 用户名不能为空
