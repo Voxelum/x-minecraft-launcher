@@ -2,7 +2,6 @@
   <MarketBase
     :plans="{}"
     :items="groupedItems"
-    :selection-mode="true"
     :item-height="itemHeight"
     :loading="loading"
     :error="error || searchError"
