@@ -1,325 +1,256 @@
-import fs from 'fs';
-import convBump from 'conventional-recommended-bump';
-import semver from 'semver';
-import * as core from '@actions/core';
-import { join } from 'path'
+import { execFileSync } from 'node:child_process'
+import fs from 'node:fs'
+import { join } from 'node:path'
+import * as core from '@actions/core'
+import { sync as parseCommit } from 'conventional-commits-parser'
+import semver from 'semver'
 
-declare interface Package {
-    name: string;
-    content: PackageJSON;
-    /**
-     * Level of change
-     */
-    level?: Level
-    /**
-     * Release type
-     */
-    releaseType?: ReleaseType;
-    passive?: boolean;
-    newVersion?: string;
-
-    reasons?: (Commit | string)[]
-    feats?: Commit[]
-    fixes?: Commit[]
-    breakings?: Commit[]
+interface Commit {
+  hash: string
+  header: string
+  type?: string
+  scope?: string
+  subject?: string
+  notes: Array<{ title: string }>
 }
 
-interface PackageJSON {
-    name: string;
-    version: string;
-    dependencies?: { [name: string]: string };
+interface PackageInfo {
+  dir: string
+  file: string
+  content: PackageJson
+  level?: number
+  newVersion?: string
+  passive?: boolean
+  reasons: Array<Commit | string>
 }
 
-type Level = 0 | 1 | 2
-
-type Commit = import('conventional-commits-parser').Commit
-type Recomendation = import('conventional-recommended-bump').Callback.Recommendation
-type ReleaseType = import('conventional-recommended-bump').Callback.Recommendation.ReleaseType
-
-interface BumpSuggestion extends Recomendation {
-    level: Level
-    reasons: Commit[]
-    feats: Commit[]
-    fixes: Commit[]
-    breakings: Commit[]
-    releaseType: ReleaseType
+interface PackageJson {
+  name: string
+  version: string
+  dependencies?: Record<string, string>
+  optionalDependencies?: Record<string, string>
+  peerDependencies?: Record<string, string>
 }
 
-const DRY = !process.env.CI;
+const DRY = !process.env.CI
+const appPackageDirs = ['xmcl-keystone-ui', 'xmcl-runtime', 'xmcl-runtime-api']
 
-/**
- * Toposort the packages
- */
-function toposort(dependencies: { [name: string]: Package[]; }, packages: Array<Package>): Array<Package> {
-    const sorted: Package[] = [];
-    const visited = new Set();
-    function dfs(pkg: Package) {
-        if (visited.has(pkg.name)) {
-            return;
-        }
-        visited.add(pkg.name);
-        const deps = dependencies[pkg.name] || [];
-        for (const dep of deps) {
-            dfs(dep);
-        }
-        sorted.push(pkg);
+function runGit(args: string[]) {
+  return execFileSync('git', args, { encoding: 'utf8' }).trim()
+}
+
+function readJson(file: string): PackageJson {
+  return JSON.parse(fs.readFileSync(file, 'utf8')) as PackageJson
+}
+
+function getPackageInfos() {
+  const packageDirs = fs.readdirSync('packages', { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => join('packages', entry.name))
+    .concat(appPackageDirs)
+
+  return packageDirs
+    .map((dir): PackageInfo | undefined => {
+      const file = join(dir, 'package.json')
+      if (!fs.existsSync(file)) return undefined
+      const content = readJson(file)
+      return { dir, file, content, reasons: [] }
+    })
+    .filter((pkg): pkg is PackageInfo => !!pkg)
+}
+
+function getVersionBaseline(file: string) {
+  return runGit([
+    'log',
+    '-1',
+    '--format=%H',
+    '-G',
+    '^[[:space:]]*"version"[[:space:]]*:',
+    '--',
+    file,
+  ])
+}
+
+function getCommitsSince(pkg: PackageInfo): Commit[] {
+  const baseline = getVersionBaseline(pkg.file)
+  if (!baseline) return []
+
+  const output = execFileSync('git', [
+    'log',
+    '--format=%H%x1f%s%x1f%b%x1e',
+    `${baseline}..HEAD`,
+    '--',
+    pkg.dir,
+  ], { encoding: 'utf8' })
+
+  return output.split('\x1e').map((record) => {
+    const [hash, subject, body] = record.split('\x1f')
+    if (!hash || !subject) return undefined
+    const parsed = parseCommit(body ? `${subject}\n\n${body}` : subject) as unknown as Commit
+    return { ...parsed, hash, header: subject }
+  }).filter((commit): commit is Commit => !!commit)
+}
+
+function getBumpLevel(commit: Commit) {
+  if (commit.notes.some((note) => note.title === 'BREAKING CHANGE')) return 0
+  if (commit.type === 'feat') return 1
+  if (commit.type === 'fix' || commit.type === 'refactor' || commit.type === 'patch') return 2
+  return undefined
+}
+
+function getReleaseType(level: number) {
+  return ['major', 'minor', 'patch'][level]
+}
+
+function scanPackageChanges(packages: PackageInfo[]) {
+  for (const pkg of packages) {
+    const commits = getCommitsSince(pkg)
+    for (const commit of commits) {
+      const level = getBumpLevel(commit)
+      if (level === undefined) continue
+      pkg.level = Math.min(pkg.level ?? 3, level)
+      pkg.reasons.push(commit)
     }
-
-    for (const pack of packages) {
-        dfs(pack);
+    if (pkg.level !== undefined) {
+      pkg.newVersion = semver.inc(pkg.content.version, getReleaseType(pkg.level) as semver.ReleaseType) || undefined
     }
-
-    return sorted;
+  }
 }
 
-function scanPackages() {
-    function readPackageJson(packageName: string) {
-        let packageJSON;
-        try {
-            packageJSON = JSON.parse(fs.readFileSync(join(process.cwd(), `packages/${packageName}/package.json`)).toString());
-            packageJSON.dependencies
-        } catch (e) {
-            if ((e as any).code === 'ENOTDIR' || (e as any).code === 'ENOENT')
-                return undefined;
-            throw e;
-        }
-        return packageJSON;
+function buildDependencyGraph(packages: PackageInfo[]) {
+  const byName = new Map(packages.map((pkg) => [pkg.content.name, pkg]))
+  const dependents = new Map<string, PackageInfo[]>()
+
+  for (const pkg of packages) {
+    const dependencies = {
+      ...pkg.content.dependencies,
+      ...pkg.content.optionalDependencies,
+      ...pkg.content.peerDependencies,
     }
-    const nameToPack: Record<string, Package> = {};
-    const reversedDependencies: Record<string, Package[]> = {};
-    const dependencies: Record<string, Package[]> = {};
-    // scan all packages and filter out useless folder like .DS_Store
-    const packages: Package[] = fs.readdirSync('packages')
-        .map(name => ({ content: readPackageJson(name), name }))
-        .filter(pack => pack.content !== undefined);
-    // create dependencies mapping
-    packages.forEach(pack => {
-        nameToPack[pack.name] = pack;
-    });
-    packages.forEach(pack => {
-        const packageJSON = pack.content;
-        if (packageJSON.dependencies) {
-            for (const dep of Object.keys(packageJSON.dependencies)) {
-                if (dep.startsWith('@xmcl')) {
-                    const dependOn = dep.substring(dep.indexOf('/') + 1);
-                    reversedDependencies[dependOn] = reversedDependencies[dependOn] || [];
-                    reversedDependencies[dependOn].push(pack);
-
-                    dependencies[pack.name] = dependencies[pack.name] || [];
-                    if (nameToPack[dependOn]) {
-                        dependencies[pack.name].push(nameToPack[dependOn]);
-                    }
-                }
-            }
-        }
-    });
-    return { reversedDependencies, packages: toposort(dependencies, packages), dependencies };
-}
-
-/**
- * Fill the package bump info by commits under it
- * @param {Package[]} packages 
- */
-async function fillPackageBumpInfo(packages: Package[]) {
-    async function getBumpSuggestion(pkg: string) {
-        const result: BumpSuggestion = await new Promise<BumpSuggestion>((resolve, reject) => {
-            convBump({
-                path: join(process.cwd(), `packages/${pkg}`),
-                whatBump(comments) {
-                    const reasons = comments.filter(c => c.type === 'feat' || c.type === 'fix' || c.header?.startsWith('BREAKING CHANGE'));
-                    const feats = comments.filter(c => c.type === 'feat');
-                    const fixes = comments.filter(c => c.type === 'fix');
-                    const breakings = comments.filter(c => c.header?.startsWith('BREAKING CHANGE'));
-                    if (comments.some(c => c.header?.startsWith('BREAKING CHANGE'))) {
-                        return { level: 0, reasons, feats, fixes, breakings }; // major
-                    } else if (comments.some(c => c.type === 'feat')) {
-                        return { level: 1, reasons, feats, fixes, breakings }; // minor
-                    } else if (comments.some(c => c.type === 'fix')) {
-                        return { level: 2, reasons, feats, fixes, breakings }; // patch
-                    }
-                    return {}
-                }
-            }, function (err, result) {
-                if (err) reject(err);
-                else resolve(result as BumpSuggestion);
-            });
-        });
-        return result;
+    for (const dependency of Object.keys(dependencies)) {
+      if (!byName.has(dependency)) continue
+      const list = dependents.get(dependency) ?? []
+      list.push(pkg)
+      dependents.set(dependency, list)
     }
-    for (const pkg of packages) {
-        const packageJSON = pkg.content;
-        const result = await getBumpSuggestion(pkg.name);
-        // bump version according to the release type 'major', 'minor' or 'patch'
-        if (result.releaseType) {
-            const newVersion = semver.inc(packageJSON.version, result.releaseType);
-            pkg.newVersion = newVersion || undefined;
-            pkg.releaseType = result.releaseType;
-            pkg.reasons = result.reasons;
-            pkg.level = result.level;
-            pkg.feats = result.feats;
-            pkg.fixes = result.fixes;
-            pkg.breakings = result.breakings;
-            console.log(`${pkg.name}: ${pkg.newVersion} ${pkg.releaseType}`)
-        }
+  }
+
+  return dependents
+}
+
+function bumpDependents(packages: PackageInfo[]) {
+  const dependents = buildDependencyGraph(packages)
+  const visited = new Set<string>()
+
+  function bump(pkg: PackageInfo) {
+    for (const dependent of dependents.get(pkg.content.name) ?? []) {
+      const key = `${pkg.content.name}->${dependent.content.name}`
+      if (visited.has(key)) continue
+      visited.add(key)
+
+      if (dependent.newVersion === undefined) {
+        dependent.level = 2
+        dependent.newVersion = semver.inc(dependent.content.version, 'patch') || undefined
+        dependent.passive = true
+        dependent.reasons.push(`Dependency ${pkg.content.name} bump **patch**`)
+        bump(dependent)
+      }
     }
+  }
+
+  for (const pkg of packages.filter((pkg) => pkg.newVersion)) bump(pkg)
 }
 
-/**
- * Bump dependencies according to the package changes
- */
-function bumpDependenciesPackage(reversedDependencies: { [name: string]: Package[]; }, packages: Array<Package>) {
-    let bumpTotalOrder = 3;
-    /**
-     * @param {Package} pkg 
-     */
-    function bump(pkg: Package) {
-        // only major & minor change affect the dependents packages update
-        const allDependent = reversedDependencies[pkg.name] || [];
-        // console.log(pkg.name)
-        for (const dep of allDependent) {
-            let affected = false;
+function getJsonFormatting(file: string) {
+  const source = fs.readFileSync(file, 'utf8')
+  const indent = source.match(/^(\s+)"/m)?.[1] || '  '
+  const newline = source.includes('\r\n') ? '\r\n' : '\n'
+  const trailingNewline = source.endsWith('\n')
+  return { indent, newline, trailingNewline }
+}
 
-            const pkgJson = dep.content;
-            const bumpLevel = 2;
-            const bumpType = 'patch';
+function writeJson(file: string, content: PackageJson) {
+  const { indent, newline, trailingNewline } = getJsonFormatting(file)
+  let output = JSON.stringify(content, null, indent)
+  if (newline !== '\n') output = output.replaceAll('\n', newline)
+  if (trailingNewline) output += newline
+  fs.writeFileSync(file, output)
+}
 
-            // if current bumping priority is lower than affected bumped priority
-            if (!("level" in dep) || (typeof dep.level === 'number' && dep.level > bumpLevel)) {
-                affected = true;
-                dep.level = bumpLevel;
-                dep.releaseType = bumpType;
-                dep.newVersion = semver.inc(pkgJson.version, bumpType) || undefined;
-            }
-
-            if (!dep.reasons) {
-                dep.reasons = [];
-            }
-            dep.passive = true;
-            dep.reasons.push(`Dependency ${pkg.content.name} bump **${bumpType}**`);
-            if (affected) {
-                // dfs bump package
-                bump(dep);
-            }
-        }
+function writeVersions(packages: PackageInfo[], rootVersion: string) {
+  for (const pkg of packages) {
+    if (!pkg.newVersion) continue
+    if (DRY) {
+      console.log(`Mock write ${pkg.file}: ${pkg.content.version} -> ${pkg.newVersion}`)
+      continue
     }
-    for (const pkg of packages.filter(pkg => pkg.newVersion && pkg.releaseType)) {
-        bumpTotalOrder = Math.min(bumpTotalOrder, pkg.level || 999);
-        bump(pkg);
+    writeJson(pkg.file, { ...pkg.content, version: pkg.newVersion })
+  }
+
+  const rootFile = 'package.json'
+  if (DRY) {
+    console.log(`Mock write ${rootFile}: ${readJson(rootFile).version} -> ${rootVersion}`)
+    return
+  }
+  writeJson(rootFile, { ...readJson(rootFile), version: rootVersion })
+
+  const electronFile = 'xmcl-electron-app/package.json'
+  writeJson(electronFile, { ...readJson(electronFile), version: rootVersion })
+}
+
+function getCommitInfoText(packages: PackageInfo[]) {
+  let body = ''
+  for (const pkg of packages.sort((a, b) => Number(!!a.passive) - Number(!!b.passive))) {
+    if (!pkg.newVersion) continue
+    body += `- **${pkg.content.name}: ${pkg.content.version}** -> ${pkg.newVersion}\n`
+    for (const reason of pkg.reasons) {
+      if (typeof reason === 'string') {
+        body += `  - ${reason}\n`
+      } else {
+        body += `  - ${reason.header} ([${reason.hash}](https://github.com/Voxelum/x-minecraft-launcher/commit/${reason.hash}))\n`
+      }
     }
-
-    return bumpTotalOrder;
+  }
+  return body
 }
 
-/**
- * Update the package.json
- * 
- * @param {Package[]} packages 
- * @param {Record<string, Package[]>} dependencies
- */
-function writeAllNewVersionsToPackageJson(packages: Package[], dependencies: Record<string, Package[]>) {
-    for (const pkg of packages) {
-        if (!pkg.newVersion) continue;
-        if (!DRY) {
-            const newContent = Object.assign({}, pkg.content, {
-                version: pkg.newVersion,
-            });
-            fs.writeFileSync(`packages/${pkg.name}/package.json`, JSON.stringify(newContent, null, 2) + '\n');
-        } else {
-            console.log(`Mock write file packages/${pkg.name}/package.json ${pkg.newVersion}`);
-        }
-    }
+function setOutputs(version: string, packages: PackageInfo[], release: boolean) {
+  const body = [
+    'This PR is auto-generated by',
+    '[create-pull-request](https://github.com/peter-evans/create-pull-request)',
+    `to prepare new releases for changed packages.\n\n### Package Changes\n\n${getCommitInfoText(packages)}`,
+  ].join('\n')
+  const output = process.env.GITHUB_OUTPUT ? core.setOutput : (key: string, value: unknown) => console.log(`${key}: ${value}`)
+  output('title', `Prepare Release ${version}`)
+  output('body', body)
+  output('changelog', body)
+  output('message', `chore(release): bump version ${version}`)
+  output('release', release)
 }
 
-/**
- * Get commits info of packagess
- * @param {Package[]} packages 
- */
-function getCommitInfoText(packages: Package[]) {
-    let body = ``;
+function main() {
+  const packages = getPackageInfos()
+  scanPackageChanges(packages)
+  bumpDependents(packages)
 
-    for (const pkg of packages.sort((a, b) => a.passive && !b.passive ? 1 : !a.passive && b.passive ? -1 : 0)) {
-        const packageJSON = pkg.content;
-        if (!pkg.newVersion) continue;
-        body += `- **${packageJSON.name}: ${packageJSON.version}** -> ${pkg.newVersion}\n`;
-        if (pkg.reasons) {
-            for (const reason of pkg.reasons) {
-                if (typeof reason === 'string') {
-                    body += `  - ${reason}\n`;
-                } else {
-                    body += `  - ${reason.header} ([${reason.hash}](https://github.com/Voxelum/x-minecraft-launcher/commit/${reason.hash}))\n`
-                }
-            }
-        }
-    }
-    return body;
+  const levels = packages
+    .filter((pkg) => pkg.newVersion && pkg.level !== undefined)
+    .map((pkg) => pkg.level as number)
+  if (levels.length === 0) {
+    setOutputs(readJson('package.json').version, packages, false)
+    return
+  }
+
+  const root = readJson('package.json')
+  const rootLevel = Math.min(...levels)
+  const version = semver.inc(root.version, getReleaseType(rootLevel) as semver.ReleaseType)
+  if (!version) {
+    setOutputs(root.version, packages, false)
+    return
+  }
+
+  writeVersions(packages, version)
+  setOutputs(version, packages, true)
 }
 
-function getPrTitle(version: string) {
-    return `Prepare Release ${version}`
-}
-/**
- * Get PR body text
- * @param {Package[]} packages 
- */
-function getPRBody(packages: Package[]) {
-    let body = `This PR is auto-generated by
-[create-pull-request](https://github.com/peter-evans/create-pull-request)
-to prepare new releases for changed packages.\n\n### Package Changes\n\n`;
-    body += getCommitInfoText(packages);
-    return body;
-}
-/**
- * Get commit message
- * @param {string} version 
- */
-function getCommitMessage(version: string) {
-    return `chore(release): bump version ${version}`
-}
-
-async function main(output: (k: string, v: any) => void) {
-    const { reversedDependencies, packages, dependencies } = scanPackages();
-
-    console.log(`Found ${packages.length} packages.`);
-
-    await fillPackageBumpInfo(packages);
-    const bumpLevel = bumpDependenciesPackage(reversedDependencies, packages);
-    
-    console.log(`Current bump level is: ${bumpLevel}`)
-
-    console.log(`Commit info:`)
-    console.log(getCommitInfoText(packages));
-
-    const packageJSON = JSON.parse(fs.readFileSync(`package.json`).toString());
-
-
-    if (bumpLevel < 3) {
-        const oldVersion = packageJSON.version;
-        const bumpType = ["major", "minor", "patch"][bumpLevel] as ReleaseType;
-        const newVersion = semver.inc(packageJSON.version, bumpType);
-        if (newVersion) {
-            packageJSON.version = newVersion;
-            console.log(`Bump total version by [${bumpType}]: ${oldVersion} -> ${newVersion}`);
-
-            if (DRY) {
-                console.log(`Mock write file package.json`);
-            } else {
-                fs.writeFileSync(`package.json`, JSON.stringify(packageJSON, null, 4));
-            }
-            writeAllNewVersionsToPackageJson(packages, dependencies);
-
-            output('title', getPrTitle(newVersion));
-            output('body', getPRBody(packages));
-            output('message', getCommitMessage(newVersion));
-            output('release', true);
-        } else {
-            output('release', false);
-        }
-    } else {
-        output('release', false);
-    }
-}
-
-main(core ? core.setOutput : (k, v) => {
-    console.log(k)
-    console.log(v)
-});
+main()

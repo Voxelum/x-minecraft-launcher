@@ -246,48 +246,9 @@ jobs:
           pnpm install --frozen-lockfile --filter ./.github/actions
       - name: Bump Version
         id: version
-        uses: Voxelum/semantic-version-bump-action@xmcl
-        with:
-          packages: |
-            ./packages/asm
-            ./packages/bore
-            ./packages/bytebuffer
-            ./packages/client
-            ./packages/core
-            ./packages/curseforge
-            ./packages/discord-rpc
-            ./packages/file-transfer
-            ./packages/forge-site-parser
-            ./packages/game-data
-            ./packages/gamesetting
-            ./packages/installer
-            ./packages/instance
-            ./packages/mod-parser
-            ./packages/model
-            ./packages/modrinth
-            ./packages/nat-api
-            ./packages/nbt
-            ./packages/oxlint-config
-            ./packages/resource
-            ./packages/resourcepack
-            ./packages/schematic
-            ./packages/semver
-            ./packages/sqlite
-            ./packages/system
-            ./packages/text-component
-            ./packages/undici-shim
-            ./packages/unzip
-            ./packages/user
-            ./packages/user-offline-uuid
-            ./packages/utils
-            ./packages/worker
-            ./packages/wrtc-multiplayer
-            ./packages/yauzl
-            ./xmcl-keystone-ui
-            ./xmcl-runtime
-            ./xmcl-runtime-api
-          root: "."
-          stage: "prepare"
+        run: pnpm tsx .github/actions/prepare-pr/index.ts
+        env:
+          CI: true
       # - name: Update Sponsor
       #   uses: Voxelum/afdian-sponsor-action@master
       #   with:
