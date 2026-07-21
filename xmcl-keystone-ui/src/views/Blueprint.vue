@@ -209,7 +209,7 @@
               <BlueprintPreview
                 :key="active.path"
                 :instance-path="path"
-                :file-name="active.fileName"
+                :file-name="active.path"
                 :size="active.dimensions"
                 :palette="active.palette"
                 :voxels="active.voxels"
@@ -550,7 +550,7 @@ watch(
     for (const bp of list) {
       if ((bp.materials && bp.materials.length > 0) || lazyRequested.has(bp.path)) continue
       lazyRequested.add(bp.path)
-      getBlueprintInfo(path.value, bp.fileName)
+      getBlueprintInfo(path.value, bp.path)
         .then((info) => {
           lazyMaterials.value = { ...lazyMaterials.value, [bp.path]: info.materials ?? [] }
         })
@@ -646,7 +646,7 @@ watch(
     materials.value = bp?.materials ?? []
     if (!bp || (bp.materials && bp.materials.length > 0)) return
     try {
-      const info = await getBlueprintInfo(path.value, bp.fileName)
+      const info = await getBlueprintInfo(path.value, bp.path)
       if (active.value?.path === bp.path) materials.value = info.materials
     } catch {
       // ignore; keep empty
@@ -740,7 +740,7 @@ async function doConvert() {
   try {
     await convertBlueprint({
       instancePath: path.value,
-      fileName: active.value.fileName,
+      fileName: active.value.path,
       target: convertTarget.value as any,
     })
     convertDialog.value = false
@@ -779,7 +779,7 @@ async function doReplace() {
       : undefined
     await replaceBlueprintBlocks({
       instancePath: path.value,
-      fileName: active.value.fileName,
+      fileName: active.value.path,
       replacements: rules,
       mode: replaceMode.value,
       output,

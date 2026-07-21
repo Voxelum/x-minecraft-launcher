@@ -1,6 +1,6 @@
 import { InstallMarketOptionWithInstance, LockKey, ResourceState, SharedState, UpdateInstanceResourcesOptions, getInstanceModStateKey } from '@xmcl/runtime-api'
 import { ensureDir, mkdir, readdir, rename, rm, stat, unlink } from 'fs-extra'
-import { basename, extname, join } from 'path'
+import { basename, extname, isAbsolute, join, relative, resolve } from 'path'
 import { kGameDataPath, LauncherApp } from '~/app'
 import { InstanceService } from '~/instance'
 import { kMarketProvider } from '~/market'
@@ -174,9 +174,15 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
 
   async uninstall({ files, path }: UpdateInstanceResourcesOptions) {
     let hasError = false
+    const domainPath = resolve(path, this.domain)
     const validFiles = files.filter((f): f is string => typeof f === 'string' && f.length > 0)
     await Promise.all(validFiles.map(async (f) => {
-      const dest = join(path, this.domain, basename(f))
+      const dest = isAbsolute(f) ? resolve(f) : resolve(domainPath, f)
+      const relativeDest = relative(domainPath, dest)
+      if (relativeDest.startsWith('..') || isAbsolute(relativeDest)) {
+        hasError = true
+        return
+      }
       await unlink(dest).catch(() => { 
         hasError = true
       })

@@ -208,7 +208,7 @@ function createWatcher(
 ) {
   const watcher = new FSWatcher({
     cwd: path,
-    depth: 1,
+    depth: domain === ResourceDomain.Blueprints ? Infinity : 1,
     followSymlinks: true,
     alwaysStat: true,
     ignorePermissionErrors: true,
@@ -221,11 +221,17 @@ function createWatcher(
   }).on('all', async (event, file, stat) => {
     if (!file) return
 
+    const eventName = event as string
     const depth = file.split(sep).length
-    if (depth > 1) return
+    if (domain !== ResourceDomain.Blueprints && depth > 1) return
 
     if (shouldIgnoreFile(file, domain)) return
     if (file.endsWith('.txt')) return
+    if (eventName === 'unlinkDir') {
+      if (domain === ResourceDomain.Blueprints) revalidate()
+      return
+    }
+    if (domain === ResourceDomain.Blueprints && stat?.isDirectory()) return
     if (event === 'unlink') {
       onResourceRemove(join(path, file))
     } else if (event === 'add' || event === 'change') {
@@ -243,7 +249,7 @@ function createWatcher(
         isDirectory: stat.isDirectory(),
       }
       onResourceUpdate(fileObj)
-    } else if (event === 'unlinkDir' && file === path) {
+    } else if (eventName === 'unlinkDir' && file === path) {
       revalidate()
     }
   })
