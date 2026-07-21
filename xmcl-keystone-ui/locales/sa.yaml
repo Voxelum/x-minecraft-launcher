@@ -1281,6 +1281,7 @@ search:
   emptyInstalled: अद्यापि किमपि न संस्थापितम्
   browseMarket: विपणिं पश्यतु
   noResults: कोऽपि परिणामः न मिलितः
+  pageSize: प्रत्येकपृष्ठे परिणामसंख्या
 server:
   acceptingMinecraftVersion: स्वीक्रियमाणं संस्करणम्
   addServer: सेवाप्रदातां योजयतु

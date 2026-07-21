@@ -1283,6 +1283,7 @@ search:
   emptyInstalled: Chưa cài đặt gì cả
   browseMarket: Duyệt qua chợ
   noResults: Không tìm thấy kết quả
+  pageSize: Số kết quả mỗi trang
 server:
   acceptingMinecraftVersion: Chấp nhận phiên bản Minecraft
   addServer: Thêm máy chủ

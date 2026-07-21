@@ -1173,6 +1173,7 @@ search:
   emptyInstalled: Henüz hiçbir şey yüklenmedi
   browseMarket: Pazara göz at
   noResults: Sonuç bulunamadı
+  pageSize: Sayfa başına sonuç
 server:
   acceptingMinecraftVersion: Kabul Edilen Minecraft Sürümü
   creationHint: Lütfen sunucu adresini doldurun ve sunucuya ping atın

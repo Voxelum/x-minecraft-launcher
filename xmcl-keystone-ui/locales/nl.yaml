@@ -1158,6 +1158,7 @@ search:
   emptyInstalled: Nog niets geïnstalleerd
   browseMarket: Markt bekijken
   noResults: Geen resultaten gevonden
+  pageSize: Resultaten per pagina
 server:
   acceptingMinecraftVersion: Accepteert Minecraft Versie
   creationHint: Vul het serveradres in en ping de server

@@ -1283,6 +1283,7 @@ search:
   emptyInstalled: இன்னும் எதுவும் நிறுவப்படவில்லை
   browseMarket: சந்தையை உலாவு
   noResults: முடிவுகள் எதுவும் கிடைக்கவில்லை
+  pageSize: ஒரு பக்கத்திற்கான முடிவுகள்
 server:
   acceptingMinecraftVersion: Minecraft பதிப்பை ஏற்றுக்கொள்கிறது
   addServer: சேவையகத்தைச் சேர்

@@ -1425,6 +1425,7 @@ search:
   emptyInstalled: Aún no hay nada instalado
   browseMarket: Explorar el mercado
   noResults: No se encontraron resultados
+  pageSize: Resultados por página
 server:
   acceptingMinecraftVersion: Aceptando Versión de Minecraft
   addServer: Añadir servidor

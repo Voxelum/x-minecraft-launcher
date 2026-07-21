@@ -1191,6 +1191,7 @@ search:
   emptyInstalled: Még nincs semmi telepítve
   browseMarket: Piac böngészése
   noResults: Nincs találat
+  pageSize: Találatok oldalanként
 server:
   acceptingMinecraftVersion: Minecraft verzió elfogadása
   creationHint: Kérlek, töltsd ki a szerver címét és pingeld a szervert

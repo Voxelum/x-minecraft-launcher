@@ -1142,6 +1142,7 @@ search:
   emptyInstalled: Ancora niente installato
   browseMarket: Esplora il mercato
   noResults: Nessun risultato trovato
+  pageSize: Risultati per pagina
 server:
   acceptingMinecraftVersion: Versione Minecraft accettata
   creationHint: Inserire l'indirizzo del server e fare ping al server

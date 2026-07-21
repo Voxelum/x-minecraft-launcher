@@ -1508,6 +1508,7 @@ search:
   emptyInstalled: Nothing installed yet
   browseMarket: Browse Market
   noResults: No results found
+  pageSize: Results per page
 localCollection:
   title: Launcher collections
   newCollection: New collection

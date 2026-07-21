@@ -2,6 +2,7 @@ import { ProjectEntry } from '@/util/search'
 import { useSearchPattern } from './useSearchPattern'
 import { useModrinthSearchFunc } from './modrinth'
 import { SearchModel } from './search'
+import { useMarketPageSize } from './marketPageSize'
 
 export function useModrinthSearch<T extends ProjectEntry<any>>(
   projectType: string,
@@ -16,6 +17,7 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
     modrinthEnvironment: environment,
   }: SearchModel
 ) {
+  const { pageSize } = useMarketPageSize()
   const search = useModrinthSearchFunc(
     keyword,
     gameVersion,
@@ -25,7 +27,7 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
     environment,
     sort,
     projectType,
-    20,
+    pageSize,
   )
 
   const {
@@ -54,6 +56,7 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
       }
       return true
     },
+    pageSize,
   )
 
   function effect() {
@@ -63,6 +66,7 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
     watch(gameVersion, onSearch)
     watch(disabled, onSearch)
     watch(environment, onSearch)
+    watch(pageSize, onSearch)
     onSearch()
   }
 

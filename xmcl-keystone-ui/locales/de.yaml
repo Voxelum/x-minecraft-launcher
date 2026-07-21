@@ -1231,6 +1231,7 @@ search:
   emptyInstalled: Noch nichts installiert
   browseMarket: Markt durchsuchen
   noResults: Keine Ergebnisse gefunden
+  pageSize: Ergebnisse pro Seite
 server:
   acceptingMinecraftVersion: Eine Version von Minecraft adoptieren
   creationHint: Geben Sie die Serveradresse und den Server-Ping an

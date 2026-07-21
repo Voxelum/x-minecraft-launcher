@@ -1281,6 +1281,7 @@ search:
   emptyInstalled: مفيش حاجة متثبتة لسه
   browseMarket: تصفح المتجر
   noResults: ملقناش نتائج للبحث
+  pageSize: عدد النتائج في كل صفحة
 server:
   acceptingMinecraftVersion: يقبل نسخة ماينكرافت
   addServer: إضافة سيرفر

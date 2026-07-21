@@ -1148,6 +1148,7 @@ search:
   emptyInstalled: Әзірге ештеңе орнатылмаған
   browseMarket: Нарықты шолу
   noResults: Нәтиже табылмады
+  pageSize: Беттегі нәтижелер саны
 server:
   acceptingMinecraftVersion: Қабылдайтын Minecraft нұсқасы
   creationHint: Сервер мекенжайын толтырып, серверге ping жасаңыз

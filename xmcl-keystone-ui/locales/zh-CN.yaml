@@ -1293,6 +1293,7 @@ search:
   emptyInstalled: 尚未安装任何内容
   browseMarket: 浏览市场
   noResults: 未找到结果
+  pageSize: 每页结果数
 localCollection:
   title: 启动器收藏夹
   newCollection: 新建收藏夹

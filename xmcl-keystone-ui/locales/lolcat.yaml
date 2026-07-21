@@ -1132,6 +1132,7 @@ search:
   emptyInstalled: NUFFIN INSTALLD YET
   browseMarket: BROWZE MARKET
   noResults: NO REZULTS FOUNDZ
+  pageSize: REZULTS PER PAGEZ
 server:
   acceptingMinecraftVersion: ACCEPTING MINECWAFT VERSHUN
   creationHint: PLZ FILL DA SERVR ADDWESS AN PING DA SERVR

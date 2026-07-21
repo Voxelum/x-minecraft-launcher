@@ -1330,6 +1330,7 @@ search:
   emptyInstalled: 尚未安裝任何內容
   browseMarket: 瀏覽市集
   noResults: 找唔到結果
+  pageSize: 每頁結果數
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   addServer: 新增伺服器

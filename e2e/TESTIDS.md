@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 162 (in 270 Vue files)
+**Total anchors:** 163 (in 271 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -114,6 +114,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `market-filter-favorite-tab` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24) |
 | `market-item-install` | [`xmcl-keystone-ui/src/components/MarketItem.vue#L55`](../xmcl-keystone-ui/src/components/MarketItem.vue#L55) |
 | `market-multi-select-toggle` | [`xmcl-keystone-ui/src/views/Mod.vue#L27`](../xmcl-keystone-ui/src/views/Mod.vue#L27)<br>[`xmcl-keystone-ui/src/views/ResourcePack.vue#L26`](../xmcl-keystone-ui/src/views/ResourcePack.vue#L26)<br>[`xmcl-keystone-ui/src/views/ShaderPack.vue#L26`](../xmcl-keystone-ui/src/views/ShaderPack.vue#L26) |
+| `market-page-size` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L72`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L72) |
 | `me-user-switcher` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16) |
 | `minecraft-friends-add-button` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68) |
 | `minecraft-friends-add-input` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L58`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L58) |
@@ -134,13 +135,13 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `nav-store` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L39`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L39)<br>[`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L134`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L134)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L45`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L45) |
 | `refresh-all-servers` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L54`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L54) |
 | `save-world-map-canvas` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L10`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L10) |
-| `save-world-map-copy` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L104`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L104) |
-| `save-world-map-delete` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L129`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L129) |
-| `save-world-map-grid-toggle` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L40`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L40) |
-| `save-world-map-height` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L51`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L51) |
-| `save-world-map-legend` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L71`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L71) |
-| `save-world-map-paste` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L117`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L117) |
-| `save-world-map-place-bar` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L156`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L156) |
+| `save-world-map-copy` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L103`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L103) |
+| `save-world-map-delete` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L128`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L128) |
+| `save-world-map-grid-toggle` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L39`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L39) |
+| `save-world-map-height` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L50`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L50) |
+| `save-world-map-legend` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L70`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L70) |
+| `save-world-map-paste` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L116`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L116) |
+| `save-world-map-place-bar` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L155`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L155) |
 | `server-tab-export` | [`xmcl-keystone-ui/src/views/BaseSettingServerExport.vue#L160`](../xmcl-keystone-ui/src/views/BaseSettingServerExport.vue#L160) |
 | `server-tab-launch` | [`xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L132`](../xmcl-keystone-ui/src/views/BaseSettingExtension.vue#L132) |
 | `server-upstream-update-row` | [`xmcl-keystone-ui/src/views/HomeFooterCard.vue#L90`](../xmcl-keystone-ui/src/views/HomeFooterCard.vue#L90) |

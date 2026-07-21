@@ -1182,6 +1182,7 @@ search:
   emptyInstalled: Ще нічого не встановлено
   browseMarket: Переглянути ринок
   noResults: Нічого не знайдено
+  pageSize: Результатів на сторінці
 server:
   acceptingMinecraftVersion: Приймає версію Minecraft
   creationHint: Будь ласка, заповніть адресу сервера та пропінгуйте сервер

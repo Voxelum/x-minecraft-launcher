@@ -28,34 +28,67 @@
 
     <v-tabs-window v-model="tab" class="flex min-h-0 flex-grow">
       <v-tabs-window-item :value="0" class="tab">
-        <div class="filter-subheader flex">
-          <v-icon size="16" class="mr-1">sort</v-icon>
-          {{ t('modrinth.sort.title') }}
+        <div class="filter-sort-size-row">
+          <div class="min-w-0">
+            <div class="filter-subheader flex">
+              <v-icon size="16" class="mr-1">sort</v-icon>
+              {{ t('modrinth.sort.title') }}
+            </div>
+            <v-btn-toggle
+              v-roving-tabindex
+              :aria-label="t('modrinth.sort.title')"
+              :model-value="sort"
+              mandatory
+              density="compact"
+              divided
+              class="px-1"
+              @update:model-value="emit('update:sort', $event || 'alpha_asc')"
+            >
+              <v-btn
+                v-for="tag in sortByItems"
+                :key="tag.value"
+                v-shared-tooltip="tag.text"
+                class="transition-all duration-200"
+                size="small"
+                variant="text"
+                border
+              >
+                <v-icon class="material-icons-outlined" size="small">
+                  {{ tag.icon }}
+                </v-icon>
+              </v-btn>
+            </v-btn-toggle>
+          </div>
+
+          <div class="min-w-0">
+            <div class="filter-subheader flex">
+              <v-icon size="16" class="mr-1">density_medium</v-icon>
+              {{ t('search.pageSize') }}
+            </div>
+            <v-btn-toggle
+              v-roving-tabindex
+              :aria-label="t('search.pageSize')"
+              :model-value="pageSize"
+              mandatory
+              density="compact"
+              divided
+              class="px-1"
+              data-testid="market-page-size"
+              @update:model-value="pageSize = $event"
+            >
+              <v-btn
+                v-for="size in pageSizeOptions"
+                :key="size"
+                :value="size"
+                size="small"
+                variant="text"
+                border
+              >
+                {{ size }}
+              </v-btn>
+            </v-btn-toggle>
+          </div>
         </div>
-        <v-btn-toggle
-          v-roving-tabindex
-          :aria-label="t('modrinth.sort.title')"
-          :model-value="sort"
-          mandatory
-          density="compact"
-          divided
-          class="px-1"
-          @update:model-value="emit('update:sort', $event || 'alpha_asc')"
-        >
-          <v-btn
-            v-for="tag in sortByItems"
-            :key="tag.value"
-            v-shared-tooltip="tag.text"
-            class="transition-all duration-200"
-            size="small"
-            variant="text"
-            border
-          >
-            <v-icon class="material-icons-outlined" size="small">
-              {{ tag.icon }}
-            </v-icon>
-          </v-btn>
-        </v-btn-toggle>
 
         <div class="filter-subheader flex">
           <v-icon size="16" class="mr-1">view_in_ar</v-icon>
@@ -305,6 +338,7 @@ import CurseforgeCategoryChip from './CurseforgeCategoryChip.vue'
 import ModrinthCategoryChip from './ModrinthCategoryChip.vue'
 import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 import { getSelectableGameVersionIds } from '@/util/gameVersion'
+import { MARKET_PAGE_SIZE_OPTIONS, useMarketPageSize } from '@/composables/marketPageSize'
 
 const props = defineProps<{
   curseforgeCategory?: number | undefined
@@ -358,6 +392,8 @@ const emit = defineEmits<{
 }>()
 
 const { versions } = useMinecraftVersions()
+const { pageSize } = useMarketPageSize()
+const pageSizeOptions = MARKET_PAGE_SIZE_OPTIONS
 const tab = computed({
   get() {
     return props.mode === 'local' ? 1 : props.mode === 'remote' ? 0 : 2
@@ -595,5 +631,12 @@ function getIcon(loader: string) {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+/* Sort (left) and page size (right) share one row as two equal columns. */
+.filter-sort-size-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  align-items: start;
 }
 </style>

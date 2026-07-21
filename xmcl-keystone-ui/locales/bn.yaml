@@ -1283,6 +1283,7 @@ search:
   emptyInstalled: এখনও কিছু ইনস্টল করা হয়নি
   browseMarket: মার্কেট ব্রাউজ করুন
   noResults: কোনো ফলাফল পাওয়া যায়নি
+  pageSize: প্রতি পৃষ্ঠায় ফলাফলের সংখ্যা
 server:
   acceptingMinecraftVersion: মাইনক্রাফট সংস্করণ গ্রহণ করা হচ্ছে
   addServer: সার্ভার যোগ করুন

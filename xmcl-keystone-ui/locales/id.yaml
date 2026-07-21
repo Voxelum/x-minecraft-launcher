@@ -1283,6 +1283,7 @@ search:
   emptyInstalled: Belum ada yang terpasang
   browseMarket: Telusuri Pasar
   noResults: Tidak menemukan hasil
+  pageSize: Hasil per halaman
 server:
   acceptingMinecraftVersion: Menerima Versi Minecraft
   addServer: Tambah Server

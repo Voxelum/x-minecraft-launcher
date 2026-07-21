@@ -1195,6 +1195,7 @@ search:
   emptyInstalled: 尚未安裝任何內容
   browseMarket: 瀏覽市集
   noResults: 找不到結果
+  pageSize: 每頁結果數
 localCollection:
   title: 啟動器收藏夾
   newCollection: 新增收藏夾

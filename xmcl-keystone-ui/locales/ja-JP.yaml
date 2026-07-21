@@ -1189,6 +1189,7 @@ search:
   emptyInstalled: まだ何もインストールされていません
   browseMarket: マーケットを見る
   noResults: 結果が見つかりません
+  pageSize: 1ページあたりの結果数
 server:
   acceptingMinecraftVersion: Minecraftバージョンを使用中
   creationHint: サーバーアドレスを入力し、pingしてください

@@ -1231,6 +1231,7 @@ search:
   emptyInstalled: 'لا شيء مثبت بعد'
   browseMarket: 'تصفح السوق'
   noResults: 'لا توجد نتائج'
+  pageSize: عدد النتائج في كل صفحة
 server:
   acceptingMinecraftVersion: 'قبول نسخة ماينكرافت'
   creationHint: 'يرجى ملء عنوان الخادم واختبار اتصال الخادم'

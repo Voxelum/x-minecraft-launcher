@@ -1283,6 +1283,7 @@ search:
   emptyInstalled: अभी तक कुछ भी इंस्टॉल नहीं है
   browseMarket: बाज़ार ब्राउज़ करें
   noResults: कोई परिणाम नहीं मिला
+  pageSize: प्रति पृष्ठ परिणाम
 server:
   acceptingMinecraftVersion: माइनक्राफ्ट संस्करण स्वीकार कर रहा है
   addServer: सर्वर जोड़ें
