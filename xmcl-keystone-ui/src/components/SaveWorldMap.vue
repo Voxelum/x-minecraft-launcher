@@ -344,15 +344,17 @@ async function ensureRegionLoaded(rx: number, rz: number) {
       atTop.value ? undefined : renderHeight.value,
     )
     chunkCache.set(key, chunks)
-    const buffer = data instanceof Uint8Array ? data : new Uint8Array(data as ArrayBufferLike)
+    const buffer = data instanceof Uint8Array ? data : new Uint8Array(data as any)
+    const clamped = new Uint8ClampedArray(buffer.buffer || buffer, buffer.byteOffset || 0, buffer.byteLength || buffer.length)
     const imageData = new ImageData(
-      new Uint8ClampedArray(buffer.buffer, buffer.byteOffset, buffer.byteLength) as any,
+      clamped,
       512,
       512,
     )
     const bitmap = await createImageBitmap(imageData)
     tileCache.set(key, bitmap)
   } catch (e) {
+    console.error('[SaveWorldMap] Failed to load region:', rx, rz, e)
     tileCache.set(key, 'empty')
   }
   requestRender()

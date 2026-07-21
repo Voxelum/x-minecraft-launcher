@@ -256,7 +256,7 @@
 
     <v-tabs v-roving-tabindex role="tablist" v-model="tab" bg-color="transparent">
       <v-tab :value="0">
-        {{ t('modrinth.description') }}
+        {{ props.contentTabName || t('modrinth.description') }}
       </v-tab>
       <v-tab :value="1" :disabled="props.detail.galleries.length === 0">
         {{ t('modrinth.gallery') }}
@@ -671,6 +671,7 @@ const props = defineProps<{
   loadingCollections?: boolean
   collection?: string
   noPaddingContent?: boolean
+  contentTabName?: string
   /**
    * When set, shows an "add to collection" menu for the currently shown
    * provider's project. Enables adding both Modrinth and CurseForge projects

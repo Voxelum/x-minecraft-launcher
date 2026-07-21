@@ -90,6 +90,7 @@ const onEnable = (enable: boolean) => {
     @delete="emit('delete', save.installed[0])"
     @enable="onEnable"
     no-padding-content
+    :content-tab-name="t('save.mapPreview')"
   >
     <template #content>
       <div class="save-map-wrapper">

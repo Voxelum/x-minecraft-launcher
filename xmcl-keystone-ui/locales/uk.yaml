@@ -1157,6 +1157,7 @@ save:
   gameMode: режим гри
   independent: Екземпляр використовує незалежну папку збережень
   levelName: Назва рівня
+  mapPreview: Карта світу
   name: Збереження | Збереження
   search: Шукати збереження
   seed: Seed
