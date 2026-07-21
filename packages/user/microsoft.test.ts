@@ -70,6 +70,55 @@ describe('MicrosoftAuthenticator', () => {
     expect(result.Token).to.equal(expectedToken)
   })
 
+  describe('#acquireXBoxToken', () => {
+    const xblToken = 'xbl-token'
+    const interceptXbl = () => {
+      agent
+        .get('https://user.auth.xboxlive.com')
+        .intercept({ method: 'POST', path: '/user/authenticate' })
+        .reply(200, { Token: xblToken })
+    }
+    const interceptAuthorize = (relyingParty: string, status: number, body: any) => {
+      agent
+        .get('https://xsts.auth.xboxlive.com')
+        .intercept({
+          method: 'POST',
+          path: '/xsts/authorize',
+          body: JSON.stringify({
+            Properties: { SandboxId: 'RETAIL', UserTokens: [xblToken] },
+            RelyingParty: relyingParty,
+            TokenType: 'JWT',
+          }),
+        })
+        .reply(status, body)
+    }
+
+    it('does not fail when the xboxlive.com (avatar) authorization fails', async () => {
+      interceptXbl()
+      interceptAuthorize('rp://api.minecraftservices.com/', 200, { Token: 'mc-xsts' })
+      // The live/avatar relying party fails (e.g. no full Xbox profile).
+      interceptAuthorize('http://xboxlive.com', 401, { XErr: 2148916233 })
+
+      const client = new MicrosoftAuthenticator({ fetch })
+      const result = await client.acquireXBoxToken('oauth-token')
+
+      expect(result.minecraftXstsResponse.Token).to.equal('mc-xsts')
+      expect(result.liveXstsResponse).toBeUndefined()
+    })
+
+    it('returns both tokens when everything succeeds', async () => {
+      interceptXbl()
+      interceptAuthorize('rp://api.minecraftservices.com/', 200, { Token: 'mc-xsts' })
+      interceptAuthorize('http://xboxlive.com', 200, { Token: 'live-xsts' })
+
+      const client = new MicrosoftAuthenticator({ fetch })
+      const result = await client.acquireXBoxToken('oauth-token')
+
+      expect(result.minecraftXstsResponse.Token).to.equal('mc-xsts')
+      expect(result.liveXstsResponse?.Token).to.equal('live-xsts')
+    })
+  })
+
   describe('#loginMinecraftWithXBox', () => {
     it('throws MicrosoftMinecraftXboxLoginError with status + body for a non-200 response', async () => {
       const pool = agent.get('https://api.minecraftservices.com')

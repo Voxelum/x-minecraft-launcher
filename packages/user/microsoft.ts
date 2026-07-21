@@ -225,11 +225,19 @@ export class MicrosoftAuthenticator {
       'rp://api.minecraftservices.com/',
       signal,
     )
-    const xstsResponse: XBoxResponse = await this.authorizeXboxLive(
+    // The `http://xboxlive.com` relying party is only needed to fetch the
+    // Xbox avatar/gamertag. Some accounts that legitimately own Minecraft
+    // (missing full Xbox Live profile, region/age restrictions, etc.) can
+    // authorize `rp://api.minecraftservices.com/` but fail here. The official
+    // launcher never requests this relying party, which is why those users
+    // report "it runs fine in the regular launcher". Treat it as optional so
+    // a failure here never blocks an otherwise valid login -- the caller just
+    // won't get an Xbox avatar.
+    const xstsResponse: XBoxResponse | undefined = await this.authorizeXboxLive(
       xblResponse.Token,
       'http://xboxlive.com',
       signal,
-    )
+    ).catch(() => undefined)
 
     return { minecraftXstsResponse, liveXstsResponse: xstsResponse }
   }

@@ -369,10 +369,12 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
 
     const [profile, avatar] = await Promise.all([
       aquireAccessToken(minecraftXstsResponse),
-      acquireXboxAvatar(liveXstsResponse).catch(e => {
-        this.logger.error(e)
-        return undefined
-      }),
+      liveXstsResponse
+        ? acquireXboxAvatar(liveXstsResponse).catch(e => {
+          this.logger.error(e)
+          return undefined
+        })
+        : Promise.resolve(undefined),
     ])
 
     return {
