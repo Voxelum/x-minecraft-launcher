@@ -1,7 +1,7 @@
 {
   "name": "@xmcl/instance",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Core instance management functionality for Minecraft launchers",
   "main": "./index.ts",
   "module": "./index.ts",

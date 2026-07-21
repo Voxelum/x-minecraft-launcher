@@ -1,6 +1,6 @@
 {
   "name": "@xmcl/gamesetting",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "main": "./index.ts",
   "description": "Parse Minecraft gamesetting (options.txt) with type.",
   "engines": {

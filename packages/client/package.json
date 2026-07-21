@@ -1,6 +1,6 @@
 {
   "name": "@xmcl/client",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "main": "./index.ts",
   "description": "Minecraft socket pipeline utilities. Support Minecraft lan server discovery.",
   "engines": {
