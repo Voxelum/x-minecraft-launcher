@@ -1,6 +1,6 @@
 {
   "name": "@xmcl/system",
-  "version": "2.2.9",
+  "version": "2.3.0",
   "main": "./index.ts",
   "browser": "./index.browser.ts",
   "description": "An abstract layer for file system on reading zip or plain dictionary/file",

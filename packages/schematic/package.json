@@ -1,6 +1,6 @@
 {
   "name": "@xmcl/schematic",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "./index.ts",
   "description": "Read, convert and edit Minecraft blueprint/schematic files (litematic, schem, structure nbt, building gadget)",
   "engines": {
