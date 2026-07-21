@@ -9,6 +9,7 @@ on:
       - "xmcl-runtime-api/**"
       - "xmcl-keystone-ui/**"
       - "xmcl-electron-app/**"
+      - "packages/**"
       - "package.json"
       - "pnpm-lock.yaml"
       - ".github/**"
@@ -248,6 +249,40 @@ jobs:
         uses: Voxelum/semantic-version-bump-action@xmcl
         with:
           packages: |
+            ./packages/asm
+            ./packages/bore
+            ./packages/bytebuffer
+            ./packages/client
+            ./packages/core
+            ./packages/curseforge
+            ./packages/discord-rpc
+            ./packages/file-transfer
+            ./packages/forge-site-parser
+            ./packages/game-data
+            ./packages/gamesetting
+            ./packages/installer
+            ./packages/instance
+            ./packages/mod-parser
+            ./packages/model
+            ./packages/modrinth
+            ./packages/nat-api
+            ./packages/nbt
+            ./packages/oxlint-config
+            ./packages/resource
+            ./packages/resourcepack
+            ./packages/schematic
+            ./packages/semver
+            ./packages/sqlite
+            ./packages/system
+            ./packages/text-component
+            ./packages/undici-shim
+            ./packages/unzip
+            ./packages/user
+            ./packages/user-offline-uuid
+            ./packages/utils
+            ./packages/worker
+            ./packages/wrtc-multiplayer
+            ./packages/yauzl
             ./xmcl-keystone-ui
             ./xmcl-runtime
             ./xmcl-runtime-api
@@ -327,6 +362,40 @@ jobs:
         uses: Voxelum/semantic-version-bump-action@xmcl
         with:
           packages: |
+            ./packages/asm
+            ./packages/bore
+            ./packages/bytebuffer
+            ./packages/client
+            ./packages/core
+            ./packages/curseforge
+            ./packages/discord-rpc
+            ./packages/file-transfer
+            ./packages/forge-site-parser
+            ./packages/game-data
+            ./packages/gamesetting
+            ./packages/installer
+            ./packages/instance
+            ./packages/mod-parser
+            ./packages/model
+            ./packages/modrinth
+            ./packages/nat-api
+            ./packages/nbt
+            ./packages/oxlint-config
+            ./packages/resource
+            ./packages/resourcepack
+            ./packages/schematic
+            ./packages/semver
+            ./packages/sqlite
+            ./packages/system
+            ./packages/text-component
+            ./packages/undici-shim
+            ./packages/unzip
+            ./packages/user
+            ./packages/user-offline-uuid
+            ./packages/utils
+            ./packages/worker
+            ./packages/wrtc-multiplayer
+            ./packages/yauzl
             ./xmcl-keystone-ui
             ./xmcl-runtime
             ./xmcl-runtime-api
