@@ -145,11 +145,10 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       ? await getOfficialJavaManifest(this.app, target.component).catch(() => undefined)
       : undefined
 
-    const folder = this.getPath(
-      'jre',
-      officialManifest ? target.component : target.component + '-zulu',
-    )
-    const exeLocation = getJavaExeFilePath(folder, this.app.platform)
+    const officialFolder = this.getPath('jre', target.component)
+    const zuluFolder = this.getPath('jre', target.component + '-zulu')
+    let folder = officialManifest ? officialFolder : zuluFolder
+    let exeLocation = getJavaExeFilePath(folder, this.app.platform)
 
     const task = this.tasks.create<InstallJavaTask>({
       type: 'installJre',
@@ -163,6 +162,8 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       const installZulu = async () => {
         this.log(`Install zulu jre runtime ${target.component} (${target.majorVersion})`)
         const zuluData = await getZuluJRE(this.app, target.component as any)
+        folder = zuluFolder
+        exeLocation = getJavaExeFilePath(folder, this.app.platform)
         await installZuluJava(zuluData, {
           destination: folder,
           ...this.downloadOptions,
@@ -201,7 +202,17 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       }
 
       this.log(`Successfully install java internally ${exeLocation}`)
-      const result = await this.resolveJava(exeLocation)
+      let result = await this.resolveJava(exeLocation)
+      // A complete official runtime can still be unusable on a particular
+      // host (blocked DLL, missing native dependency, or a vendor wrapper
+      // whose version output cannot be parsed). Do not leave the user with a
+      // dead JRE: retry via the independently packaged Zulu runtime.
+      if (!result && officialManifest && installSource === 'official') {
+        this.warn(`Official java runtime could not be resolved at ${exeLocation}; retrying with Zulu`)
+        installSource = 'official-then-zulu'
+        await installZulu()
+        result = await this.resolveJava(exeLocation)
+      }
       if (!result) {
         throw await this.#createInstallDefaultJavaError(exeLocation, folder, target, installSource)
       }

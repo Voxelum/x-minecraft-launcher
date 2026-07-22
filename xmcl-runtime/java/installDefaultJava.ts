@@ -53,7 +53,15 @@ export async function getOfficialJavaManifest(app: LauncherApp, runtimeTarget: J
   const resp = await app.fetch(normalizeUrls(DEFAULT_RUNTIME_ALL_URL, apiHost)[0], {})
   const runtimes = await resp.json() as JavaRuntimes
   const current = resolveTargetPlatform(runtimes)
+  // Mojang no longer publishes every current component for windows-x86
+  // (notably delta/epsilon), while the 32-bit launcher can still spawn an
+  // x64 Java child on 64-bit Windows. Prefer the x86 build when available,
+  // then use the x64 runtime instead of falling through to Zulu, whose index
+  // also has no matching x86 entry.
   const result = current?.[runtimeTarget]?.[0]
+    ?? (process.platform === 'win32' && process.arch === 'ia32'
+      ? runtimes['windows-x64']?.[runtimeTarget]?.[0]
+      : undefined)
 
   return result
 }

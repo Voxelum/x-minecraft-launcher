@@ -29,19 +29,21 @@ export async function resolveJava(path: string): Promise<JavaInfo | undefined> {
   }
 
   return new Promise((resolve) => {
-    exec(`"${path}" -version`, (_err, _sout, serr) => {
-      if (serr) {
-        const ver = parseJavaVersion(serr)
-        if (ver) {
-          resolve({ path, ...ver })
-        } else {
-          resolve(undefined)
-        }
-      } else {
-        resolve(undefined)
-      }
+    exec(`"${path}" -version`, (_err, stdout, stderr) => {
+      // Most JVMs write version output to stderr, but some wrappers and
+      // distributions use stdout. Accept either so a functional JRE is not
+      // misclassified as invalid solely because of its output stream.
+      const ver = parseJavaVersionOutput(stdout, stderr)
+      resolve(ver ? { path, ...ver } : undefined)
     })
   })
+}
+
+export function parseJavaVersionOutput(
+  stdout: string,
+  stderr: string,
+): { version: string; majorVersion: number; patch: number } | undefined {
+  return parseJavaVersion(stderr) ?? parseJavaVersion(stdout)
 }
 
 export class ParseJavaVersionError extends Error {
@@ -53,9 +55,9 @@ export class ParseJavaVersionError extends Error {
 }
 
 /**
- * Parse version string and major version number from stderr of java process.
+ * Parse version string and major version number from `java -version` output.
  *
- * @param versionText The stderr for `java -version`
+ * @param versionText The stdout or stderr for `java -version`
  */
 export function parseJavaVersion(
   versionText: string,
