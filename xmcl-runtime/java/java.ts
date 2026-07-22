@@ -27,6 +27,17 @@ export interface JavaInstallFailureProbe {
 }
 
 /**
+ * Keep Java process output actionable without sending the user's home path or
+ * an unbounded native-loader dump to telemetry.
+ */
+export function sanitizeJavaResolveOutput(output: string | undefined) {
+  if (!output) return undefined
+  return output
+    .replace(/(?:[A-Za-z]:[\\/]|\/(?:home|Users)\/)[^\r\n]*/g, '<path>')
+    .slice(0, 1024)
+}
+
+/**
  * Classify why an internal Java install produced an unresolvable binary.
  *
  * - `download-or-extract`: the installer resolved without throwing yet no

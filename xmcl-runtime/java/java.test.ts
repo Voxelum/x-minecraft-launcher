@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { JavaValidation, classifyJavaInstallFailure } from './java'
+import { JavaValidation, classifyJavaInstallFailure, sanitizeJavaResolveOutput } from './java'
 
 describe('classifyJavaInstallFailure', () => {
   it('reports download-or-extract when the binary never landed', () => {
@@ -21,5 +21,13 @@ describe('classifyJavaInstallFailure', () => {
     // Unknown validation with an existing exe still points at spawn/parse.
     expect(classifyJavaInstallFailure({ exeExists: true, validation: undefined }))
       .toBe('parse-or-spawn')
+  })
+
+  it('redacts absolute paths and truncates Java process output for telemetry', () => {
+    expect(sanitizeJavaResolveOutput('Error loading C:\\Users\\Alice\\.minecraftx\\jre\\bin\\server\\jvm.dll'))
+      .toBe('Error loading <path>')
+    expect(sanitizeJavaResolveOutput('Failed: /home/alice/.minecraftx/jre/bin/java'))
+      .toBe('Failed: <path>')
+    expect(sanitizeJavaResolveOutput('x'.repeat(2000))?.length).toBe(1024)
   })
 })
