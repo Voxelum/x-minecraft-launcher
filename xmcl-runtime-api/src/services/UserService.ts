@@ -300,6 +300,9 @@ export type UserExceptions = {
 } | {
   type: 'userAccessTokenExpired'
 } | {
+  type: 'userSetSkinFailed'
+  reason: 'INVALID_IMAGE' | 'REQUEST_REJECTED'
+} | {
   type: 'loginServiceNotSupported'
   authority: string
 }

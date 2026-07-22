@@ -2149,6 +2149,8 @@ userSkin:
   import: Import Skin
   importFile: Open from File
   importLink: Open from Link
+  invalidImage: Choose a valid Minecraft skin image.
+  invalidImageTitle: Invalid Skin Image
   placeUrlHere: Place Skin URL here to import
   reset: Reset
   save: Save
@@ -2156,6 +2158,8 @@ userSkin:
   skinType: Skin Type
   slim: Slim
   upload: Upload Skin
+  uploadFailed: Skin Upload Failed
+  uploadRejected: Minecraft rejected this skin upload. Please try again later.
   urlNotEmpty: Skin URL cannot be empty
   urlNotValid: Skin URL is Invalid
   useSlim: Use Slim Model

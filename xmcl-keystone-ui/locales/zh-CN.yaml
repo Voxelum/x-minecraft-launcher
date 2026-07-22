@@ -1878,12 +1878,16 @@ userSkin:
   import: 导入皮肤
   importFile: 从文件导入
   importLink: 从链接导入
+  invalidImage: 请选择有效的 Minecraft 皮肤图片。
+  invalidImageTitle: 无效的皮肤图片
   placeUrlHere: 填写待导入皮肤 URL
   reset: 重置
   save: 保存
   saveTitle: 保存皮肤到本地
   skinType: 皮肤类型
   upload: 上传
+  uploadFailed: 皮肤上传失败
+  uploadRejected: Minecraft 拒绝了此次皮肤上传，请稍后重试。
   urlNotEmpty: 皮肤 URL 不能为空
   urlNotValid: 请输入有效的皮肤 URL
   useSlim: 使用细胳膊模型

@@ -53,6 +53,7 @@
       :name="name"
       :animation="hover ? 'running' : selected ? 'walking' : 'idle'"
       @model="onModelChange"
+      @error="onPreviewError"
       @drop.prevent="dropSkin"
       @dragover.prevent="() => {}"
     />
@@ -101,6 +102,7 @@ import SkinView from '@/components/SkinView.vue'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { GameProfileAndTexture, UserProfile } from '@xmcl/runtime-api'
 import { useNotifier } from '../composables/notifier'
+import { useLocaleError } from '../composables/error'
 import {
   PlayerNameModel,
   UserSkinModel,
@@ -121,7 +123,8 @@ const props = withDefaults(
 )
 const { t } = useI18n()
 const hover = ref(false)
-const { watcherTask } = useNotifier()
+const { notify } = useNotifier()
+const toLocaleError = useLocaleError()
 
 const gameProfile = computed(() => props.profile)
 const selected = computed(() => props.user.selectedProfile === props.profile.id)
@@ -166,6 +169,15 @@ const onModelChange = (modelType: 'default' | 'slim') => {
     inferModelType.value = false
   }
 }
+const onPreviewError = (error: string) => {
+  if (error === 'invalid-skin-size') {
+    notify({
+      level: 'error',
+      title: t('userSkin.invalidImageTitle'),
+      body: t('userSkin.invalidImage'),
+    })
+  }
+}
 
 async function loadSkin() {
   if (!canUploadSkin.value) return
@@ -199,7 +211,18 @@ async function dropSkin(e: DragEvent) {
   }
 }
 
-const save_ = watcherTask(save, t('userSkin.upload'))
+const save_ = async () => {
+  try {
+    await save()
+    notify({ level: 'success', title: t('userSkin.upload') })
+  } catch (e) {
+    notify({
+      level: 'error',
+      title: t('userSkin.uploadFailed'),
+      body: toLocaleError(e),
+    })
+  }
+}
 </script>
 
 <style>

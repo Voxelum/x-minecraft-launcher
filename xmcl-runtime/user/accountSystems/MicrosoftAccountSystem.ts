@@ -9,6 +9,7 @@ import { UserTokenStorage } from '../userTokenStore'
 import { UserAccountSystem } from './AccountSystem'
 import { isAccountSuspendedError, isNetworkError, isUserCanceledError } from './MicrosoftAuthErrors'
 import { MicrosoftOAuthClient } from './MicrosoftOAuthClient'
+import { toSkinUploadException } from './SkinUploadErrors'
 
 export class MicrosoftAccountSystem implements UserAccountSystem {
   constructor(
@@ -131,13 +132,19 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       if (options.skin === null) {
         await this.mojangClient.resetSkin(token, signal)
       } else {
-        newProfile = await this.mojangClient.setSkin(
-          `${gameProfile.name}.png`,
-          await normalizeSkinData(options.skin?.url),
-          options.skin?.slim ? 'slim' : 'classic',
-          token,
-          signal,
-        ) as any
+        try {
+          newProfile = await this.mojangClient.setSkin(
+            `${gameProfile.name}.png`,
+            await normalizeSkinData(options.skin?.url),
+            options.skin?.slim ? 'slim' : 'classic',
+            token,
+            signal,
+          ) as any
+        } catch (e) {
+          const skinException = toSkinUploadException(e)
+          if (skinException) throw skinException
+          throw e
+        }
       }
     }
 
