@@ -78,22 +78,35 @@ export function spawnProcess(
   return waitProcess(process)
 }
 
+export class ProcessExitError extends Error {
+  name = 'ProcessExitError'
+
+  constructor(
+    readonly exitCode: number | null,
+    readonly signal: string | null,
+    readonly stderr: string,
+  ) {
+    super(stderr || `Process exited with code ${exitCode ?? 'unknown'}`)
+  }
+}
+
 export function waitProcess(process: ChildProcess) {
   return new Promise<void>((resolve, reject) => {
     const errorMsg: string[] = []
+    let outputLength = 0
+    const appendStderr = (chunk: string) => {
+      const remaining = 4096 - outputLength
+      if (remaining <= 0) return
+      const clipped = chunk.slice(0, remaining)
+      errorMsg.push(clipped)
+      outputLength += clipped.length
+    }
     process.on('error', (err) => {
       reject(err)
     })
-    process.on('close', (code) => {
+    process.once('close', (code, signal) => {
       if (code !== 0) {
-        reject(new Error(errorMsg.join('')))
-      } else {
-        resolve()
-      }
-    })
-    process.on('exit', (code) => {
-      if (code !== 0) {
-        reject(new Error(errorMsg.join('')))
+        reject(new ProcessExitError(code, signal, errorMsg.join('')))
       } else {
         resolve()
       }
@@ -102,7 +115,7 @@ export function waitProcess(process: ChildProcess) {
     process.stdout?.on('data', (buf) => {})
     process.stderr?.setEncoding('utf-8')
     process.stderr?.on('data', (buf) => {
-      errorMsg.push(buf.toString())
+      appendStderr(buf.toString())
     })
   })
 }
