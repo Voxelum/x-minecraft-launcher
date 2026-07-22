@@ -82,11 +82,11 @@ export function createCurseforgeHandler(app: LauncherApp): ModpackHandler<Cursef
         for (let i = 0; i < curseforgeFiles.length; i++) {
           const manifestFile = curseforgeFiles[i]
           const file = dict[manifestFile.fileID]
-          const mod = modDict[file.modId]
           if (!file) {
             console.warn(`Skip file ${manifestFile.fileID} because it is not found in curseforge API`)
             continue
           }
+          const mod = modDict[file.modId]
           let domain: ResourceDomain | undefined
           if (mod) {
             domain = getDomain(mod.primaryCategoryId)
