@@ -1,5 +1,5 @@
 import type { WindowController } from '@xmcl/runtime-api'
-import { contextBridge, ipcRenderer, clipboard } from 'electron'
+import { contextBridge, ipcRenderer, clipboard, webUtils } from 'electron'
 import EventEmitter from 'events'
 
 export enum Operation {
@@ -48,6 +48,10 @@ function createController(): WindowController {
   const writeClipboardImage = (imageUrl: string) => {
     ipcRenderer.invoke('write-clipboard-image', imageUrl)
   }
+  const getPathForFile = (file: File) => {
+    const legacyPath = (file as File & { path?: string }).path
+    return webUtils.getPathForFile(file) || legacyPath || ''
+  }
 
   return {
     on(channel, listener) {
@@ -56,6 +60,7 @@ function createController(): WindowController {
     },
     writeClipboardImage,
     writeClipboard,
+    getPathForFile,
     queryAudioPermission: () => ipcRenderer.invoke('query-audio-permission'),
     openMultiplayerWindow: () => ipcRenderer.invoke('open-multiplayer-window'),
     setTranslucent(enable) {

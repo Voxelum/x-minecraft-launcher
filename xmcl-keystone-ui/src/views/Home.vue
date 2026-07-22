@@ -90,8 +90,9 @@ useGlobalDrop({
     const file = files?.[0]
     if (file) {
       const ext = file.name.split('.').pop()
-      if (ext === 'zip' || ext === 'mrpack') {
-        show(file.path)
+      const filePath = windowController.getPathForFile(file)
+      if ((ext === 'zip' || ext === 'mrpack') && filePath) {
+        show(filePath)
         return
       }
     }
