@@ -91,6 +91,7 @@ import { formatMinecraftSrg } from './utils/formatMinecraftSrg'
 import clazData from './utils/MultiJarLauncher.class'
 import { getTracker } from '~/util/taskHelper'
 import { kResourceWorker, ResourceWorker } from '~/resource'
+import { normalizeForgeVersion } from './forgeVersion'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -928,11 +929,32 @@ export class InstallService extends AbstractService implements IInstallService {
     LockKey.libraries,
   ])
   async installForge(options: _InstallForgeOptions) {
-    const validJavaPaths = this.javaService.state.all.filter((v) => v.valid)
+    const normalizedForgeVersion = normalizeForgeVersion(options.mcversion, options.version)
+    if (normalizedForgeVersion !== options.version) {
+      this.warn(
+        `Normalized malformed Forge version ${options.version} to ${normalizedForgeVersion} for Minecraft ${options.mcversion}`,
+      )
+      options = { ...options, version: normalizedForgeVersion }
+    }
+
+    let validJavaPaths = this.javaService.state.all.filter((v) => v.valid)
     const side = options.side ?? 'client'
 
     if (!validJavaPaths.length) {
-      throw new AnyError('ForgeInstallError', 'No valid java found!')
+      const baseVersion = await this.versionService
+        .resolveLocalVersion(options.base || options.mcversion)
+        .catch(() => undefined)
+      if (!baseVersion?.javaVersion) {
+        throw new AnyError(
+          'ForgeInstallError',
+          `No valid java found and Minecraft ${options.mcversion} metadata is unavailable`,
+        )
+      }
+      this.log(
+        `No valid java found; installing ${baseVersion.javaVersion.component} (${baseVersion.javaVersion.majorVersion}) for Forge`,
+      )
+      const java = await this.javaService.installJava(baseVersion.javaVersion)
+      validJavaPaths = [{ ...java, valid: true }]
     }
 
     if (options.java) {
