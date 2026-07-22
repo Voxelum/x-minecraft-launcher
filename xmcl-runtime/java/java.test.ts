@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { JavaValidation, classifyJavaInstallFailure, sanitizeJavaResolveOutput } from './java'
+import {
+  JavaValidation,
+  classifyJavaInstallFailure,
+  getWindowsNativeArchForIa32,
+  sanitizeJavaResolveOutput,
+} from './java'
 
 describe('classifyJavaInstallFailure', () => {
   it('reports download-or-extract when the binary never landed', () => {
@@ -29,5 +34,15 @@ describe('classifyJavaInstallFailure', () => {
     expect(sanitizeJavaResolveOutput('Failed: /home/alice/.minecraftx/jre/bin/java'))
       .toBe('Failed: <path>')
     expect(sanitizeJavaResolveOutput('x'.repeat(2000))?.length).toBe(1024)
+  })
+
+  it('only selects a native 64-bit Java runtime for WOW64 processes', () => {
+    expect(getWindowsNativeArchForIa32('win32', 'ia32', { PROCESSOR_ARCHITEW6432: 'AMD64' }))
+      .toBe('x64')
+    expect(getWindowsNativeArchForIa32('win32', 'ia32', { PROCESSOR_ARCHITEW6432: 'ARM64' }))
+      .toBe('arm64')
+    expect(getWindowsNativeArchForIa32('win32', 'ia32', {})).toBeUndefined()
+    expect(getWindowsNativeArchForIa32('win32', 'x64', { PROCESSOR_ARCHITEW6432: 'AMD64' }))
+      .toBeUndefined()
   })
 })
