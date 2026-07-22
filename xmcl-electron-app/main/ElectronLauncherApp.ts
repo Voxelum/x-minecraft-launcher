@@ -6,7 +6,7 @@ import { AnyError } from '@xmcl/utils'
 import { Menu, app, net, shell } from 'electron'
 import { stat } from 'fs-extra'
 import { join } from 'path'
-import { fetch as ufetch } from 'undici'
+import { fetch as ufetch, FormData as UndiciFormData } from 'undici'
 import { ElectronController } from './ElectronController'
 import { ElectronSecretStorage } from './ElectronSecretStorage'
 import { ElectronSession } from './ElectronSession'
@@ -95,6 +95,23 @@ function isLatin1(s: string) {
     if (s.charCodeAt(i) > 0xff) return false
   }
   return true
+}
+
+async function adaptFormDataForElectron(body: unknown) {
+  if (!(body instanceof UndiciFormData)) return body
+
+  const form = new FormData()
+  for (const [name, value] of body.entries()) {
+    if (typeof value === 'string') {
+      form.append(name, value)
+    } else {
+      form.append(name, new File([await value.arrayBuffer()], value.name, {
+        type: value.type,
+        lastModified: value.lastModified,
+      }))
+    }
+  }
+  return form
 }
 
 function getErrorCode(e: Error) {
@@ -190,7 +207,11 @@ export default class ElectronLauncherApp extends LauncherApp {
   }
 
   fetch: typeof fetch = async (...args: any[]) => {
-    const init = { ...args[1], bypassCustomProtocolHandlers: true }
+    const init = {
+      ...args[1],
+      body: await adaptFormDataForElectron(args[1]?.body),
+      bypassCustomProtocolHandlers: true,
+    }
     function assertError(e: unknown): asserts e is Error {
       if (e instanceof Error || (typeof e === 'object' && e !== null && 'message' in e && typeof (e as any).message === 'string')) {
         return
