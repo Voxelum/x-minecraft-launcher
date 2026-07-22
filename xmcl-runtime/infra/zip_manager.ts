@@ -30,14 +30,18 @@ export class ZipManager {
    * @returns The managed zip file.
    */
   async open(filePath: string): Promise<ManagedZipFile> {
-    if (!!this.#files[filePath]) {
+    if (this.#files[filePath]) {
       return this.#files[filePath]
     }
     const fStat = await stat(filePath)
     const ino = fStat.ino
 
-    if (!!this.#files[ino]) {
-      return this.#files[filePath]
+    if (this.#files[ino]) {
+      // The same archive can be reached via a renamed path, hard link, or
+      // modpack cache alias. Reuse the inode cache rather than returning the
+      // (unset) path key, which left callers with `undefined` and caused
+      // openModpack to throw when reading `zip.entries`.
+      return this.#files[ino]
     }
 
     const promise = open(filePath).then(async (zip) => {
