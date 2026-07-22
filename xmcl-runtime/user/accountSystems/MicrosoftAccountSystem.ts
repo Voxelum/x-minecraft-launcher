@@ -7,7 +7,7 @@ import { toRecord } from '~/util/object'
 import { XBoxResponse, normalizeSkinData } from '../user'
 import { UserTokenStorage } from '../userTokenStore'
 import { UserAccountSystem } from './AccountSystem'
-import { isAccountSuspendedError, isUserCanceledError } from './MicrosoftAuthErrors'
+import { isAccountSuspendedError, isNetworkError, isUserCanceledError } from './MicrosoftAuthErrors'
 import { MicrosoftOAuthClient } from './MicrosoftOAuthClient'
 
 export class MicrosoftAccountSystem implements UserAccountSystem {
@@ -219,6 +219,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
         return true
       }
       if (isUserCanceledError(e)) return true
+      if (isNetworkError(e)) return true
       if (isAccountSuspendedError(e)) return true
       return false
     }
@@ -247,7 +248,11 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       logError(e)
       throw new UserException({
         type: 'userAcquireMicrosoftTokenFailed',
-        reason: isUserCanceledError(e) ? 'USER_CANCELED' : undefined,
+        reason: isUserCanceledError(e)
+          ? 'USER_CANCELED'
+          : isNetworkError(e)
+            ? 'NETWORK_ERROR'
+            : undefined,
       }, 'Failed to acquire Microsoft access token', { cause: e })
     })
 

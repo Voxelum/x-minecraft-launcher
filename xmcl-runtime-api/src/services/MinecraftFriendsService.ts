@@ -1,4 +1,5 @@
 import type { UserProfile } from '../entities/user.schema'
+import { Exception } from '../entities/exception'
 import type { ServiceKey } from './Service'
 
 /**
@@ -123,3 +124,10 @@ export type MinecraftFriendsErrorKind =
   | 'cannotAddSelf'
   | 'unsupported'
   | 'unknown'
+
+export type MinecraftFriendsExceptions = {
+  type: 'minecraftFriends'
+  reason: 'FRIENDS_DISABLED' | 'UNKNOWN_PROFILE' | 'DUPLICATED_PROFILES' | 'CANNOT_ADD_SELF' | 'INVITE_REJECTED' | 'INVALID_NAME'
+}
+
+export class MinecraftFriendsException extends Exception<MinecraftFriendsExceptions> { }

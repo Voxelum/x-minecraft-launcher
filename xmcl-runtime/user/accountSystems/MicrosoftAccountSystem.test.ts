@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { MicrosoftMinecraftXboxLoginError } from '@xmcl/user'
-import { isAccountSuspendedError, isUserCanceledError } from './MicrosoftAuthErrors'
+import { isAccountSuspendedError, isNetworkError, isUserCanceledError } from './MicrosoftAuthErrors'
 
 describe('isAccountSuspendedError', () => {
   it('recognizes the permanent account suspension response', () => {
@@ -26,5 +26,16 @@ describe('isUserCanceledError', () => {
 
   it('does not classify unrelated authentication errors as cancellation', () => {
     expect(isUserCanceledError(new Error('network_error: request failed'))).toBe(false)
+  })
+})
+
+describe('isNetworkError', () => {
+  it('recognizes MSAL network_error results', () => {
+    expect(isNetworkError({ errorCode: 'network_error' })).toBe(true)
+    expect(isNetworkError(new Error('network_error: token endpoint unreachable'))).toBe(true)
+  })
+
+  it('does not classify user cancellation as a network error', () => {
+    expect(isNetworkError(new Error('user_canceled: account picker closed'))).toBe(false)
   })
 })

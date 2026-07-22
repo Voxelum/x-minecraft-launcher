@@ -856,7 +856,9 @@ minecraftFriends:
   errors:
     cannotAddSelf: You cannot send a friend request to yourself.
     duplicate: That player is already in your list.
+    friendsDisabled: Your Minecraft account has friends disabled or cannot use friends. Enable friends in Minecraft account settings, then try again.
     generic: Something went wrong. Please try again.
+    invalidName: Minecraft usernames must be between 3 and 16 characters.
     inviteRejected: That player does not have friends enabled or does not accept invites.
     tokenExpired: Your Microsoft session expired. Please log in again.
     unknownProfile: We could not find a player with that name.

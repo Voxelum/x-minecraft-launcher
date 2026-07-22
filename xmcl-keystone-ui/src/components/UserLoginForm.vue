@@ -417,6 +417,9 @@ const errorMessage = computed(() => {
       if (e.exception.reason === 'USER_CANCELED') {
         return t('loginError.loginCanceled')
       }
+      if (e.exception.reason === 'NETWORK_ERROR') {
+        return t('loginError.badNetworkOrServer')
+      }
       return t('loginError.acquireMicrosoftTokenFailed')
     }
 

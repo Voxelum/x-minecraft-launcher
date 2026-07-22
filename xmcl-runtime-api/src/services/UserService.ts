@@ -253,7 +253,7 @@ export type UserExceptions = {
 } | {
   type: 'userAcquireMicrosoftTokenFailed'
   /** The user closed the Windows native-broker account picker. */
-  reason?: 'USER_CANCELED'
+  reason?: 'USER_CANCELED' | 'NETWORK_ERROR'
 } | {
   type: 'userExchangeXboxTokenFailed'
   /**

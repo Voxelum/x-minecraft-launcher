@@ -238,6 +238,7 @@ import { useUserMenuControl } from '@/composables/userMenu'
 import { injection } from '@/util/inject'
 import {
   type MinecraftFriend,
+  MinecraftFriendsException,
   MinecraftFriendsServiceKey,
 } from '@xmcl/runtime-api'
 import { computed, nextTick, ref } from 'vue'
@@ -341,6 +342,16 @@ function formatError(e: unknown): string {
       }
     }
     const err = e as Error
+    if (err.name === MinecraftFriendsException.name && (err as any).exception?.type === 'minecraftFriends') {
+      switch ((err as any).exception.reason) {
+        case 'FRIENDS_DISABLED': return t('minecraftFriends.errors.friendsDisabled')
+        case 'UNKNOWN_PROFILE': return t('minecraftFriends.errors.unknownProfile')
+        case 'CANNOT_ADD_SELF': return t('minecraftFriends.errors.cannotAddSelf')
+        case 'DUPLICATED_PROFILES': return t('minecraftFriends.errors.duplicate')
+        case 'INVITE_REJECTED': return t('minecraftFriends.errors.inviteRejected')
+        case 'INVALID_NAME': return t('minecraftFriends.errors.invalidName')
+      }
+    }
     if (err.name === 'UserAuthenticationError') return t('minecraftFriends.errors.tokenExpired')
     if (err.name === 'MinecraftFriendsUnsupportedError') return t('minecraftFriends.unsupported')
     return err.message || t('minecraftFriends.errors.generic')
