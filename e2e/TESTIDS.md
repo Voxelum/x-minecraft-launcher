@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 163 (in 271 Vue files)
+**Total anchors:** 170 (in 271 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -55,6 +55,13 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `blueprint-search` | [`xmcl-keystone-ui/src/views/BlueprintExtension.vue#L13`](../xmcl-keystone-ui/src/views/BlueprintExtension.vue#L13) |
 | `collection-install-all` | [`xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L2`](../xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L2) |
 | `collection-install-all-button` | [`xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L10`](../xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L10) |
+| `command-palette-ask-ai` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L323`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L323) |
+| `command-palette-input` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L15`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L15) |
+| `command-palette-instance` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L255`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L255) |
+| `command-palette-instance-delete` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L235`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L235) |
+| `command-palette-instance-duplicate` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L220`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L220) |
+| `command-palette-instance-launch` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L205`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L205) |
+| `command-palette-instance-select` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L190`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L190) |
 | `create-instance` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35) |
 | `custom-css-editor-textarea` | [`xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26`](../xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26) |
 | `custom-css-global-toggle` | [`xmcl-keystone-ui/src/components/AppearanceItems.vue#L320`](../xmcl-keystone-ui/src/components/AppearanceItems.vue#L320) |
@@ -114,7 +121,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `market-filter-favorite-tab` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24) |
 | `market-item-install` | [`xmcl-keystone-ui/src/components/MarketItem.vue#L55`](../xmcl-keystone-ui/src/components/MarketItem.vue#L55) |
 | `market-multi-select-toggle` | [`xmcl-keystone-ui/src/views/Mod.vue#L27`](../xmcl-keystone-ui/src/views/Mod.vue#L27)<br>[`xmcl-keystone-ui/src/views/ResourcePack.vue#L26`](../xmcl-keystone-ui/src/views/ResourcePack.vue#L26)<br>[`xmcl-keystone-ui/src/views/ShaderPack.vue#L26`](../xmcl-keystone-ui/src/views/ShaderPack.vue#L26) |
-| `market-page-size` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L72`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L72) |
+| `market-page-size` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L76`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L76) |
 | `me-user-switcher` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16) |
 | `minecraft-friends-add-button` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68) |
 | `minecraft-friends-add-input` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L58`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L58) |

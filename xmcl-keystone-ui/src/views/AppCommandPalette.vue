@@ -12,6 +12,7 @@
       <v-text-field
         ref="searchInput"
         v-model="query"
+        data-testid="command-palette-input"
         :placeholder="t('commandPalette.placeholder')"
         prepend-inner-icon="search"
         variant="solo"
@@ -20,6 +21,7 @@
         flat
         bg-color="transparent"
         hide-details
+        :readonly="!!pendingInstancePath"
         autofocus
         class="pa-3"
         @keydown.down.prevent="moveSelection(1)"
@@ -54,8 +56,8 @@
               :key="`recent-${inst.path}`"
               :active="selectedIndex === idx"
               :data-palette-index="idx"
-              :aria-label="`${t('launch.launch')}: ${inst.name} (Minecraft ${inst.runtime.minecraft})`"
-              @click="launchInstance(inst)"
+              :aria-label="`${inst.name} (Minecraft ${inst.runtime.minecraft})`"
+              @click="enterInstanceMenu(inst)"
               @mouseenter="selectedIndex = idx"
             >
               <template #prepend>
@@ -69,7 +71,7 @@
               <v-list-item-title>{{ inst.name }}</v-list-item-title>
               <v-list-item-subtitle>{{ inst.runtime.minecraft }} · {{ inst.path }}</v-list-item-subtitle>
               <template #append>
-                <v-icon size="small" color="primary" aria-hidden="true">play_arrow</v-icon>
+                <v-icon size="small" color="primary" aria-hidden="true">arrow_right</v-icon>
               </template>
             </v-list-item>
           </div>
@@ -180,16 +182,81 @@
           </v-list-item>
         </template>
 
+        <template v-if="pendingInstance">
+          <v-list-subheader>{{ pendingInstance.name }}</v-list-subheader>
+          <v-list-item
+            :active="selectedIndex === 0"
+            data-palette-index="0"
+            data-testid="command-palette-instance-select"
+            @click="selectInstance(pendingInstance)"
+            @mouseenter="selectedIndex = 0"
+          >
+            <template #prepend>
+              <div class="palette-cmd-icon">
+                <v-icon size="18">open_in_new</v-icon>
+              </div>
+            </template>
+            <v-list-item-title>{{ t('setting.select') }}</v-list-item-title>
+            <v-list-item-subtitle>{{ pendingInstance.runtime.minecraft }} · {{ pendingInstance.path }}</v-list-item-subtitle>
+          </v-list-item>
+          <v-list-item
+            :active="selectedIndex === 1"
+            data-palette-index="1"
+            data-testid="command-palette-instance-launch"
+            @click="launchInstance(pendingInstance)"
+            @mouseenter="selectedIndex = 1"
+          >
+            <template #prepend>
+              <div class="palette-cmd-icon">
+                <v-icon size="18">play_arrow</v-icon>
+              </div>
+            </template>
+            <v-list-item-title>{{ t('launch.launch') }}</v-list-item-title>
+            <v-list-item-subtitle>{{ pendingInstance.runtime.minecraft }} · {{ pendingInstance.path }}</v-list-item-subtitle>
+          </v-list-item>
+          <v-list-item
+            :active="selectedIndex === 2"
+            data-palette-index="2"
+            data-testid="command-palette-instance-duplicate"
+            @click="duplicateInstance(pendingInstance)"
+            @mouseenter="selectedIndex = 2"
+          >
+            <template #prepend>
+              <div class="palette-cmd-icon">
+                <v-icon size="18">file_copy</v-icon>
+              </div>
+            </template>
+            <v-list-item-title>{{ t('instance.duplicate') }}</v-list-item-title>
+            <v-list-item-subtitle>{{ pendingInstance.runtime.minecraft }} · {{ pendingInstance.path }}</v-list-item-subtitle>
+          </v-list-item>
+          <v-list-item
+            :active="selectedIndex === 3"
+            data-palette-index="3"
+            data-testid="command-palette-instance-delete"
+            @click="deleteInstance(pendingInstance)"
+            @mouseenter="selectedIndex = 3"
+          >
+            <template #prepend>
+              <div class="palette-cmd-icon">
+                <v-icon size="18" color="error">delete</v-icon>
+              </div>
+            </template>
+            <v-list-item-title>{{ t('instance.delete') }}</v-list-item-title>
+            <v-list-item-subtitle>{{ pendingInstance.runtime.minecraft }} · {{ pendingInstance.path }}</v-list-item-subtitle>
+          </v-list-item>
+        </template>
+
         <template v-if="instanceResults.length > 0">
           <div role="group" :aria-label="t('commandPalette.instances')">
             <v-list-subheader>{{ t('commandPalette.instances') }}</v-list-subheader>
             <v-list-item
               v-for="(inst, idx) in instanceResults"
               :key="inst.path"
+              data-testid="command-palette-instance"
               :active="selectedIndex === recentResults.length + commandResults.length + settingsResults.length + idx"
               :data-palette-index="recentResults.length + commandResults.length + settingsResults.length + idx"
-              :aria-label="`${instanceActionLabel}: ${inst.name} (Minecraft ${inst.runtime.minecraft})`"
-              @click="launchInstance(inst)"
+              :aria-label="`${pendingInstanceAction ? `${instanceActionLabel}: ` : ''}${inst.name} (Minecraft ${inst.runtime.minecraft})`"
+              @click="pendingInstanceAction ? launchInstance(inst) : enterInstanceMenu(inst)"
               @mouseenter="selectedIndex = recentResults.length + commandResults.length + settingsResults.length + idx"
             >
               <template #prepend>
@@ -205,26 +272,47 @@
               <template #append>
                 <v-icon
                   size="small"
-                  :color="instanceActionColor"
+                  :color="pendingInstanceAction ? instanceActionColor : 'primary'"
                   aria-hidden="true"
                 >
-                  {{ instanceActionIcon }}
+                  {{ pendingInstanceAction ? instanceActionIcon : 'arrow_right' }}
                 </v-icon>
               </template>
             </v-list-item>
           </div>
         </template>
 
-        <template v-if="modrinthResults.length > 0">
+        <v-list-item
+          v-if="showAiResult"
+          :active="selectedIndex === preMarketResultCount"
+          :data-palette-index="preMarketResultCount"
+          data-testid="command-palette-ask-ai"
+          :aria-label="`${t('agent.title')}: ${query.trim()}`"
+          @click="askAi"
+          @mouseenter="selectedIndex = preMarketResultCount"
+        >
+          <template #prepend>
+            <div class="palette-cmd-icon palette-ai-icon">
+              <v-icon size="18">auto_awesome</v-icon>
+            </div>
+          </template>
+          <v-list-item-title>{{ t('agent.title') }}</v-list-item-title>
+          <v-list-item-subtitle class="palette-ai-query">{{ query.trim() }}</v-list-item-subtitle>
+          <template #append>
+            <span class="text-caption text-medium-emphasis">{{ t('commandPalette.hintInvoke') }}</span>
+          </template>
+        </v-list-item>
+
+        <template v-if="!pendingInstanceAction && !pendingInstancePath && !pendingSettingId && modrinthResults.length > 0">
           <div role="group" :aria-label="t('commandPalette.modrinth')">
           <v-list-subheader>{{ t('commandPalette.modrinth') }}</v-list-subheader>
           <v-list-item
             v-for="(p, idx) in modrinthResults"
             :key="p.project_id"
-            :active="selectedIndex === recentResults.length + commandResults.length + settingsResults.length + instanceResults.length + idx"
-            :data-palette-index="recentResults.length + commandResults.length + settingsResults.length + instanceResults.length + idx"
+            :active="selectedIndex === preMarketResultCount + (showAiResult ? 1 : 0) + idx"
+            :data-palette-index="preMarketResultCount + (showAiResult ? 1 : 0) + idx"
             @click="openModrinthProject(p)"
-            @mouseenter="selectedIndex = recentResults.length + commandResults.length + settingsResults.length + instanceResults.length + idx"
+            @mouseenter="selectedIndex = preMarketResultCount + (showAiResult ? 1 : 0) + idx"
           >
             <template #prepend>
               <v-avatar size="36" rounded="lg" class="palette-avatar">
@@ -270,7 +358,7 @@
           <kbd>Enter</kbd>
           <span class="palette-footer__label">{{ t('commandPalette.hintInvoke') }}</span>
         </span>
-        <span v-if="pendingInstanceAction || pendingSettingId" class="palette-footer__group">
+        <span v-if="pendingInstanceAction || pendingInstancePath || pendingSettingId" class="palette-footer__group">
           <kbd>←</kbd>
           <span class="palette-footer__label">{{ t('commandPalette.hintBack') }}</span>
         </span>
@@ -293,11 +381,14 @@
 
 <script lang="ts" setup>
 import { useNotifier } from '@/composables/notifier'
+import { useLocaleError } from '@/composables/error'
+import { useAgentChatBus } from '@/composables/agentChat'
 import { useCommandPaletteBus, useCommandPaletteVisible } from '@/composables/commandPalette'
 import { useRendererCommandHost } from '@/composables/commandHost'
 import { kInstance } from '@/composables/instance'
 import { kInstances } from '@/composables/instances'
 import { useModrinthSearchFunc } from '@/composables/modrinth'
+import { useService } from '@/composables/service'
 import type { SettingsSearchItem } from '@/composables/settingsSearch'
 import { useSettingsSearchItems } from '@/composables/settingsSearch'
 import { BuiltinImages } from '@/constant'
@@ -307,6 +398,7 @@ import { injection } from '@/util/inject'
 import { useDebounce } from '@vueuse/core'
 import type { Instance } from '@xmcl/instance'
 import type { SearchResultHit } from '@xmcl/modrinth'
+import { InstanceServiceKey } from '@xmcl/runtime-api'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -319,12 +411,16 @@ const debouncedQuery = useDebounce(query, 250)
 const selectedIndex = ref(0)
 const router = useRouter()
 const bus = useCommandPaletteBus()
+const agentChatBus = useAgentChatBus()
 const { notify } = useNotifier()
+const tError = useLocaleError()
 
 const host = useRendererCommandHost()
+const { duplicateInstance: duplicateInstanceService } = useService(InstanceServiceKey)
 const instanceCtx = injection(kInstance)
 const instancesCtx = injection(kInstances)
 const pendingInstanceAction = ref<'instance.launch' | 'instance.delete' | undefined>(undefined)
+const pendingInstancePath = ref<string | undefined>(undefined)
 const settingsItems = useSettingsSearchItems()
 const pendingSettingId = ref<string | undefined>(undefined)
 
@@ -339,6 +435,7 @@ watch(isShown, (v) => {
     query.value = ''
     selectedIndex.value = 0
     pendingInstanceAction.value = undefined
+    pendingInstancePath.value = undefined
     pendingSettingId.value = undefined
   }
 })
@@ -346,6 +443,7 @@ watch(isShown, (v) => {
 function hide() {
   isShown.value = false
   pendingInstanceAction.value = undefined
+  pendingInstancePath.value = undefined
   pendingSettingId.value = undefined
 }
 
@@ -367,7 +465,7 @@ function fuzzyMatches(haystack: string, needle: string): boolean {
 }
 
 const commandResults = computed(() => {
-  if (pendingInstanceAction.value || pendingSettingId.value) return []
+  if (pendingInstanceAction.value || pendingInstancePath.value || pendingSettingId.value) return []
   const q = query.value.trim()
   return allCommands.value.filter((c) =>
     fuzzyMatches(c.title, q) || fuzzyMatches(c.id, q),
@@ -376,7 +474,7 @@ const commandResults = computed(() => {
 
 // ── Recent instances ((default view only) ─────────────────────────────────────
 const recentResults = computed(() => {
-  if (pendingInstanceAction.value || pendingSettingId.value) return []
+  if (pendingInstanceAction.value || pendingInstancePath.value || pendingSettingId.value) return []
   if (query.value.trim()) return []
   return [...instancesCtx.instances.value]
     .filter((i) => (i.lastPlayedDate ?? 0) > 0)
@@ -389,8 +487,12 @@ const pendingSetting = computed(() =>
   settingsItems.value.find((it) => it.id === pendingSettingId.value),
 )
 
+const pendingInstance = computed(() =>
+  instancesCtx.instances.value.find((it) => it.path === pendingInstancePath.value),
+)
+
 const settingsResults = computed<SettingsSearchItem[]>(() => {
-  if (pendingInstanceAction.value || pendingSettingId.value) return []
+  if (pendingInstanceAction.value || pendingInstancePath.value || pendingSettingId.value) return []
   const q = query.value.trim()
   if (!q) return []
   return settingsItems.value.filter((it) =>
@@ -420,7 +522,7 @@ const instanceResults = computed(() => {
     return left.name.localeCompare(right.name)
   })
   const q = query.value.trim()
-  if (pendingSettingId.value) return []
+  if (pendingSettingId.value || pendingInstancePath.value) return []
   if (!pendingInstanceAction.value && !q) return []
   const filtered = sorted.filter((i) =>
     !q || fuzzyMatches(i.name, q) || fuzzyMatches(i.path, q),
@@ -447,11 +549,12 @@ const isSearchingMarket = ref(false)
 watch(debouncedQuery, async (q) => {
   modrinthResults.value = []
   if (!isShown.value) return
-  if (pendingInstanceAction.value || pendingSettingId.value) return
+  if (pendingInstanceAction.value || pendingInstancePath.value || pendingSettingId.value) return
   if (!q || q.length < 2) return
   isSearchingMarket.value = true
   try {
     const r = await searchModrinth(0)
+    if (pendingInstanceAction.value || pendingInstancePath.value || pendingSettingId.value) return
     modrinthResults.value = r.hits
   } catch {
     // Silently ignore network errors — palette stays usable.
@@ -461,13 +564,26 @@ watch(debouncedQuery, async (q) => {
 })
 
 // ── Selection / invocation ───────────────────────────────────────────────────
+const preMarketResultCount = computed(() =>
+  recentResults.value.length + commandResults.value.length + settingsResults.value.length + instanceResults.value.length,
+)
+const normalResultCount = computed(() =>
+  preMarketResultCount.value + modrinthResults.value.length,
+)
+const showAiResult = computed(() => {
+  if (pendingInstanceAction.value || pendingInstancePath.value || pendingSettingId.value) return false
+  return query.value.trim().length >= 2
+})
+
 const totalResultCount = computed(() => {
+  if (pendingInstancePath.value) return pendingInstance.value ? 4 : 0
   if (pendingSettingId.value) return settingOptionResults.value.length
-  return recentResults.value.length + commandResults.value.length + settingsResults.value.length + instanceResults.value.length + modrinthResults.value.length
+  if (pendingInstanceAction.value) return instanceResults.value.length
+  return normalResultCount.value + (showAiResult.value ? 1 : 0)
 })
 const hasAnyResult = computed(() => totalResultCount.value > 0)
 
-watch([recentResults, commandResults, settingsResults, instanceResults, modrinthResults, settingOptionResults], () => {
+watch([recentResults, commandResults, settingsResults, instanceResults, modrinthResults, settingOptionResults, pendingInstancePath, showAiResult], () => {
   if (selectedIndex.value >= totalResultCount.value) selectedIndex.value = 0
 })
 
@@ -491,6 +607,7 @@ watch(selectedIndex, (idx) => {
 async function invoke(c: { id: string }) {
   if (c.id === 'instance.launch' || c.id === 'instance.delete') {
     pendingInstanceAction.value = c.id
+    pendingInstancePath.value = undefined
     query.value = ''
     selectedIndex.value = 0
     return
@@ -500,8 +617,21 @@ async function invoke(c: { id: string }) {
   try {
     await host.dispatch(c.id, {})
   } catch (e) {
-    notify({ title: e instanceof Error ? e.message : String(e), level: 'error' })
+    notify({ title: tError(e), level: 'error' })
   }
+}
+
+function askAi() {
+  const prompt = query.value.trim()
+  if (!prompt) return
+  hide()
+  agentChatBus.emit({ type: 'show', prompt })
+}
+
+function enterInstanceMenu(inst: Instance) {
+  pendingInstanceAction.value = undefined
+  pendingInstancePath.value = inst.path
+  selectedIndex.value = 0
 }
 
 async function launchInstance(inst: Instance) {
@@ -510,7 +640,33 @@ async function launchInstance(inst: Instance) {
   try {
     await host.dispatch(commandId, { instance: inst.path })
   } catch (e) {
-    notify({ title: e instanceof Error ? e.message : String(e), level: 'error' })
+    notify({ title: tError(e), level: 'error' })
+  }
+}
+
+async function selectInstance(inst: Instance) {
+  hide()
+  if (router.currentRoute.value.path !== '/') {
+    await router.push('/')
+  }
+  instanceCtx.select(inst.path)
+}
+
+async function duplicateInstance(inst: Instance) {
+  hide()
+  try {
+    await duplicateInstanceService(inst.path)
+  } catch (e) {
+    notify({ title: tError(e), level: 'error' })
+  }
+}
+
+async function deleteInstance(inst: Instance) {
+  hide()
+  try {
+    await host.dispatch('instance.delete', { instance: inst.path })
+  } catch (e) {
+    notify({ title: tError(e), level: 'error' })
   }
 }
 
@@ -559,6 +715,20 @@ function applySettingOption(option: { value: string }) {
 }
 
 function invokeSelected() {
+  if (pendingInstancePath.value) {
+    const inst = pendingInstance.value
+    if (!inst) return
+    if (selectedIndex.value === 0) {
+      selectInstance(inst)
+    } else if (selectedIndex.value === 1) {
+      launchInstance(inst)
+    } else if (selectedIndex.value === 2) {
+      duplicateInstance(inst)
+    } else {
+      deleteInstance(inst)
+    }
+    return
+  }
   if (pendingSettingId.value) {
     const opt = settingOptionResults.value[selectedIndex.value]
     if (opt) applySettingOption(opt)
@@ -570,15 +740,22 @@ function invokeSelected() {
   const instLen = instanceResults.value.length
   const idx = selectedIndex.value
   if (idx < recentLen) {
-    launchInstance(recentResults.value[idx])
+    enterInstanceMenu(recentResults.value[idx])
   } else if (idx < recentLen + cmdLen) {
     invoke(commandResults.value[idx - recentLen])
   } else if (idx < recentLen + cmdLen + setLen) {
     invokeSetting(settingsResults.value[idx - recentLen - cmdLen])
   } else if (idx < recentLen + cmdLen + setLen + instLen) {
-    launchInstance(instanceResults.value[idx - recentLen - cmdLen - setLen])
-  } else if (idx < recentLen + cmdLen + setLen + instLen + modrinthResults.value.length) {
-    openModrinthProject(modrinthResults.value[idx - recentLen - cmdLen - setLen - instLen])
+    const inst = instanceResults.value[idx - recentLen - cmdLen - setLen]
+    if (pendingInstanceAction.value) {
+      launchInstance(inst)
+    } else {
+      enterInstanceMenu(inst)
+    }
+  } else if (showAiResult.value && idx === preMarketResultCount.value) {
+    askAi()
+  } else if (idx < preMarketResultCount.value + (showAiResult.value ? 1 : 0) + modrinthResults.value.length) {
+    openModrinthProject(modrinthResults.value[idx - preMarketResultCount.value - (showAiResult.value ? 1 : 0)])
   }
 }
 
@@ -611,9 +788,10 @@ const instanceActionColor = computed(() => pendingInstanceAction.value === 'inst
 const instanceActionLabel = computed(() => pendingInstanceAction.value === 'instance.delete' ? t('delete.yes') : t('launch.launch'))
 
 const isSelectedCommandMultiStep = computed(() => {
-  if (pendingInstanceAction.value || pendingSettingId.value) return false
+  if (pendingInstanceAction.value || pendingInstancePath.value || pendingSettingId.value) return false
   const recentLen = recentResults.value.length
   const cmdLen = commandResults.value.length
+  if (selectedIndex.value < recentLen) return true
   const localIdx = selectedIndex.value - recentLen
   if (localIdx >= 0 && localIdx < cmdLen) {
     const cmd = commandResults.value[localIdx]
@@ -621,13 +799,20 @@ const isSelectedCommandMultiStep = computed(() => {
   }
   const settingIdx = selectedIndex.value - recentLen - cmdLen
   const setting = settingsResults.value[settingIdx]
-  return !!setting && setting.kind === 'select'
+  if (setting && setting.kind === 'select') return true
+  const instanceIdx = selectedIndex.value - recentLen - cmdLen - settingsResults.value.length
+  return instanceIdx >= 0 && instanceIdx < instanceResults.value.length
 })
 
 function onArrowRight(e: KeyboardEvent) {
-  if (pendingInstanceAction.value || pendingSettingId.value) return
+  if (pendingInstanceAction.value || pendingInstancePath.value || pendingSettingId.value) return
   const recentLen = recentResults.value.length
   const cmdLen = commandResults.value.length
+  if (selectedIndex.value < recentLen) {
+    e.preventDefault()
+    enterInstanceMenu(recentResults.value[selectedIndex.value])
+    return
+  }
   const localIdx = selectedIndex.value - recentLen
   if (localIdx >= 0 && localIdx < cmdLen) {
     const cmd = commandResults.value[localIdx]
@@ -641,18 +826,25 @@ function onArrowRight(e: KeyboardEvent) {
   if (setting && setting.kind === 'select') {
     e.preventDefault()
     invokeSetting(setting)
+    return
+  }
+  const instanceIdx = selectedIndex.value - recentLen - cmdLen - settingsResults.value.length
+  const inst = instanceResults.value[instanceIdx]
+  if (inst) {
+    e.preventDefault()
+    enterInstanceMenu(inst)
   }
 }
 
 function onArrowLeft(e: KeyboardEvent) {
-  if (!pendingInstanceAction.value && !pendingSettingId.value) return
+  if (!pendingInstanceAction.value && !pendingInstancePath.value && !pendingSettingId.value) return
   const target = e.target as HTMLInputElement | null
   // Allow normal cursor movement when there's text and the cursor isn't at the start.
-  if (target && target.value && (target.selectionStart ?? 0) > 0) return
+  if (!pendingInstancePath.value && target && target.value && (target.selectionStart ?? 0) > 0) return
   e.preventDefault()
   pendingInstanceAction.value = undefined
+  pendingInstancePath.value = undefined
   pendingSettingId.value = undefined
-  query.value = ''
   selectedIndex.value = 0
 }
 
@@ -721,6 +913,17 @@ function onArrowBack(e: KeyboardEvent) {
   border-radius: 12px;
   background: rgba(125, 125, 125, 0.14);
   color: rgb(var(--v-theme-on-surface));
+}
+
+.palette-ai-icon {
+  color: rgb(var(--v-theme-primary));
+  background: rgb(var(--v-theme-primary) / 0.1);
+}
+
+.palette-ai-query {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .palette-switch {

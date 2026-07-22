@@ -3,8 +3,10 @@ import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue'
 
 const AGENT_CHAT_BUS_KEY = 'app:agent-chat'
 
+export type AgentChatEvent = 'show' | 'hide' | 'toggle' | 'show-css' | { type: 'show'; prompt?: string }
+
 export function useAgentChatBus() {
-  return useEventBus<'show' | 'hide' | 'toggle' | 'show-css'>(AGENT_CHAT_BUS_KEY)
+  return useEventBus<AgentChatEvent>(AGENT_CHAT_BUS_KEY)
 }
 
 /**

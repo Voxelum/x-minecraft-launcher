@@ -259,7 +259,13 @@ const scrollEl = ref<HTMLElement | null>(null)
 
 const bus = useAgentChatBus()
 bus.on((e) => {
-  if (e === 'show') {
+  if (typeof e === 'object' && e.type === 'show') {
+    selectedAgent.value = 'common'
+    input.value = e.prompt ?? ''
+    commonAgent.loadConversationForCurrentInstance()
+    isShown.value = true
+  }
+  else if (e === 'show') {
     commonAgent.loadConversationForCurrentInstance()
     isShown.value = true
   }
