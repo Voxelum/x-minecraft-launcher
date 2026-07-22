@@ -41,6 +41,9 @@ function createSharedState<T extends object>(val: T, id: string): SharedState<T>
     revalidate() {
       ipcRenderer.invoke('revalidate', id)
     },
+    unref() {
+      ipcRenderer.invoke('unref', id)
+    },
   }) as any
 }
 

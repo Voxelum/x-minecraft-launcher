@@ -205,6 +205,7 @@ function createWatcher(
   onResourceUpdate: (file: File) => void,
   onResourceRemove: (file: string) => void,
   revalidate: () => void,
+  onError: (error: Error) => void,
 ) {
   const watcher = new FSWatcher({
     cwd: path,
@@ -218,6 +219,11 @@ function createWatcher(
       return shouldIgnoreFile(filePath, domain)
     },
     // @ts-ignore
+  }).on('error', (e) => {
+    if (isSystemError(e) && (e.code === 'EBUSY' || e.code === 'EPERM')) {
+      return
+    }
+    onError(e instanceof Error ? e : Object.assign(new Error(), e))
   }).on('all', async (event, file, stat) => {
     if (!file) return
 
@@ -395,6 +401,7 @@ export function watchResourcesDirectory({
     },
     onRemove,
     revalidate,
+    context.onError,
   )
 
   workerQueue.onerror = ({ filePath }, e) => {
@@ -489,4 +496,3 @@ async function cascadeDeleteOrphanBlueprints(context: ResourceContext) {
   await context.db.deleteFrom('uris').where('sha1', 'in', hashes).execute()
   await context.db.deleteFrom('icons').where('sha1', 'in', hashes).execute()
 }
-
