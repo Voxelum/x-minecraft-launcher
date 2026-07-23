@@ -7,6 +7,8 @@
  * render partial assistant text.
  */
 
+import { agentDebug, agentDebugEndpoint } from './debug'
+
 export interface TextContentPart {
   type: 'text'
   text: string
@@ -83,8 +85,9 @@ export async function chat(
   }
 
   const endpoint = options.endpoint ?? DEFAULT_AGNES_ENDPOINT
+  const model = options.model ?? DEFAULT_AGNES_MODEL
   const body: Record<string, unknown> = {
-    model: options.model ?? DEFAULT_AGNES_MODEL,
+    model,
     messages,
     stream: false,
   }
@@ -95,22 +98,52 @@ export async function chat(
     body.tool_choice = 'auto'
   }
 
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${options.apiKey}`,
-    },
-    body: JSON.stringify(body),
-    signal: options.signal,
+  const startedAt = performance.now()
+  const loggedEndpoint = agentDebugEndpoint(endpoint)
+  agentDebug('llm.request', {
+    endpoint: loggedEndpoint,
+    model,
+    messageCount: messages.length,
+    tools: tools.map((tool) => tool.function.name),
+    body,
   })
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => '')
-    throw new Error(`Agent LLM ${res.status}: ${text || res.statusText}`)
+  let res: Response
+  try {
+    res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${options.apiKey}`,
+      },
+      body: JSON.stringify(body),
+      signal: options.signal,
+    })
+  } catch (error) {
+    agentDebug('llm.fetch_error', {
+      endpoint: loggedEndpoint,
+      model,
+      durationMs: Math.round(performance.now() - startedAt),
+      error,
+    })
+    throw error
   }
 
-  const data = await res.json() as {
+  const responseText = await res.text()
+  const durationMs = Math.round(performance.now() - startedAt)
+  if (!res.ok) {
+    agentDebug('llm.http_error', {
+      endpoint: loggedEndpoint,
+      model,
+      status: res.status,
+      statusText: res.statusText,
+      durationMs,
+      body: responseText,
+    })
+    throw new Error(`Agent LLM ${res.status}: ${responseText || res.statusText}`)
+  }
+
+  let data: {
     model?: string
     choices: Array<{
       message: {
@@ -124,6 +157,27 @@ export async function chat(
     }>
     usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }
   }
+  try {
+    data = JSON.parse(responseText)
+  } catch (error) {
+    agentDebug('llm.parse_error', {
+      endpoint: loggedEndpoint,
+      model,
+      status: res.status,
+      durationMs,
+      body: responseText,
+      error,
+    })
+    throw error
+  }
+
+  agentDebug('llm.response', {
+    endpoint: loggedEndpoint,
+    model: data.model ?? model,
+    status: res.status,
+    durationMs,
+    body: data,
+  })
 
   const msg = data.choices[0]?.message
   if (!msg) throw new Error('Agent LLM: no choices in response')

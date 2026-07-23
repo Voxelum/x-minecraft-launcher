@@ -1,5 +1,6 @@
 import type { ChatMessage, LLMOptions, ToolCall, ToolDefinition } from './llm'
 import { chat } from './llm'
+import { agentDebug } from './debug'
 
 export interface Tool {
   readonly name: string
@@ -60,8 +61,15 @@ export async function runAgent(
 ): Promise<ChatMessage[]> {
   const { tools, maxIterations = DEFAULT_MAX_ITERATIONS, onEvent, ...llm } = options
   const toolMap = new Map<string, Tool>(tools.map((t) => [t.name, t]))
+  agentDebug('loop.start', {
+    model: llm.model,
+    messageCount: messages.length,
+    maxIterations,
+    tools: tools.map((tool) => tool.name),
+  })
 
   for (let i = 0; i < maxIterations; i++) {
+    agentDebug('loop.iteration', { iteration: i + 1, messageCount: messages.length })
     const toolDefs = toToolDefinitions([...toolMap.values()])
     const res = await chat(messages, toolDefs, llm)
 
@@ -80,6 +88,12 @@ export async function runAgent(
     if (res.content) onEvent?.({ type: 'assistant', content: res.content })
 
     if (res.toolCalls.length === 0) {
+      agentDebug('loop.done', {
+        iteration: i + 1,
+        model: res.model,
+        usage: res.usage,
+        content: res.content,
+      })
       onEvent?.({ type: 'done', finalText: res.content ?? '' })
       return messages
     }
@@ -87,6 +101,13 @@ export async function runAgent(
     // Tool calls — execute sequentially. Parallelizing readonly tools is a
     // future optimization; sequential keeps the trace easy to follow.
     for (const call of res.toolCalls) {
+      const toolStartedAt = performance.now()
+      agentDebug('tool.call', {
+        iteration: i + 1,
+        id: call.id,
+        name: call.name,
+        arguments: call.arguments,
+      })
       onEvent?.({ type: 'tool_call', toolCall: call })
       const tool = toolMap.get(call.name)
       let resultText: string
@@ -109,11 +130,20 @@ export async function runAgent(
         name: call.name,
         content: resultText,
       })
+      agentDebug('tool.result', {
+        iteration: i + 1,
+        id: call.id,
+        name: call.name,
+        durationMs: Math.round(performance.now() - toolStartedAt),
+        isError,
+        result: resultText,
+      })
       onEvent?.({ type: 'tool_result', toolResult: { id: call.id, name: call.name, result: resultText, isError } })
     }
   }
 
   const stopMsg = `Agent stopped: exceeded ${maxIterations} iterations`
+  agentDebug('loop.error', { error: stopMsg })
   onEvent?.({ type: 'error', error: stopMsg })
   throw new Error(stopMsg)
 }
