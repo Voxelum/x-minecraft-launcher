@@ -99,7 +99,7 @@ export function useUserExpired(user: Ref<UserProfile | undefined>) {
   return computed(() => !user.value || user.value?.invalidated || user.value.expiredAt < Date.now())
 }
 
-export const isValidEmail = (value: string) => /^[\w-]+(?:\.[\w-]+)*@[\w-]+(?:[.-][\w-]+)*\.\w{2,6}$/.test(value)
+export const isValidEmail = (value: string) => /^[\w-]+(?:\.[\w-]+)*@[\w-]+(?:\.[\w-]+)*\.\w{2,6}$/.test(value)
 
 export function useLoginValidation(emailOnly: Ref<boolean>, isOffline?: Ref<boolean>) {
   const { t } = useI18n()
