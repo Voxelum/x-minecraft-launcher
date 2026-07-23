@@ -1,4 +1,5 @@
 import { BaseService } from '@xmcl/runtime/app'
+import { AgentService } from '@xmcl/runtime/agent'
 import { AuthlibInjectorService } from '@xmcl/runtime/authlibInjector'
 import { BedrockService } from '@xmcl/runtime/bedrock'
 import { CollectionService } from '@xmcl/runtime/collection'
@@ -37,6 +38,7 @@ import { ThemeService } from '@xmcl/runtime/theme'
 import { OfficialUserService, UserService, MinecraftFriendsService } from '@xmcl/runtime/user'
 
 export const definedServices = [
+  AgentService,
   VersionMetadataService,
   BaseService,
   AuthlibInjectorService,

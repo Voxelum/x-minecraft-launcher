@@ -105,14 +105,15 @@
         </template>
         <template #action>
           <v-text-field
-            :model-value="agentApiKey"
+            :model-value="agentApiKeyInput"
             :type="showAgentApiKey ? 'text' : 'password'"
             variant="outlined"
             density="compact"
             class="setting-item-input"
             hide-details
             clearable
-            @update:model-value="agentApiKey = $event ?? ''"
+            :placeholder="agentConfigured ? '••••••••' : ''"
+            @update:model-value="updateAgentApiKey($event ?? '')"
           >
             <template #append-inner>
               <v-btn icon variant="text" size="small" @click="showAgentApiKey = !showAgentApiKey">
@@ -208,11 +209,22 @@ const replaceNativeItems = computed(() => [
   },
 ])
 const {
-  apiKey: agentApiKey,
   endpoint: agentEndpoint,
   model: agentModel,
+  configured: agentConfigured,
+  setApiKey: setAgentApiKey,
 } = useAgentSettings()
+const agentApiKeyInput = ref('')
 const showAgentApiKey = ref(false)
+let agentApiKeyTimer: ReturnType<typeof setTimeout> | undefined
+function updateAgentApiKey(value: string) {
+  agentApiKeyInput.value = value
+  if (agentApiKeyTimer) clearTimeout(agentApiKeyTimer)
+  agentApiKeyTimer = setTimeout(async () => {
+    await setAgentApiKey(value)
+    agentApiKeyInput.value = ''
+  }, 500)
+}
 
 const { show } = useDialog('migration')
 const { root, showGameDirectory } = useGameDirectory()

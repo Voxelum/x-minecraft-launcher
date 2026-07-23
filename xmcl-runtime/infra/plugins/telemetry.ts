@@ -190,6 +190,32 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     })
   })
 
+  app.on('agent-run-trace', (payload) => {
+    app.registry.get(kSettings).then((settings) => {
+      if (settings.disableTelemetry) return
+      defaultClient.trackTrace({
+        message: 'agent-run',
+        properties: {
+          name: 'agent-run',
+          runId: payload.runId,
+          agentId: payload.agentId,
+          provider: payload.provider,
+          model: payload.model,
+          outcome: payload.outcome,
+          stopReason: payload.stopReason,
+          tools: JSON.stringify(payload.tools).slice(0, 2048),
+          turnCount: String(payload.turnCount),
+          toolCallCount: String(payload.toolCallCount),
+          toolFailureCount: String(payload.toolFailureCount),
+          inputTokens: String(payload.inputTokens),
+          outputTokens: String(payload.outputTokens),
+          durationMs: String(payload.durationMs),
+          sampleRate: String(payload.sampleRate),
+        },
+      })
+    })
+  })
+
   app.waitEngineReady().then(async () => {
     const settings = await app.registry.get(kSettings)
 

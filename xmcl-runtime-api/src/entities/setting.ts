@@ -26,6 +26,8 @@ export class Settings implements SettingSchema {
   discordPresence = false
   developerMode = false
   disableTelemetry = false
+  agentEndpoint = 'https://apihub.agnes-ai.com/v1/chat/completions'
+  agentModel = 'agnes-2.0-flash'
   linuxTitlebar = false
   windowTranslucent = false
 
@@ -113,6 +115,8 @@ export class Settings implements SettingSchema {
     this.discordPresence = config.discordPresence
     this.developerMode = config.developerMode
     this.disableTelemetry = config.disableTelemetry
+    this.agentEndpoint = config.agentEndpoint
+    this.agentModel = config.agentModel
     this.linuxTitlebar = config.linuxTitlebar
     this.windowTranslucent = config.windowTranslucent
     this.enableDedicatedGPUOptimization = config.enableDedicatedGPUOptimization
@@ -207,6 +211,11 @@ export class Settings implements SettingSchema {
 
   disableTelemetrySet(disable: boolean) {
     this.disableTelemetry = disable
+  }
+
+  agentProviderSet(provider: { endpoint: string; model: string }) {
+    this.agentEndpoint = provider.endpoint
+    this.agentModel = provider.model
   }
 
   linuxTitlebarSet(enabled: boolean) {

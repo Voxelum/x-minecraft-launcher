@@ -5,7 +5,7 @@
     max-width="95vw"
     scrollable
   >
-    <v-card class="agent-card flex h-[85vh] max-h-[85vh] flex-col overflow-hidden">
+    <v-card data-testid="agent-dialog" class="agent-card flex h-[85vh] max-h-[85vh] flex-col overflow-hidden">
       <!-- Header -->
       <div class="flex items-center gap-2 px-4 py-3 border-b">
         <v-btn-toggle
@@ -72,6 +72,7 @@
       <div
         v-else
         ref="scrollEl"
+        data-testid="agent-transcript"
         class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 py-2 space-y-3"
       >
         <div
@@ -160,7 +161,7 @@
         </template>
 
         <!-- Live progress -->
-        <div v-if="running" class="flex items-center gap-2 text-xs text-medium-emphasis pl-2">
+        <div v-if="running" data-testid="agent-live-status" class="flex items-center gap-2 text-xs text-medium-emphasis pl-2">
           <v-progress-circular indeterminate size="14" width="2" />
           <span>{{ liveStatus }}</span>
         </div>
@@ -170,6 +171,7 @@
       <div v-if="available" class="border-t p-3">
         <v-textarea
           v-model="input"
+          data-testid="agent-input"
           :placeholder="available ? t('agent.inputPlaceholder') : t('agent.disabledPlaceholder')"
           :disabled="!available || running"
           variant="outlined"
@@ -295,6 +297,7 @@ const liveStatus = computed(() => {
   for (let i = events.value.length - 1; i >= 0; i--) {
     const e = events.value[i]
     if (e.type === 'tool_call' && e.toolCall) return t('agent.callingTool', { name: e.toolCall.name })
+    if (e.type === 'tool_result') return t('agent.thinking')
     if (e.type === 'assistant') return t('agent.thinking')
   }
   return t('agent.thinking')

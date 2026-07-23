@@ -22,13 +22,15 @@ import { getModSide } from '@/util/mod'
 import { injection } from '@/util/inject'
 import { useI18n } from 'vue-i18n'
 import type { ChatMessage } from './llm'
+import { toRuntimeMessage } from './llm'
 import { createModsCliOperations } from './cli/mods'
 import { createPackUpdateOperations } from './cli/packs'
 import { createInstanceChangeOperations } from './instanceChanges'
-import { runAgent, type AgentEvent, type RunAgentOptions } from './loop'
+import type { AgentEvent, RunAgentOptions } from './loop'
 import type { AgentContext } from './tools'
 import { buildSystemPrompt, createXmclTools } from './tools'
-import { useAgentSettings } from './settings'
+import { useRemoteAgent } from './remote'
+import { AgentServiceKey } from '@xmcl/runtime-api'
 import {
   buildChangeEvent,
   renderSessionContext,
@@ -53,25 +55,18 @@ export interface AgentSession {
   readonly running: Ref<boolean>
   readonly messages: Ref<ChatMessage[]>
   readonly events: Ref<AgentEvent[]>
-  loadConversationForCurrentInstance(): void
+  loadConversationForCurrentInstance(): Promise<void>
   send(userInput: string, options?: Partial<RunAgentOptions>): Promise<void>
-  reset(): void
+  reset(): Promise<void>
   abort(): void
-}
-
-interface StoredAgentConversation {
-  messages: ChatMessage[]
-  snapshot?: SessionContext
-  updatedAt: number
 }
 
 interface StoredAgentConversationStore {
   version: 1
-  byInstance: Record<string, StoredAgentConversation>
+  byInstance: Record<string, { messages: ChatMessage[]; snapshot?: SessionContext; updatedAt: number }>
 }
 
 const AGENT_CONVERSATION_STORAGE_KEY = 'agentConversationByInstanceV1'
-const MAX_STORED_MESSAGES = 120
 
 /**
  * Build an agent session bound to the current launcher state. Must be called
@@ -104,7 +99,7 @@ export function useAgent(): AgentSession {
   const javaService = useService(JavaServiceKey)
   const versionService = useService(VersionServiceKey)
   const { install: installServerVersion } = useInstanceVersionServerInstall()
-  const agentSettings = useAgentSettings()
+  const agentService = useService(AgentServiceKey)
 
   const resourcePacks = computed(() => [...rpEnabled.value, ...rpDisabled.value])
   const shaderPackName = computed(() => selectedShaderPack.value ?? '')
@@ -310,93 +305,49 @@ export function useAgent(): AgentSession {
   const registry = createXmclTools(ctx)
   const { locale } = useI18n()
 
-  const running = ref(false)
-  const messages = shallowRef<ChatMessage[]>([])
-  const events = shallowRef<AgentEvent[]>([])
-  let abortCtrl: AbortController | undefined
   /** Snapshot frozen on first user message in the current session. */
   let sessionSnapshot: SessionContext | undefined
-  /** Stop watcher for resolved-version / java drift. Disposed on reset. */
   let stopDriftWatch: (() => void) | undefined
 
   function currentInstancePath(): string | undefined {
     return selectedInstance.value || instance.value.path || undefined
   }
 
-  function readConversationStore(): StoredAgentConversationStore {
+  async function migrateLegacyConversations() {
+    const raw = localStorage.getItem(AGENT_CONVERSATION_STORAGE_KEY)
+    if (!raw) return
     try {
-      const raw = localStorage.getItem(AGENT_CONVERSATION_STORAGE_KEY)
-      if (!raw) return { version: 1, byInstance: {} }
-      const parsed = JSON.parse(raw) as StoredAgentConversationStore
-      if (!parsed || typeof parsed !== 'object' || parsed.version !== 1 || !parsed.byInstance || typeof parsed.byInstance !== 'object') {
-        return { version: 1, byInstance: {} }
+      const store = JSON.parse(raw) as StoredAgentConversationStore
+      if (store?.version !== 1 || !store.byInstance) return
+      for (const [scope, saved] of Object.entries(store.byInstance)) {
+        await agentService.importLegacyConversation({
+          key: { agentId: 'launcher', scope },
+          messages: saved.messages.map(toRuntimeMessage),
+          context: saved.snapshot as unknown as Record<string, unknown>,
+          updatedAt: saved.updatedAt,
+        })
       }
-      return parsed
+      localStorage.removeItem(AGENT_CONVERSATION_STORAGE_KEY)
     } catch {
-      return { version: 1, byInstance: {} }
+      // Preserve malformed or failed legacy data for manual recovery.
     }
   }
 
-  function writeConversationStore(store: StoredAgentConversationStore) {
-    try {
-      localStorage.setItem(AGENT_CONVERSATION_STORAGE_KEY, JSON.stringify(store))
-    } catch {
-      // Ignore quota / serialization failures. Conversation persistence is
-      // best-effort and should never block the agent UX.
-    }
-  }
+  void migrateLegacyConversations()
 
-  function trimMessagesForStore(input: ChatMessage[]): ChatMessage[] {
-    if (input.length <= MAX_STORED_MESSAGES) return input
-    const sys = input.find((m) => m.role === 'system')
-    const nonSystem = input.filter((m) => m.role !== 'system')
-    const tail = nonSystem.slice(-(MAX_STORED_MESSAGES - (sys ? 1 : 0)))
-    return sys ? [sys, ...tail] : tail
-  }
-
-  function persistCurrentConversation() {
-    const path = currentInstancePath()
-    if (!path) return
-    const store = readConversationStore()
-    if (messages.value.length === 0) {
-      delete store.byInstance[path]
-      writeConversationStore(store)
-      return
-    }
-    store.byInstance[path] = {
-      messages: trimMessagesForStore(messages.value),
-      snapshot: sessionSnapshot,
-      updatedAt: Date.now(),
-    }
-    writeConversationStore(store)
-  }
-
-  function loadConversationForCurrentInstance() {
-    if (running.value) return
+  async function loadConversationForCurrentInstance() {
+    if (remote.running.value) return
     const path = currentInstancePath()
     stopDriftWatch?.()
     stopDriftWatch = undefined
-    events.value = []
     sessionSnapshot = undefined
     if (!path) {
-      messages.value = []
+      await remote.load('')
       return
     }
-
-    const store = readConversationStore()
-    const saved = store.byInstance[path]
-    if (!saved || !Array.isArray(saved.messages)) {
-      messages.value = []
-      return
-    }
-
-    messages.value = saved.messages.slice()
-    sessionSnapshot = saved.snapshot
-    // Backward compatibility: if an old persisted conversation has a system
-    // message but no snapshot metadata, regenerate one so we can continue.
-    if (!sessionSnapshot && saved.messages.some((m) => m.role === 'system')) {
-      sessionSnapshot = captureSnapshot()
-    }
+    const saved = await agentService.getConversation({ agentId: 'launcher', scope: path })
+    sessionSnapshot = saved.context as unknown as SessionContext | undefined
+    await remote.load(path)
     if (sessionSnapshot) {
       startDriftWatch()
     }
@@ -453,94 +404,57 @@ export function useAgent(): AgentSession {
           ...sessionSnapshot,
           ...change,
         }
-        messages.value = [
-          ...messages.value,
-          { role: 'user', content: evt },
-        ]
-        persistCurrentConversation()
+        void agentService.notifyContextChange({
+          key: { agentId: 'launcher', scope: p },
+          message: evt,
+          context: sessionSnapshot as unknown as Record<string, unknown>,
+        })
       },
       { deep: true },
     )
   }
 
-  async function send(userInput: string, options: Partial<RunAgentOptions> = {}) {
-    if (running.value) throw new Error('Agent: a request is already in flight')
-    if (!agentSettings.apiKey.value.trim()) {
-      throw new Error('Agent: API key is not configured (Settings -> General -> AI Agent)')
-    }
-
-    // First user turn freezes the session snapshot so the prompt stays stable.
-    if (!sessionSnapshot) {
-      sessionSnapshot = captureSnapshot()
-      const sys = buildSystemPrompt({
+  const remote = useRemoteAgent({
+    agentId: 'launcher',
+    getScope: () => currentInstancePath() ?? '',
+    tools: registry.base,
+    buildSystemPrompt: () => {
+      if (!sessionSnapshot) {
+        sessionSnapshot = captureSnapshot()
+        startDriftWatch()
+      }
+      return buildSystemPrompt({
         locale: sessionSnapshot.locale,
         sessionContextMarkdown: renderSessionContext(sessionSnapshot),
       })
-      messages.value = [{ role: 'system', content: sys }]
-      startDriftWatch()
-      persistCurrentConversation()
-    }
+    },
+    getContext: () => sessionSnapshot as unknown as Record<string, unknown> | undefined,
+  })
 
-    running.value = true
-    abortCtrl = new AbortController()
-    const history = messages.value.slice()
-    history.push({ role: 'user', content: userInput })
-    // Publish the in-flight transcript immediately so the chat UI shows
-    // the user message and subsequent assistant/tool turns live.
-    messages.value = history.slice()
-    try {
-      await runAgent(history, {
-        apiKey: agentSettings.apiKey.value.trim(),
-        endpoint: agentSettings.resolvedEndpoint.value,
-        model: agentSettings.resolvedModel.value,
-        ...options,
-        tools: registry.base,
-        signal: abortCtrl.signal,
-        onEvent: (e) => {
-          events.value = [...events.value, e]
-          // `runAgent` mutates `history` in place. `messages` is a shallowRef,
-          // so we must hand it a NEW array reference each event — reassigning
-          // the same `history` reference would be a no-op and the assistant /
-          // tool bubbles would never re-render.
-          messages.value = history.slice()
-          persistCurrentConversation()
-          options.onEvent?.(e)
-        },
-      })
-      messages.value = history.slice()
-      persistCurrentConversation()
-    } finally {
-      running.value = false
-      abortCtrl = undefined
+  async function send(userInput: string, options: Partial<RunAgentOptions> = {}) {
+    if (!sessionSnapshot) {
+      sessionSnapshot = captureSnapshot()
+      startDriftWatch()
     }
+    await remote.send(userInput, options)
   }
 
-  function reset() {
-    if (running.value) abortCtrl?.abort()
+  async function reset() {
     stopDriftWatch?.()
     stopDriftWatch = undefined
     sessionSnapshot = undefined
-    messages.value = []
-    events.value = []
-    persistCurrentConversation()
+    await remote.reset()
   }
 
   function abort() {
-    abortCtrl?.abort()
+    remote.abort()
   }
 
-  // "Configured" requires all three fields (key, endpoint, model) to be
-  // present and non-empty. Any null/empty value means the agent is not ready.
-  const available = computed(() =>
-    !!(agentSettings.apiKey.value || '').trim() &&
-    !!(agentSettings.endpoint.value || '').trim() &&
-    !!(agentSettings.model.value || '').trim())
-
   return {
-    available,
-    running,
-    messages,
-    events,
+    available: remote.available,
+    running: remote.running,
+    messages: remote.messages,
+    events: remote.events,
     loadConversationForCurrentInstance,
     send,
     reset,
@@ -556,10 +470,6 @@ export const kAgent: InjectionKey<AgentSession> = Symbol('Agent')
  * is present so contributors notice the surface.
  */
 export function installAgentDevLauncher(session: AgentSession) {
-  if (!session.available.value) {
-    console.info('[agent] disabled (API key missing)')
-    return
-  }
   ;(window as any).__xmcl_agent = {
     send: (input: string) => session.send(input).catch((e) => console.error('[agent]', e)),
     reset: () => session.reset(),
@@ -568,5 +478,9 @@ export function installAgentDevLauncher(session: AgentSession) {
     get messages() { return session.messages.value },
     get events() { return session.events.value },
   }
-  console.info('[agent] ready — try window.__xmcl_agent.send("list my mods")')
+  watch(session.available, (available) => {
+    console.info(available
+      ? '[agent] ready — try window.__xmcl_agent.send("list my mods")'
+      : '[agent] disabled (API key missing)')
+  }, { immediate: true })
 }

@@ -1,8 +1,11 @@
-import { computed, ref, shallowRef, type Ref } from 'vue'
+import { type Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { ChatMessage } from './llm'
-import { runAgent, type AgentEvent, type RunAgentOptions, type Tool } from './loop'
-import { useAgentSettings } from './settings'
+import { toRuntimeMessage } from './llm'
+import type { AgentEvent, RunAgentOptions, Tool } from './loop'
+import { useRemoteAgent } from './remote'
+import { AgentServiceKey } from '@xmcl/runtime-api'
+import { useService } from '../service'
 
 /**
  * Everything the CSS agent's tools need to read/write the launcher's custom
@@ -246,7 +249,7 @@ export interface CssAgentSession {
   readonly messages: Ref<ChatMessage[]>
   readonly events: Ref<AgentEvent[]>
   send(userInput: string, options?: Partial<RunAgentOptions>): Promise<void>
-  reset(): void
+  reset(): Promise<void>
   abort(): void
 }
 
@@ -257,8 +260,6 @@ interface StoredCssAgentConversation {
 }
 
 const DEFAULT_CSS_AGENT_STORAGE_KEY = 'cssAgentConversationV1'
-const MAX_STORED_MESSAGES = 80
-
 export interface UseCssAgentOptions {
   /** Read/write hooks for the CSS this agent edits (global or instance scope). */
   context: CssAgentContext
@@ -277,113 +278,43 @@ export interface UseCssAgentOptions {
  */
 export function useCssAgent(options: UseCssAgentOptions): CssAgentSession {
   const { locale } = useI18n()
-  const agentSettings = useAgentSettings()
+  const agentService = useService(AgentServiceKey)
   const storageKey = options.storageKey ?? DEFAULT_CSS_AGENT_STORAGE_KEY
-
-  const running = ref(false)
-  const messages = shallowRef<ChatMessage[]>([])
-  const events = shallowRef<AgentEvent[]>([])
-  let abortCtrl: AbortController | undefined
-  /** Whether the system prompt has been seeded into `messages`. */
-  let started = false
-
   const tools = createCssAgentTools(options.context)
 
-  function trimForStore(input: ChatMessage[]): ChatMessage[] {
-    if (input.length <= MAX_STORED_MESSAGES) return input
-    const sys = input.find((m) => m.role === 'system')
-    const tail = input.filter((m) => m.role !== 'system').slice(-(MAX_STORED_MESSAGES - (sys ? 1 : 0)))
-    return sys ? [sys, ...tail] : tail
-  }
-
-  function persist() {
-    try {
-      const data: StoredCssAgentConversation = { version: 1, messages: trimForStore(messages.value), updatedAt: Date.now() }
-      localStorage.setItem(storageKey, JSON.stringify(data))
-    } catch { /* storage may be unavailable; transcript stays in memory */ }
-  }
-
-  function load() {
+  async function migrateLegacy() {
     try {
       const raw = localStorage.getItem(storageKey)
       if (!raw) return
       const data = JSON.parse(raw) as StoredCssAgentConversation
       if (Array.isArray(data?.messages)) {
-        messages.value = data.messages
-        started = messages.value.some((m) => m.role === 'system')
+        await agentService.importLegacyConversation({
+          key: { agentId: 'css', scope: 'global' },
+          messages: data.messages.map(toRuntimeMessage),
+          updatedAt: data.updatedAt,
+        })
+        localStorage.removeItem(storageKey)
       }
-    } catch { /* ignore malformed cache */ }
-  }
-
-  load()
-
-  async function send(userInput: string, options: Partial<RunAgentOptions> = {}) {
-    if (running.value) throw new Error('CSS agent: a request is already in flight')
-    if (!agentSettings.apiKey.value.trim()) {
-      throw new Error('CSS agent: API key is not configured (Settings -> General -> AI Agent)')
-    }
-
-    if (!started) {
-      const sys = buildCssSystemPrompt({ locale: locale.value })
-      messages.value = [{ role: 'system', content: sys }]
-      started = true
-      persist()
-    }
-
-    running.value = true
-    abortCtrl = new AbortController()
-    const history = messages.value.slice()
-    history.push({ role: 'user', content: userInput })
-    messages.value = history.slice()
-    try {
-      await runAgent(history, {
-        apiKey: agentSettings.apiKey.value.trim(),
-        endpoint: agentSettings.resolvedEndpoint.value,
-        model: agentSettings.resolvedModel.value,
-        ...options,
-        tools,
-        signal: abortCtrl.signal,
-        onEvent: (e) => {
-          events.value = [...events.value, e]
-          // `runAgent` mutates `history` in place; hand `messages` a fresh
-          // reference each event so the chat UI re-renders.
-          messages.value = history.slice()
-          persist()
-          options.onEvent?.(e)
-        },
-      })
-      messages.value = history.slice()
-      persist()
-    } finally {
-      running.value = false
-      abortCtrl = undefined
+    } catch {
+      // Preserve legacy data when migration fails.
     }
   }
 
-  function reset() {
-    if (running.value) abortCtrl?.abort()
-    started = false
-    messages.value = []
-    events.value = []
-    persist()
-  }
-
-  function abort() {
-    abortCtrl?.abort()
-  }
-
-  const available = computed(() =>
-    !!(agentSettings.apiKey.value || '').trim() &&
-    !!(agentSettings.endpoint.value || '').trim() &&
-    !!(agentSettings.model.value || '').trim())
+  const remote = useRemoteAgent({
+    agentId: 'css',
+    getScope: () => 'global',
+    tools,
+    buildSystemPrompt: () => buildCssSystemPrompt({ locale: locale.value }),
+  })
+  void migrateLegacy().then(() => remote.load())
 
   return {
-    available,
-    running,
-    messages,
-    events,
-    send,
-    reset,
-    abort,
+    available: remote.available,
+    running: remote.running,
+    messages: remote.messages,
+    events: remote.events,
+    send: remote.send,
+    reset: remote.reset,
+    abort: remote.abort,
   }
 }

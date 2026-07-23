@@ -87,6 +87,10 @@ export const SettingSchema = z.object({
   developerMode: z.boolean().catch(false),
   /** Disable telemetry setting */
   disableTelemetry: z.boolean().catch(false),
+  /** OpenAI-compatible agent endpoint (the API key is stored separately). */
+  agentEndpoint: z.string().catch('https://apihub.agnes-ai.com/v1/chat/completions'),
+  /** Agent model identifier. */
+  agentModel: z.string().catch('agnes-2.0-flash'),
   /** Linux titlebar setting */
   linuxTitlebar: z.boolean().catch(false),
   /** Enable dedicated GPU optimization */

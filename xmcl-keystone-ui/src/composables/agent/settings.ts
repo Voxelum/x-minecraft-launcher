@@ -1,34 +1,70 @@
-import { createSharedComposable, useLocalStorage } from '@vueuse/core'
+import { createSharedComposable } from '@vueuse/core'
+import { AgentServiceKey } from '@xmcl/runtime-api'
+import { useService } from '../service'
 import { DEFAULT_AGNES_ENDPOINT, DEFAULT_AGNES_MODEL } from './llm'
 
-/**
- * Agent settings are a shared singleton: the settings page and the agent
- * session must read/write the SAME refs (including the derived `computed`
- * wrappers below), so editing the key in Settings immediately updates the
- * live agent's `available` state.
- */
+const LEGACY_API_KEY = 'agentApiKey'
+const LEGACY_ENDPOINT = 'agentEndpoint'
+const LEGACY_MODEL = 'agentModel'
+
 export const useAgentSettings = createSharedComposable(() => {
-  const apiKey = useLocalStorage('agentApiKey', '')
-  // Default values are Agnes endpoint/model; users can still override both.
-  const endpoint = useLocalStorage('agentEndpoint', DEFAULT_AGNES_ENDPOINT)
-  const model = useLocalStorage('agentModel', DEFAULT_AGNES_MODEL)
+  const service = useService(AgentServiceKey)
+  const apiKey = ref('')
+  const endpoint = ref(DEFAULT_AGNES_ENDPOINT)
+  const model = ref(DEFAULT_AGNES_MODEL)
+  const configured = ref(false)
+  const loaded = ref(false)
+  let saveTimer: ReturnType<typeof setTimeout> | undefined
 
-  const resolvedEndpoint = computed(() => {
-    const raw = endpoint.value.trim()
-    if (raw) return raw
-    return DEFAULT_AGNES_ENDPOINT
+  const ready = (async () => {
+    const legacyApiKey = localStorage.getItem(LEGACY_API_KEY) ?? ''
+    const legacyEndpoint = localStorage.getItem(LEGACY_ENDPOINT) ?? ''
+    const legacyModel = localStorage.getItem(LEGACY_MODEL) ?? ''
+    let settings = await service.getProviderSettings()
+    if (legacyApiKey || legacyEndpoint || legacyModel) {
+      await service.setProviderSettings({
+        endpoint: legacyEndpoint || settings.endpoint,
+        model: legacyModel || settings.model,
+        apiKey: legacyApiKey || undefined,
+      })
+      localStorage.removeItem(LEGACY_API_KEY)
+      localStorage.removeItem(LEGACY_ENDPOINT)
+      localStorage.removeItem(LEGACY_MODEL)
+      settings = await service.getProviderSettings()
+    }
+    endpoint.value = settings.endpoint
+    model.value = settings.model
+    configured.value = settings.configured
+    loaded.value = true
+  })()
+
+  watch([endpoint, model], () => {
+    if (!loaded.value) return
+    if (saveTimer) clearTimeout(saveTimer)
+    saveTimer = setTimeout(async () => {
+      await service.setProviderSettings({ endpoint: endpoint.value, model: model.value })
+    }, 300)
   })
 
-  const resolvedModel = computed(() => {
-    const raw = model.value.trim()
-    if (raw) return raw
-    return DEFAULT_AGNES_MODEL
-  })
+  async function setApiKey(value: string) {
+    apiKey.value = value
+    await ready
+    await service.setProviderSettings({ endpoint: endpoint.value, model: model.value, apiKey: value })
+    configured.value = !!value.trim()
+    apiKey.value = ''
+  }
+
+  const resolvedEndpoint = computed(() => endpoint.value.trim() || DEFAULT_AGNES_ENDPOINT)
+  const resolvedModel = computed(() => model.value.trim() || DEFAULT_AGNES_MODEL)
 
   return {
     apiKey,
     endpoint,
     model,
+    configured,
+    loaded,
+    ready,
+    setApiKey,
     resolvedEndpoint,
     resolvedModel,
   }
