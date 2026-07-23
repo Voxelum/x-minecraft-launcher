@@ -802,8 +802,8 @@ export class LaunchService extends AbstractService implements ILaunchService {
     const shortcutOptions: ShortcutOptions = {}
 
     const launchArgs = IS_DEV
-      ? `"${process.argv[1]}" launch "${options.userId}" "${options.instancePath}"`
-      : `launch "${options.userId}" "${options.instancePath}"`
+      ? `"${process.argv[1]}" launch "${options.userId}" "${options.instancePath}" --silent`
+      : `launch "${options.userId}" "${options.instancePath}" --silent`
 
     if (process.platform === 'win32') {
       const c = vbTextContent
