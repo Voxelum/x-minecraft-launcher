@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:xmcl:m6:proposal:storage-retention-event:v1",
+  "title": "M6StorageRetentionEventProposalV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "accountId",
+    "resource",
+    "sourceId",
+    "quantity",
+    "unit",
+    "intervalStart",
+    "intervalEnd",
+    "billableBytes",
+    "rateVersion",
+    "idempotencyKey"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "m6.storage-retention.proposal.v1" },
+    "eventId": { "type": "string", "minLength": 1 },
+    "accountId": { "type": "string", "minLength": 1 },
+    "resource": { "const": "storage_retention" },
+    "sourceId": { "type": "string", "minLength": 1 },
+    "quantity": { "type": "integer", "minimum": 0 },
+    "unit": { "const": "byte_second" },
+    "intervalStart": { "type": "string", "format": "date-time" },
+    "intervalEnd": { "type": "string", "format": "date-time" },
+    "billableBytes": { "type": "integer", "minimum": 0 },
+    "rateVersion": { "type": "string", "minLength": 1 },
+    "idempotencyKey": { "type": "string", "minLength": 1 }
+  }
+}

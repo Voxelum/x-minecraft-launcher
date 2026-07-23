@@ -1,40 +1,36 @@
-import { LauncherApp } from '~/app'
+import type { LauncherApp } from '~/app'
 import { AnyError } from '@xmcl/utils'
-import { UserService } from '../UserService'
-import { fetch as undiciFetch } from 'undici'
+import type { UserService } from '../UserService'
+import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 
 interface ModrinthOAuthResponse {
   access_token: string
-  expires_in: number
-  token_type: string
-  /** Epoch milliseconds when this token was issued (added by us). */
-  issued_at?: number
+  refresh_token?: string
+  expires_in?: number
+  token_type?: string
+  scope?: string
 }
 
-export async function getModrinthAccessToken(app: LauncherApp) {
-  const metadata = await app.secretStorage.get('modrinth', 'MODRINTH_USER')
-  try {
-    if (metadata) {
-      const { access_token, expires_in, issued_at } = JSON.parse(metadata) as ModrinthOAuthResponse
-      // If we don't know when the token was issued (legacy data), assume it
-      // is still valid and let the API call fail naturally if it isn't —
-      // that path will trigger a fresh OAuth flow via `loginModrinth(true)`.
-      if (!issued_at) {
-        return access_token
-      }
-      const expirationTime = issued_at + (expires_in * 1000)
-      if (Date.now() < expirationTime) {
-        return access_token
-      }
-      return false
-    }
-  } catch (e) {
-    return undefined
-  }
+export async function getModrinthAccessToken(
+  app: LauncherApp,
+  credentials?: ExternalCredentialService,
+) {
+  const service = credentials ?? (await app.registry.getOrCreate(ExternalCredentialService))
+  const result = await service.getValidAccessToken('modrinth')
+  return result.status === 'valid' ? result.accessToken : undefined
 }
 
-export async function loginModrinth(app: LauncherApp, userService: UserService, scopes: string[], invalidate: boolean, signal?: AbortSignal) {
-  const token = invalidate ? undefined : await getModrinthAccessToken(app)
+export async function loginModrinth(
+  app: LauncherApp,
+  userService: UserService,
+  scopes: string[],
+  invalidate: boolean,
+  signal?: AbortSignal,
+  credentials?: ExternalCredentialService,
+) {
+  const credentialService =
+    credentials ?? (await app.registry.getOrCreate(ExternalCredentialService))
+  const token = invalidate ? undefined : await getModrinthAccessToken(app, credentialService)
 
   if (!token) {
     const redirect_uri = `http://127.0.0.1:${await app.serverPort}/modrinth-auth`
@@ -47,7 +43,12 @@ export async function loginModrinth(app: LauncherApp, userService: UserService, 
     userService.emit('modrinth-authorize-url', url)
     const code = await new Promise<string>((resolve, reject) => {
       const abort = () => {
-        reject(new AnyError('AuthCodeTimeoutError', 'Timeout to wait the auth code! Please try again later!'))
+        reject(
+          new AnyError(
+            'AuthCodeTimeoutError',
+            'Timeout to wait the auth code! Please try again later!',
+          ),
+        )
       }
       signal?.addEventListener('abort', abort)
       userService.once('modrinth-authorize-code', (err, code) => {
@@ -68,12 +69,21 @@ export async function loginModrinth(app: LauncherApp, userService: UserService, 
     authUrl.searchParams.set('redirect_uri', redirect_uri)
     const response = await app.fetch(authUrl)
     if (!response.ok) {
-      throw new AnyError('ModrinthAuthError', `Failed to get auth code: ${response.statusText}: ${await response.text()}`)
+      throw new AnyError(
+        'ModrinthAuthError',
+        `Failed to get auth code: ${response.statusText}: ${await response.text()}`,
+      )
     }
-    const data = await response.json() as ModrinthOAuthResponse
-    // Stamp the issue time so we can compute real expiration later.
-    data.issued_at = Date.now()
-
-    await app.secretStorage.put('modrinth', 'MODRINTH_USER', JSON.stringify(data))
+    const data = (await response.json()) as ModrinthOAuthResponse
+    const issuedAt = Date.now()
+    await credentialService.store('modrinth', {
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+      scopes: data.scope?.split(' ').filter(Boolean) ?? scopes,
+      issuedAt,
+      expiresAt:
+        typeof data.expires_in === 'number' ? issuedAt + data.expires_in * 1_000 : undefined,
+      providerMetadata: data.token_type ? { tokenType: data.token_type } : undefined,
+    })
   }
 }

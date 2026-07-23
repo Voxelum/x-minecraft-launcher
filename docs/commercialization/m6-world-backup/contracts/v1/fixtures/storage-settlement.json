@@ -1,0 +1,111 @@
+{
+  "fixtureVersion": "m6.storage-settlement.fixture.v1",
+  "policy": {
+    "freeBytes": 1073741824,
+    "policyVersion": "m2.backup-storage-policy.v1"
+  },
+  "intervalSeconds": 3600,
+  "cases": [
+    {
+      "name": "shared layer is counted once and attributed deterministically",
+      "lastSettledAt": "2026-07-22T00:00:00.000Z",
+      "settleAt": "2026-07-22T01:00:00.000Z",
+      "objects": [
+        {
+          "objectId": "object-01-shared-base",
+          "sizeBytes": 800000000,
+          "references": ["backup-a", "backup-b"],
+          "attributedBackupId": "backup-a"
+        },
+        {
+          "objectId": "object-02-layer-a",
+          "sizeBytes": 400000000,
+          "references": ["backup-a"],
+          "attributedBackupId": "backup-a"
+        },
+        {
+          "objectId": "object-03-layer-b",
+          "sizeBytes": 200000000,
+          "references": ["backup-b"],
+          "attributedBackupId": "backup-b"
+        }
+      ],
+      "expected": {
+        "usedBytes": 1400000000,
+        "overageBytes": 326258176,
+        "events": [
+          { "sourceId": "backup-a", "billableBytes": 126258176, "quantity": 454529433600 },
+          { "sourceId": "backup-b", "billableBytes": 200000000, "quantity": 720000000000 }
+        ],
+        "lastSettledAt": "2026-07-22T01:00:00.000Z"
+      }
+    },
+    {
+      "name": "reference release settles old attribution before recomputing owner",
+      "lastSettledAt": "2026-07-22T00:00:00.000Z",
+      "mutation": {
+        "operation": "release_reference",
+        "occurredAt": "2026-07-22T00:30:00.000Z",
+        "backupId": "backup-a",
+        "objectId": "object-shared"
+      },
+      "before": {
+        "objectId": "object-shared",
+        "sizeBytes": 1200000000,
+        "references": ["backup-a", "backup-b"],
+        "attributedBackupId": "backup-a"
+      },
+      "expected": {
+        "settled": {
+          "sourceId": "backup-a",
+          "intervalStart": "2026-07-22T00:00:00.000Z",
+          "intervalEnd": "2026-07-22T00:30:00.000Z",
+          "billableBytes": 126258176,
+          "quantity": 227264716800
+        },
+        "after": {
+          "references": ["backup-b"],
+          "attributedBackupId": "backup-b",
+          "usedBytes": 1200000000,
+          "overageBytes": 126258176,
+          "lastSettledAt": "2026-07-22T00:30:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "delete settles retained bytes and then stops charging removed object",
+      "lastSettledAt": "2026-07-22T00:00:00.000Z",
+      "mutation": {
+        "operation": "delete_backup",
+        "occurredAt": "2026-07-22T00:30:00.000Z",
+        "backupId": "backup-b"
+      },
+      "before": { "usedBytes": 1400000000, "overageBytes": 326258176 },
+      "expected": {
+        "settledQuantity": 587264716800,
+        "after": {
+          "usedBytes": 1200000000,
+          "overageBytes": 126258176,
+          "lastSettledAt": "2026-07-22T00:30:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "failed physical deletion leaves accounting and cursor unchanged",
+      "lastSettledAt": "2026-07-22T00:00:00.000Z",
+      "mutation": {
+        "operation": "delete_object",
+        "occurredAt": "2026-07-22T00:30:00.000Z",
+        "objectId": "object-orphan"
+      },
+      "providerResult": "failed",
+      "expected": {
+        "metadataRetained": true,
+        "usedBytes": 1200000000,
+        "overageBytes": 126258176,
+        "lastSettledAt": "2026-07-22T00:00:00.000Z",
+        "events": []
+      }
+    }
+  ]
+}

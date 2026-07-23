@@ -1,0 +1,28 @@
+{
+  "scenario": "retried PayPal order intent returns the original order",
+  "firstRequest": {
+    "accountId": "account-fixture-1",
+    "cashAmount": { "currency": "USD", "amountMinor": 1000 },
+    "idempotencyKey": "paypal-order-intent-fixture-1"
+  },
+  "retryRequest": {
+    "accountId": "account-fixture-1",
+    "cashAmount": { "currency": "USD", "amountMinor": 1000 },
+    "idempotencyKey": "paypal-order-intent-fixture-1"
+  },
+  "firstResponse": {
+    "orderId": "paypal-order-fixture-1",
+    "status": "approval_required",
+    "approvalUrl": "https://www.paypal.com/checkoutnow?token=fixture-order-1"
+  },
+  "retryResponse": {
+    "orderId": "paypal-order-fixture-1",
+    "status": "approval_required",
+    "approvalUrl": "https://www.paypal.com/checkoutnow?token=fixture-order-1"
+  },
+  "expected": {
+    "providerOrdersCreated": 1,
+    "ledgerWrites": 0,
+    "balanceChangeMinor": 0
+  }
+}

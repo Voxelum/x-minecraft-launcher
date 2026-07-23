@@ -1,0 +1,13 @@
+{
+  "contract": "m4.server-control.v1-proposal",
+  "cases": [
+    { "name": "worker-healthy-activates", "before": { "status": "starting", "statusVersion": 4, "leaseStatus": "reserved" }, "observation": { "observationId": "obs_01", "healthy": true }, "after": { "status": "running", "statusVersion": 5, "leaseStatus": "active" } },
+    { "name": "duplicate-worker-observation", "before": { "status": "running", "statusVersion": 5, "leaseStatus": "active", "processedObservationIds": ["obs_01"] }, "observation": { "observationId": "obs_01", "healthy": true }, "after": { "status": "running", "statusVersion": 5, "leaseStatus": "active" } },
+    { "name": "stale-worker-observation", "before": { "status": "suspended", "statusVersion": 11, "desiredStatus": "stopped" }, "observation": { "observationId": "obs_stale", "expectedStatusVersion": 9, "healthy": true }, "after": { "status": "suspended", "statusVersion": 11, "desiredStatus": "stopped" } },
+    { "name": "concurrent-start-stop", "before": { "status": "stopped", "statusVersion": 3 }, "commands": [{ "command": "start", "expectedStatusVersion": 3 }, { "command": "stop", "expectedStatusVersion": 3 }], "assert": { "successfulConditionalWrites": 1, "conflicts": 1 } },
+    { "name": "worker-stop-timeout-300s", "before": { "status": "billing_blocked", "statusVersion": 8, "leaseStatus": "active", "stopDeadline": "2026-07-22T10:05:00Z" }, "clock": "2026-07-22T10:05:00Z", "after": { "status": "billing_blocked", "statusVersion": 9, "statusReason": "worker_unresponsive", "leaseStatus": "released", "leaseEndedAt": "2026-07-22T10:05:00Z" }, "assert": { "providerHaltCalls": 1, "timeoutSeconds": 300 } },
+    { "name": "duplicate-worker-stop-timeout", "before": { "status": "billing_blocked", "statusVersion": 9, "leaseStatus": "released", "statusReason": "worker_unresponsive" }, "after": { "status": "billing_blocked", "statusVersion": 9, "leaseStatus": "released" }, "assert": { "additionalProviderHaltCalls": 0, "additionalLeaseClosures": 0 } },
+    { "name": "balance-exhausted-runtime-stopped", "before": { "status": "running", "statusVersion": 6, "leaseStatus": "active" }, "settlement": { "action": "stop_required" }, "runtimeEvent": { "eventType": "runtime.stopped.v1", "reason": "balance_exhausted" }, "after": { "status": "stopped", "statusVersion": 8, "desiredStatus": "stopped", "leaseStatus": "released" } },
+    { "name": "admin-suspend-wins", "before": { "status": "running", "statusVersion": 6, "desiredStatus": "running" }, "commands": [{ "command": "user.start" }, { "command": "server_suspend", "operationId": "op_suspend_01" }], "after": { "status": "suspended", "statusVersion": 7, "desiredStatus": "stopped" } }
+  ]
+}

@@ -413,6 +413,29 @@ feedback:
     Enter the feedback QQ group and direct talk with authors. Group Number:
     {number}
   qqEnterGroup: Join
+support:
+  accountDeletion: Account deletion
+  deletionConfirmation: Type DELETE to confirm
+  description: Describe what happened
+  empty: No support tickets yet
+  errorFeedback: Error feedback
+  myTickets: My support tickets
+  name: Support
+  purchaseReference: Purchase reference
+  refundRequest: Refund request
+  sensitiveNotice: Do not include OAuth tokens, API keys, card numbers, or full payment details.
+  serverAppeal: Server appeal
+  serverId: Server ID
+  status:
+    in_review: In review
+    rejected: Rejected
+    resolved: Resolved
+    submitted: Submitted
+    waiting_for_user: Waiting for your reply
+  subject: Subject
+  submit: Submit ticket
+  submitFailed: Unable to submit your ticket. You can safely retry.
+  type: Request type
 fileDetail:
   fileSize: File Size
   filesize: File size
@@ -848,6 +871,38 @@ me:
   recentPlay: Recent Play
 migrateMinecraft:
   name: Migrate Minecraft Files
+commercialAccount:
+  accountSummary: Account
+  cancelDeletion: Cancel account deletion
+  confirmMerge: Confirm account merge
+  createdAt: Created {date}
+  deletionWarning: This starts a cancellable account-deletion window. It does not remove local game accounts.
+  description: Your passwordless XMCL identity, separate from Minecraft game accounts.
+  expiresAt: Expires {date}
+  gameAccountsSeparate: Removing a game account does not unlink an XMCL login method.
+  guest: Guest
+  identityConflict: This {provider} login belongs to another XMCL Account. Accounts are never merged automatically.
+  linked: Linked
+  loginMethods: Login methods
+  mergePreview: Review the resources that will move before confirming.
+  mergeNeedsSession: Sign in to the XMCL Account you want to keep before reviewing the merge.
+  mergeQueued: Account merge is in progress.
+  requestDeletion: Request account deletion
+  requestFailed: The XMCL Account service could not complete this request. Your game account is unchanged.
+  reviewMerge: Review merge
+  session: Session
+  sessionActive: Active
+  sessionExpired: Expired
+  signInWith: Create or restore an XMCL Account
+  signOutAll: Sign out all devices
+  signOutDevice: Sign out this device
+  status:
+    active: Active
+    deleted: Deleted
+    deletion_pending: Deletion pending
+    merged: Merged
+  title: XMCL Account
+  unlink: Unlink {provider}
 minecraftFriends:
   accept: Accept
   add: Add a friend

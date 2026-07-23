@@ -1,0 +1,16 @@
+{
+  "name": "invalid request",
+  "request": {
+    "requestId": "air_fixture_invalid",
+    "accountId": "acct_fixture_001",
+    "capability": "",
+    "idempotencyKey": "ai-intent-invalid"
+  },
+  "expected": {
+    "status": 400,
+    "error": "invalid_ai_request",
+    "authorizationCalls": 0,
+    "providerCalls": 0,
+    "usageEvents": 0
+  }
+}

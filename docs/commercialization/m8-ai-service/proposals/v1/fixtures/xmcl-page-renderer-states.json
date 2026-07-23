@@ -1,0 +1,216 @@
+{
+  "schema": "m8.xmcl-page.renderer-state.proposal.v1",
+  "notice": "Module-local mock only; replace with published M1/M3/M8 client schemas.",
+  "scenarios": [
+    {
+      "id": "success",
+      "input": {
+        "session": "authenticated",
+        "requestId": "air_page_success",
+        "idempotencyKey": "ai-page-intent-success"
+      },
+      "view": {
+        "state": "result",
+        "result": "Sanitized fixture result.",
+        "confirmedCharge": { "currency": "USD", "amountMinor": 3, "rateVersion": 7 },
+        "action": "new_intent"
+      },
+      "invariants": { "additionalCharge": false, "providerDetailsVisible": false }
+    },
+    {
+      "id": "api-error",
+      "input": {
+        "session": "authenticated",
+        "requestId": "air_page_api_error",
+        "error": "ai_request_failed"
+      },
+      "view": {
+        "state": "recoverable_error",
+        "messageKey": "ai.error.generic",
+        "action": "retry_same_intent"
+      },
+      "invariants": { "resultPreserved": false, "providerDetailsVisible": false }
+    },
+    {
+      "id": "authentication-required",
+      "input": {
+        "session": "signed_out",
+        "requestId": "air_page_auth",
+        "error": "authentication_required"
+      },
+      "view": {
+        "state": "authentication_required",
+        "messageKey": "ai.error.signIn",
+        "action": "sign_in"
+      },
+      "invariants": { "providerCalled": false, "providerDetailsVisible": false }
+    },
+    {
+      "id": "permission-denied",
+      "input": {
+        "session": "authenticated",
+        "requestId": "air_page_permission",
+        "error": "ai_forbidden"
+      },
+      "view": {
+        "state": "permission_error",
+        "messageKey": "ai.error.permission",
+        "action": "none"
+      },
+      "invariants": { "providerCalled": false, "providerDetailsVisible": false }
+    },
+    {
+      "id": "idempotent-transport-retry",
+      "input": {
+        "session": "authenticated",
+        "requestId": "air_page_retry",
+        "idempotencyKeys": ["ai-page-intent-retry", "ai-page-intent-retry"],
+        "attempts": 2
+      },
+      "view": {
+        "state": "result",
+        "result": "Original sanitized result.",
+        "messageKey": "ai.retry.completed",
+        "action": "new_intent"
+      },
+      "invariants": {
+        "providerCalls": 1,
+        "settlementCount": 1,
+        "additionalCharge": false,
+        "providerDetailsVisible": false
+      }
+    },
+    {
+      "id": "provider-failure",
+      "input": {
+        "session": "authenticated",
+        "requestId": "air_page_provider_failure",
+        "error": "ai_provider_unavailable"
+      },
+      "view": {
+        "state": "recoverable_error",
+        "messageKey": "ai.error.providerUnavailable",
+        "action": "retry_same_intent"
+      },
+      "invariants": {
+        "usageEvents": 0,
+        "rawProviderBodyVisible": false,
+        "providerDetailsVisible": false
+      }
+    },
+    {
+      "id": "usage-event-retry",
+      "input": {
+        "session": "authenticated",
+        "requestId": "air_page_usage_retry",
+        "eventOutcomes": ["transient_failure", "accepted"]
+      },
+      "view": {
+        "state": "result_reconciling",
+        "result": "Sanitized fixture result.",
+        "messageKey": "ai.usage.reconciling",
+        "action": "refresh_usage"
+      },
+      "invariants": {
+        "resultPreserved": true,
+        "settlementCount": 1,
+        "additionalCharge": false,
+        "providerDetailsVisible": false
+      }
+    },
+    {
+      "id": "duplicate-usage-event",
+      "input": {
+        "session": "authenticated",
+        "requestId": "air_page_duplicate",
+        "eventOutcomes": ["accepted", "duplicate"]
+      },
+      "view": {
+        "state": "usage_confirmed",
+        "messageKey": "ai.usage.confirmed",
+        "action": "none"
+      },
+      "invariants": {
+        "settlementCount": 1,
+        "additionalCharge": false,
+        "providerDetailsVisible": false
+      }
+    },
+    {
+      "id": "out-of-order-usage-events",
+      "input": {
+        "session": "authenticated",
+        "requestId": "air_page_out_of_order",
+        "eventOrder": ["ai_tokens", "ai_request"]
+      },
+      "view": {
+        "state": "usage_confirmed",
+        "messageKey": "ai.usage.confirmed",
+        "action": "none"
+      },
+      "invariants": {
+        "settlementCount": 2,
+        "additionalChargeOnReplay": false,
+        "providerDetailsVisible": false
+      }
+    },
+    {
+      "id": "insufficient-balance",
+      "input": {
+        "session": "authenticated",
+        "requestId": "air_page_balance",
+        "error": "insufficient_balance"
+      },
+      "view": {
+        "state": "balance_error",
+        "messageKey": "ai.error.insufficientBalance",
+        "action": "manage_balance"
+      },
+      "invariants": {
+        "providerCalled": false,
+        "usageEvents": 0,
+        "additionalCharge": false,
+        "providerDetailsVisible": false
+      }
+    },
+    {
+      "id": "authorization-conflict",
+      "input": {
+        "session": "authenticated",
+        "requestId": "air_page_conflict",
+        "error": "ai_authorization_conflict"
+      },
+      "view": {
+        "state": "conflict",
+        "messageKey": "ai.error.authorizationExpired",
+        "action": "retry_new_intent"
+      },
+      "invariants": {
+        "providerCalled": false,
+        "usageEvents": 0,
+        "additionalCharge": false,
+        "providerDetailsVisible": false
+      }
+    },
+    {
+      "id": "balance-refresh-conflict",
+      "input": {
+        "session": "authenticated",
+        "requestId": "air_page_balance_conflict",
+        "error": "balance_version_conflict"
+      },
+      "view": {
+        "state": "usage_refresh_error",
+        "messageKey": "ai.usage.refreshFailed",
+        "confirmedBalancePreserved": true,
+        "action": "refresh_usage"
+      },
+      "invariants": {
+        "browserCalculatedBalanceVisible": false,
+        "additionalCharge": false,
+        "providerDetailsVisible": false
+      }
+    }
+  ]
+}
+

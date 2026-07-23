@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xmcl.app/proposals/m4/v1/server-control.schema.json",
+  "title": "M4 Server Control v1 Proposal",
+  "$defs": {
+    "ServerResource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["serverId", "accountId", "provider", "region", "status", "desiredStatus", "statusVersion"],
+      "properties": {
+        "serverId": { "type": "string", "minLength": 1 },
+        "accountId": { "type": "string", "minLength": 1 },
+        "provider": { "const": "vultr" },
+        "region": { "const": "taipei" },
+        "status": {
+          "enum": ["creating", "stopped", "starting", "running", "stopping", "suspended", "billing_blocked", "failed", "deleting", "deleted"]
+        },
+        "desiredStatus": { "enum": ["running", "stopped", "deleted"] },
+        "statusVersion": { "type": "integer", "minimum": 0 },
+        "statusReason": { "type": "string" },
+        "address": { "type": "string" },
+        "leaseId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "ServerLease": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["leaseId", "serverId", "startedAt", "status"],
+      "properties": {
+        "leaseId": { "type": "string", "minLength": 1 },
+        "serverId": { "type": "string", "minLength": 1 },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "endedAt": { "type": "string", "format": "date-time" },
+        "status": { "enum": ["reserved", "active", "settled", "released"] }
+      }
+    },
+    "AsyncTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["taskId", "requestId", "status", "resource", "createdAt", "updatedAt"],
+      "properties": {
+        "taskId": { "type": "string", "minLength": 1 },
+        "requestId": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["queued", "running", "succeeded", "failed", "cancelled"] },
+        "resource": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "id"],
+          "properties": {
+            "type": { "const": "server" },
+            "id": { "type": "string", "minLength": 1 }
+          }
+        },
+        "result": {},
+        "error": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["error", "message", "requestId"],
+          "properties": {
+            "error": { "type": "string" },
+            "message": { "type": "string" },
+            "requestId": { "type": "string" }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

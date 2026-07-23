@@ -1,0 +1,265 @@
+openapi: 3.1.0
+info:
+  title: M9 Modpack Deployment v1 Proposal
+  version: 1.0.0-proposal
+  description: Module-local proposal. It is not a published shared contract.
+servers:
+  - url: https://api.xmcl.app
+security:
+  - xmclSession: []
+paths:
+  /v1/servers/{serverId}/modpack-imports:
+    post:
+      operationId: createModpackImport
+      parameters:
+        - $ref: '#/components/parameters/ServerId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [sourceFormat, contentLength, sha256]
+              properties:
+                sourceFormat: { enum: [mrpack, curseforge_zip] }
+                contentLength: { type: integer, minimum: 1 }
+                sha256: { type: string, pattern: '^[a-f0-9]{64}$' }
+      responses:
+        '201': { $ref: '#/components/responses/ImportCreated' }
+        '401': { $ref: '#/components/responses/ApiError' }
+        '404': { $ref: '#/components/responses/ApiError' }
+        '409': { $ref: '#/components/responses/ApiError' }
+  /v1/modpack-imports/{importId}/upload-url:
+    post:
+      operationId: createModpackUploadUrl
+      parameters:
+        - $ref: '#/components/parameters/ImportId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Bound single-object ZIP upload URL. The URL is never persisted in fixtures or logs.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [uploadUrl, requiredSha256, maxSizeBytes, expiresAt]
+                properties:
+                  uploadUrl: { type: string, format: uri }
+                  requiredSha256: { type: string, pattern: '^[a-f0-9]{64}$' }
+                  maxSizeBytes: { type: integer, minimum: 1 }
+                  expiresAt: { type: string, format: date-time }
+        '401': { $ref: '#/components/responses/ApiError' }
+        '404': { $ref: '#/components/responses/ApiError' }
+        '409': { $ref: '#/components/responses/ApiError' }
+  /v1/modpack-imports/{importId}/complete:
+    post:
+      operationId: completeModpackImport
+      parameters:
+        - $ref: '#/components/parameters/ImportId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '202': { $ref: '#/components/responses/AsyncTask' }
+        '401': { $ref: '#/components/responses/ApiError' }
+        '404': { $ref: '#/components/responses/ApiError' }
+        '409': { $ref: '#/components/responses/ApiError' }
+  /v1/modpack-imports/{importId}:
+    get:
+      operationId: getModpackImport
+      parameters:
+        - $ref: '#/components/parameters/ImportId'
+      responses:
+        '200': { $ref: '#/components/responses/Import' }
+        '401': { $ref: '#/components/responses/ApiError' }
+        '404': { $ref: '#/components/responses/ApiError' }
+  /v1/modpack-imports/{importId}/validation:
+    get:
+      operationId: getModpackValidation
+      parameters:
+        - $ref: '#/components/parameters/ImportId'
+      responses:
+        '200': { $ref: '#/components/responses/ValidationReport' }
+        '401': { $ref: '#/components/responses/ApiError' }
+        '404': { $ref: '#/components/responses/ApiError' }
+  /v1/servers/{serverId}/modpack-deployments:
+    post:
+      operationId: createModpackDeployment
+      parameters:
+        - $ref: '#/components/parameters/ServerId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [importId, expectedServerStatusVersion]
+              properties:
+                importId: { type: string, minLength: 1 }
+                expectedServerStatusVersion: { type: integer, minimum: 0 }
+      responses:
+        '202': { $ref: '#/components/responses/AsyncTask' }
+        '401': { $ref: '#/components/responses/ApiError' }
+        '404': { $ref: '#/components/responses/ApiError' }
+        '409': { $ref: '#/components/responses/ApiError' }
+    get:
+      operationId: listModpackDeployments
+      parameters:
+        - $ref: '#/components/parameters/ServerId'
+        - name: cursor
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Deployment page
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: { type: array, items: { $ref: './modpack-deployment.schema.json#/$defs/DeploymentManifest' } }
+                  nextCursor: { type: string }
+        '401': { $ref: '#/components/responses/ApiError' }
+        '404': { $ref: '#/components/responses/ApiError' }
+  /v1/modpack-deployments/{deploymentId}:
+    get:
+      operationId: getModpackDeployment
+      parameters:
+        - $ref: '#/components/parameters/DeploymentId'
+      responses:
+        '200':
+          description: Immutable deployment manifest
+          content:
+            application/json:
+              schema: { $ref: './modpack-deployment.schema.json#/$defs/DeploymentManifest' }
+        '401': { $ref: '#/components/responses/ApiError' }
+        '404': { $ref: '#/components/responses/ApiError' }
+  /v1/modpack-deployments/{deploymentId}/preview:
+    post:
+      operationId: previewModpackDeployment
+      parameters:
+        - $ref: '#/components/parameters/DeploymentId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Deterministic diff against the current successful deployment
+          content:
+            application/json:
+              schema: { $ref: './modpack-deployment.schema.json#/$defs/DeploymentPreview' }
+        '401': { $ref: '#/components/responses/ApiError' }
+        '404': { $ref: '#/components/responses/ApiError' }
+        '409': { $ref: '#/components/responses/ApiError' }
+  /v1/modpack-deployments/{deploymentId}/apply:
+    post:
+      operationId: applyModpackDeployment
+      parameters:
+        - $ref: '#/components/parameters/DeploymentId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '202': { $ref: '#/components/responses/AsyncTask' }
+        '401': { $ref: '#/components/responses/ApiError' }
+        '404': { $ref: '#/components/responses/ApiError' }
+        '409': { $ref: '#/components/responses/ApiError' }
+  /v1/modpack-deployments/{deploymentId}/rollback:
+    post:
+      operationId: rollbackModpackDeployment
+      parameters:
+        - $ref: '#/components/parameters/DeploymentId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '202': { $ref: '#/components/responses/AsyncTask' }
+        '401': { $ref: '#/components/responses/ApiError' }
+        '404': { $ref: '#/components/responses/ApiError' }
+        '409': { $ref: '#/components/responses/ApiError' }
+components:
+  securitySchemes:
+    xmclSession:
+      type: http
+      scheme: bearer
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: { type: string, minLength: 1, maxLength: 200 }
+    ServerId:
+      name: serverId
+      in: path
+      required: true
+      schema: { type: string, minLength: 1 }
+    ImportId:
+      name: importId
+      in: path
+      required: true
+      schema: { type: string, minLength: 1 }
+    DeploymentId:
+      name: deploymentId
+      in: path
+      required: true
+      schema: { type: string, minLength: 1 }
+  schemas:
+    ApiError:
+      type: object
+      additionalProperties: false
+      required: [error, message, requestId]
+      properties:
+        error: { type: string }
+        message: { type: string }
+        requestId: { type: string }
+        details: {}
+    AsyncTask:
+      type: object
+      additionalProperties: false
+      required: [taskId, requestId, status, resource, createdAt, updatedAt]
+      properties:
+        taskId: { type: string }
+        requestId: { type: string }
+        status: { enum: [queued, running, succeeded, failed, cancelled] }
+        resource:
+          type: object
+          required: [type, id]
+          properties:
+            type: { enum: [modpack_import, modpack_deployment] }
+            id: { type: string }
+        result: {}
+        error: { $ref: '#/components/schemas/ApiError' }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    ModpackImport:
+      type: object
+      required: [importId, serverId, sourceFormat, status, createdAt]
+      properties:
+        importId: { type: string }
+        serverId: { type: string }
+        sourceFormat: { enum: [mrpack, curseforge_zip] }
+        status: { enum: [created, uploaded, validating, valid, invalid] }
+        createdAt: { type: string, format: date-time }
+  responses:
+    ApiError:
+      description: Stable API error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }
+    AsyncTask:
+      description: Accepted asynchronous task
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/AsyncTask' }
+    ImportCreated:
+      description: Import created
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ModpackImport' }
+    Import:
+      description: Import state
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ModpackImport' }
+    ValidationReport:
+      description: Validation report
+      content:
+        application/json:
+          schema: { $ref: './modpack-deployment.schema.json#/$defs/ValidationReport' }

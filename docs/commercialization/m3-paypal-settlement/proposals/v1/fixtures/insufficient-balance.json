@@ -1,0 +1,29 @@
+{
+  "scenario": "insufficient cash requires resource stop",
+  "before": {
+    "available": { "currency": "USD", "amountMinor": 5 },
+    "reserved": { "currency": "USD", "amountMinor": 0 }
+  },
+  "request": {
+    "eventId": "usage-insufficient-balance",
+    "authorizationId": "authorization-insufficient-balance",
+    "estimatedCharge": { "currency": "USD", "amountMinor": 6 }
+  },
+  "response": {
+    "settlementId": "settlement-insufficient-balance",
+    "usageEventId": "usage-insufficient-balance",
+    "charged": { "currency": "USD", "amountMinor": 0 },
+    "action": "stop_required",
+    "rateVersion": 7,
+    "status": "rejected"
+  },
+  "after": {
+    "available": { "currency": "USD", "amountMinor": 5 },
+    "reserved": { "currency": "USD", "amountMinor": 0 }
+  },
+  "expected": {
+    "ledgerWrites": 0,
+    "resourceStateWrites": 0,
+    "balanceNeverNegative": true
+  }
+}

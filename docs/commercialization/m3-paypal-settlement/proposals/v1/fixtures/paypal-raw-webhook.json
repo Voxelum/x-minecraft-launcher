@@ -1,0 +1,44 @@
+{
+  "scenario": "PayPal webhook verification uses the exact raw request body before any JSON parsing",
+  "request": {
+    "method": "POST",
+    "contentType": "application/json",
+    "rawBodyUtf8": "{\"id\":\"WH-fixture-1\",\"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"resource\":{\"id\":\"CAPTURE-fixture-1\"}}",
+    "verificationHeaders": {
+      "paypal-transmission-id": "transmission-fixture-1",
+      "paypal-transmission-time": "2026-07-22T10:00:00.000Z",
+      "paypal-transmission-sig": "fixture-signature-not-a-secret"
+    }
+  },
+  "validSignature": {
+    "response": { "httpStatus": 202 },
+    "expected": {
+      "rawBodyVerifiedBeforeParsing": true,
+      "asyncTasksEnqueued": 1,
+      "ledgerWritesBeforeProviderVerification": 0
+    }
+  },
+  "invalidSignature": {
+    "request": {
+      "rawBodyUtf8": "{\"id\":\"WH-fixture-1\", \"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"resource\":{\"id\":\"CAPTURE-fixture-1\"}}"
+    },
+    "response": {
+      "error": "invalid_webhook_signature",
+      "message": "The PayPal webhook signature could not be verified.",
+      "requestId": "request-webhook-invalid-signature"
+    },
+    "expected": {
+      "httpStatus": 401,
+      "asyncTasksEnqueued": 0,
+      "ledgerWrites": 0,
+      "idempotencyRecordWrites": 0
+    }
+  },
+  "retry": {
+    "sameRawBodyAndHeaders": true,
+    "expected": {
+      "eventDeduplicated": true,
+      "totalCreditedMinor": "exactly the first verified event amount"
+    }
+  }
+}

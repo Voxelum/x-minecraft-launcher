@@ -1,0 +1,38 @@
+{
+  "scenario": "older usage sequence is ignored",
+  "stream": {
+    "accountId": "account-fixture-1",
+    "resource": "server_time",
+    "sourceId": "lease-fixture-1",
+    "lastSettledSequence": 3
+  },
+  "request": {
+    "eventType": "usage.recorded.v1",
+    "eventId": "usage-out-of-order-2",
+    "schemaVersion": 1,
+    "accountId": "account-fixture-1",
+    "authorizationId": "authorization-fixture-1",
+    "resource": "server_time",
+    "quantity": 60,
+    "unit": "second",
+    "rateVersion": 7,
+    "intervalStart": "2026-07-22T10:01:00.000Z",
+    "intervalEnd": "2026-07-22T10:02:00.000Z",
+    "occurredAt": "2026-07-22T10:02:00.000Z",
+    "sourceId": "lease-fixture-1",
+    "sequence": 2,
+    "idempotencyKey": "settle-out-of-order-2"
+  },
+  "response": {
+    "error": "usage_out_of_order",
+    "message": "Usage sequence is older than the settled stream cursor.",
+    "requestId": "request-out-of-order-2",
+    "details": { "lastSettledSequence": 3 }
+  },
+  "expected": {
+    "httpStatus": 409,
+    "ledgerWrites": 0,
+    "balanceChangeMinor": 0,
+    "streamCursor": 3
+  }
+}

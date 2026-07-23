@@ -2,6 +2,7 @@ import { BaseService } from '@xmcl/runtime/app'
 import { AuthlibInjectorService } from '@xmcl/runtime/authlibInjector'
 import { BedrockService } from '@xmcl/runtime/bedrock'
 import { CollectionService } from '@xmcl/runtime/collection'
+import { CommercialAccountService } from '@xmcl/runtime/commercialAccount'
 import { ElyByService } from '@xmcl/runtime/elyby'
 import { InstallService, VersionMetadataService } from '@xmcl/runtime/install'
 import {
@@ -35,12 +36,19 @@ import { ResourcePackPreviewService } from '@xmcl/runtime/resourcePack'
 import { ServerStatusService } from '@xmcl/runtime/serverStatus'
 import { ThemeService } from '@xmcl/runtime/theme'
 import { OfficialUserService, UserService, MinecraftFriendsService } from '@xmcl/runtime/user'
+import { CloudServerService } from '@xmcl/runtime/cloudServers/CloudServerService'
+import { ExternalCredentialService } from '@xmcl/runtime/credential/ExternalCredentialService'
 
 export const definedServices = [
+  // Main-process-only: it deliberately has no service key, so token access
+  // cannot be invoked through renderer service IPC.
+  ExternalCredentialService,
   VersionMetadataService,
   BaseService,
   AuthlibInjectorService,
   CollectionService,
+  CommercialAccountService,
+  CloudServerService,
   BedrockService,
   InstallService,
   ProjectMappingService,

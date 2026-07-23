@@ -1,0 +1,17 @@
+{
+  "contract": "m9.modpack-deployment.v1-proposal",
+  "limits": { "maxUploadBytes": 536870912, "maxEntries": 10000, "maxUncompressedBytes": 536870912, "maxCompressionRatio": 100 },
+  "cases": [
+    { "name": "valid-mrpack", "entries": [{ "path": "modrinth.index.json", "size": 300, "compressedSize": 180 }, { "path": "overrides/config/server.toml", "size": 20, "compressedSize": 20 }, { "path": "overrides/data/example/tags/functions/tick.json", "size": 30, "compressedSize": 25 }], "sources": [{ "path": "mods/example.jar", "provider": "modrinth", "projectId": "example", "fileId": "version_1", "filename": "example.jar" }], "result": { "status": "valid", "configFiles": ["config/server.toml"], "dataFiles": ["data/example/tags/functions/tick.json"], "rejectedFiles": [] } },
+    { "name": "path-traversal", "entries": [{ "path": "../escape.txt" }], "result": { "status": "invalid", "reason": "path_traversal" } },
+    { "name": "absolute-path", "entries": [{ "path": "/etc/passwd" }], "result": { "status": "invalid", "reason": "absolute_path" } },
+    { "name": "case-insensitive-duplicate", "entries": [{ "path": "overrides/config/a.toml" }, { "path": "OVERRIDES/CONFIG/A.TOML" }], "result": { "status": "invalid", "reason": "duplicate_path" } },
+    { "name": "symbolic-link", "entries": [{ "path": "overrides/data/link", "unixMode": "0120777" }], "result": { "status": "invalid", "reason": "symbolic_link" } },
+    { "name": "embedded-executable", "entries": [{ "path": "overrides/mods/untrusted.jar" }, { "path": "overrides/config/start.sh" }], "result": { "status": "invalid", "reason": "embedded_executable_or_script" } },
+    { "name": "arbitrary-mod-url", "manifestFile": { "path": "mods/unknown.jar", "downloads": ["https://example.invalid/unknown.jar"] }, "result": { "status": "invalid", "reason": "unresolved_provider_source" } },
+    { "name": "entry-limit", "entryCount": 10001, "result": { "status": "invalid", "reason": "entry_limit_exceeded" } },
+    { "name": "uncompressed-size-limit", "uncompressedBytes": 536870913, "result": { "status": "invalid", "reason": "uncompressed_size_exceeded" } },
+    { "name": "compression-ratio-limit", "entries": [{ "path": "overrides/data/bomb.dat", "size": 101, "compressedSize": 1 }], "result": { "status": "invalid", "reason": "compression_ratio_exceeded" } },
+    { "name": "missing-manifest", "entries": [{ "path": "overrides/config/server.toml" }], "result": { "status": "invalid", "reason": "manifest_missing" } }
+  ]
+}

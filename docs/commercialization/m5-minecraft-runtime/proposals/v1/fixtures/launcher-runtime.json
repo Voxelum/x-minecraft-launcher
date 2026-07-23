@@ -1,0 +1,132 @@
+{
+  "contract": "m5.launcher-runtime.v1-proposal",
+  "cases": [
+    {
+      "name": "runtime-success",
+      "response": {
+        "serverId": "srv_test_01",
+        "accountId": "acct_test_01",
+        "provider": "vultr",
+        "region": "taipei",
+        "status": "running",
+        "desiredStatus": "running",
+        "statusVersion": 10,
+        "address": "mc-test.example.net:25565",
+        "leaseId": "lease_test_01"
+      }
+    },
+    {
+      "name": "runtime-out-of-order",
+      "responses": [
+        {
+          "serverId": "srv_test_01",
+          "accountId": "acct_test_01",
+          "provider": "vultr",
+          "region": "taipei",
+          "status": "running",
+          "desiredStatus": "running",
+          "statusVersion": 10,
+          "address": "mc-test.example.net:25565",
+          "leaseId": "lease_test_01"
+        },
+        {
+          "serverId": "srv_test_01",
+          "accountId": "acct_test_01",
+          "provider": "vultr",
+          "region": "taipei",
+          "status": "starting",
+          "desiredStatus": "running",
+          "statusVersion": 9
+        }
+      ]
+    },
+    {
+      "name": "logs-duplicate-and-out-of-order",
+      "response": {
+        "items": [
+          {
+            "logId": "log_02",
+            "serverId": "srv_test_01",
+            "source": "cloud_server",
+            "sequence": 2,
+            "occurredAt": "2026-07-22T14:00:02.000Z",
+            "stream": "stdout",
+            "message": "Done"
+          },
+          {
+            "logId": "log_01",
+            "serverId": "srv_test_01",
+            "source": "cloud_server",
+            "sequence": 1,
+            "occurredAt": "2026-07-22T14:00:01.000Z",
+            "stream": "stdout",
+            "message": "Starting"
+          },
+          {
+            "logId": "log_02",
+            "serverId": "srv_test_01",
+            "source": "cloud_server",
+            "sequence": 2,
+            "occurredAt": "2026-07-22T14:00:02.000Z",
+            "stream": "stdout",
+            "message": "Done"
+          }
+        ],
+        "nextCursor": "cursor_02"
+      }
+    },
+    {
+      "name": "logs-idempotent-retry",
+      "responses": [
+        {
+          "items": [
+            {
+              "logId": "log_02",
+              "serverId": "srv_test_01",
+              "source": "cloud_server",
+              "sequence": 2,
+              "occurredAt": "2026-07-22T14:00:02.000Z",
+              "stream": "stdout",
+              "message": "Done"
+            }
+          ],
+          "nextCursor": "cursor_02"
+        },
+        {
+          "items": [
+            {
+              "logId": "log_02",
+              "serverId": "srv_test_01",
+              "source": "cloud_server",
+              "sequence": 2,
+              "occurredAt": "2026-07-22T14:00:02.000Z",
+              "stream": "stdout",
+              "message": "Done"
+            }
+          ],
+          "nextCursor": "cursor_02"
+        }
+      ]
+    },
+    {
+      "name": "insufficient-balance",
+      "response": {
+        "error": "usage_authorization_rejected",
+        "message": "Server runtime authorization was rejected.",
+        "requestId": "req_start_billing"
+      }
+    },
+    {
+      "name": "status-conflict",
+      "response": {
+        "error": "server_state_conflict",
+        "message": "Server status changed before the request completed.",
+        "requestId": "req_status_conflict",
+        "details": {
+          "status": "stopping",
+          "statusVersion": 11
+        }
+      }
+    }
+  ]
+}

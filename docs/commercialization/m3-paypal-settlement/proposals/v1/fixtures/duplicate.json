@@ -1,0 +1,27 @@
+{
+  "scenario": "duplicate usage event returns the original settlement",
+  "original": {
+    "eventId": "usage-fixture-1",
+    "idempotencyKey": "settle-fixture-1",
+    "settlementId": "settlement-fixture-1",
+    "ledgerEntryId": "ledger-fixture-1",
+    "charged": { "currency": "USD", "amountMinor": 6 }
+  },
+  "duplicate": {
+    "eventId": "usage-fixture-1",
+    "idempotencyKey": "settle-fixture-1"
+  },
+  "response": {
+    "settlementId": "settlement-fixture-1",
+    "usageEventId": "usage-fixture-1",
+    "charged": { "currency": "USD", "amountMinor": 6 },
+    "ledgerEntryId": "ledger-fixture-1",
+    "action": "continue",
+    "rateVersion": 7,
+    "status": "settled"
+  },
+  "expected": {
+    "totalLedgerWrites": 1,
+    "totalChargedMinor": 6
+  }
+}

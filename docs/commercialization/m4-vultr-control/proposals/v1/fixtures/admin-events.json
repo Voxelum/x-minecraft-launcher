@@ -1,0 +1,45 @@
+{
+  "contract": "shared.v1.admin-operation",
+  "cases": [
+    {
+      "name": "suspend-requested",
+      "event": {
+        "eventType": "admin.operation.requested.v1",
+        "eventId": "evt_admin_01",
+        "schemaVersion": 1,
+        "operationId": "op_suspend_01",
+        "action": "server_suspend",
+        "target": { "resourceType": "server", "resourceId": "srv_test_01" },
+        "requestedBy": "admin_test_01",
+        "reason": "Abuse investigation",
+        "ticketId": "ticket_01",
+        "occurredAt": "2026-07-22T10:00:00Z"
+      }
+    },
+    {
+      "name": "suspend-completed",
+      "event": {
+        "eventType": "admin.operation.completed.v1",
+        "eventId": "evt_admin_02",
+        "schemaVersion": 1,
+        "operationId": "op_suspend_01",
+        "owner": "m4",
+        "status": "succeeded",
+        "result": { "serverId": "srv_test_01" },
+        "completedAt": "2026-07-22T10:00:01Z"
+      }
+    },
+    {
+      "name": "duplicate-request",
+      "operationId": "op_suspend_01",
+      "assert": { "newTaskCount": 0, "newStateTransitions": 0, "returnedCompletionEventId": "evt_admin_02" }
+    },
+    {
+      "name": "restore-to-stopped",
+      "before": { "status": "suspended", "statusVersion": 12 },
+      "request": { "operationId": "op_restore_01", "action": "server_restore" },
+      "after": { "status": "stopped", "statusVersion": 13, "desiredStatus": "stopped", "leaseId": null },
+      "assert": { "m3AuthorizationRequests": 0, "providerStartCalls": 0 }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "authorized provider success",
+  "request": {
+    "requestId": "air_fixture_success",
+    "accountId": "acct_fixture_001",
+    "capability": "troubleshoot",
+    "idempotencyKey": "ai-intent-success"
+  },
+  "authorization": {
+    "status": "authorized",
+    "authorizationId": "auth_fixture_success",
+    "rateVersion": 7
+  },
+  "providerResult": {
+    "providerRequestId": "provider_fixture_success",
+    "output": "Sanitized fixture result.",
+    "usage": [
+      { "resource": "ai_request", "quantity": 1, "unit": "request" },
+      { "resource": "ai_tokens", "quantity": 42, "unit": "token" }
+    ]
+  },
+  "expected": {
+    "providerCalls": 1,
+    "usageEventIds": ["air_fixture_success:ai_request", "air_fixture_success:ai_tokens"]
+  }
+}

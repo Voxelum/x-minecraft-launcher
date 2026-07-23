@@ -1,0 +1,12 @@
+{
+  "name": "usage publication retry",
+  "attempts": [
+    { "eventId": "air_fixture_publish_retry:ai_tokens", "idempotencyKey": "ai-intent-publish-retry:ai_tokens", "outcome": "transient_failure" },
+    { "eventId": "air_fixture_publish_retry:ai_tokens", "idempotencyKey": "ai-intent-publish-retry:ai_tokens", "outcome": "accepted" }
+  ],
+  "expected": {
+    "providerCalls": 1,
+    "settlementCount": 1,
+    "identifiersReused": true
+  }
+}

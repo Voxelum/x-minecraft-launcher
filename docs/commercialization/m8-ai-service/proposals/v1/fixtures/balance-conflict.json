@@ -1,0 +1,18 @@
+{
+  "name": "authorized usage balance conflict",
+  "event": {
+    "eventId": "air_fixture_balance_conflict:ai_tokens",
+    "idempotencyKey": "ai-intent-balance-conflict:ai_tokens",
+    "quantity": 42,
+    "unit": "token"
+  },
+  "settlement": {
+    "outcome": "balance_conflict"
+  },
+  "expected": {
+    "providerCalls": 1,
+    "automaticRetry": false,
+    "deliveryStatus": "conflict",
+    "requiresReconciliation": true
+  }
+}

@@ -82,6 +82,7 @@
     <AppSystemBarBadge
       v-if="!noDebug"
       id="feedback-button"
+      data-testid="feedback-open"
       icon="bug_report"
       :text="t('feedback.name')"
       can-hide-text

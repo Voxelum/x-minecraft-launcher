@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xmcl.app/proposals/m4/v1/admin-operation.schema.json",
+  "title": "M4 view of shared v1 administrator operations",
+  "oneOf": [
+    { "$ref": "#/$defs/Requested" },
+    { "$ref": "#/$defs/Completed" }
+  ],
+  "$defs": {
+    "Requested": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventType", "eventId", "schemaVersion", "operationId", "action", "target", "requestedBy", "reason", "occurredAt"],
+      "properties": {
+        "eventType": { "const": "admin.operation.requested.v1" },
+        "eventId": { "type": "string", "minLength": 1 },
+        "schemaVersion": { "const": 1 },
+        "operationId": { "type": "string", "minLength": 1 },
+        "action": { "enum": ["server_suspend", "server_restore"] },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["resourceType", "resourceId"],
+          "properties": {
+            "resourceType": { "const": "server" },
+            "resourceId": { "type": "string", "minLength": 1 }
+          }
+        },
+        "requestedBy": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "ticketId": { "type": "string", "minLength": 1 },
+        "occurredAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Completed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventType", "eventId", "schemaVersion", "operationId", "owner", "status", "completedAt"],
+      "properties": {
+        "eventType": { "const": "admin.operation.completed.v1" },
+        "eventId": { "type": "string", "minLength": 1 },
+        "schemaVersion": { "const": 1 },
+        "operationId": { "type": "string", "minLength": 1 },
+        "owner": { "const": "m4" },
+        "status": { "enum": ["succeeded", "rejected", "failed"] },
+        "result": { "type": "object" },
+        "error": { "type": "object" },
+        "completedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

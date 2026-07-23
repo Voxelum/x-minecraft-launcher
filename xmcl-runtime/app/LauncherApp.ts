@@ -33,41 +33,90 @@ export interface LauncherApp {
   on(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   on(channel: 'window-all-closed', listener: () => void): this
   on(channel: 'root-migrated', listener: (newRoot: string) => void): this
-  on(channel: 'service-call-end', listener: (serviceName: string, serviceMethod: string, duration: number, success: boolean) => void): this
+  on(
+    channel: 'service-call-end',
+    listener: (
+      serviceName: string,
+      serviceMethod: string,
+      duration: number,
+      success: boolean,
+    ) => void,
+  ): this
   on(channel: 'service-state-init', listener: (stateKey: string) => void): this
   on(channel: 'download-cdn', listener: (reason: string, file: string) => void): this
-  on(channel: 'install-postprocess-fallback', listener: (payload: Record<string, string | number | boolean>) => void): this
+  on(
+    channel: 'install-postprocess-fallback',
+    listener: (payload: Record<string, string | number | boolean>) => void,
+  ): this
   on(channel: 'second-instance', listener: (argv: string[]) => void): this
   on(channel: 'direct-launch', listener: (data: any) => void): this
 
   once(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   once(channel: 'window-all-closed', listener: () => void): this
   once(channel: 'root-migrated', listener: (newRoot: string) => void): this
-  once(channel: 'service-call-end', listener: (serviceName: string, serviceMethod: string, duration: number, success: boolean) => void): this
+  once(
+    channel: 'service-call-end',
+    listener: (
+      serviceName: string,
+      serviceMethod: string,
+      duration: number,
+      success: boolean,
+    ) => void,
+  ): this
   once(channel: 'service-state-init', listener: (stateKey: string) => void): this
   once(channel: 'download-cdn', listener: (reason: string, file: string) => void): this
-  once(channel: 'install-postprocess-fallback', listener: (payload: Record<string, string | number | boolean>) => void): this
+  once(
+    channel: 'install-postprocess-fallback',
+    listener: (payload: Record<string, string | number | boolean>) => void,
+  ): this
   once(channel: 'second-instance', listener: (argv: string[]) => void): this
   once(channel: 'direct-launch', listener: (data: any) => void): this
 
   emit(channel: 'app-booted', manifest: InstalledAppManifest): this
-  emit(channel: 'service-call-end', serviceName: string, serviceMethod: string, duration: number, success: boolean): this
+  emit(
+    channel: 'service-call-end',
+    serviceName: string,
+    serviceMethod: string,
+    duration: number,
+    success: boolean,
+  ): this
   emit(channel: 'window-all-closed'): boolean
   emit(channel: 'root-migrated', root: string): this
   emit(channel: 'service-state-init', stateKey: string): this
   emit(channel: 'download-cdn', reason: string, file: string): this
-  emit(channel: 'install-postprocess-fallback', payload: Record<string, string | number | boolean>): this
+  emit(
+    channel: 'install-postprocess-fallback',
+    payload: Record<string, string | number | boolean>,
+  ): this
   emit(channel: 'second-instance', argv: string[]): this
   emit(channel: 'direct-launch', data: any): this
 }
 
 export interface LogEmitter extends EventEmitter {
-  on(channel: 'info', listener: (destination: string, tag: string, message: string, ...options: any[]) => void): this
-  on(channel: 'warn', listener: (destination: string, tag: string, message: string, ...options: any[]) => void): this
+  on(
+    channel: 'info',
+    listener: (destination: string, tag: string, message: string, ...options: any[]) => void,
+  ): this
+  on(
+    channel: 'warn',
+    listener: (destination: string, tag: string, message: string, ...options: any[]) => void,
+  ): this
   on(channel: 'failure', listener: (destination: string, tag: string, error: Error) => void): this
 
-  emit(channel: 'info', destination: string, tag: string, message: string, ...options: any[]): boolean
-  emit(channel: 'warn', destination: string, tag: string, message: string, ...options: any[]): boolean
+  emit(
+    channel: 'info',
+    destination: string,
+    tag: string,
+    message: string,
+    ...options: any[]
+  ): boolean
+  emit(
+    channel: 'warn',
+    destination: string,
+    tag: string,
+    message: string,
+    ...options: any[]
+  ): boolean
   emit(channel: 'failure', destination: string, tag: string, error: Error): boolean
 }
 
@@ -99,9 +148,13 @@ export class LauncherApp extends EventEmitter {
   /**
    * The version of the launcher
    */
-  get version() { return this.host.getVersion() }
+  get version() {
+    return this.host.getVersion()
+  }
 
-  get systemLocale() { return this.host.getLocale() }
+  get systemLocale() {
+    return this.host.getLocale()
+  }
 
   get userAgent() {
     const version = IS_DEV ? '0.0.0' : this.host.getVersion()
@@ -118,25 +171,30 @@ export class LauncherApp extends EventEmitter {
    * The server to handle the launcher server protocol.
    */
   readonly server: Server = createServer((req, res) => {
-    this.protocol.handle({
-      method: req.method,
-      url: new URL(req.url ?? '/', 'xmcl://launcher'),
-      headers: req.headers,
-      body: req,
-    }).then((resp) => {
-      res.statusCode = resp.status
-      for (const [k, v] of Object.entries(resp.headers)) {
-        res.setHeader(k, v)
-      }
-      if (resp.body instanceof Readable) {
-        pipeline(resp.body, res)
-      } else {
-        res.end(resp.body)
-      }
-    }, (e) => {
-      res.statusCode = 500
-      res.end()
-    })
+    this.protocol
+      .handle({
+        method: req.method,
+        url: new URL(req.url ?? '/', 'xmcl://launcher'),
+        headers: req.headers,
+        body: req,
+      })
+      .then(
+        (resp) => {
+          res.statusCode = resp.status
+          for (const [k, v] of Object.entries(resp.headers)) {
+            res.setHeader(k, v)
+          }
+          if (resp.body instanceof Readable) {
+            pipeline(resp.body, res)
+          } else {
+            res.end(resp.body)
+          }
+        },
+        (e) => {
+          res.statusCode = 500
+          res.end()
+        },
+      )
   })
 
   /**
@@ -156,10 +214,10 @@ export class LauncherApp extends EventEmitter {
    */
   readonly registry: ObjectFactory = new ObjectFactory()
   /**
-    * The game data path is the root of the game data. It's the path where the game data is stored.
-    *
-    * This will be set by user.
-    */
+   * The game data path is the root of the game data. It's the path where the game data is stored.
+   *
+   * This will be set by user.
+   */
   #gamePath: string = ''
   /**
    * Whether the app is bootstrapping. If it's bootstrapping, it will start window with bootstrap search param.
@@ -168,7 +226,7 @@ export class LauncherApp extends EventEmitter {
   /**
    * The disposers to dispose when the app is going to quit.
    */
-  #disposers: (() => (Promise<void> | void))[] = []
+  #disposers: (() => Promise<void> | void)[] = []
 
   deferredWindowOpen = false
 
@@ -189,9 +247,14 @@ export class LauncherApp extends EventEmitter {
 
     const plat = getPlatform()
     this.platform = {
-      os: plat.name === 'unknown'
-        ? process.platform === 'win32' ? 'windows' : process.platform === 'darwin' ? 'osx' : 'linux'
-        : plat.name,
+      os:
+        plat.name === 'unknown'
+          ? process.platform === 'win32'
+            ? 'windows'
+            : process.platform === 'darwin'
+              ? 'osx'
+              : 'linux'
+          : plat.name,
       osRelease: plat.version,
       arch: plat.arch as any,
     }
@@ -236,12 +299,14 @@ export class LauncherApp extends EventEmitter {
     this.#disposers.push(disposer)
   }
 
-  get disposed() { return this.#disposed }
+  get disposed() {
+    return this.#disposed
+  }
 
   async dispose() {
     if (this.#disposed) return
     this.#disposed = true
-    await Promise.allSettled(this.#disposers.map(m => m()))
+    await Promise.allSettled(this.#disposers.map((m) => m()))
   }
 
   /**
@@ -251,10 +316,7 @@ export class LauncherApp extends EventEmitter {
     this.logger.log('Try to gently close the app')
 
     try {
-      await Promise.race([
-        setTimeout(10000).then(() => false),
-        this.dispose().then(() => true),
-      ])
+      await Promise.race([setTimeout(10000).then(() => false), this.dispose().then(() => true)])
     } finally {
       this.host.quit()
       setTimeout(10_000).then(() => {
@@ -274,15 +336,14 @@ export class LauncherApp extends EventEmitter {
     return this.host.whenReady()
   }
 
-  relaunch(args?: string[]): void { this.host.relaunch({ args }) }
+  relaunch(args?: string[]): void {
+    this.host.relaunch({ args })
+  }
 
   // setup code
 
   async start(): Promise<void> {
-    await Promise.all([
-      this.setup(),
-      this.host.whenReady().then(() => this.onEngineReady()),
-    ])
+    await Promise.all([this.setup(), this.host.whenReady().then(() => this.onEngineReady())])
   }
 
   /**
@@ -323,15 +384,19 @@ export class LauncherApp extends EventEmitter {
         // first launch
         this.#isBootstrapSignal.resolve(true)
         const path = await new Promise<string>((resolve) => {
-          this.controller.handle('bootstrap', (_, path) => {
-            resolve(path)
-          }, true)
+          this.controller.handle(
+            'bootstrap',
+            (_, path) => {
+              resolve(path)
+            },
+            true,
+          )
         })
-        gameDataPath = (path)
+        gameDataPath = path
         await writeFile(join(this.appDataPath, 'root'), path)
       } else {
         this.#isBootstrapSignal.resolve(false)
-        gameDataPath = (this.appDataPath)
+        gameDataPath = this.appDataPath
       }
     }
 
@@ -349,7 +414,7 @@ export class LauncherApp extends EventEmitter {
     this.#gamePath = gamePath
     validateDirectory(this.platform, gamePath).then((code) => {
       if (code) {
-        this.registry.get(kSettings).then(s => s.invalidGameDataPathSet(code))
+        this.registry.get(kSettings).then((s) => s.invalidGameDataPathSet(code))
       }
     })
     this.registry.register(kGameDataPath, (...args) => {
@@ -368,28 +433,30 @@ export class LauncherApp extends EventEmitter {
     if (!IS_DEV && process.platform === 'win32') {
       this.logger.log(`Try to check the start up url: ${process.argv.join(' ')}`)
       if (process.argv.length > 1) {
-        const urlOption = process.argv.find(a => a.startsWith('--url='))
+        const urlOption = process.argv.find((a) => a.startsWith('--url='))
         if (urlOption) {
           const url = urlOption.substring('--url='.length)
           if (url) {
             return url
           }
         }
-        this.logger.log('Didn\'t find --url options')
-        const protocolOption = process.argv.find(a => a.startsWith('xmcl://'))
+        this.logger.log("Didn't find --url options")
+        const protocolOption = process.argv.find((a) => a.startsWith('xmcl://'))
         if (protocolOption) {
           const u = new URL(protocolOption)
           if (u.host === 'launcher' && u.pathname === '/app' && u.searchParams.has('url')) {
             return u.searchParams.get('url') as string
           }
         }
-        this.logger.log('Didn\'t find xmcl:// protocol')
+        this.logger.log("Didn't find xmcl:// protocol")
       }
     }
-    this.logger.log('Didn\'t find the start up url, try to load from config file.')
+    this.logger.log("Didn't find the start up url, try to load from config file.")
 
     try {
-      const { default: url } = JSON.parse(await readFile(join(this.launcherAppManager.root, 'apps.json'), 'utf-8'))
+      const { default: url } = JSON.parse(
+        await readFile(join(this.launcherAppManager.root, 'apps.json'), 'utf-8'),
+      )
 
       return url
     } catch (e) {

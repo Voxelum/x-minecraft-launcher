@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:xmcl:m6:proposal:storage-state:v1",
+  "title": "M6StorageStateProposalV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "accountId",
+    "policy",
+    "usedBytes",
+    "overageBytes",
+    "billingCursor",
+    "backups",
+    "objects"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "m6.storage-state.proposal.v1" },
+    "accountId": { "type": "string", "minLength": 1 },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["freeBytes", "policyVersion"],
+      "properties": {
+        "freeBytes": { "type": "integer", "minimum": 0 },
+        "policyVersion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "usedBytes": { "type": "integer", "minimum": 0 },
+    "overageBytes": { "type": "integer", "minimum": 0 },
+    "billingCursor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intervalSeconds", "lastSettledAt"],
+      "properties": {
+        "intervalSeconds": { "const": 3600 },
+        "lastSettledAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "backups": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/backup" }
+    },
+    "objects": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/object" }
+    }
+  },
+  "$defs": {
+    "backup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "backupId",
+        "accountId",
+        "sourceType",
+        "sourceId",
+        "worldId",
+        "format",
+        "formatVersion",
+        "status",
+        "objectId"
+      ],
+      "properties": {
+        "backupId": { "type": "string", "minLength": 1 },
+        "accountId": { "type": "string", "minLength": 1 },
+        "sourceType": { "enum": ["client_world", "hosted_server_world"] },
+        "sourceId": { "type": "string", "minLength": 1 },
+        "worldId": { "type": "string", "minLength": 1 },
+        "format": { "enum": ["linear", "layered_linear"] },
+        "formatVersion": { "type": "integer", "minimum": 1 },
+        "parentBackupId": { "type": "string", "minLength": 1 },
+        "status": {
+          "enum": ["creating", "uploading", "ready", "restoring", "failed", "deleted"]
+        },
+        "objectId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "object": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objectId", "sizeBytes", "sha256", "verification", "references"],
+      "properties": {
+        "objectId": { "type": "string", "minLength": 1 },
+        "sizeBytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "verification": { "enum": ["pending", "verified", "failed"] },
+        "references": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "attributedBackupId": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

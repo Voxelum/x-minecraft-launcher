@@ -1,0 +1,18 @@
+{
+  "scenario": "user session cannot settle internal usage",
+  "request": {
+    "authSubject": "account-fixture-1",
+    "authScopes": ["billing:read"],
+    "usageEventId": "usage-fixture-1"
+  },
+  "response": {
+    "error": "insufficient_scope",
+    "message": "A service usage-settlement scope is required.",
+    "requestId": "request-permission-1"
+  },
+  "expected": {
+    "httpStatus": 403,
+    "ledgerWrites": 0,
+    "balanceChangeMinor": 0
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "contract": "m9.modpack-deployment.v1-proposal",
+  "cases": [
+    { "name": "modrinth-source", "input": { "projectId": "P7dR8mSH", "fileId": "version_1" }, "providerResult": { "projectId": "P7dR8mSH", "versionId": "version_1", "filename": "fabric-api.jar", "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" }, "result": "resolved" },
+    { "name": "curseforge-source", "input": { "projectId": "238222", "fileId": "5839825" }, "providerResult": { "modId": 238222, "id": 5839825, "filename": "jei.jar", "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" }, "result": "resolved" },
+    { "name": "unresolved-source", "input": { "path": "mods/unknown.jar" }, "result": { "status": "invalid", "error": "mod_source_unresolved" } },
+    { "name": "provider-identity-mismatch", "input": { "projectId": "238222", "fileId": "5839825" }, "providerResult": { "modId": 999999, "id": 5839825 }, "result": { "status": "invalid", "error": "mod_source_mismatch" } },
+    { "name": "provider-failure", "provider": "curseforge", "providerResponse": { "status": 503 }, "result": { "taskStatus": "failed", "error": "mod_source_provider_unavailable", "importStatus": "invalid", "retryable": true } },
+    { "name": "provider-retry", "deliveries": [{ "attempt": 1, "providerStatus": 503 }, { "attempt": 2, "providerStatus": 200 }], "result": { "providerCalls": 2, "validationReports": 1, "status": "valid" } }
+  ]
+}

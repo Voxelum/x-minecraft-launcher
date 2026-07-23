@@ -1,0 +1,23 @@
+{
+  "scenario": "PayPal order creation fails before approval",
+  "request": {
+    "accountId": "account-fixture-1",
+    "cashAmount": { "currency": "USD", "amountMinor": 1000 },
+    "idempotencyKey": "paypal-order-provider-failure"
+  },
+  "providerResult": {
+    "kind": "temporary_failure",
+    "providerRequestId": "paypal-request-fixture-failure"
+  },
+  "response": {
+    "error": "payment_provider_unavailable",
+    "message": "The payment provider is temporarily unavailable.",
+    "requestId": "request-provider-failure"
+  },
+  "expected": {
+    "httpStatus": 503,
+    "ledgerWrites": 0,
+    "balanceChangeMinor": 0,
+    "safeToRetryWithSameIdempotencyKey": true
+  }
+}

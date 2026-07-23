@@ -1,0 +1,13 @@
+{
+  "name": "idempotent request retry",
+  "attempts": [
+    { "requestId": "air_fixture_retry", "idempotencyKey": "ai-intent-retry" },
+    { "requestId": "air_fixture_retry", "idempotencyKey": "ai-intent-retry" }
+  ],
+  "expected": {
+    "providerCalls": 1,
+    "sameResult": true,
+    "usageEventIds": ["air_fixture_retry:ai_request", "air_fixture_retry:ai_tokens"],
+    "settlementCount": 2
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "scenario": "invalid usage quantity is rejected",
+  "request": {
+    "eventType": "usage.recorded.v1",
+    "eventId": "usage-invalid-quantity",
+    "schemaVersion": 1,
+    "accountId": "account-fixture-1",
+    "authorizationId": "authorization-fixture-1",
+    "resource": "server_time",
+    "quantity": -1,
+    "unit": "second",
+    "rateVersion": 7,
+    "intervalStart": "2026-07-22T10:00:00.000Z",
+    "intervalEnd": "2026-07-22T10:01:00.000Z",
+    "occurredAt": "2026-07-22T10:01:00.000Z",
+    "sourceId": "lease-fixture-1",
+    "sequence": 1,
+    "idempotencyKey": "settle-invalid-quantity"
+  },
+  "response": {
+    "error": "invalid_usage_quantity",
+    "message": "Usage quantity must be a non-negative safe integer.",
+    "requestId": "request-invalid-quantity"
+  },
+  "expected": {
+    "httpStatus": 400,
+    "ledgerWrites": 0,
+    "balanceChangeMinor": 0
+  }
+}

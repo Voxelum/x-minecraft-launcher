@@ -1,5 +1,6 @@
 <template>
   <MarketItem
+    data-testid="save-item"
     :item="item"
     :selection-mode="selectionMode"
     :selected="selected"

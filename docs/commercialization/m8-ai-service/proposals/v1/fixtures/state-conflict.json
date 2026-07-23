@@ -1,0 +1,13 @@
+{
+  "name": "authorization state conflict",
+  "authorization": {
+    "authorizationId": "auth_fixture_conflict",
+    "status": "expired"
+  },
+  "expected": {
+    "status": 409,
+    "error": "ai_authorization_conflict",
+    "providerCalls": 0,
+    "usageEvents": 0
+  }
+}

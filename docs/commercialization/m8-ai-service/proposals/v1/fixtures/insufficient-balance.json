@@ -1,0 +1,13 @@
+{
+  "name": "authorization rejected for insufficient balance",
+  "authorization": {
+    "status": "rejected",
+    "reason": "insufficient_balance"
+  },
+  "expected": {
+    "status": 402,
+    "error": "insufficient_balance",
+    "providerCalls": 0,
+    "usageEvents": 0
+  }
+}

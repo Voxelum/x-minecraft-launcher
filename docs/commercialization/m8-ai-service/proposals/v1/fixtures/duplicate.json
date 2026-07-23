@@ -1,0 +1,12 @@
+{
+  "name": "duplicate canonical usage",
+  "events": [
+    { "eventId": "air_fixture_duplicate:ai_tokens", "idempotencyKey": "ai-intent-duplicate:ai_tokens", "quantity": 42, "unit": "token" },
+    { "eventId": "air_fixture_duplicate:ai_tokens", "idempotencyKey": "ai-intent-duplicate:ai_tokens", "quantity": 42, "unit": "token" }
+  ],
+  "expected": {
+    "acceptedEvents": 1,
+    "settlementCount": 1,
+    "secondOutcome": "duplicate"
+  }
+}

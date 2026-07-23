@@ -1,0 +1,14 @@
+{
+  "name": "missing AI scope",
+  "session": {
+    "accountId": "acct_fixture_001",
+    "scopes": ["account:read"]
+  },
+  "expected": {
+    "status": 403,
+    "error": "ai_forbidden",
+    "authorizationCalls": 0,
+    "providerCalls": 0,
+    "usageEvents": 0
+  }
+}

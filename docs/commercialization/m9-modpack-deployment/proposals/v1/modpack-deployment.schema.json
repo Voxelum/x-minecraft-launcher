@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xmcl.app/contracts/m9/modpack-deployment/v1-proposal/schema.json",
+  "title": "M9 Modpack Deployment v1 Proposal",
+  "$defs": {
+    "RejectedFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "reason"],
+      "properties": {
+        "path": { "type": "string" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "ModSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "projectId", "fileId", "filename"],
+      "properties": {
+        "provider": { "enum": ["modrinth", "curseforge"] },
+        "projectId": { "type": "string", "minLength": 1 },
+        "fileId": { "type": "string", "minLength": 1 },
+        "filename": { "type": "string", "pattern": "^[^/\\\\]+\\.jar$" }
+      }
+    },
+    "ModpackValidationReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "importId", "sourceFormat", "status", "configFiles", "dataFiles", "mods", "rejectedFiles"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "importId": { "type": "string", "minLength": 1 },
+        "sourceFormat": { "enum": ["mrpack", "curseforge_zip"] },
+        "status": { "enum": ["pending", "valid", "invalid"] },
+        "configFiles": { "type": "array", "items": { "type": "string", "pattern": "^config/" }, "uniqueItems": true },
+        "dataFiles": { "type": "array", "items": { "type": "string", "pattern": "^data/" }, "uniqueItems": true },
+        "mods": { "type": "array", "items": { "$ref": "#/$defs/ModSource" } },
+        "rejectedFiles": { "type": "array", "items": { "$ref": "#/$defs/RejectedFile" } }
+      }
+    },
+    "ManifestFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "sizeBytes"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "sizeBytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "ManifestMod": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "projectId", "fileId", "sha256"],
+      "properties": {
+        "provider": { "enum": ["modrinth", "curseforge"] },
+        "projectId": { "type": "string", "minLength": 1 },
+        "fileId": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "DeploymentManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifestVersion", "deploymentId", "serverId", "sourceFormat", "compatibility", "configFiles", "dataFiles", "mods", "rollbackSnapshotId"],
+      "properties": {
+        "manifestVersion": { "const": 1 },
+        "deploymentId": { "type": "string", "minLength": 1 },
+        "serverId": { "type": "string", "minLength": 1 },
+        "sourceFormat": { "enum": ["mrpack", "curseforge_zip"] },
+        "compatibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["minecraftVersion", "loader", "javaMajor", "templateId"],
+          "properties": {
+            "minecraftVersion": { "type": "string", "minLength": 1 },
+            "loader": { "enum": ["vanilla", "forge", "fabric", "quilt", "neoforge"] },
+            "loaderVersion": { "type": "string", "minLength": 1 },
+            "javaMajor": { "type": "integer", "minimum": 8 },
+            "templateId": { "type": "string", "minLength": 1 }
+          }
+        },
+        "configFiles": { "type": "array", "items": { "$ref": "#/$defs/ManifestFile" } },
+        "dataFiles": { "type": "array", "items": { "$ref": "#/$defs/ManifestFile" } },
+        "mods": { "type": "array", "items": { "$ref": "#/$defs/ManifestMod" } },
+        "rollbackSnapshotId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "DeploymentPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deploymentId", "manifestSha256", "added", "changed", "removed", "generatedAt"],
+      "properties": {
+        "deploymentId": { "type": "string", "minLength": 1 },
+        "manifestSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "added": { "type": "array", "items": { "type": "string" } },
+        "changed": { "type": "array", "items": { "type": "string" } },
+        "removed": { "type": "array", "items": { "type": "string" } },
+        "generatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xmcl.app/contracts/m9/modpack-deployment/v1-proposal/schema.json",
+  "title": "M9 Modpack Deployment v1 Proposal",
+  "$defs": {
+    "RejectedFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "reason"],
+      "properties": {
+        "path": { "type": "string" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "ResolvedMod": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "projectId", "fileId", "filename"],
+      "properties": {
+        "provider": { "enum": ["modrinth", "curseforge"] },
+        "projectId": { "type": "string", "minLength": 1 },
+        "fileId": { "type": "string", "minLength": 1 },
+        "filename": { "type": "string", "pattern": "^[^/\\\\]+\\.jar$" }
+      }
+    },
+    "ValidationReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "importId", "sourceFormat", "status", "configFiles", "dataFiles", "mods", "rejectedFiles"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "importId": { "type": "string", "minLength": 1 },
+        "sourceFormat": { "enum": ["mrpack", "curseforge_zip"] },
+        "status": { "enum": ["pending", "valid", "invalid"] },
+        "configFiles": { "type": "array", "items": { "type": "string", "pattern": "^config/" }, "uniqueItems": true },
+        "dataFiles": { "type": "array", "items": { "type": "string", "pattern": "^data/" }, "uniqueItems": true },
+        "mods": { "type": "array", "items": { "$ref": "#/$defs/ResolvedMod" } },
+        "rejectedFiles": { "type": "array", "items": { "$ref": "#/$defs/RejectedFile" } }
+      }
+    },
+    "ContentFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "sizeBytes"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "sizeBytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "ManifestMod": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "projectId", "fileId", "sha256"],
+      "properties": {
+        "provider": { "enum": ["modrinth", "curseforge"] },
+        "projectId": { "type": "string", "minLength": 1 },
+        "fileId": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "DeploymentManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "manifestVersion", "deploymentId", "serverId", "sourceFormat", "compatibility", "configFiles", "dataFiles", "mods", "rollbackSnapshotId", "createdAt"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "manifestVersion": { "type": "integer", "minimum": 1 },
+        "deploymentId": { "type": "string", "minLength": 1 },
+        "serverId": { "type": "string", "minLength": 1 },
+        "sourceFormat": { "enum": ["mrpack", "curseforge_zip"] },
+        "compatibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["minecraftVersion", "loader", "javaMajor", "templateId", "templateMatrixVersion"],
+          "properties": {
+            "minecraftVersion": { "type": "string", "minLength": 1 },
+            "loader": { "enum": ["vanilla", "forge", "fabric", "quilt", "neoforge"] },
+            "loaderVersion": { "type": "string", "minLength": 1 },
+            "javaMajor": { "type": "integer", "minimum": 8 },
+            "templateId": { "type": "string", "minLength": 1 },
+            "templateMatrixVersion": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "configFiles": { "type": "array", "items": { "$ref": "#/$defs/ContentFile" } },
+        "dataFiles": { "type": "array", "items": { "$ref": "#/$defs/ContentFile" } },
+        "mods": { "type": "array", "items": { "$ref": "#/$defs/ManifestMod" } },
+        "rollbackSnapshotId": { "type": "string", "minLength": 1 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "DeploymentPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deploymentId", "baseDeploymentId", "config", "data", "mods"],
+      "properties": {
+        "deploymentId": { "type": "string", "minLength": 1 },
+        "baseDeploymentId": { "type": ["string", "null"] },
+        "config": { "$ref": "#/$defs/ChangeSet" },
+        "data": { "$ref": "#/$defs/ChangeSet" },
+        "mods": { "$ref": "#/$defs/ChangeSet" }
+      }
+    },
+    "ChangeSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["added", "changed", "removed"],
+      "properties": {
+        "added": { "type": "array", "items": { "type": "string" } },
+        "changed": { "type": "array", "items": { "type": "string" } },
+        "removed": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "contract": "m9.modpack-deployment.v1-proposal",
+  "cases": [
+    {
+      "name": "create-import-success",
+      "request": { "method": "POST", "path": "/v1/servers/srv_test_01/modpack-imports", "sessionAccountId": "acct_test_01", "idempotencyKey": "import-01", "body": { "sourceFormat": "mrpack", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "sizeBytes": 2048 } },
+      "response": { "status": 201, "body": { "importId": "imp_test_01", "status": "created", "constraints": { "maxZipBytes": 536870912, "maxEntries": 10000, "maxUncompressedBytes": 536870912, "maxCompressionRatio": 100 } } }
+    },
+    {
+      "name": "complete-validation-error",
+      "request": { "method": "POST", "path": "/v1/modpack-imports/imp_invalid/complete", "sessionAccountId": "acct_test_01", "idempotencyKey": "complete-invalid" },
+      "response": { "status": 202, "body": { "taskId": "task_validate_invalid", "requestId": "req_validate_invalid", "status": "queued", "resource": { "type": "modpack_import", "id": "imp_invalid" } } },
+      "terminal": { "status": "failed", "error": { "error": "modpack_validation_failed", "message": "The archive did not pass validation.", "requestId": "req_validate_invalid", "details": { "validationReportId": "imp_invalid" } } }
+    },
+    {
+      "name": "session-required",
+      "request": { "method": "GET", "path": "/v1/modpack-imports/imp_test_01/validation" },
+      "response": { "status": 401, "body": { "error": "session_required", "message": "An XMCL session is required.", "requestId": "req_session" } }
+    },
+    {
+      "name": "cross-account-hidden",
+      "request": { "method": "GET", "path": "/v1/modpack-deployments/dep_other", "sessionAccountId": "acct_test_01" },
+      "response": { "status": 404, "body": { "error": "modpack_resource_not_found", "message": "The modpack resource was not found.", "requestId": "req_hidden" } }
+    },
+    {
+      "name": "idempotent-apply-retry",
+      "requests": [
+        { "method": "POST", "path": "/v1/modpack-deployments/dep_test_01/apply", "sessionAccountId": "acct_test_01", "idempotencyKey": "apply-01", "body": { "previewSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" } },
+        { "method": "POST", "path": "/v1/modpack-deployments/dep_test_01/apply", "sessionAccountId": "acct_test_01", "idempotencyKey": "apply-01", "body": { "previewSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" } }
+      ],
+      "responses": [
+        { "status": 202, "body": { "taskId": "task_apply_01", "requestId": "req_apply_01", "status": "queued", "resource": { "type": "modpack_deployment", "id": "dep_test_01" } },
+        { "status": 202, "body": { "taskId": "task_apply_01", "requestId": "req_apply_01", "status": "queued", "resource": { "type": "modpack_deployment", "id": "dep_test_01" } }
+      ],
+      "assert": { "workerApplyCommands": 1 }
+    },
+    {
+      "name": "state-conflict",
+      "request": { "method": "POST", "path": "/v1/modpack-deployments/dep_applying/apply", "sessionAccountId": "acct_test_01", "idempotencyKey": "different-apply", "body": { "previewSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" } },
+      "response": { "status": 409, "body": { "error": "deployment_state_conflict", "message": "The deployment is already applying.", "requestId": "req_conflict" } }
+    }
+  ]
+}{
+  "contract": "m9.modpack-deployment.v1-proposal",
+  "cases": [
+    {
+      "name": "create-import",
+      "request": { "method": "POST", "path": "/v1/servers/srv_test_01/modpack-imports", "sessionAccountId": "acct_test_01", "idempotencyKey": "import-create-01", "body": { "sourceFormat": "mrpack", "contentLength": 4096, "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" } },
+      "response": { "status": 201, "body": { "importId": "imp_test_01", "serverId": "srv_test_01", "sourceFormat": "mrpack", "status": "created", "createdAt": "2026-07-22T10:00:00Z" } }
+    },
+    {
+      "name": "complete-import",
+      "request": { "method": "POST", "path": "/v1/modpack-imports/imp_test_01/complete", "sessionAccountId": "acct_test_01", "idempotencyKey": "import-complete-01" },
+      "response": { "status": 202, "body": { "taskId": "task_validate_01", "requestId": "req_validate_01", "status": "queued", "resource": { "type": "modpack_import", "id": "imp_test_01" }, "createdAt": "2026-07-22T10:01:00Z", "updatedAt": "2026-07-22T10:01:00Z" } }
+    },
+    {
+      "name": "session-required",
+      "request": { "method": "GET", "path": "/v1/modpack-imports/imp_test_01/validation" },
+      "response": { "status": 401, "body": { "error": "session_required", "message": "An XMCL session is required.", "requestId": "req_session" } }
+    },
+    {
+      "name": "cross-account-import-is-hidden",
+      "request": { "method": "GET", "path": "/v1/modpack-imports/imp_other/validation", "sessionAccountId": "acct_test_01" },
+      "response": { "status": 404, "body": { "error": "modpack_import_not_found", "message": "The modpack import was not found.", "requestId": "req_hidden" } }
+    },
+    {
+      "name": "deployment-requires-valid-import",
+      "request": { "method": "POST", "path": "/v1/servers/srv_test_01/modpack-deployments", "sessionAccountId": "acct_test_01", "idempotencyKey": "deploy-create-invalid", "body": { "importId": "imp_invalid", "expectedServerStatusVersion": 7 } },
+      "response": { "status": 409, "body": { "error": "modpack_import_invalid", "message": "A valid import is required.", "requestId": "req_invalid" } }
+    },
+    {
+      "name": "idempotent-create-retry",
+      "requests": [
+        { "method": "POST", "path": "/v1/servers/srv_test_01/modpack-deployments", "sessionAccountId": "acct_test_01", "idempotencyKey": "deploy-create-01", "body": { "importId": "imp_test_01", "expectedServerStatusVersion": 7 } },
+        { "method": "POST", "path": "/v1/servers/srv_test_01/modpack-deployments", "sessionAccountId": "acct_test_01", "idempotencyKey": "deploy-create-01", "body": { "importId": "imp_test_01", "expectedServerStatusVersion": 7 } }
+      ],
+      "responses": [
+        { "status": 202, "body": { "taskId": "task_deploy_01", "requestId": "req_deploy_01", "status": "queued", "resource": { "type": "modpack_deployment", "id": "dep_test_01" }, "createdAt": "2026-07-22T10:02:00Z", "updatedAt": "2026-07-22T10:02:00Z" } },
+        { "status": 202, "body": { "taskId": "task_deploy_01", "requestId": "req_deploy_01", "status": "queued", "resource": { "type": "modpack_deployment", "id": "dep_test_01" }, "createdAt": "2026-07-22T10:02:00Z", "updatedAt": "2026-07-22T10:02:00Z" } }
+      ],
+      "assert": { "deploymentRows": 1, "taskRows": 1 }
+    },
+    {
+      "name": "idempotency-key-body-conflict",
+      "request": { "method": "POST", "path": "/v1/servers/srv_test_01/modpack-deployments", "sessionAccountId": "acct_test_01", "idempotencyKey": "deploy-create-01", "body": { "importId": "imp_other", "expectedServerStatusVersion": 7 } },
+      "response": { "status": 409, "body": { "error": "idempotency_key_reused", "message": "The idempotency key was already used with another request.", "requestId": "req_key_conflict" } }
+    }
+  ]
+}

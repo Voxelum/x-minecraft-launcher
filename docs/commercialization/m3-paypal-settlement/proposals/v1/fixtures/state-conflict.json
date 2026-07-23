@@ -1,0 +1,29 @@
+{
+  "scenario": "released authorization cannot be settled",
+  "authorization": {
+    "authorizationId": "authorization-released-fixture-1",
+    "accountId": "account-fixture-1",
+    "resource": "server_time",
+    "sourceId": "lease-fixture-1",
+    "status": "released",
+    "rateVersion": 7,
+    "expiresAt": "2026-07-22T10:02:00.000Z",
+    "actionOnExhaustion": "stop_required"
+  },
+  "request": {
+    "eventId": "usage-after-release-fixture-1",
+    "authorizationId": "authorization-released-fixture-1",
+    "idempotencyKey": "settle-after-release-fixture-1"
+  },
+  "response": {
+    "error": "usage_authorization_state_conflict",
+    "message": "Released usage authorization cannot be settled.",
+    "requestId": "request-state-conflict-1",
+    "details": { "authorizationStatus": "released" }
+  },
+  "expected": {
+    "httpStatus": 409,
+    "ledgerWrites": 0,
+    "balanceChangeMinor": 0
+  }
+}

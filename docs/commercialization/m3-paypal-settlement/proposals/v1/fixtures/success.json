@@ -1,0 +1,50 @@
+{
+  "scenario": "usage authorization and settlement succeed",
+  "request": {
+    "accountId": "account-fixture-1",
+    "resource": "server_time",
+    "sourceId": "lease-fixture-1",
+    "expectedQuantity": 60,
+    "unit": "second",
+    "settlementIntervalSeconds": 60,
+    "rateVersion": 7,
+    "idempotencyKey": "authorize-fixture-1",
+    "expiresAt": "2026-07-22T10:02:00.000Z"
+  },
+  "authorization": {
+    "authorizationId": "authorization-fixture-1",
+    "accountId": "account-fixture-1",
+    "resource": "server_time",
+    "sourceId": "lease-fixture-1",
+    "status": "authorized",
+    "rateVersion": 7,
+    "expiresAt": "2026-07-22T10:02:00.000Z",
+    "actionOnExhaustion": "stop_required"
+  },
+  "usageEvent": {
+    "eventType": "usage.recorded.v1",
+    "eventId": "usage-fixture-1",
+    "schemaVersion": 1,
+    "accountId": "account-fixture-1",
+    "authorizationId": "authorization-fixture-1",
+    "resource": "server_time",
+    "quantity": 60,
+    "unit": "second",
+    "rateVersion": 7,
+    "intervalStart": "2026-07-22T10:00:00.000Z",
+    "intervalEnd": "2026-07-22T10:01:00.000Z",
+    "occurredAt": "2026-07-22T10:01:00.000Z",
+    "sourceId": "lease-fixture-1",
+    "sequence": 1,
+    "idempotencyKey": "settle-fixture-1"
+  },
+  "response": {
+    "settlementId": "settlement-fixture-1",
+    "usageEventId": "usage-fixture-1",
+    "charged": { "currency": "USD", "amountMinor": 6 },
+    "ledgerEntryId": "ledger-fixture-1",
+    "action": "continue",
+    "rateVersion": 7,
+    "status": "settled"
+  }
+}

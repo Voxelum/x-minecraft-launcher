@@ -1,0 +1,12 @@
+{
+  "name": "out-of-order usage delivery",
+  "events": [
+    { "eventId": "air_fixture_order:ai_tokens", "occurredAt": "2026-07-22T10:02:00.000Z", "quantity": 42, "unit": "token" },
+    { "eventId": "air_fixture_order:ai_request", "occurredAt": "2026-07-22T10:01:00.000Z", "quantity": 1, "unit": "request" }
+  ],
+  "expected": {
+    "acceptedEvents": 2,
+    "settlementCount": 2,
+    "additionalChargeOnReplay": false
+  }
+}

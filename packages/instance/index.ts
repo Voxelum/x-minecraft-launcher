@@ -10,6 +10,8 @@ export * from './modpack'
 export * from './server_exporter'
 export * from './server_exporter_ssh'
 export * from './duplicate'
+export * from './linear-backup'
+export * from './layered-linear-backup'
 
 // File discovery and processing
 export * from './launcher_parser'

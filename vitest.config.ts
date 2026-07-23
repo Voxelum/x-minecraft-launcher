@@ -5,11 +5,13 @@ import { join } from 'path'
 // tests can import composables/utils that use it. The regex form only matches
 // `@/...` and leaves scoped packages like `@xmcl/...` untouched.
 const keystoneSrc = join(__dirname, 'xmcl-keystone-ui/src').replace(/\\/g, '/')
+const runtimeSrc = join(__dirname, 'xmcl-runtime').replace(/\\/g, '/')
 
 export default defineConfig({
   resolve: {
     alias: [
       { find: /^@\//, replacement: keystoneSrc + '/' },
+      { find: /^~\//, replacement: runtimeSrc + '/' },
     ],
   },
   test: {
@@ -18,8 +20,7 @@ export default defineConfig({
     // and is intentionally outside the pnpm workspace. Vitest still walks the
     // tree, so we exclude its specs explicitly to avoid empty "0 test" runs.
     exclude: ['**/node_modules/**', '**/dist/**', 'e2e/**'],
-    sequence: {
-    },
+    sequence: {},
     globals: true,
     coverage: {
       provider: 'v8',

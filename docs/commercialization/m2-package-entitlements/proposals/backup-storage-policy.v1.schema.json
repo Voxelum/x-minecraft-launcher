@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xmcl.app/contracts/commercialization/m2/backup-storage-policy.v1.schema.json",
+  "title": "M2 BackupStoragePolicyV1 compatibility projection",
+  "description": "Compatibility projection of xmcl-web-api/contracts/shared/v1/storage-accounting.schema.json#/$defs/policy. The shared v1 schema is authoritative.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "freeBytes",
+    "policyVersion"
+  ],
+  "properties": {
+    "freeBytes": {
+      "type": "integer",
+      "const": 1073741824
+    },
+    "policyVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "freeBytes": 1073741824,
+  "policyVersion": 1,
+  "accountId": "acct_123",
+  "usedBytes": 2147483648,
+  "overageBytes": 1073741824,
+  "lastSettledAt": "2026-07-22T23:00:00Z",
+  "settlementIntervalSeconds": 3600,
+  "countedObjects": [
+    {
+      "objectId": "layer_123",
+      "storageOwnerAccountId": "acct_123",
+      "physicalBytes": 2147483648,
+      "activeReferenceCount": 2,
+      "verified": true
+    }
+  ]
+}

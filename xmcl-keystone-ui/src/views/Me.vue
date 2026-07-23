@@ -21,6 +21,7 @@ import { useFocus, useLocalStorage } from '@vueuse/core'
 import { Instance } from '@xmcl/instance'
 import { Ref, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import CommercialAccountPanel from '@/components/CommercialAccountPanel.vue'
 import MeProfilePanel from './MeProfilePanel.vue'
 
 const { t } = useI18n()
@@ -267,6 +268,7 @@ function openInBrowser(url: string) {
     <!-- Right: News + Instances (unchanged content) -->
     <div ref="container" class="my-stuff-page h-full flex-grow overflow-auto min-w-0">
     <div class="classic-container">
+      <CommercialAccountPanel />
       <!-- News Section (Hero Style) -->
       <section v-if="true && allNews.length > 0" class="news-section">
         <div class="section-header">

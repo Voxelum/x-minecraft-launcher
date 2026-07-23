@@ -1,0 +1,36 @@
+# M9 Web API publication checklist
+
+- [ ] Shared contract owner publishes an accepted version under `xmcl-web-api/contracts/m9/modpack-deployment/` and registers every route in OpenAPI.
+- [ ] Published M1 session, M4 server/template, and M5 prepare/apply/rollback schemas replace proposal references; no upstream fields are copied into M9.
+- [ ] Verified M1 `accountId` controls ownership; request bodies cannot select an owner and cross-account resources return the same not-found response.
+- [ ] Every mutation requires `Idempotency-Key`; indexes cover import/deployment IDs, scoped idempotency keys, manifest hashes, worker event IDs, and worker sequence streams.
+- [ ] Signed upload targets are ZIP-only, single-use, size/hash constrained, short-lived, and cannot overwrite another import.
+- [ ] ZIP parsing uses a maintained parser and rejects encrypted/unsupported entries, traversal, absolute paths, duplicate paths, symbolic links, ZIP bombs, executable payloads, and files outside manifest/config/data.
+- [ ] Modrinth and CurseForge adapters accept only provider project/file IDs, resolve metadata server-side, pin SHA-256, reject arbitrary URLs, and have timeout/404/429/5xx fixtures.
+- [ ] Compatibility is checked against a versioned M4/M5 template matrix before manifest creation.
+- [ ] Canonical manifest serialization and SHA-256 are deterministic; manifests are immutable and changes create a new deployment.
+- [ ] Preview binds deployment ID and manifest hash; apply rejects stale or unaccepted previews.
+- [ ] M5 stages and verifies all bytes before one atomic switch; apply failure preserves the current successful deployment.
+- [ ] Rollback restores config/data and mods from `rollbackSnapshotId`; missing/corrupt snapshots fail without metadata-only rollback.
+- [ ] Duplicate, out-of-order, retry, provider failure, worker failure, permission, validation, and state-conflict fixtures pass in Deno and Cloudflare targets.
+- [ ] Audit records include actor, request/task IDs, server/import/deployment IDs, manifest hash, outcome, and stable error code without tokens or signed URLs.# M9 Web API publication checklist
+
+- [ ] Shared contract owner publishes an accepted version under `xmcl-web-api/contracts/m9/modpack-deployment/v1/`; proposal IDs never appear in production responses.
+- [ ] Published OpenAPI replaces M1/M4/M5 proposal references with accepted schema versions without copying upstream fields.
+- [ ] Verified M1 session supplies `accountId`; every import/deployment lookup hides cross-account resources with `404`.
+- [ ] MongoDB uniqueness covers import ID, deployment ID, task ID, event ID, scoped idempotency key, and worker sequence stream.
+- [ ] ZIP bytes are read through an established ZIP parser with bounded entry enumeration and streaming hashes; no custom archive parser is introduced.
+- [ ] Reject total upload size, entry count, uncompressed size, compression ratio, encryption, symlink, duplicate/case-colliding path, absolute path, traversal, and non-UTF-safe canonical path.
+- [ ] Permit exactly one format manifest plus `config/**` and `data/**`; reject embedded jar/exe/dll/so/scripts and every arbitrary URL.
+- [ ] Resolve every mod to a Modrinth project/version or CurseForge project/file and pin SHA-256 before a report can be valid.
+- [ ] Provider timeouts, 429, 5xx, identity mismatch, missing files, and retry exhaustion produce stable errors without partial deployment.
+- [ ] M4 ownership and `statusVersion` are checked before deployment creation and apply; M9 never writes server or lease state.
+- [ ] M5 template compatibility is pinned by matrix version; incompatible Minecraft/loader/Java/template combinations fail before manifest creation.
+- [ ] Deployment manifests are insert-only; all content hashes, source IDs, compatibility, and rollback snapshot are present before publication.
+- [ ] Preview is deterministic against the current successful deployment and cannot mutate either manifest.
+- [ ] Apply stages and verifies all content before one atomic M5 switch; failure preserves the current successful deployment.
+- [ ] Rollback verifies and restores the referenced config/data snapshot, not only deployment metadata.
+- [ ] Every mutation requires scoped idempotency; identical retry returns the original resource/task and body mismatch returns `409`.
+- [ ] Worker events enforce event deduplication and monotonic sequence handling; duplicate, out-of-order, retry, and state-conflict fixtures pass.
+- [ ] Request/response, invalid input, permission, idempotent retry, provider failure, ZIP limits, hash mismatch, staging failure, and missing rollback fixtures pass in Deno and Cloudflare targets.
+- [ ] Audit records contain actor, request/task/resource IDs, source identities, decision reasons, and timestamps without tokens, signed URLs, raw provider bodies, or uploaded content.

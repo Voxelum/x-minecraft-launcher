@@ -10,7 +10,17 @@ import { pluginCli } from '@xmcl/runtime/commands/pluginCli'
 import { pluginCommandHost } from '@xmcl/runtime/commands/pluginCommandHost'
 import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
 import { pluginEncodingWorker } from '@xmcl/runtime/encoding/pluginEncodingWorker'
-import { pluginClientToken, pluginFlights, pluginGFW, pluginImageStorage, pluginLogConsumer, pluginTasks, pluginTelemetry, pluginUncaughtError } from '@xmcl/runtime/infra/plugins'
+import { pluginExternalCredentialLifecycle } from '@xmcl/runtime/credential/pluginExternalCredentialLifecycle'
+import {
+  pluginClientToken,
+  pluginFlights,
+  pluginGFW,
+  pluginImageStorage,
+  pluginLogConsumer,
+  pluginTasks,
+  pluginTelemetry,
+  pluginUncaughtError,
+} from '@xmcl/runtime/infra/plugins'
 import { pluginLaunchPrecheck } from '@xmcl/runtime/launch/pluginLaunchPrecheck'
 import { pluginMarketProvider } from '@xmcl/runtime/market/pluginMarketProvider'
 import { pluginNativeReplacer } from '@xmcl/runtime/nativeReplacer/pluginNativeReplacer'
@@ -28,6 +38,8 @@ import { pluginOfficialUserApi } from '@xmcl/runtime/user/pluginOfficialUserApi'
 import { pluginOffineUser } from '@xmcl/runtime/user/pluginOfflineUser'
 import { pluginUserTokenStorage } from '@xmcl/runtime/user/pluginUserTokenStorage'
 import { pluginYggdrasilApi } from '@xmcl/runtime/user/pluginYggdrasilApi'
+import { pluginCommercialAccountMicrosoftBridge } from '@xmcl/runtime/commercialAccount/pluginCommercialAccountMicrosoftBridge'
+import { pluginCommercialAccountModrinthBridge } from '@xmcl/runtime/commercialAccount/pluginCommercialAccountModrinthBridge'
 import { pluginYggdrasilHandler } from '@xmcl/runtime/yggdrasilServer/pluginYggdrasilHandler'
 
 import { LauncherAppPlugin } from '~/app'
@@ -66,12 +78,15 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginImageStorage,
   pluginFlights,
   pluginNetworkInterface,
+  pluginExternalCredentialLifecycle,
   pluginOfficialUserApi,
   pluginOffineUser,
   pluginUndiciLogger,
   pluginUserTokenStorage,
 
   pluginModrinthAccess,
+  pluginCommercialAccountMicrosoftBridge,
+  pluginCommercialAccountModrinthBridge,
 
   pluginCommonProtocol,
 ]

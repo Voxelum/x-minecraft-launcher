@@ -1,0 +1,18 @@
+{
+  "contract": "m9.modpack-deployment.v1-proposal",
+  "cases": [
+    { "name": "safe-mrpack", "entries": ["modrinth.index.json", "overrides/config/server.toml", "overrides/data/example/tags/functions/tick.json"], "sources": [{ "provider": "modrinth", "projectId": "project_test", "fileId": "version_test", "filename": "example.jar" }], "compatibility": { "minecraftVersion": "1.21.1", "loader": "fabric", "loaderVersion": "0.16.14", "javaMajor": 21, "templateId": "minecraft-java-verified-01" }, "result": "valid" },
+    { "name": "path-traversal", "entries": ["modrinth.index.json", "overrides/../../server.properties"], "result": "invalid", "error": "zip_path_traversal" },
+    { "name": "case-insensitive-duplicate", "entries": ["manifest.json", "overrides/config/a.toml", "overrides/CONFIG/A.TOML"], "result": "invalid", "error": "zip_duplicate_path" },
+    { "name": "symbolic-link", "entries": ["manifest.json", "overrides/data/link"], "entryMetadata": { "overrides/data/link": { "unixMode": "120777" } }, "result": "invalid", "error": "zip_symbolic_link" },
+    { "name": "embedded-jar", "entries": ["manifest.json", "overrides/mods/untrusted.jar"], "result": "invalid", "error": "embedded_executable_rejected" },
+    { "name": "arbitrary-source-url", "sources": [{ "filename": "unknown.jar", "url": "https://invalid.example/unknown.jar" }], "result": "invalid", "error": "mod_source_unresolved" },
+    { "name": "provider-failure", "sources": [{ "provider": "curseforge", "projectId": "238222", "fileId": "4567890", "filename": "example.jar" }], "providerResponse": { "status": 503 }, "result": "retryable_failure", "error": "mod_source_provider_unavailable" },
+    { "name": "provider-file-missing", "sources": [{ "provider": "curseforge", "projectId": "238222", "fileId": "9999999", "filename": "missing.jar" }], "providerResponse": { "status": 404 }, "result": "invalid", "error": "mod_source_not_found" },
+    { "name": "hash-mismatch", "expectedSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "actualSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "result": "invalid", "error": "modpack_hash_mismatch" },
+    { "name": "entry-limit", "limits": { "maxEntries": 10000 }, "observed": { "entries": 10001 }, "result": "invalid", "error": "zip_entry_limit_exceeded" },
+    { "name": "uncompressed-size-limit", "limits": { "maxUncompressedBytes": 536870912 }, "observed": { "uncompressedBytes": 536870913 }, "result": "invalid", "error": "zip_uncompressed_size_exceeded" },
+    { "name": "compression-ratio-limit", "limits": { "maxCompressionRatio": 100 }, "observed": { "compressedBytes": 1, "uncompressedBytes": 101 }, "result": "invalid", "error": "zip_compression_ratio_exceeded" },
+    { "name": "incompatible-template", "compatibility": { "minecraftVersion": "1.7.10", "loader": "forge", "loaderVersion": "10.13.4.1614", "javaMajor": 8, "templateId": "minecraft-java-21-only" }, "result": "invalid", "error": "template_incompatible" }
+  ]
+}

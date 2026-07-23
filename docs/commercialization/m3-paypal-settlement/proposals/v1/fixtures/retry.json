@@ -1,0 +1,35 @@
+{
+  "scenario": "transient settlement retry produces exactly one charge",
+  "request": {
+    "eventId": "usage-retry-fixture-1",
+    "idempotencyKey": "settle-retry-fixture-1"
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "response": {
+        "error": "settlement_temporarily_unavailable",
+        "message": "Settlement can be retried.",
+        "requestId": "request-retry-1"
+      },
+      "httpStatus": 503
+    },
+    {
+      "attempt": 2,
+      "response": {
+        "settlementId": "settlement-retry-fixture-1",
+        "usageEventId": "usage-retry-fixture-1",
+        "charged": { "currency": "USD", "amountMinor": 6 },
+        "ledgerEntryId": "ledger-retry-fixture-1",
+        "action": "continue",
+        "rateVersion": 7,
+        "status": "settled"
+      },
+      "httpStatus": 200
+    }
+  ],
+  "expected": {
+    "totalLedgerWrites": 1,
+    "totalChargedMinor": 6
+  }
+}

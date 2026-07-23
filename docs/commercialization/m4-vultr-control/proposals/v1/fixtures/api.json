@@ -1,0 +1,58 @@
+{
+  "contract": "m4.server-control.v1-proposal",
+  "cases": [
+    {
+      "name": "list-success",
+      "request": { "method": "GET", "path": "/v1/servers", "sessionAccountId": "acct_test_01" },
+      "response": { "status": 200, "body": [{ "serverId": "srv_test_01", "accountId": "acct_test_01", "provider": "vultr", "region": "taipei", "status": "stopped", "desiredStatus": "stopped", "statusVersion": 3 }] }
+    },
+    {
+      "name": "list-unauthenticated",
+      "request": { "method": "GET", "path": "/v1/servers" },
+      "response": { "status": 401, "body": { "error": "forbidden", "message": "XMCL account session required", "requestId": "req_unauthenticated" } }
+    },
+    {
+      "name": "get-forbidden-owner",
+      "request": { "method": "GET", "path": "/v1/servers/srv_other", "sessionAccountId": "acct_test_01" },
+      "response": { "status": 404, "body": { "error": "not_found", "message": "not_found", "requestId": "req_forbidden" } }
+    },
+    {
+      "name": "create-accepted",
+      "request": { "method": "POST", "path": "/v1/servers", "idempotencyKey": "create-01", "body": { "plan": "xmcl-tpe-x86-small" } },
+      "response": { "status": 202, "body": { "taskId": "task_create_01", "requestId": "req_create_01" } }
+    },
+    {
+      "name": "create-idempotent-retry",
+      "request": { "method": "POST", "path": "/v1/servers", "idempotencyKey": "create-01", "body": { "plan": "xmcl-tpe-x86-small" } },
+      "response": { "status": 202, "body": { "taskId": "task_create_01", "requestId": "req_create_01" } },
+      "assert": { "newServerResources": 0, "newProviderCreateCalls": 0 }
+    },
+    {
+      "name": "start-state-conflict",
+      "request": { "method": "POST", "path": "/v1/servers/srv_test_01/start", "idempotencyKey": "start-01" },
+      "existing": { "status": "stopping", "statusVersion": 8 },
+      "response": { "status": 409, "body": { "error": "conflict", "message": "server cannot start", "requestId": "req_start_conflict" } }
+    },
+    {
+      "name": "start-billing-rejected",
+      "request": { "method": "POST", "path": "/v1/servers/srv_test_01/start", "idempotencyKey": "start-02" },
+      "m3Result": { "status": "rejected", "actionOnExhaustion": "stop_required" },
+      "response": { "status": 422, "body": { "error": "insufficient_balance", "message": "insufficient_balance", "requestId": "req_start_billing" } },
+      "assert": { "serverStateWrites": 0, "providerCalls": 0 }
+    },
+    {
+      "name": "create-provider-quota-failure",
+      "request": { "method": "POST", "path": "/v1/servers", "idempotencyKey": "create-quota" },
+      "providerResult": { "kind": "quota_exceeded" },
+      "task": { "taskId": "task_create_quota", "status": "failed", "error": { "error": "provider_capacity_unavailable", "message": "The requested capacity is unavailable.", "requestId": "req_create_quota" } },
+      "assert": { "publicProviderBody": false }
+    },
+    {
+      "name": "create-provider-timeout-reconcile",
+      "request": { "method": "POST", "path": "/v1/servers", "idempotencyKey": "create-timeout" },
+      "providerResult": { "kind": "timeout_after_send" },
+      "task": { "taskId": "task_create_timeout", "status": "running" },
+      "assert": { "blindCreateRetry": false, "reconcileByPersistedIdentity": true }
+    }
+  ]
+}

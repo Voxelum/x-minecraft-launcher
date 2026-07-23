@@ -13,18 +13,22 @@ import {
   type SaveSkinOptions,
   type SharedState,
   type UploadSkinOptions,
-  type UserProfile
+  type UserProfile,
 } from '@xmcl/runtime-api'
 import { AnyError } from '@xmcl/utils'
 import { readJson, writeJson } from 'fs-extra'
 import debounce from 'lodash.debounce'
 import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
+import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { kDownloadOptions } from '~/network'
 import { ExposeServiceKey, Lock, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { requireObject, requireString } from '~/util/object'
 import { YggdrasilSeriveRegistry, kYggdrasilSeriveRegistry } from './YggdrasilSeriveRegistry'
 import type { UserAccountSystem } from './accountSystems/AccountSystem'
-import { YggdrasilAccountSystem, kYggdrasilAccountSystem } from './accountSystems/YggdrasilAccountSystem'
+import {
+  YggdrasilAccountSystem,
+  kYggdrasilAccountSystem,
+} from './accountSystems/YggdrasilAccountSystem'
 import { kUserTokenStorage, type UserTokenStorage } from './userTokenStore'
 import { getModrinthAccessToken, loginModrinth } from './utils/loginModrinth'
 import { ensureLauncherProfile, preprocessUserData } from './utils/userData'
@@ -45,46 +49,61 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   private accountSystems: Record<string, UserAccountSystem> = {}
   private mojangSelectedUserId = ''
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+  constructor(
+    @Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(ExternalCredentialService) private externalCredentials: ExternalCredentialService,
     @Inject(ServiceStateManager) store: ServiceStateManager,
     @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
     @Inject(kYggdrasilAccountSystem) private yggdrasilAccountSystem: YggdrasilAccountSystem,
-    @Inject(kYggdrasilSeriveRegistry) private yggdrasilSeriveRegistry: YggdrasilSeriveRegistry
+    @Inject(kYggdrasilSeriveRegistry) private yggdrasilSeriveRegistry: YggdrasilSeriveRegistry,
   ) {
-    super(app, () => store.registerStatic(new UserState(), UserServiceKey), async () => {
-      const data = await readJson(this.userJsonPath).catch(() => ({})).then(d => Users.parse(d))
-      const userData = {
-        users: {},
-        yggdrasilServices: [],
-      }
-
-      // This will fill the user data
-      const { mojangSelectedUserId } = await preprocessUserData(userData, data, this.getMinecraftPath('launcher_profiles.json'), tokenStorage)
-      this.mojangSelectedUserId = mojangSelectedUserId
-      // Ensure the launcher profile
-
-      app.registry.get(kGameDataPath).then((getPath) => {
-        ensureLauncherProfile(getPath())
-      })
-
-      this.log(`Load ${Object.keys(userData.users).length} users`)
-
-      this.state.userData(userData)
-
-      // Refresh all users
-      Promise.all(Object.values(userData.users as Record<string, UserProfile>).map((user) => {
-        if (user.username) {
-          return this.refreshUser(user.id, {
-            silent: true,
-            validate: true,
-          }).catch((e) => {
-            this.log(`Failed to refresh user ${user.id}`, e)
-          })
-        } else {
-          return this.removeUser(user)
+    super(
+      app,
+      () => store.registerStatic(new UserState(), UserServiceKey),
+      async () => {
+        const data = await readJson(this.userJsonPath)
+          .catch(() => ({}))
+          .then((d) => Users.parse(d))
+        const userData = {
+          users: {},
+          yggdrasilServices: [],
         }
-      }))
-    })
+
+        // This will fill the user data
+        const { mojangSelectedUserId } = await preprocessUserData(
+          userData,
+          data,
+          this.getMinecraftPath('launcher_profiles.json'),
+          tokenStorage,
+        )
+        this.mojangSelectedUserId = mojangSelectedUserId
+        // Ensure the launcher profile
+
+        app.registry.get(kGameDataPath).then((getPath) => {
+          ensureLauncherProfile(getPath())
+        })
+
+        this.log(`Load ${Object.keys(userData.users).length} users`)
+
+        this.state.userData(userData)
+
+        // Refresh all users
+        Promise.all(
+          Object.values(userData.users as Record<string, UserProfile>).map((user) => {
+            if (user.username) {
+              return this.refreshUser(user.id, {
+                silent: true,
+                validate: true,
+              }).catch((e) => {
+                this.log(`Failed to refresh user ${user.id}`, e)
+              })
+            } else {
+              return this.removeUser(user)
+            }
+          }),
+        )
+      },
+    )
 
     this.userJsonPath = this.getAppDataPath('user.json')
     this.state.subscribeAll(() => {
@@ -93,7 +112,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   }
 
   async hasModrinthToken(): Promise<boolean> {
-    return !!await getModrinthAccessToken(this.app)
+    return !!(await getModrinthAccessToken(this.app, this.externalCredentials))
   }
 
   // Dedupe concurrent calls so we never open multiple OAuth browser windows.
@@ -101,7 +120,22 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   // can still proceed even while a non-invalidating call is in flight.
   @Singleton((invalidate?: boolean) => `loginModrinth-${invalidate ? '1' : '0'}`)
   async loginModrinth(invalidate = false): Promise<void> {
-    await loginModrinth(this.app, this, ['USER_READ_EMAIL', 'USER_READ', 'USER_WRITE', 'COLLECTION_CREATE', 'COLLECTION_READ', 'COLLECTION_WRITE', 'COLLECTION_DELETE'], invalidate, this.loginController?.signal)
+    await loginModrinth(
+      this.app,
+      this,
+      [
+        'USER_READ_EMAIL',
+        'USER_READ',
+        'USER_WRITE',
+        'COLLECTION_CREATE',
+        'COLLECTION_READ',
+        'COLLECTION_WRITE',
+        'COLLECTION_DELETE',
+      ],
+      invalidate,
+      this.loginController?.signal,
+      this.externalCredentials,
+    )
   }
 
   addYggdrasilService(url: string): Promise<void> {
@@ -113,7 +147,9 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   }
 
   async getSupportedAuthorityMetadata(): Promise<AuthorityMetadata[]> {
-    const result = Object.values(this.accountSystems).concat(this.yggdrasilAccountSystem).map(s => s.getSupporetedAuthorityMetadata(true))
+    const result = Object.values(this.accountSystems)
+      .concat(this.yggdrasilAccountSystem)
+      .map((s) => s.getSupporetedAuthorityMetadata(true))
       .flat()
     return result
   }
@@ -137,10 +173,12 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     this.loginController = new AbortController()
 
     this.emit('user-login', options.authority)
-    const profile = await system.login(options, this.loginController.signal)
-      .finally(() => { this.loginController = undefined })
+    const profile = await system.login(options, this.loginController.signal).finally(() => {
+      this.loginController = undefined
+    })
 
     this.state.userProfile(profile)
+    this.emit('user-login-success', profile)
     return profile
   }
 
@@ -152,18 +190,19 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   async uploadSkin(options: UploadSkinOptions) {
     requireObject(options)
 
-    const {
-      gameProfileId,
-      userId,
-      skin,
-    } = options
+    const { gameProfileId, userId, skin } = options
     const user = this.state.users[userId]
     const gameProfile = user.profiles[gameProfileId || user.selectedProfile]
 
     if (!gameProfile) {
-      throw new AnyError('UploadSkinError', 'Unknown game profile.', {}, {
-        profilesIds: Object.keys(user.profiles),
-      })
+      throw new AnyError(
+        'UploadSkinError',
+        'Unknown game profile.',
+        {},
+        {
+          profilesIds: Object.keys(user.profiles),
+        },
+      )
     }
 
     const sys = this.accountSystems[user.authority] || this.yggdrasilAccountSystem
@@ -175,9 +214,11 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     this.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`)
 
     this.setSkinController = new AbortController()
-    const data = await sys.setSkin(user, gameProfile, options, this.setSkinController.signal).finally(() => {
-      this.setSkinController = undefined
-    })
+    const data = await sys
+      .setSkin(user, gameProfile, options, this.setSkinController.signal)
+      .finally(() => {
+        this.setSkinController = undefined
+      })
     this.state.userProfile(data)
   }
 
@@ -208,9 +249,11 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     const system = this.accountSystems[user.authority] || this.yggdrasilAccountSystem
     this.refreshController = new AbortController()
 
-    const newUser = await system.refresh(user, this.refreshController.signal, options).finally(() => {
-      this.refreshController = undefined
-    })
+    const newUser = await system
+      .refresh(user, this.refreshController.signal, options)
+      .finally(() => {
+        this.refreshController = undefined
+      })
 
     // Only update the user if the user is still in the state
     if (this.state.users[userId]) {
@@ -219,6 +262,8 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       if (newUser.invalidated) {
         throw new UserException({ type: 'userAccessTokenExpired' })
       }
+
+      this.emit('user-refresh-success', newUser)
     }
 
     return newUser
@@ -229,15 +274,19 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     this.state.userProfile(userProfile)
   }
 
-  @Singleton(p => p.id)
+  @Singleton((p) => p.id)
   async removeUser(userProfile: UserProfile) {
     requireObject(userProfile)
     this.state.userProfileRemove(userProfile.id)
   }
 
-  async getOfficialUserProfile(): Promise<(UserProfile & { accessToken: string | undefined }) | undefined> {
+  async getOfficialUserProfile(): Promise<
+    (UserProfile & { accessToken: string | undefined }) | undefined
+  > {
     await this.initialize()
-    const official = Object.values(this.state.users).find(u => u.authority === AUTHORITY_MICROSOFT)
+    const official = Object.values(this.state.users).find(
+      (u) => u.authority === AUTHORITY_MICROSOFT,
+    )
     if (official) {
       // Route through refreshUser so we share the Singleton lock used by
       // startup refresh and the UI launch path. A direct call to

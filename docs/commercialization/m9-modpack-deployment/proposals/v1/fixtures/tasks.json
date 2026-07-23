@@ -1,0 +1,13 @@
+{
+  "contract": "m9.modpack-deployment.v1-proposal",
+  "cases": [
+    { "name": "prepare-apply-success", "before": { "deploymentStatus": "ready", "activeDeploymentId": "dep_old" }, "commands": [{ "type": "prepare", "deploymentId": "dep_new", "manifestSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }, { "type": "apply", "deploymentId": "dep_new", "manifestSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "rollbackSnapshotId": "snapshot_old" }], "after": { "deploymentStatus": "applied", "activeDeploymentId": "dep_new", "rollbackSnapshotId": "snapshot_old" } },
+    { "name": "duplicate-worker-event", "processedEventIds": ["evt_apply_01"], "event": { "eventId": "evt_apply_01", "sequence": 2, "type": "applied" }, "assert": { "stateWrites": 0, "atomicSwitches": 0 } },
+    { "name": "out-of-order-worker-event", "lastSequence": 3, "event": { "eventId": "evt_prepare_old", "sequence": 2, "type": "prepared" }, "assert": { "stateWrites": 0, "activeDeploymentId": "dep_new" } },
+    { "name": "transient-worker-retry", "attempts": [{ "result": "timeout" }, { "result": "accepted", "workerTaskId": "worker_task_01" }], "assert": { "m9TaskId": "task_apply_01", "atomicSwitches": 1 } },
+    { "name": "staging-hash-failure", "before": { "activeDeploymentId": "dep_old" }, "workerResult": { "status": "failed", "error": "staging_hash_mismatch" }, "after": { "deploymentStatus": "failed", "activeDeploymentId": "dep_old" }, "assert": { "atomicSwitches": 0 } },
+    { "name": "staging-provider-failure", "before": { "activeDeploymentId": "dep_old" }, "workerResult": { "status": "failed", "error": "provider_download_failed" }, "after": { "deploymentStatus": "failed", "activeDeploymentId": "dep_old" }, "assert": { "atomicSwitches": 0 } },
+    { "name": "rollback-success", "before": { "activeDeploymentId": "dep_new", "rollbackSnapshotId": "snapshot_old" }, "workerResult": { "status": "restored", "restoredConfigData": true, "restoredMods": true }, "after": { "deploymentStatus": "rolled_back", "activeDeploymentId": "dep_old" } },
+    { "name": "rollback-snapshot-missing", "before": { "activeDeploymentId": "dep_new", "rollbackSnapshotId": "snapshot_missing" }, "workerResult": { "status": "failed", "error": "rollback_snapshot_not_found" }, "after": { "deploymentStatus": "rollback_failed", "activeDeploymentId": "dep_new" } }
+  ]
+}
