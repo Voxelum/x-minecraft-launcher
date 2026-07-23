@@ -11,7 +11,6 @@ import {
   type AgentRunState,
   type AgentRunTrace,
   type AgentService as IAgentService,
-  type AgentToolDefinition,
   type LegacyConversationImport,
   type StartAgentRunInput,
   type UpdateAgentProviderSettings,
@@ -26,16 +25,15 @@ import { AgentBridge } from './AgentBridge'
 import { sanitizeAgentEndpoint, sanitizeAgentLog } from './debug'
 import { AgentHistoryStore } from './history'
 import { createAgentModels } from './provider'
+import { buildAgentSystemPrompt } from './prompt'
+import { createRuntimeAgentTools } from './tools'
+import { InstanceService } from '~/instance'
+import { UserService } from '~/user'
 
 const SECRET_SERVICE = 'xmcl/agent'
 const SECRET_ACCOUNT = 'default'
 const DEFAULT_ENDPOINT = 'https://apihub.agnes-ai.com/v1/chat/completions'
 const DEFAULT_MODEL = 'agnes-2.0-flash'
-const BUILTIN_TOOLS: Record<AgentConversationKey['agentId'], ReadonlySet<string>> = {
-  launcher: new Set(['vfs_list', 'vfs_read', 'vfs_rm', 'bash', 'edit_config', 'edit_instance']),
-  css: new Set(['get_custom_css', 'set_custom_css', 'set_custom_css_enabled', 'query_dom', 'get_computed_style', 'get_dom_outline']),
-}
-
 interface ActiveRun {
   snapshot: AgentRunSnapshot
   agent: Agent
@@ -211,15 +209,36 @@ export class AgentService extends AbstractService implements IAgentService {
     const apiKey = () => this.app.secretStorage.get(SECRET_SERVICE, SECRET_ACCOUNT)
     const { models, model, providerId } = createAgentModels(providerSettings.endpoint, providerSettings.model, apiKey)
     const conversation = await this.history.load(input.key)
-    await this.history.ensureSession(input.key, input.context)
+    const sessionContext = await this.buildSessionContext(input.key, input.userId)
+    await this.history.ensureSession(input.key, { locale: input.locale, userId: input.userId })
     const userMessage: AgentMessage = { role: 'user', content: input.input }
     await this.history.appendMessage(input.key, userMessage)
 
     const runId = randomUUID()
-    const tools = this.createTools(runId, input, registration.capabilities, bridge)
+    const tools = await createRuntimeAgentTools({
+      app: this.app,
+      bridge,
+      runId,
+      bridgeId: () => this.runs.get(runId)?.bridgeId ?? input.bridgeId,
+      key: input.key,
+      readonly: !!input.policy?.readonly,
+    })
+    const systemPrompt = buildAgentSystemPrompt({
+      role: input.key.agentId === 'css' ? 'css-main' : 'launcher-main',
+      locale: input.locale,
+      tools: tools.map(tool => ({ name: tool.name, readonly: tool.name === 'vfs_list' || tool.name === 'vfs_read' || tool.name === 'get_custom_css' })),
+      policy: {
+        hasUi: tools.some(tool => tool.name === 'ui'),
+        readonly: !!input.policy?.readonly,
+        canDelegate: false,
+        depth: input.depth ?? 0,
+        maxDepth: input.policy?.maxDepth ?? 0,
+      },
+      sessionContext,
+    })
     const agent = new Agent({
       initialState: {
-        systemPrompt: input.systemPrompt,
+        systemPrompt,
         model,
         thinkingLevel: 'off',
         tools,
@@ -310,31 +329,6 @@ export class AgentService extends AbstractService implements IAgentService {
     if (run?.snapshot.state === 'running') {
       run.agent.steer({ role: 'user', content: input.message, timestamp: Date.now() })
     }
-  }
-
-  private createTools(runId: string, input: StartAgentRunInput, definitions: AgentToolDefinition[], bridge: AgentBridge): AgentTool[] {
-    const allowed = input.policy?.allowedTools ? new Set(input.policy.allowedTools) : undefined
-    const builtins = BUILTIN_TOOLS[input.key.agentId]
-    return definitions
-      .filter(definition => builtins.has(definition.name))
-      .filter(definition => !allowed || allowed.has(definition.name))
-      .filter(definition => !input.policy?.readonly || definition.readonly)
-      .map(definition => ({
-        name: definition.name,
-        label: definition.name,
-        description: definition.description,
-        parameters: Type.Unsafe(definition.parameters),
-        executionMode: 'sequential',
-        execute: async (_toolCallId, args, signal) => {
-          const timeoutMs = Math.min(Math.max(1_000, definition.timeoutMs ?? 5 * 60_000), 30 * 60_000)
-          const bridgeId = this.runs.get(runId)?.bridgeId ?? input.bridgeId
-          const value = await bridge.executeTool(bridgeId, runId, definition.name, args as Record<string, unknown>, timeoutMs, signal)
-          return {
-            content: [{ type: 'text', text: resultText(value) }],
-            details: value,
-          }
-        },
-      }))
   }
 
   private async onPiEvent(run: ActiveRun, event: PiAgentEvent, bridge: AgentBridge) {
@@ -462,5 +456,24 @@ export class AgentService extends AbstractService implements IAgentService {
     if (!IS_DEV) return
     this.agentLogger.log(message)
     this.log(message)
+  }
+
+  private async buildSessionContext(key: AgentConversationKey, userId?: string) {
+    if (key.agentId === 'css') return 'Global XMCL custom CSS scope.'
+    const instanceService = await this.app.registry.getOrCreate(InstanceService)
+    const userService = await this.app.registry.getOrCreate(UserService)
+    const [instances, users] = await Promise.all([
+      instanceService.getSharedInstancesState(),
+      userService.getUserState(),
+    ])
+    const instance = instances.all[key.scope]
+    const user = userId ? users.users[userId] : undefined
+    return [
+      `Instance path: ${key.scope}`,
+      `Instance name: ${instance?.name ?? '(unknown)'}`,
+      `Runtime: ${JSON.stringify(instance?.runtime ?? {})}`,
+      `Selected user: ${user?.username ?? '(none)'}`,
+      'Use runtime tools to inspect live files and state instead of relying on this summary.',
+    ].join('\n')
   }
 }

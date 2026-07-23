@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 174 (in 271 Vue files)
+**Total anchors:** 176 (in 271 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -28,6 +28,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `add-instance-name` | [`xmcl-keystone-ui/src/components/StepConfig.vue#L16`](../xmcl-keystone-ui/src/components/StepConfig.vue#L16) |
 | `add-instance-next` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L16`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L16) |
 | `add-server-button` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L64`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L64) |
+| `agent-api-key` | [`xmcl-keystone-ui/src/views/SettingGeneral.vue#L108`](../xmcl-keystone-ui/src/views/SettingGeneral.vue#L108) |
+| `agent-api-key-delete` | [`xmcl-keystone-ui/src/views/SettingGeneral.vue#L123`](../xmcl-keystone-ui/src/views/SettingGeneral.vue#L123) |
 | `agent-dialog` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L8`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L8) |
 | `agent-input` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L174`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L174) |
 | `agent-live-status` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L164`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L164) |

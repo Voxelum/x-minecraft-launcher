@@ -105,7 +105,8 @@
         </template>
         <template #action>
           <v-text-field
-            :model-value="agentApiKeyInput"
+            data-testid="agent-api-key"
+            :model-value="agentApiKey"
             :type="showAgentApiKey ? 'text' : 'password'"
             variant="outlined"
             density="compact"
@@ -118,6 +119,9 @@
             <template #append-inner>
               <v-btn icon variant="text" size="small" @click="showAgentApiKey = !showAgentApiKey">
                 <v-icon>{{ showAgentApiKey ? 'visibility_off' : 'visibility' }}</v-icon>
+              </v-btn>
+              <v-btn v-if="agentConfigured" data-testid="agent-api-key-delete" icon variant="text" size="small" title="Delete API key" @click="updateAgentApiKey('')">
+                <v-icon>delete</v-icon>
               </v-btn>
             </template>
           </v-text-field>
@@ -209,20 +213,19 @@ const replaceNativeItems = computed(() => [
   },
 ])
 const {
+  apiKey: agentApiKey,
   endpoint: agentEndpoint,
   model: agentModel,
   configured: agentConfigured,
   setApiKey: setAgentApiKey,
 } = useAgentSettings()
-const agentApiKeyInput = ref('')
 const showAgentApiKey = ref(false)
 let agentApiKeyTimer: ReturnType<typeof setTimeout> | undefined
 function updateAgentApiKey(value: string) {
-  agentApiKeyInput.value = value
+  agentApiKey.value = value
   if (agentApiKeyTimer) clearTimeout(agentApiKeyTimer)
   agentApiKeyTimer = setTimeout(async () => {
     await setAgentApiKey(value)
-    agentApiKeyInput.value = ''
   }, 500)
 }
 

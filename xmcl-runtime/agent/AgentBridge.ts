@@ -1,4 +1,4 @@
-import type { AgentBridgeRegistration, AgentRunEvent, AgentToolRequest, AgentToolResponse } from '@xmcl/runtime-api'
+import type { AgentBridgeRegistration, AgentRunEvent, AgentUiAction, AgentUiRequest, AgentUiResponse } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import type { Client, LauncherApp, LauncherAppPlugin } from '~/app'
 
@@ -71,7 +71,7 @@ export class AgentBridge {
     return true
   }
 
-  executeTool(bridgeId: string, runId: string, name: string, args: Record<string, unknown>, timeoutMs: number, signal?: AbortSignal) {
+  executeUi(bridgeId: string, runId: string, input: AgentUiAction, timeoutMs: number, signal?: AbortSignal) {
     const bridge = this.bridges.get(bridgeId)
     if (!bridge || bridge.client.isDestroyed()) return Promise.reject(new Error('Agent renderer bridge is unavailable'))
     const callId = randomUUID()
@@ -90,15 +90,15 @@ export class AgentBridge {
         bridge.client.send('agent-tool-cancel', { bridgeId, runId, callId })
         finish(new Error('Agent tool call aborted'))
       }
-      const timer = setTimeout(() => finish(new Error(`Agent renderer tool timed out: ${name}`)), timeoutMs)
+      const timer = setTimeout(() => finish(new Error(`Agent UI action timed out: ${input.action}`)), timeoutMs)
       this.pending.set(callId, { bridgeId, resolve, reject, timer, cleanup })
       signal?.addEventListener('abort', onAbort, { once: true })
-      const request: AgentToolRequest = { bridgeId, runId, callId, name, arguments: args, timeoutMs }
-      bridge.client.send('agent-tool-request', request)
+      const request: AgentUiRequest = { bridgeId, runId, callId, input, timeoutMs }
+      bridge.client.send('agent-ui-request', request)
     })
   }
 
-  resolve(response: AgentToolResponse) {
+  resolve(response: AgentUiResponse) {
     const pending = this.pending.get(response.callId)
     if (!pending || pending.bridgeId !== response.bridgeId) return
     clearTimeout(pending.timer)
@@ -118,7 +118,7 @@ export const pluginAgentBridge: LauncherAppPlugin = (app: LauncherApp) => {
   app.controller.handle('agent-bridge-unregister', (_, bridgeId: string) => {
     bridge.unregister(bridgeId)
   })
-  app.controller.handle('agent-bridge-resolve', (_, response: AgentToolResponse) => {
+  app.controller.handle('agent-bridge-resolve', (_, response: AgentUiResponse) => {
     bridge.resolve(response)
   })
   app.registryDisposer(() => bridge.dispose())

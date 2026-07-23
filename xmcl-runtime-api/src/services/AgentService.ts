@@ -47,19 +47,6 @@ export interface UpdateAgentProviderSettings {
   apiKey?: string
 }
 
-export interface AgentToolDefinition {
-  name: string
-  description: string
-  parameters: {
-    type: 'object'
-    properties: Record<string, unknown>
-    required?: string[]
-    additionalProperties?: boolean
-  }
-  readonly?: boolean
-  timeoutMs?: number
-}
-
 export interface AgentRunPolicy {
   allowedTools?: string[]
   readonly?: boolean
@@ -71,8 +58,8 @@ export interface StartAgentRunInput {
   key: AgentConversationKey
   bridgeId: string
   input: string
-  systemPrompt: string
-  context?: Record<string, unknown>
+  locale: string
+  userId?: string
   parentRunId?: string
   depth?: number
   policy?: AgentRunPolicy
@@ -118,19 +105,26 @@ export interface AgentRunEvent {
 export interface AgentBridgeRegistration {
   bridgeId: string
   agentId: AgentId
-  capabilities: AgentToolDefinition[]
 }
 
-export interface AgentToolRequest {
+export type AgentUiAction =
+  | { action: 'navigate'; path: string }
+  | { action: 'select_instance'; path: string }
+  | { action: 'select_account'; id: string }
+  | { action: 'confirm'; message: string; destructive?: boolean }
+  | { action: 'query_dom'; selector: string; limit?: number }
+  | { action: 'get_computed_style'; selector: string; properties?: string[] }
+  | { action: 'get_dom_outline'; selector?: string; maxDepth?: number }
+
+export interface AgentUiRequest {
   bridgeId: string
   runId: string
   callId: string
-  name: string
-  arguments: Record<string, unknown>
+  input: AgentUiAction
   timeoutMs: number
 }
 
-export interface AgentToolResponse {
+export interface AgentUiResponse {
   bridgeId: string
   callId: string
   result?: unknown
@@ -157,9 +151,9 @@ export interface AgentRunTrace {
 export interface AgentBridgeClient {
   register(registration: AgentBridgeRegistration): Promise<void>
   unregister(bridgeId: string): Promise<void>
-  resolve(response: AgentToolResponse): Promise<void>
+  resolve(response: AgentUiResponse): Promise<void>
   onRunEvent(listener: (event: AgentRunEvent) => void): () => void
-  onToolRequest(listener: (request: AgentToolRequest) => void): () => void
+  onUiRequest(listener: (request: AgentUiRequest) => void): () => void
   onToolCancel(listener: (request: { bridgeId: string; runId: string; callId: string }) => void): () => void
 }
 

@@ -1,3 +1,4 @@
+/* oxlint-disable typescript/triple-slash-reference */
 /// <reference path="./pi-ai-subpaths.d.ts" />
 
 import { createModels, createProvider, type Model } from '@earendil-works/pi-ai'

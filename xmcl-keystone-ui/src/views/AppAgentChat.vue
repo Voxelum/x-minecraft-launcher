@@ -124,22 +124,22 @@
 
           <!-- Assistant tool calls -->
           <div
-            v-else-if="msg.role === 'assistant' && msg.tool_calls && msg.tool_calls.length > 0"
+            v-else-if="msg.role === 'assistant' && msg.toolCalls && msg.toolCalls.length > 0"
             class="flex justify-start"
           >
             <div class="w-full">
               <div
-                v-for="call in msg.tool_calls"
+                v-for="call in msg.toolCalls"
                 :key="call.id"
                 class="tool-call"
               >
                 <v-icon size="small" class="mr-1 flex-shrink-0">build</v-icon>
-                <code class="text-xs flex-shrink-0">{{ call.function.name }}</code>
+                <code class="text-xs flex-shrink-0">{{ call.name }}</code>
                 <span
-                  v-if="call.function.arguments && call.function.arguments !== '{}'"
+                  v-if="call.arguments && JSON.stringify(call.arguments) !== '{}'"
                   class="text-xs text-medium-emphasis ml-2 truncate flex-1 min-w-0"
                 >
-                  {{ call.function.arguments }}
+                  {{ JSON.stringify(call.arguments) }}
                 </span>
               </div>
             </div>
@@ -217,12 +217,10 @@
 <script lang="ts" setup>
 import { kAgent, useCssAgent } from '@/composables/agent'
 import { useAgentChatBus, useAgnesSetupDocUrl } from '@/composables/agentChat'
-import { kCustomCss } from '@/composables/customCss'
-import { kTheme } from '@/composables/theme'
 import { useMarkdown } from '@/composables/markdown'
 import { injection } from '@/util/inject'
 import { computed, nextTick, ref, watch } from 'vue'
-import type { ContentPart } from '@/composables/agent'
+import type { AgentContentPart as ContentPart } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 
@@ -231,17 +229,7 @@ const commonAgent = injection(kAgent)
 // A global-scope CSS assistant shown side-by-side with the common agent and
 // switchable from the dialog header. Reuses the global CSS conversation key so
 // it continues the same thread used on the settings page.
-const globalCustomCss = injection(kCustomCss)
-const themeCtx = injection(kTheme)
-const cssAgent = useCssAgent({
-  context: {
-    getCss: () => globalCustomCss.css.value,
-    setCss: (v) => globalCustomCss.save(v),
-    getEnabled: () => themeCtx.customCssEnabled.value,
-    setEnabled: (v) => { themeCtx.customCssEnabled.value = v },
-  },
-  storageKey: 'cssAgentConversationV1',
-})
+const cssAgent = useCssAgent()
 
 const selectedAgent = ref<'common' | 'css'>('common')
 const activeAgent = computed(() => (selectedAgent.value === 'css' ? cssAgent : commonAgent))
@@ -296,9 +284,8 @@ const statusLabel = computed(() => {
 const liveStatus = computed(() => {
   for (let i = events.value.length - 1; i >= 0; i--) {
     const e = events.value[i]
-    if (e.type === 'tool_call' && e.toolCall) return t('agent.callingTool', { name: e.toolCall.name })
-    if (e.type === 'tool_result') return t('agent.thinking')
-    if (e.type === 'assistant') return t('agent.thinking')
+    if (e.type === 'tool_start' && e.toolCall) return t('agent.callingTool', { name: e.toolCall.name })
+    if (e.type === 'tool_end' || e.type === 'message_delta') return t('agent.thinking')
   }
   return t('agent.thinking')
 })

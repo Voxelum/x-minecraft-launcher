@@ -1,7 +1,9 @@
 import { createSharedComposable } from '@vueuse/core'
 import { AgentServiceKey } from '@xmcl/runtime-api'
 import { useService } from '../service'
-import { DEFAULT_AGNES_ENDPOINT, DEFAULT_AGNES_MODEL } from './llm'
+
+const DEFAULT_AGNES_ENDPOINT = 'https://apihub.agnes-ai.com/v1/chat/completions'
+const DEFAULT_AGNES_MODEL = 'agnes-2.0-flash'
 
 const LEGACY_API_KEY = 'agentApiKey'
 const LEGACY_ENDPOINT = 'agentEndpoint'
@@ -14,7 +16,9 @@ export const useAgentSettings = createSharedComposable(() => {
   const model = ref(DEFAULT_AGNES_MODEL)
   const configured = ref(false)
   const loaded = ref(false)
+  const error = ref('')
   let saveTimer: ReturnType<typeof setTimeout> | undefined
+  let keySave = Promise.resolve()
 
   const ready = (async () => {
     const legacyApiKey = localStorage.getItem(LEGACY_API_KEY) ?? ''
@@ -49,9 +53,16 @@ export const useAgentSettings = createSharedComposable(() => {
   async function setApiKey(value: string) {
     apiKey.value = value
     await ready
-    await service.setProviderSettings({ endpoint: endpoint.value, model: model.value, apiKey: value })
-    configured.value = !!value.trim()
-    apiKey.value = ''
+    keySave = keySave.then(async () => {
+      try {
+        await service.setProviderSettings({ endpoint: endpoint.value, model: model.value, apiKey: value })
+        configured.value = !!value.trim()
+        error.value = ''
+      } catch (e) {
+        error.value = e instanceof Error ? e.message : String(e)
+      }
+    })
+    await keySave
   }
 
   const resolvedEndpoint = computed(() => endpoint.value.trim() || DEFAULT_AGNES_ENDPOINT)
@@ -63,6 +74,7 @@ export const useAgentSettings = createSharedComposable(() => {
     model,
     configured,
     loaded,
+    error,
     ready,
     setApiKey,
     resolvedEndpoint,
