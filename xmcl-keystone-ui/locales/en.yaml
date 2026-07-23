@@ -2200,6 +2200,14 @@ gamepad:
   modInstalled: Controller mod installed successfully! It will be active next time you launch Minecraft.
   modInstalledNotify: '{name} has been installed for in-game controller support.'
   modNotFound: 'No compatible version found for {loader} on Minecraft {version}.'
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
   settingSteamTitle: Add Launcher to Steam
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.

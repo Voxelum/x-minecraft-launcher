@@ -104,12 +104,14 @@ provide('scrollElement', scrollElement)
 
 const { t } = useI18n()
 
+import { useLaunchButton } from '@/composables/launchButton'
+
 // Gamepad face-button actions scoped to the home page (auto-unregister on leave).
 const router = useRouter()
-const { launch: launchGame } = injection(kInstanceLaunch)
+const { text: launchText, onClick: onLaunchClick } = useLaunchButton()
 useGamepadAction('X', {
-  label: () => t('gamepad.guide.launch'),
-  handler: () => launchGame(),
+  label: () => launchText.value,
+  handler: () => onLaunchClick(),
 })
 useGamepadAction('Y', {
   label: () => t('gamepad.guide.instanceSettings'),

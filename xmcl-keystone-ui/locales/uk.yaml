@@ -1794,6 +1794,14 @@ gamepad:
   modInstalled: Мод контролера успішно встановлено! Він буде активний при наступному запуску Minecraft.
   modInstalledNotify: '{name} встановлено для підтримки контролера в грі.'
   modNotFound: 'Сумісну версію для {loader} на Minecraft {version} не знайдено.'
+  autoEnableLabel: Авто-увімкнення керування
+  autoEnableHint: Автоматично вмикати керування геймпадом при виявленні контролера.
+  autoOpenKeyboardLabel: Відкривати клавіатуру Steam
+  autoOpenKeyboardHint: Відкривати екранну клавіатуру Steam при фокусі на текстових полях.
+  focusTooltipsLabel: Підказки при фокусі
+  focusTooltipsHint: Показувати вспливаючі підказки при навігації елементами геймпадом.
+  disableModPromptLabel: Вимкнути пропозиції модів контролера
+  disableModPromptHint: Не показувати пропозицію встановлення модів для контролера при запуску з геймпадом.
   settingSteamTitle: Додати лаунчер до Steam
   steamAddedNotify: Лаунчер успішно додано до вашої бібліотеки Steam! Будь ласка, перезапустіть Steam, щоб побачити зміни.
   steamAlreadyAddedNotify: Лаунчер вже додано до вашої бібліотеки Steam.
