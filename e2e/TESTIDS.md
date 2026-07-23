@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 170 (in 271 Vue files)
+**Total anchors:** 176 (in 271 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -28,8 +28,14 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `add-instance-name` | [`xmcl-keystone-ui/src/components/StepConfig.vue#L16`](../xmcl-keystone-ui/src/components/StepConfig.vue#L16) |
 | `add-instance-next` | [`xmcl-keystone-ui/src/components/StepperFooter.vue#L16`](../xmcl-keystone-ui/src/components/StepperFooter.vue#L16) |
 | `add-server-button` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L64`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L64) |
+| `agent-api-key` | [`xmcl-keystone-ui/src/views/SettingGeneral.vue#L108`](../xmcl-keystone-ui/src/views/SettingGeneral.vue#L108) |
+| `agent-api-key-delete` | [`xmcl-keystone-ui/src/views/SettingGeneral.vue#L123`](../xmcl-keystone-ui/src/views/SettingGeneral.vue#L123) |
+| `agent-dialog` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L8`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L8) |
+| `agent-input` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L174`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L174) |
+| `agent-live-status` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L164`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L164) |
 | `agent-switch-common` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L19`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L19) |
 | `agent-switch-css` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L23`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L23) |
+| `agent-transcript` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L75`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L75) |
 | `app-sidebar` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L4`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L4)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L4`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L4) |
 | `base-setting-bedrock-available` | [`xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L100`](../xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L100) |
 | `base-setting-bedrock-devmode` | [`xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L22`](../xmcl-keystone-ui/src/views/BaseSettingBedrockVersions.vue#L22) |
@@ -55,7 +61,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `blueprint-search` | [`xmcl-keystone-ui/src/views/BlueprintExtension.vue#L13`](../xmcl-keystone-ui/src/views/BlueprintExtension.vue#L13) |
 | `collection-install-all` | [`xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L2`](../xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L2) |
 | `collection-install-all-button` | [`xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L10`](../xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L10) |
-| `command-palette-ask-ai` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L323`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L323) |
+| `command-palette-ask-ai` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L289`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L289) |
 | `command-palette-input` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L15`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L15) |
 | `command-palette-instance` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L255`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L255) |
 | `command-palette-instance-delete` | [`xmcl-keystone-ui/src/views/AppCommandPalette.vue#L235`](../xmcl-keystone-ui/src/views/AppCommandPalette.vue#L235) |

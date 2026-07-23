@@ -8,3 +8,4 @@ declare const windowController: import('.').WindowController
 declare const multiplayer: import('.').Multiplayer
 declare const appsHost: import('.').AppsHost
 declare const bootstrap: import('.').Bootstrap
+declare const agentBridge: import('.').AgentBridgeClient
