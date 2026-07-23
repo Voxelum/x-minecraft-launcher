@@ -52,6 +52,7 @@ export interface FileTreeSummary {
   savesTotal: number
   logsTotal: number
   crashReportsTotal: number
+  gameProcessesTotal?: number
 }
 
 // ── Snapshot builders ───────────────────────────────────────────────────
@@ -145,9 +146,11 @@ export function renderSessionContext(ctx: SessionContext): string {
     fileLine('mods/', `${ft.modsTotal} total, ${ft.modsEnabled} enabled`),
     fileLine('resourcepacks/', `${ft.resourcePacksTotal} total, ${ft.resourcePacksEnabled} enabled`),
     fileLine('shaderpacks/', `${ft.shaderPacksTotal} total${ft.shaderSelected ? `, active: ${ft.shaderSelected}` : ''}`),
+    fileLine('shader-options/', 'vanilla, iris, and oculus settings (read via vfs_read; write via edit_config)'),
     fileLine('saves/', `${ft.savesTotal} world${ft.savesTotal === 1 ? '' : 's'}`),
     fileLine('logs/', `${ft.logsTotal} log file${ft.logsTotal === 1 ? '' : 's'}`),
     fileLine('crash-reports/', `${ft.crashReportsTotal} report${ft.crashReportsTotal === 1 ? '' : 's'}`),
+    fileLine('game-processes/', `${ft.gameProcessesTotal ?? 0} client/server process${ft.gameProcessesTotal === 1 ? '' : 'es'} (use vfs_list/vfs_read)`),
     fileLine('launch-failures/', 'launcher-captured abnormal-exit dumps'),
     fileLine('instance.json', 'instance settings (read via vfs_read, change via edit_instance)'),
     fileLine('options.txt', 'minecraft game options (read via vfs_read)'),

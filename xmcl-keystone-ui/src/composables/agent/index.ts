@@ -13,18 +13,18 @@ import { kInstances } from '../instances'
 import { kUserContext } from '../user'
 import { kModDependenciesCheck } from '../modDependenciesCheck'
 import { kModLibCleaner } from '../modLibCleaner'
-import { kModUpgrade } from '../modUpgrade'
+import { kModUpgrade, useModUpgrade } from '../modUpgrade'
 import { kJavaContext } from '../java'
 import { kInstanceJavaDiagnose } from '../instanceJavaDiagnose'
 import { useService } from '../service'
 import { InstanceInstallServiceKey, InstanceModsServiceKey, InstanceOptionsServiceKey, JavaServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
-import { getInstanceFileFromCurseforgeFile } from '@/util/curseforge'
-import { getInstanceFileFromModrinthVersion } from '@/util/modrinth'
 import { getModSide } from '@/util/mod'
-import type { InstanceFile } from '@xmcl/instance'
 import { injection } from '@/util/inject'
 import { useI18n } from 'vue-i18n'
 import type { ChatMessage } from './llm'
+import { createModsCliOperations } from './cli/mods'
+import { createPackUpdateOperations } from './cli/packs'
+import { createInstanceChangeOperations } from './instanceChanges'
 import { runAgent, type AgentEvent, type RunAgentOptions } from './loop'
 import type { AgentContext } from './tools'
 import { buildSystemPrompt, createXmclTools } from './tools'
@@ -62,8 +62,6 @@ export interface AgentSession {
 interface StoredAgentConversation {
   messages: ChatMessage[]
   snapshot?: SessionContext
-  /** Lazy tool packs loaded during this conversation, re-mounted on resume. */
-  loadedPacks?: string[]
   updatedAt: number
 }
 
@@ -83,18 +81,18 @@ const MAX_STORED_MESSAGES = 120
  */
 export function useAgent(): AgentSession {
   const router = useRouter()
-  const { instance } = injection(kInstance)
+  const { instance, path: instancePath, runtime } = injection(kInstance)
   const { instances, selectedInstance } = injection(kInstances)
   const { resolvedVersion, serverVersionId } = injection(kInstanceVersion)
   const { instruction: installInstruction, fix: fixInstanceInstall } = injection(kInstanceVersionInstall)
   const { java, status: javaStatus } = injection(kInstanceJava)
   const { mods } = injection(kInstanceModsContext)
-  const { enabled: rpEnabled, disabled: rpDisabled, enable: enableRP, disable: disableRP } = injection(kInstanceResourcePacks)
-  const { shaderPacks, shaderPack: selectedShaderPack } = injection(kInstanceShaderPacks)
+  const { enabled: rpEnabled, disabled: rpDisabled, revalidate: revalidateResourcePacks } = injection(kInstanceResourcePacks)
+  const { shaderPacks, shaderPack: selectedShaderPack, revalidate: revalidateShaderPacks } = injection(kInstanceShaderPacks)
   const { saves } = injection(kInstanceSave)
   const { gameOptions } = injection(kInstanceOptions)
   const { userProfile, users, select: selectAccount } = injection(kUserContext)
-  const { launch, kill, serverCount } = injection(kInstanceLaunch)
+  const { launch, kill, serverCount, gameProcesses } = injection(kInstanceLaunch)
   const depCheck = injection(kModDependenciesCheck)
   const libCleaner = injection(kModLibCleaner)
   const modUpgrade = injection(kModUpgrade)
@@ -109,101 +107,22 @@ export function useAgent(): AgentSession {
   const agentSettings = useAgentSettings()
 
   const resourcePacks = computed(() => [...rpEnabled.value, ...rpDisabled.value])
-  const shaderPackName = computed({
-    get: () => selectedShaderPack.value ?? '',
-    set: (v: string) => { selectedShaderPack.value = v || undefined },
-  })
+  const shaderPackName = computed(() => selectedShaderPack.value ?? '')
+  const resourcePackUpgrade = useModUpgrade(instancePath, runtime, resourcePacks, revalidateResourcePacks, 'resourcepacks')
+  const shaderPackUpgrade = useModUpgrade(instancePath, runtime, shaderPacks, revalidateShaderPacks, 'shaderpacks')
 
-  function genOpId() {
-    return crypto.getRandomValues(new Uint8Array(8)).join('')
-  }
-
-  async function checkModDependencies() {
-    await depCheck.refresh()
-    const missing = depCheck.installation.value.map(([file, mod]) => ({
-      file: file.path,
-      requiredBy: mod.name || mod.fileName,
-    }))
-    const err = depCheck.error.value
-    return { missing, ...(err ? { error: err instanceof Error ? err.message : String(err) } : {}) }
-  }
-
-  async function installModDependencies() {
-    const path = currentInstancePath()
-    if (!path) return { error: 'no instance selected' }
-    const files = depCheck.installation.value.map(([f]) => f)
-    if (!files.length) return { installed: 0, note: 'No missing dependencies. Run check_mod_dependencies first.' }
-    await instanceInstall.installInstanceFiles({ path, oldFiles: [], files, id: genOpId() })
-    return { installed: files.length, files: files.map((f) => f.path) }
-  }
-
-  async function scanUnusedMods() {
-    await libCleaner.refresh()
-    const unused = libCleaner.unusedMods.value.map((f) => ({ path: f.path }))
-    const err = libCleaner.error.value
-    return { unused, ...(err ? { error: err instanceof Error ? err.message : String(err) } : {}) }
-  }
-
-  async function disableUnusedMods() {
-    const path = currentInstancePath()
-    if (!path) return { error: 'no instance selected' }
-    const oldFiles = libCleaner.unusedMods.value
-    if (!oldFiles.length) return { disabled: 0, note: 'No unused library mods. Run scan_unused_mods first.' }
-    const files = oldFiles.map((f) => ({ ...f, path: f.path + '.disabled' }))
-    await instanceInstall.installInstanceFiles({ path, oldFiles, files, id: genOpId() })
-    return { disabled: oldFiles.length, files: oldFiles.map((f) => f.path) }
-  }
-
-  function normalizeUpgradePolicy(policy?: string): 'curseforge' | 'modrinth' | 'curseforgeOnly' | 'modrinthOnly' {
-    const candidate = policy ?? String(modUpgrade.upgradePolicy.value)
-    if (candidate === 'curseforge' || candidate === 'curseforgeOnly' || candidate === 'modrinthOnly') {
-      return candidate
-    }
-    return 'modrinth'
-  }
-
-  async function checkModUpdates(opts: { policy?: string; skipVersion?: boolean }) {
-    const policy = normalizeUpgradePolicy(opts.policy)
-    const skipVersion = opts.skipVersion ?? modUpgrade.skipVersion.value
-    await modUpgrade.refresh({ policy, skipVersion })
-    const updates = Object.values(modUpgrade.plans.value).map((p) => ({
-      mod: p.mod.name || p.mod.fileName,
-      from: p.mod.version,
-      to: 'version' in p ? (p.version.version_number || p.version.name) : (p.file.displayName || p.file.fileName),
-      source: 'version' in p ? 'modrinth' : 'curseforge',
-    }))
-    const err = modUpgrade.error.value
-    return { updates, ...(err ? { error: err instanceof Error ? err.message : String(err) } : {}) }
-  }
-
-  async function applyModUpdates() {
-    const path = currentInstancePath()
-    if (!path) return { error: 'no instance selected' }
-    const plans = Object.values(modUpgrade.plans.value)
-    if (!plans.length) return { upgraded: 0, note: 'No updates available. Run check_mod_updates first.' }
-    const oldFiles: InstanceFile[] = []
-    const files: InstanceFile[] = []
-    for (const plan of plans) {
-      oldFiles.push({
-        path: `mods/${plan.mod.fileName}`,
-        hashes: { sha1: plan.mod.hash },
-        size: plan.mod.size || 0,
-      })
-      files.push('file' in plan
-        ? getInstanceFileFromCurseforgeFile(plan.file)
-        : getInstanceFileFromModrinthVersion(plan.version))
-    }
-    await instanceInstall.installInstanceFiles({ path, oldFiles, files, id: genOpId() })
-    return { upgraded: plans.length, mods: plans.map((p) => p.mod.name || p.mod.fileName) }
-  }
-
-  async function installJava() {
+  async function installJava(options: { majorVersion?: number; component?: string; forceZulu?: boolean } = {}) {
     const required = javaStatus.value?.javaVersion
-    const installed = await javaService.installJava(required)
+    const target = {
+      majorVersion: options.majorVersion ?? required?.majorVersion ?? 8,
+      component: options.component ?? required?.component ?? 'jre-legacy',
+    }
+    const installed = await javaService.installJava(target, options.forceZulu ?? false)
     await refreshJavaList(true).catch(() => undefined)
     return {
       ok: true,
-      requiredMajorVersion: required?.majorVersion,
+      target,
+      forceZulu: options.forceZulu ?? false,
       path: installed.path,
       version: installed.version,
       majorVersion: installed.majorVersion,
@@ -279,14 +198,6 @@ export function useAgent(): AgentSession {
     return { ok: true, eula: accepted }
   }
 
-  async function setServerProperties(props: Record<string, string | number | boolean>) {
-    const path = currentInstancePath()
-    if (!path) return { error: 'no instance selected' }
-    await instanceOptions.setServerProperties(path, props)
-    const properties = await instanceOptions.getServerProperties(path).catch(() => ({} as Record<string, string>))
-    return { ok: true, properties }
-  }
-
   async function deployServerMods(paths?: string[]) {
     const path = currentInstancePath()
     if (!path) return { error: 'no instance selected' }
@@ -296,23 +207,12 @@ export function useAgent(): AgentSession {
     return { ok: true, deployed: files.length, files }
   }
 
-  async function setServerFile(file: string, content: string) {
-    const path = currentInstancePath()
-    if (!path) return { error: 'no instance selected' }
-    try {
-      await instanceOptions.setServerFile(path, file, content)
-      return { ok: true, file }
-    } catch (e) {
-      return { error: `cannot write server/${file}: ${e instanceof Error ? e.message : String(e)}` }
-    }
-  }
-
   async function launchServer(opts?: { nogui?: boolean }) {
     const path = currentInstancePath()
     if (!path) return { error: 'no instance selected' }
     const eula = await instanceOptions.getEULA(path).catch(() => false)
     if (!eula) {
-      return { error: 'EULA not accepted. The user must agree to the Minecraft EULA (https://aka.ms/MinecraftEULA); call set_server_eula({ accepted: true }) once they do, then launch again.' }
+      return { error: 'EULA not accepted. The user must agree to the Minecraft EULA (https://aka.ms/MinecraftEULA); run `bash server eula accept` once they do, then launch again.' }
     }
     let version = serverVersionId.value || installedServerVersion
     if (!await serverVersionResolves(version)) {
@@ -344,6 +244,35 @@ export function useAgent(): AgentSession {
     return { ok: true, version }
   }
 
+  async function launchForSide(side: 'client' | 'server' = 'client', opts?: { nogui?: boolean }) {
+    if (side === 'server') return launchServer(opts)
+    await launch()
+    return { ok: true, side: 'client' }
+  }
+
+  const instanceChanges = createInstanceChangeOperations({ currentInstancePath, instanceInstall })
+  const modMaintenance = createModsCliOperations({
+    currentInstancePath,
+    dependencyCheck: depCheck,
+    libCleaner,
+    modUpgrade,
+    instanceChanges,
+  })
+  const packUpdates = {
+    resourcepacks: createPackUpdateOperations({
+      kind: 'resourcepacks',
+      currentInstancePath,
+      upgrade: resourcePackUpgrade,
+      instanceChanges,
+    }),
+    shaderpacks: createPackUpdateOperations({
+      kind: 'shaderpacks',
+      currentInstancePath,
+      upgrade: shaderPackUpgrade,
+      instanceChanges,
+    }),
+  }
+
   const ctx: AgentContext = {
     router,
     instance,
@@ -357,31 +286,23 @@ export function useAgent(): AgentSession {
     resourcePacks,
     shaderPacks,
     selectedShaderPack: shaderPackName,
+    gameProcesses,
     saves,
     gameOptions,
     installInstruction,
     fixInstanceInstall: () => fixInstanceInstall(),
-    enableResourcePack: (packs) => enableRP(packs as any),
-    disableResourcePack: (packs) => disableRP(packs),
-    selectShaderPack: (fileName) => { selectedShaderPack.value = fileName },
-    launch: () => launch(),
+    launch: launchForSide,
     killGame: (side, force) => kill(side, force),
-    checkModDependencies,
-    installModDependencies,
-    scanUnusedMods,
-    disableUnusedMods,
-    checkModUpdates,
-    applyModUpdates,
+    modMaintenance,
+    packUpdates,
+    instanceChanges,
     javaList,
     javaIssue,
     installJava,
     getServerStatus,
     installServer,
     setServerEula,
-    setServerProperties,
     deployServerMods,
-    launchServer,
-    setServerFile,
     accounts: users,
     selectAccount,
   }
@@ -395,12 +316,6 @@ export function useAgent(): AgentSession {
   let abortCtrl: AbortController | undefined
   /** Snapshot frozen on first user message in the current session. */
   let sessionSnapshot: SessionContext | undefined
-  /**
-   * Lazy tool packs loaded so far this session. Each `runAgent` call rebuilds
-   * its tool map from the base set, so we re-mount these every turn (and across
-   * reloads) — otherwise a tool loaded in an earlier turn becomes "unknown".
-   */
-  const loadedPacks = new Set<string>()
   /** Stop watcher for resolved-version / java drift. Disposed on reset. */
   let stopDriftWatch: (() => void) | undefined
 
@@ -451,7 +366,6 @@ export function useAgent(): AgentSession {
     store.byInstance[path] = {
       messages: trimMessagesForStore(messages.value),
       snapshot: sessionSnapshot,
-      loadedPacks: [...loadedPacks],
       updatedAt: Date.now(),
     }
     writeConversationStore(store)
@@ -464,7 +378,6 @@ export function useAgent(): AgentSession {
     stopDriftWatch = undefined
     events.value = []
     sessionSnapshot = undefined
-    loadedPacks.clear()
     if (!path) {
       messages.value = []
       return
@@ -479,7 +392,6 @@ export function useAgent(): AgentSession {
 
     messages.value = saved.messages.slice()
     sessionSnapshot = saved.snapshot
-    for (const p of saved.loadedPacks ?? []) loadedPacks.add(p)
     // Backward compatibility: if an old persisted conversation has a system
     // message but no snapshot metadata, regenerate one so we can continue.
     if (!sessionSnapshot && saved.messages.some((m) => m.role === 'system')) {
@@ -517,6 +429,7 @@ export function useAgent(): AgentSession {
         savesTotal: saves.value.length,
         logsTotal: 0,
         crashReportsTotal: 0,
+        gameProcessesTotal: gameProcesses.value.length,
       },
     }
   }
@@ -562,7 +475,6 @@ export function useAgent(): AgentSession {
       const sys = buildSystemPrompt({
         locale: sessionSnapshot.locale,
         sessionContextMarkdown: renderSessionContext(sessionSnapshot),
-        loadable: registry.loadable,
       })
       messages.value = [{ role: 'system', content: sys }]
       startDriftWatch()
@@ -583,15 +495,8 @@ export function useAgent(): AgentSession {
         model: agentSettings.resolvedModel.value,
         ...options,
         tools: registry.base,
-        loadable: registry.loadable,
-        preloadedPacks: [...loadedPacks],
         signal: abortCtrl.signal,
         onEvent: (e) => {
-          // Remember packs loaded this turn so later turns (and reloads)
-          // re-mount them instead of failing with "unknown tool".
-          if (e.type === 'tools_loaded' && e.loaded) {
-            for (const n of e.loaded) loadedPacks.add(n)
-          }
           events.value = [...events.value, e]
           // `runAgent` mutates `history` in place. `messages` is a shallowRef,
           // so we must hand it a NEW array reference each event — reassigning
@@ -615,7 +520,6 @@ export function useAgent(): AgentSession {
     stopDriftWatch?.()
     stopDriftWatch = undefined
     sessionSnapshot = undefined
-    loadedPacks.clear()
     messages.value = []
     events.value = []
     persistCurrentConversation()
