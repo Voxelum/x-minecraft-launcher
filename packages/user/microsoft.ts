@@ -21,6 +21,24 @@ export interface XBoxResponse {
   }
 }
 
+export interface XBoxPresenceRecord {
+  xuid: string
+  state: 'Online' | 'Offline' | 'Away' | string
+  devices?: Array<{
+    type: string
+    titles?: Array<{
+      id: number
+      name: string
+      placement?: string
+      state?: string
+    }>
+  }>
+}
+
+export interface XBoxPresenceResponse {
+  userPresence?: XBoxPresenceRecord[]
+}
+
 export interface XBoxGameProfileResponse {
   profileUsers: [
     {
@@ -200,6 +218,45 @@ export class MicrosoftAuthenticator {
 
     const result = (await response.json()) as XBoxGameProfileResponse
     return result
+  }
+
+  /**
+   * Fetch Xbox Live presence status for a list of xuids or single xuid.
+   *
+   * @param xuids Array of Xbox User IDs (xuid)
+   * @param uhs The `uhs` in {@link XBoxResponse.DisplayClaims}
+   * @param xstsToken The {@link XBoxResponse.Token}
+   */
+  async getXboxPresence(xuids: string[], uhs: string, xstsToken: string, signal?: AbortSignal): Promise<XBoxPresenceRecord[]> {
+    if (xuids.length === 0) return []
+    const response = await this.fetch('https://presence.xboxlive.com/users/batch', {
+      method: 'POST',
+      headers: {
+        'x-xbl-contract-version': '3',
+        'content-type': 'application/json',
+        Authorization: `XBL3.0 x=${uhs};${xstsToken}`,
+      },
+      body: JSON.stringify({
+        users: xuids,
+        level: 'all',
+      }),
+      signal,
+    })
+
+    if (response.status !== 200) {
+      return []
+    }
+
+    try {
+      const result = (await response.json()) as XBoxPresenceResponse | XBoxPresenceRecord[]
+      if (Array.isArray(result)) return result
+      if (result && Array.isArray((result as XBoxPresenceResponse).userPresence)) {
+        return (result as XBoxPresenceResponse).userPresence!
+      }
+      return []
+    } catch {
+      return []
+    }
   }
 
   /**

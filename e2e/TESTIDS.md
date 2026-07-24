@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 163 (in 271 Vue files)
+**Total anchors:** 164 (in 271 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -114,17 +114,18 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `market-filter-favorite-tab` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24) |
 | `market-item-install` | [`xmcl-keystone-ui/src/components/MarketItem.vue#L55`](../xmcl-keystone-ui/src/components/MarketItem.vue#L55) |
 | `market-multi-select-toggle` | [`xmcl-keystone-ui/src/views/Mod.vue#L27`](../xmcl-keystone-ui/src/views/Mod.vue#L27)<br>[`xmcl-keystone-ui/src/views/ResourcePack.vue#L26`](../xmcl-keystone-ui/src/views/ResourcePack.vue#L26)<br>[`xmcl-keystone-ui/src/views/ShaderPack.vue#L26`](../xmcl-keystone-ui/src/views/ShaderPack.vue#L26) |
-| `market-page-size` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L72`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L72) |
+| `market-page-size` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L76`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L76) |
 | `me-user-switcher` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16) |
+| `minecraft-friends-accepted-list` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L140`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L140) |
 | `minecraft-friends-add-button` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68) |
 | `minecraft-friends-add-input` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L58`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L58) |
 | `minecraft-friends-dialog` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L11`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L11) |
 | `minecraft-friends-hero-empty` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L120`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L120) |
-| `minecraft-friends-incoming-list` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L140`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L140) |
+| `minecraft-friends-incoming-list` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L173`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L173) |
 | `minecraft-friends-load-error-reconnect` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L90`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L90) |
 | `minecraft-friends-menu` | [`xmcl-keystone-ui/src/views/MeProfilePanel.vue#L178`](../xmcl-keystone-ui/src/views/MeProfilePanel.vue#L178) |
 | `minecraft-friends-menu-activator` | [`xmcl-keystone-ui/src/views/MeProfilePanel.vue#L137`](../xmcl-keystone-ui/src/views/MeProfilePanel.vue#L137) |
-| `minecraft-friends-outgoing-list` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L194`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L194) |
+| `minecraft-friends-outgoing-list` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L227`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L227) |
 | `multiplayer-group-id` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L77`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L77) |
 | `multiplayer-join` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L87`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L87) |
 | `multiplayer-page` | [`xmcl-keystone-ui/src/views/Multiplayer.vue#L3`](../xmcl-keystone-ui/src/views/Multiplayer.vue#L3) |
@@ -150,7 +151,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `settings-proxy-host` | [`xmcl-keystone-ui/src/views/SettingNetwork.vue#L37`](../xmcl-keystone-ui/src/views/SettingNetwork.vue#L37) |
 | `setup-account` | [`xmcl-keystone-ui/src/views/SetupAccount.vue#L3`](../xmcl-keystone-ui/src/views/SetupAccount.vue#L3) |
 | `setup-account-add` | [`xmcl-keystone-ui/src/views/SetupAccount.vue#L22`](../xmcl-keystone-ui/src/views/SetupAccount.vue#L22) |
-| `setup-account-skip` | [`xmcl-keystone-ui/src/views/SetupAccount.vue#L32`](../xmcl-keystone-ui/src/views/SetupAccount.vue#L32) |
+| `setup-account-skip` | [`xmcl-keystone-ui/src/views/SetupAccount.vue#L33`](../xmcl-keystone-ui/src/views/SetupAccount.vue#L33) |
 | `setup-appearance` | [`xmcl-keystone-ui/src/views/SetupAppearance.vue#L3`](../xmcl-keystone-ui/src/views/SetupAppearance.vue#L3) |
 | `setup-data-root` | [`xmcl-keystone-ui/src/views/SetupDataRoot.vue#L3`](../xmcl-keystone-ui/src/views/SetupDataRoot.vue#L3) |
 | `setup-locale-select` | [`xmcl-keystone-ui/src/views/SetupLocale.vue#L13`](../xmcl-keystone-ui/src/views/SetupLocale.vue#L13) |

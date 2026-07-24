@@ -2,6 +2,11 @@ import type { UserProfile } from '../entities/user.schema'
 import { Exception } from '../entities/exception'
 import type { ServiceKey } from './Service'
 
+export interface XboxPresenceInfo {
+  state: 'Online' | 'Offline' | 'Away' | string
+  titleName?: string
+}
+
 /**
  * A friend / friend-request entry returned by Minecraft Services.
  */
@@ -23,6 +28,10 @@ export interface MinecraftFriend {
    * For pending requests: when the request will expire on the server.
    */
   expiresAt?: string
+  /**
+   * Xbox Live presence status if available.
+   */
+  xboxPresence?: XboxPresenceInfo
 }
 
 /**
