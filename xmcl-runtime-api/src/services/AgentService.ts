@@ -50,13 +50,12 @@ export interface UpdateAgentProviderSettings {
 export interface AgentRunPolicy {
   allowedTools?: string[]
   readonly?: boolean
-  maxTurns?: number
   maxDepth?: number
 }
 
 export interface StartAgentRunInput {
   key: AgentConversationKey
-  bridgeId: string
+  bridgeId?: string
   input: string
   locale: string
   userId?: string
@@ -70,7 +69,8 @@ export type AgentRunState = 'running' | 'completed' | 'failed' | 'aborted'
 export interface AgentRunSnapshot {
   runId: string
   key: AgentConversationKey
-  bridgeId: string
+  bridgeId?: string
+  eventSeq: number
   state: AgentRunState
   messages: AgentMessage[]
   startedAt: number
@@ -93,6 +93,7 @@ export interface LegacyConversationImport {
 
 export interface AgentRunEvent {
   runId: string
+  seq: number
   type: 'state' | 'message_delta' | 'message_end' | 'tool_start' | 'tool_end' | 'complete' | 'error'
   state?: AgentRunState
   message?: AgentMessage
@@ -100,6 +101,11 @@ export interface AgentRunEvent {
   toolCall?: AgentToolCall
   toolResult?: { id: string; name: string; result: string; isError?: boolean }
   error?: string
+}
+
+export interface AgentConversationAttachment {
+  conversation: AgentConversation
+  run?: AgentRunSnapshot
 }
 
 export interface AgentBridgeRegistration {
@@ -163,6 +169,7 @@ export interface AgentService {
   getConversation(key: AgentConversationKey): Promise<AgentConversation>
   getRun(runId: string): Promise<AgentRunSnapshot | undefined>
   startRun(input: StartAgentRunInput): Promise<{ runId: string }>
+  attachConversation(key: AgentConversationKey, bridgeId: string): Promise<AgentConversationAttachment>
   attachRun(runId: string, bridgeId: string): Promise<AgentRunSnapshot>
   cancelRun(runId: string): Promise<void>
   resetConversation(key: AgentConversationKey): Promise<void>

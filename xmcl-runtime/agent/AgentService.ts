@@ -22,7 +22,7 @@ import { kSettings } from '~/settings'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { IS_DEV } from '~/constant'
 import { AgentBridge } from './AgentBridge'
-import { sanitizeAgentEndpoint, sanitizeAgentLog } from './debug'
+import { sanitizeAgentEndpoint, sanitizeAgentLog, summarizeAgentProviderPayload } from './debug'
 import { AgentHistoryStore } from './history'
 import { createAgentModels } from './provider'
 import { buildAgentSystemPrompt } from './prompt'
@@ -37,11 +37,10 @@ const DEFAULT_MODEL = 'agnes-2.0-flash'
 interface ActiveRun {
   snapshot: AgentRunSnapshot
   agent: Agent
-  bridgeId: string
-  maxTurns: number
+  bridgeId?: string
+  hasUi: boolean
   turnCount: number
   abortRequested: boolean
-  limitExceeded: boolean
   toolCounts: Record<string, number>
   toolFailures: number
   inputTokens: number
@@ -149,6 +148,14 @@ function resultText(value: unknown) {
   }
 }
 
+function toolResultText(result: any, isError: boolean) {
+  const content = Array.isArray(result?.content)
+    ? result.content.filter((part: any) => part?.type === 'text').map((part: any) => String(part.text ?? '')).join('')
+    : undefined
+  if (isError && content) return content
+  return resultText(result?.details ?? content ?? result)
+}
+
 function deterministicSample(runId: string, percentage: number) {
   const bucket = createHash('sha256').update(runId).digest().readUInt32BE(0) % 100
   return bucket < percentage
@@ -200,8 +207,9 @@ export class AgentService extends AbstractService implements IAgentService {
 
   async startRun(input: StartAgentRunInput) {
     const bridge = await this.app.registry.get(AgentBridge)
-    const registration = bridge.getRegistration(input.bridgeId)
-    if (!registration || registration.agentId !== input.key.agentId) throw new Error('Agent renderer bridge is not registered')
+    const registration = input.bridgeId ? bridge.getRegistration(input.bridgeId) : undefined
+    if (input.bridgeId && (!registration || registration.agentId !== input.key.agentId)) throw new Error('Agent renderer bridge is not registered')
+    const hasUi = !!registration
     if (this.activeByConversation.has(keyString(input.key))) throw new Error('Agent: a request is already in flight')
 
     const providerSettings = await this.getProviderSettings()
@@ -219,7 +227,13 @@ export class AgentService extends AbstractService implements IAgentService {
       app: this.app,
       bridge,
       runId,
-      bridgeId: () => this.runs.get(runId)?.bridgeId ?? input.bridgeId,
+      bridgeId: () => {
+        const run = this.runs.get(runId)
+        if (!run?.hasUi || !run.bridgeId) return undefined
+        const current = bridge.getRegistration(run.bridgeId)
+        return current?.agentId === input.key.agentId ? run.bridgeId : undefined
+      },
+      hasUi,
       key: input.key,
       readonly: !!input.policy?.readonly,
     })
@@ -228,7 +242,7 @@ export class AgentService extends AbstractService implements IAgentService {
       locale: input.locale,
       tools: tools.map(tool => ({ name: tool.name, readonly: tool.name === 'vfs_list' || tool.name === 'vfs_read' || tool.name === 'get_custom_css' })),
       policy: {
-        hasUi: tools.some(tool => tool.name === 'ui'),
+        hasUi,
         readonly: !!input.policy?.readonly,
         canDelegate: false,
         depth: input.depth ?? 0,
@@ -252,7 +266,7 @@ export class AgentService extends AbstractService implements IAgentService {
       onPayload: payload => this.logAgent(`[provider.request] ${sanitizeAgentLog({
         endpoint: sanitizeAgentEndpoint(providerSettings.endpoint),
         model: model.id,
-        payload,
+        payload: summarizeAgentProviderPayload(payload),
       })}`),
       onResponse: response => this.logAgent(`[provider.response] ${sanitizeAgentLog({
         model: model.id,
@@ -263,6 +277,7 @@ export class AgentService extends AbstractService implements IAgentService {
       runId,
       key: input.key,
       bridgeId: input.bridgeId,
+      eventSeq: 0,
       state: 'running',
       messages: [...conversation.messages, userMessage],
       startedAt: Date.now(),
@@ -271,10 +286,9 @@ export class AgentService extends AbstractService implements IAgentService {
       snapshot,
       agent,
       bridgeId: input.bridgeId,
-      maxTurns: Math.min(Math.max(1, input.policy?.maxTurns ?? 10), 50),
+      hasUi,
       turnCount: 0,
       abortRequested: false,
-      limitExceeded: false,
       toolCounts: {},
       toolFailures: 0,
       inputTokens: 0,
@@ -285,8 +299,8 @@ export class AgentService extends AbstractService implements IAgentService {
     }
     this.runs.set(runId, run)
     this.activeByConversation.set(keyString(input.key), runId)
-    this.logAgent(`[run.start] ${sanitizeAgentLog({ runId, agentId: input.key.agentId, model: model.id, tools: tools.map(tool => tool.name) })}`)
-    bridge.sendRunEvent(input.bridgeId, { runId, type: 'state', state: 'running' })
+    this.logAgent(`[run.start] ${sanitizeAgentLog({ runId, agentId: input.key.agentId, hasUi, model: model.id, tools: tools.map(tool => tool.name) })}`)
+    this.sendRunEvent(run, bridge, { runId, type: 'state', state: 'running' })
     agent.subscribe(event => this.onPiEvent(run, event, bridge))
     void this.executeRun(run, input.input, bridge)
     return { runId }
@@ -301,6 +315,31 @@ export class AgentService extends AbstractService implements IAgentService {
     run.bridgeId = bridgeId
     run.snapshot.bridgeId = bridgeId
     return structuredClone(run.snapshot)
+  }
+
+  async attachConversation(key: AgentConversationKey, bridgeId: string) {
+    const bridge = await this.app.registry.get(AgentBridge)
+    const registration = bridge.getRegistration(bridgeId)
+    if (!registration || registration.agentId !== key.agentId) throw new Error('Agent renderer bridge is not registered')
+
+    let run = this.getActiveRun(key)
+    if (!run) {
+      const conversation = await this.history.load(key)
+      run = this.getActiveRun(key)
+      if (!run) return { conversation }
+    }
+
+    run.bridgeId = bridgeId
+    run.snapshot.bridgeId = bridgeId
+    const snapshot = structuredClone(run.snapshot)
+    const conversation = await this.history.load(key)
+    return {
+      conversation: {
+        ...conversation,
+        messages: snapshot.messages,
+      },
+      run: snapshot,
+    }
   }
 
   async cancelRun(runId: string) {
@@ -338,26 +377,26 @@ export class AgentService extends AbstractService implements IAgentService {
       const delta = text.startsWith(run.lastStreamText) ? text.slice(run.lastStreamText.length) : text
       run.lastStreamText = text
       const message = fromPiMessage(event.message)
-      if (message) bridge.sendRunEvent(run.bridgeId, { runId, type: 'message_delta', delta, message })
+      if (message) this.sendRunEvent(run, bridge, { runId, type: 'message_delta', delta, message })
       return
     }
     if (event.type === 'message_end') {
       run.lastStreamText = ''
       const message = fromPiMessage(event.message)
       if (!message || message.role === 'user') return
-      run.snapshot.messages.push(message)
       await this.history.appendMessage(run.snapshot.key, message)
+      run.snapshot.messages.push(message)
       if (event.message.role === 'assistant') {
         run.inputTokens += event.message.usage.input
         run.outputTokens += event.message.usage.output
       }
-      bridge.sendRunEvent(run.bridgeId, { runId, type: 'message_end', message })
+      this.sendRunEvent(run, bridge, { runId, type: 'message_end', message })
       return
     }
     if (event.type === 'tool_execution_start') {
       run.toolCounts[event.toolName] = (run.toolCounts[event.toolName] ?? 0) + 1
       this.logAgent(`[tool.start] ${sanitizeAgentLog({ runId, name: event.toolName, arguments: event.args })}`)
-      bridge.sendRunEvent(run.bridgeId, {
+      this.sendRunEvent(run, bridge, {
         runId,
         type: 'tool_start',
         toolCall: { id: event.toolCallId, name: event.toolName, arguments: event.args },
@@ -366,9 +405,9 @@ export class AgentService extends AbstractService implements IAgentService {
     }
     if (event.type === 'tool_execution_end') {
       if (event.isError) run.toolFailures++
-      const result = resultText(event.result?.details ?? event.result?.content ?? event.result)
+      const result = toolResultText(event.result, event.isError)
       this.logAgent(`[tool.end] ${sanitizeAgentLog({ runId, name: event.toolName, isError: event.isError, result })}`)
-      bridge.sendRunEvent(run.bridgeId, {
+      this.sendRunEvent(run, bridge, {
         runId,
         type: 'tool_end',
         toolResult: { id: event.toolCallId, name: event.toolName, result, isError: event.isError },
@@ -377,11 +416,6 @@ export class AgentService extends AbstractService implements IAgentService {
     }
     if (event.type === 'turn_end') {
       run.turnCount++
-      const hasToolCall = event.message.role === 'assistant' && event.message.content.some(part => part.type === 'toolCall')
-      if (hasToolCall && run.turnCount >= run.maxTurns) {
-        run.limitExceeded = true
-        run.agent.abort()
-      }
     }
   }
 
@@ -393,10 +427,7 @@ export class AgentService extends AbstractService implements IAgentService {
       await run.agent.prompt(input)
       const last = [...run.agent.state.messages].reverse().find((message): message is AssistantMessage => message.role === 'assistant')
       stopReason = last?.stopReason ?? 'stop'
-      if (run.limitExceeded) {
-        state = 'failed'
-        error = `Agent stopped: exceeded ${run.maxTurns} iterations`
-      } else if (run.abortRequested || stopReason === 'aborted') {
+      if (run.abortRequested || stopReason === 'aborted') {
         state = 'aborted'
       } else if (last?.stopReason === 'error' || run.agent.state.errorMessage) {
         state = 'failed'
@@ -411,7 +442,7 @@ export class AgentService extends AbstractService implements IAgentService {
       run.snapshot.finishedAt = Date.now()
       run.snapshot.error = error
       this.activeByConversation.delete(keyString(run.snapshot.key))
-      bridge.sendRunEvent(run.bridgeId, error
+      this.sendRunEvent(run, bridge, error
         ? { runId: run.snapshot.runId, type: 'error', state, error }
         : { runId: run.snapshot.runId, type: 'complete', state })
       this.logAgent(`[run.end] ${sanitizeAgentLog({ runId: run.snapshot.runId, state, error, turns: run.turnCount, tools: run.toolCounts })}`)
@@ -443,6 +474,17 @@ export class AgentService extends AbstractService implements IAgentService {
       sampleRate: percentage,
     }
     this.app.emit('agent-run-trace', trace)
+  }
+
+  private sendRunEvent(run: ActiveRun, bridge: AgentBridge, event: Omit<AgentRunEvent, 'seq'>) {
+    const sequenced = { ...event, seq: ++run.snapshot.eventSeq }
+    if (run.bridgeId) bridge.sendRunEvent(run.bridgeId, sequenced)
+  }
+
+  private getActiveRun(key: AgentConversationKey) {
+    const runId = this.activeByConversation.get(keyString(key))
+    const run = runId ? this.runs.get(runId) : undefined
+    return run?.snapshot.state === 'running' ? run : undefined
   }
 
   private pruneRuns() {

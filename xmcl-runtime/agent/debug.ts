@@ -35,3 +35,34 @@ export function sanitizeAgentEndpoint(endpoint: string) {
     return redactString(endpoint)
   }
 }
+
+export function summarizeAgentProviderPayload(payload: any) {
+  const messages = Array.isArray(payload?.messages) ? payload.messages : []
+  const roles: Record<string, number> = {}
+  for (const message of messages) {
+    const role = typeof message?.role === 'string' ? message.role : 'unknown'
+    roles[role] = (roles[role] ?? 0) + 1
+  }
+  const last = messages.at(-1)
+  const contentLength = typeof last?.content === 'string'
+    ? last.content.length
+    : Array.isArray(last?.content)
+      ? last.content.reduce((sum: number, part: any) => sum + (typeof part?.text === 'string' ? part.text.length : 0), 0)
+      : 0
+  return {
+    messageCount: messages.length,
+    roles,
+    lastMessage: last
+      ? {
+          role: last.role,
+          contentLength,
+          toolCallCount: Array.isArray(last.tool_calls) ? last.tool_calls.length : 0,
+        }
+      : undefined,
+    tools: Array.isArray(payload?.tools)
+      ? payload.tools.map((tool: any) => tool?.function?.name).filter((name: unknown): name is string => typeof name === 'string')
+      : [],
+    stream: !!payload?.stream,
+    maxCompletionTokens: payload?.max_completion_tokens,
+  }
+}

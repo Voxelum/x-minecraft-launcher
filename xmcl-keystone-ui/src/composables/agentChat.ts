@@ -1,12 +1,65 @@
 import { useEventBus } from '@vueuse/core'
 import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue'
+import { useNotifier } from './notifier'
+import { useAgentSettings } from './agent/settings'
 
 const AGENT_CHAT_BUS_KEY = 'app:agent-chat'
+const agentChatShown = ref(false)
+const agentChatRunning = ref(false)
 
 export type AgentChatEvent = 'show' | 'hide' | 'toggle' | 'show-css' | { type: 'show'; prompt?: string }
 
 export function useAgentChatBus() {
   return useEventBus<AgentChatEvent>(AGENT_CHAT_BUS_KEY)
+}
+
+export function useAgentChatStatus() {
+  return {
+    shown: agentChatShown,
+    running: agentChatRunning,
+  }
+}
+
+export function useAgentChatEntry() {
+  const bus = useAgentChatBus()
+  const settings = useAgentSettings()
+  const router = useRouter()
+  const { t } = useI18n()
+  const { notify } = useNotifier()
+
+  async function open() {
+    try {
+      await settings.ready
+    } catch (error) {
+      notify({
+        level: 'error',
+        title: t('agent.notConfiguredTitle'),
+        body: error instanceof Error ? error.message : String(error),
+      })
+      return
+    }
+    if (settings.configured.value) {
+      bus.emit('show')
+      return
+    }
+    notify({
+      level: 'warning',
+      title: t('agent.notConfiguredTitle'),
+      body: t('agent.notConfiguredHint'),
+      operations: [{
+        text: t('agent.openSettings'),
+        icon: 'settings',
+        handler: () => {
+          void router.push({ path: '/setting', query: { target: 'agent' } })
+        },
+      }],
+    })
+  }
+
+  return {
+    configured: settings.configured,
+    open,
+  }
 }
 
 /**

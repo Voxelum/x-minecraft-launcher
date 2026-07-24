@@ -17,12 +17,16 @@ import {
 import { LaunchService } from '~/launch'
 import { ThemeService } from '~/theme'
 import { AgentBridge } from './AgentBridge'
+import { buildRuntimeAgentToolSet } from './capabilities'
+import { assertAgentCommandSyntax, createAgentRuntimeCommands } from './commandDefinitions'
+import { createAgentCommandOperations } from './commandOperations'
 
 interface AgentToolContext {
   app: LauncherApp
   bridge: AgentBridge
   runId: string
-  bridgeId: () => string
+  bridgeId: () => string | undefined
+  hasUi: boolean
   key: AgentConversationKey
   readonly: boolean
 }
@@ -71,8 +75,10 @@ function summarizeResource(resource: Resource) {
 
 async function confirm(ctx: AgentToolContext, message: string, signal?: AbortSignal) {
   if (ctx.readonly) throw new Error('This agent run is read-only')
+  const bridgeId = ctx.bridgeId()
+  if (!bridgeId) throw new Error('Cannot confirm a destructive action without an available UI')
   const result = await ctx.bridge.executeUi(
-    ctx.bridgeId(),
+    bridgeId,
     ctx.runId,
     { action: 'confirm', message, destructive: true },
     5 * 60_000,
@@ -97,7 +103,9 @@ function uiTool(ctx: AgentToolContext): AgentTool {
     ]),
     executionMode: 'sequential',
     async execute(_id, input, signal) {
-      const result = await ctx.bridge.executeUi(ctx.bridgeId(), ctx.runId, input as AgentUiAction, 5 * 60_000, signal)
+      const bridgeId = ctx.bridgeId()
+      if (!bridgeId) throw new Error('Agent UI is unavailable')
+      const result = await ctx.bridge.executeUi(bridgeId, ctx.runId, input as AgentUiAction, 5 * 60_000, signal)
       return textResult(result)
     },
   }
@@ -261,20 +269,48 @@ async function createVfsTools(ctx: AgentToolContext): Promise<AgentTool[]> {
 
 async function createBashTool(ctx: AgentToolContext): Promise<AgentTool> {
   const host = await ctx.app.registry.get(kCommandHost)
+  const runtimeCommands = createAgentRuntimeCommands(await createAgentCommandOperations(ctx.app, ctx.key))
+  const runtimeByName = new Map(runtimeCommands.map(command => [command.name, command]))
+  const rootHelp = () => {
+    const runtimeHelp = runtimeCommands
+      .map(command => `  ${command.name.padEnd(28)} ${command.description}`)
+      .join('\n')
+    return `${formatHelp(host.registry, { programName: 'bash' })}\n\nAgent runtime commands:\n${runtimeHelp}\n\nRun \`help <command>\` for exact syntax.`
+  }
+  const commandHelp = (name: string) => {
+    const runtime = runtimeByName.get(name)
+    if (runtime) {
+      return [
+        `Usage: ${runtime.usage}`,
+        '',
+        runtime.description,
+        '',
+        ...runtime.details,
+      ].join('\n')
+    }
+    const command = host.registry.list({ mode: 'cli' }).find(value => (value.cli?.name ?? value.id.replace(/\./g, ' ')) === name)
+    if (!command) throw new Error(`Unknown command: ${name}`)
+    return formatCommandHelp(command, { programName: 'bash' })
+  }
   return {
     name: 'bash',
     label: 'XMCL command',
-    description: 'Run a restricted XMCL command. Use `help` to list commands and `<command> --help` for details.',
+    description: 'Run one restricted XMCL command. The input is command text only: do not prefix it with `bash`, and do not use pipes, redirects, `&&`, or `||`. Use `help` or `help <command>` for syntax.',
     parameters: Type.Object({ command: Type.String() }),
     executionMode: 'sequential',
     async execute(_id, args: any, signal) {
-      const argv = tokenize(args.command)
-      if (argv[0] === 'help' && argv.length === 1) return textResult(formatHelp(host.registry, { programName: 'bash' }))
+      let argv = tokenize(args.command)
+      if (argv[0] === 'bash') argv = argv.slice(1)
+      assertAgentCommandSyntax(argv)
+      if (!argv.length || (argv[0] === 'help' && argv.length === 1)) return textResult(rootHelp())
       if (argv[0] === 'help' && argv.length > 1) {
         const name = argv.slice(1).join(' ')
-        const command = host.registry.list({ mode: 'cli' }).find(value => (value.cli?.name ?? value.id.replace(/\./g, ' ')) === name)
-        if (!command) throw new Error(`Unknown command: ${name}`)
-        return textResult(formatCommandHelp(command, { programName: 'bash' }))
+        return textResult(commandHelp(name))
+      }
+      const runtime = runtimeByName.get(argv[0])
+      if (runtime) {
+        if (argv[1] === '--help' || argv[1] === '-h') return textResult(commandHelp(runtime.name))
+        return textResult(await runtime.execute(argv.slice(1), signal))
       }
       const candidates = host.registry.list({ mode: 'cli' })
         .map(command => ({ command, name: command.cli?.name ?? command.id.replace(/\./g, ' ') }))
@@ -284,6 +320,11 @@ async function createBashTool(ctx: AgentToolContext): Promise<AgentTool> {
       const tail = args.command.slice(match.name.length).trim()
       const parsed = parseCli([match.name, ...tokenize(tail)], host.registry)
       if (parsed.kind === 'error') throw new Error(parsed.message)
+      if (parsed.kind === 'help-command') {
+        const command = host.registry.get(parsed.commandId)
+        if (!command) throw new Error(`Unknown command: ${parsed.commandId}`)
+        return textResult(formatCommandHelp(command, { programName: 'bash' }))
+      }
       if (parsed.kind !== 'command') throw new Error(`Cannot execute command: ${args.command}`)
       const output: unknown[] = []
       const result = await host.dispatch(parsed.commandId, parsed.input, {
@@ -343,6 +384,8 @@ async function createCssTools(ctx: AgentToolContext): Promise<AgentTool[]> {
 }
 
 export async function createRuntimeAgentTools(ctx: AgentToolContext) {
-  if (ctx.key.agentId === 'css') return [...await createCssTools(ctx), uiTool(ctx)]
-  return [...await createVfsTools(ctx), await createBashTool(ctx), uiTool(ctx)]
+  const tools = ctx.key.agentId === 'css'
+    ? [...await createCssTools(ctx), uiTool(ctx)]
+    : [...await createVfsTools(ctx), await createBashTool(ctx), uiTool(ctx)]
+  return buildRuntimeAgentToolSet(ctx.key.agentId, ctx.hasUi, tools)
 }

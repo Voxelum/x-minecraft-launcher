@@ -15,10 +15,11 @@ export * from './cssAgent'
 export interface AgentSession {
   readonly available: Readonly<Ref<boolean>>
   readonly running: Ref<boolean>
+  readonly runError: Ref<string>
   readonly messages: Ref<AgentMessage[]>
   readonly events: Ref<AgentRunEvent[]>
   loadConversationForCurrentInstance(): Promise<void>
-  send(userInput: string, options?: { maxTurns?: number }): Promise<void>
+  send(userInput: string): Promise<void>
   reset(): Promise<void>
   abort(): void
 }
@@ -46,7 +47,7 @@ function legacyMessage(message: any): AgentMessage {
 export function useAgent(): AgentSession {
   const router = useRouter()
   const { locale } = useI18n()
-  const { selectedInstance } = injection(kInstances)
+  const { allInstances, selectedInstance } = injection(kInstances)
   const { userProfile, select } = injection(kUserContext)
   const service = useService(AgentServiceKey)
   const remote = useRemoteAgent({
@@ -54,10 +55,10 @@ export function useAgent(): AgentSession {
     getScope: () => selectedInstance.value,
     getLocale: () => locale.value,
     getUserId: () => userProfile.value?.id || undefined,
-    handleUi: createAgentUiHandler({ router, selectedInstance, selectAccount: select }),
+    handleUi: createAgentUiHandler({ router, selectedInstance, instances: allInstances, selectAccount: select }),
   })
 
-  void (async () => {
+  const migrationReady = (async () => {
     const raw = localStorage.getItem('agentConversationByInstanceV1')
     if (!raw) return
     try {
@@ -73,10 +74,16 @@ export function useAgent(): AgentSession {
       localStorage.removeItem('agentConversationByInstanceV1')
     } catch {}
   })()
+  watch(selectedInstance, (scope) => {
+    if (scope) void migrationReady.then(() => remote.load(scope))
+  }, { immediate: true })
 
   return {
     ...remote,
-    loadConversationForCurrentInstance: () => remote.load(selectedInstance.value),
+    loadConversationForCurrentInstance: async () => {
+      await migrationReady
+      await remote.load(selectedInstance.value)
+    },
   }
 }
 
@@ -88,6 +95,7 @@ export function installAgentDevLauncher(session: AgentSession) {
     reset: () => session.reset(),
     abort: () => session.abort(),
     get running() { return session.running.value },
+    get runError() { return session.runError.value },
     get messages() { return session.messages.value },
     get events() { return session.events.value },
   }

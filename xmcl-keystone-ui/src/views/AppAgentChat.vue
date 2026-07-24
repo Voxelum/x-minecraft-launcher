@@ -37,6 +37,7 @@
           @click="reset"
         />
         <v-btn
+          data-testid="agent-close"
           icon="close"
           size="small"
           variant="text"
@@ -180,8 +181,9 @@
           auto-grow
           rows="1"
           max-rows="6"
-          @keydown.enter.exact.prevent="onSend"
-          @keydown.esc="hide"
+          @compositionstart="composing = true"
+          @compositionend="composing = false"
+          @keydown.enter.exact="onInputEnter"
         >
           <template #append-inner>
             <v-btn
@@ -207,7 +209,7 @@
           <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>A</kbd>
           <span>{{ t('agent.toggleHint') }}</span>
           <v-spacer />
-          <span v-if="lastError" class="text-error truncate">{{ lastError }}</span>
+          <span v-if="displayError" class="text-error truncate" :title="displayError">{{ displayError }}</span>
         </div>
       </div>
     </v-card>
@@ -216,9 +218,11 @@
 
 <script lang="ts" setup>
 import { kAgent, useCssAgent } from '@/composables/agent'
-import { useAgentChatBus, useAgnesSetupDocUrl } from '@/composables/agentChat'
+import { getAgentEscapeAction, shouldSubmitAgentInput } from '@/composables/agent/input'
+import { useAgentChatBus, useAgentChatStatus, useAgnesSetupDocUrl } from '@/composables/agentChat'
 import { useMarkdown } from '@/composables/markdown'
 import { injection } from '@/util/inject'
+import { useEventListener } from '@vueuse/core'
 import { computed, nextTick, ref, watch } from 'vue'
 import type { AgentContentPart as ContentPart } from '@xmcl/runtime-api'
 
@@ -236,14 +240,18 @@ const activeAgent = computed(() => (selectedAgent.value === 'css' ? cssAgent : c
 
 const available = computed(() => activeAgent.value.available.value)
 const running = computed(() => activeAgent.value.running.value)
+const anyRunning = computed(() => commonAgent.running.value || cssAgent.running.value)
+const runError = computed(() => activeAgent.value.runError.value)
 const messages = computed(() => activeAgent.value.messages.value)
 const events = computed(() => activeAgent.value.events.value)
 
 const { render: renderMd } = useMarkdown()
 const setupDocUrl = useAgnesSetupDocUrl()
 
-const isShown = ref(false)
+const chatStatus = useAgentChatStatus()
+const isShown = chatStatus.shown
 const input = ref('')
+const composing = ref(false)
 const lastError = ref('')
 const scrollEl = ref<HTMLElement | null>(null)
 
@@ -289,6 +297,7 @@ const liveStatus = computed(() => {
   }
   return t('agent.thinking')
 })
+const displayError = computed(() => lastError.value || runError.value)
 
 const suggestions = computed(() => (selectedAgent.value === 'css'
   ? [
@@ -307,6 +316,7 @@ const emptyHint = computed(() => (selectedAgent.value === 'css'
 
 // Clear any transient error when switching agents.
 watch(selectedAgent, () => { lastError.value = '' })
+watch(anyRunning, value => { chatStatus.running.value = value }, { immediate: true })
 
 function messageText(content: string | ContentPart[] | null | undefined): string {
   if (!content) return ''
@@ -344,6 +354,12 @@ async function onSend() {
   }
 }
 
+function onInputEnter(event: KeyboardEvent) {
+  if (!shouldSubmitAgentInput(event, composing.value)) return
+  event.preventDefault()
+  void onSend()
+}
+
 function quickSend(text: string) {
   input.value = text
   onSend()
@@ -355,6 +371,14 @@ function reset() {
   lastError.value = ''
 }
 function abort() { activeAgent.value.abort() }
+
+useEventListener(window, 'keydown', (event: KeyboardEvent) => {
+  if (!isShown.value || event.key !== 'Escape' || event.isComposing || composing.value) return
+  event.preventDefault()
+  event.stopImmediatePropagation()
+  if (getAgentEscapeAction(running.value) === 'abort') abort()
+  else hide()
+}, { capture: true })
 
 const { push } = useRouter()
 function openSettings() {

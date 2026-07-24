@@ -28,10 +28,13 @@ function capabilitySection(profile: AgentPromptProfile) {
       : 'Use only the tools listed above. Read current state before modifying it.',
   ]
   if (names.has('bash')) {
-    lines.push('Use `bash help` and `bash <command> --help` to discover exact launcher command syntax.')
+    lines.push('The `bash` tool accepts exactly one XMCL command as its input. Do not prefix the input with `bash` and do not use pipes, redirects, `&&`, or `||`.')
+    lines.push('Start with `help` or `help <command>`. Runtime commands include `market`, `version`, and `loader` for content search and mod-loader management.')
   }
   if (profile.policy.hasUi && names.has('ui')) {
     lines.push('The `ui` tool is available for navigation, selection, confirmation, and DOM inspection.')
+    lines.push('Do not use DOM inspection to discover backend capabilities or compensate for a missing runtime command.')
+    lines.push('For `select_instance`, use an exact path returned by `instance list`, or an unambiguous instance name.')
   } else {
     lines.push('No UI capability is available. Do not navigate, inspect DOM, select UI state, prompt the user, or claim to have seen the interface.')
   }

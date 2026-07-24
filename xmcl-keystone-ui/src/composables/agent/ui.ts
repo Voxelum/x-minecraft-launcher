@@ -33,6 +33,7 @@ function outline(el: Element, maxDepth: number, depth = 0): unknown {
 export interface AgentUiContext {
   router: Router
   selectedInstance: Ref<string>
+  instances: Readonly<Ref<Array<{ path: string; name: string }>>>
   selectAccount(id: string): void
 }
 
@@ -43,8 +44,16 @@ export function createAgentUiHandler(context: AgentUiContext) {
       return { ok: true, path: input.path }
     }
     if (input.action === 'select_instance') {
-      context.selectedInstance.value = input.path
-      return { ok: true, path: input.path }
+      const exact = context.instances.value.find(instance => instance.path === input.path)
+      const named = context.instances.value.filter(instance => instance.name === input.path)
+      const instance = exact ?? (named.length === 1 ? named[0] : undefined)
+      if (!instance) {
+        throw new Error(named.length > 1
+          ? `Instance name is ambiguous; use an exact path: ${input.path}`
+          : `Unknown instance path or name: ${input.path}`)
+      }
+      context.selectedInstance.value = instance.path
+      return { ok: true, path: instance.path }
     }
     if (input.action === 'select_account') {
       context.selectAccount(input.id)
