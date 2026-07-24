@@ -120,13 +120,13 @@ import { kInstance } from '@/composables/instance'
 import { injection } from '@/util/inject'
 import { InstanceModsServiceKey, MarketType } from '@xmcl/runtime-api'
 import { clientModrinthV2, clientCurseforgeV1 } from '@/util/clients'
-import { kGamepad } from '@/composables/gamepad'
+import { useGamepad } from '@/composables/gamepad'
 import './gamepad.css'
 
 const { t } = useI18n()
 const { notify } = useNotifier()
 
-const gamepad = injection(kGamepad)
+const gamepad = useGamepad()
 const buttonALabel = gamepad.buttonA
 const buttonBLabel = gamepad.buttonB
 
@@ -253,6 +253,7 @@ async function installSuggestedMod() {
 
 // Offer the controller mod once per instance when the gamepad is active.
 function maybeSuggestControllerMod() {
+  if (gamepad.disableModPrompt.value) return
   if (!gamepad.enabled.value || !gamepad.connected.value) return
   if (!suggestedMod.value) return
   const key = `gamepad_mod_offered_${instancePath.value}`
@@ -281,6 +282,11 @@ watch(dialogShown, (shown) => {
   if (shown) {
     gamepad.registerContext('mod-suggest', {
       onConfirm: () => {
+        const active = document.activeElement as HTMLElement
+        if (active && active.closest('.gp-mod-dialog') && active.tagName === 'BUTTON') {
+          active.click()
+          return
+        }
         if (!modInstallSuccess.value) installSuggestedMod()
         else hide()
       },

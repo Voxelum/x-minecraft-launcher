@@ -12,9 +12,9 @@ export type VSharedTooltipParam = {
 const { blocked, stack, setValue } = useSharedTooltipData()
 
 interface AttachedListeners {
-  onEnter: (e: MouseEvent) => void
-  onLeave: (e: MouseEvent) => void
-  onClick: (e: MouseEvent) => void
+  onEnter: (e?: Event) => void
+  onLeave: (e?: Event) => void
+  onClick: (e?: Event) => void
 }
 
 const LISTENERS_KEY = Symbol('vSharedTooltip.listeners')
@@ -149,8 +149,15 @@ function bind(el: AttachedEl, bindings: DirectiveBinding<any>) {
     setValue(stack.value.length > 0)
   }
 
+  const onFocusEnter = (_e?: Event) => {
+    if (localStorage.getItem('gamepad_focus_tooltips') === 'false') return
+    onEnter()
+  }
+
   el.addEventListener('mouseenter', onEnter)
   el.addEventListener('mouseleave', onLeave)
+  el.addEventListener('focusin', onFocusEnter)
+  el.addEventListener('focusout', onLeave)
   el.addEventListener('click', onClick)
   el[LISTENERS_KEY] = { onEnter, onLeave, onClick }
 }
@@ -160,6 +167,8 @@ function unbind(el: AttachedEl) {
   if (listeners) {
     el.removeEventListener('mouseenter', listeners.onEnter)
     el.removeEventListener('mouseleave', listeners.onLeave)
+    el.removeEventListener('focusin', listeners.onEnter)
+    el.removeEventListener('focusout', listeners.onLeave)
     el.removeEventListener('click', listeners.onClick)
     delete el[LISTENERS_KEY]
   }
