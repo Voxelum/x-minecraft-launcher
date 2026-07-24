@@ -54,8 +54,21 @@ agent:
   suggestion3: 构建一个整合包：为我想要的功能查找模组并安装到此实例
   thinking: 思考中…
   callingTool: 正在调用 {name}…
+  confirmTitle: 确认 Agent 操作
+  confirmCancel: 取消
+  confirmAccept: 继续
   inputPlaceholder: 向 Agent 提问…（Enter 发送，Shift+Enter 换行）
   disabledPlaceholder: Agent 已禁用
+  toolArguments: 参数
+  toolResult: 结果
+  toolRunning: 等待结果…
+  marketResultCount: 共 {count} 个结果
+  marketInstall: 安装
+  marketInstalled: 已安装
+  marketConfirmTitle: 安装模组
+  marketConfirmMessage: 要将 {name} 安装到当前实例吗？
+  marketConfirmTarget: 目标：{instance}
+  marketInstallFailed: 模组安装失败
   toggleHint: 切换
 ago:
   day: '{duration} 天前'

@@ -39,6 +39,9 @@ SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 agent:
   callingTool: calling {name}…
+  confirmAccept: Continue
+  confirmCancel: Cancel
+  confirmTitle: Confirm agent action
   disabledPlaceholder: Agent disabled
   emptyHint: >-
     Ask the agent to inspect your instance, toggle mods, read logs, or diagnose
@@ -63,7 +66,17 @@ agent:
     instance
   thinking: thinking…
   title: XMCL Agent
+  toolArguments: Arguments
+  toolResult: Result
+  toolRunning: Waiting for result…
   toggleHint: to toggle
+  marketConfirmMessage: Install {name} into the current instance?
+  marketConfirmTarget: 'Target: {instance}'
+  marketConfirmTitle: Install mod
+  marketInstall: Install
+  marketInstalled: Installed
+  marketInstallFailed: Failed to install mod
+  marketResultCount: '{count} results'
 ago:
   day: '{duration} day ago | {duration} days ago'
   hour: '{duration} hour ago | {duration} hours ago'

@@ -79,6 +79,28 @@
 
         <div class="sidebar-notch__spacer" />
 
+        <!-- Agent -->
+        <AppSideBarNotchItem
+          v-if="developerMode"
+          data-testid="nav-agent"
+          icon="auto_awesome"
+          :icon-size="iconSize"
+          :tooltip="() => ({ text: t('agent.title'), direction: tooltipDirection })"
+          clickable
+          @click="openAgent"
+        >
+          <v-progress-circular
+            v-if="agentRunningInBackground"
+            data-testid="nav-agent-running"
+            class="sidebar-notch-item__icon"
+            color="primary"
+            indeterminate
+            :size="iconSize"
+            :width="2"
+          />
+          <v-icon v-else class="sidebar-notch-item__icon" :size="iconSize">auto_awesome</v-icon>
+        </AppSideBarNotchItem>
+
         <!-- Multiplayer -->
         <AppSideBarNotchItem
           data-testid="nav-multiplayer"
@@ -116,6 +138,7 @@
 
 <script lang="ts" setup>
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
+import { useAgentChatEntry, useAgentChatStatus } from '@/composables/agentChat'
 import { useDialog } from '@/composables/dialog'
 import { useInstanceGroup } from '@/composables/instanceGroup'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
@@ -136,6 +159,10 @@ const { state } = injection(kSettingsState)
 const { gameProfile } = injection(kUserContext)
 const { position, align, scale, autoHide } = useInjectSidebarSettings()
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
+const developerMode = computed(() => state.value?.developerMode ?? false)
+const { open: openAgent } = useAgentChatEntry()
+const agentChatStatus = useAgentChatStatus()
+const agentRunningInBackground = computed(() => agentChatStatus.running.value && !agentChatStatus.shown.value)
 
 const { t } = useI18n()
 

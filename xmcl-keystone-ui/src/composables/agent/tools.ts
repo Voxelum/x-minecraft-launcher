@@ -1,6 +1,14 @@
-import type { Instance } from '@xmcl/instance'
-import type { GameOptionsState, JavaRecord, UserProfile } from '@xmcl/runtime-api'
+import type { AgentTool, AgentToolResult } from '@earendil-works/pi-agent-core'
+import { Type } from '@earendil-works/pi-ai'
+import { useRendererCommandHost } from '@/composables/commandHost'
+import { kInstanceVersionInstall } from '@/composables/instanceVersionInstall'
+import { getLatestNeoforge } from '@/composables/version'
+import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
+import { injection } from '@/util/inject'
+import type { Resource } from '@xmcl/resource'
 import {
+  formatCommandHelp,
+  formatHelp,
   InstanceLogServiceKey,
   InstanceModsServiceKey,
   InstanceOptionsServiceKey,
@@ -9,1210 +17,493 @@ import {
   InstanceServiceKey,
   InstanceShaderPacksServiceKey,
   LaunchServiceKey,
-  ModpackServiceKey,
+  parseCli,
+  ThemeServiceKey,
+  VersionMetadataServiceKey,
 } from '@xmcl/runtime-api'
-import type { Router } from 'vue-router'
 import { useService } from '../service'
-import type { ModFile } from '@/util/mod'
-import type { InstanceResourcePack } from '../instanceResourcePack'
-import type { InstanceShaderFile } from '../instanceShaderPack'
-import type { InstanceSaveFile } from '../instanceSave'
-import type { InstanceJavaStatus } from '../instanceJava'
-import type { InstanceResolveVersion } from '../instanceVersion'
-import type { InstanceInstallInstruction } from '../instanceVersionInstall'
-import type { Tool } from './loop'
+import { requestAgentConfirmation } from './confirm'
+import { type AgentCommandOperations, type AgentLoader, assertAgentCommandSyntax, createAgentRuntimeCommands } from './commands'
+import type { AgentRunContext } from './local'
+import { createAgentUiHandler } from './ui'
+import { kInstances } from '../instances'
+import { kUserContext } from '../user'
 
-/**
- * Reactive handles the agent reads at tool-call time. Every field is a `Ref`
- * (or `.value`-bearing computed) so the agent always sees fresh state — the
- * loop is async and instance / mods may change mid-conversation.
- */
-export interface AgentContext {
-  router: Router
-  instance: Ref<Instance>
-  instances: Ref<Instance[]>
-  selectedInstancePath: Ref<string>
-  resolvedVersion: Ref<InstanceResolveVersion | undefined>
-  javaStatus: Ref<InstanceJavaStatus | undefined>
-  java: Ref<JavaRecord | undefined>
-  userProfile: Ref<UserProfile>
-  mods: Ref<ModFile[]>
-  resourcePacks: Ref<InstanceResourcePack[]>
-  shaderPacks: Ref<InstanceShaderFile[]>
-  selectedShaderPack: Ref<string>
-  saves: Ref<InstanceSaveFile[]>
-  gameOptions: Ref<GameOptionsState | undefined>
-  /** Diagnosis of the current instance's version install (missing/corrupted files). */
-  installInstruction: Ref<InstanceInstallInstruction | undefined>
-  /** Download & install whatever the current instance is missing to make it launchable. */
-  fixInstanceInstall: () => Promise<void>
-  enableResourcePack: (packs: InstanceResourcePack[] | string[]) => Promise<unknown>
-  disableResourcePack: (packs: InstanceResourcePack[]) => Promise<unknown>
-  selectShaderPack: (fileName: string | undefined) => void
-  launch: () => Promise<void>
-  killGame: (side?: 'client' | 'server', force?: boolean) => Promise<void>
-  // ── Mod maintenance (mirrors the "Mod options" page) ──────────────────
-  /** Resolve missing *required* dependencies of the installed mods. */
-  checkModDependencies: () => Promise<unknown>
-  /** Download & install the dependencies found by {@link checkModDependencies}. */
-  installModDependencies: () => Promise<unknown>
-  /** Find installed library mods that nothing depends on. */
-  scanUnusedMods: () => Promise<unknown>
-  /** Disable the unused libraries found by {@link scanUnusedMods}. */
-  disableUnusedMods: () => Promise<unknown>
-  /** Look up newer versions of the installed mods. */
-  checkModUpdates: (opts: { policy?: string; skipVersion?: boolean }) => Promise<unknown>
-  /** Apply the updates found by {@link checkModUpdates}. */
-  applyModUpdates: () => Promise<unknown>
-  // ── Java ──────────────────────────────────────────────────────────────
-  /** All Java runtimes the launcher knows about. */
-  javaList: Ref<JavaRecord[]>
-  /** Current instance Java problem, if any (`invalid` / `incompatible`). */
-  javaIssue: Ref<'invalid' | 'incompatible' | undefined>
-  /** Install the Java runtime the current instance requires. */
-  installJava: () => Promise<unknown>
-  // ── Local server (mirrors the "Launch server" dialog) ─────────────────
-  /** Diagnose the local server: installed version, running count, EULA, server.properties, deployed mods. */
-  getServerStatus: () => Promise<unknown>
-  /** Install the dedicated-server build for the current instance (server version + server jar + dependencies). */
-  installServer: () => Promise<unknown>
-  /** Accept or revoke the Minecraft EULA required to run a server. */
-  setServerEula: (accepted: boolean) => Promise<unknown>
-  /** Patch server.properties (port, motd, max-players, online-mode, ...). */
-  setServerProperties: (props: Record<string, string | number | boolean>) => Promise<unknown>
-  /** Deploy enabled mods into the server folder. Defaults to the server-compatible enabled mods. */
-  deployServerMods: (paths?: string[]) => Promise<unknown>
-  /** Launch the current instance as a local server (installs first if needed). */
-  launchServer: (opts?: { nogui?: boolean }) => Promise<unknown>
-  /** Overwrite a known server-root file (ops.json, whitelist.json, banned-*.json, etc.) with raw text. */
-  setServerFile: (file: string, content: string) => Promise<unknown>
-  // ── Accounts (switch among already-logged-in users; no credential handling) ──
-  /** All user accounts already logged into the launcher. */
-  accounts: Ref<UserProfile[]>
-  /** Select which logged-in account is active by its id. */
-  selectAccount: (id: string) => void
+function textResult<T>(value: unknown, details?: T): AgentToolResult<T | unknown> {
+  const text = typeof value === 'string' ? value : JSON.stringify(value)
+  return { content: [{ type: 'text', text }], details: details ?? value }
 }
 
-// ── Shape helpers ──────────────────────────────────────────────────────
-// Trim fat fields (icon data URLs, full description, parsed manifests) so the
-// LLM context stays small. The agent can always ask for a specific file by
-// path if it needs more detail.
-
-function trimInstance(i: Instance) {
-  return {
-    path: i.path,
-    name: i.name,
-    runtime: i.runtime,
-    version: i.version,
-    java: i.java,
-    server: i.server,
-    description: i.description,
-    lastPlayed: i.lastPlayedDate,
-    playtime: i.playtime,
-  }
-}
-
-function trimMod(m: ModFile) {
-  return {
-    modId: m.modId,
-    name: m.name,
-    version: m.version,
-    fileName: m.fileName,
-    path: m.path,
-    enabled: m.enabled,
-    loaders: m.modLoaders,
-    description: m.description?.slice(0, 200),
-  }
-}
-
-function trimResourcePack(p: InstanceResourcePack) {
-  return {
-    id: p.id,
-    name: p.name,
-    fileName: p.fileName,
-    enabled: p.enabled,
-    path: p.path,
-    acceptingRange: p.acceptingRange,
-  }
-}
-
-function trimShaderPack(s: InstanceShaderFile) {
-  return {
-    fileName: s.fileName,
-    path: s.path,
-    enabled: s.enabled,
-  }
-}
-
-function trimSave(s: InstanceSaveFile) {
-  return {
-    name: s.name,
-    path: s.path,
-    enabled: s.enabled,
-    levelName: s.levelName,
-    gameVersion: s.gameVersion,
-    lastPlayed: s.lastPlayed,
-  }
-}
-
-/**
- * Condense the (potentially huge) install diagnosis into a small, LLM-friendly
- * shape: a human-readable list of issues plus the raw counts. Heavy arrays
- * (full library / asset lists) are reduced to counts so the context stays tiny.
- */
-function summarizeInstallInstruction(inst: InstanceInstallInstruction | undefined) {
-  if (!inst) {
-    return { available: false, note: 'No diagnosis available yet (no instance selected or version not resolved).' }
-  }
-  const missingLibraries = inst.libraries?.length ?? 0
-  const missingAssets = inst.assets?.length ?? 0
-  const issues: string[] = []
-  const resolved = !!inst.resolvedVersion
-  if (!resolved) issues.push('version not resolved — core game files are likely not installed')
-  if (inst.jar) issues.push(`minecraft jar missing or corrupted (${inst.jar})`)
-  if (inst.forge) issues.push(`forge not installed (minecraft ${inst.forge.minecraft}, forge ${inst.forge.version})`)
-  if (inst.optifine) issues.push(`optifine not installed (${inst.optifine})`)
-  if (inst.profile) issues.push('mod-loader install profile must be run (Forge/NeoForge post-processing)')
-  if (inst.assetsIndex) issues.push('assets index missing or corrupted')
-  if (missingLibraries) issues.push(`${missingLibraries} missing or corrupted libraries`)
-  if (missingAssets) issues.push(`${missingAssets} missing assets`)
-  if (inst.java) issues.push(`required Java (major ${inst.java.majorVersion}) is not installed`)
-  return {
-    available: true,
-    instance: inst.instance,
-    runtime: inst.runtime,
-    selectedVersion: inst.version,
-    resolvedVersion: inst.resolvedVersion,
-    healthy: issues.length === 0,
-    issues,
-    counts: { libraries: missingLibraries, assets: missingAssets },
-  }
-}
-
-// ── Routes recognised by `navigate` ─────────────────────────────────────
-// Keep this list in sync with `xmcl-keystone-ui/src/windows/main/router.ts`.
-// Restricting the LLM to a known set avoids it inventing routes that would
-// 404 to a blank pane.
-const KNOWN_ROUTES = [
-  '/',
-  '/mods',
-  '/resourcepacks',
-  '/shaderpacks',
-  '/save',
-  '/base-setting',
-  '/me',
-  '/multiplayer',
-  '/setting',
-  '/store',
-] as const
-
-// ── Virtual FS ──────────────────────────────────────────────────────────
-// A read-only view over launcher state shaped like the instance directory.
-// Paths are POSIX-style and rooted at the instance folder. The agent always
-// uses relative paths (no leading `/`) and the resolver finds the right
-// composable / service call.
-
-type VfsEntry =
-  | { type: 'dir'; name: string; description: string }
-  | { type: 'file'; name: string; size?: number; description?: string }
-
-const DISABLED_SUFFIX = '.disabled'
-
-function stripDisabled(name: string): string {
-  return name.endsWith(DISABLED_SUFFIX) ? name.slice(0, -DISABLED_SUFFIX.length) : name
-}
-
-/**
- * Tokenise a single shell command into argv, honouring single/double quotes
- * and backslash escapes. Returns `{ error }` on malformed quoting. The
- * restricted `bash` tool is the only caller, so there is intentionally no
- * support for pipes, redirection, globbing, or variable expansion — those
- * characters are treated literally.
- */
-function tokenizeCommand(input: string): string[] | { error: string } {
+function tokenize(input: string) {
   const tokens: string[] = []
   let token = ''
-  let inToken = false
+  let quote = ''
   for (let i = 0; i < input.length; i++) {
-    const c = input[i]
-    if (c === "'") {
-      inToken = true
-      i++
-      while (i < input.length && input[i] !== "'") { token += input[i]; i++ }
-      if (i >= input.length) return { error: 'unterminated single quote' }
-    } else if (c === '"') {
-      inToken = true
-      i++
-      while (i < input.length && input[i] !== '"') {
-        if (input[i] === '\\' && i + 1 < input.length) { token += input[i + 1]; i += 2 }
-        else { token += input[i]; i++ }
+    const char = input[i]
+    if (quote) {
+      if (char === quote) quote = ''
+      else if (char === '\\' && quote === '"' && i + 1 < input.length) token += input[++i]
+      else token += char
+    } else if (char === '"' || char === "'") {
+      quote = char
+    } else if (/\s/.test(char)) {
+      if (token) {
+        tokens.push(token)
+        token = ''
       }
-      if (i >= input.length) return { error: 'unterminated double quote' }
-    } else if (c === '\\' && i + 1 < input.length) {
-      inToken = true
-      token += input[i + 1]
-      i++
-    } else if (/\s/.test(c)) {
-      if (inToken) { tokens.push(token); token = ''; inToken = false }
     } else {
-      inToken = true
-      token += c
+      token += char
     }
   }
-  if (inToken) tokens.push(token)
+  if (quote) throw new Error('Unterminated quote')
+  if (token) tokens.push(token)
   return tokens
 }
 
-type AssetKind = 'mods' | 'resourcepacks' | 'shaderpacks' | 'saves' | 'logs' | 'crash-reports' | 'launch-failures' | 'config'
-
-function pathKind(path: string): { kind: AssetKind | 'instance.json' | 'options.txt' | 'root'; rest: string } {
-  const clean = path.replace(/^\.?\/+/, '').replace(/\/+$/, '')
-  if (!clean) return { kind: 'root', rest: '' }
-  if (clean === 'instance.json') return { kind: 'instance.json', rest: '' }
-  if (clean === 'options.txt') return { kind: 'options.txt', rest: '' }
-  const [head, ...rest] = clean.split('/')
-  if (head === 'mods' || head === 'resourcepacks' || head === 'shaderpacks' || head === 'saves' || head === 'logs' || head === 'crash-reports' || head === 'launch-failures' || head === 'config') {
-    return { kind: head, rest: rest.join('/') }
+function summarizeResource(resource: Resource) {
+  return {
+    name: resource.name,
+    fileName: resource.fileName,
+    path: resource.path,
+    size: resource.size,
+    hash: resource.hash,
+    metadata: resource.metadata,
   }
-  return { kind: 'root', rest: clean }
 }
 
-// ── Local-server virtual subtree (`server/...`) ──────────────────────────
-// The dedicated server lives at `<instance>/server/`. The log & config
-// services join their own subdir to the path they are given, so pointing them
-// at `<instance>/server` reads `<instance>/server/{logs,config,crash-reports}`.
-
-/** Absolute path of the local-server subfolder for an instance. */
-function serverDir(instancePath: string): string {
-  return instancePath.replace(/[\\/]+$/, '') + '/server'
+async function confirmInstall(title: string, message: string, detail: string, destructive = false) {
+  const accepted = await requestAgentConfirmation({
+    action: 'confirm',
+    title,
+    message,
+    details: [detail],
+    confirmLabel: destructive ? 'Delete' : 'Install',
+    destructive,
+  })
+  if (!accepted) throw new Error('User declined the action')
 }
 
-type ServerKind = 'root' | 'mods' | 'config' | 'logs' | 'crash-reports' | 'server.properties' | 'eula.txt' | 'rootfile' | 'unknown'
-
-/** Top-level server admin files exposed as raw text (parallels the backend allowlist). */
-const SERVER_ROOT_FILES = ['ops.json', 'whitelist.json', 'banned-ips.json', 'banned-players.json', 'usercache.json'] as const
-
-/**
- * Parse a `server/...` virtual path into the local-server subtree, or `null`
- * when the path is not under `server/` (so callers fall back to the client vfs).
- */
-function serverPathKind(path: string): { kind: ServerKind; rest: string } | null {
-  const clean = path.replace(/^\.?\/+/, '').replace(/\/+$/, '')
-  if (clean !== 'server' && !clean.startsWith('server/')) return null
-  const sub = clean === 'server' ? '' : clean.slice('server/'.length)
-  if (!sub) return { kind: 'root', rest: '' }
-  if (sub === 'server.properties') return { kind: 'server.properties', rest: '' }
-  if (sub === 'eula.txt') return { kind: 'eula.txt', rest: '' }
-  if ((SERVER_ROOT_FILES as readonly string[]).includes(sub)) return { kind: 'rootfile', rest: sub }
-  const [head, ...rest] = sub.split('/')
-  if (head === 'mods' || head === 'config' || head === 'logs' || head === 'crash-reports') {
-    return { kind: head, rest: rest.join('/') }
-  }
-  return { kind: 'unknown', rest: sub }
-}
-
-// ── Factory ─────────────────────────────────────────────────────────────
-
-export interface ToolRegistry {
-  /** Tools always exposed to the LLM. */
-  base: Tool[]
-  /**
-   * Lazy tool packs the agent can load on demand via `load_tools`. Keys
-   * appear in the system prompt so the model knows what is available.
-   */
-  loadable: Record<string, { description: string; load: () => Promise<Tool[]> }>
-}
-
-export function createXmclTools(ctx: AgentContext): ToolRegistry {
-  const instanceMods = useService(InstanceModsServiceKey)
-  const launchService = useService(LaunchServiceKey)
-  const logService = useService(InstanceLogServiceKey)
+export function useAgentToolFactory() {
+  const modsService = useService(InstanceModsServiceKey)
   const resourcePackService = useService(InstanceResourcePacksServiceKey)
   const shaderPackService = useService(InstanceShaderPacksServiceKey)
-  const modpackService = useService(ModpackServiceKey)
-  const optionsService = useService(InstanceOptionsServiceKey)
-  const instanceService = useService(InstanceServiceKey)
   const savesService = useService(InstanceSavesServiceKey)
+  const optionsService = useService(InstanceOptionsServiceKey)
+  const logService = useService(InstanceLogServiceKey)
+  const launchService = useService(LaunchServiceKey)
+  const instanceService = useService(InstanceServiceKey)
+  const metadata = useService(VersionMetadataServiceKey)
+  const themeService = useService(ThemeServiceKey)
+  const versionInstaller = injection(kInstanceVersionInstall)
+  const instances = injection(kInstances)
+  const user = injection(kUserContext)
+  const router = useRouter()
+  const commandHost = useRendererCommandHost()
 
-  const tools: Tool[] = []
-  const tool = (t: Tool) => { tools.push(t) }
-
-  function modByPathOrId(needle: string): ModFile | undefined {
-    return ctx.mods.value.find((m) => m.path === needle || m.fileName === needle || m.modId === needle)
-  }
-
-  // ── Local-server vfs helpers (read the `<instance>/server/` subtree) ──
-
-  async function listServerVfs(sp: { kind: ServerKind; rest: string }, instPath: string) {
-    const sdir = serverDir(instPath)
-    if (sp.kind === 'root') {
-      const [serverMods, eula, props] = await Promise.all([
-        instanceMods.getServerInstanceMods(instPath).catch(() => [] as Array<{ fileName: string; ino: number }>),
-        optionsService.getEULA(instPath).catch(() => false),
-        optionsService.getServerProperties(instPath).catch(() => ({} as Record<string, string>)),
-      ])
-      const entries: VfsEntry[] = [
-        { type: 'dir', name: 'mods', description: `${serverMods.length} server-deployed mods` },
-        { type: 'dir', name: 'config', description: 'server mod config files' },
-        { type: 'dir', name: 'logs', description: 'server log files (latest.log, ...)' },
-        { type: 'dir', name: 'crash-reports', description: 'server crash reports' },
-        { type: 'file', name: 'server.properties', description: `parsed server.properties${props.port ? ` (port ${props.port})` : ''}` },
-        { type: 'file', name: 'eula.txt', description: `EULA ${eula ? 'accepted' : 'not accepted'}` },
-        { type: 'file', name: 'ops.json', description: 'server operators (raw JSON)' },
-        { type: 'file', name: 'whitelist.json', description: 'server whitelist (raw JSON)' },
-        { type: 'file', name: 'banned-players.json', description: 'banned players (raw JSON)' },
-        { type: 'file', name: 'banned-ips.json', description: 'banned IPs (raw JSON)' },
-        { type: 'file', name: 'usercache.json', description: 'player name/uuid cache (raw JSON)' },
-      ]
-      return { path: sdir, entries }
-    }
-    if (sp.kind === 'mods') {
-      const serverMods = await instanceMods.getServerInstanceMods(instPath).catch(() => [] as Array<{ fileName: string; ino: number }>)
-      return serverMods.map((m) => ({ type: 'file' as const, name: m.fileName, path: `server/mods/${m.fileName}`, ino: m.ino }))
-    }
-    if (sp.kind === 'config') {
-      const files = await optionsService.getInstanceConfigFiles(sdir).catch(() => [] as string[])
-      return files.map((f) => ({ type: 'file' as const, name: f, path: `server/config/${f}` }))
-    }
-    if (sp.kind === 'logs') return await logService.listLogs(sdir)
-    if (sp.kind === 'crash-reports') return await logService.listCrashReports(sdir)
-    return { error: `not a server directory: server/${sp.rest}` }
-  }
-
-  async function readServerVfs(sp: { kind: ServerKind; rest: string }, instPath: string, tailLines: unknown) {
-    const sdir = serverDir(instPath)
-    if (sp.kind === 'server.properties') {
-      try {
-        return await optionsService.getServerProperties(instPath)
-      } catch (e) {
-        return { error: `cannot read server.properties: ${e instanceof Error ? e.message : String(e)}` }
-      }
-    }
-    if (sp.kind === 'eula.txt') {
-      return { accepted: await optionsService.getEULA(instPath).catch(() => false) }
-    }
-    if (sp.kind === 'rootfile') {
-      try {
-        const text = await optionsService.getServerFile(instPath, sp.rest)
-        return text === '' ? { note: `server/${sp.rest} does not exist yet`, content: '' } : text
-      } catch (e) {
-        return { error: `cannot read server/${sp.rest}: ${e instanceof Error ? e.message : String(e)}` }
-      }
-    }
-    if (sp.kind === 'config') {
-      if (!sp.rest) return { error: 'server/config is a directory; use vfs_list' }
-      try {
-        return await optionsService.getInstanceConfig(sdir, sp.rest)
-      } catch (e) {
-        return { error: `cannot read server/config/${sp.rest}: ${e instanceof Error ? e.message : String(e)}` }
-      }
-    }
-    if (sp.kind === 'logs') {
-      if (!sp.rest) return { error: 'server/logs is a directory; use vfs_list' }
-      const full = await logService.getLogContent(sdir, sp.rest)
-      const tail = Math.min(Number(tailLines ?? 200) || 200, 2000)
-      const lines = full.split('\n')
-      return lines.length > tail ? lines.slice(-tail).join('\n') : full
-    }
-    if (sp.kind === 'crash-reports') {
-      if (!sp.rest) return { error: 'server/crash-reports is a directory; use vfs_list' }
-      return await logService.getCrashReportContent(sdir, sp.rest)
-    }
-    if (sp.kind === 'mods') {
-      if (!sp.rest) return { error: 'server/mods is a directory; use vfs_list' }
-      const serverMods = await instanceMods.getServerInstanceMods(instPath).catch(() => [] as Array<{ fileName: string; ino: number }>)
-      const m = serverMods.find((x) => x.fileName === sp.rest)
-      if (!m) return { error: `server mod not found: ${sp.rest}` }
-      return { fileName: m.fileName, ino: m.ino, note: 'Server-deployed mod. Parsed metadata is not available here; if the same file is in the client mods/, read mods/<fileName> for details.' }
-    }
-    if (sp.kind === 'root') return { error: 'server is a directory; use vfs_list server' }
-    return { error: `unknown server path: server/${sp.rest}` }
-  }
-
-  // ── Context (read) ──────────────────────────────────────────────────
-
-  tool({
-    name: 'list_instances',
-    description: 'List all known instances (path, name, runtime). The currently selected instance is reported in the system prompt; use this only to find others.',
-    readonly: true,
-    parameters: { type: 'object', properties: {} },
-    async execute() {
-      return ctx.instances.value.map(trimInstance)
-    },
+  const uiHandler = createAgentUiHandler({
+    router,
+    selectedInstance: instances.selectedInstance,
+    instances: instances.allInstances,
+    selectAccount: user.select,
+    confirm: requestAgentConfirmation,
   })
 
-  tool({
-    name: 'select_instance',
-    description: 'Switch the currently selected instance by its path.',
-    parameters: {
-      type: 'object',
-      properties: { path: { type: 'string', description: 'Instance path' } },
-      required: ['path'],
-    },
-    async execute(args) {
-      const path = String(args.path ?? '')
-      if (!ctx.instances.value.some((i) => i.path === path)) {
-        return { error: `instance not found: ${path}` }
-      }
-      ctx.selectedInstancePath.value = path
-      return { ok: true, path }
-    },
-  })
+  function currentInstance(context: AgentRunContext) {
+    const instance = instances.allInstances.value.find(value => value.path === context.scope)
+    if (!instance) throw new Error(`Current instance is unavailable: ${context.scope}`)
+    return instance
+  }
 
-  // ── Virtual FS ──────────────────────────────────────────────────────
-
-  tool({
-    name: 'vfs_list',
-    description: 'List entries under a virtual directory rooted at the current instance. Known directories: `mods`, `resourcepacks`, `shaderpacks`, `saves`, `logs`, `crash-reports`, `config`, and `server` (the LOCAL dedicated server folder: `server/mods`, `server/config`, `server/logs`, `server/crash-reports`). Use `""` or `"."` for the root.',
-    readonly: true,
-    parameters: {
-      type: 'object',
-      properties: { path: { type: 'string', description: 'Relative directory path' } },
-    },
-    async execute(args) {
-      const path = String(args.path ?? '')
-      const inst = ctx.instance.value
-      if (!inst.path) return { error: 'no instance selected' }
-
-      const sp = serverPathKind(path)
-      if (sp) return await listServerVfs(sp, inst.path)
-
-      const { kind } = pathKind(path)
-
-      if (kind === 'root') {
-        const entries: VfsEntry[] = [
-          { type: 'dir', name: 'mods', description: `${ctx.mods.value.length} mods (${ctx.mods.value.filter((m) => m.enabled).length} enabled)` },
-          { type: 'dir', name: 'resourcepacks', description: `${ctx.resourcePacks.value.length} packs` },
-          { type: 'dir', name: 'shaderpacks', description: `${ctx.shaderPacks.value.length} packs${ctx.selectedShaderPack.value ? `, active: ${ctx.selectedShaderPack.value}` : ''}` },
-          { type: 'dir', name: 'saves', description: `${ctx.saves.value.length} worlds` },
-          { type: 'dir', name: 'logs', description: 'minecraft log files' },
-          { type: 'dir', name: 'crash-reports', description: 'minecraft crash reports' },
-          { type: 'dir', name: 'launch-failures', description: 'launcher-captured abnormal-exit dumps (xmcl-abnormal-exit-*)' },
-          { type: 'dir', name: 'config', description: 'mod config files (grep / edit_config)' },
-          { type: 'dir', name: 'server', description: 'local dedicated server files (mods, config, logs, server.properties); empty until a server is installed' },
-          { type: 'file', name: 'instance.json', description: 'full launcher instance settings' },
-          { type: 'file', name: 'options.txt', description: 'parsed minecraft options.txt' },
-        ]
-        return { path: inst.path, entries }
-      }
-
-      if (kind === 'mods') {
-        return ctx.mods.value.map((m) => ({
-          type: 'file' as const,
-          name: m.fileName,
-          path: m.path,
-          enabled: m.enabled,
-          modId: m.modId,
-          version: m.version,
-          loaders: m.modLoaders,
-        }))
-      }
-      if (kind === 'resourcepacks') return ctx.resourcePacks.value.map(trimResourcePack)
-      if (kind === 'shaderpacks') {
+  async function createVfsTools(context: AgentRunContext): Promise<AgentTool[]> {
+    const instancePath = context.scope
+    const resources = async (kind: 'mods' | 'resourcepacks' | 'shaderpacks') => {
+      const service = kind === 'mods' ? modsService : kind === 'resourcepacks' ? resourcePackService : shaderPackService
+      return (await service.watch(instancePath)).files
+    }
+    const list = async (path: string) => {
+      const clean = path.replace(/^\.?\//, '').replace(/\/$/, '')
+      if (!clean) {
         return {
-          selected: ctx.selectedShaderPack.value,
-          entries: ctx.shaderPacks.value.map(trimShaderPack),
+          path: instancePath,
+          entries: ['mods', 'resourcepacks', 'shaderpacks', 'saves', 'logs', 'crash-reports', 'launch-failures', 'config', 'game-processes', 'instance.json', 'options.txt'],
         }
       }
-      if (kind === 'saves') return ctx.saves.value.map(trimSave)
-      if (kind === 'logs') return await logService.listLogs(inst.path)
-      if (kind === 'crash-reports') return await logService.listCrashReports(inst.path)
-      if (kind === 'launch-failures') return await logService.listLaunchFailures(inst.path)
-      if (kind === 'config') {
-        const files = await optionsService.getInstanceConfigFiles(inst.path)
-        return files.map((f) => ({ type: 'file' as const, name: f, path: `config/${f}` }))
-      }
-      return { error: `not a directory: ${path}` }
-    },
-  })
-
-  tool({
-    name: 'vfs_read',
-    description: 'Read a virtual file. Examples: `instance.json` (full instance settings), `options.txt` (parsed game options), `mods/<fileName>` (mod metadata), `resourcepacks/<id>` (pack metadata), `shaderpacks/<fileName>`, `saves/<name>`, `logs/<name>` (last 200 lines by default), `crash-reports/<name>`, `config/<file>` (raw config text). For the LOCAL dedicated server, prefix with `server/`: `server/server.properties` (parsed), `server/eula.txt`, `server/ops.json`, `server/whitelist.json`, `server/banned-players.json`, `server/banned-ips.json`, `server/usercache.json` (raw JSON text), `server/config/<file>`, `server/logs/<name>`, `server/crash-reports/<name>`, `server/mods/<fileName>`.',
-    readonly: true,
-    parameters: {
-      type: 'object',
-      properties: {
-        path: { type: 'string', description: 'Relative file path' },
-        tailLines: { type: 'number', description: 'For log files: number of trailing lines to return (default 200, max 2000)' },
-      },
-      required: ['path'],
-    },
-    async execute(args) {
-      const inst = ctx.instance.value
-      if (!inst.path) return { error: 'no instance selected' }
-      const path = String(args.path ?? '')
-
-      const sp = serverPathKind(path)
-      if (sp) return await readServerVfs(sp, inst.path, args.tailLines)
-
-      const { kind, rest } = pathKind(path)
-
-      if (kind === 'instance.json') return inst
-      if (kind === 'options.txt') return ctx.gameOptions.value ?? { error: 'options.txt not loaded yet' }
-      if (kind === 'mods') {
-        const m = modByPathOrId(rest)
-        if (!m) return { error: `mod not found: ${rest}` }
-        return trimMod(m)
-      }
-      if (kind === 'resourcepacks') {
-        const p = ctx.resourcePacks.value.find((p) => p.id === rest || p.fileName === rest)
-        if (!p) return { error: `resourcepack not found: ${rest}` }
-        return trimResourcePack(p)
-      }
-      if (kind === 'shaderpacks') {
-        const s = ctx.shaderPacks.value.find((s) => s.fileName === rest)
-        if (!s) return { error: `shaderpack not found: ${rest}` }
-        return trimShaderPack(s)
+      if (clean === 'mods' || clean === 'resourcepacks' || clean === 'shaderpacks') return (await resources(clean)).map(summarizeResource)
+      if (clean === 'saves') return (await savesService.watch(instancePath)).saves
+      if (clean === 'logs') return logService.listLogs(instancePath)
+      if (clean === 'crash-reports') return logService.listCrashReports(instancePath)
+      if (clean === 'launch-failures') return logService.listLaunchFailures(instancePath)
+      if (clean === 'config') return optionsService.getInstanceConfigFiles(instancePath)
+      if (clean === 'game-processes') return (await launchService.getGameProcesses()).filter(process => process.options.gameDirectory === instancePath)
+      throw new Error(`Not a virtual directory: ${path}`)
+    }
+    const read = async (path: string, tailLines?: number) => {
+      const clean = path.replace(/^\.?\//, '')
+      if (clean === 'instance.json') return currentInstance(context)
+      if (clean === 'options.txt') return optionsService.getGameOptions(instancePath)
+      const [kind, ...parts] = clean.split('/')
+      const rest = parts.join('/')
+      if (kind === 'mods' || kind === 'resourcepacks' || kind === 'shaderpacks') {
+        const resource = (await resources(kind)).find(value => value.fileName === rest || value.path === rest || value.name === rest)
+        return resource ? summarizeResource(resource) : { error: `${kind} entry not found: ${rest}` }
       }
       if (kind === 'saves') {
-        const s = ctx.saves.value.find((s) => s.name === rest || s.path === rest)
-        if (!s) return { error: `save not found: ${rest}` }
-        return trimSave(s)
+        return (await savesService.watch(instancePath)).saves.find(value => value.name === rest || value.path === rest)
+          ?? { error: `save not found: ${rest}` }
       }
-      if (kind === 'logs') {
-        const full = await logService.getLogContent(inst.path, rest)
-        const tail = Math.min(Number(args.tailLines ?? 200) || 200, 2000)
-        const lines = full.split('\n')
-        return lines.length > tail ? lines.slice(-tail).join('\n') : full
+      if (kind === 'logs' || kind === 'launch-failures') {
+        const content = await logService.getLogContent(instancePath, rest)
+        return content.split('\n').slice(-Math.min(Math.max(1, tailLines ?? 200), 2000)).join('\n')
       }
-      if (kind === 'crash-reports') return await logService.getCrashReportContent(inst.path, rest)
-      if (kind === 'config') {
-        if (!rest) return { error: 'config is a directory; use vfs_list or grep' }
-        try {
-          return await optionsService.getInstanceConfig(inst.path, rest)
-        } catch (e) {
-          return { error: `cannot read config/${rest}: ${e instanceof Error ? e.message : String(e)}` }
-        }
-      }
-      if (kind === 'launch-failures') {
-        // Stored as a log file in the same `logs/` folder, just with a fixed
-        // prefix — so we read it the same way.
-        const full = await logService.getLogContent(inst.path, rest)
-        const tail = Math.min(Number(args.tailLines ?? 200) || 200, 2000)
-        const lines = full.split('\n')
-        return lines.length > tail ? lines.slice(-tail).join('\n') : full
-      }
-      return { error: `unknown path: ${path}` }
-    },
-  })
+      if (kind === 'crash-reports') return logService.getCrashReportContent(instancePath, rest)
+      if (kind === 'config') return optionsService.getInstanceConfig(instancePath, rest)
+      if (kind === 'game-processes') return await launchService.getGameProcess(Number(parts.at(-1))) ?? { error: `game process not found: ${rest}` }
+      return { error: `unknown virtual path: ${path}` }
+    }
 
-  // ── Virtual shell: mv (enable/disable) + rm (delete) ──────────────
-
-  function findMod(name: string): ModFile | undefined {
-    return modByPathOrId(name) ?? modByPathOrId(stripDisabled(name))
-  }
-  function findResourcePack(name: string): InstanceResourcePack | undefined {
-    const by = (n: string) => ctx.resourcePacks.value.find((p) => p.id === n || p.fileName === n)
-    return by(name) ?? by(stripDisabled(name))
-  }
-  function findShaderPack(name: string): InstanceShaderFile | undefined {
-    const by = (n: string) => ctx.shaderPacks.value.find((s) => s.fileName === n)
-    return by(name) ?? by(stripDisabled(name))
-  }
-
-  // `mv <src> <dest>` is the enable/disable primitive. A file is considered
-  // disabled when its name carries a trailing `.disabled` suffix, so toggling
-  // state is just a rename. Mods rename on disk; resourcepacks/shaderpacks are
-  // toggled through their own services but expose the same contract.
-  async function runMv(argv: string[]) {
-    const positionals = argv.filter((a) => !a.startsWith('-'))
-    if (positionals.length !== 2) {
-      return { error: `mv expects exactly 2 paths: \`mv <src> <dest>\` (got ${positionals.length})` }
-    }
-    const [src, dest] = positionals
-    const s = pathKind(src)
-    const d = pathKind(dest)
-    if (s.kind !== d.kind) {
-      return { error: `mv cannot move across directories (${s.kind} -> ${d.kind})` }
-    }
-    if (s.kind !== 'mods' && s.kind !== 'resourcepacks' && s.kind !== 'shaderpacks') {
-      return { error: `mv only operates under mods/, resourcepacks/, shaderpacks/ (the enable/disable protocol). Got: ${src}` }
-    }
-    if (stripDisabled(s.rest) !== stripDisabled(d.rest)) {
-      return { error: 'mv may only toggle the `.disabled` suffix to enable/disable a file; renaming to a different name is not supported.' }
-    }
-    const srcDisabled = s.rest.endsWith(DISABLED_SUFFIX)
-    const dstDisabled = d.rest.endsWith(DISABLED_SUFFIX)
-    if (srcDisabled === dstDisabled) {
-      return { error: 'mv is a no-op: append `.disabled` to disable, or strip it to enable.' }
-    }
-    const enabling = !dstDisabled
-    const inst = ctx.instance.value.path
-    if (!inst) return { error: 'no instance selected' }
-
-    if (s.kind === 'mods') {
-      const mod = findMod(s.rest)
-      if (!mod) return { error: `mod not found: ${s.rest}` }
-      if (enabling) await instanceMods.enable({ path: inst, files: [mod.path] })
-      else await instanceMods.disable({ path: inst, files: [mod.path] })
-      return { ok: true, action: enabling ? 'enabled' : 'disabled', mod: mod.fileName }
-    }
-    if (s.kind === 'resourcepacks') {
-      const pack = findResourcePack(s.rest)
-      if (!pack) return { error: `resourcepack not found: ${s.rest}` }
-      if (enabling) await ctx.enableResourcePack([pack])
-      else await ctx.disableResourcePack([pack])
-      return { ok: true, action: enabling ? 'enabled' : 'disabled', resourcepack: pack.fileName }
-    }
-    const shader = findShaderPack(s.rest)
-    if (!shader) return { error: `shaderpack not found: ${s.rest}` }
-    if (enabling) ctx.selectShaderPack(shader.fileName)
-    else if (ctx.selectedShaderPack.value === shader.fileName) ctx.selectShaderPack(undefined)
-    return { ok: true, action: enabling ? 'enabled' : 'disabled', shaderpack: shader.fileName }
-  }
-
-  // `rm <path...>` deletes files. Only the three resource folders are
-  // deletable — anything else is refused so the model cannot wipe configs,
-  // logs, or the instance manifest without explicit user action in the UI.
-  async function runRm(argv: string[]) {
-    const positionals = argv.filter((a) => !a.startsWith('-'))
-    if (!positionals.length) return { error: 'rm expects at least one path' }
-    const inst = ctx.instance.value.path
-    if (!inst) return { error: 'no instance selected' }
-    const mods: string[] = []
-    const rps: string[] = []
-    const sps: string[] = []
-    const rejected: string[] = []
-    for (const p of positionals) {
-      const { kind, rest } = pathKind(p)
-      const id = rest || p
-      if (kind === 'mods') {
-        mods.push(findMod(id)?.path ?? id)
-      } else if (kind === 'resourcepacks') {
-        const found = findResourcePack(id)
-        if (found?.path) rps.push(found.path)
-        else rejected.push(p)
-      } else if (kind === 'shaderpacks') {
-        const found = findShaderPack(id)
-        if (found?.path) sps.push(found.path)
-        else rejected.push(p)
-      } else {
-        rejected.push(p)
-      }
-    }
-    if (rejected.length) {
-      // Refuse the whole command so nothing is half-deleted. Deleting paths
-      // outside the resource folders needs explicit approval from the user.
-      return { error: `rm refused. Only files under mods/, resourcepacks/, shaderpacks/ may be deleted; deleting any other path requires the user to confirm in the launcher UI. Rejected: ${rejected.join(', ')}` }
-    }
-    if (mods.length) await instanceMods.uninstall({ path: inst, files: mods })
-    if (rps.length) await resourcePackService.uninstall({ path: inst, files: rps })
-    if (sps.length) await shaderPackService.uninstall({ path: inst, files: sps })
-    return { ok: true, deleted: { mods: mods.length, resourcepacks: rps.length, shaderpacks: sps.length } }
-  }
-
-  // `grep [-i] <pattern> [config/...]` searches config files for a regex.
-  // Scoped to the config/ tree so the model can inspect mod configuration
-  // without pulling whole files into context. With no path it scans every
-  // config file; a directory prefix (e.g. `config/foo`) narrows the search.
-  async function runGrep(argv: string[]) {
-    let ignoreCase = false
-    const positionals: string[] = []
-    for (const a of argv) {
-      if (a.startsWith('-') && a.length > 1) {
-        if (a.includes('i')) ignoreCase = true
-      } else {
-        positionals.push(a)
-      }
-    }
-    if (!positionals.length) {
-      return { error: 'grep expects a pattern: `grep <pattern> [config/...]`' }
-    }
-    const [pattern, ...paths] = positionals
-    let re: RegExp
-    try {
-      re = new RegExp(pattern, ignoreCase ? 'i' : '')
-    } catch (e) {
-      return { error: `invalid grep pattern: ${e instanceof Error ? e.message : String(e)}` }
-    }
-    const inst = ctx.instance.value.path
-    if (!inst) return { error: 'no instance selected' }
-
-    const prefixes: string[] = []
-    for (const p of (paths.length ? paths : ['config'])) {
-      const { kind, rest } = pathKind(p)
-      if (kind !== 'config') {
-        return { error: `grep only searches files under config/. Got: ${p}` }
-      }
-      prefixes.push(rest)
-    }
-    const allFiles = await optionsService.getInstanceConfigFiles(inst).catch(() => [] as string[])
-    const selected = new Set<string>()
-    for (const prefix of prefixes) {
-      if (!prefix) { allFiles.forEach((f) => selected.add(f)); continue }
-      for (const f of allFiles) {
-        if (f === prefix || f.startsWith(prefix + '/')) selected.add(f)
-      }
-    }
-    if (!selected.size) return { matches: [], note: 'no matching config files' }
-
-    const MAX_MATCHES = 200
-    const matches: { file: string; line: number; text: string }[] = []
-    let truncated = false
-    for (const rel of selected) {
-      let content: string
-      try {
-        content = await optionsService.getInstanceConfig(inst, rel)
-      } catch {
-        continue
-      }
-      if (content.length > 512 * 1024) continue
-      const lines = content.split('\n')
-      for (let i = 0; i < lines.length; i++) {
-        if (re.test(lines[i])) {
-          matches.push({ file: `config/${rel}`, line: i + 1, text: lines[i].slice(0, 400) })
-          if (matches.length >= MAX_MATCHES) { truncated = true; break }
-        }
-      }
-      if (truncated) break
-    }
-    return truncated ? { matches, truncated: true } : { matches }
-  }
-
-  tool({
-    name: 'bash',
-    description: [
-      'Run a restricted shell command over the current instance virtual filesystem.',
-      'Only three programs are supported — anything else is rejected:',
-      '',
-      '`mv <src> <dest>` — rename a file. This is how you enable/disable content.',
-      '  A file is DISABLED when its name ends with `.disabled`.',
-      '  - disable: `mv mods/foo.jar mods/foo.jar.disabled`',
-      '  - enable:  `mv mods/foo.jar.disabled mods/foo.jar`',
-      '  Works under mods/, resourcepacks/, shaderpacks/. Only the `.disabled`',
-      '  suffix may change — you cannot rename to a different base name.',
-      '  Shaderpacks are exclusive: enabling one disables the active pack.',
-      '',
-      '`rm <path...>` — delete files. Only paths under mods/, resourcepacks/,',
-      '  shaderpacks/ are allowed (e.g. `rm mods/foo.jar resourcepacks/bar`).',
-      '  Deleting any other path is refused. Confirm with the user first.',
-      '',
-      '`grep [-i] <pattern> [config/...]` — search config files for a regex',
-      '  (`-i` = case-insensitive). Only searches under config/. With no path it',
-      '  scans every config file; pass `config/sub` or `config/foo.toml` to narrow.',
-      '  Returns matching {file, line, text}. Use this before edit_config.',
-    ].join('\n'),
-    parameters: {
-      type: 'object',
-      properties: {
-        command: { type: 'string', description: 'A single `mv`, `rm`, or `grep` command' },
-      },
-      required: ['command'],
-    },
-    async execute(args) {
-      const command = String(args.command ?? '').trim()
-      if (!command) return { error: 'empty command' }
-      const argv = tokenizeCommand(command)
-      if (!Array.isArray(argv)) return argv
-      const [program, ...rest] = argv
-      if (program === 'mv') return runMv(rest)
-      if (program === 'rm') return runRm(rest)
-      if (program === 'grep') return runGrep(rest)
-      return { error: `unsupported command: \`${program}\`. Only \`mv\`, \`rm\`, and \`grep\` are allowed.` }
-    },
-  })
-
-  // ── Config file editing ────────────────────────────────────────────
-
-  tool({
-    name: 'edit_config',
-    description: [
-      'Edit a config file under config/ via literal string replacement. Reads the',
-      'file, replaces `match_string` with `replace_string`, and writes it back.',
-      'Only files under config/ may be edited. Every occurrence is replaced unless',
-      '`all` is false (then only the first). Fails if `match_string` is not present.',
-      'Use grep first to locate the exact text, and confirm the change with the user.',
-    ].join('\n'),
-    parameters: {
-      type: 'object',
-      properties: {
-        path: { type: 'string', description: 'Config file path, e.g. `config/foo.toml`' },
-        match_string: { type: 'string', description: 'Exact substring to find (literal, not a regex)' },
-        replace_string: { type: 'string', description: 'Replacement text' },
-        all: { type: 'boolean', description: 'Replace every occurrence (default true)' },
-      },
-      required: ['path', 'match_string', 'replace_string'],
-    },
-    async execute(args) {
-      const inst = ctx.instance.value.path
-      if (!inst) return { error: 'no instance selected' }
-      const p = String(args.path ?? '')
-      const { kind, rest } = pathKind(p)
-      if (kind !== 'config' || !rest) {
-        return { error: `edit_config only edits files under config/. Got: ${p}` }
-      }
-      const match = String(args.match_string ?? '')
-      if (!match) return { error: 'match_string is empty' }
-      const replacement = String(args.replace_string ?? '')
-      const all = args.all === undefined ? true : !!args.all
-      let content: string
-      try {
-        content = await optionsService.getInstanceConfig(inst, rest)
-      } catch (e) {
-        return { error: `cannot read config/${rest}: ${e instanceof Error ? e.message : String(e)}` }
-      }
-      const idx = content.indexOf(match)
-      if (idx < 0) return { error: `match_string not found in config/${rest}` }
-      let next: string
-      let replaced: number
-      if (all) {
-        const parts = content.split(match)
-        replaced = parts.length - 1
-        next = parts.join(replacement)
-      } else {
-        replaced = 1
-        next = content.slice(0, idx) + replacement + content.slice(idx + match.length)
-      }
-      await optionsService.setInstanceConfig(inst, rest, next)
-      return { ok: true, path: `config/${rest}`, replaced }
-    },
-  })
-
-  // ── Instance settings editing ──────────────────────────────────────
-
-  tool({
-    name: 'edit_instance',
-    description: [
-      'Edit the current instance settings (the fields in instance.json). Only the',
-      'properties you pass are changed; omitted properties are left untouched, so',
-      'read the current values first with `vfs_read instance.json`.',
-      'Memory values are in MB. Common fixes: raise `maxMemory` for out-of-memory',
-      'crashes, add JVM flags via `vmOptions`, point `java` at a specific runtime',
-      'path, set `resolution`, or toggle `fastLaunch` / `showLog`.',
-      'To change the Minecraft / mod-loader version, pass `runtime` (see its field',
-      'docs). The runtime change is merged over the current one; afterwards run',
-      '`diagnose_instance` then `repair_instance` to download & install the new',
-      'version before launching.',
-    ].join('\n'),
-    parameters: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', description: 'Instance display name' },
-        description: { type: 'string', description: 'Instance description' },
-        java: { type: 'string', description: 'Absolute path to a java executable; empty string to auto-detect' },
-        minMemory: { type: 'number', description: 'Min heap size in MB' },
-        maxMemory: { type: 'number', description: 'Max heap size in MB' },
-        assignMemory: { description: 'Memory auto-assign policy: true, "auto", or false' },
-        vmOptions: { type: 'array', items: { type: 'string' }, description: 'JVM arguments, e.g. ["-XX:+UseG1GC"]' },
-        mcOptions: { type: 'array', items: { type: 'string' }, description: 'Minecraft program arguments' },
-        env: { type: 'object', description: 'Launch environment variables (string -> string map)' },
-        resolution: {
-          type: 'object',
-          properties: {
-            width: { type: 'number' },
-            height: { type: 'number' },
-            fullscreen: { type: 'boolean' },
-          },
-          description: 'Game window resolution',
+    return [
+      {
+        name: 'vfs_list',
+        label: 'List instance files',
+        description: 'List a virtual directory for the explicitly selected instance.',
+        parameters: Type.Object({ path: Type.Optional(Type.String()) }),
+        executionMode: 'sequential',
+        async execute(_id, args: any) {
+          return textResult(await list(String(args.path ?? '')))
         },
-        runtime: {
-          type: 'object',
-          description: 'Minecraft & mod-loader versions. Merged over the current runtime, so pass only the fields you want to change. Use EXACTLY ONE mod loader: to switch loaders, set the new one and set the others to "" (empty string). When you change the Minecraft version you usually must also pick a loader version built for it. After editing runtime, run repair_instance to install the new version.',
-          properties: {
-            minecraft: { type: 'string', description: 'Minecraft version, e.g. "1.20.1"' },
-            forge: { type: 'string', description: 'Forge version (e.g. "47.2.0"); "" to disable' },
-            neoForged: { type: 'string', description: 'NeoForge version; "" to disable' },
-            fabricLoader: { type: 'string', description: 'Fabric loader version (e.g. "0.16.0"); "" to disable' },
-            quiltLoader: { type: 'string', description: 'Quilt loader version; "" to disable' },
-            optifine: { type: 'string', description: 'OptiFine version (e.g. "HD_U_I7"); "" to disable' },
-            labyMod: { type: 'string', description: 'LabyMod version; "" to disable' },
-          },
-        },
-        fastLaunch: { type: 'boolean', description: 'Skip launch pre-checks for a faster start' },
-        showLog: { type: 'boolean', description: 'Show the log window while the game runs' },
-        hideLauncher: { type: 'boolean', description: 'Hide the launcher after the game starts' },
-        prependCommand: { type: 'string', description: 'Command prepended before the java launch command' },
-        preExecuteCommand: { type: 'string', description: 'Command executed before launch' },
       },
-    },
-    async execute(args) {
-      const inst = ctx.instance.value
-      const path = inst.path
-      if (!path) return { error: 'no instance selected' }
-      const editable = [
-        'name', 'description', 'java', 'minMemory', 'maxMemory', 'assignMemory',
-        'vmOptions', 'mcOptions', 'env', 'resolution', 'fastLaunch', 'showLog',
-        'hideLauncher', 'prependCommand', 'preExecuteCommand',
-      ] as const
-      const payload: Record<string, unknown> = { instancePath: path }
-      const edited: string[] = []
-      for (const key of editable) {
-        if (Object.prototype.hasOwnProperty.call(args, key)) {
-          payload[key] = args[key]
-          edited.push(key)
-        }
-      }
-      // `runtime` is replaced wholesale by the backend, so merge the requested
-      // fields over the current runtime to avoid wiping the others. Reset
-      // `version` to '' so the launcher recomputes the version id from the new
-      // runtime (otherwise the stale version folder would be launched).
-      let runtimeChanged = false
-      if (Object.prototype.hasOwnProperty.call(args, 'runtime') && args.runtime && typeof args.runtime === 'object') {
-        payload.runtime = { ...inst.runtime, ...(args.runtime as Record<string, unknown>) }
-        payload.version = ''
-        edited.push('runtime')
-        runtimeChanged = true
-      }
-      if (!edited.length) return { error: 'no editable properties provided' }
-      try {
-        await instanceService.editInstance(payload as Parameters<typeof instanceService.editInstance>[0])
+      {
+        name: 'vfs_read',
+        label: 'Read instance data',
+        description: 'Read a virtual instance file or resource entry.',
+        parameters: Type.Object({ path: Type.String(), tailLines: Type.Optional(Type.Number()) }),
+        executionMode: 'sequential',
+        async execute(_id, args: any) {
+          return textResult(await read(args.path, args.tailLines))
+        },
+      },
+      {
+        name: 'vfs_rm',
+        label: 'Delete instance files',
+        description: 'Delete supported virtual paths after explicit user confirmation.',
+        parameters: Type.Object({ paths: Type.Array(Type.String()) }),
+        executionMode: 'sequential',
+        async execute(_id, args: any) {
+          await confirmInstall(
+            'Delete instance files',
+            `Delete ${args.paths.length} path${args.paths.length === 1 ? '' : 's'} from the selected instance?`,
+            args.paths.join('\n'),
+            true,
+          )
+          const results: unknown[] = []
+          for (const path of args.paths as string[]) {
+            const [kind, ...parts] = path.replace(/^\.?\//, '').split('/')
+            const rest = parts.join('/')
+            if (kind === 'mods' || kind === 'resourcepacks' || kind === 'shaderpacks') {
+              const service = kind === 'mods' ? modsService : kind === 'resourcepacks' ? resourcePackService : shaderPackService
+              const resource = (await resources(kind)).find(value => value.fileName === rest || value.path === rest || value.name === rest)
+              if (!resource) throw new Error(`${kind} entry not found: ${rest}`)
+              await service.uninstall({ path: instancePath, files: [resource.path] })
+            } else if (kind === 'saves') await savesService.deleteSave({ instancePath, saveName: rest })
+            else if (kind === 'logs' || kind === 'launch-failures') await logService.removeLog(instancePath, rest)
+            else if (kind === 'crash-reports') await logService.removeCrashReport(instancePath, rest)
+            else if (kind === 'config') await optionsService.removeInstanceConfig(instancePath, rest)
+            else throw new Error(`Unsupported delete path: ${path}`)
+            results.push({ deleted: path })
+          }
+          return textResult({ ok: true, results })
+        },
+      },
+      {
+        name: 'edit_config',
+        label: 'Edit instance config',
+        description: 'Edit a config file by exact literal replacement.',
+        parameters: Type.Object({
+          path: Type.String(),
+          match_string: Type.String(),
+          replace_string: Type.String(),
+          all: Type.Optional(Type.Boolean()),
+        }),
+        executionMode: 'sequential',
+        async execute(_id, args: any) {
+          const clean = args.path.replace(/^config\//, '')
+          const content = await optionsService.getInstanceConfig(instancePath, clean)
+          const index = content.indexOf(args.match_string)
+          if (index < 0) throw new Error(`match_string not found in ${args.path}`)
+          const next = args.all === false
+            ? content.slice(0, index) + args.replace_string + content.slice(index + args.match_string.length)
+            : content.split(args.match_string).join(args.replace_string)
+          await optionsService.setInstanceConfig(instancePath, clean, next)
+          return textResult({ ok: true, path: args.path })
+        },
+      },
+      {
+        name: 'edit_instance',
+        label: 'Edit instance',
+        description: 'Edit fields on the explicitly selected instance.',
+        parameters: Type.Object({}, { additionalProperties: true }),
+        executionMode: 'sequential',
+        async execute(_id, args: any) {
+          await instanceService.editInstance({ ...args, instancePath } as any)
+          return textResult({ ok: true, edited: Object.keys(args) })
+        },
+      },
+    ]
+  }
+
+  function loaderVersions(loader: AgentLoader, minecraft: string, refresh: boolean) {
+    if (loader === 'forge') return metadata.getForgeVersions(minecraft, refresh)
+    if (loader === 'neoforge') return metadata.getNeoForgedVersions(minecraft, refresh)
+    return loader === 'fabric' ? metadata.getFabricVersions(refresh) : metadata.getQuiltVersions(refresh)
+  }
+
+  function createCommandOperations(context: AgentRunContext): AgentCommandOperations {
+    return {
+      async searchModrinth(input, signal) {
+        const instance = currentInstance(context)
+        const facets: string[][] = [[`project_type:${input.type ?? 'mod'}`]]
+        const gameVersion = input.gameVersion ?? instance.runtime.minecraft
+        if (gameVersion) facets.push([`versions:${gameVersion}`])
+        if (input.loader) facets.push([`categories:${input.loader}`])
+        const result = await clientModrinthV2.searchProjects({
+          query: input.query,
+          facets: JSON.stringify(facets),
+          limit: input.limit,
+        }, signal)
         return {
-          ok: true,
-          edited,
-          ...(runtimeChanged
-            ? { note: 'Runtime changed and version reset. Run diagnose_instance / repair_instance to install the new version before launching.' }
-            : {}),
+          total: result.total_hits,
+          projects: result.hits,
+          presentation: {
+            type: 'market-project-list',
+            source: 'modrinth',
+            query: input.query,
+            total: result.total_hits,
+            items: result.hits.map(project => ({
+              provider: 'modrinth',
+              id: project.project_id,
+              title: project.title,
+              description: project.description,
+              icon: project.icon_url,
+              author: project.author,
+              downloads: project.downloads,
+            })),
+          },
         }
-      } catch (e) {
-        return { error: `editInstance failed: ${e instanceof Error ? e.message : String(e)}` }
-      }
-    },
-  })
-
-  // ── Install from market URIs ───────────────────────────────────────
-  // The `install` tool lives in the lazy `market` pack (see marketTools.ts)
-  // alongside the Modrinth / CurseForge search & metadata tools.
-
-  // ── Instance install (diagnose / repair) ────────────────────────────
-
-  tool({
-    name: 'diagnose_instance',
-    description: 'Diagnose the current instance\'s version installation: detect a missing or corrupted Minecraft jar, libraries, assets, asset index, mod loader (Forge / NeoForge / OptiFine install profile) or a required Java that is not installed. Returns `healthy: true` when nothing is wrong, otherwise a list of `issues`. Run this when a launch fails, the user reports missing files, or before repairing.',
-    readonly: true,
-    parameters: { type: 'object', properties: {} },
-    async execute() {
-      if (!ctx.instance.value.path) return { error: 'no instance selected' }
-      return summarizeInstallInstruction(ctx.installInstruction.value)
-    },
-  })
-
-  tool({
-    name: 'repair_instance',
-    description: 'Download and install whatever the current instance is missing (Minecraft jar, libraries, assets, mod loader, required Java) so it becomes launchable. Safe and idempotent — a no-op when nothing is missing. Use it to fix launch failures caused by an incomplete or corrupted installation. Returns the diagnosis before and after the repair so you can confirm it worked.',
-    parameters: { type: 'object', properties: {} },
-    async execute() {
-      if (!ctx.instance.value.path) return { error: 'no instance selected' }
-      const before = summarizeInstallInstruction(ctx.installInstruction.value)
-      if (before.available && before.healthy) {
-        return { ok: true, alreadyHealthy: true, note: 'Nothing to install — the instance is already complete.' }
-      }
-      await ctx.fixInstanceInstall()
-      const after = summarizeInstallInstruction(ctx.installInstruction.value)
-      return { ok: true, before, after }
-    },
-  })
-
-  // ── Navigation ───────────────────────────────────────────────────────
-
-  tool({
-    name: 'navigate',
-    description: `Navigate the UI to a route. Known routes: ${KNOWN_ROUTES.join(', ')}.`,
-    parameters: {
-      type: 'object',
-      properties: { path: { type: 'string', enum: [...KNOWN_ROUTES] } },
-      required: ['path'],
-    },
-    async execute(args) {
-      const path = String(args.path ?? '')
-      if (!KNOWN_ROUTES.includes(path as typeof KNOWN_ROUTES[number])) {
-        return { error: `unknown route: ${path}` }
-      }
-      await ctx.router.push(path)
-      return { ok: true, path }
-    },
-  })
-
-  // ── Launch / runtime ─────────────────────────────────────────────────
-
-  tool({
-    name: 'launch_game',
-    description: 'Launch the current instance with the active user. Returns once the launch handshake completes.',
-    parameters: { type: 'object', properties: {} },
-    async execute() {
-      await ctx.launch()
-      return { ok: true }
-    },
-  })
-
-  tool({
-    name: 'kill_game',
-    description: 'Kill the running Minecraft client for the current instance.',
-    parameters: {
-      type: 'object',
-      properties: {
-        force: { type: 'boolean', description: 'Force-terminate the process tree' },
       },
-    },
-    async execute(args) {
-      await ctx.killGame('client', !!args.force)
-      return { ok: true }
-    },
-  })
-
-  tool({
-    name: 'list_game_processes',
-    description: 'List Minecraft processes the launcher is tracking globally.',
-    readonly: true,
-    parameters: { type: 'object', properties: {} },
-    async execute() {
-      const procs = await launchService.getGameProcesses()
-      return procs.map((p) => ({
-        pid: p.pid,
-        side: p.side,
-        ready: p.ready,
-        gameDirectory: p.options.gameDirectory,
-        version: p.options.version,
-      }))
-    },
-  })
-
-  tool({
-    name: 'diagnose_server',
-    description: 'Report the LOCAL dedicated-server state for the current instance: whether the server build is installed (`installed` / `serverVersion`), how many server processes are running, whether the Minecraft EULA is accepted, the current server.properties, and the mods already deployed into the server folder. This is read-only and always available; load the `server` pack to actually install / configure / launch the server.',
-    readonly: true,
-    parameters: { type: 'object', properties: {} },
-    async execute() {
-      if (!ctx.instance.value.path) return { error: 'no instance selected' }
-      return ctx.getServerStatus()
-    },
-  })
-
-  // ── Shader options (which shaderpack the Iris / Oculus / vanilla loader uses) ──
-
-  tool({
-    name: 'get_shader_options',
-    description: 'Read the active shaderpack recorded in the instance shader options (optionsshaders.txt). Returns `{ shaderPack }`. Note: enabling/disabling shaderpack files is done with the `bash` `mv` tool; this reads which pack the shader loader is configured to use.',
-    readonly: true,
-    parameters: { type: 'object', properties: {} },
-    async execute() {
-      const path = ctx.instance.value.path
-      if (!path) return { error: 'no instance selected' }
-      try {
-        return await optionsService.getShaderOptions(path)
-      } catch (e) {
-        return { error: `cannot read shader options: ${e instanceof Error ? e.message : String(e)}` }
-      }
-    },
-  })
-
-  tool({
-    name: 'edit_shader_options',
-    description: 'Set which shaderpack the shader loader uses. `shaderPack` is a shaderpack file name (or `""` to disable). `loader` targets the right config file: `vanilla`/`iris`/`oculus` (default `vanilla`, i.e. optionsshaders.txt). Use `iris` or `oculus` only when the instance runs that specific shader mod.',
-    parameters: {
-      type: 'object',
-      properties: {
-        shaderPack: { type: 'string', description: 'Shaderpack file name, or "" to disable shaders' },
-        loader: { type: 'string', enum: ['vanilla', 'iris', 'oculus'], description: 'Which shader config to write (default vanilla)' },
+      async getModrinthVersions(input, signal) {
+        const instance = currentInstance(context)
+        const versions = await clientModrinthV2.getProjectVersions(input.project, {
+          gameVersions: input.gameVersion ?? instance.runtime.minecraft ? [input.gameVersion ?? instance.runtime.minecraft] : undefined,
+          loaders: input.loader ? [input.loader] : undefined,
+        }, signal)
+        return {
+          project: input.project,
+          versions: versions.slice(0, input.limit).map(version => ({
+            id: version.id,
+            name: version.name,
+            versionNumber: version.version_number,
+            gameVersions: version.game_versions,
+            loaders: version.loaders,
+            installRef: `modrinth:${input.project}@${version.id}`,
+          })),
+        }
       },
-      required: ['shaderPack'],
-    },
-    async execute(args) {
-      const path = ctx.instance.value.path
-      if (!path) return { error: 'no instance selected' }
-      const shaderPack = String(args.shaderPack ?? '')
-      const loader = String(args.loader ?? 'vanilla')
-      try {
-        if (loader === 'iris') await optionsService.editIrisShaderOptions({ instancePath: path, shaderPack })
-        else if (loader === 'oculus') await optionsService.editOculusShaderOptions({ instancePath: path, shaderPack })
-        else await optionsService.editShaderOptions({ instancePath: path, shaderPack })
-        return { ok: true, loader, shaderPack }
-      } catch (e) {
-        return { error: `cannot edit shader options: ${e instanceof Error ? e.message : String(e)}` }
-      }
-    },
-  })
-
-  // ── Lazy-loadable packs ─────────────────────────────────────────────
-
-  const loadable: ToolRegistry['loadable'] = {
-    market: {
-      description: 'Search Modrinth & CurseForge for mods / resourcepacks / shaderpacks / modpacks, read project descriptions and versions, and `install` them into the current instance. Load this when the user wants to find or add new content.',
-      async load() {
-        const m = await import('./marketTools')
-        return m.createMarketTools(ctx, { instanceMods, resourcePackService, shaderPackService, modpackService })
+      async searchCurseforge(input, signal) {
+        const instance = currentInstance(context)
+        const result = await clientCurseforgeV1.searchMods({
+          searchFilter: input.query,
+          classId: 6,
+          gameVersion: input.gameVersion ?? instance.runtime.minecraft,
+          pageSize: input.limit,
+        }, signal)
+        return {
+          total: result.pagination.totalCount,
+          projects: result.data,
+          presentation: {
+            type: 'market-project-list',
+            source: 'curseforge',
+            query: input.query,
+            total: result.pagination.totalCount,
+            items: result.data.map(project => ({
+              provider: 'curseforge',
+              id: String(project.id),
+              title: project.name,
+              description: project.summary,
+              icon: project.logo?.thumbnailUrl || project.logo?.url,
+              author: project.authors?.map(author => author.name).join(', '),
+              downloads: project.downloadCount,
+            })),
+          },
+        }
       },
-    },
-    troubleshoot: {
-      description: 'Diagnose & fix things that stop the game from launching or running well: missing required mod dependencies (a very common crash cause), outdated mods, unused/orphan library mods, AND Java problems (wrong major version, invalid or missing runtime). Load this for any crash / won\'t-launch / poor-performance investigation. Always run the matching `check_*` / `diagnose_*` before applying a fix.',
-      async load() {
-        const [maint, java] = await Promise.all([import('./modMaintenanceTools'), import('./javaTools')])
-        return [...maint.createModMaintenanceTools(ctx), ...java.createJavaTools(ctx)]
+      async getCurseforgeFiles(input, signal) {
+        const instance = currentInstance(context)
+        const result = await clientCurseforgeV1.getModFiles({
+          modId: input.project,
+          gameVersion: input.gameVersion ?? instance.runtime.minecraft,
+          pageSize: input.limit,
+        }, signal)
+        return {
+          project: input.project,
+          files: result.data.map(file => ({
+            id: file.id,
+            name: file.displayName,
+            filename: file.fileName,
+            gameVersions: file.gameVersions,
+            installRef: `curseforge:${input.project}/${file.id}`,
+          })),
+        }
       },
-    },
-    server: {
-      description: 'Manage the LOCAL dedicated server for the current instance: install the server build, accept the Minecraft EULA & edit server.properties, deploy mods into the server folder, edit admin files (ops/whitelist/bans via `write_server_file`), then start / stop the server. Load this when the user wants to set up, configure, run, or stop a local server (as opposed to the normal client game). `diagnose_server` is already in the base toolset; read server files via `vfs_read server/...`.',
-      async load() {
-        const m = await import('./serverTools')
-        return m.createServerTools(ctx)
+      async listLoaderVersions(input) {
+        const minecraft = input.minecraft ?? currentInstance(context).runtime.minecraft
+        const result = await loaderVersions(input.loader, minecraft, input.refresh)
+        const versions = Array.isArray(result) ? result : result.loaderVersions
+        return { loader: input.loader, minecraft, versions: versions.slice(0, input.limit) }
       },
-    },
-    worlds: {
-      description: 'Manage the instance saves / worlds: import a world from a zip or folder, export a world out, clone/duplicate a world, delete a world, and link a singleplayer world as the dedicated-server world. Load this when the user wants to move, copy, back up, or remove worlds.',
-      async load() {
-        const m = await import('./worldsTools')
-        return m.createWorldsTools(ctx, { savesService })
+      async installLoader(input) {
+        const instance = currentInstance(context)
+        const minecraft = instance.runtime.minecraft
+        const available = await loaderVersions(input.loader, minecraft, false)
+        let version = input.version
+        if (input.loader === 'forge') {
+          const values = available as Awaited<ReturnType<typeof metadata.getForgeVersions>>
+          version ??= values.find(value => value.type === 'recommended')?.version ?? values[0]?.version
+        } else if (input.loader === 'neoforge') {
+          version ??= getLatestNeoforge(available as string[])
+        } else {
+          const values = (available as Awaited<ReturnType<typeof metadata.getFabricVersions>>).loaderVersions
+          version ??= values.find(value => value.stable !== false)?.version ?? values[0]?.version
+        }
+        if (!version) throw new Error(`No ${input.loader} version is available for Minecraft ${minecraft}`)
+        await confirmInstall('Install mod loader', `Install ${input.loader} ${version} into ${instance.name}?`, `${minecraft} / ${input.loader} ${version}`)
+        const runtime = {
+          ...instance.runtime,
+          forge: '',
+          neoForged: '',
+          fabricLoader: '',
+          quiltLoader: '',
+          optifine: '',
+          labyMod: '',
+        }
+        if (input.loader === 'forge') runtime.forge = version
+        else if (input.loader === 'neoforge') runtime.neoForged = version
+        else if (input.loader === 'fabric') runtime.fabricLoader = version
+        else runtime.quiltLoader = version
+        const installedVersion = await versionInstaller.installRuntime(context.scope, runtime)
+        return { ok: true, instance: context.scope, loader: input.loader, version, installedVersion }
       },
-    },
-    instance_admin: {
-      description: 'Manage instances themselves (not their contents): create a new instance, duplicate the current one, delete an instance, or import a modpack file from disk as a new instance. Load this when the user wants to add, clone, or remove a whole instance.',
-      async load() {
-        const m = await import('./instanceAdminTools')
-        return m.createInstanceAdminTools(ctx, { instanceService, modpackService })
-      },
-    },
-    account: {
-      description: 'Switch which already-logged-in account is active. Read-only listing plus selecting an existing profile; it never handles passwords or performs a fresh login. Load this when the user wants to play as a different account they already added.',
-      async load() {
-        const m = await import('./accountTools')
-        return m.createAccountTools(ctx)
-      },
-    },
+    }
   }
 
-  return { base: tools, loadable }
-}
+  async function createBashTool(context: AgentRunContext): Promise<AgentTool> {
+    const runtimeCommands = createAgentRuntimeCommands(createCommandOperations(context))
+    const runtimeByName = new Map(runtimeCommands.map(command => [command.name, command]))
+    const rootHelp = () => {
+      const runtimeHelp = runtimeCommands.map(command => `  ${command.name.padEnd(28)} ${command.description}`).join('\n')
+      return `${formatHelp(commandHost.registry, { programName: 'bash' })}\n\nAgent renderer commands:\n${runtimeHelp}\n\nRun \`help <command>\` for exact syntax.`
+    }
+    const commandHelp = (name: string) => {
+      const runtime = runtimeByName.get(name)
+      if (runtime) return [`Usage: ${runtime.usage}`, '', runtime.description, '', ...runtime.details].join('\n')
+      const command = commandHost.registry.list({ mode: 'cli' }).find(value => (value.cli?.name ?? value.id.replace(/\./g, ' ')) === name)
+      if (!command) throw new Error(`Unknown command: ${name}`)
+      return formatCommandHelp(command, { programName: 'bash' })
+    }
+    return {
+      name: 'bash',
+      label: 'XMCL command',
+      description: 'Run one restricted XMCL renderer command.',
+      parameters: Type.Object({ command: Type.String() }),
+      executionMode: 'sequential',
+      async execute(_id, args: any, signal) {
+        let argv = tokenize(args.command)
+        if (argv[0] === 'bash') argv = argv.slice(1)
+        assertAgentCommandSyntax(argv)
+        if (!argv.length || (argv[0] === 'help' && argv.length === 1)) return textResult(rootHelp())
+        if (argv[0] === 'help') return textResult(commandHelp(argv.slice(1).join(' ')))
+        const runtime = runtimeByName.get(argv[0])
+        if (runtime) return textResult(await runtime.execute(argv.slice(1), signal))
+        const candidates = commandHost.registry.list({ mode: 'cli' })
+          .map(command => ({ command, name: command.cli?.name ?? command.id.replace(/\./g, ' ') }))
+          .sort((a, b) => b.name.length - a.name.length)
+        const match = candidates.find(candidate => args.command === candidate.name || args.command.startsWith(`${candidate.name} `))
+        if (!match) throw new Error('Unsupported command. Run `help` to list commands.')
+        const parsed = parseCli([match.name, ...tokenize(args.command.slice(match.name.length).trim())], commandHost.registry)
+        if (parsed.kind === 'error') throw new Error(parsed.message)
+        if (parsed.kind !== 'command') return textResult(commandHelp(match.name))
+        if (parsed.commandId.endsWith('.install')) {
+          await confirmInstall(match.command.title, `Allow the agent to run ${match.command.title}?`, args.command)
+        }
+        const result = await commandHost.dispatch(parsed.commandId, parsed.input)
+        return textResult({ result })
+      },
+    }
+  }
 
-// ── System prompt ──────────────────────────────────────────────────────
+  function createUiTool(): AgentTool {
+    return {
+      name: 'ui',
+      label: 'Launcher UI',
+      description: 'Navigate or inspect the XMCL user interface. The run instance and user cannot be changed.',
+      parameters: Type.Union([
+        Type.Object({ action: Type.Literal('navigate'), path: Type.String() }),
+        Type.Object({ action: Type.Literal('confirm'), message: Type.String(), destructive: Type.Optional(Type.Boolean()) }),
+        Type.Object({ action: Type.Literal('query_dom'), selector: Type.String(), limit: Type.Optional(Type.Number()) }),
+        Type.Object({ action: Type.Literal('get_computed_style'), selector: Type.String(), properties: Type.Optional(Type.Array(Type.String())) }),
+        Type.Object({ action: Type.Literal('get_dom_outline'), selector: Type.Optional(Type.String()), maxDepth: Type.Optional(Type.Number()) }),
+      ]),
+      executionMode: 'sequential',
+      async execute(_id, input, signal) {
+        return textResult(await uiHandler(input as any, signal))
+      },
+    }
+  }
 
-export interface SystemPromptOptions {
-  locale: string
-  sessionContextMarkdown: string
-  loadable: Record<string, { description: string }>
-}
+  async function createLauncherTools(context: AgentRunContext) {
+    return [...await createVfsTools(context), await createBashTool(context), createUiTool()]
+  }
 
-const BASE_RULES = `You are the XMCL (X Minecraft Launcher) assistant. You help the user manage their Minecraft launcher: switching instances, installing or toggling mods / resourcepacks / shaders, launching the game, and diagnosing crashes from logs.
+  async function createCssTools() {
+    return [
+      {
+        name: 'get_custom_css',
+        label: 'Read custom CSS',
+        description: 'Read the current global custom CSS and enabled state.',
+        parameters: Type.Object({}),
+        async execute() {
+          const [css, theme] = await Promise.all([themeService.getCustomCss(), themeService.getCurrentTheme()])
+          return textResult({ css, enabled: !!theme?.settings?.customCssEnabled })
+        },
+      },
+      {
+        name: 'set_custom_css',
+        label: 'Write custom CSS',
+        description: 'Replace the complete global custom CSS document.',
+        parameters: Type.Object({ css: Type.String() }),
+        executionMode: 'sequential',
+        async execute(_id: string, args: any) {
+          await themeService.setCustomCss(args.css)
+          return textResult({ ok: true, length: args.css.length })
+        },
+      },
+      {
+        name: 'set_custom_css_enabled',
+        label: 'Enable custom CSS',
+        description: 'Enable or disable global custom CSS.',
+        parameters: Type.Object({ enabled: Type.Boolean() }),
+        executionMode: 'sequential',
+        async execute(_id: string, args: any) {
+          const current = await themeService.getCurrentTheme() ?? { ui: 'keystone', version: 1, assets: {}, settings: {} }
+          await themeService.setCurrentTheme({
+            ...current,
+            settings: { ...current.settings, customCssEnabled: args.enabled },
+          })
+          return textResult({ ok: true, enabled: args.enabled })
+        },
+      },
+      createUiTool(),
+    ] as AgentTool[]
+  }
 
-Rules:
-- The launcher session context block below is a snapshot taken when the conversation started. If something has changed since then, you will receive a "[launcher event] context changed" message in the chat — trust it over the snapshot.
-- Be proactive and take action. When the user reports a problem (a crash, a broken mod setup, a wrong setting) and you can identify a concrete fix, apply it immediately with the tools instead of asking whether you should. Do NOT ask for permission to perform a fix you are confident about — just do it, then briefly report what you changed. Only ask the user first when the choice is genuinely ambiguous (several equally valid options) or you are missing information you cannot obtain yourself.
-- Prefer the virtual filesystem tools (vfs_list, vfs_read) for exploration. \`instance.json\` returns the full instance settings; \`options.txt\` returns parsed Minecraft options. The LOCAL dedicated server's files live under the \`server/\` prefix: browse with \`vfs_list server\` and read \`server/server.properties\`, \`server/eula.txt\`, \`server/config/<file>\`, \`server/logs/<name>\`, \`server/crash-reports/<name>\`, \`server/mods/<fileName>\`. When diagnosing a server crash, read \`server/logs/latest.log\` and \`server/crash-reports/\`.
-- To change instance settings (memory, JVM args, java path, resolution, window/launch flags, name/description), use \`edit_instance\` — pass only the properties you want to change. Read \`vfs_read instance.json\` first to see current values. Memory is in MB. For out-of-memory crashes, raise \`maxMemory\` (and \`minMemory\`) or add JVM flags via \`vmOptions\`. To change the Minecraft or mod-loader version, pass \`runtime\` to \`edit_instance\` (it merges over the current runtime — use exactly one loader and clear the others with \`""\`), then run \`diagnose_instance\` and \`repair_instance\` to install the new version before launching.
-- To enable or disable a mod / resourcepack / shaderpack, use the \`bash\` tool with \`mv\` to toggle a trailing \`.disabled\` suffix on its virtual path: appending \`.disabled\` disables it, stripping the suffix enables it. e.g. \`mv mods/foo.jar mods/foo.jar.disabled\` (disable) or \`mv mods/foo.jar.disabled mods/foo.jar\` (enable). Shaderpacks are exclusive — enabling one disables the previously active pack.
-- To delete a mod / resourcepack / shaderpack, use the \`bash\` tool with \`rm\` on its virtual path (e.g. \`rm mods/foo.jar resourcepacks/bar\`). \`rm\` only works under \`mods/\`, \`resourcepacks/\`, \`shaderpacks/\`; deleting any other path is refused.
-- To add new content, load the \`market\` pack: find projects with \`modrinth_search\` / \`curseforge_search\`, then \`install\` with a target and market URIs (\`modrinth:projId:verId\`, \`curseforge:projId:fileId\`).
-- If the game fails to launch or files look missing/corrupted, run \`diagnose_instance\` to inspect the instance's version installation, then \`repair_instance\` to download and install whatever is missing (Minecraft jar, libraries, assets, mod loader, required Java). \`repair_instance\` is safe and idempotent — prefer it over telling the user to reinstall manually.
-- When a crash, launch failure, or performance problem looks mod- or Java-related, load the \`troubleshoot\` pack (it merges the old mod-maintenance + java tools): \`check_mod_dependencies\` finds missing *required* dependencies (a very common crash cause) and \`install_mod_dependencies\` adds them; \`check_mod_updates\` / \`apply_mod_updates\` upgrade outdated mods; \`scan_unused_mods\` / \`disable_unused_mods\` clean up orphan libraries; \`diagnose_java\` / \`install_java\` fix a wrong, invalid, or missing Java runtime (the instance auto-selects the new one). Always run the matching check / diagnose before applying.
-- \`diagnose_server\` (base, read-only) reports the LOCAL dedicated-server state at any time. To actually set up or run a server (distinct from the normal client game), load the \`server\` pack: \`install_server\` installs the server build, \`set_server_properties\` edits server.properties, \`deploy_server_mods\` copies mods into the server folder, \`launch_server\` / \`kill_server\` start and stop it. A server cannot launch until the Minecraft EULA is accepted — only call \`set_server_eula({ accepted: true })\` after the user explicitly agrees to https://aka.ms/MinecraftEULA; never accept it on their behalf. If \`launch_server\` returns \`ok: false\`, the server exited on startup (usually an incomplete/broken install) — read the newest \`launch-failures/\` entry (or server \`logs/\`) with \`vfs_read\` for the exact error, then reinstall or repair before retrying. Do not report a server as running unless \`launch_server\` returned \`ok: true\`.
-- To move, copy, back up, or remove worlds, load the \`worlds\` pack (import / export / clone / delete a save, or link a singleplayer world as the server world). To create, duplicate, delete, or import (from a modpack file) a whole instance, load the \`instance_admin\` pack. To switch to a different already-logged-in account, load the \`account\` pack. Deleting a world or an instance is destructive — confirm with the user first.
-- To change which shaderpack is active, toggle the shaderpack file with \`bash\` \`mv\` (exclusive — enabling one disables the active pack). To read or rewrite the shader loader's configured pack directly use \`get_shader_options\` / \`edit_shader_options\` (target \`vanilla\` / \`iris\` / \`oculus\`).
-- Mod config files live under \`config/\`. Browse with \`vfs_list config\`, read with \`vfs_read config/<file>\`, search across them via the \`bash\` tool's \`grep [-i] <pattern> [config/...]\`, and modify them with \`edit_config\` (literal \`match_string\` -> \`replace_string\`). Only \`config/\` files can be searched or edited this way.
-- For UI navigation, only use the routes exposed by the navigate tool.
-- Reversible fixes — toggling content with \`mv\`, installing content or missing dependencies (the \`market\` / \`troubleshoot\` packs), repairing a broken installation with \`repair_instance\`, editing instance settings with \`edit_instance\`, and editing config with \`edit_config\` — are safe: perform them directly without asking. Only pause to confirm before truly destructive or irreversible actions: deleting files (\`rm\`), deleting a world or instance, or killing a running game (kill_game).
-- For crash analysis: read the most recent crash report or launch failure, determine the root cause, then directly apply the fix when you know it (e.g. re-enable a disabled dependency, install a missing or conflicting mod, correct a config value, or run \`repair_instance\` when the install is incomplete/corrupted). Afterwards report the root cause and exactly what you changed. Only stop to ask if you genuinely cannot determine a safe fix on your own.`
-
-export function buildSystemPrompt(opts: SystemPromptOptions): string {
-  const loadablePacks = Object.entries(opts.loadable)
-    .map(([name, { description }]) => `- \`${name}\` — ${description}`)
-    .join('\n')
-  const loadableSection = loadablePacks
-    ? `\n\nLazy-loaded tool packs (call \`load_tools\` with the names you need; the new tools become available the next turn):\n${loadablePacks}`
-    : ''
-
-  return [
-    BASE_RULES,
-    `\n\nUser locale: ${opts.locale}. Reply to the user in this language. Keep tool names, paths, mod ids, and JSON arguments in English (do not translate them).`,
-    loadableSection,
-    `\n\n${opts.sessionContextMarkdown}`,
-  ].join('')
+  return { createLauncherTools, createCssTools }
 }

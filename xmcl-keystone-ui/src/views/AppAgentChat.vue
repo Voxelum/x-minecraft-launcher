@@ -5,7 +5,7 @@
     max-width="95vw"
     scrollable
   >
-    <v-card class="agent-card flex h-[85vh] max-h-[85vh] flex-col overflow-hidden">
+    <v-card data-testid="agent-dialog" class="agent-card flex h-[85vh] max-h-[85vh] flex-col overflow-hidden">
       <!-- Header -->
       <div class="flex items-center gap-2 px-4 py-3 border-b">
         <v-btn-toggle
@@ -37,6 +37,7 @@
           @click="reset"
         />
         <v-btn
+          data-testid="agent-close"
           icon="close"
           size="small"
           variant="text"
@@ -72,10 +73,11 @@
       <div
         v-else
         ref="scrollEl"
-        class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 py-2 space-y-3"
+        data-testid="agent-transcript"
+        class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 py-2 space-y-2"
       >
         <div
-          v-if="visibleMessages.length === 0"
+          v-if="transcriptItems.length === 0"
           class="h-full flex items-center justify-center text-center text-medium-emphasis px-6"
         >
           <div class="w-full max-w-sm">
@@ -97,70 +99,62 @@
           </div>
         </div>
 
-        <template v-for="(msg, i) in visibleMessages" :key="i">
+        <template v-for="item in transcriptItems" :key="item.key">
           <!-- Launcher context notice (injected as a user turn for the LLM) -->
-          <div v-if="msg.role === 'user' && isLauncherNotice(msg.content)" class="flex justify-center">
+          <div
+            v-if="item.kind === 'message' && item.message.role === 'user' && isLauncherNotice(item.message.content)"
+            class="flex justify-center"
+          >
             <div class="notice">
               <v-icon size="13" class="mr-1 flex-shrink-0">info</v-icon>
-              <span>{{ noticeText(msg.content) }}</span>
+              <span>{{ noticeText(item.message.content) }}</span>
             </div>
           </div>
 
           <!-- User -->
-          <div v-else-if="msg.role === 'user'" class="flex justify-end">
+          <div v-else-if="item.kind === 'message' && item.message.role === 'user'" class="flex justify-end">
             <div class="bubble bubble-user">
-              {{ messageText(msg.content) }}
+              {{ messageText(item.message.content) }}
             </div>
           </div>
 
           <!-- Assistant text -->
-          <div v-else-if="msg.role === 'assistant' && msg.content" class="flex justify-start">
+          <div
+            v-else-if="item.kind === 'message' && item.message.role === 'assistant' && item.message.content"
+            class="flex justify-start"
+          >
             <div
               class="bubble bubble-assistant md-content"
-              v-html="renderAssistant(msg.content)"
+              v-html="renderAssistant(item.message.content)"
             />
           </div>
 
-          <!-- Assistant tool calls -->
+          <!-- Tool call and its result -->
           <div
-            v-else-if="msg.role === 'assistant' && msg.tool_calls && msg.tool_calls.length > 0"
+            v-else-if="item.kind === 'tool'"
             class="flex justify-start"
           >
-            <div class="w-full">
+            <div class="agent-tool-stack">
+              <AgentToolCall :item="item" />
               <div
-                v-for="call in msg.tool_calls"
-                :key="call.id"
-                class="tool-call"
+                v-if="item.presentation?.type === 'market-project-list'"
+                class="agent-rich-message"
               >
-                <v-icon size="small" class="mr-1 flex-shrink-0">build</v-icon>
-                <code class="text-xs flex-shrink-0">{{ call.function.name }}</code>
-                <span
-                  v-if="call.function.arguments && call.function.arguments !== '{}'"
-                  class="text-xs text-medium-emphasis ml-2 truncate flex-1 min-w-0"
-                >
-                  {{ call.function.arguments }}
-                </span>
+                <div class="agent-rich-message__avatar">
+                  <v-icon size="15">auto_awesome</v-icon>
+                </div>
+                <AgentMarketList
+                  class="agent-rich-message__content"
+                  :presentation="item.presentation"
+                  @navigate="hide"
+                />
               </div>
             </div>
-          </div>
-
-          <!-- Tool result (collapsed) -->
-          <div v-else-if="msg.role === 'tool'" class="flex justify-start">
-            <details class="bubble bubble-tool w-full">
-              <summary class="cursor-pointer text-xs flex items-center gap-1 min-w-0">
-                <v-icon size="x-small" class="flex-shrink-0">arrow_drop_down</v-icon>
-                <code class="flex-shrink-0">{{ msg.name }}</code>
-                <span class="text-medium-emphasis truncate min-w-0 flex-1">
-                  {{ toolResultPreview(msg.content) }}
-                </span>
-              </summary>
-              <pre class="mt-2 text-xs whitespace-pre-wrap break-all">{{ messageText(msg.content) }}</pre>
-            </details>
           </div>
         </template>
 
         <!-- Live progress -->
-        <div v-if="running" class="flex items-center gap-2 text-xs text-medium-emphasis pl-2">
+        <div v-if="running" data-testid="agent-live-status" class="flex items-center gap-2 text-xs text-medium-emphasis pl-2">
           <v-progress-circular indeterminate size="14" width="2" />
           <span>{{ liveStatus }}</span>
         </div>
@@ -170,6 +164,7 @@
       <div v-if="available" class="border-t p-3">
         <v-textarea
           v-model="input"
+          data-testid="agent-input"
           :placeholder="available ? t('agent.inputPlaceholder') : t('agent.disabledPlaceholder')"
           :disabled="!available || running"
           variant="outlined"
@@ -178,8 +173,9 @@
           auto-grow
           rows="1"
           max-rows="6"
-          @keydown.enter.exact.prevent="onSend"
-          @keydown.esc="hide"
+          @compositionstart="composing = true"
+          @compositionend="composing = false"
+          @keydown.enter.exact="onInputEnter"
         >
           <template #append-inner>
             <v-btn
@@ -205,61 +201,113 @@
           <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>A</kbd>
           <span>{{ t('agent.toggleHint') }}</span>
           <v-spacer />
-          <span v-if="lastError" class="text-error truncate">{{ lastError }}</span>
+          <span v-if="displayError" class="text-error truncate" :title="displayError">{{ displayError }}</span>
         </div>
+      </div>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog
+    :model-value="confirmationShown"
+    persistent
+    width="500"
+    max-width="92vw"
+  >
+    <v-card data-testid="agent-confirm-dialog" class="agent-confirm">
+      <div class="agent-confirm__header">
+        <div
+          class="agent-confirm__icon"
+          :class="{ 'agent-confirm__icon--destructive': confirmationRequest?.destructive }"
+        >
+          <v-icon size="21">{{ confirmationRequest?.destructive ? 'delete_outline' : 'priority_high' }}</v-icon>
+        </div>
+        <div class="min-w-0">
+          <div class="agent-confirm__title">
+            {{ confirmationRequest?.title || t('agent.confirmTitle') }}
+          </div>
+          <div class="agent-confirm__message">
+            {{ confirmationRequest?.message }}
+          </div>
+        </div>
+      </div>
+      <div v-if="confirmationRequest?.details?.length" class="agent-confirm__details">
+        <div v-for="detail in confirmationRequest.details" :key="detail" class="agent-confirm__detail">
+          <v-icon size="15" class="flex-shrink-0">subdirectory_arrow_right</v-icon>
+          <code>{{ detail }}</code>
+        </div>
+      </div>
+      <div class="agent-confirm__actions">
+        <v-btn data-testid="agent-confirm-cancel" variant="text" @click="declineConfirmation">
+          {{ t('agent.confirmCancel') }}
+        </v-btn>
+        <v-btn
+          data-testid="agent-confirm-accept"
+          :color="confirmationRequest?.destructive ? 'error' : 'primary'"
+          variant="flat"
+          :prepend-icon="confirmationRequest?.destructive ? 'delete_outline' : 'check'"
+          @click="acceptConfirmation"
+        >
+          {{ confirmationRequest?.confirmLabel || t('agent.confirmAccept') }}
+        </v-btn>
       </div>
     </v-card>
   </v-dialog>
 </template>
 
 <script lang="ts" setup>
+import AgentMarketList from '@/components/AgentMarketList.vue'
+import AgentToolCall from '@/components/AgentToolCall.vue'
 import { kAgent, useCssAgent } from '@/composables/agent'
-import { useAgentChatBus, useAgnesSetupDocUrl } from '@/composables/agentChat'
-import { kCustomCss } from '@/composables/customCss'
-import { kTheme } from '@/composables/theme'
+import { useAgentConfirmation } from '@/composables/agent/confirm'
+import { getAgentEscapeAction, shouldSubmitAgentInput } from '@/composables/agent/input'
+import { projectAgentTranscript } from '@/composables/agent/projection'
+import { useAgentRouteReturn } from '@/composables/agent/routeReturn'
+import { useAgentChatBus, useAgentChatStatus, useAgnesSetupDocUrl } from '@/composables/agentChat'
 import { useMarkdown } from '@/composables/markdown'
 import { injection } from '@/util/inject'
+import { useEventListener } from '@vueuse/core'
 import { computed, nextTick, ref, watch } from 'vue'
-import type { ContentPart } from '@/composables/agent'
+import type { AgentContentPart as ContentPart } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 
 const commonAgent = injection(kAgent)
+useAgentRouteReturn()
 
 // A global-scope CSS assistant shown side-by-side with the common agent and
 // switchable from the dialog header. Reuses the global CSS conversation key so
 // it continues the same thread used on the settings page.
-const globalCustomCss = injection(kCustomCss)
-const themeCtx = injection(kTheme)
-const cssAgent = useCssAgent({
-  context: {
-    getCss: () => globalCustomCss.css.value,
-    setCss: (v) => globalCustomCss.save(v),
-    getEnabled: () => themeCtx.customCssEnabled.value,
-    setEnabled: (v) => { themeCtx.customCssEnabled.value = v },
-  },
-  storageKey: 'cssAgentConversationV1',
-})
+const cssAgent = useCssAgent()
 
 const selectedAgent = ref<'common' | 'css'>('common')
 const activeAgent = computed(() => (selectedAgent.value === 'css' ? cssAgent : commonAgent))
 
 const available = computed(() => activeAgent.value.available.value)
 const running = computed(() => activeAgent.value.running.value)
+const anyRunning = computed(() => commonAgent.running.value || cssAgent.running.value)
+const runError = computed(() => activeAgent.value.runError.value)
 const messages = computed(() => activeAgent.value.messages.value)
 const events = computed(() => activeAgent.value.events.value)
 
 const { render: renderMd } = useMarkdown()
 const setupDocUrl = useAgnesSetupDocUrl()
 
-const isShown = ref(false)
+const chatStatus = useAgentChatStatus()
+const isShown = chatStatus.shown
 const input = ref('')
+const composing = ref(false)
 const lastError = ref('')
 const scrollEl = ref<HTMLElement | null>(null)
 
 const bus = useAgentChatBus()
 bus.on((e) => {
-  if (e === 'show') {
+  if (typeof e === 'object' && e.type === 'show') {
+    selectedAgent.value = 'common'
+    input.value = e.prompt ?? ''
+    commonAgent.loadConversationForCurrentInstance()
+    isShown.value = true
+  }
+  else if (e === 'show') {
     commonAgent.loadConversationForCurrentInstance()
     isShown.value = true
   }
@@ -277,7 +325,13 @@ bus.on((e) => {
   }
 })
 
-const visibleMessages = computed(() => messages.value.filter((m) => m.role !== 'system'))
+const transcriptItems = computed(() => projectAgentTranscript(messages.value))
+const {
+  request: confirmationRequest,
+  shown: confirmationShown,
+  accept: acceptConfirmation,
+  decline: declineConfirmation,
+} = useAgentConfirmation()
 
 const statusLabel = computed(() => {
   if (!available.value) return t('agent.statusDisabled')
@@ -288,11 +342,12 @@ const statusLabel = computed(() => {
 const liveStatus = computed(() => {
   for (let i = events.value.length - 1; i >= 0; i--) {
     const e = events.value[i]
-    if (e.type === 'tool_call' && e.toolCall) return t('agent.callingTool', { name: e.toolCall.name })
-    if (e.type === 'assistant') return t('agent.thinking')
+    if (e.type === 'tool_start' && e.toolCall) return t('agent.callingTool', { name: e.toolCall.name })
+    if (e.type === 'tool_end' || e.type === 'message_delta') return t('agent.thinking')
   }
   return t('agent.thinking')
 })
+const displayError = computed(() => lastError.value || runError.value)
 
 const suggestions = computed(() => (selectedAgent.value === 'css'
   ? [
@@ -311,6 +366,7 @@ const emptyHint = computed(() => (selectedAgent.value === 'css'
 
 // Clear any transient error when switching agents.
 watch(selectedAgent, () => { lastError.value = '' })
+watch(anyRunning, value => { chatStatus.running.value = value }, { immediate: true })
 
 function messageText(content: string | ContentPart[] | null | undefined): string {
   if (!content) return ''
@@ -330,12 +386,6 @@ function renderAssistant(content: string | ContentPart[] | null | undefined): st
   return renderMd(messageText(content))
 }
 
-function toolResultPreview(content: string | ContentPart[] | null | undefined): string {
-  const text = messageText(content)
-  if (text.length <= 80) return text
-  return text.slice(0, 80) + '…'
-}
-
 async function onSend() {
   const text = input.value.trim()
   if (!text || running.value || !available.value) return
@@ -346,6 +396,12 @@ async function onSend() {
   } catch (err) {
     lastError.value = err instanceof Error ? err.message : String(err)
   }
+}
+
+function onInputEnter(event: KeyboardEvent) {
+  if (!shouldSubmitAgentInput(event, composing.value)) return
+  event.preventDefault()
+  void onSend()
 }
 
 function quickSend(text: string) {
@@ -360,6 +416,14 @@ function reset() {
 }
 function abort() { activeAgent.value.abort() }
 
+useEventListener(window, 'keydown', (event: KeyboardEvent) => {
+  if (!isShown.value || event.key !== 'Escape' || event.isComposing || composing.value) return
+  event.preventDefault()
+  event.stopImmediatePropagation()
+  if (getAgentEscapeAction(running.value) === 'abort') abort()
+  else hide()
+}, { capture: true })
+
 const { push } = useRouter()
 function openSettings() {
   hide()
@@ -370,7 +434,7 @@ function openSetupDoc() {
 }
 
 // Auto-scroll on new messages / events.
-watch([visibleMessages, events], async () => {
+watch([transcriptItems, events], async () => {
   await nextTick()
   const el = scrollEl.value
   if (el) el.scrollTop = el.scrollHeight
@@ -518,30 +582,6 @@ watch(isShown, async (v) => {
   max-width: 100%;
   height: auto;
 }
-.bubble-tool {
-  background: rgba(var(--v-theme-on-surface), 0.05);
-  border: 1px dashed rgba(var(--v-theme-on-surface), 0.2);
-  padding: 6px 10px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-.bubble-tool pre {
-  margin: 0;
-  max-width: 100%;
-  white-space: pre-wrap;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-.tool-call {
-  display: flex;
-  align-items: center;
-  padding: 4px 10px;
-  background: rgba(var(--v-theme-on-surface), 0.06);
-  border-radius: 8px;
-  margin-bottom: 4px;
-  max-width: 100%;
-  min-width: 0;
-  overflow: hidden;
-}
 .suggestion-item {
   display: block;
   width: 100%;
@@ -569,6 +609,115 @@ watch(isShown, async (v) => {
   width: 800px;
   max-width: calc(100vw - 24px);
   box-sizing: border-box;
+}
+.agent-tool-stack {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 5px;
+}
+.agent-rich-message {
+  display: flex;
+  width: 78%;
+  max-width: 640px;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 7px;
+}
+.agent-rich-message__avatar {
+  display: flex;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3px;
+  border: 1px solid rgba(var(--v-theme-primary), 0.24);
+  border-radius: 50%;
+  color: rgb(var(--v-theme-primary));
+  background: rgba(var(--v-theme-primary), 0.1);
+}
+.agent-rich-message__content {
+  min-width: 0;
+  flex: 1;
+}
+.agent-confirm {
+  overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.14);
+  border-radius: 8px;
+}
+.agent-confirm__header {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: start;
+  gap: 11px;
+  padding: 16px 18px 12px;
+}
+.agent-confirm__icon {
+  display: flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: rgb(var(--v-theme-warning));
+  background: rgba(var(--v-theme-warning), 0.13);
+}
+.agent-confirm__icon--destructive {
+  color: rgb(var(--v-theme-error));
+  background: rgba(var(--v-theme-error), 0.13);
+}
+.agent-confirm__title {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.agent-confirm__message {
+  margin-top: 3px;
+  color: rgba(var(--v-theme-on-surface), 0.7);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.agent-confirm__details {
+  display: flex;
+  max-height: 160px;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 18px 12px 67px;
+  overflow: auto;
+}
+.agent-confirm__detail {
+  display: flex;
+  min-height: 32px;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 7px 9px;
+  border-radius: 6px;
+  color: rgba(var(--v-theme-on-surface), 0.72);
+  background: rgba(var(--v-theme-on-surface), 0.055);
+}
+.agent-confirm__detail code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.agent-confirm__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 10px 14px;
+  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+  background: rgba(var(--v-theme-on-surface), 0.025);
+}
+@media (max-width: 700px) {
+  .agent-rich-message {
+    width: 94%;
+  }
+  .agent-confirm__details {
+    margin-left: 18px;
+  }
 }
 kbd {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

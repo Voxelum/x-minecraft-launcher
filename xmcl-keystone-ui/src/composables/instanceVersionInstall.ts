@@ -779,6 +779,19 @@ export function useInstanceVersionInstallInstruction(
     }
   }
 
+  async function installRuntime(instancePath: string, runtime: RuntimeVersions) {
+    const lock = getInstanceLock(instancePath)
+    return lock.runExclusive(async () => {
+      const version = await install(runtime)
+      await editInstance({
+        instancePath,
+        runtime,
+        version,
+      })
+      return version
+    })
+  }
+
   watch(
     [resolvedVersion, javas],
     ([v]) => {
@@ -799,6 +812,7 @@ export function useInstanceVersionInstallInstruction(
     handleInstallInstruction,
 
     install,
+    installRuntime,
     installServer,
   }
 }

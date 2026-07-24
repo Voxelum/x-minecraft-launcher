@@ -14,6 +14,7 @@ import { getModrinthVersionModel } from './modrinthVersions'
 import { useRefreshable } from './refreshable'
 import { kSWRVConfig } from './swrvConfig'
 import { useTask } from './task'
+import { deduplicateModDependencyInstallations } from './modDependencyInstall'
 
 export const kModDependenciesCheck: InjectionKey<ReturnType<typeof useModDependenciesCheck>> = Symbol('mod-dependencies-check')
 
@@ -157,7 +158,11 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
     //   }
     // }
 
-    installation.value = result
+    // A dependency can be reported by more than one installed mod (and the
+    // Modrinth / CurseForge checks run in parallel). Keep one file per
+    // dependency project so an install plan can never contain two versions
+    // of the same mod.
+    installation.value = deduplicateModDependencyInstallations(result)
     checked.value = true
     operationId = crypto.getRandomValues(new Uint8Array(8)).join('')
     operationPath = _path
