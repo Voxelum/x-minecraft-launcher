@@ -1,5 +1,6 @@
 <template>
   <section class="about">
+    <CommercialAccountPanel class="mb-4" />
     <SettingCard>
       <div class="pa-4">
         <!-- Logo & Header info -->
@@ -103,6 +104,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import CommercialAccountPanel from '@/components/CommercialAccountPanel.vue'
 import SettingCard from '@/components/SettingCard.vue'
 import { kEnvironment } from '@/composables/environment'
 import { kFlights } from '@/composables/flights'

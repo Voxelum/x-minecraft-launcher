@@ -77,6 +77,8 @@ export interface SwitchProfileOptions {
 
 interface UserServiceEventMap {
   'user-login': string
+  'user-login-success': UserProfile
+  'user-refresh-success': UserProfile
   'error': UserException
   'auth-profile-added': string
   'microsoft-authorize-url': string

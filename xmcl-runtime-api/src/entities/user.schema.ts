@@ -138,6 +138,29 @@ export const Users = z.object({
 export type Users = z.infer<typeof Users>
 
 /**
+ * Parse a user file without treating malformed content as an intentional empty
+ * profile. `Users.parse` remains forgiving for legacy migrations, while disk
+ * persistence needs to distinguish corruption from `{ users: {} }`.
+ */
+export function parsePersistedUsers(value: unknown): Users | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined
+
+  const users = (value as { users?: unknown }).users
+  if (!users || typeof users !== 'object' || Array.isArray(users)) return undefined
+
+  const parsed = Users.safeParse(value)
+  if (!parsed.success) return undefined
+
+  // A non-empty source whose every profile was malformed is not a valid empty
+  // profile and must not overwrite a recoverable backup.
+  if (Object.keys(users).length > 0 && Object.keys(parsed.data.users).length === 0) {
+    return undefined
+  }
+
+  return parsed.data
+}
+
+/**
  * Modrinth user authentication info.
  */
 export const ModrinthUserSchema = z.object({

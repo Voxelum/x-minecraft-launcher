@@ -848,6 +848,32 @@ me:
   recentPlay: Recent Play
 migrateMinecraft:
   name: Migrate Minecraft Files
+commercialAccount:
+  accountSummary: Account
+  confirmMerge: Confirm account merge
+  createdAt: Created {date}
+  description: Your passwordless XMCL identity, separate from Minecraft game accounts.
+  expiresAt: Expires {date}
+  gameAccountsSeparate: Removing a game account does not unlink an XMCL login method.
+  guest: Guest
+  identityConflict: This {provider} login belongs to another XMCL Account. Accounts are never merged automatically.
+  linkAccountWith: Link account with
+  mergePreview: Review the resources that will move before confirming.
+  mergeNeedsSession: Sign in to the XMCL Account you want to keep before reviewing the merge.
+  mergeQueued: Account merge is in progress.
+  requestFailed: The XMCL Account service could not complete this request. Your game account is unchanged.
+  reviewMerge: Review merge
+  session: Session
+  sessionActive: Active
+  sessionExpired: Expired
+  signOutAll: Sign out all devices
+  signOutDevice: Sign out this device
+  status:
+    active: Active
+    deleted: Deleted
+    deletion_pending: Deletion pending
+    merged: Merged
+  title: XMCL Account
 minecraftFriends:
   accept: Accept
   add: Add a friend

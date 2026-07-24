@@ -1902,6 +1902,32 @@ versionType:
   beta: Beta (测试版)
   name: 类型
   release: 稳定版
+commercialAccount:
+  accountSummary: 账户
+  confirmMerge: 确认合并账户
+  createdAt: 创建于 {date}
+  description: 无密码的 XMCL 身份，与 Minecraft 游戏账户分开管理。
+  expiresAt: 过期时间 {date}
+  gameAccountsSeparate: 移除游戏账户不会解除 XMCL 登录方式。
+  guest: 访客
+  identityConflict: 此 {provider} 登录属于另一个 XMCL Account。账户绝不会自动合并。
+  linkAccountWith: 使用以下方式绑定账户
+  mergePreview: 确认前请检查将要迁移的资源。
+  mergeNeedsSession: 请先登录你希望保留的 XMCL Account，再检查合并。
+  mergeQueued: 账户合并正在进行。
+  requestFailed: XMCL Account 服务无法完成请求。你的游戏账户未受影响。
+  reviewMerge: 检查合并
+  session: 会话
+  sessionActive: 有效
+  sessionExpired: 已过期
+  signOutAll: 退出所有设备
+  signOutDevice: 退出此设备
+  status:
+    active: 有效
+    deleted: 已删除
+    deletion_pending: 等待删除
+    merged: 已合并
+  title: XMCL Account
 minecraftFriends:
   title: Minecraft 好友
   add: 添加好友

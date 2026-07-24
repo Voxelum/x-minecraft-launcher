@@ -8,6 +8,9 @@ import { pluginCommonProtocol } from '@xmcl/runtime/app/pluginCommonProtocol'
 import { pluginMediaProtocol } from '@xmcl/runtime/app/pluginMediaProtocol'
 import { pluginCli } from '@xmcl/runtime/commands/pluginCli'
 import { pluginCommandHost } from '@xmcl/runtime/commands/pluginCommandHost'
+import { pluginCommercialAccountMicrosoftBridge } from '@xmcl/runtime/commercialAccount/pluginCommercialAccountMicrosoftBridge'
+import { pluginCommercialAccountModrinthBridge } from '@xmcl/runtime/commercialAccount/pluginCommercialAccountModrinthBridge'
+import { pluginExternalCredentialLifecycle } from '@xmcl/runtime/credential/pluginExternalCredentialLifecycle'
 import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
 import { pluginEncodingWorker } from '@xmcl/runtime/encoding/pluginEncodingWorker'
 import { pluginClientToken, pluginFlights, pluginGFW, pluginImageStorage, pluginLogConsumer, pluginTasks, pluginTelemetry, pluginUncaughtError } from '@xmcl/runtime/infra/plugins'
@@ -66,12 +69,15 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginImageStorage,
   pluginFlights,
   pluginNetworkInterface,
+  pluginExternalCredentialLifecycle,
   pluginOfficialUserApi,
   pluginOffineUser,
   pluginUndiciLogger,
   pluginUserTokenStorage,
 
   pluginModrinthAccess,
+  pluginCommercialAccountMicrosoftBridge,
+  pluginCommercialAccountModrinthBridge,
 
   pluginCommonProtocol,
 ]

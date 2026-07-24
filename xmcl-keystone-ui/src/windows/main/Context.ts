@@ -1,4 +1,5 @@
 import { useExternalRoute, useI18nSync } from '@/composables'
+import { kCommercialAccount, useCommercialAccount } from '@/composables/commercialAccount'
 import { kCriticalStatus, useCriticalStatus } from '@/composables/criticalStatus'
 import { kCurseforgeCategories, useCurseforgeCategories } from '@/composables/curseforge'
 import { kCustomCss, useCustomCss } from '@/composables/customCss'
@@ -100,6 +101,7 @@ export default defineComponent({
 
     const modrinthAPI = useModrinthAuthenticatedAPI()
     provide(kModrinthAuthenticatedAPI, modrinthAPI)
+    provide(kCommercialAccount, useCommercialAccount(user.userProfile, computed(() => modrinthAPI.userData.value?.id)))
     provide(kLocalCollections, useLocalCollections())
     const searchModel = useSearchModel(instance.runtime)
     provide(kSearchModel, searchModel)

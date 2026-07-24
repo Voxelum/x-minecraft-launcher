@@ -8,7 +8,11 @@ import { XBoxResponse, normalizeSkinData } from '../user'
 import { UserTokenStorage } from '../userTokenStore'
 import { UserAccountSystem } from './AccountSystem'
 import { isAccountSuspendedError, isNetworkError, isUserCanceledError } from './MicrosoftAuthErrors'
-import { MicrosoftOAuthClient } from './MicrosoftOAuthClient'
+import {
+  MICROSOFT_GRAPH_USER_READ_SCOPE,
+  MicrosoftOAuthClient,
+  MICROSOFT_XBOX_LAUNCHER_SCOPES,
+} from './MicrosoftOAuthClient'
 import { toSkinUploadException } from './SkinUploadErrors'
 
 export class MicrosoftAccountSystem implements UserAccountSystem {
@@ -242,8 +246,12 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       }
       this.logger.error(Object.assign(e, { scenario: 'loginMicrosoft' }))
     }
-    const { result, extra } = await this.oauthClient.authenticate(microsoftEmailAddress, ['XboxLive.signin', 'XboxLive.offline_access', 'offline_access'], {
+    const { result, extra } = await this.oauthClient.authenticate(microsoftEmailAddress, MICROSOFT_XBOX_LAUNCHER_SCOPES, {
       code: oauthCode,
+      // XMCL identity binding verifies the stable subject through Microsoft
+      // Graph. Keep its consent/token in the same MSAL cache as the launcher
+      // Xbox token; the commercial bridge acquires it silently later.
+      extraScopes: [MICROSOFT_GRAPH_USER_READ_SCOPE],
       useDeviceCode,
       directRedirectToLauncher,
       // WAM selects the account signed in to Windows/Xbox. If it is

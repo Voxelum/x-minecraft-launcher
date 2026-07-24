@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 163 (in 271 Vue files)
+**Total anchors:** 174 (in 272 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -55,6 +55,17 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `blueprint-search` | [`xmcl-keystone-ui/src/views/BlueprintExtension.vue#L13`](../xmcl-keystone-ui/src/views/BlueprintExtension.vue#L13) |
 | `collection-install-all` | [`xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L2`](../xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L2) |
 | `collection-install-all-button` | [`xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L10`](../xmcl-keystone-ui/src/components/AppCollectionInstallAll.vue#L10) |
+| `commercial-account-conflict` | [`xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L22`](../xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L22) |
+| `commercial-account-merge-confirm` | [`xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L57`](../xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L57) |
+| `commercial-account-merge-prepare` | [`xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L31`](../xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L31) |
+| `commercial-account-merge-preview` | [`xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L45`](../xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L45) |
+| `commercial-account-panel` | [`xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L3`](../xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L3) |
+| `commercial-provider-discord` | [`xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L160`](../xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L160) |
+| `commercial-provider-google` | [`xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L150`](../xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L150) |
+| `commercial-provider-microsoft` | [`xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L132`](../xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L132) |
+| `commercial-provider-modrinth` | [`xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L141`](../xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L141) |
+| `commercial-session-refresh` | [`xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L102`](../xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L102) |
+| `commercial-session-revoke` | [`xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L111`](../xmcl-keystone-ui/src/components/CommercialAccountPanel.vue#L111) |
 | `create-instance` | [`xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35`](../xmcl-keystone-ui/src/views/AppSideBarInstances.vue#L35) |
 | `custom-css-editor-textarea` | [`xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26`](../xmcl-keystone-ui/src/components/CustomCssEditor.vue#L26) |
 | `custom-css-global-toggle` | [`xmcl-keystone-ui/src/components/AppearanceItems.vue#L320`](../xmcl-keystone-ui/src/components/AppearanceItems.vue#L320) |

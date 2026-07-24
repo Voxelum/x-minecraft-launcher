@@ -5,11 +5,13 @@ import { join } from 'path'
 // tests can import composables/utils that use it. The regex form only matches
 // `@/...` and leaves scoped packages like `@xmcl/...` untouched.
 const keystoneSrc = join(__dirname, 'xmcl-keystone-ui/src').replace(/\\/g, '/')
+const runtimeSrc = join(__dirname, 'xmcl-runtime').replace(/\\/g, '/')
 
 export default defineConfig({
   resolve: {
     alias: [
       { find: /^@\//, replacement: keystoneSrc + '/' },
+      { find: /^~\//, replacement: runtimeSrc + '/' },
     ],
   },
   test: {
