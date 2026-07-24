@@ -242,7 +242,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       }
       this.logger.error(Object.assign(e, { scenario: 'loginMicrosoft' }))
     }
-    const { result, extra } = await this.oauthClient.authenticate(microsoftEmailAddress, ['XboxLive.signin', 'XboxLive.offline_access'], {
+    const { result, extra } = await this.oauthClient.authenticate(microsoftEmailAddress, ['XboxLive.signin', 'XboxLive.offline_access', 'offline_access'], {
       code: oauthCode,
       useDeviceCode,
       directRedirectToLauncher,
