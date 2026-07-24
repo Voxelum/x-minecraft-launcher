@@ -7,8 +7,9 @@ import { toRecord } from '~/util/object'
 import { XBoxResponse, normalizeSkinData } from '../user'
 import { UserTokenStorage } from '../userTokenStore'
 import { UserAccountSystem } from './AccountSystem'
-import { isAccountSuspendedError, isUserCanceledError } from './MicrosoftAuthErrors'
+import { isAccountSuspendedError, isNetworkError, isUserCanceledError } from './MicrosoftAuthErrors'
 import { MicrosoftOAuthClient } from './MicrosoftOAuthClient'
+import { toSkinUploadException } from './SkinUploadErrors'
 
 export class MicrosoftAccountSystem implements UserAccountSystem {
   constructor(
@@ -131,13 +132,19 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       if (options.skin === null) {
         await this.mojangClient.resetSkin(token, signal)
       } else {
-        newProfile = await this.mojangClient.setSkin(
-          `${gameProfile.name}.png`,
-          await normalizeSkinData(options.skin?.url),
-          options.skin?.slim ? 'slim' : 'classic',
-          token,
-          signal,
-        ) as any
+        try {
+          newProfile = await this.mojangClient.setSkin(
+            `${gameProfile.name}.png`,
+            await normalizeSkinData(options.skin?.url),
+            options.skin?.slim ? 'slim' : 'classic',
+            token,
+            signal,
+          ) as any
+        } catch (e) {
+          const skinException = toSkinUploadException(e)
+          if (skinException) throw skinException
+          throw e
+        }
       }
     }
 
@@ -219,6 +226,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
         return true
       }
       if (isUserCanceledError(e)) return true
+      if (isNetworkError(e)) return true
       if (isAccountSuspendedError(e)) return true
       return false
     }
@@ -247,7 +255,11 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       logError(e)
       throw new UserException({
         type: 'userAcquireMicrosoftTokenFailed',
-        reason: isUserCanceledError(e) ? 'USER_CANCELED' : undefined,
+        reason: isUserCanceledError(e)
+          ? 'USER_CANCELED'
+          : isNetworkError(e)
+            ? 'NETWORK_ERROR'
+            : undefined,
       }, 'Failed to acquire Microsoft access token', { cause: e })
     })
 

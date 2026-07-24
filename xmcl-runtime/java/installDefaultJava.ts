@@ -3,6 +3,7 @@ import { DEFAULT_RUNTIME_ALL_URL, JavaRuntimeTargetType, JavaRuntimes } from '@x
 import { LauncherApp } from '~/app';
 import { kGFW } from '~/infra';
 import { getApiSets, kSettings, shouldOverrideApiSet } from '~/settings';
+import { getWindowsNativeArchForIa32 } from './java';
 
 function normalizeUrls(url: string, fileHost?: string | string[]): string[] {
   if (!fileHost) {
@@ -53,7 +54,16 @@ export async function getOfficialJavaManifest(app: LauncherApp, runtimeTarget: J
   const resp = await app.fetch(normalizeUrls(DEFAULT_RUNTIME_ALL_URL, apiHost)[0], {})
   const runtimes = await resp.json() as JavaRuntimes
   const current = resolveTargetPlatform(runtimes)
+  // Mojang no longer publishes every current component for windows-x86
+  // (notably delta/epsilon). Only a WOW64 process can safely use the native
+  // 64-bit host runtime; a true 32-bit Windows install keeps the x86 result
+  // (or its existing user-facing failure) rather than receiving an unusable
+  // x64/arm64 Java executable.
+  const nativeWindowsArch = getWindowsNativeArchForIa32()
   const result = current?.[runtimeTarget]?.[0]
+    ?? (nativeWindowsArch
+      ? runtimes[`windows-${nativeWindowsArch}`]?.[runtimeTarget]?.[0]
+      : undefined)
 
   return result
 }

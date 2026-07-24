@@ -859,7 +859,9 @@ minecraftFriends:
   errors:
     cannotAddSelf: You cannot send a friend request to yourself.
     duplicate: That player is already in your list.
+    friendsDisabled: Your Minecraft account has friends disabled or cannot use friends. Enable friends in Minecraft account settings, then try again.
     generic: Something went wrong. Please try again.
+    invalidName: Minecraft usernames must be between 3 and 16 characters.
     inviteRejected: That player does not have friends enabled or does not accept invites.
     tokenExpired: Your Microsoft session expired. Please log in again.
     unknownProfile: We could not find a player with that name.
@@ -2150,6 +2152,8 @@ userSkin:
   import: Import Skin
   importFile: Open from File
   importLink: Open from Link
+  invalidImage: Choose a valid Minecraft skin image.
+  invalidImageTitle: Invalid Skin Image
   placeUrlHere: Place Skin URL here to import
   reset: Reset
   save: Save
@@ -2157,6 +2161,8 @@ userSkin:
   skinType: Skin Type
   slim: Slim
   upload: Upload Skin
+  uploadFailed: Skin Upload Failed
+  uploadRejected: Minecraft rejected this skin upload. Please try again later.
   urlNotEmpty: Skin URL cannot be empty
   urlNotValid: Skin URL is Invalid
   useSlim: Use Slim Model

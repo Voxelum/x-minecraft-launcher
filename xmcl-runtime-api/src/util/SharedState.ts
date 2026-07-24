@@ -23,4 +23,10 @@ export type SharedState<T> = T & {
   unsubscribeAll<K extends keyof Mutations<T>>(listener: (mutation: K, payload: Mutations<T>[keyof Mutations<T>]) => void): SharedState<T>
 
   revalidate(): void
+
+  /**
+   * Release this renderer's reference so the main process can dispose a
+   * state-backed resource such as a filesystem watcher when no clients remain.
+   */
+  unref(): void
 }

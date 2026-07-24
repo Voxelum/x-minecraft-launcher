@@ -30,6 +30,35 @@ const getSdkVersion = () => {
   return sdkVersion
 }
 
+const installOperations: Record<string, ReadonlySet<string>> = {
+  InstallService: new Set([
+    'installMinecraft',
+    'installMinecraftJar',
+    'installForge',
+    'installNeoForged',
+    'installFabric',
+    'installQuilt',
+    'installOptifine',
+    'installOptifineAsMod',
+    'installLabyModVersion',
+    'installByProfile',
+    'installDependencies',
+    'reinstall',
+  ]),
+  InstanceInstallService: new Set([
+    'installInstanceFiles',
+    'resumeInstanceInstall',
+  ]),
+  JavaService: new Set(['installJava']),
+  ModpackService: new Set(['importModpack']),
+}
+
+function getInstallOperation(serviceName: string, serviceMethod: string) {
+  return installOperations[serviceName]?.has(serviceMethod)
+    ? `${serviceName}.${serviceMethod}`
+    : undefined
+}
+
 const installLaunchStatusTracker = (settings: Settings, defaultClient: TelemetryClient, contract: Contracts.ContextTagKeys, service: ILaunchService) => {
   let skip = false
   service.on('launch-performance', ({ name, id, duration, success }) => {
@@ -184,6 +213,28 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       defaultClient.trackEvent({
         name: 'install-postprocess-fallback',
         properties: payload,
+      })
+    })
+
+    // This is the install E2E score: every renderer-initiated installation
+    // operation records exactly one terminal outcome. `installInstanceFiles`
+    // is intentionally included so modpack/file installs are measured beside
+    // game, loader, and Java installs. No payload or local paths are sent.
+    app.on('service-call-end', (serviceName, serviceMethod, duration, success) => {
+      if (settings.disableTelemetry) return
+      const operation = getInstallOperation(serviceName, serviceMethod)
+      if (!operation) return
+      defaultClient.trackEvent({
+        name: 'install-operation',
+        properties: {
+          operation,
+          service: serviceName,
+          method: serviceMethod,
+          success: String(success),
+        },
+        measurements: {
+          durationMs: duration,
+        },
       })
     })
 

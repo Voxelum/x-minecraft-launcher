@@ -130,7 +130,7 @@ export class ErrorDiagnose {
     if (e instanceof TypeError && e.message.startsWith('fetch failed')) {
       return true
     }
-    if (e.name === 'ClientAuthError' && e.message.includes('Network request failed')) {
+    if (e.name === 'ClientAuthError' && /\b(network_error|Network request failed)\b/.test(e.message)) {
       return true
     }
     // MSAL surfaces a few more strictly user/network-state failures

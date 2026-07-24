@@ -121,6 +121,11 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
 
   writeClipboardImage(imageUrl: string): void
 
+  /**
+   * Resolve the absolute path of a file dropped into the renderer.
+   */
+  getPathForFile(file: File): string
+
   findInPage(text: string, options?: {
     /**
      * Whether to search forward or backward, defaults to `true`.

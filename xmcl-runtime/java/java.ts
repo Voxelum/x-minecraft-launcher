@@ -27,6 +27,36 @@ export interface JavaInstallFailureProbe {
 }
 
 /**
+ * A 32-bit Node/Electron process on 64-bit Windows reports `ia32`. Windows
+ * exposes the native host architecture through PROCESSOR_ARCHITEW6432 under
+ * WOW64, which lets default-Java selection avoid choosing an unsupported x86
+ * runtime when Mojang does not publish one.
+ */
+export function getWindowsNativeArchForIa32(
+  platform = process.platform,
+  arch = process.arch,
+  environment = process.env,
+): 'x64' | 'arm64' | undefined {
+  if (platform !== 'win32' || arch !== 'ia32') return undefined
+  switch (environment.PROCESSOR_ARCHITEW6432?.toUpperCase()) {
+    case 'AMD64': return 'x64'
+    case 'ARM64': return 'arm64'
+    default: return undefined
+  }
+}
+
+/**
+ * Keep Java process output actionable without sending the user's home path or
+ * an unbounded native-loader dump to telemetry.
+ */
+export function sanitizeJavaResolveOutput(output: string | undefined) {
+  if (!output) return undefined
+  return output
+    .replace(/(?:[A-Za-z]:[\\/]|\/(?:home|Users)\/)[^\r\n]*/g, '<path>')
+    .slice(0, 1024)
+}
+
+/**
  * Classify why an internal Java install produced an unresolvable binary.
  *
  * - `download-or-extract`: the installer resolved without throwing yet no

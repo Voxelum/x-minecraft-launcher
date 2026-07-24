@@ -15,7 +15,7 @@ import { LibrariesTrackerEvents, LibraryOptions, installResolvedLibraries } from
 import { convertClasspathToMaven, parseManifest } from './manifest'
 import { InstallSideOption } from './minecraft'
 import { Tracker, onProgress } from './tracker'
-import { SpawnJavaOptions, WithDiagnose, missing, waitProcess } from './utils'
+import { ProcessExitError, SpawnJavaOptions, WithDiagnose, missing, waitProcess } from './utils'
 
 export interface ProfileTrackerEvents {
   postprocess: { count: number }
@@ -616,12 +616,34 @@ export class PostProcessNoMainClassError extends Error {
 }
 
 export class PostProcessFailedError extends Error {
+  readonly processor: string
+  readonly exitCode?: number | null
+  readonly processSignal?: string | null
+  readonly processorOutput?: string
+
   constructor(
-    public jarPath: string,
-    public commands: string[],
+    readonly jarPath: string,
+    readonly commands: string[],
     message: string,
+    options?: {
+      exitCode?: number | null
+      signal?: string | null
+      output?: string
+    },
   ) {
     super(message)
+    this.processor = jarPath
+    this.exitCode = options?.exitCode
+    this.processSignal = options?.signal
+    this.processorOutput = options?.output
+    // Commands include user-local paths and make Application Insights group
+    // every failure as a unique problemId. Runtime recovery still reads these
+    // fields directly; keeping them non-enumerable only removes them from
+    // serialized telemetry.
+    Object.defineProperties(this, {
+      jarPath: { enumerable: false },
+      commands: { enumerable: false },
+    })
   }
 
   name = 'PostProcessFailedError'
@@ -640,6 +662,12 @@ export class PostProcessValidationFailedError extends PostProcessFailedError {
   }
 
   name = 'PostProcessValidationFailedError'
+}
+
+function sanitizePostProcessOutput(output: string) {
+  return output
+    .replace(/(?:[A-Za-z]:[\\/]|\/(?:home|Users)\/)[^\r\n]*/g, '<path>')
+    .slice(0, 4096)
 }
 
 async function findMainClass(lib: string) {
@@ -773,8 +801,19 @@ async function postProcessOne(
       waitProcess(process).then(resolve, reject)
     })
   } catch (e) {
-    if (e instanceof Error && e.name === 'Error') {
-      throw new PostProcessFailedError(proc.jar, [options.java ?? 'java', ...cmd], e.message)
+    if (e instanceof ProcessExitError || (e instanceof Error && e.name === 'Error')) {
+      throw new PostProcessFailedError(
+        proc.jar,
+        [options.java ?? 'java', ...cmd],
+        sanitizePostProcessOutput(e.message),
+        e instanceof ProcessExitError
+          ? {
+              exitCode: e.exitCode,
+              signal: e.signal,
+              output: sanitizePostProcessOutput(e.stderr),
+            }
+          : undefined,
+      )
     }
     throw e
   }
@@ -803,6 +842,7 @@ async function postProcessOne(
           issue.receivedChecksum,
         )
       }
+
     }
   }
 }

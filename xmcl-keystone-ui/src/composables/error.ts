@@ -1,4 +1,4 @@
-import { isException, ModpackException, NetworkErrorCode, NetworkException, BedrockException } from '@xmcl/runtime-api'
+import { isException, ModpackException, NetworkErrorCode, NetworkException, BedrockException, UserException } from '@xmcl/runtime-api'
 
 export function useLocaleError() {
   const { t } = useI18n()
@@ -24,6 +24,10 @@ export function useLocaleError() {
     if (isException(BedrockException, e)) {
       const ex = e.exception
       return t(`errors.${ex.type}`)
+    }
+    if (isException(UserException, e) && e.exception.type === 'userSetSkinFailed') {
+      if (e.exception.reason === 'INVALID_IMAGE') return t('userSkin.invalidImage')
+      return t('userSkin.uploadRejected')
     }
     if (e && typeof e === 'object' && 'type' in e) {
       if (e.type === 'bedrockUnsupportedPlatform' || e.type === 'bedrockNotInstalled' || e.type === 'bedrockLaunchFailed' || e.type === 'bedrockInstallFailed') {

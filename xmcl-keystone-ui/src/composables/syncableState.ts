@@ -1,6 +1,6 @@
 import { SharedState } from '@xmcl/runtime-api'
 import { useEventListener } from '@vueuse/core'
-import { shallowRef, triggerRef } from 'vue'
+import { ref, shallowRef, triggerRef, watchEffect } from 'vue'
 
 export type Handler<T> = { [k in keyof T]?: T[k] /* extends (...args: infer A) => infer R ? (state: T, ...args: A) => R : never */ }
 
@@ -32,8 +32,16 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
     controller = abortController
     const { signal } = abortController
     let data: SharedState<T> | undefined
+    let released = false
+    const unref = () => {
+      if (data && !released) {
+        released = true
+        data.unref()
+      }
+    }
     onCleanup?.(() => {
       abortController.abort()
+      unref()
     })
 
     // Avoid calling dispose multiple times
@@ -42,7 +50,10 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
       error.value = undefined
       state.value = undefined
       data = await fetcher(signal)
-      if (!data || signal.aborted) { return }
+      if (!data || signal.aborted) {
+        unref()
+        return
+      }
 
       // The preload is a dumb pipe and no longer knows the mutation method
       // names (it used to import the state classes, which pulled zod into every
@@ -77,6 +88,7 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
         data?.unsubscribeAll(func)
         // @ts-ignore
         data?.unsubscribe('state-validating', validFunc)
+        unref()
       })
 
       state.value = data

@@ -570,7 +570,7 @@ const onImportModpack = () => {
       filters: [{ name: t('modpack.name', 2), extensions: ['zip', 'mrpack'] }],
     })
     .then(async (res) => {
-      if (res.canceled) return
+      if (res.canceled || !res.filePaths[0]) return
       const file = res.filePaths[0]
       try {
         loading.value = true

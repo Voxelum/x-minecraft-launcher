@@ -23,6 +23,7 @@
         color="primary"
         variant="flat"
         rounded="xl"
+        :disabled="loading"
         @click="openAddAccountDialog"
       >
         <v-icon start>person_add</v-icon>
@@ -32,6 +33,7 @@
         data-testid="setup-account-skip"
         variant="tonal"
         rounded="xl"
+        :loading="loading"
         @click="emit('skip')"
       >
         {{ t('setup.account.skip') }}
@@ -43,6 +45,9 @@
 import UserAccountSwitcher from '@/components/UserAccountSwitcher.vue'
 import { useUserMenuControl } from '@/composables/userMenu'
 
+defineProps<{
+  loading?: boolean
+}>()
 const { show: showUserProfileDialog } = useUserMenuControl()
 const emit = defineEmits<{
   (event: 'skip'): void

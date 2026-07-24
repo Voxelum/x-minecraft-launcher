@@ -4,6 +4,7 @@ import {
   installJavaRuntimeWithJson,
   parseJavaVersion,
   resolveJava,
+  resolveJavaWithDiagnostic,
   scanLocalJava,
 } from '@xmcl/installer'
 import {
@@ -22,7 +23,13 @@ import { chmod, readFile, readJson, stat, writeJson } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { Tasks, kFlights, kGFW, kTasks } from '~/infra'
-import { JavaValidation, classifyJavaInstallFailure, getJavaExeFilePath, validateJavaPath } from '~/java'
+import {
+  JavaValidation,
+  classifyJavaInstallFailure,
+  getJavaExeFilePath,
+  sanitizeJavaResolveOutput,
+  validateJavaPath,
+} from '~/java'
 import { kDownloadOptions } from '~/network'
 import { ResourceWorker, kResourceWorker } from '~/resource'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
@@ -145,11 +152,10 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       ? await getOfficialJavaManifest(this.app, target.component).catch(() => undefined)
       : undefined
 
-    const folder = this.getPath(
-      'jre',
-      officialManifest ? target.component : target.component + '-zulu',
-    )
-    const exeLocation = getJavaExeFilePath(folder, this.app.platform)
+    const officialFolder = this.getPath('jre', target.component)
+    const zuluFolder = this.getPath('jre', target.component + '-zulu')
+    let folder = officialManifest ? officialFolder : zuluFolder
+    let exeLocation = getJavaExeFilePath(folder, this.app.platform)
 
     const task = this.tasks.create<InstallJavaTask>({
       type: 'installJre',
@@ -163,6 +169,8 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       const installZulu = async () => {
         this.log(`Install zulu jre runtime ${target.component} (${target.majorVersion})`)
         const zuluData = await getZuluJRE(this.app, target.component as any)
+        folder = zuluFolder
+        exeLocation = getJavaExeFilePath(folder, this.app.platform)
         await installZuluJava(zuluData, {
           destination: folder,
           ...this.downloadOptions,
@@ -201,7 +209,17 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       }
 
       this.log(`Successfully install java internally ${exeLocation}`)
-      const result = await this.resolveJava(exeLocation)
+      let result = await this.resolveJava(exeLocation)
+      // A complete official runtime can still be unusable on a particular
+      // host (blocked DLL, missing native dependency, or a vendor wrapper
+      // whose version output cannot be parsed). Do not leave the user with a
+      // dead JRE: retry via the independently packaged Zulu runtime.
+      if (!result && officialManifest && installSource === 'official') {
+        this.warn(`Official java runtime could not be resolved at ${exeLocation}; retrying with Zulu`)
+        installSource = 'official-then-zulu'
+        await installZulu()
+        result = await this.resolveJava(exeLocation)
+      }
       if (!result) {
         throw await this.#createInstallDefaultJavaError(exeLocation, folder, target, installSource)
       }
@@ -260,15 +278,21 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
 
     // Re-run the low-level resolver to capture *why* it failed (spawn vs
     // parse) instead of just knowing it returned undefined.
-    let resolveError: string | undefined
+    let resolveExitCode: number | undefined
+    let resolveSignal: string | undefined
+    let resolveStdout: string | undefined
+    let resolveStderr: string | undefined
     if (exeExists) {
       try {
-        const java = await resolveJava(exeLocation)
-        if (!java) {
-          resolveError = 'resolveJava returned undefined (could not parse java -version output)'
-        }
+        const diagnostic = await resolveJavaWithDiagnostic(exeLocation)
+        resolveExitCode = diagnostic.exitCode
+        resolveSignal = diagnostic.signal
+        resolveStdout = sanitizeJavaResolveOutput(diagnostic.stdout)
+        resolveStderr = sanitizeJavaResolveOutput(diagnostic.stderr)
       } catch (e) {
-        resolveError = e instanceof Error ? `${e.name}: ${e.message}` : String(e)
+        resolveStderr = sanitizeJavaResolveOutput(
+          e instanceof Error ? `${e.name}: ${e.message}` : String(e),
+        )
       }
     }
 
@@ -293,7 +317,10 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         folderEmpty: folderFiles ? folderFiles.length === 0 : undefined,
         releaseFilePresent: releaseRaw !== undefined,
         releaseJavaVersion,
-        resolveError,
+        resolveExitCode,
+        resolveSignal,
+        resolveStdout,
+        resolveStderr,
         platform: `${this.app.platform.os} ${this.app.platform.arch}`,
       },
     )

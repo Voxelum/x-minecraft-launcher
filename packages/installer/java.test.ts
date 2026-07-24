@@ -1,4 +1,4 @@
-import { parseJavaVersion } from './java'
+import { parseJavaVersion, parseJavaVersionOutput } from './java'
 import { describe, test, expect } from 'vitest'
 
 describe('JavaInstaller', () => {
@@ -46,6 +46,10 @@ OpenJDK 64-Bit Server VM (build 25+36-3489, mixed mode)`
       const version = 'java version "21" 2023-09-19 LTS'
       const inf = parseJavaVersion(version)
       expect(inf).toEqual({ version: '21', majorVersion: 21, patch: -1 })
+    })
+    test('should accept version output written to stdout', () => {
+      expect(parseJavaVersionOutput('openjdk version "21.0.7" 2025-04-16', ''))
+        .toEqual({ version: '21.0.7', majorVersion: 21, patch: 7 })
     })
     test('should resolve JAVA_VERSION line from JDK release file with major-only version', () => {
       const inf = parseJavaVersion('JAVA_VERSION="25"')
