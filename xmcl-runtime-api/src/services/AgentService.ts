@@ -110,32 +110,67 @@ export interface AgentConversationAttachment {
 
 export interface AgentBridgeRegistration {
   bridgeId: string
-  agentId: AgentId
 }
+
+export interface AgentProviderStreamRequest {
+  bridgeId: string
+  requestId: string
+  model: Record<string, unknown>
+  context: Record<string, unknown>
+  options?: Record<string, unknown>
+}
+
+export type AgentProviderStreamEvent =
+  | {
+      bridgeId: string
+      requestId: string
+      type: 'event'
+      event: unknown
+    }
+  | {
+      bridgeId: string
+      requestId: string
+      type: 'error'
+      error: string
+    }
+
+export type AgentMarketProvider = 'modrinth' | 'curseforge'
+
+export interface AgentMarketProject {
+  provider: AgentMarketProvider
+  id: string
+  title: string
+  description: string
+  icon?: string
+  author?: string
+  downloads?: number
+}
+
+export interface AgentMarketProjectListPresentation {
+  type: 'market-project-list'
+  source: AgentMarketProvider
+  query: string
+  total: number
+  items: AgentMarketProject[]
+}
+
+export type AgentToolPresentation = AgentMarketProjectListPresentation
 
 export type AgentUiAction =
   | { action: 'navigate'; path: string }
   | { action: 'select_instance'; path: string }
   | { action: 'select_account'; id: string }
-  | { action: 'confirm'; message: string; destructive?: boolean }
+  | {
+      action: 'confirm'
+      message: string
+      title?: string
+      details?: string[]
+      confirmLabel?: string
+      destructive?: boolean
+    }
   | { action: 'query_dom'; selector: string; limit?: number }
   | { action: 'get_computed_style'; selector: string; properties?: string[] }
   | { action: 'get_dom_outline'; selector?: string; maxDepth?: number }
-
-export interface AgentUiRequest {
-  bridgeId: string
-  runId: string
-  callId: string
-  input: AgentUiAction
-  timeoutMs: number
-}
-
-export interface AgentUiResponse {
-  bridgeId: string
-  callId: string
-  result?: unknown
-  error?: string
-}
 
 export interface AgentRunTrace {
   runId: string
@@ -157,24 +192,20 @@ export interface AgentRunTrace {
 export interface AgentBridgeClient {
   register(registration: AgentBridgeRegistration): Promise<void>
   unregister(bridgeId: string): Promise<void>
-  resolve(response: AgentUiResponse): Promise<void>
-  onRunEvent(listener: (event: AgentRunEvent) => void): () => void
-  onUiRequest(listener: (request: AgentUiRequest) => void): () => void
-  onToolCancel(listener: (request: { bridgeId: string; runId: string; callId: string }) => void): () => void
+  stream(request: AgentProviderStreamRequest): Promise<void>
+  cancel(bridgeId: string, requestId: string): Promise<void>
+  onProviderEvent(listener: (event: AgentProviderStreamEvent) => void): () => void
 }
 
 export interface AgentService {
   getProviderSettings(): Promise<AgentProviderSettings>
   setProviderSettings(input: UpdateAgentProviderSettings): Promise<void>
   getConversation(key: AgentConversationKey): Promise<AgentConversation>
-  getRun(runId: string): Promise<AgentRunSnapshot | undefined>
-  startRun(input: StartAgentRunInput): Promise<{ runId: string }>
-  attachConversation(key: AgentConversationKey, bridgeId: string): Promise<AgentConversationAttachment>
-  attachRun(runId: string, bridgeId: string): Promise<AgentRunSnapshot>
-  cancelRun(runId: string): Promise<void>
+  appendConversationMessages(key: AgentConversationKey, messages: AgentMessage[]): Promise<void>
   resetConversation(key: AgentConversationKey): Promise<void>
   importLegacyConversation(input: LegacyConversationImport): Promise<'imported' | 'exists'>
   notifyContextChange(input: AgentContextChange): Promise<void>
+  reportRunTrace(trace: AgentRunTrace): Promise<void>
 }
 
 export const AgentServiceKey: ServiceKey<AgentService> = 'AgentService'

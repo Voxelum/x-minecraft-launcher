@@ -1,95 +1,31 @@
-import { Agent, type AgentEvent as PiAgentEvent, type AgentMessage as PiAgentMessage, type AgentTool } from '@earendil-works/pi-agent-core'
-import { Type, type AssistantMessage, type Message, type TextContent, type ToolResultMessage, type UserMessage } from '@earendil-works/pi-ai'
+import type { Api, AssistantMessage, Context, Model, SimpleStreamOptions, Usage } from '@earendil-works/pi-ai'
 import {
   AgentServiceKey,
-  type AgentConversation,
-  type AgentConversationKey,
   type AgentContextChange,
+  type AgentConversationKey,
   type AgentMessage,
-  type AgentRunEvent,
-  type AgentRunSnapshot,
-  type AgentRunState,
+  type AgentProviderStreamRequest,
   type AgentRunTrace,
   type AgentService as IAgentService,
   type LegacyConversationImport,
-  type StartAgentRunInput,
   type UpdateAgentProviderSettings,
 } from '@xmcl/runtime-api'
-import { createHash, randomUUID } from 'crypto'
 import { join } from 'path'
 import { Inject, LauncherAppKey, type LauncherApp } from '~/app'
+import { IS_DEV } from '~/constant'
 import { kSettings } from '~/settings'
 import { AbstractService, ExposeServiceKey } from '~/service'
-import { IS_DEV } from '~/constant'
 import { AgentBridge } from './AgentBridge'
 import { sanitizeAgentEndpoint, sanitizeAgentLog, summarizeAgentProviderPayload } from './debug'
 import { AgentHistoryStore } from './history'
-import { createAgentModels } from './provider'
-import { buildAgentSystemPrompt } from './prompt'
-import { createRuntimeAgentTools } from './tools'
-import { InstanceService } from '~/instance'
-import { UserService } from '~/user'
+import { createAgentProvider } from './provider'
 
 const SECRET_SERVICE = 'xmcl/agent'
 const SECRET_ACCOUNT = 'default'
 const DEFAULT_ENDPOINT = 'https://apihub.agnes-ai.com/v1/chat/completions'
 const DEFAULT_MODEL = 'agnes-2.0-flash'
-interface ActiveRun {
-  snapshot: AgentRunSnapshot
-  agent: Agent
-  bridgeId?: string
-  hasUi: boolean
-  turnCount: number
-  abortRequested: boolean
-  toolCounts: Record<string, number>
-  toolFailures: number
-  inputTokens: number
-  outputTokens: number
-  provider: string
-  model: string
-  lastStreamText: string
-}
 
-function keyString(key: AgentConversationKey) {
-  return `${key.agentId}\0${key.scope}`
-}
-
-function contentText(content: AssistantMessage['content'] | ToolResultMessage['content']) {
-  return content.filter((part): part is TextContent => part.type === 'text').map(part => part.text).join('')
-}
-
-function assistantText(message: PiAgentMessage) {
-  return message.role === 'assistant' ? contentText(message.content) : ''
-}
-
-function fromPiMessage(message: PiAgentMessage): AgentMessage | undefined {
-  if (message.role === 'user') {
-    const content = typeof message.content === 'string'
-      ? message.content
-      : message.content.map(part => part.type === 'text'
-        ? { type: 'text' as const, text: part.text }
-        : { type: 'text' as const, text: `[image:${part.mimeType}]` })
-    return { role: 'user', content }
-  }
-  if (message.role === 'assistant') {
-    const text = contentText(message.content)
-    const toolCalls = message.content
-      .filter(part => part.type === 'toolCall')
-      .map(part => ({ id: part.id, name: part.name, arguments: part.arguments }))
-    return { role: 'assistant', content: text || null, toolCalls: toolCalls.length ? toolCalls : undefined }
-  }
-  if (message.role === 'toolResult') {
-    return {
-      role: 'tool',
-      toolCallId: message.toolCallId,
-      name: message.toolName,
-      content: contentText(message.content),
-      isError: message.isError,
-    }
-  }
-}
-
-function zeroUsage() {
+function zeroUsage(): Usage {
   return {
     input: 0,
     output: 0,
@@ -100,72 +36,14 @@ function zeroUsage() {
   }
 }
 
-function toPiMessage(message: AgentMessage, provider: string, model: string): Message | undefined {
-  if (message.role === 'system') return undefined
-  if (message.role === 'user') {
-    const content = typeof message.content === 'string'
-      ? message.content
-      : (message.content ?? []).map(part => ({ type: 'text' as const, text: part.type === 'text' ? part.text ?? '' : `[image:${part.image_url?.url ?? ''}]` }))
-    return { role: 'user', content, timestamp: Date.now() } satisfies UserMessage
-  }
-  if (message.role === 'assistant') {
-    const content: AssistantMessage['content'] = []
-    const text = typeof message.content === 'string'
-      ? message.content
-      : (message.content ?? []).filter(part => part.type === 'text').map(part => part.text ?? '').join('')
-    if (text) content.push({ type: 'text', text })
-    for (const call of message.toolCalls ?? []) {
-      content.push({ type: 'toolCall', id: call.id, name: call.name, arguments: call.arguments })
-    }
-    return {
-      role: 'assistant',
-      content,
-      api: 'openai-completions',
-      provider,
-      model,
-      usage: zeroUsage(),
-      stopReason: message.toolCalls?.length ? 'toolUse' : 'stop',
-      timestamp: Date.now(),
-    } satisfies AssistantMessage
-  }
-  return {
-    role: 'toolResult',
-    toolCallId: message.toolCallId ?? randomUUID(),
-    toolName: message.name ?? 'unknown',
-    content: [{ type: 'text', text: typeof message.content === 'string' ? message.content : '' }],
-    isError: !!message.isError,
-    timestamp: Date.now(),
-  } satisfies ToolResultMessage
-}
-
-function resultText(value: unknown) {
-  if (typeof value === 'string') return value
-  if (value === undefined || value === null) return ''
-  try {
-    return JSON.stringify(value)
-  } catch {
-    return String(value)
-  }
-}
-
-function toolResultText(result: any, isError: boolean) {
-  const content = Array.isArray(result?.content)
-    ? result.content.filter((part: any) => part?.type === 'text').map((part: any) => String(part.text ?? '')).join('')
-    : undefined
-  if (isError && content) return content
-  return resultText(result?.details ?? content ?? result)
-}
-
-function deterministicSample(runId: string, percentage: number) {
-  const bucket = createHash('sha256').update(runId).digest().readUInt32BE(0) % 100
-  return bucket < percentage
+function requestKey(bridgeId: string, requestId: string) {
+  return `${bridgeId}\0${requestId}`
 }
 
 @ExposeServiceKey(AgentServiceKey)
 export class AgentService extends AbstractService implements IAgentService {
   private history = new AgentHistoryStore(join(this.app.appDataPath, 'agent', 'history'), message => this.warn(message))
-  private runs = new Map<string, ActiveRun>()
-  private activeByConversation = new Map<string, string>()
+  private providerRequests = new Map<string, AbortController>()
   private agentLogger = this.app.getLogger('Agent', 'agent')
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
@@ -193,166 +71,21 @@ export class AgentService extends AbstractService implements IAgentService {
       endpoint: input.endpoint.trim() || DEFAULT_ENDPOINT,
       model: input.model.trim() || DEFAULT_MODEL,
     })
-    if (input.apiKey !== undefined) await this.app.secretStorage.put(SECRET_SERVICE, SECRET_ACCOUNT, input.apiKey.trim())
+    if (input.apiKey !== undefined) {
+      await this.app.secretStorage.put(SECRET_SERVICE, SECRET_ACCOUNT, input.apiKey.trim())
+    }
   }
 
   getConversation(key: AgentConversationKey) {
     return this.history.load(key)
   }
 
-  async getRun(runId: string) {
-    const run = this.runs.get(runId)
-    return run ? structuredClone(run.snapshot) : undefined
+  async appendConversationMessages(key: AgentConversationKey, messages: AgentMessage[]) {
+    for (const message of messages) await this.history.appendMessage(key, message)
   }
 
-  async startRun(input: StartAgentRunInput) {
-    const bridge = await this.app.registry.get(AgentBridge)
-    const registration = input.bridgeId ? bridge.getRegistration(input.bridgeId) : undefined
-    if (input.bridgeId && (!registration || registration.agentId !== input.key.agentId)) throw new Error('Agent renderer bridge is not registered')
-    const hasUi = !!registration
-    if (this.activeByConversation.has(keyString(input.key))) throw new Error('Agent: a request is already in flight')
-
-    const providerSettings = await this.getProviderSettings()
-    if (!providerSettings.configured) throw new Error('Agent: API key is not configured')
-    const apiKey = () => this.app.secretStorage.get(SECRET_SERVICE, SECRET_ACCOUNT)
-    const { models, model, providerId } = createAgentModels(providerSettings.endpoint, providerSettings.model, apiKey)
-    const conversation = await this.history.load(input.key)
-    const sessionContext = await this.buildSessionContext(input.key, input.userId)
-    await this.history.ensureSession(input.key, { locale: input.locale, userId: input.userId })
-    const userMessage: AgentMessage = { role: 'user', content: input.input }
-    await this.history.appendMessage(input.key, userMessage)
-
-    const runId = randomUUID()
-    const tools = await createRuntimeAgentTools({
-      app: this.app,
-      bridge,
-      runId,
-      bridgeId: () => {
-        const run = this.runs.get(runId)
-        if (!run?.hasUi || !run.bridgeId) return undefined
-        const current = bridge.getRegistration(run.bridgeId)
-        return current?.agentId === input.key.agentId ? run.bridgeId : undefined
-      },
-      hasUi,
-      key: input.key,
-      readonly: !!input.policy?.readonly,
-    })
-    const systemPrompt = buildAgentSystemPrompt({
-      role: input.key.agentId === 'css' ? 'css-main' : 'launcher-main',
-      locale: input.locale,
-      tools: tools.map(tool => ({ name: tool.name, readonly: tool.name === 'vfs_list' || tool.name === 'vfs_read' || tool.name === 'get_custom_css' })),
-      policy: {
-        hasUi,
-        readonly: !!input.policy?.readonly,
-        canDelegate: false,
-        depth: input.depth ?? 0,
-        maxDepth: input.policy?.maxDepth ?? 0,
-      },
-      sessionContext,
-    })
-    const agent = new Agent({
-      initialState: {
-        systemPrompt,
-        model,
-        thinkingLevel: 'off',
-        tools,
-        messages: conversation.messages
-          .map(message => toPiMessage(message, providerId, model.id))
-          .filter((message): message is Message => !!message),
-      },
-      streamFn: models.streamSimple.bind(models),
-      toolExecution: 'sequential',
-      sessionId: runId,
-      onPayload: payload => this.logAgent(`[provider.request] ${sanitizeAgentLog({
-        endpoint: sanitizeAgentEndpoint(providerSettings.endpoint),
-        model: model.id,
-        payload: summarizeAgentProviderPayload(payload),
-      })}`),
-      onResponse: response => this.logAgent(`[provider.response] ${sanitizeAgentLog({
-        model: model.id,
-        status: response.status,
-      })}`),
-    })
-    const snapshot: AgentRunSnapshot = {
-      runId,
-      key: input.key,
-      bridgeId: input.bridgeId,
-      eventSeq: 0,
-      state: 'running',
-      messages: [...conversation.messages, userMessage],
-      startedAt: Date.now(),
-    }
-    const run: ActiveRun = {
-      snapshot,
-      agent,
-      bridgeId: input.bridgeId,
-      hasUi,
-      turnCount: 0,
-      abortRequested: false,
-      toolCounts: {},
-      toolFailures: 0,
-      inputTokens: 0,
-      outputTokens: 0,
-      provider: providerId,
-      model: model.id,
-      lastStreamText: '',
-    }
-    this.runs.set(runId, run)
-    this.activeByConversation.set(keyString(input.key), runId)
-    this.logAgent(`[run.start] ${sanitizeAgentLog({ runId, agentId: input.key.agentId, hasUi, model: model.id, tools: tools.map(tool => tool.name) })}`)
-    this.sendRunEvent(run, bridge, { runId, type: 'state', state: 'running' })
-    agent.subscribe(event => this.onPiEvent(run, event, bridge))
-    void this.executeRun(run, input.input, bridge)
-    return { runId }
-  }
-
-  async attachRun(runId: string, bridgeId: string) {
-    const run = this.runs.get(runId)
-    if (!run) throw new Error(`Agent run not found: ${runId}`)
-    const bridge = await this.app.registry.get(AgentBridge)
-    const registration = bridge.getRegistration(bridgeId)
-    if (!registration || registration.agentId !== run.snapshot.key.agentId) throw new Error('Agent renderer bridge is not registered')
-    run.bridgeId = bridgeId
-    run.snapshot.bridgeId = bridgeId
-    return structuredClone(run.snapshot)
-  }
-
-  async attachConversation(key: AgentConversationKey, bridgeId: string) {
-    const bridge = await this.app.registry.get(AgentBridge)
-    const registration = bridge.getRegistration(bridgeId)
-    if (!registration || registration.agentId !== key.agentId) throw new Error('Agent renderer bridge is not registered')
-
-    let run = this.getActiveRun(key)
-    if (!run) {
-      const conversation = await this.history.load(key)
-      run = this.getActiveRun(key)
-      if (!run) return { conversation }
-    }
-
-    run.bridgeId = bridgeId
-    run.snapshot.bridgeId = bridgeId
-    const snapshot = structuredClone(run.snapshot)
-    const conversation = await this.history.load(key)
-    return {
-      conversation: {
-        ...conversation,
-        messages: snapshot.messages,
-      },
-      run: snapshot,
-    }
-  }
-
-  async cancelRun(runId: string) {
-    const run = this.runs.get(runId)
-    if (!run || run.snapshot.state !== 'running') return
-    run.abortRequested = true
-    run.agent.abort()
-  }
-
-  async resetConversation(key: AgentConversationKey) {
-    const runId = this.activeByConversation.get(keyString(key))
-    if (runId) await this.cancelRun(runId)
-    await this.history.reset(key)
+  resetConversation(key: AgentConversationKey) {
+    return this.history.reset(key)
   }
 
   importLegacyConversation(input: LegacyConversationImport) {
@@ -360,162 +93,114 @@ export class AgentService extends AbstractService implements IAgentService {
   }
 
   async notifyContextChange(input: AgentContextChange) {
-    const message: AgentMessage = { role: 'user', content: input.message }
-    await this.history.appendMessage(input.key, message)
+    await this.history.appendMessage(input.key, { role: 'user', content: input.message })
     if (input.context) await this.history.updateContext(input.key, input.context)
-    const runId = this.activeByConversation.get(keyString(input.key))
-    const run = runId ? this.runs.get(runId) : undefined
-    if (run?.snapshot.state === 'running') {
-      run.agent.steer({ role: 'user', content: input.message, timestamp: Date.now() })
-    }
   }
 
-  private async onPiEvent(run: ActiveRun, event: PiAgentEvent, bridge: AgentBridge) {
-    const runId = run.snapshot.runId
-    if (event.type === 'message_update') {
-      const text = assistantText(event.message)
-      const delta = text.startsWith(run.lastStreamText) ? text.slice(run.lastStreamText.length) : text
-      run.lastStreamText = text
-      const message = fromPiMessage(event.message)
-      if (message) this.sendRunEvent(run, bridge, { runId, type: 'message_delta', delta, message })
-      return
-    }
-    if (event.type === 'message_end') {
-      run.lastStreamText = ''
-      const message = fromPiMessage(event.message)
-      if (!message || message.role === 'user') return
-      await this.history.appendMessage(run.snapshot.key, message)
-      run.snapshot.messages.push(message)
-      if (event.message.role === 'assistant') {
-        run.inputTokens += event.message.usage.input
-        run.outputTokens += event.message.usage.output
-      }
-      this.sendRunEvent(run, bridge, { runId, type: 'message_end', message })
-      return
-    }
-    if (event.type === 'tool_execution_start') {
-      run.toolCounts[event.toolName] = (run.toolCounts[event.toolName] ?? 0) + 1
-      this.logAgent(`[tool.start] ${sanitizeAgentLog({ runId, name: event.toolName, arguments: event.args })}`)
-      this.sendRunEvent(run, bridge, {
-        runId,
-        type: 'tool_start',
-        toolCall: { id: event.toolCallId, name: event.toolName, arguments: event.args },
-      })
-      return
-    }
-    if (event.type === 'tool_execution_end') {
-      if (event.isError) run.toolFailures++
-      const result = toolResultText(event.result, event.isError)
-      this.logAgent(`[tool.end] ${sanitizeAgentLog({ runId, name: event.toolName, isError: event.isError, result })}`)
-      this.sendRunEvent(run, bridge, {
-        runId,
-        type: 'tool_end',
-        toolResult: { id: event.toolCallId, name: event.toolName, result, isError: event.isError },
-      })
-      return
-    }
-    if (event.type === 'turn_end') {
-      run.turnCount++
-    }
-  }
-
-  private async executeRun(run: ActiveRun, input: string, bridge: AgentBridge) {
-    let state: AgentRunState = 'completed'
-    let error: string | undefined
-    let stopReason = 'stop'
-    try {
-      await run.agent.prompt(input)
-      const last = [...run.agent.state.messages].reverse().find((message): message is AssistantMessage => message.role === 'assistant')
-      stopReason = last?.stopReason ?? 'stop'
-      if (run.abortRequested || stopReason === 'aborted') {
-        state = 'aborted'
-      } else if (last?.stopReason === 'error' || run.agent.state.errorMessage) {
-        state = 'failed'
-        error = last?.errorMessage ?? run.agent.state.errorMessage
-      }
-    } catch (e) {
-      state = run.abortRequested ? 'aborted' : 'failed'
-      error = e instanceof Error ? e.message : String(e)
-      stopReason = state === 'aborted' ? 'aborted' : 'error'
-    } finally {
-      run.snapshot.state = state
-      run.snapshot.finishedAt = Date.now()
-      run.snapshot.error = error
-      this.activeByConversation.delete(keyString(run.snapshot.key))
-      this.sendRunEvent(run, bridge, error
-        ? { runId: run.snapshot.runId, type: 'error', state, error }
-        : { runId: run.snapshot.runId, type: 'complete', state })
-      this.logAgent(`[run.end] ${sanitizeAgentLog({ runId: run.snapshot.runId, state, error, turns: run.turnCount, tools: run.toolCounts })}`)
-      this.emitTrace(run, stopReason)
-      this.pruneRuns()
-    }
-  }
-
-  private emitTrace(run: ActiveRun, stopReason: string) {
-    const percentage = run.snapshot.state === 'completed' ? 25 : 100
-    if (!deterministicSample(run.snapshot.runId, percentage)) return
-    const entries = Object.entries(run.toolCounts).sort((a, b) => b[1] - a[1])
-    const tools = Object.fromEntries(entries.slice(0, 32))
-    if (entries.length > 32) tools.other = entries.slice(32).reduce((sum, [, count]) => sum + count, 0)
-    const trace: AgentRunTrace = {
-      runId: run.snapshot.runId,
-      agentId: run.snapshot.key.agentId,
-      provider: run.provider,
-      model: run.model,
-      outcome: run.snapshot.state,
-      stopReason,
-      tools,
-      turnCount: run.turnCount,
-      toolCallCount: Object.values(run.toolCounts).reduce((sum, count) => sum + count, 0),
-      toolFailureCount: run.toolFailures,
-      inputTokens: run.inputTokens,
-      outputTokens: run.outputTokens,
-      durationMs: (run.snapshot.finishedAt ?? Date.now()) - run.snapshot.startedAt,
-      sampleRate: percentage,
-    }
+  async reportRunTrace(trace: AgentRunTrace) {
     this.app.emit('agent-run-trace', trace)
   }
 
-  private sendRunEvent(run: ActiveRun, bridge: AgentBridge, event: Omit<AgentRunEvent, 'seq'>) {
-    const sequenced = { ...event, seq: ++run.snapshot.eventSeq }
-    if (run.bridgeId) bridge.sendRunEvent(run.bridgeId, sequenced)
+  async startProviderStream(request: AgentProviderStreamRequest, bridge: AgentBridge) {
+    if (!bridge.has(request.bridgeId)) throw new Error('Agent provider bridge is unavailable')
+    const key = requestKey(request.bridgeId, request.requestId)
+    this.providerRequests.get(key)?.abort()
+    const controller = new AbortController()
+    this.providerRequests.set(key, controller)
+    void this.runProviderStream(request, bridge, controller).finally(() => {
+      if (this.providerRequests.get(key) === controller) this.providerRequests.delete(key)
+    })
   }
 
-  private getActiveRun(key: AgentConversationKey) {
-    const runId = this.activeByConversation.get(keyString(key))
-    const run = runId ? this.runs.get(runId) : undefined
-    return run?.snapshot.state === 'running' ? run : undefined
+  cancelProviderStream(bridgeId: string, requestId: string) {
+    this.providerRequests.get(requestKey(bridgeId, requestId))?.abort()
   }
 
-  private pruneRuns() {
-    const finished = [...this.runs.values()]
-      .filter(run => run.snapshot.state !== 'running')
-      .sort((a, b) => (b.snapshot.finishedAt ?? 0) - (a.snapshot.finishedAt ?? 0))
-    for (const run of finished.slice(50)) this.runs.delete(run.snapshot.runId)
+  cancelProviderBridge(bridgeId: string) {
+    for (const [key, controller] of this.providerRequests) {
+      if (key.startsWith(`${bridgeId}\0`)) controller.abort()
+    }
+  }
+
+  private async runProviderStream(
+    request: AgentProviderStreamRequest,
+    bridge: AgentBridge,
+    controller: AbortController,
+  ) {
+    const providerSettings = await this.getProviderSettings()
+    if (!providerSettings.configured) {
+      bridge.sendProviderEvent(request.bridgeId, {
+        bridgeId: request.bridgeId,
+        requestId: request.requestId,
+        type: 'error',
+        error: 'Agent API key is not configured',
+      })
+      return
+    }
+
+    const apiKey = await this.app.secretStorage.get(SECRET_SERVICE, SECRET_ACCOUNT)
+    const { api, model, providerId } = createAgentProvider(providerSettings.endpoint, providerSettings.model)
+    const options = {
+      ...request.options,
+      apiKey,
+      signal: controller.signal,
+      onPayload: (payload: unknown) => this.logAgent(`[provider.request] ${sanitizeAgentLog({
+        endpoint: sanitizeAgentEndpoint(providerSettings.endpoint),
+        model: model.id,
+        payload: summarizeAgentProviderPayload(payload),
+      })}`),
+      onResponse: (response: any) => this.logAgent(`[provider.response] ${sanitizeAgentLog({
+        model: model.id,
+        status: response.status,
+      })}`),
+    } as unknown as SimpleStreamOptions
+
+    try {
+      const stream = api.streamSimple(
+        model as Model<Api>,
+        request.context as unknown as Context,
+        options,
+      )
+      for await (const event of stream) {
+        if (!bridge.sendProviderEvent(request.bridgeId, {
+          bridgeId: request.bridgeId,
+          requestId: request.requestId,
+          type: 'event',
+          event,
+        })) {
+          controller.abort()
+          break
+        }
+      }
+    } catch (error) {
+      const aborted = controller.signal.aborted
+      const message: AssistantMessage = {
+        role: 'assistant',
+        content: [],
+        api: 'openai-completions',
+        provider: providerId,
+        model: model.id,
+        usage: zeroUsage(),
+        stopReason: aborted ? 'aborted' : 'error',
+        errorMessage: error instanceof Error ? error.message : String(error),
+        timestamp: Date.now(),
+      }
+      bridge.sendProviderEvent(request.bridgeId, {
+        bridgeId: request.bridgeId,
+        requestId: request.requestId,
+        type: 'event',
+        event: {
+          type: 'error',
+          reason: aborted ? 'aborted' : 'error',
+          error: message,
+        },
+      })
+    }
   }
 
   private logAgent(message: string) {
     if (!IS_DEV) return
     this.agentLogger.log(message)
     this.log(message)
-  }
-
-  private async buildSessionContext(key: AgentConversationKey, userId?: string) {
-    if (key.agentId === 'css') return 'Global XMCL custom CSS scope.'
-    const instanceService = await this.app.registry.getOrCreate(InstanceService)
-    const userService = await this.app.registry.getOrCreate(UserService)
-    const [instances, users] = await Promise.all([
-      instanceService.getSharedInstancesState(),
-      userService.getUserState(),
-    ])
-    const instance = instances.all[key.scope]
-    const user = userId ? users.users[userId] : undefined
-    return [
-      `Instance path: ${key.scope}`,
-      `Instance name: ${instance?.name ?? '(unknown)'}`,
-      `Runtime: ${JSON.stringify(instance?.runtime ?? {})}`,
-      `Selected user: ${user?.username ?? '(none)'}`,
-      'Use runtime tools to inspect live files and state instead of relying on this summary.',
-    ].join('\n')
   }
 }

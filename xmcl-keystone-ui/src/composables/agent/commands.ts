@@ -26,9 +26,7 @@ export function assertAgentCommandSyntax(argv: string[]) {
     /(^\d*)[<>]/.test(token) ||
     token.includes('$(') ||
     token.includes('`'))
-  if (unsupported) {
-    throw new Error(`Unsupported shell syntax: ${unsupported}. The bash tool accepts one XMCL command only.`)
-  }
+  if (unsupported) throw new Error(`Unsupported shell syntax: ${unsupported}. The bash tool accepts one XMCL command only.`)
 }
 
 interface ParsedArgs {
@@ -60,10 +58,7 @@ function parseArgs(argv: string[], valueFlags: string[], booleanFlags: string[] 
   return parsed
 }
 
-function one(parsed: ParsedArgs, name: string) {
-  return parsed.values.get(name)?.at(-1)
-}
-
+const one = (parsed: ParsedArgs, name: string) => parsed.values.get(name)?.at(-1)
 function limit(parsed: ParsedArgs, fallback = 10) {
   const raw = one(parsed, 'limit')
   if (!raw) return fallback
@@ -71,7 +66,6 @@ function limit(parsed: ParsedArgs, fallback = 10) {
   if (!Number.isSafeInteger(value) || value < 1 || value > 25) throw new Error('--limit must be between 1 and 25')
   return value
 }
-
 function loader(value: string | undefined): AgentLoader {
   if (value === 'forge' || value === 'neoforge' || value === 'fabric' || value === 'quilt') return value
   throw new Error(`Unknown loader: ${value ?? ''}`)
@@ -88,7 +82,6 @@ export function createAgentRuntimeCommands(operations: AgentCommandOperations): 
         'market modrinth versions <project> [--game-version <version>] [--loader <loader>] [--limit <1-25>]',
         'market curseforge search <query> [--game-version <version>] [--limit <1-25>]',
         'market curseforge files <projectId> [--game-version <version>] [--limit <1-25>]',
-        'Use the returned installRef with install-mod/install-resourcepack/install-shaderpack and pass --instance.',
       ],
       async execute(argv, signal) {
         const [source, action, ...rest] = argv
@@ -137,21 +130,14 @@ export function createAgentRuntimeCommands(operations: AgentCommandOperations): 
       name: 'version',
       usage: 'version list <forge|neoforge|fabric|quilt> [minecraftVersion] [--limit <1-25>] [--refresh]',
       description: 'List compatible mod-loader versions.',
-      details: [
-        'version list forge <minecraftVersion> [--limit <1-25>] [--refresh]',
-        'version list neoforge <minecraftVersion> [--limit <1-25>] [--refresh]',
-        'version list fabric [minecraftVersion] [--limit <1-25>] [--refresh]',
-        'version list quilt [minecraftVersion] [--limit <1-25>] [--refresh]',
-      ],
+      details: [],
       async execute(argv, signal) {
         const [action, provider, ...rest] = argv
         if (action !== 'list') throw new Error('Unknown version command. Run `help version`.')
         const parsed = parseArgs(rest, ['limit'], ['refresh'])
         if (parsed.positionals.length > 1) throw new Error('version list accepts at most one Minecraft version')
         const kind = loader(provider)
-        if ((kind === 'forge' || kind === 'neoforge') && !parsed.positionals[0]) {
-          throw new Error(`${kind} requires a Minecraft version`)
-        }
+        if ((kind === 'forge' || kind === 'neoforge') && !parsed.positionals[0]) throw new Error(`${kind} requires a Minecraft version`)
         return operations.listLoaderVersions({
           loader: kind,
           minecraft: parsed.positionals[0],
@@ -163,14 +149,8 @@ export function createAgentRuntimeCommands(operations: AgentCommandOperations): 
     {
       name: 'loader',
       usage: 'loader install <forge|neoforge|fabric|quilt> [version]',
-      description: 'Install a mod loader and update the current instance runtime.',
-      details: [
-        'loader install forge [version]',
-        'loader install neoforge [version]',
-        'loader install fabric [version]',
-        'loader install quilt [version]',
-        'When version is omitted, XMCL selects a recommended or latest compatible version.',
-      ],
+      description: 'Install a mod loader using the launcher renderer installation workflow.',
+      details: [],
       async execute(argv, signal) {
         const [action, provider, version, ...extra] = argv
         if (action !== 'install' || extra.length) throw new Error('Unknown loader command. Run `help loader`.')

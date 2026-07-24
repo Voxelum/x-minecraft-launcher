@@ -5,10 +5,11 @@ import { kInstances } from '../instances'
 import { useService } from '../service'
 import { kUserContext } from '../user'
 import { injection } from '@/util/inject'
-import { useRemoteAgent } from './remote'
-import { createAgentUiHandler } from './ui'
+import { useLocalAgent } from './local'
+import { useAgentToolFactory } from './tools'
+import { useAgentChatStatus } from '../agentChat'
 
-export * from './remote'
+export * from './local'
 export * from './ui'
 export * from './cssAgent'
 
@@ -19,6 +20,7 @@ export interface AgentSession {
   readonly messages: Ref<AgentMessage[]>
   readonly events: Ref<AgentRunEvent[]>
   loadConversationForCurrentInstance(): Promise<void>
+  replaceMessages(messages: AgentMessage[]): Promise<void>
   send(userInput: string): Promise<void>
   reset(): Promise<void>
   abort(): void
@@ -45,17 +47,26 @@ function legacyMessage(message: any): AgentMessage {
 }
 
 export function useAgent(): AgentSession {
-  const router = useRouter()
   const { locale } = useI18n()
   const { allInstances, selectedInstance } = injection(kInstances)
-  const { userProfile, select } = injection(kUserContext)
+  const { userProfile } = injection(kUserContext)
   const service = useService(AgentServiceKey)
-  const remote = useRemoteAgent({
+  const tools = useAgentToolFactory()
+  const local = useLocalAgent({
     agentId: 'launcher',
     getScope: () => selectedInstance.value,
     getLocale: () => locale.value,
     getUserId: () => userProfile.value?.id || undefined,
-    handleUi: createAgentUiHandler({ router, selectedInstance, instances: allInstances, selectAccount: select }),
+    createTools: tools.createLauncherTools,
+    getSessionContext: context => {
+      const instance = allInstances.value.find(value => value.path === context.scope)
+      return [
+        `Instance path: ${context.scope}`,
+        `Instance name: ${instance?.name ?? '(unknown)'}`,
+        `Runtime: ${JSON.stringify(instance?.runtime ?? {})}`,
+        `Selected user id: ${context.userId ?? '(none)'}`,
+      ].join('\n')
+    },
   })
 
   const migrationReady = (async () => {
@@ -75,14 +86,14 @@ export function useAgent(): AgentSession {
     } catch {}
   })()
   watch(selectedInstance, (scope) => {
-    if (scope) void migrationReady.then(() => remote.load(scope))
+    if (scope) void migrationReady.then(() => local.load(scope))
   }, { immediate: true })
 
   return {
-    ...remote,
+    ...local,
     loadConversationForCurrentInstance: async () => {
       await migrationReady
-      await remote.load(selectedInstance.value)
+      await local.load(selectedInstance.value)
     },
   }
 }
@@ -90,14 +101,18 @@ export function useAgent(): AgentSession {
 export const kAgent: InjectionKey<AgentSession> = Symbol('Agent')
 
 export function installAgentDevLauncher(session: AgentSession) {
+  const chatStatus = useAgentChatStatus()
   ;(window as any).__xmcl_agent = {
     send: (input: string) => session.send(input).catch((error) => console.error('[agent]', error)),
     reset: () => session.reset(),
     abort: () => session.abort(),
+    show: () => { chatStatus.shown.value = true },
+    hide: () => { chatStatus.shown.value = false },
     get running() { return session.running.value },
     get runError() { return session.runError.value },
     get messages() { return session.messages.value },
     get events() { return session.events.value },
+    setMessages: (messages: AgentMessage[]) => session.replaceMessages(messages),
   }
   watch(session.available, available => {
     console.info(available ? '[agent] ready' : '[agent] disabled (API key missing)')

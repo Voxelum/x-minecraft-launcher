@@ -4,23 +4,23 @@ import { kInstances } from '../instances'
 import { useService } from '../service'
 import { kUserContext } from '../user'
 import { injection } from '@/util/inject'
-import { useRemoteAgent, type RemoteAgentSession } from './remote'
-import { createAgentUiHandler } from './ui'
+import { useLocalAgent, type LocalAgentSession } from './local'
+import { useAgentToolFactory } from './tools'
 
-export type CssAgentSession = RemoteAgentSession
+export type CssAgentSession = LocalAgentSession
 
 export function useCssAgent(): CssAgentSession {
-  const router = useRouter()
   const { locale } = useI18n()
-  const { allInstances, selectedInstance } = injection(kInstances)
-  const { userProfile, select } = injection(kUserContext)
+  const { userProfile } = injection(kUserContext)
   const service = useService(AgentServiceKey)
-  const remote = useRemoteAgent({
+  const tools = useAgentToolFactory()
+  const local = useLocalAgent({
     agentId: 'css',
     getScope: () => 'global',
     getLocale: () => locale.value,
     getUserId: () => userProfile.value?.id || undefined,
-    handleUi: createAgentUiHandler({ router, selectedInstance, instances: allInstances, selectAccount: select }),
+    createTools: tools.createCssTools,
+    getSessionContext: () => 'Global XMCL custom CSS scope.',
   })
   void (async () => {
     const raw = localStorage.getItem('cssAgentConversationV1')
@@ -35,7 +35,7 @@ export function useCssAgent(): CssAgentSession {
         localStorage.removeItem('cssAgentConversationV1')
       } catch {}
     }
-    await remote.load()
+    await local.load()
   })()
-  return remote
+  return local
 }

@@ -35,10 +35,11 @@ export interface AgentUiContext {
   selectedInstance: Ref<string>
   instances: Readonly<Ref<Array<{ path: string; name: string }>>>
   selectAccount(id: string): void
+  confirm?(request: Extract<AgentUiAction, { action: 'confirm' }>, signal?: AbortSignal): Promise<boolean>
 }
 
 export function createAgentUiHandler(context: AgentUiContext) {
-  return async (input: AgentUiAction): Promise<unknown> => {
+  return async (input: AgentUiAction, signal?: AbortSignal): Promise<unknown> => {
     if (input.action === 'navigate') {
       await context.router.push(input.path)
       return { ok: true, path: input.path }
@@ -59,7 +60,10 @@ export function createAgentUiHandler(context: AgentUiContext) {
       context.selectAccount(input.id)
       return { ok: true, id: input.id }
     }
-    if (input.action === 'confirm') return window.confirm(input.message)
+    if (input.action === 'confirm') {
+      if (context.confirm) return context.confirm(input, signal)
+      return window.confirm(input.message)
+    }
     if (input.action === 'query_dom') {
       const nodes = Array.from(document.querySelectorAll(input.selector))
       const limit = Math.min(Math.max(1, input.limit ?? 10), 50)

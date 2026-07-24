@@ -12,32 +12,33 @@ class FakeClient extends EventEmitter implements Client {
 }
 
 describe('AgentBridge', () => {
-  test('routes a tool call to one renderer and resolves it', async () => {
+  test('routes provider events to the registered renderer', () => {
     const bridge = new AgentBridge()
     const client = new FakeClient()
-    bridge.register(client, { bridgeId: 'b1', agentId: 'launcher' })
+    bridge.register(client, { bridgeId: 'b1' })
 
-    const resultPromise = bridge.executeUi('b1', 'r1', { action: 'navigate', path: '/' }, 5_000)
-    const request = client.send.mock.calls[0][1]
-    bridge.resolve({ bridgeId: 'b1', callId: request.callId, result: { ok: true } })
-
-    await expect(resultPromise).resolves.toEqual({ ok: true })
+    expect(bridge.sendProviderEvent('b1', {
+      bridgeId: 'b1',
+      requestId: 'r1',
+      type: 'event',
+      event: { type: 'start' },
+    })).toBe(true)
+    expect(client.send).toHaveBeenCalledWith('agent-provider-event', expect.objectContaining({ requestId: 'r1' }))
   })
 
-  test('rejects pending calls when the renderer disconnects', async () => {
+  test('drops provider events when the renderer disconnects', () => {
     const bridge = new AgentBridge()
     const client = new FakeClient()
-    bridge.register(client, { bridgeId: 'b1', agentId: 'launcher' })
-    const resultPromise = bridge.executeUi('b1', 'r1', { action: 'navigate', path: '/' }, 5_000)
+    bridge.register(client, { bridgeId: 'b1' })
     client.emit('destroyed')
-    await expect(resultPromise).rejects.toThrow('disconnected')
+    expect(bridge.has('b1')).toBe(false)
   })
 
   test('uses one destroyed listener for multiple bridges on the same renderer', () => {
     const bridge = new AgentBridge()
     const client = new FakeClient()
-    bridge.register(client, { bridgeId: 'b1', agentId: 'launcher' })
-    bridge.register(client, { bridgeId: 'b2', agentId: 'css' })
+    bridge.register(client, { bridgeId: 'b1' })
+    bridge.register(client, { bridgeId: 'b2' })
     expect(client.listenerCount('destroyed')).toBe(1)
     bridge.unregister('b1')
     expect(client.listenerCount('destroyed')).toBe(1)
