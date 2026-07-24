@@ -1,6 +1,6 @@
 {
   "name": "@xmcl/installer",
-  "version": "6.3.0",
+  "version": "6.3.1",
   "main": "./index.ts",
   "browser": "./index.browser.ts",
   "description": "The installers of Minecraft/Forge/Fabric/Liteloader/Quilt",
