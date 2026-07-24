@@ -19,6 +19,7 @@ export const useAgentSettings = createSharedComposable(() => {
   const error = ref('')
   let saveTimer: ReturnType<typeof setTimeout> | undefined
   let keySave = Promise.resolve()
+  let settingsSave = Promise.resolve()
 
   const ready = (async () => {
     const legacyApiKey = localStorage.getItem(LEGACY_API_KEY) ?? ''
@@ -42,13 +43,32 @@ export const useAgentSettings = createSharedComposable(() => {
     loaded.value = true
   })()
 
+  function saveProviderSettings() {
+    settingsSave = settingsSave.then(async () => {
+      await service.setProviderSettings({ endpoint: endpoint.value, model: model.value })
+    })
+    return settingsSave
+  }
+
   watch([endpoint, model], () => {
     if (!loaded.value) return
     if (saveTimer) clearTimeout(saveTimer)
     saveTimer = setTimeout(async () => {
-      await service.setProviderSettings({ endpoint: endpoint.value, model: model.value })
+      saveTimer = undefined
+      await saveProviderSettings()
     }, 300)
   })
+
+  async function flush() {
+    await ready
+    if (saveTimer) {
+      clearTimeout(saveTimer)
+      saveTimer = undefined
+      await saveProviderSettings()
+    } else {
+      await settingsSave
+    }
+  }
 
   async function setApiKey(value: string) {
     apiKey.value = value
@@ -76,6 +96,7 @@ export const useAgentSettings = createSharedComposable(() => {
     loaded,
     error,
     ready,
+    flush,
     setApiKey,
     resolvedEndpoint,
     resolvedModel,

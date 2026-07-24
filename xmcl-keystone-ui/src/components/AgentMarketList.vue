@@ -43,6 +43,7 @@
         </div>
 
         <v-btn
+          v-if="canInstall(item)"
           data-testid="agent-market-install"
           size="small"
           :variant="isInstalled(item) ? 'tonal' : 'flat'"
@@ -65,6 +66,8 @@ import { openRouteFromAgent } from '@/composables/agent/routeReturn'
 import { useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
+import { kInstanceResourcePacks } from '@/composables/instanceResourcePack'
+import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { useNotifier } from '@/composables/notifier'
 import { useProjectInstall } from '@/composables/projectInstall'
@@ -72,7 +75,7 @@ import { useService } from '@/composables/service'
 import { injection } from '@/util/inject'
 import type { ProjectEntry, ProjectFile } from '@/util/search'
 import type { AgentMarketProject, AgentMarketProjectListPresentation } from '@xmcl/runtime-api'
-import { InstanceModsServiceKey } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, InstanceResourcePacksServiceKey, InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   presentation: AgentMarketProjectListPresentation
@@ -86,7 +89,11 @@ const router = useRouter()
 const { notify } = useNotifier()
 const { name, path, runtime } = injection(kInstance)
 const { mods } = injection(kInstanceModsContext)
-const { install, installFromMarket, uninstall } = useService(InstanceModsServiceKey)
+const resourcePacks = injection(kInstanceResourcePacks)
+const shaders = injection(kInstanceShaderPacks)
+const modService = useService(InstanceModsServiceKey)
+const resourcePackService = useService(InstanceResourcePacksServiceKey)
+const shaderPackService = useService(InstanceShaderPacksServiceKey)
 const installedByAction = ref(new Set<string>())
 const installing = ref(new Set<string>())
 
@@ -101,32 +108,80 @@ const loader = computed(() => runtime.value.forge
         : undefined)
 
 function installedFiles(item: AgentMarketProject) {
-  return mods.value.filter(mod => item.provider === 'modrinth'
-    ? mod.modrinth?.projectId === item.id
-    : mod.curseforge?.projectId === Number(item.id))
+  const files = item.projectType === 'resourcepack'
+    ? resourcePacks.files.value
+    : item.projectType === 'shader'
+      ? shaders.shaderPacks.value
+      : mods.value
+  return files.filter(file => item.provider === 'modrinth'
+    ? file.modrinth?.projectId === item.id
+    : file.curseforge?.projectId === Number(item.id))
 }
 
-const uninstallFiles = (files: ProjectFile[], instancePath?: string) => {
-  void uninstall({
+const uninstallMods = (files: ProjectFile[], instancePath?: string) => {
+  void modService.uninstall({
     path: instancePath ?? path.value,
     files: files.map(file => file.path),
   })
 }
-const modrinthInstaller = useModrinthInstaller(path, runtime, mods, installFromMarket, uninstallFiles)
-const curseforgeInstaller = useCurseforgeInstaller(path, runtime, mods, installFromMarket, uninstallFiles)
-const installProjectEntry = useProjectInstall(
+const uninstallResourcePacks = (files: ProjectFile[], instancePath?: string) => {
+  void resourcePackService.uninstall({
+    path: instancePath ?? path.value,
+    files: files.map(file => file.path),
+  })
+}
+const uninstallShaderPacks = (files: ProjectFile[], instancePath?: string) => {
+  void shaderPackService.uninstall({
+    path: instancePath ?? path.value,
+    files: files.map(file => file.path),
+  })
+}
+
+const modrinthModInstaller = useModrinthInstaller(path, runtime, mods, modService.installFromMarket, uninstallMods)
+const curseforgeModInstaller = useCurseforgeInstaller(path, runtime, mods, modService.installFromMarket, uninstallMods)
+const installMod = useProjectInstall(
   runtime,
   loader,
-  curseforgeInstaller,
-  modrinthInstaller,
-  file => { void install({ path: path.value, files: [file.path] }) },
+  curseforgeModInstaller,
+  modrinthModInstaller,
+  file => { void modService.install({ path: path.value, files: [file.path] }) },
+)
+
+const modrinthResourcePackInstaller = useModrinthInstaller(path, runtime, resourcePacks.files, resourcePackService.installFromMarket, uninstallResourcePacks)
+const curseforgeResourcePackInstaller = useCurseforgeInstaller(path, runtime, resourcePacks.files, resourcePackService.installFromMarket, uninstallResourcePacks)
+const installResourcePack = useProjectInstall(
+  runtime,
+  ref(undefined),
+  curseforgeResourcePackInstaller,
+  modrinthResourcePackInstaller,
+  file => {
+    void resourcePackService.install({ path: path.value, files: [file.path] }).then(resourcePacks.enable)
+  },
+)
+
+const modrinthShaderInstaller = useModrinthInstaller(path, runtime, shaders.shaderPacks, shaderPackService.installFromMarket, uninstallShaderPacks)
+const curseforgeShaderInstaller = useCurseforgeInstaller(path, runtime, shaders.shaderPacks, shaderPackService.installFromMarket, uninstallShaderPacks)
+const installShader = useProjectInstall(
+  runtime,
+  ref(undefined),
+  curseforgeShaderInstaller,
+  modrinthShaderInstaller,
+  file => { void shaderPackService.install({ path: path.value, files: [file.path] }) },
 )
 
 const providerName = computed(() => props.presentation.source === 'modrinth' ? 'Modrinth' : 'CurseForge')
 const providerIcon = computed(() => props.presentation.source === 'modrinth' ? 'xmcl:modrinth' : 'xmcl:curseforge')
 
 function projectKey(item: AgentMarketProject) {
-  return `${item.provider}:${item.id}`
+  return `${item.projectType}:${item.provider}:${item.id}`
+}
+
+function canInstall(item: AgentMarketProject) {
+  return item.projectType === 'mod' || item.projectType === 'resourcepack' || item.projectType === 'shader'
+}
+
+function projectTypeName(item: AgentMarketProject) {
+  return t(`agent.marketType.${item.projectType}`)
 }
 
 function isInstalled(item: AgentMarketProject) {
@@ -148,7 +203,15 @@ function asProjectEntry(item: AgentMarketProject): ProjectEntry {
 }
 
 function openProject(item: AgentMarketProject) {
-  void openRouteFromAgent(router, `/mods?id=${item.provider}:${item.id}`, '/mods').then(() => emit('navigate'))
+  const route = item.projectType === 'resourcepack'
+    ? '/resourcepacks'
+    : item.projectType === 'shader'
+      ? '/shaderpacks'
+      : item.projectType === 'mod'
+        ? '/mods'
+        : `/store/modrinth/${item.id}`
+  const target = route.startsWith('/store/') ? route : `${route}?id=${item.provider}:${item.id}`
+  void openRouteFromAgent(router, target, route).then(() => emit('navigate'))
 }
 
 async function installProject(item: AgentMarketProject) {
@@ -156,7 +219,7 @@ async function installProject(item: AgentMarketProject) {
   if (isInstalled(item) || installing.value.has(key)) return
   const accepted = await requestAgentConfirmation({
     action: 'confirm',
-    title: t('agent.marketConfirmTitle'),
+    title: t('agent.marketConfirmTitle', { type: projectTypeName(item) }),
     message: t('agent.marketConfirmMessage', { name: item.title }),
     details: [t('agent.marketConfirmTarget', { instance: name.value || path.value })],
     confirmLabel: t('agent.marketInstall'),
@@ -165,12 +228,15 @@ async function installProject(item: AgentMarketProject) {
 
   installing.value = new Set(installing.value).add(key)
   try {
-    await installProjectEntry(asProjectEntry(item))
+    const entry = asProjectEntry(item)
+    if (item.projectType === 'resourcepack') await installResourcePack(entry)
+    else if (item.projectType === 'shader') await installShader(entry)
+    else await installMod(entry)
     installedByAction.value = new Set(installedByAction.value).add(key)
   } catch (error) {
     notify({
       level: 'error',
-      title: t('agent.marketInstallFailed'),
+      title: t('agent.marketInstallFailed', { type: projectTypeName(item) }),
       body: error instanceof Error ? error.message : String(error),
     })
   } finally {

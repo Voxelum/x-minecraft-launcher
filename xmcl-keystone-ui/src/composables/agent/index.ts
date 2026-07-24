@@ -8,6 +8,7 @@ import { injection } from '@/util/inject'
 import { useLocalAgent } from './local'
 import { useAgentToolFactory } from './tools'
 import { useAgentChatStatus } from '../agentChat'
+import { convertLegacyAgentMessage } from './migration'
 
 export * from './local'
 export * from './ui'
@@ -24,26 +25,6 @@ export interface AgentSession {
   send(userInput: string): Promise<void>
   reset(): Promise<void>
   abort(): void
-}
-
-function legacyMessage(message: any): AgentMessage {
-  let content = message.content ?? null
-  if (Array.isArray(content)) {
-    content = content.map((part: any) => part.type === 'text'
-      ? { type: 'text', text: String(part.text ?? '') }
-      : { type: 'image_url', image_url: part.image_url })
-  }
-  return {
-    role: message.role,
-    content,
-    toolCalls: message.tool_calls?.map((call: any) => {
-      let args = {}
-      try { args = JSON.parse(call.function.arguments || '{}') } catch {}
-      return { id: call.id, name: call.function.name, arguments: args }
-    }),
-    toolCallId: message.tool_call_id,
-    name: message.name,
-  }
 }
 
 export function useAgent(): AgentSession {
@@ -77,7 +58,7 @@ export function useAgent(): AgentSession {
       for (const [scope, saved] of Object.entries<any>(store?.byInstance ?? {})) {
         await service.importLegacyConversation({
           key: { agentId: 'launcher', scope },
-          messages: (saved.messages ?? []).map(legacyMessage),
+          messages: (saved.messages ?? []).map(convertLegacyAgentMessage),
           context: saved.snapshot,
           updatedAt: saved.updatedAt,
         })

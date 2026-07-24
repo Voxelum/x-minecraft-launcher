@@ -72,10 +72,16 @@ agent:
   toggleHint: to toggle
   marketConfirmMessage: Install {name} into the current instance?
   marketConfirmTarget: 'Target: {instance}'
-  marketConfirmTitle: Install mod
+  marketConfirmTitle: Install {type}
   marketInstall: Install
   marketInstalled: Installed
-  marketInstallFailed: Failed to install mod
+  marketInstallFailed: Failed to install {type}
+  marketType:
+    datapack: data pack
+    mod: mod
+    modpack: modpack
+    resourcepack: resource pack
+    shader: shader pack
   marketResultCount: '{count} results'
 ago:
   day: '{duration} day ago | {duration} days ago'

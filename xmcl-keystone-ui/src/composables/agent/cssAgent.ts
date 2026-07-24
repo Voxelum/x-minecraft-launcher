@@ -5,7 +5,8 @@ import { useService } from '../service'
 import { kUserContext } from '../user'
 import { injection } from '@/util/inject'
 import { useLocalAgent, type LocalAgentSession } from './local'
-import { useAgentToolFactory } from './tools'
+import { useCssAgentToolFactory } from './tools'
+import { convertLegacyAgentMessage } from './migration'
 
 export type CssAgentSession = LocalAgentSession
 
@@ -13,7 +14,7 @@ export function useCssAgent(): CssAgentSession {
   const { locale } = useI18n()
   const { userProfile } = injection(kUserContext)
   const service = useService(AgentServiceKey)
-  const tools = useAgentToolFactory()
+  const tools = useCssAgentToolFactory()
   const local = useLocalAgent({
     agentId: 'css',
     getScope: () => 'global',
@@ -29,7 +30,7 @@ export function useCssAgent(): CssAgentSession {
         const saved = JSON.parse(raw)
         await service.importLegacyConversation({
           key: { agentId: 'css', scope: 'global' },
-          messages: saved.messages ?? [],
+          messages: (saved.messages ?? []).map(convertLegacyAgentMessage),
           updatedAt: saved.updatedAt,
         })
         localStorage.removeItem('cssAgentConversationV1')

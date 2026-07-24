@@ -1,7 +1,8 @@
 export type AgentLoader = 'forge' | 'neoforge' | 'fabric' | 'quilt'
+export type AgentProjectType = 'mod' | 'resourcepack' | 'shader' | 'modpack' | 'datapack'
 
 export interface AgentCommandOperations {
-  searchModrinth(input: { query: string; type?: string; gameVersion?: string; loader?: string; limit: number }, signal?: AbortSignal): Promise<unknown>
+  searchModrinth(input: { query: string; type?: AgentProjectType; gameVersion?: string; loader?: string; limit: number }, signal?: AbortSignal): Promise<unknown>
   getModrinthVersions(input: { project: string; gameVersion?: string; loader?: string; limit: number }, signal?: AbortSignal): Promise<unknown>
   searchCurseforge(input: { query: string; gameVersion?: string; limit: number }, signal?: AbortSignal): Promise<unknown>
   getCurseforgeFiles(input: { project: number; gameVersion?: string; limit: number }, signal?: AbortSignal): Promise<unknown>
@@ -88,9 +89,13 @@ export function createAgentRuntimeCommands(operations: AgentCommandOperations): 
         const parsed = parseArgs(rest, ['type', 'game-version', 'loader', 'limit'])
         if (source === 'modrinth' && action === 'search') {
           if (!parsed.positionals.length) throw new Error('market modrinth search requires a query')
+          const type = one(parsed, 'type')
+          if (type && !['mod', 'resourcepack', 'shader', 'modpack', 'datapack'].includes(type)) {
+            throw new Error(`Unsupported Modrinth project type: ${type}`)
+          }
           return operations.searchModrinth({
             query: parsed.positionals.join(' '),
-            type: one(parsed, 'type'),
+            type: type as AgentProjectType | undefined,
             gameVersion: one(parsed, 'game-version'),
             loader: one(parsed, 'loader'),
             limit: limit(parsed),

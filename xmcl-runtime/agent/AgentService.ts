@@ -1,7 +1,6 @@
 import type { Api, AssistantMessage, Context, Model, SimpleStreamOptions, Usage } from '@earendil-works/pi-ai'
 import {
   AgentServiceKey,
-  type AgentContextChange,
   type AgentConversationKey,
   type AgentMessage,
   type AgentProviderStreamRequest,
@@ -90,11 +89,6 @@ export class AgentService extends AbstractService implements IAgentService {
 
   importLegacyConversation(input: LegacyConversationImport) {
     return this.history.importLegacy(input)
-  }
-
-  async notifyContextChange(input: AgentContextChange) {
-    await this.history.appendMessage(input.key, { role: 'user', content: input.message })
-    if (input.context) await this.history.updateContext(input.key, input.context)
   }
 
   async reportRunTrace(trace: AgentRunTrace) {

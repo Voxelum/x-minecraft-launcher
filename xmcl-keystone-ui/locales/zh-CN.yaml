@@ -65,10 +65,16 @@ agent:
   marketResultCount: 共 {count} 个结果
   marketInstall: 安装
   marketInstalled: 已安装
-  marketConfirmTitle: 安装模组
+  marketConfirmTitle: 安装{type}
   marketConfirmMessage: 要将 {name} 安装到当前实例吗？
   marketConfirmTarget: 目标：{instance}
-  marketInstallFailed: 模组安装失败
+  marketInstallFailed: "{type}安装失败"
+  marketType:
+    datapack: 数据包
+    mod: 模组
+    modpack: 整合包
+    resourcepack: 资源包
+    shader: 光影包
   toggleHint: 切换
 ago:
   day: '{duration} 天前'

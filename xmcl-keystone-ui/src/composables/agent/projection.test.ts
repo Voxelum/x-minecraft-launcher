@@ -70,7 +70,7 @@ describe('agent run projection', () => {
     expect(presentation).toMatchObject({
       type: 'market-project-list',
       source: 'modrinth',
-      items: [{ id: 'abc', title: 'Sodium' }],
+      items: [{ id: 'abc', title: 'Sodium', projectType: 'mod' }],
     })
   })
 })

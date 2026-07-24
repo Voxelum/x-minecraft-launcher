@@ -47,42 +47,7 @@ export interface UpdateAgentProviderSettings {
   apiKey?: string
 }
 
-export interface AgentRunPolicy {
-  allowedTools?: string[]
-  readonly?: boolean
-  maxDepth?: number
-}
-
-export interface StartAgentRunInput {
-  key: AgentConversationKey
-  bridgeId?: string
-  input: string
-  locale: string
-  userId?: string
-  parentRunId?: string
-  depth?: number
-  policy?: AgentRunPolicy
-}
-
 export type AgentRunState = 'running' | 'completed' | 'failed' | 'aborted'
-
-export interface AgentRunSnapshot {
-  runId: string
-  key: AgentConversationKey
-  bridgeId?: string
-  eventSeq: number
-  state: AgentRunState
-  messages: AgentMessage[]
-  startedAt: number
-  finishedAt?: number
-  error?: string
-}
-
-export interface AgentContextChange {
-  key: AgentConversationKey
-  message: string
-  context?: Record<string, unknown>
-}
 
 export interface LegacyConversationImport {
   key: AgentConversationKey
@@ -103,11 +68,6 @@ export interface AgentRunEvent {
   error?: string
 }
 
-export interface AgentConversationAttachment {
-  conversation: AgentConversation
-  run?: AgentRunSnapshot
-}
-
 export interface AgentBridgeRegistration {
   bridgeId: string
 }
@@ -115,7 +75,6 @@ export interface AgentBridgeRegistration {
 export interface AgentProviderStreamRequest {
   bridgeId: string
   requestId: string
-  model: Record<string, unknown>
   context: Record<string, unknown>
   options?: Record<string, unknown>
 }
@@ -135,9 +94,11 @@ export type AgentProviderStreamEvent =
     }
 
 export type AgentMarketProvider = 'modrinth' | 'curseforge'
+export type AgentMarketProjectType = 'mod' | 'resourcepack' | 'shader' | 'modpack' | 'datapack'
 
 export interface AgentMarketProject {
   provider: AgentMarketProvider
+  projectType: AgentMarketProjectType
   id: string
   title: string
   description: string
@@ -204,7 +165,6 @@ export interface AgentService {
   appendConversationMessages(key: AgentConversationKey, messages: AgentMessage[]): Promise<void>
   resetConversation(key: AgentConversationKey): Promise<void>
   importLegacyConversation(input: LegacyConversationImport): Promise<'imported' | 'exists'>
-  notifyContextChange(input: AgentContextChange): Promise<void>
   reportRunTrace(trace: AgentRunTrace): Promise<void>
 }
 

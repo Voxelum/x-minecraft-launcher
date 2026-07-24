@@ -1,5 +1,6 @@
 import type {
   AgentMarketProjectListPresentation,
+  AgentMarketProject,
   AgentMessage,
   AgentRunEvent,
   AgentToolCall,
@@ -39,6 +40,7 @@ function isMarketPresentation(value: unknown): value is AgentMarketProjectListPr
     && presentation.items.every(item => !!item
       && typeof item === 'object'
       && (item.provider === 'modrinth' || item.provider === 'curseforge')
+      && (item.projectType === undefined || ['mod', 'resourcepack', 'shader', 'modpack', 'datapack'].includes(item.projectType))
       && typeof item.id === 'string'
       && typeof item.title === 'string'
       && typeof item.description === 'string')
@@ -48,7 +50,15 @@ export function parseAgentToolPresentation(message: AgentMessage | undefined): A
   if (!message || message.isError) return undefined
   try {
     const parsed = JSON.parse(contentText(message))
-    return isMarketPresentation(parsed?.presentation) ? parsed.presentation : undefined
+    const presentation = parsed?.presentation
+    if (!isMarketPresentation(presentation)) return undefined
+    return {
+      ...presentation,
+      items: presentation.items.map((item: AgentMarketProject) => ({
+        ...item,
+        projectType: item.projectType ?? 'mod',
+      })),
+    }
   } catch {
     return undefined
   }

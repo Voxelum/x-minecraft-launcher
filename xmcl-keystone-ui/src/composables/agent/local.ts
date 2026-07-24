@@ -141,7 +141,6 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
     void bridgeReady.then(() => agentBridge.stream({
       bridgeId,
       requestId,
-      model: serializableRecord(model),
       context: serializableRecord(context),
       options: serializableOptions(streamOptions),
     })).catch((error) => {
@@ -230,6 +229,7 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
 
   async function send(input: string) {
     await Promise.all([bridgeReady, settings.ready])
+    await settings.flush()
     if (running.value) throw new Error('Agent: a request is already in flight')
     if (!settings.configured.value) throw new Error('Agent: API key is not configured')
     const scope = options.getScope()

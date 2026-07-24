@@ -1,14 +1,14 @@
-import type { AgentTool, AgentToolResult } from '@earendil-works/pi-agent-core'
+import type { AgentTool } from '@earendil-works/pi-agent-core'
 import { Type } from '@earendil-works/pi-ai'
 import { useRendererCommandHost } from '@/composables/commandHost'
 import { kInstanceVersionInstall } from '@/composables/instanceVersionInstall'
 import { getLatestNeoforge } from '@/composables/version'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
+import type { EditInstanceOptions } from '@xmcl/instance'
 import type { Resource } from '@xmcl/resource'
 import {
   formatCommandHelp,
-  formatHelp,
   InstanceLogServiceKey,
   InstanceModsServiceKey,
   InstanceOptionsServiceKey,
@@ -28,11 +28,11 @@ import type { AgentRunContext } from './local'
 import { createAgentUiHandler } from './ui'
 import { kInstances } from '../instances'
 import { kUserContext } from '../user'
-
-function textResult<T>(value: unknown, details?: T): AgentToolResult<T | unknown> {
-  const text = typeof value === 'string' ? value : JSON.stringify(value)
-  return { content: [{ type: 'text', text }], details: details ?? value }
-}
+import { useAgentCapabilityContext } from './capabilityContext'
+import { createAgentManagementTools } from './managementTools'
+import { createAgentServerTools } from './serverTools'
+import { textResult } from './toolSupport'
+import { buildAgentInstanceEdit, isAgentCommandAllowed } from './toolPolicy'
 
 function tokenize(input: string) {
   const tokens: string[] = []
@@ -71,6 +71,32 @@ function summarizeResource(resource: Resource) {
   }
 }
 
+function summarizeInstallInstruction(instruction: ReturnType<typeof useAgentCapabilityContext>['context']['installInstruction']['value']) {
+  if (!instruction) return { available: false, note: 'Installation diagnosis is not available yet.' }
+  const missingLibraries = instruction.libraries?.length ?? 0
+  const missingAssets = instruction.assets?.length ?? 0
+  const issues: string[] = []
+  if (!instruction.resolvedVersion) issues.push('version is not resolved')
+  if (instruction.jar) issues.push(`minecraft jar missing or corrupted (${instruction.jar})`)
+  if (instruction.forge) issues.push(`forge is not installed (${instruction.forge.version})`)
+  if (instruction.optifine) issues.push(`optifine is not installed (${instruction.optifine})`)
+  if (instruction.profile) issues.push('mod-loader install profile must run')
+  if (instruction.assetsIndex) issues.push('assets index missing or corrupted')
+  if (missingLibraries) issues.push(`${missingLibraries} libraries missing or corrupted`)
+  if (missingAssets) issues.push(`${missingAssets} assets missing`)
+  if (instruction.java) issues.push(`required Java ${instruction.java.majorVersion} is not installed`)
+  return {
+    available: true,
+    instance: instruction.instance,
+    runtime: instruction.runtime,
+    selectedVersion: instruction.version,
+    resolvedVersion: instruction.resolvedVersion,
+    healthy: issues.length === 0,
+    issues,
+    counts: { libraries: missingLibraries, assets: missingAssets },
+  }
+}
+
 async function confirmInstall(title: string, message: string, detail: string, destructive = false) {
   const accepted = await requestAgentConfirmation({
     action: 'confirm',
@@ -93,12 +119,12 @@ export function useAgentToolFactory() {
   const launchService = useService(LaunchServiceKey)
   const instanceService = useService(InstanceServiceKey)
   const metadata = useService(VersionMetadataServiceKey)
-  const themeService = useService(ThemeServiceKey)
   const versionInstaller = injection(kInstanceVersionInstall)
   const instances = injection(kInstances)
   const user = injection(kUserContext)
   const router = useRouter()
   const commandHost = useRendererCommandHost()
+  const capabilities = useAgentCapabilityContext()
 
   const uiHandler = createAgentUiHandler({
     router,
@@ -125,7 +151,7 @@ export function useAgentToolFactory() {
       if (!clean) {
         return {
           path: instancePath,
-          entries: ['mods', 'resourcepacks', 'shaderpacks', 'saves', 'logs', 'crash-reports', 'launch-failures', 'config', 'game-processes', 'instance.json', 'options.txt'],
+          entries: ['mods', 'resourcepacks', 'shaderpacks', 'saves', 'logs', 'crash-reports', 'launch-failures', 'config', 'server', 'game-processes', 'instance.json', 'options.txt'],
         }
       }
       if (clean === 'mods' || clean === 'resourcepacks' || clean === 'shaderpacks') return (await resources(clean)).map(summarizeResource)
@@ -134,6 +160,10 @@ export function useAgentToolFactory() {
       if (clean === 'crash-reports') return logService.listCrashReports(instancePath)
       if (clean === 'launch-failures') return logService.listLaunchFailures(instancePath)
       if (clean === 'config') return optionsService.getInstanceConfigFiles(instancePath)
+      if (clean === 'server') {
+        return ['server.properties', 'eula.txt', 'ops.json', 'whitelist.json', 'banned-players.json', 'banned-ips.json', 'usercache.json', 'logs']
+      }
+      if (clean === 'server/logs') return logService.listServerLogs(instancePath)
       if (clean === 'game-processes') return (await launchService.getGameProcesses()).filter(process => process.options.gameDirectory === instancePath)
       throw new Error(`Not a virtual directory: ${path}`)
     }
@@ -157,6 +187,13 @@ export function useAgentToolFactory() {
       }
       if (kind === 'crash-reports') return logService.getCrashReportContent(instancePath, rest)
       if (kind === 'config') return optionsService.getInstanceConfig(instancePath, rest)
+      if (kind === 'server') {
+        if (parts[0] === 'logs') {
+          const content = await logService.getServerLogContent(instancePath, parts.slice(1).join('/'))
+          return content.split('\n').slice(-Math.min(Math.max(1, tailLines ?? 200), 2000)).join('\n')
+        }
+        return optionsService.getServerFile(instancePath, rest)
+      }
       if (kind === 'game-processes') return await launchService.getGameProcess(Number(parts.at(-1))) ?? { error: `game process not found: ${rest}` }
       return { error: `unknown virtual path: ${path}` }
     }
@@ -227,6 +264,7 @@ export function useAgentToolFactory() {
         executionMode: 'sequential',
         async execute(_id, args: any) {
           const clean = args.path.replace(/^config\//, '')
+          if (!args.match_string) throw new Error('match_string must not be empty')
           const content = await optionsService.getInstanceConfig(instancePath, clean)
           const index = content.indexOf(args.match_string)
           if (index < 0) throw new Error(`match_string not found in ${args.path}`)
@@ -240,12 +278,195 @@ export function useAgentToolFactory() {
       {
         name: 'edit_instance',
         label: 'Edit instance',
-        description: 'Edit fields on the explicitly selected instance.',
-        parameters: Type.Object({}, { additionalProperties: true }),
+        description: 'Edit allowlisted fields on the selected instance. Runtime changes are merged and reset the resolved version id.',
+        parameters: Type.Object({
+          name: Type.Optional(Type.String()),
+          description: Type.Optional(Type.String()),
+          java: Type.Optional(Type.String()),
+          minMemory: Type.Optional(Type.Number()),
+          maxMemory: Type.Optional(Type.Number()),
+          assignMemory: Type.Optional(Type.Union([Type.Boolean(), Type.Literal('auto')])),
+          vmOptions: Type.Optional(Type.Array(Type.String())),
+          mcOptions: Type.Optional(Type.Array(Type.String())),
+          env: Type.Optional(Type.Record(Type.String(), Type.String())),
+          resolution: Type.Optional(Type.Object({
+            width: Type.Optional(Type.Number()),
+            height: Type.Optional(Type.Number()),
+            fullscreen: Type.Optional(Type.Boolean()),
+          })),
+          runtime: Type.Optional(Type.Object({
+            minecraft: Type.Optional(Type.String()),
+            forge: Type.Optional(Type.String()),
+            neoForged: Type.Optional(Type.String()),
+            fabricLoader: Type.Optional(Type.String()),
+            quiltLoader: Type.Optional(Type.String()),
+            optifine: Type.Optional(Type.String()),
+            labyMod: Type.Optional(Type.String()),
+          })),
+          fastLaunch: Type.Optional(Type.Boolean()),
+          showLog: Type.Optional(Type.Boolean()),
+          hideLauncher: Type.Optional(Type.Boolean()),
+          prependCommand: Type.Optional(Type.String()),
+          preExecuteCommand: Type.Optional(Type.String()),
+        }),
         executionMode: 'sequential',
         async execute(_id, args: any) {
-          await instanceService.editInstance({ ...args, instancePath } as any)
-          return textResult({ ok: true, edited: Object.keys(args) })
+          const instance = currentInstance(context)
+          const { payload, edited } = buildAgentInstanceEdit(instance, instancePath, args)
+          if (!edited.length) throw new Error('No editable fields were provided')
+          await instanceService.editInstance(payload as EditInstanceOptions & { instancePath: string })
+          return textResult({ ok: true, edited })
+        },
+      },
+      {
+        name: 'search_config',
+        label: 'Search config',
+        description: 'Search config files with a regular expression. Results are capped at 200 matches.',
+        parameters: Type.Object({
+          pattern: Type.String(),
+          path: Type.Optional(Type.String()),
+          ignoreCase: Type.Optional(Type.Boolean()),
+        }),
+        executionMode: 'parallel',
+        async execute(_id, args: any) {
+          if (!args.pattern) throw new Error('pattern must not be empty')
+          const expression = new RegExp(args.pattern, args.ignoreCase ? 'i' : '')
+          const prefix = String(args.path ?? '').replace(/^config\/?/, '')
+          const files = (await optionsService.getInstanceConfigFiles(instancePath))
+            .filter(file => !prefix || file === prefix || file.startsWith(`${prefix}/`))
+          const matches: Array<{ file: string; line: number; text: string }> = []
+          for (const file of files) {
+            const content = await optionsService.getInstanceConfig(instancePath, file).catch(() => '')
+            if (content.length > 512 * 1024) continue
+            for (const [index, line] of content.split('\n').entries()) {
+              expression.lastIndex = 0
+              if (expression.test(line)) matches.push({ file: `config/${file}`, line: index + 1, text: line.slice(0, 400) })
+              if (matches.length >= 200) return textResult({ matches, truncated: true })
+            }
+          }
+          return textResult({ matches })
+        },
+      },
+      {
+        name: 'set_resource_enabled',
+        label: 'Enable or disable resource',
+        description: 'Enable or disable a mod, resource pack, or shader pack without deleting it.',
+        parameters: Type.Object({
+          kind: Type.Union([Type.Literal('mod'), Type.Literal('resourcepack'), Type.Literal('shaderpack')]),
+          name: Type.String(),
+          enabled: Type.Boolean(),
+        }),
+        executionMode: 'sequential',
+        async execute(_id, args: any) {
+          const name = String(args.name)
+          if (args.kind === 'mod') {
+            const resource = (await resources('mods')).find(value => value.fileName === name || value.path === name || value.name === name)
+            if (!resource) throw new Error(`mod not found: ${name}`)
+            const method = args.enabled ? modsService.enable : modsService.disable
+            await method({ path: instancePath, files: [resource.path] })
+          } else if (args.kind === 'resourcepack') {
+            const resource = capabilities.context.resourcePacks.value.find(value => value.fileName === name || value.path === name || value.name === name)
+            if (!resource) throw new Error(`resource pack not found: ${name}`)
+            if (args.enabled) await capabilities.context.enableResourcePack([resource])
+            else await capabilities.context.disableResourcePack([resource])
+          } else {
+            const resource = capabilities.context.shaderPacks.value.find(value => value.fileName === name || value.path === name)
+            if (!resource) throw new Error(`shader pack not found: ${name}`)
+            capabilities.context.selectShaderPack(args.enabled ? resource.fileName : undefined)
+          }
+          return textResult({ ok: true, kind: args.kind, name, enabled: args.enabled })
+        },
+      },
+      {
+        name: 'diagnose_instance',
+        label: 'Diagnose instance',
+        description: 'Diagnose missing or corrupted game files, libraries, assets, loaders, and Java.',
+        parameters: Type.Object({}),
+        executionMode: 'parallel',
+        async execute() {
+          return textResult(summarizeInstallInstruction(capabilities.context.installInstruction.value))
+        },
+      },
+      {
+        name: 'repair_instance',
+        label: 'Repair instance',
+        description: 'Install missing or corrupted files required by the selected instance.',
+        parameters: Type.Object({}),
+        executionMode: 'sequential',
+        async execute() {
+          await confirmInstall('Repair instance', 'Install missing files for the selected instance?', currentInstance(context).name)
+          const before = summarizeInstallInstruction(capabilities.context.installInstruction.value)
+          await capabilities.context.fixInstanceInstall()
+          return textResult({ ok: true, before, after: summarizeInstallInstruction(capabilities.context.installInstruction.value) })
+        },
+      },
+      {
+        name: 'launch_game',
+        label: 'Launch game',
+        description: 'Launch the selected instance with the active account.',
+        parameters: Type.Object({}),
+        executionMode: 'sequential',
+        async execute() {
+          await capabilities.context.launch()
+          return textResult({ ok: true })
+        },
+      },
+      {
+        name: 'kill_game',
+        label: 'Stop game',
+        description: 'Stop the running Minecraft client after explicit confirmation.',
+        parameters: Type.Object({ force: Type.Optional(Type.Boolean()) }),
+        executionMode: 'sequential',
+        async execute(_id, args: any) {
+          await confirmInstall('Stop game', 'Stop the running Minecraft client?', currentInstance(context).name, true)
+          await capabilities.context.killGame('client', !!args.force)
+          return textResult({ ok: true })
+        },
+      },
+      {
+        name: 'list_game_processes',
+        label: 'List game processes',
+        description: 'List Minecraft processes tracked for the selected instance.',
+        parameters: Type.Object({}),
+        executionMode: 'parallel',
+        async execute() {
+          const processes = (await launchService.getGameProcesses())
+            .filter(process => process.options.gameDirectory === instancePath)
+            .map(process => ({
+              pid: process.pid,
+              side: process.side,
+              ready: process.ready,
+              gameDirectory: process.options.gameDirectory,
+              version: process.options.version,
+            }))
+          return textResult(processes)
+        },
+      },
+      {
+        name: 'get_shader_options',
+        label: 'Read shader options',
+        description: 'Read the shader pack configured for the selected instance.',
+        parameters: Type.Object({}),
+        executionMode: 'parallel',
+        async execute() {
+          return textResult(await optionsService.getShaderOptions(instancePath))
+        },
+      },
+      {
+        name: 'edit_shader_options',
+        label: 'Edit shader options',
+        description: 'Set the configured shader pack for vanilla, Iris, or Oculus.',
+        parameters: Type.Object({
+          shaderPack: Type.String(),
+          loader: Type.Optional(Type.Union([Type.Literal('vanilla'), Type.Literal('iris'), Type.Literal('oculus')])),
+        }),
+        executionMode: 'sequential',
+        async execute(_id, args: any) {
+          const input = { instancePath, shaderPack: args.shaderPack }
+          if (args.loader === 'iris') await optionsService.editIrisShaderOptions(input)
+          else if (args.loader === 'oculus') await optionsService.editOculusShaderOptions(input)
+          else await optionsService.editShaderOptions(input)
+          return textResult({ ok: true, loader: args.loader ?? 'vanilla', shaderPack: args.shaderPack })
         },
       },
     ]
@@ -280,6 +501,7 @@ export function useAgentToolFactory() {
             total: result.total_hits,
             items: result.hits.map(project => ({
               provider: 'modrinth',
+              projectType: project.project_type,
               id: project.project_id,
               title: project.title,
               description: project.description,
@@ -326,6 +548,7 @@ export function useAgentToolFactory() {
             total: result.pagination.totalCount,
             items: result.data.map(project => ({
               provider: 'curseforge',
+              projectType: 'mod',
               id: String(project.id),
               title: project.name,
               description: project.summary,
@@ -398,14 +621,20 @@ export function useAgentToolFactory() {
   async function createBashTool(context: AgentRunContext): Promise<AgentTool> {
     const runtimeCommands = createAgentRuntimeCommands(createCommandOperations(context))
     const runtimeByName = new Map(runtimeCommands.map(command => [command.name, command]))
+    const allowedCommands = () => commandHost.registry.list({ mode: 'cli' })
+      .filter(command => isAgentCommandAllowed(command.id))
+      .map(command => ({ command, name: command.cli?.name ?? command.id.replace(/\./g, ' ') }))
     const rootHelp = () => {
       const runtimeHelp = runtimeCommands.map(command => `  ${command.name.padEnd(28)} ${command.description}`).join('\n')
-      return `${formatHelp(commandHost.registry, { programName: 'bash' })}\n\nAgent renderer commands:\n${runtimeHelp}\n\nRun \`help <command>\` for exact syntax.`
+      const commandHelp = allowedCommands()
+        .map(({ command, name }) => `  ${name.padEnd(28)} ${command.title}`)
+        .join('\n')
+      return `Allowed XMCL commands:\n${commandHelp}\n\nAgent renderer commands:\n${runtimeHelp}\n\nRun \`help <command>\` for exact syntax.`
     }
     const commandHelp = (name: string) => {
       const runtime = runtimeByName.get(name)
       if (runtime) return [`Usage: ${runtime.usage}`, '', runtime.description, '', ...runtime.details].join('\n')
-      const command = commandHost.registry.list({ mode: 'cli' }).find(value => (value.cli?.name ?? value.id.replace(/\./g, ' ')) === name)
+      const command = allowedCommands().find(value => value.name === name)?.command
       if (!command) throw new Error(`Unknown command: ${name}`)
       return formatCommandHelp(command, { programName: 'bash' })
     }
@@ -423,8 +652,7 @@ export function useAgentToolFactory() {
         if (argv[0] === 'help') return textResult(commandHelp(argv.slice(1).join(' ')))
         const runtime = runtimeByName.get(argv[0])
         if (runtime) return textResult(await runtime.execute(argv.slice(1), signal))
-        const candidates = commandHost.registry.list({ mode: 'cli' })
-          .map(command => ({ command, name: command.cli?.name ?? command.id.replace(/\./g, ' ') }))
+        const candidates = allowedCommands()
           .sort((a, b) => b.name.length - a.name.length)
         const match = candidates.find(candidate => args.command === candidate.name || args.command.startsWith(`${candidate.name} `))
         if (!match) throw new Error('Unsupported command. Run `help` to list commands.')
@@ -432,6 +660,7 @@ export function useAgentToolFactory() {
         if (parsed.kind === 'error') throw new Error(parsed.message)
         if (parsed.kind !== 'command') return textResult(commandHelp(match.name))
         if (parsed.commandId.endsWith('.install')) {
+          parsed.input.instance = context.scope
           await confirmInstall(match.command.title, `Allow the agent to run ${match.command.title}?`, args.command)
         }
         const result = await commandHost.dispatch(parsed.commandId, parsed.input)
@@ -460,7 +689,44 @@ export function useAgentToolFactory() {
   }
 
   async function createLauncherTools(context: AgentRunContext) {
-    return [...await createVfsTools(context), await createBashTool(context), createUiTool()]
+    return [
+      ...await createVfsTools(context),
+      await createBashTool(context),
+      createUiTool(),
+      ...createAgentManagementTools(capabilities.context, capabilities.services),
+      ...createAgentServerTools(capabilities.context),
+    ]
+  }
+
+  return { createLauncherTools }
+}
+
+export function useCssAgentToolFactory() {
+  const themeService = useService(ThemeServiceKey)
+  const instances = injection(kInstances)
+  const user = injection(kUserContext)
+  const router = useRouter()
+  const uiHandler = createAgentUiHandler({
+    router,
+    selectedInstance: instances.selectedInstance,
+    instances: instances.allInstances,
+    selectAccount: user.select,
+    confirm: requestAgentConfirmation,
+  })
+
+  const uiTool: AgentTool = {
+    name: 'ui',
+    label: 'Launcher UI',
+    description: 'Inspect the XMCL user interface for CSS selectors and computed styles.',
+    parameters: Type.Union([
+      Type.Object({ action: Type.Literal('query_dom'), selector: Type.String(), limit: Type.Optional(Type.Number()) }),
+      Type.Object({ action: Type.Literal('get_computed_style'), selector: Type.String(), properties: Type.Optional(Type.Array(Type.String())) }),
+      Type.Object({ action: Type.Literal('get_dom_outline'), selector: Type.Optional(Type.String()), maxDepth: Type.Optional(Type.Number()) }),
+    ]),
+    executionMode: 'parallel',
+    async execute(_id, input, signal) {
+      return textResult(await uiHandler(input as any, signal))
+    },
   }
 
   async function createCssTools() {
@@ -470,6 +736,7 @@ export function useAgentToolFactory() {
         label: 'Read custom CSS',
         description: 'Read the current global custom CSS and enabled state.',
         parameters: Type.Object({}),
+        executionMode: 'parallel',
         async execute() {
           const [css, theme] = await Promise.all([themeService.getCustomCss(), themeService.getCurrentTheme()])
           return textResult({ css, enabled: !!theme?.settings?.customCssEnabled })
@@ -501,9 +768,9 @@ export function useAgentToolFactory() {
           return textResult({ ok: true, enabled: args.enabled })
         },
       },
-      createUiTool(),
+      uiTool,
     ] as AgentTool[]
   }
 
-  return { createLauncherTools, createCssTools }
+  return { createCssTools }
 }
