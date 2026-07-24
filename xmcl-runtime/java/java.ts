@@ -1,5 +1,6 @@
 import { constants } from 'fs'
 import { access, chmod } from 'fs-extra'
+import { open, type FileHandle } from 'fs/promises'
 import { isSystemError } from '@xmcl/utils'
 import { ENOENT_ERROR, EPERM_ERROR } from '../util/fs'
 import { isNonnull } from '../util/object'
@@ -101,6 +102,75 @@ export async function validateJavaPath(javaPath: string): Promise<JavaValidation
       }
     }
     throw e
+  }
+}
+
+/**
+ * Detect the C library an ELF executable is dynamically linked against by
+ * reading the absolute path of the dynamic loader baked into its `PT_INTERP`
+ * program header — a `ld-musl-*` interpreter means musl, a `ld-linux*` /
+ * `ld.so` interpreter means glibc.
+ *
+ * This lets us spot a musl-vs-glibc mismatch (e.g. a musl-linked JRE resolved
+ * on a glibc host, or vice versa) *without* spawning the binary, which would
+ * otherwise fail with a cryptic `ENOENT` because the loader referenced here is
+ * absent on the host. Returns `undefined` for non-ELF files, statically linked
+ * binaries (no `PT_INTERP`), or when the header cannot be read.
+ */
+export async function detectExecutableLibc(exePath: string): Promise<'musl' | 'glibc' | undefined> {
+  let handle: FileHandle | undefined
+  try {
+    handle = await open(exePath, 'r')
+
+    const header = Buffer.alloc(64)
+    const { bytesRead } = await handle.read(header, 0, 64, 0)
+    if (bytesRead < 64) return undefined
+    // ELF magic: 0x7F 'E' 'L' 'F'
+    if (header[0] !== 0x7f || header[1] !== 0x45 || header[2] !== 0x4c || header[3] !== 0x46) {
+      return undefined
+    }
+
+    const is64 = header[4] === 2
+    const isLE = header[5] === 1
+    const readUInt = (buf: Buffer, offset: number, size: 2 | 4 | 8): number => {
+      if (size === 8) return Number(isLE ? buf.readBigUInt64LE(offset) : buf.readBigUInt64BE(offset))
+      if (size === 4) return isLE ? buf.readUInt32LE(offset) : buf.readUInt32BE(offset)
+      return isLE ? buf.readUInt16LE(offset) : buf.readUInt16BE(offset)
+    }
+
+    const phoff = is64 ? readUInt(header, 0x20, 8) : readUInt(header, 0x1c, 4)
+    const phentsize = is64 ? readUInt(header, 0x36, 2) : readUInt(header, 0x2a, 2)
+    const phnum = is64 ? readUInt(header, 0x38, 2) : readUInt(header, 0x2c, 2)
+    // Guard against corrupt/huge headers so we never allocate wildly.
+    if (!phoff || !phentsize || !phnum || phnum > 128) return undefined
+
+    const phTable = Buffer.alloc(phentsize * phnum)
+    const { bytesRead: phRead } = await handle.read(phTable, 0, phTable.length, phoff)
+    if (phRead < phTable.length) return undefined
+
+    const PT_INTERP = 3
+    for (let i = 0; i < phnum; i++) {
+      const base = i * phentsize
+      if (readUInt(phTable, base, 4) !== PT_INTERP) continue
+      const pOffset = is64 ? readUInt(phTable, base + 8, 8) : readUInt(phTable, base + 4, 4)
+      const pFilesz = is64 ? readUInt(phTable, base + 32, 8) : readUInt(phTable, base + 16, 4)
+      if (!pFilesz || pFilesz > 4096) return undefined
+
+      const interp = Buffer.alloc(pFilesz)
+      const { bytesRead: iRead } = await handle.read(interp, 0, pFilesz, pOffset)
+      if (iRead < pFilesz) return undefined
+      const nulIndex = interp.indexOf(0)
+      const interpStr = interp.toString('utf-8', 0, nulIndex >= 0 ? nulIndex : pFilesz)
+
+      if (interpStr.includes('ld-musl')) return 'musl'
+      if (interpStr.includes('ld-linux') || interpStr.includes('/ld.so') || interpStr.includes('ld64.so')) return 'glibc'
+      return undefined
+    }
+    return undefined
+  } catch {
+    return undefined
+  } finally {
+    await handle?.close().catch(() => {})
   }
 }
 

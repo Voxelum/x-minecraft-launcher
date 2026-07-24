@@ -6,6 +6,7 @@ import {
   resolveJava,
   resolveJavaWithDiagnostic,
   scanLocalJava,
+  detectLibc,
 } from '@xmcl/installer'
 import {
   InstallJavaTask,
@@ -26,6 +27,7 @@ import { Tasks, kFlights, kGFW, kTasks } from '~/infra'
 import {
   JavaValidation,
   classifyJavaInstallFailure,
+  detectExecutableLibc,
   getJavaExeFilePath,
   sanitizeJavaResolveOutput,
   validateJavaPath,
@@ -299,6 +301,15 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     // Classify the failure phase so it groups cleanly in telemetry.
     const phase = classifyJavaInstallFailure({ exeExists, validation })
 
+    // On Linux, capture the ELF libc of the installed binary vs the host so a
+    // musl/glibc mismatch (which spawns as ENOENT) is visible in telemetry.
+    let exeLibc: 'musl' | 'glibc' | undefined
+    let hostLibc: 'musl' | 'glibc' | undefined
+    if (this.app.platform.os === 'linux' && exeExists) {
+      exeLibc = await safe(() => detectExecutableLibc(exeLocation))
+      hostLibc = detectLibc()
+    }
+
     return new AnyError(
       'InstallDefaultJavaError',
       `Fail to install java: ${phase} (source=${installSource}, component=${target.component}, exeExists=${exeExists})`,
@@ -321,6 +332,9 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         resolveSignal,
         resolveStdout,
         resolveStderr,
+        exeLibc,
+        hostLibc,
+        libcMismatch: exeLibc && hostLibc ? exeLibc !== hostLibc : undefined,
         platform: `${this.app.platform.os} ${this.app.platform.arch}`,
       },
     )
@@ -376,6 +390,24 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
 
       this.state.javaUpdate({ ...java, valid: true, arch: await getJavaArch(this, java.path) })
     } else {
+      // `resolveJava` returned nothing even though the binary exists and is
+      // executable. On Linux the most common non-obvious cause is a libc
+      // mismatch: a musl-linked JRE on a glibc host (or vice versa) cannot be
+      // spawned — the kernel reports ENOENT for the missing dynamic loader,
+      // not for the binary. Inspect the ELF interpreter directly so we can log
+      // an actionable reason instead of a cryptic failure.
+      if (this.app.platform.os === 'linux') {
+        const exeLibc = await detectExecutableLibc(javaPath)
+        const hostLibc = detectLibc()
+        if (exeLibc && exeLibc !== hostLibc) {
+          this.warn(
+            `Java at ${javaPath} is a ${exeLibc}-linked build but this host uses ${hostLibc}; ` +
+            'it cannot be launched (its dynamic loader is absent). Install a ' +
+            `${hostLibc} JRE instead.`,
+          )
+        }
+      }
+
       const home = dirname(dirname(javaPath))
       const releaseData = await readFile(join(home, 'release'), 'utf-8')
       const javaVersion = releaseData
