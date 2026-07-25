@@ -1,9 +1,8 @@
-import { ConnectionUserInfo, GameProfileAndTexture, PromiseSignal, createPromiseSignal } from '@xmcl/runtime-api'
-import { setTimeout } from 'timers/promises'
-import { PeerSession } from './connection'
+import { ConnectionUserInfo, PromiseSignal } from '@xmcl/runtime-api'
+import type { MultiplayerIceServerCredential, MultiplayerRoomAdmission } from '@xmcl/runtime-api'
 import type { InitiateOptions, Peers } from './peers'
 
-type DescriptionType = string
+type DescriptionType = 'offer' | 'answer'
 
 export interface TransferDescription {
   session: string
@@ -12,37 +11,47 @@ export interface TransferDescription {
   candidates: Array<{ candidate: string; mid: string }>
 }
 
-type RelayPeerMessage = {
-  type: 'DESCRIPTOR-ECHO'
-  receiver: string
-  sender: string
-  id: number
-} | {
-  type: 'DESCRIPTOR'
-  receiver: string
-  sender: string
+interface SignalDescription {
   sdp: string
-  candidates: Array<{ candidate: string; mid: string }>
   sdpType: DescriptionType
-  id: number
+  session: string
+  candidates: Array<{ candidate: string; mid: string }>
   iceServer?: RTCIceServer
   iceServers?: RTCIceServer[]
-} | {
-  type: 'WHO'
-  receiver: string
-  sender: string
-} | {
-  type: 'ME'
-  sender: string
-  profile: ConnectionUserInfo
-} | {
-  type: 'PONG'
-  timestamp: number
 }
 
-function convertUUIDToUint8Array(id: string) {
-  const ints = id.replace(/-/g, '').match(/.{2}/g)!.map((v) => parseInt(v, 16))
-  return new Uint8Array(ints)
+interface RoomPeer {
+  peerId: string
+  accountId: string
+  displayName: string
+  status?: 'negotiating' | 'connected'
+}
+
+type RoomServerMessage =
+  | { type: 'host-ready'; self: RoomPeer; guests: RoomPeer[]; revision: number }
+  | { type: 'negotiation-started'; self: RoomPeer; hostPeerId: string; revision: number }
+  | { type: 'join-request'; guest: RoomPeer; revision: number }
+  | { type: 'signal'; sender: string; payload: SignalDescription }
+  | { type: 'guest-connected'; guest: RoomPeer; revision: number }
+  | { type: 'guest-negotiation-ended'; peerId: string; revision: number }
+  | { type: 'rtc-ready'; revision: number }
+  | { type: 'error'; code: string }
+
+export interface MultiplayerRoomApi {
+  createRoom(displayName: string, maxPeers?: number): Promise<MultiplayerRoomAdmission>
+  joinRoom(roomId: string, displayName: string): Promise<MultiplayerRoomAdmission>
+  closeRoom(roomId: string): Promise<void>
+  getIceServerCredential(): Promise<MultiplayerIceServerCredential>
+}
+
+interface RoomSocket {
+  readyState: number
+  onopen: ((event: Event) => void) | null
+  onmessage: ((event: MessageEvent) => void) | null
+  onerror: ((event: Event) => void) | null
+  onclose: ((event: CloseEvent) => void) | null
+  send(message: string): void
+  close(code?: number, reason?: string): void
 }
 
 export function createPeerGroup(
@@ -50,297 +59,288 @@ export function createPeerGroup(
   peers: Peers,
   getUserInfo: () => ConnectionUserInfo,
   initiate: (option: InitiateOptions) => void,
-  setRemoteDescription: (d: TransferDescription, type: 'offer' | 'answer', t?: RTCIceServer, all?: RTCIceServer[]) => string,
-  onstate = (state: 'connecting' | 'connected' | 'closing' | 'closed') => { },
-  onerror = (e: unknown) => { },
-  onjoin = (groupId: string) => { },
-  onleave = () => { },
-  onuser = (sender: string, profile: ConnectionUserInfo) => { },
-  onping = (ping: number, timestamp: number) => { },
+  setRemoteDescription: (
+    d: TransferDescription,
+    type: 'offer' | 'answer',
+    target?: RTCIceServer,
+    all?: RTCIceServer[],
+  ) => string,
+  roomApi: MultiplayerRoomApi,
+  onstate = (state: 'connecting' | 'connected' | 'closing' | 'closed') => {},
+  onerror = (_error: unknown) => {},
+  onjoin = (_admission: MultiplayerRoomAdmission) => {},
+  onleave = () => {},
+  onuser = (_sender: string, _profile: ConnectionUserInfo) => {},
+  onping = (_ping: number, _timestamp: number) => {},
 ) {
-  let _group: PeerGroup | undefined
+  let room: MultiplayerRoom | undefined
 
-  const cached = localStorage.getItem('peerGroup')
-  if (cached && typeof cached === 'string') {
-    console.log('Cached group', cached)
-    joinGroup(cached)
+  async function joinGroup(roomId?: string) {
+    try {
+      await room?.quit()
+      onstate('connecting')
+      const localId = await idSignal.promise
+      const profile = getUserInfo()
+      const admission = roomId
+        ? await roomApi.joinRoom(roomId, profile.name)
+        : await roomApi.createRoom(profile.name, 8)
+      room = new MultiplayerRoom(
+        admission,
+        localId,
+        profile,
+        peers,
+        initiate,
+        setRemoteDescription,
+        roomApi,
+      )
+      room.onstate = onstate
+      room.onerror = onerror
+      room.onuser = onuser
+      room.onping = onping
+      await room.connect()
+      onjoin(admission)
+    } catch (error) {
+      room = undefined
+      onerror(error)
+      onstate('closed')
+    }
   }
 
-  async function joinGroup(groupId?: string) {
-    console.log('Join group', groupId)
-    const _id = await idSignal.promise
-    if (!groupId) {
-      const buf = new Uint16Array(1)
-      window.crypto.getRandomValues(buf)
-      groupId = (getUserInfo()?.name ?? '') + '@' + buf[0]
-    }
-    localStorage.setItem('peerGroup', groupId)
-    _group = new PeerGroup(groupId, _id, () => getUserInfo())
-
-    _group.onheartbeat = (sender) => {
-      console.log(`Get heartbeat from ${sender}`)
-      const peer = peers.get(sender)
-      // Ask sender to connect to me :)
-      if (!peer) {
-        if (_id.localeCompare(sender) > 0) {
-          console.log(`Not found the ${sender} during heartbeat. Initiate new connection`)
-          // Only if my id is greater than other's id, we try to initiate the connection.
-          // This will have a total order in the UUID random space
-
-          // Try to connect to the sender
-          initiate({ remoteId: sender, initiate: true })
-        } else {
-          initiate({ remoteId: sender, initiate: false })
-        }
-      }
-    }
-    _group.ondescriptor = async (sender, sdp, type, candidates, iceServer, allIceServers) => {
-      setRemoteDescription({
-        id: sender,
-        session: '',
-        sdp,
-        candidates,
-      }, type as any, iceServer, allIceServers)
-    }
-    _group.onuser = onuser
-    _group.onstate = onstate
-    _group.onerror = onerror
-    _group.onwebsocketping = onping
-
-    onstate(_group.state)
-    onjoin(groupId)
-  }
-  function leaveGroup() {
-    _group?.quit()
-    _group = undefined
-    localStorage.setItem('peerGroup', '')
+  async function leaveGroup() {
+    const current = room
+    room = undefined
+    if (current) await current.quit()
     onleave()
   }
 
   return {
-    getGroup: () => _group,
+    getGroup: () => room,
     joinGroup,
     leaveGroup,
   }
 }
 
-export class PeerGroup {
-  private messageId = 0
-  private socket: WebSocket
-  public state: 'connecting' | 'connected' | 'closing' | 'closed'
+export class MultiplayerRoom {
+  private socket: RoomSocket | undefined
+  private closed = false
+  private signalingComplete = false
+  private reconnecting = false
 
-  readonly signals: Record<number, PromiseSignal<void>> = {}
+  onstate = (_state: 'connecting' | 'connected' | 'closing' | 'closed') => {}
+  onerror = (_error: unknown) => {}
+  onuser = (_sender: string, _profile: ConnectionUserInfo) => {}
+  onping = (_ping: number, _timestamp: number) => {}
 
-  #closed = false
-  #messageQueue: RelayPeerMessage[] = []
-  #id = ''
-  #heartbeat: ReturnType<typeof setInterval> | undefined
-  #url = ''
-  #heartbeatLastSeen: Record<string, number> = {}
+  constructor(
+    private admission: MultiplayerRoomAdmission,
+    readonly localId: string,
+    readonly profile: ConnectionUserInfo,
+    private readonly peers: Peers,
+    private readonly initiatePeer: (option: InitiateOptions) => void,
+    private readonly applyRemoteDescription: (
+      d: TransferDescription,
+      type: 'offer' | 'answer',
+      target?: RTCIceServer,
+      all?: RTCIceServer[],
+    ) => string,
+    private readonly roomApi: MultiplayerRoomApi,
+    private readonly createSocket: (url: string) => RoomSocket = (url) => new WebSocket(url),
+  ) {}
 
-  onstate = (state: 'connecting' | 'connected' | 'closing' | 'closed') => { }
-  onheartbeat = (sender: string) => { }
-  ondescriptor = (sender: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>, iceServer?: RTCIceServer, allServers?: RTCIceServer[]) => { }
-  onerror: (error: unknown) => void = () => { }
-  onuser = (sender: string, profile: ConnectionUserInfo) => { }
-  onwebsocketping = (ping: number, timestamp: number) => { }
-
-  constructor(readonly groupId: string, id: string, readonly gameProfile: () => GameProfileAndTexture) {
-    this.#id = id
-    this.#url = `wss://api.xmcl.app/group/${groupId}?client=${id}`
-    this.socket = new WebSocket(this.#url)
-    this.state = 'connecting'
-    const idBinary = convertUUIDToUint8Array(id)
-    const heartbeatMessage = new Uint8Array(16 + 8)
-    heartbeatMessage.set(idBinary)
-    const heartbeatView = new DataView(heartbeatMessage.buffer)
-    this.#heartbeat = setInterval(() => {
-      if (this.socket.readyState === this.socket.OPEN) {
-        heartbeatView.setFloat64(16, Date.now())
-        this.socket.send(heartbeatMessage)
-      }
-    }, 4_000)
-    this.#initiate()
+  get roomId() {
+    return this.admission.roomId
   }
 
-  #initiate() {
-    const { groupId, socket } = this
-    const id = this.#id
+  get role() {
+    return this.admission.role
+  }
 
-    socket.onopen = () => {
-      this.state = 'connected'
-      this.onstate?.(this.state)
-      for (let i = this.#messageQueue.shift(); i; i = this.#messageQueue.shift()) {
-        this.send(i)
+  async connect() {
+    if (this.closed) return
+    this.onstate('connecting')
+    const url = new URL(this.admission.socketUrl)
+    url.searchParams.set('ticket', this.admission.ticket)
+    const socket = this.createSocket(url.toString())
+    this.socket = socket
+    await new Promise<void>((resolve, reject) => {
+      let opened = false
+      let settled = false
+      socket.onopen = () => {
+        opened = true
+        settled = true
+        resolve()
       }
-    }
-    // socket.onping = heartbeat)
-    socket.onmessage = (event) => {
-      const { data } = event
-      const onHeartbeat = (data: Uint8Array) => {
-        const id = [...data]
-          .map((b) => ('00' + b.toString(16)).slice(-2))
-          .join('')
-          .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5')
-        if (id !== this.#id) {
-          this.onheartbeat?.(id)
-          this.#heartbeatLastSeen[id] = Date.now()
+      socket.onmessage = (event) => {
+        if (typeof event.data !== 'string') return
+        this.handle(JSON.parse(event.data) as RoomServerMessage)
+      }
+      socket.onerror = (event) => {
+        if (!opened && !settled) {
+          settled = true
+          reject(new Error('multiplayer_room_websocket_upgrade_failed', { cause: event }))
+        } else {
+          this.reportError(event)
         }
       }
-      if (data instanceof Blob) {
-        // Blob to Uint8Array
-        data.arrayBuffer().then(data => new Uint8Array(data))
-          .then(onHeartbeat)
-        return
-      }
-      if (data instanceof ArrayBuffer) {
-        onHeartbeat(new Uint8Array(data))
-        return
-      }
-      if (data instanceof Uint8Array) {
-        onHeartbeat(data)
-        return
-      }
-      if (typeof data === 'string') {
-        try {
-          const payload = JSON.parse(data.toString()) as RelayPeerMessage
-          if ('receiver' in payload && payload.receiver !== id) {
-            return
+      socket.onclose = (event) => {
+        if (socket !== this.socket || this.closed) return
+        this.socket = undefined
+        if (!opened) {
+          if (!settled) {
+            settled = true
+            reject(new Error(`multiplayer_room_websocket_closed_before_open:${event.code}`))
           }
-          if ('sender' in payload && payload.sender === id) {
-            return
-          }
-          if (payload.type === 'DESCRIPTOR') {
-            this.send({
-              type: 'DESCRIPTOR-ECHO',
-              receiver: payload.sender,
-              sender: id,
-              id: payload.id,
-            })
-            this.ondescriptor?.(payload.sender, payload.sdp, payload.sdpType, payload.candidates, payload.iceServer, payload.iceServers)
-          } else if (payload.type === 'DESCRIPTOR-ECHO') {
-            const signal = this.signals[payload.id]
-            if (signal) {
-              signal.resolve()
-              delete this.signals[payload.id]
-            }
-          } else if (payload.type === 'WHO') {
-            // Send who am I
-            const profile = this.gameProfile()
-            this.send({
-              type: 'ME',
-              sender: id,
-              profile: {
-                ...profile,
-                avatar: profile.textures.SKIN.url,
-              },
-            })
-          } else if (payload.type === 'ME') {
-            this.onuser?.(payload.sender, payload.profile)
-          } else if (payload.type === 'PONG') {
-            const now = Date.now()
-            const ping = (now - payload.timestamp) / 2
-            this.onwebsocketping?.(ping, payload.timestamp)
-          }
-        } catch (e) {
-          this.onerror?.(e)
-        }
-      }
-    }
-    const handleClosed = () => {
-      if (!this.#closed) {
-        // Try to reconnect as this is closed unexpected
-        this.state = 'connecting'
-        this.onstate?.(this.state)
-        const state = this.socket.readyState
-        const sock = this.socket
-        setTimeout(1000).then(() => {
-          if (sock === this.socket && state === this.socket.readyState) {
-            this.socket = new WebSocket(this.#url)
-            this.#initiate()
-          }
-        })
-      } else {
-        this.state = 'closed'
-        this.onstate?.(this.state)
-      }
-    }
-    socket.onerror = (e) => {
-      this.onerror?.(e)
-      handleClosed()
-    }
-    socket.onclose = (e) => {
-      const { wasClean, reason, code } = e
-      handleClosed()
-    }
-  }
-
-  wait(messageId: number): Promise<void> {
-    this.signals[messageId] = createPromiseSignal()
-    return this.signals[messageId].promise
-  }
-
-  async sendLocalDescription(receiverId: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>, iceServer: RTCIceServer, iceServers: RTCIceServer[], shouldRetry: () => boolean) {
-    const messageId = this.messageId++
-    const resolve = this.wait(messageId).then(() => true, () => false)
-    for (let i = 0; i < 60; ++i) {
-      try {
-        if (this.#closed) {
           return
         }
-        if ((Date.now() - this.#heartbeatLastSeen[receiverId]) > (5 * 60_000)) {
-          // If the receiver is not seen in 5 minutes, we stop sending
-          return 'NO_RESPONSE'
-        }
-        this.send({
-          type: 'DESCRIPTOR',
-          receiver: receiverId,
-          sdp,
-          sdpType: type,
-          sender: this.#id,
-          candidates,
-          id: messageId,
-          iceServer,
-          iceServers,
-        })
-        const responsed = await Promise.race([
-          resolve,
-          setTimeout(4_000).then(() => false), // wait 4 seconds for response
-        ])
-        if (responsed) {
+        if (this.role === 'guest' && this.signalingComplete && event.code === 1000) {
+          this.onstate('connected')
           return
         }
-        if (!shouldRetry()) {
-          return
-        }
-      } catch (e) {
-        this.onerror?.(e)
+        this.restore().catch((error) => this.fail(error))
       }
-    }
-    return 'NO_RESPONSE_TIMEOUT'
-  }
-
-  async sendWho(receiverId: string) {
-    this.send({
-      type: 'WHO',
-      receiver: receiverId,
-      sender: this.#id,
     })
   }
 
-  send(message: RelayPeerMessage) {
-    if (this.socket.readyState === this.socket.OPEN) {
-      this.socket.send(JSON.stringify(message))
-    } else {
-      this.#messageQueue.push(message)
+  async sendLocalDescription(
+    receiverId: string,
+    sdp: string,
+    type: DescriptionType,
+    candidates: Array<{ candidate: string; mid: string }>,
+    iceServer: RTCIceServer,
+    iceServers: RTCIceServer[],
+    _shouldRetry: () => boolean,
+  ) {
+    this.send({
+      type: 'signal',
+      receiver: receiverId,
+      payload: {
+        sdp,
+        sdpType: type,
+        session: this.peers.get(receiverId)?.id ?? '',
+        candidates,
+        iceServer,
+        iceServers,
+      },
+    })
+  }
+
+  sendWho(_receiverId: string) {
+    // Identity is exchanged over the authenticated metadata DataChannel.
+  }
+
+  markConnected(remoteId: string) {
+    if (this.role !== 'guest') return
+    const peer = this.peers.get(remoteId)
+    if (!peer || !peer.isDataChannelEstablished()) return
+    this.signalingComplete = true
+    this.send({ type: 'rtc-ready' })
+  }
+
+  removePeer(remoteId: string, kick = false) {
+    if (this.role !== 'host') return
+    this.send({ type: kick ? 'kick' : 'guest-left', peerId: remoteId })
+  }
+
+  private handle(message: RoomServerMessage) {
+    if (message.type === 'host-ready') {
+      this.onstate('connected')
+      for (const guest of message.guests) {
+        if (!this.peers.get(guest.peerId) && guest.status !== 'connected') {
+          this.initiatePeer({ remoteId: guest.peerId, initiate: true })
+        }
+      }
+      return
+    }
+    if (message.type === 'negotiation-started') {
+      return
+    }
+    if (message.type === 'join-request') {
+      if (this.role === 'host' && !this.peers.get(message.guest.peerId)) {
+        this.initiatePeer({ remoteId: message.guest.peerId, initiate: true })
+      }
+      return
+    }
+    if (message.type === 'signal') {
+      const payload = message.payload
+      this.applyRemoteDescription(
+        {
+          id: message.sender,
+          session: payload.session,
+          sdp: payload.sdp,
+          candidates: payload.candidates,
+        },
+        payload.sdpType,
+        payload.iceServer,
+        payload.iceServers,
+      )
+      return
+    }
+    if (message.type === 'guest-negotiation-ended') {
+      const peer = this.peers.get(message.peerId)
+      peer?.close()
+      this.peers.remove(message.peerId)
+      return
+    }
+    if (message.type === 'rtc-ready') {
+      this.signalingComplete = true
+      this.onstate('connected')
+      return
+    }
+    if (message.type === 'error') {
+      this.reportError(new Error(`multiplayer_room_${message.code}`))
     }
   }
 
-  quit() {
-    this.#closed = true
-    this.socket.close()
-    this.state = 'closing'
-    clearInterval(this.#heartbeat)
-    this.onstate?.(this.state)
+  private send(message: unknown) {
+    if (this.socket?.readyState !== 1) {
+      throw new Error('multiplayer_room_socket_unavailable')
+    }
+    this.socket.send(JSON.stringify(message))
+  }
+
+  private async restore() {
+    if (this.closed || this.reconnecting) return
+    this.reconnecting = true
+    this.onstate('connecting')
+    try {
+      const delays = [0, 500, 1_000, 2_000, 4_000]
+      let lastError: unknown
+      for (const delay of delays) {
+        if (this.closed) return
+        if (delay) await new Promise((resolve) => setTimeout(resolve, delay))
+        try {
+          const restored = await this.roomApi.joinRoom(this.roomId, this.profile.name)
+          this.admission = { ...restored, role: this.role }
+          await this.connect()
+          return
+        } catch (error) {
+          lastError = error
+        }
+      }
+      throw lastError ?? new Error('multiplayer_room_restore_failed')
+    } finally {
+      this.reconnecting = false
+    }
+  }
+
+  private fail(error: unknown) {
+    this.reportError(error)
+    this.onstate('closed')
+  }
+
+  private reportError(error: unknown) {
+    this.onerror(error)
+  }
+
+  async quit() {
+    if (this.closed) return
+    this.closed = true
+    this.onstate('closing')
+    if (this.role === 'host') {
+      await this.roomApi.closeRoom(this.roomId).catch((error) => this.reportError(error))
+    }
+    this.socket?.close(1000, 'Client left')
+    this.socket = undefined
+    this.onstate('closed')
   }
 }

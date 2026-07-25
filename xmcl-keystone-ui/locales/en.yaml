@@ -1241,10 +1241,12 @@ multiplayer:
   connectionFailedHint: >-
     Unable to establish connection. Check if both peers have compatible NAT
     types.
+  connectedToHost: Connected to the room host
   connections: Connections
   copied: Copied!
   copy: Copy
   copyGroupToFriendHint: Let your friends join the group with this id
+  directConnection: Direct
   copyLocalHint: >
     "Please copy the local SDP text and send it to your object to have your
     object enter this text in the join connection <span>A token can be only used
@@ -1279,6 +1281,8 @@ multiplayer:
     until the ICE status is complete. If the token below remains unchanged, you
     can copy it and send it to your peer."
   groupId: Group Id
+  guest: Guest
+  host: Host
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
   joinConnection: >-
@@ -1308,6 +1312,7 @@ multiplayer:
     automatically. Now you can close the dialog.
   receiveRemoteTokenHint: Please enter the token from your peer here.
   remoteToken: Remote Token
+  relayConnection: Relay
   routerInfo: Router Info
   sendTokenToRemote: Send Token to Remote
   share: Share Instance Config

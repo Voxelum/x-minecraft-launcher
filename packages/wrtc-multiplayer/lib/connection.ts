@@ -7,7 +7,11 @@ import { Readable, Writable, finished } from 'stream'
 import { PeerContext } from './PeerContext'
 import { ServerProxy } from './ServerProxy'
 import { MessageGetSharedManifestEntry, MessageShareManifestEntry } from './messages/download'
-import { MessageHeartbeatPing, MessageHeartbeatPingEntry, MessageHeartbeatPongEntry } from './messages/heartbeat'
+import {
+  MessageHeartbeatPing,
+  MessageHeartbeatPingEntry,
+  MessageHeartbeatPongEntry,
+} from './messages/heartbeat'
 import { MessageIdentity, MessageIdentityEntry } from './messages/identity'
 import { MessageLanEntry } from './messages/lan'
 import { MessageEntry, MessageHandler, MessageType } from './messages/message'
@@ -65,32 +69,41 @@ export class PeerSession {
     if (idel) {
       return idel
     }
-    const channel = new RTCDuplexChannel(this.connection.createDataChannel(`download-${this.#channelPool.length}`, {
-      ordered: true,
-      protocol: 'download',
-    }), this.createStream, this.connection.sctp?.maxMessageSize ?? 16 * 1024)
+    const channel = new RTCDuplexChannel(
+      this.connection.createDataChannel(`download-${this.#channelPool.length}`, {
+        ordered: true,
+        protocol: 'download',
+      }),
+      this.createStream,
+      this.connection.sctp?.maxMessageSize ?? 16 * 1024,
+    )
     this.#channelPool.push(channel)
     return channel
   }
 
-  #streamQueue = new WorkerQueue<{ file: string; destination: Writable }>(async ({ file, destination }) => {
-    return new Promise<any>((resolve) => {
-      const channel = this.#getOrCreateDownloadChannel()
-      finished(destination, resolve)
-      channel.download(file, destination)
-    })
-  }, 32, {
-    shouldRetry: () => false,
-    isEqual: () => false,
-  })
+  #streamQueue = new WorkerQueue<{ file: string; destination: Writable }>(
+    async ({ file, destination }) => {
+      return new Promise<any>((resolve) => {
+        const channel = this.#getOrCreateDownloadChannel()
+        finished(destination, resolve)
+        channel.download(file, destination)
+      })
+    },
+    32,
+    {
+      shouldRetry: () => false,
+      isEqual: () => false,
+    },
+  )
 
   constructor(
     /**
-    * The session id
-    */
+     * The session id
+     */
     readonly id: string,
     public connection: RTCPeerConnection,
-    readonly context: PeerContext) {
+    readonly context: PeerContext,
+  ) {
     this.#updateDescriptor = debounce(() => {
       const description = this.connection.localDescription!
       context.onDescriptorUpdate(this.id, description.sdp, description.type, this.#candidates)
@@ -141,7 +154,9 @@ export class PeerSession {
           socket.destroy()
           channel.close()
         }
-        socket.on('data', (buf) => channel.readyState === 'open' ? channel.send(buf as any) : buffers.push(buf))
+        socket.on('data', (buf) =>
+          channel.readyState === 'open' ? channel.send(buf as any) : buffers.push(buf),
+        )
         channel.addEventListener('message', ({ data }) => socket.write(Buffer.from(data)))
         socket.on('close', () => {
           console.log(`Socket ${label} closed and close game channel ${id}`)
@@ -160,7 +175,13 @@ export class PeerSession {
         console.log('Metadata channel created')
       } else if (channel.protocol === 'download') {
         console.log(`Receive peer file request: ${channel.label}`)
-        this.#channelPool.push(new RTCDuplexChannel(channel, this.createStream, this.connection.sctp?.maxMessageSize ?? 16 * 1024))
+        this.#channelPool.push(
+          new RTCDuplexChannel(
+            channel,
+            this.createStream,
+            this.connection.sctp?.maxMessageSize ?? 16 * 1024,
+          ),
+        )
       } else {
         // TODO: emit error for unknown protocol
       }
@@ -193,7 +214,7 @@ export class PeerSession {
       if (!man) {
         return 'NO_PERMISSION'
       }
-      const file = man.files.find(v => decodeURI(v.path) === filePath)
+      const file = man.files.find((v) => decodeURI(v.path) === filePath)
       if (!file) {
         return 'NO_PERMISSION'
       }
@@ -232,17 +253,19 @@ export class PeerSession {
   async initiate() {
     // host
     console.log('peer initialize')
-    this.setChannel(this.connection.createDataChannel(this.id, {
-      ordered: true,
-      protocol: 'metadata',
-    }))
+    this.setChannel(
+      this.connection.createDataChannel(this.id, {
+        ordered: true,
+        protocol: 'metadata',
+      }),
+    )
 
     const offer = await this.connection.createOffer({
       offerToReceiveAudio: false,
       offerToReceiveVideo: false,
     })
 
-    console.log(`Create offer ${(offer.sdp)}`)
+    console.log(`Create offer ${offer.sdp}`)
     await this.connection.setLocalDescription(offer)
 
     this.#updateDescriptor()
@@ -304,6 +327,7 @@ export class PeerSession {
       console.log(`Create metadata channel on ${channel.id}`)
       const info = this.context.getUserInfo()
       this.send(MessageIdentity, { ...info })
+      this.context.onConnectionEstablished(this.id)
     }
     channel.onerror = (e) => {
       console.error(new Error('Fail to create metadata channel', { cause: e }))
@@ -314,7 +338,9 @@ export class PeerSession {
     this.#channel = channel
   }
 
-  get isClosed() { return this.#isClosed }
+  get isClosed() {
+    return this.#isClosed
+  }
 
   close() {
     this.#isClosed = true
@@ -331,7 +357,11 @@ export class PeerSession {
   }
 
   send<T>(type: MessageType<T>, data: T) {
-    if (this.connection.connectionState !== 'connected' || !this.#channel || this.#channel.readyState !== 'open') {
+    if (
+      this.connection.connectionState !== 'connected' ||
+      !this.#channel ||
+      this.#channel.readyState !== 'open'
+    ) {
       return
     }
     this.#channel?.send(JSON.stringify({ type: type as string, payload: data }))

@@ -8,9 +8,21 @@ export interface RTCSessionDescription {
   type: 'answer' | 'offer' | 'pranswer' | 'rollback'
 }
 
-export type ConnectionState = 'closed' | 'connected' | 'connecting' | 'disconnected' | 'failed' | 'new'
+export type ConnectionState =
+  | 'closed'
+  | 'connected'
+  | 'connecting'
+  | 'disconnected'
+  | 'failed'
+  | 'new'
 export type IceGatheringState = 'complete' | 'gathering' | 'new'
-export type SignalingState = 'closed' | 'have-local-offer' | 'have-local-pranswer' | 'have-remote-offer' | 'have-remote-pranswer' | 'stable'
+export type SignalingState =
+  | 'closed'
+  | 'have-local-offer'
+  | 'have-local-pranswer'
+  | 'have-remote-offer'
+  | 'have-remote-pranswer'
+  | 'stable'
 
 export interface SelectedCandidateInfo {
   address: string
@@ -93,6 +105,25 @@ export interface SetRemoteDescriptionOptions {
   description: string | TransferDescription
 }
 
+export interface MultiplayerRoomAdmission {
+  roomId: string
+  socketUrl: string
+  ticket: string
+  peerId: string
+  expiresAt: string
+  role: 'host' | 'guest'
+  maxPeers?: number
+}
+
+export interface MultiplayerIceServerCredential {
+  uris?: string[]
+  ttl?: number
+  password?: string
+  username?: string
+  stuns: string[]
+  meta?: Record<string, string>
+}
+
 export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
   /**
    * Is the multiplayer module ready
@@ -124,12 +155,7 @@ export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
    * @param id The session to drop
    */
   drop(id: string): Promise<void>
-  /**
-   * Join the group.
-   * The group will automatically create connection between group members.
-   *
-   * @param groupId The group id
-   */
+  /** Create a Host room when `groupId` is empty, otherwise join as a Guest. */
   joinGroup(groupId: string): Promise<void>
   /**
    * Leave the group
