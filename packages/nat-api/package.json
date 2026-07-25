@@ -40,7 +40,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/voxelum/nat-api.git"
+    "url": "git+https://github.com/Voxelum/x-minecraft-launcher.git"
   },
   "bugs": {
     "url": "https://github.com/voxelum/nat-api/issues"

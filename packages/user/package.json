@@ -25,7 +25,7 @@
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+    "url": "git+https://github.com/Voxelum/x-minecraft-launcher.git"
   },
   "author": "cijhn@hotmail.com",
   "keywords": [
