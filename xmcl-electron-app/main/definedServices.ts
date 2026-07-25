@@ -37,6 +37,7 @@ import { ServerStatusService } from '@xmcl/runtime/serverStatus'
 import { ThemeService } from '@xmcl/runtime/theme'
 import { OfficialUserService, UserService, MinecraftFriendsService } from '@xmcl/runtime/user'
 import { CloudServerService } from '@xmcl/runtime/cloudServers/CloudServerService'
+import { SharedHostingDeploymentService } from '@xmcl/runtime/sharedHosting/SharedHostingDeploymentService'
 import { ExternalCredentialService } from '@xmcl/runtime/credential/ExternalCredentialService'
 
 export const definedServices = [
@@ -49,6 +50,7 @@ export const definedServices = [
   CollectionService,
   CommercialAccountService,
   CloudServerService,
+  SharedHostingDeploymentService,
   BedrockService,
   InstallService,
   ProjectMappingService,

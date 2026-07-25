@@ -116,6 +116,17 @@ export function useInstanceContextMenuFunc() {
         },
       },
       {
+        text: 'Deploy to Shared Hosting',
+        icon: 'cloud_upload',
+        section: 'action',
+        onClick() {
+          if (path.value !== inst.path) {
+            path.value = inst.path
+          }
+          push('/base-setting?target=server&deploySharedHosting=true')
+        },
+      },
+      {
         text: t('instance.delete'),
         color: 'red',
         icon: 'delete',
