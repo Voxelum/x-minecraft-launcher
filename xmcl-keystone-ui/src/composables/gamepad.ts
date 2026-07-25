@@ -763,6 +763,19 @@ const useGamepadCore = createGlobalState(() => {
     return buttons[index] && buttons[index].pressed
   }
 
+  function isTextEntryFocused() {
+    const active = document.activeElement
+    if (active instanceof HTMLTextAreaElement) return true
+    if (active instanceof HTMLInputElement) {
+      return !['button', 'checkbox', 'color', 'file', 'hidden', 'image', 'radio', 'range', 'reset', 'submit'].includes(active.type)
+    }
+    return active instanceof HTMLElement && (active.isContentEditable || active.getAttribute('role') === 'textbox')
+  }
+
+  function syncPreviousButtons(buttons: readonly GamepadButton[]) {
+    prevButtons = buttons.map((button) => button.pressed)
+  }
+
   /** True only on the frame the button transitions from up to down. */
   function justPressed(buttons: readonly GamepadButton[], index: number) {
     return !!(buttons[index] && buttons[index].pressed) && !prevButtons[index]
@@ -902,14 +915,21 @@ const useGamepadCore = createGlobalState(() => {
       return
     }
 
-    // Prompt to enable when a button is pressed and we are not active yet.
-    if (!enabled.value && !promptDismissed.value && onEnablePrompt) {
-      if (active.buttons.some((b) => b.pressed)) onEnablePrompt()
-    }
-
     const buttons = active.buttons
     const axes = active.axes
     if (prevButtons.length === 0) prevButtons = new Array(buttons.length).fill(false)
+
+    // Steam's on-screen keyboard shares the controller with the launcher.
+    // Do not let its navigation move focus, scroll, or activate launcher UI.
+    if (isTextEntryFocused()) {
+      syncPreviousButtons(buttons)
+      return
+    }
+
+    // Prompt to enable when a button is pressed and we are not active yet.
+    if (!enabled.value && !promptDismissed.value && onEnablePrompt) {
+      if (buttons.some((button) => button.pressed)) onEnablePrompt()
+    }
 
     const ctx = activeContext()
     if (ctx) {
@@ -918,9 +938,7 @@ const useGamepadCore = createGlobalState(() => {
       handleMainView(buttons, axes, now)
     }
 
-    for (let i = 0; i < buttons.length; i++) {
-      prevButtons[i] = buttons[i].pressed
-    }
+    syncPreviousButtons(buttons)
   }
 
   // Fires once per frame on the snapshot's identity change. The source is
