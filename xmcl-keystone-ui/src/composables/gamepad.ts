@@ -636,7 +636,11 @@ const useGamepadCore = createGlobalState(() => {
 
   // `enabled` is the only persisted state (a user preference). `useLocalStorage`
   // persists it and keeps it live across windows via storage events.
-  const enabled = useLocalStorage('gamepad_enabled', false)
+  const enabled = useLocalStorage('gamepad_enabled', true)
+  const autoEnable = useLocalStorage('gamepad_auto_enable', true)
+  const autoOpenKeyboard = useLocalStorage('gamepad_auto_open_keyboard', true)
+  const focusTooltips = useLocalStorage('gamepad_focus_tooltips', true)
+  const disableModPrompt = useLocalStorage('gamepad_disable_mod_prompt', false)
   const setEnabled = (value: boolean) => {
     enabled.value = value
   }
@@ -654,6 +658,11 @@ const useGamepadCore = createGlobalState(() => {
   })
 
   const connected = computed(() => !!activeGamepad.value)
+  watch(connected, (conn) => {
+    if (conn && autoEnable.value && !enabled.value) {
+      enabled.value = true
+    }
+  }, { immediate: true })
   const type = computed<GamepadType>(() => (activeGamepad.value ? detectGamepadType(activeGamepad.value.id) : 'xbox'))
   const name = computed(() => (activeGamepad.value ? cleanGamepadName(activeGamepad.value.id) : ''))
   const isActive = computed(() => enabled.value && connected.value)
@@ -754,6 +763,19 @@ const useGamepadCore = createGlobalState(() => {
     return buttons[index] && buttons[index].pressed
   }
 
+  function isTextEntryFocused() {
+    const active = document.activeElement
+    if (active instanceof HTMLTextAreaElement) return true
+    if (active instanceof HTMLInputElement) {
+      return !['button', 'checkbox', 'color', 'file', 'hidden', 'image', 'radio', 'range', 'reset', 'submit'].includes(active.type)
+    }
+    return active instanceof HTMLElement && (active.isContentEditable || active.getAttribute('role') === 'textbox')
+  }
+
+  function syncPreviousButtons(buttons: readonly GamepadButton[]) {
+    prevButtons = buttons.map((button) => button.pressed)
+  }
+
   /** True only on the frame the button transitions from up to down. */
   function justPressed(buttons: readonly GamepadButton[], index: number) {
     return !!(buttons[index] && buttons[index].pressed) && !prevButtons[index]
@@ -765,6 +787,7 @@ const useGamepadCore = createGlobalState(() => {
       current.click()
       if (
         current.tagName === 'INPUT' ||
+        current.tagName === 'TEXTAREA' ||
         current.tagName === 'SELECT' ||
         current.classList.contains('v-field') ||
         current.closest('.v-input') ||
@@ -777,6 +800,19 @@ const useGamepadCore = createGlobalState(() => {
         current.dispatchEvent(enterUp)
         const field = current.closest('.v-field') as HTMLElement
         if (field && field !== current) field.click()
+
+        const input = current.tagName === 'INPUT' || current.tagName === 'TEXTAREA'
+          ? (current as HTMLInputElement)
+          : current.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea')
+        if (input) {
+          input.focus()
+          input.select?.()
+          if (autoOpenKeyboard.value) {
+            try {
+              window.open('steam://open/keyboard', 'browser')
+            } catch {}
+          }
+        }
       }
     }
   }
@@ -879,14 +915,21 @@ const useGamepadCore = createGlobalState(() => {
       return
     }
 
-    // Prompt to enable when a button is pressed and we are not active yet.
-    if (!enabled.value && !promptDismissed.value && onEnablePrompt) {
-      if (active.buttons.some((b) => b.pressed)) onEnablePrompt()
-    }
-
     const buttons = active.buttons
     const axes = active.axes
     if (prevButtons.length === 0) prevButtons = new Array(buttons.length).fill(false)
+
+    // Steam's on-screen keyboard shares the controller with the launcher.
+    // Do not let its navigation move focus, scroll, or activate launcher UI.
+    if (isTextEntryFocused()) {
+      syncPreviousButtons(buttons)
+      return
+    }
+
+    // Prompt to enable when a button is pressed and we are not active yet.
+    if (!enabled.value && !promptDismissed.value && onEnablePrompt) {
+      if (buttons.some((button) => button.pressed)) onEnablePrompt()
+    }
 
     const ctx = activeContext()
     if (ctx) {
@@ -895,9 +938,7 @@ const useGamepadCore = createGlobalState(() => {
       handleMainView(buttons, axes, now)
     }
 
-    for (let i = 0; i < buttons.length; i++) {
-      prevButtons[i] = buttons[i].pressed
-    }
+    syncPreviousButtons(buttons)
   }
 
   // Fires once per frame on the snapshot's identity change. The source is
@@ -920,6 +961,10 @@ const useGamepadCore = createGlobalState(() => {
   return {
     isActive,
     enabled,
+    autoEnable,
+    autoOpenKeyboard,
+    focusTooltips,
+    disableModPrompt,
     connected,
     type,
     name,
