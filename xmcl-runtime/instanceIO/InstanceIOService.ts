@@ -1,19 +1,28 @@
 import {
   ServerFSExporter,
   ServerSSHExporter,
+  deriveLocalServerBundleMetadata,
+  exportLocalServerBundle,
   parseInstanceFiles,
   parseLauncherData,
+  preflightLocalServerBundle,
   type InstanceFile,
 } from '@xmcl/instance'
 import {
   InstanceIOServiceKey,
   type ExportInstanceAsServerOptions,
+  type DeployInstanceToSharedHostingOptions,
+  type ExportInstanceForSharedHostingOptions,
   type InstanceIOService as IInstanceIOService,
   type InstanceType,
+  type SharedHostingBundleExport,
+  type SharedHostingBundlePreview,
   type ThirdPartyLauncherManifest,
 } from '@xmcl/runtime-api'
 import { AnyError, isSystemError } from '@xmcl/utils'
 import { basename, join } from 'path'
+import { mkdir, unlink } from 'fs/promises'
+import { randomUUID } from 'crypto'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { SSHManager } from '~/infra'
 import { InstanceService } from '~/instance'
@@ -23,6 +32,7 @@ import { VersionService } from '~/launch'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, isPathDiskRootPath } from '../util/fs'
 import { uploadSSH } from './utils/uploadSSH'
+import { SharedHostingDeploymentService } from '~/sharedHosting/SharedHostingDeploymentService'
 
 @ExposeServiceKey(InstanceIOServiceKey)
 export class InstanceIOService extends AbstractService implements IInstanceIOService {
@@ -33,6 +43,30 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     @Inject(VersionService) protected versionService: VersionService,
   ) {
     super(app)
+  }
+
+  async deployInstanceToSharedHosting(
+    options: DeployInstanceToSharedHostingOptions,
+  ) {
+    const directory = join(this.app.appDataPath, 'shared-hosting-exports')
+    const outputPath = join(directory, `${randomUUID()}.xmcl-server-bundle`)
+    await mkdir(directory, { recursive: true })
+    try {
+      const exported = await this.exportInstanceForSharedHosting({
+        ...options,
+        outputPath,
+      })
+      const sharedHosting = await this.app.registry.get(SharedHostingDeploymentService)
+      return await sharedHosting.uploadLocalServerBundle({
+        serviceId: options.serviceId,
+        bundlePath: exported.outputPath,
+        expectedSha256: exported.archiveSha256,
+        expectedSizeBytes: exported.archiveSizeBytes,
+        idempotencyKey: options.idempotencyKey,
+      })
+    } finally {
+      await unlink(outputPath).catch(() => undefined)
+    }
   }
 
   async exportInstanceAsServer(options: ExportInstanceAsServerOptions): Promise<void> {
@@ -58,6 +92,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       if (!sftp) {
         throw new Error('Failed to open sftp')
       }
+
       const exporter = new ServerSSHExporter(this.getPath(), options.output.path, ssh, sftp)
 
       await uploadSSH(
@@ -69,6 +104,46 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
 
       sftp.end()
       ssh.end()
+    }
+  }
+
+  async previewInstanceForSharedHosting(
+    options: Omit<ExportInstanceForSharedHostingOptions, 'outputPath' | 'acknowledgeWarnings'>,
+  ): Promise<SharedHostingBundlePreview> {
+    const resolved = await this.versionService.resolveLocalVersion(options.options.version)
+    const metadata = deriveLocalServerBundleMetadata({
+      instanceName: options.instanceName,
+      minecraftVersion: resolved.minecraftVersion,
+      javaVersion: resolved.javaVersion,
+      libraries: resolved.libraries,
+      runtimeCatalog: options.runtimeCatalog,
+    })
+    const preflight = await preflightLocalServerBundle({
+      instancePath: options.options.gameDirectory,
+      metadata,
+      includeServerRelevantResourcePacks: options.includeServerRelevantResourcePacks,
+    })
+    return { metadata, preflight }
+  }
+
+  async exportInstanceForSharedHosting(
+    options: ExportInstanceForSharedHostingOptions,
+  ): Promise<SharedHostingBundleExport> {
+    const preview = await this.previewInstanceForSharedHosting(options)
+    const exported = await exportLocalServerBundle({
+      instancePath: options.options.gameDirectory,
+      outputPath: options.outputPath,
+      metadata: preview.metadata,
+      includeServerRelevantResourcePacks: options.includeServerRelevantResourcePacks,
+      acknowledgeWarnings: options.acknowledgeWarnings,
+    })
+    return {
+      metadata: preview.metadata,
+      preflight: exported.preflight,
+      outputPath: exported.outputPath,
+      archiveSha256: exported.archiveSha256,
+      archiveSizeBytes: exported.archiveSizeBytes,
+      manifest: exported.manifest,
     }
   }
 

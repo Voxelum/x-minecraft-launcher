@@ -1,7 +1,15 @@
 import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { ServiceKey } from './Service'
 import { LaunchOptions } from './LaunchService'
-import type { CreateInstanceOptions, InstanceFile } from '@xmcl/instance'
+import type { SharedHostingDeployment } from './SharedHostingDeploymentService'
+import type {
+  CreateInstanceOptions,
+  InstanceFile,
+  LocalServerBundleMetadata,
+  ServerBundlePreflight,
+  SharedRuntimeCatalog,
+  XmclServerBundleManifest,
+} from '@xmcl/instance'
 
 export interface ExportInstanceOptions {
   /**
@@ -94,6 +102,42 @@ export interface ExportInstanceAsServerOptions {
   files: InstanceFile[]
 }
 
+export interface ExportInstanceForSharedHostingOptions {
+  /**
+   * The resolved, working client instance launch options. They locate the
+   * instance and version metadata only; Java paths, JVM arguments, and server
+   * launch settings are never read into the shared-hosting contract.
+   */
+  options: LaunchOptions
+  instanceName: string
+  outputPath: string
+  runtimeCatalog: SharedRuntimeCatalog
+  includeServerRelevantResourcePacks?: boolean
+  acknowledgeWarnings?: boolean
+}
+
+export interface SharedHostingBundlePreview {
+  metadata: LocalServerBundleMetadata
+  preflight: ServerBundlePreflight
+}
+
+export interface SharedHostingBundleExport extends SharedHostingBundlePreview {
+  outputPath: string
+  archiveSha256: string
+  archiveSizeBytes: number
+  manifest: XmclServerBundleManifest
+}
+
+export interface DeployInstanceToSharedHostingOptions {
+  options: LaunchOptions
+  instanceName: string
+  serviceId: string
+  runtimeCatalog: SharedRuntimeCatalog
+  includeServerRelevantResourcePacks?: boolean
+  acknowledgeWarnings: true
+  idempotencyKey: string
+}
+
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -120,6 +164,17 @@ export interface InstanceIOService {
    * Export instance as server
    */
   exportInstanceAsServer(options: ExportInstanceAsServerOptions): Promise<void>
+  /**
+   * Creates a deterministic `.xmcl-server-bundle` for the authenticated
+   * shared-hosting upload flow. It never exports `server.sh` or local Java.
+   */
+  previewInstanceForSharedHosting(options: Omit<ExportInstanceForSharedHostingOptions, 'outputPath' | 'acknowledgeWarnings'>): Promise<SharedHostingBundlePreview>
+  exportInstanceForSharedHosting(options: ExportInstanceForSharedHostingOptions): Promise<SharedHostingBundleExport>
+  /**
+   * Creates and uploads one temporary bundle through the main-process-only
+   * signed-upload service, then removes that local archive.
+   */
+  deployInstanceToSharedHosting(options: DeployInstanceToSharedHostingOptions): Promise<SharedHostingDeployment>
 }
 
 export type InstanceIOExceptions = InstanceNotFoundException | {

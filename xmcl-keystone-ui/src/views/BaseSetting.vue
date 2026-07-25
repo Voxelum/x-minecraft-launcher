@@ -42,6 +42,9 @@
       <div class="flex flex-col gap-4">
         <BaseSettingServerExport />
       </div>
+      <div class="flex flex-col gap-4">
+        <BaseSettingSharedHostingDeploy />
+      </div>
     </template>
     <v-snackbar
       :model-value="isModified"
@@ -106,6 +109,7 @@ import BaseSettingModpack from './BaseSettingModpack.vue'
 import BaseSettingServer from './BaseSettingServer.vue'
 import BaseSettingServerRun from './BaseSettingServerRun.vue'
 import BaseSettingServerExport from './BaseSettingServerExport.vue'
+import BaseSettingSharedHostingDeploy from './BaseSettingSharedHostingDeploy.vue'
 import BaseSettingAdvanced from './BaseSettingAdvanced.vue'
 import { useInstanceModpackMetadata } from '@/composables/instanceModpackMetadata'
 import BaseSettingModpackFiles from './BaseSettingModpackFiles.vue'
