@@ -136,19 +136,12 @@
           >
             <div class="agent-tool-stack">
               <AgentToolCall :item="item" />
-              <div
+              <AgentMarketList
                 v-if="item.presentation?.type === 'market-project-list'"
                 class="agent-rich-message"
-              >
-                <div class="agent-rich-message__avatar">
-                  <v-icon size="15">auto_awesome</v-icon>
-                </div>
-                <AgentMarketList
-                  class="agent-rich-message__content"
-                  :presentation="item.presentation"
-                  @navigate="hide"
-                />
-              </div>
+                :presentation="item.presentation"
+                @navigate="hide"
+              />
             </div>
           </div>
         </template>
@@ -617,29 +610,9 @@ watch(isShown, async (v) => {
   gap: 5px;
 }
 .agent-rich-message {
-  display: flex;
   width: 78%;
   max-width: 640px;
   min-width: 0;
-  align-items: flex-start;
-  gap: 7px;
-}
-.agent-rich-message__avatar {
-  display: flex;
-  width: 26px;
-  height: 26px;
-  flex: 0 0 26px;
-  align-items: center;
-  justify-content: center;
-  margin-top: 3px;
-  border: 1px solid rgba(var(--v-theme-primary), 0.24);
-  border-radius: 50%;
-  color: rgb(var(--v-theme-primary));
-  background: rgba(var(--v-theme-primary), 0.1);
-}
-.agent-rich-message__content {
-  min-width: 0;
-  flex: 1;
 }
 .agent-confirm {
   overflow: hidden;

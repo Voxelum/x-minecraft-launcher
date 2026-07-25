@@ -69,6 +69,7 @@
     <v-divider class="my-3" />
     <SettingItemSwitcher
       v-model="developerMode"
+      data-testid="developer-mode"
       :title="t('setting.developerMode')"
       :description="t('setting.developerModeDescription')"
       icon="code"
@@ -119,9 +120,6 @@
             <template #append-inner>
               <v-btn icon variant="text" size="small" @click="showAgentApiKey = !showAgentApiKey">
                 <v-icon>{{ showAgentApiKey ? 'visibility_off' : 'visibility' }}</v-icon>
-              </v-btn>
-              <v-btn v-if="agentConfigured" data-testid="agent-api-key-delete" icon variant="text" size="small" title="Delete API key" @click="updateAgentApiKey('')">
-                <v-icon>delete</v-icon>
               </v-btn>
             </template>
           </v-text-field>
