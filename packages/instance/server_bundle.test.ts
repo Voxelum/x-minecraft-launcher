@@ -72,12 +72,12 @@ describe('server_bundle', () => {
         instancePath: instance,
         metadata: {
           instanceName: 'Test pack',
-          minecraftVersion: '1.21.1',
-          loader: { kind: 'fabric' as const, version: '0.16.10' },
-          javaRequirement: { component: 'java-runtime-delta', major: 21 },
+          minecraftVersion: '26.2',
+          loader: { kind: 'fabric' as const, version: '0.19.3' },
+          javaRequirement: { component: 'java-runtime-epsilon', major: 25 },
           runtimeCatalog: {
-            sha256: 'a'.repeat(64),
-            requirements: [{ component: 'java-runtime-delta', major: 21 }],
+            sha256: '7d35cc796811673ad1d22272d0ca3e5614d4ed7b3c6b01defb6e2330fe48bcc3',
+            requirements: [{ component: 'java-runtime-epsilon', major: 25 }],
           },
         },
       }
@@ -103,6 +103,8 @@ describe('server_bundle', () => {
         acknowledgeWarnings: true,
       })
       expect(first.archiveSha256).toBe(second.archiveSha256)
+      expect(first.manifest.minecraftVersion).toBe('26.2')
+      expect(first.manifest.javaRequirement.major).toBe(25)
       expect(first.manifest.files.map((file) => file.path)).toEqual([
         ...first.manifest.files.map((file) => file.path),
       ].sort())
@@ -113,6 +115,38 @@ describe('server_bundle', () => {
       const archive = await readFile(first.outputPath)
       expect(archive.toString()).toContain('"intent":"kubejs"')
       expect(archive.toString()).toContain('"intent":"script"')
+    } finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+
+  it('rejects unsafe and unreviewed Minecraft version identifiers', async () => {
+    const root = join(process.cwd(), '.test-artifacts', `server-bundle-${randomUUID()}`)
+    const metadata = {
+      instanceName: 'Test pack',
+      minecraftVersion: '26.2',
+      loader: { kind: 'fabric' as const, version: '0.19.3' },
+      javaRequirement: { component: 'java-runtime-epsilon', major: 25 },
+      runtimeCatalog: {
+        sha256: '7d35cc796811673ad1d22272d0ca3e5614d4ed7b3c6b01defb6e2330fe48bcc3',
+        requirements: [{ component: 'java-runtime-epsilon', major: 25 }],
+      },
+    }
+    try {
+      await mkdir(root, { recursive: true })
+      for (const minecraftVersion of [
+        ' 26.2', '26.2 ', '26.02', '../26.2', 'https://example.test/26.2', '26.2;cmd', '26.2\n',
+      ]) {
+        await expect(preflightLocalServerBundle({
+          instancePath: root,
+          metadata: { ...metadata, minecraftVersion },
+        })).rejects.toMatchObject({ code: 'unsupported_compatibility' })
+      }
+      const unsupported = await preflightLocalServerBundle({
+        instancePath: root,
+        metadata: { ...metadata, loader: { kind: 'fabric', version: '0.19.4' } },
+      })
+      expect(unsupported.compatible).toBe(false)
     } finally {
       await rm(root, { recursive: true, force: true })
     }

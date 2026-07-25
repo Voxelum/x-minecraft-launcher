@@ -145,6 +145,34 @@ interface MemoryFile extends ServerBundleFile {
 
 const encoder = new TextEncoder()
 const decoder = new TextDecoder('utf-8', { fatal: true })
+const reviewedRuntimeCatalogSHA256 = '7d35cc796811673ad1d22272d0ca3e5614d4ed7b3c6b01defb6e2330fe48bcc3'
+const reviewedToolchains = [
+  {
+    minecraftVersion: '1.12.2',
+    loader: { kind: 'forge', version: '14.23.5.2859' },
+    java: { component: 'jre-legacy', major: 8 },
+  },
+  {
+    minecraftVersion: '1.17.1',
+    loader: { kind: 'fabric', version: '0.12.12' },
+    java: { component: 'java-runtime-alpha', major: 16 },
+  },
+  {
+    minecraftVersion: '1.20.1',
+    loader: { kind: 'fabric', version: '0.15.11' },
+    java: { component: 'java-runtime-gamma', major: 17 },
+  },
+  {
+    minecraftVersion: '1.21.1',
+    loader: { kind: 'neoforge', version: '21.1.115' },
+    java: { component: 'java-runtime-delta', major: 21 },
+  },
+  {
+    minecraftVersion: '26.2',
+    loader: { kind: 'fabric', version: '0.19.3' },
+    java: { component: 'java-runtime-epsilon', major: 25 },
+  },
+] as const
 const rootFiles = new Set([
   'server.properties',
   'pack.toml',
@@ -226,10 +254,10 @@ export async function preflightLocalServerBundle(
       configDataBytes += stat.size
     }
   }
-  if (!catalogContains(options.metadata.runtimeCatalog, options.metadata.javaRequirement)) {
+  if (!catalogContains(options.metadata.runtimeCatalog, options.metadata)) {
     warnings.push({
       code: 'unsupported_compatibility',
-      message: 'The resolved Java component and major are not present in the reviewed runtime catalog.',
+      message: 'The resolved Minecraft, loader, and Java tuple is not present in the reviewed toolchain catalog.',
     })
   }
   for (const item of excluded) {
@@ -536,7 +564,7 @@ function categoryFor(directory: string): SourceFile['category'] {
 function validateMetadata(metadata: LocalServerBundleMetadata) {
   if (
     !metadata.instanceName.trim() ||
-    !/^1\.\d+\.\d+$/.test(metadata.minecraftVersion) ||
+    !validMinecraftVersion(metadata.minecraftVersion) ||
     !['forge', 'fabric', 'neoforge', 'quilt'].includes(metadata.loader.kind) ||
     !validLoaderVersion(metadata.loader.version) ||
     !metadata.javaRequirement.component ||
@@ -547,8 +575,23 @@ function validateMetadata(metadata: LocalServerBundleMetadata) {
   }
 }
 
-function catalogContains(catalog: SharedRuntimeCatalog, java: { component: string; major: number }) {
-  return catalog.requirements.some((entry) => entry.component === java.component && entry.major === java.major)
+function catalogContains(catalog: SharedRuntimeCatalog, metadata: LocalServerBundleMetadata) {
+  return catalog.sha256 === reviewedRuntimeCatalogSHA256 &&
+    catalog.requirements.some((entry) =>
+      entry.component === metadata.javaRequirement.component &&
+      entry.major === metadata.javaRequirement.major
+    ) &&
+    reviewedToolchains.some((toolchain) =>
+      toolchain.minecraftVersion === metadata.minecraftVersion &&
+      toolchain.loader.kind === metadata.loader.kind &&
+      toolchain.loader.version === metadata.loader.version &&
+      toolchain.java.component === metadata.javaRequirement.component &&
+      toolchain.java.major === metadata.javaRequirement.major
+    )
+}
+
+function validMinecraftVersion(value: string) {
+  return /^(?:1\.(?:0|[1-9]\d{0,2})\.(?:0|[1-9]\d{0,2})|[1-9]\d{1,3}\.(?:0|[1-9]\d{0,2})(?:\.(?:0|[1-9]\d{0,2}))?)$/.test(value)
 }
 
 function deriveLoader(
