@@ -5,6 +5,7 @@ import {
   DEFAULT_AGENT_ENDPOINT,
   DEFAULT_AGENT_MODEL,
   getAgentProviderPreset,
+  isKeylessAgentEndpoint,
   normalizeAgentBaseUrl,
   resolveAgentProviderId,
   resolveAgentSecretAccount,
@@ -32,6 +33,35 @@ describe('agent provider presets', () => {
   test('unknown endpoints resolve to the custom provider', () => {
     expect(resolveAgentProviderId('https://example.com/v1/chat/completions')).toBe(CUSTOM_AGENT_PROVIDER_ID)
     expect(getAgentProviderPreset(CUSTOM_AGENT_PROVIDER_ID)).toBeUndefined()
+  })
+
+  // A substring host test would classify these as the preset they impersonate,
+  // and the stored API key is keyed off that id -- so the user's real key would
+  // be sent to an unrelated host.
+  test('a lookalike host is never matched to a preset', () => {
+    for (const endpoint of [
+      'https://api.openai.com.attacker.example/v1/chat/completions',
+      'https://evil.example/?x=api.openai.com',
+      'https://notapi.openai.com.co/v1/chat/completions',
+      'https://api.deepseek.com.example.net/v1/chat/completions',
+    ]) {
+      expect(resolveAgentProviderId(endpoint)).toBe(CUSTOM_AGENT_PROVIDER_ID)
+      expect(resolveAgentSecretAccount(endpoint)).not.toBe('openai')
+      expect(resolveAgentSecretAccount(endpoint)).not.toBe('deepseek')
+    }
+  })
+
+  test('a preset host still matches regardless of scheme, case or path', () => {
+    expect(resolveAgentProviderId('https://API.OpenAI.com/v1/chat/completions')).toBe('openai')
+    expect(resolveAgentProviderId('https://api.openai.com/v2/chat/completions')).toBe('openai')
+  })
+
+  test('only the keyless preset is marked keyless', () => {
+    expect(isKeylessAgentEndpoint('http://localhost:11434/v1/chat/completions')).toBe(true)
+    expect(isKeylessAgentEndpoint(DEFAULT_AGENT_ENDPOINT)).toBe(false)
+    expect(isKeylessAgentEndpoint('https://api.openai.com/v1/chat/completions')).toBe(false)
+    // A remote lookalike must not inherit the local provider's keyless status.
+    expect(isKeylessAgentEndpoint('https://localhost:11434.attacker.example/v1')).toBe(false)
   })
 
   test('base url strips the chat completions suffix', () => {

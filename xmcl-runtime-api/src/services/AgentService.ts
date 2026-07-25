@@ -22,6 +22,11 @@ export interface AgentProviderPreset {
   defaultModel: string
   /** Host fragment used to map an arbitrary endpoint back to this preset. */
   host: string
+  /**
+   * Set for providers that need no credentials (a local server, say), so the
+   * agent is usable without the user inventing a placeholder key.
+   */
+  keyless?: boolean
   /** Where the user can obtain an API key. */
   apiKeyUrl?: string
 }
@@ -104,6 +109,7 @@ export const AGENT_PROVIDER_PRESETS: readonly AgentProviderPreset[] = Object.fre
     // hardware-bound, so this is a starting point users are expected to change.
     defaultModel: 'qwen3-coder:30b',
     host: 'localhost:11434',
+    keyless: true,
   },
 ])
 
@@ -125,11 +131,29 @@ export function normalizeAgentBaseUrl(endpoint: string) {
 }
 
 /**
+ * The `host` (hostname plus any explicit port) of an endpoint, lowercased.
+ * Returns an empty string when the endpoint is not a parseable URL.
+ */
+function agentEndpointHost(endpoint: string) {
+  try {
+    return new URL(endpoint.trim()).host.toLowerCase()
+  } catch {
+    return ''
+  }
+}
+
+/**
  * Derive a stable provider id from the configured endpoint. Endpoints that do not
  * belong to a known preset are reported as a generic custom OpenAI provider.
+ *
+ * The host must match a preset exactly. A substring test would treat
+ * `api.openai.com.example.net` as OpenAI, and since the stored API key is keyed
+ * off this id, that would hand the user's real OpenAI key to an unrelated host.
  */
 export function resolveAgentProviderId(endpoint: string) {
-  return AGENT_PROVIDER_PRESETS.find(preset => endpoint.includes(preset.host))?.id ?? CUSTOM_AGENT_PROVIDER_ID
+  const host = agentEndpointHost(endpoint)
+  if (!host) return CUSTOM_AGENT_PROVIDER_ID
+  return AGENT_PROVIDER_PRESETS.find(preset => preset.host.toLowerCase() === host)?.id ?? CUSTOM_AGENT_PROVIDER_ID
 }
 
 /**
@@ -141,13 +165,13 @@ export function resolveAgentProviderId(endpoint: string) {
 export function resolveAgentSecretAccount(endpoint: string) {
   const id = resolveAgentProviderId(endpoint)
   if (id !== CUSTOM_AGENT_PROVIDER_ID) return id
-  let host = ''
-  try {
-    host = new URL(endpoint.trim()).host.toLowerCase()
-  } catch {
-    host = normalizeAgentBaseUrl(endpoint).toLowerCase()
-  }
+  const host = agentEndpointHost(endpoint) || normalizeAgentBaseUrl(endpoint).toLowerCase()
   return host ? `${id}@${host}` : id
+}
+
+/** Whether `endpoint` belongs to a preset that needs no API key. */
+export function isKeylessAgentEndpoint(endpoint: string) {
+  return !!getAgentProviderPreset(resolveAgentProviderId(endpoint))?.keyless
 }
 
 export type AgentId = 'launcher' | 'css'

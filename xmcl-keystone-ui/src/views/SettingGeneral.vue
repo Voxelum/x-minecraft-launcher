@@ -115,7 +115,10 @@
         <template #title>
           <v-icon start size="small" color="primary">key</v-icon>
           {{ t('setting.aiAgentApiKey') }}
-          <v-chip v-if="agentConfigured" size="x-small" color="success" class="ml-2">
+          <v-chip v-if="agentKeyless" size="x-small" color="info" class="ml-2">
+            {{ t('setting.aiAgentApiKeyNotNeeded') }}
+          </v-chip>
+          <v-chip v-else-if="agentConfigured" size="x-small" color="success" class="ml-2">
             <v-icon start size="x-small">check_circle</v-icon>
             {{ t('setting.aiAgentApiKeySaved') }}
           </v-chip>
@@ -129,7 +132,9 @@
             density="compact"
             class="setting-item-input"
             hide-details
-            :placeholder="agentConfigured ? t('setting.aiAgentApiKeyStored') : t('setting.aiAgentApiKeyEmpty')"
+            :placeholder="agentKeyless
+              ? t('setting.aiAgentApiKeyNotNeededHint')
+              : agentConfigured ? t('setting.aiAgentApiKeyStored') : t('setting.aiAgentApiKeyEmpty')"
             :loading="clearingAgentKey"
             @update:model-value="updateAgentApiKey($event ?? '')"
           >
@@ -143,7 +148,7 @@
                    appears while the field holds text and so could never reach a
                    saved key (the field is empty once the key is stored). -->
               <v-btn
-                v-if="agentApiKey || agentConfigured"
+                v-if="agentApiKey || (agentConfigured && !agentKeyless)"
                 data-testid="agent-api-key-clear"
                 icon
                 variant="text"
@@ -253,6 +258,7 @@ const {
   clearApiKey: clearAgentApiKey,
   providers: agentProviders,
   providerId: agentProviderId,
+  keyless: agentKeyless,
   selectProvider: selectAgentProvider,
 } = useAgentSettings()
 const agentProviderItems = computed(() => {

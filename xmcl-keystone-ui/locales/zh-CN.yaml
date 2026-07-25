@@ -1424,6 +1424,8 @@ setting:
   aiAgentApiKeyClear: 清除密钥
   aiAgentApiKeyDescription: 仅保存在本地设备，用于 Agent 请求。
   aiAgentApiKeyEmpty: 粘贴你的 API Key
+  aiAgentApiKeyNotNeeded: 无需密钥
+  aiAgentApiKeyNotNeededHint: 该服务在本地运行，无需 API Key
   aiAgentApiKeySaved: 已保存
   aiAgentApiKeyStored: 已保存密钥，输入可替换
   aiAgentEndpoint: AI Agent Endpoint

@@ -3,6 +3,7 @@ import {
   AgentServiceKey,
   DEFAULT_AGENT_ENDPOINT,
   DEFAULT_AGENT_MODEL,
+  isKeylessAgentEndpoint,
   type AgentConversationKey,
   type AgentMessage,
   type AgentProviderStreamRequest,
@@ -54,7 +55,9 @@ export class AgentService extends AbstractService implements IAgentService {
   async getProviderSettings() {
     const settings = await this.app.registry.get(kSettings)
     const endpoint = settings.agentEndpoint || DEFAULT_AGENT_ENDPOINT
-    const configured = !!await this.apiKeys.get(endpoint)
+    // Keyless providers (a local Ollama, say) are ready as soon as they are
+    // selected; requiring a placeholder key would just be a hoop to jump through.
+    const configured = isKeylessAgentEndpoint(endpoint) || !!await this.apiKeys.get(endpoint)
     return {
       endpoint,
       model: settings.agentModel || DEFAULT_AGENT_MODEL,
@@ -140,7 +143,10 @@ export class AgentService extends AbstractService implements IAgentService {
       return
     }
 
+    // The OpenAI adapter expects a non-empty key even where the server ignores
+    // it, so keyless providers get a placeholder rather than an empty header.
     const apiKey = await this.apiKeys.get(providerSettings.endpoint)
+      ?? (isKeylessAgentEndpoint(providerSettings.endpoint) ? 'not-needed' : undefined)
     const { api, model, providerId } = createAgentProvider(providerSettings.endpoint, providerSettings.model)
     const options = {
       ...request.options,

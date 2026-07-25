@@ -1667,6 +1667,8 @@ setting:
   aiAgentApiKeyClear: Clear key
   aiAgentApiKeyDescription: Stored locally on this device and used for agent requests.
   aiAgentApiKeyEmpty: Paste your API key
+  aiAgentApiKeyNotNeeded: Not required
+  aiAgentApiKeyNotNeededHint: This provider runs locally and needs no API key
   aiAgentApiKeySaved: Saved
   aiAgentApiKeyStored: Key saved - type to replace
   aiAgentEndpoint: AI Agent Endpoint

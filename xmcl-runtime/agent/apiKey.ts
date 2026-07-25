@@ -26,10 +26,19 @@ export class AgentApiKeyStore {
   async get(endpoint: string): Promise<string | undefined> {
     const account = resolveAgentSecretAccount(endpoint)
     const stored = await this.storage.get(SECRET_SERVICE, account)
-    if (stored || this.legacyMigrated) return stored
+    if (this.legacyMigrated) return stored
 
     const legacy = await this.storage.get(SECRET_SERVICE, LEGACY_SECRET_ACCOUNT)
     if (!legacy) {
+      this.legacyMigrated = true
+      return stored
+    }
+    // A provider-specific key already exists, so the legacy key has been
+    // superseded (or a previous migration deleted it only partially). Retire it
+    // now: leaving it in place would make it eligible to be copied to whichever
+    // provider is configured next, handing one service's key to another.
+    if (stored) {
+      await this.storage.put(SECRET_SERVICE, LEGACY_SECRET_ACCOUNT, '')
       this.legacyMigrated = true
       return stored
     }

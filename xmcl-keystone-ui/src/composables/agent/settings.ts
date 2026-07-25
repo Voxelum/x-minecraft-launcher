@@ -82,13 +82,26 @@ export const useAgentSettings = createSharedComposable(() => {
   async function setApiKey(value: string) {
     apiKey.value = value
     await ready
+    // Capture the endpoint at call time. If the user switches provider while this
+    // write is queued behind an earlier one, the key must still be filed under the
+    // provider it was typed for -- and must not resurrect settings for that
+    // provider over the newly selected one.
+    const target = endpoint.value
+    const targetModel = model.value
     keySave = keySave.then(async () => {
       try {
-        await service.setProviderSettings({ endpoint: endpoint.value, model: model.value, apiKey: value })
-        configured.value = !!value.trim()
-        error.value = ''
+        await service.setProviderSettings({ endpoint: target, model: targetModel, apiKey: value })
+        // Only reflect the result in the UI if that provider is still selected.
+        if (endpoint.value === target) {
+          configured.value = !!value.trim()
+          error.value = ''
+        } else {
+          // The endpoint just committed belongs to the previous provider; restore
+          // the current selection so settings and UI do not drift apart.
+          await service.setProviderSettings({ endpoint: endpoint.value, model: model.value })
+        }
       } catch (e) {
-        error.value = e instanceof Error ? e.message : String(e)
+        if (endpoint.value === target) error.value = e instanceof Error ? e.message : String(e)
       }
     })
     await keySave
@@ -131,6 +144,8 @@ export const useAgentSettings = createSharedComposable(() => {
   /** The preset matching the current endpoint, or the custom id when none matches. */
   const providerId = computed(() => resolveAgentProviderId(resolvedEndpoint.value))
   const provider = computed(() => getAgentProviderPreset(providerId.value))
+  /** True when the selected provider needs no API key at all. */
+  const keyless = computed(() => !!provider.value?.keyless)
 
   /**
    * API keys are stored per provider and never read back into the renderer, so on a
@@ -145,7 +160,10 @@ export const useAgentSettings = createSharedComposable(() => {
     apiKey.value = ''
     configured.value = false
     const token = ++refreshToken
-    void flush().then(async () => {
+    // Wait for any key write that was already in flight: it commits the previous
+    // provider's endpoint, so reading `configured` before it settles would report
+    // the wrong provider's state.
+    void keySave.then(() => flush()).then(async () => {
       const settings = await service.getProviderSettings()
       // Ignore a stale response if the user switched again while this was in flight.
       if (token === refreshToken) configured.value = settings.configured
@@ -186,6 +204,7 @@ export const useAgentSettings = createSharedComposable(() => {
     providers: AGENT_PROVIDER_PRESETS,
     providerId,
     provider,
+    keyless,
     selectProvider,
   }
 })

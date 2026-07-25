@@ -111,6 +111,22 @@ describe('AgentApiKeyStore', () => {
     await keys.put(DEFAULT_AGENT_ENDPOINT, 'fresh-key')
 
     expect(await keys.get(DEFAULT_AGENT_ENDPOINT)).toBe('fresh-key')
-    expect(await storage.get(SECRET_SERVICE, LEGACY_SECRET_ACCOUNT)).toBe('legacy-key')
+  })
+
+  // If a previous migration wrote the per-provider key but failed to delete the
+  // legacy copy, that copy must not stay eligible: after a provider switch the
+  // new provider would be seen as its owner and inherit another service's key.
+  test('retires a superseded legacy key instead of leaving it migratable', async () => {
+    await storage.put(SECRET_SERVICE, LEGACY_SECRET_ACCOUNT, 'legacy-key')
+    await storage.put(SECRET_SERVICE, 'agnes', 'agnes-key')
+    let configured = DEFAULT_AGENT_ENDPOINT
+    const keys = new AgentApiKeyStore(storage, async () => configured)
+
+    expect(await keys.get(DEFAULT_AGENT_ENDPOINT)).toBe('agnes-key')
+    expect(await storage.get(SECRET_SERVICE, LEGACY_SECRET_ACCOUNT)).toBeUndefined()
+
+    // Switching providers must not resurrect the legacy key under the new one.
+    configured = OPENAI
+    expect(await keys.get(OPENAI)).toBeUndefined()
   })
 })
