@@ -10,6 +10,9 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
 
@@ -23,6 +26,8 @@ jobs:
       with:
         node-version: 22
         registry-url: 'https://registry.npmjs.org'
+    - name: Use npm with trusted publishing support
+      run: npm install --global npm@^11.15.0
     - name: Install
       run: |
         pnpm install --frozen-lockfile
@@ -36,10 +41,37 @@ jobs:
         pnpm --parallel build:browser
     - name: Publish
       run: |
-        pnpm -r --filter './packages/**' publish --access public --no-git-checks
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        node <<'NODE'
+        const { execFileSync } = require('node:child_process')
+        const { existsSync, readdirSync, readFileSync } = require('node:fs')
+        const { join } = require('node:path')
+
+        for (const entry of readdirSync('packages', { withFileTypes: true })) {
+          if (!entry.isDirectory()) continue
+
+          const directory = join('packages', entry.name)
+          const packageJson = join(directory, 'package.json')
+          if (!existsSync(packageJson)) continue
+
+          const pkg = JSON.parse(readFileSync(packageJson, 'utf8'))
+          if (pkg.private) continue
+
+          try {
+            execFileSync('npm', [
+              'view',
+              `${pkg.name}@${pkg.version}`,
+              'version',
+              '--registry=https://registry.npmjs.org',
+            ], { stdio: 'ignore' })
+            console.log(`Skipping ${pkg.name}@${pkg.version}; it is already published.`)
+          } catch {
+            execFileSync('npm', ['publish', '--access=public', '--ignore-scripts'], {
+              cwd: directory,
+              stdio: 'inherit',
+            })
+          }
+        }
+        NODE
     - name: Build Docs
       run: |
         pnpm build:docs
