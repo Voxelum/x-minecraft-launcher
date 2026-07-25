@@ -60,7 +60,7 @@ export class MicrosoftOAuthClient {
       },
       broker: nativeBrokerPlugin ? { nativeBrokerPlugin } : undefined,
       cache: {
-        cachePlugin: createPlugin('xmcl-oauth', account, this.logger, this.storage),
+        cachePlugin: createPlugin('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', this.logger, this.storage),
       },
       system: {
         loggerOptions: {
@@ -85,9 +85,9 @@ export class MicrosoftOAuthClient {
   } = {}) {
     const nativeBrokerPlugin = options.useNativeBroker ? await this.getNativeBrokerPlugin() : undefined
     const app = await this.getOAuthApp(username, options.signal, nativeBrokerPlugin)
-    if (username && !options?.code) {
+    if (!options?.code) {
       const accounts = await app.getTokenCache().getAllAccounts().catch(() => [])
-      const account = accounts.find(a => a.username === username)
+      const account = (username ? accounts.find(a => a.username.toLowerCase() === username.toLowerCase()) : undefined) || (accounts.length === 1 ? accounts[0] : undefined)
       if (account) {
         const result = await app.acquireTokenSilent({
           scopes,

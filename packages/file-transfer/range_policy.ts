@@ -20,7 +20,7 @@ export function isRangePolicy(
   if (!rangeOptions) {
     return false
   }
-  return 'computeRanges' in rangeOptions && typeof rangeOptions.computeRanges === 'function'
+  return 'computeRangesInRange' in rangeOptions && typeof (rangeOptions as any).computeRangesInRange === 'function'
 }
 
 export function resolveRangePolicy(rangeOptions?: RangePolicy | DefaultRangePolicyOptions) {

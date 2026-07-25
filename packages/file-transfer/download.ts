@@ -12,11 +12,11 @@ import {
 } from './controller'
 import { ProgressTrackerMultiple, ProgressTrackerSingle } from './progress'
 import { RangeRequestHandler } from './range_handler'
-import { RangePolicy, resolveRangePolicy } from './range_policy'
+import { DefaultRangePolicyOptions, RangePolicy, resolveRangePolicy } from './range_policy'
 import { decorateError, getDestinationExtension } from './error'
 
 export interface DownloadBaseOptions {
-  rangePolicy?: RangePolicy
+  rangePolicy?: RangePolicy | DefaultRangePolicyOptions
   dispatcher?: Dispatcher
   /**
    * Optional adaptive strategy. When supplied, the download runs as a

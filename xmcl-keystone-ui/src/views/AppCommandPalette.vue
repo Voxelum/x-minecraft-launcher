@@ -350,6 +350,7 @@
       <v-divider />
 
       <div class="palette-footer px-4 py-2 text-medium-emphasis text-caption flex items-center gap-2 flex-wrap">
+<<<<<<< HEAD
         <span class="palette-footer__group">
           <kbd>↑</kbd><kbd>↓</kbd>
           <span class="palette-footer__label">{{ t('commandPalette.hintNavigate') }}</span>
@@ -374,6 +375,60 @@
         <span class="palette-footer__group">
           <kbd>Ctrl</kbd><kbd>K</kbd>
         </span>
+=======
+        <template v-if="gamepadActive">
+          <span class="palette-footer__group">
+            <kbd class="gp-btn__key">D-Pad</kbd>
+            <span class="palette-footer__label">{{ t('commandPalette.hintNavigate') }}</span>
+          </span>
+          <span class="palette-footer__group">
+            <kbd class="gp-btn__key">{{ buttonA }}</kbd>
+            <span class="palette-footer__label">{{ t('commandPalette.hintInvoke') }}</span>
+          </span>
+          <span v-if="pendingInstanceAction || pendingSettingId" class="palette-footer__group">
+            <kbd class="gp-btn__key">D-Pad ←</kbd>
+            <span class="palette-footer__label">{{ t('commandPalette.hintBack') }}</span>
+          </span>
+          <span v-else-if="isSelectedCommandMultiStep" class="palette-footer__group">
+            <kbd class="gp-btn__key">D-Pad →</kbd>
+            <span class="palette-footer__label">{{ t('commandPalette.hintEnter') }}</span>
+          </span>
+          <span class="palette-footer__group">
+            <kbd class="gp-btn__key">{{ buttonB }}</kbd>
+            <span class="palette-footer__label">{{ t('commandPalette.hintClose') }}</span>
+          </span>
+          <v-spacer />
+          <span class="palette-footer__group">
+            <kbd class="gp-btn__key">{{ labels.menu }}</kbd>
+          </span>
+        </template>
+        <template v-else>
+          <span class="palette-footer__group">
+            <kbd>↑</kbd><kbd>↓</kbd>
+            <span class="palette-footer__label">{{ t('commandPalette.hintNavigate') }}</span>
+          </span>
+          <span class="palette-footer__group">
+            <kbd>Enter</kbd>
+            <span class="palette-footer__label">{{ t('commandPalette.hintInvoke') }}</span>
+          </span>
+          <span v-if="pendingInstanceAction || pendingSettingId" class="palette-footer__group">
+            <kbd>←</kbd>
+            <span class="palette-footer__label">{{ t('commandPalette.hintBack') }}</span>
+          </span>
+          <span v-else-if="isSelectedCommandMultiStep" class="palette-footer__group">
+            <kbd>→</kbd>
+            <span class="palette-footer__label">{{ t('commandPalette.hintEnter') }}</span>
+          </span>
+          <span class="palette-footer__group">
+            <kbd>Esc</kbd>
+            <span class="palette-footer__label">{{ t('commandPalette.hintClose') }}</span>
+          </span>
+          <v-spacer />
+          <span class="palette-footer__group">
+            <kbd>Ctrl</kbd><kbd>K</kbd>
+          </span>
+        </template>
+>>>>>>> origin/master
       </div>
     </v-card>
   </v-dialog>
@@ -387,6 +442,7 @@ import { useCommandPaletteBus, useCommandPaletteVisible } from '@/composables/co
 import { useRendererCommandHost } from '@/composables/commandHost'
 import { kInstance } from '@/composables/instance'
 import { kInstances } from '@/composables/instances'
+import { useGamepad } from '@/composables/gamepad'
 import { useModrinthSearchFunc } from '@/composables/modrinth'
 import { useService } from '@/composables/service'
 import type { SettingsSearchItem } from '@/composables/settingsSearch'
@@ -403,6 +459,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useRtl } from 'vuetify'
+import './gamepad.css'
 
 const { t, te, locale } = useI18n()
 const isShown = useCommandPaletteVisible()
@@ -414,6 +471,12 @@ const bus = useCommandPaletteBus()
 const agentChatBus = useAgentChatBus()
 const { notify } = useNotifier()
 const tError = useLocaleError()
+
+const gamepad = useGamepad()
+const gamepadActive = computed(() => gamepad.isActive.value)
+const buttonA = gamepad.buttonA
+const buttonB = gamepad.buttonB
+const labels = gamepad.labels
 
 const host = useRendererCommandHost()
 const { duplicateInstance: duplicateInstanceService } = useService(InstanceServiceKey)

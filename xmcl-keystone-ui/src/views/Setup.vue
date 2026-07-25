@@ -108,6 +108,7 @@
             <AppMoodSurface fill>
               <SetupAccount
                 v-model="data.instancePath"
+                :loading="data.loading"
                 @skip="setup"
               />
             </AppMoodSurface>
@@ -230,16 +231,12 @@ watch(() => data.theme, () => {
 
 const { state } = injection(kSettingsState)
 
-async function setup() {
-  await bootstrap.bootstrap(data.path)
+async function persistInitialTheme() {
   // The wizard mutates `currentTheme` in-place when it picks defaults
   // (dark mode + Halo background on GPU machines). `useTheme()` does not
   // auto-persist those mutations, so we must explicitly save here —
   // otherwise the first launch shows Halo but `theme.json` is never
   // written and the next launch falls back to `BackgroundType.NONE`.
-  //
-  // Await the environment lookup so the Halo assignment is in place
-  // before we serialize, instead of racing with the wizard unmounting.
   try {
     const e = await getEnvironment()
     if (e.gpu && isDark.value) {
@@ -253,6 +250,17 @@ async function setup() {
   } catch (err) {
     console.error('Failed to persist initial theme during setup', err)
   }
+}
+
+async function setup() {
+  if (data.loading) return
+  data.loading = true
+  try {
+    await bootstrap.bootstrap(data.path)
+  } catch (err) {
+    data.loading = false
+    throw err
+  }
   emit('ready', data)
   if (state.value) {
     state.value.localeSet(locale.value)
@@ -264,7 +272,9 @@ async function setup() {
       }
     })
   }
-  data.loading = true
+  // Environment detection may wait on the network. It should never block the
+  // user from leaving onboarding after the data root has been accepted.
+  void persistInitialTheme()
 }
 </script>
 

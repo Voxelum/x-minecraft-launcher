@@ -11,7 +11,7 @@ import {
   DownloadUpdateTask,
   NetworkStatus,
 } from '@xmcl/runtime-api'
-import { readFile, readdir, stat, pathExists, writeFile } from 'fs-extra'
+import { readFile, readdir, stat, pathExists } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { join, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
@@ -26,6 +26,8 @@ import { LauncherApp } from '../app/LauncherApp'
 import { HAS_DEV_SERVER } from '../constant'
 import { ZipFile } from 'yazl'
 import { getTracker } from '~/util/taskHelper'
+import { addSteamShortcutToVdf } from './steamShortcut'
+import { writeFile as writeAtomically } from 'atomically'
 
 @ExposeServiceKey(BaseServiceKey)
 export class BaseService extends AbstractService implements IBaseService {
@@ -82,7 +84,10 @@ export class BaseService extends AbstractService implements IBaseService {
               (g) => g.vendorId === 4318 || g.vendorId === 4098 || g.vendorId === 4203,
             ) ?? false,
         ),
-      steamDeck: process.env.STEAM_DECK === '1' || process.env.USER === 'deck' || (process.platform === 'linux' && os.release().toLowerCase().includes('steamdeck')),
+      steamDeck:
+        process.env.STEAM_DECK === '1' ||
+        process.env.USER === 'deck' ||
+        (process.platform === 'linux' && os.release().toLowerCase().includes('steamdeck')),
     }
   }
 
@@ -100,88 +105,6 @@ export class BaseService extends AbstractService implements IBaseService {
   }
 
   async addSteamShortcut(): Promise<boolean> {
-    const parseBinaryVdf = (buffer: Buffer): any => {
-      let offset = 0
-      const readString = (): string => {
-        const start = offset
-        while (offset < buffer.length && buffer[offset] !== 0) {
-          offset++
-        }
-        const str = buffer.toString('utf8', start, offset)
-        offset++ // skip null terminator
-        return str
-      }
-
-      const parseMap = (): Record<string, any> => {
-        const obj: Record<string, any> = {}
-        while (offset < buffer.length) {
-          const type = buffer[offset]
-          if (type === 0x08) {
-            offset++ // skip 0x08
-            break
-          }
-          offset++ // skip type byte
-          const key = readString()
-          if (type === 0x00) {
-            obj[key] = parseMap()
-          } else if (type === 0x01) {
-            obj[key] = readString()
-          } else if (type === 0x02) {
-            obj[key] = buffer.readInt32LE(offset)
-            offset += 4
-          }
-        }
-        return obj
-      }
-
-      if (buffer.length === 0) return {}
-      const type = buffer[0]
-      if (type !== 0x00) return {}
-      offset++
-      const rootKey = readString()
-      const rootValue = parseMap()
-      return { [rootKey]: rootValue }
-    }
-
-    const serializeBinaryVdf = (obj: Record<string, any>): Buffer => {
-      const chunks: Buffer[] = []
-      const writeString = (str: string) => {
-        chunks.push(Buffer.from(str, 'utf8'))
-        chunks.push(Buffer.from([0]))
-      }
-
-      const serializeMap = (map: Record<string, any>) => {
-        for (const [key, value] of Object.entries(map)) {
-          if (value === null || value === undefined) continue
-          if (typeof value === 'object') {
-            chunks.push(Buffer.from([0x00]))
-            writeString(key)
-            serializeMap(value)
-          } else if (typeof value === 'string') {
-            chunks.push(Buffer.from([0x01]))
-            writeString(key)
-            writeString(value)
-          } else if (typeof value === 'number') {
-            chunks.push(Buffer.from([0x02]))
-            writeString(key)
-            const buf = Buffer.alloc(4)
-            buf.writeInt32LE(value, 0)
-            chunks.push(buf)
-          }
-        }
-        chunks.push(Buffer.from([0x08]))
-      }
-
-      const rootKeys = Object.keys(obj)
-      if (rootKeys.length > 0) {
-        const rootKey = rootKeys[0]
-        chunks.push(Buffer.from([0x00]))
-        writeString(rootKey)
-        serializeMap(obj[rootKey])
-      }
-      return Buffer.concat(chunks)
-    }
-
     // Find Steam userdata directory
     const steamPaths: string[] = []
     if (process.platform === 'win32') {
@@ -205,6 +128,7 @@ export class BaseService extends AbstractService implements IBaseService {
     const startDir = resolve(exePath, '..')
 
     let shortcutAdded = false
+    let shortcutError: unknown
 
     for (const steamPath of steamPaths) {
       const userdataPath = join(steamPath, 'userdata')
@@ -216,59 +140,32 @@ export class BaseService extends AbstractService implements IBaseService {
               const configDir = join(userdataPath, userDir, 'config')
               if (await pathExists(configDir)) {
                 const shortcutsVdfPath = join(configDir, 'shortcuts.vdf')
-                let data: any = { shortcuts: {} }
+                const existing = (await pathExists(shortcutsVdfPath))
+                  ? await readFile(shortcutsVdfPath)
+                  : Buffer.alloc(0)
+                const updated = addSteamShortcutToVdf(existing, {
+                  executable: `"${exePath}"`,
+                  startDir: `"${startDir}"`,
+                  icon: exePath,
+                })
 
-                if (await pathExists(shortcutsVdfPath)) {
-                  try {
-                    const buf = await readFile(shortcutsVdfPath)
-                    data = parseBinaryVdf(buf)
-                    if (!data || !data.shortcuts) {
-                      data = { shortcuts: {} }
-                    }
-                  } catch (e) {
-                    data = { shortcuts: {} }
-                  }
-                }
-
-                const existingList = Object.values(data.shortcuts)
-                const alreadyExists = existingList.some(
-                  (s: any) => s && (s.AppName === 'X Minecraft Launcher' || s.AppName === 'XMCL')
-                )
-
-                if (!alreadyExists) {
-                  const nextIdx = Object.keys(data.shortcuts).length.toString()
-                  data.shortcuts[nextIdx] = {
-                    AppName: 'X Minecraft Launcher',
-                    Exe: exePath,
-                    StartDir: `"${startDir}"`,
-                    icon: exePath,
-                    ShortcutPath: '',
-                    LaunchOptions: '',
-                    IsHidden: 0,
-                    AllowDesktopConfig: 1,
-                    AllowOverlay: 1,
-                    OpenVR: 0,
-                    Devkit: 0,
-                    DevkitGameID: '',
-                    DevkitOverrideAppID: 0,
-                    LastPlayTime: 0,
-                    FlatpakAppID: '',
-                    tags: {
-                      '0': 'Launcher'
-                    }
-                  }
-
-                  const updatedBuf = serializeBinaryVdf(data)
-                  await writeFile(shortcutsVdfPath, updatedBuf)
+                if (updated) {
+                  await writeAtomically(shortcutsVdfPath, updated)
                   shortcutAdded = true
                 }
               }
             }
           }
         } catch (err) {
-          // ignore error for individual folders
+          this.logger.warn(`Failed to add Steam shortcut for ${steamPath}`)
+          this.logger.warn(err)
+          shortcutError ??= err
         }
       }
+    }
+
+    if (!shortcutAdded && shortcutError) {
+      throw shortcutError
     }
 
     return shortcutAdded
@@ -355,9 +252,11 @@ export class BaseService extends AbstractService implements IBaseService {
       operation: updateInfo.operation as 'autoupdater' | 'asar' | 'appx' | 'manual',
       version: updateInfo.name,
     })
-    await task.wrap(this.app.updater.downloadUpdate(updateInfo, {
-      tracker: getTracker(task),
-    }))
+    await task.wrap(
+      this.app.updater.downloadUpdate(updateInfo, {
+        tracker: getTracker(task),
+      }),
+    )
     settings.updateStatusSet('ready')
   }
 
