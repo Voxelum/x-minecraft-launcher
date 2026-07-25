@@ -1,9 +1,9 @@
 import { createSharedComposable } from '@vueuse/core'
-import { AgentServiceKey } from '@xmcl/runtime-api'
+import { AgentServiceKey, DEFAULT_AGENT_ENDPOINT, DEFAULT_AGENT_MODEL } from '@xmcl/runtime-api'
 import { useService } from '../service'
 
-const DEFAULT_AGNES_ENDPOINT = 'https://apihub.agnes-ai.com/v1/chat/completions'
-const DEFAULT_AGNES_MODEL = 'agnes-2.0-flash'
+const DEFAULT_AGNES_ENDPOINT = DEFAULT_AGENT_ENDPOINT
+const DEFAULT_AGNES_MODEL = DEFAULT_AGENT_MODEL
 
 const LEGACY_API_KEY = 'agentApiKey'
 const LEGACY_ENDPOINT = 'agentEndpoint'

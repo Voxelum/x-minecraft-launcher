@@ -1,4 +1,10 @@
-import type { AgentMessage } from '@xmcl/runtime-api'
+import {
+  AGENT_MODEL_CONTEXT_WINDOW,
+  AGENT_MODEL_MAX_TOKENS,
+  normalizeAgentBaseUrl,
+  resolveAgentProviderId,
+  type AgentMessage,
+} from '@xmcl/runtime-api'
 import type {
   AssistantMessage,
   Message,
@@ -99,18 +105,16 @@ export function toPiMessage(message: AgentMessage, provider: string, model: stri
 }
 
 export function createAgentModel(endpoint: string, modelId: string): Model<'openai-completions'> {
-  const baseUrl = endpoint.trim().replace(/\/chat\/completions\/?$/i, '').replace(/\/+$/, '')
-  const provider = endpoint.includes('apihub.agnes-ai.com') ? 'agnes' : 'custom-openai'
   return {
     id: modelId,
     name: modelId,
     api: 'openai-completions',
-    provider,
-    baseUrl,
+    provider: resolveAgentProviderId(endpoint),
+    baseUrl: normalizeAgentBaseUrl(endpoint),
     reasoning: false,
     input: ['text', 'image'],
     cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-    contextWindow: 128_000,
-    maxTokens: 8_192,
+    contextWindow: AGENT_MODEL_CONTEXT_WINDOW,
+    maxTokens: AGENT_MODEL_MAX_TOKENS,
   }
 }

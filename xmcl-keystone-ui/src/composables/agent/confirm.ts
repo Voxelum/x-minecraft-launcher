@@ -53,6 +53,28 @@ export function requestAgentConfirmation(request: AgentConfirmation, signal?: Ab
   })
 }
 
+/**
+ * Prompt the user for confirmation of a (usually destructive/mutating) agent tool
+ * action and throw if they decline. Shared by the launcher/management/server tools.
+ */
+export async function confirmAgentAction(input: {
+  title: string
+  message: string
+  details?: string[]
+  confirmLabel?: string
+  destructive?: boolean
+}, signal?: AbortSignal) {
+  const accepted = await requestAgentConfirmation({
+    action: 'confirm',
+    title: input.title,
+    message: input.message,
+    details: input.details,
+    confirmLabel: input.confirmLabel,
+    destructive: input.destructive,
+  }, signal)
+  if (!accepted) throw new Error('User declined the action')
+}
+
 export function useAgentConfirmation() {
   return {
     request: computed(() => active.value?.request),

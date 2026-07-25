@@ -1,6 +1,8 @@
 import type { Api, AssistantMessage, Context, Model, SimpleStreamOptions, Usage } from '@earendil-works/pi-ai'
 import {
   AgentServiceKey,
+  DEFAULT_AGENT_ENDPOINT,
+  DEFAULT_AGENT_MODEL,
   type AgentConversationKey,
   type AgentMessage,
   type AgentProviderStreamRequest,
@@ -21,8 +23,6 @@ import { createAgentProvider } from './provider'
 
 const SECRET_SERVICE = 'xmcl/agent'
 const SECRET_ACCOUNT = 'default'
-const DEFAULT_ENDPOINT = 'https://apihub.agnes-ai.com/v1/chat/completions'
-const DEFAULT_MODEL = 'agnes-2.0-flash'
 
 function zeroUsage(): Usage {
   return {
@@ -53,8 +53,8 @@ export class AgentService extends AbstractService implements IAgentService {
     const settings = await this.app.registry.get(kSettings)
     const configured = !!await this.app.secretStorage.get(SECRET_SERVICE, SECRET_ACCOUNT)
     return {
-      endpoint: settings.agentEndpoint || DEFAULT_ENDPOINT,
-      model: settings.agentModel || DEFAULT_MODEL,
+      endpoint: settings.agentEndpoint || DEFAULT_AGENT_ENDPOINT,
+      model: settings.agentModel || DEFAULT_AGENT_MODEL,
       configured,
     }
   }
@@ -66,13 +66,16 @@ export class AgentService extends AbstractService implements IAgentService {
       model: input.model,
       hasApiKey: input.apiKey !== undefined,
     })}`)
-    settings.agentProviderSet({
-      endpoint: input.endpoint.trim() || DEFAULT_ENDPOINT,
-      model: input.model.trim() || DEFAULT_MODEL,
-    })
+    // Persist the secret first: it is the only step that can fail (OS keychain
+    // errors), and we must not leave the endpoint/model settings committed while
+    // the API key write was rejected.
     if (input.apiKey !== undefined) {
       await this.app.secretStorage.put(SECRET_SERVICE, SECRET_ACCOUNT, input.apiKey.trim())
     }
+    settings.agentProviderSet({
+      endpoint: input.endpoint.trim() || DEFAULT_AGENT_ENDPOINT,
+      model: input.model.trim() || DEFAULT_AGENT_MODEL,
+    })
   }
 
   getConversation(key: AgentConversationKey) {

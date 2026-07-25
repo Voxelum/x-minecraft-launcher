@@ -1,5 +1,6 @@
 import { AgentServiceKey, type AgentMessage, type AgentRunEvent } from '@xmcl/runtime-api'
 import type { InjectionKey, Ref } from 'vue'
+import { watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { kInstances } from '../instances'
 import { useService } from '../service'
@@ -8,7 +9,7 @@ import { injection } from '@/util/inject'
 import { useLocalAgent } from './local'
 import { useAgentToolFactory } from './tools'
 import { useAgentChatStatus } from '../agentChat'
-import { convertLegacyAgentMessage } from './migration'
+import { migrateLegacyLauncherConversations } from './migration'
 
 export * from './local'
 export * from './ui'
@@ -50,22 +51,7 @@ export function useAgent(): AgentSession {
     },
   })
 
-  const migrationReady = (async () => {
-    const raw = localStorage.getItem('agentConversationByInstanceV1')
-    if (!raw) return
-    try {
-      const store = JSON.parse(raw)
-      for (const [scope, saved] of Object.entries<any>(store?.byInstance ?? {})) {
-        await service.importLegacyConversation({
-          key: { agentId: 'launcher', scope },
-          messages: (saved.messages ?? []).map(convertLegacyAgentMessage),
-          context: saved.snapshot,
-          updatedAt: saved.updatedAt,
-        })
-      }
-      localStorage.removeItem('agentConversationByInstanceV1')
-    } catch {}
-  })()
+  const migrationReady = migrateLegacyLauncherConversations(service)
   watch(selectedInstance, (scope) => {
     if (scope) void migrationReady.then(() => local.load(scope))
   }, { immediate: true })
@@ -81,9 +67,9 @@ export function useAgent(): AgentSession {
 
 export const kAgent: InjectionKey<AgentSession> = Symbol('Agent')
 
-export function installAgentDevLauncher(session: AgentSession) {
+export function installAgentDevLauncher(session: AgentSession, enabled: Ref<boolean>) {
   const chatStatus = useAgentChatStatus()
-  ;(window as any).__xmcl_agent = {
+  const surface = {
     send: (input: string) => session.send(input).catch((error) => console.error('[agent]', error)),
     reset: () => session.reset(),
     abort: () => session.abort(),
@@ -95,6 +81,12 @@ export function installAgentDevLauncher(session: AgentSession) {
     get events() { return session.events.value },
     setMessages: (messages: AgentMessage[]) => session.replaceMessages(messages),
   }
+  // Only expose the debug surface while developer mode is on; the whole agent
+  // feature is developer-mode gated, so it is never present on a default install.
+  watch(enabled, (on) => {
+    if (on) (window as any).__xmcl_agent = surface
+    else delete (window as any).__xmcl_agent
+  }, { immediate: true })
   watch(session.available, available => {
     console.info(available ? '[agent] ready' : '[agent] disabled (API key missing)')
   }, { immediate: true })

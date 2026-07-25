@@ -1,6 +1,6 @@
 import type { PartialRuntimeVersions } from '@xmcl/instance'
 import type { InstanceSavesService, InstanceService, ModpackService } from '@xmcl/runtime-api'
-import { requestAgentConfirmation } from './confirm'
+import { confirmAgentAction } from './confirm'
 import type { AgentCapabilityContext } from './capabilityContext'
 import { createAgentTools } from './toolSupport'
 
@@ -10,16 +10,8 @@ export interface AgentManagementServices {
   savesService: Pick<InstanceSavesService, 'importSave' | 'exportSave' | 'cloneSave' | 'deleteSave' | 'linkSaveAsServerWorld'>
 }
 
-async function confirmAction(title: string, message: string, details: string[], destructive = false) {
-  const accepted = await requestAgentConfirmation({
-    action: 'confirm',
-    title,
-    message,
-    details,
-    destructive,
-    confirmLabel: destructive ? 'Delete' : 'Continue',
-  })
-  if (!accepted) throw new Error('User declined the action')
+function confirmAction(title: string, message: string, details: string[], destructive = false) {
+  return confirmAgentAction({ title, message, details, destructive, confirmLabel: destructive ? 'Delete' : 'Continue' })
 }
 
 function compatibilityLabel(compatible: number | undefined) {

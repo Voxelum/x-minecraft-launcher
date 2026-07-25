@@ -22,7 +22,7 @@ import {
   VersionMetadataServiceKey,
 } from '@xmcl/runtime-api'
 import { useService } from '../service'
-import { requestAgentConfirmation } from './confirm'
+import { confirmAgentAction, requestAgentConfirmation } from './confirm'
 import { type AgentCommandOperations, type AgentLoader, assertAgentCommandSyntax, createAgentRuntimeCommands } from './commands'
 import type { AgentRunContext } from './local'
 import { createAgentUiHandler } from './ui'
@@ -97,16 +97,14 @@ function summarizeInstallInstruction(instruction: ReturnType<typeof useAgentCapa
   }
 }
 
-async function confirmInstall(title: string, message: string, detail: string, destructive = false) {
-  const accepted = await requestAgentConfirmation({
-    action: 'confirm',
+function confirmInstall(title: string, message: string, detail: string, destructive = false) {
+  return confirmAgentAction({
     title,
     message,
     details: [detail],
     confirmLabel: destructive ? 'Delete' : 'Install',
     destructive,
   })
-  if (!accepted) throw new Error('User declined the action')
 }
 
 export function useAgentToolFactory() {
@@ -271,6 +269,12 @@ export function useAgentToolFactory() {
           const next = args.all === false
             ? content.slice(0, index) + args.replace_string + content.slice(index + args.match_string.length)
             : content.split(args.match_string).join(args.replace_string)
+          await confirmAgentAction({
+            title: 'Edit instance config',
+            message: `Apply a literal replacement to ${args.path}?`,
+            details: [`- ${args.match_string}`, `+ ${args.replace_string}`],
+            confirmLabel: 'Apply',
+          })
           await optionsService.setInstanceConfig(instancePath, clean, next)
           return textResult({ ok: true, path: args.path })
         },

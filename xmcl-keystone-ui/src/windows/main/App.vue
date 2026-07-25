@@ -127,7 +127,9 @@ provide(kMinecraftFriends, useMinecraftFriendsImpl())
 // and `inject` only resolves on descendants.
 const agent = useAgent()
 provide(kAgent, agent)
-installAgentDevLauncher(agent)
+// The window.__xmcl_agent debug surface follows developer mode: the whole agent
+// feature is developer-mode gated, so it is never exposed to a default install.
+installAgentDevLauncher(agent, developerMode)
 
 // User profile dialog — moved from AppSystemBarUserMenu to App root
 const userProfileDialogShown = ref(false)

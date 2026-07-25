@@ -2,16 +2,9 @@ import type {
   AgentMarketProjectListPresentation,
   AgentMarketProject,
   AgentMessage,
-  AgentRunEvent,
   AgentToolCall,
   AgentToolPresentation,
 } from '@xmcl/runtime-api'
-
-export function selectPendingRunEvents(events: AgentRunEvent[], runId: string, afterSeq: number) {
-  return events
-    .filter(event => event.runId === runId && event.seq > afterSeq)
-    .sort((a, b) => a.seq - b.seq)
-}
 
 export type AgentTranscriptItem =
   | { kind: 'message'; key: string; message: AgentMessage }

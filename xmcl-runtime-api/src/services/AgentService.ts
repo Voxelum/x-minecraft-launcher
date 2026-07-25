@@ -1,5 +1,24 @@
 import type { ServiceKey } from './Service'
 
+/** Default OpenAI-compatible agent endpoint. The API key is stored separately. */
+export const DEFAULT_AGENT_ENDPOINT = 'https://apihub.agnes-ai.com/v1/chat/completions'
+/** Default agent model identifier. */
+export const DEFAULT_AGENT_MODEL = 'agnes-2.0-flash'
+/** Conservative context window assumed for OpenAI-compatible agent models. */
+export const AGENT_MODEL_CONTEXT_WINDOW = 128_000
+/** Conservative max output tokens assumed for OpenAI-compatible agent models. */
+export const AGENT_MODEL_MAX_TOKENS = 8_192
+
+/** Strip the trailing `/chat/completions` and any trailing slashes to derive a base URL. */
+export function normalizeAgentBaseUrl(endpoint: string) {
+  return endpoint.trim().replace(/\/chat\/completions\/?$/i, '').replace(/\/+$/, '')
+}
+
+/** Derive a stable provider id from the configured endpoint. */
+export function resolveAgentProviderId(endpoint: string) {
+  return endpoint.includes('apihub.agnes-ai.com') ? 'agnes' : 'custom-openai'
+}
+
 export type AgentId = 'launcher' | 'css'
 
 export interface AgentConversationKey {

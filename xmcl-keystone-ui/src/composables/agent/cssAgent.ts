@@ -6,7 +6,7 @@ import { kUserContext } from '../user'
 import { injection } from '@/util/inject'
 import { useLocalAgent, type LocalAgentSession } from './local'
 import { useCssAgentToolFactory } from './tools'
-import { convertLegacyAgentMessage } from './migration'
+import { migrateLegacyCssConversation } from './migration'
 
 export type CssAgentSession = LocalAgentSession
 
@@ -23,20 +23,6 @@ export function useCssAgent(): CssAgentSession {
     createTools: tools.createCssTools,
     getSessionContext: () => 'Global XMCL custom CSS scope.',
   })
-  void (async () => {
-    const raw = localStorage.getItem('cssAgentConversationV1')
-    if (raw) {
-      try {
-        const saved = JSON.parse(raw)
-        await service.importLegacyConversation({
-          key: { agentId: 'css', scope: 'global' },
-          messages: (saved.messages ?? []).map(convertLegacyAgentMessage),
-          updatedAt: saved.updatedAt,
-        })
-        localStorage.removeItem('cssAgentConversationV1')
-      } catch {}
-    }
-    await local.load()
-  })()
+  void migrateLegacyCssConversation(service).then(() => local.load())
   return local
 }

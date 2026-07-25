@@ -1,5 +1,5 @@
+import { normalizeAgentBaseUrl } from '@xmcl/runtime-api'
 import { describe, expect, test } from 'vitest'
-import { normalizeAgentBaseUrl } from './provider'
 
 describe('agent provider', () => {
   test('normalizes a full chat completions endpoint', () => {

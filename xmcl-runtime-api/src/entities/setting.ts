@@ -1,4 +1,5 @@
 import { type InvalidDirectoryErrorCode } from '../services/BaseService'
+import { DEFAULT_AGENT_ENDPOINT, DEFAULT_AGENT_MODEL } from '../services/AgentService'
 import { type SettingSchema } from './setting.schema'
 import { type ReleaseInfo } from './update'
 
@@ -26,8 +27,8 @@ export class Settings implements SettingSchema {
   discordPresence = false
   developerMode = false
   disableTelemetry = false
-  agentEndpoint = 'https://apihub.agnes-ai.com/v1/chat/completions'
-  agentModel = 'agnes-2.0-flash'
+  agentEndpoint = DEFAULT_AGENT_ENDPOINT
+  agentModel = DEFAULT_AGENT_MODEL
   linuxTitlebar = false
   windowTranslucent = false
 

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { DEFAULT_AGENT_ENDPOINT, DEFAULT_AGENT_MODEL } from '../services/AgentService'
 
 /**
  * API set configuration.
@@ -88,9 +89,9 @@ export const SettingSchema = z.object({
   /** Disable telemetry setting */
   disableTelemetry: z.boolean().catch(false),
   /** OpenAI-compatible agent endpoint (the API key is stored separately). */
-  agentEndpoint: z.string().catch('https://apihub.agnes-ai.com/v1/chat/completions'),
+  agentEndpoint: z.string().catch(DEFAULT_AGENT_ENDPOINT),
   /** Agent model identifier. */
-  agentModel: z.string().catch('agnes-2.0-flash'),
+  agentModel: z.string().catch(DEFAULT_AGENT_MODEL),
   /** Linux titlebar setting */
   linuxTitlebar: z.boolean().catch(false),
   /** Enable dedicated GPU optimization */

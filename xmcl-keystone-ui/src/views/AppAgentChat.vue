@@ -100,19 +100,8 @@
         </div>
 
         <template v-for="item in transcriptItems" :key="item.key">
-          <!-- Launcher context notice (injected as a user turn for the LLM) -->
-          <div
-            v-if="item.kind === 'message' && item.message.role === 'user' && isLauncherNotice(item.message.content)"
-            class="flex justify-center"
-          >
-            <div class="notice">
-              <v-icon size="13" class="mr-1 flex-shrink-0">info</v-icon>
-              <span>{{ noticeText(item.message.content) }}</span>
-            </div>
-          </div>
-
           <!-- User -->
-          <div v-else-if="item.kind === 'message' && item.message.role === 'user'" class="flex justify-end">
+          <div v-if="item.kind === 'message' && item.message.role === 'user'" class="flex justify-end">
             <div class="bubble bubble-user">
               {{ messageText(item.message.content) }}
             </div>
@@ -367,14 +356,6 @@ function messageText(content: string | ContentPart[] | null | undefined): string
   return content.map((p) => (p.type === 'text' ? p.text : '[image]')).join('')
 }
 
-const LAUNCHER_NOTICE_PREFIX = '[launcher event]'
-function isLauncherNotice(content: string | ContentPart[] | null | undefined): boolean {
-  return messageText(content).trimStart().startsWith(LAUNCHER_NOTICE_PREFIX)
-}
-function noticeText(content: string | ContentPart[] | null | undefined): string {
-  return messageText(content).replace(LAUNCHER_NOTICE_PREFIX, '').trim()
-}
-
 function renderAssistant(content: string | ContentPart[] | null | undefined): string {
   return renderMd(messageText(content))
 }
@@ -467,21 +448,6 @@ watch(isShown, async (v) => {
   border-color: rgba(var(--v-theme-on-surface), 0.26);
   border-bottom-left-radius: 4px;
   max-width: 95%;
-}
-.notice {
-  display: flex;
-  align-items: flex-start;
-  gap: 2px;
-  max-width: 90%;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  line-height: 1.4;
-  white-space: pre-wrap;
-  word-break: break-word;
-  color: rgba(var(--v-theme-on-surface), 0.6);
-  background: rgba(var(--v-theme-on-surface), 0.04);
-  border: 1px dashed rgba(var(--v-theme-on-surface), 0.16);
 }
 .md-content {
   white-space: normal;
