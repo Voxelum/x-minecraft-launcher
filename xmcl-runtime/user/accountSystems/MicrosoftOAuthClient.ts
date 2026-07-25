@@ -9,6 +9,13 @@ import { AnyError } from '@xmcl/utils'
 import { createPlugin } from '../credentialPlugin'
 import { createNetworkClient } from './OAuthNetworkClient'
 
+export const MICROSOFT_GRAPH_USER_READ_SCOPE = 'User.Read'
+export const MICROSOFT_XBOX_LAUNCHER_SCOPES = [
+  'XboxLive.signin',
+  'XboxLive.offline_access',
+  'offline_access',
+]
+
 export class MicrosoftOAuthClient {
   private nativeBrokerPlugin: INativeBrokerPlugin | undefined
 
@@ -126,6 +133,7 @@ export class MicrosoftOAuthClient {
         try {
           result = await app.acquireTokenInteractive({
             scopes,
+            extraScopesToConsent: options.extraScopes,
             loginHint: username || undefined,
             // Force the WAM account picker so the user can pick/add a
             // different account instead of silently logging in with the

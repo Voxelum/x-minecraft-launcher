@@ -6,11 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-<<<<<<< HEAD
-**Total anchors:** 186 (in 273 Vue files)
-=======
-**Total anchors:** 164 (in 271 Vue files)
->>>>>>> origin/master
+**Total anchors:** 199 (in 274 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -34,12 +30,12 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `add-server-button` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L64`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L64) |
 | `agent-api-key` | [`xmcl-keystone-ui/src/views/SettingGeneral.vue#L109`](../xmcl-keystone-ui/src/views/SettingGeneral.vue#L109) |
 | `agent-close` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L40`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L40) |
-| `agent-confirm-accept` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L237`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L237) |
-| `agent-confirm-cancel` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L233`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L233) |
-| `agent-confirm-dialog` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L209`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L209) |
+| `agent-confirm-accept` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L226`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L226) |
+| `agent-confirm-cancel` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L222`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L222) |
+| `agent-confirm-dialog` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L198`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L198) |
 | `agent-dialog` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L8`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L8) |
-| `agent-input` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L160`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L160) |
-| `agent-live-status` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L150`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L150) |
+| `agent-input` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L149`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L149) |
+| `agent-live-status` | [`xmcl-keystone-ui/src/views/AppAgentChat.vue#L139`](../xmcl-keystone-ui/src/views/AppAgentChat.vue#L139) |
 | `agent-market-install` | [`xmcl-keystone-ui/src/components/AgentMarketList.vue#L47`](../xmcl-keystone-ui/src/components/AgentMarketList.vue#L47) |
 | `agent-market-item` | [`xmcl-keystone-ui/src/components/AgentMarketList.vue#L18`](../xmcl-keystone-ui/src/components/AgentMarketList.vue#L18) |
 | `agent-market-list` | [`xmcl-keystone-ui/src/components/AgentMarketList.vue#L2`](../xmcl-keystone-ui/src/components/AgentMarketList.vue#L2) |
@@ -141,6 +137,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `market-multi-select-toggle` | [`xmcl-keystone-ui/src/views/Mod.vue#L27`](../xmcl-keystone-ui/src/views/Mod.vue#L27)<br>[`xmcl-keystone-ui/src/views/ResourcePack.vue#L26`](../xmcl-keystone-ui/src/views/ResourcePack.vue#L26)<br>[`xmcl-keystone-ui/src/views/ShaderPack.vue#L26`](../xmcl-keystone-ui/src/views/ShaderPack.vue#L26) |
 | `market-page-size` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L76`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L76) |
 | `me-user-switcher` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16) |
+| `microsoft-error-help` | [`xmcl-keystone-ui/src/components/UserLoginForm.vue#L181`](../xmcl-keystone-ui/src/components/UserLoginForm.vue#L181) |
 | `minecraft-friends-accepted-list` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L140`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L140) |
 | `minecraft-friends-add-button` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L68) |
 | `minecraft-friends-add-input` | [`xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L58`](../xmcl-keystone-ui/src/views/AppMinecraftFriendsDialog.vue#L58) |
@@ -201,3 +198,14 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `version-input-minecraft` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L23`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L23) |
 | `version-input-neoforge` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L33`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L33) |
 | `version-input-quilt` | [`xmcl-keystone-ui/src/components/ModloaderSelector.vue#L57`](../xmcl-keystone-ui/src/components/ModloaderSelector.vue#L57) |
+| `xmcl-account-conflict` | [`xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L22`](../xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L22) |
+| `xmcl-account-merge-confirm` | [`xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L57`](../xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L57) |
+| `xmcl-account-merge-prepare` | [`xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L31`](../xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L31) |
+| `xmcl-account-merge-preview` | [`xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L45`](../xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L45) |
+| `xmcl-account-panel` | [`xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L3`](../xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L3) |
+| `xmcl-provider-discord` | [`xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L160`](../xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L160) |
+| `xmcl-provider-google` | [`xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L150`](../xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L150) |
+| `xmcl-provider-microsoft` | [`xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L132`](../xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L132) |
+| `xmcl-provider-modrinth` | [`xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L141`](../xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L141) |
+| `xmcl-session-refresh` | [`xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L102`](../xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L102) |
+| `xmcl-session-revoke` | [`xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L111`](../xmcl-keystone-ui/src/components/XmclAccountPanel.vue#L111) |
