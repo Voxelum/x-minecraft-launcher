@@ -1,4 +1,5 @@
 import { InjectionKey } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
 import { useMarketSort } from './marketSort'
 import { searlizers, useQuery, useQueryOverride } from './query'
 import type { MaybeRef } from 'vue'
@@ -26,8 +27,11 @@ export function useSearchModel(runtime: Ref<RuntimeVersions>) {
   const modrinthCategories = ref([] as string[])
   const curseforgeCategory = ref(undefined as number | undefined)
   const sort = ref(0)
-  const isCurseforgeActive = ref(true)
-  const isModrinthActive = ref(true)
+  // Provider visibility is a launcher-wide preference, not an instance
+  // filter. Keep it in local storage so changing it for one instance is
+  // reflected by every market page and survives instance switches/restarts.
+  const isCurseforgeActive = useLocalStorage('marketCurseforgeActive', true, { writeDefaults: false })
+  const isModrinthActive = useLocalStorage('marketModrinthActive', true, { writeDefaults: false })
   const source = ref('remote' as 'local' | 'remote' | 'favorite')
   const notRemote = computed(() => source.value !== 'remote')
   const selectedCollection = ref(undefined as string | undefined)
@@ -76,8 +80,11 @@ export function useSearchModel(runtime: Ref<RuntimeVersions>) {
     useQueryOverride('modLoaders', modrinthCategories, [], searlizers.stringArray)
     useQueryOverride('curseforgeCategory', curseforgeCategory, undefined, searlizers.number)
     useQueryOverride('sort', sort, 0, searlizers.number)
-    useQueryOverride('curseforgeActive', isCurseforgeActive, true, searlizers.boolean)
-    useQueryOverride('modrinthActive', isModrinthActive, true, searlizers.boolean)
+    // These preferences intentionally use the current persisted value as the
+    // query fallback instead of resetting to `true` whenever another instance
+    // or market page calls `effect()`.
+    useQueryOverride('curseforgeActive', isCurseforgeActive, isCurseforgeActive, searlizers.boolean)
+    useQueryOverride('modrinthActive', isModrinthActive, isModrinthActive, searlizers.boolean)
     useQueryOverride('source', source, 'local', searlizers.string)
     useQueryOverride('modrinthEnvironment', modrinthEnvironment, '', searlizers.string)
     selectedCollection.value = undefined

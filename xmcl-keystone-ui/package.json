@@ -30,6 +30,8 @@
     "dependencies": {
         "@mdi/font": "^7.4.47",
         "@microsoft/applicationinsights-web": "^3.1.1",
+        "@earendil-works/pi-agent-core": "0.81.1",
+        "@earendil-works/pi-ai": "0.81.1",
         "@vueuse/core": "^14.3.0",
         "@xmcl/core": "workspace:*",
         "@xmcl/curseforge": "workspace:*",

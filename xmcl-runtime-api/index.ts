@@ -30,6 +30,7 @@ export * from './src/entities/yggdrasil.schema'
 
 export * from './src/service'
 export * from './src/services/AuthlibInjectorService'
+export * from './src/services/AgentService'
 export * from './src/services/BaseService'
 export * from './src/services/BedrockService'
 export * from './src/services/CollectionService'

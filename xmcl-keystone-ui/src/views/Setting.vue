@@ -102,7 +102,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, onUnmounted, provide } from 'vue'
+import { ref, computed, nextTick, onMounted, onUnmounted, provide, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SettingUpdateInfoDialog from './SettingUpdateInfoDialog.vue'
 import SettingUpdate from './SettingUpdate.vue'
@@ -122,6 +122,7 @@ import SettingAdvanced from './SettingAdvanced.vue'
 import SettingHeader from '@/components/SettingHeader.vue'
 
 const { t } = useI18n()
+const route = useRoute()
 usePresence(computed(() => t('presence.setting')))
 
 provide(kUpdateSettings, useUpdateSettings())
@@ -131,6 +132,7 @@ const tokens = injection(kSurfaceTokens)
 
 onMounted(() => {
   suppressed.value = true
+  revealRouteTarget()
 })
 onUnmounted(() => {
   suppressed.value = false
@@ -152,6 +154,16 @@ const sections = [
   { id: 'network', title: 'setting.network', icon: 'wifi' },
   { id: 'about', title: 'setting.about', icon: 'info' },
 ]
+
+async function revealRouteTarget() {
+  if (route.query.target !== 'agent') return
+  await nextTick()
+  const target = document.getElementById('agent-settings')
+  target?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  target?.querySelector<HTMLElement>('input')?.focus()
+}
+
+watch(() => route.query.target, revealRouteTarget)
 
 function scrollTo(id: string) {
   const el = document.getElementById(id)

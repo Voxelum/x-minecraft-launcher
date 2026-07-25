@@ -1,34 +1,103 @@
-import { createSharedComposable, useLocalStorage } from '@vueuse/core'
-import { DEFAULT_AGNES_ENDPOINT, DEFAULT_AGNES_MODEL } from './llm'
+import { createSharedComposable } from '@vueuse/core'
+import { AgentServiceKey, DEFAULT_AGENT_ENDPOINT, DEFAULT_AGENT_MODEL } from '@xmcl/runtime-api'
+import { useService } from '../service'
 
-/**
- * Agent settings are a shared singleton: the settings page and the agent
- * session must read/write the SAME refs (including the derived `computed`
- * wrappers below), so editing the key in Settings immediately updates the
- * live agent's `available` state.
- */
+const DEFAULT_AGNES_ENDPOINT = DEFAULT_AGENT_ENDPOINT
+const DEFAULT_AGNES_MODEL = DEFAULT_AGENT_MODEL
+
+const LEGACY_API_KEY = 'agentApiKey'
+const LEGACY_ENDPOINT = 'agentEndpoint'
+const LEGACY_MODEL = 'agentModel'
+
 export const useAgentSettings = createSharedComposable(() => {
-  const apiKey = useLocalStorage('agentApiKey', '')
-  // Default values are Agnes endpoint/model; users can still override both.
-  const endpoint = useLocalStorage('agentEndpoint', DEFAULT_AGNES_ENDPOINT)
-  const model = useLocalStorage('agentModel', DEFAULT_AGNES_MODEL)
+  const service = useService(AgentServiceKey)
+  const apiKey = ref('')
+  const endpoint = ref(DEFAULT_AGNES_ENDPOINT)
+  const model = ref(DEFAULT_AGNES_MODEL)
+  const configured = ref(false)
+  const loaded = ref(false)
+  const error = ref('')
+  let saveTimer: ReturnType<typeof setTimeout> | undefined
+  let keySave = Promise.resolve()
+  let settingsSave = Promise.resolve()
 
-  const resolvedEndpoint = computed(() => {
-    const raw = endpoint.value.trim()
-    if (raw) return raw
-    return DEFAULT_AGNES_ENDPOINT
+  const ready = (async () => {
+    const legacyApiKey = localStorage.getItem(LEGACY_API_KEY) ?? ''
+    const legacyEndpoint = localStorage.getItem(LEGACY_ENDPOINT) ?? ''
+    const legacyModel = localStorage.getItem(LEGACY_MODEL) ?? ''
+    let settings = await service.getProviderSettings()
+    if (legacyApiKey || legacyEndpoint || legacyModel) {
+      await service.setProviderSettings({
+        endpoint: legacyEndpoint || settings.endpoint,
+        model: legacyModel || settings.model,
+        apiKey: legacyApiKey || undefined,
+      })
+      localStorage.removeItem(LEGACY_API_KEY)
+      localStorage.removeItem(LEGACY_ENDPOINT)
+      localStorage.removeItem(LEGACY_MODEL)
+      settings = await service.getProviderSettings()
+    }
+    endpoint.value = settings.endpoint
+    model.value = settings.model
+    configured.value = settings.configured
+    loaded.value = true
+  })()
+
+  function saveProviderSettings() {
+    settingsSave = settingsSave.then(async () => {
+      await service.setProviderSettings({ endpoint: endpoint.value, model: model.value })
+    })
+    return settingsSave
+  }
+
+  watch([endpoint, model], () => {
+    if (!loaded.value) return
+    if (saveTimer) clearTimeout(saveTimer)
+    saveTimer = setTimeout(async () => {
+      saveTimer = undefined
+      await saveProviderSettings()
+    }, 300)
   })
 
-  const resolvedModel = computed(() => {
-    const raw = model.value.trim()
-    if (raw) return raw
-    return DEFAULT_AGNES_MODEL
-  })
+  async function flush() {
+    await ready
+    if (saveTimer) {
+      clearTimeout(saveTimer)
+      saveTimer = undefined
+      await saveProviderSettings()
+    } else {
+      await settingsSave
+    }
+  }
+
+  async function setApiKey(value: string) {
+    apiKey.value = value
+    await ready
+    keySave = keySave.then(async () => {
+      try {
+        await service.setProviderSettings({ endpoint: endpoint.value, model: model.value, apiKey: value })
+        configured.value = !!value.trim()
+        error.value = ''
+      } catch (e) {
+        error.value = e instanceof Error ? e.message : String(e)
+      }
+    })
+    await keySave
+  }
+
+  const resolvedEndpoint = computed(() => endpoint.value.trim() || DEFAULT_AGNES_ENDPOINT)
+  const resolvedModel = computed(() => model.value.trim() || DEFAULT_AGNES_MODEL)
 
   return {
     apiKey,
     endpoint,
     model,
+    configured,
+    loaded,
+    error,
+    ready,
+    flush,
+    setApiKey,
     resolvedEndpoint,
     resolvedModel,
   }

@@ -25,6 +25,9 @@ export function useLocaleError() {
       const ex = e.exception
       return t(`errors.${ex.type}`)
     }
+    if (isException(UserException, e) && e.exception.type === 'userAccessTokenExpired') {
+      return t('user.tokenExpired')
+    }
     if (isException(UserException, e) && e.exception.type === 'userSetSkinFailed') {
       if (e.exception.reason === 'INVALID_IMAGE') return t('userSkin.invalidImage')
       return t('userSkin.uploadRejected')

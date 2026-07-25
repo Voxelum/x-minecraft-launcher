@@ -69,6 +69,7 @@
     <v-divider class="my-3" />
     <SettingItemSwitcher
       v-model="developerMode"
+      data-testid="developer-mode"
       :title="t('setting.developerMode')"
       :description="t('setting.developerModeDescription')"
       icon="code"
@@ -98,13 +99,14 @@
 
     <template v-if="developerMode">
       <v-divider class="my-3" />
-      <SettingItem :title="t('setting.aiAgentApiKey')" :description="t('setting.aiAgentApiKeyDescription')">
+      <SettingItem id="agent-settings" :title="t('setting.aiAgentApiKey')" :description="t('setting.aiAgentApiKeyDescription')">
         <template #title>
           <v-icon start size="small" color="primary">key</v-icon>
           {{ t('setting.aiAgentApiKey') }}
         </template>
         <template #action>
           <v-text-field
+            data-testid="agent-api-key"
             :model-value="agentApiKey"
             :type="showAgentApiKey ? 'text' : 'password'"
             variant="outlined"
@@ -112,7 +114,8 @@
             class="setting-item-input"
             hide-details
             clearable
-            @update:model-value="agentApiKey = $event ?? ''"
+            :placeholder="agentConfigured ? '••••••••' : ''"
+            @update:model-value="updateAgentApiKey($event ?? '')"
           >
             <template #append-inner>
               <v-btn icon variant="text" size="small" @click="showAgentApiKey = !showAgentApiKey">
@@ -211,8 +214,18 @@ const {
   apiKey: agentApiKey,
   endpoint: agentEndpoint,
   model: agentModel,
+  configured: agentConfigured,
+  setApiKey: setAgentApiKey,
 } = useAgentSettings()
 const showAgentApiKey = ref(false)
+let agentApiKeyTimer: ReturnType<typeof setTimeout> | undefined
+function updateAgentApiKey(value: string) {
+  agentApiKey.value = value
+  if (agentApiKeyTimer) clearTimeout(agentApiKeyTimer)
+  agentApiKeyTimer = setTimeout(async () => {
+    await setAgentApiKey(value)
+  }, 500)
+}
 
 const { show } = useDialog('migration')
 const { root, showGameDirectory } = useGameDirectory()
