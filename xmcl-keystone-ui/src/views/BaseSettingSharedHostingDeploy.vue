@@ -90,6 +90,43 @@
         Deployment {{ deployment.deploymentId }} is {{ deployment.status }}.
         The shared service remains unchanged until compilation and safe selection succeed.
       </p>
+      <div
+        v-if="deployment?.status === 'published' && selectedService?.status === 'ready'"
+        class="flex flex-col gap-2 border-t pt-3"
+      >
+        <strong>Optional: migrate a local world</strong>
+        <p class="text-body-2 opacity-70">
+          This uploads a copy of this local world to your shared server. Your local save is not deleted or continuously synchronized.
+        </p>
+        <v-select
+          v-model="worldName"
+          :items="worlds"
+          item-title="name"
+          item-value="name"
+          label="Local world"
+          :loading="loadingWorlds"
+          :disabled="loadingWorldSeed || loadingWorlds"
+          density="compact"
+          hide-details
+        >
+          <template #item="{ props: itemProps, item }">
+            <v-list-item v-bind="itemProps" :subtitle="`${item.logicalSizeBytes} bytes`" />
+          </template>
+        </v-select>
+        <div v-if="worldSeedProgress" class="text-body-2">
+          <v-progress-linear color="green" :model-value="worldSeedPercent" rounded />
+          Uploading {{ worldSeedPercent }}% ({{ worldSeedProgress.uploadedBytes }} / {{ worldSeedProgress.totalBytes }} bytes)
+        </div>
+        <p v-if="worldSeed" class="text-body-2">World migration is {{ worldSeed.status }}.</p>
+        <div class="flex gap-2">
+          <v-btn :loading="loadingWorldSeed" :disabled="!worldName" color="green" variant="flat" @click="migrateWorld">
+            Upload world copy
+          </v-btn>
+          <v-btn v-if="worldSeedUploadId" :disabled="!loadingWorldSeed" variant="text" @click="cancelWorldSeedUpload">
+            Cancel upload
+          </v-btn>
+        </div>
+      </div>
     </div>
   </SettingCard>
 </template>
@@ -109,6 +146,7 @@ import {
   type SharedHostingBundlePreview,
   type SharedHostingDeployment,
   type SharedHostingServiceRecord,
+  type SharedWorldSeed,
 } from '@xmcl/runtime-api'
 
 const { instance, path } = injection(kInstance)
@@ -123,6 +161,10 @@ const sharedHosting = useService(SharedHostingDeploymentServiceKey)
 const {
   listSharedHostingServices,
   cancelSharedHostingBundleUpload,
+  listLocalWorldSeeds,
+  uploadLocalWorldSeed,
+  cancelSharedHostingWorldSeedUpload,
+  listSharedHostingWorldSeeds,
 } = sharedHosting
 
 const serviceId = ref('')
@@ -138,6 +180,17 @@ const uploadId = ref('')
 const uploadProgress = ref<{ uploadedBytes: number; totalBytes: number }>()
 const uploadPercent = computed(() => uploadProgress.value
   ? Math.min(100, Math.round(uploadProgress.value.uploadedBytes / uploadProgress.value.totalBytes * 100))
+  : 0)
+const selectedService = computed(() => services.value.find(service => service.serviceId === serviceId.value))
+const worlds = ref<Awaited<ReturnType<typeof listLocalWorldSeeds>>>([])
+const worldName = ref('')
+const loadingWorlds = ref(false)
+const loadingWorldSeed = ref(false)
+const worldSeedUploadId = ref('')
+const worldSeed = ref<SharedWorldSeed>()
+const worldSeedProgress = ref<{ uploadedBytes: number; totalBytes: number }>()
+const worldSeedPercent = computed(() => worldSeedProgress.value
+  ? Math.min(100, Math.round(worldSeedProgress.value.uploadedBytes / worldSeedProgress.value.totalBytes * 100))
   : 0)
 
 const canDeploy = computed(() =>
@@ -220,6 +273,48 @@ async function cancelUpload() {
   await cancelSharedHostingBundleUpload(uploadId.value)
 }
 
+async function refreshWorlds() {
+  loadingWorlds.value = true
+  try {
+    worlds.value = await listLocalWorldSeeds(path.value)
+    if (!worldName.value && worlds.value.length) worldName.value = worlds.value[0].name
+    if (serviceId.value) {
+      const existing = await listSharedHostingWorldSeeds(serviceId.value)
+      worldSeed.value = existing.find(seed => seed.status === 'selected')
+    }
+  } catch {
+    error.value = 'Local worlds could not be prepared for migration.'
+  } finally {
+    loadingWorlds.value = false
+  }
+}
+
+async function migrateWorld() {
+  if (!worldName.value || !serviceId.value || selectedService.value?.status !== 'ready') return
+  loadingWorldSeed.value = true
+  worldSeedProgress.value = undefined
+  error.value = ''
+  const idempotencyKey = crypto.randomUUID()
+  worldSeedUploadId.value = idempotencyKey
+  try {
+    worldSeed.value = await uploadLocalWorldSeed({
+      instancePath: path.value,
+      saveName: worldName.value,
+      serviceId: serviceId.value,
+      idempotencyKey,
+    })
+  } catch {
+    error.value = 'World migration did not complete. The existing shared world was not changed; retry explicitly.'
+  } finally {
+    loadingWorldSeed.value = false
+    worldSeedUploadId.value = ''
+  }
+}
+
+async function cancelWorldSeedUpload() {
+  if (worldSeedUploadId.value) await cancelSharedHostingWorldSeedUpload(worldSeedUploadId.value)
+}
+
 function onUploadProgress(progress: {
   idempotencyKey: string
   uploadedBytes: number
@@ -233,11 +328,24 @@ function onUploadProgress(progress: {
   }
 }
 
+function onWorldSeedUploadProgress(progress: {
+  idempotencyKey: string
+  uploadedBytes: number
+  totalBytes: number
+}) {
+  if (progress.idempotencyKey === worldSeedUploadId.value) {
+    worldSeedProgress.value = { uploadedBytes: progress.uploadedBytes, totalBytes: progress.totalBytes }
+  }
+}
+
 onMounted(() => {
   sharedHosting.on('shared-hosting-bundle-upload-progress', onUploadProgress)
+  sharedHosting.on('shared-hosting-world-seed-upload-progress', onWorldSeedUploadProgress)
   void refreshServices()
+  void refreshWorlds()
 })
 onUnmounted(() => {
   sharedHosting.removeListener('shared-hosting-bundle-upload-progress', onUploadProgress)
+  sharedHosting.removeListener('shared-hosting-world-seed-upload-progress', onWorldSeedUploadProgress)
 })
 </script>

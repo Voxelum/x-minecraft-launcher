@@ -58,13 +58,39 @@ export const SharedHostingDeploymentSchema = z.object({
   updatedAt: z.string(),
 }).strict()
 
+export const SharedWorldSeedSchema = z.object({
+  seedId: z.string().min(1),
+  serviceId: z.string().min(1),
+  status: z.enum(['awaiting_upload', 'validating', 'valid', 'invalid', 'selected']),
+  worldName: z.string().min(1).optional(),
+  expectedSha256: z.string().regex(/^[a-f0-9]{64}$/i),
+  expectedSizeBytes: z.number().int().positive(),
+  files: z.array(z.object({
+    path: z.string().min(1),
+    sha256: z.string().regex(/^[a-f0-9]{64}$/i),
+    sizeBytes: z.number().int().nonnegative(),
+  }).strict()).optional(),
+  validation: z.object({ code: z.string().min(1) }).strict().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+}).strict()
+
+export const SharedWorldSeedUploadSchema = SharedHostingBundleUploadSchema
+
 export type SharedHostingServiceRecord = z.infer<typeof SharedHostingServiceSchema>
 export type SharedHostingBundleImport = z.infer<typeof SharedHostingBundleImportSchema>
 export type SharedHostingBundleUpload = z.infer<typeof SharedHostingBundleUploadSchema>
 export type SharedHostingDeployment = z.infer<typeof SharedHostingDeploymentSchema>
+export type SharedWorldSeed = z.infer<typeof SharedWorldSeedSchema>
+export type SharedWorldSeedUpload = z.infer<typeof SharedWorldSeedUploadSchema>
 
 export interface SharedHostingDeploymentServiceEventMap {
   'shared-hosting-bundle-upload-progress': {
+    idempotencyKey: string
+    uploadedBytes: number
+    totalBytes: number
+  }
+  'shared-hosting-world-seed-upload-progress': {
     idempotencyKey: string
     uploadedBytes: number
     totalBytes: number
@@ -100,6 +126,19 @@ export interface CreateSharedHostingBundleImport {
   expectedSha256: string
   expectedSizeBytes: number
   idempotencyKey: string
+}
+
+export interface CreateSharedWorldSeed {
+  serviceId: string
+  expectedSha256: string
+  expectedSizeBytes: number
+  idempotencyKey: string
+}
+
+export interface LocalWorldSeedCandidate {
+  name: string
+  path: string
+  logicalSizeBytes: number
 }
 
 export class SharedHostingDeploymentApiError extends Error {
@@ -179,6 +218,41 @@ export class SharedHostingDeploymentApiClient {
     ).then(value => value.items)
   }
 
+  createWorldSeed(input: CreateSharedWorldSeed) {
+    validateWorldSeed(input)
+    return this.mutate(
+      `/v1/shared-hosting/services/${encodeId(input.serviceId)}/world-seeds`,
+      input.idempotencyKey,
+      { expectedSha256: input.expectedSha256.toLowerCase(), expectedSizeBytes: input.expectedSizeBytes },
+      SharedWorldSeedSchema,
+    )
+  }
+
+  createWorldSeedUploadUrl(seedId: string, idempotencyKey: string) {
+    return this.mutate(
+      `/v1/shared-hosting/world-seeds/${encodeId(seedId)}/upload-url`,
+      idempotencyKey,
+      undefined,
+      SharedWorldSeedUploadSchema,
+    )
+  }
+
+  completeWorldSeed(seedId: string, idempotencyKey: string) {
+    return this.mutate(
+      `/v1/shared-hosting/world-seeds/${encodeId(seedId)}/complete`,
+      idempotencyKey,
+      undefined,
+      SharedWorldSeedSchema,
+    )
+  }
+
+  listWorldSeeds(serviceId: string) {
+    return this.request(
+      `/v1/shared-hosting/services/${encodeId(serviceId)}/world-seeds`,
+      SharedWorldSeedSchema.array(),
+    )
+  }
+
   private mutate<T>(
     path: string,
     idempotencyKey: string,
@@ -240,6 +314,16 @@ export interface SharedHostingDeploymentService extends GenericEventEmitter<Shar
     maxAttempts?: number
   }): Promise<SharedHostingDeployment>
   cancelSharedHostingBundleUpload(idempotencyKey: string): Promise<void>
+  listSharedHostingWorldSeeds(serviceId: string): Promise<SharedWorldSeed[]>
+  listLocalWorldSeeds(instancePath: string): Promise<LocalWorldSeedCandidate[]>
+  uploadLocalWorldSeed(input: {
+    instancePath: string
+    saveName: string
+    serviceId: string
+    idempotencyKey: string
+    maxAttempts?: number
+  }): Promise<SharedWorldSeed>
+  cancelSharedHostingWorldSeedUpload(idempotencyKey: string): Promise<void>
 }
 
 export const SharedHostingDeploymentServiceKey: ServiceKey<SharedHostingDeploymentService> =
@@ -252,6 +336,15 @@ function validateImport(input: CreateSharedHostingBundleImport) {
     input.expectedSizeBytes < 1 ||
     input.expectedSizeBytes > 512 * 1024 * 1024
   ) throw new RangeError('Invalid shared-server bundle hash or size')
+}
+
+function validateWorldSeed(input: CreateSharedWorldSeed) {
+  if (
+    !validSha256(input.expectedSha256) ||
+    !Number.isSafeInteger(input.expectedSizeBytes) ||
+    input.expectedSizeBytes < 1 ||
+    input.expectedSizeBytes > 512 * 1024 * 1024
+  ) throw new RangeError('Invalid shared world seed hash or size')
 }
 
 function validSha256(value: string) {
