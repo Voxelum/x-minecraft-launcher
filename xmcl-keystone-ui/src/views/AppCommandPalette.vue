@@ -350,32 +350,6 @@
       <v-divider />
 
       <div class="palette-footer px-4 py-2 text-medium-emphasis text-caption flex items-center gap-2 flex-wrap">
-<<<<<<< HEAD
-        <span class="palette-footer__group">
-          <kbd>↑</kbd><kbd>↓</kbd>
-          <span class="palette-footer__label">{{ t('commandPalette.hintNavigate') }}</span>
-        </span>
-        <span class="palette-footer__group">
-          <kbd>Enter</kbd>
-          <span class="palette-footer__label">{{ t('commandPalette.hintInvoke') }}</span>
-        </span>
-        <span v-if="pendingInstanceAction || pendingInstancePath || pendingSettingId" class="palette-footer__group">
-          <kbd>←</kbd>
-          <span class="palette-footer__label">{{ t('commandPalette.hintBack') }}</span>
-        </span>
-        <span v-else-if="isSelectedCommandMultiStep" class="palette-footer__group">
-          <kbd>→</kbd>
-          <span class="palette-footer__label">{{ t('commandPalette.hintEnter') }}</span>
-        </span>
-        <span class="palette-footer__group">
-          <kbd>Esc</kbd>
-          <span class="palette-footer__label">{{ t('commandPalette.hintClose') }}</span>
-        </span>
-        <v-spacer />
-        <span class="palette-footer__group">
-          <kbd>Ctrl</kbd><kbd>K</kbd>
-        </span>
-=======
         <template v-if="gamepadActive">
           <span class="palette-footer__group">
             <kbd class="gp-btn__key">D-Pad</kbd>
@@ -385,7 +359,7 @@
             <kbd class="gp-btn__key">{{ buttonA }}</kbd>
             <span class="palette-footer__label">{{ t('commandPalette.hintInvoke') }}</span>
           </span>
-          <span v-if="pendingInstanceAction || pendingSettingId" class="palette-footer__group">
+          <span v-if="pendingInstanceAction || pendingInstancePath || pendingSettingId" class="palette-footer__group">
             <kbd class="gp-btn__key">D-Pad ←</kbd>
             <span class="palette-footer__label">{{ t('commandPalette.hintBack') }}</span>
           </span>
@@ -411,7 +385,7 @@
             <kbd>Enter</kbd>
             <span class="palette-footer__label">{{ t('commandPalette.hintInvoke') }}</span>
           </span>
-          <span v-if="pendingInstanceAction || pendingSettingId" class="palette-footer__group">
+          <span v-if="pendingInstanceAction || pendingInstancePath || pendingSettingId" class="palette-footer__group">
             <kbd>←</kbd>
             <span class="palette-footer__label">{{ t('commandPalette.hintBack') }}</span>
           </span>
@@ -428,7 +402,6 @@
             <kbd>Ctrl</kbd><kbd>K</kbd>
           </span>
         </template>
->>>>>>> origin/master
       </div>
     </v-card>
   </v-dialog>

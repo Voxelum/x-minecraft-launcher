@@ -50,4 +50,25 @@ describe('Agent UI handler', () => {
     }, controller.signal)).resolves.toBe(true)
     expect(confirm).toHaveBeenCalledWith(expect.objectContaining({ title: 'Install mod' }), controller.signal)
   })
+
+  // The wire schema is a flat object with every field optional (so strict
+  // providers accept it), so the handler is the only thing enforcing that a
+  // given action actually got the fields it needs.
+  test('rejects an action that is missing its required field', async () => {
+    const { handle } = handler([])
+    await expect(handle({ action: 'navigate' } as any)).rejects.toThrow('"path" is required')
+    await expect(handle({ action: 'query_dom' } as any)).rejects.toThrow('"selector" is required')
+    await expect(handle({ action: 'get_computed_style' } as any)).rejects.toThrow('"selector" is required')
+    await expect(handle({ action: 'select_account' } as any)).rejects.toThrow('"id" is required')
+  })
+
+  test('treats a blank required field as missing', async () => {
+    const { handle } = handler([])
+    await expect(handle({ action: 'navigate', path: '   ' })).rejects.toThrow('"path" is required')
+  })
+
+  test('rejects an unknown action instead of silently outlining the DOM', async () => {
+    const { handle } = handler([])
+    await expect(handle({ action: 'drop_database' } as any)).rejects.toThrow('Unknown ui action')
+  })
 })
