@@ -188,7 +188,7 @@ import { sort } from '@/composables/sortBy'
 import { useModUpgrade } from '@/composables/modUpgrade'
 
 const { runtime, path } = injection(kInstance)
-const { files, enable, disable, insert, revalidate } = injection(kInstanceResourcePacks)
+const { files, enabled, enable, disable, insert, revalidate } = injection(kInstanceResourcePacks)
 const { keyword, curseforgeCategory, modrinthCategories, currentView, gameVersion, isCurseforgeActive, isModrinthActive, sort: marketSort, source, selectedCollection } =
   injection(kSearchModel)
 
@@ -278,12 +278,8 @@ const onDisable = (f: ProjectFile) => {
   disable([f as InstanceResourcePack])
 }
 const onDrop = (item: ResourcePackProject, id: string) => {
-  const _items = items.value
-  if (_items[0] !== 'enabled') {
-    return
-  }
-  const target = _items.indexOf(item)
-  const from = _items.findIndex((e) => typeof e === 'object' && e.id === id)
+  const target = enabled.value.findIndex(pack => pack.id === item.id)
+  const from = enabled.value.findIndex(pack => pack.id === id)
   if (target !== -1 && from !== -1) {
     insert(from, target)
   }

@@ -27,6 +27,7 @@
     @click="emit('click', $event)"
   >
     <template #prepend>
+      <slot name="prepend" />
       <v-avatar
         v-if="selectionMode"
         :size="dense ? 30 : 40"

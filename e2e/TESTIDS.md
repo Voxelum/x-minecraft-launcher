@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 225 (in 279 Vue files)
+**Total anchors:** 227 (in 279 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -133,7 +133,7 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `market-detail-collection-menu` | [`xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L59`](../xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L59) |
 | `market-detail-install` | [`xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L161`](../xmcl-keystone-ui/src/components/MarketProjectDetail.vue#L161) |
 | `market-filter-favorite-tab` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L24) |
-| `market-item-install` | [`xmcl-keystone-ui/src/components/MarketItem.vue#L55`](../xmcl-keystone-ui/src/components/MarketItem.vue#L55) |
+| `market-item-install` | [`xmcl-keystone-ui/src/components/MarketItem.vue#L56`](../xmcl-keystone-ui/src/components/MarketItem.vue#L56) |
 | `market-multi-select-toggle` | [`xmcl-keystone-ui/src/views/Mod.vue#L27`](../xmcl-keystone-ui/src/views/Mod.vue#L27)<br>[`xmcl-keystone-ui/src/views/ResourcePack.vue#L26`](../xmcl-keystone-ui/src/views/ResourcePack.vue#L26)<br>[`xmcl-keystone-ui/src/views/ShaderPack.vue#L26`](../xmcl-keystone-ui/src/views/ShaderPack.vue#L26) |
 | `market-page-size` | [`xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L76`](../xmcl-keystone-ui/src/components/MarketFilterPanel.vue#L76) |
 | `me-user-switcher` | [`xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16`](../xmcl-keystone-ui/src/components/UserAccountSwitcher.vue#L16) |
@@ -185,6 +185,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `nav-settings` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L99`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L99)<br>[`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L208`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L208)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L118`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L118) |
 | `nav-store` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L39`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L39)<br>[`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L156`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L156)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L45`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L45) |
 | `refresh-all-servers` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L54`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L54) |
+| `resource-pack-drag-handle` | [`xmcl-keystone-ui/src/views/ResourcePackItem.vue#L21`](../xmcl-keystone-ui/src/views/ResourcePackItem.vue#L21) |
+| `resource-pack-item` | [`xmcl-keystone-ui/src/views/ResourcePackItem.vue#L3`](../xmcl-keystone-ui/src/views/ResourcePackItem.vue#L3) |
 | `save-world-map-canvas` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L10`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L10) |
 | `save-world-map-copy` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L103`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L103) |
 | `save-world-map-delete` | [`xmcl-keystone-ui/src/components/SaveWorldMap.vue#L128`](../xmcl-keystone-ui/src/components/SaveWorldMap.vue#L128) |
