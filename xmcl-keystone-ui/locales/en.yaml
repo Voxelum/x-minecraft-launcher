@@ -46,6 +46,7 @@ agent:
   emptyHint: >-
     Ask the agent to inspect your instance, toggle mods, read logs, or diagnose
     a crash.
+  errorTitle: The agent hit an error
   inputPlaceholder: Ask the agent…  (Enter to send, Shift+Enter for newline)
   notConfiguredHint: >-
     Set your API key, model and endpoint in Settings → General → AI Agent to
@@ -1663,11 +1664,18 @@ setting:
   advancedSettings: Advanced Settings
   advancedSettingsHint: Danger zone - reset or manage launcher data
   aiAgentApiKey: AI Agent API Key
+  aiAgentApiKeyClear: Clear key
   aiAgentApiKeyDescription: Stored locally on this device and used for agent requests.
+  aiAgentApiKeyEmpty: Paste your API key
+  aiAgentApiKeySaved: Saved
+  aiAgentApiKeyStored: Key saved - type to replace
   aiAgentEndpoint: AI Agent Endpoint
   aiAgentEndpointDescription: Chat completions endpoint URL.
   aiAgentModel: AI Agent Model
   aiAgentModelDescription: Model name to send in chat completion requests.
+  aiAgentProvider: AI Agent Provider
+  aiAgentProviderCustom: Custom (OpenAI compatible)
+  aiAgentProviderDescription: Pick a preset OpenAI-compatible provider to fill the endpoint.
   apiSets:
     auto: Auto (Determine by network)
     official: Official (Mojang)

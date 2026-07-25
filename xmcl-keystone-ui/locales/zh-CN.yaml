@@ -57,6 +57,7 @@ agent:
   confirmTitle: 确认 Agent 操作
   confirmCancel: 取消
   confirmAccept: 继续
+  errorTitle: Agent 执行出错
   inputPlaceholder: 向 Agent 提问…（Enter 发送，Shift+Enter 换行）
   disabledPlaceholder: Agent 已禁用
   toolArguments: 参数
@@ -1420,11 +1421,18 @@ setting:
   advancedSettings: 高级设置
   advancedSettingsHint: 危险区域 - 重置或管理启动器数据
   aiAgentApiKey: AI Agent API Key
+  aiAgentApiKeyClear: 清除密钥
   aiAgentApiKeyDescription: 仅保存在本地设备，用于 Agent 请求。
+  aiAgentApiKeyEmpty: 粘贴你的 API Key
+  aiAgentApiKeySaved: 已保存
+  aiAgentApiKeyStored: 已保存密钥，输入可替换
   aiAgentEndpoint: AI Agent Endpoint
   aiAgentEndpointDescription: 聊天补全（chat completions）的 Endpoint 地址。
   aiAgentModel: AI Agent 模型
   aiAgentModelDescription: 请求聊天补全时使用的模型名。
+  aiAgentProvider: AI Agent 服务商
+  aiAgentProviderCustom: 自定义（OpenAI 兼容）
+  aiAgentProviderDescription: 选择预设的 OpenAI 兼容服务商以自动填充 Endpoint。
   apiSets:
     auto: 自动 (根据网络决定)
     official: 官方 (Mojang)

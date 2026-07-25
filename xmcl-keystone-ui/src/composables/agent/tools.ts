@@ -31,7 +31,7 @@ import { kUserContext } from '../user'
 import { useAgentCapabilityContext } from './capabilityContext'
 import { createAgentManagementTools } from './managementTools'
 import { createAgentServerTools } from './serverTools'
-import { textResult } from './toolSupport'
+import { actionObjectSchema, textResult } from './toolSupport'
 import { buildAgentInstanceEdit, isAgentCommandAllowed } from './toolPolicy'
 
 function tokenize(input: string) {
@@ -59,6 +59,9 @@ function tokenize(input: string) {
   if (token) tokens.push(token)
   return tokens
 }
+
+/** Max resource entries returned per `vfs_list` page, to bound prompt size. */
+const RESOURCE_LIST_LIMIT = 10
 
 function summarizeResource(resource: Resource) {
   return {
@@ -144,7 +147,7 @@ export function useAgentToolFactory() {
       const service = kind === 'mods' ? modsService : kind === 'resourcepacks' ? resourcePackService : shaderPackService
       return (await service.watch(instancePath)).files
     }
-    const list = async (path: string) => {
+    const list = async (path: string, listOffset?: number) => {
       const clean = path.replace(/^\.?\//, '').replace(/\/$/, '')
       if (!clean) {
         return {
@@ -152,7 +155,21 @@ export function useAgentToolFactory() {
           entries: ['mods', 'resourcepacks', 'shaderpacks', 'saves', 'logs', 'crash-reports', 'launch-failures', 'config', 'server', 'game-processes', 'instance.json', 'options.txt'],
         }
       }
-      if (clean === 'mods' || clean === 'resourcepacks' || clean === 'shaderpacks') return (await resources(clean)).map(summarizeResource)
+      if (clean === 'mods' || clean === 'resourcepacks' || clean === 'shaderpacks') {
+        // Instances can hold hundreds of mods; sending them all would blow the
+        // context window, so only a page is returned and the rest is summarized.
+        const all = await resources(clean)
+        const offset = Number.isFinite(listOffset) ? Math.max(0, Math.trunc(listOffset as number)) : 0
+        const page = all.slice(offset, offset + RESOURCE_LIST_LIMIT)
+        return {
+          path: clean,
+          total: all.length,
+          offset,
+          limit: RESOURCE_LIST_LIMIT,
+          truncated: all.length > offset + page.length,
+          entries: page.map(summarizeResource),
+        }
+      }
       if (clean === 'saves') return (await savesService.watch(instancePath)).saves
       if (clean === 'logs') return logService.listLogs(instancePath)
       if (clean === 'crash-reports') return logService.listCrashReports(instancePath)
@@ -200,11 +217,11 @@ export function useAgentToolFactory() {
       {
         name: 'vfs_list',
         label: 'List instance files',
-        description: 'List a virtual directory for the explicitly selected instance.',
-        parameters: Type.Object({ path: Type.Optional(Type.String()) }),
+        description: `List a virtual directory for the explicitly selected instance. Resource directories (mods, resourcepacks, shaderpacks) return at most ${RESOURCE_LIST_LIMIT} entries per call; use offset to page through the rest.`,
+        parameters: Type.Object({ path: Type.Optional(Type.String()), offset: Type.Optional(Type.Number()) }),
         executionMode: 'sequential',
         async execute(_id, args: any) {
-          return textResult(await list(String(args.path ?? '')))
+          return textResult(await list(String(args.path ?? ''), args.offset))
         },
       },
       {
@@ -678,13 +695,26 @@ export function useAgentToolFactory() {
       name: 'ui',
       label: 'Launcher UI',
       description: 'Navigate or inspect the XMCL user interface. The run instance and user cannot be changed.',
-      parameters: Type.Union([
-        Type.Object({ action: Type.Literal('navigate'), path: Type.String() }),
-        Type.Object({ action: Type.Literal('confirm'), message: Type.String(), destructive: Type.Optional(Type.Boolean()) }),
-        Type.Object({ action: Type.Literal('query_dom'), selector: Type.String(), limit: Type.Optional(Type.Number()) }),
-        Type.Object({ action: Type.Literal('get_computed_style'), selector: Type.String(), properties: Type.Optional(Type.Array(Type.String())) }),
-        Type.Object({ action: Type.Literal('get_dom_outline'), selector: Type.Optional(Type.String()), maxDepth: Type.Optional(Type.Number()) }),
-      ]),
+      parameters: actionObjectSchema(
+        ['navigate', 'confirm', 'query_dom', 'get_computed_style', 'get_dom_outline'],
+        {
+          path: { type: 'string', description: 'Route path. Required for navigate.' },
+          message: { type: 'string', description: 'Prompt text. Required for confirm.' },
+          destructive: { type: 'boolean', description: 'Mark a confirm as destructive.' },
+          selector: {
+            type: 'string',
+            description: 'CSS selector. Required for query_dom and get_computed_style; optional for get_dom_outline.',
+          },
+          limit: { type: 'number', description: 'Max elements for query_dom (1-50).' },
+          properties: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'CSS properties for get_computed_style.',
+          },
+          maxDepth: { type: 'number', description: 'Tree depth for get_dom_outline (1-8).' },
+        },
+        'Which UI operation to run.',
+      ),
       executionMode: 'sequential',
       async execute(_id, input, signal) {
         return textResult(await uiHandler(input as any, signal))
@@ -722,11 +752,23 @@ export function useCssAgentToolFactory() {
     name: 'ui',
     label: 'Launcher UI',
     description: 'Inspect the XMCL user interface for CSS selectors and computed styles.',
-    parameters: Type.Union([
-      Type.Object({ action: Type.Literal('query_dom'), selector: Type.String(), limit: Type.Optional(Type.Number()) }),
-      Type.Object({ action: Type.Literal('get_computed_style'), selector: Type.String(), properties: Type.Optional(Type.Array(Type.String())) }),
-      Type.Object({ action: Type.Literal('get_dom_outline'), selector: Type.Optional(Type.String()), maxDepth: Type.Optional(Type.Number()) }),
-    ]),
+    parameters: actionObjectSchema(
+      ['query_dom', 'get_computed_style', 'get_dom_outline'],
+      {
+        selector: {
+          type: 'string',
+          description: 'CSS selector. Required for query_dom and get_computed_style; optional for get_dom_outline.',
+        },
+        limit: { type: 'number', description: 'Max elements for query_dom (1-50).' },
+        properties: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'CSS properties for get_computed_style.',
+        },
+        maxDepth: { type: 'number', description: 'Tree depth for get_dom_outline (1-8).' },
+      },
+      'Which UI inspection to run.',
+    ),
     executionMode: 'parallel',
     async execute(_id, input, signal) {
       return textResult(await uiHandler(input as any, signal))

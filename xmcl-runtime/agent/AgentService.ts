@@ -17,12 +17,10 @@ import { IS_DEV } from '~/constant'
 import { kSettings } from '~/settings'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { AgentBridge } from './AgentBridge'
+import { AgentApiKeyStore } from './apiKey'
 import { sanitizeAgentEndpoint, sanitizeAgentLog, summarizeAgentProviderPayload } from './debug'
 import { AgentHistoryStore } from './history'
 import { createAgentProvider } from './provider'
-
-const SECRET_SERVICE = 'xmcl/agent'
-const SECRET_ACCOUNT = 'default'
 
 function zeroUsage(): Usage {
   return {
@@ -44,6 +42,10 @@ export class AgentService extends AbstractService implements IAgentService {
   private history = new AgentHistoryStore(join(this.app.appDataPath, 'agent', 'history'), message => this.warn(message))
   private providerRequests = new Map<string, AbortController>()
   private agentLogger = this.app.getLogger('Agent', 'agent')
+  private apiKeys = new AgentApiKeyStore(this.app.secretStorage, async () => {
+    const settings = await this.app.registry.get(kSettings)
+    return settings.agentEndpoint || DEFAULT_AGENT_ENDPOINT
+  })
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app)
@@ -51,9 +53,10 @@ export class AgentService extends AbstractService implements IAgentService {
 
   async getProviderSettings() {
     const settings = await this.app.registry.get(kSettings)
-    const configured = !!await this.app.secretStorage.get(SECRET_SERVICE, SECRET_ACCOUNT)
+    const endpoint = settings.agentEndpoint || DEFAULT_AGENT_ENDPOINT
+    const configured = !!await this.apiKeys.get(endpoint)
     return {
-      endpoint: settings.agentEndpoint || DEFAULT_AGENT_ENDPOINT,
+      endpoint,
       model: settings.agentModel || DEFAULT_AGENT_MODEL,
       configured,
     }
@@ -61,19 +64,21 @@ export class AgentService extends AbstractService implements IAgentService {
 
   async setProviderSettings(input: UpdateAgentProviderSettings) {
     const settings = await this.app.registry.get(kSettings)
+    const endpoint = input.endpoint.trim() || DEFAULT_AGENT_ENDPOINT
     this.logAgent(`[provider.settings] ${sanitizeAgentLog({
-      endpoint: sanitizeAgentEndpoint(input.endpoint),
+      endpoint: sanitizeAgentEndpoint(endpoint),
       model: input.model,
       hasApiKey: input.apiKey !== undefined,
     })}`)
     // Persist the secret first: it is the only step that can fail (OS keychain
     // errors), and we must not leave the endpoint/model settings committed while
-    // the API key write was rejected.
+    // the API key write was rejected. The key is scoped to the endpoint being
+    // saved, so each provider keeps its own.
     if (input.apiKey !== undefined) {
-      await this.app.secretStorage.put(SECRET_SERVICE, SECRET_ACCOUNT, input.apiKey.trim())
+      await this.apiKeys.put(endpoint, input.apiKey)
     }
     settings.agentProviderSet({
-      endpoint: input.endpoint.trim() || DEFAULT_AGENT_ENDPOINT,
+      endpoint,
       model: input.model.trim() || DEFAULT_AGENT_MODEL,
     })
   }
@@ -135,7 +140,7 @@ export class AgentService extends AbstractService implements IAgentService {
       return
     }
 
-    const apiKey = await this.app.secretStorage.get(SECRET_SERVICE, SECRET_ACCOUNT)
+    const apiKey = await this.apiKeys.get(providerSettings.endpoint)
     const { api, model, providerId } = createAgentProvider(providerSettings.endpoint, providerSettings.model)
     const options = {
       ...request.options,

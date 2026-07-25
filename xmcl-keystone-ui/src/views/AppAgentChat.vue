@@ -77,7 +77,7 @@
         class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 py-2 space-y-2"
       >
         <div
-          v-if="transcriptItems.length === 0"
+          v-if="transcriptItems.length === 0 && !displayError"
           class="h-full flex items-center justify-center text-center text-medium-emphasis px-6"
         >
           <div class="w-full max-w-sm">
@@ -140,6 +140,22 @@
           <v-progress-circular indeterminate size="14" width="2" />
           <span>{{ liveStatus }}</span>
         </div>
+
+        <!-- Failures belong in the transcript: they are part of the conversation
+             and are easy to miss tucked into the footer. -->
+        <div v-if="displayError && !running" data-testid="agent-error" class="flex justify-start">
+          <div class="agent-error">
+            <v-icon size="small" color="error" class="agent-error__icon">error_outline</v-icon>
+            <div class="min-w-0 flex-1">
+              <div class="agent-error__title">
+                {{ t('agent.errorTitle') }}
+              </div>
+              <div class="agent-error__body">
+                {{ displayError }}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Input -->
@@ -182,8 +198,6 @@
         <div class="mt-2 text-xs text-medium-emphasis flex items-center gap-2">
           <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>A</kbd>
           <span>{{ t('agent.toggleHint') }}</span>
-          <v-spacer />
-          <span v-if="displayError" class="text-error truncate" :title="displayError">{{ displayError }}</span>
         </div>
       </div>
     </v-card>
@@ -407,8 +421,9 @@ function openSetupDoc() {
   window.open(setupDocUrl.value, 'browser')
 }
 
-// Auto-scroll on new messages / events.
-watch([transcriptItems, events], async () => {
+// Auto-scroll on new messages / events. `displayError` is included so a failure
+// rendered at the end of the transcript scrolls into view like any other message.
+watch([transcriptItems, events, displayError], async () => {
   await nextTick()
   const el = scrollEl.value
   if (el) el.scrollTop = el.scrollHeight
@@ -579,6 +594,36 @@ watch(isShown, async (v) => {
   width: 78%;
   max-width: 640px;
   min-width: 0;
+}
+.agent-error {
+  display: flex;
+  max-width: 85%;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 9px 13px;
+  border-radius: 12px;
+  border: 1px solid rgba(var(--v-theme-error), 0.5);
+  background: rgba(var(--v-theme-error), 0.12);
+}
+.agent-error__icon {
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+.agent-error__title {
+  color: rgb(var(--v-theme-error));
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.agent-error__body {
+  margin-top: 2px;
+  color: rgba(var(--v-theme-on-surface), 0.8);
+  font-size: 12.5px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .agent-confirm {
   overflow: hidden;

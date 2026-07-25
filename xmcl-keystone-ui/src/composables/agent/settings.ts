@@ -1,5 +1,13 @@
 import { createSharedComposable } from '@vueuse/core'
-import { AgentServiceKey, DEFAULT_AGENT_ENDPOINT, DEFAULT_AGENT_MODEL } from '@xmcl/runtime-api'
+import {
+  AGENT_PROVIDER_PRESETS,
+  AgentServiceKey,
+  CUSTOM_AGENT_PROVIDER_ID,
+  DEFAULT_AGENT_ENDPOINT,
+  DEFAULT_AGENT_MODEL,
+  getAgentProviderPreset,
+  resolveAgentProviderId,
+} from '@xmcl/runtime-api'
 import { useService } from '../service'
 
 const DEFAULT_AGNES_ENDPOINT = DEFAULT_AGENT_ENDPOINT
@@ -18,6 +26,7 @@ export const useAgentSettings = createSharedComposable(() => {
   const loaded = ref(false)
   const error = ref('')
   let saveTimer: ReturnType<typeof setTimeout> | undefined
+  let keyTimer: ReturnType<typeof setTimeout> | undefined
   let keySave = Promise.resolve()
   let settingsSave = Promise.resolve()
 
@@ -85,8 +94,80 @@ export const useAgentSettings = createSharedComposable(() => {
     await keySave
   }
 
+  /**
+   * Debounced key entry. The debounce lives here rather than in the view so that a
+   * provider switch can cancel a still-pending write: otherwise a key typed for the
+   * previous provider would land under the newly selected one.
+   */
+  function updateApiKey(value: string) {
+    apiKey.value = value
+    if (keyTimer) clearTimeout(keyTimer)
+    keyTimer = setTimeout(() => {
+      keyTimer = undefined
+      void setApiKey(value)
+    }, 500)
+  }
+
+  function cancelPendingApiKey() {
+    if (!keyTimer) return
+    clearTimeout(keyTimer)
+    keyTimer = undefined
+  }
+
+  /**
+   * Forget the stored key for the currently selected provider. Writing an empty
+   * value deletes the secret rather than storing a blank one. Any pending
+   * debounced write is cancelled first, so a key typed moments earlier cannot
+   * land after the clear and silently resurrect it.
+   */
+  async function clearApiKey() {
+    cancelPendingApiKey()
+    await setApiKey('')
+  }
+
   const resolvedEndpoint = computed(() => endpoint.value.trim() || DEFAULT_AGNES_ENDPOINT)
   const resolvedModel = computed(() => model.value.trim() || DEFAULT_AGNES_MODEL)
+
+  /** The preset matching the current endpoint, or the custom id when none matches. */
+  const providerId = computed(() => resolveAgentProviderId(resolvedEndpoint.value))
+  const provider = computed(() => getAgentProviderPreset(providerId.value))
+
+  /**
+   * API keys are stored per provider and never read back into the renderer, so on a
+   * provider switch the input is cleared and `configured` is re-read for the newly
+   * selected provider. The endpoint must be persisted first, since the backend keys
+   * the secret off the saved endpoint.
+   */
+  let refreshToken = 0
+  watch(providerId, () => {
+    if (!loaded.value) return
+    cancelPendingApiKey()
+    apiKey.value = ''
+    configured.value = false
+    const token = ++refreshToken
+    void flush().then(async () => {
+      const settings = await service.getProviderSettings()
+      // Ignore a stale response if the user switched again while this was in flight.
+      if (token === refreshToken) configured.value = settings.configured
+    }).catch(e => {
+      if (token === refreshToken) error.value = e instanceof Error ? e.message : String(e)
+    })
+  })
+
+  /**
+   * Switch to a preset provider. The endpoint always follows the preset; the model
+   * only follows when it is empty or still the previous preset's default, so a model
+   * the user typed by hand is never silently discarded.
+   */
+  function selectProvider(id: string) {
+    if (id === CUSTOM_AGENT_PROVIDER_ID) return
+    const preset = getAgentProviderPreset(id)
+    if (!preset || preset.id === providerId.value) return
+    const previous = provider.value
+    const current = model.value.trim()
+    if (!current || current === previous?.defaultModel) model.value = preset.defaultModel
+    endpoint.value = preset.endpoint
+  }
 
   return {
     apiKey,
@@ -98,7 +179,13 @@ export const useAgentSettings = createSharedComposable(() => {
     ready,
     flush,
     setApiKey,
+    updateApiKey,
+    clearApiKey,
     resolvedEndpoint,
     resolvedModel,
+    providers: AGENT_PROVIDER_PRESETS,
+    providerId,
+    provider,
+    selectProvider,
   }
 })
