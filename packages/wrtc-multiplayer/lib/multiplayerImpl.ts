@@ -1,4 +1,10 @@
-import { SharedState, PeerState, SetRemoteDescriptionOptions, TransferDescription, createPromiseSignal } from '@xmcl/runtime-api'
+import {
+  SharedState,
+  PeerState,
+  SetRemoteDescriptionOptions,
+  TransferDescription,
+  createPromiseSignal,
+} from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import EventEmitter from 'events'
 import { promisify } from 'util'
@@ -12,7 +18,7 @@ import { createIceServersProvider, getKey } from './iceServers'
 import { createLanDiscover } from './lanDiscover'
 import { exposeLocalPort, parseCandidate } from './mapAndGetPortCanidate'
 import { raceNatType } from './nat'
-import { createPeerGroup } from './peerGorup'
+import { createPeerGroup, MultiplayerRoomApi } from './peerGorup'
 import { createPeerSharing } from './peerSharing'
 import { createPeerUserInfo } from './peerUserInfo'
 import { InitiateOptions, Peers } from './peers'
@@ -28,7 +34,7 @@ async function decode(description: string): Promise<TransferDescription> {
   return JSON.parse((await pBrotliDecompress(Buffer.from(description, 'base64'))).toString('utf-8'))
 }
 
-export function createMultiplayer() {
+export function createMultiplayer(roomApi: MultiplayerRoomApi) {
   const peers = new Peers()
   const state = createPromiseSignal<SharedState<PeerState>>()
   const emitter = new EventEmitter()
@@ -48,43 +54,63 @@ export function createMultiplayer() {
   const sharing = createPeerSharing(peers)
   const userInfo = createPeerUserInfo()
   const host = createHosting(peers)
-  const group = createPeerGroup(idSignal, peers, userInfo.getUserInfo, initiate, setRemoteDescription, (gstate) => {
-    state.then(s => s.groupStateSet(gstate))
-  }, (e) => {
-    state.then(s => {
-      if (e instanceof Error) {
-        s.groupErrorSet({
-          message: e.message,
-          name: e.name,
-          stack: e.stack,
-        })
-      }
-      console.warn(e)
-    })
-  }, (id) => {
-    state.then(s => s.groupSet({ group: id, state: 'connected' }))
-  }, () => {
-    state.then(s => s.groupSet({ group: '', state: 'closed' }))
-  }, (sender, profile) => {
-    state.then(s => {
-      const target = peers.get(sender)
-      if (target) {
-        s.connectionUserInfo({ id: target.id, info: profile })
-      }
-    })
-  }, (ping, timestamp) => {
-    state.then(s => s.pingSet({ ping, timestamp }))
-  })
+  const group = createPeerGroup(
+    idSignal,
+    peers,
+    userInfo.getUserInfo,
+    initiate,
+    setRemoteDescription,
+    roomApi,
+    (gstate) => {
+      state.then((s) => s.groupStateSet(gstate))
+    },
+    (e) => {
+      state.then((s) => {
+        if (e instanceof Error) {
+          s.groupErrorSet({
+            message: e.message,
+            name: e.name,
+            stack: e.stack,
+          })
+        }
+        console.warn(e)
+      })
+    },
+    (admission) => {
+      state.then((s) =>
+        s.groupSet({
+          group: admission.roomId,
+          state: 'connecting',
+          role: admission.role,
+          maxPeers: admission.maxPeers ?? 0,
+        }),
+      )
+    },
+    () => {
+      state.then((s) => s.groupSet({ group: '', state: 'closed', role: '', maxPeers: 0 }))
+    },
+    (sender, profile) => {
+      state.then((s) => {
+        const target = peers.get(sender)
+        if (target) {
+          s.connectionUserInfo({ id: target.id, info: profile })
+        }
+      })
+    },
+    (ping, timestamp) => {
+      state.then((s) => s.pingSet({ ping, timestamp }))
+    },
+  )
 
   state.then((s) => {
     s.subscribe('exposedPortsSet', (ports) => {
-      discover.setExposedPorts(ports.map(p => p[0]))
+      discover.setExposedPorts(ports.map((p) => p[0]))
     })
-    discover.setExposedPorts(s.exposedPorts.map(p => p[0]))
+    discover.setExposedPorts(s.exposedPorts.map((p) => p[0]))
   })
 
   peers.onremove = (id) => {
-    state.then(s => s.connectionDrop(id))
+    state.then((s) => s.connectionDrop(id))
   }
 
   const facotry: PeerConnectionFactory = {
@@ -99,14 +125,17 @@ export function createMultiplayer() {
       console.log('Use node data channel', server)
       try {
         if (_RTCPeerConnection && _PeerConnection) {
-          return new _RTCPeerConnection({
-            iceServers: server ? [server] : [],
-            iceTransportPolicy: 'all',
-            portRangeBegin: privatePort,
-            portRangeEnd: privatePort,
-            enableIceUdpMux: true,
-            // @ts-ignore
-          }, _PeerConnection)
+          return new _RTCPeerConnection(
+            {
+              iceServers: server ? [server] : [],
+              iceTransportPolicy: 'all',
+              portRangeBegin: privatePort,
+              portRangeEnd: privatePort,
+              enableIceUdpMux: true,
+            },
+            // @ts-expect-error node-datachannel polyfill accepts its native constructor here.
+            _PeerConnection,
+          )
         } else {
           return new RTCPeerConnection({
             iceServers: server ? [server] : [],
@@ -128,26 +157,33 @@ export function createMultiplayer() {
     facotry,
     (server, ping) => {
       console.log('Valid ice server', server)
-      state.then(s => s.validIceServerSet(Array.from(new Set([...s.validIceServers, getKey(server)]))))
+      state.then((s) =>
+        s.validIceServerSet(Array.from(new Set([...s.validIceServers, getKey(server)]))),
+      )
       if (ping) {
         const rawKey = getKey(server)
         const key = rawKey.split(':')[1] || rawKey
-        state.then(s => s.iceServerPingSet({ server: key, ping }))
+        state.then((s) => s.iceServerPingSet({ server: key, ping }))
       }
       debouncedRefreshNat()
     },
     (ip) => {
       console.log('Public ip', ip)
-      state.then(s => s.ipsSet(Array.from(new Set([...s.ips, ip]))))
+      state.then((s) => s.ipsSet(Array.from(new Set([...s.ips, ip]))))
     },
     (meta) => {
-      state.then(s => s.turnserversSet(meta))
+      state.then((s) => s.turnserversSet(meta))
     },
+    roomApi.getIceServerCredential,
   )
   const portCandidate = 35565
 
-  const createContext = (remoteId: string | undefined, targetIceServer: RTCIceServer | undefined, preferredIceServers: Array<RTCIceServer>): PeerContext => {
-    const isAllowTurn = () => localStorage.getItem('peerAllowTurn') === 'true'
+  const createContext = (
+    remoteId: string | undefined,
+    targetIceServer: RTCIceServer | undefined,
+    preferredIceServers: Array<RTCIceServer>,
+  ): PeerContext => {
+    const isAllowTurn = () => localStorage.getItem('peerAllowTurn') !== 'false'
     let stunIndex = 0
     let turnIndex = 0
     let current: RTCIceServer | undefined
@@ -170,7 +206,7 @@ export function createMultiplayer() {
         if (isAllowTurn() && turns.length > 0) {
           const preferredTurn = localStorage.getItem('peerPreferredTurn')
           if (preferredTurn) {
-            const index = turns.findIndex(s => s.urls.includes(preferredTurn))
+            const index = turns.findIndex((s) => s.urls.includes(preferredTurn))
             if (index !== -1) {
               const cur = turns[index]
               current = cur
@@ -195,10 +231,10 @@ export function createMultiplayer() {
         return cur
       },
       onHeartbeat: (session, ping) => {
-        state.then(s => s.connectionPing({ id: session, ping }))
+        state.then((s) => s.connectionPing({ id: session, ping }))
       },
       onInstanceShared: (session, manifest) => {
-        state.then(s => s.connectionShareManifest({ id: session, manifest }))
+        state.then((s) => s.connectionShareManifest({ id: session, manifest }))
       },
       onDescriptorUpdate: (session, sdp, type, candidates) => {
         console.log(candidates)
@@ -209,50 +245,46 @@ export function createMultiplayer() {
           console.log(`Send local description ${remoteId}: ${sdp} ${type}`)
           // Send to the group if the remoteId is set
           const [stuns] = iceServers.get(preferredIceServers)
-          if (current) {
-            group.getGroup()?.sendLocalDescription(remoteId, sdp, type, candidates, current, stuns, () => {
-              const sess = peers.get(session)
-              // not retry if the connection is established
-              if (sess && sess.isDataChannelEstablished()) return false
-              return true
-            }).then(v => {
-              if (!v) return
-              // remove this peer
-              const sess = peers.get(session)
-              if (sess) {
-                if (!sess.isDataChannelEstablished()) {
-                  peers.get(session)?.close()
-                  peers.remove(session)
-                  state.then(s => s.connectionDrop(session))
-                }
-              }
-            })
+          if (current && (type === 'offer' || type === 'answer')) {
+            group
+              .getGroup()
+              ?.sendLocalDescription(remoteId, sdp, type, candidates, current, stuns, () => true)
+              .catch(console.error)
           }
         }
 
-        const candidate = candidates.find(c => c.candidate.indexOf('typ srflx') !== -1)
+        const candidate = candidates.find((c) => c.candidate.indexOf('typ srflx') !== -1)
         if (candidate) {
           const [ip, port] = parseCandidate(candidate.candidate)
           if (ip && port) {
             exposeLocalPort(portCandidate, Number(port)).catch((e) => {
-              if (e.name === 'Error') { e.name = 'MapNatError' }
+              if (e.name === 'Error') {
+                e.name = 'MapNatError'
+              }
               console.error(e)
             })
           }
         }
 
-        pBrotliCompress(JSON.stringify(payload)).then((s) => s.toString('base64')).then((compressed) => {
-          state.then(s => s.connectionLocalDescription({ id: payload.session, description: compressed }))
-        })
+        pBrotliCompress(JSON.stringify(payload))
+          .then((s) => s.toString('base64'))
+          .then((compressed) => {
+            state.then((s) =>
+              s.connectionLocalDescription({ id: payload.session, description: compressed }),
+            )
+          })
       },
       onIdentity: (session, info) => {
         const p = peers.get(session)
         if (p) {
           p.remoteInfo = info
         }
-        state.then(s => s.connectionUserInfo({ id: session, info }))
+        state.then((s) => s.connectionUserInfo({ id: session, info }))
       },
       onLanMessage: discover.onLanMessage,
+      onConnectionEstablished: () => {
+        if (remoteId) group.getGroup()?.markConnected(remoteId)
+      },
       getUserInfo: userInfo.getUserInfo,
       getSharedInstance: sharing.getSharedInstance,
       getShadedInstancePath: sharing.getShadedInstancePath,
@@ -276,6 +308,7 @@ export function createMultiplayer() {
     const remoteId = options.remoteId
     const sessionId = options.session || randomUUID()
     const preferredIceServers = options.preferredIceServers || []
+    let roomReconnectAttempts = 0
 
     console.log(`Create peer connection to [${remoteId}]. Is initiator: ${initiator}`)
     const privatePort = portCandidate
@@ -284,42 +317,89 @@ export function createMultiplayer() {
       const ice = ctx.getNextIceServer()
 
       if (ice) {
-        state.then(s => s.connectionIceServersSet({ id: sessionId, iceServer: ice }))
+        state.then((s) => s.connectionIceServersSet({ id: sessionId, iceServer: ice }))
       }
 
       const co = facotry.createConnection(ice, privatePort)
 
       co.onsignalingstatechange = () => {
-        state.then(s => s.signalingStateChange({ id: sessionId, signalingState: co.signalingState }))
+        state.then((s) =>
+          s.signalingStateChange({ id: sessionId, signalingState: co.signalingState }),
+        )
       }
       co.onicegatheringstatechange = () => {
-        state.then(s => s.iceGatheringStateChange({ id: sessionId, iceGatheringState: co.iceGatheringState }))
+        state.then((s) =>
+          s.iceGatheringStateChange({ id: sessionId, iceGatheringState: co.iceGatheringState }),
+        )
       }
       co.onconnectionstatechange = () => {
-        // const pair = co.getSelectedCandidatePair()
-        // if (pair) {
-        //   console.log('Select pair %o', pair)
-        //   state?.connectionSelectedCandidate({
-        //     id: sessionId,
-        //     remote: pair.remote as any,
-        //     local: pair.local as any,
-        //   })
-        // }
-        state.then(s => s.connectionStateChange({ id: sessionId, connectionState: co.connectionState }))
-        if (co.connectionState === 'closed' || co.connectionState === 'disconnected' || co.connectionState === 'failed') {
+        const pair = (
+          co as RTCPeerConnection & {
+            getSelectedCandidatePair?: () => {
+              local: {
+                address: string
+                port: number
+                type: 'host' | 'prflx' | 'srflx' | 'relay'
+                protocol?: 'udp' | 'tcp'
+              }
+              remote: {
+                address: string
+                port: number
+                type: 'host' | 'prflx' | 'srflx' | 'relay'
+                protocol?: 'udp' | 'tcp'
+              }
+            }
+          }
+        ).getSelectedCandidatePair?.()
+        if (pair) {
+          state.then((s) =>
+            s.connectionSelectedCandidate({
+              id: sessionId,
+              local: { ...pair.local, transportType: pair.local.protocol ?? 'udp' },
+              remote: { ...pair.remote, transportType: pair.remote.protocol ?? 'udp' },
+            }),
+          )
+        }
+        state.then((s) =>
+          s.connectionStateChange({ id: sessionId, connectionState: co.connectionState }),
+        )
+        if (co.connectionState === 'connected' && remoteId) {
+          roomReconnectAttempts = 0
+          group.getGroup()?.markConnected(remoteId)
+        }
+        if (
+          co.connectionState === 'closed' ||
+          co.connectionState === 'disconnected' ||
+          co.connectionState === 'failed'
+        ) {
           if (sess.isClosed) {
             // Close by user manually
             peers.remove(sessionId)
-            state.then(s => s.connectionDrop(sessionId))
+            state.then((s) => s.connectionDrop(sessionId))
           } else {
-            if (initiator) {
+            const activeRoom = group.getGroup()
+            if (activeRoom) {
+              if (initiator && activeRoom.role === 'host' && roomReconnectAttempts < 6) {
+                roomReconnectAttempts++
+                const next = create(ctx, sessionId)
+                sess.setConnection(next)
+                sess.initiate()
+              } else {
+                if (remoteId && activeRoom.role === 'host') {
+                  activeRoom.removePeer(remoteId)
+                }
+                sess.close()
+                peers.remove(sessionId)
+                state.then((s) => s.connectionDrop(sessionId))
+              }
+            } else if (initiator) {
               // unexpected close! reconnect
               const s = create(ctx, sessionId)
               sess.setConnection(s)
               sess.initiate()
             } else {
               peers.remove(sessionId)
-              state.then(s => s.connectionDrop(sessionId))
+              state.then((s) => s.connectionDrop(sessionId))
             }
           }
         }
@@ -332,29 +412,31 @@ export function createMultiplayer() {
       group.getGroup()?.sendWho(remoteId)
     }
 
-    state.then(s => s.connectionAdd({
-      id: sessionId,
-      initiator,
-      remoteId: remoteId ?? '',
-      userInfo: {
-        name: '',
-        id: '',
-        textures: {
-          SKIN: { url: '' },
+    state.then((s) =>
+      s.connectionAdd({
+        id: sessionId,
+        initiator,
+        remoteId: remoteId ?? '',
+        userInfo: {
+          name: '',
+          id: '',
+          textures: {
+            SKIN: { url: '' },
+          },
+          avatar: '',
         },
-        avatar: '',
-      },
-      iceServer: { urls: [] },
-      triedIceServers: [],
-      preferredIceServers,
-      ping: -1,
-      signalingState: 'closed',
-      localDescriptionSDP: '',
-      iceGatheringState: 'new',
-      connectionState: 'new',
-      sharing: undefined,
-      selectedCandidate: undefined,
-    }))
+        iceServer: { urls: [] },
+        triedIceServers: [],
+        preferredIceServers,
+        ping: -1,
+        signalingState: 'closed',
+        localDescriptionSDP: '',
+        iceGatheringState: 'new',
+        connectionState: 'new',
+        sharing: undefined,
+        selectedCandidate: undefined,
+      }),
+    )
 
     const ctx = createContext(remoteId, options.targetIceServer, preferredIceServers)
     const sess = new PeerSession(sessionId, create(ctx, sessionId), ctx)
@@ -371,16 +453,37 @@ export function createMultiplayer() {
     return sess
   }
 
-  function setRemoteDescription({ sdp, candidates, id: sender, session }: TransferDescription, type: 'offer' | 'answer', targetIceServer?: RTCIceServer, preferredIceServers?: RTCIceServer[]) {
+  function setRemoteDescription(
+    { sdp, candidates, id: sender, session }: TransferDescription,
+    type: 'offer' | 'answer',
+    targetIceServer?: RTCIceServer,
+    preferredIceServers?: RTCIceServer[],
+  ) {
     let sess = peers.get(session, sender)
 
     const newPeer = !sess
     if (!sess) {
       console.log(`Not found the ${sender}. Initiate new connection`)
       // Try to connect to the sender
-      sess = initiate({ remoteId: sender, session, initiate: false, targetIceServer, preferredIceServers })
+      sess = initiate({
+        remoteId: sender,
+        session,
+        initiate: false,
+        targetIceServer,
+        preferredIceServers,
+      })
     } else if (targetIceServer) {
       sess.context.setTargetIceServer(targetIceServer)
+    }
+
+    const currentRemote = sess.connection.remoteDescription
+    if (currentRemote?.type === type && currentRemote.sdp === sdp) {
+      for (const { candidate, mid } of candidates) {
+        sess.connection.addIceCandidate({ candidate, sdpMid: mid }).catch(() => {
+          // Candidate updates can repeat while the local descriptor is debounced.
+        })
+      }
+      return sess.id
     }
 
     // const currentIceServer = sess.context.getCurrentIceServer()
@@ -393,7 +496,10 @@ export function createMultiplayer() {
     console.log(`Set remote ${type} description: ${sdp}`)
     console.log(candidates)
     const sState = sess.connection.signalingState
-    if ((sState === 'stable' || sState === 'have-local-offer') && !sess.isDataChannelEstablished()) {
+    if (
+      (sState === 'stable' || sState === 'have-local-offer') &&
+      !sess.isDataChannelEstablished()
+    ) {
       try {
         sess.setRemoteDescription({ sdp, type })
         for (const { candidate, mid } of candidates) {
@@ -419,12 +525,16 @@ export function createMultiplayer() {
       await Promise.all([
         s.natDeviceInfo
           ? Promise.resolve()
-          : getDeviceInfo().then((i) => {
-            if (i) { s.natDeviceSet(i) }
-          }).catch(e => {
-            console.error('Failed to get NAT device info:', e)
-          }),
-        raceNatType(s, (await iceServers.get())[0]).catch(e => {
+          : getDeviceInfo()
+              .then((i) => {
+                if (i) {
+                  s.natDeviceSet(i)
+                }
+              })
+              .catch((e) => {
+                console.error('Failed to get NAT device info:', e)
+              }),
+        raceNatType(s, (await iceServers.get())[0]).catch((e) => {
           console.error('Failed to race NAT type:', e)
         }),
       ])
@@ -462,8 +572,11 @@ export function createMultiplayer() {
     async drop(id: string): Promise<void> {
       const existed = peers.get(id)
       if (existed) {
+        if (existed.remoteId) {
+          group.getGroup()?.removePeer(existed.remoteId, true)
+        }
         existed.close()
-        state.then(s => s.connectionDrop(id))
+        state.then((s) => s.connectionDrop(id))
       }
     },
 

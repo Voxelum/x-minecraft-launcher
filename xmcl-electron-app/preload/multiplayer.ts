@@ -5,11 +5,13 @@ import './controller'
 import { serviceChannels } from './service'
 
 let inited = false
-ipcRenderer.invoke('multiplayer-init').then((payload: { appDataPath: string; resourcePath: string; sessionId: string }) => {
-  init(payload.appDataPath, payload.resourcePath, payload.sessionId)
-  emitter.emit('ready')
-  inited = true
-})
+ipcRenderer
+  .invoke('multiplayer-init')
+  .then((payload: { appDataPath: string; resourcePath: string; sessionId: string }) => {
+    init(payload.appDataPath, payload.resourcePath, payload.sessionId)
+    emitter.emit('ready')
+    inited = true
+  })
 
 ipcRenderer.on('peer-instance-shared', (_, options) => {
   shareInstance(options)
@@ -17,38 +19,52 @@ ipcRenderer.on('peer-instance-shared', (_, options) => {
 
 let stateReady = false
 const peerServ = serviceChannels.open(PeerServiceKey)
-peerServ.call('getPeerState').then((state) => state).then(state => {
-  for (const key of Object.getOwnPropertyNames(PeerState.prototype)) {
-    if (key === 'constructor' || (state as any)[key]) continue
-    if (typeof (PeerState.prototype as any)[key] === 'function') {
-      (state as any)[key] = (...args: any[]) => (state as any).commit(key, ...args)
+peerServ
+  .call('getPeerState')
+  .then((state) => state)
+  .then((state) => {
+    for (const key of Object.getOwnPropertyNames(PeerState.prototype)) {
+      if (key === 'constructor' || (state as any)[key]) continue
+      if (typeof (PeerState.prototype as any)[key] === 'function') {
+        ;(state as any)[key] = (...args: any[]) => (state as any).commit(key, ...args)
+      }
     }
-  }
-  state.subscribeAll((mutation, payload) => {
-    ((PeerState.prototype as any)[mutation] as Function | undefined)?.call(state, payload)
+    state.subscribeAll((mutation, payload) => {
+      ;((PeerState.prototype as any)[mutation] as Function | undefined)?.call(state, payload)
+    })
+    setState(state)
+    stateReady = true
   })
-  setState(state)
-  stateReady = true
-})
 
 const userServ = serviceChannels.open(UserServiceKey)
-userServ.call('getUserState').then((state) => state).then(state => {
-  let updated = false
-  if (Object.values(state.users).some(u => u.authority === AUTHORITY_MICROSOFT)) {
-    updateIceServers()
-    updated = true
-  }
-  if (!updated) {
-    state.subscribe('userProfile', (p) => {
-      if (p.authority === AUTHORITY_MICROSOFT) {
-        updateIceServers()
-        updated = true
-      }
-    })
-  }
-})
+userServ
+  .call('getUserState')
+  .then((state) => state)
+  .then((state) => {
+    let updated = false
+    if (Object.values(state.users).some((u) => u.authority === AUTHORITY_MICROSOFT)) {
+      updateIceServers()
+      updated = true
+    }
+    if (!updated) {
+      state.subscribe('userProfile', (p) => {
+        if (p.authority === AUTHORITY_MICROSOFT) {
+          updateIceServers()
+          updated = true
+        }
+      })
+    }
+  })
 
-const { init, emitter, shareInstance, setState, host, updateIceServers, ...peer } = createMultiplayer()
+const { init, emitter, shareInstance, setState, host, updateIceServers, ...peer } =
+  createMultiplayer({
+    createRoom: (displayName, maxPeers) =>
+      ipcRenderer.invoke('multiplayer-room-create', { displayName, maxPeers }),
+    joinRoom: (roomId, displayName) =>
+      ipcRenderer.invoke('multiplayer-room-join', { roomId, displayName }),
+    closeRoom: (roomId) => ipcRenderer.invoke('multiplayer-room-close', roomId),
+    getIceServerCredential: () => ipcRenderer.invoke('multiplayer-ice-servers'),
+  })
 
 listen(host, 25566, (p) => p + 2).then((s) => {
   ipcRenderer.invoke('multiplayer-port', s)
@@ -59,11 +75,16 @@ const multiplayer = {
   refreshNat: peer.refreshNat,
   isNatSupported: peer.isNatSupported,
   isReady: () => inited && stateReady,
-  on: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.on(eventName, listener),
-  once: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.once(eventName, listener),
-  off: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.off(eventName, listener),
-  addListener: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.addListener(eventName, listener),
-  removeListener: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.removeListener(eventName, listener),
+  on: (eventName: string | symbol, listener: (...args: any[]) => void) =>
+    emitter.on(eventName, listener),
+  once: (eventName: string | symbol, listener: (...args: any[]) => void) =>
+    emitter.once(eventName, listener),
+  off: (eventName: string | symbol, listener: (...args: any[]) => void) =>
+    emitter.off(eventName, listener),
+  addListener: (eventName: string | symbol, listener: (...args: any[]) => void) =>
+    emitter.addListener(eventName, listener),
+  removeListener: (eventName: string | symbol, listener: (...args: any[]) => void) =>
+    emitter.removeListener(eventName, listener),
 }
 
 contextBridge.exposeInMainWorld('multiplayer', multiplayer)

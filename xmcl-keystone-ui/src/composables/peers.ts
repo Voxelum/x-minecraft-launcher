@@ -20,7 +20,7 @@ export function usePeerConnections() {
   watch(state, (s) => {
     if (!s) return
     s.subscribe('connectionShareManifest', ({ id, manifest }) => {
-      const info = s.connections.find(c => c.id === id)
+      const info = s.connections.find((c) => c.id === id)
       const name = info?.userInfo.name || id.substring(0, 6)
       const show = () => {
         if (manifest) {
@@ -28,31 +28,38 @@ export function usePeerConnections() {
             icon: info?.userInfo.avatar,
             title: t('multiplayer.sharingNotificationTitle'),
             body: t('multiplayer.sharingNotificationBody', { name }),
-            operations: [{
-              text: t('shared.download'),
-              icon: 'download',
-              handler() {
-                showShareInstance(manifest)
+            operations: [
+              {
+                text: t('shared.download'),
+                icon: 'download',
+                handler() {
+                  showShareInstance(manifest)
+                },
               },
-            }, {
-              text: t('instances.add'),
-              icon: 'add',
-              color: 'primary',
-              handler() {
-                showAddInstance({
-                  format: 'manifest',
-                  manifest,
-                })
+              {
+                text: t('instances.add'),
+                icon: 'add',
+                color: 'primary',
+                handler() {
+                  showAddInstance({
+                    format: 'manifest',
+                    manifest,
+                  })
+                },
               },
-            }],
+            ],
           })
         }
       }
       if (!document.hasFocus()) {
         windowController.flashFrame()
-        window.addEventListener('focus', () => {
-          show()
-        }, { once: true })
+        window.addEventListener(
+          'focus',
+          () => {
+            show()
+          },
+          { once: true },
+        )
       } else {
         show()
       }
@@ -67,7 +74,16 @@ export const kPeerState: InjectionKey<ReturnType<typeof usePeerState>> = Symbol(
 
 export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
   const { getPeerState, exposePort, unexposePort } = useService(PeerServiceKey)
-  const { initiate, setRemoteDescription, drop, refreshNat, isReady, setUserInfo, leaveGroup, joinGroup } = multiplayer
+  const {
+    initiate,
+    setRemoteDescription,
+    drop,
+    refreshNat,
+    isReady,
+    setUserInfo,
+    leaveGroup,
+    joinGroup,
+  } = multiplayer
 
   const { state } = useState(getPeerState, PeerState)
 
@@ -88,17 +104,23 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
   const connections = computed(() => state.value?.connections ?? [])
   const validIceServers = computed(() => state.value?.validIceServers ?? [])
   const ips = computed(() => state.value?.ips ?? [])
-  const exposedPorts = computed(() => state.value?.exposedPorts.map(v => v[0]) ?? [])
+  const exposedPorts = computed(() => state.value?.exposedPorts.map((v) => v[0]) ?? [])
 
-  watch(gameProfile, (p) => {
-    setUserInfo({
-      ...p,
-      name: p.name,
-      avatar: p.textures.SKIN.url,
-    })
-  }, { immediate: true })
+  watch(
+    gameProfile,
+    (p) => {
+      setUserInfo({
+        ...p,
+        name: p.name,
+        avatar: p.textures.SKIN.url,
+      })
+    },
+    { immediate: true },
+  )
 
   const group = computed(() => state.value?.group)
+  const groupRole = computed(() => state.value?.groupRole || '')
+  const groupMaxPeers = computed(() => state.value?.groupMaxPeers || 0)
   const groupState = computed(() => state.value?.groupState || 'closed')
   const icePings = computed(() => state.value?.icsServersPings || {})
   const groupPing = computed(() => state.value?.ping || NaN)
@@ -118,7 +140,9 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
       otherExposedPorts.value = b.map(({ port, session }) => {
         return {
           port,
-          user: connections.value.find(c => c.id === session)?.userInfo.name || session.substring(0, 6),
+          user:
+            connections.value.find((c) => c.id === session)?.userInfo.name ||
+            session.substring(0, 6),
         }
       })
       buffer = []
@@ -149,6 +173,8 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
     setRemoteDescription: _setRemoteDescription,
     initiate,
     group,
+    groupRole,
+    groupMaxPeers,
     icePings,
     groupPing,
     groupLastTimestamp,
