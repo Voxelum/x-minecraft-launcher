@@ -8,11 +8,8 @@ import {
 import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
 import { kPeerFacade } from './PeerServiceFacade'
-import { kClientToken } from '~/infra'
-import {
-  CommercialAccountService,
-  kCommercialSessionAuthorization,
-} from '~/commercialAccount/CommercialAccountService'
+import { kClientToken, kFlights } from '~/infra'
+import { kXmclSessionAuthorization, XmclAccountService } from '~/xmclAccount/XmclAccountService'
 import { resolveXmclApiBaseUrl } from '~/app/xmclApiBaseUrl'
 import type { MultiplayerIceServerCredential, MultiplayerRoomAdmission } from '@xmcl/runtime-api'
 import { UserService } from '~/user'
@@ -42,17 +39,18 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         sessionId,
       }
     })
-    const multiplayerApiBaseUrl = resolveXmclApiBaseUrl(
-      'https://xmcl-web-api.cijhn.workers.dev',
-      app.getLogger('MultiplayerApi'),
-    )
+    const getMultiplayerApiBaseUrl = async () => {
+      const flights = await app.registry.get(kFlights)
+      return resolveXmclApiBaseUrl(flights.xmclApiBaseUrl, app.getLogger('MultiplayerApi'))
+    }
     const requestRoom = async (
       path: string,
       init: RequestInit,
     ): Promise<MultiplayerRoomAdmission | undefined> => {
-      const account = await app.registry.get(CommercialAccountService)
-      const authorization = await account[kCommercialSessionAuthorization]()
-      if (!authorization) throw new Error('commercial_account_session_missing')
+      const account = await app.registry.get(XmclAccountService)
+      const authorization = await account[kXmclSessionAuthorization]()
+      if (!authorization) throw new Error('xmcl_account_session_missing')
+      const multiplayerApiBaseUrl = await getMultiplayerApiBaseUrl()
       const headers = new Headers(init.headers)
       headers.set('Content-Type', 'application/json')
       headers.set('authorization', ['Bearer', authorization.accessToken].join(' '))
@@ -101,6 +99,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     app.controller.handle(
       'multiplayer-ice-servers',
       async (): Promise<MultiplayerIceServerCredential> => {
+        const multiplayerApiBaseUrl = await getMultiplayerApiBaseUrl()
         const official = await app.registry
           .get(UserService)
           .then((service) => service.getOfficialUserProfile())
