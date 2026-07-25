@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { loginModrinth } from './loginModrinth'
 
@@ -14,17 +14,8 @@ function createStorage() {
   }
 }
 
-let previousApiBaseUrl: string | undefined
-
-afterEach(() => {
-  if (previousApiBaseUrl === undefined) delete process.env.XMCL_API_BASE_URL
-  else process.env.XMCL_API_BASE_URL = previousApiBaseUrl
-})
-
 describe('loginModrinth', () => {
   it('stores successful OAuth credentials once and emits one lifecycle signal', async () => {
-    previousApiBaseUrl = process.env.XMCL_API_BASE_URL
-    process.env.XMCL_API_BASE_URL = 'https://xmcl-web-api.cijhn.workers.dev/'
     const storage = createStorage()
     const app = Object.assign(new EventEmitter(), {
       secretStorage: storage,
@@ -35,6 +26,11 @@ describe('loginModrinth', () => {
       },
       controller: {
         requireFocus: vi.fn(),
+      },
+      registry: {
+        get: vi.fn().mockResolvedValue({
+          xmclApiBaseUrl: 'https://edge.example.test',
+        }),
       },
       fetch: vi.fn().mockResolvedValue({
         ok: true,
@@ -71,7 +67,8 @@ describe('loginModrinth', () => {
     })
     expect(changes).toHaveLength(1)
     expect(changes[0]).toMatchObject({ provider: 'modrinth', type: 'stored' })
-    expect(String(vi.mocked(app.fetch).mock.calls[0]![0]))
-      .toBe('https://xmcl-web-api.cijhn.workers.dev/modrinth/auth?code=authorization-code&redirect_uri=http%3A%2F%2F127.0.0.1%3A25555%2Fmodrinth-auth')
+    expect(String(vi.mocked(app.fetch).mock.calls[0]![0])).toBe(
+      'https://edge.example.test/modrinth/auth?code=authorization-code&redirect_uri=http%3A%2F%2F127.0.0.1%3A25555%2Fmodrinth-auth',
+    )
   })
 })

@@ -85,9 +85,10 @@ function getCommitsSince(pkg: PackageInfo): Commit[] {
 
   return output.split('\x1e').map((record) => {
     const [hash, subject, body] = record.split('\x1f')
-    if (!hash || !subject) return undefined
+    const normalizedHash = hash?.trim()
+    if (!normalizedHash || !subject) return undefined
     const parsed = parseCommit(body ? `${subject}\n\n${body}` : subject) as unknown as Commit
-    return { ...parsed, hash, header: subject }
+    return { ...parsed, hash: normalizedHash, header: subject }
   }).filter((commit): commit is Commit => !!commit)
 }
 
@@ -225,9 +226,10 @@ function getAppChangelog(version: string) {
   ], { encoding: 'utf8' })
   const commits = output.split('\x1e').map((record) => {
     const [hash, subject, body] = record.split('\x1f')
-    if (!hash || !subject) return undefined
+    const normalizedHash = hash?.trim()
+    if (!normalizedHash || !subject) return undefined
     const parsed = parseCommit(body ? `${subject}\n\n${body}` : subject) as unknown as Commit
-    return { ...parsed, hash, header: subject }
+    return { ...parsed, hash: normalizedHash, header: subject }
   }).filter((commit): commit is Commit => !!commit)
 
   const sections = [

@@ -3,9 +3,7 @@ import { DEFAULT_XMCL_API_BASE_URL, resolveXmclApiBaseUrl } from './xmclApiBaseU
 
 describe('resolveXmclApiBaseUrl', () => {
   it('normalizes a HTTPS origin and strips trailing slashes', () => {
-    expect(resolveXmclApiBaseUrl('https://xmcl-web-api.cijhn.workers.dev///')).toBe(
-      'https://xmcl-web-api.cijhn.workers.dev',
-    )
+    expect(resolveXmclApiBaseUrl('https://edge.example.test///')).toBe('https://edge.example.test')
   })
 
   it('falls back safely and warns when the override is not a HTTPS origin', () => {
@@ -13,7 +11,11 @@ describe('resolveXmclApiBaseUrl', () => {
 
     expect(resolveXmclApiBaseUrl('http://example.test/api', logger)).toBe(DEFAULT_XMCL_API_BASE_URL)
     expect(logger.warn).toHaveBeenCalledWith(
-      'Ignoring invalid XMCL_API_BASE_URL; using the default XMCL API origin.',
+      'Ignoring invalid xmclApiBaseUrl flight; using the default XMCL API origin.',
     )
+  })
+
+  it('uses the production API when the flight is absent', () => {
+    expect(resolveXmclApiBaseUrl(undefined)).toBe(DEFAULT_XMCL_API_BASE_URL)
   })
 })

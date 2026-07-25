@@ -1,0 +1,190 @@
+import type { ServiceKey } from './Service'
+
+/** Default OpenAI-compatible agent endpoint. The API key is stored separately. */
+export const DEFAULT_AGENT_ENDPOINT = 'https://apihub.agnes-ai.com/v1/chat/completions'
+/** Default agent model identifier. */
+export const DEFAULT_AGENT_MODEL = 'agnes-2.0-flash'
+/** Conservative context window assumed for OpenAI-compatible agent models. */
+export const AGENT_MODEL_CONTEXT_WINDOW = 128_000
+/** Conservative max output tokens assumed for OpenAI-compatible agent models. */
+export const AGENT_MODEL_MAX_TOKENS = 8_192
+
+/** Strip the trailing `/chat/completions` and any trailing slashes to derive a base URL. */
+export function normalizeAgentBaseUrl(endpoint: string) {
+  return endpoint.trim().replace(/\/chat\/completions\/?$/i, '').replace(/\/+$/, '')
+}
+
+/** Derive a stable provider id from the configured endpoint. */
+export function resolveAgentProviderId(endpoint: string) {
+  return endpoint.includes('apihub.agnes-ai.com') ? 'agnes' : 'custom-openai'
+}
+
+export type AgentId = 'launcher' | 'css'
+
+export interface AgentConversationKey {
+  agentId: AgentId
+  scope: string
+}
+
+export interface AgentContentPart {
+  type: 'text' | 'image_url'
+  text?: string
+  image_url?: { url: string; detail?: 'auto' | 'low' | 'high' }
+}
+
+export interface AgentToolCall {
+  id: string
+  name: string
+  arguments: Record<string, unknown>
+}
+
+export interface AgentMessage {
+  role: 'system' | 'user' | 'assistant' | 'tool'
+  content: string | AgentContentPart[] | null
+  toolCalls?: AgentToolCall[]
+  toolCallId?: string
+  name?: string
+  isError?: boolean
+}
+
+export interface AgentConversation {
+  key: AgentConversationKey
+  messages: AgentMessage[]
+  context?: Record<string, unknown>
+  updatedAt?: number
+}
+
+export interface AgentProviderSettings {
+  endpoint: string
+  model: string
+  configured: boolean
+}
+
+export interface UpdateAgentProviderSettings {
+  endpoint: string
+  model: string
+  apiKey?: string
+}
+
+export type AgentRunState = 'running' | 'completed' | 'failed' | 'aborted'
+
+export interface LegacyConversationImport {
+  key: AgentConversationKey
+  messages: AgentMessage[]
+  context?: Record<string, unknown>
+  updatedAt?: number
+}
+
+export interface AgentRunEvent {
+  runId: string
+  seq: number
+  type: 'state' | 'message_delta' | 'message_end' | 'tool_start' | 'tool_end' | 'complete' | 'error'
+  state?: AgentRunState
+  message?: AgentMessage
+  delta?: string
+  toolCall?: AgentToolCall
+  toolResult?: { id: string; name: string; result: string; isError?: boolean }
+  error?: string
+}
+
+export interface AgentBridgeRegistration {
+  bridgeId: string
+}
+
+export interface AgentProviderStreamRequest {
+  bridgeId: string
+  requestId: string
+  context: Record<string, unknown>
+  options?: Record<string, unknown>
+}
+
+export type AgentProviderStreamEvent =
+  | {
+      bridgeId: string
+      requestId: string
+      type: 'event'
+      event: unknown
+    }
+  | {
+      bridgeId: string
+      requestId: string
+      type: 'error'
+      error: string
+    }
+
+export type AgentMarketProvider = 'modrinth' | 'curseforge'
+export type AgentMarketProjectType = 'mod' | 'resourcepack' | 'shader' | 'modpack' | 'datapack'
+
+export interface AgentMarketProject {
+  provider: AgentMarketProvider
+  projectType: AgentMarketProjectType
+  id: string
+  title: string
+  description: string
+  icon?: string
+  author?: string
+  downloads?: number
+}
+
+export interface AgentMarketProjectListPresentation {
+  type: 'market-project-list'
+  source: AgentMarketProvider
+  query: string
+  total: number
+  items: AgentMarketProject[]
+}
+
+export type AgentToolPresentation = AgentMarketProjectListPresentation
+
+export type AgentUiAction =
+  | { action: 'navigate'; path: string }
+  | { action: 'select_instance'; path: string }
+  | { action: 'select_account'; id: string }
+  | {
+      action: 'confirm'
+      message: string
+      title?: string
+      details?: string[]
+      confirmLabel?: string
+      destructive?: boolean
+    }
+  | { action: 'query_dom'; selector: string; limit?: number }
+  | { action: 'get_computed_style'; selector: string; properties?: string[] }
+  | { action: 'get_dom_outline'; selector?: string; maxDepth?: number }
+
+export interface AgentRunTrace {
+  runId: string
+  agentId: AgentId
+  provider: string
+  model: string
+  outcome: AgentRunState
+  stopReason: string
+  tools: Record<string, number>
+  turnCount: number
+  toolCallCount: number
+  toolFailureCount: number
+  inputTokens: number
+  outputTokens: number
+  durationMs: number
+  sampleRate: number
+}
+
+export interface AgentBridgeClient {
+  register(registration: AgentBridgeRegistration): Promise<void>
+  unregister(bridgeId: string): Promise<void>
+  stream(request: AgentProviderStreamRequest): Promise<void>
+  cancel(bridgeId: string, requestId: string): Promise<void>
+  onProviderEvent(listener: (event: AgentProviderStreamEvent) => void): () => void
+}
+
+export interface AgentService {
+  getProviderSettings(): Promise<AgentProviderSettings>
+  setProviderSettings(input: UpdateAgentProviderSettings): Promise<void>
+  getConversation(key: AgentConversationKey): Promise<AgentConversation>
+  appendConversationMessages(key: AgentConversationKey, messages: AgentMessage[]): Promise<void>
+  resetConversation(key: AgentConversationKey): Promise<void>
+  importLegacyConversation(input: LegacyConversationImport): Promise<'imported' | 'exists'>
+  reportRunTrace(trace: AgentRunTrace): Promise<void>
+}
+
+export const AgentServiceKey: ServiceKey<AgentService> = 'AgentService'

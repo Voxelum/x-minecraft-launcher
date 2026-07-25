@@ -10,7 +10,7 @@ import {
   stringifyShaderOptions,
 } from '@xmcl/runtime-api'
 import { FSWatcher } from 'chokidar'
-import { ensureDir, ensureFile, readdir, readFile, writeFile } from 'fs-extra'
+import { ensureDir, ensureFile, readdir, readFile, unlink, writeFile } from 'fs-extra'
 import { basename, dirname, join, resolve, sep } from 'path'
 import { Inject, kGameDataPath, LauncherAppKey, type PathResolver } from '~/app'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
@@ -146,6 +146,11 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     const target = this.#resolveConfigPath(instancePath, filePath)
     await ensureDir(dirname(target))
     await writeFile(target, content)
+  }
+
+  async removeInstanceConfig(instancePath: string, filePath: string): Promise<void> {
+    const target = this.#resolveConfigPath(instancePath, filePath)
+    await unlink(target)
   }
 
   async getEULA(instancePath: string): Promise<boolean> {

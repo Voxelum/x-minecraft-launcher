@@ -1,8 +1,9 @@
 import { BaseService } from '@xmcl/runtime/app'
+import { AgentService } from '@xmcl/runtime/agent'
 import { AuthlibInjectorService } from '@xmcl/runtime/authlibInjector'
 import { BedrockService } from '@xmcl/runtime/bedrock'
 import { CollectionService } from '@xmcl/runtime/collection'
-import { CommercialAccountService } from '@xmcl/runtime/commercialAccount'
+import { XmclAccountService } from '@xmcl/runtime/xmclAccount'
 import { ExternalCredentialService } from '@xmcl/runtime/credential/ExternalCredentialService'
 import { ElyByService } from '@xmcl/runtime/elyby'
 import { InstallService, VersionMetadataService } from '@xmcl/runtime/install'
@@ -42,11 +43,12 @@ export const definedServices = [
   // Main-process-only: it deliberately has no service key, so token access
   // cannot be invoked through renderer service IPC.
   ExternalCredentialService,
+  AgentService,
   VersionMetadataService,
   BaseService,
   AuthlibInjectorService,
   CollectionService,
-  CommercialAccountService,
+  XmclAccountService,
   BedrockService,
   InstallService,
   ProjectMappingService,

@@ -135,6 +135,12 @@ folder. The PR's file diff stays clean.
 
 ## Other conventions
 
+- Do not change project-wide compiler, build, lint, or workspace configuration
+  without explicit maintainer approval. This includes settings such as
+  `module`, `moduleResolution`, `target`, bundler behavior, lint rules, and
+  workspace/package-manager policy. Prefer a scoped adapter, shim, declaration,
+  or package-local workaround. If a shared config change is genuinely required,
+  stop and ask first, explaining the impact.
 - Dependency updates use `chore:` (not `fix:`). See `CONTRIBUTING.md`.
 - Type-check after edits with `pnpm check`. Lint with `pnpm lint`.
 - Do not modify `e2e/specs/showcase/01-..05-...spec.ts` (the canonical

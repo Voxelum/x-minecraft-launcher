@@ -4,6 +4,7 @@ import { UserService } from '../UserService'
 import { fetch as undiciFetch } from 'undici'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { resolveXmclApiBaseUrl } from '~/app/xmclApiBaseUrl'
+import { kFlights } from '~/infra'
 
 interface ModrinthOAuthResponse {
   access_token: string
@@ -22,8 +23,16 @@ export async function getModrinthAccessToken(
   return result.status === 'valid' ? result.accessToken : undefined
 }
 
-export async function loginModrinth(app: LauncherApp, userService: UserService, scopes: string[], invalidate: boolean, signal?: AbortSignal, credentials?: ExternalCredentialService) {
-  const credentialService = credentials ?? (await app.registry.getOrCreate(ExternalCredentialService))
+export async function loginModrinth(
+  app: LauncherApp,
+  userService: UserService,
+  scopes: string[],
+  invalidate: boolean,
+  signal?: AbortSignal,
+  credentials?: ExternalCredentialService,
+) {
+  const credentialService =
+    credentials ?? (await app.registry.getOrCreate(ExternalCredentialService))
   const token = invalidate ? undefined : await getModrinthAccessToken(app, credentialService)
 
   if (!token) {
@@ -37,7 +46,12 @@ export async function loginModrinth(app: LauncherApp, userService: UserService, 
     userService.emit('modrinth-authorize-url', url)
     const code = await new Promise<string>((resolve, reject) => {
       const abort = () => {
-        reject(new AnyError('AuthCodeTimeoutError', 'Timeout to wait the auth code! Please try again later!'))
+        reject(
+          new AnyError(
+            'AuthCodeTimeoutError',
+            'Timeout to wait the auth code! Please try again later!',
+          ),
+        )
       }
       signal?.addEventListener('abort', abort)
       userService.once('modrinth-authorize-code', (err, code) => {
@@ -49,24 +63,29 @@ export async function loginModrinth(app: LauncherApp, userService: UserService, 
         }
       })
     })
+    const flights = await app.registry.get(kFlights)
     const authUrl = new URL(
       '/modrinth/auth',
-      resolveXmclApiBaseUrl('https://xmcl-web-api.cijhn.workers.dev', app.getLogger('ApiBaseUrl')),
+      resolveXmclApiBaseUrl(flights.xmclApiBaseUrl, app.getLogger('ApiBaseUrl')),
     )
     authUrl.searchParams.set('code', code)
     authUrl.searchParams.set('redirect_uri', redirect_uri)
     const response = await app.fetch(authUrl)
     if (!response.ok) {
-      throw new AnyError('ModrinthAuthError', `Failed to get auth code: ${response.statusText}: ${await response.text()}`)
+      throw new AnyError(
+        'ModrinthAuthError',
+        `Failed to get auth code: ${response.statusText}: ${await response.text()}`,
+      )
     }
-    const data = await response.json() as ModrinthOAuthResponse
+    const data = (await response.json()) as ModrinthOAuthResponse
     const issuedAt = Date.now()
     await credentialService.store('modrinth', {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
       scopes: data.scope?.split(' ').filter(Boolean) ?? scopes,
       issuedAt,
-      expiresAt: typeof data.expires_in === 'number' ? issuedAt + data.expires_in * 1_000 : undefined,
+      expiresAt:
+        typeof data.expires_in === 'number' ? issuedAt + data.expires_in * 1_000 : undefined,
       providerMetadata: data.token_type ? { tokenType: data.token_type } : undefined,
     })
   }

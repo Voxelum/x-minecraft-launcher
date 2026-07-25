@@ -41,20 +41,71 @@
         {{ gamepadName || (isPlayStation ? 'PlayStation Controller' : 'Xbox / Steam Deck Controller') }}
       </div>
 
-      <div class="gp-qm-switch">
+      <div
+        class="gp-qm-switch cursor-pointer mb-2"
+        :class="{ 'gp-qm-switch--focused': zone === 'switch' && switchIndex === 0 }"
+        @click="autoEnable = !autoEnable"
+      >
         <div class="gp-qm-switch__text">
-          <div class="gp-qm-switch__label">{{ t('gamepad.enableSwitchLabel') }}</div>
-          <div class="gp-qm-switch__state">
-            {{ enabled ? t('gamepad.enabledState') : t('gamepad.disabledState') }}
-          </div>
+          <div class="gp-qm-switch__label">{{ t('gamepad.autoEnableLabel') }}</div>
         </div>
         <v-switch
-          :model-value="enabled"
+          v-model="autoEnable"
           color="primary"
           hide-details
           density="comfortable"
           inset
-          @update:model-value="(v) => setEnabled(!!v)"
+        />
+      </div>
+
+      <div
+        class="gp-qm-switch cursor-pointer mb-2"
+        :class="{ 'gp-qm-switch--focused': zone === 'switch' && switchIndex === 1 }"
+        @click="autoOpenKeyboard = !autoOpenKeyboard"
+      >
+        <div class="gp-qm-switch__text">
+          <div class="gp-qm-switch__label">{{ t('gamepad.autoOpenKeyboardLabel') }}</div>
+        </div>
+        <v-switch
+          v-model="autoOpenKeyboard"
+          color="primary"
+          hide-details
+          density="comfortable"
+          inset
+        />
+      </div>
+
+      <div
+        class="gp-qm-switch cursor-pointer mb-2"
+        :class="{ 'gp-qm-switch--focused': zone === 'switch' && switchIndex === 2 }"
+        @click="focusTooltips = !focusTooltips"
+      >
+        <div class="gp-qm-switch__text">
+          <div class="gp-qm-switch__label">{{ t('gamepad.focusTooltipsLabel') }}</div>
+        </div>
+        <v-switch
+          v-model="focusTooltips"
+          color="primary"
+          hide-details
+          density="comfortable"
+          inset
+        />
+      </div>
+
+      <div
+        class="gp-qm-switch cursor-pointer"
+        :class="{ 'gp-qm-switch--focused': zone === 'switch' && switchIndex === 3 }"
+        @click="disableModPrompt = !disableModPrompt"
+      >
+        <div class="gp-qm-switch__text">
+          <div class="gp-qm-switch__label">{{ t('gamepad.disableModPromptLabel') }}</div>
+        </div>
+        <v-switch
+          v-model="disableModPrompt"
+          color="primary"
+          hide-details
+          density="comfortable"
+          inset
         />
       </div>
 
@@ -67,20 +118,24 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useNotifier } from '@/composables/notifier'
 import { useCommandPaletteBus, useCommandPaletteVisible } from '@/composables/commandPalette'
 import { injection } from '@/util/inject'
-import { kGamepad } from '@/composables/gamepad'
+import { useGamepad } from '@/composables/gamepad'
 import './gamepad.css'
 
 const { t } = useI18n()
 const { notify } = useNotifier()
 const paletteBus = useCommandPaletteBus()
 
-const gamepad = injection(kGamepad)
+const gamepad = useGamepad()
 const enabled = gamepad.enabled
+const autoEnable = gamepad.autoEnable
+const autoOpenKeyboard = gamepad.autoOpenKeyboard
+const focusTooltips = gamepad.focusTooltips
+const disableModPrompt = gamepad.disableModPrompt
 const gamepadName = gamepad.name
 const buttonALabel = gamepad.buttonA
 const buttonBLabel = gamepad.buttonB
@@ -122,22 +177,36 @@ function close() {
   if (!enabled.value) gamepad.dismissPrompt()
 }
 
-// Two focus zones while the menu is open: the command list (palette) on the
-// left and the enable/disable switch (right card) on the right.
 type Zone = 'list' | 'switch'
 const zone = ref<Zone>('list')
+const switchIndex = ref<number>(0)
+const SWITCH_COUNT = 4
 
 const paletteInput = () => document.querySelector<HTMLElement>('.palette-card input')
-const switchInput = () => document.querySelector<HTMLElement>('.gp-qm-card--right input')
+
+function updateSwitchFocus() {
+  nextTick(() => {
+    const switches = Array.from(document.querySelectorAll<HTMLElement>('.gp-qm-card--right .gp-qm-switch'))
+    const target = switches[switchIndex.value]
+    if (target) {
+      const input = target.querySelector<HTMLElement>('input')
+      if (input) input.focus({ preventScroll: true })
+      else target.focus({ preventScroll: true })
+    }
+  })
+}
 
 function focusList() {
   zone.value = 'list'
   paletteInput()?.focus()
 }
-function focusSwitch() {
+
+function focusSwitch(index = 0) {
   zone.value = 'switch'
-  switchInput()?.focus()
+  switchIndex.value = Math.max(0, Math.min(index, SWITCH_COUNT - 1))
+  updateSwitchFocus()
 }
+
 /** Drive the palette's own keyboard navigation with a synthetic key event. */
 function sendToList(key: string) {
   const input = paletteInput()
@@ -147,15 +216,58 @@ function sendToList(key: string) {
 }
 
 function onNavigate(dir: 'up' | 'down' | 'left' | 'right') {
-  if (dir === 'right') { focusSwitch(); return }
-  if (dir === 'left') { focusList(); return }
-  // Up / down only mean something on the command list.
-  if (zone.value === 'list') sendToList(dir === 'up' ? 'ArrowUp' : 'ArrowDown')
+  if (zone.value === 'list') {
+    if (dir === 'right') {
+      focusSwitch(0)
+      return
+    }
+    sendToList(dir === 'up' ? 'ArrowUp' : 'ArrowDown')
+    return
+  }
+
+  if (dir === 'left') {
+    focusList()
+    return
+  }
+  if (dir === 'up') {
+    if (switchIndex.value > 0) {
+      focusSwitch(switchIndex.value - 1)
+    } else {
+      focusList()
+    }
+    return
+  }
+  if (dir === 'down') {
+    if (switchIndex.value < SWITCH_COUNT - 1) {
+      focusSwitch(switchIndex.value + 1)
+    }
+    return
+  }
+}
+
+function toggleCurrentSwitch() {
+  switch (switchIndex.value) {
+    case 0:
+      autoEnable.value = !autoEnable.value
+      break
+    case 1:
+      autoOpenKeyboard.value = !autoOpenKeyboard.value
+      break
+    case 2:
+      focusTooltips.value = !focusTooltips.value
+      break
+    case 3:
+      disableModPrompt.value = !disableModPrompt.value
+      break
+  }
 }
 
 function onConfirm() {
-  if (zone.value === 'switch') setEnabled(!enabled.value)
-  else sendToList('Enter')
+  if (zone.value === 'switch') {
+    toggleCurrentSwitch()
+  } else {
+    sendToList('Enter')
+  }
 }
 
 // While the menu is open: left/right switch zones, A confirms in the current
@@ -229,11 +341,25 @@ watch(visible, (v) => {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 8px 4px 8px 12px;
+  padding: 8px 12px;
   border-radius: 14px;
   background: rgba(var(--v-theme-on-surface), 0.04);
   border: 1px solid rgba(var(--v-theme-on-surface), 0.06);
+  transition: all 0.2s ease;
 }
+.gp-qm-switch--focused {
+  background: rgba(var(--v-theme-primary), 0.15) !important;
+  border-color: rgba(var(--v-theme-primary), 0.6) !important;
+  box-shadow: 0 0 16px rgba(var(--v-theme-primary), 0.25) !important;
+}
+
+.gp-qm-switch :focus,
+.gp-qm-switch :focus-visible,
+.gp-qm-switch input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 .gp-qm-switch__label {
   font-size: 0.9rem;
   font-weight: 600;

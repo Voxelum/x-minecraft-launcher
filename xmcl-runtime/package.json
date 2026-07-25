@@ -1,7 +1,7 @@
 {
     "name": "@xmcl/runtime",
     "private": true,
-    "version": "0.60.0",
+    "version": "0.60.1",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "The runtime for x minecraft launcher in nodejs",
     "license": "MIT",
@@ -24,6 +24,7 @@
         "@azure/msal-common": "^16.11.1",
         "@azure/msal-node": "^5.4.0",
         "@azure/msal-node-extensions": "5.3.2",
+        "@earendil-works/pi-ai": "0.81.1",
         "@xmcl/client": "workspace:*",
         "@xmcl/core": "workspace:*",
         "@xmcl/curseforge": "workspace:*",

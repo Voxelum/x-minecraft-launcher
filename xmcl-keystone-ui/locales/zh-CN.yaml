@@ -54,8 +54,27 @@ agent:
   suggestion3: 构建一个整合包：为我想要的功能查找模组并安装到此实例
   thinking: 思考中…
   callingTool: 正在调用 {name}…
+  confirmTitle: 确认 Agent 操作
+  confirmCancel: 取消
+  confirmAccept: 继续
   inputPlaceholder: 向 Agent 提问…（Enter 发送，Shift+Enter 换行）
   disabledPlaceholder: Agent 已禁用
+  toolArguments: 参数
+  toolResult: 结果
+  toolRunning: 等待结果…
+  marketResultCount: 共 {count} 个结果
+  marketInstall: 安装
+  marketInstalled: 已安装
+  marketConfirmTitle: 安装{type}
+  marketConfirmMessage: 要将 {name} 安装到当前实例吗？
+  marketConfirmTarget: 目标：{instance}
+  marketInstallFailed: "{type}安装失败"
+  marketType:
+    datapack: 数据包
+    mod: 模组
+    modpack: 整合包
+    resourcepack: 资源包
+    shader: 光影包
   toggleHint: 切换
 ago:
   day: '{duration} 天前'
@@ -702,6 +721,9 @@ loginError:
     找不到游戏资料！
     如果您是新的Minecraft用户，请在Minecraft官方启动器中至少登录一次。
   requestFailed: 由于未知原因登录失败，请重试
+  xboxErrorGuideHint: 登录遇到问题？查看如何修复 Microsoft 和 Xbox 登录问题。
+  openLoginGuide: 如何修复此问题
+  openDiscordSupport: 仍需要帮助？加入 Discord
   requireEmail: 必须使用邮箱登录
   requirePassword: 请输入密码
   requireUsername: 用户名不能为空
@@ -1902,7 +1924,7 @@ versionType:
   beta: Beta (测试版)
   name: 类型
   release: 稳定版
-commercialAccount:
+xmclAccount:
   accountSummary: 账户
   confirmMerge: 确认合并账户
   createdAt: 创建于 {date}

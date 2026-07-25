@@ -1,4 +1,5 @@
 import { type InvalidDirectoryErrorCode } from '../services/BaseService'
+import { DEFAULT_AGENT_ENDPOINT, DEFAULT_AGENT_MODEL } from '../services/AgentService'
 import { type SettingSchema } from './setting.schema'
 import { type ReleaseInfo } from './update'
 
@@ -26,6 +27,8 @@ export class Settings implements SettingSchema {
   discordPresence = false
   developerMode = false
   disableTelemetry = false
+  agentEndpoint = DEFAULT_AGENT_ENDPOINT
+  agentModel = DEFAULT_AGENT_MODEL
   linuxTitlebar = false
   windowTranslucent = false
 
@@ -113,6 +116,8 @@ export class Settings implements SettingSchema {
     this.discordPresence = config.discordPresence
     this.developerMode = config.developerMode
     this.disableTelemetry = config.disableTelemetry
+    this.agentEndpoint = config.agentEndpoint
+    this.agentModel = config.agentModel
     this.linuxTitlebar = config.linuxTitlebar
     this.windowTranslucent = config.windowTranslucent
     this.enableDedicatedGPUOptimization = config.enableDedicatedGPUOptimization
@@ -207,6 +212,11 @@ export class Settings implements SettingSchema {
 
   disableTelemetrySet(disable: boolean) {
     this.disableTelemetry = disable
+  }
+
+  agentProviderSet(provider: { endpoint: string; model: string }) {
+    this.agentEndpoint = provider.endpoint
+    this.agentModel = provider.model
   }
 
   linuxTitlebarSet(enabled: boolean) {

@@ -157,6 +157,12 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         }
       }
     }
+    // Scale retained agent-run traces back up: the run is dropped client-side at
+    // (100 - keepPercent)%, so tell ingestion the effective sampling rate.
+    const agentSampleRate = contextObjects?.agentSampleRate
+    if (typeof agentSampleRate === 'number') {
+      envelope.sampleRate = agentSampleRate
+    }
     return true
   })
 
@@ -187,6 +193,38 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         reason,
         file,
       },
+    })
+  })
+
+  app.on('agent-run-trace', (payload) => {
+    app.registry.get(kSettings).then((settings) => {
+      if (settings.disableTelemetry) return
+      // payload.sampleRate is the percentage of runs to keep (25 = keep 1/4,
+      // 100 = keep all). Drop client-side, and set envelope.sampleRate so
+      // ingestion scales the retained counts back up.
+      const keepPercent = Math.max(1, Math.min(100, payload.sampleRate || 100))
+      if (Math.random() * 100 >= keepPercent) return
+      defaultClient.trackTrace({
+        message: 'agent-run',
+        properties: {
+          name: 'agent-run',
+          runId: payload.runId,
+          agentId: payload.agentId,
+          provider: payload.provider,
+          model: payload.model,
+          outcome: payload.outcome,
+          stopReason: payload.stopReason,
+          tools: JSON.stringify(payload.tools).slice(0, 2048),
+          turnCount: String(payload.turnCount),
+          toolCallCount: String(payload.toolCallCount),
+          toolFailureCount: String(payload.toolFailureCount),
+          inputTokens: String(payload.inputTokens),
+          outputTokens: String(payload.outputTokens),
+          durationMs: String(payload.durationMs),
+          sampleRate: String(keepPercent),
+        },
+        contextObjects: { agentSampleRate: keepPercent },
+      })
     })
   })
 

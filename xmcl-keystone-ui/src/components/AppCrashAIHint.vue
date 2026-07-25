@@ -139,14 +139,14 @@ const platforms = computed(() => props.useCNAI
     { name: 'GLM', url: 'https://chatglm.cn/share/kFiK3rVp', icon: 'https://chatglm.cn/img/icons/favicon.svg', copyRaw: true },
     { name: '豆包', url: 'https://doubao.com/bot/uic8dYCs', icon: 'https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao/web/logo-icon.png', copyRaw: true },
     { name: 'Deepseek', url: 'https://chat.deepseek.com/', icon: 'https://chat.deepseek.com/favicon.svg', copyRaw: false },
-    { name: 'Qwen', url: 'https://www.tongyi.com/', icon: 'https://img.alicdn.com/imgextra/i4/O1CN01EfJVFQ1uZPd7W4W6V_!!6000000006052-2-tps-112-112.png', copyRaw: false },
+    { name: 'Qwen', url: 'https://www.tongyi.com/', icon: 'https://chat.qwen.ai/favicon.ico', copyRaw: false },
   ]
   : [
     { name: 'ChatGPT', url: 'https://chat.openai.com', icon: 'https://chat.openai.com/favicon.ico', copyRaw: false },
     { name: 'Gemini', url: 'https://gemini.google.com', icon: 'https://www.gstatic.com/lamda/images/gemini_sparkle_aurora_33f86dc0c0257da337c63.svg', copyRaw: false },
     { name: 'Deepseek', url: 'https://chat.deepseek.com/', icon: 'https://chat.deepseek.com/favicon.svg', copyRaw: false },
     { name: 'z.ai', url: 'https://chat.z.ai', icon: 'https://z-cdn.chatglm.cn/z-ai/static/logo.svg', copyRaw: false },
-    { name: 'Qwen', url: 'https://chat.qwen.ai/', icon: 'https://img.alicdn.com/imgextra/i4/O1CN01EfJVFQ1uZPd7W4W6V_!!6000000006052-2-tps-112-112.png', copyRaw: false },
+    { name: 'Qwen', url: 'https://chat.qwen.ai/', icon: 'https://chat.qwen.ai/favicon.ico', copyRaw: false },
   ])
 
 const copied = ref(false)

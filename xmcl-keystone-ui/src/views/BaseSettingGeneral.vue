@@ -148,11 +148,13 @@ const isElyBy = computed(() => userProfile.value.authority.startsWith('https://a
 
 const { t } = useI18n()
 
-// Gamepad X on the base-setting general tab launches the game.
-const { launch: launchGame } = injection(kInstanceLaunch)
+import { useLaunchButton } from '@/composables/launchButton'
+
+// Gamepad X on the base-setting general tab launches / cancels / stops the game.
+const { text: launchText, onClick: onLaunchClick } = useLaunchButton()
 useGamepadAction('X', {
-  label: () => t('gamepad.guide.launch'),
-  handler: () => launchGame(),
+  label: () => launchText.value,
+  handler: () => onLaunchClick(),
 })
 
 const changeIconModel = ref(false)

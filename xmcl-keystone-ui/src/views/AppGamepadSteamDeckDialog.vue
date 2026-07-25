@@ -59,13 +59,13 @@ import { useDialog } from '@/composables/dialog'
 import { useService } from '@/composables/service'
 import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import { kGamepad } from '@/composables/gamepad'
+import { useGamepad } from '@/composables/gamepad'
 import './gamepad.css'
 
 const { t } = useI18n()
 const { notify } = useNotifier()
 
-const gamepad = injection(kGamepad)
+const gamepad = useGamepad()
 const buttonALabel = gamepad.buttonA
 const buttonBLabel = gamepad.buttonB
 
