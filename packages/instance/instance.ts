@@ -158,6 +158,7 @@ export const InstanceDataSchema = z.object({
       width: z.number().positive().optional(),
       height: z.number().positive().optional(),
       fullscreen: z.boolean().optional(),
+      monitor: z.string().optional(),
     })
     .optional()
     .catch(undefined),

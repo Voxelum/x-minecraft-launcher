@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 227 (in 279 Vue files)
+**Total anchors:** 231 (in 279 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -82,6 +82,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `gamepad-hints-card` | [`xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L7`](../xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L7) |
 | `gamepad-key-guide` | [`xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L13`](../xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L13) |
 | `gamepad-toggle-card` | [`xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L37`](../xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L37) |
+| `global-fullscreen-switch` | [`xmcl-keystone-ui/src/views/SettingGlobal.vue#L153`](../xmcl-keystone-ui/src/views/SettingGlobal.vue#L153) |
+| `global-monitor-select` | [`xmcl-keystone-ui/src/views/SettingGlobal.vue#L156`](../xmcl-keystone-ui/src/views/SettingGlobal.vue#L156) |
 | `home-bedrock` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L3`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L3) |
 | `home-bedrock-install` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L60`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L60) |
 | `home-bedrock-installed` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L48`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L48) |
@@ -102,7 +104,9 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `install-version-confirm` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L97`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L97) |
 | `install-version-dialog` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L4`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L4) |
 | `install-version-item` | [`xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L208`](../xmcl-keystone-ui/src/components/StoreProjectInstallVersionDialog.vue#L208) |
+| `instance-fullscreen-switch` | [`xmcl-keystone-ui/src/views/BaseSettingResolution.vue#L36`](../xmcl-keystone-ui/src/views/BaseSettingResolution.vue#L36) |
 | `instance-item` | [`xmcl-keystone-ui/src/views/AppSideBarInstanceItem.vue#L7`](../xmcl-keystone-ui/src/views/AppSideBarInstanceItem.vue#L7) |
+| `instance-monitor-select` | [`xmcl-keystone-ui/src/views/BaseSettingResolution.vue#L56`](../xmcl-keystone-ui/src/views/BaseSettingResolution.vue#L56) |
 | `instance-server-edit-dialog` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L3`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L3) |
 | `instance-server-edit-host` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L79`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L79) |
 | `instance-server-edit-name` | [`xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L66`](../xmcl-keystone-ui/src/views/AppJoinServerDialog.vue#L66) |

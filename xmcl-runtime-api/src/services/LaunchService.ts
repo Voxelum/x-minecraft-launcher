@@ -145,7 +145,7 @@ export interface LaunchOptions {
   /**
    * Resolution settings for Minecraft
    */
-  resolution?: { width?: number; height?: number; fullscreen?: boolean }
+  resolution?: { width?: number; height?: number; fullscreen?: boolean; monitor?: string }
 }
 
 export interface GameProcess {

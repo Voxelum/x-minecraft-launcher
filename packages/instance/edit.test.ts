@@ -151,12 +151,12 @@ describe('Instance Assignment Utils', () => {
       it('should handle resolution in creation options', () => {
         const payload: CreateInstanceOptions = {
           name: 'New Instance',
-          resolution: { width: 1024, height: 768, fullscreen: true },
+          resolution: { width: 1024, height: 768, fullscreen: true, monitor: '2528732444' },
         }
 
         const instance = createInstance(payload, getCandidatePath, mockVersionProvider)
 
-        expect(instance.resolution).toEqual({ width: 1024, height: 768, fullscreen: true })
+        expect(instance.resolution).toEqual({ width: 1024, height: 768, fullscreen: true, monitor: '2528732444' })
       })
     })
   })

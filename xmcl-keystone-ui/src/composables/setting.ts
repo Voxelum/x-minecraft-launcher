@@ -95,7 +95,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalPrependCommand: string
     globalPreExecuteCommand: string
     globalEnv: Record<string, string>
-    globalResolution: { width?: number; height?: number; fullscreen?: boolean }
+    globalResolution: { width?: number; height?: number; fullscreen?: boolean; monitor?: string }
   }) => {
     state.value?.globalInstanceSetting(setting)
   }

@@ -16,6 +16,7 @@ export const GlobalResolutionSchema = z.object({
   width: z.number().optional(),
   height: z.number().optional(),
   fullscreen: z.boolean().optional(),
+  monitor: z.string().optional(),
 })
 
 /**

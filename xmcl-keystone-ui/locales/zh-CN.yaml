@@ -433,6 +433,10 @@ instance:
   fileApiHint: 用于远程同步实例文件的链接
   fullscreen: 全屏
   height: 高度
+  monitor: 全屏显示器
+  monitorDefault: 默认（主显示器）
+  monitorNumber: 显示器 {number}
+  monitorPrimary: 主显示器
   hideCard: 隐藏此卡片
   icon: 实例图标
   iconHint: 该图标可以是文件或互联网 URL 链接。

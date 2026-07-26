@@ -13,6 +13,7 @@ import { pipeline } from 'stream'
 import { promisify } from 'util'
 import { buildAppInstaller } from './build/appinstaller-builder'
 import { config as electronBuilderConfig } from './build/electron-builder.config'
+import { resolveKoffiBinary } from './build/koffi'
 import esbuildConfig from './esbuild.config'
 import { version } from './package.json'
 
@@ -27,14 +28,14 @@ async function writeHash(algorithm: string, path: string) {
 /**
  * Use esbuild to build main process
  *
- * @param copyMsalRuntime Whether to copy the Windows-only `@azure/msal-node-runtime`
- * native binaries (`msal-node-runtime.node` + `msalruntime.dll`) into `dist`.
- * These are only ever loaded on Windows (the native broker plugin bails out on
- * other platforms), so they are pure dead weight in mac/linux asars (issue: mac
- * build shipped msal node/dll files). Defaults to the host platform for local
- * (`BUILD_TARGET=none`) builds.
+ * @param target Platform and architecture whose native binaries are copied.
+ * Defaults to the host for local (`BUILD_TARGET=none`) builds.
  */
-async function buildMain(options: BuildOptions, slient = false, copyMsalRuntime = process.platform === 'win32') {
+async function buildMain(
+  options: BuildOptions,
+  slient = false,
+  target: { platform: NodeJS.Platform; arch: string | number } = { platform: process.platform, arch: process.arch },
+) {
   await emptyDir(path.join(__dirname, './dist'))
   if (!slient) console.log(chalk.bold.underline('Build main process & preload'))
   const startTime = Date.now()
@@ -48,7 +49,7 @@ async function buildMain(options: BuildOptions, slient = false, copyMsalRuntime 
   if (options.metafile) {
     await writeFile('./meta.json', JSON.stringify(out.metafile, null, 2))
   }
-  if (copyMsalRuntime) {
+  if (target.platform === 'win32') {
     const msalRuntimeDir = path.dirname(require.resolve('@azure/msal-node-runtime/package.json'))
     await Promise.all([
       ['x64', 'msalruntime.dll'],
@@ -60,6 +61,12 @@ async function buildMain(options: BuildOptions, slient = false, copyMsalRuntime 
       await copyFile(join(source, dll), join(__dirname, 'dist', `msalruntime-${targetArch}.dll`))
     }))
   }
+  const koffiPlatform = target.platform
+  const koffiArch = typeof target.arch === 'number'
+    ? ['ia32', 'x64', 'armv7l', 'arm64', 'universal'][target.arch]
+    : target.arch
+  if (!koffiArch || koffiArch === 'universal') throw new Error(`Unsupported Koffi target architecture: ${target.arch}`)
+  await copyFile(await resolveKoffiBinary(koffiPlatform, koffiArch), join(__dirname, 'dist', 'koffi.node'))
   const time = ((Date.now() - startTime) / 1000).toFixed(2)
   if (!slient) console.log(`Build completed in ${time}s.`)
   await copy(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer'))
@@ -135,7 +142,10 @@ async function start() {
       })
       await rebuildProcess
       console.log(`  ${chalk.blue('•')} rebuilt native modules ${chalk.blue('electron')}=${context.electronVersion} ${chalk.blue('arch')}=${context.arch}`)
-      const time = await buildMain({ ...esbuildConfig, metafile: true }, true, context.platform === Platform.WINDOWS)
+      const time = await buildMain({ ...esbuildConfig, metafile: true }, true, {
+        platform: context.platform.nodeName,
+        arch: context.arch,
+      })
       console.log(`  ${chalk.blue('•')} compiled main process & preload in ${chalk.blue('time')}=${time}s`)
     },
     async afterPack(context) {

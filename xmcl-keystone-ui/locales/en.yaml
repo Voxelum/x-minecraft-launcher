@@ -513,6 +513,10 @@ instance:
   fileApiPlaceholder: Please enter the remote sync url here if you want to keep the resource sync
   fullscreen: Fullscreen
   height: Height
+  monitor: Fullscreen Monitor
+  monitorDefault: Default (primary monitor)
+  monitorNumber: Monitor {number}
+  monitorPrimary: Primary
   hideCard: Hide this card
   icon: Profile Icon
   iconHint: The icon could be a file or internet url link.

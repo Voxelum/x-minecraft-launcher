@@ -87,6 +87,14 @@ interface WindowControllerEventMap {
   minimize: boolean
 }
 
+export interface MonitorInfo {
+  id: string
+  label: string
+  width: number
+  height: number
+  primary: boolean
+}
+
 export interface WindowController extends GenericEventEmitter<WindowControllerEventMap> {
   /**
    * Show current window
@@ -116,6 +124,8 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
   openMultiplayerWindow(): void
 
   queryAudioPermission(): Promise<boolean>
+
+  getMonitors(): Promise<MonitorInfo[]>
 
   writeClipboard(text: string): void
 
