@@ -188,7 +188,7 @@ curseforgeCategory:
   Technology: Tecnología
   Traditional: Tradicional
   Twitch Integration: integración Twitch
-  Utility & QoL: Utilidad y Qol
+  Utility & QoL: Utilidad y QoL
   Vanilla+: Vanilla+
   World Gen: Generador de Mundos
 dependencies:
@@ -216,11 +216,11 @@ diagnosis:
     message: Haga clic para intentar reinstalar esta versión.
     name: Instalación Erronea en {version}
   corruptedAssets:
-    message: Launcher instalará assets por ti
-    name: 'Asset dañado : {name} | Asset dañado {name} | {count} Assets dañados'
+    message: Launcher instalará recursos por ti
+    name: 'Recurso dañado: {name} | Recurso dañado: {name} | {count} recursos dañados'
   corruptedAssetsIndex:
-    message: Launcher descargará el índice de assets para ti
-    name: El archivo de índice de assets {version} está dañado.
+    message: Launcher descargará el índice de recursos para ti
+    name: El archivo de índice de recursos {version} está dañado.
   corruptedLibraries:
     message: Launcher instalará bibliotecas por ti
     name: >-
@@ -486,7 +486,7 @@ instance:
   mcOptions: Opciones de Minecraft
   mcOptionsHint: Argumentos adicionales de lanzamiento de Minecraft
   name: Nombre del Perfil
-  nameHint: El nombre del modpack
+  nameHint: Nombre de la instancia
   nameInvalidChars: 'El nombre no puede contener estos caracteres: < > : " / \\ | ? *'
   nameNoCyrillic: El nombre no puede contener caracteres cirílicos
   namePathTraversal: El nombre no puede contener recorrido de directorios ("..")
@@ -660,7 +660,7 @@ launch:
   cancel: Cancelar
   createShortcut: Crear atajo
   kill: Detener
-  killServer: Matar el servidor localhost
+  killServer: Detener servidor localhost
   launch: Lanzar
   launchAnyway: Lanzar de todos modos
   launchAs: Lanzar como
@@ -1453,7 +1453,7 @@ server:
   exportToFolder: Exportar a la carpeta
   filterVersion: Filtrar versión de Minecraft del servidor respondido
   host: Anfitrión
-  hostHint: El host (con puerto) del servidor
+  hostHint: Dirección del servidor (host:puerto)
   hostRequired: Ingrese la dirección IP del servidor
   ipAddress: Dirección IP
   maxPlayers: Jugadores máximos
