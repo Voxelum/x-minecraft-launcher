@@ -92,7 +92,14 @@ export class MicrosoftOAuthClient {
   } = {}) {
     const nativeBrokerPlugin = options.useNativeBroker ? await this.getNativeBrokerPlugin() : undefined
     const app = await this.getOAuthApp(username, options.signal, nativeBrokerPlugin)
-    if (username && !options?.code) {
+    // When the user explicitly picked device-code login they want to control
+    // which account signs in -- often a different account than the one signed in
+    // to Windows (which the WAM native broker reuses silently). Skip the silent
+    // broker reuse so they actually reach the device-code flow. A background
+    // silent refresh of an existing user (`slientOnly`) must still reuse the
+    // cache, so keep the fast path for that case.
+    const allowSilentReuse = options.slientOnly || !options.useDeviceCode
+    if (username && !options?.code && allowSilentReuse) {
       const accounts = await app.getTokenCache().getAllAccounts().catch(() => [])
       // The token cache is shared by every Microsoft account, and
       // acquireTokenSilent keys off homeAccountId (it ignores username), so
