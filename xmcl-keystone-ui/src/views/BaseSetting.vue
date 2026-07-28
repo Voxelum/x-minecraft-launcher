@@ -64,7 +64,7 @@
         </v-tabs>
 
         <div class="base-setting-scroll">
-          <div class="base-setting-content">
+          <div ref="content" class="base-setting-content">
           <template v-if="!targetQuery || targetQuery === 'general'">
             <template v-if="isBedrock">
               <BaseSettingGeneral />
@@ -180,6 +180,7 @@ provide(InstanceEditInjectionKey, edit)
 useAutoSaveLoad(() => {}, edit.load)
 const { isModified } = edit
 const root = ref<HTMLElement | null>(null)
+const content = ref<HTMLElement | null>(null)
 provide('root', root)
 const modpackMetadataContext = useInstanceModpackMetadata()
 provide('modpackMetadata', modpackMetadataContext)
@@ -289,6 +290,44 @@ useBeforeLeave(() => {
 const compact = injection(kCompact)
 onMounted(() => {
   compact.value = true
+})
+
+let cardResizeObserver: ResizeObserver | undefined
+let cardMutationObserver: MutationObserver | undefined
+
+function updateCardSpan(card: HTMLElement) {
+  if (!content.value) return
+  const style = getComputedStyle(content.value)
+  const rowHeight = Number.parseFloat(style.gridAutoRows)
+  const cardGap = Number.parseFloat(style.columnGap)
+  if (!rowHeight || Number.isNaN(cardGap)) return
+  const span = Math.ceil((card.getBoundingClientRect().height + cardGap) / rowHeight)
+  card.style.gridRowEnd = `span ${span}`
+}
+
+function observeSettingCards() {
+  if (!content.value || !cardResizeObserver) return
+  cardResizeObserver.disconnect()
+  for (const child of content.value.children) {
+    cardResizeObserver.observe(child)
+    updateCardSpan(child as HTMLElement)
+  }
+}
+
+onMounted(() => {
+  cardResizeObserver = new ResizeObserver(entries => {
+    for (const entry of entries) {
+      updateCardSpan(entry.target as HTMLElement)
+    }
+  })
+  cardMutationObserver = new MutationObserver(observeSettingCards)
+  cardMutationObserver.observe(content.value!, { childList: true })
+  observeSettingCards()
+})
+
+onBeforeUnmount(() => {
+  cardResizeObserver?.disconnect()
+  cardMutationObserver?.disconnect()
 })
 
 usePresence(computed(() => t('presence.instanceSetting', { instance: name.value })))
@@ -422,12 +461,19 @@ useTutorial(computed(() => [{
 }
 
 .base-setting-content {
-  width: min(100%, 1080px);
+  width: min(100%, 1440px);
   margin: 0 auto;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
+  grid-auto-flow: dense;
+  grid-auto-rows: 1px;
+  align-items: start;
+  gap: 0 18px;
+}
+
+.base-setting-content > .base-setting-card--wide {
+  grid-column: 1 / -1;
 }
 
 @media (max-width: 900px) {

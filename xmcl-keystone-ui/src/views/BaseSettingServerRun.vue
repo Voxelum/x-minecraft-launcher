@@ -1,5 +1,5 @@
 <template>
-  <SettingCard>
+  <SettingCard class="base-setting-card--wide">
     <div class="flex flex-col gap-5" data-testid="server-shared-settings">
       <v-alert
         v-if="error"
