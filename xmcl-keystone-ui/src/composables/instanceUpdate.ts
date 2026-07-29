@@ -3,6 +3,15 @@ import { CachedFTBModpackVersionManifest } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { DialogKey } from './dialog'
 
+export type InstanceInstallReleaseNote = {
+  id: string
+  source: 'curseforge' | 'modrinth'
+  title: string
+  currentVersion: string
+  targetVersion: string
+  html: string
+}
+
 export type InstanceInstallOptions = {
   type: 'upstream'
   instancePath: string
@@ -18,6 +27,7 @@ export type InstanceInstallOptions = {
   oldFiles: InstanceFile[]
   files: InstanceFile[]
   id: string
+  releaseNotes?: InstanceInstallReleaseNote[]
   /**
    * Projects that could not be resolved to a compatible version for the current
    * instance (e.g. from a collection bulk install). Shown as an alert in the

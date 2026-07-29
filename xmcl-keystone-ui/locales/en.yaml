@@ -608,6 +608,8 @@ instanceUpdate:
     The modloader of this instance has been changed. The old modloader is
     {modloader}, and the new modloader is {newModloader}.
   noFiles: No file changes
+  noReleaseNotes: No release notes were provided by the source.
+  releaseNotes: Release Notes
   summary: Add {add} files. Remove {remove} files. Keep {keep} files.
   title: Update Instance
   update: Start Update
