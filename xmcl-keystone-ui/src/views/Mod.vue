@@ -29,43 +29,17 @@
         >
           <v-icon> checklist </v-icon>
         </v-btn>
-        <v-menu
+        <v-btn
           v-if="!isLocalView"
-          :close-on-content-click="true"
+          v-shared-tooltip="() => groupInstalled === 'off' ? t('mod.installedFilterOff') : groupInstalled === 'group' ? t('mod.groupInstalled') : t('mod.hideInstalled')"
+          :class="{ 'v-btn--active': groupInstalled !== 'off' }"
+          icon
+          variant="text"
+          density="comfortable"
+          @click="groupInstalled = groupInstalled === 'off' ? 'group' : groupInstalled === 'group' ? 'hide' : 'off'"
         >
-          <template #activator="{ props: menu }">
-            <v-btn
-              v-bind="menu"
-              v-shared-tooltip="() => t('mod.groupInstalled')"
-              :class="{ 'v-btn--active': groupInstalled !== 'off' }"
-              icon
-              variant="text"
-              density="comfortable"
-            >
-              <v-icon> {{ groupInstalled === 'hide' ? 'layers_clear' : 'layers' }} </v-icon>
-            </v-btn>
-          </template>
-          <v-list density="compact">
-            <v-list-item
-              :active="groupInstalled === 'off'"
-              prepend-icon="filter_none"
-              :title="t('mod.installedFilterOff')"
-              @click="groupInstalled = 'off'"
-            />
-            <v-list-item
-              :active="groupInstalled === 'group'"
-              prepend-icon="layers"
-              :title="t('mod.groupInstalled')"
-              @click="groupInstalled = 'group'"
-            />
-            <v-list-item
-              :active="groupInstalled === 'hide'"
-              prepend-icon="layers_clear"
-              :title="t('mod.hideInstalled')"
-              @click="groupInstalled = 'hide'"
-            />
-          </v-list>
-        </v-menu>
+          <v-icon> {{ groupInstalled === 'hide' ? 'layers_clear' : groupInstalled === 'group' ? 'layers' : 'filter_none' }} </v-icon>
+        </v-btn>
         <AppCollectionInstallAll
           v-if="showInstallAll"
           :items="collectionItems"

@@ -664,6 +664,8 @@ mod:
   filter: Modをフィルタ
   group: グループアップ
   groupInstalled: グループでインストールされたMod
+  hideInstalled: インストール済みModを非表示
+  installedFilterOff: 全てのModを表示
   groupName: グループ名
   groupNameRequired: グループ名は必須です
   hasUpdate: Modにアップデートがあります!

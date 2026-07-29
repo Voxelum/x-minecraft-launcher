@@ -718,6 +718,8 @@ mod:
   filter: Modok szűrése
   group: Csoportosul
   groupInstalled: Csoportosan telepített modok
+  hideInstalled: Telepített modok elrejtése
+  installedFilterOff: Összes mod megjelenítése
   groupName: Csoport neve
   groupNameRequired: A csoport neve kötelező
   hasUpdate: A modnak új verziója van!

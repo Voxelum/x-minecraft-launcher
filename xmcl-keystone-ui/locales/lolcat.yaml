@@ -680,6 +680,8 @@ mod:
   filter: FILTR MODZ
   group: GROUP UP
   groupInstalled: GROUP INSTALLED MODZ
+  hideInstalled: HIDE INSTALLED MODZ
+  installedFilterOff: SHOW ALL MODZ
   groupName: GROUP NAME
   groupNameRequired: GROUP NAME IS REQUIRED
   hasUpdate: MOD HAZ A NEW VERSHUN!

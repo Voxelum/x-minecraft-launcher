@@ -692,6 +692,8 @@ mod:
   filter: 모드 필터
   group: 그룹화
   groupInstalled: 설치된 모드 그룹화
+  hideInstalled: 설치된 모드 숨기기
+  installedFilterOff: 모든 모드 표시
   groupName: 그룹 이름
   groupNameRequired: 그룹 이름이 필요합니다
   hasUpdate: 새 버전의 모드가 있습니다!

@@ -737,6 +737,8 @@ mod:
   filter: Фільтрувати моди
   group: Згрупувати
   groupInstalled: Згрупувати встановлені моди
+  hideInstalled: Приховати встановлені моди
+  installedFilterOff: Показати всі моди
   groupName: Назва групи
   groupNameRequired: Назва групи обов'язкова
   hasUpdate: Мод має нову версію!

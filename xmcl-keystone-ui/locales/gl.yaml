@@ -693,6 +693,8 @@ mod:
   filter: Filter Mods
   group: Groeperen
   groupInstalled: Groepeer Geïnstalleerde Mods
+  hideInstalled: Verberg Geïnstalleerde Mods
+  installedFilterOff: Toon Alle Mods
   groupName: Groepsnaam
   groupNameRequired: Groepsnaam is verplicht
   hasUpdate: Mod heeft een nieuwe versie!

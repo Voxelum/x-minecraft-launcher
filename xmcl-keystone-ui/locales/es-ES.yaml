@@ -882,6 +882,8 @@ mod:
   filter: Filtrar Mods
   group: Agrupar
   groupInstalled: Agrupar Mods Instalados
+  hideInstalled: Ocultar Mods Instalados
+  installedFilterOff: Mostrar Todos los Mods
   groupName: Nombre del grupo
   groupNameRequired: El nombre del grupo es obligatorio
   hasUpdate: ¡El mod tiene una nueva versión!

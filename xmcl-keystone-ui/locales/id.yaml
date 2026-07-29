@@ -750,6 +750,8 @@ mod:
   filter: Filter Mod
   group: Kelompokkan
   groupInstalled: Kelompokkan Mod Terpasang
+  hideInstalled: Sembunyikan Mod Terpasang
+  installedFilterOff: Tampilkan Semua Mod
   groupName: Nama Grup
   groupNameRequired: Nama grup diperlukan
   hasUpdate: Mod memiliki versi baru!

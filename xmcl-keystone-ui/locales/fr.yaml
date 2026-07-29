@@ -723,6 +723,8 @@ mod:
   filter: Mods de filtrage
   group: Se regrouper
   groupInstalled: Groupe de modules installés
+  hideInstalled: Masquer les modules installés
+  installedFilterOff: Afficher tous les modules
   groupName: Nom du groupe
   groupNameRequired: Le nom du groupe est requis
   incompatible: Mod incompatible.

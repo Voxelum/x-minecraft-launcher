@@ -789,6 +789,8 @@ mod:
   filter: 篩選模組
   group: 分組
   groupInstalled: 分開顯示已安裝模組
+  hideInstalled: 隱藏已安裝模組
+  installedFilterOff: 顯示所有模組
   groupName: 分組名稱
   groupNameRequired: 分組名稱是必填嘅
   hasUpdate: 模組有新版本！

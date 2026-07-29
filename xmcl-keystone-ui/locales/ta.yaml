@@ -750,6 +750,8 @@ mod:
   filter: மாட்களை வடிகட்டு
   group: குழுவாக்கு
   groupInstalled: நிறுவப்பட்ட மாட்களை குழுவாக்கு
+  hideInstalled: நிறுவப்பட்ட மாட்களை மறை
+  installedFilterOff: அனைத்து மாட்களையும் காட்டு
   groupName: குழு பெயர்
   groupNameRequired: குழு பெயர் தேவை
   hasUpdate: மாட்டின் புதிய பதிப்பு உள்ளது!

@@ -730,6 +730,8 @@ mod:
   filter: Фильтр модов
   group: Группа вверх
   groupInstalled: Группировать установленные моды
+  hideInstalled: Скрыть установленные моды
+  installedFilterOff: Показать все моды
   groupName: Название группы
   groupNameRequired: Название группы обязательно
   hasUpdate: У мода есть новая версия!
