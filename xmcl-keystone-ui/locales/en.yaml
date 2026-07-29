@@ -963,6 +963,8 @@ mod:
   filter: Filter Mods
   group: Group up
   groupInstalled: Group Installed Mods
+  hideInstalled: Hide Installed Mods
+  installedFilterOff: Show All Mods
   groupName: Group Name
   groupNameRequired: Group name is required
   hasUpdate: Mod has a new version!

@@ -29,17 +29,43 @@
         >
           <v-icon> checklist </v-icon>
         </v-btn>
-        <v-btn
+        <v-menu
           v-if="!isLocalView"
-          v-shared-tooltip="() => t('mod.groupInstalled')"
-          :class="{ 'v-btn--active': groupInstalled }"
-          icon
-          variant="text"
-          density="comfortable"
-          @click="groupInstalled = !groupInstalled"
+          :close-on-content-click="true"
         >
-          <v-icon> layers </v-icon>
-        </v-btn>
+          <template #activator="{ props: menu }">
+            <v-btn
+              v-bind="menu"
+              v-shared-tooltip="() => t('mod.groupInstalled')"
+              :class="{ 'v-btn--active': groupInstalled !== 'off' }"
+              icon
+              variant="text"
+              density="comfortable"
+            >
+              <v-icon> {{ groupInstalled === 'hide' ? 'layers_clear' : 'layers' }} </v-icon>
+            </v-btn>
+          </template>
+          <v-list density="compact">
+            <v-list-item
+              :active="groupInstalled === 'off'"
+              prepend-icon="filter_none"
+              :title="t('mod.installedFilterOff')"
+              @click="groupInstalled = 'off'"
+            />
+            <v-list-item
+              :active="groupInstalled === 'group'"
+              prepend-icon="layers"
+              :title="t('mod.groupInstalled')"
+              @click="groupInstalled = 'group'"
+            />
+            <v-list-item
+              :active="groupInstalled === 'hide'"
+              prepend-icon="layers_clear"
+              :title="t('mod.hideInstalled')"
+              @click="groupInstalled = 'hide'"
+            />
+          </v-list>
+        </v-menu>
         <AppCollectionInstallAll
           v-if="showInstallAll"
           :items="collectionItems"
@@ -655,7 +681,9 @@ const groupedItems = computed(() => {
   const transformed: Array<ProjectEntry<ModFile> | string> = []
   let rest = result
 
-  if (groupInstalled.value) {
+  if (groupInstalled.value === 'hide') {
+    rest = rest.filter(i => i.installed.length === 0)
+  } else if (groupInstalled.value === 'group') {
     const [installed, uninstalled] = rest.reduce(
       (acc, i) => {
         if (i.installed.length > 0) {
