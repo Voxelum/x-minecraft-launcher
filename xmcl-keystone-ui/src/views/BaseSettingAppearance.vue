@@ -36,6 +36,7 @@ import { useService } from '@/composables/service'
 import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
 import { InstanceThemeServiceKey, ThemeServiceKey } from '@xmcl/runtime-api'
+import { useGamepadAction } from '@/composables/gamepad'
 
 const { t } = useI18n()
 const { path: instancePath } = injection(kInstance)
@@ -99,4 +100,10 @@ async function toggleInstanceTheme(enabled: boolean) {
 function onSave() {
   saveTheme()
 }
+
+// Gamepad X on the appearance tab toggles the per-instance theme.
+useGamepadAction('X', {
+  label: () => t('setting.instanceTheme.name'),
+  handler: () => toggleInstanceTheme(!instanceTheme.value),
+})
 </script>

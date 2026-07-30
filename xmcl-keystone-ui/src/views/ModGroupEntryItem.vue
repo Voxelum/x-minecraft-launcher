@@ -25,8 +25,7 @@
           <v-img
             v-for="i in avatars.slice(0, 4)"
             :key="`avatar-${i}`"
-            class="rounded-lg"
-            :style="{ maxHeight: '20px', maxWidth: '20px', minHeight: '20px', minWidth: '20px' }"
+            class="rounded-lg max-h-[20px] max-w-[20px] min-h-[20px] min-w-[20px]"
             :src="i"
           />
         </div>
@@ -60,7 +59,7 @@ const props = defineProps<{
 
 const avatars = computed(() => props.items.map((i) => i.icon).filter((v) => !!v))
 
-const emit = defineEmits(['expand', 'setting', 'ungroup', 'enable-all', 'disable-all'])
+const emit = defineEmits(['expand', 'setting', 'ungroup', 'enable-all', 'disable-all', 'apply-group-rules', 'save-group-rules'])
 
 const { t } = useI18n()
 
@@ -89,6 +88,7 @@ function getContextMenu() {
     {
       icon: 'settings',
       text: t('instances.folderSetting'),
+      section: 'config',
       onClick: () => {
         show(mutableState)
       },
@@ -100,6 +100,7 @@ function getContextMenu() {
     items.push({
       icon: 'flash_on',
       text: t('mod.enableAll'),
+      section: 'action',
       onClick: () => {
         emit('enable-all')
       },
@@ -110,6 +111,7 @@ function getContextMenu() {
     items.push({
       icon: 'flash_off',
       text: t('mod.disableAll'),
+      section: 'action',
       onClick: () => {
         emit('disable-all')
       },
@@ -119,8 +121,27 @@ function getContextMenu() {
   items.push({
     icon: 'label_off',
     text: t('mod.ungroup'),
+    section: 'group',
     onClick: () => {
       emit('ungroup')
+    },
+  })
+
+  items.push({
+    icon: 'bookmarks',
+    text: t('mod.applyGroupRules'),
+    section: 'rules',
+    onClick: () => {
+      emit('apply-group-rules')
+    },
+  })
+
+  items.push({
+    icon: 'book',
+    text: t('mod.syncGroupRules'),
+    section: 'rules',
+    onClick: () => {
+      emit('save-group-rules')
     },
   })
 

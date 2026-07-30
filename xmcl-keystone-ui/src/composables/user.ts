@@ -2,7 +2,7 @@ import { computed, InjectionKey, reactive, Ref, toRefs } from 'vue'
 import { GameProfileAndTexture, OfficialUserServiceKey, UserProfile, UserServiceKey, UserState } from '@xmcl/runtime-api'
 
 import { useService } from '@/composables'
-import { useLocalStorageCacheStringValue } from './cache'
+import { useLocalStorage } from '@vueuse/core'
 import { useState } from './syncableState'
 import { GameProfile } from '@xmcl/user'
 
@@ -55,7 +55,7 @@ export function useUserContext() {
       }
     }
   })
-  const selectedUserId = useLocalStorageCacheStringValue('selectedUserId', '' as string)
+  const selectedUserId = useLocalStorage('selectedUserId', '', { writeDefaults: false })
   const userProfile: Ref<UserProfile> = computed(() => state.value?.users[selectedUserId.value] ?? NO_USER_PROFILE)
   const gameProfile: Ref<GameProfileAndTexture> = computed(() => userProfile.value.profiles[userProfile.value.selectedProfile] ?? NO_GAME_PROFILE)
   const users = computed(() => Object.values(state.value?.users || {}))
@@ -99,6 +99,8 @@ export function useUserExpired(user: Ref<UserProfile | undefined>) {
   return computed(() => !user.value || user.value?.invalidated || user.value.expiredAt < Date.now())
 }
 
+export const isValidEmail = (value: string) => /^[\w-]+(?:\.[\w-]+)*@[\w-]+(?:\.[\w-]+)*\.\w{2,6}$/.test(value)
+
 export function useLoginValidation(emailOnly: Ref<boolean>, isOffline?: Ref<boolean>) {
   const { t } = useI18n()
   const nameRules = computed(() => {
@@ -113,7 +115,7 @@ export function useLoginValidation(emailOnly: Ref<boolean>, isOffline?: Ref<bool
   })
   const emailRules = [
     (v: unknown) => !!v || t('loginError.requireEmail'),
-    (v: string) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,6})+$/.test(v) ||
+    (v: string) => isValidEmail(v) ||
       t('loginError.illegalEmail'),
   ]
   const passwordRules = [(v: unknown) => !!v || t('loginError.requirePassword')]

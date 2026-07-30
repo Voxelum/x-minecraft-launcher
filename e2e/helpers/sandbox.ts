@@ -21,6 +21,8 @@ export interface SeedInstance {
   name: string
   /** Minecraft version (e.g. '1.20.4'). */
   minecraft: string
+  /** Edition to seed. Defaults to Java Edition. */
+  edition?: 'java' | 'bedrock'
   /** Optional resolved-version JSON `id` to embed. Defaults to minecraft. */
   versionId?: string
 }
@@ -36,27 +38,30 @@ export async function seedSandbox(gameDataPath: string, instance?: SeedInstance)
 
   if (!instance) return
 
+  const edition = instance.edition ?? 'java'
   const versionId = instance.versionId ?? instance.minecraft
 
-  // Minimal version JSON so the launcher recognizes it as installed.
-  const versionDir = join(gameDataPath, 'versions', versionId)
-  await mkdir(versionDir, { recursive: true })
-  await writeFile(
-    join(versionDir, `${versionId}.json`),
-    JSON.stringify({
-      id: versionId,
-      type: 'release',
-      mainClass: 'net.minecraft.client.main.Main',
-      arguments: { game: [], jvm: [] },
-      libraries: [],
-      assets: 'legacy',
-      assetIndex: { id: 'legacy', sha1: '0', size: 0, totalSize: 0, url: '' },
-      downloads: {},
-      releaseTime: '2024-01-01T00:00:00+00:00',
-      time: '2024-01-01T00:00:00+00:00',
-      minimumLauncherVersion: 21,
-    }),
-  )
+  if (edition === 'java') {
+    // Minimal version JSON so the launcher recognizes it as installed.
+    const versionDir = join(gameDataPath, 'versions', versionId)
+    await mkdir(versionDir, { recursive: true })
+    await writeFile(
+      join(versionDir, `${versionId}.json`),
+      JSON.stringify({
+        id: versionId,
+        type: 'release',
+        mainClass: 'net.minecraft.client.main.Main',
+        arguments: { game: [], jvm: [] },
+        libraries: [],
+        assets: 'legacy',
+        assetIndex: { id: 'legacy', sha1: '0', size: 0, totalSize: 0, url: '' },
+        downloads: {},
+        releaseTime: '2024-01-01T00:00:00+00:00',
+        time: '2024-01-01T00:00:00+00:00',
+        minimumLauncherVersion: 21,
+      }),
+    )
+  }
 
   // Synthetic instance.
   const safeName = instance.name.replace(/[^a-zA-Z0-9-_]/g, '_')
@@ -66,8 +71,9 @@ export async function seedSandbox(gameDataPath: string, instance?: SeedInstance)
     join(instanceDir, 'instance.json'),
     JSON.stringify({
       name: instance.name,
+      edition,
       runtime: { minecraft: instance.minecraft },
-      version: versionId,
+      version: edition === 'java' ? versionId : '',
       lastAccessDate: Date.now(),
       creationDate: Date.now(),
     }),

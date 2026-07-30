@@ -43,7 +43,12 @@ const msAccessToken: string; // the access token you got from msal
 const { liveXstsResponse, minecraftXstsResponse } = await authenticator.acquireXBoxToken(msAccessToken);
 
 // You can use liveXstsResponse to get the xbox user avatar and name.
-const const xboxGameProfile = await authenticator.getXboxGameProfile(xstsResponse.DisplayClaims.xui[0].xid, xstsResponse.DisplayClaims.xui[0].uhs, liveXstsResponse.Token);
+// Note: liveXstsResponse may be undefined -- the `http://xboxlive.com`
+// relying party is optional and only used for the Xbox avatar/gamertag.
+// Some accounts that own Minecraft cannot authorize it, so guard for undefined.
+if (liveXstsResponse) {
+  const xboxGameProfile = await authenticator.getXboxGameProfile(liveXstsResponse.DisplayClaims.xui[0].xid, liveXstsResponse.DisplayClaims.xui[0].uhs, liveXstsResponse.Token);
+}
 
 // you can use the xstsResponse to get the minecraft access token
 const mcResponse = await authenticator.loginMinecraftWithXBox(minecraftXstsResponse.DisplayClaims.xui[0].uhs, minecraftXstsResponse.Token);

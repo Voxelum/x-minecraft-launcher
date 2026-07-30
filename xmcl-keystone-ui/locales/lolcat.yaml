@@ -45,6 +45,25 @@ askAICrash:
     LET AI HALP U TO UNDERSTAND DA GAME CRASH! FOLLOW DA INSTRUKSHUNS BELOW TO ASK AI ABOUT THIS GAME CRASH!
   selectPlatform: OPEN AN AI PLATFORM AN PASTE DA PROMPT U JUS COPIED.
 authProfileAddedNotification: AUTH PROFILE {name} ADDED
+bedrock:
+  installBedrockVersion: 'Downloading Bedrock {version}'
+  versionsTitle: Version manager
+  versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
+  versionsError: Failed to load the version list. Check your network and try again.
+  channel: Channel
+  channelRelease: Release
+  channelBeta: Beta
+  channelPreview: Preview
+  active: Active
+  play: Play
+  download: Download
+  installedTag: Installed
+  developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
+  enableDeveloperMode: Enable Developer Mode
+  enableDeveloperModeFailed: Failed to enable Developer Mode
+  downloadFailed: 'Failed to download Bedrock {version}'
+  launchFailed: Failed to launch this Bedrock version
+  removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
   title: INSTANCE SETTINGZ
 browseApp:
@@ -459,6 +478,20 @@ instances:
   folderSetting: FOLDR SETTINGZ
   importFolderDescription: IMPORT MINECWAFT TO LAUNCHER
   loadingFiles: LOADING MODPACK FILEZ
+  edition: EDISHUN
+  editionJava: JAVA EDISHUN
+  editionBedrock: BEDROK EDISHUN
+  editionBedrockHint: >-
+    BEDROK EDISHUN LAUNCHZ THRU DA MICROSOFT STORE APP. U NEEDZ 2 OWN A BEDROK
+    LICENSE. MODZ, REZORCE PAKZ AN OTHR JAVA-ONLY THINGZ R NOT AVAILABUL.
+  editionBedrockWindowsOnly: BEDROK EDISHUN ONLY WERKZ ON DA WINDOWS BUILD.
+  linkSharedFolders: SHARE FOLDERZ AKROSS INSTANCEZ
+  linkSharedFoldersHint: >-
+    MAEK DEEZ FOLDERZ INTO LINKZ TO DA LAUNCHR SHARD FOLDERZ SO DIS INSTANCE
+    SHARE STUFFZ WIF ALL OTHR LINKD INSTANCEZ. DIS NOT A COPY — CHANGEZ IN ONE
+    INSTANCE SHOW UP IN ALL OF DEM. UNCHEKD FOLDERZ STAY PRIVATE TO DIS
+    INSTANCE.
+  linkFailed: COULD NOT LINK DA {folder} FOLDR TO DA SHARD FOLDR
   addPrismDescription: Imprt exsting PrismLauncher instnce.
 items:
   count: '{count} ITEMZ'
@@ -475,6 +508,7 @@ java:
   memoryManual: MANUAL
   memoryUnassigned: UNASSIGN
   minMemory: MIN MEMRY
+  name: Java
   noMemory: DO NOT LIMIT MEMRY USAG
   refresh: REFRESH LOCAL JAVA
   systemMemory: 'SYSTEM FREE MEMRY: {free} / {total}'
@@ -691,9 +725,7 @@ modInstall:
     title: UPDAT MODZ?
     'yes': UPDAT MODZ
   checkDependencies: CHECK DEPENDENCIEZ
-  checkUpgrade: CHECK MODZ UPDAT
   checkedDependencies: CHECKED DEPENDENCIEZ
-  checkedUpgrade: UPGRADE CHECKED
   currentVersion: SELECTED VERSHUN
   dependencyHint: INSTALLED ANOTHR VERSHUN {version}
   releaseOnly: IGNOR DA ALFA AN BETA VERSHUNS WEN UPDATIN
@@ -706,7 +738,6 @@ modInstall:
   skipVersion: SKIP DA MODZ WITH DIFFERENT MINECWAFT VERSHUN
   source: MOD SOURC
   switch: SWITCH VERSHUN
-  upgrade: UPGRADE MODZ
 modSearch:
   noLocalModsFound: NO LOCAL MODZ FOUND MATCHING UR SEARCH.
   noModsFound: NO MODZ FOUND
@@ -746,6 +777,12 @@ modpack:
 modpackImportConfirm:
   description: DETECT U DROP A FILE INTO DA LAWNCHER. ARE U TRYING TO IMPORT A MODPACK?
   title: ARE U TRYING TO IMPORT A MODPACK?
+modpackUpdateOrCreate:
+  createNew: 'Maek noo wan'
+  description: >-
+    An instance "{name}" fur dis modpak already haz. U wants updat it or maek noo wan?
+  title: 'INSTANCE ALREADY HAZ'
+  update: 'Updat old wan'
 modrinth:
   browseUrl: OPEN IN BROWSR {url}
   categories:
@@ -1017,6 +1054,10 @@ quiltVersion:
   disable: DISABL QUILT
   empty: QUILT DOES NOT SUPPORT MINECWAFT {version}
 resourcepack:
+  linkShared: SHARE UR RESOURCE PACKZ ACROSS ALL INSTANCEZ
+  linkSharedHint: >-
+    LINKZ DIS INSTANCE resourcepacks FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ
+    CAN HAZ SAME PACKZ. OLD PACKZ GETS MERGD IN2 DA SHARY FOLDR.
   compatible: COMPATIBLE FORMAT {format} WITH {version}
   defaultDescription: TEH DEFAULT LOOK AN FEEL OF MINECWAFT
   delete:
@@ -1038,6 +1079,10 @@ resourcepack:
   noPacks: No reswurz packz fownd
   search: Sniff reswurz packz...
 save:
+  linkShared: SHARE UR SAVEZ ACROSS ALL INSTANCEZ
+  linkSharedHint: >-
+    LINKZ DIS INSTANCE saves FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ CAN HAZ
+    SAME WERLDZ. OLD SAVEZ GETS MERGD IN2 DA SHARY FOLDR.
   allowCheats: ALLOW CHEATS
   copy:
     name: COPY SAVE
@@ -1083,7 +1128,11 @@ screenshots:
 search:
   favorate: COLLEKSHUN
   local: INSTALLED
-  market: MOD MARKET
+  market: MARKET
+  emptyInstalled: NUFFIN INSTALLD YET
+  browseMarket: BROWZE MARKET
+  noResults: NO REZULTS FOUNDZ
+  pageSize: REZULTS PER PAGEZ
 server:
   acceptingMinecraftVersion: ACCEPTING MINECWAFT VERSHUN
   creationHint: PLZ FILL DA SERVR ADDWESS AN PING DA SERVR
@@ -1209,6 +1258,8 @@ setting:
   exportSettingsHint: SAVE UR CURREN SETTINGZ TO A FILE
   general: GENERAL
   githubRelease: GITHUB RELEASE
+  globalJava: Favrit Java
+  globalJavaHint: "In auto moad dis Java getz tride furst, an only fallz bak to auto-detekshun when it no can play nice wif teh gaem verzhun."
   globalSetting: GLOBAL INSTANCE SETTING
   globalSettingHint: INSTANCE WILL USE THESE SETTINGZ BY DEFAULT.
   importSettings: IMPORT SETTINGZ
@@ -1356,6 +1407,10 @@ setup:
     name: SET LANGUAG
   path: CURREN PATH
 shaderPack:
+  linkShared: SHARE UR SHADR PACKZ ACROSS ALL INSTANCEZ
+  linkSharedHint: >-
+    LINKZ DIS INSTANCE shaderpacks FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ
+    CAN HAZ SAME SHADRZ. OLD PACKZ GETS MERGD IN2 DA SHARY FOLDR.
   deletion: DELET SHADER PAK
   deletionHint: THIS WILL DELET DA SHADER PAK FILE {path} AN CANNOT BE REVERTED.
   disabled: DISABLED SHADER PAKS
@@ -1381,6 +1436,7 @@ shared:
   back: BACK
   browse: BROWSE
   cancel: CANCEL
+  checkUpgrade: CHECK UPDATEZ
   client: CLIENT
   description: DESCRIPSHUN
   disable: DISABL
@@ -1402,6 +1458,7 @@ shared:
   search: Search
   server: SERVR
   skipForNow: SKIP FUR NAO
+  upgrade: UPGRAYDD
   'yes': YAS
 sidebar:
   pin: STIK IT

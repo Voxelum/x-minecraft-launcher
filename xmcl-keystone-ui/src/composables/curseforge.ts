@@ -83,6 +83,7 @@ export enum CurseforgeBuiltinClassId {
   modpack = 4471,
   resourcePack = 12,
   world = 17,
+  datapack = 6945,
 }
 
 export function useCurseforgeSearchFunc(

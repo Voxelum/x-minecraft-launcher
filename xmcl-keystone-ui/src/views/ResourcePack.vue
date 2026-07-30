@@ -2,25 +2,82 @@
   <MarketBase
     :items="items"
     :item-height="itemHeight"
-    :plans="{}"
+    :plans="plans"
+    :selection-mode="currentView === 'local' && selectionMode"
     :class="{
       dragover,
     }"
     :error="error"
     :loading="loading"
     @load="onLoad"
+    @update:selection-mode="onUpdateSelectionMode"
   >
     <template #actions>
       <MarketListHeader
         v-model:dense="denseView"
         :label="`${originalItems.length} ${t('resourcepack.name', originalItems.length)}`"
-      />
+      >
+        <v-btn
+          v-if="currentView === 'local'"
+          :class="{ 'v-btn--active': selectionMode }"
+          icon
+          variant="text"
+          density="comfortable"
+          data-testid="market-multi-select-toggle"
+          @click="onUpdateSelectionMode(!selectionMode)"
+        >
+          <v-icon> checklist </v-icon>
+        </v-btn>
+        <AppCollectionInstallAll
+          v-if="showInstallAll"
+          :items="collectionItems"
+          content-type="resourcepacks"
+          :runtime="runtime"
+        />
+      </MarketListHeader>
+    </template>
+    <template #placeholder>
+      <MarketEmptyPlaceholder />
+    </template>
+    <template #filter>
+      <MarketFilterPanel
+        :modrinth-categories="modrinthCategories"
+        modrinth-category-filter="resourcepack"
+        :local-sort="sortBy"
+        :curseforge-category="curseforgeCategory"
+        curseforge-category-filter="texture-packs"
+        :enable-curseforge="isCurseforgeActive"
+        :enable-modrinth="isModrinthActive"
+        v-model:sort="marketSort"
+        :game-version="gameVersion"
+        :mode="source"
+        :collection="selectedCollection"
+        @update:modrinth-categories="modrinthCategories = $event"
+        @update:local-sort="sortBy = $event"
+        @update:curseforge-category="curseforgeCategory = $event"
+        @update:enable-curseforge="isCurseforgeActive = $event"
+        @update:enable-modrinth="isModrinthActive = $event"
+        @update:game-version="gameVersion = $event"
+        @update:mode="source = $event"
+        @update:collection="selectedCollection = $event"
+      >
+        <template #local>
+          <LinkSharedFolderSetting domain="resourcepacks" @changed="revalidate" />
+          <MarketUpgradePanel
+            :plans="plans"
+            v-model:upgrade-policy="upgradePolicy"
+            :refreshing="refreshing"
+            :upgrading="upgrading"
+            @check-upgrade="refresh({ skipVersion: false, policy: upgradePolicy as any })"
+            @upgrade="upgrade"
+          />
+        </template>
+      </MarketFilterPanel>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-list-subheader
         v-if="typeof item === 'string'"
-        class="flex"
-        :style="{ height: itemHeight + 'px' }"
+        class="flex px-3"
       >
         {{
           item === 'enabled'
@@ -45,26 +102,6 @@
         @click="on.click"
       />
     </template>
-    <template #placeholder>
-      <Hint
-        v-if="currentView === 'local' && !keyword.trim()"
-        key="info"
-        :text="t('resourcepack.noPacksInstalled')"
-        icon="info"
-      />
-      <Hint
-        v-else-if="currentView === 'local'"
-        key="search"
-        :text="t('resourcepack.noLocalPacksFound')"
-        icon="search"
-      />
-      <Hint
-        v-else
-        key="no-packs"
-        :text="t('resourcepack.noPacks')"
-        icon="search"
-      />
-    </template>
     <template #content="{ selectedModrinthId, selectedItem, selectedCurseforgeId }">
       <Hint v-if="dragover" icon="save_alt" :text="t('resourcepack.dropHint')" class="h-full" />
       <MarketProjectDetailModrinth
@@ -79,6 +116,7 @@
         :categories="modrinthCategories"
         :all-files="files"
         :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
+        collection-content-type="resourcepacks"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -96,6 +134,7 @@
         :category="curseforgeCategory"
         :all-files="files"
         :modrinth="selectedItem?.modrinth?.project_id || selectedModrinthId"
+        collection-content-type="resourcepacks"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -107,13 +146,6 @@
         :installed="selectedItem.installed"
         :runtime="runtime"
       />
-      <MarketRecommendation
-        v-else
-        curseforge="texture-packs"
-        modrinth="resourcepack"
-        @modrinth="modrinthCategories.push($event.name)"
-        @curseforge="curseforgeCategory = $event.id"
-      />
     </template>
     <SimpleDialog :title="t('resourcepack.delete.title')">
       {{ t('resourcepack.delete.content') }}
@@ -124,13 +156,17 @@
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
+import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
+import MarketUpgradePanel from '@/components/MarketUpgradePanel.vue'
+import LinkSharedFolderSetting from '@/components/LinkSharedFolderSetting.vue'
+import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
-import MarketRecommendation from '@/components/MarketRecommendation.vue'
+import AppCollectionInstallAll from '@/components/AppCollectionInstallAll.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
@@ -141,7 +177,6 @@ import { useProjectInstall } from '@/composables/projectInstall'
 import { ResourcePackProject, kResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
@@ -150,18 +185,34 @@ import ResourcePackItem from './ResourcePackItem.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
 
+import { useModUpgrade } from '@/composables/modUpgrade'
+
 const { runtime, path } = injection(kInstance)
-const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
-const { keyword, curseforgeCategory, modrinthCategories, currentView, gameVersion } =
+const { files, enable, disable, insert, revalidate } = injection(kInstanceResourcePacks)
+const { keyword, curseforgeCategory, modrinthCategories, currentView, gameVersion, isCurseforgeActive, isModrinthActive, sort: marketSort, source, selectedCollection } =
   injection(kSearchModel)
+
+const { refresh, refreshing, upgrade, plans, upgradePolicy, upgrading } = useModUpgrade(
+  path,
+  runtime,
+  files,
+  revalidate,
+  'resourcepacks',
+)
+
 const {
   error,
   loading,
   loadMore,
   items: originalItems,
+  collectionItems,
   effect,
   sortBy,
 } = injection(kResourcePackSearch)
+
+// Install-all works for any collection open in the Favorites view (local or
+// Modrinth collections/follows).
+const showInstallAll = computed(() => source.value === 'favorite')
 
 // Register the resource pack search effect
 effect()
@@ -290,6 +341,18 @@ const curseforgeInstaller = useCurseforgeInstaller(
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 
+const selections = ref({} as Record<string, boolean>)
+provide('selections', selections)
+
+const selectionMode = ref(false)
+function onUpdateSelectionMode(v: boolean) {
+  selectionMode.value = v
+  if (!v) selections.value = {}
+}
+watch(currentView, (view) => {
+  if (view !== 'local') onUpdateSelectionMode(false)
+})
+
 const onInstallProject = useProjectInstall(
   runtime,
   ref(undefined),
@@ -309,8 +372,8 @@ const getInstalledCurseforge = (modId: number | undefined) => {
 }
 
 // dense
-const denseView = useLocalStorageCacheBool('resource-pack-dense-view', false)
-const itemHeight = computed(() => (denseView.value ? 48 : 76))
+const denseView = useLocalStorage('resource-pack-dense-view', false, { writeDefaults: false })
+const itemHeight = computed(() => (denseView.value ? 48 : 96))
 </script>
 
 <style scoped>

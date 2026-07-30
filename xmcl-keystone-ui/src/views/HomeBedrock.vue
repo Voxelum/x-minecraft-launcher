@@ -3,9 +3,7 @@
     data-testid="home-bedrock"
     class="mx-3 flex flex-col items-center justify-center gap-4 py-12 text-center"
   >
-    <v-icon size="64" color="primary">
-      view_in_ar
-    </v-icon>
+    <v-icon size="64" color="primary"> view_in_ar </v-icon>
     <div class="text-h6 font-bold">
       {{ t('instances.editionBedrock') }}
     </div>
@@ -38,18 +36,11 @@
       </v-alert>
 
       <template v-else>
-        <div
-          class="max-w-[480px] text-body-2"
-          style="color: rgba(var(--v-theme-on-surface), 0.7);"
-        >
+        <div class="max-w-[480px] text-body-2" style="color: rgba(var(--v-theme-on-surface), 0.7)">
           {{ t('bedrock.description') }}
         </div>
 
-        <v-progress-circular
-          v-if="loading"
-          indeterminate
-          color="primary"
-        />
+        <v-progress-circular v-if="loading" indeterminate color="primary" />
 
         <template v-else>
           <v-chip
@@ -90,11 +81,12 @@
           <div
             v-if="installation.installed"
             class="text-caption"
-            style="color: rgba(var(--v-theme-on-surface), 0.6);"
+            style="color: rgba(var(--v-theme-on-surface), 0.6)"
           >
             {{ t('bedrock.launchHint') }}
           </div>
         </template>
+
       </template>
     </template>
   </div>
@@ -103,17 +95,29 @@
 import { useService } from '@/composables'
 import { useHasMinecraftLicense } from '@/composables/minecraftLicense'
 import { useNotifier } from '@/composables/notifier'
-import { BedrockInstallation, BedrockServiceKey } from '@xmcl/runtime-api'
+import {
+  BedrockInstallation,
+  BedrockServiceKey,
+} from '@xmcl/runtime-api'
 
 const { t } = useI18n()
-const { isSupported, getInstallation, install } = useService(BedrockServiceKey)
+const {
+  isSupported,
+  getInstallation,
+  install,
+} = useService(BedrockServiceKey)
 const { hasMinecraftLicense } = useHasMinecraftLicense()
 const { notify } = useNotifier()
 
 const supported = ref(false)
 const loading = ref(true)
 const installing = ref(false)
-const installation = ref<BedrockInstallation>({ installed: false, version: '', packageFullName: '' })
+const installation = ref<BedrockInstallation>({
+  installed: false,
+  version: '',
+  packageFullName: '',
+  aumid: '',
+})
 
 async function refresh() {
   loading.value = true

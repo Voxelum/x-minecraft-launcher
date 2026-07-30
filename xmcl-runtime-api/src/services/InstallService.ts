@@ -296,6 +296,11 @@ export interface InstallAssetsOptions {
 export interface InstallMinecraftOptions {
   meta: MinecraftVersion
   side?: 'client' | 'server'
+  /**
+   * Whether to install the Minecraft jar after resolving the version JSON.
+   * @default true
+   */
+  installJar?: boolean
 }
 
 export interface InstallMinecraftJarOptions {

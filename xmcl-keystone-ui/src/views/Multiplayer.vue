@@ -17,15 +17,20 @@
           {{ tGroupState[groupState] }}
 
           <v-chip v-if="groupState === 'connected'" size="small" label color="primary">
-            <v-icon start> signal_cellular_alt </v-icon>
-            {{ groupPing + 'ms' }}
-
-            {{ pingAgo }}
+            <v-icon start>{{ groupRole === 'host' ? 'home' : 'person' }}</v-icon>
+            {{ groupRole === 'host' ? t('multiplayer.host') : t('multiplayer.guest') }}
+            <template v-if="groupRole === 'host' && groupMaxPeers">
+              · {{ connections.length + 1 }}/{{ groupMaxPeers }}
+            </template>
           </v-chip>
 
           <div class="hidden text-sm text-gray-400 lg:block">
             <template v-if="group">
-              {{ t('multiplayer.copyGroupToFriendHint') }}
+              {{
+                groupRole === 'host'
+                  ? t('multiplayer.copyGroupToFriendHint')
+                  : t('multiplayer.connectedToHost')
+              }}
             </template>
             <template v-else>
               {{ t('multiplayer.joinOrCreateGroupHint') }}
@@ -101,7 +106,7 @@
           </v-btn>
           <v-btn
             v-shared-tooltip.left="() => (copied ? t('multiplayer.copied') : t('multiplayer.copy'))"
-            :disabled="!group"
+            :disabled="!group || groupState !== 'connected'"
             variant="text"
             icon
             @click="onCopy(groupId)"
@@ -259,6 +264,17 @@
                 {{ tConnectionStates[c.connectionState] }}
                 <template v-if="c.connectionState === 'connected'"> ({{ c.ping }}ms) </template>
               </v-chip>
+              <v-chip
+                v-if="c.connectionState === 'connected' && c.selectedCandidate"
+                label
+                size="small"
+                :color="isRelay(c) ? 'warning' : 'success'"
+              >
+                <v-icon start>{{ isRelay(c) ? 'swap_vert' : 'bolt' }}</v-icon>
+                {{
+                  isRelay(c) ? t('multiplayer.relayConnection') : t('multiplayer.directConnection')
+                }}
+              </v-chip>
             </v-list-item-subtitle>
             <template #append>
               <div class="flex items-center gap-2">
@@ -355,7 +371,7 @@
                 v-model="kernel"
                 variant="filled"
                 item-title="text"
-                style="max-width: 105px"
+                class="max-w-[105px]"
                 hide-details
                 :items="kernels"
               />
@@ -476,15 +492,13 @@ import Hint from '@/components/Hint.vue'
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
-import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from '@/composables/cache'
-import { useDateString } from '@/composables/date'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kPeerState } from '@/composables/peers'
 import { kTheme } from '@/composables/theme'
 import { kUserContext } from '@/composables/user'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { useIntervalFn } from '@vueuse/core'
+import { useLocalStorage } from '@vueuse/core'
 import { AUTHORITY_MICROSOFT, BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog, useSimpleDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
@@ -497,7 +511,7 @@ const { show: showReceive } = useDialog('peer-receive')
 const navigation = ref('connections' as 'connections' | 'settings')
 
 const hideIp = ref(true)
-const showNetworkInfo = useLocalStorageCacheBool('peerShowNetworkInfo', true)
+const showNetworkInfo = useLocalStorage('peerShowNetworkInfo', true, { writeDefaults: false })
 
 const open = (...args: any[]) => window.open(...args)
 
@@ -519,10 +533,10 @@ const {
   connections,
   turnservers,
   group,
+  groupRole,
+  groupMaxPeers,
   groupState,
   icePings,
-  groupPing,
-  groupLastTimestamp,
   joinGroup,
   leaveGroup,
   drop,
@@ -543,11 +557,10 @@ const { users } = injection(kUserContext)
 const hasMicrosoft = computed(() => !!users.value.find((u) => u.authority === AUTHORITY_MICROSOFT))
 const forwardedPort = ref(0)
 
-const allowTurn = useLocalStorageCacheBool('peerAllowTurn', false)
-const kernel = useLocalStorageCacheStringValue(
-  'peerKernel',
-  'node-datachannel' as 'node-datachannel' | 'webrtc',
-)
+const allowTurn = useLocalStorage('peerAllowTurn', true, { writeDefaults: false })
+const kernel = useLocalStorage<'node-datachannel' | 'webrtc'>('peerKernel', 'node-datachannel', {
+  writeDefaults: false,
+})
 const kernels = computed(() => [
   { value: 'node-datachannel', text: 'node-datachannel' },
   { value: 'webrtc', text: 'WebRTC' },
@@ -558,7 +571,7 @@ function getIceServerPingText(value: number | 'timeout' | undefined) {
   return ` (${value}ms)`
 }
 
-const preferredTurnserver = useLocalStorageCacheStringValue('peerPreferredTurn', '')
+const preferredTurnserver = useLocalStorage('peerPreferredTurn', '', { writeDefaults: false })
 const turnserversItems = computed(() =>
   Object.entries(turnservers.value).map(([key, value]) => ({
     value: key,
@@ -657,27 +670,9 @@ const tConnectionStates = computed(() => ({
   new: t('peerConnectionState.new'),
 }))
 
-const { getDateString } = useDateString()
-const pingAgo = ref('')
-const interval = useIntervalFn(
-  () => {
-    pingAgo.value = `(${getDateString(groupLastTimestamp.value)})`
-  },
-  1_000,
-  { immediate: false },
-)
-
-watch(
-  groupState,
-  (newVal) => {
-    if (newVal === 'connected') {
-      interval.resume()
-    } else {
-      interval.pause()
-    }
-  },
-  { immediate: true },
-)
+const isRelay = (connection: (typeof connections.value)[number]) =>
+  connection.selectedCandidate?.local.type === 'relay' ||
+  connection.selectedCandidate?.remote.type === 'relay'
 
 const edit = (id: string, init: boolean) => {
   const conn = connections.value.find((c) => c.id === id)

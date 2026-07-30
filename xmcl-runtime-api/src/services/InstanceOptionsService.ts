@@ -170,6 +170,8 @@ export interface InstanceOptionsService {
    * @param content The new file content
    */
   setInstanceConfig(instancePath: string, filePath: string, content: string): Promise<void>
+  /** Remove a file under the instance `config/` directory. */
+  removeInstanceConfig(instancePath: string, filePath: string): Promise<void>
 }
 
 export const InstanceOptionsServiceKey: ServiceKey<InstanceOptionsService> = 'InstanceOptionsService'

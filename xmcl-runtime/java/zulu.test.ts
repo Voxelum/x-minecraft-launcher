@@ -45,6 +45,16 @@ describe('zulu', () => {
       }
     })
 
+    test('provides an epsilon runtime from the bundled index', async () => {
+      const app = makeApp(() => Promise.resolve(new Response('', { status: 304 })))
+      try {
+        const jre = await getZuluJRE(app as any, 'java-runtime-epsilon')
+        expect(jre.url).toContain('zulu25')
+      } finally {
+        app.dispose()
+      }
+    })
+
     test('error message records which sources were tried', async () => {
       const app = makeApp(() => Promise.resolve(new Response('', { status: 304 })))
       try {

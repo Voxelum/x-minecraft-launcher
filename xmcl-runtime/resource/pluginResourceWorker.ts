@@ -15,84 +15,53 @@ import {
   SharedState,
 } from '@xmcl/runtime-api'
 import {
-  DatabaseWorker,
   JSONPlugin,
-  SqliteWASMDialect,
-  SqliteWASMDialectConfig,
+  NodeSqliteDialect,
+  NodeSqliteDialectConfig,
 } from '@xmcl/sqlite'
 import { AnyError } from '@xmcl/utils'
 import { createLazyWorker } from '@xmcl/worker'
 import EventEmitter from 'events'
-import { existsSync, rmSync } from 'fs'
 import { rename } from 'fs-extra'
 import { Kysely, ParseJSONResultsPlugin } from 'kysely'
-import { Database as SQLDatabase } from 'node-sqlite3-wasm'
+import { DatabaseSync } from 'node:sqlite'
 import { join } from 'path'
 import { LauncherApp, LauncherAppPlugin, kGameDataPath } from '~/app'
-import { ImageStorage, ZipManager, kFlights } from '~/infra'
+import { ImageStorage, ZipManager } from '~/infra'
 import { ServiceStateManager } from '~/service'
 import { kSettings } from '~/settings'
 import { kResourceContext, kResourceManager } from './index'
 import createResourceWorker from './resource.worker?worker'
-import createDbWorker from './sqlite.worker?worker'
 import { ResourceWorker, kResourceWorker } from './worker'
 
-function loadDatabaseConfig(app: LauncherApp, flights: any, dbPath: string) {
-  let config: SqliteWASMDialectConfig
-
-  try {
-    const lockPath = dbPath + '.lock'
-    if (existsSync(lockPath)) {
-      rmSync(lockPath, { recursive: true })
-    }
-  } catch {}
-
-  const onError: SqliteWASMDialectConfig['onError'] = (e) => {
-    if (e instanceof Error && e.name === 'SQLite3Error') {
+function loadDatabaseConfig(app: LauncherApp, dbPath: string): NodeSqliteDialectConfig {
+  const onError: NodeSqliteDialectConfig['onError'] = (e) => {
+    if (e instanceof Error && ((e as any).code === 'ERR_SQLITE_ERROR' || e.name === 'SQLite3Error')) {
+      const message = e.message.toLowerCase()
       if (
-        e.message === 'unable to open database file' ||
-        e.message === 'database disk image is malformed' ||
-        e.message === 'file is not a database' ||
-        e.message === 'file is encrypted or is not a database' ||
-        e.message.startsWith('no such table') ||
-        e.message.startsWith('out of memory')
+        message === 'unable to open database file' ||
+        message === 'database disk image is malformed' ||
+        message === 'file is not a database' ||
+        message === 'file is encrypted or is not a database' ||
+        message.startsWith('no such table') ||
+        message.startsWith('out of memory')
       )
         app.registry.get(kSettings).then((settings) => settings.databaseReadySet(false))
     }
     // @ts-ignore
     e.source = 'ResourceDatabase'
   }
-  if (flights.enableResourceDatabaseWorker) {
-    const dbLogger = app.getLogger('ResourceDbWorker')
-    const [dbWorker, dispose]: [DatabaseWorker, () => void] = createLazyWorker(
-      createDbWorker,
-      {
-        methods: ['executeQuery', 'streamQuery', 'init', 'destroy'],
-        asyncGenerators: ['streamQuery'],
-      },
-      dbLogger,
-      Exception,
-      { workerData: { fileName: dbPath }, name: 'ResourceDBWorker' },
-    )
-    config = {
-      worker: dbWorker,
-      databasePath: dbPath,
-      onError,
-    }
-  } else {
-    config = {
-      databasePath: dbPath,
-      database: () => {
-        const db = new SQLDatabase(dbPath)
-        db.run('PRAGMA locking_mode = EXCLUSIVE')
-        db.run('PRAGMA journal_mode = WAL')
-        return db
-      },
-      onError,
-    }
-  }
 
-  return config
+  return {
+    databasePath: dbPath,
+    database: () => {
+      const db = new DatabaseSync(dbPath)
+      db.exec('PRAGMA locking_mode = EXCLUSIVE')
+      db.exec('PRAGMA journal_mode = WAL')
+      return db
+    },
+    onError,
+  }
 }
 
 export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
@@ -111,7 +80,11 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   app.registry.register(kResourceWorker, resourceWorker)
 
   const logger = app.getLogger('ResourceContext')
-  const flights = await app.registry.get(kFlights)
+  // The resource database no longer has a worker/non-worker selection: the
+  // obsolete `enableResourceDatabaseWorker` flight is ignored (it can no longer
+  // spawn a SQLite worker). The database now runs in the normal runtime process
+  // through a single `node:sqlite` connection.
+  //
   // The resource database is launcher-level state and stays in appData: it must
   // NOT travel with the game data root during a migration (its rows hold
   // absolute paths that are stale at the new location anyway, so the index is
@@ -125,8 +98,8 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
       const bkPath = dbPath + '.' + Date.now() + '.bk'
       await rename(dbPath, bkPath).catch(() => {})
     }
-    const config = loadDatabaseConfig(app, flights, dbPath)
-    const dialect = new SqliteWASMDialect(config)
+    const config = loadDatabaseConfig(app, dbPath)
+    const dialect = new NodeSqliteDialect(config)
     const database = new Kysely<Database>({
       dialect,
       plugins: [new ParseJSONResultsPlugin(), new JSONPlugin()],

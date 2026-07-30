@@ -25,7 +25,7 @@
           >settings_heart</v-icon
         >
         <span
-          :style="{ width: !isNarrow && !targetQuery ? '80px' : 0 }"
+          :class="!isNarrow && !targetQuery ? 'w-[80px]' : 'w-0'"
           class="overflow-hidden transition-all!"
         >
           {{ t('BaseSettingGeneral.title') }}
@@ -43,13 +43,14 @@
           >folder_zip</v-icon
         >
         <span
-          :style="{ width: !isNarrow && targetQuery === 'modpack' ? '80px' : 0 }"
+          :class="!isNarrow && targetQuery === 'modpack' ? 'w-[80px]' : 'w-0'"
           class="overflow-hidden transition-all!"
         >
           {{ t('modpack.name', 1) }}
         </span>
       </v-btn>
       <v-btn
+        v-if="!isBedrock"
         v-shared-tooltip="() => t('instance.launchServer')"
         variant="text"
         :aria-pressed="targetQuery === 'server'"
@@ -109,12 +110,17 @@
           @click="exportModpack"
           size="large"
         >
-          <v-icon start> build </v-icon>
+          <span
+            v-if="isGamepadActive"
+            class="gp-btn__key gp-btn__key--primary mr-2"
+            style="transform: scale(0.85); vertical-align: middle;"
+          >{{ buttonX }}</span>
+          <v-icon v-else start> build </v-icon>
           {{ t('modpack.export') }}
         </v-btn>
       </div>
       <div
-        v-else-if="targetQuery === 'server'"
+        v-else-if="targetQuery === 'server' && !isBedrock"
         class="flex items-center justify-end gap-2 overflow-hidden"
       >
         <v-btn
@@ -122,11 +128,16 @@
           rounded="pill"
           :variant="serverLaunch.running.value ? 'tonal' : 'flat'"
           size="large"
-          :prepend-icon="serverLaunch.running.value ? 'stop' : 'play_arrow'"
+          :prepend-icon="isGamepadActive ? undefined : (serverLaunch.running.value ? 'stop' : 'play_arrow')"
           data-testid="server-tab-launch"
           :loading="serverLaunch.loading.value"
           @click="serverLaunch.running.value ? serverLaunch.killServer() : serverLaunch.launchServer()"
         >
+          <span
+            v-if="isGamepadActive"
+            class="gp-btn__key gp-btn__key--primary mr-2"
+            style="transform: scale(0.85); vertical-align: middle;"
+          >{{ buttonX }}</span>
           {{ serverLaunch.running.value ? t('launch.killServer') : t('instance.launchServer') }}
         </v-btn>
       </div>
@@ -146,6 +157,8 @@ import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
 import { useQuery } from '@/composables/query'
 import { kModpackExport } from '@/composables/modpack'
 import { kInstanceServerLaunch } from '@/composables/instanceServerLaunch'
+import { useGamepadInnerNav } from '@/composables/gamepad'
+import { useGamepad } from '@/composables/gamepad'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { useMediaQuery } from '@vueuse/core'
@@ -171,6 +184,7 @@ const targetQuery = useQuery('target')
 
 const { exportModpack, exporting, loading } = injection(kModpackExport)
 const serverLaunch = injection(kInstanceServerLaunch)
+const { isActive: isGamepadActive, buttonX } = useGamepad()
 
 const router = useRouter()
 function navigate(target: '' | 'modpack' | 'appearance' | 'server') {
@@ -183,4 +197,21 @@ function navigate(target: '' | 'modpack' | 'appearance' | 'server') {
     router.replace({ query: { target } })
   }
 }
+
+// Gamepad triggers (L2/R2) cycle through the base-setting tabs.
+const tabGroup = computed<Array<'' | 'modpack' | 'server' | 'appearance'>>(() =>
+  isBedrock.value ? ['', 'appearance'] : ['', 'modpack', 'server', 'appearance'],
+)
+useGamepadInnerNav({
+  handler: (dir) => {
+    const raw = (targetQuery.value || '') as string
+    const cur = raw === 'general' ? '' : raw
+    let idx = tabGroup.value.indexOf(cur as '' | 'modpack' | 'server' | 'appearance')
+    if (idx === -1) idx = 0
+    const next = dir === 'next'
+      ? (idx + 1) % tabGroup.value.length
+      : (idx - 1 + tabGroup.value.length) % tabGroup.value.length
+    navigate(tabGroup.value[next])
+  },
+})
 </script>

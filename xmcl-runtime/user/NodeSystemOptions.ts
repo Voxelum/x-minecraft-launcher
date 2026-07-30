@@ -6,6 +6,7 @@ import { createNetworkClient } from './accountSystems/OAuthNetworkClient'
 export function createNodeSystemOptions(logger: Logger, fetch: typeof globalThis.fetch, signal?: AbortSignal, transformReqResp = false): NodeSystemOptions {
   const client = createNetworkClient(fetch, signal)
   return {
+    protocolMode: 'OIDC',
     loggerOptions: {
       logLevel: LogLevel.Verbose,
       loggerCallback: (level, message, ppi) => {
@@ -48,5 +49,5 @@ export function createNodeSystemOptions(logger: Logger, fetch: typeof globalThis
         return client.sendPostRequestAsync(url, options) as any
       },
     },
-  }
+  } satisfies NodeSystemOptions
 }

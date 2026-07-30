@@ -85,9 +85,16 @@ describe('@xmcl/file-transfer download', () => {
     try {
       const dest = join(dir, 'missing.bin')
       const tracker = new ProgressTrackerSingle()
-      await expect(
-        download({ url: `${baseUrl}/missing`, destination: dest, tracker }),
-      ).rejects.toThrow()
+      const error = await download({ url: `${baseUrl}/missing`, destination: dest, tracker }).catch((error) => error)
+      expect(error).toBeInstanceOf(Error)
+      expect((error as any).downloadUrl).toBe(`${baseUrl}/missing`)
+      expect((error as any).downloadHosts).toBe(JSON.stringify(['127.0.0.1:' + new URL(baseUrl).port]))
+      expect((error as any).downloadDestinationExtension).toBe('.bin')
+      expect(Object.keys(error)).toEqual(expect.arrayContaining([
+        'downloadUrl',
+        'downloadHost',
+        'downloadDestinationExtension',
+      ]))
 
       // Give microtasks a chance to flush the .finally
       await new Promise((r) => setImmediate(r))
@@ -150,6 +157,7 @@ describe('@xmcl/file-transfer download', () => {
     const fullBody = Buffer.alloc(2048)
     for (let i = 0; i < fullBody.length; i++) fullBody[i] = i & 0xff
     let reqCount = 0
+    let restartRangeHeader: string | undefined
     const { server, baseUrl } = await startServer({
       '/flaky': {
         handle: (req, res) => {
@@ -174,6 +182,7 @@ describe('@xmcl/file-transfer download', () => {
             return
           }
           // Our rewind dispatches a fresh request — serve the full body.
+          restartRangeHeader = req.headers.range
           res.writeHead(200, { 'Content-Length': fullBody.length.toString() })
           res.end(fullBody)
         },
@@ -182,12 +191,18 @@ describe('@xmcl/file-transfer download', () => {
     const dir = await tempDir()
     try {
       const dest = join(dir, 'flaky.bin')
-      await download({ url: `${baseUrl}/flaky`, destination: dest })
+      await download({
+        url: `${baseUrl}/flaky`,
+        destination: dest,
+        expectedTotal: fullBody.length,
+        rangePolicy: { rangeThreshold: 256 },
+      })
       const written = await readFile(dest)
       expect(written.length).toBe(fullBody.length)
       expect(written.equals(fullBody)).toBe(true)
       // At least: initial attempt + undici's range retry + our rewind.
       expect(reqCount).toBeGreaterThanOrEqual(3)
+      expect(restartRangeHeader).toBeUndefined()
     } finally {
       server.close()
       await rm(dir, { recursive: true, force: true })
@@ -636,7 +651,4 @@ describe('@xmcl/file-transfer download (controller range-split)', () => {
     }
   })
 })
-
-
-
 

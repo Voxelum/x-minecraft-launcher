@@ -6,7 +6,7 @@
       <img
         width="45px"
         height="45px"
-        style="min-width: 45px; min-height: 45px;"
+        class="min-w-[45px] min-h-[45px]"
         contain
         :src="icon"
       >

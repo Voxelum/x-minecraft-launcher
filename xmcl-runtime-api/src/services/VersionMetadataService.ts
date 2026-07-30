@@ -1,4 +1,6 @@
 import type { LabyModManifest } from '@xmcl/installer'
+import { Exception } from '../entities/exception'
+import type { ExceptionBase } from '../entities/exception'
 import type { FabricArtifactVersion, ForgeVersion, MinecraftVersions, OptifineVersion } from '../entities/version'
 import { GenericEventEmitter } from '../events'
 import { ServiceKey } from './Service'
@@ -7,6 +9,16 @@ export interface FabricVersionsResult {
   gameVersions: string[]
   loaderVersions: FabricArtifactVersion[]
 }
+
+export interface VersionMetadataFetchFailedException extends ExceptionBase {
+  type: 'versionMetadataFetchFailed'
+  cachePath: string
+  sources: string[]
+}
+
+export type VersionMetadataExceptions = VersionMetadataFetchFailedException
+
+export class VersionMetadataException extends Exception<VersionMetadataExceptions> { }
 
 /**
  * Events fired when a background stale-while-revalidate cycle for a

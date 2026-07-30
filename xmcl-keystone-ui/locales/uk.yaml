@@ -75,10 +75,31 @@ bedrock:
   installFailed: Не вдалося відкрити Microsoft Store
   installed: 'Встановлено: {version}'
   launchHint: Використовуйте кнопку «Запуск», щоб запустити Bedrock Edition.
+  installBedrockVersion: 'Завантаження Bedrock {version}'
   licenseRequired: >-
     Увійдіть за допомогою облікового запису Microsoft, який володіє Minecraft, щоб установити та грати
     в Bedrock Edition.
   refresh: Оновити
+  versionsTitle: Менеджер версій
+  versionsHint: >-
+    Завантажуйте кілька версій Bedrock із серверів Microsoft і перемикайтеся між ними.
+    Windows може зареєструвати лише одну версію одночасно.
+  versionsError: Не вдалося завантажити список версій. Перевірте мережу та спробуйте ще раз.
+  channel: Канал
+  channelRelease: Реліз
+  channelBeta: Бета
+  channelPreview: Попередня версія
+  active: Активна
+  play: Грати
+  download: Завантажити
+  installedTag: Встановлено
+  developerModeRequired: >-
+    Для реєстрації завантаженої версії потрібно ввімкнути режим розробника Windows.
+  enableDeveloperMode: Увімкнути режим розробника
+  enableDeveloperModeFailed: Не вдалося ввімкнути режим розробника
+  downloadFailed: 'Не вдалося завантажити Bedrock {version}'
+  launchFailed: Не вдалося запустити цю версію Bedrock
+  removeFailed: 'Не вдалося видалити Bedrock {version}'
 baseSetting:
   title: Основні налаштування
 browseApp:
@@ -221,10 +242,10 @@ downloadCount: '{count} завантажень'
 downloadUpdate:
   name: Завантажити оновлення {version}
 duration:
-  day: '{duration} день | {duration} дні | {duration} днів'
-  hour: '{duration} година | {duration} години | {duration} годин'
-  minute: '{duration} хвилина | {duration} хвилини | {duration} хвилин'
-  second: '{duration} секунда | {duration} секунди | {duration} секунд'
+  day: '{duration} день | {duration} дня'
+  hour: '{duration} година | {duration} години'
+  minute: '{duration} хвилина | {duration} хвилини'
+  second: '{duration} секунда | {duration} секунди'
 env:
   select:
     all: Вибрати все
@@ -500,6 +521,21 @@ instances:
   folderSetting: Налаштування папки
   importFolderDescription: Імпортувати Minecraft в лаунчер
   loadingFiles: Завантаження файлів модпаку
+  edition: Видання
+  editionJava: Java-видання
+  editionBedrock: Bedrock-видання
+  editionBedrockHint: >-
+    Видання Bedrock запускається через застосунок Microsoft Store. Ви повинні
+    мати ліцензію Bedrock. Моди, набори ресурсів та інші функції, доступні лише
+    в Java, недоступні.
+  editionBedrockWindowsOnly: Видання Bedrock підтримується лише у збірці для Windows.
+  linkSharedFolders: Спільний доступ до папок між збірками
+  linkSharedFoldersHint: >-
+    Створіть ці папки як посилання на спільні папки лаунчера, щоб ця збірка
+    ділила їхній вміст з усіма іншими пов'язаними збірками. Це не копіювання —
+    зміни в одній збірці з'являються в усіх. Непозначені папки залишаються
+    приватними для цієї збірки.
+  linkFailed: Не вдалося пов'язати папку {folder} зі спільною папкою
   addPrismDescription: Імпортувати існуючий інстанс PrismLauncher.
 items:
   count: '{count} елементів'
@@ -516,6 +552,7 @@ java:
   memoryManual: Вручну
   memoryUnassigned: Не призначати
   minMemory: Мін. пам'ять
+  name: Java
   noMemory: Не обмежувати використання пам'яті
   refresh: Оновити локальні Java
   systemMemory: 'Вільна системна пам''ять: {free} / {total}'
@@ -649,6 +686,9 @@ loginError:
   noProfileForNewUser: >-
     Профіль гри не знайдено! Якщо ви новий користувач Minecraft, будь ласка, увійдіть принаймні один раз в офіційному лаунчері Minecraft.
   requestFailed: Помилка входу, точна причина невідома. Будь ласка, спробуйте ще раз.
+  xboxErrorGuideHint: Виникла проблема із входом? Подивіться як це виправити.
+  openLoginGuide: Як це виправити (Гайд)
+  openDiscordSupport: Не допомогло? Наш Discord
   requireEmail: Електронна пошта обов'язкова
   requirePassword: Пароль обов'язковий
   requireUsername: Ім'я користувача обов'язкове
@@ -744,9 +784,7 @@ modInstall:
     title: Оновити моди?
     'yes': Оновити моди
   checkDependencies: Перевірити залежності
-  checkUpgrade: Перевірити оновлення модів
   checkedDependencies: Залежності перевірено
-  checkedUpgrade: Оновлення перевірено
   currentVersion: Обрана версія
   dependencyHint: Встановлено іншу версію {version}
   releaseOnly: Ігнорувати альфа- та бета-версії під час оновлення
@@ -759,7 +797,6 @@ modInstall:
   skipVersion: Пропустити моди з іншою версією Minecraft
   source: Джерело модів
   switch: Змінити версію
-  upgrade: Оновити моди
 modSearch:
   noLocalModsFound: Не знайдено локальних модів, що відповідають вашому пошуку.
   noModsFound: Модів не знайдено.
@@ -800,6 +837,12 @@ modpackImportConfirm:
   description: >-
     Виявлено, що ви перетягнули файл у лаунчер. Ви намагаєтеся імпортувати модпак?
   title: Ви намагаєтеся імпортувати модпак?
+modpackUpdateOrCreate:
+  createNew: 'Створити новий'
+  description: >-
+    Екземпляр "{name}" для цього модпака вже існує. Бажаєте оновити його чи створити новий?
+  title: 'Екземпляр уже існує'
+  update: 'Оновити наявний'
 modrinth:
   browseUrl: Відкрити в браузері {url}
   categories:
@@ -1075,6 +1118,9 @@ quiltVersion:
   disable: Вимкнути Quilt
   empty: Quilt не підтримує Minecraft {version}
 resourcepack:
+  linkShared: Спільні пакети ресурсів для всіх збірок
+  linkSharedHint: >-
+    Пов'язати папку resourcepacks цієї збірки зі спільною глобальною папкою, щоб усі збірки використовували однакові пакети ресурсів. Наявні пакети буде перенесено до спільної папки.
   compatible: Сумісний формат {format} з {version}
   defaultDescription: Типовий вигляд Minecraft
   delete:
@@ -1097,6 +1143,9 @@ resourcepack:
   noPacks: Ресурспаки не знайдено
   search: Пошук ресурспаків...
 save:
+  linkShared: Спільні збереження для всіх збірок
+  linkSharedHint: >-
+    Пов'язати папку saves цієї збірки зі спільною глобальною папкою, щоб усі збірки використовували однакові світи. Наявні збереження буде перенесено до спільної папки.
   copy:
     name: Копіювати збереження
   createNew: Створити новий світ
@@ -1132,7 +1181,11 @@ screenshots:
 search:
   favorate: Колекція
   local: Встановлені
-  market: Ринок модів
+  market: Ринок
+  emptyInstalled: Ще нічого не встановлено
+  browseMarket: Переглянути ринок
+  noResults: Нічого не знайдено
+  pageSize: Результатів на сторінці
 server:
   acceptingMinecraftVersion: Приймає версію Minecraft
   creationHint: Будь ласка, заповніть адресу сервера та пропінгуйте сервер
@@ -1269,6 +1322,8 @@ setting:
   exportSettingsHint: Зберегти поточні налаштування у файл
   general: Загальні
   githubRelease: Реліз на Github
+  globalJava: Бажана Java
+  globalJavaHint: "В автоматичному режимі спочатку використовується ця Java, і лише за несумісності з версією гри відбувається перехід до автовизначення."
   globalSetting: Глобальні налаштування екземпляра
   globalSettingHint: Екземпляр використовуватиме ці налаштування за замовчуванням.
   importSettings: Імпорт налаштувань
@@ -1421,6 +1476,9 @@ setup:
     name: Встановити мову
   path: Поточний шлях
 shaderPack:
+  linkShared: Спільні пакети шейдерів для всіх збірок
+  linkSharedHint: >-
+    Пов'язати папку shaderpacks цієї збірки зі спільною глобальною папкою, щоб усі збірки використовували однакові пакети шейдерів. Наявні пакети буде перенесено до спільної папки.
   deletion: Видалити пакет шейдерів
   deletionHint: Це видалить файл пакета шейдерів {path} і не може бути скасовано.
   disabled: Вимкнені пакети шейдерів
@@ -1447,6 +1505,7 @@ shared:
   back: Назад
   browse: Огляд
   cancel: Скасувати
+  checkUpgrade: Перевірити оновлення
   client: Клієнт
   description: Опис
   disable: Вимкнути
@@ -1468,6 +1527,7 @@ shared:
   search: Пошук
   server: Сервер
   skipForNow: Пропустити зараз
+  upgrade: Оновити
   'yes': Так
 sidebar:
   pin: Закріпити
@@ -1723,3 +1783,33 @@ relative:
   minutesAgo: '{count} хвилину тому | {count} хвилин тому'
   hoursAgo: '{count} годину тому | {count} годин тому'
   daysAgo: '{count} день тому | {count} днів тому'
+
+gamepad:
+  detectedTitle: Виявлено геймпад
+  enabledNotify: Керування геймпадом увімкнено! Використовуйте хрестовину/лівий стік для навігації, {btnA} для вибору, {btnB} для повернення.
+  modSuggestTitle: Мод для контролера
+  modSuggestBody: >-
+    Щоб використовувати геймпад безпосередньо в Minecraft, рекомендується встановити мод підтримки контролера.
+    Бажаєте встановити відповідний мод для вашого завантажувача модів?
+  modInstall: Встановити мод
+  modSkip: Пропустити
+  modDone: Готово
+  modInstalled: Мод контролера успішно встановлено! Він буде активний при наступному запуску Minecraft.
+  modInstalledNotify: '{name} встановлено для підтримки контролера в грі.'
+  modNotFound: 'Сумісну версію для {loader} на Minecraft {version} не знайдено.'
+  autoEnableLabel: Авто-увімкнення керування
+  autoEnableHint: Автоматично вмикати керування геймпадом при виявленні контролера.
+  autoOpenKeyboardLabel: Відкривати клавіатуру Steam
+  autoOpenKeyboardHint: Відкривати екранну клавіатуру Steam при фокусі на текстових полях.
+  focusTooltipsLabel: Підказки при фокусі
+  focusTooltipsHint: Показувати вспливаючі підказки при навігації елементами геймпадом.
+  disableModPromptLabel: Вимкнути пропозиції модів контролера
+  disableModPromptHint: Не показувати пропозицію встановлення модів для контролера при запуску з геймпадом.
+  settingSteamTitle: Додати лаунчер до Steam
+  steamAddedNotify: Лаунчер успішно додано до вашої бібліотеки Steam! Будь ласка, перезапустіть Steam, щоб побачити зміни.
+  steamAlreadyAddedNotify: Лаунчер вже додано до вашої бібліотеки Steam.
+  steamDeckTitle: Виявлено Steam Deck
+  steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати X Minecraft Launcher до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
+  steamDeckAddBtn: Додати до Steam ({btn})
+  steamDeckCancelBtn: Скасувати ({btn})
+

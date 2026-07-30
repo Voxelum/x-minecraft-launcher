@@ -57,9 +57,12 @@ export interface InstanceModsGroupService {
   
   /**
    * Update shared group rules by extracting mod ID to group mappings from an instance
-   * @param instancePath Path to the instance to extract rules from
+   * @param mapping The mod ID to group mappings to save
+   * @param replaceGroups The names of the groups whose existing shared items should be
+   * discarded (replaced) instead of appended/merged. Groups not listed here keep their
+   * existing shared items and only append the new ones.
    */
-  updateSharedGroupRules(mapping: ModGroupRules): Promise<void>
+  updateSharedGroupRules(mapping: ModGroupRules, replaceGroups?: string[]): Promise<void>
 }
 
 export const InstanceModsGroupServiceKey: ServiceKey<InstanceModsGroupService> = 'InstanceModsGroupService'

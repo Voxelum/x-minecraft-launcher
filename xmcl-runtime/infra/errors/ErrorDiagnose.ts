@@ -23,20 +23,29 @@ export class ErrorDiagnose {
    * @returns `true` to ignore error
    */
   processError(e: Error): boolean {
-    if (e.name === 'SQLite3Error') {
+    // node:sqlite raises plain `Error`s tagged with `code: 'ERR_SQLITE_ERROR'`
+    // (or `ERR_INVALID_STATE` for a closed handle). Older builds used
+    // node-sqlite3-wasm's `SQLite3Error`; accept both so telemetry suppression
+    // keeps working across the engine change.
+    const code = (e as any).code
+    const isSqliteError =
+      e.name === 'SQLite3Error' || code === 'ERR_SQLITE_ERROR' || code === 'ERR_INVALID_STATE'
+    if (isSqliteError) {
       // The driver already auto-reopens the handle on these transient
-      // failures (see SqliteWASMDriver). Suppress them from telemetry so we
+      // failures (see NodeSqliteDriver). Suppress them from telemetry so we
       // don't get the per-user storm reported in issue #1429.
       if ((e as any).isDisposed) {
         return true
       }
+      const message = e.message.toLowerCase()
       if (
-        e.message === 'Database already closed' ||
-        e.message === 'unable to open database file'
+        message === 'database already closed' ||
+        message === 'database is not open' ||
+        message === 'unable to open database file'
       ) {
         return true
       }
-      if (e.message.startsWith('disk I/O error')) {
+      if (message.startsWith('disk i/o error')) {
         this.#sqlDiskIOError = true
       }
       // Ignore sqlite error if the disk is full
@@ -121,7 +130,7 @@ export class ErrorDiagnose {
     if (e instanceof TypeError && e.message.startsWith('fetch failed')) {
       return true
     }
-    if (e.name === 'ClientAuthError' && e.message.includes('Network request failed')) {
+    if (e.name === 'ClientAuthError' && /\b(network_error|Network request failed)\b/.test(e.message)) {
       return true
     }
     // MSAL surfaces a few more strictly user/network-state failures
@@ -137,7 +146,7 @@ export class ErrorDiagnose {
     //   - `interaction_required` / `user_cancelled`: silent flows
     //     that need a UI re-prompt; the launcher already triggers
     //     one, telemetry would only see the dead-end attempt.
-    if (e.name === 'ClientAuthError' && /\b(device_code_expired|endpoints_resolution_error|interaction_required|user_cancelled)\b/.test(e.message)) {
+    if (e.name === 'ClientAuthError' && /\b(device_code_expired|endpoints_resolution_error|interaction_required|user_cancel(?:led|ed))\b/.test(e.message)) {
       return true
     }
     // Issue #1442: 404 from /minecraft/profile just means the user's MS
@@ -145,6 +154,13 @@ export class ErrorDiagnose {
     // UserException, but suppress it here too in case any future caller
     // forgets and bubbles the raw error through logEmitter('failure').
     if (e.name === 'ProfileNotFoundError') {
+      return true
+    }
+    // Minecraft's token-exchange endpoint reports a suspended account as a
+    // 403 JSON body. MicrosoftAccountSystem turns it into a UserException for
+    // a friendly support message; keep this as a last-line safeguard if a
+    // future caller logs the raw error instead.
+    if (e.name === 'MicrosoftMinecraftXboxLoginError' && /\bACCOUNT_SUSPENDED\b/.test(e.message)) {
       return true
     }
     // Issue #1446: Node WHATWG streams throw ERR_INVALID_STATE
@@ -218,7 +234,7 @@ export class ErrorDiagnose {
     // the XBox numeric XErr codes but not the OAuth-layer codes that
     // come back from MSAL itself.
     if (e.name === 'MicrosoftOLoginMicrosoftError' && typeof e.message === 'string' &&
-        /\b(access_denied|server_error|invalid_request|consent_required|interaction_required|login_required|user_cancelled)\b/.test(e.message)) {
+        /\b(access_denied|server_error|invalid_request|consent_required|interaction_required|login_required|user_cancel(?:led|ed))\b/.test(e.message)) {
       return true
     }
     // node-sqlite3-wasm surfaces native open failures as plain `Error`

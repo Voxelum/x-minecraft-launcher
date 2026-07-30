@@ -11,7 +11,7 @@ import {
   DownloadUpdateTask,
   NetworkStatus,
 } from '@xmcl/runtime-api'
-import { readFile, readdir, stat } from 'fs-extra'
+import { readFile, readdir, stat, pathExists } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { join, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
@@ -26,6 +26,8 @@ import { LauncherApp } from '../app/LauncherApp'
 import { HAS_DEV_SERVER } from '../constant'
 import { ZipFile } from 'yazl'
 import { getTracker } from '~/util/taskHelper'
+import { addSteamShortcutToVdf } from './steamShortcut'
+import { writeFile as writeAtomically } from 'atomically'
 
 @ExposeServiceKey(BaseServiceKey)
 export class BaseService extends AbstractService implements IBaseService {
@@ -82,6 +84,10 @@ export class BaseService extends AbstractService implements IBaseService {
               (g) => g.vendorId === 4318 || g.vendorId === 4098 || g.vendorId === 4203,
             ) ?? false,
         ),
+      steamDeck:
+        process.env.STEAM_DECK === '1' ||
+        process.env.USER === 'deck' ||
+        (process.platform === 'linux' && os.release().toLowerCase().includes('steamdeck')),
     }
   }
 
@@ -96,6 +102,73 @@ export class BaseService extends AbstractService implements IBaseService {
       })
     }
     return false
+  }
+
+  async addSteamShortcut(): Promise<boolean> {
+    // Find Steam userdata directory
+    const steamPaths: string[] = []
+    if (process.platform === 'win32') {
+      if (process.env['PROGRAMFILES(X86)']) {
+        steamPaths.push(join(process.env['PROGRAMFILES(X86)'], 'Steam'))
+      }
+      if (process.env.PROGRAMFILES) {
+        steamPaths.push(join(process.env.PROGRAMFILES, 'Steam'))
+      }
+      steamPaths.push('C:\\Program Files (x86)\\Steam')
+      steamPaths.push('C:\\Program Files\\Steam')
+    } else if (process.platform === 'darwin') {
+      steamPaths.push(join(os.homedir(), 'Library/Application Support/Steam'))
+    } else {
+      // Linux
+      steamPaths.push(join(os.homedir(), '.steam/steam'))
+      steamPaths.push(join(os.homedir(), '.local/share/Steam'))
+    }
+
+    const exePath = this.app.host.getPath('exe')
+    const startDir = resolve(exePath, '..')
+
+    let shortcutAdded = false
+    let shortcutError: unknown
+
+    for (const steamPath of steamPaths) {
+      const userdataPath = join(steamPath, 'userdata')
+      if (await pathExists(userdataPath)) {
+        try {
+          const userDirs = await readdir(userdataPath)
+          for (const userDir of userDirs) {
+            if (/^\d+$/.test(userDir)) {
+              const configDir = join(userdataPath, userDir, 'config')
+              if (await pathExists(configDir)) {
+                const shortcutsVdfPath = join(configDir, 'shortcuts.vdf')
+                const existing = (await pathExists(shortcutsVdfPath))
+                  ? await readFile(shortcutsVdfPath)
+                  : Buffer.alloc(0)
+                const updated = addSteamShortcutToVdf(existing, {
+                  executable: `"${exePath}"`,
+                  startDir: `"${startDir}"`,
+                  icon: exePath,
+                })
+
+                if (updated) {
+                  await writeAtomically(shortcutsVdfPath, updated)
+                  shortcutAdded = true
+                }
+              }
+            }
+          }
+        } catch (err) {
+          this.logger.warn(`Failed to add Steam shortcut for ${steamPath}`)
+          this.logger.warn(err)
+          shortcutError ??= err
+        }
+      }
+    }
+
+    if (!shortcutAdded && shortcutError) {
+      throw shortcutError
+    }
+
+    return shortcutAdded
   }
 
   async handleUrl(url: string) {
@@ -179,9 +252,11 @@ export class BaseService extends AbstractService implements IBaseService {
       operation: updateInfo.operation as 'autoupdater' | 'asar' | 'appx' | 'manual',
       version: updateInfo.name,
     })
-    await task.wrap(this.app.updater.downloadUpdate(updateInfo, {
-      tracker: getTracker(task),
-    }))
+    await task.wrap(
+      this.app.updater.downloadUpdate(updateInfo, {
+        tracker: getTracker(task),
+      }),
+    )
     settings.updateStatusSet('ready')
   }
 

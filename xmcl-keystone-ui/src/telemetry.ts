@@ -12,6 +12,13 @@ const appInsights = new ApplicationInsights({
 })
 appInsights.loadAppInsights()
 
+const vuetifyDetachedOverlayMessage =
+  "Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'."
+
+export function isIgnorableRendererExceptionMessage(message: string) {
+  return message.includes(vuetifyDetachedOverlayMessage)
+}
+
 // Add telemetry initializer to filter exceptions and enrich the ones we
 // want to investigate with renderer-side context.
 //
@@ -83,8 +90,7 @@ appInsights.addTelemetryInitializer((envelope) => {
   // there is no patch we can apply -- only suppress here until the
   // upstream Vuetify fix lands. Issue #1426. With the envelope-shape
   // fix this finally takes effect.
-  if (message ===
-      "Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'.") {
+  if (isIgnorableRendererExceptionMessage(message)) {
     return false
   }
   // vue-i18n message-compiler error. Production messages come back

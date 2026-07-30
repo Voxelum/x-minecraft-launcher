@@ -1,26 +1,25 @@
 {
   "name": "@xmcl/sqlite",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./index.ts",
   "author": {
     "name": "cijhn@hotmail.com"
   },
-  "description": "WASM SQLite helper",
+  "description": "Node SQLite (node:sqlite) Kysely dialect helper",
   "scripts": {
     "build:type": "tsc",
-    "build:cjs": "esbuild --target=es2020 --platform=node --external:node-sqlite3-wasm --external:kysely --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
-    "build:esm": "esbuild --target=es2020 --platform=node --external:node-sqlite3-wasm --external:kysely --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts"
+    "build:cjs": "esbuild --target=es2020 --platform=node --external:kysely --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
+    "build:esm": "esbuild --target=es2020 --platform=node --external:kysely --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+    "url": "git+https://github.com/Voxelum/x-minecraft-launcher.git"
   },
   "devDependencies": {
-    "@types/node": "^20.19.0",
+    "@types/node": "^24.13.3",
     "kysely": "^0.28.14",
-    "node-sqlite3-wasm": "^0.8.52",
     "@xmcl/oxlint-config": "workspace:^*",
     "esbuild": "^0.25.12",
     "oxlint": "^1.63.0",

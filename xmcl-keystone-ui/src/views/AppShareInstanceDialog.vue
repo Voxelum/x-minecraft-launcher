@@ -37,85 +37,13 @@
         <v-list-subheader>{{ t('AppShareInstanceDialog.baseInfo') }}</v-list-subheader>
         <div class="flex flex-col p-5 ">
           <div class="flex gap-5">
-            <v-text-field
-              variant="solo"
-              flat
-              :model-value="minecraft"
-              label="Minecraft"
-              density="compact"
-              readonly
-            >
-              <template #prepend-inner>
-                <img
-                  :src="BuiltinImages.minecraft"
-                  width="32"
-                >
-              </template>
-            </v-text-field>
-            <v-text-field
-              v-if="forge"
-              variant="solo"
-              flat
-              density="compact"
-              label="Forge"
-              :model-value="forge"
-              readonly
-            >
-              <template #prepend-inner>
-                <img
-                  :src="BuiltinImages.forge"
-                  width="32"
-                >
-              </template>
-            </v-text-field>
-            <v-text-field
-              v-if="fabricLoader"
-              variant="solo"
-              flat
-              density="compact"
-              label="Fabric"
-              :model-value="fabricLoader"
-              readonly
-            >
-              <template #prepend-inner>
-                <img
-                  :src="BuiltinImages.fabric"
-                  width="32"
-                >
-              </template>
-            </v-text-field>
-            <v-text-field
-              v-if="quiltLoader"
-              variant="solo"
-              flat
-              density="compact"
-              label="Fabric"
-              :model-value="quiltLoader"
-              readonly
-            >
-              <template #prepend-inner>
-                <img
-                  :src="BuiltinImages.quilt"
-                  width="32"
-                >
-              </template>
-            </v-text-field>
-            <v-text-field
-              v-if="neoForged"
-              variant="solo"
-              flat
-              density="compact"
-              label="Fabric"
-              :model-value="neoForged"
-              readonly
-            >
-              <template #prepend-inner>
-                <img
-                  :src="BuiltinImages.neoForged"
-                  width="32"
-                >
-              </template>
-            </v-text-field>
+            <InstanceVersionField
+              v-for="field in versionFields"
+              :key="field.label"
+              :label="field.label"
+              :value="field.value"
+              :image="field.image"
+            />
           </div>
           <div class="flex gap-5">
             <v-text-field
@@ -215,6 +143,7 @@ import { injection } from '@/util/inject'
 import { InstanceInstallServiceKey, InstanceManifest, InstanceManifestServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
+import InstanceVersionField from '../components/InstanceVersionField.vue'
 import { useDialog } from '../composables/dialog'
 import { useNotifier } from '../composables/notifier'
 import { BuiltinImages } from '../constant'
@@ -244,6 +173,13 @@ const fabricLoader = computed(() => manifest.value?.runtime.fabricLoader)
 const quiltLoader = computed(() => manifest.value?.runtime.quiltLoader)
 const neoForged = computed(() => manifest.value?.runtime.neoForged)
 const optifine = computed(() => manifest.value?.runtime.optifine)
+const versionFields = computed(() => [
+  { label: 'Minecraft', value: minecraft.value, image: BuiltinImages.minecraft },
+  { label: 'Forge', value: forge.value, image: BuiltinImages.forge },
+  { label: 'Fabric', value: fabricLoader.value, image: BuiltinImages.fabric },
+  { label: 'Quilt', value: quiltLoader.value, image: BuiltinImages.quilt },
+  { label: 'NeoForged', value: neoForged.value, image: BuiltinImages.neoForged },
+].filter((f): f is { label: string; value: string; image: string } => !!f.value))
 const mcOptions = computed(() => manifest.value?.mcOptions || [])
 const vmOptions = computed(() => manifest.value?.vmOptions || [])
 const loading = ref(false)

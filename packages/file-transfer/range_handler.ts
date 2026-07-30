@@ -21,8 +21,9 @@ export class RangeRequestHandler extends FileHandler {
     fd: number,
     readonly rangePolicy: RangePolicy,
     tracker?: ProgressTrackerSingle,
+    destinationExtension?: string,
   ) {
-    super(options.signal, fd)
+    super(options.signal, fd, `${options.origin}${options.path}`, destinationExtension)
     // If the parent's response fails before `onHeaderParsed` runs
     // (e.g. HTTP 4xx/5xx, malformed headers, network error), we will
     // never spawn child range requests and the existing code paths
@@ -64,7 +65,7 @@ export class RangeRequestHandler extends FileHandler {
     const childrenPromises: Promise<void>[] = []
 
     for (const range of ranges) {
-      const handler = new FileHandler(this.options.signal, this.fd)
+      const handler = new FileHandler(this.options.signal, this.fd, `${origin}${path}`, this.destinationExtension)
       this.children.push(handler)
       handler.onWritten = this.onWritten
       childrenPromises.push(handler.wait())

@@ -293,6 +293,7 @@ import { useInstanceVersionServerInstall } from '@/composables/instanceVersionSe
 import { kInstanceServerLaunch } from '@/composables/instanceServerLaunch'
 import { useLaunchException } from '@/composables/launchException'
 import { useService } from '@/composables/service'
+import { useGamepadAction, vibrateGamepad } from '@/composables/gamepad'
 import { BuiltinImages } from '@/constant'
 import { vFallbackImg } from '@/directives/fallbackImage'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
@@ -336,6 +337,7 @@ function triggerEulaShake() {
   eulaBox.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   eulaShake.value = false
   clearTimeout(shakeTimer)
+  vibrateGamepad()
   requestAnimationFrame(() => {
     eulaShake.value = true
     shakeTimer = setTimeout(() => { eulaShake.value = false }, 600)
@@ -630,6 +632,22 @@ watch(error, (e) => {
   if (e) {
     onError(e)
   }
+})
+
+// Gamepad X on the server tab launches (or stops) the local server.
+useGamepadAction('X', {
+  label: () => isServerRunning.value ? t('launch.killServer') : t('instance.launchServer'),
+  handler: () => {
+    if (isServerRunning.value) {
+      onKill()
+      return
+    }
+    if (!isAcceptEula.value) {
+      triggerEulaShake()
+      return
+    }
+    onPlay()
+  },
 })
 </script>
 

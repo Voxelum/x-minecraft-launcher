@@ -1,6 +1,6 @@
 import { injection } from '@/util/inject'
 import { InjectionKey, Ref } from 'vue'
-import { useLocalStorageCache } from './cache'
+import { useLocalStorage } from '@vueuse/core'
 import { JavaCompatibleState, kInstanceJava } from './instanceJava'
 
 export const kInstanceJavaDiagnose: InjectionKey<ReturnType<typeof useInstanceJavaDiagnose>> = Symbol('InstanceJavaDiagnose')
@@ -26,7 +26,7 @@ export function useInstanceJavaDiagnose({ status: java } = injection(kInstanceJa
     return undefined
   })
 
-  const whiteList = useLocalStorageCache('instanceJavaBypass', () => ({}), JSON.stringify, JSON.parse)
+  const whiteList = useLocalStorage<Record<string, string>>('instanceJavaBypass', {}, { deep: false, writeDefaults: false })
 
   function bypass() {
     if (!item.value) return

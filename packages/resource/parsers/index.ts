@@ -1,4 +1,6 @@
 import { FileSystem, openFileSystem } from '@xmcl/system'
+import { getBlockCount, getMaterialList, getUsedBlocks, isAir, isBlueprintFile, readBlueprint } from '@xmcl/schematic'
+import { readFile } from 'fs/promises'
 import { basename, extname } from 'path'
 import { fabricModParser } from './fabric_mod'
 import { forgeModParser } from './forge_mod'
@@ -53,6 +55,52 @@ export class ResourceParser {
   async parse(args: ParseResourceArgs): Promise<ParseResourceResult> {
     const inspectExt = args.fileType === 'zip' ? '.zip' : undefined
     const ext = extname(args.path)
+
+    // Blueprints (litematic / schem / structure nbt / building gadget) are
+    // gzip-compressed NBT or JSON, not zip archives, so they cannot go through
+    // `openFileSystem`. Parse them directly from the raw bytes.
+    if ((args.domain === ResourceDomain.Blueprints || args.domain === ResourceDomain.Unclassified) && isBlueprintFile(args.path)) {
+      try {
+        const data = await readFile(args.path)
+        const blueprint = await readBlueprint(data, args.path)
+        const { size, palette, blocks } = blueprint
+        const air = palette.map((s) => isAir(s))
+        const voxels: number[] = []
+        for (let y = 0; y < size.y; y++) {
+          for (let z = 0; z < size.z; z++) {
+            for (let x = 0; x < size.x; x++) {
+              const idx = blocks[x + size.x * (z + size.z * y)]
+              if (air[idx]) continue
+              voxels.push(x, y, z, idx)
+            }
+          }
+        }
+        const metadata: ResourceMetadata = {
+          [ResourceType.Blueprint]: {
+            format: blueprint.format,
+            size: blueprint.size,
+            blockCount: getBlockCount(blueprint),
+            blockTypeCount: getUsedBlocks(blueprint).length,
+            dataVersion: blueprint.dataVersion,
+            author: blueprint.author,
+            materials: getMaterialList(blueprint),
+            palette: palette.map((s) => ({ name: s.name, properties: s.properties })),
+            voxels,
+          },
+        }
+        return {
+          name: blueprint.name || basename(args.path),
+          metadata,
+          uris: [],
+          icons: [],
+        }
+      } catch (e) {
+        if (args.domain === ResourceDomain.Blueprints) {
+          return { name: basename(args.path), metadata: {}, uris: [], icons: [] }
+        }
+        // Unclassified: fall through to the regular pipeline.
+      }
+    }
 
     let parsers: IResourceParser<any>[]
     if (args.domain === ResourceDomain.Unclassified) {

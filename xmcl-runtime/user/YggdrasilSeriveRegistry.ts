@@ -47,9 +47,13 @@ export class YggdrasilSeriveRegistry {
   }
 
   async load() {
-    const apis = await readJson(this.yggdrasilJsonPath)
-      .catch(() => this.getDefaultYggdrasilServices())
-      .then(d => YggdrasilSchema.parse(d))
+    let apis: YggdrasilSchema
+    try {
+      apis = YggdrasilSchema.parse(await readJson(this.yggdrasilJsonPath))
+    } catch (e) {
+      this.logger.warn('Failed to load Yggdrasil services. Falling back to defaults.', e)
+      apis = await this.getDefaultYggdrasilServices()
+    }
     const litteSkin = apis.yggdrasilServices.find(a => new URL(a.url).host === 'littleskin.cn')
     if (litteSkin && (!litteSkin.authlibInjector || !litteSkin.ocidConfig)) {
       apis.yggdrasilServices.splice(apis.yggdrasilServices.indexOf(litteSkin), 1)

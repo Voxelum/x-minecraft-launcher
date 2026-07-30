@@ -119,6 +119,7 @@ const getContextMenuItems = () => {
         showItemInDirectory(props.pack.installed[0].path)
       },
       icon: 'folder',
+      section: 'action',
     })
     all.push({
       text: t('delete.name', { name: props.pack.title }),
@@ -127,6 +128,7 @@ const getContextMenuItems = () => {
       },
       icon: 'delete',
       color: 'error',
+      section: 'danger',
     })
   }
 

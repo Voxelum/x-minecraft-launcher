@@ -10,6 +10,7 @@ import { AbstractService, ExposeServiceKey } from '~/service'
 import { writeZipFile } from '~/util/zip'
 import { LauncherApp } from '../app/LauncherApp'
 import { ZipFile } from 'yazl'
+import { getDesktopWallpaper } from './getDesktopWallpaper'
 
 const MAX_CSS_SIZE = 1024 * 1024 // 1 MB
 /**
@@ -84,7 +85,7 @@ export class ThemeService extends AbstractService implements IThemeService {
 
     // Collect all media URLs from the theme
     const mediaUrls = new Set<string>()
-    for (const asset of Object.values(themeData.assets)) {
+    for (const asset of Object.values(themeData.assets ?? {})) {
       if (Array.isArray(asset)) {
         for (const media of asset) {
           if (media.url?.startsWith('http://launcher/theme-media/')) {
@@ -141,7 +142,7 @@ export class ThemeService extends AbstractService implements IThemeService {
 
   private async createXTheme(data: ThemeData, mediaSourceFolder: string, destinationFile: string) {
     const zipFile = new ZipFile()
-    for (const asset of Object.values(data.assets)) {
+    for (const asset of Object.values(data.assets ?? {})) {
       if (Array.isArray(asset)) {
         for (const media of asset) {
           const url = media.url
@@ -176,6 +177,10 @@ export class ThemeService extends AbstractService implements IThemeService {
       return
     }
     this.app.shell.showItemInFolder(path)
+  }
+
+  async getDesktopWallpaper(): Promise<string | undefined> {
+    return getDesktopWallpaper(this.app.platform.os)
   }
 
   async addMedia(filePath: string): Promise<MediaData> {

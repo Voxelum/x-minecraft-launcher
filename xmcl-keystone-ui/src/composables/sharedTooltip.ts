@@ -1,10 +1,10 @@
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 
 const isShown = ref(false)
 const stack = shallowRef([] as SharedTooltipData[])
 const blocked = ref(false)
 const pending = [undefined as boolean | undefined]
-const _setValue = debounce(() => {
+const _setValue = useDebounceFn(() => {
   if (pending[0] === undefined) return
   isShown.value = pending[0]
   pending[0] = undefined

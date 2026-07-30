@@ -45,6 +45,25 @@ askAICrash:
     Laat AI je helpen de gamecrash te begrijpen! Volg de instructies hieronder om AI te vragen over deze gamecrash!
   selectPlatform: Open een AI-platform en plak de prompt die je zojuist hebt gekopieerd.
 authProfileAddedNotification: Auth-profiel {name} toegevoegd
+bedrock:
+  installBedrockVersion: 'Downloading Bedrock {version}'
+  versionsTitle: Version manager
+  versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
+  versionsError: Failed to load the version list. Check your network and try again.
+  channel: Channel
+  channelRelease: Release
+  channelBeta: Beta
+  channelPreview: Preview
+  active: Active
+  play: Play
+  download: Download
+  installedTag: Installed
+  developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
+  enableDeveloperMode: Enable Developer Mode
+  enableDeveloperModeFailed: Failed to enable Developer Mode
+  downloadFailed: 'Failed to download Bedrock {version}'
+  launchFailed: Failed to launch this Bedrock version
+  removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
   title: Instantie-instellingen
 browseApp:
@@ -465,6 +484,22 @@ instances:
   folderSetting: Mapinstellingen
   importFolderDescription: Importeer Minecraft naar Launcher
   loadingFiles: Modpack-bestanden laden
+  edition: Edición
+  editionJava: Edición Java
+  editionBedrock: Edición Bedrock
+  editionBedrockHint: >-
+    A edición Bedrock iníciase a través da aplicación Microsoft Store. Debes
+    posuír unha licenza de Bedrock. Os mods, paquetes de recursos e outras
+    funcións exclusivas de Java non están dispoñibles.
+  editionBedrockWindowsOnly: A edición Bedrock só é compatible coa versión de Windows.
+  linkSharedFolders: Compartir cartafoles entre instancias
+  linkSharedFoldersHint: >-
+    Crea estes cartafoles como ligazóns aos cartafoles compartidos do iniciador
+    para que esta instancia comparta o seu contido con todas as demais
+    instancias ligadas. Isto non é unha copia: os cambios feitos nunha
+    instancia aparecen en todas. Os cartafoles non marcados permanecen privados
+    desta instancia.
+  linkFailed: Non se puido ligar o cartafol {folder} ao cartafol compartido
   addPrismDescription: Importar unha instancia de PrismLauncher existente.
 items:
   count: '{count} items'
@@ -481,6 +516,7 @@ java:
   memoryManual: Handmatig
   memoryUnassigned: Niet toewijzen
   minMemory: Min Geheugen
+  name: Java
   noMemory: Geheugengebruik niet beperken
   refresh: Ververs Lokale Java
   systemMemory: 'Systeem Vrij Geheugen: {free} / {total}'
@@ -703,9 +739,7 @@ modInstall:
     title: Mods updaten?
     'yes': Mods updaten
   checkDependencies: Controleer Afhankelijkheden
-  checkUpgrade: Controleer Mods Update
   checkedDependencies: Gecontroleerde Afhankelijkheden
-  checkedUpgrade: Upgrade gecontroleerd
   currentVersion: Geselecteerde Versie
   dependencyHint: Installeerde andere versie {version}
   releaseOnly: Ignorar as versións alfa e beta ao actualizar
@@ -718,7 +752,6 @@ modInstall:
   skipVersion: Sla de Mods over met andere Minecraft-versie
   source: Mod Bron
   switch: Wissel Versie
-  upgrade: Mods Upgraden
 modSearch:
   noLocalModsFound: Geen lokale mods gevonden die overeenkomen met je zoekopdracht.
   noModsFound: Geen mods gevonden
@@ -760,6 +793,12 @@ modpackImportConfirm:
   description: >-
     Gedetecteerd dat je een bestand in de launcher sleept. Probeer je een modpack te importeren?
   title: Probeer je een modpack te importeren?
+modpackUpdateOrCreate:
+  createNew: 'Crear nova'
+  description: >-
+    Xa existe unha instancia "{name}" para este modpack. Queres actualizala ou crear unha nova?
+  title: 'A instancia xa existe'
+  update: 'Actualizar existente'
 modrinth:
   browseUrl: Open in Browser {url}
   categories:
@@ -1033,6 +1072,11 @@ quiltVersion:
   disable: Quilt uitschakelen
   empty: Quilt ondersteunt Minecraft {version} niet
 resourcepack:
+  linkShared: Compartir paquetes de recursos entre instancias
+  linkSharedHint: >-
+    Vincular o cartafol resourcepacks desta instancia co cartafol compartido
+    global para que todas as instancias usen os mesmos paquetes de recursos. Os
+    paquetes existentes fusiónanse no cartafol compartido.
   compatible: Compatibel formaat {format} met {version}
   defaultDescription: De standaard look en feel van Minecraft
   delete:
@@ -1055,6 +1099,11 @@ resourcepack:
   unselected: Niet-geselecteerde Resourcepacks
   search: Buscar paquetes de recursos...
 save:
+  linkShared: Compartir partidas entre instancias
+  linkSharedHint: >-
+    Vincular o cartafol saves desta instancia co cartafol compartido global para
+    que todas as instancias compartan os mesmos mundos. As partidas existentes
+    fusiónanse no cartafol compartido.
   allowCheats: Cheats Toestaan
   copy:
     name: Save Kopiëren
@@ -1100,7 +1149,11 @@ screenshots:
 search:
   favorate: Collectie
   local: Geïnstalleerd
-  market: Mod Markt
+  market: Mercado
+  emptyInstalled: Aínda non hai nada instalado
+  browseMarket: Explorar o mercado
+  noResults: Non se atoparon resultados
+  pageSize: Resultados por páxina
 server:
   acceptingMinecraftVersion: Accepteert Minecraft Versie
   creationHint: Vul het serveradres in en ping de server
@@ -1227,6 +1280,8 @@ setting:
   exportSettingsHint: Sla je huidige instellingen op in een bestand
   general: Algemeen
   githubRelease: Github Release
+  globalJava: Java preferido
+  globalJavaHint: "No modo automático próbase primeiro este Java e só se recorre á detección automática cando non é compatible coa versión do xogo."
   globalSetting: Globale Instantie Instelling
   globalSettingHint: Instantie gebruikt deze instellingen standaard.
   importSettings: Importeer Instellingen
@@ -1375,6 +1430,11 @@ setup:
     name: Stel Taal In
   path: Huidig Pad
 shaderPack:
+  linkShared: Compartir paquetes de shaders entre instancias
+  linkSharedHint: >-
+    Vincular o cartafol shaderpacks desta instancia co cartafol compartido global
+    para que todas as instancias usen os mesmos paquetes de shaders. Os paquetes
+    existentes fusiónanse no cartafol compartido.
   deletion: Verwijder Shader Pack
   deletionHint: >-
     Dit verwijdert het shaderpack-bestand {path} en kan niet ongedaan worden gemaakt.
@@ -1401,6 +1461,7 @@ shared:
   back: Terug
   browse: Bladeren
   cancel: Annuleren
+  checkUpgrade: Controleer Updates
   client: Client
   description: Beschrijving
   disable: Uitschakelen
@@ -1422,6 +1483,7 @@ shared:
   search: Busca
   server: Server
   skipForNow: Sla voor nu over
+  upgrade: Bijwerken
   'yes': Ja
 sidebar:
   pin: Fixar

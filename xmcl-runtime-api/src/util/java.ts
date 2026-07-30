@@ -38,7 +38,7 @@ export interface VersionPreference {
   requirement: string
 }
 
-export function selectJavaByPreference(allJava: JavaRecord[], { match, okay }: VersionPreference) {
+export function selectJavaByPreference(allJava: JavaRecord[], { match, okay }: VersionPreference, preferredPath?: string) {
   const records = allJava.filter(v => v.valid)
   // const root = this.getPath('jre')
   // const isUnderPath = (p: string) => !relative(root, p).startsWith('..')
@@ -55,6 +55,15 @@ export function selectJavaByPreference(allJava: JavaRecord[], { match, okay }: V
     }
   }
   if (bestMatched.length > 0) {
+    // Honor the user's globally preferred Java only when it is fully
+    // compatible with this version — otherwise we fall through to the
+    // regular auto-selection (or a download) instead of forcing it.
+    if (preferredPath) {
+      const preferred = bestMatched.find(j => j.path === preferredPath)
+      if (preferred) {
+        return [preferred, JavaCompatibleState.Matched] as const
+      }
+    }
     if (bestMatched.length > 1) {
       // Deprioritize OpenJ9 — HotSpot is the de-facto compatibility baseline.
       bestMatched.sort((a, b) => {
@@ -181,6 +190,7 @@ export function getAutoSelectedJava<T extends object>(
   minecraft: string,
   forge: string | undefined,
   selectedVersion?: InstanceResolvedVersion<T>,
+  preferredPath?: string,
 ): AutoDetectedJava {
   const { javaVersion, versionPref } = getVersionPreference(minecraft, forge, selectedVersion)
 
@@ -195,7 +205,7 @@ export function getAutoSelectedJava<T extends object>(
     }
   }
 
-  const [computedJava, computedQuality] = selectJavaByPreference(all, versionPref)
+  const [computedJava, computedQuality] = selectJavaByPreference(all, versionPref, preferredPath)
 
   return computedQuality !== JavaCompatibleState.Matched
     ? {

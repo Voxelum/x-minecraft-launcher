@@ -7,7 +7,13 @@ import { toRecord } from '~/util/object'
 import { XBoxResponse, normalizeSkinData } from '../user'
 import { UserTokenStorage } from '../userTokenStore'
 import { UserAccountSystem } from './AccountSystem'
-import { MicrosoftOAuthClient } from './MicrosoftOAuthClient'
+import { isAccountSuspendedError, isNetworkError, isUserCanceledError } from './MicrosoftAuthErrors'
+import {
+  MICROSOFT_GRAPH_USER_READ_SCOPE,
+  MicrosoftOAuthClient,
+  MICROSOFT_XBOX_LAUNCHER_SCOPES,
+} from './MicrosoftOAuthClient'
+import { toSkinUploadException } from './SkinUploadErrors'
 
 export class MicrosoftAccountSystem implements UserAccountSystem {
   constructor(
@@ -130,13 +136,19 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       if (options.skin === null) {
         await this.mojangClient.resetSkin(token, signal)
       } else {
-        newProfile = await this.mojangClient.setSkin(
-          `${gameProfile.name}.png`,
-          await normalizeSkinData(options.skin?.url),
-          options.skin?.slim ? 'slim' : 'classic',
-          token,
-          signal,
-        ) as any
+        try {
+          newProfile = await this.mojangClient.setSkin(
+            `${gameProfile.name}.png`,
+            await normalizeSkinData(options.skin?.url),
+            options.skin?.slim ? 'slim' : 'classic',
+            token,
+            signal,
+          ) as any
+        } catch (e) {
+          const skinException = toSkinUploadException(e)
+          if (skinException) throw skinException
+          throw e
+        }
       }
     }
 
@@ -214,9 +226,12 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       // Telemetry showed 34 ev / 29 users in 0.56.4 even after #1445
       // shipped the XErr mapping. Follow-up to that issue.
       if (typeof e?.message === 'string' &&
-          /\b(access_denied|server_error|invalid_request|consent_required|interaction_required|login_required|user_cancelled)\b/.test(e.message)) {
+          /\b(access_denied|server_error|invalid_request|consent_required|interaction_required|login_required)\b/.test(e.message)) {
         return true
       }
+      if (isUserCanceledError(e)) return true
+      if (isNetworkError(e)) return true
+      if (isAccountSuspendedError(e)) return true
       return false
     }
     const logError = (e: any) => {
@@ -231,15 +246,29 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       }
       this.logger.error(Object.assign(e, { scenario: 'loginMicrosoft' }))
     }
-    const { result, extra } = await this.oauthClient.authenticate(microsoftEmailAddress, ['XboxLive.signin', 'XboxLive.offline_access'], {
+    const { result, extra } = await this.oauthClient.authenticate(microsoftEmailAddress, MICROSOFT_XBOX_LAUNCHER_SCOPES, {
       code: oauthCode,
+      // XMCL identity binding verifies the stable subject through Microsoft
+      // Graph. Keep its consent/token in the same MSAL cache as the launcher
+      // Xbox token; the commercial bridge acquires it silently later.
+      extraScopes: [MICROSOFT_GRAPH_USER_READ_SCOPE],
       useDeviceCode,
       directRedirectToLauncher,
+      // WAM selects the account signed in to Windows/Xbox. If it is
+      // unavailable, MicrosoftOAuthClient falls back to the isolated WebView.
+      useNativeBroker: this.app.platform.os === 'windows',
       signal,
       slientOnly,
     }).catch((e) => {
       logError(e)
-      throw new UserException({ type: 'userAcquireMicrosoftTokenFailed' }, 'Failed to acquire Microsoft access token', { cause: e })
+      throw new UserException({
+        type: 'userAcquireMicrosoftTokenFailed',
+        reason: isUserCanceledError(e)
+          ? 'USER_CANCELED'
+          : isNetworkError(e)
+            ? 'NETWORK_ERROR'
+            : undefined,
+      }, 'Failed to acquire Microsoft access token', { cause: e })
     })
 
     const isBadXstsResponse = (xstsResponse: XBoxResponse) => !xstsResponse.DisplayClaims || !xstsResponse.DisplayClaims.xui
@@ -287,6 +316,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
             statusBody: truncatedBody,
             retryable: e.retryable,
             retryAfter: e.retryAfter,
+            reason: isAccountSuspendedError(e) ? 'ACCOUNT_SUSPENDED' : undefined,
           }, `Failed to login Minecraft with Xbox (HTTP ${e.status})`, { cause: e })
         }
         throw new UserException({ type: 'userLoginMinecraftByXboxFailed' }, 'Failed to login Minecraft with Xbox', { cause: e })
@@ -359,10 +389,12 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
 
     const [profile, avatar] = await Promise.all([
       aquireAccessToken(minecraftXstsResponse),
-      acquireXboxAvatar(liveXstsResponse).catch(e => {
-        this.logger.error(e)
-        return undefined
-      }),
+      liveXstsResponse
+        ? acquireXboxAvatar(liveXstsResponse).catch(e => {
+          this.logger.error(e)
+          return undefined
+        })
+        : Promise.resolve(undefined),
     ])
 
     return {

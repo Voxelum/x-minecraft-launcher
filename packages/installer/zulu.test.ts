@@ -87,13 +87,22 @@ describe('ZuluInstaller', () => {
       expect(selected?.url).toContain('fx-jre')
     })
 
-    test('should select JRE for Linux x64 with musl preference', () => {
-      const selected = selectZuluJRE(sampleZuluJREs, 'linux', 'x64')
+    test('should select musl JRE for Linux x64 only on musl hosts', () => {
+      const selected = selectZuluJRE(sampleZuluJREs, 'linux', 'x64', 'musl')
       expect(selected).toBeDefined()
       expect(selected?.os).toBe('linux')
       expect(selected?.architecture).toBe('x64')
       expect(selected?.features).toContain('musl')
       expect(selected?.url).toContain('musl')
+    })
+
+    test('should select glibc JRE for Linux x64 on glibc hosts', () => {
+      const selected = selectZuluJRE(sampleZuluJREs, 'linux', 'x64', 'glibc')
+      expect(selected).toBeDefined()
+      expect(selected?.os).toBe('linux')
+      expect(selected?.architecture).toBe('x64')
+      expect(selected?.features).not.toContain('musl')
+      expect(selected?.url).not.toContain('musl')
     })
 
     test('should select JRE for macOS ARM64 with javafx preference', () => {
@@ -185,13 +194,22 @@ describe('ZuluInstaller', () => {
   })
 
   describe('JRE selection preferences', () => {
-    test('should prefer musl builds on Linux', () => {
+    test('should pick musl builds on Linux only for musl hosts', () => {
       const linuxJREs = sampleZuluJREs.filter(
         (jre) => jre.os === 'linux' && jre.architecture === 'x64',
       )
-      const selected = selectZuluJRE(linuxJREs, 'linux', 'x64')
+      const selected = selectZuluJRE(linuxJREs, 'linux', 'x64', 'musl')
 
       expect(selected?.features).toContain('musl')
+    })
+
+    test('should never pick musl builds on glibc Linux hosts', () => {
+      const linuxJREs = sampleZuluJREs.filter(
+        (jre) => jre.os === 'linux' && jre.architecture === 'x64',
+      )
+      const selected = selectZuluJRE(linuxJREs, 'linux', 'x64', 'glibc')
+
+      expect(selected?.features).not.toContain('musl')
     })
 
     test('should prefer javafx builds when musl is not available', () => {

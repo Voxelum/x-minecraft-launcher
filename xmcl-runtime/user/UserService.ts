@@ -16,9 +16,9 @@ import {
   type UserProfile
 } from '@xmcl/runtime-api'
 import { AnyError } from '@xmcl/utils'
-import { readJson, writeJson } from 'fs-extra'
 import debounce from 'lodash.debounce'
 import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
+import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { kDownloadOptions } from '~/network'
 import { ExposeServiceKey, Lock, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { requireObject, requireString } from '~/util/object'
@@ -28,15 +28,28 @@ import { YggdrasilAccountSystem, kYggdrasilAccountSystem } from './accountSystem
 import { kUserTokenStorage, type UserTokenStorage } from './userTokenStore'
 import { getModrinthAccessToken, loginModrinth } from './utils/loginModrinth'
 import { ensureLauncherProfile, preprocessUserData } from './utils/userData'
+import { UserPersistence, type UserPersistenceIntent } from './UserPersistence'
 
 @ExposeServiceKey(UserServiceKey)
 export class UserService extends StatefulService<UserState> implements IUserService {
   private userJsonPath: string
-  private saveUserFile = debounce(async () => {
-    const userData = Users.parse({
-      users: this.state.users,
-    })
-    await writeJson(this.userJsonPath, userData, { spaces: 2 })
+  private userPersistence: UserPersistence
+  private persistenceReady = false
+  private explicitEmptyUserPersistence = false
+  private persistenceQueue: Promise<void> = Promise.resolve()
+  private saveUserFile = debounce(() => {
+    const userData = Users.parse({ users: this.state.users })
+    const intent: UserPersistenceIntent = Object.keys(userData.users).length === 0 && this.explicitEmptyUserPersistence
+      ? 'explicit-empty'
+      : 'automatic'
+    this.persistenceQueue = this.persistenceQueue
+      .then(() => this.userPersistence.persist(userData, intent))
+      .then(() => undefined)
+      .catch(() => {
+        // Do not include the failed profile or error object: either may contain
+        // account details and persistence will retry after the next mutation.
+        this.warn('Failed to persist user profile changes.')
+      })
   }, 1000)
 
   private loginController: AbortController | undefined
@@ -46,13 +59,15 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   private mojangSelectedUserId = ''
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(ExternalCredentialService) private externalCredentials: ExternalCredentialService,
     @Inject(ServiceStateManager) store: ServiceStateManager,
     @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
     @Inject(kYggdrasilAccountSystem) private yggdrasilAccountSystem: YggdrasilAccountSystem,
     @Inject(kYggdrasilSeriveRegistry) private yggdrasilSeriveRegistry: YggdrasilSeriveRegistry
   ) {
     super(app, () => store.registerStatic(new UserState(), UserServiceKey), async () => {
-      const data = await readJson(this.userJsonPath).catch(() => ({})).then(d => Users.parse(d))
+      const persisted = await this.userPersistence.load()
+      const data = persisted.users
       const userData = {
         users: {},
         yggdrasilServices: [],
@@ -70,6 +85,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       this.log(`Load ${Object.keys(userData.users).length} users`)
 
       this.state.userData(userData)
+      this.persistenceReady = true
 
       // Refresh all users
       Promise.all(Object.values(userData.users as Record<string, UserProfile>).map((user) => {
@@ -81,19 +97,30 @@ export class UserService extends StatefulService<UserState> implements IUserServ
             this.log(`Failed to refresh user ${user.id}`, e)
           })
         } else {
-          return this.removeUser(user)
+          // This is startup cleanup, not a user-requested logout. It must
+          // not grant permission to replace a valid profile with empty data.
+          this.state.userProfileRemove(user.id)
         }
       }))
     })
 
     this.userJsonPath = this.getAppDataPath('user.json')
+    this.userPersistence = new UserPersistence(this.userJsonPath)
     this.state.subscribeAll(() => {
+      if (!this.persistenceReady) return
+      if (Object.keys(this.state.users).length > 0) {
+        this.explicitEmptyUserPersistence = false
+      }
       this.saveUserFile()
+    })
+    app.registryDisposer(async () => {
+      this.saveUserFile.flush()
+      await this.persistenceQueue
     })
   }
 
   async hasModrinthToken(): Promise<boolean> {
-    return !!await getModrinthAccessToken(this.app)
+    return !!await getModrinthAccessToken(this.app, this.externalCredentials)
   }
 
   // Dedupe concurrent calls so we never open multiple OAuth browser windows.
@@ -101,7 +128,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   // can still proceed even while a non-invalidating call is in flight.
   @Singleton((invalidate?: boolean) => `loginModrinth-${invalidate ? '1' : '0'}`)
   async loginModrinth(invalidate = false): Promise<void> {
-    await loginModrinth(this.app, this, ['USER_READ_EMAIL', 'USER_READ', 'USER_WRITE', 'COLLECTION_CREATE', 'COLLECTION_READ', 'COLLECTION_WRITE', 'COLLECTION_DELETE'], invalidate, this.loginController?.signal)
+    await loginModrinth(this.app, this, ['USER_READ_EMAIL', 'USER_READ', 'USER_WRITE', 'COLLECTION_CREATE', 'COLLECTION_READ', 'COLLECTION_WRITE', 'COLLECTION_DELETE'], invalidate, this.loginController?.signal, this.externalCredentials)
   }
 
   addYggdrasilService(url: string): Promise<void> {
@@ -141,6 +168,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       .finally(() => { this.loginController = undefined })
 
     this.state.userProfile(profile)
+    this.emit('user-login-success', profile)
     return profile
   }
 
@@ -219,6 +247,8 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       if (newUser.invalidated) {
         throw new UserException({ type: 'userAccessTokenExpired' })
       }
+
+      this.emit('user-refresh-success', newUser)
     }
 
     return newUser
@@ -232,6 +262,9 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   @Singleton(p => p.id)
   async removeUser(userProfile: UserProfile) {
     requireObject(userProfile)
+    if (Object.keys(this.state.users).length === 1 && this.state.users[userProfile.id]) {
+      this.explicitEmptyUserPersistence = true
+    }
     this.state.userProfileRemove(userProfile.id)
   }
 

@@ -3,6 +3,7 @@ import MarketProjectDetail, { ExternalResource, Info, ProjectDetail } from '@/co
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
+import { kInstanceModsContext } from '@/composables/instanceMods'
 import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
 import { injection } from '@/util/inject'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
@@ -44,7 +45,7 @@ const installedVersions = computed(() => {
   const ver = props.mod.installed.map(v => versions.value.find(f => f.id === v.modId)).filter((v): v is ProjectVersion => !!v)
   return ver
 })
-const selectedVersion = ref(installedVersions.value[0] ?? versions.value[0])
+const selectedVersion = shallowRef(installedVersions.value[0] ?? versions.value[0])
 provide('selectedVersion', selectedVersion)
 watch(installedVersions, (v) => {
   if (v) {
@@ -133,7 +134,8 @@ const model = computed(() => {
 })
 
 const updating = useProjectDetailUpdate()
-const { install, uninstall, enable, disable } = useService(InstanceModsServiceKey)
+const { install, uninstall } = useService(InstanceModsServiceKey)
+const { enable, disable } = injection(kInstanceModsContext)
 const { enabled, installed, hasInstalledVersion } = useProjectDetailEnable(
   selectedVersion,
   computed(() => props.installed),

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { InstanceUpstream, isUpstreamSameOrigin } from './instance'
+import { findInstanceForModpack, InstanceModpackMatchTarget, InstanceUpstream, isUpstreamSameOrigin } from './instance'
 
 describe('Instance Templates', () => {
   describe('isUpstreamSameOrigin', () => {
@@ -125,6 +125,67 @@ describe('Instance Templates', () => {
       const peer: InstanceUpstream = { type: 'peer', id: 'mc.hypixel.net' }
 
       expect(isUpstreamSameOrigin(server, peer)).toBe(false)
+    })
+  })
+
+  describe('findInstanceForModpack', () => {
+    const instances: InstanceModpackMatchTarget[] = [
+      {
+        path: '/instances/optimized-mc',
+        name: 'Renamed by user',
+        upstream: { type: 'modrinth-modpack', projectId: 'abc', versionId: 'v1' },
+      },
+      {
+        path: '/instances/cf-pack',
+        name: 'CF Pack',
+        upstream: { type: 'curseforge-modpack', modId: 123, fileId: 1 },
+      },
+      {
+        path: '/instances/custom',
+        name: 'My Custom Pack',
+      },
+    ]
+
+    it('should match by upstream even if the instance was renamed', () => {
+      const match = findInstanceForModpack(instances, {
+        upstream: { type: 'modrinth-modpack', projectId: 'abc', versionId: 'v2' },
+        name: 'Optimized MC',
+      })
+      expect(match?.path).toBe('/instances/optimized-mc')
+    })
+
+    it('should match curseforge upstream by modId regardless of fileId', () => {
+      const match = findInstanceForModpack(instances, {
+        upstream: { type: 'curseforge-modpack', modId: 123, fileId: 999 },
+      })
+      expect(match?.path).toBe('/instances/cf-pack')
+    })
+
+    it('should fall back to case-insensitive name match without upstream', () => {
+      const match = findInstanceForModpack(instances, { name: 'my custom pack' })
+      expect(match?.path).toBe('/instances/custom')
+    })
+
+    it('should prefer upstream match over name match', () => {
+      const match = findInstanceForModpack(instances, {
+        upstream: { type: 'curseforge-modpack', modId: 123, fileId: 5 },
+        name: 'My Custom Pack',
+      })
+      expect(match?.path).toBe('/instances/cf-pack')
+    })
+
+    it('should return undefined when nothing matches', () => {
+      const match = findInstanceForModpack(instances, {
+        upstream: { type: 'modrinth-modpack', projectId: 'zzz', versionId: 'v1' },
+        name: 'Nonexistent',
+      })
+      expect(match).toBeUndefined()
+    })
+
+    it('should not name-match an instance that has an upstream when importing a custom modpack', () => {
+      const match = findInstanceForModpack(instances, { name: 'CF Pack' })
+      // Name fallback still matches by name even if that instance has upstream.
+      expect(match?.path).toBe('/instances/cf-pack')
     })
   })
 })

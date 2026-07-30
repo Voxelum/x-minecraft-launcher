@@ -58,7 +58,8 @@ export function useAppDropHandler() {
       if (dataTransfer.files.length > 0) {
         for (let i = 0; i < dataTransfer.files.length; i++) {
           const file = dataTransfer.files.item(i)!
-          if (items.value.every(p => p.id !== file.path)) {
+          const filePath = windowController.getPathForFile(file)
+          if (filePath && items.value.every(p => p.id !== filePath)) {
             promises.push(onFileDropped(file))
           }
         }

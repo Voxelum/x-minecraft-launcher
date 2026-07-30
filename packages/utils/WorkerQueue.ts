@@ -42,14 +42,19 @@ export class WorkerQueue<T> {
     }
     if (this.busy < this.workers && this.queue.length > 0) {
       this.busy++
-      const { job, retry } = this.queue[0]
+      // Claim the job by removing it from the queue BEFORE awaiting the
+      // worker. If we only shifted after the await (as before), every
+      // concurrent `workIfIdle` invocation triggered by a synchronous
+      // burst of `push()` calls would read the SAME `queue[0]` and run
+      // it `workers` times in parallel (verified: a 300-job burst with
+      // 128 workers ran the head job 128×). For the unzip step that
+      // meant the first override file was extracted by 128 racing
+      // writers onto one destination.
+      const { job, retry } = this.queue.shift()!
       try {
         await this.worker(job)
-        if (this.disposed) return
-        this.queue.shift()
       } catch (e) {
         if (this.disposed) return
-        this.queue.shift()
         if (retry < this.retryCount && this.shouldRetry(e as Error)) {
           await new Promise((resolve) => setTimeout(resolve, this.retryAwait(retry)))
           if (this.disposed) return

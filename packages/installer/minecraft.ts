@@ -41,6 +41,11 @@ export type {
  */
 export interface JarOption extends DownloadBaseOptions, InstallSideOption, WithDiagnose {
   /**
+   * Whether to install the Minecraft jar after resolving the version JSON.
+   * @default true
+   */
+  installJar?: boolean
+  /**
    * The version json url replacement
    */
   json?: string | string[] | ((version: MinecraftVersionBaseInfo) => string | string[])
@@ -178,7 +183,9 @@ export async function installMinecraft(
   })
 
   const side = options.side ?? 'client'
-  await installMinecraftJar(version, options)
+  if (options.installJar !== false) {
+    await installMinecraftJar(version, options)
+  }
 
   if (side === 'server') {
     const jarPath = folder.getVersionJar(versionMeta.id, 'server')

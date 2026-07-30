@@ -1,0 +1,251 @@
+/* Shared styles for the gamepad dialogs (AppGamepad*Dialog.vue). Global on
+   purpose — the same design-system classes are used across several components. */
+
+/* ─── Dialog container ─── */
+.gp-dialog {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(18, 18, 22, 0.92);
+  backdrop-filter: blur(24px) saturate(1.8);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+}
+
+.gp-dialog__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 28px 24px;
+}
+
+/* Decorative top glow */
+.gp-dialog__glow {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 120px;
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+.gp-dialog__glow--primary {
+  background: rgb(var(--v-theme-primary));
+}
+.gp-dialog__glow--accent {
+  background: linear-gradient(135deg, #7c3aed, #06b6d4);
+}
+
+/* Icon badge */
+.gp-dialog__icon-wrap {
+  position: relative;
+}
+.gp-dialog__icon-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.gp-dialog__icon-badge--primary {
+  background: rgba(var(--v-theme-primary), 0.12);
+  box-shadow: 0 0 24px rgba(var(--v-theme-primary), 0.15);
+}
+.gp-dialog__icon-badge--accent {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(6, 182, 212, 0.15));
+  box-shadow: 0 0 24px rgba(124, 58, 237, 0.12);
+}
+
+/* Chip (controller type) */
+.gp-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 100px;
+  background: rgba(var(--v-theme-on-surface), 0.06);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+/* Key mapping legend */
+.gp-guide {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(var(--v-theme-on-surface), 0.04);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.06);
+}
+.gp-guide__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.gp-guide__keys {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.gp-guide__keys .gp-btn__key {
+  width: auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 10px;
+}
+.gp-guide__label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Buttons */
+.gp-btn {
+  border-radius: 12px !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.gp-btn--primary {
+  background: rgba(var(--v-theme-primary), 1) !important;
+  color: rgba(var(--v-theme-on-primary), 1) !important;
+}
+.gp-btn--primary:hover {
+  box-shadow: 0 4px 20px rgba(var(--v-theme-primary), 0.35) !important;
+  transform: translateY(-1px);
+}
+.gp-btn--secondary {
+  background: rgba(var(--v-theme-on-surface), 0.06) !important;
+  color: rgba(var(--v-theme-on-surface), 0.7) !important;
+}
+.gp-btn--secondary:hover {
+  background: rgba(var(--v-theme-on-surface), 0.1) !important;
+}
+.gp-btn--success {
+  background: rgba(var(--v-theme-success), 1) !important;
+  color: #fff !important;
+}
+.gp-btn--success:hover {
+  box-shadow: 0 4px 20px rgba(var(--v-theme-success), 0.35) !important;
+}
+
+/* Mod card */
+.gp-mod-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(var(--v-theme-on-surface), 0.04);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.06);
+  text-align: left;
+  transition: all 0.2s ease;
+}
+.gp-mod-card:hover {
+  background: rgba(var(--v-theme-on-surface), 0.06);
+  border-color: rgba(var(--v-theme-primary), 0.2);
+}
+.gp-mod-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: rgba(var(--v-theme-primary), 0.1);
+}
+
+/* Tags */
+.gp-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(var(--v-theme-on-surface), 0.06);
+  color: rgba(var(--v-theme-on-surface), 0.55);
+  letter-spacing: 0.02em;
+}
+
+/* Status messages */
+.gp-status {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-align: left;
+  line-height: 1.5;
+}
+.gp-status--error {
+  background: rgba(var(--v-theme-error), 0.08);
+  border: 1px solid rgba(var(--v-theme-error), 0.15);
+  color: rgb(var(--v-theme-error));
+}
+.gp-status--success {
+  background: rgba(var(--v-theme-success), 0.08);
+  border: 1px solid rgba(var(--v-theme-success), 0.15);
+  color: rgb(var(--v-theme-success));
+}
+
+/* Transitions */
+.gp-fade-enter-active,
+.gp-fade-leave-active {
+  transition: all 0.25s ease;
+}
+.gp-fade-enter-from,
+.gp-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* Global gamepad-active focus styling */
+.gamepad-active :focus-visible,
+.gamepad-active :focus,
+.gamepad-active .v-btn:focus,
+.gamepad-active .v-list-item:focus,
+.gamepad-active .v-card:focus {
+  outline: 2px solid rgba(var(--v-theme-primary), 0.8) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(var(--v-theme-primary), 0.15), 0 0 16px rgba(var(--v-theme-primary), 0.1) !important;
+  border-radius: 4px !important;
+  transition: outline 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+/* Button key indicator (A / B / ✖ / ●) */
+.gp-btn__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.85);
+}
+.gp-btn__key--primary {
+  background: rgba(255, 255, 255, 0.2);
+}

@@ -1,10 +1,10 @@
 {
-    "version": "0.59.1",
+    "version": "0.65.1",
     "private": true,
     "license": "MIT",
-    "packageManager": "pnpm@10.33.3",
+    "packageManager": "pnpm@11.10.0",
     "engines": {
-        "node": ">=20"
+        "node": ">=22.16.0"
     },
     "scripts": {
         "compile": "pnpm -r compile",
@@ -19,19 +19,27 @@
         "dev:main": "pnpm run --prefix=xmcl-electron-app dev",
         "dev:renderer": "pnpm run --prefix=xmcl-keystone-ui dev",
         "lint": "oxlint -c ./.oxlintrc.json packages && pnpm run --prefix=xmcl-keystone-ui lint && pnpm run --prefix=xmcl-runtime lint && pnpm run --prefix=xmcl-runtime-api lint && pnpm run --prefix=xmcl-electron-app lint",
+        "i18n": "pnpm run --prefix=xmcl-keystone-ui i18n",
+        "lint:i18n": "pnpm run --prefix=xmcl-keystone-ui lint:i18n",
+        "i18n:remove": "pnpm run --prefix=xmcl-keystone-ui i18n:remove",
+        "i18n:rename": "pnpm run --prefix=xmcl-keystone-ui i18n:rename",
+        "i18n:daemon": "pnpm run --prefix=xmcl-keystone-ui i18n:daemon",
         "lint:fix": "oxlint -c ./.oxlintrc.json packages --fix && pnpm run --prefix=xmcl-runtime-api lint:fix && pnpm run --prefix=xmcl-runtime lint:fix && pnpm run --prefix=xmcl-electron-app lint:fix && pnpm run --prefix=xmcl-keystone-ui lint:fix",
         "format": "oxfmt -c ./.oxfmtrc.json packages --write",
         "coverage": "vitest run --coverage",
         "test:e2e": "pnpm --prefix=e2e test",
+        "test:e2e:ci": "pnpm --prefix=e2e test:ci",
+        "test:e2e:showcase": "pnpm --prefix=e2e test:showcase",
+        "test:e2e:release": "pnpm --prefix=e2e test:release",
         "test:e2e:smoke": "pnpm --prefix=e2e test:smoke",
         "test:e2e:ui": "pnpm --prefix=e2e test:ui",
         "test:e2e:scratch": "pnpm --prefix=e2e test:scratch",
-        "e2e:install": "pnpm --dir=e2e install --ignore-workspace",
+        "e2e:install": "pnpm --dir=e2e install",
         "build:tutorial": "pnpm --prefix=e2e tutorial",
         "gen:testids": "tsx scripts/gen-testids.ts"
     },
     "devDependencies": {
-        "@types/node": "^20.19.0",
+        "@types/node": "^24.13.3",
         "@vitest/coverage-v8": "^4.1.0",
         "oxfmt": "^0.48.0",
         "oxlint": "^1.63.0",
@@ -39,19 +47,5 @@
         "typedoc": "^0.28.15",
         "typescript": "^5.9.3",
         "vitest": "^4.1.0"
-    },
-    "pnpm": {
-        "onlyBuiltDependencies": [
-            "cpu-features",
-            "electron",
-            "esbuild",
-            "node-datachannel",
-            "ssh2",
-            "vue-demi"
-        ],
-        "overrides": {
-            "postcss": ">=8.5.10",
-            "rolldown": "1.0.1"
-        }
     }
 }

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { generateBaseName, generateDistinctName, validateInstanceName } from './instanceName'
+import { generateBaseName, generateDistinctName, getEffectiveInstanceName, validateInstanceName } from './instanceName'
 import type { RuntimeVersions } from '@xmcl/instance'
 
 const rt = (overrides: Partial<RuntimeVersions>): RuntimeVersions => ({
@@ -70,7 +70,7 @@ describe('generateDistinctName', () => {
 
 /**
  * Test the name validation logic used in StepConfig.vue:
- *   const effectiveName = trimmed || placeHolderName
+ *   const effectiveName = getEffectiveInstanceName(input, placeHolderName)
  *   return !instances.some(i => i.name === effectiveName)
  *
  * When the user leaves the name field empty, the effective name
@@ -79,9 +79,8 @@ describe('generateDistinctName', () => {
 describe('instance name validation logic', () => {
   /** Simulates the validation rule from StepConfig.vue */
   function validateName(input: string, placeHolderName: string, instanceNames: string[]): boolean {
-    const trimmed = input.trim()
-    const effectiveName = trimmed || placeHolderName
-    return !instanceNames.some(name => name === effectiveName)
+    const effectiveName = getEffectiveInstanceName(input, placeHolderName)
+    return effectiveName !== '' && !instanceNames.some(name => name === effectiveName)
   }
 
   test('empty input with unique placeholder should be valid', () => {
@@ -112,6 +111,10 @@ describe('instance name validation logic', () => {
     // With the old logic: v.trim() === "" matches instance with name ""  -> false positive!
     // With the fix: effectiveName = placeHolderName = "1.20.1", no conflict -> valid
     expect(validateName('', '1.20.1', [''])).toBe(true)
+  })
+
+  test('empty input without a generated placeholder should be invalid', () => {
+    expect(validateName('', '', [])).toBe(false)
   })
 })
 

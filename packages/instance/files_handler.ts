@@ -43,6 +43,31 @@ export interface FileOperationPayload {
   destination: string
 }
 
+export function assertNoCaseInsensitivePathCollisions(
+  paths: Iterable<string>,
+  caseInsensitive = process.platform === 'win32',
+) {
+  if (!caseInsensitive) return
+
+  const seen = new Map<string, string>()
+  for (const path of paths) {
+    const key = path.toLowerCase()
+    const existing = seen.get(key)
+    if (existing && existing !== path) {
+      const error = new Error(
+        'The selected files contain paths that differ only by letter case and cannot be installed on Windows',
+      )
+      error.name = 'CaseInsensitivePathCollisionError'
+      Object.defineProperties(error, {
+        firstPath: { value: existing, enumerable: false },
+        secondPath: { value: path, enumerable: false },
+      })
+      throw error
+    }
+    seen.set(key, path)
+  }
+}
+
 /**
  * The handler to handle the instance file install.
  *
@@ -115,6 +140,8 @@ export class InstanceFileOperationHandler {
    * These tasks will do the phase 1 of the instance file operation.
    */
   async prepareInstallFiles(file: InstanceFileUpdate[], signal: AbortSignal) {
+    assertNoCaseInsensitivePathCollisions(file.map((update) => update.file.path))
+
     const batchSize = 64;
     for (let i = 0; i < file.length; i += batchSize) {
         const batch = file.slice(i, i + batchSize);

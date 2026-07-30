@@ -3,7 +3,6 @@
     ref="root"
     class="inline-flex items-center w-full gap-2 pl-1 h-7 cursor-pointer"
     role="button"
-    tabindex="0"
     :aria-label="text || icon"
     @click="emit('setting')"
     @keydown.enter.prevent="emit('setting')"

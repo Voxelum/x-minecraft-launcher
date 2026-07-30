@@ -14,7 +14,7 @@ import { router } from './router'
 import { kFlights } from '@/composables/flights'
 import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
 import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
-import { appInsights } from '@/telemetry'
+import { appInsights, isIgnorableRendererExceptionMessage } from '@/telemetry'
 
 // to prevent the universal drop activated on self element dragging
 document.addEventListener('dragstart', (e) => {
@@ -151,6 +151,9 @@ app.config.errorHandler = (err: any, vm, info) => {
     // ignore ResizeObserver error
     return
   }
+  if (typeof err?.message === 'string' && isIgnorableRendererExceptionMessage(err.message)) {
+    return
+  }
 
   const level = err?.message?.indexOf('TypeError') !== -1 ? 4 : 3
   appInsights.trackException({
@@ -167,4 +170,3 @@ app.config.errorHandler = (err: any, vm, info) => {
 }
 
 app.mount('#app')
-

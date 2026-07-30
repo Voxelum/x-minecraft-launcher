@@ -10,12 +10,12 @@ import { spawn } from 'child_process'
 import { readFile, writeFile } from 'fs/promises'
 import { delimiter, dirname, join, relative, sep } from 'path'
 import { ZipFile } from '@xmcl/yauzl'
-import { diagnoseFile } from './diagnose'
+import { diagnoseFile, Issue } from './diagnose'
 import { LibrariesTrackerEvents, LibraryOptions, installResolvedLibraries } from './libraries'
 import { convertClasspathToMaven, parseManifest } from './manifest'
 import { InstallSideOption } from './minecraft'
 import { Tracker, onProgress } from './tracker'
-import { SpawnJavaOptions, WithDiagnose, missing, waitProcess } from './utils'
+import { ProcessExitError, SpawnJavaOptions, WithDiagnose, missing, waitProcess } from './utils'
 
 export interface ProfileTrackerEvents {
   postprocess: { count: number }
@@ -143,12 +143,7 @@ export async function diagnoseProfile(
   for (const proc of processors) {
     if (proc.outputs) {
       for (const [file, checksum] of Object.entries(proc.outputs)) {
-        issues.push(await diagnoseFile({
-          role: 'processor',
-          file,
-          expectedChecksum: checksum.replace(/'/g, ''),
-          hint: 'Re-install this installer profile!',
-        }))
+        issues.push(await diagnoseProcessorOutput(file, checksum.replace(/'/g, '')))
       }
     }
   }
@@ -621,12 +616,34 @@ export class PostProcessNoMainClassError extends Error {
 }
 
 export class PostProcessFailedError extends Error {
+  readonly processor: string
+  readonly exitCode?: number | null
+  readonly processSignal?: string | null
+  readonly processorOutput?: string
+
   constructor(
-    public jarPath: string,
-    public commands: string[],
+    readonly jarPath: string,
+    readonly commands: string[],
     message: string,
+    options?: {
+      exitCode?: number | null
+      signal?: string | null
+      output?: string
+    },
   ) {
     super(message)
+    this.processor = jarPath
+    this.exitCode = options?.exitCode
+    this.processSignal = options?.signal
+    this.processorOutput = options?.output
+    // Commands include user-local paths and make Application Insights group
+    // every failure as a unique problemId. Runtime recovery still reads these
+    // fields directly; keeping them non-enumerable only removes them from
+    // serialized telemetry.
+    Object.defineProperties(this, {
+      jarPath: { enumerable: false },
+      commands: { enumerable: false },
+    })
   }
 
   name = 'PostProcessFailedError'
@@ -645,6 +662,12 @@ export class PostProcessValidationFailedError extends PostProcessFailedError {
   }
 
   name = 'PostProcessValidationFailedError'
+}
+
+function sanitizePostProcessOutput(output: string) {
+  return output
+    .replace(/(?:[A-Za-z]:[\\/]|\/(?:home|Users)\/)[^\r\n]*/g, '<path>')
+    .slice(0, 4096)
 }
 
 async function findMainClass(lib: string) {
@@ -674,6 +697,86 @@ async function findMainClass(lib: string) {
   return mainClass
 }
 
+/**
+ * Detect whether a jar/zip file is unreadable or contains zero entries.
+ *
+ * The forge/neoforge `binarypatcher` processor can silently emit a 22-byte
+ * empty zip when its lzma input is corrupt. That passes a naive `size > 0`
+ * check but leaves the game running against unpatched vanilla classes, which
+ * crashes at bootstrap.
+ */
+async function isEmptyOrCorruptArchive(file: string, signal?: AbortSignal): Promise<boolean> {
+  let zip: ZipFile | undefined
+  try {
+    zip = await open(file, { lazyEntries: true, autoClose: false })
+    if (signal?.aborted) return false
+    return zip.entryCount <= 0
+  } catch {
+    return true
+  } finally {
+    zip?.close()
+  }
+}
+
+/**
+ * Diagnose a single processor output file.
+ *
+ * In addition to the regular existence/checksum/size check, a jar/zip output
+ * that lacks a declared checksum is opened to ensure it is a readable,
+ * non-empty archive. Mapping files (`*.tsrg`) are frequently rewritten by
+ * later processors so their declared checksum drifts legitimately; only their
+ * presence is validated.
+ */
+async function diagnoseProcessorOutput(
+  file: string,
+  expectedChecksum: string,
+  options?: { signal?: AbortSignal; checksum?: (file: string, algorithm: string) => Promise<string> },
+): Promise<Issue | undefined> {
+  const isMappings = /mappings\.tsrg$/i.test(file)
+  const issue = await diagnoseFile(
+    {
+      role: 'processor',
+      file,
+      expectedChecksum: isMappings ? '' : expectedChecksum,
+      hint: 'Re-install this installer profile!',
+    },
+    options,
+  )
+  if (issue) return issue
+  if (!isMappings && expectedChecksum === '' && /\.(jar|zip)$/i.test(file)) {
+    if (await isEmptyOrCorruptArchive(file, options?.signal)) {
+      return {
+        type: 'corrupted',
+        role: 'processor',
+        file,
+        expectedChecksum,
+        receivedChecksum: '',
+        hint: 'Re-install this installer profile!',
+      }
+    }
+  }
+  return undefined
+}
+
+/**
+ * Diagnose every declared output of the given processors. Returns the list of
+ * issues found (empty when all outputs are valid).
+ */
+export async function diagnoseProcessorOutputs(
+  processors: PostProcessor[],
+  options?: { signal?: AbortSignal; checksum?: (file: string, algorithm: string) => Promise<string> },
+): Promise<Issue[]> {
+  const issues: Issue[] = []
+  for (const proc of processors) {
+    if (!proc.outputs) continue
+    for (const [file, expected] of Object.entries(proc.outputs)) {
+      const issue = await diagnoseProcessorOutput(file, expected.replace(/'/g, ''), options)
+      if (issue) issues.push(issue)
+    }
+  }
+  return issues
+}
+
 async function postProcessOne(
   mc: MinecraftFolder,
   proc: PostProcessor,
@@ -681,24 +784,6 @@ async function postProcessOne(
 ) {
   if (await options.handler?.(proc).catch(() => false)) {
     return
-  }
-  if (proc.outputs && options.diagnose) {
-    for (const [file, checksum] of Object.entries(proc.outputs)) {
-      const issue = await diagnoseFile(
-        {
-          role: 'processor',
-          file,
-          expectedChecksum: checksum.replace(/'/g, ''),
-          hint: 'Re-install this installer profile!',
-        },
-        { signal: options.signal, checksum: options.checksum },
-      )
-      if (!issue) {
-        throw new Error(
-          `Post processor output validation failed for file ${file} with expected checksum ${checksum}`,
-        )
-      }
-    }
   }
 
   const jarRealPath = mc.getLibraryByPath(LibraryInfo.resolve(proc.jar).path)
@@ -716,10 +801,49 @@ async function postProcessOne(
       waitProcess(process).then(resolve, reject)
     })
   } catch (e) {
-    if (e instanceof Error && e.name === 'Error') {
-      throw new PostProcessFailedError(proc.jar, [options.java ?? 'java', ...cmd], e.message)
+    if (e instanceof ProcessExitError || (e instanceof Error && e.name === 'Error')) {
+      throw new PostProcessFailedError(
+        proc.jar,
+        [options.java ?? 'java', ...cmd],
+        sanitizePostProcessOutput(e.message),
+        e instanceof ProcessExitError
+          ? {
+              exitCode: e.exitCode,
+              signal: e.signal,
+              output: sanitizePostProcessOutput(e.stderr),
+            }
+          : undefined,
+      )
     }
     throw e
+  }
+
+  // Validate the processor outputs after running it. A processor that exits
+  // with code 0 but writes an empty/corrupt output (e.g. binarypatcher fed a
+  // corrupt lzma emitting a 22-byte empty client jar) must fail loudly here
+  // instead of being cached as a successful install.
+  if (proc.outputs) {
+    for (const [file, expected] of Object.entries(proc.outputs)) {
+      const expectedChecksum = expected.replace(/'/g, '')
+      const issue = await diagnoseProcessorOutput(file, expectedChecksum, {
+        signal: options.signal,
+        checksum: options.checksum,
+      })
+      if (issue) {
+        throw new PostProcessValidationFailedError(
+          proc.jar,
+          [options.java ?? 'java', ...cmd],
+          `Post processor ${proc.jar} produced ${issue.type} output ${file}` +
+            (expectedChecksum
+              ? ` (expected sha1 ${expectedChecksum}, got ${issue.receivedChecksum || 'none'})`
+              : ' (empty or unreadable archive)'),
+          file,
+          expectedChecksum,
+          issue.receivedChecksum,
+        )
+      }
+
+    }
   }
 }
 

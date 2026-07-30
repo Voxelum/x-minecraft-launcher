@@ -98,7 +98,7 @@ export class InstanceModsGroupService extends AbstractService implements IInstan
    * Update shared group rules by extracting mod ID to group mappings from an instance
    * @param instancePath Path to the instance to extract rules from
    */
-  async updateSharedGroupRules(groupRules: Record<string, string[]>): Promise<void> {
+  async updateSharedGroupRules(groupRules: Record<string, string[]>, replaceGroups: string[] = []): Promise<void> {
     const appDataPath = this.app.appDataPath
     const rulesPath = join(appDataPath, 'shared-mod-group-rules.json')
 
@@ -107,6 +107,7 @@ export class InstanceModsGroupService extends AbstractService implements IInstan
     const newRules = {} as ModGroupRules
 
     const visited = new Set<string>()
+    const replaceSet = new Set(replaceGroups)
 
     for (const [key, modIds] of Object.entries(groupRules)) {
       if (!newRules[key]) {
@@ -122,6 +123,10 @@ export class InstanceModsGroupService extends AbstractService implements IInstan
     }
 
     for (const [key, modIds] of Object.entries(sharedRules)) {
+      // Discard the existing shared items for groups explicitly marked to be replaced
+      if (replaceSet.has(key)) {
+        continue
+      }
       if (!newRules[key]) {
         newRules[key] = []
       }

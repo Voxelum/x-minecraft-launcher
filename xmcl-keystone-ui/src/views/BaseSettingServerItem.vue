@@ -68,7 +68,7 @@
         />
       </div>
       <span
-        v-if="status.players.online >= 0"
+        v-if="status.players?.online >= 0"
         class="text-xs text-gray-400 whitespace-nowrap flex items-center gap-0.5"
       >
         <v-icon size="11" color="primary" aria-hidden="true">group</v-icon>

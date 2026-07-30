@@ -123,9 +123,11 @@ const onDropModpack = (e: DragEvent) => {
   e.preventDefault()
   const file = e.dataTransfer?.files.item(0)
   if (file) {
+    const filePath = windowController.getPathForFile(file)
+    if (!filePath) return
     show({
       format: 'modpack',
-      path: file.path,
+      path: filePath,
     })
   }
 }

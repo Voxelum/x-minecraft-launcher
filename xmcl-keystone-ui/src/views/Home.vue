@@ -37,13 +37,14 @@
       </div>
       <HomeFocusFooter v-else class="absolute bottom-0 left-0 pb-[26px]" />
     </transition>
-    <!-- <ScreenshotGalleryDialog /> -->
   </div>
 </template>
 <script lang="ts" setup>
 import { useDialog } from '@/composables/dialog'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
+import { kInstanceLaunch } from '@/composables/instanceLaunch'
+import { useGamepadAction } from '@/composables/gamepad'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { kCompact } from '@/composables/scrollTop'
 import { useTutorial } from '@/composables/tutorial'
@@ -58,7 +59,6 @@ import HomeGrid from './HomeGrid.vue'
 import HomeUpstreamCurseforge from './HomeUpstreamCurseforge.vue'
 import HomeUpstreamFeedTheBeast from './HomeUpstreamFeedTheBeast.vue'
 import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
-// import ScreenshotGalleryDialog from '@/components/ScreenshotGalleryDialog.vue'
 
 const isFocus = useInFocusMode()
 const { instance } = injection(kInstance)
@@ -90,8 +90,9 @@ useGlobalDrop({
     const file = files?.[0]
     if (file) {
       const ext = file.name.split('.').pop()
-      if (ext === 'zip' || ext === 'mrpack') {
-        show(file.path)
+      const filePath = windowController.getPathForFile(file)
+      if ((ext === 'zip' || ext === 'mrpack') && filePath) {
+        show(filePath)
         return
       }
     }
@@ -102,6 +103,21 @@ const scrollElement = ref(null as HTMLElement | null)
 provide('scrollElement', scrollElement)
 
 const { t } = useI18n()
+
+import { useLaunchButton } from '@/composables/launchButton'
+
+// Gamepad face-button actions scoped to the home page (auto-unregister on leave).
+const router = useRouter()
+const { text: launchText, onClick: onLaunchClick } = useLaunchButton()
+useGamepadAction('X', {
+  label: () => launchText.value,
+  handler: () => onLaunchClick(),
+})
+useGamepadAction('Y', {
+  label: () => t('gamepad.guide.instanceSettings'),
+  handler: () => router.push('/base-setting'),
+})
+
 useTutorial(
   computed(() => {
     const steps: DriveStep[] = [

@@ -6,13 +6,14 @@ import { AnyError } from '@xmcl/utils'
 import { Menu, app, net, shell } from 'electron'
 import { stat } from 'fs-extra'
 import { join } from 'path'
-import { fetch as ufetch } from 'undici'
+import { fetch as ufetch, FormData as UndiciFormData } from 'undici'
 import { ElectronController } from './ElectronController'
 import { ElectronSecretStorage } from './ElectronSecretStorage'
 import { ElectronSession } from './ElectronSession'
 import { IS_DEV } from './constant'
 import defaultApp from './defaultApp'
 import { definedPlugins } from './definedPlugins'
+import { getOzonePlatform } from './ozonePlatform'
 import { ElectronUpdater } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
 
@@ -96,6 +97,23 @@ function isLatin1(s: string) {
   return true
 }
 
+async function adaptFormDataForElectron(body: unknown) {
+  if (!(body instanceof UndiciFormData)) return body
+
+  const form = new FormData()
+  for (const [name, value] of body.entries()) {
+    if (typeof value === 'string') {
+      form.append(name, value)
+    } else {
+      form.append(name, new File([await value.arrayBuffer()], value.name, {
+        type: value.type,
+        lastModified: value.lastModified,
+      }))
+    }
+  }
+  return form
+}
+
 function getErrorCode(e: Error) {
   let code: NetworkErrorCode | undefined
   if (e.message === 'net::ERR_CONNECTION_CLOSED') {
@@ -173,11 +191,14 @@ export default class ElectronLauncherApp extends LauncherApp {
     // BrowserWindow exists and reaches `ready-to-show`). Skip the Ozone
     // switches whenever the E2E test harness is active so Playwright stays
     // on the default X11 path.
-    if (!process.env.XMCL_E2E) {
-      // Enable native Wayland support with automatic platform detection
-      app.commandLine?.appendSwitch('ozone-platform-hint', 'auto')
-      // Enable Wayland-specific features for better native appearance
-      app.commandLine?.appendSwitch('enable-features', 'UseOzonePlatform,WaylandWindowDecorations')
+    if (!process.env.XMCL_E2E &&
+      !app.commandLine.hasSwitch('ozone-platform') &&
+      !app.commandLine.hasSwitch('ozone-platform-hint')) {
+      const ozonePlatform = getOzonePlatform(process.env)
+      app.commandLine.appendSwitch(
+        ozonePlatform === 'auto' ? 'ozone-platform-hint' : 'ozone-platform',
+        ozonePlatform,
+      )
     }
   }
 
@@ -186,7 +207,11 @@ export default class ElectronLauncherApp extends LauncherApp {
   }
 
   fetch: typeof fetch = async (...args: any[]) => {
-    const init = { ...args[1], bypassCustomProtocolHandlers: true }
+    const init = {
+      ...args[1],
+      body: await adaptFormDataForElectron(args[1]?.body),
+      bypassCustomProtocolHandlers: true,
+    }
     function assertError(e: unknown): asserts e is Error {
       if (e instanceof Error || (typeof e === 'object' && e !== null && 'message' in e && typeof (e as any).message === 'string')) {
         return

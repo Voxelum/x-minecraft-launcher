@@ -43,25 +43,48 @@
           </v-btn>
 
           <div class="flex-grow" />
-          <template v-if="modrinth">
-            <v-menu>
-              <template #activator="{ props }">
-                <v-btn
-                  :variant="!collection ? 'plain' : 'text'"
-                  icon
-                  :loading="loadingCollections"
-                  size="small"
-                >
-                  <v-icon :class="!collection ? 'material-icons-outlined' : ''"> label </v-icon>
-                </v-btn>
-              </template>
-              <AppCollectionList
-                :project-id="modrinth"
-                no-favorite
-                :select="collection"
-                @update:select="emit('collection', $event)"
+          <!-- Add to collection: launcher-owned local collections (both
+               providers) plus the Modrinth collection list when applicable. -->
+          <v-menu
+            v-if="collectionContentType && collectionProjectId"
+            :close-on-content-click="false"
+          >
+            <template #activator="{ props: menu }">
+              <v-btn
+                v-bind="menu"
+                variant="plain"
+                icon
+                :loading="loadingCollections"
+                size="small"
+                data-testid="market-detail-collection-menu"
+                :aria-label="t('localCollection.addToCollection')"
+              >
+                <v-icon class="material-icons-outlined"> bookmark_add </v-icon>
+              </v-btn>
+            </template>
+            <v-card min-width="360" width="420" max-width="90vw" class="overflow-y-auto" style="max-height: 60vh">
+              <AppLocalCollectionList
+                mode="add"
+                :provider="collectionProvider"
+                :project-id="collectionProjectId"
+                :content-type="collectionContentType"
               />
-            </v-menu>
+              <template v-if="modrinth">
+                <v-divider />
+                <div class="filter-subheader flex items-center">
+                  <v-icon size="16" class="mr-1">xmcl:modrinth</v-icon>
+                  {{ t('localCollection.modrinthSection') }}
+                </div>
+                <AppCollectionList
+                  :project-id="modrinth"
+                  no-favorite
+                  :select="collection"
+                  @update:select="emit('collection', $event)"
+                />
+              </template>
+            </v-card>
+          </v-menu>
+          <template v-if="modrinth">
             <v-btn
               :variant="!followed ? 'plain' : 'text'"
               icon
@@ -119,7 +142,7 @@
           <div class="flex items-end gap-2 flex-wrap">
             <v-btn
               v-if="selectedInstalled && !noEnabled"
-              :disabled="updating"
+              :disabled="updating || disableInstall"
               :loading="loadingVersions"
               hide-details
               @click="_enabled = !_enabled"
@@ -138,12 +161,13 @@
               data-testid="market-detail-install"
               class="primary"
               :loading="loadingVersions || updating"
-              :disabled="!selectedVersion || loadingVersions || updating"
+              :disabled="!selectedVersion || loadingVersions || updating || disableInstall"
               @click="onInstall"
               size="small"
               color="primary"
             >
-              <v-icon class="material-icons-outlined" start> file_download </v-icon>
+              <v-icon v-if="!isGamepadActive" class="material-icons-outlined" start> file_download </v-icon>
+              <span v-else class="gp-btn__key gp-btn__key--primary mr-1" style="transform: scale(0.85); vertical-align: middle;">{{ buttonX }}</span>
               {{ !hasInstalledVersion ? t('shared.install') : t('modInstall.switch') }}
             </v-btn>
             <div
@@ -179,14 +203,14 @@
           </div>
 
           <div class="flex-grow" />
+          <slot name="install-target" />
           <div v-if="!noVersion" class="text-center">
             <v-menu open-on-hover :disabled="loadingVersions" offset-y>
               <template #activator="{ props }">
                 <div
-                  class="cursor-pointer items-center"
+                  class="items-center"
                   :class="{ flex: versions.length > 0, hidden: versions.length === 0 }"
                   style="color: var(--color-secondary-text)"
-                  v-bind="props"
                 >
                   <span class="mr-2 whitespace-nowrap font-bold">
                     {{ t('modInstall.currentVersion') }}:
@@ -197,7 +221,7 @@
                     type="text"
                     class="self-center"
                   />
-                  <v-btn v-else hide-details size="small" variant="text" border>
+                  <v-btn v-else hide-details size="small" variant="text" border v-bind="props">
                     <span
                       class="xl:max-w-50 max-w-40 overflow-hidden overflow-ellipsis whitespace-nowrap 2xl:max-w-full"
                     >
@@ -246,7 +270,8 @@
     <div class="grid w-full grid-cols-4 gap-2">
       <v-tabs-window
         v-model="tab"
-        class="main-content h-full max-h-full max-w-full bg-transparent! p-4"
+        class="main-content h-full max-h-full max-w-full bg-transparent!"
+        :style="{ padding: noPaddingContent ? '0' : '1rem' }"
       >
         <v-tabs-window-item :value="0">
           <v-expansion-panels
@@ -478,7 +503,7 @@
             {{ t('modrinth.modLoaders.name') }}
           </v-list-subheader>
           <span class="flex flex-wrap gap-2 px-2">
-            <div v-for="l of validModLoaders" :key="l" style="width: 36px; height: 36px">
+            <div v-for="l of validModLoaders" :key="l" class="w-[36px] h-[36px]">
               <v-icon v-shared-tooltip="l" size="32px">
                 {{ iconMapping[l] }}
               </v-icon>
@@ -604,6 +629,7 @@ import { getExpectedSize } from '@/util/size'
 import ModDetailVersion, { ProjectVersion } from './MarketProjectDetailVersion.vue'
 import AppCopyChip from './AppCopyChip.vue'
 import { kImageDialog } from '@/composables/imageDialog'
+import { useGamepad, useGamepadAction } from '@/composables/gamepad'
 import { useDateString } from '@/composables/date'
 import { kTheme } from '@/composables/theme'
 import { kSearchModel } from '@/composables/search'
@@ -613,7 +639,9 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { vFallbackImg } from '@/directives/fallbackImage'
 import { BuiltinImages } from '@/constant'
 import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
+import { CollectionContentType, CollectionProvider } from '@xmcl/runtime-api'
 import AppCollectionList from './AppCollectionList.vue'
+import AppLocalCollectionList from './AppLocalCollectionList.vue'
 
 const props = defineProps<{
   detail: ProjectDetail
@@ -630,6 +658,10 @@ const props = defineProps<{
   noDelete?: boolean
   noEnabled?: boolean
   noVersion?: boolean
+  /**
+   * Force-disable the install / enable actions (e.g. no valid install target).
+   */
+  disableInstall?: boolean
   hasMore: boolean
   curseforge?: number
   modrinth?: string
@@ -638,7 +670,16 @@ const props = defineProps<{
   following?: boolean
   loadingCollections?: boolean
   collection?: string
+  noPaddingContent?: boolean
+  /**
+   * When set, shows an "add to collection" menu for the currently shown
+   * provider's project. Enables adding both Modrinth and CurseForge projects
+   * to launcher-owned local collections offline.
+   */
+  collectionContentType?: CollectionContentType
 }>()
+
+const { isActive: isGamepadActive, buttonX } = useGamepad()
 
 const emit = defineEmits<{
   (event: 'load-changelog', version: ProjectVersion): void
@@ -839,6 +880,14 @@ watch(
   { immediate: true },
 )
 const { t } = useI18n()
+
+// The currently shown provider's project, used by the add-to-collection menu.
+const collectionProvider = computed<CollectionProvider>(() => props.currentTarget === 'curseforge' ? 'curseforge' : 'modrinth')
+const collectionProjectId = computed<string | undefined>(() =>
+  collectionProvider.value === 'curseforge'
+    ? (props.curseforge !== undefined ? String(props.curseforge) : undefined)
+    : props.modrinth)
+
 watch(
   () => props.detail,
   (d, o) => {
@@ -881,6 +930,14 @@ const onInstall = () => {
     emit('install', selectedVersion.value)
   }
 }
+
+// Gamepad X installs the selected version (replaces the old A-on-install-button
+// special case in the driver).
+useGamepadAction('X', {
+  label: () => t('shared.install'),
+  handler: onInstall,
+  disabled: () => props.selectedInstalled || !selectedVersion.value || props.loadingVersions || props.updating || !!props.disableInstall,
+})
 
 const onInstallDependency = (dep: ProjectDependency) => {
   if (props.updating || dep.installedVersion || dep.progress >= 0) return

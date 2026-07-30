@@ -14,13 +14,12 @@
     >
       <div
         v-if="shouldShiftBackControl"
-        style="width: 80px"
+        class="w-[80px]"
       />
       <button
         type="button"
         v-ripple
-        class="system-bar-back-btn non-moveable flex cursor-pointer select-none items-center h-full"
-        style="width: 80px;"
+        class="system-bar-back-btn non-moveable flex cursor-pointer select-none items-center h-full w-[80px]"
         :aria-label="backAriaLabel"
         @click="onBack"
       >
@@ -37,6 +36,17 @@
     />
 
     <div class="flex-grow"/>
+
+    <AppSystemBarBadge
+      v-if="gamepadConnected"
+      v-shared-tooltip.bottom="() => gamepadLabel"
+      icon="sports_esports"
+      :text="gamepadLabel"
+      :aria-label="gamepadLabel"
+      can-hide-text
+      class="gamepad-badge"
+      @click="openPalette"
+    />
 
     <AppSystemBarBadge
       v-if="!noUser"
@@ -120,6 +130,7 @@
 <script lang="ts" setup>
 import { useDialog } from '../composables/dialog'
 import { useTaskCount } from '../composables/task'
+import { useGamepad } from '@/composables/gamepad'
 
 import { injection } from '@/util/inject'
 import { useWindowStyle } from '@/composables/windowStyle'
@@ -168,7 +179,15 @@ const taskTooltip = computed(() => {
 })
 
 const paletteBus = useCommandPaletteBus()
-const paletteShortcut = computed(() => navigator.platform.toLowerCase().includes('mac') ? '⌘K' : 'Ctrl+K')
+const { isActive: gamepadActive, connected: gamepadConnected, name: gamepadName, labels: gamepadLabels } = useGamepad()
+const paletteShortcut = computed(() => {
+  if (gamepadActive.value) {
+    // Start / Menu button opens the palette in gamepad mode.
+    return gamepadLabels.value.menu
+  }
+  return navigator.platform.toLowerCase().includes('mac') ? '⌘K' : 'Ctrl+K'
+})
+const gamepadLabel = computed(() => gamepadName.value || t('gamepad.connected'))
 const openPalette = () => paletteBus.emit('show')
 
 const router = useRouter()
@@ -184,6 +203,17 @@ const closeAriaLabel = 'Close'
 const windowControlsAriaLabel = 'Window controls'
 </script>
 <style lang="css" scoped>
+/* Keep a long controller name from pushing/overflowing the bar. */
+.gamepad-badge {
+  max-width: 180px;
+  overflow: hidden;
+}
+.gamepad-badge :deep(.whitespace-nowrap) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .system-btn {
   @apply  h-full top-0 mr-0 flex cursor-pointer select-none items-center justify-center px-3 py-1 after:hidden! w-[40px] min-w-[40px];
   font-size: 16px !important;

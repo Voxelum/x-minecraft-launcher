@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { DEFAULT_AGENT_ENDPOINT, DEFAULT_AGENT_MODEL } from '../services/AgentService'
 
 /**
  * API set configuration.
@@ -55,6 +56,12 @@ export const SettingSchema = z.object({
   globalMaxMemory: z.number().catch(0),
   /** Global assign memory setting */
   globalAssignMemory: z.union([z.boolean(), z.literal('auto')]).catch(false),
+  /**
+   * Globally preferred Java executable path. In auto mode the launcher tries
+   * this Java first and only falls back to auto-detection when it is not
+   * compatible with the instance. Empty string means no preference.
+   */
+  globalJava: z.string().catch(''),
   /** Global VM options */
   globalVmOptions: z.array(z.string()).catch([]),
   /** Global Minecraft options */
@@ -81,6 +88,10 @@ export const SettingSchema = z.object({
   developerMode: z.boolean().catch(false),
   /** Disable telemetry setting */
   disableTelemetry: z.boolean().catch(false),
+  /** OpenAI-compatible agent endpoint (the API key is stored separately). */
+  agentEndpoint: z.string().catch(DEFAULT_AGENT_ENDPOINT),
+  /** Agent model identifier. */
+  agentModel: z.string().catch(DEFAULT_AGENT_MODEL),
   /** Linux titlebar setting */
   linuxTitlebar: z.boolean().catch(false),
   /** Enable dedicated GPU optimization */

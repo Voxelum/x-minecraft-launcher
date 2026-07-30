@@ -2,7 +2,7 @@
   <MarketBase
     :plans="plans"
     :items="groupedItems"
-    :selection-mode="true"
+    :selection-mode="isLocalView && selectionMode"
     :item-height="itemHeight"
     :loading="loading"
     :error="error"
@@ -10,6 +10,7 @@
       dragover,
     }"
     @load="onLoad"
+    @update:selection-mode="onUpdateSelectionMode"
   >
     <template #actions>
       <MarketListHeader
@@ -18,20 +19,20 @@
         :total="!isLocalView ? totalAvailable : undefined"
       >
         <v-btn
-          id="default-source-button"
-          v-shared-tooltip="() => t('mod.switchDefaultSource') + ' ' + defaultSource"
+          v-if="isLocalView"
+          :class="{ 'v-btn--active': selectionMode }"
           icon
           variant="text"
           density="comfortable"
-          @click="defaultSource = defaultSource === 'curseforge' ? 'modrinth' : 'curseforge'"
+          data-testid="market-multi-select-toggle"
+          @click="onUpdateSelectionMode(!selectionMode)"
         >
-          <v-icon>
-            {{ defaultSource === 'modrinth' ? 'xmcl:modrinth' : 'xmcl:curseforge' }}
-          </v-icon>
+          <v-icon> checklist </v-icon>
         </v-btn>
         <v-btn
+          v-if="!isLocalView"
           v-shared-tooltip="() => t('mod.groupInstalled')"
-          :class="{ 'v-list-item--active': groupInstalled }"
+          :class="{ 'v-btn--active': groupInstalled }"
           icon
           variant="text"
           density="comfortable"
@@ -39,6 +40,12 @@
         >
           <v-icon> layers </v-icon>
         </v-btn>
+        <AppCollectionInstallAll
+          v-if="showInstallAll"
+          :items="collectionItems"
+          content-type="mods"
+          :runtime="runtime"
+        />
       </MarketListHeader>
       <v-alert v-if="upgradeError" dense type="error">
         {{ updateErrorMessage }}
@@ -52,6 +59,98 @@
       >
         {{ localizedTexts.mod.duplicatedDetected }}
       </v-alert>
+    </template>
+    <template #placeholder>
+      <MarketEmptyPlaceholder />
+    </template>
+    <template #filter>
+      <MarketFilterPanel
+        :curseforge-category="curseforgeCategory"
+        :modrinth-categories="modrinthCategories"
+        :local-sort="sortBy"
+        curseforge-category-filter="mc-mods"
+        modrinth-category-filter="mod"
+        :collection="selectedCollection"
+        :enable-curseforge="isCurseforgeActive"
+        :enable-modrinth="isModrinthActive"
+        v-model:sort="sort"
+        :mode="source"
+        :game-version="gameVersion"
+        :modloader="modLoader"
+        :mod-loaders="[ModLoaderFilter.forge, ModLoaderFilter.neoforge, ModLoaderFilter.fabric, ModLoaderFilter.quilt]"
+        :modrinth-environment="modrinthEnvironment"
+        @update:curseforge-category="curseforgeCategory = $event"
+        @update:modrinth-categories="modrinthCategories = $event"
+        @update:local-sort="sortBy = $event"
+        @update:collection="selectedCollection = $event"
+        @update:enable-curseforge="isCurseforgeActive = $event"
+        @update:enable-modrinth="isModrinthActive = $event"
+        @update:mode="source = $event"
+        @update:game-version="gameVersion = $event"
+        @update:modloader="modLoader = $event"
+        @update:modrinth-environment="modrinthEnvironment = $event"
+      >
+        <template #local>
+          <div class="filter-subheader flex">
+            <v-icon size="16" class="mr-1">filter_alt</v-icon>
+            {{ t('mod.filter') }}
+          </div>
+          <v-btn-toggle
+            v-roving-tabindex
+            :aria-label="t('mod.filter')"
+            density="compact"
+            :model-value="getFilterButtonValue()"
+            class="bg-transparent px-1"
+            @update:model-value="onUpdateLocalFilter($event != null ? filterItems[$event]?.value : undefined)"
+          >
+            <v-btn
+              v-for="tag in filterItems"
+              :key="tag.value"
+              v-shared-tooltip="() => tag.text"
+              :disabled="tag.disabled"
+              size="small"
+              variant="text"
+              border
+            >
+              <v-icon
+                class="material-icons-outlined"
+                size="small"
+              >
+                {{ tag.icon }}
+              </v-icon>
+            </v-btn>
+          </v-btn-toggle>
+          <div class="filter-subheader flex">
+            <v-icon size="16" class="mr-1">extension</v-icon>
+            {{ t('modrinth.modLoaders.name') }}
+          </div>
+          <v-btn-toggle
+            v-roving-tabindex
+            :aria-label="t('modrinth.modLoaders.name')"
+            density="compact"
+            :model-value="getModLoaderFilterValue()"
+            class="bg-transparent px-1"
+            @update:model-value="onUpdateLocalFilter($event != null ? modLoaderFilterItems[$event]?.value : undefined)"
+          >
+            <v-btn
+              v-for="tag in modLoaderFilterItems"
+              :key="tag.value"
+              v-shared-tooltip="() => tag.text"
+              size="small"
+              variant="text"
+              border
+            >
+              <v-icon size="small">
+                {{ tag.icon }}
+              </v-icon>
+            </v-btn>
+          </v-btn-toggle>
+          <ModOptionsPage
+            v-model:denseView="denseView"
+            v-model:groupInstalled="groupInstalled"
+          />
+        </template>
+      </MarketFilterPanel>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
       <ModItem
@@ -84,11 +183,13 @@
         @setting="renameGroup(item.name, $event.name)"
         @enable-all="enableAll(item)"
         @disable-all="disableAll(item)"
+        @apply-group-rules="applySharedGroupRules()"
+        @save-group-rules="syncGroupRules()"
       />
       <v-list-subheader
         v-else-if="item === 'search'"
         key="search"
-        :style="{ height: `${itemHeight}px` }"
+        class="px-3"
       >
         <v-divider class="mr-4" />
         {{ localizedTexts.mod.search }}
@@ -96,34 +197,13 @@
       </v-list-subheader>
       <v-list-subheader
         v-else-if="item === 'unsupported'"
+        class="px-3"
         key="unsupported"
-        :style="{ height: `${itemHeight}px` }"
       >
         <v-divider class="mr-4" />
         {{ localizedTexts.mod.unsupported }}
         <v-divider class="ml-4" />
       </v-list-subheader>
-    </template>
-    <template #placeholder>
-      <Hint
-        key="info"
-        v-if="isLocalView && !keyword.trim() && !hasActiveFilters"
-        :text="t('modSearch.noModsInstalled')"
-        icon="info"
-      />
-      <Hint
-        key="search"
-        v-else-if="isLocalView && keyword.trim()"
-        :text="t('modSearch.noLocalModsFound')"
-        icon="search"
-      >
-        <div>
-          <v-btn color="primary" @click="switchToMarketWithKeyword">{{
-            t('modSearch.searchInMarket', { keyword: keyword.trim() || 'mods' })
-          }}</v-btn>
-        </div>
-      </Hint>
-      <Hint key="no-mods" v-else :text="t('modSearch.noModsFound')" icon="search" />
     </template>
     <template #content="{ selectedItem, selectedModrinthId, selectedCurseforgeId, updating }">
       <Hint
@@ -146,6 +226,7 @@
         :updating="updating"
         :game-version="gameVersion"
         :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
+        collection-content-type="mods"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -163,6 +244,7 @@
         :all-files="mods"
         :updating="updating"
         :modrinth="selectedModrinthId"
+        collection-content-type="mods"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -181,14 +263,6 @@
         :files="selectedItem.files"
         :runtime="runtime"
         :installed="selectedItem.installed"
-      />
-      <MarketRecommendation
-        v-else
-        key="recommendation"
-        curseforge="mc-mods"
-        modrinth="mod"
-        @modrinth="modrinthCategories.push($event.name)"
-        @curseforge="curseforgeCategory = $event.id"
       />
     </template>
     <v-dialog v-model="wizardModel" width="600">
@@ -223,7 +297,6 @@
       </v-card>
     </v-dialog>
     <ModDuplicatedDialog />
-    <ModGroupSelectDialog />
     <ModIncompatibileDialog />
   </MarketBase>
 </template>
@@ -231,10 +304,12 @@
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
+import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
+import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
-import MarketRecommendation from '@/components/MarketRecommendation.vue'
+import AppCollectionInstallAll from '@/components/AppCollectionInstallAll.vue'
 import { useService } from '@/composables'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
@@ -253,23 +328,24 @@ import { useProjectInstall } from '@/composables/projectInstall'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { useTutorial } from '@/composables/tutorial'
+import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
 import ModGroupEntryItem from './ModGroupEntryItem.vue'
-import ModGroupSelectDialog from './ModGroupSelectDialog.vue'
 import ModIncompatibileDialog from './ModIncompatibileDialog.vue'
 import ModItem from './ModItem.vue'
 import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModLibCleaner } from '@/composables/modLibCleaner'
 import { basename } from '@/util/basename'
-import { kSearchModel } from '@/composables/search'
+import { kSearchModel, ModLoaderFilter } from '@/composables/search'
+import ModOptionsPage from './ModOptionsPage.vue'
 
 const localizedTexts = computed(() =>
   markRaw({
@@ -283,16 +359,11 @@ const localizedTexts = computed(() =>
       disabe: t('shared.disable'),
       denseView: t('mod.denseView'),
       groupInstalled: t('mod.groupInstalled'),
-      switchDefaultSource: t('mod.switchDefaultSource'),
       checkDependencies: t('modInstall.checkDependencies'),
       checkedDependencies: t('modInstall.checkedDependencies'),
       installDependencies: t('modInstall.installDependencies'),
       scanUnusedLibraries: t('modInstall.scanUnusedLibraries'),
       removeUnusedLibraries: t('modInstall.removeUnusedLibraries'),
-      checkUpgrade: t('modInstall.checkUpgrade'),
-      checkedUpgrade: t('modInstall.checkedUpgrade'),
-      upgrade: t('modInstall.upgrade'),
-      skipVersion: t('modInstall.skipVersion'),
       noModLoaderHint: t('mod.noModLoaderHint'),
       modloaderSelectHint: t('mod.modloaderSelectHint'),
       modloaderSelectNotSupported: t('mod.modloaderSelectNotSupported'),
@@ -323,6 +394,11 @@ const {
   gameVersion,
   currentView,
   source,
+  isCurseforgeActive,
+  isModrinthActive,
+  sort,
+  selectedCollection,
+  modrinthEnvironment,
 } = injection(kSearchModel)
 
 // Ensure mod search effect is applied
@@ -330,6 +406,7 @@ const {
   error,
   loading,
   items,
+  collectionItems,
   effect,
   denseView,
   sortBy,
@@ -346,12 +423,77 @@ onDependenciesEffect()
 
 const { unusedMods } = injection(kModLibCleaner)
 
-const isLocalView = computed(() => {
-  return currentView.value === 'local'
+const filterItems = computed(() => {
+  const hasUpdate = Object.keys(plans.value).length > 0
+  const hasDependenciesInstall = Object.keys(installation.value).length > 0
+  const hasUnusedMods = Object.keys(unusedMods.value).length > 0
+  const result = [{
+    icon: 'flash_off',
+    text: t('modFilter.disabledOnly'),
+    disabled: false,
+    value: 'disabledOnly',
+  }, {
+    icon: 'info',
+    text: t('modFilter.incompatibleOnly'),
+    value: 'incompatibleOnly',
+  }]
+  result.push({
+    icon: 'recycling',
+    disabled: !hasUnusedMods,
+    text: t('modFilter.unusedOnly'),
+    value: 'unusedOnly',
+  })
+  result.push({
+    icon: 'merge',
+    disabled: !hasDependenciesInstall,
+    text: t('modFilter.dependenciesInstallOnly'),
+    value: 'dependenciesInstallOnly',
+  })
+  result.push({
+    icon: 'update',
+    disabled: !hasUpdate,
+    text: t('modFilter.hasUpdateOnly'),
+    value: 'hasUpdateOnly',
+  })
+  return result
 })
 
-const hasActiveFilters = computed(() => {
-  return !!localFilter.value
+const modLoaderFilterItems = computed(() => {
+  return [{
+    icon: 'xmcl:forge',
+    text: 'Forge',
+    value: 'forgeOnly',
+  }, {
+    icon: 'xmcl:neoForged',
+    text: 'NeoForge',
+    value: 'neoforgeOnly',
+  }, {
+    icon: 'xmcl:fabric',
+    text: 'Fabric',
+    value: 'fabricOnly',
+  }, {
+    icon: 'xmcl:quilt',
+    text: 'Quilt',
+    value: 'quiltOnly',
+  }]
+})
+
+function getFilterButtonValue() {
+  const idx = filterItems.value.findIndex(i => i.value === localFilter.value)
+  return idx >= 0 ? idx : undefined
+}
+
+function getModLoaderFilterValue() {
+  const idx = modLoaderFilterItems.value.findIndex(i => i.value === localFilter.value)
+  return idx >= 0 ? idx : undefined
+}
+
+function onUpdateLocalFilter(filter: string | undefined) {
+  localFilter.value = (filter ?? '') as any
+}
+
+const isLocalView = computed(() => {
+  return currentView.value === 'local'
 })
 
 const {
@@ -367,6 +509,8 @@ const {
   groups,
   groupsRaw,
   groupModCounts,
+  syncGroupRules,
+  applySharedGroupRules,
   updateGroupFilenames,
 } = useModGroups(isLocalView, path, items, sortBy)
 
@@ -610,8 +754,12 @@ const shouldShowCurseforge = (
   return true
 }
 
-const { mods, conflicted, revalidate, incompatible, compatibility } =
+const { mods, conflicted, revalidate, incompatible, compatibility, enable, disable } =
   injection(kInstanceModsContext)
+
+// Install-all is available for any collection open in the Favorites view —
+// launcher-owned local collections as well as Modrinth collections/follows.
+const showInstallAll = computed(() => source.value === 'favorite')
 
 const { show: showDuplicatedDialog } = useDialog('mod-duplicated')
 const { show: showIncompatibleDialog } = useDialog('mod-incompatible')
@@ -632,11 +780,21 @@ watch(
   { immediate: true },
 )
 
-const onLoad = loadMore
+// Remember the source the user explicitly picks in the detail view so the next
+// mod that has both providers defaults to the same source.
+watch(
+  computed(() => route.query.id as string | undefined),
+  (id) => {
+    if (!id) return
+    if (id.startsWith('curseforge:')) {
+      defaultSource.value = 'curseforge'
+    } else if (id.startsWith('modrinth:')) {
+      defaultSource.value = 'modrinth'
+    }
+  },
+)
 
-const switchToMarketWithKeyword = () => {
-  source.value = 'remote'
-}
+const onLoad = loadMore
 
 const onClickDependency = (modId: string) => {
   // Switch to remote (market) view and set the keyword to search for the dependency
@@ -645,7 +803,7 @@ const onClickDependency = (modId: string) => {
 }
 
 // install / uninstall / enable / disable
-const { install, uninstall, enable, disable, installFromMarket } =
+const { install, uninstall, installFromMarket } =
   useService(InstanceModsServiceKey)
 const onUninstall = (f: ProjectFile[], _path?: string) => {
   uninstall({ path: _path ?? path.value, files: f.map((f) => f.path) }).then(() => {
@@ -675,6 +833,15 @@ const selections = ref({} as Record<string, boolean>)
 
 provide('selections', selections)
 
+const selectionMode = ref(false)
+function onUpdateSelectionMode(v: boolean) {
+  selectionMode.value = v
+  if (!v) selections.value = {}
+}
+watch(isLocalView, (local) => {
+  if (!local) onUpdateSelectionMode(false)
+})
+
 const { show: showGroupSelectDialog } = useDialog('mod-group-select')
 
 function showGroupDialog(fileNames: string[]) {
@@ -691,6 +858,7 @@ function showGroupDialog(fileNames: string[]) {
         group(fileNames, newName)
       }
     },
+    onApplyShared: () => applySharedGroupRules(),
   })
 }
 
@@ -805,7 +973,7 @@ const onInstallProject = useProjectInstall(
   },
 )
 
-const updateSearch = debounce(() => {
+const updateSearch = useDebounceFn(() => {
   const buffer = keywordBuffer.value
   if (buffer) {
     const isSuperQuery = buffer.startsWith('@')
@@ -871,13 +1039,6 @@ useTutorial(
       popover: {
         title: t('tutorial.mod.detailTitle'),
         description: t('tutorial.mod.detailDescription'),
-      },
-    },
-    {
-      element: '#default-source-button',
-      popover: {
-        title: t('tutorial.mod.defaultSourceTitle'),
-        description: t('tutorial.mod.defaultSourceDescription'),
       },
     },
   ]),

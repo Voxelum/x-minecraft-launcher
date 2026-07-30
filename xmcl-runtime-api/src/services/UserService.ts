@@ -77,6 +77,8 @@ export interface SwitchProfileOptions {
 
 interface UserServiceEventMap {
   'user-login': string
+  'user-login-success': UserProfile
+  'user-refresh-success': UserProfile
   'error': UserException
   'auth-profile-added': string
   'microsoft-authorize-url': string
@@ -252,6 +254,8 @@ export type UserExceptions = {
   type: 'loginInternetNotConnected' | 'loginInvalidCredentials' | 'loginGeneral' | 'loginTimeout' | 'loginReset'
 } | {
   type: 'userAcquireMicrosoftTokenFailed'
+  /** The user closed the Windows native-broker account picker. */
+  reason?: 'USER_CANCELED' | 'NETWORK_ERROR'
 } | {
   type: 'userExchangeXboxTokenFailed'
   /**
@@ -285,6 +289,8 @@ export type UserExceptions = {
   retryable?: boolean
   /** Effective Retry-After (ms) the server asked us to wait, if any. */
   retryAfter?: number
+  /** A permanent account-state failure returned by Minecraft authentication. */
+  reason?: 'ACCOUNT_SUSPENDED'
 } | {
   type: 'userCheckGameOwnershipFailed'
 } | {
@@ -295,6 +301,9 @@ export type UserExceptions = {
   developerMessage: string
 } | {
   type: 'userAccessTokenExpired'
+} | {
+  type: 'userSetSkinFailed'
+  reason: 'INVALID_IMAGE' | 'REQUEST_REJECTED'
 } | {
   type: 'loginServiceNotSupported'
   authority: string

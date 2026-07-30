@@ -40,7 +40,7 @@
           </div>
         </v-expand-transition>
 
-        <v-list dense v-if="!creatingNew">
+        <v-list dense v-if="!creatingNew" bg-color="transparent">
           <v-list-item
             @click="onCreateNew"
           >
@@ -54,13 +54,26 @@
               </v-list-item-title>
 </v-list-item>
 
+          <v-list-item
+            v-if="onApplyShared"
+            @click="onApplySharedRules"
+          >
+            <template #prepend><v-avatar>
+              <v-icon color="primary">
+                bookmarks
+              </v-icon>
+            </v-avatar></template>
+            <v-list-item-title class="primary--text font-weight-bold">
+                {{ t('mod.applyGroupRules') }}
+              </v-list-item-title>
+</v-list-item>
+
           <v-divider v-if="filteredGroups.length > 0" class="mb-2" />
 
           <!-- Existing groups (filtered and sorted) -->
           <div
             v-if="filteredGroups.length > 0"
-            class="overflow-auto"
-            style="max-height: 300px"
+            class="overflow-auto max-h-[300px]"
           >
             <v-list-item
               v-for="g of filteredGroups"
@@ -73,7 +86,7 @@
               </v-avatar></template>
               <v-list-item-title>{{ g[0] }}</v-list-item-title>
                 <v-list-item-subtitle>
-                  {{ t('mod.mods', { count: groupModCounts[g[0]] || 0 }) }}
+                  {{ countLabel(groupModCounts[g[0]] || 0) }}
                 </v-list-item-subtitle>
 </v-list-item>
           </div>
@@ -131,11 +144,15 @@ const rules = computed(() => [(v: string) => !!v || t('mod.groupNameRequired')])
 const { isShown, parameter } = useDialog<{
   groups: Record<string, ModGroupData>
   groupModCounts?: Record<string, number>
+  countLabel?: (count: number) => string
   onSelect: (groupName: string | null, newName?: string) => void
+  onApplyShared?: () => void
 }>('mod-group-select')
 
 const groups = computed(() => parameter.value?.groups || {})
 const groupModCounts = computed(() => parameter.value?.groupModCounts || {})
+const countLabel = computed(() => parameter.value?.countLabel || ((count: number) => t('mod.mods', { count })))
+const onApplyShared = computed(() => parameter.value?.onApplyShared)
 
 // Filter and sort groups alphabetically
 const filteredGroups = computed(() => {
@@ -158,6 +175,12 @@ function onSelectGroup(groupName: string) {
 function onCreateNew() {
   creatingNew.value = true
   newGroupName.value = ''
+}
+
+function onApplySharedRules() {
+  parameter.value?.onApplyShared?.()
+  isShown.value = false
+  reset()
 }
 
 function onConfirmNewGroup() {

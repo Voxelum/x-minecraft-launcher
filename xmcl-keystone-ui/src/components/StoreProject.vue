@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!project"
-    class="flex w-full flex-col gap-4 overflow-auto p-4 lg:flex-row"
+    class="flex w-full flex-col gap-4 overflow-auto p-4 lg:flex-row select-none"
   >
     <v-progress-linear
       class="absolute left-0 top-0 z-10 m-0 p-0"
@@ -16,7 +16,7 @@
   </div>
   <div
     v-else
-    class="flex flex-col gap-4 p-4"
+    class="flex flex-col gap-4 p-4 select-none"
   >
     <v-progress-linear
       class="absolute left-0 top-0 z-10 m-0 p-0"
@@ -53,7 +53,7 @@
         <StoreProjectTags :project="project" />
       </v-card>
     </div>
-    <div class="flex flex-col max-w-360">
+    <div class="flex flex-col max-w-360 select-text">
       <div
         v-if="project.htmlDescription"
         class="markdown-body p-4"
@@ -78,6 +78,7 @@ import StoreProjectInstallVersionDialog, { StoreProjectVersion, StoreProjectVers
 import StoreProjectMembers, { TeamMember } from './StoreProjectMembers.vue'
 import StoreProjectTags from './StoreProjectTags.vue'
 import { CategoryChipProps } from './CategoryChip.vue'
+import { useGamepadAction } from '@/composables/gamepad'
 
 export interface StoreProject {
   id: string
@@ -136,4 +137,11 @@ const onInstallVersion = (v: StoreProjectVersion) => {
   installDialog.value = false
   emit('install', v)
 }
+
+// Gamepad X installs the project (opens the version picker).
+const { t } = useI18n()
+useGamepadAction('X', {
+  label: () => t('shared.install'),
+  handler: onInstall,
+})
 </script>

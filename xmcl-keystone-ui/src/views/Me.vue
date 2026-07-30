@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { useLocalStorageCacheBool } from '@/composables/cache'
 import { useDateString } from '@/composables/date'
 import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
@@ -10,6 +9,7 @@ import { kInstances } from '@/composables/instances'
 import { LauncherNews, useLauncherNews } from '@/composables/launcherNews'
 import { useMojangNews } from '@/composables/mojangNews'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
+import { useGamepadInnerNav } from '@/composables/gamepad'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { kTheme } from '@/composables/theme'
 import { vContextMenu } from '@/directives/contextMenu'
@@ -50,14 +50,27 @@ const allNews = computed((): LauncherNews[] => {
 })
 
 const filterKey = ref('')
-const displayNewsHeader = useLocalStorageCacheBool('displayNewsHeader', true)
+const displayNewsHeader = useLocalStorage('displayNewsHeader', true, { writeDefaults: false })
 const { instances } = injection(kInstances)
 const { path } = injection(kInstance)
 const { groups } = useInstanceGroup()
 const { pinnedInstances } = useInjectSidebarSettings()
 
 // View mode: folder, date, or plain
-const instanceViewMode = useLocalStorage('instanceViewMode', 'plain' as 'folder' | 'date' | 'plain')
+const instanceViewMode = useLocalStorage<'folder' | 'date' | 'plain'>('instanceViewMode', 'plain')
+
+// Gamepad triggers (L2/R2) switch the instance grouping tab.
+const VIEW_MODES: Array<'folder' | 'date' | 'plain'> = ['folder', 'date', 'plain']
+useGamepadInnerNav({
+  handler: (dir) => {
+    let idx = VIEW_MODES.indexOf(instanceViewMode.value)
+    if (idx === -1) idx = 0
+    idx = dir === 'next'
+      ? (idx + 1) % VIEW_MODES.length
+      : (idx - 1 + VIEW_MODES.length) % VIEW_MODES.length
+    instanceViewMode.value = VIEW_MODES[idx]
+  },
+})
 
 const filteredInstances = computed(() =>
   [...instances.value]
@@ -413,7 +426,7 @@ function openInBrowser(url: string) {
                   <v-img :src="getInstanceIcon(instance, undefined)" />
                 </v-avatar>
                 <div v-if="pinnedInstances.includes(instance.path)" class="pin-badge">
-                  <v-icon size="x-small" color="white" style="font-size: 8px" aria-hidden="true">push_pin</v-icon>
+                  <v-icon size="x-small" color="white" class="text-[8px]" aria-hidden="true">push_pin</v-icon>
                 </div>
               </div>
               <div class="instance-info">
@@ -466,6 +479,7 @@ function openInBrowser(url: string) {
 }
 
 .news-section {
+  user-select: none;
   width: 100%;
 }
 

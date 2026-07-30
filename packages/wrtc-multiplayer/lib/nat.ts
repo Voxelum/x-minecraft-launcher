@@ -7,11 +7,15 @@ export async function raceNatType(state: PeerState, iceServers: RTCIceServer[]) 
 
   const winner = createPromiseSignal<{ stun: string; info: UnblockedNatInfo }>()
   const all = Promise.all(stuns.map(async (stun) => {
-    console.log(`Testing nat type with ${stun}`)
-    const info = await getNatInfoUDP({ stun })
-    console.log(`Nat type test result ${stun}: %o`, info)
-    if (info.type !== 'Blocked') {
-      winner.resolve({ info, stun })
+    try {
+      console.log(`Testing nat type with ${stun}`)
+      const info = await getNatInfoUDP({ stun })
+      console.log(`Nat type test result ${stun}: %o`, info)
+      if (info.type !== 'Blocked') {
+        winner.resolve({ info, stun })
+      }
+    } catch (e) {
+      console.warn(`Failed to test NAT type with ${stun}:`, e)
     }
   }))
   const winOrBlocked = await Promise.race([winner.promise, all])
@@ -24,14 +28,20 @@ export async function raceNatType(state: PeerState, iceServers: RTCIceServer[]) 
     state.natTypeSet(info.type)
     console.log('Fast nat detection: %o', info)
 
-    const result = await sampleNatType({
-      sampleCount: 3,
-      retryInterval: 3_000,
-      stun,
-    })
-    if (result && result !== 'Blocked') {
-      state.natTypeSet(result)
+    let result: string | undefined
+    try {
+      const sample = await sampleNatType({
+        sampleCount: 3,
+        retryInterval: 3_000,
+        stun,
+      })
+      result = sample ?? undefined
+      if (result && result !== 'Blocked') {
+        state.natTypeSet(result as any)
+      }
+      console.log(`Refresh nat type ${result}`)
+    } catch (e) {
+      console.warn(`Failed to sample NAT type:`, e)
     }
-    console.log(`Refresh nat type ${result}`)
   }
 }

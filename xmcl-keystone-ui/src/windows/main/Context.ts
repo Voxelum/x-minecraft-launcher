@@ -1,4 +1,5 @@
 import { useExternalRoute, useI18nSync } from '@/composables'
+import { kXmclAccount, useXmclAccount } from '@/composables/xmclAccount'
 import { kCriticalStatus, useCriticalStatus } from '@/composables/criticalStatus'
 import { kCurseforgeCategories, useCurseforgeCategories } from '@/composables/curseforge'
 import { kCustomCss, useCustomCss } from '@/composables/customCss'
@@ -6,20 +7,30 @@ import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { kEnvironment, useEnvironment } from '@/composables/environment'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
 import { kInstance, useInstance } from '@/composables/instance'
-import { kInstanceDefaultSource, useInstanceDefaultSource } from '@/composables/instanceDefaultSource'
+import { kInstanceBlueprints, useInstanceBlueprints } from '@/composables/instanceBlueprints'
+import {
+  kInstanceDefaultSource,
+  useInstanceDefaultSource,
+} from '@/composables/instanceDefaultSource'
 import { kInstanceFiles, useInstanceFiles } from '@/composables/instanceFiles'
 import { kInstanceJava, useInstanceJava } from '@/composables/instanceJava'
 import { kInstanceJavaDiagnose, useInstanceJavaDiagnose } from '@/composables/instanceJavaDiagnose'
 import { kInstanceLaunch, useInstanceLaunch } from '@/composables/instanceLaunch'
 import { kInstanceModsContext, useInstanceMods } from '@/composables/instanceMods'
 import { kInstanceOptions, useInstanceOptions } from '@/composables/instanceOptions'
-import { kInstanceResourcePacks, useInstanceResourcePacks } from '@/composables/instanceResourcePack'
+import {
+  kInstanceResourcePacks,
+  useInstanceResourcePacks,
+} from '@/composables/instanceResourcePack'
 import { kInstanceSave, useInstanceSaves } from '@/composables/instanceSave'
 import { kInstanceServerInfo, useInstanceServerInfo } from '@/composables/instanceServerInfo'
 import { kInstanceShaderPacks, useInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kInstanceTheme, useInstanceTheme } from '@/composables/instanceTheme'
 import { kInstanceVersion, useInstanceVersion } from '@/composables/instanceVersion'
-import { kInstanceVersionInstall, useInstanceVersionInstallInstruction } from '@/composables/instanceVersionInstall'
+import {
+  kInstanceVersionInstall,
+  useInstanceVersionInstallInstruction,
+} from '@/composables/instanceVersionInstall'
 import { kInstances, useInstances } from '@/composables/instances'
 import { kJavaContext, useJavaContext } from '@/composables/java'
 import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
@@ -30,7 +41,11 @@ import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
 import { kModpackExport, useModpackExport } from '@/composables/modpack'
 import { kInstanceServerLaunch, useInstanceServerLaunch } from '@/composables/instanceServerLaunch'
 import { kModrinthTags, useModrinthTags } from '@/composables/modrinth'
-import { kModrinthAuthenticatedAPI, useModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
+import {
+  kModrinthAuthenticatedAPI,
+  useModrinthAuthenticatedAPI,
+} from '@/composables/modrinthAuthenticatedAPI'
+import { kLocalCollections, useLocalCollections } from '@/composables/localCollections'
 import { kPeerShared, usePeerConnections } from '@/composables/peers'
 import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kSaveSearch, useSavesSearch } from '@/composables/savesSearch'
@@ -81,8 +96,17 @@ export default defineComponent({
     provide(kPeerShared, usePeerConnections())
 
     const settings = useSettingsState()
-    const instanceVersion = useInstanceVersion(instance.instance, localVersions.versions, localVersions.servers)
-    const instanceJava = useInstanceJava(instance.instance, instanceVersion.resolvedVersion, java.all)
+    const instanceVersion = useInstanceVersion(
+      instance.instance,
+      localVersions.versions,
+      localVersions.servers,
+    )
+    const instanceJava = useInstanceJava(
+      instance.instance,
+      instanceVersion.resolvedVersion,
+      java.all,
+      computed(() => settings.state.value?.globalJava),
+    )
     provide(kInstanceJavaDiagnose, useInstanceJavaDiagnose(instanceJava))
     const instanceDefaultSource = useInstanceDefaultSource(instance.path)
     const options = useInstanceOptions(instance.path)
@@ -90,22 +114,71 @@ export default defineComponent({
     const serverInfo = useInstanceServerInfo(instance.path)
     const resourcePacks = useInstanceResourcePacks(instance.path, options.gameOptions)
     const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
-    const shaderPacks = useInstanceShaderPacks(instance.path, instance.runtime, instanceMods.mods, options.gameOptions)
+    const blueprints = useInstanceBlueprints(instance.path)
+    const shaderPacks = useInstanceShaderPacks(
+      instance.path,
+      instance.runtime,
+      instanceMods.mods,
+      options.gameOptions,
+    )
     const files = useInstanceFiles(instance.path)
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionId)
-    const instanceLaunch = useInstanceLaunch(instance.instance, instanceVersion.versionId, instanceVersion.serverVersionId, instanceJava.java, user.userProfile, settings, instanceMods.mods)
+    const instanceLaunch = useInstanceLaunch(
+      instance.instance,
+      instanceVersion.versionId,
+      instanceVersion.serverVersionId,
+      instanceJava.java,
+      user.userProfile,
+      settings,
+      instanceMods.mods,
+    )
 
     const modrinthAPI = useModrinthAuthenticatedAPI()
     provide(kModrinthAuthenticatedAPI, modrinthAPI)
+    provide(
+      kXmclAccount,
+      useXmclAccount(
+        user.userProfile,
+        computed(() => modrinthAPI.userData.value?.id),
+      ),
+    )
+    provide(kLocalCollections, useLocalCollections())
     const searchModel = useSearchModel(instance.runtime)
     provide(kSearchModel, searchModel)
-    const modsSearch = useModsSearch(instance.path, instance.runtime, instanceMods.mods, instanceMods.isValidating, settings.state, modrinthAPI, searchModel)
-    const modUpgrade = useModUpgrade(instance.path, instance.runtime, instanceMods.mods, instanceMods.updateMetadata)
+    const modsSearch = useModsSearch(
+      instance.path,
+      instance.runtime,
+      instanceMods.mods,
+      instanceMods.isValidating,
+      settings.state,
+      modrinthAPI,
+      searchModel,
+    )
+    const modUpgrade = useModUpgrade(
+      instance.path,
+      instance.runtime,
+      instanceMods.mods,
+      instanceMods.updateMetadata,
+    )
 
-    const resourcePackSearch = useResourcePackSearch(resourcePacks.enabled, resourcePacks.disabled, modrinthAPI, searchModel)
+    const resourcePackSearch = useResourcePackSearch(
+      resourcePacks.enabled,
+      resourcePacks.disabled,
+      modrinthAPI,
+      searchModel,
+    )
     const shaderPackSearch = useShaderPackSearch(shaderPacks.shaderPacks, modrinthAPI, searchModel)
 
-    const install = useInstanceVersionInstallInstruction(instance.path, instance.instances, instanceVersion.resolvedVersion, instanceVersion.refreshResolvedVersion, localVersions.versions, localVersions.servers, java.all, java.refresh)
+    const install = useInstanceVersionInstallInstruction(
+      instance.path,
+      instance.instances,
+      instanceVersion.resolvedVersion,
+      instanceVersion.refreshResolvedVersion,
+      localVersions.versions,
+      localVersions.servers,
+      java.all,
+      java.refresh,
+    )
 
     useTelemetryTrack(settings.state)
 
@@ -127,6 +200,7 @@ export default defineComponent({
     provide(kInstanceServerInfo, serverInfo)
     provide(kInstanceResourcePacks, resourcePacks)
     provide(kInstanceModsContext, instanceMods)
+    provide(kInstanceBlueprints, blueprints)
     provide(kInstanceFiles, files)
     provide(kLaunchTask, task)
 
@@ -136,7 +210,15 @@ export default defineComponent({
     provide(kResourcePackSearch, resourcePackSearch)
     provide(kShaderPackSearch, shaderPackSearch)
     provide(kModsSearch, modsSearch)
-    provide(kModDependenciesCheck, useModDependenciesCheck(instance.path, instance.runtime, instanceMods.mods, instanceMods.updateMetadata))
+    provide(
+      kModDependenciesCheck,
+      useModDependenciesCheck(
+        instance.path,
+        instance.runtime,
+        instanceMods.mods,
+        instanceMods.updateMetadata,
+      ),
+    )
     provide(kModLibCleaner, useModLibCleaner(instanceMods.mods, instanceMods.allowLoaders))
     provide(kSaveSearch, useSavesSearch(saves.saves, saves.sharedSaves, searchModel))
     provide(kModUpgrade, modUpgrade)
@@ -162,16 +244,36 @@ export default defineComponent({
       surfaceTokens.cardClickableRadius.value = enabled ? DEFAULT_CARD_CLICKABLE_RADIUS : 0
       surfaceTokens.tooltipRadius.value = enabled ? DEFAULT_SURFACE_TOOLTIP_RADIUS : 0
       surfaceTokens.pillRadius.value = enabled ? DEFAULT_SURFACE_PILL_RADIUS : 0
-      surfaceTokens.buttonRadius.value = enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0
+      vuetify.defaults.value = {
+        ...vuetify.defaults.value,
+        VBtn: {
+          ...vuetify.defaults.value?.VBtn,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
+        },
+        VChip: {
+          ...vuetify.defaults.value?.VChip,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
+        },
+        VTextField: {
+          ...vuetify.defaults.value?.VTextField,
+          rounded: enabled ? undefined : 0,
+        },
+        VSwitch: {
+          ...vuetify.defaults.value?.VSwitch,
+          rounded: enabled ? undefined : 0,
+        },
+      }
     })
 
-    provide(kCustomCss, useCustomCss({
-      currentTheme: theme.currentTheme,
-      instanceTheme: instanceTheme.instanceTheme,
-      instanceCss: instanceTheme.customCss,
-      suppressed: theme.suppressed,
-    }))
-
+    provide(
+      kCustomCss,
+      useCustomCss({
+        currentTheme: theme.currentTheme,
+        instanceTheme: instanceTheme.instanceTheme,
+        instanceCss: instanceTheme.customCss,
+        suppressed: theme.suppressed,
+      }),
+    )
 
     useI18nSync(settings.state)
 

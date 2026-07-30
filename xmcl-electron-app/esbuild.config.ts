@@ -54,7 +54,7 @@ const config = {
     pluginWorker(),
     pluginElevate(),
     // pluginJsdetect(),
-    plugin7Zip(path.resolve(__dirname, './node_modules')),
+    plugin7Zip(),
     pluginNode(),
     yamlPlugin({}) as any,
   ],

@@ -11,6 +11,7 @@
   >
     <v-skeleton-loader
       v-if="loading"
+      class="mt-1.5"
       type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
     />
     <div
@@ -58,6 +59,12 @@ import { useVirtualizer, VirtualItem, VirtualizerOptions } from '@tanstack/vue-v
 import InstanceManifestFileItem from './InstanceManifestFileItem.vue'
 import { flatTree, treeItemKey, TreeItem } from '@/util/tree'
 import { useVModel } from '@vueuse/core'
+
+enum CheckedState {
+  Unchecked = 0,
+  Checked = 1,
+  Partial = 2
+}
 
 const props = withDefaults(defineProps<{
   modelValue?: string[]
@@ -156,11 +163,6 @@ const toggleValue = (item: TreeItem<InstanceFileNode<any>>) => {
 const files = injection(FileNodesSymbol)
 const flattened = ref<TreeItem<InstanceFileNode<any>>[]>([])
 
-enum CheckedState {
-  Unchecked = 0,
-  Checked = 1,
-  Partial = 2
-}
 const checkedStates = computed(() => {
   const checkedSet = props.modelValue ?? []
   const result: Record<string, CheckedState> = {}

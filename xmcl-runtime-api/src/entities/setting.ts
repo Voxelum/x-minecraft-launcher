@@ -1,4 +1,5 @@
 import { type InvalidDirectoryErrorCode } from '../services/BaseService'
+import { DEFAULT_AGENT_ENDPOINT, DEFAULT_AGENT_MODEL } from '../services/AgentService'
 import { type SettingSchema } from './setting.schema'
 import { type ReleaseInfo } from './update'
 
@@ -13,6 +14,7 @@ export class Settings implements SettingSchema {
   globalMinMemory = 0
   globalMaxMemory = 0
   globalAssignMemory: 'auto' | boolean = false
+  globalJava: string = ''
   globalVmOptions: string[] = []
   globalMcOptions: string[] = []
   globalPrependCommand: string = ''
@@ -25,6 +27,8 @@ export class Settings implements SettingSchema {
   discordPresence = false
   developerMode = false
   disableTelemetry = false
+  agentEndpoint = DEFAULT_AGENT_ENDPOINT
+  agentModel = DEFAULT_AGENT_MODEL
   linuxTitlebar = false
   windowTranslucent = false
 
@@ -98,6 +102,7 @@ export class Settings implements SettingSchema {
     this.globalMinMemory = config.globalMinMemory
     this.globalMaxMemory = config.globalMaxMemory
     this.globalAssignMemory = config.globalAssignMemory
+    this.globalJava = config.globalJava
     this.globalVmOptions = config.globalVmOptions
     this.globalMcOptions = config.globalMcOptions
     this.globalFastLaunch = config.globalFastLaunch
@@ -111,6 +116,8 @@ export class Settings implements SettingSchema {
     this.discordPresence = config.discordPresence
     this.developerMode = config.developerMode
     this.disableTelemetry = config.disableTelemetry
+    this.agentEndpoint = config.agentEndpoint
+    this.agentModel = config.agentModel
     this.linuxTitlebar = config.linuxTitlebar
     this.windowTranslucent = config.windowTranslucent
     this.enableDedicatedGPUOptimization = config.enableDedicatedGPUOptimization
@@ -207,6 +214,11 @@ export class Settings implements SettingSchema {
     this.disableTelemetry = disable
   }
 
+  agentProviderSet(provider: { endpoint: string; model: string }) {
+    this.agentEndpoint = provider.endpoint
+    this.agentModel = provider.model
+  }
+
   linuxTitlebarSet(enabled: boolean) {
     this.linuxTitlebar = enabled
   }
@@ -243,6 +255,7 @@ export class Settings implements SettingSchema {
     globalMinMemory: number
     globalMaxMemory: number
     globalAssignMemory: boolean | 'auto'
+    globalJava: string
     globalVmOptions: string[]
     globalMcOptions: string[]
     globalFastLaunch: boolean
@@ -258,6 +271,7 @@ export class Settings implements SettingSchema {
     this.globalMinMemory = settings.globalMinMemory
     this.globalMaxMemory = settings.globalMaxMemory
     this.globalAssignMemory = settings.globalAssignMemory
+    this.globalJava = settings.globalJava
     this.globalVmOptions = settings.globalVmOptions
     this.globalMcOptions = settings.globalMcOptions
     this.globalFastLaunch = settings.globalFastLaunch

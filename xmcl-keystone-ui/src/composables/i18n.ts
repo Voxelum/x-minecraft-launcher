@@ -12,16 +12,22 @@ export function useI18nSync(state: Ref<Settings | undefined>) {
     console.log(`Locale changed ${oldValue} -> ${newValue}`)
     if (newValue === 'zh-CN') {
       vuetifyLocale.current.value = 'zhHans'
+    } else if (newValue === 'zh-TW' || newValue === 'zh-HK') {
+      vuetifyLocale.current.value = 'zhHant'
+    } else if (newValue === 'ja-JP') {
+      vuetifyLocale.current.value = 'ja'
+    } else if (newValue === 'ko') {
+      vuetifyLocale.current.value = 'ko'
     } else if (newValue === 'ru') {
       vuetifyLocale.current.value = 'ru'
-    } else if (newValue === 'ar') {
+    } else if (newValue === 'ar' || newValue === 'ar-EG') {
       vuetifyLocale.current.value = 'ar'
     } else {
       vuetifyLocale.current.value = 'en'
     }
 
     if (typeof document !== 'undefined') {
-      document.documentElement.dir = newValue === 'ar' ? 'rtl' : 'ltr'
+      document.documentElement.dir = (newValue === 'ar' || newValue === 'ar-EG') ? 'rtl' : 'ltr'
     }
 
     if (!locales[`../../locales/${newValue}.yaml`]) {

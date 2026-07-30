@@ -52,7 +52,7 @@
             <span class="text-error">{{ t('HomeJavaIssueDialog.missingJava') }}</span>
           </template>
           <template v-else-if="autoIssue === 'no-match'">
-            <span class="text-warning">{{ t('launchNoProperJava.title') }}</span>
+            <span class="text-warning">{{ t('launchBlocked.launchNoProperJava.title') }}</span>
           </template>
           <template v-else>
             {{ t('java.allocatedLong') }}
@@ -246,7 +246,7 @@ import { BaseServiceKey, JavaRecord, JavaServiceKey } from '@xmcl/runtime-api'
 import { resolvePinChoice, shouldClearPinOnRemove } from '@/util/javaPin'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { kJavaContext } from '../composables/java'
-import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
+import BaseSettingGlobalLabel from '@/components/BaseSettingGlobalLabel.vue'
 import JavaList from './BaseSettingJavaList.vue'
 import SettingJavaMemory from './SettingJavaMemory.vue'
 import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'

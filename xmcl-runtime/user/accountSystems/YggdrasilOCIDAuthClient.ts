@@ -21,13 +21,12 @@ export class YggdrasilOCIDAuthClient {
         authority: authority,
         knownAuthorities: [authority],
         clientId: clientId,
-        protocolMode: 'OIDC',
         azureCloudOptions: {
           azureCloudInstance: 'none',
         }
       },
       cache: {
-        cachePlugin: createPlugin('xmcl-oauth', account, this.logger, this.storage),
+        cachePlugin: createPlugin('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', this.logger, this.storage),
       },
       system: createNodeSystemOptions(this.logger, this.fetch, signal, true),
     })

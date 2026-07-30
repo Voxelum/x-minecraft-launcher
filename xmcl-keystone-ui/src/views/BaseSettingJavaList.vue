@@ -19,7 +19,7 @@
         {{ t('HomeJavaIssueDialog.missingJava') }}
       </v-list-item-subtitle>
       <v-list-item-subtitle v-else-if="autoIssue === 'no-match'" class="text-warning">
-        {{ t('launchNoProperJava.title') }} — {{ t('installJre.name') }}
+        {{ t('launchBlocked.launchNoProperJava.title') }} — {{ t('installJre.name') }}
       </v-list-item-subtitle>
     </v-list-item>
 

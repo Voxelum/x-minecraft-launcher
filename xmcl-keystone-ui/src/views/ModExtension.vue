@@ -6,83 +6,19 @@
       </div>
       <div class="flex-grow" />
       <div class="invisible-scroll flex flex-grow justify-end gap-4 overflow-x-auto">
-        <MarketTextFieldWithMenu
+        <MarketTextField
+          :clearable="!!curseforgeCategory || modrinthCategories.length > 0 || !!keywordBuffer"
+          :value="keywordBuffer"
           :placeholder="t('mod.search') + ' / ' + (source === 'remote' ? t('search.market') : source === 'local' ? t('search.local') : t('search.favorate')) "
-          v-model:keyword="keywordBuffer"
-          v-model:curseforge-category="curseforgeCategory"
-          v-model:modrinth-categories="modrinthCategories"
-          v-model:local-sort="sortBy"
-          curseforge-category-filter="mc-mods"
-          modrinth-category-filter="mod"
-          v-model:collection="selectedCollection"
-          v-model:enable-curseforge="isCurseforgeActive"
-          v-model:enable-modrinth="isModrinthActive"
-          v-model:sort="sort"
-          v-model:mode="source"
-          v-model:game-version="gameVersion"
-          v-model:modloader="modLoader"
-          :mod-loaders="[ModLoaderFilter.forge, ModLoaderFilter.neoforge, ModLoaderFilter.fabric, ModLoaderFilter.quilt]"
-          v-model:modrinth-environment="modrinthEnvironment"
-        >
-          <template #local>
-            <div class="filter-subheader flex">
-              {{ t('mod.filter') }}
-            </div>
-            <v-btn-toggle
-              v-roving-tabindex
-              :aria-label="t('mod.filter')"
-              density="compact"
-              :model-value="getFilterButtonValue()"
-              class="bg-transparent px-1"
-              @update:model-value="onUpdateLocalFilter($event != null ? filterItems[$event]?.value : undefined)"
-            >
-              <v-btn
-                v-for="tag in filterItems"
-                :key="tag.value"
-                v-shared-tooltip="() => tag.text"
-                :disabled="tag.disabled"
-                size="small"
-                variant="text"
-                border
-              >
-                <v-icon
-                  class="material-icons-outlined"
-                  size="small"
-                >
-                  {{ tag.icon }}
-                </v-icon>
-              </v-btn>
-            </v-btn-toggle>
-            <div class="filter-subheader flex">
-              {{ t('modrinth.modLoaders.name') }}
-            </div>
-            <v-btn-toggle
-              v-roving-tabindex
-              :aria-label="t('modrinth.modLoaders.name')"
-              density="compact"
-              :model-value="getModLoaderFilterValue()"
-              class="bg-transparent px-1"
-              @update:model-value="onUpdateLocalFilter($event != null ? modLoaderFilterItems[$event]?.value : undefined)"
-            >
-              <v-btn
-                v-for="tag in modLoaderFilterItems"
-                :key="tag.value"
-                v-shared-tooltip="() => tag.text"
-                size="small"
-                variant="text"
-                border
-              >
-                <v-icon size="small">
-                  {{ tag.icon }}
-                </v-icon>
-              </v-btn>
-            </v-btn-toggle>
-            <ModOptionsPage
-              v-model:denseView="denseView"
-              v-model:groupInstalled="groupInstalled"
-            />
-          </template>
-        </MarketTextFieldWithMenu>
+          :game-version="gameVersion !== version.minecraft ? gameVersion : undefined"
+          :category="!!curseforgeCategory || modrinthCategories.length > 0"
+          :icon="source === 'remote' ? 'storefront' : source === 'local' ? 'inventory_2' : 'favorite'"
+          @clear="onClear"
+          @clear-version="gameVersion = version.minecraft"
+          @input="keywordBuffer = $event ?? ''"
+          @clear-category="onClear"
+          @blur="focused = false"
+        />
       </div>
     </div>
     <MarketExtensions />
@@ -92,102 +28,34 @@
 <script lang=ts setup>
 import AvatarItemList from '@/components/AvatarItemList.vue'
 import MarketExtensions from '@/components/MarketExtensions.vue'
-import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
+import MarketTextField from '@/components/MarketTextField.vue'
 import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
-import { kModsSearch } from '@/composables/modSearch'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
-import debounce from 'lodash.debounce'
-import ModOptionsPage from './ModOptionsPage.vue'
-import { vRovingTabindex } from '@/directives/rovingTabindex'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
-import { kModUpgrade } from '@/composables/modUpgrade'
-import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
-import { kModLibCleaner } from '@/composables/modLibCleaner'
-import { ModLoaderFilter, kSearchModel } from '@/composables/search'
+import { useDebounceFn } from '@vueuse/core'
+import { kSearchModel } from '@/composables/search'
+import { useQuery } from '@/composables/query'
 
 const { runtime: version } = injection(kInstance)
-const { plans } = injection(kModUpgrade)
-const { curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort, modLoader, selectedCollection, gameVersion, source, modrinthEnvironment } = injection(kSearchModel)
-const { denseView, groupInstalled, sortBy, localFilter } = injection(kModsSearch)
+const { curseforgeCategory, modrinthCategories, gameVersion, source } = injection(kSearchModel)
 const { mods: modFiles } = injection(kInstanceModsContext)
 const { t } = useI18n()
-const { installation } = injection(kModDependenciesCheck)
-const { unusedMods } = injection(kModLibCleaner)
 
+// Focusing the search field deselects the current item so the filter panel
+// (the default "nothing selected" right-pane content) is shown.
+const focused = ref(false)
+provide('focused', focused)
+const selectedId = useQuery('id')
+watch(focused, (v) => { if (v) selectedId.value = '' })
 
-const filterItems = computed(() => {
-  const hasUpdate = Object.keys(plans.value).length > 0
-  const hasDependenciesInstall = Object.keys(installation.value).length > 0
-  const hasUnusedMods = Object.keys(unusedMods.value).length > 0
-  const result = [{
-    icon: 'flash_off',
-    text: t('modFilter.disabledOnly'),
-    disabled: false,
-    value: 'disabledOnly',
-  }, {
-    icon: 'info',
-    text: t('modFilter.incompatibleOnly'),
-    value: 'incompatibleOnly',
-  }]
-  result.push({
-    icon: 'recycling',
-    disabled: !hasUnusedMods,
-    text: t('modFilter.unusedOnly'),
-    value: 'unusedOnly',
-  })
-  result.push({
-    icon: 'merge',
-    disabled: !hasDependenciesInstall,
-    text: t('modFilter.dependenciesInstallOnly'),
-    value: 'dependenciesInstallOnly',
-  })
-  result.push({
-    icon: 'update',
-    disabled: !hasUpdate,
-    text: t('modFilter.hasUpdateOnly'),
-    value: 'hasUpdateOnly',
-  })
-  return result
-})
-
-const modLoaderFilterItems = computed(() => {
-  return [{
-    icon: 'xmcl:forge',
-    text: 'Forge',
-    value: 'forgeOnly',
-  }, {
-    icon: 'xmcl:neoForged',
-    text: 'NeoForge',
-    value: 'neoforgeOnly',
-  }, {
-    icon: 'xmcl:fabric',
-    text: 'Fabric',
-    value: 'fabricOnly',
-  }, {
-    icon: 'xmcl:quilt',
-    text: 'Quilt',
-    value: 'quiltOnly',
-  }]
-})
-
-function getFilterButtonValue() {
-  const idx = filterItems.value.findIndex(i => i.value === localFilter.value)
-  return idx >= 0 ? idx : undefined
-}
-
-function getModLoaderFilterValue() {
-  const idx = modLoaderFilterItems.value.findIndex(i => i.value === localFilter.value)
-  return idx >= 0 ? idx : undefined
-}
-
-function onUpdateLocalFilter(filter: string | undefined) {
-  localFilter.value = (filter ?? '') as any
+const onClear = () => {
+  curseforgeCategory.value = undefined
+  modrinthCategories.value = []
 }
 
 const route = useRoute()
-const updateSearch = debounce(() => {
+const updateSearch = useDebounceFn(() => {
   const buffer = keywordBuffer.value
   if (buffer) {
     const isSuperQuery = buffer.startsWith('@')

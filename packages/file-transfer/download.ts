@@ -12,11 +12,11 @@ import {
 } from './controller'
 import { ProgressTrackerMultiple, ProgressTrackerSingle } from './progress'
 import { RangeRequestHandler } from './range_handler'
-import { RangePolicy, resolveRangePolicy } from './range_policy'
-import { decorateError } from './error'
+import { DefaultRangePolicyOptions, RangePolicy, resolveRangePolicy } from './range_policy'
+import { decorateError, getDestinationExtension } from './error'
 
 export interface DownloadBaseOptions {
-  rangePolicy?: RangePolicy
+  rangePolicy?: RangePolicy | DefaultRangePolicyOptions
   dispatcher?: Dispatcher
   /**
    * Optional adaptive strategy. When supplied, the download runs as a
@@ -169,13 +169,21 @@ export async function download(options: DownloadOptions): Promise<void> {
       // bytes=<consumed>-` request to resume, and throws
       // `RequestRetryError` ("server does not support the range header
       // and the payload was partially consumed" / "content-range
-      // mismatch") if the origin can't honour it (returns 200 or a
-      // different range). Treat that as a transient failure and retry
-      // this same URL from byte 0 with the file truncated, instead of
-      // skipping to the (often equally broken) next mirror.
+      // mismatch") if the origin can't honour it. Treat that as a
+      // transient failure and retry this same URL from byte 0 with the
+      // file truncated. The retry deliberately removes our initial Range
+      // header so a proxy/CDN that mangles range responses gets one chance
+      // to serve a complete single stream.
       let restartedForRangeRetry = false
       while (true) {
-        const handler = new RangeRequestHandler(ops, dispatcher, fd, rangePolicy, tracker)
+        const handler = new RangeRequestHandler(
+          ops,
+          dispatcher,
+          fd,
+          rangePolicy,
+          tracker,
+          getDestinationExtension(destination),
+        )
         dispatcher.dispatch(ops, handler)
         const err = await handler.wait().catch((e) => e)
         if (!err) {
@@ -187,6 +195,7 @@ export async function download(options: DownloadOptions): Promise<void> {
         if (!restartedForRangeRetry && isRangeRetryError(err)) {
           restartedForRangeRetry = true
           await ftruncateAsync(fd, 0).catch(() => {})
+          delete ops.headers.Range
           continue
         }
         errors.push(err)

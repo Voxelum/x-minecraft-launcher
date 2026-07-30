@@ -1,5 +1,5 @@
 <template>
-  <v-card flat class="task-dialog flex flex-col overflow-hidden" style="min-height: 280px; max-width: 100%">
+  <v-card flat class="task-dialog flex flex-col overflow-hidden min-h-[280px] max-w-full">
     <!-- Header -->
     <div class="task-dialog__header flex items-center gap-3 px-5 py-4 flex-grow-0">
       <div class="task-dialog__icon flex items-center justify-center rounded-xl">

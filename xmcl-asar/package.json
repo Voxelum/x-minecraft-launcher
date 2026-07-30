@@ -1,0 +1,23 @@
+{
+  "name": "@xmcl/app",
+  "version": "0.0.0",
+  "description": "Prebuilt app.asar bundle of X Minecraft Launcher for one platform, published per release so mirrors (e.g. npmmirror.com in mainland China) can serve the asar hot-update payload and the portable script installer. Published as @xmcl/app-<platform>.",
+  "electron": "0.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Voxelum/x-minecraft-launcher.git",
+    "directory": "xmcl-asar"
+  },
+  "homepage": "https://xmcl.app",
+  "files": [
+    "app.asar",
+    "app.asar.sha256",
+    "icon.ico",
+    "icon.icns"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}

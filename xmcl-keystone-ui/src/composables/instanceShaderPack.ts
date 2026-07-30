@@ -3,7 +3,7 @@ import { ModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
 import { FabricModMetadata } from '@xmcl/mod-parser'
 import { GameOptionsState, InstanceOptionsServiceKey, InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useResourceParseErrorNotifier } from './resourceParseError'
@@ -26,7 +26,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
   const { watch: watchShaderPacks } = useService(InstanceShaderPacksServiceKey)
   const { editOculusShaderOptions, getOculusShaderOptions, getIrisShaderOptions, editIrisShaderOptions, getShaderOptions, editShaderOptions } = useService(InstanceOptionsServiceKey)
 
-  const { state, error, isValidating } = useState(() => instancePath.value ? watchShaderPacks(instancePath.value) : undefined, ReactiveResourceState)
+  const { state, error, isValidating, revalidate } = useState(() => instancePath.value ? watchShaderPacks(instancePath.value) : undefined, ReactiveResourceState)
 
   useResourceParseErrorNotifier(state)
 
@@ -120,7 +120,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     return gameOptions.value?.shaderPack
   })
 
-  const shaderPackStatus = ref(undefined as [string, string | undefined] | undefined)
+  const shaderPackStatus = shallowRef(undefined as [string, string | undefined] | undefined)
   const { refresh: mutateShaderPackOptions } = useRefreshable(async () => {
     const mod = shaderMod.value
     const inst = instancePath.value
@@ -145,7 +145,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     }
   })
 
-  const debouncedMutateShaderPackOptions = debounce(mutateShaderPackOptions, 300)
+  const debouncedMutateShaderPackOptions = useDebounceFn(mutateShaderPackOptions, 300)
   watch([shaderMod, shaderPackPath], () => debouncedMutateShaderPackOptions())
 
   const shaderPack = computed({
@@ -194,6 +194,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     shaderPack,
     shaderPacks,
     refreshing: isValidating,
+    revalidate,
     error,
     effect,
   }

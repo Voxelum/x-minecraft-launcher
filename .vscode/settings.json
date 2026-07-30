@@ -8,6 +8,13 @@
         "**/.DS_Store": true,
         "**/node_modules": false
     },
+    "files.watcherExclude": {
+        "**/xmcl-electron-app/build/output/**": true,
+        "**/dist/**": true
+    },
+    "search.exclude": {
+        "**/xmcl-electron-app/build/output/**": true
+    },
     "typescript.preferences.quoteStyle": "single",
     "editor.tabSize": 2,
     "i18n-ally.enabledFrameworks": [

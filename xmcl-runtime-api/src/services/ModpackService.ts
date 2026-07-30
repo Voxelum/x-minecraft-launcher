@@ -164,9 +164,13 @@ export interface ModpackService {
    * Import the modpack as an instance
    * @param modpackPath The modpack file path
    * @param iconUrl The icon url of the modpack
+   * @param upstream The upstream data source of the modpack
+   * @param instancePath When provided and pointing to an existing instance, the
+   * modpack is installed into (updates) that instance instead of creating a new
+   * one. Otherwise a new instance is created.
    * @returns The instance path
    */
-  importModpack(modpackPath: string, iconUrl?: string, upstream?: InstanceData['upstream']): Promise<{
+  importModpack(modpackPath: string, iconUrl?: string, upstream?: InstanceData['upstream'], instancePath?: string): Promise<{
     instancePath: string
     version?: string
     runtime: PartialRuntimeVersions

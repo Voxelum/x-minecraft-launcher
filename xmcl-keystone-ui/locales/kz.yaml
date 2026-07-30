@@ -45,6 +45,25 @@ askAICrash:
     ЖИ ойын құлауын түсінуге көмектесіңіз! Төмендегі нұсқаулыққа сәйкес осы ойын құлауы туралы ЖИ-ге сұрақ жіберіңіз!
   selectPlatform: ЖИ платформасын ашып, жаңа көшірілген сұрақты қойыңыз.
 authProfileAddedNotification: '{name} аутентификация профилі қосылды'
+bedrock:
+  installBedrockVersion: 'Downloading Bedrock {version}'
+  versionsTitle: Version manager
+  versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
+  versionsError: Failed to load the version list. Check your network and try again.
+  channel: Channel
+  channelRelease: Release
+  channelBeta: Beta
+  channelPreview: Preview
+  active: Active
+  play: Play
+  download: Download
+  installedTag: Installed
+  developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
+  enableDeveloperMode: Enable Developer Mode
+  enableDeveloperModeFailed: Failed to enable Developer Mode
+  downloadFailed: 'Failed to download Bedrock {version}'
+  launchFailed: Failed to launch this Bedrock version
+  removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
   title: Жеке жағдай баптаулары
 browseApp:
@@ -464,6 +483,21 @@ instances:
   folderSetting: Қалта баптаулары
   importFolderDescription: Minecraft-ты іске қосқышқа импорттау
   loadingFiles: Мод-пак файлдары жүктелуде
+  edition: Басылым
+  editionJava: Java басылымы
+  editionBedrock: Bedrock басылымы
+  editionBedrockHint: >-
+    Bedrock басылымы Microsoft Store қолданбасы арқылы іске қосылады. Сізде
+    Bedrock лицензиясы болуы керек. Модтар, ресурс жинақтары және басқа Java-ға
+    ғана тән мүмкіндіктер қолжетімсіз.
+  editionBedrockWindowsOnly: Bedrock басылымы тек Windows нұсқасында қолдау көрсетіледі.
+  linkSharedFolders: Даналар арасында қалталарды ортақ пайдалану
+  linkSharedFoldersHint: >-
+    Бұл қалталарды іске қосу бағдарламасының ортақ қалталарына сілтеме ретінде
+    жасаңыз, осылайша бұл дана олардың мазмұнын барлық басқа байланысқан
+    даналармен бөліседі. Бұл көшірме емес — бір данадағы өзгерістер барлығында
+    көрінеді. Белгіленбеген қалталар осы дана үшін жеке болып қалады.
+  linkFailed: '{folder} қалтасын ортақ қалтаға байланыстыру мүмкін болмады'
   addPrismDescription: Бар PrismLauncher данасын импорттау.
 items:
   count: '{count} элемент'
@@ -480,6 +514,7 @@ java:
   memoryManual: Қолмен
   memoryUnassigned: Бөлінбеген
   minMemory: Минимал жады
+  name: Java
   noMemory: Жады қолданысын шектеуді болдырмау
   refresh: Жергілікті Java-ны жаңарту
   systemMemory: 'Жүйелік бос жады: {free} / {total}'
@@ -699,9 +734,7 @@ modInstall:
     title: Модтарды жаңарту керек пе?
     'yes': Модтарды жаңарту
   checkDependencies: Тәуелділіктерді тексеру
-  checkUpgrade: Мод жаңартуларын тексеру
   checkedDependencies: Тәуелділіктер тексерілді
-  checkedUpgrade: Тексерілгендерді жаңарту
   currentVersion: Таңдалған нұсқа
   dependencyHint: Басқа {version} нұсқасы орнатылған
   releaseOnly: Жаңарту кезінде альфа және бета нұсқаларын елемеу
@@ -714,7 +747,6 @@ modInstall:
   skipVersion: Әртүрлі Minecraft нұсқасы бар модтарды өткізіп жіберу
   source: Мод көзі
   switch: Нұсқаны ауыстыру
-  upgrade: Модтарды жаңарту
 modSearch:
   noLocalModsFound: Сіздің іздеуіңізге сәйкес жергілікті модтар табылмады.
   noModsFound: Модтар табылмады.
@@ -755,6 +787,12 @@ modpackImportConfirm:
   description: >-
     Сіз launcher-ға файл апарғаныңыз анықталды. Сіз мод-пак импорттағыңыз келе ме?
   title: Сіз мод-пак импорттағыңыз келе ме?
+modpackUpdateOrCreate:
+  createNew: 'Жаңасын жасау'
+  description: >-
+    Осы модпакқа арналған "{name}" данасы бұрыннан бар. Оны жаңартқыңыз келе ме, әлде жаңасын жасайсыз ба?
+  title: 'Дана әлдеқашан бар'
+  update: 'Бар данасын жаңарту'
 modrinth:
   browseUrl: Браузерде ашу {url}
   categories:
@@ -1029,6 +1067,11 @@ quiltVersion:
   disable: Quilt-ті өшіру
   empty: Quilt Minecraft {version} нұсқасын қолдамайды
 resourcepack:
+  linkShared: Даналар арасында ресурс пакеттерін бөлісу
+  linkSharedHint: >-
+    Барлық даналар бірдей ресурс пакеттерін пайдалануы үшін осы дананың
+    resourcepacks қалтасын жаһандық ортақ қалтамен байланыстырыңыз. Бар пакеттер ортақ
+    қалтаға біріктіріледі.
   compatible: '{version} нұсқасымен үйлесімді {format} пішімі'
   defaultDescription: Minecraft-тың әдепкі көрінісі
   delete:
@@ -1051,6 +1094,11 @@ resourcepack:
   noPacks: Ресурс пакеттері табылмады
   search: Ресурс пакеттерін іздеу...
 save:
+  linkShared: Даналар арасында сақтауларды бөлісу
+  linkSharedHint: >-
+    Барлық даналар бірдей әлемдерді пайдалануы үшін осы дананың saves
+    қалтасын жаһандық ортақ қалтамен байланыстырыңыз. Бар сақтаулар ортақ
+    қалтаға біріктіріледі.
   allowCheats: Читтерге рұқсат беру
   copy:
     name: Сақталған ойынды көшіру
@@ -1096,7 +1144,11 @@ screenshots:
 search:
   favorate: Жинақ
   local: Орнатылған
-  market: Мод нарығы
+  market: Нарық
+  emptyInstalled: Әзірге ештеңе орнатылмаған
+  browseMarket: Нарықты шолу
+  noResults: Нәтиже табылмады
+  pageSize: Беттегі нәтижелер саны
 server:
   acceptingMinecraftVersion: Қабылдайтын Minecraft нұсқасы
   creationHint: Сервер мекенжайын толтырып, серверге ping жасаңыз
@@ -1223,6 +1275,8 @@ setting:
   exportSettingsHint: Ағымдағы баптауларыңызды файлға сақтаңыз
   general: Жалпы
   githubRelease: Github шығарылымы
+  globalJava: Таңдаулы Java
+  globalJavaHint: "Автоматты режимде алдымен осы Java қолданылады, ол ойын нұсқасымен үйлеспеген жағдайда ғана автоанықтауға оралады."
   globalSetting: Глобалды жеке жағдай баптаулары
   globalSettingHint: Жеке жағдайлар әдепкі бұл баптауларды қолданады.
   importSettings: Баптауларды импорттау
@@ -1371,6 +1425,11 @@ setup:
     name: Тілді орнату
   path: Ағымдағы жол
 shaderPack:
+  linkShared: Даналар арасында шейдер пакеттерін бөлісу
+  linkSharedHint: >-
+    Барлық даналар бірдей шейдер пакеттерін пайдалануы үшін осы дананың
+    shaderpacks қалтасын жаһандық ортақ қалтамен байланыстырыңыз. Бар пакеттер ортақ
+    қалтаға біріктіріледі.
   deletion: Шейдерлер жинағын жою
   deletionHint: Бұл {path} шейдерлер жинағы файлын жояды және оны қайтару мүмкін емес.
   disabled: Өшірілген шейдерлер жинағы
@@ -1396,6 +1455,7 @@ shared:
   back: Артқа
   browse: Шолу
   cancel: Болдырмау
+  checkUpgrade: Жаңартуларды тексеру
   client: Клиент
   description: Сипаттама
   disable: Өшіру
@@ -1417,6 +1477,7 @@ shared:
   search: Search
   server: Сервер
   skipForNow: Қазір өткізіп жіберу
+  upgrade: Жаңарту
   'yes': Иә
 sidebar:
   pin: Бекіту

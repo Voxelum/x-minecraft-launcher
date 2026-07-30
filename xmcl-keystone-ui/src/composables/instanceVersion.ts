@@ -1,7 +1,7 @@
 import type { ResolvedVersion, VersionParseError } from '@xmcl/core'
 import { Instance, PartialRuntimeVersions, RuntimeVersions } from '@xmcl/instance'
 import { InstanceServiceKey, ServerVersionHeader, VersionHeader, VersionServiceKey, findMatchedVersion, getResolvedVersionHeader } from '@xmcl/runtime-api'
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
@@ -123,7 +123,7 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
   })
 
   // update on instance/instance version/versions changed
-  const dmutate = debounce(() => {
+  const dmutate = useDebounceFn(() => {
     mutate(instance.value)
   }, 500)
   watch([versionHeader, local, instance], dmutate, { deep: true })

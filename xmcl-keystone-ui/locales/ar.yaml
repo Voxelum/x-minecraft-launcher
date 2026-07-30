@@ -45,6 +45,25 @@ askAICrash:
     دع الذكاء الاصطناعي يساعدك على فهم تعطل اللعبة! اتبع الإرشادات أدناه لسؤال الذكاء الاصطناعي عن تعطل اللعبة!
   selectPlatform: 'افتح منصة AI والصق المطالبة التي نسختها للتو.'
 authProfileAddedNotification: 'تمت إضافة ملف تعريف المصادقة {name}'
+bedrock:
+  installBedrockVersion: 'Downloading Bedrock {version}'
+  versionsTitle: Version manager
+  versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
+  versionsError: Failed to load the version list. Check your network and try again.
+  channel: Channel
+  channelRelease: Release
+  channelBeta: Beta
+  channelPreview: Preview
+  active: Active
+  play: Play
+  download: Download
+  installedTag: Installed
+  developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
+  enableDeveloperMode: Enable Developer Mode
+  enableDeveloperModeFailed: Failed to enable Developer Mode
+  downloadFailed: 'Failed to download Bedrock {version}'
+  launchFailed: Failed to launch this Bedrock version
+  removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
   title: 'إعدادات المثيل'
 browseApp:
@@ -489,6 +508,19 @@ instances:
   folderSetting: 'إعدادات المجلد'
   importFolderDescription: 'استيراد ماين كرافت إلى قاذفة'
   loadingFiles: 'تحميل ملفات Modpack'
+  edition: الإصدار
+  editionJava: إصدار Java
+  editionBedrock: إصدار Bedrock
+  editionBedrockHint: >-
+    يتم تشغيل إصدار Bedrock من خلال تطبيق Microsoft Store. يجب أن تمتلك ترخيص
+    Bedrock. الوحدات وحزم الموارد والميزات الأخرى الخاصة بـ Java غير متوفرة.
+  editionBedrockWindowsOnly: إصدار Bedrock مدعوم فقط في إصدار Windows.
+  linkSharedFolders: مشاركة المجلدات بين النسخ
+  linkSharedFoldersHint: >-
+    أنشئ هذه المجلدات كروابط إلى المجلدات المشتركة للمشغّل حتى تشارك هذه النسخة
+    محتواها مع جميع النسخ المرتبطة الأخرى. هذه ليست نسخة — التغييرات التي تُجرى في
+    نسخة واحدة تظهر في جميع النسخ. تبقى المجلدات غير المحددة خاصة بهذه النسخة.
+  linkFailed: 'فشل ربط المجلد {folder} بالمجلد المشترك'
 items:
   count: '{count} العناصر'
   total: '{total} الإجمالي'
@@ -506,6 +538,7 @@ java:
   memoryManual: 'يدوي'
   memoryUnassigned: 'إلغاء التعيين'
   minMemory: 'دقيقة الذاكرة'
+  name: Java
   noMemory: 'لا تحد من استخدام الذاكرة'
   openFolder: 'افتح مجلد جافا'
   presets: 'الإعدادات المسبقة'
@@ -749,9 +782,7 @@ modInstall:
     title: 'تحديث المودات؟'
     'yes': 'تحديث تعديل'
   checkDependencies: 'التحقق من التبعيات'
-  checkUpgrade: 'تحقق من تحديث التعديلات'
   checkedDependencies: 'التبعيات التي تم التحقق منها'
-  checkedUpgrade: 'تم فحص الترقية'
   currentVersion: 'النسخة المختارة'
   dependencyHint: 'تم تثبيت إصدار آخر {version}'
   releaseOnly: تجاهل إصدارات ألفا وبيتا عند التحديث
@@ -764,7 +795,6 @@ modInstall:
   skipVersion: 'تخطي التعديلات مع إصدار Minecraft المختلف'
   source: 'مصدر وزارة الدفاع'
   switch: 'تبديل الإصدار'
-  upgrade: 'ترقية تعديل'
 modSearch:
   noLocalModsFound: 'لم يتم العثور على تعديلات محلية مطابقة لبحثك.'
   noModsFound: 'لم يتم العثور على تعديلات'
@@ -805,6 +835,12 @@ modpackImportConfirm:
   description: >-
     اكتشف أنك قمت بإسقاط ملف في المشغل. هل تحاول استيراد modpack؟
   title: 'هل تحاول استيراد modpack؟'
+modpackUpdateOrCreate:
+  createNew: 'إنشاء جديد'
+  description: >-
+    يوجد بالفعل مثيل "{name}" لحزمة الوحدات هذه. هل تريد تحديثه أم إنشاء مثيل جديد؟
+  title: 'المثيل موجود بالفعل'
+  update: 'تحديث الموجود'
 modrinth:
   browseUrl: 'فتح في المتصفح {url}'
   categories:
@@ -1111,6 +1147,10 @@ resourceError:
     تعذر تحليل "{path}" ({code}). قد يكون الملف تالفًا أو مقفلاً أو
     غير مكتمل. حاول إعادة تنزيله أو إزالته.
 resourcepack:
+  linkShared: مشاركة حزم الموارد بين النسخ
+  linkSharedHint: >-
+    اربط مجلد resourcepacks لهذه النسخة بالمجلد المشترك العام حتى تستخدم
+    جميع النسخ نفس حزم الموارد. يتم دمج الحزم الموجودة في المجلد المشترك.
   compatible: 'التنسيق المتوافق {format} مع {version}'
   defaultDescription: 'الشكل والمظهر الافتراضي لـ Minecraft'
   delete:
@@ -1135,6 +1175,10 @@ resourcepack:
   showInCurseforge: 'أظهر {name} في Curseforge'
   unselected: 'حزم الموارد غير المحددة'
 save:
+  linkShared: مشاركة عوالم الحفظ بين النسخ
+  linkSharedHint: >-
+    اربط مجلد saves لهذه النسخة بالمجلد المشترك العام حتى تشارك جميع
+    النسخ نفس العوالم. يتم دمج ملفات الحفظ الموجودة في المجلد المشترك.
   allowCheats: 'السماح بالغش'
   copy:
     name: 'نسخ حفظ'
@@ -1183,7 +1227,11 @@ screenshots:
 search:
   favorate: 'مجموعة'
   local: 'تم التثبيت'
-  market: 'سوق مود'
+  market: 'سوق'
+  emptyInstalled: 'لا شيء مثبت بعد'
+  browseMarket: 'تصفح السوق'
+  noResults: 'لا توجد نتائج'
+  pageSize: عدد النتائج في كل صفحة
 server:
   acceptingMinecraftVersion: 'قبول نسخة ماينكرافت'
   creationHint: 'يرجى ملء عنوان الخادم واختبار اتصال الخادم'
@@ -1317,6 +1365,8 @@ setting:
   exportSettingsHint: 'احفظ إعداداتك الحالية في ملف'
   general: 'عام'
   githubRelease: 'إصدار جيثب'
+  globalJava: Java المفضلة
+  globalJavaHint: "في الوضع التلقائي تتم تجربة Java هذه أولاً ولا يتم الرجوع إلى الاكتشاف التلقائي إلا عندما لا تكون متوافقة مع إصدار اللعبة."
   globalSetting: 'إعداد المثيل العالمي'
   globalSettingHint: 'سيستخدم المثيل هذه الإعدادات بشكل افتراضي.'
   importSettings: 'إعدادات الاستيراد'
@@ -1461,6 +1511,10 @@ setup:
     name: 'ضبط اللغة'
   path: 'المسار الحالي'
 shaderPack:
+  linkShared: مشاركة حزم الشيدر بين النسخ
+  linkSharedHint: >-
+    اربط مجلد shaderpacks لهذه النسخة بالمجلد المشترك العام حتى تستخدم
+    جميع النسخ نفس حزم الشيدر. يتم دمج الحزم الموجودة في المجلد المشترك.
   deletion: 'حذف حزمة التظليل'
   deletionHint: 'سيؤدي هذا إلى حذف ملف حزمة التظليل {path} ولا يمكن التراجع عنه.'
   disabled: 'حزم تظليل المعوقين'
@@ -1488,6 +1542,7 @@ shared:
   back: 'خلف'
   browse: 'تصفح'
   cancel: 'يلغي'
+  checkUpgrade: 'تحقق من التحديثات'
   client: 'عميل'
   description: 'وصف'
   disable: 'إبطال'
@@ -1509,6 +1564,7 @@ shared:
   search: 'يبحث'
   server: 'الخادم'
   skipForNow: 'تخطي الآن'
+  upgrade: 'ترقية'
   'yes': 'نعم'
 sidebar:
   pin: 'دبوس'

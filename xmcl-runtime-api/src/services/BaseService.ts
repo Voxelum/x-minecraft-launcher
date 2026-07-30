@@ -37,6 +37,8 @@ export interface Environment extends Platform {
   gfw: boolean
 
   gpu: boolean
+
+  steamDeck: boolean
 }
 
 export interface NetworkStatus {
@@ -74,6 +76,8 @@ export interface BaseService extends GenericEventEmitter<BaseServiceEventMap> {
   getSettings(): Promise<SharedState<Settings>>
 
   makeDesktopShortcut(): Promise<boolean>
+
+  addSteamShortcut(): Promise<boolean>
   /**
    * Get the environment of the launcher
    */

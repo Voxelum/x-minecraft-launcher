@@ -128,6 +128,39 @@
           </div>
         </div>
 
+        <!-- Accepted Friends -->
+        <div
+          v-if="!isHeroEmpty && data?.friends.length"
+          class="surface-panel overflow-hidden"
+        >
+          <div class="px-4 pt-3 pb-2 text-xs font-semibold uppercase tracking-wide opacity-60">
+            {{ t('minecraftFriends.friends') }}
+            <span class="text-primary">({{ data.friends.length }})</span>
+          </div>
+          <div data-testid="minecraft-friends-accepted-list">
+            <MinecraftFriendRow
+              v-for="f of data.friends"
+              :key="f.profileId"
+              :friend="f"
+              :presence="onlineFriends[f.profileId]"
+              class="px-2 border-b border-[rgba(var(--v-theme-on-surface),0.04)] last:border-0"
+            >
+              <v-btn
+                size="small"
+                variant="text"
+                color="error"
+                rounded="lg"
+                :title="t('shared.remove')"
+                :loading="busy[f.profileId] === 'remove'"
+                :disabled="!!busy[f.profileId]"
+                @click.stop="onRemove(f)"
+              >
+                <v-icon size="16">person_remove</v-icon>
+              </v-btn>
+            </MinecraftFriendRow>
+          </div>
+        </div>
+
         <!-- Incoming requests -->
         <div
           v-if="!isHeroEmpty && data?.incomingRequests.length"
@@ -228,16 +261,19 @@
 </template>
 
 <script lang="ts" setup>
+import MinecraftFriendRow from '@/components/MinecraftFriendRow.vue'
 import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
 import {
   kMinecraftFriends,
 } from '@/composables/minecraftFriends'
+import { useFriendsPresence } from '@/composables/useFriendsPresence'
 import { useNotifier } from '@/composables/notifier'
 import { useUserMenuControl } from '@/composables/userMenu'
 import { injection } from '@/util/inject'
 import {
   type MinecraftFriend,
+  MinecraftFriendsException,
   MinecraftFriendsServiceKey,
 } from '@xmcl/runtime-api'
 import { computed, nextTick, ref } from 'vue'
@@ -247,6 +283,7 @@ const friendsService = useService(MinecraftFriendsServiceKey)
 const { notify } = useNotifier()
 const { data, loading, error, refresh, userProfile, preferences, preferencesLoading, setPreferences } =
   injection(kMinecraftFriends)
+const { onlineFriends } = useFriendsPresence()
 const userMenu = useUserMenuControl()
 
 const addInputRef = ref<{ focus: () => void } | null>(null)
@@ -263,7 +300,7 @@ const { isShown, hide } = useDialog('minecraft-friends', () => {
 const adding = ref(false)
 const addError = ref('')
 const newFriendName = ref('')
-const busy = ref<Record<string, 'accept' | 'decline' | 'revoke' | undefined>>({})
+const busy = ref<Record<string, 'accept' | 'decline' | 'revoke' | 'remove' | undefined>>({})
 
 const loadError = computed(() => error.value ? formatError(error.value) : '')
 const isAuthError = computed(() => {
@@ -288,7 +325,8 @@ const isHeroEmpty = computed(() => {
   if (loading.value || loadError.value) return false
   const d = data.value
   if (!d) return false
-  return d.incomingRequests.length === 0 &&
+  return (d.friends?.length ?? 0) === 0 &&
+    d.incomingRequests.length === 0 &&
     d.outgoingRequests.length === 0
 })
 
@@ -310,7 +348,7 @@ async function onAddFriend() {
   }
 }
 
-async function withBusy(friend: MinecraftFriend, kind: 'accept' | 'decline' | 'revoke', op: () => Promise<void>) {
+async function withBusy(friend: MinecraftFriend, kind: 'accept' | 'decline' | 'revoke' | 'remove', op: () => Promise<void>) {
   busy.value = { ...busy.value, [friend.profileId]: kind }
   try {
     await op()
@@ -327,6 +365,7 @@ async function withBusy(friend: MinecraftFriend, kind: 'accept' | 'decline' | 'r
 const onAccept = (f: MinecraftFriend) => withBusy(f, 'accept', () => friendsService.acceptFriendRequest(userProfile.value, f.profileId))
 const onDecline = (f: MinecraftFriend) => withBusy(f, 'decline', () => friendsService.declineFriendRequest(userProfile.value, f.profileId))
 const onRevoke = (f: MinecraftFriend) => withBusy(f, 'revoke', () => friendsService.revokeFriendRequest(userProfile.value, f.profileId))
+const onRemove = (f: MinecraftFriend) => withBusy(f, 'remove', () => friendsService.removeFriend(userProfile.value, f.profileId))
 
 function formatError(e: unknown): string {
   if (!e) return ''
@@ -341,6 +380,16 @@ function formatError(e: unknown): string {
       }
     }
     const err = e as Error
+    if (err.name === MinecraftFriendsException.name && (err as any).exception?.type === 'minecraftFriends') {
+      switch ((err as any).exception.reason) {
+        case 'FRIENDS_DISABLED': return t('minecraftFriends.errors.friendsDisabled')
+        case 'UNKNOWN_PROFILE': return t('minecraftFriends.errors.unknownProfile')
+        case 'CANNOT_ADD_SELF': return t('minecraftFriends.errors.cannotAddSelf')
+        case 'DUPLICATED_PROFILES': return t('minecraftFriends.errors.duplicate')
+        case 'INVITE_REJECTED': return t('minecraftFriends.errors.inviteRejected')
+        case 'INVALID_NAME': return t('minecraftFriends.errors.invalidName')
+      }
+    }
     if (err.name === 'UserAuthenticationError') return t('minecraftFriends.errors.tokenExpired')
     if (err.name === 'MinecraftFriendsUnsupportedError') return t('minecraftFriends.unsupported')
     return err.message || t('minecraftFriends.errors.generic')

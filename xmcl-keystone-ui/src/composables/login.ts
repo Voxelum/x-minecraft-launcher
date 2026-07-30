@@ -1,4 +1,3 @@
-import { useLocalStorageCache, useLocalStorageCacheStringValue } from '@/composables/cache'
 import {
   AUTHORITY_DEV,
   AUTHORITY_MICROSOFT,
@@ -14,10 +13,10 @@ import { kSettingsState } from './setting'
 import { useLocalStorage } from '@vueuse/core'
 
 export function useAccountSystemHistory() {
-  const authority = useLocalStorageCacheStringValue(
+  const authority = useLocalStorage(
     'loginLastAuthAuthority',
     AUTHORITY_MICROSOFT as string,
-    { legacyKey: 'last-auth-service' },
+    { writeDefaults: false },
   )
   const allHistoryRaw = useLocalStorage(
     'loginAuthorityHistory',
@@ -115,7 +114,7 @@ export function useAuthorityItems(authorities: Ref<AuthorityMetadata[] | undefin
         } else if (v.authority.includes('littleskin') && !icon) {
           icon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTIiIGZpbGw9IiMzYjgyZjYiLz48dGV4dCB4PSIxMiIgeT0iMTYiIGZvbnQtZmFtaWx5PSJBcmlhbCxHZW5ldmEsc2Fucy1zZXJpZiIgZm9udC1zaXplPSI5IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TFM8L3RleHQ+PC9zdmc+'
         }
-        
+
         result.push({
           value: v.authority,
           text: v.authlibInjector?.meta.serverName ?? new URL(v.authority).host,

@@ -20,15 +20,20 @@ export async function getFile(path: string, fileName = basename(path)) {
   return entry
 }
 
-export async function getFiles(dir: string, domain?: ResourceDomain) {
+export async function getFiles(dir: string, domain?: ResourceDomain): Promise<File[]> {
   const files = await readdir(dir)
-  const entries = await Promise.all(
+  const entries: Array<File | File[] | undefined> = await Promise.all(
     files.map(async (file) => {
       if (shouldIgnoreFile(file, domain)) return
       if (file.endsWith('.txt')) return
       const path = join(dir, file)
-      return getFile(path, file)
+      const entry = await getFile(path, file)
+      if (!entry) return
+      if (domain === ResourceDomain.Blueprints && entry.isDirectory) {
+        return getFiles(path, domain)
+      }
+      return entry
     }),
-  ).then((f) => f.filter((v): v is File => !!v))
-  return entries
+  )
+  return entries.flat().filter((v): v is File => !!v)
 }

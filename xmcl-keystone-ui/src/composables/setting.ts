@@ -2,7 +2,7 @@ import { useService } from '@/composables'
 import { injection } from '@/util/inject'
 import { BaseServiceKey, Environment, Settings } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
-import { useLocalStorageCacheBool } from './cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kEnvironment } from './environment'
 import { useState } from './syncableState'
 
@@ -68,6 +68,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
   const globalAssignMemory = computed(() => state.value?.globalAssignMemory ?? false)
   const globalMinMemory = computed(() => state.value?.globalMinMemory ?? 0)
   const globalMaxMemory = computed(() => state.value?.globalMaxMemory ?? 0)
+  const globalJava = computed(() => state.value?.globalJava ?? '')
   const globalVmOptions = computed(() => state.value?.globalVmOptions ?? [])
   const globalMcOptions = computed(() => state.value?.globalMcOptions ?? [])
   const globalFastLaunch = computed(() => state.value?.globalFastLaunch ?? false)
@@ -83,6 +84,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalMinMemory: number
     globalMaxMemory: number
     globalAssignMemory: boolean | 'auto'
+    globalJava: string
     globalVmOptions: string[]
     globalMcOptions: string[]
     globalFastLaunch: boolean
@@ -102,6 +104,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalAssignMemory,
     globalMinMemory,
     globalMaxMemory,
+    globalJava,
     globalVmOptions,
     globalMcOptions,
     globalFastLaunch,
@@ -142,7 +145,7 @@ export function useGameDirectory() {
 }
 
 export function useSettings() {
-  const streamerMode = inject('streamerMode', useLocalStorageCacheBool('streamerMode', false))
+  const streamerMode = inject('streamerMode', useLocalStorage('streamerMode', false, { writeDefaults: false }))
   const { state, error, isValidating } = injection(kSettingsState)
 
   const getProxy = () => {

@@ -16,7 +16,7 @@ export function useInstanceSaves(instancePath: Ref<string>) {
   const { watch, getInstanceSaves, getSharedSaves, shareSave } = useService(InstanceSavesServiceKey)
   const { state, isValidating, error, revalidate } = useState(() => instancePath.value ? watch(instancePath.value) : undefined, Saves)
 
-  const { isSaveLinked, importSave, deleteSave, updateSave } = useService(InstanceSavesServiceKey)
+  const { isSaveLinked, importSave, deleteSave, updateSave, cloneSave } = useService(InstanceSavesServiceKey)
   const { data: isInstanceLinked, isValidating: isInstanceLinkValidating } = useSWRV(instancePath, isSaveLinked)
   const { data: sharedSavesData, mutate: revalidateSharedSave } = useSWRV(computed(() => `${instancePath.value}:${isInstanceLinked.value}`), getSharedSaves)
 
@@ -83,6 +83,25 @@ export function useInstanceSaves(instancePath: Ref<string>) {
     await updateSave({ instancePath: instancePath.value, saveName: save.name, metadata })
   }
 
+  const _duplicateSave = async (save: InstanceSaveFile) => {
+    if (isInstanceLinked.value) {
+      return
+    }
+    const existing = new Set(saves.value.map(s => s.name))
+    let newSaveName = `${save.name} - Copy`
+    let i = 2
+    while (existing.has(newSaveName)) {
+      newSaveName = `${save.name} - Copy (${i++})`
+    }
+    await cloneSave({
+      srcInstancePath: instancePath.value,
+      destInstancePath: instancePath.value,
+      saveName: save.name,
+      newSaveName,
+    })
+    revalidate()
+  }
+
   return {
     revalidate,
     saves,
@@ -96,5 +115,6 @@ export function useInstanceSaves(instancePath: Ref<string>) {
     disableSave,
     updateSave: _updateSave,
     deleteSave: _deleteSave,
+    duplicateSave: _duplicateSave,
   }
 }

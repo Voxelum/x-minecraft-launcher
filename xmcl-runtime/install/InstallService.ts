@@ -20,6 +20,7 @@ import {
   installQuiltVersion,
   installResolvedAssets,
   installResolvedLibraries,
+  diagnoseProcessorOutputs,
   JarOption,
   LibrariesTrackerEvents,
   LibraryOptions,
@@ -90,6 +91,7 @@ import { formatMinecraftSrg } from './utils/formatMinecraftSrg'
 import clazData from './utils/MultiJarLauncher.class'
 import { getTracker } from '~/util/taskHelper'
 import { kResourceWorker, ResourceWorker } from '~/resource'
+import { normalizeForgeVersion } from './forgeVersion'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -483,8 +485,9 @@ export class InstallService extends AbstractService implements IInstallService {
       const clz = join(app.appDataPath, 'MultiJarLauncher.class')
       await writeFile(clz, clazData)
       let ppOut = ''
+      let pending: PostProcessor[] = []
       try {
-        const pending = procs.filter((p) => !skip.includes(p))
+        pending = procs.filter((p) => !skip.includes(p))
         const classPaths = pending
           .map((p) => p.jar)
           .concat(pending.flatMap((p) => p.classpath))
@@ -514,24 +517,50 @@ export class InstallService extends AbstractService implements IInstallService {
         })
         await waitProcess(process)
       } catch (e) {
-        Object.assign(e as any, {
-          name: 'CustomPostProcessError',
+        const err = e instanceof Error ? e : new Error(String(e))
+        app.emit('install-postprocess-fallback', {
+          java: options.java ?? '',
+          side: overrides.side ?? '',
+          inheritsFrom: overrides.inheritsFrom ?? '',
+          processorCount: pending.length,
+          processors: pending.map((p) => p.jar).join('\n'),
+          errorName: err.name,
+          message: err.message.slice(0, 4096),
+          clzPathExists: existsSync(clz),
         })
-        if (e instanceof Error) {
-          if (e.message.indexOf('Could not find or load main class')) {
-            Object.assign(e, {
-              clzPath: clz,
-              clzPathExists: existsSync(clz),
-            })
-          }
-        }
-        this.error(e as any)
+        this.warn('[forge-pp] MultiJarLauncher post-processing failed; falling back to per-processor post-processing')
+        this.warn(err as any)
         this.warn(`[forge-pp] MultiJarLauncher output:\n${ppOut}`)
         // Retry with original postprocess
         this.log('[forge-pp] falling back to per-processor post-processing')
         await originalPostprocess()
       } finally {
         await unlink(clz).catch(() => undefined)
+      }
+
+      // Post-processing (either the batch launcher or the per-processor
+      // fallback) can silently emit a corrupt/empty output — most notably a
+      // 22-byte empty binpatched client jar produced when the installer's lzma
+      // input is corrupt. Validate every declared output so the install fails
+      // loudly instead of caching a broken version that crashes at runtime.
+      const outputIssues = await diagnoseProcessorOutputs(procs, {
+        signal: options.signal,
+        checksum: (file, algorithm) => this.resourceWorker.checksum(file, algorithm),
+      })
+      if (outputIssues.length > 0) {
+        for (const issue of outputIssues) {
+          this.warn(
+            `[forge-pp] invalid post-processor output ${issue.file} (${issue.type}); removing so a reinstall regenerates it`,
+          )
+          // Remove the bad output so a subsequent reinstall regenerates it.
+          await unlink(issue.file).catch(() => {})
+        }
+        throw new AnyError(
+          'ForgeInstallError',
+          `Post-processing produced ${outputIssues.length} invalid output(s): ${outputIssues
+            .map((i) => `${i.file} (${i.type})`)
+            .join(', ')}`,
+        )
       }
     }
 
@@ -575,7 +604,7 @@ export class InstallService extends AbstractService implements IInstallService {
     }
   }
 
-  @Lock((v) => [LockKey.version(v.version), LockKey.assets, LockKey.libraries])
+  @Lock([LockKey.assets, LockKey.libraries])
   async installDependencies(options: InstallDependenciesOptions) {
     const location = this.getPath()
     const side = options.side ?? 'client'
@@ -588,8 +617,10 @@ export class InstallService extends AbstractService implements IInstallService {
       this.log(`Install dependencies for ${options.version} (${side})`)
       if (side === 'client') {
         const resolvedVersion = await Version.parse(location, options.version)
-        await installLibraries(resolvedVersion, ops)
-        await installAssets(resolvedVersion, ops)
+        await Promise.all([
+          installLibraries(resolvedVersion, ops),
+          installAssets(resolvedVersion, ops),
+        ])
       } else {
         const resolvedVersion = await this.versionService.resolveServerVersion(options.version)
 
@@ -738,7 +769,10 @@ export class InstallService extends AbstractService implements IInstallService {
     const ops = this.getInstallOptions({ side: options.side }, task)
     try {
       this.log(`Install Minecraft ${id} (${options.side})`)
-      await installMinecraft(options.meta, this.getPath(), ops)
+      await installMinecraft(options.meta, this.getPath(), {
+        ...ops,
+        installJar: options.installJar,
+      })
       this.log(`Successfully installed Minecraft ${id} (${options.side})`)
       task.complete()
     } catch (e) {
@@ -806,7 +840,10 @@ export class InstallService extends AbstractService implements IInstallService {
     }
   }
 
-  @Lock((v: InstallNeoForgedOptions) => LockKey.version(`neoforged-${v.minecraft}-${v.version}`))
+  @Lock((v: InstallNeoForgedOptions) => [
+    LockKey.version(`neoforged-${v.minecraft}-${v.version}`),
+    LockKey.libraries,
+  ])
   async installNeoForged(options: InstallNeoForgedOptions) {
     const validJavaPaths = this.javaService.state.all.filter((v) => v.valid)
 
@@ -887,13 +924,37 @@ export class InstallService extends AbstractService implements IInstallService {
     return version
   }
 
-  @Lock((v: _InstallForgeOptions) => LockKey.version(`forge-${v.mcversion}-${v.version}`))
+  @Lock((v: _InstallForgeOptions) => [
+    LockKey.version(`forge-${v.mcversion}-${v.version}`),
+    LockKey.libraries,
+  ])
   async installForge(options: _InstallForgeOptions) {
-    const validJavaPaths = this.javaService.state.all.filter((v) => v.valid)
+    const normalizedForgeVersion = normalizeForgeVersion(options.mcversion, options.version)
+    if (normalizedForgeVersion !== options.version) {
+      this.warn(
+        `Normalized malformed Forge version ${options.version} to ${normalizedForgeVersion} for Minecraft ${options.mcversion}`,
+      )
+      options = { ...options, version: normalizedForgeVersion }
+    }
+
+    let validJavaPaths = this.javaService.state.all.filter((v) => v.valid)
     const side = options.side ?? 'client'
 
     if (!validJavaPaths.length) {
-      throw new AnyError('ForgeInstallError', 'No valid java found!')
+      const baseVersion = await this.versionService
+        .resolveLocalVersion(options.base || options.mcversion)
+        .catch(() => undefined)
+      if (!baseVersion?.javaVersion) {
+        throw new AnyError(
+          'ForgeInstallError',
+          `No valid java found and Minecraft ${options.mcversion} metadata is unavailable`,
+        )
+      }
+      this.log(
+        `No valid java found; installing ${baseVersion.javaVersion.component} (${baseVersion.javaVersion.majorVersion}) for Forge`,
+      )
+      const java = await this.javaService.installJava(baseVersion.javaVersion)
+      validJavaPaths = [{ ...java, valid: true }]
     }
 
     if (options.java) {

@@ -1,6 +1,6 @@
 import { SSHCredentials } from '@xmcl/runtime-api'
 import { readFile } from 'fs-extra'
-import { Client, SFTPWrapper } from 'ssh2'
+import type { Client, SFTPWrapper } from 'ssh2'
 
 export class SSHManager {
   #connections: Record<string, Promise<Client>> = {}
@@ -37,6 +37,7 @@ export class SSHManager {
       return this.#connections[options.host]
     }
 
+    const { Client } = await import('ssh2')
     const client = new Client()
 
     const privateKey = await this.#getPrivateKeyBuff(options.credentials)

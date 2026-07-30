@@ -4,12 +4,13 @@
       <template v-if="isBedrock">
         <div class="flex flex-col gap-4">
           <BaseSettingGeneral />
+          <BaseSettingBedrockVersions />
         </div>
       </template>
       <template v-else>
         <div class="flex flex-col gap-4">
           <BaseSettingGeneral />
-          <BaseSettingVersions :isExpanded="isExpanded" />
+          <BaseSettingVersions />
           <BaseSettingResolution />
         </div>
         <div class="flex flex-col gap-4">
@@ -34,7 +35,7 @@
     <template v-else-if="targetQuery === 'appearance'">
       <BaseSettingAppearance />
     </template>
-    <template v-else-if="targetQuery === 'server'">
+    <template v-else-if="targetQuery === 'server' && !isBedrock">
       <div class="flex flex-col gap-4">
         <BaseSettingServerRun />
       </div>
@@ -80,6 +81,7 @@
 import { useAutoSaveLoad } from '@/composables'
 import { useBeforeLeave } from '@/composables/beforeLeave'
 import { useDialog } from '@/composables/dialog'
+import { vibrateGamepad } from '@/composables/gamepad'
 import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kInstances } from '@/composables/instances'
@@ -91,12 +93,13 @@ import { useService } from '@/composables'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import { InstanceEditInjectionKey, useInstanceEdit } from '../composables/instanceEdit'
 import BaseSettingGeneral from './BaseSettingGeneral.vue'
+import BaseSettingBedrockVersions from './BaseSettingBedrockVersions.vue'
 import BaseSettingJava from './BaseSettingJava.vue'
 import BaseSettingLaunch from './BaseSettingLaunch.vue'
 import BaseSettingSync from './BaseSettingSync.vue'
 import BaseSettingVersions from './BaseSettingVersions.vue'
 import BaseSettingResolution from './BaseSettingResolution.vue'
-import { templateRef, useMediaQuery } from '@vueuse/core'
+import { templateRef } from '@vueuse/core'
 import { kCompact } from '@/composables/scrollTop'
 import { useQuery } from '@/composables/query'
 import BaseSettingModpack from './BaseSettingModpack.vue'
@@ -168,7 +171,7 @@ async function onSkipUpgrade() {
 const targetQuery = useQuery('target')
 
 watch([isBedrock, targetQuery], ([bedrock, target]) => {
-  if (bedrock && target === 'modpack') {
+  if (bedrock && (target === 'modpack' || target === 'server')) {
     targetQuery.value = 'general'
   }
 }, { immediate: true })
@@ -187,6 +190,7 @@ useBeforeLeave(() => {
     }
     snackbarColor.value = 'error'
     hasAnimation.value = true
+    vibrateGamepad()
     setTimeout(() => {
       snackbarColor.value = 'black'
       hasAnimation.value = false
@@ -201,8 +205,6 @@ const compact = injection(kCompact)
 onMounted(() => {
   compact.value = true
 })
-
-const isExpanded = useMediaQuery('(min-width: 1360px)')
 
 usePresence(computed(() => t('presence.instanceSetting', { instance: name.value })))
 

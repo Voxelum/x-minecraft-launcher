@@ -62,6 +62,21 @@
         ref="scrollRef"
         class="visible-scroll flex flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden px-6 py-4"
       >
+        <v-alert
+          v-if="upgrade.incompatible && upgrade.incompatible.length > 0"
+          type="warning"
+          variant="tonal"
+          density="compact"
+          data-testid="install-incompatible-alert"
+        >
+          <div class="text-sm font-medium">
+            {{ t('localCollection.incompatibleAlert', { count: upgrade.incompatible.length }, upgrade.incompatible.length) }}
+          </div>
+          <ul class="mt-1 ml-4 list-disc text-caption">
+            <li v-for="p in upgrade.incompatible" :key="p.id">{{ p.name }}</li>
+          </ul>
+        </v-alert>
+
         <template v-if="upgrade && upgrade.edit">
           <div class="flex items-center gap-2">
             <v-icon size="small" color="primary">tune</v-icon>
@@ -344,6 +359,7 @@ type UpgradeValueType = {
   edit?: EditInstanceOptions
   installation: InstallInstanceOptions
   delta: InstanceFileUpdate[]
+  incompatible?: Array<{ id: string; name: string }>
 }
 
 const tOperations = computed(
@@ -486,6 +502,7 @@ async function getUpgradeValueFromParam(
       files: param.files,
       id: param.id,
     },
+    incompatible: param.incompatible,
   })
 }
 

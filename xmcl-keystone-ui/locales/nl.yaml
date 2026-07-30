@@ -46,6 +46,25 @@ askAICrash:
     Laat AI u helpen de gamecrash te begrijpen! Volg de onderstaande instructies om deze gamecrash aan AI te vragen!
   selectPlatform: Open een AI-platform en plak de prompt die u zojuist heeft gekopieerd.
 authProfileAddedNotification: Auth-profiel {name} Toegevoegd
+bedrock:
+  installBedrockVersion: 'Downloading Bedrock {version}'
+  versionsTitle: Version manager
+  versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
+  versionsError: Failed to load the version list. Check your network and try again.
+  channel: Channel
+  channelRelease: Release
+  channelBeta: Beta
+  channelPreview: Preview
+  active: Active
+  play: Play
+  download: Download
+  installedTag: Installed
+  developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
+  enableDeveloperMode: Enable Developer Mode
+  enableDeveloperModeFailed: Failed to enable Developer Mode
+  downloadFailed: 'Failed to download Bedrock {version}'
+  launchFailed: Failed to launch this Bedrock version
+  removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
   title: Instance-instellingen
 browseApp:
@@ -469,6 +488,21 @@ instances:
   folderSetting: Map Instellingen
   importFolderDescription: Importeer Minecraft naar Launcher
   loadingFiles: Modpack Bestanden Laden
+  edition: Editie
+  editionJava: Java-editie
+  editionBedrock: Bedrock-editie
+  editionBedrockHint: >-
+    De Bedrock-editie wordt gestart via de Microsoft Store-app. Je moet een
+    Bedrock-licentie bezitten. Mods, resourcepacks en andere Java-exclusieve
+    functies zijn niet beschikbaar.
+  editionBedrockWindowsOnly: De Bedrock-editie wordt alleen ondersteund in de Windows-build.
+  linkSharedFolders: Mappen delen tussen instanties
+  linkSharedFoldersHint: >-
+    Maak deze mappen als koppelingen naar de gedeelde mappen van de launcher,
+    zodat deze instantie hun inhoud deelt met alle andere gekoppelde
+    instanties. Dit is geen kopie — wijzigingen in één instantie verschijnen in
+    alle. Niet-aangevinkte mappen blijven privé voor deze instantie.
+  linkFailed: Kan de map {folder} niet koppelen aan de gedeelde map
   addPrismDescription: Bestaande PrismLauncher-instantie importeren.
 items:
   count: '{count} items'
@@ -485,6 +519,7 @@ java:
   memoryManual: Handmatig
   memoryUnassigned: Niet Toegewezen
   minMemory: Min Geheugen
+  name: Java
   noMemory: Geheugengebruik niet beperken
   refresh: Ververs Lokale Java
   systemMemory: 'Systeem Vrij Geheugen: {free} / {total}'
@@ -708,9 +743,7 @@ modInstall:
     title: Mods Upgraden?
     'yes': Mods Upgraden
   checkDependencies: Controleer Afhankelijkheden
-  checkUpgrade: Controleer Mods Updates
   checkedDependencies: Afhankelijkheden Gecontroleerd
-  checkedUpgrade: Gecontroleerde Upgraden
   currentVersion: Geselecteerde Versie
   dependencyHint: Andere versie {version} geïnstalleerd
   releaseOnly: Negeer alfa- en bètaversies bij het bijwerken
@@ -723,7 +756,6 @@ modInstall:
   skipVersion: Sla de Mods met andere Minecraft versie over
   source: Mod Bron
   switch: Versie Wisselen
-  upgrade: Mods Upgraden
 modSearch:
   noLocalModsFound: Geen lokale mods gevonden die overeenkomen met uw zoekopdracht.
   noModsFound: Geen mods gevonden.
@@ -766,6 +798,12 @@ modpackImportConfirm:
   description: >-
     U heeft een bestand in de launcher gesleept. Probeert u een modpack te importeren?
   title: Probeert u een modpack te importeren?
+modpackUpdateOrCreate:
+  createNew: 'Nieuwe maken'
+  description: >-
+    Er bestaat al een instantie "{name}" voor dit modpack. Wil je deze bijwerken of een nieuwe maken?
+  title: 'Instantie bestaat al'
+  update: 'Bestaande bijwerken'
 modrinth:
   browseUrl: Openen in Browser {url}
   categories:
@@ -1039,6 +1077,11 @@ quiltVersion:
   disable: Quilt Uitschakelen
   empty: Quilt ondersteunt Minecraft {version} niet
 resourcepack:
+  linkShared: Resourcepacks delen tussen instanties
+  linkSharedHint: >-
+    Koppel de map resourcepacks van deze instantie aan de globale gedeelde map
+    zodat alle instanties dezelfde resourcepacks gebruiken. Bestaande packs
+    worden samengevoegd in de gedeelde map.
   compatible: Compatibel formaat {format} met {version}
   defaultDescription: De standaard look and feel van Minecraft
   delete:
@@ -1061,6 +1104,11 @@ resourcepack:
   noPacks: Geen resourcepakketten gevonden
   search: Resourcepakketten zoeken...
 save:
+  linkShared: Werelden delen tussen instanties
+  linkSharedHint: >-
+    Koppel de map saves van deze instantie aan de globale gedeelde map zodat alle
+    instanties dezelfde werelden delen. Bestaande saves worden samengevoegd in de
+    gedeelde map.
   allowCheats: Cheats Toestaan
   copy:
     name: Save Kopiëren
@@ -1106,7 +1154,11 @@ screenshots:
 search:
   favorate: Collectie
   local: Geïnstalleerd
-  market: Mod Markt
+  market: Markt
+  emptyInstalled: Nog niets geïnstalleerd
+  browseMarket: Markt bekijken
+  noResults: Geen resultaten gevonden
+  pageSize: Resultaten per pagina
 server:
   acceptingMinecraftVersion: Accepteert Minecraft Versie
   creationHint: Vul het serveradres in en ping de server
@@ -1234,6 +1286,8 @@ setting:
   exportSettingsHint: Sla uw huidige instellingen op naar een bestand
   general: Algemeen
   githubRelease: Github Release
+  globalJava: Voorkeurs-Java
+  globalJavaHint: "In de automatische modus wordt eerst deze Java geprobeerd en wordt alleen teruggevallen op automatische detectie als deze niet compatibel is met de spelversie."
   globalSetting: Globale Instance Instellingen
   globalSettingHint: Instance zal deze instellingen standaard gebruiken.
   importSettings: Instellingen Importeren
@@ -1380,6 +1434,11 @@ setup:
     name: Stel Taal In
   path: Huidig Pad
 shaderPack:
+  linkShared: Shaderpacks delen tussen instanties
+  linkSharedHint: >-
+    Koppel de map shaderpacks van deze instantie aan de globale gedeelde map
+    zodat alle instanties dezelfde shaderpacks gebruiken. Bestaande packs worden
+    samengevoegd in de gedeelde map.
   deletion: Shader Pack Verwijderen
   deletionHint: >-
     Dit zal het shader pack bestand {path} verwijderen en kan niet ongedaan worden gemaakt.
@@ -1406,6 +1465,7 @@ shared:
   back: Terug
   browse: Bladeren
   cancel: Annuleren
+  checkUpgrade: Controleer op Updates
   client: Client
   description: Beschrijving
   disable: Uitschakelen
@@ -1427,6 +1487,7 @@ shared:
   search: Zoekopdracht
   server: Server
   skipForNow: Nu Overslaan
+  upgrade: Bijwerken
   'yes': Ja
 sidebar:
   pin: Vastzetten

@@ -4,6 +4,7 @@ import { basename, join, resolve, sep } from 'path'
 import { File } from '../File'
 import { ResourceContext } from '../ResourceContext'
 import { ResourceDomain } from '../ResourceDomain'
+import { ResourceType } from '../ResourceType'
 import { ResourceMetadata } from '../ResourceMetadata'
 import { ResourceWorkerQueuePayload } from '../ResourceWorkerQueuePayload'
 import { ResourceAction, ResourceActionTuple, ResourceErrorAction, ResourceErrorActionTuple, UpdateResourcePayload } from '../ResourcesState'
@@ -204,10 +205,11 @@ function createWatcher(
   onResourceUpdate: (file: File) => void,
   onResourceRemove: (file: string) => void,
   revalidate: () => void,
+  onError: (error: Error) => void,
 ) {
   const watcher = new FSWatcher({
     cwd: path,
-    depth: 1,
+    depth: domain === ResourceDomain.Blueprints ? Infinity : 1,
     followSymlinks: true,
     alwaysStat: true,
     ignorePermissionErrors: true,
@@ -217,14 +219,25 @@ function createWatcher(
       return shouldIgnoreFile(filePath, domain)
     },
     // @ts-ignore
+  }).on('error', (e) => {
+    if (isSystemError(e) && (e.code === 'EBUSY' || e.code === 'EPERM')) {
+      return
+    }
+    onError(e instanceof Error ? e : Object.assign(new Error(), e))
   }).on('all', async (event, file, stat) => {
     if (!file) return
 
+    const eventName = event as string
     const depth = file.split(sep).length
-    if (depth > 1) return
+    if (domain !== ResourceDomain.Blueprints && depth > 1) return
 
     if (shouldIgnoreFile(file, domain)) return
     if (file.endsWith('.txt')) return
+    if (eventName === 'unlinkDir') {
+      if (domain === ResourceDomain.Blueprints) revalidate()
+      return
+    }
+    if (domain === ResourceDomain.Blueprints && stat?.isDirectory()) return
     if (event === 'unlink') {
       onResourceRemove(join(path, file))
     } else if (event === 'add' || event === 'change') {
@@ -242,7 +255,7 @@ function createWatcher(
         isDirectory: stat.isDirectory(),
       }
       onResourceUpdate(fileObj)
-    } else if (event === 'unlinkDir' && file === path) {
+    } else if (eventName === 'unlinkDir' && file === path) {
       revalidate()
     }
   })
@@ -300,6 +313,11 @@ export function watchResourcesDirectory({
       .deleteFrom('snapshots')
       .where('domainedPath', '=', fileRelativeName)
       .execute()
+      // Blueprints are content-addressed but rarely shared between instances,
+      // and their cached metadata (palette + voxels) is large. Once the
+      // snapshot is gone, drop any blueprint resource rows that no longer have
+      // a snapshot so the cache doesn't accumulate dead rows.
+      .then(() => domain === ResourceDomain.Blueprints ? cascadeDeleteOrphanBlueprints(context) : undefined)
       .catch((e) => {})
 
     update.push([file, ResourceAction.Remove])
@@ -383,6 +401,7 @@ export function watchResourcesDirectory({
     },
     onRemove,
     revalidate,
+    context.onError,
   )
 
   workerQueue.onerror = ({ filePath }, e) => {
@@ -457,4 +476,23 @@ export function watchResourcesDirectory({
     revalidate,
     state,
   }
+}
+
+/**
+ * Delete blueprint resource metadata (and its uris/icons) whose sha1 no longer
+ * has any snapshot referencing it. Keeps the content-addressed cache from
+ * accumulating heavy palette/voxel rows after blueprint files are removed.
+ */
+async function cascadeDeleteOrphanBlueprints(context: ResourceContext) {
+  const orphans = await context.db
+    .selectFrom('resources')
+    .select('sha1')
+    .where(ResourceType.Blueprint, 'is not', null)
+    .where((eb) => eb('sha1', 'not in', eb.selectFrom('snapshots').select('sha1')))
+    .execute()
+  if (orphans.length === 0) return
+  const hashes = orphans.map((o) => o.sha1)
+  await context.db.deleteFrom('resources').where('sha1', 'in', hashes).execute()
+  await context.db.deleteFrom('uris').where('sha1', 'in', hashes).execute()
+  await context.db.deleteFrom('icons').where('sha1', 'in', hashes).execute()
 }

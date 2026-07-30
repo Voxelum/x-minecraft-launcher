@@ -69,6 +69,7 @@
     <v-divider class="my-3" />
     <SettingItemSwitcher
       v-model="developerMode"
+      data-testid="developer-mode"
       :title="t('setting.developerMode')"
       :description="t('setting.developerModeDescription')"
       icon="code"
@@ -98,25 +99,65 @@
 
     <template v-if="developerMode">
       <v-divider class="my-3" />
-      <SettingItem :title="t('setting.aiAgentApiKey')" :description="t('setting.aiAgentApiKeyDescription')">
+
+      <SettingItemSelect
+        :model-value="agentProviderId"
+        icon="cloud"
+        :title="t('setting.aiAgentProvider')"
+        :description="t('setting.aiAgentProviderDescription')"
+        :items="agentProviderItems"
+        @update:model-value="selectAgentProvider($event)"
+      />
+
+      <v-divider class="my-3" />
+
+      <SettingItem id="agent-settings" :title="t('setting.aiAgentApiKey')" :description="t('setting.aiAgentApiKeyDescription')">
         <template #title>
           <v-icon start size="small" color="primary">key</v-icon>
           {{ t('setting.aiAgentApiKey') }}
+          <v-chip v-if="agentKeyless" size="x-small" color="info" class="ml-2">
+            {{ t('setting.aiAgentApiKeyNotNeeded') }}
+          </v-chip>
+          <v-chip v-else-if="agentConfigured" size="x-small" color="success" class="ml-2">
+            <v-icon start size="x-small">check_circle</v-icon>
+            {{ t('setting.aiAgentApiKeySaved') }}
+          </v-chip>
         </template>
         <template #action>
           <v-text-field
+            data-testid="agent-api-key"
             :model-value="agentApiKey"
             :type="showAgentApiKey ? 'text' : 'password'"
             variant="outlined"
             density="compact"
             class="setting-item-input"
             hide-details
-            clearable
-            @update:model-value="agentApiKey = $event ?? ''"
+            :placeholder="agentKeyless
+              ? t('setting.aiAgentApiKeyNotNeededHint')
+              : agentConfigured ? t('setting.aiAgentApiKeyStored') : t('setting.aiAgentApiKeyEmpty')"
+            :loading="clearingAgentKey"
+            @update:model-value="updateAgentApiKey($event ?? '')"
           >
             <template #append-inner>
-              <v-btn icon variant="text" size="small" @click="showAgentApiKey = !showAgentApiKey">
+              <!-- The stored key is never read back, so the toggle only has
+                   something to reveal while the user is typing a new one. -->
+              <v-btn v-if="agentApiKey" icon variant="text" size="small" @click="showAgentApiKey = !showAgentApiKey">
                 <v-icon>{{ showAgentApiKey ? 'visibility_off' : 'visibility' }}</v-icon>
+              </v-btn>
+              <!-- Stands in for the built-in `clearable` affordance, which only
+                   appears while the field holds text and so could never reach a
+                   saved key (the field is empty once the key is stored). -->
+              <v-btn
+                v-if="agentApiKey || (agentConfigured && !agentKeyless)"
+                data-testid="agent-api-key-clear"
+                icon
+                variant="text"
+                size="small"
+                :disabled="clearingAgentKey"
+                :title="t('setting.aiAgentApiKeyClear')"
+                @click="onClearAgentApiKey"
+              >
+                <v-icon>close</v-icon>
               </v-btn>
             </template>
           </v-text-field>
@@ -173,6 +214,7 @@ import { kCriticalStatus } from '@/composables/criticalStatus'
 import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
 import { kEnvironment } from '@/composables/environment'
 import { injection } from '@/util/inject'
+import { CUSTOM_AGENT_PROVIDER_ID } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useAgentSettings } from '../composables/agent/settings'
 import { useGameDirectory, useSettings } from '../composables/setting'
@@ -211,8 +253,40 @@ const {
   apiKey: agentApiKey,
   endpoint: agentEndpoint,
   model: agentModel,
+  configured: agentConfigured,
+  updateApiKey: updateAgentApiKey,
+  clearApiKey: clearAgentApiKey,
+  providers: agentProviders,
+  providerId: agentProviderId,
+  keyless: agentKeyless,
+  selectProvider: selectAgentProvider,
 } = useAgentSettings()
+const agentProviderItems = computed(() => {
+  const items = agentProviders.map(({ id, name }) => ({ text: name, value: id }))
+  // The custom entry is only offered when the endpoint no longer matches a preset,
+  // so it acts as a read-only indicator rather than a selectable option.
+  if (agentProviderId.value === CUSTOM_AGENT_PROVIDER_ID) {
+    items.push({ text: t('setting.aiAgentProviderCustom'), value: CUSTOM_AGENT_PROVIDER_ID })
+  }
+  return items
+})
 const showAgentApiKey = ref(false)
+// Re-hide the key when the field empties (provider switch, or the user cleared it)
+// so the next key typed does not start out visible.
+watch(agentApiKey, value => {
+  if (!value) showAgentApiKey.value = false
+})
+
+const clearingAgentKey = ref(false)
+/** Clear the field and forget whatever key is stored for the current provider. */
+async function onClearAgentApiKey() {
+  clearingAgentKey.value = true
+  try {
+    await clearAgentApiKey()
+  } finally {
+    clearingAgentKey.value = false
+  }
+}
 
 const { show } = useDialog('migration')
 const { root, showGameDirectory } = useGameDirectory()

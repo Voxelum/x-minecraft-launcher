@@ -15,10 +15,10 @@ export interface ManagedZipFile {
 }
 
 export class ZipManager {
-  #files: Record<string, Promise<ManagedZipFile>> = {}
+  #files = new Map<string, Promise<ManagedZipFile>>()
 
   async close() {
-    for (const file of Object.values(this.#files)) {
+    for (const file of new Set(this.#files.values())) {
       const f = await file
       f.file.close()
     }
@@ -30,14 +30,20 @@ export class ZipManager {
    * @returns The managed zip file.
    */
   async open(filePath: string): Promise<ManagedZipFile> {
-    if (!!this.#files[filePath]) {
-      return this.#files[filePath]
-    }
-    const fStat = await stat(filePath)
-    const ino = fStat.ino
+    const pathKey = `path:${filePath}`
+    const cachedByPath = this.#files.get(pathKey)
+    if (cachedByPath) return cachedByPath
 
-    if (!!this.#files[ino]) {
-      return this.#files[filePath]
+    const fStat = await stat(filePath)
+    const inodeKey = `inode:${fStat.ino}`
+
+    const cachedByInode = this.#files.get(inodeKey)
+    if (cachedByInode) {
+      // The same archive can be reached via a renamed path, hard link, or
+      // modpack cache alias. Reuse the inode cache rather than returning the
+      // (unset) path key, which left callers with `undefined` and caused
+      // openModpack to throw when reading `zip.entries`.
+      return cachedByInode
     }
 
     const promise = open(filePath).then(async (zip) => {
@@ -45,8 +51,8 @@ export class ZipManager {
         if (zip.isOpen) {
           zip.close()
         }
-        delete this.#files[filePath]
-        delete this.#files[ino]
+        this.#files.delete(pathKey)
+        this.#files.delete(inodeKey)
       }
       zip.once('close', dispose)
 
@@ -58,8 +64,8 @@ export class ZipManager {
       return file
     })
 
-    this.#files[filePath] = promise
-    this.#files[ino] = promise
+    this.#files.set(pathKey, promise)
+    this.#files.set(inodeKey, promise)
 
     return promise
   }

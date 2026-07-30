@@ -20,6 +20,60 @@
         :description="t('instanceSetting.disableElyByAuthlibDescription')" />
     </SettingCard>
 
+    <!-- Java Preference Card -->
+    <SettingCard :title="t('java.name')" icon="coffee">
+      <div class="flex items-center gap-3">
+        <v-avatar
+          size="40"
+          rounded="lg"
+          :color="preferredJava && preferredJava.valid ? 'primary' : 'surface-variant'"
+          :variant="preferredJava && preferredJava.valid ? 'flat' : 'tonal'"
+        >
+          <span
+            v-if="preferredJava && preferredJava.valid && preferredJava.majorVersion"
+            class="text-subtitle-1 font-weight-bold"
+          >
+            {{ preferredJava.majorVersion }}
+          </span>
+          <v-icon v-else>auto_awesome</v-icon>
+        </v-avatar>
+        <div class="flex-1 min-w-0">
+          <div class="text-subtitle-2 font-weight-medium">
+            {{ t('setting.globalJava') }}
+          </div>
+          <div
+            v-if="preferredJava && preferredJava.valid"
+            class="text-caption text-medium-emphasis truncate"
+          >
+            Java {{ preferredJava.version }} — {{ preferredJava.path }}
+          </div>
+          <div v-else class="text-caption text-medium-emphasis">
+            {{ t('setting.globalJavaHint') }}
+          </div>
+        </div>
+        <v-menu
+          v-model="javaPickerOpen"
+          :close-on-content-click="false"
+          location="bottom end"
+        >
+          <template #activator="{ props: menuProps }">
+            <v-btn v-bind="menuProps" variant="tonal" size="small">
+              <v-icon start size="small">tune</v-icon>
+              {{ t('java.change') }}
+            </v-btn>
+          </template>
+          <v-card width="540" max-width="90vw" max-height="60vh" class="overflow-auto">
+            <JavaList
+              :value="preferredJava || emptyJava"
+              :items="javas"
+              :remove="removeJava"
+              @input="onPickJava"
+            />
+          </v-card>
+        </v-menu>
+      </div>
+    </SettingCard>
+
     <!-- Java Memory Settings Card -->
     <SettingCard :title="t('java.memory')" icon="memory">
       <div class="d-flex align-center mb-3">
@@ -110,9 +164,13 @@ import { useI18n } from 'vue-i18n'
 import { useEventListener } from '@vueuse/core'
 import { useGlobalSettings } from '@/composables/setting'
 import { useResolutionPresets } from '@/composables/resolutionPresets'
+import { kJavaContext } from '@/composables/java'
+import { injection } from '@/util/inject'
+import type { JavaRecord } from '@xmcl/runtime-api'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingJavaMemory from './SettingJavaMemory.vue'
 import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
+import JavaList from './BaseSettingJavaList.vue'
 import EnvVarTableItem from '@/components/EnvVarTableItem.vue'
 import EnvVarAddItem from '@/components/EnvVarAddItem.vue'
 import SettingCard from '@/components/SettingCard.vue'
@@ -122,6 +180,7 @@ const {
   globalAssignMemory,
   globalMaxMemory,
   globalMinMemory,
+  globalJava,
   globalVmOptions,
   globalMcOptions,
   globalFastLaunch,
@@ -135,6 +194,18 @@ const {
   globalResolution,
   setGlobalSettings,
 } = useGlobalSettings()
+
+// Java preference selection
+const { all: javas, remove: removeJava } = injection(kJavaContext)
+const javaPickerOpen = ref(false)
+const emptyJava: JavaRecord = { path: '', version: '', majorVersion: 0, valid: false }
+const preferredJavaPath = ref(globalJava.value)
+const preferredJava = computed(() => javas.value.find(j => j.path === preferredJavaPath.value))
+function onPickJava(value: JavaRecord) {
+  preferredJavaPath.value = value.path
+  javaPickerOpen.value = false
+  save()
+}
 
 // --- Reactive State (Form Data) ---
 const assignMemory = ref(globalAssignMemory.value)
@@ -177,6 +248,7 @@ onMounted(() => {
   assignMemory.value = globalAssignMemory.value
   minMem.value = globalMinMemory.value
   maxMem.value = globalMaxMemory.value
+  preferredJavaPath.value = globalJava.value
   vmOptions.value = globalVmOptions.value.join(' ')
   mcOptions.value = globalMcOptions.value.join(' ')
   fastLaunch.value = globalFastLaunch.value
@@ -199,6 +271,7 @@ function save() {
     globalAssignMemory: assignMemory.value,
     globalMaxMemory: maxMem.value,
     globalMinMemory: minMem.value,
+    globalJava: preferredJavaPath.value,
     globalVmOptions: vmOptions.value.split(' ').filter(s => !!s),
     globalMcOptions: mcOptions.value.split(' ').filter(s => !!s),
     globalFastLaunch: fastLaunch.value,

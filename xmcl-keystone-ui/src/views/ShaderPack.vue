@@ -2,19 +2,77 @@
   <MarketBase
     :items="all"
     :item-height="itemHeight"
-    :plans="{}"
+    :plans="plans"
     :error="error"
+    :selection-mode="currentView === 'local' && selectionMode"
     :class="{
       dragover,
     }"
     :loading="loading"
     @load="loadMore"
+    @update:selection-mode="onUpdateSelectionMode"
   >
     <template #actions>
       <MarketListHeader
         v-model:dense="denseView"
         :label="`${originalItems.length} ${t('shaderPack.name', originalItems.length)}`"
-      />
+      >
+        <v-btn
+          v-if="currentView === 'local'"
+          :class="{ 'v-btn--active': selectionMode }"
+          icon
+          variant="text"
+          density="comfortable"
+          data-testid="market-multi-select-toggle"
+          @click="onUpdateSelectionMode(!selectionMode)"
+        >
+          <v-icon> checklist </v-icon>
+        </v-btn>
+        <AppCollectionInstallAll
+          v-if="showInstallAll"
+          :items="collectionItems"
+          content-type="shaderpacks"
+          :runtime="runtime"
+        />
+      </MarketListHeader>
+    </template>
+    <template #placeholder>
+      <MarketEmptyPlaceholder />
+    </template>
+    <template #filter>
+      <MarketFilterPanel
+        :modrinth-categories="modrinthCategories"
+        modrinth-category-filter="shader"
+        :enable-modrinth="isModrinthActive"
+        :curseforge-category="curseforgeCategory"
+        curseforge-category-filter="shaders"
+        :enable-curseforge="isCurseforgeActive"
+        :game-version="gameVersion"
+        :local-sort="sortBy"
+        v-model:sort="marketSort"
+        :mode="source"
+        :collection="selectedCollection"
+        @update:modrinth-categories="modrinthCategories = $event"
+        @update:enable-modrinth="isModrinthActive = $event"
+        @update:curseforge-category="curseforgeCategory = $event"
+        @update:enable-curseforge="isCurseforgeActive = $event"
+        @update:game-version="gameVersion = $event"
+        @update:local-sort="sortBy = $event"
+        @update:mode="source = $event"
+        @update:collection="selectedCollection = $event"
+      >
+        <template #local>
+          <LinkSharedFolderSetting domain="shaderpacks" @changed="revalidate" />
+          <MarketUpgradePanel
+            :plans="plans"
+            v-model:upgrade-policy="upgradePolicy"
+            :refreshing="refreshing"
+            :upgrading="upgrading"
+            @check-upgrade="refresh({ skipVersion: false, policy: upgradePolicy as any })"
+            @upgrade="upgrade"
+          />
+        </template>
+      </MarketFilterPanel>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-list-subheader
@@ -38,26 +96,6 @@
         @click="on.click"
       />
     </template>
-    <template #placeholder>
-      <Hint
-        v-if="currentView === 'local' && !keyword.trim()"
-        key="info"
-        :text="t('shaderPack.noPacksInstalled')"
-        icon="info"
-      />
-      <Hint
-        v-else-if="currentView === 'local'"
-        key="search"
-        :text="t('shaderPack.noLocalPacksFound')"
-        icon="search"
-      />
-      <Hint
-        v-else
-        key="no-packs"
-        :text="t('shaderPack.noPacks')"
-        icon="search"
-      />
-    </template>
     <template #content="{ selectedModrinthId, selectedCurseforgeId, selectedItem }">
       <Hint
         v-if="dragover"
@@ -74,6 +112,7 @@
         :categories="modrinthCategories"
         :all-files="shaderPacks"
         :curseforge="selectedItem?.curseforge?.id || selectedItem?.curseforgeProjectId"
+        collection-content-type="shaderpacks"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -88,6 +127,7 @@
         :category="curseforgeCategory"
         :all-files="shaderPacks"
         :modrinth="selectedModrinthId"
+        collection-content-type="shaderpacks"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -99,11 +139,6 @@
         :installed="selectedItem.files || []"
         :runtime="runtime"
         @enable="onEnable"
-      />
-      <MarketRecommendation
-        v-else
-        modrinth="shader"
-        @modrinth="modrinthCategories.push($event.name)"
       />
     </template>
     <v-dialog
@@ -241,11 +276,16 @@
 import AvatarChip from '@/components/AvatarChip.vue'
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
+import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
+import MarketUpgradePanel from '@/components/MarketUpgradePanel.vue'
+import MarketEmptyPlaceholder from '@/components/MarketEmptyPlaceholder.vue'
+import LinkSharedFolderSetting from '@/components/LinkSharedFolderSetting.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
-import MarketRecommendation from '@/components/MarketRecommendation.vue'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import AppCollectionInstallAll from '@/components/AppCollectionInstallAll.vue'
+import { useModUpgrade } from '@/composables/modUpgrade'
+import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useSimpleDialog } from '@/composables/dialog'
 import { useGlobalDrop } from '@/composables/dropHandler'
@@ -260,7 +300,6 @@ import { useService } from '@/composables/service'
 import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { BuiltinImages } from '@/constant'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
@@ -276,6 +315,11 @@ const {
   curseforgeCategory,
   currentView,
   keyword,
+  isModrinthActive,
+  isCurseforgeActive,
+  sort: marketSort,
+  source,
+  selectedCollection,
 } = injection(kSearchModel)
 
 const {
@@ -284,6 +328,7 @@ const {
   loadMore,
   effect,
   items: originalItems,
+  collectionItems,
   sortBy,
 } = injection(kShaderPackSearch)
 
@@ -302,7 +347,19 @@ const shouldDisableOptifine = computed(() => !!runtime.value.fabricLoader || !!r
 
 effect()
 
-const { shaderPacks } = injection(kInstanceShaderPacks)
+const { shaderPacks, revalidate } = injection(kInstanceShaderPacks)
+
+const { refresh, refreshing, upgrade, plans, upgradePolicy, upgrading } = useModUpgrade(
+  path,
+  runtime,
+  shaderPacks,
+  revalidate,
+  'shaderpacks',
+)
+
+// Install-all works for any collection open in the Favorites view (local or
+// Modrinth collections/follows).
+const showInstallAll = computed(() => source.value === 'favorite')
 const getInstalledModrinth = (projectId: string) => {
   const allPacks = shaderPacks.value
   return allPacks.filter((m) => m.modrinth?.projectId === projectId)
@@ -451,6 +508,18 @@ const curseforgeInstaller = useCurseforgeInstaller(
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 
+const selections = ref({} as Record<string, boolean>)
+provide('selections', selections)
+
+const selectionMode = ref(false)
+function onUpdateSelectionMode(v: boolean) {
+  selectionMode.value = v
+  if (!v) selections.value = {}
+}
+watch(currentView, (view) => {
+  if (view !== 'local') onUpdateSelectionMode(false)
+})
+
 const onInstallProject = useProjectInstall(
   runtime,
   ref(undefined),
@@ -463,6 +532,6 @@ const onInstallProject = useProjectInstall(
 )
 
 // dense
-const denseView = useLocalStorageCacheBool('shader-pack-dense-view', false)
+const denseView = useLocalStorage('shader-pack-dense-view', false, { writeDefaults: false })
 const itemHeight = computed(() => denseView.value ? 48 : 80)
 </script>

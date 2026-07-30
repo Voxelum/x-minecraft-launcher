@@ -22,7 +22,7 @@ import { AnyError, isSystemError } from '@xmcl/utils'
 import filenamify from 'filenamify'
 import { fileTypeFromFile } from 'file-type'
 import { existsSync } from 'fs'
-import { ensureDir, readJson, rename, rm, writeFile, writeJson } from 'fs-extra'
+import { ensureDir, readdir, readlink, readJson, rename, rm, writeFile, writeJson } from 'fs-extra'
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { ImageStorage, kTasks, Tasks } from '~/infra'
@@ -451,9 +451,40 @@ export class InstanceService extends StatefulService<InstanceState> implements I
   }
 
   /**
-   * Delete the managed instance from the disk
-   * @param path The instance path
+   * Move all the saves of an instance to the shared saves folder before the
+   * instance is deleted, so the user can re-enable them on another instance
+   * instead of losing them. If the instance `saves` folder is a symlink to the
+   * shared folder, nothing needs to be moved.
    */
+  private async moveSavesToShared(path: string) {
+    const instanceSaves = join(path, 'saves')
+    if (!existsSync(instanceSaves)) {
+      return
+    }
+    // If linked to shared, saves already live in the shared folder.
+    if (await readlink(instanceSaves).catch(() => '')) {
+      return
+    }
+    const sharedSaves = this.getPath('saves')
+    try {
+      await ensureDir(sharedSaves)
+      const saves = await readdir(instanceSaves)
+      for (const saveName of saves) {
+        if (saveName.startsWith('.')) continue
+        const savePath = join(instanceSaves, saveName)
+        // Skip individually linked saves
+        if (await readlink(savePath).catch(() => '')) continue
+        let dest = join(sharedSaves, saveName)
+        if (existsSync(dest)) {
+          dest = join(sharedSaves, `${saveName}-${Date.now()}`)
+        }
+        await rename(savePath, dest).catch((e) => this.warn(`Fail to move save ${savePath} to shared: ${e}`))
+      }
+    } catch (e) {
+      this.warn(`Fail to move instance saves to shared for ${path}: ${e}`)
+    }
+  }
+
   /**
    * Delete the managed instance from the disk
    * @param path The instance path
@@ -515,6 +546,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           }
 
           if (deleteData) {
+            await this.moveSavesToShared(path)
             try {
               await rm(path, { recursive: true, force: true, maxRetries: 1 })
             } catch (e) {

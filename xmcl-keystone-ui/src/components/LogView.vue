@@ -74,10 +74,9 @@
 import { injection } from '@/util/inject'
 import { LogRecord } from '../util/log'
 import { kTheme } from '@/composables/theme'
-import { useScroll } from '@vueuse/core'
+import { useDebounceFn, useScroll } from '@vueuse/core'
 import { VirtualItem, VirtualizerOptions, useVirtualizer } from '@tanstack/vue-virtual'
 import { filter as fuzzyFilter } from 'fuzzy'
-import debounce from 'lodash.debounce'
 
 interface DisplayLogRecord extends LogRecord {
   groupCount?: number
@@ -97,7 +96,7 @@ const searchText = ref('')
 
 // Debounced search text for filtering
 const debouncedSearchText = ref('')
-const updateDebouncedSearch = debounce((val: string) => {
+const updateDebouncedSearch = useDebounceFn((val: string) => {
   debouncedSearchText.value = val
 }, 200)
 watch(searchText, updateDebouncedSearch)

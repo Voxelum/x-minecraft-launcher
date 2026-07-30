@@ -1,31 +1,73 @@
-import { Constants, DeviceCodeResponse, ServerError } from '@azure/msal-common'
+import { Constants, DeviceCodeResponse, INativeBrokerPlugin, ServerError } from '@azure/msal-common'
 import { AuthenticationResult, LogLevel, PublicClientApplication } from '@azure/msal-node'
+import { copyFileSync, mkdirSync } from 'fs'
+import { tmpdir } from 'os'
+import { join } from 'path'
 import { SecretStorage } from '~/app/SecretStorage'
 import { Logger } from '~/infra'
 import { AnyError } from '@xmcl/utils'
 import { createPlugin } from '../credentialPlugin'
 import { createNetworkClient } from './OAuthNetworkClient'
 
+export const MICROSOFT_GRAPH_USER_READ_SCOPE = 'User.Read'
+export const MICROSOFT_XBOX_LAUNCHER_SCOPES = [
+  'XboxLive.signin',
+  'XboxLive.offline_access',
+  'offline_access',
+]
+
 export class MicrosoftOAuthClient {
+  private nativeBrokerPlugin: INativeBrokerPlugin | undefined
+
   constructor(
     private fetch: typeof global.fetch,
     private logger: Logger,
     readonly clientId: string,
-    private getCode: (url: string, signal?: AbortSignal) => Promise<string>,
+    private getCode: (url: string, redirectUri: string, signal?: AbortSignal) => Promise<string>,
     private getRedirectUrl: (preferLocalHost: boolean) => Promise<string>,
     private deviceCodeCallback: (deviceCodeResponse: DeviceCodeResponse) => void,
     private storage: SecretStorage,
+    private getWindowHandle?: () => Buffer | undefined,
   ) {
   }
 
-  protected async getOAuthApp(account: string, signal?: AbortSignal) {
+  private async getNativeBrokerPlugin() {
+    if (process.platform !== 'win32') {
+      return undefined
+    }
+    if (!this.nativeBrokerPlugin) {
+      try {
+        this.prepareNativeBrokerRuntime()
+        const { NativeBrokerPlugin } = await import('@azure/msal-node-extensions')
+        this.nativeBrokerPlugin = new NativeBrokerPlugin()
+      } catch (e) {
+        this.logger.warn('Unable to load the Windows native broker plugin')
+        this.logger.warn(e)
+        return undefined
+      }
+    }
+    return this.nativeBrokerPlugin.isBrokerAvailable ? this.nativeBrokerPlugin : undefined
+  }
+
+  private prepareNativeBrokerRuntime() {
+    const arch = process.arch === 'ia32' ? 'ia32' : 'x64'
+    const target = join(tmpdir(), 'xmcl-msal-node-runtime', String(process.pid), arch)
+    mkdirSync(target, { recursive: true })
+    const targetNode = join(target, 'msal-node-runtime.node')
+    copyFileSync(join(__dirname, `msal-node-runtime-${arch}.node`), targetNode)
+    copyFileSync(join(__dirname, `msalruntime-${arch}.dll`), join(target, 'msalruntime.dll'))
+    process.env.XMCL_MSAL_NODE_RUNTIME_PATH = targetNode
+  }
+
+  protected async getOAuthApp(account: string, signal?: AbortSignal, nativeBrokerPlugin?: INativeBrokerPlugin) {
     return new PublicClientApplication({
       auth: {
         authority: 'https://login.microsoftonline.com/consumers/',
         clientId: this.clientId,
       },
+      broker: nativeBrokerPlugin ? { nativeBrokerPlugin } : undefined,
       cache: {
-        cachePlugin: createPlugin('xmcl-oauth', account, this.logger, this.storage),
+        cachePlugin: createPlugin('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', this.logger, this.storage),
       },
       system: {
         loggerOptions: {
@@ -46,11 +88,13 @@ export class MicrosoftOAuthClient {
     slientOnly?: boolean
     extraScopes?: string[]
     directRedirectToLauncher?: boolean
+    useNativeBroker?: boolean
   } = {}) {
-    const app = await this.getOAuthApp(username, options.signal)
-    if (username && !options?.code) {
+    const nativeBrokerPlugin = options.useNativeBroker ? await this.getNativeBrokerPlugin() : undefined
+    const app = await this.getOAuthApp(username, options.signal, nativeBrokerPlugin)
+    if (!options?.code) {
       const accounts = await app.getTokenCache().getAllAccounts().catch(() => [])
-      const account = accounts.find(a => a.username === username)
+      const account = (username ? accounts.find(a => a.username.toLowerCase() === username.toLowerCase()) : undefined) || (accounts.length === 1 ? accounts[0] : undefined)
       if (account) {
         const result = await app.acquireTokenSilent({
           scopes,
@@ -85,22 +129,47 @@ export class MicrosoftOAuthClient {
 
     let result: AuthenticationResult | null = null
     if (!options.useDeviceCode) {
-      const redirectUri = await this.getRedirectUrl(options?.directRedirectToLauncher ?? false)
-      let code = options.code
-      if (!code) {
-        const url = await app.getAuthCodeUrl({
-          redirectUri,
-          scopes,
-          extraScopesToConsent: options.extraScopes,
-          loginHint: username,
-        })
-        code = await this.getCode(url, options.signal)
+      if (nativeBrokerPlugin) {
+        try {
+          result = await app.acquireTokenInteractive({
+            scopes,
+            extraScopesToConsent: options.extraScopes,
+            loginHint: username || undefined,
+            // Force the WAM account picker so the user can pick/add a
+            // different account instead of silently logging in with the
+            // account signed in to Windows. Without this, adding a second
+            // Microsoft account always resolves to the Windows account.
+            prompt: 'select_account',
+            openBrowser: async () => {},
+            windowHandle: this.getWindowHandle?.(),
+          })
+        } catch (e) {
+          const message = e instanceof Error ? `${e.name} ${e.message}` : String(e)
+          if (/(user[_ -]?cancel|access_denied)/i.test(message)) {
+            throw e
+          }
+          this.logger.warn('Windows native broker authentication failed; falling back to OAuth redirect')
+          this.logger.warn(e)
+        }
       }
-      result = await app.acquireTokenByCode({
-        code,
-        scopes,
-        redirectUri,
-      })
+      if (!result) {
+        const redirectUri = await this.getRedirectUrl(options?.directRedirectToLauncher ?? false)
+        let code = options.code
+        if (!code) {
+          const url = await app.getAuthCodeUrl({
+            redirectUri,
+            scopes,
+            extraScopesToConsent: options.extraScopes,
+            loginHint: username,
+          })
+          code = await this.getCode(url, redirectUri, options.signal)
+        }
+        result = await app.acquireTokenByCode({
+          code,
+          scopes,
+          redirectUri,
+        })
+      }
     } else {
       if (options.signal) {
         (options.signal as any).addEventListener('abort', () => {

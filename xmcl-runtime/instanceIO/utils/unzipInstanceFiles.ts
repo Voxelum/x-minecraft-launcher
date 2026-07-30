@@ -45,7 +45,6 @@ export async function unzipInstanceFiles(
 ): Promise<void> {
   const progress = onProgress(tracker, 'install-instance.unzip', { count: queue.length })
   const allErrors: any[] = []
-  const zipsToClose = new Set<ZipFile>()
   const workerQueue = new WorkerQueue<{
     file: InstanceFile
     zipPath: string
@@ -54,7 +53,6 @@ export async function unzipInstanceFiles(
   }>(
     async ({ file, zipPath, entryName, destination }) => {
       const { file: zip, entries } = await zipManager.open(zipPath)
-      zipsToClose.add(zip)
       const entry = entries[entryName]
       if (entry) {
         try {
@@ -69,7 +67,10 @@ export async function unzipInstanceFiles(
         }
       }
     },
-    128,
+    // A ZipFile is shared by all jobs from an archive. Hundreds of concurrent
+    // streams can exhaust handles and race archive lifecycle; 16 still keeps
+    // extraction parallel while leaving room for download and filesystem work.
+    16,
     {
       shouldRetry: (e) => false,
     },
@@ -97,10 +98,6 @@ export async function unzipInstanceFiles(
   await new Promise<void>((resolve) => {
     workerQueue.onIdle = () => resolve()
   })
-
-  for (const zip of zipsToClose) {
-    zip.close()
-  }
 
   if (allErrors.length === 1) {
     throw allErrors[0]

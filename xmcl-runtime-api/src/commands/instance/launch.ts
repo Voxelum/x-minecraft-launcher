@@ -102,6 +102,9 @@ export const launchInstanceCommand = defineCommand({
     }
     const resolvedVersion = await ctx.call(VersionServiceKey, 'resolveLocalVersion', versionHeader.id)
 
+    // Pull global settings (resolved once, read-only).
+    const settings = await ctx.call(BaseServiceKey, 'getSettings')
+
     // Resolve Java — auto-select then optionally override with the instance's pinned path.
     const javaState = await ctx.call(JavaServiceKey, 'getJavaState')
     const detected = getAutoSelectedJava(
@@ -109,6 +112,7 @@ export const launchInstanceCommand = defineCommand({
       instance.runtime.minecraft,
       instance.runtime.forge,
       resolvedVersion,
+      settings.globalJava,
     )
     const javaResult = await getAutoOrManuallJava(
       detected,
@@ -119,9 +123,6 @@ export const launchInstanceCommand = defineCommand({
     // fall back to the auto-detected one — otherwise a stale pin (deleted /
     // moved JDK) would crash spawn with ENOENT instead of launching cleanly.
     const java = (javaResult.java?.valid ? javaResult.java : undefined) || javaResult.auto.java
-
-    // Pull global settings (resolved once, read-only).
-    const settings = await ctx.call(BaseServiceKey, 'getSettings')
 
     // Build the side-specific overrides.
     const overrides = input.server

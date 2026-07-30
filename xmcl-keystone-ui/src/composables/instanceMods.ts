@@ -1,12 +1,10 @@
 import { ReactiveResourceState } from '@/util/ReactiveResourceState'
 import { basename } from '@/util/basename'
-import { ModFile, getModFileFromResource } from '@/util/mod'
+import { ModFile, getModFileFromResource, resolveModsToDisable, resolveModsToEnable } from '@/util/mod'
 import { CompatibleDetail, getModsCompatiblity, resolveDepsCompatible } from '@/util/modCompatible'
-import { refThrottled, useEventListener } from '@vueuse/core'
+import { refThrottled, useDebounceFn, useEventListener, useLocalStorage } from '@vueuse/core'
 import { InstanceModsServiceKey, JavaRecord, ResourceState, SharedState } from '@xmcl/runtime-api'
-import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
-import { useLocalStorageCache } from './cache'
 import { useResourceParseErrorNotifier } from './resourceParseError'
 import { useService } from './service'
 import { useState } from './syncableState'
@@ -16,7 +14,7 @@ import { Resource } from '@xmcl/resource'
 export const kInstanceModsContext: InjectionKey<ReturnType<typeof useInstanceMods>> = Symbol('instance-mods')
 
 function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<SharedState<ResourceState> | undefined>) {
-  const lastUpdateMetadata = useLocalStorageCache<Record<string, number>>('instanceModsLastRefreshMetadata', () => ({}), JSON.stringify, JSON.parse)
+  const lastUpdateMetadata = useLocalStorage<Record<string, number>>('instanceModsLastRefreshMetadata', {}, { deep: false, writeDefaults: false })
   const { refreshMetadata } = useService(InstanceModsServiceKey)
   const expireTime = 1000 * 30 * 60 // 0.5 hour
 
@@ -58,7 +56,7 @@ function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<Sh
     await refreshMetadata(instancePath.value)
   }
 
-  const debounced = debounce(checkAndUpdate, 1000)
+  const debounced = useDebounceFn(checkAndUpdate, 1000)
 
   watch(state, (s) => {
     if (!s) return
@@ -81,7 +79,7 @@ function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<Sh
 }
 
 export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<RuntimeVersions>, java: Ref<JavaRecord | undefined>) {
-  const { watch: watchMods } = useService(InstanceModsServiceKey)
+  const { watch: watchMods, enable: enableMods, disable: disableMods } = useService(InstanceModsServiceKey)
   const { isValidating, error, state, revalidate } = useState(async () => {
     const inst = instancePath.value
     if (!inst) { return undefined }
@@ -240,6 +238,29 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
   const { update: updateMetadata } = useInstanceModsMetadataRefresh(instancePath, state)
   const { t } = useI18n()
 
+  /**
+   * Enable the given mod files together with their dependency mods.
+   */
+  function enable(options: { path: string; files: string[] }) {
+    const target = mods.value.filter(m => options.files.includes(m.path))
+    const files = target.length > 0
+      ? resolveModsToEnable(target, mods.value).map(m => m.path)
+      : options.files
+    return enableMods({ path: options.path, files })
+  }
+
+  /**
+   * Disable the given mod files together with their dependency mods that are no
+   * longer required by any other enabled mod.
+   */
+  function disable(options: { path: string; files: string[] }) {
+    const target = mods.value.filter(m => options.files.includes(m.path))
+    const files = target.length > 0
+      ? resolveModsToDisable(target, mods.value).map(m => m.path)
+      : options.files
+    return disableMods({ path: options.path, files })
+  }
+
   return {
     mods,
     allowLoaders,
@@ -251,6 +272,8 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     enabledMods,
     isValidating,
     updateMetadata,
+    enable,
+    disable,
     error: computed(() => Object.keys(conflicted.value).length ? t('mod.duplicatedDetected', { count: Object.keys(conflicted.value).length }) : error.value),
     revalidate,
   }

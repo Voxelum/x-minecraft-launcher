@@ -2,7 +2,7 @@ import { Category, GameVersion, License, Project } from '@xmcl/modrinth'
 import { InjectionKey, Ref, computed, reactive, toRefs, watch } from 'vue'
 
 import { clientModrinthV2 } from '@/util/clients'
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 import useSWRV from 'swrv'
 import { kSWRVConfig, useOverrideSWRVConfig } from './swrvConfig'
 import { get, notNullish } from '@vueuse/core'
@@ -182,7 +182,7 @@ export function useModrinth(
   const pages = computed(() => searchData.value ? Math.floor(searchData.value.total_hits / get(pageSize)) + 1 : 0)
 
   const projects = computed(() => searchData.value?.hits || [])
-  const debouncedRefresh = debounce(() => mutate(), 1000)
+  const debouncedRefresh = useDebounceFn(() => mutate(), 1000)
   const refresh = () => {
     refreshing.value = true
     return debouncedRefresh()

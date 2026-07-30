@@ -54,8 +54,28 @@ agent:
   suggestion3: 构建一个整合包：为我想要的功能查找模组并安装到此实例
   thinking: 思考中…
   callingTool: 正在调用 {name}…
+  confirmTitle: 确认 Agent 操作
+  confirmCancel: 取消
+  confirmAccept: 继续
+  errorTitle: Agent 执行出错
   inputPlaceholder: 向 Agent 提问…（Enter 发送，Shift+Enter 换行）
   disabledPlaceholder: Agent 已禁用
+  toolArguments: 参数
+  toolResult: 结果
+  toolRunning: 等待结果…
+  marketResultCount: 共 {count} 个结果
+  marketInstall: 安装
+  marketInstalled: 已安装
+  marketConfirmTitle: 安装{type}
+  marketConfirmMessage: 要将 {name} 安装到当前实例吗？
+  marketConfirmTarget: 目标：{instance}
+  marketInstallFailed: "{type}安装失败"
+  marketType:
+    datapack: 数据包
+    mod: 模组
+    modpack: 整合包
+    resourcepack: 资源包
+    shader: 光影包
   toggleHint: 切换
 ago:
   day: '{duration} 天前'
@@ -73,6 +93,25 @@ askAICrash:
   selectPlatform: 打开一个AI平台，粘贴您刚刚复制的提示。
   setupAgent: 设置 AI 助手
 authProfileAddedNotification: 已添加第三方验证 {name}
+bedrock:
+  installBedrockVersion: '正在下载基岩版 {version}'
+  versionsTitle: 版本管理
+  versionsHint: 从微软服务器下载多个基岩版，并在它们之间切换。Windows 同时只能注册一个版本。
+  versionsError: 无法加载版本列表，请检查网络后重试。
+  channel: 渠道
+  channelRelease: 正式版
+  channelBeta: 测试版
+  channelPreview: 预览版
+  active: 当前版本
+  play: 启动
+  download: 下载
+  installedTag: 已安装
+  developerModeRequired: 注册下载的版本需要开启 Windows 开发者模式。
+  enableDeveloperMode: 开启开发者模式
+  enableDeveloperModeFailed: 开启开发者模式失败
+  downloadFailed: '下载基岩版 {version} 失败'
+  launchFailed: 启动此基岩版失败
+  removeFailed: '移除基岩版 {version} 失败'
 baseSetting:
   title: 实例设置
 browseApp:
@@ -521,6 +560,16 @@ instances:
   importFolderDescription: 导入 Minecraft 到启动器
   addPrismDescription: 导入现有的 PrismLauncher 实例。
   loadingFiles: 加载整合包文件
+  edition: 版本
+  editionJava: Java 版
+  editionBedrock: 基岩版
+  editionBedrockHint: >-
+    基岩版通过 Microsoft Store 应用启动。你需要拥有基岩版许可。模组、资源包及其他 Java 版专属功能不可用。
+  editionBedrockWindowsOnly: 基岩版仅在 Windows 版本中受支持。
+  linkSharedFolders: 在多个实例间共享文件夹
+  linkSharedFoldersHint: >-
+    将这些文件夹创建为指向启动器共享文件夹的链接，使此实例与其他所有已链接的实例共享其内容。这不是复制——在一个实例中所做的更改会显示在所有实例中。未勾选的文件夹将保持此实例私有。
+  linkFailed: 无法将 {folder} 文件夹链接到共享文件夹
 items:
   count: '{count} 个'
   total: 共 {total} 个
@@ -544,6 +593,7 @@ java:
   memoryManual: 手动指定
   memoryUnassigned: 不指定内存
   minMemory: 最小内存
+  name: Java
   noMemory: 不设置内存限制
   openFolder: 打开 Java 所在文件夹
   presets: 预设
@@ -672,6 +722,9 @@ loginError:
     找不到游戏资料！
     如果您是新的Minecraft用户，请在Minecraft官方启动器中至少登录一次。
   requestFailed: 由于未知原因登录失败，请重试
+  xboxErrorGuideHint: 登录遇到问题？查看如何修复 Microsoft 和 Xbox 登录问题。
+  openLoginGuide: 如何修复此问题
+  openDiscordSupport: 仍需要帮助？加入 Discord
   requireEmail: 必须使用邮箱登录
   requirePassword: 请输入密码
   requireUsername: 用户名不能为空
@@ -769,9 +822,7 @@ modInstall:
     title: 更新模组？
     'yes': 更新模组
   checkDependencies: 检查依赖关系
-  checkUpgrade: 检查模组更新
   checkedDependencies: 已检查依赖关系
-  checkedUpgrade: 已刷新更新列表
   currentVersion: 已选版本
   dependencyHint: 安装了其他版本 {version}
   releaseOnly: 更新时忽略 alpha 和 beta 版本
@@ -784,7 +835,6 @@ modInstall:
   skipVersion: 忽略不同 Minecraft 版本的 Mod
   source: 模组来源
   switch: 切换版本
-  upgrade: 更新模组
 modSearch:
   noLocalModsFound: 未找到匹配搜索的本地模组。
   noModsFound: 未找到模组。
@@ -825,6 +875,12 @@ modpackImportConfirm:
     检测您将文件放入启动器中。
     这个文件是不是一个整合包(ModPack)？
   title: 您是否要导入ModPack？
+modpackUpdateOrCreate:
+  createNew: '创建新的'
+  description: >-
+    此整合包的实例“{name}”已存在。你想更新它还是创建一个新的？
+  title: '实例已存在'
+  update: '更新现有'
 modrinth:
   browseUrl: 在浏览器中打开 {url}
   categories:
@@ -989,11 +1045,13 @@ multiplayer:
   confirm: 确定
   connectionError: 连接错误
   connectionFailedHint: 无法建立连接。请检查双方的 NAT 类型是否兼容。
+  connectedToHost: 已连接到房主
   natWarning: 您的 NAT 类型可能阻碍直连。请尝试在设置中启用中继服务器，或让朋友作为主机。
   connections: 用户连接管理
   copied: 已复制！
   copy: 复制
   copyGroupToFriendHint: 让您的小伙伴使用此 ID 加入联机群组
+  directConnection: 直连
   copyLocalHint: >
     <span>一段令牌只能用<span style="color: red; font-weight:bold;">一次</span>！您不能将一个令牌发送给多个小伙伴！</span> <br> <span class="hint-text" style="font-style: italic;">如果有多个小伙伴要加入您需要<span style="font-weight: bold; color: rgba(245, 158, 11)">多次</span>建立连接。</span>
   createLocalToken: 创建本地令牌
@@ -1010,6 +1068,8 @@ multiplayer:
   gatheringIce: >
     请将<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>发送给您的联机伙伴，您的联机伙伴在 <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> 加入连接 </span> 中输入这段文字。 <br> 期间 ICE 服务器可能需要时间收集足够信息来创建<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>。 <br> <span class="hint-text"> 您不需要等 ICE 服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，您可以提前将令牌复制给对方。 </span>
   groupId: 小组 ID
+  guest: 玩家
+  host: 房主
   illegalTokenDescription: 非法的令牌，请确认对方给您的令牌是完整且正确的。
   initiateConnection: 发起连接
   joinConnection: 如果您的伙伴已经创建了连接，您需要选择加入链接。
@@ -1032,6 +1092,7 @@ multiplayer:
   receiveHint: 在对方输入您的令牌后，您们之间的连接会自动创建。现在您已经可以点击完成了。
   receiveRemoteTokenHint: 请将联机伙伴的令牌粘贴在此处，并点击下一步。
   remoteToken: 对方的令牌
+  relayConnection: 中继
   routerInfo: 路由器信息
   sendTokenToRemote: 将本地令牌给您的联机伙伴
   share: 分享启动配置
@@ -1101,7 +1162,64 @@ resourceError:
   body: >-
     “{path}” 解析失败（{code}）。该文件可能已损坏、被占用或下载不完整。
     请尝试重新下载或删除该文件。
+blueprint:
+  name: 蓝图 | 蓝图
+  count: '{count} 个蓝图'
+  searchLocal: 搜索蓝图...
+  searchOnline: 在线搜索...
+  market: 市场
+  local: 本地
+  provider: 来源
+  import: 导入
+  openFolder: 打开文件夹
+  refresh: 刷新
+  empty: 未找到蓝图。导入 .litematic / .schem / .nbt 文件或浏览市场。
+  dropHint: 将蓝图文件（.litematic / .schem / .nbt）拖入此处来导入。
+  selectHint: 选择一个蓝图以预览。
+  blocks: '{count} 个方块'
+  materials: 材料
+  allNamespaces: 全部
+  findMod: 查找此命名空间对应的模组
+  compatible: 兼容
+  incompatible: 缺少模组
+  missingNamespaces: '缺少以下模组：{namespaces}'
+  delete: 删除
+  cancel: 取消
+  install: 安装
+  goTo: 网站
+  byAuthor: 作者：{author}
+  noDescription: 暂无描述。
+  loadMore: 加载更多
+  cmsBrowseOnly: 此来源仅供浏览；请打开网站下载。
+  mixedSources: 结果来自所有来源的混合。部分仅供浏览，请打开其网站下载。
+  formats:
+    structure: 原版结构
+  preview:
+    title: 3D 预览
+    loading: 正在加载预览...
+    empty: 此蓝图没有可显示的方块。
+    hint: '{count} 个方块 · {x}×{y}×{z}'
+    controls: 拖动以观察 · WASD 移动 · 空格/Shift 上升/下降
+  convert:
+    title: 转换格式
+    hint: 将此蓝图转换为其他格式。将创建一个新文件。
+    target: 目标格式
+    action: 转换
+  replace:
+    title: 替换方块
+    simple: 简单
+    precise: 精确
+    simpleHint: 仅按方块 ID 匹配，保留现有的方块状态属性。
+    preciseHint: 匹配完整的方块状态（ID + 属性）并整体替换。
+    from: 从
+    to: 到
+    addRule: 添加规则
+    newFile: 另存为新文件
+    action: 替换
 resourcepack:
+  linkShared: 在实例间共享资源包
+  linkSharedHint: >-
+    将此实例的 resourcepacks 文件夹链接到全局共享文件夹，使所有实例共用相同的资源包。现有资源包会被合并到共享文件夹中。
   compatible: 当前格式({format}) 可用于当前版本 {version}
   defaultDescription: Minecraft 的默认材质
   delete:
@@ -1124,6 +1242,33 @@ resourcepack:
   showInCurseforge: 在 Curseforge 中显示 {name}
   unselected: 未选资源包
 save:
+  linkShared: 在实例间共享存档
+  linkSharedHint: >-
+    将此实例的 saves 文件夹链接到全局共享文件夹，使所有实例共用相同的世界存档。现有存档会被合并到共享文件夹中。
+  chunkSelectMode: 选择区块
+  panMode: 平移
+  chunkSelected: 已选择 {count} 个区块
+  mapHintPan: 拖动以平移
+  mapHintSelect: 选择
+  mapHintDeselect: 取消选择
+  toggleGrid: 切换区域网格
+  heightTop: 顶部
+  resetView: 重置视图
+  clearSelection: 清除选择
+  copyChunks: 复制区块
+  pasteChunks: 粘贴 {count} 个区块
+  pasteChunksPlaceHint: >-
+    移动鼠标以放置 {count} 个区块，然后点击粘贴。目标位置的现有区块将被覆盖。按 Esc 取消。
+  pasteChunksCancel: 取消
+  deleteChunks: 删除区块
+  deleteChunksTitle: 删除选中的区块
+  deleteChunksHint: >-
+    删除选中的 {count} 个区块？此操作不可撤销。下次在游戏中加载该区域时，这些区块将重新生成。
+  mapLoading: 正在加载地图…
+  noRegions: 该世界没有可预览的已生成区域。
+  dimOverworld: 主世界
+  dimNether: 下界
+  dimEnd: 末地
   allowCheats: 允许作弊
   copy:
     name: 复制存档
@@ -1133,6 +1278,7 @@ save:
   deleteTitle: 删除该存档
   difficulty: 难度
   dropHint: 将地图 Zip 或文件夹拖入此处来导入
+  duplicate: 复制存档
   export: 导出地图
   exportMessage: 将存档导出为 Zip
   exportTitle: 导出存档
@@ -1171,7 +1317,23 @@ screenshots:
 search:
   favorate: 收藏
   local: 已安装
-  market: Mod 市场
+  market: 市场
+  emptyInstalled: 尚未安装任何内容
+  browseMarket: 浏览市场
+  noResults: 未找到结果
+  pageSize: 每页结果数
+localCollection:
+  title: 启动器收藏夹
+  newCollection: 新建收藏夹
+  namePlaceholder: 收藏夹名称
+  addToCollection: 添加到收藏夹
+  empty: 还没有启动器收藏夹
+  corrupted: 无法读取已保存的收藏夹，已重置。备份已保存在数据文件旁边。
+  modrinthSection: Modrinth 账户
+  installAll: 全部安装
+  installAllHint: 安装此收藏夹中与当前 Minecraft 版本和加载器兼容的所有项目。
+  incompatibleAlert: '有 {count} 个项目与当前实例不兼容，已跳过：'
+  projects: '无项目 | {count} 个项目 | {count} 个项目'
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   addServer: 添加服务器
@@ -1259,11 +1421,20 @@ setting:
   advancedSettings: 高级设置
   advancedSettingsHint: 危险区域 - 重置或管理启动器数据
   aiAgentApiKey: AI Agent API Key
+  aiAgentApiKeyClear: 清除密钥
   aiAgentApiKeyDescription: 仅保存在本地设备，用于 Agent 请求。
+  aiAgentApiKeyEmpty: 粘贴你的 API Key
+  aiAgentApiKeyNotNeeded: 无需密钥
+  aiAgentApiKeyNotNeededHint: 该服务在本地运行，无需 API Key
+  aiAgentApiKeySaved: 已保存
+  aiAgentApiKeyStored: 已保存密钥，输入可替换
   aiAgentEndpoint: AI Agent Endpoint
   aiAgentEndpointDescription: 聊天补全（chat completions）的 Endpoint 地址。
   aiAgentModel: AI Agent 模型
   aiAgentModelDescription: 请求聊天补全时使用的模型名。
+  aiAgentProvider: AI Agent 服务商
+  aiAgentProviderCustom: 自定义（OpenAI 兼容）
+  aiAgentProviderDescription: 选择预设的 OpenAI 兼容服务商以自动填充 Endpoint。
   apiSets:
     auto: 自动 (根据网络决定)
     official: 官方 (Mojang)
@@ -1346,6 +1517,8 @@ setting:
   exportSettingsHint: 将当前设置保存到文件
   general: 基本设置
   githubRelease: Github
+  globalJava: 首选 Java
+  globalJavaHint: "在自动模式下会优先尝试此 Java，仅当其与游戏版本不兼容时才回退到自动检测。"
   globalSetting: 全局实例设置
   globalSettingHint: 实例默认情况下会使用这些全局设置
   importSettings: 导入设置
@@ -1495,6 +1668,9 @@ setup:
     name: 设置语言
   path: 当前位置
 shaderPack:
+  linkShared: 在实例间共享光影包
+  linkSharedHint: >-
+    将此实例的 shaderpacks 文件夹链接到全局共享文件夹，使所有实例共用相同的光影包。现有光影包会被合并到共享文件夹中。
   deletion: 删除光影包
   deletionHint: 这将把光影包文件 {path} 永久删除。
   disabled: 未启用的光影
@@ -1522,6 +1698,7 @@ shared:
   back: 返回
   browse: 浏览
   cancel: 取消
+  checkUpgrade: 检查更新
   client: 客户端
   copy: 复制
   copied: 已复制
@@ -1548,6 +1725,7 @@ shared:
   search: 搜索
   server: 服务端
   skipForNow: 先跳过
+  upgrade: 更新
   'yes': 是
 sidebar:
   pin: 固定
@@ -1737,12 +1915,16 @@ userSkin:
   import: 导入皮肤
   importFile: 从文件导入
   importLink: 从链接导入
+  invalidImage: 请选择有效的 Minecraft 皮肤图片。
+  invalidImageTitle: 无效的皮肤图片
   placeUrlHere: 填写待导入皮肤 URL
   reset: 重置
   save: 保存
   saveTitle: 保存皮肤到本地
   skinType: 皮肤类型
   upload: 上传
+  uploadFailed: 皮肤上传失败
+  uploadRejected: Minecraft 拒绝了此次皮肤上传，请稍后重试。
   urlNotEmpty: 皮肤 URL 不能为空
   urlNotValid: 请输入有效的皮肤 URL
   useSlim: 使用细胳膊模型
@@ -1757,6 +1939,32 @@ versionType:
   beta: Beta (测试版)
   name: 类型
   release: 稳定版
+xmclAccount:
+  accountSummary: 账户
+  confirmMerge: 确认合并账户
+  createdAt: 创建于 {date}
+  description: 无密码的 XMCL 身份，与 Minecraft 游戏账户分开管理。
+  expiresAt: 过期时间 {date}
+  gameAccountsSeparate: 移除游戏账户不会解除 XMCL 登录方式。
+  guest: 访客
+  identityConflict: 此 {provider} 登录属于另一个 XMCL Account。账户绝不会自动合并。
+  linkAccountWith: 使用以下方式绑定账户
+  mergePreview: 确认前请检查将要迁移的资源。
+  mergeNeedsSession: 请先登录你希望保留的 XMCL Account，再检查合并。
+  mergeQueued: 账户合并正在进行。
+  requestFailed: XMCL Account 服务无法完成请求。你的游戏账户未受影响。
+  reviewMerge: 检查合并
+  session: 会话
+  sessionActive: 有效
+  sessionExpired: 已过期
+  signOutAll: 退出所有设备
+  signOutDevice: 退出此设备
+  status:
+    active: 有效
+    deleted: 已删除
+    deletion_pending: 等待删除
+    merged: 已合并
+  title: XMCL Account
 minecraftFriends:
   title: Minecraft 好友
   add: 添加好友

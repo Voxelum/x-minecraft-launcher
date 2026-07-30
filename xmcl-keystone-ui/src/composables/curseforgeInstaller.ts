@@ -45,7 +45,7 @@ export function useCurseforgeInstaller(
     const toUninstalls = [...installed]
     const files = deps
       ?.filter((v) => v.type === FileRelationType.RequiredDependency)
-      .filter(v => _allFiles.every(m => m.curseforge?.fileId !== v.project.id))
+      .filter(v => _allFiles.every(m => m.curseforge?.projectId !== v.project.id))
       .map((v) => ({
         fileId: v.file.id,
         icon: v.project.logo?.url as string | undefined,

@@ -101,7 +101,7 @@ function renderIndex(locale: string, manifests: JourneyManifest[]): string {
 async function main(): Promise<void> {
   const locales = await listLocales()
   if (locales.length === 0) {
-    console.warn(`No screenshots found at ${SCREENSHOT_ROOT}. Run the e2e suite first: pnpm -C e2e test`)
+    console.warn(`No screenshots found at ${SCREENSHOT_ROOT}. Run the e2e suite first: pnpm -C e2e test:showcase`)
     return
   }
 

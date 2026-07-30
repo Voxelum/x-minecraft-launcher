@@ -2,9 +2,9 @@
   "files": [
     "index.ts",
     "helper.ts",
-    "SqliteWASMDialect.ts",
-    "SqliteWASMDialectConfig.ts",
-    "SqliteWASMDriver.ts"
+    "NodeSqliteDialect.ts",
+    "NodeSqliteDialectConfig.ts",
+    "NodeSqliteDriver.ts"
   ],
   "extends": "../../tsconfig.json",
   "compilerOptions": {

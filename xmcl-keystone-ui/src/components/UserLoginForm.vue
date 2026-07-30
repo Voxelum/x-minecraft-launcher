@@ -108,7 +108,7 @@
       variant="tonal"
       color="error"
       rounded="lg"
-      class="text-left text-sm"
+      class="text-left text-sm min-h-[min-content]"
     >
       {{ errorMessage }}
     </v-alert>
@@ -159,7 +159,7 @@
       variant="tonal"
       color="info"
       rounded="lg"
-      class="mt-3 text-left border border-info/30"
+      class="mt-3 text-left border border-info/30 min-h-[min-content]"
     >
       <a
         :href="data.verificationUri"
@@ -171,6 +171,37 @@
     </v-alert>
 
     <div class="mt-4 flex flex-col gap-3 items-center text-sm font-medium">
+      <div
+        v-if="errorMessage && isMicrosoftAuthError"
+        class="flex flex-col gap-2 rounded-xl p-3 text-sm text-left border w-full backdrop-blur-sm"
+        style="
+          background: rgba(var(--v-theme-error), 0.08);
+          border-color: rgba(var(--v-theme-error), 0.2);
+        "
+        data-testid="microsoft-error-help"
+      >
+        <div class="text-xs opacity-90 font-medium">
+          {{ t('loginError.xboxErrorGuideHint') }}
+        </div>
+        <div class="flex flex-col gap-1.5 pt-1">
+          <a
+            target="browser"
+            href="https://xmcl.app/en/guide/microsoft-login-issues"
+            class="flex items-center gap-1.5 text-xs text-amber-500 hover:underline font-medium"
+          >
+            <v-icon size="14">help_outline</v-icon>
+            {{ t('loginError.openLoginGuide') }}
+          </a>
+          <a
+            target="browser"
+            href="https://discord.gg/r7Sz9cAUSu"
+            class="flex items-center gap-1.5 text-xs text-primary hover:underline font-medium"
+          >
+            <v-icon size="14">xmcl:discord</v-icon>
+            {{ t('loginError.openDiscordSupport') }}
+          </a>
+        </div>
+      </div>
       <a
         v-if="authority === AUTHORITY_MICROSOFT"
         target="browser"
@@ -213,7 +244,7 @@
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
 import { useRefreshable, useService } from '@/composables'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kSupportedAuthorityMetadata } from '@/composables/yggrasil'
 import { injection } from '@/util/inject'
 import {
@@ -224,7 +255,8 @@ import {
   UserServiceKey,
   isException,
 } from '@xmcl/runtime-api'
-import { Ref } from 'vue'
+import { Ref, watch } from 'vue'
+import { useNotifier } from '@/composables/notifier'
 import { useAccountSystemHistory, useAuthorityItems } from '../composables/login'
 import { kUserContext, useLoginValidation } from '../composables/user'
 import UserLoginAuthoritySelect from './UserLoginAuthoritySelect.vue'
@@ -241,7 +273,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['seed', 'login', 'add-service'])
-const streamerMode = inject('streamerMode', useLocalStorageCacheBool('streamerMode', false))
+const streamerMode = inject('streamerMode', useLocalStorage('streamerMode', false, { writeDefaults: false }))
 
 const { t } = useI18n()
 const { select } = injection(kUserContext)
@@ -281,7 +313,7 @@ const currentAccountSystem = computed(() => {
 // Sign up link
 const signUpLink = computed(() => {
   const sys = currentAccountSystem.value
-  if (sys?.authority === AUTHORITY_MICROSOFT) return 'https://account.live.com/registration'
+  if (sys?.authority === AUTHORITY_MICROSOFT) return 'https://signup.live.com/signup'
   const url = sys?.authlibInjector?.meta.links.register
   return url || ''
 })
@@ -389,7 +421,10 @@ const errorMessage = computed(() => {
       return t('loginError.loginXboxFailed')
     }
     if (e.exception.type === 'userLoginMinecraftByXboxFailed') {
-      const { status, retryAfter } = e.exception
+      const { status, retryAfter, reason } = e.exception
+      if (reason === 'ACCOUNT_SUSPENDED') {
+        return t('loginError.loginXboxBanned')
+      }
       if (status === 429) {
         const retrySeconds = typeof retryAfter === 'number' ? Math.ceil(retryAfter / 1000) : undefined
         return retrySeconds
@@ -411,6 +446,12 @@ const errorMessage = computed(() => {
       return t('loginError.timeout')
     }
     if (e.exception.type === 'userAcquireMicrosoftTokenFailed') {
+      if (e.exception.reason === 'USER_CANCELED') {
+        return t('loginError.loginCanceled')
+      }
+      if (e.exception.reason === 'NETWORK_ERROR') {
+        return t('loginError.badNetworkOrServer')
+      }
       return t('loginError.acquireMicrosoftTokenFailed')
     }
 
@@ -471,6 +512,58 @@ const { refresh: onLogin, error } = useRefreshable(async () => {
   })
   select(profile.id)
   emit('login', profile)
+})
+
+const isMicrosoftAuthError = computed(() => {
+  if (authority.value === AUTHORITY_MICROSOFT && error.value) return true
+  if (!error.value) return false
+  const e = error.value as any
+  const type = e?.exception?.type
+  if (
+    type === 'userExchangeXboxTokenFailed' ||
+    type === 'userLoginMinecraftByXboxFailed' ||
+    type === 'userAcquireMicrosoftTokenFailed'
+  ) {
+    return true
+  }
+  const str = (e?.message || e?.exception?.message || String(e || '')).toLowerCase()
+  return (
+    str.includes('xbox') ||
+    str.includes('microsoft') ||
+    str.includes('canceled') ||
+    str.includes('cancelled') ||
+    str.includes('xerr') ||
+    str.includes('exchange')
+  )
+})
+
+const { notify } = useNotifier()
+
+watch(error, (err) => {
+  if (err && isMicrosoftAuthError.value) {
+    notify({
+      level: 'error',
+      title: errorMessage.value || t('loginError.requestFailed'),
+      body: t('loginError.xboxErrorGuideHint'),
+      key: 'microsoft-login-error-help',
+      operations: [
+        {
+          text: t('loginError.openLoginGuide'),
+          icon: 'help_outline',
+          handler() {
+            window.open('https://xmcl.app/en/guide/microsoft-login-issues', 'browser')
+          },
+        },
+        {
+          text: t('loginError.openDiscordSupport'),
+          icon: 'xmcl:discord',
+          handler() {
+            window.open('https://discord.gg/r7Sz9cAUSu', 'browser')
+          },
+        },
+      ],
+    })
+  }
 })
 
 watch(authority, () => {

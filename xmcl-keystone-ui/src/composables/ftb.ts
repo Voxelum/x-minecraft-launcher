@@ -5,7 +5,7 @@ import { generateDistinctName } from '@/util/instanceName'
 import { CachedFTBModpackVersionManifest, CreateInstanceOption, FTBModpackManifest, FTBModpackVersionManifest, FTBVersion, InstanceInstallServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { Ref } from 'vue'
-import { useLocalStorageCache } from './cache'
+import { useLocalStorage } from '@vueuse/core'
 import { kInstanceVersion } from './instanceVersion'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { kInstances } from './instances'
@@ -82,9 +82,7 @@ export function useGetFeedTheBeastVersionsCache() {
 }
 
 export function useFeedTheBeastVersionsCache() {
-  const ftb: Ref<CachedFTBModpackVersionManifest[]> = useLocalStorageCache('cachedFTB', () => [], JSON.stringify, JSON.parse, {
-    deep: true,
-  })
+  const ftb: Ref<CachedFTBModpackVersionManifest[]> = useLocalStorage<CachedFTBModpackVersionManifest[]>('cachedFTB', [], { deep: true, writeDefaults: false })
 
   function dispose() {
     ftb.value = []

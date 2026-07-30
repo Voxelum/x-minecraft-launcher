@@ -69,6 +69,25 @@ askAICrash:
     Следуйте инструкциям ниже, чтобы спросить ИИ об этом игровом сбое!
   selectPlatform: Откройте платформу для ИИ и вставьте только что только что скопированное.
 authProfileAddedNotification: Профиль аутентификации {name} добавлен
+bedrock:
+  installBedrockVersion: 'Downloading Bedrock {version}'
+  versionsTitle: Version manager
+  versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
+  versionsError: Failed to load the version list. Check your network and try again.
+  channel: Channel
+  channelRelease: Release
+  channelBeta: Beta
+  channelPreview: Preview
+  active: Active
+  play: Play
+  download: Download
+  installedTag: Installed
+  developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
+  enableDeveloperMode: Enable Developer Mode
+  enableDeveloperModeFailed: Failed to enable Developer Mode
+  downloadFailed: 'Failed to download Bedrock {version}'
+  launchFailed: Failed to launch this Bedrock version
+  removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
   title: Локальные настройки
 browseApp:
@@ -495,6 +514,21 @@ instances:
   folderSetting: Настройки папки
   importFolderDescription: Импортировать Minecraft в лаунчер
   loadingFiles: Загрузка файлов сборки модов
+  edition: Издание
+  editionJava: Java-издание
+  editionBedrock: Bedrock-издание
+  editionBedrockHint: >-
+    Издание Bedrock запускается через приложение Microsoft Store. У вас должна
+    быть лицензия Bedrock. Моды, наборы ресурсов и другие функции, доступные
+    только в Java, недоступны.
+  editionBedrockWindowsOnly: Издание Bedrock поддерживается только в сборке для Windows.
+  linkSharedFolders: Общий доступ к папкам между сборками
+  linkSharedFoldersHint: >-
+    Создайте эти папки как ссылки на общие папки лаунчера, чтобы эта сборка
+    делила их содержимое со всеми другими связанными сборками. Это не
+    копирование — изменения в одной сборке появляются во всех. Неотмеченные
+    папки остаются приватными для этой сборки.
+  linkFailed: Не удалось связать папку {folder} с общей папкой
   addPrismDescription: Импортировать существующий инстанс PrismLauncher.
 items:
   count: '{count} элементов'
@@ -511,6 +545,7 @@ java:
   memoryManual: Вручную
   memoryUnassigned: Не назначено
   minMemory: Минимальная память
+  name: Java
   noMemory: Не ограничивать использование памяти
   refresh: Обновить локальный Java
   systemMemory: 'Свободная память системы: {free} / {total}'
@@ -746,9 +781,7 @@ modInstall:
     title: Обновить моды?
     'yes': Обновить моды
   checkDependencies: Проверить недостающие зависимости
-  checkUpgrade: Проверить обновления для модов
   checkedDependencies: Недостающие зависимости проверены
-  checkedUpgrade: Обновления для модов проверены
   currentVersion: Выбранная версия
   dependencyHint: Установлена ​​другая версия {version}
   releaseOnly: Игнорировать альфа- и бета-версии при обновлении
@@ -761,7 +794,6 @@ modInstall:
   skipVersion: Пропустите моды с другой версией Minecraft
   source: Источник контента мода
   switch: Переключить версию
-  upgrade: Обновить моды
 modSearch:
   noLocalModsFound: Локальные моды, соответствующие вашему поиску, не найдены.
   noModsFound: Моды не найдены.
@@ -803,6 +835,12 @@ modpackImportConfirm:
     Обнаружите, что вы бросите файл в пусковую установку.
     Вы пытаетесь импортировать Modpack?
   title: Вы пытаетесь импортировать Modpack?
+modpackUpdateOrCreate:
+  createNew: 'Создать новый'
+  description: >-
+    Экземпляр "{name}" для этого модпака уже существует. Хотите обновить его или создать новый?
+  title: 'Экземпляр уже существует'
+  update: 'Обновить существующий'
 modrinth:
   browseUrl: Открыть в браузере {url}
   categories:
@@ -1077,6 +1115,9 @@ quiltVersion:
   disable: Quilt не выбран
   empty: Quilt не поддерживает Minecraft {version}
 resourcepack:
+  linkShared: Общие пакеты ресурсов для всех сборок
+  linkSharedHint: >-
+    Связать папку resourcepacks этой сборки с общей глобальной папкой, чтобы все сборки использовали одни и те же пакеты ресурсов. Существующие пакеты будут перемещены в общую папку.
   compatible: Формат {format} совместим с {version}
   defaultDescription: Внешний вид Minecraft по умолчанию
   delete:
@@ -1099,6 +1140,9 @@ resourcepack:
   noPacks: Ресурс-паки не найдены
   search: Поиск ресурс-паков...
 save:
+  linkShared: Общие сохранения для всех сборок
+  linkSharedHint: >-
+    Связать папку saves этой сборки с общей глобальной папкой, чтобы все сборки использовали одни и те же миры. Существующие сохранения будут перемещены в общую папку.
   copy:
     name: Копировать мир
   createNew: Создать новый мир
@@ -1134,7 +1178,11 @@ screenshots:
 search:
   favorate: Коллекция
   local: Установлено
-  market: Мод маркет
+  market: Маркет
+  emptyInstalled: Пока ничего не установлено
+  browseMarket: Открыть маркет
+  noResults: Ничего не найдено
+  pageSize: Результатов на странице
 server:
   acceptingMinecraftVersion: Принятие версии Minecraft
   creationHint: Пожалуйста, заполните адрес сервера и протестируйте сервер
@@ -1271,6 +1319,8 @@ setting:
   exportSettingsHint: Сохранить текущие настройки в файл
   general: Общее
   githubRelease: Релиз GitHub
+  globalJava: Предпочитаемая Java
+  globalJavaHint: "В автоматическом режиме сначала используется эта Java и только при несовместимости с версией игры выполняется переход к автоопределению."
   globalSetting: Глобальные настройки экземпляра
   globalSettingHint: Экземпляр будет использовать эти настройки по умолчанию.
   importSettings: Импорт настроек
@@ -1427,6 +1477,9 @@ setup:
     name: Установить язык
   path: Текущий путь
 shaderPack:
+  linkShared: Общие пакеты шейдеров для всех сборок
+  linkSharedHint: >-
+    Связать папку shaderpacks этой сборки с общей глобальной папкой, чтобы все сборки использовали одни и те же пакеты шейдеров. Существующие пакеты будут перемещены в общую папку.
   deletion: Удалить набор шейдеров
   deletionHint: >-
     Это приведёт к удалению файла набора шейдеров {path} и его будет невозможно восстановить.
@@ -1454,6 +1507,7 @@ shared:
   back: Назад
   browse: Обзор
   cancel: Отмена
+  checkUpgrade: Проверить обновления
   client: Клиент
   description: Описание
   disable: Отключить
@@ -1475,6 +1529,7 @@ shared:
   search: Поиск
   server: Сервер
   skipForNow: Пропустить сейчас
+  upgrade: Обновить
   'yes': Да
 sidebar:
   pin: Закрепить

@@ -68,6 +68,12 @@ export interface ThemeService extends GenericEventEmitter<ThemeServiceEventMap> 
   showMediaItemInFolder(url: string): Promise<void>
 
   /**
+   * Get the file path of the current OS desktop wallpaper, if it can be resolved.
+   * @returns The absolute wallpaper file path, or undefined if unavailable
+   */
+  getDesktopWallpaper(): Promise<string | undefined>
+
+  /**
    * Get the current active global theme.
    * This reads from theme.json in the appdata folder.
    * @returns The current theme data or undefined if not set

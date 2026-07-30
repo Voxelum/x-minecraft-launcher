@@ -28,6 +28,7 @@
     <AppFeedbackDialog />
     <AppTaskDialog />
     <AppAddInstanceDialog />
+    <AppModpackUpdateDialog />
     <AppShareInstanceDialog />
     <AppInstanceDeleteDialog />
     <AppGameExitDialog />
@@ -41,8 +42,9 @@
     <AppMinecraftFriendsDialog />
     <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
     <AppModrinthLoginDialog />
-    <InstanceLauncherPage />
     <AppSideBarGroupSettingDialog :default-color="defaultColor" />
+    <ModGroupSelectDialog />
+    <AppGamepadPrompt />
   </v-app>
   <v-app v-else class="h-full max-h-screen overflow-hidden" :class="{ 'dark': isDark }">
     <AppSystemBar no-user no-task />
@@ -51,6 +53,7 @@
     </div>
     <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
     <AppFeedbackDialog />
+    <AppGamepadPrompt />
   </v-app>
 </template>
 
@@ -59,7 +62,6 @@ import '@/assets/common.css'
 import AppImageDialog from '@/components/AppImageDialog.vue'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
-import { useLocalStorageCacheBool } from '@/composables/cache'
 import { useAgentChatHotkey } from '@/composables/agentChat'
 import { kAgent, installAgentDevLauncher, useAgent } from '@/composables/agent'
 import { useCommandPaletteHotkey } from '@/composables/commandPalette'
@@ -77,6 +79,7 @@ import { kSidebarSettings, useInjectSidebarSettings, useSidebarSettings } from '
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
+import AppModpackUpdateDialog from '@/views/AppModpackUpdateDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
 import AppAgentChat from '@/views/AppAgentChat.vue'
 import AppCommandPalette from '@/views/AppCommandPalette.vue'
@@ -98,7 +101,6 @@ import AppSideBarClassic from '@/views/AppSideBarClassic.vue'
 import AppSideBarNotch from '@/views/AppSideBarNotch.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
-import InstanceLauncherPage from '@/views/InstanceLauncherPage.vue'
 import Setup from '@/views/Setup.vue'
 import { useLocalStorage, useMediaQuery, usePreferredColorScheme, usePreferredDark } from '@vueuse/core'
 import { kInstanceLauncher, useInstanceLauncher } from '@/composables/instanceLauncher'
@@ -106,6 +108,8 @@ import { kMinecraftFriends, useMinecraftFriendsImpl } from '@/composables/minecr
 import { useUserMenuControl } from '@/composables/userMenu'
 import { UserSkinRenderPaused } from '@/composables/userSkin'
 import AppSideBarGroupSettingDialog from '@/views/AppSideBarGroupSettingDialog.vue'
+import ModGroupSelectDialog from '@/views/ModGroupSelectDialog.vue'
+import AppGamepadPrompt from '@/views/AppGamepadPrompt.vue'
 import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
@@ -113,7 +117,7 @@ const { state } = injection(kSettingsState)
 const developerMode = computed(() => state.value?.developerMode ?? false)
 
 
-provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
+provide('streamerMode', useLocalStorage('streamerMode', false, { writeDefaults: false }))
 provide(kLocalizedContent, useLocalizedContentControl())
 provide(kInstanceLauncher, useInstanceLauncher())
 provide(kMinecraftFriends, useMinecraftFriendsImpl())
@@ -123,7 +127,9 @@ provide(kMinecraftFriends, useMinecraftFriendsImpl())
 // and `inject` only resolves on descendants.
 const agent = useAgent()
 provide(kAgent, agent)
-installAgentDevLauncher(agent)
+// The window.__xmcl_agent debug surface follows developer mode: the whole agent
+// feature is developer-mode gated, so it is never exposed to a default install.
+installAgentDevLauncher(agent, developerMode)
 
 // User profile dialog — moved from AppSystemBarUserMenu to App root
 const userProfileDialogShown = ref(false)

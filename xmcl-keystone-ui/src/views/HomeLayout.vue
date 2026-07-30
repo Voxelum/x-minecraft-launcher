@@ -45,8 +45,24 @@ import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import HomeLogDialog from './HomeLogDialog.vue'
 import AppCollectionDialog from './AppCollectionDialog.vue'
 import HomeDropModpackDialog from './HomeDropModpackDialog.vue'
+import { useGamepadInnerNav } from '@/composables/gamepad'
 
 const router = useRouter()
+
+// Gamepad triggers (L2/R2) cycle through the instance pages.
+const HOME_GROUP = ['/', '/mods', '/resourcepacks', '/shaderpacks', '/save']
+useGamepadInnerNav({
+  handler: (dir) => {
+    const cur = router.currentRoute.value.path
+    const idx = HOME_GROUP.indexOf(cur)
+    if (idx === -1) return
+    const next = dir === 'next'
+      ? (idx + 1) % HOME_GROUP.length
+      : (idx - 1 + HOME_GROUP.length) % HOME_GROUP.length
+    router.push(HOME_GROUP[next])
+  },
+  disabled: () => !HOME_GROUP.includes(router.currentRoute.value.path),
+})
 
 const removeAfterEach = router.afterEach((r) => {
   document.title = `X Minecraft Launcher - ${r.fullPath}`

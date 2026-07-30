@@ -3,7 +3,7 @@ import {
   File as CurseforgeFile,
   CurseforgeV1Client,
   HashAlgo,
-  guessCurseforgeFileUrl,
+  getCurseforgeFileDownloadUrls,
 } from '@xmcl/curseforge'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { diagnoseFile, onDownloadSingle, Tracker } from '@xmcl/installer'
@@ -285,13 +285,11 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
 
     const uris = [] as string[]
 
-    const downloadUrls = [] as string[]
-    if (curseforgeFile.downloadUrl) {
-      downloadUrls.push(curseforgeFile.downloadUrl)
-    } else {
-      // Guess the download url if the file url is not provided by curseforge
-      downloadUrls.push(...guessCurseforgeFileUrl(curseforgeFile.id, curseforgeFile.fileName))
-    }
+    const downloadUrls = getCurseforgeFileDownloadUrls(
+      curseforgeFile.id,
+      curseforgeFile.fileName,
+      curseforgeFile.downloadUrl,
+    )
 
     uris.push(...downloadUrls)
 

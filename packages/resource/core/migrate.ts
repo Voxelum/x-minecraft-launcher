@@ -12,6 +12,7 @@ export class ResourceMigrateProvider implements MigrationProvider {
       2.3: v23,
       2.4: v24,
       2.5: v25,
+      2.6: v26,
     })
   }
 }
@@ -70,6 +71,11 @@ async function fixResourceTable(db: Kysely<Database>) {
   // check neoforge column
   if (!columns.rows.some((c: any) => c.name === ResourceType.Neoforge)) {
     await v22.up(db)
+  }
+  // check blueprint column — older DBs created before v2.6 are missing it.
+  columns = await sql`PRAGMA table_info(resources)`.execute(db)
+  if (!columns.rows.some((c: any) => c.name === ResourceType.Blueprint)) {
+    await v26.up(db)
   }
 }
 
@@ -247,5 +253,17 @@ const v25: Migration = {
       return
     }
     await sql`UPDATE snapshots SET parseError = NULL WHERE parseError = 'null'`.execute(db)
+  },
+}
+
+// Add the `blueprint` metadata column for the schematic/blueprint resource
+// domain (litematic / schem / structure nbt / building gadget).
+const v26: Migration = {
+  async up(db: Kysely<Database>): Promise<void> {
+    const columns = await sql`PRAGMA table_info(resources)`.execute(db)
+    if (columns.rows.some((c: any) => c.name === ResourceType.Blueprint)) {
+      return
+    }
+    await db.schema.alterTable('resources').addColumn(ResourceType.Blueprint, 'json').execute()
   },
 }

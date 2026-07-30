@@ -1,6 +1,6 @@
 {
   "name": "@xmcl/user",
-  "version": "4.3.0",
+  "version": "4.4.1",
   "main": "./index.ts",
   "description": "Minecraft user related functions, including Yggdrasil authenticator, player skin fetcher, and Mojang security API",
   "scripts": {
@@ -25,7 +25,7 @@
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+    "url": "git+https://github.com/Voxelum/x-minecraft-launcher.git"
   },
   "author": "cijhn@hotmail.com",
   "keywords": [

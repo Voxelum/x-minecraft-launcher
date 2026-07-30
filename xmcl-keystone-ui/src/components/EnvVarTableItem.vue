@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { vSharedTooltip } from '@/directives/sharedTooltip'
-import BaseSettingGlobalLabel from '@/views/BaseSettingGlobalLabel.vue'
+import BaseSettingGlobalLabel from '@/components/BaseSettingGlobalLabel.vue'
 
 const props = defineProps<{
   env: Record<string, string>

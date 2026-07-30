@@ -2,7 +2,7 @@
 import MarketProjectDetail, { ProjectDetail } from '@/components/MarketProjectDetail.vue'
 import MarketProjectDetailSave from '@/components/MarketProjectDetailContentSave.vue'
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
-import SaveMapRenderer from '@/components/SaveMapRenderer.vue'
+import SaveWorldMap from '@/components/SaveWorldMap.vue'
 import { useService } from '@/composables'
 import { useDateString } from '@/composables/date'
 import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
@@ -89,9 +89,12 @@ const onEnable = (enable: boolean) => {
     @install="onInstall"
     @delete="emit('delete', save.installed[0])"
     @enable="onEnable"
+    no-padding-content
   >
     <template #content>
-      <!-- <SaveMapRenderer :save-path="save.installed[0].path" /> -->
+      <div class="save-map-wrapper">
+        <SaveWorldMap :save-path="save.installed[0].path" />
+      </div>
     </template>
     <template #properties>
       <MarketProjectDetailSave
@@ -100,3 +103,12 @@ const onEnable = (enable: boolean) => {
     </template>
   </MarketProjectDetail>
 </template>
+
+<style scoped>
+.save-map-wrapper {
+  height: 60vh;
+  min-height: 360px;
+  width: 100%;
+  overflow: hidden;
+}
+</style>

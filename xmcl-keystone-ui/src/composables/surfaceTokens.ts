@@ -37,7 +37,11 @@ export const DEFAULT_SURFACE_MENU_ITEM_RADIUS = 10
 export const DEFAULT_SURFACE_TOOLTIP_RADIUS = 10
 /** Pill button radius. Keep large by default to preserve capsule shape. */
 export const DEFAULT_SURFACE_PILL_RADIUS = 9999
-/** Default button radius (matches previous Vuetify VBtn rounded=4). */
+/**
+ * Default button radius as a Vuetify `rounded` prop value (NOT pixels).
+ * Applied through Vuetify's reactive `defaults` so buttons honor the
+ * appearance toggle without per-element CSS overrides.
+ */
 export const DEFAULT_SURFACE_BUTTON_RADIUS = 4
 
 // Cards — three intentional tiers. Apply via the `.surface-card`,
@@ -114,7 +118,6 @@ export interface SurfaceTokensInit {
   dialogRadius?: number
   tooltipRadius?: number
   pillRadius?: number
-  buttonRadius?: number
   cardRadius?: number
   cardSubsectionRadius?: number
   cardItemRadius?: number
@@ -153,7 +156,6 @@ export interface SurfaceTokens {
   dialogRadius: Ref<number>
   tooltipRadius: Ref<number>
   pillRadius: Ref<number>
-  buttonRadius: Ref<number>
   cardRadius: Ref<number>
   cardSubsectionRadius: Ref<number>
   cardItemRadius: Ref<number>
@@ -196,7 +198,6 @@ export function useSurfaceTokens(init: SurfaceTokensInit = {}): SurfaceTokens {
   const dialogRadius = ref(init.dialogRadius ?? DEFAULT_SURFACE_DIALOG_RADIUS)
   const tooltipRadius = ref(init.tooltipRadius ?? DEFAULT_SURFACE_TOOLTIP_RADIUS)
   const pillRadius = ref(init.pillRadius ?? DEFAULT_SURFACE_PILL_RADIUS)
-  const buttonRadius = ref(init.buttonRadius ?? DEFAULT_SURFACE_BUTTON_RADIUS)
 
   const cardRadius = ref(init.cardRadius ?? DEFAULT_CARD_RADIUS)
   const cardSubsectionRadius = ref(init.cardSubsectionRadius ?? DEFAULT_CARD_SUBSECTION_RADIUS)
@@ -240,7 +241,6 @@ export function useSurfaceTokens(init: SurfaceTokensInit = {}): SurfaceTokens {
     root.setProperty('--surface-dialog-radius', `${dialogRadius.value}px`)
     root.setProperty('--surface-tooltip-radius', `${tooltipRadius.value}px`)
     root.setProperty('--surface-pill-radius', `${pillRadius.value}px`)
-    root.setProperty('--surface-button-radius', `${buttonRadius.value}px`)
 
     root.setProperty('--card-radius', `${cardRadius.value}px`)
     root.setProperty('--card-subsection-radius', `${cardSubsectionRadius.value}px`)
@@ -282,7 +282,6 @@ export function useSurfaceTokens(init: SurfaceTokensInit = {}): SurfaceTokens {
     dialogRadius.value = DEFAULT_SURFACE_DIALOG_RADIUS
     tooltipRadius.value = DEFAULT_SURFACE_TOOLTIP_RADIUS
     pillRadius.value = DEFAULT_SURFACE_PILL_RADIUS
-    buttonRadius.value = DEFAULT_SURFACE_BUTTON_RADIUS
     cardRadius.value = DEFAULT_CARD_RADIUS
     cardSubsectionRadius.value = DEFAULT_CARD_SUBSECTION_RADIUS
     cardItemRadius.value = DEFAULT_CARD_ITEM_RADIUS
@@ -321,7 +320,6 @@ export function useSurfaceTokens(init: SurfaceTokensInit = {}): SurfaceTokens {
     dialogRadius,
     tooltipRadius,
     pillRadius,
-    buttonRadius,
     cardRadius,
     cardSubsectionRadius,
     cardItemRadius,

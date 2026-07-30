@@ -28,7 +28,8 @@ export const pluginYggdrasilApi: LauncherAppPlugin = async (app) => {
         );
       } else {
         throw createClientAuthError(
-          ClientAuthErrorCodes.endpointResolutionError
+          ClientAuthErrorCodes.endpointResolutionError,
+          'xmcl-yggdrasil-device-code',
         );
       }
     }

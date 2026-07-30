@@ -63,13 +63,11 @@ export async function installModpackFromStore(
   await shell.storeInstall.click()
 
   await shell.installVersionDialog.waitFor({ state: 'visible', timeout: 15_000 })
-  // The first version row is `StoreProjectInstallVersionDialogVersion`. Click
-  // it to enter the version-detail view, which exposes the confirm button.
-  const firstVersionRow = shell.installVersionDialog
-    .locator('[class*="rounded-lg"]')
-    .filter({ hasNot: launcher.main.locator('.v-toolbar') })
-    .first()
-  await firstVersionRow.click().catch(() => {})
+  // Click the first version row to enter the version-detail view, which
+  // exposes the confirm button.
+  const firstVersionRow = shell.installVersionItem.first()
+  await firstVersionRow.waitFor({ state: 'visible', timeout: 30_000 })
+  await firstVersionRow.click()
   await shell.installVersionConfirm.waitFor({ state: 'visible', timeout: 15_000 })
   await shoot(ctx, '04-version', {
     caption: 'Step 4. Pick the **latest version** in the dialog.',
@@ -77,28 +75,32 @@ export async function installModpackFromStore(
 
   await shell.installVersionConfirm.click()
 
-  // Modpack downloads → HomeInstanceInstallDialog opens.
+  // Depending on the launcher version, confirming either opens a
+  // HomeInstanceInstallDialog to review file changes, or creates the instance
+  // and installs the modpack files directly. Handle the optional dialog.
   const downloadTimeout = args.downloadTimeoutMs ?? 5 * 60_000
-  await shell.installInstanceConfirm.waitFor({
-    state: 'visible',
-    timeout: downloadTimeout,
-  })
-  await shoot(ctx, '05-confirm', {
-    caption: 'Step 5. Review the file changes, then click **Update** to install.',
-  })
+  const reviewDialogAppeared = await shell.installInstanceConfirm
+    .waitFor({ state: 'visible', timeout: 20_000 })
+    .then(() => true)
+    .catch(() => false)
+  if (reviewDialogAppeared) {
+    await shoot(ctx, '05-confirm', {
+      caption: 'Step 5. Review the file changes, then click **Update** to install.',
+    })
+    await shell.installInstanceConfirm.click()
+    await launcher.main
+      .waitForFunction(
+        () => !document.querySelector('[data-testid="install-instance-confirm"]'),
+        undefined,
+        { timeout: downloadTimeout },
+      )
+      .catch(() => {})
+  }
 
-  await shell.installInstanceConfirm.click()
-
-  // Wait for the dialog to close and the launcher to return to Home.
-  await launcher.main
-    .waitForFunction(
-      () => !document.querySelector('[data-testid="install-instance-confirm"]'),
-      undefined,
-      { timeout: downloadTimeout },
-    )
-    .catch(() => {})
+  // Let the version dialog close and the instance creation settle.
+  await shell.installVersionDialog.waitFor({ state: 'hidden', timeout: 30_000 }).catch(() => {})
   await launcher.main.waitForTimeout(1500)
   await shoot(ctx, '06-home', {
-    caption: 'Step 6. The modpack is installed and you are returned to **Home**.',
+    caption: 'Step 6. The modpack is installed and the new instance is selected.',
   })
 }

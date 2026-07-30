@@ -2,7 +2,7 @@ import { VersionHeader } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import type { EditInstanceOptions, Instance, InstanceData, RuntimeVersions } from '@xmcl/instance'
 import { useGlobalSettings } from './setting'
-import debounce from 'lodash.debounce'
+import { useDebounceFn } from '@vueuse/core'
 import { injection } from '@/util/inject'
 import { kLaunchButton } from './launchButton'
 import { AnyError } from '@/util/error'
@@ -308,7 +308,7 @@ export function useInstanceEdit(
   )
 
   let buffer: (EditInstanceOptions & { instancePath: string }) | undefined
-  const queue = debounce(flush, 2000)
+  const queue = useDebounceFn(flush, 2000)
 
   async function flush() {
     if (buffer) {

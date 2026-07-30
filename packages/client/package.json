@@ -1,6 +1,6 @@
 {
   "name": "@xmcl/client",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "main": "./index.ts",
   "description": "Minecraft socket pipeline utilities. Support Minecraft lan server discovery.",
   "engines": {
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+    "url": "git+https://github.com/Voxelum/x-minecraft-launcher.git"
   },
   "author": "cijhn@hotmail.com",
   "keywords": [
@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
   "devDependencies": {
-    "@types/node": "^20.19.0",
+    "@types/node": "^24.13.3",
     "@xmcl/oxlint-config": "workspace:^*",
     "esbuild": "^0.25.12",
     "oxlint": "^1.63.0",

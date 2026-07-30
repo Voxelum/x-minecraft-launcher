@@ -91,6 +91,12 @@ export function useInstances() {
 
   const _path = useLocalStorage('selectedInstancePath', '' as string)
   const path = ref('')
+  // Guard against `watch(instances)` clobbering the restored selection before
+  // the async `watch(state)` initializer has finished. Without this, the
+  // instances list populates (synchronously) while `path` is still empty,
+  // causing the first instance to be selected and persisted over the real
+  // last-selected instance.
+  const initialized = ref(false)
 
   const migrationBus = useEventBus<{ oldRoot: string; newRoot: string }>('migration')
 
@@ -159,6 +165,7 @@ export function useInstances() {
       }
 
       path.value = _path.value
+      initialized.value = true
     }
   })
   watch(path, (newPath) => {
@@ -173,7 +180,7 @@ export function useInstances() {
   })
 
   watch(instances, (newInstances) => {
-    if (ready.value && !newInstances.some(i => i.path === path.value)) {
+    if (initialized.value && ready.value && !newInstances.some(i => i.path === path.value)) {
       if (newInstances.length > 0) {
         path.value = newInstances[0].path
       } else {

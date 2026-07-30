@@ -42,16 +42,12 @@
     </div>
 
     <div class="flex-grow flex flex-col justify-center">
-      <div :style="{ fontSize: '16px', lineHeight: '100%', ...item.style }">
+      <div class="text-[16px] leading-none" :style="item.style">
         {{ basename(item.name, '/') }}
       </div>
       <div
         v-if="description"
-        :style="{
-          opacity: 0.6,
-          fontStyle: 'italic',
-          fontSize: '12px',
-        }"
+        class="opacity-60 italic text-[12px]"
       >
         {{ description }}
       </div>
@@ -59,7 +55,7 @@
         v-if="item.size > 0"
         class="inline-flex gap-2 items-center"
       >
-        <span :style="{ opacity: 0.6, fontStyle: 'italic', fontSize: '12px' }">
+        <span class="opacity-60 italic text-[12px]">
           {{ getExpectedSize(item.size) }}
         </span>
         <v-icon

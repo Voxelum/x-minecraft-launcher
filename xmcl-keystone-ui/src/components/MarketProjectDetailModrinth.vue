@@ -15,6 +15,7 @@ import { useService } from '@/composables/service'
 import { useLoading, useSWRVModel } from '@/composables/swrv'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { kTaskManager } from '@/composables/taskManager'
+import { getSWRV } from '@/util/swrvGet'
 import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
 import { SearchResultHit } from '@xmcl/modrinth'
@@ -31,6 +32,8 @@ const props = defineProps<{
   allFiles: ProjectFile[]
   updating?: boolean
   curseforge?: number
+  disableInstall?: boolean
+  collectionContentType?: import('@xmcl/runtime-api').CollectionContentType
 }>()
 
 const emit = defineEmits<{
@@ -87,7 +90,7 @@ const modVersions = useModrinthProjectDetailVersions(
   computed(() => props.installed),
 )
 
-const selectedVersion = ref(
+const selectedVersion = shallowRef(
   modVersions.value.find((v) => v.installed) ??
     (modVersions.value[0] as ProjectDetailVersion | undefined),
 )
@@ -170,16 +173,28 @@ watch(
 // Install
 const installing = ref(false)
 const { install, installWithDependencies } = injection(kModrinthInstaller)
+const config = injection(kSWRVConfig)
 const onInstall = async (v: ProjectDetailVersion) => {
   if (installing.value) return
   try {
     installing.value = true
+    let resolvedDeps = deps.value
+    if (!resolvedDeps) {
+      resolvedDeps = await getSWRV(
+        getModrinthDependenciesModel(
+          computed(() => versions.value?.find((ver) => ver.id === v.id)),
+          modLoader,
+          config,
+        ),
+        config,
+      )
+    }
     await installWithDependencies(
       v.id,
       v.loaders,
       project.value?.icon_url,
       props.installed,
-      deps.value ?? [],
+      resolvedDeps ?? [],
     )
   } finally {
     installing.value = false
@@ -289,6 +304,8 @@ const { t } = useI18n()
     :following="following"
     :collection="collectionId"
     :loading-collections="loadingCollections"
+    :disable-install="disableInstall"
+    :collection-content-type="collectionContentType"
     @collection="onAddOrRemove"
     current-target="modrinth"
     @open-dependency="onOpenDependency"
@@ -299,5 +316,9 @@ const { t } = useI18n()
     @select:category="emit('category', $event)"
     @refresh="refresh()"
     @follow="onFollow"
-  />
+  >
+    <template v-for="(_, name) in $slots" #[name]="slotProps">
+      <slot :name="name" v-bind="slotProps ?? {}" />
+    </template>
+  </MarketProjectDetail>
 </template>

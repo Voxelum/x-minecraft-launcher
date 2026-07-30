@@ -897,3 +897,7 @@ export function guessCurseforgeFileUrl(id: number, name: string) {
     `https://mediafiles.forgecdn.net/files/${fileId.slice(0, 4)}/${fileId.slice(4)}/${name}`,
   ]
 }
+
+export function getCurseforgeFileDownloadUrls(id: number, name: string, downloadUrl?: string) {
+  return [...new Set([...(downloadUrl ? [downloadUrl] : []), ...guessCurseforgeFileUrl(id, name)])]
+}

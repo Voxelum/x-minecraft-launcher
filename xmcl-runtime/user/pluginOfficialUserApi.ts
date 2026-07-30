@@ -39,7 +39,10 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
       (...args) => app.fetch(...args),
       logger,
       CLIENT_ID,
-      async (url, signal) => {
+      async (url, redirectUri, signal) => {
+        if (app.controller.openMicrosoftLogin) {
+          return app.controller.openMicrosoftLogin(url, redirectUri, signal)
+        }
         app.shell.openInBrowser(url)
         userService.emit('microsoft-authorize-url', url)
         return await new Promise<string>((resolve, reject) => {
@@ -67,6 +70,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
         app.shell.openInBrowser(response.verificationUri)
       },
       app.secretStorage,
+      () => app.controller.getNativeWindowHandle?.(),
     ), app)
 
   userService.registerAccountSystem(AUTHORITY_MICROSOFT, system)

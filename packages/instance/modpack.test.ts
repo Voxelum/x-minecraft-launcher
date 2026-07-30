@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest'
 import {
   getInstanceConfigFromMcbbsModpack,
   getInstanceConfigFromMmcModpack,
+  getMmcVersionFromManifest,
+  getMmcLocalLibraryNames,
   getInstanceConfigFromCurseforgeModpack,
   getInstanceConfigFromModrinthModpack,
   getModrinthModpackFromInstance,
@@ -292,6 +294,128 @@ describe('Modpack Conversion Functions', () => {
       const result = getInstanceConfigFromMmcModpack(manifest)
 
       expect(result.vmOptions).toBeUndefined()
+    })
+  })
+
+  describe('getMmcVersionFromManifest', () => {
+    // A trimmed-down reproduction of the GTNH 2.8.4 Prism layout: net.minecraft
+    // carries the base metadata, net.minecraftforge adds libraries + tweakers,
+    // lwjgl3ify.forgepatches injects a `MMC-hint: local` jar, and
+    // lwjgl3ify.launchargs overrides the mainClass with a high `order`.
+    const gtnhManifest = (): MMCModpackManifest => ({
+      json: {
+        formatVersion: 1,
+        components: [
+          { uid: 'net.minecraft', version: '1.7.10' },
+          { uid: 'me.eigenraven.lwjgl3ify.forgepatches', version: '2.1.16' },
+          { uid: 'net.minecraftforge', version: '10.13.4.1614' },
+          { uid: 'me.eigenraven.lwjgl3ify.launchargs', version: '2.1.16' },
+        ],
+      },
+      cfg: { name: 'GTNH', notes: '' },
+      patches: {
+        'net.minecraft': {
+          uid: 'net.minecraft',
+          order: -2,
+          mainClass: 'net.minecraft.client.main.Main',
+          minecraftArguments: '--username ${auth_player_name} --version ${version_name}',
+          assetIndex: { id: '1.7.10', sha1: 'abc', size: 1, totalSize: 1, url: 'https://example/1.7.10.json' },
+          assets: '1.7.10',
+          type: 'release',
+          libraries: [{ name: 'net.minecraft:client:1.7.10' }],
+        } as any,
+        'net.minecraftforge': {
+          uid: 'net.minecraftforge',
+          order: 5,
+          '+tweakers': ['cpw.mods.fml.common.launcher.FMLTweaker'],
+          libraries: [{ name: 'net.minecraftforge:forge:1.7.10-10.13.4.1614' }],
+        },
+        'me.eigenraven.lwjgl3ify.forgepatches': {
+          uid: 'me.eigenraven.lwjgl3ify.forgepatches',
+          order: 3,
+          '+jvmArgs': ['-Dfile.encoding=UTF-8'],
+          libraries: [
+            { name: 'com.github.GTNewHorizons:lwjgl3ify:2.1.16:forgePatches', 'MMC-hint': 'local' },
+          ],
+        },
+        'me.eigenraven.lwjgl3ify.launchargs': {
+          uid: 'me.eigenraven.lwjgl3ify.launchargs',
+          order: 100,
+          mainClass: 'com.gtnewhorizons.retrofuturabootstrap.Main',
+        },
+      },
+    })
+
+    it('merges patches into a standalone version json (GTNH layout)', () => {
+      const version = getMmcVersionFromManifest(gtnhManifest(), 'GTNH')
+
+      expect(version).toBeDefined()
+      expect(version!.id).toBe('GTNH')
+      // The high-`order` launchargs component overrides the vanilla mainClass.
+      expect(version!.mainClass).toBe('com.gtnewhorizons.retrofuturabootstrap.Main')
+      // Base metadata comes from the net.minecraft component.
+      expect(version!.assetIndex?.id).toBe('1.7.10')
+      expect(version!.minecraftArguments).toContain('${auth_player_name}')
+      // Libraries appear in `order` sequence (minecraft, lwjgl3ify, forge).
+      expect(version!.libraries.map((l) => l.name)).toEqual([
+        'net.minecraft:client:1.7.10',
+        'com.github.GTNewHorizons:lwjgl3ify:2.1.16:forgePatches',
+        'net.minecraftforge:forge:1.7.10-10.13.4.1614',
+      ])
+    })
+
+    it('exposes the `MMC-hint: local` libraries for copying', () => {
+      const version = getMmcVersionFromManifest(gtnhManifest(), 'GTNH')!
+      expect(getMmcLocalLibraryNames(version)).toEqual([
+        'com.github.GTNewHorizons:lwjgl3ify:2.1.16:forgePatches',
+      ])
+    })
+
+    it('returns undefined when the manifest has no patches', () => {
+      const manifest: MMCModpackManifest = {
+        json: { formatVersion: 1, components: [{ uid: 'net.minecraft', version: '1.20.1' }] },
+        cfg: { name: 'Plain', notes: '' },
+      }
+      expect(getMmcVersionFromManifest(manifest, 'Plain')).toBeUndefined()
+    })
+
+    it('returns undefined when no patch overrides the mainClass', () => {
+      // Only additive `+jvmArgs` — this is handled by getInstanceConfigFromMmcModpack
+      // and does not need a standalone version json.
+      const manifest: MMCModpackManifest = {
+        json: {
+          formatVersion: 1,
+          components: [
+            { uid: 'net.minecraft', version: '1.7.10' },
+            { uid: 'me.eigenraven.lwjgl3ify.forgepatches', version: '2.1.16' },
+          ],
+        },
+        cfg: { name: 'NoMain', notes: '' },
+        patches: {
+          'me.eigenraven.lwjgl3ify.forgepatches': {
+            uid: 'me.eigenraven.lwjgl3ify.forgepatches',
+            '+jvmArgs': ['-Dfile.encoding=UTF-8'],
+          },
+        },
+      }
+      expect(getMmcVersionFromManifest(manifest, 'NoMain')).toBeUndefined()
+    })
+
+    it('returns undefined when a mainClass override lacks base libraries', () => {
+      const manifest: MMCModpackManifest = {
+        json: {
+          formatVersion: 1,
+          components: [{ uid: 'me.eigenraven.lwjgl3ify.launchargs', version: '2.1.16' }],
+        },
+        cfg: { name: 'MainOnly', notes: '' },
+        patches: {
+          'me.eigenraven.lwjgl3ify.launchargs': {
+            uid: 'me.eigenraven.lwjgl3ify.launchargs',
+            mainClass: 'com.gtnewhorizons.retrofuturabootstrap.Main',
+          },
+        },
+      }
+      expect(getMmcVersionFromManifest(manifest, 'MainOnly')).toBeUndefined()
     })
   })
 

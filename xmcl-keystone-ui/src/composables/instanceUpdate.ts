@@ -18,6 +18,12 @@ export type InstanceInstallOptions = {
   oldFiles: InstanceFile[]
   files: InstanceFile[]
   id: string
+  /**
+   * Projects that could not be resolved to a compatible version for the current
+   * instance (e.g. from a collection bulk install). Shown as an alert in the
+   * install dialog so the user knows what was left out.
+   */
+  incompatible?: Array<{ id: string; name: string }>
 }
 
 export const InstanceInstallDialog: DialogKey<InstanceInstallOptions> = 'instance-install'

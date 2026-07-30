@@ -3,6 +3,7 @@ import { tmpdir } from 'os'
 import { dirname, join } from 'path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { z } from 'zod'
+import type { VersionMetadataException } from '@xmcl/runtime-api'
 import { fetchVersionMetadata, flushRevalidation, VersionMetadataSource } from './versionMetadataCache'
 
 const payloadSchema = z.array(z.object({ version: z.string() }))
@@ -95,7 +96,7 @@ describe('fetchVersionMetadata (cold cache, blocking)', () => {
     expect(JSON.parse(readFileSync(cachePath, 'utf-8')).source).toBe('https://mirror/data.json')
   })
 
-  test('throws AggregateError when every source fails and there is no cache', async () => {
+  test('throws VersionMetadataException when every source fails and there is no cache', async () => {
     app.fetch.mockImplementation(async () => { throw new Error('offline') })
 
     const onFresh = vi.fn()
@@ -105,7 +106,15 @@ describe('fetchVersionMetadata (cold cache, blocking)', () => {
       schema: payloadSchema,
       sources: [source('https://primary/data.json'), source('https://mirror/data.json')],
       onFresh,
-    })).rejects.toBeInstanceOf(AggregateError)
+    })).rejects.toMatchObject({
+      name: 'VersionMetadataException',
+      exception: {
+        type: 'versionMetadataFetchFailed',
+        cachePath,
+        sources: ['https://primary/data.json', 'https://mirror/data.json'],
+      },
+      cause: expect.any(AggregateError),
+    } satisfies Partial<VersionMetadataException>)
     expect(onFresh).not.toHaveBeenCalled()
   })
 

@@ -16,6 +16,7 @@
       <v-list-item
         v-bind="itemProps"
         :key="item.value"
+        :data-testid="`login-authority-item-${authoritySlug(item.value)}`"
         :title="item.text"
       >
         <template #prepend>
@@ -51,6 +52,7 @@
 </template>
 <script setup lang="ts">
 import { AuthorityItem, useAllowThirdparty } from '@/composables/login'
+import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   modelValue: string
@@ -62,6 +64,22 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+
+/**
+ * Stable, locale-independent slug for each authority option so e2e specs can
+ * anchor on `data-testid="login-authority-item-<slug>"`. Built-in authorities
+ * get a friendly name; third-party services fall back to their host.
+ */
+function authoritySlug(value: string) {
+  if (value === AUTHORITY_MICROSOFT) return 'microsoft'
+  if (value === AUTHORITY_MOJANG) return 'mojang'
+  if (value === AUTHORITY_DEV) return 'offline'
+  try {
+    return `thirdparty-${new URL(value).host}`
+  } catch {
+    return `thirdparty-${value}`
+  }
+}
 
 const allowThirdParty = useAllowThirdparty()
 const allowAddService = computed(() => allowThirdParty.value)

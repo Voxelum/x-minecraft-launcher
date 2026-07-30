@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useService } from '@/composables'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { useDateString } from '@/composables/date'
 import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
@@ -48,7 +48,7 @@ const currentVersion = computed(() => {
   return result
 })
 const limit = ref(10)
-const onlyCurrentVersion = useLocalStorageCacheBool(computed(() => `instanceUpstreamOnlyShowCurrentVersion/${instance.value.path}`), false)
+const onlyCurrentVersion = useLocalStorage(computed(() => `instanceUpstreamOnlyShowCurrentVersion/${instance.value.path}`), false, { writeDefaults: false })
 const items = computed(() => {
   const result = {} as Record<string, ProjectVersionProps[]>
 

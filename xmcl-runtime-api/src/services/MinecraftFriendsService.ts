@@ -1,5 +1,11 @@
 import type { UserProfile } from '../entities/user.schema'
+import { Exception } from '../entities/exception'
 import type { ServiceKey } from './Service'
+
+export interface XboxPresenceInfo {
+  state: 'Online' | 'Offline' | 'Away' | string
+  titleName?: string
+}
 
 /**
  * A friend / friend-request entry returned by Minecraft Services.
@@ -22,6 +28,10 @@ export interface MinecraftFriend {
    * For pending requests: when the request will expire on the server.
    */
   expiresAt?: string
+  /**
+   * Xbox Live presence status if available.
+   */
+  xboxPresence?: XboxPresenceInfo
 }
 
 /**
@@ -123,3 +133,10 @@ export type MinecraftFriendsErrorKind =
   | 'cannotAddSelf'
   | 'unsupported'
   | 'unknown'
+
+export type MinecraftFriendsExceptions = {
+  type: 'minecraftFriends'
+  reason: 'FRIENDS_DISABLED' | 'UNKNOWN_PROFILE' | 'DUPLICATED_PROFILES' | 'CANNOT_ADD_SELF' | 'INVITE_REJECTED' | 'INVALID_NAME'
+}
+
+export class MinecraftFriendsException extends Exception<MinecraftFriendsExceptions> { }

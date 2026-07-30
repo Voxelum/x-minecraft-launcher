@@ -1,4 +1,4 @@
-import { CurseforgeV1Client, File, Mod, guessCurseforgeFileUrl } from '@xmcl/curseforge'
+import { CurseforgeV1Client, File, Mod, getCurseforgeFileDownloadUrls } from '@xmcl/curseforge'
 import { CurseforgeModpackManifest, InstanceFile, getInstanceConfigFromCurseforgeModpack } from '@xmcl/instance'
 import { ResourceDomain } from '@xmcl/resource'
 import { readEntry } from '@xmcl/unzip'
@@ -82,11 +82,11 @@ export function createCurseforgeHandler(app: LauncherApp): ModpackHandler<Cursef
         for (let i = 0; i < curseforgeFiles.length; i++) {
           const manifestFile = curseforgeFiles[i]
           const file = dict[manifestFile.fileID]
-          const mod = modDict[file.modId]
           if (!file) {
             console.warn(`Skip file ${manifestFile.fileID} because it is not found in curseforge API`)
             continue
           }
+          const mod = modDict[file.modId]
           let domain: ResourceDomain | undefined
           if (mod) {
             domain = getDomain(mod.primaryCategoryId)
@@ -95,7 +95,7 @@ export function createCurseforgeHandler(app: LauncherApp): ModpackHandler<Cursef
             domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
           }
           infos.push({
-            downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),
+            downloads: getCurseforgeFileDownloadUrls(file.id, file.fileName, file.downloadUrl),
             path: join(domain, file.fileName),
             hashes: resolveHashes(file),
             curseforge: {

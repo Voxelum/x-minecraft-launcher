@@ -2,7 +2,7 @@ import { PingServerOptions, ServerStatus, ServerStatusServiceKey } from '@xmcl/r
 import { InjectionKey, Ref, computed, ref, watch } from 'vue'
 
 import { useService } from '@/composables'
-import { useLocalStorageCache } from '@/composables/cache'
+import { useLocalStorage } from '@vueuse/core'
 import { injection } from '@/util/inject'
 import { kInstances } from './instances'
 import { Instance } from '@xmcl/instance'
@@ -16,7 +16,7 @@ export function useInstanceServerStatus(instance: Ref<Instance | undefined>) {
 }
 
 export function useServerStatusCache() {
-  return useLocalStorageCache('serverStatusCache', () => ({}), JSON.stringify, JSON.parse)
+  return useLocalStorage<Record<string, ServerStatus>>('serverStatusCache', {}, { deep: false, writeDefaults: false })
 }
 
 /**

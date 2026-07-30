@@ -13,7 +13,7 @@
         autoplay
         loop
         playsinline
-        muted
+        :muted="isMuted"
       />
       <Particles
         v-else-if="backgroundType === BackgroundType.PARTICLE"
@@ -44,7 +44,7 @@
         autoplay
         loop
         playsinline
-        muted
+        :muted="isMuted"
       />
     </transition>
 
@@ -73,6 +73,7 @@ const customBackgroundVideo = computed(() => customCss?.customBackgroundVideo.va
 
 const { sideBarColor, backgroundColorOverlay, backgroundColor, blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, volume } = injection(kTheme)
 const videoRef = ref(null as null | HTMLVideoElement)
+const isMuted = computed(() => volume.value <= 0)
 
 const route = useRoute()
 const isHome = computed(() => route.path === '/')

@@ -1,12 +1,20 @@
 <template>
-  <v-dialog v-model="isShown" :width="1200">
+  <v-dialog
+    v-model="isShown"
+    :width="1200"
+    :content-props="{ 'aria-labelledby': 'log-dialog-title' }"
+  >
     <v-card>
       <v-toolbar class="select-none" color="warning">
-        <v-toolbar-title class="text-white">
+        <v-toolbar-title id="log-dialog-title" class="text-white">
           {{ t("logsCrashes.title") }}
         </v-toolbar-title>
         <v-spacer />
-        <v-btn icon="close" @click="hide" />
+        <v-btn
+          icon="close"
+          :aria-label="t('shared.close')"
+          @click="hide"
+        />
 
         <template #extension>
           <v-tabs v-model="data.tab" color="white" slider-color="yellow">

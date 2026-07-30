@@ -81,7 +81,7 @@ const navigate = () => {
       v-if="isPinned"
       class="pin-badge"
     >
-      <v-icon size="x-small" color="white" style="font-size: 8px;">push_pin</v-icon>
+      <v-icon size="x-small" color="white" class="text-[8px]">push_pin</v-icon>
     </div>
   </div>
 </template>

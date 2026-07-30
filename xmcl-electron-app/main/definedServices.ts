@@ -1,6 +1,10 @@
 import { BaseService } from '@xmcl/runtime/app'
+import { AgentService } from '@xmcl/runtime/agent'
 import { AuthlibInjectorService } from '@xmcl/runtime/authlibInjector'
 import { BedrockService } from '@xmcl/runtime/bedrock'
+import { CollectionService } from '@xmcl/runtime/collection'
+import { XmclAccountService } from '@xmcl/runtime/xmclAccount'
+import { ExternalCredentialService } from '@xmcl/runtime/credential/ExternalCredentialService'
 import { ElyByService } from '@xmcl/runtime/elyby'
 import { InstallService, VersionMetadataService } from '@xmcl/runtime/install'
 import {
@@ -15,6 +19,7 @@ import {
   InstanceShaderPacksService,
   InstanceThemeService,
   InstanceModsGroupService,
+  InstanceBlueprintsService,
 } from '@xmcl/runtime/instance'
 import {
   InstanceIOService,
@@ -25,6 +30,7 @@ import { JavaService } from '@xmcl/runtime/java'
 import { LaunchService, VersionService } from '@xmcl/runtime/launch'
 import { ProjectMappingService } from '@xmcl/runtime/moddb'
 import { ModMetadataService } from '@xmcl/runtime/moddb/ModMetadataService'
+import { BlueprintMarketService } from '@xmcl/runtime/market'
 import { ModpackService } from '@xmcl/runtime/modpack'
 import { PeerService } from '@xmcl/runtime/peer'
 import { PresenceService } from '@xmcl/runtime/presence'
@@ -34,9 +40,15 @@ import { ThemeService } from '@xmcl/runtime/theme'
 import { OfficialUserService, UserService, MinecraftFriendsService } from '@xmcl/runtime/user'
 
 export const definedServices = [
+  // Main-process-only: it deliberately has no service key, so token access
+  // cannot be invoked through renderer service IPC.
+  ExternalCredentialService,
+  AgentService,
   VersionMetadataService,
   BaseService,
   AuthlibInjectorService,
+  CollectionService,
+  XmclAccountService,
   BedrockService,
   InstallService,
   ProjectMappingService,
@@ -51,6 +63,8 @@ export const definedServices = [
   InstanceService,
   InstanceScreenshotService,
   InstanceShaderPacksService,
+  InstanceBlueprintsService,
+  BlueprintMarketService,
   PresenceService,
   JavaService,
   LaunchService,

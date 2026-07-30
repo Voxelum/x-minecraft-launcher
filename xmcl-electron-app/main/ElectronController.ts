@@ -45,6 +45,14 @@ export class ElectronController implements LauncherAppController {
    */
   protected parking = false
 
+  /**
+   * Whether the app is quitting. Once the app is quitting, windows that normally
+   * hide instead of closing (e.g. the multiplayer window) must be allowed to
+   * actually close, otherwise they keep the process (and its WebRTC/pipewire
+   * capturer child processes) alive in the background after the app appears closed.
+   */
+  protected quitting = false
+
   protected activatedManifest: InstalledAppManifest | undefined
 
   protected sharedSession: Session | undefined
@@ -185,15 +193,14 @@ export class ElectronController implements LauncherAppController {
 
   private setupBrowserLogger(ref: BrowserWindow, name: string) {
     const logger = this.app.getLogger(name, name)
-    ref.webContents.on('console-message', (e, level, message, line, id) => {
+    ref.webContents.on('console-message', (e) => {
+      const message = e.message
       if (message.startsWith("Listener added for a synchronous 'DOMNodeRemoved' DOM Mutation Event. This event type is deprecated")) {
         return
       }
-      if (level === 1) {
+      if (e.level === 'info') {
         logger.log(message)
-      } else if (level === 2) {
-        logger.warn(message)
-      } else if (level === 3) {
+      } else if (e.level === 'warning' || e.level === 'error') {
         logger.warn(message)
       }
     })
@@ -330,9 +337,22 @@ export class ElectronController implements LauncherAppController {
         win.show()
       })
       win.on('close', (e) => {
-        if (this.mainWin && !this.mainWin.isDestroyed()) {
+        if (!this.quitting && this.mainWin && !this.mainWin.isDestroyed()) {
           win.hide()
           e.preventDefault()
+        }
+      })
+      // When the app is quitting, allow this window to actually close instead of
+      // being hidden, otherwise its WebRTC/pipewire capturer child processes keep
+      // the whole app alive in the background after the window appears closed.
+      const onBeforeQuit = () => {
+        this.quitting = true
+      }
+      app.on('before-quit', onBeforeQuit)
+      win.on('closed', () => {
+        app.off('before-quit', onBeforeQuit)
+        if (this.multiplayerRef === win) {
+          this.multiplayerRef = undefined
         }
       })
       this.multiplayerRef = win
@@ -532,6 +552,84 @@ export class ElectronController implements LauncherAppController {
 
   get activeWindow() {
     return this.mainWin ?? this.loggerWin
+  }
+
+  getNativeWindowHandle() {
+    const window = this.activeWindow
+    if (!window || window.isDestroyed()) {
+      return undefined
+    }
+    return window.getNativeWindowHandle()
+  }
+
+  async openMicrosoftLogin(authorizationUrl: string, redirectUri: string, signal?: AbortSignal): Promise<string> {
+    const redirect = new URL(redirectUri)
+    await app.whenReady()
+    return new Promise<string>((resolve, reject) => {
+      let settled = false
+      const parent = this.activeWindow
+      const browser = new BrowserWindow({
+        title: 'Sign in to Microsoft',
+        width: 560,
+        height: 720,
+        minWidth: 420,
+        minHeight: 600,
+        parent,
+        modal: !!parent,
+        autoHideMenuBar: true,
+        webPreferences: {
+          contextIsolation: true,
+          nodeIntegration: false,
+          sandbox: true,
+          partition: 'persist:xmcl-microsoft-login',
+        },
+        show: false,
+      })
+      const finish = (error?: Error, code?: string) => {
+        if (settled) return
+        settled = true
+        signal?.removeEventListener('abort', onAbort)
+        if (!browser.isDestroyed()) {
+          browser.close()
+        }
+        if (error) reject(error)
+        else resolve(code!)
+      }
+      const onAbort = () => {
+        const error = new Error('Microsoft authorization was cancelled.')
+        error.name = 'AbortError'
+        finish(error)
+      }
+      const onNavigate = (event: Event, url: string) => {
+        const target = new URL(url)
+        if (target.origin !== redirect.origin || target.pathname !== redirect.pathname) return
+        event.preventDefault()
+        const error = target.searchParams.get('error')
+        if (error) {
+          finish(new Error(target.searchParams.get('error_description') || error))
+          return
+        }
+        const code = target.searchParams.get('code')
+        finish(code ? undefined : new Error('Microsoft authorization returned no code.'), code ?? undefined)
+      }
+      browser.webContents.on('will-navigate', onNavigate)
+      browser.webContents.on('will-redirect', onNavigate)
+      browser.webContents.setWindowOpenHandler(({ url }) => {
+        try {
+          const target = new URL(url)
+          if (target.protocol === 'https:' || target.origin === redirect.origin) {
+            void browser.loadURL(url).catch(error => finish(error))
+          }
+        } catch {
+          // Ignore malformed popup targets from third-party identity pages.
+        }
+        return { action: 'deny' }
+      })
+      browser.once('ready-to-show', () => browser.show())
+      browser.once('closed', () => finish(new Error('Microsoft authorization window was closed.')))
+      signal?.addEventListener('abort', onAbort, { once: true })
+      void browser.loadURL(authorizationUrl).catch(error => finish(error))
+    })
   }
 
   getLoginSuccessHTML() {

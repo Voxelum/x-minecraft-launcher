@@ -91,6 +91,16 @@
       long-action
     >
       <template #action>
+        <v-btn
+          v-shared-tooltip="() => t('setting.useDesktopBackground')"
+          icon
+          variant="text"
+          class="mr-2"
+          :loading="settingDesktopBackground"
+          @click="applyDesktopBackground"
+        >
+          <v-icon>wallpaper</v-icon>
+        </v-btn>
         <v-select
           v-model="backgroundImageFit"
           class="mr-4 w-40"
@@ -447,6 +457,7 @@ import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import { useAgentChatBus } from '@/composables/agentChat'
 import { kCustomCss } from '@/composables/customCss'
+import { kEnvironment } from '@/composables/environment'
 import { kInstanceTheme } from '@/composables/instanceTheme'
 import { useService } from '@/composables/service'
 import { kSettingsState } from '@/composables/setting'
@@ -454,7 +465,7 @@ import { BackgroundType, UIThemeDataV1, useThemeWritter } from '@/composables/th
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ThemeServiceKey } from '@xmcl/runtime-api'
-import SettingAppearanceColor from '../views/SettingAppearanceColor.vue'
+import SettingAppearanceColor from '@/components/SettingAppearanceColor.vue'
 
 const props = defineProps<{
   theme: UIThemeDataV1
@@ -468,6 +479,21 @@ const props = defineProps<{
 }>()
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
+const env = injection(kEnvironment)
+
+// Default folder to open in the font picker: the OS system font directory.
+const defaultFontFolder = computed(() => {
+  switch (env.value?.os) {
+    case 'windows':
+      return 'C:\\Windows\\Fonts'
+    case 'osx':
+      return '/System/Library/Fonts'
+    case 'linux':
+      return '/usr/share/fonts'
+    default:
+      return undefined
+  }
+})
 
 const emit = defineEmits<{
   (e: 'save'): void
@@ -477,6 +503,7 @@ const {
   backgroundImage,
   setBackgroundImage,
   setBackgroundImageUrl,
+  setBackgroundToDesktop,
   clearBackgroundImage,
   exportTheme,
   importTheme,
@@ -518,6 +545,11 @@ watch(backgroundType, (type) => {
   if (type !== BackgroundType.IMAGE && type !== BackgroundType.VIDEO) return
   if (!backgroundColorOverlay.value) {
     backgroundColorOverlay.value = true
+  }
+  // When the user first switches to an image background and nothing has been
+  // set before, default to the current OS desktop wallpaper.
+  if (type === BackgroundType.IMAGE && !backgroundImage.value) {
+    applyDesktopBackground()
   }
   const color = backgroundColor.value
   if (!color || !color.startsWith('#')) return
@@ -670,6 +702,16 @@ function selectImage() {
     }
   })
 }
+const settingDesktopBackground = ref(false)
+async function applyDesktopBackground() {
+  if (settingDesktopBackground.value) return
+  settingDesktopBackground.value = true
+  try {
+    await setBackgroundToDesktop()
+  } finally {
+    settingDesktopBackground.value = false
+  }
+}
 function selectVideo() {
   showOpenDialog({
     title: t('theme.selectVideo'),
@@ -762,6 +804,7 @@ function onFontSizeDecrease() {
 function onSelectFont() {
   showOpenDialog({
     title: t('setting.themeSelectFont'),
+    defaultPath: defaultFontFolder.value,
     properties: ['openFile'],
     filters: [
       {

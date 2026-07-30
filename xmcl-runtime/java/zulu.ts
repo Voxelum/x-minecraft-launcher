@@ -15,6 +15,7 @@ export type ZuluJavaType =
   | 'java-runtime-gamma'
   | 'java-runtime-gamma-snapshot'
   | 'java-runtime-delta'
+  | 'java-runtime-epsilon'
   | 'jre-legacy'
 
 // Required component keys the launcher fetches a Zulu build for.
@@ -29,6 +30,7 @@ const ZULU_TYPES = [
   'java-runtime-gamma',
   'java-runtime-gamma-snapshot',
   'java-runtime-delta',
+  'java-runtime-epsilon',
   'jre-legacy',
 ] as const satisfies readonly ZuluJavaType[]
 

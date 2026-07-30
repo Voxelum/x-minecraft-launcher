@@ -1,9 +1,20 @@
 import { ServiceKey } from '@xmcl/runtime-api'
-import { InjectionKey } from 'vue'
+import { InjectionKey, toRaw } from 'vue'
 import { injection } from '../util/inject'
 
 export interface ServiceFactory {
   getService<T>(key: ServiceKey<T>): T
+}
+
+function sanitizePayload(p: any): any {
+  if (!p || typeof p !== 'object') return p
+  const raw = toRaw(p)
+  if (typeof raw !== 'object' || raw === null) return raw
+  try {
+    return JSON.parse(JSON.stringify(raw))
+  } catch {
+    return raw
+  }
 }
 
 export class ServiceFactoryImpl implements ServiceFactory {
@@ -21,7 +32,7 @@ export class ServiceFactoryImpl implements ServiceFactory {
     } as any, {
       get(o, key, r) {
         if (key in o) return o[key]
-        const f = (...payload: any[]) => channel.call(key as any, ...(payload as any))
+        const f = (...payload: any[]) => channel.call(key as any, ...(payload.map(sanitizePayload) as any))
         o[key] = f
         return f
       },

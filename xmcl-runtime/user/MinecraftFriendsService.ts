@@ -12,6 +12,7 @@ import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { kUserTokenStorage } from '~/user'
 import { UserService } from './UserService'
+import { translateMojangFriendsError } from './MinecraftFriendsErrors'
 
 const UserAuthenticationError = AnyError.make('UserAuthenticationError')
 const MinecraftFriendsUnsupportedError = AnyError.make('MinecraftFriendsUnsupportedError')
@@ -245,7 +246,7 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
     if (e instanceof UnauthorizedError) {
       return new UserAuthenticationError('Minecraft access token is invalid or expired', { cause: e })
     }
-    return e
+    return translateMojangFriendsError(e)
   }
 }
 

@@ -50,6 +50,25 @@ askAICrash:
   selectPlatform: 打開一個AI平台，粘貼您剛剛複制的提示。
   setupAgent: 設定 AI 助手
 authProfileAddedNotification: 已新增第三方驗證 {name}
+bedrock:
+  installBedrockVersion: '正在下載基岩版 {version}'
+  versionsTitle: 版本管理
+  versionsHint: 從 Microsoft 伺服器下載多個基岩版，並在版本之間切換。Windows 同時只能註冊一個版本。
+  versionsError: 無法載入版本清單，請檢查網路後再試一次。
+  channel: 頻道
+  channelRelease: 正式版
+  channelBeta: 測試版
+  channelPreview: 預覽版
+  active: 目前版本
+  play: 啟動
+  download: 下載
+  installedTag: 已安裝
+  developerModeRequired: 註冊下載的版本需要啟用 Windows 開發人員模式。
+  enableDeveloperMode: 啟用開發人員模式
+  enableDeveloperModeFailed: 啟用開發人員模式失敗
+  downloadFailed: '下載基岩版 {version} 失敗'
+  launchFailed: 啟動此基岩版失敗
+  removeFailed: '移除基岩版 {version} 失敗'
 baseSetting:
   title: 一般設定
 browseApp:
@@ -467,6 +486,16 @@ instances:
   folderSetting: 資料夾設定
   importFolderDescription: 匯入 Minecraft 到啟動器
   loadingFiles: 載入模組包檔案
+  edition: 版本
+  editionJava: Java 版
+  editionBedrock: 基岩版
+  editionBedrockHint: >-
+    基岩版透過 Microsoft Store 應用程式啟動。你需要擁有基岩版授權。模組、資源包及其他 Java 版專屬功能無法使用。
+  editionBedrockWindowsOnly: 基岩版僅在 Windows 版本中受支援。
+  linkSharedFolders: 在多個實例間共享資料夾
+  linkSharedFoldersHint: >-
+    將這些資料夾建立為指向啟動器共享資料夾的連結，使此實例與其他所有已連結的實例共享其內容。這不是複製——在一個實例中所做的變更會顯示在所有實例中。未勾選的資料夾將保持此實例私有。
+  linkFailed: 無法將 {folder} 資料夾連結到共享資料夾
   addPrismDescription: 匯入現有的 PrismLauncher 實例。
 items:
   count: '{count} 個'
@@ -483,6 +512,7 @@ java:
   memoryManual: 手動指定
   memoryUnassigned: 不指定記憶體
   minMemory: 最小記憶體
+  name: Java
   noMemory: 不設定記憶體限制
   refresh: 重新整理本地 Java
   systemMemory: '系統可用記憶體: {free} / {total}'
@@ -699,9 +729,7 @@ modInstall:
     title: 更新模組？
     'yes': 更新模組
   checkDependencies: 檢查相依性
-  checkUpgrade: 檢查模組更新
   checkedDependencies: 已檢查相依性
-  checkedUpgrade: 已重新整理更新列表
   currentVersion: 已選版本
   dependencyHint: 安裝了其他版本 {version}
   releaseOnly: 更新時忽略 alpha 和 beta 版本
@@ -714,7 +742,6 @@ modInstall:
   skipVersion: 忽略不同 Minecraft 版本的 Mod
   source: 模組來源
   switch: 切換版本
-  upgrade: 更新模組
 modSearch:
   noLocalModsFound: 未找到符合搜尋的本機模組。
   noModsFound: 未找到模組。
@@ -753,6 +780,12 @@ modpack:
 modpackImportConfirm:
   description: 偵測到您將檔案拖曳到啟動器。您是要匯入模組包嗎？
   title: 您是否要匯入模組包？
+modpackUpdateOrCreate:
+  createNew: '建立新的'
+  description: >-
+    此整合包的執行個體「{name}」已存在。您想要更新它還是建立一個新的？
+  title: '執行個體已存在'
+  update: '更新現有'
 modrinth:
   browseUrl: 在瀏覽器中開啟 {url}
   categories:
@@ -1018,7 +1051,64 @@ proxy:
 quiltVersion:
   disable: 不使用 Quilt
   empty: Minecraft {version} 不支援 Quilt
+blueprint:
+  name: 藍圖 | 藍圖
+  count: '{count} 個藍圖'
+  searchLocal: 搜尋藍圖...
+  searchOnline: 線上搜尋...
+  market: 市集
+  local: 本機
+  provider: 來源
+  import: 匯入
+  openFolder: 開啟資料夾
+  refresh: 重新整理
+  empty: 未找到藍圖。匯入 .litematic / .schem / .nbt 檔案或瀏覽市集。
+  dropHint: 將藍圖檔案（.litematic / .schem / .nbt）拖入此處來匯入。
+  selectHint: 選擇一個藍圖以預覽。
+  blocks: '{count} 個方塊'
+  materials: 材料
+  allNamespaces: 全部
+  findMod: 尋找此命名空間對應的模組
+  compatible: 相容
+  incompatible: 缺少模組
+  missingNamespaces: '缺少以下模組：{namespaces}'
+  delete: 刪除
+  cancel: 取消
+  install: 安裝
+  goTo: 網站
+  byAuthor: 作者：{author}
+  noDescription: 暫無描述。
+  loadMore: 載入更多
+  cmsBrowseOnly: 此來源僅供瀏覽；請開啟網站下載。
+  mixedSources: 結果來自所有來源的混合。部分僅供瀏覽，請開啟其網站下載。
+  formats:
+    structure: 原版結構
+  preview:
+    title: 3D 預覽
+    loading: 正在載入預覽...
+    empty: 此藍圖沒有可顯示的方塊。
+    hint: '{count} 個方塊 · {x}×{y}×{z}'
+    controls: 拖曳以觀察 · WASD 移動 · 空白鍵/Shift 上升/下降
+  convert:
+    title: 轉換格式
+    hint: 將此藍圖轉換為其他格式。將建立一個新檔案。
+    target: 目標格式
+    action: 轉換
+  replace:
+    title: 取代方塊
+    simple: 簡單
+    precise: 精確
+    simpleHint: 僅依方塊 ID 比對，保留現有的方塊狀態屬性。
+    preciseHint: 比對完整的方塊狀態（ID + 屬性）並整體取代。
+    from: 從
+    to: 到
+    addRule: 新增規則
+    newFile: 另存為新檔案
+    action: 取代
 resourcepack:
+  linkShared: 在實例間共用資源包
+  linkSharedHint: >-
+    將此實例的 resourcepacks 資料夾連結到全域共用資料夾，讓所有實例共用相同的資源包。現有的資源包會被合併到共用資料夾中。
   compatible: 目前格式({format}) 可用於目前版本 {version}
   defaultDescription: Minecraft 的預設材質
   delete:
@@ -1039,6 +1129,33 @@ resourcepack:
   noPacks: 未找到資源包
   search: 搜尋資源包...
 save:
+  linkShared: 在實例間共用存檔
+  linkSharedHint: >-
+    將此實例的 saves 資料夾連結到全域共用資料夾，讓所有實例共用相同的世界存檔。現有的存檔會被合併到共用資料夾中。
+  chunkSelectMode: 選擇區塊
+  panMode: 平移
+  chunkSelected: 已選擇 {count} 個區塊
+  mapHintPan: 拖曳以平移
+  mapHintSelect: 選擇
+  mapHintDeselect: 取消選擇
+  toggleGrid: 切換區域格線
+  heightTop: 頂部
+  resetView: 重置視圖
+  clearSelection: 清除選擇
+  copyChunks: 複製區塊
+  pasteChunks: 貼上 {count} 個區塊
+  pasteChunksPlaceHint: >-
+    移動滑鼠以放置 {count} 個區塊，然後點擊貼上。目標位置的現有區塊將被覆蓋。按 Esc 取消。
+  pasteChunksCancel: 取消
+  deleteChunks: 刪除區塊
+  deleteChunksTitle: 刪除選取的區塊
+  deleteChunksHint: >-
+    刪除選取的 {count} 個區塊？此操作無法復原。下次在遊戲中載入該區域時，這些區塊將重新生成。
+  mapLoading: 正在載入地圖…
+  noRegions: 此世界沒有可預覽的已生成區域。
+  dimOverworld: 主世界
+  dimNether: 地獄
+  dimEnd: 終界
   copy:
     name: 複製存檔
   createNew: 新存檔
@@ -1046,6 +1163,7 @@ save:
   deleteHint: 該操作不可逆，您將永遠失去這個存檔的紀錄，您確定要刪除此存檔嗎？
   deleteTitle: 刪除該存檔
   dropHint: 將地圖 Zip 或資料夾拖入此處來匯入
+  duplicate: 複製存檔
   export: 匯出地圖
   exportMessage: 將存檔匯出為 Zip
   exportTitle: 匯出存檔
@@ -1073,7 +1191,23 @@ screenshots:
 search:
   favorate: 收藏
   local: 已安裝
-  market: 模組市集
+  market: 市集
+  emptyInstalled: 尚未安裝任何內容
+  browseMarket: 瀏覽市集
+  noResults: 找不到結果
+  pageSize: 每頁結果數
+localCollection:
+  title: 啟動器收藏夾
+  newCollection: 新增收藏夾
+  namePlaceholder: 收藏夾名稱
+  addToCollection: 加入收藏夾
+  empty: 還沒有啟動器收藏夾
+  corrupted: 無法讀取已儲存的收藏夾，已重設。備份已儲存在資料檔案旁邊。
+  modrinthSection: Modrinth 帳戶
+  installAll: 全部安裝
+  installAllHint: 安裝此收藏夾中與目前 Minecraft 版本和載入器相容的所有項目。
+  incompatibleAlert: '有 {count} 個項目與目前執行個體不相容，已略過：'
+  projects: '無項目 | {count} 個項目 | {count} 個項目'
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   addServer: 新增伺服器
@@ -1237,6 +1371,8 @@ setting:
   exportSettingsHint: 將目前設定儲存到檔案
   general: 基本設定
   githubRelease: Github
+  globalJava: 首選 Java
+  globalJavaHint: "在自動模式下會優先嘗試此 Java，僅當其與遊戲版本不相容時才回退到自動偵測。"
   globalSetting: 全域性實例設定
   globalSettingHint: 實例預設情況下會使用這些全域性設定
   importSettings: 匯入設定
@@ -1386,6 +1522,9 @@ setup:
     name: 設定語言
   path: 目前位置
 shaderPack:
+  linkShared: 在實例間共用光影包
+  linkSharedHint: >-
+    將此實例的 shaderpacks 資料夾連結到全域共用資料夾，讓所有實例共用相同的光影包。現有的光影包會被合併到共用資料夾中。
   deletion: 刪除光影包
   deletionHint: 這將把光影包檔案 {path} 永久刪除。
   disabled: 未啟用的光影
@@ -1411,6 +1550,7 @@ shared:
   back: 返回
   browse: 瀏覽
   cancel: 取消
+  checkUpgrade: 檢查更新
   client: 用戶端
   copy: 複製
   copied: 已複製
@@ -1437,6 +1577,7 @@ shared:
   search: 搜尋
   server: 伺服器
   skipForNow: 暫時跳過
+  upgrade: 更新
   'yes': 是
 sidebar:
   pin: 釘選

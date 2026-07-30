@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar-instances">
-    <template v-if="isValidating">
+    <template>
       <v-skeleton-loader
         v-for="i in 5"
         :key="i"
@@ -113,5 +113,12 @@ const defaultColor = useInstanceGroupDefaultColor()
 
 .add-instance-button {
   --sidebar-item-color: #4caf50;
+}
+</style>
+
+<style>
+
+.sidebar-instances__skeleton .v-skeleton-loader__avatar {
+  margin: 0 auto !important;
 }
 </style>

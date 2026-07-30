@@ -39,10 +39,14 @@ SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 agent:
   callingTool: calling {name}…
+  confirmAccept: Continue
+  confirmCancel: Cancel
+  confirmTitle: Confirm agent action
   disabledPlaceholder: Agent disabled
   emptyHint: >-
     Ask the agent to inspect your instance, toggle mods, read logs, or diagnose
     a crash.
+  errorTitle: The agent hit an error
   inputPlaceholder: Ask the agent…  (Enter to send, Shift+Enter for newline)
   notConfiguredHint: >-
     Set your API key, model and endpoint in Settings → General → AI Agent to
@@ -63,7 +67,23 @@ agent:
     instance
   thinking: thinking…
   title: XMCL Agent
+  toolArguments: Arguments
+  toolResult: Result
+  toolRunning: Waiting for result…
   toggleHint: to toggle
+  marketConfirmMessage: Install {name} into the current instance?
+  marketConfirmTarget: 'Target: {instance}'
+  marketConfirmTitle: Install {type}
+  marketInstall: Install
+  marketInstalled: Installed
+  marketInstallFailed: Failed to install {type}
+  marketType:
+    datapack: data pack
+    mod: mod
+    modpack: modpack
+    resourcepack: resource pack
+    shader: shader pack
+  marketResultCount: '{count} results'
 ago:
   day: '{duration} day ago | {duration} days ago'
   hour: '{duration} hour ago | {duration} hours ago'
@@ -90,10 +110,33 @@ bedrock:
   installFailed: Failed to open the Microsoft Store
   installed: 'Installed: {version}'
   launchHint: Use the Launch button to start Bedrock Edition.
+  installBedrockVersion: 'Downloading Bedrock {version}'
   licenseRequired: >-
     Sign in with a Microsoft account that owns Minecraft to install and play
     Bedrock Edition.
   refresh: Refresh
+  versionsTitle: Version manager
+  versionsHint: >-
+    Download multiple Bedrock versions from Microsoft's servers and switch
+    between them. Only one version can be registered with Windows at a time, so
+    playing a version re-registers it.
+  versionsError: Failed to load the version list. Check your network and try again.
+  channel: Channel
+  channelRelease: Release
+  channelBeta: Beta
+  channelPreview: Preview
+  active: Active
+  play: Play
+  download: Download
+  installedTag: Installed
+  developerModeRequired: >-
+    Registering a downloaded version requires Windows Developer Mode. Enabling it
+    prompts for administrator permission.
+  enableDeveloperMode: Enable Developer Mode
+  enableDeveloperModeFailed: Failed to enable Developer Mode
+  downloadFailed: 'Failed to download Bedrock {version}'
+  launchFailed: Failed to launch this Bedrock version
+  removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
   title: Instance Settings
 browseApp:
@@ -261,6 +304,12 @@ errors:
   bedrockNotInstalled: Minecraft Bedrock Edition is not installed.
   bedrockLaunchFailed: Failed to launch Minecraft Bedrock Edition.
   bedrockInstallFailed: Failed to install Minecraft Bedrock Edition.
+  bedrockDownloadUrlUnavailable: >-
+    This Bedrock version is not available for the current Microsoft account.
+    Beta and Preview versions require an account enrolled in the Minecraft beta programme.
+  bedrockDeveloperModeRequired: Windows Developer Mode is required to register this Bedrock version.
+  bedrockRegisterFailed: Failed to register this Bedrock version with Windows.
+  bedrockVersionNotFound: This Bedrock version is not installed locally.
   BadForgeInstallerJarError: >-
     Cannot parse forge installer jar file. Maybe the forge has new installer
     file format? Contact developers if this issue persists.
@@ -564,6 +613,7 @@ instanceUpdate:
   update: Start Update
 instances:
   add: Create Game
+  instanceCount: '{count} instances'
   addCurseForgeDescription: >-
     Import from curseforge data folder. You need to select curseforge's root
     data folder
@@ -596,6 +646,13 @@ instances:
   folderSetting: Folder Settings
   importFolderDescription: Import Minecraft to Launcher
   loadingFiles: Loading Modpack Files
+  linkSharedFolders: Share folders across instances
+  linkSharedFoldersHint: >-
+    Create these folders as links to the launcher's shared folders so this
+    instance shares their content with every other linked instance. This is not
+    a copy — changes made in one instance appear in all of them. Unchecked
+    folders stay private to this instance.
+  linkFailed: Failed to link the {folder} folder to the shared folder
 items:
   count: '{count} items'
   total: '{total} total'
@@ -615,6 +672,7 @@ java:
   memoryManual: Manual
   memoryUnassigned: Unassign
   minMemory: Min Memory
+  name: Java
   noMemory: Do not limit memory usage
   openFolder: Open Java Folder
   presets: Presets
@@ -731,6 +789,7 @@ loginError:
   acquireMicrosoftTokenFailed: >-
     Fail to acquire Microsoft token. This might be a network issue. Please
     retry.
+  loginCanceled: Microsoft sign-in was canceled.
   badNetworkOrServer: >-
     Please check your network connectivity! Or maybe the authentication server
     is down!
@@ -792,6 +851,9 @@ loginError:
     No game profile found! If you are a new Minecraft user, please login at
     least one time in Minecraft official launcher.
   requestFailed: Login failed, we do not know the exact reason. Please retry.
+  xboxErrorGuideHint: Having trouble signing in? Learn how to fix Microsoft & Xbox login issues.
+  openLoginGuide: How to fix this issue
+  openDiscordSupport: Still need help? Join our Discord
   requireEmail: E-mail is required
   requirePassword: Password is required
   requireUsername: Username is required
@@ -802,12 +864,39 @@ logsCrashes:
   logs: Logs
   placeholder: No Files Found
   serverLogs: Server Logs
+  showFile: Show in Folder
   title: Logs or Crash Reports
 me:
   news: News
   recentPlay: Recent Play
 migrateMinecraft:
   name: Migrate Minecraft Files
+xmclAccount:
+  accountSummary: Account
+  confirmMerge: Confirm account merge
+  createdAt: Created {date}
+  description: Your passwordless XMCL identity, separate from Minecraft game accounts.
+  expiresAt: Expires {date}
+  gameAccountsSeparate: Removing a game account does not unlink an XMCL login method.
+  guest: Guest
+  identityConflict: This {provider} login belongs to another XMCL Account. Accounts are never merged automatically.
+  linkAccountWith: Link account with
+  mergePreview: Review the resources that will move before confirming.
+  mergeNeedsSession: Sign in to the XMCL Account you want to keep before reviewing the merge.
+  mergeQueued: Account merge is in progress.
+  requestFailed: The XMCL Account service could not complete this request. Your game account is unchanged.
+  reviewMerge: Review merge
+  session: Session
+  sessionActive: Active
+  sessionExpired: Expired
+  signOutAll: Sign out all devices
+  signOutDevice: Sign out this device
+  status:
+    active: Active
+    deleted: Deleted
+    deletion_pending: Deletion pending
+    merged: Merged
+  title: XMCL Account
 minecraftFriends:
   accept: Accept
   add: Add a friend
@@ -816,7 +905,9 @@ minecraftFriends:
   errors:
     cannotAddSelf: You cannot send a friend request to yourself.
     duplicate: That player is already in your list.
+    friendsDisabled: Your Minecraft account has friends disabled or cannot use friends. Enable friends in Minecraft account settings, then try again.
     generic: Something went wrong. Please try again.
+    invalidName: Minecraft usernames must be between 3 and 16 characters.
     inviteRejected: That player does not have friends enabled or does not accept invites.
     tokenExpired: Your Microsoft session expired. Please log in again.
     unknownProfile: We could not find a player with that name.
@@ -920,9 +1011,7 @@ modInstall:
     title: Update Mods?
     'yes': Update Mods
   checkDependencies: Check Dependencies
-  checkUpgrade: Check Mods Update
   checkedDependencies: Checked Dependencies
-  checkedUpgrade: Upgrade checked
   currentVersion: Selected Version
   dependencyHint: Installed another version {version}
   releaseOnly: Ignore alpha and beta versions when updating
@@ -931,11 +1020,11 @@ modInstall:
   noVersionSupported: Mod only supports Minecraft {supported}.
   recommendation: Explore the {first} mods in {modrinth} and {curseforge}!
   removeUnusedLibraries: Remove Unused
+  scanUnusedLibraries: Scan Unused Libraries
   search: Search Mods...
   skipVersion: Skip the Mods with different Minecraft version
   source: Mod Source
   switch: Switch Version
-  upgrade: Upgrade Mods
 modSearch:
   noLocalModsFound: No local mods found matching your search.
   noModsFound: No mods found
@@ -978,6 +1067,13 @@ modpackImportConfirm:
     Detect you drop a file into the launcher. Are you trying to import a
     modpack?
   title: Are you trying to import a modpack?
+modpackUpdateOrCreate:
+  createNew: Create new
+  description: >-
+    An instance "{name}" for this modpack already exists. Do you want to update
+    it or create a new one?
+  title: Instance already exists
+  update: Update existing
 modrinth:
   browseUrl: Open In Browser {url}
   categories:
@@ -1146,10 +1242,12 @@ multiplayer:
   connectionFailedHint: >-
     Unable to establish connection. Check if both peers have compatible NAT
     types.
+  connectedToHost: Connected to the room host
   connections: Connections
   copied: Copied!
   copy: Copy
   copyGroupToFriendHint: Let your friends join the group with this id
+  directConnection: Direct
   copyLocalHint: >
     "Please copy the local SDP text and send it to your object to have your
     object enter this text in the join connection <span>A token can be only used
@@ -1184,6 +1282,8 @@ multiplayer:
     until the ICE status is complete. If the token below remains unchanged, you
     can copy it and send it to your peer."
   groupId: Group Id
+  guest: Guest
+  host: Host
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
   joinConnection: >-
@@ -1213,6 +1313,7 @@ multiplayer:
     automatically. Now you can close the dialog.
   receiveRemoteTokenHint: Please enter the token from your peer here.
   remoteToken: Remote Token
+  relayConnection: Relay
   routerInfo: Router Info
   sendTokenToRemote: Send Token to Remote
   share: Share Instance Config
@@ -1286,6 +1387,60 @@ resourceError:
     "{path}" could not be parsed ({code}). The file may be corrupted, locked, or
     incomplete. Try re-downloading or removing it.
   title: Cannot read {file}
+blueprint:
+  name: Blueprint | Blueprints
+  count: '{count} blueprints'
+  searchLocal: Search blueprints...
+  searchOnline: Search online...
+  market: Market
+  local: Local
+  provider: Provider
+  import: Import
+  openFolder: Open folder
+  refresh: Refresh
+  empty: No blueprints found. Import a .litematic / .schem / .nbt file or browse the market.
+  dropHint: Drop blueprint files (.litematic / .schem / .nbt) here to import.
+  selectHint: Select a blueprint to preview it.
+  blocks: '{count} blocks'
+  materials: Materials
+  allNamespaces: All
+  findMod: Find the mod for this namespace
+  compatible: Compatible
+  incompatible: Missing mods
+  missingNamespaces: 'Missing mods for: {namespaces}'
+  delete: Delete
+  cancel: Cancel
+  install: Install
+  goTo: Website
+  byAuthor: by {author}
+  noDescription: No description provided.
+  loadMore: Load more
+  cmsBrowseOnly: This source is browse-only; open the website to download.
+  mixedSources: Results are mixed from all sources. Some are browse-only — open their website to download.
+  formats:
+    structure: Vanilla Structure
+  preview:
+    title: 3D Preview
+    loading: Loading preview...
+    empty: This blueprint has no blocks to display.
+    hint: '{count} blocks · {x}×{y}×{z}'
+    controls: Drag to look · WASD move · Space/Shift up/down
+  convert:
+    title: Convert format
+    hint: Convert this blueprint to another format. A new file will be created.
+    target: Target format
+    action: Convert
+  replace:
+    title: Replace blocks
+    simple: Simple
+    precise: Precise
+    simpleHint: Match by block id only, keeping the existing block state properties.
+    preciseHint: Match the full block state (id + properties) and replace it entirely.
+    from: From
+    to: To
+    addRule: Add rule
+    newFile: Save as a new file
+    action: Replace
 resourcepack:
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft
@@ -1300,6 +1455,11 @@ resourcepack:
     Incompatible Resource Pack format({format}). Fitin {accept}. Current
     {actual}.
   name: Resource Pack | Resource Packs
+  linkShared: Share resource packs across instances
+  linkSharedHint: >-
+    Link this instance's resourcepacks folder to the global shared folder so all
+    instances see the same resource packs. Existing packs are merged into the
+    shared folder.
   noLocalPacksFound: No local resource packs found matching your search.
   noPacks: No resource packs found
   noPacksInstalled: You don't have any resource packs installed.
@@ -1324,17 +1484,54 @@ save:
   deleteTitle: Delete the Save
   difficulty: Difficulty
   dropHint: Drag save zip here to Import
+  datapack:
+    name: Data Pack | Data Packs
+    noSaveHint: Create or select a world first to install this data pack
+    packFormat: 'Pack format: {format}'
+    imported: Data pack imported into {save}
+  duplicate: Duplicate Save
   export: Export Save
   exportMessage: Export the Save as zip
   exportTitle: Export the Save
   gameMode: game mode
   independent: Instance use independent saves folder
+  linkShared: Share saves across instances
+  linkSharedHint: >-
+    Link this instance's saves folder to the global shared folder so all
+    instances share the same worlds. Existing saves are merged into the shared
+    folder.
   levelName: Level Name
   loadMap: Load Map
   mapError: Map Error
   mapInfo: 'Interactive 3D world preview:'
   mapLoaded: Map Loaded
   mapPreview: Map Preview
+  chunkSelectMode: Select Chunks
+  panMode: Pan
+  chunkSelected: '{count} chunks selected'
+  mapHintPan: Drag to pan
+  mapHintSelect: Select
+  mapHintDeselect: Deselect
+  toggleGrid: Toggle region grid
+  heightTop: Top
+  resetView: Reset View
+  clearSelection: Clear Selection
+  copyChunks: Copy Chunks
+  pasteChunks: 'Paste {count} Chunks'
+  pasteChunksPlaceHint: >-
+    Move the mouse to position {count} chunk(s), then click to paste. Existing
+    chunks at the target are overwritten. Press Esc to cancel.
+  pasteChunksCancel: Cancel
+  deleteChunks: Delete Chunks
+  deleteChunksTitle: Delete Selected Chunks
+  deleteChunksHint: >-
+    Delete {count} selected chunk(s)? This cannot be undone. The chunks will be
+    regenerated the next time the area is loaded in game.
+  mapLoading: Loading map…
+  noRegions: This world has no generated regions to preview.
+  dimOverworld: Overworld
+  dimNether: The Nether
+  dimEnd: The End
   name: Save | Saves
   noLocalSavesFound: No local saves found matching your search.
   noSavesFound: No saves found
@@ -1363,7 +1560,28 @@ screenshots:
 search:
   favorate: Collection
   local: Installed
-  market: Mod Market
+  market: Market
+  emptyInstalled: Nothing installed yet
+  browseMarket: Browse Market
+  noResults: No results found
+  pageSize: Results per page
+localCollection:
+  title: Launcher collections
+  newCollection: New collection
+  namePlaceholder: Collection name
+  addToCollection: Add to collection
+  empty: No launcher collections yet
+  corrupted: Your saved collections could not be read and have been reset. A backup was kept next to the data file.
+  modrinthSection: Modrinth account
+  installAll: Install all
+  installAllHint: Install every project in this collection compatible with the current Minecraft version and loader.
+  incompatibleAlert: '1 project is not compatible with the current instance and was skipped: | {count} projects are not compatible with the current instance and were skipped:'
+  projects: 'No projects | {count} project | {count} projects'
+  result:
+    failed: Failed
+    installed: Installed
+    skipped: Skipped
+    title: Collection Installation Result
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
   addServer: Add Server
@@ -1446,11 +1664,20 @@ setting:
   advancedSettings: Advanced Settings
   advancedSettingsHint: Danger zone - reset or manage launcher data
   aiAgentApiKey: AI Agent API Key
+  aiAgentApiKeyClear: Clear key
   aiAgentApiKeyDescription: Stored locally on this device and used for agent requests.
+  aiAgentApiKeyEmpty: Paste your API key
+  aiAgentApiKeyNotNeeded: Not required
+  aiAgentApiKeyNotNeededHint: This provider runs locally and needs no API key
+  aiAgentApiKeySaved: Saved
+  aiAgentApiKeyStored: Key saved - type to replace
   aiAgentEndpoint: AI Agent Endpoint
   aiAgentEndpointDescription: Chat completions endpoint URL.
   aiAgentModel: AI Agent Model
   aiAgentModelDescription: Model name to send in chat completion requests.
+  aiAgentProvider: AI Agent Provider
+  aiAgentProviderCustom: Custom (OpenAI compatible)
+  aiAgentProviderDescription: Pick a preset OpenAI-compatible provider to fill the endpoint.
   apiSets:
     auto: Auto (Determine by network)
     official: Official (Mojang)
@@ -1466,6 +1693,7 @@ setting:
   backgroundImage: Background image
   backgroundImageClear: clear
   backgroundImageDescription: Select an image as background or clear
+  useDesktopBackground: Use current desktop wallpaper
   backgroundImageFit:
     contain: Contain
     cover: Cover
@@ -1531,6 +1759,10 @@ setting:
   exportSettingsHint: Save your current settings to a file
   general: General
   githubRelease: Github Release
+  globalJava: Preferred Java
+  globalJavaHint: >-
+    In auto mode this Java is tried first, and only falls back to
+    auto-detection when it is not compatible with the game version.
   globalSetting: Global Instance Setting
   globalSettingHint: Instance will use these settings by default.
   importSettings: Import Settings
@@ -1722,6 +1954,11 @@ shaderPack:
   manage: Manage Shader Packs
   market: Shader Market
   name: Shader Pack
+  linkShared: Share shader packs across instances
+  linkSharedHint: >-
+    Link this instance's shaderpacks folder to the global shared folder so all
+    instances see the same shader packs. Existing packs are merged into the
+    shared folder.
   noLocalPacksFound: No local shader packs found matching your search.
   noPacks: No shader packs installed
   noPacksInstalled: You don't have any shader packs installed.
@@ -1739,9 +1976,11 @@ shared:
   back: Back
   browse: Browse
   cancel: Cancel
+  checkUpgrade: Check for Updates
   client: Client
   copied: Copied
   copy: Copy
+  close: Close
   copyFailed: Copy failed
   copyFailedHint: Could not copy to clipboard
   description: Description
@@ -1765,7 +2004,9 @@ shared:
   search: Search
   server: Server
   skipForNow: Skip for now
+  upgrade: Upgrade
   'yes': 'Yes'
+  delete: Delete
 sidebar:
   pin: Pin
   unpin: Unpin
@@ -1971,6 +2212,8 @@ userSkin:
   import: Import Skin
   importFile: Open from File
   importLink: Open from Link
+  invalidImage: Choose a valid Minecraft skin image.
+  invalidImageTitle: Invalid Skin Image
   placeUrlHere: Place Skin URL here to import
   reset: Reset
   save: Save
@@ -1978,6 +2221,8 @@ userSkin:
   skinType: Skin Type
   slim: Slim
   upload: Upload Skin
+  uploadFailed: Skin Upload Failed
+  uploadRejected: Minecraft rejected this skin upload. Please try again later.
   urlNotEmpty: Skin URL cannot be empty
   urlNotValid: Skin URL is Invalid
   useSlim: Use Slim Model
@@ -1990,3 +2235,46 @@ versionType:
   beta: Beta
   name: Status
   release: Release
+
+gamepad:
+  detectedTitle: Gamepad Detected
+  connected: Controller Connected
+  guideTitle: Controller Controls
+  enableSwitchLabel: Gamepad Controls
+  enabledState: Enabled
+  disabledState: Disabled
+  toggle: Toggle
+  disabledNotify: Gamepad controls disabled.
+  enabledNotify: Gamepad controls enabled! Use D-pad/Left stick to navigate, {btnA} to select, {btnB} to go back.
+  guide:
+    confirm: Select
+    navigate: Navigate
+    tabs: Switch tabs
+    sections: Switch sections
+    launch: Launch game
+    instanceSettings: Instance settings
+  modSuggestTitle: Controller Mod
+  modSuggestBody: >-
+    To use your gamepad inside Minecraft, a controller mod is recommended.
+    Would you like to install the appropriate mod for your modloader?
+  modInstall: Install Mod
+  modSkip: Skip
+  modDone: Done
+  modInstalled: Controller mod installed successfully! It will be active next time you launch Minecraft.
+  modInstalledNotify: '{name} has been installed for in-game controller support.'
+  modNotFound: 'No compatible version found for {loader} on Minecraft {version}.'
+  autoEnableLabel: Auto Enable Controls
+  autoEnableHint: Automatically enable gamepad navigation when a controller is detected.
+  autoOpenKeyboardLabel: Auto Open Steam Keyboard
+  autoOpenKeyboardHint: Open Steam On-Screen Keyboard when focusing text input fields.
+  focusTooltipsLabel: Show Tooltips on Focus
+  focusTooltipsHint: Display hover tooltips when navigating elements using gamepad focus.
+  disableModPromptLabel: Disable Controller Mod Suggestions
+  disableModPromptHint: Do not prompt to install controller mods when launching with a gamepad.
+  settingSteamTitle: Add Launcher to Steam
+  steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
+  steamAlreadyAddedNotify: Launcher is already in your Steam Library.
+  steamDeckTitle: Steam Deck Detected
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add X Minecraft Launcher to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckAddBtn: Add to Steam ({btn})
+  steamDeckCancelBtn: Cancel ({btn})

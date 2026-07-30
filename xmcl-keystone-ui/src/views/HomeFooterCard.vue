@@ -2,6 +2,7 @@
   <v-card
     ref="root"
     flat
+    data-gamepad-section
     class="surface-card-subsection overflow-hidden tabs-card"
   >
     <HomeScreenshotCard
@@ -58,7 +59,7 @@
             v-if="!!upstream"
             ref="newsRef"
             role="tab"
-            tabindex="0"
+            tabindex="-1"
             :aria-selected="selected === 1"
             @click="onSelectUpdates"
             @keydown.enter.prevent="onSelectUpdates"
@@ -78,7 +79,7 @@
             </v-btn>
           </div>
         </div>
-        <div class="flex flex-col gap-2 transition-all duration-400" :style="((active || dragover) && !isBedrock) ? { 'height': '136px', overflow: selected === 1 ? 'auto' : 'unset' } : { 'height': '4rem' }">
+        <div class="flex flex-col gap-2 transition-all duration-400" :style="((active || dragover) && !isBedrock) ? { 'height': '8.5rem', overflow: selected === 1 ? 'auto' : 'unset' } : { 'height': '4rem' }">
           <template v-if="selected === 1 && upstream?.type === 'server'">
             <HomeCardListItem
               v-if="serverUpstream.suggestedMinecraft.value"
@@ -251,10 +252,10 @@ async function getVersionDetail(version: StoreProjectVersion): Promise<StoreProj
   if (upstream.value?.type === 'modrinth-modpack') {
     const target = (modrinthVersions.data.value || []).find(v => v.id === version.id)
     if (!target) return { changelog: '', dependencies: [], version }
-    
+
     const projects = target.dependencies?.map(v => v.project_id).filter(v => !!v) || []
     const lookup = Object.fromEntries(target.dependencies?.map(p => [p.project_id, p.dependency_type]) || [])
-    
+
     try {
       const { clientModrinthV2 } = await import('@/util/clients')
       const matched = projects.length > 0 ? await clientModrinthV2.getProjects(projects) : []
@@ -277,11 +278,11 @@ async function getVersionDetail(version: StoreProjectVersion): Promise<StoreProj
   } else if (upstream.value?.type === 'curseforge-modpack') {
     const target = ((curseforgeFiles.data.value)?.data || []).find(v => v.id.toString() === version.id)
     if (!target) return { changelog: '', dependencies: [], version }
-    
+
     try {
       const { clientCurseforgeV1 } = await import('@/util/clients')
       const { FileRelationType } = await import('@xmcl/curseforge')
-      
+
       const mapping = {
         [FileRelationType.EmbeddedLibrary]: 'embedded',
         [FileRelationType.Include]: 'embedded',
@@ -301,7 +302,7 @@ async function getVersionDetail(version: StoreProjectVersion): Promise<StoreProj
         href: d?.links.websiteUrl ?? '',
         dependencyType: lookup[d.id] || 'optional',
       }))
-      
+
       // Fetch changelog
       let changelog = ''
       if (curseforgeProjectId.value) {
@@ -312,7 +313,7 @@ async function getVersionDetail(version: StoreProjectVersion): Promise<StoreProj
           console.error('Failed to fetch changelog:', e)
         }
       }
-      
+
       return {
         changelog,
         dependencies,
@@ -323,7 +324,7 @@ async function getVersionDetail(version: StoreProjectVersion): Promise<StoreProj
       return { changelog: '', dependencies: [], version }
     }
   }
-  
+
   return { changelog: '', dependencies: [], version }
 }
 

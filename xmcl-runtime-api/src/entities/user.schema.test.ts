@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { Users, UserProfileCompatible, GameProfileAndTextureSchema } from './user.schema'
+import { Users, UserProfileCompatible, GameProfileAndTextureSchema, parsePersistedUsers } from './user.schema'
 
 describe('Users', () => {
   const createValidUserProfile = (id: string) => ({
@@ -113,6 +113,16 @@ describe('Users', () => {
 
     expect(resultNull.users).toEqual({})
     expect(resultUndefined.users).toEqual({})
+  })
+
+  test('should distinguish a malformed persisted file from an intentional empty profile', () => {
+    expect(parsePersistedUsers({ users: {} })).toEqual({ users: {} })
+    expect(parsePersistedUsers({ users: 'not-an-object' })).toBeUndefined()
+    expect(parsePersistedUsers({
+      users: {
+        broken: { id: 42 },
+      },
+    })).toBeUndefined()
   })
 
   test('should skip malformed profiles but keep valid ones within a user', () => {

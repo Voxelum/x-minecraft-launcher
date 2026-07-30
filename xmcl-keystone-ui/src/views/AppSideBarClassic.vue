@@ -62,6 +62,28 @@
 
     <div v-roving-tabindex role="group" class="sidebar__section">
       <AppSideBarItem
+        v-if="developerMode"
+        data-testid="nav-agent"
+        v-shared-tooltip.right="() => t('agent.title')"
+        clickable
+        :aria-label="agentAriaLabel"
+        @click="openAgent"
+      >
+        <v-progress-circular
+          v-if="agentRunningInBackground"
+          data-testid="nav-agent-running"
+          class="sidebar-item__icon"
+          color="primary"
+          indeterminate
+          :size="22"
+          :width="2"
+        />
+        <v-icon v-else class="sidebar-item__icon" :size="23">
+          auto_awesome
+        </v-icon>
+      </AppSideBarItem>
+
+      <AppSideBarItem
         data-testid="nav-multiplayer"
         v-shared-tooltip.right="() => t('multiplayer.name')"
         clickable
@@ -105,7 +127,7 @@
   >
     <div v-roving-tabindex role="group" class="flex flex-row items-center flex-grow-0">
       <v-btn
-        v-shared-tooltip.bottom="t('back')"
+        v-shared-tooltip.bottom="t('shared.back')"
         icon
         :aria-label="backAriaLabel"
         class="non-moveable mr-1"
@@ -152,6 +174,26 @@
       <v-divider vertical class="mx-2 h-6" />
 
       <v-btn
+        v-if="developerMode"
+        data-testid="nav-agent"
+        v-shared-tooltip.bottom="t('agent.title')"
+        icon
+        :aria-label="agentAriaLabel"
+        class="non-moveable mr-1"
+        @click="openAgent"
+      >
+        <v-progress-circular
+          v-if="agentRunningInBackground"
+          data-testid="nav-agent-running"
+          color="primary"
+          indeterminate
+          :size="22"
+          :width="2"
+        />
+        <v-icon v-else :size="23">auto_awesome</v-icon>
+      </v-btn>
+
+      <v-btn
         data-testid="nav-multiplayer"
         v-shared-tooltip.bottom="t('multiplayer.name')"
         icon
@@ -187,6 +229,7 @@
 
 <script lang="ts" setup>
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
+import { useAgentChatEntry, useAgentChatStatus } from '@/composables/agentChat'
 import { useDragAutoScroll } from '@/composables/dragAutoScroll'
 import { kSettingsState } from '@/composables/setting'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
@@ -205,6 +248,10 @@ const { gameProfile } = injection(kUserContext)
 const { position } = useInjectSidebarSettings()
 
 const isHorizontal = computed(() => position.value === 'top' || position.value === 'bottom')
+const developerMode = computed(() => state.value?.developerMode ?? false)
+const { open: openAgent } = useAgentChatEntry()
+const agentChatStatus = useAgentChatStatus()
+const agentRunningInBackground = computed(() => agentChatStatus.running.value && !agentChatStatus.shown.value)
 
 const { t } = useI18n()
 const { back } = useRouter()
@@ -213,6 +260,7 @@ const navigationAriaLabel = 'Sidebar navigation'
 const backAriaLabel = computed(() => t('shared.back'))
 const myStuffAriaLabel = computed(() => t('myStuff'))
 const storeAriaLabel = computed(() => t('store.name', 2))
+const agentAriaLabel = computed(() => t('agent.title'))
 const multiplayerAriaLabel = computed(() => t('multiplayer.name'))
 const settingsAriaLabel = computed(() => t('setting.name', 2))
 
@@ -256,7 +304,7 @@ useDragAutoScroll(instancesScrollEl)
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  border-radius: 0.75rem;
+  border-radius: var(--surface-menu-item-radius);
   padding: 8px 0;
   overflow: hidden;
 }

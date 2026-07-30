@@ -41,6 +41,12 @@ export interface ProjectEntry<T extends ProjectFile = ProjectFile> {
   modrinth?: SearchResultHit
   modrinthProjectId?: string
   /**
+   * An optional content-type marker used when a single market list mixes
+   * multiple content kinds (e.g. the save market shows both worlds and data
+   * packs). Set by the search composable that produced the entry.
+   */
+  contentType?: string
+  /**
    * The files under resources storage
    */
   files?: T[]

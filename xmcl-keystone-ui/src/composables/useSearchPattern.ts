@@ -1,11 +1,12 @@
-import debounce from 'lodash.debounce'
+import { get, useDebounceFn } from '@vueuse/core'
+import type { MaybeRef } from 'vue'
 
 export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal) => Promise<{
   data: T[]
   total: number
   offset: number
   limit: number
-}>, shouldSearch: () => boolean) {
+}>, shouldSearch: () => boolean, pageSize: MaybeRef<number> = 20) {
   const result = ref(undefined as undefined | {
     data: T[]
     total: number
@@ -18,7 +19,7 @@ export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal
 
   let abortController: AbortController | undefined
 
-  const doSearch = debounce(async (offset: number, append: boolean) => {
+  const doSearch = useDebounceFn(async (offset: number, append: boolean) => {
     // Cancel any in-flight request so its (possibly out-of-order) response
     // cannot overwrite the result of this newer search.
     abortController?.abort()
@@ -60,14 +61,14 @@ export function useSearchPattern<T>(search: (offset: number, signal: AbortSignal
     if (loading.value) return
     page.value += 1
     loading.value = true
-    await doSearch(page.value * 20, true)
+    await doSearch(page.value * get(pageSize), true)
   }
 
   const onSearch = async () => {
     loading.value = true
     page.value = 0
     error.value = undefined
-    return doSearch(page.value * 20, false)
+    return doSearch(page.value * get(pageSize), false)
   }
 
   const hasMore = computed(() => {

@@ -86,3 +86,66 @@ export class Saves {
     this.saves = this.saves.filter((s) => s.path !== save)
   }
 }
+
+/**
+ * A datapack installed under a save's `datapacks/` folder.
+ */
+export interface InstanceDatapack {
+  /**
+   * The full path of the datapack file (zip) or folder.
+   */
+  path: string
+  /**
+   * The owner save folder path.
+   */
+  savePath: string
+  /**
+   * The file/folder name (basename) of the datapack.
+   */
+  fileName: string
+  /**
+   * The display name of the datapack.
+   */
+  name: string
+  /**
+   * The icon data url (from pack.png). Empty string if not present.
+   */
+  icon: string
+  /**
+   * The datapack description text.
+   */
+  description: string
+  /**
+   * The pack format declared in pack.mcmeta.
+   */
+  packFormat: number
+  /**
+   * The last modified time.
+   */
+  mtime: number
+}
+
+export function getInstanceSaveDatapacksKey(savePath: string) {
+  return `save-datapacks://${savePath}`
+}
+
+export class SaveDatapacks {
+  datapacks = [] as InstanceDatapack[]
+
+  saveDatapacks(datapacks: InstanceDatapack[]) {
+    this.datapacks = datapacks
+  }
+
+  saveDatapackUpdate(datapack: InstanceDatapack) {
+    const existed = this.datapacks.find(d => d.path === datapack.path)
+    if (existed) {
+      Object.assign(existed, datapack)
+    } else {
+      this.datapacks.push(datapack)
+    }
+  }
+
+  saveDatapackRemove(path: string) {
+    this.datapacks = this.datapacks.filter((d) => d.path !== path)
+  }
+}

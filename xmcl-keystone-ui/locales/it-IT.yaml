@@ -48,6 +48,25 @@ askAICrash:
   selectPlatform: >-
     Apri una piattaforma di intelligenza artificiale e incolla il prompt che hai appena copiato.
 authProfileAddedNotification: Profilo Auth {name} aggiunto
+bedrock:
+  installBedrockVersion: 'Downloading Bedrock {version}'
+  versionsTitle: Version manager
+  versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
+  versionsError: Failed to load the version list. Check your network and try again.
+  channel: Channel
+  channelRelease: Release
+  channelBeta: Beta
+  channelPreview: Preview
+  active: Active
+  play: Play
+  download: Download
+  installedTag: Installed
+  developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
+  enableDeveloperMode: Enable Developer Mode
+  enableDeveloperModeFailed: Failed to enable Developer Mode
+  downloadFailed: 'Failed to download Bedrock {version}'
+  launchFailed: Failed to launch this Bedrock version
+  removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
   title: Impostazioni di base
 browseApp:
@@ -451,6 +470,22 @@ instances:
   folderSetting: Impostazioni della cartella
   importFolderDescription: Importa Minecraft nel launcher
   loadingFiles: Caricamento file Modpack
+  edition: Edizione
+  editionJava: Edizione Java
+  editionBedrock: Edizione Bedrock
+  editionBedrockHint: >-
+    L'edizione Bedrock viene avviata tramite l'app Microsoft Store. Devi
+    possedere una licenza Bedrock. Mod, pacchetti risorse e altre funzionalità
+    esclusive di Java non sono disponibili.
+  editionBedrockWindowsOnly: L'edizione Bedrock è supportata solo nella build per Windows.
+  linkSharedFolders: Condividi le cartelle tra le istanze
+  linkSharedFoldersHint: >-
+    Crea queste cartelle come collegamenti alle cartelle condivise del launcher
+    in modo che questa istanza condivida il loro contenuto con tutte le altre
+    istanze collegate. Questa non è una copia: le modifiche fatte in un'istanza
+    compaiono in tutte. Le cartelle non selezionate restano private di questa
+    istanza.
+  linkFailed: Impossibile collegare la cartella {folder} alla cartella condivisa
   addPrismDescription: Importa un'istanza PrismLauncher esistente.
 items:
   count: '{count} elementi'
@@ -467,6 +502,7 @@ java:
   memoryManual: Manuale
   memoryUnassigned: Annulla assegnazione
   minMemory: Memoria minima
+  name: Java
   noMemory: Non limitare l'utilizzo della memoria
   refresh: Aggiorna Java locale
   systemMemory: Memoria di sistema attuale
@@ -700,9 +736,7 @@ modInstall:
     title: Aggiornare le Mod?
     'yes': Aggiorna le Mod
   checkDependencies: Controlla le dipendenze
-  checkUpgrade: Controlla Aggiornamento delle Mod
   checkedDependencies: Dipendenze controllate
-  checkedUpgrade: Aggiornamento controllato
   currentVersion: Versione Selezionata
   dependencyHint: Installata un'altra versione {version}
   releaseOnly: Ignora le versioni alpha e beta durante l'aggiornamento
@@ -715,7 +749,6 @@ modInstall:
   skipVersion: Salta le Mod con diverse versioni di Minecraft
   source: Sorgente Mod
   switch: Cambia versione
-  upgrade: Aggiorna le Mod
 modSearch:
   noLocalModsFound: Nessuna mod locale trovata corrispondente alla tua ricerca.
   noModsFound: Nessuna mod trovata.
@@ -759,6 +792,12 @@ modpackImportConfirm:
     Rilevati rilasciare un file nel lanciatore.
     Stai cercando di importare un modpack?
   title: Stai cercando di importare un modpack?
+modpackUpdateOrCreate:
+  createNew: 'Crea nuova'
+  description: >-
+    Esiste già un'istanza "{name}" per questo modpack. Vuoi aggiornarla o crearne una nuova?
+  title: 'L''istanza esiste già'
+  update: 'Aggiorna esistente'
 modrinth:
   browseUrl: Apri nel browser {url}
   categories:
@@ -1032,6 +1071,11 @@ quiltVersion:
   disable: Disabilita Quilt
   empty: Quilt non supporta Minecraft {version}
 resourcepack:
+  linkShared: Condividi i resource pack tra le istanze
+  linkSharedHint: >-
+    Collega la cartella resourcepacks di questa istanza alla cartella condivisa
+    globale in modo che tutte le istanze usino gli stessi resource pack. I
+    pacchetti esistenti vengono uniti nella cartella condivisa.
   compatible: Formato compatibile {format} con {version}
   defaultDescription: Aspetto e funzionalità predefiniti di Minecraft
   delete:
@@ -1054,6 +1098,11 @@ resourcepack:
   noPacks: Nessun pacchetto risorse trovato
   search: Cerca pacchetti risorse...
 save:
+  linkShared: Condividi i salvataggi tra le istanze
+  linkSharedHint: >-
+    Collega la cartella saves di questa istanza alla cartella condivisa globale
+    in modo che tutte le istanze condividano gli stessi mondi. I salvataggi
+    esistenti vengono uniti nella cartella condivisa.
   copy:
     name: Copia salvataggio
   createNew: Crea un nuovo mondo
@@ -1089,7 +1138,11 @@ screenshots:
 search:
   favorate: Collezione
   local: Installato
-  market: Mercato Mod
+  market: Mercato
+  emptyInstalled: Ancora niente installato
+  browseMarket: Esplora il mercato
+  noResults: Nessun risultato trovato
+  pageSize: Risultati per pagina
 server:
   acceptingMinecraftVersion: Versione Minecraft accettata
   creationHint: Inserire l'indirizzo del server e fare ping al server
@@ -1220,6 +1273,8 @@ setting:
   exportSettingsHint: Salva le impostazioni correnti in un file
   general: Generale
   githubRelease: Rilascio Github
+  globalJava: Java preferito
+  globalJavaHint: "In modalità automatica viene provato prima questo Java e si ricorre al rilevamento automatico solo quando non è compatibile con la versione del gioco."
   globalSetting: Impostazioni globali
   globalSettingHint: L'istanza utilizzerà queste impostazioni per impostazione predefinita.
   importSettings: Importa impostazioni
@@ -1376,6 +1431,11 @@ setup:
     name: Imposta lingua
   path: Percorso corrente
 shaderPack:
+  linkShared: Condividi gli shader pack tra le istanze
+  linkSharedHint: >-
+    Collega la cartella shaderpacks di questa istanza alla cartella condivisa
+    globale in modo che tutte le istanze usino gli stessi shader pack. I
+    pacchetti esistenti vengono uniti nella cartella condivisa.
   deletion: Elimina Shader Pack
   deletionHint: >-
     Questa azione eliminerà il file del pacchetto shader {path} e non potrà essere annullata.
@@ -1402,6 +1462,7 @@ shared:
   back: Indietro
   browse: Sfoglia
   cancel: Annulla
+  checkUpgrade: Controlla Aggiornamenti
   client: Client
   description: Descrizione
   disable: Disabilita
@@ -1423,6 +1484,7 @@ shared:
   search: Ricerca
   server: Server
   skipForNow: Salta per ora
+  upgrade: Aggiorna
   'yes': Si
 sidebar:
   pin: Fissa

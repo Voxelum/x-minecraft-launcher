@@ -9,20 +9,18 @@
         <AvatarItemList :items="extensionItems" />
       </div>
       <div class="flex-grow" />
-      <MarketTextFieldWithMenu
-        v-model:keyword="keyword"
+      <MarketTextField
+        :clearable="!!curseforgeCategory || modrinthCategories.length > 0 || !!keyword"
+        :value="keyword"
         :placeholder="t('resourcepack.searchHint')"
-        v-model:modrinth-categories="modrinthCategories"
-        modrinth-category-filter="resourcepack"
-        v-model:local-sort="sortBy"
-        v-model:curseforge-category="curseforgeCategory"
-        curseforge-category-filter="texture-packs"
-        v-model:enable-curseforge="isCurseforgeActive"
-        v-model:enable-modrinth="isModrinthActive"
-        v-model:sort="sort"
-        v-model:game-version="gameVersion"
-        v-model:mode="filterMode"
-        v-model:collection="selectedCollection"
+        :game-version="gameVersion !== runtime.minecraft ? gameVersion : undefined"
+        :category="!!curseforgeCategory || modrinthCategories.length > 0"
+        :icon="filterMode === 'remote' ? 'storefront' : filterMode === 'local' ? 'inventory_2' : 'favorite'"
+        @clear="onClear"
+        @clear-version="gameVersion = runtime.minecraft"
+        @input="keyword = $event ?? ''"
+        @clear-category="onClear"
+        @blur="focused = false"
       />
     </div>
     <MarketExtensions
@@ -33,13 +31,14 @@
 <script lang=ts setup>
 import AvatarItemList from '@/components/AvatarItemList.vue'
 import MarketExtensions from '@/components/MarketExtensions.vue'
-import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
+import MarketTextField from '@/components/MarketTextField.vue'
 import { kInstance } from '@/composables/instance'
 import { kInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { kResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kSearchModel } from '@/composables/search'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
+import { useQuery } from '@/composables/query'
 
 const { path, runtime } = injection(kInstance)
 const { enabled } = injection(kInstanceResourcePacks)
@@ -52,9 +51,17 @@ const extensionItems = computed(() => {
 })
 const {
   keyword, modrinthCategories, curseforgeCategory,
-  isCurseforgeActive, isModrinthActive, source: filterMode, selectedCollection,
+  source: filterMode,
   sort, gameVersion,
 } = injection(kSearchModel)
+const focused = ref(false)
+provide('focused', focused)
+const selectedId = useQuery('id')
+watch(focused, (v) => { if (v) selectedId.value = '' })
+const onClear = () => {
+  curseforgeCategory.value = undefined
+  modrinthCategories.value = []
+}
 const { sortBy } = injection(kResourcePackSearch)
 
 const { t } = useI18n()

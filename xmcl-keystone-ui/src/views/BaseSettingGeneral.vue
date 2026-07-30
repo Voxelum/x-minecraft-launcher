@@ -111,13 +111,15 @@ import SettingItem from '@/components/SettingItem.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import { useQuery } from '@/composables/query'
 import { kInstance } from '@/composables/instance'
+import { kInstanceLaunch } from '@/composables/instanceLaunch'
+import { useGamepadAction } from '@/composables/gamepad'
 import { kUserContext } from '@/composables/user'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { useTimeout } from '@vueuse/core'
 import { AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
-import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
+import BaseSettingGlobalLabel from '@/components/BaseSettingGlobalLabel.vue'
 
 const changeIcon = useQuery('changeIcon')
 
@@ -146,7 +148,17 @@ const isElyBy = computed(() => userProfile.value.authority.startsWith('https://a
 
 const { t } = useI18n()
 
+import { useLaunchButton } from '@/composables/launchButton'
+
+// Gamepad X on the base-setting general tab launches / cancels / stops the game.
+const { text: launchText, onClick: onLaunchClick } = useLaunchButton()
+useGamepadAction('X', {
+  label: () => launchText.value,
+  handler: () => onLaunchClick(),
+})
+
 const changeIconModel = ref(false)
+
 
 onMounted(() => {
   if (changeIcon.value) {

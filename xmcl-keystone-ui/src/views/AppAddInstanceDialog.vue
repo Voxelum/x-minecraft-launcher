@@ -29,23 +29,111 @@
             </template>
           </div>
         </div>
-        <v-btn
-          color="primary"
-          variant="tonal"
-          rounded="pill"
-          size="small"
-          @click="onMigrateFromOther"
-        >
-          <v-icon start size="16">local_shipping</v-icon>
-          {{ t('setting.migrateFromOther') }}
-        </v-btn>
+        <div class="flex items-center gap-3">
+          <v-btn-toggle
+            v-if="steps[step - 1] === 'config' && hasMinecraftLicense && bedrockSupported"
+            data-testid="add-instance-edition"
+            :model-value="creation.data.edition"
+            mandatory
+            color="primary"
+            variant="outlined"
+            rounded="pill"
+            density="compact"
+            divided
+            @update:model-value="onEditionChange"
+          >
+            <v-btn
+              data-testid="add-instance-edition-java"
+              value="java"
+              size="small"
+              :disabled="loading"
+            >
+              <v-icon start size="16">code</v-icon>
+              {{ t('instances.editionJava') }}
+            </v-btn>
+            <v-btn
+              data-testid="add-instance-edition-bedrock"
+              value="bedrock"
+              size="small"
+              :disabled="loading || !bedrockSupported"
+            >
+              <v-icon start size="16">view_in_ar</v-icon>
+              {{ t('instances.editionBedrock') }}
+            </v-btn>
+          </v-btn-toggle>
+          <v-btn
+            color="primary"
+            variant="tonal"
+            rounded="pill"
+            size="small"
+            @click="onMigrateFromOther"
+          >
+            <v-icon start size="16">local_shipping</v-icon>
+            {{ t('setting.migrateFromOther') }}
+          </v-btn>
+        </div>
       </div>
 
       <v-divider class="mx-6 opacity-20" />
 
+      <div
+        v-if="steps[step - 1] === 'config' && creation.data.edition === 'bedrock'"
+        class="px-6 pt-3 text-caption"
+        style="color: rgba(var(--v-theme-on-surface), 0.6);"
+      >
+        {{ t('instances.editionBedrockHint') }}
+      </div>
+
+      <v-alert
+        v-if="existingInstance"
+        type="info"
+        variant="tonal"
+        density="compact"
+        rounded="lg"
+        class="mx-6 mt-4"
+      >
+        <div class="flex items-center gap-3 flex-wrap">
+          <span class="flex-grow">
+            {{ t('modpackUpdateOrCreate.description', { name: existingInstance.name }) }}
+          </span>
+          <v-btn
+            color="primary"
+            variant="tonal"
+            rounded="pill"
+            size="small"
+            :loading="loading"
+            @click="onUpdateExisting"
+          >
+            <v-icon start size="16">update</v-icon>
+            {{ t('modpackUpdateOrCreate.update') }}
+          </v-btn>
+        </div>
+      </v-alert>
+
       <v-window v-model="step" class="visible-scroll overflow-y-auto">
         <v-window-item v-for="(tStep, i) in steps" :key="tStep" class="max-h-[70vh]" :value="i + 1">
-          <StepConfig v-if="tStep === 'config'" :loading="loading" v-model:valid="valid" />
+          <StepConfig v-if="tStep === 'config'" :loading="loading" v-model:valid="valid">
+            <!-- TODO: rethink how to integrate collections into the Add Instance flow.
+            <template #collection>
+              <div v-if="localCollectionOptions.length > 0" class="mb-4">
+                <v-select
+                  v-model="selectedCollectionId"
+                  :items="localCollectionOptions"
+                  item-title="title"
+                  item-value="value"
+                  :label="t('localCollection.title')"
+                  :hint="t('localCollection.installAllHint')"
+                  persistent-hint
+                  clearable
+                  density="comfortable"
+                  variant="outlined"
+                  prepend-inner-icon="bookmarks"
+                  data-testid="add-instance-collection"
+                />
+              </div>
+            </template>
+            -->
+          </StepConfig>
           <StepServer v-if="tStep === 'server'" v-model:valid="valid" />
         </v-window-item>
       </v-window>
@@ -97,6 +185,7 @@ import { kPeerShared } from '@/composables/peers'
 import { kUserContext } from '@/composables/user'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
+import { findInstanceForModpack, InstanceEdition } from '@xmcl/instance'
 import {
   CachedFTBModpackVersionManifest,
   InstanceManifest,
@@ -110,7 +199,20 @@ import {
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
+import { useModpackFinishInstall } from '@/composables/modpackInstaller'
 import { useHasMinecraftLicense } from '@/composables/minecraftLicense'
+// TODO: collection integration for Add Instance is disabled pending a redesign.
+// import { kLocalCollections } from '@/composables/localCollections'
+// import { runBulkInstall, candidateToMarketOption } from '@/composables/collectionInstall'
+// import { resolveCollectionEntry } from '@/composables/collectionResolver'
+// import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
+// import { getModrinthModLoaders } from '@/util/modrinth'
+// import {
+//   CollectionContentType,
+//   InstanceModsServiceKey,
+//   InstanceResourcePacksServiceKey,
+//   InstanceShaderPacksServiceKey,
+// } from '@xmcl/runtime-api'
 
 const type = ref(
   undefined as
@@ -127,15 +229,27 @@ const type = ref(
 // Dialog model
 const { openModpack } = useService(ModpackServiceKey)
 const { all: javas } = injection(kJavaContext)
+// The modpack file currently loaded into the creation form (if any), and the
+// existing instance that already corresponds to it. Used to offer updating the
+// existing instance instead of always creating a new one.
+const modpackFilePath = ref('')
+const existingInstance = ref(undefined as { path: string; name: string } | undefined)
 const onSelectModpack = async (modpack: string) => {
   try {
     loading.value = true
+    existingInstance.value = undefined
+    modpackFilePath.value = modpack
     const openedModpack = await openModpack(modpack)
     if (openedModpack.error) {
       error.value = openedModpack.error
     }
     if (openedModpack.config) {
       await update(openedModpack.config, waitModpackFiles(openedModpack))
+      const matched = findInstanceForModpack(instances.value, {
+        upstream: openedModpack.config.upstream,
+        name: openedModpack.config.name,
+      })
+      existingInstance.value = matched ? { path: matched.path, name: matched.name } : undefined
     }
   } catch (e) {
     error.value = e
@@ -146,6 +260,8 @@ const onSelectModpack = async (modpack: string) => {
 const onSelectFTB = async (ftb: CachedFTBModpackVersionManifest) => {
   try {
     loading.value = true
+    existingInstance.value = undefined
+    modpackFilePath.value = ''
     const [config, files] = getFTBTemplateAndFile(ftb, javas.value)
     if (!config) return
     await update(config, Promise.resolve(files))
@@ -158,6 +274,8 @@ const onSelectFTB = async (ftb: CachedFTBModpackVersionManifest) => {
 const onSelectManifest = async (man: InstanceManifest) => {
   try {
     loading.value = true
+    existingInstance.value = undefined
+    modpackFilePath.value = ''
     await update(
       {
         name: man.name ?? '',
@@ -187,6 +305,8 @@ const { isShown, show, hide } = useDialog(
     step.value = 1
     type.value = 'template'
     valid.value = true
+    existingInstance.value = undefined
+    modpackFilePath.value = ''
 
     windowController.focus()
 
@@ -216,6 +336,9 @@ const { isShown, show, hide } = useDialog(
       step.value = 1
       valid.value = true
       type.value = 'template'
+      existingInstance.value = undefined
+      modpackFilePath.value = ''
+      // selectedCollectionId.value = undefined
       reset()
     }, 500)
   },
@@ -247,9 +370,92 @@ provide(kInstanceCreation, creation)
 
 // Install
 const router = useRouter()
-const { getInstallation, install: installBedrock } = useService(BedrockServiceKey)
+const { getInstallation, install: installBedrock, isSupported } = useService(BedrockServiceKey)
 const { fix } = injection(kInstanceVersionInstall)
 const { hasMinecraftLicense } = useHasMinecraftLicense()
+
+// Edition selector (in the dialog header). Only offered when the account is
+// licensed and the platform supports Bedrock.
+const bedrockSupported = ref(false)
+isSupported().then((v) => { bedrockSupported.value = v }).catch(() => { bedrockSupported.value = false })
+
+// Fall back to the Java edition if the Bedrock option is no longer available
+// (e.g. the account lost its license or on unsupported platform), so the
+// mandatory toggle always has a valid selection.
+watch([hasMinecraftLicense, bedrockSupported], ([licensed, supported]) => {
+  if ((!licensed || !supported) && creation.data.edition === 'bedrock') {
+    creation.data.edition = 'java'
+  }
+}, { immediate: true })
+
+const onEditionChange = (edition: InstanceEdition) => {
+  creation.data.edition = edition ?? 'java'
+  if (edition === 'bedrock') {
+    creation.data.name = 'Bedrock'
+  } else if (creation.data.name === 'Bedrock') {
+    creation.data.name = ''
+  }
+}
+
+/* TODO: Create-from-collection is disabled pending a redesign of how
+ * collections integrate with the Add Instance dialog.
+const localCollectionsCtx = injection(kLocalCollections)
+const selectedCollectionId = ref<string | undefined>(undefined)
+const localCollectionOptions = computed(() => localCollectionsCtx.collections.value
+  .map((c) => {
+    const count = c.mods.length + c.resourcepacks.length + c.shaderpacks.length
+    return {
+      value: c.id,
+      title: `${c.name} (${count})`,
+      count,
+    }
+  })
+  .filter((c) => c.count > 0))
+
+const { installFromMarket: installCollectionMods } = useService(InstanceModsServiceKey)
+const { installFromMarket: installCollectionResourcePacks } = useService(InstanceResourcePacksServiceKey)
+const { installFromMarket: installCollectionShaderPacks } = useService(InstanceShaderPacksServiceKey)
+
+async function installCollectionToInstance(newPath: string) {
+  const id = selectedCollectionId.value
+  if (!id) return
+  const collection = localCollectionsCtx.getCollection(id)
+  if (!collection) return
+  const runtime = creation.data.runtime
+  const installers: Record<CollectionContentType, (o: any) => Promise<any>> = {
+    mods: installCollectionMods,
+    resourcepacks: installCollectionResourcePacks,
+    shaderpacks: installCollectionShaderPacks,
+  }
+  const summary = { installed: 0, skipped: 0, failed: 0 }
+  for (const contentType of ['mods', 'resourcepacks', 'shaderpacks'] as CollectionContentType[]) {
+    const entries = collection[contentType]
+    if (entries.length === 0) continue
+    const target = {
+      minecraft: runtime.minecraft,
+      loaders: contentType === 'mods' ? getModrinthModLoaders(runtime, false) : [],
+      contentType,
+    }
+    const result = await runBulkInstall(entries, {
+      resolve: (e, signal) => resolveCollectionEntry(e, target, { modrinth: clientModrinthV2, curseforge: clientCurseforgeV1 }, signal),
+      isInstalled: () => false,
+      install: (candidate) => installers[contentType](candidateToMarketOption(candidate, newPath)),
+    })
+    summary.installed += result.installed.length
+    summary.skipped += result.skipped.length
+    summary.failed += result.failed.length
+  }
+  // Report incompatible/failed items without silently dropping them.
+  if (summary.skipped + summary.failed > 0) {
+    notify({
+      level: 'warning',
+      title: t('localCollection.result.title'),
+      body: `${t('localCollection.result.installed')}: ${summary.installed}, ${t('localCollection.result.skipped')}: ${summary.skipped}, ${t('localCollection.result.failed')}: ${summary.failed}`,
+    })
+  }
+}
+*/
+
 const onCreate = async () => {
   const isBedrock = creation.data.edition === 'bedrock'
   if (isBedrock) {
@@ -280,6 +486,31 @@ const onCreate = async () => {
     }
   } else if (newPath === path.value) {
     await fix().catch(() => {})
+  }
+  // TODO: re-enable installing a selected collection into the new instance
+  // once the Add Instance collection UX is redesigned.
+  // if (!isBedrock && newPath) {
+  //   await installCollectionToInstance(newPath).catch((e) => console.error(e))
+  // }
+}
+
+const finishModpackInstall = useModpackFinishInstall()
+const onUpdateExisting = async () => {
+  const existing = existingInstance.value
+  if (!existing || !modpackFilePath.value) return
+  try {
+    loading.value = true
+    await finishModpackInstall(
+      modpackFilePath.value,
+      creation.data.icon || undefined,
+      creation.data.upstream,
+      existing.path,
+    )
+    hide()
+  } catch (e) {
+    error.value = e
+  } finally {
+    loading.value = false
   }
 }
 
@@ -339,7 +570,7 @@ const onImportModpack = () => {
       filters: [{ name: t('modpack.name', 2), extensions: ['zip', 'mrpack'] }],
     })
     .then(async (res) => {
-      if (res.canceled) return
+      if (res.canceled || !res.filePaths[0]) return
       const file = res.filePaths[0]
       try {
         loading.value = true

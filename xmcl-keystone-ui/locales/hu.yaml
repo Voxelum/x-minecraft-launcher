@@ -51,6 +51,25 @@ askAICrash:
     Kövesse az alábbi utasításokat, hogy megkérdezze az AI -t a játék összeomlásáról!
   selectPlatform: Nyisson meg egy AI platformot, és illessze be az éppen lemásolt promptot.
 authProfileAddedNotification: Belépési profil {name} hozzáadva
+bedrock:
+  installBedrockVersion: 'Downloading Bedrock {version}'
+  versionsTitle: Version manager
+  versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
+  versionsError: Failed to load the version list. Check your network and try again.
+  channel: Channel
+  channelRelease: Release
+  channelBeta: Beta
+  channelPreview: Preview
+  active: Active
+  play: Play
+  download: Download
+  installedTag: Installed
+  developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
+  enableDeveloperMode: Enable Developer Mode
+  enableDeveloperModeFailed: Failed to enable Developer Mode
+  downloadFailed: 'Failed to download Bedrock {version}'
+  launchFailed: Failed to launch this Bedrock version
+  removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
   title: Alapbeállítások
 browseApp:
@@ -484,6 +503,22 @@ instances:
   folderSetting: Mappa beállításai
   importFolderDescription: Minecraft importálása a Launcherbe
   loadingFiles: Modcsomag fájlok betöltése
+  edition: Kiadás
+  editionJava: Java kiadás
+  editionBedrock: Bedrock kiadás
+  editionBedrockHint: >-
+    A Bedrock kiadás a Microsoft Store alkalmazáson keresztül indul. Rendelkezned
+    kell Bedrock licenccel. A modok, erőforráscsomagok és egyéb, csak Java alatt
+    elérhető funkciók nem használhatók.
+  editionBedrockWindowsOnly: A Bedrock kiadás csak a Windows-változatban támogatott.
+  linkSharedFolders: Mappák megosztása példányok között
+  linkSharedFoldersHint: >-
+    Hozza létre ezeket a mappákat az indító megosztott mappáira mutató
+    hivatkozásként, hogy ez a példány megossza a tartalmukat az összes többi
+    összekapcsolt példánnyal. Ez nem másolás — az egyik példányban végzett
+    módosítások az összesben megjelennek. A be nem jelölt mappák a példány
+    számára priváttak maradnak.
+  linkFailed: Nem sikerült a(z) {folder} mappát a megosztott mappához kapcsolni
   addPrismDescription: Meglévő PrismLauncher-példány importálása.
 items:
   count: '{count} elem'
@@ -500,6 +535,7 @@ java:
   memoryManual: Mannuális
   memoryUnassigned: Nem használt
   minMemory: Min Memória
+  name: Java
   noMemory: Ne korlátozza a memória használatát
   refresh: Helyi Java frissítése
   systemMemory: 'Rendszermentes memória: {free} / {total}'
@@ -734,9 +770,7 @@ modInstall:
     title: Modok frissítése?
     'yes': Modok frissítése
   checkDependencies: Ellenőrizze a függőségeket
-  checkUpgrade: Modok frissítésének ellenőrzése
   checkedDependencies: Ellenőrzött függőségek
-  checkedUpgrade: Frissítés ellenőrizve
   currentVersion: Kiválasztott verzió
   dependencyHint: Egy másik verzió {version} telepítése
   releaseOnly: Az alfa és béta verziók kihagyása frissítéskor
@@ -749,7 +783,6 @@ modInstall:
   skipVersion: Hagyd ki a modokat a különböző Minecraft verziókkal
   source: Mod forrása
   switch: Verzió váltás
-  upgrade: Modok frissítése
 modSearch:
   noLocalModsFound: Nem található helyi mod, amely megfelel a keresésnek.
   noModsFound: Nem található mod.
@@ -792,6 +825,12 @@ modpackImportConfirm:
     Detektálja, hogy egy fájlt dobjon be az indítóba.
     Modpackot próbál importálni?
   title: Modpackot próbál importálni?
+modpackUpdateOrCreate:
+  createNew: 'Új létrehozása'
+  description: >-
+    Már létezik egy "{name}" nevű példány ehhez a modpackhez. Szeretnéd frissíteni, vagy újat létrehozni?
+  title: 'A példány már létezik'
+  update: 'Meglévő frissítése'
 modrinth:
   browseUrl: Megnyitás böngészőben {url}
   categories:
@@ -1071,6 +1110,11 @@ quiltVersion:
   disable: Quilt letiltása
   empty: Quilt nem támogatja a {version} verziót
 resourcepack:
+  linkShared: Erőforráscsomagok megosztása példányok között
+  linkSharedHint: >-
+    Kösse össze ennek a példánynak a resourcepacks mappáját a globális megosztott
+    mappával, hogy minden példány ugyanazokat az erőforráscsomagokat használja. A
+    meglévő csomagok a megosztott mappába kerülnek.
   compatible: Kompatibilis formátum {format} a {version}-vel
   defaultDescription: A Minecraft alapértelmezett megjelenése
   delete:
@@ -1093,6 +1137,11 @@ resourcepack:
   noPacks: Nem található erőforráscsomag
   search: Erőforráscsomagok keresése...
 save:
+  linkShared: Mentések megosztása példányok között
+  linkSharedHint: >-
+    Kösse össze ennek a példánynak a saves mappáját a globális megosztott
+    mappával, hogy minden példány ugyanazokat a világokat használja. A meglévő
+    mentések a megosztott mappába kerülnek.
   allowCheats: Csalások engedélyezése
   copy:
     name: Mentés másolása
@@ -1138,7 +1187,11 @@ screenshots:
 search:
   favorate: Gyűjtemény
   local: Telepített
-  market: Mod Market
+  market: Piac
+  emptyInstalled: Még nincs semmi telepítve
+  browseMarket: Piac böngészése
+  noResults: Nincs találat
+  pageSize: Találatok oldalanként
 server:
   acceptingMinecraftVersion: Minecraft verzió elfogadása
   creationHint: Kérlek, töltsd ki a szerver címét és pingeld a szervert
@@ -1271,6 +1324,8 @@ setting:
   exportSettingsHint: Jelenlegi beállítások mentése fájlba
   general: Általános
   githubRelease: Github kiadás
+  globalJava: Előnyben részesített Java
+  globalJavaHint: "Automatikus módban először ezt a Java-t próbálja meg, és csak akkor tér vissza az automatikus felismeréshez, ha az nem kompatibilis a játékverzióval."
   globalSetting: Globális példány beállítás
   globalSettingHint: Az példány alapértelmezés szerint ezeket a beállításokat fogja használni.
   importSettings: Beállítások importálása
@@ -1426,6 +1481,11 @@ setup:
     name: Nyelv beállítása
   path: Jelenlegi útvonal
 shaderPack:
+  linkShared: Árnyékolócsomagok megosztása példányok között
+  linkSharedHint: >-
+    Kösse össze ennek a példánynak a shaderpacks mappáját a globális megosztott
+    mappával, hogy minden példány ugyanazokat az árnyékolócsomagokat használja. A
+    meglévő csomagok a megosztott mappába kerülnek.
   deletion: Shader Pack törlése
   deletionHint: Ez törli a shader pack fájlt {path} és nem lehet visszaállítani.
   disabled: Shader pack kikapcsolása
@@ -1451,6 +1511,7 @@ shared:
   back: Vissza
   browse: Böngészés
   cancel: Mégsem
+  checkUpgrade: Frissítések ellenőrzése
   client: Kliens
   description: Leírás
   disable: Letiltás
@@ -1472,6 +1533,7 @@ shared:
   search: Keresés
   server: Szerver
   skipForNow: Most hagyd ki
+  upgrade: Frissítés
   'yes': Igen
 sidebar:
   pin: Rögzít

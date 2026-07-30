@@ -20,6 +20,8 @@ import {
   useCurseforgeTask,
 } from '@/composables/curseforgeDependencies'
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
+import { kSWRVConfig } from '@/composables/swrvConfig'
+import { getSWRV } from '@/util/swrvGet'
 import { useDateString } from '@/composables/date'
 import { useI18nSearchFlights } from '@/composables/flights'
 import { useAutoI18nCommunityContent } from '@/composables/i18n'
@@ -52,6 +54,8 @@ const props = defineProps<{
   category?: number
   updating?: boolean
   modrinth?: string
+  disableInstall?: boolean
+  collectionContentType?: import('@xmcl/runtime-api').CollectionContentType
 }>()
 
 const emit = defineEmits<{
@@ -194,7 +198,7 @@ const model = computed(() => {
   const detail: ProjectDetail = {
     id: props.curseforgeId.toString(),
     title: mod?.name ?? '',
-    icon: mod?.logo.url ?? '',
+    icon: mod?.logo?.url ?? '',
     description: mod?.summary ?? '',
     author: mod?.authors.map((a) => a.name).join(', ') ?? '',
     downloadCount: mod?.downloadCount ?? 0,
@@ -237,6 +241,7 @@ const releaseTypes: Record<string, 'release' | 'beta' | 'alpha'> = {
 
 const {
   files,
+  refresh,
   refreshing: loadingVersions,
   index,
   totalCount,
@@ -403,17 +408,33 @@ const dependencies = computed(() =>
 const installing = ref(false)
 
 const { install, installWithDependencies } = injection(kCurseforgeInstaller)
+const config = injection(kSWRVConfig)
 
 const onInstall = async (mod: ProjectVersion) => {
   if (installing.value) return
   try {
     installing.value = true
+    let resolvedDeps = deps.value
+    if (!resolvedDeps) {
+      const loaderType = curseforgeFile.value
+        ? getModLoaderTypesForFile(curseforgeFile.value).values().next().value!
+        : FileModLoaderType.Any
+      resolvedDeps = await getSWRV(
+        getCurseforgeDependenciesModel(
+          curseforgeFile,
+          computed(() => props.gameVersion),
+          computed(() => loaderType),
+          config,
+        ),
+        config,
+      )
+    }
     await installWithDependencies(
       Number(mod.id),
       mod.loaders,
       curseforgeProject.value?.logo.url,
       props.installed,
-      deps.value ?? [],
+      resolvedDeps ?? [],
     )
   } finally {
     installing.value = false
@@ -453,8 +474,8 @@ const onOpenDependency = (dep: ProjectDependency) => {
   push({ query: { ...currentRoute.value.query, id: `curseforge:${dep.id}` } })
 }
 
-const onRefresh = () => {
-  mutate()
+const onRefresh = async () => {
+  await Promise.all([mutate(), refresh()])
 }
 
 const modrinthId = computed(
@@ -488,6 +509,8 @@ const { collectionId, onAddOrRemove, loadingCollections } = useInCollection(modr
     :collection="collectionId"
     :following="following"
     :loading-collections="loadingCollections"
+    :disable-install="disableInstall"
+    :collection-content-type="collectionContentType"
     @load-changelog="loadChangelog"
     @collection="onAddOrRemove"
     @delete="onDelete"
@@ -499,5 +522,9 @@ const { collectionId, onAddOrRemove, loadingCollections } = useInCollection(modr
     @select:category="emit('category', Number($event))"
     @refresh="onRefresh"
     @follow="onFollow"
-  />
+  >
+    <template v-for="(_, name) in $slots" #[name]="slotProps">
+      <slot :name="name" v-bind="slotProps ?? {}" />
+    </template>
+  </MarketProjectDetail>
 </template>

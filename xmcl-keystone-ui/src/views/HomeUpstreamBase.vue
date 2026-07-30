@@ -112,8 +112,6 @@ import HomeUpstreamHeader, { UpstreamHeaderProps } from './HomeUpstreamHeader.vu
 import HomeUpstreamVersion, { ProjectVersionProps } from './HomeUpstreamVersion.vue'
 import { useVirtualizer, VirtualizerOptions } from '@tanstack/vue-virtual'
 import { getEl } from '@/util/el'
-import { injection } from '@/util/inject'
-import { kTheme } from '@/composables/theme'
 
 const props = defineProps<{
   duplicating?: boolean

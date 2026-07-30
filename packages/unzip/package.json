@@ -1,6 +1,6 @@
 {
   "name": "@xmcl/unzip",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "main": "./index.ts",
   "description": "A easy unzip interface based on yauzl",
   "engines": {
@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+    "url": "git+https://github.com/Voxelum/x-minecraft-launcher.git"
   },
   "author": "cijhn@hotmail.com",
   "sideEffects": false,
@@ -44,7 +44,7 @@
   "devDependencies": {
     "@xmcl/oxlint-config": "workspace:^*",
     "esbuild": "^0.25.12",
-    "@types/node": "^20.19.0",
+    "@types/node": "^24.13.3",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
   }

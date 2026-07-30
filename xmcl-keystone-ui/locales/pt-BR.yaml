@@ -49,6 +49,25 @@ askAICrash:
     Siga as instruções abaixo para perguntar à IA sobre este acidente de jogo!
   selectPlatform: Abra uma plataforma de IA e cole o aviso que acabou de copiar.
 authProfileAddedNotification: Perfil de autenticação {name} adicionado
+bedrock:
+  installBedrockVersion: 'Downloading Bedrock {version}'
+  versionsTitle: Version manager
+  versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
+  versionsError: Failed to load the version list. Check your network and try again.
+  channel: Channel
+  channelRelease: Release
+  channelBeta: Beta
+  channelPreview: Preview
+  active: Active
+  play: Play
+  download: Download
+  installedTag: Installed
+  developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
+  enableDeveloperMode: Enable Developer Mode
+  enableDeveloperModeFailed: Failed to enable Developer Mode
+  downloadFailed: 'Failed to download Bedrock {version}'
+  launchFailed: Failed to launch this Bedrock version
+  removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
   title: Configurações básicas
 browseApp:
@@ -472,6 +491,22 @@ instances:
   folderSetting: Configurações de Pasta
   importFolderDescription: Importar Minecraft para o Launcher
   loadingFiles: Carregando arquivos do modpack
+  edition: Edição
+  editionJava: Edição Java
+  editionBedrock: Edição Bedrock
+  editionBedrockHint: >-
+    A Edição Bedrock é iniciada pelo aplicativo da Microsoft Store. Você precisa
+    possuir uma licença Bedrock. Mods, pacotes de recursos e outros recursos
+    exclusivos do Java não estão disponíveis.
+  editionBedrockWindowsOnly: A Edição Bedrock só é compatível com a versão para Windows.
+  linkSharedFolders: Compartilhar pastas entre instâncias
+  linkSharedFoldersHint: >-
+    Crie estas pastas como links para as pastas compartilhadas do launcher,
+    para que esta instância compartilhe o conteúdo delas com todas as outras
+    instâncias vinculadas. Isto não é uma cópia — alterações feitas em uma
+    instância aparecem em todas. Pastas não marcadas permanecem privadas desta
+    instância.
+  linkFailed: Falha ao vincular a pasta {folder} à pasta compartilhada
   addPrismDescription: Importar instância existente do PrismLauncher.
 items:
   count: '{count} itens'
@@ -488,6 +523,7 @@ java:
   memoryManual: Manual
   memoryUnassigned: Sem alocação
   minMemory: Memória mínima
+  name: Java
   noMemory: Não limitar o uso de memória
   refresh: Atualizar Java local
   systemMemory: 'Memória livre do sistema: {free} / {total}'
@@ -712,9 +748,7 @@ modInstall:
     title: Atualizar Mods?
     'yes': Atualizar Mods
   checkDependencies: Verificar Dependências
-  checkUpgrade: Verificar Atualizações dos Mods
   checkedDependencies: Dependências Verificadas
-  checkedUpgrade: Atualização Verificada
   currentVersion: Versão Selecionada
   dependencyHint: Instalado outra versão {version}
   releaseOnly: Ignorar versões alfa e beta ao atualizar
@@ -727,7 +761,6 @@ modInstall:
   skipVersion: Pular Mods com versão diferente do Minecraft
   source: Fonte do Mod
   switch: Trocar Versão
-  upgrade: Atualizar Mods
 modSearch:
   noLocalModsFound: Nenhum mod local encontrado correspondendo à sua pesquisa.
   noModsFound: Nenhum mod encontrado.
@@ -770,6 +803,12 @@ modpackImportConfirm:
     Detecte que você solta um arquivo no lançador.
     Você está tentando importar um modpack?
   title: Você está tentando importar um modpack?
+modpackUpdateOrCreate:
+  createNew: 'Criar nova'
+  description: >-
+    Já existe uma instância "{name}" para este modpack. Deseja atualizá-la ou criar uma nova?
+  title: 'A instância já existe'
+  update: 'Atualizar existente'
 modrinth:
   browseUrl: Abrir no navegador {url}
   categories:
@@ -1043,6 +1082,11 @@ quiltVersion:
   disable: Desabilitar Quilt
   empty: Quilt não suporta Minecraft {version}
 resourcepack:
+  linkShared: Compartilhar pacotes de recursos entre instâncias
+  linkSharedHint: >-
+    Vincular a pasta resourcepacks desta instância à pasta compartilhada global
+    para que todas as instâncias usem os mesmos pacotes de recursos. Os pacotes
+    existentes são mesclados na pasta compartilhada.
   compatible: Formato compatível {format} com {version}
   defaultDescription: A aparência padrão do Minecraft
   delete:
@@ -1065,6 +1109,11 @@ resourcepack:
   noPacks: Nenhum pacote de recursos encontrado
   search: Buscar pacotes de recursos...
 save:
+  linkShared: Compartilhar saves entre instâncias
+  linkSharedHint: >-
+    Vincular a pasta saves desta instância à pasta compartilhada global para que
+    todas as instâncias compartilhem os mesmos mundos. Os saves existentes são
+    mesclados na pasta compartilhada.
   copy:
     name: Copiar Salvar
   createNew: Criar Novo Mundo
@@ -1099,6 +1148,10 @@ screenshots:
   openFolder: Abrir pasta de capturas de tela
 search:
   favorate: Coleção
+  emptyInstalled: Nada instalado ainda
+  browseMarket: Explorar o mercado
+  noResults: Nenhum resultado encontrado
+  pageSize: Resultados por página
 server:
   acceptingMinecraftVersion: Aceitando Versão do Minecraft
   creationHint: Preencha o endereço do servidor e faça o ping no servidor
@@ -1228,6 +1281,8 @@ setting:
   exportSettingsHint: Salvar as configurações atuais em um arquivo
   general: Geral
   githubRelease: Lançamento no Github
+  globalJava: Java preferido
+  globalJavaHint: "No modo automático, este Java é tentado primeiro e só recorre à detecção automática quando não é compatível com a versão do jogo."
   globalSetting: Configuração global da instância
   globalSettingHint: A instância usará essas configurações como padrão.
   importSettings: Importar configurações
@@ -1384,6 +1439,11 @@ setup:
     name: Definir Idioma
   path: Caminho Atual
 shaderPack:
+  linkShared: Compartilhar pacotes de shaders entre instâncias
+  linkSharedHint: >-
+    Vincular a pasta shaderpacks desta instância à pasta compartilhada global
+    para que todas as instâncias usem os mesmos pacotes de shaders. Os pacotes
+    existentes são mesclados na pasta compartilhada.
   deletion: Excluir Shaders Pack
   deletionHint: >-
     Isso excluirá o arquivo do shaders pack em {path} e não poderá ser revertido.
@@ -1410,6 +1470,7 @@ shared:
   back: Voltar
   browse: Navegar
   cancel: Cancelar
+  checkUpgrade: Verificar Atualizações
   client: Cliente
   description: Descrição
   disable: Desativar
@@ -1431,6 +1492,7 @@ shared:
   search: Procurar
   server: Servidor
   skipForNow: Pular por agora
+  upgrade: Atualizar
   'yes': Sim
 sidebar:
   pin: Fixar
