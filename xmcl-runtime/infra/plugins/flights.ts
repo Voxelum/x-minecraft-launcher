@@ -62,7 +62,8 @@ export const pluginFlights: LauncherAppPlugin = async (app) => {
     }
   }
   try {
-    const filtered = { ...BUILTIN_FLIGHTS } as Record<string, string>
+    const filtered = { ...BUILTIN_FLIGHTS } as Record<string, any>
+
     const cachedPath = join(app.appDataPath, 'flights.json')
     const promise = readFlights(filtered, cachedPath).then(() => {
       logger.log('Flights loaded', JSON.stringify(filtered))
