@@ -4,5 +4,10 @@ export const kFlights: InjectionKey<Record<string, object | string | number | bo
 
 export function useI18nSearchFlights() {
   const flights = inject(kFlights, {})
-  return flights.i18nSearch && flights.i18nSearch instanceof Array ? flights.i18nSearch as string[] : undefined
+  const defaultLocales = ['zh-CN', 'zh-TW', 'ru', 'uk', 'pl', 'de', 'fr', 'ja', 'ja-JP']
+  if (flights.i18nSearch && flights.i18nSearch instanceof Array) {
+    return Array.from(new Set([...(flights.i18nSearch as string[]), ...defaultLocales]))
+  }
+  return defaultLocales
 }
+

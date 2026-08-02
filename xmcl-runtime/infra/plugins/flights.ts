@@ -6,7 +6,9 @@ import { kClientToken } from '../client_token'
 import { kFlights } from '../flights'
 
 const BUILTIN_FLIGHTS = {
+  i18nSearch: ['zh-CN', 'zh-TW', 'ru', 'uk', 'pl', 'de', 'fr', 'ja', 'ja-JP'],
 }
+
 
 export const pluginFlights: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('Flights')
