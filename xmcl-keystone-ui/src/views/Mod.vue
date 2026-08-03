@@ -147,7 +147,6 @@
           </v-btn-toggle>
           <ModOptionsPage
             v-model:denseView="denseView"
-            v-model:groupInstalled="groupInstalled"
           />
         </template>
       </MarketFilterPanel>
