@@ -13,6 +13,7 @@ import { ElectronSession } from './ElectronSession'
 import { IS_DEV } from './constant'
 import defaultApp from './defaultApp'
 import { definedPlugins } from './definedPlugins'
+import { isReplayableFetchBody, splitFetchBody } from './fetchBody'
 import { getOzonePlatform } from './ozonePlatform'
 import { ElectronUpdater } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
@@ -207,10 +208,18 @@ export default class ElectronLauncherApp extends LauncherApp {
   }
 
   fetch: typeof fetch = async (...args: any[]) => {
+    const bodies = splitFetchBody(
+      await adaptFormDataForElectron(args[1]?.body),
+      isReplayableFetchBody(args[1]?.headers),
+    )
     const init = {
       ...args[1],
-      body: await adaptFormDataForElectron(args[1]?.body),
+      body: bodies.primary,
       bypassCustomProtocolHandlers: true,
+    }
+    const fallbackInit = {
+      ...init,
+      body: bodies.fallback,
     }
     function assertError(e: unknown): asserts e is Error {
       if (e instanceof Error || (typeof e === 'object' && e !== null && 'message' in e && typeof (e as any).message === 'string')) {
@@ -279,10 +288,12 @@ export default class ElectronLauncherApp extends LauncherApp {
           }
         }
       }
-      return await net.fetch(args[0], init) as any
+      const response = await net.fetch(args[0], init) as any
+      await bodies.cancelFallback()
+      return response
     } catch (e) {
       assertError(e)
-      return await handlError(e, () => ufetch(args[0], init).catch(handlError))
+      return await handlError(e, bodies.retryable ? () => ufetch(args[0], fallbackInit).catch(handlError) : undefined)
     }
   }
 
