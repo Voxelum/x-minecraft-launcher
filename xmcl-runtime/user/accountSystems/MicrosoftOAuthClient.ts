@@ -16,6 +16,8 @@ export const MICROSOFT_XBOX_LAUNCHER_SCOPES = [
   'offline_access',
 ]
 
+let nativeBrokerRuntimePrepared = false
+
 export class MicrosoftOAuthClient {
   private nativeBrokerPlugin: INativeBrokerPlugin | undefined
 
@@ -50,6 +52,8 @@ export class MicrosoftOAuthClient {
   }
 
   private prepareNativeBrokerRuntime() {
+    if (nativeBrokerRuntimePrepared) return
+
     const arch = process.arch === 'ia32' ? 'ia32' : 'x64'
     const target = join(tmpdir(), 'xmcl-msal-node-runtime', String(process.pid), arch)
     mkdirSync(target, { recursive: true })
@@ -57,6 +61,7 @@ export class MicrosoftOAuthClient {
     copyFileSync(join(__dirname, `msal-node-runtime-${arch}.node`), targetNode)
     copyFileSync(join(__dirname, `msalruntime-${arch}.dll`), join(target, 'msalruntime.dll'))
     process.env.XMCL_MSAL_NODE_RUNTIME_PATH = targetNode
+    nativeBrokerRuntimePrepared = true
   }
 
   protected async getOAuthApp(account: string, signal?: AbortSignal, nativeBrokerPlugin?: INativeBrokerPlugin) {

@@ -49,24 +49,26 @@ async function buildMain(
   if (options.metafile) {
     await writeFile('./meta.json', JSON.stringify(out.metafile, null, 2))
   }
-  if (target.platform === 'win32') {
-    const msalRuntimeDir = path.dirname(require.resolve('@azure/msal-node-runtime/package.json'))
-    await Promise.all([
-      ['x64', 'msalruntime.dll'],
-      ['x86', 'msalruntime_x86.dll'],
-    ].map(async ([arch, dll]) => {
-      const source = join(msalRuntimeDir, 'dist', 'windows', arch)
-      const targetArch = arch === 'x86' ? 'ia32' : arch
-      await copyFile(join(source, 'msal-node-runtime.node'), join(__dirname, 'dist', `msal-node-runtime-${targetArch}.node`))
-      await copyFile(join(source, dll), join(__dirname, 'dist', `msalruntime-${targetArch}.dll`))
-    }))
-  }
-  const koffiPlatform = target.platform
-  const koffiArch = typeof target.arch === 'number'
+  const targetArch = typeof target.arch === 'number'
     ? ['ia32', 'x64', 'armv7l', 'arm64', 'universal'][target.arch]
     : target.arch
-  if (!koffiArch || koffiArch === 'universal') throw new Error(`Unsupported Koffi target architecture: ${target.arch}`)
-  await copyFile(await resolveKoffiBinary(koffiPlatform, koffiArch), join(__dirname, 'dist', 'koffi.node'))
+  if (!targetArch || targetArch === 'universal') throw new Error(`Unsupported native target architecture: ${target.arch}`)
+  if (target.platform === 'win32') {
+    const msalRuntimeDir = path.dirname(require.resolve('@azure/msal-node-runtime/package.json'))
+    const runtime = targetArch === 'x64'
+      ? { directory: 'x64', dll: 'msalruntime.dll' }
+      : targetArch === 'ia32'
+        ? { directory: 'x86', dll: 'msalruntime_x86.dll' }
+        : undefined
+    if (!runtime) throw new Error(`Unsupported MSAL runtime architecture: ${target.arch}`)
+    const source = join(msalRuntimeDir, 'dist', 'windows', runtime.directory)
+    await Promise.all([
+      copyFile(join(source, 'msal-node-runtime.node'), join(__dirname, 'dist', `msal-node-runtime-${targetArch}.node`)),
+      copyFile(join(source, runtime.dll), join(__dirname, 'dist', `msalruntime-${targetArch}.dll`)),
+    ])
+  }
+  const koffiPlatform = target.platform
+  await copyFile(await resolveKoffiBinary(koffiPlatform, targetArch), join(__dirname, 'dist', 'koffi.node'))
   const time = ((Date.now() - startTime) / 1000).toFixed(2)
   if (!slient) console.log(`Build completed in ${time}s.`)
   await copy(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer'))
