@@ -28,9 +28,6 @@ package-lock.json
 !/docs/
 docs/*
 !/docs/tutorial/
-!/docs/commercialization.md
-!/docs/commercialization/
-!/docs/commercialization/**
 
 # e2e artifacts
 e2e/artifacts/

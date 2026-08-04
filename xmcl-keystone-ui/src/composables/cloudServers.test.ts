@@ -7,7 +7,7 @@ import {
 } from '@xmcl/runtime-api'
 import { ref } from 'vue'
 import { describe, expect, test } from 'vitest'
-import fixture from '../../../docs/commercialization/m5-minecraft-runtime/proposals/v1/fixtures/launcher-runtime.json'
+import fixture from './fixtures/cloud-server-runtime.json'
 import { mapCloudServerIssue, mergeCloudServerLogs, mergeCloudServerSnapshot, useCloudServer } from './cloudServers'
 
 const cases = new Map(fixture.cases.map(item => [item.name, item]))
