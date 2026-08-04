@@ -1,6 +1,7 @@
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
+import { basename } from '@/util/basename'
 import { ProjectFile } from '@/util/search'
-import { RuntimeVersions } from '@xmcl/instance'
+import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
 import { InstallMarketOptionWithInstance, MarketType } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
@@ -14,8 +15,7 @@ export function useModrinthInstaller(
   path: Ref<string>,
   runtime: Ref<RuntimeVersions>,
   allFiles: Ref<ProjectFile[]>,
-  installFromMarket: (options: InstallMarketOptionWithInstance) => Promise<any>,
-  uninstallFiles: (resources: ProjectFile[], path?: string) => void,
+  resolveFromMarket: (options: InstallMarketOptionWithInstance) => Promise<InstanceFile[]>,
   installDefaultModLoader = useInstanceModLoaderDefault(),
   resolveArtifactDependencies?: ResolveArtifactModrinthDependencies,
 ) {
@@ -26,8 +26,9 @@ export function useModrinthInstaller(
     const files = await resolveFromMarket({
       market: MarketType.Modrinth,
       version,
-      instancePath: instancePath || path.value,
+      instancePath: target,
     })
+    return stage(target, [], files)
   }
 
   async function installWithDependencies(versionId: string, loaders: string[], icon: string | undefined, installed: ProjectFile[], deps: Array<{ recommendedVersion: ProjectVersion; project: Project; type: string }>, artifactUrl?: string) {

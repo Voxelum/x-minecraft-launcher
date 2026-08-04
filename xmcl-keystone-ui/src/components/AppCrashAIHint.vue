@@ -84,7 +84,7 @@
 </template>
 <script lang="ts" setup>
 import { kAgent } from '@/composables/agent'
-import { useAgentChatBus } from '@/composables/agentChat'
+import { useAgentChatOpen } from '@/composables/agentChat'
 import { injection } from '@/util/inject'
 
 const { t } = useI18n()
@@ -98,7 +98,7 @@ const emit = defineEmits<{ (e: 'close'): void }>()
 const agent = injection(kAgent)
 const agentAvailable = agent.available
 const agentRunning = agent.running
-const chatBus = useAgentChatBus()
+const { open: openAgentChat } = useAgentChatOpen()
 const { push } = useRouter()
 
 function onAskAgent() {
@@ -107,7 +107,7 @@ function onAskAgent() {
     push('/setting')
     return
   }
-  chatBus.emit('show')
+  openAgentChat()
   agent.send(props.getAgentPrompt()).catch((e) => {
     console.error('[crash-agent]', e)
   })

@@ -37,14 +37,15 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: 选择新的根目录
 agent:
+  abort: 停止生成
   title: XMCL Agent
   statusReady: 就绪
   statusWorking: 处理中…
-  statusDisabled: 已禁用 — 缺少 API Key
-  reset: 重置对话
-  notConfiguredTitle: Agent 尚未配置
+  statusDisabled: 已禁用 — 请登录或配置服务商
+  reset: 新建对话
+  notConfiguredTitle: Agent 暂不可用
   notConfiguredHint: >-
-    在设置 → 通用 → AI Agent 中填写 API Key、模型和 Endpoint 以启用 Agent。
+    登录 XMCL 账号以使用内置服务，或在设置 → 通用 → AI Agent 中填写 API Key、模型和 Endpoint。
   openSettings: 打开设置
   setupGuide: 配置指南
   emptyHint: >-
@@ -53,11 +54,13 @@ agent:
   suggestion2: 我的模组崩溃了 — 找出原因并告诉我如何修复
   suggestion3: 构建一个整合包：为我想要的功能查找模组并安装到此实例
   thinking: 思考中…
+  reasoning: 思考过程
   callingTool: 正在调用 {name}…
   confirmTitle: 确认 Agent 操作
   confirmCancel: 取消
   confirmAccept: 继续
   errorTitle: Agent 执行出错
+  confirmAllowAll: 全部允许
   inputPlaceholder: 向 Agent 提问…（Enter 发送，Shift+Enter 换行）
   disabledPlaceholder: Agent 已禁用
   toolArguments: 参数
@@ -356,6 +359,7 @@ commandPalette:
   hintEnter: 进入
   hintBack: 返回
   hintClose: 关闭
+  hintAskAgent: 询问 Agent
 feedback:
   channel: 联系渠道
   description: 我找到了漏洞/我想反馈
@@ -1625,12 +1629,14 @@ setting:
   advancedSettingsHint: 危险区域 - 重置或管理启动器数据
   aiAgentApiKey: AI Agent API Key
   aiAgentApiKeyClear: 清除密钥
-  aiAgentApiKeyDescription: 仅保存在本地设备，用于 Agent 请求。
+  aiAgentApiKeyDescription: 保持“内置”即可使用 XMCL 账号；也可选择外部服务商并填写其 API Key。密钥按服务商分别保存在本地设备。
   aiAgentApiKeyEmpty: 粘贴你的 API Key
   aiAgentApiKeyNotNeeded: 无需密钥
   aiAgentApiKeyNotNeededHint: 该服务在本地运行，无需 API Key
   aiAgentApiKeySaved: 已保存
   aiAgentApiKeyStored: 已保存密钥，输入可替换
+  aiAgentBuiltin: 内置
+  aiAgentCustom: 自定义
   aiAgentEndpoint: AI Agent Endpoint
   aiAgentEndpointDescription: 聊天补全（chat completions）的 Endpoint 地址。
   aiAgentModel: AI Agent 模型

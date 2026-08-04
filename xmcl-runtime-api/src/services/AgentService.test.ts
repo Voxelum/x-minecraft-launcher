@@ -1,6 +1,9 @@
 import { describe, expect, test } from 'vitest'
 import {
   AGENT_PROVIDER_PRESETS,
+  BUILTIN_AGENT_ENDPOINT,
+  BUILTIN_AGENT_MODEL,
+  BUILTIN_AGENT_PROVIDER_ID,
   CUSTOM_AGENT_PROVIDER_ID,
   DEFAULT_AGENT_ENDPOINT,
   DEFAULT_AGENT_MODEL,
@@ -12,9 +15,10 @@ import {
 } from './AgentService'
 
 describe('agent provider presets', () => {
-  test('keeps agnes as the default so existing users see no change', () => {
-    expect(DEFAULT_AGENT_ENDPOINT).toBe('https://apihub.agnes-ai.com/v1/chat/completions')
-    expect(DEFAULT_AGENT_MODEL).toBe('agnes-2.0-flash')
+  test('uses the built-in XMCL provider by default and offers Agnes first externally', () => {
+    expect(DEFAULT_AGENT_ENDPOINT).toBe('')
+    expect(DEFAULT_AGENT_MODEL).toBe('')
+    expect(BUILTIN_AGENT_MODEL).toBe('xmcl-agent')
     expect(AGENT_PROVIDER_PRESETS[0].id).toBe('agnes')
   })
 
@@ -33,6 +37,16 @@ describe('agent provider presets', () => {
   test('unknown endpoints resolve to the custom provider', () => {
     expect(resolveAgentProviderId('https://example.com/v1/chat/completions')).toBe(CUSTOM_AGENT_PROVIDER_ID)
     expect(getAgentProviderPreset(CUSTOM_AGENT_PROVIDER_ID)).toBeUndefined()
+  })
+
+  test.each([
+    [BUILTIN_AGENT_ENDPOINT, BUILTIN_AGENT_PROVIDER_ID],
+    ['', BUILTIN_AGENT_PROVIDER_ID],
+    ['https://provider.example/v1/chat/completions', CUSTOM_AGENT_PROVIDER_ID],
+    ['https://api.xmcl.api.attacker.example/chat/completions', CUSTOM_AGENT_PROVIDER_ID],
+    ['not a URL containing api.xmcl.api', CUSTOM_AGENT_PROVIDER_ID],
+  ])('resolves %s as %s', (endpoint, expected) => {
+    expect(resolveAgentProviderId(endpoint)).toBe(expected)
   })
 
   // A substring host test would classify these as the preset they impersonate,
@@ -76,7 +90,7 @@ describe('resolveAgentSecretAccount', () => {
   test('gives every preset its own account', () => {
     const accounts = AGENT_PROVIDER_PRESETS.map(p => resolveAgentSecretAccount(p.endpoint))
     expect(new Set(accounts).size).toBe(AGENT_PROVIDER_PRESETS.length)
-    expect(resolveAgentSecretAccount(DEFAULT_AGENT_ENDPOINT)).toBe('agnes')
+    expect(resolveAgentSecretAccount(DEFAULT_AGENT_ENDPOINT)).toBe(BUILTIN_AGENT_PROVIDER_ID)
   })
 
   test('separates distinct custom hosts so keys do not leak between them', () => {

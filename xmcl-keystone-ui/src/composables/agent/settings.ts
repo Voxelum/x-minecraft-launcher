@@ -2,16 +2,16 @@ import { createSharedComposable } from '@vueuse/core'
 import {
   AGENT_PROVIDER_PRESETS,
   AgentServiceKey,
+  BUILTIN_AGENT_ENDPOINT,
+  BUILTIN_AGENT_MODEL,
+  BUILTIN_AGENT_PROVIDER_ID,
   CUSTOM_AGENT_PROVIDER_ID,
-  DEFAULT_AGENT_ENDPOINT,
-  DEFAULT_AGENT_MODEL,
+  DEFAULT_AGENT_PROVIDER,
   getAgentProviderPreset,
   resolveAgentProviderId,
 } from '@xmcl/runtime-api'
+import { kXmclAccount } from '../xmclAccount'
 import { useService } from '../service'
-
-const DEFAULT_AGNES_ENDPOINT = DEFAULT_AGENT_ENDPOINT
-const DEFAULT_AGNES_MODEL = DEFAULT_AGENT_MODEL
 
 const LEGACY_API_KEY = 'agentApiKey'
 const LEGACY_ENDPOINT = 'agentEndpoint'
@@ -19,16 +19,25 @@ const LEGACY_MODEL = 'agentModel'
 
 export const useAgentSettings = createSharedComposable(() => {
   const service = useService(AgentServiceKey)
+  const xmclAccount = inject(kXmclAccount, undefined)
   const apiKey = ref('')
-  const endpoint = ref(DEFAULT_AGNES_ENDPOINT)
-  const model = ref(DEFAULT_AGNES_MODEL)
-  const configured = ref(false)
+  const endpoint = ref('')
+  const model = ref('')
+  const providerConfigured = ref(false)
+  const mode = computed<'builtin' | 'custom'>(() => endpoint.value.trim() && model.value.trim() ? 'custom' : 'builtin')
   const loaded = ref(false)
   const error = ref('')
   let saveTimer: ReturnType<typeof setTimeout> | undefined
   let keyTimer: ReturnType<typeof setTimeout> | undefined
+  let pendingApiKey = ''
   let keySave = Promise.resolve()
+  let keySaveError: Error | undefined
   let settingsSave = Promise.resolve()
+
+  async function refreshStatus() {
+    const settings = await service.getProviderSettings()
+    providerConfigured.value = settings.configured
+  }
 
   const ready = (async () => {
     const legacyApiKey = localStorage.getItem(LEGACY_API_KEY) ?? ''
@@ -36,9 +45,10 @@ export const useAgentSettings = createSharedComposable(() => {
     const legacyModel = localStorage.getItem(LEGACY_MODEL) ?? ''
     let settings = await service.getProviderSettings()
     if (legacyApiKey || legacyEndpoint || legacyModel) {
+      const migrateToExternal = !!legacyApiKey && !legacyEndpoint && !settings.endpoint
       await service.setProviderSettings({
-        endpoint: legacyEndpoint || settings.endpoint,
-        model: legacyModel || settings.model,
+        endpoint: legacyEndpoint || settings.endpoint || (migrateToExternal ? DEFAULT_AGENT_PROVIDER.endpoint : ''),
+        model: legacyModel || settings.model || (migrateToExternal ? DEFAULT_AGENT_PROVIDER.defaultModel : ''),
         apiKey: legacyApiKey || undefined,
       })
       localStorage.removeItem(LEGACY_API_KEY)
@@ -48,13 +58,14 @@ export const useAgentSettings = createSharedComposable(() => {
     }
     endpoint.value = settings.endpoint
     model.value = settings.model
-    configured.value = settings.configured
+    providerConfigured.value = settings.configured
     loaded.value = true
   })()
 
   function saveProviderSettings() {
     settingsSave = settingsSave.then(async () => {
       await service.setProviderSettings({ endpoint: endpoint.value, model: model.value })
+      await refreshStatus()
     })
     return settingsSave
   }
@@ -74,9 +85,14 @@ export const useAgentSettings = createSharedComposable(() => {
       clearTimeout(saveTimer)
       saveTimer = undefined
       await saveProviderSettings()
-    } else {
-      await settingsSave
     }
+    if (keyTimer) {
+      clearTimeout(keyTimer)
+      keyTimer = undefined
+      await setApiKey(pendingApiKey)
+    }
+    await Promise.all([settingsSave, keySave])
+    if (keySaveError) throw keySaveError
   }
 
   async function setApiKey(value: string) {
@@ -93,7 +109,8 @@ export const useAgentSettings = createSharedComposable(() => {
         await service.setProviderSettings({ endpoint: target, model: targetModel, apiKey: value })
         // Only reflect the result in the UI if that provider is still selected.
         if (endpoint.value === target) {
-          configured.value = !!value.trim()
+          await refreshStatus()
+          keySaveError = undefined
           error.value = ''
         } else {
           // The endpoint just committed belongs to the previous provider; restore
@@ -101,7 +118,8 @@ export const useAgentSettings = createSharedComposable(() => {
           await service.setProviderSettings({ endpoint: endpoint.value, model: model.value })
         }
       } catch (e) {
-        if (endpoint.value === target) error.value = e instanceof Error ? e.message : String(e)
+        keySaveError = e instanceof Error ? e : new Error(String(e))
+        if (endpoint.value === target) error.value = keySaveError.message
       }
     })
     await keySave
@@ -114,10 +132,11 @@ export const useAgentSettings = createSharedComposable(() => {
    */
   function updateApiKey(value: string) {
     apiKey.value = value
+    pendingApiKey = value
     if (keyTimer) clearTimeout(keyTimer)
     keyTimer = setTimeout(() => {
       keyTimer = undefined
-      void setApiKey(value)
+      void setApiKey(pendingApiKey)
     }, 500)
   }
 
@@ -138,11 +157,16 @@ export const useAgentSettings = createSharedComposable(() => {
     await setApiKey('')
   }
 
-  const resolvedEndpoint = computed(() => endpoint.value.trim() || DEFAULT_AGNES_ENDPOINT)
-  const resolvedModel = computed(() => model.value.trim() || DEFAULT_AGNES_MODEL)
+  const resolvedEndpoint = computed(() => mode.value === 'custom' ? endpoint.value.trim() : BUILTIN_AGENT_ENDPOINT)
+  const resolvedModel = computed(() => mode.value === 'custom' ? model.value.trim() : BUILTIN_AGENT_MODEL)
+  const configured = computed(() => {
+    if (mode.value === 'custom' || !xmclAccount) return providerConfigured.value
+    const session = xmclAccount.session.value
+    return !!session && Date.parse(session.expiresAt) > Date.now()
+  })
 
   /** The preset matching the current endpoint, or the custom id when none matches. */
-  const providerId = computed(() => resolveAgentProviderId(resolvedEndpoint.value))
+  const providerId = computed(() => mode.value === 'builtin' ? BUILTIN_AGENT_PROVIDER_ID : resolveAgentProviderId(resolvedEndpoint.value))
   const provider = computed(() => getAgentProviderPreset(providerId.value))
   /** True when the selected provider needs no API key at all. */
   const keyless = computed(() => !!provider.value?.keyless)
@@ -158,7 +182,7 @@ export const useAgentSettings = createSharedComposable(() => {
     if (!loaded.value) return
     cancelPendingApiKey()
     apiKey.value = ''
-    configured.value = false
+    providerConfigured.value = false
     const token = ++refreshToken
     // Wait for any key write that was already in flight: it commits the previous
     // provider's endpoint, so reading `configured` before it settles would report
@@ -166,7 +190,7 @@ export const useAgentSettings = createSharedComposable(() => {
     void keySave.then(() => flush()).then(async () => {
       const settings = await service.getProviderSettings()
       // Ignore a stale response if the user switched again while this was in flight.
-      if (token === refreshToken) configured.value = settings.configured
+      if (token === refreshToken) providerConfigured.value = settings.configured
     }).catch(e => {
       if (token === refreshToken) error.value = e instanceof Error ? e.message : String(e)
     })
@@ -178,6 +202,11 @@ export const useAgentSettings = createSharedComposable(() => {
    * the user typed by hand is never silently discarded.
    */
   function selectProvider(id: string) {
+    if (id === BUILTIN_AGENT_PROVIDER_ID) {
+      endpoint.value = ''
+      model.value = ''
+      return
+    }
     if (id === CUSTOM_AGENT_PROVIDER_ID) return
     const preset = getAgentProviderPreset(id)
     if (!preset || preset.id === providerId.value) return
@@ -192,6 +221,7 @@ export const useAgentSettings = createSharedComposable(() => {
     endpoint,
     model,
     configured,
+    mode,
     loaded,
     error,
     ready,

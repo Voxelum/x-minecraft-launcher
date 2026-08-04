@@ -345,6 +345,7 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
   }
 
   app.registry.register(kMarketProvider, {
+    resolveInstanceFiles: getFiles,
     installFile: async (options) => {
       const downloadOptions = await app.registry.get(kDownloadOptions)
 

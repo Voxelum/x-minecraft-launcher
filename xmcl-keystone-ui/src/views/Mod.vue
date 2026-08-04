@@ -793,7 +793,7 @@ const onClickDependency = (modId: string) => {
 }
 
 // install / uninstall / enable / disable
-const { install, uninstall, installFromMarket } =
+const { install, uninstall, resolveFromMarket } =
   useService(InstanceModsServiceKey)
 const onUninstall = (f: ProjectFile[], _path?: string) => {
   uninstall({ path: _path ?? path.value, files: f.map((f) => f.path) }).then(() => {
@@ -948,8 +948,7 @@ const modrinthInstaller = useModrinthInstaller(
   path,
   runtime,
   mods,
-  installFromMarket,
-  onUninstall,
+  resolveFromMarket,
   onInstallModRuntime,
   resolveArtifactDependencies,
 )
@@ -960,8 +959,7 @@ const curseforgeInstaller = useCurseforgeInstaller(
   path,
   runtime,
   mods,
-  installFromMarket,
-  onUninstall,
+  resolveFromMarket,
   onInstallModRuntime,
   resolveArtifactDependencies,
 )

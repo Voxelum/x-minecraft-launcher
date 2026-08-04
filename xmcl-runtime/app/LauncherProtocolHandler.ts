@@ -11,6 +11,7 @@ export interface RequestOptions {
   url: string | URL
   headers?: Record<string, any>
   body?: string | Buffer | Readable
+  signal?: AbortSignal
 }
 
 export interface Request {
@@ -18,12 +19,17 @@ export interface Request {
   url: URL
   headers: Record<string, any>
   body?: string | Buffer | Readable
+  signal?: AbortSignal
+  /** Skip remaining protocol interceptors after the current handler, but still run the sink. */
+  skipRemainingHandlers?: boolean
 }
 
 export interface Response {
   status?: number
   headers: Record<string, any>
   body?: string | Buffer | Readable
+  /** Return this response without running remaining interceptors or a sink. */
+  handled?: boolean
 }
 
 export interface Handler {
@@ -75,6 +81,8 @@ export class LauncherProtocolHandler {
       const handers = this.handlers.filter(v => `${v[0]}:` === ctx.request.url.protocol).map(v => v[1])
       for (const handler of handers) {
         await handler(ctx)
+        if (ctx.response.handled) return
+        if (ctx.request.skipRemainingHandlers) break
       }
       await this.sinkHandlers[ctx.request.url.protocol.substring(0, ctx.request.url.protocol.length - 1)]?.(ctx)
     }
@@ -84,6 +92,7 @@ export class LauncherProtocolHandler {
         url: typeof request.url === 'string' ? new URL(request.url, 'xmcl://launcher') : request.url,
         headers: request.headers || {},
         body: request.body,
+        signal: request.signal,
       },
       response: {
         headers: {},

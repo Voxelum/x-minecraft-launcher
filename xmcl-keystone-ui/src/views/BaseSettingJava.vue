@@ -41,7 +41,7 @@
               label
               variant="tonal"
             >
-              <v-icon start size="x-small">auto_awesome</v-icon>
+              <v-icon start size="x-small">smart_toy</v-icon>
               {{ t('java.allocatedShort') }}
             </v-chip>
           </template>

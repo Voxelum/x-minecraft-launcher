@@ -98,8 +98,12 @@ export interface Host {
 
   getGPUInfo(type: 'complete' | 'basic'): Promise<{
     gpuDevice?: {
+      active?: boolean
       vendorId: number
       deviceId: number
+      deviceString?: string
+      driverVendor?: string
+      driverVersion?: string
     }[]
   }>
 }

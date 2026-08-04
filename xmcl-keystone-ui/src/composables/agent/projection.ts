@@ -5,9 +5,17 @@ import type {
   AgentToolCall,
   AgentToolPresentation,
 } from '@xmcl/runtime-api'
+import { AGENT_PASSIVE_CONTEXT_MESSAGE_NAME } from './context'
+
+export interface AgentPassiveTranscriptEvent {
+  type: 'game-start' | 'game-exit' | 'mod-diagnosis'
+  payload: Record<string, unknown>
+}
 
 export type AgentTranscriptItem =
   | { kind: 'message'; key: string; message: AgentMessage }
+  | { kind: 'reasoning'; key: string; content: string }
+  | { kind: 'passive'; key: string; event: AgentPassiveTranscriptEvent }
   | {
       kind: 'tool'
       key: string
@@ -20,6 +28,26 @@ function contentText(message: AgentMessage) {
   if (!message.content) return ''
   if (typeof message.content === 'string') return message.content
   return message.content.map(part => part.type === 'text' ? part.text ?? '' : '[image]').join('')
+}
+
+function parseAgentPassiveEvent(message: AgentMessage): AgentPassiveTranscriptEvent | undefined {
+  if (message.role !== 'system' || message.name !== AGENT_PASSIVE_CONTEXT_MESSAGE_NAME || typeof message.content !== 'string') return undefined
+  const content = message.content
+  const prefixes = [
+    ['Game started: ', 'game-start'],
+    ['Game exited: ', 'game-exit'],
+    ['Mod compatibility diagnosis after applying the instance manifest: ', 'mod-diagnosis'],
+  ] as const
+  const match = prefixes.find(([prefix]) => content.startsWith(prefix))
+  if (!match) return undefined
+  const [prefix, type] = match
+  try {
+    const payload = JSON.parse(content.slice(prefix.length).split('\n', 1)[0])
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return undefined
+    return { type, payload }
+  } catch {
+    return undefined
+  }
 }
 
 function isMarketPresentation(value: unknown): value is AgentMarketProjectListPresentation {
@@ -66,13 +94,28 @@ export function projectAgentTranscript(messages: AgentMessage[]): AgentTranscrip
   const attachedResults = new Set<string>()
   const items: AgentTranscriptItem[] = []
   messages.forEach((message, index) => {
-    if (message.role === 'system' || message.role === 'tool') return
-    if (message.role !== 'assistant' || !message.toolCalls?.length) {
+    if (message.role === 'system') {
+      const event = parseAgentPassiveEvent(message)
+      if (event) items.push({ kind: 'passive', key: `passive-${index}`, event })
+      return
+    }
+    if (message.role === 'tool') return
+    if (message.role !== 'assistant') {
       items.push({ kind: 'message', key: `message-${index}`, message })
       return
     }
 
-    if (contentText(message)) {
+    if (message.reasoningContent?.trim()) {
+      items.push({ kind: 'reasoning', key: `reasoning-${index}`, content: message.reasoningContent })
+    }
+
+    const hasVisibleContent = contentText(message).trim().length > 0
+    if (!message.toolCalls?.length) {
+      if (hasVisibleContent) items.push({ kind: 'message', key: `message-${index}`, message })
+      return
+    }
+
+    if (hasVisibleContent) {
       items.push({
         kind: 'message',
         key: `message-${index}`,

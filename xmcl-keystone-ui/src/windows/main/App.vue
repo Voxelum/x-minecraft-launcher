@@ -23,8 +23,7 @@
     </div>
     <AppContextMenu />
     <AppNotifier />
-    <AppCommandPalette />
-    <AppAgentChat v-if="developerMode" />
+    <AppOmniDialog :agent-enabled="developerMode" />
     <AppFeedbackDialog />
     <AppTaskDialog />
     <AppAddInstanceDialog />
@@ -84,8 +83,7 @@ import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
 import AppModpackUpdateDialog from '@/views/AppModpackUpdateDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
-import AppAgentChat from '@/views/AppAgentChat.vue'
-import AppCommandPalette from '@/views/AppCommandPalette.vue'
+import AppOmniDialog from '@/views/AppOmniDialog.vue'
 import AppContextMenu from '@/views/AppContextMenu.vue'
 import AppFeedbackDialog from '@/views/AppFeedbackDialog.vue'
 import AppGameExitDialog from '@/views/AppGameExitDialog.vue'
@@ -144,9 +142,9 @@ userMenu.on(() => { userProfileDialogShown.value = true })
 const route = useRoute()
 provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value && route.path !== '/me'))
 
-// Bind Ctrl/Cmd+K to toggle the command palette.
+// Bind Ctrl/Cmd+Shift+C to open the command palette.
 useCommandPaletteHotkey()
-// Bind Ctrl/Cmd+Shift+A to toggle the agent chat panel.
+// Bind Ctrl/Cmd+Shift+A to open the agent chat panel.
 useAgentChatHotkey(developerMode)
 
 const defaultColor = useInstanceGroupDefaultColor()

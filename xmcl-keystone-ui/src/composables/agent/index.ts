@@ -1,15 +1,16 @@
-import { AgentServiceKey, type AgentMessage, type AgentRunEvent } from '@xmcl/runtime-api'
+import { AgentServiceKey, LaunchServiceKey, type AgentMessage, type AgentRunEvent } from '@xmcl/runtime-api'
 import type { InjectionKey, Ref } from 'vue'
-import { watch } from 'vue'
+import { onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { kInstances } from '../instances'
 import { useService } from '../service'
 import { kUserContext } from '../user'
 import { injection } from '@/util/inject'
-import { useLocalAgent } from './local'
+import { useLocalAgent, type AgentContextUsage } from './local'
 import { useAgentToolFactory } from './tools'
 import { useAgentChatStatus } from '../agentChat'
 import { migrateLegacyLauncherConversations } from './migration'
+import { drainAgentPassiveEvents, enqueueAgentPassiveEvent } from './passiveEvents'
 
 export * from './local'
 export * from './ui'
@@ -21,6 +22,7 @@ export interface AgentSession {
   readonly runError: Ref<string>
   readonly messages: Ref<AgentMessage[]>
   readonly events: Ref<AgentRunEvent[]>
+  readonly contextUsage: Readonly<Ref<AgentContextUsage>>
   loadConversationForCurrentInstance(): Promise<void>
   replaceMessages(messages: AgentMessage[]): Promise<void>
   send(userInput: string): Promise<void>
@@ -28,27 +30,78 @@ export interface AgentSession {
   abort(): void
 }
 
+let disposeAgentLaunchListeners: (() => void) | undefined
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => disposeAgentLaunchListeners?.())
+}
+
 export function useAgent(): AgentSession {
   const { locale } = useI18n()
+  const router = useRouter()
   const { allInstances, selectedInstance } = injection(kInstances)
   const { userProfile } = injection(kUserContext)
   const service = useService(AgentServiceKey)
+  const launchService = useService(LaunchServiceKey)
   const tools = useAgentToolFactory()
   const local = useLocalAgent({
     agentId: 'launcher',
     getScope: () => selectedInstance.value,
     getLocale: () => locale.value,
     getUserId: () => userProfile.value?.id || undefined,
+    getPassiveContext: context => ({
+      userId: context.userId,
+      page: router.currentRoute.value.fullPath,
+    }),
+    drainPassiveEvents: context => drainAgentPassiveEvents(context.scope),
     createTools: tools.createLauncherTools,
     getSessionContext: context => {
       const instance = allInstances.value.find(value => value.path === context.scope)
-      return [
-        `Instance path: ${context.scope}`,
-        `Instance name: ${instance?.name ?? '(unknown)'}`,
-        `Runtime: ${JSON.stringify(instance?.runtime ?? {})}`,
-        `Selected user id: ${context.userId ?? '(none)'}`,
-      ].join('\n')
+      return {
+        instancePath: context.scope,
+        instanceName: instance?.name ?? '(unknown)',
+        runtime: instance?.runtime ?? {},
+        userId: context.userId,
+        page: router.currentRoute.value.fullPath,
+      }
     },
+  })
+
+  const onGameStart = (event: Parameters<Parameters<typeof launchService.on<'minecraft-start'>>[1]>[0]) => {
+    enqueueAgentPassiveEvent(event.gameDirectory, {
+      type: 'game-start',
+      pid: event.pid,
+      launchId: event.launchId,
+      launchPath: `launches/${event.launchId}`,
+      side: event.side ?? 'client',
+      version: event.version,
+      minecraft: event.minecraft,
+    })
+  }
+  const onGameExit = (event: Parameters<Parameters<typeof launchService.on<'minecraft-exit'>>[1]>[0]) => {
+    enqueueAgentPassiveEvent(event.gameDirectory, {
+      type: 'game-exit',
+      pid: event.pid,
+      launchId: event.launchId,
+      launchPath: `launches/${event.launchId}`,
+      side: event.side ?? 'client',
+      code: event.code,
+      signal: event.signal,
+      duration: event.duration,
+      crashed: !!(event.crashReport || event.crashReportLocation),
+    })
+  }
+  disposeAgentLaunchListeners?.()
+  const disposeLaunchListeners = () => {
+    launchService.removeListener('minecraft-start', onGameStart)
+    launchService.removeListener('minecraft-exit', onGameExit)
+  }
+  disposeAgentLaunchListeners = disposeLaunchListeners
+  launchService.on('minecraft-start', onGameStart)
+  launchService.on('minecraft-exit', onGameExit)
+  onUnmounted(() => {
+    disposeLaunchListeners()
+    if (disposeAgentLaunchListeners === disposeLaunchListeners) disposeAgentLaunchListeners = undefined
   })
 
   const migrationReady = migrateLegacyLauncherConversations(service)

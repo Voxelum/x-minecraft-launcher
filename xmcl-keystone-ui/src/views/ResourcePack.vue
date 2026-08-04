@@ -307,7 +307,7 @@ onMounted(() => {
   compact.value = true
 })
 
-const { installFromMarket, uninstall, install } = useService(InstanceResourcePacksServiceKey)
+const { resolveFromMarket, uninstall, install } = useService(InstanceResourcePacksServiceKey)
 
 // Drop
 const { dragover } = useGlobalDrop({
@@ -324,7 +324,7 @@ const { dragover } = useGlobalDrop({
 })
 
 // modrinth installer
-const modrinthInstaller = useModrinthInstaller(path, runtime, files, installFromMarket, onUninstall)
+const modrinthInstaller = useModrinthInstaller(path, runtime, files, resolveFromMarket)
 provide(kModrinthInstaller, modrinthInstaller)
 
 // curseforge installer
@@ -332,8 +332,7 @@ const curseforgeInstaller = useCurseforgeInstaller(
   path,
   runtime,
   files,
-  installFromMarket,
-  onUninstall,
+  resolveFromMarket,
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 

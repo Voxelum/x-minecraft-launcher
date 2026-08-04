@@ -3,6 +3,7 @@ import { Directive, DirectiveBinding, EffectScope, effectScope, markRaw, watchEf
 
 export type VSharedTooltipParam = {
   text?: string
+  ariaLabel?: string
   items?: Array<{ icon: string; text: string }>
   color?: string
   list?: Array<string>
@@ -217,7 +218,8 @@ function applyAriaLabel(
   if (typeof raw === 'string') {
     text = raw
   } else if (typeof raw === 'object') {
-    if (raw.text) text = raw.text
+    if (raw.ariaLabel) text = raw.ariaLabel
+    else if (raw.text) text = raw.text
     else if (raw.list && raw.list.length) text = raw.list.join(', ')
     else if (raw.items && raw.items.length) text = raw.items.map((i) => i.text).join(', ')
   }

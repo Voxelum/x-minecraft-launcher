@@ -62,7 +62,8 @@ const resultText = computed(() => {
   width: 100%;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.14);
   border-radius: 8px;
-  background: rgba(var(--v-theme-on-surface), 0.055);
+  background: rgb(var(--v-theme-surface));
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.22);
   overflow: hidden;
 }
 .agent-tool__summary {

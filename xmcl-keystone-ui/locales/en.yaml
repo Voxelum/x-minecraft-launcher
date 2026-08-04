@@ -38,9 +38,12 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 agent:
+  abort: Stop generation
   callingTool: calling {name}…
   confirmAccept: Continue
+  confirmAllowAll: Allow all
   confirmCancel: Cancel
+  confirmPending: Waiting for confirmation
   confirmTitle: Confirm agent action
   disabledPlaceholder: Agent disabled
   emptyHint: >-
@@ -49,13 +52,27 @@ agent:
   errorTitle: The agent hit an error
   inputPlaceholder: Ask the agent…  (Enter to send, Shift+Enter for newline)
   notConfiguredHint: >-
-    Set your API key, model and endpoint in Settings → General → AI Agent to
-    enable the agent.
-  notConfiguredTitle: Agent not configured
+    Sign in to your XMCL account for the built-in provider, or set an API key,
+    model and endpoint in Settings → General → AI Agent.
+  notConfiguredTitle: Agent unavailable
   openSettings: Open settings
-  reset: Reset conversation
+  passiveGameCrashed: Game crashed
+  passiveGameExitCode: Exit code {code}
+  passiveGameExited: Game exited
+  passiveGameExitSignal: Signal {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: No exit status
+  reasoning: Reasoning
+  passiveGameStarted: Game started
+  passiveGameStartedSummary: 'Minecraft {minecraft} · {version} · PID {pid}'
+  passiveModDiagnosis: Mod compatibility report
+  passiveModDiagnosisError: Compatibility diagnosis failed
+  passiveModDiagnosisSummary: '{checked} mods checked · {incompatibilities} incompatibilities · {duplicates} duplicates'
+  passiveModDuplicate: 'Duplicate {mod}: {files}'
+  passiveModInstalled: installed {version}
+  reset: New conversation
   setupGuide: Setup guide
-  statusDisabled: Disabled — missing API key
+  statusDisabled: Disabled — sign in or configure a provider
   statusReady: Ready
   statusWorking: Working…
   suggestion1: >-
@@ -428,6 +445,7 @@ commandPalette:
   hintEnter: enter
   hintBack: back
   hintClose: close
+  hintAskAgent: ask Agent
 feedback:
   channel: Channels
   description: I found a Bug or I want to make a suggestion
@@ -1868,12 +1886,14 @@ setting:
   advancedSettingsHint: Danger zone - reset or manage launcher data
   aiAgentApiKey: AI Agent API Key
   aiAgentApiKeyClear: Clear key
-  aiAgentApiKeyDescription: Stored locally on this device and used for agent requests.
+  aiAgentApiKeyDescription: Leave the provider on Built-in to use your XMCL account, or select an external provider and enter its API key. Keys are stored locally per provider.
   aiAgentApiKeyEmpty: Paste your API key
   aiAgentApiKeyNotNeeded: Not required
   aiAgentApiKeyNotNeededHint: This provider runs locally and needs no API key
   aiAgentApiKeySaved: Saved
   aiAgentApiKeyStored: Key saved - type to replace
+  aiAgentBuiltin: Built-in
+  aiAgentCustom: Custom
   aiAgentEndpoint: AI Agent Endpoint
   aiAgentEndpointDescription: Chat completions endpoint URL.
   aiAgentModel: AI Agent Model

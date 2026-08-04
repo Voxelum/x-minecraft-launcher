@@ -1,54 +1,9 @@
 <template>
-  <v-dialog
-    v-model="isShown"
-    width="800"
-    max-width="95vw"
-    scrollable
-  >
-    <v-card data-testid="agent-dialog" class="agent-card flex h-[85vh] max-h-[85vh] flex-col overflow-hidden">
-      <!-- Header -->
-      <div class="flex items-center gap-2 px-4 py-3 border-b">
-        <v-btn-toggle
-          v-model="selectedAgent"
-          density="compact"
-          variant="outlined"
-          color="primary"
-          mandatory
-          divided
-        >
-          <v-btn value="common" size="small" data-testid="agent-switch-common">
-            <v-icon size="small" start>auto_awesome</v-icon>
-            {{ t('agent.title') }}
-          </v-btn>
-          <v-btn value="css" size="small" data-testid="agent-switch-css">
-            <v-icon size="small" start>code</v-icon>
-            {{ t('setting.customCss.assistantTitle') }}
-          </v-btn>
-        </v-btn-toggle>
-        <div class="flex-1 truncate text-xs text-medium-emphasis">
-          {{ statusLabel }}
-        </div>
-        <v-btn
-          icon="restart_alt"
-          size="small"
-          variant="text"
-          :disabled="running || !available"
-          :title="t('agent.reset')"
-          @click="reset"
-        />
-        <v-btn
-          data-testid="agent-close"
-          icon="close"
-          size="small"
-          variant="text"
-          @click="hide"
-        />
-      </div>
-
+  <div data-testid="agent-dialog" class="agent-surface">
       <!-- Disabled state -->
       <div
         v-if="!available"
-        class="flex-1 min-h-0 flex flex-col items-center justify-center text-center gap-4 px-8"
+        class="agent-disabled-card"
       >
         <v-avatar size="72" color="warning" variant="tonal">
           <v-icon size="40">vpn_key_off</v-icon>
@@ -63,9 +18,6 @@
           <v-btn color="primary" variant="flat" prepend-icon="settings" @click="openSettings">
             {{ t('agent.openSettings') }}
           </v-btn>
-          <v-btn variant="tonal" prepend-icon="open_in_new" @click="openSetupDoc">
-            {{ t('agent.setupGuide') }}
-          </v-btn>
         </div>
       </div>
 
@@ -74,13 +26,14 @@
         v-else
         ref="scrollEl"
         data-testid="agent-transcript"
-        class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 py-2 space-y-2"
+        class="agent-transcript"
+        @scroll.passive="onTranscriptScroll"
       >
         <div
           v-if="transcriptItems.length === 0 && !displayError"
-          class="h-full flex items-center justify-center text-center text-medium-emphasis px-6"
+          class="agent-empty-wrap"
         >
-          <div class="w-full max-w-sm">
+          <div class="agent-empty-card">
             <v-icon size="48" class="mb-3 opacity-50">forum</v-icon>
             <div class="text-sm">
               {{ emptyHint }}
@@ -109,7 +62,7 @@
 
           <!-- Assistant text -->
           <div
-            v-else-if="item.kind === 'message' && item.message.role === 'assistant' && item.message.content"
+            v-else-if="item.kind === 'message' && item.message.role === 'assistant' && messageText(item.message.content)"
             class="flex justify-start"
           >
             <div
@@ -118,27 +71,97 @@
             />
           </div>
 
+          <div v-else-if="item.kind === 'reasoning'" class="flex justify-start">
+            <button
+              v-shared-tooltip.top="() => ({ text: item.content, ariaLabel: t('agent.reasoning') })"
+              type="button"
+              class="agent-reasoning"
+              :class="{ 'agent-reasoning--running': running && item.key === latestReasoningKey }"
+            >
+              <v-icon size="16">psychology</v-icon>
+              <span>{{ t('agent.reasoning') }}</span>
+            </button>
+          </div>
+
+          <div v-else-if="item.kind === 'passive'" class="flex justify-start">
+            <AgentPassiveEventCard :event="item.event" />
+          </div>
+
           <!-- Tool call and its result -->
           <div
             v-else-if="item.kind === 'tool'"
             class="flex justify-start"
           >
-            <div class="agent-tool-stack">
-              <AgentToolCall :item="item" />
-              <AgentMarketList
-                v-if="item.presentation?.type === 'market-project-list'"
-                class="agent-rich-message"
-                :presentation="item.presentation"
-                @navigate="hide"
-              />
-            </div>
+            <AgentToolCall :item="item" />
           </div>
         </template>
 
         <!-- Live progress -->
-        <div v-if="running" data-testid="agent-live-status" class="flex items-center gap-2 text-xs text-medium-emphasis pl-2">
-          <v-progress-circular indeterminate size="14" width="2" />
-          <span>{{ liveStatus }}</span>
+        <div v-if="running" class="flex justify-start">
+          <div data-testid="agent-live-status" class="agent-live-card">
+            <v-progress-circular indeterminate size="14" width="2" />
+            <span>{{ liveStatus }}</span>
+          </div>
+        </div>
+
+        <!-- User confirmation -->
+        <div v-if="confirmationShown" class="flex justify-start">
+          <div data-testid="agent-confirm-dialog" class="agent-confirm">
+            <div class="agent-confirm__header">
+              <div
+                class="agent-confirm__icon"
+                :class="{ 'agent-confirm__icon--destructive': confirmationRequest?.destructive }"
+              >
+                <v-icon size="18">{{ confirmationRequest?.destructive ? 'delete_outline' : 'priority_high' }}</v-icon>
+              </div>
+              <div class="min-w-0">
+                <div class="agent-confirm__title">
+                  {{ confirmationRequest?.title || t('agent.confirmTitle') }}
+                </div>
+                <div class="agent-confirm__message">
+                  {{ confirmationRequest?.message }}
+                </div>
+              </div>
+            </div>
+            <div v-if="confirmationRequest?.details?.length" class="agent-confirm__details">
+              <div v-for="detail in confirmationRequest.details" :key="detail" class="agent-confirm__detail">
+                <v-icon size="15" class="flex-shrink-0">subdirectory_arrow_right</v-icon>
+                <code>{{ detail }}</code>
+              </div>
+            </div>
+            <div v-if="confirmationRequest?.presentations?.length" class="agent-confirm__presentations">
+              <AgentMarketList
+                v-for="presentation in confirmationRequest.presentations"
+                :key="presentation.source"
+                :presentation="presentation"
+                readonly
+              />
+            </div>
+            <div class="agent-confirm__actions">
+              <v-btn data-testid="agent-confirm-cancel" size="small" variant="text" @click="declineConfirmation">
+                {{ t('agent.confirmCancel') }}
+              </v-btn>
+              <v-btn
+                v-if="confirmationRequest?.allowAll"
+                data-testid="agent-confirm-allow-all"
+                size="small"
+                variant="text"
+                @click="allowAllConfirmations"
+              >
+                {{ t('agent.confirmAllowAll') }}
+              </v-btn>
+              <v-btn
+                data-testid="agent-confirm-accept"
+                size="small"
+                :color="confirmationRequest?.destructive ? 'error' : 'primary'"
+                variant="flat"
+                :prepend-icon="confirmationRequest?.destructive ? 'delete_outline' : 'check'"
+                @click="acceptConfirmation"
+              >
+                {{ confirmationRequest?.confirmLabel || t('agent.confirmAccept') }}
+              </v-btn>
+            </div>
+          </div>
         </div>
 
         <!-- Failures belong in the transcript: they are part of the conversation
@@ -158,116 +181,88 @@
         </div>
       </div>
 
-      <!-- Input -->
-      <div v-if="available" class="border-t p-3">
-        <v-textarea
-          v-model="input"
-          data-testid="agent-input"
-          :placeholder="available ? t('agent.inputPlaceholder') : t('agent.disabledPlaceholder')"
-          :disabled="!available || running"
-          variant="outlined"
-          density="comfortable"
-          hide-details
-          auto-grow
-          rows="1"
-          max-rows="6"
-          @compositionstart="composing = true"
-          @compositionend="composing = false"
-          @keydown.enter.exact="onInputEnter"
-        >
-          <template #append-inner>
-            <v-btn
-              v-if="!running"
-              icon="send"
-              size="small"
-              variant="text"
-              color="primary"
-              :disabled="!available || !input.trim()"
-              @click="onSend"
-            />
-            <v-btn
-              v-else
-              icon="stop"
-              size="small"
-              variant="text"
-              color="error"
-              @click="abort"
-            />
-          </template>
-        </v-textarea>
-        <div class="mt-2 text-xs text-medium-emphasis flex items-center gap-2">
-          <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>A</kbd>
-          <span>{{ t('agent.toggleHint') }}</span>
-        </div>
-      </div>
-    </v-card>
-  </v-dialog>
-
-  <v-dialog
-    :model-value="confirmationShown"
-    persistent
-    width="500"
-    max-width="92vw"
-  >
-    <v-card data-testid="agent-confirm-dialog" class="agent-confirm">
-      <div class="agent-confirm__header">
-        <div
-          class="agent-confirm__icon"
-          :class="{ 'agent-confirm__icon--destructive': confirmationRequest?.destructive }"
-        >
-          <v-icon size="21">{{ confirmationRequest?.destructive ? 'delete_outline' : 'priority_high' }}</v-icon>
-        </div>
-        <div class="min-w-0">
-          <div class="agent-confirm__title">
-            {{ confirmationRequest?.title || t('agent.confirmTitle') }}
+      <Teleport v-if="isShown" defer to="#omni-mode-specific-controls">
+        <div class="agent-mode-controls">
+          <div class="agent-composer-status">
+            {{ statusLabel }}
           </div>
-          <div class="agent-confirm__message">
-            {{ confirmationRequest?.message }}
-          </div>
+          <div class="agent-mode-meta text-xs text-medium-emphasis flex min-w-0 items-center gap-2">
+          <span v-if="developerMode" data-testid="agent-context-usage" class="tabular-nums" :title="contextUsageTitle">
+            Context {{ contextUsageLabel }}
+          </span>
+          <v-spacer />
+          <span v-if="displayError" class="text-error truncate" :title="displayError">{{ displayError }}</span>
         </div>
+          <v-btn
+            class="agent-new-conversation"
+            icon="add_comment"
+            size="small"
+            variant="text"
+            :disabled="running || !available"
+            :title="t('agent.reset')"
+            @click="startNewConversation"
+          />
+          <v-menu location="bottom end">
+            <template #activator="{ props: menuProps }">
+              <v-btn
+                v-bind="menuProps"
+                class="agent-selector"
+                size="small"
+                variant="text"
+                :prepend-icon="selectedAgent === 'css' ? 'code' : 'smart_toy'"
+                append-icon="arrow_drop_down"
+                :aria-label="selectedAgent === 'css' ? t('setting.customCss.assistantTitle') : t('agent.title')"
+              >
+                {{ selectedAgent === 'css' ? t('setting.customCss.assistantTitle') : t('agent.title') }}
+              </v-btn>
+            </template>
+            <v-list density="compact" nav min-width="180">
+              <v-list-item
+                data-testid="agent-switch-common"
+                prepend-icon="smart_toy"
+                :active="selectedAgent === 'common'"
+                :aria-label="t('agent.title')"
+                @click="selectedAgent = 'common'"
+              >
+                <v-list-item-title>{{ t('agent.title') }}</v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                data-testid="agent-switch-css"
+                prepend-icon="code"
+                :active="selectedAgent === 'css'"
+                :aria-label="t('setting.customCss.assistantTitle')"
+                @click="selectedAgent = 'css'"
+              >
+                <v-list-item-title>{{ t('setting.customCss.assistantTitle') }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
       </div>
-      <div v-if="confirmationRequest?.details?.length" class="agent-confirm__details">
-        <div v-for="detail in confirmationRequest.details" :key="detail" class="agent-confirm__detail">
-          <v-icon size="15" class="flex-shrink-0">subdirectory_arrow_right</v-icon>
-          <code>{{ detail }}</code>
-        </div>
-      </div>
-      <div class="agent-confirm__actions">
-        <v-btn data-testid="agent-confirm-cancel" variant="text" @click="declineConfirmation">
-          {{ t('agent.confirmCancel') }}
-        </v-btn>
-        <v-btn
-          data-testid="agent-confirm-accept"
-          :color="confirmationRequest?.destructive ? 'error' : 'primary'"
-          variant="flat"
-          :prepend-icon="confirmationRequest?.destructive ? 'delete_outline' : 'check'"
-          @click="acceptConfirmation"
-        >
-          {{ confirmationRequest?.confirmLabel || t('agent.confirmAccept') }}
-        </v-btn>
-      </div>
-    </v-card>
-  </v-dialog>
+      </Teleport>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import AgentMarketList from '@/components/AgentMarketList.vue'
+import AgentPassiveEventCard from '@/components/AgentPassiveEventCard.vue'
 import AgentToolCall from '@/components/AgentToolCall.vue'
 import { kAgent, useCssAgent } from '@/composables/agent'
 import { useAgentConfirmation } from '@/composables/agent/confirm'
-import { getAgentEscapeAction, shouldSubmitAgentInput } from '@/composables/agent/input'
 import { projectAgentTranscript } from '@/composables/agent/projection'
 import { useAgentRouteReturn } from '@/composables/agent/routeReturn'
-import { useAgentChatBus, useAgentChatStatus, useAgnesSetupDocUrl } from '@/composables/agentChat'
+import { useAgentChatStatus, usePendingAgentKind } from '@/composables/agentChat'
 import { useMarkdown } from '@/composables/markdown'
+import { useOmniDialog } from '@/composables/omniDialog'
+import { kSettingsState } from '@/composables/setting'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { useEventListener } from '@vueuse/core'
 import { computed, nextTick, ref, watch } from 'vue'
 import type { AgentContentPart as ContentPart } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 
 const commonAgent = injection(kAgent)
+const { state: settingsState } = injection(kSettingsState)
 useAgentRouteReturn()
 
 // A global-scope CSS assistant shown side-by-side with the common agent and
@@ -284,48 +279,50 @@ const anyRunning = computed(() => commonAgent.running.value || cssAgent.running.
 const runError = computed(() => activeAgent.value.runError.value)
 const messages = computed(() => activeAgent.value.messages.value)
 const events = computed(() => activeAgent.value.events.value)
+const contextUsage = computed(() => activeAgent.value.contextUsage.value)
+const developerMode = computed(() => settingsState.value?.developerMode ?? false)
+const numberFormat = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 })
+const contextUsageLabel = computed(() => {
+  const { usedTokens, contextWindow } = contextUsage.value
+  const used = usedTokens ? numberFormat.format(usedTokens) : '—'
+  const percent = usedTokens ? ` (${Math.round(usedTokens / contextWindow * 100)}%)` : ''
+  return `${used} / ${numberFormat.format(contextWindow)}${percent}`
+})
+const contextUsageTitle = computed(() => {
+  const { usedTokens, contextWindow } = contextUsage.value
+  return `${usedTokens.toLocaleString('en-US')} / ${contextWindow.toLocaleString('en-US')} tokens`
+})
 
 const { render: renderMd } = useMarkdown()
-const setupDocUrl = useAgnesSetupDocUrl()
-
 const chatStatus = useAgentChatStatus()
 const isShown = chatStatus.shown
-const input = ref('')
-const composing = ref(false)
+const input = useOmniDialog().agentInput
 const lastError = ref('')
 const scrollEl = ref<HTMLElement | null>(null)
+const followTranscript = ref(true)
 
-const bus = useAgentChatBus()
-bus.on((e) => {
-  if (typeof e === 'object' && e.type === 'show') {
-    selectedAgent.value = 'common'
-    input.value = e.prompt ?? ''
-    commonAgent.loadConversationForCurrentInstance()
-    isShown.value = true
-  }
-  else if (e === 'show') {
-    commonAgent.loadConversationForCurrentInstance()
-    isShown.value = true
-  }
-  else if (e === 'show-css') {
-    // Opened from the Custom CSS settings — jump straight to the CSS assistant.
+const pendingAgentKind = usePendingAgentKind()
+// Select the requested agent and (for the common agent) load its conversation
+// only on a fresh open, not while flipping tabs with the surface left open.
+watch(isShown, (visible, wasVisible) => {
+  if (!visible || wasVisible) return
+  const kind = pendingAgentKind.value
+  pendingAgentKind.value = 'common'
+  if (kind === 'css') {
     selectedAgent.value = 'css'
-    isShown.value = true
-  }
-  else if (e === 'hide') isShown.value = false
-  else {
-    if (!isShown.value) {
-      commonAgent.loadConversationForCurrentInstance()
-    }
-    isShown.value = !isShown.value
+  } else {
+    selectedAgent.value = 'common'
+    commonAgent.loadConversationForCurrentInstance()
   }
 })
 
 const transcriptItems = computed(() => projectAgentTranscript(messages.value))
+const latestReasoningKey = computed(() => transcriptItems.value.findLast(item => item.kind === 'reasoning')?.key)
 const {
   request: confirmationRequest,
   shown: confirmationShown,
   accept: acceptConfirmation,
+  allowAll: allowAllConfirmations,
   decline: declineConfirmation,
 } = useAgentConfirmation()
 
@@ -361,7 +358,10 @@ const emptyHint = computed(() => (selectedAgent.value === 'css'
   : t('agent.emptyHint')))
 
 // Clear any transient error when switching agents.
-watch(selectedAgent, () => { lastError.value = '' })
+watch(selectedAgent, () => {
+  lastError.value = ''
+  followTranscript.value = true
+})
 watch(anyRunning, value => { chatStatus.running.value = value }, { immediate: true })
 
 function messageText(content: string | ContentPart[] | null | undefined): string {
@@ -386,53 +386,55 @@ async function onSend() {
   }
 }
 
-function onInputEnter(event: KeyboardEvent) {
-  if (!shouldSubmitAgentInput(event, composing.value)) return
-  event.preventDefault()
-  void onSend()
-}
-
 function quickSend(text: string) {
   input.value = text
   onSend()
 }
 
 function hide() { isShown.value = false }
-function reset() {
+function startNewConversation() {
   activeAgent.value.reset()
   lastError.value = ''
 }
 function abort() { activeAgent.value.abort() }
 
-useEventListener(window, 'keydown', (event: KeyboardEvent) => {
-  if (!isShown.value || event.key !== 'Escape' || event.isComposing || composing.value) return
-  event.preventDefault()
-  event.stopImmediatePropagation()
-  if (getAgentEscapeAction(running.value) === 'abort') abort()
-  else hide()
-}, { capture: true })
+defineExpose({
+  available,
+  running,
+  send: onSend,
+  abort,
+})
 
 const { push } = useRouter()
 function openSettings() {
   hide()
   push('/setting')
 }
-function openSetupDoc() {
-  window.open(setupDocUrl.value, 'browser')
+
+function onTranscriptScroll() {
+  const el = scrollEl.value
+  if (el) followTranscript.value = el.scrollHeight - el.scrollTop - el.clientHeight <= 32
 }
 
-// Auto-scroll on new messages / events. `displayError` is included so a failure
-// rendered at the end of the transcript scrolls into view like any other message.
-watch([transcriptItems, events, displayError], async () => {
-  await nextTick()
+function scrollTranscriptToBottom() {
   const el = scrollEl.value
-  if (el) el.scrollTop = el.scrollHeight
+  if (!el) return
+  el.scrollTop = el.scrollHeight
+  followTranscript.value = true
+}
+
+// Follow new output and failures only while the user remains at the bottom.
+watch([transcriptItems, events, confirmationShown, displayError], async () => {
+  if (!followTranscript.value) return
+  await nextTick()
+  if (followTranscript.value) scrollTranscriptToBottom()
 }, { deep: true })
 
 watch(isShown, async (v) => {
   if (v) {
+    followTranscript.value = true
     await nextTick()
-    if (scrollEl.value) scrollEl.value.scrollTop = scrollEl.value.scrollHeight
+    scrollTranscriptToBottom()
   }
 })
 </script>
@@ -449,7 +451,7 @@ watch(isShown, async (v) => {
   word-break: break-word;
   overflow-wrap: anywhere;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.18);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.22);
 }
 .bubble-user {
   background: rgba(var(--v-theme-primary), 0.9);
@@ -459,10 +461,36 @@ watch(isShown, async (v) => {
   max-width: 85%;
 }
 .bubble-assistant {
-  background: rgba(var(--v-theme-on-surface), 0.1);
-  border-color: rgba(var(--v-theme-on-surface), 0.26);
+  background: rgb(var(--v-theme-surface));
+  border-color: rgba(var(--v-theme-on-surface), 0.18);
   border-bottom-left-radius: 4px;
   max-width: 95%;
+}
+.agent-reasoning {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 4px 8px;
+  border: 0;
+  border-left: 2px solid rgba(var(--v-theme-primary), 0.45);
+  background: transparent;
+  color: rgba(var(--v-theme-on-surface), 0.72);
+  cursor: pointer;
+  user-select: none;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+}
+.agent-reasoning:hover,
+.agent-reasoning:focus-visible,
+.agent-reasoning--running {
+  color: rgb(var(--v-theme-primary));
+  background: rgba(var(--v-theme-primary), 0.08);
+}
+.agent-reasoning:focus-visible {
+  outline: 2px solid rgba(var(--v-theme-primary), 0.6);
+  outline-offset: 2px;
 }
 .md-content {
   white-space: normal;
@@ -575,25 +603,104 @@ watch(isShown, async (v) => {
 .suggestion-item:hover {
   background: rgba(var(--v-theme-primary), 0.18);
 }
-.agent-card {
-  position: fixed;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 800px;
-  max-width: calc(100vw - 24px);
+.agent-surface {
+  display: flex;
+  width: var(--omni-content-width, 720px);
+  height: auto;
+  max-height: none;
+  max-width: 100%;
+  min-height: 0;
+  flex: 1 1 auto;
+  align-self: center;
+  flex-direction: column;
+  gap: 8px;
   box-sizing: border-box;
+  overflow: hidden;
+  --surface-blur: 0px;
+  --surface-border: none;
+  --surface-shadow: none;
+  --surface-bg: transparent;
+  --surface-dialog-radius: 0px;
+  background: transparent !important;
+  box-shadow: none !important;
 }
-.agent-tool-stack {
+.agent-empty-card,
+.agent-disabled-card,
+.agent-live-card {
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.16);
+  border-radius: 8px;
+  background: rgb(var(--v-theme-surface));
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.22);
+}
+.agent-mode-controls {
   display: flex;
   width: 100%;
-  flex-direction: column;
-  gap: 5px;
+  min-height: 32px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
-.agent-rich-message {
-  width: 78%;
-  max-width: 640px;
+.agent-mode-meta {
+  flex: 1 1 260px;
+}
+.agent-new-conversation {
+  margin-inline-start: auto;
+}
+.agent-composer-status {
   min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.agent-transcript {
+  display: flex;
+  width: calc(100% + 6px);
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+  margin-inline: -3px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 3px;
+  scrollbar-gutter: stable;
+}
+.agent-empty-wrap {
+  display: flex;
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+}
+.agent-empty-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+  color: rgba(var(--v-theme-on-surface), 0.72);
+}
+.agent-disabled-card {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px;
+  text-align: center;
+}
+.agent-live-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 11px;
+  color: rgba(var(--v-theme-on-surface), 0.7);
+  font-size: 12px;
 }
 .agent-error {
   display: flex;
@@ -626,21 +733,30 @@ watch(isShown, async (v) => {
   overflow-wrap: anywhere;
 }
 .agent-confirm {
+  display: flex;
+  width: 78%;
+  max-width: 640px;
+  max-height: calc(100vh - 16px);
+  min-width: 0;
+  flex-direction: column;
   overflow: hidden;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.14);
   border-radius: 8px;
+  background: rgb(var(--v-theme-surface));
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.22);
 }
 .agent-confirm__header {
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr);
+  grid-template-columns: 32px minmax(0, 1fr);
   align-items: start;
-  gap: 11px;
-  padding: 16px 18px 12px;
+  gap: 9px;
+  flex-shrink: 0;
+  padding: 12px 13px 9px;
 }
 .agent-confirm__icon {
   display: flex;
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
@@ -652,22 +768,23 @@ watch(isShown, async (v) => {
   background: rgba(var(--v-theme-error), 0.13);
 }
 .agent-confirm__title {
-  font-size: 17px;
+  font-size: 13px;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 .agent-confirm__message {
-  margin-top: 3px;
+  margin-top: 2px;
   color: rgba(var(--v-theme-on-surface), 0.7);
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 1.45;
 }
 .agent-confirm__details {
   display: flex;
   max-height: 160px;
+  min-height: 0;
   flex-direction: column;
   gap: 4px;
-  margin: 0 18px 12px 67px;
+  margin: 0 13px 9px 54px;
   overflow: auto;
 }
 .agent-confirm__detail {
@@ -686,29 +803,41 @@ watch(isShown, async (v) => {
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
+.agent-confirm__presentations {
+  display: flex;
+  max-height: 280px;
+  min-height: 0;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 13px 9px;
+  overflow: auto;
+}
 .agent-confirm__actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
-  padding: 10px 14px;
+  flex-shrink: 0;
+  padding: 8px 10px;
   border-top: 1px solid rgba(var(--v-theme-on-surface), 0.1);
   background: rgba(var(--v-theme-on-surface), 0.025);
 }
 @media (max-width: 700px) {
-  .agent-rich-message {
+  .agent-mode-controls {
+    gap: 4px;
+  }
+  .agent-composer-status {
+    display: none;
+  }
+  .agent-confirm {
     width: 94%;
   }
   .agent-confirm__details {
-    margin-left: 18px;
+    margin-left: 13px;
   }
-}
-kbd {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
-  padding: 1px 5px;
-  border-radius: 4px;
-  background: rgba(var(--v-theme-on-surface), 0.1);
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.15);
+  .agent-surface {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 </style>

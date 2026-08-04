@@ -6,6 +6,7 @@ export interface ShaderPack {
 
 export interface ShaderOptions {
   shaderPack: string
+  [key: string]: string
 }
 
 export function parseShaderOptions(text: string): ShaderOptions {

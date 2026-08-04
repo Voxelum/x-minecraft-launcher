@@ -113,7 +113,9 @@ export class ElectronSecretStorage implements SecretStorage {
     const key = filenamify(service + '@' + account)
     const file = join(this.dir, key)
     if (!value) {
-      await unlink(file).catch(() => undefined)
+      await unlink(file).catch((error: NodeJS.ErrnoException) => {
+        if (error.code !== 'ENOENT') throw error
+      })
       return
     }
 
@@ -132,6 +134,6 @@ export class ElectronSecretStorage implements SecretStorage {
     if (!data) {
       data = Buffer.concat([MARKER_RAW, Buffer.from(value, 'utf-8')])
     }
-    await writeFile(file, data).catch(() => undefined)
+    await writeFile(file, data)
   }
 }

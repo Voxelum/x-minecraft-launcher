@@ -305,7 +305,7 @@
           variant="outlined"
           size="small"
           class="mr-2"
-          prepend-icon="auto_awesome"
+          prepend-icon="smart_toy"
           :title="t('setting.customCss.openInDialog')"
           @click="openAssistant"
         >
@@ -455,7 +455,7 @@ import CustomCssEditor from '@/components/CustomCssEditor.vue'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
-import { useAgentChatBus } from '@/composables/agentChat'
+import { useAgentChatOpen } from '@/composables/agentChat'
 import { kCustomCss } from '@/composables/customCss'
 import { kEnvironment } from '@/composables/environment'
 import { kInstanceTheme } from '@/composables/instanceTheme'
@@ -569,7 +569,7 @@ const globalCustomCss = injection(kCustomCss)
 const instanceThemeCtx = injection(kInstanceTheme)
 const { state: settingsState } = injection(kSettingsState)
 const developerMode = computed(() => settingsState.value?.developerMode ?? false)
-const chatBus = useAgentChatBus()
+const { open: openAgentChat } = useAgentChatOpen()
 
 const isInstance = computed(() => !!props.instancePath)
 const cssEnabled = computed(() => props.theme.customCssEnabled ?? false)
@@ -586,7 +586,7 @@ function onToggleCss(value: boolean | null) {
   emit('save')
 }
 function openAssistant() {
-  chatBus.emit('show-css')
+  openAgentChat({ kind: 'css' })
 }
 
 // URL input refs

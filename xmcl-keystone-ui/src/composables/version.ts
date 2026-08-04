@@ -2,9 +2,11 @@ import { injection } from '@/util/inject'
 import { get } from '@vueuse/core'
 import type { JavaRuntimeManifest, JavaRuntimeTarget, JavaRuntimes } from '@xmcl/installer'
 import { ForgeVersion, VersionMetadataService, VersionMetadataServiceEventMap, VersionMetadataServiceKey } from '@xmcl/runtime-api'
-import { gt } from 'semver'
 import { InjectionKey, MaybeRef, Ref, computed, onMounted, onUnmounted, shallowRef, watch } from 'vue'
+import { sortNeoForgeVersions } from './neoForgeVersion'
 import { useService } from './service'
+
+export { getLatestNeoforge } from './neoForgeVersion'
 
 async function getJson<T>(url: string) {
   const res = await fetch(url)
@@ -159,18 +161,6 @@ export function useQuiltVersions(minecraftVersion: Ref<string>) {
   }
 }
 
-export function tryGt(a: string, b: string) {
-  try {
-    return gt(a, b)
-  } catch {
-    return false
-  }
-}
-
-export function getLatestNeoforge(versions: string[]) {
-  return versions.toSorted((a, b) => tryGt(a, b) ? -1 : 1)[0]
-}
-
 export function useNeoForgedVersions(minecraft: Ref<string>) {
   const service = useService(VersionMetadataServiceKey)
   const data = shallowRef<string[] | undefined>()
@@ -204,7 +194,7 @@ export function useNeoForgedVersions(minecraft: Ref<string>) {
   const versions = computed(() => {
     const vers = data.value
     if (!vers) return []
-    return vers.toSorted((a, b) => tryGt(a, b) ? -1 : 1)
+    return sortNeoForgeVersions(vers)
   })
   const recommended = computed(() => '')
   const latest = computed(() => versions.value[0] ?? '')

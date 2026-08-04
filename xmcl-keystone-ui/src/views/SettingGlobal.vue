@@ -35,7 +35,7 @@
           >
             {{ preferredJava.majorVersion }}
           </span>
-          <v-icon v-else>auto_awesome</v-icon>
+          <v-icon v-else>smart_toy</v-icon>
         </v-avatar>
         <div class="flex-1 min-w-0">
           <div class="text-subtitle-2 font-weight-medium">

@@ -49,6 +49,36 @@ export interface NetworkStatus {
   downloadSpeed: number
 }
 
+export interface SystemInfo {
+  operatingSystem: {
+    name: string
+    platform: Platform['os']
+    release: string
+    arch: string
+  }
+  cpu: {
+    model: string
+    logicalCores: number
+    speedMHz: number
+  }
+  memory: {
+    totalBytes: number
+    freeBytes: number
+  }
+  disk?: {
+    totalBytes: number
+    freeBytes: number
+  }
+  gpus: Array<{
+    active?: boolean
+    vendorId: number
+    deviceId: number
+    name?: string
+    driverVendor?: string
+    driverVersion?: string
+  }>
+}
+
 export interface PoolStats {
   connected: number
   free: number
@@ -136,6 +166,8 @@ export interface BaseService extends GenericEventEmitter<BaseServiceEventMap> {
   migrate(options: MigrateOptions): Promise<void>
 
   getMemoryStatus(): Promise<{ total: number; free: number }>
+
+  getSystemInfo(diskPath?: string): Promise<SystemInfo>
 }
 
 export type MigrationExceptions = {

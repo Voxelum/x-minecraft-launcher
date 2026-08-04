@@ -35,7 +35,7 @@
         <v-select v-model="profile" :items="profileOptions" :label="t('modpack.publishProfile')" variant="outlined" density="compact" hide-details />
         <div class="flex items-center justify-between">
           <span class="text-body-2 opacity-70">{{ t('modpack.publishChangelog') }}</span>
-          <v-btn data-testid="modrinth-version-changelog-generate" size="small" variant="text" prepend-icon="auto_awesome" :loading="generatingChangelog" @click="generateChangelog">{{ t('modpack.publishChangelogGenerate') }}</v-btn>
+          <v-btn data-testid="modrinth-version-changelog-generate" size="small" variant="text" prepend-icon="smart_toy" :loading="generatingChangelog" @click="generateChangelog">{{ t('modpack.publishChangelogGenerate') }}</v-btn>
         </div>
         <v-textarea v-model="changelog" data-testid="modrinth-version-changelog" variant="outlined" rows="6" hide-details />
         <v-alert v-if="changelogError" type="error" variant="tonal" density="compact">{{ changelogError }}</v-alert>

@@ -1448,6 +1448,9 @@ importers:
       iconv-lite:
         specifier: ^0.6.3
         version: 0.6.3
+      js-yaml:
+        specifier: ^4.2.0
+        version: 4.3.0
       jschardet:
         specifier: 3.1.2
         version: 3.1.2
@@ -1500,6 +1503,9 @@ importers:
       '@types/http-cache-semantics':
         specifier: ^4.0.1
         version: 4.0.1
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
       '@types/lodash.debounce':
         specifier: ^4.0.7
         version: 4.0.7

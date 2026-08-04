@@ -1,4 +1,5 @@
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
+import { basename } from '@/util/basename'
 import { isNoModLoader } from '@/util/isNoModloader'
 import { ProjectFile } from '@/util/search'
 import { File, FileRelationType, Mod } from '@xmcl/curseforge'
@@ -15,19 +16,19 @@ export function useCurseforgeInstaller(
   path: Ref<string>,
   runtime: Ref<RuntimeVersions>,
   allFiles: Ref<ProjectFile[]>,
-  installResource: (options: InstallMarketOptionWithInstance) => Promise<any>,
-  uninstallResource: (files: ProjectFile[], path?: string) => void,
+  resolveResource: (options: InstallMarketOptionWithInstance) => Promise<InstanceFile[]>,
   installDefaultModLoader = useInstanceModLoaderDefault(),
   resolveArtifactDependencies?: ResolveArtifactModrinthDependencies,
 ) {
   const stage = useMarketInstallStaging()
 
   const install = async (file: { fileId: number; icon?: string } | { fileId: number; icon?: string }[]) => {
-    return installResource({
+    const files = await resolveResource({
       market: MarketType.CurseForge,
       file,
       instancePath: path.value,
     })
+    return stage(path.value, [], files)
   }
 
   async function installWithDependencies(fileId: number, loaders: string[], icon: string | undefined, installed: ProjectFile[], deps: Array<{

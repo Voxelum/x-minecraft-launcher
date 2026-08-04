@@ -6,6 +6,7 @@ import {
   type MigrateOptions,
   MigrationException,
   type PoolStats,
+  type SystemInfo,
   Settings,
   type SharedState,
   DownloadUpdateTask,
@@ -13,6 +14,7 @@ import {
 } from '@xmcl/runtime-api'
 import { readFile, readdir, stat, pathExists } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
+import { statfs } from 'fs/promises'
 import { join, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
 import { kClientToken, kGFW, kLogRoot } from '~/infra'
@@ -354,5 +356,44 @@ export class BaseService extends AbstractService implements IBaseService {
       total: totalmem(),
       free: freemem(),
     })
+  }
+
+  async getSystemInfo(diskPath?: string): Promise<SystemInfo> {
+    const cpus = os.cpus()
+    const [gpuInfo, diskInfo] = await Promise.all([
+      this.app.host.getGPUInfo('complete').catch(() => ({ gpuDevice: [] })),
+      diskPath ? statfs(diskPath).catch(() => undefined) : undefined,
+    ])
+    return {
+      operatingSystem: {
+        name: os.type(),
+        platform: this.app.platform.os,
+        release: this.app.platform.osRelease,
+        arch: this.app.platform.arch,
+      },
+      cpu: {
+        model: cpus[0]?.model.trim() ?? 'unknown',
+        logicalCores: cpus.length,
+        speedMHz: cpus[0]?.speed ?? 0,
+      },
+      memory: {
+        totalBytes: totalmem(),
+        freeBytes: freemem(),
+      },
+      disk: diskInfo
+        ? {
+            totalBytes: diskInfo.blocks * diskInfo.bsize,
+            freeBytes: diskInfo.bavail * diskInfo.bsize,
+          }
+        : undefined,
+      gpus: (gpuInfo.gpuDevice ?? []).map(gpu => ({
+        active: gpu.active,
+        vendorId: gpu.vendorId,
+        deviceId: gpu.deviceId,
+        name: gpu.deviceString,
+        driverVendor: gpu.driverVendor,
+        driverVersion: gpu.driverVersion,
+      })),
+    }
   }
 }

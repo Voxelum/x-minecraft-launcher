@@ -1,43 +1,31 @@
-import { useEventBus } from '@vueuse/core'
-import { onMounted, onUnmounted, ref } from 'vue'
-
-/**
- * Event bus key for showing / hiding the command palette modal. We don't
- * use the existing `useDialog` system because the palette is a more
- * lightweight always-mounted modal — using the bus avoids the dialog
- * registration boilerplate.
- */
-const PALETTE_BUS_KEY = 'app:command-palette'
-
-export function useCommandPaletteBus() {
-  return useEventBus<'show' | 'hide' | 'toggle'>(PALETTE_BUS_KEY)
-}
+import { computed, onMounted, onUnmounted } from 'vue'
+import { useOmniDialog } from './omniDialog'
 
 /**
  * Shared reactive visibility of the command palette. Owned by AppCommandPalette
  * (as its `v-model`), but exposed here so other UI (e.g. the gamepad cards that
  * flank the palette) can appear/disappear in sync with it.
  */
-const paletteVisible = ref(false)
 export function useCommandPaletteVisible() {
-  return paletteVisible
+  const surface = useOmniDialog()
+  return computed({
+    get: () => surface.shown.value && surface.mode.value === 'command',
+    set: (value) => {
+      if (value) surface.open('command')
+      else if (surface.mode.value === 'command') surface.close()
+    },
+  })
 }
 
-/**
- * Bind Ctrl/Cmd+K (and Ctrl/Cmd+Shift+P) to toggle the command palette.
- * Should be called once at the app root.
- */
+/** Bind Ctrl/Cmd+Shift+C to open the command palette. */
 export function useCommandPaletteHotkey() {
-  const bus = useCommandPaletteBus()
+  const surface = useOmniDialog()
   function onKeyDown(e: KeyboardEvent) {
     const mod = e.ctrlKey || e.metaKey
-    if (!mod) return
-    if (e.code === 'KeyK') {
+    if (!mod || !e.shiftKey) return
+    if (e.code === 'KeyC') {
       e.preventDefault()
-      bus.emit('toggle')
-    } else if (e.shiftKey && e.code === 'KeyP') {
-      e.preventDefault()
-      bus.emit('toggle')
+      surface.open('command')
     }
   }
   onMounted(() => window.addEventListener('keydown', onKeyDown))

@@ -49,7 +49,7 @@ agent:
     enable the agent.
   notConfiguredTitle: Agent not configured
   openSettings: Open settings
-  reset: Reset conversation
+  reset: New conversation
   setupGuide: Setup guide
   statusDisabled: Disabled — missing API key
   statusReady: Ready

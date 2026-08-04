@@ -1,4 +1,3 @@
-import type { Api, AssistantMessage, Context, Model, SimpleStreamOptions, Usage } from '@earendil-works/pi-ai'
 import {
   AgentServiceKey,
   DEFAULT_AGENT_ENDPOINT,
@@ -6,68 +5,71 @@ import {
   isKeylessAgentEndpoint,
   type AgentConversationKey,
   type AgentMessage,
-  type AgentProviderStreamRequest,
   type AgentRunTrace,
   type AgentService as IAgentService,
   type LegacyConversationImport,
   type UpdateAgentProviderSettings,
 } from '@xmcl/runtime-api'
+import { randomUUID } from 'crypto'
 import { join } from 'path'
 import { Inject, LauncherAppKey, type LauncherApp } from '~/app'
 import { IS_DEV } from '~/constant'
 import { kSettings } from '~/settings'
 import { AbstractService, ExposeServiceKey } from '~/service'
-import { AgentBridge } from './AgentBridge'
 import { AgentApiKeyStore } from './apiKey'
-import { sanitizeAgentEndpoint, sanitizeAgentLog, summarizeAgentProviderPayload } from './debug'
+import { kXmclSessionAuthorization, XmclAccountService } from '~/xmclAccount'
+import { sanitizeAgentEndpoint, sanitizeAgentLog } from './debug'
+import { AgentArtifactStore } from './artifacts'
+import { AgentDocumentStore, kAgentDocumentDirectory } from './documents'
 import { AgentHistoryStore } from './history'
-import { createAgentProvider } from './provider'
 
-function zeroUsage(): Usage {
-  return {
-    input: 0,
-    output: 0,
-    cacheRead: 0,
-    cacheWrite: 0,
-    totalTokens: 0,
-    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
-  }
-}
+export { AGENT_SECRET_SERVICE } from './providerSettings'
 
-function requestKey(bridgeId: string, requestId: string) {
-  return `${bridgeId}\0${requestId}`
-}
+export type ResolvedAgentProvider =
+  | { mode: 'builtin' }
+  | { mode: 'custom'; endpoint: string; model: string; apiKey: string }
+
+export const kResolvedAgentProvider = Symbol('resolved-agent-provider')
 
 @ExposeServiceKey(AgentServiceKey)
 export class AgentService extends AbstractService implements IAgentService {
   private history = new AgentHistoryStore(join(this.app.appDataPath, 'agent', 'history'), message => this.warn(message))
-  private providerRequests = new Map<string, AbortController>()
+  private artifacts = new AgentArtifactStore(join(this.app.appDataPath, 'agent', 'artifacts'))
+  private documents: AgentDocumentStore
   private agentLogger = this.app.getLogger('Agent', 'agent')
   private apiKeys = new AgentApiKeyStore(this.app.secretStorage, async () => {
     const settings = await this.app.registry.get(kSettings)
     return settings.agentEndpoint || DEFAULT_AGENT_ENDPOINT
   })
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
+  constructor(
+    @Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(kAgentDocumentDirectory) private readonly documentDirectory: string,
+  ) {
     super(app)
+    this.documents = new AgentDocumentStore(documentDirectory)
   }
 
   async getProviderSettings() {
     const settings = await this.app.registry.get(kSettings)
     const endpoint = settings.agentEndpoint || DEFAULT_AGENT_ENDPOINT
-    // Keyless providers (a local Ollama, say) are ready as soon as they are
-    // selected; requiring a placeholder key would just be a hoop to jump through.
-    const configured = isKeylessAgentEndpoint(endpoint) || !!await this.apiKeys.get(endpoint)
+    const provider = await this[kResolvedAgentProvider]()
+    const configured = provider.mode === 'custom'
+      ? isKeylessAgentEndpoint(endpoint) || !!await this.apiKeys.get(endpoint)
+      : !!await this.app.registry.getOrCreate(XmclAccountService)
+        .then(service => service[kXmclSessionAuthorization]())
+        .catch(() => undefined)
     return {
       endpoint,
       model: settings.agentModel || DEFAULT_AGENT_MODEL,
       configured,
+      mode: provider.mode,
     }
   }
 
   async setProviderSettings(input: UpdateAgentProviderSettings) {
     const settings = await this.app.registry.get(kSettings)
-    const endpoint = input.endpoint.trim() || DEFAULT_AGENT_ENDPOINT
+    const endpoint = input.endpoint.trim()
     this.logAgent(`[provider.settings] ${sanitizeAgentLog({
       endpoint: sanitizeAgentEndpoint(endpoint),
       model: input.model,
@@ -77,25 +79,84 @@ export class AgentService extends AbstractService implements IAgentService {
     // errors), and we must not leave the endpoint/model settings committed while
     // the API key write was rejected. The key is scoped to the endpoint being
     // saved, so each provider keeps its own.
-    if (input.apiKey !== undefined) {
+    if (input.apiKey !== undefined && endpoint) {
       await this.apiKeys.put(endpoint, input.apiKey)
     }
     settings.agentProviderSet({
       endpoint,
-      model: input.model.trim() || DEFAULT_AGENT_MODEL,
+      model: input.model.trim(),
     })
+  }
+
+  async [kResolvedAgentProvider](): Promise<ResolvedAgentProvider> {
+    const settings = await this.app.registry.get(kSettings)
+    const endpoint = settings.agentEndpoint.trim()
+    const model = settings.agentModel.trim()
+    if (!endpoint || !model) return { mode: 'builtin' }
+
+    const apiKey = await this.apiKeys.get(endpoint)
+      ?? (isKeylessAgentEndpoint(endpoint) ? 'not-needed' : '')
+    return { mode: 'custom', endpoint, model, apiKey }
   }
 
   getConversation(key: AgentConversationKey) {
     return this.history.load(key)
   }
 
+  updateConversationContext(key: AgentConversationKey, context: Record<string, unknown>) {
+    return this.history.updateContext(key, context)
+  }
+
   async appendConversationMessages(key: AgentConversationKey, messages: AgentMessage[]) {
     for (const message of messages) await this.history.appendMessage(key, message)
   }
 
-  resetConversation(key: AgentConversationKey) {
-    return this.history.reset(key)
+  replaceConversationMessages(key: AgentConversationKey, messages: AgentMessage[]) {
+    return this.history.replaceMessages(key, messages)
+  }
+
+  async startNewConversation(key: AgentConversationKey) {
+    const archiveId = randomUUID()
+    const historyArchived = await this.history.archive(key, archiveId)
+    try {
+      const artifactsArchived = await this.artifacts.archive(key, archiveId)
+      return historyArchived || artifactsArchived ? archiveId : undefined
+    } catch (error) {
+      if (historyArchived) await this.history.restoreArchive(key, archiveId)
+      throw error
+    }
+  }
+
+  async resetConversation(key: AgentConversationKey) {
+    await Promise.all([this.history.reset(key), this.artifacts.reset(key)])
+  }
+
+  writeArtifact(key: AgentConversationKey, input: { content: string; toolName: string }) {
+    return this.artifacts.write(key, input.content, input.toolName)
+  }
+
+  listArtifacts(key: AgentConversationKey) {
+    return this.artifacts.list(key)
+  }
+
+  readArtifact(key: AgentConversationKey, input: { path: string; offset?: number; limit?: number }) {
+    return this.artifacts.read(key, input.path, input.offset, input.limit)
+  }
+
+  grepArtifact(key: AgentConversationKey, input: { path: string; pattern: string; ignoreCase: boolean; offset?: number; limit?: number }) {
+    return this.artifacts.grep(key, input.path, input.pattern, input.ignoreCase, input.offset, input.limit)
+  }
+
+  listDocuments() {
+    return this.documents.list()
+  }
+
+  searchDocuments(input: { query: string; limit?: number }) {
+    return this.documents.search(input.query, input.limit)
+  }
+
+  readDocument(id: string) {
+    return this.documents.read(id)
   }
 
   importLegacyConversation(input: LegacyConversationImport) {
@@ -104,106 +165,6 @@ export class AgentService extends AbstractService implements IAgentService {
 
   async reportRunTrace(trace: AgentRunTrace) {
     this.app.emit('agent-run-trace', trace)
-  }
-
-  async startProviderStream(request: AgentProviderStreamRequest, bridge: AgentBridge) {
-    if (!bridge.has(request.bridgeId)) throw new Error('Agent provider bridge is unavailable')
-    const key = requestKey(request.bridgeId, request.requestId)
-    this.providerRequests.get(key)?.abort()
-    const controller = new AbortController()
-    this.providerRequests.set(key, controller)
-    void this.runProviderStream(request, bridge, controller).finally(() => {
-      if (this.providerRequests.get(key) === controller) this.providerRequests.delete(key)
-    })
-  }
-
-  cancelProviderStream(bridgeId: string, requestId: string) {
-    this.providerRequests.get(requestKey(bridgeId, requestId))?.abort()
-  }
-
-  cancelProviderBridge(bridgeId: string) {
-    for (const [key, controller] of this.providerRequests) {
-      if (key.startsWith(`${bridgeId}\0`)) controller.abort()
-    }
-  }
-
-  private async runProviderStream(
-    request: AgentProviderStreamRequest,
-    bridge: AgentBridge,
-    controller: AbortController,
-  ) {
-    const providerSettings = await this.getProviderSettings()
-    if (!providerSettings.configured) {
-      bridge.sendProviderEvent(request.bridgeId, {
-        bridgeId: request.bridgeId,
-        requestId: request.requestId,
-        type: 'error',
-        error: 'Agent API key is not configured',
-      })
-      return
-    }
-
-    // The OpenAI adapter expects a non-empty key even where the server ignores
-    // it, so keyless providers get a placeholder rather than an empty header.
-    const apiKey = await this.apiKeys.get(providerSettings.endpoint)
-      ?? (isKeylessAgentEndpoint(providerSettings.endpoint) ? 'not-needed' : undefined)
-    const { api, model, providerId } = createAgentProvider(providerSettings.endpoint, providerSettings.model)
-    const options = {
-      ...request.options,
-      apiKey,
-      signal: controller.signal,
-      onPayload: (payload: unknown) => this.logAgent(`[provider.request] ${sanitizeAgentLog({
-        endpoint: sanitizeAgentEndpoint(providerSettings.endpoint),
-        model: model.id,
-        payload: summarizeAgentProviderPayload(payload),
-      })}`),
-      onResponse: (response: any) => this.logAgent(`[provider.response] ${sanitizeAgentLog({
-        model: model.id,
-        status: response.status,
-      })}`),
-    } as unknown as SimpleStreamOptions
-
-    try {
-      const stream = api.streamSimple(
-        model as Model<Api>,
-        request.context as unknown as Context,
-        options,
-      )
-      for await (const event of stream) {
-        if (!bridge.sendProviderEvent(request.bridgeId, {
-          bridgeId: request.bridgeId,
-          requestId: request.requestId,
-          type: 'event',
-          event,
-        })) {
-          controller.abort()
-          break
-        }
-      }
-    } catch (error) {
-      const aborted = controller.signal.aborted
-      const message: AssistantMessage = {
-        role: 'assistant',
-        content: [],
-        api: 'openai-completions',
-        provider: providerId,
-        model: model.id,
-        usage: zeroUsage(),
-        stopReason: aborted ? 'aborted' : 'error',
-        errorMessage: error instanceof Error ? error.message : String(error),
-        timestamp: Date.now(),
-      }
-      bridge.sendProviderEvent(request.bridgeId, {
-        bridgeId: request.bridgeId,
-        requestId: request.requestId,
-        type: 'event',
-        event: {
-          type: 'error',
-          reason: aborted ? 'aborted' : 'error',
-          error: message,
-        },
-      })
-    }
   }
 
   private logAgent(message: string) {

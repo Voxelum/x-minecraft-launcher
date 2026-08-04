@@ -296,7 +296,7 @@ import { useVuetifyColor } from '@/composables/vuetify'
 import { basename } from '@/util/basename'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
-import type { EditInstanceOptions } from '@xmcl/instance'
+import { mergeInstanceInstallManifest, type EditInstanceOptions } from '@xmcl/instance'
 import {
   InstallInstanceOptions,
   InstanceFileUpdate,
@@ -350,7 +350,7 @@ const { isShown } = useDialog(
 )
 
 const { openModpack } = useService(ModpackServiceKey)
-const { installInstanceFiles, previewInstanceFiles } = useService(InstanceInstallServiceKey)
+const { applyInstanceInstallManifest, getInstanceInstallManifest, installInstanceFiles, previewInstanceFiles, setInstanceInstallManifest } = useService(InstanceInstallServiceKey)
 const { getInstanceModpackMetadata, setInstanceModpackMetadata } = useService(InstanceServiceKey)
 
 const { edit } = injection(kInstances)
@@ -500,11 +500,16 @@ async function getUpgradeValueFromParam(
     })
   }
 
+  const pending = await getInstanceInstallManifest(instancePath.value)
+  const manifest = mergeInstanceInstallManifest(pending, {
+    oldFiles: param.oldFiles,
+    files: param.files,
+  })
   return markRaw({
     installation: {
       path: instancePath.value,
-      oldFiles: param.oldFiles,
-      files: param.files,
+      oldFiles: manifest.oldFiles,
+      files: manifest.files,
       id: param.id,
     },
     incompatible: param.incompatible,
@@ -536,7 +541,12 @@ const confirm = async () => {
       }
       installation.files = installation.files.filter((f) => selectedPath.includes(f.path))
     }
-    await installInstanceFiles(installation)
+    if ('oldFiles' in installation) {
+      await setInstanceInstallManifest(installation)
+      await applyInstanceInstallManifest(installation.path, installation.id)
+    } else {
+      await installInstanceFiles(installation)
+    }
   } catch (e) {
     Object.assign(e as any, {
       instanceInstallErrorId: installation.id,

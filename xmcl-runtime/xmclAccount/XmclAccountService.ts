@@ -51,6 +51,7 @@ interface PendingMergeCredential {
 
 export interface XmclSessionAuthorization {
   readonly accessToken: string
+  readonly accountId: string
 }
 
 /**
@@ -117,7 +118,10 @@ export class XmclAccountService
 
   async [kXmclSessionAuthorization](): Promise<XmclSessionAuthorization | undefined> {
     await this.initialize()
-    return this.credential && { accessToken: this.credential.accessToken }
+    const accountId = this.state.account?.accountId
+    return this.credential && accountId
+      ? { accessToken: this.credential.accessToken, accountId }
+      : undefined
   }
 
   @Singleton()
