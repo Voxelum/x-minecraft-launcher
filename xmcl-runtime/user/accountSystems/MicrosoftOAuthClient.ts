@@ -92,9 +92,12 @@ export class MicrosoftOAuthClient {
   } = {}) {
     const nativeBrokerPlugin = options.useNativeBroker ? await this.getNativeBrokerPlugin() : undefined
     const app = await this.getOAuthApp(username, options.signal, nativeBrokerPlugin)
-    if (!options?.code) {
+    if (username && !options?.code) {
       const accounts = await app.getTokenCache().getAllAccounts().catch(() => [])
-      const account = (username ? accounts.find(a => a.username.toLowerCase() === username.toLowerCase()) : undefined) || (accounts.length === 1 ? accounts[0] : undefined)
+      // The token cache is shared by every Microsoft account, and
+      // acquireTokenSilent keys off homeAccountId (it ignores username), so
+      // the match must be exact.
+      const account = accounts.find(a => a.username.toLowerCase() === username.toLowerCase())
       if (account) {
         const result = await app.acquireTokenSilent({
           scopes,
