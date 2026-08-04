@@ -2,6 +2,12 @@
 
 > 本页只定义两类世界来源、备份对象 schema 和 M5/M9/M3 共享 contract。具体实现见三个子页面。
 
+## 交付状态（2026-08-04）
+
+- **已完成（shared-hosting world migration）：**launcher 只在用户显式选择本地 world 时导出 seed archive；API/server control plane 只授予该 seed 的 exact GET；node agent 在 revision-0 restore 前验证并提取它，成功后才标记已发送。
+- **已完成（runtime persistence）：**shared workspace 使用 immutable content/config/world layers 和 manifest-last protocol；node 没有 Object Storage master credential、List 或 Delete capability。
+- **本页的完整手动 Linear/layered Linear backup 产品：**仍需 M6 owner 的真实 object accounting、reference counting、manual restore/export 和与 M3 overage settlement 的 provider acceptance；不能把 local world seed 当作完整 backup product。
+
 ## Shared contract
 
 ```ts

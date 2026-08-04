@@ -2,6 +2,11 @@
 
 > 本页只定义跨模块事件、审计和管理员操作 contract。具体实现见三个子页面。
 
+## 交付状态（2026-08-04）
+
+- **已完成：**admin/audit/reconciliation contract、M3 refund/balance-adjust 与 M4 suspend/restore ownership boundaries、sanitized logging constraints。
+- **剩余：**真实 production operator authentication/MFA、retention policy、alert routing、support workflows 和 provider dispute/refund operations。它们必须在 M3 payment public rollout 前完成，不因 staging payment proxy 自动启用。
+
 ## Shared contract
 
 ```ts

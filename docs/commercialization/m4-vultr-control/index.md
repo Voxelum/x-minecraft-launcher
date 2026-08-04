@@ -2,6 +2,13 @@
 
 > 本页只定义服务器控制平面、Vultr provider 和 M5/M9 共享的服务器 contract。具体实现见三个子页面。
 
+## 交付状态（2026-08-04）
+
+- **已完成（shared-hosting control plane）：**global slot scheduler、durable command outbox、ingress reservation、Vultr VM/Block Storage/Firewall lifecycle、drain/reconcile 与 SGP shared-node profile；Azure 为 Cosmos-backed durable control plane。
+- **已修复：**node credential rotation、workspace ownership、start/stop recovery、transient command retry/requeue、initial-world grant 和 bounded workspace transfer contract。
+- **尚未进行真实 provider acceptance：**需要 compiler production deployment 后，执行 SGP VM → volume attach → enrollment → external Minecraft connect → stop/sync → restore/drain 的完整演练。
+- **本页的 Taipei dedicated-server proposal：**仍是 M4 dedicated product contract，不表示 Taipei/shared public server 已上线；当前 shared-hosting staging region 是 SGP。
+
 ## Shared contract
 
 ```ts

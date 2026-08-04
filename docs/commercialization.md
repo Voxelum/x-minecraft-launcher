@@ -18,6 +18,26 @@
 
 详细产品边界见 [产品范围与商业模式](commercialization/product-scope.md)。
 
+## 当前交付状态（2026-08-04）
+
+M 系列 contract、fixture 和大部分 control-plane implementation 已完成；“完成”
+不等于 public commercial rollout。当前状态按可验证环境分为：
+
+| 范围 | 状态 | 仍需完成 |
+| --- | --- | --- |
+| M1 account/session | Launcher bridge 和 Pages/account surface 已完成；Worker → Azure staging proxy 已部署且默认 fail-closed | 配置至少一个 browser OAuth provider、session/proxy secret、Pages callback 后取得 staging session |
+| M2 allowance | 固定 1 GiB policy contract 与 endpoint 已完成 | M6 real accounting 以此 policy 验收 overage |
+| M3 cash/PayPal | Durable ledger、hourly work、Sandbox webhook 和 restricted Worker → Azure checkout proxy 已完成；non-credit Sandbox webhook 已验证 | 用 M1 staging session 跑真实 order → approval → capture → single credit |
+| M4/M5 shared hosting | SGP scheduler、Vultr volume/firewall/provisioning、node agent/runtime image 和 lifecycle recovery 已完成 | 先部署 trusted compiler，再做 real SGP node end-to-end acceptance |
+| M6 world data | Explicit local world seed 和 immutable layered workspace persistence 已完成 | 完整 manual backup/accounting product 仍需 M6 provider acceptance |
+| M7/M8 | Contract/fixture 和 owner boundaries 已完成 | M7 production operator workflow；M8 real provider/settlement deployment |
+| M9 modded deployment | Local instance bundle validation、exact compiler grants、compiler image/callback protocol 已完成 | Reviewed JRE/artifact/sandbox/identity/terms adapters，之后才可 real compile |
+
+当前 shared-hosting staging 使用 **SGP + Azure durable control plane**。Cloudflare
+staging Worker 仅作为受限的 public ingress/proxy；它不直接连接 Cosmos。旧的
+Taipei dedicated-server contract 仍保留为 M4 proposal，不代表已部署 shared
+hosting region。
+
 ## 2. 业务模块
 
 每个模块都可以由独立负责人交付，拥有自己的输入/输出 contract、mock contract、实现范围和验收条件。模块之间通过 API、事件和数据 contract 协作，不通过共享内部实现耦合。

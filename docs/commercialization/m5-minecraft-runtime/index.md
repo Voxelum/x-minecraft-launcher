@@ -2,6 +2,13 @@
 
 > 本页只定义 worker、服务器运行状态和 M4/M6/M9 共享的 runtime contract。具体实现见三个子页面。
 
+## 交付状态（2026-08-04）
+
+- **已完成（shared runtime path）：**generic non-root runtime image、reviewed Java 8/16/17/21/25 catalog、fixed launcher、agent lifecycle/health/workspace integration，以及 immutable GHCR release supply chain。
+- **已修复：**stopped container restart、health-wait crash recovery、runtime UID workspace access、large blob transfer grant expiry和 agent restart mid-sync recovery。
+- **剩余：**real modded compiler sandbox 产出可运行 content 后，按 Java/loader fixture 做 node-level start/health/external-connect/stop-sync/cross-node restore acceptance。
+- **未开放：**任意 Docker、用户 shell/JVM path/argument、或未审核 loader artifact；这些输入继续 fail-closed。
+
 ## Shared contract
 
 ```ts

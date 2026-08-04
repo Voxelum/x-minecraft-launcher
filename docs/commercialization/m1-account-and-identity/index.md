@@ -2,6 +2,13 @@
 
 > 本页只定义 Web API、XMCL App 和 xmcl-page 共同依赖的账户 contract。具体实现见三个子页面。
 
+## 交付状态（2026-08-04）
+
+- **已完成：**启动器的 Microsoft/Modrinth account bridge、session 轮换与本地持久化保护；xmcl-page 的 account/OAuth 页面；Mongo-backed account/session 实现和 shared contract。
+- **已部署但 fail-closed：**staging Cloudflare Worker 到 Azure 的最小 M1 account/session proxy。它只允许固定的 browser OAuth、账户查询和 session refresh/revoke 路径；Worker 不连接 Cosmos。
+- **剩余：**为 Azure 配置 `XMCL_SESSION_SECRET`、至少一个 OAuth provider 的 client ID/secret、独立 M1 proxy key/secret 和 Pages CORS origin；并在该 provider dashboard 注册 `https://feat-mot.xmcl-page.pages.dev/oauth/callback`。完成后才可签发用于 M3 staging checkout 的 browser session。
+- **未开放：**生产 public account/payment/commercial routes。现有 launcher account auth 不等同于 production commercial rollout。
+
 ## Shared contract
 
 ```ts

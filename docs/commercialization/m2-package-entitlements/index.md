@@ -2,6 +2,12 @@
 
 > 本页只定义固定免费备份容量 policy。MVP 没有套餐、订阅、AI 免费额度、服务器免费额度或其他会员权益。
 
+## 交付状态（2026-08-04）
+
+- **已完成：**固定 `1 GiB` / `policyVersion: 1` shared contract、session-authenticated policy read endpoint、fixture 与 consumer 边界。
+- **明确不属于 M2：**实际对象占用、`usedBytes`、超额保留计费和 backup 生命周期仍由 M6 owner 实现；M2 不保存每个账户的可变状态。
+- **剩余：**M6 完成真实 backup storage accounting 后，验证它只对超过此固定 allowance 的字节生成 M3 `storage_retention` usage。
+
 ## D1 ownership
 
 ```ts

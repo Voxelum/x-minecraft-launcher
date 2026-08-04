@@ -2,6 +2,13 @@
 
 > 本页只定义上传包白名单、来源校验和部署 manifest 的共享 contract。具体实现见三个子页面。
 
+## 交付状态（2026-08-04）
+
+- **已完成（shared modded runtime path）：**validated `.xmcl-server-bundle` from an already-working local client instance、frozen deployment manifest、reviewed Java/toolchain tuple validation、exact compiler input/output grants、explicit local world seed separation。
+- **已完成：**compiler HTTP worker、non-root image/SBOM/provenance、authenticated callback/grant protocol，以及 immutable upload timeout/`412` reconciliation。
+- **剩余：**deployment-owned reviewed read-only JRE roots、approved artifact catalog release、constrained no-Docker sandbox adapter、workload identity 和 server-owned EULA/terms acceptance。缺少任一项时 compiler `/readyz` 必须保持 unavailable；不能运行真实 Forge/Fabric/NeoForge/Quilt installer。
+- **本页的 arbitrary dedicated-server modpack proposal：**继续与 shared local-instance flow 分离；shared feature 不接受 `ServerExporter` output、user URLs、shell scripts 或 JVM/Docker settings。
+
 ## Shared contract
 
 ```ts

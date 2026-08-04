@@ -2,6 +2,13 @@
 
 > 本页定义 M3 对 PayPal 充值、账户现金余额和 usage settlement 的实现边界。MVP 没有积分、订阅或套餐履约。
 
+## 交付状态（2026-08-04）
+
+- **已完成：**durable Mongo/Cosmos cash ledger、idempotent order/usage settlement、`stop_required`、stale PayPal intent reconciliation、Azure hourly trusted work，以及 Sandbox-only Worker → Azure proxy。
+- **已验证：**PayPal Sandbox 的已签名非入账 webhook 已通过 Cloudflare Worker、Azure verification 和 Mongo durable dedup；M3 public routes 仍未开放。
+- **已部署的 staging surface：**经独立 HMAC 和精确 allowlist 的 order/capture/balance/rates/orders/ledger/usage API；直接 Azure 请求和未经认证请求不会访问账本。
+- **剩余：**先完成 M1 staging OAuth，再执行真实 Sandbox order → buyer approval → capture → 单个 `PAYMENT.CAPTURE.COMPLETED` cash credit、重复/乱序 delivery 与 reconciliation 验收。生产 PayPal credentials/webhook 与 public payment routes 不在当前范围。
+
 ## Consumed shared contract
 
 M3 consumes the immutable published contract at

@@ -1,5 +1,10 @@
 # M8 AI 服务
 
+## 交付状态（2026-08-04）
+
+- **已完成：**M8 local contract、fixture、launcher-side service/client/state，以及对 M1/M3 ownership 的边界定义。
+- **剩余：**inject real M1 session/scope、M3 internal authorization/settlement credential、production AI provider、durable request/result store 与 usage outbox。当前不是已部署的 paid AI service。
+
 ## 当前增量
 
 本 workspace 没有 `xmcl-web-api` 或 `xmcl-page` 仓库。M8 消费已发布的
