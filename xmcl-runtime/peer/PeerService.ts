@@ -78,7 +78,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     app.controller.handle(
       'multiplayer-room-create',
       async (_event, input: { displayName: string; maxPeers?: number }) => {
-        const admission = await requestRoom('/v2/multiplayer/rooms', {
+        const admission = await requestRoom('/v1/multiplayer/rooms', {
           method: 'POST',
           body: JSON.stringify(input),
         })
@@ -89,7 +89,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       'multiplayer-room-join',
       async (_event, input: { roomId: string; displayName: string }) => {
         const admission = await requestRoom(
-          `/v2/multiplayer/rooms/${encodeURIComponent(input.roomId)}/join`,
+          `/v1/multiplayer/rooms/${encodeURIComponent(input.roomId)}/join`,
           {
             method: 'POST',
             body: JSON.stringify({ displayName: input.displayName }),
@@ -99,7 +99,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       },
     )
     app.controller.handle('multiplayer-room-close', async (_event, roomId: string) => {
-      await requestRoom(`/v2/multiplayer/rooms/${encodeURIComponent(roomId)}`, {
+      await requestRoom(`/v1/multiplayer/rooms/${encodeURIComponent(roomId)}`, {
         method: 'DELETE',
       })
     })
@@ -114,7 +114,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         if (official?.accessToken) {
           headers.set('authorization', ['Bearer', official.accessToken].join(' '))
         }
-        const response = await app.fetch(new URL('/rtc/official', multiplayerApiBaseUrl), {
+        const response = await app.fetch(new URL('/v1/rtc/official', multiplayerApiBaseUrl), {
           method: 'POST',
           headers,
         })

@@ -46,7 +46,7 @@ const profile: ConnectionUserInfo = {
 function admission(role: 'host' | 'guest'): MultiplayerRoomAdmission {
   return {
     roomId: 'room-1',
-    socketUrl: 'wss://api.example/v2/multiplayer/rooms/room-1/socket',
+    socketUrl: 'wss://signaling.example/v1/multiplayer/rooms/room-1/socket',
     ticket: `${role}-ticket`,
     peerId: `${role}-peer`,
     expiresAt: new Date(Date.now() + 60_000).toISOString(),

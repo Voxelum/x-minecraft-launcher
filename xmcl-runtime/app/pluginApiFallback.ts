@@ -9,7 +9,7 @@ export const pluginApiFallback: LauncherAppPlugin = (app) => {
     if (isCommonApi || isSignalingApi) {
       const shouldDecorateHeaders =
         (isCommonApi && request.url.pathname === '/translation') ||
-        (isSignalingApi && request.url.pathname === '/rtc/official')
+        (isSignalingApi && request.url.pathname === '/v1/rtc/official')
       // const gfw = await app.registry.get(kGFW)
       // if (gfw.inside && shouldDecorateHeaders) {
       //   request.url.host = 'api-xmcl.0xc.cn'

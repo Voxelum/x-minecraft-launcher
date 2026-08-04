@@ -3,7 +3,7 @@ import type { Handler } from '~/app'
 import type { ResolvedAgentProvider } from './AgentService'
 
 const builtinUrl = new URL(BUILTIN_AGENT_ENDPOINT)
-const builtinProviderUrl = 'https://ai.xmcl.app/ai/chat/completions'
+const builtinProviderUrl = 'https://ai.xmcl.app/v1/chat/completions'
 
 function setHeader(headers: Record<string, any>, name: string, value?: string) {
   for (const key of Object.keys(headers)) {

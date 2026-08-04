@@ -48,7 +48,7 @@ describe('agent protocol', () => {
 
     await handler(ctx)
 
-    expect(ctx.request.url.toString()).toBe('https://ai.xmcl.app/ai/chat/completions')
+    expect(ctx.request.url.toString()).toBe('https://ai.xmcl.app/v1/chat/completions')
     expect(ctx.request.headers).toEqual({
       authorization: 'Bearer xmcl-token',
       'x-xmcl-account-id': 'account-id',
