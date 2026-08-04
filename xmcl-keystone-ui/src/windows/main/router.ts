@@ -1,7 +1,6 @@
 import BaseSetting from '@/views/BaseSetting.vue'
 import BaseSettingActions from '@/views/BaseSettingActions.vue'
 import BaseSettingExtension from '@/views/BaseSettingExtension.vue'
-import BaseSettingModrinthProject from '@/views/BaseSettingModrinthProject.vue'
 import Home from '@/views/Home.vue'
 import HomeActions from '@/views/HomeActions.vue'
 import HomeExtension from '@/views/HomeExtension.vue'
@@ -96,7 +95,7 @@ export const router = createRouter({
         },
         {
           path: 'base-setting/modrinth-project',
-          component: BaseSettingModrinthProject,
+          redirect: { path: '/base-setting', query: { target: 'modrinth-project' } },
         },
       ],
     },

@@ -122,7 +122,7 @@ export function useInstanceLaunch(
   }
 
   async function generateLaunchOptions(instancePath: string, userProfile: UserProfile, operationId: string, side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>, dry = false) {
-    const ver = overrides?.version ?? side === 'client' ? version.value : serverVersion.value
+    const ver = overrides?.version ?? (side === 'client' ? version.value : serverVersion.value)
     const token = getLaunchToken(userProfile, instancePath)
 
     return await generateLaunchOptionsWithGlobal(

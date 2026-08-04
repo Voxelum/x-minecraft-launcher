@@ -1,7 +1,7 @@
 import { useService } from '@/composables'
 import { injection } from '@/util/inject'
 import { generateBaseName, generateDistinctName, getEffectiveInstanceName } from '@/util/instanceName'
-import { InstanceInstallServiceKey, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, VersionMetadataServiceKey } from '@xmcl/runtime-api'
+import { InstanceInstallServiceKey, InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import type { GameProfile } from '@xmcl/user'
 import { useLocalStorage } from '@vueuse/core'
 import { InjectionKey, Ref, reactive } from 'vue'
@@ -27,6 +27,8 @@ export interface InstanceCreationLinkPreferences {
   saves: boolean
   resourcepacks: boolean
   shaderpacks: boolean
+  options: boolean
+  servers: boolean
 }
 
 const DEFAULT_LINK_PREFERENCES: InstanceCreationLinkPreferences = {
@@ -34,17 +36,22 @@ const DEFAULT_LINK_PREFERENCES: InstanceCreationLinkPreferences = {
   saves: false,
   resourcepacks: false,
   shaderpacks: false,
+  options: false,
+  servers: false,
 }
 
 /**
- * The runtime link operations, one per supported shared folder. Each mirrors
- * the corresponding local-view link switch (`linkSharedSave` /
- * `linkShared`), so creation-time links share the exact merge/backup semantics.
+ * The runtime link operations, one per supported shared folder/file. Each
+ * mirrors the corresponding local-view link switch (`linkSharedSave` /
+ * `linkShared` / `linkGameOptions` / servers `link`), so creation-time links
+ * share the exact merge/backup semantics.
  */
 export interface InstanceLinkOperations {
   linkSaves: (instancePath: string) => Promise<void>
   linkResourcePacks: (instancePath: string) => Promise<void>
   linkShaderPacks: (instancePath: string) => Promise<void>
+  linkOptions: (instancePath: string) => Promise<void>
+  linkServers: (instancePath: string) => Promise<void>
 }
 
 /**
@@ -57,13 +64,15 @@ export interface InstanceLinkOperations {
  */
 export async function applyInstanceLinkPreferences(
   instancePath: string,
-  preferences: Pick<InstanceCreationLinkPreferences, 'saves' | 'resourcepacks' | 'shaderpacks'>,
+  preferences: Pick<InstanceCreationLinkPreferences, 'saves' | 'resourcepacks' | 'shaderpacks' | 'options' | 'servers'>,
   operations: InstanceLinkOperations,
 ): Promise<string[]> {
   const tasks: Array<{ folder: string; run: () => Promise<void> }> = []
   if (preferences.saves) tasks.push({ folder: 'saves', run: () => operations.linkSaves(instancePath) })
   if (preferences.resourcepacks) tasks.push({ folder: 'resourcepacks', run: () => operations.linkResourcePacks(instancePath) })
   if (preferences.shaderpacks) tasks.push({ folder: 'shaderpacks', run: () => operations.linkShaderPacks(instancePath) })
+  if (preferences.options) tasks.push({ folder: 'options', run: () => operations.linkOptions(instancePath) })
+  if (preferences.servers) tasks.push({ folder: 'servers', run: () => operations.linkServers(instancePath) })
   const failed: string[] = []
   for (const task of tasks) {
     try {
@@ -85,6 +94,8 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
   const { linkSharedSave } = useService(InstanceSavesServiceKey)
   const { linkShared: linkSharedResourcePacks } = useService(InstanceResourcePacksServiceKey)
   const { linkShared: linkSharedShaderPacks } = useService(InstanceShaderPacksServiceKey)
+  const { linkGameOptions } = useService(InstanceOptionsServiceKey)
+  const { link: linkServersList } = useService(InstanceServerInfoServiceKey)
   const { notify } = useNotifier()
   const { t } = useI18n()
   const { release } = injection(kLatestMinecraftVersion)
@@ -273,11 +284,13 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
         // runtime services as the local link switches. Each link is applied
         // independently so one failure does not hide the others, and the
         // instance stays usable with an ordinary folder for any failed link.
-        if (shouldApplyLinks && (linkSnapshot.saves || linkSnapshot.resourcepacks || linkSnapshot.shaderpacks)) {
+        if (shouldApplyLinks && (linkSnapshot.saves || linkSnapshot.resourcepacks || linkSnapshot.shaderpacks || linkSnapshot.options || linkSnapshot.servers)) {
           const failed = await applyInstanceLinkPreferences(newPath, linkSnapshot, {
             linkSaves: linkSharedSave,
             linkResourcePacks: linkSharedResourcePacks,
             linkShaderPacks: linkSharedShaderPacks,
+            linkOptions: linkGameOptions,
+            linkServers: linkServersList,
           })
           for (const folder of failed) {
             notify({ level: 'error', title: t('instances.linkFailed', { folder }) })

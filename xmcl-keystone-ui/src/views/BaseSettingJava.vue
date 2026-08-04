@@ -210,10 +210,18 @@
         />
       </div>
     </div>
-  </SettingCard>
 
-  <SettingCard :title="t('instance.vmVar')" icon="eco">
-    <template #header-action>
+    <v-divider class="mx-2 mt-7" />
+    <div class="java-subheader flex items-center gap-2 px-2 mt-5 mb-3">
+      <v-icon color="primary" size="small">eco</v-icon>
+      <div class="min-w-0 flex-1">
+        <div class="text-subtitle-1 font-weight-medium select-none">
+          {{ t('instance.vmVar') }}
+        </div>
+        <div class="text-caption text-medium-emphasis">
+          {{ t('instance.vmVarHint') }}
+        </div>
+      </div>
       <v-btn
         color="primary"
         variant="text"
@@ -224,13 +232,12 @@
         <v-icon start size="small">add</v-icon>
         {{ t('shared.add') }}
       </v-btn>
-    </template>
-
-    <div class="text-subtitle-2 mb-3">
-      {{ t('instance.vmVarHint') }}
     </div>
-    <EnvVarTableItem :env="allEnv" :readonly="readonlyEnv" @delete="onEnvVarDeleted" />
-    <EnvVarAddItem v-if="adding" @clear="onEnvVarCleared" @add="onEnvVarAdded" />
+
+    <div class="px-2">
+      <EnvVarTableItem :env="allEnv" :readonly="readonlyEnv" @delete="onEnvVarDeleted" />
+      <EnvVarAddItem v-if="adding" @clear="onEnvVarCleared" @add="onEnvVarAdded" />
+    </div>
   </SettingCard>
 </template>
 

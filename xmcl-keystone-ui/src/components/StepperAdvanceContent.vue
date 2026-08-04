@@ -46,7 +46,7 @@
       </div>
     </v-list-subheader>
     <v-list-item class="pt-0 pb-4 px-0" v-if="isManual">
-      <div class="flex gap-2 items-center">
+      <div class="flex gap-2 items-center flex-wrap">
         <v-checkbox
           data-testid="add-instance-link-saves"
           v-model="linkPreferences.saves"
@@ -75,6 +75,26 @@
           <template #label>
             <v-icon start>gradient </v-icon>
             {{ t('shaderPack.name') }}
+          </template>
+        </v-checkbox>
+        <v-checkbox
+          data-testid="add-instance-link-options"
+          v-model="linkPreferences.options"
+          hide-details
+        >
+          <template #label>
+            <v-icon start>videogame_asset </v-icon>
+            {{ t('setting.minecraftOptions') }}
+          </template>
+        </v-checkbox>
+        <v-checkbox
+          data-testid="add-instance-link-servers"
+          v-model="linkPreferences.servers"
+          hide-details
+        >
+          <template #label>
+            <v-icon start>dns </v-icon>
+            {{ t('server.serversListTitle') }}
           </template>
         </v-checkbox>
       </div>

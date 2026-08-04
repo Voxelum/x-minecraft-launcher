@@ -1702,6 +1702,84 @@ server:
   pinnedHeader: 'pinned: {name}'
   players: Players
   port: Port
+  clearLog: Clear log
+  log: Server Log
+  logWaiting: Server output will appear here after launch.
+  remoteActionSuccess: Done.
+  remoteAdmin: Remote Server Admin
+  remoteAuthMethod: Authentication
+  remoteAuthPassword: Password
+  remoteAuthPrivateKey: Private key
+  remoteBuildOfflinePackage: Build offline package
+  remoteConnected: Connected
+  remoteConnection: Connection
+  remoteDeployment: Deployment
+  remoteDeploy: Deploy
+  remoteDisk: Disk
+  remoteConfigFiles: Configuration files
+  remoteExtraFiles: Extra files
+  remoteForgetCredentials: Forget saved credentials
+  remoteInstallService: Install service
+  remoteLoad: Load average
+  remoteLog: Remote Log
+  remoteMemory: Memory
+  remoteMods: Mods
+  remoteNoWorldSelected: No instance world selected
+  remoteJavaRequired: Java is not available on the remote Linux host.
+  remoteLinuxRequired: Only Linux SSH targets are supported.
+  remoteNotConfiguredHint: Fill in the connection details above and save to enable status, service control, and log tailing.
+  remotePathNotWritable: The remote server directory is not writable.
+  remotePathWritable: Directory writable
+  remotePolicyInitialize: Initialize once
+  remotePolicyMirror: Mirror
+  remotePolicyOverlay: Overlay
+  remotePolicyPreserve: Preserve
+  remotePreview: Preview changes
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: Remember credentials (OS keychain)
+  remoteReconcileReady: The target matches this instance and the console is attached.
+  remoteRestartService: Restart
+  remoteSavedCredentialsHint: Using saved credentials — leave blank to keep, or type to replace.
+  remoteService: systemd Service
+  remoteServiceActive: Running
+  remoteServerInstalled: Server files installed
+  remoteServiceName: Service name
+  remoteServiceNameHint: 'systemd --user unit name, e.g. mc-server'
+  remoteSelectedFiles: '{count} server files selected'
+  remoteSelectFiles: Select files
+  remoteStartCommand: Start command
+  remoteStartCommandHint: e.g. java -jar server.jar nogui
+  remoteStartService: Start
+  remoteStatus: Status
+  remoteSystemdRequired: systemd user services are not available on the remote Linux host.
+  remoteTargetName: Target name
+  remoteStopService: Stop
+  remoteStopWatchLog: Stop watching
+  remoteTestConnection: Test connection
+  remoteTestConnectionSuccess: Connection successful.
+  remoteUninstallConfirmMessage: This disables and removes the systemd unit on the remote host. Server files are not touched.
+  remoteUninstallService: Uninstall service
+  remoteRunInstall: Install or repair
+  remoteWatchLog: Watch live log
+  remoteWorldAlways: Replace on every reconciliation
+  remoteWorldDeployment: Instance world deployment
+  remoteWorldDeploymentHint: Routine sync never uploads world data unless this policy explicitly allows it.
+  remoteWorldFirstInstall: Initialize only when the target has no world
+  remoteWorldNever: Never upload a world
+  remoteWorldPresent: Target world
+  remoteWorld: World
+  remoteWorldWillDeploy: The selected instance world will be uploaded by this reconciliation.
   serverName: Server name
   serversListTitle: Server List
   unbindUpstream: Unbind

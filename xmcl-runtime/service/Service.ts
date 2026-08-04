@@ -93,12 +93,13 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
       if (last) {
         return last
       } else {
-        this.log(`Acquire singleton ${targetKey}`)
-
         const startTime = Date.now()
         instances[targetKey] = exec().finally(() => {
           const endTime = Date.now()
-          this.log(`Release singleton ${targetKey}. Took ${endTime - startTime}ms.`)
+          const time = endTime - startTime
+          if (time > 1000) {
+            this.log(`Release singleton ${targetKey}. Took ${time}ms.`)
+          }
           delete instances[targetKey]
         })
         return instances[targetKey]

@@ -1451,6 +1451,84 @@ server:
   pings: 延迟
   players: 玩家
   port: 端口
+  clearLog: 清空日志
+  log: 服务端日志
+  logWaiting: 启动服务端后，输出将显示在这里。
+  remoteActionSuccess: 操作完成。
+  remoteAdmin: SSH 服务端
+  remoteAuthMethod: 身份验证
+  remoteAuthPassword: 密码
+  remoteAuthPrivateKey: 私钥
+  remoteBuildOfflinePackage: 生成离线包
+  remoteConnected: 已连接
+  remoteConnection: SSH 连接
+  remoteDeployment: 部署
+  remoteDeploy: 部署
+  remoteDisk: 磁盘
+  remoteConfigFiles: 配置文件
+  remoteExtraFiles: 其他文件
+  remoteForgetCredentials: 忘记已保存的凭据
+  remoteInstallService: 安装服务
+  remoteLoad: 系统负载
+  remoteLog: 远程日志
+  remoteMemory: 内存
+  remoteMods: 模组
+  remoteNoWorldSelected: 未选择实例世界
+  remoteJavaRequired: 远程 Linux 主机上未找到 Java。
+  remoteLinuxRequired: 仅支持 Linux SSH 目标。
+  remoteNotConfiguredHint: 请填写并保存连接信息，以启用状态检查、服务控制和日志监控。
+  remotePathNotWritable: 远程服务端目录不可写。
+  remotePathWritable: 目录可写
+  remotePolicyInitialize: 仅初始化一次
+  remotePolicyMirror: 镜像同步
+  remotePolicyOverlay: 覆盖写入
+  remotePolicyPreserve: 保留远端
+  remotePreview: 预览变更
+  remotePhase:
+    connect: 正在连接
+    error: 协调失败
+    idle: 等待协调
+    inspect: 正在检查目标
+    install: 正在安装服务端
+    logs: 正在连接控制台
+    ready: 已应用期望状态
+    service: 正在确保 systemd 服务
+    start: 正在启动服务端
+    sync: 正在同步期望状态
+    world: 正在应用世界策略
+  remoteRememberCredentials: 在系统凭据库中记住凭据
+  remoteReconcileReady: 目标已与实例配置一致，控制台已连接。
+  remoteRestartService: 重启
+  remoteRunInstall: 安装或修复
+  remoteSavedCredentialsHint: 正在使用已保存的凭据；留空以保持不变，输入新值可替换。
+  remoteServerInstalled: 已安装服务端文件
+  remoteService: systemd 服务
+  remoteServiceActive: 运行中
+  remoteServiceName: 服务名称
+  remoteServiceNameHint: systemd --user 单元名称，例如 mc-server
+  remoteSelectedFiles: 已选择 {count} 个服务端文件
+  remoteSelectFiles: 选择文件
+  remoteStartCommand: 启动命令
+  remoteStartCommandHint: 例如 java -jar server.jar nogui
+  remoteStartService: 启动
+  remoteStatus: 状态
+  remoteSystemdRequired: 远程 Linux 主机不支持 systemd 用户服务。
+  remoteTargetName: 目标名称
+  remoteStopService: 停止
+  remoteStopWatchLog: 停止监控
+  remoteTestConnection: 测试连接
+  remoteTestConnectionSuccess: 连接成功。
+  remoteUninstallConfirmMessage: 这会禁用并移除远程主机上的 systemd 单元，不会删除服务端文件。
+  remoteUninstallService: 卸载服务
+  remoteWatchLog: 监控实时日志
+  remoteWorldAlways: 每次协调时覆盖
+  remoteWorldDeployment: 实例世界部署
+  remoteWorldDeploymentHint: 常规同步不会上传世界数据，只有此策略明确允许时才会上传。
+  remoteWorldFirstInstall: 仅在目标没有世界时初始化
+  remoteWorldNever: 永不上传世界
+  remoteWorldPresent: 目标世界
+  remoteWorld: 世界
+  remoteWorldWillDeploy: 本次协调将上传所选实例世界。
   serverName: 服务器名称
   serversListTitle: 服务器列表
   unbindUpstream: 解绑
