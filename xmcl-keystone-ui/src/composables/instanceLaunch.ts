@@ -18,7 +18,7 @@ export function useInstanceLaunch(
   mods: Ref<ModFile[]>,
 ) {
   const { refreshUser } = useService(UserServiceKey)
-  const { launch, kill, on, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
+  const { launch, kill, on, removeListener, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
   const { launch: launchBedrock } = useService(BedrockServiceKey)
   const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalPreExecuteCommand, globalPrependCommand, globalMcOptions, globalVmOptions, globalFastLaunch, globalEnv, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib, globalResolution } = useGlobalSettings(globalState)
   const { getOrInstallAuthlibInjector } = useService(AuthlibInjectorServiceKey)
@@ -187,7 +187,7 @@ export function useInstanceLaunch(
       } finally {
         assignStatus(token, '')
       }
-      return
+      return { operationId }
     }
     try {
       error.value = undefined
@@ -221,20 +221,29 @@ export function useInstanceLaunch(
       if (state?.aborted) {
         return
       }
-      const pid = await launch(options)
+      let launchId: string | undefined
+      const captureLaunch = (event: { launchId: string; operationId?: string }) => {
+        if (event.operationId === operationId) launchId = event.launchId
+      }
+      on('minecraft-start', captureLaunch)
+      const pid = await launch(options).finally(() => removeListener('minecraft-start', captureLaunch))
       if (pid) {
+        if (!launchId) throw new Error('Launch started but no launch ID was reported')
         mutate()
         if (state.aborted) {
           await kill(pid)
         } else {
           data.value?.push({
             pid,
+            launchId,
             ready: false,
             options,
             side,
           })
         }
+        return { operationId, pid, launchId }
       }
+      return { operationId }
     } catch (e) {
       console.error(e)
       error.value = e as any
@@ -249,14 +258,14 @@ export function useInstanceLaunch(
     const instancePath = instance.value.path
     const user = userProfile.value
     const token = getLaunchToken(user, instancePath)
-    await track(token, _launch(instancePath, user, operationId, side, overrides), 'launching', operationId)
+    return await track(token, _launch(instancePath, user, operationId, side, overrides), 'launching', operationId)
   }
 
   async function launchAs(user: UserProfile, side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>) {
     const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
     const instancePath = instance.value.path
     const token = getLaunchToken(user, instancePath)
-    await track(token, _launch(instancePath, user, operationId, side, overrides), 'launching', operationId)
+    return await track(token, _launch(instancePath, user, operationId, side, overrides), 'launching', operationId)
   }
 
   async function killGame(side: 'client' | 'server' = 'client', force?: boolean) {

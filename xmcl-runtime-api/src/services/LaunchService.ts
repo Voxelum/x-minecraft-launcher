@@ -5,9 +5,10 @@ import { AUTHORITY_DEV } from '../util/authority'
 import { ServiceKey } from './Service'
 
 interface LaunchServiceEventMap {
-  'minecraft-window-ready': { pid: number }
+  'minecraft-window-ready': { pid: number; launchId: string }
   'minecraft-start': {
     pid: number
+    launchId: string
     version: string
     minecraft: string
     forge: string
@@ -15,6 +16,7 @@ interface LaunchServiceEventMap {
   } & LaunchOptions
   'minecraft-exit': LaunchOptions & {
     pid: number
+    launchId: string
     code?: number
     signal?: string
     duration: number
@@ -150,6 +152,7 @@ export interface LaunchOptions {
 
 export interface GameProcess {
   pid: number
+  launchId: string
   ready: boolean
   side: 'client' | 'server'
   options: LaunchOptions
