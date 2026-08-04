@@ -113,6 +113,24 @@ bedrock:
   launchFailed: 启动此基岩版失败
   removeFailed: '移除基岩版 {version} 失败'
 baseSetting:
+  info:
+    address: 地址
+    changes: 修改状态
+    custom: 自定义
+    disabled: 未启用
+    enabled: 已启用
+    exportFormats: 导出格式
+    inherited: 继承全局
+    modLoader: 模组加载器
+    notConfigured: 未配置
+    notSet: 未设置
+    offline: 离线包
+    projectId: 项目 ID
+    running: 运行中
+    saved: 已保存
+    status: 状态
+    stopped: 未运行
+    vanilla: 原版
   title: 实例设置
 browseApp:
   createShortcut: 创建快捷方式
@@ -444,7 +462,7 @@ instance:
   installModpack: 从modpack更新实例
   lastPlayed: 上次游玩
   launchArguments: 启动命令预览
-  launchServer: 启动本地服务端
+  launchServer: 启动服务端
   linkFileDesc: |-
     这将使用全局 {file} 覆盖实例本地 {file}。
     您确定要链接吗？
@@ -617,7 +635,7 @@ launch:
   createShortcut: 创建快捷方式
   kill: 停止
   forceKill: 强制结束
-  killServer: 停止本地服务器
+  killServer: 停止服务端
   launch: 启动
   launchAnyway: 直接启动
   launchAs: 以其他账号启动
@@ -876,13 +894,20 @@ modpack:
   selectDefaultFiles: 选择默认文件
   bindProject: 绑定项目
   bindProjectHint: 选择当前 Modrinth 账号有权管理的整合包项目。
+  bindProjectTypeImmutableHint: Modrinth 会在项目的第一个版本上传后确定项目类型，之后无法修改。还没有任何版本的草稿项目仍可在此绑定，但已发布为 mod/资源包等类型的项目无法转换为整合包，请使用“创建新项目”来发布。
+  bindProjectNoProjects: 未找到你的 Modrinth 账号下的任何项目。
+  unbindProject: 解除绑定
+  unbindProjectConfirmTitle: 解除绑定 Modrinth 项目？
+  unbindProjectConfirmMessage: 这只会解除当前实例与该 Modrinth 项目的本地关联，Modrinth 上的项目和版本不会受影响。
   editProject: 编辑项目
   projectDiscovery: 发现与兼容性
   projectGallery: 项目图库
   projectGalleryAdd: 添加图片
   projectGalleryEmpty: 暂无图库图片。
   projectGalleryFeatured: 设为主图
+  projectGalleryFromScreenshots: 选择实例截图
   projectGalleryHint: 可添加不超过 5 MiB 的图片，并设置项目主图。
+  projectGallerySelectScreenshot: 选择当前实例的截图
   projectIdentity: 标识与介绍
   projectLinks: 项目链接
   projectLoadFailed: 无法加载已绑定的 Modrinth 项目。
@@ -896,6 +921,7 @@ modpack:
   publishCategories: 分类（用逗号分隔）
   publishChannel: 发布通道
   publishChangelog: 更新日志
+  publishChangelogGenerate: 用 AI 生成
   publishConfirmProjectChanges: 确认项目修改
   publishCreateProject: 创建项目
   publishCreateDraft: 构建并创建草稿
@@ -908,10 +934,18 @@ modpack:
   publishIcon: 项目图标
   publishIconHint: 支持 PNG、JPEG 或 WebP
   publishIconKeep: 未选择新图片时保持现有图标
+  publishIconUseInstance: 使用实例图标
   publishIssuesUrl: 问题反馈地址
   publishLicense: 许可证 ID
   publishLogin: 登录 Modrinth
   publishFiles: 个已选文件
+  publishLinkageSummary: '{total} 个 mod/资源包/光影包中，{linked} 个可以直接链接到 Modrinth 上的下载地址，无需上传。'
+  publishLinkageEmbeddedSummary: '{count} 个文件无法链接，将随此版本一起上传（内嵌）。'
+  publishLinkageShowFiles: 查看需要上传的文件
+  publishLinkageReason:
+    missing-file: 本地找不到该文件
+    not-linked-to-modrinth: 未识别为 Modrinth 资源
+    no-downloadable-url: 未找到可再分发的下载地址
   publishModrinth: 发布到 Modrinth
   publishNewProject: 新建项目
   publishOpenProject: 打开项目
@@ -1408,6 +1442,8 @@ localCollection:
   incompatibleAlert: '有 {count} 个项目与当前实例不兼容，已跳过：'
   projects: '无项目 | {count} 个项目 | {count} 个项目'
 server:
+  launch: 启动服务端
+  stop: 停止服务端
   acceptingMinecraftVersion: 接受 Minecraft 版本
   addServer: 添加服务器
   address: 服务器地址
@@ -1423,7 +1459,7 @@ server:
   export: 导出服务器
   exportNoFilesHint: |-
     找不到服务器文件。
-    您可以一次在本地运行服务器来生成一些文件。
+    请先安装一次服务端以生成所需文件。
   exportOption: 服务器导出选项
   exportSSHAuthenticationFailed: |-
     所有身份验证方法都失败了。
@@ -1530,7 +1566,22 @@ server:
   remoteWorld: 世界
   remoteWorldWillDeploy: 本次协调将上传所选实例世界。
   serverName: 服务器名称
+  serviceInstall: 安装服务
+  serviceManagedLaunch: 使用系统服务执行启动和停止操作
+  serviceManager: 系统服务
+  serviceName: 服务名称
+  serviceNameHint: 仅使用字母、数字、点、下划线或连字符的稳定标识
+  serviceNotInstalled: 未安装
+  serviceStartCommand: 启动命令
+  serviceSystemd: systemd --user
+  serviceWindows: Windows 服务
+  serviceWindowsCommandHint: 安装服务时会根据当前实例自动生成 Java 启动命令。
   serversListTitle: 服务器列表
+  target: 服务端目标
+  targetLocal: localhost
+  targetLocalHint: 在此电脑上安装并运行服务端。
+  targetRemote: SSH 目标
+  targetRemoteHint: 通过 SSH 连接、安装、启动并监控服务端。
   unbindUpstream: 解绑
   unknown: 未知服务器
   unknownDescription: 未知服务器，请刷新。
@@ -1543,6 +1594,7 @@ server:
   useAsUpstreamHint: 此实例将跟随服务器所报告的 Minecraft 版本。
   version: 服务器推荐版本
   versionHint: Ping 使用的 Minecraft 版本
+  worldPreserve: 保留目标现有世界
 serverStatus:
   nohost: 找不到服务器！
   ping: 延迟

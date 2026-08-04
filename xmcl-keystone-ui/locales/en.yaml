@@ -138,6 +138,24 @@ bedrock:
   launchFailed: Failed to launch this Bedrock version
   removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
+  info:
+    address: Address
+    changes: Changes
+    custom: Custom
+    disabled: Disabled
+    enabled: Enabled
+    exportFormats: Export formats
+    inherited: Inherited
+    modLoader: Mod loader
+    notConfigured: Not configured
+    notSet: Not set
+    offline: Offline archive
+    projectId: Project ID
+    running: Running
+    saved: Saved
+    status: Status
+    stopped: Stopped
+    vanilla: Vanilla
   title: Instance Settings
 browseApp:
   createShortcut: Create Shortcut
@@ -524,7 +542,7 @@ instance:
   installModpack: Update instance from modpack
   lastPlayed: Last Played
   launchArguments: Launch Arguments Preview
-  launchServer: Launch localhost server
+  launchServer: Launch server
   linkFileDesc: >-
     This will overwrite instance local {file} with the global {file}. Are you
     sure to link it?
@@ -690,7 +708,7 @@ launch:
   createShortcut: Create shortcut
   forceKill: Force Kill
   kill: Stop
-  killServer: Kill Localhost Server
+  killServer: Stop Server
   launch: Launch
   launchAnyway: Launch Anyway
   launchAs: Launch as
@@ -1068,13 +1086,20 @@ modpack:
   selectDefaultFiles: Select default files
   bindProject: Bind project
   bindProjectHint: Select a Modrinth modpack project managed by the current account.
+  bindProjectTypeImmutableHint: Modrinth fixes a project's type when its first version is uploaded, and it can't be changed afterwards. Draft projects without any version yet can still be bound here, but a project already published as a mod/resource pack/etc. can't be converted into a modpack — use "Create new project" instead.
+  bindProjectNoProjects: No Modrinth projects were found for your account.
+  unbindProject: Unbind project
+  unbindProjectConfirmTitle: Unbind Modrinth project?
+  unbindProjectConfirmMessage: This only removes the local association between this instance and the Modrinth project. The project and its versions on Modrinth are not affected.
   editProject: Edit project
   projectDiscovery: Discovery and compatibility
   projectGallery: Gallery
   projectGalleryAdd: Add image
   projectGalleryEmpty: No gallery images yet.
   projectGalleryFeatured: Featured
+  projectGalleryFromScreenshots: Choose screenshot
   projectGalleryHint: Add up to 5 MiB images and choose the featured project image.
+  projectGallerySelectScreenshot: Select an instance screenshot
   projectIdentity: Identity and description
   projectLinks: Project links
   projectLoadFailed: Failed to load the bound Modrinth project.
@@ -1088,6 +1113,7 @@ modpack:
   publishCategories: Categories (comma separated)
   publishChannel: Release channel
   publishChangelog: Changelog
+  publishChangelogGenerate: Generate with AI
   publishConfirmProjectChanges: Confirm project changes
   publishCreateProject: Create project
   publishCreateDraft: Build and create draft
@@ -1100,10 +1126,18 @@ modpack:
   publishIcon: Project icon
   publishIconHint: PNG, JPEG, or WebP
   publishIconKeep: Leave unchanged unless a new image is selected
+  publishIconUseInstance: Use instance icon
   publishIssuesUrl: Issues URL
   publishLicense: License ID
   publishLogin: Sign in to Modrinth
   publishFiles: selected files
+  publishLinkageSummary: '{linked} of {total} mods/resource packs/shader packs will be linked directly to their Modrinth download instead of being uploaded.'
+  publishLinkageEmbeddedSummary: '{count} file(s) can''t be linked and will be uploaded (embedded) with this version.'
+  publishLinkageShowFiles: Show files that must be uploaded
+  publishLinkageReason:
+    missing-file: File not found on disk
+    not-linked-to-modrinth: Not recognized as a Modrinth resource
+    no-downloadable-url: No redistributable download URL found
   publishModrinth: Publish to Modrinth
   publishNewProject: New project
   publishOpenProject: Open project
@@ -1656,6 +1690,8 @@ localCollection:
     skipped: Skipped
     title: Collection Installation Result
 server:
+  launch: Launch server
+  stop: Stop server
   acceptingMinecraftVersion: Accepting Minecraft Version
   addServer: Add Server
   address: Server Address
@@ -1670,7 +1706,7 @@ server:
   expectedVersions: Supported Versions
   export: Export Server
   exportNoFilesHint: >-
-    No server files found. You can run server on local once to generate some
+    No server files found. Install the server once to generate the required
     files.
   exportOption: Server Export Options
   exportSSHAuthenticationFailed: >-
@@ -1781,7 +1817,22 @@ server:
   remoteWorld: World
   remoteWorldWillDeploy: The selected instance world will be uploaded by this reconciliation.
   serverName: Server name
+  serviceInstall: Install service
+  serviceManagedLaunch: Use the OS service for launch and stop actions
+  serviceManager: System service
+  serviceName: Service name
+  serviceNameHint: Stable identifier containing letters, numbers, dot, underscore, or hyphen
+  serviceNotInstalled: Not installed
+  serviceStartCommand: Start command
+  serviceSystemd: systemd --user
+  serviceWindows: Windows Service
+  serviceWindowsCommandHint: The Java command is generated from this instance when the service is installed.
   serversListTitle: Server List
+  target: Server target
+  targetLocal: localhost
+  targetLocalHint: Install and run the server on this computer.
+  targetRemote: SSH target
+  targetRemoteHint: Connect, install, launch, and monitor a server over SSH.
   unbindUpstream: Unbind
   unknown: Unknown Server
   unknownDescription: Unknown Server. Please Refresh
@@ -1794,6 +1845,7 @@ server:
   useAsUpstreamHint: The instance will follow the server's reported Minecraft version.
   version: Server Requires Version
   versionHint: The Minecraft Version To Ping
+  worldPreserve: Preserve target world
 serverStatus:
   nohost: §4Cannot find host!
   ping: Ping...
