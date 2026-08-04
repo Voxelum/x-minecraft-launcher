@@ -72,26 +72,30 @@ describe('Xmcl Modrinth bridge', () => {
     await vi.waitFor(() => expect(bootstrap).toHaveBeenCalledTimes(1))
   })
 
-  it('keeps credential changes nonblocking when xmcl bootstrap fails', async () => {
+  it('does not retry when xmcl bootstrap fails', async () => {
     const bootstrap = vi.fn().mockRejectedValue(new Error('xmcl bootstrap failed'))
     const { app, credentials, logger } = createApp({ status: 'missing' }, bootstrap)
     pluginXmclAccountModrinthBridge(app as any, {} as any)
     await vi.waitFor(() => expect(credentials.onCredentialChange).toHaveBeenCalledTimes(1))
 
-    expect(() =>
+    vi.useFakeTimers()
+    try {
       credentials.emit({
         provider: 'modrinth',
         type: 'stored',
         occurredAt: Date.now(),
-      }),
-    ).not.toThrow()
+      })
 
-    await vi.waitFor(() => {
+      await vi.advanceTimersByTimeAsync(5 * 60_000)
+
+      expect(bootstrap).toHaveBeenCalledTimes(1)
       expect(logger.warn).toHaveBeenCalledWith(
-        'Failed to bootstrap XMCL XMCL account from Modrinth authentication; retrying later.',
+        'Failed to bootstrap XMCL account from Modrinth authentication.',
         expect.any(Error),
       )
-    })
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('bridges a valid credential found during startup', async () => {

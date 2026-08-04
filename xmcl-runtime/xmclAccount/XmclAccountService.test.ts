@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
 import { ProviderCredentialExchangeCache } from './ProviderCredentialExchangeCache'
+import { XmclAccountApiError } from './XmclAccountApi'
 
 const oauth = vi.hoisted(() => ({
   authenticate: vi.fn(),
@@ -53,7 +54,7 @@ vi.mock('~/user/accountSystems/MicrosoftOAuthClient', () => ({
   },
 }))
 
-const { XmclAccountService } = await import('./XmclAccountService')
+const { XmclAccountService, kXmclSessionAuthorization } = await import('./XmclAccountService')
 
 function createXmclService(stubBootstrapCredential = true) {
   const nativeWindowHandle = Buffer.from('native-window')
@@ -216,7 +217,298 @@ describe('XmclAccountService Microsoft bootstrap', () => {
   })
 })
 
+describe('XmclAccountService automatic session refresh', () => {
+  it('single-flights refresh before expiry and returns the rotated access token', async () => {
+    const { app, service } = createXmclService()
+    const previous = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'old-access-token',
+      refreshToken: 'old-refresh-token',
+      scopes: ['account:read'],
+      issuedAt: new Date(Date.now() - 60 * 60 * 1_000).toISOString(),
+      expiresAt: new Date(Date.now() + 60 * 1_000).toISOString(),
+    }
+    const rotated = {
+      ...previous,
+      accessToken: 'new-access-token',
+      refreshToken: 'new-refresh-token',
+      issuedAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 60 * 60 * 1_000).toISOString(),
+    }
+    ;(service as any).credential = previous
+    ;(service as any).state.snapshot({
+      account: {
+        accountId: previous.accountId,
+        status: 'active',
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: previous,
+    })
+    let resolveRefresh!: (credential: typeof rotated) => void
+    const refresh = new Promise<typeof rotated>((resolve) => {
+      resolveRefresh = resolve
+    })
+    const api = (service as any).api
+    api.refreshSession = vi.fn(() => refresh)
+
+    const first = (service as any)[kXmclSessionAuthorization]()
+    const second = (service as any)[kXmclSessionAuthorization]()
+    await vi.waitFor(() => expect(api.refreshSession).toHaveBeenCalledTimes(1))
+    resolveRefresh(rotated)
+
+    await expect(first).resolves.toEqual({
+      accessToken: 'new-access-token',
+      accountId: 'account-1',
+    })
+    await expect(second).resolves.toEqual({
+      accessToken: 'new-access-token',
+      accountId: 'account-1',
+    })
+    expect(api.refreshSession).toHaveBeenCalledWith(previous)
+    const persisted = JSON.parse(app.secretStorage.put.mock.calls.at(-1)?.[2] ?? '{}')
+    expect(persisted.credential.refreshToken).toBe('new-refresh-token')
+  })
+
+  it('does not refresh a token outside the expiry window', async () => {
+    const { service } = createXmclService()
+    const credential = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'current-access-token',
+      refreshToken: 'current-refresh-token',
+      scopes: ['account:read'],
+      issuedAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 10 * 60 * 1_000).toISOString(),
+    }
+    ;(service as any).credential = credential
+    ;(service as any).state.snapshot({
+      account: {
+        accountId: credential.accountId,
+        status: 'active',
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: credential,
+    })
+    const api = (service as any).api
+    api.refreshSession = vi.fn()
+
+    await expect((service as any)[kXmclSessionAuthorization]()).resolves.toEqual({
+      accessToken: 'current-access-token',
+      accountId: 'account-1',
+    })
+    expect(api.refreshSession).not.toHaveBeenCalled()
+  })
+
+  it('does not let a delayed account read restore a rotated credential', async () => {
+    const { app, service } = createXmclService()
+    const previous = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'old-access-token',
+      refreshToken: 'old-refresh-token',
+      scopes: ['account:read'],
+      issuedAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 60 * 60 * 1_000).toISOString(),
+    }
+    const rotated = {
+      ...previous,
+      accessToken: 'new-access-token',
+      refreshToken: 'new-refresh-token',
+    }
+    const oldSnapshot = {
+      account: {
+        accountId: previous.accountId,
+        status: 'active' as const,
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: previous,
+    }
+    ;(service as any).credential = previous
+    ;(service as any).state.snapshot(oldSnapshot)
+    let resolveSnapshot!: (snapshot: typeof oldSnapshot) => void
+    const delayedSnapshot = new Promise<typeof oldSnapshot>((resolve) => {
+      resolveSnapshot = resolve
+    })
+    const api = (service as any).api
+    api.getSnapshot = vi.fn(() => delayedSnapshot)
+
+    const refreshAccount = service.refreshAccount()
+    await vi.waitFor(() => expect(api.getSnapshot).toHaveBeenCalledTimes(1))
+    await (service as any).applySnapshot(
+      { ...oldSnapshot, session: rotated },
+      rotated,
+    )
+    resolveSnapshot(oldSnapshot)
+    await refreshAccount
+
+    expect((service as any).credential.accessToken).toBe('new-access-token')
+    const persisted = JSON.parse(app.secretStorage.put.mock.calls.at(-1)?.[2] ?? '{}')
+    expect(persisted.credential.refreshToken).toBe('new-refresh-token')
+  })
+
+  it('clears an expired session when manual refresh is terminal', async () => {
+    const { app, service } = createXmclService()
+    const expired = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'expired-access-token',
+      refreshToken: 'expired-refresh-token',
+      scopes: ['account:read'],
+      issuedAt: '2026-07-23T00:00:00.000Z',
+      expiresAt: '2026-07-23T00:01:00.000Z',
+    }
+    ;(service as any).credential = expired
+    ;(service as any).state.snapshot({
+      account: {
+        accountId: expired.accountId,
+        status: 'active',
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: expired,
+    })
+    ;(service as any).api.refreshSession = vi
+      .fn()
+      .mockRejectedValue(new XmclAccountApiError(401, 'refresh_token_expired'))
+
+    await expect(service.refreshSession()).rejects.toMatchObject({
+      code: 'refresh_token_expired',
+    })
+    expect((service as any).credential).toBeUndefined()
+    expect((service as any).state.account).toBeUndefined()
+    expect(app.secretStorage.put).toHaveBeenLastCalledWith(
+      'xmcl-xmcl-account',
+      'current-session',
+      '',
+    )
+  })
+
+  it('retains a rotated credential in memory when secure persistence fails', async () => {
+    const { app, service } = createXmclService()
+    const previous = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'old-access-token',
+      refreshToken: 'old-refresh-token',
+      scopes: ['account:read'],
+      issuedAt: new Date(Date.now() - 60 * 60 * 1_000).toISOString(),
+      expiresAt: new Date(Date.now() + 60 * 1_000).toISOString(),
+    }
+    const rotated = {
+      ...previous,
+      accessToken: 'new-access-token',
+      refreshToken: 'new-refresh-token',
+      issuedAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 60 * 60 * 1_000).toISOString(),
+    }
+    ;(service as any).credential = previous
+    ;(service as any).state.snapshot({
+      account: {
+        accountId: previous.accountId,
+        status: 'active',
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: previous,
+    })
+    ;(service as any).api.refreshSession = vi.fn().mockResolvedValue(rotated)
+    app.secretStorage.put.mockRejectedValueOnce(new Error('secure storage unavailable'))
+
+    await expect((service as any)[kXmclSessionAuthorization]()).resolves.toEqual({
+      accessToken: 'new-access-token',
+      accountId: 'account-1',
+    })
+    expect((service as any).credential.refreshToken).toBe('new-refresh-token')
+    expect((service as any).api.refreshSession).toHaveBeenCalledTimes(1)
+  })
+
+  it('clears terminal session state even when secure storage cleanup fails', async () => {
+    const { app, logger, service } = createXmclService()
+    const expired = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'expired-access-token',
+      refreshToken: 'expired-refresh-token',
+      scopes: ['account:read'],
+      issuedAt: '2026-07-23T00:00:00.000Z',
+      expiresAt: '2026-07-23T00:01:00.000Z',
+    }
+    ;(service as any).credential = expired
+    ;(service as any).state.snapshot({
+      account: {
+        accountId: expired.accountId,
+        status: 'active',
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: expired,
+    })
+    ;(service as any).api.refreshSession = vi
+      .fn()
+      .mockRejectedValue(new XmclAccountApiError(401, 'session_revoked'))
+    app.secretStorage.put.mockRejectedValueOnce(new Error('secure storage unavailable'))
+
+    await expect((service as any)[kXmclSessionAuthorization]()).resolves.toBeUndefined()
+    expect((service as any).credential).toBeUndefined()
+    expect((service as any).state.account).toBeUndefined()
+    expect(logger.warn).toHaveBeenCalledWith(
+      'XMCL session cleared in memory, but secure storage cleanup failed.',
+    )
+  })
+})
+
 describe('XmclAccountService provider bootstrap queue', () => {
+  it('does not cache a provider credential when its delayed exchange becomes stale', async () => {
+    const { service } = createXmclService(false)
+    const result = createAuthResult('microsoft', 'account-1')
+    let resolveExchange!: (value: typeof result) => void
+    const delayedExchange = new Promise<typeof result>((resolve) => {
+      resolveExchange = resolve
+    })
+    const launcherExchange = vi
+      .fn()
+      .mockImplementationOnce(() => delayedExchange)
+      .mockResolvedValueOnce(result)
+    ;(service as any).api.launcherExchange = launcherExchange
+    const bootstrapCredential = (service as any).bootstrapCredential.bind(service)
+
+    const stale = bootstrapCredential('microsoft', 'microsoft-credential')
+    await vi.waitFor(() => expect(launcherExchange).toHaveBeenCalledTimes(1))
+    await (service as any).clearSession()
+    resolveExchange(result)
+    await expect(stale).rejects.toThrow('xmcl_account_session_changed')
+
+    await expect(
+      bootstrapCredential('microsoft', 'microsoft-credential'),
+    ).resolves.toBeUndefined()
+    expect(launcherExchange).toHaveBeenCalledTimes(2)
+  })
+
+  it('ignores a delayed identity conflict after the session changes', async () => {
+    const { service } = createXmclService(false)
+    let rejectExchange!: (error: Error) => void
+    const delayedExchange = new Promise<never>((_resolve, reject) => {
+      rejectExchange = reject
+    })
+    ;(service as any).api.launcherExchange = vi.fn(() => delayedExchange)
+    const bootstrapCredential = (service as any).bootstrapCredential.bind(service)
+
+    const stale = bootstrapCredential('microsoft', 'microsoft-credential')
+    await vi.waitFor(() =>
+      expect((service as any).api.launcherExchange).toHaveBeenCalledTimes(1),
+    )
+    await (service as any).clearSession()
+    rejectExchange(new XmclAccountApiError(409, 'identity_conflict', undefined, 'merge-1'))
+
+    await expect(stale).rejects.toThrow('xmcl_account_session_changed')
+    expect((service as any).pendingMergeCredential).toBeUndefined()
+    expect((service as any).state.conflict).toBeUndefined()
+  })
+
   it('serializes concurrent exchanges and links the second provider with the first session', async () => {
     const { app, service } = createXmclService(false)
     const firstResult = createAuthResult('microsoft', 'account-1')
