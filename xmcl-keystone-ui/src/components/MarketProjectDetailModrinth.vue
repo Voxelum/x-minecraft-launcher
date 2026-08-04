@@ -178,11 +178,12 @@ const onInstall = async (v: ProjectDetailVersion) => {
   if (installing.value) return
   try {
     installing.value = true
+    const selectedVersion = versions.value?.find((version) => version.id === v.id)
     let resolvedDeps = deps.value
     if (!resolvedDeps) {
       resolvedDeps = await getSWRV(
         getModrinthDependenciesModel(
-          computed(() => versions.value?.find((ver) => ver.id === v.id)),
+          computed(() => selectedVersion),
           modLoader,
           config,
         ),
@@ -195,6 +196,7 @@ const onInstall = async (v: ProjectDetailVersion) => {
       project.value?.icon_url,
       props.installed,
       resolvedDeps ?? [],
+      (selectedVersion?.files.find(file => file.primary) ?? selectedVersion?.files[0])?.url,
     )
   } finally {
     installing.value = false

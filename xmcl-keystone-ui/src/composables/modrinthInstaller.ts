@@ -2,10 +2,11 @@ import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefa
 import { ProjectFile } from '@/util/search'
 import { RuntimeVersions } from '@xmcl/instance'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
-import { InstallMarketOptionWithInstance, InstanceServiceKey, MarketType } from '@xmcl/runtime-api'
+import { InstallMarketOptionWithInstance, MarketType } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
-import { useService } from './service'
-import { updateEmittedFiles } from './modpackMetadataUpdater'
+import type { ResolveArtifactModrinthDependencies } from './modArtifactDependencies'
+import { getRequiredModrinthInstallVersions } from './modInstall'
+import { useMarketInstallStaging } from './marketInstallStaging'
 
 export const kModrinthInstaller: InjectionKey<ReturnType<typeof useModrinthInstaller>> = Symbol('modrinthInstaller')
 
@@ -16,18 +17,20 @@ export function useModrinthInstaller(
   installFromMarket: (options: InstallMarketOptionWithInstance) => Promise<any>,
   uninstallFiles: (resources: ProjectFile[], path?: string) => void,
   installDefaultModLoader = useInstanceModLoaderDefault(),
+  resolveArtifactDependencies?: ResolveArtifactModrinthDependencies,
 ) {
-  const { getInstanceModpackMetadata, setInstanceModpackMetadata } = useService(InstanceServiceKey)
+  const stage = useMarketInstallStaging()
 
-  function install(version: { versionId: string; icon?: string } | { versionId: string; icon?: string }[], instancePath?: string) {
-    return installFromMarket({
+  async function install(version: { versionId: string; icon?: string } | { versionId: string; icon?: string }[], instancePath?: string) {
+    const target = instancePath || path.value
+    const files = await resolveFromMarket({
       market: MarketType.Modrinth,
       version,
       instancePath: instancePath || path.value,
     })
   }
 
-  async function installWithDependencies(versionId: string, loaders: string[], icon: string | undefined, installed: ProjectFile[], deps: Array<{ recommendedVersion: ProjectVersion; project: Project; type: string }>) {
+  async function installWithDependencies(versionId: string, loaders: string[], icon: string | undefined, installed: ProjectFile[], deps: Array<{ recommendedVersion: ProjectVersion; project: Project; type: string }>, artifactUrl?: string) {
     const _path = path.value
     const _runtime = runtime.value
     const _allFiles = allFiles.value
@@ -35,18 +38,20 @@ export function useModrinthInstaller(
     if (!success) {
       return false
     }
-    const files = [...installed]
-    const versions = deps
-      ?.filter((v) => v.type === 'required')
-      .filter(v => _allFiles.every(m => m.modrinth?.projectId !== v.project.id))
-      .map((v) => ({ versionId: v.recommendedVersion.id, icon: v.project.icon_url }))
-
-    versions.push({ versionId, icon })
-    const installedPaths: string[] = await install(versions, _path)
-    if (files.length > 0) {
-      uninstallFiles(files, _path)
+    const installedProjects = new Set(_allFiles.flatMap(file => file.modrinth ? [file.modrinth.projectId] : []))
+    const versions = getRequiredModrinthInstallVersions({ id: versionId, icon }, deps, installedProjects)
+    const selectedProjects = new Set(deps.map(dependency => dependency.project.id))
+    if (resolveArtifactDependencies) {
+      versions.push(...await resolveArtifactDependencies(artifactUrl, selectedProjects, loaders))
     }
-    updateEmittedFiles(_path, files, installedPaths, getInstanceModpackMetadata, setInstanceModpackMetadata)
+    const files = await resolveFromMarket({ market: MarketType.Modrinth, version: versions, instancePath: _path })
+    const domain = files[0]?.path.split('/')[0] ?? 'mods'
+    const oldFiles = installed.map(file => ({
+      path: `${domain}/${basename(file.path)}`,
+      hashes: {},
+      ...(file.modrinth ? { modrinth: file.modrinth } : {}),
+    }))
+    await stage(_path, oldFiles, files)
     return true
   }
 

@@ -2,11 +2,12 @@ import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefa
 import { isNoModLoader } from '@/util/isNoModloader'
 import { ProjectFile } from '@/util/search'
 import { File, FileRelationType, Mod } from '@xmcl/curseforge'
-import { RuntimeVersions } from '@xmcl/instance'
-import { InstallMarketOptionWithInstance, InstanceServiceKey, MarketType } from '@xmcl/runtime-api'
+import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
+import { InstallMarketOptionWithInstance, MarketType } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
-import { useService } from './service'
-import { updateEmittedFiles } from './modpackMetadataUpdater'
+import type { ResolveArtifactModrinthDependencies } from './modArtifactDependencies'
+import { getRequiredCurseforgeInstallFiles } from './modInstall'
+import { useMarketInstallStaging } from './marketInstallStaging'
 
 export const kCurseforgeInstaller: InjectionKey<ReturnType<typeof useCurseforgeInstaller>> = Symbol('curseforgeInstaller')
 
@@ -17,8 +18,9 @@ export function useCurseforgeInstaller(
   installResource: (options: InstallMarketOptionWithInstance) => Promise<any>,
   uninstallResource: (files: ProjectFile[], path?: string) => void,
   installDefaultModLoader = useInstanceModLoaderDefault(),
+  resolveArtifactDependencies?: ResolveArtifactModrinthDependencies,
 ) {
-  const { getInstanceModpackMetadata, setInstanceModpackMetadata } = useService(InstanceServiceKey)
+  const stage = useMarketInstallStaging()
 
   const install = async (file: { fileId: number; icon?: string } | { fileId: number; icon?: string }[]) => {
     return installResource({
@@ -33,7 +35,7 @@ export function useCurseforgeInstaller(
     file: File
     files: File[]
     project: Mod
-  }>) {
+  }>, artifactUrl?: string) {
     const _path = path.value
     const _runtime = runtime.value
     const _allFiles = allFiles.value
@@ -42,23 +44,22 @@ export function useCurseforgeInstaller(
       await installDefaultModLoader(_path, _runtime, loaders)
     }
 
-    const toUninstalls = [...installed]
-    const files = deps
-      ?.filter((v) => v.type === FileRelationType.RequiredDependency)
-      .filter(v => _allFiles.every(m => m.curseforge?.projectId !== v.project.id))
-      .map((v) => ({
-        fileId: v.file.id,
-        icon: v.project.logo?.url as string | undefined,
-      }))
-
-    files.push({ fileId, icon })
-
-    const installedPaths: string[] = await install(files)
-
-    if (toUninstalls.length > 0) {
-      uninstallResource(toUninstalls, _path)
+    const installedProjects = new Set(_allFiles.flatMap(file => file.curseforge ? [file.curseforge.projectId] : []))
+    const files = getRequiredCurseforgeInstallFiles({ id: fileId, icon }, deps, installedProjects)
+    const resolved = await resolveResource({ market: MarketType.CurseForge, file: files, instancePath: _path })
+    if (resolveArtifactDependencies) {
+      const artifactDependencies = await resolveArtifactDependencies(artifactUrl, new Set(), loaders)
+      if (artifactDependencies.length) {
+        resolved.push(...await resolveResource({ market: MarketType.Modrinth, version: artifactDependencies, instancePath: _path }))
+      }
     }
-    updateEmittedFiles(_path, toUninstalls, installedPaths, getInstanceModpackMetadata, setInstanceModpackMetadata)
+    const domain = resolved[0]?.path.split('/')[0] ?? 'mods'
+    const oldFiles = installed.map(file => ({
+      path: `${domain}/${basename(file.path)}`,
+      hashes: {},
+      ...(file.curseforge ? { curseforge: file.curseforge } : {}),
+    }))
+    await stage(_path, oldFiles, resolved)
   }
 
   return {

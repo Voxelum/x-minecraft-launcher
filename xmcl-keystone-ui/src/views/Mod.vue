@@ -321,6 +321,7 @@ import { kInstanceModsContext } from '@/composables/instanceMods'
 import { ProjectGroup, useModGroups } from '@/composables/modGroup'
 import { kModsSearch } from '@/composables/modSearch'
 import { kModUpgrade } from '@/composables/modUpgrade'
+import { ArtifactLoader, resolveArtifactModrinthDependencies } from '@/composables/modArtifactDependencies'
 import { useModWizard } from '@/composables/modWizard'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
@@ -331,6 +332,7 @@ import { useTutorial } from '@/composables/tutorial'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
+import { clientModrinthV2 } from '@/util/clients'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
@@ -511,7 +513,6 @@ const {
   groupModCounts,
   syncGroupRules,
   applySharedGroupRules,
-  updateGroupFilenames,
 } = useModGroups(isLocalView, path, items, sortBy)
 
 function enableAll(group: ProjectGroup) {
@@ -531,10 +532,12 @@ function disableAll(group: ProjectGroup) {
 }
 
 function isIncompatible(p: ProjectEntry<ModFile>) {
-  const modId = p.installed?.[0]?.modId
+  const installed = p.installed?.[0]
+  const modId = installed?.modId
   if (!modId) {
     return false
   }
+  if (loaderIncompatibilities.value.some(issue => issue.file === installed.fileName)) return true
   const items = compatibility.value[modId]
   if (!items) {
     return false
@@ -697,20 +700,7 @@ const isOptifineProject = (v: ProjectEntry<ProjectFile> | undefined): v is Proje
   v?.id === 'OptiFine'
 
 // Upgrade
-const { plans, error: upgradeError, upgradeFilenameMappings, upgrading } = injection(kModUpgrade)
-
-// When upgrade completes successfully, update group membership if filenames changed
-watch(upgrading, (isUpgrading, wasUpgrading) => {
-  if (wasUpgrading && !isUpgrading) {
-    // Upgrade just completed
-    const mappings = upgradeFilenameMappings.value
-    if (Object.keys(mappings).length > 0) {
-      updateGroupFilenames(mappings)
-      // Clear the mappings after use
-      upgradeFilenameMappings.value = {}
-    }
-  }
-})
+const { plans, error: upgradeError } = injection(kModUpgrade)
 
 const updateErrorMessage = computed(() => {
   if (upgradeError) return (upgradeError.value as any).message
@@ -754,7 +744,7 @@ const shouldShowCurseforge = (
   return true
 }
 
-const { mods, conflicted, revalidate, incompatible, compatibility, enable, disable } =
+const { mods, conflicted, revalidate, incompatible, compatibility, loaderIncompatibilities, enable, disable } =
   injection(kInstanceModsContext)
 
 // Install-all is available for any collection open in the Favorites view —
@@ -942,6 +932,18 @@ const { onInstallModRuntime, wizardModel, wizardHandleOnEnable, wizardError, wiz
   useModWizard()
 
 // modrinth installer
+const resolveArtifactDependencies = (url: string | undefined, selectedProjects: Set<string>, loaders: string[]) => {
+  const loader = loaders.find((value): value is ArtifactLoader => ['forge', 'neoforge', 'fabric', 'quilt'].includes(value))
+  return resolveArtifactModrinthDependencies({
+    url,
+    loader,
+    minecraft: runtime.value.minecraft,
+    installedMods: mods.value,
+    selectedProjects,
+    client: clientModrinthV2,
+  })
+}
+
 const modrinthInstaller = useModrinthInstaller(
   path,
   runtime,
@@ -949,6 +951,7 @@ const modrinthInstaller = useModrinthInstaller(
   installFromMarket,
   onUninstall,
   onInstallModRuntime,
+  resolveArtifactDependencies,
 )
 provide(kModrinthInstaller, modrinthInstaller)
 
@@ -960,6 +963,7 @@ const curseforgeInstaller = useCurseforgeInstaller(
   installFromMarket,
   onUninstall,
   onInstallModRuntime,
+  resolveArtifactDependencies,
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 

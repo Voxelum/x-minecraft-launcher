@@ -1,11 +1,12 @@
 import { ReactiveResourceState } from '@/util/ReactiveResourceState'
 import { basename } from '@/util/basename'
 import { ModFile, getModFileFromResource, resolveModsToDisable, resolveModsToEnable } from '@/util/mod'
-import { CompatibleDetail, getModsCompatiblity, resolveDepsCompatible } from '@/util/modCompatible'
+import { CompatibleDetail, getModLoaderIncompatibilities, getModsCompatiblity, resolveDepsCompatible } from '@/util/modCompatible'
 import { refThrottled, useDebounceFn, useEventListener, useLocalStorage } from '@vueuse/core'
 import { InstanceModsServiceKey, JavaRecord, ResourceState, SharedState } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useResourceParseErrorNotifier } from './resourceParseError'
+import { waitForModSnapshot } from './modSnapshot'
 import { useService } from './service'
 import { useState } from './syncableState'
 import { RuntimeVersions } from '@xmcl/instance'
@@ -225,7 +226,10 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     return markRaw(result)
   })
 
+  const loaderIncompatibilities = computed(() => markRaw(getModLoaderIncompatibilities(mods.value, allowLoaders.value)))
+
   const incompatible = computed(() => {
+    if (loaderIncompatibilities.value.length) return true
     const com = compatibility.value
     for (const key in com) {
       if (!resolveDepsCompatible(com[key])) {
@@ -237,6 +241,29 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
 
   const { update: updateMetadata } = useInstanceModsMetadataRefresh(instancePath, state)
   const { t } = useI18n()
+
+  function waitForSnapshot(predicate?: (mods: ModFile[]) => boolean) {
+    return waitForModSnapshot(
+      () => ({ source: modsRaw.value, visible: mods.value, validating: isValidating.value }),
+      predicate,
+      { wait: async () => {
+        await nextTick()
+        await new Promise<void>(resolve => setTimeout(resolve, 50))
+      } },
+    )
+  }
+
+  async function updateMetadataAndWait() {
+    const previous = modsRaw.value
+    await updateMetadata()
+    await waitForSnapshot(() => modsRaw.value !== previous)
+  }
+
+  async function revalidateAndWait(predicate?: (mods: ModFile[]) => boolean) {
+    const previous = modsRaw.value
+    await revalidate()
+    return waitForSnapshot(mods => modsRaw.value !== previous && (!predicate || predicate(mods)))
+  }
 
   /**
    * Enable the given mod files together with their dependency mods.
@@ -268,10 +295,13 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     modsIconsMap,
     provideRuntime,
     compatibility,
+    loaderIncompatibilities,
     incompatible,
     enabledMods,
     isValidating,
     updateMetadata,
+    updateMetadataAndWait,
+    revalidateAndWait,
     enable,
     disable,
     error: computed(() => Object.keys(conflicted.value).length ? t('mod.duplicatedDetected', { count: Object.keys(conflicted.value).length }) : error.value),

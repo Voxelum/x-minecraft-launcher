@@ -22,7 +22,9 @@ import {
   InstallInstanceTask,
   InstallInstanceTrackerEvents,
   LockKey,
+  getModUpgradeFilenameMappings,
   isUpstreamIsSameOrigin,
+  migrateModGroupFilenames,
   type InstanceInstallService as IInstanceInstallService,
   type InstallFileError,
   type InstallInstanceOptions,
@@ -38,6 +40,7 @@ import { basename, dirname, join, resolve } from 'path'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { ZipManager, kTasks, type Tasks } from '~/infra'
 import { InstanceService } from '~/instance/InstanceService'
+import { InstanceModsGroupService } from '~/instance/InstanceModsGroupService'
 import { kDownloadOptions } from '~/network'
 import { kPeerFacade } from '~/peer'
 import { kResourceManager, kResourceWorker, type ResourceWorker } from '~/resource'
@@ -191,7 +194,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const downloadOptions = await this.app.registry.get(kDownloadOptions)
 
     const lock = this.mutex.of(LockKey.instance(instancePath))
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
     const logger = this
 
     // Track the task at service level. Created BEFORE the lock so the
@@ -728,7 +731,24 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
 
       this.log('Install instance files with diff')
-      return this.#install(instancePath, lockState, currentState, id, true)
+      const result = await this.#install(instancePath, lockState, currentState, id, true)
+      await this.#migrateModGroupFilenames(instancePath, oldFiles, files)
+      return result
+    }
+  }
+
+  async #migrateModGroupFilenames(instancePath: string, oldFiles: readonly InstanceFile[], files: readonly InstanceFile[]) {
+    const isMod = (file: InstanceFile) => file.path.replace(/\\/g, '/').startsWith('mods/')
+    const mappings = getModUpgradeFilenameMappings(oldFiles.filter(isMod), files.filter(isMod))
+    if (Object.keys(mappings).length === 0) return
+
+    try {
+      const service = await this.app.registry.get(InstanceModsGroupService)
+      const state = await service.getGroupState(instancePath)
+      const migrated = migrateModGroupFilenames(state.groups, mappings)
+      if (migrated !== state.groups) await service.updateModsGroups(instancePath, migrated)
+    } catch (error) {
+      this.warn(`Failed to migrate mod group filenames for ${instancePath}`, error)
     }
   }
 
