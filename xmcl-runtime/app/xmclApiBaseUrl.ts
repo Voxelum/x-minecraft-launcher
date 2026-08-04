@@ -1,6 +1,7 @@
 import type { Logger } from '~/infra'
 
 export const DEFAULT_XMCL_API_BASE_URL = 'https://api.xmcl.app'
+export const DEFAULT_XMCL_SIGNALING_API_BASE_URL = 'https://signaling.xmcl.app'
 export const XMCL_API_BASE_URL_FLIGHT = 'xmclApiBaseUrl'
 
 /**

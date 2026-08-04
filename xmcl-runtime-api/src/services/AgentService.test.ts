@@ -43,8 +43,8 @@ describe('agent provider presets', () => {
     [BUILTIN_AGENT_ENDPOINT, BUILTIN_AGENT_PROVIDER_ID],
     ['', BUILTIN_AGENT_PROVIDER_ID],
     ['https://provider.example/v1/chat/completions', CUSTOM_AGENT_PROVIDER_ID],
-    ['https://api.xmcl.api.attacker.example/chat/completions', CUSTOM_AGENT_PROVIDER_ID],
-    ['not a URL containing api.xmcl.api', CUSTOM_AGENT_PROVIDER_ID],
+    ['https://ai.xmcl.app.attacker.example/chat/completions', CUSTOM_AGENT_PROVIDER_ID],
+    ['not a URL containing ai.xmcl.app', CUSTOM_AGENT_PROVIDER_ID],
   ])('resolves %s as %s', (endpoint, expected) => {
     expect(resolveAgentProviderId(endpoint)).toBe(expected)
   })

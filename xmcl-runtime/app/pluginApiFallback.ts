@@ -4,8 +4,12 @@ import type { Handler } from './LauncherProtocolHandler'
 
 export const pluginApiFallback: LauncherAppPlugin = (app) => {
   const handler: Handler = async ({ request, response }) => {
-    if (request.url.host === 'api.xmcl.app') {
-      const shouldDecorateHeaders = request.url.pathname === '/translation' || request.url.pathname === '/rtc/official'
+    const isCommonApi = request.url.host === 'api.xmcl.app'
+    const isSignalingApi = request.url.host === 'signaling.xmcl.app'
+    if (isCommonApi || isSignalingApi) {
+      const shouldDecorateHeaders =
+        (isCommonApi && request.url.pathname === '/translation') ||
+        (isSignalingApi && request.url.pathname === '/rtc/official')
       // const gfw = await app.registry.get(kGFW)
       // if (gfw.inside && shouldDecorateHeaders) {
       //   request.url.host = 'api-xmcl.0xc.cn'
@@ -19,7 +23,7 @@ export const pluginApiFallback: LauncherAppPlugin = (app) => {
         if (accessToken) {
           request.headers['Authorization'] = `Bearer ${accessToken}`
         }
-        if (request.url.pathname.startsWith('/translation')) {
+        if (isCommonApi && request.url.pathname.startsWith('/translation')) {
           request.headers['x-api-key'] = process.env.CURSEFORGE_API_KEY || ''
         }
       }

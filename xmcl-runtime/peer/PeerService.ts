@@ -10,7 +10,11 @@ import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/servic
 import { kPeerFacade } from './PeerServiceFacade'
 import { kClientToken, kFlights } from '~/infra'
 import { kXmclSessionAuthorization, XmclAccountService } from '~/xmclAccount/XmclAccountService'
-import { resolveXmclApiBaseUrl } from '~/app/xmclApiBaseUrl'
+import {
+  DEFAULT_XMCL_API_BASE_URL,
+  DEFAULT_XMCL_SIGNALING_API_BASE_URL,
+  resolveXmclApiBaseUrl,
+} from '~/app/xmclApiBaseUrl'
 import type { MultiplayerIceServerCredential, MultiplayerRoomAdmission } from '@xmcl/runtime-api'
 import { UserService } from '~/user'
 
@@ -41,7 +45,10 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     })
     const getMultiplayerApiBaseUrl = async () => {
       const flights = await app.registry.get(kFlights)
-      return resolveXmclApiBaseUrl(flights.xmclApiBaseUrl, app.getLogger('MultiplayerApi'))
+      const baseUrl = resolveXmclApiBaseUrl(flights.xmclApiBaseUrl, app.getLogger('MultiplayerApi'))
+      return baseUrl === DEFAULT_XMCL_API_BASE_URL
+        ? DEFAULT_XMCL_SIGNALING_API_BASE_URL
+        : baseUrl
     }
     const requestRoom = async (
       path: string,

@@ -4,6 +4,8 @@ import { useLocale } from 'vuetify'
 import { useI18nSearchFlights } from './flights'
 
 const locales = import.meta.glob('../../locales/*.yaml')
+const TRANSLATION_DEBOUNCE_MS = 250
+const pendingTranslations = new Map<string, Promise<string>>()
 
 export function useI18nSync(state: Ref<Settings | undefined>) {
   const { locale, setLocaleMessage } = useI18n()
@@ -67,21 +69,40 @@ export function useAutoI18nCommunityContent(allowLocale: string[] = []) {
       return ''
     }
 
+    const language = locale.value
+    const key = `${type}:${id}:${language}`
+    const pending = pendingTranslations.get(key)
+    if (pending) return pending
+
     const url = new URL('https://api.xmcl.app/translation')
     url.searchParams.append('type', type)
     url.searchParams.append('id', id.toString())
-    const response = await fetch(url, {
-      headers: {
-        'Accept-Language': locale.value,
-      },
-      cache: 'force-cache',
+    const request = new Promise<string>((resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          const response = await fetch(url, {
+            headers: {
+              'Accept-Language': language,
+            },
+            cache: 'force-cache',
+          })
+
+          if (!response.ok) {
+            throw new Error(`Fail to get translation for ${type} ${id}`)
+          }
+
+          resolve(await response.text())
+        } catch (error) {
+          reject(error)
+        }
+      }, TRANSLATION_DEBOUNCE_MS)
     })
-
-    if (!response.ok) {
-      throw new Error(`Fail to get translation for ${type} ${id}`)
-    }
-
-    return await response.text()
+    pendingTranslations.set(key, request)
+    request.then(
+      () => pendingTranslations.delete(key),
+      () => pendingTranslations.delete(key),
+    )
+    return request
   }
 
   return {

@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
-import { DEFAULT_XMCL_API_BASE_URL, resolveXmclApiBaseUrl } from './xmclApiBaseUrl'
+import {
+  DEFAULT_XMCL_API_BASE_URL,
+  DEFAULT_XMCL_SIGNALING_API_BASE_URL,
+  resolveXmclApiBaseUrl,
+} from './xmclApiBaseUrl'
 
 describe('resolveXmclApiBaseUrl', () => {
   it('normalizes a HTTPS origin and strips trailing slashes', () => {
@@ -17,5 +21,9 @@ describe('resolveXmclApiBaseUrl', () => {
 
   it('uses the production API when the flight is absent', () => {
     expect(resolveXmclApiBaseUrl(undefined)).toBe(DEFAULT_XMCL_API_BASE_URL)
+  })
+
+  it('defines a separate production signaling origin', () => {
+    expect(DEFAULT_XMCL_SIGNALING_API_BASE_URL).toBe('https://signaling.xmcl.app')
   })
 })
