@@ -146,7 +146,7 @@ describe('XmclAccountService Microsoft bootstrap', () => {
       useNativeBroker: true,
     })
     expect(oauth.constructorArgs[0]?.[7]).toEqual(expect.any(Function))
-    expect((oauth.constructorArgs[0]?.[7] as () => Buffer)()).toBe(nativeWindowHandle)
+    expect((oauth.constructorArgs[0]![7] as () => Buffer)()).toBe(nativeWindowHandle)
     expect(app.controller.getNativeWindowHandle).toHaveBeenCalled()
   })
 

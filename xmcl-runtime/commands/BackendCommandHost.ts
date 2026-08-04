@@ -130,6 +130,7 @@ export class BackendCommandHost {
    * helpers keeps every dispatch consistent.
    */
   createContext(opts: { mode?: CommandMode; signal?: AbortSignal; out?: CommandOutput } = {}): CommandContext {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const host = this
     const mode = opts.mode ?? 'cli'
     const signal = opts.signal ?? new AbortController().signal

@@ -109,7 +109,7 @@ describe('ModrinthV2Client', () => {
         is_draft: true,
         license_id: 'LicenseRef-All-Rights-Reserved',
       })
-      expect((requestBody?.get('icon') as File).name).toBe('icon.png')
+      expect((requestBody!.get('icon') as File).name).toBe('icon.png')
     })
 
     it('updates a project icon with the selected extension and mime type', async () => {
@@ -125,7 +125,7 @@ describe('ModrinthV2Client', () => {
 
       expect(requestUrl).toBe('https://api.modrinth.com/v2/project/project1/icon?ext=png')
       expect(requestInit?.method).toBe('PATCH')
-      expect((requestInit?.headers as Record<string, string>)['content-type']).toBe('image/png')
+      expect((requestInit!.headers as Record<string, string>)['content-type']).toBe('image/png')
     })
 
     it('adds, updates, and deletes project gallery images with query metadata', async () => {
@@ -238,7 +238,7 @@ describe('ModrinthV2Client', () => {
         featured: false,
         status: 'draft',
       })
-      expect((requestBody?.get('client') as File).name).toBe('pack-client-1.0.0.mrpack')
+      expect((requestBody!.get('client') as File).name).toBe('pack-client-1.0.0.mrpack')
     })
 
     it('rejects a missing primary file before sending the request', async () => {

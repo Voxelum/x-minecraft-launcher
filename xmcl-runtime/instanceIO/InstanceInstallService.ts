@@ -191,6 +191,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const downloadOptions = await this.app.registry.get(kDownloadOptions)
 
     const lock = this.mutex.of(LockKey.instance(instancePath))
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const logger = this
 
     // Track the task at service level. Created BEFORE the lock so the

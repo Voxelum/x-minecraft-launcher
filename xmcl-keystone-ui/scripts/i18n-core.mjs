@@ -50,7 +50,7 @@ const SRC_EXTS = ['.vue', '.ts']
 
 /** Flatten a nested message object into a Map of dot-joined key -> leaf value. */
 export function flatten(obj, prefix = '', out = new Map()) {
-  if (obj == null) return out
+  if (obj === null || obj === undefined) return out
   for (const [k, v] of Object.entries(obj)) {
     const key = prefix ? `${prefix}.${k}` : k
     if (v !== null && typeof v === 'object' && !Array.isArray(v)) flatten(v, key, out)

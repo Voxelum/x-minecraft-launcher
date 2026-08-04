@@ -31,6 +31,7 @@ import { ImageStorage, ZipManager } from '~/infra'
 import { ServiceStateManager } from '~/service'
 import { kSettings } from '~/settings'
 import { kResourceContext, kResourceManager } from './index'
+// eslint-disable-next-line import/default
 import createResourceWorker from './resource.worker?worker'
 import { ResourceWorker, kResourceWorker } from './worker'
 
