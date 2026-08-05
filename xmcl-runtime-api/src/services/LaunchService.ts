@@ -252,6 +252,9 @@ export type LaunchExceptions = {
   type: 'launchPreExecuteCommandFailed'
   command: string
   error?: string
+} | {
+  type: 'launchLinuxDisplayUnavailable'
+  reason: 'no-graphical-session' | 'xwayland-missing' | 'xwayland-not-running' | 'environment-missing' | 'sandbox-denied'
 }
 
 export class LaunchException extends Exception<LaunchExceptions> { }

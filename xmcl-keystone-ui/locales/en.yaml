@@ -749,6 +749,13 @@ launchBlocked:
       class="highlight"> {javaPath} </span>. Either change the permission of the
       java file or raise the permission of launcher.
     title: No permission to launch
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL could not recover the X11 display information from your desktop session. Restart XMCL from a terminal in the current desktop session, or sign out and sign in again.
+    noGraphicalSession: XMCL is not running in a graphical desktop session. Start XMCL from your desktop session before launching Minecraft.
+    sandboxDenied: The application sandbox cannot access X11. Grant XMCL access to the X11 socket in your Flatpak permissions, then restart XMCL.
+    title: X11 display unavailable
+    xwaylandMissing: Minecraft needs XWayland in this Wayland session. Install the XWayland package provided by your Linux distribution, then sign out and sign in again.
+    xwaylandNotRunning: XWayland is installed but no X11 display is running. Enable XWayland in your compositor configuration, then sign out and sign in again.
   launchNoProperJava:
     description: >-
       No proper java can be selected to launch the game. ({javaPath} is

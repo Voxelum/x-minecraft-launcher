@@ -2,6 +2,7 @@ import { pluginAutoUpdate } from './pluginAutoUpdate'
 import { pluginAgentDocuments } from './pluginAgentDocuments'
 import { pluginIconProtocol } from './pluginIconProtocol'
 import { pluginDiscreteGPULinux } from './pluginDiscreteGPULinux'
+import { pluginLinuxDisplay } from './pluginLinuxDisplay'
 import { pluginPowerMonitor } from './pluginPowerMonitor'
 
 import { pluginApiFallback } from '@xmcl/runtime/app/pluginApiFallback'
@@ -61,6 +62,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginSaveWorker,
   pluginSetup,
   pluginLaunchPrecheck,
+  pluginLinuxDisplay,
   pluginDiscreteGPULinux,
   pluginUncaughtError,
   pluginNativeReplacer,

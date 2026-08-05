@@ -445,6 +445,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
           } catch (e) {
             this.warn('Fail to run plugin')
             this.error(e as any)
+            if (e instanceof LaunchException) throw e
           }
         }
 
@@ -470,6 +471,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
           } catch (e) {
             this.warn('Fail to run plugin', plugin)
             this.error(e as any)
+            if (e instanceof LaunchException) throw e
           }
         }
 

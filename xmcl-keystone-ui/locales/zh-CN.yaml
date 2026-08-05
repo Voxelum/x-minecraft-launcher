@@ -659,6 +659,13 @@ launchBlocked:
     description: >-
       没有权限执行 <span class="highlight"> {javaPath} </span>，请尝试给启动器更高权限，给 Java 文件增加可执行权限，或者更换 Java。
     title: 无权限使用 Java
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL 无法从当前桌面会话恢复 X11 显示信息。请在当前桌面会话的终端中重新启动 XMCL，或注销后重新登录。
+    noGraphicalSession: XMCL 当前不在图形桌面会话中运行。请从桌面会话启动 XMCL 后再启动 Minecraft。
+    sandboxDenied: 应用沙箱无法访问 X11。请在 Flatpak 权限中允许 XMCL 访问 X11 socket，然后重启 XMCL。
+    title: X11 显示不可用
+    xwaylandMissing: 当前 Wayland 会话中的 Minecraft 需要 XWayland。请安装 Linux 发行版提供的 XWayland 软件包，然后注销并重新登录。
+    xwaylandNotRunning: 已安装 XWayland，但当前没有运行 X11 显示服务。请在合成器配置中启用 XWayland，然后注销并重新登录。
   launchNoProperJava:
     description: 找不到合适的 Java 来启动游戏。({javaPath} 可能无效？)
     title: 没有合适的 Java
