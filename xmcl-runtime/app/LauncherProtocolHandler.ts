@@ -12,6 +12,7 @@ export interface RequestOptions {
   headers?: Record<string, any>
   body?: string | Buffer | Readable
   signal?: AbortSignal
+  cache?: RequestCache
 }
 
 export interface Request {
@@ -20,6 +21,7 @@ export interface Request {
   headers: Record<string, any>
   body?: string | Buffer | Readable
   signal?: AbortSignal
+  cache?: RequestCache
   /** Skip remaining protocol interceptors after the current handler, but still run the sink. */
   skipRemainingHandlers?: boolean
 }
@@ -93,6 +95,7 @@ export class LauncherProtocolHandler {
         headers: request.headers || {},
         body: request.body,
         signal: request.signal,
+        cache: request.cache,
       },
       response: {
         headers: {},

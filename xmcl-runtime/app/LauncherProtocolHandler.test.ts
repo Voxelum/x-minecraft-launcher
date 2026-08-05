@@ -10,6 +10,7 @@ describe('LauncherProtocolHandler', () => {
       response.status = 200
       response.body = request.url.toString()
     })
+
     protocol.registerHandler('https', ({ request }) => {
       request.url = new URL('http://provider.example/v1/chat/completions')
       request.skipRemainingHandlers = true
@@ -26,6 +27,23 @@ describe('LauncherProtocolHandler', () => {
       status: 200,
       body: 'http://provider.example/v1/chat/completions',
     })
+  })
+
+  test('preserves the fetch cache mode through protocol interceptors', async () => {
+    const protocol = new LauncherProtocolHandler()
+    const sink = vi.fn(({ request, response }) => {
+      response.status = 200
+      response.body = request.cache
+    })
+    protocol.registerHandler('https', sink, true)
+
+    const response = await protocol.handle({
+      url: 'https://api.xmcl.app/translation',
+      cache: 'force-cache',
+    })
+
+    expect(sink).toHaveBeenCalledOnce()
+    expect(response.body).toBe('force-cache')
   })
 
   test('does not run remaining interceptors or the sink after a response is handled', async () => {

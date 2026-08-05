@@ -20,4 +20,19 @@ describe('common protocol', () => {
       signal: controller.signal,
     }))
   })
+
+  test('forwards the request cache mode to the network fetch', async () => {
+    const protocol = new LauncherProtocolHandler()
+    const fetch = vi.fn(async () => new Response('{}', { status: 200 }))
+    pluginCommonProtocol({ protocol, fetch } as any, {} as any)
+
+    await protocol.handle({
+      url: 'https://api.xmcl.app/translation',
+      cache: 'force-cache',
+    })
+
+    expect(fetch).toHaveBeenCalledWith('https://api.xmcl.app/translation', expect.objectContaining({
+      cache: 'force-cache',
+    }))
+  })
 })
