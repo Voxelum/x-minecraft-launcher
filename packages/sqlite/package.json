@@ -12,6 +12,11 @@
     "build:cjs": "esbuild --target=es2020 --platform=node --external:kysely --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
     "build:esm": "esbuild --target=es2020 --platform=node --external:kysely --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts"
   },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
