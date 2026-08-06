@@ -250,6 +250,40 @@
           <v-icon size="40">check_circle</v-icon>
           <div class="text-sm">{{ t('instanceUpdate.noFiles') }}</div>
         </div>
+
+        <template v-if="upgrade.releaseNotes && upgrade.releaseNotes.length > 0">
+          <v-divider class="my-1" />
+          <div class="flex items-center gap-2">
+            <v-icon size="small" color="primary">history</v-icon>
+            <h3 class="text-base font-medium">{{ t('instanceUpdate.releaseNotes') }}</h3>
+          </div>
+          <v-expansion-panels variant="accordion">
+            <v-expansion-panel
+              v-for="note in upgrade.releaseNotes"
+              :key="note.id"
+            >
+              <v-expansion-panel-title>
+                <div class="min-w-0 flex flex-col py-1 text-left">
+                  <div class="flex min-w-0 items-center gap-2">
+                    <span class="truncate font-medium">{{ note.title }}</span>
+                    <v-chip size="x-small" label variant="tonal">
+                      {{ t(`modUpgradePolicy.${note.source}`) }}
+                    </v-chip>
+                  </div>
+                  <div class="text-caption opacity-70">
+                    {{ note.currentVersion }} → {{ note.targetVersion }}
+                  </div>
+                </div>
+              </v-expansion-panel-title>
+              <v-expansion-panel-text>
+                <div
+                  class="markdown-body instance-update-release-note"
+                  v-html="note.html || t('instanceUpdate.noReleaseNotes')"
+                />
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </template>
       </div>
 
       <v-divider class="mx-6 opacity-20" />
@@ -289,7 +323,7 @@ import InstanceVersionShiftAlert from '@/components/InstanceVersionShiftAlert.vu
 import { useRefreshable, useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { InstanceFileNode, provideFileNodes } from '@/composables/instanceFileNodeData'
-import { InstanceInstallDialog, InstanceInstallOptions } from '@/composables/instanceUpdate'
+import { InstanceInstallDialog, InstanceInstallOptions, InstanceInstallReleaseNote } from '@/composables/instanceUpdate'
 import { kInstances } from '@/composables/instances'
 import { kJavaContext } from '@/composables/java'
 import { useVuetifyColor } from '@/composables/vuetify'
@@ -360,6 +394,7 @@ type UpgradeValueType = {
   installation: InstallInstanceOptions
   delta: InstanceFileUpdate[]
   incompatible?: Array<{ id: string; name: string }>
+  releaseNotes?: InstanceInstallReleaseNote[]
 }
 
 const tOperations = computed(
@@ -503,6 +538,7 @@ async function getUpgradeValueFromParam(
       id: param.id,
     },
     incompatible: param.incompatible,
+    releaseNotes: param.releaseNotes,
   })
 }
 
@@ -582,3 +618,10 @@ function cancel() {
   isShown.value = false
 }
 </script>
+
+<style scoped>
+.instance-update-release-note {
+  overflow: auto;
+  max-height: 360px;
+}
+</style>

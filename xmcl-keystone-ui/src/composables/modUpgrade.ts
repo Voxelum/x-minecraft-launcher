@@ -11,19 +11,16 @@ import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
 import { ProjectVersion } from '@xmcl/modrinth'
 import { InstallInstanceTask, isTask, TaskState, Tasks } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
+import { normalizeCurseforgeChangelogHtml } from './curseforgeChangelog'
 import { useDialog } from './dialog'
 import { useErrorHandler } from './exception'
-import { InstanceInstallDialog } from './instanceUpdate'
+import { InstanceInstallDialog, InstanceInstallReleaseNote } from './instanceUpdate'
+import { useMarkdown } from './markdown'
 import { useRefreshable } from './refreshable'
 import { kSWRVConfig } from './swrvConfig'
 import { useTask } from './task'
 
-export type UpgradePlan = {
-  /**
-   * The curseforge file
-   */
-  file: File
-
+type UpgradePlanBase = {
   mod: ModFile
 
   updating: boolean
@@ -31,19 +28,53 @@ export type UpgradePlan = {
    * Relative filepath to the instance
    */
   filePath: string
+  releaseNote?: InstanceInstallReleaseNote
+}
+
+export type UpgradePlan = UpgradePlanBase & ({
+  /**
+   * The curseforge file
+   */
+  file: File
 } | {
   /**
    * The modrinth version
    */
   version: ProjectVersion
+})
 
-  mod: ModFile
+function getCurrentVersionLabel(mod: ModFile) {
+  return mod.version || mod.fileName
+}
 
-  updating: boolean
-  /**
-   * Relative filepath to the instance
-   */
-  filePath: string
+export async function getUpgradePlanReleaseNote(
+  plan: UpgradePlan,
+  {
+    renderMarkdown,
+    getCurseforgeChangelog,
+  }: {
+    renderMarkdown: (markdown: string) => string
+    getCurseforgeChangelog: (modId: number, fileId: number) => Promise<string>
+  },
+): Promise<InstanceInstallReleaseNote> {
+  if ('file' in plan) {
+    return {
+      id: `${plan.mod.curseforge?.projectId ?? plan.file.id}`,
+      source: 'curseforge',
+      title: plan.mod.name || plan.mod.fileName,
+      currentVersion: getCurrentVersionLabel(plan.mod),
+      targetVersion: plan.file.displayName || plan.file.fileName,
+      html: await getCurseforgeChangelog(plan.mod.curseforge!.projectId, plan.file.id),
+    }
+  }
+  return {
+    id: plan.mod.modrinth?.projectId ?? plan.version.id,
+    source: 'modrinth',
+    title: plan.mod.name || plan.mod.fileName,
+    currentVersion: getCurrentVersionLabel(plan.mod),
+    targetVersion: plan.version.name || plan.version.version_number,
+    html: plan.version.changelog ? renderMarkdown(plan.version.changelog) : '',
+  }
 }
 
 export const kModUpgrade: InjectionKey<ReturnType<typeof useModUpgrade>> = Symbol('kModUpgrade')
@@ -56,6 +87,7 @@ export function useModUpgrade(
   destinationPrefix: 'mods' | 'resourcepacks' | 'shaderpacks' = 'mods',
 ) {
   const { cache, dedupingInterval } = injection(kSWRVConfig)
+  const { render: renderMarkdown } = useMarkdown()
   const plans = shallowRef({} as Record<string, UpgradePlan>)
   let operationId = ''
   let operationPath = ''
@@ -88,6 +120,13 @@ export function useModUpgrade(
     operationPath = path.value
     upgradeFilenameMappings.value = {}
   })
+
+  async function getCurseforgeReleaseNote(modId: number, fileId: number) {
+    return swrvGet(`/curseforge/${modId}/${fileId}/changelog`, async () => {
+      const changelog = await clientCurseforgeV1.getModFileChangelog(modId, fileId)
+      return normalizeCurseforgeChangelogHtml(changelog)
+    }, cache, dedupingInterval)
+  }
 
   async function checkCurseforgeUpgrade(mods: ModFile[], runtime: RuntimeVersions, skipVersion: boolean, releaseOnly: boolean, result: Record<string, UpgradePlan>) {
     const fileIds = mods.map(m => m.curseforge?.fileId).filter(notNullish)
@@ -123,12 +162,17 @@ export function useModUpgrade(
           if (file.id !== current.curseforge?.fileId) {
             // this is the new version
             if (!result[mod.curseforge!.projectId]) {
-              result[mod.curseforge!.projectId] = {
+              const plan: UpgradePlan = {
                 file,
                 mod,
                 updating: false,
                 filePath: basename(current.path),
               }
+              plan.releaseNote = markRaw(await getUpgradePlanReleaseNote(plan, {
+                renderMarkdown,
+                getCurseforgeChangelog: async (modId, fileId) => await getCurseforgeReleaseNote(modId, fileId).catch(() => ''),
+              }))
+              result[mod.curseforge!.projectId] = plan
             }
           }
         }
@@ -184,12 +228,17 @@ export function useModUpgrade(
       const resolved = await resolveReleaseVersion(mod, version)
       if (resolved && resolved.id !== mod.modrinth?.versionId) {
         // this is the new version
-        result[mod.modrinth!.projectId] = {
+        const plan: UpgradePlan = {
           version: markRaw(resolved),
           mod,
           updating: false,
           filePath: basename(mod.path),
         }
+        plan.releaseNote = markRaw(await getUpgradePlanReleaseNote(plan, {
+          renderMarkdown,
+          getCurseforgeChangelog: async () => '',
+        }))
+        result[mod.modrinth!.projectId] = plan
       }
     }))
 
@@ -298,6 +347,9 @@ export function useModUpgrade(
       oldFiles,
       files,
       id: operationId,
+      releaseNotes: Object.values(plans.value)
+        .map(plan => plan.releaseNote)
+        .filter(notNullish),
     })
   }
 

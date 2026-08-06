@@ -527,6 +527,8 @@ instanceUpdate:
     该实例的模组加载器已更改。
     以前的模组加载器是 {modloader}，现在的模组加载器是 {newModloader}。
   noFiles: 无文件变更
+  noReleaseNotes: 来源未提供发布说明。
+  releaseNotes: 发布说明
   summary: |-
     添加{add}文件。
     删除{remove}文件。
