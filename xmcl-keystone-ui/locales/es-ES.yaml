@@ -52,9 +52,9 @@ askAICrash:
     ¡Deja que Ai te ayude a entender el bloqueo del juego!
 
     ¡Siga las instrucciones a continuación para preguntarle a AI sobre este bloqueo del juego!
-    orExternal: o usa una IA externa
-    selectPlatform: Abre una plataforma de IA y pega el mensaje que acabas de copiar.
-    setupAgent: Configurar el agente IA
+  orExternal: o usa una IA externa
+  selectPlatform: Abre una plataforma de IA y pega el mensaje que acabas de copiar.
+  setupAgent: Configurar el agente IA
 agent:
   callingTool: llamando a {name}…
   disabledPlaceholder: Agente desactivado
@@ -80,6 +80,26 @@ agent:
     Crear un modpack: encuentra mods para una función que quiero e instálalos
     en esta instancia
   thinking: pensando…
+  confirmAccept: Aceptar
+  confirmCancel: Cancelar
+  confirmTitle: Confirmar acción
+  errorTitle: Error del agente
+  toolArguments: Argumentos
+  toolResult: Resultado
+  toolRunning: Ejecutando…
+  marketConfirmMessage: '¿Instalar {name}?'
+  marketConfirmTarget: Destino
+  marketConfirmTitle: Confirmar instalación
+  marketInstall: Instalar
+  marketInstalled: Instalado
+  marketInstallFailed: Instalación fallida
+  marketType:
+    datapack: Datapack
+    mod: Mod
+    modpack: Modpack
+    resourcepack: Resourcepack
+    shader: Shader
+  marketResultCount: '{count} resultados'
   title: Agente XMCL
   toggleHint: para alternar
 ago:
@@ -188,7 +208,7 @@ curseforgeCategory:
   Technology: Tecnología
   Traditional: Tradicional
   Twitch Integration: integración Twitch
-  Utility & QoL: Utilidad y Qol
+  Utility & QoL: Utilidad y QoL
   Vanilla+: Vanilla+
   World Gen: Generador de Mundos
 dependencies:
@@ -216,11 +236,11 @@ diagnosis:
     message: Haga clic para intentar reinstalar esta versión.
     name: Instalación Erronea en {version}
   corruptedAssets:
-    message: Launcher instalará assets por ti
-    name: 'Asset dañado : {name} | Asset dañado {name} | {count} Assets dañados'
+    message: Launcher instalará recursos por ti
+    name: 'Recurso dañado: {name} | Recurso dañado: {name} | {count} recursos dañados'
   corruptedAssetsIndex:
-    message: Launcher descargará el índice de assets para ti
-    name: El archivo de índice de assets {version} está dañado.
+    message: Launcher descargará el índice de recursos para ti
+    name: El archivo de índice de recursos {version} está dañado.
   corruptedLibraries:
     message: Launcher instalará bibliotecas por ti
     name: >-
@@ -325,6 +345,14 @@ errors:
     title: No se puede escribir en la carpeta del lanzador
   NotFoundError: 404 No encontrado
   SocketError: Error de socket del servidor
+  bedrockUnsupportedPlatform: Plataforma no compatible con Bedrock
+  bedrockNotInstalled: Minecraft Bedrock no está instalado
+  bedrockLaunchFailed: Error al lanzar Bedrock
+  bedrockInstallFailed: Error al instalar Bedrock
+  bedrockDownloadUrlUnavailable: URL de descarga no disponible
+  bedrockDeveloperModeRequired: Se necesita el modo desarrollador
+  bedrockRegisterFailed: Error al registrar la versión
+  bedrockVersionNotFound: Versión de Bedrock no encontrada
 exception:
   http: >-
     La solicitud HTTP a {url} falló. Código de estado {statusCode}. {code}.
@@ -346,15 +374,20 @@ command:
   instance:
     launch:
       title: Iniciar instancia
+      description: Lanzar una instancia
     create:
       title: Crear instancia
+      description: Crear una nueva instancia
     delete:
       title: Eliminar instancia
+      description: Eliminar una instancia
   user:
     login:
       title: Iniciar sesión de usuario
+      description: Iniciar sesión con una cuenta
     refresh:
       title: Actualizar usuario
+      description: Refrescar la sesión actual
 commandPalette:
   placeholder: Buscar comandos, instancias, mods…
   commands: Comandos
@@ -486,7 +519,7 @@ instance:
   mcOptions: Opciones de Minecraft
   mcOptionsHint: Argumentos adicionales de lanzamiento de Minecraft
   name: Nombre del Perfil
-  nameHint: El nombre del modpack
+  nameHint: Nombre de la instancia
   nameInvalidChars: 'El nombre no puede contener estos caracteres: < > : " / \\ | ? *'
   nameNoCyrillic: El nombre no puede contener caracteres cirílicos
   namePathTraversal: El nombre no puede contener recorrido de directorios ("..")
@@ -580,6 +613,7 @@ instanceUpdate:
   title: Actualizar Instancia
   update: Iniciar Actualización
 instances:
+  instanceCount: '{count} instancias'
   add: Crear juego
   addDescription: Crear una nueva instancia desde cero
   addCurseForgeDescription: |-
@@ -622,6 +656,33 @@ instances:
     instancia aparecen en todas. Las carpetas no marcadas permanecen privadas
     de esta instancia.
   linkFailed: No se pudo enlazar la carpeta {folder} con la carpeta compartida
+
+xmclAccount:
+  accountSummary: 'Resumen de la cuenta'
+  confirmMerge: ¿Confirmar fusión?
+  createdAt: 'Creada el {date}'
+  description: Cuenta de X Minecraft Launcher
+  expiresAt: 'Expira el {date}'
+  gameAccountsSeparate: Las cuentas del juego están separadas
+  guest: Invitado
+  identityConflict: Conflicto de identidad
+  linkAccountWith: 'Vincular cuenta con {provider}'
+  mergePreview: Vista previa de fusión
+  mergeNeedsSession: Se necesita sesión para fusionar
+  mergeQueued: Fusión en cola
+  requestFailed: Solicitud fallida
+  reviewMerge: Revisar fusión
+  session: Sesión
+  sessionActive: Sesión activa
+  sessionExpired: Sesión expirada
+  signOutAll: Cerrar sesión en todos los dispositivos
+  signOutDevice: Cerrar sesión en este dispositivo
+  status:
+    active: Activa
+    deleted: Eliminada
+    deletion_pending: Eliminación pendiente
+    merged: Fusionada
+  title: Cuenta XMCL
 items:
   count: '{count} ítems'
   total: '{total} total'
@@ -660,7 +721,7 @@ launch:
   cancel: Cancelar
   createShortcut: Crear atajo
   kill: Detener
-  killServer: Matar el servidor localhost
+  killServer: Detener servidor localhost
   launch: Lanzar
   launchAnyway: Lanzar de todos modos
   launchAs: Lanzar como
@@ -758,6 +819,25 @@ login:
   signup: Registrarse
   signupDescription: ¿Nuevo aquí?
   userRelogin: El token de acceso del usuario ha caducado. ¡Vuelve a iniciar sesión!
+
+localCollection:
+  title: Colección local
+  newCollection: Nueva colección
+  namePlaceholder: Nombre de la colección
+  addToCollection: Añadir a colección
+  empty: No hay elementos en esta colección
+  corrupted: Colección dañada
+  modrinthSection: De Modrinth
+  installAll: Instalar todo
+  installAllHint: Instala todos los proyectos de esta colección
+  incompatibleAlert: Algunos proyectos son incompatibles
+  projects: Proyectos
+  result:
+    failed: '{count} fallidos'
+    installed: '{count} instalados'
+    skipped: '{count} omitidos'
+    title: Resultados de instalación
+
 loginError:
   acquireMicrosoftTokenFailed: >-
     Error al obtener el token de Microsoft. Puede ser un problema de red.
@@ -835,6 +915,10 @@ loginError:
   requirePassword: Se requiere contraseña
   requireUsername: Se requiere nombre de usuario
   timeout: Tiempo de espera de inicio de sesión. Vuelve a intentarlo o revisa tu red.
+  loginCanceled: Inicio de sesión cancelado
+  xboxErrorGuideHint: Revisa la guía de errores de Xbox
+  openLoginGuide: Abrir guía de inicio de sesión
+  openDiscordSupport: Abrir soporte en Discord
 logsCrashes:
   crashes: Informes de Errores
   failures: Fallos de inicio
@@ -923,6 +1007,7 @@ modFilter:
     Solo mostrar mods incompatibles o con dependencias faltantes
   unusedOnly: Solo mostrar mods de librerías no utilizadas
 modInstall:
+  scanUnusedLibraries: Escanear librerías no usadas
   archived: >-
     {name} ha sido archivado.
 
@@ -1154,6 +1239,11 @@ modrinth:
   versions: Versiones
   wikiUrl: Wiki
 multiplayer:
+  connectedToHost: 'Conectado a {host}'
+  directConnection: Conexión directa
+  guest: Invitado
+  host: Anfitrión
+  relayConnection: Conexión por retransmisión
   allowTurn: Activar servidor de retransmisión
   allowTurnHint: >-
     Activa el servidor de retransmisión si no puedes conectarte con tu amigo.
@@ -1453,7 +1543,7 @@ server:
   exportToFolder: Exportar a la carpeta
   filterVersion: Filtrar versión de Minecraft del servidor respondido
   host: Anfitrión
-  hostHint: El host (con puerto) del servidor
+  hostHint: Dirección del servidor (host:puerto)
   hostRequired: Ingrese la dirección IP del servidor
   ipAddress: Dirección IP
   maxPlayers: Jugadores máximos
@@ -1521,6 +1611,16 @@ setting:
   aiAgentApiKeyDescription: Se almacena localmente en este dispositivo y se usa para las solicitudes del agente.
   aiAgentEndpoint: Endpoint del Agente IA
   aiAgentEndpointDescription: URL del endpoint de chat completions.
+  aiAgentProvider: Proveedor de IA
+  aiAgentProviderCustom: Proveedor personalizado
+  aiAgentProviderDescription: Selecciona el proveedor de IA para el agente
+  aiAgentApiKeyClear: Limpiar clave API
+  aiAgentApiKeyEmpty: No hay clave API configurada
+  aiAgentApiKeyNotNeeded: No se necesita clave API
+  aiAgentApiKeyNotNeededHint: Este proveedor no requiere clave API
+  aiAgentApiKeySaved: Clave API guardada
+  aiAgentApiKeyStored: La clave está almacenada de forma segura
+  useDesktopBackground: Usar fondo de escritorio
   aiAgentModel: Modelo del Agente IA
   aiAgentModelDescription: Nombre del modelo a enviar en las solicitudes de chat completions.
   apiSets:
@@ -1728,6 +1828,16 @@ settingLabel:
   local: Local
   localHint: Esta configuración está modificada por la instancia actual
 setup:
+  aiAgentApiKeyClear: Limpiar clave API
+  aiAgentApiKeyEmpty: No hay clave API configurada
+  aiAgentApiKeyNotNeeded: No se necesita clave API
+  aiAgentApiKeyNotNeededHint: Este proveedor no requiere clave API
+  aiAgentApiKeySaved: Clave API guardada
+  aiAgentApiKeyStored: La clave está almacenada de forma segura
+  aiAgentProvider: Proveedor de IA
+  aiAgentProviderCustom: Proveedor personalizado
+  aiAgentProviderDescription: Selecciona el proveedor de IA para el agente
+  useDesktopBackground: Usar fondo de escritorio
   account:
     description: >-
       Inicia sesión en tu cuenta del juego. Si no tienes una, puedes saltarte esto por ahora.
@@ -1886,6 +1996,8 @@ transportType:
   relay: Candidato de Relevo
   srflx: Candidato Reflexivo de Servidor
 turnRegion:
+  guangzhou: Cantón
+  liaoning: Liaoning
   fr: francia
   hk: Hong Kong
   po: Polonia
@@ -2033,6 +2145,10 @@ userServices:
     password: Sin contraseña
     uuid: UUID de usuario (Opcional)
 userSkin:
+  invalidImage: Imagen no válida
+  invalidImageTitle: Imagen de skin no válida
+  uploadFailed: Error al subir la skin
+  uploadRejected: Skin rechazada por el servidor
   classic: Clásico
   import: Importar skin
   importFile: Abrir desde archivo
@@ -2063,6 +2179,8 @@ minecraftFriends:
   addPlaceholder: Nombre de usuario de Minecraft
   addedRelative: Añadido {time}
   errors:
+    friendsDisabled: Amigos desactivados
+    invalidName: Nombre no válido
     cannotAddSelf: No puedes enviarte una solicitud de amistad a ti mismo.
     duplicate: Ese jugador ya está en tu lista.
     generic: Algo salió mal. Vuelve a intentarlo.
@@ -2142,6 +2260,14 @@ blueprint:
     newFile: Guardar como nuevo archivo
     action: Reemplazar
 gamepad:
+  autoEnableLabel: Activar gamepad automáticamente
+  autoEnableHint: Activa el soporte de mando cuando se detecte uno
+  autoOpenKeyboardLabel: Abrir teclado virtual automáticamente
+  autoOpenKeyboardHint: Abre el teclado en pantalla al enfocar un campo de texto
+  focusTooltipsLabel: Tooltips de enfoque
+  focusTooltipsHint: Muestra tooltips al navegar con el mando
+  disableModPromptLabel: Desactivar aviso de mods
+  disableModPromptHint: No preguntar al gestionar mods con el mando
   detectedTitle: Gamepad detectado
   connected: Mando conectado
   guideTitle: Controles del mando
