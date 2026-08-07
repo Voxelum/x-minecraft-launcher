@@ -10,6 +10,8 @@ import { kUserTokenStorage } from './userTokenStore'
 import { withRetry } from './utils/withRetry'
 
 const CLIENT_ID = '1363d629-5b06-48a9-a5fb-c65de945f13e'
+const XBOX_DEVICE_STORAGE_SERVICE = 'xmcl/xbox-device'
+const XBOX_DEVICE_STORAGE_ACCOUNT = 'XMCL_XBOX_DEVICE'
 
 export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
   app.registry.get(kNetworkInterface).then((networkInterface) => {
@@ -32,6 +34,22 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
     // HTTP stack handles the call. See issue #1445 / PR #1447.
     new MicrosoftAuthenticator({
       fetch: withRetry((...args) => app.fetch(...args)),
+      xboxDeviceTokenStorage: {
+        get: async () => {
+          const value = await app.secretStorage.get(XBOX_DEVICE_STORAGE_SERVICE, XBOX_DEVICE_STORAGE_ACCOUNT)
+          if (!value) return undefined
+          try {
+            return JSON.parse(value)
+          } catch {
+            return undefined
+          }
+        },
+        put: state => app.secretStorage.put(
+          XBOX_DEVICE_STORAGE_SERVICE,
+          XBOX_DEVICE_STORAGE_ACCOUNT,
+          JSON.stringify(state),
+        ),
+      },
     }),
     mojangApi,
     () => app.registry.get(kUserTokenStorage),
