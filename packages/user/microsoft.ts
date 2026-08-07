@@ -69,6 +69,70 @@ export interface MinecraftAuthResponse {
 
 export interface MicrosoftAuthenticatorOptions {
   fetch?: typeof fetch
+  xboxDeviceTokenStorage?: XboxDeviceTokenStorage
+}
+
+export interface XboxDeviceTokenState {
+  id: string
+  privateKey: JsonWebKey
+  token?: Pick<XBoxResponse, 'Token' | 'NotAfter'>
+}
+
+export interface XboxDeviceTokenStorage {
+  get(): Promise<XboxDeviceTokenState | undefined>
+  put(state: XboxDeviceTokenState): Promise<void>
+}
+
+const textEncoder = new TextEncoder()
+
+function concatBytes(...parts: Uint8Array[]) {
+  const result = new Uint8Array(parts.reduce((size, part) => size + part.length, 0))
+  let offset = 0
+  for (const part of parts) {
+    result.set(part, offset)
+    offset += part.length
+  }
+  return result
+}
+
+function uint32(value: number) {
+  const bytes = new Uint8Array(4)
+  new DataView(bytes.buffer).setUint32(0, value)
+  return bytes
+}
+
+function uint64(value: bigint) {
+  const bytes = new Uint8Array(8)
+  new DataView(bytes.buffer).setBigUint64(0, value)
+  return bytes
+}
+
+function bytesToBase64(bytes: Uint8Array) {
+  return btoa(String.fromCharCode(...bytes))
+}
+
+async function createXboxSignature(privateKey: CryptoKey, timestamp: bigint, path: string, body: string) {
+  const zero = new Uint8Array([0])
+  const policyVersion = uint32(1)
+  const signatureContent = concatBytes(
+    policyVersion,
+    zero,
+    uint64(timestamp),
+    zero,
+    textEncoder.encode('POST'),
+    zero,
+    textEncoder.encode(path),
+    zero,
+    zero,
+    textEncoder.encode(body),
+    zero,
+  )
+  const signature = new Uint8Array(await crypto.subtle.sign(
+    { name: 'ECDSA', hash: 'SHA-256' },
+    privateKey,
+    signatureContent,
+  ))
+  return bytesToBase64(concatBytes(policyVersion, uint64(timestamp), signature))
 }
 
 /**
@@ -104,9 +168,14 @@ export class MicrosoftMinecraftXboxLoginError extends Error {
  */
 export class MicrosoftAuthenticator {
   fetch: typeof fetch
+  private xboxDeviceTokenStorage?: XboxDeviceTokenStorage
+  private xboxDeviceTokenState: XboxDeviceTokenState | undefined
+  private xboxDeviceTokenStateLoaded = false
+  private xboxDeviceTokenTask: Promise<Pick<XBoxResponse, 'Token' | 'NotAfter'>> | undefined
 
   constructor(options?: MicrosoftAuthenticatorOptions) {
     this.fetch = options?.fetch || fetch
+    this.xboxDeviceTokenStorage = options?.xboxDeviceTokenStorage
   }
 
   /**
@@ -127,6 +196,7 @@ export class MicrosoftAuthenticator {
       }),
       headers: {
         'Content-Type': 'application/json',
+        'x-xbl-contract-version': '1',
       },
       signal,
     })
@@ -142,6 +212,99 @@ export class MicrosoftAuthenticator {
     return result
   }
 
+  async authenticateXboxDevice(signal?: AbortSignal) {
+    let state = await this.loadXboxDeviceTokenState()
+    let privateKey: CryptoKey
+    if (state?.id && state.privateKey?.d && state.privateKey.x && state.privateKey.y) {
+      try {
+        privateKey = await crypto.subtle.importKey(
+          'jwk',
+          state.privateKey,
+          { name: 'ECDSA', namedCurve: 'P-256' },
+          true,
+          ['sign'],
+        )
+      } catch {
+        state = undefined
+      }
+    }
+    if (!state) {
+      const keyPair = await crypto.subtle.generateKey(
+        { name: 'ECDSA', namedCurve: 'P-256' },
+        true,
+        ['sign', 'verify'],
+      )
+      const privateKeyJwk = await crypto.subtle.exportKey('jwk', keyPair.privateKey)
+      state = {
+        id: crypto.randomUUID(),
+        privateKey: privateKeyJwk,
+      }
+      privateKey = keyPair.privateKey
+    }
+    const body = JSON.stringify({
+      Properties: {
+        DeviceType: 'Win32',
+        Id: `{${state.id}}`,
+        AuthMethod: 'ProofOfPossession',
+        ProofKey: {
+          kty: 'EC',
+          alg: 'ES256',
+          crv: 'P-256',
+          use: 'sig',
+          x: state.privateKey.x,
+          y: state.privateKey.y,
+        },
+      },
+      RelyingParty: 'http://auth.xboxlive.com',
+      TokenType: 'JWT',
+    })
+    const windowsTimestamp = BigInt(Date.now() + 11_644_473_600_000) * 10_000n
+    const response = await this.fetch('https://device.auth.xboxlive.com/device/authenticate', {
+      method: 'POST',
+      body,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-xbl-contract-version': '1',
+        Signature: await createXboxSignature(privateKey!, windowsTimestamp, '/device/authenticate', body),
+      },
+      signal,
+    })
+
+    if (response.status !== 200) {
+      throw new Error(
+        `Failed to authenticate Xbox device, status code: ${response.status}: ${await response.text()}}`,
+      )
+    }
+
+    const token = (await response.json()) as Pick<XBoxResponse, 'Token' | 'NotAfter'>
+    state.token = token
+    this.xboxDeviceTokenState = state
+    await this.xboxDeviceTokenStorage?.put(state)
+    return token
+  }
+
+  private async loadXboxDeviceTokenState() {
+    if (!this.xboxDeviceTokenStateLoaded) {
+      this.xboxDeviceTokenState = await this.xboxDeviceTokenStorage?.get()
+      this.xboxDeviceTokenStateLoaded = true
+    }
+    return this.xboxDeviceTokenState
+  }
+
+  private async acquireXboxDeviceToken(signal?: AbortSignal) {
+    const state = await this.loadXboxDeviceTokenState()
+    const notAfter = state?.token?.NotAfter ? Date.parse(state.token.NotAfter) : Number.NaN
+    if (state?.token?.Token && Number.isFinite(notAfter) && notAfter > Date.now() + 5 * 60_000) {
+      return state.token
+    }
+    if (!this.xboxDeviceTokenTask) {
+      this.xboxDeviceTokenTask = this.authenticateXboxDevice(signal).finally(() => {
+        this.xboxDeviceTokenTask = undefined
+      })
+    }
+    return this.xboxDeviceTokenTask
+  }
+
   /**
    * Authorize the xbox live. It will get the xsts token in response.
    * @param xblResponseToken The {@link XBoxResponse.Token}
@@ -152,6 +315,7 @@ export class MicrosoftAuthenticator {
       | 'rp://api.minecraftservices.com/'
       | 'http://xboxlive.com' = 'rp://api.minecraftservices.com/',
     signal?: AbortSignal,
+    deviceToken?: string,
   ) {
     const xstsResponse = await this.fetch('https://xsts.auth.xboxlive.com/xsts/authorize', {
       method: 'POST',
@@ -162,6 +326,7 @@ export class MicrosoftAuthenticator {
         Properties: {
           SandboxId: 'RETAIL',
           UserTokens: [xblResponseToken],
+          ...(deviceToken ? { DeviceToken: deviceToken } : {}),
         },
         RelyingParty: relyingParty,
         TokenType: 'JWT',
@@ -277,10 +442,12 @@ export class MicrosoftAuthenticator {
    */
   async acquireXBoxToken(oauthAccessToken: string, signal?: AbortSignal) {
     const xblResponse: XBoxResponse = await this.authenticateXboxLive(oauthAccessToken, signal)
-    const minecraftXstsResponse: XBoxResponse = await this.authorizeXboxLive(
+    const deviceToken = (await this.acquireXboxDeviceToken(signal)).Token
+    const minecraftXstsResponse = await this.authorizeXboxLive(
       xblResponse.Token,
       'rp://api.minecraftservices.com/',
       signal,
+      deviceToken,
     )
     // The `http://xboxlive.com` relying party is only needed to fetch the
     // Xbox avatar/gamertag. Some accounts that legitimately own Minecraft
@@ -294,6 +461,7 @@ export class MicrosoftAuthenticator {
       xblResponse.Token,
       'http://xboxlive.com',
       signal,
+      deviceToken,
     ).catch(() => undefined)
 
     return { minecraftXstsResponse, liveXstsResponse: xstsResponse }

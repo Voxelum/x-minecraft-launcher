@@ -1,11 +1,11 @@
-import { Constants, DeviceCodeResponse, INativeBrokerPlugin, ServerError } from '@azure/msal-common'
+import { AccountInfo, DeviceCodeResponse, INativeBrokerPlugin } from '@azure/msal-common'
 import { AuthenticationResult, LogLevel, PublicClientApplication } from '@azure/msal-node'
+import { AnyError } from '@xmcl/utils'
 import { copyFileSync, mkdirSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { SecretStorage } from '~/app/SecretStorage'
 import { Logger } from '~/infra'
-import { AnyError } from '@xmcl/utils'
 import { createPlugin } from '../credentialPlugin'
 import { createNetworkClient } from './OAuthNetworkClient'
 
@@ -89,7 +89,7 @@ export class MicrosoftOAuthClient {
       },
       broker: nativeBrokerPlugin ? { nativeBrokerPlugin } : undefined,
       cache: {
-        cachePlugin: createPlugin('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', this.logger, this.storage),
+        cachePlugin: createPlugin('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', this.logger, this.storage, [account]),
       },
       system: {
         loggerOptions: {
@@ -115,22 +115,17 @@ export class MicrosoftOAuthClient {
     useNativeBroker?: boolean
   } = {}) {
     const nativeBrokerPlugin = options.useNativeBroker ? await this.getNativeBrokerPlugin() : undefined
-    const app = await this.getOAuthApp(username, options.signal, nativeBrokerPlugin)
-    // When the user explicitly picked device-code login they want to control
-    // which account signs in -- often a different account than the one signed in
-    // to Windows (which the WAM native broker reuses silently). Skip the silent
-    // broker reuse so they actually reach the device-code flow. A background
-    // silent refresh of an existing user (`slientOnly`) must still reuse the
-    // cache, so keep the fast path for that case.
+    const cacheApp = await this.getOAuthApp(username, options.signal)
+    let account: AccountInfo | undefined
     const allowSilentReuse = options.slientOnly || !options.useDeviceCode
-    if (username && !options?.code && allowSilentReuse) {
-      const accounts = await app.getTokenCache().getAllAccounts().catch(() => [])
+    if (username && !options.code && allowSilentReuse) {
+      const accounts = await cacheApp.getTokenCache().getAllAccounts().catch(() => [])
       // The token cache is shared by every Microsoft account, and
       // acquireTokenSilent keys off homeAccountId (it ignores username), so
       // the match must be exact.
-      const account = accounts.find(a => a.username.toLowerCase() === username.toLowerCase())
+      account = accounts.find(a => a.username.toLowerCase() === username.toLowerCase())
       if (account) {
-        const result = await app.acquireTokenSilent({
+        const result = await cacheApp.acquireTokenSilent({
           scopes,
           account,
           forceRefresh: false,
@@ -143,7 +138,7 @@ export class MicrosoftOAuthClient {
           return {
             result,
             extra: options.extraScopes
-              ? await app.acquireTokenSilent({
+              ? await cacheApp.acquireTokenSilent({
                 scopes: options.extraScopes,
                 account,
               }).catch((e) => {
@@ -161,6 +156,9 @@ export class MicrosoftOAuthClient {
       throw new AnyError('MicrosoftOAuthSlientFailed', 'Fail to acquire Microsoft token silently.')
     }
 
+    const app = nativeBrokerPlugin && !options.useDeviceCode
+      ? await this.getOAuthApp(username, options.signal, nativeBrokerPlugin)
+      : cacheApp
     let result: AuthenticationResult | null = null
     if (!options.useDeviceCode) {
       if (nativeBrokerPlugin) {
@@ -168,6 +166,7 @@ export class MicrosoftOAuthClient {
           result = await app.acquireTokenInteractive({
             scopes,
             extraScopesToConsent: options.extraScopes,
+            account,
             loginHint: username || undefined,
             // Force the WAM account picker so the user can pick/add a
             // different account instead of silently logging in with the
@@ -177,6 +176,10 @@ export class MicrosoftOAuthClient {
             openBrowser: async () => {},
             windowHandle: this.getWindowHandle?.(),
           })
+          if (account && result.account?.homeAccountId !== account.homeAccountId) {
+            this.logger.warn(`Windows native broker returned a different account for ${username}; falling back to OAuth redirect`)
+            result = null
+          }
         } catch (e) {
           const message = e instanceof Error ? `${e.name} ${e.message}` : String(e)
           if (/(user[_ -]?cancel|access_denied)/i.test(message)) {
@@ -195,6 +198,7 @@ export class MicrosoftOAuthClient {
             scopes,
             extraScopesToConsent: options.extraScopes,
             loginHint: username,
+            prompt: 'select_account',
           })
           code = await this.getCode(url, redirectUri, options.signal)
         }
@@ -218,6 +222,13 @@ export class MicrosoftOAuthClient {
         scopes,
         deviceCodeCallback: this.deviceCodeCallback,
       })
+    }
+
+    if (account && result!.account?.homeAccountId !== account.homeAccountId) {
+      throw new AnyError(
+        'MicrosoftOAuthAccountMismatch',
+        `Microsoft authentication returned a different account than ${username}.`,
+      )
     }
 
     let extra: AuthenticationResult | undefined
