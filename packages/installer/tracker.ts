@@ -23,7 +23,7 @@ export function onState<T extends object, K extends keyof T>(
   phase: K,
   payload: T[K],
 ): void {
-  tracker?.({ phase, payload } as any)
+  tracker?.({ phase, payload } as TrackEvent<T>)
 }
 
 export function onProgress<T extends object, K extends keyof T>(
@@ -32,7 +32,7 @@ export function onProgress<T extends object, K extends keyof T>(
   payload: Omit<T[K], 'progress'>,
 ): { progress: number; total: number } {
   const single = { progress: 0, total: 0 }
-  tracker?.({ phase, payload: { ...payload, progress: single } } as any)
+  tracker?.({ phase, payload: { ...payload, progress: single } } as TrackEvent<T>)
   return single
 }
 
@@ -42,7 +42,7 @@ export function onDownloadMultiple<T extends object, K extends keyof T>(
   payload: Omit<T[K], 'progress'>,
 ): ProgressTrackerMultiple {
   const parent = new ProgressTrackerMultiple()
-  tracker?.({ phase, payload: { ...payload, progress: parent } } as any)
+  tracker?.({ phase, payload: { ...payload, progress: parent } } as TrackEvent<T>)
   return parent
 }
 
@@ -52,6 +52,6 @@ export function onDownloadSingle<T extends object, K extends keyof T>(
   payload: Omit<T[K], 'progress'>,
 ): ProgressTrackerSingle {
   const single = new ProgressTrackerSingle()
-  tracker?.({ phase, payload: { ...payload, progress: single } } as any)
+  tracker?.({ phase, payload: { ...payload, progress: single } } as TrackEvent<T>)
   return single
 }
