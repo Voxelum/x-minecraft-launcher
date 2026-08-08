@@ -1374,7 +1374,7 @@ multiplayer:
   connectionFailedHint: >-
     Unable to establish connection. Check if both peers have compatible NAT
     types.
-  connectedToHost: Connected to the room host
+  connectedToMaster: Connected to the room master
   connections: Connections
   copied: Copied!
   copy: Copy
@@ -1414,8 +1414,9 @@ multiplayer:
     until the ICE status is complete. If the token below remains unchanged, you
     can copy it and send it to your peer."
   groupId: Group Id
-  guest: Guest
-  host: Host
+  master: Master
+  masterHostsGameHint: The room master is the connection hub and should host the Minecraft LAN world. Transfer master before changing hosts.
+  member: Member
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
   joinConnection: >-
@@ -1424,6 +1425,7 @@ multiplayer:
   joinManual: Join
   joinOrCreateGroup: Join/Create Group
   joinOrCreateGroupHint: Get group id from your friends or create a group
+  joinCreatesMissingRoomHint: If this room does not exist, you will create it and become its master.
   kernel: P2P Kernel
   kernelDescription: >-
     Use either native WebRTC or node-datachannel. Only switch this when your p2p
@@ -1434,7 +1436,7 @@ multiplayer:
   name: Multiplayer on LAN
   natWarning: >-
     Your NAT type may prevent direct connections. Try enabling relay server in
-    settings or ask your friend to host instead.
+    settings or ask your friend to be the room master instead.
   networkInfo: Network Info (Click to toggle)
   next: Next
   otherExposedPortDescription: The port forwarded by {user}
@@ -1454,6 +1456,7 @@ multiplayer:
   sharingNotificationTitle: A peer is sharing their game config
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
+  waitingForMaster: Waiting for the room master to reconnect
 myStuff: My Stuff
 natType:
   blocked: Blocked

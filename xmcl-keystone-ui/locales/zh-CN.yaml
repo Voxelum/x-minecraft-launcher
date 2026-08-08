@@ -1163,8 +1163,8 @@ multiplayer:
   confirm: 确定
   connectionError: 连接错误
   connectionFailedHint: 无法建立连接。请检查双方的 NAT 类型是否兼容。
-  connectedToHost: 已连接到房主
-  natWarning: 您的 NAT 类型可能阻碍直连。请尝试在设置中启用中继服务器，或让朋友作为主机。
+  connectedToMaster: 已连接到房间主控
+  natWarning: 您的 NAT 类型可能阻碍直连。请尝试在设置中启用中继服务器，或让朋友担任房间主控。
   connections: 用户连接管理
   copied: 已复制！
   copy: 复制
@@ -1186,14 +1186,16 @@ multiplayer:
   gatheringIce: >
     请将<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>发送给您的联机伙伴，您的联机伙伴在 <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> 加入连接 </span> 中输入这段文字。 <br> 期间 ICE 服务器可能需要时间收集足够信息来创建<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>。 <br> <span class="hint-text"> 您不需要等 ICE 服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，您可以提前将令牌复制给对方。 </span>
   groupId: 小组 ID
-  guest: 玩家
-  host: 房主
+  master: 主控
+  masterHostsGameHint: 房间主控是联机连接中心，应由主控开启 Minecraft 局域网世界。更换游戏宿主前请先转移主控。
+  member: 成员
   illegalTokenDescription: 非法的令牌，请确认对方给您的令牌是完整且正确的。
   initiateConnection: 发起连接
   joinConnection: 如果您的伙伴已经创建了连接，您需要选择加入链接。
   joinManual: 加入连接
   joinOrCreateGroup: 加入/创建群组
   joinOrCreateGroupHint: 从您的小伙伴那获得群组 ID 或自己创建一个群组
+  joinCreatesMissingRoomHint: 如果该房间不存在，你会创建它并成为房间主控。
   kernel: P2P内核
   kernelDescription: |-
     使用本机 WebRTC 或节点数据通道。
@@ -1219,6 +1221,7 @@ multiplayer:
   sharingNotificationTitle: 同伴正在共享游戏配置
   start: 开始
   startNewP2PConnection: 点击开始按钮来新建一个新的点对点连接
+  waitingForMaster: 正在等待房间主控重新连接
 myStuff: 个人中心
 migrateMinecraft:
   name: 迁移 Minecraft 文件

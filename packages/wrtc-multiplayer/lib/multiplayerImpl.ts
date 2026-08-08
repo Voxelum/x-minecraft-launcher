@@ -18,7 +18,12 @@ import { createIceServersProvider, getKey } from './iceServers'
 import { createLanDiscover } from './lanDiscover'
 import { exposeLocalPort, parseCandidate } from './mapAndGetPortCanidate'
 import { raceNatType } from './nat'
-import { createPeerGroup, MultiplayerRoomApi } from './peerGorup'
+import {
+  createPeerGroup,
+  dropPeerConnection,
+  isShareableTurnServer,
+  MultiplayerRoomApi,
+} from './peerGorup'
 import { createPeerSharing } from './peerSharing'
 import { createPeerUserInfo } from './peerUserInfo'
 import { InitiateOptions, Peers } from './peers'
@@ -54,6 +59,8 @@ export function createMultiplayer(roomApi: MultiplayerRoomApi) {
   const sharing = createPeerSharing(peers)
   const userInfo = createPeerUserInfo()
   const host = createHosting(peers)
+  let addSharedTurnServer = (_server: RTCIceServer) => {}
+  let clearSharedTurnServers = () => {}
   const group = createPeerGroup(
     idSignal,
     peers,
@@ -82,12 +89,17 @@ export function createMultiplayer(roomApi: MultiplayerRoomApi) {
           group: admission.roomId,
           state: 'connecting',
           role: admission.role,
-          maxPeers: admission.maxPeers ?? 0,
+          maxPeers: admission.maxPeers,
+          selfPeerId: admission.peerId,
         }),
       )
     },
     () => {
-      state.then((s) => s.groupSet({ group: '', state: 'closed', role: '', maxPeers: 0 }))
+      clearSharedTurnServers()
+      state.then((s) => s.groupReset())
+    },
+    (roomState) => {
+      state.then((s) => s.groupRoomStateSet(roomState))
     },
     (sender, profile) => {
       state.then((s) => {
@@ -100,6 +112,7 @@ export function createMultiplayer(roomApi: MultiplayerRoomApi) {
     (ping, timestamp) => {
       state.then((s) => s.pingSet({ ping, timestamp }))
     },
+    (server) => addSharedTurnServer(server),
   )
 
   state.then((s) => {
@@ -176,6 +189,8 @@ export function createMultiplayer(roomApi: MultiplayerRoomApi) {
     },
     roomApi.getIceServerCredential,
   )
+  addSharedTurnServer = iceServers.addSharedTurnServer
+  clearSharedTurnServers = iceServers.clearSharedTurnServers
   const portCandidate = 35565
 
   const createContext = (
@@ -196,7 +211,12 @@ export function createMultiplayer(roomApi: MultiplayerRoomApi) {
       getNextIceServer: () => {
         // select priority follow targetIceServer (turn) > common turns > common stuns
 
-        if (!triedTargetIceServer && targetIceServer && targetIceServer.credential) {
+        if (
+          isAllowTurn() &&
+          !triedTargetIceServer &&
+          targetIceServer &&
+          targetIceServer.credential
+        ) {
           triedTargetIceServer = true
           current = targetIceServer
           return targetIceServer
@@ -244,11 +264,11 @@ export function createMultiplayer(roomApi: MultiplayerRoomApi) {
         if (remoteId) {
           console.log(`Send local description ${remoteId}: ${sdp} ${type}`)
           // Send to the group if the remoteId is set
-          const [stuns] = iceServers.get(preferredIceServers)
           if (current && (type === 'offer' || type === 'answer')) {
+            const sharedTurnServer = isShareableTurnServer(current) ? current : undefined
             group
               .getGroup()
-              ?.sendLocalDescription(remoteId, sdp, type, candidates, current, stuns, () => true)
+              ?.sendLocalDescription(remoteId, sdp, type, candidates, sharedTurnServer)
               .catch(console.error)
           }
         }
@@ -283,7 +303,7 @@ export function createMultiplayer(roomApi: MultiplayerRoomApi) {
       },
       onLanMessage: discover.onLanMessage,
       onConnectionEstablished: () => {
-        if (remoteId) group.getGroup()?.markConnected(remoteId)
+        if (remoteId) group.getGroup()?.setRtcState(remoteId, 'connected')
       },
       getUserInfo: userInfo.getUserInfo,
       getSharedInstance: sharing.getSharedInstance,
@@ -365,13 +385,14 @@ export function createMultiplayer(roomApi: MultiplayerRoomApi) {
         )
         if (co.connectionState === 'connected' && remoteId) {
           roomReconnectAttempts = 0
-          group.getGroup()?.markConnected(remoteId)
+          group.getGroup()?.setRtcState(remoteId, 'connected')
         }
         if (
           co.connectionState === 'closed' ||
           co.connectionState === 'disconnected' ||
           co.connectionState === 'failed'
         ) {
+          if (remoteId) group.getGroup()?.setRtcState(remoteId, 'negotiating')
           if (sess.isClosed) {
             // Close by user manually
             peers.remove(sessionId)
@@ -379,14 +400,14 @@ export function createMultiplayer(roomApi: MultiplayerRoomApi) {
           } else {
             const activeRoom = group.getGroup()
             if (activeRoom) {
-              if (initiator && activeRoom.role === 'host' && roomReconnectAttempts < 6) {
+              if (initiator && activeRoom.role === 'master' && roomReconnectAttempts < 6) {
                 roomReconnectAttempts++
                 const next = create(ctx, sessionId)
                 sess.setConnection(next)
                 sess.initiate()
               } else {
-                if (remoteId && activeRoom.role === 'host') {
-                  activeRoom.removePeer(remoteId)
+                if (remoteId && activeRoom.canRemoveMember(remoteId)) {
+                  activeRoom.removeMember(remoteId)
                 }
                 sess.close()
                 peers.remove(sessionId)
@@ -570,18 +591,13 @@ export function createMultiplayer(roomApi: MultiplayerRoomApi) {
     },
     shareInstance: sharing.shareInstance,
     async drop(id: string): Promise<void> {
-      const existed = peers.get(id)
-      if (existed) {
-        if (existed.remoteId) {
-          group.getGroup()?.removePeer(existed.remoteId, true)
-        }
-        existed.close()
-        state.then((s) => s.connectionDrop(id))
-      }
+      dropPeerConnection(peers, group.getGroup(), id)
     },
 
     refreshNat,
+    createGroup: group.createGroup,
     joinGroup: group.joinGroup,
     leaveGroup: group.leaveGroup,
+    transferGroupMaster: group.transferGroupMaster,
   }
 }

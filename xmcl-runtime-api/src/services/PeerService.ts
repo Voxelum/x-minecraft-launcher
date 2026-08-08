@@ -5,6 +5,8 @@ import type {
   ConnectionUserInfo,
   IceGatheringState,
   Peer,
+  MultiplayerRoomMember,
+  MultiplayerRoomState,
   SelectedCandidateInfo,
   SignalingState,
 } from '../multiplayer'
@@ -39,7 +41,12 @@ export class PeerState {
   ips = [] as string[]
   turnservers = {} as Record<string, string>
   group = ''
-  groupRole: 'host' | 'guest' | '' = ''
+  groupRole: 'master' | 'member' | '' = ''
+  groupSelfPeerId = ''
+  groupMasterPeerId = ''
+  groupMembers = [] as MultiplayerRoomMember[]
+  groupRevision = 0
+  groupStatus: 'open' | 'waiting-master' | 'closed' | '' = ''
   groupMaxPeers = 0
   groupState: 'connecting' | 'connected' | 'closing' | 'closed' = 'closed'
   groupError?: Error
@@ -68,18 +75,51 @@ export class PeerState {
   groupSet({
     group,
     state,
-    role = '',
-    maxPeers = 0,
+    role,
+    maxPeers,
+    selfPeerId,
+    masterPeerId = '',
   }: {
     group: string
     state: 'connecting' | 'connected' | 'closing' | 'closed'
-    role?: 'host' | 'guest' | ''
-    maxPeers?: number
+    role: 'master' | 'member'
+    maxPeers: number
+    selfPeerId: string
+    masterPeerId?: string
   }) {
     this.group = group
     this.groupState = state
     this.groupRole = role
     this.groupMaxPeers = maxPeers
+    this.groupSelfPeerId = selfPeerId
+    this.groupMasterPeerId = masterPeerId
+    this.groupMembers = []
+    this.groupRevision = 0
+    this.groupStatus = ''
+    this.groupError = undefined
+  }
+
+  groupRoomStateSet(room: MultiplayerRoomState) {
+    this.groupSelfPeerId = room.selfPeerId
+    this.groupMasterPeerId = room.masterPeerId
+    this.groupMembers = room.members
+    this.groupRevision = room.revision
+    this.groupStatus = room.status
+    this.groupMaxPeers = room.maxPeers
+    this.groupRole = room.selfPeerId === room.masterPeerId ? 'master' : 'member'
+  }
+
+  groupReset() {
+    this.group = ''
+    this.groupRole = ''
+    this.groupSelfPeerId = ''
+    this.groupMasterPeerId = ''
+    this.groupMembers = []
+    this.groupRevision = 0
+    this.groupStatus = ''
+    this.groupMaxPeers = 0
+    this.groupState = 'closed'
+    this.groupError = undefined
   }
 
   groupStateSet(state: 'connecting' | 'connected' | 'closing' | 'closed') {
@@ -88,6 +128,10 @@ export class PeerState {
 
   groupErrorSet(error: Error) {
     this.groupError = error
+  }
+
+  groupErrorClear() {
+    this.groupError = undefined
   }
 
   connectionClear() {
