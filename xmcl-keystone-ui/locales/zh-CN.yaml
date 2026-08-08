@@ -72,7 +72,7 @@ agent:
   marketConfirmTitle: 安装{type}
   marketConfirmMessage: 要将 {name} 安装到当前实例吗？
   marketConfirmTarget: 目标：{instance}
-  marketInstallFailed: "{type}安装失败"
+  marketInstallFailed: '{type}安装失败'
   marketType:
     datapack: 数据包
     mod: 模组
@@ -1718,7 +1718,7 @@ setting:
     assistantSuggestion2: 给卡片添加淡淡的渐变背景
     assistantTitle: CSS 助手
     dropHint: 拖入 .css 文件以加载
-    editorPlaceholder: "/* 在此编写你的自定义 CSS */"
+    editorPlaceholder: '/* 在此编写你的自定义 CSS */'
     globalToggle: 开关自定义 CSS
     openInDialog: 在助手对话框中打开
     title: 自定义 CSS
@@ -1740,7 +1740,7 @@ setting:
   general: 基本设置
   githubRelease: Github
   globalJava: 首选 Java
-  globalJavaHint: "在自动模式下会优先尝试此 Java，仅当其与游戏版本不兼容时才回退到自动检测。"
+  globalJavaHint: '在自动模式下会优先尝试此 Java，仅当其与游戏版本不兼容时才回退到自动检测。'
   globalSetting: 全局实例设置
   globalSettingHint: 实例默认情况下会使用这些全局设置
   importSettings: 导入设置

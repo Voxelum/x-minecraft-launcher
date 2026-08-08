@@ -1157,7 +1157,7 @@ modpack:
   publishLogin: Sign in to Modrinth
   publishFiles: selected files
   publishLinkageSummary: '{linked} of {total} mods/resource packs/shader packs will be linked directly to their Modrinth download instead of being uploaded.'
-  publishLinkageEmbeddedSummary: '{count} file(s) can''t be linked and will be uploaded (embedded) with this version.'
+  publishLinkageEmbeddedSummary: "{count} file(s) can't be linked and will be uploaded (embedded) with this version."
   publishLinkageShowFiles: Show files that must be uploaded
   publishLinkageReason:
     missing-file: File not found on disk
