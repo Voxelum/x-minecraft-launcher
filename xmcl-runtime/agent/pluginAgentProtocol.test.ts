@@ -70,6 +70,25 @@ describe('agent protocol', () => {
     expect(ctx.response.handled).toBe(true)
   })
 
+  test('rejects unconfigured mode without resolving XMCL authorization', async () => {
+    const resolveXmclAuthorization = vi.fn(async () => ({
+      accessToken: 'xmcl-token',
+      accountId: 'account-id',
+    }))
+    const handler = createAgentProtocolHandler(
+      async () => ({ mode: 'unconfigured' }),
+      resolveXmclAuthorization,
+    )
+    const ctx = context()
+
+    await handler(ctx)
+
+    expect(ctx.response.status).toBe(401)
+    expect(ctx.response.handled).toBe(true)
+    expect(ctx.request.url.toString()).toBe(BUILTIN_AGENT_ENDPOINT)
+    expect(resolveXmclAuthorization).not.toHaveBeenCalled()
+  })
+
   test('ignores unrelated requests', async () => {
     const resolveProvider = vi.fn(async () => ({ mode: 'builtin' as const }))
     const handler = createAgentProtocolHandler(resolveProvider, async () => undefined)

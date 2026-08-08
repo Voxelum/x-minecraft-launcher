@@ -45,7 +45,7 @@ agent:
   reset: 新建对话
   notConfiguredTitle: Agent 暂不可用
   notConfiguredHint: >-
-    登录 XMCL 账号以使用内置服务，或在设置 → 通用 → AI Agent 中填写 API Key、模型和 Endpoint。
+    请在设置 → 通用 → AI Agent 中填写 API Key、模型和 OpenAI 兼容 Endpoint，例如 OpenAI 或兼容 Claude 的网关。
   openSettings: 打开设置
   setupGuide: 配置指南
   emptyHint: >-
@@ -1642,10 +1642,13 @@ setting:
   aiAgentApiKeyNotNeededHint: 该服务在本地运行，无需 API Key
   aiAgentApiKeySaved: 已保存
   aiAgentApiKeyStored: 已保存密钥，输入可替换
+  aiAgentApiKeyPlaceholder: OpenAI 或 Claude 服务商 API Key
   aiAgentBuiltin: 内置
   aiAgentCustom: 自定义
   aiAgentEndpoint: AI Agent Endpoint
   aiAgentEndpointDescription: 聊天补全（chat completions）的 Endpoint 地址。
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 或 claude-sonnet-4-5
   aiAgentModel: AI Agent 模型
   aiAgentModelDescription: 请求聊天补全时使用的模型名。
   aiAgentProvider: AI Agent 服务商

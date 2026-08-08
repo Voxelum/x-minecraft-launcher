@@ -52,8 +52,8 @@ agent:
   errorTitle: The agent hit an error
   inputPlaceholder: Ask the agent…  (Enter to send, Shift+Enter for newline)
   notConfiguredHint: >-
-    Sign in to your XMCL account for the built-in provider, or set an API key,
-    model and endpoint in Settings → General → AI Agent.
+    Set an API key, model and OpenAI-compatible endpoint in Settings → General
+    → AI Agent. For example, use OpenAI or a Claude-compatible gateway.
   notConfiguredTitle: Agent unavailable
   openSettings: Open settings
   passiveGameCrashed: Game crashed
@@ -1899,10 +1899,13 @@ setting:
   aiAgentApiKeyNotNeededHint: This provider runs locally and needs no API key
   aiAgentApiKeySaved: Saved
   aiAgentApiKeyStored: Key saved - type to replace
+  aiAgentApiKeyPlaceholder: OpenAI or Claude provider API key
   aiAgentBuiltin: Built-in
   aiAgentCustom: Custom
   aiAgentEndpoint: AI Agent Endpoint
   aiAgentEndpointDescription: Chat completions endpoint URL.
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 or claude-sonnet-4-5
   aiAgentModel: AI Agent Model
   aiAgentModelDescription: Model name to send in chat completion requests.
   aiAgentProvider: AI Agent Provider

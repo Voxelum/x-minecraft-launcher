@@ -1191,7 +1191,13 @@ serverStatus:
   ping: Pingen...
   refuse: §4Server weigerde!
   timeout: §4Verbind server time-out!
+agent:
+  notConfiguredHint: Stel een API-sleutel, model en OpenAI-compatibel endpoint in via Instellingen → Algemeen → AI-agent. Gebruik bijvoorbeeld OpenAI of een Claude-compatibele gateway.
 setting:
+  aiAgentApiKeyDescription: Configureer een OpenAI-compatibele provider, zoals OpenAI of een gateway voor Claude. De sleutel wordt lokaal op dit apparaat opgeslagen.
+  aiAgentApiKeyPlaceholder: API-sleutel van OpenAI- of Claude-provider
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 of claude-sonnet-4-5
   themeStore:
     name: Almacén de temas
     description: Gardar e xestionar temas globais

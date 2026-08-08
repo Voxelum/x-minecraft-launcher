@@ -183,16 +183,14 @@
 
       <Teleport v-if="isShown" defer to="#omni-mode-specific-controls">
         <div class="agent-mode-controls">
-          <div class="agent-composer-status">
-            {{ statusLabel }}
-          </div>
           <div class="agent-mode-meta text-xs text-medium-emphasis flex min-w-0 items-center gap-2">
-          <span v-if="developerMode" data-testid="agent-context-usage" class="tabular-nums" :title="contextUsageTitle">
-            Context {{ contextUsageLabel }}
-          </span>
-          <v-spacer />
-          <span v-if="displayError" class="text-error truncate" :title="displayError">{{ displayError }}</span>
-        </div>
+            <span v-if="!available" class="agent-composer-status">{{ t('agent.statusDisabled') }}</span>
+            <span v-else-if="developerMode" data-testid="agent-context-usage" class="tabular-nums" :title="contextUsageTitle">
+              Context {{ contextUsageLabel }}
+            </span>
+            <v-spacer />
+            <span v-if="displayError" class="text-error truncate" :title="displayError">{{ displayError }}</span>
+          </div>
           <v-btn
             class="agent-new-conversation"
             icon="add_comment"
@@ -325,12 +323,6 @@ const {
   allowAll: allowAllConfirmations,
   decline: declineConfirmation,
 } = useAgentConfirmation()
-
-const statusLabel = computed(() => {
-  if (!available.value) return t('agent.statusDisabled')
-  if (running.value) return t('agent.statusWorking')
-  return t('agent.statusReady')
-})
 
 const liveStatus = computed(() => {
   for (let i = events.value.length - 1; i >= 0; i--) {

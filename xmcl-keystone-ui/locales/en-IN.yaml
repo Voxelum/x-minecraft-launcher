@@ -45,8 +45,8 @@ agent:
     a crash.
   inputPlaceholder: Ask the agent…  (Enter to send, Shift+Enter for newline)
   notConfiguredHint: >-
-    Set your API key, model and endpoint in Settings → General → AI Agent to
-    enable the agent.
+    Set an API key, model and OpenAI-compatible endpoint in Settings → General
+    → AI Agent. For example, use OpenAI or a Claude-compatible gateway.
   notConfiguredTitle: Agent not configured
   openSettings: Open settings
   reset: New conversation
@@ -1581,9 +1581,12 @@ setting:
   advancedSettings: Advanced Settings
   advancedSettingsHint: Danger zone - reset or manage launcher data
   aiAgentApiKey: AI Agent API Key
-  aiAgentApiKeyDescription: Stored locally on this device and used for agent requests.
+  aiAgentApiKeyDescription: Configure an OpenAI-compatible provider, such as OpenAI or a gateway for Claude. The key is stored locally on this device.
+  aiAgentApiKeyPlaceholder: OpenAI or Claude provider API key
   aiAgentEndpoint: AI Agent Endpoint
   aiAgentEndpointDescription: Chat completions endpoint URL.
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 or claude-sonnet-4-5
   aiAgentModel: AI Agent Model
   aiAgentModelDescription: Model name to send in chat completion requests.
   apiSets:

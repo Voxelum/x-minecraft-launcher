@@ -97,11 +97,11 @@
       @update:model-value="replaceNative = !$event ? false : $event"
     />
 
-    <template v-if="developerMode">
+    <template v-if="developerMode || !builtinAgentEnabled">
       <v-divider class="my-3" />
 
       <SettingItemSelect
-        :model-value="agentProviderId"
+        :model-value="builtinAgentEnabled || agentProviderMode === 'custom' ? agentProviderId : CUSTOM_AGENT_PROVIDER_ID"
         icon="cloud"
         :title="t('setting.aiAgentProvider')"
         :description="t('setting.aiAgentProviderDescription')"
@@ -153,7 +153,7 @@
                    appears while the field holds text and so could never reach a
                    saved key (the field is empty once the key is stored). -->
               <v-btn
-                v-if="agentApiKey || (agentConfigured && !agentKeyless)"
+                v-if="agentProviderMode === 'custom' && (agentApiKey || (agentConfigured && !agentKeyless))"
                 data-testid="agent-api-key-clear"
                 icon
                 variant="text"
@@ -183,7 +183,7 @@
             density="compact"
             class="setting-item-input"
             hide-details
-            :placeholder="agentResolvedModel"
+            :placeholder="agentProviderMode === 'custom' ? t('setting.aiAgentModelPlaceholder') : agentResolvedModel"
           />
         </template>
       </SettingItem>
@@ -202,7 +202,7 @@
             density="compact"
             class="setting-item-input"
             hide-details
-            :placeholder="agentResolvedEndpoint"
+            :placeholder="agentProviderMode === 'custom' ? t('setting.aiAgentEndpointPlaceholder') : agentResolvedEndpoint"
           />
         </template>
       </SettingItem>
@@ -218,8 +218,9 @@ import SettingItemSwitcher from '@/components/SettingItemSwitcher.vue'
 import { kCriticalStatus } from '@/composables/criticalStatus'
 import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
 import { kEnvironment } from '@/composables/environment'
+import { kFlights } from '@/composables/flights'
 import { injection } from '@/util/inject'
-import { BUILTIN_AGENT_PROVIDER_ID, CUSTOM_AGENT_PROVIDER_ID } from '@xmcl/runtime-api'
+import { BUILTIN_AGENT_FLIGHT, BUILTIN_AGENT_PROVIDER_ID, CUSTOM_AGENT_PROVIDER_ID } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useAgentSettings } from '../composables/agent/settings'
 import { useGameDirectory, useSettings } from '../composables/setting'
@@ -228,6 +229,8 @@ const { isNoEmptySpace, invalidGameDataPath } = injection(kCriticalStatus)
 const getDirErroText = useGetDataDirErrorText()
 const errorText = computed(() => isNoEmptySpace.value ? t('errors.DiskIsFull') : invalidGameDataPath.value ? getDirErroText(invalidGameDataPath.value) : undefined)
 const env = injection(kEnvironment)
+const flights = injection(kFlights)
+const builtinAgentEnabled = flights[BUILTIN_AGENT_FLIGHT] === true
 const {
   streamerMode,
   developerMode,
@@ -272,12 +275,12 @@ const {
 } = useAgentSettings()
 const agentProviderItems = computed(() => {
   const items = [
-    { text: t('setting.aiAgentBuiltin'), value: BUILTIN_AGENT_PROVIDER_ID },
+    ...(builtinAgentEnabled ? [{ text: t('setting.aiAgentBuiltin'), value: BUILTIN_AGENT_PROVIDER_ID }] : []),
     ...agentProviders.map(({ id, name }) => ({ text: name, value: id })),
   ]
   // The custom entry is only offered when the endpoint no longer matches a preset,
   // so it acts as a read-only indicator rather than a selectable option.
-  if (agentProviderId.value === CUSTOM_AGENT_PROVIDER_ID) {
+  if (agentProviderId.value === CUSTOM_AGENT_PROVIDER_ID || (!builtinAgentEnabled && agentProviderMode.value === 'builtin')) {
     items.push({ text: t('setting.aiAgentProviderCustom'), value: CUSTOM_AGENT_PROVIDER_ID })
   }
   return items

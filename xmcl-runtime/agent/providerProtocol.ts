@@ -49,6 +49,14 @@ export function createAgentProtocolHandler(
       return
     }
 
+    if (provider.mode === 'unconfigured') {
+      response.status = 401
+      response.headers = { 'content-type': 'application/json' }
+      response.body = JSON.stringify({ error: { message: 'Custom agent provider is not configured' } })
+      response.handled = true
+      return
+    }
+
     const authorization = await resolveXmclAuthorization()
     if (!authorization) {
       response.status = 401

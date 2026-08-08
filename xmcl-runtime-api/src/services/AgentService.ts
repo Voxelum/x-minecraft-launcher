@@ -6,6 +6,8 @@ export const BUILTIN_AGENT_ENDPOINT = 'https://ai.xmcl.app/v1/chat/completions'
 export const BUILTIN_AGENT_MODEL = 'xmcl-agent'
 /** Provider id used for the built-in XMCL provider. */
 export const BUILTIN_AGENT_PROVIDER_ID = 'xmcl'
+/** Default-off flight enabling the built-in XMCL provider. */
+export const BUILTIN_AGENT_FLIGHT = 'builtinAgent'
 /** Empty defaults select the built-in provider. */
 export const DEFAULT_AGENT_ENDPOINT = ''
 export const DEFAULT_AGENT_MODEL = ''

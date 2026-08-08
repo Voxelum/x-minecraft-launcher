@@ -1169,7 +1169,13 @@ serverStatus:
   ping: PING...
   refuse: §4SERVER REFUSED!
   timeout: §4CONNECT SERVR TIMEOUT!
+agent:
+  notConfiguredHint: SET AN API KEY, MODEL AN OPENAI-COMPATIBL ENDPOINT IN SETTINGZ → GENERAL → AI AGENT. FUR EXAMPL, USE OPENAI OR A CLAUDE-COMPATIBL GATEWAY.
 setting:
+  aiAgentApiKeyDescription: CONFIGUR AN OPENAI-COMPATIBL PROVIDR, SUCH AS OPENAI OR A GATEWAY FUR CLAUDE. TEH KEY IZ STORED LOCALY ON DIS DEVICE.
+  aiAgentApiKeyPlaceholder: OPENAI OR CLAUDE PROVIDR API KEY
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 OR claude-sonnet-4-5
   themeStore:
     name: TEEM STOR
     description: SAVE N MANAGE GLOBL TEEMZ

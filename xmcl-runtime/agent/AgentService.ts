@@ -1,10 +1,12 @@
 import {
   AgentServiceKey,
+  BUILTIN_AGENT_FLIGHT,
   DEFAULT_AGENT_ENDPOINT,
   DEFAULT_AGENT_MODEL,
   isKeylessAgentEndpoint,
   type AgentConversationKey,
   type AgentMessage,
+  type AgentProviderSettings,
   type AgentRunTrace,
   type AgentService as IAgentService,
   type LegacyConversationImport,
@@ -14,6 +16,7 @@ import { randomUUID } from 'crypto'
 import { join } from 'path'
 import { Inject, LauncherAppKey, type LauncherApp } from '~/app'
 import { IS_DEV } from '~/constant'
+import { kFlights } from '~/infra'
 import { kSettings } from '~/settings'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { AgentApiKeyStore } from './apiKey'
@@ -28,6 +31,7 @@ export { AGENT_SECRET_SERVICE } from './providerSettings'
 export type ResolvedAgentProvider =
   | { mode: 'builtin' }
   | { mode: 'custom'; endpoint: string; model: string; apiKey: string }
+  | { mode: 'unconfigured' }
 
 export const kResolvedAgentProvider = Symbol('resolved-agent-provider')
 
@@ -50,20 +54,20 @@ export class AgentService extends AbstractService implements IAgentService {
     this.documents = new AgentDocumentStore(documentDirectory)
   }
 
-  async getProviderSettings() {
+  async getProviderSettings(): Promise<AgentProviderSettings> {
     const settings = await this.app.registry.get(kSettings)
     const endpoint = settings.agentEndpoint || DEFAULT_AGENT_ENDPOINT
     const provider = await this[kResolvedAgentProvider]()
     const configured = provider.mode === 'custom'
       ? isKeylessAgentEndpoint(endpoint) || !!await this.apiKeys.get(endpoint)
-      : !!await this.app.registry.getOrCreate(XmclAccountService)
+      : provider.mode === 'builtin' && !!await this.app.registry.getOrCreate(XmclAccountService)
         .then(service => service[kXmclSessionAuthorization]())
         .catch(() => undefined)
     return {
       endpoint,
       model: settings.agentModel || DEFAULT_AGENT_MODEL,
       configured,
-      mode: provider.mode,
+      mode: provider.mode === 'builtin' ? 'builtin' : 'custom',
     }
   }
 
@@ -92,11 +96,14 @@ export class AgentService extends AbstractService implements IAgentService {
     const settings = await this.app.registry.get(kSettings)
     const endpoint = settings.agentEndpoint.trim()
     const model = settings.agentModel.trim()
-    if (!endpoint || !model) return { mode: 'builtin' }
+    if (endpoint && model) {
+      const apiKey = await this.apiKeys.get(endpoint)
+        ?? (isKeylessAgentEndpoint(endpoint) ? 'not-needed' : '')
+      return { mode: 'custom', endpoint, model, apiKey }
+    }
 
-    const apiKey = await this.apiKeys.get(endpoint)
-      ?? (isKeylessAgentEndpoint(endpoint) ? 'not-needed' : '')
-    return { mode: 'custom', endpoint, model, apiKey }
+    const flights = await this.app.registry.get(kFlights).catch((): Record<string, any> => ({}))
+    return flights[BUILTIN_AGENT_FLIGHT] === true ? { mode: 'builtin' } : { mode: 'unconfigured' }
   }
 
   getConversation(key: AgentConversationKey) {

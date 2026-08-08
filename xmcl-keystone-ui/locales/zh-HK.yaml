@@ -41,7 +41,7 @@ agent:
   disabledPlaceholder: AI 助理已停用
   emptyHint: 你可以叫 AI 助理檢查你嘅實例、切換模組、讀取記錄或者診斷崩潰。
   inputPlaceholder: 問下 AI 助理… （Enter 送出，Shift+Enter 換行）
-  notConfiguredHint: 請喺「設定」→「一般」→「AI 助理」度設定你嘅 API 金鑰、模型同終端點，以啟用 AI 助理。
+  notConfiguredHint: 請喺「設定」→「一般」→「AI 助理」度設定 API 金鑰、模型同 OpenAI 兼容終端點。例如使用 OpenAI 或兼容 Claude 嘅閘道。
   notConfiguredTitle: AI 助理未設定
   openSettings: 開啟設定
   reset: 重設對話
@@ -1408,9 +1408,12 @@ setting:
   advancedSettings: 進階設定
   advancedSettingsHint: 危險區域 - 重置或管理啟動器資料
   aiAgentApiKey: AI 助理 API 金鑰
-  aiAgentApiKeyDescription: 儲存喺此裝置本機，並用於向 AI 助理發送請求。
+  aiAgentApiKeyDescription: 配置 OpenAI 兼容供應商，例如 OpenAI 或 Claude 閘道。API 金鑰會儲存喺此裝置本機。
+  aiAgentApiKeyPlaceholder: OpenAI 或 Claude 供應商 API 金鑰
   aiAgentEndpoint: AI 助理終端點
   aiAgentEndpointDescription: 對話補全（Chat completions）的終端點 URL。
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 或 claude-sonnet-4-5
   aiAgentModel: AI 助理模型
   aiAgentModelDescription: 在對話補全請求中發送嘅模型名稱。
   apiSets:
