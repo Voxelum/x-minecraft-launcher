@@ -17,10 +17,11 @@ export const MICROSOFT_XBOX_LAUNCHER_SCOPES = [
 ]
 
 let nativeBrokerRuntimePrepared = false
+let nativeBrokerPlugin: INativeBrokerPlugin | undefined
+let nativeBrokerPluginInitialized = false
+let nativeBrokerPluginPromise: Promise<INativeBrokerPlugin | undefined> | undefined
 
 export class MicrosoftOAuthClient {
-  private nativeBrokerPlugin: INativeBrokerPlugin | undefined
-
   constructor(
     private fetch: typeof global.fetch,
     private logger: Logger,
@@ -37,18 +38,34 @@ export class MicrosoftOAuthClient {
     if (process.platform !== 'win32') {
       return undefined
     }
-    if (!this.nativeBrokerPlugin) {
+    if (nativeBrokerPluginInitialized) {
+      return nativeBrokerPlugin
+    }
+    if (nativeBrokerPluginPromise) {
+      return nativeBrokerPluginPromise
+    }
+    const operation = (async () => {
       try {
         this.prepareNativeBrokerRuntime()
         const { NativeBrokerPlugin } = await import('@azure/msal-node-extensions')
-        this.nativeBrokerPlugin = new NativeBrokerPlugin()
+        const plugin = new NativeBrokerPlugin()
+        return plugin.isBrokerAvailable ? plugin : undefined
       } catch (e) {
         this.logger.warn('Unable to load the Windows native broker plugin')
         this.logger.warn(e)
         return undefined
       }
+    })()
+    nativeBrokerPluginPromise = operation
+    try {
+      nativeBrokerPlugin = await operation
+      nativeBrokerPluginInitialized = true
+      return nativeBrokerPlugin
+    } finally {
+      if (nativeBrokerPluginPromise === operation) {
+        nativeBrokerPluginPromise = undefined
+      }
     }
-    return this.nativeBrokerPlugin.isBrokerAvailable ? this.nativeBrokerPlugin : undefined
   }
 
   private prepareNativeBrokerRuntime() {
@@ -76,9 +93,11 @@ export class MicrosoftOAuthClient {
       },
       system: {
         loggerOptions: {
-          logLevel: LogLevel.Verbose,
-          loggerCallback: (level, message, ppi) => {
-            this.logger.log(`${message}`)
+          logLevel: LogLevel.Error,
+          loggerCallback: (level, message) => {
+            if (level === LogLevel.Error) {
+              this.logger.error(new Error(message))
+            }
           },
         },
         networkClient: createNetworkClient(this.fetch, signal),

@@ -7,8 +7,14 @@ vi.mock('fs', () => ({
   mkdirSync: vi.fn(),
 }))
 
+const nativeBrokerPluginConstructed = vi.hoisted(() => ({ count: 0 }))
+
 vi.mock('@azure/msal-node-extensions', () => ({
   NativeBrokerPlugin: class {
+    constructor() {
+      nativeBrokerPluginConstructed.count += 1
+    }
+
     isBrokerAvailable = true
   },
 }))
@@ -16,9 +22,10 @@ vi.mock('@azure/msal-node-extensions', () => ({
 describe(MicrosoftOAuthClient.name, () => {
   beforeEach(() => {
     vi.mocked(copyFileSync).mockClear()
+    nativeBrokerPluginConstructed.count = 0
   })
 
-  test('prepares the native broker runtime once across concurrent clients', async () => {
+  test('serializes native broker initialization across concurrent clients', async () => {
     const createClient = () => new MicrosoftOAuthClient(
       vi.fn(),
       { log: vi.fn(), warn: vi.fn() } as any,
@@ -38,5 +45,6 @@ describe(MicrosoftOAuthClient.name, () => {
     ])
 
     expect(copyFileSync).toHaveBeenCalledTimes(2)
+    expect(nativeBrokerPluginConstructed.count).toBe(1)
   })
 })
