@@ -26,7 +26,7 @@ import { AgentArtifactStore } from './artifacts'
 import { AgentDocumentStore, kAgentDocumentDirectory } from './documents'
 import { AgentHistoryStore } from './history'
 
-export { AGENT_SECRET_SERVICE } from './providerSettings'
+export { SECRET_SERVICE as AGENT_SECRET_SERVICE } from './apiKey'
 
 export type ResolvedAgentProvider =
   | { mode: 'builtin' }

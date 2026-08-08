@@ -6,16 +6,11 @@ import {
   BUILTIN_AGENT_MODEL,
   BUILTIN_AGENT_PROVIDER_ID,
   CUSTOM_AGENT_PROVIDER_ID,
-  DEFAULT_AGENT_PROVIDER,
   getAgentProviderPreset,
   resolveAgentProviderId,
 } from '@xmcl/runtime-api'
 import { kXmclAccount } from '../xmclAccount'
 import { useService } from '../service'
-
-const LEGACY_API_KEY = 'agentApiKey'
-const LEGACY_ENDPOINT = 'agentEndpoint'
-const LEGACY_MODEL = 'agentModel'
 
 export const useAgentSettings = createSharedComposable(() => {
   const service = useService(AgentServiceKey)
@@ -40,22 +35,7 @@ export const useAgentSettings = createSharedComposable(() => {
   }
 
   const ready = (async () => {
-    const legacyApiKey = localStorage.getItem(LEGACY_API_KEY) ?? ''
-    const legacyEndpoint = localStorage.getItem(LEGACY_ENDPOINT) ?? ''
-    const legacyModel = localStorage.getItem(LEGACY_MODEL) ?? ''
-    let settings = await service.getProviderSettings()
-    if (legacyApiKey || legacyEndpoint || legacyModel) {
-      const migrateToExternal = !!legacyApiKey && !legacyEndpoint && !settings.endpoint
-      await service.setProviderSettings({
-        endpoint: legacyEndpoint || settings.endpoint || (migrateToExternal ? DEFAULT_AGENT_PROVIDER.endpoint : ''),
-        model: legacyModel || settings.model || (migrateToExternal ? DEFAULT_AGENT_PROVIDER.defaultModel : ''),
-        apiKey: legacyApiKey || undefined,
-      })
-      localStorage.removeItem(LEGACY_API_KEY)
-      localStorage.removeItem(LEGACY_ENDPOINT)
-      localStorage.removeItem(LEGACY_MODEL)
-      settings = await service.getProviderSettings()
-    }
+    const settings = await service.getProviderSettings()
     endpoint.value = settings.endpoint
     model.value = settings.model
     providerConfigured.value = settings.configured
