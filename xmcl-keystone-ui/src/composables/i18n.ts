@@ -1,7 +1,7 @@
-import { Settings } from '@xmcl/runtime-api'
+import { resolveXmclApiEndpoints, Settings } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { useLocale } from 'vuetify'
-import { useI18nSearchFlights } from './flights'
+import { kFlights, useI18nSearchFlights } from './flights'
 
 const locales = import.meta.glob('../../locales/*.yaml')
 const TRANSLATION_DEBOUNCE_MS = 250
@@ -63,6 +63,7 @@ export function useAutoI18nEnabled() {
 
 export function useAutoI18nCommunityContent(allowLocale: string[] = []) {
   const { locale } = useI18n()
+  const flights = inject(kFlights, {})
 
   async function getContent(type: 'modrinth' | 'curseforge', id: string | number) {
     if (!allowLocale.includes(locale.value)) {
@@ -74,7 +75,10 @@ export function useAutoI18nCommunityContent(allowLocale: string[] = []) {
     const pending = pendingTranslations.get(key)
     if (pending) return pending
 
-    const url = new URL('https://api.xmcl.app/translation')
+    const url = new URL(
+      '/translation',
+      resolveXmclApiEndpoints(flights.xmclApiBaseUrl).common,
+    )
     url.searchParams.append('type', type)
     url.searchParams.append('id', id.toString())
     const request = new Promise<string>((resolve, reject) => {

@@ -1,9 +1,8 @@
 import { LauncherApp } from '~/app'
 import { AnyError } from '@xmcl/utils'
 import { UserService } from '../UserService'
-import { fetch as undiciFetch } from 'undici'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
-import { resolveXmclApiBaseUrl } from '~/app/xmclApiBaseUrl'
+import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
 import { kFlights } from '~/infra'
 
 interface ModrinthOAuthResponse {
@@ -83,7 +82,7 @@ export async function loginModrinth(
     const flights = await app.registry.get(kFlights)
     const authUrl = new URL(
       '/modrinth/auth',
-      resolveXmclApiBaseUrl(flights.xmclApiBaseUrl, app.getLogger('ApiBaseUrl')),
+      resolveXmclApiEndpoints(flights.xmclApiBaseUrl).common,
     )
     authUrl.searchParams.set('code', code)
     authUrl.searchParams.set('redirect_uri', redirect_uri)

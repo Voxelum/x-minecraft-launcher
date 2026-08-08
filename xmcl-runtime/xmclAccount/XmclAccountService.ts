@@ -10,7 +10,7 @@ import {
 } from '@xmcl/runtime-api'
 import { createHash, randomBytes } from 'crypto'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
-import { resolveXmclApiBaseUrl } from '~/app/xmclApiBaseUrl'
+import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { UserService } from '~/user'
@@ -91,7 +91,10 @@ export class XmclAccountService
       (input, init) => app.fetch(input, init),
       async () => {
         const flights = await app.registry.get(kFlights)
-        return resolveXmclApiBaseUrl(flights.xmclApiBaseUrl, app.getLogger('ApiBaseUrl'))
+        return resolveXmclApiEndpoints(
+          flights.xmclApiBaseUrl,
+          () => app.getLogger('ApiBaseUrl').warn('Ignoring invalid xmclApiUrl flight; using default XMCL API origins.'),
+        ).common
       },
     )
 
