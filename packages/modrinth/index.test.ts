@@ -532,4 +532,34 @@ describe('ModrinthV2Client', () => {
       await expect(client.getUserProjects('123')).rejects.toThrow(ModerinthApiError)
     })
   })
+  describe('#updateCollection', () => {
+    it('replaces collection projects and supports removing the final project', async () => {
+      const requests: Array<{ url: string; method: string | undefined; body: unknown }> = []
+      const patchFetch: typeof globalThis.fetch = async (input, init) => {
+        requests.push({
+          url: input.toString(),
+          method: init?.method,
+          body: JSON.parse(init?.body as string),
+        })
+        return new Response(undefined, { status: 204 })
+      }
+      const client = new ModrinthV2Client({ fetch: patchFetch })
+
+      await client.updateCollection('collection-id', ['remaining-project'])
+      await client.updateCollection('collection-id', [])
+
+      expect(requests).toEqual([
+        {
+          url: 'https://api.modrinth.com/v3/collection/collection-id',
+          method: 'PATCH',
+          body: { new_projects: ['remaining-project'] },
+        },
+        {
+          url: 'https://api.modrinth.com/v3/collection/collection-id',
+          method: 'PATCH',
+          body: { new_projects: [] },
+        },
+      ])
+    })
+  })
 })
