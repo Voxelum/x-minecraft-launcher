@@ -334,6 +334,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { clientModrinthV2 } from '@/util/clients'
 import { ModFile } from '@/util/mod'
+import { flattenVisibleModGroups } from '@/util/modGroupFilter'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import { useDebounceFn } from '@vueuse/core'
@@ -576,83 +577,35 @@ const groupedItems = computed(() => {
   const installationSet = new Set(installation.value.map(([_, file]) => basename(file.path)))
   const unusedSet = new Set(unusedMods.value.map((file) => basename(file.path, '/')))
 
+  const matchesLocalFilter = (item: ProjectEntry<ModFile>) => {
+    if (localFilter.value === 'disabledOnly' && !item.disabled) return false
+    if (localFilter.value === 'incompatibleOnly' && !isIncompatible(item)) return false
+    if (localFilter.value === 'hasUpdateOnly' && !plans.value[item.id]) return false
+    const installed = item.installed[0]
+    if (
+      installed &&
+      localFilter.value === 'dependenciesInstallOnly' &&
+      !installationSet.has(basename(installed.path))
+    ) return false
+    if (
+      installed &&
+      localFilter.value === 'unusedOnly' &&
+      !unusedSet.has(basename(installed.path))
+    ) return false
+    if (
+      MODLOADER_FILTERS.includes(localFilter.value) &&
+      !matchesModLoaderFilter(item, localFilter.value)
+    ) return false
+    return true
+  }
+
   if (isLocalView.value) {
     const sortableEntity = localGroupedItems.value
-    const localResult: Array<ProjectEntry<ModFile> | string | ProjectGroup> = []
-    for (const i of sortableEntity) {
-      if ('projects' in i) {
-        localResult.push(markRaw(i))
-        if (!groupCollapsedState.value[i.name]) {
-          for (const p of i.projects) {
-            if (localFilter.value === 'disabledOnly' && !p.disabled) {
-              continue
-            }
-            if (localFilter.value === 'incompatibleOnly' && !isIncompatible(p)) {
-              continue
-            }
-            if (localFilter.value === 'hasUpdateOnly' && !plans.value[p.id]) {
-              continue
-            }
-            if (
-              p.installed[0] &&
-              localFilter.value === 'dependenciesInstallOnly' &&
-              !installationSet.has(basename(p.installed[0].path))
-            ) {
-              continue
-            }
-            if (
-              p.installed[0] &&
-              localFilter.value === 'unusedOnly' &&
-              !unusedSet.has(basename(p.installed[0].path))
-            ) {
-              continue
-            }
-            // Modloader filters
-            if (
-              MODLOADER_FILTERS.includes(localFilter.value) &&
-              !matchesModLoaderFilter(p, localFilter.value)
-            ) {
-              continue
-            }
-            localResult.push(p)
-          }
-        }
-      } else {
-        if (localFilter.value === 'disabledOnly' && !i.disabled) {
-          continue
-        }
-        if (localFilter.value === 'incompatibleOnly' && !isIncompatible(i)) {
-          continue
-        }
-        if (localFilter.value === 'hasUpdateOnly' && !plans.value[i.id]) {
-          continue
-        }
-        if (
-          localFilter.value === 'dependenciesInstallOnly' &&
-          i.installed[0] &&
-          !installationSet.has(basename(i.installed[0].path))
-        ) {
-          continue
-        }
-        if (
-          localFilter.value === 'unusedOnly' &&
-          i.installed[0] &&
-          !unusedSet.has(basename(i.installed[0].path))
-        ) {
-          continue
-        }
-        // Modloader filters
-        if (
-          MODLOADER_FILTERS.includes(localFilter.value) &&
-          !matchesModLoaderFilter(i, localFilter.value)
-        ) {
-          continue
-        }
-        localResult.push(i)
-      }
-    }
-
-    return localResult
+    return flattenVisibleModGroups(
+      sortableEntity,
+      matchesLocalFilter,
+      groupCollapsedState.value,
+    ).map(item => 'projects' in item ? markRaw(item) : item)
   }
 
   const transformed: Array<ProjectEntry<ModFile> | string> = []
