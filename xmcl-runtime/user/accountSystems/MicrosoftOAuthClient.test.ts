@@ -1,6 +1,6 @@
 import type { AccountInfo, INativeBrokerPlugin, TokenCacheContext } from '@azure/msal-common'
 import { copyFileSync } from 'fs'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { SecretStorage } from '~/app/SecretStorage'
 import { createPlugin } from '../credentialPlugin'
 import { MicrosoftOAuthClient } from './MicrosoftOAuthClient'
@@ -38,7 +38,12 @@ describe('MicrosoftOAuthClient', () => {
     nativeBrokerPluginConstructed.count = 0
   })
 
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('serializes native broker initialization across concurrent clients', async () => {
+    vi.spyOn(process, 'platform', 'get').mockReturnValue('win32')
     const createClient = () => new MicrosoftOAuthClient(
       vi.fn(),
       { log: vi.fn(), warn: vi.fn() } as any,

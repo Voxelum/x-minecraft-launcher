@@ -1,6 +1,7 @@
 import { describe, test, expect, vi } from 'vitest'
 import { assertInstallable, installResource, MarketRefInputSchema } from './installResource'
 import { InstanceModsServiceKey } from '../../services/InstanceModsService'
+import { InstanceInstallServiceKey } from '../../services/InstanceInstallService'
 import type { CommandContext } from '../types'
 
 function makeCtx(callImpl: (key: string, method: string, ...args: any[]) => any): CommandContext {
@@ -52,41 +53,57 @@ describe('assertInstallable', () => {
 })
 
 describe('installResource', () => {
-  test('modrinth ref → installFromMarket with Modrinth shape', async () => {
-    const ctx = makeCtx((key, method, ...args) => {
-      expect(String(key)).toBe(String(InstanceModsServiceKey))
-      expect(method).toBe('installFromMarket')
-      expect(args[0]).toEqual({
-        market: 0,
-        version: { versionId: '0.105' },
-        instancePath: '/i',
-      })
-      return ['/i/mods/x.jar']
-    })
+  test('modrinth ref → resolve and stage with Modrinth shape', async () => {
+    const files = [{ path: 'mods/x.jar' }]
+    const ctx = makeCtx((_key, method) => method === 'resolveFromMarket' ? files : undefined)
     const result = await installResource(ctx, InstanceModsServiceKey, '/i', { source: 'modrinth', project: 'fabric-api', version: '0.105' })
-    expect(result).toEqual(['/i/mods/x.jar'])
+
+    expect(ctx.call).toHaveBeenNthCalledWith(1, InstanceModsServiceKey, 'resolveFromMarket', {
+      market: 0,
+      version: { versionId: '0.105' },
+      instancePath: '/i',
+    })
+    expect(ctx.call).toHaveBeenNthCalledWith(2, InstanceInstallServiceKey, 'stageInstanceFiles', {
+      path: '/i',
+      oldFiles: [],
+      files,
+    })
+    expect(result).toEqual(['mods/x.jar'])
   })
 
-  test('curseforge ref → installFromMarket with CurseForge shape', async () => {
-    const ctx = makeCtx((_k, method, ...args) => {
-      expect(method).toBe('installFromMarket')
-      expect(args[0]).toEqual({
-        market: 1,
-        file: { fileId: 999 },
-        instancePath: '/i',
-      })
-      return ['/i/mods/y.jar']
+  test('curseforge ref → resolve and stage with CurseForge shape', async () => {
+    const files = [{ path: 'mods/y.jar' }]
+    const ctx = makeCtx((_key, method) => method === 'resolveFromMarket' ? files : undefined)
+    const result = await installResource(ctx, InstanceModsServiceKey, '/i', { source: 'curseforge', project: 1, file: 999 })
+
+    expect(ctx.call).toHaveBeenNthCalledWith(1, InstanceModsServiceKey, 'resolveFromMarket', {
+      market: 1,
+      file: { fileId: 999 },
+      instancePath: '/i',
     })
-    await installResource(ctx, InstanceModsServiceKey, '/i', { source: 'curseforge', project: 1, file: 999 })
+    expect(ctx.call).toHaveBeenNthCalledWith(2, InstanceInstallServiceKey, 'stageInstanceFiles', {
+      path: '/i',
+      oldFiles: [],
+      files,
+    })
+    expect(result).toEqual(['mods/y.jar'])
   })
 
-  test('file ref → install with local path', async () => {
-    const ctx = makeCtx((_k, method, ...args) => {
-      expect(method).toBe('install')
-      expect(args[0]).toEqual({ path: '/i', files: ['./local.jar'] })
-      return ['/i/mods/local.jar']
+  test('file ref → resolve and stage a local path', async () => {
+    const files = [{ path: 'mods/local.jar' }]
+    const ctx = makeCtx((_key, method) => method === 'resolveFiles' ? files : undefined)
+    const result = await installResource(ctx, InstanceModsServiceKey, '/i', { source: 'file', path: './local.jar' })
+
+    expect(ctx.call).toHaveBeenNthCalledWith(1, InstanceModsServiceKey, 'resolveFiles', {
+      path: '/i',
+      files: ['./local.jar'],
     })
-    await installResource(ctx, InstanceModsServiceKey, '/i', { source: 'file', path: './local.jar' })
+    expect(ctx.call).toHaveBeenNthCalledWith(2, InstanceInstallServiceKey, 'stageInstanceFiles', {
+      path: '/i',
+      oldFiles: [],
+      files,
+    })
+    expect(result).toEqual(['mods/local.jar'])
   })
 
   test('url ref throws (not yet supported)', async () => {
