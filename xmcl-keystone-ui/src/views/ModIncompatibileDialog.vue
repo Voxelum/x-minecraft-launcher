@@ -7,7 +7,7 @@ import { injection } from '@/util/inject'
 import { CompatibleDetail } from '@/util/modCompatible'
 
 const { isShown } = useDialog('mod-incompatible')
-const { compatibility } = injection(kInstanceModsContext)
+const { compatibility, loaderIncompatibilities } = injection(kInstanceModsContext)
 const { getTooltip } = useModCompatibleTooltip()
 const items = computed(() => {
   const items = [] as (string | CompatibleDetail)[]
@@ -48,6 +48,16 @@ const { t } = useI18n()
           nav
           class="overflow-auto"
         >
+          <template v-for="item in loaderIncompatibilities" :key="`loader-${item.file}`">
+            <v-list-subheader>
+              {{ item.mod }}
+            </v-list-subheader>
+            <v-list-item :title="item.file">
+              <v-list-item-subtitle>
+                {{ t('modrinth.modLoaders.name') }}: {{ item.supportedLoaders.join(', ') }}
+              </v-list-item-subtitle>
+            </v-list-item>
+          </template>
           <template v-for="(item, i) of items" :key="typeof item === 'string' ? item + i : item.modId + i">
             <v-list-subheader
               v-if="typeof item === 'string'"

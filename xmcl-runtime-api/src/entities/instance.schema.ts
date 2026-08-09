@@ -47,6 +47,8 @@ export const InstanceModpackMetadataSchema = z.object({
   emitOffline: z.boolean().default(false),
   /** The files to included in last export */
   emittedFiles: z.array(z.string()).default([]),
+  /** The server-folder files included in server exports and deployments. */
+  emittedServerFiles: z.array(z.string()).default([]),
   /** The files environment assignments. Key is the file path. */
   filesEnvironments: z
     .record(
@@ -59,6 +61,29 @@ export const InstanceModpackMetadataSchema = z.object({
       }),
     )
     .default({}),
+  modrinth: z.object({
+    projectId: z.string().default(''),
+    profile: z.enum(['universal', 'client', 'server', 'split']).default('client'),
+    versionType: z.enum(['release', 'beta', 'alpha']).default('release'),
+    pendingProjectStatus: z.enum(['approved', 'unlisted', 'private']).optional(),
+    lastVersionId: z.string().default(''),
+    lastPublishedAt: z.number().default(0),
+    /** The mods/resourcepacks/shaderpacks file paths included in the last successful publish. Used to compute a changelog diff for the next version. */
+    lastPublishedFiles: z.array(z.string()).default([]),
+    artifacts: z.array(z.object({
+      profile: z.enum(['universal', 'client', 'server']),
+      path: z.string(),
+    })).default([]),
+  }).default({
+    projectId: '',
+    profile: 'client',
+    versionType: 'release',
+    pendingProjectStatus: undefined,
+    lastVersionId: '',
+    lastPublishedAt: 0,
+    lastPublishedFiles: [],
+    artifacts: [],
+  }),
 })
 
 /**

@@ -7,6 +7,7 @@ import type { CreateInstanceOption } from './InstanceService'
 import type { ServiceKey } from './Service'
 import type { Task, SubState } from '../task'
 import type { WithProgress } from '@xmcl/installer'
+import type { CreateModrinthProjectData, CreateModrinthVersionData, Project, UpdateModrinthProjectData } from '@xmcl/modrinth'
 
 export interface ExportModpackTrackerEvents {
   'zip.progress': WithProgress<{ destination: string }>
@@ -21,6 +22,8 @@ export interface ExportModpackTask extends Task {
 
 export interface ExportFileDirective {
   path: string
+  /** Source path relative to the instance. Defaults to `path`. */
+  source?: string
   /**
    * Force this file included as override. Otherwise, it will use `downloads` in modrinth modpack and curseforge id in curseforge modpack
    *
@@ -90,6 +93,90 @@ export interface ExportModpackOptions {
    * @see https://docs.modrinth.com/docs/modpacks/format_definition/#downloads
    */
   strictModeInModrinth?: boolean
+  /** Do not reveal the artifact in the system file manager. */
+  showInFolder?: boolean
+}
+
+export interface ExportModpackResult {
+  curseforge?: string
+  curseforgeServer?: string
+  modrinth?: string
+  offline?: string
+}
+
+export interface ModrinthLinkagePreviewEntry {
+  /** The instance-relative path of the file, e.g. `mods/sodium.jar`. */
+  path: string
+  /** Whether this file can be represented by a Modrinth download link instead of being embedded. */
+  linked: boolean
+  /** Present when `linked` is false, explaining why the file must be embedded. */
+  reason?: 'missing-file' | 'not-linked-to-modrinth' | 'no-downloadable-url'
+}
+
+export interface ModrinthLinkagePreview {
+  /** Total number of mods/resourcepacks/shaderpacks considered (excludes forced overrides and other files). */
+  total: number
+  /** Number of files that will be referenced by a Modrinth download link. */
+  linked: number
+  /** Number of files that will be embedded (uploaded) because they can't be linked. */
+  embedded: number
+  /** The files that will be embedded, with the reason each one can't be linked. */
+  embeddedFiles: ModrinthLinkagePreviewEntry[]
+}
+
+export interface ModrinthChangelogContext {
+  /** Whether a previous publish was recorded to diff against. */
+  hasPreviousVersion: boolean
+  /** File paths present now but not in the last publish. */
+  added: string[]
+  /** File paths present in the last publish but not now. */
+  removed: string[]
+  /** Files that appear to be the same mod updated to a different file/version. */
+  updated: Array<{ from: string; to: string }>
+}
+
+export type ModrinthPackProfile = 'universal' | 'client' | 'server' | 'split'
+
+export interface PublishModrinthOptions extends Omit<ExportModpackOptions, 'emitCurseforge' | 'emitModrinth' | 'emitOffline' | 'showInFolder'> {
+  profile: ModrinthPackProfile
+  project: { id: string } | { create: CreateModrinthProjectData; iconPath?: string }
+  release: Omit<CreateModrinthVersionData, 'project_id'>
+}
+
+export interface PublishModrinthResult {
+  projectId: string
+  versionId: string
+  artifacts: Array<{ profile: Exclude<ModrinthPackProfile, 'split'>; path: string }>
+}
+
+export interface SubmitModrinthVersionOptions {
+  instancePath: string
+  projectId: string
+  versionId: string
+}
+
+export interface CreateAndBindModrinthProjectOptions {
+  instancePath: string
+  project: CreateModrinthProjectData
+  requestedStatus?: 'approved' | 'unlisted' | 'private'
+  iconPath?: string
+}
+
+export interface UpdateBoundModrinthProjectOptions {
+  instancePath: string
+  projectId: string
+  project: UpdateModrinthProjectData
+  iconPath?: string
+}
+
+export interface AddModrinthGalleryImageOptions {
+  instancePath: string
+  projectId: string
+  imagePath: string
+  featured: boolean
+  title?: string
+  description?: string
+  ordering?: number
 }
 
 export type ImportModpackOptions = ImportModpackCreateInstanceOptions
@@ -155,7 +242,33 @@ export interface ModpackService {
    * Export the instance as an curseforge/modrinth/mcbbs modpack
    * @param options The curseforge/modrinth/mcbbs modpack export options
    */
-  exportModpack(options: ExportModpackOptions): Promise<void>
+  exportModpack(options: ExportModpackOptions): Promise<ExportModpackResult>
+  createAndBindModrinthProject(options: CreateAndBindModrinthProjectOptions): Promise<Project>
+  bindModrinthProject(instancePath: string, projectId: string): Promise<Project>
+  /**
+   * Unbind the Modrinth project currently associated with this instance. This
+   * only clears the local association; it does not modify or delete anything
+   * on Modrinth.
+   */
+  unbindModrinthProject(instancePath: string): Promise<void>
+  updateBoundModrinthProject(options: UpdateBoundModrinthProjectOptions): Promise<Project>
+  addModrinthGalleryImage(options: AddModrinthGalleryImageOptions): Promise<Project>
+  updateModrinthGalleryImage(instancePath: string, projectId: string, imageUrl: string, data: { featured?: boolean; title?: string; description?: string; ordering?: number }): Promise<Project>
+  deleteModrinthGalleryImage(instancePath: string, projectId: string, imageUrl: string): Promise<Project>
+  publishModrinth(options: PublishModrinthOptions): Promise<PublishModrinthResult>
+  submitModrinthVersion(options: SubmitModrinthVersionOptions): Promise<void>
+  /**
+   * Preview which of the given mods/resourcepacks/shaderpacks can be represented
+   * in a Modrinth modpack manifest by a download link, versus which ones must be
+   * embedded (uploaded) as raw files.
+   */
+  previewModrinthLinkage(instancePath: string, files: ExportFileDirective[], strictModeInModrinth?: boolean): Promise<ModrinthLinkagePreview>
+  /**
+   * Compare the given file selection against the last successful Modrinth
+   * publish for this instance, returning added/removed/updated mods to help
+   * summarize changes for a changelog.
+   */
+  previewModrinthChangelogContext(instancePath: string, files: ExportFileDirective[]): Promise<ModrinthChangelogContext>
   /**
    * Open an modpack to install. Use the `installInstanceFiles` to create an instance.
    */

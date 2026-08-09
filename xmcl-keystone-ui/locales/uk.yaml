@@ -42,7 +42,8 @@ agent:
   reset: Скинути розмову
   notConfiguredTitle: Agent не налаштовано
   notConfiguredHint: >-
-    Вкажіть API key, модель та endpoint у Налаштування → Загальні → AI Agent, щоб увімкнути агента.
+    Вкажіть API key, модель та OpenAI-сумісний endpoint у Налаштування → Загальні → AI Agent.
+    Наприклад, використайте OpenAI або gateway, сумісний із Claude.
   openSettings: Відкрити налаштування
   setupGuide: Посібник з налаштування
   emptyHint: >-
@@ -1253,9 +1254,12 @@ setting:
   advancedSettings: Розширені налаштування
   advancedSettingsHint: Небезпечна зона - скидання або керування даними лаунчера
   aiAgentApiKey: API key AI Agent
-  aiAgentApiKeyDescription: Зберігається локально на цьому пристрої та використовується для запитів агента.
+  aiAgentApiKeyDescription: Налаштуйте OpenAI-сумісного провайдера, наприклад OpenAI або gateway для Claude. Ключ зберігається локально на цьому пристрої.
+  aiAgentApiKeyPlaceholder: API key провайдера OpenAI або Claude
   aiAgentEndpoint: Endpoint AI Agent
   aiAgentEndpointDescription: URL endpoint для chat completions.
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 або claude-sonnet-4-5
   aiAgentModel: Модель AI Agent
   aiAgentModelDescription: Назва моделі для запитів chat completion.
   apiSets:

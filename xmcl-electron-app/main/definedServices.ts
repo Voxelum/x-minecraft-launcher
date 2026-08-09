@@ -33,11 +33,13 @@ import { ModMetadataService } from '@xmcl/runtime/moddb/ModMetadataService'
 import { BlueprintMarketService } from '@xmcl/runtime/market'
 import { ModpackService } from '@xmcl/runtime/modpack'
 import { PeerService } from '@xmcl/runtime/peer'
+import { RemoteServerService } from '@xmcl/runtime/remoteServer'
 import { PresenceService } from '@xmcl/runtime/presence'
 import { ResourcePackPreviewService } from '@xmcl/runtime/resourcePack'
 import { ServerStatusService } from '@xmcl/runtime/serverStatus'
 import { ThemeService } from '@xmcl/runtime/theme'
 import { OfficialUserService, UserService, MinecraftFriendsService } from '@xmcl/runtime/user'
+import { ServerService } from './ServerService'
 
 export const definedServices = [
   // Main-process-only: it deliberately has no service key, so token access
@@ -70,6 +72,8 @@ export const definedServices = [
   LaunchService,
   ModpackService,
   InstanceServerInfoService,
+  RemoteServerService,
+  ServerService,
   ResourcePackPreviewService,
   InstanceManifestService,
   ServerStatusService,

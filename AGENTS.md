@@ -9,15 +9,75 @@ This file is short on purpose. Repository conventions live in
 
 ---
 
-## Visual verification — when you change anything in `xmcl-keystone-ui/`
+## Validate in the real development app first
 
-If your change is **visible to the user** (a new dialog, a new tab, a
-relocated button, a styling tweak), you MUST capture screenshots of the
-result so the human reviewer can confirm the intent without checking out the
-branch and rebuilding the launcher.
+For UI behavior and Electron/main/preload/runtime integration, the default
+validation environment is the actual launcher started by the repository's
+development tasks. Do not write a scratch E2E spec merely to click through a
+change once. Direct DevTools debugging is faster, exercises real app state and
+IPC boundaries, and gives better access to renderer errors and main-process
+logs.
 
-The repository ships a one-call Playwright helper for exactly this. **Do
-not** reinvent it.
+For main-launcher UI viewport checks, use the dimensions declared in
+`xmcl-electron-app/main/defaultApp.ts`: `800x400` is the minimum supported
+window and `1200x720` is the default desktop window. Do not test the main
+launcher at smaller or mobile-like viewport sizes (for example, `480px` wide),
+because Electron prevents the real window from reaching them. Only use a
+different size range when validating another window with its own manifest
+constraints or when the task explicitly changes those constraints.
+
+1. Reuse the running `dev:main` and `dev:renderer` tasks. Do not start a
+   duplicate launcher or dev server if one is already running.
+    The normal development target must load the renderer from
+    `http://localhost:3000`, not the built renderer from
+    `http://xmcl.runtime`. `dev:main` compiles the main bundle with
+    `HAS_DEV_SERVER=true`; when launched by VS Code, `LAUNCH_BY=vscode` means
+    the task watches and rebuilds but the `Electron: Main (launch)` debug
+    configuration owns the Electron process.
+2. Treat `pnpm --prefix=xmcl-electron-app compile` as a production-bundle
+  smoke step, not the default development launch. It writes a
+  `HAS_DEV_SERVER=false` bundle to the same
+  `xmcl-electron-app/dist/index.js`, so manually launching Electron after
+  `compile` loads the already-built renderer through `xmcl.runtime`. Because
+  an existing `dev:main` watcher does not rebuild merely because its output
+  was overwritten, restart that task or otherwise trigger and confirm a
+  fresh dev main rebuild before relaunching Electron. Verify `/json/list`
+  reports a `localhost:3000` page before beginning normal UI validation.
+3. Connect to the launcher's Chrome DevTools endpoint. `xmcl-electron-app/dev.ts`
+   uses port `9222` by default, but VS Code launch configurations may choose a
+   different port such as `9300`. Discover the active port from process
+   arguments or task output, then inspect `/json/list` and select the real
+   `X Minecraft Launcher` page.
+4. Drive the real launcher through DevTools and validate the complete user
+   workflow, not only the changed control. Use accessibility snapshots,
+  renderer console/network inspection, main logs, and the local/WSL environment.
+5. Renderer changes normally hot-reload. Electron main/runtime changes are
+   rebuilt into `xmcl-electron-app/dist/index.js` but are not loaded by an
+   already-running main process. Confirm the watcher rebuilt the bundle, then
+   restart only this repository's Electron app, reconnect DevTools, and retry
+   the same workflow. Never terminate unrelated Electron processes.
+6. Preserve user data. Record any instance/profile fields touched by the test,
+   use uniquely named temporary remote directories, services, and credentials,
+   and remove only those test resources afterward. Reopen or restart the app
+   once more to confirm cleaned state was reloaded.
+7. Still run the narrowest relevant automated test plus type-check/lint. Real
+   app debugging validates integration; it does not replace cheap regression
+   checks for pure logic.
+
+Report the exercised workflow and important observed results (for example
+status transitions, PIDs, file counts, timings, logs, and cleanup), rather than
+only saying that the app was opened.
+
+## Scratch E2E and screenshots (when needed)
+
+Write a scratch Playwright spec when the behavior deserves a repeatable
+regression check, must run in CI, requires deterministic isolated state, or a
+maintainer/reviewer explicitly needs reproducible screenshots. A scratch spec
+is a supplement to real-app validation, not the default prerequisite for every
+visible change.
+
+When a scratch spec is warranted, use the repository helper below rather than
+inventing another harness.
 
 ### 1. Discover existing UI anchors
 
@@ -33,7 +93,7 @@ If the anchor you need is missing:
 
 Use kebab-case. Keep IDs short and stable across locales.
 
-### 2. Write a scratch spec
+### 2. Write the scratch spec
 
 Copy the template:
 
@@ -56,8 +116,8 @@ test('<short description>', async ({ launcher, shell }) => {
 })
 ```
 
-- Call `snap(launcher, step, caption)` after **every meaningful visual
-  change**. One PNG per critical step is the rule.
+- When screenshots are required, call `snap(launcher, step, caption)` after
+  every meaningful visual change. One PNG per critical step is the rule.
 - Prefer `getByTestId(...)` over text/class selectors (text changes per
   locale).
 - Keep the spec under ~50 lines. If it grows, promote it to a real
@@ -67,7 +127,7 @@ Scratch specs live under `e2e/specs/scratch/`, which is **gitignored**
 except for the example template. They exist only for the lifetime of the
 PR — you do not need to clean them up.
 
-### 3. Run it
+### 3. Run the scratch spec
 
 ```bash
 pnpm install --frozen-lockfile     # first time only
@@ -93,10 +153,11 @@ e2e/artifacts/screenshots/en/<test-title-slug>/manifest.json
 
 If a `snap()` fails it logs a warning but does not fail the test.
 
-### 4. Surface screenshots to the human reviewer
+### 4. Surface screenshots when requested
 
-After the spec passes, attach the captured PNGs to the pull request so the
-reviewer sees them inline. **Do not commit screenshots into the PR diff.**
+When screenshot evidence is requested, attach the captured PNGs to the pull
+request so the reviewer sees them inline. **Do not commit screenshots into the
+PR diff.**
 GitHub does not expose its drag-and-drop image-upload endpoint to bots, so
 we host the PNGs in a **public gist** and reference them by raw URL inside
 a PR comment. A helper script does the whole thing:
@@ -148,8 +209,9 @@ folder. The PR's file diff stays clean.
   unrelated feature. Use `specs/scratch/` instead.
 - The showcase suite (`pnpm test:e2e:showcase`) hits live network endpoints
   and takes 10-30 minutes per storyline. The safety-net group
-  (`pnpm test:e2e:ci`) is deterministic and network-free. Scratch specs are
-  the fast path for visual verification.
+  (`pnpm test:e2e:ci`) is deterministic and network-free. Prefer the real dev
+  app for interactive verification; scratch specs are the fast automated path
+  when repeatability or screenshot evidence is needed.
 
 ## Network access (Copilot coding agent only)
 

@@ -1,9 +1,11 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import {
   InstanceFileOperationHandler as InstanceFileOperationHandlerV2,
+  InstanceInstallManifest,
   InstanceInstallLock,
   InstanceLockSchema,
   computeFileUpdates,
+  mergeInstanceInstallManifest,
   type InstanceFile,
   type InstanceUpstream,
 } from '@xmcl/instance'
@@ -22,7 +24,9 @@ import {
   InstallInstanceTask,
   InstallInstanceTrackerEvents,
   LockKey,
+  getModUpgradeFilenameMappings,
   isUpstreamIsSameOrigin,
+  migrateModGroupFilenames,
   type InstanceInstallService as IInstanceInstallService,
   type InstallFileError,
   type InstallInstanceOptions,
@@ -38,6 +42,7 @@ import { basename, dirname, join, resolve } from 'path'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { ZipManager, kTasks, type Tasks } from '~/infra'
 import { InstanceService } from '~/instance/InstanceService'
+import { InstanceModsGroupService } from '~/instance/InstanceModsGroupService'
 import { kDownloadOptions } from '~/network'
 import { kPeerFacade } from '~/peer'
 import { kResourceManager, kResourceWorker, type ResourceWorker } from '~/resource'
@@ -191,6 +196,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const downloadOptions = await this.app.registry.get(kDownloadOptions)
 
     const lock = this.mutex.of(LockKey.instance(instancePath))
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
     const logger = this
 
     // Track the task at service level. Created BEFORE the lock so the
@@ -483,6 +489,64 @@ export class InstanceInstallService extends AbstractService implements IInstance
     return await computeFileUpdates(instancePath, options.oldFiles, options.files, Date.now(), fs)
   }
 
+  async getInstanceInstallManifest(path: string): Promise<InstanceInstallManifest | undefined> {
+    return readJson(join(path, '.install-manifest'))
+      .then(InstanceInstallManifest.parse)
+      .catch(() => undefined)
+  }
+
+  async stageInstanceFiles(options: Extract<InstallInstanceOptions, { oldFiles: InstanceFile[] }>): Promise<InstanceInstallManifest> {
+    const lock = this.mutex.of(LockKey.instanceManifest(options.path))
+    return lock.runExclusive(async () => {
+      const current = await this.getInstanceInstallManifest(options.path)
+      const manifest = mergeInstanceInstallManifest(current, options)
+      await writeJson(join(options.path, '.install-manifest'), manifest)
+      return manifest
+    })
+  }
+
+  async setInstanceInstallManifest(options: Extract<InstallInstanceOptions, { oldFiles: InstanceFile[] }>): Promise<InstanceInstallManifest | undefined> {
+    const lock = this.mutex.of(LockKey.instanceManifest(options.path))
+    return lock.runExclusive(async () => {
+      const manifestPath = join(options.path, '.install-manifest')
+      if (!options.oldFiles.length && !options.files.length) {
+        await unlink(manifestPath).catch(() => undefined)
+        return undefined
+      }
+      const current = await this.getInstanceInstallManifest(options.path)
+      const now = Date.now()
+      const manifest: InstanceInstallManifest = {
+        version: 1,
+        createdAt: current?.createdAt ?? now,
+        updatedAt: now,
+        oldFiles: options.oldFiles,
+        files: options.files,
+      }
+      await writeJson(manifestPath, manifest)
+      return manifest
+    })
+  }
+
+  async applyInstanceInstallManifest(path: string, id?: string): Promise<void> {
+    const lock = this.mutex.of(LockKey.instanceManifest(path))
+    await lock.runExclusive(async () => {
+      const manifest = await this.getInstanceInstallManifest(path)
+      if (!manifest) return
+      await this.installInstanceFiles({
+        path,
+        oldFiles: manifest.oldFiles,
+        files: manifest.files,
+        id,
+      })
+      await unlink(join(path, '.install-manifest')).catch(() => undefined)
+    })
+  }
+
+  async discardInstanceInstallManifest(path: string): Promise<void> {
+    const lock = this.mutex.of(LockKey.instanceManifest(path))
+    await lock.runExclusive(() => unlink(join(path, '.install-manifest')).catch(() => undefined))
+  }
+
   async resumeInstanceInstall(
     instancePath: string,
     overrides?: InstanceFile[],
@@ -727,7 +791,24 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
 
       this.log('Install instance files with diff')
-      return this.#install(instancePath, lockState, currentState, id, true)
+      const result = await this.#install(instancePath, lockState, currentState, id, true)
+      await this.#migrateModGroupFilenames(instancePath, oldFiles, files)
+      return result
+    }
+  }
+
+  async #migrateModGroupFilenames(instancePath: string, oldFiles: readonly InstanceFile[], files: readonly InstanceFile[]) {
+    const isMod = (file: InstanceFile) => file.path.replace(/\\/g, '/').startsWith('mods/')
+    const mappings = getModUpgradeFilenameMappings(oldFiles.filter(isMod), files.filter(isMod))
+    if (Object.keys(mappings).length === 0) return
+
+    try {
+      const service = await this.app.registry.get(InstanceModsGroupService)
+      const state = await service.getGroupState(instancePath)
+      const migrated = migrateModGroupFilenames(state.groups, mappings)
+      if (migrated !== state.groups) await service.updateModsGroups(instancePath, migrated)
+    } catch (error) {
+      this.warn(`Failed to migrate mod group filenames for ${instancePath}`, error)
     }
   }
 

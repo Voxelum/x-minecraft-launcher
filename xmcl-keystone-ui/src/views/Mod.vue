@@ -321,6 +321,7 @@ import { kInstanceModsContext } from '@/composables/instanceMods'
 import { ProjectGroup, useModGroups } from '@/composables/modGroup'
 import { kModsSearch } from '@/composables/modSearch'
 import { kModUpgrade } from '@/composables/modUpgrade'
+import { ArtifactLoader, resolveArtifactModrinthDependencies } from '@/composables/modArtifactDependencies'
 import { useModWizard } from '@/composables/modWizard'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
@@ -331,7 +332,9 @@ import { useTutorial } from '@/composables/tutorial'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
+import { clientModrinthV2 } from '@/util/clients'
 import { ModFile } from '@/util/mod'
+import { flattenVisibleModGroups } from '@/util/modGroupFilter'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import { useDebounceFn } from '@vueuse/core'
@@ -511,7 +514,6 @@ const {
   groupModCounts,
   syncGroupRules,
   applySharedGroupRules,
-  updateGroupFilenames,
 } = useModGroups(isLocalView, path, items, sortBy)
 
 function enableAll(group: ProjectGroup) {
@@ -531,10 +533,12 @@ function disableAll(group: ProjectGroup) {
 }
 
 function isIncompatible(p: ProjectEntry<ModFile>) {
-  const modId = p.installed?.[0]?.modId
+  const installed = p.installed?.[0]
+  const modId = installed?.modId
   if (!modId) {
     return false
   }
+  if (loaderIncompatibilities.value.some(issue => issue.file === installed.fileName)) return true
   const items = compatibility.value[modId]
   if (!items) {
     return false
@@ -573,83 +577,35 @@ const groupedItems = computed(() => {
   const installationSet = new Set(installation.value.map(([_, file]) => basename(file.path)))
   const unusedSet = new Set(unusedMods.value.map((file) => basename(file.path, '/')))
 
+  const matchesLocalFilter = (item: ProjectEntry<ModFile>) => {
+    if (localFilter.value === 'disabledOnly' && !item.disabled) return false
+    if (localFilter.value === 'incompatibleOnly' && !isIncompatible(item)) return false
+    if (localFilter.value === 'hasUpdateOnly' && !plans.value[item.id]) return false
+    const installed = item.installed[0]
+    if (
+      installed &&
+      localFilter.value === 'dependenciesInstallOnly' &&
+      !installationSet.has(basename(installed.path))
+    ) return false
+    if (
+      installed &&
+      localFilter.value === 'unusedOnly' &&
+      !unusedSet.has(basename(installed.path))
+    ) return false
+    if (
+      MODLOADER_FILTERS.includes(localFilter.value) &&
+      !matchesModLoaderFilter(item, localFilter.value)
+    ) return false
+    return true
+  }
+
   if (isLocalView.value) {
     const sortableEntity = localGroupedItems.value
-    const localResult: Array<ProjectEntry<ModFile> | string | ProjectGroup> = []
-    for (const i of sortableEntity) {
-      if ('projects' in i) {
-        localResult.push(markRaw(i))
-        if (!groupCollapsedState.value[i.name]) {
-          for (const p of i.projects) {
-            if (localFilter.value === 'disabledOnly' && !p.disabled) {
-              continue
-            }
-            if (localFilter.value === 'incompatibleOnly' && !isIncompatible(p)) {
-              continue
-            }
-            if (localFilter.value === 'hasUpdateOnly' && !plans.value[p.id]) {
-              continue
-            }
-            if (
-              p.installed[0] &&
-              localFilter.value === 'dependenciesInstallOnly' &&
-              !installationSet.has(basename(p.installed[0].path))
-            ) {
-              continue
-            }
-            if (
-              p.installed[0] &&
-              localFilter.value === 'unusedOnly' &&
-              !unusedSet.has(basename(p.installed[0].path))
-            ) {
-              continue
-            }
-            // Modloader filters
-            if (
-              MODLOADER_FILTERS.includes(localFilter.value) &&
-              !matchesModLoaderFilter(p, localFilter.value)
-            ) {
-              continue
-            }
-            localResult.push(p)
-          }
-        }
-      } else {
-        if (localFilter.value === 'disabledOnly' && !i.disabled) {
-          continue
-        }
-        if (localFilter.value === 'incompatibleOnly' && !isIncompatible(i)) {
-          continue
-        }
-        if (localFilter.value === 'hasUpdateOnly' && !plans.value[i.id]) {
-          continue
-        }
-        if (
-          localFilter.value === 'dependenciesInstallOnly' &&
-          i.installed[0] &&
-          !installationSet.has(basename(i.installed[0].path))
-        ) {
-          continue
-        }
-        if (
-          localFilter.value === 'unusedOnly' &&
-          i.installed[0] &&
-          !unusedSet.has(basename(i.installed[0].path))
-        ) {
-          continue
-        }
-        // Modloader filters
-        if (
-          MODLOADER_FILTERS.includes(localFilter.value) &&
-          !matchesModLoaderFilter(i, localFilter.value)
-        ) {
-          continue
-        }
-        localResult.push(i)
-      }
-    }
-
-    return localResult
+    return flattenVisibleModGroups(
+      sortableEntity,
+      matchesLocalFilter,
+      groupCollapsedState.value,
+    ).map(item => 'projects' in item ? markRaw(item) : item)
   }
 
   const transformed: Array<ProjectEntry<ModFile> | string> = []
@@ -697,20 +653,7 @@ const isOptifineProject = (v: ProjectEntry<ProjectFile> | undefined): v is Proje
   v?.id === 'OptiFine'
 
 // Upgrade
-const { plans, error: upgradeError, upgradeFilenameMappings, upgrading } = injection(kModUpgrade)
-
-// When upgrade completes successfully, update group membership if filenames changed
-watch(upgrading, (isUpgrading, wasUpgrading) => {
-  if (wasUpgrading && !isUpgrading) {
-    // Upgrade just completed
-    const mappings = upgradeFilenameMappings.value
-    if (Object.keys(mappings).length > 0) {
-      updateGroupFilenames(mappings)
-      // Clear the mappings after use
-      upgradeFilenameMappings.value = {}
-    }
-  }
-})
+const { plans, error: upgradeError } = injection(kModUpgrade)
 
 const updateErrorMessage = computed(() => {
   if (upgradeError) return (upgradeError.value as any).message
@@ -754,7 +697,7 @@ const shouldShowCurseforge = (
   return true
 }
 
-const { mods, conflicted, revalidate, incompatible, compatibility, enable, disable } =
+const { mods, conflicted, revalidate, incompatible, compatibility, loaderIncompatibilities, enable, disable } =
   injection(kInstanceModsContext)
 
 // Install-all is available for any collection open in the Favorites view —
@@ -803,7 +746,7 @@ const onClickDependency = (modId: string) => {
 }
 
 // install / uninstall / enable / disable
-const { install, uninstall, installFromMarket } =
+const { install, uninstall, resolveFromMarket } =
   useService(InstanceModsServiceKey)
 const onUninstall = (f: ProjectFile[], _path?: string) => {
   uninstall({ path: _path ?? path.value, files: f.map((f) => f.path) }).then(() => {
@@ -942,13 +885,25 @@ const { onInstallModRuntime, wizardModel, wizardHandleOnEnable, wizardError, wiz
   useModWizard()
 
 // modrinth installer
+const resolveArtifactDependencies = (url: string | undefined, selectedProjects: Set<string>, loaders: string[]) => {
+  const loader = loaders.find((value): value is ArtifactLoader => ['forge', 'neoforge', 'fabric', 'quilt'].includes(value))
+  return resolveArtifactModrinthDependencies({
+    url,
+    loader,
+    minecraft: runtime.value.minecraft,
+    installedMods: mods.value,
+    selectedProjects,
+    client: clientModrinthV2,
+  })
+}
+
 const modrinthInstaller = useModrinthInstaller(
   path,
   runtime,
   mods,
-  installFromMarket,
-  onUninstall,
+  resolveFromMarket,
   onInstallModRuntime,
+  resolveArtifactDependencies,
 )
 provide(kModrinthInstaller, modrinthInstaller)
 
@@ -957,9 +912,9 @@ const curseforgeInstaller = useCurseforgeInstaller(
   path,
   runtime,
   mods,
-  installFromMarket,
-  onUninstall,
+  resolveFromMarket,
   onInstallModRuntime,
+  resolveArtifactDependencies,
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 

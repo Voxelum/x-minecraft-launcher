@@ -121,14 +121,13 @@
 import { computed, ref, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useNotifier } from '@/composables/notifier'
-import { useCommandPaletteBus, useCommandPaletteVisible } from '@/composables/commandPalette'
+import { useCommandPaletteVisible } from '@/composables/commandPalette'
 import { injection } from '@/util/inject'
 import { useGamepad } from '@/composables/gamepad'
 import './gamepad.css'
 
 const { t } = useI18n()
 const { notify } = useNotifier()
-const paletteBus = useCommandPaletteBus()
 
 const gamepad = useGamepad()
 const enabled = gamepad.enabled
@@ -172,7 +171,7 @@ function setEnabled(value: boolean) {
 }
 
 function close() {
-  paletteBus.emit('hide')
+  paletteShown.value = false
   // Don't keep auto-opening the onboarding cards once dismissed while disabled.
   if (!enabled.value) gamepad.dismissPrompt()
 }

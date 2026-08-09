@@ -1,34 +1,40 @@
 import { Agent, type AgentEvent, type AgentTool } from '@earendil-works/pi-agent-core'
 import {
-  createAssistantMessageEventStream,
+  AGENT_MODEL_CONTEXT_WINDOW,
+  BUILTIN_AGENT_ENDPOINT,
+} from '@xmcl/runtime-api'
+import {
   type Api,
   type AssistantMessage,
-  type AssistantMessageEvent,
-  type Context,
   type Message,
-  type Model,
   type SimpleStreamOptions,
   type StreamFunction,
 } from '@earendil-works/pi-ai'
+import { openAICompletionsApi } from '@earendil-works/pi-ai/api/openai-completions.lazy'
 import {
   AgentServiceKey,
   type AgentConversationKey,
   type AgentId,
   type AgentMessage,
-  type AgentProviderStreamEvent,
   type AgentRunEvent,
   type AgentRunTrace,
 } from '@xmcl/runtime-api'
 import { computed, onUnmounted, ref, shallowRef, type Ref } from 'vue'
 import { useService } from '../service'
 import { agentDebug } from './debug'
-import { buildAgentSystemPrompt } from './prompt'
-import { contentText, createAgentId, createAgentModel, fromPiMessage, toPiMessage, zeroUsage } from './protocol'
+import { AGENT_COMPACTION_SYSTEM_PROMPT, compactedMessages, estimateAgentContextTokens, prepareAgentCompaction, toCompactionInput } from './compaction'
+import { buildAgentSystemPrompt, createXmclBuiltInPayload, type AgentPromptSessionContext, type XmclBuiltInAgentContext } from './prompt'
+import { contentText, createAgentId, createAgentModel, fromPiMessage, getAgentContextTokens, toPiMessage } from './protocol'
 import { useAgentSettings } from './settings'
+import { createAgentToolFailureGuard, stringifyAgentToolEventResult, wrapAgentToolsWithErrorNormalization, wrapAgentToolsWithResultSpill } from './toolSupport'
+import { createAgentPassiveContextMessage, readAgentSessionContext, resolveAgentSessionSystemPrompt, type AgentPassiveContext } from './context'
+import { createAgentPassiveEventMessage, registerAgentPassiveEventConsumer, type AgentPassiveEvent } from './passiveEvents'
+import { clearAgentConfirmationScope, registerAgentConfirmationScope } from './confirm'
 
 export interface AgentRunContext {
   agentId: AgentId
   scope: string
+  permissionScope: string
   locale: string
   userId?: string
 }
@@ -39,6 +45,7 @@ export interface LocalAgentSession {
   readonly runError: Ref<string>
   readonly messages: Ref<AgentMessage[]>
   readonly events: Ref<AgentRunEvent[]>
+  readonly contextUsage: Readonly<Ref<AgentContextUsage>>
   load(scope?: string): Promise<void>
   replaceMessages(messages: AgentMessage[]): Promise<void>
   send(userInput: string): Promise<void>
@@ -46,108 +53,52 @@ export interface LocalAgentSession {
   abort(): void
 }
 
+export interface AgentContextUsage {
+  usedTokens: number
+  contextWindow: number
+}
+
 export interface LocalAgentOptions {
   agentId: AgentId
   getScope(): string
   getLocale(): string
   getUserId?(): string | undefined
+  getPassiveContext?(context: AgentRunContext): AgentPassiveContext
+  drainPassiveEvents?(context: AgentRunContext): AgentPassiveEvent[]
   createTools(context: AgentRunContext): Promise<AgentTool[]>
-  getSessionContext(context: AgentRunContext): string
-}
-
-interface PendingProviderStream {
-  stream: ReturnType<typeof createAssistantMessageEventStream>
-  model: Model<Api>
-  signal?: AbortSignal
-  onAbort?: () => void
-}
-
-function providerError(model: Model<Api>, message: string, aborted = false): AssistantMessageEvent {
-  const error: AssistantMessage = {
-    role: 'assistant',
-    content: [],
-    api: model.api,
-    provider: model.provider,
-    model: model.id,
-    usage: zeroUsage(),
-    stopReason: aborted ? 'aborted' : 'error',
-    errorMessage: message,
-    timestamp: Date.now(),
-  }
-  return { type: 'error', reason: aborted ? 'aborted' : 'error', error }
-}
-
-function serializableOptions(options?: SimpleStreamOptions) {
-  if (!options) return undefined
-  return JSON.parse(JSON.stringify(options, (_key, value) => {
-    if (typeof value === 'function' || value instanceof AbortSignal) return undefined
-    return value
-  }))
-}
-
-function serializableRecord(value: unknown) {
-  return JSON.parse(JSON.stringify(value)) as Record<string, unknown>
+  getSessionContext(context: AgentRunContext): AgentPromptSessionContext
 }
 
 export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
   const service = useService(AgentServiceKey)
   const settings = useAgentSettings()
-  const bridgeId = createAgentId()
-  const bridgeReady = agentBridge.register({ bridgeId })
   const running = ref(false)
   const runError = ref('')
   const messages = shallowRef<AgentMessage[]>([])
   const events = shallowRef<AgentRunEvent[]>([])
-  const pendingProviderStreams = new Map<string, PendingProviderStream>()
+  const contextUsage = ref<AgentContextUsage>({ usedTokens: 0, contextWindow: AGENT_MODEL_CONTEXT_WINDOW })
   let currentScope = options.getScope()
   let activeAgent: Agent | undefined
   let currentRunId = ''
   let eventSeq = 0
   let streamingIndex = -1
   let loadVersion = 0
+  let conversationContext: Record<string, unknown> = {}
+  let activeBuiltInContext: XmclBuiltInAgentContext | undefined
 
-  function finishProviderStream(requestId: string) {
-    const pending = pendingProviderStreams.get(requestId)
-    if (!pending) return
-    if (pending.signal && pending.onAbort) pending.signal.removeEventListener('abort', pending.onAbort)
-    pendingProviderStreams.delete(requestId)
-  }
-
-  const stopProviderEvents = agentBridge.onProviderEvent((event: AgentProviderStreamEvent) => {
-    if (event.bridgeId !== bridgeId) return
-    const pending = pendingProviderStreams.get(event.requestId)
-    if (!pending) return
-    if (event.type === 'error') {
-      pending.stream.push(providerError(pending.model, event.error))
-      finishProviderStream(event.requestId)
-      return
-    }
-    const providerEvent = event.event as AssistantMessageEvent
-    pending.stream.push(providerEvent)
-    if (providerEvent.type === 'done' || providerEvent.type === 'error') finishProviderStream(event.requestId)
-  })
-
+  const providerApi = openAICompletionsApi()
   const streamFn: StreamFunction<Api, SimpleStreamOptions> = (model, context, streamOptions) => {
-    const requestId = createAgentId()
-    const stream = createAssistantMessageEventStream()
-    const pending: PendingProviderStream = { stream, model, signal: streamOptions?.signal }
-    if (streamOptions?.signal) {
-      pending.onAbort = () => {
-        void agentBridge.cancel(bridgeId, requestId)
-      }
-      streamOptions.signal.addEventListener('abort', pending.onAbort, { once: true })
-    }
-    pendingProviderStreams.set(requestId, pending)
-    void bridgeReady.then(() => agentBridge.stream({
-      bridgeId,
-      requestId,
-      context: serializableRecord(context),
-      options: serializableOptions(streamOptions),
-    })).catch((error) => {
-      stream.push(providerError(model, error instanceof Error ? error.message : String(error)))
-      finishProviderStream(requestId)
+    const transportModel = createAgentModel(BUILTIN_AGENT_ENDPOINT, model.id)
+    return providerApi.streamSimple(transportModel, context, {
+      ...streamOptions,
+      apiKey: 'runtime-managed',
+      onPayload: settings.mode.value === 'builtin'
+        ? payload => {
+            if (!activeBuiltInContext) throw new Error('Built-in agent request context is unavailable')
+            return createXmclBuiltInPayload(payload, activeBuiltInContext)
+          }
+        : streamOptions?.onPayload,
     })
-    return stream
   }
 
   const key = (scope = currentScope): AgentConversationKey => ({ agentId: options.agentId, scope })
@@ -165,9 +116,11 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
     eventSeq = 0
     streamingIndex = -1
     events.value = []
+    contextUsage.value = { usedTokens: 0, contextWindow: AGENT_MODEL_CONTEXT_WINDOW }
     runError.value = ''
     running.value = false
     messages.value = conversation.messages
+    conversationContext = conversation.context ?? {}
   }
 
   function appendEvent(event: Omit<AgentRunEvent, 'runId' | 'seq'>) {
@@ -217,9 +170,7 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
       return
     }
     if (event.type === 'tool_execution_end') {
-      const result = Array.isArray(event.result?.content)
-        ? event.result.content.filter((part: any) => part?.type === 'text').map((part: any) => String(part.text ?? '')).join('')
-        : String(event.result ?? '')
+      const result = stringifyAgentToolEventResult(event.result)
       appendEvent({
         type: 'tool_end',
         toolResult: { id: event.toolCallId, name: event.toolName, result, isError: event.isError },
@@ -227,32 +178,148 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
     }
   }
 
+  async function compactConversation(
+    previousMessages: AgentMessage[],
+    systemPrompt: string,
+    pendingInput: string,
+    providerModel: ReturnType<typeof createAgentModel>,
+    requestContext: XmclBuiltInAgentContext,
+  ) {
+    const contextTokens = estimateAgentContextTokens(
+      previousMessages,
+      systemPrompt,
+      pendingInput,
+      providerModel.provider,
+      providerModel.id,
+    )
+    const preparation = prepareAgentCompaction(previousMessages, contextTokens, providerModel.provider, providerModel.id)
+    if (!preparation) return { messages: previousMessages, compacted: false }
+
+    const summarizer = new Agent({
+      initialState: {
+        systemPrompt: AGENT_COMPACTION_SYSTEM_PROMPT,
+        model: providerModel,
+        thinkingLevel: 'off',
+        tools: [],
+        messages: toCompactionInput(preparation.messagesToSummarize, providerModel.provider, providerModel.id),
+      },
+      streamFn,
+      sessionId: createAgentId(),
+    })
+    activeAgent = summarizer
+    const previousBuiltInContext = activeBuiltInContext
+    activeBuiltInContext = {
+      promptVersion: 1,
+      agentType: 'compaction',
+      locale: requestContext.locale,
+    }
+    running.value = true
+    try {
+      await summarizer.prompt('Summarize the conversation above as a concise checkpoint. Preserve goals, constraints, completed work, exact paths and identifiers, current blockers, and next steps. Do not continue the conversation.')
+      const response = [...summarizer.state.messages].reverse().find((message): message is AssistantMessage => message.role === 'assistant')
+      const summary = response ? contentText(response.content).trim() : ''
+      if (!summary || response?.stopReason === 'error' || response?.stopReason === 'aborted') {
+        throw new Error(response?.errorMessage || `Context compaction ${response?.stopReason ?? 'returned no summary'}`)
+      }
+      const nextMessages = compactedMessages(preparation, summary)
+      await service.replaceConversationMessages(key(), nextMessages)
+      messages.value = nextMessages
+      contextUsage.value = {
+        usedTokens: estimateAgentContextTokens(nextMessages, systemPrompt, pendingInput, providerModel.provider, providerModel.id),
+        contextWindow: providerModel.contextWindow,
+      }
+      return { messages: nextMessages, compacted: true }
+    } finally {
+      activeBuiltInContext = previousBuiltInContext
+      if (activeAgent === summarizer) activeAgent = undefined
+      running.value = false
+    }
+  }
+
   async function send(input: string) {
-    await Promise.all([bridgeReady, settings.ready])
+    await settings.ready
     await settings.flush()
     if (running.value) throw new Error('Agent: a request is already in flight')
-    if (!settings.configured.value) throw new Error('Agent: API key is not configured')
+    if (!settings.configured.value) throw new Error('Agent: provider is not configured')
     const scope = options.getScope()
     if (scope !== currentScope) await load(scope)
+    const permissionScope = createAgentId()
 
     const runContext: AgentRunContext = {
       agentId: options.agentId,
       scope,
+      permissionScope,
       locale: options.getLocale(),
       userId: options.getUserId?.(),
     }
-    const tools = await options.createTools(runContext)
+    const createdTools = wrapAgentToolsWithErrorNormalization(await options.createTools(runContext))
+    const supportsArtifacts = createdTools.some(tool => tool.name === 'vfs_read') && createdTools.some(tool => tool.name === 'vfs_shell')
+    const artifactKey: AgentConversationKey = { agentId: options.agentId, scope }
+    const tools = supportsArtifacts
+      ? wrapAgentToolsWithResultSpill(createdTools, (content, toolName) => service.writeArtifact(artifactKey, { content, toolName }))
+      : createdTools
     const providerModel = createAgentModel(settings.resolvedEndpoint.value, settings.resolvedModel.value)
-    const previousMessages = messages.value
-      .map(message => toPiMessage(message, providerModel.provider, providerModel.id))
-      .filter((message): message is Message => !!message)
-    const systemPrompt = buildAgentSystemPrompt({
-      role: options.agentId === 'css' ? 'css-main' : 'launcher-main',
+    const role = options.agentId === 'css' ? 'css-main' : options.agentId === 'modpack-changelog' ? 'modpack-changelog-main' : 'launcher-main'
+    const documents = role === 'launcher-main' && tools.some(tool => tool.name === 'vfs_shell')
+      ? await service.listDocuments()
+      : undefined
+    const sessionContext = options.getSessionContext(runContext)
+    const promptProfile = {
+      role,
       locale: runContext.locale,
       tools: tools.map(tool => ({ name: tool.name })),
       readonly: false,
-      sessionContext: options.getSessionContext(runContext),
-    })
+      documents,
+      sessionContext,
+    } as const
+    const generatedSystemPrompt = buildAgentSystemPrompt(promptProfile)
+    const builtInContext: XmclBuiltInAgentContext = {
+      promptVersion: 1,
+      agentType: options.agentId,
+      locale: runContext.locale,
+      documents,
+      sessionContext,
+    }
+    const storedSessionContext = readAgentSessionContext(conversationContext)
+    const initialSystemPrompt = resolveAgentSessionSystemPrompt(storedSessionContext.systemPrompt, generatedSystemPrompt, false)
+    const passiveContext = options.getPassiveContext?.(runContext)
+    const passiveMessage = passiveContext
+      ? createAgentPassiveContextMessage(storedSessionContext.passiveContext, passiveContext)
+      : undefined
+    const passiveMessages = [
+      ...(options.drainPassiveEvents?.(runContext) ?? []).map(createAgentPassiveEventMessage),
+      ...(passiveMessage ? [passiveMessage] : []),
+    ]
+    if (passiveMessages.length) {
+      messages.value = [...messages.value, ...passiveMessages]
+      await service.appendConversationMessages(key(), passiveMessages)
+    }
+    const passiveContextChanged = passiveContext && (
+      passiveContext.userId !== storedSessionContext.passiveContext?.userId ||
+      passiveContext.page !== storedSessionContext.passiveContext?.page
+    )
+    const contextPatch: Record<string, unknown> = {}
+    if (!storedSessionContext.systemPrompt) contextPatch.systemPrompt = initialSystemPrompt
+    if (passiveContextChanged) contextPatch.passiveContext = passiveContext
+    if (Object.keys(contextPatch).length) {
+      await service.updateConversationContext(key(scope), contextPatch)
+      conversationContext = { ...conversationContext, ...contextPatch }
+    }
+
+    const compacted = await compactConversation(messages.value, initialSystemPrompt, input, providerModel, builtInContext)
+    const systemPrompt = resolveAgentSessionSystemPrompt(storedSessionContext.systemPrompt, generatedSystemPrompt, compacted.compacted)
+    if (compacted.compacted) {
+      await service.updateConversationContext(key(scope), { systemPrompt })
+      conversationContext = { ...conversationContext, systemPrompt }
+      contextUsage.value = {
+        usedTokens: estimateAgentContextTokens(compacted.messages, systemPrompt, input, providerModel.provider, providerModel.id),
+        contextWindow: providerModel.contextWindow,
+      }
+    }
+    const previousMessages = compacted.messages
+      .map(message => toPiMessage(message, providerModel.provider, providerModel.id))
+      .filter((message): message is Message => !!message)
+    const toolFailureGuard = createAgentToolFailureGuard(tools)
     const agent = new Agent({
       initialState: {
         systemPrompt,
@@ -263,10 +330,13 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
       },
       streamFn,
       toolExecution: 'sequential',
-      sessionId: createAgentId(),
+      beforeToolCall: toolFailureGuard.beforeToolCall,
+      afterToolCall: toolFailureGuard.afterToolCall,
+      sessionId: permissionScope,
     })
     activeAgent = agent
-    currentRunId = agent.sessionId ?? createAgentId()
+    activeBuiltInContext = builtInContext
+    currentRunId = permissionScope
     eventSeq = 0
     events.value = []
     runError.value = ''
@@ -282,19 +352,37 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
     let inputTokens = 0
     let outputTokens = 0
     const unsubscribe = agent.subscribe(async (event) => {
-      if (event.type === 'tool_execution_start') {
-        toolCounts[event.toolName] = (toolCounts[event.toolName] ?? 0) + 1
-      } else if (event.type === 'tool_execution_end' && event.isError) {
-        toolFailures++
-      } else if (event.type === 'message_end' && event.message.role === 'assistant') {
+      if (event.type === 'message_end' && event.message.role === 'assistant') {
+        toolFailureGuard.beginToolBatch()
         inputTokens += event.message.usage.input
         outputTokens += event.message.usage.output
+        contextUsage.value = {
+          usedTokens: getAgentContextTokens(event.message.usage),
+          contextWindow: providerModel.contextWindow,
+        }
+      } else if (event.type === 'tool_execution_start') {
+        toolCounts[event.toolName] = (toolCounts[event.toolName] ?? 0) + 1
+      } else if (event.type === 'tool_execution_end') {
+        toolFailureGuard.recordToolResult(event.toolName, event.isError)
+        if (event.isError) toolFailures++
       }
       await applyAgentEvent(event)
     })
+    const unregisterPassiveEvents = options.drainPassiveEvents
+      ? registerAgentPassiveEventConsumer(scope, (event) => {
+          const message = createAgentPassiveEventMessage(event)
+          const steeringMessage = toPiMessage(message, providerModel.provider, providerModel.id)
+          if (!steeringMessage || activeAgent !== agent || !running.value) return false
+          messages.value = [...messages.value, message]
+          void persist(message).catch(error => agentDebug('passive-event.persist.error', error))
+          agent.steer(steeringMessage)
+          return true
+        })
+      : () => undefined
 
     let outcome: AgentRunTrace['outcome'] = 'completed'
     let stopReason = 'stop'
+  registerAgentConfirmationScope(permissionScope)
     try {
       await agent.prompt(input)
       const last = [...agent.state.messages].reverse().find((message): message is AssistantMessage => message.role === 'assistant')
@@ -310,8 +398,11 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
       runError.value = error instanceof Error ? error.message : String(error)
       agentDebug('run.error', error)
     } finally {
+      unregisterPassiveEvents()
+      clearAgentConfirmationScope(permissionScope)
       unsubscribe()
       if (activeAgent === agent) activeAgent = undefined
+      if (activeBuiltInContext === builtInContext) activeBuiltInContext = undefined
       running.value = false
       appendEvent(runError.value
         ? { type: 'error', state: outcome, error: runError.value }
@@ -338,12 +429,14 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
   async function reset() {
     activeAgent?.abort()
     await activeAgent?.waitForIdle().catch(() => undefined)
-    await service.resetConversation(key())
+    await service.startNewConversation(key())
     activeAgent = undefined
     messages.value = []
     events.value = []
+    contextUsage.value = { usedTokens: 0, contextWindow: AGENT_MODEL_CONTEXT_WINDOW }
     runError.value = ''
     running.value = false
+    conversationContext = {}
   }
 
   async function replaceMessages(nextMessages: AgentMessage[]) {
@@ -353,20 +446,16 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
     if (nextMessages.length) await service.appendConversationMessages(key(), nextMessages)
     messages.value = nextMessages
     events.value = []
+    contextUsage.value = { usedTokens: 0, contextWindow: AGENT_MODEL_CONTEXT_WINDOW }
     runError.value = ''
     running.value = false
+    conversationContext = {}
   }
 
   const abort = () => activeAgent?.abort()
 
   onUnmounted(() => {
     activeAgent?.abort()
-    stopProviderEvents()
-    for (const requestId of pendingProviderStreams.keys()) {
-      void agentBridge.cancel(bridgeId, requestId)
-      finishProviderStream(requestId)
-    }
-    void agentBridge.unregister(bridgeId)
   })
 
   return {
@@ -375,6 +464,7 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
     runError,
     messages,
     events,
+    contextUsage,
     load,
     replaceMessages,
     send,

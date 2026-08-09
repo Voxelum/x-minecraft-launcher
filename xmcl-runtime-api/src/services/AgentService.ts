@@ -1,7 +1,18 @@
 import type { ServiceKey } from './Service'
 
-/** Conservative context window assumed for OpenAI-compatible agent models. */
-export const AGENT_MODEL_CONTEXT_WINDOW = 128_000
+/** Internal endpoint intercepted by the launcher runtime before it reaches the network. */
+export const BUILTIN_AGENT_ENDPOINT = 'https://ai.xmcl.app/v1/chat/completions'
+/** Model selected by the built-in XMCL provider. */
+export const BUILTIN_AGENT_MODEL = 'xmcl-agent'
+/** Provider id used for the built-in XMCL provider. */
+export const BUILTIN_AGENT_PROVIDER_ID = 'xmcl'
+/** Default-off flight enabling the built-in XMCL provider. */
+export const BUILTIN_AGENT_FLIGHT = 'builtinAgent'
+/** Empty defaults select the built-in provider. */
+export const DEFAULT_AGENT_ENDPOINT = ''
+export const DEFAULT_AGENT_MODEL = ''
+/** Working context target used to trigger compaction for agent models. */
+export const AGENT_MODEL_CONTEXT_WINDOW = 256_000
 /** Conservative max output tokens assumed for OpenAI-compatible agent models. */
 export const AGENT_MODEL_MAX_TOKENS = 8_192
 
@@ -32,8 +43,8 @@ export interface AgentProviderPreset {
 }
 
 /**
- * Built-in providers. The first entry is the default so the out-of-the-box
- * behavior stays unchanged.
+ * Selectable external providers. The launcher uses its built-in XMCL provider
+ * when no external endpoint and model are configured.
  *
  * Each `defaultModel` is the current-generation, best value-for-money model of
  * that provider (the cheap/fast tier, not the flagship), verified against the
@@ -113,13 +124,8 @@ export const AGENT_PROVIDER_PRESETS: readonly AgentProviderPreset[] = Object.fre
   },
 ])
 
-/** Default OpenAI-compatible provider preset. */
+/** Default external provider preset offered when switching away from built-in. */
 export const DEFAULT_AGENT_PROVIDER = AGENT_PROVIDER_PRESETS[0]
-
-/** Default OpenAI-compatible agent endpoint. The API key is stored separately. */
-export const DEFAULT_AGENT_ENDPOINT = DEFAULT_AGENT_PROVIDER.endpoint
-/** Default agent model identifier. */
-export const DEFAULT_AGENT_MODEL = DEFAULT_AGENT_PROVIDER.defaultModel
 
 export function getAgentProviderPreset(id: string) {
   return AGENT_PROVIDER_PRESETS.find(preset => preset.id === id)
@@ -151,8 +157,10 @@ function agentEndpointHost(endpoint: string) {
  * off this id, that would hand the user's real OpenAI key to an unrelated host.
  */
 export function resolveAgentProviderId(endpoint: string) {
+  if (!endpoint.trim()) return BUILTIN_AGENT_PROVIDER_ID
   const host = agentEndpointHost(endpoint)
   if (!host) return CUSTOM_AGENT_PROVIDER_ID
+  if (host === agentEndpointHost(BUILTIN_AGENT_ENDPOINT)) return BUILTIN_AGENT_PROVIDER_ID
   return AGENT_PROVIDER_PRESETS.find(preset => preset.host.toLowerCase() === host)?.id ?? CUSTOM_AGENT_PROVIDER_ID
 }
 
@@ -174,7 +182,7 @@ export function isKeylessAgentEndpoint(endpoint: string) {
   return !!getAgentProviderPreset(resolveAgentProviderId(endpoint))?.keyless
 }
 
-export type AgentId = 'launcher' | 'css'
+export type AgentId = 'launcher' | 'css' | 'modpack-changelog'
 
 export interface AgentConversationKey {
   agentId: AgentId
@@ -196,10 +204,13 @@ export interface AgentToolCall {
 export interface AgentMessage {
   role: 'system' | 'user' | 'assistant' | 'tool'
   content: string | AgentContentPart[] | null
+  reasoningContent?: string
   toolCalls?: AgentToolCall[]
   toolCallId?: string
   name?: string
   isError?: boolean
+  compaction?: { tokensBefore: number }
+  contextTokens?: number
 }
 
 export interface AgentConversation {
@@ -209,10 +220,46 @@ export interface AgentConversation {
   updatedAt?: number
 }
 
+export interface AgentArtifactInfo {
+  path: string
+  length: number
+  createdAt: number
+}
+
+export interface AgentArtifactRead extends AgentArtifactInfo {
+  offset: number
+  limit: number
+  content: string
+  hasMore: boolean
+}
+
+export interface AgentArtifactGrepResult {
+  path: string
+  offset: number
+  limit: number
+  totalMatches: number
+  hasMore: boolean
+  matches: Array<{ line: number; text: string }>
+}
+
+export interface AgentDocumentMetadata {
+  id: string
+  description: string
+}
+
+export interface AgentDocument extends AgentDocumentMetadata {
+  body: string
+}
+
+export interface AgentDocumentSearchResult extends AgentDocumentMetadata {
+  score: number
+}
+
 export interface AgentProviderSettings {
   endpoint: string
   model: string
   configured: boolean
+  mode: 'builtin' | 'custom'
 }
 
 export interface UpdateAgentProviderSettings {
@@ -242,31 +289,6 @@ export interface AgentRunEvent {
   error?: string
 }
 
-export interface AgentBridgeRegistration {
-  bridgeId: string
-}
-
-export interface AgentProviderStreamRequest {
-  bridgeId: string
-  requestId: string
-  context: Record<string, unknown>
-  options?: Record<string, unknown>
-}
-
-export type AgentProviderStreamEvent =
-  | {
-      bridgeId: string
-      requestId: string
-      type: 'event'
-      event: unknown
-    }
-  | {
-      bridgeId: string
-      requestId: string
-      type: 'error'
-      error: string
-    }
-
 export type AgentMarketProvider = 'modrinth' | 'curseforge'
 export type AgentMarketProjectType = 'mod' | 'resourcepack' | 'shader' | 'modpack' | 'datapack'
 
@@ -279,6 +301,7 @@ export interface AgentMarketProject {
   icon?: string
   author?: string
   downloads?: number
+  installRef?: string
 }
 
 export interface AgentMarketProjectListPresentation {
@@ -300,8 +323,10 @@ export type AgentUiAction =
       message: string
       title?: string
       details?: string[]
+      presentations?: AgentMarketProjectListPresentation[]
       confirmLabel?: string
       destructive?: boolean
+      allowAll?: boolean
     }
   | { action: 'query_dom'; selector: string; limit?: number }
   | { action: 'get_computed_style'; selector: string; properties?: string[] }
@@ -324,20 +349,22 @@ export interface AgentRunTrace {
   sampleRate: number
 }
 
-export interface AgentBridgeClient {
-  register(registration: AgentBridgeRegistration): Promise<void>
-  unregister(bridgeId: string): Promise<void>
-  stream(request: AgentProviderStreamRequest): Promise<void>
-  cancel(bridgeId: string, requestId: string): Promise<void>
-  onProviderEvent(listener: (event: AgentProviderStreamEvent) => void): () => void
-}
-
 export interface AgentService {
   getProviderSettings(): Promise<AgentProviderSettings>
   setProviderSettings(input: UpdateAgentProviderSettings): Promise<void>
   getConversation(key: AgentConversationKey): Promise<AgentConversation>
+  updateConversationContext(key: AgentConversationKey, context: Record<string, unknown>): Promise<void>
   appendConversationMessages(key: AgentConversationKey, messages: AgentMessage[]): Promise<void>
+  replaceConversationMessages(key: AgentConversationKey, messages: AgentMessage[]): Promise<void>
+  startNewConversation(key: AgentConversationKey): Promise<string | undefined>
   resetConversation(key: AgentConversationKey): Promise<void>
+  writeArtifact(key: AgentConversationKey, input: { content: string; toolName: string }): Promise<AgentArtifactInfo>
+  listArtifacts(key: AgentConversationKey): Promise<AgentArtifactInfo[]>
+  readArtifact(key: AgentConversationKey, input: { path: string; offset?: number; limit?: number }): Promise<AgentArtifactRead>
+  grepArtifact(key: AgentConversationKey, input: { path: string; pattern: string; ignoreCase: boolean; offset?: number; limit?: number }): Promise<AgentArtifactGrepResult>
+  listDocuments(): Promise<AgentDocumentMetadata[]>
+  searchDocuments(input: { query: string; limit?: number }): Promise<AgentDocumentSearchResult[]>
+  readDocument(id: string): Promise<AgentDocument>
   importLegacyConversation(input: LegacyConversationImport): Promise<'imported' | 'exists'>
   reportRunTrace(trace: AgentRunTrace): Promise<void>
 }

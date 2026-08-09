@@ -226,7 +226,6 @@
                 v-for="f of friendsData?.friends ?? []"
                 :key="f.profileId"
                 :friend="f"
-                :presence="onlineFriends[f.profileId]"
                 class="mx-1 rounded-lg"
               >
                 <v-btn
@@ -276,7 +275,6 @@ import UserSkin from '@/components/UserSkin.vue'
 import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
 import { kMinecraftFriends } from '@/composables/minecraftFriends'
-import { useFriendsPresence } from '@/composables/useFriendsPresence'
 import { kUserContext } from '@/composables/user'
 import { UserSkinModel, UserSkinRenderPaused, useUserSkin } from '@/composables/userSkin'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
@@ -299,8 +297,6 @@ const {
   preferencesLoading,
   setPreferences,
 } = injection(kMinecraftFriends)
-
-const { onlineFriends } = useFriendsPresence()
 
 const paused = inject(UserSkinRenderPaused, ref(false))
 

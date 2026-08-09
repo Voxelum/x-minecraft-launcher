@@ -10,20 +10,36 @@ import { AnyError } from '@xmcl/utils'
 
 const CredentialSerializeError = AnyError.make('CredentialSerializeError')
 
-export function createPlugin(serviceName: string, accountName: string, logger: Logger, storage: SecretStorage): ICachePlugin {
+export function createPlugin(serviceName: string, accountName: string, logger: Logger, storage: SecretStorage, legacyAccountNames: string[] = []): ICachePlugin {
   accountName = accountName || 'XMCL_MICROSOFT_ACCOUNT'
   let cachedInMemory: boolean
   const plugin: ICachePlugin = {
     async beforeCacheAccess(cacheContext: TokenCacheContext): Promise<void> {
-      const secret = await storage.get(serviceName, accountName).catch((e) => {
+      let secret = await storage.get(serviceName, accountName).catch((e) => {
         logger.error(new CredentialSerializeError('Fail to deserialize the credential cache', { cause: e }))
       })
       if (cachedInMemory && cacheContext.cacheHasChanged) {
         return
       }
+      let legacyAccountName: string | undefined
+      if (!secret) {
+        for (const candidate of legacyAccountNames) {
+          if (!candidate || candidate === accountName) continue
+          secret = await storage.get(serviceName, candidate).catch((e) => {
+            logger.error(new CredentialSerializeError('Fail to deserialize the legacy credential cache', { cause: e }))
+          })
+          if (secret) {
+            legacyAccountName = candidate
+            break
+          }
+        }
+      }
       if (secret) {
         try {
           cacheContext.tokenCache.deserialize(secret)
+          if (legacyAccountName) {
+            await storage.put(serviceName, accountName, secret)
+          }
         } catch (e) {
           logger.error(new CredentialSerializeError('Fail to deserialize the credential cache', { cause: e }))
         }

@@ -155,6 +155,11 @@ describe('parseCli — positionals + flags', () => {
     expect(r).toMatchObject({ kind: 'error', message: expect.stringContaining('-z') })
   })
 
+  test('errors on unknown long flag', () => {
+    const r = parseCli(['launch', '/inst/foo', '--game-version', '1.21.1'], makeRegistry())
+    expect(r).toMatchObject({ kind: 'error', message: 'Unknown flag --game-version' })
+  })
+
   test('multi-word command name (user list)', () => {
     // For now `user list` would require separate matching logic; verify
     // single-word fallback continues to work.

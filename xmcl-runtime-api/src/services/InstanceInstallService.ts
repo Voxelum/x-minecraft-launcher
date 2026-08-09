@@ -1,4 +1,4 @@
-import type { InstanceFile, InstanceUpstream } from '@xmcl/instance'
+import type { InstanceFile, InstanceInstallManifest, InstanceUpstream } from '@xmcl/instance'
 import type { WithDownload, WithProgress } from '@xmcl/installer'
 import type { SharedState } from '../util/SharedState'
 import type { Task, SubState } from '../task'
@@ -99,6 +99,16 @@ export type InstallFileError = {
  * Provide the abilities to import/export instance from/to modpack
  */
 export interface InstanceInstallService {
+  /** Add file changes to the pending instance install manifest. */
+  stageInstanceFiles(options: Extract<InstallInstanceOptions, { oldFiles: InstanceFile[] }>): Promise<InstanceInstallManifest>
+  /** Replace the pending manifest with an exact set of selected file changes. */
+  setInstanceInstallManifest(options: Extract<InstallInstanceOptions, { oldFiles: InstanceFile[] }>): Promise<InstanceInstallManifest | undefined>
+  /** Read the pending instance install manifest. */
+  getInstanceInstallManifest(path: string): Promise<InstanceInstallManifest | undefined>
+  /** Apply and clear the pending instance install manifest. */
+  applyInstanceInstallManifest(path: string, id?: string): Promise<void>
+  /** Discard the pending instance install manifest without applying it. */
+  discardInstanceInstallManifest(path: string): Promise<void>
   /**
    * Install the instance files.
    *

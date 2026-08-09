@@ -1,11 +1,11 @@
-import { Constants, DeviceCodeResponse, INativeBrokerPlugin, ServerError } from '@azure/msal-common'
+import { AccountInfo, DeviceCodeResponse, INativeBrokerPlugin } from '@azure/msal-common'
 import { AuthenticationResult, LogLevel, PublicClientApplication } from '@azure/msal-node'
+import { AnyError } from '@xmcl/utils'
 import { copyFileSync, mkdirSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { SecretStorage } from '~/app/SecretStorage'
 import { Logger } from '~/infra'
-import { AnyError } from '@xmcl/utils'
 import { createPlugin } from '../credentialPlugin'
 import { createNetworkClient } from './OAuthNetworkClient'
 
@@ -16,9 +16,12 @@ export const MICROSOFT_XBOX_LAUNCHER_SCOPES = [
   'offline_access',
 ]
 
-export class MicrosoftOAuthClient {
-  private nativeBrokerPlugin: INativeBrokerPlugin | undefined
+let nativeBrokerRuntimePrepared = false
+let nativeBrokerPlugin: INativeBrokerPlugin | undefined
+let nativeBrokerPluginInitialized = false
+let nativeBrokerPluginPromise: Promise<INativeBrokerPlugin | undefined> | undefined
 
+export class MicrosoftOAuthClient {
   constructor(
     private fetch: typeof global.fetch,
     private logger: Logger,
@@ -35,21 +38,39 @@ export class MicrosoftOAuthClient {
     if (process.platform !== 'win32') {
       return undefined
     }
-    if (!this.nativeBrokerPlugin) {
+    if (nativeBrokerPluginInitialized) {
+      return nativeBrokerPlugin
+    }
+    if (nativeBrokerPluginPromise) {
+      return nativeBrokerPluginPromise
+    }
+    const operation = (async () => {
       try {
         this.prepareNativeBrokerRuntime()
         const { NativeBrokerPlugin } = await import('@azure/msal-node-extensions')
-        this.nativeBrokerPlugin = new NativeBrokerPlugin()
+        const plugin = new NativeBrokerPlugin()
+        return plugin.isBrokerAvailable ? plugin : undefined
       } catch (e) {
         this.logger.warn('Unable to load the Windows native broker plugin')
         this.logger.warn(e)
         return undefined
       }
+    })()
+    nativeBrokerPluginPromise = operation
+    try {
+      nativeBrokerPlugin = await operation
+      nativeBrokerPluginInitialized = true
+      return nativeBrokerPlugin
+    } finally {
+      if (nativeBrokerPluginPromise === operation) {
+        nativeBrokerPluginPromise = undefined
+      }
     }
-    return this.nativeBrokerPlugin.isBrokerAvailable ? this.nativeBrokerPlugin : undefined
   }
 
   private prepareNativeBrokerRuntime() {
+    if (nativeBrokerRuntimePrepared) return
+
     const arch = process.arch === 'ia32' ? 'ia32' : 'x64'
     const target = join(tmpdir(), 'xmcl-msal-node-runtime', String(process.pid), arch)
     mkdirSync(target, { recursive: true })
@@ -57,6 +78,7 @@ export class MicrosoftOAuthClient {
     copyFileSync(join(__dirname, `msal-node-runtime-${arch}.node`), targetNode)
     copyFileSync(join(__dirname, `msalruntime-${arch}.dll`), join(target, 'msalruntime.dll'))
     process.env.XMCL_MSAL_NODE_RUNTIME_PATH = targetNode
+    nativeBrokerRuntimePrepared = true
   }
 
   protected async getOAuthApp(account: string, signal?: AbortSignal, nativeBrokerPlugin?: INativeBrokerPlugin) {
@@ -67,13 +89,15 @@ export class MicrosoftOAuthClient {
       },
       broker: nativeBrokerPlugin ? { nativeBrokerPlugin } : undefined,
       cache: {
-        cachePlugin: createPlugin('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', this.logger, this.storage),
+        cachePlugin: createPlugin('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', this.logger, this.storage, [account]),
       },
       system: {
         loggerOptions: {
-          logLevel: LogLevel.Verbose,
-          loggerCallback: (level, message, ppi) => {
-            this.logger.log(`${message}`)
+          logLevel: LogLevel.Error,
+          loggerCallback: (level, message) => {
+            if (level === LogLevel.Error) {
+              this.logger.error(new Error(message))
+            }
           },
         },
         networkClient: createNetworkClient(this.fetch, signal),
@@ -91,12 +115,17 @@ export class MicrosoftOAuthClient {
     useNativeBroker?: boolean
   } = {}) {
     const nativeBrokerPlugin = options.useNativeBroker ? await this.getNativeBrokerPlugin() : undefined
-    const app = await this.getOAuthApp(username, options.signal, nativeBrokerPlugin)
-    if (!options?.code) {
-      const accounts = await app.getTokenCache().getAllAccounts().catch(() => [])
-      const account = (username ? accounts.find(a => a.username.toLowerCase() === username.toLowerCase()) : undefined) || (accounts.length === 1 ? accounts[0] : undefined)
+    const cacheApp = await this.getOAuthApp(username, options.signal)
+    let account: AccountInfo | undefined
+    const allowSilentReuse = options.slientOnly || !options.useDeviceCode
+    if (username && !options.code && allowSilentReuse) {
+      const accounts = await cacheApp.getTokenCache().getAllAccounts().catch(() => [])
+      // The token cache is shared by every Microsoft account, and
+      // acquireTokenSilent keys off homeAccountId (it ignores username), so
+      // the match must be exact.
+      account = accounts.find(a => a.username.toLowerCase() === username.toLowerCase())
       if (account) {
-        const result = await app.acquireTokenSilent({
+        const result = await cacheApp.acquireTokenSilent({
           scopes,
           account,
           forceRefresh: false,
@@ -109,7 +138,7 @@ export class MicrosoftOAuthClient {
           return {
             result,
             extra: options.extraScopes
-              ? await app.acquireTokenSilent({
+              ? await cacheApp.acquireTokenSilent({
                 scopes: options.extraScopes,
                 account,
               }).catch((e) => {
@@ -127,6 +156,9 @@ export class MicrosoftOAuthClient {
       throw new AnyError('MicrosoftOAuthSlientFailed', 'Fail to acquire Microsoft token silently.')
     }
 
+    const app = nativeBrokerPlugin && !options.useDeviceCode
+      ? await this.getOAuthApp(username, options.signal, nativeBrokerPlugin)
+      : cacheApp
     let result: AuthenticationResult | null = null
     if (!options.useDeviceCode) {
       if (nativeBrokerPlugin) {
@@ -134,6 +166,7 @@ export class MicrosoftOAuthClient {
           result = await app.acquireTokenInteractive({
             scopes,
             extraScopesToConsent: options.extraScopes,
+            account,
             loginHint: username || undefined,
             // Force the WAM account picker so the user can pick/add a
             // different account instead of silently logging in with the
@@ -143,6 +176,10 @@ export class MicrosoftOAuthClient {
             openBrowser: async () => {},
             windowHandle: this.getWindowHandle?.(),
           })
+          if (account && result.account?.homeAccountId !== account.homeAccountId) {
+            this.logger.warn(`Windows native broker returned a different account for ${username}; falling back to OAuth redirect`)
+            result = null
+          }
         } catch (e) {
           const message = e instanceof Error ? `${e.name} ${e.message}` : String(e)
           if (/(user[_ -]?cancel|access_denied)/i.test(message)) {
@@ -161,6 +198,7 @@ export class MicrosoftOAuthClient {
             scopes,
             extraScopesToConsent: options.extraScopes,
             loginHint: username,
+            prompt: 'select_account',
           })
           code = await this.getCode(url, redirectUri, options.signal)
         }
@@ -184,6 +222,13 @@ export class MicrosoftOAuthClient {
         scopes,
         deviceCodeCallback: this.deviceCodeCallback,
       })
+    }
+
+    if (account && result!.account?.homeAccountId !== account.homeAccountId) {
+      throw new AnyError(
+        'MicrosoftOAuthAccountMismatch',
+        `Microsoft authentication returned a different account than ${username}.`,
+      )
     }
 
     let extra: AuthenticationResult | undefined

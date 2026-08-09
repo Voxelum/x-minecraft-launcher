@@ -1,4 +1,4 @@
-import { InstanceLogServiceKey, LAUNCH_FAILURE_PREFIX, type InstanceLogService as IInstanceLogService } from '@xmcl/runtime-api'
+import { InstanceLogServiceKey, type InstanceLogService as IInstanceLogService } from '@xmcl/runtime-api'
 import { readFile, unlink } from 'fs-extra'
 import { isAbsolute, join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
@@ -9,43 +9,46 @@ import { UTF8 } from '../util/encoding'
 import { AnyError, isSystemError } from '@xmcl/utils'
 import { ENOENT_ERROR, readdirIfPresent } from '../util/fs'
 import { gunzip } from '../util/zip'
+import { LaunchHistoryStore } from '../launch/LaunchHistoryStore'
 
 /**
  * Provide the ability to list/read/remove log and crash reports of a instance.
  */
 @ExposeServiceKey(InstanceLogServiceKey)
 export class InstanceLogService extends AbstractService implements IInstanceLogService {
+  private launchHistory: LaunchHistoryStore
+
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kEncodingWorker) private encoder: EncodingWorker,
   ) {
     super(app)
+    this.launchHistory = new LaunchHistoryStore(this.getAppDataPath('launch-history'))
+  }
+
+  listLaunches(instancePath: string) {
+    return this.launchHistory.list(instancePath)
+  }
+
+  getLaunch(instancePath: string, launchId: string) {
+    return this.launchHistory.get(instancePath, launchId)
+  }
+
+  getLaunchEvidence(instancePath: string, launchId: string, name: 'game.log' | 'debug.log' | 'crash-report.txt' | 'launcher-output.log') {
+    return this.launchHistory.readEvidence(instancePath, launchId, name)
+  }
+
+  async findLaunchByCrashReport(instancePath: string, name: string) {
+    const content = await this.getCrashReportContent(instancePath, name)
+    return this.launchHistory.findByCrashReport(instancePath, content)
   }
 
   /**
-   * List the log in current instances. Excludes launcher-captured
-   * abnormal-exit dumps (those are surfaced separately via
-   * {@link listLaunchFailures}).
+   * List the log in current instances.
    */
   @Singleton()
   async listLogs(instancePath: string) {
     const files = await readdirIfPresent(join(instancePath, 'logs'))
-    return files.filter(f =>
-      (f.endsWith('.gz') || f.endsWith('.txt') || f.endsWith('.log')) &&
-      !f.startsWith(LAUNCH_FAILURE_PREFIX),
-    )
-  }
-
-  /**
-   * List the launcher-captured abnormal-exit dumps written by LaunchService
-   * for non-zero exits. Sorted most recent first (filenames carry an ISO
-   * timestamp so a reverse lexicographic sort is chronological).
-   */
-  @Singleton()
-  async listLaunchFailures(instancePath: string) {
-    const files = await readdirIfPresent(join(instancePath, 'logs'))
-    return files
-      .filter(f => f.startsWith(LAUNCH_FAILURE_PREFIX) && f.endsWith('.log'))
-      .sort((a, b) => b.localeCompare(a))
+    return files.filter(f => f.endsWith('.gz') || f.endsWith('.txt') || f.endsWith('.log'))
   }
 
   /**
@@ -54,10 +57,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
   @Singleton()
   async listServerLogs(instancePath: string) {
     const files = await readdirIfPresent(join(instancePath, 'server', 'logs'))
-    return files.filter(f =>
-      (f.endsWith('.gz') || f.endsWith('.txt') || f.endsWith('.log')) &&
-      !f.startsWith(LAUNCH_FAILURE_PREFIX),
-    )
+    return files.filter(f => f.endsWith('.gz') || f.endsWith('.txt') || f.endsWith('.log'))
   }
 
   /**

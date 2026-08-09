@@ -25,10 +25,10 @@ interface CacheEntry {
 }
 
 /**
- * Cooldown between consecutive `getFriends` cache misses (Mojang
- * recommends not polling more than once every ~10s).
+ * Keep the cache aligned with the renderer's polling interval so repeated
+ * consumers do not issue additional conditional requests between ticks.
  */
-const REFRESH_COOLDOWN_MS = 10_000
+const REFRESH_COOLDOWN_MS = 60_000
 
 @ExposeServiceKey(MinecraftFriendsServiceKey)
 export class MinecraftFriendsService extends AbstractService implements IMinecraftFriendsService {
@@ -210,16 +210,22 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
   }
 
   private async getToken(user: UserProfile, force = false): Promise<string> {
-    // Route through UserService.refreshUser so we share its per-user
-    // Singleton lock with the startup refresh and the launch flow. Without
-    // this, the UI's eager `getFriends` call on user-switch can read a
-    // stale token before the background refresh writes the new one,
-    // producing a spurious UnauthorizedError on launcher start.
-    await this.userService.refreshUser(user.id, { silent: true, force }).catch((e) => {
-      this.log(`Failed to refresh user ${user.id} before MinecraftFriends call`, e)
-    })
     const userTokenStorage = await this.app.registry.get(kUserTokenStorage)
-    const token = await userTokenStorage.get(user)
+    let token = await userTokenStorage.get(user)
+    const shouldRefresh = force || !token || !user.expiredAt || user.expiredAt <= Date.now() || user.invalidated
+
+    if (shouldRefresh) {
+      // Route refreshes through UserService so startup, launch, and a 401
+      // retry share its per-user Singleton lock.
+      await this.userService.refreshUser(user.id, {
+        silent: true,
+        force: force || !token,
+      }).catch((e) => {
+        this.log(`Failed to refresh user ${user.id} before MinecraftFriends call`, e)
+      })
+      token = await userTokenStorage.get(user)
+    }
+
     if (!token) {
       throw new UserAuthenticationError('No access token available for user')
     }

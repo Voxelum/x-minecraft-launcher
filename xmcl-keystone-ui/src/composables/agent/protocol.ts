@@ -10,11 +10,16 @@ import type {
   Message,
   Model,
   TextContent,
+  ThinkingContent,
   ToolResultMessage,
   Usage,
   UserMessage,
 } from '@earendil-works/pi-ai'
 import type { AgentMessage as PiAgentMessage } from '@earendil-works/pi-agent-core'
+import { COMPACTION_SUMMARY_PREFIX, COMPACTION_SUMMARY_SUFFIX } from '@earendil-works/pi-agent-core'
+import { AGENT_PASSIVE_CONTEXT_MESSAGE_NAME } from './context'
+
+export const AGENT_COMPACTION_MESSAGE_NAME = 'compaction'
 
 export function createAgentId() {
   const bytes = crypto.getRandomValues(new Uint8Array(16))
@@ -23,6 +28,10 @@ export function createAgentId() {
 
 export function contentText(content: AssistantMessage['content'] | ToolResultMessage['content']) {
   return content.filter((part): part is TextContent => part.type === 'text').map(part => part.text).join('')
+}
+
+export function reasoningText(content: AssistantMessage['content']) {
+  return content.filter((part): part is ThinkingContent => part.type === 'thinking' && !part.redacted).map(part => part.thinking).join('')
 }
 
 export function fromPiMessage(message: PiAgentMessage): AgentMessage | undefined {
@@ -36,10 +45,17 @@ export function fromPiMessage(message: PiAgentMessage): AgentMessage | undefined
   }
   if (message.role === 'assistant') {
     const text = contentText(message.content)
+    const reasoningContent = reasoningText(message.content)
     const toolCalls = message.content
       .filter(part => part.type === 'toolCall')
       .map(part => ({ id: part.id, name: part.name, arguments: part.arguments }))
-    return { role: 'assistant', content: text || null, toolCalls: toolCalls.length ? toolCalls : undefined }
+    return {
+      role: 'assistant',
+      content: text || null,
+      reasoningContent: reasoningContent || undefined,
+      toolCalls: toolCalls.length ? toolCalls : undefined,
+      contextTokens: getAgentContextTokens(message.usage),
+    }
   }
   if (message.role === 'toolResult') {
     return {
@@ -63,8 +79,27 @@ export function zeroUsage(): Usage {
   }
 }
 
+export function getAgentContextTokens(usage: Usage) {
+  return usage.totalTokens || usage.input + usage.output + usage.cacheRead + usage.cacheWrite
+}
+
 export function toPiMessage(message: AgentMessage, provider: string, model: string): Message | undefined {
-  if (message.role === 'system') return undefined
+  if (message.role === 'system') {
+    if (typeof message.content !== 'string') return undefined
+    if (message.name === AGENT_PASSIVE_CONTEXT_MESSAGE_NAME) {
+      return {
+        role: 'user',
+        content: [{ type: 'text', text: `<xmcl-passive-context>\n${message.content}\n</xmcl-passive-context>` }],
+        timestamp: Date.now(),
+      } satisfies UserMessage
+    }
+    if (message.name !== AGENT_COMPACTION_MESSAGE_NAME) return undefined
+    return {
+      role: 'user',
+      content: [{ type: 'text', text: COMPACTION_SUMMARY_PREFIX + message.content + COMPACTION_SUMMARY_SUFFIX }],
+      timestamp: Date.now(),
+    } satisfies UserMessage
+  }
   if (message.role === 'user') {
     const content = typeof message.content === 'string'
       ? message.content
@@ -79,6 +114,7 @@ export function toPiMessage(message: AgentMessage, provider: string, model: stri
     const text = typeof message.content === 'string'
       ? message.content
       : (message.content ?? []).filter(part => part.type === 'text').map(part => part.text ?? '').join('')
+    if (message.reasoningContent) content.push({ type: 'thinking', thinking: message.reasoningContent })
     if (text) content.push({ type: 'text', text })
     for (const call of message.toolCalls ?? []) {
       content.push({ type: 'toolCall', id: call.id, name: call.name, arguments: call.arguments })

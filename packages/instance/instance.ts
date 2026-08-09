@@ -108,6 +108,93 @@ export const InstanceUpstreamSchema = z.discriminatedUnion('type', [
 
 export type InstanceUpstream = z.infer<typeof InstanceUpstreamSchema>
 
+/** Desired dedicated-server state owned by the instance, independent of its execution target. */
+export const ServerDeploymentPolicySchema = z.enum(['mirror', 'overlay', 'initialize', 'preserve'])
+
+export type ServerDeploymentPolicy = z.infer<typeof ServerDeploymentPolicySchema>
+
+export const InstanceServerConfigSchema = z.object({
+  eula: z.boolean().catch(false).default(false),
+  motd: z.string().catch('A Minecraft Server').default('A Minecraft Server'),
+  port: z.number().int().positive().max(65535).catch(25565).default(25565),
+  maxPlayers: z.number().int().positive().catch(20).default(20),
+  onlineMode: z.boolean().catch(false).default(false),
+  nogui: z.boolean().catch(true).default(true),
+  world: z.object({
+    mode: z.enum(['create', 'instance', 'preserve']).catch('create').default('create'),
+    saveName: z.string().optional().catch(undefined),
+  }).catch({ mode: 'create' }).default({ mode: 'create' }),
+  mods: z.array(z.string()).optional().catch(undefined),
+  deployment: z.object({
+    config: z.object({
+      policy: ServerDeploymentPolicySchema.catch('mirror').default('mirror'),
+      /** Paths relative to `<instance>/server`; undefined until first discovery. */
+      files: z.array(z.string()).optional().catch(undefined),
+    }).catch({ policy: 'mirror' }).default({ policy: 'mirror' }),
+    mods: z.object({
+      policy: ServerDeploymentPolicySchema.catch('mirror').default('mirror'),
+    }).catch({ policy: 'mirror' }).default({ policy: 'mirror' }),
+    world: z.object({
+      policy: ServerDeploymentPolicySchema.catch('initialize').default('initialize'),
+    }).catch({ policy: 'initialize' }).default({ policy: 'initialize' }),
+    extra: z.object({
+      policy: ServerDeploymentPolicySchema.catch('overlay').default('overlay'),
+      /** Explicitly selected paths not owned by config, mods, or world. */
+      files: z.array(z.string()).optional().catch(undefined),
+    }).catch({ policy: 'overlay' }).default({ policy: 'overlay' }),
+  }).catch({
+    config: { policy: 'mirror' },
+    mods: { policy: 'mirror' },
+    world: { policy: 'initialize' },
+    extra: { policy: 'overlay' },
+  }).default({
+    config: { policy: 'mirror' },
+    mods: { policy: 'mirror' },
+    world: { policy: 'initialize' },
+    extra: { policy: 'overlay' },
+  }),
+  /** Optional OS service registration shared by local and remote targets. */
+  service: z.object({
+    enabled: z.boolean().catch(false).default(false),
+    name: z.string().catch('').default(''),
+    startCommand: z.string().optional().catch(undefined),
+  }).catch({ enabled: false, name: '' }).default({ enabled: false, name: '' }),
+})
+
+export type InstanceServerConfig = z.infer<typeof InstanceServerConfigSchema>
+
+/**
+ * Remote SSH server admin connection profile. Describes where the dedicated
+ * server lives on a remote host and (optionally) how the launcher should
+ * manage its process lifecycle via a `systemd --user` unit.
+ *
+ * Secrets (password / private key passphrase) are deliberately NOT part of
+ * this schema — they are stored separately via the OS keychain
+ * (`SecretStorage`), keyed by instance path, so `instance.json` never holds
+ * plaintext credentials.
+ */
+export const RemoteServerConnectionSchema = z.object({
+  /** User-facing label for this Linux target. */
+  name: z.string().catch('SSH Target').default('SSH Target'),
+  host: z.string(),
+  port: z.number().positive().catch(22).default(22),
+  username: z.string(),
+  /** Absolute path to the server directory on the remote host. */
+  remotePath: z.string(),
+  authMethod: z.union([z.literal('password'), z.literal('privateKey')]),
+  /** Path to the private key file on the local machine, when using `privateKey` auth. */
+  privateKeyPath: z.string().optional().catch(undefined),
+  /** Legacy target-specific service name. New profiles use `serverConfig.service.name`. */
+  serviceName: z.string().optional().catch(undefined),
+  /** Legacy target-specific start command. New profiles use `serverConfig.service.startCommand`. */
+  startCommand: z.string().optional().catch(undefined),
+  /** Desired-state revision applied by the last successful reconciliation. */
+  lastSyncedRevision: z.string().optional().catch(undefined),
+  lastSyncedAt: z.number().optional().catch(undefined),
+})
+
+export type RemoteServerConnection = z.infer<typeof RemoteServerConnectionSchema>
+
 /**
  * Core instance data structure
  */
@@ -158,6 +245,7 @@ export const InstanceDataSchema = z.object({
       width: z.number().positive().optional(),
       height: z.number().positive().optional(),
       fullscreen: z.boolean().optional(),
+      monitor: z.string().optional(),
     })
     .optional()
     .catch(undefined),
@@ -211,6 +299,13 @@ export const InstanceDataSchema = z.object({
     .catch(undefined),
   /** The upstream data source for this instance */
   upstream: InstanceUpstreamSchema.optional().catch(undefined),
+  /**
+   * Remote SSH server admin connection profile for this instance's dedicated
+   * server. Absent when the instance has no remote target configured.
+   */
+  remoteServer: RemoteServerConnectionSchema.optional().catch(undefined),
+  /** Target-independent desired dedicated-server configuration. */
+  serverConfig: InstanceServerConfigSchema.optional().catch(undefined),
 })
 
 export type InstanceData = z.infer<typeof InstanceDataSchema>

@@ -83,14 +83,23 @@
         <AppSideBarNotchItem
           v-if="developerMode"
           data-testid="nav-agent"
-          icon="auto_awesome"
+          icon="smart_toy"
           :icon-size="iconSize"
-          :tooltip="() => ({ text: t('agent.title'), direction: tooltipDirection })"
+          :tooltip="() => ({ text: agentAriaLabel, direction: tooltipDirection })"
           clickable
           @click="openAgent"
         >
+          <v-badge
+            v-if="agentConfirmationPending"
+            data-testid="nav-agent-confirmation"
+            color="warning"
+            dot
+            location="top end"
+          >
+            <v-icon class="sidebar-notch-item__icon" color="warning" :size="iconSize">priority_high</v-icon>
+          </v-badge>
           <v-progress-circular
-            v-if="agentRunningInBackground"
+            v-else-if="agentRunningInBackground"
             data-testid="nav-agent-running"
             class="sidebar-notch-item__icon"
             color="primary"
@@ -98,7 +107,7 @@
             :size="iconSize"
             :width="2"
           />
-          <v-icon v-else class="sidebar-notch-item__icon" :size="iconSize">auto_awesome</v-icon>
+          <v-icon v-else class="sidebar-notch-item__icon" :size="iconSize">smart_toy</v-icon>
         </AppSideBarNotchItem>
 
         <!-- Multiplayer -->
@@ -163,8 +172,10 @@ const developerMode = computed(() => state.value?.developerMode ?? false)
 const { open: openAgent } = useAgentChatEntry()
 const agentChatStatus = useAgentChatStatus()
 const agentRunningInBackground = computed(() => agentChatStatus.running.value && !agentChatStatus.shown.value)
+const agentConfirmationPending = agentChatStatus.confirmationPending
 
 const { t } = useI18n()
+const agentAriaLabel = computed(() => agentConfirmationPending.value ? `${t('agent.title')}: ${t('agent.confirmPending')}` : t('agent.title'))
 
 // Hover state for auto-hide
 const isHovered = ref(false)

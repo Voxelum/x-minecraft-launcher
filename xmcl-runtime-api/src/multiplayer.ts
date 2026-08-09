@@ -111,8 +111,25 @@ export interface MultiplayerRoomAdmission {
   ticket: string
   peerId: string
   expiresAt: string
-  role: 'host' | 'guest'
-  maxPeers?: number
+  role: 'master' | 'member'
+  maxPeers: number
+}
+
+export interface MultiplayerRoomMember {
+  peerId: string
+  accountId: string
+  displayName: string
+  status: 'negotiating' | 'connected'
+  joinedAt: number
+}
+
+export interface MultiplayerRoomState {
+  selfPeerId: string
+  masterPeerId: string
+  members: MultiplayerRoomMember[]
+  status: 'open' | 'waiting-master' | 'closed'
+  maxPeers: number
+  revision: number
 }
 
 export interface MultiplayerIceServerCredential {
@@ -155,8 +172,14 @@ export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
    * @param id The session to drop
    */
   drop(id: string): Promise<void>
-  /** Create a Host room when `groupId` is empty, otherwise join as a Guest. */
+  /** Create a new multiplayer room as its master. */
+  createGroup(): Promise<void>
+  /** Join an existing multiplayer room as a member. */
   joinGroup(groupId: string): Promise<void>
+  /**
+   * Transfer the room master role to another connected member.
+   */
+  transferGroupMaster(peerId: string): Promise<void>
   /**
    * Leave the group
    */

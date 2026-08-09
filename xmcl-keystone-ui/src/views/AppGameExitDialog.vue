@@ -88,6 +88,7 @@ const data = reactive({
   isCrash: false,
   isServer: false,
   launcherError: false,
+  launchId: '',
   crashReportLocation: '',
   errorLog: '',
   elyByWarning: false,
@@ -99,6 +100,7 @@ watch(() => data.isShown, (isShown) => {
     data.isCrash = false
     data.isServer = false
     data.launcherError = false
+    data.launchId = ''
     data.crashReportLocation = ''
     data.errorLog = ''
     data.elyByWarning = false
@@ -129,12 +131,13 @@ async function displayCrash(crashReport: string | undefined) {
   data.log = log
   data.isShown = true
 }
-on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog, stdLog, side, elyByAuthlibReplaced, elyByMinecraftVersion }) => {
+on('minecraft-exit', ({ code, signal, launchId, crashReport, crashReportLocation, errorLog, stdLog, side, elyByAuthlibReplaced, elyByMinecraftVersion }) => {
   if (!code && signal === 'SIGTERM') {
     return
   }
   if (code !== 0) {
     data.isServer = side === 'server'
+    data.launchId = launchId
     data.errorLog = `${errorLog || ''}\n${stdLog || ''}`.trim()
     
     // Check if Ely.by authlib was used
@@ -177,7 +180,7 @@ function getPrompt(raw?: boolean) {
 function getAgentPrompt() {
   const crashPath = data.crashReportLocation ? toVirtualInstancePath(data.crashReportLocation, path.value) : undefined
   const logPath = toVirtualInstancePath(`${path.value}/${data.isServer ? 'server/logs' : 'logs'}/latest.log`, path.value)
-  return getCrashAgentPrompt(data.log, data.errorLog, crashPath, logPath)
+  return getCrashAgentPrompt(data.log, data.errorLog, crashPath, logPath, data.launchId || undefined)
 }
 </script>
 

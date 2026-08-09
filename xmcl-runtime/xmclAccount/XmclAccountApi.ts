@@ -294,10 +294,25 @@ export class XmclAccountApi {
       headers,
     })
     if (!response.ok) {
-      const body = (await response.json().catch(() => ({}))) as ApiErrorBody
+      const text = await response.text()
+      let body: ApiErrorBody = {}
+      try {
+        body = JSON.parse(text) as ApiErrorBody
+      } catch {
+        // Infrastructure errors such as Cloudflare 1027 are plain text.
+      }
+      const cloudflareCode = /^error code:\s*(\d+)\s*$/i.exec(text)?.[1]
+      const fallbackCode =
+        response.status === 429 && cloudflareCode === '1027'
+          ? 'xmcl_api_plan_limit_exceeded'
+          : response.status === 429
+            ? 'xmcl_api_rate_limited'
+            : response.status >= 500
+              ? 'xmcl_api_unavailable'
+              : 'xmcl_account_request_failed'
       throw new XmclAccountApiError(
         response.status,
-        typeof body.error === 'string' ? body.error : 'xmcl_account_request_failed',
+        typeof body.error === 'string' ? body.error : fallbackCode,
         typeof body.requestId === 'string' ? body.requestId : undefined,
         typeof body.details?.mergeId === 'string' ? body.details.mergeId : undefined,
       )

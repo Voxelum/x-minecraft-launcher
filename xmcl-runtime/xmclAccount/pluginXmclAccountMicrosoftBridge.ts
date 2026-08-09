@@ -1,37 +1,10 @@
-import { AUTHORITY_MICROSOFT, type UserProfile } from '@xmcl/runtime-api'
 import type { LauncherAppPlugin } from '~/app'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
-import { UserService } from '~/user/UserService'
 import { XmclAccountService } from './XmclAccountService'
-
-const RETRY_DELAY = 60_000
-
-function isValidMicrosoftUser(user: UserProfile) {
-  return user.authority === AUTHORITY_MICROSOFT && !user.invalidated && user.expiredAt > Date.now()
-}
 
 export const pluginXmclAccountMicrosoftBridge: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('XmclMicrosoftBridge')
   const pendingAttempts = new Map<string, Promise<void>>()
-  const retryTimers = new Map<string, ReturnType<typeof setTimeout>>()
-
-  const clearRetry = (userId: string) => {
-    const timer = retryTimers.get(userId)
-    if (timer) {
-      clearTimeout(timer)
-      retryTimers.delete(userId)
-    }
-  }
-
-  const scheduleRetry = (userId: string) => {
-    if (retryTimers.has(userId)) return
-    const timer = setTimeout(() => {
-      retryTimers.delete(userId)
-      void bridge(userId)
-    }, RETRY_DELAY)
-    timer.unref?.()
-    retryTimers.set(userId, timer)
-  }
 
   const bridge = (userId: string) => {
     const pendingAttempt = pendingAttempts.get(userId)
@@ -41,17 +14,12 @@ export const pluginXmclAccountMicrosoftBridge: LauncherAppPlugin = (app) => {
       .getOrCreate(XmclAccountService)
       .then((service) => service.bootstrapMicrosoft(userId))
       .then((result) => {
-        clearRetry(userId)
         if (result === 'pending-consent') {
           logger.log('XMCL xmcl bridge is waiting for Microsoft Graph consent.')
         }
       })
       .catch((e) => {
-        logger.warn(
-          'Failed to bootstrap XMCL XMCL account from Microsoft authentication; retrying later.',
-          e,
-        )
-        scheduleRetry(userId)
+        logger.warn('Failed to bootstrap XMCL account from Microsoft authentication.', e)
       })
       .finally(() => {
         pendingAttempts.delete(userId)
@@ -63,7 +31,7 @@ export const pluginXmclAccountMicrosoftBridge: LauncherAppPlugin = (app) => {
 
   void app.registry
     .getOrCreate(ExternalCredentialService)
-    .then(async (credentials) => {
+    .then((credentials) => {
       credentials.onCredentialChange((change) => {
         if (
           change.provider === 'microsoft' &&
@@ -73,14 +41,6 @@ export const pluginXmclAccountMicrosoftBridge: LauncherAppPlugin = (app) => {
           void bridge(change.subject)
         }
       })
-
-      const userService = await app.registry.get(UserService)
-      const userState = await userService.getUserState()
-      for (const user of Object.values(userState.users)) {
-        if (isValidMicrosoftUser(user)) {
-          void bridge(user.id)
-        }
-      }
     })
     .catch(() => {
       logger.warn('Unable to load Microsoft users for XMCL XMCL account bootstrap.')

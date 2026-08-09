@@ -1,5 +1,7 @@
 <template>
   <MarketItem
+    data-testid="resource-pack-item"
+    :data-resource-pack-id="pack.id"
     :item="pack"
     :selection-mode="selectionMode"
     :disabled="isVirtual"
@@ -15,6 +17,18 @@
     @click="isVirtual ? undefined : emit('click', $event)"
     @checked="emit('check', $event)"
   >
+    <template v-if="draggable" #prepend>
+      <v-icon
+        data-testid="resource-pack-drag-handle"
+        class="mr-2 cursor-move opacity-60"
+        size="20"
+        draggable="true"
+        aria-hidden="true"
+        @click.stop
+      >
+        drag_indicator
+      </v-icon>
+    </template>
     <template
       v-if="pack.installed.length > 0"
       #labels

@@ -21,7 +21,7 @@ export function useCssAgent(): CssAgentSession {
     getLocale: () => locale.value,
     getUserId: () => userProfile.value?.id || undefined,
     createTools: tools.createCssTools,
-    getSessionContext: () => 'Global XMCL custom CSS scope.',
+    getSessionContext: () => ({ scope: 'global' }),
   })
   void migrateLegacyCssConversation(service).then(() => local.load())
   return local

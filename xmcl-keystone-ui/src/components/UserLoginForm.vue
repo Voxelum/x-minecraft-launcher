@@ -365,43 +365,56 @@ const { usernameRules, passwordRules } = useLoginValidation(emailOnly, isOffline
 
 // Login Error
 const errorMessage = computed(() => {
-  const e = error.value
-  if (isException(UserException, e)) {
-    if (e.exception.type === 'loginInvalidCredentials') {
+  const e = error.value as any
+  // Prefer the structured `exception` payload for classification. `isException`
+  // matches by class name, which can be lost or renamed when the UserException
+  // is serialized across the IPC boundary or through minified bundles. When
+  // that happens a classified error (e.g. a child-account Xbox failure) would
+  // otherwise fall through and leak its raw, untranslated internal message to
+  // the user. Detect the payload structurally so the friendly, localized
+  // message is always shown when a known exception type is present.
+  const exception: UserException['exception'] | undefined =
+    isException(UserException, e)
+      ? e.exception
+      : (e?.exception && typeof e.exception.type === 'string' ? e.exception : undefined)
+  if (exception) {
+    if (exception.type === 'loginInvalidCredentials') {
       return t('loginError.invalidCredentials')
     }
-    if (e.exception.type === 'loginInternetNotConnected') {
+    if (exception.type === 'loginInternetNotConnected') {
       return t('loginError.badNetworkOrServer')
     }
-    if (e.exception.type === 'loginGeneral') {
+    if (exception.type === 'loginGeneral') {
       if (e.message) {
         return e.message
       }
       return t('loginError.requestFailed')
     }
-    if (e.exception.type === 'fetchMinecraftProfileFailed') {
-      if (e.exception.errorType === 'ProfileNotFoundError' && !e.exception.developerMessage) {
+    if (exception.type === 'fetchMinecraftProfileFailed') {
+      if (exception.errorType === 'ProfileNotFoundError' && !exception.developerMessage) {
         return t('loginError.noProfileForNewUser')
       }
       return t('loginError.fetchMinecraftProfileFailed', {
-        reason: `${e.exception.errorType}, ${e.exception.developerMessage}`,
+        reason: `${exception.errorType}, ${exception.developerMessage}`,
       })
     }
-    if (e.exception.type === 'userCheckGameOwnershipFailed') {
+    if (exception.type === 'userCheckGameOwnershipFailed') {
       return t('loginError.checkOwnershipFailed')
     }
-    if (e.exception.type === 'userExchangeXboxTokenFailed') {
-      const redirect = e.exception.xErrRedirect
-      // New granular reasons take precedence; legacy reasons fall through
-      // to the existing strings. Where Microsoft returns a fix-it URL
-      // (e.g. AddChildToFamily, CreateAccount), pass it through so the
-      // user can click straight to the resolution.
-      switch (e.exception.reason) {
+    if (exception.type === 'userExchangeXboxTokenFailed') {
+      const redirect = exception.xErrRedirect
+      // Microsoft's XErr `Redirect` for these codes is an Xbox-console-only
+      // deep link (e.g. https://start.ui.xboxlive.com/AddChildToFamily) that
+      // does NOT resolve in a browser, so we must NOT hand it to the user.
+      // Point each case at the real browser page that fixes it instead.
+      switch (exception.reason) {
         case 'CHILD_ACCOUNT':
-          return t('loginError.loginXboxChildAccount', { url: redirect ?? 'https://start.ui.xboxlive.com/AddChildToFamily' })
+          // A parent must add this child to the Microsoft Family group.
+          return t('loginError.loginXboxChildAccount', { url: 'https://account.microsoft.com/family/' })
         case 'NO_XBOX_PROFILE':
         case 'NO_ACCOUNT':
-          return t('loginError.loginXboxNoXboxProfile', { url: redirect ?? 'https://start.ui.xboxlive.com/CreateAccount' })
+          // Sign in once to create the missing Xbox profile / gamertag.
+          return t('loginError.loginXboxNoXboxProfile', { url: 'https://account.xbox.com/' })
         case 'ADULT_VERIFICATION_REQUIRED':
           return t('loginError.loginXboxAdultVerification', { url: redirect ?? '' })
         case 'REGION_LOCKED':
@@ -415,13 +428,13 @@ const errorMessage = computed(() => {
       }
       // Surface the raw XErr code if we have one but no classification --
       // helps users searching the web / opening support tickets.
-      if (typeof e.exception.xErr === 'number') {
-        return t('loginError.loginXboxFailedWithCode', { code: e.exception.xErr })
+      if (typeof exception.xErr === 'number') {
+        return t('loginError.loginXboxFailedWithCode', { code: exception.xErr })
       }
       return t('loginError.loginXboxFailed')
     }
-    if (e.exception.type === 'userLoginMinecraftByXboxFailed') {
-      const { status, retryAfter, reason } = e.exception
+    if (exception.type === 'userLoginMinecraftByXboxFailed') {
+      const { status, retryAfter, reason } = exception
       if (reason === 'ACCOUNT_SUSPENDED') {
         return t('loginError.loginXboxBanned')
       }
@@ -439,17 +452,17 @@ const errorMessage = computed(() => {
       }
       return t('loginError.loginMinecraftByXboxFailed')
     }
-    if (e.exception.type === 'loginReset') {
+    if (exception.type === 'loginReset') {
       return t('loginError.connectionReset')
     }
-    if (e.exception.type === 'loginTimeout') {
+    if (exception.type === 'loginTimeout') {
       return t('loginError.timeout')
     }
-    if (e.exception.type === 'userAcquireMicrosoftTokenFailed') {
-      if (e.exception.reason === 'USER_CANCELED') {
+    if (exception.type === 'userAcquireMicrosoftTokenFailed') {
+      if (exception.reason === 'USER_CANCELED') {
         return t('loginError.loginCanceled')
       }
-      if (e.exception.reason === 'NETWORK_ERROR') {
+      if (exception.reason === 'NETWORK_ERROR') {
         return t('loginError.badNetworkOrServer')
       }
       return t('loginError.acquireMicrosoftTokenFailed')

@@ -5,6 +5,7 @@ import {
   InstanceModsGroupServiceKey,
   InstanceModsGroupState,
   ModGroupData,
+  normalizeModFileName,
 } from "@xmcl/runtime-api";
 import { ContextMenuItem } from "./contextMenu";
 import { useService } from "./service";
@@ -101,16 +102,11 @@ export function useModGroups(
     };
   }
 
-  // Helper function to normalize file names by removing .disabled suffix
-  function normalizeFileName(fileName: string): string {
-    return fileName.endsWith(".disabled") ? fileName.slice(0, -9) : fileName;
-  }
-
   const groupNames = computed(() => Object.keys(instanceModGroupping.value));
 
   function group(fileNames: string[], customName?: string) {
     const newVal = { ...instanceModGroupping.value };
-    const normalizedFileNames = fileNames.map(normalizeFileName);
+    const normalizedFileNames = fileNames.map(normalizeModFileName);
     const newGroupName = customName || normalizedFileNames.join(",");
     newVal[newGroupName] = {
       files: normalizedFileNames,
@@ -129,7 +125,7 @@ export function useModGroups(
 
   function addToGroup(fileNames: string[], groupName: string) {
     const newVal = { ...instanceModGroupping.value };
-    const normalizedFileNames = fileNames.map(normalizeFileName);
+    const normalizedFileNames = fileNames.map(normalizeModFileName);
 
     // Check if target group exists
     const targetGroup = newVal[groupName];
@@ -143,7 +139,7 @@ export function useModGroups(
     // Remove from all groups first
     for (const group of Object.values(newVal)) {
       group.files = group.files.filter(
-        (f) => !normalizedFileNames.includes(normalizeFileName(f))
+        (f) => !normalizedFileNames.includes(normalizeModFileName(f))
       );
     }
 
@@ -204,7 +200,7 @@ export function useModGroups(
       for (const file of group.files) {
         // Map both original and normalized file names to handle disabled mods
         groupMap[file] = groupName;
-        const normalized = normalizeFileName(file);
+        const normalized = normalizeModFileName(file);
         if (normalized !== file) {
           groupMap[normalized] = groupName;
         }
@@ -225,7 +221,7 @@ export function useModGroups(
       if (!fileName) continue;
 
       // Use normalized file name for group lookup to handle disabled mods
-      const normalizedFileName = normalizeFileName(fileName);
+      const normalizedFileName = normalizeModFileName(fileName);
       const group = _groupMap[normalizedFileName];
 
       if (group) {
@@ -261,34 +257,6 @@ export function useModGroups(
 
     return sortableEntity;
   });
-
-  /**
-   * Update group file memberships when filenames change (e.g., during mod upgrade)
-   * @param filenameMappings - Object mapping old normalized filenames to new normalized filenames
-   */
-  function updateGroupFilenames(filenameMappings: Record<string, string>) {
-    if (Object.keys(filenameMappings).length === 0) return;
-    
-    const newVal = { ...instanceModGroupping.value };
-    let hasChanges = false;
-    
-    for (const group of Object.values(newVal)) {
-      const newFiles = group.files.map(fileName => {
-        const normalized = normalizeFileName(fileName);
-        if (filenameMappings[normalized]) {
-          hasChanges = true;
-          return filenameMappings[normalized];
-        }
-        // Return original filename if no mapping exists to preserve existing state
-        return fileName;
-      });
-      group.files = newFiles;
-    }
-    
-    if (hasChanges) {
-      instanceModGroupping.value = markRaw(newVal);
-    }
-  }
 
   function ungroup(groupName: string) {
     const newVal = { ...instanceModGroupping.value };
@@ -355,7 +323,7 @@ export function useModGroups(
         icon: "label",
         text: t("mod.group"),
         onClick: () => {
-          showDialog([normalizeFileName(fileName)]);
+          showDialog([normalizeModFileName(fileName)]);
         },
       });
     } else {
@@ -363,17 +331,17 @@ export function useModGroups(
         icon: "label",
         text: t("mod.group"),
         onClick: () => {
-          group([normalizeFileName(fileName)]);
+          group([normalizeModFileName(fileName)]);
         },
         children: groupNames.value.map((g) => ({
           text: g,
           icon: "",
           onClick: () => {
             const newVal = { ...instanceModGroupping.value };
-            const normalizedFileName = normalizeFileName(fileName);
+            const normalizedFileName = normalizeModFileName(fileName);
             for (const group of Object.values(newVal)) {
               group.files = group.files.filter(
-                (f) => normalizeFileName(f) !== normalizedFileName
+                (f) => normalizeModFileName(f) !== normalizedFileName
               );
             }
             const group = newVal[g];
@@ -390,11 +358,11 @@ export function useModGroups(
         text: t("mod.ungroup"),
         onClick: () => {
           const newVal = { ...instanceModGroupping.value };
-          const normalizedFileName = normalizeFileName(fileName);
+          const normalizedFileName = normalizeModFileName(fileName);
           // Remove from all groups using normalized filename
           for (const group of Object.values(newVal)) {
             group.files = group.files.filter(
-              (f) => normalizeFileName(f) !== normalizedFileName
+              (f) => normalizeModFileName(f) !== normalizedFileName
             );
           }
           instanceModGroupping.value = newVal;
@@ -410,12 +378,12 @@ export function useModGroups(
 
   function isInGroup(fileName?: string) {
     if (!fileName) return false;
-    return groupMap.value[normalizeFileName(fileName)] !== undefined;
+    return groupMap.value[normalizeModFileName(fileName)] !== undefined;
   }
 
   function getGroupColor(fileName?: string) {
     if (!fileName) return "";
-    const groupName = groupMap.value[normalizeFileName(fileName)];
+    const groupName = groupMap.value[normalizeModFileName(fileName)];
     if (!groupName) return "";
     const group = instanceModGroupping.value[groupName];
     if (!group) return "";
@@ -429,7 +397,7 @@ export function useModGroups(
       const file = mod.installed?.[0];
       if (!file) continue;
       const fileName = file.fileName;
-      const normalizedFileName = normalizeFileName(fileName);
+      const normalizedFileName = normalizeModFileName(fileName);
       const group = groupMap.value[normalizedFileName];
       if (group) {
         if (!currentRules[group]) {
@@ -514,7 +482,7 @@ export function useModGroups(
       if (!file) continue;
       const modId = file.modId;
       const fileName = file.fileName;
-      const normalizedFileName = normalizeFileName(fileName);
+      const normalizedFileName = normalizeModFileName(fileName);
       const expectedGroup = modIdToGroup[modId];
 
       if (expectedGroup) {
@@ -534,7 +502,7 @@ export function useModGroups(
         // Remove from all groups using normalized filename
         for (const group of Object.values(newVal)) {
           group.files = group.files.filter(
-            (f) => normalizeFileName(f) !== normalizedFileName
+            (f) => normalizeModFileName(f) !== normalizedFileName
           );
         }
       }
@@ -563,7 +531,7 @@ export function useModGroups(
       const fileName = i.installed?.[0]?.fileName;
       if (!fileName) continue;
       
-      const normalizedFileName = normalizeFileName(fileName);
+      const normalizedFileName = normalizeModFileName(fileName);
       const groupName = _groupMap[normalizedFileName];
       
       if (groupName) {
@@ -586,7 +554,6 @@ export function useModGroups(
     addToGroup,
     ungroup,
     renameGroup,
-    updateGroupFilenames,
     localGroupedItems,
     groupCollapsedState,
     toggleGroupCollapsed,

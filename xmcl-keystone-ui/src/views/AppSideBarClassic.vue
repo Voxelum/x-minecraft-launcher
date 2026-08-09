@@ -64,13 +64,22 @@
       <AppSideBarItem
         v-if="developerMode"
         data-testid="nav-agent"
-        v-shared-tooltip.right="() => t('agent.title')"
+        v-shared-tooltip.right="agentTooltip"
         clickable
         :aria-label="agentAriaLabel"
         @click="openAgent"
       >
+        <v-badge
+          v-if="agentConfirmationPending"
+          data-testid="nav-agent-confirmation"
+          color="warning"
+          dot
+          location="top end"
+        >
+          <v-icon class="sidebar-item__icon" color="warning" :size="23">priority_high</v-icon>
+        </v-badge>
         <v-progress-circular
-          v-if="agentRunningInBackground"
+          v-else-if="agentRunningInBackground"
           data-testid="nav-agent-running"
           class="sidebar-item__icon"
           color="primary"
@@ -79,7 +88,7 @@
           :width="2"
         />
         <v-icon v-else class="sidebar-item__icon" :size="23">
-          auto_awesome
+          smart_toy
         </v-icon>
       </AppSideBarItem>
 
@@ -176,21 +185,30 @@
       <v-btn
         v-if="developerMode"
         data-testid="nav-agent"
-        v-shared-tooltip.bottom="t('agent.title')"
+        v-shared-tooltip.bottom="agentTooltip"
         icon
         :aria-label="agentAriaLabel"
         class="non-moveable mr-1"
         @click="openAgent"
       >
+        <v-badge
+          v-if="agentConfirmationPending"
+          data-testid="nav-agent-confirmation"
+          color="warning"
+          dot
+          location="top end"
+        >
+          <v-icon color="warning" :size="23">priority_high</v-icon>
+        </v-badge>
         <v-progress-circular
-          v-if="agentRunningInBackground"
+          v-else-if="agentRunningInBackground"
           data-testid="nav-agent-running"
           color="primary"
           indeterminate
           :size="22"
           :width="2"
         />
-        <v-icon v-else :size="23">auto_awesome</v-icon>
+        <v-icon v-else :size="23">smart_toy</v-icon>
       </v-btn>
 
       <v-btn
@@ -252,6 +270,7 @@ const developerMode = computed(() => state.value?.developerMode ?? false)
 const { open: openAgent } = useAgentChatEntry()
 const agentChatStatus = useAgentChatStatus()
 const agentRunningInBackground = computed(() => agentChatStatus.running.value && !agentChatStatus.shown.value)
+const agentConfirmationPending = agentChatStatus.confirmationPending
 
 const { t } = useI18n()
 const { back } = useRouter()
@@ -260,7 +279,8 @@ const navigationAriaLabel = 'Sidebar navigation'
 const backAriaLabel = computed(() => t('shared.back'))
 const myStuffAriaLabel = computed(() => t('myStuff'))
 const storeAriaLabel = computed(() => t('store.name', 2))
-const agentAriaLabel = computed(() => t('agent.title'))
+const agentAriaLabel = computed(() => agentConfirmationPending.value ? `${t('agent.title')}: ${t('agent.confirmPending')}` : t('agent.title'))
+const agentTooltip = () => agentAriaLabel.value
 const multiplayerAriaLabel = computed(() => t('multiplayer.name'))
 const settingsAriaLabel = computed(() => t('setting.name', 2))
 

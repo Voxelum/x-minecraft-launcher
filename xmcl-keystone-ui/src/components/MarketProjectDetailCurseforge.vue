@@ -435,6 +435,7 @@ const onInstall = async (mod: ProjectVersion) => {
       curseforgeProject.value?.logo.url,
       props.installed,
       resolvedDeps ?? [],
+      curseforgeFile.value?.downloadUrl,
     )
   } finally {
     installing.value = false

@@ -78,7 +78,33 @@ export function getCrashAgentPrompt(
   log: string,
   crashPath?: string,
   logPath?: string,
+  launchId?: string,
 ) {
+  if (launchId) {
+    return `Diagnose and fix this Minecraft launch failure for the selected instance.
+
+Read the evidence for launch ${launchId} through the instance VFS:
+- Launch evidence: launches/${launchId}
+
+Inspect installed mods and the resolved loader / Java setup as needed. Apply a supported fix when the cause is clear, then report what changed. If the cause is uncertain or outside XMCL, say so plainly.
+`
+  }
+
+  const evidence = [
+    crashPath ? `- Crash report: ${crashPath}` : '',
+    logPath ? `- Latest log: ${logPath}` : '',
+  ].filter(Boolean)
+
+  if (evidence.length) {
+    return `Diagnose and fix this Minecraft launch failure for the selected instance.
+
+Read the available evidence through the instance VFS:
+${evidence.join('\n')}
+
+Inspect installed mods and the resolved loader / Java setup as needed. Apply a supported fix when the cause is clear, then report what changed. If the cause is uncertain or outside XMCL, say so plainly.
+`
+  }
+
   const crashSection = crashPath
     ? `Crash report file (inspect it via the instance virtual filesystem using vfs_read/vfs_list): ${crashPath}`
     : `Crash report / launcher error:\n\`\`\`\n${crash || '<none captured>'}\n\`\`\``

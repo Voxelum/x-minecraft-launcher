@@ -1,6 +1,6 @@
 <template>
-  <SettingCard>
-    <div class="flex flex-col gap-5">
+  <SettingCard class="base-setting-card--wide">
+    <div class="flex flex-col gap-5" data-testid="server-shared-settings">
       <v-alert
         v-if="error"
         type="error"
@@ -19,6 +19,7 @@
       <!-- EULA acceptance (launch action lives in the header) -->
       <div
         ref="eulaBox"
+        data-testid="server-eula"
         class="eula-box flex items-center gap-3 rounded-lg px-2"
         :class="{ 'eula-box--alert': eulaShake }"
       >
@@ -48,7 +49,7 @@
       </div>
 
       <!-- Server settings -->
-      <section>
+      <section data-testid="server-properties">
         <div class="server-run__section-header">
           <v-icon
             size="small"
@@ -103,7 +104,7 @@
       </section>
 
       <!-- Save selection -->
-      <section>
+      <section data-testid="server-worlds">
         <div class="server-run__section-header">
           <v-icon
             size="small"
@@ -135,7 +136,7 @@
                   {{ rawWorldExists ? 'save' : 'add_circle_outline' }}
                 </v-icon>
                 <span class="save-card__label">
-                  {{ rawWorldExists ? t('save.useCurrent') : t('save.createNew') }}
+                  {{ target === 'remote' ? t('server.worldPreserve') : rawWorldExists ? t('save.useCurrent') : t('save.createNew') }}
                 </span>
               </button>
             </v-item>
@@ -165,7 +166,7 @@
       </section>
 
       <!-- Mods -->
-      <section v-if="enabled.length > 0">
+      <section v-if="enabled.length > 0" data-testid="server-mods">
         <div class="server-run__section-header">
           <v-icon
             size="small"
@@ -278,6 +279,24 @@
           </template>
         </v-data-table>
       </section>
+
+      <section>
+        <div class="server-run__section-header">
+          <v-icon size="small" color="primary">article</v-icon>
+          <span class="text-subtitle-2 font-weight-medium">{{ t('server.log') }}</span>
+          <v-chip size="x-small" variant="tonal" :color="isTargetRunning ? 'success' : undefined">
+            {{ isTargetRunning ? t('baseSetting.info.running') : t('baseSetting.info.stopped') }}
+          </v-chip>
+          <v-spacer />
+          <v-btn icon size="small" variant="text" :aria-label="t('server.clearLog')" @click="clearTargetLog">
+            <v-icon size="18">delete_sweep</v-icon>
+          </v-btn>
+        </div>
+        <div ref="localLogViewer" class="server-run__log" :data-testid="target === 'remote' ? 'server-remote-log' : 'server-local-log'">
+          <div v-if="targetLogLines.length === 0" class="opacity-50">{{ t('server.logWaiting') }}</div>
+          <div v-for="(line, index) in targetLogLines" :key="index">{{ line }}</div>
+        </div>
+      </section>
     </div>
   </SettingCard>
 </template>
@@ -291,6 +310,7 @@ import { kInstanceSave } from '@/composables/instanceSave'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { useInstanceVersionServerInstall } from '@/composables/instanceVersionServerInstall'
 import { kInstanceServerLaunch } from '@/composables/instanceServerLaunch'
+import { kRemoteServer } from '@/composables/remoteServer'
 import { useLaunchException } from '@/composables/launchException'
 import { useService } from '@/composables/service'
 import { useGamepadAction, vibrateGamepad } from '@/composables/gamepad'
@@ -301,7 +321,12 @@ import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { ModFile, getModSide } from '@/util/mod'
 import { Project } from '@xmcl/modrinth'
-import { InstanceModsServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey } from '@xmcl/runtime-api'
+import type { InstanceServerConfig } from '@xmcl/instance'
+import { InstanceLogServiceKey, InstanceModsServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey, InstanceServiceKey, LaunchServiceKey, ServerServiceKey, type ServerServiceStatus } from '@xmcl/runtime-api'
+import { useDebounceFn } from '@vueuse/core'
+
+const { target } = defineProps<{ target: 'local' | 'remote' }>()
+const remote = injection(kRemoteServer)
 
 const port = ref(25565)
 const motd = ref('')
@@ -310,23 +335,112 @@ const onlineMode = ref(false)
 const isAcceptEula = ref(false)
 const nogui = ref(false)
 const linkedWorld = ref('')
+const worldMode = ref<'create' | 'instance' | 'preserve'>('create')
 const rawWorldExists = ref(false)
 const { getEULA, setEULA, getServerProperties, setServerProperties } = useService(InstanceOptionsServiceKey)
 const { linkSaveAsServerWorld, getLinkedSaveWorld } = useService(InstanceSavesServiceKey)
 
-let _eula: boolean
+function parseServerProperties(content: string) {
+  return Object.fromEntries(content
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(line => line && !line.startsWith('#'))
+    .map((line) => {
+      const separator = line.indexOf('=')
+      return separator === -1 ? [line, ''] : [line.slice(0, separator), line.slice(separator + 1)]
+    }))
+}
 
-const { launch, kill, serverCount } = injection(kInstanceLaunch)
+function stringifyServerProperties(properties: Record<string, string | number | boolean>) {
+  return Object.entries(properties).map(([key, value]) => `${key}=${value}`).join('\n') + '\n'
+}
+
+const { launch, kill, serverCount, gameProcesses } = injection(kInstanceLaunch)
 const { serverVersionId } = injection(kInstanceVersion)
-const { runtime, path } = injection(kInstance)
+const { runtime, path, instance } = injection(kInstance)
+const { editInstance } = useService(InstanceServiceKey)
 const { saves, revalidate } = injection(kInstanceSave)
 const { mods } = injection(kInstanceModsContext)
 const enabled = computed(() => mods.value.filter(m => m.enabled))
 
 const isServerRunning = computed(() => serverCount.value > 0)
-function onKill() {
-  kill('server')
+const localServiceEnabled = computed(() => target === 'local' && instance.value.serverConfig?.service.enabled === true)
+const localServiceStatus = ref<ServerServiceStatus>()
+const serverService = useService(ServerServiceKey)
+const isTargetRunning = computed(() => target === 'remote'
+  ? !!remote.status.value?.serviceActive
+  : localServiceEnabled.value ? !!localServiceStatus.value?.active : isServerRunning.value)
+const targetLogLines = computed(() => target === 'remote' ? remote.logLines.value : localLogLines.value)
+async function refreshLocalServiceStatus() {
+  if (target === 'local') localServiceStatus.value = await serverService.getStatus(path.value, 'local')
 }
+async function onKill() {
+  if (target === 'remote') {
+    remote.stopService().then(() => remote.refreshStatus())
+  } else if (localServiceEnabled.value) {
+    const result = await serverService.stop(path.value, 'local')
+    if (!result.ok) throw new Error(result.message || 'Failed to stop Windows service.')
+    await refreshLocalServiceStatus()
+  } else {
+    kill('server')
+  }
+}
+
+function clearTargetLog() {
+  if (target === 'local') localLogLines.value = []
+}
+
+const localLogLines = ref<string[]>([])
+const localLogViewer = ref<HTMLElement>()
+const serverPids = new Set<number>()
+const logRemainders = new Map<number, string>()
+const launchService = useService(LaunchServiceKey)
+const { getServerLogContent } = useService(InstanceLogServiceKey)
+
+function appendLocalLog(pid: number, output: string) {
+  if (!serverPids.has(pid)) return
+  const chunks = (logRemainders.get(pid) ?? '').concat(output).replaceAll('\r', '').split('\n')
+  logRemainders.set(pid, chunks.pop() ?? '')
+  if (chunks.length > 0) {
+    localLogLines.value = localLogLines.value.concat(chunks).slice(-2000)
+  }
+}
+
+function onServerStart(event: { pid: number; side?: 'client' | 'server'; gameDirectory: string }) {
+  if (event.side !== 'server' || event.gameDirectory !== path.value) return
+  serverPids.add(event.pid)
+  localLogLines.value = []
+}
+
+function onServerStdout(event: { pid: number; stdout: string }) {
+  appendLocalLog(event.pid, event.stdout)
+}
+
+function onServerStderr(event: { pid: number; stderr: string }) {
+  appendLocalLog(event.pid, event.stderr)
+}
+
+function onServerExit(event: { pid: number; code?: number; signal?: string }) {
+  if (!serverPids.delete(event.pid)) return
+  const remainder = logRemainders.get(event.pid)
+  if (remainder) localLogLines.value = localLogLines.value.concat(remainder)
+  logRemainders.delete(event.pid)
+  localLogLines.value.push(`[XMCL] Server process exited (${event.code ?? event.signal ?? 'unknown'}).`)
+}
+
+async function loadLocalLog() {
+  const instancePath = path.value
+  const content = await getServerLogContent(instancePath, 'latest.log').catch(() => '')
+  if (instancePath === path.value && localLogLines.value.length === 0 && content) {
+    localLogLines.value = content.replaceAll('\r', '').split('\n').slice(-2000)
+  }
+}
+
+watch(() => targetLogLines.value.length, () => {
+  nextTick(() => {
+    if (localLogViewer.value) localLogViewer.value.scrollTop = localLogViewer.value.scrollHeight
+  })
+})
 
 // Draw attention to the EULA checkbox (shake + highlight) when the user tries
 // to launch without accepting it — instead of disabling the launch button.
@@ -346,74 +460,139 @@ function triggerEulaShake() {
 
 // Bridge to the header action button (BaseSettingExtension).
 const serverLaunch = injection(kInstanceServerLaunch)
-serverLaunch.setHandlers({
-  launch: () => {
-    if (!isAcceptEula.value) {
-      triggerEulaShake()
-      return
-    }
-    return onPlay()
-  },
-  kill: onKill,
+if (target === 'local') {
+  serverLaunch.setHandlers({
+    launch: async () => {
+      if (!isAcceptEula.value) {
+        triggerEulaShake()
+        return
+      }
+      if (!localServiceEnabled.value) return onPlay()
+      await prepareServer()
+      const result = await serverService.start(path.value, 'local')
+      if (!result.ok) throw new Error(result.message || 'Failed to start Windows service.')
+      await refreshLocalServiceStatus()
+    },
+    kill: onKill,
+  })
+}
+watch(isTargetRunning, (v) => { serverLaunch.running.value = v }, { immediate: true })
+watch(() => isAcceptEula.value, (v) => {
+  serverLaunch.canLaunch.value = target === 'local' ? v : v && remote.configured.value
+}, { immediate: true })
+watch(port, (value) => { serverLaunch.port.value = value }, { immediate: true })
+watch(maxPlayers, (value) => { serverLaunch.maxPlayers.value = value }, { immediate: true })
+onMounted(() => {
+  serverLaunch.active.value = true
+  if (target === 'remote' && remote.configured.value) remote.watchingLog.value = true
+  if (target === 'remote') return
+  refreshLocalServiceStatus()
+  for (const process of gameProcesses.value) {
+    if (process.side === 'server') serverPids.add(process.pid)
+  }
+  launchService.on('minecraft-start', onServerStart)
+  launchService.on('minecraft-stdout', onServerStdout)
+  launchService.on('minecraft-stderr', onServerStderr)
+  launchService.on('minecraft-exit', onServerExit)
+  loadLocalLog()
 })
-watch(isServerRunning, (v) => { serverLaunch.running.value = v }, { immediate: true })
-watch(() => isAcceptEula.value, (v) => { serverLaunch.canLaunch.value = v }, { immediate: true })
-onMounted(() => { serverLaunch.active.value = true })
+let serviceStatusTimer: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  if (target === 'local') serviceStatusTimer = setInterval(refreshLocalServiceStatus, 3_000)
+})
 onBeforeUnmount(() => {
-  serverLaunch.active.value = false
-  serverLaunch.setHandlers({})
+  serverLaunch.setPreparationHandlers({})
+  if (target === 'local') {
+    serverLaunch.active.value = false
+    serverLaunch.setHandlers({})
+  }
+  if (target === 'remote') return
+  if (serviceStatusTimer) clearInterval(serviceStatusTimer)
+  launchService.removeListener('minecraft-start', onServerStart)
+  launchService.removeListener('minecraft-stdout', onServerStdout)
+  launchService.removeListener('minecraft-stderr', onServerStderr)
+  launchService.removeListener('minecraft-exit', onServerExit)
 })
 
 const selectedSave = computed({
   get() {
-    if (linkedWorld.value === '') return 0
+    if (worldMode.value !== 'instance') return 0
     const i = saves.value.findIndex(s => s.path === linkedWorld.value)
     return i + 1
   },
   set(v) {
     if (v === 0) {
+      worldMode.value = target === 'remote' ? 'preserve' : 'create'
       linkedWorld.value = ''
       return
     }
+    worldMode.value = 'instance'
     linkedWorld.value = saves.value[v - 1]?.path ?? ''
   },
 })
 
-function refresh() {
-  getLinkedSaveWorld(path.value).then((v) => {
-    rawWorldExists.value = v !== undefined && v !== ''
-    linkedWorld.value = v ?? ''
-  })
-  getServerProperties(path.value).then((p) => {
-    const parsedPort = parseInt(p.port, 10)
-    port.value = isNaN(parsedPort) ? 25565 : parsedPort
-    motd.value = p.motd || 'A Minecraft Server'
-    const parsedMaxPlayers = parseInt(p.maxPlayers, 10)
-    maxPlayers.value = isNaN(parsedMaxPlayers) ? 20 : parsedMaxPlayers
-    onlineMode.value = Boolean(p.onlineMode)
-  })
-  getEULA(path.value).then((v) => {
-    isAcceptEula.value = v
-    _eula = v
-  })
+function applyDesiredConfig(config: InstanceServerConfig) {
+  isAcceptEula.value = config.eula
+  motd.value = config.motd
+  port.value = config.port
+  maxPlayers.value = config.maxPlayers
+  onlineMode.value = config.onlineMode
+  nogui.value = config.nogui
+  worldMode.value = config.world.mode
+  linkedWorld.value = config.world.saveName ?? ''
+}
+
+async function refresh() {
+  const desired = instance.value.serverConfig
+  const linked = await getLinkedSaveWorld(path.value)
+  rawWorldExists.value = linked !== undefined && linked !== ''
+  if (desired) {
+    applyDesiredConfig(desired)
+    return
+  }
+  const [properties, eula] = await Promise.all([
+    getServerProperties(path.value),
+    getEULA(path.value),
+  ])
+  const p = properties
+  const parsedPort = parseInt(p.port, 10)
+  port.value = isNaN(parsedPort) ? 25565 : parsedPort
+  motd.value = p.motd || 'A Minecraft Server'
+  const parsedMaxPlayers = parseInt(p['max-players'], 10)
+  maxPlayers.value = isNaN(parsedMaxPlayers) ? 20 : parsedMaxPlayers
+  onlineMode.value = p['online-mode'] === 'true'
+  isAcceptEula.value = eula
+  if (linked && saves.value.some(save => save.path === linked)) {
+    worldMode.value = 'instance'
+    linkedWorld.value = linked
+  } else {
+    worldMode.value = 'create'
+    linkedWorld.value = ''
+  }
 }
 
 let lastPath = ''
-function init() {
+const initialized = ref(false)
+async function init() {
   if (lastPath === path.value) {
     serverModsLocked.value = serverModsDetected.value
     return
   }
+  initialized.value = false
   lastPath = path.value
   revalidate()
-  refresh()
+  await refresh()
   loadingSelectedMods.value = true
   selectNone()
   // Check the server mods folder. If multiple files exist, mark as detected and optionally lock the mods list.
-  getServerInstanceMods(path.value).then((mods) => {
+  await getServerInstanceMods(path.value).then((mods) => {
     const all = enabled.value
     serverModsDetected.value = mods.length > 0
-    if (mods.length > 1) {
+    const desiredMods = instance.value.serverConfig?.mods
+    if (desiredMods) {
+      selectedMods.value = all.filter(mod => desiredMods.includes(mod.path))
+      serverModsLocked.value = false
+    } else if (mods.length > 1) {
       serverModsLocked.value = true
       if (mods.length > 0) {
         selectedMods.value = all.filter(m => mods.some(a => a.ino === m.ino))
@@ -431,6 +610,8 @@ function init() {
   }).finally(() => {
     loadingSelectedMods.value = false
   })
+  initialized.value = true
+  if (!instance.value.serverConfig) await persistDesiredConfiguration()
 }
 onMounted(init)
 watch(() => path.value, init)
@@ -591,28 +772,101 @@ const { onError } = useLaunchException(
 )
 
 const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () => {
+  const version = await prepareServer()
+  await launch('server', { nogui: nogui.value, version })
+})
+
+function getDesiredConfiguration(): InstanceServerConfig {
+  const serviceName = instance.value.serverConfig?.service.name || `xmcl-${instance.value.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'server'}`
+  return {
+    eula: isAcceptEula.value,
+    motd: motd.value || 'A Minecraft Server',
+    port: port.value || 25565,
+    maxPlayers: maxPlayers.value || 20,
+    onlineMode: onlineMode.value,
+    nogui: nogui.value,
+    world: {
+      mode: worldMode.value,
+      saveName: worldMode.value === 'instance' ? linkedWorld.value : undefined,
+    },
+    mods: selectedMods.value.map(mod => mod.path),
+    deployment: instance.value.serverConfig?.deployment ?? {
+      config: { policy: 'mirror' },
+      mods: { policy: 'mirror' },
+      world: { policy: 'initialize' },
+      extra: { policy: 'overlay' },
+    },
+    service: {
+      enabled: instance.value.serverConfig?.service.enabled ?? false,
+      name: serviceName,
+      startCommand: target === 'remote'
+        ? instance.value.serverConfig?.service.startCommand || '/bin/sh server.sh'
+        : undefined,
+    },
+  }
+}
+
+async function persistDesiredConfiguration() {
+  await editInstance({
+    instancePath: path.value,
+    serverConfig: getDesiredConfiguration(),
+  })
+}
+
+const persistDesiredConfigurationDebounced = useDebounceFn(persistDesiredConfiguration, 300)
+watch([
+  isAcceptEula,
+  motd,
+  port,
+  maxPlayers,
+  onlineMode,
+  nogui,
+  worldMode,
+  linkedWorld,
+  selectedMods,
+], () => {
+  if (initialized.value) persistDesiredConfigurationDebounced()
+}, { deep: true })
+
+async function applyLocalConfiguration() {
   const instPath = path.value
-  let version = serverVersionId.value
   const _maxPlayers = maxPlayers.value
   const _port = port.value
   const _motd = motd.value
   const _onlineMode = onlineMode.value
-  const _nogui = nogui.value
-  const _mods = selectedMods.value
 
-  if (!_eula) {
-    await setEULA(instPath, true)
-  }
+  await persistDesiredConfiguration()
+  await setEULA(instPath, isAcceptEula.value)
   await setServerProperties(instPath, {
     port: _port ?? 25565,
     motd: _motd || 'A Minecraft Server',
     'max-players': _maxPlayers ?? 20,
     'online-mode': _onlineMode ?? false,
   })
+}
 
-  version = await install()
+async function applyConfiguration() {
+  if (target !== 'remote') return
+  const original = parseServerProperties(await remote.readRemoteFile('server.properties'))
+  await remote.writeRemoteFile('eula.txt', `#By agreeing to the Minecraft EULA.\neula=${isAcceptEula.value}\n`)
+  await remote.writeRemoteFile('server.properties', stringifyServerProperties({
+    ...original,
+    port: port.value ?? 25565,
+    motd: motd.value || 'A Minecraft Server',
+    'max-players': maxPlayers.value ?? 20,
+    'online-mode': onlineMode.value ?? false,
+  }))
+}
 
-  if (linkedWorld.value) {
+async function prepareServer() {
+  const instPath = path.value
+  const _mods = selectedMods.value
+
+  await applyLocalConfiguration()
+
+  const version = await install()
+
+  if (worldMode.value === 'instance' && linkedWorld.value) {
     await linkSaveAsServerWorld({
       instancePath: instPath,
       saveName: linkedWorld.value,
@@ -625,8 +879,10 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
     })
   }
 
-  await launch('server', { nogui: _nogui, version })
-})
+  return version
+}
+
+serverLaunch.setPreparationHandlers({ prepare: prepareServer, applyConfiguration })
 
 watch(error, (e) => {
   if (e) {
@@ -636,7 +892,7 @@ watch(error, (e) => {
 
 // Gamepad X on the server tab launches (or stops) the local server.
 useGamepadAction('X', {
-  label: () => isServerRunning.value ? t('launch.killServer') : t('instance.launchServer'),
+  label: () => isServerRunning.value ? t('server.stop') : t('server.launch'),
   handler: () => {
     if (isServerRunning.value) {
       onKill()
@@ -657,6 +913,20 @@ useGamepadAction('X', {
   align-items: center;
   gap: 8px;
   padding: 0 4px 10px;
+}
+
+.server-run__log {
+  height: 280px;
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 /* EULA attention shake + highlight when launching without acceptance. */

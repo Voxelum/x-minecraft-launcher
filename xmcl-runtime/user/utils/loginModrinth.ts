@@ -1,9 +1,8 @@
 import { LauncherApp } from '~/app'
 import { AnyError } from '@xmcl/utils'
 import { UserService } from '../UserService'
-import { fetch as undiciFetch } from 'undici'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
-import { resolveXmclApiBaseUrl } from '~/app/xmclApiBaseUrl'
+import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
 import { kFlights } from '~/infra'
 
 interface ModrinthOAuthResponse {
@@ -14,6 +13,11 @@ interface ModrinthOAuthResponse {
   scope?: string
 }
 
+export function formatModrinthAuthorization(accessToken: string, tokenType = 'Bearer') {
+  if (/^[A-Za-z][\w-]*\s+/.test(accessToken)) return accessToken
+  return `${tokenType || 'Bearer'} ${accessToken}`
+}
+
 export async function getModrinthAccessToken(
   app: LauncherApp,
   credentials?: ExternalCredentialService,
@@ -21,6 +25,16 @@ export async function getModrinthAccessToken(
   const service = credentials ?? (await app.registry.getOrCreate(ExternalCredentialService))
   const result = await service.getValidAccessToken('modrinth')
   return result.status === 'valid' ? result.accessToken : undefined
+}
+
+export function createModrinthAuthenticatedFetch(app: LauncherApp): typeof fetch {
+  return async (input, init) => {
+    const headers = new Headers(input instanceof Request ? input.headers : undefined)
+    new Headers(init?.headers).forEach((value, key) => headers.set(key, value))
+    const token = await getModrinthAccessToken(app)
+    if (token) headers.set('Authorization', formatModrinthAuthorization(token))
+    return await app.fetch(input, { ...init, headers })
+  }
 }
 
 export async function loginModrinth(
@@ -34,6 +48,8 @@ export async function loginModrinth(
   const credentialService =
     credentials ?? (await app.registry.getOrCreate(ExternalCredentialService))
   const token = invalidate ? undefined : await getModrinthAccessToken(app, credentialService)
+
+  if (token) return
 
   if (!token) {
     const redirect_uri = `http://127.0.0.1:${await app.serverPort}/modrinth-auth`
@@ -66,7 +82,7 @@ export async function loginModrinth(
     const flights = await app.registry.get(kFlights)
     const authUrl = new URL(
       '/modrinth/auth',
-      resolveXmclApiBaseUrl(flights.xmclApiBaseUrl, app.getLogger('ApiBaseUrl')),
+      resolveXmclApiEndpoints(flights.xmclApiBaseUrl).common,
     )
     authUrl.searchParams.set('code', code)
     authUrl.searchParams.set('redirect_uri', redirect_uri)

@@ -142,7 +142,6 @@
               v-for="f of data.friends"
               :key="f.profileId"
               :friend="f"
-              :presence="onlineFriends[f.profileId]"
               class="px-2 border-b border-[rgba(var(--v-theme-on-surface),0.04)] last:border-0"
             >
               <v-btn
@@ -267,7 +266,6 @@ import { useDialog } from '@/composables/dialog'
 import {
   kMinecraftFriends,
 } from '@/composables/minecraftFriends'
-import { useFriendsPresence } from '@/composables/useFriendsPresence'
 import { useNotifier } from '@/composables/notifier'
 import { useUserMenuControl } from '@/composables/userMenu'
 import { injection } from '@/util/inject'
@@ -283,7 +281,6 @@ const friendsService = useService(MinecraftFriendsServiceKey)
 const { notify } = useNotifier()
 const { data, loading, error, refresh, userProfile, preferences, preferencesLoading, setPreferences } =
   injection(kMinecraftFriends)
-const { onlineFriends } = useFriendsPresence()
 const userMenu = useUserMenuControl()
 
 const addInputRef = ref<{ focus: () => void } | null>(null)

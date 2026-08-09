@@ -126,7 +126,7 @@ export function useSettingsSearchItems() {
       globalPrependCommand: globalPrependCommand.value,
       globalPreExecuteCommand: globalPreExecuteCommand.value,
       globalEnv: { ...globalEnv.value },
-      globalResolution: { ...(globalResolution.value ?? {}) },
+      globalResolution: { ...globalResolution.value },
       ...patch,
     })
   }

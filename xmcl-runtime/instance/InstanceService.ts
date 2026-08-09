@@ -20,7 +20,7 @@ import {
 } from '@xmcl/runtime-api'
 import { AnyError, isSystemError } from '@xmcl/utils'
 import filenamify from 'filenamify'
-import { fileTypeFromFile } from 'file-type'
+import { fileTypeFromBuffer, fileTypeFromFile } from 'file-type'
 import { existsSync } from 'fs'
 import { ensureDir, readdir, readlink, readJson, rename, rm, writeFile, writeJson } from 'fs-extra'
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'path'
@@ -342,10 +342,10 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     // Store the icon inside the instance folder so it is portable and shared
-    // with the instance. Falls back to the original value on failure.
+    // with the instance.
     instance.icon = await this.#resolveIncomingInstanceIcon(instance.path, instance.icon).catch((e) => {
       this.error(e)
-      return instance.icon
+      return ''
     })
 
     await writeJson(join(instance.path, 'instance.json'), {
@@ -362,8 +362,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
   /**
    * Ensure an incoming icon value is stored inside the instance folder when it
-   * is a local file, returning the in-memory (absolute) media URL to display
-   * it. External URLs, global image URLs and empty values are returned as-is.
+    * is a local or remote image, returning the in-memory (absolute) media URL
+    * to display it. Every non-empty icon is owned by the instance afterwards.
    */
   async #resolveIncomingInstanceIcon(instancePath: string, icon: string | undefined): Promise<string> {
     if (!icon) return ''
@@ -380,11 +380,50 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
       return icon
     }
+    if (icon.startsWith('http://launcher/image/')) {
+      const imageName = basename(new URL(icon).pathname)
+      if (!/^[a-f0-9]{40}$/i.test(imageName)) {
+        throw new Error('Invalid shared image URL')
+      }
+      const source = this.getAppDataPath('resource-images', imageName)
+      if (!existsSync(source)) {
+        throw new Error('Shared image does not exist')
+      }
+      return this.#storeInstanceIcon(instancePath, source)
+    }
+    if (icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('data:image/')) {
+      const response = await this.app.fetch(icon)
+      if (!response.ok) {
+        throw new Error(`Fail to fetch instance icon: ${response.status}`)
+      }
+      const contentLength = Number(response.headers.get('content-length') || 0)
+      if (contentLength > 8 * 1024 * 1024) {
+        throw new Error('Instance icon exceeds maximum size of 8 MB')
+      }
+      const data = Buffer.from(await response.arrayBuffer())
+      if (data.byteLength > 8 * 1024 * 1024) {
+        throw new Error('Instance icon exceeds maximum size of 8 MB')
+      }
+      return this.#storeInstanceIconData(instancePath, data, response.headers.get('content-type') || '')
+    }
     // No scheme: a relative reference resolved against the instance folder.
     if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(icon)) {
       return resolveInstanceIcon(icon, instancePath)
     }
-    return icon
+    throw new Error('Unsupported instance icon URL')
+  }
+
+  async #storeInstanceIconData(instancePath: string, data: Buffer, contentType: string): Promise<string> {
+    const fileType = await fileTypeFromBuffer(data).catch(() => undefined)
+    const isSvg = contentType.startsWith('image/svg+xml') || data.subarray(0, 512).toString().includes('<svg')
+    if (!fileType?.mime.startsWith('image/') && !isSvg) {
+      throw new Error('Instance icon is not an image')
+    }
+    const ext = isSvg ? 'svg' : (fileType?.ext || 'png')
+    const iconPath = join(instancePath, `icon.${ext}`)
+    await ensureDir(instancePath)
+    await writeFile(iconPath, data)
+    return toMediaIconUrl(iconPath)
   }
 
   /**
@@ -626,6 +665,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         return ''
       }),
     )
+    if (result.icon) {
+      result.icon = await this.#resolveIncomingInstanceIcon(instancePath, result.icon)
+    }
 
     if (Object.keys(result).length > 0) {
       this.log(

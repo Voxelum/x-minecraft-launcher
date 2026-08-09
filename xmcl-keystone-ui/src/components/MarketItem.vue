@@ -11,6 +11,7 @@
     :class="{
       'v-list-item--disabled': disabled || item.disabled || item.unsupported,
       'dragged-over': dragover > 0,
+      'market-item--indented': indent,
       dense,
     }"
     :active="selected"
@@ -27,6 +28,7 @@
     @click="emit('click', $event)"
   >
     <template #prepend>
+      <slot name="prepend" />
       <v-avatar
         v-if="selectionMode"
         :size="dense ? 30 : 40"
@@ -71,8 +73,8 @@
       </v-avatar>
       <div
         v-if="indent"
-        class="indicator"
-        :style="{ height: `${height}px`, background: indentColor || 'rgb(250 204 21 / 1)' }"
+        class="market-item__indent-guide"
+        :style="{ '--market-item-indent-color': indentColor || 'rgb(var(--v-theme-primary))' }"
       />
     </template>
 
@@ -377,11 +379,19 @@ const onInstall = async () => {
 .dragged-over {
   @apply border border-dashed border-transparent border-yellow-400;
 }
-.indicator {
-  content: '';
-  min-width: 2px;
+.market-item__indent-guide {
+  width: 3px;
+  height: calc(100% - 16px);
   position: absolute;
-  left: 0;
+  inset-inline-start: 12px;
+  top: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--market-item-indent-color) 58%, transparent);
+}
+.market-item--indented {
+  margin-inline-start: 8px;
+  padding-inline-start: 24px !important;
+  width: calc(100% - 8px);
 }
 .market-item__icon {
   width: 100%;
