@@ -138,7 +138,7 @@ import { kTutorial } from '@/composables/tutorial'
 import AppSystemBarBadge from '@/components/AppSystemBarBadge.vue'
 import AppAudioPlayer from '@/components/AppAudioPlayer.vue'
 import { kTheme } from '@/composables/theme'
-import { useCommandPaletteBus } from '@/composables/commandPalette'
+import { useCommandPaletteVisible } from '@/composables/commandPalette'
 import { kNetworkStatus } from '@/composables/useNetworkStatus'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
@@ -178,17 +178,17 @@ const taskTooltip = computed(() => {
   return taskCountText.value
 })
 
-const paletteBus = useCommandPaletteBus()
+const paletteShown = useCommandPaletteVisible()
 const { isActive: gamepadActive, connected: gamepadConnected, name: gamepadName, labels: gamepadLabels } = useGamepad()
 const paletteShortcut = computed(() => {
   if (gamepadActive.value) {
     // Start / Menu button opens the palette in gamepad mode.
     return gamepadLabels.value.menu
   }
-  return navigator.platform.toLowerCase().includes('mac') ? '⌘K' : 'Ctrl+K'
+  return navigator.platform.toLowerCase().includes('mac') ? '⌘⇧C' : 'Ctrl+Shift+C'
 })
 const gamepadLabel = computed(() => gamepadName.value || t('gamepad.connected'))
-const openPalette = () => paletteBus.emit('show')
+const openPalette = () => { paletteShown.value = true }
 
 const router = useRouter()
 const onBack = () => {

@@ -30,15 +30,27 @@ export class InstanceModsGroupService extends AbstractService implements IInstan
 
       const groupsPath = join(instancePath, 'mod-groups.json')
 
+      const loadGroups = async () => {
+        const data = await readFile(groupsPath, 'utf-8').catch(() => undefined)
+        if (!data) return false
+        try {
+          const groups = JSON.parse(data)
+          if (typeof groups !== 'object') return false
+          state.groupsSet(groups)
+          return true
+        } catch (error) {
+          this.warn(`Failed to read mod groups from ${groupsPath}`, error)
+          return false
+        }
+      }
+
+      await loadGroups()
+
       const watcher = new FSWatcher()
       watcher.add(groupsPath)
       watcher.on('all', async (e) => {
         if (e === 'add' || e === 'change') {
-          const data = await readFile(groupsPath, 'utf-8')
-          const groups = JSON.parse(data)
-          if (typeof groups === 'object') {
-            state.groupsSet(groups)
-          }
+          await loadGroups()
         } else {
           state.groupsSet({})
         }

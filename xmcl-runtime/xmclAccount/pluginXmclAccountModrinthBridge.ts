@@ -3,8 +3,6 @@ import { ExternalCredentialService } from '~/credential/ExternalCredentialServic
 import { XmclAccountApiError } from './XmclAccountApi'
 import { XmclAccountService } from './XmclAccountService'
 
-const RETRY_DELAY = 60_000
-
 function diagnosticError(error: unknown) {
   if (error instanceof XmclAccountApiError) {
     return {
@@ -21,23 +19,6 @@ function diagnosticError(error: unknown) {
 export const pluginXmclAccountModrinthBridge: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('XmclModrinthBridge')
   let pendingAttempt: Promise<void> | undefined
-  let retryTimer: ReturnType<typeof setTimeout> | undefined
-
-  const clearRetry = () => {
-    if (retryTimer) {
-      clearTimeout(retryTimer)
-      retryTimer = undefined
-    }
-  }
-
-  const scheduleRetry = () => {
-    if (retryTimer) return
-    retryTimer = setTimeout(() => {
-      retryTimer = undefined
-      void bridge()
-    }, RETRY_DELAY)
-    retryTimer.unref?.()
-  }
 
   const bridge = () => {
     if (pendingAttempt) return pendingAttempt
@@ -45,15 +26,11 @@ export const pluginXmclAccountModrinthBridge: LauncherAppPlugin = (app) => {
     pendingAttempt = app.registry
       .getOrCreate(XmclAccountService)
       .then((service) => service.bootstrapModrinth())
-      .then(() => {
-        clearRetry()
-      })
       .catch((error) => {
         logger.warn(
-          'Failed to bootstrap XMCL XMCL account from Modrinth authentication; retrying later.',
+          'Failed to bootstrap XMCL account from Modrinth authentication.',
           diagnosticError(error),
         )
-        scheduleRetry()
       })
       .finally(() => {
         pendingAttempt = undefined

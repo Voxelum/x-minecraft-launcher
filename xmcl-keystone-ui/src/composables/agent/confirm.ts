@@ -7,6 +7,7 @@ interface PendingConfirmation {
   id: number
   request: AgentConfirmation
   resolve(value: boolean): void
+  permissionScope?: string
   signal?: AbortSignal
   onAbort?: () => void
 }
@@ -14,6 +15,8 @@ interface PendingConfirmation {
 let nextId = 1
 const active = shallowRef<PendingConfirmation>()
 const queue: PendingConfirmation[] = []
+const allowedScopes = new Set<string>()
+const registeredScopes = new Set<string>()
 
 function showNext() {
   if (!active.value) active.value = queue.shift()
@@ -35,13 +38,16 @@ function finish(item: PendingConfirmation, value: boolean) {
   showNext()
 }
 
-export function requestAgentConfirmation(request: AgentConfirmation, signal?: AbortSignal): Promise<boolean> {
+export function requestAgentConfirmation(request: AgentConfirmation, signal?: AbortSignal, permissionScope?: string): Promise<boolean> {
   if (signal?.aborted) return Promise.resolve(false)
+  const resolvedScope = permissionScope ?? (registeredScopes.size === 1 ? registeredScopes.values().next().value : undefined)
+  if (resolvedScope && allowedScopes.has(resolvedScope) && !request.destructive) return Promise.resolve(true)
   return new Promise<boolean>((resolve) => {
     const item: PendingConfirmation = {
       id: nextId++,
       request,
       resolve,
+      permissionScope: resolvedScope,
       signal,
     }
     if (signal) {
@@ -61,18 +67,31 @@ export async function confirmAgentAction(input: {
   title: string
   message: string
   details?: string[]
+  presentations?: AgentConfirmation['presentations']
   confirmLabel?: string
   destructive?: boolean
-}, signal?: AbortSignal) {
+  allowAll?: boolean
+}, signal?: AbortSignal, permissionScope?: string) {
   const accepted = await requestAgentConfirmation({
     action: 'confirm',
     title: input.title,
     message: input.message,
     details: input.details,
+    presentations: input.presentations,
     confirmLabel: input.confirmLabel,
     destructive: input.destructive,
-  }, signal)
+    allowAll: input.allowAll,
+  }, signal, permissionScope)
   if (!accepted) throw new Error('User declined the action')
+}
+
+export function clearAgentConfirmationScope(permissionScope: string) {
+  allowedScopes.delete(permissionScope)
+  registeredScopes.delete(permissionScope)
+}
+
+export function registerAgentConfirmationScope(permissionScope: string) {
+  registeredScopes.add(permissionScope)
 }
 
 export function useAgentConfirmation() {
@@ -80,6 +99,12 @@ export function useAgentConfirmation() {
     request: computed(() => active.value?.request),
     shown: computed(() => !!active.value),
     accept: () => active.value && finish(active.value, true),
+    allowAll: () => {
+      const item = active.value
+      if (!item) return
+      if (item.permissionScope) allowedScopes.add(item.permissionScope)
+      finish(item, true)
+    },
     decline: () => active.value && finish(active.value, false),
   }
 }

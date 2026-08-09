@@ -1,6 +1,6 @@
 import { MockAgent, fetch as _fetch } from 'undici'
-import { describe, expect, it } from 'vitest'
-import { MicrosoftAuthenticator, MicrosoftMinecraftXboxLoginError } from './microsoft'
+import { describe, expect, it, vi } from 'vitest'
+import { MicrosoftAuthenticator, MicrosoftMinecraftXboxLoginError, XboxDeviceTokenState } from './microsoft'
 
 describe('MicrosoftAuthenticator', () => {
   const agent = new MockAgent()
@@ -72,6 +72,20 @@ describe('MicrosoftAuthenticator', () => {
 
   describe('#acquireXBoxToken', () => {
     const xblToken = 'xbl-token'
+    const deviceToken = 'device-token'
+    const persistedDeviceTokenState: XboxDeviceTokenState = {
+      id: 'persisted-device-id',
+      privateKey: {},
+      token: { Token: deviceToken, NotAfter: '2099-01-01T00:00:00Z' },
+    }
+    const createDeviceTokenStorage = (state?: XboxDeviceTokenState) => ({
+      get: vi.fn().mockResolvedValue(state),
+      put: vi.fn(),
+    })
+    const createClient = (xboxDeviceTokenStorage = createDeviceTokenStorage(persistedDeviceTokenState)) => new MicrosoftAuthenticator({
+      fetch,
+      xboxDeviceTokenStorage,
+    })
     const interceptXbl = () => {
       agent
         .get('https://user.auth.xboxlive.com')
@@ -85,7 +99,11 @@ describe('MicrosoftAuthenticator', () => {
           method: 'POST',
           path: '/xsts/authorize',
           body: JSON.stringify({
-            Properties: { SandboxId: 'RETAIL', UserTokens: [xblToken] },
+            Properties: {
+              SandboxId: 'RETAIL',
+              UserTokens: [xblToken],
+              DeviceToken: deviceToken,
+            },
             RelyingParty: relyingParty,
             TokenType: 'JWT',
           }),
@@ -99,7 +117,7 @@ describe('MicrosoftAuthenticator', () => {
       // The live/avatar relying party fails (e.g. no full Xbox profile).
       interceptAuthorize('http://xboxlive.com', 401, { XErr: 2148916233 })
 
-      const client = new MicrosoftAuthenticator({ fetch })
+      const client = createClient()
       const result = await client.acquireXBoxToken('oauth-token')
 
       expect(result.minecraftXstsResponse.Token).to.equal('mc-xsts')
@@ -111,11 +129,52 @@ describe('MicrosoftAuthenticator', () => {
       interceptAuthorize('rp://api.minecraftservices.com/', 200, { Token: 'mc-xsts' })
       interceptAuthorize('http://xboxlive.com', 200, { Token: 'live-xsts' })
 
-      const client = new MicrosoftAuthenticator({ fetch })
+      const storage = createDeviceTokenStorage(persistedDeviceTokenState)
+      const client = createClient(storage)
       const result = await client.acquireXBoxToken('oauth-token')
 
       expect(result.minecraftXstsResponse.Token).to.equal('mc-xsts')
       expect(result.liveXstsResponse?.Token).to.equal('live-xsts')
+      expect(storage.get).toHaveBeenCalledOnce()
+      expect(storage.put).not.toHaveBeenCalled()
+    })
+
+    it('creates and persists an Xbox device token before the first XSTS request', async () => {
+      interceptXbl()
+      agent
+        .get('https://device.auth.xboxlive.com')
+        .intercept({
+          method: 'POST',
+          path: '/device/authenticate',
+        })
+        .reply(200, { Token: deviceToken, NotAfter: '2099-01-01T00:00:00Z' })
+      interceptAuthorize('rp://api.minecraftservices.com/', 200, { Token: 'mc-xsts' })
+      interceptAuthorize('http://xboxlive.com', 200, { Token: 'live-xsts' })
+
+      const storage = createDeviceTokenStorage(undefined)
+      const client = createClient(storage)
+      const result = await client.acquireXBoxToken('oauth-token')
+
+      expect(result.minecraftXstsResponse.Token).to.equal('mc-xsts')
+      expect(storage.put).toHaveBeenCalledOnce()
+      expect(storage.put).toHaveBeenCalledWith(expect.objectContaining({
+        id: expect.any(String),
+        privateKey: expect.objectContaining({ d: expect.any(String) }),
+        token: { Token: deviceToken, NotAfter: '2099-01-01T00:00:00Z' },
+      }))
+    })
+
+    it('does not silently continue without a device token when device authentication is unavailable', async () => {
+      interceptXbl()
+      agent
+        .get('https://device.auth.xboxlive.com')
+        .intercept({ method: 'POST', path: '/device/authenticate' })
+        .reply(503, 'unavailable')
+
+      const client = createClient(createDeviceTokenStorage(undefined))
+      await expect(client.acquireXBoxToken('oauth-token')).rejects.toThrow(
+        'Failed to authenticate Xbox device, status code: 503',
+      )
     })
   })
 

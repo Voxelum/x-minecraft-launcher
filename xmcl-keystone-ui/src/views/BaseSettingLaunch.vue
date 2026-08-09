@@ -14,6 +14,10 @@
 
     <v-divider class="my-4" />
 
+    <BaseSettingResolution />
+
+    <v-divider class="my-4" />
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <div class="font-weight-medium mb-2 flex items-center">
@@ -212,6 +216,7 @@ import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { useLaunchPreview } from '../composables/launchPreview'
 import { useNotifier } from '../composables/notifier'
 import BaseSettingGlobalLabel from '@/components/BaseSettingGlobalLabel.vue'
+import BaseSettingResolution from './BaseSettingResolution.vue'
 import { useLaunchException } from '@/composables/launchException'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 

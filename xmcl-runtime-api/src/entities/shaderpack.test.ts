@@ -122,13 +122,13 @@ describe('shaderOptions unicode roundtrip', () => {
     const original = {
       shaderPack: '高清光影.zip',
       oldLighting: 'default',
-    } as any
+    }
     const text = stringifyShaderOptions(original)
     // Verify encoded text doesn't contain raw Chinese
     expect(text).not.toContain('高清光影')
     expect(text).toContain('\\u')
     // Verify roundtrip
     const parsed = parseShaderOptions(text)
-    expect(parsed.shaderPack).toEqual('高清光影.zip')
+    expect(parsed).toEqual(original)
   })
 })

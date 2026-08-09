@@ -777,6 +777,7 @@ modpack:
   modpackVersion: 模組包版本
   name: 模組包
   overrides: 模組包打包覆蓋 (overrides)
+  selectDefaultFiles: 選擇預設檔案
   url: URL
   urlHint: 模組包的主頁 URL 位址
 modpackImportConfirm:
@@ -1274,7 +1275,13 @@ serverStatus:
   ping: 延遲
   refuse: 伺服器中斷了連線！
   timeout: 伺服器響應超時！
+agent:
+  notConfiguredHint: 請在設定 → 基本設定 → AI 助手中設定 API 金鑰、模型和 OpenAI 相容端點，例如 OpenAI 或相容 Claude 的閘道。
 setting:
+  aiAgentApiKeyDescription: 配置 OpenAI 相容供應商，例如 OpenAI 或 Claude 閘道。API 金鑰僅儲存在本機裝置。
+  aiAgentApiKeyPlaceholder: OpenAI 或 Claude 供應商 API 金鑰
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 或 claude-sonnet-4-5
   themeStore:
     name: 主題庫
     description: 保存並管理全域主題

@@ -336,7 +336,9 @@ export function useInCollection(projectId: Ref<string | undefined>) {
   })
 
   async function onAddOrRemove(id?: string) {
-    if (!projectId.value) {
+    const currentProjectId = projectId.value
+    const currentCollectionId = collectionId.value
+    if (!currentProjectId) {
       return
     }
     if (mutating.value) {
@@ -345,9 +347,9 @@ export function useInCollection(projectId: Ref<string | undefined>) {
     mutating.value = true
     try {
       if (id) {
-        await addToCollection(id, projectId.value)
+        await addToCollection(id, currentProjectId)
       } else {
-        await removeFromCollection(collectionId.value, projectId.value)
+        await removeFromCollection(currentCollectionId, currentProjectId)
       }
     } finally {
       mutating.value = false

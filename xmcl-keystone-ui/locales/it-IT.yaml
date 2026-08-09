@@ -1184,7 +1184,13 @@ serverStatus:
   ping: Ping...
   refuse: §4Server rufiutato!
   timeout: §4Tmeout della conessione del server!
+agent:
+  notConfiguredHint: Configura una chiave API, un modello e un endpoint compatibile con OpenAI in Impostazioni → Generale → Agente IA. Ad esempio, usa OpenAI o un gateway compatibile con Claude.
 setting:
+  aiAgentApiKeyDescription: Configura un provider compatibile con OpenAI, come OpenAI o un gateway per Claude. La chiave viene archiviata localmente su questo dispositivo.
+  aiAgentApiKeyPlaceholder: Chiave API del provider OpenAI o Claude
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 o claude-sonnet-4-5
   themeStore:
     name: Archivio temi
     description: Salva e gestisci i temi globali

@@ -49,28 +49,32 @@
         />
       </template>
     </SettingItem>
-  </SettingCard>
-
-  <SettingCard v-if="!isBedrock" :title="t('setting.quickLaunchSettings')" icon="flash_on">
-    <SettingItemCheckbox
-      v-model="hideLauncher"
-      :title="t('instanceSetting.hideLauncher')"
-    >
-      <BaseSettingGlobalLabel
-        :global="isGlobalHideLauncher"
-        @clear="resetHideLauncher"
-      />
-    </SettingItemCheckbox>
-    <v-divider class="my-2" />
-    <SettingItemCheckbox
-      v-model="showLog"
-      :title="t('instanceSetting.showLog')"
-    >
-      <BaseSettingGlobalLabel
-        :global="isGlobalShowLog"
-        @clear="resetShowLog"
-      />
-    </SettingItemCheckbox>
+    <template v-if="!isBedrock">
+      <v-divider class="my-3" />
+      <div class="base-setting-general__section-heading">
+        <v-icon size="small" color="primary">flash_on</v-icon>
+        <span>{{ t('setting.quickLaunchSettings') }}</span>
+      </div>
+      <SettingItemCheckbox
+        v-model="hideLauncher"
+        :title="t('instanceSetting.hideLauncher')"
+      >
+        <BaseSettingGlobalLabel
+          :global="isGlobalHideLauncher"
+          @clear="resetHideLauncher"
+        />
+      </SettingItemCheckbox>
+      <v-divider class="my-2" />
+      <SettingItemCheckbox
+        v-model="showLog"
+        :title="t('instanceSetting.showLog')"
+      >
+        <BaseSettingGlobalLabel
+          :global="isGlobalShowLog"
+          @clear="resetShowLog"
+        />
+      </SettingItemCheckbox>
+    </template>
   </SettingCard>
 
   <SettingCard
@@ -185,5 +189,14 @@ const highlighted = computed(() => !ready.value && changeIconModel.value)
 }
 .base-setting-general__icon--empty {
   border: 1px dashed rgba(var(--v-theme-on-surface), 0.24);
+}
+.base-setting-general__section-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 16px 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(var(--v-theme-on-surface), 0.72);
 }
 </style>

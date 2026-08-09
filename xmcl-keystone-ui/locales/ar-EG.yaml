@@ -36,7 +36,7 @@ agent:
   disabledPlaceholder: العميل معطل
   emptyHint: اطلب من العميل يفحص النسخة بتاعتك، أو يفعل/يعطل المودات، أو يقرأ السجلات، أو يشخص سبب الكراش.
   inputPlaceholder: اسأل العميل… (اضغط Enter للإرسال، Shift+Enter لسطر جديد)
-  notConfiguredHint: اضبط مفتاح الـ API والـ model والـ endpoint في الإعدادات ← عام ← عميل الذكاء الاصطناعي لتفعيل العميل.
+  notConfiguredHint: اضبط مفتاح الـ API والـ model والـ endpoint المتوافق مع OpenAI في الإعدادات ← عام ← عميل الذكاء الاصطناعي. مثلاً استخدم OpenAI أو بوابة متوافقة مع Claude.
   notConfiguredTitle: العميل مش مهيأ
   openSettings: افتح الإعدادات
   reset: إعادة ضبط المحادثة
@@ -1356,9 +1356,12 @@ setting:
   advancedSettings: الإعدادات المتقدمة
   advancedSettingsHint: منطقة خطر - إعادة ضبط أو إدارة بيانات اللانشر
   aiAgentApiKey: مفتاح API لعميل الذكاء الاصطناعي
-  aiAgentApiKeyDescription: بيتم حفظه محلياً على جهازك وبيستخدم لطلبات العميل.
+  aiAgentApiKeyDescription: اضبط موفر متوافق مع OpenAI، زي OpenAI أو بوابة لـ Claude. المفتاح بيتحفظ محلياً على جهازك.
+  aiAgentApiKeyPlaceholder: مفتاح API لموفر OpenAI أو Claude
   aiAgentEndpoint: نقطة اتصال (Endpoint) عميل الذكاء الاصطناعي
   aiAgentEndpointDescription: عنوان URL لنقطة اتصال إكمال الدردشة (Chat completions).
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 أو claude-sonnet-4-5
   aiAgentModel: موديل (Model) عميل الذكاء الاصطناعي
   aiAgentModelDescription: اسم الموديل اللي بيتبعت في طلبات الدردشة.
   apiSets:

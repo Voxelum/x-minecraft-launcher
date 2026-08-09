@@ -1421,9 +1421,12 @@ setting:
     successInstance: 인스턴스 배경 이미지가 업데이트되었습니다.
     failed: 배경 이미지 설정에 실패했습니다
   aiAgentApiKey: AI 에이전트 API 키
-  aiAgentApiKeyDescription: 이 기기에 로컬로 저장되며 에이전트 요청에 사용됩니다.
+  aiAgentApiKeyDescription: OpenAI 또는 Claude용 게이트웨이처럼 OpenAI와 호환되는 제공자를 설정합니다. 키는 이 기기에 로컬로 저장됩니다.
+  aiAgentApiKeyPlaceholder: OpenAI 또는 Claude 제공자 API 키
   aiAgentEndpoint: AI 에이전트 엔드포인트
   aiAgentEndpointDescription: 채팅 완성 엔드포인트 URL입니다.
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 또는 claude-sonnet-4-5
   aiAgentModel: AI 에이전트 모델
   aiAgentModelDescription: 채팅 완성 요청 시 전송할 모델 이름입니다.
   useDesktopBackground: 현재 바탕화면 배경 이미지 사용
@@ -1737,7 +1740,7 @@ agent:
   disabledPlaceholder: 에이전트 비활성화됨
   emptyHint: 에이전트에게 인스턴스 검사, 모드 활성화/비활성화, 로그 읽기 또는 충돌 진단을 요청하세요.
   inputPlaceholder: 에이전트에게 질문하기… (전송하려면 Enter, 줄바꿈은 Shift+Enter)
-  notConfiguredHint: 에이전트를 활성화하려면 설정 → 일반 → AI 에이전트에서 API 키, 모델 및 엔드포인트를 설정하세요.
+  notConfiguredHint: 설정 → 일반 → AI 에이전트에서 API 키, 모델 및 OpenAI 호환 엔드포인트를 설정하세요. 예를 들어 OpenAI 또는 Claude 호환 게이트웨이를 사용할 수 있습니다.
   notConfiguredTitle: 에이전트가 설정되지 않음
   openSettings: 설정 열기
   reset: 대화 초기화

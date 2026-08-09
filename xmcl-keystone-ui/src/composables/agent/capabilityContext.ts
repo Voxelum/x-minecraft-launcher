@@ -1,6 +1,4 @@
-import { getInstanceFileFromCurseforgeFile } from '@/util/curseforge'
 import { getModSide, type ModFile } from '@/util/mod'
-import { getInstanceFileFromModrinthVersion } from '@/util/modrinth'
 import { injection } from '@/util/inject'
 import type { Instance, InstanceFile } from '@xmcl/instance'
 import {
@@ -11,6 +9,7 @@ import {
   InstanceServiceKey,
   JavaServiceKey,
   ModpackServiceKey,
+  RemoteServerServiceKey,
   VersionServiceKey,
   type JavaRecord,
   type UserProfile,
@@ -34,6 +33,7 @@ import { kModLibCleaner } from '../modLibCleaner'
 import { kModUpgrade } from '../modUpgrade'
 import { useService } from '../service'
 import { kUserContext } from '../user'
+import { createAgentModDiagnosis } from './modDiagnosis'
 
 export interface AgentCapabilityContext {
   instance: Ref<Instance>
@@ -47,37 +47,44 @@ export interface AgentCapabilityContext {
   selectedShaderPack: Ref<string>
   saves: Ref<InstanceSaveFile[]>
   installInstruction: Ref<InstanceInstallInstruction | undefined>
+  installInstance(): Promise<unknown>
   fixInstanceInstall(): Promise<void>
   enableResourcePack(packs: InstanceResourcePack[] | string[]): Promise<unknown>
   disableResourcePack(packs: InstanceResourcePack[]): Promise<unknown>
   selectShaderPack(fileName: string | undefined): void
-  launch(): Promise<void>
+  launch(): Promise<{ operationId: string; pid?: number; launchId?: string } | undefined>
   killGame(side?: 'client' | 'server', force?: boolean): Promise<void>
   checkModDependencies(): Promise<unknown>
+  diagnoseModCompatibility(changes: { added: string[]; removed: string[] }): Promise<unknown>
   installModDependencies(): Promise<unknown>
   scanUnusedMods(): Promise<unknown>
-  disableUnusedMods(): Promise<unknown>
   checkModUpdates(options: { policy?: string; skipVersion?: boolean }): Promise<unknown>
-  applyModUpdates(): Promise<unknown>
+  stageModUpdates(): Promise<unknown>
   javaList: Ref<JavaRecord[]>
   javaIssue: Ref<'invalid' | 'incompatible' | undefined>
-  installJava(): Promise<unknown>
+  refreshJavaList(force?: boolean): Promise<void>
+  installJava(forceZulu?: boolean): Promise<unknown>
   getServerStatus(): Promise<unknown>
   installServer(): Promise<unknown>
-  setServerEula(accepted: boolean): Promise<unknown>
-  setServerProperties(properties: Record<string, string | number | boolean>): Promise<unknown>
   deployServerMods(paths?: string[]): Promise<unknown>
   launchServer(options?: { nogui?: boolean }): Promise<unknown>
-  setServerFile(file: string, content: string): Promise<unknown>
+  getRemoteServerStatus(): Promise<unknown>
+  testRemoteServerConnection(): Promise<unknown>
+  installRemoteServerService(): Promise<unknown>
+  uninstallRemoteServerService(): Promise<unknown>
+  startRemoteServer(): Promise<unknown>
+  stopRemoteServer(): Promise<unknown>
+  restartRemoteServer(): Promise<unknown>
 }
 
 export function useAgentCapabilityContext() {
   const { instance } = injection(kInstance)
   const { selectedInstance } = injection(kInstances)
-  const { serverVersionId } = injection(kInstanceVersion)
-  const { instruction: installInstruction, fix: fixInstanceInstall } = injection(kInstanceVersionInstall)
+  const { serverVersionId, resolvedVersion, refreshResolvedVersion } = injection(kInstanceVersion)
+  const { instruction: installInstruction, fix: fixInstanceInstall, getInstallInstruction, handleInstallInstruction, getInstanceLock } = injection(kInstanceVersionInstall)
   const { status: javaStatus } = injection(kInstanceJava)
-  const { mods } = injection(kInstanceModsContext)
+  const instanceModsContext = injection(kInstanceModsContext)
+  const { mods } = instanceModsContext
   const { enabled: resourcePacksEnabled, disabled: resourcePacksDisabled, enable: enableResourcePack, disable: disableResourcePack } = injection(kInstanceResourcePacks)
   const { shaderPacks, shaderPack: selectedShaderPack } = injection(kInstanceShaderPacks)
   const { saves } = injection(kInstanceSave)
@@ -96,6 +103,7 @@ export function useAgentCapabilityContext() {
   const savesService = useService(InstanceSavesServiceKey)
   const javaService = useService(JavaServiceKey)
   const versionService = useService(VersionServiceKey)
+  const remoteServerService = useService(RemoteServerServiceKey)
   const { install: installServerVersion } = useInstanceVersionServerInstall()
 
   const resourcePacks = computed(() => [...resourcePacksEnabled.value, ...resourcePacksDisabled.value])
@@ -107,6 +115,24 @@ export function useAgentCapabilityContext() {
   const currentInstancePath = () => selectedInstance.value || instance.value.path || undefined
   const operationId = () => crypto.getRandomValues(new Uint8Array(8)).join('')
 
+  async function installInstance() {
+    const path = currentInstancePath()
+    if (!path) return { error: 'no instance selected' }
+    await refreshResolvedVersion()
+    const resolved = resolvedVersion.value
+    if (!resolved) return { error: 'instance version is not available' }
+    const instruction = await getInstallInstruction(
+      path,
+      resolved.requirements,
+      resolved.version,
+      'id' in resolved ? resolved : undefined,
+      javaList.value,
+    )
+    await getInstanceLock(path).runExclusive(() => handleInstallInstruction(instruction))
+    await refreshResolvedVersion()
+    return { ok: true, instruction }
+  }
+
   async function checkModDependencies() {
     await dependencyCheck.refresh()
     const missing = dependencyCheck.installation.value.map(([file, mod]) => ({
@@ -117,13 +143,32 @@ export function useAgentCapabilityContext() {
     return { missing, ...(error ? { error: error instanceof Error ? error.message : String(error) } : {}) }
   }
 
+  async function diagnoseModCompatibility(changes: { added: string[]; removed: string[] }) {
+    const fileName = (path: string) => path.replace(/\\/g, '/').split('/').at(-1) || path
+    const added = new Set(changes.added.map(fileName))
+    const removed = new Set(changes.removed.map(fileName).filter(name => !added.has(name)))
+
+    const settled = await instanceModsContext.revalidateAndWait((mods) => {
+      const current = new Set(mods.map(mod => mod.fileName))
+      return [...added].every(name => current.has(name)) && [...removed].every(name => !current.has(name))
+    })
+
+    return createAgentModDiagnosis(
+      instanceModsContext.mods.value,
+      instanceModsContext.compatibility.value,
+      instanceModsContext.conflicted.value,
+      !settled,
+      instanceModsContext.loaderIncompatibilities.value,
+    )
+  }
+
   async function installModDependencies() {
     const path = currentInstancePath()
     if (!path) return { error: 'no instance selected' }
     const files = dependencyCheck.installation.value.map(([file]) => file)
-    if (!files.length) return { installed: 0, note: 'No missing dependencies. Run check_mod_dependencies first.' }
-    await instanceInstall.installInstanceFiles({ path, oldFiles: [], files, id: operationId() })
-    return { installed: files.length, files: files.map(file => file.path) }
+    if (!files.length) return { installed: 0, note: 'No missing dependencies. Run `mod dependencies check` first.' }
+    const manifest = await instanceInstall.stageInstanceFiles({ path, oldFiles: [], files, id: operationId() })
+    return { staged: files.length, files: files.map(file => file.path), manifest }
   }
 
   async function scanUnusedMods() {
@@ -131,16 +176,6 @@ export function useAgentCapabilityContext() {
     const unused = libraryCleaner.unusedMods.value.map(file => ({ path: file.path }))
     const error = libraryCleaner.error.value
     return { unused, ...(error ? { error: error instanceof Error ? error.message : String(error) } : {}) }
-  }
-
-  async function disableUnusedMods() {
-    const path = currentInstancePath()
-    if (!path) return { error: 'no instance selected' }
-    const oldFiles = libraryCleaner.unusedMods.value
-    if (!oldFiles.length) return { disabled: 0, note: 'No unused library mods. Run scan_unused_mods first.' }
-    const files = oldFiles.map(file => ({ ...file, path: `${file.path}.disabled` }))
-    await instanceInstall.installInstanceFiles({ path, oldFiles, files, id: operationId() })
-    return { disabled: oldFiles.length, files: oldFiles.map(file => file.path) }
   }
 
   function normalizeUpgradePolicy(policy?: string): 'curseforge' | 'modrinth' | 'curseforgeOnly' | 'modrinthOnly' {
@@ -163,33 +198,23 @@ export function useAgentCapabilityContext() {
     return { updates, ...(error ? { error: error instanceof Error ? error.message : String(error) } : {}) }
   }
 
-  async function applyModUpdates() {
+  async function stageModUpdates() {
     const path = currentInstancePath()
     if (!path) return { error: 'no instance selected' }
     const plans = Object.values(modUpgrade.plans.value)
-    if (!plans.length) return { upgraded: 0, note: 'No updates available. Run check_mod_updates first.' }
-    const oldFiles: InstanceFile[] = []
-    const files: InstanceFile[] = []
-    for (const plan of plans) {
-      oldFiles.push({
-        path: `mods/${plan.mod.fileName}`,
-        hashes: { sha1: plan.mod.hash },
-        size: plan.mod.size || 0,
-      })
-      files.push('file' in plan
-        ? getInstanceFileFromCurseforgeFile(plan.file)
-        : getInstanceFileFromModrinthVersion(plan.version))
-    }
-    await instanceInstall.installInstanceFiles({ path, oldFiles, files, id: operationId() })
-    return { upgraded: plans.length, mods: plans.map(plan => plan.mod.name || plan.mod.fileName) }
+    if (!plans.length) return { upgraded: 0, note: 'No updates available. Run `mod update check` first.' }
+    const { oldFiles, files } = modUpgrade.prepareUpgradeManifest()
+    const manifest = await instanceInstall.stageInstanceFiles({ path, oldFiles, files, id: operationId() })
+    return { staged: plans.length, mods: plans.map(plan => plan.mod.name || plan.mod.fileName), manifest }
   }
 
-  async function installJava() {
+  async function installJava(forceZulu = false) {
     const required = javaStatus.value?.javaVersion
-    const installed = await javaService.installJava(required)
+    const installed = await javaService.installJava(required, forceZulu)
     await refreshJavaList(true).catch(() => undefined)
     return {
       ok: true,
+      sourcePreference: forceZulu ? 'zulu' : 'official-with-zulu-fallback',
       requiredMajorVersion: required?.majorVersion,
       path: installed.path,
       version: installed.version,
@@ -217,11 +242,6 @@ export function useAgentCapabilityContext() {
   async function getServerStatus() {
     const path = currentInstancePath()
     if (!path) return { error: 'no instance selected' }
-    const [eula, properties, deployed] = await Promise.all([
-      instanceOptions.getEULA(path).catch(() => false),
-      instanceOptions.getServerProperties(path).catch(() => ({} as Record<string, string>)),
-      instanceMods.getServerInstanceMods(path).catch(() => [] as Array<{ fileName: string }>),
-    ])
     let version = serverVersionId.value || undefined
     let installed = !!version
     if (!installed && await serverVersionResolves(installedServerVersion)) {
@@ -232,26 +252,6 @@ export function useAgentCapabilityContext() {
       installed,
       serverVersion: version ?? null,
       running: serverCount.value,
-      eula,
-      properties,
-      deployedMods: deployed.map(file => file.fileName),
-    }
-  }
-
-  async function setServerEula(accepted: boolean) {
-    const path = currentInstancePath()
-    if (!path) return { error: 'no instance selected' }
-    await instanceOptions.setEULA(path, accepted)
-    return { ok: true, eula: accepted }
-  }
-
-  async function setServerProperties(properties: Record<string, string | number | boolean>) {
-    const path = currentInstancePath()
-    if (!path) return { error: 'no instance selected' }
-    await instanceOptions.setServerProperties(path, properties)
-    return {
-      ok: true,
-      properties: await instanceOptions.getServerProperties(path).catch(() => ({} as Record<string, string>)),
     }
   }
 
@@ -264,11 +264,61 @@ export function useAgentCapabilityContext() {
     return { ok: true, deployed: files.length, files }
   }
 
-  async function setServerFile(file: string, content: string) {
+  function requireRemoteServerConfigured(path: string | undefined) {
+    if (!path) return { error: 'no instance selected' } as const
+    if (!instance.value.remoteServer) {
+      return { error: 'No remote server is configured for this instance. Ask the user to fill in the connection details in Base Setting > Remote Server Admin first.' } as const
+    }
+    return undefined
+  }
+
+  async function getRemoteServerStatus() {
     const path = currentInstancePath()
-    if (!path) return { error: 'no instance selected' }
-    await instanceOptions.setServerFile(path, file, content)
-    return { ok: true, file }
+    const guard = requireRemoteServerConfigured(path)
+    if (guard) return guard
+    return remoteServerService.getStatus(path!)
+  }
+
+  async function testRemoteServerConnection() {
+    const path = currentInstancePath()
+    const guard = requireRemoteServerConfigured(path)
+    if (guard) return guard
+    return remoteServerService.testConnection(path!)
+  }
+
+  async function installRemoteServerService() {
+    const path = currentInstancePath()
+    const guard = requireRemoteServerConfigured(path)
+    if (guard) return guard
+    return remoteServerService.installService(path!)
+  }
+
+  async function uninstallRemoteServerService() {
+    const path = currentInstancePath()
+    const guard = requireRemoteServerConfigured(path)
+    if (guard) return guard
+    return remoteServerService.uninstallService(path!)
+  }
+
+  async function startRemoteServer() {
+    const path = currentInstancePath()
+    const guard = requireRemoteServerConfigured(path)
+    if (guard) return guard
+    return remoteServerService.startService(path!)
+  }
+
+  async function stopRemoteServer() {
+    const path = currentInstancePath()
+    const guard = requireRemoteServerConfigured(path)
+    if (guard) return guard
+    return remoteServerService.stopService(path!)
+  }
+
+  async function restartRemoteServer() {
+    const path = currentInstancePath()
+    const guard = requireRemoteServerConfigured(path)
+    if (guard) return guard
+    return remoteServerService.restartService(path!)
   }
 
   async function launchServer(options?: { nogui?: boolean }) {
@@ -287,7 +337,7 @@ export function useAgentCapabilityContext() {
     for (let index = 0; index < 8; index++) {
       await new Promise<void>(resolve => setTimeout(resolve, 400))
       if (serverCount.value <= before) {
-        return { ok: false, version, error: 'The server process exited immediately. Inspect launch-failures or server logs.' }
+        return { ok: false, version, error: 'The server process exited immediately. Inspect launches/latest or server logs.' }
       }
     }
     return { ok: true, version }
@@ -305,6 +355,7 @@ export function useAgentCapabilityContext() {
     selectedShaderPack: selectedShaderPackName,
     saves,
     installInstruction,
+    installInstance,
     fixInstanceInstall: async () => { await fixInstanceInstall() },
     enableResourcePack: packs => enableResourcePack(packs as any),
     disableResourcePack,
@@ -312,21 +363,26 @@ export function useAgentCapabilityContext() {
     launch: () => launch(),
     killGame: (side, force) => kill(side, force),
     checkModDependencies,
+    diagnoseModCompatibility,
     installModDependencies,
     scanUnusedMods,
-    disableUnusedMods,
     checkModUpdates,
-    applyModUpdates,
+    stageModUpdates,
     javaList,
     javaIssue,
+    refreshJavaList,
     installJava,
     getServerStatus,
     installServer,
-    setServerEula,
-    setServerProperties,
     deployServerMods,
     launchServer,
-    setServerFile,
+    getRemoteServerStatus,
+    testRemoteServerConnection,
+    installRemoteServerService,
+    uninstallRemoteServerService,
+    startRemoteServer,
+    stopRemoteServer,
+    restartRemoteServer,
   }
 
   return {
@@ -335,6 +391,7 @@ export function useAgentCapabilityContext() {
       instanceService,
       modpackService,
       savesService,
+      versionService,
     },
   }
 }

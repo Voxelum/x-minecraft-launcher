@@ -1,7 +1,8 @@
-import { File, FileModLoaderType, FileRelationType, HashAlgo } from '@xmcl/curseforge'
+import { File, FileModLoaderType, FileRelationType } from '@xmcl/curseforge'
 import { isNoModLoader } from './isNoModloader'
 import { ModLoaderFilter } from '@/composables/search'
-import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
+import { RuntimeVersions } from '@xmcl/instance'
+export { getInstanceFileFromCurseforgeFile } from '@xmcl/runtime-api'
 
 export function getCurseforgeRelationType(type: FileRelationType) {
   return type === FileRelationType.RequiredDependency
@@ -14,11 +15,13 @@ export function getCurseforgeRelationType(type: FileRelationType) {
 }
 
 export function getCursforgeFileModLoaders(file: File): string[] {
-  return file.gameVersions.filter(v => !Number.isInteger(Number(v[0]))).map(v => v.toLocaleLowerCase())
+  return file.gameVersions
+    .filter((v) => !Number.isInteger(Number(v[0])))
+    .map((v) => v.toLocaleLowerCase())
 }
 
 export function getCurseforgeFileGameVersions(file: File): string[] {
-  return file.gameVersions.filter(v => Number.isInteger(Number(v[0])))
+  return file.gameVersions.filter((v) => Number.isInteger(Number(v[0])))
 }
 
 export function getModLoaderTypesForFile(file: File) {
@@ -50,36 +53,25 @@ export function getCursforgeModLoadersFromString(loaderTypes: string | string[] 
   } as Record<string, FileModLoaderType>
   if (!loaderTypes) return [FileModLoaderType.Any]
   if (typeof loaderTypes === 'string') return [mapping[loaderTypes]]
-  return loaderTypes.map(loaderType => mapping[loaderType])
+  return loaderTypes.map((loaderType) => mapping[loaderType])
 }
 
-export function getCurseforgeModLoaderTypeFromRuntime(runtime: RuntimeVersions, returnAnyIfNoModLoader = true) {
+export function getCurseforgeModLoaderTypeFromRuntime(
+  runtime: RuntimeVersions,
+  returnAnyIfNoModLoader = true,
+) {
   const noModLoader = isNoModLoader(runtime)
   const modLoaderType =
     noModLoader && returnAnyIfNoModLoader
       ? FileModLoaderType.Any
-      : (runtime.forge)
+      : runtime.forge
         ? FileModLoaderType.Forge
         : runtime.fabricLoader
           ? FileModLoaderType.Fabric
           : runtime.quiltLoader
             ? FileModLoaderType.Quilt
             : runtime.neoForged
-            ? FileModLoaderType.NeoForge
-            : FileModLoaderType.Any
+              ? FileModLoaderType.NeoForge
+              : FileModLoaderType.Any
   return modLoaderType
-}
-
-export function getInstanceFileFromCurseforgeFile(file: File, destinationPrefix = 'mods'): InstanceFile {
-  return {
-    path: `${destinationPrefix}/${(file.fileName)}`,
-    hashes: {
-      sha1: file.hashes.find(f => f.algo === HashAlgo.Sha1)?.value as string,
-    },
-    size: file.fileLength,
-    curseforge: {
-      projectId: file.modId,
-      fileId: file.id,
-    },
-  }
 }

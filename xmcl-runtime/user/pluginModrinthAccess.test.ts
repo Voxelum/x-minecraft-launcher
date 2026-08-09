@@ -53,7 +53,7 @@ describe('pluginModrinthAccess', () => {
     }
     await handlers.get('https')!({ request, response: {} })
 
-    expect(request.headers.Authorization).toBe('modrinth-access-token')
+    expect(request.headers.Authorization).toBe('Bearer modrinth-access-token')
     expect(registry.get).toHaveBeenCalledWith(UserService)
     expect(registry.getOrCreate).toHaveBeenCalledWith(ExternalCredentialService)
   })

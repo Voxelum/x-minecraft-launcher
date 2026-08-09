@@ -37,14 +37,15 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: 选择新的根目录
 agent:
+  abort: 停止生成
   title: XMCL Agent
   statusReady: 就绪
   statusWorking: 处理中…
-  statusDisabled: 已禁用 — 缺少 API Key
-  reset: 重置对话
-  notConfiguredTitle: Agent 尚未配置
+  statusDisabled: 已禁用 — 请登录或配置服务商
+  reset: 新建对话
+  notConfiguredTitle: Agent 暂不可用
   notConfiguredHint: >-
-    在设置 → 通用 → AI Agent 中填写 API Key、模型和 Endpoint 以启用 Agent。
+    请在设置 → 通用 → AI Agent 中填写 API Key、模型和 OpenAI 兼容 Endpoint，例如 OpenAI 或兼容 Claude 的网关。
   openSettings: 打开设置
   setupGuide: 配置指南
   emptyHint: >-
@@ -53,11 +54,13 @@ agent:
   suggestion2: 我的模组崩溃了 — 找出原因并告诉我如何修复
   suggestion3: 构建一个整合包：为我想要的功能查找模组并安装到此实例
   thinking: 思考中…
+  reasoning: 思考过程
   callingTool: 正在调用 {name}…
   confirmTitle: 确认 Agent 操作
   confirmCancel: 取消
   confirmAccept: 继续
   errorTitle: Agent 执行出错
+  confirmAllowAll: 全部允许
   inputPlaceholder: 向 Agent 提问…（Enter 发送，Shift+Enter 换行）
   disabledPlaceholder: Agent 已禁用
   toolArguments: 参数
@@ -69,7 +72,7 @@ agent:
   marketConfirmTitle: 安装{type}
   marketConfirmMessage: 要将 {name} 安装到当前实例吗？
   marketConfirmTarget: 目标：{instance}
-  marketInstallFailed: "{type}安装失败"
+  marketInstallFailed: '{type}安装失败'
   marketType:
     datapack: 数据包
     mod: 模组
@@ -113,6 +116,24 @@ bedrock:
   launchFailed: 启动此基岩版失败
   removeFailed: '移除基岩版 {version} 失败'
 baseSetting:
+  info:
+    address: 地址
+    changes: 修改状态
+    custom: 自定义
+    disabled: 未启用
+    enabled: 已启用
+    exportFormats: 导出格式
+    inherited: 继承全局
+    modLoader: 模组加载器
+    notConfigured: 未配置
+    notSet: 未设置
+    offline: 离线包
+    projectId: 项目 ID
+    running: 运行中
+    saved: 已保存
+    status: 状态
+    stopped: 未运行
+    vanilla: 原版
   title: 实例设置
 browseApp:
   createShortcut: 创建快捷方式
@@ -338,6 +359,7 @@ commandPalette:
   hintEnter: 进入
   hintBack: 返回
   hintClose: 关闭
+  hintAskAgent: 询问 Agent
 feedback:
   channel: 联系渠道
   description: 我找到了漏洞/我想反馈
@@ -433,6 +455,10 @@ instance:
   fileApiHint: 用于远程同步实例文件的链接
   fullscreen: 全屏
   height: 高度
+  monitor: 全屏显示器
+  monitorDefault: 默认（主显示器）
+  monitorNumber: 显示器 {number}
+  monitorPrimary: 主显示器
   hideCard: 隐藏此卡片
   icon: 实例图标
   iconHint: 该图标可以是文件或互联网 URL 链接。
@@ -440,7 +466,7 @@ instance:
   installModpack: 从modpack更新实例
   lastPlayed: 上次游玩
   launchArguments: 启动命令预览
-  launchServer: 启动本地服务端
+  launchServer: 启动服务端
   linkFileDesc: |-
     这将使用全局 {file} 覆盖实例本地 {file}。
     您确定要链接吗？
@@ -613,7 +639,7 @@ launch:
   createShortcut: 创建快捷方式
   kill: 停止
   forceKill: 强制结束
-  killServer: 停止本地服务器
+  killServer: 停止服务端
   launch: 启动
   launchAnyway: 直接启动
   launchAs: 以其他账号启动
@@ -633,6 +659,13 @@ launchBlocked:
     description: >-
       没有权限执行 <span class="highlight"> {javaPath} </span>，请尝试给启动器更高权限，给 Java 文件增加可执行权限，或者更换 Java。
     title: 无权限使用 Java
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL 无法从当前桌面会话恢复 X11 显示信息。请在当前桌面会话的终端中重新启动 XMCL，或注销后重新登录。
+    noGraphicalSession: XMCL 当前不在图形桌面会话中运行。请从桌面会话启动 XMCL 后再启动 Minecraft。
+    sandboxDenied: 应用沙箱无法访问 X11。请在 Flatpak 权限中允许 XMCL 访问 X11 socket，然后重启 XMCL。
+    title: X11 显示不可用
+    xwaylandMissing: 当前 Wayland 会话中的 Minecraft 需要 XWayland。请安装 Linux 发行版提供的 XWayland 软件包，然后注销并重新登录。
+    xwaylandNotRunning: 已安装 XWayland，但当前没有运行 X11 显示服务。请在合成器配置中启用 XWayland，然后注销并重新登录。
   launchNoProperJava:
     description: 找不到合适的 Java 来启动游戏。({javaPath} 可能无效？)
     title: 没有合适的 Java
@@ -868,8 +901,93 @@ modpack:
   includeAssets: 是否包含游戏资源 (Assets) 文件
   includes: 打包文件
   modpackVersion: 整合包版本
+  modrinthProject: Modrinth 项目
   name: 整合包
   overrides: 整合包打包覆盖 (overrides)
+  selectDefaultFiles: 选择默认文件
+  bindProject: 绑定项目
+  bindProjectHint: 选择当前 Modrinth 账号有权管理的整合包项目。
+  bindProjectTypeImmutableHint: Modrinth 会在项目的第一个版本上传后确定项目类型，之后无法修改。还没有任何版本的草稿项目仍可在此绑定，但已发布为 mod/资源包等类型的项目无法转换为整合包，请使用“创建新项目”来发布。
+  bindProjectNoProjects: 未找到你的 Modrinth 账号下的任何项目。
+  unbindProject: 解除绑定
+  unbindProjectConfirmTitle: 解除绑定 Modrinth 项目？
+  unbindProjectConfirmMessage: 这只会解除当前实例与该 Modrinth 项目的本地关联，Modrinth 上的项目和版本不会受影响。
+  editProject: 编辑项目
+  projectDiscovery: 发现与兼容性
+  projectGallery: 项目图库
+  projectGalleryAdd: 添加图片
+  projectGalleryEmpty: 暂无图库图片。
+  projectGalleryFeatured: 设为主图
+  projectGalleryFromScreenshots: 选择实例截图
+  projectGalleryHint: 可添加不超过 5 MiB 的图片，并设置项目主图。
+  projectGallerySelectScreenshot: 选择当前实例的截图
+  projectIdentity: 标识与介绍
+  projectLinks: 项目链接
+  projectLoadFailed: 无法加载已绑定的 Modrinth 项目。
+  projectNoChanges: 项目没有未保存的修改。
+  projectNotBound: 尚未绑定 Modrinth 项目
+  projectNotBoundHint: 可绑定已有项目，或创建新的 Modrinth 项目。
+  projectUnsavedChanges: 已修改 {count} 个项目字段
+  projectLatestDraft: 草稿
+  projectVersions: 个版本
+  publish: 发布
+  publishCategories: 分类（用逗号分隔）
+  publishChannel: 发布通道
+  publishChangelog: 更新日志
+  publishChangelogGenerate: 用 AI 生成
+  publishConfirmProjectChanges: 确认项目修改
+  publishCreateProject: 创建项目
+  publishCreateDraft: 构建并创建草稿
+  publishCustomVersion: 自定义
+  publishDescription: 项目详细介绍
+  publishDiscordUrl: Discord 地址
+  publishDraftCreated: 草稿版本已上传。
+  publishSubmitted: 版本已提交审核。
+  publishExistingProject: 已有项目
+  publishIcon: 项目图标
+  publishIconHint: 支持 PNG、JPEG 或 WebP
+  publishIconKeep: 未选择新图片时保持现有图标
+  publishIconUseInstance: 使用实例图标
+  publishIssuesUrl: 问题反馈地址
+  publishLicense: 许可证 ID
+  publishLogin: 登录 Modrinth
+  publishFiles: 个已选文件
+  publishLinkageSummary: '{total} 个 mod/资源包/光影包中，{linked} 个可以直接链接到 Modrinth 上的下载地址，无需上传。'
+  publishLinkageEmbeddedSummary: '{count} 个文件无法链接，将随此版本一起上传（内嵌）。'
+  publishLinkageShowFiles: 查看需要上传的文件
+  publishLinkageReason:
+    missing-file: 本地找不到该文件
+    not-linked-to-modrinth: 未识别为 Modrinth 资源
+    no-downloadable-url: 未找到可再分发的下载地址
+  publishModrinth: 发布到 Modrinth
+  publishNewProject: 新建项目
+  publishOpenProject: 打开项目
+  publishOpenVersion: 打开版本
+  publishProfile: MRPack 类型
+  publishProfileClient: 仅客户端
+  publishProfileServer: 仅服务端
+  publishProfileSplit: 通用包及独立客户端/服务端包
+  publishProfileUniversal: 通用包
+  publishProject: 项目
+  publishProjectDetailsTab: 项目详情
+  publishProjectName: 项目名称
+  publishProjectRequired: 请先选择要发布的项目。
+  publishProjectSlug: 项目标识
+  publishProjectUrl: 项目 URL（可选）
+  publishProjectUrlHint: 留空将自动使用 {slug}。
+  publishProjectSaved: 项目详情已更新。
+  publishSourceUrl: 源代码地址
+  publishSubmit: 提交草稿审核
+  publishSummary: 简短摘要
+  publishSummaryMinWords: 摘要至少需要包含 3 个词。
+  publishVersionTitle: 版本标题
+  publishVersionTab: 发布版本
+  publishVersion: 发布版本
+  publishVisibility: 可见性
+  publishWikiUrl: Wiki 地址
+  visibilityPrivate: 私有
+  visibilityPublic: 公开
+  visibilityUnlisted: 不公开列出
   url: URL
   urlHint: 整合包的主页 URL 地址
 modpackImportConfirm:
@@ -1047,8 +1165,8 @@ multiplayer:
   confirm: 确定
   connectionError: 连接错误
   connectionFailedHint: 无法建立连接。请检查双方的 NAT 类型是否兼容。
-  connectedToHost: 已连接到房主
-  natWarning: 您的 NAT 类型可能阻碍直连。请尝试在设置中启用中继服务器，或让朋友作为主机。
+  connectedToMaster: 已连接到房间主控
+  natWarning: 您的 NAT 类型可能阻碍直连。请尝试在设置中启用中继服务器，或让朋友担任房间主控。
   connections: 用户连接管理
   copied: 已复制！
   copy: 复制
@@ -1070,14 +1188,16 @@ multiplayer:
   gatheringIce: >
     请将<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>发送给您的联机伙伴，您的联机伙伴在 <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> 加入连接 </span> 中输入这段文字。 <br> 期间 ICE 服务器可能需要时间收集足够信息来创建<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>。 <br> <span class="hint-text"> 您不需要等 ICE 服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，您可以提前将令牌复制给对方。 </span>
   groupId: 小组 ID
-  guest: 玩家
-  host: 房主
+  master: 主控
+  masterHostsGameHint: 房间主控是联机连接中心，应由主控开启 Minecraft 局域网世界。更换游戏宿主前请先转移主控。
+  member: 成员
   illegalTokenDescription: 非法的令牌，请确认对方给您的令牌是完整且正确的。
   initiateConnection: 发起连接
   joinConnection: 如果您的伙伴已经创建了连接，您需要选择加入链接。
   joinManual: 加入连接
   joinOrCreateGroup: 加入/创建群组
   joinOrCreateGroupHint: 从您的小伙伴那获得群组 ID 或自己创建一个群组
+  joinCreatesMissingRoomHint: 如果该房间不存在，你会创建它并成为房间主控。
   kernel: P2P内核
   kernelDescription: |-
     使用本机 WebRTC 或节点数据通道。
@@ -1103,6 +1223,7 @@ multiplayer:
   sharingNotificationTitle: 同伴正在共享游戏配置
   start: 开始
   startNewP2PConnection: 点击开始按钮来新建一个新的点对点连接
+  waitingForMaster: 正在等待房间主控重新连接
 myStuff: 个人中心
 migrateMinecraft:
   name: 迁移 Minecraft 文件
@@ -1337,6 +1458,8 @@ localCollection:
   incompatibleAlert: '有 {count} 个项目与当前实例不兼容，已跳过：'
   projects: '无项目 | {count} 个项目 | {count} 个项目'
 server:
+  launch: 启动服务端
+  stop: 停止服务端
   acceptingMinecraftVersion: 接受 Minecraft 版本
   addServer: 添加服务器
   address: 服务器地址
@@ -1352,7 +1475,7 @@ server:
   export: 导出服务器
   exportNoFilesHint: |-
     找不到服务器文件。
-    您可以一次在本地运行服务器来生成一些文件。
+    请先安装一次服务端以生成所需文件。
   exportOption: 服务器导出选项
   exportSSHAuthenticationFailed: |-
     所有身份验证方法都失败了。
@@ -1380,8 +1503,101 @@ server:
   pings: 延迟
   players: 玩家
   port: 端口
+  clearLog: 清空日志
+  log: 服务端日志
+  logWaiting: 启动服务端后，输出将显示在这里。
+  remoteActionSuccess: 操作完成。
+  remoteAdmin: SSH 服务端
+  remoteAuthMethod: 身份验证
+  remoteAuthPassword: 密码
+  remoteAuthPrivateKey: 私钥
+  remoteBuildOfflinePackage: 生成离线包
+  remoteConnected: 已连接
+  remoteConnection: SSH 连接
+  remoteDeployment: 部署
+  remoteDeploy: 部署
+  remoteDisk: 磁盘
+  remoteConfigFiles: 配置文件
+  remoteExtraFiles: 其他文件
+  remoteForgetCredentials: 忘记已保存的凭据
+  remoteInstallService: 安装服务
+  remoteLoad: 系统负载
+  remoteLog: 远程日志
+  remoteMemory: 内存
+  remoteMods: 模组
+  remoteNoWorldSelected: 未选择实例世界
+  remoteJavaRequired: 远程 Linux 主机上未找到 Java。
+  remoteLinuxRequired: 仅支持 Linux SSH 目标。
+  remoteNotConfiguredHint: 请填写并保存连接信息，以启用状态检查、服务控制和日志监控。
+  remotePathNotWritable: 远程服务端目录不可写。
+  remotePathWritable: 目录可写
+  remotePolicyInitialize: 仅初始化一次
+  remotePolicyMirror: 镜像同步
+  remotePolicyOverlay: 覆盖写入
+  remotePolicyPreserve: 保留远端
+  remotePreview: 预览变更
+  remotePhase:
+    connect: 正在连接
+    error: 协调失败
+    idle: 等待协调
+    inspect: 正在检查目标
+    install: 正在安装服务端
+    logs: 正在连接控制台
+    ready: 已应用期望状态
+    service: 正在确保 systemd 服务
+    start: 正在启动服务端
+    sync: 正在同步期望状态
+    world: 正在应用世界策略
+  remoteRememberCredentials: 在系统凭据库中记住凭据
+  remoteReconcileReady: 目标已与实例配置一致，控制台已连接。
+  remoteRestartService: 重启
+  remoteRunInstall: 安装或修复
+  remoteSavedCredentialsHint: 正在使用已保存的凭据；留空以保持不变，输入新值可替换。
+  remoteServerInstalled: 已安装服务端文件
+  remoteService: systemd 服务
+  remoteServiceActive: 运行中
+  remoteServiceName: 服务名称
+  remoteServiceNameHint: systemd --user 单元名称，例如 mc-server
+  remoteSelectedFiles: 已选择 {count} 个服务端文件
+  remoteSelectFiles: 选择文件
+  remoteStartCommand: 启动命令
+  remoteStartCommandHint: 例如 java -jar server.jar nogui
+  remoteStartService: 启动
+  remoteStatus: 状态
+  remoteSystemdRequired: 远程 Linux 主机不支持 systemd 用户服务。
+  remoteTargetName: 目标名称
+  remoteStopService: 停止
+  remoteStopWatchLog: 停止监控
+  remoteTestConnection: 测试连接
+  remoteTestConnectionSuccess: 连接成功。
+  remoteUninstallConfirmMessage: 这会禁用并移除远程主机上的 systemd 单元，不会删除服务端文件。
+  remoteUninstallService: 卸载服务
+  remoteWatchLog: 监控实时日志
+  remoteWorldAlways: 每次协调时覆盖
+  remoteWorldDeployment: 实例世界部署
+  remoteWorldDeploymentHint: 常规同步不会上传世界数据，只有此策略明确允许时才会上传。
+  remoteWorldFirstInstall: 仅在目标没有世界时初始化
+  remoteWorldNever: 永不上传世界
+  remoteWorldPresent: 目标世界
+  remoteWorld: 世界
+  remoteWorldWillDeploy: 本次协调将上传所选实例世界。
   serverName: 服务器名称
+  serviceInstall: 安装服务
+  serviceManagedLaunch: 使用系统服务执行启动和停止操作
+  serviceManager: 系统服务
+  serviceName: 服务名称
+  serviceNameHint: 仅使用字母、数字、点、下划线或连字符的稳定标识
+  serviceNotInstalled: 未安装
+  serviceStartCommand: 启动命令
+  serviceSystemd: systemd --user
+  serviceWindows: Windows 服务
+  serviceWindowsCommandHint: 安装服务时会根据当前实例自动生成 Java 启动命令。
   serversListTitle: 服务器列表
+  target: 服务端目标
+  targetLocal: localhost
+  targetLocalHint: 在此电脑上安装并运行服务端。
+  targetRemote: SSH 目标
+  targetRemoteHint: 通过 SSH 连接、安装、启动并监控服务端。
   unbindUpstream: 解绑
   unknown: 未知服务器
   unknownDescription: 未知服务器，请刷新。
@@ -1394,6 +1610,7 @@ server:
   useAsUpstreamHint: 此实例将跟随服务器所报告的 Minecraft 版本。
   version: 服务器推荐版本
   versionHint: Ping 使用的 Minecraft 版本
+  worldPreserve: 保留目标现有世界
 serverStatus:
   nohost: 找不到服务器！
   ping: 延迟
@@ -1424,14 +1641,19 @@ setting:
   advancedSettingsHint: 危险区域 - 重置或管理启动器数据
   aiAgentApiKey: AI Agent API Key
   aiAgentApiKeyClear: 清除密钥
-  aiAgentApiKeyDescription: 仅保存在本地设备，用于 Agent 请求。
+  aiAgentApiKeyDescription: 保持“内置”即可使用 XMCL 账号；也可选择外部服务商并填写其 API Key。密钥按服务商分别保存在本地设备。
   aiAgentApiKeyEmpty: 粘贴你的 API Key
   aiAgentApiKeyNotNeeded: 无需密钥
   aiAgentApiKeyNotNeededHint: 该服务在本地运行，无需 API Key
   aiAgentApiKeySaved: 已保存
   aiAgentApiKeyStored: 已保存密钥，输入可替换
+  aiAgentApiKeyPlaceholder: OpenAI 或 Claude 服务商 API Key
+  aiAgentBuiltin: 内置
+  aiAgentCustom: 自定义
   aiAgentEndpoint: AI Agent Endpoint
   aiAgentEndpointDescription: 聊天补全（chat completions）的 Endpoint 地址。
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 或 claude-sonnet-4-5
   aiAgentModel: AI Agent 模型
   aiAgentModelDescription: 请求聊天补全时使用的模型名。
   aiAgentProvider: AI Agent 服务商
@@ -1498,7 +1720,7 @@ setting:
     assistantSuggestion2: 给卡片添加淡淡的渐变背景
     assistantTitle: CSS 助手
     dropHint: 拖入 .css 文件以加载
-    editorPlaceholder: "/* 在此编写你的自定义 CSS */"
+    editorPlaceholder: '/* 在此编写你的自定义 CSS */'
     globalToggle: 开关自定义 CSS
     openInDialog: 在助手对话框中打开
     title: 自定义 CSS
@@ -1520,7 +1742,7 @@ setting:
   general: 基本设置
   githubRelease: Github
   globalJava: 首选 Java
-  globalJavaHint: "在自动模式下会优先尝试此 Java，仅当其与游戏版本不兼容时才回退到自动检测。"
+  globalJavaHint: '在自动模式下会优先尝试此 Java，仅当其与游戏版本不兼容时才回退到自动检测。'
   globalSetting: 全局实例设置
   globalSettingHint: 实例默认情况下会使用这些全局设置
   importSettings: 导入设置

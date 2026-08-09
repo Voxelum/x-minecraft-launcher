@@ -32,6 +32,11 @@ export const config = {
     to: '.',
     filter: 'package.json',
   }],
+  extraResources: [{
+    from: 'main/agent-documents',
+    to: 'agent-documents',
+    filter: ['**/*.md'],
+  }],
   artifactName: 'xmcl-${version}-${platform}-${arch}.${ext}',
   appx: {
     displayName: 'X Minecraft Launcher',

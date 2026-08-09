@@ -63,8 +63,8 @@ agent:
     registros o diagnostique un fallo.
   inputPlaceholder: Pregúntale al agente… (Enter para enviar, Shift+Enter para nueva línea)
   notConfiguredHint: >-
-    Configura tu clave API, modelo y endpoint en Ajustes → General → Agente IA
-    para activar el agente.
+    Configura una clave API, un modelo y un endpoint compatible con OpenAI en
+    Ajustes → General → Agente IA. Por ejemplo, usa OpenAI o una pasarela compatible con Claude.
   notConfiguredTitle: Agente no configurado
   openSettings: Abrir ajustes
   reset: Reiniciar conversación
@@ -1520,9 +1520,12 @@ setting:
   advancedSettings: Configuración avanzada
   advancedSettingsHint: Zona de peligro — restablecer o administrar datos del lanzador
   aiAgentApiKey: Clave API del Agente IA
-  aiAgentApiKeyDescription: Se almacena localmente en este dispositivo y se usa para las solicitudes del agente.
+  aiAgentApiKeyDescription: Configura un proveedor compatible con OpenAI, como OpenAI o una pasarela para Claude. La clave se almacena localmente en este dispositivo.
+  aiAgentApiKeyPlaceholder: Clave API del proveedor de OpenAI o Claude
   aiAgentEndpoint: Endpoint del Agente IA
   aiAgentEndpointDescription: URL del endpoint de chat completions.
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 o claude-sonnet-4-5
   aiAgentModel: Modelo del Agente IA
   aiAgentModelDescription: Nombre del modelo a enviar en las solicitudes de chat completions.
   apiSets:

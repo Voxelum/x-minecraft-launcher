@@ -36,7 +36,7 @@ agent:
   disabledPlaceholder: प्रतिनिधिः असमर्थितः
   emptyHint: स्वक्षणं परीक्षितुं, मोड्स परिवर्तयितुं, वृत्तलेखं पठितुं, अथवा पतनस्य निदानं कर्तुं प्रतिनिधिं पृच्छतु।
   inputPlaceholder: प्रतिनिधिं पृच्छतु... (प्रेषणाय Enter, नूतनपङ्क्तये Shift+Enter)
-  notConfiguredHint: प्रतिनिधिं सक्रियं कर्तुं विकल्पाः → सामान्याः → एआय (AI) प्रतिनिधिः इत्यत्र स्वकीयं API कुञ्जी, प्रारूपं, अन्त्यबिन्दुं च निर्धारयतु।
+  notConfiguredHint: विकल्पाः → सामान्याः → एआय (AI) प्रतिनिधिः इत्यत्र API कुञ्जी, प्रारूपं, OpenAI-सुसङ्गतम् अन्त्यबिन्दुं च निर्धारयतु। उदाहरणार्थं OpenAI अथवा Claude-सुसङ्गतं gateway उपयुज्यताम्।
   notConfiguredTitle: प्रतिनिधिः न विन्यस्तः
   openSettings: विकल्पान् उद्घाटयतु
   reset: वार्तालापं पुनः स्थापयतु
@@ -1356,9 +1356,12 @@ setting:
   advancedSettings: प्रौढविकल्पाः
   advancedSettingsHint: सङ्कटक्षेत्रम् - प्रवर्तकदत्तं पुनः स्थापयतु प्रबन्धयतु वा
   aiAgentApiKey: एआय (AI) प्रतिनिधि-API-कुञ्जी
-  aiAgentApiKeyDescription: अस्मिन् यन्त्रे स्थानिकरूपेण रक्षिता।
+  aiAgentApiKeyDescription: OpenAI-सुसङ्गतं प्रदातारं विन्यस्यताम्, यथा OpenAI अथवा Claude-कृते gateway। कुञ्जी अस्मिन् यन्त्रे स्थानिकरूपेण रक्ष्यते।
+  aiAgentApiKeyPlaceholder: OpenAI अथवा Claude प्रदातुः API कुञ्जी
   aiAgentEndpoint: एआय (AI) प्रतिनिधि-अन्त्यबिन्दुः
   aiAgentEndpointDescription: वार्तालापपूर्णतायाः अन्त्यबिन्दुः सङ्केतः।
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 अथवा claude-sonnet-4-5
   aiAgentModel: एआय (AI) प्रतिनिधिप्रारूपम्
   aiAgentModelDescription: वार्तालापप्रार्थनासु प्रेषणीयं प्रारूपनाम।
   apiSets:

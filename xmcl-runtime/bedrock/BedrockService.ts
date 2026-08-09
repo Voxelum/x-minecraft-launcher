@@ -400,14 +400,16 @@ export class BedrockService extends AbstractService implements IBedrockService {
     this.#assertSupported()
 
     const downloadOptions = await this.app.registry.get(kDownloadOptions)
-    const downloadUrl = await resolveBedrockDownloadUrl(
-      version.updateIdentity,
-      '1',
-      downloadOptions.dispatcher,
-    ).catch((e) => {
-      this.warn(`Failed to resolve Bedrock download URL for ${version.version}: ${e}`)
-      return undefined
-    })
+    const downloadUrl = /^https?:\/\//i.test(version.updateIdentity)
+      ? version.updateIdentity
+      : await resolveBedrockDownloadUrl(
+        version.updateIdentity,
+        '1',
+        downloadOptions.dispatcher,
+      ).catch((e) => {
+        this.warn(`Failed to resolve Bedrock download URL for ${version.version}: ${e}`)
+        return undefined
+      })
     if (!downloadUrl) {
       throw new BedrockException({ type: 'bedrockDownloadUrlUnavailable' },
         version.type === 'release'

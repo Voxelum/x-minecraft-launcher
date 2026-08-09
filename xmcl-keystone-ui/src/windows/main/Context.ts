@@ -158,7 +158,7 @@ export default defineComponent({
       instance.path,
       instance.runtime,
       instanceMods.mods,
-      instanceMods.updateMetadata,
+      instanceMods.updateMetadataAndWait,
     )
 
     const resourcePackSearch = useResourcePackSearch(
@@ -216,7 +216,7 @@ export default defineComponent({
         instance.path,
         instance.runtime,
         instanceMods.mods,
-        instanceMods.updateMetadata,
+        instanceMods.updateMetadataAndWait,
       ),
     )
     provide(kModLibCleaner, useModLibCleaner(instanceMods.mods, instanceMods.allowLoaders))

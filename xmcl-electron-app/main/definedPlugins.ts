@@ -1,10 +1,12 @@
 import { pluginAutoUpdate } from './pluginAutoUpdate'
+import { pluginAgentDocuments } from './pluginAgentDocuments'
 import { pluginIconProtocol } from './pluginIconProtocol'
 import { pluginDiscreteGPULinux } from './pluginDiscreteGPULinux'
+import { pluginLinuxDisplay } from './pluginLinuxDisplay'
 import { pluginPowerMonitor } from './pluginPowerMonitor'
 
 import { pluginApiFallback } from '@xmcl/runtime/app/pluginApiFallback'
-import { pluginAgentBridge } from '@xmcl/runtime/agent'
+import { pluginAgentProtocol } from '@xmcl/runtime/agent'
 import { pluginCommonProtocol } from '@xmcl/runtime/app/pluginCommonProtocol'
 import { pluginMediaProtocol } from '@xmcl/runtime/app/pluginMediaProtocol'
 import { pluginCli } from '@xmcl/runtime/commands/pluginCli'
@@ -47,7 +49,8 @@ import { LauncherAppPlugin } from '~/app'
 import { definedServices } from './definedServices'
 
 export const definedPlugins: LauncherAppPlugin[] = [
-  pluginAgentBridge,
+  pluginAgentDocuments,
+  pluginAgentProtocol,
   pluginCommandHost({ services: definedServices }),
   pluginCli,
   pluginAutoUpdate,
@@ -59,6 +62,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginSaveWorker,
   pluginSetup,
   pluginLaunchPrecheck,
+  pluginLinuxDisplay,
   pluginDiscreteGPULinux,
   pluginUncaughtError,
   pluginNativeReplacer,

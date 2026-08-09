@@ -36,7 +36,7 @@ agent:
   disabledPlaceholder: Trợ lý đã bị vô hiệu hóa
   emptyHint: Yêu cầu trợ lý kiểm tra phiên bản của bạn, bật/tắt mod, đọc nhật ký hoạt động hoặc chẩn đoán sự cố crash.
   inputPlaceholder: Hỏi trợ lý… (Nhấn Enter để gửi, Shift+Enter để xuống dòng)
-  notConfiguredHint: Đặt khóa API, mô hình và máy chủ (endpoint) trong Cài đặt → Chung → Trợ lý AI để kích hoạt trợ lý.
+  notConfiguredHint: Đặt khóa API, mô hình và endpoint tương thích OpenAI trong Cài đặt → Chung → Trợ lý AI. Ví dụ, dùng OpenAI hoặc gateway tương thích với Claude.
   notConfiguredTitle: Trợ lý chưa được cấu hình
   openSettings: Mở cài đặt
   reset: Đặt lại cuộc hội thoại
@@ -1358,9 +1358,12 @@ setting:
   advancedSettings: Cài đặt nâng cao
   advancedSettingsHint: Vùng nguy hiểm - đặt lại hoặc quản lý dữ liệu trình khởi chạy
   aiAgentApiKey: Khóa API trợ lý AI
-  aiAgentApiKeyDescription: Được lưu trữ cục bộ trên thiết bị này và dùng cho các yêu cầu trợ lý.
+  aiAgentApiKeyDescription: Cấu hình một nhà cung cấp tương thích OpenAI, chẳng hạn OpenAI hoặc gateway cho Claude. Khóa được lưu trữ cục bộ trên thiết bị này.
+  aiAgentApiKeyPlaceholder: Khóa API của nhà cung cấp OpenAI hoặc Claude
   aiAgentEndpoint: Máy chủ trợ lý AI (Endpoint)
   aiAgentEndpointDescription: URL endpoint cho việc hoàn thành chat.
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 hoặc claude-sonnet-4-5
   aiAgentModel: Mô hình trợ lý AI
   aiAgentModelDescription: Tên mô hình gửi trong các yêu cầu hoàn thành chat.
   apiSets:

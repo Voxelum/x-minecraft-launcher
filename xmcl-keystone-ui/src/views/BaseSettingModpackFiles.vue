@@ -1,5 +1,9 @@
 <template>
-  <SettingCard :title="t('modpack.exportDirectory')" icon="save_alt">
+  <Teleport defer to="#modrinth-project-anchor">
+    <BaseSettingModrinthProjectCard :project-id="boundProjectId" :last-version-id="modpackMetadata.modrinth.lastVersionId" :bind-loading="bindingProject" :create-loading="creatingProject" :unbinding="unbindingProject" @bind="openBindDialog" @create="openCreateDialog" @publish="openPublishDialog" @unbind="unbindProject" />
+  </Teleport>
+
+  <SettingCard :title="t('modpack.export')" icon="ios_share">
     <SettingItem
       long-action
       :title="t('modpack.exportDirectory')"
@@ -14,11 +18,90 @@
         </v-btn>
       </template>
     </SettingItem>
+    <v-divider class="my-2" />
+    <SettingItem
+      :title="t('modpack.emitCurseforge')"
+      class="cursor-pointer"
+      @click="modpackMetadata.emitCurseforge = !modpackMetadata.emitCurseforge"
+    >
+      <template #preaction>
+        <v-icon>xmcl:curseforge</v-icon>
+      </template>
+      <template #action>
+        <v-switch
+          v-model="modpackMetadata.emitCurseforge"
+          color="primary"
+          hide-details
+          inset
+          density="compact"
+          @click.stop
+        />
+      </template>
+    </SettingItem>
+    <v-divider class="my-2" />
+    <SettingItem
+      :title="t('modpack.emitModrinth')"
+      class="cursor-pointer"
+      @click="modpackMetadata.emitModrinth = !modpackMetadata.emitModrinth"
+    >
+      <template #preaction>
+        <v-icon>xmcl:modrinth</v-icon>
+      </template>
+      <template #action>
+        <v-switch
+          v-model="modpackMetadata.emitModrinth"
+          color="primary"
+          hide-details
+          inset
+          density="compact"
+          @click.stop
+        />
+      </template>
+    </SettingItem>
+    <template v-if="modpackMetadata.emitModrinth">
+      <v-divider class="my-2" />
+      <SettingItem
+        :title="t('modpack.emitModrinthStrict')"
+        class="cursor-pointer"
+        @click="modpackMetadata.emitModrinthStrict = !modpackMetadata.emitModrinthStrict"
+      >
+        <template #preaction>
+          <v-icon class="opacity-60">verified</v-icon>
+        </template>
+        <template #subtitle>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span>{{ t('modpack.emitModrinthStrictDescription') }}</span>
+            <a
+              class="inline-flex items-center rounded border border-dashed border-green-300 px-1 text-xs"
+              target="browser"
+              href="https://docs.modrinth.com/docs/modpacks/format_definition/#downloads"
+              @click.stop
+            >
+              docs.modrinth.com
+            </a>
+          </div>
+        </template>
+        <template #action>
+          <v-switch
+            v-model="modpackMetadata.emitModrinthStrict"
+            color="primary"
+            hide-details
+            inset
+            density="compact"
+            @click.stop
+          />
+        </template>
+      </SettingItem>
+    </template>
   </SettingCard>
 
-  <SettingCard :title="t('modpack.includes', 1)" icon="folder_zip">
+  <SettingCard class="base-setting-card--wide" :title="t('modpack.includes', 1)" icon="folder_zip">
     <template #header-action>
       <div class="flex items-center gap-2 min-w-0">
+        <v-tabs v-model="fileSide" density="compact" color="primary" class="modpack-file-tabs">
+          <v-tab value="client" size="small"><v-icon start size="small">desktop_windows</v-icon>{{ t('shared.client') }}</v-tab>
+          <v-tab value="server" size="small" :disabled="!hasServerFiles"><v-icon start size="small">dns</v-icon>{{ t('shared.server') }}</v-tab>
+        </v-tabs>
         <v-text-field
           v-model="filterText"
           :label="t('shared.filter')"
@@ -33,6 +116,14 @@
           ~{{ getExpectedSize(totalSize) }}
         </div>
         <v-btn
+          v-shared-tooltip="() => t('modpack.selectDefaultFiles')"
+          variant="text"
+          icon="restore"
+          size="small"
+          :disabled="(fileSide === 'client' ? refreshing : serverRefreshing) || !activeFiles.length"
+          @click="selectDefaultFiles"
+        />
+        <v-btn
           variant="text"
           icon="refresh"
           size="small"
@@ -43,13 +134,13 @@
     </template>
     <div ref="scrollElement" class="visible-scroll modpack-files">
       <InstanceManifestFileTree
-        v-model="cache.selected"
-        :loading="refreshing"
+        v-model="activeSelection"
+        :loading="refreshing || serverRefreshing"
         selectable
         :scroll-element="scrollElement"
       >
         <template #default="{ item }">
-          <div v-if="item.curseforge || item.modrinth" class="inline-flex gap-2" @click.stop>
+          <div v-if="fileSide === 'client' && (item.curseforge || item.modrinth)" class="inline-flex gap-2" @click.stop>
             <div class="v-btn-toggle v-btn-toggle--density-compact">
               <v-btn
                 v-shared-tooltip="() => getEnvText(item, 'client')"
@@ -94,11 +185,26 @@
         </template>
       </InstanceManifestFileTree>
     </div>
+    <div v-if="fileSide === 'server'" class="flex items-center gap-3 px-2 pb-2">
+      <span v-if="!hasServerFiles" class="text-sm text-medium-emphasis">{{ t('server.exportNoFilesHint') }}</span>
+      <v-spacer />
+      <v-btn
+        color="primary"
+        variant="tonal"
+        prepend-icon="folder"
+        :disabled="!serverCache.selected.length"
+        :loading="exportingServerFolder"
+        @click="exportServerToFolder"
+      >
+        {{ t('server.exportToFolder') }}
+      </v-btn>
+    </div>
   </SettingCard>
 </template>
 
 <script lang="ts" setup>
 import InstanceManifestFileTree from '@/components/InstanceManifestFileTree.vue'
+import BaseSettingModrinthProjectCard from '@/components/BaseSettingModrinthProjectCard.vue'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingCard from '@/components/SettingCard.vue'
 import { useRefreshable, useService } from '@/composables'
@@ -110,37 +216,60 @@ import {
 } from '@/composables/instanceFileNodeData'
 import { useInstanceModpackMetadata } from '@/composables/instanceModpackMetadata'
 import { kInstanceVersion } from '@/composables/instanceVersion'
+import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { kModpackExport } from '@/composables/modpack'
+import { useInstanceVersionServerInstall } from '@/composables/instanceVersionServerInstall'
+import { kUserContext } from '@/composables/user'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
+import { getModrinthModLoaders } from '@/util/modrinth'
 import { getModSides } from '@/util/modSides'
 import { getExpectedSize } from '@/util/size'
 import { syncRef } from '@vueuse/core'
 import type { InstanceFile } from '@xmcl/instance'
+import type { Project } from '@xmcl/modrinth'
 import {
   ExportFileDirective,
+  BaseServiceKey,
+  InstanceIOServiceKey,
   InstanceManifestServiceKey,
   InstanceModsServiceKey,
   InstanceResourcePacksServiceKey,
+  InstanceServiceKey,
   InstanceShaderPacksServiceKey,
   ModpackServiceKey,
 } from '@xmcl/runtime-api'
+import { useDialog } from '@/composables/dialog'
+import { ModrinthProjectBindDialogKey, ModrinthProjectCreateDialogKey, ModrinthVersionPublishDialogKey, useModrinthProjectBindingBus } from '@/composables/modrinthProjectBinding'
+import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 
 const { t } = useI18n()
-const { getInstanceManifest } = useService(InstanceManifestServiceKey)
-const { exportModpack } = useService(ModpackServiceKey)
+const { getInstanceManifest, getInstanceServerManifest } = useService(InstanceManifestServiceKey)
+const { getInstanceModpackMetadata } = useService(InstanceServiceKey)
+const { exportModpack, unbindModrinthProject } = useService(ModpackServiceKey)
 
 const { modpackMetadata } = inject('modpackMetadata', useInstanceModpackMetadata())
 const cache = shallowReactive({
   selected: [] as string[],
   files: [] as InstanceFile[],
 })
-const selectedPaths = computed(() => new Set(cache.selected))
+const serverCache = shallowReactive({ selected: [] as string[], files: [] as InstanceFile[] })
+const defaultServerFileRoots = ['mods', 'config', 'defaultconfigs', 'kubejs', 'scripts', 'plugins']
+const fileSide = ref<'client' | 'server'>('client')
+const activeSelection = computed({
+  get: () => fileSide.value === 'client' ? cache.selected : serverCache.selected,
+  set: (value: string[]) => {
+    if (fileSide.value === 'client') cache.selected = value
+    else serverCache.selected = value
+  },
+})
+const activeFiles = computed(() => fileSide.value === 'client' ? cache.files : serverCache.files)
+const selectedPaths = computed(() => new Set(activeSelection.value))
 const filterText = ref('')
 const { leaves } = provideFileNodes(
   useInstanceFileNodesFromLocal(
     computed(() =>
-      cache.files.filter((f) =>
+      activeFiles.value.filter((f) =>
         f.path.toLowerCase().includes((filterText.value || '').toLowerCase()),
       ),
     ),
@@ -150,6 +279,53 @@ const { leaves } = provideFileNodes(
 const { instance } = injection(kInstance)
 const { versionId } = injection(kInstanceVersion)
 const scrollElement = ref<HTMLElement | null>(null)
+const boundProjectId = computed(() => typeof modpackMetadata.modrinth.projectId === 'string' ? modpackMetadata.modrinth.projectId : (modpackMetadata.modrinth.projectId as Project | undefined)?.id || '')
+const { show: showCreateProject, isShown: isCreateDialogShown } = useDialog(ModrinthProjectCreateDialogKey)
+const { show: showBindProject, isShown: isBindDialogShown } = useDialog(ModrinthProjectBindDialogKey)
+const { show: showPublishVersion } = useDialog(ModrinthVersionPublishDialogKey)
+const { interact, userData } = injection(kModrinthAuthenticatedAPI)
+const authenticatingAction = ref<'bind' | 'create'>()
+const bindingProject = computed(() => authenticatingAction.value === 'bind' || isBindDialogShown.value)
+const creatingProject = computed(() => authenticatingAction.value === 'create' || isCreateDialogShown.value)
+const unbindingProject = ref(false)
+const bindingBus = useModrinthProjectBindingBus()
+const hasServerFiles = computed(() => serverCache.files.length > 0)
+
+function getDefaultClientFiles(files: InstanceFile[]) {
+  return files
+    .filter(
+      (file) =>
+        file.path.startsWith('resourcepacks') ||
+        file.path.startsWith('mods') ||
+        file.path.startsWith('config') ||
+        file.path.startsWith('scripts') ||
+        file.path.startsWith('shaderpacks') ||
+        file.path.startsWith('options.txt') ||
+        file.path.startsWith('optionsof.txt') ||
+        file.path.startsWith('theme.json') ||
+        file.path.startsWith('theme'),
+    )
+    .filter((file) => !file.path.endsWith('.disabled'))
+    .map((file) => file.path)
+}
+
+function getDefaultServerFiles(files: InstanceFile[]) {
+  return files
+    .filter(file => defaultServerFileRoots.some(root => file.path.startsWith(`${root}/`)))
+    .filter(file => !file.path.endsWith('.disabled'))
+    .map(file => file.path)
+}
+
+function selectDefaultFiles() {
+  activeSelection.value = fileSide.value === 'client'
+    ? getDefaultClientFiles(cache.files)
+    : getDefaultServerFiles(serverCache.files)
+}
+
+const stopBindingBus = bindingBus.on((project) => {
+  modpackMetadata.modrinth = { ...modpackMetadata.modrinth, projectId: project.id }
+})
+onUnmounted(stopBindingBus)
 
 const environments = shallowRef<Record<string, { client: string; server: string }>>({})
 watch(environments, (val) => {
@@ -173,22 +349,7 @@ const { refresh, refreshing } = useRefreshable(async () => {
       .filter((file) => modpackMetadata.emittedFiles!.includes(file.path))
       .map((file) => file.path)
   } else {
-    selected = files
-      .filter(
-        (file) =>
-          file.path.startsWith('resourcepacks') ||
-          file.path.startsWith('mods') ||
-          file.path.startsWith('config') ||
-          file.path.startsWith('scripts') ||
-          file.path.startsWith('shaderpacks') ||
-          file.path.startsWith('options.txt') ||
-          file.path.startsWith('optionsof.txt') ||
-          file.path.startsWith('servers.dat') ||
-          file.path.startsWith('theme.json') ||
-          file.path.startsWith('theme'),
-      )
-      .filter((file) => !file.path.endsWith('.disabled'))
-      .map((file) => file.path)
+    selected = getDefaultClientFiles(files)
   }
   nextTick().then(() => {
     cache.selected = selected
@@ -226,6 +387,15 @@ const { refresh, refreshing } = useRefreshable(async () => {
   }
 })
 
+const { refresh: refreshServer, refreshing: serverRefreshing } = useRefreshable(async () => {
+  const files = await getInstanceServerManifest({ path: instance.value.path })
+  const selected = modpackMetadata.emittedServerFiles.length
+    ? files.filter(file => modpackMetadata.emittedServerFiles.includes(file.path)).map(file => file.path)
+    : getDefaultServerFiles(files)
+  serverCache.files = files
+  serverCache.selected = selected
+})
+
 async function updateEnvironments(
   files: InstanceFile[],
   envs: Record<string, { client: string; server: string }>,
@@ -253,7 +423,15 @@ async function updateEnvironments(
 
 onMounted(() => {
   refresh()
+  refreshServer()
 })
+
+watch(() => serverCache.selected, (selected) => {
+  modpackMetadata.emittedServerFiles = [...selected]
+}, { deep: true })
+watch(() => cache.selected, (selected) => {
+  modpackMetadata.emittedFiles = [...selected]
+}, { deep: true })
 
 const totalSize = computed(() => {
   const existed = selectedPaths.value
@@ -262,6 +440,27 @@ const totalSize = computed(() => {
     .filter((n) => !n?.curseforge && !n.data?.downloads /* || !canExport(n.data) */)
     .map((l) => l.size)
     .reduce((a, b) => a + b, 0)
+})
+
+const { exportInstanceAsServer } = useService(InstanceIOServiceKey)
+const { showItemInDirectory } = useService(BaseServiceKey)
+const { generateLaunchOptions } = injection(kInstanceLaunch)
+const { userProfile } = injection(kUserContext)
+const { install: installServer } = useInstanceVersionServerInstall()
+const { refresh: exportServerToFolder, refreshing: exportingServerFolder } = useRefreshable(async () => {
+  const { filePaths, canceled } = await windowController.showOpenDialog({
+    title: t('server.export'),
+    defaultPath: `${instance.value.name}-server`,
+    properties: ['openDirectory', 'createDirectory'],
+  })
+  if (canceled || !filePaths[0]) return
+  const version = await installServer()
+  await exportInstanceAsServer({
+    output: { type: 'folder', path: filePaths[0] },
+    options: await generateLaunchOptions(instance.value.path, userProfile.value, '', 'server', { version }, true),
+    files: serverCache.files.filter(file => serverCache.selected.includes(file.path)),
+  })
+  showItemInDirectory(filePaths[0])
 })
 
 function toggle(item: InstanceFileNode<any>, side: 'client' | 'server' = 'client') {
@@ -313,34 +512,92 @@ function onSelectExportDirectory() {
     })
 }
 
+function getExportFiles() {
+  const selected = selectedPaths.value
+  const clientFiles = cache.files
+    .filter((file) => selected.has(file.path))
+    .map((file) => ({
+      path: file.path,
+      env: environments.value[file.path] || undefined,
+    }) as ExportFileDirective)
+  const selectedServerFiles = new Set(serverCache.selected)
+  const serverFiles = serverCache.files
+    .filter(file => selectedServerFiles.has(file.path))
+    .map(file => ({
+      path: file.path,
+      source: `server/${file.path}`,
+      override: true,
+      env: { client: 'unsupported' as const, server: 'required' as const },
+    }))
+  return [...clientFiles, ...serverFiles]
+}
+
+function getPublishOptions() {
+  return {
+    instancePath: instance.value.path, gameVersion: instance.value.runtime.minecraft || versionId.value || '', loaders: getModrinthModLoaders(instance.value.runtime, false),
+    name: instance.value.name, author: instance.value.author, currentVersion: modpackMetadata.modpackVersion,
+    destinationDirectory: modpackMetadata.exportDirectory, strictMode: modpackMetadata.emitModrinthStrict,
+    profile: modpackMetadata.modrinth.profile, versionType: modpackMetadata.modrinth.versionType, files: getExportFiles(),
+  }
+}
+
+async function requireModrinthLogin(action: 'bind' | 'create') {
+  if (userData.value) return true
+  authenticatingAction.value = action
+  try { await interact(); return !!userData.value } finally { authenticatingAction.value = undefined }
+}
+async function openBindDialog() { if (await requireModrinthLogin('bind')) showBindProject({ instancePath: instance.value.path }) }
+async function openCreateDialog() { if (await requireModrinthLogin('create')) showCreateProject({ instancePath: instance.value.path, name: instance.value.name, summary: instance.value.description || '', hasServer: !!instance.value.server }) }
+async function unbindProject() {
+  unbindingProject.value = true
+  try {
+    await unbindModrinthProject(instance.value.path)
+    modpackMetadata.modrinth = {
+      ...modpackMetadata.modrinth,
+      projectId: '',
+      lastVersionId: '',
+      lastPublishedAt: 0,
+      lastPublishedFiles: [],
+      pendingProjectStatus: undefined,
+      artifacts: [],
+    }
+  } finally {
+    unbindingProject.value = false
+  }
+}
+function openPublishDialog(project: Project) {
+  const options = getPublishOptions()
+  const projectId = project?.id || boundProjectId.value
+  if (projectId) {
+    showPublishVersion({
+      ...options,
+      projectId,
+      projectSlug: project?.slug || instance.value.name,
+      onPublished: async () => {
+        const metadata = await getInstanceModpackMetadata(instance.value.path)
+        if (metadata) Object.assign(modpackMetadata, metadata)
+      },
+    })
+  }
+}
+
 const disabledBuild = computed(
   () =>
     !modpackMetadata.emitCurseforge &&
-    !modpackMetadata.emitModrinth &&
-    !modpackMetadata.emitOffline,
+    !modpackMetadata.emitModrinth,
 )
 const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
   try {
-    const selected = selectedPaths.value
-    const exportFiles: ExportFileDirective[] = leaves.value
-      .filter((n) => selected.has(n.path))
-      .map(
-        (l) =>
-          ({
-            path: l.path,
-            env: environments.value[l.path] ? environments.value[l.path] : undefined,
-          }) as ExportFileDirective,
-      )
     const path = instance.value.path
     await exportModpack({
       instancePath: path,
-      gameVersion: versionId.value || '',
+      gameVersion: instance.value.runtime.minecraft || versionId.value || '',
       name: instance.value.name,
-      files: exportFiles,
+      files: getExportFiles(),
       author: instance.value.author,
       version: modpackMetadata.modpackVersion,
       destinationDirectory: modpackMetadata.exportDirectory,
-      emitOffline: modpackMetadata.emitOffline,
+      emitOffline: false,
       emitCurseforge: modpackMetadata.emitCurseforge,
       emitModrinth: modpackMetadata.emitModrinth,
       strictModeInModrinth: modpackMetadata.emitModrinthStrict,
@@ -382,6 +639,10 @@ onUnmounted(() => {
   overflow: auto;
   border-radius: 6px;
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+.modpack-file-tabs {
+  min-width: 230px;
 }
 
 .dark .modpack-files {

@@ -36,7 +36,7 @@ agent:
   disabledPlaceholder: এজেন্ট নিষ্ক্রিয়
   emptyHint: এজেন্টকে আপনার ইনস্ট্যান্স পরীক্ষা করতে, মড চালু/বন্ধ করতে, লগ পড়তে অথবা ক্র্যাশ নির্ণয় করতে বলুন।
   inputPlaceholder: এজেন্টকে জিজ্ঞাসা করুন… (পাঠাতে Enter, নতুন লাইনের জন্য Shift+Enter চাপুন)
-  notConfiguredHint: এজেন্ট চালু করতে Settings → General → AI Agent-এ আপনার API কী, মডেল এবং এন্ডপয়েন্ট সেট করুন।
+  notConfiguredHint: সেটিংস → সাধারণ → এআই এজেন্ট-এ একটি API কী, মডেল এবং OpenAI-সামঞ্জস্যপূর্ণ এন্ডপয়েন্ট সেট করুন। উদাহরণস্বরূপ, OpenAI বা Claude-সামঞ্জস্যপূর্ণ গেটওয়ে ব্যবহার করুন।
   notConfiguredTitle: এজেন্ট কনফিগার করা হয়নি
   openSettings: সেটিংস খুলুন
   reset: কথোপকথন রিসেট করুন
@@ -1358,9 +1358,12 @@ setting:
   advancedSettings: উন্নত সেটিংস
   advancedSettingsHint: বিপদ অঞ্চল - লঞ্চারের ডেটা রিসেট বা পরিচালনা করুন
   aiAgentApiKey: এআই এজেন্ট এপিআই কী (AI Agent API Key)
-  aiAgentApiKeyDescription: এই ডিভাইসে স্থানীয়ভাবে সংরক্ষিত এবং এজেন্টের অনুরোধের জন্য ব্যবহৃত হয়।
+  aiAgentApiKeyDescription: OpenAI-সামঞ্জস্যপূর্ণ প্রোভাইডার কনফিগার করুন, যেমন OpenAI অথবা Claude-এর জন্য একটি গেটওয়ে। কীটি এই ডিভাইসে স্থানীয়ভাবে সংরক্ষিত থাকে।
+  aiAgentApiKeyPlaceholder: OpenAI বা Claude প্রোভাইডারের API কী
   aiAgentEndpoint: এআই এজেন্ট এন্ডপয়েন্ট (AI Agent Endpoint)
   aiAgentEndpointDescription: চ্যাট সমাপ্তির এন্ডপয়েন্ট ইউআরএল (Endpoint URL)।
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 বা claude-sonnet-4-5
   aiAgentModel: এআই এজেন্ট মডেল
   aiAgentModelDescription: চ্যাট সমাপ্তির অনুরোধে পাঠানোর জন্য মডেলের নাম।
   apiSets:

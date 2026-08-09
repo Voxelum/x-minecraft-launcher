@@ -138,6 +138,23 @@ describe('XmclAccountApi', () => {
     expect(JSON.stringify(error)).not.toContain('private@example.com')
   })
 
+  it('identifies a Cloudflare Worker plan-limit response', async () => {
+    const api = new XmclAccountApi(async () =>
+      new Response('error code: 1027\n', {
+        status: 429,
+        headers: { 'content-type': 'text/plain; charset=UTF-8' },
+      }),
+    )
+
+    const error = await api.refreshSession(M1_LOCAL_AUTH_FIXTURE.session).catch((e) => e)
+
+    expect(error).toBeInstanceOf(XmclAccountApiError)
+    expect(error).toMatchObject({
+      status: 429,
+      code: 'xmcl_api_plan_limit_exceeded',
+    })
+  })
+
   it('prepares and confirms a merge with separate idempotent requests', async () => {
     const fetch = vi
       .fn()

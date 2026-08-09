@@ -201,6 +201,66 @@ export interface ModrinthClientOptions {
   fetch?: typeof fetch
 }
 
+export interface ModrinthUploadFile {
+  partName: string
+  fileName: string
+  data: Blob
+}
+
+export const MODRINTH_DEFAULT_LICENSE_ID = 'LicenseRef-All-Rights-Reserved'
+
+export function normalizeModrinthLicenseId(licenseId: string) {
+  return licenseId === 'ARR' ? MODRINTH_DEFAULT_LICENSE_ID : licenseId
+}
+
+export interface ModrinthGalleryImageData {
+  featured: boolean
+  title?: string
+  description?: string
+  ordering?: number
+}
+
+export interface CreateModrinthProjectData {
+  slug: string
+  title: string
+  description: string
+  body: string
+  client_side: 'required' | 'optional' | 'unsupported' | 'unknown'
+  server_side: 'required' | 'optional' | 'unsupported' | 'unknown'
+  project_type: 'modpack'
+  initial_versions: string[]
+  categories: string[]
+  additional_categories?: string[]
+  license_id: string
+  license_url?: string
+  status?: 'draft'
+  requested_status?: string
+  issues_url?: string | null
+  source_url?: string | null
+  wiki_url?: string | null
+  discord_url?: string | null
+}
+
+export interface CreateModrinthVersionData {
+  name: string
+  version_number: string
+  changelog?: string
+  dependencies?: ProjectVersion['dependencies']
+  game_versions: string[]
+  version_type: 'release' | 'beta' | 'alpha'
+  loaders: string[]
+  featured?: boolean
+  project_id: string
+  status?: 'draft'
+  requested_status?: string
+}
+
+export type UpdateModrinthProjectData = Partial<Omit<CreateModrinthProjectData, 'project_type' | 'initial_versions'>>
+export type UpdateModrinthVersionData = Partial<Pick<CreateModrinthVersionData, 'name' | 'version_number' | 'changelog' | 'dependencies' | 'game_versions' | 'version_type' | 'loaders' | 'featured'>> & {
+  status?: 'listed' | 'archived' | 'draft' | 'unlisted' | 'scheduled' | 'unknown'
+  requested_status?: 'listed' | 'archived' | 'draft' | 'unlisted'
+}
+
 /**
  * @see https://docs.modrinth.com/api-spec
  */
@@ -275,6 +335,94 @@ export class ModrinthV2Client {
     return project
   }
 
+  async createProject(
+    data: CreateModrinthProjectData,
+    icon?: { fileName: string; data: Blob },
+    signal?: AbortSignal,
+  ): Promise<Project> {
+    const url = new URL(this.baseUrl + '/v2/project')
+    const body = new FormData()
+    const draftProjectData = data.initial_versions.length === 0
+      ? { ...data, status: 'draft' as const, requested_status: 'draft', is_draft: true }
+      : data
+    const projectData = {
+      ...draftProjectData,
+      license_id: normalizeModrinthLicenseId(draftProjectData.license_id),
+    }
+    body.append('data', JSON.stringify(projectData))
+    if (icon) {
+      body.append('icon', icon.data, icon.fileName)
+    }
+    const response = await this.fetch(url, {
+      method: 'POST',
+      headers: this.headers,
+      body,
+      signal,
+    })
+    if (!response.ok) {
+      throw new ModerinthApiError(url.toString(), response.status, await response.text())
+    }
+    return await response.json() as Project
+  }
+
+  async updateProject(projectId: string, data: UpdateModrinthProjectData, signal?: AbortSignal) {
+    const url = new URL(this.baseUrl + `/v2/project/${projectId}`)
+    const response = await this.fetch(url, {
+      method: 'PATCH',
+      headers: { ...this.headers, 'content-type': 'application/json' },
+      body: JSON.stringify(data),
+      signal,
+    })
+    if (!response.ok) {
+      throw new ModerinthApiError(url.toString(), response.status, await response.text())
+    }
+  }
+
+  async updateProjectIcon(projectId: string, icon: Blob, extension: string, signal?: AbortSignal) {
+    const url = new URL(this.baseUrl + `/v2/project/${projectId}/icon`)
+    url.searchParams.set('ext', extension.replace(/^\./, ''))
+    const response = await this.fetch(url, {
+      method: 'PATCH',
+      headers: { ...this.headers, 'content-type': icon.type || 'application/octet-stream' },
+      body: icon,
+      signal,
+    })
+    if (!response.ok) {
+      throw new ModerinthApiError(url.toString(), response.status, await response.text())
+    }
+  }
+
+  async addProjectGalleryImage(projectId: string, image: Blob, extension: string, data: ModrinthGalleryImageData, signal?: AbortSignal) {
+    const url = new URL(this.baseUrl + `/v2/project/${projectId}/gallery`)
+    url.searchParams.set('ext', extension.replace(/^\./, ''))
+    url.searchParams.set('featured', data.featured.toString())
+    if (data.title) url.searchParams.set('title', data.title)
+    if (data.description) url.searchParams.set('description', data.description)
+    if (data.ordering !== undefined) url.searchParams.set('ordering', data.ordering.toString())
+    const response = await this.fetch(url, {
+      method: 'POST', headers: { ...this.headers, 'content-type': image.type || 'application/octet-stream' }, body: image, signal,
+    })
+    if (!response.ok) throw new ModerinthApiError(url.toString(), response.status, await response.text())
+  }
+
+  async updateProjectGalleryImage(projectId: string, imageUrl: string, data: Partial<ModrinthGalleryImageData>, signal?: AbortSignal) {
+    const url = new URL(this.baseUrl + `/v2/project/${projectId}/gallery`)
+    url.searchParams.set('url', imageUrl)
+    if (data.featured !== undefined) url.searchParams.set('featured', data.featured.toString())
+    if (data.title !== undefined) url.searchParams.set('title', data.title)
+    if (data.description !== undefined) url.searchParams.set('description', data.description)
+    if (data.ordering !== undefined) url.searchParams.set('ordering', data.ordering.toString())
+    const response = await this.fetch(url, { method: 'PATCH', headers: this.headers, signal })
+    if (!response.ok) throw new ModerinthApiError(url.toString(), response.status, await response.text())
+  }
+
+  async deleteProjectGalleryImage(projectId: string, imageUrl: string, signal?: AbortSignal) {
+    const url = new URL(this.baseUrl + `/v2/project/${projectId}/gallery`)
+    url.searchParams.set('url', imageUrl)
+    const response = await this.fetch(url, { method: 'DELETE', headers: this.headers, signal })
+    if (!response.ok) throw new ModerinthApiError(url.toString(), response.status, await response.text())
+  }
+
   /**
    * @see https://docs.modrinth.com/#tag/versions/operation/getProjectVersions
    */
@@ -322,6 +470,58 @@ export class ModrinthV2Client {
     }
     const version = (await response.json()) as ProjectVersion
     return version
+  }
+
+  async createVersion(
+    data: CreateModrinthVersionData,
+    files: ModrinthUploadFile[],
+    primaryFile: string,
+    signal?: AbortSignal,
+  ): Promise<ProjectVersion> {
+    if (files.length === 0) {
+      throw new TypeError('A Modrinth version must contain at least one file')
+    }
+    if (!files.some((file) => file.partName === primaryFile)) {
+      throw new TypeError(`Primary file part does not exist: ${primaryFile}`)
+    }
+    const url = new URL(this.baseUrl + '/v2/version')
+    const body = new FormData()
+    body.append('data', JSON.stringify({
+      ...data,
+      // The Modrinth API requires `dependencies` to be present even when
+      // empty; omitting it (e.g. via JSON.stringify dropping `undefined`)
+      // fails with "missing field `dependencies`".
+      dependencies: data.dependencies ?? [],
+      featured: data.featured ?? false,
+      file_parts: files.map((file) => file.partName),
+      primary_file: primaryFile,
+    }))
+    for (const file of files) {
+      body.append(file.partName, file.data, file.fileName)
+    }
+    const response = await this.fetch(url, {
+      method: 'POST',
+      headers: this.headers,
+      body,
+      signal,
+    })
+    if (!response.ok) {
+      throw new ModerinthApiError(url.toString(), response.status, await response.text())
+    }
+    return await response.json() as ProjectVersion
+  }
+
+  async updateVersion(versionId: string, data: UpdateModrinthVersionData, signal?: AbortSignal) {
+    const url = new URL(this.baseUrl + `/v2/version/${versionId}`)
+    const response = await this.fetch(url, {
+      method: 'PATCH',
+      headers: { ...this.headers, 'content-type': 'application/json' },
+      body: JSON.stringify(data),
+      signal,
+    })
+    if (!response.ok) {
+      throw new ModerinthApiError(url.toString(), response.status, await response.text())
+    }
   }
 
   /**

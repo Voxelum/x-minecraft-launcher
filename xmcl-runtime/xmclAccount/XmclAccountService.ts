@@ -10,7 +10,7 @@ import {
 } from '@xmcl/runtime-api'
 import { createHash, randomBytes } from 'crypto'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
-import { resolveXmclApiBaseUrl } from '~/app/xmclApiBaseUrl'
+import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { UserService } from '~/user'
@@ -32,6 +32,7 @@ const MICROSOFT_LAUNCHER_CLIENT_ID = '1363d629-5b06-48a9-a5fb-c65de945f13e'
 const SESSION_SERVICE = 'xmcl-xmcl-account'
 const SESSION_ACCOUNT = 'current-session'
 const BROWSER_AUTH_TIMEOUT = 5 * 60 * 1000
+const SESSION_REFRESH_SKEW = 5 * 60 * 1000
 
 interface StoredXmclSession {
   credential: XmclSessionCredential
@@ -51,6 +52,7 @@ interface PendingMergeCredential {
 
 export interface XmclSessionAuthorization {
   readonly accessToken: string
+  readonly accountId: string
 }
 
 /**
@@ -70,6 +72,10 @@ export class XmclAccountService
   private readonly exchangedProviderTransactions = new ProviderCredentialExchangeCache()
   private readonly pendingBrowserAuthorizations = new Map<string, PendingBrowserAuthorization>()
   private providerBootstrapQueue: Promise<void> = Promise.resolve()
+  private refreshCredentialPromise: Promise<XmclSessionCredential> | undefined
+  private sessionGeneration = 0
+  private snapshotGeneration = 0
+  private sessionMutationQueue: Promise<void> = Promise.resolve()
 
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
@@ -85,7 +91,10 @@ export class XmclAccountService
       (input, init) => app.fetch(input, init),
       async () => {
         const flights = await app.registry.get(kFlights)
-        return resolveXmclApiBaseUrl(flights.xmclApiBaseUrl, app.getLogger('ApiBaseUrl'))
+        return resolveXmclApiEndpoints(
+          flights.xmclApiBaseUrl,
+          () => app.getLogger('ApiBaseUrl').warn('Ignoring invalid xmclApiUrl flight; using default XMCL API origins.'),
+        ).common
       },
     )
 
@@ -117,14 +126,25 @@ export class XmclAccountService
 
   async [kXmclSessionAuthorization](): Promise<XmclSessionAuthorization | undefined> {
     await this.initialize()
-    return this.credential && { accessToken: this.credential.accessToken }
+    const credential = await this.getValidCredential()
+    const accountId = this.state.account?.accountId
+    return credential && accountId
+      ? { accessToken: credential.accessToken, accountId }
+      : undefined
   }
 
   @Singleton()
   async refreshAccount(): Promise<void> {
     await this.initialize()
-    const credential = this.requireCredential()
-    await this.applySnapshot(await this.api.getSnapshot(credential), credential)
+    const credential = await this.requireValidCredential()
+    const generation = this.sessionGeneration
+    const snapshotGeneration = this.snapshotGeneration
+    await this.applySnapshot(
+      await this.api.getSnapshot(credential),
+      credential,
+      generation,
+      snapshotGeneration,
+    )
   }
 
   @Singleton((userId) => userId)
@@ -190,6 +210,8 @@ export class XmclAccountService
     const state = toBase64Url(randomBytes(32))
     const codeChallenge = toBase64Url(createHash('sha256').update(verifier).digest())
     const redirectUri = `http://127.0.0.1:${await this.app.serverPort}/xmcl-auth`
+    const credential = this.credential ? await this.requireValidCredential() : undefined
+    const expectedSessionId = credential?.sessionId
     const authorization = await (
       await this.api
     ).beginBrowserAuthorization(
@@ -199,7 +221,7 @@ export class XmclAccountService
         redirectUri,
         codeChallenge,
       },
-      this.credential,
+      credential,
     )
     const code = await new Promise<string>((resolve, reject) => {
       const timer = setTimeout(() => {
@@ -221,6 +243,11 @@ export class XmclAccountService
       this.app.shell.openInBrowser(authorization.authorizationUrl)
     })
 
+    const exchangeCredential = this.credential ? await this.requireValidCredential() : undefined
+    if (exchangeCredential?.sessionId !== expectedSessionId) {
+      throw new Error('xmcl_account_session_changed')
+    }
+    const generation = this.sessionGeneration
     const result = await (
       await this.api
     ).exchangeBrowser(
@@ -232,9 +259,9 @@ export class XmclAccountService
         codeVerifier: verifier,
         redirectUri,
       },
-      this.credential,
+      exchangeCredential,
     )
-    await this.applyAuthResult(result)
+    await this.applyAuthResult(result, generation)
   }
 
   @Singleton()
@@ -245,7 +272,7 @@ export class XmclAccountService
     }
     const preview = await (
       await this.api
-    ).prepareMerge(this.requireCredential(), this.pendingMergeCredential)
+    ).prepareMerge(await this.requireValidCredential(), this.pendingMergeCredential)
     this.state.mergePrepared(preview)
   }
 
@@ -254,21 +281,23 @@ export class XmclAccountService
     await this.initialize()
     const mergeId = this.state.mergePreview?.mergeId
     if (!mergeId) throw new Error('xmcl_account_merge_not_prepared')
-    const taskId = await this.api.confirmMerge(this.requireCredential(), mergeId)
+    const taskId = await this.api.confirmMerge(await this.requireValidCredential(), mergeId)
     this.state.mergeQueued(taskId)
   }
 
   @Singleton()
   async refreshSession(): Promise<void> {
     await this.initialize()
-    const next = await this.api.refreshSession(this.requireCredential())
-    // Refresh-token rotation is already committed server-side when this call
-    // resolves. Persist the new credential before any optional account read so
-    // a later snapshot failure cannot leave the client retrying the consumed
-    // token and revoking its session family.
-    await this.applySnapshot(this.currentSnapshot(next), next)
+    const next = await this.rotateSessionCredential()
+    const generation = this.sessionGeneration
+    const snapshotGeneration = this.snapshotGeneration
     try {
-      await this.applySnapshot(await this.api.getSnapshot(next), next)
+      await this.applySnapshot(
+        await this.api.getSnapshot(next),
+        next,
+        generation,
+        snapshotGeneration,
+      )
     } catch {
       this.warn('XMCL session refreshed; account snapshot refresh will retry later.')
     }
@@ -277,8 +306,9 @@ export class XmclAccountService
   @Singleton()
   async revokeSession(allDevices = false): Promise<void> {
     await this.initialize()
-    await this.api.revokeSession(this.requireCredential(), allDevices)
-    await this.clearSession()
+    const credential = await this.requireValidCredential()
+    await this.api.revokeSession(credential, allDevices)
+    await this.clearSession(credential.sessionId)
   }
 
   private async bootstrapCredential(
@@ -288,18 +318,20 @@ export class XmclAccountService
     return this.enqueueProviderBootstrap(async () => {
       if (this.exchangedProviderTransactions.has(provider, providerCredential)) return
 
+      let generation = this.sessionGeneration
       try {
-        const currentCredential =
-          this.credential && Date.parse(this.credential.expiresAt) > Date.now()
-            ? this.credential
-            : undefined
+        const currentCredential = await this.getValidCredential()
+        generation = this.sessionGeneration
         const result = await (
           await this.api
         ).launcherExchange(provider, providerCredential, currentCredential)
+        await this.applyAuthResult(result, generation)
         this.exchangedProviderTransactions.remember(provider, providerCredential)
-        await this.applyAuthResult(result)
       } catch (error) {
         if (error instanceof XmclAccountApiError && error.code === 'identity_conflict') {
+          if (generation !== this.sessionGeneration) {
+            throw new Error('xmcl_account_session_changed')
+          }
           this.exchangedProviderTransactions.remember(provider, providerCredential)
           this.pendingMergeCredential = {
             provider,
@@ -321,20 +353,115 @@ export class XmclAccountService
     return queued
   }
 
-  private async applyAuthResult(result: XmclAuthResult) {
+  private async applyAuthResult(result: XmclAuthResult, expectedGeneration = this.sessionGeneration) {
     const snapshot: XmclAccountSnapshot = {
       account: result.account,
       identities: result.identities ?? this.state.identities,
       session: toSessionSummary(result.session),
     }
-    await this.applySnapshot(snapshot, result.session)
+    const applied = await this.applySnapshot(snapshot, result.session, expectedGeneration)
+    if (!applied) throw new Error('xmcl_account_session_changed')
   }
 
-  private async applySnapshot(snapshot: XmclAccountSnapshot, credential: XmclSessionCredential) {
-    const stored: StoredXmclSession = { credential, snapshot }
-    await this.app.secretStorage.put(SESSION_SERVICE, SESSION_ACCOUNT, JSON.stringify(stored))
-    this.credential = credential
-    this.state.snapshot(snapshot)
+  private async getValidCredential(): Promise<XmclSessionCredential | undefined> {
+    const credential = this.credential
+    if (!credential) return undefined
+    const expiresAt = Date.parse(credential.expiresAt)
+    if (Number.isFinite(expiresAt) && expiresAt > Date.now() + SESSION_REFRESH_SKEW) {
+      return credential
+    }
+    try {
+      return await this.rotateSessionCredential()
+    } catch (error) {
+      if (isTerminalSessionRefreshError(error)) {
+        return undefined
+      }
+      const fallback = this.credential
+      const fallbackExpiresAt = fallback ? Date.parse(fallback.expiresAt) : Number.NaN
+      if (fallback && Number.isFinite(fallbackExpiresAt) && fallbackExpiresAt > Date.now()) {
+        this.warn('XMCL session refresh failed; the current access token will be used until expiry.')
+        return fallback
+      }
+      this.warn('XMCL session refresh failed and the current access token is expired.')
+      return undefined
+    }
+  }
+
+  private async rotateSessionCredential(): Promise<XmclSessionCredential> {
+    if (this.refreshCredentialPromise) return this.refreshCredentialPromise
+    const operation = (async () => {
+      const current = this.requireCredential()
+      const generation = this.sessionGeneration
+      let next: XmclSessionCredential
+      try {
+        if (!current.refreshToken) throw new Error('xmcl_account_refresh_token_missing')
+        next = await this.api.refreshSession(current)
+      } catch (error) {
+        if (isTerminalSessionRefreshError(error)) {
+          await this.clearSession(current.sessionId)
+        }
+        throw error
+      }
+      // Rotation is committed server-side before this resolves. Persist first
+      // so no later account read can leave the consumed token on disk.
+      const applied = await this.applySnapshot(
+        this.currentSnapshot(next),
+        next,
+        generation,
+        undefined,
+        true,
+      )
+      if (!applied) throw new Error('xmcl_account_session_changed')
+      return next
+    })()
+    this.refreshCredentialPromise = operation
+    try {
+      return await operation
+    } finally {
+      if (this.refreshCredentialPromise === operation) {
+        this.refreshCredentialPromise = undefined
+      }
+    }
+  }
+
+  private applySnapshot(
+    snapshot: XmclAccountSnapshot,
+    credential: XmclSessionCredential,
+    expectedGeneration?: number,
+    expectedSnapshotGeneration?: number,
+    retainCredentialOnPersistenceFailure = false,
+  ) {
+    return this.enqueueSessionMutation(async () => {
+      if (
+        expectedGeneration !== undefined &&
+        expectedGeneration !== this.sessionGeneration
+      ) return false
+      if (
+        expectedSnapshotGeneration !== undefined &&
+        expectedSnapshotGeneration !== this.snapshotGeneration
+      ) return false
+      const stored: StoredXmclSession = { credential, snapshot }
+      const credentialChanged =
+        this.credential?.sessionId !== credential.sessionId ||
+        this.credential.accessToken !== credential.accessToken ||
+        this.credential.refreshToken !== credential.refreshToken
+      try {
+        await this.app.secretStorage.put(SESSION_SERVICE, SESSION_ACCOUNT, JSON.stringify(stored))
+      } catch (error) {
+        if (retainCredentialOnPersistenceFailure) {
+          this.credential = credential
+          this.state.snapshot(snapshot)
+          if (credentialChanged) this.sessionGeneration += 1
+          this.snapshotGeneration += 1
+        }
+        throw error
+      }
+      this.credential = credential
+      this.state.snapshot(snapshot)
+      if (credentialChanged) this.sessionGeneration += 1
+      this.snapshotGeneration += 1
+      return true
+    })
   }
 
   private currentSnapshot(credential: XmclSessionCredential): XmclAccountSnapshot {
@@ -355,8 +482,12 @@ export class XmclAccountService
         await this.clearSession()
         return
       }
-      this.credential = stored.credential
-      this.state.snapshot(stored.snapshot)
+      await this.enqueueSessionMutation(async () => {
+        this.credential = stored.credential
+        this.state.snapshot(stored.snapshot)
+        this.sessionGeneration += 1
+        this.snapshotGeneration += 1
+      })
     } catch {
       await this.clearSession()
     }
@@ -367,12 +498,37 @@ export class XmclAccountService
     return this.credential
   }
 
-  private async clearSession() {
-    this.credential = undefined
-    this.pendingMergeCredential = undefined
-    this.exchangedProviderTransactions.clear()
-    this.state.guest()
-    await this.app.secretStorage.put(SESSION_SERVICE, SESSION_ACCOUNT, '')
+  private async requireValidCredential() {
+    const credential = await this.getValidCredential()
+    if (!credential) throw new Error('xmcl_account_session_missing')
+    return credential
+  }
+
+  private clearSession(expectedSessionId?: string) {
+    return this.enqueueSessionMutation(async () => {
+      if (expectedSessionId && this.credential?.sessionId !== expectedSessionId) return false
+      this.credential = undefined
+      this.pendingMergeCredential = undefined
+      this.exchangedProviderTransactions.clear()
+      this.state.guest()
+      this.sessionGeneration += 1
+      this.snapshotGeneration += 1
+      try {
+        await this.app.secretStorage.put(SESSION_SERVICE, SESSION_ACCOUNT, '')
+      } catch {
+        this.warn('XMCL session cleared in memory, but secure storage cleanup failed.')
+      }
+      return true
+    })
+  }
+
+  private enqueueSessionMutation<T>(mutation: () => Promise<T>): Promise<T> {
+    const result = this.sessionMutationQueue.then(mutation, mutation)
+    this.sessionMutationQueue = result.then(
+      () => undefined,
+      () => undefined,
+    )
+    return result
   }
 
   private recordError(error: unknown) {
@@ -406,4 +562,16 @@ function isStoredSession(value: StoredXmclSession): value is StoredXmclSession {
     typeof value.snapshot === 'object' &&
     Array.isArray(value.snapshot?.identities)
   )
+}
+
+function isTerminalSessionRefreshError(error: unknown) {
+  return (
+    error instanceof XmclAccountApiError &&
+    [
+      'invalid_refresh_token',
+      'refresh_token_expired',
+      'refresh_token_replayed',
+      'session_revoked',
+    ].includes(error.code)
+  ) || (error instanceof Error && error.message === 'xmcl_account_refresh_token_missing')
 }

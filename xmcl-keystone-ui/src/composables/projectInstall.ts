@@ -48,7 +48,8 @@ export function useProjectInstall(runtime: Ref<RuntimeVersions>,
       }
       const version = versions?.[0]
       const deps = await getSWRV(getModrinthDependenciesModel(ref(version), loader, config), config)
-      await modrinthInstaller.installWithDependencies(version.id, version.loaders, proj.icon_url, item.installed, deps || [])
+      const artifactUrl = (version.files.find(file => file.primary) ?? version.files[0])?.url
+      await modrinthInstaller.installWithDependencies(version.id, version.loaders, proj.icon_url, item.installed, deps || [], artifactUrl)
     } else if (curseforgeId) {
       const proj = await getSWRV(getCurseforgeProjectModel(ref(curseforgeId)), config)
       if (!proj) {
@@ -78,7 +79,7 @@ export function useProjectInstall(runtime: Ref<RuntimeVersions>,
       }
       const loaderType = getModLoaderTypesForFile(file)
       const deps = await getSWRV(getCurseforgeDependenciesModel(ref(file), ref(runtime.value.minecraft), ref([...loaderType][0]), config), config)
-      await curseforgeInstaller.installWithDependencies(file.id, getCursforgeFileModLoaders(file), proj.logo.url, item.installed, deps || [])
+      await curseforgeInstaller.installWithDependencies(file.id, getCursforgeFileModLoaders(file), proj.logo.url, item.installed, deps || [], file.downloadUrl)
     } else if (item.files) {
       const file = item.files[0]
       if (!file) {

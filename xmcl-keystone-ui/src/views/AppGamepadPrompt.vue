@@ -10,15 +10,15 @@
 import { computed, provide, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGamepad, kGamepad } from '@/composables/gamepad'
-import { useCommandPaletteBus } from '@/composables/commandPalette'
+import { useCommandPaletteVisible } from '@/composables/commandPalette'
 import { useDialog } from '@/composables/dialog'
 import AppGamepadQuickMenu from './AppGamepadQuickMenu.vue'
 import AppGamepadModDialog from './AppGamepadModDialog.vue'
 import AppGamepadSteamDeckDialog from './AppGamepadSteamDeckDialog.vue'
 
 const router = useRouter()
-const paletteBus = useCommandPaletteBus()
-const openPalette = () => paletteBus.emit('show')
+const paletteShown = useCommandPaletteVisible()
+const openPalette = () => { paletteShown.value = true }
 
 // Select toggles the background task dialog.
 const { isShown: taskShown, show: showTasks, hide: hideTasks } = useDialog('task')

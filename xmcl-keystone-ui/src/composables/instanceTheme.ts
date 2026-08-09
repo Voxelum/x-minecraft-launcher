@@ -54,7 +54,8 @@ export function useInstanceTheme(instancePath: Ref<string>) {
     // affecting semantics.
     const cloneable = themeData ? JSON.parse(JSON.stringify(themeData)) : undefined
     await setInstanceTheme(instancePath.value, cloneable)
-    instanceTheme.value = theme
+    const savedTheme = await getInstanceTheme(instancePath.value)
+    instanceTheme.value = savedTheme ? deserialize(savedTheme) : undefined
   }
 
   function clearTheme() {

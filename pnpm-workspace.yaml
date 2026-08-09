@@ -19,6 +19,7 @@ allowBuilds:
   electron: true
   esbuild: true
   keytar: true
+  koffi: true
   node-datachannel: true
   protobufjs: true
   ssh2: true

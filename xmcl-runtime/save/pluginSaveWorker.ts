@@ -2,6 +2,7 @@ import { createLazyWorker } from '@xmcl/worker'
 import { Exception } from '@xmcl/runtime-api'
 import { LauncherAppPlugin } from '~/app'
 import { SaveWorker, kSaveWorker } from './saveWorker'
+// eslint-disable-next-line import/default
 import createSaveWorker from './saveWorkerEntry?worker'
 
 export const pluginSaveWorker: LauncherAppPlugin = async (app) => {

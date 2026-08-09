@@ -1271,7 +1271,13 @@ serverStatus:
   ping: 'بينغ...'
   refuse: '§4تم رفض الخادم!'
   timeout: '§4 مهلة خادم الاتصال!'
+agent:
+  notConfiguredHint: اضبط مفتاح API والنموذج ونقطة نهاية متوافقة مع OpenAI في الإعدادات → عام → عميل الذكاء الاصطناعي. على سبيل المثال، استخدم OpenAI أو بوابة متوافقة مع Claude.
 setting:
+  aiAgentApiKeyDescription: قم بتكوين موفر متوافق مع OpenAI، مثل OpenAI أو بوابة لـ Claude. يتم تخزين المفتاح محليًا على هذا الجهاز.
+  aiAgentApiKeyPlaceholder: مفتاح API لموفر OpenAI أو Claude
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 أو claude-sonnet-4-5
   about: 'عن'
   aboutBmclDescription: 'يوفر BMCL API تنزيلات مريحة للمستخدمين في البر الرئيسي الصيني'
   aboutContributors: '🧑‍💻 المساهمون 🧑‍💻'

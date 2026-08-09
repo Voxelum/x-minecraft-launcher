@@ -1,37 +1,8 @@
 <template>
-  <v-dialog
-    v-model="isShown"
-    width="720"
-    max-width="92vw"
-    transition="dialog-top-transition"
-    scrollable
+  <v-card
+    data-testid="command-palette"
+    class="palette-card flex max-h-[75vh] w-full flex-col overflow-hidden"
   >
-    <v-card
-      class="palette-card flex max-h-[75vh] flex-col overflow-hidden"
-    >
-      <v-text-field
-        ref="searchInput"
-        v-model="query"
-        data-testid="command-palette-input"
-        :placeholder="t('commandPalette.placeholder')"
-        prepend-inner-icon="search"
-        variant="solo"
-        density="comfortable"
-        rounded="lg"
-        flat
-        bg-color="transparent"
-        hide-details
-        :readonly="!!pendingInstancePath"
-        autofocus
-        class="pa-3"
-        @keydown.down.prevent="moveSelection(1)"
-        @keydown.up.prevent="moveSelection(-1)"
-        @keydown.right="onArrowForward"
-        @keydown.left="onArrowBack"
-        @keydown.enter.prevent="invokeSelected"
-        @keydown.esc="hide"
-      />
-
       <v-progress-linear
         :active="isSearchingMarket"
         indeterminate
@@ -293,7 +264,7 @@
         >
           <template #prepend>
             <div class="palette-cmd-icon palette-ai-icon">
-              <v-icon size="18">auto_awesome</v-icon>
+              <v-icon size="18">smart_toy</v-icon>
             </div>
           </template>
           <v-list-item-title>{{ t('agent.title') }}</v-list-item-title>
@@ -347,9 +318,8 @@
         </v-list-item>
       </v-list>
 
-      <v-divider />
-
-      <div class="palette-footer px-4 py-2 text-medium-emphasis text-caption flex items-center gap-2 flex-wrap">
+      <Teleport v-if="isShown" defer to="#omni-mode-specific-controls">
+      <div class="palette-footer text-medium-emphasis text-caption flex w-full items-center gap-2 flex-wrap">
         <template v-if="gamepadActive">
           <span class="palette-footer__group">
             <kbd class="gp-btn__key">D-Pad</kbd>
@@ -398,20 +368,22 @@
             <span class="palette-footer__label">{{ t('commandPalette.hintClose') }}</span>
           </span>
           <v-spacer />
-          <span class="palette-footer__group">
-            <kbd>Ctrl</kbd><kbd>K</kbd>
+          <span v-if="canAskAi" class="palette-footer__group">
+            <kbd>Alt</kbd><kbd>Enter</kbd>
+            <span class="palette-footer__label">{{ t('commandPalette.hintAskAgent') }}</span>
           </span>
         </template>
       </div>
-    </v-card>
-  </v-dialog>
+      </Teleport>
+  </v-card>
 </template>
 
 <script lang="ts" setup>
 import { useNotifier } from '@/composables/notifier'
 import { useLocaleError } from '@/composables/error'
-import { useAgentChatBus } from '@/composables/agentChat'
-import { useCommandPaletteBus, useCommandPaletteVisible } from '@/composables/commandPalette'
+import { useAgentChatOpen } from '@/composables/agentChat'
+import { useCommandPaletteVisible } from '@/composables/commandPalette'
+import { useOmniDialog } from '@/composables/omniDialog'
 import { useRendererCommandHost } from '@/composables/commandHost'
 import { kInstance } from '@/composables/instance'
 import { kInstances } from '@/composables/instances'
@@ -434,14 +406,22 @@ import { useRouter } from 'vue-router'
 import { useRtl } from 'vuetify'
 import './gamepad.css'
 
+const props = withDefaults(defineProps<{
+  agentEnabled?: boolean
+}>(), {
+  agentEnabled: true,
+})
+
+const agentEnabled = computed(() => props.agentEnabled)
+
 const { t, te, locale } = useI18n()
 const isShown = useCommandPaletteVisible()
-const query = ref('')
+const surface = useOmniDialog()
+const query = surface.commandInput
 const debouncedQuery = useDebounce(query, 250)
 const selectedIndex = ref(0)
 const router = useRouter()
-const bus = useCommandPaletteBus()
-const agentChatBus = useAgentChatBus()
+const { open: openAgentChat } = useAgentChatOpen()
 const { notify } = useNotifier()
 const tError = useLocaleError()
 
@@ -460,20 +440,18 @@ const pendingInstancePath = ref<string | undefined>(undefined)
 const settingsItems = useSettingsSearchItems()
 const pendingSettingId = ref<string | undefined>(undefined)
 
-bus.on((event) => {
-  if (event === 'show') isShown.value = true
-  else if (event === 'hide') isShown.value = false
-  else isShown.value = !isShown.value
-})
+function resetPalette() {
+  query.value = ''
+  selectedIndex.value = 0
+  pendingInstanceAction.value = undefined
+  pendingInstancePath.value = undefined
+  pendingSettingId.value = undefined
+}
 
-watch(isShown, (v) => {
-  if (v) {
-    query.value = ''
-    selectedIndex.value = 0
-    pendingInstanceAction.value = undefined
-    pendingInstancePath.value = undefined
-    pendingSettingId.value = undefined
-  }
+// Reset stale query/selection only on a fresh open of the whole omni surface,
+// not when flipping between the command/agent tabs while it stays open.
+watch(surface.shown, (visible, wasVisible) => {
+  if (visible && !wasVisible && surface.mode.value === 'command') resetPalette()
 })
 
 function hide() {
@@ -607,9 +585,15 @@ const normalResultCount = computed(() =>
   preMarketResultCount.value + modrinthResults.value.length,
 )
 const showAiResult = computed(() => {
-  if (pendingInstanceAction.value || pendingInstancePath.value || pendingSettingId.value) return false
+  if (!canAskAi.value) return false
   return query.value.trim().length >= 2
 })
+const canAskAi = computed(() =>
+  agentEnabled.value &&
+  !pendingInstanceAction.value &&
+  !pendingInstancePath.value &&
+  !pendingSettingId.value,
+)
 
 const totalResultCount = computed(() => {
   if (pendingInstancePath.value) return pendingInstance.value ? 4 : 0
@@ -657,11 +641,14 @@ async function invoke(c: { id: string }) {
   }
 }
 
-function askAi() {
+function switchToAgent() {
   const prompt = query.value.trim()
-  if (!prompt) return
-  hide()
-  agentChatBus.emit({ type: 'show', prompt })
+  openAgentChat(prompt ? { prompt } : undefined)
+}
+
+function askAi() {
+  if (!canAskAi.value || !query.value.trim()) return
+  switchToAgent()
 }
 
 function enterInstanceMenu(inst: Instance) {
@@ -893,10 +880,23 @@ function onArrowForward(e: KeyboardEvent) {
 function onArrowBack(e: KeyboardEvent) {
   return paletteIsRtl.value ? onArrowRight(e) : onArrowLeft(e)
 }
+
+const inputReadonly = computed(() => !!pendingInstancePath.value)
+
+defineExpose({
+  inputReadonly,
+  askAi,
+  invokeSelected,
+  moveSelection,
+  onArrowForward,
+  onArrowBack,
+})
 </script>
 
 <style scoped>
 .palette-card {
+  width: 720px;
+  max-width: 100%;
   border-radius: 18px;
 }
 
@@ -1003,7 +1003,7 @@ function onArrowBack(e: KeyboardEvent) {
 }
 
 .palette-footer {
-  background: rgb(var(--v-theme-surface-bright, var(--v-theme-surface)) / 0.4);
+  min-height: 28px;
 }
 
 .palette-footer__group {

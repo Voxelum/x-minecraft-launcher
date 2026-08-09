@@ -2,6 +2,7 @@ import { EventEmitter } from 'events'
 import { describe, expect, it, vi } from 'vitest'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { loginModrinth } from './loginModrinth'
+import { createModrinthAuthenticatedFetch, formatModrinthAuthorization } from './loginModrinth'
 
 function createStorage() {
   const values = new Map<string, string>()
@@ -70,5 +71,47 @@ describe('loginModrinth', () => {
     expect(String(vi.mocked(app.fetch).mock.calls[0]![0])).toBe(
       'https://edge.example.test/modrinth/auth?code=authorization-code&redirect_uri=http%3A%2F%2F127.0.0.1%3A25555%2Fmodrinth-auth',
     )
+  })
+})
+describe('formatModrinthAuthorization', () => {
+  it('uses the Bearer scheme for OAuth access tokens', () => {
+    expect(formatModrinthAuthorization('mrp_oauth_token')).toBe('Bearer mrp_oauth_token')
+  })
+
+  it('preserves an explicitly formatted authorization value', () => {
+    expect(formatModrinthAuthorization('Bearer mrp_oauth_token')).toBe('Bearer mrp_oauth_token')
+  })
+
+  it('injects the latest OAuth token into runtime fetch requests', async () => {
+    let requestHeaders: Headers | undefined
+    const app = {
+      secretStorage: {
+        get: async () => JSON.stringify({
+          access_token: 'mrp_oauth_token',
+          token_type: 'Bearer',
+          expires_in: 3600,
+          issued_at: Date.now(),
+        }),
+      },
+      registry: {
+        getOrCreate: async () => ({
+          getValidAccessToken: async () => ({
+            status: 'valid',
+            accessToken: 'mrp_oauth_token',
+          }),
+        }),
+      },
+      fetch: async (_input: RequestInfo | URL, init?: RequestInit) => {
+        requestHeaders = new Headers(init?.headers)
+        return new Response('{}', { status: 200 })
+      },
+    }
+
+    await createModrinthAuthenticatedFetch(app as any)('https://api.modrinth.com/v2/project', {
+      headers: { 'x-test': 'preserved' },
+    })
+
+    expect(requestHeaders?.get('authorization')).toBe('Bearer mrp_oauth_token')
+    expect(requestHeaders?.get('x-test')).toBe('preserved')
   })
 })

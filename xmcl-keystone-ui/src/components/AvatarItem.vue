@@ -5,7 +5,7 @@
     @click="onclick ? onclick($event) : emit('click', $event)"
   >
     <v-avatar
-      class="mr-2 hidden lg:block"
+      class="mr-2 hidden lg:inline-flex"
       :size="32"
       color="transparent"
       :class="{ responsive }"

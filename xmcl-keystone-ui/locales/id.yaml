@@ -36,7 +36,7 @@ agent:
   disabledPlaceholder: Agen dinonaktifkan
   emptyHint: Minta agen untuk memeriksa instansi Anda, mengaktifkan/menonaktifkan mod, membaca log, atau mendiagnosis crash.
   inputPlaceholder: Tanya agen… (Tekan Enter untuk mengirim, Shift+Enter untuk baris baru)
-  notConfiguredHint: Atur kunci API, model, dan endpoint Anda di Pengaturan → Umum → Agen AI untuk mengaktifkan agen.
+  notConfiguredHint: Atur kunci API, model, dan endpoint yang kompatibel dengan OpenAI di Pengaturan → Umum → Agen AI. Misalnya, gunakan OpenAI atau gateway yang kompatibel dengan Claude.
   notConfiguredTitle: Agen belum dikonfigurasi
   openSettings: Buka pengaturan
   reset: Atur ulang percakapan
@@ -1358,9 +1358,12 @@ setting:
   advancedSettings: Pengaturan Lanjutan
   advancedSettingsHint: Zona bahaya - atur ulang atau kelola data peluncur
   aiAgentApiKey: Kunci API Agen AI
-  aiAgentApiKeyDescription: Disimpan secara lokal di perangkat ini dan digunakan untuk permintaan agen.
+  aiAgentApiKeyDescription: Konfigurasikan penyedia yang kompatibel dengan OpenAI, seperti OpenAI atau gateway untuk Claude. Kunci disimpan secara lokal di perangkat ini.
+  aiAgentApiKeyPlaceholder: Kunci API penyedia OpenAI atau Claude
   aiAgentEndpoint: Endpoint Agen AI
   aiAgentEndpointDescription: URL endpoint pelengkap obrolan.
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 atau claude-sonnet-4-5
   aiAgentModel: Model Agen AI
   aiAgentModelDescription: Nama model untuk dikirim dalam permintaan pelengkap obrolan.
   apiSets:

@@ -1208,7 +1208,13 @@ serverStatus:
   ping: Ping...
   refuse: §4Serveur refusé !
   timeout: §4Timeout de la connexion !
+agent:
+  notConfiguredHint: Définissez une clé API, un modèle et un endpoint compatible OpenAI dans Paramètres → Général → Agent IA. Par exemple, utilisez OpenAI ou une passerelle compatible avec Claude.
 setting:
+  aiAgentApiKeyDescription: Configurez un fournisseur compatible OpenAI, comme OpenAI ou une passerelle pour Claude. La clé est stockée localement sur cet appareil.
+  aiAgentApiKeyPlaceholder: Clé API du fournisseur OpenAI ou Claude
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 ou claude-sonnet-4-5
   themeStore:
     name: Bibliothèque de thèmes
     description: Enregistrer et gérer les thèmes globaux

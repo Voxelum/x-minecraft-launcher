@@ -42,6 +42,21 @@ export function useLaunchException(
     } else if (e.type === 'launchSpawnProcessFailed') {
       title.value = t('launchBlocked.launchSpawnProcessFailed.title')
       description.value = t('launchBlocked.launchSpawnProcessFailed.description')
+    } else if (e.type === 'launchLinuxDisplayUnavailable') {
+      title.value = t('launchBlocked.launchLinuxDisplayUnavailable.title')
+      if (e.reason === 'no-graphical-session') {
+        description.value = t('launchBlocked.launchLinuxDisplayUnavailable.noGraphicalSession')
+      } else if (e.reason === 'xwayland-missing') {
+        description.value = t('launchBlocked.launchLinuxDisplayUnavailable.xwaylandMissing')
+      } else if (e.reason === 'xwayland-not-running') {
+        description.value = t('launchBlocked.launchLinuxDisplayUnavailable.xwaylandNotRunning')
+      } else if (e.reason === 'sandbox-denied') {
+        description.value = t('launchBlocked.launchLinuxDisplayUnavailable.sandboxDenied')
+      } else {
+        description.value = t('launchBlocked.launchLinuxDisplayUnavailable.environmentMissing')
+      }
+      unexpected.value = false
+      extraText.value = ''
     }
   }
   function onError(err: unknown) {

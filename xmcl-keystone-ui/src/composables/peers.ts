@@ -82,7 +82,9 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
     isReady,
     setUserInfo,
     leaveGroup,
+    createGroup,
     joinGroup,
+    transferGroupMaster,
   } = multiplayer
 
   const { state } = useState(getPeerState, PeerState)
@@ -120,6 +122,11 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
 
   const group = computed(() => state.value?.group)
   const groupRole = computed(() => state.value?.groupRole || '')
+  const groupSelfPeerId = computed(() => state.value?.groupSelfPeerId || '')
+  const groupMasterPeerId = computed(() => state.value?.groupMasterPeerId || '')
+  const groupMembers = computed(() => state.value?.groupMembers || [])
+  const groupRevision = computed(() => state.value?.groupRevision || 0)
+  const groupStatus = computed(() => state.value?.groupStatus || '')
   const groupMaxPeers = computed(() => state.value?.groupMaxPeers || 0)
   const groupState = computed(() => state.value?.groupState || 'closed')
   const icePings = computed(() => state.value?.icsServersPings || {})
@@ -174,6 +181,11 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
     initiate,
     group,
     groupRole,
+    groupSelfPeerId,
+    groupMasterPeerId,
+    groupMembers,
+    groupRevision,
+    groupStatus,
     groupMaxPeers,
     icePings,
     groupPing,
@@ -182,7 +194,9 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
     connections,
     drop,
     leaveGroup,
+    createGroup,
     joinGroup,
+    transferGroupMaster,
     error,
   }
 }

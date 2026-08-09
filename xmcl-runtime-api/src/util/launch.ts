@@ -31,7 +31,7 @@ export interface GenerateLaunchOptions {
   globalDisableAuthlibInjector?: boolean
   globalDisableElyByAuthlib?: boolean
   globalPreExecuteCommand?: string
-  globalResolution?: { width?: number; height?: number; fullscreen?: boolean }
+  globalResolution?: { width?: number; height?: number; fullscreen?: boolean; monitor?: string }
   modCount: number
   getOrInstallAuthlibInjector: () => Promise<string>
   track: <T, S = string>(token: string, p: Promise<T>, name: S, id: string) => Promise<T>

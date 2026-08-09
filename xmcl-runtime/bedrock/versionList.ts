@@ -1,32 +1,41 @@
 import { BedrockVersion, BedrockVersionType } from '@xmcl/runtime-api'
 import { request } from 'undici'
 
+const MCAPPX_DEVELOPER_USER_AGENT = 'mcappx_developer'
+
+interface VersionListEndpoint {
+  url: string
+  userAgent?: string
+}
+
 /**
  * Endpoints that serve the Minecraft Bedrock (UWP) version database. Each
- * returns a JSON array of `[versionName, updateIdentity, versionType]` tuples,
- * where `versionType` is `0` (release), `1` (beta) or `2` (preview). This is
- * the same schema used by MCMrARM's `mc-w10-version-launcher`.
+ * returns either:
+ * - a JSON array of `[versionName, updateIdentity, versionType]` tuples,
+ *   where `versionType` is `0` (release), `1` (beta) or `2` (preview), as
+ *   used by MCMrARM's `mc-w10-version-launcher`; or
+ * - the mcappx.com Bedrock database object, whose `Variations[].MetaData`
+ *   entries contain either direct package URLs or Windows Update identities.
  *
  * `mrarm.io` is the canonical global source. Inside the GFW it may be
  * unreachable, so the list is tried in order and the first reachable endpoint
- * wins. Add reachable mirrors here as they become available — note that any
- * mirror MUST expose the update identities (GUIDs), since those are required to
- * resolve the package download from Microsoft's delivery service. A plain
- * "app list" site such as mcappx.com cannot be used directly because it does
- * not expose update identities.
+ * wins. The MCAPPX source originates from mcappx.com and requires the
+ * `mcappx_developer` User-Agent to bypass regional blocking for developer
+ * access.
  */
-const GLOBAL_ENDPOINTS = [
-  'https://mrarm.io/r/w10-vdb',
+const GLOBAL_ENDPOINTS: VersionListEndpoint[] = [
+  { url: 'https://mrarm.io/r/w10-vdb' },
 ]
 
 /**
  * GFW-friendly endpoints, tried first for users inside the GFW. Kept separate
  * so the ordering can be tuned without touching the global list.
  */
-const GFW_ENDPOINTS: string[] = [
-  // jsDelivr mirrors GitHub raw content and is generally reachable inside the
-  // GFW; it points at the same version database format.
-  'https://mrarm.io/r/w10-vdb',
+const GFW_ENDPOINTS: VersionListEndpoint[] = [
+  // MCAPPX originates from mcappx.com and is guaranteed by its operator to
+  // remain reachable inside the GFW for public launcher usage.
+  { url: 'https://data.mcappx.com/v2/bedrock.json', userAgent: MCAPPX_DEVELOPER_USER_AGENT },
+  { url: 'https://mrarm.io/r/w10-vdb' },
 ]
 
 function toVersionType(raw: number): BedrockVersionType | undefined {
@@ -38,11 +47,29 @@ function toVersionType(raw: number): BedrockVersionType | undefined {
   }
 }
 
-function parseVersionDb(text: string): BedrockVersion[] {
-  const data = JSON.parse(text)
+function toVersionTypeFromString(raw: string): BedrockVersionType {
+  switch (raw.toLowerCase()) {
+    case 'beta': return 'beta'
+    case 'preview': return 'preview'
+    default: return 'release'
+  }
+}
+
+function sortVersions(versions: BedrockVersion[]) {
+  const typeWeight = (type: BedrockVersionType) => (type === 'release' ? 0 : type === 'beta' ? 1 : 2)
+  versions.sort((a, b) => {
+    const byVersion = b.version.localeCompare(a.version, undefined, { numeric: true })
+    if (byVersion !== 0) return byVersion
+    return typeWeight(a.type) - typeWeight(b.type)
+  })
+  return versions
+}
+
+function parseLegacyVersionDb(data: unknown): BedrockVersion[] {
   if (!Array.isArray(data)) {
     throw new Error('Unexpected Bedrock version database shape')
   }
+
   const result: BedrockVersion[] = []
   const seen = new Set<string>()
   // The database is ordered oldest-first; reverse so newest versions come first.
@@ -52,11 +79,83 @@ function parseVersionDb(text: string): BedrockVersion[] {
     const updateIdentity = String(entry[1])
     const type = toVersionType(Number(entry[2]))
     if (!type) continue
-    if (seen.has(version)) continue
-    seen.add(version)
+    const key = `${version}:${type}`
+    if (seen.has(key)) continue
+    seen.add(key)
     result.push({ version, updateIdentity, type })
   }
   return result
+}
+
+function getMcAppxVersionsObject(data: Record<string, unknown>) {
+  const fromMcAppx = data.From_mcappx_com ?? data['From_mcappx.com']
+  if (fromMcAppx && typeof fromMcAppx === 'object' && !Array.isArray(fromMcAppx)) {
+    return fromMcAppx as Record<string, unknown>
+  }
+  for (const [key, value] of Object.entries(data)) {
+    if (key === 'CreationTime') continue
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      return value as Record<string, unknown>
+    }
+  }
+  return undefined
+}
+
+function pickMcAppxMetaData(build: Record<string, unknown>): string | undefined {
+  const variations = Array.isArray(build.Variations) ? build.Variations : []
+  const preferred = ['x64', 'neutral']
+  const ordered = [
+    ...preferred.flatMap((arch) => variations.filter((variation) => typeof variation === 'object' && variation !== null && String((variation as Record<string, unknown>).Arch ?? '').toLowerCase() === arch)),
+    ...variations,
+  ]
+
+  for (const variation of ordered) {
+    if (!variation || typeof variation !== 'object') continue
+    const metadata = Array.isArray((variation as Record<string, unknown>).MetaData)
+      ? ((variation as Record<string, unknown>).MetaData as unknown[])
+      : []
+    const last = [...metadata].reverse().find((value) => typeof value === 'string' && value.length > 0)
+    if (typeof last === 'string') {
+      return last
+    }
+  }
+
+  return undefined
+}
+
+function parseMcAppxVersionDb(data: Record<string, unknown>): BedrockVersion[] {
+  const versionsObject = getMcAppxVersionsObject(data)
+  if (!versionsObject) {
+    throw new Error('Unexpected MCAPPX Bedrock version database shape')
+  }
+
+  const result: BedrockVersion[] = []
+  const seen = new Set<string>()
+  for (const [versionKey, value] of Object.entries(versionsObject)) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) continue
+    const build = value as Record<string, unknown>
+    const version = typeof build.ID === 'string' && build.ID.length > 0 ? build.ID : versionKey
+    const updateIdentity = pickMcAppxMetaData(build)
+    if (!updateIdentity) continue
+    const type = toVersionTypeFromString(String(build.Type ?? 'release'))
+    const key = `${version}:${type}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    result.push({ version, updateIdentity, type })
+  }
+
+  return sortVersions(result)
+}
+
+function parseVersionDb(text: string): BedrockVersion[] {
+  const data = JSON.parse(text)
+  if (Array.isArray(data)) {
+    return sortVersions(parseLegacyVersionDb(data))
+  }
+  if (data && typeof data === 'object') {
+    return parseMcAppxVersionDb(data as Record<string, unknown>)
+  }
+  throw new Error('Unexpected Bedrock version database shape')
 }
 
 /**
@@ -70,7 +169,7 @@ export async function fetchBedrockVersionList(insideGFW: boolean): Promise<Bedro
     ? [...GFW_ENDPOINTS, ...GLOBAL_ENDPOINTS]
     : [...GLOBAL_ENDPOINTS, ...GFW_ENDPOINTS]
   // De-duplicate while preserving order.
-  const ordered = [...new Set(endpoints)]
+  const ordered = [...new Map(endpoints.map((endpoint) => [endpoint.url, endpoint])).values()]
 
   let lastError: unknown
   for (const endpoint of ordered) {
@@ -88,8 +187,9 @@ export async function fetchBedrockVersionList(insideGFW: boolean): Promise<Bedro
  * GET a URL, manually following up to 5 redirects (the repo's undici typings do
  * not expose `maxRedirections`), and return the body text.
  */
-async function fetchFollowingRedirects(url: string, redirectsLeft = 5): Promise<string> {
-  const response = await request(url, { method: 'GET' })
+async function fetchFollowingRedirects(endpoint: VersionListEndpoint, redirectsLeft = 5): Promise<string> {
+  const headers = endpoint.userAgent ? { 'user-agent': endpoint.userAgent } : undefined
+  const response = await request(endpoint.url, { method: 'GET', headers })
   const status = response.statusCode
   if (status >= 300 && status < 400 && redirectsLeft > 0) {
     const location = response.headers.location
@@ -97,12 +197,12 @@ async function fetchFollowingRedirects(url: string, redirectsLeft = 5): Promise<
     if (next) {
       // Drain the body before starting the next request.
       await response.body.dump().catch(() => undefined)
-      return fetchFollowingRedirects(new URL(next, url).toString(), redirectsLeft - 1)
+      return fetchFollowingRedirects({ ...endpoint, url: new URL(next, endpoint.url).toString() }, redirectsLeft - 1)
     }
   }
   const text = await response.body.text()
   if (status >= 400) {
-    throw new Error(`Version list request to ${url} failed with status ${status}`)
+    throw new Error(`Version list request to ${endpoint.url} failed with status ${status}`)
   }
   return text
 }

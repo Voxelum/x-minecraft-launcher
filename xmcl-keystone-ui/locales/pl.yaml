@@ -1181,7 +1181,13 @@ serverStatus:
   ping: Ping...
   refuse: §4Serwer odmówił!
   timeout: §4Limit czasu połączenia z serwerem!
+agent:
+  notConfiguredHint: Ustaw klucz API, model i endpoint zgodny z OpenAI w Ustawienia → Ogólne → Agent AI. Na przykład użyj OpenAI albo bramki zgodnej z Claude.
 setting:
+  aiAgentApiKeyDescription: Skonfiguruj dostawcę zgodnego z OpenAI, takiego jak OpenAI lub bramka dla Claude. Klucz jest przechowywany lokalnie na tym urządzeniu.
+  aiAgentApiKeyPlaceholder: Klucz API dostawcy OpenAI lub Claude
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 lub claude-sonnet-4-5
   themeStore:
     name: Magazyn motywów
     description: Zapisuj i zarządzaj globalnymi motywami

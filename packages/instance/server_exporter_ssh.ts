@@ -4,6 +4,10 @@ import { dirname, join } from 'path'
 import type { Client, SFTPWrapper, Stats } from 'ssh2'
 import { ServerExporter } from './server_exporter'
 
+function quoteShellArgument(value: string) {
+  return `'${value.replace(/'/g, `'\\''`)}'`
+}
+
 export class ServerSSHExporter extends ServerExporter {
   constructor(
     dataRoot: string,
@@ -96,17 +100,28 @@ export class ServerSSHExporter extends ServerExporter {
       }),
     ).then((tasks) => tasks.filter(isNotNull))
 
-    await new Promise<void>((resolve, reject) => {
-      const dirs = remaining.map(({ to }) => dirname(to))
-      const dirsString = dirs.map((d) => '"' + d + '"').join(' ')
-      this.ssh.exec(`mkdir -p ${dirsString}`, (e) => {
-        if (e) {
-          reject(e)
-        } else {
-          resolve()
-        }
+    const dirs = [...new Set(remaining.map(({ to }) => dirname(to)))]
+    if (dirs.length > 0) {
+      await new Promise<void>((resolve, reject) => {
+        const dirsString = dirs.map(quoteShellArgument).join(' ')
+        this.ssh.exec(`mkdir -p ${dirsString}`, (e, channel) => {
+          if (e) {
+            reject(e)
+            return
+          }
+          channel.resume()
+          channel.stderr.resume()
+          channel.once('error', reject)
+          channel.once('close', (code: number | null) => {
+            if (code === 0) {
+              resolve()
+            } else {
+              reject(new Error(`Failed to create remote server directories (exit code ${code ?? 'unknown'})`))
+            }
+          })
+        })
       })
-    })
+    }
 
     await Promise.all(
       remaining.map(async ({ to, ...rest }) => {

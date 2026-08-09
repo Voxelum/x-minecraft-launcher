@@ -1425,9 +1425,12 @@ setting:
   aboutLicenseInfo: Windows'ta ücretsiz kod imzalama SignPath.io tarafından, sertifika ise SignPath Foundation tarafından sağlanmaktadır
   aboutSponsors: 😇 Sponsorlar 😇
   aiAgentApiKey: Yapay Zeka Temsilcisi API Anahtarı
-  aiAgentApiKeyDescription: Bu cihazda yerel olarak saklanır ve temsilci istekleri için kullanılır.
+  aiAgentApiKeyDescription: OpenAI veya Claude için bir ağ geçidi gibi OpenAI uyumlu bir sağlayıcı yapılandırın. Anahtar bu cihazda yerel olarak saklanır.
+  aiAgentApiKeyPlaceholder: OpenAI veya Claude sağlayıcısı API anahtarı
   aiAgentEndpoint: Yapay Zeka Temsilcisi Uç Noktası
   aiAgentEndpointDescription: Sohbet tamamlama uç noktası URL'si.
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 veya claude-sonnet-4-5
   aiAgentModel: Yapay Zeka Temsilcisi Modeli
   aiAgentModelDescription: Sohbet tamamlama isteklerinde gönderilecek model adı.
   useDesktopBackground: Mevcut masaüstü duvar kağıdını kullan
@@ -1741,7 +1744,7 @@ agent:
   disabledPlaceholder: Temsilci devre dışı
   emptyHint: Temsilciden örneğinizi incelemesini, modları değiştirmesini, günlükleri okumasını veya çökmeyi teşhis etmesini isteyin.
   inputPlaceholder: Temsilciye sorun… (Göndermek için Enter, yeni satır için Shift+Enter)
-  notConfiguredHint: Temsilciyi etkinleştirmek için Ayarlar → Genel → Yapay Zeka Temsilcisi bölümünde API anahtarınızı, modelinizi ve uç noktanızı ayarlayın.
+  notConfiguredHint: Ayarlar → Genel → Yapay Zeka Temsilcisi bölümünde API anahtarı, model ve OpenAI uyumlu uç nokta ayarlayın. Örneğin OpenAI veya Claude uyumlu bir ağ geçidi kullanın.
   notConfiguredTitle: Temsilci yapılandırılmadı
   openSettings: Ayarları aç
   reset: Sohbeti sıfırla

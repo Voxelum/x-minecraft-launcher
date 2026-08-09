@@ -5,6 +5,7 @@ import type { ServiceKey } from '../../services/Service'
 import type { InstanceResourcesService } from '../../services/InstanceResourcesService'
 import { MarketRefSchema, parseMarketRef } from '../marketRef'
 import { MarketType } from '../../entities/market'
+import { InstanceInstallServiceKey } from '../../services/InstanceInstallService'
 
 /**
  * CLI-friendly market reference: accepts either the JSON object form or a
@@ -33,24 +34,30 @@ export async function installResource(
   instancePath: string,
   ref: MarketRef,
 ): Promise<string[]> {
+  let files
   switch (ref.source) {
     case 'modrinth':
-      return ctx.call(serviceKey, 'installFromMarket', {
+      files = await ctx.call(serviceKey, 'resolveFromMarket', {
         market: MarketType.Modrinth,
         version: { versionId: ref.version ?? '' },
         instancePath,
       })
+      break
     case 'curseforge':
-      return ctx.call(serviceKey, 'installFromMarket', {
+      files = await ctx.call(serviceKey, 'resolveFromMarket', {
         market: MarketType.CurseForge,
         file: { fileId: ref.file ?? 0 },
         instancePath,
       })
+      break
     case 'file':
-      return ctx.call(serviceKey, 'install', { path: instancePath, files: [ref.path] })
+      files = await ctx.call(serviceKey, 'resolveFiles', { path: instancePath, files: [ref.path] })
+      break
     case 'url':
       throw new Error('Installing from a URL is not supported via CLI yet — download the file and pass the local path.')
   }
+  await ctx.call(InstanceInstallServiceKey, 'stageInstanceFiles', { path: instancePath, oldFiles: [], files })
+  return files.map(file => file.path)
 }
 
 /**

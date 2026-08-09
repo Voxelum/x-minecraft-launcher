@@ -35,7 +35,7 @@
           >
             {{ preferredJava.majorVersion }}
           </span>
-          <v-icon v-else>auto_awesome</v-icon>
+          <v-icon v-else>smart_toy</v-icon>
         </v-avatar>
         <div class="flex-1 min-w-0">
           <div class="text-subtitle-2 font-weight-medium">
@@ -150,9 +150,12 @@
           hide-details />
         <v-text-field v-model="resolutionHeight" :label="t('instance.height')" type="number" variant="outlined" density="compact"
           hide-details />
-        <v-switch v-model="resolutionFullscreen" :label="t('instance.fullscreen')" class="mt-0" color="primary" hide-details />
+        <v-switch v-model="resolutionFullscreen" data-testid="global-fullscreen-switch" :label="t('instance.fullscreen')" class="mt-0" color="primary" hide-details />
         <v-select v-model="selectedResolutionPreset" :items="resolutionPresets" item-title="text" item-value="value"
           :label="t('instance.resolutionPreset')" outlined filled hide-details dense />
+        <v-select v-if="monitorItems.length > 1" v-model="resolutionMonitor" data-testid="global-monitor-select"
+          :items="monitorItems" :label="t('instance.monitor')" :disabled="!resolutionFullscreen" variant="outlined"
+          density="compact" hide-details class="sm:col-span-4" />
       </div>
     </SettingCard>
   </div>
@@ -164,6 +167,7 @@ import { useI18n } from 'vue-i18n'
 import { useEventListener } from '@vueuse/core'
 import { useGlobalSettings } from '@/composables/setting'
 import { useResolutionPresets } from '@/composables/resolutionPresets'
+import { useMonitorItems } from '@/composables/monitor'
 import { kJavaContext } from '@/composables/java'
 import { injection } from '@/util/inject'
 import type { JavaRecord } from '@xmcl/runtime-api'
@@ -227,7 +231,9 @@ const adding = ref(false) // For adding environment variables
 const resolutionFullscreen = ref(globalResolution.value?.fullscreen)
 const resolutionWidth = ref(globalResolution.value?.width)
 const resolutionHeight = ref(globalResolution.value?.height)
+const resolutionMonitor = ref(globalResolution.value?.monitor ?? '')
 const resolutionPresets = useResolutionPresets()
+const monitorItems = useMonitorItems()
 
 // --- Computed Properties ---
 const selectedResolutionPreset = computed({
@@ -262,6 +268,7 @@ onMounted(() => {
     resolutionFullscreen.value = globalResolution.value.fullscreen
     resolutionWidth.value = globalResolution.value.width
     resolutionHeight.value = globalResolution.value.height
+    resolutionMonitor.value = globalResolution.value.monitor ?? ''
   }
 })
 
@@ -288,6 +295,7 @@ function save() {
       width: resolutionWidth.value,
       height: resolutionHeight.value,
       fullscreen: resolutionFullscreen.value,
+      monitor: resolutionMonitor.value || undefined,
     },
   })
 }

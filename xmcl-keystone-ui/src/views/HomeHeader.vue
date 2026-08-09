@@ -20,7 +20,7 @@
       }"
     >
       <div
-        class="align-center flex max-h-20 flex-1 flex-grow-0 items-baseline pl-6 pr-2 gap-1"
+        class="header-primary-row align-center flex max-h-20 flex-1 flex-grow-0 items-baseline pl-6 pr-2 gap-1"
       >
         <span
           :style="{
@@ -46,10 +46,10 @@
         >
           <component
             :is="Component"
-            class="px-4"
+            class="header-extension px-4"
             :class="{
               'mt-5': !compact,
-              'mt-3': compact,
+              'mt-1': compact,
             }"
           />
         </transition>
@@ -109,7 +109,7 @@ const onTransitionEnd = (e: TransitionEvent) => {
 const compact = injection(kCompact)
 const headerFontSize = computed(() => {
   if (compact.value) {
-    return '1.8rem'
+    return '1.35rem'
   }
   if (name.value && name.value.length > 30) {
     return '2rem'
@@ -163,12 +163,43 @@ const overcount = ref(0)
 }
 
 .header.compact::before {
-  bottom: -30px;
+  bottom: -20px;
 }
 
 .header.compact {
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.header-primary-row,
+.home-title {
+  min-width: 0;
+}
+
+.header.compact .header-primary-row {
+  min-height: 36px;
+  align-items: center;
+  padding-left: 1rem;
+}
+
+@media (max-width: 900px) {
+  .header {
+    padding-right: 0.25rem !important;
+    padding-left: 0.25rem !important;
+  }
+
+  .header-primary-row {
+    padding-left: 0.75rem !important;
+  }
+
+  .header.compact .home-title {
+    max-width: 40vw;
+  }
+
+  .header-extension {
+    padding-right: 0.75rem !important;
+    padding-left: 0.75rem !important;
+  }
 }
 
 </style>

@@ -34,14 +34,19 @@ export interface InitiateOptions {
 export class Peers {
   private peers: Record<string, PeerSession> = {}
 
-  onremove: (id: string) => void = () => { }
+  onremove: (id: string) => void = () => {}
 
   add(peer: PeerSession) {
     this.peers[peer.id] = peer
   }
 
   #validate(sess: PeerSession) {
-    if (sess && (sess.isClosed || sess.connection.connectionState === 'closed' || sess.connection.connectionState === 'disconnected')) {
+    if (
+      sess &&
+      (sess.isClosed ||
+        sess.connection.connectionState === 'closed' ||
+        sess.connection.connectionState === 'disconnected')
+    ) {
       delete this.peers[sess.id]
       this.onremove(sess.id)
       return undefined
@@ -50,16 +55,21 @@ export class Peers {
   }
 
   get(id: string, remoteId?: string): PeerSession | undefined {
-    const sess = this.peers[id] || Object.values(this.peers).find(p => p.remoteId === (remoteId || id))
+    const sess =
+      this.peers[id] || Object.values(this.peers).find((p) => p.remoteId === (remoteId || id))
 
     return this.#validate(sess)
   }
 
   remove(id: string) {
+    if (!this.peers[id]) return
     delete this.peers[id]
+    this.onremove(id)
   }
 
   get entries() {
-    return Object.values(this.peers).map(p => this.#validate(p)).filter(v => !!v) as PeerSession[]
+    return Object.values(this.peers)
+      .map((p) => this.#validate(p))
+      .filter((v) => !!v) as PeerSession[]
   }
 }

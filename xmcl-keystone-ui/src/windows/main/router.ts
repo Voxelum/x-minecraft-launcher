@@ -93,6 +93,10 @@ export const router = createRouter({
             actions: BaseSettingActions,
           },
         },
+        {
+          path: 'base-setting/modrinth-project',
+          redirect: { path: '/base-setting', query: { target: 'modrinth-project' } },
+        },
       ],
     },
     {

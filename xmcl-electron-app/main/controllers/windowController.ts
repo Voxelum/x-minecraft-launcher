@@ -1,9 +1,10 @@
 import { ElectronController } from '@/ElectronController'
-import { app, BrowserWindow, clipboard, dialog, FindInPageOptions, ipcMain, nativeImage, systemPreferences } from 'electron'
+import { app, BrowserWindow, clipboard, dialog, FindInPageOptions, ipcMain, nativeImage, screen, systemPreferences } from 'electron'
 import { ControllerPlugin } from './plugin'
 import { platform } from 'os'
 import { writeFile } from 'fs-extra'
 import { isNiri } from '@/utils/niri'
+import { isMonitorSelectionSupported } from '@/utils/moveWindowToMonitor'
 
 export enum Operation {
   Minimize = 0,
@@ -113,6 +114,17 @@ export const windowController: ControllerPlugin = function (this: ElectronContro
       return systemPreferences.askForMediaAccess('microphone')
     }
     return true
+  })
+  ipcMain.handle('get-monitors', () => {
+    if (!isMonitorSelectionSupported(currentPlatform)) return []
+    const primary = screen.getPrimaryDisplay()
+    return screen.getAllDisplays().map(display => ({
+      id: String(display.id),
+      label: display.label,
+      width: display.size.width,
+      height: display.size.height,
+      primary: display.id === primary.id,
+    }))
   })
   ipcMain.handle('set-translucent', (_, enable: boolean) => {
     this.setWindowTranslucent(enable)

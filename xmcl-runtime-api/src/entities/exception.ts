@@ -43,6 +43,7 @@ export const enum NetworkErrorCode {
   CONNECTION_RESET = 'CONNECTION_RESET',
   CONNECTION_TIMED_OUT = 'CONNECTION_TIMED_OUT',
   TIMED_OUT = 'TIMED_OUT',
+  // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
   DNS_NOTFOUND = 'NAME_NOT_RESOLVED',
   NAME_NOT_RESOLVED = 'NAME_NOT_RESOLVED',
   SOCKET_NOT_CONNECTED = 'SOCKET_NOT_CONNECTED',

@@ -81,6 +81,67 @@ export const InstanceInstallLock = InstanceLockSchema.extend({
 
 export type InstanceInstallLock = z.infer<typeof InstanceInstallLock>
 
+/**
+ * Pending file changes for an instance. The manifest is built incrementally
+ * and applied as one install transaction.
+ */
+export const InstanceInstallManifest = z.object({
+  version: z.literal(1),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+  oldFiles: z.array(InstanceFile),
+  files: z.array(InstanceFile),
+})
+
+export type InstanceInstallManifest = z.infer<typeof InstanceInstallManifest>
+
+function getInstanceFileIdentity(file: InstanceFile) {
+  if (file.modrinth) return `modrinth:${file.modrinth.projectId}`
+  if (file.curseforge) return `curseforge:${file.curseforge.projectId}`
+  return `path:${file.path}`
+}
+
+function upsertInstanceFile(files: InstanceFile[], file: InstanceFile) {
+  const identity = getInstanceFileIdentity(file)
+  const index = files.findIndex(value => value.path === file.path || getInstanceFileIdentity(value) === identity)
+  if (index === -1) files.push(file)
+  else files[index] = file
+}
+
+function isSameInstanceFileArtifact(left: InstanceFile, right: InstanceFile) {
+  if (left.path === right.path) return true
+  if (left.modrinth && right.modrinth) return left.modrinth.versionId === right.modrinth.versionId
+  if (left.curseforge && right.curseforge) return left.curseforge.fileId === right.curseforge.fileId
+  return false
+}
+
+export function mergeInstanceInstallManifest(
+  current: InstanceInstallManifest | undefined,
+  change: { oldFiles: InstanceFile[]; files: InstanceFile[] },
+  now = Date.now(),
+): InstanceInstallManifest {
+  const oldFiles = [...(current?.oldFiles ?? [])]
+  const files = [...(current?.files ?? [])]
+
+  for (const oldFile of change.oldFiles) {
+    const stagedIndex = files.findIndex(file => isSameInstanceFileArtifact(file, oldFile))
+    if (stagedIndex !== -1) {
+      files.splice(stagedIndex, 1)
+    } else {
+      upsertInstanceFile(oldFiles, oldFile)
+    }
+  }
+  for (const file of change.files) upsertInstanceFile(files, file)
+
+  return {
+    version: 1,
+    createdAt: current?.createdAt ?? now,
+    updatedAt: now,
+    oldFiles,
+    files,
+  }
+}
+
 const InstanceDataFieldsSchema = InstanceDataSchema.pick({
   description: true,
   minMemory: true,

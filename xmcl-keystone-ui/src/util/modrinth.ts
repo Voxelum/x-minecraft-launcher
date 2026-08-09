@@ -1,7 +1,8 @@
 import { clientModrinthV2 } from '@/util/clients'
-import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
+import { RuntimeVersions } from '@xmcl/instance'
 import { ProjectVersion } from '@xmcl/modrinth'
 import { isNoModLoader } from './isNoModloader'
+export { getInstanceFileFromModrinthVersion } from '@xmcl/runtime-api'
 export async function resolveModrinthDependencies(version: ProjectVersion) {
   const visited = new Set<string>()
   type VersionTuple = [ProjectVersion, 'required' | 'optional' | 'incompatible' | 'embedded']
@@ -12,17 +13,22 @@ export async function resolveModrinthDependencies(version: ProjectVersion) {
       return []
     }
     visited.add(version.project_id)
-    const deps = await Promise.all(version.dependencies.map(async (dep) => {
-      if (dep.version_id) {
-        const depVersion = await clientModrinthV2.getProjectVersion(dep.version_id)
-        const result = await visit([depVersion, dep.dependency_type])
-        return result
-      } else {
-        const versions = await clientModrinthV2.getProjectVersions(dep.project_id, { loaders: version.loaders, gameVersions: version.game_versions })
-        const result = await visit([versions[0], dep.dependency_type])
-        return result
-      }
-    }))
+    const deps = await Promise.all(
+      version.dependencies.map(async (dep) => {
+        if (dep.version_id) {
+          const depVersion = await clientModrinthV2.getProjectVersion(dep.version_id)
+          const result = await visit([depVersion, dep.dependency_type])
+          return result
+        } else {
+          const versions = await clientModrinthV2.getProjectVersions(dep.project_id, {
+            loaders: version.loaders,
+            gameVersions: version.game_versions,
+          })
+          const result = await visit([versions[0], dep.dependency_type])
+          return result
+        }
+      }),
+    )
 
     return [tuple, ...deps.reduce((a, b) => [...a, ...b], [])]
   }
@@ -56,23 +62,15 @@ export function getModrinthModLoaders(runtime: RuntimeVersions, allForNoModLoade
   return modLoaders
 }
 
-export function getModrinthVersionKey(projectId: string, featured?: boolean, loaders?: string | string[] | undefined, gameVersions?: string[]) {
+export function getModrinthVersionKey(
+  projectId: string,
+  featured?: boolean,
+  loaders?: string | string[] | undefined,
+  gameVersions?: string[],
+) {
   return `/modrinth/versions/${projectId}?featured=${featured}&loaders=${typeof loaders === 'string' ? loaders : loaders?.join(',') || ''}&gameVersions=${gameVersions?.join(',') || ''}`
 }
 
 export function getModrinthProjectKey(projectId: string) {
   return `/modrinth/${projectId}`
-}
-
-export function getInstanceFileFromModrinthVersion(version: ProjectVersion, destinationPrefix = 'mods', filename?: string): InstanceFile {
-  const primary = version.files.find(f => f.filename === filename) || version.files.find(f => f.primary) || version.files[0]
-  return {
-    path: `${destinationPrefix}/${(primary.filename)}`,
-    hashes: primary.hashes,
-    size: 0,
-    modrinth: {
-      projectId: version.project_id,
-      versionId: version.id,
-    },
-  }
 }

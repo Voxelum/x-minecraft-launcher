@@ -17,7 +17,7 @@
         color="primary"
         size="large"
         variant="flat"
-        prepend-icon="auto_awesome"
+        prepend-icon="smart_toy"
         :loading="agentRunning"
         :disabled="agentRunning"
         block
@@ -84,7 +84,7 @@
 </template>
 <script lang="ts" setup>
 import { kAgent } from '@/composables/agent'
-import { useAgentChatBus, useAgnesSetupDocUrl } from '@/composables/agentChat'
+import { useAgentChatOpen } from '@/composables/agentChat'
 import { injection } from '@/util/inject'
 
 const { t } = useI18n()
@@ -98,19 +98,16 @@ const emit = defineEmits<{ (e: 'close'): void }>()
 const agent = injection(kAgent)
 const agentAvailable = agent.available
 const agentRunning = agent.running
-const chatBus = useAgentChatBus()
+const { open: openAgentChat } = useAgentChatOpen()
 const { push } = useRouter()
-const setupDocUrl = useAgnesSetupDocUrl()
 
 function onAskAgent() {
   emit('close')
   if (!agentAvailable.value) {
-    // Open a single Agnes setup guide when the built-in agent isn't ready.
-    window.open(setupDocUrl.value, 'browser')
     push('/setting')
     return
   }
-  chatBus.emit('show')
+  openAgentChat()
   agent.send(props.getAgentPrompt()).catch((e) => {
     console.error('[crash-agent]', e)
   })

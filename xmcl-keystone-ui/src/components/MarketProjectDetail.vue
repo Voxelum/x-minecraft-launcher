@@ -231,7 +231,7 @@
                   </v-btn>
                 </div>
               </template>
-              <v-list class="max-h-[400px] overflow-auto w-60">
+              <v-list class="max-h-[400px] w-[28rem] overflow-auto">
                 <v-list-item
                   v-for="(item, index) in versions"
                   :key="item.id + index"
@@ -241,10 +241,17 @@
                   :subtitle="item.version"
                   @click="selectedVersion = item"
                 >
-                  <template #prepend>
-                    <v-avatar v-if="item.installed" class="self-center">
-                      <v-icon size="small"> folder </v-icon>
-                    </v-avatar>
+                  <template #append>
+                    <v-chip
+                      v-if="item.installed"
+                      size="x-small"
+                      label
+                      color="primary"
+                      variant="tonal"
+                    >
+                      <v-icon start size="x-small">check</v-icon>
+                      {{ t('shared.installed') }}
+                    </v-chip>
                   </template>
                 </v-list-item>
               </v-list>

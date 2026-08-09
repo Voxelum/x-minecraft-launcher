@@ -1,7 +1,7 @@
 import { type AddInstanceServerOptions, InstanceServerInfoServiceKey, type RemoveInstanceServerOptions, ServerInfoState, type UpdateInstanceServerOptions, getServerInfoKey, type InstanceServerInfoService as IInstanceServerInfoService, SharedState } from '@xmcl/runtime-api'
 import { readServerInfo, writeServerInfo, ServerInfo } from '@xmcl/game-data'
 import { FSWatcher } from 'chokidar'
-import { ensureDir, readFile, writeFile } from 'fs-extra'
+import { ensureDir, readFile, stat, writeFile } from 'fs-extra'
 import { basename, dirname, join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
@@ -119,10 +119,18 @@ export class InstanceServerInfoService extends AbstractService implements IInsta
     const stateManager = await this.app.registry.get(ServiceStateManager)
     return stateManager.registerOrGet(getServerInfoKey(path), async ({ defineAsyncOperation }) => {
       const state = new ServerInfoState()
+      let fileFingerprint: string | undefined
 
-      const update = defineAsyncOperation(async () => {
+      const update = defineAsyncOperation(async (force = false) => {
         try {
+          const serversPath = join(path, 'servers.dat')
+          const nextFingerprint = await stat(serversPath)
+            .then(({ mtimeMs, ctimeMs, size }) => `${mtimeMs}:${ctimeMs}:${size}`)
+            .catch(() => 'missing')
+          if (!force && nextFingerprint === fileFingerprint) return
+
           const infos = await this.read(path)
+          fileFingerprint = nextFingerprint
           state.instanceServerInfos(infos)
         } catch (e) {
           this.warn(`Failed to load servers.dat for ${path}: ${(e as Error)?.message}`)
@@ -144,7 +152,7 @@ export class InstanceServerInfoService extends AbstractService implements IInsta
         }
       }).add('.')
 
-      await update()
+      await update(true)
 
       return [state, () => {
         watcher.close()

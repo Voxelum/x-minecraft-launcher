@@ -1,3 +1,4 @@
+import type { InstanceFile } from '@xmcl/instance'
 import { InstallMarketOptionWithInstance, LockKey, ResourceState, SharedState, UpdateInstanceResourcesOptions, getInstanceModStateKey } from '@xmcl/runtime-api'
 import { ensureDir, mkdir, readdir, rename, rm, stat, unlink } from 'fs-extra'
 import { basename, extname, isAbsolute, join, relative, resolve } from 'path'
@@ -12,6 +13,7 @@ import { linkDirectory, linkOrCopyDirectory, linkWithTimeoutOrCopy, missing } fr
 import { readlinkSafe, isLinkTo, normalizeLinkTarget } from './utils/readLinkSafe'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { CurseforgeApiError, CurseforgeV1Client } from '@xmcl/curseforge'
+import { pathToFileURL } from 'url'
 
 export abstract class AbstractInstanceDomainService extends AbstractService {
   constructor(app: LauncherApp, protected domain: ResourceDomain) {
@@ -172,6 +174,20 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
     return dests
   }
 
+  async resolveFiles({ files }: UpdateInstanceResourcesOptions): Promise<InstanceFile[]> {
+    const worker = await this.app.registry.getOrCreate(kResourceWorker)
+    return Promise.all(files.map(async (file) => {
+      const fileStat = await stat(file)
+      if (!fileStat.isFile()) throw new Error(`Only files can be staged in an instance manifest: ${file}`)
+      return {
+        path: `${this.domain}/${basename(file)}`,
+        hashes: { sha1: await worker.checksum(file, 'sha1') },
+        downloads: [pathToFileURL(file).toString()],
+        size: fileStat.size,
+      }
+    }))
+  }
+
   async uninstall({ files, path }: UpdateInstanceResourcesOptions) {
     let hasError = false
     const domainPath = resolve(path, this.domain)
@@ -227,6 +243,15 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
       instancePath: options.instancePath,
     })
     return result.map((r) => r.path)
+  }
+
+  async resolveFromMarket(options: InstallMarketOptionWithInstance): Promise<InstanceFile[]> {
+    const provider = await this.app.registry.get(kMarketProvider)
+    return provider.resolveInstanceFiles({
+      ...options,
+      domain: this.domain,
+      instancePath: options.instancePath,
+    })
   }
 
   async showDirectory(path: string): Promise<void> {

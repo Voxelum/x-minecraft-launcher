@@ -36,8 +36,9 @@ export interface BedrockVersion {
    */
   version: string
   /**
-   * The Windows Update `UpdateID` (a GUID) used to resolve the package
-   * download URL from the Microsoft FE3 delivery service.
+   * The package locator for this version: either a Windows Update `UpdateID`
+   * (GUID) resolved through Microsoft FE3, or a direct package URL from a
+   * trusted source such as mcappx.com.
    */
   updateIdentity: string
   /**

@@ -38,9 +38,12 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 agent:
+  abort: Stop generation
   callingTool: calling {name}…
   confirmAccept: Continue
+  confirmAllowAll: Allow all
   confirmCancel: Cancel
+  confirmPending: Waiting for confirmation
   confirmTitle: Confirm agent action
   disabledPlaceholder: Agent disabled
   emptyHint: >-
@@ -49,13 +52,27 @@ agent:
   errorTitle: The agent hit an error
   inputPlaceholder: Ask the agent…  (Enter to send, Shift+Enter for newline)
   notConfiguredHint: >-
-    Set your API key, model and endpoint in Settings → General → AI Agent to
-    enable the agent.
-  notConfiguredTitle: Agent not configured
+    Set an API key, model and OpenAI-compatible endpoint in Settings → General
+    → AI Agent. For example, use OpenAI or a Claude-compatible gateway.
+  notConfiguredTitle: Agent unavailable
   openSettings: Open settings
-  reset: Reset conversation
+  passiveGameCrashed: Game crashed
+  passiveGameExitCode: Exit code {code}
+  passiveGameExited: Game exited
+  passiveGameExitSignal: Signal {signal}
+  passiveGameExitSummary: '{duration} · {result}'
+  passiveGameExitUnknown: No exit status
+  reasoning: Reasoning
+  passiveGameStarted: Game started
+  passiveGameStartedSummary: 'Minecraft {minecraft} · {version} · PID {pid}'
+  passiveModDiagnosis: Mod compatibility report
+  passiveModDiagnosisError: Compatibility diagnosis failed
+  passiveModDiagnosisSummary: '{checked} mods checked · {incompatibilities} incompatibilities · {duplicates} duplicates'
+  passiveModDuplicate: 'Duplicate {mod}: {files}'
+  passiveModInstalled: installed {version}
+  reset: New conversation
   setupGuide: Setup guide
-  statusDisabled: Disabled — missing API key
+  statusDisabled: Disabled — sign in or configure a provider
   statusReady: Ready
   statusWorking: Working…
   suggestion1: >-
@@ -138,6 +155,24 @@ bedrock:
   launchFailed: Failed to launch this Bedrock version
   removeFailed: 'Failed to remove Bedrock {version}'
 baseSetting:
+  info:
+    address: Address
+    changes: Changes
+    custom: Custom
+    disabled: Disabled
+    enabled: Enabled
+    exportFormats: Export formats
+    inherited: Inherited
+    modLoader: Mod loader
+    notConfigured: Not configured
+    notSet: Not set
+    offline: Offline archive
+    projectId: Project ID
+    running: Running
+    saved: Saved
+    status: Status
+    stopped: Stopped
+    vanilla: Vanilla
   title: Instance Settings
 browseApp:
   createShortcut: Create Shortcut
@@ -410,6 +445,7 @@ commandPalette:
   hintEnter: enter
   hintBack: back
   hintClose: close
+  hintAskAgent: ask Agent
 feedback:
   channel: Channels
   description: I found a Bug or I want to make a suggestion
@@ -513,6 +549,10 @@ instance:
   fileApiPlaceholder: Please enter the remote sync url here if you want to keep the resource sync
   fullscreen: Fullscreen
   height: Height
+  monitor: Fullscreen Monitor
+  monitorDefault: Default (primary monitor)
+  monitorNumber: Monitor {number}
+  monitorPrimary: Primary
   hideCard: Hide this card
   icon: Profile Icon
   iconHint: The icon could be a file or internet url link.
@@ -520,7 +560,7 @@ instance:
   installModpack: Update instance from modpack
   lastPlayed: Last Played
   launchArguments: Launch Arguments Preview
-  launchServer: Launch localhost server
+  launchServer: Launch server
   linkFileDesc: >-
     This will overwrite instance local {file} with the global {file}. Are you
     sure to link it?
@@ -686,7 +726,7 @@ launch:
   createShortcut: Create shortcut
   forceKill: Force Kill
   kill: Stop
-  killServer: Kill Localhost Server
+  killServer: Stop Server
   launch: Launch
   launchAnyway: Launch Anyway
   launchAs: Launch as
@@ -709,6 +749,13 @@ launchBlocked:
       class="highlight"> {javaPath} </span>. Either change the permission of the
       java file or raise the permission of launcher.
     title: No permission to launch
+  launchLinuxDisplayUnavailable:
+    environmentMissing: XMCL could not recover the X11 display information from your desktop session. Restart XMCL from a terminal in the current desktop session, or sign out and sign in again.
+    noGraphicalSession: XMCL is not running in a graphical desktop session. Start XMCL from your desktop session before launching Minecraft.
+    sandboxDenied: The application sandbox cannot access X11. Grant XMCL access to the X11 socket in your Flatpak permissions, then restart XMCL.
+    title: X11 display unavailable
+    xwaylandMissing: Minecraft needs XWayland in this Wayland session. Install the XWayland package provided by your Linux distribution, then sign out and sign in again.
+    xwaylandNotRunning: XWayland is installed but no X11 display is running. Enable XWayland in your compositor configuration, then sign out and sign in again.
   launchNoProperJava:
     description: >-
       No proper java can be selected to launch the game. ({javaPath} is
@@ -1060,8 +1107,93 @@ modpack:
   includeAssets: Include Assets
   includes: Files to include
   modpackVersion: Modpack Version
+  modrinthProject: Modrinth project
   name: Modpack | Modpacks
   overrides: Overrides
+  selectDefaultFiles: Select default files
+  bindProject: Bind project
+  bindProjectHint: Select a Modrinth modpack project managed by the current account.
+  bindProjectTypeImmutableHint: Modrinth fixes a project's type when its first version is uploaded, and it can't be changed afterwards. Draft projects without any version yet can still be bound here, but a project already published as a mod/resource pack/etc. can't be converted into a modpack — use "Create new project" instead.
+  bindProjectNoProjects: No Modrinth projects were found for your account.
+  unbindProject: Unbind project
+  unbindProjectConfirmTitle: Unbind Modrinth project?
+  unbindProjectConfirmMessage: This only removes the local association between this instance and the Modrinth project. The project and its versions on Modrinth are not affected.
+  editProject: Edit project
+  projectDiscovery: Discovery and compatibility
+  projectGallery: Gallery
+  projectGalleryAdd: Add image
+  projectGalleryEmpty: No gallery images yet.
+  projectGalleryFeatured: Featured
+  projectGalleryFromScreenshots: Choose screenshot
+  projectGalleryHint: Add up to 5 MiB images and choose the featured project image.
+  projectGallerySelectScreenshot: Select an instance screenshot
+  projectIdentity: Identity and description
+  projectLinks: Project links
+  projectLoadFailed: Failed to load the bound Modrinth project.
+  projectNoChanges: No unsaved project changes.
+  projectNotBound: No Modrinth project is bound
+  projectNotBoundHint: Bind an existing project, or create a new Modrinth project.
+  projectUnsavedChanges: '{count} project field(s) changed'
+  projectLatestDraft: Draft
+  projectVersions: versions
+  publish: Publish
+  publishCategories: Categories (comma separated)
+  publishChannel: Release channel
+  publishChangelog: Changelog
+  publishChangelogGenerate: Generate with AI
+  publishConfirmProjectChanges: Confirm project changes
+  publishCreateProject: Create project
+  publishCreateDraft: Build and create draft
+  publishCustomVersion: Custom
+  publishDescription: Project description
+  publishDiscordUrl: Discord URL
+  publishDraftCreated: Draft version uploaded.
+  publishSubmitted: Version submitted for review.
+  publishExistingProject: Existing project
+  publishIcon: Project icon
+  publishIconHint: PNG, JPEG, or WebP
+  publishIconKeep: Leave unchanged unless a new image is selected
+  publishIconUseInstance: Use instance icon
+  publishIssuesUrl: Issues URL
+  publishLicense: License ID
+  publishLogin: Sign in to Modrinth
+  publishFiles: selected files
+  publishLinkageSummary: '{linked} of {total} mods/resource packs/shader packs will be linked directly to their Modrinth download instead of being uploaded.'
+  publishLinkageEmbeddedSummary: "{count} file(s) can't be linked and will be uploaded (embedded) with this version."
+  publishLinkageShowFiles: Show files that must be uploaded
+  publishLinkageReason:
+    missing-file: File not found on disk
+    not-linked-to-modrinth: Not recognized as a Modrinth resource
+    no-downloadable-url: No redistributable download URL found
+  publishModrinth: Publish to Modrinth
+  publishNewProject: New project
+  publishOpenProject: Open project
+  publishOpenVersion: Open version
+  publishProfile: MRPack profile
+  publishProfileClient: Client only
+  publishProfileServer: Server only
+  publishProfileSplit: Universal + separate client/server files
+  publishProfileUniversal: Universal
+  publishProject: Project
+  publishProjectDetailsTab: Project details
+  publishProjectName: Project name
+  publishProjectRequired: Select a project before publishing.
+  publishProjectSlug: Project slug
+  publishProjectUrl: Project URL (optional)
+  publishProjectUrlHint: Leave blank to use {slug}.
+  publishProjectSaved: Project details updated.
+  publishSourceUrl: Source URL
+  publishSubmit: Submit draft for review
+  publishSummary: Short summary
+  publishSummaryMinWords: Summary must contain at least 3 words.
+  publishVersionTitle: Version title
+  publishVersionTab: Publish version
+  publishVersion: Publish version
+  publishVisibility: Visibility
+  publishWikiUrl: Wiki URL
+  visibilityPrivate: Private
+  visibilityPublic: Public
+  visibilityUnlisted: Unlisted
   url: URL
   urlHint: The home page url of your modpack
 modpackImportConfirm:
@@ -1244,7 +1376,7 @@ multiplayer:
   connectionFailedHint: >-
     Unable to establish connection. Check if both peers have compatible NAT
     types.
-  connectedToHost: Connected to the room host
+  connectedToMaster: Connected to the room master
   connections: Connections
   copied: Copied!
   copy: Copy
@@ -1284,8 +1416,9 @@ multiplayer:
     until the ICE status is complete. If the token below remains unchanged, you
     can copy it and send it to your peer."
   groupId: Group Id
-  guest: Guest
-  host: Host
+  master: Master
+  masterHostsGameHint: The room master is the connection hub and should host the Minecraft LAN world. Transfer master before changing hosts.
+  member: Member
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
   joinConnection: >-
@@ -1294,6 +1427,7 @@ multiplayer:
   joinManual: Join
   joinOrCreateGroup: Join/Create Group
   joinOrCreateGroupHint: Get group id from your friends or create a group
+  joinCreatesMissingRoomHint: If this room does not exist, you will create it and become its master.
   kernel: P2P Kernel
   kernelDescription: >-
     Use either native WebRTC or node-datachannel. Only switch this when your p2p
@@ -1304,7 +1438,7 @@ multiplayer:
   name: Multiplayer on LAN
   natWarning: >-
     Your NAT type may prevent direct connections. Try enabling relay server in
-    settings or ask your friend to host instead.
+    settings or ask your friend to be the room master instead.
   networkInfo: Network Info (Click to toggle)
   next: Next
   otherExposedPortDescription: The port forwarded by {user}
@@ -1324,6 +1458,7 @@ multiplayer:
   sharingNotificationTitle: A peer is sharing their game config
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
+  waitingForMaster: Waiting for the room master to reconnect
 myStuff: My Stuff
 natType:
   blocked: Blocked
@@ -1585,6 +1720,8 @@ localCollection:
     skipped: Skipped
     title: Collection Installation Result
 server:
+  launch: Launch server
+  stop: Stop server
   acceptingMinecraftVersion: Accepting Minecraft Version
   addServer: Add Server
   address: Server Address
@@ -1599,7 +1736,7 @@ server:
   expectedVersions: Supported Versions
   export: Export Server
   exportNoFilesHint: >-
-    No server files found. You can run server on local once to generate some
+    No server files found. Install the server once to generate the required
     files.
   exportOption: Server Export Options
   exportSSHAuthenticationFailed: >-
@@ -1631,8 +1768,101 @@ server:
   pinnedHeader: 'pinned: {name}'
   players: Players
   port: Port
+  clearLog: Clear log
+  log: Server Log
+  logWaiting: Server output will appear here after launch.
+  remoteActionSuccess: Done.
+  remoteAdmin: Remote Server Admin
+  remoteAuthMethod: Authentication
+  remoteAuthPassword: Password
+  remoteAuthPrivateKey: Private key
+  remoteBuildOfflinePackage: Build offline package
+  remoteConnected: Connected
+  remoteConnection: Connection
+  remoteDeployment: Deployment
+  remoteDeploy: Deploy
+  remoteDisk: Disk
+  remoteConfigFiles: Configuration files
+  remoteExtraFiles: Extra files
+  remoteForgetCredentials: Forget saved credentials
+  remoteInstallService: Install service
+  remoteLoad: Load average
+  remoteLog: Remote Log
+  remoteMemory: Memory
+  remoteMods: Mods
+  remoteNoWorldSelected: No instance world selected
+  remoteJavaRequired: Java is not available on the remote Linux host.
+  remoteLinuxRequired: Only Linux SSH targets are supported.
+  remoteNotConfiguredHint: Fill in the connection details above and save to enable status, service control, and log tailing.
+  remotePathNotWritable: The remote server directory is not writable.
+  remotePathWritable: Directory writable
+  remotePolicyInitialize: Initialize once
+  remotePolicyMirror: Mirror
+  remotePolicyOverlay: Overlay
+  remotePolicyPreserve: Preserve
+  remotePreview: Preview changes
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: Remember credentials (OS keychain)
+  remoteReconcileReady: The target matches this instance and the console is attached.
+  remoteRestartService: Restart
+  remoteSavedCredentialsHint: Using saved credentials — leave blank to keep, or type to replace.
+  remoteService: systemd Service
+  remoteServiceActive: Running
+  remoteServerInstalled: Server files installed
+  remoteServiceName: Service name
+  remoteServiceNameHint: 'systemd --user unit name, e.g. mc-server'
+  remoteSelectedFiles: '{count} server files selected'
+  remoteSelectFiles: Select files
+  remoteStartCommand: Start command
+  remoteStartCommandHint: e.g. java -jar server.jar nogui
+  remoteStartService: Start
+  remoteStatus: Status
+  remoteSystemdRequired: systemd user services are not available on the remote Linux host.
+  remoteTargetName: Target name
+  remoteStopService: Stop
+  remoteStopWatchLog: Stop watching
+  remoteTestConnection: Test connection
+  remoteTestConnectionSuccess: Connection successful.
+  remoteUninstallConfirmMessage: This disables and removes the systemd unit on the remote host. Server files are not touched.
+  remoteUninstallService: Uninstall service
+  remoteRunInstall: Install or repair
+  remoteWatchLog: Watch live log
+  remoteWorldAlways: Replace on every reconciliation
+  remoteWorldDeployment: Instance world deployment
+  remoteWorldDeploymentHint: Routine sync never uploads world data unless this policy explicitly allows it.
+  remoteWorldFirstInstall: Initialize only when the target has no world
+  remoteWorldNever: Never upload a world
+  remoteWorldPresent: Target world
+  remoteWorld: World
+  remoteWorldWillDeploy: The selected instance world will be uploaded by this reconciliation.
   serverName: Server name
+  serviceInstall: Install service
+  serviceManagedLaunch: Use the OS service for launch and stop actions
+  serviceManager: System service
+  serviceName: Service name
+  serviceNameHint: Stable identifier containing letters, numbers, dot, underscore, or hyphen
+  serviceNotInstalled: Not installed
+  serviceStartCommand: Start command
+  serviceSystemd: systemd --user
+  serviceWindows: Windows Service
+  serviceWindowsCommandHint: The Java command is generated from this instance when the service is installed.
   serversListTitle: Server List
+  target: Server target
+  targetLocal: localhost
+  targetLocalHint: Install and run the server on this computer.
+  targetRemote: SSH target
+  targetRemoteHint: Connect, install, launch, and monitor a server over SSH.
   unbindUpstream: Unbind
   unknown: Unknown Server
   unknownDescription: Unknown Server. Please Refresh
@@ -1645,6 +1875,7 @@ server:
   useAsUpstreamHint: The instance will follow the server's reported Minecraft version.
   version: Server Requires Version
   versionHint: The Minecraft Version To Ping
+  worldPreserve: Preserve target world
 serverStatus:
   nohost: §4Cannot find host!
   ping: Ping...
@@ -1667,14 +1898,19 @@ setting:
   advancedSettingsHint: Danger zone - reset or manage launcher data
   aiAgentApiKey: AI Agent API Key
   aiAgentApiKeyClear: Clear key
-  aiAgentApiKeyDescription: Stored locally on this device and used for agent requests.
+  aiAgentApiKeyDescription: Leave the provider on Built-in to use your XMCL account, or select an external provider and enter its API key. Keys are stored locally per provider.
   aiAgentApiKeyEmpty: Paste your API key
   aiAgentApiKeyNotNeeded: Not required
   aiAgentApiKeyNotNeededHint: This provider runs locally and needs no API key
   aiAgentApiKeySaved: Saved
   aiAgentApiKeyStored: Key saved - type to replace
+  aiAgentApiKeyPlaceholder: OpenAI or Claude provider API key
+  aiAgentBuiltin: Built-in
+  aiAgentCustom: Custom
   aiAgentEndpoint: AI Agent Endpoint
   aiAgentEndpointDescription: Chat completions endpoint URL.
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 or claude-sonnet-4-5
   aiAgentModel: AI Agent Model
   aiAgentModelDescription: Model name to send in chat completion requests.
   aiAgentProvider: AI Agent Provider

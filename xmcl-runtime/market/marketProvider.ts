@@ -1,3 +1,4 @@
+import type { InstanceFile } from '@xmcl/instance'
 import { ResourceDomain, ResourceMetadata } from '@xmcl/resource'
 import { InstallMarketOptions, } from '@xmcl/runtime-api'
 import { InjectionKey } from '~/app'
@@ -29,6 +30,8 @@ export type InstallResult = {
 }
 
 export interface MarketProvider {
+  /** Resolve market files for an instance without installing them. */
+  resolveInstanceFiles(options: InstallMarketInstanceOptions): Promise<InstanceFile[]>
   /**
    * Install a modrinth or curseforge file to the folder.
    */
