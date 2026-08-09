@@ -31,14 +31,14 @@
         </v-btn>
         <v-btn
           v-if="!isLocalView"
-          v-shared-tooltip="() => t('mod.groupInstalled')"
-          :class="{ 'v-btn--active': groupInstalled }"
+          v-shared-tooltip="() => groupInstalled === 'off' ? t('mod.installedFilterOff') : groupInstalled === 'group' ? t('mod.groupInstalled') : t('mod.hideInstalled')"
+          :class="{ 'v-btn--active': groupInstalled !== 'off' }"
           icon
           variant="text"
           density="comfortable"
-          @click="groupInstalled = !groupInstalled"
+          @click="groupInstalled = groupInstalled === 'off' ? 'group' : groupInstalled === 'group' ? 'hide' : 'off'"
         >
-          <v-icon> layers </v-icon>
+          <v-icon> {{ groupInstalled === 'hide' ? 'layers_clear' : groupInstalled === 'group' ? 'layers' : 'filter_none' }} </v-icon>
         </v-btn>
         <AppCollectionInstallAll
           v-if="showInstallAll"
@@ -147,7 +147,6 @@
           </v-btn-toggle>
           <ModOptionsPage
             v-model:denseView="denseView"
-            v-model:groupInstalled="groupInstalled"
           />
         </template>
       </MarketFilterPanel>
@@ -611,7 +610,9 @@ const groupedItems = computed(() => {
   const transformed: Array<ProjectEntry<ModFile> | string> = []
   let rest = result
 
-  if (groupInstalled.value) {
+  if (groupInstalled.value === 'hide') {
+    rest = rest.filter(i => i.installed.length === 0)
+  } else if (groupInstalled.value === 'group') {
     const [installed, uninstalled] = rest.reduce(
       (acc, i) => {
         if (i.installed.length > 0) {

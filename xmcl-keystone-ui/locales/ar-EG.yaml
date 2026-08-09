@@ -750,6 +750,8 @@ mod:
   filter: تصفية المودات
   group: تجميع
   groupInstalled: تجميع المودات المثبتة
+  hideInstalled: إخفاء المودات المثبتة
+  installedFilterOff: عرض جميع المودات
   groupName: اسم المجموعة
   groupNameRequired: اسم المجموعة مطلوب
   hasUpdate: فيه إصدار جديد للمود ده!

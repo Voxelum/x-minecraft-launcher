@@ -750,6 +750,8 @@ mod:
   filter: मोड्स शोधयतु
   group: समूहं करोतु
   groupInstalled: संस्थापितान् मोड्स समूहीकरोतु
+  hideInstalled: संस्थापितान् मोड्स गोपयतु
+  installedFilterOff: सर्वान् मोड्स दर्शयतु
   groupName: समूहनाम
   groupNameRequired: समूहनाम आवश्यकम्
   hasUpdate: मोडस्य नूतनं संस्करणं उपलब्धम् अस्ति!

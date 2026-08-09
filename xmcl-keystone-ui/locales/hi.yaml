@@ -750,6 +750,8 @@ mod:
   filter: फ़िल्टर मॉड
   group: समूह बनाएं
   groupInstalled: स्थापित मॉड का समूह बनाएं
+  hideInstalled: स्थापित मॉड छिपाएं
+  installedFilterOff: सभी मॉड दिखाएं
   groupName: समूह का नाम
   groupNameRequired: समूह का नाम आवश्यक है
   hasUpdate: मॉड का नया संस्करण उपलब्ध है!

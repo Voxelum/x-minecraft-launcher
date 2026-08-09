@@ -678,6 +678,8 @@ mod:
   filter: Modyfikacje filtra
   group: Grupa
   groupInstalled: Modyfikacje instalowane grupowo
+  hideInstalled: Ukryj zainstalowane modyfikacje
+  installedFilterOff: Pokaż wszystkie modyfikacje
   groupName: Nazwa grupy
   groupNameRequired: Nazwa grupy jest wymagana
   hasUpdate: Mod ma nową wersję!

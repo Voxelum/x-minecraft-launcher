@@ -807,6 +807,8 @@ mod:
   filter: 筛选模组
   group: 分组
   groupInstalled: 分开显示已安装模组
+  hideInstalled: 隐藏已安装模组
+  installedFilterOff: 显示所有模组
   groupName: 分组名称
   groupNameRequired: 分组名称是必需的
   hasUpdate: mod有一个新版本！

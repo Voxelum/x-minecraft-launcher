@@ -750,6 +750,8 @@ mod:
   filter: Lọc Mod
   group: Nhóm lại
   groupInstalled: Nhóm các mod đã cài đặt
+  hideInstalled: Ẩn các mod đã cài đặt
+  installedFilterOff: Hiển thị tất cả các mod
   groupName: Tên nhóm
   groupNameRequired: Tên nhóm là bắt buộc
   hasUpdate: Mod có phiên bản mới!

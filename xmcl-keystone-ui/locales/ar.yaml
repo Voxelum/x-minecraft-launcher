@@ -737,6 +737,8 @@ mod:
   filter: 'تعديل التصفية'
   group: 'المجموعة'
   groupInstalled: 'تعديلات المجموعة المثبتة'
+  hideInstalled: إخفاء المودات المثبتة
+  installedFilterOff: عرض جميع المودات
   groupName: 'اسم المجموعة'
   groupNameRequired: 'اسم المجموعة مطلوب'
   hasUpdate: 'وزارة الدفاع لديها نسخة جديدة!'

@@ -750,6 +750,8 @@ mod:
   filter: মড ফিল্টার করুন
   group: গ্রুপ করুন
   groupInstalled: ইনস্টল করা মড গ্রুপ করুন
+  hideInstalled: ইনস্টল করা মড লুকান
+  installedFilterOff: সব মড দেখান
   groupName: গ্রুপের নাম
   groupNameRequired: গ্রুপের নাম প্রয়োজন
   hasUpdate: মডের একটি নতুন সংস্করণ উপলব্ধ!

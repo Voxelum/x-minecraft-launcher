@@ -705,6 +705,8 @@ mod:
   filter: Modları Filtrele
   group: Grupla
   groupInstalled: Yüklü Modları Grupla
+  hideInstalled: Yüklü Modları Gizle
+  installedFilterOff: Tüm Modları Göster
   groupName: Grup Adı
   groupNameRequired: Grup adı gereklidir
   hasUpdate: Modun yeni bir sürümü var!

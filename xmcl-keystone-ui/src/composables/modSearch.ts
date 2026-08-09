@@ -336,7 +336,7 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
   const localFilter = ref('' as '' | 'disabledOnly' | 'incompatibleOnly' | 'hasUpdateOnly' | 'unusedOnly' | 'dependenciesInstallOnly' | 'forgeOnly' | 'fabricOnly' | 'quiltOnly' | 'neoforgeOnly')
   const sortBy = useLocalStorage<'' | 'alpha_asc' | 'alpha_desc' | 'time_asc' | 'time_desc'>('modSort', '', { writeDefaults: false })
   const denseView = useLocalStorage('mod-dense-view', false, { writeDefaults: false })
-  const groupInstalled = useLocalStorage('mod-group-installed', true, { writeDefaults: false })
+  const groupInstalled = useLocalStorage<'off' | 'group' | 'hide'>('mod-installed-filter', 'group', { writeDefaults: false })
 
   const totalAvailable = computed(() => {
     let total = 0

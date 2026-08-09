@@ -688,6 +688,8 @@ mod:
   filter: Модтарды сүзгілеу
   group: Топтастыру
   groupInstalled: Орнатылған модтарды топтастыру
+  hideInstalled: Орнатылған модтарды жасыру
+  installedFilterOff: Барлық модтарды көрсету
   groupName: Топ атауы
   groupNameRequired: Топ атауы міндетті
   hasUpdate: Модтың жаңа нұсқасы бар!

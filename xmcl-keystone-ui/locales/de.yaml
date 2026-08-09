@@ -748,6 +748,8 @@ mod:
   filter: Mod-Filter
   group: Gruppe
   groupInstalled: Gruppensatz Mods
+  hideInstalled: Installierte Mods ausblenden
+  installedFilterOff: Alle Mods anzeigen
   groupName: Gruppenname
   groupNameRequired: Gruppenname ist erforderlich
   hasUpdate: Die Mod hat eine neue Version!
