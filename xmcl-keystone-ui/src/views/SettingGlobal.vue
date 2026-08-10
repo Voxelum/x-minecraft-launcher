@@ -66,7 +66,7 @@
             <JavaList
               :value="preferredJava || emptyJava"
               :items="javas"
-              :remove="removeJava"
+              :remove="onRemoveJava"
               @input="onPickJava"
             />
           </v-card>
@@ -170,6 +170,7 @@ import { useResolutionPresets } from '@/composables/resolutionPresets'
 import { useMonitorItems } from '@/composables/monitor'
 import { kJavaContext } from '@/composables/java'
 import { injection } from '@/util/inject'
+import { shouldClearPinOnRemove } from '@/util/javaPin'
 import type { JavaRecord } from '@xmcl/runtime-api'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingJavaMemory from './SettingJavaMemory.vue'
@@ -209,6 +210,14 @@ function onPickJava(value: JavaRecord) {
   preferredJavaPath.value = value.path
   javaPickerOpen.value = false
   save()
+}
+
+function onRemoveJava(value: JavaRecord) {
+  if (shouldClearPinOnRemove(value.path, preferredJavaPath.value)) {
+    preferredJavaPath.value = ''
+    save()
+  }
+  removeJava(value)
 }
 
 // --- Reactive State (Form Data) ---

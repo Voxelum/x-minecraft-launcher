@@ -17,7 +17,7 @@ import {
 import type { Ref } from 'vue'
 import { kInstance } from '../instance'
 import { kInstanceJava, type InstanceJavaStatus } from '../instanceJava'
-import { kInstanceJavaDiagnose } from '../instanceJavaDiagnose'
+import { kInstanceJavaDiagnose, type InstanceJavaIssue } from '../instanceJavaDiagnose'
 import { kInstanceLaunch } from '../instanceLaunch'
 import { kInstanceModsContext } from '../instanceMods'
 import { kInstanceResourcePacks, type InstanceResourcePack } from '../instanceResourcePack'
@@ -61,7 +61,7 @@ export interface AgentCapabilityContext {
   checkModUpdates(options: { policy?: string; skipVersion?: boolean }): Promise<unknown>
   stageModUpdates(): Promise<unknown>
   javaList: Ref<JavaRecord[]>
-  javaIssue: Ref<'invalid' | 'incompatible' | undefined>
+  javaIssue: Ref<InstanceJavaIssue | undefined>
   refreshJavaList(force?: boolean): Promise<void>
   installJava(forceZulu?: boolean): Promise<unknown>
   getServerStatus(): Promise<unknown>

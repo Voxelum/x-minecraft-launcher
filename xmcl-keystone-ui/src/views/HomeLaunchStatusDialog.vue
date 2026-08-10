@@ -100,6 +100,7 @@
         </v-btn>
         <template v-if="javaIssue && !selected">
           <v-btn
+            v-if="javaIssue !== 'missing'"
             color="warning"
             :loading="selected"
             @click="onLaunchAnyway"
@@ -110,6 +111,7 @@
             {{ t('launch.launchAnyway') }}
           </v-btn>
           <v-btn
+            v-if="status?.preferredJava"
             color="primary"
             :loading="selected"
             @click="selectLocalJava"
@@ -155,7 +157,7 @@ import { injection } from '@/util/inject'
 import { InstanceServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { LaunchStatusDialogKey } from '../composables/launch'
-import { kInstanceJavaDiagnose } from '@/composables/instanceJavaDiagnose'
+import { kInstanceJavaDiagnose, type InstanceJavaIssue } from '@/composables/instanceJavaDiagnose'
 import { kUserContext } from '@/composables/user'
 import { kSettingsState } from '@/composables/setting'
 
@@ -168,7 +170,7 @@ const { instance } = injection(kInstance)
 
 const exiting = ref(false)
 const selected = ref(false)
-const javaIssue = ref<'invalid' | 'incompatible' | undefined>()
+const javaIssue = ref<InstanceJavaIssue | undefined>()
 
 const isElyBy = computed(() => userProfile.value.authority.indexOf('authserver.ely.by') !== -1)
 const disableElyByAuthlib = computed(() => instance.value.disableElybyAuthlib ?? settings.value?.globalDisableElyByAuthlib ?? false)
@@ -250,6 +252,12 @@ const javaHints = computed(() => {
     return [
       t('HomeJavaIssueDialog.incompatibleJava', { javaVersion: stat.java?.version ?? stat.javaPath ?? '' }),
       t('diagnosis.incompatibleJava.name', { version: stat.preference.requirement, javaVersion: stat.java?.version || '' }),
+    ]
+  }
+  if (type === 'missing') {
+    return [
+      t('HomeJavaIssueDialog.missingJava'),
+      t('HomeJavaIssueDialog.missingJavaHint'),
     ]
   }
   return []
