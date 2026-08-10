@@ -31,6 +31,7 @@ export class Settings implements SettingSchema {
   agentModel = DEFAULT_AGENT_MODEL
   linuxTitlebar = false
   windowTranslucent = false
+  quickActionShortcut = ''
 
   locale = ''
 
@@ -123,10 +124,15 @@ export class Settings implements SettingSchema {
     this.enableDedicatedGPUOptimization = config.enableDedicatedGPUOptimization
     this.replaceNatives = config.replaceNatives
     this.globalResolution = config.globalResolution
+    this.quickActionShortcut = config.quickActionShortcut ?? ''
   }
 
   developerModeSet(developerMode: boolean) {
     this.developerMode = developerMode
+  }
+
+  quickActionShortcutSet(shortcut: string) {
+    this.quickActionShortcut = shortcut
   }
 
   discordPresenceSet(presence: boolean) {

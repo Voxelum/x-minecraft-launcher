@@ -1253,6 +1253,10 @@ setting:
     openInDialog: Відкрити у діалозі агента
     title: Власний CSS
     warning: Власний CSS дозволяє налаштувати будь-який аспект лаунчера. Будьте обережні при вставленні CSS з ненадійних джерел, оскільки це може змінити інтерфейс.
+  quickActionShortcut: Гаряча клавіша Quick Action
+  quickActionShortcutDescription: Комбінація клавіш для відкриття командної палітри Quick Action
+  pressKeyToRecord: Натисніть комбінацію...
+  resetShortcut: Скинути за замовчуванням
   about: Про
   advancedJavaOptions: Розширені параметри Java
   advancedSettings: Розширені налаштування

@@ -99,6 +99,8 @@ export const SettingSchema = z.object({
   enableDedicatedGPUOptimization: z.boolean().catch(true),
   /** Window translucency effect */
   windowTranslucent: z.boolean().catch(false),
+  /** Custom shortcut combination for Quick Action (command palette) */
+  quickActionShortcut: z.string().catch(''),
   /** Global resolution settings for Minecraft */
   globalResolution: GlobalResolutionSchema.catch({}),
 })

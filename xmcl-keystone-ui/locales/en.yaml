@@ -1884,6 +1884,10 @@ serverStatus:
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
 setting:
+  quickActionShortcut: Quick Action Shortcut
+  quickActionShortcutDescription: Shortcut combination to toggle Quick Action command palette
+  pressKeyToRecord: Press key combination...
+  resetShortcut: Reset to default
   about: About
   aboutBmclDescription: BMCL API provides convenient downloads for users in Chinese Mainland
   aboutContributors: 🧑‍💻 Contributors 🧑‍💻

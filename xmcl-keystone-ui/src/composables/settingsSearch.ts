@@ -236,6 +236,17 @@ export function useSettingsSearchItems() {
     })
 
     list.push({
+      kind: 'navigate',
+      id: 'setting.quickActionShortcut',
+      title: t('setting.quickActionShortcut'),
+      description: t('setting.quickActionShortcutDescription'),
+      icon: 'search',
+      group: groupGeneral.value,
+      keywords: 'quick action hotkey shortcut palette command keybinding',
+      route: '/setting',
+    })
+
+    list.push({
       kind: 'select',
       id: 'setting.replaceNative',
       title: t('setting.replaceNative'),
