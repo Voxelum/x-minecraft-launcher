@@ -1,7 +1,7 @@
 <template>
   <section
     data-testid="xmcl-account-panel"
-    class="xmcl-account-panel surface-card-subsection"
+    class="xmcl-account-panel surface-card-subsection rounded-xl"
     :aria-label="t('xmclAccount.title')"
   >
     <div class="flex items-start justify-between gap-4">
@@ -130,56 +130,95 @@
     </template>
 
     <div class="mt-5">
-      <div v-if="!account" class="text-sm font-semibold">
+      <div v-if="!account" class="text-sm font-semibold tracking-wide opacity-80 mb-3">
         {{ t('xmclAccount.linkAccountWith') }}
       </div>
-      <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <v-btn
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Microsoft -->
+        <button
+          type="button"
           data-testid="xmcl-provider-microsoft"
-          variant="tonal"
+          class="provider-btn provider-btn--microsoft"
+          :class="{ 'provider-btn--linked': isProviderLinked('microsoft') }"
           :disabled="busy || isProviderLinked('microsoft')"
           @click="openMicrosoftLogin"
         >
-          <v-icon start aria-hidden="true">{{
-            isProviderLinked('microsoft') ? 'check' : providerIcon('microsoft')
-          }}</v-icon>
-          Microsoft
-        </v-btn>
-        <v-btn
+          <v-icon size="20" aria-hidden="true" class="provider-icon">
+            xmcl:microsoft
+          </v-icon>
+          <span class="provider-name">Microsoft</span>
+          <v-icon v-if="isProviderLinked('microsoft')" color="success" size="18">
+            check_circle
+          </v-icon>
+        </button>
+
+        <!-- Modrinth -->
+        <button
+          type="button"
           data-testid="xmcl-provider-modrinth"
-          variant="tonal"
+          class="provider-btn provider-btn--modrinth"
+          :class="{ 'provider-btn--linked': isProviderLinked('modrinth') }"
           :disabled="busy || isProviderLinked('modrinth')"
           @click="openModrinthLogin"
         >
-          <v-icon start aria-hidden="true">{{
-            isProviderLinked('modrinth') ? 'check' : providerIcon('modrinth')
-          }}</v-icon>
-          Modrinth
-        </v-btn>
-        <v-btn
+          <v-icon size="20" aria-hidden="true" class="provider-icon">
+            xmcl:modrinth
+          </v-icon>
+          <span class="provider-name">Modrinth</span>
+          <v-icon v-if="isProviderLinked('modrinth')" color="success" size="18">
+            check_circle
+          </v-icon>
+        </button>
+
+        <!-- Google -->
+        <button
+          type="button"
           data-testid="xmcl-provider-google"
-          variant="tonal"
+          class="provider-btn provider-btn--google"
+          :class="{ 'provider-btn--linked': isProviderLinked('google') }"
           :disabled="busy || isProviderLinked('google')"
-          :loading="busy && !isProviderLinked('google')"
           @click="authorizeProvider('google')"
         >
-          <v-icon start aria-hidden="true">{{
-            isProviderLinked('google') ? 'check' : providerIcon('google')
-          }}</v-icon>
-          Google
-        </v-btn>
-        <v-btn
+          <v-progress-circular
+            v-if="busy && !isProviderLinked('google')"
+            indeterminate
+            size="18"
+            width="2"
+            color="primary"
+          />
+          <v-icon v-else size="20" aria-hidden="true" class="provider-icon">
+            xmcl:google
+          </v-icon>
+          <span class="provider-name">Google</span>
+          <v-icon v-if="isProviderLinked('google')" color="success" size="18">
+            check_circle
+          </v-icon>
+        </button>
+
+        <!-- Discord -->
+        <button
+          type="button"
           data-testid="xmcl-provider-discord"
-          variant="tonal"
+          class="provider-btn provider-btn--discord"
+          :class="{ 'provider-btn--linked': isProviderLinked('discord') }"
           :disabled="busy || isProviderLinked('discord')"
-          :loading="busy && !isProviderLinked('discord')"
           @click="authorizeProvider('discord')"
         >
-          <v-icon start aria-hidden="true">{{
-            isProviderLinked('discord') ? 'check' : providerIcon('discord')
-          }}</v-icon>
-          Discord
-        </v-btn>
+          <v-progress-circular
+            v-if="busy && !isProviderLinked('discord')"
+            indeterminate
+            size="18"
+            width="2"
+            color="primary"
+          />
+          <v-icon v-else size="20" aria-hidden="true" class="provider-icon">
+            xmcl:discord
+          </v-icon>
+          <span class="provider-name">Discord</span>
+          <v-icon v-if="isProviderLinked('discord')" color="success" size="18">
+            check_circle
+          </v-icon>
+        </button>
       </div>
       <p class="mt-3 text-xs opacity-60">{{ t('xmclAccount.gameAccountsSeparate') }}</p>
     </div>
@@ -228,8 +267,7 @@ function providerName(provider: XmclOAuthProvider) {
 }
 
 function providerIcon(provider: XmclOAuthProvider) {
-  if (provider === 'microsoft' || provider === 'modrinth') return `xmcl:${provider}`
-  return provider === 'google' ? 'language' : 'forum'
+  return `xmcl:${provider}`
 }
 
 function isProviderLinked(provider: XmclOAuthProvider) {
@@ -257,13 +295,64 @@ function openModrinthLogin() {
 
 <style scoped>
 .xmcl-account-panel {
-  padding: 16px;
+  padding: 20px;
 }
 
 .xmcl-account-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+.provider-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+  color: inherit;
+}
+
+.provider-btn:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.provider-btn--microsoft:hover:not(:disabled) {
+  border-color: rgba(0, 164, 239, 0.45);
+}
+
+.provider-btn--modrinth:hover:not(:disabled) {
+  border-color: rgba(93, 164, 38, 0.45);
+}
+
+.provider-btn--google:hover:not(:disabled) {
+  border-color: rgba(66, 133, 244, 0.45);
+}
+
+.provider-btn--discord:hover:not(:disabled) {
+  border-color: rgba(88, 101, 242, 0.45);
+}
+
+.provider-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.provider-btn--linked {
+  background-color: rgba(76, 175, 80, 0.08);
+  border-color: rgba(76, 175, 80, 0.3);
 }
 
 @media (max-width: 900px) {
