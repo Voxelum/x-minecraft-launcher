@@ -296,13 +296,14 @@ import { useVuetifyColor } from '@/composables/vuetify'
 import { basename } from '@/util/basename'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
-import type { EditInstanceOptions } from '@xmcl/instance'
+import { mergeInstanceInstallManifest, type EditInstanceOptions } from '@xmcl/instance'
 import {
   InstallInstanceOptions,
   InstanceFileUpdate,
   InstanceInstallServiceKey,
   InstanceServiceKey,
   ModpackServiceKey,
+  waitModpackFiles,
 } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { BuiltinImages } from '../constant'
@@ -349,7 +350,7 @@ const { isShown } = useDialog(
 )
 
 const { openModpack } = useService(ModpackServiceKey)
-const { installInstanceFiles, previewInstanceFiles } = useService(InstanceInstallServiceKey)
+const { applyInstanceInstallManifest, getInstanceInstallManifest, installInstanceFiles, previewInstanceFiles, setInstanceInstallManifest } = useService(InstanceInstallServiceKey)
 const { getInstanceModpackMetadata, setInstanceModpackMetadata } = useService(InstanceServiceKey)
 
 const { edit } = injection(kInstances)
@@ -482,7 +483,11 @@ async function getUpgradeValueFromParam(
     const modpack = param.modpack
 
     const state = await openModpack(modpack)
-    const files = state.files
+    // Files are populated asynchronously after `openModpack` resolves. Reading
+    // `state.files` directly returns an empty list on the first open (right
+    // after the zip download), which makes the preview mark every existing
+    // instance file for removal. Wait until the files are ready.
+    const files = await waitModpackFiles(state)
     const config = state.config
 
     return markRaw({
@@ -495,11 +500,16 @@ async function getUpgradeValueFromParam(
     })
   }
 
+  const pending = await getInstanceInstallManifest(instancePath.value)
+  const manifest = mergeInstanceInstallManifest(pending, {
+    oldFiles: param.oldFiles,
+    files: param.files,
+  })
   return markRaw({
     installation: {
       path: instancePath.value,
-      oldFiles: param.oldFiles,
-      files: param.files,
+      oldFiles: manifest.oldFiles,
+      files: manifest.files,
       id: param.id,
     },
     incompatible: param.incompatible,
@@ -531,7 +541,12 @@ const confirm = async () => {
       }
       installation.files = installation.files.filter((f) => selectedPath.includes(f.path))
     }
-    await installInstanceFiles(installation)
+    if ('oldFiles' in installation) {
+      await setInstanceInstallManifest(installation)
+      await applyInstanceInstallManifest(installation.path, installation.id)
+    } else {
+      await installInstanceFiles(installation)
+    }
   } catch (e) {
     Object.assign(e as any, {
       instanceInstallErrorId: installation.id,

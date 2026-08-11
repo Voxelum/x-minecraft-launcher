@@ -111,6 +111,7 @@ export interface Project {
    * The status of the mod - approved, rejected, draft, unlisted, processing, or unknown
    */
   status: string
+  requested_status?: 'approved' | 'archived' | 'unlisted' | 'private' | 'draft' | null
   /**
    * The license of the mod
    */
@@ -352,5 +353,5 @@ export interface TeamMember {
    * - DELETE_PROJECT
    */
   permissions: number
-  accept: boolean
+  accepted: boolean
 }

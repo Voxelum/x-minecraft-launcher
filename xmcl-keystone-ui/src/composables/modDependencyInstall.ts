@@ -1,5 +1,6 @@
 import type { InstanceFile } from '@xmcl/instance'
 import type { ModFile } from '@/util/mod'
+import { normalizeModFileName } from '@xmcl/runtime-api'
 
 export type ModDependencyInstallation = [InstanceFile, ModFile]
 
@@ -11,7 +12,7 @@ export type ModDependencyInstallation = [InstanceFile, ModFile]
 export function getModDependencyIdentity(file: InstanceFile): string {
   if (file.modrinth) return `modrinth:${file.modrinth.projectId}`
   if (file.curseforge) return `curseforge:${file.curseforge.projectId}`
-  return `path:${file.path.replace(/\.disabled$/, '').toLocaleLowerCase()}`
+  return `path:${normalizeModFileName(file.path).toLocaleLowerCase()}`
 }
 
 /**

@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 import { ServerFSExporter, ServerExporter } from './server_exporter'
+import { ServerSSHExporter } from './server_exporter_ssh'
 import { ServerOptions } from '@xmcl/core'
+import { EventEmitter } from 'events'
 import { join } from 'path'
 
 class DummyExporter extends ServerExporter {
@@ -41,5 +43,32 @@ describe('server_exporter', () => {
     const emittedPaths = exporter.emitted.map((e) => e.path).sort()
     expect(emittedPaths).toContain('server.bat')
     expect(emittedPaths).toContain('server.sh')
+  })
+
+  it('waits for remote directories before writing files', async () => {
+    const channel = Object.assign(new EventEmitter(), {
+      resume: vi.fn(),
+      stderr: { resume: vi.fn() },
+    })
+    const writeFile = vi.fn((_path, _content, callback) => callback())
+    const ssh = {
+      exec: vi.fn((_command, callback) => callback(undefined, channel)),
+    }
+    const sftp = {
+      stat: vi.fn((_path, callback) => callback(new Error('missing'))),
+      writeFile,
+    }
+    const exporter = new ServerSSHExporter('/data', '/remote', ssh as any, sftp as any)
+    exporter.emitFile('nested/server.sh', '#!/bin/sh')
+
+    const completed = exporter.end()
+    await vi.waitFor(() => expect(ssh.exec).toHaveBeenCalledOnce())
+
+    expect(channel.resume).toHaveBeenCalledOnce()
+    expect(channel.stderr.resume).toHaveBeenCalledOnce()
+    expect(writeFile).not.toHaveBeenCalled()
+    channel.emit('close', 0)
+    await completed
+    expect(writeFile).toHaveBeenCalledOnce()
   })
 })

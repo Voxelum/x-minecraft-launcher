@@ -8,7 +8,7 @@
     >
       <template #prepend>
         <v-avatar variant="tonal" rounded="lg">
-          <v-icon>auto_awesome</v-icon>
+          <v-icon>smart_toy</v-icon>
         </v-avatar>
       </template>
       <v-list-item-title>

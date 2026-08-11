@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq */
+
 var fs = require("fs");
 var zlib = require("zlib");
 var fd_slicer = require("fd-slicer");
@@ -664,7 +666,7 @@ function validateFileName(fileName) {
   if (fileName.indexOf("\\") !== -1) {
     return "invalid characters in fileName: " + fileName;
   }
-  if (/^[a-zA-Z]:/.test(fileName) || /^\//.test(fileName)) {
+  if (/^[a-zA-Z]:/.test(fileName) || fileName.startsWith("/")) {
     return "absolute path: " + fileName;
   }
   if (fileName.split("/").indexOf("..") !== -1) {

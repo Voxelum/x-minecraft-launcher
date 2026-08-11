@@ -16,6 +16,17 @@ describe('toVirtualInstancePath', () => {
 })
 
 describe('getCrashAgentPrompt', () => {
+  it('points the agent at the evidence for the failed launch', () => {
+    const prompt = getCrashAgentPrompt('raw crash', 'raw log', 'crash-reports/test.txt', 'logs/latest.log', 'launch-id')
+
+    expect(prompt).toContain('launch launch-id')
+    expect(prompt).toContain('launches/launch-id')
+    expect(prompt).not.toContain('logs/latest.log')
+    expect(prompt).not.toContain('crash-reports/test.txt')
+    expect(prompt).not.toContain('raw crash')
+    expect(prompt).not.toContain('raw log')
+  })
+
   it('prefers the virtual path over inline crash content when a file path is available', () => {
     const prompt = getCrashAgentPrompt('raw crash', 'raw log', 'crash-reports/test.txt', 'logs/latest.log')
 
@@ -23,5 +34,14 @@ describe('getCrashAgentPrompt', () => {
     expect(prompt).toContain('logs/latest.log')
     expect(prompt).not.toContain('raw crash')
     expect(prompt).not.toContain('raw log')
+  })
+
+  it('does not inline captured output when the latest log is available', () => {
+    const prompt = getCrashAgentPrompt('large captured crash output', 'large captured log output', undefined, 'logs/latest.log')
+
+    expect(prompt).toContain('- Latest log: logs/latest.log')
+    expect(prompt).not.toContain('large captured crash output')
+    expect(prompt).not.toContain('large captured log output')
+    expect(prompt.length).toBeLessThan(500)
   })
 })

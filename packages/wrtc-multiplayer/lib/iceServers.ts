@@ -174,6 +174,7 @@ export function createIceServersProvider(
 ) {
   const passed: Record<string, RTCIceServer> = {}
   const blocked: Record<string, RTCIceServer> = {}
+  const shared: Record<string, RTCIceServer> = {}
 
   let _resolve = () => {}
   const initPromise: Promise<void> = new Promise((resolve) => {
@@ -181,6 +182,12 @@ export function createIceServersProvider(
   })
 
   return {
+    addSharedTurnServer(server: RTCIceServer) {
+      shared[getKey(server)] = server
+    },
+    clearSharedTurnServers() {
+      for (const key of Object.keys(shared)) delete shared[key]
+    },
     whenReady() {
       return initPromise
     },
@@ -205,8 +212,12 @@ export function createIceServersProvider(
       testIceServers(factory, servers, passed, blocked, onValidIceServer, onIp)
     },
     get(preferredIceServers: RTCIceServer[] = []) {
-      const servers =
+      const available =
         Object.keys(passed).length > 0 ? Object.values(passed) : Object.values(blocked)
+      const servers = [
+        ...Object.values(shared),
+        ...available.filter((server) => !Object.hasOwn(shared, getKey(server))),
+      ]
       // sort all servers by preferredIceServers
       if (preferredIceServers.length > 0) {
         servers.sort((a, b) => {

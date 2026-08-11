@@ -1,6 +1,6 @@
 import type { Router, RouteLocationRaw } from 'vue-router'
 import { nextTick, onUnmounted } from 'vue'
-import { useAgentChatBus } from '../agentChat'
+import { useAgentChatOpen } from '../agentChat'
 
 interface PendingAgentRoute {
   origin: string
@@ -24,14 +24,14 @@ export async function openRouteFromAgent(router: Router, to: RouteLocationRaw, d
 
 export function useAgentRouteReturn() {
   const router = useRouter()
-  const bus = useAgentChatBus()
+  const { open: openAgentChat } = useAgentChatOpen()
   const remove = router.afterEach(async (to) => {
     const current = pending
     if (!current) return
     if (to.fullPath === current.origin) {
       pending = undefined
       await nextTick()
-      bus.emit('show')
+      openAgentChat()
     } else if (to.path !== current.destinationPath) {
       pending = undefined
     }

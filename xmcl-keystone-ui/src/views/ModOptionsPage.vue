@@ -99,12 +99,10 @@ import { injection } from '@/util/inject'
 
 defineProps<{
   denseView: boolean
-  groupInstalled: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'update:denseView', value: boolean): void
-  (e: 'update:groupInstalled', value: boolean): void
 }>()
 
 const { t } = useI18n()

@@ -370,9 +370,9 @@ function onLaunchToWorld(world: { name: string }) {
 
 const text = computed(() => {
   if (serverCount.value > 0) {
-    return t('launch.killServer')
+    return t('server.stop')
   }
-  return t('instance.launchServer')
+  return t('server.launch')
 })
 const { getEULA } = useService(InstanceOptionsServiceKey)
 const { install: installServer } = useInstanceVersionServerInstall()

@@ -1,10 +1,11 @@
-import { DEFAULT_AGENT_ENDPOINT } from '@xmcl/runtime-api'
+import { DEFAULT_AGENT_PROVIDER } from '@xmcl/runtime-api'
 import { beforeEach, describe, expect, test } from 'vitest'
 import type { SecretStorage } from '~/app'
 import { AgentApiKeyStore, LEGACY_SECRET_ACCOUNT, SECRET_SERVICE } from './apiKey'
 
 const OPENAI = 'https://api.openai.com/v1/chat/completions'
 const CUSTOM = 'https://self.hosted.example/v1/chat/completions'
+const AGNES = DEFAULT_AGENT_PROVIDER.endpoint
 
 class MemoryStorage implements SecretStorage {
   entries = new Map<string, string>()
@@ -27,15 +28,15 @@ describe('AgentApiKeyStore', () => {
     storage = new MemoryStorage()
   })
 
-  const store = (configured = DEFAULT_AGENT_ENDPOINT) =>
+  const store = (configured = AGNES) =>
     new AgentApiKeyStore(storage, async () => configured)
 
   test('keeps a separate key per provider', async () => {
     const keys = store()
-    await keys.put(DEFAULT_AGENT_ENDPOINT, 'agnes-key')
+    await keys.put(AGNES, 'agnes-key')
     await keys.put(OPENAI, 'openai-key')
 
-    expect(await keys.get(DEFAULT_AGENT_ENDPOINT)).toBe('agnes-key')
+    expect(await keys.get(AGNES)).toBe('agnes-key')
     expect(await keys.get(OPENAI)).toBe('openai-key')
   })
 
@@ -64,12 +65,12 @@ describe('AgentApiKeyStore', () => {
 
   test('clearing one provider leaves the others untouched', async () => {
     const keys = store()
-    await keys.put(DEFAULT_AGENT_ENDPOINT, 'agnes-key')
+    await keys.put(AGNES, 'agnes-key')
     await keys.put(OPENAI, 'openai-key')
 
     await keys.put(OPENAI, '')
     expect(await keys.get(OPENAI)).toBeUndefined()
-    expect(await keys.get(DEFAULT_AGENT_ENDPOINT)).toBe('agnes-key')
+    expect(await keys.get(AGNES)).toBe('agnes-key')
   })
 
   test('a cleared provider can be configured again', async () => {
@@ -82,12 +83,12 @@ describe('AgentApiKeyStore', () => {
 
   test('migrates the legacy key to the endpoint configured at upgrade time', async () => {
     await storage.put(SECRET_SERVICE, LEGACY_SECRET_ACCOUNT, 'legacy-key')
-    const keys = store(DEFAULT_AGENT_ENDPOINT)
+    const keys = store(AGNES)
 
-    expect(await keys.get(DEFAULT_AGENT_ENDPOINT)).toBe('legacy-key')
+    expect(await keys.get(AGNES)).toBe('legacy-key')
     // Legacy slot is cleared so the promotion happens exactly once.
     expect(await storage.get(SECRET_SERVICE, LEGACY_SECRET_ACCOUNT)).toBeUndefined()
-    expect(await keys.get(DEFAULT_AGENT_ENDPOINT)).toBe('legacy-key')
+    expect(await keys.get(AGNES)).toBe('legacy-key')
   })
 
   test('migrates to a custom endpoint when that was the configured one', async () => {
@@ -98,19 +99,19 @@ describe('AgentApiKeyStore', () => {
 
   test('never hands the legacy key to a provider that did not own it', async () => {
     await storage.put(SECRET_SERVICE, LEGACY_SECRET_ACCOUNT, 'legacy-key')
-    const keys = store(DEFAULT_AGENT_ENDPOINT)
+    const keys = store(AGNES)
 
     expect(await keys.get(OPENAI)).toBeUndefined()
     // The legacy key must survive for its real owner.
-    expect(await keys.get(DEFAULT_AGENT_ENDPOINT)).toBe('legacy-key')
+    expect(await keys.get(AGNES)).toBe('legacy-key')
   })
 
   test('prefers an already per-provider key over the legacy one', async () => {
     await storage.put(SECRET_SERVICE, LEGACY_SECRET_ACCOUNT, 'legacy-key')
-    const keys = store(DEFAULT_AGENT_ENDPOINT)
-    await keys.put(DEFAULT_AGENT_ENDPOINT, 'fresh-key')
+    const keys = store(AGNES)
+    await keys.put(AGNES, 'fresh-key')
 
-    expect(await keys.get(DEFAULT_AGENT_ENDPOINT)).toBe('fresh-key')
+    expect(await keys.get(AGNES)).toBe('fresh-key')
   })
 
   // If a previous migration wrote the per-provider key but failed to delete the
@@ -119,10 +120,10 @@ describe('AgentApiKeyStore', () => {
   test('retires a superseded legacy key instead of leaving it migratable', async () => {
     await storage.put(SECRET_SERVICE, LEGACY_SECRET_ACCOUNT, 'legacy-key')
     await storage.put(SECRET_SERVICE, 'agnes', 'agnes-key')
-    let configured = DEFAULT_AGENT_ENDPOINT
+    let configured = AGNES
     const keys = new AgentApiKeyStore(storage, async () => configured)
 
-    expect(await keys.get(DEFAULT_AGENT_ENDPOINT)).toBe('agnes-key')
+    expect(await keys.get(AGNES)).toBe('agnes-key')
     expect(await storage.get(SECRET_SERVICE, LEGACY_SECRET_ACCOUNT)).toBeUndefined()
 
     // Switching providers must not resurrect the legacy key under the new one.

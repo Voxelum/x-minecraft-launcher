@@ -1,12 +1,14 @@
 {
-  "version": "0.4.4",
+  "version": "0.4.5",
   "name": "@xmcl/nat-api",
   "description": "Port mapping with UPnP and NAT-PMP",
   "main": "./index.ts",
+  "types": "./index.ts",
   "publishConfig": {
     "access": "public",
     "main": "./dist/index.js",
-    "module": "./dist/index.mjs"
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts"
   },
   "scripts": {
     "build:cjs": "esbuild --bundle --outfile=dist/index.js --format=cjs --platform=node --external:default-gateway --external:fast-xml-parser --target=es2020 index.ts",

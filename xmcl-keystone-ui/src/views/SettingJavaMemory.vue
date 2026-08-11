@@ -121,7 +121,7 @@
     </div>
     <!-- Auto mode hint -->
     <div v-if="auto" class="text-caption text-medium-emphasis d-flex align-center gap-1">
-      <v-icon size="small">auto_awesome</v-icon>
+      <v-icon size="small">smart_toy</v-icon>
       {{ t('java.autoHint') }}
     </div>
   </div>

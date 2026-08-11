@@ -1,5 +1,6 @@
 import { parseVersion, VersionRange } from '@xmcl/runtime-api'
 import { parseSemanticVersion, parseVersionRange } from '@xmcl/semver'
+import type { ModFile } from './mod'
 import { ModDependencies, ModDependency } from './modDependencies'
 
 export type Compatible = 'maybe' | boolean
@@ -16,6 +17,20 @@ export type CompatibleDetail = {
   requirements: string | string[]
 
   version: string
+}
+
+export interface ModLoaderIncompatibility {
+  mod: string
+  file: string
+  supportedLoaders: string[]
+}
+
+export function getModLoaderIncompatibilities(mods: readonly ModFile[], allowedLoaders: readonly string[]): ModLoaderIncompatibility[] {
+  if (!allowedLoaders.length) return []
+  const allowed = new Set(allowedLoaders.map(loader => loader.toLowerCase()))
+  return mods
+    .filter(mod => mod.enabled && Array.isArray(mod.modLoaders) && mod.modLoaders.length > 0 && !mod.modLoaders.some(loader => allowed.has(loader.toLowerCase())))
+    .map(mod => ({ mod: mod.modId, file: mod.fileName, supportedLoaders: mod.modLoaders }))
 }
 
 export function resolveCompatible(deps: Compatible[]) {

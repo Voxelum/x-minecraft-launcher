@@ -106,6 +106,8 @@ export class ElectronSession {
         method: request.method,
         headers: headers,
         body: adaptRequestBody() as any,
+        signal: request.signal,
+        cache: request.cache,
       })
 
       response.headers['access-control-allow-origin'] = ['*']

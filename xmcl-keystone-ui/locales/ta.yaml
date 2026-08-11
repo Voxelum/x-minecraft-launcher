@@ -36,7 +36,7 @@ agent:
   disabledPlaceholder: முகவர் முடக்கப்பட்டது
   emptyHint: உங்கள் நிகழ்வை ஆய்வு செய்ய, மோட்களை மாற்ற, பதிவுகளைப் படிக்க அல்லது செயலிழப்பைக் கண்டறிய முகவரிடம் கேளுங்கள்.
   inputPlaceholder: முகவரிடம் கேளுங்கள்... (அனுப்ப Enter ஐயும், புதிய வரியைத் தொடங்க Shift+Enter ஐயும் அழுத்தவும்)
-  notConfiguredHint: முகவரைச் செயல்படுத்த அமைப்புகள் → பொது → AI முகவர் என்பதில் உங்கள் API விசை, மாதிரி மற்றும் இறுதிப்புள்ளியை அமைக்கவும்.
+  notConfiguredHint: அமைப்புகள் → பொது → AI முகவர் என்பதில் API விசை, மாதிரி மற்றும் OpenAI-இணக்கமான எண்ட்பாயிண்டை அமைக்கவும். எடுத்துக்காட்டாக, OpenAI அல்லது Claude-இணக்கமான கேட்வேயைப் பயன்படுத்தவும்.
   notConfiguredTitle: முகவர் கட்டமைக்கப்படவில்லை
   openSettings: அமைப்புகளைத் திறக்கவும்
   reset: உரையாடலை மீட்டமை
@@ -750,6 +750,8 @@ mod:
   filter: மாட்களை வடிகட்டு
   group: குழுவாக்கு
   groupInstalled: நிறுவப்பட்ட மாட்களை குழுவாக்கு
+  hideInstalled: நிறுவப்பட்ட மாட்களை மறை
+  installedFilterOff: அனைத்து மாட்களையும் காட்டு
   groupName: குழு பெயர்
   groupNameRequired: குழு பெயர் தேவை
   hasUpdate: மாட்டின் புதிய பதிப்பு உள்ளது!
@@ -1356,9 +1358,12 @@ setting:
   advancedSettings: மேம்பட்ட அமைப்புகள்
   advancedSettingsHint: ஆபத்தான பகுதி - லான்ச்சர் தரவை மீட்டமைக்கவும் அல்லது நிர்வகிக்கவும்
   aiAgentApiKey: AI ஏஜென்ட் API விசை
-  aiAgentApiKeyDescription: இந்த சாதனத்தில் உள்ளூரில் சேமிக்கப்பட்டு ஏஜென்ட் கோரிக்கைகளுக்குப் பயன்படுத்தப்படுகிறது.
+  aiAgentApiKeyDescription: OpenAI அல்லது Claude-க்கான கேட்வே போன்ற OpenAI-இணக்கமான வழங்குநரை கட்டமைக்கவும். விசை இந்த சாதனத்தில் உள்ளூரில் சேமிக்கப்படும்.
+  aiAgentApiKeyPlaceholder: OpenAI அல்லது Claude வழங்குநரின் API விசை
   aiAgentEndpoint: AI ஏஜென்ட் எண்ட்பாயிண்ட்
   aiAgentEndpointDescription: அரட்டை நிறைவு எண்ட்பாயிண்ட் URL.
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 அல்லது claude-sonnet-4-5
   aiAgentModel: AI ஏஜென்ட் மாதிரி
   aiAgentModelDescription: அரட்டை நிறைவு கோரிக்கைகளில் அனுப்ப வேண்டிய மாதிரியின் பெயர்.
   apiSets:

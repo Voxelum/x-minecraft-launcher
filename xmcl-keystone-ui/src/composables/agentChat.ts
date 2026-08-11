@@ -1,27 +1,48 @@
-import { useEventBus } from '@vueuse/core'
 import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue'
 import { useNotifier } from './notifier'
+import { useAgentConfirmation } from './agent/confirm'
 import { useAgentSettings } from './agent/settings'
+import { useOmniDialog } from './omniDialog'
 
-const AGENT_CHAT_BUS_KEY = 'app:agent-chat'
-const agentChatShown = ref(false)
 const agentChatRunning = ref(false)
+// Which agent the chat surface should select the next time it transitions
+// from hidden to shown; consumed and reset by AppAgentChat's open watcher.
+const pendingAgentKind = ref<'common' | 'css'>('common')
 
-export type AgentChatEvent = 'show' | 'hide' | 'toggle' | 'show-css' | { type: 'show'; prompt?: string }
-
-export function useAgentChatBus() {
-  return useEventBus<AgentChatEvent>(AGENT_CHAT_BUS_KEY)
+export function usePendingAgentKind() {
+  return pendingAgentKind
 }
 
 export function useAgentChatStatus() {
+  const surface = useOmniDialog()
+  const confirmation = useAgentConfirmation()
   return {
-    shown: agentChatShown,
+    shown: computed({
+      get: () => surface.shown.value && surface.mode.value === 'agent',
+      set: (value) => {
+        if (value) surface.open('agent')
+        else if (surface.mode.value === 'agent') surface.close()
+      },
+    }),
     running: agentChatRunning,
+    confirmationPending: confirmation.shown,
   }
 }
 
+/** Open the agent chat, optionally prefilling the input and/or selecting the CSS assistant. */
+export function useAgentChatOpen() {
+  const status = useAgentChatStatus()
+  const surface = useOmniDialog()
+  function open(options?: { prompt?: string; kind?: 'common' | 'css' }) {
+    pendingAgentKind.value = options?.kind ?? 'common'
+    if (options?.prompt) surface.agentInput.value = options.prompt
+    status.shown.value = true
+  }
+  return { open }
+}
+
 export function useAgentChatEntry() {
-  const bus = useAgentChatBus()
+  const { open: openChat } = useAgentChatOpen()
   const settings = useAgentSettings()
   const router = useRouter()
   const { t } = useI18n()
@@ -39,7 +60,7 @@ export function useAgentChatEntry() {
       return
     }
     if (settings.configured.value) {
-      bus.emit('show')
+      openChat()
       return
     }
     notify({
@@ -62,39 +83,16 @@ export function useAgentChatEntry() {
   }
 }
 
-/**
- * Resolve the Agnes AI setup guide URL for a launcher locale. The guide is
- * only authored in `en`, `zh`, `ru` and `uk`; everything else falls back to
- * English so the link never 404s.
- */
-export function getAgnesSetupDocUrl(locale: string): string {
-  const l = (locale || '').toLowerCase()
-  let docLocale = 'en'
-  if (l.startsWith('zh')) docLocale = 'zh'
-  else if (l.startsWith('ru')) docLocale = 'ru'
-  else if (l.startsWith('uk')) docLocale = 'uk'
-  return `https://xmcl.app/${docLocale}/guide/agnes-ai-setup`
-}
-
-/** Reactive Agnes setup guide URL matching the active UI locale. */
-export function useAgnesSetupDocUrl() {
-  const { locale } = useI18n()
-  return computed(() => getAgnesSetupDocUrl(locale.value))
-}
-
-/**
- * Bind Ctrl/Cmd+Shift+A to toggle the agent chat drawer. Mirrors the
- * command-palette hotkey pattern in commandPalette.ts.
- */
+/** Bind Ctrl/Cmd+Shift+A to open the agent chat. */
 export function useAgentChatHotkey(enabled: Ref<boolean> = ref(true)) {
-  const bus = useAgentChatBus()
+  const surface = useOmniDialog()
   function onKeyDown(e: KeyboardEvent) {
     if (!enabled.value) return
     const mod = e.ctrlKey || e.metaKey
     if (!mod || !e.shiftKey) return
     if (e.code === 'KeyA') {
       e.preventDefault()
-      bus.emit('toggle')
+      surface.open('agent')
     }
   }
   onMounted(() => window.addEventListener('keydown', onKeyDown))

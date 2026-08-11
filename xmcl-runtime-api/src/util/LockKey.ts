@@ -5,6 +5,7 @@ export const LockKey = {
   assets: 'assets',
   version: (v: string) => `versions/${v}`,
   instance: (p: string) => `instances/${p}`,
+  instanceManifest: (p: string) => `instances/${p}/manifest`,
   instanceRemove: (p: string) => `instances/${p}/remove`,
   shaderpacks: (p: string) => `shaderpacks/${p}`,
   resourcepacks: (p: string) => `resourcepacks/${p}`,

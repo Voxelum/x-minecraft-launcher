@@ -1,12 +1,16 @@
 <template>
-  <SettingCard :title="t('instance.resolution')" icon="aspect_ratio">
-    <template #header-action>
+  <section class="base-setting-resolution">
+    <div class="base-setting-resolution__heading">
+      <div class="flex items-center gap-2">
+        <v-icon size="small" color="primary">aspect_ratio</v-icon>
+        <span>{{ t('instance.resolution') }}</span>
+      </div>
       <BaseSettingGlobalLabel
         :global="isGlobalResolution"
         @clear="resetResolution"
         @click="gotoSetting"
       />
-    </template>
+    </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
       <v-text-field
@@ -29,6 +33,7 @@
       />
       <v-switch
         v-model="resolutionFullscreen"
+        data-testid="instance-fullscreen-switch"
         :label="t('instance.fullscreen')"
         color="primary"
         density="compact"
@@ -45,17 +50,29 @@
         density="compact"
         hide-details
       />
+      <v-select
+        v-if="monitorItems.length > 1"
+        v-model="resolutionMonitor"
+        data-testid="instance-monitor-select"
+        :items="monitorItems"
+        :label="t('instance.monitor')"
+        :disabled="!resolutionFullscreen"
+        variant="outlined"
+        density="compact"
+        hide-details
+        class="sm:col-span-4"
+      />
     </div>
-  </SettingCard>
+  </section>
 </template>
 
 <script lang="ts" setup>
-import SettingCard from '@/components/SettingCard.vue'
 import { injection } from '@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import BaseSettingGlobalLabel from '@/components/BaseSettingGlobalLabel.vue'
 import { ref, computed, watch } from 'vue'
 import { useResolutionPresets } from '@/composables/resolutionPresets'
+import { useMonitorItems } from '@/composables/monitor'
 
 const { t } = useI18n()
 const { isGlobalResolution, resetResolution, resolution } = injection(InstanceEditInjectionKey)
@@ -73,6 +90,8 @@ const resolutionPresets = useResolutionPresets()
 const resolutionFullscreen = ref(resolution.value?.fullscreen)
 const resolutionWidth = ref(resolution.value?.width)
 const resolutionHeight = ref(resolution.value?.height)
+const resolutionMonitor = ref(resolution.value?.monitor ?? '')
+const monitorItems = useMonitorItems()
 
 // Watch for changes in the global resolution setting
 watch(
@@ -82,14 +101,15 @@ watch(
       resolutionFullscreen.value = newValue.fullscreen
       resolutionWidth.value = newValue.width
       resolutionHeight.value = newValue.height
+      resolutionMonitor.value = newValue.monitor ?? ''
     }
   },
   { immediate: true },
 )
 
 // Update resolution when controls change
-watch([resolutionFullscreen, resolutionWidth, resolutionHeight], ([full, w, h]) => {
-  if (!full && !w && !h) {
+watch([resolutionFullscreen, resolutionWidth, resolutionHeight, resolutionMonitor], ([full, w, h, monitor]) => {
+  if (!full && !w && !h && !monitor) {
     resolution.value = undefined
     return
   }
@@ -97,6 +117,7 @@ watch([resolutionFullscreen, resolutionWidth, resolutionHeight], ([full, w, h]) 
     fullscreen: full,
     width: Number(w) || undefined,
     height: Number(h) || undefined,
+    monitor: monitor || undefined,
   }
 })
 
@@ -119,3 +140,21 @@ const selectedResolutionKey = computed({
   },
 })
 </script>
+
+<style scoped>
+.base-setting-resolution {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.base-setting-resolution__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(var(--v-theme-on-surface), 0.72);
+}
+</style>

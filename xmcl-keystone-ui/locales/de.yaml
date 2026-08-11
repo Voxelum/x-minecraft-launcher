@@ -748,6 +748,8 @@ mod:
   filter: Mod-Filter
   group: Gruppe
   groupInstalled: Gruppensatz Mods
+  hideInstalled: Installierte Mods ausblenden
+  installedFilterOff: Alle Mods anzeigen
   groupName: Gruppenname
   groupNameRequired: Gruppenname ist erforderlich
   hasUpdate: Die Mod hat eine neue Version!
@@ -1273,7 +1275,13 @@ serverStatus:
   ping: Ping...
   refuse: §4Der Server wurde abgelehnt!
   timeout: §4Es ist Zeit, sich mit dem Server zu verbinden!
+agent:
+  notConfiguredHint: Legen Sie einen API-Schlüssel, ein Modell und einen OpenAI-kompatiblen Endpunkt unter Einstellungen → Allgemein → KI-Agent fest. Verwenden Sie zum Beispiel OpenAI oder ein Claude-kompatibles Gateway.
 setting:
+  aiAgentApiKeyDescription: Konfigurieren Sie einen OpenAI-kompatiblen Anbieter, z. B. OpenAI oder ein Gateway für Claude. Der Schlüssel wird lokal auf diesem Gerät gespeichert.
+  aiAgentApiKeyPlaceholder: API-Schlüssel für OpenAI- oder Claude-Anbieter
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 oder claude-sonnet-4-5
   themeStore:
     name: Theme-Speicher
     description: Globale Themes speichern und verwalten

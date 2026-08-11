@@ -718,6 +718,8 @@ mod:
   filter: Modok szűrése
   group: Csoportosul
   groupInstalled: Csoportosan telepített modok
+  hideInstalled: Telepített modok elrejtése
+  installedFilterOff: Összes mod megjelenítése
   groupName: Csoport neve
   groupNameRequired: A csoport neve kötelező
   hasUpdate: A modnak új verziója van!
@@ -1232,7 +1234,13 @@ serverStatus:
   ping: Pingelés...
   refuse: §4A szerver elutasítot!
   timeout: §4Szerver csatlakozási időtúllépés!
+agent:
+  notConfiguredHint: Állítson be egy API-kulcsot, modellt és OpenAI-kompatibilis végpontot a Beállítások → Általános → AI ügynök alatt. Használhat például OpenAI-t vagy Claude-kompatibilis átjárót.
 setting:
+  aiAgentApiKeyDescription: Állítson be OpenAI-kompatibilis szolgáltatót, például OpenAI-t vagy Claude-hoz használható átjárót. A kulcs helyileg, ezen az eszközön lesz tárolva.
+  aiAgentApiKeyPlaceholder: OpenAI- vagy Claude-szolgáltató API-kulcsa
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 vagy claude-sonnet-4-5
   themeStore:
     name: Téma tár
     description: Globális témák mentése és kezelése

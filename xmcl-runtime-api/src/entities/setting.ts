@@ -23,7 +23,7 @@ export class Settings implements SettingSchema {
   globalHideLauncher = false
   globalShowLog = false
   globalEnv: Record<string, string> = {}
-  globalResolution: { width?: number; height?: number; fullscreen?: boolean } = {}
+  globalResolution: { width?: number; height?: number; fullscreen?: boolean; monitor?: string } = {}
   discordPresence = false
   developerMode = false
   disableTelemetry = false
@@ -231,7 +231,7 @@ export class Settings implements SettingSchema {
     this.replaceNatives = replace
   }
 
-  globalResolutionSet(resolution: { width?: number; height?: number; fullscreen?: boolean }) {
+  globalResolutionSet(resolution: { width?: number; height?: number; fullscreen?: boolean; monitor?: string }) {
     this.globalResolution = resolution
   }
 
@@ -266,7 +266,7 @@ export class Settings implements SettingSchema {
     globalPrependCommand: string
     globalPreExecuteCommand: string
     globalEnv: Record<string, string>
-    globalResolution: { width?: number; height?: number; fullscreen?: boolean }
+    globalResolution: { width?: number; height?: number; fullscreen?: boolean; monitor?: string }
   }) {
     this.globalMinMemory = settings.globalMinMemory
     this.globalMaxMemory = settings.globalMaxMemory

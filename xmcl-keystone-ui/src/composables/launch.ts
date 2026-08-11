@@ -1,8 +1,9 @@
 import { DialogKey } from './dialog'
+import type { InstanceJavaIssue } from './instanceJavaDiagnose'
 
 export type LaunchStatusParam = {
   isKill?: boolean
-  javaIssue?: 'invalid' | 'incompatible' | undefined
+  javaIssue?: InstanceJavaIssue
 }
 
 export const LaunchStatusDialogKey: DialogKey<LaunchStatusParam> = 'launch-status'

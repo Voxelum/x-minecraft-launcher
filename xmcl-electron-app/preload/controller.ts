@@ -62,6 +62,7 @@ function createController(): WindowController {
     writeClipboard,
     getPathForFile,
     queryAudioPermission: () => ipcRenderer.invoke('query-audio-permission'),
+    getMonitors: () => ipcRenderer.invoke('get-monitors'),
     openMultiplayerWindow: () => ipcRenderer.invoke('open-multiplayer-window'),
     setTranslucent(enable) {
       ipcRenderer.invoke('set-translucent', enable)

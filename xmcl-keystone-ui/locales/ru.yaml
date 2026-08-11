@@ -44,7 +44,8 @@ agent:
   reset: Сбросить диалог
   notConfiguredTitle: Agent не настроен
   notConfiguredHint: >-
-    Укажите API-ключ, модель и endpoint в Настройки → Общие → AI Agent, чтобы включить агента.
+    Укажите API-ключ, модель и OpenAI-совместимый endpoint в Настройки → Общие → AI Agent.
+    Например, используйте OpenAI или gateway, совместимый с Claude.
   openSettings: Открыть настройки
   setupGuide: Руководство по настройке
   emptyHint: >-
@@ -730,6 +731,8 @@ mod:
   filter: Фильтр модов
   group: Группа вверх
   groupInstalled: Группировать установленные моды
+  hideInstalled: Скрыть установленные моды
+  installedFilterOff: Показать все моды
   groupName: Название группы
   groupNameRequired: Название группы обязательно
   hasUpdate: У мода есть новая версия!
@@ -1247,9 +1250,12 @@ setting:
   advancedSettings: Расширенные настройки
   advancedSettingsHint: Опасная зона - сброс или управление данными лаунчера
   aiAgentApiKey: API-ключ AI Agent
-  aiAgentApiKeyDescription: Хранится локально на этом устройстве и используется для запросов агента.
+  aiAgentApiKeyDescription: Настройте OpenAI-совместимого провайдера, например OpenAI или gateway для Claude. Ключ хранится локально на этом устройстве.
+  aiAgentApiKeyPlaceholder: API-ключ провайдера OpenAI или Claude
   aiAgentEndpoint: Endpoint AI Agent
   aiAgentEndpointDescription: URL endpoint для chat completions.
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 или claude-sonnet-4-5
   aiAgentModel: Модель AI Agent
   aiAgentModelDescription: Имя модели для запросов chat completion.
   apiSets:

@@ -24,22 +24,9 @@
             <v-tab :value="1" :disabled="data.loadingList" @click="goCrash">
               {{ t("logsCrashes.crashes") }}
             </v-tab>
-            <v-tab :value="2" :disabled="data.loadingList" @click="goFailures">
-              {{ t("logsCrashes.failures") }}
-              <v-chip
-                v-if="data.failures.length > 0"
-                size="x-small"
-                class="ml-2"
-                color="white"
-                variant="tonal"
-                label
-              >
-                {{ data.failures.length }}
-              </v-chip>
-            </v-tab>
             <v-tab
               v-if="data.serverLogs.length > 0"
-              :value="3"
+              :value="2"
               :disabled="data.loadingList"
               @click="goServerLogs"
             >
@@ -75,24 +62,15 @@
             :files="data.crashes"
             :refreshing="data.loadingList"
             :get-file-content="_getCrashReportContent"
+            :get-launch-id="_getCrashReportLaunchId"
             :remove-file="removeCrashReport"
             :show-file="_showCrashReport"
           />
         </v-tabs-window-item>
         <v-tabs-window-item :value="2">
           <TabItem
-            :visible="data.tab === 2 && isShown"
-            :files="data.failures"
-            :refreshing="data.loadingList"
-            :get-file-content="_getLogContent"
-            :remove-file="removeFailure"
-            :show-file="_showLog"
-          />
-        </v-tabs-window-item>
-        <v-tabs-window-item :value="3">
-          <TabItem
             log
-            :visible="data.tab === 3 && isShown"
+            :visible="data.tab === 2 && isShown"
             :files="data.serverLogs"
             :refreshing="data.loadingList"
             :get-file-content="_getServerLogContent"
@@ -115,13 +93,13 @@ import TabItem from "./HomeLogDialogTab.vue";
 
 const {
   listLogs,
-  listLaunchFailures,
   listCrashReports,
   listServerLogs,
   removeLog: rmLog,
   removeCrashReport: rmCrash,
   removeServerLog: rmServerLog,
   getCrashReportContent,
+  findLaunchByCrashReport,
   getLogContent,
   getServerLogContent,
   showLog,
@@ -139,12 +117,13 @@ const data = reactive({
   loadingList: false,
   logs: [] as string[],
   crashes: [] as string[],
-  failures: [] as string[],
   serverLogs: [] as string[],
 });
 const _getLogContent = (name: string) => getLogContent(path.value, name);
 const _getCrashReportContent = (name: string) =>
   getCrashReportContent(path.value, name);
+const _getCrashReportLaunchId = (name: string) =>
+  findLaunchByCrashReport(path.value, name).then((launch) => launch?.launchId);
 const _getServerLogContent = (name: string) =>
   getServerLogContent(path.value, name);
 const _showLog = (name: string) => showLog(path.value, name);
@@ -171,16 +150,6 @@ function loadCrashes() {
       data.loadingList = false;
     });
 }
-function loadFailures() {
-  data.loadingList = true;
-  listLaunchFailures(path.value)
-    .then((l) => {
-      data.failures = l;
-    })
-    .finally(() => {
-      data.loadingList = false;
-    });
-}
 function loadServerLogs() {
   data.loadingList = true;
   listServerLogs(path.value)
@@ -199,12 +168,6 @@ async function removeCrashReport(name: string) {
   await rmCrash(path.value, name);
   loadCrashes();
 }
-async function removeFailure(name: string) {
-  // Failures live in the same `logs/` folder as regular logs, so the
-  // existing removeLog endpoint handles them.
-  await rmLog(path.value, name);
-  loadFailures();
-}
 async function removeServerLog(name: string) {
   await rmServerLog(path.value, name);
   loadServerLogs();
@@ -213,16 +176,12 @@ watch(isShown, (s) => {
   if (s) {
     data.tab = 0;
     loadLogs();
-    // Eagerly load the failure list so the badge count on the tab is
-    // accurate even before the user clicks the tab.
-    loadFailures();
     // Eagerly load the server logs so the Server Logs tab only appears when
     // the instance has actually produced any (and its badge count is right).
     loadServerLogs();
   } else {
     data.logs = [];
     data.crashes = [];
-    data.failures = [];
     data.serverLogs = [];
   }
 });
@@ -235,12 +194,8 @@ function goCrash() {
   data.tab = 1;
   loadCrashes();
 }
-function goFailures() {
-  data.tab = 2;
-  loadFailures();
-}
 function goServerLogs() {
-  data.tab = 3;
+  data.tab = 2;
   loadServerLogs();
 }
 </script>

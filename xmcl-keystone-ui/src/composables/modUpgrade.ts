@@ -1,22 +1,22 @@
 import { basename } from '@/util/basename'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
-import { getCurseforgeModLoaderTypeFromRuntime, getInstanceFileFromCurseforgeFile } from '@/util/curseforge'
+import { getCurseforgeModLoaderTypeFromRuntime } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
-import { getInstanceFileFromModrinthVersion, getModrinthModLoaders, getModrinthVersionKey } from '@/util/modrinth'
+import { getModrinthModLoaders, getModrinthVersionKey } from '@/util/modrinth'
 import { swrvGet } from '@/util/swrvGet'
 import { notNullish, useLocalStorage } from '@vueuse/core'
 import { File, FileModLoaderType } from '@xmcl/curseforge'
 import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { InstallInstanceTask, isTask, TaskState, Tasks } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
 import { useErrorHandler } from './exception'
 import { InstanceInstallDialog } from './instanceUpdate'
 import { useRefreshable } from './refreshable'
 import { kSWRVConfig } from './swrvConfig'
-import { useTask } from './task'
+import { buildModUpgradeManifest } from './modUpgradeManifest'
+import { useInstanceInstallOperation } from './instanceInstallOperation'
 
 export type UpgradePlan = {
   /**
@@ -57,14 +57,11 @@ export function useModUpgrade(
 ) {
   const { cache, dedupingInterval } = injection(kSWRVConfig)
   const plans = shallowRef({} as Record<string, UpgradePlan>)
-  let operationId = ''
-  let operationPath = ''
   const checked = ref(false)
   const { show } = useDialog(InstanceInstallDialog)
-
-  // Store the mapping of old normalized filename to new normalized filename during upgrade
-  // This is used to update group membership after upgrade completes
-  const upgradeFilenameMappings = shallowRef({} as Record<string, string>)
+  const operation = useInstanceInstallOperation(path, () => {
+    plans.value = {}
+  })
 
   const skipVersion = useLocalStorage(computed(() => `${destinationPrefix}UpgradeSkipVersion:${path.value}`), false, { writeDefaults: false })
   // Default to ignoring alpha/beta versions so mods upgrade to the latest stable release,
@@ -73,7 +70,7 @@ export function useModUpgrade(
   const upgradePolicy = useLocalStorage<'modrinth' | 'curseforge' | 'curseforgeOnly' | 'modrinthOnly'>(computed(() => `${destinationPrefix}UpgradePolicy:${path.value}`), 'modrinth', { writeDefaults: false })
 
   useErrorHandler((e) => {
-    if (e instanceof Error && 'instanceInstallErrorId' in e && e.instanceInstallErrorId === operationId) {
+    if (e instanceof Error && 'instanceInstallErrorId' in e && e.instanceInstallErrorId === operation.id.value) {
       error.value = e
       return true
     }
@@ -83,10 +80,8 @@ export function useModUpgrade(
   watch([path, runtime], () => {
     checked.value = false
     plans.value = {}
-    operationId = ''
+    operation.reset()
     error.value = null
-    operationPath = path.value
-    upgradeFilenameMappings.value = {}
   })
 
   async function checkCurseforgeUpgrade(mods: ModFile[], runtime: RuntimeVersions, skipVersion: boolean, releaseOnly: boolean, result: Record<string, UpgradePlan>) {
@@ -212,9 +207,6 @@ export function useModUpgrade(
     // mods which haven't been resolved yet can be matched against the providers.
     // Without this, a click on "check update" finds nothing and returns instantly.
     await updateMetadata()
-    // `instanceMods` is throttled by 500ms (see useInstanceMods), so wait for the
-    // refreshed metadata to propagate into `instanceMods.value` before reading it.
-    await new Promise((resolve) => setTimeout(resolve, 500))
 
     const onlyRelease = releaseOnlyOpt ?? releaseOnly.value
     const result: Record<string, UpgradePlan> = {}
@@ -249,8 +241,7 @@ export function useModUpgrade(
 
     plans.value = result
     checked.value = true
-    operationId = crypto.getRandomValues(new Uint8Array(8)).join('')
-    operationPath = _path
+    operation.begin(_path)
   })
 
   watch(instanceMods, (mods) => {
@@ -263,41 +254,17 @@ export function useModUpgrade(
   })
 
 
+  function prepareUpgradeManifest() {
+    return buildModUpgradeManifest(Object.values(plans.value), destinationPrefix)
+  }
+
   function upgrade() {
-    const oldFiles: InstanceFile[] = []
-    const files: InstanceFile[] = []
-    const filenameMappings: Record<string, string> = {}
-
-    for (const plan of Object.values(plans.value)) {
-      // fileName already includes .disabled suffix for disabled mods
-      // but disabled mods are filtered out during check, so all plans are for enabled mods
-      oldFiles.push({
-        path: `${destinationPrefix}/${plan.mod.fileName}`,
-        hashes: {
-          sha1: plan.mod.hash,
-        },
-        size: plan.mod.size || 0,
-      })
-      const newFile = 'file' in plan ? getInstanceFileFromCurseforgeFile(plan.file, destinationPrefix) : getInstanceFileFromModrinthVersion(plan.version, destinationPrefix)
-      files.push(newFile)
-
-      // Build mapping of old normalized filename to new normalized filename for group membership update
-      // Normalize by stripping .disabled suffix to match how groups store filenames
-      const oldNormalizedFileName = plan.mod.fileName.replace(/\.disabled$/, '')
-      const newNormalizedFileName = basename(newFile.path).replace(/\.disabled$/, '')
-      if (oldNormalizedFileName !== newNormalizedFileName) {
-        filenameMappings[oldNormalizedFileName] = newNormalizedFileName
-      }
-    }
-
-    // Store the mappings so they can be used to update group membership after upgrade succeeds
-    upgradeFilenameMappings.value = filenameMappings
-
+    const { oldFiles, files } = prepareUpgradeManifest()
     show({
       type: 'updates',
       oldFiles,
       files,
-      id: operationId,
+      id: operation.id.value,
     })
   }
 
@@ -314,27 +281,6 @@ export function useModUpgrade(
       .map(m => m.path)
   }
 
-  function isCurrentTask(task: Tasks): task is InstallInstanceTask {
-    if (task.type !== 'installInstance') return false
-    return task.taskId === operationId && task.instancePath === operationPath
-  }
-
-  const { task } = useTask((i) => {
-    if (isCurrentTask(i)) {
-      return true
-    }
-    return false
-  })
-  watch(task, (newV, oldV) => {
-    if (oldV && isCurrentTask(oldV) && !newV) {
-      if (oldV.state === TaskState.Succeed) {
-        plans.value = {}
-        // Note: upgradeFilenameMappings is intentionally NOT cleared here
-        // It will be cleared after the group membership update is complete
-      }
-    }
-  })
-
   return {
     refresh,
     refreshing,
@@ -345,8 +291,8 @@ export function useModUpgrade(
     plans,
     checked,
     upgrade,
-    upgrading: computed(() => !!task.value),
-    upgradeFilenameMappings,
+    prepareUpgradeManifest,
+    upgrading: computed(() => !!operation.task.value),
     getModsWithoutUpgrade,
   }
 }

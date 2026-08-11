@@ -95,7 +95,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalPrependCommand: string
     globalPreExecuteCommand: string
     globalEnv: Record<string, string>
-    globalResolution: { width?: number; height?: number; fullscreen?: boolean }
+    globalResolution: { width?: number; height?: number; fullscreen?: boolean; monitor?: string }
   }) => {
     state.value?.globalInstanceSetting(setting)
   }
@@ -144,24 +144,46 @@ export function useGameDirectory() {
   }
 }
 
+export function parseProxy(proxy: string) {
+  try {
+    const url = new URL(proxy)
+    return {
+      host: url.hostname,
+      port: url.port,
+    }
+  } catch (e) {
+    return {
+      host: '',
+      port: '',
+    }
+  }
+}
+
+export function formatProxy(host: string, port: string) {
+  const value = host.trim()
+  const configuredPort = port.trim()
+  if (!value && !configuredPort) return ''
+
+  let protocol = 'http:'
+  let hostname = value
+  let embeddedPort = ''
+  try {
+    const url = new URL(value.includes('://') ? value : `http://${value}`)
+    protocol = url.protocol
+    hostname = url.hostname
+    embeddedPort = url.port
+  } catch (e) {}
+
+  const effectivePort = configuredPort || embeddedPort
+  return `${protocol}//${hostname}${effectivePort ? `:${effectivePort}` : ''}`
+}
+
 export function useSettings() {
   const streamerMode = inject('streamerMode', useLocalStorage('streamerMode', false, { writeDefaults: false }))
   const { state, error, isValidating } = injection(kSettingsState)
 
   const getProxy = () => {
-    const proxy = state.value?.httpProxy || ''
-    try {
-      const url = new URL(proxy)
-      return {
-        host: url.hostname,
-        port: url.port,
-      }
-    } catch (e) {
-      return {
-        host: '',
-        port: '',
-      }
-    }
+    return parseProxy(state.value?.httpProxy || '')
   }
 
   const locales = computed(() => state.value?.locales || [])
@@ -216,10 +238,7 @@ export function useSettings() {
 
   onUnmounted(() => {
     const p = proxy.value
-    const newValue =
-      !p.host && !p.port
-        ? ''
-        : `http://${p.host}:${p.port}`
+    const newValue = formatProxy(p.host, p.port)
     if (newValue !== state.value?.httpProxy) {
       state.value?.httpProxySet(newValue)
     }

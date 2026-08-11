@@ -1,6 +1,6 @@
 import type { AgentConversation, AgentConversationKey, AgentMessage, LegacyConversationImport } from '@xmcl/runtime-api'
 import { createHash, randomUUID } from 'crypto'
-import { appendFile, ensureDir, readFile, rename, rm, stat, writeFile } from 'fs-extra'
+import { appendFile, ensureDir, pathExists, readFile, rename, rm, stat, writeFile } from 'fs-extra'
 import { dirname, join } from 'path'
 
 type SessionRecord = {
@@ -50,12 +50,16 @@ function parseRecords(raw: string): HistoryRecord[] {
 
 function keepCompleteTail(messages: AgentMessage[], limit: number) {
   if (messages.length <= limit) return messages
-  let start = messages.length - limit
+  const checkpointIndex = messages.findLastIndex(message => !!message.compaction)
+  let start = messages.length - limit + (checkpointIndex >= 0 ? 1 : 0)
   if (messages[start]?.role === 'tool') {
     while (start > 0 && messages[start - 1]?.role !== 'assistant') start--
     if (start > 0) start--
   }
-  return messages.slice(start)
+  const tail = messages.slice(start)
+  return checkpointIndex >= 0 && checkpointIndex < start
+    ? [messages[checkpointIndex], ...tail]
+    : tail
 }
 
 export class AgentHistoryStore {
@@ -65,6 +69,10 @@ export class AgentHistoryStore {
 
   private path(key: AgentConversationKey) {
     return join(this.root, key.agentId, `${keyId(key)}.jsonl`)
+  }
+
+  private archivePath(key: AgentConversationKey, archiveId: string) {
+    return join(this.root, key.agentId, 'archive', keyId(key), `${archiveId}.jsonl`)
   }
 
   private queue(key: AgentConversationKey, task: () => Promise<void>) {
@@ -140,6 +148,37 @@ export class AgentHistoryStore {
     })
   }
 
+  async replaceMessages(key: AgentConversationKey, messages: AgentMessage[]) {
+    return this.queue(key, async () => {
+      const file = this.path(key)
+      const records = parseRecords(await readFile(file, 'utf8').catch(() => ''))
+      const session = records.find((record): record is SessionRecord => record.type === 'session') ?? {
+        v: 1,
+        type: 'session',
+        agentId: key.agentId,
+        scope: key.scope,
+        sessionId: randomUUID(),
+        createdAt: Date.now(),
+        promptVersion: 1,
+      }
+      const now = Date.now()
+      const lines = [
+        JSON.stringify(session),
+        ...messages.map((message, index) => JSON.stringify({
+          v: 1,
+          type: 'message',
+          seq: index + 1,
+          at: now,
+          message,
+        } satisfies MessageRecord)),
+      ]
+      await ensureDir(dirname(file))
+      const temp = `${file}.${process.pid}.tmp`
+      await writeFile(temp, `${lines.join('\n')}\n`, 'utf8')
+      await rename(temp, file)
+    })
+  }
+
   async importLegacy(input: LegacyConversationImport): Promise<'imported' | 'exists'> {
     let result: 'imported' | 'exists' = 'exists'
     await this.queue(input.key, async () => {
@@ -177,13 +216,51 @@ export class AgentHistoryStore {
     return this.queue(key, () => rm(this.path(key), { force: true }))
   }
 
+  async archive(key: AgentConversationKey, archiveId: string) {
+    let archived = false
+    await this.queue(key, async () => {
+      const source = this.path(key)
+      if (!await pathExists(source)) return
+      const destination = this.archivePath(key, archiveId)
+      await ensureDir(dirname(destination))
+      await rename(source, destination)
+      archived = true
+    })
+    return archived
+  }
+
+  async restoreArchive(key: AgentConversationKey, archiveId: string) {
+    let restored = false
+    await this.queue(key, async () => {
+      const source = this.archivePath(key, archiveId)
+      if (!await pathExists(source)) return
+      const destination = this.path(key)
+      await ensureDir(dirname(destination))
+      await rename(source, destination)
+      restored = true
+    })
+    return restored
+  }
+
   async updateContext(key: AgentConversationKey, context: Record<string, unknown>) {
     return this.queue(key, async () => {
       const file = this.path(key)
       const records = parseRecords(await readFile(file, 'utf8').catch(() => ''))
-      const session = records.find((record): record is SessionRecord => record.type === 'session')
-      if (!session) return
-      session.context = context
+      let session = records.find((record): record is SessionRecord => record.type === 'session')
+      if (!session) {
+        session = {
+          v: 1,
+          type: 'session',
+          agentId: key.agentId,
+          scope: key.scope,
+          sessionId: randomUUID(),
+          createdAt: Date.now(),
+          promptVersion: 1,
+        }
+        records.unshift(session)
+      }
+      session.context = { ...session.context, ...context }
+      await ensureDir(dirname(file))
       const temp = `${file}.${process.pid}.tmp`
       await writeFile(temp, `${records.map(record => JSON.stringify(record)).join('\n')}\n`, 'utf8')
       await rename(temp, file)

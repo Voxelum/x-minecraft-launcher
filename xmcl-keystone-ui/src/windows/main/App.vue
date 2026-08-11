@@ -1,5 +1,5 @@
 <template>
-  <v-app v-if="!showSetup" class="h-full max-h-screen overflow-hidden" :class="{ 'dark': isDark }">
+  <v-app v-if="!showSetup" class="h-full max-h-screen overflow-hidden select-none" :class="{ 'dark': isDark }">
     <AppBackground />
     <div class="w-full h-full absolute left-0 header-overlay" :style="{
       height: headerHeight + 70 + 'px',
@@ -23,8 +23,7 @@
     </div>
     <AppContextMenu />
     <AppNotifier />
-    <AppCommandPalette />
-    <AppAgentChat v-if="developerMode" />
+    <AppOmniDialog :agent-enabled="developerMode" />
     <AppFeedbackDialog />
     <AppTaskDialog />
     <AppAddInstanceDialog />
@@ -42,6 +41,9 @@
     <AppMinecraftFriendsDialog />
     <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
     <AppModrinthLoginDialog />
+    <AppModrinthProjectCreateDialog />
+    <AppModrinthProjectBindDialog />
+    <AppModrinthVersionPublishDialog />
     <AppSideBarGroupSettingDialog :default-color="defaultColor" />
     <ModGroupSelectDialog />
     <AppGamepadPrompt />
@@ -81,8 +83,7 @@ import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
 import AppModpackUpdateDialog from '@/views/AppModpackUpdateDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
-import AppAgentChat from '@/views/AppAgentChat.vue'
-import AppCommandPalette from '@/views/AppCommandPalette.vue'
+import AppOmniDialog from '@/views/AppOmniDialog.vue'
 import AppContextMenu from '@/views/AppContextMenu.vue'
 import AppFeedbackDialog from '@/views/AppFeedbackDialog.vue'
 import AppGameExitDialog from '@/views/AppGameExitDialog.vue'
@@ -95,6 +96,9 @@ import AppMigrateWizardDialog from '@/views/AppMigrateWizardDialog.vue'
 import AppMinecraftFriendsDialog from '@/views/AppMinecraftFriendsDialog.vue'
 import UserProfileDialog from '@/components/UserProfileDialog.vue'
 import AppModrinthLoginDialog from '@/views/AppModrinthLoginDialog.vue'
+import AppModrinthProjectCreateDialog from '@/views/AppModrinthProjectCreateDialog.vue'
+import AppModrinthProjectBindDialog from '@/views/AppModrinthProjectBindDialog.vue'
+import AppModrinthVersionPublishDialog from '@/views/AppModrinthVersionPublishDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
 import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
 import AppSideBarClassic from '@/views/AppSideBarClassic.vue'
@@ -138,9 +142,9 @@ userMenu.on(() => { userProfileDialogShown.value = true })
 const route = useRoute()
 provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value && route.path !== '/me'))
 
-// Bind Ctrl/Cmd+K to toggle the command palette.
+// Bind Ctrl/Cmd+Shift+C to open the command palette.
 useCommandPaletteHotkey()
-// Bind Ctrl/Cmd+Shift+A to toggle the agent chat panel.
+// Bind Ctrl/Cmd+Shift+A to open the agent chat panel.
 useAgentChatHotkey(developerMode)
 
 const defaultColor = useInstanceGroupDefaultColor()

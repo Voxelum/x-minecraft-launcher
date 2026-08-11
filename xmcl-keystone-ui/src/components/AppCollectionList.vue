@@ -151,7 +151,7 @@ const selectedIndex = computed({
   get() {
     const noOffset = props.noFavorite
     if (noOffset) {
-      return collections.value?.findIndex(c => c.id === props.select) || -1
+      return collections.value?.findIndex(c => c.id === props.select) ?? -1
     }
     const select = props.select
     // No selection or an explicit "followed" selection highlights the

@@ -55,7 +55,6 @@
 
 <script lang="ts" setup>
 import type { MinecraftFriend, XboxPresenceInfo } from '@xmcl/runtime-api'
-import type { FriendPresenceInfo } from '@/composables/useFriendsPresence'
 import {
   formatRelativeTime,
   useReactiveNow,
@@ -64,7 +63,6 @@ import { computed, ref } from 'vue'
 
 const props = defineProps<{
   friend: MinecraftFriend
-  presence?: FriendPresenceInfo
   busy?: string
 }>()
 
@@ -89,9 +87,6 @@ const avatarUrl = computed(() => {
 })
 
 const effectiveStatus = computed<'offline' | 'online' | 'playing' | 'away'>(() => {
-  if (props.presence) {
-    return props.presence.status
-  }
   const xbox = props.friend.xboxPresence
   if (xbox) {
     const st = (xbox.state || '').toLowerCase()
@@ -104,9 +99,6 @@ const effectiveStatus = computed<'offline' | 'online' | 'playing' | 'away'>(() =
 })
 
 const presenceStatusText = computed(() => {
-  if (props.presence?.instanceName) {
-    return `${t('presence.playing', { game: props.presence.instanceName }, `Playing ${props.presence.instanceName}`)}`
-  }
   if (props.friend.xboxPresence?.titleName) {
     return `${t('presence.playing', { game: props.friend.xboxPresence.titleName }, `Playing ${props.friend.xboxPresence.titleName}`)}`
   }
@@ -127,9 +119,6 @@ const referenceTimestamp = computed(() => {
 
 const subtitle = computed(() => {
   if (effectiveStatus.value !== 'offline') {
-    if (props.presence?.instanceName) {
-      return `${props.presence.instanceName}${props.presence.version ? ` (${props.presence.version})` : ''}`
-    }
     if (props.friend.xboxPresence?.titleName) {
       return props.friend.xboxPresence.titleName
     }

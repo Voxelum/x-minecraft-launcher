@@ -1,7 +1,7 @@
 {
   "name": "@xmcl/sqlite",
   "private": false,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "./index.ts",
   "author": {
     "name": "cijhn@hotmail.com"
@@ -11,6 +11,11 @@
     "build:type": "tsc",
     "build:cjs": "esbuild --target=es2020 --platform=node --external:kysely --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
     "build:esm": "esbuild --target=es2020 --platform=node --external:kysely --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs"
   },
   "license": "MIT",
   "repository": {

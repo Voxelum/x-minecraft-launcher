@@ -84,6 +84,7 @@ const props = defineProps<{
   files: string[]
   log?: boolean
   getFileContent(file: string): Promise<string>
+  getLaunchId?(file: string): Promise<string | undefined>
   removeFile(file: string): Promise<void>
   showFile(file: string): void
   visible: boolean
@@ -96,16 +97,23 @@ const { path } = injection(kInstance)
 const content = ref('')
 const loading = ref(false)
 const showedFile = ref('')
+const launchId = ref('')
 const goBack = () => {
   content.value = ''
   showedFile.value = ''
+  launchId.value = ''
 }
 const openFile = async (name: string) => {
   loading.value = true
   showedFile.value = name
-  content.value = await props.getFileContent(name).finally(() => {
+  const [nextContent, nextLaunchId] = await Promise.all([
+    props.getFileContent(name),
+    props.getLaunchId?.(name).catch(() => undefined) ?? Promise.resolve(undefined),
+  ]).finally(() => {
     loading.value = false
   })
+  content.value = nextContent
+  launchId.value = nextLaunchId ?? ''
 }
 const pending = computed(() => props.refreshing || loading.value)
 const logs = computed(() => {
@@ -146,18 +154,14 @@ function getAgentPrompt() {
   const currentPath = showedFile.value || ''
   if (!currentPath) return getCrashAgentPrompt(content.value, '')
 
-  const virtualDir = props.log
-    ? 'logs'
-    : currentPath.startsWith('xmcl-abnormal-exit-')
-      ? 'launch-failures'
-      : 'crash-reports'
+  const virtualDir = props.log ? 'logs' : 'crash-reports'
 
   const currentFilePath = toVirtualInstancePath(`${path.value}/${currentPath}`, path.value)
   const virtualPath = currentFilePath === currentPath
     ? `${virtualDir}/${currentPath}`
     : currentFilePath
 
-  return getCrashAgentPrompt(content.value, '', virtualPath)
+  return getCrashAgentPrompt(content.value, '', virtualPath, undefined, launchId.value || undefined)
 }
 
 watch(

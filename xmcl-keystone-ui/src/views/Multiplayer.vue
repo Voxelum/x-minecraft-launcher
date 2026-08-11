@@ -14,22 +14,26 @@
             :size="20"
             :width="3"
           />
-          {{ tGroupState[groupState] }}
+          {{
+            groupStatus === 'waiting-master'
+              ? t('multiplayer.waitingForMaster')
+              : tGroupState[groupState]
+          }}
 
           <v-chip v-if="groupState === 'connected'" size="small" label color="primary">
-            <v-icon start>{{ groupRole === 'host' ? 'home' : 'person' }}</v-icon>
-            {{ groupRole === 'host' ? t('multiplayer.host') : t('multiplayer.guest') }}
-            <template v-if="groupRole === 'host' && groupMaxPeers">
-              · {{ connections.length + 1 }}/{{ groupMaxPeers }}
+            <v-icon start>{{ groupRole === 'master' ? 'home' : 'person' }}</v-icon>
+            {{ groupRole === 'master' ? t('multiplayer.master') : t('multiplayer.member') }}
+            <template v-if="groupMaxPeers">
+              · {{ groupMembers.length }}/{{ groupMaxPeers }}
             </template>
           </v-chip>
 
           <div class="hidden text-sm text-gray-400 lg:block">
             <template v-if="group">
               {{
-                groupRole === 'host'
+                groupRole === 'master'
                   ? t('multiplayer.copyGroupToFriendHint')
-                  : t('multiplayer.connectedToHost')
+                  : t('multiplayer.connectedToMaster')
               }}
             </template>
             <template v-else>
@@ -80,11 +84,12 @@
             id="group-input"
             v-model="groupId"
             data-testid="multiplayer-group-id"
-            hide-details
+            persistent-hint
             density="compact"
             variant="filled"
             prepend-inner-icon="group"
             :label="t('multiplayer.groupId')"
+            :hint="!group ? t('multiplayer.joinCreatesMissingRoomHint') : undefined"
             @click="groupState === 'connected' ? onCopy(groupId) : undefined"
           />
           <v-btn
@@ -115,6 +120,14 @@
             <v-icon v-else color="success"> check </v-icon>
           </v-btn>
         </div>
+        <v-alert
+          v-if="groupRole === 'master' && groupState === 'connected'"
+          type="info"
+          density="compact"
+          class="mt-2 mb-0"
+        >
+          {{ t('multiplayer.masterHostsGameHint') }}
+        </v-alert>
         <!-- Error Banner -->
         <v-alert
           v-if="groupError"
@@ -149,6 +162,75 @@
         style="width: 100%; background: transparent"
       >
         <template v-if="navigation === 'connections'">
+          <template v-if="group">
+            <v-list-subheader>
+              {{ t('multiplayer.connections') }}
+            </v-list-subheader>
+            <v-list-item
+              v-for="member of groupMembers"
+              :key="member.peerId"
+              class="multiplayer-content flex-1 flex-grow-0"
+            >
+              <template #prepend>
+                <v-avatar class="mr-4">
+                  <v-icon>{{ member.peerId === groupSelfPeerId ? 'person' : 'group' }}</v-icon>
+                </v-avatar>
+              </template>
+              <v-list-item-title>
+                {{ member.displayName || member.accountId || member.peerId }}
+              </v-list-item-title>
+              <v-list-item-subtitle class="flex items-center gap-2">
+                <v-chip
+                  label
+                  size="small"
+                  :color="member.peerId === groupMasterPeerId ? 'primary' : undefined"
+                >
+                  <v-icon start>{{
+                    member.peerId === groupMasterPeerId ? 'home' : 'person'
+                  }}</v-icon>
+                  {{
+                    member.peerId === groupMasterPeerId
+                      ? t('multiplayer.master')
+                      : t('multiplayer.member')
+                  }}
+                </v-chip>
+                <v-chip
+                  label
+                  size="small"
+                  :color="
+                    stateToColor[
+                      roomConnection(member.peerId)?.connectionState ||
+                        (member.status === 'connected' ? 'connected' : 'connecting')
+                    ]
+                  "
+                >
+                  <v-icon start>signal_cellular_alt</v-icon>
+                  {{
+                    tConnectionStates[
+                      roomConnection(member.peerId)?.connectionState ||
+                        (member.status === 'connected' ? 'connected' : 'connecting')
+                    ]
+                  }}
+                </v-chip>
+              </v-list-item-subtitle>
+              <template #append>
+                <v-btn
+                  v-if="
+                    groupRole === 'master' &&
+                    member.peerId !== groupSelfPeerId &&
+                    member.status === 'connected' &&
+                    roomConnection(member.peerId)?.connectionState === 'connected'
+                  "
+                  v-shared-tooltip.left="() => t('multiplayer.master')"
+                  icon
+                  variant="text"
+                  @click="transferGroupMaster(member.peerId)"
+                >
+                  <v-icon>home</v-icon>
+                </v-btn>
+              </template>
+            </v-list-item>
+          </template>
           <v-list-subheader>
             {{ t('multiplayer.networkInfo') }}
           </v-list-subheader>
@@ -242,6 +324,16 @@
             </template>
             <v-list-item-title>
               {{ c.userInfo.name || c.id }}
+              <v-chip
+                v-if="c.remoteId === groupMasterPeerId"
+                class="ml-2"
+                label
+                size="x-small"
+                color="primary"
+              >
+                <v-icon start>home</v-icon>
+                {{ t('multiplayer.master') }}
+              </v-chip>
             </v-list-item-title>
             <v-list-item-subtitle class="flex items-center gap-2">
               <v-tooltip v-if="c.connectionState === 'failed'" location="bottom" max-width="300">
@@ -534,11 +626,17 @@ const {
   turnservers,
   group,
   groupRole,
+  groupSelfPeerId,
+  groupMasterPeerId,
+  groupMembers,
+  groupStatus,
   groupMaxPeers,
   groupState,
   icePings,
+  createGroup,
   joinGroup,
   leaveGroup,
+  transferGroupMaster,
   drop,
   ips,
   device,
@@ -674,6 +772,9 @@ const isRelay = (connection: (typeof connections.value)[number]) =>
   connection.selectedCandidate?.local.type === 'relay' ||
   connection.selectedCandidate?.remote.type === 'relay'
 
+const roomConnection = (peerId: string) =>
+  connections.value.find((connection) => connection.remoteId === peerId)
+
 const edit = (id: string, init: boolean) => {
   const conn = connections.value.find((c) => c.id === id)
   if (conn) {
@@ -703,7 +804,12 @@ const onCopy = (val: string) => {
 
 const onJoin = () => {
   if (!group.value) {
-    joinGroup(groupId.value)
+    const roomId = groupId.value.trim()
+    if (roomId) {
+      joinGroup(roomId)
+    } else {
+      createGroup()
+    }
   } else {
     leaveGroup()
   }

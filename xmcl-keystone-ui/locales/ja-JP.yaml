@@ -664,6 +664,8 @@ mod:
   filter: Modをフィルタ
   group: グループアップ
   groupInstalled: グループでインストールされたMod
+  hideInstalled: インストール済みModを非表示
+  installedFilterOff: 全てのModを表示
   groupName: グループ名
   groupNameRequired: グループ名は必須です
   hasUpdate: Modにアップデートがあります!
@@ -1229,7 +1231,13 @@ serverStatus:
   ping: Ping...
   refuse: §4サーバーが拒否しました!
   timeout: §4サーバーへの接続がタイムアウト!
+agent:
+  notConfiguredHint: 設定 → 一般 → AIエージェントで API キー、モデル、OpenAI 互換エンドポイントを設定してください。たとえば、OpenAI または Claude 互換ゲートウェイを使用します。
 setting:
+  aiAgentApiKeyDescription: OpenAI や Claude 用ゲートウェイなど、OpenAI 互換プロバイダーを設定します。キーはこのデバイスにローカル保存されます。
+  aiAgentApiKeyPlaceholder: OpenAI または Claude プロバイダーの API キー
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 または claude-sonnet-4-5
   themeStore:
     name: テーマストア
     description: グローバルテーマを保存・管理します

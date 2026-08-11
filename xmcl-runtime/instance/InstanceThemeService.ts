@@ -23,7 +23,33 @@ export class InstanceThemeService extends AbstractService implements IInstanceTh
   async setInstanceTheme(instancePath: string, theme: ThemeData | undefined): Promise<void> {
     const themePath = join(instancePath, 'theme.json')
     if (theme) {
-      return writeJSON(themePath, theme)
+      const mediaCache = new Map<string, Promise<MediaData>>()
+      const localizeMedia = (media: MediaData) => {
+        if (media.url.startsWith('http://launcher/instance-theme-media/')) {
+          return Promise.resolve(media)
+        }
+        let sourcePath: string | undefined
+        if (media.url.startsWith('http://launcher/theme-media/')) {
+          sourcePath = this.getAppDataPath('theme-media', basename(media.url.substring('http://launcher/theme-media/'.length)))
+        } else if (media.url.startsWith('http://launcher/image/')) {
+          sourcePath = this.getAppDataPath('resource-images', basename(media.url.substring('http://launcher/image/'.length)))
+        }
+        if (!sourcePath) {
+          return Promise.resolve(media)
+        }
+        const cached = mediaCache.get(media.url)
+        if (cached) return cached
+        const localized = this.addMedia(instancePath, sourcePath)
+        mediaCache.set(media.url, localized)
+        return localized
+      }
+      const assets = Object.fromEntries(await Promise.all(Object.entries(theme.assets).map(async ([key, media]) => [
+        key,
+        Array.isArray(media)
+          ? await Promise.all(media.map(localizeMedia))
+          : await localizeMedia(media),
+      ])))
+      return writeJSON(themePath, { ...theme, assets })
     } else {
       return rm(themePath, { force: true }).catch(() => undefined)
     }

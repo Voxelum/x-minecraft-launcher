@@ -4,7 +4,7 @@
       <div class="flex items-center gap-2 min-w-0">
         <v-icon size="18">{{ providerIcon }}</v-icon>
         <strong class="truncate">{{ providerName }}</strong>
-        <span class="text-medium-emphasis truncate">{{ presentation.query }}</span>
+        <span v-if="presentation.query" class="text-medium-emphasis truncate">{{ presentation.query }}</span>
       </div>
       <span class="text-xs text-medium-emphasis flex-shrink-0">
         {{ t('agent.marketResultCount', { count: presentation.total }) }}
@@ -17,10 +17,11 @@
         :key="`${item.provider}:${item.id}`"
         data-testid="agent-market-item"
         class="agent-market__item"
-        role="button"
-        tabindex="0"
-        @click="openProject(item)"
-        @keydown.enter.prevent="openProject(item)"
+        :class="{ 'agent-market__item--readonly': readonly }"
+        :role="readonly ? undefined : 'button'"
+        :tabindex="readonly ? undefined : 0"
+        @click="!readonly && openProject(item)"
+        @keydown.enter.prevent="!readonly && openProject(item)"
       >
         <v-avatar size="48" rounded="sm" class="agent-market__icon">
           <v-img v-if="item.icon" :src="item.icon" cover />
@@ -43,7 +44,7 @@
         </div>
 
         <v-btn
-          v-if="canInstall(item)"
+          v-if="!readonly && canInstall(item)"
           data-testid="agent-market-install"
           size="small"
           :variant="isInstalled(item) ? 'tonal' : 'flat'"
@@ -79,6 +80,7 @@ import { InstanceModsServiceKey, InstanceResourcePacksServiceKey, InstanceShader
 
 const props = defineProps<{
   presentation: AgentMarketProjectListPresentation
+  readonly?: boolean
 }>()
 const emit = defineEmits<{
   (event: 'navigate'): void
@@ -118,27 +120,8 @@ function installedFiles(item: AgentMarketProject) {
     : file.curseforge?.projectId === Number(item.id))
 }
 
-const uninstallMods = (files: ProjectFile[], instancePath?: string) => {
-  void modService.uninstall({
-    path: instancePath ?? path.value,
-    files: files.map(file => file.path),
-  })
-}
-const uninstallResourcePacks = (files: ProjectFile[], instancePath?: string) => {
-  void resourcePackService.uninstall({
-    path: instancePath ?? path.value,
-    files: files.map(file => file.path),
-  })
-}
-const uninstallShaderPacks = (files: ProjectFile[], instancePath?: string) => {
-  void shaderPackService.uninstall({
-    path: instancePath ?? path.value,
-    files: files.map(file => file.path),
-  })
-}
-
-const modrinthModInstaller = useModrinthInstaller(path, runtime, mods, modService.installFromMarket, uninstallMods)
-const curseforgeModInstaller = useCurseforgeInstaller(path, runtime, mods, modService.installFromMarket, uninstallMods)
+const modrinthModInstaller = useModrinthInstaller(path, runtime, mods, modService.resolveFromMarket)
+const curseforgeModInstaller = useCurseforgeInstaller(path, runtime, mods, modService.resolveFromMarket)
 const installMod = useProjectInstall(
   runtime,
   loader,
@@ -147,8 +130,8 @@ const installMod = useProjectInstall(
   file => { void modService.install({ path: path.value, files: [file.path] }) },
 )
 
-const modrinthResourcePackInstaller = useModrinthInstaller(path, runtime, resourcePacks.files, resourcePackService.installFromMarket, uninstallResourcePacks)
-const curseforgeResourcePackInstaller = useCurseforgeInstaller(path, runtime, resourcePacks.files, resourcePackService.installFromMarket, uninstallResourcePacks)
+const modrinthResourcePackInstaller = useModrinthInstaller(path, runtime, resourcePacks.files, resourcePackService.resolveFromMarket)
+const curseforgeResourcePackInstaller = useCurseforgeInstaller(path, runtime, resourcePacks.files, resourcePackService.resolveFromMarket)
 const installResourcePack = useProjectInstall(
   runtime,
   ref(undefined),
@@ -159,8 +142,8 @@ const installResourcePack = useProjectInstall(
   },
 )
 
-const modrinthShaderInstaller = useModrinthInstaller(path, runtime, shaders.shaderPacks, shaderPackService.installFromMarket, uninstallShaderPacks)
-const curseforgeShaderInstaller = useCurseforgeInstaller(path, runtime, shaders.shaderPacks, shaderPackService.installFromMarket, uninstallShaderPacks)
+const modrinthShaderInstaller = useModrinthInstaller(path, runtime, shaders.shaderPacks, shaderPackService.resolveFromMarket)
+const curseforgeShaderInstaller = useCurseforgeInstaller(path, runtime, shaders.shaderPacks, shaderPackService.resolveFromMarket)
 const installShader = useProjectInstall(
   runtime,
   ref(undefined),
@@ -256,7 +239,8 @@ function formatDownloads(value: number) {
   overflow: hidden;
   border: 1px solid rgba(var(--v-theme-primary), 0.22);
   border-radius: 8px;
-  background: rgba(var(--v-theme-surface), 0.72);
+  background: rgb(var(--v-theme-surface));
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.22);
 }
 .agent-market__header {
   display: flex;
@@ -283,11 +267,14 @@ function formatDownloads(value: number) {
   cursor: pointer;
   outline: none;
 }
+.agent-market__item--readonly {
+  cursor: default;
+}
 .agent-market__item + .agent-market__item {
   border-top: 1px solid rgba(var(--v-theme-on-surface), 0.09);
 }
-.agent-market__item:hover,
-.agent-market__item:focus-visible {
+.agent-market__item:not(.agent-market__item--readonly):hover,
+.agent-market__item:not(.agent-market__item--readonly):focus-visible {
   background: rgba(var(--v-theme-on-surface), 0.055);
 }
 .agent-market__icon {

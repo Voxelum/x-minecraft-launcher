@@ -180,6 +180,9 @@ export function parseCli(argv: ReadonlyArray<string>, registry: CommandRegistry)
       }
       const canonical = kebabToCamel(rawName)
       const decl = flagsByCanonical.get(canonical)
+      if (!decl) {
+        return { kind: 'error', message: `Unknown flag --${rawName}`, commandId: cmd.id, globals }
+      }
       const isBoolean = decl?.type === 'boolean'
       if (isBoolean) {
         if (inlineValue !== undefined) {

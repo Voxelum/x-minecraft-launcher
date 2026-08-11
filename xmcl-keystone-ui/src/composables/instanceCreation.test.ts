@@ -6,6 +6,8 @@ function createOperations(overrides: Partial<InstanceLinkOperations> = {}) {
     linkSaves: vi.fn().mockResolvedValue(undefined),
     linkResourcePacks: vi.fn().mockResolvedValue(undefined),
     linkShaderPacks: vi.fn().mockResolvedValue(undefined),
+    linkOptions: vi.fn().mockResolvedValue(undefined),
+    linkServers: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   }
 }
@@ -17,12 +19,16 @@ describe('applyInstanceLinkPreferences', () => {
       saves: false,
       resourcepacks: false,
       shaderpacks: false,
+      options: false,
+      servers: false,
     }, ops)
 
     expect(failed).toEqual([])
     expect(ops.linkSaves).not.toHaveBeenCalled()
     expect(ops.linkResourcePacks).not.toHaveBeenCalled()
     expect(ops.linkShaderPacks).not.toHaveBeenCalled()
+    expect(ops.linkOptions).not.toHaveBeenCalled()
+    expect(ops.linkServers).not.toHaveBeenCalled()
   })
 
   test('links only the checked folders with the instance path', async () => {
@@ -31,12 +37,29 @@ describe('applyInstanceLinkPreferences', () => {
       saves: true,
       resourcepacks: false,
       shaderpacks: true,
+      options: false,
+      servers: false,
     }, ops)
 
     expect(failed).toEqual([])
     expect(ops.linkSaves).toHaveBeenCalledWith('/instance')
     expect(ops.linkResourcePacks).not.toHaveBeenCalled()
     expect(ops.linkShaderPacks).toHaveBeenCalledWith('/instance')
+  })
+
+  test('links the options.txt and servers.dat files when checked', async () => {
+    const ops = createOperations()
+    const failed = await applyInstanceLinkPreferences('/instance', {
+      saves: false,
+      resourcepacks: false,
+      shaderpacks: false,
+      options: true,
+      servers: true,
+    }, ops)
+
+    expect(failed).toEqual([])
+    expect(ops.linkOptions).toHaveBeenCalledWith('/instance')
+    expect(ops.linkServers).toHaveBeenCalledWith('/instance')
   })
 
   test('reports the failed folder while still linking the others', async () => {
@@ -47,6 +70,8 @@ describe('applyInstanceLinkPreferences', () => {
       saves: true,
       resourcepacks: true,
       shaderpacks: true,
+      options: false,
+      servers: false,
     }, ops)
 
     expect(failed).toEqual(['resourcepacks'])
@@ -58,14 +83,17 @@ describe('applyInstanceLinkPreferences', () => {
     const ops = createOperations({
       linkSaves: vi.fn().mockRejectedValue(new Error('locked')),
       linkShaderPacks: vi.fn().mockRejectedValue(new Error('locked')),
+      linkServers: vi.fn().mockRejectedValue(new Error('locked')),
     })
     const failed = await applyInstanceLinkPreferences('/instance', {
       saves: true,
       resourcepacks: true,
       shaderpacks: true,
+      options: false,
+      servers: true,
     }, ops)
 
-    expect(failed).toEqual(['saves', 'shaderpacks'])
+    expect(failed).toEqual(['saves', 'shaderpacks', 'servers'])
     expect(ops.linkResourcePacks).toHaveBeenCalledWith('/instance')
   })
 })

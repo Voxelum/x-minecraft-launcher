@@ -36,7 +36,7 @@ agent:
   disabledPlaceholder: एजेंट अक्षम
   emptyHint: एजेंट से अपने इंस्टेंस का निरीक्षण करने, मॉड टॉगल करने, लॉग पढ़ने या क्रैश का निदान करने के लिए कहें।
   inputPlaceholder: एजेंट से पूछें... (भेजने के लिए Enter, नई लाइन के लिए Shift+Enter)
-  notConfiguredHint: एजेंट को सक्षम करने के लिए सेटिंग्स → सामान्य → एआई एजेंट में अपनी एपीआई कुंजी, मॉडल और एंडपॉइंट सेट करें।
+  notConfiguredHint: सेटिंग्स → सामान्य → एआई एजेंट में API कुंजी, मॉडल और OpenAI-संगत एंडपॉइंट सेट करें। उदाहरण के लिए, OpenAI या Claude-संगत गेटवे का उपयोग करें।
   notConfiguredTitle: एजेंट कॉन्फ़िगर नहीं किया गया है
   openSettings: सेटिंग्स खोलें
   reset: बातचीत रीसेट करें
@@ -750,6 +750,8 @@ mod:
   filter: फ़िल्टर मॉड
   group: समूह बनाएं
   groupInstalled: स्थापित मॉड का समूह बनाएं
+  hideInstalled: स्थापित मॉड छिपाएं
+  installedFilterOff: सभी मॉड दिखाएं
   groupName: समूह का नाम
   groupNameRequired: समूह का नाम आवश्यक है
   hasUpdate: मॉड का नया संस्करण उपलब्ध है!
@@ -1356,9 +1358,12 @@ setting:
   advancedSettings: उन्नत सेटिंग
   advancedSettingsHint: खतरनाक क्षेत्र - लॉन्चर डेटा रीसेट या प्रबंधित करें
   aiAgentApiKey: AI एजेंट API कुंजी
-  aiAgentApiKeyDescription: इस डिवाइस पर स्थानीय रूप से संग्रहीत और एजेंट अनुरोधों के लिए उपयोग किया जाता है।
+  aiAgentApiKeyDescription: OpenAI-संगत प्रदाता कॉन्फ़िगर करें, जैसे OpenAI या Claude के लिए कोई गेटवे। कुंजी इस डिवाइस पर स्थानीय रूप से संग्रहीत रहती है।
+  aiAgentApiKeyPlaceholder: OpenAI या Claude प्रदाता की API कुंजी
   aiAgentEndpoint: AI एजेंट एंडपॉइंट
   aiAgentEndpointDescription: चैट कम्पलीशन एंडपॉइंट URL।
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 या claude-sonnet-4-5
   aiAgentModel: AI एजेंट मॉडल
   aiAgentModelDescription: चैट कम्पलीशन अनुरोधों में भेजने के लिए मॉडल नाम।
   apiSets:

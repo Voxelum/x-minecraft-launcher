@@ -11,6 +11,8 @@
     :class="{ expanded }"
     :title="name"
     :subtitle="!dense ? t('mod.mods', { count: items.length }) : undefined"
+    :aria-label="name"
+    :aria-expanded="expanded"
     @dragover.prevent
     @click="emit('expand', expanded)"
   >
@@ -19,14 +21,15 @@
         variant="text"
         rounded
         :size="dense ? 30 : 40"
-        class="transition-all duration-300 rounded"
+        class="mod-group-entry__avatar"
       >
-        <div class="grid cols-2 rows-2 gap-[2px] rounded-xl">
+        <div class="mod-group-entry__avatar-grid">
           <v-img
-            v-for="i in avatars.slice(0, 4)"
-            :key="`avatar-${i}`"
-            class="rounded-lg max-h-[20px] max-w-[20px] min-h-[20px] min-w-[20px]"
-            :src="i"
+            v-for="(avatar, index) in avatars.slice(0, 4)"
+            :key="`avatar-${avatar}-${index}`"
+            class="mod-group-entry__avatar-image"
+            cover
+            :src="avatar"
           />
         </div>
       </v-avatar>
@@ -57,7 +60,7 @@ const props = defineProps<{
   height?: number
 }>()
 
-const avatars = computed(() => props.items.map((i) => i.icon).filter((v) => !!v))
+const avatars = computed(() => props.items.map((item) => item.icon).filter((icon): icon is string => !!icon))
 
 const emit = defineEmits(['expand', 'setting', 'ungroup', 'enable-all', 'disable-all', 'apply-group-rules', 'save-group-rules'])
 
@@ -150,7 +153,25 @@ function getContextMenu() {
 </script>
 
 <style lang="css" scoped>
+.mod-group-entry__avatar-grid {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  padding: 2px;
+}
+
+.mod-group-entry__avatar-image {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 3px;
+}
+
 .expanded {
-  border-radius: 0px;
+  border-radius: 0;
 }
 </style>

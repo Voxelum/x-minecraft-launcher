@@ -485,14 +485,13 @@ function navigateToMod(type: string) {
   }
 }
 
-const { installFromMarket, install, uninstall } = useService(InstanceShaderPacksServiceKey)
+const { resolveFromMarket, install, uninstall } = useService(InstanceShaderPacksServiceKey)
 // modrinth installer
 const modrinthInstaller = useModrinthInstaller(
   path,
   runtime,
   shaderPacks,
-  installFromMarket,
-  onUninstall,
+  resolveFromMarket,
   installModloaders,
 )
 provide(kModrinthInstaller, modrinthInstaller)
@@ -502,8 +501,7 @@ const curseforgeInstaller = useCurseforgeInstaller(
   path,
   runtime,
   shaderPacks,
-  installFromMarket,
-  onUninstall,
+  resolveFromMarket,
   installModloaders,
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)

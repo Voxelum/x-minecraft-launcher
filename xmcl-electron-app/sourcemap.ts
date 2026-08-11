@@ -35,6 +35,7 @@ function CallSiteToString(this: any) {
       fileLocation += '<anonymous>'
     }
     const lineNumber = this.getLineNumber()
+    // eslint-disable-next-line eqeqeq
     if (lineNumber != null) {
       fileLocation += ':' + lineNumber
       const columnNumber = this.getColumnNumber()

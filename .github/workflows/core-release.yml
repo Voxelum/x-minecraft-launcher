@@ -43,7 +43,8 @@ jobs:
       run: |
         node <<'NODE'
         const { execFileSync } = require('node:child_process')
-        const { existsSync, readdirSync, readFileSync } = require('node:fs')
+        const { existsSync, mkdtempSync, readdirSync, readFileSync } = require('node:fs')
+        const { tmpdir } = require('node:os')
         const { join } = require('node:path')
 
         for (const entry of readdirSync('packages', { withFileTypes: true })) {
@@ -64,12 +65,25 @@ jobs:
               '--registry=https://registry.npmjs.org',
             ], { stdio: 'ignore' })
             console.log(`Skipping ${pkg.name}@${pkg.version}; it is already published.`)
+            continue
           } catch {
-            execFileSync('npm', ['publish', '--access=public', '--ignore-scripts'], {
-              cwd: directory,
-              stdio: 'inherit',
-            })
+            // Not on the registry yet, so fall through and publish it.
           }
+
+          const packDirectory = mkdtempSync(join(tmpdir(), 'xmcl-pack-'))
+          execFileSync('pnpm', ['pack', '--pack-destination', packDirectory], {
+            cwd: directory,
+            stdio: 'inherit',
+          })
+
+          const tarball = readdirSync(packDirectory).find(file => file.endsWith('.tgz'))
+          if (!tarball) {
+            throw new Error(`pnpm pack produced no tarball for ${pkg.name}`)
+          }
+
+          execFileSync('npm', ['publish', join(packDirectory, tarball), '--access=public', '--ignore-scripts'], {
+            stdio: 'inherit',
+          })
         }
         NODE
     - name: Build Docs

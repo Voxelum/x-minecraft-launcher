@@ -877,7 +877,7 @@ export class InstallService extends AbstractService implements IInstallService {
         // (1.21.x, the 26.x snapshot series, etc.) whose version strings
         // (e.g. `26.1.2.0-beta`) start with the Minecraft version.
         const isLegacyForgeArtifact =
-          options.version.startsWith('47.') || /^1\.20\.1-47\./.test(options.version)
+          options.version.startsWith('47.') || options.version.startsWith('1.20.1-47.')
         if (isLegacyForgeArtifact) {
           neoforgeVersion = options.version.startsWith('47.')
             ? `${options.minecraft}-${options.version}`

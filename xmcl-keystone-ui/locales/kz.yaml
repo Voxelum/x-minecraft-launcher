@@ -688,6 +688,8 @@ mod:
   filter: Модтарды сүзгілеу
   group: Топтастыру
   groupInstalled: Орнатылған модтарды топтастыру
+  hideInstalled: Орнатылған модтарды жасыру
+  installedFilterOff: Барлық модтарды көрсету
   groupName: Топ атауы
   groupNameRequired: Топ атауы міндетті
   hasUpdate: Модтың жаңа нұсқасы бар!
@@ -1186,7 +1188,13 @@ serverStatus:
   ping: Ping...
   refuse: §4Сервер бас тартты!
   timeout: §4Серверге қосылу уақыты аяқталды!
+agent:
+  notConfiguredHint: Баптаулар → Жалпы → ЖИ агенті бөлімінде API кілтін, модельді және OpenAI-мен үйлесімді соңғы нүктені орнатыңыз. Мысалы, OpenAI немесе Claude-пен үйлесімді шлюзді қолданыңыз.
 setting:
+  aiAgentApiKeyDescription: OpenAI-мен үйлесімді провайдерді баптаңыз, мысалы OpenAI немесе Claude үшін шлюз. Кілт осы құрылғыда жергілікті сақталады.
+  aiAgentApiKeyPlaceholder: OpenAI немесе Claude провайдерінің API кілті
+  aiAgentEndpointPlaceholder: https://api.openai.com/v1/chat/completions
+  aiAgentModelPlaceholder: gpt-5.6 немесе claude-sonnet-4-5
   themeStore:
     name: Тақырыптар қоймасы
     description: Жалпы тақырыптарды сақтау және басқару

@@ -382,10 +382,9 @@ export class InstanceOptionsService extends AbstractService implements IInstance
   }
 
   async editShaderOptions(options: EditShaderOptions): Promise<void> {
-    const instancePath = options.instancePath
+    const { instancePath, ...patch } = options
     const current = await this.getShaderOptions(instancePath)
-
-    current.shaderPack = options.shaderPack
+    Object.assign(current, patch)
 
     const configFile = join(instancePath, 'optionsshaders.txt')
     await writeFile(configFile, stringifyShaderOptions(current))

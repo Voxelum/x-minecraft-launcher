@@ -1,29 +1,37 @@
 import { injection } from '@/util/inject'
 import { InjectionKey, Ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
-import { JavaCompatibleState, kInstanceJava } from './instanceJava'
+import { InstanceJavaStatus, JavaCompatibleState, kInstanceJava } from './instanceJava'
 
 export const kInstanceJavaDiagnose: InjectionKey<ReturnType<typeof useInstanceJavaDiagnose>> = Symbol('InstanceJavaDiagnose')
+export type InstanceJavaIssue = 'invalid' | 'incompatible' | 'missing'
+
+export function getInstanceJavaIssue(stat: InstanceJavaStatus | undefined, bypassedPath?: string): InstanceJavaIssue | undefined {
+  if (!stat) return undefined
+
+  const isBypassed = stat.java && bypassedPath === stat.java.path
+  if (isBypassed) return undefined
+
+  if (stat.javaPath) {
+    if (!stat.java?.valid) {
+      return 'invalid'
+    }
+    if ('compatible' in stat && stat.compatible !== JavaCompatibleState.Matched) {
+      return 'incompatible'
+    }
+  }
+
+  if (!stat.java) {
+    return 'missing'
+  }
+
+  return undefined
+}
 
 export function useInstanceJavaDiagnose({ status: java } = injection(kInstanceJava)) {
-  const item: Ref<'invalid' | 'incompatible' | undefined> = computed(() => {
+  const item: Ref<InstanceJavaIssue | undefined> = computed(() => {
     const stat = java.value
-    if (!stat) return undefined
-
-    const key = stat.instance
-    const isBypassed = stat.java && whiteList.value[key] === stat.java.path
-    if (isBypassed) return undefined
-
-    if (stat.javaPath) {
-      if (!stat.java?.valid) {
-        return 'invalid'
-      }
-      if ('compatible' in stat && stat.compatible !== JavaCompatibleState.Matched) {
-        return 'incompatible'
-      }
-    }
-
-    return undefined
+    return getInstanceJavaIssue(stat, stat ? whiteList.value[stat.instance] : undefined)
   })
 
   const whiteList = useLocalStorage<Record<string, string>>('instanceJavaBypass', {}, { deep: false, writeDefaults: false })

@@ -1,3 +1,4 @@
+import type { InstanceFile } from '@xmcl/instance'
 import type { ResourceState } from '@xmcl/resource'
 import { Exception, ExceptionBase } from '../entities/exception'
 import { InstallMarketOptionWithInstance } from '../entities/market'
@@ -28,6 +29,8 @@ export interface InstanceResourcesService {
    * Only call this if you don't want to use link or link is failed.
    */
   install(options: UpdateInstanceResourcesOptions): Promise<string[]>
+  /** Resolve local files into instance manifest entries without installing them. */
+  resolveFiles(options: UpdateInstanceResourcesOptions): Promise<InstanceFile[]>
   /**
    * Uninstall the resourcepack file from the instance.
    */
@@ -36,6 +39,8 @@ export interface InstanceResourcesService {
    * Install resources from the market to the instance.
    */
   installFromMarket(options: InstallMarketOptionWithInstance): Promise<string[]>
+  /** Resolve market files into instance manifest entries without installing them. */
+  resolveFromMarket(options: InstallMarketOptionWithInstance): Promise<InstanceFile[]>
   /**
    * Show the `resourcepacks` directory under the instance path
    * @param instancePath The instance path
