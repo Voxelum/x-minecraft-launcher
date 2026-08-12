@@ -87,7 +87,7 @@ jobs:
           path: signing-input/*.appx
 
       - name: Submit signing request
-        uses: signpath/github-action-submit-signing-request@v0.4
+        uses: signpath/github-action-submit-signing-request@v2
         with:
           api-token: ${{ secrets.CODE_SIGN_TOKEN }}
           organization-id: ab51b40d-a5bd-4d25-ae54-66ccabf86161
