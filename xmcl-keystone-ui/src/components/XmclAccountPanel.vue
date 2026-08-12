@@ -77,8 +77,9 @@
     <template v-if="account">
       <div class="xmcl-account-grid mt-4">
         <div class="surface-card-row rounded-xl p-4">
-          <div class="text-xs font-semibold uppercase tracking-wider opacity-50">
-            {{ t('xmclAccount.accountSummary') }}
+          <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider opacity-50">
+            <v-icon size="16">badge</v-icon>
+            <span>{{ t('xmclAccount.accountSummary') }}</span>
           </div>
           <div class="mt-2 font-mono text-sm break-all">{{ account.accountId }}</div>
           <div class="mt-1 text-xs opacity-60">
@@ -88,8 +89,9 @@
 
         <div class="surface-card-row rounded-xl p-4">
           <div class="flex items-center justify-between">
-            <div class="text-xs font-semibold uppercase tracking-wider opacity-50">
-              {{ t('xmclAccount.session') }}
+            <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider opacity-50">
+              <v-icon size="16">key</v-icon>
+              <span>{{ t('xmclAccount.session') }}</span>
             </div>
             <v-chip :color="sessionExpired ? 'warning' : 'success'" size="x-small" variant="tonal">
               {{
@@ -107,21 +109,31 @@
               data-testid="xmcl-session-refresh"
               size="small"
               variant="tonal"
+              color="primary"
               :loading="busy"
               @click="refreshSession"
             >
+              <v-icon start size="18">refresh</v-icon>
               {{ t('shared.refresh') }}
             </v-btn>
             <v-btn
               data-testid="xmcl-session-revoke"
               size="small"
-              variant="text"
+              variant="tonal"
               :disabled="busy"
               @click="revokeSession(false)"
             >
+              <v-icon start size="18">devices</v-icon>
               {{ t('xmclAccount.signOutDevice') }}
             </v-btn>
-            <v-btn size="small" variant="text" :disabled="busy" @click="revokeSession(true)">
+            <v-btn
+              size="small"
+              variant="tonal"
+              color="error"
+              :disabled="busy"
+              @click="revokeSession(true)"
+            >
+              <v-icon start size="18">phonelink_erase</v-icon>
               {{ t('xmclAccount.signOutAll') }}
             </v-btn>
           </div>

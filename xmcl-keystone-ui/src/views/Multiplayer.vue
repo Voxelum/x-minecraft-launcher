@@ -138,9 +138,27 @@
           class="mt-2 mb-0"
         >
           <template #prepend> </template>
-          <div class="flex items-center gap-2">
-            <v-icon size="small">error</v-icon>
-            <span>{{ t('multiplayer.connectionError') }}: {{ groupError }}</span>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <v-icon size="small">error</v-icon>
+              <span v-if="isAuthError">
+                {{ t('multiplayer.loginRequiredDescription') }}
+              </span>
+              <span v-else>
+                {{ t('multiplayer.connectionError') }}: {{ groupError }}
+              </span>
+            </div>
+            <v-btn
+              v-if="isAuthError"
+              size="x-small"
+              variant="elevated"
+              color="primary"
+              class="ml-auto"
+              @click="openMultiplayerLogin"
+            >
+              <v-icon start size="14">login</v-icon>
+              {{ t('xmclAccount.title') }}
+            </v-btn>
           </div>
         </v-alert>
         <!-- NAT Warning for Symmetric NAT -->
@@ -587,6 +605,7 @@ import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
+import { kMultiplayerEntry } from '@/composables/multiplayerEntry'
 import { kPeerState } from '@/composables/peers'
 import { kTheme } from '@/composables/theme'
 import { kUserContext } from '@/composables/user'
@@ -598,6 +617,10 @@ import { useDialog, useSimpleDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
 
+const multiplayerEntry = inject(kMultiplayerEntry, undefined)
+function openMultiplayerLogin() {
+  multiplayerEntry?.request()
+}
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
 const { show: showAddInstasnce } = useDialog(AddInstanceDialogKey)
@@ -650,6 +673,11 @@ const {
 const groupErrorVisible = ref(true)
 watch(groupError, () => {
   groupErrorVisible.value = true
+})
+const isAuthError = computed(() => {
+  if (!groupError.value) return false
+  const errStr = typeof groupError.value === 'string' ? groupError.value : JSON.stringify(groupError.value)
+  return errStr.includes('authentication_required') || errStr.includes('unauthorized') || errStr.includes('xmcl_account')
 })
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
