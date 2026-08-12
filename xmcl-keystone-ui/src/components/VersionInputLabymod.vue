@@ -6,6 +6,7 @@ import { BuiltinImages } from '../constant'
 const props = defineProps<{
   minecraft: string
   value?: string
+  autoSelectLatest?: boolean
 }>()
 
 const { data, isValidating, mutate, error } = useLabyModManifest()
@@ -21,6 +22,7 @@ const items = computed(() => {
   })]
   return result
 })
+const latestVersion = computed(() => items.value[0]?.name ?? '')
 const { t } = useI18n()
 
 const emit = defineEmits<{
@@ -39,6 +41,7 @@ const emit = defineEmits<{
     :empty-text="t('labyMod.empty', { version: minecraft })"
     :refreshing="isValidating"
     :placeholder="t('labyMod.disable')"
+    :auto-select="autoSelectLatest ? latestVersion : undefined"
     :value="value"
     @refresh="mutate()"
     @input="emit('input', $event)"

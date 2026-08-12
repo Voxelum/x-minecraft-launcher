@@ -34,6 +34,7 @@
           :value="data.runtime.neoForged"
           :minecraft="data.runtime.minecraft"
           :versions="versions"
+          :auto-select-latest="autoSelectLatestOnClick"
           @input="onSelectNeoForged"
         />
         <VersionInputForge
@@ -42,6 +43,7 @@
           :value="data.runtime.forge"
           :minecraft="data.runtime.minecraft"
           :versions="versions"
+          :auto-select-latest="autoSelectLatestOnClick"
           @input="onSelectForge"
         />
         <VersionInputFabric
@@ -50,6 +52,7 @@
           :value="data.runtime.fabricLoader"
           :minecraft="data.runtime.minecraft"
           :versions="versions"
+          :auto-select-latest="autoSelectLatestOnClick"
           @input="onSelectFabric"
         />
         <VersionInputQuilt
@@ -58,6 +61,7 @@
           :value="data.runtime.quiltLoader"
           :minecraft="data.runtime.minecraft"
           :versions="versions"
+          :auto-select-latest="autoSelectLatestOnClick"
           @input="onSelectQuilt"
         />
         <VersionInputOptifine
@@ -66,6 +70,7 @@
           :forge="data.runtime.forge || ''"
           :minecraft="data.runtime.minecraft"
           :versions="versions"
+          :auto-select-latest="autoSelectLatestOnClick"
           @input="onSelectOptifine"
         />
         <VersionInputLabymod
@@ -73,6 +78,7 @@
           :value="data.runtime.labyMod"
           :minecraft="data.runtime.minecraft"
           :versions="versions"
+          :auto-select-latest="autoSelectLatestOnClick"
           @input="onSelectLabyMod"
         />
       </div>
@@ -110,10 +116,12 @@ const props = withDefaults(defineProps<{
   showMinecraft?: boolean
   showLocal?: boolean
   localPlaceholder?: string
+  autoSelectLatestOnClick?: boolean
 }>(), {
   showMinecraft: true,
   showLocal: true,
   localPlaceholder: undefined,
+  autoSelectLatestOnClick: false,
 })
 
 const { t } = useI18n()
@@ -141,8 +149,14 @@ const loaders = [
 ]
 
 const currentTab = ref('vanilla')
+const pendingLoader = ref<string | undefined>()
 
 watch([() => props.data.runtime, () => props.data.version], ([rt, version]) => {
+  if (pendingLoader.value === currentTab.value) {
+    const hasRuntimeVersion = rt.labyMod || rt.quiltLoader || rt.fabricLoader || rt.neoForged || rt.forge || rt.optifine || version
+    if (!hasRuntimeVersion) return
+    pendingLoader.value = undefined
+  }
   if (rt.labyMod) currentTab.value = 'labymod'
   else if (rt.quiltLoader) currentTab.value = 'quilt'
   else if (rt.fabricLoader) currentTab.value = 'fabric'
@@ -153,8 +167,7 @@ watch([() => props.data.runtime, () => props.data.version], ([rt, version]) => {
   else currentTab.value = 'vanilla'
 }, { deep: true, immediate: true })
 
-function resetToVanilla() {
-  currentTab.value = 'vanilla'
+function clearVersionSelection() {
   props.data.runtime.forge = ''
   props.data.runtime.fabricLoader = ''
   props.data.runtime.quiltLoader = ''
@@ -164,6 +177,12 @@ function resetToVanilla() {
   props.data.version = ''
 }
 
+function resetToVanilla() {
+  currentTab.value = 'vanilla'
+  pendingLoader.value = undefined
+  clearVersionSelection()
+}
+
 function selectLoader(loader: string) {
   // Toggle off when clicking the already-selected loader, reverting to vanilla.
   if (currentTab.value === loader) {
@@ -171,6 +190,8 @@ function selectLoader(loader: string) {
     return
   }
   currentTab.value = loader
+  pendingLoader.value = loader
+  clearVersionSelection()
   if (loader === 'forge') {
     onSelectForge('')
   } else if (loader === 'fabric') {

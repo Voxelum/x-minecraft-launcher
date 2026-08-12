@@ -1,6 +1,11 @@
 <template>
   <div style="background: transparent; width: 100%">
-    <ModloaderSelector :data="data" :versions="versions" :show-minecraft="showMinecraft" />
+    <ModloaderSelector
+      :data="data"
+      :versions="versions"
+      :show-minecraft="showMinecraft"
+      auto-select-latest-on-click
+    />
     <!-- Advanced Settings -->
     <v-list-subheader data-testid="add-instance-advanced" class="my-4">
       {{ t('setting.advancedSettings') }}

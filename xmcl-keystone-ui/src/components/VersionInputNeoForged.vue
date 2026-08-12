@@ -6,6 +6,7 @@ import { BuiltinImages } from '../constant'
 const props = defineProps<{
   minecraft: string
   value?: string
+  autoSelectLatest?: boolean
 }>()
 const { versions, latest, recommended, isValidating, mutate, error } = useNeoForgedVersions(computed(() => props.minecraft))
 const { t } = useI18n()
@@ -42,6 +43,7 @@ const emit = defineEmits<{
     :empty-text="t('neoForgedVersion.empty', { version: minecraft })"
     :refreshing="isValidating"
     :placeholder="t('neoForgedVersion.disable')"
+    :auto-select="autoSelectLatest ? latest : undefined"
     :value="value"
     @refresh="mutate()"
     @input="emit('input', $event)"
