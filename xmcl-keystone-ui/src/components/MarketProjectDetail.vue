@@ -953,7 +953,7 @@ const onInstallDependency = (dep: ProjectDependency) => {
 
 const onScroll = (e: Event) => {
   const t = e.target as HTMLElement
-  if (t.scrollTop + t.clientHeight >= t.scrollHeight && tab.value === 3) {
+  if (t.scrollTop + t.clientHeight >= t.scrollHeight && tab.value === 2) {
     emit('load-more')
   }
 }

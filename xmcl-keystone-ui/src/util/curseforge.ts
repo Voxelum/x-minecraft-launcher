@@ -24,6 +24,11 @@ export function getCurseforgeFileGameVersions(file: File): string[] {
   return file.gameVersions.filter((v) => Number.isInteger(Number(v[0])))
 }
 
+export function mergeCurseforgeFilePage<T>(files: readonly T[], page: readonly T[], index: number): T[] {
+  if (index === 0) return [...page]
+  return [...files.slice(0, index), ...page]
+}
+
 export function getModLoaderTypesForFile(file: File) {
   const modLoaderTypes = new Set<FileModLoaderType>()
   if (file.sortableGameVersions) {

@@ -7,7 +7,7 @@ import { InstallMarketOptionWithInstance, MarketType } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import type { ResolveArtifactModrinthDependencies } from './modArtifactDependencies'
 import { getRequiredModrinthInstallVersions } from './modInstall'
-import { useMarketInstallStaging } from './marketInstallStaging'
+import { useMarketInstall } from './marketInstall'
 
 export const kModrinthInstaller: InjectionKey<ReturnType<typeof useModrinthInstaller>> = Symbol('modrinthInstaller')
 
@@ -19,7 +19,7 @@ export function useModrinthInstaller(
   installDefaultModLoader = useInstanceModLoaderDefault(),
   resolveArtifactDependencies?: ResolveArtifactModrinthDependencies,
 ) {
-  const stage = useMarketInstallStaging()
+  const installFiles = useMarketInstall()
 
   async function install(version: { versionId: string; icon?: string } | { versionId: string; icon?: string }[], instancePath?: string) {
     const target = instancePath || path.value
@@ -28,7 +28,7 @@ export function useModrinthInstaller(
       version,
       instancePath: target,
     })
-    return stage(target, [], files)
+    return installFiles(target, [], files)
   }
 
   async function installWithDependencies(versionId: string, loaders: string[], icon: string | undefined, installed: ProjectFile[], deps: Array<{ recommendedVersion: ProjectVersion; project: Project; type: string }>, artifactUrl?: string) {
@@ -52,7 +52,7 @@ export function useModrinthInstaller(
       hashes: {},
       ...(file.modrinth ? { modrinth: file.modrinth } : {}),
     }))
-    await stage(_path, oldFiles, files)
+    await installFiles(_path, oldFiles, files)
     return true
   }
 

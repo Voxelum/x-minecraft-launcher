@@ -156,7 +156,7 @@
         v-if="typeof item === 'object' && 'id' in item"
         :item="(item as ProjectEntry<ModFile>)"
         :key="`item-${item.id}`"
-        :indent="!!isInGroup(((item as ProjectEntry<ModFile>).installed?.[0]?.fileName))"
+        :indent="isLocalView && !!isInGroup(((item as ProjectEntry<ModFile>).installed?.[0]?.fileName))"
         :indent-color="getGroupColor((item as ProjectEntry<ModFile>).installed?.[0]?.fileName)"
         :item-height="itemHeight"
         :has-update="hasUpdate"

@@ -8,6 +8,7 @@ import { InjectionKey, Ref, computed, reactive, toRefs, watch } from 'vue'
 import { kSWRVConfig, useOverrideSWRVConfig } from './swrvConfig'
 import { UpstreamHeaderProps } from '@/views/HomeUpstreamHeader.vue'
 import { getExpectedSize } from '@/util/size'
+import { mergeCurseforgeFilePage } from '@/util/curseforge'
 import { useDateString } from './date'
 
 export interface CurseforgeProps {
@@ -137,14 +138,19 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: R
   const files = shallowRef([] as File[])
   const data = shallowReactive({
     index: 0,
-    pageSize: 30,
+    pageSize: 50,
     totalCount: 0,
+  })
+  watch([projectId, gameVersion, modLoaderType], () => {
+    data.index = 0
+    files.value = []
   })
   const { mutate: refresh, isValidating: refreshing, error, data: _data } = useSWRV(
     computed(() => formatKey(`/curseforge/${projectId.value}/files`, {
       gameVersion,
       modLoaderType,
       index: data.index,
+      pageSize: data.pageSize,
     })), async () => {
       return markRaw(await clientCurseforgeV1.getModFiles({
         modId: projectId.value,
@@ -156,7 +162,7 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: R
     }, inject(kSWRVConfig))
   watch(_data, (f) => {
     if (f) {
-      files.value = markRaw(f.data.map(markRaw))
+      files.value = markRaw(mergeCurseforgeFilePage(files.value, f.data.map(markRaw), f.pagination.index))
       data.index = f.pagination.index
       data.pageSize = f.pagination.pageSize
       data.totalCount = f.pagination.totalCount
