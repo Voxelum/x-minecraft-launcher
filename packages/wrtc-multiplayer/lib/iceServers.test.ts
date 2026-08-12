@@ -34,6 +34,43 @@ describe('getIceServers', () => {
       },
     })
   })
+
+  it('uses multiple TURN credential sets from the signaling service', async () => {
+    const credential = vi.fn(async () => ({
+      stuns: ['stun.example:3478'],
+      uris: ['turn:legacy.example'],
+      username: 'legacy-user',
+      password: 'legacy-password',
+      servers: [
+        {
+          urls: 'turn:built-in.example',
+          username: 'built-in-user',
+          credential: 'built-in-password',
+        },
+        {
+          urls: ['turn:turn.cloudflare.com:3478?transport=udp'],
+          username: 'cloudflare-user',
+          credential: 'cloudflare-password',
+        },
+      ],
+    }))
+
+    const result = await getIceServers(credential)
+
+    expect(result.servers).toEqual([
+      {
+        urls: 'turn:built-in.example',
+        username: 'built-in-user',
+        credential: 'built-in-password',
+      },
+      {
+        urls: ['turn:turn.cloudflare.com:3478?transport=udp'],
+        username: 'cloudflare-user',
+        credential: 'cloudflare-password',
+      },
+      { urls: 'stun:stun.example:3478' },
+    ])
+  })
 })
 
 describe('createIceServersProvider', () => {

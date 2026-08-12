@@ -3,7 +3,6 @@ import {
   BUILTIN_AGENT_FLIGHT,
   DEFAULT_AGENT_ENDPOINT,
   DEFAULT_AGENT_MODEL,
-  isKeylessAgentEndpoint,
   type AgentConversationKey,
   type AgentMessage,
   type AgentProviderSettings,
@@ -59,7 +58,7 @@ export class AgentService extends AbstractService implements IAgentService {
     const endpoint = settings.agentEndpoint || DEFAULT_AGENT_ENDPOINT
     const provider = await this[kResolvedAgentProvider]()
     const configured = provider.mode === 'custom'
-      ? isKeylessAgentEndpoint(endpoint) || !!await this.apiKeys.get(endpoint)
+      ? true
       : provider.mode === 'builtin' && !!await this.app.registry.getOrCreate(XmclAccountService)
         .then(service => service[kXmclSessionAuthorization]())
         .catch(() => undefined)
@@ -67,7 +66,7 @@ export class AgentService extends AbstractService implements IAgentService {
       endpoint,
       model: settings.agentModel || DEFAULT_AGENT_MODEL,
       configured,
-      mode: provider.mode === 'builtin' ? 'builtin' : 'custom',
+      mode: provider.mode,
     }
   }
 
@@ -96,9 +95,10 @@ export class AgentService extends AbstractService implements IAgentService {
     const settings = await this.app.registry.get(kSettings)
     const endpoint = settings.agentEndpoint.trim()
     const model = settings.agentModel.trim()
-    if (endpoint && model) {
+    if (endpoint || model) {
+      if (!endpoint || !model) return { mode: 'unconfigured' }
       const apiKey = await this.apiKeys.get(endpoint)
-        ?? (isKeylessAgentEndpoint(endpoint) ? 'not-needed' : '')
+      if (!apiKey) return { mode: 'unconfigured' }
       return { mode: 'custom', endpoint, model, apiKey }
     }
 

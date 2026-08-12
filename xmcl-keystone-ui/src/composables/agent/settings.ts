@@ -1,12 +1,8 @@
 import { createSharedComposable } from '@vueuse/core'
 import {
-  AGENT_PROVIDER_PRESETS,
   AgentServiceKey,
   BUILTIN_AGENT_ENDPOINT,
   BUILTIN_AGENT_MODEL,
-  BUILTIN_AGENT_PROVIDER_ID,
-  CUSTOM_AGENT_PROVIDER_ID,
-  getAgentProviderPreset,
   resolveAgentProviderId,
 } from '@xmcl/runtime-api'
 import { kXmclAccount } from '../xmclAccount'
@@ -19,7 +15,8 @@ export const useAgentSettings = createSharedComposable(() => {
   const endpoint = ref('')
   const model = ref('')
   const providerConfigured = ref(false)
-  const mode = computed<'builtin' | 'custom'>(() => endpoint.value.trim() && model.value.trim() ? 'custom' : 'builtin')
+  const resolvedMode = ref<'builtin' | 'custom' | 'unconfigured'>('unconfigured')
+  const mode = computed(() => resolvedMode.value)
   const loaded = ref(false)
   const error = ref('')
   let saveTimer: ReturnType<typeof setTimeout> | undefined
@@ -32,6 +29,7 @@ export const useAgentSettings = createSharedComposable(() => {
   async function refreshStatus() {
     const settings = await service.getProviderSettings()
     providerConfigured.value = settings.configured
+    resolvedMode.value = settings.mode
   }
 
   const ready = (async () => {
@@ -39,6 +37,7 @@ export const useAgentSettings = createSharedComposable(() => {
     endpoint.value = settings.endpoint
     model.value = settings.model
     providerConfigured.value = settings.configured
+    resolvedMode.value = settings.mode
     loaded.value = true
   })()
 
@@ -137,20 +136,15 @@ export const useAgentSettings = createSharedComposable(() => {
     await setApiKey('')
   }
 
-  const resolvedEndpoint = computed(() => mode.value === 'custom' ? endpoint.value.trim() : BUILTIN_AGENT_ENDPOINT)
-  const resolvedModel = computed(() => mode.value === 'custom' ? model.value.trim() : BUILTIN_AGENT_MODEL)
+  const resolvedEndpoint = computed(() => endpoint.value.trim() || BUILTIN_AGENT_ENDPOINT)
+  const resolvedModel = computed(() => model.value.trim() || BUILTIN_AGENT_MODEL)
   const configured = computed(() => {
-    if (mode.value === 'custom' || !xmclAccount) return providerConfigured.value
+    if (mode.value !== 'builtin' || !xmclAccount) return providerConfigured.value
     const session = xmclAccount.session.value
     return !!session && Date.parse(session.expiresAt) > Date.now()
   })
 
-  /** The preset matching the current endpoint, or the custom id when none matches. */
-  const providerId = computed(() => mode.value === 'builtin' ? BUILTIN_AGENT_PROVIDER_ID : resolveAgentProviderId(resolvedEndpoint.value))
-  const provider = computed(() => getAgentProviderPreset(providerId.value))
-  /** True when the selected provider needs no API key at all. */
-  const keyless = computed(() => !!provider.value?.keyless)
-
+  const providerId = computed(() => resolveAgentProviderId(endpoint.value))
   /**
    * API keys are stored per provider and never read back into the renderer, so on a
    * provider switch the input is cleared and `configured` is re-read for the newly
@@ -176,26 +170,6 @@ export const useAgentSettings = createSharedComposable(() => {
     })
   })
 
-  /**
-   * Switch to a preset provider. The endpoint always follows the preset; the model
-   * only follows when it is empty or still the previous preset's default, so a model
-   * the user typed by hand is never silently discarded.
-   */
-  function selectProvider(id: string) {
-    if (id === BUILTIN_AGENT_PROVIDER_ID) {
-      endpoint.value = ''
-      model.value = ''
-      return
-    }
-    if (id === CUSTOM_AGENT_PROVIDER_ID) return
-    const preset = getAgentProviderPreset(id)
-    if (!preset || preset.id === providerId.value) return
-    const previous = provider.value
-    const current = model.value.trim()
-    if (!current || current === previous?.defaultModel) model.value = preset.defaultModel
-    endpoint.value = preset.endpoint
-  }
-
   return {
     apiKey,
     endpoint,
@@ -211,10 +185,5 @@ export const useAgentSettings = createSharedComposable(() => {
     clearApiKey,
     resolvedEndpoint,
     resolvedModel,
-    providers: AGENT_PROVIDER_PRESETS,
-    providerId,
-    provider,
-    keyless,
-    selectProvider,
   }
 })

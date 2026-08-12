@@ -22,6 +22,7 @@ import {
 import {
   XmclAccountApi,
   XmclAccountApiError,
+  XmclAccountSessionResponseError,
   type XmclAuthResult,
   type XmclSessionCredential,
   toSessionSummary,
@@ -439,7 +440,10 @@ export class XmclAccountService
         if (!current.refreshToken) throw new Error('xmcl_account_refresh_token_missing')
         next = await this.api.refreshSession(current)
       } catch (error) {
-        if (isTerminalSessionRefreshError(error)) {
+        if (
+          isTerminalSessionRefreshError(error) ||
+          error instanceof XmclAccountSessionResponseError
+        ) {
           await this.clearSession(current.sessionId)
         }
         throw error

@@ -1,11 +1,10 @@
-import { DEFAULT_AGENT_PROVIDER } from '@xmcl/runtime-api'
 import { beforeEach, describe, expect, test } from 'vitest'
 import type { SecretStorage } from '~/app'
 import { AgentApiKeyStore, LEGACY_SECRET_ACCOUNT, SECRET_SERVICE } from './apiKey'
 
 const OPENAI = 'https://api.openai.com/v1/chat/completions'
 const CUSTOM = 'https://self.hosted.example/v1/chat/completions'
-const AGNES = DEFAULT_AGENT_PROVIDER.endpoint
+const AGNES = 'https://apihub.agnes-ai.com/v1/chat/completions'
 
 class MemoryStorage implements SecretStorage {
   entries = new Map<string, string>()
@@ -60,7 +59,7 @@ describe('AgentApiKeyStore', () => {
     await keys.put(OPENAI, 'openai-key')
     await keys.put(OPENAI, '')
     // A blank entry left behind would still read as "configured" downstream.
-    expect(storage.entries.has(`${SECRET_SERVICE}@openai`)).toBe(false)
+    expect(storage.entries.has(`${SECRET_SERVICE}@custom-openai@api.openai.com`)).toBe(false)
   })
 
   test('clearing one provider leaves the others untouched', async () => {
@@ -119,7 +118,7 @@ describe('AgentApiKeyStore', () => {
   // new provider would be seen as its owner and inherit another service's key.
   test('retires a superseded legacy key instead of leaving it migratable', async () => {
     await storage.put(SECRET_SERVICE, LEGACY_SECRET_ACCOUNT, 'legacy-key')
-    await storage.put(SECRET_SERVICE, 'agnes', 'agnes-key')
+    await storage.put(SECRET_SERVICE, 'custom-openai@apihub.agnes-ai.com', 'agnes-key')
     let configured = AGNES
     const keys = new AgentApiKeyStore(storage, async () => configured)
 

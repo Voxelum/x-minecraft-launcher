@@ -16,120 +16,8 @@ export const AGENT_MODEL_CONTEXT_WINDOW = 256_000
 /** Conservative max output tokens assumed for OpenAI-compatible agent models. */
 export const AGENT_MODEL_MAX_TOKENS = 8_192
 
-/** Provider id used when the endpoint does not match any known preset. */
+/** Provider id used for external OpenAI-compatible endpoints. */
 export const CUSTOM_AGENT_PROVIDER_ID = 'custom-openai'
-
-/**
- * A selectable OpenAI-completions compatible provider. Providers requiring OAuth
- * are intentionally not modelled here: every preset authenticates with an API key.
- */
-export interface AgentProviderPreset {
-  id: string
-  /** Display name shown in the provider dropdown. */
-  name: string
-  /** Chat completions endpoint pre-filled when the preset is selected. */
-  endpoint: string
-  /** Model pre-filled when the preset is selected. */
-  defaultModel: string
-  /** Host fragment used to map an arbitrary endpoint back to this preset. */
-  host: string
-  /**
-   * Set for providers that need no credentials (a local server, say), so the
-   * agent is usable without the user inventing a placeholder key.
-   */
-  keyless?: boolean
-  /** Where the user can obtain an API key. */
-  apiKeyUrl?: string
-}
-
-/**
- * Selectable external providers. The launcher uses its built-in XMCL provider
- * when no external endpoint and model are configured.
- *
- * Each `defaultModel` is the current-generation, best value-for-money model of
- * that provider (the cheap/fast tier, not the flagship), verified against the
- * provider's own docs in July 2026. Providers retire model ids fairly quickly,
- * so re-check these against the official model list when touching this table.
- */
-export const AGENT_PROVIDER_PRESETS: readonly AgentProviderPreset[] = Object.freeze([
-  {
-    id: 'agnes',
-    name: 'Agnes',
-    endpoint: 'https://apihub.agnes-ai.com/v1/chat/completions',
-    defaultModel: 'agnes-2.0-flash',
-    host: 'apihub.agnes-ai.com',
-  },
-  {
-    id: 'openai',
-    name: 'OpenAI',
-    endpoint: 'https://api.openai.com/v1/chat/completions',
-    // Cheapest GPT-5.6 tier ($1/$6 per 1M), 1M context.
-    defaultModel: 'gpt-5.6-luna',
-    host: 'api.openai.com',
-    apiKeyUrl: 'https://platform.openai.com/api-keys',
-  },
-  {
-    id: 'deepseek',
-    name: 'DeepSeek',
-    endpoint: 'https://api.deepseek.com/v1/chat/completions',
-    // `deepseek-chat` was retired 2026-07-24; V4-Flash is the value tier.
-    defaultModel: 'deepseek-v4-flash',
-    host: 'api.deepseek.com',
-    apiKeyUrl: 'https://platform.deepseek.com/api_keys',
-  },
-  {
-    id: 'openrouter',
-    name: 'OpenRouter',
-    endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-    defaultModel: 'openai/gpt-5.6-luna',
-    host: 'openrouter.ai',
-    apiKeyUrl: 'https://openrouter.ai/keys',
-  },
-  {
-    id: 'siliconflow',
-    name: 'SiliconFlow',
-    endpoint: 'https://api.siliconflow.cn/v1/chat/completions',
-    // Mid-size open model with tool calling; far cheaper than the 700B+ flagships.
-    defaultModel: 'Qwen/Qwen3.6-27B',
-    host: 'api.siliconflow.cn',
-    apiKeyUrl: 'https://cloud.siliconflow.cn/account/ak',
-  },
-  {
-    id: 'moonshot',
-    name: 'Moonshot',
-    endpoint: 'https://api.moonshot.cn/v1/chat/completions',
-    // The moonshot-v1 series sunsets 2026-08-31; K3 is the current generation.
-    defaultModel: 'kimi-k3',
-    host: 'api.moonshot.cn',
-    apiKeyUrl: 'https://platform.moonshot.cn/console/api-keys',
-  },
-  {
-    id: 'zhipu',
-    name: 'Zhipu GLM',
-    endpoint: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-    // Current flagship generation; GLM-4.x is superseded and partly retired.
-    defaultModel: 'glm-5.2',
-    host: 'open.bigmodel.cn',
-    apiKeyUrl: 'https://open.bigmodel.cn/usercenter/apikeys',
-  },
-  {
-    id: 'ollama',
-    name: 'Ollama (local)',
-    endpoint: 'http://localhost:11434/v1/chat/completions',
-    // Tool-capable coding model that fits a 24-32GB machine. Local models are
-    // hardware-bound, so this is a starting point users are expected to change.
-    defaultModel: 'qwen3-coder:30b',
-    host: 'localhost:11434',
-    keyless: true,
-  },
-])
-
-/** Default external provider preset offered when switching away from built-in. */
-export const DEFAULT_AGENT_PROVIDER = AGENT_PROVIDER_PRESETS[0]
-
-export function getAgentProviderPreset(id: string) {
-  return AGENT_PROVIDER_PRESETS.find(preset => preset.id === id)
-}
 
 /** Strip the trailing `/chat/completions` and any trailing slashes to derive a base URL. */
 export function normalizeAgentBaseUrl(endpoint: string) {
@@ -149,19 +37,13 @@ function agentEndpointHost(endpoint: string) {
 }
 
 /**
- * Derive a stable provider id from the configured endpoint. Endpoints that do not
- * belong to a known preset are reported as a generic custom OpenAI provider.
- *
- * The host must match a preset exactly. A substring test would treat
- * `api.openai.com.example.net` as OpenAI, and since the stored API key is keyed
- * off this id, that would hand the user's real OpenAI key to an unrelated host.
+ * Derive a stable provider id from the configured endpoint.
  */
 export function resolveAgentProviderId(endpoint: string) {
   if (!endpoint.trim()) return BUILTIN_AGENT_PROVIDER_ID
   const host = agentEndpointHost(endpoint)
-  if (!host) return CUSTOM_AGENT_PROVIDER_ID
   if (host === agentEndpointHost(BUILTIN_AGENT_ENDPOINT)) return BUILTIN_AGENT_PROVIDER_ID
-  return AGENT_PROVIDER_PRESETS.find(preset => preset.host.toLowerCase() === host)?.id ?? CUSTOM_AGENT_PROVIDER_ID
+  return CUSTOM_AGENT_PROVIDER_ID
 }
 
 /**
@@ -175,11 +57,6 @@ export function resolveAgentSecretAccount(endpoint: string) {
   if (id !== CUSTOM_AGENT_PROVIDER_ID) return id
   const host = agentEndpointHost(endpoint) || normalizeAgentBaseUrl(endpoint).toLowerCase()
   return host ? `${id}@${host}` : id
-}
-
-/** Whether `endpoint` belongs to a preset that needs no API key. */
-export function isKeylessAgentEndpoint(endpoint: string) {
-  return !!getAgentProviderPreset(resolveAgentProviderId(endpoint))?.keyless
 }
 
 export type AgentId = 'launcher' | 'css' | 'modpack-changelog'
@@ -259,7 +136,7 @@ export interface AgentProviderSettings {
   endpoint: string
   model: string
   configured: boolean
-  mode: 'builtin' | 'custom'
+  mode: 'builtin' | 'custom' | 'unconfigured'
 }
 
 export interface UpdateAgentProviderSettings {

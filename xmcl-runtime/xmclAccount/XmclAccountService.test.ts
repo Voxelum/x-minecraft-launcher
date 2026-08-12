@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
 import { ProviderCredentialExchangeCache } from './ProviderCredentialExchangeCache'
-import { XmclAccountApiError } from './XmclAccountApi'
+import { XmclAccountApiError, XmclAccountSessionResponseError } from './XmclAccountApi'
 import { generateXmclDpopKey, serializeXmclDpopKey } from './XmclAccountDpop'
 
 const oauth = vi.hoisted(() => ({
@@ -394,6 +394,43 @@ describe('XmclAccountService automatic session refresh', () => {
     await expect(service.refreshSession()).rejects.toMatchObject({
       code: 'refresh_token_expired',
     })
+    expect((service as any).credential).toBeUndefined()
+    expect((service as any).state.account).toBeUndefined()
+    expect(app.secretStorage.put).toHaveBeenLastCalledWith(
+      'xmcl-xmcl-account',
+      'current-session',
+      '',
+    )
+  })
+
+  it('clears a rotated session when the successful refresh response is invalid', async () => {
+    const { app, service } = createXmclService()
+    const previous = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'old-access-token',
+      refreshToken: 'old-refresh-token',
+      scopes: ['account:read'],
+      issuedAt: new Date(Date.now() - 60 * 60 * 1_000).toISOString(),
+      expiresAt: new Date(Date.now() + 60 * 60 * 1_000).toISOString(),
+    }
+    ;(service as any).credential = previous
+    ;(service as any).state.snapshot({
+      account: {
+        accountId: previous.accountId,
+        status: 'active',
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: previous,
+    })
+    ;(service as any).api.refreshSession = vi
+      .fn()
+      .mockRejectedValue(new XmclAccountSessionResponseError())
+
+    await expect(service.refreshSession()).rejects.toBeInstanceOf(
+      XmclAccountSessionResponseError,
+    )
     expect((service as any).credential).toBeUndefined()
     expect((service as any).state.account).toBeUndefined()
     expect(app.secretStorage.put).toHaveBeenLastCalledWith(

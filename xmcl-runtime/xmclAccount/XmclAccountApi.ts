@@ -61,6 +61,13 @@ export class XmclAccountApiError extends Error {
   }
 }
 
+export class XmclAccountSessionResponseError extends TypeError {
+  constructor() {
+    super('Invalid xmcl session refresh response')
+    this.name = 'XmclAccountSessionResponseError'
+  }
+}
+
 type FetchLike = (input: string | URL, init?: RequestInit) => Promise<Response>
 type BaseUrlProvider = string | (() => Promise<string>)
 
@@ -222,8 +229,13 @@ export class XmclAccountApi {
       credential,
       crypto.randomUUID(),
     )
-    if (!isRecord(body)) throw new TypeError('Invalid xmcl session refresh response')
-    return parseSession(body.session)
+    if (!isRecord(body)) throw new XmclAccountSessionResponseError()
+    try {
+      return parseSession(body.session)
+    } catch (error) {
+      if (error instanceof TypeError) throw new XmclAccountSessionResponseError()
+      throw error
+    }
   }
 
   async prepareMerge(

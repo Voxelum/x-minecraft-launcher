@@ -1900,7 +1900,7 @@ setting:
   advancedSettingsHint: Danger zone - reset or manage launcher data
   aiAgentApiKey: AI Agent API Key
   aiAgentApiKeyClear: Clear key
-  aiAgentApiKeyDescription: Leave the provider on Built-in to use your XMCL account, or select an external provider and enter its API key. Keys are stored locally per provider.
+  aiAgentApiKeyDescription: Enter the key for the configured OpenAI-compatible endpoint. Keys are stored locally per endpoint host.
   aiAgentApiKeyEmpty: Paste your API key
   aiAgentApiKeyNotNeeded: Not required
   aiAgentApiKeyNotNeededHint: This provider runs locally and needs no API key
@@ -1915,9 +1915,6 @@ setting:
   aiAgentModelPlaceholder: gpt-5.6 or claude-sonnet-4-5
   aiAgentModel: AI Agent Model
   aiAgentModelDescription: Model name to send in chat completion requests.
-  aiAgentProvider: AI Agent Provider
-  aiAgentProviderCustom: Custom (OpenAI compatible)
-  aiAgentProviderDescription: Pick a preset OpenAI-compatible provider to fill the endpoint.
   apiSets:
     auto: Auto (Determine by network)
     official: Official (Mojang)

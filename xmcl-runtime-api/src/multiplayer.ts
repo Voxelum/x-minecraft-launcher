@@ -139,6 +139,11 @@ export interface MultiplayerIceServerCredential {
   username?: string
   stuns: string[]
   meta?: Record<string, string>
+  servers?: Array<{
+    urls: string | string[]
+    username?: string
+    credential?: string
+  }>
 }
 
 export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
