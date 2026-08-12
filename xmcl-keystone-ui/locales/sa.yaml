@@ -1006,6 +1006,8 @@ modrinth:
 modrinthCard:
   currentVersion: वर्तमानसंस्करणम्
 multiplayer:
+  loginRequiredDescription: P2P बहुक्रीडनं XMCL अन्तर्जालसेवान् उपयुङ्क्ते। अग्रे गन्तुं XMCL खाते प्रवेशं कुर्वन्तु।
+  loginRequiredTitle: P2P बहुक्रीडनाय प्रवेशं कुर्वन्तु
   allowTurn: रिले (relay) सेवाप्रदाता समर्थं करोतु
   allowTurnHint: यदि भवान् मित्रैः सह सन्धितुं न शक्नोति तर्हि रिले सेवाप्रदातुः अनुमतिं ददातु।
   complete: पूर्णम्

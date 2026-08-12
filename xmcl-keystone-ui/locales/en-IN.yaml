@@ -1173,6 +1173,8 @@ modrinth:
 modrinthCard:
   currentVersion: Current Version
 multiplayer:
+  loginRequiredDescription: P2P multiplayer uses XMCL online services. Sign in to an XMCL Account to continue.
+  loginRequiredTitle: Sign in for P2P multiplayer
   allowTurn: Enable relay server
   allowTurnHint: >-
     Allow relay server if you cannot connect with your friend. However, using

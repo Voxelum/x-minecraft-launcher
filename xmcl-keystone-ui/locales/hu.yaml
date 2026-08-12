@@ -991,6 +991,8 @@ modrinth:
 modrinthCard:
   currentVersion: Jelenlegi verzió
 multiplayer:
+  loginRequiredDescription: A P2P többjátékos mód az XMCL online szolgáltatásait használja. A folytatáshoz jelentkezzen be egy XMCL-fiókba.
+  loginRequiredTitle: Bejelentkezés a P2P többjátékos módhoz
   allowTurn: Relay szerver engedélyezése
   allowTurnHint: >-
     Engedélyezd a relé-kiszolgálót, ha nem tudsz csatlakozni a barátodhoz. A relés szerver használata azonban lelassíthatja a kapcsolatot. Használd óvatosan.

@@ -1156,6 +1156,8 @@ modrinth:
   versions: Versiones
   wikiUrl: Wiki
 multiplayer:
+  loginRequiredDescription: El multijugador P2P utiliza los servicios en línea de XMCL. Inicia sesión en una cuenta de XMCL para continuar.
+  loginRequiredTitle: Inicia sesión para jugar en multijugador P2P
   allowTurn: Activar servidor de retransmisión
   allowTurnHint: >-
     Activa el servidor de retransmisión si no puedes conectarte con tu amigo.

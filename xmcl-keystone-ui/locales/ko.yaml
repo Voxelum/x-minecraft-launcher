@@ -949,6 +949,8 @@ modrinth:
 modrinthCard:
   currentVersion: 현재 버전
 multiplayer:
+  loginRequiredDescription: P2P 멀티플레이어는 XMCL 온라인 서비스를 사용합니다. 계속하려면 XMCL 계정에 로그인하세요.
+  loginRequiredTitle: P2P 멀티플레이어 로그인
   allowTurn: 릴레이 서버 사용
   allowTurnHint: 친구와 연결할 수 없을 때 릴레이 서버를 허용합니다. 하지만 릴레이 서버 사용은 연결 속도를 느리게 할 수 있습니다. 주의해서 사용하세요.
   complete: 완료

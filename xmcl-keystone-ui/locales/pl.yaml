@@ -947,6 +947,8 @@ modrinth:
 modrinthCard:
   currentVersion: Aktualna wersja
 multiplayer:
+  loginRequiredDescription: Tryb wieloosobowy P2P korzysta z usług online XMCL. Zaloguj się na konto XMCL, aby kontynuować.
+  loginRequiredTitle: Zaloguj się do trybu wieloosobowego P2P
   allowTurn: Włącz serwer przekaźnikowy
   allowTurnHint: >-
     Zezwól na serwer przekaźnikowy, jeśli nie możesz połączyć się ze znajomym. Jednak korzystanie z może spowolnić połączenie. Należy używać go ostrożnie.

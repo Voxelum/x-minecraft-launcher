@@ -33,6 +33,7 @@
     <AppGameExitDialog />
     <AppLaunchBlockedDialog />
     <AppUnauthenticatedWarningDialog />
+    <AppMultiplayerLoginDialog />
     <AppImageDialog />
     <AppJoinServerDialog />
     <AppSharedTooltip />
@@ -90,6 +91,7 @@ import AppGameExitDialog from '@/views/AppGameExitDialog.vue'
 import AppInstallSkipDialog from '@/views/AppInstallSkipDialog.vue'
 import AppInstanceDeleteDialog from '@/views/AppInstanceDeleteDialog.vue'
 import AppLaunchBlockedDialog from '@/views/AppLaunchBlockedDialog.vue'
+import AppMultiplayerLoginDialog from '@/views/AppMultiplayerLoginDialog.vue'
 import AppUnauthenticatedWarningDialog from '@/views/AppUnauthenticatedWarningDialog.vue'
 import AppJoinServerDialog from '@/views/AppJoinServerDialog.vue'
 import AppMigrateWizardDialog from '@/views/AppMigrateWizardDialog.vue'
@@ -115,6 +117,7 @@ import AppSideBarGroupSettingDialog from '@/views/AppSideBarGroupSettingDialog.v
 import ModGroupSelectDialog from '@/views/ModGroupSelectDialog.vue'
 import AppGamepadPrompt from '@/views/AppGamepadPrompt.vue'
 import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
+import { kMultiplayerEntry, useMultiplayerEntry } from '@/composables/multiplayerEntry'
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
@@ -136,9 +139,8 @@ provide(kAgent, agent)
 installAgentDevLauncher(agent, developerMode)
 
 // User profile dialog — moved from AppSystemBarUserMenu to App root
-const userProfileDialogShown = ref(false)
 const userMenu = useUserMenuControl()
-userMenu.on(() => { userProfileDialogShown.value = true })
+const userProfileDialogShown = userMenu.shown
 const route = useRoute()
 provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value && route.path !== '/me'))
 
@@ -171,6 +173,7 @@ provide(kInFocusMode, computed({
 }))
 
 provide(kLaunchButton, useLaunchButton())
+provide(kMultiplayerEntry, useMultiplayerEntry())
 
 const sidebarSettings = useSidebarSettings()
 provide(kSidebarSettings, sidebarSettings)

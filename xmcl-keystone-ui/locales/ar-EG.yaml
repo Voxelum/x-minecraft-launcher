@@ -1006,6 +1006,8 @@ modrinth:
 modrinthCard:
   currentVersion: الإصدار الحالي
 multiplayer:
+  loginRequiredDescription: تستخدم لعبة P2P الجماعية خدمات XMCL عبر الإنترنت. سجّل الدخول إلى حساب XMCL للمتابعة.
+  loginRequiredTitle: سجّل الدخول لاستخدام اللعب الجماعي عبر P2P
   allowTurn: تفعيل سيرفر الترحيل (relay)
   allowTurnHint: فعل سيرفر الترحيل لو مش عارف تتصل بصاحبك. بس خد بالك، استخدامه ممكن يبطأ الاتصال شوية. استخدمه بحذر.
   complete: اكتمل

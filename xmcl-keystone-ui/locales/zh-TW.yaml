@@ -945,6 +945,8 @@ modrinth:
 modrinthCard:
   currentVersion: 目前版本
 multiplayer:
+  loginRequiredDescription: P2P 多人遊戲使用 XMCL 線上服務。請登入 XMCL 帳戶以繼續。
+  loginRequiredTitle: 登入以使用 P2P 多人遊戲
   allowTurn: 啟用中繼伺服器
   allowTurnHint: 當您和您的朋友連不上時可以嘗試啟用中繼伺服器，但是使用中繼伺服器可能會增加您的聯機延遲。使用時請注意。
   complete: 完成

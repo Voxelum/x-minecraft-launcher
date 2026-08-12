@@ -931,6 +931,8 @@ modrinth:
 modrinthCard:
   currentVersion: 現在のバージョン
 multiplayer:
+  loginRequiredDescription: P2P マルチプレイヤーでは XMCL のオンラインサービスを使用します。続行するには XMCL アカウントにサインインしてください。
+  loginRequiredTitle: P2P マルチプレイヤーにサインイン
   allowTurn: リレーサーバーを有効化
   allowTurnHint: フレンドに接続できない場合はリレーサーバーを有効にしてください。リレーサーバーは接続速度を低下させる可能性があります。注意して使用してください。
   complete: 完了

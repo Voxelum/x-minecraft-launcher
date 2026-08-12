@@ -1428,6 +1428,8 @@ multiplayer:
   joinOrCreateGroup: Join/Create Group
   joinOrCreateGroupHint: Get group id from your friends or create a group
   joinCreatesMissingRoomHint: If this room does not exist, you will create it and become its master.
+  loginRequiredDescription: P2P multiplayer uses XMCL online services. Sign in to an XMCL Account to continue.
+  loginRequiredTitle: Sign in for P2P multiplayer
   kernel: P2P Kernel
   kernelDescription: >-
     Use either native WebRTC or node-datachannel. Only switch this when your p2p

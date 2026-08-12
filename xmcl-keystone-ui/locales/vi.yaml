@@ -1006,6 +1006,8 @@ modrinth:
 modrinthCard:
   currentVersion: Phiên bản hiện tại
 multiplayer:
+  loginRequiredDescription: Chế độ nhiều người chơi P2P sử dụng dịch vụ trực tuyến XMCL. Hãy đăng nhập vào Tài khoản XMCL để tiếp tục.
+  loginRequiredTitle: Đăng nhập để chơi nhiều người P2P
   allowTurn: Bật máy chủ chuyển tiếp (Relay server)
   allowTurnHint: Cho phép máy chủ chuyển tiếp nếu bạn không thể kết nối trực tiếp với bạn bè. Tuy nhiên, việc sử dụng máy chủ chuyển tiếp có thể làm chậm kết nối của bạn. Hãy sử dụng cẩn thận.
   complete: Hoàn tất

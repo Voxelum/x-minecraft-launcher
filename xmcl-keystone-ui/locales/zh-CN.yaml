@@ -1198,6 +1198,8 @@ multiplayer:
   joinOrCreateGroup: 加入/创建群组
   joinOrCreateGroupHint: 从您的小伙伴那获得群组 ID 或自己创建一个群组
   joinCreatesMissingRoomHint: 如果该房间不存在，你会创建它并成为房间主控。
+  loginRequiredDescription: P2P 联机依赖 XMCL 在线服务。请先登录 XMCL Account 后继续。
+  loginRequiredTitle: 登录后使用 P2P 联机
   kernel: P2P内核
   kernelDescription: |-
     使用本机 WebRTC 或节点数据通道。

@@ -1000,6 +1000,8 @@ modrinth:
 modrinthCard:
   currentVersion: 'الإصدار الحالي'
 multiplayer:
+  loginRequiredDescription: تستخدم لعبة P2P الجماعية خدمات XMCL عبر الإنترنت. سجّل الدخول إلى حساب XMCL للمتابعة.
+  loginRequiredTitle: تسجيل الدخول للعب الجماعي عبر P2P
   allowTurn: 'تمكين خادم الترحيل'
   allowTurnHint: >-
     السماح بخادم الترحيل إذا لم تتمكن من الاتصال بصديقك. ومع ذلك، فإن استخدام خادم الترحيل قد يؤدي إلى إبطاء اتصالك. استخدامه بحذر.

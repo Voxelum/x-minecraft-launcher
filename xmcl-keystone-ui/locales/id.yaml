@@ -1006,6 +1006,8 @@ modrinth:
 modrinthCard:
   currentVersion: Versi Saat Ini
 multiplayer:
+  loginRequiredDescription: Multipemain P2P menggunakan layanan online XMCL. Masuk ke Akun XMCL untuk melanjutkan.
+  loginRequiredTitle: Masuk untuk multipemain P2P
   allowTurn: Aktifkan server relai
   allowTurnHint: Izinkan server relai jika Anda tidak dapat terhubung dengan teman Anda. Namun, menggunakan server relai dapat memperlambat koneksi Anda. Gunakan dengan hati-hati.
   complete: Selesai

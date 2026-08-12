@@ -969,6 +969,8 @@ modrinth:
 modrinthCard:
   currentVersion: Versão Atual
 multiplayer:
+  loginRequiredDescription: O modo multijogador P2P usa os serviços online do XMCL. Inicie sessão numa conta XMCL para continuar.
+  loginRequiredTitle: Inicie sessão para o modo multijogador P2P
   allowTurn: Ativar servidor de retransmissão
   allowTurnHint: >-
     Permita o servidor de retransmissão se você não conseguir se conectar com seu amigo. No entanto, o uso do servidor de retransmissão pode diminuir sua conexão. Use com cautela.

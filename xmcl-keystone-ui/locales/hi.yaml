@@ -1006,6 +1006,8 @@ modrinth:
 modrinthCard:
   currentVersion: वर्तमान संस्करण
 multiplayer:
+  loginRequiredDescription: P2P मल्टीप्लेयर XMCL ऑनलाइन सेवाओं का उपयोग करता है। जारी रखने के लिए XMCL खाते में साइन इन करें।
+  loginRequiredTitle: P2P मल्टीप्लेयर के लिए साइन इन करें
   allowTurn: रिले सर्वर सक्षम करें
   allowTurnHint: यदि आप अपने मित्र से कनेक्ट नहीं हो पाते हैं तो रिले सर्वर की अनुमति दें। हालाँकि, रिले सर्वर का उपयोग करने से आपका कनेक्शन धीमा हो सकता है। सावधानी से इसका प्रयोग करें।
   complete: पूर्ण

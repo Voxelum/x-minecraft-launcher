@@ -1020,6 +1020,8 @@ modrinth:
 modrinthCard:
   currentVersion: Aktuelle Version
 multiplayer:
+  loginRequiredDescription: P2P-Multiplayer verwendet die XMCL-Onlinedienste. Melden Sie sich bei einem XMCL-Konto an, um fortzufahren.
+  loginRequiredTitle: Für P2P-Multiplayer anmelden
   allowTurn: Schalten Sie den Relay-Server ein
   allowTurnHint: >-
     Lassen Sie einen Relay-Server zu, wenn Sie keine Verbindung zu Ihrem Freund herstellen können. Die Verwendung eines Relay-Servers kann Ihre Verbindung jedoch verlangsamen. Verbindung verlangsamen. Verwenden Sie ihn mit Vorsicht.

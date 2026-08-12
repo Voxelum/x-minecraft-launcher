@@ -958,6 +958,8 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
+  loginRequiredDescription: O multixogador P2P usa os servizos en liña de XMCL. Inicia sesión nunha conta de XMCL para continuar.
+  loginRequiredTitle: Inicia sesión para o multixogador P2P
   allowTurn: Schakel relay-server in
   allowTurnHint: >-
     Sta relay-server toe als je geen verbinding kunt maken met je vriend. Echter, gebruik van relay-server kan je verbinding vertragen. Gebruik het met voorzichtigheid.

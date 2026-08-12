@@ -150,6 +150,7 @@ import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import { useAgentChatEntry, useAgentChatStatus } from '@/composables/agentChat'
 import { useDialog } from '@/composables/dialog'
 import { useInstanceGroup } from '@/composables/instanceGroup'
+import { kMultiplayerEntry } from '@/composables/multiplayerEntry'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstances } from '@/composables/instances'
 import { kSettingsState } from '@/composables/setting'
@@ -166,6 +167,7 @@ const { blurSidebar, sideBarColor } = injection(kTheme)
 const { instances } = injection(kInstances)
 const { state } = injection(kSettingsState)
 const { gameProfile } = injection(kUserContext)
+const { request: openMultiplayer } = injection(kMultiplayerEntry)
 const { position, align, scale, autoHide } = useInjectSidebarSettings()
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
 const developerMode = computed(() => state.value?.developerMode ?? false)
@@ -282,7 +284,7 @@ function onMouseLeave(e: MouseEvent) {
 
 
 function goMultiplayer() {
-  windowController.openMultiplayerWindow()
+  openMultiplayer()
 }
 
 watch([autoHide, align, position, scale], ([newAutoHide]) => {
