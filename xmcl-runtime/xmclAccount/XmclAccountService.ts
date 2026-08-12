@@ -26,17 +26,32 @@ import {
   type XmclSessionCredential,
   toSessionSummary,
 } from './XmclAccountApi'
+import {
+  createXmclDpopProof,
+  generateXmclDpopKey,
+  restoreXmclDpopKey,
+  serializeXmclDpopKey,
+  type XmclDpopKey,
+} from './XmclAccountDpop'
 import { ProviderCredentialExchangeCache } from './ProviderCredentialExchangeCache'
 
 const MICROSOFT_LAUNCHER_CLIENT_ID = '1363d629-5b06-48a9-a5fb-c65de945f13e'
 const SESSION_SERVICE = 'xmcl-xmcl-account'
 const SESSION_ACCOUNT = 'current-session'
+const DPOP_KEY_SERVICE = 'xmcl-xmcl-account'
+const DPOP_KEY_ACCOUNT = 'dpop-device-key'
 const BROWSER_AUTH_TIMEOUT = 5 * 60 * 1000
 const SESSION_REFRESH_SKEW = 5 * 60 * 1000
+const BROWSER_AUTH_CALLBACK_PATH = '/commercial-auth'
 
 interface StoredXmclSession {
   credential: XmclSessionCredential
   snapshot: XmclAccountSnapshot
+  dpopPrivateJwk?: string
+}
+
+interface StoredXmclDpopKey {
+  privateJwk: string
 }
 
 interface PendingBrowserAuthorization {
@@ -53,6 +68,13 @@ interface PendingMergeCredential {
 export interface XmclSessionAuthorization {
   readonly accessToken: string
   readonly accountId: string
+  readonly tokenType?: XmclSessionCredential['tokenType']
+  readonly dpopProof?: string
+}
+
+export interface XmclSessionAuthorizationRequest {
+  readonly method: string
+  readonly url: string | URL
 }
 
 /**
@@ -68,6 +90,7 @@ export class XmclAccountService
 {
   private readonly api: XmclAccountApi
   private credential: XmclSessionCredential | undefined
+  private dpopKey: XmclDpopKey | undefined
   private pendingMergeCredential: PendingMergeCredential | undefined
   private readonly exchangedProviderTransactions = new ProviderCredentialExchangeCache()
   private readonly pendingBrowserAuthorizations = new Map<string, PendingBrowserAuthorization>()
@@ -96,10 +119,14 @@ export class XmclAccountService
           () => app.getLogger('ApiBaseUrl').warn('Ignoring invalid xmclApiUrl flight; using default XMCL API origins.'),
         ).common
       },
+      () => this.getDpopKey(),
     )
 
     app.protocol.registerHandler('xmcl', ({ request, response }) => {
-      if (request.url.host !== 'launcher' || request.url.pathname !== '/xmcl-auth') return
+      if (
+        request.url.host !== 'launcher' ||
+        request.url.pathname !== BROWSER_AUTH_CALLBACK_PATH
+      ) return
       const state = request.url.searchParams.get('state') ?? ''
       const pending = this.pendingBrowserAuthorizations.get(state)
       if (!pending) {
@@ -124,13 +151,28 @@ export class XmclAccountService
     return this.state
   }
 
-  async [kXmclSessionAuthorization](): Promise<XmclSessionAuthorization | undefined> {
+  async [kXmclSessionAuthorization](
+    request?: XmclSessionAuthorizationRequest,
+  ): Promise<XmclSessionAuthorization | undefined> {
     await this.initialize()
     const credential = await this.getValidCredential()
     const accountId = this.state.account?.accountId
-    return credential && accountId
-      ? { accessToken: credential.accessToken, accountId }
-      : undefined
+    if (!credential || !accountId) return undefined
+    const dpopProof =
+      credential.tokenType === 'DPoP' && request
+        ? createXmclDpopProof(
+            await this.getDpopKey(),
+            request.method,
+            request.url,
+            credential.accessToken,
+          )
+        : undefined
+    return {
+      accessToken: credential.accessToken,
+      accountId,
+      ...(credential.tokenType ? { tokenType: credential.tokenType } : {}),
+      ...(dpopProof ? { dpopProof } : {}),
+    }
   }
 
   @Singleton()
@@ -209,7 +251,7 @@ export class XmclAccountService
     const verifier = toBase64Url(randomBytes(32))
     const state = toBase64Url(randomBytes(32))
     const codeChallenge = toBase64Url(createHash('sha256').update(verifier).digest())
-    const redirectUri = `http://127.0.0.1:${await this.app.serverPort}/xmcl-auth`
+    const redirectUri = `http://127.0.0.1:${await this.app.serverPort}${BROWSER_AUTH_CALLBACK_PATH}`
     const credential = this.credential ? await this.requireValidCredential() : undefined
     const expectedSessionId = credential?.sessionId
     const authorization = await (
@@ -440,7 +482,13 @@ export class XmclAccountService
         expectedSnapshotGeneration !== undefined &&
         expectedSnapshotGeneration !== this.snapshotGeneration
       ) return false
-      const stored: StoredXmclSession = { credential, snapshot }
+      if (credential.tokenType === 'DPoP' && !this.dpopKey) {
+        await this.getDpopKey()
+      }
+      const stored: StoredXmclSession = {
+        credential,
+        snapshot,
+      }
       const credentialChanged =
         this.credential?.sessionId !== credential.sessionId ||
         this.credential.accessToken !== credential.accessToken ||
@@ -482,7 +530,13 @@ export class XmclAccountService
         await this.clearSession()
         return
       }
+      const restoredDpopKey = await this.loadDpopKey(stored)
+      if (stored.credential.tokenType === 'DPoP' && !restoredDpopKey) {
+        await this.clearSession()
+        return
+      }
       await this.enqueueSessionMutation(async () => {
+        this.dpopKey = restoredDpopKey
         this.credential = stored.credential
         this.state.snapshot(stored.snapshot)
         this.sessionGeneration += 1
@@ -496,6 +550,87 @@ export class XmclAccountService
   private requireCredential() {
     if (!this.credential) throw new Error('xmcl_account_session_missing')
     return this.credential
+  }
+
+  private async getDpopKey(): Promise<XmclDpopKey> {
+    if (this.dpopKey) return this.dpopKey
+    const storedKey = await this.readDpopKey()
+    if (storedKey) {
+      this.dpopKey = storedKey
+      return storedKey
+    }
+    const raw = await this.app.secretStorage.get(SESSION_SERVICE, SESSION_ACCOUNT)
+    if (raw) {
+      try {
+        const stored = JSON.parse(raw) as StoredXmclSession
+        const embeddedKey = stored.dpopPrivateJwk
+          ? restoreXmclDpopKey(stored.dpopPrivateJwk)
+          : undefined
+        if (embeddedKey) {
+          this.dpopKey = embeddedKey
+          await this.persistDpopKey(embeddedKey)
+          await this.removeEmbeddedDpopKey(stored)
+          return embeddedKey
+        }
+      } catch {
+        // Generate a new key when secure storage contains a legacy session.
+      }
+    }
+    this.dpopKey = generateXmclDpopKey()
+    await this.persistDpopKey(this.dpopKey)
+    return this.dpopKey
+  }
+
+  private async loadDpopKey(stored: StoredXmclSession): Promise<XmclDpopKey | undefined> {
+    const dedicatedKey = await this.readDpopKey()
+    if (dedicatedKey) {
+      await this.removeEmbeddedDpopKey(stored)
+      return dedicatedKey
+    }
+    const embeddedKey = stored.dpopPrivateJwk
+      ? restoreXmclDpopKey(stored.dpopPrivateJwk)
+      : undefined
+    if (embeddedKey) {
+      try {
+        await this.persistDpopKey(embeddedKey)
+        await this.removeEmbeddedDpopKey(stored)
+      } catch {
+        this.warn('XMCL DPoP key migration could not create the dedicated copy.')
+      }
+    }
+    return embeddedKey
+  }
+
+  private async readDpopKey(): Promise<XmclDpopKey | undefined> {
+    const raw = await this.app.secretStorage.get(DPOP_KEY_SERVICE, DPOP_KEY_ACCOUNT)
+    if (!raw) return undefined
+    try {
+      const stored = JSON.parse(raw) as StoredXmclDpopKey
+      return typeof stored.privateJwk === 'string'
+        ? restoreXmclDpopKey(stored.privateJwk)
+        : undefined
+    } catch {
+      return undefined
+    }
+  }
+
+  private persistDpopKey(key: XmclDpopKey) {
+    const stored: StoredXmclDpopKey = { privateJwk: serializeXmclDpopKey(key) }
+    return this.app.secretStorage.put(
+      DPOP_KEY_SERVICE,
+      DPOP_KEY_ACCOUNT,
+      JSON.stringify(stored),
+    )
+  }
+
+  private removeEmbeddedDpopKey(stored: StoredXmclSession) {
+    if (!stored.dpopPrivateJwk) return Promise.resolve()
+    const { dpopPrivateJwk: _, ...withoutDpopPrivateJwk } = stored
+    return this.app.secretStorage
+      .put(SESSION_SERVICE, SESSION_ACCOUNT, JSON.stringify(withoutDpopPrivateJwk))
+      .catch(() => {
+        this.warn('XMCL DPoP key migration retained the legacy embedded copy.')
+      })
   }
 
   private async requireValidCredential() {
@@ -559,6 +694,10 @@ function isStoredSession(value: StoredXmclSession): value is StoredXmclSession {
     Array.isArray(value.credential?.scopes) &&
     typeof value.credential?.issuedAt === 'string' &&
     typeof value.credential?.expiresAt === 'string' &&
+    (value.credential?.tokenType === undefined ||
+      value.credential?.tokenType === 'DPoP' ||
+      value.credential?.tokenType === 'Bearer') &&
+    (value.dpopPrivateJwk === undefined || typeof value.dpopPrivateJwk === 'string') &&
     typeof value.snapshot === 'object' &&
     Array.isArray(value.snapshot?.identities)
   )

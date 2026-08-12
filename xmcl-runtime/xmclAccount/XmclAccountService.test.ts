@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
 import { ProviderCredentialExchangeCache } from './ProviderCredentialExchangeCache'
 import { XmclAccountApiError } from './XmclAccountApi'
+import { generateXmclDpopKey, serializeXmclDpopKey } from './XmclAccountDpop'
 
 const oauth = vi.hoisted(() => ({
   authenticate: vi.fn(),
@@ -84,6 +85,21 @@ function createXmclService(stubBootstrapCredential = true) {
   }
   return { app, logger, nativeWindowHandle, service, user }
 }
+
+it('registers the server-approved browser OAuth callback path', () => {
+  const { app } = createXmclService()
+  const handler = app.protocol.registerHandler.mock.calls[0]?.[1]
+  const response: Record<string, unknown> = {}
+
+  handler({
+    request: {
+      url: new URL('xmcl://launcher/commercial-auth?state=unknown'),
+    },
+    response,
+  })
+
+  expect(response.status).toBe(400)
+})
 
 function createAuthResult(provider: 'microsoft' | 'modrinth', accountId: string) {
   return {
@@ -601,5 +617,68 @@ describe('XmclAccountService provider bootstrap queue', () => {
       'fresh-provider-credential',
       undefined,
     )
+  })
+})
+
+describe('XmclAccountService DPoP device key lifecycle', () => {
+  it('migrates an embedded device key into dedicated secret storage', async () => {
+    const { app, service } = createXmclService()
+    const key = generateXmclDpopKey()
+    const auth = createAuthResult('modrinth', 'account-1')
+    const session = { ...auth.session, tokenType: 'DPoP' as const }
+    const stored = {
+      credential: session,
+      snapshot: {
+        account: auth.account,
+        identities: auth.identities,
+        session,
+      },
+      dpopPrivateJwk: serializeXmclDpopKey(key),
+    }
+    app.secretStorage.get.mockImplementation(async (_service: string, account: string) =>
+      account === 'current-session' ? JSON.stringify(stored) : '',
+    )
+
+    await service.getXmclAccountState()
+
+    expect(app.secretStorage.put).toHaveBeenCalledWith(
+      'xmcl-xmcl-account',
+      'dpop-device-key',
+      JSON.stringify({ privateJwk: serializeXmclDpopKey(key) }),
+    )
+    const migratedSession = app.secretStorage.put.mock.calls.find(
+      (call) => call[1] === 'current-session',
+    )?.[2]
+    expect(JSON.parse(migratedSession ?? '{}')).not.toHaveProperty('dpopPrivateJwk')
+  })
+
+  it('keeps the cached device key across sign-out', async () => {
+    const { service } = createXmclService()
+    const key = await (service as any).getDpopKey()
+    const credential = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'access-token',
+      refreshToken: 'refresh-token',
+      tokenType: 'DPoP' as const,
+      scopes: [],
+      issuedAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 60 * 60 * 1_000).toISOString(),
+    }
+    ;(service as any).credential = credential
+    ;(service as any).state.snapshot({
+      account: {
+        accountId: credential.accountId,
+        status: 'active',
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: credential,
+    })
+    ;(service as any).api.revokeSession = vi.fn()
+
+    await service.revokeSession()
+
+    expect((service as any).dpopKey).toBe(key)
   })
 })
