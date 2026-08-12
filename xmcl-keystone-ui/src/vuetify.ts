@@ -3,6 +3,9 @@ import FTBIcon from '@/components/FTBIcon.vue'
 import ImageIcon from '@/components/ImageIcon.vue'
 import JarFileIcon from '@/components/JarFileIcon.vue'
 import ModrinthIcon from '@/components/ModrinthIcon.vue'
+import MicrosoftIcon from '@/components/MicrosoftIcon.vue'
+import GoogleIcon from '@/components/GoogleIcon.vue'
+import DiscordIcon from '@/components/DiscordIcon.vue'
 import PackageFileIcon from '@/components/PackageFileIcon.vue'
 import ZipFileIcon from '@/components/ZipFileIcon.vue'
 import { h } from 'vue'
@@ -22,6 +25,9 @@ const xmcl: IconSet = {
       case 'jar': return h(JarFileIcon)
       case 'package': return h(PackageFileIcon)
       case 'modrinth': return h(ModrinthIcon)
+      case 'microsoft': return h(MicrosoftIcon)
+      case 'google': return h(GoogleIcon)
+      case 'discord': return h(DiscordIcon)
       case 'forge': return h(ImageIcon, { src: BuiltinImages.forge })
       case 'fabric': return h(ImageIcon, { src: BuiltinImages.fabric })
       case 'quilt': return h(ImageIcon, { src: BuiltinImages.quilt })
