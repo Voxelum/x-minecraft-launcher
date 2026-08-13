@@ -634,8 +634,7 @@ export class ElectronController implements LauncherAppController {
 
   getLoginSuccessHTML() {
     const title = this.i18n.t('urlSuccess')
-    const body = this.i18n.t('autoCloseHint').replace('{time}', '<span id="countdown">10</span>')
-    return getLoginSuccessHTML(title, body)
+    return getLoginSuccessHTML(title)
   }
 
   openDevTools() {

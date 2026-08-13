@@ -20,5 +20,4 @@ task:
 title: X Minecraft Launcher
 urlFailed: URL desconhecida {url}. Por favor, verifique sua URL ou entre em contato com o desenvolvedor!
 urlSuccess: Sucesso! Agora você pode fechar esta janela e retornar ao iniciador!
-autoCloseHint: Essa janela irá fechar em {time} segundos
 multiplayer: Multiplayer P2P
