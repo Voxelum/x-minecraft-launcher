@@ -288,7 +288,7 @@ import { useModUpgrade } from '@/composables/modUpgrade'
 import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useSimpleDialog } from '@/composables/dialog'
-import { useGlobalDrop } from '@/composables/dropHandler'
+import { getDropFilePaths, useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { InstanceShaderFile, kInstanceShaderPacks } from '@/composables/instanceShaderPack'
@@ -455,10 +455,8 @@ usePresence(computed(() => t('presence.shaderPack', { instance: name.value })))
 const { dragover } = useGlobalDrop({
   onEnter: () => { },
   onDrop: async (t) => {
-    const paths = [] as string[]
-    for (const f of t.files) {
-      paths.push(f.path)
-    }
+    const paths = getDropFilePaths(t.files)
+    if (paths.length === 0) return
     const resources = await install({ path: path.value, files: paths })
     shaderPack.value = basename(resources[0])
   },

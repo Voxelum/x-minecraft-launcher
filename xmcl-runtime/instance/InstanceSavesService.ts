@@ -355,6 +355,10 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
   async importSave(options: ImportSaveOptions) {
     let { instancePath, saveName, path, curseforge } = options
 
+    if (!path) {
+      throw new ImportSaveException({ type: 'instanceImportMissingPath' })
+    }
+
     if (!this.instanceService.state.all[instancePath]) {
       throw new Error(`Cannot find managed instance ${instancePath}`)
     }

@@ -209,7 +209,7 @@ import { ContextMenuItem } from '@/composables/contextMenu'
 import { CurseforgeBuiltinClassId } from '@/composables/curseforge'
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { kModrinthInstaller } from '@/composables/modrinthInstaller'
-import { useGlobalDrop } from '@/composables/dropHandler'
+import { getDropFilePaths, useGlobalDrop } from '@/composables/dropHandler'
 import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
 import { InstanceDatapackFile, useInstanceSavesDatapacks, useSaveDatapackInstallers } from '@/composables/instanceSaveDatapack'
 import { useNotifier } from '@/composables/notifier'
@@ -432,8 +432,8 @@ usePresence(computed(() => t('presence.save', { instance: name.value })))
 // Drop
 const { dragover } = useGlobalDrop({
   onDrop: async (t) => {
-    for (const f of t.files) {
-      importSave({ path: f.path, instancePath: path.value })
+    for (const filePath of getDropFilePaths(t.files)) {
+      await importSave({ path: filePath, instancePath: path.value })
     }
   },
 })
