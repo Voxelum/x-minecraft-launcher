@@ -158,10 +158,17 @@
           data-testid="xmcl-provider-modrinth"
           class="provider-btn provider-btn--modrinth"
           :class="{ 'provider-btn--linked': isProviderLinked('modrinth') }"
-          :disabled="busy || isProviderLinked('modrinth')"
+          :disabled="busy || modrinthLoginPending || isProviderLinked('modrinth')"
           @click="openModrinthLogin"
         >
-          <v-icon size="20" aria-hidden="true" class="provider-icon">
+          <v-progress-circular
+            v-if="modrinthLoginPending"
+            indeterminate
+            size="18"
+            width="2"
+            color="primary"
+          />
+          <v-icon v-else size="20" aria-hidden="true" class="provider-icon">
             xmcl:modrinth
           </v-icon>
           <span class="provider-name">Modrinth</span>
@@ -228,7 +235,6 @@
 <script lang="ts" setup>
 import { kXmclAccount } from '@/composables/xmclAccount'
 import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
-import { useUserMenuControl } from '@/composables/userMenu'
 import { injection } from '@/util/inject'
 import type { XmclAccountStatus, XmclOAuthProvider } from '@xmcl/runtime-api'
 
@@ -243,14 +249,17 @@ const {
   sessionExpired,
   busy,
   error,
+  authorizeMicrosoft,
   authorizeProvider,
   prepareMerge,
   confirmMerge,
   refreshSession,
   revokeSession,
 } = injection(kXmclAccount)
-const modrinth = injection(kModrinthAuthenticatedAPI)
-const { show: showUserProfileDialog } = useUserMenuControl()
+const {
+  authenticate: authenticateModrinth,
+  isValidatingUser: modrinthLoginPending,
+} = injection(kModrinthAuthenticatedAPI)
 
 const accountStatusColor = computed(() => {
   const colors: Record<XmclAccountStatus, string> = {
@@ -285,11 +294,11 @@ function formatDate(value: string) {
 }
 
 function openMicrosoftLogin() {
-  showUserProfileDialog('login')
+  authorizeMicrosoft()
 }
 
 function openModrinthLogin() {
-  modrinth.interact()
+  void authenticateModrinth()
 }
 </script>
 

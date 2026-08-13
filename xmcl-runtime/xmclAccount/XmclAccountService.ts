@@ -237,6 +237,43 @@ export class XmclAccountService
   }
 
   @Singleton()
+  async authorizeMicrosoft(): Promise<void> {
+    await this.initialize()
+    const oauthClient = new MicrosoftOAuthClient(
+      (...args) => this.app.fetch(...args),
+      this.app.getLogger('XmclMicrosoftIdentity'),
+      MICROSOFT_LAUNCHER_CLIENT_ID,
+      async (url, redirectUri, signal, authAttemptId) => {
+        const openMicrosoftLogin = this.app.controller.openMicrosoftLogin
+        if (!openMicrosoftLogin) {
+          throw new Error('interactive_microsoft_auth_not_supported')
+        }
+        return openMicrosoftLogin.call(
+          this.app.controller,
+          url,
+          redirectUri,
+          signal,
+          authAttemptId,
+        )
+      },
+      async () => {
+        const port = await this.app.serverPort ?? 25555
+        return `http://localhost:${port}/auth`
+      },
+      () => {},
+      this.app.secretStorage,
+      () => this.app.controller.getNativeWindowHandle?.(),
+      event => this.app.emit('microsoft-auth-telemetry', event),
+    )
+    const { result } = await oauthClient.authenticate(
+      '',
+      [MICROSOFT_GRAPH_USER_READ_SCOPE],
+      { useNativeBroker: process.platform === 'win32' },
+    )
+    await this.bootstrapCredential('microsoft', result.accessToken)
+  }
+
+  @Singleton()
   async bootstrapModrinth(): Promise<void> {
     await this.initialize()
     const credential = await this.externalCredentials.getValidAccessToken('modrinth')

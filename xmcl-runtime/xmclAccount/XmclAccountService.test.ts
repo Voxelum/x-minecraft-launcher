@@ -67,7 +67,11 @@ function createXmclService(stubBootstrapCredential = true) {
     invalidated: false,
   }
   const app = {
-    controller: { getNativeWindowHandle: vi.fn(() => nativeWindowHandle) },
+    controller: {
+      getNativeWindowHandle: vi.fn(() => nativeWindowHandle),
+      openMicrosoftLogin: vi.fn(),
+    },
+    emit: vi.fn(),
     fetch: vi.fn(),
     getLogger: vi.fn(() => logger),
     protocol: { registerHandler: vi.fn() },
@@ -188,6 +192,20 @@ describe('XmclAccountService Microsoft bootstrap', () => {
 
     await expect(service.bootstrapMicrosoft(user.id)).resolves.toBe('pending-consent')
     expect(app.getLogger).toHaveBeenCalled()
+  })
+
+  it('authorizes the XMCL Microsoft identity interactively without a game account login', async () => {
+    Object.defineProperty(process, 'platform', { value: 'win32', configurable: true })
+    oauth.authenticate.mockResolvedValue({ result: { accessToken: 'microsoft-graph-token' } })
+    const { service } = createXmclService()
+    const bootstrapCredential = vi.mocked((service as any).bootstrapCredential)
+
+    await service.authorizeMicrosoft()
+
+    expect(oauth.authenticate).toHaveBeenCalledWith('', ['User.Read'], {
+      useNativeBroker: true,
+    })
+    expect(bootstrapCredential).toHaveBeenCalledWith('microsoft', 'microsoft-graph-token')
   })
 
   it('persists the rotated credential when the subsequent account snapshot fails', async () => {

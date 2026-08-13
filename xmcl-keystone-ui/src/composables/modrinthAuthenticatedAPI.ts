@@ -74,6 +74,17 @@ export function useModrinthAuthenticatedAPI() {
     }
   }
 
+  async function authenticate() {
+    await login()
+    if (!userData.value) return
+    if (!follows.value) {
+      mutateFollows()
+    }
+    if (!collections.value) {
+      mutateCollections()
+    }
+  }
+
   // Dedupe concurrent login() calls. Without this an onMounted silent login
   // can race with a user-triggered explicit login and double-invoke OAuth.
   let loginInFlight: Promise<void> | undefined
@@ -264,6 +275,7 @@ export function useModrinthAuthenticatedAPI() {
   }
 
   return {
+    authenticate,
     interact,
     follows,
     rejectSignal,

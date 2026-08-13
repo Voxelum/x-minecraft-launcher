@@ -116,6 +116,7 @@ export function useXmclAccount(
     busy,
     isValidating,
     error: computed(() => actionError.value ?? state.value?.error ?? stateError.value),
+    authorizeMicrosoft: () => run(service.authorizeMicrosoft),
     authorizeProvider: (provider: Extract<XmclOAuthProvider, 'google' | 'discord'>) =>
       run(() => service.authorizeProvider(provider)),
     prepareMerge: () => run(service.prepareMerge),

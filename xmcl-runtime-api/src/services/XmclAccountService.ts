@@ -8,6 +8,7 @@ export interface XmclAccountService {
   getXmclAccountState(): Promise<SharedState<XmclAccountState>>
   refreshAccount(): Promise<void>
   bootstrapMicrosoft(userId: string): Promise<XmclMicrosoftBootstrapResult>
+  authorizeMicrosoft(): Promise<void>
   bootstrapModrinth(): Promise<void>
   authorizeProvider(provider: Extract<XmclOAuthProvider, 'google' | 'discord'>): Promise<void>
   prepareMerge(): Promise<void>
