@@ -1,5 +1,7 @@
 # Contribute
 
+<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](i18n/CONTRIBUTE.ru.md)</kbd>
+
 Feel free to contribute to the project. You can fork the project and make PR to here just like any other github project.
 
 - [Contribute](#contribute)
