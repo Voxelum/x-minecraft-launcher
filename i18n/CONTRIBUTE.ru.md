@@ -2,7 +2,7 @@
 
 <kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](i18n/CONTRIBUTE.ru.md)</kbd>
 
-Не стесняйтесь вносить свой вклад в проект. Вы можете разветвить проект и делать PR прямо здесь, как и любой другой проект на Github.
+Не стесняйтесь вносить свой вклад в проект. Вы можете форкать проект и делать PR прямо здесь, как и любой другой проект на Github.
 
 - [Внести вклад](#внести-вклад)
   - [Начало работы](#начало-работы)
