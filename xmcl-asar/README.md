@@ -1,6 +1,6 @@
 # @xmcl/app-&lt;platform&gt;
 
-<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](xmcl-asar/CODE_OF_CONDUCT.ru.md)</kbd>
+<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](CODE_OF_CONDUCT.ru.md)</kbd>
 
 Prebuilt `app.asar` bundles of [X Minecraft Launcher](https://xmcl.app), one
 package per platform.
