@@ -805,6 +805,22 @@ export class ModrinthV2Client {
     }
   }
 
+  async removeProjectsFromCollection(collectionId: string, projectIds: string[], signal?: AbortSignal) {
+    const url = new URL(this.baseUrl + `/v3/collection/${collectionId}`)
+    const response = await this.fetch(url, {
+      method: 'PATCH',
+      headers: {
+        ...this.headers,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ remove_projects: projectIds }),
+      signal,
+    })
+    if (!response.ok) {
+      throw new ModerinthApiError(url.toString(), response.status, await response.text())
+    }
+  }
+
   async getAuthenticatedUser(signal?: AbortSignal) {
     const url = new URL(this.baseUrl + '/v2/user')
     const response = await this.fetch(url, {
