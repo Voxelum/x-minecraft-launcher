@@ -488,6 +488,16 @@ help: Help
 home: Home
 importModpack:
   name: Import Modpack
+  fromFile: Local File...
+  fromUrl: From Link / URL...
+  fromUrlTitle: Import Modpack from Link
+  fromUrlDescription: "Enter or paste the URL of the modpack (.zip, .mrpack):"
+  fromUrlPlaceholder: "https://example.com/modpack.zip"
+  invalidUrl: "Please enter a valid URL (http:// or https://)"
+  import: Import
+  selectVersion: Select Modpack Version
+  selectVersionDescription: "Choose the version of {name} to install:"
+  importVersion: Import Selected Version
 installAssets:
   asset: Install {count} Assets
   assetIndex: Check Assets Index File
