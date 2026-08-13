@@ -1,0 +1,583 @@
+[
+  {
+    "text": "📦 @xmcl/asm",
+    "link": "asm",
+    "items": [
+      {
+        "text": "AnnotationVisitor",
+        "link": "asm/AnnotationVisitor"
+      },
+      {
+        "text": "Attribute",
+        "link": "asm/Attribute"
+      },
+      {
+        "text": "ClassReader",
+        "link": "asm/ClassReader"
+      },
+      {
+        "text": "ClassVisitor",
+        "link": "asm/ClassVisitor"
+      },
+      {
+        "text": "FieldVisitor",
+        "link": "asm/FieldVisitor"
+      },
+      {
+        "text": "Handle",
+        "link": "asm/Handle"
+      },
+      {
+        "text": "Label",
+        "link": "asm/Label"
+      },
+      {
+        "text": "MethodVisitor",
+        "link": "asm/MethodVisitor"
+      },
+      {
+        "text": "Type",
+        "link": "asm/Type"
+      },
+      {
+        "text": "TypePath",
+        "link": "asm/TypePath"
+      },
+      {
+        "text": "TypeReference",
+        "link": "asm/TypeReference"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/client",
+    "link": "client",
+    "items": [
+      {
+        "text": "Channel",
+        "link": "client/Channel"
+      },
+      {
+        "text": "Handshake",
+        "link": "client/Handshake"
+      },
+      {
+        "text": "MinecraftLanDiscover",
+        "link": "client/MinecraftLanDiscover"
+      },
+      {
+        "text": "PacketDecoder",
+        "link": "client/PacketDecoder"
+      },
+      {
+        "text": "PacketEmitter",
+        "link": "client/PacketEmitter"
+      },
+      {
+        "text": "PacketEncoder",
+        "link": "client/PacketEncoder"
+      },
+      {
+        "text": "PacketInBound",
+        "link": "client/PacketInBound"
+      },
+      {
+        "text": "PacketOutbound",
+        "link": "client/PacketOutbound"
+      },
+      {
+        "text": "Ping",
+        "link": "client/Ping"
+      },
+      {
+        "text": "Pong",
+        "link": "client/Pong"
+      },
+      {
+        "text": "ServerQuery",
+        "link": "client/ServerQuery"
+      },
+      {
+        "text": "ServerStatus",
+        "link": "client/ServerStatus"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/core",
+    "link": "core",
+    "items": [
+      {
+        "text": "MinecraftFolder",
+        "link": "core/MinecraftFolder"
+      },
+      {
+        "text": "ResolvedLibrary",
+        "link": "core/ResolvedLibrary"
+      },
+      {
+        "text": "LaunchPrecheck",
+        "link": "core/LaunchPrecheck"
+      },
+      {
+        "text": "LibraryInfo",
+        "link": "core/LibraryInfo"
+      },
+      {
+        "text": "MinecraftPath",
+        "link": "core/MinecraftPath"
+      },
+      {
+        "text": "Version",
+        "link": "core/Version"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/curseforge",
+    "link": "curseforge",
+    "items": [
+      {
+        "text": "CurseforgeApiError",
+        "link": "curseforge/CurseforgeApiError"
+      },
+      {
+        "text": "CurseforgeV1Client",
+        "link": "curseforge/CurseforgeV1Client"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/file-transfer",
+    "link": "file-transfer",
+    "items": [
+      {
+        "text": "DefaultRangePolicy",
+        "link": "file-transfer/DefaultRangePolicy"
+      },
+      {
+        "text": "ManagedAbortError",
+        "link": "file-transfer/ManagedAbortError"
+      },
+      {
+        "text": "ProgressTrackerMultiple",
+        "link": "file-transfer/ProgressTrackerMultiple"
+      },
+      {
+        "text": "ProgressTrackerSingle",
+        "link": "file-transfer/ProgressTrackerSingle"
+      },
+      {
+        "text": "RangeNotSupportedError",
+        "link": "file-transfer/RangeNotSupportedError"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/forge-site-parser",
+    "link": "forge-site-parser",
+    "items": []
+  },
+  {
+    "text": "📦 @xmcl/game-data",
+    "link": "game-data",
+    "items": [
+      {
+        "text": "ServerInfo",
+        "link": "game-data/ServerInfo"
+      },
+      {
+        "text": "ServersData",
+        "link": "game-data/ServersData"
+      },
+      {
+        "text": "WorldReader",
+        "link": "game-data/WorldReader"
+      },
+      {
+        "text": "RegionReader",
+        "link": "game-data/RegionReader"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/gamesetting",
+    "link": "gamesetting",
+    "items": []
+  },
+  {
+    "text": "📦 @xmcl/installer",
+    "link": "installer",
+    "items": [
+      {
+        "text": "BadForgeInstallerJarError",
+        "link": "installer/BadForgeInstallerJarError"
+      },
+      {
+        "text": "BadOptifineJarError",
+        "link": "installer/BadOptifineJarError"
+      },
+      {
+        "text": "InstallError",
+        "link": "installer/InstallError"
+      },
+      {
+        "text": "ParseJavaVersionError",
+        "link": "installer/ParseJavaVersionError"
+      },
+      {
+        "text": "PostProcessBadJarError",
+        "link": "installer/PostProcessBadJarError"
+      },
+      {
+        "text": "PostProcessFailedError",
+        "link": "installer/PostProcessFailedError"
+      },
+      {
+        "text": "PostProcessNoMainClassError",
+        "link": "installer/PostProcessNoMainClassError"
+      },
+      {
+        "text": "PostProcessValidationFailedError",
+        "link": "installer/PostProcessValidationFailedError"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/mod-parser",
+    "link": "mod-parser",
+    "items": [
+      {
+        "text": "CorruptedForgeConfigError",
+        "link": "mod-parser/CorruptedForgeConfigError"
+      },
+      {
+        "text": "ForgeModParseFailedError",
+        "link": "mod-parser/ForgeModParseFailedError"
+      },
+      {
+        "text": "ForgeConfig",
+        "link": "mod-parser/ForgeConfig"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/model",
+    "link": "model",
+    "items": [
+      {
+        "text": "BasicTextureManager",
+        "link": "model/BasicTextureManager"
+      },
+      {
+        "text": "BlockModelFactory",
+        "link": "model/BlockModelFactory"
+      },
+      {
+        "text": "BlockModelObject",
+        "link": "model/BlockModelObject"
+      },
+      {
+        "text": "PlayerModel",
+        "link": "model/PlayerModel"
+      },
+      {
+        "text": "PlayerObject3D",
+        "link": "model/PlayerObject3D"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/modrinth",
+    "link": "modrinth",
+    "items": [
+      {
+        "text": "ModerinthApiError",
+        "link": "modrinth/ModerinthApiError"
+      },
+      {
+        "text": "ModrinthV2Client",
+        "link": "modrinth/ModrinthV2Client"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/nat-api",
+    "link": "nat-api",
+    "items": [
+      {
+        "text": "Device",
+        "link": "nat-api/Device"
+      },
+      {
+        "text": "PmpClient",
+        "link": "nat-api/PmpClient"
+      },
+      {
+        "text": "Ssdp",
+        "link": "nat-api/Ssdp"
+      },
+      {
+        "text": "UpnpClient",
+        "link": "nat-api/UpnpClient"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/nbt",
+    "link": "nbt",
+    "items": [
+      {
+        "text": "ReadContext",
+        "link": "nbt/ReadContext"
+      },
+      {
+        "text": "WriteContext",
+        "link": "nbt/WriteContext"
+      },
+      {
+        "text": "TagType",
+        "link": "nbt/TagType"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/resourcepack",
+    "link": "resourcepack",
+    "items": [
+      {
+        "text": "ModelLoader",
+        "link": "resourcepack/ModelLoader"
+      },
+      {
+        "text": "ResourceLocation",
+        "link": "resourcepack/ResourceLocation"
+      },
+      {
+        "text": "ResourceManager",
+        "link": "resourcepack/ResourceManager"
+      },
+      {
+        "text": "ResourcePack",
+        "link": "resourcepack/ResourcePack"
+      },
+      {
+        "text": "BlockModel",
+        "link": "resourcepack/BlockModel"
+      },
+      {
+        "text": "PackMeta",
+        "link": "resourcepack/PackMeta"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/semver",
+    "link": "semver",
+    "items": [
+      {
+        "text": "FabricSemanticVersion",
+        "link": "semver/FabricSemanticVersion"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/system",
+    "link": "system",
+    "items": [
+      {
+        "text": "FileSystem",
+        "link": "system/FileSystem"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 @xmcl/text-component",
+    "link": "text-component",
+    "items": []
+  },
+  {
+    "text": "📦 @xmcl/unzip",
+    "link": "unzip",
+    "items": []
+  },
+  {
+    "text": "📦 @xmcl/user",
+    "link": "user",
+    "items": [
+      {
+        "text": "MicrosoftAuthenticator",
+        "link": "user/MicrosoftAuthenticator"
+      },
+      {
+        "text": "MicrosoftMinecraftXboxLoginError",
+        "link": "user/MicrosoftMinecraftXboxLoginError"
+      },
+      {
+        "text": "MojangClient",
+        "link": "user/MojangClient"
+      },
+      {
+        "text": "MojangError",
+        "link": "user/MojangError"
+      },
+      {
+        "text": "MojangFriendsError",
+        "link": "user/MojangFriendsError"
+      },
+      {
+        "text": "ProfileNotFoundError",
+        "link": "user/ProfileNotFoundError"
+      },
+      {
+        "text": "SetNameError",
+        "link": "user/SetNameError"
+      },
+      {
+        "text": "SetSkinError",
+        "link": "user/SetSkinError"
+      },
+      {
+        "text": "UnauthorizedError",
+        "link": "user/UnauthorizedError"
+      },
+      {
+        "text": "YggdrasilClient",
+        "link": "user/YggdrasilClient"
+      },
+      {
+        "text": "YggdrasilError",
+        "link": "user/YggdrasilError"
+      },
+      {
+        "text": "YggdrasilThirdPartyClient",
+        "link": "user/YggdrasilThirdPartyClient"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 bore",
+    "link": "bore",
+    "items": [
+      {
+        "text": "AuthenticationError",
+        "link": "bore/AuthenticationError"
+      },
+      {
+        "text": "BoreClient",
+        "link": "bore/BoreClient"
+      },
+      {
+        "text": "ConnectionError",
+        "link": "bore/ConnectionError"
+      },
+      {
+        "text": "ProtocolError",
+        "link": "bore/ProtocolError"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 bytebuffer",
+    "link": "bytebuffer",
+    "items": [
+      {
+        "text": "ByteBuffer",
+        "link": "bytebuffer/ByteBuffer"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 discord-rpc",
+    "link": "discord-rpc",
+    "items": [
+      {
+        "text": "CertifiedDevice",
+        "link": "discord-rpc/CertifiedDevice"
+      },
+      {
+        "text": "Channel",
+        "link": "discord-rpc/Channel"
+      },
+      {
+        "text": "Client",
+        "link": "discord-rpc/Client"
+      },
+      {
+        "text": "ClientUser",
+        "link": "discord-rpc/ClientUser"
+      },
+      {
+        "text": "Guild",
+        "link": "discord-rpc/Guild"
+      },
+      {
+        "text": "Lobby",
+        "link": "discord-rpc/Lobby"
+      },
+      {
+        "text": "Message",
+        "link": "discord-rpc/Message"
+      },
+      {
+        "text": "Transport",
+        "link": "discord-rpc/Transport"
+      },
+      {
+        "text": "User",
+        "link": "discord-rpc/User"
+      },
+      {
+        "text": "VoiceSettings",
+        "link": "discord-rpc/VoiceSettings"
+      }
+    ],
+    "collapsed": true
+  },
+  {
+    "text": "📦 schematic",
+    "link": "schematic",
+    "items": []
+  },
+  {
+    "text": "📦 sqlite",
+    "link": "sqlite",
+    "items": [
+      {
+        "text": "AbstractSqliteDriver",
+        "link": "sqlite/AbstractSqliteDriver"
+      },
+      {
+        "text": "JSONPlugin",
+        "link": "sqlite/JSONPlugin"
+      },
+      {
+        "text": "NodeSqliteDialect",
+        "link": "sqlite/NodeSqliteDialect"
+      },
+      {
+        "text": "NodeSqliteDriver",
+        "link": "sqlite/NodeSqliteDriver"
+      }
+    ],
+    "collapsed": true
+  }
+]
