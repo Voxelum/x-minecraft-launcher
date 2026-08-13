@@ -441,6 +441,20 @@ export class XmclAccountService
     }
     const applied = await this.applySnapshot(snapshot, result.session, expectedGeneration)
     if (!applied) throw new Error('xmcl_account_session_changed')
+    if (result.identities === undefined) {
+      const generation = this.sessionGeneration
+      const snapshotGeneration = this.snapshotGeneration
+      try {
+        await this.applySnapshot(
+          await this.api.getSnapshot(result.session),
+          result.session,
+          generation,
+          snapshotGeneration,
+        )
+      } catch {
+        this.warn('XMCL authentication succeeded; account identities will refresh later.')
+      }
+    }
   }
 
   private async getValidCredential(): Promise<XmclSessionCredential | undefined> {
