@@ -23,7 +23,7 @@ const NO_GAME_PROFILE: GameProfileAndTexture = Object.freeze({
 export const kUserContext: InjectionKey<ReturnType<typeof useUserContext>> = Symbol('UserContext')
 
 export function useUserContext() {
-  const { getUserState, refreshUser } = useService(UserServiceKey)
+  const { getUserState } = useService(UserServiceKey)
   const { state, isValidating, error } = useState(getUserState, class extends UserState {
     override gameProfileUpdate({ profile, userId }: { userId: string; profile: (GameProfileAndTexture | GameProfile) }) {
       const userProfile = this.users[userId]
@@ -70,8 +70,6 @@ export function useUserContext() {
       if (first) {
         select(first.id)
       }
-    } else {
-      refreshUser(profile.id)
     }
   }, { immediate: true })
 

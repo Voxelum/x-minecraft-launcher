@@ -244,6 +244,19 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       })
     })
 
+    app.on('microsoft-auth-telemetry', (payload) => {
+      if (settings.disableTelemetry) return
+      defaultClient.trackEvent({
+        name: payload.name,
+        properties: payload.properties,
+        measurements: payload.measurements,
+        tagOverrides: {
+          [contract.operationId]: String(payload.properties.authAttemptId),
+          [contract.operationName]: 'microsoft-auth',
+        },
+      })
+    })
+
     // This is the install E2E score: every renderer-initiated installation
     // operation records exactly one terminal outcome. `installInstanceFiles`
     // is intentionally included so modpack/file installs are measured beside

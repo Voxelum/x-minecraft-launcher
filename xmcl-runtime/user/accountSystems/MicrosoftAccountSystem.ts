@@ -209,6 +209,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       // ProfileNotFoundError just means "this MS account doesn't own
       // Minecraft" -- expected, see issue #1442.
       if (e.name === 'ProfileNotFoundError') return true
+      if (e.name === 'MicrosoftOAuthSlientFailed') return true
       if (isKnownXErr(e)) return true
       // 429/408 from login_with_xbox is transient. When the authenticator
       // uses its built-in undici fetch + RetryAgent, undici retries it

@@ -29,6 +29,12 @@ import { kSettings } from '~/settings'
 
 export const LauncherAppKey: InjectionKey<LauncherApp> = Symbol('LauncherAppKey')
 
+export interface MicrosoftAuthTelemetryEvent {
+  name: 'microsoft-auth-start' | 'microsoft-auth-broker-result' | 'microsoft-auth-webview-result' | 'microsoft-auth-complete'
+  properties: Record<string, string | number | boolean>
+  measurements?: Record<string, number>
+}
+
 export interface LauncherApp {
   on(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   on(channel: 'window-all-closed', listener: () => void): this
@@ -38,6 +44,7 @@ export interface LauncherApp {
   on(channel: 'download-cdn', listener: (reason: string, file: string) => void): this
   on(channel: 'install-postprocess-fallback', listener: (payload: Record<string, string | number | boolean>) => void): this
   on(channel: 'agent-run-trace', listener: (payload: AgentRunTrace) => void): this
+  on(channel: 'microsoft-auth-telemetry', listener: (payload: MicrosoftAuthTelemetryEvent) => void): this
   on(channel: 'second-instance', listener: (argv: string[]) => void): this
   on(channel: 'direct-launch', listener: (data: any) => void): this
 
@@ -49,6 +56,7 @@ export interface LauncherApp {
   once(channel: 'download-cdn', listener: (reason: string, file: string) => void): this
   once(channel: 'install-postprocess-fallback', listener: (payload: Record<string, string | number | boolean>) => void): this
   once(channel: 'agent-run-trace', listener: (payload: AgentRunTrace) => void): this
+  once(channel: 'microsoft-auth-telemetry', listener: (payload: MicrosoftAuthTelemetryEvent) => void): this
   once(channel: 'second-instance', listener: (argv: string[]) => void): this
   once(channel: 'direct-launch', listener: (data: any) => void): this
 
@@ -60,6 +68,7 @@ export interface LauncherApp {
   emit(channel: 'download-cdn', reason: string, file: string): this
   emit(channel: 'install-postprocess-fallback', payload: Record<string, string | number | boolean>): this
   emit(channel: 'agent-run-trace', payload: AgentRunTrace): this
+  emit(channel: 'microsoft-auth-telemetry', payload: MicrosoftAuthTelemetryEvent): this
   emit(channel: 'second-instance', argv: string[]): this
   emit(channel: 'direct-launch', data: any): this
 }
