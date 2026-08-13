@@ -40,22 +40,22 @@ agent:
   title: XMCL Agent
   statusReady: Готов
   statusWorking: Работаю…
-  statusDisabled: Отключено — нет API-ключа
+  statusDisabled: Отключено - нет API-ключа
   reset: Сбросить диалог
   notConfiguredTitle: Agent не настроен
   notConfiguredHint: >-
     Укажите API-ключ, модель и OpenAI-совместимый endpoint в Настройки → Общие → AI Agent.
-    Например, используйте OpenAI или gateway, совместимый с Claude.
+    Например, используйте OpenAI или эндпоинт, совместимый с Claude.
   openSettings: Открыть настройки
   setupGuide: Руководство по настройке
   emptyHint: >-
     Попросите агента проверить экземпляр, включить/выключить моды, читать логи или диагностировать краш.
   suggestion1: Обновите этот экземпляр до новой версии Minecraft и обновите моды
-  suggestion2: Мои моды падают — найдите причину и подскажите, как исправить
+  suggestion2: Мои моды падают - найдите причину и подскажите, как исправить
   suggestion3: 'Соберите сборку: найдите моды для нужной функции и установите их в этот экземпляр'
   thinking: думаю…
   callingTool: вызов {name}…
-  inputPlaceholder: Спросите агента… (Enter — отправить, Shift+Enter — новая строка)
+  inputPlaceholder: Спросите агента… (Enter - отправить, Shift+Enter - новая строка)
   disabledPlaceholder: Agent отключен
   toggleHint: переключить
 ago:
@@ -71,24 +71,24 @@ askAICrash:
   selectPlatform: Откройте платформу для ИИ и вставьте только что только что скопированное.
 authProfileAddedNotification: Профиль аутентификации {name} добавлен
 bedrock:
-  installBedrockVersion: 'Downloading Bedrock {version}'
-  versionsTitle: Version manager
-  versionsHint: Download multiple Bedrock versions from Microsoft's servers and switch between them. Windows can register only one version at a time.
-  versionsError: Failed to load the version list. Check your network and try again.
-  channel: Channel
-  channelRelease: Release
-  channelBeta: Beta
-  channelPreview: Preview
-  active: Active
-  play: Play
-  download: Download
-  installedTag: Installed
-  developerModeRequired: Registering a downloaded version requires Windows Developer Mode.
-  enableDeveloperMode: Enable Developer Mode
-  enableDeveloperModeFailed: Failed to enable Developer Mode
-  downloadFailed: 'Failed to download Bedrock {version}'
-  launchFailed: Failed to launch this Bedrock version
-  removeFailed: 'Failed to remove Bedrock {version}'
+  installBedrockVersion: 'Скачивание Bedrock {version}'
+  versionsTitle: Менеджер версий
+  versionsHint: Загрузите несколько версий Bedrock с серверов Microsoft и переключайтесь между ними. Windows может одновременно регистрировать только одну версию.
+  versionsError: Не удалось загрузить список версий. Проверьте свою сеть и повторите попытку.
+  channel: Канал
+  channelRelease: Релиз
+  channelBeta: Бета
+  channelPreview: Анонс
+  active: Активная
+  play: Играть
+  download: Скачать
+  installedTag: Установлена
+  developerModeRequired: Для регистрации загруженной версии требуется режим разработчика Windows.
+  enableDeveloperMode: Включить режим разработчика
+  enableDeveloperModeFailed: Не удалось включить режим разработчика
+  downloadFailed: 'Не удалось загрузить Bedrock {version}'
+  launchFailed: Не удалось запустить эту версию Bedrock
+  removeFailed: 'Не удалось удалить Bedrock {version}'
 baseSetting:
   title: Локальные настройки
 browseApp:
@@ -527,7 +527,7 @@ instances:
   linkSharedFoldersHint: >-
     Создайте эти папки как ссылки на общие папки лаунчера, чтобы эта сборка
     делила их содержимое со всеми другими связанными сборками. Это не
-    копирование — изменения в одной сборке появляются во всех. Неотмеченные
+    копирование - изменения в одной сборке появляются во всех. Неотмеченные
     папки остаются приватными для этой сборки.
   linkFailed: Не удалось связать папку {folder} с общей папкой
   addPrismDescription: Импортировать существующий инстанс PrismLauncher.
@@ -553,7 +553,7 @@ java:
   allocation: Выделено
   autoHint: Минимум растёт с количеством установленных модов; максимум использует доступную системную память.
   change: Изменить
-  locationHint: Java не выбрана — используется системная по умолчанию
+  locationHint: Java не выбрана - используется системная по умолчанию
   openFolder: Открыть папку Java
   presets: Предустановки
 labyMod:
