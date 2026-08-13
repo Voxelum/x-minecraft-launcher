@@ -343,6 +343,8 @@ feedback:
   qqDescription: >-
     Увійдіть до групи QQ для зворотного зв'язку та спілкуйтеся безпосередньо з авторами. Номер групи: {number}
   qqEnterGroup: Приєднатися
+  reddit: Reddit
+  redditDescription: Приєднатися до спільноти r/XMCL у Reddit
 fileDetail:
   fileSize: Розмір файлу
   filesize: Розмір файлу
