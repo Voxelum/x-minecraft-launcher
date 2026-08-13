@@ -1,5 +1,7 @@
 # XMCL Modrinth Publish
 
+<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](i18n/ModrinthPublish.ru.md)</kbd>
+
 ## 背景
 
 XMCL 已支持浏览、安装和导出 Modrinth modpack，也已通过 OAuth 申请读取、创建和修改 Modrinth project/version 所需的权限。当前发布流程仍需要用户离开启动器，在本地导出文件后再到 Modrinth 网站手动创建项目或版本并上传。
