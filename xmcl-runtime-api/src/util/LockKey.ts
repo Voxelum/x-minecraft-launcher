@@ -4,6 +4,7 @@ export const LockKey = {
   libraries: 'libraries',
   assets: 'assets',
   version: (v: string) => `versions/${v}`,
+  forgePostProcess: (minecraft: string) => `forge-post-process/${minecraft}`,
   instance: (p: string) => `instances/${p}`,
   instanceManifest: (p: string) => `instances/${p}/manifest`,
   instanceRemove: (p: string) => `instances/${p}/remove`,
