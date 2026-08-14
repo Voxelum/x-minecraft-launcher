@@ -250,12 +250,18 @@ export function useSettings() {
     }
   })
 
+  const quickActionShortcut = computed({
+    get: () => state.value?.quickActionShortcut ?? '',
+    set: (v) => state.value?.quickActionShortcutSet(v),
+  })
+
   return {
     enableDedicatedGPUOptimization,
     streamerMode,
     developerMode,
     httpProxyEnabled,
     enableDiscord,
+    quickActionShortcut,
     maxSockets,
     maxAPISockets,
     locales,

@@ -86,6 +86,15 @@
       icon="videocam"
     />
 
+    <!-- Quick Action Shortcut -->
+    <v-divider class="my-3" />
+    <SettingItemHotkey
+      v-model="quickActionShortcut"
+      :title="t('setting.quickActionShortcut')"
+      :description="t('setting.quickActionShortcutDescription')"
+      icon="search"
+    />
+
     <v-divider class="my-3" />
 
     <SettingItemSelect
@@ -199,6 +208,7 @@ import SettingCard from '@/components/SettingCard.vue'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import SettingItemSwitcher from '@/components/SettingItemSwitcher.vue'
+import SettingItemHotkey from '@/components/SettingItemHotkey.vue'
 import { kCriticalStatus } from '@/composables/criticalStatus'
 import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
 import { kEnvironment } from '@/composables/environment'
@@ -222,6 +232,7 @@ const {
   replaceNative,
   disableTelemetry,
   enableDiscord,
+  quickActionShortcut,
   locales: rawLocales,
   enableDedicatedGPUOptimization,
 } = useSettings()
