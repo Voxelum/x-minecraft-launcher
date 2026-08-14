@@ -53,11 +53,13 @@ export function createTechnicHandler(app: LauncherApp): ModpackHandler<TechnicMa
       let forge: string | undefined
       let fabricLoader: string | undefined
 
-      // Extract clean name from zip filename: e.g. "the-1122-pack_1.6.6.zip" -> "The 1.12.2 Pack"
-      const rawName = basename(zipFile.fileName || '', extname(zipFile.fileName || ''))
+      // Extract clean name from zip filename if available: e.g. "the-1122-pack_1.6.6.zip" -> "The 1.12.2 Pack"
+      const zipFileName = (zipFile as any).fileName as string | undefined
+      const rawName = zipFileName ? basename(zipFileName, extname(zipFileName)) : ''
       let name = rawName
         ? rawName
             .replace(/[_-]1\.\d+(\.\d+)?/g, '')
+            .replace(/[_-]v?\d+(\.\d+)+/g, '')
             .replace(/[_-]/g, ' ')
             .replace(/1122/g, '1.12.2')
             .replace(/1710/g, '1.7.10')
