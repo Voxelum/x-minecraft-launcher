@@ -75,7 +75,7 @@
         "@types/node": "^24.13.3",
         "@xmcl/oxlint-config": "workspace:*",
         "chalk": "^4.1.2",
-        "js-yaml": "^4.1.0",
+        "js-yaml": "^4.3.1",
         "@types/js-yaml": "^4.0.9",
         "cross-env": "^5.2.1",
         "lightningcss": "^1.32.0",
