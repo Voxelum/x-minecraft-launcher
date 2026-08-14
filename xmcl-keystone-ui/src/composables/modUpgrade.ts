@@ -116,9 +116,11 @@ export function useModUpgrade(
           const file = markRaw(candidates[0])
           const current = mod
           if (file.id !== current.curseforge?.fileId) {
-            // this is the new version
-            if (!result[mod.curseforge!.projectId]) {
-              result[mod.curseforge!.projectId] = {
+            // Key by modrinthId when available so it matches the item.id used by
+            // modSearch (which also prefers modrinthId over curseforgeId).
+            const planKey = mod.modrinth?.projectId ?? mod.curseforge!.projectId.toString()
+            if (!result[planKey]) {
+              result[planKey] = {
                 file,
                 mod,
                 updating: false,
