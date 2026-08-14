@@ -258,6 +258,7 @@ function setOutputs(version: string, packages: PackageInfo[], release: boolean) 
     `to prepare new releases for changed packages.\n\n${getAppChangelog(version)}\n### Package Changes\n\n${getCommitInfoText(packages)}`,
   ].join('\n')
   const output = process.env.GITHUB_OUTPUT ? core.setOutput : (key: string, value: unknown) => console.log(`${key}: ${value}`)
+  output('version', version)
   output('title', `Prepare Release ${version}`)
   output('body', body)
   output('changelog', body)
