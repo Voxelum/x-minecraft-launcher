@@ -207,7 +207,7 @@ async function downloadAppInstaller(
   } & DownloadBaseOptions,
 ): Promise<void> {
   const destination = join(app.getPath('downloads'), 'X Minecraft Launcher.appinstaller')
-  const url = 'https://xmcl.blob.core.windows.net/releases/xmcl.appinstaller'
+  const url = 'https://api.xmcl.app/appinstaller'
 
   await download({
     url,
