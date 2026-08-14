@@ -256,14 +256,7 @@ export function useModrinthAuthenticatedAPI() {
     if (!collectionId) {
       return
     }
-    if (!collections.value) {
-      await mutateCollections()
-    }
-    const current = collections.value?.find((collection) => collection.id === collectionId)
-    if (!current) {
-      throw new TypeError('Collection not found')
-    }
-    await clientModrinthV2.updateCollection(collectionId, current.projects.filter((id) => id !== projectId))
+    await clientModrinthV2.removeProjectsFromCollection(collectionId, [projectId])
     await mutateCollections()
   }
 
