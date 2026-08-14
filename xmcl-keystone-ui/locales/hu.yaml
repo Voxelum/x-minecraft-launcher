@@ -1586,8 +1586,8 @@ theme:
   selectImage: Válassza a Kép lehetőséget
   selectMusic: Válassza a Zene lehetőséget
   selectVideo: Válassza a Videó lehetőséget
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Kiszolgáló jelölt
   prflx: Peer Reflexív jelölt

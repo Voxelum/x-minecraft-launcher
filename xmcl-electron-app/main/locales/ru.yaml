@@ -17,7 +17,7 @@ task:
   continue: Посмотреть в лаунчере
   fail: Одна задача не выполнена
   success: Одна задача выполнена
-title: X Minecraft Launcher
+title: XMCL
 urlFailed: Неизвестная ссылка {url}. Проверьте ссылку или обратитесь к разработчику.
 urlSuccess: Готово ! Можете закрыть это окно и вернуться к лаунчеру.
 makeDesktopShortcut: Создать ярлык на рабочем столе

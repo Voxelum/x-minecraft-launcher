@@ -1580,8 +1580,8 @@ theme:
   selectImage: Вибрати зображення
   selectMusic: Вибрати музику
   selectVideo: Вибрати відео
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Кандидат хоста
   prflx: Кандидат Peer Reflexive
@@ -1819,7 +1819,7 @@ gamepad:
   steamAddedNotify: Лаунчер успішно додано до вашої бібліотеки Steam! Будь ласка, перезапустіть Steam, щоб побачити зміни.
   steamAlreadyAddedNotify: Лаунчер вже додано до вашої бібліотеки Steam.
   steamDeckTitle: Виявлено Steam Deck
-  steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати X Minecraft Launcher до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
+  steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати XMCL до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
   steamDeckAddBtn: Додати до Steam ({btn})
   steamDeckCancelBtn: Скасувати ({btn})
 

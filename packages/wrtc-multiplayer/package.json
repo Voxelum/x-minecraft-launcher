@@ -2,7 +2,7 @@
   "version": "0.3.2",
   "name": "@xmcl/wrtc-multiplayer",
   "private": true,
-  "description": "WebRTC-based multiplayer runtime for X Minecraft Launcher (runs inside the multiplayer preload process)",
+  "description": "WebRTC-based multiplayer runtime for XMCL (runs inside the multiplayer preload process)",
   "main": "./index.ts",
   "scripts": {
     "check": "tsc --project tsconfig.json --noEmit",

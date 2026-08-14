@@ -17,7 +17,7 @@ task:
   continue: Подивитись в лаунчері
   fail: Завдання не було виконано
   success: Завдання було виконано
-title: X Minecraft Launcher
+title: XMCL
 urlFailed: >-
   Невідоме посилання {url}. Перевірте свою полсилання або зв'яжіться з
   розробниками

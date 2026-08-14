@@ -225,9 +225,8 @@ export class MicrosoftOAuthClient {
             scopes,
             account,
             forceRefresh: false,
-          }).catch((e) => {
-            this.logger.warn(`Fail to acquire microsoft token silently for ${username}`)
-            this.logger.warn(e)
+          }).catch(() => {
+            this.logger.warn('Microsoft silent token acquisition missed; interactive authentication may be required.')
             return null
           })
           if (result) {
@@ -238,9 +237,8 @@ export class MicrosoftOAuthClient {
                 ? await cacheApp.acquireTokenSilent({
                   scopes: options.extraScopes,
                   account,
-                }).catch((e) => {
-                  this.logger.warn(`Fail to acquire EXTRA microsoft token silently for ${username}`)
-                  this.logger.warn(e)
+                }).catch(() => {
+                  this.logger.warn('Microsoft silent extra-scope acquisition missed; interactive authentication may be required.')
                   return undefined
                 }) ?? undefined
                 : undefined,
@@ -285,7 +283,7 @@ export class MicrosoftOAuthClient {
               }, {
                 durationMs: Date.now() - brokerStartedAt,
               })
-              this.logger.warn(`Windows native broker returned a different account for ${username}; falling back to OAuth redirect`)
+              this.logger.warn('Microsoft broker returned a different account; falling back to WebView.')
               result = null
             } else {
               track('microsoft-auth-broker-result', {
@@ -309,8 +307,7 @@ export class MicrosoftOAuthClient {
             if (canceled) {
               throw e
             }
-            this.logger.warn('Windows native broker authentication failed; falling back to OAuth redirect')
-            this.logger.warn(e)
+            this.logger.warn('Microsoft broker authentication failed; falling back to WebView.')
           }
         }
         if (!result) {

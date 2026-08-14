@@ -17,9 +17,9 @@
               class="text-h5 font-weight-bold text-decoration-none"
               href="https://www.xmcl.app"
               target="_blank"
-              v-shared-tooltip="() => 'X Minecraft Launcher'"
+              v-shared-tooltip="() => 'XMCL'"
             >
-              X Minecraft Launcher
+              XMCL
             </a>
             <div class="d-flex items-center gap-2 mt-2">
               <a
@@ -49,6 +49,9 @@
             <v-icon color="primary" size="small">verified</v-icon>
             <div class="text-caption font-weight-medium">{{ t('setting.aboutLicense') }}</div>
           </div>
+        </div>
+        <div class="text-caption opacity-70 mb-6">
+          NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
         </div>
 
         <!-- Debug Info Box -->

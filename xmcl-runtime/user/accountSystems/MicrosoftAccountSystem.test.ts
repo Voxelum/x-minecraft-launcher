@@ -23,6 +23,7 @@ describe('isUserCanceledError', () => {
   it('recognizes both MSAL cancellation spellings', () => {
     expect(isUserCanceledError(new Error('user_canceled: account picker closed'))).toBe(true)
     expect(isUserCanceledError(new Error('user_cancelled: authorization closed'))).toBe(true)
+    expect(isUserCanceledError(new Error('Microsoft authorization window was closed.'))).toBe(true)
   })
 
   it('does not classify unrelated authentication errors as cancellation', () => {

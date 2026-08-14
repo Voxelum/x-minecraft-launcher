@@ -1991,8 +1991,8 @@ theme:
   selectImage: 选择图像
   selectMusic: 选择音乐
   selectVideo: 选择视频
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: 公网地址
   prflx: 同伴反射地址

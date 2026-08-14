@@ -188,7 +188,7 @@ export class ServerService extends AbstractService implements IServerService {
         '<service>',
         `  <id>${escapeXml(options.name)}</id>`,
         `  <name>${escapeXml(`XMCL Minecraft Server - ${options.name}`)}</name>`,
-        '  <description>Minecraft dedicated server managed by X Minecraft Launcher.</description>',
+        '  <description>Minecraft dedicated server managed by XMCL.</description>',
         `  <executable>${escapeXml(launchOptions.java)}</executable>`,
         `  <arguments>${escapeXml(args.map(quoteWindowsArgument).join(' '))}</arguments>`,
         `  <workingdirectory>${escapeXml(serverDirectory)}</workingdirectory>`,
