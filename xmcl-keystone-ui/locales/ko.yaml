@@ -1578,8 +1578,8 @@ theme:
   selectImage: 이미지 선택
   selectMusic: 음악 선택
   selectVideo: 비디오 선택
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: 호스트 후보
   prflx: 피어 반사 후보

@@ -17,7 +17,7 @@ task:
   continue: Visualizar no iniciador
   fail: Uma tarefa falhou
   success: Uma tarefa bem-sucedida
-title: X Minecraft Launcher
+title: XMCL
 urlFailed: URL desconhecida {url}. Por favor, verifique sua URL ou entre em contato com o desenvolvedor!
 urlSuccess: Sucesso! Agora você pode fechar esta janela e retornar ao iniciador!
 multiplayer: Multiplayer P2P

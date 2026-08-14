@@ -1567,8 +1567,8 @@ theme:
   selectImage: 画像を選択
   selectMusic: 音楽を選択
   selectVideo: 映像を選択
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: ホスト候補
   prflx: ピアの反射の候補

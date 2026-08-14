@@ -1870,6 +1870,6 @@ gamepad:
   steamAddedNotify: اللانشر انضاف لمكتبة Steam بنجاح! يا ريت ترستر Steam عشان تشوفه.
   steamAlreadyAddedNotify: اللانشر موجود بالفعل في مكتبة Steam بتاعتك.
   steamDeckTitle: تم اكتشاف جهاز Steam Deck
-  steamDeckDesc: اكتشفنا إنك بتشغل اللعبة على Steam Deck. تحب تضيف X Minecraft Launcher لمكتبة Steam كأداة مش من Steam عشان تستمتع بمميزات الـ Steam overlay ودعم الدراع الكامل في Gaming Mode؟
+  steamDeckDesc: اكتشفنا إنك بتشغل اللعبة على Steam Deck. تحب تضيف XMCL لمكتبة Steam كأداة مش من Steam عشان تستمتع بمميزات الـ Steam overlay ودعم الدراع الكامل في Gaming Mode؟
   steamDeckAddBtn: إضافة لـ Steam ({btn})
   steamDeckCancelBtn: إلغاء ({btn})

@@ -24,9 +24,9 @@ function existingShortcuts() {
 
 describe('addSteamShortcutToVdf', () => {
   const shortcut = {
-    executable: '"/home/deck/X Minecraft Launcher"',
+    executable: '"/home/deck/XMCL"',
     startDir: '"/home/deck"',
-    icon: '/home/deck/X Minecraft Launcher',
+    icon: '/home/deck/XMCL',
   }
 
   test('appends a shortcut without rewriting existing binary-VDF entries', () => {
@@ -39,11 +39,11 @@ describe('addSteamShortcutToVdf', () => {
       existing.subarray(0, existing.length - 1),
     )
     expect(updated![updated!.length - 1]).toBe(0x08)
-    expect(updated!.toString('utf8')).toContain('X Minecraft Launcher')
+    expect(updated!.toString('utf8')).toContain('XMCL')
   })
 
   test('does not add a second launcher shortcut', () => {
-    const launcher = object('0', string('AppName', 'X Minecraft Launcher'))
+    const launcher = object('0', string('AppName', 'XMCL'))
     const existing = Buffer.concat([
       Buffer.from([0x00, ...Buffer.from('shortcuts\0')]),
       launcher,

@@ -17,6 +17,6 @@ task:
   continue: Widok w programie uruchamiającym
   fail: Jedno zadanie nie powiodło się
   success: Sukces jednego zadania
-title: X Minecraft Launcher
+title: XMCL
 urlFailed: Nieznany adres url {url}. Sprawdź swój adres url lub skontaktuj się z deweloperem!
 urlSuccess: Udało się! Teraz możesz zamknąć to okno i powrócić do programu uruchamiającego!

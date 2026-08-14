@@ -1696,8 +1696,8 @@ theme:
   selectImage: Pilih Gambar
   selectMusic: Pilih Musik
   selectVideo: Pilih Video
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Kandidat Host
   prflx: Kandidat Peer Reflexive
@@ -1872,6 +1872,6 @@ gamepad:
   steamAddedNotify: Peluncur berhasil ditambahkan ke Perpustakaan Steam! Silakan mulai ulang Steam untuk melihatnya.
   steamAlreadyAddedNotify: Peluncur sudah ada di Perpustakaan Steam Anda.
   steamDeckTitle: Steam Deck Terdeteksi
-  steamDeckDesc: Kami mendeteksi bahwa Anda berjalan di Steam Deck. Apakah Anda ingin menambahkan X Minecraft Launcher ke Perpustakaan Steam Anda sebagai game non-Steam untuk integrasi overlay Steam dan pengontrol penuh dalam Mode Game?
+  steamDeckDesc: Kami mendeteksi bahwa Anda berjalan di Steam Deck. Apakah Anda ingin menambahkan XMCL ke Perpustakaan Steam Anda sebagai game non-Steam untuk integrasi overlay Steam dan pengontrol penuh dalam Mode Game?
   steamDeckAddBtn: Tambahkan ke Steam ({btn})
   steamDeckCancelBtn: Batal ({btn})
