@@ -17,7 +17,7 @@ task:
   continue: Afficher dans le Launcher
   fail: Une tâche a échoué
   success: Succès d'une tâche
-title: X Minecraft Launcher
+title: XMCL
 urlFailed: |-
   URL inconnue {url}. 
   Veuillez vérifier votre URL ou contacter un développeur !

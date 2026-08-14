@@ -1696,8 +1696,8 @@ theme:
   selectImage: Chọn hình ảnh
   selectMusic: Chọn nhạc
   selectVideo: Chọn video
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Ứng viên máy chủ (Host Candidate)
   prflx: Ứng viên phản chiếu ngang hàng
@@ -1872,6 +1872,6 @@ gamepad:
   steamAddedNotify: Đã thêm trình khởi chạy vào Thư viện Steam thành công! Vui lòng khởi động lại Steam để áp dụng.
   steamAlreadyAddedNotify: Trình khởi chạy đã có sẵn trong Thư viện Steam của bạn.
   steamDeckTitle: Phát hiện Steam Deck
-  steamDeckDesc: Chúng tôi phát hiện bạn đang chạy trên Steam Deck. Bạn có muốn thêm X Minecraft Launcher vào Thư viện Steam của mình dưới dạng trò chơi ngoài Steam để tích hợp đầy đủ lớp phủ Steam và điều khiển trong Gaming Mode không?
+  steamDeckDesc: Chúng tôi phát hiện bạn đang chạy trên Steam Deck. Bạn có muốn thêm XMCL vào Thư viện Steam của mình dưới dạng trò chơi ngoài Steam để tích hợp đầy đủ lớp phủ Steam và điều khiển trong Gaming Mode không?
   steamDeckAddBtn: Thêm vào Steam ({btn})
   steamDeckCancelBtn: Hủy ({btn})

@@ -87,7 +87,7 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
           meta: {
             implementationName: 'xmcl-offline-server',
             implementationVersion: '0.0.1',
-            serverName: 'X Minecraft Launcher Offline Server',
+            serverName: 'XMCL Offline Server',
           },
           skinDomains: [
             'localhost',

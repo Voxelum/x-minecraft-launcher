@@ -10,8 +10,10 @@ export function isAccountSuspendedError(error: unknown): error is MicrosoftMinec
 }
 
 export function isUserCanceledError(error: unknown) {
-  return typeof (error as Error | undefined)?.message === 'string' &&
-    /\buser_cancel(?:led|ed)\b/.test((error as Error).message)
+  const message = (error as Error | undefined)?.message
+  return typeof message === 'string' &&
+    (/\buser_cancel(?:led|ed)\b/.test(message) ||
+      message === 'Microsoft authorization window was closed.')
 }
 
 export function isNetworkError(error: unknown) {

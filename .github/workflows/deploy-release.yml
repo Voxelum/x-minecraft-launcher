@@ -156,7 +156,7 @@ jobs:
               url "https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${version}/xmcl-${version}-x64.dmg"
             end
 
-            name "X Minecraft Launcher"
+            name "XMCL"
             desc "An Open Source Minecraft Launcher with Modern UX. Provides a Disk Efficient way to manage all your Mods!"
             homepage "https://xmcl.app"
 
@@ -165,10 +165,10 @@ jobs:
               strategy :header_match
             end
             
-            app "X Minecraft Launcher.app"
+            app "XMCL.app"
 
             zap trash: [
-              "~/Applications/X Minecraft Launcher.app",
+              "~/Applications/XMCL.app",
               "~/Library/Application Support/xmcl",
               "~/Library/Preferences/xmcl.plist",
               "~/Library/Saved Application State/xmcl.savedState"

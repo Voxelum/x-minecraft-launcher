@@ -120,9 +120,10 @@ describe('MicrosoftOAuthClient', () => {
       acquireTokenInteractive: vi.fn().mockRejectedValue(new Error('broker unavailable')),
       getAuthCodeUrl: vi.fn().mockResolvedValue('https://login.example/authorize'),
     }
+    const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
     const client = new MicrosoftOAuthClient(
       fetch,
-      { log: vi.fn(), warn: vi.fn(), error: vi.fn() } as any,
+      logger as any,
       'client-id',
       vi.fn().mockResolvedValue('web-code'),
       vi.fn().mockResolvedValue('http://localhost/auth'),
@@ -137,6 +138,9 @@ describe('MicrosoftOAuthClient', () => {
     await expect(client.authenticate('account-a@example.com', ['XboxLive.signin'], {
       useNativeBroker: true,
     })).rejects.toMatchObject({ name: 'MicrosoftOAuthAccountMismatch' })
+
+    expect(logger.warn.mock.calls.flat()).not.toContainEqual(expect.any(Error))
+    expect(JSON.stringify(logger.warn.mock.calls)).not.toContain('account-a@example.com')
   })
 
   it('emits correlated, sanitized telemetry when WAM is cancelled', async () => {
@@ -201,9 +205,10 @@ describe('MicrosoftOAuthClient', () => {
       getTokenCache: vi.fn().mockReturnValue({ getAllAccounts: vi.fn().mockResolvedValue([account]) }),
     }
     const getCode = vi.fn()
+    const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
     const client = new MicrosoftOAuthClient(
       fetch,
-      { log: vi.fn(), warn: vi.fn(), error: vi.fn() } as any,
+      logger as any,
       'client-id',
       getCode,
       vi.fn(),
@@ -237,6 +242,11 @@ describe('MicrosoftOAuthClient', () => {
       routeUsed: 'silent',
       cachedAccount: true,
     })
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Microsoft silent token acquisition missed; interactive authentication may be required.',
+    )
+    expect(logger.warn.mock.calls.flat()).not.toContainEqual(expect.any(Error))
+    expect(JSON.stringify(logger.warn.mock.calls)).not.toContain(account.username)
   })
 })
 

@@ -101,14 +101,12 @@ export class XmclAccountApi {
     },
     credential?: XmclSessionCredential,
   ): Promise<XmclBrowserAuthorization> {
-    const dpopJwk = credential ? undefined : (await this.getDpopKey()).publicJwk
     const path = credential
       ? `/v1/account/identities/${provider}/authorize`
       : `/v1/auth/${provider}/authorize?${new URLSearchParams({
           state: request.state,
           redirectUri: request.redirectUri,
           codeChallenge: request.codeChallenge,
-          dpopJwk: JSON.stringify(dpopJwk),
         })}`
     const body = await this.request<unknown>(
       path,
