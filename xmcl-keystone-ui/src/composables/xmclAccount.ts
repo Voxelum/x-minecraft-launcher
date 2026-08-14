@@ -68,16 +68,16 @@ export function useXmclAccount(
     }
   }
 
+  const microsoftBootstrapTarget = computed(() => {
+    const { id, authority, invalidated, expiredAt } = selectedGameAccount.value
+    return id && authority === AUTHORITY_MICROSOFT && !invalidated && expiredAt > Date.now()
+      ? id
+      : undefined
+  })
   watch(
-    () =>
-      [
-        selectedGameAccount.value.id,
-        selectedGameAccount.value.authority,
-        selectedGameAccount.value.invalidated,
-        selectedGameAccount.value.expiredAt,
-      ] as const,
-    ([id, authority, invalidated, expiresAt]) => {
-      if (id && authority === AUTHORITY_MICROSOFT && !invalidated && expiresAt > Date.now()) {
+    microsoftBootstrapTarget,
+    (id) => {
+      if (id) {
         run(async () => {
           await service.bootstrapMicrosoft(id)
         })
