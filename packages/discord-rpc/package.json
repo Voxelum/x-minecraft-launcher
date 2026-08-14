@@ -35,7 +35,7 @@
   "sideEffects": false,
   "dependencies": {
     "discord-api-types": "^0.37.39",
-    "undici": "^7.24.0"
+    "undici": "^7.29.0"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
