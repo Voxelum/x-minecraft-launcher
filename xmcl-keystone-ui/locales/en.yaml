@@ -469,6 +469,8 @@ feedback:
     Enter the feedback QQ group and direct talk with authors. Group Number:
     {number}
   qqEnterGroup: Join
+  reddit: Reddit
+  redditDescription: Join the r/XMCL subreddit community
 fileDetail:
   fileSize: File Size
   filesize: File size

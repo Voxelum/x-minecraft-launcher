@@ -107,6 +107,15 @@ const feedbackChannels = computed(() => [
     buttonText: t('feedback.githubOpenIssue')
   },
   {
+    title: t('feedback.reddit'),
+    description: t('feedback.redditDescription'),
+    icon: 'xmcl:reddit',
+    color: 'deep-orange darken-1',
+    link: 'https://www.reddit.com/r/XMCL/',
+    target: 'browser',
+    buttonText: t('feedback.discordJoin')
+  },
+  {
     title: t('feedback.qq'),
     description: t('feedback.qqDescription', { number: 858391850 }),
     icon: 'chat',
@@ -127,7 +136,7 @@ const feedbackChannels = computed(() => [
   {
     title: t('feedback.discord'),
     description: t('feedback.discordDescription'),
-    icon: 'discord',
+    icon: 'xmcl:discord',
     color: 'indigo darken-2',
     link: 'https://discord.gg/W5XVwYY7GQ',
     target: 'browser',

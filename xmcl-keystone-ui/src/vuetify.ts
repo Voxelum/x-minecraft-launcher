@@ -6,6 +6,7 @@ import ModrinthIcon from '@/components/ModrinthIcon.vue'
 import MicrosoftIcon from '@/components/MicrosoftIcon.vue'
 import GoogleIcon from '@/components/GoogleIcon.vue'
 import DiscordIcon from '@/components/DiscordIcon.vue'
+import RedditIcon from '@/components/RedditIcon.vue'
 import PackageFileIcon from '@/components/PackageFileIcon.vue'
 import ZipFileIcon from '@/components/ZipFileIcon.vue'
 import { h } from 'vue'
@@ -28,6 +29,7 @@ const xmcl: IconSet = {
       case 'microsoft': return h(MicrosoftIcon)
       case 'google': return h(GoogleIcon)
       case 'discord': return h(DiscordIcon)
+      case 'reddit': return h(RedditIcon)
       case 'forge': return h(ImageIcon, { src: BuiltinImages.forge })
       case 'fabric': return h(ImageIcon, { src: BuiltinImages.fabric })
       case 'quilt': return h(ImageIcon, { src: BuiltinImages.quilt })
