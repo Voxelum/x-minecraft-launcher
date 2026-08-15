@@ -364,6 +364,16 @@ help: Допомога
 home: Головна
 importModpack:
   name: Імпортувати модпак
+  fromFile: Локальний файл...
+  fromUrl: Через посилання / URL...
+  fromUrlTitle: Імпорт модпаку за посиланням
+  fromUrlDescription: "Введіть або вставте посилання на файл модпаку (.zip, .mrpack):"
+  fromUrlPlaceholder: "https://example.com/modpack.zip"
+  invalidUrl: "Будь ласка, введіть коректне посилання (http:// або https://)"
+  import: Імпортувати
+  selectVersion: Оберіть версію модпаку
+  selectVersionDescription: "Виберіть версію {name} для встановлення:"
+  importVersion: Імпортувати обрану версію
 installAssets:
   asset: Встановити {count} ресурсів
   assetIndex: Перевірити індексний файл ресурсів
