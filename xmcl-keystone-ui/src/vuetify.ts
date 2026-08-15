@@ -8,6 +8,8 @@ import GoogleIcon from '@/components/GoogleIcon.vue'
 import DiscordIcon from '@/components/DiscordIcon.vue'
 import PackageFileIcon from '@/components/PackageFileIcon.vue'
 import ZipFileIcon from '@/components/ZipFileIcon.vue'
+import GithubIcon from '@/components/GithubIcon.vue'
+import TechnicIcon from '@/components/TechnicIcon.vue'
 import { h } from 'vue'
 import { IconProps, IconSet, createVuetify } from 'vuetify'
 import { aliases, md } from 'vuetify/iconsets/md'
@@ -28,6 +30,8 @@ const xmcl: IconSet = {
       case 'microsoft': return h(MicrosoftIcon)
       case 'google': return h(GoogleIcon)
       case 'discord': return h(DiscordIcon)
+      case 'github': return h(GithubIcon)
+      case 'technic': return h(TechnicIcon)
       case 'forge': return h(ImageIcon, { src: BuiltinImages.forge })
       case 'fabric': return h(ImageIcon, { src: BuiltinImages.fabric })
       case 'quilt': return h(ImageIcon, { src: BuiltinImages.quilt })

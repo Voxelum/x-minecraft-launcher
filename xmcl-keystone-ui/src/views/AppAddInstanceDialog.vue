@@ -243,7 +243,7 @@
       <v-card class="rounded-2xl p-4">
         <v-card-title class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-primary/10">
-            <v-icon color="primary">folder_zip</v-icon>
+            <v-icon color="primary" size="24" :icon="selectedSourceIcon" />
           </div>
           <div class="flex flex-col">
             <span class="text-base font-bold">{{ t('importModpack.selectVersion') }}</span>
@@ -718,6 +718,16 @@ const selectedProjectName = ref('')
 const selectedVersionId = ref<number | string | undefined>(undefined)
 const availableVersions = ref<{ id: number | string; title: string }[]>([])
 const selectedMarketType = ref<MarketType>(MarketType.Modrinth)
+const selectedSource = ref<'modrinth' | 'curseforge' | 'github' | 'technic' | 'url'>('url')
+const selectedSourceIcon = computed(() => {
+  switch (selectedSource.value) {
+    case 'modrinth': return 'xmcl:modrinth'
+    case 'curseforge': return 'xmcl:curseforge'
+    case 'github': return 'xmcl:github'
+    case 'technic': return 'xmcl:technic'
+    default: return 'folder_zip'
+  }
+})
 const versionLoading = ref(false)
 
 function openUrlDialog() {
@@ -730,6 +740,20 @@ async function confirmVersionSelect() {
   if (!selectedVersionId.value) return
   versionLoading.value = true
   try {
+    if (
+      typeof selectedVersionId.value === 'string' &&
+      (selectedVersionId.value.startsWith('http://') || selectedVersionId.value.startsWith('https://'))
+    ) {
+      showVersionSelectDialog.value = false
+      showUrlDialog.value = false
+      await onSelectModpack(selectedVersionId.value)
+      type.value = 'template'
+      nextTick(() => {
+        step.value = 1
+      })
+      return
+    }
+
     const [downloadedFile] = await installModapckFromMarket(
       selectedMarketType.value === MarketType.CurseForge
         ? {
@@ -792,6 +816,7 @@ async function submitModpackUrl() {
       const versions = await clientModrinthV2.getProjectVersions(slug).catch(() => [])
 
       if (versions && versions.length > 0) {
+        selectedSource.value = 'modrinth'
         selectedProjectName.value = project?.title || slug
         selectedMarketType.value = MarketType.Modrinth
         availableVersions.value = versions.map((v: any) => ({
@@ -870,6 +895,7 @@ async function submitModpackUrl() {
       }
 
       if (versionsList.length > 0) {
+        selectedSource.value = 'curseforge'
         selectedMarketType.value = MarketType.CurseForge
         availableVersions.value = versionsList
         selectedVersionId.value = versionsList[0]?.id
@@ -918,6 +944,7 @@ async function submitModpackUrl() {
       }
 
       if (resolvedUrl) {
+        selectedSource.value = 'technic'
         showUrlDialog.value = false
         await onSelectModpack(resolvedUrl)
         type.value = 'template'
@@ -928,7 +955,84 @@ async function submitModpackUrl() {
       }
     }
 
-    // 4. Try handling via protocol URL
+    // 4. Resolve GitHub repository / release URLs: e.g. https://github.com/Fabulously-Optimized/fabulously-optimized
+    const githubMatch = inputUrl.match(/github\.com\/([^\/]+)\/([^\/\?\#]+)/i)
+    if (githubMatch) {
+      const owner = githubMatch[1]
+      const repo = githubMatch[2].replace(/\.git$/, '')
+
+      selectedProjectName.value = repo
+        .replace(/[_-]/g, ' ')
+        .replace(/\b\w/g, (c) => c.toUpperCase())
+
+      const versionsList: { id: string; title: string }[] = []
+
+      // 1. Query GitHub Releases API
+      try {
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases`).catch(() => null)
+        if (res && res.ok) {
+          const releases = await res.json()
+          if (Array.isArray(releases) && releases.length > 0) {
+            for (const rel of releases) {
+              if (Array.isArray(rel.assets)) {
+                for (const asset of rel.assets) {
+                  const name = asset.name || ''
+                  if (name.endsWith('.mrpack') || name.endsWith('.zip')) {
+                    versionsList.push({
+                      id: asset.browser_download_url,
+                      title: `${rel.name || rel.tag_name} - ${name}`,
+                    })
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch { }
+
+      // 2. Fallback: Parse GitHub Releases HTML if API rate-limited or failed
+      if (versionsList.length === 0) {
+        try {
+          const pageRes = await fetch(`https://github.com/${owner}/${repo}/releases`).catch(() => null)
+          if (pageRes && pageRes.ok) {
+            const html = await pageRes.text()
+            const assetRegex = /href="(\/[^\/]+\/[^\/]+\/releases\/download\/[^"]+\.(?:mrpack|zip))"/gi
+            let m: RegExpExecArray | null
+            while ((m = assetRegex.exec(html)) !== null) {
+              const downloadUrl = `https://github.com${m[1]}`
+              const filename = m[1].split('/').pop() || ''
+              const tag = m[1].split('/')[4] || ''
+              if (!versionsList.some((v) => v.id === downloadUrl)) {
+                versionsList.push({
+                  id: downloadUrl,
+                  title: `${tag} - ${filename}`,
+                })
+              }
+            }
+          }
+        } catch { }
+      }
+
+      // 3. Fallback: If no releases found, provide source zip archive
+      if (versionsList.length === 0) {
+        const defaultBranchZip = `https://github.com/${owner}/${repo}/archive/refs/heads/main.zip`
+        versionsList.push({
+          id: defaultBranchZip,
+          title: `${selectedProjectName.value} (main branch)`,
+        })
+      }
+
+      if (versionsList.length > 0) {
+        selectedSource.value = 'github'
+        availableVersions.value = versionsList
+        selectedVersionId.value = versionsList[0]?.id
+        showUrlDialog.value = false
+        showVersionSelectDialog.value = true
+        return
+      }
+    }
+
+    // 5. Try handling via protocol URL
     const handled = await handleUrl(inputUrl)
     if (handled) {
       showUrlDialog.value = false
@@ -936,7 +1040,7 @@ async function submitModpackUrl() {
       return
     }
 
-    // 5. Direct download URL
+    // 6. Direct download URL
     if (inputUrl.startsWith('http://') || inputUrl.startsWith('https://')) {
       await onSelectModpack(inputUrl)
       type.value = 'template'
