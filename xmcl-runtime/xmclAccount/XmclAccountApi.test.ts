@@ -41,7 +41,7 @@ describe('XmclAccountApi', () => {
     expect(result.session.accessToken).toBe('fixture-access-token')
   })
 
-  it('binds browser and launcher exchanges to the same P-256 public JWK', async () => {
+  it('binds the browser session to the P-256 public JWK submitted at exchange', async () => {
     const fetch = vi
       .fn()
       .mockResolvedValueOnce(
@@ -69,10 +69,9 @@ describe('XmclAccountApi', () => {
     })
 
     const firstUrl = new URL(String(fetch.mock.calls[0]![0]))
-    const firstJwk = JSON.parse(firstUrl.searchParams.get('dpopJwk')!)
     const secondBody = JSON.parse(String(fetch.mock.calls[1]![1]?.body))
-    expect(secondBody.dpopJwk).toEqual(firstJwk)
-    expect(firstJwk).toMatchObject({
+    expect(firstUrl.searchParams.has('dpopJwk')).toBe(false)
+    expect(secondBody.dpopJwk).toMatchObject({
       kty: 'EC',
       crv: 'P-256',
       x: expect.any(String),
@@ -81,29 +80,26 @@ describe('XmclAccountApi', () => {
   })
 
   it('retries the DPoP key provider after a transient failure', async () => {
-    const fetch = vi.fn(async () =>
-      Response.json({
-        transactionId: 'transaction-1',
-        authorizationUrl: 'https://provider.example/authorize',
-        expiresAt: '2026-07-22T01:00:00.000Z',
-      }),
-    )
+    const fetch = vi.fn(async () => Response.json(M1_LOCAL_AUTH_FIXTURE))
     const key = generateXmclDpopKey()
     const keyProvider = vi.fn()
       .mockRejectedValueOnce(new Error('Temporary secure storage failure'))
       .mockResolvedValue(key)
     const api = new XmclAccountApi(fetch, 'https://edge.example.test/', keyProvider)
     const request = {
+      provider: 'discord' as const,
+      transactionId: 'transaction-1',
+      code: 'code-1',
       state: 'state-1',
+      codeVerifier: 'verifier-1',
       redirectUri: 'http://127.0.0.1:25555/commercial-auth',
-      codeChallenge: 'challenge-1',
     }
 
-    await expect(api.beginBrowserAuthorization('discord', request)).rejects.toThrow(
+    await expect(api.exchangeBrowser(request)).rejects.toThrow(
       'Temporary secure storage failure',
     )
-    await expect(api.beginBrowserAuthorization('discord', request)).resolves.toMatchObject({
-      transactionId: 'transaction-1',
+    await expect(api.exchangeBrowser(request)).resolves.toMatchObject({
+      session: { accessToken: 'fixture-access-token' },
     })
 
     expect(keyProvider).toHaveBeenCalledTimes(2)
@@ -193,7 +189,7 @@ describe('XmclAccountApi', () => {
     expect(url.searchParams.get('state')).toBe('state-1')
     expect(url.searchParams.get('redirectUri')).toBe('http://127.0.0.1:25555/commercial-auth')
     expect(url.searchParams.get('codeChallenge')).toBe('challenge-1')
-    expect(url.searchParams.get('dpopJwk')).toMatch(/"kty":"EC"/)
+    expect(url.searchParams.has('dpopJwk')).toBe(false)
     expect(init?.method).toBe('GET')
   })
 

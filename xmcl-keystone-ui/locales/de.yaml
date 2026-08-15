@@ -1655,8 +1655,8 @@ theme:
   selectImage: Bild auswählen
   selectMusic: Wählen Sie Musik
   selectVideo: Wählen Sie Video
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Gastgeber-Kandidat
   prflx: Gastgeber-Peer Reflexive

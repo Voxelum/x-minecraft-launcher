@@ -2,7 +2,7 @@
   "name": "@xmcl/e2e",
   "private": true,
   "version": "0.0.0",
-  "description": "End-to-end tests for X Minecraft Launcher. Each spec is also a tutorial source: shots + captions are emitted into a manifest that scripts/build-tutorial.ts compiles into docs/tutorial/*.md.",
+  "description": "End-to-end tests for XMCL. Each spec is also a tutorial source: shots + captions are emitted into a manifest that scripts/build-tutorial.ts compiles into docs/tutorial/*.md.",
   "license": "MIT",
   "type": "module",
   "scripts": {

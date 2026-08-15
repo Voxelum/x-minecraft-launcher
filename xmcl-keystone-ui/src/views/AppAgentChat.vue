@@ -300,9 +300,9 @@ const scrollEl = ref<HTMLElement | null>(null)
 const followTranscript = ref(true)
 
 const pendingAgentKind = usePendingAgentKind()
-// Select the requested agent and (for the common agent) load its conversation
-// only on a fresh open, not while flipping tabs with the surface left open.
-watch(isShown, (visible, wasVisible) => {
+// Select the requested agent, load its conversation, then scroll to the latest
+// message — all in one watcher so the scroll happens after the async load.
+watch(isShown, async (visible, wasVisible) => {
   if (!visible || wasVisible) return
   const kind = pendingAgentKind.value
   pendingAgentKind.value = 'common'
@@ -310,8 +310,11 @@ watch(isShown, (visible, wasVisible) => {
     selectedAgent.value = 'css'
   } else {
     selectedAgent.value = 'common'
-    commonAgent.loadConversationForCurrentInstance()
+    await commonAgent.loadConversationForCurrentInstance()
   }
+  followTranscript.value = true
+  await nextTick()
+  scrollTranscriptToBottom()
 })
 
 const transcriptItems = computed(() => projectAgentTranscript(messages.value))
@@ -422,13 +425,6 @@ watch([transcriptItems, events, confirmationShown, displayError], async () => {
   if (followTranscript.value) scrollTranscriptToBottom()
 }, { deep: true })
 
-watch(isShown, async (v) => {
-  if (v) {
-    followTranscript.value = true
-    await nextTick()
-    scrollTranscriptToBottom()
-  }
-})
 </script>
 
 <style scoped>

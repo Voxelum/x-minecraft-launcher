@@ -52,14 +52,17 @@
             <template #activator="{ props: menu }">
               <v-btn
                 v-bind="menu"
-                variant="plain"
+                :variant="collection ? 'tonal' : 'plain'"
+                :color="collection ? 'primary' : undefined"
                 icon
                 :loading="loadingCollections"
                 size="small"
                 data-testid="market-detail-collection-menu"
                 :aria-label="t('localCollection.addToCollection')"
               >
-                <v-icon class="material-icons-outlined"> bookmark_add </v-icon>
+                <v-icon :class="collection ? '' : 'material-icons-outlined'">
+                  {{ collection ? 'bookmark' : 'bookmark_add' }}
+                </v-icon>
               </v-btn>
             </template>
             <v-card min-width="360" width="420" max-width="90vw" class="overflow-y-auto" style="max-height: 60vh">
