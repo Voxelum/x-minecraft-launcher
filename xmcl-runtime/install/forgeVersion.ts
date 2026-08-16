@@ -16,3 +16,10 @@ export function normalizeForgeVersion(minecraftVersion: string, forgeVersion: st
   }
   return forgeVersion
 }
+
+export function isBrokenJavaRuntimeError(error: unknown) {
+  if (!(error instanceof Error)) return false
+  return error.message.includes("missing `server' JVM") ||
+    /(?:jvm\.dll|libjvm\.(?:so|dylib)).*(?:missing|not found)/i.test(error.message) ||
+    /could not create the java virtual machine/i.test(error.message)
+}

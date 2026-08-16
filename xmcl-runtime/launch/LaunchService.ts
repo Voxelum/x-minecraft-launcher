@@ -422,7 +422,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       this.log(`Will launch with ${version.id} version.`)
 
-      if (!javaPath || !(await this.#isValidAndExeucatable(javaPath))) {
+      if (!javaPath) {
         throw new LaunchException({ type: 'launchNoProperJava', javaPath: javaPath || '' }, 'Cannot launch without a valid java')
       }
 
