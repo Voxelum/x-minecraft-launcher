@@ -1,4 +1,4 @@
-import { parseJavaVersion, parseJavaVersionOutput } from './java'
+import { parseJavaVersion, parseJavaVersionOutput, resolveJavaWithDiagnostic } from './java'
 import { describe, test, expect } from 'vitest'
 
 describe('JavaInstaller', () => {
@@ -54,6 +54,11 @@ OpenJDK 64-Bit Server VM (build 25+36-3489, mixed mode)`
     test('should resolve JAVA_VERSION line from JDK release file with major-only version', () => {
       const inf = parseJavaVersion('JAVA_VERSION="25"')
       expect(inf).toEqual({ version: '25', majorVersion: 25, patch: -1 })
+    })
+    test('should invoke an executable directly when resolving its version', async () => {
+      const diagnostic = await resolveJavaWithDiagnostic(process.execPath)
+      expect(diagnostic.java).toBeUndefined()
+      expect(diagnostic.stderr).toContain('-version')
     })
   })
 })

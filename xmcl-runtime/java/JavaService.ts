@@ -20,7 +20,7 @@ import {
   type SharedState
 } from '@xmcl/runtime-api'
 import { AnyError } from '@xmcl/utils'
-import { chmod, readFile, readJson, stat, writeJson } from 'fs-extra'
+import { readFile, readJson, stat, writeJson } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { Tasks, kFlights, kGFW, kTasks } from '~/infra'
@@ -29,6 +29,7 @@ import {
   classifyJavaInstallFailure,
   detectExecutableLibc,
   getJavaExeFilePath,
+  getManagedJavaComponent,
   sanitizeJavaResolveOutput,
   validateJavaPath,
 } from '~/java'
@@ -107,6 +108,20 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     return Promise.resolve()
   }
 
+  async repairManagedJava(javaPath: string, target?: JavaVersion) {
+    const managed = getManagedJavaComponent(javaPath, this.getPath('jre'))
+    if (!managed) return undefined
+
+    const cached = this.state.all.find((java) => java.path === javaPath)
+    const javaVersion = target ?? (cached?.majorVersion
+      ? { component: managed.component, majorVersion: cached.majorVersion }
+      : undefined)
+    if (!javaVersion) return undefined
+
+    await this.removeJava(javaPath)
+    return this.installJava(javaVersion, managed.forceZulu)
+  }
+
   async getJavaState(): Promise<SharedState<JavaState>> {
     await this.initialize()
     return this.state
@@ -125,7 +140,10 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
   /**
    * Install a default jdk 8 to the a preserved location. It'll be installed under your launcher root location `jre` folder
    */
-  @Singleton()
+  @Singleton((
+    target: JavaVersion = { majorVersion: 8, component: 'jre-legacy' },
+    forceZulu = false,
+  ) => `${target.component}:${target.majorVersion}:${forceZulu}`)
   async installJava(
     target: JavaVersion = {
       majorVersion: 8,
@@ -206,25 +224,31 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         }
       }
 
-      if (this.app.platform.os !== 'windows') {
-        await chmod(exeLocation, 0o765)
+      const resolveInstalledJava = async () => {
+        const validation = await validateJavaPath(exeLocation)
+        if (validation !== JavaValidation.Okay) return undefined
+        return resolveJava(exeLocation)
       }
 
-      this.log(`Successfully install java internally ${exeLocation}`)
-      let result = await this.resolveJava(exeLocation)
-      // A complete official runtime can still be unusable on a particular
-      // host (blocked DLL, missing native dependency, or a vendor wrapper
-      // whose version output cannot be parsed). Do not leave the user with a
-      // dead JRE: retry via the independently packaged Zulu runtime.
+      this.log(`Verify internally installed java ${exeLocation}`)
+      let result = await resolveInstalledJava()
+      // The official installer can finish with an incomplete or unusable
+      // runtime. Do not leave the user with a dead JRE: retry via the
+      // independently packaged Zulu runtime.
       if (!result && officialManifest && installSource === 'official') {
         this.warn(`Official java runtime could not be resolved at ${exeLocation}; retrying with Zulu`)
         installSource = 'official-then-zulu'
         await installZulu()
-        result = await this.resolveJava(exeLocation)
+        result = await resolveInstalledJava()
       }
       if (!result) {
         throw await this.#createInstallDefaultJavaError(exeLocation, folder, target, installSource)
       }
+      this.state.javaUpdate({
+        ...result,
+        valid: true,
+        arch: await getJavaArch(this, result.path),
+      })
       task.complete()
       return result
     } catch (error) {
@@ -361,31 +385,22 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     const validation = await validateJavaPath(javaPath)
 
     const found = this.state.all.find((java) => java.path === javaPath)
-    if (found) {
-      if (validation !== JavaValidation.Okay) {
-        // invalidate java
-        if (found.valid) {
-          this.state.javaUpdate({ ...found, valid: false })
-        }
-      } else {
-        if (!found.valid) {
-          this.state.javaUpdate({ ...found, valid: true })
-        }
-        this.log(
-          `Found a cached & ${found.valid ? 'valid' : 'invalid'} java ${found.version} in ${javaPath}`,
-        )
-      }
-      return found
-    }
-
     if (validation === JavaValidation.NotExisted) {
-      // just cannot resolve java
+      if (found?.valid) {
+        this.state.javaUpdate({ ...found, valid: false })
+      }
       this.log(`Skip resolve missing java ${javaPath}`)
+      return undefined
+    }
+    if (validation !== JavaValidation.Okay) {
+      if (found?.valid) {
+        this.state.javaUpdate({ ...found, valid: false })
+      }
       return undefined
     }
 
     const java = await resolveJava(javaPath)
-    if (java && validation === JavaValidation.Okay) {
+    if (java) {
       this.log(`Resolved java ${java.version} in ${javaPath}`)
 
       this.state.javaUpdate({ ...java, valid: true, arch: await getJavaArch(this, java.path) })
@@ -409,7 +424,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       }
 
       const home = dirname(dirname(javaPath))
-      const releaseData = await readFile(join(home, 'release'), 'utf-8')
+      const releaseData = await readFile(join(home, 'release'), 'utf-8').catch(() => '')
       const javaVersion = releaseData
         .split('\n')
         .map((l) => l.split('='))

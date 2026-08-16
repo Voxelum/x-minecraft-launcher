@@ -6,6 +6,7 @@ import {
   JavaValidation,
   classifyJavaInstallFailure,
   detectExecutableLibc,
+  getManagedJavaComponent,
   getWindowsNativeArchForIa32,
   sanitizeJavaResolveOutput,
 } from './java'
@@ -48,6 +49,19 @@ describe('classifyJavaInstallFailure', () => {
     expect(getWindowsNativeArchForIa32('win32', 'ia32', {})).toBeUndefined()
     expect(getWindowsNativeArchForIa32('win32', 'x64', { PROCESSOR_ARCHITEW6432: 'AMD64' }))
       .toBeUndefined()
+  })
+
+  it('identifies managed official and Zulu Java runtimes', () => {
+    const root = join('launcher', 'jre')
+    expect(getManagedJavaComponent(
+      join(root, 'java-runtime-delta', 'bin', 'java'),
+      root,
+    )).toEqual({ component: 'java-runtime-delta', forceZulu: false })
+    expect(getManagedJavaComponent(
+      join(root, 'java-runtime-delta-zulu', 'bin', 'java'),
+      root,
+    )).toEqual({ component: 'java-runtime-delta', forceZulu: true })
+    expect(getManagedJavaComponent(join('system', 'bin', 'java'), root)).toBeUndefined()
   })
 })
 

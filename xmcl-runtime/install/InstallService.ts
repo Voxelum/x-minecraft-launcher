@@ -91,7 +91,7 @@ import { formatMinecraftSrg } from './utils/formatMinecraftSrg'
 import clazData from './utils/MultiJarLauncher.class'
 import { getTracker } from '~/util/taskHelper'
 import { kResourceWorker, ResourceWorker } from '~/resource'
-import { normalizeForgeVersion } from './forgeVersion'
+import { isBrokenJavaRuntimeError, normalizeForgeVersion } from './forgeVersion'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -965,13 +965,19 @@ export class InstallService extends AbstractService implements IInstallService {
       options = { ...options, version: normalizedForgeVersion }
     }
 
-    let validJavaPaths = this.javaService.state.all.filter((v) => v.valid)
+    let validJavaPaths = (
+      await Promise.all(
+        this.javaService.state.all
+          .filter((java) => java.valid)
+          .map((java) => this.javaService.resolveJava(java.path)),
+      )
+    ).filter((java): java is NonNullable<typeof java> => !!java)
     const side = options.side ?? 'client'
+    const baseVersion = await this.versionService
+      .resolveLocalVersion(options.base || options.mcversion)
+      .catch(() => undefined)
 
     if (!validJavaPaths.length) {
-      const baseVersion = await this.versionService
-        .resolveLocalVersion(options.base || options.mcversion)
-        .catch(() => undefined)
       if (!baseVersion?.javaVersion) {
         throw new AnyError(
           'ForgeInstallError',
@@ -982,7 +988,7 @@ export class InstallService extends AbstractService implements IInstallService {
         `No valid java found; installing ${baseVersion.javaVersion.component} (${baseVersion.javaVersion.majorVersion}) for Forge`,
       )
       const java = await this.javaService.installJava(baseVersion.javaVersion)
-      validJavaPaths = [{ ...java, valid: true }]
+      validJavaPaths = [java]
     }
 
     if (options.java) {
@@ -1001,6 +1007,8 @@ export class InstallService extends AbstractService implements IInstallService {
       version: options.version,
       mcversion: options.mcversion,
     })
+    let repairedJava = false
+    let lastJavaRuntimeError: Error | undefined
     for (const java of validJavaPaths) {
       try {
         this.log(
@@ -1023,6 +1031,25 @@ export class InstallService extends AbstractService implements IInstallService {
         break
       } catch (err) {
         if (err instanceof Error) {
+          if (isBrokenJavaRuntimeError(err)) {
+            lastJavaRuntimeError = err
+            this.warn(`Java runtime ${java.path} is incomplete; exclude it from Forge post-processing`)
+            await this.javaService.removeJava(java.path)
+            if (!repairedJava && baseVersion?.javaVersion) {
+              repairedJava = true
+              this.log(
+                `Repair ${baseVersion.javaVersion.component} (${baseVersion.javaVersion.majorVersion}) and retry Forge post-processing`,
+              )
+              try {
+                const repaired = await this.javaService.installJava(baseVersion.javaVersion)
+                validJavaPaths.push(repaired)
+              } catch (repairError) {
+                task.fail(repairError)
+                throw repairError
+              }
+            }
+            continue
+          }
           if (err.message.indexOf('sun.security.validator.ValidatorException') !== -1) {
             continue
           }
@@ -1078,7 +1105,10 @@ export class InstallService extends AbstractService implements IInstallService {
     if (!version) {
       const err = new AnyError(
         'ForgeInstallError',
-        `Cannot install forge ${options.version} on ${options.mcversion}, ${side}`,
+        lastJavaRuntimeError
+          ? `Cannot install forge ${options.version} on ${options.mcversion}, ${side}: no complete Java runtime is available`
+          : `Cannot install forge ${options.version} on ${options.mcversion}, ${side}`,
+        lastJavaRuntimeError ? { cause: lastJavaRuntimeError } : undefined,
       )
       task.fail(err)
       throw err
