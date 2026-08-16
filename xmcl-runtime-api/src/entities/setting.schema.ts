@@ -37,8 +37,6 @@ export const SettingSchema = z.object({
   apiSetsPreference: z.enum(['mojang', 'bmcl', '']).catch(''),
   /** The supported unofficial api sets */
   apiSets: z.array(ApiSetSchema).catch([]),
-  /** Allow turn server in p2p */
-  allowTurn: z.boolean().catch(false),
   /** The http proxy address */
   httpProxy: z.string().catch(''),
   /** Is proxy setting enabled */

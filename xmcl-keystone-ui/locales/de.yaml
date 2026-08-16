@@ -1020,11 +1020,37 @@ modrinth:
 modrinthCard:
   currentVersion: Aktuelle Version
 multiplayer:
+  addFunds: "Guthaben hinzufügen"
+  availableBalance: "Verfügbares Guthaben"
+  balanceHint: "Für XMCL Together-Dienste verfügbar"
+  billing: "Abrechnung"
+  billingDescription: "Verwalte Relay-Zugriff, deinen Together Home-Tarif und Zahlungen."
+  billingError: "Die Together-Abrechnung konnte nicht geladen werden. Versuche es gleich noch einmal."
+  buyTogether: "Together kaufen"
+  cancelTogether: "Tarif kündigen"
+  checkout: "Waffo-Kasse öffnen"
+  connectionTogetherWarning: "Ein Raummitglied kann seit einiger Zeit keine Verbindung zu dir herstellen. Versuche XMCL Together, um die Verbindung für alle im Raum zu verbessern. Nur der Raumleiter benötigt Together."
+  masterPurchaseHint: "Nur der Raumleiter benötigt Together Home, um die Verbindung für alle im Raum zu verbessern."
+  natTogetherWarning: "Dein Router hat möglicherweise Schwierigkeiten, eine Verbindung zum Raumleiter herzustellen. Falls Verbindungen fehlschlagen, versuche XMCL Together, um die Verbindung zwischen dir und deinen Freunden zu verbessern. Nur der Raumleiter muss Together für den Raum kaufen."
+  togetherName: "Minecraft Together"
+  trialDescription: "Ein 7-tägiger Testzeitraum mit 1 GB Relay-Datenverkehr."
+  trialTitle: "Verbindungstest"
+  tryTogether: "Together testen"
+  month: "Monat"
+  orderStatus: "Waffo-Bestellung: {status}"
+  planDescription: "20 GB verwalteter Relay-Datenverkehr pro Monat sowie KI-Fehlerbehebung für dein Modpack."
+  waffoHint: "Zahlungen werden sicher über Waffo Pancake abgewickelt. XMCL erhält niemals deine Kartennummer."
+  subscription:
+    active: "Aktiv"
+    cancelled: "Gekündigt"
+    payment_due: "Zahlung fällig"
+  trial:
+    active: "Testzeitraum aktiv"
+    available: "Kostenloser Testzeitraum verfügbar"
+    expired: "Testzeitraum genutzt"
+    unavailable: "Testzeitraum nicht verfügbar"
   loginRequiredDescription: P2P-Multiplayer verwendet die XMCL-Onlinedienste. Melden Sie sich bei einem XMCL-Konto an, um fortzufahren.
   loginRequiredTitle: Für P2P-Multiplayer anmelden
-  allowTurn: Schalten Sie den Relay-Server ein
-  allowTurnHint: >-
-    Lassen Sie einen Relay-Server zu, wenn Sie keine Verbindung zu Ihrem Freund herstellen können. Die Verwendung eines Relay-Servers kann Ihre Verbindung jedoch verlangsamen. Verbindung verlangsamen. Verwenden Sie ihn mit Vorsicht.
   complete: Bereit
   confirm: Bestätigen Sie
   connections: Verbindungen
@@ -1106,8 +1132,6 @@ multiplayer:
   connectionError: Verbindungsfehler
   connectionFailedHint: >-
     Verbindung kann nicht hergestellt werden. Prüfen Sie, ob beide Seiten kompatible NAT-Typen haben.
-  natWarning: >-
-    Ihr NAT-Typ kann Direktverbindungen verhindern. Aktivieren Sie in den Einstellungen den Relay-Server oder lassen Sie Ihren Freund hosten.
 myStuff: Meine Materialien
 natType:
   blocked: Blockiert

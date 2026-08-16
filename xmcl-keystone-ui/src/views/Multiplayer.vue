@@ -6,7 +6,7 @@
     @dragover.prevent
   >
     <div class="flex h-full flex-col gap-2 overflow-auto" @dragover.prevent @drop="onDrop">
-      <v-card class="z-5 flex-shrink flex-grow-0 rounded-none px-2 py-1 pb-2" variant="flat">
+      <v-card class="z-5 flex-shrink-0 flex-grow-0 rounded-none px-2 py-1 pb-2" variant="flat">
         <div class="flex items-center gap-2">
           <v-progress-circular
             v-if="groupState === 'connecting'"
@@ -143,24 +143,43 @@
             <span>{{ t('multiplayer.connectionError') }}: {{ groupError }}</span>
           </div>
         </v-alert>
-        <!-- NAT Warning for Symmetric NAT -->
+        <!-- Together recommendation for difficult network conditions -->
         <v-alert
-          v-if="natType === 'Symmetric NAT' || natType === 'Blocked'"
+          v-if="showTogetherRecommendation"
           type="warning"
+          :icon="false"
           density="compact"
           class="mt-2 mb-0"
         >
-          <template #prepend> </template>
-          <div class="flex items-center gap-2">
-            <v-icon size="small">warning</v-icon>
-            <span>{{ t('multiplayer.natWarning') }}</span>
+          <div class="flex w-full items-center gap-2">
+            <v-icon class="flex-shrink-0" size="small">warning</v-icon>
+            <span class="min-w-0 flex-1">
+              {{
+                hasProblematicNat
+                  ? t('multiplayer.natTogetherWarning')
+                  : t('multiplayer.connectionTogetherWarning')
+              }}
+            </span>
+            <v-btn
+              class="flex-shrink-0 self-center"
+              size="small"
+              variant="tonal"
+              :loading="togetherLoading"
+              @click="onTogetherAction"
+            >
+              {{
+                togetherRecommendationAction === 'try'
+                  ? t('multiplayer.tryTogether')
+                  : t('multiplayer.buyTogether')
+              }}
+            </v-btn>
           </div>
         </v-alert>
       </v-card>
 
       <v-list
         lines="two"
-        class="flex flex-col justify-start gap-2 overflow-auto py-2"
+        class="flex flex-col justify-start gap-2 overflow-auto pb-16 pt-2"
         style="width: 100%; background: transparent"
       >
         <template v-if="navigation === 'connections'">
@@ -447,7 +466,7 @@
             </template>
           </v-list-item>
         </template>
-        <template v-else>
+        <template v-else-if="navigation === 'settings'">
           <v-list-item class="flex-1 flex-grow-0">
             <template #prepend>
               <v-avatar>
@@ -472,27 +491,7 @@
             </template>
           </v-list-item>
 
-          <v-list-item v-if="hasMicrosoft" class="flex-1 flex-grow-0">
-            <template #prepend>
-              <v-avatar>
-                <v-icon>swap_vert</v-icon>
-              </v-avatar>
-            </template>
-            <v-list-item-title>
-              {{ t('multiplayer.allowTurn') }}
-            </v-list-item-title>
-            <v-list-item-subtitle
-              v-shared-tooltip="() => t('multiplayer.allowTurnHint')"
-              class="flex items-center gap-2"
-            >
-              {{ t('multiplayer.allowTurnHint') }}
-            </v-list-item-subtitle>
-            <template #append>
-              <v-checkbox v-model="allowTurn" hide-details />
-            </template>
-          </v-list-item>
-
-          <v-list-item v-if="allowTurn && turnserversItems.length > 0" class="flex-1 flex-grow-0">
+          <v-list-item v-if="turnserversItems.length > 0" class="flex-1 flex-grow-0">
             <template #prepend>
               <v-avatar />
             </template>
@@ -553,6 +552,18 @@
             </v-list-item-subtitle>
           </v-list-item>
         </template>
+        <MultiplayerBilling
+          v-else
+          :overview="togetherOverview"
+          :order="togetherOrder"
+          :loading="togetherLoading"
+          :error="togetherError"
+          @refresh="refreshTogether"
+          @claim-trial="claimTogetherTrial"
+          @top-up="createTogetherTopUp"
+          @subscribe="subscribeTogether"
+          @cancel="cancelTogether"
+        />
       </v-list>
       <v-bottom-navigation v-model="navigation" color="primary">
         <v-btn value="connections">
@@ -562,6 +573,10 @@
         <v-btn value="settings">
           <span> {{ t('setting.name') }} </span>
           <v-icon> settings </v-icon>
+        </v-btn>
+        <v-btn value="billing">
+          <span> {{ t('multiplayer.billing') }} </span>
+          <v-icon> payments </v-icon>
         </v-btn>
       </v-bottom-navigation>
 
@@ -589,20 +604,119 @@ import { useService } from '@/composables'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kPeerState } from '@/composables/peers'
 import { kTheme } from '@/composables/theme'
-import { kUserContext } from '@/composables/user'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { useLocalStorage } from '@vueuse/core'
-import { AUTHORITY_MICROSOFT, BaseServiceKey } from '@xmcl/runtime-api'
+import {
+  getTogetherRecommendationAction,
+  hasLongConnectionProblem,
+  shouldRecommendTogether,
+  updateConnectionProblemSince,
+} from '@/util/multiplayerTogether'
+import { useEventListener, useIntervalFn, useLocalStorage } from '@vueuse/core'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog, useSimpleDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
+import MultiplayerBilling from './MultiplayerBilling.vue'
+import {
+  XmclAccountServiceKey,
+  type XmclTogetherOrder,
+  type XmclTogetherOverview,
+} from '@xmcl/runtime-api'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
 const { show: showAddInstasnce } = useDialog(AddInstanceDialogKey)
 const { show: showReceive } = useDialog('peer-receive')
-const navigation = ref('connections' as 'connections' | 'settings')
+const navigation = ref('connections' as 'connections' | 'settings' | 'billing')
+const togetherService = useService(XmclAccountServiceKey)
+const togetherOverview = shallowRef<XmclTogetherOverview>()
+const togetherOrder = shallowRef<XmclTogetherOrder>()
+const togetherLoading = ref(false)
+const togetherError = shallowRef<Error>()
+
+async function runTogether(action: () => Promise<void>) {
+  if (togetherLoading.value) return
+  togetherLoading.value = true
+  togetherError.value = undefined
+  try {
+    await action()
+  } catch (error) {
+    togetherError.value = error as Error
+  } finally {
+    togetherLoading.value = false
+  }
+}
+
+function refreshTogether() {
+  return runTogether(async () => {
+    if (togetherOrder.value?.status === 'pending') {
+      togetherOrder.value = await togetherService.getTogetherOrder(togetherOrder.value.orderId)
+    }
+    togetherOverview.value = await togetherService.getTogetherOverview()
+  })
+}
+
+function claimTogetherTrial() {
+  return runTogether(async () => {
+    await togetherService.claimTogetherTrial()
+    togetherOverview.value = await togetherService.getTogetherOverview()
+    await multiplayer.refreshIceServers()
+  })
+}
+
+function createTogetherTopUp(amountMinor: number) {
+  return runTogether(async () => {
+    togetherOrder.value = await togetherService.createTogetherOrder(amountMinor)
+    const approvalUrl = togetherOrder.value.approvalUrl
+    if (!approvalUrl || !isWaffoCheckoutUrl(approvalUrl)) {
+      throw new Error('invalid_waffo_checkout_url')
+    }
+    open(approvalUrl, '_blank')
+  })
+}
+
+function subscribeTogether() {
+  return runTogether(async () => {
+    await togetherService.subscribeTogether()
+    togetherOverview.value = await togetherService.getTogetherOverview()
+    await multiplayer.refreshIceServers()
+  })
+}
+
+function cancelTogether() {
+  return runTogether(async () => {
+    await togetherService.cancelTogether()
+    togetherOverview.value = await togetherService.getTogetherOverview()
+  })
+}
+
+function onTogetherAction() {
+  if (togetherRecommendationAction.value === 'try') {
+    void claimTogetherTrial()
+  } else {
+    navigation.value = 'billing'
+  }
+}
+
+function isWaffoCheckoutUrl(value: string) {
+  try {
+    const url = new URL(value)
+    return (
+      url.protocol === 'https:' &&
+      (url.hostname === 'checkout.waffo.ai' || url.hostname === 'pancake.waffo.ai')
+    )
+  } catch {
+    return false
+  }
+}
+
+onMounted(() => {
+  void refreshTogether()
+})
+useEventListener(window, 'focus', () => {
+  if (togetherOrder.value?.status === 'pending') void refreshTogether()
+})
 
 const hideIp = ref(true)
 const showNetworkInfo = useLocalStorage('peerShowNetworkInfo', true, { writeDefaults: false })
@@ -651,13 +765,55 @@ const groupErrorVisible = ref(true)
 watch(groupError, () => {
   groupErrorVisible.value = true
 })
+const connectionProblemSince = reactive(new Map<string, number>())
+const connectionClock = ref(Date.now())
+useIntervalFn(() => {
+  connectionClock.value = Date.now()
+}, 1_000)
+watchEffect(() => {
+  const now = Date.now()
+  if (groupRole.value !== 'master' || groupState.value !== 'connected') {
+    connectionProblemSince.clear()
+    return
+  }
+  updateConnectionProblemSince(
+    connectionProblemSince,
+    groupMembers.value
+      .filter((member) => member.peerId !== groupSelfPeerId.value)
+      .map((member) => ({
+        member,
+        connectionState: connections.value.find(
+          (connection) => connection.remoteId === member.peerId,
+        )?.connectionState,
+      })),
+    now,
+  )
+})
+const hasProblematicNat = computed(
+  () => natType.value === 'Symmetric NAT' || natType.value === 'Blocked',
+)
+const hasLongRoomConnectionProblem = computed(
+  () =>
+    groupRole.value === 'master' &&
+    hasLongConnectionProblem(connectionProblemSince, connectionClock.value),
+)
+const togetherRecommendationAction = computed(() =>
+  getTogetherRecommendationAction(togetherOverview.value?.trial.status),
+)
+const showTogetherRecommendation = computed(
+  () =>
+    shouldRecommendTogether({
+      problematicNat: hasProblematicNat.value,
+      isMaster: groupRole.value === 'master',
+      longConnectionProblem: hasLongRoomConnectionProblem.value,
+      trialStatus: togetherOverview.value?.trial.status,
+      subscriptionStatus: togetherOverview.value?.subscription?.status,
+    }),
+)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
-const { users } = injection(kUserContext)
-const hasMicrosoft = computed(() => !!users.value.find((u) => u.authority === AUTHORITY_MICROSOFT))
 const forwardedPort = ref(0)
 
-const allowTurn = useLocalStorage('peerAllowTurn', true, { writeDefaults: false })
 const kernel = useLocalStorage<'node-datachannel' | 'webrtc'>('peerKernel', 'node-datachannel', {
   writeDefaults: false,
 })

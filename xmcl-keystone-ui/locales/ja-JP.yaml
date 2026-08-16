@@ -931,10 +931,37 @@ modrinth:
 modrinthCard:
   currentVersion: 現在のバージョン
 multiplayer:
+  addFunds: "残高を追加"
+  availableBalance: "利用可能残高"
+  balanceHint: "XMCL Together のサービスに利用できます"
+  billing: "請求"
+  billingDescription: "リレーアクセス、Together Home プラン、お支払いを管理します。"
+  billingError: "Together の請求情報を読み込めませんでした。しばらくしてからもう一度お試しください。"
+  buyTogether: "Together を購入"
+  cancelTogether: "プランを解約"
+  checkout: "Waffo の決済を開く"
+  connectionTogetherWarning: "ルームメンバーの1人がしばらくあなたに接続できていません。ルーム全員の接続性を改善するには XMCL Together をお試しください。Together が必要なのはルームマスターだけです。"
+  masterPurchaseHint: "ルーム全員の接続性を改善するには、ルームマスターだけが Together Home を必要とします。"
+  natTogetherWarning: "ルーターがルームマスターへの接続に問題を抱えている可能性があります。接続に失敗する場合は、あなたと友達の接続性を改善するため XMCL Together をお試しください。ルームの Together を購入する必要があるのはルームマスターだけです。"
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB のリレートラフィックを含む7日間のトライアルを1回利用できます。"
+  trialTitle: "接続性トライアル"
+  tryTogether: "Together を試す"
+  month: "月"
+  orderStatus: "Waffo の注文: {status}"
+  planDescription: "毎月20 GBの管理リレートラフィックに加え、ModpackのAIトラブルシューティングを利用できます。"
+  waffoHint: "お支払いは Waffo Pancake で安全に完了します。XMCL がカード番号を受け取ることはありません。"
+  subscription:
+    active: "有効"
+    cancelled: "解約済み"
+    payment_due: "支払い期限"
+  trial:
+    active: "トライアル有効"
+    available: "無料トライアルを利用可能"
+    expired: "トライアル使用済み"
+    unavailable: "トライアル利用不可"
   loginRequiredDescription: P2P マルチプレイヤーでは XMCL のオンラインサービスを使用します。続行するには XMCL アカウントにサインインしてください。
   loginRequiredTitle: P2P マルチプレイヤーにサインイン
-  allowTurn: リレーサーバーを有効化
-  allowTurnHint: フレンドに接続できない場合はリレーサーバーを有効にしてください。リレーサーバーは接続速度を低下させる可能性があります。注意して使用してください。
   complete: 完了
   confirm: 続行
   connections: 接続
@@ -995,8 +1022,6 @@ multiplayer:
   connectionError: 接続エラー
   connectionFailedHint: >-
     接続を確立できません。両方のピアのNATタイプが互換性があるか確認してください。
-  natWarning: >-
-    NATタイプが直接接続を妨げている可能性があります。設定でリレーサーバーを有効にするか、フレンドにホストを依頼してください。
 myStuff: 私の作品
 natType:
   blocked: ブロックされた

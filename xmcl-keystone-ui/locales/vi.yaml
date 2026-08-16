@@ -1006,10 +1006,37 @@ modrinth:
 modrinthCard:
   currentVersion: Phiên bản hiện tại
 multiplayer:
+  addFunds: "Thêm tiền"
+  availableBalance: "Số dư khả dụng"
+  balanceHint: "Có thể sử dụng cho các dịch vụ XMCL Together"
+  billing: "Thanh toán"
+  billingDescription: "Quản lý quyền truy cập relay, gói Together Home và các khoản thanh toán."
+  billingError: "Không thể tải thông tin thanh toán Together. Vui lòng thử lại sau ít phút."
+  buyTogether: "Mua Together"
+  cancelTogether: "Hủy gói"
+  checkout: "Mở trang thanh toán Waffo"
+  connectionTogetherWarning: "Một thành viên trong phòng đã không thể kết nối với bạn trong một thời gian. Hãy thử XMCL Together để cải thiện kết nối cho mọi người trong phòng. Chỉ chủ phòng cần Together."
+  masterPurchaseHint: "Chỉ chủ phòng cần Together Home để cải thiện kết nối cho mọi người trong phòng."
+  natTogetherWarning: "Bộ định tuyến của bạn có thể gặp khó khăn khi kết nối với chủ phòng. Nếu kết nối thất bại, hãy thử XMCL Together để cải thiện kết nối giữa bạn và bạn bè. Chỉ chủ phòng cần mua Together cho phòng."
+  togetherName: "Minecraft Together"
+  trialDescription: "Một lần dùng thử trong 7 ngày với 1 GB lưu lượng relay."
+  trialTitle: "Dùng thử kết nối"
+  tryTogether: "Dùng thử Together"
+  month: "tháng"
+  orderStatus: "Đơn hàng Waffo: {status}"
+  planDescription: "20 GB lưu lượng relay được quản lý mỗi tháng, cùng với hỗ trợ AI khắc phục sự cố modpack."
+  waffoHint: "Thanh toán được hoàn tất an toàn trên Waffo Pancake. XMCL không bao giờ nhận số thẻ của bạn."
+  subscription:
+    active: "Đang hoạt động"
+    cancelled: "Đã hủy"
+    payment_due: "Đến hạn thanh toán"
+  trial:
+    active: "Đang dùng thử"
+    available: "Có bản dùng thử miễn phí"
+    expired: "Đã dùng bản dùng thử"
+    unavailable: "Không có bản dùng thử"
   loginRequiredDescription: Chế độ nhiều người chơi P2P sử dụng dịch vụ trực tuyến XMCL. Hãy đăng nhập vào Tài khoản XMCL để tiếp tục.
   loginRequiredTitle: Đăng nhập để chơi nhiều người P2P
-  allowTurn: Bật máy chủ chuyển tiếp (Relay server)
-  allowTurnHint: Cho phép máy chủ chuyển tiếp nếu bạn không thể kết nối trực tiếp với bạn bè. Tuy nhiên, việc sử dụng máy chủ chuyển tiếp có thể làm chậm kết nối của bạn. Hãy sử dụng cẩn thận.
   complete: Hoàn tất
   confirm: Xác nhận
   connectionError: Lỗi kết nối
@@ -1046,7 +1073,6 @@ multiplayer:
   localToken: Token cục bộ
   manualConnect: Kết nối thủ công
   name: Chơi mạng qua mạng LAN
-  natWarning: Loại NAT của bạn có thể ngăn cản kết nối trực tiếp. Try bật máy chủ chuyển tiếp trong cài đặt hoặc yêu cầu bạn bè làm máy chủ lưu trữ (host) thay thế.
   networkInfo: Thông tin mạng (Nhấp để bật/tắt)
   next: Tiếp theo
   otherExposedPortDescription: Cổng được chuyển tiếp bởi {user}

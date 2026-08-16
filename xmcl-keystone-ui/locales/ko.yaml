@@ -949,10 +949,37 @@ modrinth:
 modrinthCard:
   currentVersion: 현재 버전
 multiplayer:
+  addFunds: "잔액 추가"
+  availableBalance: "사용 가능 잔액"
+  balanceHint: "XMCL Together 서비스에 사용 가능"
+  billing: "결제"
+  billingDescription: "릴레이 액세스, Together Home 플랜 및 결제를 관리합니다."
+  billingError: "Together 결제를 불러오지 못했습니다. 잠시 후 다시 시도하세요."
+  buyTogether: "Together 구매"
+  cancelTogether: "플랜 취소"
+  checkout: "Waffo 결제 열기"
+  connectionTogetherWarning: "방 구성원 한 명이 한동안 사용자에게 연결하지 못하고 있습니다. 방의 모든 구성원이 더 원활하게 연결되도록 XMCL Together를 사용해 보세요. Together는 방장만 필요합니다."
+  masterPurchaseHint: "방의 모든 구성원이 더 원활하게 연결되도록 Together Home은 방장만 필요합니다."
+  natTogetherWarning: "라우터가 방장에게 연결하는 데 문제가 있을 수 있습니다. 연결에 실패하면 사용자와 친구들의 연결을 개선하기 위해 XMCL Together를 사용해 보세요. 이 방에서 Together를 구매해야 하는 사람은 방장뿐입니다."
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB 릴레이 트래픽이 포함된 7일 체험판 1회입니다."
+  trialTitle: "연결성 체험판"
+  tryTogether: "Together 사용해 보기"
+  month: "개월"
+  orderStatus: "Waffo 주문: {status}"
+  planDescription: "매월 20 GB의 관리형 릴레이 트래픽과 모드팩 문제 해결을 위한 AI 지원을 제공합니다."
+  waffoHint: "결제는 Waffo Pancake에서 안전하게 처리됩니다. XMCL은 카드 번호를 받지 않습니다."
+  subscription:
+    active: "활성"
+    cancelled: "취소됨"
+    payment_due: "결제 기한 도래"
+  trial:
+    active: "체험 활성"
+    available: "무료 체험 사용 가능"
+    expired: "체험판 사용됨"
+    unavailable: "체험판 사용 불가"
   loginRequiredDescription: P2P 멀티플레이어는 XMCL 온라인 서비스를 사용합니다. 계속하려면 XMCL 계정에 로그인하세요.
   loginRequiredTitle: P2P 멀티플레이어 로그인
-  allowTurn: 릴레이 서버 사용
-  allowTurnHint: 친구와 연결할 수 없을 때 릴레이 서버를 허용합니다. 하지만 릴레이 서버 사용은 연결 속도를 느리게 할 수 있습니다. 주의해서 사용하세요.
   complete: 완료
   confirm: 확인
   connections: 연결
@@ -1005,7 +1032,6 @@ multiplayer:
   startNewP2PConnection: 시작 버튼을 클릭하여 새로운 피어 연결을 생성하세요
   connectionError: 연결 오류
   connectionFailedHint: 연결을 설정할 수 없습니다. 양쪽 피어의 NAT 유형이 호환되는지 확인하세요.
-  natWarning: NAT 유형이 직접 연결을 방해할 수 있습니다. 설정에서 릴레이 서버를 활성화하거나 친구에게 호스트를 부탁하세요.
 myStuff: 내 자료
 natType:
   blocked: 차단됨

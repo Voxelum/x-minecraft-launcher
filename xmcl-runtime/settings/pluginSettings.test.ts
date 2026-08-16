@@ -340,7 +340,6 @@ describe('pluginSettings', () => {
         allowPrerelease: false,
         apiSetsPreference: '',
         apiSets: [{ name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }],
-        allowTurn: false,
         httpProxy: '',
         httpProxyEnabled: false,
         theme: 'dark',
@@ -410,7 +409,6 @@ describe('pluginSettings', () => {
         allowPrerelease: false,
         apiSetsPreference: '',
         apiSets: [{ name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }],
-        allowTurn: false,
         httpProxy: '',
         httpProxyEnabled: false,
         theme: 'dark', // default value, not 'invalid-theme'

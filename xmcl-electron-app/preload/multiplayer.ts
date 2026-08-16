@@ -182,6 +182,7 @@ listen(host, 25566, (p) => p + 2).then((s) => {
 const multiplayer = {
   ...peer,
   isReady: () => inited && stateReady,
+  refreshIceServers: updateIceServers,
   on: (eventName: string | symbol, listener: (...args: any[]) => void) =>
     emitter.on(eventName, listener),
   once: (eventName: string | symbol, listener: (...args: any[]) => void) =>

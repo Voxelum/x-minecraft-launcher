@@ -1159,14 +1159,22 @@ modrinth:
 modrinthCard:
   currentVersion: 当前版本
 multiplayer:
-  allowTurn: 允许转发服务
-  allowTurnHint: 当您和您的朋友连不上时可以尝试允许转发服务，但是转发服务可能会增加您的联机延迟。使用时请注意。
+  addFunds: 充值
+  availableBalance: 可用余额
+  balanceHint: 可用于 XMCL Together 服务
+  billing: 账单
+  billingDescription: 管理中继服务、Together Home 套餐和付款。
+  billingError: 暂时无法加载 Together 账单，请稍后重试。
+  buyTogether: 购买 Together
+  cancelTogether: 取消套餐
+  checkout: 打开 Waffo 结账页
   complete: 完成
   confirm: 确定
   connectionError: 连接错误
   connectionFailedHint: 无法建立连接。请检查双方的 NAT 类型是否兼容。
+  connectionTogetherWarning: 有房间成员长时间无法连接到您。可以尝试 XMCL Together，改善房间内所有成员的联机体验；一个房间只需房间主控使用 Together。
   connectedToMaster: 已连接到房间主控
-  natWarning: 您的 NAT 类型可能阻碍直连。请尝试在设置中启用中继服务器，或让朋友担任房间主控。
+  natTogetherWarning: 您的路由器可能难以连接房间主控。如果确实无法连接，可以尝试 XMCL Together，改善您和朋友之间的联机体验。一个房间只需房间主控购买 Together。
   connections: 用户连接管理
   copied: 已复制！
   copy: 复制
@@ -1190,6 +1198,7 @@ multiplayer:
   groupId: 小组 ID
   master: 主控
   masterHostsGameHint: 房间主控是联机连接中心，应由主控开启 Minecraft 局域网世界。更换游戏宿主前请先转移主控。
+  masterPurchaseHint: 一个房间只需房间主控购买 Together Home，即可改善所有成员的联机体验。
   member: 成员
   illegalTokenDescription: 非法的令牌，请确认对方给您的令牌是完整且正确的。
   initiateConnection: 发起连接
@@ -1208,6 +1217,23 @@ multiplayer:
   localToken: 本地令牌
   manualConnect: 手动连接
   name: 跨局域网联机
+  togetherName: Minecraft Together
+  trial:
+    active: 试用中
+    available: 可免费试用
+    expired: 已试用
+    unavailable: 暂不可试用
+  trialDescription: 每个账户可试用一次，7 天内包含 1 GB 中继流量。
+  trialTitle: 联机试用
+  tryTogether: 试用 Together
+  month: 月
+  orderStatus: 'Waffo 订单：{status}'
+  planDescription: 每月包含 20 GB 托管中继流量，以及用于排查整合包问题的 AI 协助。
+  subscription:
+    active: 使用中
+    cancelled: 已取消
+    payment_due: 待付款
+  waffoHint: 付款由 Waffo Pancake 安全处理，XMCL 不会接收您的银行卡号。
   networkInfo: 当前网络状况
   next: 下一步
   otherExposedPortDescription: '{user} 暴露给你的端口'

@@ -198,7 +198,6 @@ export function createMultiplayer(roomApi: MultiplayerRoomApi) {
     targetIceServer: RTCIceServer | undefined,
     preferredIceServers: Array<RTCIceServer>,
   ): PeerContext => {
-    const isAllowTurn = () => localStorage.getItem('peerAllowTurn') !== 'false'
     let stunIndex = 0
     let turnIndex = 0
     let current: RTCIceServer | undefined
@@ -211,19 +210,14 @@ export function createMultiplayer(roomApi: MultiplayerRoomApi) {
       getNextIceServer: () => {
         // select priority follow targetIceServer (turn) > common turns > common stuns
 
-        if (
-          isAllowTurn() &&
-          !triedTargetIceServer &&
-          targetIceServer &&
-          targetIceServer.credential
-        ) {
+        if (!triedTargetIceServer && targetIceServer && targetIceServer.credential) {
           triedTargetIceServer = true
           current = targetIceServer
           return targetIceServer
         }
 
         const [stuns, turns] = iceServers.get(preferredIceServers)
-        if (isAllowTurn() && turns.length > 0) {
+        if (turns.length > 0) {
           const preferredTurn = localStorage.getItem('peerPreferredTurn')
           if (preferredTurn) {
             const index = turns.findIndex((s) => s.urls.includes(preferredTurn))

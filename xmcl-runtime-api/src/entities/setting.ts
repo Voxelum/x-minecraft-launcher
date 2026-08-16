@@ -61,7 +61,6 @@ export class Settings implements SettingSchema {
    * Is current environment connecting to internet?
    */
   online = false
-  allowTurn = false
   replaceNatives: 'all' | 'legacy-only' | false = 'legacy-only'
 
   httpProxy = ''
@@ -97,7 +96,6 @@ export class Settings implements SettingSchema {
     this.httpProxyEnabled = config.httpProxyEnabled
     this.maxSockets = config.maxSockets ?? 16
     this.maxAPISockets = config.maxAPISockets ?? 0
-    this.allowTurn = config.allowTurn ?? false
     this.theme = config.theme
     this.globalMinMemory = config.globalMinMemory
     this.globalMaxMemory = config.globalMaxMemory
@@ -192,10 +190,6 @@ export class Settings implements SettingSchema {
 
   apiSetsSet(sets: { name: string; url: string }[]) {
     this.apiSets = sets
-  }
-
-  allowTurnSet(allowTurn: boolean) {
-    this.allowTurn = allowTurn
   }
 
   onlineSet(online: boolean) {

@@ -115,7 +115,7 @@
           data-testid="nav-multiplayer"
           icon="hub"
           :icon-size="iconSize"
-          :tooltip="() => ({ text: t('multiplayer.name'), direction: tooltipDirection })"
+          :tooltip="() => ({ text: t('multiplayer.togetherName'), direction: tooltipDirection })"
           clickable
           @click="goMultiplayer"
         />

@@ -157,6 +157,7 @@ export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
   getPeers(): Peer[]
 
   refreshNat(): Promise<void>
+  refreshIceServers(): Promise<void>
   /**
    * Set your user info
    */
