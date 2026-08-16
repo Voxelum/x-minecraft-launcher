@@ -22,7 +22,7 @@
 </template>
 <script lang="ts" setup>
 import HomeCard from '@/components/HomeCard.vue'
-import { kDropHandler } from '@/composables/dropHandler'
+import { getDropFilePaths, kDropHandler } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { useService } from '@/composables/service'
@@ -39,7 +39,8 @@ const { path } = injection(kInstance)
 
 function onDrop(e: DragEvent) {
   if (e.dataTransfer) {
-    const filePaths = Array.from(e.dataTransfer.files).map(f => f.path)
+    const filePaths = getDropFilePaths(e.dataTransfer.files)
+    if (filePaths.length === 0) return
     install({ path: path.value, files: filePaths })
     e.preventDefault()
   }

@@ -343,6 +343,8 @@ feedback:
   qqDescription: >-
     Увійдіть до групи QQ для зворотного зв'язку та спілкуйтеся безпосередньо з авторами. Номер групи: {number}
   qqEnterGroup: Приєднатися
+  reddit: Reddit
+  redditDescription: Приєднатися до спільноти r/XMCL у Reddit
 fileDetail:
   fileSize: Розмір файлу
   filesize: Розмір файлу
@@ -1003,6 +1005,8 @@ modrinth:
 modrinthCard:
   currentVersion: Поточна версія
 multiplayer:
+  loginRequiredDescription: Для мережевої гри P2P використовуються онлайн-сервіси XMCL. Увійдіть в обліковий запис XMCL, щоб продовжити.
+  loginRequiredTitle: Увійдіть для мережевої гри P2P
   allowTurn: Увімкнути ретрансляційний сервер
   allowTurnHint: >-
     Дозволити ретрансляційний сервер, якщо ви не можете з'єднатися з другом. Однак, використання ретрансляційного сервера може сповільнити ваше з'єднання. Використовуйте з обережністю.
@@ -1576,8 +1580,8 @@ theme:
   selectImage: Вибрати зображення
   selectMusic: Вибрати музику
   selectVideo: Вибрати відео
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Кандидат хоста
   prflx: Кандидат Peer Reflexive
@@ -1815,7 +1819,7 @@ gamepad:
   steamAddedNotify: Лаунчер успішно додано до вашої бібліотеки Steam! Будь ласка, перезапустіть Steam, щоб побачити зміни.
   steamAlreadyAddedNotify: Лаунчер вже додано до вашої бібліотеки Steam.
   steamDeckTitle: Виявлено Steam Deck
-  steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати X Minecraft Launcher до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
+  steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати XMCL до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
   steamDeckAddBtn: Додати до Steam ({btn})
   steamDeckCancelBtn: Скасувати ({btn})
 

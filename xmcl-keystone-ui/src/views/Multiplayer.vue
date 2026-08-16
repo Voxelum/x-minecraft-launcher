@@ -137,6 +137,7 @@
           closable
           class="mt-2 mb-0"
         >
+          <template #prepend> </template>
           <div class="flex items-center gap-2">
             <v-icon size="small">error</v-icon>
             <span>{{ t('multiplayer.connectionError') }}: {{ groupError }}</span>
@@ -149,6 +150,7 @@
           density="compact"
           class="mt-2 mb-0"
         >
+          <template #prepend> </template>
           <div class="flex items-center gap-2">
             <v-icon size="small">warning</v-icon>
             <span>{{ t('multiplayer.natWarning') }}</span>

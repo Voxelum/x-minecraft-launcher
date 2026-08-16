@@ -1,10 +1,10 @@
 import { UpdateResourcePayload } from '@xmcl/resource'
-import { APP_INSIGHT_KEY, Exception, LaunchService as ILaunchService, Settings } from '@xmcl/runtime-api'
+import { AGENT_TELEMETRY_FLIGHT, APP_INSIGHT_KEY, Exception, LaunchService as ILaunchService, Settings } from '@xmcl/runtime-api'
 import type { Contracts, TelemetryClient } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '~/constant'
-import { kClientToken, kIsNewClient } from '~/infra'
+import { kClientToken, kFlights, kIsNewClient } from '~/infra'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
 import { kResourceManager } from '~/resource'
@@ -157,12 +157,6 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         }
       }
     }
-    // Scale retained agent-run traces back up: the run is dropped client-side at
-    // (100 - keepPercent)%, so tell ingestion the effective sampling rate.
-    const agentSampleRate = contextObjects?.agentSampleRate
-    if (typeof agentSampleRate === 'number') {
-      envelope.sampleRate = agentSampleRate
-    }
     return true
   })
 
@@ -199,31 +193,27 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   app.on('agent-run-trace', (payload) => {
     app.registry.get(kSettings).then((settings) => {
       if (settings.disableTelemetry) return
-      // payload.sampleRate is the percentage of runs to keep (25 = keep 1/4,
-      // 100 = keep all). Drop client-side, and set envelope.sampleRate so
-      // ingestion scales the retained counts back up.
-      const keepPercent = Math.max(1, Math.min(100, payload.sampleRate || 100))
-      if (Math.random() * 100 >= keepPercent) return
-      defaultClient.trackTrace({
-        message: 'agent-run',
-        properties: {
-          name: 'agent-run',
-          runId: payload.runId,
-          agentId: payload.agentId,
-          provider: payload.provider,
-          model: payload.model,
-          outcome: payload.outcome,
-          stopReason: payload.stopReason,
-          tools: JSON.stringify(payload.tools).slice(0, 2048),
-          turnCount: String(payload.turnCount),
-          toolCallCount: String(payload.toolCallCount),
-          toolFailureCount: String(payload.toolFailureCount),
-          inputTokens: String(payload.inputTokens),
-          outputTokens: String(payload.outputTokens),
-          durationMs: String(payload.durationMs),
-          sampleRate: String(keepPercent),
-        },
-        contextObjects: { agentSampleRate: keepPercent },
+      app.registry.get(kFlights).then((flights) => {
+        if (flights[AGENT_TELEMETRY_FLIGHT] !== true) return
+        defaultClient.trackTrace({
+          message: 'agent-run',
+          properties: {
+            name: 'agent-run',
+            runId: payload.runId,
+            agentId: payload.agentId,
+            provider: payload.provider,
+            model: payload.model,
+            outcome: payload.outcome,
+            stopReason: payload.stopReason,
+            tools: JSON.stringify(payload.tools).slice(0, 2048),
+            turnCount: String(payload.turnCount),
+            toolCallCount: String(payload.toolCallCount),
+            toolFailureCount: String(payload.toolFailureCount),
+            inputTokens: String(payload.inputTokens),
+            outputTokens: String(payload.outputTokens),
+            durationMs: String(payload.durationMs),
+          },
+        })
       })
     })
   })
@@ -251,6 +241,19 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       defaultClient.trackEvent({
         name: 'install-postprocess-fallback',
         properties: payload,
+      })
+    })
+
+    app.on('microsoft-auth-telemetry', (payload) => {
+      if (settings.disableTelemetry) return
+      defaultClient.trackEvent({
+        name: payload.name,
+        properties: payload.properties,
+        measurements: payload.measurements,
+        tagOverrides: {
+          [contract.operationId]: String(payload.properties.authAttemptId),
+          [contract.operationName]: 'microsoft-auth',
+        },
       })
     })
 

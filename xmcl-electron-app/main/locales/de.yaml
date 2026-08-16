@@ -17,6 +17,6 @@ task:
   continue: Blick in den Launcher
   fail: Eine Aufgabe nicht erledigt
   success: Eine Aufgabe erfüllt
-title: X Minecraft Launcher
+title: XMCL
 urlFailed: Unbekannter Link {url}. Überprüfen Sie Ihren Link oder kontaktieren Sie den Entwickler
 urlSuccess: Erfolgreich! Jetzt können Sie dieses Fenster schließen und zum Launcher zurückkehren!

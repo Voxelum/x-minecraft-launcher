@@ -25,7 +25,9 @@ export async function getIceServers(getCredential: () => Promise<MultiplayerIceS
       urls: `stun:${s}`,
     }))
 
-    if (credential.uris && credential.username && credential.password) {
+    if (credential.servers) {
+      result.unshift(...credential.servers)
+    } else if (credential.uris && credential.username && credential.password) {
       for (const uri of credential.uris) {
         result.unshift({
           urls: uri,

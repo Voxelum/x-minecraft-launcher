@@ -8,7 +8,7 @@ import { InstallMarketOptionWithInstance, MarketType } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import type { ResolveArtifactModrinthDependencies } from './modArtifactDependencies'
 import { getRequiredCurseforgeInstallFiles } from './modInstall'
-import { useMarketInstallStaging } from './marketInstallStaging'
+import { useMarketInstall } from './marketInstall'
 
 export const kCurseforgeInstaller: InjectionKey<ReturnType<typeof useCurseforgeInstaller>> = Symbol('curseforgeInstaller')
 
@@ -20,7 +20,7 @@ export function useCurseforgeInstaller(
   installDefaultModLoader = useInstanceModLoaderDefault(),
   resolveArtifactDependencies?: ResolveArtifactModrinthDependencies,
 ) {
-  const stage = useMarketInstallStaging()
+  const installFiles = useMarketInstall()
 
   const install = async (file: { fileId: number; icon?: string } | { fileId: number; icon?: string }[]) => {
     const files = await resolveResource({
@@ -28,7 +28,7 @@ export function useCurseforgeInstaller(
       file,
       instancePath: path.value,
     })
-    return stage(path.value, [], files)
+    return installFiles(path.value, [], files)
   }
 
   async function installWithDependencies(fileId: number, loaders: string[], icon: string | undefined, installed: ProjectFile[], deps: Array<{
@@ -60,7 +60,7 @@ export function useCurseforgeInstaller(
       hashes: {},
       ...(file.curseforge ? { curseforge: file.curseforge } : {}),
     }))
-    await stage(_path, oldFiles, resolved)
+    await installFiles(_path, oldFiles, resolved)
   }
 
   return {

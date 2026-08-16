@@ -1198,6 +1198,8 @@ multiplayer:
   joinOrCreateGroup: 加入/创建群组
   joinOrCreateGroupHint: 从您的小伙伴那获得群组 ID 或自己创建一个群组
   joinCreatesMissingRoomHint: 如果该房间不存在，你会创建它并成为房间主控。
+  loginRequiredDescription: P2P 联机依赖 XMCL 在线服务。请先登录 XMCL Account 后继续。
+  loginRequiredTitle: 登录后使用 P2P 联机
   kernel: P2P内核
   kernelDescription: |-
     使用本机 WebRTC 或节点数据通道。
@@ -1641,7 +1643,7 @@ setting:
   advancedSettingsHint: 危险区域 - 重置或管理启动器数据
   aiAgentApiKey: AI Agent API Key
   aiAgentApiKeyClear: 清除密钥
-  aiAgentApiKeyDescription: 保持“内置”即可使用 XMCL 账号；也可选择外部服务商并填写其 API Key。密钥按服务商分别保存在本地设备。
+  aiAgentApiKeyDescription: 输入已配置的 OpenAI 兼容 Endpoint 所需的 API Key。密钥按 Endpoint 主机分别保存在本地设备。
   aiAgentApiKeyEmpty: 粘贴你的 API Key
   aiAgentApiKeyNotNeeded: 无需密钥
   aiAgentApiKeyNotNeededHint: 该服务在本地运行，无需 API Key
@@ -1656,9 +1658,6 @@ setting:
   aiAgentModelPlaceholder: gpt-5.6 或 claude-sonnet-4-5
   aiAgentModel: AI Agent 模型
   aiAgentModelDescription: 请求聊天补全时使用的模型名。
-  aiAgentProvider: AI Agent 服务商
-  aiAgentProviderCustom: 自定义（OpenAI 兼容）
-  aiAgentProviderDescription: 选择预设的 OpenAI 兼容服务商以自动填充 Endpoint。
   apiSets:
     auto: 自动 (根据网络决定)
     official: 官方 (Mojang)
@@ -1992,8 +1991,8 @@ theme:
   selectImage: 选择图像
   selectMusic: 选择音乐
   selectVideo: 选择视频
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: 公网地址
   prflx: 同伴反射地址

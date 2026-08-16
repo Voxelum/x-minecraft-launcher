@@ -1,4 +1,4 @@
-import { computed, InjectionKey, Ref, ref, ShallowRef, toRaw } from 'vue'
+import { computed, InjectionKey, markRaw, Ref, ref, shallowRef, ShallowRef, toRaw, watch } from 'vue'
 
 import { injection } from '@/util/inject'
 
@@ -39,16 +39,26 @@ export type DialogModel = {
   registered: Record<string, DialogControl>
 }
 
-export function useDialogModel(): DialogModel {
-  const model = shallowRef({ dialog: '', parameter: undefined })
+interface DialogBroadcastChannel {
+  addEventListener(type: 'message', listener: (event: MessageEvent) => void): void
+  postMessage(message: DialogModelData<any>): void
+}
 
-  const channel = new BroadcastChannel('dialog')
+export function useDialogModel(
+  channel: DialogBroadcastChannel = new BroadcastChannel('dialog'),
+): DialogModel {
+  const model = shallowRef({ dialog: '', parameter: undefined })
+  const remoteValues = new WeakSet<object>()
+
   channel.addEventListener('message', (e) => {
-    console.log(e)
-    if (e.data.dialog === model.value.dialog) return
-    model.value = e.data
+    const value = e.data
+    if (!value || typeof value !== 'object' || typeof value.dialog !== 'string') return
+    if (value.dialog === model.value.dialog) return
+    remoteValues.add(value)
+    model.value = value
   })
   watch(model, (value) => {
+    if (remoteValues.delete(value)) return
     try {
       const rawParam = value.parameter ? toRaw(value.parameter) : undefined
       const cleanParam = rawParam ? JSON.parse(JSON.stringify(rawParam)) : undefined

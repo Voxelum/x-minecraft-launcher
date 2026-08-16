@@ -942,6 +942,8 @@ modrinth:
 modrinthCard:
   currentVersion: CURREN VERSHUN
 multiplayer:
+  loginRequiredDescription: P2P multiplayer uses XMCL onlinez. Sign in 2 an XMCL Account 2 continue.
+  loginRequiredTitle: Sign in 4 P2P multiplayer
   allowTurn: ENABL RELAY SERVR
   allowTurnHint: >-
     ALLOW RELAY SERVR IF U CANNOT CONNECT WITH UR FREN. HOWEVER, USING RELAY SERVR MAY SLOW DOWN UR CONNEKSHUN. USE IT WITH CAUSHUN.

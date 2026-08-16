@@ -5,6 +5,18 @@ import type { ResolvedAgentProvider } from './AgentService'
 const builtinUrl = new URL(BUILTIN_AGENT_ENDPOINT)
 const builtinProviderUrl = 'https://ai.xmcl.app/v1/chat/completions'
 
+export interface AgentXmclAuthorization {
+  accessToken: string
+  accountId: string
+  tokenType?: 'DPoP' | 'Bearer'
+  dpopProof?: string
+}
+
+export interface AgentXmclAuthorizationRequest {
+  method: string
+  url: string | URL
+}
+
 function setHeader(headers: Record<string, any>, name: string, value?: string) {
   for (const key of Object.keys(headers)) {
     if (key.toLowerCase() === name.toLowerCase()) delete headers[key]
@@ -14,13 +26,16 @@ function setHeader(headers: Record<string, any>, name: string, value?: string) {
 
 export function createAgentProtocolHandler(
   resolveProvider: () => Promise<ResolvedAgentProvider>,
-  resolveXmclAuthorization: () => Promise<{ accessToken: string; accountId: string } | undefined>,
+  resolveXmclAuthorization: (
+    request?: AgentXmclAuthorizationRequest,
+  ) => Promise<AgentXmclAuthorization | undefined>,
 ): Handler {
   return async ({ request, response }) => {
     if (request.url.origin !== builtinUrl.origin || request.url.pathname !== builtinUrl.pathname)
       return
 
     setHeader(request.headers, 'authorization')
+    setHeader(request.headers, 'DPoP')
     setHeader(request.headers, 'x-xmcl-account-id')
     const provider = await resolveProvider()
     if (provider.mode === 'custom') {
@@ -57,7 +72,11 @@ export function createAgentProtocolHandler(
       return
     }
 
-    const authorization = await resolveXmclAuthorization()
+    const targetUrl = new URL(builtinProviderUrl)
+    const authorization = await resolveXmclAuthorization({
+      method: request.method,
+      url: targetUrl,
+    })
     if (!authorization) {
       response.status = 401
       response.headers = { 'content-type': 'application/json' }
@@ -65,9 +84,11 @@ export function createAgentProtocolHandler(
       response.handled = true
       return
     }
-    setHeader(request.headers, 'authorization', `Bearer ${authorization.accessToken}`)
+    const tokenType = authorization.tokenType === 'DPoP' ? 'DPoP' : 'Bearer'
+    setHeader(request.headers, 'authorization', `${tokenType} ${authorization.accessToken}`)
+    setHeader(request.headers, 'DPoP', authorization.dpopProof)
     setHeader(request.headers, 'x-xmcl-account-id', authorization.accountId)
-    request.url = new URL(builtinProviderUrl)
+    request.url = targetUrl
     request.skipRemainingHandlers = true
   }
 }

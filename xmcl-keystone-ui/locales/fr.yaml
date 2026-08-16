@@ -983,6 +983,8 @@ modrinth:
 modrinthCard:
   currentVersion: Version actuelle
 multiplayer:
+  loginRequiredDescription: Le multijoueur P2P utilise les services en ligne XMCL. Connectez-vous à un compte XMCL pour continuer.
+  loginRequiredTitle: Connectez-vous pour le multijoueur P2P
   complete: Compléter
   confirm: Confirmer
   connections: Connexions
@@ -1563,8 +1565,8 @@ theme:
   selectImage: Sélectionnez une image
   selectMusic: Sélectionnez la musique
   selectVideo: Sélectionnez la vidéo
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Candidat Hôte
   prflx: Candidat Peer Reflexive

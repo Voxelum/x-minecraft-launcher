@@ -135,7 +135,7 @@ import type { StoreProjectVersion, StoreProjectVersionDetail } from '@/component
 import StoreProjectInstallVersionDialog from '@/components/StoreProjectInstallVersionDialog.vue'
 import { useService } from '@/composables'
 import { getCurseforgeProjectFilesModel } from '@/composables/curseforge'
-import { kDropHandler } from '@/composables/dropHandler'
+import { getDropFilePaths, kDropHandler } from '@/composables/dropHandler'
 import { useUpstreamData } from '@/composables/upstreamData'
 import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
@@ -366,7 +366,8 @@ const underlineWidth = computed(() => {
 const { install: installMod } = useService(InstanceModsServiceKey)
 function onDropMod(e: DragEvent) {
   if (e.dataTransfer) {
-    const filePaths = Array.from(e.dataTransfer.files).map(f => f.path)
+    const filePaths = getDropFilePaths(e.dataTransfer.files)
+    if (filePaths.length === 0) return
     installMod({
       path: path.value,
       files: filePaths,
@@ -378,7 +379,8 @@ function onDropMod(e: DragEvent) {
 const { install: installResourcePack } = useService(InstanceResourcePacksServiceKey)
 function onDropResourcePack(e: DragEvent) {
   if (e.dataTransfer) {
-    const filePaths = Array.from(e.dataTransfer.files).map(f => f.path)
+    const filePaths = getDropFilePaths(e.dataTransfer.files)
+    if (filePaths.length === 0) return
     installResourcePack({ path: path.value, files: filePaths })
     e.preventDefault()
   }
@@ -387,7 +389,8 @@ function onDropResourcePack(e: DragEvent) {
 const { install: installShaderPack } = useService(InstanceShaderPacksServiceKey)
 function onDropShaderPack(e: DragEvent) {
   if (e.dataTransfer) {
-    const filePaths = Array.from(e.dataTransfer.files).map(f => f.path)
+    const filePaths = getDropFilePaths(e.dataTransfer.files)
+    if (filePaths.length === 0) return
     installShaderPack({ path: path.value, files: filePaths })
     e.preventDefault()
   }
@@ -398,8 +401,9 @@ const savesLength = computed(() => saves.value.length)
 const { importSave } = useService(InstanceSavesServiceKey)
 function onDropSave(e: DragEvent) {
   if (e.dataTransfer) {
-    const filePaths = Array.from(e.dataTransfer.files).map(f => f.path)
-    importSave({ instancePath: path.value, path: filePaths[0] })
+    const [filePath] = getDropFilePaths(e.dataTransfer.files)
+    if (!filePath) return
+    importSave({ instancePath: path.value, path: filePath })
     e.preventDefault()
   }
 }

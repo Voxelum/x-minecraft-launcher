@@ -249,6 +249,7 @@
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import { useAgentChatEntry, useAgentChatStatus } from '@/composables/agentChat'
 import { useDragAutoScroll } from '@/composables/dragAutoScroll'
+import { kMultiplayerEntry } from '@/composables/multiplayerEntry'
 import { kSettingsState } from '@/composables/setting'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 import { kTheme } from '@/composables/theme'
@@ -263,6 +264,7 @@ import AppSideBarItem from './AppSideBarItem.vue'
 const { blurSidebar, sideBarColor } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const { gameProfile } = injection(kUserContext)
+const { request: openMultiplayer } = injection(kMultiplayerEntry)
 const { position } = useInjectSidebarSettings()
 
 const isHorizontal = computed(() => position.value === 'top' || position.value === 'bottom')
@@ -289,7 +291,7 @@ function goBack() {
 }
 
 function goMultiplayer() {
-  windowController.openMultiplayerWindow()
+  openMultiplayer()
 }
 
 // Global hotkey: Alt+Left arrow goes back, mirroring the back button.

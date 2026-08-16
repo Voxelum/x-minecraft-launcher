@@ -168,7 +168,7 @@ import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
 import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
-import { useGlobalDrop } from '@/composables/dropHandler'
+import { getDropFilePaths, useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { InstanceResourcePack, kInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
@@ -312,10 +312,7 @@ const { resolveFromMarket, uninstall, install } = useService(InstanceResourcePac
 // Drop
 const { dragover } = useGlobalDrop({
   onDrop: async (t) => {
-    const paths = [] as string[]
-    for (const f of t.files) {
-      paths.push(f.path)
-    }
+    const paths = getDropFilePaths(t.files)
     if (paths.length > 0) {
       const installed = await install({ path: path.value, files: paths })
       await enable(installed)

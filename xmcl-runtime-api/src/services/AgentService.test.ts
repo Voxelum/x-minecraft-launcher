@@ -1,42 +1,25 @@
 import { describe, expect, test } from 'vitest'
 import {
-  AGENT_PROVIDER_PRESETS,
   BUILTIN_AGENT_ENDPOINT,
   BUILTIN_AGENT_MODEL,
   BUILTIN_AGENT_PROVIDER_ID,
   CUSTOM_AGENT_PROVIDER_ID,
   DEFAULT_AGENT_ENDPOINT,
   DEFAULT_AGENT_MODEL,
-  getAgentProviderPreset,
-  isKeylessAgentEndpoint,
   normalizeAgentBaseUrl,
   resolveAgentProviderId,
   resolveAgentSecretAccount,
 } from './AgentService'
 
-describe('agent provider presets', () => {
-  test('uses the built-in XMCL provider by default and offers Agnes first externally', () => {
+describe('agent provider settings', () => {
+  test('uses the built-in XMCL provider by default', () => {
     expect(DEFAULT_AGENT_ENDPOINT).toBe('')
     expect(DEFAULT_AGENT_MODEL).toBe('')
     expect(BUILTIN_AGENT_MODEL).toBe('xmcl-agent')
-    expect(AGENT_PROVIDER_PRESETS[0].id).toBe('agnes')
   })
 
-  test('preset ids and hosts are unique', () => {
-    expect(new Set(AGENT_PROVIDER_PRESETS.map(p => p.id)).size).toBe(AGENT_PROVIDER_PRESETS.length)
-    expect(new Set(AGENT_PROVIDER_PRESETS.map(p => p.host)).size).toBe(AGENT_PROVIDER_PRESETS.length)
-  })
-
-  test('every preset endpoint resolves back to its own id', () => {
-    for (const preset of AGENT_PROVIDER_PRESETS) {
-      expect(resolveAgentProviderId(preset.endpoint)).toBe(preset.id)
-      expect(getAgentProviderPreset(preset.id)).toBe(preset)
-    }
-  })
-
-  test('unknown endpoints resolve to the custom provider', () => {
+  test('external endpoints resolve to the custom provider', () => {
     expect(resolveAgentProviderId('https://example.com/v1/chat/completions')).toBe(CUSTOM_AGENT_PROVIDER_ID)
-    expect(getAgentProviderPreset(CUSTOM_AGENT_PROVIDER_ID)).toBeUndefined()
   })
 
   test.each([
@@ -49,10 +32,7 @@ describe('agent provider presets', () => {
     expect(resolveAgentProviderId(endpoint)).toBe(expected)
   })
 
-  // A substring host test would classify these as the preset they impersonate,
-  // and the stored API key is keyed off that id -- so the user's real key would
-  // be sent to an unrelated host.
-  test('a lookalike host is never matched to a preset', () => {
+  test('external endpoints are isolated from the built-in provider', () => {
     for (const endpoint of [
       'https://api.openai.com.attacker.example/v1/chat/completions',
       'https://evil.example/?x=api.openai.com',
@@ -60,36 +40,17 @@ describe('agent provider presets', () => {
       'https://api.deepseek.com.example.net/v1/chat/completions',
     ]) {
       expect(resolveAgentProviderId(endpoint)).toBe(CUSTOM_AGENT_PROVIDER_ID)
-      expect(resolveAgentSecretAccount(endpoint)).not.toBe('openai')
-      expect(resolveAgentSecretAccount(endpoint)).not.toBe('deepseek')
+      expect(resolveAgentSecretAccount(endpoint)).not.toBe(BUILTIN_AGENT_PROVIDER_ID)
     }
-  })
-
-  test('a preset host still matches regardless of scheme, case or path', () => {
-    expect(resolveAgentProviderId('https://API.OpenAI.com/v1/chat/completions')).toBe('openai')
-    expect(resolveAgentProviderId('https://api.openai.com/v2/chat/completions')).toBe('openai')
-  })
-
-  test('only the keyless preset is marked keyless', () => {
-    expect(isKeylessAgentEndpoint('http://localhost:11434/v1/chat/completions')).toBe(true)
-    expect(isKeylessAgentEndpoint(DEFAULT_AGENT_ENDPOINT)).toBe(false)
-    expect(isKeylessAgentEndpoint('https://api.openai.com/v1/chat/completions')).toBe(false)
-    // A remote lookalike must not inherit the local provider's keyless status.
-    expect(isKeylessAgentEndpoint('https://localhost:11434.attacker.example/v1')).toBe(false)
   })
 
   test('base url strips the chat completions suffix', () => {
-    for (const preset of AGENT_PROVIDER_PRESETS) {
-      expect(normalizeAgentBaseUrl(preset.endpoint).endsWith('/chat/completions')).toBe(false)
-    }
     expect(normalizeAgentBaseUrl('https://api.openai.com/v1/chat/completions/')).toBe('https://api.openai.com/v1')
   })
 })
 
 describe('resolveAgentSecretAccount', () => {
-  test('gives every preset its own account', () => {
-    const accounts = AGENT_PROVIDER_PRESETS.map(p => resolveAgentSecretAccount(p.endpoint))
-    expect(new Set(accounts).size).toBe(AGENT_PROVIDER_PRESETS.length)
+  test('uses the built-in provider account for the default endpoint', () => {
     expect(resolveAgentSecretAccount(DEFAULT_AGENT_ENDPOINT)).toBe(BUILTIN_AGENT_PROVIDER_ID)
   })
 

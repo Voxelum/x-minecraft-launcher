@@ -401,9 +401,13 @@ export interface InstanceSavesService {
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'
 
-export type ImportSaveExceptions = {
-  type: 'instanceImportIllegalSave'
-  path: string
-}
+export type ImportSaveExceptions =
+  | {
+    type: 'instanceImportIllegalSave'
+    path: string
+  }
+  | {
+    type: 'instanceImportMissingPath'
+  }
 
 export class ImportSaveException extends Exception<ImportSaveExceptions> { }

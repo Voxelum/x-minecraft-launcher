@@ -35,6 +35,7 @@ import {
   InstallResult,
   kMarketProvider,
 } from './marketProvider'
+import { getMarketFilePath } from './marketFilePath'
 
 type InstanceFile = _InstanceFile & { downloads: string[]; icon?: string }
 
@@ -260,7 +261,7 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
   ): InstanceFile {
     const file = version.files.find((f) => f.filename === filename)
     const modrinthFile = file || getModrinthPrimaryFile(version)
-    const filePath = [domain, modrinthFile.filename].filter((v) => !!v).join('/')
+    const filePath = getMarketFilePath(domain, modrinthFile.filename)
 
     const uris = [modrinthFile.url] as string[]
 
@@ -282,7 +283,7 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
     curseforgeFile: CurseforgeFile,
     icon?: string,
   ): InstanceFile {
-    const filePath = [domain, curseforgeFile.fileName].filter((v) => !!v).join('/')
+    const filePath = getMarketFilePath(domain, curseforgeFile.fileName)
 
     const uris = [] as string[]
 

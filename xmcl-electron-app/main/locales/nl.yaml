@@ -15,6 +15,6 @@ task:
   continue: Bekijk in launcher
   fail: Eén taak is mislukt
   success: Eén taak is gelukt
-title: X Minecraft Launcher
+title: XMCL
 urlFailed: Onbekende url {url}. Controlleer de url of contacteer een developer!
 urlSuccess: Gelukt! Nu kan je deze venster sluiten en terugkeren naar de launcher!

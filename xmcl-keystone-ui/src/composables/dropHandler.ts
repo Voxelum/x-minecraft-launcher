@@ -9,6 +9,17 @@ export interface DropHandler {
   onLeave?: () => void
 }
 
+export function getDropFilePaths(files: FileList) {
+  const paths: string[] = []
+  for (const file of files) {
+    const path = windowController.getPathForFile(file)
+    if (path) {
+      paths.push(path)
+    }
+  }
+  return paths
+}
+
 export function useGlobalDrop(handler: DropHandler) {
   const { registerHandler, dragover } = injection(kDropHandler)
   let dispose = () => { }

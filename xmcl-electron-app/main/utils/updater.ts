@@ -206,7 +206,7 @@ async function downloadAppInstaller(
     tracker?: Tracker<DownloadUpdateTrackerEvents>
   } & DownloadBaseOptions,
 ): Promise<void> {
-  const destination = join(app.getPath('downloads'), 'X Minecraft Launcher.appinstaller')
+  const destination = join(app.getPath('downloads'), 'XMCL.appinstaller')
   const url = 'https://xmcl.blob.core.windows.net/releases/xmcl.appinstaller'
 
   await download({

@@ -1,6 +1,26 @@
+import { createWriteStream } from 'fs'
+import { readFile, rm, writeFile } from 'fs/promises'
 import { join } from 'path'
-import { expect, test } from 'vitest'
-import { classpathEntryToLibraryName, parseArgumentsFromArgsFile } from './profile'
+import { pipeline } from 'stream/promises'
+import { afterEach, expect, test } from 'vitest'
+import { ZipFile } from 'yazl'
+import { classpathEntryToLibraryName, isEmptyOrCorruptArchive, parseArgumentsFromArgsFile } from './profile'
+
+let cleanup: string | undefined
+
+afterEach(async () => {
+  if (cleanup) {
+    await rm(cleanup, { recursive: true, force: true }).catch(() => {})
+    cleanup = undefined
+  }
+})
+
+async function writeArchive(dest: string, content: Buffer) {
+  const zip = new ZipFile()
+  zip.addBuffer(content, 'data.bin')
+  zip.end()
+  await pipeline(zip.outputStream, createWriteStream(dest))
+}
 
 function emptyServerProfile() {
   return {
@@ -118,4 +138,21 @@ test('classpathEntryToLibraryName handles backslash separators', () => {
       'libraries\\com\\google\\code\\gson\\gson\\2.13.2\\gson-2.13.2.jar',
     ),
   ).toBe('com.google.code.gson:gson:2.13.2')
+})
+
+test('isEmptyOrCorruptArchive reads compressed entry payloads', async ({ temp }) => {
+  cleanup = temp
+  const archive = join(temp, 'processor-output.jar')
+  await writeArchive(archive, Buffer.from('forge post-process output '.repeat(4096)))
+
+  expect(await isEmptyOrCorruptArchive(archive)).toBe(false)
+
+  const bytes = await readFile(archive)
+  const fileNameLength = bytes.readUInt16LE(26)
+  const extraFieldLength = bytes.readUInt16LE(28)
+  const dataOffset = 30 + fileNameLength + extraFieldLength
+  bytes[dataOffset] = 0xff
+  await writeFile(archive, bytes)
+
+  expect(await isEmptyOrCorruptArchive(archive)).toBe(true)
 })

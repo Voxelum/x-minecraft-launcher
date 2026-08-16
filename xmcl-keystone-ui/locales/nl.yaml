@@ -963,6 +963,8 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
+  loginRequiredDescription: P2P-multiplayer gebruikt de online diensten van XMCL. Meld u aan bij een XMCL-account om door te gaan.
+  loginRequiredTitle: Aanmelden voor P2P-multiplayer
   allowTurn: Relay server inschakelen
   allowTurnHint: >-
     Sta een relay server toe als u niet met uw vriend kunt verbinden. Het gebruik van een relay server kan echter uw verbinding vertragen. Wees voorzichtig.
@@ -1538,7 +1540,7 @@ theme:
   selectImage: Selecteer Afbeelding
   selectMusic: Selecteer Muziek
   selectVideo: Selecteer Video
-  title: X Minecraft Launcher
+  title: XMCL
 transportType:
   host: Host Kandidaat
   prflx: Peer Reflexive Kandidaat

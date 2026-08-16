@@ -7,6 +7,7 @@ const props = defineProps<{
   minecraft: string
   forge: string
   value?: string
+  autoSelectLatest?: boolean
 }>()
 
 const { versions, error, isValidating, mutate } = useOptifineVersions()
@@ -30,6 +31,7 @@ const items = computed(() => {
     return result
   })
 })
+const latestVersion = computed(() => items.value[0]?.name ?? '')
 
 const { t } = useI18n()
 
@@ -50,6 +52,7 @@ const emit = defineEmits<{
     :empty-text="t('optifineVersion.empty', { version: minecraft })"
     :refreshing="isValidating"
     :placeholder="t('optifineVersion.disable')"
+    :auto-select="autoSelectLatest ? latestVersion : undefined"
     :value="value"
     @refresh="mutate()"
     @input="emit('input', $event)"

@@ -56,6 +56,32 @@ describe('agent protocol', () => {
     expect(ctx.request.skipRemainingHandlers).toBe(true)
   })
 
+  test('authenticates builtin mode with a URL-specific DPoP proof', async () => {
+    const resolveXmclAuthorization = vi.fn(async () => ({
+      accessToken: 'xmcl-token',
+      accountId: 'account-id',
+      tokenType: 'DPoP' as const,
+      dpopProof: 'proof-for-final-url',
+    }))
+    const handler = createAgentProtocolHandler(
+      async () => ({ mode: 'builtin' }),
+      resolveXmclAuthorization,
+    )
+    const ctx = context(BUILTIN_AGENT_ENDPOINT, { authorization: 'stale' })
+
+    await handler(ctx)
+
+    expect(resolveXmclAuthorization).toHaveBeenCalledWith({
+      method: 'POST',
+      url: new URL('https://ai.xmcl.app/v1/chat/completions'),
+    })
+    expect(ctx.request.headers).toMatchObject({
+      authorization: 'DPoP xmcl-token',
+      DPoP: 'proof-for-final-url',
+      'x-xmcl-account-id': 'account-id',
+    })
+  })
+
   test('rejects builtin mode without an XMCL session', async () => {
     const handler = createAgentProtocolHandler(
       async () => ({ mode: 'builtin' }),

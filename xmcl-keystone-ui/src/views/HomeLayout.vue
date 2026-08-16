@@ -65,7 +65,7 @@ useGamepadInnerNav({
 })
 
 const removeAfterEach = router.afterEach((r) => {
-  document.title = `X Minecraft Launcher - ${r.fullPath}`
+  document.title = `XMCL - ${r.fullPath}`
   if (containerRef.value) {
     containerRef.value.scrollTop = 0
   }

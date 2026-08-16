@@ -3,6 +3,12 @@ import { Peers } from './peers'
 import { basename } from 'path'
 import { Transform } from 'stream'
 
+export function getContentDisposition(fileName: string) {
+  const encoded = encodeURIComponent(fileName).replace(/['()*]/g, (character) =>
+    `%${character.charCodeAt(0).toString(16).toUpperCase()}`)
+  return `attachment; filename*=UTF-8''${encoded}`
+}
+
 export function createHosting(peers: Peers) {
   const server = createServer((req, res) => {
     const url = req.url ?? '/'
@@ -26,7 +32,7 @@ export function createHosting(peers: Peers) {
       }
       res.writeHead(200, {
         'Content-Type': 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${basename(filePathString)}"`,
+        'Content-Disposition': getContentDisposition(basename(filePathString)),
       })
       peer.stream(filePathString, res)
     } else {

@@ -6,6 +6,7 @@ import { BuiltinImages } from '../constant'
 const props = defineProps<{
   minecraft: string
   value?: string
+  autoSelectLatest?: boolean
 }>()
 
 const { versions, isValidating, mutate, error } = useQuiltVersions(computed(() => props.minecraft))
@@ -21,6 +22,7 @@ const items = computed(() => {
     })
   return result
 })
+const latestVersion = computed(() => items.value[0]?.name ?? '')
 
 const { t } = useI18n()
 
@@ -40,6 +42,7 @@ const emit = defineEmits<{
     :empty-text="t('quiltVersion.empty', { version: minecraft })"
     :refreshing="isValidating"
     :placeholder="t('quiltVersion.disable')"
+    :auto-select="autoSelectLatest ? latestVersion : undefined"
     :value="value"
     @refresh="mutate()"
     @input="emit('input', $event)"

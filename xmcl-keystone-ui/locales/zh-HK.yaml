@@ -1052,6 +1052,8 @@ modrinth:
 modrinthCard:
   currentVersion: 目前版本
 multiplayer:
+  loginRequiredDescription: P2P 多人遊戲使用 XMCL 線上服務。請登入 XMCL 帳戶以繼續。
+  loginRequiredTitle: 登入以使用 P2P 多人遊戲
   allowTurn: 啟用中繼伺服器
   allowTurnHint: 當你和你嘅朋友連唔上時可以嘗試啟用中繼伺服器，但是使用中繼伺服器可能會增加你嘅連線延遲。使用時請注意。
   complete: 完成
@@ -1758,8 +1760,8 @@ theme:
   selectImage: 選擇影象
   selectMusic: 選擇音樂
   selectVideo: 選擇影片
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: 公網位址
   prflx: 同伴反射位址
@@ -1959,6 +1961,6 @@ gamepad:
   steamAddedNotify: 啟動器已成功新增至 Steam 收藏庫！請重新啟動 Steam 嚟套用變更。
   steamAlreadyAddedNotify: 啟動器已經喺你嘅 Steam 收藏庫中。
   steamDeckTitle: 偵測到 Steam Deck
-  steamDeckDesc: 偵測到你正在使用 Steam Deck。你想將 X Minecraft Launcher 新增至 Steam 收藏庫作為非 Steam 遊戲，以便在遊戲模式中使用完整的 Steam 介面同手掣整合功能嗎？
+  steamDeckDesc: 偵測到你正在使用 Steam Deck。你想將 XMCL 新增至 Steam 收藏庫作為非 Steam 遊戲，以便在遊戲模式中使用完整的 Steam 介面同手掣整合功能嗎？
   steamDeckAddBtn: 新增至 Steam ({btn})
   steamDeckCancelBtn: 取消 ({btn})

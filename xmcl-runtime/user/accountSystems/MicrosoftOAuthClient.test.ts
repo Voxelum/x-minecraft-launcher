@@ -120,9 +120,10 @@ describe('MicrosoftOAuthClient', () => {
       acquireTokenInteractive: vi.fn().mockRejectedValue(new Error('broker unavailable')),
       getAuthCodeUrl: vi.fn().mockResolvedValue('https://login.example/authorize'),
     }
+    const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
     const client = new MicrosoftOAuthClient(
       fetch,
-      { log: vi.fn(), warn: vi.fn(), error: vi.fn() } as any,
+      logger as any,
       'client-id',
       vi.fn().mockResolvedValue('web-code'),
       vi.fn().mockResolvedValue('http://localhost/auth'),
@@ -137,6 +138,115 @@ describe('MicrosoftOAuthClient', () => {
     await expect(client.authenticate('account-a@example.com', ['XboxLive.signin'], {
       useNativeBroker: true,
     })).rejects.toMatchObject({ name: 'MicrosoftOAuthAccountMismatch' })
+
+    expect(logger.warn.mock.calls.flat()).not.toContainEqual(expect.any(Error))
+    expect(JSON.stringify(logger.warn.mock.calls)).not.toContain('account-a@example.com')
+  })
+
+  it('emits correlated, sanitized telemetry when WAM is cancelled', async () => {
+    const events: any[] = []
+    const brokerError = Object.assign(new Error('user_canceled: account picker closed for user@example.com'), {
+      errorCode: 'user_canceled',
+      subError: 'cancel',
+    })
+    const cacheApp = {
+      getTokenCache: vi.fn().mockReturnValue({ getAllAccounts: vi.fn().mockResolvedValue([]) }),
+    }
+    const brokerApp = {
+      acquireTokenInteractive: vi.fn().mockRejectedValue(brokerError),
+    }
+    const getCode = vi.fn()
+    const client = new MicrosoftOAuthClient(
+      fetch,
+      { log: vi.fn(), warn: vi.fn(), error: vi.fn() } as any,
+      'client-id',
+      getCode,
+      vi.fn(),
+      vi.fn(),
+      { get: vi.fn(), put: vi.fn() },
+      vi.fn().mockReturnValue(Buffer.from('window')),
+      event => events.push(event),
+    )
+    vi.spyOn(client as any, 'getNativeBrokerPlugin').mockResolvedValue({} as INativeBrokerPlugin)
+    vi.spyOn(client as any, 'getOAuthApp')
+      .mockResolvedValueOnce(cacheApp)
+      .mockResolvedValueOnce(brokerApp)
+
+    await expect(client.authenticate('', ['XboxLive.signin'], {
+      useNativeBroker: true,
+    })).rejects.toBe(brokerError)
+
+    expect(getCode).not.toHaveBeenCalled()
+    expect(events.map(event => event.name)).toEqual([
+      'microsoft-auth-start',
+      'microsoft-auth-broker-result',
+      'microsoft-auth-complete',
+    ])
+    expect(events[1].properties).toMatchObject({
+      authAttemptId: events[0].properties.authAttemptId,
+      outcome: 'user_cancelled',
+      errorName: 'Error',
+      errorCode: 'user_canceled',
+      subError: 'cancel',
+    })
+    expect(events[2].properties).toMatchObject({
+      authAttemptId: events[0].properties.authAttemptId,
+      outcome: 'user_cancelled',
+      routeUsed: 'wam',
+    })
+    expect(JSON.stringify(events)).not.toContain('user@example.com')
+  })
+
+  it('keeps silent-only refresh non-interactive and reports a silent miss', async () => {
+    const events: any[] = []
+    const account = createAccount('account-a@example.com', 'account-a')
+    const cacheApp = {
+      acquireTokenSilent: vi.fn().mockRejectedValue(new Error('interaction_required')),
+      getTokenCache: vi.fn().mockReturnValue({ getAllAccounts: vi.fn().mockResolvedValue([account]) }),
+    }
+    const getCode = vi.fn()
+    const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    const client = new MicrosoftOAuthClient(
+      fetch,
+      logger as any,
+      'client-id',
+      getCode,
+      vi.fn(),
+      vi.fn(),
+      { get: vi.fn(), put: vi.fn() },
+      vi.fn(),
+      event => events.push(event),
+    )
+    const getNativeBrokerPlugin = vi.spyOn(client as any, 'getNativeBrokerPlugin')
+    vi.spyOn(client as any, 'getOAuthApp').mockResolvedValue(cacheApp)
+
+    await expect(client.authenticate(account.username, ['XboxLive.signin'], {
+      slientOnly: true,
+      useNativeBroker: true,
+    })).rejects.toMatchObject({ name: 'MicrosoftOAuthSlientFailed' })
+
+    expect(getNativeBrokerPlugin).not.toHaveBeenCalled()
+    expect(getCode).not.toHaveBeenCalled()
+    expect(events.map(event => event.name)).toEqual([
+      'microsoft-auth-start',
+      'microsoft-auth-complete',
+    ])
+    expect(events[0].properties).toMatchObject({
+      preferredFlow: 'silent',
+      brokerRequested: true,
+      brokerAvailable: false,
+    })
+    expect(events[1].properties).toMatchObject({
+      authAttemptId: events[0].properties.authAttemptId,
+      outcome: 'silent_miss',
+      routeUsed: 'silent',
+      cachedAccount: true,
+    })
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Microsoft silent token acquisition missed; interactive authentication may be required.',
+    )
+    expect(logger.warn.mock.calls.flat()).not.toContainEqual(expect.any(Error))
+    expect(JSON.stringify(logger.warn.mock.calls)).not.toContain(account.username)
   })
 })
 

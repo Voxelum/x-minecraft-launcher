@@ -41,10 +41,10 @@ jobs:
         target_branch: gh-pages
         build_dir: docs/
       env:
-        GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+        GH_PAT: ${{ secrets.PAT_GITHUB_TOKEN }}
     - name: Notify the xmcl-page
       uses: benc-uk/workflow-dispatch@v1
       with:
-        token: ${{ secrets.GITHUB_PAT }}
+        token: ${{ secrets.PAT_GITHUB_TOKEN }}
         repo: Voxelum/xmcl-page
         workflow: deploy.yaml

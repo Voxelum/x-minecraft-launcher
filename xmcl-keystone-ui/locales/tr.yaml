@@ -961,6 +961,8 @@ modrinth:
 modrinthCard:
   currentVersion: Mevcut Sürüm
 multiplayer:
+  loginRequiredDescription: P2P çok oyunculu oyun XMCL çevrimiçi hizmetlerini kullanır. Devam etmek için bir XMCL Hesabında oturum açın.
+  loginRequiredTitle: P2P çok oyunculu oyun için giriş yapın
   allowTurn: Geçiş (relay) sunucusunu etkinleştir
   allowTurnHint: Arkadaşınızla bağlantı kuramıyorsanız geçiş sunucusuna izin verin. Ancak, geçiş sunucusu kullanmak bağlantınızı yavaşlatabilir. Dikkatli kullanın.
   complete: Tamamla

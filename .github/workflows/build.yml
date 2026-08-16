@@ -179,7 +179,7 @@ jobs:
           pkgname=xmcl-launcher
           pkgver=${{ steps.version.outputs.version }}
           pkgrel=1
-          pkgdesc="X Minecraft Launcher - A modern Minecraft launcher"
+          pkgdesc="XMCL - A modern Minecraft launcher"
           arch=('${{ matrix.arch }}')
           url="https://xmcl.app/"
           license=('MIT')

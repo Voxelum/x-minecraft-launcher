@@ -52,13 +52,14 @@ export interface VersionItem {
   description?: string
 }
 
-defineProps<{
+const props = defineProps<{
   icon: string
   title: string
   url: string
   placeholder: string
 
   value?: string
+  autoSelect?: string
 
   items: VersionItem[]
   refreshing?: boolean
@@ -77,4 +78,12 @@ const emit = defineEmits<{
   (event: 'refresh'): void
   (event: 'update:snapshot', value: boolean): void
 }>()
+
+const autoSelected = ref(false)
+
+watch([() => props.autoSelect, () => props.items], ([autoSelect, newItems]) => {
+  if (!autoSelect || autoSelected.value || !newItems.some((item) => item.name === autoSelect)) return
+  autoSelected.value = true
+  emit('input', autoSelect)
+}, { immediate: true })
 </script>

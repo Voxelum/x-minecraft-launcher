@@ -156,7 +156,7 @@
         v-if="typeof item === 'object' && 'id' in item"
         :item="(item as ProjectEntry<ModFile>)"
         :key="`item-${item.id}`"
-        :indent="!!isInGroup(((item as ProjectEntry<ModFile>).installed?.[0]?.fileName))"
+        :indent="isLocalView && !!isInGroup(((item as ProjectEntry<ModFile>).installed?.[0]?.fileName))"
         :indent-color="getGroupColor((item as ProjectEntry<ModFile>).installed?.[0]?.fileName)"
         :item-height="itemHeight"
         :has-update="hasUpdate"
@@ -313,7 +313,7 @@ import { useService } from '@/composables'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDialog } from '@/composables/dialog'
-import { useGlobalDrop } from '@/composables/dropHandler'
+import { getDropFilePaths, useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 import { kInstanceModsContext } from '@/composables/instanceMods'
@@ -873,10 +873,8 @@ onUnmounted(() => {
 // Drop
 const { dragover } = useGlobalDrop({
   onDrop: async (t) => {
-    const paths = [] as string[]
-    for (const f of t.files) {
-      paths.push(f.path)
-    }
+    const paths = getDropFilePaths(t.files)
+    if (paths.length === 0) return
     await install({ path: path.value, files: paths })
   },
 })

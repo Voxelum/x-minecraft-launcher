@@ -364,6 +364,29 @@ on('device-code', (code) => {
 const { usernameRules, passwordRules } = useLoginValidation(emailOnly, isOffline)
 
 // Login Error
+const getUserException = (value: unknown): UserException['exception'] | undefined => {
+  if (isException(UserException, value)) return value.exception
+  if (value && typeof value === 'object' && 'exception' in value) {
+    const exception = (value as { exception?: unknown }).exception
+    if (exception && typeof exception === 'object' && 'type' in exception && typeof exception.type === 'string') {
+      return exception as UserException['exception']
+    }
+  }
+  return undefined
+}
+
+const microsoftProfileFetchErrorMessage = 'Failed to get Microsoft account game profile'
+const isMinecraftProfileNotFoundError = (value: unknown) => {
+  const exception = getUserException(value)
+  if (exception) {
+    return exception.type === 'fetchMinecraftProfileFailed' && exception.errorType === 'ProfileNotFoundError'
+  }
+  return value !== null
+    && typeof value === 'object'
+    && 'message' in value
+    && value.message === microsoftProfileFetchErrorMessage
+}
+
 const errorMessage = computed(() => {
   const e = error.value as any
   // Prefer the structured `exception` payload for classification. `isException`
@@ -373,10 +396,10 @@ const errorMessage = computed(() => {
   // otherwise fall through and leak its raw, untranslated internal message to
   // the user. Detect the payload structurally so the friendly, localized
   // message is always shown when a known exception type is present.
-  const exception: UserException['exception'] | undefined =
-    isException(UserException, e)
-      ? e.exception
-      : (e?.exception && typeof e.exception.type === 'string' ? e.exception : undefined)
+  if (isMinecraftProfileNotFoundError(e)) {
+    return t('loginError.noProfileForNewUser')
+  }
+  const exception = getUserException(e)
   if (exception) {
     if (exception.type === 'loginInvalidCredentials') {
       return t('loginError.invalidCredentials')
@@ -391,9 +414,6 @@ const errorMessage = computed(() => {
       return t('loginError.requestFailed')
     }
     if (exception.type === 'fetchMinecraftProfileFailed') {
-      if (exception.errorType === 'ProfileNotFoundError' && !exception.developerMessage) {
-        return t('loginError.noProfileForNewUser')
-      }
       return t('loginError.fetchMinecraftProfileFailed', {
         reason: `${exception.errorType}, ${exception.developerMessage}`,
       })

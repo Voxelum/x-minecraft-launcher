@@ -421,7 +421,6 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
         inputTokens,
         outputTokens,
         durationMs: Date.now() - startedAt,
-        sampleRate: outcome === 'completed' ? 25 : 100,
       })
     }
   }

@@ -100,26 +100,12 @@
     <template v-if="developerMode || !builtinAgentEnabled">
       <v-divider class="my-3" />
 
-      <SettingItemSelect
-        :model-value="builtinAgentEnabled || agentProviderMode === 'custom' ? agentProviderId : CUSTOM_AGENT_PROVIDER_ID"
-        icon="cloud"
-        :title="t('setting.aiAgentProvider')"
-        :description="t('setting.aiAgentProviderDescription')"
-        :items="agentProviderItems"
-        @update:model-value="selectAgentProvider($event)"
-      />
-
-      <v-divider class="my-3" />
-
       <SettingItem id="agent-settings" :title="t('setting.aiAgentApiKey')" :description="t('setting.aiAgentApiKeyDescription')">
         <template #title>
           <v-icon start size="small" color="primary">key</v-icon>
           {{ t('setting.aiAgentApiKey') }}
           <v-chip v-if="agentProviderMode === 'builtin'" size="x-small" class="ml-2">
             {{ t('setting.aiAgentBuiltin') }}
-          </v-chip>
-          <v-chip v-else-if="agentKeyless" size="x-small" color="info" class="ml-2">
-            {{ t('setting.aiAgentApiKeyNotNeeded') }}
           </v-chip>
           <v-chip v-else-if="agentConfigured" size="x-small" color="success" class="ml-2">
             <v-icon start size="x-small">check_circle</v-icon>
@@ -135,11 +121,9 @@
             density="compact"
             class="setting-item-input"
             hide-details="auto"
-            :disabled="agentProviderMode === 'builtin' || agentKeyless"
+            :disabled="agentProviderMode === 'builtin'"
             :error-messages="agentSettingsError"
-            :placeholder="agentKeyless
-              ? t('setting.aiAgentApiKeyNotNeededHint')
-              : agentConfigured ? t('setting.aiAgentApiKeyStored') : t('setting.aiAgentApiKeyEmpty')"
+            :placeholder="agentConfigured ? t('setting.aiAgentApiKeyStored') : t('setting.aiAgentApiKeyEmpty')"
             :loading="clearingAgentKey"
             @update:model-value="updateAgentApiKey($event ?? '')"
           >
@@ -153,7 +137,7 @@
                    appears while the field holds text and so could never reach a
                    saved key (the field is empty once the key is stored). -->
               <v-btn
-                v-if="agentProviderMode === 'custom' && (agentApiKey || (agentConfigured && !agentKeyless))"
+                v-if="agentProviderMode === 'custom' && (agentApiKey || agentConfigured)"
                 data-testid="agent-api-key-clear"
                 icon
                 variant="text"
@@ -220,7 +204,7 @@ import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
 import { kEnvironment } from '@/composables/environment'
 import { kFlights } from '@/composables/flights'
 import { injection } from '@/util/inject'
-import { BUILTIN_AGENT_FLIGHT, BUILTIN_AGENT_PROVIDER_ID, CUSTOM_AGENT_PROVIDER_ID } from '@xmcl/runtime-api'
+import { BUILTIN_AGENT_FLIGHT } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useAgentSettings } from '../composables/agent/settings'
 import { useGameDirectory, useSettings } from '../composables/setting'
@@ -268,23 +252,7 @@ const {
   resolvedModel: agentResolvedModel,
   updateApiKey: updateAgentApiKey,
   clearApiKey: clearAgentApiKey,
-  providers: agentProviders,
-  providerId: agentProviderId,
-  keyless: agentKeyless,
-  selectProvider: selectAgentProvider,
 } = useAgentSettings()
-const agentProviderItems = computed(() => {
-  const items = [
-    ...(builtinAgentEnabled ? [{ text: t('setting.aiAgentBuiltin'), value: BUILTIN_AGENT_PROVIDER_ID }] : []),
-    ...agentProviders.map(({ id, name }) => ({ text: name, value: id })),
-  ]
-  // The custom entry is only offered when the endpoint no longer matches a preset,
-  // so it acts as a read-only indicator rather than a selectable option.
-  if (agentProviderId.value === CUSTOM_AGENT_PROVIDER_ID || (!builtinAgentEnabled && agentProviderMode.value === 'builtin')) {
-    items.push({ text: t('setting.aiAgentProviderCustom'), value: CUSTOM_AGENT_PROVIDER_ID })
-  }
-  return items
-})
 const showAgentApiKey = ref(false)
 // Re-hide the key when the field empties (provider switch, or the user cleared it)
 // so the next key typed does not start out visible.

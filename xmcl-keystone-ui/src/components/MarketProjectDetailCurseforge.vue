@@ -308,6 +308,7 @@ const loadChangelog = (version: ProjectVersion) => {
 }
 
 const onLoadMore = () => {
+  if (loadingVersions.value || index.value + pageSize.value >= totalCount.value) return
   index.value += pageSize.value
 }
 

@@ -1173,6 +1173,8 @@ modrinth:
 modrinthCard:
   currentVersion: Current Version
 multiplayer:
+  loginRequiredDescription: P2P multiplayer uses XMCL online services. Sign in to an XMCL Account to continue.
+  loginRequiredTitle: Sign in for P2P multiplayer
   allowTurn: Enable relay server
   allowTurnHint: >-
     Allow relay server if you cannot connect with your friend. However, using
@@ -1959,8 +1961,8 @@ theme:
   selectImage: Select Image
   selectMusic: Select Music
   selectVideo: Select Video
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Host Candidate
   prflx: Peer Reflexive Candidate
@@ -2174,7 +2176,7 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add X Minecraft Launcher to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
 

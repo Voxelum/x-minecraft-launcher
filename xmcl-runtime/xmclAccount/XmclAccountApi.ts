@@ -7,6 +7,7 @@ import type {
   XmclOAuthProvider,
   XmclSessionSummary,
 } from '@xmcl/runtime-api'
+import { createXmclDpopProof, generateXmclDpopKey, type XmclDpopKey } from './XmclAccountDpop'
 
 export const M1_LOCAL_CONTRACT_VERSION = 'm1-local-proposal-2026-07-22+shared-v1'
 export const XMCL_SHARED_CONTRACT_VERSION = 'shared/v1'
@@ -14,6 +15,7 @@ export const XMCL_SHARED_CONTRACT_VERSION = 'shared/v1'
 export interface XmclSessionCredential extends XmclSessionSummary {
   accessToken: string
   refreshToken?: string
+  tokenType?: 'DPoP' | 'Bearer'
 }
 
 export interface XmclAuthResult {
@@ -59,14 +61,36 @@ export class XmclAccountApiError extends Error {
   }
 }
 
+export class XmclAccountSessionResponseError extends TypeError {
+  constructor() {
+    super('Invalid xmcl session refresh response')
+    this.name = 'XmclAccountSessionResponseError'
+  }
+}
+
 type FetchLike = (input: string | URL, init?: RequestInit) => Promise<Response>
 type BaseUrlProvider = string | (() => Promise<string>)
 
 export class XmclAccountApi {
+  private dpopKeyPromise: Promise<XmclDpopKey> | undefined
+
   constructor(
     private readonly fetch: FetchLike,
     private readonly baseUrl: BaseUrlProvider = 'https://api.xmcl.app',
+    private readonly dpopKeyProvider: () => Promise<XmclDpopKey> | XmclDpopKey = () =>
+      generateXmclDpopKey(),
   ) {}
+
+  private getDpopKey() {
+    if (!this.dpopKeyPromise) {
+      const pending = Promise.resolve().then(() => this.dpopKeyProvider())
+      this.dpopKeyPromise = pending
+      void pending.catch(() => {
+        if (this.dpopKeyPromise === pending) this.dpopKeyPromise = undefined
+      })
+    }
+    return this.dpopKeyPromise
+  }
 
   async beginBrowserAuthorization(
     provider: Extract<XmclOAuthProvider, 'google' | 'discord'>,
@@ -118,6 +142,7 @@ export class XmclAccountApi {
           loginTransactionId: crypto.randomUUID(),
           completedAt: new Date().toISOString(),
           credential: providerCredential,
+          dpopJwk: (await this.getDpopKey()).publicJwk,
         }),
       },
       currentCredential,
@@ -142,6 +167,7 @@ export class XmclAccountApi {
           code: request.code,
           state: request.state,
           codeVerifier: request.codeVerifier,
+          dpopJwk: (await this.getDpopKey()).publicJwk,
         }),
       },
       currentCredential,
@@ -201,7 +227,13 @@ export class XmclAccountApi {
       credential,
       crypto.randomUUID(),
     )
-    return parseSession(body)
+    if (!isRecord(body)) throw new XmclAccountSessionResponseError()
+    try {
+      return parseSession(body.session)
+    } catch (error) {
+      if (error instanceof TypeError) throw new XmclAccountSessionResponseError()
+      throw error
+    }
   }
 
   async prepareMerge(
@@ -285,11 +317,26 @@ export class XmclAccountApi {
     const headers = new Headers(init.headers)
     headers.set('Accept', 'application/json')
     if (init.body) headers.set('Content-Type', 'application/json')
-    if (credential) headers.set('Authorization', `Bearer ${credential.accessToken}`)
+    const baseUrl = typeof this.baseUrl === 'function' ? await this.baseUrl() : this.baseUrl
+    const url = new URL(path, baseUrl)
+    if (credential) {
+      const tokenType = credential.tokenType === 'DPoP' ? 'DPoP' : 'Bearer'
+      headers.set('Authorization', `${tokenType} ${credential.accessToken}`)
+      if (tokenType === 'DPoP') {
+        headers.set(
+          'DPoP',
+          createXmclDpopProof(
+            await this.getDpopKey(),
+            init.method ?? 'GET',
+            url,
+            url.pathname === '/v1/sessions/refresh' ? undefined : credential.accessToken,
+          ),
+        )
+      }
+    }
     if (idempotencyKey) headers.set('Idempotency-Key', idempotencyKey)
 
-    const baseUrl = typeof this.baseUrl === 'function' ? await this.baseUrl() : this.baseUrl
-    const response = await this.fetch(new URL(path, baseUrl), {
+    const response = await this.fetch(url, {
       ...init,
       headers,
     })
@@ -406,7 +453,8 @@ function parseSession(value: unknown): XmclSessionCredential {
     !value.scopes.every((scope) => typeof scope === 'string') ||
     typeof value.issuedAt !== 'string' ||
     typeof value.expiresAt !== 'string' ||
-    (value.refreshToken !== undefined && typeof value.refreshToken !== 'string')
+    (value.refreshToken !== undefined && typeof value.refreshToken !== 'string') ||
+    (value.tokenType !== undefined && value.tokenType !== 'DPoP' && value.tokenType !== 'Bearer')
   ) {
     throw new TypeError('Invalid xmcl session response')
   }
@@ -415,6 +463,7 @@ function parseSession(value: unknown): XmclSessionCredential {
     accountId: value.accountId,
     accessToken: value.accessToken,
     refreshToken: value.refreshToken,
+    tokenType: value.tokenType,
     scopes: [...value.scopes],
     issuedAt: value.issuedAt,
     expiresAt: value.expiresAt,

@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
 import { ProviderCredentialExchangeCache } from './ProviderCredentialExchangeCache'
-import { XmclAccountApiError } from './XmclAccountApi'
+import { XmclAccountApiError, XmclAccountSessionResponseError } from './XmclAccountApi'
+import { generateXmclDpopKey, serializeXmclDpopKey } from './XmclAccountDpop'
 
 const oauth = vi.hoisted(() => ({
   authenticate: vi.fn(),
@@ -66,7 +67,11 @@ function createXmclService(stubBootstrapCredential = true) {
     invalidated: false,
   }
   const app = {
-    controller: { getNativeWindowHandle: vi.fn(() => nativeWindowHandle) },
+    controller: {
+      getNativeWindowHandle: vi.fn(() => nativeWindowHandle),
+      openMicrosoftLogin: vi.fn(),
+    },
+    emit: vi.fn(),
     fetch: vi.fn(),
     getLogger: vi.fn(() => logger),
     protocol: { registerHandler: vi.fn() },
@@ -84,6 +89,21 @@ function createXmclService(stubBootstrapCredential = true) {
   }
   return { app, logger, nativeWindowHandle, service, user }
 }
+
+it('registers the server-approved browser OAuth callback path', () => {
+  const { app } = createXmclService()
+  const handler = app.protocol.registerHandler.mock.calls[0]?.[1]
+  const response: Record<string, unknown> = {}
+
+  handler({
+    request: {
+      url: new URL('xmcl://launcher/commercial-auth?state=unknown'),
+    },
+    response,
+  })
+
+  expect(response.status).toBe(400)
+})
 
 function createAuthResult(provider: 'microsoft' | 'modrinth', accountId: string) {
   return {
@@ -172,6 +192,20 @@ describe('XmclAccountService Microsoft bootstrap', () => {
 
     await expect(service.bootstrapMicrosoft(user.id)).resolves.toBe('pending-consent')
     expect(app.getLogger).toHaveBeenCalled()
+  })
+
+  it('authorizes the XMCL Microsoft identity interactively without a game account login', async () => {
+    Object.defineProperty(process, 'platform', { value: 'win32', configurable: true })
+    oauth.authenticate.mockResolvedValue({ result: { accessToken: 'microsoft-graph-token' } })
+    const { service } = createXmclService()
+    const bootstrapCredential = vi.mocked((service as any).bootstrapCredential)
+
+    await service.authorizeMicrosoft()
+
+    expect(oauth.authenticate).toHaveBeenCalledWith('', ['User.Read'], {
+      useNativeBroker: true,
+    })
+    expect(bootstrapCredential).toHaveBeenCalledWith('microsoft', 'microsoft-graph-token')
   })
 
   it('persists the rotated credential when the subsequent account snapshot fails', async () => {
@@ -387,6 +421,43 @@ describe('XmclAccountService automatic session refresh', () => {
     )
   })
 
+  it('clears a rotated session when the successful refresh response is invalid', async () => {
+    const { app, service } = createXmclService()
+    const previous = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'old-access-token',
+      refreshToken: 'old-refresh-token',
+      scopes: ['account:read'],
+      issuedAt: new Date(Date.now() - 60 * 60 * 1_000).toISOString(),
+      expiresAt: new Date(Date.now() + 60 * 60 * 1_000).toISOString(),
+    }
+    ;(service as any).credential = previous
+    ;(service as any).state.snapshot({
+      account: {
+        accountId: previous.accountId,
+        status: 'active',
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: previous,
+    })
+    ;(service as any).api.refreshSession = vi
+      .fn()
+      .mockRejectedValue(new XmclAccountSessionResponseError())
+
+    await expect(service.refreshSession()).rejects.toBeInstanceOf(
+      XmclAccountSessionResponseError,
+    )
+    expect((service as any).credential).toBeUndefined()
+    expect((service as any).state.account).toBeUndefined()
+    expect(app.secretStorage.put).toHaveBeenLastCalledWith(
+      'xmcl-xmcl-account',
+      'current-session',
+      '',
+    )
+  })
+
   it('retains a rotated credential in memory when secure persistence fails', async () => {
     const { app, service } = createXmclService()
     const previous = {
@@ -462,6 +533,72 @@ describe('XmclAccountService automatic session refresh', () => {
 })
 
 describe('XmclAccountService provider bootstrap queue', () => {
+  it('refreshes the complete identity list when an auth response omits it', async () => {
+    const { service } = createXmclService(false)
+    const result = {
+      ...createAuthResult('modrinth', 'account-1'),
+      identities: undefined,
+    }
+    const api = (service as any).api
+    api.launcherExchange = vi.fn().mockResolvedValue(result)
+    api.getSnapshot = vi.fn().mockResolvedValue({
+      account: result.account,
+      identities: [
+        {
+          provider: 'microsoft',
+          linkedBy: 'launcher_bootstrap',
+          linkedAt: '2026-07-23T00:00:00.000Z',
+        },
+        {
+          provider: 'modrinth',
+          linkedBy: 'launcher_link',
+          linkedAt: '2026-07-23T00:01:00.000Z',
+        },
+        {
+          provider: 'google',
+          linkedBy: 'web_link',
+          linkedAt: '2026-07-23T00:02:00.000Z',
+        },
+        {
+          provider: 'discord',
+          linkedBy: 'web_link',
+          linkedAt: '2026-07-23T00:03:00.000Z',
+        },
+      ],
+      session: result.session,
+    })
+
+    await (service as any).bootstrapCredential('modrinth', 'modrinth-credential')
+
+    expect(api.getSnapshot).toHaveBeenCalledWith(result.session)
+    expect((service as any).state.identities.map((identity: any) => identity.provider)).toEqual([
+      'microsoft',
+      'modrinth',
+      'google',
+      'discord',
+    ])
+  })
+
+  it('keeps a successful session when the post-auth identity refresh fails', async () => {
+    const { logger, service } = createXmclService(false)
+    const result = {
+      ...createAuthResult('microsoft', 'account-1'),
+      identities: undefined,
+    }
+    const api = (service as any).api
+    api.launcherExchange = vi.fn().mockResolvedValue(result)
+    api.getSnapshot = vi.fn().mockRejectedValue(new Error('snapshot unavailable'))
+
+    await expect(
+      (service as any).bootstrapCredential('microsoft', 'microsoft-credential'),
+    ).resolves.toBeUndefined()
+
+    expect((service as any).credential).toBe(result.session)
+    expect(logger.warn).toHaveBeenCalledWith(
+      'XMCL authentication succeeded; account identities will refresh later.',
+    )
+  })
+
   it('does not cache a provider credential when its delayed exchange becomes stale', async () => {
     const { service } = createXmclService(false)
     const result = createAuthResult('microsoft', 'account-1')
@@ -601,5 +738,68 @@ describe('XmclAccountService provider bootstrap queue', () => {
       'fresh-provider-credential',
       undefined,
     )
+  })
+})
+
+describe('XmclAccountService DPoP device key lifecycle', () => {
+  it('migrates an embedded device key into dedicated secret storage', async () => {
+    const { app, service } = createXmclService()
+    const key = generateXmclDpopKey()
+    const auth = createAuthResult('modrinth', 'account-1')
+    const session = { ...auth.session, tokenType: 'DPoP' as const }
+    const stored = {
+      credential: session,
+      snapshot: {
+        account: auth.account,
+        identities: auth.identities,
+        session,
+      },
+      dpopPrivateJwk: serializeXmclDpopKey(key),
+    }
+    app.secretStorage.get.mockImplementation(async (_service: string, account: string) =>
+      account === 'current-session' ? JSON.stringify(stored) : '',
+    )
+
+    await service.getXmclAccountState()
+
+    expect(app.secretStorage.put).toHaveBeenCalledWith(
+      'xmcl-xmcl-account',
+      'dpop-device-key',
+      JSON.stringify({ privateJwk: serializeXmclDpopKey(key) }),
+    )
+    const migratedSession = app.secretStorage.put.mock.calls.find(
+      (call) => call[1] === 'current-session',
+    )?.[2]
+    expect(JSON.parse(migratedSession ?? '{}')).not.toHaveProperty('dpopPrivateJwk')
+  })
+
+  it('keeps the cached device key across sign-out', async () => {
+    const { service } = createXmclService()
+    const key = await (service as any).getDpopKey()
+    const credential = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'access-token',
+      refreshToken: 'refresh-token',
+      tokenType: 'DPoP' as const,
+      scopes: [],
+      issuedAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 60 * 60 * 1_000).toISOString(),
+    }
+    ;(service as any).credential = credential
+    ;(service as any).state.snapshot({
+      account: {
+        accountId: credential.accountId,
+        status: 'active',
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: credential,
+    })
+    ;(service as any).api.revokeSession = vi.fn()
+
+    await service.revokeSession()
+
+    expect((service as any).dpopKey).toBe(key)
   })
 })

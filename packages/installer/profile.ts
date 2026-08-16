@@ -705,12 +705,19 @@ async function findMainClass(lib: string) {
  * check but leaves the game running against unpatched vanilla classes, which
  * crashes at bootstrap.
  */
-async function isEmptyOrCorruptArchive(file: string, signal?: AbortSignal): Promise<boolean> {
+export async function isEmptyOrCorruptArchive(file: string, signal?: AbortSignal): Promise<boolean> {
   let zip: ZipFile | undefined
   try {
     zip = await open(file, { lazyEntries: true, autoClose: false })
-    if (signal?.aborted) return false
-    return zip.entryCount <= 0
+    let entries = 0
+    for await (const entry of walkEntriesGenerator(zip)) {
+      if (signal?.aborted) return false
+      entries += 1
+      if (!entry.fileName.endsWith('/')) {
+        await readEntry(zip, entry)
+      }
+    }
+    return entries <= 0
   } catch {
     return true
   } finally {

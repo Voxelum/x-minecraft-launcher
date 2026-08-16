@@ -469,6 +469,8 @@ feedback:
     Enter the feedback QQ group and direct talk with authors. Group Number:
     {number}
   qqEnterGroup: Join
+  reddit: Reddit
+  redditDescription: Join the r/XMCL subreddit community
 fileDetail:
   fileSize: File Size
   filesize: File size
@@ -1428,6 +1430,8 @@ multiplayer:
   joinOrCreateGroup: Join/Create Group
   joinOrCreateGroupHint: Get group id from your friends or create a group
   joinCreatesMissingRoomHint: If this room does not exist, you will create it and become its master.
+  loginRequiredDescription: P2P multiplayer uses XMCL online services. Sign in to an XMCL Account to continue.
+  loginRequiredTitle: Sign in for P2P multiplayer
   kernel: P2P Kernel
   kernelDescription: >-
     Use either native WebRTC or node-datachannel. Only switch this when your p2p
@@ -1898,7 +1902,7 @@ setting:
   advancedSettingsHint: Danger zone - reset or manage launcher data
   aiAgentApiKey: AI Agent API Key
   aiAgentApiKeyClear: Clear key
-  aiAgentApiKeyDescription: Leave the provider on Built-in to use your XMCL account, or select an external provider and enter its API key. Keys are stored locally per provider.
+  aiAgentApiKeyDescription: Enter the key for the configured OpenAI-compatible endpoint. Keys are stored locally per endpoint host.
   aiAgentApiKeyEmpty: Paste your API key
   aiAgentApiKeyNotNeeded: Not required
   aiAgentApiKeyNotNeededHint: This provider runs locally and needs no API key
@@ -1913,9 +1917,6 @@ setting:
   aiAgentModelPlaceholder: gpt-5.6 or claude-sonnet-4-5
   aiAgentModel: AI Agent Model
   aiAgentModelDescription: Model name to send in chat completion requests.
-  aiAgentProvider: AI Agent Provider
-  aiAgentProviderCustom: Custom (OpenAI compatible)
-  aiAgentProviderDescription: Pick a preset OpenAI-compatible provider to fill the endpoint.
   apiSets:
     auto: Auto (Determine by network)
     official: Official (Mojang)
@@ -2286,8 +2287,8 @@ theme:
   selectImage: Select Image
   selectMusic: Select Music
   selectVideo: Select Video
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Host Candidate
   prflx: Peer Reflexive Candidate
@@ -2513,6 +2514,6 @@ gamepad:
   steamAddedNotify: Launcher added to Steam Library successfully! Please restart Steam to see it.
   steamAlreadyAddedNotify: Launcher is already in your Steam Library.
   steamDeckTitle: Steam Deck Detected
-  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add X Minecraft Launcher to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
+  steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})

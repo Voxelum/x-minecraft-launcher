@@ -113,6 +113,10 @@ export class InstallService extends AbstractService implements IInstallService {
     super(app)
   }
 
+  private runForgeInstall<T>(minecraft: string, action: () => Promise<T>) {
+    return this.mutex.of(LockKey.forgePostProcess(minecraft)).runExclusive(action)
+  }
+
   protected createFetchWithFallback(
     apiSets: string[],
     preferDefault: boolean,
@@ -548,19 +552,36 @@ export class InstallService extends AbstractService implements IInstallService {
         checksum: (file, algorithm) => this.resourceWorker.checksum(file, algorithm),
       })
       if (outputIssues.length > 0) {
+        const invalidFiles = new Set(outputIssues.map((issue) => issue.file))
+        const firstInvalidProcessor = procs.findIndex((proc) =>
+          Object.keys(proc.outputs ?? {}).some((file) => invalidFiles.has(file)),
+        )
+        const processorsToRegenerate = firstInvalidProcessor < 0
+          ? procs
+          : procs.slice(firstInvalidProcessor)
+        const outputsToRegenerate = new Set(
+          processorsToRegenerate.flatMap((proc) => Object.keys(proc.outputs ?? {})),
+        )
         for (const issue of outputIssues) {
           this.warn(
-            `[forge-pp] invalid post-processor output ${issue.file} (${issue.type}); removing so a reinstall regenerates it`,
+            `[forge-pp] invalid post-processor output ${issue.file} (${issue.type}); regenerating from the responsible processor`,
           )
-          // Remove the bad output so a subsequent reinstall regenerates it.
-          await unlink(issue.file).catch(() => {})
         }
-        throw new AnyError(
-          'ForgeInstallError',
-          `Post-processing produced ${outputIssues.length} invalid output(s): ${outputIssues
-            .map((i) => `${i.file} (${i.type})`)
-            .join(', ')}`,
-        )
+        await Promise.all([...outputsToRegenerate].map((file) => unlink(file).catch(() => {})))
+        await originalPostprocess()
+        const retryIssues = await diagnoseProcessorOutputs(procs, {
+          signal: options.signal,
+          checksum: (file, algorithm) => this.resourceWorker.checksum(file, algorithm),
+        })
+        if (retryIssues.length > 0) {
+          await Promise.all(retryIssues.map((issue) => unlink(issue.file).catch(() => {})))
+          throw new AnyError(
+            'ForgeInstallError',
+            `Post-processing produced ${retryIssues.length} invalid output(s) after regeneration: ${retryIssues
+              .map((i) => `${i.file} (${i.type})`)
+              .join(', ')}`,
+          )
+        }
       }
     }
 
@@ -679,47 +700,54 @@ export class InstallService extends AbstractService implements IInstallService {
     })
     const ops = this.getInstallOptions({ side: options.side }, task)
     ops.strict = true
-    try {
-      this.log(`Reinstall ${options.version} (${options.side})`)
-      await installMinecraft({ id: resolvedVersion.minecraftVersion, url: '' }, location, ops)
-      const forgeLib = resolvedVersion.libraries.find(isForgeLibrary)
-      if (forgeLib) {
-        await installForge(
-          { version: forgeLib.version, mcversion: resolvedVersion.minecraftVersion },
-          MinecraftFolder.from(location),
-          ops,
-        )
+    const forgeLib = resolvedVersion.libraries.find(isForgeLibrary)
+    const reinstall = async () => {
+      try {
+        this.log(`Reinstall ${options.version} (${options.side})`)
+        await installMinecraft({ id: resolvedVersion.minecraftVersion, url: '' }, location, ops)
+        if (forgeLib) {
+          await installForge(
+            { version: forgeLib.version, mcversion: resolvedVersion.minecraftVersion },
+            MinecraftFolder.from(location),
+            ops,
+          )
+        }
+        const fabLib = resolvedVersion.libraries.find(isFabricLoaderLibrary)
+        if (fabLib) {
+          await this.installFabric({
+            minecraft: resolvedVersion.minecraftVersion,
+            loader: fabLib.version,
+          })
+        }
+        const neoForge = findNeoForgedVersion(resolvedVersion.minecraftVersion, resolvedVersion)
+        if (neoForge) {
+          await this.installNeoForged({
+            minecraft: resolvedVersion.minecraftVersion,
+            version: neoForge,
+          })
+        }
+        const quilt = resolvedVersion.libraries.find(isQuiltLibrary)
+        if (quilt) {
+          await this.installQuilt({
+            minecraftVersion: resolvedVersion.minecraftVersion,
+            version: quilt.version,
+          })
+        }
+        await installLibraries(resolvedVersion, ops)
+        await installAssets(resolvedVersion, ops)
+        this.log(`Successfully reinstalled ${options.version} (${options.side})`)
+        task.complete()
+      } catch (e) {
+        task.fail(e)
+        this.warn(`An error occurred during reinstalling ${options.version} (${options.side}):`)
+        this.warn(e)
+        throw e
       }
-      const fabLib = resolvedVersion.libraries.find(isFabricLoaderLibrary)
-      if (fabLib) {
-        await this.installFabric({
-          minecraft: resolvedVersion.minecraftVersion,
-          loader: fabLib.version,
-        })
-      }
-      const neoForge = findNeoForgedVersion(resolvedVersion.minecraftVersion, resolvedVersion)
-      if (neoForge) {
-        await this.installNeoForged({
-          minecraft: resolvedVersion.minecraftVersion,
-          version: neoForge,
-        })
-      }
-      const quilt = resolvedVersion.libraries.find(isQuiltLibrary)
-      if (quilt) {
-        await this.installQuilt({
-          minecraftVersion: resolvedVersion.minecraftVersion,
-          version: quilt.version,
-        })
-      }
-      await installLibraries(resolvedVersion, ops)
-      await installAssets(resolvedVersion, ops)
-      this.log(`Successfully reinstalled ${options.version} (${options.side})`)
-      task.complete()
-    } catch (e) {
-      task.fail(e)
-      this.warn(`An error occurred during reinstalling ${options.version} (${options.side}):`)
-      this.warn(e)
-      throw e
+    }
+    if (forgeLib) {
+      await this.runForgeInstall(resolvedVersion.minecraftVersion, reinstall)
+    } else {
+      await reinstall()
     }
   }
 
@@ -982,7 +1010,10 @@ export class InstallService extends AbstractService implements IInstallService {
           { side, java: java.path, inheritsFrom: options.base || options.mcversion },
           task,
         )
-        version = await installForge(options, mc, taskOps)
+        version = await this.runForgeInstall(
+          options.mcversion,
+          () => installForge(options, mc, taskOps),
+        )
 
         const json = join(mc.getVersionRoot(version), 'install_profile.json')
         await unlink(json).catch(() => {})
@@ -1305,7 +1336,10 @@ export class InstallService extends AbstractService implements IInstallService {
     )
     try {
       this.log(`Install by profile ${options.profile.version} (${options.side})`)
-      await installByProfile(options.profile, minecraftFolder, ops)
+      await this.runForgeInstall(
+        options.profile.minecraft,
+        () => installByProfile(options.profile, minecraftFolder, ops),
+      )
       const json = join(
         minecraftFolder.getVersionRoot(options.profile.version),
         'install_profile.json',

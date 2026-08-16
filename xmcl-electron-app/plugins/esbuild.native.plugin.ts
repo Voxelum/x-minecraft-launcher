@@ -50,6 +50,14 @@ export default function createNativeModulePlugin(): Plugin {
     name: 'resolve-native-module',
     setup(build) {
       const isDev = build.initialOptions.plugins!.find(v => v.name === 'dev')
+      if (process.env.NODE_ENV === 'production') {
+        build.onResolve({ filter: /^@azure\/msal-node-extensions$/ }, () => ({
+          path: join(
+            dirname(require.resolve('@azure/msal-node-extensions/package.json')),
+            'dist/broker/NativeBrokerPlugin.mjs',
+          ),
+        }))
+      }
       if (isDev) {
         build.onLoad(
           { filter: /^.+[\\/]node_modules[\\/].+[\\/]default-gateway[\\/]index\.js$/ },
