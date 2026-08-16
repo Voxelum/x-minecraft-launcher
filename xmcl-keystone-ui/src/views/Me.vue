@@ -6,6 +6,7 @@ import { useInstanceContextMenuFunc } from '@/composables/instanceContextMenu'
 import { useInstanceGroup } from '@/composables/instanceGroup'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstances } from '@/composables/instances'
+import { kLaunchButton } from '@/composables/launchButton'
 import { LauncherNews, useLauncherNews } from '@/composables/launcherNews'
 import { useMojangNews } from '@/composables/mojangNews'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
@@ -19,7 +20,7 @@ import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
 import { useFocus, useLocalStorage } from '@vueuse/core'
 import { Instance } from '@xmcl/instance'
-import { Ref, computed, ref } from 'vue'
+import { Ref, computed, nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import MeProfilePanel from './MeProfilePanel.vue'
 
@@ -240,12 +241,19 @@ const instanceSections = computed((): InstanceSection[] => {
 const { show: openAddInstanceDialog } = useDialog(AddInstanceDialogKey)
 
 const router = useRouter()
+const { onClick: onLaunchClick } = injection(kLaunchButton)
 
 function selectInstance(instancePath: string) {
   path.value = instancePath
   if (router.currentRoute.value.path !== '/') {
     router.push('/')
   }
+}
+
+async function launchInstance(instancePath: string) {
+  path.value = instancePath
+  await nextTick()
+  await onLaunchClick()
 }
 
 const getInstanceContextMenu = useInstanceContextMenuFunc()
@@ -433,6 +441,16 @@ function openInBrowser(url: string) {
                 <div class="instance-name">{{ instance.name }}</div>
                 <div class="instance-version">{{ instance.runtime.minecraft }}</div>
               </div>
+              <v-btn
+                v-shared-tooltip="() => t('launch.launch')"
+                class="instance-play-button"
+                color="primary"
+                variant="text"
+                size="small"
+                icon="play_arrow"
+                :aria-label="t('launch.launch')"
+                @click.stop="launchInstance(instance.path)"
+              />
             </div>
           </div>
         </div>
@@ -665,6 +683,11 @@ function openInBrowser(url: string) {
   gap: 12px;
   padding: 12px 16px;
   /* radius / border / cursor / transition / hover come from .surface-card-row */
+}
+
+.instance-play-button {
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .instance-avatar-wrapper {
