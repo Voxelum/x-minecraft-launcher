@@ -14,14 +14,25 @@
   <a href="https://conventionalcommits.org">
     <img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Commit">
   </a>
-  <br>
+  <a href="https://flathub.org/en/apps/app.xmcl.voxelum">
+    <img src="https://img.shields.io/flathub/v/app.xmcl.voxelum?logo=flathub&label=Flathub" alt="Flathub">
+  </a>
+</p>
+
+<p align="center">
   <a href="https://discord.gg/W5XVwYY7GQ">
-    <img src="https://discord.com/api/guilds/405213567118213121/widget.png" alt="Discord">
+    <img src="https://img.shields.io/discord/405213567118213121?logo=discord&logoColor=white&label=Discord&color=5865F2" alt="Discord">
+  </a>
+  <a href="https://www.reddit.com/r/XMCL/">
+    <img src="https://img.shields.io/badge/Reddit-r%2FXMCL-FF4500?logo=reddit&logoColor=white" alt="Reddit">
   </a>
   <a href="https://kook.top/gqjSHh">
     <img src="https://img.shields.io/endpoint?url=https://api.xmcl.app/kook-badge" alt="Kook">
   </a>
-  <a href="https://afdian.net/@ci010">
+</p>
+
+<p align="center">
+  <a href="https://afdian.com/@ci010">
     <img src="https://img.shields.io/endpoint?url=https://api.xmcl.app/afdian-badge" alt="afdian">
   </a>
   <a href="https://patreon.com/xmcl">
@@ -33,48 +44,107 @@
 
 Қолданбаны жүктеп алу үшін [ресми сайтқа](https://xmcl.app) кіріңіз!
 
-Егер сізде winget болса, орнату үшін winget пайдалануға болады
+Егер сізде winget орнатылған болса:
 
 ```bash
 winget install CI010.XMinecraftLauncher
 ```
 
-## Ерекше өзгешеліктері
+Homebrew (macOS tap) арқылы орнату:
 
+```bash
+brew tap voxelum/xmcl
+brew install --cask voxelum/xmcl/xmcl
+sudo xattr -rd com.apple.quarantine /Applications/X\ Minecraft\ Launcher.app
+```
 
-- 📥 **Жүктеп алу және автоматты аяқтау**. Ресми немесе үшінші тарап айналарынан 'Minecraft', 'Forge', 'Fabric', 'Quilt', 'OptiFine', 'JVM' жүктеп алуға қолдау көрсетіңіз.
-- ⚡️ **Жылдам жүктеп алу**. HTTP/HTTPS агенттері арқылы розетканы қайта пайдаланыңыз және файлдарды бір уақытта бөліктерге жүктеп алыңыз.
-- 💻 **Кросс-платформа**. Іске қосу құралы Electron негізінде жасалған және 🗔 Windows 10/11, 🍎 MacOS және 🐧 Linux жүйелерін қолдайды.
-- 📚 **Көп үлгілік**. Пайдаланушылар әртүрлі нұсқаларды, режимдерді және іске қосу параметрлерін оқшаулау үшін бірнеше даналарды жасай алады.
-- 🗂 **Барлық ресурстарды басқарыңыз**. Даналардағы ресурстарды орнату үшін (қатты/символдық) сілтемелерді пайдаланыңыз, дискіні оңтайлы пайдалануды сақтаңыз. Модтардың көшірмелері барлық жерде жоқ! 😆
-- 🔥 **Кіріктірілген CurseForge, Modrinth қолдауы**. Іске қосу құралының ішіндегі ресурстарды жүктеп алуға болады.
-- 📦 **импорттау/экспорттауды қолдау** CurseForge және Modrinth модпакеттеріне сәйкес келеді!
-- 🔒 **Бірнеше тіркелгі жүйесін қолдау**. Кірістірілген Microsoft логині және Mojang Yggdrasil API. Сондай-ақ оның [ely.by](https://ely.by/) және [littleskin.cn](https://littleskin.cn) қолдауы бар. Сіз сондай-ақ үшінші тарап аутентификация серверлерін қоса аласыз!
-- 🔗 **Пайдаланушылар арасындағы тең дәрежелі байланыс**. Сіз LAN арқылы көп ойыншы ойнай аласыз, тіпті бір физикалық жергілікті желіде болмасаңыз да!
-- 🔑 **Код белгісі және заманауи қаптама**. Windows жүйесінде қолданбаны орнату үшін "appx" және "appinstaller" қолданбаларын пайдалануға болады. Браузерден блоктау хабарларын алмайсыз немесе SmartScreen қателерін енді көрмейсіз! 😎
+Linux жүйесінде XMCL сонымен қатар Flathub арқылы қолжетімді:
 
-## Үлес қосу
+```bash
+flatpak install flathub app.xmcl.voxelum
+```
 
-Жалпы әзірлеуші ​​үшін [Үлес қосу](./CONTRIBUTING.md) бөлімін қараңыз.
+<div align="center">
 
-i18n локализация әзірлеушісі үшін [Локализацияны бастау] (https://docs.xmcl.app/en/guide/i18n) бөлімін орындаңыз.
+### 🌐 Readme Languages
+
+| | | | | |
+| :---: | :---: | :---: | :---: | :---: |
+| [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_the_United_States.svg/1280px-Flag_of_the_United_States.svg.png" width="18"> English](../README.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="18"> Українська](README.uk.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Flag_of_Poland.svg/1280px-Flag_of_Poland.svg.png" width="18"> Polski](README.pl.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/1280px-Flag_of_Germany.svg.png" width="18"> Deutsch](README.de.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/1280px-Flag_of_Austria.svg.png" width="18"> Österreich](README.de-AT.md) |
+| [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Switzerland.svg/1280px-Flag_of_Switzerland.svg.png" width="18"> Schweiz](README.de-CH.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Flag_of_Brazil.svg/1280px-Flag_of_Brazil.svg.png" width="18"> Português (BR)](README.pt-BR.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Portugal.svg/1280px-Flag_of_Portugal.svg.png" width="18"> Português](README.pt.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/1280px-Flag_of_Spain.svg.png" width="18"> Español](README.es.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/1280px-Flag_of_France.svg.png" width="18"> Français](README.fr.md) |
+| [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/1280px-Flag_of_Canada_%28Pantone%29.svg.png" width="18"> Français (CA)](README.fr-CA.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Flag_of_Italy.svg/1280px-Flag_of_Italy.svg.png" width="18"> Italiano](README.it.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_the_Czech_Republic.svg/1280px-Flag_of_the_Czech_Republic.svg.png" width="18"> Čeština](README.cs.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Flag_of_Romania.svg/1280px-Flag_of_Romania.svg.png" width="18"> Română](README.ro.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Flag_of_Moldova.svg/1280px-Flag_of_Moldova.svg.png" width="18"> Moldova](README.mo.md) |
+| [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Flag_of_Belarus.svg/1280px-Flag_of_Belarus.svg.png" width="18"> Беларуская](README.be.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Flag_of_Estonia.svg/1280px-Flag_of_Estonia.svg.png" width="18"> Eesti](README.et.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Flag_of_Lithuania.svg/1280px-Flag_of_Lithuania.svg.png" width="18"> Lietuvių](README.lt.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Greece.svg/1280px-Flag_of_Greece.svg.png" width="18"> Ελληνικά](README.el.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Israel.svg/1280px-Flag_of_Israel.svg.png" width="18"> עברית](README.he.md) |
+| [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Flag_of_Turkey.svg/1280px-Flag_of_Turkey.svg.png" width="18"> Türkçe](README.tr.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Flag_of_Saudi_Arabia.svg/1280px-Flag_of_Saudi_Arabia.svg.png" width="18"> العربية](README.ar.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Flag_of_Lebanon.svg/1280px-Flag_of_Lebanon.svg.png" width="18"> لبنان](README.ar-LB.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_India.svg/1280px-Flag_of_India.svg.png" width="18"> हिन्दी](README.hi.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/1280px-Flag_of_Japan.svg.png" width="18"> 日本語](README.jp.md) |
+| [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Flag_of_South_Korea.svg/1280px-Flag_of_South_Korea.svg.png" width="18"> 한국어](README.ko.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Flag_of_the_People%27s_Republic_of_China.svg/1280px-Flag_of_the_People%27s_Republic_of_China.svg.png" width="18"> 简体中文](README.zh.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Flag_of_Denmark.svg/1280px-Flag_of_Denmark.svg.png" width="18"> Dansk](README.da.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Flag_of_Sweden.svg/1280px-Flag_of_Sweden.svg.png" width="18"> Svenska](README.sv.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Flag_of_Finland.svg/1280px-Flag_of_Finland.svg.png" width="18"> Suomi](README.fi.md) |
+| [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Flag_of_Kazakhstan.svg/1280px-Flag_of_Kazakhstan.svg.png" width="18"> Қазақша](README.kz.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Flag_of_Hungary.svg/1280px-Flag_of_Hungary.svg.png" width="18"> Magyar](README.hu.md) | [<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="18"> Русский](README.ru.md) | | |
+
+</div>
+
+## Мүмкіндіктер
+
+- 📥 **Автоматты жүктеу және толықтыру**. Ресми немесе үшінші тарап көздерінен `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` жүктеу.
+- ⚡️ **Жоғары жылдамдықта жүктеу**. Байланыстарды қайта пайдалану және файлдарды бөліктерге бөліп қатар жүктеу.
+- 💻 **Кросс-платформалы**. Electron негізінде жасалған: 🗔 Windows 10/11, 🍎 macOS және 🐧 Linux.
+- 📚 **Бірнеше инстанцияларды басқару**. Нұсқаларды, модтарды және іске қосу параметрлерін бөлек профильдерде оқшаулау.
+- 🗂 **Тиімді ресурстарды басқару**. Файлдарды көшірмелемей, қатты және символдық сілтемелерді пайдаланып дискілік орынды үнемдеу! 😆
+- 🔥 **CurseForge & Modrinth интеграциясы**. Ресурстарды тікелей лаунчер ішінен іздеп жүктеу.
+- 📦 **Модпактарды импорттау және экспорттау**. CurseForge және Modrinth стандарттарымен толық үйлесімділік!
+- 🔒 **Бірнеше аккаунт жүйелері**. Microsoft кіруі, Mojang Yggdrasil API, [ely.by](https://ely.by/) және дербес серверлер!
+- 🔗 **P2P мультиплеер**. Күрделі желілік баптауларсыз достарыңызбен виртуалды LAN арқылы ойнаңыз!
+- 🔑 **Сандық қолтаңба және заманауи пакеттер**. Windows жүйесінде SmartScreen ескертулерінсіз `appx` және `appinstaller` қолдауы! 😎
+
+## Негізгі кітапханалар (Core Libraries)
+
+Бұл репозиторий сонымен қатар Minecraft лаунчерін жасауға арналған npm пакеттері **Minecraft Launcher Core** (`@xmcl/*`) қамтиды. [API құжаттамасы](https://docs.xmcl.app/en/core)
+
+| Package | Description | Version |
+| --- | --- | --- |
+| [@xmcl/core](../packages/core) | Minecraft іске қосу | [![npm](https://img.shields.io/npm/v/@xmcl/core.svg)](https://www.npmjs.com/package/@xmcl/core) |
+| [@xmcl/installer](../packages/installer) | Minecraft, Forge, Fabric, Quilt, OptiFine, JVM орнату | [![npm](https://img.shields.io/npm/v/@xmcl/installer.svg)](https://www.npmjs.com/package/@xmcl/installer) |
+| [@xmcl/user](../packages/user) | Пайдаланушы аутентификациясы және скиндер | [![npm](https://img.shields.io/npm/v/@xmcl/user.svg)](https://www.npmjs.com/package/@xmcl/user) |
+| [@xmcl/mod-parser](../packages/mod-parser) | Forge/LiteLoader/Fabric модтарын талдау | [![npm](https://img.shields.io/npm/v/@xmcl/mod-parser.svg)](https://www.npmjs.com/package/@xmcl/mod-parser) |
+| [@xmcl/curseforge](../packages/curseforge) | CurseForge API | [![npm](https://img.shields.io/npm/v/@xmcl/curseforge.svg)](https://www.npmjs.com/package/@xmcl/curseforge) |
+| [@xmcl/modrinth](../packages/modrinth) | Modrinth API | [![npm](https://img.shields.io/npm/v/@xmcl/modrinth.svg)](https://www.npmjs.com/package/@xmcl/modrinth) |
+| [@xmcl/nbt](../packages/nbt) | NBT талдау | [![npm](https://img.shields.io/npm/v/@xmcl/nbt.svg)](https://www.npmjs.com/package/@xmcl/nbt) |
+| [@xmcl/game-data](../packages/game-data) | Әлем деректерін немесе servers.dat жүктеу | [![npm](https://img.shields.io/npm/v/@xmcl/game-data.svg)](https://www.npmjs.com/package/@xmcl/game-data) |
+| [@xmcl/resourcepack](../packages/resourcepack) | Ресурстар топтамасын талдау | [![npm](https://img.shields.io/npm/v/@xmcl/resourcepack.svg)](https://www.npmjs.com/package/@xmcl/resourcepack) |
+| [@xmcl/gamesetting](../packages/gamesetting) | Ойын баптауларын талдау | [![npm](https://img.shields.io/npm/v/@xmcl/gamesetting.svg)](https://www.npmjs.com/package/@xmcl/gamesetting) |
+| [@xmcl/client](../packages/client) | Minecraft клиентінің желілік құралдары | [![npm](https://img.shields.io/npm/v/@xmcl/client.svg)](https://www.npmjs.com/package/@xmcl/client) |
+| [@xmcl/model](../packages/model) | Ойыншылар мен блоктардың 3D үлгілерін көрсету | [![npm](https://img.shields.io/npm/v/@xmcl/model.svg)](https://www.npmjs.com/package/@xmcl/model) |
+| [@xmcl/text-component](../packages/text-component) | Minecraft мәтіндік компоненттерін талдау | [![npm](https://img.shields.io/npm/v/@xmcl/text-component.svg)](https://www.npmjs.com/package/@xmcl/text-component) |
+| [@xmcl/forge-site-parser](../packages/forge-site-parser) | Forge веб-сайтын талдау | [![npm](https://img.shields.io/npm/v/@xmcl/forge-site-parser.svg)](https://www.npmjs.com/package/@xmcl/forge-site-parser) |
+| [@xmcl/file-transfer](../packages/file-transfer) | Жоғары өнімді файлдарды жүктеу | [![npm](https://img.shields.io/npm/v/@xmcl/file-transfer.svg)](https://www.npmjs.com/package/@xmcl/file-transfer) |
+| [@xmcl/nat-api](../packages/nat-api) | UPnP және NAT-PMP порттарын бағыттау | [![npm](https://img.shields.io/npm/v/@xmcl/nat-api.svg)](https://www.npmjs.com/package/@xmcl/nat-api) |
+| [@xmcl/system](../packages/system) | Браузер/Node үшін FS аралық бағдарламалық құралы | [![npm](https://img.shields.io/npm/v/@xmcl/system.svg)](https://www.npmjs.com/package/@xmcl/system) |
+| [@xmcl/unzip](../packages/unzip) | yauzl zip ашу қаптамасы | [![npm](https://img.shields.io/npm/v/@xmcl/unzip.svg)](https://www.npmjs.com/package/@xmcl/unzip) |
+| [@xmcl/semver](../packages/semver) | Fabric semver пішімі | [![npm](https://img.shields.io/npm/v/@xmcl/semver.svg)](https://www.npmjs.com/package/@xmcl/semver) |
+| [@xmcl/bytebuffer](../packages/bytebuffer) | ByteBuffer іске асыруы | [![npm](https://img.shields.io/npm/v/@xmcl/bytebuffer.svg)](https://www.npmjs.com/package/@xmcl/bytebuffer) |
+
+## Жобаға үлес қосу
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Voxelum/x-minecraft-launcher)
+
+Әзірлеушілер үшін: [Үлес қосу нұсқаулығын](CONTRIBUTING.kz.md) қараңыз
+
+Аудармашылар (i18n) үшін: [Локализация бастау](https://docs.xmcl.app/en/guide/i18n) бөлімін қараңыз
 
 ## ЛИЦЕНЗИЯ
 
-[MIT](LICENSE)
+[MIT](../LICENSE)
 
 ## Демеушілік
 
-| [![](https://github.com/DGP-Studio/Snap.Hutao/assets/10614984/73ae8b90-f3c7-4033-b2b7-f4126331ce66)](https://www.netlify.com/) | Windows жүйесінде тегін кодқа қол қою [SignPath.io](https://signpath.io/), [SignPath Foundation] сертификаты(https://signpath.org/) қамтамасыз етеді. |
-| :----------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
-| [![](https://deno.com/images/deno_logo_4.gif)](https://deno.com/deploy) | [Deno Deploy](https://deno.com/deploy), XMCL серверсіз JavaScript қолданбалары үшін қиындықсыз платформасын пайдаланады. Берген [Deno](https://deno.com/)   |
+| [![](https://github.com/DGP-Studio/Snap.Hutao/assets/10614984/73ae8b90-f3c7-4033-b2b7-f4126331ce66)](https://signpath.io/) | Windows үшін тегін кодқа қол қою: [SignPath.io](https://signpath.io/), сертификат: [SignPath Foundation](https://signpath.org/) |
+| :---: | :---: |
+| [![](https://deno.com/images/deno_logo_4.gif)](https://deno.com/deploy) | [Deno Deploy](https://deno.com/deploy) серверсіз JavaScript қолданбалары үшін. Ұсынған: [Deno](https://deno.com/) |
+| [![](../assets/EdgeOne.png)](https://edgeone.ai/) | [Tencent EdgeOne](https://edgeone.ai/) — CDN жеделдету және қауіпсіздік Tencent EdgeOne арқылы қамтамасыз етіледі. |
 
-### ДЕМЕУШІ (AFDIAN)
+### Sponsor (AFDIAN)
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
-<a title="爱发电用户_9d663: ￥390.00" href="https://afdian.net/u/9d663ec6fb6711ec9ace52540025c377"> <img width="100" height="100" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/"> </a>
-<a title="爱发电用户_19e29: ￥300.00" href="https://afdian.net/u/19e292c21a1d11ee929a52540025c377"> <img width="100" height="100" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/"> </a>
+<a title="爱发电用户_9d663: ￥390.00" href="https://afdian.com/u/9d663ec6fb6711ec9ace52540025c377"> <img width="100" height="100" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/"> </a>
+<a title="爱发电用户_19e29: ￥300.00" href="https://afdian.com/u/19e292c21a1d11ee929a52540025c377"> <img width="100" height="100" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/"> </a>
 <a title="ahdg: ￥180.00" href="https://afdian.net/u/dd9058ce20df11eba5c052540025c377"> <img width="70" height="70" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/dd9058ce20df11eba5c052540025c377/avatar/0c776e6de1b1027e951c6d94919eb781_w1280_h1024_s364.jpg"> </a>
 <a title="Kandk: ￥30.00" href="https://afdian.net/u/404b86a078e111ecab3652540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/404b86a078e111ecab3652540025c377/avatar/dfa3e35a696d8d8af5425dd400d68a8d_w607_h527_s432.png"> </a>
 <a title="白雨 楠: ￥30.00" href="https://afdian.net/u/7f6ad7161b3e11eb8d0e52540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/7f6ad7161b3e11eb8d0e52540025c377/avatar/1fa3b75648a15aea8da202c6108d659b_w1153_h1153_s319.jpeg"> </a>
@@ -89,22 +159,37 @@ i18n локализация әзірлеушісі үшін [Локализац�
 </div>
 <!-- afdian-end -->
 
-## Credit
+## Алғыстар мен Авторлар
 
-[BANSAFAn](https://github.com/BANSAFAn), кім маған RU/UK қауымдастығында көп көмектеседі.
+### 🌍 Қоғамдастық және локализация
 
-[GodLeaveMe](https://github.com/GodLeaveMe), AUR пакетінің тізілімін жүргізу.
+**[BANSAFAn/Baneronetwo](https://github.com/BANSAFAn)**
+RU/UK қоғамдастығын қолдау және модерация
 
-[0xc0000142](https://github.com/0xc0000142), сақтау winget.
+**[Marmur2020](https://github.com/Marmur2020)**
+Украин тіліне толық аударма
 
-[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), толығымен украин тіліне аударылды!
+**[vanja-san](https://github.com/vanja-san)**
+Орыс тілін қолдау
 
-[vanja-san](https://github.com/vanja-san), орыс тілімен қамтамасыз етілді!
+### 📦 Пакет кураторлары
 
-[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) маған Launcher ядросында көмектеседі.
+**[VolodiaKraplich](https://github.com/VolodiaKraplich)**
+AUR (Arch User Repository) пакетін қолдау
 
-[laolarou726](https://github.com/laolarou726), кім іске қосу құрылғысының дизайнына көп көмектеседі.
+**[0xc0000142](https://github.com/0xc0000142)**
+winget пакетін қолдау
 
-Сондай-ақ, ерекше рахмет
+### 🛠️ Әзірлеушілер
 
-[Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)
+**[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle)**
+Лаунчер ядросын әзірлеу
+
+**[laolarou726](https://github.com/laolarou726)**
+Лаунчер дизайны мен UI/UX
+
+### 💙 Ерекше алғыс
+
+Қолдау көрсеткені үшін барлық қатысушыларға шын жүректен алғыс білдіреміз:
+
+[Yricky](https://github.com/Yricky) · [Jin](https://github.com/Indexyz) · [LG](https://github.com/LasmGratel) · [Phoebe](https://github.com/PhoebezZ) · [Sumeng Wang](https://github.com/darkkingwsm) · [Luca](https://github.com/LucaIsGenius) · [Charles Tang](https://github.com/CharlesQT)
