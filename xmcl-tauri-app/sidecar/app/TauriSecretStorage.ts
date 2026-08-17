@@ -1,5 +1,6 @@
 import type { SecretStorage } from '@xmcl/runtime/app'
 import { execFile } from 'child_process'
+import { createDecipheriv, pbkdf2Sync } from 'crypto'
 import filenamify from 'filenamify'
 import { ensureDir, readFile, unlink, writeFile } from 'fs-extra'
 import { join } from 'path'
@@ -109,10 +110,64 @@ function createKeyring(dir: string): Keyring | undefined {
   return undefined
 }
 
+/**
+ * Read a blob Electron's `safeStorage` wrote, which is Chromium's `os_crypt`
+ * format: `v10` followed by AES-128-CBC over a key derived from a password kept
+ * in the OS keyring (`"<app name> Safe Storage"`), with the fixed salt and IV
+ * Chromium uses. Without this, switching to the Tauri shell silently logged the
+ * user out of every account.
+ */
+async function decryptElectron(payload: Buffer, appName: string): Promise<string | undefined> {
+  if (process.platform === 'win32') {
+    // `os_crypt` on Windows is DPAPI over the string itself, no version prefix.
+    const out = await exec('powershell.exe', [
+      '-NoProfile', '-NonInteractive', '-Command',
+      'Add-Type -AssemblyName System.Security;' +
+      '$b=[Convert]::FromBase64String($input | Out-String);' +
+      '[Convert]::ToBase64String([Security.Cryptography.ProtectedData]::Unprotect($b,$null,1))',
+    ], payload.toString('base64')).catch(() => undefined)
+    return out ? Buffer.from(out.trim(), 'base64').toString('utf-8') : undefined
+  }
+
+  const version = payload.subarray(0, 3).toString('ascii')
+  if (version !== 'v10' && version !== 'v11') return undefined
+
+  let iterations: number
+  let stored: string | undefined
+  if (process.platform === 'darwin') {
+    iterations = 1003
+    stored = (await exec('security', ['find-generic-password', '-s', `${appName} Safe Storage`, '-a', appName, '-w'])
+      .catch(() => undefined))?.trimEnd()
+  } else {
+    iterations = 1
+    stored = await exec('secret-tool', ['lookup', 'application', appName]).catch(() => undefined)
+  }
+
+  // The keyring may hold a password now while the blob was written by a run
+  // that fell back to Chromium's `basic_text` backend (or the other way
+  // around), so both candidates are tried.
+  for (const password of [stored, 'peanuts']) {
+    if (!password) continue
+    const key = pbkdf2Sync(password, 'saltysalt', iterations, 16, 'sha1')
+    const decipher = createDecipheriv('aes-128-cbc', key, Buffer.alloc(16, ' '))
+    try {
+      return Buffer.concat([decipher.update(payload.subarray(3)), decipher.final()]).toString('utf-8')
+    } catch {
+      continue
+    }
+  }
+  return undefined
+}
+
 export class TauriSecretStorage implements SecretStorage {
   private keyring?: Keyring | null
 
-  constructor(private readonly dir: string, private readonly logger: Pick<Console, 'log' | 'warn'> = console) {}
+  constructor(
+    private readonly dir: string,
+    private readonly logger: Pick<Console, 'log' | 'warn'> = console,
+    /** Electron's `app.getName()`, which keys its `safeStorage` password. */
+    private readonly electronAppName = 'xmcl',
+  ) {}
 
   async get(service: string, account: string): Promise<string | undefined> {
     const buf = await readFile(this.fileOf(service, account)).catch(() => undefined)
@@ -124,15 +179,14 @@ export class TauriSecretStorage implements SecretStorage {
     }
     if (marker.equals(MARKER_ENC)) {
       if (buf.length > MARKER_LEN) {
-        // Written by the Electron build: `safeStorage` ciphertext we cannot
-        // decrypt. Report "no secret" instead of surfacing ciphertext as a
-        // token; the user re-authenticates once when switching shells.
-        return undefined
+        return await decryptElectron(buf.subarray(MARKER_LEN), this.electronAppName)
       }
       const keyring = await this.getKeyring()
       return await keyring?.get(service, account).catch(() => undefined)
     }
-    return undefined
+    // Marker-less blob: an old Electron build wrote the raw `safeStorage`
+    // buffer.
+    return await decryptElectron(buf, this.electronAppName)
   }
 
   async put(service: string, account: string, value: string): Promise<void> {

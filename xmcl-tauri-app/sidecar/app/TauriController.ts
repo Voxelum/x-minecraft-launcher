@@ -12,6 +12,7 @@ const MAIN_WINDOW = 'main'
 const MULTIPLAYER_WINDOW = 'multiplayer'
 const MONITOR_WINDOW = 'monitor'
 const MIGRATION_WINDOW = 'migration'
+const LOGIN_WINDOW = 'microsoft-login'
 
 /**
  * `LauncherAppController` on top of the Tauri shell.
@@ -226,6 +227,67 @@ export class TauriController implements LauncherAppController {
     }
     this.shell.showWindow(MAIN_WINDOW)
     this.shell.focusWindow(MAIN_WINDOW)
+  }
+
+  /**
+   * Electron ran this flow in a modal `BrowserWindow` and read the code from
+   * `will-navigate`. Here the window is a plain wry webview without the bridge,
+   * and the shell cancels the navigation to the redirect URI and reports it.
+   */
+  openMicrosoftLogin(authorizationUrl: string, redirectUri: string, signal?: AbortSignal): Promise<string> {
+    const redirect = new URL(redirectUri)
+    return new Promise<string>((resolve, reject) => {
+      let settled = false
+      const finish = (error?: Error, code?: string) => {
+        if (settled) return
+        settled = true
+        this.shell.off('navigate', onNavigate)
+        this.shell.off('window-closed', onClosed)
+        signal?.removeEventListener('abort', onAbort)
+        if (this.opened.has(LOGIN_WINDOW)) {
+          this.shell.closeWindow(LOGIN_WINDOW)
+        }
+        if (error) reject(error)
+        else resolve(code!)
+      }
+      const onNavigate = (label: string, url: string) => {
+        if (label !== LOGIN_WINDOW) return
+        const target = new URL(url)
+        const error = target.searchParams.get('error')
+        if (error) {
+          finish(new Error(target.searchParams.get('error_description') || error))
+          return
+        }
+        const code = target.searchParams.get('code')
+        finish(code ? undefined : new Error('Microsoft authorization returned no code.'), code ?? undefined)
+      }
+      const onClosed = (label: string) => {
+        if (label !== LOGIN_WINDOW) return
+        finish(new Error('Microsoft authorization window was closed.'))
+      }
+      const onAbort = () => {
+        const error = new Error('Microsoft authorization was cancelled.')
+        error.name = 'AbortError'
+        finish(error)
+      }
+
+      this.shell.on('navigate', onNavigate)
+      this.shell.on('window-closed', onClosed)
+      signal?.addEventListener('abort', onAbort, { once: true })
+
+      this.openWindow({
+        label: LOGIN_WINDOW,
+        url: authorizationUrl,
+        title: 'Sign in to Microsoft',
+        width: 560,
+        height: 720,
+        minWidth: 420,
+        minHeight: 600,
+        decorations: true,
+        navigateIntercept: redirect.origin + redirect.pathname,
+        bridge: false,
+      })
+    })
   }
 
   getLoginSuccessHTML(): string {

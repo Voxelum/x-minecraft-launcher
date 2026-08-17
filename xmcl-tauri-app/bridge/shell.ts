@@ -30,6 +30,13 @@ export interface WindowSpec {
   /** Keep the window alive but hidden when closed, like the multiplayer window. */
   hideOnClose?: boolean
   backgroundColor?: string
+  /**
+   * Cancel every navigation starting with this prefix and report it as a
+   * `navigate` event instead. Used to capture the OAuth redirect.
+   */
+  navigateIntercept?: string
+  /** Defaults to `true`; third-party pages are loaded without the bridge. */
+  bridge?: boolean
 }
 
 export type ShellCommand =
@@ -55,6 +62,7 @@ export interface TrayMenuItem {
 export type ShellEvent =
   | { type: 'window-closed'; label: string }
   | { type: 'window-all-closed' }
+  | { type: 'navigate'; label: string; url: string }
   | { type: 'second-instance'; argv: string[] }
   | { type: 'deep-link'; url: string }
   | { type: 'tray-click'; id: string }

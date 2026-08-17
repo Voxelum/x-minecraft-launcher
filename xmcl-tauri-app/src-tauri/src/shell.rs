@@ -42,6 +42,11 @@ pub struct WindowSpec {
   #[serde(default)]
   pub hide_on_close: bool,
   pub background_color: Option<String>,
+  /// Navigations starting with this prefix are cancelled and reported to the
+  /// sidecar instead: how the OAuth redirect is captured without a preload.
+  pub navigate_intercept: Option<String>,
+  /// Third-party pages (the Microsoft sign-in flow) must not see the bridge.
+  pub bridge: Option<bool>,
 }
 
 #[derive(Deserialize)]
@@ -96,6 +101,7 @@ pub enum ShellCommand {
 pub enum ShellEvent {
   WindowClosed { label: String },
   WindowAllClosed,
+  Navigate { label: String, url: String },
   SecondInstance { argv: Vec<String> },
   DeepLink { url: String },
   TrayClick { id: String },
@@ -193,18 +199,37 @@ fn open_window<R: Runtime>(app: &AppHandle<R>, spec: WindowSpec) {
       return;
     }
   };
-  let script = app
-    .try_state::<Preload>()
-    .map(|p| p.0.clone())
-    .unwrap_or_default();
-
   let mut builder = WebviewWindowBuilder::new(app, spec.label.clone(), url)
     .title(spec.title)
     .inner_size(spec.width, spec.height)
     .decorations(spec.decorations)
     .transparent(spec.transparent)
-    .initialization_script(&script)
     .visible(false);
+  if spec.bridge.unwrap_or(true) {
+    let script = app
+      .try_state::<Preload>()
+      .map(|p| p.0.clone())
+      .unwrap_or_default();
+    builder = builder.initialization_script(&script);
+  }
+  if let Some(prefix) = spec.navigate_intercept.clone() {
+    let handle = app.clone();
+    let label = spec.label.clone();
+    builder = builder.on_navigation(move |url| {
+      let url = url.to_string();
+      if !url.starts_with(&prefix) {
+        return true;
+      }
+      send(
+        &handle,
+        &ShellEvent::Navigate {
+          label: label.clone(),
+          url,
+        },
+      );
+      false
+    });
+  }
   if let (Some(w), Some(h)) = (spec.min_width, spec.min_height) {
     builder = builder.min_inner_size(w, h);
   }

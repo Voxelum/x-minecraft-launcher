@@ -5,6 +5,7 @@ import { SHELL_MARKER, ShellCommand, ShellEvent, WindowSpec } from '../../bridge
 export interface ShellClient {
   on(event: 'window-closed', listener: (label: string) => void): this
   on(event: 'window-all-closed', listener: () => void): this
+  on(event: 'navigate', listener: (label: string, url: string) => void): this
   on(event: 'second-instance', listener: (argv: string[]) => void): this
   on(event: 'deep-link', listener: (url: string) => void): this
   on(event: 'tray-click', listener: (id: string) => void): this
@@ -29,6 +30,8 @@ export class ShellClient extends EventEmitter {
         this.emit(event.type, event.argv)
       } else if (event.type === 'window-closed') {
         this.emit(event.type, event.label)
+      } else if (event.type === 'navigate') {
+        this.emit(event.type, event.label, event.url)
       } else if (event.type === 'deep-link') {
         this.emit(event.type, event.url)
       } else if (event.type === 'tray-click') {
