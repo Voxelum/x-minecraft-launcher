@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "strict": true,
+    "moduleResolution": "Bundler",
+    "baseUrl": "./",
+    "paths": {
+      // The reused preload modules of the Electron target import `electron`;
+      // in this target that import resolves to the bridge shim, both here and
+      // in `esbuild.config.ts`.
+      "electron": [
+        "./preload/shim/electron.ts"
+      ]
+    },
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true
+  },
+  "include": [
+    "bridge",
+    "preload",
+    "../xmcl-electron-app/preload/controller.ts",
+    "../xmcl-electron-app/preload/service.ts",
+    "../xmcl-electron-app/preload/task.ts",
+    "../xmcl-electron-app/preload/bootstrap.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

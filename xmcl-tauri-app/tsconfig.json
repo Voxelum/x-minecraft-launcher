@@ -1,0 +1,49 @@
+{
+  // The sidecar half of the package: a Node program hosting `xmcl-runtime`, so
+  // it needs the same compiler surface as the Electron main bundle (decorators
+  // for the service metadata, `~/*` for the runtime, and the asset module
+  // declarations of `global.module`). The renderer half is checked separately
+  // by `tsconfig.preload.json`, which resolves `electron` to the bridge shim.
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "strict": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "~/*": [
+        "../xmcl-runtime/*"
+      ],
+      "@/*": [
+        "../xmcl-electron-app/main/*"
+      ]
+    },
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "types": [
+      "@xmcl/runtime/global",
+      "@xmcl/runtime/global.module",
+      "esbuild-plugin-yaml/dist/yaml"
+    ]
+  },
+  "include": [
+    "./*.ts",
+    "bridge",
+    "sidecar"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "../xmcl-runtime"
+  ]
+}

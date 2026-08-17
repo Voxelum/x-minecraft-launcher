@@ -1,6 +1,7 @@
 packages:
   - 'packages/**'
   - 'xmcl-electron-app'
+  - 'xmcl-tauri-app'
   - 'xmcl-runtime-api'
   - 'xmcl-runtime'
   - 'xmcl-keystone-ui'
