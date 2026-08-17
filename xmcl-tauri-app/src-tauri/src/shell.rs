@@ -97,17 +97,45 @@ pub enum ShellCommand {
   RegisterProtocol {
     protocol: String,
   },
+  CheckUpdate,
+  DownloadUpdate,
+  InstallUpdate,
 }
 
 #[derive(Serialize)]
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum ShellEvent {
-  WindowClosed { label: String },
+  WindowClosed {
+    label: String,
+  },
   WindowAllClosed,
-  Navigate { label: String, url: String },
-  SecondInstance { argv: Vec<String> },
-  DeepLink { url: String },
-  TrayClick { id: String },
+  Navigate {
+    label: String,
+    url: String,
+  },
+  SecondInstance {
+    argv: Vec<String>,
+  },
+  DeepLink {
+    url: String,
+  },
+  TrayClick {
+    id: String,
+  },
+  UpdateAvailable {
+    version: String,
+    notes: Option<String>,
+    date: Option<String>,
+  },
+  UpdateNotAvailable,
+  UpdateProgress {
+    downloaded: u64,
+    total: Option<u64>,
+  },
+  UpdateDownloaded,
+  UpdateError {
+    message: String,
+  },
 }
 
 /// The initialization scripts a window can get, by [`WindowSpec::preload`]
@@ -187,6 +215,9 @@ pub fn apply<R: Runtime>(app: &AppHandle<R>, command: ShellCommand) {
       // runtime registration; log it so a missing declaration is visible.
       println!("[shell] sidecar requested the '{protocol}' scheme");
     }
+    ShellCommand::CheckUpdate => crate::updater::check(app),
+    ShellCommand::DownloadUpdate => crate::updater::download(app),
+    ShellCommand::InstallUpdate => crate::updater::install(app),
   }
 }
 

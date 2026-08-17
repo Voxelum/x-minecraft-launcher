@@ -19,21 +19,31 @@
       "desktop": {
         "schemes": ["xmcl"]
       }
+    },
+    "updater": {
+      "endpoints": [
+        "https://github.com/Voxelum/x-minecraft-launcher/releases/latest/download/latest.json"
+      ],
+      "pubkey": ""
     }
   },
   "bundle": {
-    "active": false,
+    "active": true,
     "targets": ["appimage", "deb", "nsis", "dmg"],
     "icon": [
       "../../xmcl-electron-app/icons/light@256x256.png",
       "../../xmcl-electron-app/icons/light.ico",
       "../../xmcl-electron-app/icons/light.icns"
     ],
+    "linux": {
+      "deb": {
+        "depends": ["libwebkit2gtk-4.1-0", "libgtk-3-0"]
+      }
+    },
     "resources": {
-      "../dist/sidecar.js": "dist/sidecar.js",
-      "../dist/preload.js": "dist/preload.js",
-      "../dist/preload-browse.js": "dist/preload-browse.js",
-      "../dist/preload-multiplayer.js": "dist/preload-multiplayer.js"
+      "../dist/*": "dist/",
+      "../dist/renderer/": "dist/renderer/",
+      "../dist/agent-documents/": "dist/agent-documents/"
     }
   }
 }

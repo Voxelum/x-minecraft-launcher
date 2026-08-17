@@ -10,6 +10,7 @@
 mod commands;
 mod shell;
 mod sidecar;
+mod updater;
 
 use std::collections::HashMap;
 use std::path::Path;
@@ -117,6 +118,7 @@ pub fn run() {
     .plugin(tauri_plugin_clipboard_manager::init())
     .plugin(tauri_plugin_deep_link::init())
     .plugin(tauri_plugin_dialog::init())
+    .plugin(updater::init())
     .invoke_handler(tauri::generate_handler![
       commands::control,
       commands::focus,
@@ -149,6 +151,7 @@ pub fn run() {
         },
       )?));
       app.manage(HiddenOnClose::default());
+      app.manage(updater::PendingUpdate::default());
       app.manage(sidecar);
 
       // On Linux and Windows a link arrives as a second launch, which the

@@ -9,6 +9,11 @@ export interface ShellClient {
   on(event: 'second-instance', listener: (argv: string[]) => void): this
   on(event: 'deep-link', listener: (url: string) => void): this
   on(event: 'tray-click', listener: (id: string) => void): this
+  on(event: 'update-available', listener: (version: string, notes?: string, date?: string) => void): this
+  on(event: 'update-not-available', listener: () => void): this
+  on(event: 'update-progress', listener: (downloaded: number, total?: number) => void): this
+  on(event: 'update-downloaded', listener: () => void): this
+  on(event: 'update-error', listener: (message: string) => void): this
 }
 
 /**
@@ -36,6 +41,12 @@ export class ShellClient extends EventEmitter {
         this.emit(event.type, event.url)
       } else if (event.type === 'tray-click') {
         this.emit(event.type, event.id)
+      } else if (event.type === 'update-available') {
+        this.emit(event.type, event.version, event.notes, event.date)
+      } else if (event.type === 'update-progress') {
+        this.emit(event.type, event.downloaded, event.total)
+      } else if (event.type === 'update-error') {
+        this.emit(event.type, event.message)
       } else {
         this.emit(event.type)
       }
@@ -88,5 +99,17 @@ export class ShellClient extends EventEmitter {
 
   flashFrame(label: string, flash: boolean) {
     this.send({ type: 'flash-frame', label, flash })
+  }
+
+  checkUpdate() {
+    this.send({ type: 'check-update' })
+  }
+
+  downloadUpdate() {
+    this.send({ type: 'download-update' })
+  }
+
+  installUpdate() {
+    this.send({ type: 'install-update' })
   }
 }

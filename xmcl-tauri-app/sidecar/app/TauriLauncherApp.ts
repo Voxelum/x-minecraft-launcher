@@ -40,7 +40,7 @@ export class TauriLauncherApp extends LauncherApp {
         join(host.getPath('appData'), LAUNCHER_NAME, options.isDev ? 'secret-dev' : 'secret'),
       ),
       (app) => new TauriController(app, options.bridge, options.shell),
-      (app) => new TauriUpdater(app),
+      (app) => new TauriUpdater(app, options.shell),
       options.builtinAppManifest,
       options.env,
       definedPlugins,

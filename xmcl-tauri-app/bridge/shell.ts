@@ -56,6 +56,11 @@ export type ShellCommand =
   | { type: 'set-progress'; label: string; progress: number }
   | { type: 'flash-frame'; label: string; flash: boolean }
   | { type: 'register-protocol'; protocol: string }
+  // In-place updates. The runtime keeps owning the policy; the shell only runs
+  // the operation and answers with the `update-*` events below.
+  | { type: 'check-update' }
+  | { type: 'download-update' }
+  | { type: 'install-update' }
 
 export interface TrayMenuItem {
   id: string
@@ -71,3 +76,8 @@ export type ShellEvent =
   | { type: 'second-instance'; argv: string[] }
   | { type: 'deep-link'; url: string }
   | { type: 'tray-click'; id: string }
+  | { type: 'update-available'; version: string; notes?: string; date?: string }
+  | { type: 'update-not-available' }
+  | { type: 'update-progress'; downloaded: number; total?: number }
+  | { type: 'update-downloaded' }
+  | { type: 'update-error'; message: string }

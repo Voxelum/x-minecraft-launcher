@@ -15,6 +15,7 @@
     "scripts": {
         "compile": "tsx build.ts",
         "build": "cross-env NODE_ENV=production cross-env BUILD_TARGET=shell tsx build.ts",
+        "bundle": "cross-env NODE_ENV=production cross-env BUILD_TARGET=bundle tsx build.ts",
         "dev": "cross-env NODE_ENV=development tsx dev.ts",
         "check": "tsc --noEmit --project tsconfig.json && tsc --noEmit --project tsconfig.preload.json",
         "fmt": "oxfmt -c ../.oxfmtrc.json .",
@@ -22,6 +23,7 @@
         "lint:fix": "npm run lint -- --fix"
     },
     "devDependencies": {
+        "@tauri-apps/cli": "^2.11.4",
         "@types/fs-extra": "~11",
         "@types/node": "^24.13.3",
         "@types/semver": "^7.3.13",

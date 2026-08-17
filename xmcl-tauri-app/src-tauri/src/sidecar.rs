@@ -83,11 +83,22 @@ fn reserve_port() -> std::io::Result<u16> {
   Ok(port)
 }
 
-fn node_binary() -> PathBuf {
+/// Resolve the Node runtime that hosts the sidecar.
+///
+/// Installers pack one next to the bundle (see `build.ts`), because a user's
+/// machine is not expected to have Node — it is the counterpart of the Electron
+/// binary the Electron target ships. `XMCL_NODE` overrides it, and a
+/// development checkout falls back to the Node on `PATH`.
+fn node_binary(dist_dir: &Path) -> PathBuf {
   if let Some(path) = std::env::var_os("XMCL_NODE") {
     return PathBuf::from(path);
   }
-  PathBuf::from(if cfg!(windows) { "node.exe" } else { "node" })
+  let name = if cfg!(windows) { "node.exe" } else { "node" };
+  let packed = dist_dir.join(name);
+  if packed.exists() {
+    return packed;
+  }
+  PathBuf::from(name)
 }
 
 /// Resolve the directory holding `sidecar.js` / `preload.js`.
@@ -116,6 +127,12 @@ fn spawn_process(launch: &Launch) -> std::io::Result<Child> {
     .env("XMCL_BRIDGE_PORT", launch.port.to_string())
     .env("XMCL_BRIDGE_TOKEN", &launch.token)
     .env("XMCL_TAURI", "true")
+    // `process.resourcesPath` does not exist outside Electron, so the sidecar
+    // reads its packaged assets (agent documents) from here instead.
+    .env(
+      "XMCL_RESOURCES_PATH",
+      launch.script.parent().unwrap_or(Path::new(".")),
+    )
     .stdin(Stdio::piped())
     .stdout(Stdio::piped())
     .stderr(Stdio::piped());
@@ -168,7 +185,7 @@ pub fn start(dist_dir: &Path, commands: Sender<String>) -> Result<Sidecar, Strin
     ));
   }
   let launch = Launch {
-    node: node_binary(),
+    node: node_binary(dist_dir),
     script,
     token: uuid::Uuid::new_v4().to_string(),
     port: reserve_port().map_err(|e| format!("cannot reserve a loopback port: {e}"))?,
