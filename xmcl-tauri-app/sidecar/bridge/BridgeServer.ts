@@ -21,6 +21,9 @@ import {
 export class BridgeClient extends EventEmitter {
   constructor(private readonly ws: WebSocket, private readonly server: BridgeServer) {
     super()
+    // One `destroyed` listener per service that tracks this window, and the
+    // launcher has far more than ten of them.
+    this.setMaxListeners(0)
   }
 
   isDestroyed() {

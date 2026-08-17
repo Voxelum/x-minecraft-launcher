@@ -175,9 +175,13 @@ pub fn run() {
     .expect("error while building the XMCL shell")
     .run(|app, event| match event {
       tauri::RunEvent::Exit => app.state::<sidecar::Sidecar>().shutdown(),
-      // The runtime owns the lifecycle: closing the launcher window while a
-      // game or a download is running must not end the process.
-      tauri::RunEvent::ExitRequested { api, .. } => api.prevent_exit(),
+      // The runtime owns the lifecycle: losing every window must not end the
+      // process by itself, the sidecar decides (and then asks for an exit code).
+      tauri::RunEvent::ExitRequested { api, code, .. } => {
+        if code.is_none() {
+          api.prevent_exit();
+        }
+      }
       _ => {}
     });
 }

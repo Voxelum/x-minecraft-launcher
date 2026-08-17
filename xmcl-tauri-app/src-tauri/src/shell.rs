@@ -349,7 +349,8 @@ pub fn on_window_event<R: Runtime>(app: &AppHandle<R>, label: &str, event: &Wind
         label: label.to_owned(),
       },
     );
-    if app.webview_windows().is_empty() {
+    // The window being destroyed can still be listed here.
+    if app.webview_windows().keys().all(|l| l == label) {
       send(app, &ShellEvent::WindowAllClosed);
     }
   }

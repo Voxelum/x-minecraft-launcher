@@ -33,6 +33,9 @@ export class TauriController implements LauncherAppController {
   /** Windows the shell currently owns, by label. */
   private readonly opened = new Set<string>()
 
+  /** While parking, closing every window keeps the process alive. */
+  private parking = false
+
   constructor(
     private readonly app: LauncherApp,
     private readonly bridge: BridgeServer,
@@ -51,7 +54,15 @@ export class TauriController implements LauncherAppController {
         this.shell.closeWindow(MULTIPLAYER_WINDOW)
       }
     })
-    this.shell.on('window-all-closed', () => this.app.emit('window-all-closed'))
+    this.shell.on('window-all-closed', () => {
+      this.logger.log(`All windows closed. parking=${this.parking}`)
+      this.app.emit('window-all-closed')
+      // The shell never exits on its own, so the decision Electron made in
+      // `app.on('window-all-closed')` has to be taken here.
+      if (this.app.platform.os !== 'osx' && !this.parking) {
+        this.shell.quit()
+      }
+    })
     this.shell.on('second-instance', (argv) => {
       const last = argv[argv.length - 1] ?? ''
       if (last.startsWith('xmcl://')) {
@@ -83,6 +94,7 @@ export class TauriController implements LauncherAppController {
     if (this.activatedManifest && this.activatedManifest.url !== manifest.url) {
       this.shell.closeWindow(MAIN_WINDOW)
     }
+    this.parking = true
     this.activatedManifest = manifest
 
     const url = new URL(manifest.url)
@@ -113,6 +125,7 @@ export class TauriController implements LauncherAppController {
       decorations: await this.useSystemTitlebar(),
       backgroundColor: manifest.backgroundColor,
     })
+    this.parking = false
 
     this.app.emit('app-booted', manifest)
   }
@@ -202,6 +215,15 @@ export class TauriController implements LauncherAppController {
   }
 
   requireFocus(): void {
+    if (!this.opened.has(MAIN_WINDOW)) {
+      // Nothing to focus: the launcher window was closed while the runtime kept
+      // working (a game running, a task in flight), so bring it back.
+      const manifest = this.activatedManifest
+      if (manifest) {
+        void this.activate(manifest)
+      }
+      return
+    }
     this.shell.showWindow(MAIN_WINDOW)
     this.shell.focusWindow(MAIN_WINDOW)
   }
