@@ -50,6 +50,11 @@ export class EventEmitter {
     return this
   }
 
+  /** No-op: this emitter has no listener cap to raise. */
+  setMaxListeners(_count: number) {
+    return this
+  }
+
   listenerCount(channel: string) {
     return this.channels.get(channel)?.length ?? 0
   }

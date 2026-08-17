@@ -19,7 +19,11 @@ import {
  * mutations to the window that subscribed to them.
  */
 export class BridgeClient extends EventEmitter {
-  constructor(private readonly ws: WebSocket, private readonly server: BridgeServer) {
+  /**
+   * `ws` is absent for the sidecar itself, which calls channels locally through
+   * {@link BridgeServer.invokeLocal} and has nothing to push events to.
+   */
+  constructor(private readonly ws: WebSocket | undefined, private readonly server: BridgeServer) {
     super()
     // One `destroyed` listener per service that tracks this window, and the
     // launcher has far more than ten of them.
@@ -27,10 +31,12 @@ export class BridgeClient extends EventEmitter {
   }
 
   isDestroyed() {
+    if (!this.ws) return false
     return this.ws.readyState !== WebSocket.OPEN && this.ws.readyState !== WebSocket.CONNECTING
   }
 
   send(channel: string, ...payload: any[]) {
+    if (!this.ws) return
     this.server.sendTo(this.ws, channel, payload)
   }
 }
@@ -53,6 +59,7 @@ export type BridgeHandler = (event: BridgeEvent, ...args: any[]) => unknown
 export class BridgeServer {
   private readonly handlers = new Map<string, { handler: BridgeHandler; once: boolean }>()
   private readonly clients = new Map<WebSocket, BridgeClient>()
+  private readonly localListeners = new Map<string, Set<(...args: any[]) => void>>()
   private readonly wss = new WebSocketServer({ noServer: true, maxPayload: 128 * 1024 * 1024 })
   private readonly http: Server = createServer((_, res) => {
     res.writeHead(404).end()
@@ -87,6 +94,37 @@ export class BridgeServer {
     for (const client of this.clients.keys()) {
       this.send(client, payload)
     }
+    for (const listener of this.localListeners.get(channel) ?? []) {
+      try {
+        listener(...args)
+      } catch (e) {
+        this.logger.error(`[bridge] local '${channel}' listener failed`, e)
+      }
+    }
+  }
+
+  /**
+   * Observe a broadcast from inside the sidecar. Modules that Electron ran in a
+   * window's preload, such as the multiplayer peer, are windows as far as the
+   * runtime is concerned and still need the events it sends to them.
+   */
+  onBroadcast(channel: string, listener: (...args: any[]) => void) {
+    const listeners = this.localListeners.get(channel) ?? new Set()
+    listeners.add(listener)
+    this.localListeners.set(channel, listeners)
+    return () => listeners.delete(listener)
+  }
+
+  /**
+   * Call a channel from inside the sidecar. Used by the modules that moved out
+   * of a preload: the runtime registers their channels on the controller, and
+   * there is no window in between anymore.
+   */
+  async invokeLocal(channel: string, ...args: unknown[]) {
+    const entry = this.handlers.get(channel)
+    if (!entry) throw new MissingHandlerError(channel)
+    if (entry.once) this.handlers.delete(channel)
+    return await entry.handler({ sender: new BridgeClient(undefined, this) }, ...args)
   }
 
   /** Push an event to a single window, like `webContents.send`. */

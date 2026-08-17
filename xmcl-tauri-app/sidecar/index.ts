@@ -82,6 +82,11 @@ async function main() {
   }
   process.on('SIGTERM', () => void stop())
   process.on('SIGINT', () => void stop())
+  // The shell owns this process through the stdio pipes. If it dies without
+  // terminating the sidecar, the orphan keeps the sqlite lock of the profile and
+  // the next launch boots against a locked database.
+  process.stdin.on('end', () => void stop())
+  process.stdin.on('close', () => void stop())
 
   await app.start()
 }

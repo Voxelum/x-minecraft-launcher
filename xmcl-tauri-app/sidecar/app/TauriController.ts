@@ -9,6 +9,7 @@ import { createI18n } from '../../../xmcl-electron-app/main/utils/i18n'
 import { getLoginSuccessHTML } from '../../../xmcl-electron-app/main/utils/login'
 import { TrayMenuItem, WindowSpec } from '../../bridge/shell'
 import { BridgeServer } from '../bridge/BridgeServer'
+import { MultiplayerHost } from '../multiplayer/MultiplayerHost'
 import { ShellClient } from '../shell/ShellClient'
 import { createWindowTracker } from './windowTracker'
 
@@ -54,12 +55,15 @@ export class TauriController implements LauncherAppController {
 
   private readonly i18n = createI18n(definedLocales, 'en')
 
+  private readonly multiplayer: MultiplayerHost
+
   constructor(
     private readonly app: LauncherApp,
     private readonly bridge: BridgeServer,
     private readonly shell: ShellClient,
   ) {
     this.logger = app.getLogger('Controller')
+    this.multiplayer = new MultiplayerHost(app, bridge, app.getLogger('Multiplayer'))
 
     this.handle('open-multiplayer-window', () => this.openMultiplayerWindow())
     this.handle('open-monitor-window', () => this.openMonitorWindow())
@@ -257,7 +261,12 @@ export class TauriController implements LauncherAppController {
       y: config.y ?? undefined,
       decorations: await this.useSystemTitlebar(),
       hideOnClose: true,
+      preload: 'multiplayer',
     })
+
+    // Electron booted the peer by loading the preload of this window; the peer
+    // now lives in this process, so opening the window is what starts it.
+    await this.multiplayer.start().catch((e) => this.logger.error(e as Error))
   }
 
   async openMonitorWindow() {

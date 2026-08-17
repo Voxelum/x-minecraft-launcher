@@ -37,10 +37,11 @@ export interface WindowSpec {
   navigateIntercept?: string
   /**
    * Which renderer bridge to inject. Defaults to `index`, the launcher preload;
-   * `browse` adds `appsHost` for the app browser, and `none` loads the page
-   * bare, as third-party pages such as the Microsoft sign-in flow must be.
+   * `browse` adds `appsHost` for the app browser, `multiplayer` adds the
+   * `multiplayer` peer proxy, and `none` loads the page bare, as third-party
+   * pages such as the Microsoft sign-in flow must be.
    */
-  preload?: 'index' | 'browse' | 'none'
+  preload?: 'index' | 'browse' | 'multiplayer' | 'none'
 }
 
 export type ShellCommand =

@@ -32,7 +32,8 @@
     "resources": {
       "../dist/sidecar.js": "dist/sidecar.js",
       "../dist/preload.js": "dist/preload.js",
-      "../dist/preload-browse.js": "dist/preload-browse.js"
+      "../dist/preload-browse.js": "dist/preload-browse.js",
+      "../dist/preload-multiplayer.js": "dist/preload-multiplayer.js"
     }
   }
 }

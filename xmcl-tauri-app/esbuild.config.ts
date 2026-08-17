@@ -74,8 +74,9 @@ export const sidecarConfig = {
  * The renderer bridges, injected as the webview's initialization script.
  *
  * One bundle per preload of the Electron target: `preload.js` for the launcher
- * windows and `preload-browse.js` for the app browser, which additionally gets
- * `appsHost`.
+ * windows, `preload-browse.js` for the app browser, which additionally gets
+ * `appsHost`, and `preload-multiplayer.js` for the multiplayer window, which
+ * gets `multiplayer`.
  *
  * The aliases are what let this target reuse the preload modules of
  * `xmcl-electron-app` instead of forking them: `electron` becomes the shim
@@ -92,6 +93,7 @@ export const preloadConfig = {
   entryPoints: {
     preload: resolve(__dirname, 'preload/index.ts'),
     'preload-browse': resolve(__dirname, 'preload/browse.ts'),
+    'preload-multiplayer': resolve(__dirname, 'preload/multiplayer.ts'),
   },
   outdir: resolve(__dirname, 'dist'),
   entryNames: '[name]',

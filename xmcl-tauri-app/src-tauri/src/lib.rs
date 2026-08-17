@@ -44,10 +44,15 @@ fn initialization_script(preload: &str, config: &BridgeConfig) -> String {
 }
 
 /// Read every renderer bridge the sidecar can ask a window for. The names match
-/// the preloads of the Electron target: `index` for the launcher windows and
-/// `browse` for the app browser, which also gets `appsHost`.
+/// the preloads of the Electron target: `index` for the launcher windows,
+/// `browse` for the app browser, which also gets `appsHost`, and `multiplayer`
+/// for the multiplayer window, which also gets `multiplayer`.
 fn read_preloads(dist: &Path, config: &BridgeConfig) -> Result<HashMap<String, String>, String> {
-  [("index", "preload.js"), ("browse", "preload-browse.js")]
+  [
+    ("index", "preload.js"),
+    ("browse", "preload-browse.js"),
+    ("multiplayer", "preload-multiplayer.js"),
+  ]
     .into_iter()
     .map(|(name, file)| {
       let path = dist.join(file);

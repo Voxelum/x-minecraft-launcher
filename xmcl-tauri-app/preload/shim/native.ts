@@ -116,6 +116,4 @@ export const nativeChannels: Record<string, (...args: any[]) => Promise<any>> = 
   'stop-find-in-page': async () => reportUnsupported('stop-find-in-page', undefined),
   'start-profiling': async () => reportUnsupported('start-profiling', undefined),
   'stop-profiling': async () => reportUnsupported('stop-profiling', undefined),
-  // Multiplayer moves to the sidecar instead of a hidden window (M5).
-  'open-multiplayer-window': async () => reportUnsupported('open-multiplayer-window', undefined),
 }
