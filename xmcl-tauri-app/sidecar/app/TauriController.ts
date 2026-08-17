@@ -1,9 +1,13 @@
 import { InstalledAppManifest, Settings } from '@xmcl/runtime-api'
+import { BaseService } from '@xmcl/runtime/app'
 import type { Client, LauncherApp, LauncherAppController } from '@xmcl/runtime/app'
 import type { Logger } from '@xmcl/runtime/infra'
 import { kSettings } from '@xmcl/runtime/settings'
+import localeMappings from '../../../assets/locales.json'
+import { definedLocales } from '../../../xmcl-electron-app/main/definedLocales'
+import { createI18n } from '../../../xmcl-electron-app/main/utils/i18n'
 import { getLoginSuccessHTML } from '../../../xmcl-electron-app/main/utils/login'
-import { WindowSpec } from '../../bridge/shell'
+import { TrayMenuItem, WindowSpec } from '../../bridge/shell'
 import { BridgeServer } from '../bridge/BridgeServer'
 import { ShellClient } from '../shell/ShellClient'
 import { createWindowTracker } from './windowTracker'
@@ -13,6 +17,17 @@ const MULTIPLAYER_WINDOW = 'multiplayer'
 const MONITOR_WINDOW = 'monitor'
 const MIGRATION_WINDOW = 'migration'
 const LOGIN_WINDOW = 'microsoft-login'
+const BROWSER_WINDOW = 'browser'
+
+/** Tray entry ids, mapped back to actions in {@link TauriController.onTrayClick}. */
+const TRAY_SHOW = 'show-launcher'
+const TRAY_CHECK_UPDATE = 'check-update'
+const TRAY_MULTIPLAYER = 'multiplayer'
+const TRAY_SHORTCUT = 'make-desktop-shortcut'
+const TRAY_RELAUNCH = 'relaunch'
+const TRAY_QUIT = 'quit'
+/** Emitted by the shell when the icon itself is clicked, not a menu entry. */
+const TRAY_ICON_CLICK = '__click__'
 
 /**
  * `LauncherAppController` on top of the Tauri shell.
@@ -37,6 +52,8 @@ export class TauriController implements LauncherAppController {
   /** While parking, closing every window keeps the process alive. */
   private parking = false
 
+  private readonly i18n = createI18n(definedLocales, 'en')
+
   constructor(
     private readonly app: LauncherApp,
     private readonly bridge: BridgeServer,
@@ -46,6 +63,7 @@ export class TauriController implements LauncherAppController {
 
     this.handle('open-multiplayer-window', () => this.openMultiplayerWindow())
     this.handle('open-monitor-window', () => this.openMonitorWindow())
+    this.handle('open-browse-window', () => this.openBrowseWindow())
 
     this.shell.on('window-closed', (label) => {
       this.opened.delete(label)
@@ -76,6 +94,83 @@ export class TauriController implements LauncherAppController {
     this.shell.on('deep-link', (url) => {
       void this.app.protocol.handle({ url })
     })
+    this.shell.on('tray-click', (id) => {
+      void this.onTrayClick(id)
+    })
+
+    void this.setupTray()
+  }
+
+  /**
+   * The tray of `xmcl-electron-app/main/controllers/tray.ts`, minus the entries
+   * that only Chromium could serve (the devtools toggle and the content-tracing
+   * recorder). The menu is rebuilt on every locale change because the shell has
+   * no way to relabel a single entry.
+   */
+  private async setupTray() {
+    await this.app.waitEngineReady()
+
+    const state = await this.app.registry.get(kSettings).catch(() => undefined)
+    state?.localesSet(Object.entries(localeMappings).map(([locale, name]) => ({ locale, name })))
+    if (state) {
+      this.i18n.use(state.locale)
+      state.subscribe('config', (c) => {
+        this.i18n.use(c.locale)
+        this.renderTray()
+      }).subscribe('localeSet', (l) => {
+        this.i18n.use(l)
+        this.renderTray()
+      })
+    }
+
+    this.app.on('app-booted', () => this.renderTray())
+    this.renderTray()
+  }
+
+  private renderTray() {
+    const { t } = this.i18n
+    const menu: TrayMenuItem[] = [
+      { id: TRAY_SHOW, label: t('showLauncher') },
+      { id: TRAY_CHECK_UPDATE, label: t('checkUpdate') },
+      { id: TRAY_MULTIPLAYER, label: t('multiplayer') },
+      { id: TRAY_SHORTCUT, label: t('makeDesktopShortcut') },
+      { id: TRAY_RELAUNCH, label: t('relaunch') },
+      { id: TRAY_QUIT, label: t('quit') },
+    ]
+    const icons = (this.activatedManifest ?? this.app.builtinAppManifest).iconSets
+    this.shell.setTray({
+      tooltip: t('title'),
+      icon: icons.trayIcon,
+      menu,
+    })
+  }
+
+  private async onTrayClick(id: string) {
+    switch (id) {
+      case TRAY_ICON_CLICK:
+      case TRAY_SHOW:
+        this.requireFocus()
+        break
+      case TRAY_CHECK_UPDATE: {
+        const service = await this.app.registry.get(BaseService)
+        await service.checkUpdate()
+        break
+      }
+      case TRAY_MULTIPLAYER:
+        await this.openMultiplayerWindow()
+        break
+      case TRAY_SHORTCUT: {
+        const service = await this.app.registry.get(BaseService)
+        service.makeDesktopShortcut()
+        break
+      }
+      case TRAY_RELAUNCH:
+        this.shell.relaunch()
+        break
+      case TRAY_QUIT:
+        this.shell.quit()
+        break
+    }
   }
 
   handle(channel: string, handler: (event: { sender: Client }, ...args: any[]) => any, once = false) {
@@ -193,6 +288,34 @@ export class TauriController implements LauncherAppController {
     })
   }
 
+  /**
+   * The app browser (`browser.html`), the only window that gets `appsHost`. It
+   * is the counterpart of `ElectronController.createBrowseWindow`, so the same
+   * frameless 860x450 window, loaded with the `browse` bridge instead of the
+   * launcher one.
+   */
+  async openBrowseWindow() {
+    if (this.opened.has(BROWSER_WINDOW)) {
+      this.shell.showWindow(BROWSER_WINDOW)
+      this.shell.focusWindow(BROWSER_WINDOW)
+      return
+    }
+    const url = new URL(this.activatedManifest?.url ?? this.app.builtinAppManifest.url)
+    url.pathname = '/browser.html'
+
+    this.openWindow({
+      label: BROWSER_WINDOW,
+      url: url.toString(),
+      title: 'XMCL Launcher Browser',
+      width: 860,
+      height: 450,
+      decorations: false,
+      transparent: true,
+      resizable: false,
+      preload: 'browse',
+    })
+  }
+
   startMigrate(): void {
     const url = new URL(this.activatedManifest?.url ?? this.app.builtinAppManifest.url)
     url.pathname = '/migration.html'
@@ -285,7 +408,7 @@ export class TauriController implements LauncherAppController {
         minHeight: 600,
         decorations: true,
         navigateIntercept: redirect.origin + redirect.pathname,
-        bridge: false,
+        preload: 'none',
       })
     })
   }

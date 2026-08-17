@@ -11,6 +11,8 @@ mod commands;
 mod shell;
 mod sidecar;
 
+use std::collections::HashMap;
+use std::path::Path;
 use std::sync::mpsc::channel;
 
 use serde::Serialize;
@@ -39,6 +41,21 @@ fn initialization_script(preload: &str, config: &BridgeConfig) -> String {
     serde_json::to_string(config).expect("bridge config is serializable"),
     preload
   )
+}
+
+/// Read every renderer bridge the sidecar can ask a window for. The names match
+/// the preloads of the Electron target: `index` for the launcher windows and
+/// `browse` for the app browser, which also gets `appsHost`.
+fn read_preloads(dist: &Path, config: &BridgeConfig) -> Result<HashMap<String, String>, String> {
+  [("index", "preload.js"), ("browse", "preload-browse.js")]
+    .into_iter()
+    .map(|(name, file)| {
+      let path = dist.join(file);
+      let script = std::fs::read_to_string(&path)
+        .map_err(|e| format!("cannot read the renderer bridge at {}: {e}", path.display()))?;
+      Ok((name.to_owned(), initialization_script(&script, config)))
+    })
+    .collect()
 }
 
 /// Deliver an event to the renderer bridge, standing in for the
@@ -107,13 +124,6 @@ pub fn run() {
     ])
     .setup(|app| {
       let dist = sidecar::resolve_dist_dir(app.path().resource_dir().ok());
-      let preload = std::fs::read_to_string(dist.join("preload.js")).map_err(|e| {
-        format!(
-          "cannot read the renderer bridge at {}: {e}",
-          dist.join("preload.js").display()
-        )
-      })?;
-
       // The sidecar serves the renderer bundle itself, because the runtime has
       // to intercept its requests to inject the API credentials the way
       // `ElectronSession` did.
@@ -125,14 +135,14 @@ pub fn run() {
       let sidecar = sidecar::start(&dist, tx)?;
       println!("[shell] bridge listening on 127.0.0.1:{}", sidecar.port);
 
-      app.manage(Preload(initialization_script(
-        &preload,
+      app.manage(Preload(read_preloads(
+        &dist,
         &BridgeConfig {
           port: sidecar.port,
           token: sidecar.token.clone(),
           dev: is_dev(),
         },
-      )));
+      )?));
       app.manage(HiddenOnClose::default());
       app.manage(sidecar);
 

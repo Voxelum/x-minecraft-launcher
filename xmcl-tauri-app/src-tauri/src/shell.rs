@@ -6,6 +6,7 @@
 //! [`MARKER`], and the shell answers with [`ShellEvent`] lines on its stdin.
 //! Keep this file in sync with `bridge/shell.ts`.
 
+use std::collections::HashMap;
 use std::sync::Mutex;
 
 use serde::{Deserialize, Serialize};
@@ -45,8 +46,10 @@ pub struct WindowSpec {
   /// Navigations starting with this prefix are cancelled and reported to the
   /// sidecar instead: how the OAuth redirect is captured without a preload.
   pub navigate_intercept: Option<String>,
-  /// Third-party pages (the Microsoft sign-in flow) must not see the bridge.
-  pub bridge: Option<bool>,
+  /// Which renderer bridge to inject: `"index"` (default) for the launcher
+  /// windows, `"browse"` for the app browser, `"none"` for third-party pages
+  /// such as the Microsoft sign-in flow, which must not see the bridge.
+  pub preload: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -107,10 +110,11 @@ pub enum ShellEvent {
   TrayClick { id: String },
 }
 
-/// The initialization script every window gets: the bridge endpoint plus the
-/// compiled renderer shim. Windows are created on demand by the sidecar, so the
-/// script has to outlive `setup`.
-pub struct Preload(pub String);
+/// The initialization scripts a window can get, by [`WindowSpec::preload`]
+/// name: the bridge endpoint plus the matching compiled renderer shim. Windows
+/// are created on demand by the sidecar, so the scripts have to outlive
+/// `setup`.
+pub struct Preload(pub HashMap<String, String>);
 
 /// Windows the sidecar asked to keep alive when closed.
 #[derive(Default)]
@@ -205,12 +209,18 @@ fn open_window<R: Runtime>(app: &AppHandle<R>, spec: WindowSpec) {
     .decorations(spec.decorations)
     .transparent(spec.transparent)
     .visible(false);
-  if spec.bridge.unwrap_or(true) {
-    let script = app
+  let preload = spec.preload.as_deref().unwrap_or("index");
+  if preload != "none" {
+    match app
       .try_state::<Preload>()
-      .map(|p| p.0.clone())
-      .unwrap_or_default();
-    builder = builder.initialization_script(&script);
+      .and_then(|p| p.0.get(preload).cloned())
+    {
+      Some(script) => builder = builder.initialization_script(&script),
+      None => eprintln!(
+        "[shell] window '{}' asked for the unknown '{preload}' bridge",
+        spec.label
+      ),
+    }
   }
   if let Some(prefix) = spec.navigate_intercept.clone() {
     let handle = app.clone();

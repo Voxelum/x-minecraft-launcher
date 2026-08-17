@@ -71,7 +71,11 @@ export const sidecarConfig = {
 } satisfies BuildOptions
 
 /**
- * The renderer bridge, injected as the webview's initialization script.
+ * The renderer bridges, injected as the webview's initialization script.
+ *
+ * One bundle per preload of the Electron target: `preload.js` for the launcher
+ * windows and `preload-browse.js` for the app browser, which additionally gets
+ * `appsHost`.
  *
  * The aliases are what let this target reuse the preload modules of
  * `xmcl-electron-app` instead of forking them: `electron` becomes the shim
@@ -85,8 +89,12 @@ export const preloadConfig = {
   platform: 'browser',
   target: 'safari16',
   format: 'iife',
-  entryPoints: [resolve(__dirname, 'preload/index.ts')],
-  outfile: resolve(__dirname, 'dist/preload.js'),
+  entryPoints: {
+    preload: resolve(__dirname, 'preload/index.ts'),
+    'preload-browse': resolve(__dirname, 'preload/browse.ts'),
+  },
+  outdir: resolve(__dirname, 'dist'),
+  entryNames: '[name]',
   alias: {
     electron: resolve(__dirname, 'preload/shim/electron.ts'),
     events: resolve(__dirname, 'preload/shim/events.ts'),

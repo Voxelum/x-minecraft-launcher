@@ -35,8 +35,12 @@ export interface WindowSpec {
    * `navigate` event instead. Used to capture the OAuth redirect.
    */
   navigateIntercept?: string
-  /** Defaults to `true`; third-party pages are loaded without the bridge. */
-  bridge?: boolean
+  /**
+   * Which renderer bridge to inject. Defaults to `index`, the launcher preload;
+   * `browse` adds `appsHost` for the app browser, and `none` loads the page
+   * bare, as third-party pages such as the Microsoft sign-in flow must be.
+   */
+  preload?: 'index' | 'browse' | 'none'
 }
 
 export type ShellCommand =

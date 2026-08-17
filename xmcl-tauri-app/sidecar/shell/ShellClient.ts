@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
 import { createInterface } from 'readline'
-import { SHELL_MARKER, ShellCommand, ShellEvent, WindowSpec } from '../../bridge/shell'
+import { SHELL_MARKER, ShellCommand, ShellEvent, TrayMenuItem, WindowSpec } from '../../bridge/shell'
 
 export interface ShellClient {
   on(event: 'window-closed', listener: (label: string) => void): this
@@ -76,5 +76,17 @@ export class ShellClient extends EventEmitter {
 
   registerProtocol(protocol: string) {
     this.send({ type: 'register-protocol', protocol })
+  }
+
+  setTray(options: { tooltip?: string; icon?: string; menu?: TrayMenuItem[] }) {
+    this.send({ type: 'set-tray', ...options })
+  }
+
+  setProgress(label: string, progress: number) {
+    this.send({ type: 'set-progress', label, progress })
+  }
+
+  flashFrame(label: string, flash: boolean) {
+    this.send({ type: 'flash-frame', label, flash })
   }
 }
