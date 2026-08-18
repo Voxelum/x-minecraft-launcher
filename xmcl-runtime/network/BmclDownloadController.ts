@@ -39,6 +39,8 @@ export interface BmclDownloadControllerOptions {
    * @default 5
    */
   maxResumes?: number
+  /** Slow re-assignments per source before traffic moves to fallback. @default 2 */
+  maxSlowRerolls?: number
   /**
    * Re-roll a connection that delivers no byte within this many ms.
    * @default 5000
@@ -128,6 +130,19 @@ export interface BmclDownloadControllerOptions {
    * @default 24
    */
   cbProbeEvery?: number
+  /** Slow aborts in one window before temporarily preferring fallback. @default 8 */
+  slowCbThreshold?: number
+  /** Slow-source quarantine duration. @default 30000 */
+  slowCbCooldownMs?: number
+}
+
+export interface BmclDownloadTelemetrySnapshot {
+  properties: {
+    schemaVersion: '1'
+    breakerOpen: boolean
+    performanceSchemaVersion?: '1'
+  }
+  measurements: Record<string, number>
 }
 /**
  * Adaptive {@link DownloadController} for distributed-CDN APIs such as
@@ -152,6 +167,7 @@ export class BmclDownloadController implements DownloadController {
   readonly sampleInterval: number
   readonly warmup: number
   readonly maxResumes: number
+  readonly maxSlowRerolls: number
   readonly ttfbDeadline: number
   readonly stallTimeout: number
   readonly maxNoProgressRerolls: number
@@ -175,6 +191,11 @@ export class BmclDownloadController implements DownloadController {
   private readonly cbProbeEvery: number
   /** Rolling counter that spaces out half-open probes. */
   private cbProbeTick = 0
+  private readonly slowCbThreshold: number
+  private readonly slowCbCooldownMs: number
+  private slowStrikes = 0
+  private lastSlowStrike = 0
+  private slowOpenUntil = 0
 
   private readonly hosts = new Map<string, Ewma>()
   private readonly global: Ewma = { score: 0, weight: 0, lastUpdate: 0, count: 0 }
@@ -186,6 +207,7 @@ export class BmclDownloadController implements DownloadController {
    * to log a periodic download-distribution snapshot.
    */
   private win = newWindow()
+  private telemetryWin = newTelemetryWindow()
 
   private persistPath?: string
   private saveTimer?: ReturnType<typeof setTimeout>
@@ -195,6 +217,7 @@ export class BmclDownloadController implements DownloadController {
     this.sampleInterval = options.sampleInterval ?? 1000
     this.warmup = options.warmup ?? 2500
     this.maxResumes = options.maxResumes ?? 5
+    this.maxSlowRerolls = options.maxSlowRerolls ?? 2
     this.ttfbDeadline = options.ttfbDeadline ?? 5_000
     this.stallTimeout = options.stallTimeout ?? 5_000
     this.maxNoProgressRerolls = options.maxNoProgressRerolls ?? 2
@@ -209,6 +232,8 @@ export class BmclDownloadController implements DownloadController {
     this.cbThreshold = options.cbThreshold ?? 16
     this.cbCooldownMs = options.cbCooldownMs ?? 30_000
     this.cbProbeEvery = Math.max(1, options.cbProbeEvery ?? 24)
+    this.slowCbThreshold = options.slowCbThreshold ?? 8
+    this.slowCbCooldownMs = options.slowCbCooldownMs ?? 30_000
   }
 
   /**
@@ -238,6 +263,11 @@ export class BmclDownloadController implements DownloadController {
       h.speedSum += sample.speed
       w.hosts.set(sample.host, h)
     }
+    const telemetry = this.telemetryWin
+    telemetry.samples++
+    telemetry.sampleSpeedSum += sample.speed
+    if (sample.speed < this.stallFloor) telemetry.stalledSamples++
+    if (decision === 'abort') telemetry.abortDecisions++
     return decision
   }
 
@@ -308,7 +338,7 @@ export class BmclDownloadController implements DownloadController {
     // nothing). The breaker auto-closes after the cooldown so the CDN is
     // periodically retried in case it recovered.
     if (!this.isReassignable(origin)) return false
-    if (Date.now() >= this.cbOpenUntil) return false
+    if (Date.now() >= Math.max(this.cbOpenUntil, this.slowOpenUntil)) return false
     // Half-open: occasionally let a request through to probe whether the
     // CDN has recovered. A successful probe closes the breaker (in
     // `report`) before the cooldown elapses, so we converge back to the
@@ -316,10 +346,15 @@ export class BmclDownloadController implements DownloadController {
     // official fallback is itself slow.
     this.cbProbeTick = (this.cbProbeTick + 1) % this.cbProbeEvery
     if (this.cbProbeTick === 0) return false
+    this.telemetryWin.breakerSkips++
     return true
   }
 
   report(result: DownloadResult): void {
+    if (result.abortReason === 'skip') {
+      this.telemetryWin.abortSkip++
+      return
+    }
     // Count every outcome for the periodic snapshot (before the
     // learning-model filters below).
     const w = this.win
@@ -333,23 +368,64 @@ export class BmclDownloadController implements DownloadController {
       w.failed++
     }
 
+    const telemetry = this.telemetryWin
+    const reassignable = this.isReassignable(result.origin)
+    telemetry.attempts++
+    telemetry.transferredBytes += result.received
+    telemetry.durationMs += result.duration
+    if (result.ranged) telemetry.rangedAttempts++
+    if (result.resumed) telemetry.resumedAttempts++
+    if (result.fallback) telemetry.fallbackAttempts++
+    if (result.committed) telemetry.committedAttempts++
+    if (reassignable) {
+      telemetry.reassignableAttempts++
+      if (result.host) telemetry.reassignableMirrors.add(result.host)
+    } else {
+      telemetry.fixedAttempts++
+    }
+    if (result.outcome === 'completed') {
+      telemetry.completed++
+      telemetry.completedBytes += result.received
+      if (reassignable) {
+        telemetry.reassignableCompletedBytes += result.received
+        telemetry.reassignableCompletedDurationMs += result.duration
+      } else {
+        telemetry.fixedCompletedBytes += result.received
+        telemetry.fixedCompletedDurationMs += result.duration
+      }
+    } else if (result.outcome === 'aborted') {
+      telemetry.aborted++
+      if (result.abortReason === 'ttfb') telemetry.abortTtfb++
+      if (result.abortReason === 'stall') telemetry.abortStall++
+      if (result.abortReason === 'slow') telemetry.abortSlow++
+    } else {
+      telemetry.failed++
+    }
+    if (result.failureReason === 'range-not-supported') telemetry.rangeUnsupported++
+    if (result.failureReason === 'cancelled') telemetry.cancelled++
+    if (result.failureReason === 'request') telemetry.requestFailures++
+
     // Circuit-breaker accounting: a re-assignable attempt that delivered
     // real data proves the CDN is reachable → reset and close; an
     // attempt that delivered (almost) nothing is evidence the CDN is
     // down → count toward tripping the breaker.
-    if (this.isReassignable(result.origin)) {
-      if (result.received >= this.minMeasureBytes) {
+    if (reassignable) {
+      if (
+        result.received >= this.minMeasureBytes ||
+        result.failureReason === 'range-not-supported'
+      ) {
         this.cbFails = 0
         this.cbOpenUntil = 0
-      } else {
+      } else if (result.failureReason !== 'cancelled') {
         this.cbFails++
         if (this.cbFails >= this.cbThreshold) {
+          if (Date.now() >= this.cbOpenUntil) telemetry.breakerTrips++
           this.cbOpenUntil = Date.now() + this.cbCooldownMs
           this.cbFails = 0
         }
       }
     } else if (
-      this.cbOpenUntil > 0 &&
+      (this.cbOpenUntil > 0 || this.slowOpenUntil > 0) &&
       result.outcome !== 'completed' &&
       result.received < this.minMeasureBytes
     ) {
@@ -361,6 +437,29 @@ export class BmclDownloadController implements DownloadController {
       // works, even when the official source is the worse one.
       this.cbOpenUntil = 0
       this.cbFails = 0
+      this.slowOpenUntil = 0
+      this.slowStrikes = 0
+    }
+
+    const now = Date.now()
+    if (reassignable && result.outcome === 'aborted' && result.abortReason === 'slow') {
+      if (now - this.lastSlowStrike > this.slowCbCooldownMs) this.slowStrikes = 0
+      this.lastSlowStrike = now
+      this.slowStrikes++
+      if (this.slowStrikes >= this.slowCbThreshold) {
+        if (now >= this.slowOpenUntil) telemetry.slowBreakerTrips++
+        this.slowOpenUntil = now + this.slowCbCooldownMs
+        this.slowStrikes = 0
+      }
+    } else if (
+      reassignable &&
+      result.outcome === 'completed' &&
+      !result.committed &&
+      result.received >= this.minMeasureBytes &&
+      (this.global.count < this.minGlobalSamples || result.speed >= this.global.score * 0.5)
+    ) {
+      this.slowOpenUntil = 0
+      this.slowStrikes = 0
     }
 
     if (result.received < this.minMeasureBytes) {
@@ -372,7 +471,6 @@ export class BmclDownloadController implements DownloadController {
       // fallback says nothing about what a fresh mirror re-roll yields.
       return
     }
-    const now = Date.now()
     const host = result.host
     if (result.outcome === 'completed') {
       if (host) this.update(this.host(host), result.speed, now)
@@ -409,10 +507,14 @@ export class BmclDownloadController implements DownloadController {
     // Approx aggregate: per-second samples summed over the window.
     const agg = w.speedSum / durS
     const slow = hostList.filter((h) => h.avg < this.stallFloor)
-    const cbOpen = Date.now() < this.cbOpenUntil
+    const now = Date.now()
+    const cbOpen = now < this.cbOpenUntil
+    const slowOpen = now < this.slowOpenUntil
     const cb = cbOpen
-      ? `CDN-BREAKER-OPEN(${((this.cbOpenUntil - Date.now()) / 1000).toFixed(0)}s)`
-      : `cdnFails=${this.cbFails}/${this.cbThreshold}`
+      ? `CDN-BREAKER-OPEN(${((this.cbOpenUntil - now) / 1000).toFixed(0)}s)`
+      : slowOpen
+        ? `CDN-SLOW-QUARANTINE(${((this.slowOpenUntil - now) / 1000).toFixed(0)}s)`
+        : `cdnFails=${this.cbFails}/${this.cbThreshold}`
 
     return (
       `win=${durS.toFixed(0)}s sampledConns=${w.samples} agg~${fmt(agg)} avgConn=${fmt(avgConn)} ` +
@@ -422,6 +524,77 @@ export class BmclDownloadController implements DownloadController {
       `fast: ${hostList.slice(0, 3).map((h) => `${h.host}=${fmt(h.avg)}x${h.count}`).join(' ')} | ` +
       `slow: ${slow.slice(0, 3).map((h) => `${h.host}=${fmt(h.avg)}x${h.count}`).join(' ')}`
     )
+  }
+
+  telemetrySnapshot(): BmclDownloadTelemetrySnapshot | undefined {
+    const window = this.telemetryWin
+    this.telemetryWin = newTelemetryWindow()
+    const hadActivity =
+      window.samples > 0 ||
+      window.attempts > 0 ||
+      window.abortSkip > 0 ||
+      window.breakerSkips > 0 ||
+      window.breakerTrips > 0 ||
+      window.slowBreakerTrips > 0
+    if (!hadActivity) return undefined
+
+    const throughput = (bytes: number, durationMs: number) =>
+      durationMs > 0 ? bytes / (durationMs / 1000) : 0
+    return {
+      properties: {
+        schemaVersion: '1',
+        breakerOpen: Date.now() < Math.max(this.cbOpenUntil, this.slowOpenUntil),
+      },
+      measurements: {
+        windowDurationMs: Date.now() - window.start,
+        samples: window.samples,
+        averageSampleSpeedBps: window.samples
+          ? window.sampleSpeedSum / window.samples
+          : 0,
+        stalledSamples: window.stalledSamples,
+        abortDecisions: window.abortDecisions,
+        attempts: window.attempts,
+        completed: window.completed,
+        aborted: window.aborted,
+        failed: window.failed,
+        abortTtfb: window.abortTtfb,
+        abortStall: window.abortStall,
+        abortSlow: window.abortSlow,
+        abortSkip: window.abortSkip,
+        rangedAttempts: window.rangedAttempts,
+        resumedAttempts: window.resumedAttempts,
+        fallbackAttempts: window.fallbackAttempts,
+        committedAttempts: window.committedAttempts,
+        rangeUnsupported: window.rangeUnsupported,
+        cancelled: window.cancelled,
+        requestFailures: window.requestFailures,
+        reassignableAttempts: window.reassignableAttempts,
+        fixedAttempts: window.fixedAttempts,
+        attemptDurationMs: window.durationMs,
+        transferredBytes: window.transferredBytes,
+        completedBytes: window.completedBytes,
+        reassignableCompletedThroughputBps: throughput(
+          window.reassignableCompletedBytes,
+          window.reassignableCompletedDurationMs,
+        ),
+        fixedCompletedThroughputBps: throughput(
+          window.fixedCompletedBytes,
+          window.fixedCompletedDurationMs,
+        ),
+        reassignableMirrors: window.reassignableMirrors.size,
+        breakerSkips: window.breakerSkips,
+        breakerTrips: window.breakerTrips,
+        slowBreakerTrips: window.slowBreakerTrips,
+        breakerRemainingMs: Math.max(0, Math.max(this.cbOpenUntil, this.slowOpenUntil) - Date.now()),
+        rangeConcurrency: this.rangeConcurrency,
+        rangeSplitThresholdBytes: this.rangeSplitThreshold,
+        maxSlowRerolls: this.maxSlowRerolls,
+        slowBreakerThreshold: this.slowCbThreshold,
+        slowBreakerCooldownMs: this.slowCbCooldownMs,
+        ttfbDeadlineMs: this.ttfbDeadline,
+        stallTimeoutMs: this.stallTimeout,
+      },
+    }
   }
 
   /**
@@ -518,6 +691,42 @@ interface Window {
   hosts: Map<string, { count: number; speedSum: number }>
 }
 
+interface TelemetryWindow {
+  start: number
+  samples: number
+  sampleSpeedSum: number
+  stalledSamples: number
+  abortDecisions: number
+  attempts: number
+  completed: number
+  aborted: number
+  failed: number
+  abortTtfb: number
+  abortStall: number
+  abortSlow: number
+  abortSkip: number
+  rangedAttempts: number
+  resumedAttempts: number
+  fallbackAttempts: number
+  committedAttempts: number
+  rangeUnsupported: number
+  cancelled: number
+  requestFailures: number
+  reassignableAttempts: number
+  fixedAttempts: number
+  transferredBytes: number
+  completedBytes: number
+  reassignableCompletedBytes: number
+  reassignableCompletedDurationMs: number
+  fixedCompletedBytes: number
+  fixedCompletedDurationMs: number
+  reassignableMirrors: Set<string>
+  breakerSkips: number
+  breakerTrips: number
+  slowBreakerTrips: number
+  durationMs: number
+}
+
 function newWindow(): Window {
   return {
     start: Date.now(),
@@ -531,6 +740,44 @@ function newWindow(): Window {
     abortedNoData: 0,
     completedBytes: 0,
     hosts: new Map(),
+  }
+}
+
+function newTelemetryWindow(): TelemetryWindow {
+  return {
+    start: Date.now(),
+    samples: 0,
+    sampleSpeedSum: 0,
+    stalledSamples: 0,
+    abortDecisions: 0,
+    attempts: 0,
+    completed: 0,
+    aborted: 0,
+    failed: 0,
+    abortTtfb: 0,
+    abortStall: 0,
+    abortSlow: 0,
+    abortSkip: 0,
+    rangedAttempts: 0,
+    resumedAttempts: 0,
+    fallbackAttempts: 0,
+    committedAttempts: 0,
+    rangeUnsupported: 0,
+    cancelled: 0,
+    requestFailures: 0,
+    reassignableAttempts: 0,
+    fixedAttempts: 0,
+    transferredBytes: 0,
+    completedBytes: 0,
+    reassignableCompletedBytes: 0,
+    reassignableCompletedDurationMs: 0,
+    fixedCompletedBytes: 0,
+    fixedCompletedDurationMs: 0,
+    reassignableMirrors: new Set(),
+    breakerSkips: 0,
+    breakerTrips: 0,
+    slowBreakerTrips: 0,
+    durationMs: 0,
   }
 }
 

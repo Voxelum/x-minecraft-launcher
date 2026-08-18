@@ -1,4 +1,4 @@
-import { installZuluJava as installerInstallZuluJava, selectZuluJRE, type ZuluJRE } from '@xmcl/installer'
+import { selectZuluJRE, type ZuluJRE } from '@xmcl/installer'
 import { readJson, writeFile } from 'fs-extra'
 import { existsSync } from 'fs'
 import { join } from 'path'
@@ -6,8 +6,7 @@ import { z } from 'zod'
 import { LauncherApp } from '~/app'
 import index from './zulu.json'
 
-// Re-export types and functions from @xmcl/installer
-export { installZuluJava, selectZuluJRE, type ZuluJRE } from '@xmcl/installer'
+export { selectZuluJRE, type ZuluJRE } from '@xmcl/installer'
 
 export type ZuluJavaType =
   | 'java-runtime-alpha'

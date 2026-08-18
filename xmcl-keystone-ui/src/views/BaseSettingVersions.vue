@@ -42,7 +42,7 @@ import { useSimpleDialog } from '@/composables/dialog'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kLocalVersions } from '@/composables/versionLocal'
 import { injection } from '@/util/inject'
-import { InstallServiceKey } from '@xmcl/runtime-api'
+import { VersionInstallServiceKey } from '@xmcl/runtime-api'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 
 const { data, isModified } = injection(InstanceEditInjectionKey)
@@ -55,10 +55,11 @@ function onFix() {
   }
 }
 
-const { reinstall } = useService(InstallServiceKey)
+const { install } = useService(VersionInstallServiceKey)
 const reinstallDialog = useSimpleDialog<string>((v) => {
   if (!v) return
-  reinstall({
+  install({
+    type: 'reinstall',
     version: v,
     side: 'client',
   })

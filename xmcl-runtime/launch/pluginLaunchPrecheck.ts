@@ -11,8 +11,9 @@ import { ensureDir, move, stat, unlink } from 'fs-extra'
 import { join } from 'path'
 import { LauncherAppPlugin, kGameDataPath } from '~/app'
 import { InstanceService } from '~/instance'
+import { VersionInstallService } from '~/install/InstallService'
 import { isLinkTo, readlinkSafe } from '~/instance/utils/readLinkSafe'
-import { JavaService, JavaValidation } from '~/java'
+import { getManagedJavaComponent, JavaService, JavaValidation } from '~/java'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
 import { linkOrCopyDirectory, missing } from '~/util/fs'
@@ -101,10 +102,22 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       try {
         resolved = await javaService.resolveJava(javaPath)
         if (!resolved) {
-          const target = 'javaVersion' in payload.version
+          const managed = getManagedJavaComponent(javaPath, getPath('jre'))
+          const cached = javaService.state.all.find((java) => java.path === javaPath)
+          const target = ('javaVersion' in payload.version
             ? payload.version.javaVersion
-            : undefined
-          resolved = await javaService.repairManagedJava(javaPath, target)
+            : undefined) ?? (managed && cached?.majorVersion
+              ? { component: managed.component, majorVersion: cached.majorVersion }
+              : undefined)
+          if (managed && target) {
+            await javaService.removeJava(javaPath)
+            const installer = await app.registry.getOrCreate(VersionInstallService)
+            resolved = await installer.install({
+              type: 'java',
+              target,
+              forceZulu: managed.forceZulu,
+            })
+          }
           if (resolved) {
             input.java = resolved.path
             payload.options.javaPath = resolved.path

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getErrorMessage } from './error'
+import { getErrorMessage, isDownloadError } from './error'
 
 describe('getErrorMessage', () => {
   it('uses a serialized service error description', () => {
@@ -21,5 +21,23 @@ describe('getErrorMessage', () => {
 
   it('falls back to standard error messages', () => {
     expect(getErrorMessage(new Error('Network unavailable'))).toBe('Network unavailable')
+  })
+
+  it('recognizes nested serialized download failures', () => {
+    expect(isDownloadError([{
+      name: 'InstallFileDownloadError',
+      cause: { code: 'ECONNRESET' },
+    }])).toBe(true)
+    expect(isDownloadError({
+      name: 'AggregateError',
+      errors: [{ name: 'SocketError' }],
+    })).toBe(true)
+  })
+
+  it('does not classify postprocess failures as download failures', () => {
+    expect(isDownloadError({
+      name: 'ProcessExitError',
+      message: 'load patch bundle failed unexpectedly',
+    })).toBe(false)
   })
 })

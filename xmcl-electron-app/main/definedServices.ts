@@ -6,7 +6,7 @@ import { CollectionService } from '@xmcl/runtime/collection'
 import { XmclAccountService } from '@xmcl/runtime/xmclAccount'
 import { ExternalCredentialService } from '@xmcl/runtime/credential/ExternalCredentialService'
 import { ElyByService } from '@xmcl/runtime/elyby'
-import { InstallService, VersionMetadataService } from '@xmcl/runtime/install'
+import { VersionInstallService, VersionMetadataService } from '@xmcl/runtime/install'
 import {
   InstanceLogService,
   InstanceModsService,
@@ -52,7 +52,7 @@ export const definedServices = [
   CollectionService,
   XmclAccountService,
   BedrockService,
-  InstallService,
+  VersionInstallService,
   ProjectMappingService,
   InstanceIOService,
   InstanceLogService,

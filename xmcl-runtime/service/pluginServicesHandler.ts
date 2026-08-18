@@ -4,7 +4,7 @@ import { AbstractService, ServiceConstructor, getServiceKey } from './Service'
 import { ServiceStateManager } from './ServiceStateManager'
 import { isStateObject } from './stateUtils'
 import { AnyError } from '@xmcl/utils'
-import { getNormalizeException, getSerializedError } from '~/infra/errors'
+import { getNormalizeException, getSerializedError, getServiceFailureCategory } from '~/infra/errors'
 
 export const pluginServicesHandler = (services: ServiceConstructor[]): LauncherAppPlugin => (app, manifest) => {
   const logger = app.getLogger('Services')
@@ -48,13 +48,13 @@ export const pluginServicesHandler = (services: ServiceConstructor[]): LauncherA
       serv = await get(serviceName, serviceMethod)
     } catch (error) {
       if (error instanceof Error) logger.error(error)
-      return { error }
+      return { error: await getSerializedError(error, { serviceName, serviceMethod, payload }) }
     }
 
     if (typeof (serv as any)[serviceMethod] !== 'function') {
       const error = new AnyError('ServiceMethodNotFoundError', `Cannot execute service call ${serviceMethod} from service ${serviceName}. The service doesn't have such method!`, undefined, { method: serviceMethod })
       logger.error(error)
-      return { error }
+      return { error: await getSerializedError(error, { serviceName, serviceMethod, payload }) }
     }
 
     const start = Date.now()
@@ -66,7 +66,7 @@ export const pluginServicesHandler = (services: ServiceConstructor[]): LauncherA
       }
       return { result: r }
     } catch (e) {
-      app.emit('service-call-end', serviceName, serviceMethod, Date.now() - start, false)
+      app.emit('service-call-end', serviceName, serviceMethod, Date.now() - start, false, getServiceFailureCategory(e))
       const exception = await getNormalizeException(e)
 
       if (!exception) {

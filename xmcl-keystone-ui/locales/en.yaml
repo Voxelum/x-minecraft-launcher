@@ -491,9 +491,9 @@ home: Home
 importModpack:
   name: Import Modpack
 installAssets:
-  asset: Install {count} Assets
+  asset: Check {count} assets and install missing files
   assetIndex: Check Assets Index File
-  name: Install Asset Files
+  name: Check Asset Files
 installAuthlibInjector: Install authlib-injector
 installCurseforgeFile: Install Curseforge File
 installFabric:

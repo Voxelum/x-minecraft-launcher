@@ -1,8 +1,8 @@
 import {
   Version,
+  isMissingVersionJsonError,
   type ResolvedServerVersion,
   type ResolvedVersion,
-  type VersionParseError,
 } from '@xmcl/core'
 import {
   LocalVersions,
@@ -165,8 +165,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
       this.state.localVersionAdd(getResolvedVersionHeader(version))
     } catch (e) {
       this.state.localVersionRemove(versionFolder)
-      const err = e as VersionParseError
-      if ('err' in err && err.err === 'MissingVersionJson') {
+      if (isMissingVersionJsonError(e)) {
         this.warn(`Missing version json for ${versionFolder}`)
       } else {
         this.warn(`An error occurred during refresh local version ${versionFolder}`)
@@ -264,8 +263,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
               return version
             }
           } catch (e) {
-            const err = e as VersionParseError
-            if ('error' in err && err.name === 'MissingVersionJson') {
+            if (isMissingVersionJsonError(e)) {
               this.warn(`Missing version json for ${versionId}`)
             } else {
               this.warn(`An error occurred during load local version ${versionId}`)

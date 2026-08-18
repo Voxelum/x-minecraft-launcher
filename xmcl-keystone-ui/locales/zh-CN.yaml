@@ -400,9 +400,9 @@ importModpack:
 exportModpack:
   name: 导出整合包
 installAssets:
-  asset: 下载 {count} 个资源文件
-  assetIndex: 下载资源文件目录
-  name: 下载游戏资源文件
+  asset: 检查并下载缺失的资源文件（共 {count} 个）
+  assetIndex: 检查资源文件目录
+  name: 检查游戏资源文件
 installAuthlibInjector: 安装 authlib-injector
 installCurseforgeFile: 安装 Curseforge 文件
 installFabric:
