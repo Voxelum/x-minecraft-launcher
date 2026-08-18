@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import Hint from '@/components/Hint.vue'
 import { useDateString } from '@/composables/date'
 import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
@@ -347,7 +348,7 @@ function openInBrowser(url: string) {
             <v-icon class="section-icon" color="primary" aria-hidden="true">apps</v-icon>
             <h2 class="section-title">{{ t('instance.current', 2) }}</h2>
           </div>
-          <div class="d-flex align-center gap-2">
+          <div v-if="instances.length > 0" class="d-flex align-center gap-2">
             <v-btn-toggle
               v-roving-tabindex
               v-model="instanceViewMode"
@@ -386,6 +387,7 @@ function openInBrowser(url: string) {
         </div>
 
         <v-text-field
+          v-if="instances.length > 0"
           ref="filter"
           v-model="filterKey"
           :placeholder="t('shared.filter')"
@@ -395,6 +397,24 @@ function openInBrowser(url: string) {
           hide-details
           class="search-field mb-4"
         />
+
+        <Hint
+          v-if="instances.length === 0"
+          icon="sports_esports"
+          :text="t('instances.addDescription')"
+          class="instances-empty"
+        >
+          <v-btn
+            color="primary"
+            variant="flat"
+            prepend-icon="add"
+            size="small"
+            class="mt-2"
+            @click="openAddInstanceDialog"
+          >
+            {{ t('instances.add') }}
+          </v-btn>
+        </Hint>
 
         <!-- Unified Instance Sections -->
         <div
@@ -631,6 +651,10 @@ function openInBrowser(url: string) {
 .instances-section {
   width: 100%;
   user-select: none;
+}
+
+.instances-empty {
+  min-height: 180px;
 }
 
 .search-field {
