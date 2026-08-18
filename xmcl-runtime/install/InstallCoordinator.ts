@@ -564,7 +564,7 @@ export class InstallCoordinator {
     try {
       if (request.type === 'instance') {
         return await this.app.mutex
-          .of(LockKey.instance(request.instancePath))
+          .of(LockKey.instanceVersion(request.instancePath))
           .runExclusive(() => this.installInstanceRequest(request))
       }
       if (request.type === 'repair') {

@@ -1,5 +1,43 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { LockKey } from '@xmcl/runtime-api'
+import { Mutex } from 'async-mutex'
 import { FreshResultCache, InFlightCache } from './DiagnosisCache'
+
+describe('InstallCoordinator instance locks', () => {
+  test('runs version installation beside instance file installation while serializing version requests', async () => {
+    const locks = new Map<string, Mutex>()
+    const getLock = (key: string) => {
+      let lock = locks.get(key)
+      if (!lock) {
+        lock = new Mutex()
+        locks.set(key, lock)
+      }
+      return lock
+    }
+    const instancePath = 'C:/instances/modpack'
+    const instanceLock = getLock(LockKey.instance(instancePath))
+    const versionLock = getLock(LockKey.instanceVersion(instancePath))
+    const releaseInstance = await instanceLock.acquire()
+    const releaseVersion = await versionLock.acquire()
+
+    expect(instanceLock.isLocked()).toBe(true)
+    expect(versionLock.isLocked()).toBe(true)
+
+    let secondVersionStarted = false
+    const secondVersion = versionLock.runExclusive(() => {
+      secondVersionStarted = true
+    })
+    await Promise.resolve()
+    expect(secondVersionStarted).toBe(false)
+
+    releaseVersion()
+    await secondVersion
+    expect(secondVersionStarted).toBe(true)
+    expect(instanceLock.isLocked()).toBe(true)
+
+    releaseInstance()
+  })
+})
 
 describe('InstallCoordinator diagnosis cache', () => {
   beforeEach(() => {
