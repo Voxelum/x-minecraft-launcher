@@ -34,13 +34,12 @@ import MarketExtensions from '@/components/MarketExtensions.vue'
 import MarketTextField from '@/components/MarketTextField.vue'
 import { kInstance } from '@/composables/instance'
 import { kInstanceResourcePacks } from '@/composables/instanceResourcePack'
-import { kResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kSearchModel } from '@/composables/search'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 import { useQuery } from '@/composables/query'
 
-const { path, runtime } = injection(kInstance)
+const { runtime } = injection(kInstance)
 const { enabled } = injection(kInstanceResourcePacks)
 const extensionItems = computed(() => {
   return [...getExtensionItemsFromRuntime({ minecraft: runtime.value.minecraft }), {
@@ -52,7 +51,7 @@ const extensionItems = computed(() => {
 const {
   keyword, modrinthCategories, curseforgeCategory,
   source: filterMode,
-  sort, gameVersion,
+  gameVersion,
 } = injection(kSearchModel)
 const focused = ref(false)
 provide('focused', focused)
@@ -62,7 +61,5 @@ const onClear = () => {
   curseforgeCategory.value = undefined
   modrinthCategories.value = []
 }
-const { sortBy } = injection(kResourcePackSearch)
-
 const { t } = useI18n()
 </script>

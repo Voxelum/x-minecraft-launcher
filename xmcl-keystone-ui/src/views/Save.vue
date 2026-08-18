@@ -214,7 +214,7 @@ import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
 import { InstanceDatapackFile, useInstanceSavesDatapacks, useSaveDatapackInstallers } from '@/composables/instanceSaveDatapack'
 import { useNotifier } from '@/composables/notifier'
 import { usePresence } from '@/composables/presence'
-import { kSaveSearch } from '@/composables/savesSearch'
+import { useSavesSearch } from '@/composables/savesSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { BuiltinImages } from '@/constant'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
@@ -231,10 +231,11 @@ import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
 
 const { path } = injection(kInstance)
-const { error, deleteSave, saves, revalidate } = injection(kInstanceSave)
+const { error, deleteSave, saves, sharedSaves, revalidate } = injection(kInstanceSave)
 
-const { curseforgeCategory, gameVersion, currentView, keyword, source, isCurseforgeActive, isModrinthActive, modrinthCategories, sort: marketSort } = injection(kSearchModel)
-const { effect, items, sortBy, loadMore, loading, error: searchError, curseforgeDatapackCategory } = injection(kSaveSearch)
+const searchModel = injection(kSearchModel)
+const { curseforgeCategory, gameVersion, currentView, keyword, source, isCurseforgeActive, isModrinthActive, modrinthCategories, sort: marketSort } = searchModel
+const { effect, items, sortBy, loadMore, loading, error: searchError, curseforgeDatapackCategory } = useSavesSearch(saves, sharedSaves, searchModel)
 
 effect()
 

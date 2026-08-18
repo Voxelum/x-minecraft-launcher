@@ -318,7 +318,7 @@ import { kInstance } from '@/composables/instance'
 import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { ProjectGroup, useModGroups } from '@/composables/modGroup'
-import { kModsSearch } from '@/composables/modSearch'
+import { useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade } from '@/composables/modUpgrade'
 import { ArtifactLoader, resolveArtifactModrinthDependencies } from '@/composables/modArtifactDependencies'
 import { useModWizard } from '@/composables/modWizard'
@@ -347,6 +347,8 @@ import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModLibCleaner } from '@/composables/modLibCleaner'
 import { basename } from '@/util/basename'
 import { kSearchModel, ModLoaderFilter } from '@/composables/search'
+import { kSettingsState } from '@/composables/setting'
+import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 import ModOptionsPage from './ModOptionsPage.vue'
 
 const localizedTexts = computed(() =>
@@ -388,6 +390,7 @@ const localizedTexts = computed(() =>
 
 const { runtime, path } = injection(kInstance)
 
+const searchModel = injection(kSearchModel)
 const {
   keyword,
   modrinthCategories,
@@ -401,7 +404,21 @@ const {
   sort,
   selectedCollection,
   modrinthEnvironment,
-} = injection(kSearchModel)
+} = searchModel
+
+const {
+  mods,
+  conflicted,
+  revalidate,
+  incompatible,
+  compatibility,
+  loaderIncompatibilities,
+  enable,
+  disable,
+  isValidating,
+} = injection(kInstanceModsContext)
+const { state: settingsState } = injection(kSettingsState)
+const modrinthAPI = injection(kModrinthAuthenticatedAPI)
 
 // Ensure mod search effect is applied
 const {
@@ -416,7 +433,7 @@ const {
   localFilter,
   loadMore,
   totalAvailable,
-} = injection(kModsSearch)
+} = useModsSearch(path, runtime, mods, isValidating, settingsState, modrinthAPI, searchModel)
 
 effect()
 
@@ -697,9 +714,6 @@ const shouldShowCurseforge = (
   }
   return true
 }
-
-const { mods, conflicted, revalidate, incompatible, compatibility, loaderIncompatibilities, enable, disable } =
-  injection(kInstanceModsContext)
 
 // Install-all is available for any collection open in the Favorites view —
 // launcher-owned local collections as well as Modrinth collections/follows.
