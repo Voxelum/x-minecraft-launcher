@@ -1,18 +1,9 @@
-import { MinecraftFolder, MinecraftLocation, Version as VersionJson } from '@xmcl/core'
-import { download, getDownloadBaseOptions } from '@xmcl/file-transfer'
-import { open, readEntry } from '@xmcl/unzip'
-import { unlink } from 'fs/promises'
+import { MinecraftFolder, Version as VersionJson } from '@xmcl/core'
 import {
-  BadForgeInstallerJarError,
   InstallForgeOptions,
-  isForgeInstallerEntries,
-  unpackForgeInstaller,
-  walkForgeInstallerEntries,
 } from './forge'
 import { resolveLibraryDownloadUrls } from './libraries'
-import { InstallProfile, installByProfile } from './profile'
-import { onDownloadSingle } from './tracker'
-import { checksum } from './utils'
+import { type InstallFile } from './installManifest'
 import { doFetch, normalizeArray } from './utils.browser'
 
 /**
@@ -33,19 +24,33 @@ async function fetchMavenSha1(options: InstallForgeOptions, url: string): Promis
   }
 }
 
-async function downloadNeoForgedInstaller(
+async function fetchMavenSize(options: InstallForgeOptions, url: string): Promise<number | undefined> {
+  try {
+    const response = await doFetch(options, url, { method: 'HEAD' })
+    if (!response.ok) return undefined
+    const size = Number.parseInt(response.headers.get('content-length') ?? '', 10)
+    return Number.isSafeInteger(size) && size >= 0 ? size : undefined
+  } catch {
+    return undefined
+  }
+}
+
+export async function resolveNeoForgedInstallerFile(
   project: 'forge' | 'neoforge',
   version: string,
   minecraft: MinecraftFolder,
   options: InstallForgeOptions,
-): Promise<string> {
+): Promise<{ file: InstallFile; source: string }> {
   const url = `https://maven.neoforged.net/releases/net/neoforged/${project}/${version}/${project}-${version}-installer.jar`
 
   // The installer jar is the single input the whole install pipeline derives
   // from (it carries `data/client.lzma`, which the binpatcher applies). A
   // size-correct but content-corrupt download here silently produces an empty
   // binpatched client jar, so validate it against the published sha1.
-  const expectedSha1 = await fetchMavenSha1(options, url)
+  const [expectedSha1, expectedSize] = await Promise.all([
+    fetchMavenSha1(options, url),
+    fetchMavenSize(options, url),
+  ])
 
   const library = VersionJson.resolveLibrary({
     name: `net.neoforged:${project}:${version}:installer`,
@@ -53,7 +58,7 @@ async function downloadNeoForgedInstaller(
       artifact: {
         url,
         path: `net/neoforged/${project}/${version}/${project}-${version}-installer.jar`,
-        size: -1,
+        size: expectedSize ?? -1,
         sha1: expectedSha1,
       },
     },
@@ -63,68 +68,13 @@ async function downloadNeoForgedInstaller(
   const urls = resolveLibraryDownloadUrls(library, { ...options, mavenHost } as any) // cast to avoid tracker type issue
 
   const installJarPath = minecraft.getLibraryByPath(library.path)
-
-  const doDownload = () =>
-    download({
-      url: urls,
-      destination: installJarPath,
-      ...getDownloadBaseOptions(options),
-      tracker: onDownloadSingle(options.tracker, 'forge.installer', { version, path: url }),
-      signal: options.signal,
-    })
-
-  if (!expectedSha1) {
-    // No published checksum available; fall back to a plain download.
-    await doDownload()
-    return installJarPath
+  const file: InstallFile = {
+    path: installJarPath,
+    urls,
+    size: expectedSize,
+    checksum: expectedSha1 ? { algorithm: 'sha1', value: expectedSha1 } : undefined,
+    validator: 'zip',
+    validatedAt: options.timestamp,
   }
-
-  const checksumFn = options.checksum ?? checksum
-
-  // Reuse a valid cached installer; otherwise (re)download and verify, retrying
-  // a couple of times to recover from a transient corrupt download.
-  let actualSha1 = await checksumFn(installJarPath, 'sha1').catch(() => '')
-  for (let attempt = 0; attempt < 3 && actualSha1 !== expectedSha1; attempt++) {
-    await unlink(installJarPath).catch(() => {})
-    await doDownload()
-    actualSha1 = await checksumFn(installJarPath, 'sha1').catch(() => '')
-  }
-
-  if (actualSha1 !== expectedSha1) {
-    // Remove the corrupt jar so the next attempt starts from a clean download.
-    await unlink(installJarPath).catch(() => {})
-    throw new BadForgeInstallerJarError(installJarPath)
-  }
-
-  return installJarPath
-}
-
-export async function installNeoForge(
-  project: 'forge' | 'neoforge',
-  version: string,
-  minecraft: MinecraftLocation,
-  options: InstallForgeOptions = {},
-): Promise<string> {
-  const [_, forgeVersion = version] = version.split('-')
-  const mc = MinecraftFolder.from(minecraft)
-  const jarPath = await downloadNeoForgedInstaller(project, version, mc, options)
-
-  const zip = await open(jarPath, { lazyEntries: true, autoClose: false })
-  const entries = await walkForgeInstallerEntries(zip, forgeVersion)
-
-  if (!entries.installProfileJson) {
-    throw new BadForgeInstallerJarError(jarPath, 'install_profile.json')
-  }
-  const profile: InstallProfile = await readEntry(zip, entries.installProfileJson)
-    .then((b) => b.toString())
-    .then(JSON.parse)
-  if (isForgeInstallerEntries(entries)) {
-    // new forge
-    const versionId = await unpackForgeInstaller(zip, entries, profile, mc, jarPath, options)
-    await installByProfile(profile, minecraft, options)
-    return versionId
-  } else {
-    // bad forge
-    throw new BadForgeInstallerJarError(jarPath)
-  }
+  return { file, source: url }
 }

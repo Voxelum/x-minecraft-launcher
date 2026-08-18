@@ -141,6 +141,8 @@ export interface InstallOptions {
 }
 export interface WithDiagnose {
   diagnose?: boolean
+  /** Timestamp of the last fully validated installation. */
+  timestamp?: number
 }
 
 export function runWithDiagnose<T>(
