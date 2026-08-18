@@ -628,7 +628,13 @@ const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
 const { show: showAddInstasnce } = useDialog(AddInstanceDialogKey)
 const { show: showReceive } = useDialog('peer-receive')
-const navigation = ref('connections' as 'connections' | 'settings' | 'billing')
+const route = useRoute()
+const navigation = ref<'connections' | 'settings' | 'billing'>(
+  route.query.target === 'billing' ? 'billing' : 'connections',
+)
+watch(() => route.query.target, (target) => {
+  if (target === 'billing') navigation.value = 'billing'
+})
 const togetherService = useService(XmclAccountServiceKey)
 const togetherOverview = shallowRef<XmclTogetherOverview>()
 const togetherOrder = shallowRef<XmclTogetherOrder>()

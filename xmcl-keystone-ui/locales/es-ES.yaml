@@ -56,6 +56,8 @@ askAICrash:
     selectPlatform: Abre una plataforma de IA y pega el mensaje que acabas de copiar.
     setupAgent: Configurar el agente IA
 agent:
+  accessRequiredHint: Suscríbete a XMCL para usar el agente integrado o configura tu propio proveedor de IA en Ajustes.
+  subscribeXmcl: Suscribirse a XMCL
   callingTool: llamando a {name}…
   disabledPlaceholder: Agente desactivado
   emptyHint: >-

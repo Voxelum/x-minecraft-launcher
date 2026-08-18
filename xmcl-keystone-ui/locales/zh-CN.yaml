@@ -37,6 +37,7 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: 选择新的根目录
 agent:
+  accessRequiredHint: 订阅 XMCL 即可使用内置 Agent，或前往设置自行配置 AI 服务商。
   abort: 停止生成
   title: XMCL Agent
   statusReady: 就绪
@@ -47,6 +48,7 @@ agent:
   notConfiguredHint: >-
     请在设置 → 通用 → AI Agent 中填写 API Key、模型和 OpenAI 兼容 Endpoint，例如 OpenAI 或兼容 Claude 的网关。
   openSettings: 打开设置
+  subscribeXmcl: 订阅 XMCL
   setupGuide: 配置指南
   emptyHint: >-
     让 Agent 检查你的实例、启用/禁用模组、读取日志或诊断崩溃。

@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: اختر المجلد الرئيسي
 agent:
+  accessRequiredHint: اشترك في XMCL عشان تستخدم العميل المدمج، أو ظبّط مزود الذكاء الاصطناعي بتاعك في الإعدادات.
+  subscribeXmcl: اشترك في XMCL
   callingTool: بيستدعي {name}…
   disabledPlaceholder: العميل معطل
   emptyHint: اطلب من العميل يفحص النسخة بتاعتك، أو يفعل/يعطل المودات، أو يقرأ السجلات، أو يشخص سبب الكراش.

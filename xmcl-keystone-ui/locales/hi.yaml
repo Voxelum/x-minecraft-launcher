@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: रूट निर्देशिका चुनें
 agent:
+  accessRequiredHint: बिल्ट-इन एजेंट का उपयोग करने के लिए XMCL की सदस्यता लें, या सेटिंग्स में अपना AI प्रदाता कॉन्फ़िगर करें।
+  subscribeXmcl: XMCL की सदस्यता लें
   callingTool: '{name} को कॉल किया जा रहा है...'
   disabledPlaceholder: एजेंट अक्षम
   emptyHint: एजेंट से अपने इंस्टेंस का निरीक्षण करने, मॉड टॉगल करने, लॉग पढ़ने या क्रैश का निदान करने के लिए कहें।

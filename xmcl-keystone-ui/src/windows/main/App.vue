@@ -23,7 +23,7 @@
     </div>
     <AppContextMenu />
     <AppNotifier />
-    <AppOmniDialog :agent-enabled="developerMode" />
+    <AppOmniDialog :agent-enabled="true" />
     <AppFeedbackDialog />
     <AppTaskDialog />
     <AppAddInstanceDialog />
@@ -135,8 +135,7 @@ provide(kMinecraftFriends, useMinecraftFriendsImpl())
 // and `inject` only resolves on descendants.
 const agent = useAgent()
 provide(kAgent, agent)
-// The window.__xmcl_agent debug surface follows developer mode: the whole agent
-// feature is developer-mode gated, so it is never exposed to a default install.
+// Keep the window.__xmcl_agent debug surface restricted to developer mode.
 installAgentDevLauncher(agent, developerMode)
 
 // User profile dialog — moved from AppSystemBarUserMenu to App root
@@ -148,7 +147,7 @@ provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value && ro
 // Bind Ctrl/Cmd+Shift+C to open the command palette.
 useCommandPaletteHotkey()
 // Bind Ctrl/Cmd+Shift+A to open the agent chat panel.
-useAgentChatHotkey(developerMode)
+useAgentChatHotkey()
 
 const defaultColor = useInstanceGroupDefaultColor()
 

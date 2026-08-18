@@ -1768,6 +1768,8 @@ migrateMinecraft:
 reinstall:
   name: '{version} 재설치'
 agent:
+  accessRequiredHint: 기본 제공 에이전트를 사용하려면 XMCL을 구독하거나 설정에서 자체 AI 제공자를 구성하세요.
+  subscribeXmcl: XMCL 구독
   callingTool: '{name} 호출 중…'
   disabledPlaceholder: 에이전트 비활성화됨
   emptyHint: 에이전트에게 인스턴스 검사, 모드 활성화/비활성화, 로그 읽기 또는 충돌 진단을 요청하세요.

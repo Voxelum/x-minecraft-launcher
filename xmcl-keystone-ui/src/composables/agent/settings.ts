@@ -3,18 +3,20 @@ import {
   AgentServiceKey,
   BUILTIN_AGENT_ENDPOINT,
   BUILTIN_AGENT_MODEL,
+  XmclAccountServiceKey,
   resolveAgentProviderId,
 } from '@xmcl/runtime-api'
-import { kXmclAccount } from '../xmclAccount'
 import { useService } from '../service'
+import { hasActiveXmclSubscription } from './access'
 
 export const useAgentSettings = createSharedComposable(() => {
   const service = useService(AgentServiceKey)
-  const xmclAccount = inject(kXmclAccount, undefined)
+  const xmclAccountService = useService(XmclAccountServiceKey)
   const apiKey = ref('')
   const endpoint = ref('')
   const model = ref('')
   const providerConfigured = ref(false)
+  const subscriptionActive = ref(false)
   const resolvedMode = ref<'builtin' | 'custom' | 'unconfigured'>('unconfigured')
   const mode = computed(() => resolvedMode.value)
   const loaded = ref(false)
@@ -30,6 +32,12 @@ export const useAgentSettings = createSharedComposable(() => {
     const settings = await service.getProviderSettings()
     providerConfigured.value = settings.configured
     resolvedMode.value = settings.mode
+    subscriptionActive.value = false
+    if (settings.mode === 'builtin' && settings.configured) {
+      subscriptionActive.value = hasActiveXmclSubscription(
+        await xmclAccountService.getTogetherOverview(),
+      )
+    }
   }
 
   const ready = (async () => {
@@ -38,6 +46,15 @@ export const useAgentSettings = createSharedComposable(() => {
     model.value = settings.model
     providerConfigured.value = settings.configured
     resolvedMode.value = settings.mode
+    if (settings.mode === 'builtin' && settings.configured) {
+      try {
+        subscriptionActive.value = hasActiveXmclSubscription(
+          await xmclAccountService.getTogetherOverview(),
+        )
+      } catch (cause) {
+        error.value = cause instanceof Error ? cause.message : String(cause)
+      }
+    }
     loaded.value = true
   })()
 
@@ -139,9 +156,8 @@ export const useAgentSettings = createSharedComposable(() => {
   const resolvedEndpoint = computed(() => endpoint.value.trim() || BUILTIN_AGENT_ENDPOINT)
   const resolvedModel = computed(() => model.value.trim() || BUILTIN_AGENT_MODEL)
   const configured = computed(() => {
-    if (mode.value !== 'builtin' || !xmclAccount) return providerConfigured.value
-    const session = xmclAccount.session.value
-    return !!session && Date.parse(session.expiresAt) > Date.now()
+    if (mode.value !== 'builtin') return providerConfigured.value
+    return providerConfigured.value && subscriptionActive.value
   })
 
   const providerId = computed(() => resolveAgentProviderId(endpoint.value))
@@ -179,6 +195,7 @@ export const useAgentSettings = createSharedComposable(() => {
     loaded,
     error,
     ready,
+    refreshStatus,
     flush,
     setApiKey,
     updateApiKey,

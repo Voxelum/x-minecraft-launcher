@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: மூல கோப்பகத்தைத் தேர்ந்தெடுக்கவும்
 agent:
+  accessRequiredHint: உள்ளமைந்த முகவரைப் பயன்படுத்த XMCL-க்கு சந்தா செலுத்தவும் அல்லது அமைப்புகளில் உங்கள் சொந்த AI வழங்குநரைக் கட்டமைக்கவும்.
+  subscribeXmcl: XMCL-க்கு சந்தா செலுத்தவும்
   callingTool: '{name} ஐ அழைக்கிறது...'
   disabledPlaceholder: முகவர் முடக்கப்பட்டது
   emptyHint: உங்கள் நிகழ்வை ஆய்வு செய்ய, மோட்களை மாற்ற, பதிவுகளைப் படிக்க அல்லது செயலிழப்பைக் கண்டறிய முகவரிடம் கேளுங்கள்.

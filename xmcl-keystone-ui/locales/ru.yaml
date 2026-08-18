@@ -37,6 +37,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Выбрать корневой каталог
 agent:
+  accessRequiredHint: Оформите подписку XMCL, чтобы использовать встроенный Agent, или настройте собственного поставщика ИИ в настройках.
+  subscribeXmcl: Оформить подписку XMCL
   title: XMCL Agent
   statusReady: Готов
   statusWorking: Работаю…

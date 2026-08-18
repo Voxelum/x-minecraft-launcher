@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: मूलनिर्देशिकां चिनोतु
 agent:
+  accessRequiredHint: अन्तर्निर्मितप्रतिनिधिम् उपयोक्तुं XMCL-सदस्यतां गृह्णातु, अथवा विकल्पेषु स्वकीयम् AI-प्रदातारं विन्यस्यतु।
+  subscribeXmcl: XMCL-सदस्यतां गृह्णातु
   callingTool: '{name} आह्वयति...'
   disabledPlaceholder: प्रतिनिधिः असमर्थितः
   emptyHint: स्वक्षणं परीक्षितुं, मोड्स परिवर्तयितुं, वृत्तलेखं पठितुं, अथवा पतनस्य निदानं कर्तुं प्रतिनिधिं पृच्छतु।

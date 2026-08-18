@@ -38,6 +38,7 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 agent:
+  accessRequiredHint: Subscribe to XMCL to use the built-in Agent, or configure your own AI provider in Settings.
   abort: Stop generation
   callingTool: calling {name}…
   confirmAccept: Continue
@@ -56,6 +57,7 @@ agent:
     → AI Agent. For example, use OpenAI or a Claude-compatible gateway.
   notConfiguredTitle: Agent unavailable
   openSettings: Open settings
+  subscribeXmcl: Subscribe to XMCL
   passiveGameCrashed: Game crashed
   passiveGameExitCode: Exit code {code}
   passiveGameExited: Game exited

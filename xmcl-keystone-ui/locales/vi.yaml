@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Chọn thư mục gốc
 agent:
+  accessRequiredHint: Đăng ký XMCL để sử dụng Trợ lý tích hợp hoặc cấu hình nhà cung cấp AI của riêng bạn trong phần cài đặt.
+  subscribeXmcl: Đăng ký XMCL
   callingTool: đang gọi {name}…
   disabledPlaceholder: Trợ lý đã bị vô hiệu hóa
   emptyHint: Yêu cầu trợ lý kiểm tra phiên bản của bạn, bật/tắt mod, đọc nhật ký hoạt động hoặc chẩn đoán sự cố crash.

@@ -37,6 +37,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: 選擇新嘅根目錄
 agent:
+  accessRequiredHint: 訂閱 XMCL 即可使用內置 AI 助理，或者去設定自行配置 AI 供應商。
+  subscribeXmcl: 訂閱 XMCL
   callingTool: 正在呼叫 {name}…
   disabledPlaceholder: AI 助理已停用
   emptyHint: 你可以叫 AI 助理檢查你嘅實例、切換模組、讀取記錄或者診斷崩潰。

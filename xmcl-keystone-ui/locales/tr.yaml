@@ -1772,6 +1772,8 @@ migrateMinecraft:
 reinstall:
   name: '{version} yeniden kur'
 agent:
+  accessRequiredHint: Yerleşik temsilciyi kullanmak için XMCL’ye abone olun veya ayarlarda kendi yapay zeka sağlayıcınızı yapılandırın.
+  subscribeXmcl: XMCL’ye abone ol
   callingTool: '{name} çağrılıyor…'
   disabledPlaceholder: Temsilci devre dışı
   emptyHint: Temsilciden örneğinizi incelemesini, modları değiştirmesini, günlükleri okumasını veya çökmeyi teşhis etmesini isteyin.
