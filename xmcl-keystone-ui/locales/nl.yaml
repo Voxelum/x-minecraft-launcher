@@ -662,6 +662,10 @@ logsCrashes:
   title: Logs of Crash Rapporten
   failures: Startfouten
 me:
+  groupByDate: Groeperen op datum
+  groupByFolder: Groeperen op map
+  instanceViewMode: Instantieweergave
+  listView: Lijstweergave
   news: Nieuws
   recentPlay: Onlangs Gespeeld
 migrationWindow:

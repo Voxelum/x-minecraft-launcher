@@ -659,6 +659,10 @@ logsCrashes:
   serverLogs: 서버 로그
   showFile: 폴더에 표시
 me:
+  groupByDate: 날짜별 그룹화
+  groupByFolder: 폴더별 그룹화
+  instanceViewMode: 인스턴스 보기 모드
+  listView: 목록 보기
   news: 뉴스
   recentPlay: 최근 플레이
 migrationWindow:

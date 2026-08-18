@@ -694,6 +694,10 @@ logsCrashes:
   title: Журналы и отчёты об ошибках
   failures: Ошибки запуска
 me:
+  groupByDate: Группировать по дате
+  groupByFolder: Группировать по папке
+  instanceViewMode: Режим отображения сборок
+  listView: В виде списка
   news: Новости
   recentPlay: Последние игры
 migrationWindow:

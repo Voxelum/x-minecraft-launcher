@@ -835,6 +835,10 @@ logsCrashes:
   showFile: Show in Folder
   title: Logs or Crash Reports
 me:
+  groupByDate: Group by date
+  groupByFolder: Group by folder
+  instanceViewMode: Instance view mode
+  listView: List view
   news: News
   recentPlay: Recent Play
 migrateMinecraft:

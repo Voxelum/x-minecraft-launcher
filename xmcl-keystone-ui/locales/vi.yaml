@@ -684,6 +684,10 @@ logsCrashes:
   showFile: Hiển thị trong thư mục
   title: Nhật ký hoặc Báo cáo sự cố
 me:
+  groupByDate: Nhóm theo ngày
+  groupByFolder: Nhóm theo thư mục
+  instanceViewMode: Chế độ xem phiên bản
+  listView: Dạng danh sách
   news: Tin tức
   recentPlay: Chơi gần đây
 migrateMinecraft:

@@ -654,6 +654,10 @@ logsCrashes:
   title: Журналдар немесе құлау есептері
   failures: Іске қосу қателері
 me:
+  groupByDate: Күні бойынша топтау
+  groupByFolder: Қалта бойынша топтау
+  instanceViewMode: Даналарды көрсету режимі
+  listView: Тізім көрінісі
   news: Жаңалықтар
   recentPlay: Соңғы ойналғандар
 migrationWindow:
