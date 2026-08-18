@@ -14,7 +14,10 @@ export interface InstanceFilesStatus {
 
 export function useInstanceFiles(instancePath: Ref<string>) {
   const { watchInstanceInstall, resumeInstanceInstall } = useService(InstanceInstallServiceKey)
-  const { error, isValidating, state: instanceFileStatus } = useState(() => watchInstanceInstall(instancePath.value), InstanceInstallStatus)
+  const { error, isValidating, state: instanceFileStatus } = useState(
+    () => instancePath.value ? watchInstanceInstall(instancePath.value) : undefined,
+    InstanceInstallStatus,
+  )
 
   const _validating = ref(false)
   const update = useDebounceFn(() => {

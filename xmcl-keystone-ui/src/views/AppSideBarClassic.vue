@@ -45,22 +45,7 @@
           store
         </v-icon>
       </AppSideBarItem>
-    </div>
 
-    <div class="sidebar__divider" />
-
-    <div
-      ref="instancesScrollEl"
-      v-roving-tabindex
-      role="group"
-      class="sidebar__instances"
-    >
-      <AppSideBarInstances />
-    </div>
-
-    <div class="sidebar__divider" />
-
-    <div v-roving-tabindex role="group" class="sidebar__section">
       <AppSideBarItem
         v-if="developerMode"
         data-testid="nav-agent"
@@ -91,7 +76,22 @@
           smart_toy
         </v-icon>
       </AppSideBarItem>
+    </div>
 
+    <div class="sidebar__divider" />
+
+    <div
+      ref="instancesScrollEl"
+      v-roving-tabindex
+      role="group"
+      class="sidebar__instances"
+    >
+      <AppSideBarInstances />
+    </div>
+
+    <div class="sidebar__divider" />
+
+    <div v-roving-tabindex role="group" class="sidebar__section">
       <AppSideBarItem
         data-testid="nav-multiplayer"
         v-shared-tooltip.right="() => t('multiplayer.togetherName')"
