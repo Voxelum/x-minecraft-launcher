@@ -684,6 +684,10 @@ logsCrashes:
   showFile: फ़ोल्डर में दिखाएं
   title: लॉग या क्रैश रिपोर्ट
 me:
+  groupByDate: दिनांक के अनुसार समूहित करें
+  groupByFolder: फ़ोल्डर के अनुसार समूहित करें
+  instanceViewMode: इंस्टेंस दृश्य मोड
+  listView: सूची दृश्य
   news: समाचार
   recentPlay: हालिया खेल
 migrateMinecraft:

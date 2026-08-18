@@ -712,6 +712,10 @@ logsCrashes:
   title: Protokolle oder Fehlerberichte
   failures: Startfehler
 me:
+  groupByDate: Nach Datum gruppieren
+  groupByFolder: Nach Ordner gruppieren
+  instanceViewMode: Instanzansicht
+  listView: Listenansicht
   news: Nachrichten
   recentPlay: Neuestes Spiel
 migrationWindow:

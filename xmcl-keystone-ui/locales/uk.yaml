@@ -706,6 +706,10 @@ logsCrashes:
   title: Логи або звіти про збої
   failures: Помилки запуску
 me:
+  groupByDate: Групувати за датою
+  groupByFolder: Групувати за папкою
+  instanceViewMode: Режим відображення збірок
+  listView: Подання списком
   news: Новини
   recentPlay: Нещодавно грав
 migrationWindow:

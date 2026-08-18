@@ -684,6 +684,10 @@ logsCrashes:
   showFile: Tampilkan di Folder
   title: Log atau Laporan Crash
 me:
+  groupByDate: Kelompokkan berdasarkan tanggal
+  groupByFolder: Kelompokkan berdasarkan folder
+  instanceViewMode: Mode tampilan instans
+  listView: Tampilan daftar
   news: Berita
   recentPlay: Baru Saja Dimainkan
 migrateMinecraft:

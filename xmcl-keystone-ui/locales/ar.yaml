@@ -700,6 +700,10 @@ logsCrashes:
   placeholder: 'لم يتم العثور على ملفات'
   title: 'السجلات أو تقارير الأعطال'
 me:
+  groupByDate: تجميع حسب التاريخ
+  groupByFolder: تجميع حسب المجلد
+  instanceViewMode: وضع عرض المثيلات
+  listView: عرض القائمة
   news: 'أخبار'
   recentPlay: 'اللعب الأخير'
 migrateMinecraft:
