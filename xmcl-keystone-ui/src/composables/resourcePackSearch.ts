@@ -1,7 +1,7 @@
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
 import { TextComponent } from '@xmcl/text-component'
-import { InjectionKey, Ref } from 'vue'
+import { Ref } from 'vue'
 import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
 import { InstanceResourcePack } from './instanceResourcePack'
@@ -13,8 +13,6 @@ import { useMergedProjects, useProjectsSort } from './useMergedProjects'
 import { useLocalStorage } from '@vueuse/core'
 import { LocalSort } from './sortBy'
 import { mergeSorted } from '@/util/sort'
-
-export const kResourcePackSearch: InjectionKey<ReturnType<typeof useResourcePackSearch>> = Symbol('ResourcePackSearch')
 
 /**
  * Represent a mod project

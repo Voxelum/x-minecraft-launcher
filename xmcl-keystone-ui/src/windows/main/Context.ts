@@ -36,7 +36,6 @@ import { kJavaContext, useJavaContext } from '@/composables/java'
 import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
 import { kModDependenciesCheck, useModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModLibCleaner, useModLibCleaner } from '@/composables/modLibCleaner'
-import { kModsSearch, useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
 import { kModpackExport, useModpackExport } from '@/composables/modpack'
 import { kInstanceServerLaunch, useInstanceServerLaunch } from '@/composables/instanceServerLaunch'
@@ -47,8 +46,6 @@ import {
 } from '@/composables/modrinthAuthenticatedAPI'
 import { kLocalCollections, useLocalCollections } from '@/composables/localCollections'
 import { kPeerShared, usePeerConnections } from '@/composables/peers'
-import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
-import { kSaveSearch, useSavesSearch } from '@/composables/savesSearch'
 import { kSearchModel, useSearchModel } from '@/composables/search'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
@@ -68,7 +65,6 @@ import {
   kSurfaceTokens,
   useSurfaceTokens,
 } from '@/composables/surfaceTokens'
-import { kShaderPackSearch, useShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useTelemetryTrack } from '@/composables/telemetryTrack'
 import { kTheme, useTheme } from '@/composables/theme'
 import { kTutorial, useTutorialModel } from '@/composables/tutorial'
@@ -145,29 +141,12 @@ export default defineComponent({
     provide(kLocalCollections, useLocalCollections())
     const searchModel = useSearchModel(instance.runtime)
     provide(kSearchModel, searchModel)
-    const modsSearch = useModsSearch(
-      instance.path,
-      instance.runtime,
-      instanceMods.mods,
-      instanceMods.isValidating,
-      settings.state,
-      modrinthAPI,
-      searchModel,
-    )
     const modUpgrade = useModUpgrade(
       instance.path,
       instance.runtime,
       instanceMods.mods,
       instanceMods.updateMetadataAndWait,
     )
-
-    const resourcePackSearch = useResourcePackSearch(
-      resourcePacks.enabled,
-      resourcePacks.disabled,
-      modrinthAPI,
-      searchModel,
-    )
-    const shaderPackSearch = useShaderPackSearch(shaderPacks.shaderPacks, modrinthAPI, searchModel)
 
     const install = useInstanceVersionInstallInstruction(
       instance.path,
@@ -204,9 +183,6 @@ export default defineComponent({
     provide(kInstanceVersionInstall, install)
 
     provide(kInstanceShaderPacks, shaderPacks)
-    provide(kResourcePackSearch, resourcePackSearch)
-    provide(kShaderPackSearch, shaderPackSearch)
-    provide(kModsSearch, modsSearch)
     provide(
       kModDependenciesCheck,
       useModDependenciesCheck(
@@ -217,7 +193,6 @@ export default defineComponent({
       ),
     )
     provide(kModLibCleaner, useModLibCleaner(instanceMods.mods, instanceMods.allowLoaders))
-    provide(kSaveSearch, useSavesSearch(saves.saves, saves.sharedSaves, searchModel))
     provide(kModUpgrade, modUpgrade)
     provide(kEnvironment, useEnvironment())
 
