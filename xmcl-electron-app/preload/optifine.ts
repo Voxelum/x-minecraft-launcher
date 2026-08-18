@@ -130,8 +130,11 @@ function handleDownloadsPage() {
 }
 
 function handleDownloadPage() {
-  const href = document.querySelector('.downloadButton a')?.getAttribute('href')
-  const realUrl = new URL(href ?? '', OPTIFINE_HOST)
+  const href = document.querySelector<HTMLAnchorElement>(
+    '.downloadButton a, a[href^="downloadx.php?f="], a[href^="/downloadx.php?f="]',
+  )?.getAttribute('href')
+  if (!href) return
+  const realUrl = new URL(href, OPTIFINE_HOST)
   ipcRenderer.send('optifine-download', realUrl.toString())
 }
 

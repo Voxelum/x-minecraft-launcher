@@ -58,7 +58,8 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
       if (err.name === 'MissingVersionJson' || err.name === 'CorruptedVersionJson') {
         return undefined
       }
-      throw e
+      console.warn(e)
+      return undefined
     }
   }
 
