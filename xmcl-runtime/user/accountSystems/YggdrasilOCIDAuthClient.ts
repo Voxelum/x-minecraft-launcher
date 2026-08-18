@@ -15,7 +15,7 @@ export class YggdrasilOCIDAuthClient {
   ) {
   }
 
-  protected async getOAuthApp(authority: string, clientId: string, account: string, signal?: AbortSignal) {
+  protected async getOAuthApp(authority: string, clientId: string, signal?: AbortSignal) {
     return new PublicClientApplication({
       auth: {
         authority: authority,
@@ -26,7 +26,7 @@ export class YggdrasilOCIDAuthClient {
         }
       },
       cache: {
-        cachePlugin: createPlugin('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', this.logger, this.storage),
+        cachePlugin: createPlugin('xmcl-oauth', this.logger, this.storage),
       },
       system: createNodeSystemOptions(this.logger, this.fetch, signal, true),
     })
@@ -43,7 +43,7 @@ export class YggdrasilOCIDAuthClient {
       homeAccountId?: string
       extraScopes?: string[]
     } = {}) {
-    const app = await this.getOAuthApp(authority, clientId, username, options.signal)
+    const app = await this.getOAuthApp(authority, clientId, options.signal)
     if (options.homeAccountId) {
       const accounts = await app.getTokenCache().getAllAccounts().catch(() => [])
       const account = accounts.find(a => a.homeAccountId === options.homeAccountId)
