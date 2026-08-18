@@ -222,10 +222,12 @@
         :loader="modLoader"
         :categories="modrinthCategories"
         :all-files="mods"
+        :dependents="getModDependents(selectedItem?.installed || getInstalledModrinth(selectedModrinthId))"
         :updating="updating"
         :game-version="gameVersion"
         :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
         collection-content-type="mods"
+        @open-dependent="openModDependent"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -241,9 +243,11 @@
         :loader="modLoader"
         :category="curseforgeCategory"
         :all-files="mods"
+        :dependents="getModDependents(selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId))"
         :updating="updating"
         :modrinth="selectedModrinthId"
         collection-content-type="mods"
+        @open-dependent="openModDependent"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -262,6 +266,8 @@
         :files="selectedItem.files"
         :runtime="runtime"
         :installed="selectedItem.installed"
+        :dependents="getModDependents(selectedItem.installed)"
+        @open-dependent="openModDependent"
       />
     </template>
     <v-dialog v-model="wizardModel" width="600">
@@ -302,6 +308,7 @@
 
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
+import type { ProjectDependent } from '@/components/MarketProjectDetail.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
@@ -332,7 +339,7 @@ import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { clientModrinthV2 } from '@/util/clients'
-import { ModFile } from '@/util/mod'
+import { ModFile, isModFile } from '@/util/mod'
 import { flattenVisibleModGroups } from '@/util/modGroupFilter'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
@@ -417,6 +424,28 @@ const {
   disable,
   isValidating,
 } = injection(kInstanceModsContext)
+
+function getModDependents(installedFiles: ProjectEntry['installed'] | undefined): ProjectDependent[] {
+  const installed = installedFiles?.filter(isModFile) ?? []
+  if (installed.length === 0) return []
+
+  const installedPaths = new Set(installed.map(file => file.path))
+  const providedIds = new Set(installed.flatMap(file => [file.modId, ...Object.keys(file.provideRuntime)]))
+  return mods.value.flatMap((candidate): ProjectDependent[] => {
+    if (installedPaths.has(candidate.path)) return []
+    const matched = Object.values(candidate.dependencies)
+      .flat()
+      .filter(dependency => providedIds.has(dependency.modId))
+    if (matched.length === 0) return []
+    return [{
+      id: candidate.modrinth?.projectId || candidate.curseforge?.projectId.toString() || candidate.name,
+      icon: candidate.icon,
+      title: candidate.name,
+      description: candidate.version,
+      type: matched.every(dependency => dependency.optional) ? 'optional' : 'required',
+    }]
+  })
+}
 const { state: settingsState } = injection(kSettingsState)
 const modrinthAPI = injection(kModrinthAuthenticatedAPI)
 
@@ -972,6 +1001,13 @@ const updateSearch = useDebounceFn(() => {
 }, 500)
 const { replace } = useRouter()
 const keywordBuffer = ref(route.query.keyword as string)
+
+function openModDependent(dependent: ProjectDependent) {
+  keywordBuffer.value = ''
+  localFilter.value = ''
+  replace({ query: { ...route.query, keyword: '', id: dependent.id } })
+}
+
 onMounted(() => {
   keywordBuffer.value = (route.query.keyword as string) ?? ''
 })
