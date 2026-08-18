@@ -72,7 +72,7 @@ describe('MicrosoftOAuthClient', () => {
     const getCode = vi.fn().mockResolvedValue('web-code')
     const cacheApp = {
       acquireTokenSilent: vi.fn().mockRejectedValue(new Error('refresh failed')),
-      getTokenCache: vi.fn().mockReturnValue({ getAllAccounts: vi.fn().mockResolvedValue([requestedAccount]) }),
+      getAllAccounts: vi.fn().mockResolvedValue([requestedAccount]),
     }
     const brokerApp = {
       acquireTokenByCode: vi.fn().mockResolvedValue({ accessToken: 'web-token', account: requestedAccount }),
@@ -89,9 +89,10 @@ describe('MicrosoftOAuthClient', () => {
       { get: vi.fn(), put: vi.fn() },
     )
     vi.spyOn(client as any, 'getNativeBrokerPlugin').mockResolvedValue({} as INativeBrokerPlugin)
-    vi.spyOn(client as any, 'getOAuthApp')
-      .mockResolvedValueOnce(cacheApp)
-      .mockResolvedValueOnce(brokerApp)
+    const getOAuthApp = vi.spyOn(client as any, 'getOAuthApp').mockResolvedValue({
+      ...brokerApp,
+      ...cacheApp,
+    })
 
     const authentication = await client.authenticate('account-a@example.com', ['XboxLive.signin'], {
       useNativeBroker: true,
@@ -106,6 +107,7 @@ describe('MicrosoftOAuthClient', () => {
     expect(brokerApp.getAuthCodeUrl).toHaveBeenCalledWith(expect.objectContaining({ prompt: 'select_account' }))
     expect(brokerApp.acquireTokenByCode).toHaveBeenCalledWith(expect.objectContaining({ code: 'web-code' }))
     expect(authentication.result.accessToken).toBe('web-token')
+    expect(getOAuthApp).toHaveBeenCalledOnce()
   })
 
   it('rejects a different account returned by the WebView fallback', async () => {
@@ -113,7 +115,7 @@ describe('MicrosoftOAuthClient', () => {
     const brokerAccount = createAccount('account-b@example.com', 'account-b')
     const cacheApp = {
       acquireTokenSilent: vi.fn().mockRejectedValue(new Error('refresh failed')),
-      getTokenCache: vi.fn().mockReturnValue({ getAllAccounts: vi.fn().mockResolvedValue([requestedAccount]) }),
+      getAllAccounts: vi.fn().mockResolvedValue([requestedAccount]),
     }
     const brokerApp = {
       acquireTokenByCode: vi.fn().mockResolvedValue({ accessToken: 'web-token-b', account: brokerAccount }),
@@ -131,9 +133,10 @@ describe('MicrosoftOAuthClient', () => {
       { get: vi.fn(), put: vi.fn() },
     )
     vi.spyOn(client as any, 'getNativeBrokerPlugin').mockResolvedValue({} as INativeBrokerPlugin)
-    vi.spyOn(client as any, 'getOAuthApp')
-      .mockResolvedValueOnce(cacheApp)
-      .mockResolvedValueOnce(brokerApp)
+    const getOAuthApp = vi.spyOn(client as any, 'getOAuthApp').mockResolvedValue({
+      ...brokerApp,
+      ...cacheApp,
+    })
 
     await expect(client.authenticate('account-a@example.com', ['XboxLive.signin'], {
       useNativeBroker: true,
@@ -141,6 +144,7 @@ describe('MicrosoftOAuthClient', () => {
 
     expect(logger.warn.mock.calls.flat()).not.toContainEqual(expect.any(Error))
     expect(JSON.stringify(logger.warn.mock.calls)).not.toContain('account-a@example.com')
+    expect(getOAuthApp).toHaveBeenCalledOnce()
   })
 
   it('emits correlated, sanitized telemetry when WAM is cancelled', async () => {
@@ -150,7 +154,7 @@ describe('MicrosoftOAuthClient', () => {
       subError: 'cancel',
     })
     const cacheApp = {
-      getTokenCache: vi.fn().mockReturnValue({ getAllAccounts: vi.fn().mockResolvedValue([]) }),
+      getAllAccounts: vi.fn().mockResolvedValue([]),
     }
     const brokerApp = {
       acquireTokenInteractive: vi.fn().mockRejectedValue(brokerError),
@@ -168,9 +172,10 @@ describe('MicrosoftOAuthClient', () => {
       event => events.push(event),
     )
     vi.spyOn(client as any, 'getNativeBrokerPlugin').mockResolvedValue({} as INativeBrokerPlugin)
-    vi.spyOn(client as any, 'getOAuthApp')
-      .mockResolvedValueOnce(cacheApp)
-      .mockResolvedValueOnce(brokerApp)
+    const getOAuthApp = vi.spyOn(client as any, 'getOAuthApp').mockResolvedValue({
+      ...brokerApp,
+      ...cacheApp,
+    })
 
     await expect(client.authenticate('', ['XboxLive.signin'], {
       useNativeBroker: true,
@@ -195,14 +200,19 @@ describe('MicrosoftOAuthClient', () => {
       routeUsed: 'wam',
     })
     expect(JSON.stringify(events)).not.toContain('user@example.com')
+    expect(getOAuthApp).toHaveBeenCalledOnce()
   })
 
   it('keeps silent-only refresh non-interactive and reports a silent miss', async () => {
     const events: any[] = []
     const account = createAccount('account-a@example.com', 'account-a')
+    const silentError = Object.assign(new Error('sensitive message'), {
+      errorCode: 'invalid_grant',
+      subError: 'token_expired',
+    })
     const cacheApp = {
-      acquireTokenSilent: vi.fn().mockRejectedValue(new Error('interaction_required')),
-      getTokenCache: vi.fn().mockReturnValue({ getAllAccounts: vi.fn().mockResolvedValue([account]) }),
+      acquireTokenSilent: vi.fn().mockRejectedValue(silentError),
+      getAllAccounts: vi.fn().mockResolvedValue([account]),
     }
     const getCode = vi.fn()
     const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
@@ -217,7 +227,7 @@ describe('MicrosoftOAuthClient', () => {
       vi.fn(),
       event => events.push(event),
     )
-    const getNativeBrokerPlugin = vi.spyOn(client as any, 'getNativeBrokerPlugin')
+    const getNativeBrokerPlugin = vi.spyOn(client as any, 'getNativeBrokerPlugin').mockResolvedValue(undefined)
     vi.spyOn(client as any, 'getOAuthApp').mockResolvedValue(cacheApp)
 
     await expect(client.authenticate(account.username, ['XboxLive.signin'], {
@@ -225,7 +235,7 @@ describe('MicrosoftOAuthClient', () => {
       useNativeBroker: true,
     })).rejects.toMatchObject({ name: 'MicrosoftOAuthSlientFailed' })
 
-    expect(getNativeBrokerPlugin).not.toHaveBeenCalled()
+    expect(getNativeBrokerPlugin).toHaveBeenCalledOnce()
     expect(getCode).not.toHaveBeenCalled()
     expect(events.map(event => event.name)).toEqual([
       'microsoft-auth-start',
@@ -243,10 +253,92 @@ describe('MicrosoftOAuthClient', () => {
       cachedAccount: true,
     })
     expect(logger.warn).toHaveBeenCalledWith(
-      'Microsoft silent token acquisition missed; interactive authentication may be required.',
+      'Microsoft silent token acquisition missed: {"errorName":"Error","errorCode":"invalid_grant","subError":"token_expired"}',
     )
     expect(logger.warn.mock.calls.flat()).not.toContainEqual(expect.any(Error))
+    expect(JSON.stringify(logger.warn.mock.calls)).not.toContain('sensitive message')
     expect(JSON.stringify(logger.warn.mock.calls)).not.toContain(account.username)
+  })
+
+  it('discovers the account from WAM during silent refresh', async () => {
+    const events: any[] = []
+    const account = { ...createAccount('account-a@example.com', 'account-a'), nativeAccountId: 'native-a' }
+    const brokerResult = { accessToken: 'broker-token', account }
+    const brokerApp = {
+      acquireTokenSilent: vi.fn().mockResolvedValue(brokerResult),
+      getAllAccounts: vi.fn().mockResolvedValue([account]),
+    }
+    const getCode = vi.fn()
+    const storage = {
+      get: vi.fn().mockResolvedValue(JSON.stringify(account)),
+      put: vi.fn(),
+    }
+    const client = new MicrosoftOAuthClient(
+      fetch,
+      { log: vi.fn(), warn: vi.fn(), error: vi.fn() } as any,
+      'client-id',
+      getCode,
+      vi.fn(),
+      vi.fn(),
+      storage,
+      vi.fn(),
+      event => events.push(event),
+    )
+    vi.spyOn(client as any, 'getNativeBrokerPlugin').mockResolvedValue({} as INativeBrokerPlugin)
+    const getOAuthApp = vi.spyOn(client as any, 'getOAuthApp').mockResolvedValue(brokerApp)
+
+    const authentication = await client.authenticate(account.username, ['XboxLive.signin'], {
+      slientOnly: true,
+      useNativeBroker: true,
+    })
+
+    expect(authentication.result).toBe(brokerResult)
+    expect(brokerApp.acquireTokenSilent).toHaveBeenCalledWith({
+      scopes: ['XboxLive.signin'],
+      account,
+      forceRefresh: false,
+    })
+    expect(getCode).not.toHaveBeenCalled()
+    expect(brokerApp.getAllAccounts).toHaveBeenCalledOnce()
+    expect(storage.get).not.toHaveBeenCalled()
+    expect(events.at(-1)?.properties).toMatchObject({
+      outcome: 'success',
+      routeUsed: 'wam',
+      cachedAccount: true,
+    })
+    expect(getOAuthApp).toHaveBeenCalledOnce()
+  })
+
+  it('does not persist a separate WAM account record', async () => {
+    const account = {
+      ...createAccount('account-a@example.com', 'account-a'),
+      nativeAccountId: 'native-a',
+    }
+    const brokerApp = {
+      acquireTokenInteractive: vi.fn().mockResolvedValue({ accessToken: 'broker-token', account }),
+      getAllAccounts: vi.fn().mockResolvedValue([]),
+    }
+    const storage = {
+      get: vi.fn().mockResolvedValue(undefined),
+      put: vi.fn().mockResolvedValue(undefined),
+    }
+    const client = new MicrosoftOAuthClient(
+      fetch,
+      { log: vi.fn(), warn: vi.fn(), error: vi.fn() } as any,
+      'client-id',
+      vi.fn(),
+      vi.fn(),
+      vi.fn(),
+      storage,
+      vi.fn().mockReturnValue(Buffer.from('window')),
+    )
+    vi.spyOn(client as any, 'getNativeBrokerPlugin').mockResolvedValue({} as INativeBrokerPlugin)
+    const getOAuthApp = vi.spyOn(client as any, 'getOAuthApp').mockResolvedValue(brokerApp)
+
+    await client.authenticate(account.username, ['XboxLive.signin'], { useNativeBroker: true })
+
+    expect(storage.put).not.toHaveBeenCalled()
+    expect(getOAuthApp).toHaveBeenCalledOnce()
   })
 })
 
@@ -271,37 +363,16 @@ describe('Microsoft credential cache', () => {
     }
     const storage: SecretStorage = { get: vi.fn(get), put: vi.fn(put) }
     const serialized = '{"Account":{"account-a":{}}}'
-    const writer = createPlugin('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', logger, storage)
+    const writer = createPlugin('xmcl-oauth', logger, storage)
     const writeContext = createCacheContext(true, serialized)
 
     await writer.afterCacheAccess(writeContext)
 
-    const reader = createPlugin('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', logger, storage)
+    const reader = createPlugin('xmcl-oauth', logger, storage)
     const readContext = createCacheContext(false)
     await reader.beforeCacheAccess(readContext)
 
     expect(readContext.tokenCache.deserialize).toHaveBeenCalledWith(serialized)
-    expect(storage.put).toHaveBeenCalledWith('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', serialized)
-  })
-
-  it('migrates a legacy per-email cache to the shared storage key unchanged', async () => {
-    const serialized = '{"Account":{"account-a":{}}}'
-    const get: SecretStorage['get'] = async (_service, account) => account === 'account-a@example.com' ? serialized : undefined
-    const storage: SecretStorage = { get: vi.fn(get), put: vi.fn() }
-    const plugin = createPlugin(
-      'xmcl-oauth',
-      'XMCL_MICROSOFT_ACCOUNT',
-      logger,
-      storage,
-      ['account-a@example.com'],
-    )
-    const context = createCacheContext(false)
-
-    await plugin.beforeCacheAccess(context)
-
-    expect(storage.get).toHaveBeenNthCalledWith(1, 'xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT')
-    expect(storage.get).toHaveBeenNthCalledWith(2, 'xmcl-oauth', 'account-a@example.com')
-    expect(context.tokenCache.deserialize).toHaveBeenCalledWith(serialized)
     expect(storage.put).toHaveBeenCalledWith('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', serialized)
   })
 })
