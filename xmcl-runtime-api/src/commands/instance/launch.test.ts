@@ -4,6 +4,8 @@ import { launchInstanceCommand, LaunchInstanceInputSchema } from './launch'
 import type { CommandContext } from '../types'
 import { AuthlibInjectorServiceKey } from '../../services/AuthlibInjectorService'
 import { BaseServiceKey } from '../../services/BaseService'
+import { VersionInstallServiceKey } from '../../services/InstallService'
+import { InstanceServiceKey } from '../../services/InstanceService'
 import { JavaServiceKey } from '../../services/JavaService'
 import { LaunchServiceKey } from '../../services/LaunchService'
 import { UserServiceKey } from '../../services/UserService'
@@ -100,7 +102,8 @@ describe('launchInstanceCommand', () => {
     const launchSpy = vi.fn(async () => 4242)
     const ctx = makeCtx((key, method) => {
       if (key === UserServiceKey && method === 'refreshUser') return makeUser()
-      if (key === VersionServiceKey && method === 'getLocalVersions') return { local: [{ id: 'v1', minecraft: '1.21.1' }] }
+      if (key === VersionInstallServiceKey && method === 'installInstance') return { version: 'v1' }
+      if (key === InstanceServiceKey && method === 'editInstance') return undefined
       if (key === VersionServiceKey && method === 'resolveLocalVersion') return { id: 'v1', minecraftVersion: '1.21.1', libraries: [], pathChain: ['/v'] }
       if (key === JavaServiceKey && method === 'getJavaState') return { all: [{ path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }] }
       if (key === JavaServiceKey && method === 'resolveJava') return { path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }
@@ -119,20 +122,71 @@ describe('launchInstanceCommand', () => {
     expect(launchSpy).toHaveBeenCalledOnce()
     expect(ctx.resolveInstance).toHaveBeenCalledWith('/inst/foo')
     expect(ctx.resolveUser).toHaveBeenCalledWith('u1')
+    expect(ctx.call).toHaveBeenCalledWith(VersionInstallServiceKey, 'installInstance', expect.objectContaining({
+      type: 'instance',
+      instancePath: '/inst/foo',
+      selectedVersion: '',
+    }))
+    expect(ctx.call).toHaveBeenCalledWith(InstanceServiceKey, 'editInstance', {
+      instancePath: '/inst/foo',
+      version: 'v1',
+    })
   })
 
-  test('throws when no version matches the instance', async () => {
-    const ctx = makeCtx((key, method) => {
+  test('installs a missing version before launching', async () => {
+    const installSpy = vi.fn(() => ({ version: 'installed-v1' }))
+    let launchedVersion: string | undefined
+    const ctx = makeCtx((key, method, options) => {
       if (key === UserServiceKey && method === 'refreshUser') return makeUser()
-      if (key === VersionServiceKey && method === 'getLocalVersions') return { local: [] }
+      if (key === VersionInstallServiceKey && method === 'installInstance') return installSpy()
+      if (key === InstanceServiceKey && method === 'editInstance') return undefined
+      if (key === VersionServiceKey && method === 'resolveLocalVersion') return { id: 'installed-v1', minecraftVersion: '1.21.1', libraries: [], pathChain: ['/v'] }
+      if (key === JavaServiceKey && method === 'getJavaState') return { all: [{ path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }] }
+      if (key === JavaServiceKey && method === 'resolveJava') return { path: '/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }
       if (key === BaseServiceKey && method === 'getSettings') return makeSettings()
+      if (key === LaunchServiceKey && method === 'launch') {
+        launchedVersion = options.version
+        return 4242
+      }
       throw new Error(`Unexpected ctx.call(${key}, ${method})`)
     })
 
     await expect(launchInstanceCommand.handler(
       LaunchInstanceInputSchema.parse({ instance: '/inst/foo' }),
       ctx,
+    )).resolves.toBe(4242)
+    expect(installSpy).toHaveBeenCalledOnce()
+    expect(launchedVersion).toBe('installed-v1')
+  })
+
+  test('dry mode still throws when no version matches the instance', async () => {
+    const ctx = makeCtx((key, method) => {
+      if (key === VersionServiceKey && method === 'getLocalVersions') return { local: [] }
+      throw new Error(`Unexpected ctx.call(${key}, ${method})`)
+    })
+
+    await expect(launchInstanceCommand.handler(
+      LaunchInstanceInputSchema.parse({ instance: '/inst/foo', dry: true }),
+      ctx,
     )).rejects.toThrow(/No local version matches/)
+  })
+
+  test('does not launch when the instance changes during installation', async () => {
+    const launchSpy = vi.fn()
+    const ctx = makeCtx((key, method) => {
+      if (key === VersionInstallServiceKey && method === 'installInstance') return { version: 'v1' }
+      if (key === LaunchServiceKey && method === 'launch') return launchSpy()
+      throw new Error(`Unexpected ctx.call(${key}, ${method})`)
+    })
+    ;(ctx.resolveInstance as any)
+      .mockResolvedValueOnce(makeInstance({ path: '/inst/foo', version: 'old' }))
+      .mockResolvedValueOnce(makeInstance({ path: '/inst/foo', version: 'changed' }))
+
+    await expect(launchInstanceCommand.handler(
+      LaunchInstanceInputSchema.parse({ instance: '/inst/foo' }),
+      ctx,
+    )).rejects.toThrow(/changed while preparing launch/)
+    expect(launchSpy).not.toHaveBeenCalled()
   })
 
   test('falls back to auto-detected Java when the pinned instance.java path is gone', async () => {
@@ -142,7 +196,8 @@ describe('launchInstanceCommand', () => {
     let spawnedJava: string | undefined
     const ctx = makeCtx((key, method, _arg) => {
       if (key === UserServiceKey && method === 'refreshUser') return makeUser()
-      if (key === VersionServiceKey && method === 'getLocalVersions') return { local: [{ id: 'v1', minecraft: '1.21.1' }] }
+      if (key === VersionInstallServiceKey && method === 'installInstance') return { version: 'v1' }
+      if (key === InstanceServiceKey && method === 'editInstance') return undefined
       if (key === VersionServiceKey && method === 'resolveLocalVersion') return { id: 'v1', minecraftVersion: '1.21.1', libraries: [], pathChain: ['/v'] }
       if (key === JavaServiceKey && method === 'getJavaState') {
         return { all: [{ path: '/usr/local/jdk-21/bin/java', valid: true, version: '21', majorVersion: 21, arch: 'x64' }] }
@@ -160,7 +215,7 @@ describe('launchInstanceCommand', () => {
     })
 
     // Pin a deleted path.
-    ;(ctx.resolveInstance as any).mockImplementationOnce(async (ref: string) => makeInstance({
+    ;(ctx.resolveInstance as any).mockImplementation(async (ref: string) => makeInstance({
       path: ref,
       java: '/deleted/old-jdk/bin/java',
     }))

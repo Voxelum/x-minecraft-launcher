@@ -350,6 +350,7 @@ export interface VersionInstallService {
    * input because they may be stale by the time installation starts.
    */
   install(request: Extract<VersionInstallRequest, { type: 'instance' }>): Promise<InstanceVersionInstallResult>
+  installInstance(request: Extract<VersionInstallRequest, { type: 'instance' }>): Promise<InstanceVersionInstallResult>
   install(request: Extract<VersionInstallRequest, { type: 'server' }>): Promise<string>
   install(request: Extract<VersionInstallRequest, { type: 'java' }>): Promise<Java>
   install(request: Extract<VersionInstallRequest, { type: 'repair' | 'reinstall' | 'optifine-mod' }>): Promise<void>

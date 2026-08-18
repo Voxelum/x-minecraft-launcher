@@ -31,6 +31,10 @@ export class VersionInstallService extends AbstractService implements IVersionIn
     return this.coordinator.install(request)
   }
 
+  installInstance(request: Extract<VersionInstallRequest, { type: 'instance' }>) {
+    return this.coordinator.install(request)
+  }
+
   diagnose(options: DiagnoseOptions) {
     return this.coordinator.diagnose(options)
   }

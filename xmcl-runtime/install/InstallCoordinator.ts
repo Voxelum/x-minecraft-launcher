@@ -38,6 +38,7 @@ import {
   type ForgeTrackerEvents,
   type InstallFile,
   type InstallForgeOptions,
+  type InstallIssue,
   type InstallManifest,
   type InstallTask,
   type InstallWorkflow,
@@ -93,11 +94,14 @@ import { applyJavaInstallManifest, resolveLauncherJavaInstallManifest } from '~/
 import { kResourceWorker, ResourceWorker } from '~/resource'
 import { getTracker } from '~/util/taskHelper'
 import { InstallManifestService } from './InstallManifestService'
+import { FreshResultCache, InFlightCache } from './DiagnosisCache'
 import { reinstallDiagnoseOptions } from './reinstallPolicy'
 // @ts-ignore
 import clazData from './utils/MultiJarLauncher.class'
 import { VersionMetadataService } from './VersionMetadataService'
 import { selectLocalVersion } from './versionSelection'
+
+const DIAGNOSIS_FRESHNESS_MS = 30_000
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -106,6 +110,8 @@ export class InstallCoordinator {
   private installContext = new AsyncLocalStorage<{
     timings: Array<{ task: string; type: InstallTask['type']; startedAt: number; duration: number }>
   }>()
+  private readonly diagnosisCache = new FreshResultCache<InstallIssue | undefined>(DIAGNOSIS_FRESHNESS_MS)
+  private readonly diagnosisChecksums = new InFlightCache<string>()
   private readonly logger
 
   constructor(
@@ -554,28 +560,33 @@ export class InstallCoordinator {
     if (request.type === 'java') {
       return this.ensureJava(request.target, request.forceZulu)
     }
-    if (request.type === 'instance') {
-      return this.app.mutex
-        .of(LockKey.instance(request.instancePath))
-        .runExclusive(() => this.installInstanceRequest(request))
-    }
-    if (request.type === 'repair') {
-      return this.app.mutex
-        .of(LockKey.version(request.version))
-        .runExclusive(() => this.repairVersion(request.version, request.side))
-    }
-    if (request.type === 'reinstall') {
-      return this.app.mutex
-        .of(LockKey.version(request.version))
-        .runExclusive(() => this.reinstallVersion(request.version, request.side ?? 'client'))
-    }
-    if (request.type === 'optifine-mod') {
-      return this.applyOptifineModPlan(request.options)
-    }
+    this.invalidateDiagnosis()
+    try {
+      if (request.type === 'instance') {
+        return await this.app.mutex
+          .of(LockKey.instance(request.instancePath))
+          .runExclusive(() => this.installInstanceRequest(request))
+      }
+      if (request.type === 'repair') {
+        return await this.app.mutex
+          .of(LockKey.version(request.version))
+          .runExclusive(() => this.repairVersion(request.version, request.side))
+      }
+      if (request.type === 'reinstall') {
+        return await this.app.mutex
+          .of(LockKey.version(request.version))
+          .runExclusive(() => this.reinstallVersion(request.version, request.side ?? 'client'))
+      }
+      if (request.type === 'optifine-mod') {
+        return await this.applyOptifineModPlan(request.options)
+      }
 
-    return this.app.mutex
-      .of(LockKey.instance(request.path))
-      .runExclusive(() => this.applyServerRecipe(request))
+      return await this.app.mutex
+        .of(LockKey.instance(request.path))
+        .runExclusive(() => this.applyServerRecipe(request))
+    } finally {
+      this.invalidateDiagnosis()
+    }
   }
 
   private async installInstanceRequest(
@@ -1621,13 +1632,18 @@ export class InstallCoordinator {
   }
 
   async diagnose(options: DiagnoseOptions) {
+    const key = `${options.side}:${options.version}`
+    return this.diagnosisCache.getOrCreate(key, () => this.diagnoseUncached(options))
+  }
+
+  private async diagnoseUncached(options: DiagnoseOptions) {
     const timestamp = await this.getVersionInstallTimestamp(options.version)
     if (options.side === 'server') {
       const resolved = await this.versionService.resolveServerVersion(options.version)
       const base = await this.versionService.resolveLocalVersion(resolved.minecraftVersion)
       return diagnoseServerInstallation(resolved, MinecraftFolder.from(this.getPath()), base, {
         timestamp,
-        checksum: (file, algorithm) => this.resourceWorker.checksum(file, algorithm),
+        checksum: (file, algorithm) => this.checksumForDiagnosis(file, algorithm),
       })
     }
     const resolved = await this.versionService.resolveLocalVersion(options.version)
@@ -1646,7 +1662,7 @@ export class InstallCoordinator {
       const result = await diagnoseInstallation(currentVersion, {
         timestamp,
         strict: options.strict,
-        checksum: (file, algorithm) => this.resourceWorker.checksum(file, algorithm),
+        checksum: (file, algorithm) => this.checksumForDiagnosis(file, algorithm),
       })
       this.logger.log(`Successfully diagnosed installation for ${currentVersion.id} (client)`)
       return result || undefined
@@ -1673,5 +1689,15 @@ export class InstallCoordinator {
           : undefined,
       )
       .catch(() => undefined)
+  }
+
+  private checksumForDiagnosis(file: string, algorithm: string) {
+    const key = `${algorithm}\0${file}`
+    return this.diagnosisChecksums.getOrCreate(key, () => this.resourceWorker.checksum(file, algorithm))
+  }
+
+  private invalidateDiagnosis() {
+    this.diagnosisCache.invalidate()
+    this.diagnosisChecksums.clear()
   }
 }
