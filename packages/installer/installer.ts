@@ -1,186 +1,109 @@
 import {
   getResolvedVersionHeader,
   MinecraftFolder,
-  ResolvedLibrary,
-  ResolvedVersion,
+  type ResolvedLibrary,
+  type ResolvedServerVersion,
+  type ResolvedVersion,
 } from '@xmcl/core'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
-import { AssetsOptions, AssetsTrackerEvents, installAssets, installResolvedAssets } from './assets'
-import { InstallError, InstallIssue, isInstallError, mergeInstallIssue } from './error'
-import { installForge } from './forge'
-import {
-  installLibraries,
-  installResolvedLibraries,
-  LibrariesTrackerEvents,
-  LibraryOptions,
-} from './libraries'
-import { installMinecraftJar, JarOption, MinecraftTrackerEvents } from './minecraft'
-import {
-  diagnoseProfile,
-  installByProfile,
-  InstallProfile,
-  InstallProfileOption,
-  ProfileTrackerEvents,
-} from './profile'
-import { Tracker } from './tracker'
-
-export interface CompleteTrackerEvents
-  extends
-    MinecraftTrackerEvents,
-    LibrariesTrackerEvents,
-    AssetsTrackerEvents,
-    ProfileTrackerEvents {}
-
-export interface CompleteOptions
-  extends
-    Omit<JarOption, 'tracker'>,
-    Omit<LibraryOptions, 'tracker'>,
-    Omit<AssetsOptions, 'tracker'>,
-    Omit<InstallProfileOption, 'tracker'> {
-  /**
-   * The tracker to track the complete installation process
-   */
-  tracker?: Tracker<CompleteTrackerEvents>
-}
+import { diagnoseVersionAssets } from './assets'
+import { diagnoseFile, type DiagnoseOptions } from './diagnose'
+import { type InstallIssue } from './error'
+import { diagnoseLibraries } from './libraries'
+import { diagnoseProfile, type InstallProfile } from './profile'
 
 async function readProfile(versionDir: string) {
-  const installProfilePath = join(versionDir, 'install_profile.json')
-  try {
-    const installProfile: InstallProfile = JSON.parse(await readFile(installProfilePath, 'utf8'))
-    return installProfile
-  } catch {
-    return undefined
+  return readFile(join(versionDir, 'install_profile.json'), 'utf8')
+    .then((content) => JSON.parse(content) as InstallProfile)
+    .catch(() => undefined)
+}
+
+function classifyLibraries(version: ResolvedVersion, libraries: ResolvedLibrary[], issue: InstallIssue) {
+  const optifines: ResolvedLibrary[] = []
+  const forges: ResolvedLibrary[] = []
+  const others: ResolvedLibrary[] = []
+  for (const library of libraries) {
+    if (library.groupId === 'optifine') {
+      optifines.push(library)
+    } else if (
+      library.groupId === 'net.minecraftforge' &&
+      library.artifactId === 'forge' &&
+      (library.classifier === 'client' || !library.classifier)
+    ) {
+      forges.push(library)
+    } else {
+      others.push(library)
+    }
+  }
+  if (others.length > 0) issue.libraries = others
+  if (optifines.length > 0) issue.optifine = optifines[0].version
+  if (forges.length > 0) {
+    const header = getResolvedVersionHeader(version)
+    if (header.forge && header.minecraft) {
+      issue.forge = { minecraft: header.minecraft, version: header.forge }
+    }
   }
 }
 
-/**
- * Complete the installation of a resolved version, including minecraft jar, libraries, assets and profile.
- *
- * This can continue to install an aborted or failed installation, and it can diagnose the installation if `options.diagnose` is set to `true`.
- *
- * @param version The resolved version to install
- * @param options Installation options
- * @throws InstallError when diagnose is true and there are issues found during installation
- */
-export async function completeInstallation(
+export async function diagnoseInstallation(
   version: ResolvedVersion,
-  options: CompleteOptions = {},
-): Promise<void> {
-  let issue: InstallIssue = {}
-
-  await installMinecraftJar(version, { ...options, tracker: options.tracker }).catch((e) => {
-    if (options.diagnose && isInstallError(e)) {
-      mergeInstallIssue(issue, e.issue)
-      return
-    }
-    throw e
-  })
-
+  options: DiagnoseOptions = {},
+): Promise<InstallIssue | undefined> {
+  const issue: InstallIssue = {}
   const folder = MinecraftFolder.from(version.minecraftDirectory)
-  const versionDir = folder.getVersionRoot(version.id)
-  const profile = await readProfile(versionDir)
-  if (profile) {
-    const issue = await diagnoseProfile(profile, folder, options.side)
-    if (issue) {
-      if (options.diagnose) {
-        throw new InstallError({
-          profile,
-        })
-      }
-
-      await installByProfile(profile, folder, { ...options, tracker: options.tracker })
-    }
-  }
-
-  await installLibraries(version, { ...options, tracker: options.tracker }).catch((e) => {
-    if (options.diagnose && isInstallError(e)) {
-      mergeInstallIssue(issue, e.issue)
-      return
-    }
-    throw e
-  })
-  await installAssets(version, { ...options, tracker: options.tracker }).catch((e) => {
-    if (options.diagnose && isInstallError(e)) {
-      mergeInstallIssue(issue, e.issue)
-      return
-    }
-    throw e
-  })
-
-  if (options.diagnose && Object.keys(issue).length > 0) {
-    if (issue.libraries && issue.libraries.length > 0) {
-      const optifines = [] as ResolvedLibrary[]
-      const forges = [] as ResolvedLibrary[]
-      const others = [] as ResolvedLibrary[]
-      for (const l of issue.libraries) {
-        if (l.groupId === 'optifine') {
-          optifines.push(l)
-        } else if (
-          l.groupId === 'net.minecraftforge' &&
-          l.artifactId === 'forge' &&
-          (l.classifier === 'client' || !l.classifier)
-        ) {
-          forges.push(l)
-        } else {
-          others.push(l)
-        }
-      }
-      if (others.length > 0) {
-        issue.libraries = others
-      }
-      if (optifines.length > 0) {
-        issue.optifine = optifines[0].version
-      }
-      if (forges.length > 0) {
-        const header = getResolvedVersionHeader(version)
-        if (header.forge && header.minecraft) {
-          issue.forge = {
-            minecraft: header.minecraft,
-            version: header.forge,
-          }
-        }
-      }
-    }
-    throw new InstallError(issue)
-  }
-}
-
-export async function completeInstallationByError(
-  version: ResolvedVersion,
-  error: InstallError,
-  options: CompleteOptions = {},
-): Promise<void> {
-  const issue = error.issue
-  const folder = MinecraftFolder.from(version.minecraftDirectory)
-
-  if (issue.jar) {
-    await installMinecraftJar(version, { ...options, tracker: options.tracker })
-  }
-
-  if (issue.forge) {
-    await installForge(
+  const jar = version.downloads.client
+  if (jar) {
+    const jarIssue = await diagnoseFile(
       {
-        mcversion: issue.forge.minecraft,
-        version: issue.forge.version,
+        file: folder.getVersionJar(version.minecraftVersion, 'client'),
+        expectedChecksum: jar.sha1,
+        role: 'minecraftClientJar',
+        hint: 'Reinstall the client version.',
       },
-      folder,
-      { ...options, tracker: options.tracker },
+      options,
     )
-  } else if (issue.profile) {
-    await installByProfile(issue.profile, folder, { ...options, tracker: options.tracker })
+    if (jarIssue) issue.jar = version.id
   }
 
-  if (issue.libraries && issue.libraries.length > 0) {
-    await installResolvedLibraries(issue.libraries, folder, {
-      ...options,
-      tracker: options.tracker,
-    })
-  }
+  const profile = await readProfile(folder.getVersionRoot(version.id))
+  if (profile && await diagnoseProfile(profile, folder, 'client', options)) issue.profile = profile
 
-  if (issue.assetsIndex) {
-    await installAssets(version, { ...options, tracker: options.tracker })
-  } else if (issue.assets && issue.assets.length > 0) {
-    await installResolvedAssets(issue.assets, folder, version.id, options)
-  }
+  const libraries = await diagnoseLibraries(version.libraries, folder, options)
+  if (libraries.length > 0) classifyLibraries(version, libraries, issue)
+
+  Object.assign(issue, await diagnoseVersionAssets(version, {
+    ...options,
+    useHashForAssetsIndex: true,
+  }))
+  return Object.keys(issue).length > 0 ? issue : undefined
+}
+
+export async function diagnoseServerInstallation(
+  version: ResolvedServerVersion,
+  minecraft: MinecraftFolder,
+  baseVersion: ResolvedVersion,
+  options: DiagnoseOptions = {},
+): Promise<InstallIssue | undefined> {
+  const issue: InstallIssue = {}
+  const jarPath = version.jar
+    ? minecraft.getLibraryByPath(version.jar)
+    : minecraft.getVersionJar(version.minecraftVersion, 'server')
+  const jarIssue = await diagnoseFile(
+    {
+      file: jarPath,
+      expectedChecksum: baseVersion.downloads.server?.sha1 ?? '',
+      role: 'minecraftServerJar',
+      hint: 'Reinstall the server version.',
+    },
+    options,
+  )
+  if (jarIssue) issue.jar = version.id
+
+  const libraries = await diagnoseLibraries(version.libraries, minecraft, options)
+  if (libraries.length > 0) issue.libraries = libraries
+
+  const profile = await readProfile(minecraft.getVersionRoot(version.id))
+  if (profile && await diagnoseProfile(profile, minecraft, 'server', options)) issue.profile = profile
+  return Object.keys(issue).length > 0 ? issue : undefined
 }

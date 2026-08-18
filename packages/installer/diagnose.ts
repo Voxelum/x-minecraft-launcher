@@ -35,6 +35,11 @@ export interface DiagnoseOptions {
   checksum?: (file: string, algorithm: string) => Promise<string>
   strict?: boolean
   signal?: AbortSignal
+  /**
+   * The timestamp of the last successful validation. Files not modified after
+   * this timestamp are treated as valid without computing their checksum.
+   */
+  timestamp?: number
 }
 
 /**
@@ -63,19 +68,27 @@ export async function diagnoseFile<T extends string>(
   if (signal?.aborted) return
   if (!fileExisted) {
     issue = true
-  } else if (expectedChecksum !== '') {
-    receivedChecksum = await checksumFunc(file, algorithm).catch((e) => {
-      if (e.code === 'ENOENT') {
-        return ''
-      }
-      throw e
-    })
-    if (signal?.aborted) return
-    issue = receivedChecksum !== expectedChecksum
   } else {
-    const fstat = await stat(file).catch(() => ({ size: 0 }))
-    if (fstat.size === 0) {
-      issue = true
+    if (options?.timestamp !== undefined) {
+      const fstat = await stat(file).catch(() => undefined)
+      if (!fstat) {
+        issue = true
+      } else if (fstat.mtimeMs <= options.timestamp) {
+        return undefined
+      }
+    }
+    if (!issue && expectedChecksum !== '') {
+      receivedChecksum = await checksumFunc(file, algorithm).catch((e) => {
+        if (e.code === 'ENOENT') {
+          return ''
+        }
+        throw e
+      })
+      if (signal?.aborted) return
+      issue = receivedChecksum !== expectedChecksum
+    } else if (!issue) {
+      const fstat = await stat(file).catch(() => undefined)
+      issue = !fstat || fstat.size === 0
     }
   }
   const type = fileExisted ? 'corrupted' : ('missing' as const)

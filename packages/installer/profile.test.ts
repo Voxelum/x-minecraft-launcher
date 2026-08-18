@@ -1,10 +1,10 @@
 import { createWriteStream } from 'fs'
-import { readFile, rm, writeFile } from 'fs/promises'
-import { join } from 'path'
+import { mkdir, readFile, rm, writeFile } from 'fs/promises'
+import { delimiter, dirname, join } from 'path'
 import { pipeline } from 'stream/promises'
 import { afterEach, expect, test } from 'vitest'
 import { ZipFile } from 'yazl'
-import { classpathEntryToLibraryName, isEmptyOrCorruptArchive, parseArgumentsFromArgsFile } from './profile'
+import { classpathEntryToLibraryName, isEmptyOrCorruptArchive, parseArgumentsFromArgsFile, resolvePostProcessJavaTask } from './profile'
 
 let cleanup: string | undefined
 
@@ -18,6 +18,14 @@ afterEach(async () => {
 async function writeArchive(dest: string, content: Buffer) {
   const zip = new ZipFile()
   zip.addBuffer(content, 'data.bin')
+  zip.end()
+  await pipeline(zip.outputStream, createWriteStream(dest))
+}
+
+async function writeProcessorArchive(dest: string, mainClass: string) {
+  await mkdir(dirname(dest), { recursive: true })
+  const zip = new ZipFile()
+  zip.addBuffer(Buffer.from(`Manifest-Version: 1.0\nMain-Class: ${mainClass}\n`), 'META-INF/MANIFEST.MF')
   zip.end()
   await pipeline(zip.outputStream, createWriteStream(dest))
 }
@@ -141,8 +149,9 @@ test('classpathEntryToLibraryName handles backslash separators', () => {
 })
 
 test('isEmptyOrCorruptArchive reads compressed entry payloads', async ({ temp }) => {
-  cleanup = temp
-  const archive = join(temp, 'processor-output.jar')
+  cleanup = join(temp, 'profile-archive')
+  await mkdir(cleanup, { recursive: true })
+  const archive = join(cleanup, 'processor-output.jar')
   await writeArchive(archive, Buffer.from('forge post-process output '.repeat(4096)))
 
   expect(await isEmptyOrCorruptArchive(archive)).toBe(false)
@@ -155,4 +164,70 @@ test('isEmptyOrCorruptArchive reads compressed entry payloads', async ({ temp })
   await writeFile(archive, bytes)
 
   expect(await isEmptyOrCorruptArchive(archive)).toBe(true)
+})
+
+test('resolvePostProcessJavaTask isolates each batch processor classpath', async ({ temp }) => {
+  cleanup = join(temp, 'profile-batch')
+  const minecraft = join(cleanup, 'minecraft')
+  const firstJar = join(minecraft, 'libraries', 'example', 'first', '1.0', 'first-1.0.jar')
+  const secondJar = join(minecraft, 'libraries', 'example', 'second', '1.0', 'second-1.0.jar')
+  const firstDependency = join(minecraft, 'libraries', 'example', 'shared', '1.0', 'shared-1.0.jar')
+  const secondDependency = join(minecraft, 'libraries', 'example', 'shared', '2.0', 'shared-2.0.jar')
+  await writeProcessorArchive(firstJar, 'example.FirstProcessor')
+  await writeProcessorArchive(secondJar, 'example.SecondProcessor')
+
+  const task = await resolvePostProcessJavaTask({
+    id: 'forge:test:processors',
+    processors: [{
+      jar: 'example:first:1.0',
+      classpath: ['example:shared:1.0'],
+      args: ['--value', 'one'],
+    }, {
+      jar: 'example:second:1.0',
+      classpath: ['example:shared:2.0'],
+      args: ['--value', 'two'],
+    }],
+    minecraft,
+    java: 'java',
+    javaArgs: ['-Ddirect=true'],
+    batch: {
+      classpath: 'launcher-only',
+      cwd: minecraft,
+      javaArgs: ['-Dbatch=true'],
+    },
+  })
+
+  expect(task.strategies).toHaveLength(2)
+  expect(task.strategies[0]).toHaveLength(1)
+  expect(task.strategies[0]![0]!.args.slice(0, 5)).toEqual([
+    '-Dbatch=true',
+    '-cp',
+    'launcher-only',
+    'MultiJarLauncher',
+    expect.any(String),
+  ])
+  expect(task.strategies[0]![0]!.cwd).toBe(minecraft)
+
+  const invocations = task.strategies[0]![0]!.args.slice(4).map((payload) =>
+    Buffer.from(payload, 'base64').toString().split('\0'))
+  expect(invocations).toEqual([[
+    'example.FirstProcessor',
+    '2',
+    firstDependency,
+    firstJar,
+    '--value',
+    'one',
+  ], [
+    'example.SecondProcessor',
+    '2',
+    secondDependency,
+    secondJar,
+    '--value',
+    'two',
+  ]])
+
+  expect(task.strategies[1]!.map((command) => command.args)).toEqual([
+    ['-Ddirect=true', '-cp', [firstDependency, firstJar].join(delimiter), 'example.FirstProcessor', '--value', 'one'],
+    ['-Ddirect=true', '-cp', [secondDependency, secondJar].join(delimiter), 'example.SecondProcessor', '--value', 'two'],
+  ])
 })

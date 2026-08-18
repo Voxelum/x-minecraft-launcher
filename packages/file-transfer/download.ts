@@ -66,7 +66,7 @@ export interface DownloadOptions extends DownloadBaseOptions {
 
 export type DownloadMultipleOption = Pick<
   DownloadOptions,
-  'url' | 'headers' | 'destination' | 'expectedTotal'
+  'url' | 'headers' | 'destination' | 'expectedTotal' | 'controller'
 >
 
 export interface DownloadMultipleOptions extends DownloadBaseOptions {
@@ -81,6 +81,7 @@ export async function downloadMultiple(
   options: DownloadMultipleOptions,
 ): Promise<PromiseSettledResult<void>[]> {
   const tracker = options.tracker
+  const baseOptions = getDownloadBaseOptions(options)
 
   if (tracker) {
     let expectedTotal = 0
@@ -99,10 +100,10 @@ export async function downloadMultiple(
   return Promise.allSettled(
     options.options.map((opt) =>
       download({
+        ...baseOptions,
         ...opt,
         tracker: tracker?.subSingle(),
         signal: options.signal,
-        ...getDownloadBaseOptions(options),
       }),
     ),
   )
@@ -175,6 +176,7 @@ export async function download(options: DownloadOptions): Promise<void> {
       // header so a proxy/CDN that mangles range responses gets one chance
       // to serve a complete single stream.
       let restartedForRangeRetry = false
+      let streamResumes = 0
       while (true) {
         const handler = new RangeRequestHandler(
           ops,
@@ -192,10 +194,24 @@ export async function download(options: DownloadOptions): Promise<void> {
           break
         }
         signal?.throwIfAborted()
-        if (!restartedForRangeRetry && isRangeRetryError(err)) {
+        if (
+          !restartedForRangeRetry &&
+          (isRangeRetryError(err) || handler.childFailed)
+        ) {
           restartedForRangeRetry = true
           await ftruncateAsync(fd, 0).catch(() => {})
           delete ops.headers.Range
+          continue
+        }
+        if (
+          streamResumes < 5 &&
+          !(err as any)?.statusCode &&
+          expectedTotal &&
+          handler.position > 0 &&
+          handler.position < expectedTotal
+        ) {
+          streamResumes++
+          ops.headers.Range = `bytes=${handler.position}-`
           continue
         }
         errors.push(err)
@@ -373,6 +389,7 @@ interface SegmentParams {
 async function runSegment(p: SegmentParams): Promise<void> {
   const { urls, headers, fd, dispatcher, controller, signal, expectedTotal } = p
   const maxResumes = controller.maxResumes ?? 5
+  const maxSlowRerolls = controller.maxSlowRerolls ?? maxResumes
   const maxNoProgress = controller.maxNoProgressRerolls ?? 2
   const isSeg = !!p.segment
   const segStart = p.segment?.start ?? 0
@@ -381,12 +398,22 @@ async function runSegment(p: SegmentParams): Promise<void> {
 
   let resumeOffset = segStart
   let resumes = 0
+  let slowRerolls = 0
   let noProgress = 0
   let committed = false
+  let restartedCurrentUrlFromZero = false
   let lastError: unknown
   let done = false
+  let urlIndex = 0
+  const advanceUrl = () => {
+    urlIndex++
+    slowRerolls = 0
+    noProgress = 0
+    committed = false
+    restartedCurrentUrlFromZero = false
+  }
 
-  for (let urlIndex = 0; urlIndex < urls.length; ) {
+  for (; urlIndex < urls.length; ) {
     const parsedUrl = new URL(urls[urlIndex])
     // Circuit breaker: when a re-assignable CDN is failing hard, skip its
     // URLs and fall straight through to a fallback — but never skip the
@@ -395,7 +422,7 @@ async function runSegment(p: SegmentParams): Promise<void> {
       urlIndex < urls.length - 1 &&
       controller.shouldSkip?.(parsedUrl.origin)
     ) {
-      urlIndex++
+      advanceUrl()
       continue
     }
     const range = isSeg
@@ -403,11 +430,15 @@ async function runSegment(p: SegmentParams): Promise<void> {
       : resumeOffset > 0
         ? `bytes=${resumeOffset}-`
         : undefined
+    const attemptController = new AbortController()
+    const attemptSignal = signal
+      ? AbortSignal.any([signal, attemptController.signal])
+      : attemptController.signal
     const ops = {
       path: parsedUrl.pathname + parsedUrl.search,
       origin: parsedUrl.origin,
       method: 'GET',
-      signal,
+      signal: attemptSignal,
       headers: { ...headers, ...(range ? { Range: range } : {}) },
     }
 
@@ -419,7 +450,9 @@ async function runSegment(p: SegmentParams): Promise<void> {
       requestStart: isSeg ? resumeOffset : -1,
       noAbort: committed,
       abortable: controller.isAbortable ? controller.isAbortable(ops.origin) : true,
+      skippable: urlIndex < urls.length - 1,
       onAdvance: p.onAdvance,
+      abortRequest: (error) => attemptController.abort(error),
     })
     const startedAt = Date.now()
     dispatcher.dispatch(ops, handler)
@@ -427,6 +460,7 @@ async function runSegment(p: SegmentParams): Promise<void> {
 
     const duration = Date.now() - startedAt
     const received = handler.received
+    const managedAbort = isManagedAbortError(err) ? err : undefined
     controller.report?.({
       origin: ops.origin,
       finalUrl: handler.resolvedUrl,
@@ -434,7 +468,19 @@ async function runSegment(p: SegmentParams): Promise<void> {
       received,
       duration,
       speed: duration > 0 ? (received / duration) * 1000 : 0,
-      outcome: !err ? 'completed' : isManagedAbortError(err) ? 'aborted' : 'failed',
+      outcome: !err ? 'completed' : managedAbort ? 'aborted' : 'failed',
+      abortReason: managedAbort?.reason,
+      ranged: isSeg,
+      resumed: resumeOffset > segStart,
+      fallback: urlIndex > 0,
+      committed,
+      failureReason: !err || managedAbort
+        ? undefined
+        : signal?.aborted
+          ? 'cancelled'
+          : isRangeNotSupportedError(err)
+            ? 'range-not-supported'
+            : 'request',
     })
 
     if (!err) {
@@ -455,7 +501,7 @@ async function runSegment(p: SegmentParams): Promise<void> {
         lastError = new Error(
           `Incomplete download: received ${handler.offset} of ${target} bytes`,
         )
-        urlIndex++
+        advanceUrl()
         continue
       }
       done = true
@@ -473,18 +519,42 @@ async function runSegment(p: SegmentParams): Promise<void> {
     resumeOffset = Math.max(resumeOffset, handler.offset)
     lastError = err
 
+    if (
+      !isSeg &&
+      resumeOffset > 0 &&
+      (err as any)?.statusCode === 416 &&
+      !restartedCurrentUrlFromZero
+    ) {
+      // Some fixed sources reject Range entirely. Restart this source once
+      // from byte zero instead of failing the manifest round.
+      await ftruncateAsync(fd, 0)
+      resumeOffset = 0
+      restartedCurrentUrlFromZero = true
+      continue
+    }
+
     if (isManagedAbortError(err)) {
       const reason = (err as ManagedAbortError).reason
+      if (reason === 'skip') {
+        advanceUrl()
+        continue
+      }
       if (reason === 'slow') {
-        if (resumes < maxResumes) {
+        if (slowRerolls < maxSlowRerolls && resumes < maxResumes) {
           // Reroll: retry the same URL to be re-assigned a (hopefully)
           // faster mirror, resuming from where we stopped.
+          slowRerolls++
           resumes++
           continue
         }
+        if (urlIndex < urls.length - 1) {
+          // Repeated slow assignments mean this source is currently a bad
+          // choice. Preserve the partial bytes and let the fallback resume.
+          advanceUrl()
+          continue
+        }
         // The re-roll budget is spent. A slow-but-working connection is
-        // never a hard failure — commit to finishing the next attempt
-        // with the speed abort disabled so it can complete.
+        // never a hard failure on the last source — commit to finishing.
         committed = true
         continue
       }
@@ -496,9 +566,7 @@ async function runSegment(p: SegmentParams): Promise<void> {
         noProgress++
         continue
       }
-      noProgress = 0
-      committed = false
-      urlIndex++
+      advanceUrl()
       continue
     }
 
@@ -512,7 +580,7 @@ async function runSegment(p: SegmentParams): Promise<void> {
 
     // Terminal failure, or the reroll budget is spent: fall through to
     // the next fallback URL.
-    urlIndex++
+    advanceUrl()
   }
 
   if (!done) {

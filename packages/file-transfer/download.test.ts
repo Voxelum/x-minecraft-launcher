@@ -1,11 +1,13 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { createServer, IncomingMessage, ServerResponse, Server } from 'http'
-import { mkdtemp, rm, readFile } from 'fs/promises'
+import { mkdtemp, rm, readFile, stat } from 'fs/promises'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { download } from './download'
 import { ProgressTrackerSingle } from './progress'
 import type { DownloadController, DownloadResult } from './controller'
+import { Agent } from 'undici'
+import { ConcurrencyDispatcher } from './concurrency_dispatcher'
 
 interface RouteSpec {
   status?: number
@@ -78,8 +80,15 @@ describe('@xmcl/file-transfer download', () => {
    * Expected: tracker.done becomes true on terminal HTTP errors too.
    */
   it('marks tracker.done on HTTP 4xx error responses', async () => {
+    let requests = 0
     const { server, baseUrl } = await startServer({
-      '/missing': { status: 404, body: 'not found' },
+      '/missing': {
+        handle: (_req, res) => {
+          requests++
+          res.writeHead(404)
+          res.end('not found')
+        },
+      },
     })
     const dir = await tempDir()
     try {
@@ -99,6 +108,7 @@ describe('@xmcl/file-transfer download', () => {
       // Give microtasks a chance to flush the .finally
       await new Promise((r) => setImmediate(r))
       expect(tracker.done).toBe(true)
+      expect(requests).toBe(1)
     } finally {
       server.close()
       await rm(dir, { recursive: true, force: true })
@@ -204,6 +214,102 @@ describe('@xmcl/file-transfer download', () => {
       expect(reqCount).toBeGreaterThanOrEqual(3)
       expect(restartRangeHeader).toBeUndefined()
     } finally {
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('falls back to a single stream when a child range resets', async () => {
+    const fullBody = Buffer.alloc(2048, 0xab)
+    let childReset = false
+    let singleStreamRequests = 0
+    const { server, baseUrl } = await startServer({
+      '/range-reset': {
+        handle: (req, res) => {
+          const range = req.headers.range
+          if (!range) {
+            singleStreamRequests++
+            res.writeHead(200, { 'Content-Length': String(fullBody.length) })
+            res.end(fullBody)
+            return
+          }
+          const match = /bytes=(\d+)-(\d+)/.exec(range)
+          const start = Number(match?.[1] ?? 0)
+          const end = Number(match?.[2] ?? fullBody.length - 1)
+          if (start > 0) {
+            childReset = true
+            req.socket.destroy()
+            return
+          }
+          res.writeHead(206, {
+            'Accept-Ranges': 'bytes',
+            'Content-Length': String(end - start + 1),
+            'Content-Range': `bytes ${start}-${end}/${fullBody.length}`,
+          })
+          res.end(fullBody.subarray(start, end + 1))
+        },
+      },
+    })
+    const dir = await tempDir()
+    try {
+      const dest = join(dir, 'range-reset.bin')
+      await download({
+        url: `${baseUrl}/range-reset`,
+        destination: dest,
+        expectedTotal: fullBody.length,
+        rangePolicy: { rangeThreshold: 256 },
+      })
+      expect((await readFile(dest)).equals(fullBody)).toBe(true)
+      expect(childReset).toBe(true)
+      expect(singleStreamRequests).toBe(1)
+    } finally {
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('resumes a fixed-origin stream after a connection reset', async () => {
+    const fullBody = Buffer.alloc(2048, 0xcd)
+    const ranges: Array<string | undefined> = []
+    const { server, baseUrl } = await startServer({
+      '/resume-reset': {
+        handle: (req, res) => {
+          const range = req.headers.range
+          ranges.push(range)
+          if (!range) {
+            res.writeHead(200, {
+              'Accept-Ranges': 'bytes',
+              'Content-Length': String(fullBody.length),
+            })
+            res.write(fullBody.subarray(0, 512))
+            setImmediate(() => req.socket.destroy())
+            return
+          }
+          const start = Number(/bytes=(\d+)-/.exec(range)?.[1] ?? 0)
+          res.writeHead(206, {
+            'Accept-Ranges': 'bytes',
+            'Content-Length': String(fullBody.length - start),
+            'Content-Range': `bytes ${start}-${fullBody.length - 1}/${fullBody.length}`,
+          })
+          res.end(fullBody.subarray(start))
+        },
+      },
+    })
+    const dispatcher = new Agent()
+    const dir = await tempDir()
+    try {
+      const dest = join(dir, 'resume-reset.bin')
+      await download({
+        url: `${baseUrl}/resume-reset`,
+        destination: dest,
+        dispatcher,
+        expectedTotal: fullBody.length,
+        rangePolicy: { rangeThreshold: Number.MAX_SAFE_INTEGER },
+      })
+      expect((await readFile(dest)).equals(fullBody)).toBe(true)
+      expect(ranges).toEqual([undefined, 'bytes=512-'])
+    } finally {
+      await dispatcher.close()
       server.close()
       await rm(dir, { recursive: true, force: true })
     }
@@ -372,6 +478,312 @@ describe('@xmcl/file-transfer download (controller)', () => {
     }
   })
 
+  it('completes after expected bytes when the response never ends', async () => {
+    const content = Buffer.from('complete-without-eof')
+    let response: ServerResponse | undefined
+    const { server, baseUrl } = await startServer({
+      '/hanging': {
+        handle: (_req, res) => {
+          response = res
+          res.writeHead(200)
+          res.write(content)
+        },
+      },
+    })
+    const dir = await tempDir()
+    const controller: DownloadController = {
+      rangeSplitThreshold: Number.MAX_SAFE_INTEGER,
+    }
+    try {
+      const dest = join(dir, 'hanging.bin')
+      await download({
+        url: `${baseUrl}/hanging`,
+        destination: dest,
+        controller,
+        expectedTotal: content.length,
+      })
+      expect((await readFile(dest)).equals(content)).toBe(true)
+    } finally {
+      response?.destroy()
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('falls back when a request exceeds the TTFB deadline', async () => {
+    const content = Buffer.from('ttfb-fallback')
+    let stalledResponse: ServerResponse | undefined
+    let fallbackRequests = 0
+    const reports: DownloadResult[] = []
+    const { server, baseUrl } = await startServer({
+      '/stalled': {
+        handle: (_req, res) => {
+          stalledResponse = res
+        },
+      },
+      '/fallback': {
+        handle: (_req, res) => {
+          fallbackRequests++
+          res.writeHead(200, { 'Content-Length': String(content.length) })
+          res.end(content)
+        },
+      },
+    })
+    const dir = await tempDir()
+    const controller: DownloadController = {
+      ttfbDeadline: 20,
+      maxNoProgressRerolls: 0,
+      rangeSplitThreshold: Number.MAX_SAFE_INTEGER,
+      report: (result) => reports.push(result),
+    }
+    try {
+      const dest = join(dir, 'ttfb.bin')
+      await download({
+        url: [`${baseUrl}/stalled`, `${baseUrl}/fallback`],
+        destination: dest,
+        controller,
+        expectedTotal: content.length,
+      })
+      expect((await readFile(dest)).equals(content)).toBe(true)
+      expect(fallbackRequests).toBe(1)
+      expect(reports.map((result) => result.outcome)).toEqual(['aborted', 'completed'])
+      expect(reports[0]).toMatchObject({ abortReason: 'ttfb', fallback: false, resumed: false })
+      expect(reports[1]).toMatchObject({ fallback: true, resumed: false })
+    } finally {
+      stalledResponse?.destroy()
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('resumes from the written offset after a mid-stream stall', async () => {
+    const content = Buffer.alloc(1024)
+    for (let index = 0; index < content.length; index++) content[index] = index & 0xff
+    const firstChunk = 256
+    let stalledResponse: ServerResponse | undefined
+    let fallbackRange: string | undefined
+    const { server, baseUrl } = await startServer({
+      '/stalled': {
+        handle: (_req, res) => {
+          stalledResponse = res
+          res.writeHead(200, {
+            'Accept-Ranges': 'bytes',
+            'Content-Length': String(content.length),
+          })
+          res.write(content.subarray(0, firstChunk))
+        },
+      },
+      '/fallback': {
+        handle: (req, res) => {
+          fallbackRange = req.headers.range
+          const start = Number(/bytes=(\d+)-/.exec(fallbackRange ?? '')?.[1] ?? 0)
+          res.writeHead(206, {
+            'Accept-Ranges': 'bytes',
+            'Content-Range': `bytes ${start}-${content.length - 1}/${content.length}`,
+            'Content-Length': String(content.length - start),
+          })
+          res.end(content.subarray(start))
+        },
+      },
+    })
+    const dir = await tempDir()
+    const reports: DownloadResult[] = []
+    const controller: DownloadController = {
+      sampleInterval: 10,
+      stallTimeout: 20,
+      maxNoProgressRerolls: 0,
+      rangeSplitThreshold: Number.MAX_SAFE_INTEGER,
+      report: (result) => reports.push(result),
+    }
+    try {
+      const dest = join(dir, 'stall.bin')
+      await download({
+        url: [`${baseUrl}/stalled`, `${baseUrl}/fallback`],
+        destination: dest,
+        controller,
+        expectedTotal: content.length,
+      })
+      expect(fallbackRange).toBe(`bytes=${firstChunk}-`)
+      expect((await readFile(dest)).equals(content)).toBe(true)
+      expect(reports[0]).toMatchObject({ abortReason: 'stall', fallback: false, resumed: false })
+      expect(reports[1]).toMatchObject({ fallback: true, resumed: true })
+    } finally {
+      stalledResponse?.destroy()
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('falls back and resumes after the slow re-roll budget is exhausted', async () => {
+    const content = Buffer.alloc(2048)
+    for (let index = 0; index < content.length; index++) content[index] = index & 0xff
+    const chunkSize = 256
+    let slowRequests = 0
+    let fallbackRange: string | undefined
+    const { server, baseUrl } = await startServer({
+      '/slow': {
+        handle: (req, res) => {
+          slowRequests++
+          const start = Number(/bytes=(\d+)-/.exec(req.headers.range ?? '')?.[1] ?? 0)
+          res.writeHead(start > 0 ? 206 : 200, {
+            'Accept-Ranges': 'bytes',
+            ...(start > 0 ? { 'Content-Range': `bytes ${start}-${content.length - 1}/${content.length}` } : {}),
+            'Content-Length': String(content.length - start),
+          })
+          res.write(content.subarray(start, start + chunkSize))
+        },
+      },
+      '/official': {
+        handle: (req, res) => {
+          fallbackRange = req.headers.range
+          const start = Number(/bytes=(\d+)-/.exec(fallbackRange ?? '')?.[1] ?? 0)
+          res.writeHead(206, {
+            'Accept-Ranges': 'bytes',
+            'Content-Range': `bytes ${start}-${content.length - 1}/${content.length}`,
+            'Content-Length': String(content.length - start),
+          })
+          res.end(content.subarray(start))
+        },
+      },
+    })
+    const dir = await tempDir()
+    try {
+      const destination = join(dir, 'slow-fallback.bin')
+      await download({
+        url: [`${baseUrl}/slow`, `${baseUrl}/official`],
+        destination,
+        expectedTotal: content.length,
+        controller: {
+          sampleInterval: 10,
+          warmup: 0,
+          maxResumes: 5,
+          maxSlowRerolls: 1,
+          rangeSplitThreshold: Number.MAX_SAFE_INTEGER,
+          onSample: (sample) => sample.finalUrl?.endsWith('/slow') ? 'abort' : 'continue',
+        },
+      })
+
+      expect(slowRequests).toBe(2)
+      expect(fallbackRange).toBe(`bytes=${chunkSize * slowRequests}-`)
+      expect((await readFile(destination)).equals(content)).toBe(true)
+    } finally {
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('restarts a fallback from zero when it rejects Range with 416', async () => {
+    const content = Buffer.alloc(2048, 0xab)
+    let officialRequests = 0
+    const { server, baseUrl } = await startServer({
+      '/slow': {
+        handle: (_req, res) => {
+          res.writeHead(200, { 'Content-Length': String(content.length) })
+          res.write(content.subarray(0, 256))
+        },
+      },
+      '/official': {
+        handle: (req, res) => {
+          officialRequests++
+          if (req.headers.range) {
+            res.writeHead(416)
+            res.end('range unsupported')
+          } else {
+            res.writeHead(200, { 'Content-Length': String(content.length) })
+            res.end(content)
+          }
+        },
+      },
+    })
+    const dir = await tempDir()
+    try {
+      const destination = join(dir, 'range-rejected-fallback.bin')
+      await download({
+        url: [`${baseUrl}/slow`, `${baseUrl}/official`],
+        destination,
+        expectedTotal: content.length,
+        controller: {
+          sampleInterval: 10,
+          warmup: 0,
+          maxSlowRerolls: 0,
+          rangeSplitThreshold: Number.MAX_SAFE_INTEGER,
+          onSample: (sample) => sample.finalUrl?.endsWith('/slow') ? 'abort' : 'continue',
+        },
+      })
+
+      expect(officialRequests).toBe(2)
+      expect((await readFile(destination)).equals(content)).toBe(true)
+    } finally {
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('skips a quarantined BMCL request when it leaves the concurrency queue', async () => {
+    const content = Buffer.from('official-fallback')
+    let blockerResponse: ServerResponse | undefined
+    let blockerStarted!: () => void
+    const started = new Promise<void>((resolve) => { blockerStarted = resolve })
+    let bmclRequests = 0
+    let officialRequests = 0
+    const { server, baseUrl } = await startServer({
+      '/block': {
+        handle: (_req, res) => {
+          blockerResponse = res
+          blockerStarted()
+        },
+      },
+      '/bmcl': {
+        handle: (_req, res) => {
+          bmclRequests++
+          res.end(content)
+        },
+      },
+      '/official': {
+        handle: (_req, res) => {
+          officialRequests++
+          res.writeHead(200, { 'Content-Length': String(content.length) })
+          res.end(content)
+        },
+      },
+    })
+    const dir = await tempDir()
+    const dispatcher = new ConcurrencyDispatcher(new Agent(), () => 1)
+    let quarantine = false
+    try {
+      const blocker = download({
+        url: `${baseUrl}/block`,
+        destination: join(dir, 'block.bin'),
+        dispatcher,
+        expectedTotal: 1,
+      })
+      await started
+      const target = download({
+        url: [`${baseUrl}/bmcl`, `${baseUrl}/official`],
+        destination: join(dir, 'target.bin'),
+        dispatcher,
+        expectedTotal: content.length,
+        controller: {
+          rangeSplitThreshold: Number.MAX_SAFE_INTEGER,
+          shouldSkip: () => quarantine,
+        },
+      })
+      await vi.waitFor(() => expect(dispatcher.pending).toBe(1))
+      quarantine = true
+      blockerResponse!.writeHead(200, { 'Content-Length': '1' })
+      blockerResponse!.end('x')
+
+      await Promise.all([blocker, target])
+      expect(bmclRequests).toBe(0)
+      expect(officialRequests).toBe(1)
+      expect((await readFile(join(dir, 'target.bin'))).equals(content)).toBe(true)
+    } finally {
+      await dispatcher.close()
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
   it('commits to finishing (never fails) after the resume budget is exhausted', async () => {
     // A managed abort is an optimization, not a hard failure. Once the
     // re-roll budget is spent the download must COMMIT to finishing on a
@@ -476,6 +888,66 @@ describe('@xmcl/file-transfer download (controller range-split)', () => {
     }
   })
 
+  it('aborts all range segments and removes the destination on external cancellation', async () => {
+    const full = patterned(8 * 1024)
+    const activeRequests = new Set<IncomingMessage>()
+    let requests = 0
+    let closed = 0
+    const { server, baseUrl } = await startServer({
+      '/f': {
+        handle: (req, res) => {
+          requests++
+          activeRequests.add(req)
+          req.on('close', () => {
+            activeRequests.delete(req)
+            closed++
+          })
+          const range = req.headers.range
+          const match = typeof range === 'string' ? /bytes=(\d+)-(\d+)/.exec(range) : undefined
+          const start = Number(match?.[1] ?? 0)
+          const end = Number(match?.[2] ?? full.length - 1)
+          res.writeHead(206, {
+            'Accept-Ranges': 'bytes',
+            'Content-Range': `bytes ${start}-${end}/${full.length}`,
+            'Content-Length': String(end - start + 1),
+          })
+          res.write(full.subarray(start, start + 64))
+        },
+      },
+    })
+    const dir = await tempDir()
+    const abortController = new AbortController()
+    try {
+      const dest = join(dir, 'cancelled.bin')
+      const promise = download({
+        url: `${baseUrl}/f`,
+        destination: dest,
+        controller: splitController,
+        expectedTotal: full.length,
+        signal: abortController.signal,
+      })
+      await new Promise<void>((resolve) => {
+        const interval = setInterval(() => {
+          if (requests === 4) {
+            clearInterval(interval)
+            resolve()
+          }
+        }, 1)
+      })
+      abortController.abort(new Error('cancelled by test'))
+      await expect(promise).rejects.toThrow('cancelled by test')
+      await new Promise((resolve) => setImmediate(resolve))
+      expect(requests).toBe(4)
+      expect(closed).toBe(4)
+      expect(activeRequests.size).toBe(0)
+      await expect(stat(dest)).rejects.toMatchObject({ code: 'ENOENT' })
+    } finally {
+      for (const request of activeRequests) request.socket.destroy()
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
   it('reconstructs a ranged download across redirects (bmcl-like)', async () => {
     const full = patterned(8 * 1024)
     let bmclHits = 0
@@ -517,6 +989,7 @@ describe('@xmcl/file-transfer download (controller range-split)', () => {
 
   it('falls back to a single stream when a mirror ignores Range', async () => {
     const full = patterned(8 * 1024)
+    const reports: DownloadResult[] = []
     const { server, baseUrl } = await startServer({
       '/f': {
         handle: (req, res) => serveRange(full, req, res, false), // always 200
@@ -528,10 +1001,12 @@ describe('@xmcl/file-transfer download (controller range-split)', () => {
       await download({
         url: `${baseUrl}/f`,
         destination: dest,
-        controller: splitController,
+        controller: { ...splitController, report: (result) => reports.push(result) },
         expectedTotal: full.length,
       })
       expect((await readFile(dest)).equals(full)).toBe(true)
+      expect(reports.some((result) => result.failureReason === 'range-not-supported')).toBe(true)
+      expect(reports.some((result) => result.ranged === false && result.outcome === 'completed')).toBe(true)
     } finally {
       server.close()
       await rm(dir, { recursive: true, force: true })
