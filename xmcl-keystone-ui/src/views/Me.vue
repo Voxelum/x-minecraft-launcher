@@ -2,14 +2,16 @@
 import Hint from '@/components/Hint.vue'
 import { useDateString } from '@/composables/date'
 import { useDialog } from '@/composables/dialog'
+import { useLocaleError } from '@/composables/error'
 import { kInstance } from '@/composables/instance'
 import { useInstanceContextMenuFunc } from '@/composables/instanceContextMenu'
 import { useInstanceGroup } from '@/composables/instanceGroup'
+import { kInstanceLaunchCoordinator } from '@/composables/instanceLaunchCoordinator'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstances } from '@/composables/instances'
-import { kLaunchButton } from '@/composables/launchButton'
 import { LauncherNews, useLauncherNews } from '@/composables/launcherNews'
 import { useMojangNews } from '@/composables/mojangNews'
+import { useNotifier } from '@/composables/notifier'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 import { useGamepadInnerNav } from '@/composables/gamepad'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
@@ -21,7 +23,7 @@ import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
 import { useFocus, useLocalStorage } from '@vueuse/core'
 import { Instance } from '@xmcl/instance'
-import { Ref, computed, nextTick, ref } from 'vue'
+import { Ref, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import MeProfilePanel from './MeProfilePanel.vue'
 
@@ -242,7 +244,9 @@ const instanceSections = computed((): InstanceSection[] => {
 const { show: openAddInstanceDialog } = useDialog(AddInstanceDialogKey)
 
 const router = useRouter()
-const { onClick: onLaunchClick } = injection(kLaunchButton)
+const { notify } = useNotifier()
+const tError = useLocaleError()
+const { isLaunching, launch } = injection(kInstanceLaunchCoordinator)
 
 function selectInstance(instancePath: string) {
   path.value = instancePath
@@ -252,9 +256,11 @@ function selectInstance(instancePath: string) {
 }
 
 async function launchInstance(instancePath: string) {
-  path.value = instancePath
-  await nextTick()
-  await onLaunchClick()
+  try {
+    await launch(instancePath)
+  } catch (e) {
+    notify({ title: tError(e), level: 'error' })
+  }
 }
 
 const getInstanceContextMenu = useInstanceContextMenuFunc()
@@ -468,6 +474,7 @@ function openInBrowser(url: string) {
                 variant="text"
                 size="small"
                 icon="play_arrow"
+                :loading="isLaunching(instance.path)"
                 :aria-label="t('launch.launch')"
                 @click.stop="launchInstance(instance.path)"
               />
