@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Pilih Direktori Utama
 agent:
+  accessRequiredHint: Berlangganan XMCL untuk menggunakan Agen bawaan, atau konfigurasikan penyedia AI Anda sendiri di Pengaturan.
+  subscribeXmcl: Berlangganan XMCL
   callingTool: memanggil {name}…
   disabledPlaceholder: Agen dinonaktifkan
   emptyHint: Minta agen untuk memeriksa instansi Anda, mengaktifkan/menonaktifkan mod, membaca log, atau mendiagnosis crash.

@@ -35,6 +35,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Вибрати кореневий каталог
 agent:
+  accessRequiredHint: Оформіть підписку XMCL, щоб використовувати вбудований Agent, або налаштуйте власного постачальника ШІ в налаштуваннях.
+  subscribeXmcl: Оформити підписку XMCL
   title: XMCL Agent
   statusReady: Готово
   statusWorking: Працюю…

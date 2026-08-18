@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: রুট ডিরেক্টরি নির্বাচন করুন
 agent:
+  accessRequiredHint: বিল্ট-ইন এজেন্ট ব্যবহার করতে XMCL-এ সাবস্ক্রাইব করুন, অথবা সেটিংসে নিজের AI প্রদানকারী কনফিগার করুন।
+  subscribeXmcl: XMCL-এ সাবস্ক্রাইব করুন
   callingTool: '{name}-কে কল করা হচ্ছে…'
   disabledPlaceholder: এজেন্ট নিষ্ক্রিয়
   emptyHint: এজেন্টকে আপনার ইনস্ট্যান্স পরীক্ষা করতে, মড চালু/বন্ধ করতে, লগ পড়তে অথবা ক্র্যাশ নির্ণয় করতে বলুন।

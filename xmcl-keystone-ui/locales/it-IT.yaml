@@ -1191,6 +1191,8 @@ serverStatus:
   refuse: §4Server rufiutato!
   timeout: §4Tmeout della conessione del server!
 agent:
+  accessRequiredHint: Abbonati a XMCL per usare l’agente integrato, oppure configura il tuo provider IA nelle impostazioni.
+  subscribeXmcl: Abbonati a XMCL
   notConfiguredHint: Configura una chiave API, un modello e un endpoint compatibile con OpenAI in Impostazioni → Generale → Agente IA. Ad esempio, usa OpenAI o un gateway compatibile con Claude.
 setting:
   aiAgentApiKeyDescription: Configura un provider compatibile con OpenAI, come OpenAI o un gateway per Claude. La chiave viene archiviata localmente su questo dispositivo.

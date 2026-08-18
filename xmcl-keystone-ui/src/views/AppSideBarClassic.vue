@@ -47,7 +47,6 @@
       </AppSideBarItem>
 
       <AppSideBarItem
-        v-if="developerMode"
         data-testid="nav-agent"
         v-shared-tooltip.right="agentTooltip"
         clickable
@@ -183,7 +182,6 @@
       <v-divider vertical class="mx-2 h-6" />
 
       <v-btn
-        v-if="developerMode"
         data-testid="nav-agent"
         v-shared-tooltip.bottom="agentTooltip"
         icon
@@ -268,7 +266,6 @@ const { request: openMultiplayer } = injection(kMultiplayerEntry)
 const { position } = useInjectSidebarSettings()
 
 const isHorizontal = computed(() => position.value === 'top' || position.value === 'bottom')
-const developerMode = computed(() => state.value?.developerMode ?? false)
 const { open: openAgent } = useAgentChatEntry()
 const agentChatStatus = useAgentChatStatus()
 const agentRunningInBackground = computed(() => agentChatStatus.running.value && !agentChatStatus.shown.value)
