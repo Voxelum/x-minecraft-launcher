@@ -1215,6 +1215,8 @@ serverStatus:
   refuse: §4Serveur refusé !
   timeout: §4Timeout de la connexion !
 agent:
+  accessRequiredHint: Abonnez-vous à XMCL pour utiliser l’agent intégré, ou configurez votre propre fournisseur d’IA dans les paramètres.
+  subscribeXmcl: S’abonner à XMCL
   notConfiguredHint: Définissez une clé API, un modèle et un endpoint compatible OpenAI dans Paramètres → Général → Agent IA. Par exemple, utilisez OpenAI ou une passerelle compatible avec Claude.
 setting:
   aiAgentApiKeyDescription: Configurez un fournisseur compatible OpenAI, comme OpenAI ou une passerelle pour Claude. La clé est stockée localement sur cet appareil.

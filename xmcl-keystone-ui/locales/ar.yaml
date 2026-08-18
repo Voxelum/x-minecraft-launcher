@@ -1278,6 +1278,8 @@ serverStatus:
   refuse: '§4تم رفض الخادم!'
   timeout: '§4 مهلة خادم الاتصال!'
 agent:
+  accessRequiredHint: اشترك في XMCL لاستخدام العميل المدمج، أو قم بتهيئة موفر الذكاء الاصطناعي الخاص بك في الإعدادات.
+  subscribeXmcl: الاشتراك في XMCL
   notConfiguredHint: اضبط مفتاح API والنموذج ونقطة نهاية متوافقة مع OpenAI في الإعدادات → عام → عميل الذكاء الاصطناعي. على سبيل المثال، استخدم OpenAI أو بوابة متوافقة مع Claude.
 setting:
   aiAgentApiKeyDescription: قم بتكوين موفر متوافق مع OpenAI، مثل OpenAI أو بوابة لـ Claude. يتم تخزين المفتاح محليًا على هذا الجهاز.

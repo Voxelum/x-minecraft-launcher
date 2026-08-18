@@ -1282,6 +1282,8 @@ serverStatus:
   refuse: §4Der Server wurde abgelehnt!
   timeout: §4Es ist Zeit, sich mit dem Server zu verbinden!
 agent:
+  accessRequiredHint: Abonniere XMCL, um den integrierten Agenten zu verwenden, oder konfiguriere deinen eigenen KI-Anbieter in den Einstellungen.
+  subscribeXmcl: XMCL abonnieren
   notConfiguredHint: Legen Sie einen API-Schlüssel, ein Modell und einen OpenAI-kompatiblen Endpunkt unter Einstellungen → Allgemein → KI-Agent fest. Verwenden Sie zum Beispiel OpenAI oder ein Claude-kompatibles Gateway.
 setting:
   aiAgentApiKeyDescription: Konfigurieren Sie einen OpenAI-kompatiblen Anbieter, z. B. OpenAI oder ein Gateway für Claude. Der Schlüssel wird lokal auf diesem Gerät gespeichert.

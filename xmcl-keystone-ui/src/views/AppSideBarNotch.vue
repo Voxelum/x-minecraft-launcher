@@ -81,7 +81,6 @@
 
         <!-- Agent -->
         <AppSideBarNotchItem
-          v-if="developerMode"
           data-testid="nav-agent"
           icon="smart_toy"
           :icon-size="iconSize"
@@ -170,7 +169,6 @@ const { gameProfile } = injection(kUserContext)
 const { request: openMultiplayer } = injection(kMultiplayerEntry)
 const { position, align, scale, autoHide } = useInjectSidebarSettings()
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
-const developerMode = computed(() => state.value?.developerMode ?? false)
 const { open: openAgent } = useAgentChatEntry()
 const agentChatStatus = useAgentChatStatus()
 const agentRunningInBackground = computed(() => agentChatStatus.running.value && !agentChatStatus.shown.value)

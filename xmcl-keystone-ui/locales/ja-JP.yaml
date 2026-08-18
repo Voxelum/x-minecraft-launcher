@@ -1238,6 +1238,8 @@ serverStatus:
   refuse: §4サーバーが拒否しました!
   timeout: §4サーバーへの接続がタイムアウト!
 agent:
+  accessRequiredHint: 内蔵エージェントを使用するには XMCL に登録するか、設定で独自の AI プロバイダーを構成してください。
+  subscribeXmcl: XMCL に登録
   notConfiguredHint: 設定 → 一般 → AIエージェントで API キー、モデル、OpenAI 互換エンドポイントを設定してください。たとえば、OpenAI または Claude 互換ゲートウェイを使用します。
 setting:
   aiAgentApiKeyDescription: OpenAI や Claude 用ゲートウェイなど、OpenAI 互換プロバイダーを設定します。キーはこのデバイスにローカル保存されます。

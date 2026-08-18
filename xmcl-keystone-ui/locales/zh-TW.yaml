@@ -1282,6 +1282,8 @@ serverStatus:
   refuse: 伺服器中斷了連線！
   timeout: 伺服器響應超時！
 agent:
+  accessRequiredHint: 訂閱 XMCL 即可使用內建 AI 助手，或前往設定自行配置 AI 供應商。
+  subscribeXmcl: 訂閱 XMCL
   notConfiguredHint: 請在設定 → 基本設定 → AI 助手中設定 API 金鑰、模型和 OpenAI 相容端點，例如 OpenAI 或相容 Claude 的閘道。
 setting:
   aiAgentApiKeyDescription: 配置 OpenAI 相容供應商，例如 OpenAI 或 Claude 閘道。API 金鑰僅儲存在本機裝置。

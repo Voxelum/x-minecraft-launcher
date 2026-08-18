@@ -1205,6 +1205,8 @@ serverStatus:
   refuse: §4Server weigert!
   timeout: §4Verbinden met server timeout!
 agent:
+  accessRequiredHint: Abonneer je op XMCL om de ingebouwde agent te gebruiken, of configureer je eigen AI-provider in de instellingen.
+  subscribeXmcl: Abonneren op XMCL
   notConfiguredHint: Stel een API-sleutel, model en OpenAI-compatibel endpoint in via Instellingen → Algemeen → AI-agent. Gebruik bijvoorbeeld OpenAI of een Claude-compatibele gateway.
 setting:
   aiAgentApiKeyDescription: Configureer een OpenAI-compatibele provider, zoals OpenAI of een gateway voor Claude. De sleutel wordt lokaal op dit apparaat opgeslagen.
