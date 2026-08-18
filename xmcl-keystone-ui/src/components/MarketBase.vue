@@ -73,19 +73,26 @@
           id="right-pane"
           class="relative flex flex-col h-full flex-grow-0 overflow-y-auto overflow-x-hidden market-right"
         >
-          <slot
-            v-if="!selectedId && $slots.filter"
-            name="filter"
-          />
-          <slot
-            v-else
-            name="content"
-            :selected-item="selectedItem"
-            :selected-id="selectedId"
-            :selected-modrinth-id="selectedModrinthId"
-            :selected-curseforge-id="selectedCurseforgeId"
-            :updating="plans[selectedItem?.id ?? '']?.updating"
-          />
+          <Transition name="market-pane-fade">
+            <div
+              v-show="!selectedId && $slots.filter"
+              class="market-filter-cache absolute inset-0"
+            >
+              <slot name="filter" />
+            </div>
+          </Transition>
+          <Transition name="market-pane-fade" mode="out-in">
+            <slot
+              v-if="selectedId || !$slots.filter"
+              name="content"
+              :key="selectedId || 'market-content'"
+              :selected-item="selectedItem"
+              :selected-id="selectedId"
+              :selected-modrinth-id="selectedModrinthId"
+              :selected-curseforge-id="selectedCurseforgeId"
+              :updating="plans[selectedItem?.id ?? '']?.updating"
+            />
+          </Transition>
         </div>
       </template>
     </SplitPane>
@@ -256,6 +263,21 @@ onUnmounted(() => {
 .dark.v-application .market-base .info {
   background-color: rgba(33, 150, 243, 0.5) !important;
   border-color: rgba(33, 150, 243, 0.5) !important;
+}
+
+.market-pane-fade-enter-active,
+.market-pane-fade-leave-active {
+  transition: opacity 100ms ease;
+}
+
+.market-pane-fade-enter-from,
+.market-pane-fade-leave-to {
+  opacity: 0;
+}
+
+.market-filter-cache {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .dark.v-application .market-base .error {
