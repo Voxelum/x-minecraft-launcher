@@ -1,5 +1,7 @@
-import type { ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
+import type { JavaVersion, ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
+import type { Java } from '../entities/java.schema'
 import type {
+  InstanceVersionInstallResult,
   InstallIssue,
   InstallProfile,
   LabyModManifest,
@@ -315,125 +317,44 @@ export interface InstallLibrariesOptions {
 }
 
 export interface DiagnoseOptions {
-  currentVersion: ResolvedVersion
-  side?: 'client' | 'server'
+  /** Version id to inspect. The returned issue is advisory UI state only. */
+  version: string
+  side: 'client' | 'server'
+}
+
+export interface MarkVersionInstallationOptions {
+  version: string
+  timestamp: number
 }
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
-export interface InstallService {
-  /**
-   * Install assets which defined in this version asset.json. If this version is not present, this will throw error！
-   *
-   * Task key: Uses the version id as task key
-   */
-  installAssetsForVersion(options: InstallAssetsForVersionOptions): Promise<void>
+export type VersionInstallRequest =
+  | {
+      type: 'instance'
+      instancePath: string
+      runtime: import('@xmcl/instance').PartialRuntimeVersions
+      selectedVersion?: string
+    }
+  | { type: 'server'; runtime: import('@xmcl/instance').RuntimeVersions; path: string }
+  | { type: 'repair'; version: string; side: 'client' | 'server' }
+  | { type: 'reinstall'; version: string; side?: 'client' | 'server' }
+  | { type: 'java'; target: JavaVersion; forceZulu?: boolean }
+  | { type: 'optifine-mod'; options: InstallOptifineAsModOptions }
 
+export interface VersionInstallService {
   /**
-   * Install libraries and assets for the version
-   *
-   * Task key: Uses the version id as task key
+   * Resolve metadata, diagnose current files, compile staged plans, and execute
+   * them in one main-process operation. Diagnosis results are never accepted as
+   * input because they may be stale by the time installation starts.
    */
-  installDependencies(options: InstallDependenciesOptions): Promise<void>
-
-  /**
-   * Install labymod to a minecraft version
-   *
-   * Task key: Computed as `${minecraftVersion}-labymod${manifest.version}`
-   */
-  installLabyModVersion(options: InstallLabyModOptions): Promise<string>
-
-  /**
-   * If you think a version is corrupted, you can try to reinstall this version
-   *
-   * Task key: Uses the version id as task key
-   */
-  reinstall(options: ReinstallOptions): Promise<void>
-
-  /**
-   * Install assets to the version
-   *
-   * Task key: Uses the provided key or 'assets' if not specified
-   */
-  installAssets(options: InstallAssetsOptions): Promise<void>
-
-  /**
-   * Download and install a minecraft version
-   *
-   * Task key: Uses the minecraft version id (meta.id) as task key
-   */
-  installMinecraft(options: InstallMinecraftOptions): Promise<void>
-
-  /**
-   * Install minecraft jar to the game
-   *
-   * Task key: Uses the version id as task key
-   */
-  installMinecraftJar(options: InstallMinecraftJarOptions): Promise<void>
-
-  /**
-   * Install provided libraries to game
-   *
-   * Task key: Uses the provided version or 'libraries' if not specified
-   */
-  installLibraries(options: InstallLibrariesOptions): Promise<void>
-
-  /**
-   * Install neoForged to the minecraft
-   *
-   * Task key: Computed as `${minecraft}-neoforged${version}`
-   */
-  installNeoForged(options: InstallNeoForgedOptions): Promise<string>
-
-  /**
-   * Install forge by forge version metadata and minecraft
-   *
-   * Task key: Computed as `${mcversion}-forge${version}`
-   */
-  installForge(options: InstallForgeOptions): Promise<string>
-
-  /**
-   * Install fabric to the minecraft
-   *
-   * Task key: Computed as `${minecraft}-fabric${loader}`
-   */
-  installFabric(options: InstallFabricOptions): Promise<string>
-
-  /**
-   * Install the optifine to the minecraft
-   *
-   * Task key: Computed as `${mcversion}-optifine${type}_${patch}`
-   */
-  installOptifine(options: InstallOptifineOptions): Promise<string>
-
-  /**
-   * Install the optifine universal jar as a mod
-   *
-   * Task key: Not applicable - this installs to an instance, not a version
-   */
-  installOptifineAsMod(options: InstallOptifineAsModOptions): Promise<void>
-
-  /**
-   * Install quilt to the minecraft
-   *
-   * Task key: Computed as `${minecraftVersion}-quilt${version}`
-   */
-  installQuilt(options: InstallQuiltOptions): Promise<string>
-
-  /**
-   * Install by a custom install profile
-   *
-   * Task key: Uses the provided version or profile.version as task key
-   */
-  installByProfile(options: InstallProfileOptions): Promise<void>
-
-  /**
-   * Diagnose if the version has any missing or corrupted files
-   *
-   * Task key: Not applicable - this is a diagnostic method
-   */
+  install(request: Extract<VersionInstallRequest, { type: 'instance' }>): Promise<InstanceVersionInstallResult>
+  install(request: Extract<VersionInstallRequest, { type: 'server' }>): Promise<string>
+  install(request: Extract<VersionInstallRequest, { type: 'java' }>): Promise<Java>
+  install(request: Extract<VersionInstallRequest, { type: 'repair' | 'reinstall' | 'optifine-mod' }>): Promise<void>
+  /** Inspect current state for display. `install` always diagnoses again. */
   diagnose(options: DiagnoseOptions): Promise<InstallIssue | undefined>
 }
 
-export const InstallServiceKey: ServiceKey<InstallService> = 'InstallService'
+export const VersionInstallServiceKey: ServiceKey<VersionInstallService> = 'VersionInstallService'

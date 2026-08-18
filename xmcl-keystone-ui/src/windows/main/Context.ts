@@ -174,10 +174,7 @@ export default defineComponent({
       instance.instances,
       instanceVersion.resolvedVersion,
       instanceVersion.refreshResolvedVersion,
-      localVersions.versions,
-      localVersions.servers,
       java.all,
-      java.refresh,
     )
 
     useTelemetryTrack(settings.state)
