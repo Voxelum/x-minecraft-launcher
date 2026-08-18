@@ -13,7 +13,7 @@ export const kInstances: InjectionKey<ReturnType<typeof useInstances>> = Symbol(
  * Hook of a view of all instances & some deletion/selection functions
  */
 export function useInstances() {
-  const { createInstance, getSharedInstancesState, editInstance, deleteInstance, validateInstancePath } = useService(InstanceServiceKey)
+  const { getSharedInstancesState, editInstance, deleteInstance, validateInstancePath } = useService(InstanceServiceKey)
   const { state, isValidating, error } = useState(getSharedInstancesState, class extends InstanceState {
     constructor() {
       super()
@@ -122,14 +122,8 @@ export function useInstances() {
     await deleteInstance(instancePath, deleteData)
     if (instancePath === lastSelected) {
       path.value = instances.value[Math.max(index - 1, 0)]?.path ?? ''
-      if (!path.value) {
-        createInstance({
-          name: 'Minecraft',
-        }).then(p => {
-          path.value = p
-        })
-      }
     }
+    return allInstances.value.length === 0
   }
   watch(state, async (newVal, oldVal) => {
     if (!newVal) return
@@ -139,13 +133,7 @@ export function useInstances() {
 
       const selectDefault = async () => {
         // Select the first instance
-        let defaultPath = instances.value[0]?.path as string | undefined
-        if (!defaultPath) {
-          // Create a default instance
-          defaultPath = await createInstance({
-            name: 'Minecraft',
-          })
-        }
+        const defaultPath = instances.value[0]?.path ?? ''
         _path.value = defaultPath
       }
 
@@ -173,6 +161,7 @@ export function useInstances() {
       // save to local storage
       _path.value = newPath
     }
+    if (!newPath) return
     editInstance({
       instancePath: newPath,
       lastAccessDate: Date.now(),
@@ -184,11 +173,7 @@ export function useInstances() {
       if (newInstances.length > 0) {
         path.value = newInstances[0].path
       } else {
-        createInstance({
-          name: 'Minecraft',
-        }).then(p => {
-          path.value = p
-        })
+        path.value = ''
       }
     }
   })

@@ -88,6 +88,12 @@ export default defineComponent({
     const java = useJavaContext()
     const localVersions = useLocalVersions()
     const instances = useInstances()
+    const router = useRouter()
+    watch([instances.ready, instances.allInstances], ([ready, current], [wasReady, previous]) => {
+      if (ready && current.length === 0 && (!wasReady || previous.length > 0) && router.currentRoute.value.path !== '/me') {
+        router.replace('/me')
+      }
+    })
     const instance = useInstance(instances.selectedInstance, instances.instances)
     provide(kPeerShared, usePeerConnections())
 
@@ -249,7 +255,6 @@ export default defineComponent({
 
     useI18nSync(settings.state)
 
-    const router = useRouter()
     useExternalRoute(router)
 
     provide(kImageDialog, useImageDialog())

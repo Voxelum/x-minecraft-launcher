@@ -69,6 +69,7 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
     console.log('refresh instance version', i.path, i.version, i.runtime)
     const _path = i.path
     if (!_path) {
+      resolvedVersion.value = undefined
       return undefined
     }
 
