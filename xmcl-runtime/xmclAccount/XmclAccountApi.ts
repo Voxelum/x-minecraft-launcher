@@ -6,6 +6,8 @@ import type {
   XmclMergePreview,
   XmclOAuthProvider,
   XmclSessionSummary,
+  XmclTogetherAllowance,
+  XmclTogetherAllowances,
   XmclTogetherBalance,
   XmclTogetherOffer,
   XmclTogetherOrder,
@@ -316,7 +318,7 @@ export class XmclAccountApi {
   }
 
   async getTogetherOverview(credential: XmclSessionCredential): Promise<XmclTogetherOverview> {
-    const [offer, trial, subscription, balance] = await Promise.all([
+    const [offer, trial, subscription, allowances, balance] = await Promise.all([
       this.request<unknown>('/v1/xmcl-plus/offer', { method: 'GET' }, credential, undefined, this.togetherBaseUrl),
       this.request<unknown>('/v1/xmcl-plus/trial', { method: 'GET' }, credential, undefined, this.togetherBaseUrl).catch((error) => {
         if (error instanceof XmclAccountApiError && error.status === 404) {
@@ -329,12 +331,14 @@ export class XmclAccountApi {
         throw error
       }),
       this.request<unknown>('/v1/xmcl-plus/status', { method: 'GET' }, credential, undefined, this.togetherBaseUrl),
+      this.request<unknown>('/v1/xmcl-plus/allowances', { method: 'GET' }, credential, undefined, this.togetherBaseUrl),
       this.request<unknown>('/v1/billing/balance', { method: 'GET' }, credential, undefined, this.togetherBaseUrl),
     ])
     return {
       offer: parseTogetherOffer(offer),
       trial: parseTogetherTrial(trial),
       subscription: subscription === null ? null : parseTogetherSubscription(subscription),
+      allowances: parseTogetherAllowances(allowances),
       balance: parseTogetherBalance(balance),
     }
   }
@@ -607,6 +611,56 @@ function parseTogetherSubscription(value: unknown): XmclTogetherSubscription {
     createdAt: value.createdAt,
     updatedAt: value.updatedAt,
     cancelAtPeriodEnd: value.cancelAtPeriodEnd,
+  }
+}
+
+function parseTogetherAllowance(value: unknown): XmclTogetherAllowance {
+  if (
+    !isRecord(value) ||
+    !Number.isSafeInteger(value.included) ||
+    !Number.isSafeInteger(value.consumed) ||
+    !Number.isSafeInteger(value.remaining) ||
+    !['not_configured', 'active'].includes(value.meteringStatus as string)
+  ) {
+    throw new TypeError('Invalid Together allowance response')
+  }
+  return {
+    included: value.included as number,
+    consumed: value.consumed as number,
+    remaining: value.remaining as number,
+    meteringStatus: value.meteringStatus as XmclTogetherAllowance['meteringStatus'],
+  }
+}
+
+function parseTogetherAllowances(value: unknown): XmclTogetherAllowances {
+  if (!isRecord(value) || !Array.isArray(value.sources)) {
+    throw new TypeError('Invalid Together allowances response')
+  }
+  const sources = value.sources.map((source) => {
+    if (
+      !isRecord(source) ||
+      !['plus', 'shared_hosting'].includes(source.source as string) ||
+      typeof source.referenceId !== 'string' ||
+      !Number.isSafeInteger(source.aiUnits) ||
+      !Number.isSafeInteger(source.turnEgressBytes) ||
+      typeof source.periodStartedAt !== 'string' ||
+      typeof source.periodEndsAt !== 'string'
+    ) {
+      throw new TypeError('Invalid Together allowance source response')
+    }
+    return {
+      source: source.source as 'plus' | 'shared_hosting',
+      referenceId: source.referenceId,
+      aiUnits: source.aiUnits as number,
+      turnEgressBytes: source.turnEgressBytes as number,
+      periodStartedAt: source.periodStartedAt,
+      periodEndsAt: source.periodEndsAt,
+    }
+  })
+  return {
+    sources,
+    aiUnits: parseTogetherAllowance(value.aiUnits),
+    turnEgressBytes: parseTogetherAllowance(value.turnEgressBytes),
   }
 }
 

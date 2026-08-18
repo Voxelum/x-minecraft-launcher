@@ -42,6 +42,28 @@ export interface XmclTogetherSubscription {
   cancelAtPeriodEnd?: true
 }
 
+export interface XmclTogetherAllowanceSource {
+  source: 'plus' | 'shared_hosting'
+  referenceId: string
+  aiUnits: number
+  turnEgressBytes: number
+  periodStartedAt: string
+  periodEndsAt: string
+}
+
+export interface XmclTogetherAllowance {
+  included: number
+  consumed: number
+  remaining: number
+  meteringStatus: 'not_configured' | 'active'
+}
+
+export interface XmclTogetherAllowances {
+  sources: XmclTogetherAllowanceSource[]
+  aiUnits: XmclTogetherAllowance
+  turnEgressBytes: XmclTogetherAllowance
+}
+
 export interface XmclTogetherOrder {
   orderId: string
   cashAmount: XmclTogetherMoney
@@ -55,6 +77,7 @@ export interface XmclTogetherOverview {
   offer: XmclTogetherOffer
   trial: XmclTogetherTrial
   subscription: XmclTogetherSubscription | null
+  allowances: XmclTogetherAllowances
   balance: XmclTogetherBalance
 }
 

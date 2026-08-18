@@ -320,6 +320,24 @@
               </div>
             </template>
           </v-list-item>
+          <v-list-item v-if="relayAllowance" class="flex-1 flex-grow-0">
+            <template #prepend>
+              <v-avatar color="success" variant="tonal">
+                <v-icon>cloud_done</v-icon>
+              </v-avatar>
+            </template>
+            <v-list-item-title class="text-success">
+              {{ t('multiplayer.relayServiceAvailable') }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{
+                t('multiplayer.relayAllowanceSummary', {
+                  remaining: formatBytes(relayAllowance.remaining),
+                  total: formatBytes(relayAllowance.included),
+                })
+              }}
+            </v-list-item-subtitle>
+          </v-list-item>
 
           <v-list-subheader>
             {{ t('multiplayer.connections') }}
@@ -484,7 +502,7 @@
                 v-model="kernel"
                 variant="filled"
                 item-title="text"
-                class="max-w-[105px]"
+                class="max-w-[165px]"
                 hide-details
                 :items="kernels"
               />
@@ -623,23 +641,24 @@ import {
   type XmclTogetherOrder,
   type XmclTogetherOverview,
 } from '@xmcl/runtime-api'
+import { routeLocationKey } from 'vue-router'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
 const { show: showAddInstasnce } = useDialog(AddInstanceDialogKey)
 const { show: showReceive } = useDialog('peer-receive')
-const route = useRoute()
+const route = inject(routeLocationKey, undefined)
 const navigation = ref<'connections' | 'settings' | 'billing'>(
-  route.query.target === 'billing' ? 'billing' : 'connections',
+  route?.query.target === 'billing' ? 'billing' : 'connections',
 )
-watch(() => route.query.target, (target) => {
+watch(() => route?.query.target, (target) => {
   if (target === 'billing') navigation.value = 'billing'
 })
 const togetherService = useService(XmclAccountServiceKey)
 const togetherOverview = shallowRef<XmclTogetherOverview>()
 const togetherOrder = shallowRef<XmclTogetherOrder>()
 const togetherLoading = ref(false)
-const togetherError = shallowRef<Error>()
+const togetherError = shallowRef<unknown>()
 
 async function runTogether(action: () => Promise<void>) {
   if (togetherLoading.value) return
@@ -648,7 +667,7 @@ async function runTogether(action: () => Promise<void>) {
   try {
     await action()
   } catch (error) {
-    togetherError.value = error as Error
+    togetherError.value = error
   } finally {
     togetherLoading.value = false
   }
@@ -816,7 +835,12 @@ const showTogetherRecommendation = computed(
       subscriptionStatus: togetherOverview.value?.subscription?.status,
     }),
 )
-const { t } = useI18n()
+const relayAllowance = computed(() =>
+  togetherOverview.value?.subscription?.status === 'active'
+    ? togetherOverview.value.allowances.turnEgressBytes
+    : undefined,
+)
+const { t, locale } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
 const forwardedPort = ref(0)
 
@@ -831,6 +855,15 @@ const kernels = computed(() => [
 function getIceServerPingText(value: number | 'timeout' | undefined) {
   if (value === undefined) return ''
   return ` (${value}ms)`
+}
+
+function formatBytes(bytes: number) {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB']
+  const unitIndex = bytes > 0
+    ? Math.min(Math.floor(Math.log(bytes) / Math.log(1000)), units.length - 1)
+    : 0
+  const value = bytes / 1000 ** unitIndex
+  return `${new Intl.NumberFormat(locale.value, { maximumFractionDigits: 2 }).format(value)} ${units[unitIndex]}`
 }
 
 const preferredTurnserver = useLocalStorage('peerPreferredTurn', '', { writeDefaults: false })

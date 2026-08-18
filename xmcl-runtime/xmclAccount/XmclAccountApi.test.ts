@@ -382,6 +382,23 @@ describe('XmclAccountApi', () => {
         return new Response('Not Found', { status: 404 })
       }
       if (path === '/v1/xmcl-plus/status') return Response.json(null)
+      if (path === '/v1/xmcl-plus/allowances') {
+        return Response.json({
+          sources: [],
+          aiUnits: {
+            included: 0,
+            consumed: 0,
+            remaining: 0,
+            meteringStatus: 'active',
+          },
+          turnEgressBytes: {
+            included: 20_000_000_000,
+            consumed: 2_500_000_000,
+            remaining: 17_500_000_000,
+            meteringStatus: 'active',
+          },
+        })
+      }
       if (path === '/v1/billing/balance') {
         return Response.json({
           accountId: 'account-1',
@@ -400,6 +417,13 @@ describe('XmclAccountApi', () => {
         turnEgressBytes: 1_000_000_000,
       },
       subscription: null,
+      allowances: {
+        turnEgressBytes: {
+          included: 20_000_000_000,
+          consumed: 2_500_000_000,
+          remaining: 17_500_000_000,
+        },
+      },
       balance: { available: { amountMinor: 0 } },
     })
   })

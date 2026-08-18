@@ -144,7 +144,7 @@ const props = defineProps<{
   overview?: XmclTogetherOverview
   order?: XmclTogetherOrder
   loading: boolean
-  error?: Error
+  error?: unknown
 }>()
 const { t, locale } = useI18n()
 const topUpAmount = ref(5)
