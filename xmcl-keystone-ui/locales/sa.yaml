@@ -684,6 +684,10 @@ logsCrashes:
   showFile: कोशे दर्शयतु
   title: वृत्तलेखाः पतनविवरणानि च
 me:
+  groupByDate: दिनाङ्कानुसारं समूहीकरोतु
+  groupByFolder: पुटिकानुसारं समूहीकरोतु
+  instanceViewMode: दृष्टान्तदर्शनविधिः
+  listView: सूचीदर्शनम्
   news: वृत्तान्ताः
   recentPlay: सद्यः क्रीडितम्
 migrateMinecraft:

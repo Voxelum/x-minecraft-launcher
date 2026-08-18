@@ -658,6 +658,10 @@ logsCrashes:
   title: Logs of Crashrapporten
   failures: Fallos de inicio
 me:
+  groupByDate: Agrupar por data
+  groupByFolder: Agrupar por cartafol
+  instanceViewMode: Modo de vista das instancias
+  listView: Vista de lista
   news: Nieuws
   recentPlay: Recent gespeeld
 migrationWindow:

@@ -644,6 +644,10 @@ logsCrashes:
   failures: 啟動失敗
   serverLogs: 伺服器日誌
 me:
+  groupByDate: 按日期分組
+  groupByFolder: 按資料夾分組
+  instanceViewMode: 實例檢視模式
+  listView: 列表檢視
   news: 最新消息
   recentPlay: 最近遊玩
 migrationWindow:

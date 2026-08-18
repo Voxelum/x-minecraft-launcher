@@ -684,6 +684,10 @@ logsCrashes:
   showFile: கோப்புறையில் காட்டு
   title: பதிவுகள் அல்லது செயலிழப்பு அறிக்கைகள்
 me:
+  groupByDate: தேதியின்படி குழுவாக்கு
+  groupByFolder: கோப்புறையின்படி குழுவாக்கு
+  instanceViewMode: இன்ஸ்டன்ஸ் காட்சி முறை
+  listView: பட்டியல் காட்சி
   news: செய்திகள்
   recentPlay: சமீபத்திய விளையாட்டு
 migrateMinecraft:

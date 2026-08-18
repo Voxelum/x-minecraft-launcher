@@ -682,6 +682,10 @@ logsCrashes:
   title: Napló vagy összeomlás jelentések
   failures: Indítási hibák
 me:
+  groupByDate: Dátum szerinti csoportosítás
+  groupByFolder: Mappa szerinti csoportosítás
+  instanceViewMode: Példánynézet mód
+  listView: Listanézet
   news: Hírek
   recentPlay: Legutóbbi játék
 migrationWindow:

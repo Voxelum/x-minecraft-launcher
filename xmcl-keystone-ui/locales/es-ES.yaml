@@ -844,6 +844,10 @@ logsCrashes:
   showFile: Mostrar en la carpeta
   title: Registros o Informes de Errores
 me:
+  groupByDate: Agrupar por fecha
+  groupByFolder: Agrupar por carpeta
+  instanceViewMode: Modo de vista de instancias
+  listView: Vista de lista
   news: Noticias
   recentPlay: Juego Reciente
 migrationWindow:

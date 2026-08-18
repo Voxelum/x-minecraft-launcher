@@ -720,6 +720,10 @@ logsCrashes:
   showFile: 在資料夾中顯示
   title: 日誌或崩潰報告
 me:
+  groupByDate: 按日期分組
+  groupByFolder: 按資料夾分組
+  instanceViewMode: 實例檢視模式
+  listView: 列表檢視
   news: 最新消息
   recentPlay: 最近遊玩
 migrateMinecraft:

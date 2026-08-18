@@ -628,6 +628,10 @@ logsCrashes:
   title: ログ、またはクラッシュレポート
   failures: 起動失敗
 me:
+  groupByDate: 日付でグループ化
+  groupByFolder: フォルダーでグループ化
+  instanceViewMode: インスタンス表示モード
+  listView: リスト表示
   news: ニュース
   recentPlay: プレイの履歴
 migrationWindow:

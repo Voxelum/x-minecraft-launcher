@@ -650,6 +650,10 @@ logsCrashes:
   title: Log o report arresto anomalo
   failures: Errori di avvio
 me:
+  groupByDate: Raggruppa per data
+  groupByFolder: Raggruppa per cartella
+  instanceViewMode: Modalità di visualizzazione delle istanze
+  listView: Vista elenco
   news: Notizie
   recentPlay: Giocato di recente
 migrationWindow:

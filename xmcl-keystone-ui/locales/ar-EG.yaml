@@ -684,6 +684,10 @@ logsCrashes:
   showFile: عرض في المجلد
   title: السجلات وتقارير الكراش
 me:
+  groupByDate: تجميع حسب التاريخ
+  groupByFolder: تجميع حسب المجلد
+  instanceViewMode: وضع عرض المثيلات
+  listView: عرض القائمة
   news: الأخبار
   recentPlay: لعبت مؤخراً
 migrateMinecraft:

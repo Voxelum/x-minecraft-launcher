@@ -645,6 +645,10 @@ logsCrashes:
   title: LOGZ OR CRASH REPORTS
   failures: LANCH FAYLZ
 me:
+  groupByDate: GROOP BY DATE
+  groupByFolder: GROOP BY FOLDR
+  instanceViewMode: INSTANS VIEW MODE
+  listView: LIST VIEW
   news: NEWZ
   recentPlay: RECENT PLAY
 migrationWindow:

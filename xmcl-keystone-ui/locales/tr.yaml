@@ -671,6 +671,10 @@ logsCrashes:
   serverLogs: Sunucu Günlükleri
   showFile: Klasörde Göster
 me:
+  groupByDate: Tarihe göre grupla
+  groupByFolder: Klasöre göre grupla
+  instanceViewMode: Oyun örneği görünüm modu
+  listView: Liste görünümü
   news: Haberler
   recentPlay: Son Oynananlar
 migrationWindow:

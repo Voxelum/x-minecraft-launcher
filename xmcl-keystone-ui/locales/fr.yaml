@@ -687,6 +687,10 @@ logsCrashes:
   title: Journaux ou rapports de plantage
   failures: Échecs de lancement
 me:
+  groupByDate: Regrouper par date
+  groupByFolder: Regrouper par dossier
+  instanceViewMode: Mode d’affichage des instances
+  listView: Vue en liste
   news: Nouvelles
   recentPlay: Joué Récemment
 migrationWindow:

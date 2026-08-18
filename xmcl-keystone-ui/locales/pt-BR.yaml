@@ -667,6 +667,10 @@ logsCrashes:
   title: Logs ou Relatórios de falhas
   failures: Falhas de inicialização
 me:
+  groupByDate: Agrupar por data
+  groupByFolder: Agrupar por pasta
+  instanceViewMode: Modo de visualização das instâncias
+  listView: Visualização em lista
   news: Notícias
   recentPlay: Jogado recente
 migrationWindow:

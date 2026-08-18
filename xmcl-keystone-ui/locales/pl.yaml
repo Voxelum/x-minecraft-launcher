@@ -642,6 +642,10 @@ logsCrashes:
   title: Dzienniki lub raporty o wypadkach
   failures: Błędy uruchamiania
 me:
+  groupByDate: Grupuj według daty
+  groupByFolder: Grupuj według folderu
+  instanceViewMode: Tryb widoku instancji
+  listView: Widok listy
   news: Aktualności
   recentPlay: Ostatnia gra
 migrationWindow:

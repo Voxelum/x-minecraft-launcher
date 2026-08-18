@@ -770,6 +770,10 @@ logsCrashes:
   serverLogs: 服务器日志
   title: 日志或崩溃报告
 me:
+  groupByDate: 按日期分组
+  groupByFolder: 按文件夹分组
+  instanceViewMode: 实例视图模式
+  listView: 列表视图
   news: 新闻
   recentPlay: 最近游玩
 migrationWindow:

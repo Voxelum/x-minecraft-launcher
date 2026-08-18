@@ -355,24 +355,24 @@ function openInBrowser(url: string) {
               density="compact"
               mandatory
               class="mr-2"
-              aria-label="Instance view mode"
+              :aria-label="t('me.instanceViewMode')"
             >
               <v-btn
-                v-shared-tooltip="() => 'Group by folder'"
+                v-shared-tooltip="() => t('me.groupByFolder')"
                 value="folder"
                 size="small"
               >
                 <v-icon size="small" aria-hidden="true">folder</v-icon>
               </v-btn>
               <v-btn
-                v-shared-tooltip="() => 'Group by date'"
+                v-shared-tooltip="() => t('me.groupByDate')"
                 value="date"
                 size="small"
               >
                 <v-icon size="small" aria-hidden="true">schedule</v-icon>
               </v-btn>
               <v-btn
-                v-shared-tooltip="() => 'List view'"
+                v-shared-tooltip="() => t('me.listView')"
                 value=""
                 size="small"
               >
