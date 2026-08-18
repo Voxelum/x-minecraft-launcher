@@ -194,6 +194,7 @@ curseforgeCategory:
   Vanilla+: Vanilla+
   World Gen: Generador de Mundos
 dependencies:
+  dependents: Mods que dependen de este mod
   embedded: Integrada
   incompatible: Incompatible
   name: Dependencias

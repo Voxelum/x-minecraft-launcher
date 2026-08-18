@@ -178,6 +178,7 @@ delete:
   'no': Нет
   'yes': Удалить
 dependencies:
+  dependents: Моды, зависящие от этого мода
   embedded: Встраиваемые
   incompatible: Несовместимые
   name: Зависимости

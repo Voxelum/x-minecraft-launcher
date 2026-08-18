@@ -149,6 +149,7 @@ delete:
   'no': Жоқ
   'yes': Жою
 dependencies:
+  dependents: Осы модқа тәуелді модтар
   embedded: Енгізілген
   incompatible: Үйлесімсіз
   name: Тәуелділіктер

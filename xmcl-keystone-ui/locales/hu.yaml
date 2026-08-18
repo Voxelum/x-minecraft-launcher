@@ -156,6 +156,7 @@ delete:
   'no': Nem
   'yes': Törlés
 dependencies:
+  dependents: Ettől a modtól függő modok
   embedded: Beépített
   incompatible: Inkompatibilis
   name: Szükségletek

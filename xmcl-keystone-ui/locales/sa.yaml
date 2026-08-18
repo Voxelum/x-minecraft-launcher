@@ -176,6 +176,7 @@ delete:
   'no': न
   'yes': लोपयतु
 dependencies:
+  dependents: अस्मिन् मोड् इत्यस्मिन् आश्रिताः मोड्
   embedded: अन्तर्निहितम्
   incompatible: असुसङ्गतम्
   name: अधीनताः
