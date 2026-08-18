@@ -12,6 +12,7 @@ import { getSerializedError } from '~/infra/errors/error_serialize'
 gracefulify(fs)
 
 const parser = new ResourceParser()
+const CHECKSUM_CONCURRENCY = 64
 
 const handlers: ResourceWorker = {
   checksum: async (path, algorithm) => {
@@ -25,4 +26,6 @@ const handlers: ResourceWorker = {
   parse: (args) => parser.parse(args),
   hashAndFileType: (file, size, dir) => hashAndFiletypeResource(file, size, dir),
 }
-setHandler(handlers, getSerializedError)
+setHandler(handlers, getSerializedError, {
+  concurrency: { checksum: CHECKSUM_CONCURRENCY },
+})
