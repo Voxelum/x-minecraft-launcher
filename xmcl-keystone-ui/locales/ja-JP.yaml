@@ -146,6 +146,7 @@ delete:
   'no': いいえ
   'yes': はい
 dependencies:
+  dependents: この Mod に依存する Mod
   embedded: 埋め込み
   incompatible: 不適合
   name: 依存関係

@@ -176,6 +176,7 @@ delete:
   'no': Tidak
   'yes': Hapus
 dependencies:
+  dependents: Mod yang bergantung pada mod ini
   embedded: Tertanam
   incompatible: Tidak Kompatibel
   name: Dependensi

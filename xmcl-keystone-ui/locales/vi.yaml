@@ -176,6 +176,7 @@ delete:
   'no': Không
   'yes': Xóa
 dependencies:
+  dependents: Các mod phụ thuộc vào mod này
   embedded: Đã tích hợp
   incompatible: Không tương thích
   name: Phụ thuộc

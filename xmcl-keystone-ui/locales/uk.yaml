@@ -190,6 +190,7 @@ delete:
   'no': Ні
   'yes': Видалити
 dependencies:
+  dependents: Моди, що залежать від цього мода
   embedded: Вбудовані
   incompatible: Несумісні
   name: Залежності

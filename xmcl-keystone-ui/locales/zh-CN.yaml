@@ -219,6 +219,7 @@ delete:
   'no': 取消
   'yes': 删除
 dependencies:
+  dependents: 依赖此 Mod 的 Mod
   embedded: 内嵌
   incompatible: 不兼容
   name: 依赖
@@ -1235,6 +1236,8 @@ multiplayer:
   month: 月
   orderStatus: 'Waffo 订单：{status}'
   planDescription: 每月包含 20 GB 托管中继流量，以及用于排查整合包问题的 AI 协助。
+  relayAllowanceSummary: 本周期剩余 {remaining}，共 {total}
+  relayServiceAvailable: XMCL Together 中继服务可用
   subscription:
     active: 使用中
     cancelled: 已取消

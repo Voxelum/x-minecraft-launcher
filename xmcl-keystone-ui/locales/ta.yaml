@@ -176,6 +176,7 @@ delete:
   'no': இல்லை
   'yes': அழி
 dependencies:
+  dependents: இந்த மோடைச் சார்ந்த மோட்கள்
   embedded: உட்பொதிக்கப்பட்டது
   incompatible: பொருந்தாதது
   name: சார்புகள்

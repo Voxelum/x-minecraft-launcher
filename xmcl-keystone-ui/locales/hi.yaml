@@ -176,6 +176,7 @@ delete:
   'no': नहीं
   'yes': हटाएं
 dependencies:
+  dependents: इस मॉड पर निर्भर मॉड
   embedded: एम्बेडेड
   incompatible: असंगत
   name: निर्भरताएँ

@@ -176,6 +176,7 @@ delete:
   'no': না
   'yes': মুছে ফেলুন
 dependencies:
+  dependents: এই মডের উপর নির্ভরশীল মডগুলি
   embedded: এমবেডেড
   incompatible: অসামঞ্জস্যপূর্ণ
   name: নির্ভরতা

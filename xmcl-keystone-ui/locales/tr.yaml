@@ -155,6 +155,7 @@ delete:
   'no': Hayır
   'yes': Sil
 dependencies:
+  dependents: Bu moda bağlı modlar
   embedded: Gömülü
   incompatible: Uyumsuz
   name: Bağımlılıklar

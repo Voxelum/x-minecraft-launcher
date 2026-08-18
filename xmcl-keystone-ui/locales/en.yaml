@@ -260,6 +260,7 @@ delete:
   'no': 'No'
   'yes': Delete
 dependencies:
+  dependents: Mods depending on this mod
   embedded: Embedded
   incompatible: Incompatible
   name: Dependencies
@@ -1493,6 +1494,8 @@ multiplayer:
   month: month
   orderStatus: 'Waffo order: {status}'
   planDescription: 20 GB of managed relay traffic each month, plus AI troubleshooting for your modpack.
+  relayAllowanceSummary: '{remaining} remaining of {total} this period'
+  relayServiceAvailable: XMCL Together relay service available
   waffoHint: Payments are completed securely on Waffo Pancake. XMCL never receives your card number.
   waitingForMaster: Waiting for the room master to reconnect
 myStuff: My Stuff

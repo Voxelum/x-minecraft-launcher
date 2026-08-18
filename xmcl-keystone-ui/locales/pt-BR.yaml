@@ -154,6 +154,7 @@ delete:
   'no': Não
   'yes': Deletar
 dependencies:
+  dependents: Mods que dependem deste mod
   embedded: Incorporado
   incompatible: Incompatível
   name: Dependências

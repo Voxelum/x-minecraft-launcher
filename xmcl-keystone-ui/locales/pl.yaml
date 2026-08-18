@@ -123,6 +123,7 @@ delete:
   'no': Nie
   'yes': Usuń
 dependencies:
+  dependents: Mody zależne od tego moda
   embedded: Wbudowany
   incompatible: Niezgodność
   name: Zależności

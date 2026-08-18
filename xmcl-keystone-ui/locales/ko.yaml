@@ -155,6 +155,7 @@ delete:
   'no': 아니오
   'yes': 삭제
 dependencies:
+  dependents: 이 모드에 의존하는 모드
   embedded: 내장됨
   incompatible: 호환되지 않음
   name: 의존성

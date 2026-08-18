@@ -129,6 +129,7 @@ delete:
   'no': 'No'
   'yes': Elimina
 dependencies:
+  dependents: Mod che dipendono da questa mod
   embedded: Incorporato
   incompatible: Incompatibile
   name: Dipendenze
