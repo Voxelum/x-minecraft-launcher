@@ -150,6 +150,7 @@ delete:
   'no': Nee
   'yes': Verwijderen
 dependencies:
+  dependents: Mods die afhankelijk zijn van deze mod
   embedded: Ingebed
   incompatible: Incompatibel
   name: Afhankelijkheden

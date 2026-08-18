@@ -260,6 +260,7 @@ delete:
   'no': 'No'
   'yes': Delete
 dependencies:
+  dependents: Mods depending on this mod
   embedded: Embedded
   incompatible: Incompatible
   name: Dependencies

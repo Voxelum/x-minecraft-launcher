@@ -176,6 +176,7 @@ delete:
   'no': لا
   'yes': حذف
 dependencies:
+  dependents: التعديلات التي تعتمد على هذا التعديل
   embedded: مدمج
   incompatible: غير متوافق
   name: المتطلبات والتبعيات

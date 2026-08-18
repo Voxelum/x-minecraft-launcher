@@ -219,6 +219,7 @@ delete:
   'no': 取消
   'yes': 删除
 dependencies:
+  dependents: 依赖此 Mod 的 Mod
   embedded: 内嵌
   incompatible: 不兼容
   name: 依赖

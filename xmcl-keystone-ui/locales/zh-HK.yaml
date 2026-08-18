@@ -181,6 +181,7 @@ delete:
   'no': 取消
   'yes': 刪除
 dependencies:
+  dependents: 依賴此 Mod 的 Mod
   embedded: 內嵌
   incompatible: 唔相容
   name: 相依項

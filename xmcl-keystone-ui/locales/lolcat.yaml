@@ -149,6 +149,7 @@ delete:
   'no': 'NO'
   'yes': DELET
 dependencies:
+  dependents: MODZ DAT DEPEND ON DIS MOD
   embedded: EMBEDDED
   incompatible: BAD MATCH
   name: DEPENDENCIEZ

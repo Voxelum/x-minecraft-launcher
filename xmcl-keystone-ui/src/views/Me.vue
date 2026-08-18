@@ -709,6 +709,10 @@ function openInBrowser(url: string) {
   /* radius / border / cursor / transition / hover come from .surface-card-row */
 }
 
+.instance-item--active {
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-primary));
+}
+
 .instance-play-button {
   flex-shrink: 0;
   margin-left: auto;

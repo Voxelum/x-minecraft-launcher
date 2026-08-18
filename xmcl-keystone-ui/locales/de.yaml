@@ -167,6 +167,7 @@ delete:
   'no': Nein.
   'yes': Ja
 dependencies:
+  dependents: Mods, die von diesem Mod abhängen
   embedded: Eingebaut
   incompatible: Inkompatibel
   name: Abhängigkeiten

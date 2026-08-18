@@ -149,6 +149,7 @@ delete:
   'no': 'لا'
   'yes': 'يمسح'
 dependencies:
+  dependents: التعديلات التي تعتمد على هذا التعديل
   embedded: 'مغروس'
   incompatible: 'غير متوافق'
   name: 'التبعيات'
