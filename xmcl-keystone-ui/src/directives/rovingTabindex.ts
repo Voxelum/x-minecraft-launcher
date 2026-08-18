@@ -33,6 +33,7 @@ type Binding = RovingOrientation | RovingTabindexOptions | undefined
 
 const ROOT_ATTR = 'data-roving-tabindex-root'
 const SKIP_ATTR = 'data-roving-skip'
+const ROOT_SELECTOR = `[${ROOT_ATTR}]`
 const FOCUSABLE_SELECTOR =
   'button, a[href], [role="button"], input, select, textarea, [tabindex]:not([tabindex="-2"])'
 
@@ -41,6 +42,7 @@ interface Instance {
   onKeydown: (e: KeyboardEvent) => void
   onFocusin: (e: FocusEvent) => void
   observer: MutationObserver | null
+  refreshFrame: { value: number | null }
 }
 
 const instances = new WeakMap<HTMLElement, Instance>()
@@ -58,8 +60,12 @@ function isVisible(el: HTMLElement): boolean {
   if (el.hasAttribute('disabled')) return false
   if (el.getAttribute('aria-hidden') === 'true') return false
   if (el.hasAttribute(SKIP_ATTR)) return false
-  if (el.offsetParent === null && getComputedStyle(el).position !== 'fixed') return false
+  if (isHidden(el)) return false
   return true
+}
+
+function isHidden(el: HTMLElement): boolean {
+  return el.offsetParent === null && getComputedStyle(el).position !== 'fixed'
 }
 
 /**
@@ -67,22 +73,19 @@ function isVisible(el: HTMLElement): boolean {
  * no nested roving-tabindex root between `el` and `root`.
  */
 function belongsToGroup(el: HTMLElement, root: HTMLElement): boolean {
-  let cur: HTMLElement | null = el.parentElement
-  while (cur && cur !== root) {
-    if (cur.hasAttribute(ROOT_ATTR)) return false
-    cur = cur.parentElement
-  }
-  return cur === root
+  return el.closest(ROOT_SELECTOR) === root
 }
 
 function getItems(root: HTMLElement): HTMLElement[] {
+  if (isHidden(root)) return []
   const nodes = Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
   return nodes.filter((el) => belongsToGroup(el, root) && isVisible(el))
 }
 
 function applyRoving(items: HTMLElement[], activeIndex: number) {
   for (let i = 0; i < items.length; i++) {
-    items[i].tabIndex = i === activeIndex ? 0 : -1
+    const tabindex = i === activeIndex ? 0 : -1
+    if (items[i].tabIndex !== tabindex) items[i].tabIndex = tabindex
   }
 }
 
@@ -151,17 +154,25 @@ export const vRovingTabindex: ObjectDirective<HTMLElement, Binding> = {
     el.addEventListener('keydown', onKeydown)
     el.addEventListener('focusin', onFocusin)
 
+    const refreshFrame = { value: null as number | null }
+    const scheduleRefresh = () => {
+      if (refreshFrame.value !== null) return
+      refreshFrame.value = requestAnimationFrame(() => {
+        refreshFrame.value = null
+        const active = document.activeElement as HTMLElement | null
+        const focused = active && belongsToGroup(active, el) ? active : null
+        refresh(el, focused)
+      })
+    }
     const observer = new MutationObserver(() => {
-      const active = document.activeElement as HTMLElement | null
-      const focused = active && belongsToGroup(active, el) ? active : null
-      refresh(el, focused)
+      scheduleRefresh()
     })
     observer.observe(el, { childList: true, subtree: true })
 
-    instances.set(el, { options, onKeydown, onFocusin, observer })
+    instances.set(el, { options, onKeydown, onFocusin, observer, refreshFrame })
 
     // Seed initial tabindex state after the DOM settles.
-    queueMicrotask(() => refresh(el, null))
+    queueMicrotask(scheduleRefresh)
   },
 
   updated(el, binding) {
@@ -176,6 +187,7 @@ export const vRovingTabindex: ObjectDirective<HTMLElement, Binding> = {
     el.removeEventListener('keydown', inst.onKeydown)
     el.removeEventListener('focusin', inst.onFocusin)
     inst.observer?.disconnect()
+    if (inst.refreshFrame.value !== null) cancelAnimationFrame(inst.refreshFrame.value)
     el.removeAttribute(ROOT_ATTR)
     instances.delete(el)
   },
