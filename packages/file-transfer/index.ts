@@ -4,6 +4,7 @@
 
 export * from './agent'
 export * from './controller'
+export * from './concurrency_dispatcher'
 export * from './download'
 export * from './error'
 export * from './progress'

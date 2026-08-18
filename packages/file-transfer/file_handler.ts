@@ -17,6 +17,7 @@ export class FileHandler implements Dispatcher.DispatchHandler {
   protected terminated = false
   protected pending = 0
   protected writeError?: Error
+  private completedEarly = false
   protected listener = () => this.resolvers.reject(this.signal?.reason)
 
   constructor(
@@ -125,14 +126,26 @@ export class FileHandler implements Dispatcher.DispatchHandler {
 
   protected onHeaderParsed(acceptRanges: boolean, total: number) {}
 
-  private checkTermination() {
+  protected checkTermination() {
     if (this.pending === 0) {
       if (this.writeError) {
         this.resolvers.reject(this.writeError)
       } else {
         this.resolvers.resolve()
+        if (this.completedEarly) {
+          const abort = this.abort
+          this.abort = undefined
+          abort?.()
+        }
       }
     }
+  }
+
+  protected completeEarly() {
+    if (this.terminated) return
+    this.terminated = true
+    this.completedEarly = true
+    this.checkTermination()
   }
 
   onData(chunk: Buffer): boolean {

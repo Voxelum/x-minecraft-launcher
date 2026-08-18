@@ -1,4 +1,5 @@
 export * from './error'
+export * from './versionInstallManifest'
 export * from './fabric.browser'
 export * from './forge.browser'
 export * from './quilt.browser'

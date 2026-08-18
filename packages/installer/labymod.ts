@@ -1,23 +1,14 @@
 /* eslint-disable n/no-unsupported-features/node-builtins */
 import { LibraryInfo, MinecraftFolder, MinecraftLocation } from '@xmcl/core'
-import {
-  DownloadBaseOptions,
-  download,
-  downloadMultiple,
-  getDownloadBaseOptions,
-} from '@xmcl/file-transfer'
-
-import { writeFile } from 'fs/promises'
-import { dirname, join } from 'path'
-import { diagnoseFile } from './diagnose'
+import { readFile } from 'fs/promises'
+import { type InstallFile, type InstallManifest, type InstallWorkflow } from './installManifest'
 import {
   LabyModAddon,
   LabyModAddonIndex,
   LabyModManifest,
-  getLabyModAddon,
 } from './labymod.browser'
-import { Tracker, WithDownload, onDownloadMultiple, onDownloadSingle } from './tracker'
-import { InstallOptions, ensureDir } from './utils'
+import { Tracker, WithDownload } from './tracker'
+import { InstallOptions } from './utils'
 import { FetchOptions, doFetch } from './utils.browser'
 
 export interface LabyModTrackerEvents {
@@ -27,7 +18,7 @@ export interface LabyModTrackerEvents {
   'labymod.addon': WithDownload<{ namespace: string; name: string }>
 }
 
-export interface InstallLabyModOptions extends DownloadBaseOptions, InstallOptions, FetchOptions {
+export interface InstallLabyModOptions extends InstallOptions, FetchOptions {
   environment?: string
   /**
    * The tracker to track the install process
@@ -38,7 +29,7 @@ export interface InstallLabyModOptions extends DownloadBaseOptions, InstallOptio
    */
   checksum?: (file: string, algorithm: string) => Promise<string>
 }
-export interface InstallLabyModAddonOptions extends DownloadBaseOptions, FetchOptions {
+export interface InstallLabyModAddonOptions extends FetchOptions {
   environment?: string
   /**
    * Whether to install addon dependencies automatically
@@ -55,13 +46,93 @@ export interface InstallLabyModAddonOptions extends DownloadBaseOptions, FetchOp
   checksum?: (file: string, algorithm: string) => Promise<string>
 }
 
-async function createLabyModJson(
+interface LabyModLibraryInfo {
+  name: string
+  url: string
+  minecraftVersion: string
+  sha1: string
+  size: number
+  natives: any[]
+  resolvedAt: number
+}
+
+export function createLabyModInstallWorkflow(
+  manifest: LabyModManifest,
+  tag: string,
+  folder: MinecraftFolder,
+  environment = 'production',
+): InstallWorkflow<string> {
+  const versionInfo = manifest.minecraftVersions.find((version) => version.tag === tag)
+  if (!versionInfo) throw new Error(`Cannot find version info for ${tag}`)
+  const metadataPath = folder.getPath('versions', '.install', `labymod-libraries-${environment}.json`)
+  const versionPath = folder.getPath('versions', '.install', `labymod-version-${tag}.json`)
+  let stage = 0
+  let version = ''
+  return {
+    async next() {
+      if (stage === 0) {
+        stage += 1
+        return {
+          done: false,
+          plan: {
+            schemaVersion: 1,
+            tasks: [{
+              id: 'labymod-metadata',
+              type: 'files',
+              files: [
+                {
+                  path: metadataPath,
+                  urls: [`https://laby-releases.s3.de.io.cloud.ovh.net/api/v1/libraries/${environment}.json`],
+                  validator: 'json',
+                  replace: true,
+                },
+                {
+                  path: versionPath,
+                  urls: [versionInfo.customManifestUrl],
+                  validator: 'json',
+                  replace: true,
+                },
+              ],
+            }],
+          },
+        }
+      }
+      if (stage === 1) {
+        stage += 1
+        const metadata = JSON.parse(await readFile(metadataPath, 'utf8')) as { libraries: LabyModLibraryInfo[] }
+        const versionJson = JSON.parse(await readFile(versionPath, 'utf8'))
+        const resolved = resolveLabyModMetadataInstallManifest(
+          manifest,
+          tag,
+          folder,
+          environment,
+          metadata.libraries,
+          versionJson,
+        )
+        version = resolved.version
+        resolved.plan.tasks.push({
+          id: 'labymod-metadata-cleanup',
+          type: 'materialize',
+          operations: [
+            { type: 'remove', path: metadataPath },
+            { type: 'remove', path: versionPath },
+          ],
+          outputs: [],
+        })
+        return { done: false, plan: resolved.plan }
+      }
+      return { done: true, result: version }
+    },
+  }
+}
+
+export async function resolveLabyModInstallManifest(
   manifest: LabyModManifest,
   tag: string,
   folder: MinecraftFolder,
   environment: string,
   options: InstallLabyModOptions,
-): Promise<string> {
+): Promise<{ version: string; plan: InstallManifest }> {
   const librariesUrl = `https://laby-releases.s3.de.io.cloud.ovh.net/api/v1/libraries/${environment}.json`
   const versionInfo = manifest.minecraftVersions.find((v) => v.tag === tag)!
 
@@ -69,16 +140,6 @@ async function createLabyModJson(
     throw Object.assign(new Error(`Cannot find version info for ${tag}`), {
       name: 'VersionInfoNotFoundError',
     })
-  }
-
-  interface LibInfo {
-    name: string
-    url: string
-    minecraftVersion: string
-    sha1: string
-    size: number
-    natives: any[]
-    resolvedAt: number
   }
 
   const metadataResponse = await doFetch(options, librariesUrl)
@@ -94,9 +155,9 @@ async function createLabyModJson(
     )
   }
   // Get version json and merge with libraries
-  const libraries: LibInfo[] = await metadataResponse
+  const libraries: LabyModLibraryInfo[] = await metadataResponse
     .json()
-    .then((res) => res.libraries as LibInfo[])
+    .then((res) => res.libraries as LabyModLibraryInfo[])
     .then((libs) =>
       libs.filter((lib) => lib.minecraftVersion === 'all' || lib.minecraftVersion === tag),
     )
@@ -114,6 +175,26 @@ async function createLabyModJson(
     )
   }
   const versionJson = await versionJsonResponse.json()
+
+  return resolveLabyModMetadataInstallManifest(
+    manifest,
+    tag,
+    folder,
+    environment,
+    libraries,
+    versionJson,
+  )
+}
+
+export function resolveLabyModMetadataInstallManifest(
+  manifest: LabyModManifest,
+  tag: string,
+  folder: MinecraftFolder,
+  environment: string,
+  libraries: LabyModLibraryInfo[],
+  sourceVersionJson: any,
+): { version: string; plan: InstallManifest } {
+  const versionJson = structuredClone(sourceVersionJson)
 
   versionJson.libraries.push(
     ...libraries.map((l) => ({
@@ -145,175 +226,28 @@ async function createLabyModJson(
     versionJson.inheritFrom = versionJson._minecraftVersion || tag
   }
 
-  // write json to file
   const versionPath = folder.getPath('versions', versionJson.id, `${versionJson.id}.json`)
-  await ensureDir(dirname(versionPath))
-  await writeFile(versionPath, JSON.stringify(versionJson, null, 4))
-
-  return versionJson.id
-}
-
-export async function installLabyMod4(
-  manifest: LabyModManifest,
-  tag: string,
-  minecraft: MinecraftLocation,
-  options: InstallLabyModOptions = {},
-): Promise<string> {
-  const folder = MinecraftFolder.from(minecraft)
-  const environment = options?.environment ?? 'production'
-
-  const versionId = await createLabyModJson(manifest, tag, folder, environment, options)
-
-  // Diagnose assets first in parallel
   const assetEntries = Object.entries(manifest.assets)
-  const diagnoseResults = await Promise.all(
-    assetEntries.map(async ([name, hash]) => {
-      const destination = folder.getPath('labymod-neo', 'assets', `${name}.jar`)
-      const url = `https://laby-releases.s3.de.io.cloud.ovh.net/api/v1/download/assets/labymod4/${environment}/${manifest.commitReference}/${name}/${hash}.jar`
-
-      const issue = await diagnoseFile(
+  const files: InstallFile[] = assetEntries.map(([name, hash]) => ({
+    path: folder.getPath('labymod-neo', 'assets', `${name}.jar`),
+    urls: [`https://laby-releases.s3.de.io.cloud.ovh.net/api/v1/download/assets/labymod4/${environment}/${manifest.commitReference}/${name}/${hash}.jar`],
+    validator: 'file',
+  }))
+  return {
+    version: versionJson.id,
+    plan: {
+      schemaVersion: 1,
+      tasks: [
         {
-          file: destination,
-          expectedChecksum: '', // LabyMod doesn't provide checksums for assets
-          role: 'labymod-asset',
-          hint: 'Problem on labymod asset! Please consider to reinstall labymod.',
+          id: 'labymod-version-json',
+          type: 'materialize',
+          operations: [{ type: 'write', path: versionPath, content: JSON.stringify(versionJson, null, 4) }],
+          outputs: [{ path: versionPath, validator: 'json' }],
         },
-        { signal: options.signal, checksum: options.checksum },
-      )
-
-      return {
-        name,
-        hash,
-        url,
-        destination,
-        needsDownload: !!issue,
-      }
-    }),
-  )
-
-  // Only download assets that need to be downloaded
-  const assetsToDownload = diagnoseResults.filter((r) => r.needsDownload)
-
-  if (assetsToDownload.length > 0) {
-    await downloadMultiple({
-      options: assetsToDownload.map((r) => ({
-        url: r.url,
-        destination: r.destination,
-      })),
-      ...getDownloadBaseOptions(options),
-      tracker: onDownloadMultiple(options.tracker, 'labymod.assets', {
-        count: assetsToDownload.length,
-      }),
-      signal: options.signal,
-    })
-  }
-
-  return versionId
-}
-
-async function installLabyModAddonImpl(
-  addon: LabyModAddon | LabyModAddonIndex,
-  minecraft: MinecraftLocation,
-  options?: InstallLabyModAddonOptions,
-): Promise<string> {
-  const folder = MinecraftFolder.from(minecraft)
-  const environment = options?.environment ?? 'production'
-  const installDependencies = options?.installDependencies ?? true
-
-  // Install dependencies first if needed
-  if (installDependencies && addon.dependencies && addon.dependencies.length > 0) {
-    for (const dep of addon.dependencies) {
-      if (!dep.optional) {
-        const depAddon = await getLabyModAddon(dep.namespace, environment, options)
-        await installLabyModAddonImpl(depAddon, minecraft, {
-          ...options,
-          installDependencies: true,
-        })
-      }
-    }
-  }
-
-  // Download the addon jar
-  const url = `https://flintmc.net/api/client-store/fetch-jar-by-hash/${addon.file_hash}`
-  const destination = join(folder.getPath('labymod-neo', 'addons'), `${addon.namespace}.jar`)
-
-  // Check if file needs download
-  const issue = await diagnoseFile(
-    {
-      file: destination,
-      expectedChecksum: addon.file_hash,
-      role: 'labymod-addon',
-      hint: 'Problem on labymod addon! Please consider to reinstall.',
+        { id: 'labymod-assets', type: 'files', files },
+      ],
     },
-    { signal: options?.signal, checksum: options?.checksum },
-  )
-
-  if (issue) {
-    await download({
-      url,
-      destination,
-      ...getDownloadBaseOptions(options),
-      tracker: onDownloadSingle(options?.tracker, 'labymod.addon', {
-        namespace: addon.namespace,
-        name: addon.name,
-      }),
-    })
   }
-
-  return destination
-}
-
-/**
- * Install a LabyMod addon by namespace (like 'labyfabric' for Fabric Loader)
- *
- * @param namespace The addon namespace
- * @param minecraft The Minecraft location
- * @param options Installation options
- * @returns Promise that resolves to the installed addon file path
- */
-export async function installLabyModAddon(
-  namespace: string,
-  minecraft: MinecraftLocation,
-  options?: InstallLabyModAddonOptions,
-): Promise<string> {
-  const environment = options?.environment ?? 'production'
-  const addon = await getLabyModAddon(namespace, environment, options)
-  return installLabyModAddonImpl(addon, minecraft, options)
-}
-
-/**
- * Install Fabric Loader addon for LabyMod 4
- *
- * This installs the labyfabric addon which allows running Fabric mods within LabyMod.
- * It will also install required dependencies like modcompat.
- *
- * @param minecraft The Minecraft location
- * @param options Installation options
- * @returns Promise that resolves to the installed addon file path
- */
-export function installLabyModFabricAddon(
-  minecraft: MinecraftLocation,
-  options?: InstallLabyModAddonOptions,
-): Promise<string> {
-  return installLabyModAddon('labyfabric', minecraft, options)
-}
-
-/**
- * Install Forge Loader addon for LabyMod 4
- *
- * This installs the labyforge addon which allows running Forge mods within LabyMod.
- * Note: Forge Loader only supports Minecraft 1.8.9.
- * It will also install required dependencies like modcompat.
- *
- * @param minecraft The Minecraft location
- * @param options Installation options
- * @returns Promise that resolves to the installed addon file path
- */
-export function installLabyModForgeAddon(
-  minecraft: MinecraftLocation,
-  options?: InstallLabyModAddonOptions,
-): Promise<string> {
-  return installLabyModAddon('labyforge', minecraft, options)
 }
 
 /**
