@@ -54,10 +54,12 @@ import { useExceptionHandler } from '@/composables/exception'
 import { isException, LaunchException, LaunchExceptions, LaunchServiceKey } from '@xmcl/runtime-api'
 import FeedbackCard from '../components/FeedbackCard.vue'
 import { useDialog } from '../composables/dialog'
+import { LaunchStatusDialogKey } from '../composables/launch'
 import { useLaunchException } from '@/composables/launchException'
 
 const { on } = useService(LaunchServiceKey)
 const { isShown, hide } = useDialog('launch-blocked')
+const { hide: hideLaunchStatus } = useDialog(LaunchStatusDialogKey)
 const title = ref('')
 const description = ref('')
 const unexpected = ref(false)
@@ -73,11 +75,13 @@ const { onException: _onException, onError } = useLaunchException(
 
 function onException(e: LaunchExceptions) {
   _onException(e)
+  hideLaunchStatus()
   isShown.value = true
 }
 
 on('error', (e) => {
   onError(e)
+  hideLaunchStatus()
   isShown.value = true
 })
 

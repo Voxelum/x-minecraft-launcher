@@ -257,6 +257,8 @@ export type LaunchExceptions = {
   reason: 'no-graphical-session' | 'xwayland-missing' | 'xwayland-not-running' | 'environment-missing' | 'sandbox-denied'
 }
 
-export class LaunchException extends Exception<LaunchExceptions> { }
+export class LaunchException extends Exception<LaunchExceptions> {
+  static readonly exceptionName = 'LaunchException'
+}
 
 export const LaunchServiceKey: ServiceKey<LaunchService> = 'LaunchService'
