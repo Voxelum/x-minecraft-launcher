@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { getLocalX11Socket, parseSystemdUserEnvironment, resolveLinuxDisplayEnvironment } from './linuxDisplay'
+import { getLocalX11Socket, parseSystemdUserEnvironment, resolveLinuxDisplayEnvironment, shouldBlockLinuxDisplayLaunch } from './linuxDisplay'
 
 describe('linux display environment', () => {
   test('parses systemd user environment values containing equals signs', () => {
@@ -61,10 +61,20 @@ describe('linux display environment', () => {
   })
 
   test('reports a sandbox failure before guessing a display', () => {
-    expect(resolveLinuxDisplayEnvironment(
+    const result = resolveLinuxDisplayEnvironment(
       { WAYLAND_DISPLAY: 'wayland-1', FLATPAK_ID: 'org.xmcl.launcher' },
       {},
       { xwaylandAvailable: false, x11SocketAvailable: false },
-    )).toEqual({ type: 'unavailable', reason: 'sandbox-denied' })
+    )
+
+    expect(result).toEqual({ type: 'unavailable', reason: 'sandbox-denied' })
+    expect(shouldBlockLinuxDisplayLaunch(result)).toBe(false)
+  })
+
+  test('blocks diagnosed display failures outside a sandbox', () => {
+    expect(shouldBlockLinuxDisplayLaunch({
+      type: 'unavailable',
+      reason: 'xwayland-missing',
+    })).toBe(true)
   })
 })
