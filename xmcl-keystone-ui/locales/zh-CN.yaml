@@ -1654,6 +1654,8 @@ serverStatus:
   refuse: 服务器断开了连接！
   timeout: 服务器响应超时！
 setting:
+  multiplayerTransport: Together 传输核心
+  multiplayerTransportDescription: 选择 Together 使用的 WebRTC 实现。切换核心会断开当前连接。
   themeStore:
     name: 主题库
     description: 保存并管理全局主题

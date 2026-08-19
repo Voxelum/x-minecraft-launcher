@@ -83,13 +83,16 @@ export function createMultiplayerEntryController<T>(
 
 export function useMultiplayerEntry(): MultiplayerEntryController {
   const xmclAccount = useXmclAccountState()
+  const router = useRouter()
   const { isShown, show, hide } = useDialog(MultiplayerLoginDialogKey)
   const controller = createMultiplayerEntryController(
     xmclAccount.account,
     isShown,
     show,
     hide,
-    () => windowController.openMultiplayerWindow(),
+    async () => {
+      await router.push('/multiplayer')
+    },
   )
 
   return {

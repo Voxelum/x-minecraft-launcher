@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest'
 import {
   getTogetherRecommendationAction,
   hasLongConnectionProblem,
+  isProblematicNatType,
+  isWaffoCheckoutUrl,
+  mergeRoomPeerConnections,
   shouldRecommendTogether,
   updateConnectionProblemSince,
 } from './multiplayerTogether'
@@ -10,7 +13,45 @@ function member(peerId: string, status: 'negotiating' | 'connected', joinedAt: n
   return { peerId, status, joinedAt, accountId: peerId, displayName: peerId }
 }
 
+describe('Together peer list', () => {
+  it('attaches a room connection to its member instead of adding a duplicate row', () => {
+    const self = member('self', 'connected', 1_000)
+    const master = member('master', 'connected', 2_000)
+    const masterConnection = { id: 'master-session', remoteId: 'master' }
+
+    const peers = mergeRoomPeerConnections([self, master], [masterConnection])
+
+    expect(peers).toHaveLength(2)
+    expect(peers[0]).toMatchObject({ key: 'self', member: self })
+    expect(peers[1]).toEqual({
+      key: 'master',
+      member: master,
+      connection: masterConnection,
+    })
+  })
+
+  it('keeps manual connections that are not room members', () => {
+    const manualConnection = { id: 'manual-session', remoteId: 'manual-peer' }
+
+    const peers = mergeRoomPeerConnections([member('self', 'connected', 1_000)], [manualConnection])
+
+    expect(peers).toHaveLength(2)
+    expect(peers[1]).toEqual({
+      key: 'manual-peer',
+      connection: manualConnection,
+    })
+  })
+})
+
 describe('Together connection warning', () => {
+  it('classifies NAT conditions that commonly require a relay', () => {
+    expect(isProblematicNatType('Symmetric NAT')).toBe(true)
+    expect(isProblematicNatType('Symmetric UDP Firewall')).toBe(true)
+    expect(isProblematicNatType('Blocked')).toBe(true)
+    expect(isProblematicNatType('Restrict Port NAT')).toBe(false)
+    expect(isProblematicNatType('Unknown')).toBe(false)
+  })
+
   it('counts initial negotiation from the room join time', () => {
     const problemSince = new Map<string, number>()
     updateConnectionProblemSince(
@@ -96,5 +137,13 @@ describe('Together connection warning', () => {
     expect(getTogetherRecommendationAction('available')).toBe('try')
     expect(getTogetherRecommendationAction('expired')).toBe('buy')
     expect(getTogetherRecommendationAction('unavailable')).toBe('buy')
+  })
+
+  it('accepts only HTTPS checkout URLs on the Waffo checkout hosts', () => {
+    expect(isWaffoCheckoutUrl('https://checkout.waffo.ai/order/1')).toBe(true)
+    expect(isWaffoCheckoutUrl('https://pancake.waffo.ai/order/1')).toBe(true)
+    expect(isWaffoCheckoutUrl('http://checkout.waffo.ai/order/1')).toBe(false)
+    expect(isWaffoCheckoutUrl('https://checkout.waffo.ai.example.com/order/1')).toBe(false)
+    expect(isWaffoCheckoutUrl('not-a-url')).toBe(false)
   })
 })

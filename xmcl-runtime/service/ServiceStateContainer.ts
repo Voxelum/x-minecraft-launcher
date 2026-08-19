@@ -128,6 +128,7 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
   }
 
   track(client: Client) {
+    if (this.#clients.some(([tracked]) => tracked === client)) return
     const handler = (type: any, payload: any) => {
       client.send('commit', this.id, type, payload)
     }

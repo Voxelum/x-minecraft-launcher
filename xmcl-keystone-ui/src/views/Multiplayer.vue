@@ -48,7 +48,7 @@
             icon
             @click="showShareInstance()"
           >
-            <v-icon> share </v-icon>
+            <v-icon>share</v-icon>
           </v-btn>
 
           <v-menu location="bottom end">
@@ -60,7 +60,7 @@
                 variant="text"
                 icon
               >
-                <v-icon> build </v-icon>
+                <v-icon>build</v-icon>
               </v-btn>
             </template>
             <v-list>
@@ -627,6 +627,8 @@ import { injection } from '@/util/inject'
 import {
   getTogetherRecommendationAction,
   hasLongConnectionProblem,
+  isProblematicNatType,
+  isWaffoCheckoutUrl,
   shouldRecommendTogether,
   updateConnectionProblemSince,
 } from '@/util/multiplayerTogether'
@@ -686,7 +688,7 @@ function claimTogetherTrial() {
   return runTogether(async () => {
     await togetherService.claimTogetherTrial()
     togetherOverview.value = await togetherService.getTogetherOverview()
-    await multiplayer.refreshIceServers()
+    await refreshIceServers()
   })
 }
 
@@ -705,7 +707,7 @@ function subscribeTogether() {
   return runTogether(async () => {
     await togetherService.subscribeTogether()
     togetherOverview.value = await togetherService.getTogetherOverview()
-    await multiplayer.refreshIceServers()
+    await refreshIceServers()
   })
 }
 
@@ -721,18 +723,6 @@ function onTogetherAction() {
     void claimTogetherTrial()
   } else {
     navigation.value = 'billing'
-  }
-}
-
-function isWaffoCheckoutUrl(value: string) {
-  try {
-    const url = new URL(value)
-    return (
-      url.protocol === 'https:' &&
-      (url.hostname === 'checkout.waffo.ai' || url.hostname === 'pancake.waffo.ai')
-    )
-  } catch {
-    return false
   }
 }
 
@@ -784,6 +774,7 @@ const {
   natType,
   refreshingNatType,
   refreshNatType,
+  refreshIceServers,
   error: groupError,
 } = injection(kPeerState)
 const groupErrorVisible = ref(true)
@@ -814,9 +805,7 @@ watchEffect(() => {
     now,
   )
 })
-const hasProblematicNat = computed(
-  () => natType.value === 'Symmetric NAT' || natType.value === 'Blocked',
-)
+const hasProblematicNat = computed(() => isProblematicNatType(natType.value))
 const hasLongRoomConnectionProblem = computed(
   () =>
     groupRole.value === 'master' &&

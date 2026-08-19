@@ -15,6 +15,8 @@ interface SyncableEventMap {
 export interface SyncableStateChannel<T> extends GenericEventEmitter<SyncableEventMap> {
 }
 
+type ServiceEventMap<T> = T extends GenericEventEmitter<infer Events> ? Events : {}
+
 /**
  * The stateless service channel. Since the limitation of the context isolation, you need to build state by yourself.
  */
@@ -28,8 +30,8 @@ export type ServiceChannel<T> = {
   call<M extends keyof T, MT = T[M]>(
     method: M,
     ...payload: MT extends (...args: infer A) => any ? A : never
-  ): Promise<MT extends (...args: any) => any ? ReturnType<MT> : never>
-} & GenericEventEmitter<SyncableEventMap>
+  ): Promise<MT extends (...args: any) => any ? Awaited<ReturnType<MT>> : never>
+} & GenericEventEmitter<SyncableEventMap & ServiceEventMap<T>>
 
 export interface StateMetadata {
   /**

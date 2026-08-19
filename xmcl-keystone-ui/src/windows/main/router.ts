@@ -12,7 +12,7 @@ import ModExtension from '@/views/ModExtension.vue'
 import Blueprint from '@/views/Blueprint.vue'
 import BlueprintActions from '@/views/BlueprintActions.vue'
 import BlueprintExtension from '@/views/BlueprintExtension.vue'
-import Multiplayer from '@/views/Multiplayer.vue'
+import MultiplayerDesktop from '@/views/MultiplayerDesktop.vue'
 import ResourcePack from '@/views/ResourcePack.vue'
 import ResourcePackActions from '@/views/ResourcePackActions.vue'
 import ResourcePackExtension from '@/views/ResourcePackExtension.vue'
@@ -131,10 +131,12 @@ export const router = createRouter({
     {
       path: '/me',
       component: Me,
+      meta: { workspaceSidePanel: true },
     },
     {
       path: '/multiplayer',
-      component: Multiplayer,
+      component: MultiplayerDesktop,
+      meta: { workspaceSidePanel: true },
     },
   ],
 })

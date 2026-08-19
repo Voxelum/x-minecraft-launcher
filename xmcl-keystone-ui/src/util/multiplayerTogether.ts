@@ -7,8 +7,47 @@ export interface RoomPeerConnectionSnapshot {
   connectionState?: ConnectionState
 }
 
+export interface RoomPeerItem<Connection> {
+  key: string
+  member?: MultiplayerRoomMember
+  connection?: Connection
+}
+
 export type TogetherTrialStatus = 'available' | 'active' | 'expired' | 'unavailable'
 export type TogetherSubscriptionStatus = 'active' | 'payment_due' | 'cancelled'
+
+export function isProblematicNatType(natType: string) {
+  return (
+    natType === 'Symmetric NAT' ||
+    natType === 'Symmetric UDP Firewall' ||
+    natType === 'Blocked'
+  )
+}
+
+export function mergeRoomPeerConnections<Connection extends { id: string; remoteId?: string }>(
+  members: MultiplayerRoomMember[],
+  connections: Connection[],
+): RoomPeerItem<Connection>[] {
+  const roomPeerIds = new Set(members.map((member) => member.peerId))
+  const connectionsByRemoteId = new Map(
+    connections
+      .filter((connection) => connection.remoteId)
+      .map((connection) => [connection.remoteId, connection]),
+  )
+  return [
+    ...members.map((member) => ({
+      key: member.peerId,
+      member,
+      connection: connectionsByRemoteId.get(member.peerId),
+    })),
+    ...connections
+      .filter((connection) => !connection.remoteId || !roomPeerIds.has(connection.remoteId))
+      .map((connection) => ({
+        key: connection.remoteId || connection.id,
+        connection,
+      })),
+  ]
+}
 
 export function shouldRecommendTogether(options: {
   problematicNat: boolean
@@ -30,6 +69,18 @@ export function getTogetherRecommendationAction(
   trialStatus?: TogetherTrialStatus,
 ): 'try' | 'buy' {
   return trialStatus === 'available' ? 'try' : 'buy'
+}
+
+export function isWaffoCheckoutUrl(value: string) {
+  try {
+    const url = new URL(value)
+    return (
+      url.protocol === 'https:' &&
+      (url.hostname === 'checkout.waffo.ai' || url.hostname === 'pancake.waffo.ai')
+    )
+  } catch {
+    return false
+  }
 }
 
 export function updateConnectionProblemSince(

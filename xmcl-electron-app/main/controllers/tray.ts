@@ -68,7 +68,7 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
         label: t('multiplayer'),
         type: 'normal',
         click: () => {
-          this.openMultiplayerWindow()
+          this.openMultiplayer()
         },
       },
       {

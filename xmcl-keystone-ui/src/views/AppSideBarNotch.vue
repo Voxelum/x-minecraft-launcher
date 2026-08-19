@@ -116,6 +116,7 @@
           :icon-size="iconSize"
           :tooltip="() => ({ text: t('multiplayer.togetherName'), direction: tooltipDirection })"
           clickable
+          :active="isMultiplayerActive"
           @click="goMultiplayer"
         />
 
@@ -175,7 +176,9 @@ const agentRunningInBackground = computed(() => agentChatStatus.running.value &&
 const agentConfirmationPending = agentChatStatus.confirmationPending
 
 const { t } = useI18n()
+const route = useRoute()
 const agentAriaLabel = computed(() => agentConfirmationPending.value ? `${t('agent.title')}: ${t('agent.confirmPending')}` : t('agent.title'))
+const isMultiplayerActive = computed(() => route.path === '/multiplayer')
 
 // Hover state for auto-hide
 const isHovered = ref(false)
