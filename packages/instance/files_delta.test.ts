@@ -94,6 +94,58 @@ describe('computeFileUpdates', () => {
     expect(updates[0].operation).toBe('remove')
   })
 
+  it('materializes a case-only path rename even when the content is unchanged', async () => {
+    const oldFile = file('config/ftbquests/ABC.snbt', 'AAA')
+    const newFile = file('config/ftbquests/abc.snbt', 'AAA')
+    const fs = createFs(
+      {
+        'config/ftbquests/ABC.snbt': { size: 100, mtime: 1000, sha1: 'AAA' },
+        'config/ftbquests/abc.snbt': { size: 100, mtime: 1000, sha1: 'AAA' },
+      },
+      INSTANCE,
+    )
+
+    const updates = await computeFileUpdates(
+      INSTANCE,
+      [oldFile],
+      [newFile],
+      2000,
+      fs,
+      true,
+    )
+
+    expect(updates).toEqual([
+      { file: oldFile, operation: 'remove' },
+      { file: newFile, operation: 'add' },
+    ])
+  })
+
+  it('materializes a case-only path rename with updated content', async () => {
+    const oldFile = file('config/ftbquests/ABC.snbt', 'AAA')
+    const newFile = file('config/ftbquests/abc.snbt', 'BBB')
+    const fs = createFs(
+      {
+        'config/ftbquests/ABC.snbt': { size: 100, mtime: 1000, sha1: 'AAA' },
+        'config/ftbquests/abc.snbt': { size: 100, mtime: 1000, sha1: 'AAA' },
+      },
+      INSTANCE,
+    )
+
+    const updates = await computeFileUpdates(
+      INSTANCE,
+      [oldFile],
+      [newFile],
+      2000,
+      fs,
+      true,
+    )
+
+    expect(updates).toEqual([
+      { file: oldFile, operation: 'remove' },
+      { file: newFile, operation: 'add' },
+    ])
+  })
+
   /**
    * BUG: when a user has modified a file post-install, but the modified
    * content happens to be EXACTLY the new modpack version, we incorrectly

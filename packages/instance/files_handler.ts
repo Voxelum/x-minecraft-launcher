@@ -68,6 +68,16 @@ export function assertNoCaseInsensitivePathCollisions(
   }
 }
 
+export function assertNoCaseInsensitiveUpdatePathCollisions(
+  updates: Iterable<InstanceFileUpdate>,
+  caseInsensitive = process.platform === 'win32',
+) {
+  const finalPaths = Array.from(updates)
+    .filter(({ operation }) => operation !== 'remove' && operation !== 'backup-remove')
+    .map(({ file }) => file.path)
+  assertNoCaseInsensitivePathCollisions(finalPaths, caseInsensitive)
+}
+
 /**
  * The handler to handle the instance file install.
  *
@@ -140,7 +150,7 @@ export class InstanceFileOperationHandler {
    * These tasks will do the phase 1 of the instance file operation.
    */
   async prepareInstallFiles(file: InstanceFileUpdate[], signal: AbortSignal) {
-    assertNoCaseInsensitivePathCollisions(file.map((update) => update.file.path))
+    assertNoCaseInsensitiveUpdatePathCollisions(file)
 
     const batchSize = 64;
     for (let i = 0; i < file.length; i += batchSize) {
