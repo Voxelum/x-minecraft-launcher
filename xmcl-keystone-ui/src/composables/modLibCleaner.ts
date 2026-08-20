@@ -1,6 +1,6 @@
 import { basename } from '@/util/basename';
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients';
-import { ModFile } from '@/util/mod';
+import { getEnabledModsWithNoDependent, ModFile } from '@/util/mod';
 import { useRefreshable } from './refreshable';
 import { InstanceInstallDialog } from './instanceUpdate';
 import { useDialog } from './dialog';
@@ -24,7 +24,8 @@ export function useModLibCleaner(mods: Ref<ModFile[]>, allowLoaders: Ref<string[
   })
 
   async function calcUnusedLibsMod(mods: ModFile[]) {
-    const [modrinthMods, curseforgeMods] = mods.reduce((arr, m) => {
+    const orphan = getEnabledModsWithNoDependent(mods, allowLoaders.value)
+    const [modrinthMods, curseforgeMods] = orphan.reduce((arr, m) => {
       if (m.modrinth) arr[0].push(m)
       else if (m.curseforge) arr[1].push(m)
       return arr
@@ -50,8 +51,6 @@ export function useModLibCleaner(mods: Ref<ModFile[]>, allowLoaders: Ref<string[
       }
     }
 
-    const orphan = getModsWithNoDependent(mods)
-
     const result = orphan.filter(m => {
       const key = m.modrinth?.projectId ?? m.curseforge?.projectId
       if (!key) return false
@@ -65,31 +64,6 @@ export function useModLibCleaner(mods: Ref<ModFile[]>, allowLoaders: Ref<string[
     })
 
     unusedMods.value = result
-  }
-
-  function getModsWithNoDependent(mods: ModFile[]) {
-    const modsDict = mods.reduce((dict, m) => {
-      dict[m.modId] = m
-      for (const alias of Object.keys(m.provideRuntime)) {
-        dict[alias] = m
-      }
-      return dict
-    }, {} as Record<string, ModFile>)
-
-    const omitted = new Set<ModFile>()
-    for (const m of mods) {
-      for (const loader of allowLoaders.value) {
-        const deps = m.dependencies[loader] || []
-        for (const dep of deps) {
-          if (modsDict[dep.modId]) {
-            const mod = modsDict[dep.modId]
-            omitted.add(mod)
-          }
-        }
-      }
-    }
-
-    return mods.filter(m => !omitted.has(m))
   }
 
   const { show } = useDialog(InstanceInstallDialog)
