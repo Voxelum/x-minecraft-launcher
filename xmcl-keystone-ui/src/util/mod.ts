@@ -282,6 +282,29 @@ function buildModProviderIndex(mods: ModFile[]) {
   return providers
 }
 
+export function getEnabledModsWithNoDependent(mods: ModFile[], allowedLoaders: string[]): ModFile[] {
+  const enabledMods = mods.filter(mod => mod.enabled)
+  const providers = new Map<string, ModFile>()
+  for (const mod of enabledMods) {
+    providers.set(mod.modId, mod)
+    for (const alias of Object.keys(mod.provideRuntime)) {
+      providers.set(alias, mod)
+    }
+  }
+
+  const dependencies = new Set<ModFile>()
+  for (const mod of enabledMods) {
+    for (const loader of allowedLoaders) {
+      for (const dependency of mod.dependencies[loader] || []) {
+        const provider = providers.get(dependency.modId)
+        if (provider) dependencies.add(provider)
+      }
+    }
+  }
+
+  return enabledMods.filter(mod => !dependencies.has(mod))
+}
+
 /**
  * Resolve the full set of mods that should be disabled together with the given mods.
  *
