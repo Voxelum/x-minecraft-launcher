@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { getRequiredModDependencyIds, resolveModsToDisable, resolveModsToEnable, type ModFile } from './mod'
+import { getEnabledModsWithNoDependent, getRequiredModDependencyIds, resolveModsToDisable, resolveModsToEnable, type ModFile } from './mod'
 
 type ModStub = {
   modId: string
@@ -52,6 +52,21 @@ describe('getRequiredModDependencyIds', () => {
       dependencies: { forge: [{ modId: 'opt', versionRange: '', optional: true }] },
     } as unknown as ModFile
     expect(getRequiredModDependencyIds(mod)).toEqual([])
+  })
+})
+
+describe('getEnabledModsWithNoDependent', () => {
+  test('excludes disabled mods from unused candidates', () => {
+    const disabledLib = makeMod({ modId: 'lib', enabled: false })
+
+    expect(getEnabledModsWithNoDependent([disabledLib], ['forge'])).toEqual([])
+  })
+
+  test('excludes dependencies of enabled mods', () => {
+    const app = makeMod({ modId: 'app', enabled: true, deps: [{ modId: 'lib' }] })
+    const lib = makeMod({ modId: 'lib', enabled: true })
+
+    expect(paths(getEnabledModsWithNoDependent([app, lib], ['forge']))).toEqual(['app'])
   })
 })
 
