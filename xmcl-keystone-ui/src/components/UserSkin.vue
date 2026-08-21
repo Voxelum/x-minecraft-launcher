@@ -20,7 +20,7 @@
     <!-- Slim/Classic toggle (top-right, hover only) -->
     <transition name="fade-transition">
       <v-btn-toggle
-        v-if="hover && canUploadSkin"
+        v-if="!hideControls && hover && canUploadSkin"
         v-model="slimToggle"
         mandatory
         density="compact"
@@ -57,7 +57,7 @@
       @drop.prevent="dropSkin"
       @dragover.prevent="() => {}"
     />
-    <div class="absolute bottom-4 flex flex-none flex-shrink gap-4">
+    <div v-if="!hideControls" class="absolute bottom-4 flex flex-none flex-shrink gap-4">
       <v-fab-transition>
         <v-btn
           v-show="!inspect && modified"
@@ -75,6 +75,7 @@
         :has-skin="canUploadSkin"
         :has-cape="canUploadCape"
         :disabled="pending"
+        :open-library="() => (isSkinLibraryDialogShown = true)"
         :upload="() => (isImportSkinDialogShown = true)"
         :save="exportSkin"
         :load="loadSkin"
@@ -118,9 +119,10 @@ const props = withDefaults(
   defineProps<{
     user: UserProfile
     profile: GameProfileAndTexture
-    inspect: boolean
+    inspect?: boolean
+    hideControls?: boolean
   }>(),
-  { inspect: false },
+  { inspect: false, hideControls: false },
 )
 const { t } = useI18n()
 const hover = ref(false)
@@ -162,6 +164,7 @@ const slimToggle = computed({
 })
 const { showOpenDialog, showSaveDialog } = windowController
 const isImportSkinDialogShown = ref(false)
+const isSkinLibraryDialogShown = ref(false)
 
 const onModelChange = (modelType: 'default' | 'slim') => {
   if (inferModelType.value) {

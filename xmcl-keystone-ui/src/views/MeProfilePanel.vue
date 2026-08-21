@@ -12,7 +12,25 @@
           :user="userProfile"
           :profile="gameProfile"
           :inspect="false"
+          :hide-controls="true"
         />
+      </div>
+
+      <!-- Skin Library Button -->
+      <div v-if="isMicrosoftAccount" class="skin-row border-t px-3 py-2"
+        style="border-color: rgba(var(--v-theme-on-surface), 0.06);"
+      >
+        <v-btn
+          variant="tonal"
+          size="small"
+          block
+          color="primary"
+          class="rounded-lg font-medium text-xs tracking-normal"
+          @click="isSkinLibraryOpen = true"
+        >
+          <v-icon start size="16">accessibility</v-icon>
+          {{ t('userSkin.libraryTitle') }}
+        </v-btn>
       </div>
 
       <!-- Cape row -->
@@ -264,29 +282,41 @@
         <div class="text-xs">{{ t('minecraftFriends.requiresMicrosoft') }}</div>
       </div>
     </div>
+
+    <!-- Master Skin Library Dialog -->
+    <UserSkinLibraryDialog
+      v-if="isMicrosoftAccount"
+      v-model="isSkinLibraryOpen"
+      :user="userProfile"
+      :profile="gameProfile"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
 import MinecraftFriendRow from '@/components/MinecraftFriendRow.vue'
 import PlayerCape from '@/components/PlayerCape.vue'
+import SkinView from '@/components/SkinView.vue'
 import UserAccountSwitcher from '@/components/UserAccountSwitcher.vue'
 import UserSkin from '@/components/UserSkin.vue'
+import UserSkinLibraryDialog from '@/components/UserSkinLibraryDialog.vue'
 import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
 import { kMinecraftFriends } from '@/composables/minecraftFriends'
 import { kUserContext } from '@/composables/user'
 import { UserSkinModel, UserSkinRenderPaused, useUserSkin } from '@/composables/userSkin'
+import { SkinLibraryItem, useUserSkinLibrary } from '@/composables/userSkinLibrary'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { MinecraftFriendsServiceKey } from '@xmcl/runtime-api'
+import { MinecraftFriendsServiceKey, AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
 import type { MinecraftFriend } from '@xmcl/runtime-api'
 import { useId } from 'vue'
 
 const { t } = useI18n()
 
 const { userProfile, gameProfile } = injection(kUserContext)
+const isMicrosoftAccount = computed(() => userProfile.value.authority === AUTHORITY_MICROSOFT)
 const {
   data: friendsData,
   loading: friendsLoading,
@@ -306,6 +336,22 @@ const skinModel = useUserSkin(
   computed(() => userProfile.value),
 )
 provide(UserSkinModel, skinModel)
+
+const { allSkins } = useUserSkinLibrary()
+const isSkinLibraryOpen = ref(false)
+const skinScroller = ref<HTMLElement | null>(null)
+
+function selectSkin(s: SkinLibraryItem) {
+  skinModel.skin.value = s.url
+  skinModel.slim.value = s.slim
+}
+
+function onSkinWheel(e: WheelEvent) {
+  if (skinScroller.value) {
+    skinScroller.value.scrollLeft += e.deltaY
+  }
+}
+
 const capes = computed(() => gameProfile.value?.capes ?? [])
 const capeScroller = ref<HTMLElement | null>(null)
 
@@ -349,6 +395,7 @@ async function onRemoveFriend(f: MinecraftFriend) {
   --workspace-side-panel-width: 280px;
 }
 
+.skin-thumb,
 .cape-thumb {
   width: 36px;
   height: 52px;
@@ -362,10 +409,12 @@ async function onRemoveFriend(f: MinecraftFriend) {
   transform-origin: top left;
 }
 
+.skin-scroll,
 .cape-scroll {
   scrollbar-width: none;
 }
 
+.skin-scroll::-webkit-scrollbar,
 .cape-scroll::-webkit-scrollbar {
   height: 0;
   display: none;

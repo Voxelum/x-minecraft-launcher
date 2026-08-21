@@ -1753,20 +1753,64 @@ userServices:
     password: Без пароля
     uuid: UUID користувача (необов'язково)
 userSkin:
-  import: Імпортувати скін
-  importFile: Відкрити з файлу
-  importLink: Відкрити за посиланням
-  placeUrlHere: Вставте URL скіна сюди для імпорту
-  reset: Скинути
-  save: Зберегти
-  saveTitle: Зберегти скін на диск
-  skinType: Тип скіна
-  upload: Завантажити скін
-  urlNotEmpty: URL скіна не може бути порожнім
-  urlNotValid: URL скіна недійсний
-  useSlim: Використовувати тонку модель
-  classic: Класична
-  slim: Тонка
+  import: 'Імпортувати скін'
+  importFile: 'Відкрити з файлу'
+  importLink: 'Відкрити за посиланням'
+  invalidImage: 'Оберіть дійсне зображення скіна Minecraft.'
+  invalidImageTitle: 'Недійсне зображення скіна'
+  placeUrlHere: 'Вставте URL скіна сюди для імпорту'
+  reset: 'Скинути'
+  save: 'Зберегти'
+  saveTitle: 'Зберегти скін на диск'
+  saveSuccess: 'Скін збережено на диск!'
+  saveFailed: 'Не вдалося зберегти скін на диск'
+  skinType: 'Тип скіна'
+  upload: 'Завантажити скін'
+  uploadSuccess: 'Скін успішно застосовано до вашого акаунта!'
+  uploadFailed: 'Не вдалося завантажити скін'
+  uploadRejected: 'Сервери Minecraft відхилили цей скін. Спробуйте пізніше.'
+  urlNotEmpty: 'URL скіна не може бути порожнім'
+  urlNotValid: 'URL скіна недійсний'
+  useSlim: 'Використовувати тонку модель'
+  classic: 'Класична'
+  slim: 'Тонка'
+  libraryTitle: 'Бібліотека скінів'
+  librarySubtitle: 'Обирайте, керуйте та зберігайте скіни локально'
+  manage: 'Керувати'
+  all: 'Всі'
+  currentSkin: 'Поточний скін'
+  savedCount: 'збережених скінів'
+  newSkin: 'Новий скін'
+  addNewSkin: 'Додати новий скін'
+  editSkin: 'Редагувати скін'
+  skinName: 'Назва скіна'
+  skinNamePlaceholder: 'напр. Мій улюблений скін'
+  localFile: 'Локальний файл'
+  urlOrPlayer: 'URL / Нік гравця'
+  urlOrPlayerPlaceholder: 'Введіть URL зображення або нікнейм гравця'
+  urlOrPlayerHint: 'Введіть пряме посилання на .png або нікнейм для завантаження з Mojang'
+  dropFileHere: 'Перетягніть .PNG файл скіна сюди або натисніть для вибору'
+  supportedFormats: 'Підтримуваний формат: 64x64 або 64x32 PNG зображення'
+  preview: 'Перегляд скіна'
+  previewPlaceholder: 'Перегляд скіна недоступний'
+  saveToLibrary: 'Зберегти в бібліотеку'
+  saveAndEquip: 'Зберегти та застосувати'
+  equip: 'Застосувати'
+  equipToAccount: 'Застосувати до акаунта Minecraft'
+  currentlyActive: 'Активний скін'
+  equipped: 'Застосовано'
+  noSkinSelected: 'Скін не вибрано'
+  saveCurrent: 'Зберегти поточний'
+  officialPreset: 'Офіційний пресет'
+  mySkins: 'Мої скіни'
+  presets: 'Пресети'
+  noSkinsFound: 'Скінів не знайдено'
+  tryAddingOne: 'Спробуйте додати новий скін за допомогою кнопки вгорі!'
+  skinAdded: 'Скін додано до бібліотеки!'
+  skinUpdated: 'Скін оновлено!'
+  skinDeleted: 'Скін видалено з бібліотеки!'
+  edit: 'Редагувати'
+  fetch: 'Завантажити'
 version:
   checkIntegrity: Перевірте цілісність
   name: Версія | Версії

@@ -2493,24 +2493,64 @@ userServices:
     password: No Password
     uuid: User UUID (Optional)
 userSkin:
-  classic: Classic
-  import: Import Skin
-  importFile: Open from File
-  importLink: Open from Link
-  invalidImage: Choose a valid Minecraft skin image.
-  invalidImageTitle: Invalid Skin Image
-  placeUrlHere: Place Skin URL here to import
-  reset: Reset
-  save: Save
-  saveTitle: Save Skin To Disk
-  skinType: Skin Type
-  slim: Slim
-  upload: Upload Skin
-  uploadFailed: Skin Upload Failed
-  uploadRejected: Minecraft rejected this skin upload. Please try again later.
-  urlNotEmpty: Skin URL cannot be empty
-  urlNotValid: Skin URL is Invalid
-  useSlim: Use Slim Model
+  classic: 'Classic'
+  import: 'Import Skin'
+  importFile: 'Open from File'
+  importLink: 'Open from Link'
+  invalidImage: 'Choose a valid Minecraft skin image.'
+  invalidImageTitle: 'Invalid Skin Image'
+  placeUrlHere: 'Place Skin URL here to import'
+  reset: 'Reset'
+  save: 'Save'
+  saveTitle: 'Save Skin To Disk'
+  saveSuccess: 'Skin saved to disk!'
+  saveFailed: 'Failed to save skin to disk'
+  skinType: 'Skin Type'
+  slim: 'Slim'
+  upload: 'Upload Skin'
+  uploadSuccess: 'Skin applied to your account!'
+  uploadFailed: 'Skin Upload Failed'
+  uploadRejected: 'Minecraft rejected this skin upload. Please try again later.'
+  urlNotEmpty: 'Skin URL cannot be empty'
+  urlNotValid: 'Skin URL is Invalid'
+  useSlim: 'Use Slim Model'
+  libraryTitle: 'Skin Library'
+  librarySubtitle: 'Choose, manage and save your skins locally'
+  manage: 'Manage'
+  all: 'All'
+  currentSkin: 'Current Skin'
+  savedCount: 'saved skins'
+  newSkin: 'New Skin'
+  addNewSkin: 'Add New Skin'
+  editSkin: 'Edit Skin'
+  skinName: 'Skin Name'
+  skinNamePlaceholder: 'e.g. My Favorite Skin'
+  localFile: 'Local File'
+  urlOrPlayer: 'URL / Player Name'
+  urlOrPlayerPlaceholder: 'Enter Skin image URL or Minecraft username'
+  urlOrPlayerHint: 'Enter a direct .png image URL or player username to fetch skin from Mojang'
+  dropFileHere: 'Drop skin .PNG file here or click to browse'
+  supportedFormats: 'Supported format: 64x64 or 64x32 PNG image'
+  preview: 'Skin Preview'
+  previewPlaceholder: 'No skin preview available'
+  saveToLibrary: 'Save to Library'
+  saveAndEquip: 'Save & Equip'
+  equip: 'Equip'
+  equipToAccount: 'Equip to Minecraft Account'
+  currentlyActive: 'Currently Active'
+  equipped: 'Equipped'
+  noSkinSelected: 'No Skin Selected'
+  saveCurrent: 'Save Current'
+  officialPreset: 'Official Preset'
+  mySkins: 'My Skins'
+  presets: 'Presets'
+  noSkinsFound: 'No skins found'
+  tryAddingOne: 'Try adding a new skin with the button above!'
+  skinAdded: 'Skin added to library!'
+  skinUpdated: 'Skin updated!'
+  skinDeleted: 'Skin removed from library!'
+  edit: 'Edit'
+  fetch: 'Load'
 version:
   checkIntegrity: Check Integrity
   name: Version | Versions
