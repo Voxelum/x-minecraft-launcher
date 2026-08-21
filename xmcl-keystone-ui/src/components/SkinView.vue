@@ -76,7 +76,7 @@ async function loadSkin() {
       emit('error', 'invalid-skin-size')
       return
     }
-    throw e
+    emit('error', 'load-failed')
   }
 }
 
@@ -85,7 +85,7 @@ onMounted(() => {
     canvas: canvasRef.value!,
     width: props.width,
     height: props.height,
-    nameTag: props.name,
+    nameTag: props.name || undefined,
     fov: 45,
     zoom: 0.5,
   })
@@ -117,7 +117,7 @@ watch(() => props.cape, (v) => {
 })
 
 watch(() => props.name, (v) => {
-  if (viewer) viewer.nameTag = v || 'Steve'
+  if (viewer) viewer.nameTag = v || null
 })
 
 watch(() => props.paused, (paused) => {

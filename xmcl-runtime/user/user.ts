@@ -41,9 +41,21 @@ export function normalizeGameProfile(profile: GameProfile): GameProfileAndTextur
   }
 }
 
-export async function normalizeSkinData(url: string) {
+export async function normalizeSkinData(url?: string) {
+  if (!url) {
+    throw new Error('Skin URL cannot be empty!')
+  }
+  if (url.startsWith('data:')) {
+    const base64 = url.substring(url.indexOf(',') + 1)
+    return Buffer.from(base64, 'base64')
+  }
   url = url.replace('image:', 'file:')
-  const resolved = new URL(url)
+  let resolved: URL
+  try {
+    resolved = new URL(url, 'http://launcher')
+  } catch {
+    throw new Error('Unknown url protocol! Require a file or http/https protocol!')
+  }
   if (resolved.protocol === 'file:' || resolved.protocol === 'image:') {
     return await readFile(url.replace('file://', '').replace('image://', ''))
   } else if (resolved.protocol === 'https:' || resolved.protocol === 'http:') {
@@ -51,7 +63,10 @@ export async function normalizeSkinData(url: string) {
       const path = resolved.searchParams.get('path')
       if (path) return await readFile(path)
     }
-    return url
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`Failed to fetch skin from ${url}: ${res.statusText}`)
+    const arrayBuffer = await res.arrayBuffer()
+    return Buffer.from(arrayBuffer)
   } else {
     throw new Error('Unknown url protocol! Require a file or http/https protocol!')
   }
