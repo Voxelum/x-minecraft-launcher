@@ -952,11 +952,37 @@ modrinth:
 modrinthCard:
   currentVersion: Aktualna wersja
 multiplayer:
+  addFunds: "Dodaj środki"
+  availableBalance: "Dostępne saldo"
+  balanceHint: "Dostępne na usługi XMCL Together"
+  billing: "Rozliczenia"
+  billingDescription: "Zarządzaj dostępem do przekaźnika, planem Together Home i płatnościami."
+  billingError: "Nie udało się wczytać rozliczeń Together. Spróbuj ponownie za chwilę."
+  buyTogether: "Kup Together"
+  cancelTogether: "Anuluj plan"
+  checkout: "Otwórz płatność Waffo"
+  connectionTogetherWarning: "Jeden z członków pokoju od pewnego czasu nie może się z Tobą połączyć. Wypróbuj XMCL Together, aby poprawić łączność wszystkich osób w pokoju. Tylko właściciel pokoju potrzebuje Together."
+  masterPurchaseHint: "Tylko właściciel pokoju potrzebuje Together Home, aby poprawić łączność wszystkich osób w pokoju."
+  natTogetherWarning: "Twój router może mieć problemy z połączeniem z właścicielem pokoju. Jeśli połączenia się nie powiodą, wypróbuj XMCL Together, aby poprawić łączność między Tobą a znajomymi. Tylko właściciel pokoju musi kupić Together dla pokoju."
+  togetherName: "Minecraft Together"
+  trialDescription: "Jeden 7-dniowy okres próbny z 1 GB ruchu przez przekaźnik."
+  trialTitle: "Okres próbny łączności"
+  tryTogether: "Wypróbuj Together"
+  month: "miesiąc"
+  orderStatus: "Zamówienie Waffo: {status}"
+  planDescription: "20 GB zarządzanego ruchu przez przekaźnik miesięcznie oraz rozwiązywanie problemów z modpackiem przez AI."
+  waffoHint: "Płatności są bezpiecznie realizowane w Waffo Pancake. XMCL nigdy nie otrzymuje numeru Twojej karty."
+  subscription:
+    active: "Aktywna"
+    cancelled: "Anulowana"
+    payment_due: "Płatność wymagana"
+  trial:
+    active: "Okres próbny aktywny"
+    available: "Dostępny bezpłatny okres próbny"
+    expired: "Okres próbny wykorzystany"
+    unavailable: "Okres próbny niedostępny"
   loginRequiredDescription: Tryb wieloosobowy P2P korzysta z usług online XMCL. Zaloguj się na konto XMCL, aby kontynuować.
   loginRequiredTitle: Zaloguj się do trybu wieloosobowego P2P
-  allowTurn: Włącz serwer przekaźnikowy
-  allowTurnHint: >-
-    Zezwól na serwer przekaźnikowy, jeśli nie możesz połączyć się ze znajomym. Jednak korzystanie z może spowolnić połączenie. Należy używać go ostrożnie.
   complete: Kompletny
   confirm: Potwierdzenie
   connections: Połączenia
@@ -1021,8 +1047,6 @@ multiplayer:
   connectionError: Błąd połączenia
   connectionFailedHint: >-
     Nie można nawiązać połączenia. Sprawdź, czy obie strony mają zgodne typy NAT.
-  natWarning: >-
-    Twój typ NAT może uniemożliwiać bezpośrednie połączenia. Spróbuj włączyć serwer przekaźnikowy w ustawieniach lub poproś znajomego, aby był hostem.
 myStuff: Moje rzeczy
 natType:
   blocked: Zablokowany

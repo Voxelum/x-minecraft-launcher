@@ -38,6 +38,9 @@ function createController(): WindowController {
   ipcRenderer.on('minimize', (_, v) => {
     emitter.emit('minimize', v)
   })
+  ipcRenderer.on('navigate', (_, route: string) => {
+    emitter.emit('navigate', route)
+  })
   const emitter = new EventEmitter()
 
   const writeClipboard =
@@ -63,7 +66,6 @@ function createController(): WindowController {
     getPathForFile,
     queryAudioPermission: () => ipcRenderer.invoke('query-audio-permission'),
     getMonitors: () => ipcRenderer.invoke('get-monitors'),
-    openMultiplayerWindow: () => ipcRenderer.invoke('open-multiplayer-window'),
     setTranslucent(enable) {
       ipcRenderer.invoke('set-translucent', enable)
     },

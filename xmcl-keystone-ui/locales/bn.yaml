@@ -1013,10 +1013,37 @@ modrinth:
 modrinthCard:
   currentVersion: বর্তমান সংস্করণ
 multiplayer:
+  addFunds: "অর্থ যোগ করুন"
+  availableBalance: "উপলভ্য ব্যালেন্স"
+  balanceHint: "XMCL Together পরিষেবার জন্য উপলভ্য"
+  billing: "বিলিং"
+  billingDescription: "রিলে অ্যাক্সেস, আপনার Together Home প্ল্যান এবং পেমেন্ট পরিচালনা করুন।"
+  billingError: "Together-এর বিলিং লোড করা যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।"
+  buyTogether: "Together কিনুন"
+  cancelTogether: "প্ল্যান বাতিল করুন"
+  checkout: "Waffo চেকআউট খুলুন"
+  connectionTogetherWarning: "একজন রুম সদস্য কিছুক্ষণ ধরে আপনার সঙ্গে সংযোগ করতে পারছেন না। রুমের সবার সংযোগ উন্নত করতে XMCL Together ব্যবহার করে দেখুন। শুধু রুম মাস্টারের Together প্রয়োজন।"
+  masterPurchaseHint: "রুমের সবার সংযোগ উন্নত করতে শুধু রুম মাস্টারের Together Home প্রয়োজন।"
+  natTogetherWarning: "আপনার রাউটারের রুম মাস্টারের সঙ্গে সংযোগ করতে সমস্যা হতে পারে। সংযোগ ব্যর্থ হলে, আপনার বন্ধুদের সঙ্গে সংযোগ উন্নত করতে XMCL Together ব্যবহার করে দেখুন। রুমের জন্য শুধু রুম মাস্টারকেই Together কিনতে হবে।"
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB রিলে ট্র্যাফিকসহ 7 দিনের একটি ট্রায়াল।"
+  trialTitle: "সংযোগ ট্রায়াল"
+  tryTogether: "Together ব্যবহার করে দেখুন"
+  month: "মাস"
+  orderStatus: "Waffo অর্ডার: {status}"
+  planDescription: "প্রতি মাসে 20 GB পরিচালিত রিলে ট্র্যাফিক, সঙ্গে আপনার মডপ্যাকের সমস্যা সমাধানে AI সহায়তা।"
+  waffoHint: "Waffo Pancake-এ পেমেন্ট নিরাপদে সম্পন্ন হয়। XMCL কখনও আপনার কার্ড নম্বর পায় না।"
+  subscription:
+    active: "সক্রিয়"
+    cancelled: "বাতিল করা হয়েছে"
+    payment_due: "পেমেন্ট বাকি"
+  trial:
+    active: "ট্রায়াল সক্রিয়"
+    available: "বিনামূল্যের ট্রায়াল উপলভ্য"
+    expired: "ট্রায়াল ব্যবহার করা হয়েছে"
+    unavailable: "ট্রায়াল উপলভ্য নয়"
   loginRequiredDescription: P2P মাল্টিপ্লেয়ার XMCL অনলাইন পরিষেবা ব্যবহার করে। চালিয়ে যেতে একটি XMCL অ্যাকাউন্টে সাইন ইন করুন।
   loginRequiredTitle: P2P মাল্টিপ্লেয়ারের জন্য সাইন ইন করুন
-  allowTurn: রিলে সার্ভার সক্ষম করুন
-  allowTurnHint: আপনি যদি আপনার বন্ধুর সাথে সংযোগ করতে না পারেন তবে রিলে সার্ভার অনুমোদন করুন। তবে, রিলে সার্ভার ব্যবহার করলে আপনার সংযোগ ধীর হতে পারে। এটি সতর্কতার সাথে ব্যবহার করুন।
   complete: সম্পন্ন
   confirm: নিশ্চিত করুন
   connectionError: সংযোগ ত্রুটি
@@ -1053,7 +1080,6 @@ multiplayer:
   localToken: লোকাল টোকেন
   manualConnect: ম্যানুয়ালি সংযোগ করুন
   name: ল্যান (LAN) এ মাল্টিপ্লেয়ার
-  natWarning: আপনার NAT এর ধরন সরাসরি সংযোগ করতে বাধা দিতে পারে। সেটিংসে রিলে সার্ভার সক্রিয় করার চেষ্টা করুন অথবা এর পরিবর্তে আপনার বন্ধুকে হোস্ট করতে বলুন।
   networkInfo: নেটওয়ার্ক তথ্য (টগল করতে ক্লিক করুন)
   next: পরবর্তী
   otherExposedPortDescription: '{user} দ্বারা ফরওয়ার্ড করা পোর্ট'

@@ -1,9 +1,9 @@
 import { HAS_DEV_SERVER, HOST, IS_DEV, WindowsBuild } from '@/constant'
 import browsePreload from '@preload/browse'
 import indexPreload from '@preload/index'
+import indexTogetherPreload from '@preload/indexTogether'
 import migrationPreload from '@preload/migration'
 import monitorPreload from '@preload/monitor'
-import multiplayerPreload from '@preload/multiplayer'
 import browserWinUrl from '@renderer/browser.html'
 import loggerWinUrl from '@renderer/logger.html'
 import migrateWinUrl from '@renderer/migration.html'
@@ -20,6 +20,8 @@ import { createI18n } from './utils/i18n'
 import { darkIcon } from './utils/icons'
 import { getLoginSuccessHTML } from './utils/login'
 import { createWindowTracker } from './utils/windowSizeTracker'
+import { MultiplayerNetworkDiagnosticsController } from './MultiplayerNetworkDiagnosticsController'
+import { BrowserRtcController } from './BrowserRtcController'
 
 export class ElectronController implements LauncherAppController {
   protected windowsVersion?: { major: number; minor: number; build: number }
@@ -29,8 +31,6 @@ export class ElectronController implements LauncherAppController {
   protected loggerWin: BrowserWindow | undefined = undefined
 
   protected browserRef: BrowserWindow | undefined = undefined
-
-  protected multiplayerRef: BrowserWindow | undefined = undefined
 
   protected migrationRef: BrowserWindow | undefined = undefined
 
@@ -45,14 +45,6 @@ export class ElectronController implements LauncherAppController {
    */
   protected parking = false
 
-  /**
-   * Whether the app is quitting. Once the app is quitting, windows that normally
-   * hide instead of closing (e.g. the multiplayer window) must be allowed to
-   * actually close, otherwise they keep the process (and its WebRTC/pipewire
-   * capturer child processes) alive in the background after the app appears closed.
-   */
-  protected quitting = false
-
   protected activatedManifest: InstalledAppManifest | undefined
 
   protected sharedSession: Session | undefined
@@ -60,6 +52,10 @@ export class ElectronController implements LauncherAppController {
   private settings: Settings | undefined
 
   private migrated: { from: string; to: string } | undefined
+
+  private readonly multiplayerNetworkDiagnostics: MultiplayerNetworkDiagnosticsController
+
+  readonly browserRtc = new BrowserRtcController()
 
   maximized: boolean | undefined
 
@@ -117,6 +113,7 @@ export class ElectronController implements LauncherAppController {
   }
 
   constructor(protected app: ElectronLauncherApp) {
+    this.multiplayerNetworkDiagnostics = new MultiplayerNetworkDiagnosticsController(ipcMain)
     plugins.forEach(p => p.call(this))
 
     if (app.platform.os === 'windows') {
@@ -124,10 +121,6 @@ export class ElectronController implements LauncherAppController {
         this.windowsVersion = app.windowsUtils?.getWindowsVersion()
       })
     }
-
-    this.handle('open-multiplayer-window', () => {
-      this.openMultiplayerWindow()
-    })
 
     this.app.on('window-all-closed', () => {
       if (process.platform !== 'darwin' && !this.parking) {
@@ -299,67 +292,13 @@ export class ElectronController implements LauncherAppController {
     this.browserRef = browser
   }
 
-  async openMultiplayerWindow() {
-    if (!this.multiplayerRef || this.multiplayerRef.isDestroyed()) {
-      const man = this.activatedManifest!
-      const tracker = createWindowTracker(this.app, 'multiplayer', man)
-      const config = await tracker.getConfig()
-
-      const win = new BrowserWindow({
-        icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
-        titleBarStyle: this.getTitlebarStyle(),
-        trafficLightPosition: this.app.platform.os === 'osx' ? { x: 14, y: 10 } : undefined,
-        minWidth: 400,
-        minHeight: 600,
-        width: config.getWidth(400, 400),
-        height: config.getHeight(600, 600),
-        x: config.x,
-        y: config.y,
-        show: false,
-        frame: this.getFrameOption(),
-
-        webPreferences: {
-          session: this.app.session.getSession(this.activatedManifest!.url),
-          contextIsolation: true,
-          sandbox: false,
-          preload: multiplayerPreload,
-          devTools: IS_DEV,
-        },
-      })
-
-      tracker.track(win)
-
-      const url = new URL(man.url)
-      url.pathname = '/app.html'
-      win.loadURL(url.toString())
-      this.onWebContentCreateWindow(win)
-      win.once('ready-to-show', () => {
-        win.show()
-      })
-      win.on('close', (e) => {
-        if (!this.quitting && this.mainWin && !this.mainWin.isDestroyed()) {
-          win.hide()
-          e.preventDefault()
-        }
-      })
-      // When the app is quitting, allow this window to actually close instead of
-      // being hidden, otherwise its WebRTC/pipewire capturer child processes keep
-      // the whole app alive in the background after the window appears closed.
-      const onBeforeQuit = () => {
-        this.quitting = true
-      }
-      app.on('before-quit', onBeforeQuit)
-      win.on('closed', () => {
-        app.off('before-quit', onBeforeQuit)
-        if (this.multiplayerRef === win) {
-          this.multiplayerRef = undefined
-        }
-      })
-      this.multiplayerRef = win
-    } else {
-      this.multiplayerRef.show()
-      this.multiplayerRef.focus()
-    }
+  openMultiplayer() {
+    const window = this.mainWin
+    if (!window || window.isDestroyed()) return
+    if (window.isMinimized()) window.restore()
+    window.show()
+    window.focus()
+    window.webContents.send('navigate', '/multiplayer')
   }
 
   setWindowTranslucent(enable: boolean) {
@@ -407,12 +346,17 @@ export class ElectronController implements LauncherAppController {
       titleBarStyle: this.getTitlebarStyle(),
       trafficLightPosition: this.app.platform.os === 'osx' ? { x: 14, y: 10 } : undefined,
       webPreferences: {
-        preload: indexPreload,
+        preload: indexTogetherPreload,
         session: restoredSession,
+        contextIsolation: true,
+        sandbox: true,
         webviewTag: true,
       },
       show: false,
     })
+
+    this.multiplayerNetworkDiagnostics.attach(browser.webContents)
+    this.browserRtc.attach(browser.webContents)
 
     if (man.ratio) {
       browser.setAspectRatio(minWidth / minHeight)
@@ -433,9 +377,11 @@ export class ElectronController implements LauncherAppController {
     browser.webContents.on('will-navigate', this.onWebContentWillNavigate)
     browser.webContents.on('did-create-window', this.onWebContentCreateWindow)
     browser.webContents.setWindowOpenHandler(this.windowOpenHandler)
+    const webContentsId = browser.webContents.id
     browser.on('closed', () => {
+      this.multiplayerNetworkDiagnostics.detach(webContentsId)
+      this.browserRtc.detach(webContentsId)
       this.mainWin = undefined
-      this.multiplayerRef?.close()
     })
 
     this.setupBrowserLogger(browser, 'app')

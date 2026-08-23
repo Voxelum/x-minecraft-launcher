@@ -466,6 +466,7 @@ import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ThemeServiceKey } from '@xmcl/runtime-api'
 import SettingAppearanceColor from '@/components/SettingAppearanceColor.vue'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const props = defineProps<{
   theme: UIThemeDataV1

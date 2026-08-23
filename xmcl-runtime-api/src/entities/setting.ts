@@ -27,6 +27,7 @@ export class Settings implements SettingSchema {
   discordPresence = false
   developerMode = false
   disableTelemetry = false
+  multiplayerTransport: import('../multiplayer').MultiplayerTransport = 'webrtc'
   agentEndpoint = DEFAULT_AGENT_ENDPOINT
   agentModel = DEFAULT_AGENT_MODEL
   linuxTitlebar = false
@@ -61,7 +62,6 @@ export class Settings implements SettingSchema {
    * Is current environment connecting to internet?
    */
   online = false
-  allowTurn = false
   replaceNatives: 'all' | 'legacy-only' | false = 'legacy-only'
 
   httpProxy = ''
@@ -97,7 +97,6 @@ export class Settings implements SettingSchema {
     this.httpProxyEnabled = config.httpProxyEnabled
     this.maxSockets = config.maxSockets ?? 16
     this.maxAPISockets = config.maxAPISockets ?? 0
-    this.allowTurn = config.allowTurn ?? false
     this.theme = config.theme
     this.globalMinMemory = config.globalMinMemory
     this.globalMaxMemory = config.globalMaxMemory
@@ -116,6 +115,7 @@ export class Settings implements SettingSchema {
     this.discordPresence = config.discordPresence
     this.developerMode = config.developerMode
     this.disableTelemetry = config.disableTelemetry
+    this.multiplayerTransport = config.multiplayerTransport
     this.agentEndpoint = config.agentEndpoint
     this.agentModel = config.agentModel
     this.linuxTitlebar = config.linuxTitlebar
@@ -194,10 +194,6 @@ export class Settings implements SettingSchema {
     this.apiSets = sets
   }
 
-  allowTurnSet(allowTurn: boolean) {
-    this.allowTurn = allowTurn
-  }
-
   onlineSet(online: boolean) {
     this.online = online
   }
@@ -212,6 +208,10 @@ export class Settings implements SettingSchema {
 
   disableTelemetrySet(disable: boolean) {
     this.disableTelemetry = disable
+  }
+
+  multiplayerTransportSet(transport: import('../multiplayer').MultiplayerTransport) {
+    this.multiplayerTransport = transport
   }
 
   agentProviderSet(provider: { endpoint: string; model: string }) {

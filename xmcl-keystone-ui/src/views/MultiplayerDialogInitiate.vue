@@ -1,12 +1,14 @@
 <template>
   <v-dialog
     v-model="isShown"
-    fullscreen
+    :fullscreen="!embedded"
+    :max-width="embedded ? 760 : undefined"
+    :width="embedded ? 'calc(100% - 48px)' : undefined"
     hide-overlay
     transition="dialog-bottom-transition"
     scrollable
   >
-    <v-stepper v-model="step">
+    <v-stepper v-model="step" :class="{ 'multiplayer-desktop-dialog': embedded }">
       <v-stepper-header>
         <v-stepper-item
           :complete="step > 1"
@@ -86,6 +88,7 @@
             <div v-html="t('multiplayer.copyLocalHint')" />
             <div class="mt-3 flex items-center justify-center gap-2 text-amber-500">
               <v-btn
+                :disabled="!canCopy"
                 variant="text"
                 @click="copyLocalDescription"
               >
@@ -107,7 +110,7 @@
               <div class="flex-grow" />
               <v-btn
                 :color="initiating ? '' : 'primary'"
-                :disabled="freeze"
+                :disabled="freeze || !canCopy"
                 variant="text"
                 @click="step++"
               >
@@ -159,6 +162,8 @@ import { createOfferAppUrl } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { kUserContext } from '../composables/user'
 
+const { embedded = false } = defineProps<{ embedded?: boolean }>()
+
 const { gameProfile } = injection(kUserContext)
 const { connections, setRemoteDescription, initiate: _initiate } = injection(kPeerState)
 const { isShown, parameter } = useDialog('peer-initiate')
@@ -167,6 +172,7 @@ const id = ref('')
 const gatheringState = computed(() => connection.value?.iceGatheringState)
 const connection = computed(() => connections.value.find(c => c.id === id.value))
 const localDescription = computed(() => connection.value ? (connection.value.localDescriptionSDP) : '')
+const canCopy = computed(() => !!localDescription.value)
 const localUrl = computed(() => createOfferAppUrl(localDescription.value, gameProfile.value.name))
 const { t } = useI18n()
 
@@ -196,6 +202,7 @@ watch(isShown, (v) => {
 const copied = ref(false)
 
 function copyLocalDescription() {
+  if (!canCopy.value) return
   windowController.writeClipboard(localDescription.value)
   copied.value = true
 }
@@ -229,14 +236,18 @@ const { refresh: initiate, refreshing: initiating } = useRefreshable(async () =>
 </script>
 
 <style>
-
-.dark .hint-text {
-  color:
-    rgba(255,255,255,0.7);
+.hint-text {
+  color: rgba(var(--v-theme-on-surface), 0.7);
 }
 
-.hint-text {
-  color:
-    rgba(0,0,0,0.7);
+.multiplayer-desktop-dialog {
+  max-height: min(720px, calc(100vh - 64px));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.multiplayer-desktop-dialog .v-stepper-window {
+  overflow-y: auto;
 }
 </style>

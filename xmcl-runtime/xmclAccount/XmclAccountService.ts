@@ -121,6 +121,13 @@ export class XmclAccountService
         ).common
       },
       () => this.getDpopKey(),
+      async () => {
+        const flights = await app.registry.get(kFlights)
+        return resolveXmclApiEndpoints(
+          flights.xmclBillingApiBaseUrl,
+          () => app.getLogger('BillingApiBaseUrl').warn('Ignoring invalid xmclBillingApiBaseUrl flight; using the default XMCL API origin.'),
+        ).common
+      },
     )
 
     app.protocol.registerHandler('xmcl', ({ request, response }) => {
@@ -389,6 +396,42 @@ export class XmclAccountService
     const credential = await this.requireValidCredential()
     await this.api.revokeSession(credential, allDevices)
     await this.clearSession(credential.sessionId)
+  }
+
+  @Singleton()
+  async getTogetherOverview() {
+    await this.initialize()
+    return this.api.getTogetherOverview(await this.requireValidCredential())
+  }
+
+  @Singleton()
+  async claimTogetherTrial() {
+    await this.initialize()
+    return this.api.claimTogetherTrial(await this.requireValidCredential())
+  }
+
+  @Singleton((amountMinor) => amountMinor)
+  async createTogetherOrder(amountMinor: number) {
+    await this.initialize()
+    return this.api.createTogetherOrder(await this.requireValidCredential(), amountMinor)
+  }
+
+  @Singleton((orderId) => orderId)
+  async getTogetherOrder(orderId: string) {
+    await this.initialize()
+    return this.api.getTogetherOrder(await this.requireValidCredential(), orderId)
+  }
+
+  @Singleton()
+  async subscribeTogether() {
+    await this.initialize()
+    return this.api.subscribeTogether(await this.requireValidCredential())
+  }
+
+  @Singleton()
+  async cancelTogether() {
+    await this.initialize()
+    return this.api.cancelTogether(await this.requireValidCredential())
   }
 
   private async bootstrapCredential(

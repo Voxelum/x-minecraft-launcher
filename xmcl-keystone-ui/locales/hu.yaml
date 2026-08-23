@@ -996,11 +996,37 @@ modrinth:
 modrinthCard:
   currentVersion: Jelenlegi verzió
 multiplayer:
+  addFunds: "Egyenleg feltöltése"
+  availableBalance: "Elérhető egyenleg"
+  balanceHint: "XMCL Together-szolgáltatásokhoz használható"
+  billing: "Számlázás"
+  billingDescription: "Kezeld a relay-hozzáférést, a Together Home-csomagodat és a fizetéseidet."
+  billingError: "A Together számlázása nem tölthető be. Próbáld újra egy pillanat múlva."
+  buyTogether: "Together megvásárlása"
+  cancelTogether: "Csomag lemondása"
+  checkout: "Waffo fizetés megnyitása"
+  connectionTogetherWarning: "Egy szobatag egy ideje nem tud kapcsolódni hozzád. Próbáld ki az XMCL Together szolgáltatást, hogy mindenki számára javuljon a kapcsolat a szobában. Csak a szobamesternek van szüksége Togetherre."
+  masterPurchaseHint: "Csak a szobamesternek van szüksége Together Home-ra, hogy mindenki számára javuljon a kapcsolat a szobában."
+  natTogetherWarning: "Lehet, hogy az útválasztód nehezen tud kapcsolódni a szobamesterhez. Ha a kapcsolatok sikertelenek, próbáld ki az XMCL Togethert, hogy javuljon a kapcsolat közted és a barátaid között. A szobához csak a szobamesternek kell megvásárolnia a Togethert."
+  togetherName: "Minecraft Together"
+  trialDescription: "Egy 7 napos próbaidőszak 1 GB relay-forgalommal."
+  trialTitle: "Kapcsolati próbaidőszak"
+  tryTogether: "Together kipróbálása"
+  month: "hónap"
+  orderStatus: "Waffo-rendelés: {status}"
+  planDescription: "Havonta 20 GB kezelt relay-forgalom, valamint AI-alapú hibaelhárítás a modcsomagodhoz."
+  waffoHint: "A fizetések biztonságosan a Waffo Pancake-en keresztül zajlanak. Az XMCL soha nem kapja meg a kártyaszámodat."
+  subscription:
+    active: "Aktív"
+    cancelled: "Lemondva"
+    payment_due: "Fizetés esedékes"
+  trial:
+    active: "A próbaidőszak aktív"
+    available: "Ingyenes próbaidőszak érhető el"
+    expired: "A próbaidőszak felhasználva"
+    unavailable: "A próbaidőszak nem érhető el"
   loginRequiredDescription: A P2P többjátékos mód az XMCL online szolgáltatásait használja. A folytatáshoz jelentkezzen be egy XMCL-fiókba.
   loginRequiredTitle: Bejelentkezés a P2P többjátékos módhoz
-  allowTurn: Relay szerver engedélyezése
-  allowTurnHint: >-
-    Engedélyezd a relé-kiszolgálót, ha nem tudsz csatlakozni a barátodhoz. A relés szerver használata azonban lelassíthatja a kapcsolatot. Használd óvatosan.
   complete: Kész
   confirm: Megerősítés
   connections: Kapcsolatok
@@ -1064,8 +1090,6 @@ multiplayer:
   connectionError: Kapcsolódási hiba
   connectionFailedHint: >-
     Nem sikerült kapcsolatot létesíteni. Ellenőrizze, hogy mindkét fél kompatibilis NAT-típussal rendelkezik-e.
-  natWarning: >-
-    A NAT-típusod akadályozhatja a közvetlen kapcsolatot. Próbáld engedélyezni a továbbító szervert a beállításokban, vagy kérd meg a barátodat, hogy ő legyen a házigazda.
 myStuff: Dolgaid
 natType:
   blocked: Blokkolva

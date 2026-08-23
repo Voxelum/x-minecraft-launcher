@@ -1375,16 +1375,25 @@ modrinth:
 modrinthCard:
   currentVersion: Current Version
 multiplayer:
-  allowTurn: Enable relay server
-  allowTurnHint: >-
-    Allow relay server if you cannot connect with your friend. However, using
-    relay server may slow down your connection. Use it with caution.
+  addFunds: Add funds
+  availableBalance: Available balance
+  balanceHint: Available for XMCL Together services
+  billing: Billing
+  billingDescription: Manage relay access, your Together Home plan, and payments.
+  billingError: Together billing could not be loaded. Try again in a moment.
+  buyTogether: Buy Together
+  cancelTogether: Cancel plan
+  checkout: Open Waffo checkout
   complete: Complete
   confirm: Confirm
   connectionError: Connection Error
   connectionFailedHint: >-
     Unable to establish connection. Check if both peers have compatible NAT
     types.
+  connectionTogetherWarning: >-
+    A room member has been unable to connect to you for a while. Try XMCL
+    Together to improve connectivity for everyone in the room. Only the room
+    master needs Together.
   connectedToMaster: Connected to the room master
   connections: Connections
   copied: Copied!
@@ -1427,6 +1436,7 @@ multiplayer:
   groupId: Group Id
   master: Master
   masterHostsGameHint: The room master is the connection hub and should host the Minecraft LAN world. Transfer master before changing hosts.
+  masterPurchaseHint: Only the room master needs Together Home to improve connectivity for everyone in the room.
   member: Member
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
@@ -1447,9 +1457,10 @@ multiplayer:
   localToken: Local Token
   manualConnect: Manually Connect
   name: Multiplayer on LAN
-  natWarning: >-
-    Your NAT type may prevent direct connections. Try enabling relay server in
-    settings or ask your friend to be the room master instead.
+  natTogetherWarning: >-
+    Your router may have trouble connecting to the room master. If connections
+    fail, try XMCL Together to improve connectivity between you and your friends.
+    Only the room master needs to purchase Together for the room.
   networkInfo: Network Info (Click to toggle)
   next: Next
   otherExposedPortDescription: The port forwarded by {user}
@@ -1469,6 +1480,25 @@ multiplayer:
   sharingNotificationTitle: A peer is sharing their game config
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
+  subscription:
+    active: Active
+    cancelled: Cancelled
+    payment_due: Payment due
+  togetherName: Minecraft Together
+  trial:
+    active: Trial active
+    available: Free trial available
+    expired: Trial used
+    unavailable: Trial unavailable
+  trialDescription: One 7-day trial with 1 GB of relay traffic.
+  trialTitle: Connectivity trial
+  tryTogether: Try Together
+  month: month
+  orderStatus: 'Waffo order: {status}'
+  planDescription: 20 GB of managed relay traffic each month, plus AI troubleshooting for your modpack.
+  relayAllowanceSummary: '{remaining} remaining of {total} this period'
+  relayServiceAvailable: XMCL Together relay service available
+  waffoHint: Payments are completed securely on Waffo Pancake. XMCL never receives your card number.
   waitingForMaster: Waiting for the room master to reconnect
 myStuff: My Stuff
 natType:
@@ -1893,6 +1923,8 @@ serverStatus:
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
 setting:
+  multiplayerTransport: Together transport
+  multiplayerTransportDescription: Choose the WebRTC implementation used by Together. Changing transport disconnects active peers.
   about: About
   aboutBmclDescription: BMCL API provides convenient downloads for users in Chinese Mainland
   aboutContributors: 🧑‍💻 Contributors 🧑‍💻

@@ -1013,10 +1013,37 @@ modrinth:
 modrinthCard:
   currentVersion: الإصدار الحالي
 multiplayer:
+  addFunds: "ضيف رصيد"
+  availableBalance: "الرصيد المتاح"
+  balanceHint: "متاح لخدمات XMCL Together"
+  billing: "الفوترة"
+  billingDescription: "إدارة الوصول للترحيل، وخطة Together Home، والمدفوعات."
+  billingError: "مش قادرين نحمّل فواتير Together. جرّب تاني بعد شوية."
+  buyTogether: "اشتري Together"
+  cancelTogether: "إلغاء الخطة"
+  checkout: "افتح الدفع على Waffo"
+  connectionTogetherWarning: "أحد أعضاء الغرفة مش قادر يتصل بيك بقاله فترة. جرّب XMCL Together عشان تحسّن الاتصال لكل الموجودين في الغرفة. قائد الغرفة بس هو اللي محتاج Together."
+  masterPurchaseHint: "قائد الغرفة بس هو اللي محتاج Together Home عشان يحسّن الاتصال لكل الموجودين في الغرفة."
+  natTogetherWarning: "ممكن الراوتر بتاعك يواجه مشكلة في الاتصال بقائد الغرفة. لو الاتصال فشل، جرّب XMCL Together عشان تحسّن الاتصال بينك وبين أصحابك. قائد الغرفة بس هو اللي محتاج يشتري Together للغرفة."
+  togetherName: "Minecraft Together"
+  trialDescription: "تجربة واحدة لمدة 7 أيام مع 1 GB من حركة مرور الترحيل."
+  trialTitle: "تجربة الاتصال"
+  tryTogether: "جرّب Together"
+  month: "شهر"
+  orderStatus: "طلب Waffo: {status}"
+  planDescription: "20 GB من حركة مرور الترحيل المُدارة كل شهر، بالإضافة إلى استكشاف أخطاء حزمة التعديلات وإصلاحها بالذكاء الاصطناعي."
+  waffoHint: "بتتم المدفوعات بأمان على Waffo Pancake. XMCL عمره ما بيستلم رقم بطاقتك."
+  subscription:
+    active: "نشطة"
+    cancelled: "ملغاة"
+    payment_due: "الدفع مستحق"
+  trial:
+    active: "التجربة مفعّلة"
+    available: "التجربة المجانية متاحة"
+    expired: "تم استخدام التجربة"
+    unavailable: "التجربة غير متاحة"
   loginRequiredDescription: تستخدم لعبة P2P الجماعية خدمات XMCL عبر الإنترنت. سجّل الدخول إلى حساب XMCL للمتابعة.
   loginRequiredTitle: سجّل الدخول لاستخدام اللعب الجماعي عبر P2P
-  allowTurn: تفعيل سيرفر الترحيل (relay)
-  allowTurnHint: فعل سيرفر الترحيل لو مش عارف تتصل بصاحبك. بس خد بالك، استخدامه ممكن يبطأ الاتصال شوية. استخدمه بحذر.
   complete: اكتمل
   confirm: تأكيد
   connectionError: خطأ في الاتصال
@@ -1051,7 +1078,6 @@ multiplayer:
   localToken: الرمز المحلي (Token)
   manualConnect: اتصال يدوي
   name: لعب جماعي عبر الشبكة المحلية (LAN)
-  natWarning: نوع الـ NAT بتاعك ممكن يمنع الاتصال المباشر. جرب تفعل سيرفر الترحيل (relay) في الإعدادات أو اطلب من صديقك يستضيف اللعبة بدالك.
   networkInfo: معلومات الشبكة (اضغط للتبديل)
   next: التالي
   otherExposedPortDescription: المنفذ المحول بواسطة {user}

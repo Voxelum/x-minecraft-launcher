@@ -45,7 +45,7 @@ import {
   useModrinthAuthenticatedAPI,
 } from '@/composables/modrinthAuthenticatedAPI'
 import { kLocalCollections, useLocalCollections } from '@/composables/localCollections'
-import { kPeerShared, usePeerConnections } from '@/composables/peers'
+import { kPeerShared, kPeerState, usePeerConnections, usePeerState } from '@/composables/peers'
 import { kSearchModel, useSearchModel } from '@/composables/search'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
@@ -76,6 +76,7 @@ import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { kSupportedAuthorityMetadata, useSupportedAuthority } from '@/composables/yggrasil'
 import { vuetify } from '@/vuetify'
 import { provide, watchEffect } from 'vue'
+import { useTogetherMultiplayer } from './multiplayerTogether'
 
 export default defineComponent({
   setup(props, ctx) {
@@ -89,15 +90,30 @@ export default defineComponent({
     const localVersions = useLocalVersions()
     const instances = useInstances()
     const router = useRouter()
+    const onNavigate = (route: string) => { void router.push(route) }
+    windowController.on('navigate', onNavigate)
+    onUnmounted(() => windowController.removeListener('navigate', onNavigate))
     watch([instances.ready, instances.allInstances], ([ready, current], [wasReady, previous]) => {
       if (ready && current.length === 0 && (!wasReady || previous.length > 0) && router.currentRoute.value.path !== '/me') {
         router.replace('/me')
       }
     })
     const instance = useInstance(instances.selectedInstance, instances.instances)
-    provide(kPeerShared, usePeerConnections())
-
     const settings = useSettingsState()
+    const multiplayerTransport = computed(() => settings.state.value?.multiplayerTransport ?? 'webrtc')
+    const togetherMultiplayer = typeof multiplayerNetworkDiagnostics !== 'undefined'
+      ? useTogetherMultiplayer(multiplayerTransport)
+      : undefined
+    provide(kPeerShared, usePeerConnections(togetherMultiplayer?.state))
+
+    if (togetherMultiplayer) {
+      provide(kPeerState, usePeerState(
+        user.gameProfile,
+        togetherMultiplayer.multiplayer,
+        togetherMultiplayer.state,
+        togetherMultiplayer.refreshNat,
+      ))
+    }
     const instanceVersion = useInstanceVersion(
       instance.instance,
       localVersions.versions,

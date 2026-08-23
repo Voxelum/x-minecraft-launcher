@@ -963,11 +963,37 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
+  addFunds: "Engadir fondos"
+  availableBalance: "Saldo dispoñible"
+  balanceHint: "Dispoñible para os servizos de XMCL Together"
+  billing: "Facturación"
+  billingDescription: "Xestiona o acceso ao relay, o teu plan Together Home e os pagamentos."
+  billingError: "Non se puido cargar a facturación de Together. Téntao de novo nun momento."
+  buyTogether: "Mercar Together"
+  cancelTogether: "Cancelar o plan"
+  checkout: "Abrir o pagamento de Waffo"
+  connectionTogetherWarning: "Un membro da sala non puido conectarse contigo durante un tempo. Proba XMCL Together para mellorar a conectividade de todos na sala. Só o mestre da sala necesita Together."
+  masterPurchaseHint: "Só o mestre da sala necesita Together Home para mellorar a conectividade de todos na sala."
+  natTogetherWarning: "É posible que o teu router teña problemas para conectarse ao mestre da sala. Se fallan as conexións, proba XMCL Together para mellorar a conectividade entre ti e os teus amigos. Só o mestre da sala ten que mercar Together para a sala."
+  togetherName: "Minecraft Together"
+  trialDescription: "Unha proba de 7 días con 1 GB de tráfico de relay."
+  trialTitle: "Proba de conectividade"
+  tryTogether: "Probar Together"
+  month: "mes"
+  orderStatus: "Pedido de Waffo: {status}"
+  planDescription: "20 GB de tráfico de relay xestionado ao mes, ademais de resolución de problemas con IA para o teu modpack."
+  waffoHint: "Os pagamentos complétanse de forma segura en Waffo Pancake. XMCL nunca recibe o teu número de tarxeta."
+  subscription:
+    active: "Activa"
+    cancelled: "Cancelada"
+    payment_due: "Pagamento pendente"
+  trial:
+    active: "Proba activa"
+    available: "Proba gratuíta dispoñible"
+    expired: "Proba utilizada"
+    unavailable: "Proba non dispoñible"
   loginRequiredDescription: O multixogador P2P usa os servizos en liña de XMCL. Inicia sesión nunha conta de XMCL para continuar.
   loginRequiredTitle: Inicia sesión para o multixogador P2P
-  allowTurn: Schakel relay-server in
-  allowTurnHint: >-
-    Sta relay-server toe als je geen verbinding kunt maken met je vriend. Echter, gebruik van relay-server kan je verbinding vertragen. Gebruik het met voorzichtigheid.
   complete: Voltooid
   confirm: Bevestigen
   connections: Verbindingen
@@ -1026,8 +1052,6 @@ multiplayer:
   connectionError: Erro de conexión
   connectionFailedHint: >-
     Non se pode establecer a conexión. Comproba que ambos os pares teñan tipos de NAT compatibles.
-  natWarning: >-
-    O teu tipo de NAT pode impedir conexións directas. Tenta activar o servidor de relé na configuración ou pídelle ao teu amigo que sexa o anfitrión.
 myStuff: Mijn Spullen
 natType:
   blocked: Geblokkeerd
