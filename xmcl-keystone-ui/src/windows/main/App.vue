@@ -9,7 +9,7 @@
     <AppSystemBar :back="sidebarStyle === 'notch'" />
     <div
       class="app-layout flex-grow relative flex overflow-auto"
-      :class="layoutClasses"
+      :class="[layoutClasses, { 'workspace-side-panel-attached': hasAttachedWorkspacePanel }]"
     >
       <AppSideBarClassic v-if="sidebarStyle === 'classic'" />
       <AppSideBarNotch v-else />
@@ -142,6 +142,9 @@ installAgentDevLauncher(agent, developerMode)
 const userMenu = useUserMenuControl()
 const userProfileDialogShown = userMenu.shown
 const route = useRoute()
+const hasAttachedWorkspacePanel = computed(
+  () => route.meta.workspaceSidePanel === true && sidebarPosition.value === 'left',
+)
 provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value && route.path !== '/me'))
 
 // Bind Ctrl/Cmd+Shift+C to open the command palette.
@@ -250,5 +253,15 @@ img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.workspace-side-panel-attached :deep(.sidebar) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.workspace-side-panel-attached :deep(.sidebar-notch--left .sidebar-notch__container) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 </style>

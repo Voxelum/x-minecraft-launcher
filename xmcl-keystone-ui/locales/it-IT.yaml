@@ -963,11 +963,37 @@ modrinth:
 modrinthCard:
   currentVersion: Versione corrente
 multiplayer:
+  addFunds: "Aggiungi fondi"
+  availableBalance: "Saldo disponibile"
+  balanceHint: "Disponibile per i servizi XMCL Together"
+  billing: "Fatturazione"
+  billingDescription: "Gestisci l'accesso al relay, il tuo piano Together Home e i pagamenti."
+  billingError: "Impossibile caricare la fatturazione di Together. Riprova tra poco."
+  buyTogether: "Acquista Together"
+  cancelTogether: "Annulla piano"
+  checkout: "Apri il pagamento Waffo"
+  connectionTogetherWarning: "Un membro della stanza non riesce a connettersi a te da un po'. Prova XMCL Together per migliorare la connettività di tutti nella stanza. Solo il master della stanza ha bisogno di Together."
+  masterPurchaseHint: "Solo il master della stanza ha bisogno di Together Home per migliorare la connettività di tutti nella stanza."
+  natTogetherWarning: "Il tuo router potrebbe avere difficoltà a connettersi al master della stanza. Se le connessioni falliscono, prova XMCL Together per migliorare la connettività tra te e i tuoi amici. Solo il master della stanza deve acquistare Together per la stanza."
+  togetherName: "Minecraft Together"
+  trialDescription: "Una prova di 7 giorni con 1 GB di traffico relay."
+  trialTitle: "Prova di connettività"
+  tryTogether: "Prova Together"
+  month: "mese"
+  orderStatus: "Ordine Waffo: {status}"
+  planDescription: "20 GB di traffico relay gestito al mese, oltre alla risoluzione dei problemi del tuo modpack con l'IA."
+  waffoHint: "I pagamenti vengono completati in modo sicuro su Waffo Pancake. XMCL non riceve mai il numero della tua carta."
+  subscription:
+    active: "Attivo"
+    cancelled: "Annullato"
+    payment_due: "Pagamento dovuto"
+  trial:
+    active: "Prova attiva"
+    available: "Prova gratuita disponibile"
+    expired: "Prova utilizzata"
+    unavailable: "Prova non disponibile"
   loginRequiredDescription: Il multiplayer P2P utilizza i servizi online di XMCL. Accedi a un account XMCL per continuare.
   loginRequiredTitle: Accedi per il multiplayer P2P
-  allowTurn: Abilita il server di relay
-  allowTurnHint: >-
-    Abilita il server relay se non riesci a connetterti con il tuo amico. Tuttavia, l'utilizzo di un server di relay potrebbe rallentare la tua connessione. Usalo con cautela.
   complete: Completo
   confirm: Conferma
   connections: Connessioni
@@ -1025,8 +1051,6 @@ multiplayer:
   connectionError: Errore di connessione
   connectionFailedHint: >-
     Impossibile stabilire la connessione. Verifica che entrambi i peer abbiano tipi di NAT compatibili.
-  natWarning: >-
-    Il tuo tipo di NAT potrebbe impedire le connessioni dirette. Prova ad abilitare il server di relay nelle impostazioni o chiedi al tuo amico di fare da host.
 myStuff: Le mie cose
 natType:
   blocked: Bloccato

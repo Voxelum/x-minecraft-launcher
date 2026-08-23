@@ -2,7 +2,7 @@
   "version": "0.3.2",
   "name": "@xmcl/wrtc-multiplayer",
   "private": true,
-  "description": "WebRTC-based multiplayer runtime for XMCL (runs inside the multiplayer preload process)",
+  "description": "node-datachannel peer connection provider for XMCL multiplayer",
   "main": "./index.ts",
   "scripts": {
     "check": "tsc --project tsconfig.json --noEmit",
@@ -13,17 +13,11 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "@xmcl/client": "workspace:*",
-    "@xmcl/nat-api": "workspace:*",
-    "@xmcl/runtime-api": "workspace:*",
-    "@xmcl/stun-client": "^1.0.0",
-    "@xmcl/text-component": "workspace:*",
+    "@xmcl/multiplayer-core": "workspace:*",
     "@xmcl/utils": "workspace:*",
-    "lodash.debounce": "^4.0.8",
     "node-datachannel": "0.32.3"
   },
   "devDependencies": {
-    "@types/lodash.debounce": "^4.0.7",
     "@types/node": "^24.13.3",
     "@xmcl/oxlint-config": "workspace:*",
     "oxlint": "^1.63.0",

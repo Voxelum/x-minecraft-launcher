@@ -71,7 +71,6 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
         ],
       }
       logger.log(`Encode profile for ${id}: %o`, transformed)
-      transformed.id = id
       return JSON.stringify(transformed)
     }
     return undefined

@@ -146,6 +146,8 @@ export interface MultiplayerIceServerCredential {
   }>
 }
 
+export type MultiplayerTransport = 'webrtc' | 'node-datachannel'
+
 export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
   /**
    * Is the multiplayer module ready
@@ -156,7 +158,7 @@ export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
    */
   getPeers(): Peer[]
 
-  refreshNat(): Promise<void>
+  refreshIceServers(): Promise<void>
   /**
    * Set your user info
    */

@@ -988,6 +988,35 @@ modrinth:
 modrinthCard:
   currentVersion: Version actuelle
 multiplayer:
+  addFunds: "Ajouter des fonds"
+  availableBalance: "Solde disponible"
+  balanceHint: "Disponible pour les services XMCL Together"
+  billing: "Facturation"
+  billingDescription: "Gérez l’accès au relais, votre forfait Together Home et vos paiements."
+  billingError: "La facturation Together n’a pas pu être chargée. Réessayez dans un instant."
+  buyTogether: "Acheter Together"
+  cancelTogether: "Annuler le forfait"
+  checkout: "Ouvrir le paiement Waffo"
+  connectionTogetherWarning: "Un membre du salon ne parvient pas à se connecter à vous depuis un moment. Essayez XMCL Together pour améliorer la connectivité de tous les membres du salon. Seul le propriétaire du salon a besoin de Together."
+  masterPurchaseHint: "Seul le propriétaire du salon a besoin de Together Home pour améliorer la connectivité de tous les membres du salon."
+  natTogetherWarning: "Votre routeur peut avoir des difficultés à se connecter au propriétaire du salon. Si les connexions échouent, essayez XMCL Together pour améliorer la connectivité entre vous et vos amis. Seul le propriétaire du salon doit acheter Together pour le salon."
+  togetherName: "Minecraft Together"
+  trialDescription: "Un essai de 7 jours avec 1 GB de trafic relay."
+  trialTitle: "Essai de connectivité"
+  tryTogether: "Essayer Together"
+  month: "mois"
+  orderStatus: "Commande Waffo : {status}"
+  planDescription: "20 GB de trafic relay géré par mois, ainsi qu’une aide au dépannage par IA pour votre modpack."
+  waffoHint: "Les paiements sont effectués en toute sécurité sur Waffo Pancake. XMCL ne reçoit jamais votre numéro de carte."
+  subscription:
+    active: "Active"
+    cancelled: "Annulée"
+    payment_due: "Paiement dû"
+  trial:
+    active: "Essai actif"
+    available: "Essai gratuit disponible"
+    expired: "Essai utilisé"
+    unavailable: "Essai indisponible"
   loginRequiredDescription: Le multijoueur P2P utilise les services en ligne XMCL. Connectez-vous à un compte XMCL pour continuer.
   loginRequiredTitle: Connectez-vous pour le multijoueur P2P
   complete: Compléter
@@ -1050,8 +1079,6 @@ multiplayer:
   connectionError: Erreur de connexion
   connectionFailedHint: >-
     Impossible d'établir la connexion. Vérifiez que les deux pairs ont des types de NAT compatibles.
-  natWarning: >-
-    Votre type de NAT peut empêcher les connexions directes. Essayez d'activer le serveur de relais dans les paramètres ou demandez à votre ami d'héberger.
 myStuff: Mon inventaire
 natType:
   blocked: Bloqué
