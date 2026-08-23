@@ -4,8 +4,9 @@ import { getExceptionName, isException } from './exception'
 
 describe('exception protocol name', () => {
   it('matches serialized launch exceptions after the constructor is renamed', () => {
-    class MinifiedLaunchException extends LaunchException { }
-    MinifiedLaunchException.exceptionName = LaunchException.exceptionName
+    class MinifiedLaunchException extends LaunchException {
+      static readonly exceptionName = LaunchException.exceptionName
+    }
 
     const serialized = {
       name: 'LaunchException',
