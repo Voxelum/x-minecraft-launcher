@@ -29,7 +29,7 @@
 import { injection } from '@/util/inject'
 import HomeCard from '@/components/HomeCard.vue'
 import { kInstanceResourcePacks } from '@/composables/instanceResourcePack'
-import { kDropHandler } from '@/composables/dropHandler'
+import { getDropFilePaths, kDropHandler } from '@/composables/dropHandler'
 import { InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
 import { kInstance } from '@/composables/instance'
 import { useService } from '@/composables/service'
@@ -61,9 +61,11 @@ const highlight = ref(0)
 
 function onDrop(e: DragEvent) {
   if (e.dataTransfer) {
-    const filePaths = Array.from(e.dataTransfer.files).map(f => f.path)
-    install({ path: path.value, files: filePaths })
-    e.preventDefault()
+    const filePaths = getDropFilePaths(e.dataTransfer.files)
+    if (filePaths.length > 0) {
+      install({ path: path.value, files: filePaths })
+      e.preventDefault()
+    }
   }
   highlight.value = 0
 }

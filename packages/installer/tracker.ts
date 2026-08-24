@@ -1,8 +1,46 @@
-import {
-  ProgressTracker,
-  ProgressTrackerMultiple,
-  ProgressTrackerSingle,
-} from '@xmcl/file-transfer'
+export interface ProgressTracker {
+  url: string
+  total: number
+  progress: number
+}
+
+export class ProgressTrackerSingle implements ProgressTracker {
+  accessor?: ProgressTracker
+  expectedTotal = 0
+  done = false
+
+  constructor(readonly onDownload?: (accessor: ProgressTracker) => void) {}
+
+  setAccessor(accessor: ProgressTracker) {
+    this.accessor = accessor
+    this.onDownload?.(accessor)
+  }
+
+  get progress() { return this.accessor?.progress ?? 0 }
+  get total() { return this.accessor?.total ?? this.expectedTotal }
+  get url() { return this.accessor?.url ?? '' }
+  toJSON() { return { url: this.url, total: this.total, progress: this.progress } }
+}
+
+export class ProgressTrackerMultiple implements ProgressTracker {
+  trackers: ProgressTrackerSingle[] = []
+  expectedTotal = 0
+
+  subSingle() {
+    const single = new ProgressTrackerSingle()
+    this.trackers.push(single)
+    return single
+  }
+
+  get url() { return this.trackers.find((tracker) => !tracker.done)?.url ?? this.trackers[0]?.url ?? '' }
+  get total() {
+    return Math.max(this.expectedTotal, this.trackers.reduce((total, tracker) => total + tracker.total, 0))
+  }
+  get progress() {
+    return this.trackers.reduce((progress, tracker) => progress + tracker.progress, 0)
+  }
+  toJSON() { return { url: this.url, total: this.total, progress: this.progress } }
+}
 
 type TrackEvent<T extends object> = {
   [K in keyof T]: { phase: K; payload: T[K] }

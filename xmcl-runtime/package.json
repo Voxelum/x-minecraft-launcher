@@ -1,7 +1,7 @@
 {
     "name": "@xmcl/runtime",
     "private": true,
-    "version": "0.61.0",
+    "version": "0.61.2",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "The runtime for x minecraft launcher in nodejs",
     "license": "MIT",
@@ -38,6 +38,7 @@
         "@xmcl/mod-parser": "workspace:*",
         "@xmcl/model": "workspace:*",
         "@xmcl/modrinth": "workspace:*",
+        "@xmcl/multiplayer-core": "workspace:*",
         "@xmcl/nat-api": "workspace:*",
         "@xmcl/nbt": "workspace:*",
         "@xmcl/resource": "workspace:*",

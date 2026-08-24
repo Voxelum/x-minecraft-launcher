@@ -149,6 +149,7 @@ delete:
   'no': 'NO'
   'yes': DELET
 dependencies:
+  dependents: MODZ DAT DEPEND ON DIS MOD
   embedded: EMBEDDED
   incompatible: BAD MATCH
   name: DEPENDENCIEZ
@@ -645,6 +646,10 @@ logsCrashes:
   title: LOGZ OR CRASH REPORTS
   failures: LANCH FAYLZ
 me:
+  groupByDate: GROOP BY DATE
+  groupByFolder: GROOP BY FOLDR
+  instanceViewMode: INSTANS VIEW MODE
+  listView: LIST VIEW
   news: NEWZ
   recentPlay: RECENT PLAY
 migrationWindow:
@@ -942,11 +947,37 @@ modrinth:
 modrinthCard:
   currentVersion: CURREN VERSHUN
 multiplayer:
+  addFunds: "Add moar funds"
+  availableBalance: "Funds nao available"
+  balanceHint: "Usable for XMCL Together servicez"
+  billing: "Billz"
+  billingDescription: "Manage relay access, ur Together Home plan, and payz."
+  billingError: "Together billz cud not load. Try again in a lil moment."
+  buyTogether: "Buy Together"
+  cancelTogether: "Cancel plan"
+  checkout: "Open Waffo checkout"
+  connectionTogetherWarning: "Room member haz been unable to connect to u fur a while. Try XMCL Together to make connectivity better fur everybuddy in teh room. Only teh room master needs Together."
+  masterPurchaseHint: "Only teh room master needs Together Home to make connectivity better fur everybuddy in teh room."
+  natTogetherWarning: "Ur router may haf trouble connecting to teh room master. If connections fail, try XMCL Together to improve connectivity between u and ur frenz. Only teh room master needs to buy Together fur teh room."
+  togetherName: "Minecraft Together"
+  trialDescription: "One 7-day trial with 1 GB relay traffic. Much connect."
+  trialTitle: "Connectivity trial"
+  tryTogether: "Try Together"
+  month: "month"
+  orderStatus: "Waffo order: {status}"
+  planDescription: "20 GB managed relay traffic every month, plus AI troubleshooting fur ur modpack."
+  waffoHint: "Payments happen securely on Waffo Pancake. XMCL never gets ur card number, promise."
+  subscription:
+    active: "Active nao"
+    cancelled: "Cancelled nao"
+    payment_due: "Payment due nao"
+  trial:
+    active: "Trial active nao"
+    available: "Free trial available, yay"
+    expired: "Trial used up"
+    unavailable: "Trial unavailable nao"
   loginRequiredDescription: P2P multiplayer uses XMCL onlinez. Sign in 2 an XMCL Account 2 continue.
   loginRequiredTitle: Sign in 4 P2P multiplayer
-  allowTurn: ENABL RELAY SERVR
-  allowTurnHint: >-
-    ALLOW RELAY SERVR IF U CANNOT CONNECT WITH UR FREN. HOWEVER, USING RELAY SERVR MAY SLOW DOWN UR CONNEKSHUN. USE IT WITH CAUSHUN.
   complete: COMPLETE
   confirm: CONFIRM
   connections: CONNEKSHUNS
@@ -1003,8 +1034,6 @@ multiplayer:
   connectionError: CONNEKSHN BORKED
   connectionFailedHint: >-
     Cant connectz. Bof NAT typez maybe sad.
-  natWarning: >-
-    Ur NAT mite blockz directs. Try relayz in settingz or makez ur frend host plz.
 myStuff: MAH STUFF
 natType:
   blocked: BLOCKED
@@ -1174,6 +1203,8 @@ serverStatus:
   refuse: §4SERVER REFUSED!
   timeout: §4CONNECT SERVR TIMEOUT!
 agent:
+  accessRequiredHint: SUBSCRIEB TO XMCL TO USE TEH BUILT-IN AGENT, OR CONFIGURE UR OWN AI PROVIDR IN SETTINGZ.
+  subscribeXmcl: SUBSCRIEB TO XMCL
   notConfiguredHint: SET AN API KEY, MODEL AN OPENAI-COMPATIBL ENDPOINT IN SETTINGZ → GENERAL → AI AGENT. FUR EXAMPL, USE OPENAI OR A CLAUDE-COMPATIBL GATEWAY.
 setting:
   aiAgentApiKeyDescription: CONFIGUR AN OPENAI-COMPATIBL PROVIDR, SUCH AS OPENAI OR A GATEWAY FUR CLAUDE. TEH KEY IZ STORED LOCALY ON DIS DEVICE.

@@ -150,6 +150,7 @@ delete:
   'no': Nee
   'yes': Verwijderen
 dependencies:
+  dependents: Mods die afhankelijk zijn van deze mod
   embedded: Ingebed
   incompatible: Incompatibel
   name: Afhankelijkheden
@@ -662,6 +663,10 @@ logsCrashes:
   title: Logs of Crash Rapporten
   failures: Startfouten
 me:
+  groupByDate: Groeperen op datum
+  groupByFolder: Groeperen op map
+  instanceViewMode: Instantieweergave
+  listView: Lijstweergave
   news: Nieuws
   recentPlay: Onlangs Gespeeld
 migrationWindow:
@@ -963,11 +968,37 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
+  addFunds: "Tegoed toevoegen"
+  availableBalance: "Beschikbaar saldo"
+  balanceHint: "Beschikbaar voor XMCL Together-diensten"
+  billing: "Facturering"
+  billingDescription: "Beheer relaytoegang, je Together Home-abonnement en betalingen."
+  billingError: "De facturering van Together kon niet worden geladen. Probeer het zo opnieuw."
+  buyTogether: "Together kopen"
+  cancelTogether: "Abonnement opzeggen"
+  checkout: "Waffo-betaling openen"
+  connectionTogetherWarning: "Een groepslid kan al een tijdje geen verbinding met je maken. Probeer XMCL Together om de verbinding voor iedereen in de groep te verbeteren. Alleen de groepsbeheerder heeft Together nodig."
+  masterPurchaseHint: "Alleen de groepsbeheerder heeft Together Home nodig om de verbinding voor iedereen in de groep te verbeteren."
+  natTogetherWarning: "Je router kan problemen hebben om verbinding te maken met de groepsbeheerder. Als verbindingen mislukken, probeer dan XMCL Together om de verbinding tussen jou en je vrienden te verbeteren. Alleen de groepsbeheerder hoeft Together voor de groep te kopen."
+  togetherName: "Minecraft Together"
+  trialDescription: "Een proefperiode van 7 dagen met 1 GB relayverkeer."
+  trialTitle: "Connectiviteitstest"
+  tryTogether: "Together proberen"
+  month: "maand"
+  orderStatus: "Waffo-bestelling: {status}"
+  planDescription: "20 GB beheerd relayverkeer per maand, plus probleemoplossing met AI voor je modpack."
+  waffoHint: "Betalingen worden veilig via Waffo Pancake uitgevoerd. XMCL ontvangt nooit je kaartnummer."
+  subscription:
+    active: "Actief"
+    cancelled: "Opgezegd"
+    payment_due: "Betaling verschuldigd"
+  trial:
+    active: "Proefperiode actief"
+    available: "Gratis proefperiode beschikbaar"
+    expired: "Proefperiode gebruikt"
+    unavailable: "Proefperiode niet beschikbaar"
   loginRequiredDescription: P2P-multiplayer gebruikt de online diensten van XMCL. Meld u aan bij een XMCL-account om door te gaan.
   loginRequiredTitle: Aanmelden voor P2P-multiplayer
-  allowTurn: Relay server inschakelen
-  allowTurnHint: >-
-    Sta een relay server toe als u niet met uw vriend kunt verbinden. Het gebruik van een relay server kan echter uw verbinding vertragen. Wees voorzichtig.
   complete: Voltooien
   confirm: Bevestigen
   connections: Verbindingen
@@ -1026,8 +1057,6 @@ multiplayer:
   connectionError: Verbindingsfout
   connectionFailedHint: >-
     Kan geen verbinding maken. Controleer of beide peers compatibele NAT-types hebben.
-  natWarning: >-
-    Je NAT-type kan directe verbindingen verhinderen. Probeer de relay-server in de instellingen in te schakelen of vraag je vriend om host te zijn.
 myStuff: Mijn Spullen
 natType:
   blocked: Geblokkeerd
@@ -1201,6 +1230,8 @@ serverStatus:
   refuse: §4Server weigert!
   timeout: §4Verbinden met server timeout!
 agent:
+  accessRequiredHint: Abonneer je op XMCL om de ingebouwde agent te gebruiken, of configureer je eigen AI-provider in de instellingen.
+  subscribeXmcl: Abonneren op XMCL
   notConfiguredHint: Stel een API-sleutel, model en OpenAI-compatibel endpoint in via Instellingen → Algemeen → AI-agent. Gebruik bijvoorbeeld OpenAI of een Claude-compatibele gateway.
 setting:
   aiAgentApiKeyDescription: Configureer een OpenAI-compatibele provider, zoals OpenAI of een gateway voor Claude. De sleutel wordt lokaal op dit apparaat opgeslagen.
@@ -1540,7 +1571,7 @@ theme:
   selectImage: Selecteer Afbeelding
   selectMusic: Selecteer Muziek
   selectVideo: Selecteer Video
-  title: X Minecraft Launcher
+  title: XMCL
 transportType:
   host: Host Kandidaat
   prflx: Peer Reflexive Kandidaat

@@ -17,9 +17,8 @@ task:
   continue: 런처에서 보기
   fail: 작업 실패
   success: 작업 성공
-title: X Minecraft Launcher
+title: XMCL
 urlFailed: 알 수 없는 URL {url}. URL을 확인하거나 개발자에게 문의하세요!
 urlSuccess: 성공! 이제 이 창을 닫고 런처로 돌아갈 수 있습니다!
-autoCloseHint: 이 창은 {time} 초 후에 닫힙니다
 multiplayer: P2P 멀티플레이어
 makeDesktopShortcut: 바탕 화면 바로 가기 만들기

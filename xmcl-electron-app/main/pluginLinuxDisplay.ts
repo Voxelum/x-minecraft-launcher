@@ -4,7 +4,7 @@ import { existsSync, readdirSync } from 'fs'
 import { delimiter, join } from 'path'
 import { LauncherAppPlugin } from '~/app'
 import { LaunchService } from '~/launch'
-import { parseSystemdUserEnvironment, resolveLinuxDisplayEnvironment } from './linuxDisplay'
+import { parseSystemdUserEnvironment, resolveLinuxDisplayEnvironment, shouldBlockLinuxDisplayLaunch } from './linuxDisplay'
 
 function readSystemdUserEnvironment() {
   return new Promise<NodeJS.ProcessEnv>((resolve) => {
@@ -62,6 +62,10 @@ export const pluginLinuxDisplay: LauncherAppPlugin = async (app) => {
         }
 
         logger.warn(`Cannot prepare an X11 display for Minecraft: ${result.reason}`)
+        if (!shouldBlockLinuxDisplayLaunch(result)) {
+          logger.warn('The Flatpak sandbox prevents display verification; continuing with the inherited environment')
+          return
+        }
         throw new LaunchException({
           type: 'launchLinuxDisplayUnavailable',
           reason: result.reason,

@@ -149,6 +149,7 @@ delete:
   'no': Жоқ
   'yes': Жою
 dependencies:
+  dependents: Осы модқа тәуелді модтар
   embedded: Енгізілген
   incompatible: Үйлесімсіз
   name: Тәуелділіктер
@@ -654,6 +655,10 @@ logsCrashes:
   title: Журналдар немесе құлау есептері
   failures: Іске қосу қателері
 me:
+  groupByDate: Күні бойынша топтау
+  groupByFolder: Қалта бойынша топтау
+  instanceViewMode: Даналарды көрсету режимі
+  listView: Тізім көрінісі
   news: Жаңалықтар
   recentPlay: Соңғы ойналғандар
 migrationWindow:
@@ -952,11 +957,37 @@ modrinth:
 modrinthCard:
   currentVersion: Ағымдағы нұсқа
 multiplayer:
+  addFunds: "Қаражат қосу"
+  availableBalance: "Қолжетімді баланс"
+  balanceHint: "XMCL Together қызметтері үшін қолжетімді"
+  billing: "Төлемдер"
+  billingDescription: "Реле қатынасын, Together Home жоспарын және төлемдерді басқарыңыз."
+  billingError: "Together төлемдері жүктелмеді. Біраздан кейін қайталап көріңіз."
+  buyTogether: "Together сатып алу"
+  cancelTogether: "Жоспардан бас тарту"
+  checkout: "Waffo төлем бетін ашу"
+  connectionTogetherWarning: "Бөлме мүшелерінің бірі біраз уақыттан бері сізге қосыла алмай жүр. Бөлмедегі барлығына қосылымды жақсарту үшін XMCL Together қолданып көріңіз. Together тек бөлме иесіне қажет."
+  masterPurchaseHint: "Бөлмедегі барлығына қосылымды жақсарту үшін Together Home тек бөлме иесіне қажет."
+  natTogetherWarning: "Маршрутизаторыңыз бөлме иесіне қосылуда қиындыққа тап болуы мүмкін. Қосылым сәтсіз болса, достарыңызбен байланыс сапасын жақсарту үшін XMCL Together қолданып көріңіз. Бөлме үшін Together сатып алуы керек адам тек бөлме иесі."
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB реле трафигі бар бір 7 күндік сынақ мерзімі."
+  trialTitle: "Қосылым сынағы"
+  tryTogether: "Together қолданып көру"
+  month: "ай"
+  orderStatus: "Waffo тапсырысы: {status}"
+  planDescription: "Ай сайын 20 GB басқарылатын реле трафигі және модпак мәселелерін AI көмегімен анықтау."
+  waffoHint: "Төлемдер Waffo Pancake арқылы қауіпсіз орындалады. XMCL карта нөміріңізді ешқашан алмайды."
+  subscription:
+    active: "Белсенді"
+    cancelled: "Бас тартылды"
+    payment_due: "Төлем мерзімі келді"
+  trial:
+    active: "Сынақ мерзімі белсенді"
+    available: "Тегін сынақ нұсқасы қолжетімді"
+    expired: "Сынақ нұсқасы қолданылды"
+    unavailable: "Сынақ нұсқасы қолжетімсіз"
   loginRequiredDescription: P2P көп ойыншысы XMCL онлайн қызметтерін пайдаланады. Жалғастыру үшін XMCL тіркелгісіне кіріңіз.
   loginRequiredTitle: P2P көп ойыншысы үшін кіру
-  allowTurn: Релей серверін қосу
-  allowTurnHint: >-
-    Досыңызбен байланыса алмасаңыз, релей серверін қолдануға рұқсат етіңіз. Алайда, релей серверді қолдану байланысыңызды баяулатуы мүмкін. Мұны сақтықпен қолданыңыз.
   complete: Аяқтау
   confirm: Растау
   connections: Байланыстар
@@ -1016,8 +1047,6 @@ multiplayer:
   connectionError: Байланыс қатесі
   connectionFailedHint: >-
     Байланыс орнату мүмкін емес. Екі жағында да NAT түрлерінің сәйкестігін тексеріңіз.
-  natWarning: >-
-    NAT түрі тікелей байланысқа кедергі келтіруі мүмкін. Параметрлерде релелік серверді қосыңыз немесе досыңыздан хост болуын сұраңыз.
 myStuff: Менің заттарым
 natType:
   blocked: Блокталған
@@ -1191,6 +1220,8 @@ serverStatus:
   refuse: §4Сервер бас тартты!
   timeout: §4Серверге қосылу уақыты аяқталды!
 agent:
+  accessRequiredHint: Кірістірілген агентті пайдалану үшін XMCL қызметіне жазылыңыз немесе баптауларда өз ЖИ провайдеріңізді реттеңіз.
+  subscribeXmcl: XMCL қызметіне жазылу
   notConfiguredHint: Баптаулар → Жалпы → ЖИ агенті бөлімінде API кілтін, модельді және OpenAI-мен үйлесімді соңғы нүктені орнатыңыз. Мысалы, OpenAI немесе Claude-пен үйлесімді шлюзді қолданыңыз.
 setting:
   aiAgentApiKeyDescription: OpenAI-мен үйлесімді провайдерді баптаңыз, мысалы OpenAI немесе Claude үшін шлюз. Кілт осы құрылғыда жергілікті сақталады.
@@ -1530,7 +1561,7 @@ theme:
   selectImage: Суретті таңдау
   selectMusic: Музыканы таңдау
   selectVideo: Видеоны таңдау
-  title: X Minecraft Launcher
+  title: XMCL
 transportType:
   host: Хост кандидаты
   prflx: Қарым-қатынас рефлексивті кандидаты

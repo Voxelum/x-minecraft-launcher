@@ -45,24 +45,8 @@
           store
         </v-icon>
       </AppSideBarItem>
-    </div>
 
-    <div class="sidebar__divider" />
-
-    <div
-      ref="instancesScrollEl"
-      v-roving-tabindex
-      role="group"
-      class="sidebar__instances"
-    >
-      <AppSideBarInstances />
-    </div>
-
-    <div class="sidebar__divider" />
-
-    <div v-roving-tabindex role="group" class="sidebar__section">
       <AppSideBarItem
-        v-if="developerMode"
         data-testid="nav-agent"
         v-shared-tooltip.right="agentTooltip"
         clickable
@@ -91,11 +75,27 @@
           smart_toy
         </v-icon>
       </AppSideBarItem>
+    </div>
 
+    <div class="sidebar__divider" />
+
+    <div
+      ref="instancesScrollEl"
+      v-roving-tabindex
+      role="group"
+      class="sidebar__instances"
+    >
+      <AppSideBarInstances />
+    </div>
+
+    <div class="sidebar__divider" />
+
+    <div v-roving-tabindex role="group" class="sidebar__section">
       <AppSideBarItem
         data-testid="nav-multiplayer"
-        v-shared-tooltip.right="() => t('multiplayer.name')"
+        v-shared-tooltip.right="() => t('multiplayer.togetherName')"
         clickable
+        :active="isMultiplayerActive"
         :aria-label="multiplayerAriaLabel"
         @click="goMultiplayer"
       >
@@ -183,7 +183,6 @@
       <v-divider vertical class="mx-2 h-6" />
 
       <v-btn
-        v-if="developerMode"
         data-testid="nav-agent"
         v-shared-tooltip.bottom="agentTooltip"
         icon
@@ -213,8 +212,9 @@
 
       <v-btn
         data-testid="nav-multiplayer"
-        v-shared-tooltip.bottom="t('multiplayer.name')"
+        v-shared-tooltip.bottom="t('multiplayer.togetherName')"
         icon
+        :active="isMultiplayerActive"
         :aria-label="multiplayerAriaLabel"
         class="non-moveable mr-1"
         @click="goMultiplayer"
@@ -268,7 +268,6 @@ const { request: openMultiplayer } = injection(kMultiplayerEntry)
 const { position } = useInjectSidebarSettings()
 
 const isHorizontal = computed(() => position.value === 'top' || position.value === 'bottom')
-const developerMode = computed(() => state.value?.developerMode ?? false)
 const { open: openAgent } = useAgentChatEntry()
 const agentChatStatus = useAgentChatStatus()
 const agentRunningInBackground = computed(() => agentChatStatus.running.value && !agentChatStatus.shown.value)
@@ -276,6 +275,7 @@ const agentConfirmationPending = agentChatStatus.confirmationPending
 
 const { t } = useI18n()
 const { back } = useRouter()
+const route = useRoute()
 
 const navigationAriaLabel = 'Sidebar navigation'
 const backAriaLabel = computed(() => t('shared.back'))
@@ -283,7 +283,8 @@ const myStuffAriaLabel = computed(() => t('myStuff'))
 const storeAriaLabel = computed(() => t('store.name', 2))
 const agentAriaLabel = computed(() => agentConfirmationPending.value ? `${t('agent.title')}: ${t('agent.confirmPending')}` : t('agent.title'))
 const agentTooltip = () => agentAriaLabel.value
-const multiplayerAriaLabel = computed(() => t('multiplayer.name'))
+const multiplayerAriaLabel = computed(() => t('multiplayer.togetherName'))
+const isMultiplayerActive = computed(() => route.path === '/multiplayer')
 const settingsAriaLabel = computed(() => t('setting.name', 2))
 
 function goBack() {

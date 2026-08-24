@@ -17,10 +17,9 @@ task:
   continue: Ver en el lanzador
   fail: Una tarea falló
   success: Una tarea completada
-title: X Minecraft Launcher
+title: XMCL
 urlFailed: >-
   URL no encontrada {url}. Revisa la URL o contacta al desarrollador.
 urlSuccess: '¡Hecho! Ya puedes cerrar esta ventana y volver al lanzador.'
-autoCloseHint: Esta ventana se cerrará en {time} segundos
 multiplayer: Multijugador P2P
 makeDesktopShortcut: Crear acceso directo en el escritorio

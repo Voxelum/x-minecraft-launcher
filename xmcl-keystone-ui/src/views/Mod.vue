@@ -222,10 +222,12 @@
         :loader="modLoader"
         :categories="modrinthCategories"
         :all-files="mods"
+        :dependents="getModDependents(selectedItem?.installed || getInstalledModrinth(selectedModrinthId))"
         :updating="updating"
         :game-version="gameVersion"
         :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
         collection-content-type="mods"
+        @open-dependent="openModDependent"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -241,9 +243,11 @@
         :loader="modLoader"
         :category="curseforgeCategory"
         :all-files="mods"
+        :dependents="getModDependents(selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId))"
         :updating="updating"
         :modrinth="selectedModrinthId"
         collection-content-type="mods"
+        @open-dependent="openModDependent"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -262,6 +266,8 @@
         :files="selectedItem.files"
         :runtime="runtime"
         :installed="selectedItem.installed"
+        :dependents="getModDependents(selectedItem.installed)"
+        @open-dependent="openModDependent"
       />
     </template>
     <v-dialog v-model="wizardModel" width="600">
@@ -302,6 +308,7 @@
 
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
+import type { ProjectDependent } from '@/components/MarketProjectDetail.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
@@ -313,12 +320,12 @@ import { useService } from '@/composables'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDialog } from '@/composables/dialog'
-import { useGlobalDrop } from '@/composables/dropHandler'
+import { getDropFilePaths, useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { ProjectGroup, useModGroups } from '@/composables/modGroup'
-import { kModsSearch } from '@/composables/modSearch'
+import { useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade } from '@/composables/modUpgrade'
 import { ArtifactLoader, resolveArtifactModrinthDependencies } from '@/composables/modArtifactDependencies'
 import { useModWizard } from '@/composables/modWizard'
@@ -332,7 +339,7 @@ import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { clientModrinthV2 } from '@/util/clients'
-import { ModFile } from '@/util/mod'
+import { ModFile, isModFile } from '@/util/mod'
 import { flattenVisibleModGroups } from '@/util/modGroupFilter'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
@@ -347,6 +354,8 @@ import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModLibCleaner } from '@/composables/modLibCleaner'
 import { basename } from '@/util/basename'
 import { kSearchModel, ModLoaderFilter } from '@/composables/search'
+import { kSettingsState } from '@/composables/setting'
+import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 import ModOptionsPage from './ModOptionsPage.vue'
 
 const localizedTexts = computed(() =>
@@ -388,6 +397,7 @@ const localizedTexts = computed(() =>
 
 const { runtime, path } = injection(kInstance)
 
+const searchModel = injection(kSearchModel)
 const {
   keyword,
   modrinthCategories,
@@ -401,7 +411,43 @@ const {
   sort,
   selectedCollection,
   modrinthEnvironment,
-} = injection(kSearchModel)
+} = searchModel
+
+const {
+  mods,
+  conflicted,
+  revalidate,
+  incompatible,
+  compatibility,
+  loaderIncompatibilities,
+  enable,
+  disable,
+  isValidating,
+} = injection(kInstanceModsContext)
+
+function getModDependents(installedFiles: ProjectEntry['installed'] | undefined): ProjectDependent[] {
+  const installed = installedFiles?.filter(isModFile) ?? []
+  if (installed.length === 0) return []
+
+  const installedPaths = new Set(installed.map(file => file.path))
+  const providedIds = new Set(installed.flatMap(file => [file.modId, ...Object.keys(file.provideRuntime)]))
+  return mods.value.flatMap((candidate): ProjectDependent[] => {
+    if (installedPaths.has(candidate.path)) return []
+    const matched = Object.values(candidate.dependencies)
+      .flat()
+      .filter(dependency => providedIds.has(dependency.modId))
+    if (matched.length === 0) return []
+    return [{
+      id: candidate.modrinth?.projectId || candidate.curseforge?.projectId.toString() || candidate.name,
+      icon: candidate.icon,
+      title: candidate.name,
+      description: candidate.version,
+      type: matched.every(dependency => dependency.optional) ? 'optional' : 'required',
+    }]
+  })
+}
+const { state: settingsState } = injection(kSettingsState)
+const modrinthAPI = injection(kModrinthAuthenticatedAPI)
 
 // Ensure mod search effect is applied
 const {
@@ -416,7 +462,7 @@ const {
   localFilter,
   loadMore,
   totalAvailable,
-} = injection(kModsSearch)
+} = useModsSearch(path, runtime, mods, isValidating, settingsState, modrinthAPI, searchModel)
 
 effect()
 
@@ -698,9 +744,6 @@ const shouldShowCurseforge = (
   return true
 }
 
-const { mods, conflicted, revalidate, incompatible, compatibility, loaderIncompatibilities, enable, disable } =
-  injection(kInstanceModsContext)
-
 // Install-all is available for any collection open in the Favorites view —
 // launcher-owned local collections as well as Modrinth collections/follows.
 const showInstallAll = computed(() => source.value === 'favorite')
@@ -873,10 +916,8 @@ onUnmounted(() => {
 // Drop
 const { dragover } = useGlobalDrop({
   onDrop: async (t) => {
-    const paths = [] as string[]
-    for (const f of t.files) {
-      paths.push(f.path)
-    }
+    const paths = getDropFilePaths(t.files)
+    if (paths.length === 0) return
     await install({ path: path.value, files: paths })
   },
 })
@@ -960,6 +1001,13 @@ const updateSearch = useDebounceFn(() => {
 }, 500)
 const { replace } = useRouter()
 const keywordBuffer = ref(route.query.keyword as string)
+
+function openModDependent(dependent: ProjectDependent) {
+  keywordBuffer.value = ''
+  localFilter.value = ''
+  replace({ query: { ...route.query, keyword: '', id: dependent.id } })
+}
+
 onMounted(() => {
   keywordBuffer.value = (route.query.keyword as string) ?? ''
 })

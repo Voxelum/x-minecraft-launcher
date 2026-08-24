@@ -218,6 +218,13 @@ export class NetworkAgent extends Dispatcher {
     return clients
   }
 
+  async close() {
+    await Promise.all([
+      this.proxyClient?.close(),
+      this.agent.close(),
+    ])
+  }
+
   dispatch(opts: Agent.DispatchOptions, handler: DispatchHandlers) {
     // const { host } = new URL(opts.origin as string)
     const headers = opts.headers

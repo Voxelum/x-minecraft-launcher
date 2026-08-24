@@ -12,7 +12,7 @@ export interface LauncherAppController {
   /**
    * Open an isolated Microsoft authorization window and resolve with its OAuth code.
    */
-  openMicrosoftLogin?(authorizationUrl: string, redirectUri: string, signal?: AbortSignal): Promise<string>
+  openMicrosoftLogin?(authorizationUrl: string, redirectUri: string, signal?: AbortSignal, authAttemptId?: string): Promise<string>
   /**
    * Get the login success html content with current locale
    */

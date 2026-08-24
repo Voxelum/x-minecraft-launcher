@@ -27,7 +27,7 @@
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { injection } from '@/util/inject'
 import HomeCard from '@/components/HomeCard.vue'
-import { kDropHandler } from '@/composables/dropHandler'
+import { getDropFilePaths, kDropHandler } from '@/composables/dropHandler'
 import { useService } from '@/composables'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import { kInstance } from '@/composables/instance'
@@ -46,7 +46,8 @@ const { path } = injection(kInstance)
 
 function onDrop(e: DragEvent) {
   if (e.dataTransfer) {
-    const filePaths = Array.from(e.dataTransfer.files).map(f => f.path)
+    const filePaths = getDropFilePaths(e.dataTransfer.files)
+    if (filePaths.length === 0) return
     install({
       path: path.value,
       files: filePaths,

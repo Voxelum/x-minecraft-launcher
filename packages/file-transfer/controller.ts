@@ -66,6 +66,18 @@ export interface DownloadResult {
    */
   speed: number
   outcome: 'completed' | 'aborted' | 'failed'
+  /** Managed controller abort category, when outcome is `aborted`. */
+  abortReason?: ManagedAbortReason
+  /** Whether this connection fetched one segment of a split range download. */
+  ranged?: boolean
+  /** Whether this attempt resumed bytes already written by an earlier attempt. */
+  resumed?: boolean
+  /** Whether this attempt used a fallback URL instead of the preferred URL. */
+  fallback?: boolean
+  /** Whether the managed-abort budget was exhausted and this attempt had to finish. */
+  committed?: boolean
+  /** Sanitized failure category. Never contains an error message, URL, or path. */
+  failureReason?: 'range-not-supported' | 'cancelled' | 'request'
 }
 
 /**
@@ -98,6 +110,12 @@ export interface DownloadController {
    * @default 5
    */
   readonly maxResumes?: number
+  /**
+   * Maximum throughput-based re-rolls on one URL before advancing to
+   * the next fallback source. The last source still commits to finish.
+   * @default 5
+   */
+  readonly maxSlowRerolls?: number
   /**
    * Maximum *no-progress* re-rolls (TTFB/stall, i.e. dead/stuck mirrors)
    * to attempt on one URL before falling through to the next fallback
@@ -178,11 +196,12 @@ const kManagedAbort = Symbol('ManagedAbort')
  * - `ttfb`: connected/redirected but delivered no first byte in time.
  * - `stall`: delivered a first byte then stopped making progress.
  * - `slow`: making progress, but too slow vs. the learned model.
+ * - `skip`: source quarantine opened while this request was queued.
  *
  * `ttfb` and `stall` mean *no progress* (a dead/stuck mirror) and should
  * be abandoned fast; `slow` is a tuning decision.
  */
-export type ManagedAbortReason = 'ttfb' | 'stall' | 'slow'
+export type ManagedAbortReason = 'ttfb' | 'stall' | 'slow' | 'skip'
 
 /**
  * Error used to signal a controller-requested abort. `download`

@@ -1,10 +1,10 @@
-import { Exception, ExceptionBase, isException } from '@xmcl/runtime-api'
+import { Exception, ExceptionBase, ExceptionConstructor, getExceptionName, isException } from '@xmcl/runtime-api'
 import { InjectionKey } from 'vue'
 import { injection } from '../util/inject'
 
-export function useExceptionHandler<T extends ExceptionBase>(type: { new(...args: any[]): Exception<T> }, handler: (e: T) => void) {
+export function useExceptionHandler<T extends ExceptionBase>(type: ExceptionConstructor<Exception<T>>, handler: (e: T) => void) {
   const { exceptionHandlers } = injection(kExceptionHandlers)
-  const key = type.name
+  const key = getExceptionName(type)
   if (!exceptionHandlers[key]) {
     exceptionHandlers[key] = [type, [handler as any]]
   } else {
@@ -18,7 +18,7 @@ export function useErrorHandler(handler: (e: unknown) => boolean) {
 }
 
 export function useExceptionHandlers() {
-  const exceptionHandlers: Record<string, [{ new(...args: any[]): Exception<any> }, Array<(e: unknown) => void>]> = {}
+  const exceptionHandlers: Record<string, [ExceptionConstructor<Exception<any>>, Array<(e: unknown) => void>]> = {}
   const serviceErrorHandlers: Record<string, Array<(e: any, serviceName: string, serviceMethod: string) => void>> = {}
   const errorHandlers: Array<(e: unknown) => boolean> = []
 

@@ -1,18 +1,11 @@
 import { appInsights } from '@/telemetry'
-import { AnyError } from '@/util/error'
+import { AnyError, getErrorMessage, isDownloadError } from '@/util/error'
 import type { JavaVersion, ResolvedVersion } from '@xmcl/core'
 import type { InstallIssue } from '@xmcl/installer'
 import {
-  InstallServiceKey,
   InstanceServiceKey,
   JavaRecord,
-  JavaServiceKey,
-  ServerVersionHeader,
-  VersionHeader,
-  VersionMetadataServiceKey,
-  VersionServiceKey,
-  findMatchedVersion,
-  parseOptifineVersion,
+  VersionInstallServiceKey,
 } from '@xmcl/runtime-api'
 import { Mutex } from 'async-mutex'
 import { InjectionKey, Ref, ShallowRef } from 'vue'
@@ -50,311 +43,38 @@ function getJavaPathOrInstall(
   return validJava ? validJava.path : resolved.javaVersion
 }
 
-function useInstanceVersionInstall(
-  versions: Ref<VersionHeader[]>,
-  servers: Ref<ServerVersionHeader[]>,
-  instances: Ref<Instance[]>,
-  javas: Ref<JavaRecord[]>,
-  refreshJava: () => Promise<void>,
-) {
-  const {
-    installForge,
-    installNeoForged,
-    installMinecraft,
-    installMinecraftJar,
-    installDependencies,
-    installOptifine,
-    installFabric,
-    installQuilt,
-    installLabyModVersion,
-  } = useService(InstallServiceKey)
-  const { refreshVersion, refreshServerVersion, resolveLocalVersion } =
-    useService(VersionServiceKey)
-  const { installJava } = useService(JavaServiceKey)
-  const metadata = useService(VersionMetadataServiceKey)
+function useInstanceVersionInstall() {
+  const { install: installVersion } = useService(VersionInstallServiceKey)
 
-  function onInstallForgeError(e: any): never {
-    if (e.code === 'ENOENT') {
-      refreshJava()
-    }
-    throw e
-  }
-
-  async function install(runtime: PartialRuntimeVersions) {
-    const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
-    const mcVersions = await metadata.getMinecraftVersions()
-    const local = versions.value
-    const mcMeta = mcVersions.versions.find((v) => v.id === minecraft)
-    if (mcMeta) {
-      await installMinecraft({ meta: mcMeta, side: 'client', installJar: false })
-    } else {
-      const exception = new AnyError(
-        'InstallMinecraftClientError',
-        `Cannot find the minecraft version ${minecraft}`,
-        {},
-        {
-          minecraft,
-        },
-      )
+  async function install(runtime: PartialRuntimeVersions, instancePath = '', selectedVersion = '') {
+    try {
+      const result = await installVersion({
+        type: 'instance',
+        instancePath,
+        runtime,
+        selectedVersion,
+      })
+      console.log('[install-plan]', result)
+      return result.version
+    } catch (e) {
+      const exception = e instanceof Error
+        ? e
+        : new AnyError(
+            'InstallMinecraftClientError',
+            getErrorMessage(e),
+            undefined,
+            e && typeof e === 'object' && !Array.isArray(e) ? e : undefined,
+          )
+      if (exception.name === 'Error') {
+        exception.name = 'InstallMinecraftClientError'
+      }
       appInsights.trackException({ exception })
       throw exception
     }
-
-    const resolvedMcVersion = await resolveLocalVersion(minecraft).catch((e) => {
-      if (e.name === 'Error') {
-        e.name = 'InstallMinecraftClientError'
-      }
-      appInsights.trackException({ exception: e })
-      throw e
-    })
-
-    const capture = <T>(promise: Promise<T>) => promise.then(
-      (value) => ({ value } as const),
-      (error: unknown) => ({ error } as const),
-    )
-    const unwrap = <T>(result: { value: T } | { error: unknown }) => {
-      if ('error' in result) {
-        throw result.error
-      }
-      return result.value
-    }
-
-    const javaOrInstall = getJavaPathOrInstall(instances.value, javas.value, resolvedMcVersion, '')
-    const jarResult = capture(installMinecraftJar({ version: minecraft, side: 'client' }))
-    const dependenciesResult = capture(installDependencies({ version: minecraft, side: 'client' }))
-    const javaResult = capture(
-      typeof javaOrInstall === 'string'
-        ? Promise.resolve(javaOrInstall)
-        : installJava(javaOrInstall).then((result) => result.path),
-    )
-    const [jar, java] = await Promise.all([jarResult, javaResult])
-    unwrap(jar)
-    const javaPath = unwrap(java)
-
-    const finishInstall = async (version: string) => {
-      unwrap(await dependenciesResult)
-      return version
-    }
-
-    let labyModBase = ''
-    if (labyMod) {
-      const localLabyMod = findMatchedVersion(local, '', {
-        minecraft,
-        labyMod,
-      })
-      if (localLabyMod) {
-        await refreshVersion(localLabyMod.id)
-        labyModBase = localLabyMod.id
-      } else {
-        const manifest = await metadata.getLabyModManifest()
-
-        labyModBase = await installLabyModVersion({ manifest, minecraftVersion: minecraft })
-      }
-    }
-
-    let forgeVersion = undefined as undefined | string
-    if (forge) {
-      const localForge = findMatchedVersion(local, '', {
-        minecraft,
-        forge,
-        labyMod,
-      })
-      if (!localForge) {
-        const forgeVersions = await metadata.getForgeVersions(minecraft)
-        const found = forgeVersions.find((v) => v.version === forge)
-        const forgeVersionId = found?.version ?? forge
-
-        forgeVersion = await installForge({
-          mcversion: minecraft,
-          version: forgeVersionId,
-          installer: found?.installer,
-          java: javaPath,
-          base: labyModBase,
-        }).catch(onInstallForgeError)
-      } else {
-        forgeVersion = localForge.id
-        await refreshVersion(localForge.id)
-      }
-    }
-
-    if (neoForged) {
-      const localNeoForge = findMatchedVersion(local, '', {
-        minecraft,
-        neoForged,
-        labyMod,
-      })
-      if (!localNeoForge) {
-        const neoForgedVersion = await metadata.getNeoForgedVersions(minecraft)
-        const found = neoForgedVersion.find((v) => v === neoForged)
-        const id = found ?? neoForged
-
-        forgeVersion = await installNeoForged({
-          version: id,
-          minecraft,
-          java: javaPath,
-          base: labyModBase,
-        }).catch(onInstallForgeError)
-      } else {
-        forgeVersion = localNeoForge.id
-        await refreshVersion(localNeoForge.id)
-      }
-    }
-
-    if (optifine) {
-      let optifineVersion = optifine
-      if (optifineVersion.startsWith(minecraft)) {
-        optifineVersion = optifineVersion.substring(minecraft.length)
-      }
-      const localOptifine = findMatchedVersion(local, '', {
-        minecraft,
-        optifine: optifineVersion,
-        forge: forgeVersion || '',
-      })
-      if (localOptifine) {
-        await refreshVersion(localOptifine.id)
-        return await finishInstall(localOptifine.id)
-      }
-      const { type, patch } = parseOptifineVersion(optifineVersion)
-
-      const ver = await installOptifine({
-        type,
-        patch,
-        mcversion: minecraft,
-        inheritFrom: forgeVersion,
-        java: javaPath,
-      })
-      return await finishInstall(ver)
-    } else if (forgeVersion) {
-      return await finishInstall(forgeVersion)
-    }
-
-    if (fabricLoader) {
-      const localFabric = findMatchedVersion(local, '', {
-        fabricLoader,
-        minecraft,
-        labyMod,
-      })
-      if (localFabric) {
-        await refreshVersion(localFabric.id)
-        return await finishInstall(localFabric.id)
-      }
-      const version = await installFabric({ loader: fabricLoader, minecraft, base: labyModBase })
-      return await finishInstall(version)
-    }
-
-    if (quiltLoader) {
-      const localQuilt = findMatchedVersion(local, '', {
-        quiltLoader,
-        minecraft,
-        labyMod,
-      })
-      if (localQuilt) {
-        await refreshVersion(localQuilt.id)
-        return await finishInstall(localQuilt.id)
-      }
-      const version = await installQuilt({
-        version: quiltLoader,
-        minecraftVersion: minecraft,
-        base: labyModBase,
-      })
-      return await finishInstall(version)
-    }
-
-    return await finishInstall(minecraft)
   }
 
   async function installServer(runtime: RuntimeVersions, path: string) {
-    const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
-
-    const mcVersions = await metadata.getMinecraftVersions()
-    const mcMeta = mcVersions.versions.find((v) => v.id === minecraft)
-    if (mcMeta) {
-      await installMinecraft({ meta: mcMeta, side: 'server' })
-    } else {
-      const exception = new AnyError(
-        'InstallServerError',
-        `Cannot find the minecraft version ${minecraft}`,
-        {},
-        {
-          minecraft,
-        },
-      )
-      appInsights.trackException({ exception })
-      throw exception
-    }
-
-    if (forge) {
-      const forgeServer = servers.value.find(
-        (v) => v.version === forge && v.minecraft === minecraft && v.type === 'forge',
-      )
-      if (forgeServer) return forgeServer.id
-      const forgeVersions = await metadata.getForgeVersions(minecraft)
-      const found = forgeVersions.find((v) => v.version === forge)
-      const forgeVersionId = found?.version ?? forge
-
-      if (javas.value.length === 0 || javas.value.every((java) => !java.valid)) {
-        // no valid java
-        const mcVersionResolved = await resolveLocalVersion(minecraft)
-        await installJava(mcVersionResolved.javaVersion)
-      }
-
-      const id = await installForge({
-        mcversion: minecraft,
-        version: forgeVersionId,
-        installer: found?.installer,
-        side: 'server',
-        root: path,
-      })
-
-      refreshServerVersion(id)
-
-      return id
-    }
-
-    if (neoForged) {
-      const neoForgeServer = servers.value.find(
-        (v) => v.version === neoForged && v.minecraft === minecraft && v.type === 'neoforge',
-      )
-      if (neoForgeServer) return neoForgeServer.id
-
-      const id = await installNeoForged({ version: neoForged, minecraft, side: 'server' })
-
-      refreshServerVersion(id)
-
-      return id
-    }
-
-    if (fabricLoader) {
-      const fabricServer = servers.value.find(
-        (v) => v.version === fabricLoader && v.minecraft === minecraft && v.type === 'fabric',
-      )
-      if (fabricServer) return fabricServer.id
-
-      const id = await installFabric({ loader: fabricLoader, minecraft, side: 'server' })
-
-      refreshServerVersion(id)
-
-      return id
-    }
-
-    if (quiltLoader) {
-      const quiltServer = servers.value.find(
-        (v) => v.version === quiltLoader && v.minecraft === minecraft && v.type === 'quilt',
-      )
-      if (quiltServer) return quiltServer.id
-
-      const id = await installQuilt({
-        version: quiltLoader,
-        minecraftVersion: minecraft,
-        side: 'server',
-      })
-
-      refreshServerVersion(id)
-
-      return id
-    }
-
-    return minecraft
+    return installVersion({ type: 'server', runtime, path })
   }
 
   return {
@@ -368,36 +88,14 @@ export function useInstanceVersionInstallInstruction(
   instances: Ref<Instance[]>,
   resolvedVersion: Ref<InstanceResolveVersion | undefined>,
   refreshResolvedVersion: () => void,
-  versions: Ref<VersionHeader[]>,
-  servers: Ref<ServerVersionHeader[]>,
   javas: Ref<JavaRecord[]>,
-  refreshJava: () => Promise<void>,
 ) {
-  const {
-    diagnose,
-    installAssetsForVersion,
-    installForge,
-    installAssets,
-    installMinecraftJar,
-    installLibraries,
-    installDependencies,
-    installOptifine,
-    installByProfile,
-  } = useService(InstallServiceKey)
+  const { diagnose } = useService(VersionInstallServiceKey)
   const { editInstance } = useService(InstanceServiceKey)
-  const { resolveLocalVersion } = useService(VersionServiceKey)
-  const { installJava } = useService(JavaServiceKey)
-  const metadata = useService(VersionMetadataServiceKey)
   const { notify } = useNotifier()
   const { t } = useI18n()
 
-  const { install, installServer } = useInstanceVersionInstall(
-    versions,
-    servers,
-    instances,
-    javas,
-    refreshJava,
-  )
+  const { install, installServer } = useInstanceVersionInstall()
 
   let abortController = new AbortController()
   const instruction: ShallowRef<InstanceInstallInstruction | undefined> = shallowRef(undefined)
@@ -530,7 +228,7 @@ export function useInstanceVersionInstallInstruction(
       result.java = javaInstallOrPath
     }
 
-    const issue = await diagnose({ currentVersion: resolved, side: 'client' })
+    const issue = await diagnose({ version: resolved.id, side: 'client' })
     if (abortSignal?.aborted) {
       throw kAbort
     }
@@ -567,127 +265,23 @@ export function useInstanceVersionInstallInstruction(
     }
 
     try {
-      if (!instruction.resolvedVersion) {
-        // install fresh version
-        const version = await install(instruction.runtime)
-        if (version) {
-          await installDependencies({ version, side: 'client' })
-        }
-
-        await commit(version)
-        return
-      }
-      const version = instruction.resolvedVersion
-      if (instruction.jar) {
-        await installMinecraftJar({
-          version,
-          side: 'client',
-        })
-      }
-      if (instruction.profile) {
-        const resolved = await resolveLocalVersion(version)
-        const java = getJavaPathOrInstall(
-          instances.value,
-          javas.value,
-          resolved,
-          instruction.instance,
-        )
-        const javaPath =
-          typeof java === 'string' ? java : await installJava(java).then((r) => r.path)
-
-        await installByProfile({
-          profile: instruction.profile,
-          side: 'client',
-          java: javaPath,
-        })
-
-        await installDependencies({ version: version, side: 'client' })
-        return
-      }
-      if (instruction.optifine) {
-        const version = await installOptifine({
-          mcversion: instruction.runtime.minecraft,
-          ...parseOptifineVersion(instruction.optifine),
-        })
-        await installDependencies({ version, side: 'client' })
-        const resolved = await resolveLocalVersion(version)
-        const java = getJavaPathOrInstall(
-          instances.value,
-          javas.value,
-          resolved,
-          instruction.instance,
-        )
-        if (typeof java === 'object') {
-          await installJava(java)
-        }
-        await commit(version)
-        return
-      }
-      if (instruction.forge) {
-        const resolved = await resolveLocalVersion(instruction.forge.minecraft)
-        const java = getJavaPathOrInstall(
-          instances.value,
-          javas.value,
-          resolved,
-          instruction.instance,
-        )
-        const javaPath =
-          typeof java === 'string' ? java : await installJava(java).then((r) => r.path)
-
-        const version = await installForge({
-          mcversion: instruction.forge.minecraft,
-          version: instruction.forge.version,
-          java: javaPath,
-          side: 'client',
-        })
-        await installDependencies({ version, side: 'client' })
-        await commit(version)
-        return
-      }
-
-      const resolved = await resolveLocalVersion(version)
-      const java = getJavaPathOrInstall(
-        instances.value,
-        javas.value,
-        resolved,
+      const version = await install(
+        instruction.runtime,
         instruction.instance,
+        instruction.version,
       )
-      if (typeof java === 'object') {
-        await installJava(java)
-      }
-      if (instruction.libraries) {
-        console.log('Installing libraries', version)
-        await installLibraries({
-          libraries: instruction.libraries,
-          version: instruction.runtime.minecraft,
-          force: instruction.libraries.length > 15,
-        })
+      if (version !== instruction.resolvedVersion) {
+        await commit(version)
       }
       if (instruction.assetsIndex) {
-        const list = await metadata.getMinecraftVersions()
-        await installAssetsForVersion({
-          version,
-          fallbackVersionMetadata: list.versions.filter(
-            (v) => v.id === version || v.id === instruction.assetsIndex?.id,
-          ),
-        })
         refreshResolvedVersion()
-      } else if (instruction.assets) {
-        await installAssets({
-          assets: instruction.assets,
-          key: instruction.runtime.minecraft,
-          force: instruction.assets.length > 15,
-        })
       }
     } catch (e) {
       const err = e as Error
       const code = (typeof e === 'object' && e && 'code' in e && typeof e.code === 'string') ? e.code : undefined
       const isPermissionError = code === 'EPERM' || code === 'EACCES'
       const isDiskFull = code === 'ENOSPC'
-      const isNetworkError = err?.name === 'DownloadAggregateError' || err?.name === 'ConnectTimeoutError' ||
-        err?.name === 'BodyTimeoutError' || err?.name === 'HeadersTimeoutError' ||
-        err?.name === 'SocketError' || err?.name === 'DNSNotFoundError' ||
-        (err?.message?.includes('fetch failed') ?? false)
+      const isDownloadFailure = isDownloadError(e)
       // The main process never replied to a `service-call` IPC invoke even
       // though this renderer is still alive to catch the rejection. That means
       // the IPC bridge to the backend is broken - nothing else in the launcher
@@ -700,7 +294,7 @@ export function useInstanceVersionInstallInstruction(
       // Only report unknown failures to telemetry. Environment errors
       // (anti-virus, disk full, broken network) are not bugs and otherwise
       // generate per-user storms - the user already gets a clear toast below.
-      if (err.name && !isPermissionError && !isDiskFull && !isNetworkError) {
+      if (err.name && !isPermissionError && !isDiskFull && !isDownloadFailure) {
         if (isBackendUnresponsiveError) {
           // Otherwise reported as a generic 'Error'. Give it a distinct,
           // searchable name so the broken-IPC signal is not silently lumped
@@ -733,12 +327,8 @@ export function useInstanceVersionInstallInstruction(
           title: t('errors.DiskIsFull'),
           level: 'error',
         })
-      } else if (isNetworkError) {
-        notify({
-          title: t('errors.InstallNetworkError.title'),
-          body: t('errors.InstallNetworkError.body'),
-          level: 'error',
-        })
+      } else if (isDownloadFailure) {
+        // Download failures remain visible and actionable in the task manager.
       } else {
         notify({
           title: t('errors.InstallInstructionFailed.title'),
@@ -782,7 +372,7 @@ export function useInstanceVersionInstallInstruction(
   async function installRuntime(instancePath: string, runtime: RuntimeVersions) {
     const lock = getInstanceLock(instancePath)
     return lock.runExclusive(async () => {
-      const version = await install(runtime)
+      const version = await install(runtime, instancePath)
       await editInstance({
         instancePath,
         runtime,

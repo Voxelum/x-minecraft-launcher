@@ -155,6 +155,7 @@ delete:
   'no': Hayır
   'yes': Sil
 dependencies:
+  dependents: Bu moda bağlı modlar
   embedded: Gömülü
   incompatible: Uyumsuz
   name: Bağımlılıklar
@@ -671,6 +672,10 @@ logsCrashes:
   serverLogs: Sunucu Günlükleri
   showFile: Klasörde Göster
 me:
+  groupByDate: Tarihe göre grupla
+  groupByFolder: Klasöre göre grupla
+  instanceViewMode: Oyun örneği görünüm modu
+  listView: Liste görünümü
   news: Haberler
   recentPlay: Son Oynananlar
 migrationWindow:
@@ -961,10 +966,37 @@ modrinth:
 modrinthCard:
   currentVersion: Mevcut Sürüm
 multiplayer:
+  addFunds: "Bakiye ekle"
+  availableBalance: "Kullanılabilir bakiye"
+  balanceHint: "XMCL Together hizmetleri için kullanılabilir"
+  billing: "Faturalandırma"
+  billingDescription: "Aktarma erişimini, Together Home planını ve ödemelerini yönet."
+  billingError: "Together faturalandırması yüklenemedi. Biraz sonra tekrar dene."
+  buyTogether: "Together satın al"
+  cancelTogether: "Planı iptal et"
+  checkout: "Waffo ödeme sayfasını aç"
+  connectionTogetherWarning: "Bir oda üyesi bir süredir sana bağlanamıyor. Odadaki herkesin bağlantısını iyileştirmek için XMCL Together'ı dene. Together'a yalnızca oda sahibi ihtiyaç duyar."
+  masterPurchaseHint: "Odadaki herkesin bağlantısını iyileştirmek için Together Home'a yalnızca oda sahibinin ihtiyacı vardır."
+  natTogetherWarning: "Yönlendiricin oda sahibine bağlanmakta zorlanıyor olabilir. Bağlantılar başarısız olursa, seninle arkadaşların arasındaki bağlantıyı iyileştirmek için XMCL Together'ı dene. Oda için Together'ı yalnızca oda sahibinin satın alması gerekir."
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB aktarma trafiği içeren 7 günlük bir deneme."
+  trialTitle: "Bağlantı denemesi"
+  tryTogether: "Together'ı dene"
+  month: "ay"
+  orderStatus: "Waffo siparişi: {status}"
+  planDescription: "Aylık 20 GB yönetilen aktarma trafiği ve modpack'in için yapay zekâ destekli sorun giderme."
+  waffoHint: "Ödemeler Waffo Pancake üzerinden güvenli bir şekilde tamamlanır. XMCL kart numaranı asla almaz."
+  subscription:
+    active: "Aktif"
+    cancelled: "İptal edildi"
+    payment_due: "Ödeme bekleniyor"
+  trial:
+    active: "Deneme etkin"
+    available: "Ücretsiz deneme kullanılabilir"
+    expired: "Deneme kullanıldı"
+    unavailable: "Deneme kullanılamıyor"
   loginRequiredDescription: P2P çok oyunculu oyun XMCL çevrimiçi hizmetlerini kullanır. Devam etmek için bir XMCL Hesabında oturum açın.
   loginRequiredTitle: P2P çok oyunculu oyun için giriş yapın
-  allowTurn: Geçiş (relay) sunucusunu etkinleştir
-  allowTurnHint: Arkadaşınızla bağlantı kuramıyorsanız geçiş sunucusuna izin verin. Ancak, geçiş sunucusu kullanmak bağlantınızı yavaşlatabilir. Dikkatli kullanın.
   complete: Tamamla
   confirm: Onayla
   connections: Bağlantılar
@@ -1017,7 +1049,6 @@ multiplayer:
   startNewP2PConnection: Yeni bir eş bağlantısı oluşturmak için Başlat düğmesine tıklayın
   connectionError: Bağlantı hatası
   connectionFailedHint: Bağlantı kurulamıyor. Her iki tarafın da uyumlu NAT türlerine sahip olduğunu kontrol edin.
-  natWarning: NAT türünüz doğrudan bağlantıyı engelleyebilir. Ayarlardan röle sunucusunu etkinleştirmeyi deneyin veya arkadaşınızdan ev sahibi olmasını isteyin.
 myStuff: Eşyalarım
 natType:
   blocked: Engellendi
@@ -1742,6 +1773,8 @@ migrateMinecraft:
 reinstall:
   name: '{version} yeniden kur'
 agent:
+  accessRequiredHint: Yerleşik temsilciyi kullanmak için XMCL’ye abone olun veya ayarlarda kendi yapay zeka sağlayıcınızı yapılandırın.
+  subscribeXmcl: XMCL’ye abone ol
   callingTool: '{name} çağrılıyor…'
   disabledPlaceholder: Temsilci devre dışı
   emptyHint: Temsilciden örneğinizi incelemesini, modları değiştirmesini, günlükleri okumasını veya çökmeyi teşhis etmesini isteyin.

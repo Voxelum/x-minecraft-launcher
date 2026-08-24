@@ -85,6 +85,7 @@ export interface SaveDialogOptions {
 interface WindowControllerEventMap {
   maximize: boolean
   minimize: boolean
+  navigate: string
 }
 
 export interface MonitorInfo {
@@ -120,8 +121,6 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
    * Maximize current window
    */
   maximize(): void
-
-  openMultiplayerWindow(): void
 
   queryAudioPermission(): Promise<boolean>
 

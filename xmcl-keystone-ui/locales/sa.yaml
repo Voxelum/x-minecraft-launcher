@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: मूलनिर्देशिकां चिनोतु
 agent:
+  accessRequiredHint: अन्तर्निर्मितप्रतिनिधिम् उपयोक्तुं XMCL-सदस्यतां गृह्णातु, अथवा विकल्पेषु स्वकीयम् AI-प्रदातारं विन्यस्यतु।
+  subscribeXmcl: XMCL-सदस्यतां गृह्णातु
   callingTool: '{name} आह्वयति...'
   disabledPlaceholder: प्रतिनिधिः असमर्थितः
   emptyHint: स्वक्षणं परीक्षितुं, मोड्स परिवर्तयितुं, वृत्तलेखं पठितुं, अथवा पतनस्य निदानं कर्तुं प्रतिनिधिं पृच्छतु।
@@ -174,6 +176,7 @@ delete:
   'no': न
   'yes': लोपयतु
 dependencies:
+  dependents: अस्मिन् मोड् इत्यस्मिन् आश्रिताः मोड्
   embedded: अन्तर्निहितम्
   incompatible: असुसङ्गतम्
   name: अधीनताः
@@ -684,6 +687,10 @@ logsCrashes:
   showFile: कोशे दर्शयतु
   title: वृत्तलेखाः पतनविवरणानि च
 me:
+  groupByDate: दिनाङ्कानुसारं समूहीकरोतु
+  groupByFolder: पुटिकानुसारं समूहीकरोतु
+  instanceViewMode: दृष्टान्तदर्शनविधिः
+  listView: सूचीदर्शनम्
   news: वृत्तान्ताः
   recentPlay: सद्यः क्रीडितम्
 migrateMinecraft:
@@ -1006,10 +1013,37 @@ modrinth:
 modrinthCard:
   currentVersion: वर्तमानसंस्करणम्
 multiplayer:
+  addFunds: "धनं योजयतु"
+  availableBalance: "उपलब्धं शेषधनम्"
+  balanceHint: "XMCL Together-सेवानां कृते उपलब्धम्"
+  billing: "भुगतानम्"
+  billingDescription: "रिले-प्रवेशं, भवतः Together Home योजनां, भुगतांश्च प्रबन्धयतु।"
+  billingError: "Together-भुगतानं लोडितुं न शक्यम्। किञ्चित्कालानन्तरं पुनः प्रयतताम्।"
+  buyTogether: "Together क्रीणातु"
+  cancelTogether: "योजना निरस्यतु"
+  checkout: "Waffo-भुगतानं उद्घाटयतु"
+  connectionTogetherWarning: "कक्षस्य एकः सदस्यः किञ्चित्कालात् भवता सह संयोजितुं न शक्नोति। कक्षे सर्वेषां संयोजनं सुधारयितुं XMCL Together प्रयतताम्। केवलं कक्षस्वामिनः Together आवश्यकम्।"
+  masterPurchaseHint: "कक्षे सर्वेषां संयोजनं सुधारयितुं केवलं कक्षस्वामिनः Together Home आवश्यकम्।"
+  natTogetherWarning: "भवतः रूटरेण कक्षस्वामिना सह संयोजने समस्या भवितुं शक्नोति। संयोजनं विफलं चेत्, भवद्भिः मित्रैः सह संयोजनं सुधारयितुं XMCL Together प्रयतताम्। कक्षस्य कृते Together क्रेतुं केवलं कक्षस्वामी आवश्यकः।"
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB रिले-यातायातेन सह एकं 7-दिवसीयं परीक्षणम्।"
+  trialTitle: "संयोजन-परीक्षणम्"
+  tryTogether: "Together प्रयतताम्"
+  month: "मासः"
+  orderStatus: "Waffo-आदेशः: {status}"
+  planDescription: "प्रतिमासं 20 GB प्रबन्धितं रिले-यातायातम्, तथा च भवतः मोडपैकस्य समस्यासु AI-सहायता।"
+  waffoHint: "भुगतानानि Waffo Pancake इत्यत्र सुरक्षिततया सम्पन्नानि भवन्ति। XMCL कदापि भवतः कार्ड-सङ्ख्यां न प्राप्नोति।"
+  subscription:
+    active: "सक्रियम्"
+    cancelled: "निरस्तम्"
+    payment_due: "भुगतानं देयम्"
+  trial:
+    active: "परीक्षणं सक्रियम्"
+    available: "निःशुल्कं परीक्षणं उपलब्धम्"
+    expired: "परीक्षणं प्रयुक्तम्"
+    unavailable: "परीक्षणं अनुपलब्धम्"
   loginRequiredDescription: P2P बहुक्रीडनं XMCL अन्तर्जालसेवान् उपयुङ्क्ते। अग्रे गन्तुं XMCL खाते प्रवेशं कुर्वन्तु।
   loginRequiredTitle: P2P बहुक्रीडनाय प्रवेशं कुर्वन्तु
-  allowTurn: रिले (relay) सेवाप्रदाता समर्थं करोतु
-  allowTurnHint: यदि भवान् मित्रैः सह सन्धितुं न शक्नोति तर्हि रिले सेवाप्रदातुः अनुमतिं ददातु।
   complete: पूर्णम्
   confirm: दृढीकरोतु
   connectionError: सम्पर्कदोषः
@@ -1044,7 +1078,6 @@ multiplayer:
   localToken: स्थानिकं प्रतीकम्
   manualConnect: हस्तेन सम्पर्कं करोतु
   name: LAN इत्यत्र बहुक्रीडकम्
-  natWarning: भवतः NAT प्रकारः साक्षात्सम्पर्कं बाधितुं शक्नोति।
   networkInfo: जालसूचना (परिवर्तनाय नुदतु)
   next: अग्रिमम्
   otherExposedPortDescription: '{user} द्वारा प्रेषितः पोर्ट (port)'

@@ -19,12 +19,12 @@
     "JavaScript": {
       "tab_size": 2,
       "format_on_save": "off",
-      "formatter": "prettier",
+      "formatter": "oxc",
     },
     "Vue.js": {
       "tab_size": 2,
       "format_on_save": "off",
-      "formatter": "prettier",
+      "formatter": "oxc",
     },
     "Markdown": {
       "format_on_save": "off",

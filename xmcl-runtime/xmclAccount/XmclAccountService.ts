@@ -121,6 +121,13 @@ export class XmclAccountService
         ).common
       },
       () => this.getDpopKey(),
+      async () => {
+        const flights = await app.registry.get(kFlights)
+        return resolveXmclApiEndpoints(
+          flights.xmclBillingApiBaseUrl,
+          () => app.getLogger('BillingApiBaseUrl').warn('Ignoring invalid xmclBillingApiBaseUrl flight; using the default XMCL API origin.'),
+        ).common
+      },
     )
 
     app.protocol.registerHandler('xmcl', ({ request, response }) => {
@@ -234,6 +241,43 @@ export class XmclAccountService
     }
     await this.bootstrapCredential('microsoft', result.accessToken)
     return 'bootstrapped'
+  }
+
+  @Singleton()
+  async authorizeMicrosoft(): Promise<void> {
+    await this.initialize()
+    const oauthClient = new MicrosoftOAuthClient(
+      (...args) => this.app.fetch(...args),
+      this.app.getLogger('XmclMicrosoftIdentity'),
+      MICROSOFT_LAUNCHER_CLIENT_ID,
+      async (url, redirectUri, signal, authAttemptId) => {
+        const openMicrosoftLogin = this.app.controller.openMicrosoftLogin
+        if (!openMicrosoftLogin) {
+          throw new Error('interactive_microsoft_auth_not_supported')
+        }
+        return openMicrosoftLogin.call(
+          this.app.controller,
+          url,
+          redirectUri,
+          signal,
+          authAttemptId,
+        )
+      },
+      async () => {
+        const port = await this.app.serverPort ?? 25555
+        return `http://localhost:${port}/auth`
+      },
+      () => {},
+      this.app.secretStorage,
+      () => this.app.controller.getNativeWindowHandle?.(),
+      event => this.app.emit('microsoft-auth-telemetry', event),
+    )
+    const { result } = await oauthClient.authenticate(
+      '',
+      [MICROSOFT_GRAPH_USER_READ_SCOPE],
+      { useNativeBroker: process.platform === 'win32' },
+    )
+    await this.bootstrapCredential('microsoft', result.accessToken)
   }
 
   @Singleton()
@@ -354,6 +398,42 @@ export class XmclAccountService
     await this.clearSession(credential.sessionId)
   }
 
+  @Singleton()
+  async getTogetherOverview() {
+    await this.initialize()
+    return this.api.getTogetherOverview(await this.requireValidCredential())
+  }
+
+  @Singleton()
+  async claimTogetherTrial() {
+    await this.initialize()
+    return this.api.claimTogetherTrial(await this.requireValidCredential())
+  }
+
+  @Singleton((amountMinor) => amountMinor)
+  async createTogetherOrder(amountMinor: number) {
+    await this.initialize()
+    return this.api.createTogetherOrder(await this.requireValidCredential(), amountMinor)
+  }
+
+  @Singleton((orderId) => orderId)
+  async getTogetherOrder(orderId: string) {
+    await this.initialize()
+    return this.api.getTogetherOrder(await this.requireValidCredential(), orderId)
+  }
+
+  @Singleton()
+  async subscribeTogether() {
+    await this.initialize()
+    return this.api.subscribeTogether(await this.requireValidCredential())
+  }
+
+  @Singleton()
+  async cancelTogether() {
+    await this.initialize()
+    return this.api.cancelTogether(await this.requireValidCredential())
+  }
+
   private async bootstrapCredential(
     provider: Extract<XmclOAuthProvider, 'microsoft' | 'modrinth'>,
     providerCredential: string,
@@ -404,6 +484,20 @@ export class XmclAccountService
     }
     const applied = await this.applySnapshot(snapshot, result.session, expectedGeneration)
     if (!applied) throw new Error('xmcl_account_session_changed')
+    if (result.identities === undefined) {
+      const generation = this.sessionGeneration
+      const snapshotGeneration = this.snapshotGeneration
+      try {
+        await this.applySnapshot(
+          await this.api.getSnapshot(result.session),
+          result.session,
+          generation,
+          snapshotGeneration,
+        )
+      } catch {
+        this.warn('XMCL authentication succeeded; account identities will refresh later.')
+      }
+    }
   }
 
   private async getValidCredential(): Promise<XmclSessionCredential | undefined> {

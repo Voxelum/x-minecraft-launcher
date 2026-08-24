@@ -1,5 +1,5 @@
 import { useIntervalFn } from '@vueuse/core'
-import { GameProfileAndTexture, PeerServiceKey, PeerState } from '@xmcl/runtime-api'
+import { GameProfileAndTexture, Multiplayer, PeerServiceKey, PeerState, SharedState } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
 import { AddInstanceDialogKey } from './instanceTemplates'
@@ -10,9 +10,15 @@ import { useState } from './syncableState'
 
 export const kPeerShared: InjectionKey<ReturnType<typeof usePeerConnections>> = Symbol('PeerState')
 
-export function usePeerConnections() {
+type PeerStateRef = Ref<SharedState<PeerState> | undefined>
+
+function usePeerStateRef() {
   const { getPeerState } = useService(PeerServiceKey)
-  const { state } = useState(getPeerState, PeerState)
+  return useState(getPeerState, PeerState).state
+}
+
+export function usePeerConnections(sharedState?: PeerStateRef) {
+  const state = sharedState ?? usePeerStateRef()
   const { notify } = useNotifier()
   const { t } = useI18n()
   const { show: showShareInstance } = useDialog('share-instance')
@@ -72,22 +78,27 @@ export function usePeerConnections() {
 
 export const kPeerState: InjectionKey<ReturnType<typeof usePeerState>> = Symbol('PeerState')
 
-export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
-  const { getPeerState, exposePort, unexposePort } = useService(PeerServiceKey)
+export function usePeerState(
+  gameProfile: Ref<GameProfileAndTexture>,
+  multiplayer: Multiplayer,
+  sharedState?: PeerStateRef,
+  refreshNat: () => Promise<void> = async () => {},
+) {
+  const { exposePort, unexposePort } = useService(PeerServiceKey)
   const {
     initiate,
     setRemoteDescription,
     drop,
-    refreshNat,
     isReady,
     setUserInfo,
     leaveGroup,
     createGroup,
     joinGroup,
     transferGroupMaster,
+    refreshIceServers,
   } = multiplayer
 
-  const { state } = useState(getPeerState, PeerState)
+  const state = sharedState ?? usePeerStateRef()
 
   const refreshNatType = useRefreshable(() => refreshNat())
 
@@ -197,6 +208,7 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
     createGroup,
     joinGroup,
     transferGroupMaster,
+    refreshIceServers,
     error,
   }
 }

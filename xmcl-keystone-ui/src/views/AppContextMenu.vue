@@ -1,5 +1,6 @@
 <template>
   <v-menu
+    :key="generation"
     v-model="shown"
     :target="[x, y]"
     absolute
@@ -93,7 +94,7 @@ const { isDark } = injection(kTheme)
 const { isRtl } = useRtl()
 const submenuIcon = computed(() => isRtl.value ? 'arrow_left' : 'arrow_right')
 
-const { x, y, items, shown } = useContextMenuData()
+const { x, y, items, shown, generation } = useContextMenuData()
 
 // When at least one item declares a section, only render a divider between
 // items belonging to different sections. Otherwise fall back to the legacy

@@ -71,7 +71,6 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
         ],
       }
       logger.log(`Encode profile for ${id}: %o`, transformed)
-      transformed.id = id
       return JSON.stringify(transformed)
     }
     return undefined
@@ -87,7 +86,7 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
           meta: {
             implementationName: 'xmcl-offline-server',
             implementationVersion: '0.0.1',
-            serverName: 'X Minecraft Launcher Offline Server',
+            serverName: 'XMCL Offline Server',
           },
           skinDomains: [
             'localhost',

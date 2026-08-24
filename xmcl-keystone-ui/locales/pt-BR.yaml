@@ -154,6 +154,7 @@ delete:
   'no': Não
   'yes': Deletar
 dependencies:
+  dependents: Mods que dependem deste mod
   embedded: Incorporado
   incompatible: Incompatível
   name: Dependências
@@ -667,6 +668,10 @@ logsCrashes:
   title: Logs ou Relatórios de falhas
   failures: Falhas de inicialização
 me:
+  groupByDate: Agrupar por data
+  groupByFolder: Agrupar por pasta
+  instanceViewMode: Modo de visualização das instâncias
+  listView: Visualização em lista
   news: Notícias
   recentPlay: Jogado recente
 migrationWindow:
@@ -969,11 +974,37 @@ modrinth:
 modrinthCard:
   currentVersion: Versão Atual
 multiplayer:
+  addFunds: "Adicionar fundos"
+  availableBalance: "Saldo disponível"
+  balanceHint: "Disponível para os serviços do XMCL Together"
+  billing: "Cobrança"
+  billingDescription: "Gerencie o acesso ao relay, seu plano Together Home e os pagamentos."
+  billingError: "Não foi possível carregar a cobrança do Together. Tente novamente em instantes."
+  buyTogether: "Comprar Together"
+  cancelTogether: "Cancelar plano"
+  checkout: "Abrir checkout da Waffo"
+  connectionTogetherWarning: "Um membro da sala não consegue se conectar a você há algum tempo. Experimente o XMCL Together para melhorar a conectividade de todos na sala. Apenas o mestre da sala precisa do Together."
+  masterPurchaseHint: "Apenas o mestre da sala precisa do Together Home para melhorar a conectividade de todos na sala."
+  natTogetherWarning: "Seu roteador pode estar com dificuldades para se conectar ao mestre da sala. Se as conexões falharem, experimente o XMCL Together para melhorar a conectividade entre você e seus amigos. Apenas o mestre da sala precisa comprar o Together para a sala."
+  togetherName: "Minecraft Together"
+  trialDescription: "Uma avaliação de 7 dias com 1 GB de tráfego de relay."
+  trialTitle: "Avaliação de conectividade"
+  tryTogether: "Experimentar o Together"
+  month: "mês"
+  orderStatus: "Pedido da Waffo: {status}"
+  planDescription: "20 GB de tráfego de relay gerenciado por mês, além de solução de problemas com IA para seu modpack."
+  waffoHint: "Os pagamentos são concluídos com segurança na Waffo Pancake. O XMCL nunca recebe o número do seu cartão."
+  subscription:
+    active: "Ativa"
+    cancelled: "Cancelada"
+    payment_due: "Pagamento pendente"
+  trial:
+    active: "Avaliação ativa"
+    available: "Avaliação gratuita disponível"
+    expired: "Avaliação usada"
+    unavailable: "Avaliação indisponível"
   loginRequiredDescription: O modo multijogador P2P usa os serviços online do XMCL. Inicie sessão numa conta XMCL para continuar.
   loginRequiredTitle: Inicie sessão para o modo multijogador P2P
-  allowTurn: Ativar servidor de retransmissão
-  allowTurnHint: >-
-    Permita o servidor de retransmissão se você não conseguir se conectar com seu amigo. No entanto, o uso do servidor de retransmissão pode diminuir sua conexão. Use com cautela.
   complete: Completo
   confirm: Confirmar
   connections: Conexões
@@ -1031,8 +1062,6 @@ multiplayer:
   connectionError: Erro de conexão
   connectionFailedHint: >-
     Não foi possível estabelecer a conexão. Verifique se ambos os pares têm tipos de NAT compatíveis.
-  natWarning: >-
-    Seu tipo de NAT pode impedir conexões diretas. Tente ativar o servidor de relay nas configurações ou peça ao seu amigo para ser o anfitrião.
 myStuff: Minhas coisas
 natType:
   blocked: Bloqueado
@@ -1196,6 +1225,8 @@ serverStatus:
   refuse: §4Servidor recusado!
   timeout: §4Tempo de conexão do servidor expirado!
 agent:
+  accessRequiredHint: Assine o XMCL para usar o agente integrado ou configure seu próprio provedor de IA nas configurações.
+  subscribeXmcl: Assinar o XMCL
   notConfiguredHint: Configure uma chave de API, modelo e endpoint compatível com OpenAI em Configurações → Geral → Agente de IA. Por exemplo, use OpenAI ou um gateway compatível com Claude.
 setting:
   aiAgentApiKeyDescription: Configure um provedor compatível com OpenAI, como OpenAI ou um gateway para Claude. A chave é armazenada localmente neste dispositivo.
@@ -1545,8 +1576,8 @@ theme:
   selectImage: Selecionar Imagem
   selectMusic: Selecionar Música
   selectVideo: Selecionar Vídeo
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Candidato Host
   prflx: Candidato Reflexivo Peer

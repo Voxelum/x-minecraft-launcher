@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Pilih Direktori Utama
 agent:
+  accessRequiredHint: Berlangganan XMCL untuk menggunakan Agen bawaan, atau konfigurasikan penyedia AI Anda sendiri di Pengaturan.
+  subscribeXmcl: Berlangganan XMCL
   callingTool: memanggil {name}…
   disabledPlaceholder: Agen dinonaktifkan
   emptyHint: Minta agen untuk memeriksa instansi Anda, mengaktifkan/menonaktifkan mod, membaca log, atau mendiagnosis crash.
@@ -174,6 +176,7 @@ delete:
   'no': Tidak
   'yes': Hapus
 dependencies:
+  dependents: Mod yang bergantung pada mod ini
   embedded: Tertanam
   incompatible: Tidak Kompatibel
   name: Dependensi
@@ -684,6 +687,10 @@ logsCrashes:
   showFile: Tampilkan di Folder
   title: Log atau Laporan Crash
 me:
+  groupByDate: Kelompokkan berdasarkan tanggal
+  groupByFolder: Kelompokkan berdasarkan folder
+  instanceViewMode: Mode tampilan instans
+  listView: Tampilan daftar
   news: Berita
   recentPlay: Baru Saja Dimainkan
 migrateMinecraft:
@@ -1006,10 +1013,37 @@ modrinth:
 modrinthCard:
   currentVersion: Versi Saat Ini
 multiplayer:
+  addFunds: "Tambah dana"
+  availableBalance: "Saldo tersedia"
+  balanceHint: "Tersedia untuk layanan XMCL Together"
+  billing: "Penagihan"
+  billingDescription: "Kelola akses relay, paket Together Home, dan pembayaran Anda."
+  billingError: "Penagihan Together tidak dapat dimuat. Coba lagi sebentar."
+  buyTogether: "Beli Together"
+  cancelTogether: "Batalkan paket"
+  checkout: "Buka pembayaran Waffo"
+  connectionTogetherWarning: "Seorang anggota ruangan tidak dapat terhubung ke Anda selama beberapa waktu. Coba XMCL Together untuk meningkatkan konektivitas semua orang di ruangan. Hanya master ruangan yang memerlukan Together."
+  masterPurchaseHint: "Hanya master ruangan yang memerlukan Together Home untuk meningkatkan konektivitas semua orang di ruangan."
+  natTogetherWarning: "Router Anda mungkin mengalami masalah saat terhubung ke master ruangan. Jika koneksi gagal, coba XMCL Together untuk meningkatkan koneksi antara Anda dan teman-teman. Hanya master ruangan yang perlu membeli Together untuk ruangan ini."
+  togetherName: "Minecraft Together"
+  trialDescription: "Satu uji coba selama 7 hari dengan 1 GB lalu lintas relay."
+  trialTitle: "Uji coba konektivitas"
+  tryTogether: "Coba Together"
+  month: "bulan"
+  orderStatus: "Pesanan Waffo: {status}"
+  planDescription: "20 GB lalu lintas relay terkelola setiap bulan, ditambah pemecahan masalah modpack dengan AI."
+  waffoHint: "Pembayaran diselesaikan dengan aman di Waffo Pancake. XMCL tidak pernah menerima nomor kartu Anda."
+  subscription:
+    active: "Aktif"
+    cancelled: "Dibatalkan"
+    payment_due: "Pembayaran jatuh tempo"
+  trial:
+    active: "Uji coba aktif"
+    available: "Uji coba gratis tersedia"
+    expired: "Uji coba telah digunakan"
+    unavailable: "Uji coba tidak tersedia"
   loginRequiredDescription: Multipemain P2P menggunakan layanan online XMCL. Masuk ke Akun XMCL untuk melanjutkan.
   loginRequiredTitle: Masuk untuk multipemain P2P
-  allowTurn: Aktifkan server relai
-  allowTurnHint: Izinkan server relai jika Anda tidak dapat terhubung dengan teman Anda. Namun, menggunakan server relai dapat memperlambat koneksi Anda. Gunakan dengan hati-hati.
   complete: Selesai
   confirm: Konfirmasi
   connectionError: Kesalahan Koneksi
@@ -1046,7 +1080,6 @@ multiplayer:
   localToken: Token Lokal
   manualConnect: Hubungkan Manual
   name: Multipemain di LAN
-  natWarning: Tipe NAT Anda dapat mencegah koneksi langsung. Coba aktifkan server relai di pengaturan atau minta teman Anda untuk menjadi host.
   networkInfo: Info Jaringan (Klik untuk beralih)
   next: Berikutnya
   otherExposedPortDescription: Port yang diteruskan oleh {user}
@@ -1696,8 +1729,8 @@ theme:
   selectImage: Pilih Gambar
   selectMusic: Pilih Musik
   selectVideo: Pilih Video
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Kandidat Host
   prflx: Kandidat Peer Reflexive
@@ -1872,6 +1905,6 @@ gamepad:
   steamAddedNotify: Peluncur berhasil ditambahkan ke Perpustakaan Steam! Silakan mulai ulang Steam untuk melihatnya.
   steamAlreadyAddedNotify: Peluncur sudah ada di Perpustakaan Steam Anda.
   steamDeckTitle: Steam Deck Terdeteksi
-  steamDeckDesc: Kami mendeteksi bahwa Anda berjalan di Steam Deck. Apakah Anda ingin menambahkan X Minecraft Launcher ke Perpustakaan Steam Anda sebagai game non-Steam untuk integrasi overlay Steam dan pengontrol penuh dalam Mode Game?
+  steamDeckDesc: Kami mendeteksi bahwa Anda berjalan di Steam Deck. Apakah Anda ingin menambahkan XMCL ke Perpustakaan Steam Anda sebagai game non-Steam untuk integrasi overlay Steam dan pengontrol penuh dalam Mode Game?
   steamDeckAddBtn: Tambahkan ke Steam ({btn})
   steamDeckCancelBtn: Batal ({btn})

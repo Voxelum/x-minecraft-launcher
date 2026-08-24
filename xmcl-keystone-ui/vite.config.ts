@@ -8,6 +8,8 @@ import AutoImport from 'unplugin-auto-import/vite'
 import { defineConfig } from 'vite'
 import vuetify from 'vite-plugin-vuetify'
 
+const devPort = Number(process.env.XMCL_DEV_PORT ?? 3000)
+
 // Multi-page renderer — one html entry per launcher window (main /
 // app / browser / logger / migration / multiplayer). All html files in
 // `src/` are picked up automatically.
@@ -20,7 +22,7 @@ const entries = readdirSync(join(__dirname, './src'))
  */
 export default defineConfig({
   server: {
-    port: 3000,
+    port: devPort,
   },
   root: join(__dirname, './src'),
   base: '', // has to set to empty string so the html assets path will be relative

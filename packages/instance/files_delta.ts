@@ -28,11 +28,16 @@ export async function computeFileUpdates(
   newFiles: InstanceFile[],
   oldInstallTime: number | undefined,
   fs: FileSystem,
+  caseInsensitive = process.platform === 'win32',
 ): Promise<InstanceFileUpdate[]> {
   const toAdd: Record<string, InstanceFile> = {}
   const oldFilesMap: Record<string, InstanceFile> = {}
+  const oldPathsByKey = new Map<string, string>()
 
-  for (const f of oldFiles) oldFilesMap[f.path] = f
+  for (const f of oldFiles) {
+    oldFilesMap[f.path] = f
+    oldPathsByKey.set(caseInsensitive ? f.path.toLowerCase() : f.path, f.path)
+  }
   for (const f of newFiles) toAdd[f.path] = f
 
   const jointFilePaths = new Set([...oldFiles.map((f) => f.path), ...newFiles.map((f) => f.path)])
@@ -42,6 +47,8 @@ export async function computeFileUpdates(
   for (const p of jointFilePaths) {
     const filePath = join(instancePath, p)
     const file = await fs.getFile(filePath)
+    const oldPath = oldPathsByKey.get(caseInsensitive ? p.toLowerCase() : p)
+    const isCaseOnlyRename = !!toAdd[p] && !!oldPath && oldPath !== p
 
     if (!file) {
       // File not found on disk
@@ -107,7 +114,7 @@ export async function computeFileUpdates(
           const isDifferent = await isFileDiffFromNew(toAdd[p])
           result.push({
             file: toAdd[p],
-            operation: isDifferent ? 'backup-add' : 'keep',
+            operation: isCaseOnlyRename ? 'add' : isDifferent ? 'backup-add' : 'keep',
           })
         } else {
           result.push({
@@ -122,7 +129,7 @@ export async function computeFileUpdates(
 
           result.push({
             file: toAdd[p],
-            operation: !isFileDifferent ? 'keep' : dontKnowOldFile ? 'backup-add' : 'add',
+            operation: isCaseOnlyRename ? 'add' : !isFileDifferent ? 'keep' : dontKnowOldFile ? 'backup-add' : 'add',
           })
         } else {
           result.push({

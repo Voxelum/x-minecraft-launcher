@@ -35,6 +35,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Вибрати кореневий каталог
 agent:
+  accessRequiredHint: Оформіть підписку XMCL, щоб використовувати вбудований Agent, або налаштуйте власного постачальника ШІ в налаштуваннях.
+  subscribeXmcl: Оформити підписку XMCL
   title: XMCL Agent
   statusReady: Готово
   statusWorking: Працюю…
@@ -188,6 +190,7 @@ delete:
   'no': Ні
   'yes': Видалити
 dependencies:
+  dependents: Моди, що залежать від цього мода
   embedded: Вбудовані
   incompatible: Несумісні
   name: Залежності
@@ -343,6 +346,8 @@ feedback:
   qqDescription: >-
     Увійдіть до групи QQ для зворотного зв'язку та спілкуйтеся безпосередньо з авторами. Номер групи: {number}
   qqEnterGroup: Приєднатися
+  reddit: Reddit
+  redditDescription: Приєднатися до спільноти r/XMCL у Reddit
 fileDetail:
   fileSize: Розмір файлу
   filesize: Розмір файлу
@@ -704,6 +709,10 @@ logsCrashes:
   title: Логи або звіти про збої
   failures: Помилки запуску
 me:
+  groupByDate: Групувати за датою
+  groupByFolder: Групувати за папкою
+  instanceViewMode: Режим відображення збірок
+  listView: Подання списком
   news: Новини
   recentPlay: Нещодавно грав
 migrationWindow:
@@ -1003,11 +1012,37 @@ modrinth:
 modrinthCard:
   currentVersion: Поточна версія
 multiplayer:
+  addFunds: "Додати кошти"
+  availableBalance: "Доступний баланс"
+  balanceHint: "Доступно для служб XMCL Together"
+  billing: "Оплата"
+  billingDescription: "Керуйте доступом до ретранслятора, планом Together Home і платежами."
+  billingError: "Не вдалося завантажити дані про оплату Together. Спробуйте ще раз за мить."
+  buyTogether: "Придбати Together"
+  cancelTogether: "Скасувати план"
+  checkout: "Відкрити оплату Waffo"
+  connectionTogetherWarning: "Один із учасників кімнати вже деякий час не може підключитися до вас. Спробуйте XMCL Together, щоб покращити з'єднання для всіх у кімнаті. Together потрібен лише власнику кімнати."
+  masterPurchaseHint: "Together Home потрібен лише власнику кімнати, щоб покращити з'єднання для всіх у кімнаті."
+  natTogetherWarning: "Ваш маршрутизатор може мати труднощі з підключенням до власника кімнати. Якщо підключення не вдаються, спробуйте XMCL Together, щоб покращити з'єднання між вами та друзями. Придбати Together для кімнати має лише її власник."
+  togetherName: "Minecraft Together"
+  trialDescription: "Один 7-денний пробний період із 1 GB ретрансляційного трафіку."
+  trialTitle: "Пробний період підключення"
+  tryTogether: "Спробувати Together"
+  month: "місяць"
+  orderStatus: "Замовлення Waffo: {status}"
+  planDescription: "20 GB керованого ретрансляційного трафіку щомісяця, а також усунення несправностей модпаку за допомогою ШІ."
+  waffoHint: "Платежі безпечно здійснюються через Waffo Pancake. XMCL ніколи не отримує номер вашої картки."
+  subscription:
+    active: "Активна"
+    cancelled: "Скасована"
+    payment_due: "Потрібна оплата"
+  trial:
+    active: "Пробний період активний"
+    available: "Доступний безкоштовний пробний період"
+    expired: "Пробний період використано"
+    unavailable: "Пробний період недоступний"
   loginRequiredDescription: Для мережевої гри P2P використовуються онлайн-сервіси XMCL. Увійдіть в обліковий запис XMCL, щоб продовжити.
   loginRequiredTitle: Увійдіть для мережевої гри P2P
-  allowTurn: Увімкнути ретрансляційний сервер
-  allowTurnHint: >-
-    Дозволити ретрансляційний сервер, якщо ви не можете з'єднатися з другом. Однак, використання ретрансляційного сервера може сповільнити ваше з'єднання. Використовуйте з обережністю.
   complete: Завершено
   confirm: Підтвердити
   connections: З'єднання
@@ -1068,8 +1103,6 @@ multiplayer:
   connectionError: Помилка з'єднання
   connectionFailedHint: >-
     Не вдалося встановити з'єднання. Перевірте, чи мають обидві сторони сумісні типи NAT.
-  natWarning: >-
-    Ваш тип NAT може перешкоджати прямим з'єднанням. Спробуйте увімкнути ретрансляційний сервер у налаштуваннях або попросіть друга бути хостом.
 myStuff: Мої речі
 natType:
   blocked: Заблоковано
@@ -1582,8 +1615,8 @@ theme:
   selectImage: Вибрати зображення
   selectMusic: Вибрати музику
   selectVideo: Вибрати відео
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Кандидат хоста
   prflx: Кандидат Peer Reflexive
@@ -1821,7 +1854,7 @@ gamepad:
   steamAddedNotify: Лаунчер успішно додано до вашої бібліотеки Steam! Будь ласка, перезапустіть Steam, щоб побачити зміни.
   steamAlreadyAddedNotify: Лаунчер вже додано до вашої бібліотеки Steam.
   steamDeckTitle: Виявлено Steam Deck
-  steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати X Minecraft Launcher до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
+  steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати XMCL до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
   steamDeckAddBtn: Додати до Steam ({btn})
   steamDeckCancelBtn: Скасувати ({btn})
 

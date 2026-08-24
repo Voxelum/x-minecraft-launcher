@@ -16,6 +16,10 @@ export type LinuxDisplaySetupResult = {
   reason: LinuxDisplaySetupFailureReason
 }
 
+export function shouldBlockLinuxDisplayLaunch(result: LinuxDisplaySetupResult) {
+  return result.type === 'unavailable' && result.reason !== 'sandbox-denied'
+}
+
 export interface LinuxDisplayDiagnostics {
   xwaylandAvailable: boolean
   x11SocketAvailable: boolean

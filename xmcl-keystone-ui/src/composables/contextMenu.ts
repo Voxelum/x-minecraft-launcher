@@ -18,6 +18,7 @@ const x = ref(0)
 const y = ref(0)
 const items = ref([] as ContextMenuItem[])
 const shown = ref(false)
+const generation = ref(0)
 
 export function useContextMenu() {
   const cx = x
@@ -33,6 +34,7 @@ export function useContextMenu() {
     zx.value = x
     zy.value = y
     zitems.value = items
+    generation.value += 1
     nextTick(() => {
       zshown.value = true
     })
@@ -44,6 +46,6 @@ export function useContextMenu() {
 
 export function useContextMenuData() {
   return {
-    x, y, items, shown,
+    x, y, items, shown, generation,
   }
 }

@@ -17,9 +17,8 @@ task:
   continue: ランチャーで見る
   fail: 一つのタスクが失敗
   success: 一つのタスクが成功
-title: X Minecraft Launcher
+title: XMCL
 urlFailed: "{url}: 未知のURLです。 URLを確認するか、開発者に連絡してください!"
 urlSuccess: 成功! このウィンドウを閉じてランチャーに戻ることができます!
-autoCloseHint: このウィンドウは {time} 秒で閉じます
 multiplayer: P2P マルチプレイヤー
 makeDesktopShortcut: デスクトップショートカットを作成

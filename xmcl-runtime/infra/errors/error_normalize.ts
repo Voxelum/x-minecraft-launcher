@@ -28,13 +28,13 @@ function getNomralizedSystemError(e: SystemError) {
     return new NetworkException({
       type: 'networkException',
       code: NetworkErrorCode.DNS_NOTFOUND,
-    })
+    }, e.message)
   }
   if (e.code === 'ECONNRESET') {
     return new NetworkException({
       type: 'networkException',
       code: NetworkErrorCode.CONNECTION_RESET,
-    })
+    }, e.message)
   }
 }
 
@@ -69,6 +69,6 @@ async function getNormalizedUndiciException(e: errors.UndiciError) {
       ? new NetworkException({
         type: 'networkException',
         code,
-      })
+      }, e.message)
       : undefined
 }

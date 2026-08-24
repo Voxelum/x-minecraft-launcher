@@ -1,5 +1,5 @@
 <template>
-  <div class="me-profile-panel flex flex-col h-full overflow-hidden select-none">
+  <div class="me-profile-panel workspace-side-panel flex flex-col h-full overflow-hidden select-none">
     <UserAccountSwitcher class="profile-header px-3 pt-3 pb-2 flex-shrink-0" show-inline-delete />
 
     <!-- Skin & Cape Card -->
@@ -346,11 +346,7 @@ async function onRemoveFriend(f: MinecraftFriend) {
 
 <style scoped>
 .me-profile-panel {
-  width: 280px;
-  min-width: 280px;
-  border-right: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  background: rgba(var(--v-theme-surface), 0.6);
-  backdrop-filter: blur(12px);
+  --workspace-side-panel-width: 280px;
 }
 
 .cape-thumb {

@@ -67,7 +67,11 @@ function createXmclService(stubBootstrapCredential = true) {
     invalidated: false,
   }
   const app = {
-    controller: { getNativeWindowHandle: vi.fn(() => nativeWindowHandle) },
+    controller: {
+      getNativeWindowHandle: vi.fn(() => nativeWindowHandle),
+      openMicrosoftLogin: vi.fn(),
+    },
+    emit: vi.fn(),
     fetch: vi.fn(),
     getLogger: vi.fn(() => logger),
     protocol: { registerHandler: vi.fn() },
@@ -188,6 +192,20 @@ describe('XmclAccountService Microsoft bootstrap', () => {
 
     await expect(service.bootstrapMicrosoft(user.id)).resolves.toBe('pending-consent')
     expect(app.getLogger).toHaveBeenCalled()
+  })
+
+  it('authorizes the XMCL Microsoft identity interactively without a game account login', async () => {
+    Object.defineProperty(process, 'platform', { value: 'win32', configurable: true })
+    oauth.authenticate.mockResolvedValue({ result: { accessToken: 'microsoft-graph-token' } })
+    const { service } = createXmclService()
+    const bootstrapCredential = vi.mocked((service as any).bootstrapCredential)
+
+    await service.authorizeMicrosoft()
+
+    expect(oauth.authenticate).toHaveBeenCalledWith('', ['User.Read'], {
+      useNativeBroker: true,
+    })
+    expect(bootstrapCredential).toHaveBeenCalledWith('microsoft', 'microsoft-graph-token')
   })
 
   it('persists the rotated credential when the subsequent account snapshot fails', async () => {
@@ -515,6 +533,72 @@ describe('XmclAccountService automatic session refresh', () => {
 })
 
 describe('XmclAccountService provider bootstrap queue', () => {
+  it('refreshes the complete identity list when an auth response omits it', async () => {
+    const { service } = createXmclService(false)
+    const result = {
+      ...createAuthResult('modrinth', 'account-1'),
+      identities: undefined,
+    }
+    const api = (service as any).api
+    api.launcherExchange = vi.fn().mockResolvedValue(result)
+    api.getSnapshot = vi.fn().mockResolvedValue({
+      account: result.account,
+      identities: [
+        {
+          provider: 'microsoft',
+          linkedBy: 'launcher_bootstrap',
+          linkedAt: '2026-07-23T00:00:00.000Z',
+        },
+        {
+          provider: 'modrinth',
+          linkedBy: 'launcher_link',
+          linkedAt: '2026-07-23T00:01:00.000Z',
+        },
+        {
+          provider: 'google',
+          linkedBy: 'web_link',
+          linkedAt: '2026-07-23T00:02:00.000Z',
+        },
+        {
+          provider: 'discord',
+          linkedBy: 'web_link',
+          linkedAt: '2026-07-23T00:03:00.000Z',
+        },
+      ],
+      session: result.session,
+    })
+
+    await (service as any).bootstrapCredential('modrinth', 'modrinth-credential')
+
+    expect(api.getSnapshot).toHaveBeenCalledWith(result.session)
+    expect((service as any).state.identities.map((identity: any) => identity.provider)).toEqual([
+      'microsoft',
+      'modrinth',
+      'google',
+      'discord',
+    ])
+  })
+
+  it('keeps a successful session when the post-auth identity refresh fails', async () => {
+    const { logger, service } = createXmclService(false)
+    const result = {
+      ...createAuthResult('microsoft', 'account-1'),
+      identities: undefined,
+    }
+    const api = (service as any).api
+    api.launcherExchange = vi.fn().mockResolvedValue(result)
+    api.getSnapshot = vi.fn().mockRejectedValue(new Error('snapshot unavailable'))
+
+    await expect(
+      (service as any).bootstrapCredential('microsoft', 'microsoft-credential'),
+    ).resolves.toBeUndefined()
+
+    expect((service as any).credential).toBe(result.session)
+    expect(logger.warn).toHaveBeenCalledWith(
+      'XMCL authentication succeeded; account identities will refresh later.',
+    )
+  })
+
   it('does not cache a provider credential when its delayed exchange becomes stale', async () => {
     const { service } = createXmclService(false)
     const result = createAuthResult('microsoft', 'account-1')

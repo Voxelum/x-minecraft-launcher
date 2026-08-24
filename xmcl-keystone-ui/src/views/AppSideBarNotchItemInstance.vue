@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { kInstance } from '@/composables/instance'
 import { useInstanceContextMenuItems } from '@/composables/instanceContextMenu'
+import { kInstanceLaunchCoordinator } from '@/composables/instanceLaunchCoordinator'
 import { kInstances } from '@/composables/instances'
+import { kLaunchButton } from '@/composables/launchButton'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
@@ -16,6 +18,8 @@ const props = defineProps<{
 }>()
 
 const { instances, selectedInstance } = injection(kInstances)
+const { isLaunching, isRunning, launch } = injection(kInstanceLaunchCoordinator)
+const { onClick: onLaunchClick } = injection(kLaunchButton)
 const { pinnedInstances } = useInjectSidebarSettings()
 
 const instance = computed(() => instances.value.find((i) => i.path === props.path))
@@ -66,6 +70,14 @@ const navigate = () => {
   }
 }
 
+const launchInstance = () => {
+  void launch(props.path, async () => {
+    select(props.path)
+    await nextTick()
+    await onLaunchClick()
+  }).catch(console.error)
+}
+
 </script>
 <template>
   <div class="notch-instance-wrapper">
@@ -75,7 +87,14 @@ const navigate = () => {
       :active="isActive"
       :context-menu="getContextMenu"
       @click="navigate"
+      @dblclick="launchInstance"
     />
+    <div v-if="isLaunching(path)" class="instance-status instance-status--launching">
+      <v-progress-circular indeterminate :size="18" :width="2" color="white" />
+    </div>
+    <div v-else-if="isRunning(path)" class="instance-status instance-status--running">
+      <v-icon :size="11" color="white">play_arrow</v-icon>
+    </div>
     <!-- Pin indicator -->
     <div
       v-if="isPinned"
@@ -89,6 +108,31 @@ const navigate = () => {
 <style scoped>
 .notch-instance-wrapper {
   position: relative;
+}
+
+.instance-status {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.instance-status--launching {
+  inset: 6px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.instance-status--running {
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgb(var(--v-theme-surface));
+  border-radius: 50%;
+  background: rgb(var(--v-theme-success));
 }
 
 .pin-badge {

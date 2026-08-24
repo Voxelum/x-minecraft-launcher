@@ -11,7 +11,7 @@ import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
 import { RuntimeVersions } from '@xmcl/instance'
-import { InstallServiceKey, InstanceModsServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, InstanceServiceKey, VersionInstallServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 
 const props = defineProps<{
@@ -93,7 +93,7 @@ const model = computed(() => {
 })
 
 const { editInstance } = useService(InstanceServiceKey)
-const { installOptifineAsMod } = useService(InstallServiceKey)
+const { install: installVersion } = useService(VersionInstallServiceKey)
 const { path } = injection(kInstance)
 const updating = ref(false)
 const { install: installMod, uninstall: uninstallMod } = useService(InstanceModsServiceKey)
@@ -120,10 +120,10 @@ const onInstall = async (m: ProjectVersion) => {
       })
     } else {
       if (deleteOld) {
-        await installOptifineAsMod({ mcversion: mc, type, patch, instancePath })
+        await installVersion({ type: 'optifine-mod', options: { mcversion: mc, type, patch, instancePath } })
         await uninstallMod({ path: instancePath, files: oldFiles })
       } else {
-        await installOptifineAsMod({ mcversion: mc, type, patch, instancePath })
+        await installVersion({ type: 'optifine-mod', options: { mcversion: mc, type, patch, instancePath } })
       }
     }
   } finally {

@@ -74,6 +74,17 @@ export function useModrinthAuthenticatedAPI() {
     }
   }
 
+  async function authenticate() {
+    await login()
+    if (!userData.value) return
+    if (!follows.value) {
+      mutateFollows()
+    }
+    if (!collections.value) {
+      mutateCollections()
+    }
+  }
+
   // Dedupe concurrent login() calls. Without this an onMounted silent login
   // can race with a user-triggered explicit login and double-invoke OAuth.
   let loginInFlight: Promise<void> | undefined
@@ -245,14 +256,7 @@ export function useModrinthAuthenticatedAPI() {
     if (!collectionId) {
       return
     }
-    if (!collections.value) {
-      await mutateCollections()
-    }
-    const current = collections.value?.find((collection) => collection.id === collectionId)
-    if (!current) {
-      throw new TypeError('Collection not found')
-    }
-    await clientModrinthV2.updateCollection(collectionId, current.projects.filter((id) => id !== projectId))
+    await clientModrinthV2.removeProjectsFromCollection(collectionId, [projectId])
     await mutateCollections()
   }
 
@@ -264,6 +268,7 @@ export function useModrinthAuthenticatedAPI() {
   }
 
   return {
+    authenticate,
     interact,
     follows,
     rejectSignal,

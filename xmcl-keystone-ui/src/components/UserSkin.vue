@@ -99,6 +99,7 @@
 
 <script lang="ts" setup>
 import SkinView from '@/components/SkinView.vue'
+import { getDropFilePaths } from '@/composables/dropHandler'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { GameProfileAndTexture, UserProfile } from '@xmcl/runtime-api'
 import { useNotifier } from '../composables/notifier'
@@ -203,9 +204,9 @@ async function exportSkin() {
 async function dropSkin(e: DragEvent) {
   if (!canUploadSkin.value) return
   if (e.dataTransfer) {
-    const length = e.dataTransfer.files.length
-    if (length > 0) {
-      skin.value = `http://launcher/media?path=${e.dataTransfer!.files[0].path}`
+    const [filePath] = getDropFilePaths(e.dataTransfer.files)
+    if (filePath) {
+      skin.value = `http://launcher/media?path=${filePath}`
       inferModelType.value = true
     }
   }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MarketProjectDetail, { ExternalResource, Info, ProjectDetail } from '@/components/MarketProjectDetail.vue'
+import MarketProjectDetail, { ExternalResource, Info, ProjectDependent, ProjectDetail } from '@/components/MarketProjectDetail.vue'
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
@@ -19,6 +19,11 @@ const props = defineProps<{
   files: ModFile[]
   runtime: RuntimeVersions
   installed: ModFile[]
+  dependents?: ProjectDependent[]
+}>()
+
+const emit = defineEmits<{
+  (event: 'open-dependent', dependent: ProjectDependent): void
 }>()
 
 const versions = computed(() => {
@@ -177,6 +182,7 @@ const onInstall = async () => {
   <MarketProjectDetail
     :detail="model"
     :dependencies="[]"
+    :dependents="props.dependents"
     :enabled="enabled"
     :has-installed-version="hasInstalledVersion"
     :selected-installed="installed"
@@ -188,5 +194,6 @@ const onInstall = async () => {
     @install="onInstall"
     @delete="onDelete"
     @enable="enabled = $event"
+    @open-dependent="emit('open-dependent', $event)"
   />
 </template>

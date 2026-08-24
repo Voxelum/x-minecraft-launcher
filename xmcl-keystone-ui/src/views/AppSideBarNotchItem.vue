@@ -8,6 +8,7 @@
     class="sidebar-notch-item non-moveable"
     :class="{ 'sidebar-notch-item--link': !!to || clickable, 'sidebar-notch-item--active': active }"
     @click="onClick"
+    @dblclick="onDoubleClick"
   >
     <slot>
       <img
@@ -41,10 +42,15 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'click', event: MouseEvent): void
+  (e: 'dblclick', event: MouseEvent): void
 }>()
 
 function onClick(event: MouseEvent) {
   emit('click', event)
+}
+
+function onDoubleClick(event: MouseEvent) {
+  emit('dblclick', event)
 }
 </script>
 

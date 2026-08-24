@@ -533,7 +533,7 @@ describe('ModrinthV2Client', () => {
     })
   })
   describe('#updateCollection', () => {
-    it('replaces collection projects and supports removing the final project', async () => {
+    it('sends new_projects in the PATCH body', async () => {
       const requests: Array<{ url: string; method: string | undefined; body: unknown }> = []
       const patchFetch: typeof globalThis.fetch = async (input, init) => {
         requests.push({
@@ -558,6 +558,31 @@ describe('ModrinthV2Client', () => {
           url: 'https://api.modrinth.com/v3/collection/collection-id',
           method: 'PATCH',
           body: { new_projects: [] },
+        },
+      ])
+    })
+  })
+
+  describe('#removeProjectsFromCollection', () => {
+    it('sends remove_projects in the PATCH body', async () => {
+      const requests: Array<{ url: string; method: string | undefined; body: unknown }> = []
+      const patchFetch: typeof globalThis.fetch = async (input, init) => {
+        requests.push({
+          url: input.toString(),
+          method: init?.method,
+          body: JSON.parse(init?.body as string),
+        })
+        return new Response(undefined, { status: 204 })
+      }
+      const client = new ModrinthV2Client({ fetch: patchFetch })
+
+      await client.removeProjectsFromCollection('collection-id', ['project-to-remove'])
+
+      expect(requests).toEqual([
+        {
+          url: 'https://api.modrinth.com/v3/collection/collection-id',
+          method: 'PATCH',
+          body: { remove_projects: ['project-to-remove'] },
         },
       ])
     })

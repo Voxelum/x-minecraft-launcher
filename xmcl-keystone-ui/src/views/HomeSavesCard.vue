@@ -24,7 +24,7 @@
 import HomeCard from '@/components/HomeCard.vue'
 import { injection } from '@/util/inject'
 import { kInstanceSave } from '@/composables/instanceSave'
-import { kDropHandler } from '@/composables/dropHandler'
+import { getDropFilePaths, kDropHandler } from '@/composables/dropHandler'
 import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import { kInstance } from '@/composables/instance'
 import { useService } from '@/composables/service'
@@ -44,8 +44,9 @@ const { path } = injection(kInstance)
 
 function onDrop(e: DragEvent) {
   if (e.dataTransfer) {
-    const filePaths = Array.from(e.dataTransfer.files).map(f => f.path)
-    importSave({ instancePath: path.value, path: filePaths[0] })
+    const [filePath] = getDropFilePaths(e.dataTransfer.files)
+    if (!filePath) return
+    importSave({ instancePath: path.value, path: filePath })
     e.preventDefault()
   }
 }

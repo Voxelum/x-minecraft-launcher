@@ -1045,6 +1045,7 @@ export function useTheme(
     --color-card-bg: ${cardColor.value};
     --color-bg: ${backgroundColor.value};
     --blur-card: ${blurCard.value}px;
+    --blur-sidebar: ${blurSidebar.value}px;
   }
 
   html, body {

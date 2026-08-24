@@ -37,6 +37,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Выбрать корневой каталог
 agent:
+  accessRequiredHint: Оформите подписку XMCL, чтобы использовать встроенный Agent, или настройте собственного поставщика ИИ в настройках.
+  subscribeXmcl: Оформить подписку XMCL
   title: XMCL Agent
   statusReady: Готов
   statusWorking: Работаю…
@@ -176,6 +178,7 @@ delete:
   'no': Нет
   'yes': Удалить
 dependencies:
+  dependents: Моды, зависящие от этого мода
   embedded: Встраиваемые
   incompatible: Несовместимые
   name: Зависимости
@@ -694,6 +697,10 @@ logsCrashes:
   title: Журналы и отчёты об ошибках
   failures: Ошибки запуска
 me:
+  groupByDate: Группировать по дате
+  groupByFolder: Группировать по папке
+  instanceViewMode: Режим отображения сборок
+  listView: В виде списка
   news: Новости
   recentPlay: Последние игры
 migrationWindow:
@@ -1002,11 +1009,37 @@ modrinth:
 modrinthCard:
   currentVersion: Текущая версия
 multiplayer:
+  addFunds: "Пополнить баланс"
+  availableBalance: "Доступный баланс"
+  balanceHint: "Доступно для сервисов XMCL Together"
+  billing: "Оплата"
+  billingDescription: "Управляйте доступом к ретранслятору, планом Together Home и платежами."
+  billingError: "Не удалось загрузить данные об оплате Together. Повторите попытку через некоторое время."
+  buyTogether: "Купить Together"
+  cancelTogether: "Отменить план"
+  checkout: "Открыть оплату Waffo"
+  connectionTogetherWarning: "Один из участников комнаты уже некоторое время не может подключиться к вам. Попробуйте XMCL Together, чтобы улучшить соединение для всех участников комнаты. Together нужен только владельцу комнаты."
+  masterPurchaseHint: "Together Home нужен только владельцу комнаты, чтобы улучшить соединение для всех участников комнаты."
+  natTogetherWarning: "У вашего роутера могут возникать проблемы с подключением к владельцу комнаты. Если подключения не работают, попробуйте XMCL Together, чтобы улучшить соединение между вами и друзьями. Купить Together для комнаты должен только её владелец."
+  togetherName: "Minecraft Together"
+  trialDescription: "Один 7-дневный пробный период с 1 GB ретрансляционного трафика."
+  trialTitle: "Пробный период подключения"
+  tryTogether: "Попробовать Together"
+  month: "месяц"
+  orderStatus: "Заказ Waffo: {status}"
+  planDescription: "20 GB управляемого ретрансляционного трафика в месяц, а также устранение неполадок модпака с помощью ИИ."
+  waffoHint: "Платежи безопасно обрабатываются через Waffo Pancake. XMCL никогда не получает номер вашей карты."
+  subscription:
+    active: "Активна"
+    cancelled: "Отменена"
+    payment_due: "Требуется оплата"
+  trial:
+    active: "Пробный период активен"
+    available: "Доступен бесплатный пробный период"
+    expired: "Пробный период использован"
+    unavailable: "Пробный период недоступен"
   loginRequiredDescription: Для сетевой игры P2P используются онлайн-сервисы XMCL. Войдите в аккаунт XMCL, чтобы продолжить.
   loginRequiredTitle: Войдите для игры по сети P2P
-  allowTurn: Разрешить сервер-ретранслятор
-  allowTurnHint: >-
-    Включите ретранслятор, если связь напрямую не работает.  Он может замедлить соединение, используйте осторожно. Включите ретранслятор, если связь напрямую не работает.  Он может замедлить соединение, используйте осторожно.
   complete: Завершено
   confirm: Подтвердить
   connections: Соединения
@@ -1065,8 +1098,6 @@ multiplayer:
   connectionError: Ошибка соединения
   connectionFailedHint: >-
     Не удалось установить соединение. Проверьте, что у обеих сторон совместимые типы NAT.
-  natWarning: >-
-    Ваш тип NAT может препятствовать прямым соединениям. Попробуйте включить релейный сервер в настройках или попросите друга стать хостом.
 myStuff: Мой контент
 natType:
   blocked: Заблокирован
@@ -1580,8 +1611,8 @@ theme:
   selectImage: Выберите изображение
   selectMusic: Выберите музыку
   selectVideo: Выберите видео
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Хост-кандидат
   prflx: Пиринг-рефлексивный кандидат

@@ -1,8 +1,6 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest'
-import { join } from 'path'
-import { tmpdir } from 'os'
-import { mkdtemp, rm } from 'fs/promises'
-import { selectZuluJRE, ZuluJRE, installZuluJava } from './zulu'
+import { describe, test, expect } from 'vitest'
+import { createZuluRuntimeInstallWorkflow } from './javaWorkflow'
+import { selectZuluJRE, ZuluJRE } from './zulu'
 
 // Sample test data
 const sampleZuluJREs: ZuluJRE[] = [
@@ -65,18 +63,6 @@ const sampleZuluJREs: ZuluJRE[] = [
 ]
 
 describe('ZuluInstaller', () => {
-  let tempDir: string
-
-  beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'zulu-test-'))
-  })
-
-  afterEach(async () => {
-    if (tempDir) {
-      await rm(tempDir, { recursive: true, force: true }).catch(() => {})
-    }
-  })
-
   describe('#selectZuluJRE', () => {
     test('should select JRE for Windows x64 with javafx preference', () => {
       const selected = selectZuluJRE(sampleZuluJREs, 'win32', 'x64')
@@ -159,8 +145,8 @@ describe('ZuluInstaller', () => {
     })
   })
 
-  describe('#installZuluJava', () => {
-    test('should throw error for unsupported archive formats', async () => {
+  describe('#createZuluRuntimeInstallWorkflow', () => {
+    test('should throw error for unsupported archive formats', () => {
       const jre: ZuluJRE = {
         features: [],
         architecture: 'x64',
@@ -170,7 +156,11 @@ describe('ZuluInstaller', () => {
         url: 'https://static.azul.com/zulu/bin/zulu17.30.15-ca-jre17.0.1-linux_x64.rar',
       }
 
-      await expect(installZuluJava(jre, { destination: tempDir })).rejects.toThrow(
+      expect(() => createZuluRuntimeInstallWorkflow({
+        runtime: jre,
+        destination: 'runtime',
+        executable: 'runtime/bin/java',
+      })).toThrow(
         'Unsupported archive format',
       )
     })

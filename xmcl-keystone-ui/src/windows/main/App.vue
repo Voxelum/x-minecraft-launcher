@@ -9,7 +9,7 @@
     <AppSystemBar :back="sidebarStyle === 'notch'" />
     <div
       class="app-layout flex-grow relative flex overflow-auto"
-      :class="layoutClasses"
+      :class="[layoutClasses, { 'workspace-side-panel-attached': hasAttachedWorkspacePanel }]"
     >
       <AppSideBarClassic v-if="sidebarStyle === 'classic'" />
       <AppSideBarNotch v-else />
@@ -23,7 +23,7 @@
     </div>
     <AppContextMenu />
     <AppNotifier />
-    <AppOmniDialog :agent-enabled="developerMode" />
+    <AppOmniDialog :agent-enabled="true" />
     <AppFeedbackDialog />
     <AppTaskDialog />
     <AppAddInstanceDialog />
@@ -70,6 +70,7 @@ import { kAgent, installAgentDevLauncher, useAgent } from '@/composables/agent'
 import { useCommandPaletteHotkey } from '@/composables/commandPalette'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { kInstance } from '@/composables/instance'
+import { kInstanceLaunchCoordinator, useInstanceLaunchCoordinator } from '@/composables/instanceLaunchCoordinator'
 import { kLaunchButton, useLaunchButton } from '@/composables/launchButton'
 import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
 import { useNotifier } from '@/composables/notifier'
@@ -134,20 +135,22 @@ provide(kMinecraftFriends, useMinecraftFriendsImpl())
 // and `inject` only resolves on descendants.
 const agent = useAgent()
 provide(kAgent, agent)
-// The window.__xmcl_agent debug surface follows developer mode: the whole agent
-// feature is developer-mode gated, so it is never exposed to a default install.
+// Keep the window.__xmcl_agent debug surface restricted to developer mode.
 installAgentDevLauncher(agent, developerMode)
 
 // User profile dialog — moved from AppSystemBarUserMenu to App root
 const userMenu = useUserMenuControl()
 const userProfileDialogShown = userMenu.shown
 const route = useRoute()
+const hasAttachedWorkspacePanel = computed(
+  () => route.meta.workspaceSidePanel === true && sidebarPosition.value === 'left',
+)
 provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value && route.path !== '/me'))
 
 // Bind Ctrl/Cmd+Shift+C to open the command palette.
 useCommandPaletteHotkey()
 // Bind Ctrl/Cmd+Shift+A to open the agent chat panel.
-useAgentChatHotkey(developerMode)
+useAgentChatHotkey()
 
 const defaultColor = useInstanceGroupDefaultColor()
 
@@ -173,6 +176,7 @@ provide(kInFocusMode, computed({
 }))
 
 provide(kLaunchButton, useLaunchButton())
+provide(kInstanceLaunchCoordinator, useInstanceLaunchCoordinator())
 provide(kMultiplayerEntry, useMultiplayerEntry())
 
 const sidebarSettings = useSidebarSettings()
@@ -249,5 +253,15 @@ img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.workspace-side-panel-attached :deep(.sidebar) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.workspace-side-panel-attached :deep(.sidebar-notch--left .sidebar-notch__container) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 </style>

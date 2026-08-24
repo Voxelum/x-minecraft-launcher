@@ -11,12 +11,20 @@ export class SpeedMonitor {
   }
 
   sample() {
+    return this.drain().speed
+  }
+
+  drain() {
     const now = Date.now()
-    const current = this.aggregate
+    const bytes = this.aggregate
     const duration = now - this.lastSample
     this.aggregate = 0
     this.lastSample = now
-    return current / (duration / 1000)
+    return {
+      bytes,
+      duration,
+      speed: duration > 0 ? bytes / (duration / 1000) : 0,
+    }
   }
 }
 

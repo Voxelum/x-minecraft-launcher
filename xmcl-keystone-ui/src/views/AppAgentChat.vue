@@ -12,9 +12,12 @@
           {{ t('agent.notConfiguredTitle') }}
         </div>
         <div class="text-sm text-medium-emphasis max-w-xs">
-          {{ t('agent.notConfiguredHint') }}
+          {{ t('agent.accessRequiredHint') }}
         </div>
         <div class="flex flex-wrap items-center justify-center gap-2 mt-1">
+          <v-btn color="primary" variant="flat" prepend-icon="workspace_premium" @click="openSubscription">
+            {{ t('agent.subscribeXmcl') }}
+          </v-btn>
           <v-btn color="primary" variant="flat" prepend-icon="settings" @click="openSettings">
             {{ t('agent.openSettings') }}
           </v-btn>
@@ -248,6 +251,7 @@ import { kAgent, useCssAgent } from '@/composables/agent'
 import { useAgentConfirmation } from '@/composables/agent/confirm'
 import { projectAgentTranscript } from '@/composables/agent/projection'
 import { useAgentRouteReturn } from '@/composables/agent/routeReturn'
+import { useAgentSettings } from '@/composables/agent/settings'
 import { useAgentChatStatus, usePendingAgentKind } from '@/composables/agentChat'
 import { useMarkdown } from '@/composables/markdown'
 import { useOmniDialog } from '@/composables/omniDialog'
@@ -260,6 +264,7 @@ import type { AgentContentPart as ContentPart } from '@xmcl/runtime-api'
 const { t } = useI18n()
 
 const commonAgent = injection(kAgent)
+const agentSettings = useAgentSettings()
 const { state: settingsState } = injection(kSettingsState)
 useAgentRouteReturn()
 
@@ -300,18 +305,24 @@ const scrollEl = ref<HTMLElement | null>(null)
 const followTranscript = ref(true)
 
 const pendingAgentKind = usePendingAgentKind()
-// Select the requested agent and (for the common agent) load its conversation
-// only on a fresh open, not while flipping tabs with the surface left open.
-watch(isShown, (visible, wasVisible) => {
+// Select the requested agent, load its conversation, then scroll to the latest
+// message — all in one watcher so the scroll happens after the async load.
+watch(isShown, async (visible, wasVisible) => {
   if (!visible || wasVisible) return
+  await agentSettings.refreshStatus().catch((error) => {
+    lastError.value = error instanceof Error ? error.message : String(error)
+  })
   const kind = pendingAgentKind.value
   pendingAgentKind.value = 'common'
   if (kind === 'css') {
     selectedAgent.value = 'css'
   } else {
     selectedAgent.value = 'common'
-    commonAgent.loadConversationForCurrentInstance()
+    await commonAgent.loadConversationForCurrentInstance()
   }
+  followTranscript.value = true
+  await nextTick()
+  scrollTranscriptToBottom()
 })
 
 const transcriptItems = computed(() => projectAgentTranscript(messages.value))
@@ -400,7 +411,11 @@ defineExpose({
 const { push } = useRouter()
 function openSettings() {
   hide()
-  push('/setting')
+  push({ path: '/setting', query: { target: 'agent' } })
+}
+function openSubscription() {
+  hide()
+  push({ path: '/multiplayer', query: { target: 'billing' } })
 }
 
 function onTranscriptScroll() {
@@ -422,13 +437,6 @@ watch([transcriptItems, events, confirmationShown, displayError], async () => {
   if (followTranscript.value) scrollTranscriptToBottom()
 }, { deep: true })
 
-watch(isShown, async (v) => {
-  if (v) {
-    followTranscript.value = true
-    await nextTick()
-    scrollTranscriptToBottom()
-  }
-})
 </script>
 
 <style scoped>

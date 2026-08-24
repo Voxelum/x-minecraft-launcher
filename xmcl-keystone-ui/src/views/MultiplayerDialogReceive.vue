@@ -1,12 +1,14 @@
 <template>
   <v-dialog
     v-model="isShown"
-    fullscreen
+    :fullscreen="!embedded"
+    :max-width="embedded ? 720 : undefined"
+    :width="embedded ? 'calc(100% - 48px)' : undefined"
     hide-overlay
     transition="dialog-bottom-transition"
     scrollable
   >
-    <v-stepper v-model="step">
+    <v-stepper v-model="step" :class="{ 'multiplayer-desktop-dialog': embedded }">
       <v-stepper-header>
         <v-stepper-item
           :complete="step > 1"
@@ -86,6 +88,7 @@
             </div>
             <div class="flex">
               <v-btn
+                :disabled="!canCopy"
                 variant="text"
                 @click="copyLocalDescription"
               >
@@ -107,6 +110,7 @@
               <div class="flex-grow" />
               <v-btn
                 color="primary"
+                :disabled="!canCopy"
                 @click="isShown = false"
               >
                 {{ t('multiplayer.complete') }}
@@ -126,12 +130,15 @@ import { injection } from '@/util/inject'
 import { createAnswerAppUrl } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 
+const { embedded = false } = defineProps<{ embedded?: boolean }>()
+
 const { isShown, parameter } = useDialog('peer-receive')
 const { gameProfile } = injection(kUserContext)
 const { connections, setRemoteDescription } = injection(kPeerState)
 
 const connection = computed(() => connections.value.find(c => c.id === id.value))
 const localDescription = computed(() => connection.value?.localDescriptionSDP ? (connection.value?.localDescriptionSDP) : '')
+const canCopy = computed(() => !!localDescription.value)
 const localSdpUrl = computed(() => createAnswerAppUrl(localDescription.value, gameProfile.value.name))
 const { t } = useI18n()
 
@@ -157,6 +164,7 @@ watch(isShown, (v) => {
 })
 
 function copyLocalDescription() {
+  if (!canCopy.value) return
   windowController.writeClipboard(localDescription.value)
   copied.value = true
 }
@@ -184,3 +192,16 @@ const { refresh: answer, refreshing: answering } = useRefreshable(async () => {
 })
 
 </script>
+
+<style>
+.multiplayer-desktop-dialog {
+  max-height: min(680px, calc(100vh - 64px));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.multiplayer-desktop-dialog .v-stepper-window {
+  overflow-y: auto;
+}
+</style>

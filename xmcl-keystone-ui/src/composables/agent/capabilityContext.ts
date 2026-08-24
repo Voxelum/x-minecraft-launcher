@@ -7,9 +7,9 @@ import {
   InstanceOptionsServiceKey,
   InstanceSavesServiceKey,
   InstanceServiceKey,
-  JavaServiceKey,
   ModpackServiceKey,
   RemoteServerServiceKey,
+  VersionInstallServiceKey,
   VersionServiceKey,
   type JavaRecord,
   type UserProfile,
@@ -101,7 +101,7 @@ export function useAgentCapabilityContext() {
   const instanceService = useService(InstanceServiceKey)
   const modpackService = useService(ModpackServiceKey)
   const savesService = useService(InstanceSavesServiceKey)
-  const javaService = useService(JavaServiceKey)
+  const versionInstallService = useService(VersionInstallServiceKey)
   const versionService = useService(VersionServiceKey)
   const remoteServerService = useService(RemoteServerServiceKey)
   const { install: installServerVersion } = useInstanceVersionServerInstall()
@@ -210,7 +210,12 @@ export function useAgentCapabilityContext() {
 
   async function installJava(forceZulu = false) {
     const required = javaStatus.value?.javaVersion
-    const installed = await javaService.installJava(required, forceZulu)
+    if (!required) return { error: 'selected instance has no resolved Java requirement' }
+    const installed = await versionInstallService.install({
+      type: 'java',
+      target: required,
+      forceZulu,
+    })
     await refreshJavaList(true).catch(() => undefined)
     return {
       ok: true,

@@ -1,4 +1,4 @@
-import { exec } from 'child_process'
+import { execFile } from 'child_process'
 import { stat } from 'fs/promises'
 import { EOL, platform } from 'os'
 import { join } from 'path'
@@ -45,19 +45,26 @@ export async function resolveJavaWithDiagnostic(path: string): Promise<JavaResol
   }
 
   return new Promise((resolve) => {
-    exec(`"${path}" -version`, (error, stdout, stderr) => {
-      // Most JVMs write version output to stderr, but some wrappers and
-      // distributions use stdout. Accept either so a functional JRE is not
-      // misclassified as invalid solely because of its output stream.
-      const ver = parseJavaVersionOutput(stdout, stderr)
-      resolve({
-        java: ver ? { path, ...ver } : undefined,
-        exitCode: typeof error?.code === 'number' ? error.code : undefined,
-        signal: error?.signal ?? undefined,
-        stdout,
-        stderr,
+    try {
+      execFile(path, ['-version'], (error, stdout, stderr) => {
+        // Most JVMs write version output to stderr, but some wrappers and
+        // distributions use stdout. Accept either so a functional JRE is not
+        // misclassified as invalid solely because of its output stream.
+        const ver = parseJavaVersionOutput(stdout, stderr)
+        resolve({
+          java: ver ? { path, ...ver } : undefined,
+          exitCode: typeof error?.code === 'number' ? error.code : undefined,
+          signal: error?.signal ?? undefined,
+          stdout,
+          stderr,
+        })
       })
-    })
+    } catch (error) {
+      resolve({
+        stdout: '',
+        stderr: error instanceof Error ? error.message : String(error),
+      })
+    }
   })
 }
 
@@ -74,6 +81,17 @@ export class ParseJavaVersionError extends Error {
   constructor(message: string) {
     super(message)
   }
+}
+
+function execFileOutput(command: string, args: string[]) {
+  return new Promise<string>((resolve) => {
+    try {
+      execFile(command, args, (error, stdout) => resolve(error ? '' : stdout))
+        .once('error', () => resolve(''))
+    } catch {
+      resolve('')
+    }
+  })
 }
 
 /**
@@ -149,40 +167,20 @@ export async function getPotentialJavaLocations(): Promise<string[]> {
     unchecked.add(join(process.env.JAVA_HOME, 'bin', javaFile))
   }
 
-  const which = () =>
-    new Promise<string>((resolve) => {
-      exec('which java', (_error, stdout) => {
-        if (!_error) resolve(stdout.replace('\n', ''))
-        else resolve('')
-      }).once('error', () => resolve(''))
-    })
-  const where = () =>
-    new Promise<string[]>((resolve) => {
-      exec('where java', (_error, stdout) => {
-        if (!_error) resolve(stdout.split('\r\n'))
-        else resolve([])
-      }).once('error', () => resolve([]))
-    })
+  const which = () => execFileOutput('which', ['java']).then((stdout) => stdout.replace('\n', ''))
+  const where = () => execFileOutput('where.exe', ['java']).then((stdout) => stdout.split('\r\n'))
 
   if (currentPlatform === 'win32') {
-    const out = await new Promise<string[]>((resolve) => {
-      exec(
-        'REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome',
-        (_error, stdout) => {
-          if (!stdout) {
-            resolve([])
-          }
-          resolve(
-            stdout
-              .split(EOL)
-              .map((item) => item.replace(/[\r\n]/g, ''))
-              .filter((item) => item !== null && item !== undefined)
-              .filter((item) => item[0] === ' ')
-              .map((item) => `${item.split('    ')[3]}\\bin\\java.exe`),
-          )
-        },
-      )
-    })
+    const registry = await execFileOutput(
+      'reg.exe',
+      ['QUERY', 'HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\', '/s', '/v', 'JavaHome'],
+    )
+    const out = registry
+      .split(EOL)
+      .map((item) => item.replace(/[\r\n]/g, ''))
+      .filter((item) => item !== null && item !== undefined)
+      .filter((item) => item[0] === ' ')
+      .map((item) => `${item.split('    ')[3]}\\bin\\java.exe`)
     for (const o of [...out, ...(await where())]) {
       unchecked.add(o)
     }

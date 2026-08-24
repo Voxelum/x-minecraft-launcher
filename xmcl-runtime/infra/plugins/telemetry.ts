@@ -1,11 +1,12 @@
 import { UpdateResourcePayload } from '@xmcl/resource'
-import { APP_INSIGHT_KEY, Exception, LaunchService as ILaunchService, Settings } from '@xmcl/runtime-api'
+import { AGENT_TELEMETRY_FLIGHT, APP_INSIGHT_KEY, Exception, LaunchService as ILaunchService, Settings } from '@xmcl/runtime-api'
 import type { Contracts, TelemetryClient } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '~/constant'
-import { kClientToken, kIsNewClient } from '~/infra'
+import { kClientToken, kFlights, kIsNewClient } from '~/infra'
 import { LaunchService } from '~/launch'
+import { createPostprocessTelemetryTracker } from '~/install/postprocessTelemetry'
 import { PeerService } from '~/peer'
 import { kResourceManager } from '~/resource'
 import { kSettings } from '~/settings'
@@ -31,20 +32,7 @@ const getSdkVersion = () => {
 }
 
 const installOperations: Record<string, ReadonlySet<string>> = {
-  InstallService: new Set([
-    'installMinecraft',
-    'installMinecraftJar',
-    'installForge',
-    'installNeoForged',
-    'installFabric',
-    'installQuilt',
-    'installOptifine',
-    'installOptifineAsMod',
-    'installLabyModVersion',
-    'installByProfile',
-    'installDependencies',
-    'reinstall',
-  ]),
+  VersionInstallService: new Set(['install']),
   InstanceInstallService: new Set([
     'installInstanceFiles',
     'resumeInstanceInstall',
@@ -157,12 +145,6 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         }
       }
     }
-    // Scale retained agent-run traces back up: the run is dropped client-side at
-    // (100 - keepPercent)%, so tell ingestion the effective sampling rate.
-    const agentSampleRate = contextObjects?.agentSampleRate
-    if (typeof agentSampleRate === 'number') {
-      envelope.sampleRate = agentSampleRate
-    }
     return true
   })
 
@@ -199,31 +181,27 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   app.on('agent-run-trace', (payload) => {
     app.registry.get(kSettings).then((settings) => {
       if (settings.disableTelemetry) return
-      // payload.sampleRate is the percentage of runs to keep (25 = keep 1/4,
-      // 100 = keep all). Drop client-side, and set envelope.sampleRate so
-      // ingestion scales the retained counts back up.
-      const keepPercent = Math.max(1, Math.min(100, payload.sampleRate || 100))
-      if (Math.random() * 100 >= keepPercent) return
-      defaultClient.trackTrace({
-        message: 'agent-run',
-        properties: {
-          name: 'agent-run',
-          runId: payload.runId,
-          agentId: payload.agentId,
-          provider: payload.provider,
-          model: payload.model,
-          outcome: payload.outcome,
-          stopReason: payload.stopReason,
-          tools: JSON.stringify(payload.tools).slice(0, 2048),
-          turnCount: String(payload.turnCount),
-          toolCallCount: String(payload.toolCallCount),
-          toolFailureCount: String(payload.toolFailureCount),
-          inputTokens: String(payload.inputTokens),
-          outputTokens: String(payload.outputTokens),
-          durationMs: String(payload.durationMs),
-          sampleRate: String(keepPercent),
-        },
-        contextObjects: { agentSampleRate: keepPercent },
+      app.registry.get(kFlights).then((flights) => {
+        if (flights[AGENT_TELEMETRY_FLIGHT] !== true) return
+        defaultClient.trackTrace({
+          message: 'agent-run',
+          properties: {
+            name: 'agent-run',
+            runId: payload.runId,
+            agentId: payload.agentId,
+            provider: payload.provider,
+            model: payload.model,
+            outcome: payload.outcome,
+            stopReason: payload.stopReason,
+            tools: JSON.stringify(payload.tools).slice(0, 2048),
+            turnCount: String(payload.turnCount),
+            toolCallCount: String(payload.toolCallCount),
+            toolFailureCount: String(payload.toolFailureCount),
+            inputTokens: String(payload.inputTokens),
+            outputTokens: String(payload.outputTokens),
+            durationMs: String(payload.durationMs),
+          },
+        })
       })
     })
   })
@@ -246,11 +224,38 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     // resource data are enormous, so we need to handle them separately
     setupResourceTelemetryClient(appInsight, app, settings, appInsight.defaultClient.context.tags)
 
-    app.on('install-postprocess-fallback', (payload) => {
+    app.on('download-performance', (payload) => {
       if (settings.disableTelemetry) return
       defaultClient.trackEvent({
-        name: 'install-postprocess-fallback',
-        properties: payload,
+        name: 'download-performance',
+        properties: payload.properties,
+        measurements: payload.measurements,
+      })
+    })
+
+    app.on('install-manifest', createPostprocessTelemetryTracker((payload) => {
+      if (settings.disableTelemetry) return
+      defaultClient.trackEvent({
+        name: 'install-postprocess',
+        properties: payload.properties,
+        measurements: payload.measurements,
+        tagOverrides: {
+          [contract.operationId]: payload.operationId,
+          [contract.operationName]: 'install-postprocess',
+        },
+      })
+    }, randomUUID))
+
+    app.on('microsoft-auth-telemetry', (payload) => {
+      if (settings.disableTelemetry) return
+      defaultClient.trackEvent({
+        name: payload.name,
+        properties: payload.properties,
+        measurements: payload.measurements,
+        tagOverrides: {
+          [contract.operationId]: String(payload.properties.authAttemptId),
+          [contract.operationName]: 'microsoft-auth',
+        },
       })
     })
 
@@ -258,17 +263,19 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     // operation records exactly one terminal outcome. `installInstanceFiles`
     // is intentionally included so modpack/file installs are measured beside
     // game, loader, and Java installs. No payload or local paths are sent.
-    app.on('service-call-end', (serviceName, serviceMethod, duration, success) => {
+    app.on('service-call-end', (serviceName, serviceMethod, duration, success, failureCategory) => {
       if (settings.disableTelemetry) return
       const operation = getInstallOperation(serviceName, serviceMethod)
       if (!operation) return
       defaultClient.trackEvent({
         name: 'install-operation',
         properties: {
+          schemaVersion: '2',
           operation,
           service: serviceName,
           method: serviceMethod,
           success: String(success),
+          failureCategory: success ? 'none' : failureCategory ?? 'unknown',
         },
         measurements: {
           durationMs: duration,

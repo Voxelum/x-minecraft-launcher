@@ -56,6 +56,8 @@ askAICrash:
     selectPlatform: Abre una plataforma de IA y pega el mensaje que acabas de copiar.
     setupAgent: Configurar el agente IA
 agent:
+  accessRequiredHint: Suscríbete a XMCL para usar el agente integrado o configura tu propio proveedor de IA en Ajustes.
+  subscribeXmcl: Suscribirse a XMCL
   callingTool: llamando a {name}…
   disabledPlaceholder: Agente desactivado
   emptyHint: >-
@@ -192,6 +194,7 @@ curseforgeCategory:
   Vanilla+: Vanilla+
   World Gen: Generador de Mundos
 dependencies:
+  dependents: Mods que dependen de este mod
   embedded: Integrada
   incompatible: Incompatible
   name: Dependencias
@@ -844,6 +847,10 @@ logsCrashes:
   showFile: Mostrar en la carpeta
   title: Registros o Informes de Errores
 me:
+  groupByDate: Agrupar por fecha
+  groupByFolder: Agrupar por carpeta
+  instanceViewMode: Modo de vista de instancias
+  listView: Vista de lista
   news: Noticias
   recentPlay: Juego Reciente
 migrationWindow:
@@ -1156,13 +1163,37 @@ modrinth:
   versions: Versiones
   wikiUrl: Wiki
 multiplayer:
+  addFunds: "Añadir fondos"
+  availableBalance: "Saldo disponible"
+  balanceHint: "Disponible para los servicios de XMCL Together"
+  billing: "Facturación"
+  billingDescription: "Gestiona el acceso al relay, tu plan Together Home y los pagos."
+  billingError: "No se ha podido cargar la facturación de Together. Inténtalo de nuevo en un momento."
+  buyTogether: "Comprar Together"
+  cancelTogether: "Cancelar plan"
+  checkout: "Abrir el pago de Waffo"
+  connectionTogetherWarning: "Un miembro de la sala no ha podido conectarse contigo durante un tiempo. Prueba XMCL Together para mejorar la conectividad de todos en la sala. Solo el anfitrión de la sala necesita Together."
+  masterPurchaseHint: "Solo el anfitrión de la sala necesita Together Home para mejorar la conectividad de todos en la sala."
+  natTogetherWarning: "Es posible que tu router tenga problemas para conectarse al anfitrión de la sala. Si las conexiones fallan, prueba XMCL Together para mejorar la conectividad entre tú y tus amigos. Solo el anfitrión de la sala debe comprar Together para la sala."
+  togetherName: "Minecraft Together"
+  trialDescription: "Una prueba de 7 días con 1 GB de tráfico de relay."
+  trialTitle: "Prueba de conectividad"
+  tryTogether: "Probar Together"
+  month: "mes"
+  orderStatus: "Pedido de Waffo: {status}"
+  planDescription: "20 GB de tráfico de relay gestionado al mes, además de asistencia de IA para solucionar problemas de tu modpack."
+  waffoHint: "Los pagos se completan de forma segura en Waffo Pancake. XMCL nunca recibe tu número de tarjeta."
+  subscription:
+    active: "Activa"
+    cancelled: "Cancelada"
+    payment_due: "Pago pendiente"
+  trial:
+    active: "Prueba activa"
+    available: "Prueba gratuita disponible"
+    expired: "Prueba utilizada"
+    unavailable: "Prueba no disponible"
   loginRequiredDescription: El multijugador P2P utiliza los servicios en línea de XMCL. Inicia sesión en una cuenta de XMCL para continuar.
   loginRequiredTitle: Inicia sesión para jugar en multijugador P2P
-  allowTurn: Activar servidor de retransmisión
-  allowTurnHint: >-
-    Activa el servidor de retransmisión si no puedes conectarte con tu amigo.
-    Sin embargo, usar el servidor de retransmisión puede ralentizar tu conexión.
-    Úsalo con precaución.
   complete: Completado
   confirm: Confirmar
   connectionError: Error de conexión
@@ -1222,9 +1253,6 @@ multiplayer:
   localToken: Token local
   manualConnect: Conectar manualmente
   name: Multijugador en LAN
-  natWarning: >-
-    Tu tipo de NAT puede impedir conexiones directas. Activa el servidor de
-    retransmisión en ajustes o pide a tu amigo que sea el anfitrión.
   networkInfo: Información de red (clic para alternar)
   next: Siguiente
   otherExposedPortDescription: Puerto reenviado por {user}
@@ -1885,8 +1913,8 @@ theme:
   selectImage: Seleccionar imagen
   selectMusic: Seleccionar música
   selectVideo: Seleccionar vídeo
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  title: XMCL
+title: XMCL
 transportType:
   host: Candidato de Anfitrión
   prflx: Candidato Reflexivo de Par

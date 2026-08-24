@@ -106,10 +106,9 @@
       @update:model-value="replaceNative = !$event ? false : $event"
     />
 
-    <template v-if="developerMode || !builtinAgentEnabled">
-      <v-divider class="my-3" />
+    <v-divider class="my-3" />
 
-      <SettingItem id="agent-settings" :title="t('setting.aiAgentApiKey')" :description="t('setting.aiAgentApiKeyDescription')">
+    <SettingItem id="agent-settings" :title="t('setting.aiAgentApiKey')" :description="t('setting.aiAgentApiKeyDescription')">
         <template #title>
           <v-icon start size="small" color="primary">key</v-icon>
           {{ t('setting.aiAgentApiKey') }}
@@ -160,11 +159,11 @@
             </template>
           </v-text-field>
         </template>
-      </SettingItem>
+    </SettingItem>
 
-      <v-divider class="my-3" />
+    <v-divider class="my-3" />
 
-      <SettingItem :title="t('setting.aiAgentModel')" :description="t('setting.aiAgentModelDescription')">
+    <SettingItem :title="t('setting.aiAgentModel')" :description="t('setting.aiAgentModelDescription')">
         <template #title>
           <v-icon start size="small" color="primary">tune</v-icon>
           {{ t('setting.aiAgentModel') }}
@@ -179,11 +178,11 @@
             :placeholder="agentProviderMode === 'custom' ? t('setting.aiAgentModelPlaceholder') : agentResolvedModel"
           />
         </template>
-      </SettingItem>
+    </SettingItem>
 
-      <v-divider class="my-3" />
+    <v-divider class="my-3" />
 
-      <SettingItem :title="t('setting.aiAgentEndpoint')" :description="t('setting.aiAgentEndpointDescription')">
+    <SettingItem :title="t('setting.aiAgentEndpoint')" :description="t('setting.aiAgentEndpointDescription')">
         <template #title>
           <v-icon start size="small" color="primary">link</v-icon>
           {{ t('setting.aiAgentEndpoint') }}
@@ -198,8 +197,7 @@
             :placeholder="agentProviderMode === 'custom' ? t('setting.aiAgentEndpointPlaceholder') : agentResolvedEndpoint"
           />
         </template>
-      </SettingItem>
-    </template>
+    </SettingItem>
   </SettingCard>
 </template>
 
@@ -212,9 +210,7 @@ import SettingItemHotkey from '@/components/SettingItemHotkey.vue'
 import { kCriticalStatus } from '@/composables/criticalStatus'
 import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
 import { kEnvironment } from '@/composables/environment'
-import { kFlights } from '@/composables/flights'
 import { injection } from '@/util/inject'
-import { BUILTIN_AGENT_FLIGHT } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useAgentSettings } from '../composables/agent/settings'
 import { useGameDirectory, useSettings } from '../composables/setting'
@@ -223,8 +219,6 @@ const { isNoEmptySpace, invalidGameDataPath } = injection(kCriticalStatus)
 const getDirErroText = useGetDataDirErrorText()
 const errorText = computed(() => isNoEmptySpace.value ? t('errors.DiskIsFull') : invalidGameDataPath.value ? getDirErroText(invalidGameDataPath.value) : undefined)
 const env = injection(kEnvironment)
-const flights = injection(kFlights)
-const builtinAgentEnabled = flights[BUILTIN_AGENT_FLIGHT] === true
 const {
   streamerMode,
   developerMode,

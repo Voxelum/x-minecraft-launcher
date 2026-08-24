@@ -48,9 +48,31 @@ export function useAgentChatEntry() {
   const { t } = useI18n()
   const { notify } = useNotifier()
 
+  function showAccessRequired() {
+    notify({
+      level: 'warning',
+      title: t('agent.notConfiguredTitle'),
+      body: t('agent.accessRequiredHint'),
+      operations: [{
+        text: t('agent.subscribeXmcl'),
+        icon: 'workspace_premium',
+        handler: () => {
+          void router.push({ path: '/multiplayer', query: { target: 'billing' } })
+        },
+      }, {
+        text: t('agent.openSettings'),
+        icon: 'settings',
+        handler: () => {
+          void router.push({ path: '/setting', query: { target: 'agent' } })
+        },
+      }],
+    })
+  }
+
   async function open() {
     try {
       await settings.ready
+      await settings.refreshStatus()
     } catch (error) {
       notify({
         level: 'error',
@@ -63,18 +85,7 @@ export function useAgentChatEntry() {
       openChat()
       return
     }
-    notify({
-      level: 'warning',
-      title: t('agent.notConfiguredTitle'),
-      body: t('agent.notConfiguredHint'),
-      operations: [{
-        text: t('agent.openSettings'),
-        icon: 'settings',
-        handler: () => {
-          void router.push({ path: '/setting', query: { target: 'agent' } })
-        },
-      }],
-    })
+    showAccessRequired()
   }
 
   return {
@@ -85,14 +96,14 @@ export function useAgentChatEntry() {
 
 /** Bind Ctrl/Cmd+Shift+A to open the agent chat. */
 export function useAgentChatHotkey(enabled: Ref<boolean> = ref(true)) {
-  const surface = useOmniDialog()
+  const { open } = useAgentChatEntry()
   function onKeyDown(e: KeyboardEvent) {
     if (!enabled.value) return
     const mod = e.ctrlKey || e.metaKey
     if (!mod || !e.shiftKey) return
     if (e.code === 'KeyA') {
       e.preventDefault()
-      surface.open('agent')
+      void open()
     }
   }
   onMounted(() => window.addEventListener('keydown', onKeyDown))

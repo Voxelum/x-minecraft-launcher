@@ -288,7 +288,7 @@ import { useModUpgrade } from '@/composables/modUpgrade'
 import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useSimpleDialog } from '@/composables/dialog'
-import { useGlobalDrop } from '@/composables/dropHandler'
+import { getDropFilePaths, useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { InstanceShaderFile, kInstanceShaderPacks } from '@/composables/instanceShaderPack'
@@ -297,7 +297,7 @@ import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
 import { kCompact } from '@/composables/scrollTop'
 import { useService } from '@/composables/service'
-import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
+import { ShaderPackProject, useShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { BuiltinImages } from '@/constant'
 import { basename } from '@/util/basename'
@@ -308,7 +308,9 @@ import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
+import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 
+const searchModel = injection(kSearchModel)
 const {
   gameVersion,
   modrinthCategories,
@@ -320,7 +322,10 @@ const {
   sort: marketSort,
   source,
   selectedCollection,
-} = injection(kSearchModel)
+} = searchModel
+
+const { runtime, path } = injection(kInstance)
+const { shaderPacks, revalidate } = injection(kInstanceShaderPacks)
 
 const {
   error,
@@ -330,9 +335,7 @@ const {
   items: originalItems,
   collectionItems,
   sortBy,
-} = injection(kShaderPackSearch)
-
-const { runtime, path } = injection(kInstance)
+} = useShaderPackSearch(shaderPacks, injection(kModrinthAuthenticatedAPI), searchModel)
 
 const { model, show: showInstallShaderWizard, confirm } = useSimpleDialog<(bypass: boolean) => void>((f) => {
   console.log('skip')
@@ -346,8 +349,6 @@ const shouldDisableOculus = computed(() => !!runtime.value.fabricLoader || !!run
 const shouldDisableOptifine = computed(() => !!runtime.value.fabricLoader || !!runtime.value.neoForged || !!runtime.value.quiltLoader)
 
 effect()
-
-const { shaderPacks, revalidate } = injection(kInstanceShaderPacks)
 
 const { refresh, refreshing, upgrade, plans, upgradePolicy, upgrading } = useModUpgrade(
   path,
@@ -455,10 +456,8 @@ usePresence(computed(() => t('presence.shaderPack', { instance: name.value })))
 const { dragover } = useGlobalDrop({
   onEnter: () => { },
   onDrop: async (t) => {
-    const paths = [] as string[]
-    for (const f of t.files) {
-      paths.push(f.path)
-    }
+    const paths = getDropFilePaths(t.files)
+    if (paths.length === 0) return
     const resources = await install({ path: path.value, files: paths })
     shaderPack.value = basename(resources[0])
   },

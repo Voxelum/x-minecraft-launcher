@@ -57,9 +57,9 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
       (...args) => app.fetch(...args),
       logger,
       CLIENT_ID,
-      async (url, redirectUri, signal) => {
+      async (url, redirectUri, signal, authAttemptId) => {
         if (app.controller.openMicrosoftLogin) {
-          return app.controller.openMicrosoftLogin(url, redirectUri, signal)
+          return app.controller.openMicrosoftLogin(url, redirectUri, signal, authAttemptId)
         }
         app.shell.openInBrowser(url)
         userService.emit('microsoft-authorize-url', url)
@@ -89,6 +89,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
       },
       app.secretStorage,
       () => app.controller.getNativeWindowHandle?.(),
+      event => app.emit('microsoft-auth-telemetry', event),
     ), app)
 
   userService.registerAccountSystem(AUTHORITY_MICROSOFT, system)

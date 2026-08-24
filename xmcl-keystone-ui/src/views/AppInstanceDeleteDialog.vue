@@ -66,10 +66,19 @@ watch(isShown, (shown) => {
 const router = useRouter()
 const { remove, selectedInstance } = injection(kInstances)
 const { notify } = useNotifier()
-const doDelete = () => {
+const doDelete = async () => {
   const val = parameter.value
-  remove((val as any).path, deleteFiles.value).catch(e => {
-    if ('code' in e) {
+  const instancePath = (val as any).path
+  const isSelectedInstance = selectedInstance.value === instancePath
+  try {
+    const isLastInstance = await remove(instancePath, deleteFiles.value)
+    if (isLastInstance) {
+      await router.push('/me')
+    } else if (router.currentRoute.value.fullPath !== '/' && isSelectedInstance) {
+      await router.push('/')
+    }
+  } catch (e) {
+    if (e instanceof Error && 'code' in e) {
       if (e.code === 'EBUSY') {
         notify({
           title: t('instance.deleteFailed'),
@@ -78,10 +87,6 @@ const doDelete = () => {
         })
       }
     }
-  })
-  const instancePath = (val as any).path
-  if (router.currentRoute.value.fullPath !== '/' && selectedInstance.value === instancePath) {
-    router.push('/')
   }
   isShown.value = false
 }

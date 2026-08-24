@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MarketProjectDetail, { ProjectDependency } from '@/components/MarketProjectDetail.vue'
+import MarketProjectDetail, { ProjectDependency, ProjectDependent } from '@/components/MarketProjectDetail.vue'
 import { ProjectVersion as ProjectDetailVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useInCollection, useModrinthFollow } from '@/composables/modrinthAuthenticatedAPI'
 import { getModrinthDependenciesModel } from '@/composables/modrinthDependencies'
@@ -30,6 +30,7 @@ const props = defineProps<{
   categories: string[]
   gameVersion: string
   allFiles: ProjectFile[]
+  dependents?: ProjectDependent[]
   updating?: boolean
   curseforge?: number
   disableInstall?: boolean
@@ -41,6 +42,7 @@ const emit = defineEmits<{
   (event: 'uninstall', files: ProjectFile[]): void
   (event: 'enable', file: ProjectFile): void
   (event: 'disable', file: ProjectFile): void
+  (event: 'open-dependent', dependent: ProjectDependent): void
 }>()
 
 // Project
@@ -298,6 +300,7 @@ const { t } = useI18n()
     :updating="innerUpdating || installing || updating"
     :loading-dependencies="isValidating"
     :dependencies="dependencies"
+    :dependents="dependents"
     :loading="loading"
     :loading-versions="loadingVersions"
     :modrinth="projectId"
@@ -311,6 +314,7 @@ const { t } = useI18n()
     @collection="onAddOrRemove"
     current-target="modrinth"
     @open-dependency="onOpenDependency"
+    @open-dependent="emit('open-dependent', $event)"
     @install="onInstall"
     @enable="enabled = $event"
     @delete="onDelete"
