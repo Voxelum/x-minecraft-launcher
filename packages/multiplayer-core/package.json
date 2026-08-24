@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "@xmcl/multiplayer-core",
   "private": true,
   "description": "Browser-safe shared WebRTC primitives for XMCL multiplayer",
@@ -18,17 +18,39 @@
   },
   "typesVersions": {
     "*": {
-      "codec": ["lib/codec.ts"],
-      "events": ["lib/events.ts"],
-      "fileTransfer": ["lib/fileTransfer.ts"],
-      "localNetwork": ["lib/localNetwork.ts"],
-      "logger": ["lib/logger.ts"],
-      "multiplayer": ["lib/multiplayer.ts"],
-      "peerConnection": ["lib/peerConnection.ts"],
-      "peer": ["lib/peer.ts"],
-      "peerDownload": ["lib/peerDownload.ts"],
-      "room": ["lib/room.ts"],
-      "selectedCandidate": ["lib/selectedCandidate.ts"]
+      "codec": [
+        "lib/codec.ts"
+      ],
+      "events": [
+        "lib/events.ts"
+      ],
+      "fileTransfer": [
+        "lib/fileTransfer.ts"
+      ],
+      "localNetwork": [
+        "lib/localNetwork.ts"
+      ],
+      "logger": [
+        "lib/logger.ts"
+      ],
+      "multiplayer": [
+        "lib/multiplayer.ts"
+      ],
+      "peerConnection": [
+        "lib/peerConnection.ts"
+      ],
+      "peer": [
+        "lib/peer.ts"
+      ],
+      "peerDownload": [
+        "lib/peerDownload.ts"
+      ],
+      "room": [
+        "lib/room.ts"
+      ],
+      "selectedCandidate": [
+        "lib/selectedCandidate.ts"
+      ]
     }
   },
   "sideEffects": false,
