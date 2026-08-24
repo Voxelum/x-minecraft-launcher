@@ -1,5 +1,5 @@
 {
-    "version": "0.67.0",
+    "version": "0.67.1",
     "private": true,
     "license": "MIT",
     "packageManager": "pnpm@11.10.0",
