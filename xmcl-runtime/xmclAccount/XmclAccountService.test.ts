@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
 import { ProviderCredentialExchangeCache } from './ProviderCredentialExchangeCache'
 import { XmclAccountApiError, XmclAccountSessionResponseError } from './XmclAccountApi'
 import { generateXmclDpopKey, serializeXmclDpopKey } from './XmclAccountDpop'
@@ -40,10 +39,6 @@ vi.mock('~/service', () => ({
   },
 }))
 
-vi.mock('~/user', () => ({
-  UserService: class {},
-}))
-
 vi.mock('~/user/accountSystems/MicrosoftOAuthClient', () => ({
   MICROSOFT_GRAPH_USER_READ_SCOPE: 'User.Read',
   MicrosoftOAuthClient: class {
@@ -60,12 +55,6 @@ const { XmclAccountService, kXmclSessionAuthorization } = await import('./XmclAc
 function createXmclService(stubBootstrapCredential = true) {
   const nativeWindowHandle = Buffer.from('native-window')
   const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
-  const user = {
-    id: 'microsoft-user',
-    username: 'player@example.com',
-    authority: AUTHORITY_MICROSOFT,
-    invalidated: false,
-  }
   const app = {
     controller: {
       getNativeWindowHandle: vi.fn(() => nativeWindowHandle),
@@ -76,9 +65,7 @@ function createXmclService(stubBootstrapCredential = true) {
     getLogger: vi.fn(() => logger),
     protocol: { registerHandler: vi.fn() },
     registry: {
-      get: vi.fn().mockResolvedValue({
-        getUserState: vi.fn().mockResolvedValue({ users: { [user.id]: user } }),
-      }),
+      get: vi.fn(),
     },
     secretStorage: { get: vi.fn().mockResolvedValue(''), put: vi.fn() },
   }
@@ -87,7 +74,7 @@ function createXmclService(stubBootstrapCredential = true) {
   if (stubBootstrapCredential) {
     vi.spyOn(service as any, 'bootstrapCredential').mockResolvedValue(undefined)
   }
-  return { app, logger, nativeWindowHandle, service, user }
+  return { app, logger, nativeWindowHandle, service }
 }
 
 it('registers the server-approved browser OAuth callback path', () => {
@@ -148,50 +135,11 @@ describe('ProviderCredentialExchangeCache', () => {
   })
 })
 
-describe('XmclAccountService Microsoft bootstrap', () => {
+describe('XmclAccountService authentication', () => {
   const originalPlatform = process.platform
 
   afterEach(() => {
     Object.defineProperty(process, 'platform', { value: originalPlatform, configurable: true })
-  })
-
-  it('uses the Windows native broker and native window handle for silent authentication', async () => {
-    Object.defineProperty(process, 'platform', { value: 'win32', configurable: true })
-    oauth.authenticate.mockResolvedValue({ result: { accessToken: 'microsoft-token' } })
-    const { app, nativeWindowHandle, service, user } = createXmclService()
-
-    await service.bootstrapMicrosoft(user.id)
-
-    expect(oauth.authenticate).toHaveBeenCalledWith(user.username, ['User.Read'], {
-      slientOnly: true,
-      useNativeBroker: true,
-    })
-    expect(oauth.constructorArgs[0]?.[7]).toEqual(expect.any(Function))
-    expect((oauth.constructorArgs[0]![7] as () => Buffer)()).toBe(nativeWindowHandle)
-    expect(app.controller.getNativeWindowHandle).toHaveBeenCalled()
-  })
-
-  it('uses the normal silent cache path without the native broker off Windows', async () => {
-    Object.defineProperty(process, 'platform', { value: 'linux', configurable: true })
-    oauth.authenticate.mockResolvedValue({ result: { accessToken: 'microsoft-token' } })
-    const { service, user } = createXmclService()
-
-    await service.bootstrapMicrosoft(user.id)
-
-    expect(oauth.authenticate).toHaveBeenCalledWith(user.username, ['User.Read'], {
-      slientOnly: true,
-      useNativeBroker: false,
-    })
-  })
-
-  it('returns pending consent instead of throwing when Graph scope is unavailable silently', async () => {
-    const silentFailure = new Error('Fail to acquire Microsoft token silently.')
-    silentFailure.name = 'MicrosoftOAuthSlientFailed'
-    oauth.authenticate.mockRejectedValue(silentFailure)
-    const { app, logger, service, user } = createXmclService()
-
-    await expect(service.bootstrapMicrosoft(user.id)).resolves.toBe('pending-consent')
-    expect(app.getLogger).toHaveBeenCalled()
   })
 
   it('authorizes the XMCL Microsoft identity interactively without a game account login', async () => {

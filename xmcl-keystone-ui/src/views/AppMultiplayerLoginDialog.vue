@@ -68,7 +68,7 @@ import type { XmclOAuthProvider } from '@xmcl/runtime-api'
 const { t } = useI18n()
 const { account, busy, error, isShown, cancel } =
   injection(kMultiplayerEntry)
-const { authorizeMicrosoft, authorizeProvider } = injection(kXmclAccount)
+const { authorizeMicrosoft, authorizeModrinth, authorizeProvider } = injection(kXmclAccount)
 const { authenticate: authenticateModrinth } = injection(kModrinthAuthenticatedAPI)
 
 function onModelUpdate(value: boolean) {
@@ -79,8 +79,9 @@ function openMicrosoftLogin() {
   authorizeMicrosoft()
 }
 
-function openModrinthLogin() {
-  void authenticateModrinth()
+async function openModrinthLogin() {
+  await authenticateModrinth()
+  await authorizeModrinth()
 }
 
 function loginWithBrowser(provider: Extract<XmclOAuthProvider, 'google' | 'discord'>) {

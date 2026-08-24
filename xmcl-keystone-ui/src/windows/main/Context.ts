@@ -155,10 +155,7 @@ export default defineComponent({
     provide(kModrinthAuthenticatedAPI, modrinthAPI)
     provide(
       kXmclAccount,
-      useXmclAccount(
-        user.userProfile,
-        computed(() => modrinthAPI.userData.value?.id),
-      ),
+      useXmclAccount(),
     )
     provide(kLocalCollections, useLocalCollections())
     const searchModel = useSearchModel(instance.runtime)

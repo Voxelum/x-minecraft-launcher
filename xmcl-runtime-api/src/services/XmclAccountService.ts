@@ -2,8 +2,6 @@ import type { SharedState } from '../util/SharedState'
 import type { XmclAccountState, XmclOAuthProvider } from '../entities/xmclAccount'
 import type { ServiceKey } from './Service'
 
-export type XmclMicrosoftBootstrapResult = 'bootstrapped' | 'pending-consent' | 'not-applicable'
-
 export interface XmclTogetherMoney {
   currency: string
   amountMinor: number
@@ -84,9 +82,8 @@ export interface XmclTogetherOverview {
 export interface XmclAccountService {
   getXmclAccountState(): Promise<SharedState<XmclAccountState>>
   refreshAccount(): Promise<void>
-  bootstrapMicrosoft(userId: string): Promise<XmclMicrosoftBootstrapResult>
   authorizeMicrosoft(): Promise<void>
-  bootstrapModrinth(): Promise<void>
+  authorizeModrinth(): Promise<void>
   authorizeProvider(provider: Extract<XmclOAuthProvider, 'google' | 'discord'>): Promise<void>
   prepareMerge(): Promise<void>
   confirmMerge(): Promise<void>

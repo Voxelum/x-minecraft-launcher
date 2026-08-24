@@ -1,11 +1,9 @@
 import {
-  AUTHORITY_MICROSOFT,
   XmclAccountServiceKey,
   XmclAccountState,
   type XmclAccountSnapshot,
   type XmclOAuthProvider,
   type XmclAccountService as IXmclAccountService,
-  type XmclMicrosoftBootstrapResult,
   type SharedState,
 } from '@xmcl/runtime-api'
 import { createHash, randomBytes } from 'crypto'
@@ -13,7 +11,6 @@ import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
-import { UserService } from '~/user'
 import { kFlights } from '~/infra'
 import {
   MICROSOFT_GRAPH_USER_READ_SCOPE,
@@ -197,52 +194,6 @@ export class XmclAccountService
     )
   }
 
-  @Singleton((userId) => userId)
-  async bootstrapMicrosoft(userId: string): Promise<XmclMicrosoftBootstrapResult> {
-    await this.initialize()
-    const userState = await this.app.registry
-      .get(UserService)
-      .then((service) => service.getUserState())
-    const user = userState.users[userId]
-    if (!user || user.authority !== AUTHORITY_MICROSOFT || user.invalidated) {
-      return 'not-applicable'
-    }
-
-    const oauthClient = new MicrosoftOAuthClient(
-      (...args) => this.app.fetch(...args),
-      this.app.getLogger('XmclMicrosoftIdentity'),
-      MICROSOFT_LAUNCHER_CLIENT_ID,
-      async () => {
-        throw new Error('interactive_microsoft_auth_not_allowed')
-      },
-      async () => {
-        throw new Error('interactive_microsoft_auth_not_allowed')
-      },
-      () => {},
-      this.app.secretStorage,
-      () => this.app.controller.getNativeWindowHandle?.(),
-    )
-    let result: { accessToken: string }
-    try {
-      ;({ result } = await oauthClient.authenticate(
-        user.username,
-        [MICROSOFT_GRAPH_USER_READ_SCOPE],
-        {
-          slientOnly: true,
-          useNativeBroker: process.platform === 'win32',
-        },
-      ))
-    } catch (error) {
-      if (error instanceof Error && error.name === 'MicrosoftOAuthSlientFailed') {
-        this.warn('XMCL account bridge is waiting for Microsoft Graph consent.')
-        return 'pending-consent'
-      }
-      throw error
-    }
-    await this.bootstrapCredential('microsoft', result.accessToken)
-    return 'bootstrapped'
-  }
-
   @Singleton()
   async authorizeMicrosoft(): Promise<void> {
     await this.initialize()
@@ -281,7 +232,7 @@ export class XmclAccountService
   }
 
   @Singleton()
-  async bootstrapModrinth(): Promise<void> {
+  async authorizeModrinth(): Promise<void> {
     await this.initialize()
     const credential = await this.externalCredentials.getValidAccessToken('modrinth')
     if (credential.status !== 'valid') return
