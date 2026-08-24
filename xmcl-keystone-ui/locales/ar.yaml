@@ -1578,6 +1578,7 @@ shaderPack:
   showDirectory: 'إظهار دليل حزمة التظليل'
   showFile: 'إظهار حزمة التظليل هذه في المجلد'
 shared:
+  pressKeyCombination: 'اضغط مجموعة مفاتيح...'
   add: 'يضيف'
   author: 'مؤلف'
   back: 'خلف'

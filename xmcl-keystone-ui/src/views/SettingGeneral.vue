@@ -90,8 +90,8 @@
     <v-divider class="my-3" />
     <SettingItemHotkey
       v-model="quickActionShortcut"
-      :title="t('setting.quickActionShortcut')"
-      :description="t('setting.quickActionShortcutDescription')"
+      :title="t('commandPalette.open')"
+      :description="quickActionShortcutHint"
       icon="search"
     />
 
@@ -211,6 +211,7 @@ import { kCriticalStatus } from '@/composables/criticalStatus'
 import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
 import { kEnvironment } from '@/composables/environment'
 import { injection } from '@/util/inject'
+import { formatShortcutDisplay } from '@/util/shortcut'
 import { useDialog } from '../composables/dialog'
 import { useAgentSettings } from '../composables/agent/settings'
 import { useGameDirectory, useSettings } from '../composables/setting'
@@ -231,6 +232,7 @@ const {
   enableDedicatedGPUOptimization,
 } = useSettings()
 const { t } = useI18n()
+const quickActionShortcutHint = computed(() => t('commandPalette.openHint', { shortcut: formatShortcutDisplay(quickActionShortcut.value || '') }))
 const locales = computed(() => rawLocales.value.map(({ locale, name }) => ({ text: name, value: locale })))
 const replaceNativeItems = computed(() => [
   {

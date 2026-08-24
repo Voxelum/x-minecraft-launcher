@@ -1472,6 +1472,7 @@ shaderPack:
   noPacks: No shadr packz instold
   search: Sniff shadr packz...
 shared:
+  pressKeyCombination: PRESS KEY COMBO...
   add: ADD
   author: AUTHOR
   back: BACK

@@ -1652,6 +1652,7 @@ shaderPack:
   showDirectory: শেডার প্যাক ডিরেক্টরি দেখান
   showFile: ফোল্ডারে এই শেডার প্যাকটি দেখান
 shared:
+  pressKeyCombination: কী সমন্বয় চাপুন...
   add: যোগ করুন
   author: লেখক
   back: ফিরে যান

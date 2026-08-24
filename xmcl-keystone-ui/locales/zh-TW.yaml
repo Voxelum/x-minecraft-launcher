@@ -1589,6 +1589,7 @@ shaderPack:
   noPacks: 未安裝光影包
   search: 搜尋光影包...
 shared:
+  pressKeyCombination: 按下按鍵組合...
   add: 新增
   author: 作者
   back: 返回

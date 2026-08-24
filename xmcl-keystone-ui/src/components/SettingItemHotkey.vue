@@ -18,7 +18,7 @@
         </v-btn>
         <v-btn
           v-if="modelValue"
-          v-shared-tooltip.bottom="() => t('setting.resetShortcut')"
+          v-shared-tooltip.bottom="() => t('setting.resetToDefault')"
           icon
           variant="text"
           size="small"
@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { ref, computed, onUnmounted } from 'vue'
 import SettingItem from './SettingItem.vue'
-import { formatShortcutDisplay } from '@/util/shortcut'
+import { eventToShortcutString, formatShortcutDisplay } from '@/util/shortcut'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const { t } = useI18n()
@@ -67,50 +67,16 @@ const recordingText = computed(() => {
   if (pendingShortcut.value) {
     return `${formatShortcutDisplay(pendingShortcut.value)}...`
   }
-  return t('setting.pressKeyToRecord')
+  return t('shared.pressKeyCombination')
 })
 
 function getShortcutFromEvent(e: KeyboardEvent): { string: string; isComplete: boolean } | null {
-  if (e.key === 'Escape') return null
-
-  const isCtrl = e.ctrlKey || e.key === 'Control'
-  const isAlt = e.altKey || e.key === 'Alt'
-  const isShift = e.shiftKey || e.key === 'Shift'
-  const isMeta = e.metaKey || e.key === 'Meta'
-
-  const modifiers: string[] = []
-  if (isCtrl) modifiers.push('Ctrl')
-  if (isAlt) modifiers.push('Alt')
-  if (isShift) modifiers.push('Shift')
-  if (isMeta) modifiers.push('Meta')
-
-  const uniqueMods = Array.from(new Set(modifiers))
+  const shortcut = eventToShortcutString(e)
+  if (!shortcut) return null
   const isModifierKeyOnly = e.key === 'Control' || e.key === 'Alt' || e.key === 'Shift' || e.key === 'Meta'
-
-  if (isModifierKeyOnly) {
-    return {
-      string: uniqueMods.join('+'),
-      isComplete: false,
-    }
-  }
-
-  let mainKey = ''
-  if (e.code.startsWith('Key')) {
-    mainKey = e.code.replace('Key', '')
-  } else if (e.code.startsWith('Digit')) {
-    mainKey = e.code.replace('Digit', '')
-  } else if (e.code.startsWith('Numpad')) {
-    mainKey = e.code.replace('Numpad', 'Num')
-  } else if (e.key.length === 1) {
-    mainKey = e.key.toUpperCase()
-  } else {
-    mainKey = e.key
-  }
-
-  uniqueMods.push(mainKey)
   return {
-    string: uniqueMods.join('+'),
-    isComplete: true,
+    string: shortcut,
+    isComplete: !isModifierKeyOnly,
   }
 }
 

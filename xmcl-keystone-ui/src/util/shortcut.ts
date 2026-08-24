@@ -43,7 +43,7 @@ export function parseShortcut(str: string): ParsedShortcut {
     } else if (lower === 'cmd' || lower === 'meta' || lower === 'win' || lower === '⌘') {
       meta = true
     } else {
-      key = lower
+      key = lower === 'plus' ? '+' : lower
       if (key.length === 1 && key >= 'a' && key <= 'z') {
         code = `Key${key.toUpperCase()}`
       } else if (key.length === 1 && key >= '0' && key <= '9') {
@@ -79,7 +79,7 @@ export function matchShortcut(e: KeyboardEvent, parsed: ParsedShortcut): boolean
 
   // Modifier-only shortcut (e.g. Ctrl+Shift)
   if (!parsed.key) {
-    return true
+    return e.key === 'Control' || e.key === 'Shift' || e.key === 'Alt' || e.key === 'Meta'
   }
 
   if (parsed.code && e.code === parsed.code) {
@@ -102,15 +102,18 @@ export function formatShortcutDisplay(str: string): string {
   const isMac = typeof navigator !== 'undefined' && navigator.platform.toLowerCase().includes('mac')
   if (isMac) {
     return str
-      .replace(/Ctrl\+|CmdOrCtrl\+|Control\+/gi, '⌘')
+      .replace(/CmdOrCtrl\+/gi, '⌘')
+      .replace(/Ctrl\+|Control\+/gi, '⌃')
       .replace(/Cmd\+|Meta\+/gi, '⌘')
       .replace(/Shift\+/gi, '⇧')
       .replace(/Alt\+|Option\+/gi, '⌥')
+      .replace(/\bPlus\b/gi, '+')
   }
 
   return str
     .replace(/CmdOrCtrl\+/gi, 'Ctrl+')
     .replace(/Meta\+/gi, 'Win+')
+    .replace(/\bPlus\b/gi, '+')
 }
 
 export function eventToShortcutString(e: KeyboardEvent): string | null {
@@ -140,7 +143,11 @@ export function eventToShortcutString(e: KeyboardEvent): string | null {
     } else if (e.code.startsWith('Digit')) {
       mainKey = e.code.replace('Digit', '')
     } else if (e.code.startsWith('Numpad')) {
-      mainKey = e.code.replace('Numpad', 'Num')
+      mainKey = e.code
+    } else if (e.code === 'Space') {
+      mainKey = 'Space'
+    } else if (e.key === '+') {
+      mainKey = 'Plus'
     } else if (e.key.length === 1) {
       mainKey = e.key.toUpperCase()
     } else {

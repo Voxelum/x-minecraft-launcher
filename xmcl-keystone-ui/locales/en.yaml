@@ -1923,10 +1923,6 @@ serverStatus:
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
 setting:
-  quickActionShortcut: Quick Action Shortcut
-  quickActionShortcutDescription: Shortcut combination to toggle Quick Action command palette
-  pressKeyToRecord: Press key combination...
-  resetShortcut: Reset to default
   multiplayerTransport: Together transport
   multiplayerTransportDescription: Choose the WebRTC implementation used by Together. Changing transport disconnects active peers.
   about: About
@@ -2253,6 +2249,7 @@ shaderPack:
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
 shared:
+  pressKeyCombination: Press key combination...
   add: Add
   author: Author
   back: Back

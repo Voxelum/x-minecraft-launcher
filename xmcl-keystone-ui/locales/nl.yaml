@@ -1501,6 +1501,7 @@ shaderPack:
   noPacks: Geen shaderpakketten geïnstalleerd
   search: Shaderpakketten zoeken...
 shared:
+  pressKeyCombination: Druk op een toetsencombinatie...
   add: Toevoegen
   author: Auteur
   back: Terug

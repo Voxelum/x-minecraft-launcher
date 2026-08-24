@@ -1540,6 +1540,7 @@ shaderPack:
   noLocalPacksFound: Aramanızla eşleşen yerel gölgelendirici paketi bulunamadı.
   noPacksInstalled: Hiç gölgelendirici paketiniz yüklü değil.
 shared:
+  pressKeyCombination: Tuş kombinasyonuna basın...
   add: Ekle
   author: Yazar
   back: Geri

@@ -1486,6 +1486,7 @@ shaderPack:
   noPacks: Nie zainstalowano paczek shaderów
   search: Wyszukaj paczki shaderów...
 shared:
+  pressKeyCombination: Naciśnij kombinację klawiszy...
   add: Dodaj
   author: Autor
   back: Powrót

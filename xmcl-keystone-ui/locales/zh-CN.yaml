@@ -1953,6 +1953,7 @@ shaderPack:
   showDirectory: 显示光影文件夹
   showFile: 在文件夹中显示此光影包
 shared:
+  pressKeyCombination: 按下组合键...
   add: 添加
   author: 作者
   back: 返回
