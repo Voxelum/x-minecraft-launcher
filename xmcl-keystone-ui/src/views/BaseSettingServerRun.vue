@@ -584,28 +584,20 @@ async function init() {
   await refresh()
   loadingSelectedMods.value = true
   selectNone()
-  // Check the server mods folder. If multiple files exist, mark as detected and optionally lock the mods list.
+  // Existing server mods are authoritative until the user explicitly unlocks the list.
   await getServerInstanceMods(path.value).then((mods) => {
     const all = enabled.value
     serverModsDetected.value = mods.length > 0
     const desiredMods = instance.value.serverConfig?.mods
-    if (desiredMods) {
+    if (mods.length > 0) {
+      serverModsLocked.value = true
+      selectedMods.value = all.filter(m => mods.some(a => a.ino === m.ino))
+    } else if (desiredMods) {
       selectedMods.value = all.filter(mod => desiredMods.includes(mod.path))
       serverModsLocked.value = false
-    } else if (mods.length > 1) {
-      serverModsLocked.value = true
-      if (mods.length > 0) {
-        selectedMods.value = all.filter(m => mods.some(a => a.ino === m.ino))
-      } else {
-        selectedMods.value = getFitsMods()
-      }
     } else {
       serverModsLocked.value = false
-      if (mods.length > 0) {
-        selectedMods.value = all.filter(m => mods.some(a => a.ino === m.ino))
-      } else {
-        selectedMods.value = getFitsMods()
-      }
+      selectedMods.value = getFitsMods()
     }
   }).finally(() => {
     loadingSelectedMods.value = false
