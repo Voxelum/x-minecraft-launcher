@@ -21,6 +21,8 @@ export const useAgentSettings = createSharedComposable(() => {
   const mode = computed(() => resolvedMode.value)
   const loaded = ref(false)
   const error = ref('')
+  const checkingAccess = ref(true)
+  let accessCheckCount = 1
   let saveTimer: ReturnType<typeof setTimeout> | undefined
   let keyTimer: ReturnType<typeof setTimeout> | undefined
   let pendingApiKey = ''
@@ -29,33 +31,46 @@ export const useAgentSettings = createSharedComposable(() => {
   let settingsSave = Promise.resolve()
 
   async function refreshStatus() {
-    const settings = await service.getProviderSettings()
-    providerConfigured.value = settings.configured
-    resolvedMode.value = settings.mode
+    accessCheckCount += 1
+    checkingAccess.value = true
+    providerConfigured.value = false
     subscriptionActive.value = false
-    if (settings.mode === 'builtin' && settings.configured) {
-      subscriptionActive.value = hasActiveXmclSubscription(
-        await xmclAccountService.getTogetherOverview(),
-      )
+    try {
+      const settings = await service.getProviderSettings()
+      providerConfigured.value = settings.configured
+      resolvedMode.value = settings.mode
+      if (settings.mode === 'builtin' && settings.configured) {
+        subscriptionActive.value = hasActiveXmclSubscription(
+          await xmclAccountService.getTogetherOverview(),
+        )
+      }
+    } finally {
+      accessCheckCount -= 1
+      checkingAccess.value = accessCheckCount > 0
     }
   }
 
   const ready = (async () => {
-    const settings = await service.getProviderSettings()
-    endpoint.value = settings.endpoint
-    model.value = settings.model
-    providerConfigured.value = settings.configured
-    resolvedMode.value = settings.mode
-    if (settings.mode === 'builtin' && settings.configured) {
-      try {
-        subscriptionActive.value = hasActiveXmclSubscription(
-          await xmclAccountService.getTogetherOverview(),
-        )
-      } catch (cause) {
-        error.value = cause instanceof Error ? cause.message : String(cause)
+    try {
+      const settings = await service.getProviderSettings()
+      endpoint.value = settings.endpoint
+      model.value = settings.model
+      providerConfigured.value = settings.configured
+      resolvedMode.value = settings.mode
+      if (settings.mode === 'builtin' && settings.configured) {
+        try {
+          subscriptionActive.value = hasActiveXmclSubscription(
+            await xmclAccountService.getTogetherOverview(),
+          )
+        } catch (cause) {
+          error.value = cause instanceof Error ? cause.message : String(cause)
+        }
       }
+      loaded.value = true
+    } finally {
+      accessCheckCount -= 1
+      checkingAccess.value = accessCheckCount > 0
     }
-    loaded.value = true
   })()
 
   function saveProviderSettings() {
@@ -156,6 +171,7 @@ export const useAgentSettings = createSharedComposable(() => {
   const resolvedEndpoint = computed(() => endpoint.value.trim() || BUILTIN_AGENT_ENDPOINT)
   const resolvedModel = computed(() => model.value.trim() || BUILTIN_AGENT_MODEL)
   const configured = computed(() => {
+    if (checkingAccess.value) return false
     if (mode.value !== 'builtin') return providerConfigured.value
     return providerConfigured.value && subscriptionActive.value
   })

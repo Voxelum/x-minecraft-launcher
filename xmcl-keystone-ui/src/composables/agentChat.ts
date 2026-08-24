@@ -1,5 +1,4 @@
 import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue'
-import { useNotifier } from './notifier'
 import { useAgentConfirmation } from './agent/confirm'
 import { useAgentSettings } from './agent/settings'
 import { useOmniDialog } from './omniDialog'
@@ -44,48 +43,9 @@ export function useAgentChatOpen() {
 export function useAgentChatEntry() {
   const { open: openChat } = useAgentChatOpen()
   const settings = useAgentSettings()
-  const router = useRouter()
-  const { t } = useI18n()
-  const { notify } = useNotifier()
 
-  function showAccessRequired() {
-    notify({
-      level: 'warning',
-      title: t('agent.notConfiguredTitle'),
-      body: t('agent.accessRequiredHint'),
-      operations: [{
-        text: t('agent.subscribeXmcl'),
-        icon: 'workspace_premium',
-        handler: () => {
-          void router.push({ path: '/multiplayer', query: { target: 'billing' } })
-        },
-      }, {
-        text: t('agent.openSettings'),
-        icon: 'settings',
-        handler: () => {
-          void router.push({ path: '/setting', query: { target: 'agent' } })
-        },
-      }],
-    })
-  }
-
-  async function open() {
-    try {
-      await settings.ready
-      await settings.refreshStatus()
-    } catch (error) {
-      notify({
-        level: 'error',
-        title: t('agent.notConfiguredTitle'),
-        body: error instanceof Error ? error.message : String(error),
-      })
-      return
-    }
-    if (settings.configured.value) {
-      openChat()
-      return
-    }
-    showAccessRequired()
+  function open() {
+    openChat()
   }
 
   return {
