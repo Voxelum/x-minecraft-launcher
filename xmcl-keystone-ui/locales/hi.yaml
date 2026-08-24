@@ -1652,6 +1652,7 @@ shaderPack:
   showDirectory: शेडर पैक डायरेक्टरी दिखाएँ
   showFile: इस शेडर पैक को फ़ोल्डर में दिखाएँ
 shared:
+  pressKeyCombination: कुंजी संयोजन दबाएँ...
   add: Add
   author: लेखक
   back: वापस

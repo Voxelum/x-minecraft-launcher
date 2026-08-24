@@ -1650,6 +1650,7 @@ shaderPack:
   showDirectory: عرض مجلد حزم الشيدر
   showFile: عرض حزمة الشيدر دي في المجلد
 shared:
+  pressKeyCombination: اضغط مجموعة مفاتيح...
   add: إضافة
   author: المؤلف
   back: رجوع

@@ -1506,6 +1506,7 @@ shaderPack:
   noPacks: Nenhum pacote de shader instalado
   search: Buscar pacotes de shader...
 shared:
+  pressKeyCombination: Pressione uma combinação de teclas...
   add: Adicionar
   author: Autor
   back: Voltar

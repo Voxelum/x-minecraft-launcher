@@ -1913,6 +1913,7 @@ shaderPack:
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
 shared:
+  pressKeyCombination: Press key combination...
   add: Add
   author: Author
   back: Back

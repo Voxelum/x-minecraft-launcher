@@ -1652,6 +1652,7 @@ shaderPack:
   showDirectory: Hiển thị thư mục gói shader
   showFile: Hiển thị gói shader này trong thư mục
 shared:
+  pressKeyCombination: Nhấn tổ hợp phím...
   add: Thêm
   author: Tác giả
   back: Quay lại

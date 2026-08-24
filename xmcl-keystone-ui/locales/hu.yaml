@@ -1547,6 +1547,7 @@ shaderPack:
   noPacks: Nincs shadercsomag telepítve
   search: Shadercsomagok keresése...
 shared:
+  pressKeyCombination: Nyomjon meg egy billentyűkombinációt...
   add: Új
   author: Készítő
   back: Vissza

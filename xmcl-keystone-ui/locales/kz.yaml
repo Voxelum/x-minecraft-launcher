@@ -1491,6 +1491,7 @@ shaderPack:
   noPacks: Шейдер пакеттері орнатылмаған
   search: Шейдер пакеттерін іздеу...
 shared:
+  pressKeyCombination: Пернелер тіркесімін басыңыз...
   add: Қосу
   author: Автор
   back: Артқа

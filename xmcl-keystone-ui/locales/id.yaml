@@ -1652,6 +1652,7 @@ shaderPack:
   showDirectory: Tampilkan direktori paket shader
   showFile: Tampilkan paket shader ini di folder
 shared:
+  pressKeyCombination: Tekan kombinasi tombol...
   add: Tambah
   author: Pembuat
   back: Kembali

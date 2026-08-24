@@ -1532,6 +1532,7 @@ shaderPack:
   noLocalPacksFound: 검색어와 일치하는 로컬 셰이더 팩을 찾을 수 없습니다.
   noPacksInstalled: 설치된 셰이더 팩이 없습니다.
 shared:
+  pressKeyCombination: 키 조합을 누르세요...
   add: 추가
   author: 작성자
   back: 뒤로

@@ -86,6 +86,15 @@
       icon="videocam"
     />
 
+    <!-- Quick Action Shortcut -->
+    <v-divider class="my-3" />
+    <SettingItemHotkey
+      v-model="quickActionShortcut"
+      :title="t('commandPalette.open')"
+      :description="quickActionShortcutHint"
+      icon="search"
+    />
+
     <v-divider class="my-3" />
 
     <SettingItemSelect
@@ -197,10 +206,12 @@ import SettingCard from '@/components/SettingCard.vue'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import SettingItemSwitcher from '@/components/SettingItemSwitcher.vue'
+import SettingItemHotkey from '@/components/SettingItemHotkey.vue'
 import { kCriticalStatus } from '@/composables/criticalStatus'
 import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
 import { kEnvironment } from '@/composables/environment'
 import { injection } from '@/util/inject'
+import { formatShortcutDisplay } from '@/util/shortcut'
 import { useDialog } from '../composables/dialog'
 import { useAgentSettings } from '../composables/agent/settings'
 import { useGameDirectory, useSettings } from '../composables/setting'
@@ -216,10 +227,12 @@ const {
   replaceNative,
   disableTelemetry,
   enableDiscord,
+  quickActionShortcut,
   locales: rawLocales,
   enableDedicatedGPUOptimization,
 } = useSettings()
 const { t } = useI18n()
+const quickActionShortcutHint = computed(() => t('commandPalette.openHint', { shortcut: formatShortcutDisplay(quickActionShortcut.value || '') }))
 const locales = computed(() => rawLocales.value.map(({ locale, name }) => ({ text: name, value: locale })))
 const replaceNativeItems = computed(() => [
   {

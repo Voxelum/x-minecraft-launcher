@@ -1836,6 +1836,7 @@ shaderPack:
   noPacksInstalled: No tienes ningún pack de shaders instalado
   search: Buscar shaders...
 shared:
+  pressKeyCombination: Pulsa una combinación de teclas...
   add: Añadir
   author: Autor
   back: Atrás

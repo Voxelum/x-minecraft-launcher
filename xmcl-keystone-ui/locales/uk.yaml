@@ -1541,6 +1541,7 @@ shaderPack:
   noPacks: Шейдерпаки не встановлені
   search: Пошук шейдерпаків...
 shared:
+  pressKeyCombination: Натисніть комбінацію клавіш...
   add: Додати
   author: Автор
   back: Назад
