@@ -18,7 +18,7 @@
         </v-btn>
         <v-btn
           v-if="modelValue"
-          v-shared-tooltip.bottom="() => t('setting.resetToDefault')"
+          v-shared-tooltip.bottom="() => t('modified.reset')"
           icon
           variant="text"
           size="small"
