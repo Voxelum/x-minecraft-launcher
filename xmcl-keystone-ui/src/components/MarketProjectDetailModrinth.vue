@@ -9,6 +9,7 @@ import {
   useModrinthProjectDetailData,
   useModrinthProjectDetailVersions,
 } from '@/composables/modrinthProjectDetailData'
+import { includeModrinthUpgradeVersion } from '@/composables/modrinthProjectVersions'
 import { getModrinthVersionModel, useModrinthTask } from '@/composables/modrinthVersions'
 import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
 import { useService } from '@/composables/service'
@@ -18,13 +19,14 @@ import { kTaskManager } from '@/composables/taskManager'
 import { getSWRV } from '@/util/swrvGet'
 import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
-import { SearchResultHit } from '@xmcl/modrinth'
+import { ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
 import { ProjectMapping, ProjectMappingServiceKey } from '@xmcl/runtime-api'
 import Hint from './Hint.vue'
 
 const props = defineProps<{
   modrinth?: SearchResultHit
   projectId: string
+  upgradeVersion?: ProjectVersion
   installed: ProjectFile[]
   loader?: string
   categories: string[]
@@ -87,8 +89,9 @@ const { data: versions, isValidating: loadingVersions } = useSWRVModel(
   ),
   inject(kSWRVConfig),
 )
+const detailVersions = computed(() => includeModrinthUpgradeVersion(versions.value, props.upgradeVersion))
 const modVersions = useModrinthProjectDetailVersions(
-  versions,
+  detailVersions,
   computed(() => props.installed),
 )
 
@@ -104,7 +107,7 @@ const supportedVersions = computed(() => {
 })
 
 // Dependencies
-const version = computed(() => versions.value?.find((v) => v.id === selectedVersion.value?.id))
+const version = computed(() => detailVersions.value.find((v) => v.id === selectedVersion.value?.id))
 const { data: deps, isValidating } = useSWRVModel(
   getModrinthDependenciesModel(version, modLoader),
   { revalidateOnFocus: false },
@@ -180,7 +183,7 @@ const onInstall = async (v: ProjectDetailVersion) => {
   if (installing.value) return
   try {
     installing.value = true
-    const selectedVersion = versions.value?.find((version) => version.id === v.id)
+    const selectedVersion = detailVersions.value.find((version) => version.id === v.id)
     let resolvedDeps = deps.value
     if (!resolvedDeps) {
       resolvedDeps = await getSWRV(

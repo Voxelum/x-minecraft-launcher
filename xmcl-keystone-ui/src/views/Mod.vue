@@ -218,6 +218,7 @@
         :key="selectedModrinthId"
         :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
+        :upgrade-version="getModrinthUpgradeVersion(selectedModrinthId)"
         :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
         :loader="modLoader"
         :categories="modrinthCategories"
@@ -701,6 +702,11 @@ const isOptifineProject = (v: ProjectEntry<ProjectFile> | undefined): v is Proje
 
 // Upgrade
 const { plans, error: upgradeError } = injection(kModUpgrade)
+
+const getModrinthUpgradeVersion = (projectId: string) => {
+  const plan = plans.value[projectId]
+  return plan && 'version' in plan ? plan.version : undefined
+}
 
 const updateErrorMessage = computed(() => {
   if (upgradeError) return (upgradeError.value as any).message
