@@ -5,6 +5,9 @@ AppAddInstanceDialog:
   createTitle: Eine Instanz erstellen
   serverTitle: Geben Sie Ihre Serveradresse ein
 AppShareInstanceDialog:
+  editScopeDescription: Wähle die Dateien aus, die andere Spieler abrufen können, nachdem sie dieses laufende Spiel im LAN gefunden haben.
+  editScopeTitle: Freigabebereich bearbeiten
+  instanceToShare: Laufendes Spiel
   alterDownloadDescription: >-
     Wenn Sie die aktuelle Instanz nicht durcheinander bringen möchten.
 
@@ -12,7 +15,6 @@ AppShareInstanceDialog:
 
     Klicken Sie auf die Schaltfläche unten, um eine Instanz zu erstellen.
   baseInfo: Grundlegende Einrichtung
-  cancelShare: Verteilen Sie nicht
   description: >-
     Nachdem Sie Ihr Profil freigegeben haben, können andere Benutzer die diese Dateien über Ihren PC installieren.
   downloadDescription: >-
@@ -25,9 +27,7 @@ AppShareInstanceDialog:
   downloadTitle: Dateien von anderen Peers installieren
   filesToDownload: Wählen Sie die zu installierenden Dateien aus
   filesToShare: Wählen Sie die Dateien aus, die Sie freigeben möchten
-  instanceShare: '{user} gerade die aktuelle Instanz mit Ihnen geteilt'
   share: Teilen Sie
-  shareNotifyTitle: Eine Kopie freigeben
   shareTitle: Teilen von Spieldateien mit anderen Spielern
 BaseSettingGeneral:
   title: Allgemein
@@ -1025,6 +1025,14 @@ modrinth:
 modrinthCard:
   currentVersion: Aktuelle Version
 multiplayer:
+  autoShareAmbiguous: Mehrere Spiele werden ausgeführt. Wähle die Instanz aus, die die LAN-Welt hostet, damit XMCL sie freigeben kann.
+  editSharingScope: Freigabebereich bearbeiten
+  gameAvailable: LAN-Spiel verfügbar
+  joinGame: Spiel beitreten
+  noRunningInstanceToShare: Starte ein Spiel, bevor du dessen Freigabebereich bearbeitest
+  updateSharedInstanceConfirm: Aktualisieren und starten
+  updateSharedInstanceDescription: Die freigegebenen Mods unterscheiden sich von {instance}. Soll diese Instanz vor dem Start an den Host angeglichen werden? Vorhandene geänderte Dateien werden gesichert.
+  updateSharedInstanceTitle: Freigegebene Instanz aktualisieren?
   addFunds: "Guthaben hinzufügen"
   availableBalance: "Verfügbares Guthaben"
   balanceHint: "Für XMCL Together-Dienste verfügbar"
@@ -1129,9 +1137,6 @@ multiplayer:
   sendTokenToRemote: Senden eines Tokens an eine entfernte
   share: die Instanzkonfiguration freigeben
   sharing: Filesharing...
-  sharingNotificationBody: >-
-    Sie können eine Instanz aus der freigegebenen Konfiguration „{name}“ herunterladen oder erstellen.
-  sharingNotificationTitle: Ein Peer teilt die Spielkonfiguration
   start: Los geht's
   startNewP2PConnection: Klicken Sie auf Start, um eine neue Peer-to-Peer-Verbindung zu erstellen
   connectionError: Verbindungsfehler

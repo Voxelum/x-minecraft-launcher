@@ -157,7 +157,10 @@ describe('Together peer negotiation', () => {
     const shareMessage = metadata.send.mock.calls
       .map(([data]) => typeof data === 'string' ? JSON.parse(data) : undefined)
       .find((message) => message?.type === 'share-available')
-    expect(shareMessage).toEqual({ type: 'share-available', payload: { available: true } })
+    expect(shareMessage).toEqual({
+      type: 'share-available',
+      payload: { available: true, fingerprint: undefined, revision: 0 },
+    })
     expect(JSON.stringify(shareMessage)).not.toContain(manifest.vmOptions![0])
 
     const client = new FileTransferChannel(
@@ -190,6 +193,108 @@ describe('Together peer negotiation', () => {
     expect(sentChunks.every((chunk) => chunk.byteLength <= 1_024)).toBe(true)
     expect(connection.channels.size).toBe(2)
     peer.close()
+  })
+
+  it('pulls manifests after LAN discovery and only when the advertised revision changes', async () => {
+    vi.stubGlobal('RTCPeerConnection', FakePeerConnection)
+    let manifest = {
+      runtime: { minecraft: '1.21.1' },
+      files: [{ path: 'mods/example.jar', size: 3, hashes: { sha1: 'first' } }],
+      fingerprint: 'pack',
+    } as unknown as InstanceManifest
+    let revision = 1
+    const host = new TogetherPeer({
+      id: 'host-session',
+      localId: 'host',
+      remoteId: 'client',
+      initiator: true,
+      iceServers: [],
+      localNetwork: {
+        listen: vi.fn(),
+        connect: vi.fn(),
+        discoverLan: vi.fn(),
+        broadcastLan: vi.fn(),
+      },
+      getUserInfo: () => profile,
+      getSharedManifest: () => manifest,
+      getSharedManifestRevision: () => revision,
+      onDescription: vi.fn(),
+      onIdentity: vi.fn(),
+      onShare: vi.fn(),
+      onLan: vi.fn(),
+      onState: vi.fn(),
+      onPing: vi.fn(),
+      onClosed: vi.fn(),
+      logger: { emit: vi.fn() },
+    })
+    const hostConnection = FakePeerConnection.instance
+    const hostMetadata = hostConnection.channels.get('metadata')!
+    const hostFiles = hostConnection.channels.get('files')!
+
+    const onShare = vi.fn()
+    const client = new TogetherPeer({
+      id: 'client-session',
+      localId: 'client',
+      remoteId: 'host',
+      initiator: false,
+      iceServers: [],
+      localNetwork: {
+        listen: vi.fn(async () => ({
+          port: 30_000,
+          close: vi.fn(),
+          onConnection: vi.fn(),
+        })),
+        connect: vi.fn(),
+        discoverLan: vi.fn(),
+        broadcastLan: vi.fn(),
+      },
+      getUserInfo: () => profile,
+      getSharedManifest: () => undefined,
+      onDescription: vi.fn(),
+      onIdentity: vi.fn(),
+      onShare,
+      onLan: vi.fn(),
+      onState: vi.fn(),
+      onPing: vi.fn(),
+      onClosed: vi.fn(),
+      logger: { emit: vi.fn() },
+    })
+    const clientConnection = FakePeerConnection.instance
+    const clientMetadata = new FakeDataChannel('metadata', 'metadata')
+    const clientFiles = new FakeDataChannel('files', 'files')
+    hostMetadata.peer = clientMetadata
+    clientMetadata.peer = hostMetadata
+    hostFiles.peer = clientFiles
+    clientFiles.peer = hostFiles
+    clientConnection.emit('datachannel', { channel: clientMetadata as unknown as RTCDataChannel })
+    clientConnection.emit('datachannel', { channel: clientFiles as unknown as RTCDataChannel })
+    hostMetadata.onopen?.(new Event('open'))
+    clientMetadata.onopen?.(new Event('open'))
+
+    await Promise.resolve()
+    expect(onShare).not.toHaveBeenCalled()
+
+    host.sendLan(25_565, 'Local World')
+    await vi.waitFor(() => expect(onShare).toHaveBeenCalledTimes(1))
+    expect(onShare.mock.calls[0][1]).toMatchObject({ fingerprint: 'pack' })
+
+    host.sendShare(manifest, revision)
+    await Promise.resolve()
+    expect(onShare).toHaveBeenCalledTimes(1)
+
+    manifest = {
+      ...manifest,
+      files: [{ path: 'mods/example.jar', size: 4, hashes: { sha1: 'second' } }],
+    }
+    revision++
+    host.sendShare(manifest, revision)
+    await vi.waitFor(() => expect(onShare).toHaveBeenCalledTimes(2))
+    expect(onShare.mock.calls[1][1]).toMatchObject({
+      files: [{ hashes: { sha1: 'second' } }],
+    })
+
+    host.close()
+    client.close()
   })
 
   it('applies a repeated answer once while accepting newly gathered candidates', async () => {

@@ -55,6 +55,7 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
     textures: { SKIN: { url: '' } },
   }
   let sharedManifest: ShareInstanceOptions['manifest']
+  let sharedManifestRevision = 0
   let iceServers: RTCIceServer[] = []
   let iceServersExpireAt = 0
   let iceServersRefresh: Promise<void> | undefined
@@ -153,6 +154,7 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
         sharedFiles: options.sharedFiles,
         getUserInfo: () => userInfo,
         getSharedManifest: () => sharedManifest,
+        getSharedManifestRevision: () => sharedManifestRevision,
         onDescription(current, descriptionType, complete) {
           const revision = ++localDescriptionRevision
           if (peer.remoteId && room) {
@@ -555,11 +557,12 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
     },
     async shareInstance({ manifest, instancePath }) {
       sharedManifest = manifest
+      sharedManifestRevision++
       await options.sharedFiles?.share(
         manifest ? instancePath : undefined,
         manifest?.files.map((file) => file.path) ?? [],
       )
-      for (const peer of peers.values()) peer.sendShare(manifest)
+      for (const peer of peers.values()) peer.sendShare(manifest, sharedManifestRevision)
     },
     async dispose() {
       if (disposed) return

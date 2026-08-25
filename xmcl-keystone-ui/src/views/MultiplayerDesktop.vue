@@ -101,8 +101,13 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <v-btn variant="tonal" prepend-icon="share" @click="showShareInstance()">
-              {{ t('multiplayer.share') }}
+            <v-btn
+              variant="tonal"
+              prepend-icon="share"
+              :disabled="runningClientInstances.length === 0"
+              @click="showShareInstance()"
+            >
+              {{ t('multiplayer.editSharingScope') }}
             </v-btn>
             <v-menu location="bottom end">
               <template #activator="{ props }">
@@ -505,6 +510,7 @@ const {
   refreshingNatType,
   refreshNatType,
   refreshIceServers,
+  runningClientInstances,
   error: groupError,
 } = injection(kPeerState)
 

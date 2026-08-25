@@ -3,12 +3,14 @@ AppAddInstanceDialog:
   createTitle: Játék létrehozása
   serverTitle: Add meg a kiszolgáló címét
 AppShareInstanceDialog:
+  editScopeDescription: Válaszd ki azokat a fájlokat, amelyeket a társak letölthetnek, miután felfedezték ezt a LAN-on futó játékot.
+  editScopeTitle: Megosztási kör szerkesztése
+  instanceToShare: Futó játék
   alterDownloadDescription: |-
     Ha nem akarja elrontani az aktuális példányt.
     Létrehozhat egy új példányt a partner konfigurációjából is.
     Példány létrehozásához kattintson az alábbi gombra.
   baseInfo: Alapvető beállítások
-  cancelShare: Megosztás visszavonása
   description: >-
     Miután megosztottad a profilt, más helyről is letöltheted ezeket a fájlokat az alábbi módon a számítógépeden keresztül.
   downloadDescription: |-
@@ -19,9 +21,7 @@ AppShareInstanceDialog:
   downloadTitle: Fájlok letöltése más társaidtól
   filesToDownload: Letölteni kívánt fájlok kiválasztása
   filesToShare: Megosztani kívánt fájlok kiválasztása
-  instanceShare: '{user} épp most osztotta meg veled az aktuális példányt.'
   share: Megosztás
-  shareNotifyTitle: Példány megosztása
   shareTitle: Játék fájlok megosztása másokkal
 BaseSettingGeneral:
   title: Általános
@@ -996,6 +996,14 @@ modrinth:
 modrinthCard:
   currentVersion: Jelenlegi verzió
 multiplayer:
+  autoShareAmbiguous: Több játék is fut. Válaszd ki a LAN-világot futtató példányt, hogy az XMCL megoszthassa.
+  editSharingScope: Megosztási kör szerkesztése
+  gameAvailable: LAN-játék érhető el
+  joinGame: Csatlakozás a játékhoz
+  noRunningInstanceToShare: A megosztási kör szerkesztése előtt indíts el egy játékot
+  updateSharedInstanceConfirm: Frissítés és indítás
+  updateSharedInstanceDescription: A megosztott modok eltérnek a(z) {instance} modjaitól. Frissíted ezt a példányt, hogy indítás előtt megegyezzen a gazdagépével? A meglévő módosított fájlokról biztonsági másolat készül.
+  updateSharedInstanceTitle: Megosztott példány frissítése?
   addFunds: "Egyenleg feltöltése"
   availableBalance: "Elérhető egyenleg"
   balanceHint: "XMCL Together-szolgáltatásokhoz használható"
@@ -1082,9 +1090,6 @@ multiplayer:
   sendTokenToRemote: Token küldése a távolra
   share: Példány konfigurációjánask megosztása
   sharing: Fájlok megosztása...
-  sharingNotificationBody: >-
-    Letöltheti vagy létrehozhatja a példányt a {name} megosztott konfigurációjából.
-  sharingNotificationTitle: Egy társ megosztja a játék konfigurációját
   start: Indítás
   startNewP2PConnection: Kattints az Indítás gombra egy új kapcsolat létrehozásához.
   connectionError: Kapcsolódási hiba

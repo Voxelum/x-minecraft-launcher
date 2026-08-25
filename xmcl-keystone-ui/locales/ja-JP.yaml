@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: ゲームを作成
   serverTitle: サーバーアドレスを入力
 AppShareInstanceDialog:
+  editScopeDescription: LAN上で実行中のこのゲームを検出したピアが取得できるファイルを選択します。
+  editScopeTitle: 共有範囲を編集
+  instanceToShare: 実行中のゲーム
   alterDownloadDescription: 現在の起動構成をいじりたくなければ、ピアの構成から新しく起動構成を作ることができます。下のボタンをクリックすると起動構成を作成します。
   baseInfo: 基本的な設定
-  cancelShare: 共有を取り消す
   description: プロファイルを共有すると、他の場所からあなたのPCを通してファイルをダウンロードできるようになります。
   downloadDescription: ピアから提供されたファイルを確認し、ダウンロードするファイルを選択してください。これは現在の起動構成 {name} に配置されます。
   downloadNotifyTitle: '{user} から起動構成をダウンロード'
   downloadTitle: 他のピアからファイルをダウンロード
   filesToDownload: ダウンロードするファイルを選択
   filesToShare: 共有するファイルを選択
-  instanceShare: '{user} が現在の起動構成をあなたに共有しました。'
   share: 共有
-  shareNotifyTitle: 起動構成を共有
   shareTitle: ゲームファイルを他のプレイヤーに共有
 BaseSettingGeneral:
   title: 一般
@@ -936,6 +936,14 @@ modrinth:
 modrinthCard:
   currentVersion: 現在のバージョン
 multiplayer:
+  autoShareAmbiguous: 複数のゲームが実行中です。XMCLで共有するLANワールドをホストしているインスタンスを選択してください。
+  editSharingScope: 共有範囲を編集
+  gameAvailable: LANゲームが利用可能
+  joinGame: ゲームに参加
+  noRunningInstanceToShare: 共有範囲を編集する前にゲームを起動してください
+  updateSharedInstanceConfirm: 更新して起動
+  updateSharedInstanceDescription: 共有されたModが{instance}と異なります。起動前にこのインスタンスをホストに合わせて更新しますか？変更済みの既存ファイルはバックアップされます。
+  updateSharedInstanceTitle: 共有インスタンスを更新しますか？
   addFunds: "残高を追加"
   availableBalance: "利用可能残高"
   balanceHint: "XMCL Together のサービスに利用できます"
@@ -1020,8 +1028,6 @@ multiplayer:
   sendTokenToRemote: リモートにトークンを送る
   share: 起動構成を共有する
   sharing: ファイルを共有中...
-  sharingNotificationBody: '{name} から起動構成、共有された設定をダウンロード/作成できます'
-  sharingNotificationTitle: ピアはゲームの設定を共有しています
   start: スタート
   startNewP2PConnection: スタートボタンをクリックして新しいピアへの接続を作成します
   connectionError: 接続エラー

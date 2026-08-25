@@ -2,81 +2,17 @@ import { useIntervalFn } from '@vueuse/core'
 import { GameProfileAndTexture, InstanceManifestServiceKey, LaunchServiceKey, Multiplayer, PeerServiceKey, PeerState, SharedState } from '@xmcl/runtime-api'
 import { InjectionKey, onScopeDispose, Ref } from 'vue'
 import { resolveLanSharingInstance } from '@/util/multiplayerTogether'
-import { useDialog } from './dialog'
-import { AddInstanceDialogKey } from './instanceTemplates'
+import { createScopedInstanceManifest, getInstanceSharingRevisionSource, useInstanceSharingPreferences } from './instanceSharing'
 import { useNotifier } from './notifier'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
 import { useState } from './syncableState'
-
-export const kPeerShared: InjectionKey<ReturnType<typeof usePeerConnections>> = Symbol('PeerState')
 
 type PeerStateRef = Ref<SharedState<PeerState> | undefined>
 
 function usePeerStateRef() {
   const { getPeerState } = useService(PeerServiceKey)
   return useState(getPeerState, PeerState).state
-}
-
-export function usePeerConnections(sharedState?: PeerStateRef) {
-  const state = sharedState ?? usePeerStateRef()
-  const { notify } = useNotifier()
-  const { t } = useI18n()
-  const { show: showShareInstance } = useDialog('share-instance')
-  const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
-  watch(state, (s, _, onCleanup) => {
-    if (!s) return
-    const onShareManifest = ({ id, manifest }: Parameters<PeerState['connectionShareManifest']>[0]) => {
-      const info = s.connections.find((c) => c.id === id)
-      const name = info?.userInfo.name || id.substring(0, 6)
-      const show = () => {
-        if (manifest) {
-          notify({
-            icon: info?.userInfo.avatar,
-            title: t('multiplayer.sharingNotificationTitle'),
-            body: t('multiplayer.sharingNotificationBody', { name }),
-            operations: [
-              {
-                text: t('shared.download'),
-                icon: 'download',
-                handler() {
-                  showShareInstance(manifest)
-                },
-              },
-              {
-                text: t('instances.add'),
-                icon: 'add',
-                color: 'primary',
-                handler() {
-                  showAddInstance({
-                    format: 'manifest',
-                    manifest,
-                  })
-                },
-              },
-            ],
-          })
-        }
-      }
-      if (!document.hasFocus()) {
-        windowController.flashFrame()
-        window.addEventListener(
-          'focus',
-          () => {
-            show()
-          },
-          { once: true },
-        )
-      } else {
-        show()
-      }
-    }
-    s.subscribe('connectionShareManifest', onShareManifest)
-    onCleanup(() => s.unsubscribe('connectionShareManifest', onShareManifest))
-  })
-  return {
-    connections: computed(() => state.value?.connections ?? []),
-  }
 }
 
 export const kPeerState: InjectionKey<ReturnType<typeof usePeerState>> = Symbol('PeerState')
@@ -89,10 +25,12 @@ export function usePeerState(
   selectedInstancePath: Ref<string> = ref(''),
 ) {
   const { exposePort, unexposePort, shareInstance } = useService(PeerServiceKey)
-  const { getGameProcesses } = useService(LaunchServiceKey)
+  const launchService = useService(LaunchServiceKey)
+  const { getGameProcesses } = launchService
   const { getInstanceManifest } = useService(InstanceManifestServiceKey)
   const { notify } = useNotifier()
   const { t } = useI18n()
+  const sharingPreferences = useInstanceSharingPreferences()
   const {
     initiate,
     setRemoteDescription,
@@ -154,8 +92,25 @@ export function usePeerState(
   const error = computed(() => state.value?.groupError)
   const turnservers = computed(() => state.value?.turnservers || {})
 
+  const runningClientInstances = ref<string[]>([])
+  const refreshRunningClientInstances = async () => {
+    runningClientInstances.value = Array.from(new Set(
+      (await getGameProcesses())
+        .filter((process) => process.side === 'client')
+        .map((process) => process.options.gameDirectory),
+    ))
+  }
+  const onMinecraftProcessChanged = () => { void refreshRunningClientInstances() }
+  launchService.on('minecraft-start', onMinecraftProcessChanged)
+  launchService.on('minecraft-exit', onMinecraftProcessChanged)
+  void refreshRunningClientInstances()
+  onScopeDispose(() => {
+    launchService.removeListener('minecraft-start', onMinecraftProcessChanged)
+    launchService.removeListener('minecraft-exit', onMinecraftProcessChanged)
+  })
+
   let autoSharing: Promise<void> | undefined
-  let autoSharedInstancePath = ''
+  let autoSharedManifestSignature = ''
   let warnedRunningInstances = ''
   const autoShareLanInstance = async () => {
     const processes = await getGameProcesses()
@@ -179,13 +134,18 @@ export function usePeerState(
       }
       return
     }
-    if (instancePath === autoSharedInstancePath) return
-    const manifest = await getInstanceManifest({ path: instancePath })
+    const fullManifest = await getInstanceManifest({ path: instancePath })
+    const manifest = await createScopedInstanceManifest(
+      fullManifest,
+      sharingPreferences.getFiles(instancePath, fullManifest.files),
+    )
+    const signature = `${instancePath}\0${getInstanceSharingRevisionSource(manifest)}`
+    if (signature === autoSharedManifestSignature) return
     if (groupRole.value !== 'master') return
     const currentProcesses = await getGameProcesses()
     if (!currentProcesses.some((process) => process.side === 'client' && process.options.gameDirectory === instancePath)) return
     await shareInstance({ manifest, instancePath })
-    autoSharedInstancePath = instancePath
+    autoSharedManifestSignature = signature
     warnedRunningInstances = ''
   }
   const onLocalLan = () => {
@@ -258,6 +218,7 @@ export function usePeerState(
     groupPing,
     groupLastTimestamp,
     groupState,
+    runningClientInstances,
     connections,
     drop,
     leaveGroup,

@@ -7,12 +7,14 @@ AppAddInstanceDialog:
   updateAction: Actualizar Existente
   createNewAction: Crear Nueva
 AppShareInstanceDialog:
+  editScopeDescription: Selecciona los archivos que otros jugadores podrán obtener después de detectar esta partida en ejecución en la LAN.
+  editScopeTitle: Editar alcance compartido
+  instanceToShare: Partida en ejecución
   alterDownloadDescription: >-
     Si no quieres estropear la instancia actual. También puedes crear una nueva
     instancia desde la configuración de tu par. Haz clic en el botón de abajo
     para crear una instancia.
   baseInfo: Configuración Básica
-  cancelShare: Cancelar Compartir
   description: >-
     Después de compartir, otros compañeros podran descargar los archivos del juego que compartiste a través de tu PC.
   downloadDescription: |-
@@ -23,9 +25,7 @@ AppShareInstanceDialog:
   downloadTitle: Descargar archivos de otros compañeros
   filesToDownload: Elija archivos para descargar
   filesToShare: Elija archivos para compartir
-  instanceShare: '{user} acaba de compartir archivos del juego contigo'
   share: Compartir
-  shareNotifyTitle: Compartir Instancia
   shareTitle: Comparte archivos de juego con otro jugador
 BaseSettingGeneral:
   title: General
@@ -1163,6 +1163,14 @@ modrinth:
   versions: Versiones
   wikiUrl: Wiki
 multiplayer:
+  autoShareAmbiguous: Hay varias partidas en ejecución. Selecciona la instancia que aloja el mundo LAN para que XMCL pueda compartirla.
+  editSharingScope: Editar alcance compartido
+  gameAvailable: Partida LAN disponible
+  joinGame: Unirse a la partida
+  noRunningInstanceToShare: Inicia una partida antes de editar su alcance compartido
+  updateSharedInstanceConfirm: Actualizar e iniciar
+  updateSharedInstanceDescription: Los mods compartidos difieren de los de {instance}. ¿Quieres actualizar esta instancia para que coincida con el anfitrión antes de iniciarla? Se hará una copia de seguridad de los archivos modificados.
+  updateSharedInstanceTitle: ¿Actualizar la instancia compartida?
   addFunds: "Añadir fondos"
   availableBalance: "Saldo disponible"
   balanceHint: "Disponible para los servicios de XMCL Together"
@@ -1267,8 +1275,6 @@ multiplayer:
   sendTokenToRemote: Enviar token al remoto
   share: Compartir configuración de instancia
   sharing: Compartiendo archivos...
-  sharingNotificationBody: Puedes descargar o crear una instancia desde la configuración compartida de {name}.
-  sharingNotificationTitle: Un compañero está compartiendo la configuración de su juego
   start: Iniciar
   startNewP2PConnection: Haz clic en Iniciar para crear una nueva conexión entre pares
 myStuff: Mis Cosas

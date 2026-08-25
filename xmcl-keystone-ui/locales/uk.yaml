@@ -3,10 +3,12 @@ AppAddInstanceDialog:
   createTitle: Створити гру
   serverTitle: Введіть адресу вашого сервера
 AppShareInstanceDialog:
+  editScopeDescription: Виберіть файли, які інші учасники зможуть отримати після виявлення цієї запущеної гри в локальній мережі.
+  editScopeTitle: Змінити область поширення
+  instanceToShare: Запущена гра
   alterDownloadDescription: >-
     Якщо ви не хочете псувати поточний екземпляр. Ви також можете створити новий екземпляр з конфігурації вашого колеги. Натисніть кнопку нижче, щоб створити екземпляр.
   baseInfo: Основні налаштування
-  cancelShare: Скасувати спільний доступ
   description: >-
     Після того, як ви поділитеся профілем, інші зможуть завантажувати ці файли через ваш ПК.
   downloadDescription: >-
@@ -15,9 +17,7 @@ AppShareInstanceDialog:
   downloadTitle: Завантажити файли від інших користувачів
   filesToDownload: Виберіть файли для завантаження
   filesToShare: Виберіть файли для спільного доступу
-  instanceShare: '{user} щойно поділився з вами поточним екземпляром'
   share: Поділитися
-  shareNotifyTitle: Поділитися екземпляром
   shareTitle: Поділитися файлами гри з іншим гравцем
 BaseSettingGeneral:
   title: Загальні
@@ -1012,6 +1012,14 @@ modrinth:
 modrinthCard:
   currentVersion: Поточна версія
 multiplayer:
+  autoShareAmbiguous: Запущено кілька ігор. Виберіть збірку, у якій відкрито світ для локальної мережі, щоб XMCL міг нею поділитися.
+  editSharingScope: Змінити область поширення
+  gameAvailable: Доступна гра в локальній мережі
+  joinGame: Приєднатися до гри
+  noRunningInstanceToShare: Запустіть гру перед зміною області поширення
+  updateSharedInstanceConfirm: Оновити й запустити
+  updateSharedInstanceDescription: Поширені моди відрізняються від модів у {instance}. Оновити цю збірку відповідно до збірки хоста перед запуском? Для змінених файлів буде створено резервну копію.
+  updateSharedInstanceTitle: Оновити поширену збірку?
   addFunds: "Додати кошти"
   availableBalance: "Доступний баланс"
   balanceHint: "Доступно для служб XMCL Together"
@@ -1095,9 +1103,6 @@ multiplayer:
   sendTokenToRemote: Надіслати токен віддаленому вузлу
   share: Поділитися конфігурацією екземпляра
   sharing: Обмін файлами...
-  sharingNotificationBody: >-
-    Ви можете завантажити або створити екземпляр з конфігурації, якою поділився {name}.
-  sharingNotificationTitle: Вузол ділиться своєю ігровою конфігурацією
   start: Почати
   startNewP2PConnection: Натисніть кнопку "Почати", щоб створити нове з'єднання з вузлом
   connectionError: Помилка з'єднання

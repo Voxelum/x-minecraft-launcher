@@ -10,16 +10,16 @@ AppShareInstanceDialog:
     您还可以从对等方的配置创建一个新实例。
     单击下面的按钮创建实例。
   baseInfo: 分享的基本配置
-  cancelShare: 取消分享
   description: 分享后，您的联机伙伴将可以下载您分享的游戏资源
+  editScopeDescription: 选择联机伙伴发现这个正在运行的局域网游戏后可以按需拉取的文件。
+  editScopeTitle: 编辑分享范围
   downloadDescription: 请选择从您的小伙伴那下载的文件。文件将下载到当前实例 {name} 中。
   downloadNotifyTitle: 从 {user} 下载实例
   downloadTitle: 从其他玩家那获得游戏资源
   filesToDownload: 选择您想下载的文件
   filesToShare: 选择分享的文件
-  instanceShare: '{user} 给您分享了他的游戏配置'
+  instanceToShare: 正在运行的游戏
   share: 分享
-  shareNotifyTitle: 分享配置
   shareTitle: 分享启动配置给其他玩家
 BaseSettingGeneral:
   title: 常规设置
@@ -1257,10 +1257,10 @@ multiplayer:
   relayConnection: 中继
   routerInfo: 路由器信息
   sendTokenToRemote: 将本地令牌给您的联机伙伴
+  editSharingScope: 编辑分享范围
+  noRunningInstanceToShare: 请先启动游戏，再编辑它的分享范围
   share: 分享启动配置
   sharing: 正在共享游戏配置...
-  sharingNotificationBody: 您可以从 {name} 共享配置下载或创建实例。
-  sharingNotificationTitle: 同伴正在共享游戏配置
   start: 开始
   startNewP2PConnection: 点击开始按钮来新建一个新的点对点连接
   updateSharedInstanceConfirm: 更新并启动

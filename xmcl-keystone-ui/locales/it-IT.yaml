@@ -3,10 +3,12 @@ AppAddInstanceDialog:
   createTitle: Crea gioco
   serverTitle: Inserisci l'indirizzo del server
 AppShareInstanceDialog:
+  editScopeDescription: Seleziona i file che gli altri peer potranno scaricare dopo aver rilevato questo gioco in esecuzione sulla LAN.
+  editScopeTitle: Modifica ambito di condivisione
+  instanceToShare: Gioco in esecuzione
   alterDownloadDescription: >-
     "Se non vuoi rovinare l'istanza corrente. Puoi anche creare una nuova istanza dalla configurazione del tuo peer. Fai clic sul pulsante qui sotto per creare un'istanza."
   baseInfo: Impostazioni di base
-  cancelShare: Annulla condivisione
   description: >-
     Dopo aver condiviso il profilo, altri luoghi possono scaricare questi file tramite il tuo PC.
   downloadDescription: >-
@@ -15,9 +17,7 @@ AppShareInstanceDialog:
   downloadTitle: Scarica i file da altri peer
   filesToDownload: Scegli i file da scaricare
   filesToShare: Scegli i file da condividere
-  instanceShare: '{user} ha appena condiviso l''istanza corrente con te'
   share: Condividi
-  shareNotifyTitle: Condividi l'istanza
   shareTitle: Condividi i file di gioco con altri giocatori
 BaseSettingGeneral:
   title: Generale
@@ -963,6 +963,14 @@ modrinth:
 modrinthCard:
   currentVersion: Versione corrente
 multiplayer:
+  autoShareAmbiguous: Sono in esecuzione più giochi. Seleziona l'istanza che ospita il mondo LAN affinché XMCL possa condividerla.
+  editSharingScope: Modifica ambito di condivisione
+  gameAvailable: Partita LAN disponibile
+  joinGame: Partecipa alla partita
+  noRunningInstanceToShare: Avvia un gioco prima di modificarne l'ambito di condivisione
+  updateSharedInstanceConfirm: Aggiorna e avvia
+  updateSharedInstanceDescription: Le mod condivise sono diverse da quelle di {instance}. Aggiornare questa istanza in modo che corrisponda all'host prima dell'avvio? Verrà eseguito il backup dei file modificati esistenti.
+  updateSharedInstanceTitle: Aggiornare l'istanza condivisa?
   addFunds: "Aggiungi fondi"
   availableBalance: "Saldo disponibile"
   balanceHint: "Disponibile per i servizi XMCL Together"
@@ -1044,8 +1052,6 @@ multiplayer:
   sendTokenToRemote: Invia token al remoto
   share: Condividi configurazione istanza
   sharing: Condivisione file...
-  sharingNotificationBody: Puoi scaricare o creare un'istanza dalla configurazione condivisa di {name}.
-  sharingNotificationTitle: Un peer sta condividendo la configurazione del gioco
   start: Inizia
   startNewP2PConnection: Fare clic sul pulsante Start per creare una nuova connessione peer
   connectionError: Errore di connessione

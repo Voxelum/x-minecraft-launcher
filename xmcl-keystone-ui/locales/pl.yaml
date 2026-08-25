@@ -3,12 +3,14 @@ AppAddInstanceDialog:
   createTitle: Utwórz grę
   serverTitle: Wprowadź adres serwera
 AppShareInstanceDialog:
+  editScopeDescription: Wybierz pliki, które inni gracze będą mogli pobrać po wykryciu tej uruchomionej gry w sieci LAN.
+  editScopeTitle: Edytuj zakres udostępniania
+  instanceToShare: Uruchomiona gra
   alterDownloadDescription: |-
     Jeśli nie chcesz zepsuć bieżącej instancji.
     Możesz także utworzyć nową instancję na podstawie konfiguracji partnera.
     Kliknij przycisk poniżej, aby utworzyć instancję.
   baseInfo: Ustawienia podstawowe
-  cancelShare: Anuluj udostępnianie
   description: >-
     Po udostępnieniu profilu inne miejsce może pobrać te pliki za pośrednictwem komputera.
   downloadDescription: |-
@@ -19,9 +21,7 @@ AppShareInstanceDialog:
   downloadTitle: Pobieranie plików z innych urządzeń równorzędnych
   filesToDownload: Wybierz pliki do pobrania
   filesToShare: Wybierz pliki do udostępnienia
-  instanceShare: '{user} właśnie udostępnił ci bieżącą instancję'
   share: Udział
-  shareNotifyTitle: Instancja udostępniania
   shareTitle: Udostępnianie plików gry innym graczom
 BaseSettingGeneral:
   title: Ogólne
@@ -952,6 +952,14 @@ modrinth:
 modrinthCard:
   currentVersion: Aktualna wersja
 multiplayer:
+  autoShareAmbiguous: Uruchomionych jest wiele gier. Wybierz instancję hostującą świat LAN, aby XMCL mógł ją udostępnić.
+  editSharingScope: Edytuj zakres udostępniania
+  gameAvailable: Gra LAN jest dostępna
+  joinGame: Dołącz do gry
+  noRunningInstanceToShare: Uruchom grę przed edycją zakresu udostępniania
+  updateSharedInstanceConfirm: Zaktualizuj i uruchom
+  updateSharedInstanceDescription: Udostępnione mody różnią się od modów w {instance}. Zaktualizować tę instancję przed uruchomieniem, aby odpowiadała hostowi? Istniejące zmienione pliki zostaną zarchiwizowane.
+  updateSharedInstanceTitle: Zaktualizować udostępnioną instancję?
   addFunds: "Dodaj środki"
   availableBalance: "Dostępne saldo"
   balanceHint: "Dostępne na usługi XMCL Together"
@@ -1040,8 +1048,6 @@ multiplayer:
   sendTokenToRemote: Wyślij token do pilota
   share: Konfiguracja wystąpienia udostępnionego
   sharing: Udostępnianie plików...
-  sharingNotificationBody: Możesz pobrać lub utworzyć instancję ze udostępnionej konfiguracji {name}.
-  sharingNotificationTitle: Kolega udostępnia konfigurację gry
   start: Start
   startNewP2PConnection: Kliknij przycisk Start, aby utworzyć nowe połączenie peer
   connectionError: Błąd połączenia

@@ -4,10 +4,12 @@ AppAddInstanceDialog:
   createTitle: Создать экземпляр
   serverTitle: Введите адрес вашего сервера
 AppShareInstanceDialog:
+  editScopeDescription: Выберите файлы, которые другие участники смогут получить после обнаружения этой запущенной игры в локальной сети.
+  editScopeTitle: Изменить область общего доступа
+  instanceToShare: Запущенная игра
   alterDownloadDescription: >-
     Если вы не хотите менять текущий экземпляр, вы можете создать новый экземпляр из конфигурации вашего пользователя. Нажмите на кнопку ниже, чтобы создать экземпляр.
   baseInfo: Локальные настройки
-  cancelShare: Отменить обмен
   description: >-
     После того, как вы разрешите обмен экземпляром, другие пользователи смогут загружать эти файлы через ваш компьютер.
   downloadDescription: >-
@@ -16,9 +18,7 @@ AppShareInstanceDialog:
   downloadTitle: Скачивание файлов от других пользователей
   filesToDownload: Выберите файлы для загрузки
   filesToShare: Выберите файлы для обмена
-  instanceShare: '{user} только что поделился текущим экземпляром с вами'
   share: Обмен
-  shareNotifyTitle: Обмен экземпляром
   shareTitle: Обмен игровыми файлами с другими игроками
 BaseSettingGeneral:
   title: Общие
@@ -1009,6 +1009,14 @@ modrinth:
 modrinthCard:
   currentVersion: Текущая версия
 multiplayer:
+  autoShareAmbiguous: Запущено несколько игр. Выберите сборку, в которой открыт мир для локальной сети, чтобы XMCL мог поделиться ею.
+  editSharingScope: Изменить область общего доступа
+  gameAvailable: Доступна игра в локальной сети
+  joinGame: Присоединиться к игре
+  noRunningInstanceToShare: Запустите игру перед изменением области общего доступа
+  updateSharedInstanceConfirm: Обновить и запустить
+  updateSharedInstanceDescription: Общие моды отличаются от модов в {instance}. Обновить эту сборку в соответствии со сборкой хоста перед запуском? Для изменённых файлов будет создана резервная копия.
+  updateSharedInstanceTitle: Обновить общую сборку?
   addFunds: "Пополнить баланс"
   availableBalance: "Доступный баланс"
   balanceHint: "Доступно для сервисов XMCL Together"
@@ -1091,8 +1099,6 @@ multiplayer:
   sendTokenToRemote: Отправить токен
   share: Поделиться конфигурацией экземпляра
   sharing: Обмен файлами...
-  sharingNotificationBody: Вы можете загрузить или создать экземпляр из общих настроек {name}.
-  sharingNotificationTitle: Пользователь делится настройками экземпляра
   start: Начать
   startNewP2PConnection: Нажмите на кнопку "Начать", чтобы создать новое p2p-соединение
   connectionError: Ошибка соединения

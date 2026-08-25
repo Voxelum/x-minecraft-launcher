@@ -3,10 +3,12 @@ AppAddInstanceDialog:
   createTitle: 'إنشاء لعبة'
   serverTitle: 'أدخل عنوان الخادم الخاص بك'
 AppShareInstanceDialog:
+  editScopeDescription: حدد الملفات التي يمكن للأقران سحبها بعد اكتشاف هذه اللعبة قيد التشغيل على الشبكة المحلية.
+  editScopeTitle: تحرير نطاق المشاركة
+  instanceToShare: اللعبة قيد التشغيل
   alterDownloadDescription: >-
     إذا كنت لا ترغب في إفساد المثيل الحالي. يمكنك أيضًا إنشاء مثيل جديد من تكوين نظيرك. انقر فوق الزر أدناه لإنشاء مثيل.
   baseInfo: 'الإعداد الأساسي'
-  cancelShare: 'إلغاء المشاركة'
   description: >-
     بعد مشاركة ملف التعريف، يمكن لمكان آخر تنزيل هذه الملفات من خلال جهاز الكمبيوتر الخاص بك.
   downloadDescription: >-
@@ -15,9 +17,7 @@ AppShareInstanceDialog:
   downloadTitle: 'تنزيل الملفات من أقرانهم الآخرين'
   filesToDownload: 'اختر الملفات لتنزيلها'
   filesToShare: 'اختر الملفات لمشاركتها'
-  instanceShare: '{user} شارك للتو المثيل الحالي معك'
   share: 'يشارك'
-  shareNotifyTitle: 'مشاركة المثيل'
   shareTitle: 'مشاركة ملفات اللعبة مع لاعب آخر'
 BaseSettingGeneral:
   title: 'عام'
@@ -1005,6 +1005,14 @@ modrinth:
 modrinthCard:
   currentVersion: 'الإصدار الحالي'
 multiplayer:
+  autoShareAmbiguous: هناك عدة ألعاب قيد التشغيل. حدد النسخة التي تستضيف عالم الشبكة المحلية لكي يتمكن XMCL من مشاركتها.
+  editSharingScope: تحرير نطاق المشاركة
+  gameAvailable: لعبة شبكة محلية متاحة
+  joinGame: الانضمام إلى اللعبة
+  noRunningInstanceToShare: شغّل لعبة قبل تحرير نطاق مشاركتها
+  updateSharedInstanceConfirm: التحديث والتشغيل
+  updateSharedInstanceDescription: تختلف التعديلات المشتركة عن {instance}. هل تريد تحديث هذه النسخة لتطابق المضيف قبل التشغيل؟ سيتم إنشاء نسخة احتياطية من الملفات المعدلة الحالية.
+  updateSharedInstanceTitle: تحديث النسخة المشتركة؟
   addFunds: "إضافة أموال"
   availableBalance: "الرصيد المتاح"
   balanceHint: "متاح لخدمات XMCL Together"
@@ -1091,8 +1099,6 @@ multiplayer:
   sendTokenToRemote: 'أرسل الرمز المميز إلى جهاز التحكم عن بعد'
   share: 'مشاركة تكوين المثيل'
   sharing: 'مشاركة الملفات...'
-  sharingNotificationBody: 'يمكنك تنزيل أو إنشاء مثيل من {name} التكوين المشترك.'
-  sharingNotificationTitle: 'يشارك أحد الأقران تكوين اللعبة الخاص به'
   start: 'يبدأ'
   startNewP2PConnection: 'انقر فوق الزر "ابدأ" لإنشاء اتصال نظير جديد'
   onlinePresenceActive: 'التواجد عبر الإنترنت نشط'

@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: 게임 생성
   serverTitle: 서버 주소를 입력하세요.
 AppShareInstanceDialog:
+  editScopeDescription: LAN에서 실행 중인 이 게임을 발견한 피어가 가져갈 수 있는 파일을 선택하세요.
+  editScopeTitle: 공유 범위 편집
+  instanceToShare: 실행 중인 게임
   alterDownloadDescription: 현재 인스턴스를 망가트리고 싶지 않다면, 다른 사용자의 설정으로 새 인스턴스를 생성할 수도 있습니다.  아래 버튼을 눌러 인스턴스를 생성하세요.
   baseInfo: 기본 설정
-  cancelShare: 공유 취소
   description: 프로필을 공유하면 다른 곳에서 이 파일들을 사용자의 PC를  통해 다운로드 할 수 있습니다.
   downloadDescription: 상대방이 제공한 파일을 확인해주세요. 다운로드할 파일을 선택하면 현재 인스턴스 {name} 에 저장됩니다.
   downloadNotifyTitle: '{user} 에게서 인스턴트 다운로드'
   downloadTitle: 다른 사용자에게서 파일 다운로드
   filesToDownload: 다우놀드 받을 파일들을 선택해주세요.
   filesToShare: 공유할 파일들을 선택해주세요.
-  instanceShare: '{user} 가 당신에게 현재 인스턴트를 공유했어요.'
   share: 공유
-  shareNotifyTitle: 공유 인스턴스
   shareTitle: 다른 플레이어에게 게임 파일들을 공유
 BaseSettingGeneral:
   title: 기본
@@ -954,6 +954,14 @@ modrinth:
 modrinthCard:
   currentVersion: 현재 버전
 multiplayer:
+  autoShareAmbiguous: 여러 게임이 실행 중입니다. XMCL이 공유할 수 있도록 LAN 월드를 호스팅하는 인스턴스를 선택하세요.
+  editSharingScope: 공유 범위 편집
+  gameAvailable: LAN 게임 사용 가능
+  joinGame: 게임 참가
+  noRunningInstanceToShare: 공유 범위를 편집하기 전에 게임을 실행하세요
+  updateSharedInstanceConfirm: 업데이트 후 실행
+  updateSharedInstanceDescription: 공유된 모드가 {instance}와 다릅니다. 실행하기 전에 이 인스턴스를 호스트와 일치하도록 업데이트할까요? 기존에 변경된 파일은 백업됩니다.
+  updateSharedInstanceTitle: 공유 인스턴스를 업데이트할까요?
   addFunds: "잔액 추가"
   availableBalance: "사용 가능 잔액"
   balanceHint: "XMCL Together 서비스에 사용 가능"
@@ -1031,8 +1039,6 @@ multiplayer:
   sendTokenToRemote: 원격으로 토큰 보내기
   share: 인스턴스 설정 공유
   sharing: 파일 공유 중...
-  sharingNotificationBody: '{name} 의 공유 설정에서 인스턴스를 다운로드하거나 생성할 수 있습니다.'
-  sharingNotificationTitle: 피어가 게임 설정을 공유하고 있습니다
   start: 시작
   startNewP2PConnection: 시작 버튼을 클릭하여 새로운 피어 연결을 생성하세요
   connectionError: 연결 오류

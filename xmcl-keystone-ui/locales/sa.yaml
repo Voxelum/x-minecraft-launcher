@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: क्रीडां सृजतु
   serverTitle: स्वकीय-सेवाप्रदाता-सङ्केतम् लिखतु
 AppShareInstanceDialog:
+  editScopeDescription: LAN-जाले प्रचलितमिदं क्रीडनं ज्ञात्वा समकक्षाः याः सञ्चिकाः प्राप्तुं शक्नुवन्ति ताः चिनुत।
+  editScopeTitle: सहभाजनसीमां सम्पादयतु
+  instanceToShare: प्रचलितं क्रीडनम्
   alterDownloadDescription: यदि भवान् वर्तमानक्षणं न नाशयितुम् इच्छति, तर्हि भवान् स्वसहयोगिनः संरचनया नूतनक्षणं निर्मातुं शक्नोति। क्षणनिर्माणाय अधः नुदतु।
   baseInfo: मूलसंरचना
-  cancelShare: सहभाजनं निरस्यतु
   description: प्रोफाइल-सहभाजनात् परं, अन्ये जनाः भवतः सङ्गणकद्वारा एतान् सञ्चिकान् अवतारेतुं शक्नुवन्ति।
   downloadDescription: कृपया स्वसहयोगिना प्रदत्तानां सञ्चिकानां सत्यापनं करोतु। यां सञ्चिकाम् अवतारेतुम् इच्छति तां चिनोतु। इयं वर्तमानक्षणे {name} स्थापयिष्यते।
   downloadNotifyTitle: '{user} तः क्षणम् अवतारयतु'
   downloadTitle: सहयोगिभ्यः सञ्चिकाः अवतारयतु
   filesToDownload: अवतारेतुं सञ्चिकाः चिनोतु
   filesToShare: सहभाजनाय सञ्चिकाः चिनोतु
-  instanceShare: '{user} इदानीमेव वर्तमानक्षणं भवता सह साझितवान्'
   share: सहभाजनं करोतु
-  shareNotifyTitle: क्षणसहभाजनं करोतु
   shareTitle: क्रीडासञ्चिकाः अन्यक्रीडकेन सह साझयतु
 BaseSettingGeneral:
   title: सामान्यम्
@@ -1013,6 +1013,14 @@ modrinth:
 modrinthCard:
   currentVersion: वर्तमानसंस्करणम्
 multiplayer:
+  autoShareAmbiguous: अनेकानि क्रीडनानि प्रचलन्ति। XMCL तद् सहभाजयितुं शक्नुयात् इति LAN-जगतः आतिथ्यं कुर्वन्तं दृष्टान्तं चिनुत।
+  editSharingScope: सहभाजनसीमां सम्पादयतु
+  gameAvailable: LAN-क्रीडनम् उपलब्धम्
+  joinGame: क्रीडने सम्मिलतु
+  noRunningInstanceToShare: सहभाजनसीमां सम्पादयितुं पूर्वं क्रीडनं प्रारभताम्
+  updateSharedInstanceConfirm: अद्यतनीकृत्य प्रारभताम्
+  updateSharedInstanceDescription: सहभाजिताः मोडाः {instance} इत्यस्य मोडेभ्यः भिन्नाः सन्ति। प्रारम्भात् पूर्वम् आतिथेयेन सह मेलयितुं दृष्टान्तमिमम् अद्यतनीकरोतु? परिवर्तितानां सञ्चिकानां प्रतिलिपिः रक्ष्यते।
+  updateSharedInstanceTitle: सहभाजितं दृष्टान्तम् अद्यतनीकरोतु?
   addFunds: "धनं योजयतु"
   availableBalance: "उपलब्धं शेषधनम्"
   balanceHint: "XMCL Together-सेवानां कृते उपलब्धम्"
@@ -1090,8 +1098,6 @@ multiplayer:
   sendTokenToRemote: दूरस्थाय प्रतीकं प्रेषयतु
   share: क्षणसंरचनां साझयतु
   sharing: सञ्चिकाः साझयति...
-  sharingNotificationBody: भवान् {name} इत्यस्य साझितसंरचनातः क्षणम् अवतारेतुं सृजितुं च शक्नोति।
-  sharingNotificationTitle: एकः क्रीडकः स्वकीयां क्रीडासंरचनां साझयति
   start: आरम्भः
   startNewP2PConnection: नूतन-सहयोगि-सम्पर्कं निर्मातुं आरम्भ-नुदं नुदतु
 myStuff: मम सामग्री

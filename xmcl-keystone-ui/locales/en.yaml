@@ -7,10 +7,11 @@ AppShareInstanceDialog:
     If you don't want to mess up current instance. You can also create a new
     instance from your peer's config. Click the button below to create instance.
   baseInfo: Basic Setting
-  cancelShare: Cancel Share
   description: >-
     After you share the profile, other place can download these files through
     your PC.
+  editScopeDescription: Select the files peers can pull after discovering this running game on LAN.
+  editScopeTitle: Edit Sharing Scope
   downloadDescription: >-
     Please verify the files your peer provided to you. Select the file you want
     to download. It will be placed to current instance {name}.
@@ -18,9 +19,8 @@ AppShareInstanceDialog:
   downloadTitle: Download files from other peers
   filesToDownload: Choose files to download
   filesToShare: Choose files to share
-  instanceShare: '{user} just shared the current instance to you'
+  instanceToShare: Running Game
   share: Share
-  shareNotifyTitle: Share Instance
   shareTitle: Share game files to other player
 BaseSettingGeneral:
   title: General
@@ -1477,10 +1477,10 @@ multiplayer:
   relayConnection: Relay
   routerInfo: Router Info
   sendTokenToRemote: Send Token to Remote
+  editSharingScope: Edit Sharing Scope
+  noRunningInstanceToShare: Launch a game before editing its sharing scope
   share: Share Instance Config
   sharing: Sharing files...
-  sharingNotificationBody: You can download or create an instance from {name} shared config.
-  sharingNotificationTitle: A peer is sharing their game config
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
   subscription:

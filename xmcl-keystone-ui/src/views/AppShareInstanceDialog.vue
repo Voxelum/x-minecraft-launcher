@@ -9,7 +9,7 @@
       >
         <v-toolbar-title>
           <template v-if="sharing">
-            {{ t('AppShareInstanceDialog.shareTitle') }}
+            {{ t('AppShareInstanceDialog.editScopeTitle') }}
           </template>
           <template v-else>
             {{ t('AppShareInstanceDialog.downloadTitle') }}
@@ -25,12 +25,22 @@
       >
         <v-card-text>
           <template v-if="sharing">
-            {{ t('AppShareInstanceDialog.description') }}
+            {{ t('AppShareInstanceDialog.editScopeDescription') }}
           </template>
           <template v-else>
             {{ t('AppShareInstanceDialog.downloadDescription', { name }) }}
           </template>
         </v-card-text>
+        <v-select
+          v-if="sharing && runningInstanceItems.length > 1"
+          v-model="sharingPath"
+          class="mx-4"
+          density="comfortable"
+          :items="runningInstanceItems"
+          item-title="title"
+          item-value="value"
+          :label="t('AppShareInstanceDialog.instanceToShare')"
+        />
         <v-card-text v-if="!sharing">
           {{ t('AppShareInstanceDialog.alterDownloadDescription') }}
         </v-card-text>
@@ -87,23 +97,22 @@
       </v-container>
       <v-card-actions v-if="sharing">
         <v-btn
-          color="error"
-          @click="onCancelShare"
-         variant="text">
-          <v-icon start>
-            delete
-          </v-icon>
-          {{ t('AppShareInstanceDialog.cancelShare') }}
+          @click="isShown = false"
+          variant="text"
+        >
+          {{ t('shared.cancel') }}
         </v-btn>
         <v-spacer />
         <v-btn
           color="primary"
-          @click="onShareInstance"
+          :loading="saving"
+          :disabled="!manifest || !sharingPath"
+          @click="onSaveSharingScope"
          variant="text">
           <v-icon start>
-            share
+            save
           </v-icon>
-          {{ t('AppShareInstanceDialog.share') }}
+          {{ t('shared.save') }}
         </v-btn>
       </v-card-actions>
       <v-card-actions v-else>
@@ -138,7 +147,10 @@
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
+import { createScopedInstanceManifest, useInstanceSharingPreferences } from '@/composables/instanceSharing'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
+import { kInstances } from '@/composables/instances'
+import { kPeerState } from '@/composables/peers'
 import { injection } from '@/util/inject'
 import { InstanceInstallServiceKey, InstanceManifest, InstanceManifestServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
@@ -154,8 +166,11 @@ const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
 const { shareInstance } = useService(PeerServiceKey)
 const { path, name } = injection(kInstance)
+const { instances } = injection(kInstances)
+const { runningClientInstances } = injection(kPeerState)
 const { t } = useI18n()
 const { subscribeTask } = useNotifier()
+const sharingPreferences = useInstanceSharingPreferences()
 
 const sharing = computed(() => isShown.value && !parameter.value)
 /**
@@ -164,6 +179,12 @@ const sharing = computed(() => isShown.value && !parameter.value)
 const currentUser = ref('')
 const manifest: Ref<InstanceManifest | undefined> = shallowRef(undefined)
 const selected = ref([] as string[])
+const sharingPath = ref('')
+const saving = ref(false)
+const runningInstanceItems = computed(() => runningClientInstances.value.map((instancePath) => ({
+  value: instancePath,
+  title: instances.value.find((instance) => instance.path === instancePath)?.name || instancePath,
+})))
 
 provideFileNodes(useInstanceFileNodesFromLocal(computed(() => manifest.value?.files || [])))
 
@@ -186,18 +207,16 @@ const loading = ref(false)
 
 const scrollElement = ref<HTMLElement | null>(null)
 
-const onCancelShare = () => {
-  shareInstance({ manifest: undefined, instancePath: path.value })
-  isShown.value = false
-}
-
-const onShareInstance = () => {
-  if (manifest.value) {
-    const man = { ...manifest.value }
-    const allow = new Set(selected.value)
-    man.files = man.files.filter(f => allow.has(f.path))
-    subscribeTask(shareInstance({ manifest: man, instancePath: path.value }), t('AppShareInstanceDialog.shareNotifyTitle'))
+const onSaveSharingScope = async () => {
+  if (!manifest.value || !sharingPath.value || saving.value) return
+  saving.value = true
+  try {
+    sharingPreferences.setFiles(sharingPath.value, selected.value)
+    const scoped = await createScopedInstanceManifest(manifest.value, selected.value)
+    await shareInstance({ manifest: scoped, instancePath: sharingPath.value })
     isShown.value = false
+  } finally {
+    saving.value = false
   }
 }
 
@@ -235,14 +254,35 @@ const onCreateInstance = () => {
   }
 }
 
+let loadRevision = 0
+async function loadSharingManifest(instancePath: string) {
+  const revision = ++loadRevision
+  loading.value = true
+  try {
+    const value = await getInstanceManifest({ path: instancePath })
+    if (revision !== loadRevision) return
+    manifest.value = value
+    selected.value = sharingPreferences.getFiles(instancePath, value.files)
+  } finally {
+    if (revision === loadRevision) loading.value = false
+  }
+}
+
+watch(sharingPath, (instancePath) => {
+  if (isShown.value && sharing.value && instancePath) void loadSharingManifest(instancePath)
+})
+
 watch(isShown, async (shown) => {
   if (shown) {
     windowController.focus()
     if (parameter.value) {
       manifest.value = parameter.value as any
+      selected.value = manifest.value?.files.map((file) => file.path) ?? []
     } else {
-      loading.value = true
-      manifest.value = await getInstanceManifest({ path: path.value }).finally(() => { loading.value = false })
+      const running = runningClientInstances.value
+      const target = running.includes(path.value) ? path.value : running[0] ?? ''
+      if (sharingPath.value === target && target) void loadSharingManifest(target)
+      else sharingPath.value = target
     }
   }
 })

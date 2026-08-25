@@ -3,10 +3,12 @@ AppAddInstanceDialog:
   createTitle: MAKE GAME
   serverTitle: TYP IN DA SERVR ADDWESS
 AppShareInstanceDialog:
+  editScopeDescription: CHOOZ TEH FILEZ PEEPS CAN GRAB AFTER DEY FIND DIS RUNNIN GAEM ON LAN.
+  editScopeTitle: EDIT SHARIN RANGE
+  instanceToShare: RUNNIN GAEM
   alterDownloadDescription: >-
     IF U NO WANT BREAK CURREN INSTANCE. U CAN ALSO MAKE NEW INSTANCE FROM UR FREN'S CONFIG. CLICK DA BUTTON BELOW TO MAKE INSTANCE.
   baseInfo: BASIC SETTINGZ
-  cancelShare: CANCEL SHAREZ
   description: >-
     AFTR U SHARE DA PROFILE, OTHR PLACE CAN DOWNLOD THESE FILEZ THRU UR COMPUTAH.
   downloadDescription: >-
@@ -15,9 +17,7 @@ AppShareInstanceDialog:
   downloadTitle: DOWNLOD FILEZ FROM OTHR FRENS
   filesToDownload: PICK FILEZ TO DOWNLOD
   filesToShare: PICK FILEZ TO SHARE
-  instanceShare: '{user} JUS SHARED DA CURREN INSTANCE TO U!'
   share: SHAREZ
-  shareNotifyTitle: SHARE INSTANCE
   shareTitle: SHARE GAME FILEZ TO OTHR PLAYR
 BaseSettingGeneral:
   title: GENERAL
@@ -947,6 +947,14 @@ modrinth:
 modrinthCard:
   currentVersion: CURREN VERSHUN
 multiplayer:
+  autoShareAmbiguous: MANY GAEMS R RUNNIN. CHOOZ TEH INSTANCE HOSTIN TEH LAN WORLD SO XMCL CAN SHARE IT.
+  editSharingScope: EDIT SHARIN RANGE
+  gameAvailable: LAN GAEM IZ HERE
+  joinGame: JOIN GAEM
+  noRunningInstanceToShare: START A GAEM BFORE EDITIN ITS SHARIN RANGE
+  updateSharedInstanceConfirm: UPDAET AN PLAY
+  updateSharedInstanceDescription: SHARED MODZ R DIFFRUNT FROM {instance}. UPDAET DIS INSTANCE TO MATCH TEH HOST BFORE PLAYIN? CHANGED FILEZ WILL BE BAKD UP.
+  updateSharedInstanceTitle: UPDAET SHARED INSTANCE?
   addFunds: "Add moar funds"
   availableBalance: "Funds nao available"
   balanceHint: "Usable for XMCL Together servicez"
@@ -1027,8 +1035,6 @@ multiplayer:
   sendTokenToRemote: SEND TOKEN TO REMOTE
   share: SHARE INSTANCE CONFIG
   sharing: SHARING FILEZ...
-  sharingNotificationBody: U CAN DOWNLOD OR MAKE AN INSTANCE FROM {name} SHARED CONFIG.
-  sharingNotificationTitle: A PEER IS SHARING THEIR GAME CONFIG
   start: START
   startNewP2PConnection: CLICK DA START BUTTON TO MAKE A NEW PEER CONNEKSHUN
   connectionError: CONNEKSHN BORKED
