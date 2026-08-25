@@ -28,6 +28,7 @@ export interface TogetherPeerOptions {
   peerConnectionProvider?: PeerConnectionProvider
   getUserInfo(): ConnectionUserInfo
   getSharedManifest(): InstanceManifest | undefined
+  getSharedManifestRevision?(): number
   onDescription(description: TransferDescription, type: 'offer' | 'answer', complete: boolean): void
   onIdentity(peer: TogetherPeer, info: ConnectionUserInfo): void
   onShare(peer: TogetherPeer, manifest?: InstanceManifest): void
@@ -48,6 +49,10 @@ export class TogetherPeer {
   private metadata: RTCDataChannel | undefined
   private files: FileTransferChannel | undefined
   private remoteManifest: InstanceManifest | undefined
+  private remoteManifestRevision: number | undefined
+  private advertisedManifestRevision: number | undefined
+  private remoteLanAvailable = false
+  private manifestDownload: Promise<void> | undefined
   private readonly candidates: Array<{ candidate: string; mid: string }> = []
   private readonly remoteCandidates = new Set<string>()
   private readonly proxies = new Map<number, LocalServer>()
@@ -184,8 +189,15 @@ export class TogetherPeer {
     return Array.from(this.proxies.values()).some((server) => server.port === port)
   }
 
-  sendShare(manifest?: InstanceManifest) {
-    this.sendMetadata({ type: 'share-available', payload: { available: manifest !== undefined } })
+  sendShare(manifest?: InstanceManifest, revision = this.options.getSharedManifestRevision?.() ?? 0) {
+    this.sendMetadata({
+      type: 'share-available',
+      payload: {
+        available: manifest !== undefined,
+        fingerprint: manifest?.fingerprint,
+        revision,
+      },
+    })
   }
 
   download(path: string, destination: TransferWritable) {
@@ -347,6 +359,8 @@ export class TogetherPeer {
         event: 'together.lan.received',
         data: { session: this.id, remoteId: this.remoteId, port: payload.port, motd: payload.motd },
       })
+      this.remoteLanAvailable = true
+      this.requestManifestIfNeeded()
       void this.ensureProxy(Number(payload.port), payload.motd).catch((error) => {
         this.options.logger.emit({
           level: 'error',
@@ -365,9 +379,17 @@ export class TogetherPeer {
         this.receiveManifest(manifest as InstanceManifest | undefined)
       }
     } else if (message.type === 'share-available') {
-      const available = (message.payload as { available?: unknown })?.available
-      if (available === false) this.receiveManifest(undefined)
-      else if (available === true) void this.downloadManifest()
+      const payload = message.payload as { available?: unknown; revision?: unknown }
+      if (payload?.available === false) {
+        this.advertisedManifestRevision = undefined
+        this.remoteManifestRevision = undefined
+        this.receiveManifest(undefined)
+      } else if (payload?.available === true) {
+        this.advertisedManifestRevision = typeof payload.revision === 'number'
+          ? payload.revision
+          : undefined
+        this.requestManifestIfNeeded()
+      }
     }
   }
 
@@ -378,6 +400,7 @@ export class TogetherPeer {
       (path) => this.openSharedFile(path),
       this.connection.sctp?.maxMessageSize,
     )
+    this.requestManifestIfNeeded()
   }
 
   private async openSharedFile(path: string): Promise<TransferSource | undefined> {
@@ -395,7 +418,21 @@ export class TogetherPeer {
     return { size: file.size ?? 0, stream: await this.options.sharedFiles.open(filePath) }
   }
 
-  private async downloadManifest() {
+  private requestManifestIfNeeded() {
+    if (!this.remoteLanAvailable || this.manifestDownload) return
+    if (
+      this.remoteManifest &&
+      this.advertisedManifestRevision !== undefined &&
+      this.remoteManifestRevision === this.advertisedManifestRevision
+    ) return
+    const revision = this.advertisedManifestRevision
+    this.manifestDownload = this.downloadManifest(revision).finally(() => {
+      this.manifestDownload = undefined
+      if (this.advertisedManifestRevision !== revision) this.requestManifestIfNeeded()
+    })
+  }
+
+  private async downloadManifest(revision: number | undefined) {
     if (!this.files) return
     const chunks: Uint8Array[] = []
     let size = 0
@@ -419,7 +456,11 @@ export class TogetherPeer {
             data.set(chunk, offset)
             offset += chunk.byteLength
           }
-          this.receiveManifest(JSON.parse(new TextDecoder().decode(data)) as InstanceManifest)
+          const manifest = JSON.parse(new TextDecoder().decode(data)) as InstanceManifest
+          if (this.advertisedManifestRevision === revision) {
+            this.remoteManifestRevision = revision
+            this.receiveManifest(manifest)
+          }
         } catch (error) {
           this.options.logger.emit({
             level: 'warn',

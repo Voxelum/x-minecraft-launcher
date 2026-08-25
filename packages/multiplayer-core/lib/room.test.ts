@@ -324,6 +324,32 @@ describe('Together room', () => {
     expect(callbacks.drop).toHaveBeenCalledWith('master')
   })
 
+  it('ignores a stale signal receiver after a member leaves', async () => {
+    vi.stubGlobal('WebSocket', FakeWebSocket)
+    const callbacks = createCallbacks()
+    const room = new TogetherRoom(
+      { ...admission, role: 'master' },
+      profile,
+      {
+        createRoom: vi.fn(),
+        joinRoom: vi.fn(),
+        closeRoom: vi.fn(async () => {}),
+        getIceServerCredential: vi.fn(),
+      },
+      callbacks,
+      { emit: vi.fn() },
+    )
+
+    const connected = room.connect()
+    const socket = FakeWebSocket.instances[0]
+    socket.open()
+    await connected
+    socket.receive({ type: 'error', code: 'invalid_receiver' })
+
+    expect(callbacks.onError).not.toHaveBeenCalled()
+    await room.quit()
+  })
+
   it('does not expose WebRTC state as the room state', async () => {
     vi.stubGlobal('WebSocket', FakeWebSocket)
     const callbacks = createCallbacks()

@@ -9,6 +9,7 @@ import {
 
 export function hostBrowserRtc(control: MessagePort) {
   const connections = new Map<string, RTCPeerConnection>()
+  let nextRemoteChannelId = 0
   control.onmessage = ({ data, ports }: MessageEvent<RtcConnectionCommand>) => {
     if (!data || typeof data !== 'object') return
     void handle(data, ports).catch((error) => {
@@ -95,7 +96,7 @@ export function hostBrowserRtc(control: MessagePort) {
         {
           type: 'data-channel',
           connectionId,
-          channelId: `${connectionId}-remote-${crypto.randomUUID()}`,
+          channelId: `${connectionId}-remote-${nextRemoteChannelId++}`,
           label: channel.label,
           protocol: channel.protocol,
         } satisfies RtcConnectionEvent,

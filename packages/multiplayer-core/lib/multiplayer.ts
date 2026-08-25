@@ -55,6 +55,7 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
     textures: { SKIN: { url: '' } },
   }
   let sharedManifest: ShareInstanceOptions['manifest']
+  let sharedManifestRevision = 0
   let iceServers: RTCIceServer[] = []
   let iceServersExpireAt = 0
   let iceServersRefresh: Promise<void> | undefined
@@ -68,6 +69,7 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
   let exposedPortsListener: ((ports: [number, number][]) => void) | undefined
   const lanDiscoveryListener = (server: LocalLanServer) => {
     if (disposed || Array.from(peers.values()).some((peer) => peer.hasLocalProxy(server.port))) return
+    events.emit('local-lan', server)
     for (const peer of peers.values()) {
       if (peer.isMetadataOpen) peer.sendLan(server.port, server.motd)
     }
@@ -152,6 +154,7 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
         sharedFiles: options.sharedFiles,
         getUserInfo: () => userInfo,
         getSharedManifest: () => sharedManifest,
+        getSharedManifestRevision: () => sharedManifestRevision,
         onDescription(current, descriptionType, complete) {
           const revision = ++localDescriptionRevision
           if (peer.remoteId && room) {
@@ -554,11 +557,12 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
     },
     async shareInstance({ manifest, instancePath }) {
       sharedManifest = manifest
+      sharedManifestRevision++
       await options.sharedFiles?.share(
         manifest ? instancePath : undefined,
         manifest?.files.map((file) => file.path) ?? [],
       )
-      for (const peer of peers.values()) peer.sendShare(manifest)
+      for (const peer of peers.values()) peer.sendShare(manifest, sharedManifestRevision)
     },
     async dispose() {
       if (disposed) return
