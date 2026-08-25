@@ -1,6 +1,6 @@
 import { useIntervalFn } from '@vueuse/core'
 import { GameProfileAndTexture, Multiplayer, PeerServiceKey, PeerState, SharedState } from '@xmcl/runtime-api'
-import { InjectionKey, Ref } from 'vue'
+import { InjectionKey, onScopeDispose, Ref } from 'vue'
 import { useDialog } from './dialog'
 import { AddInstanceDialogKey } from './instanceTemplates'
 import { useNotifier } from './notifier'
@@ -23,9 +23,9 @@ export function usePeerConnections(sharedState?: PeerStateRef) {
   const { t } = useI18n()
   const { show: showShareInstance } = useDialog('share-instance')
   const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
-  watch(state, (s) => {
+  watch(state, (s, _, onCleanup) => {
     if (!s) return
-    s.subscribe('connectionShareManifest', ({ id, manifest }) => {
+    const onShareManifest = ({ id, manifest }: Parameters<PeerState['connectionShareManifest']>[0]) => {
       const info = s.connections.find((c) => c.id === id)
       const name = info?.userInfo.name || id.substring(0, 6)
       const show = () => {
@@ -69,7 +69,9 @@ export function usePeerConnections(sharedState?: PeerStateRef) {
       } else {
         show()
       }
-    })
+    }
+    s.subscribe('connectionShareManifest', onShareManifest)
+    onCleanup(() => s.unsubscribe('connectionShareManifest', onShareManifest))
   })
   return {
     connections: computed(() => state.value?.connections ?? []),
@@ -148,9 +150,11 @@ export function usePeerState(
 
   let buffer = [] as Array<{ port: number; session: string }>
   const otherExposedPorts = ref([] as Array<{ port: number; user: string }>)
-  multiplayer.on('lan', (msg) => {
+  const onLan = (msg: { port: number; session: string }) => {
     buffer.push(msg)
-  })
+  }
+  multiplayer.on('lan', onLan)
+  onScopeDispose(() => multiplayer.removeListener('lan', onLan))
 
   useIntervalFn(() => {
     if (buffer.length > 0) {

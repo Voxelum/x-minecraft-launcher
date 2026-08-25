@@ -124,15 +124,15 @@ import { basename } from '@/util/basename'
 import { InstanceIOServiceKey, InstanceType, ThirdPartyLauncherManifest } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
+const step = ref(1)
+const error = shallowRef(undefined as any)
+const manifest = shallowRef(undefined as ThirdPartyLauncherManifest | undefined)
 const { isShown, hide: cancel } = useDialog('migrate-wizard', () => {
   step.value = 1
   error.value = undefined
   manifest.value = undefined
 })
 
-const step = ref(1)
-const error = shallowRef(undefined as any)
-const manifest = shallowRef(undefined as ThirdPartyLauncherManifest | undefined)
 const errorText = computed(() => t('errors.BadInstanceType', {}))
 const included = shallowRef([] as string[])
 

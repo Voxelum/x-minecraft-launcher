@@ -9,9 +9,6 @@ import Me from '@/views/Me.vue'
 import Mod from '@/views/Mod.vue'
 import ModActions from '@/views/ModActions.vue'
 import ModExtension from '@/views/ModExtension.vue'
-import Blueprint from '@/views/Blueprint.vue'
-import BlueprintActions from '@/views/BlueprintActions.vue'
-import BlueprintExtension from '@/views/BlueprintExtension.vue'
 import MultiplayerDesktop from '@/views/MultiplayerDesktop.vue'
 import ResourcePack from '@/views/ResourcePack.vue'
 import ResourcePackActions from '@/views/ResourcePackActions.vue'
@@ -24,10 +21,6 @@ import ShaderPack from '@/views/ShaderPack.vue'
 import ShaderPackActions from '@/views/ShaderPackActions.vue'
 import ShaderPackExtension from '@/views/ShaderPackExtension.vue'
 import Store from '@/views/Store.vue'
-import StoreEntry from '@/views/StoreEntry.vue'
-import StoreProjectCurseforge from '@/views/StoreProjectCurseforge.vue'
-import StoreProjectFeedTheBeast from '@/views/StoreProjectFeedTheBeast.vue'
-import StoreProjectModrinth from '@/views/StoreProjectModrinth.vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 export const router = createRouter({
@@ -79,10 +72,11 @@ export const router = createRouter({
         },
         {
           path: 'blueprints',
+          meta: { blueprintState: true },
           components: {
-            default: Blueprint,
-            extensions: BlueprintExtension,
-            actions: BlueprintActions,
+            default: () => import('@/views/Blueprint.vue'),
+            extensions: () => import('@/views/BlueprintExtension.vue'),
+            actions: () => import('@/views/BlueprintActions.vue'),
           },
         },
         {
@@ -105,21 +99,21 @@ export const router = createRouter({
       children: [
         {
           path: '',
-          component: StoreEntry,
+          component: () => import('@/views/StoreEntry.vue'),
         },
         {
           path: 'modrinth/:id',
-          component: StoreProjectModrinth,
+          component: () => import('@/views/StoreProjectModrinth.vue'),
           props: (route) => ({ id: route.params.id }),
         },
         {
           path: 'curseforge/:id',
-          component: StoreProjectCurseforge,
+          component: () => import('@/views/StoreProjectCurseforge.vue'),
           props: (route) => ({ id: Number(route.params.id) }),
         },
         {
           path: 'ftb/:id',
-          component: StoreProjectFeedTheBeast,
+          component: () => import('@/views/StoreProjectFeedTheBeast.vue'),
           props: (route) => ({ id: Number(route.params.id) }),
         },
       ],

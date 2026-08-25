@@ -24,29 +24,15 @@
     <AppContextMenu />
     <AppNotifier />
     <AppOmniDialog :agent-enabled="true" />
-    <AppFeedbackDialog />
-    <AppTaskDialog />
     <AppAddInstanceDialog />
-    <AppModpackUpdateDialog />
-    <AppShareInstanceDialog />
-    <AppInstanceDeleteDialog />
     <AppGameExitDialog />
-    <AppLaunchBlockedDialog />
     <AppUnauthenticatedWarningDialog />
     <AppMultiplayerLoginDialog />
     <AppImageDialog />
-    <AppJoinServerDialog />
     <AppSharedTooltip />
-    <AppInstallSkipDialog />
-    <AppMigrateWizardDialog />
-    <AppMinecraftFriendsDialog />
     <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
-    <AppModrinthLoginDialog />
-    <AppModrinthProjectCreateDialog />
-    <AppModrinthProjectBindDialog />
-    <AppModrinthVersionPublishDialog />
+    <component :is="lazyDialogComponent" v-if="lazyDialogComponent" />
     <AppSideBarGroupSettingDialog :default-color="defaultColor" />
-    <ModGroupSelectDialog />
     <AppGamepadPrompt />
   </v-app>
   <v-app v-else class="h-full max-h-screen overflow-hidden" :class="{ 'dark': isDark }">
@@ -55,7 +41,7 @@
       <Setup @ready="onReady" />
     </div>
     <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
-    <AppFeedbackDialog />
+    <component :is="lazyDialogComponent" v-if="lazyDialogComponent" />
     <AppGamepadPrompt />
   </v-app>
 </template>
@@ -68,6 +54,7 @@ import { useAuthProfileImportNotification } from '@/composables/authProfileImpor
 import { useAgentChatHotkey } from '@/composables/agentChat'
 import { kAgent, installAgentDevLauncher, useAgent } from '@/composables/agent'
 import { useCommandPaletteHotkey } from '@/composables/commandPalette'
+import { kDialogModel } from '@/composables/dialog'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { kInstance } from '@/composables/instance'
 import { kInstanceLaunchCoordinator, useInstanceLaunchCoordinator } from '@/composables/instanceLaunchCoordinator'
@@ -83,31 +70,17 @@ import { kSidebarSettings, useInjectSidebarSettings, useSidebarSettings } from '
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
-import AppModpackUpdateDialog from '@/views/AppModpackUpdateDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
 import AppOmniDialog from '@/views/AppOmniDialog.vue'
 import AppContextMenu from '@/views/AppContextMenu.vue'
-import AppFeedbackDialog from '@/views/AppFeedbackDialog.vue'
 import AppGameExitDialog from '@/views/AppGameExitDialog.vue'
-import AppInstallSkipDialog from '@/views/AppInstallSkipDialog.vue'
-import AppInstanceDeleteDialog from '@/views/AppInstanceDeleteDialog.vue'
-import AppLaunchBlockedDialog from '@/views/AppLaunchBlockedDialog.vue'
 import AppMultiplayerLoginDialog from '@/views/AppMultiplayerLoginDialog.vue'
 import AppUnauthenticatedWarningDialog from '@/views/AppUnauthenticatedWarningDialog.vue'
-import AppJoinServerDialog from '@/views/AppJoinServerDialog.vue'
-import AppMigrateWizardDialog from '@/views/AppMigrateWizardDialog.vue'
-import AppMinecraftFriendsDialog from '@/views/AppMinecraftFriendsDialog.vue'
 import UserProfileDialog from '@/components/UserProfileDialog.vue'
-import AppModrinthLoginDialog from '@/views/AppModrinthLoginDialog.vue'
-import AppModrinthProjectCreateDialog from '@/views/AppModrinthProjectCreateDialog.vue'
-import AppModrinthProjectBindDialog from '@/views/AppModrinthProjectBindDialog.vue'
-import AppModrinthVersionPublishDialog from '@/views/AppModrinthVersionPublishDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
-import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
 import AppSideBarClassic from '@/views/AppSideBarClassic.vue'
 import AppSideBarNotch from '@/views/AppSideBarNotch.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
-import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
 import { useLocalStorage, useMediaQuery, usePreferredColorScheme, usePreferredDark } from '@vueuse/core'
 import { kInstanceLauncher, useInstanceLauncher } from '@/composables/instanceLauncher'
@@ -115,13 +88,32 @@ import { kMinecraftFriends, useMinecraftFriendsImpl } from '@/composables/minecr
 import { useUserMenuControl } from '@/composables/userMenu'
 import { UserSkinRenderPaused } from '@/composables/userSkin'
 import AppSideBarGroupSettingDialog from '@/views/AppSideBarGroupSettingDialog.vue'
-import ModGroupSelectDialog from '@/views/ModGroupSelectDialog.vue'
 import AppGamepadPrompt from '@/views/AppGamepadPrompt.vue'
 import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 import { kMultiplayerEntry, useMultiplayerEntry } from '@/composables/multiplayerEntry'
 
+const lazyDialogComponents = {
+  'task': defineAsyncComponent(() => import('@/views/AppTaskDialog.vue')),
+  'feedback': defineAsyncComponent(() => import('@/views/AppFeedbackDialog.vue')),
+  'share-instance': defineAsyncComponent(() => import('@/views/AppShareInstanceDialog.vue')),
+  'delete-instance': defineAsyncComponent(() => import('@/views/AppInstanceDeleteDialog.vue')),
+  'launch-blocked': defineAsyncComponent(() => import('@/views/AppLaunchBlockedDialog.vue')),
+  'InstanceInstallSkipDialog': defineAsyncComponent(() => import('@/views/AppInstallSkipDialog.vue')),
+  'modpack-update-or-create': defineAsyncComponent(() => import('@/views/AppModpackUpdateDialog.vue')),
+  'instance-server-edit': defineAsyncComponent(() => import('@/views/AppJoinServerDialog.vue')),
+  'migrate-wizard': defineAsyncComponent(() => import('@/views/AppMigrateWizardDialog.vue')),
+  'minecraft-friends': defineAsyncComponent(() => import('@/views/AppMinecraftFriendsDialog.vue')),
+  'mod-group-select': defineAsyncComponent(() => import('@/views/ModGroupSelectDialog.vue')),
+  'modrinth-login': defineAsyncComponent(() => import('@/views/AppModrinthLoginDialog.vue')),
+  'modrinth-project-create': defineAsyncComponent(() => import('@/views/AppModrinthProjectCreateDialog.vue')),
+  'modrinth-project-bind': defineAsyncComponent(() => import('@/views/AppModrinthProjectBindDialog.vue')),
+  'modrinth-version-publish': defineAsyncComponent(() => import('@/views/AppModrinthVersionPublishDialog.vue')),
+}
+
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
+const dialogModel = injection(kDialogModel)
+const lazyDialogComponent = computed(() => lazyDialogComponents[dialogModel.current.value.dialog as keyof typeof lazyDialogComponents])
 const developerMode = computed(() => state.value?.developerMode ?? false)
 
 

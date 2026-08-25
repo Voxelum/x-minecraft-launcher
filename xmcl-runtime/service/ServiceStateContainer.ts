@@ -7,6 +7,31 @@ import { MutableStateImpl, kStateKey } from './stateUtils'
 
 export type ServiceStateFactory<T> = (context: ServiceStateContext) => Promise<[T, () => void] | [T, () => void, () => Promise<void>]>
 const kStateContainer = Symbol('StateContainer')
+const trackedClients = new WeakMap<Client, { containers: Set<ServiceStateContainer>; onDestroyed: () => void }>()
+
+function trackClient(client: Client, container: ServiceStateContainer) {
+  let tracked = trackedClients.get(client)
+  if (!tracked) {
+    const containers = new Set<ServiceStateContainer>()
+    const onDestroyed = () => {
+      for (const trackedContainer of containers) trackedContainer.untrack(client)
+    }
+    tracked = { containers, onDestroyed }
+    trackedClients.set(client, tracked)
+    client.on('destroyed', onDestroyed)
+  }
+  tracked.containers.add(container)
+}
+
+function untrackClient(client: Client, container: ServiceStateContainer) {
+  const tracked = trackedClients.get(client)
+  if (!tracked) return
+  tracked.containers.delete(container)
+  if (tracked.containers.size === 0) {
+    client.removeListener('destroyed', tracked.onDestroyed)
+    trackedClients.delete(client)
+  }
+}
 
 /**
  * The util class to hold each service state snapshot
@@ -25,6 +50,7 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
   #revalidator?: () => Promise<void>
   #emitter = new EventEmitter()
   #static = false
+  #destroyed = false
 
   constructor(
     readonly id: string,
@@ -134,9 +160,7 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
     }
     this.#clients.push([client, handler])
     this.#emitter.on('*', handler)
-    client.on('destroyed', () => {
-      this.untrack(client)
-    })
+    trackClient(client, this)
   }
 
   untrack(client: Client) {
@@ -146,6 +170,7 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
     if (deleted[0]) {
       const [_, handler] = deleted[0]
       this.#emitter.off('*', handler as any)
+      untrackClient(client, this)
       if (this.#clients.length === 0 && !this.#static) {
         this.destroy()
         return true
@@ -155,9 +180,23 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
   }
 
   destroy() {
+    if (this.#destroyed) return
+    this.#destroyed = true
+    for (const [client, handler] of this.#clients) {
+      this.#emitter.off('*', handler as any)
+      untrackClient(client, this)
+    }
+    this.#clients = []
     this.#emitter.removeAllListeners()
-    this.#disposer()
-    this.unregister(this.id)
+    const disposer = this.#disposer
+    this.#disposer = () => { }
+    this.#state = undefined
+    this.#revalidator = undefined
+    try {
+      disposer()
+    } finally {
+      this.unregister(this.id)
+    }
   }
 
   async commit(type: string, payload: any) {

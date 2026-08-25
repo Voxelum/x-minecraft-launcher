@@ -59,13 +59,15 @@ function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<Sh
 
   const debounced = useDebounceFn(checkAndUpdate, 1000)
 
-  watch(state, (s) => {
+  watch(state, (s, _, onCleanup) => {
     if (!s) return
     attempted = new Set()
     markAllAttempted()
-    s.subscribe('filesUpdates', () => {
+    const onFilesUpdated = () => {
       debounced()
-    })
+    }
+    s.subscribe('filesUpdates', onFilesUpdated)
+    onCleanup(() => s.unsubscribe('filesUpdates', onFilesUpdated))
     if (s.files.length > 0) {
       checkAndUpdate()
     }

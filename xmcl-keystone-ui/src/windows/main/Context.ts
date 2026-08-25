@@ -132,7 +132,10 @@ export default defineComponent({
     const serverInfo = useInstanceServerInfo(instance.path)
     const resourcePacks = useInstanceResourcePacks(instance.path, options.gameOptions)
     const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
-    const blueprints = useInstanceBlueprints(instance.path)
+    const blueprints = useInstanceBlueprints(
+      instance.path,
+      computed(() => router.currentRoute.value.meta.blueprintState === true),
+    )
     const shaderPacks = useInstanceShaderPacks(
       instance.path,
       instance.runtime,
