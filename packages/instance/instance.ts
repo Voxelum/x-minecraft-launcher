@@ -76,7 +76,12 @@ export type FTBUpstream = z.infer<typeof FTBUpstreamSchema>
  */
 export const PeerUpstreamSchema = z.object({
   type: z.literal('peer'),
+  /** Legacy peer/session identifier retained for existing instance data. */
   id: z.string(),
+  /** Stable XMCL account that shared this instance through a room. */
+  accountId: z.string().optional(),
+  /** Content hint only; callers must verify the current instance manifest. */
+  fingerprint: z.string().optional(),
 })
 
 export type PeerUpstream = z.infer<typeof PeerUpstreamSchema>
@@ -349,7 +354,10 @@ export function isUpstreamSameOrigin(a: InstanceUpstream, b: InstanceUpstream): 
   if (a.type === 'curseforge-modpack') return a.modId === (b as any).modId
   if (a.type === 'modrinth-modpack') return a.projectId === (b as any).projectId
   if (a.type === 'ftb-modpack') return a.id === (b as any).id
-  if (a.type === 'peer') return a.id === (b as any).id
+  if (a.type === 'peer') {
+    const peer = b as PeerUpstream
+    return (a.accountId || a.id) === (peer.accountId || peer.id)
+  }
   if (a.type === 'server') {
     const bs = b as ServerUpstream
     return a.host === bs.host && (a.port ?? 25565) === (bs.port ?? 25565)

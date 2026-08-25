@@ -1,8 +1,9 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
-import { generateInstanceManifest, getInstanceFiles, type InstanceFile } from '@xmcl/instance'
+import { generateInstanceManifest, getInstanceFiles, getInstanceManifestFingerprintSource, type InstanceFile } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { InstanceIOException, InstanceManifestServiceKey, type GetManifestOptions, type InstanceManifestService as IInstanceManifestService, type InstanceManifest } from '@xmcl/runtime-api'
 import { join } from 'path'
+import { createHash } from 'crypto'
 import { Inject, LauncherAppKey } from '~/app'
 import { InstanceService } from '~/instance'
 import { kResourceManager, kResourceWorker } from '~/resource'
@@ -69,6 +70,10 @@ export class InstanceManifestService extends AbstractService implements IInstanc
       await this.app.registry.get(CurseforgeV1Client),
       await this.app.registry.get(ModrinthV2Client),
     )
+
+    result.fingerprint = createHash('sha256')
+      .update(getInstanceManifestFingerprintSource(result))
+      .digest('hex')
 
     return result
   }

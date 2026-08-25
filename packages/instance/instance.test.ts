@@ -96,19 +96,27 @@ describe('Instance Templates', () => {
     it('should handle peer upstream comparison', () => {
       const upstream1: InstanceUpstream = {
         type: 'peer',
-        id: 'peer-123',
+        id: 'session-123',
+        accountId: 'account-id',
+        fingerprint: 'manifest-fingerprint',
       }
       const upstream2: InstanceUpstream = {
         type: 'peer',
-        id: 'peer-123',
+        id: 'session-456',
+        accountId: 'account-id',
       }
       const upstream3: InstanceUpstream = {
         type: 'peer',
-        id: 'peer-456',
+        id: 'session-123',
+        accountId: 'other-account-id',
       }
 
       expect(isUpstreamSameOrigin(upstream1, upstream2)).toBe(true)
       expect(isUpstreamSameOrigin(upstream1, upstream3)).toBe(false)
+      expect(isUpstreamSameOrigin(
+        { type: 'peer', id: 'legacy-peer' },
+        { type: 'peer', id: 'legacy-peer' },
+      )).toBe(true)
     })
 
     it('should match server upstream by host and port (default 25565)', () => {
