@@ -12,6 +12,8 @@ export function useInstanceLaunchCoordinator(
 ) {
   const operations = new Map<string, Promise<unknown>>()
   const processInstances = new Map<number, string>()
+  const exitedBeforeInitialization = new Set<number>()
+  let initialized = false
   const launchingInstances = shallowRef<Record<string, boolean>>({})
   const runningInstances = shallowRef<Record<string, number>>({})
 
@@ -47,18 +49,24 @@ export function useInstanceLaunchCoordinator(
   }
 
   const onMinecraftStart = ({ pid, gameDirectory }: { pid: number; gameDirectory: string }) => {
+    exitedBeforeInitialization.delete(pid)
     markRunning(gameDirectory, pid)
   }
   const onMinecraftExit = ({ pid }: { pid: number }) => {
+    if (!initialized && !processInstances.has(pid)) exitedBeforeInitialization.add(pid)
     markStopped(pid)
   }
   launchService.on('minecraft-start', onMinecraftStart)
   launchService.on('minecraft-exit', onMinecraftExit)
   void launchService.getGameProcesses().then((processes) => {
     for (const process of processes) {
+      if (exitedBeforeInitialization.has(process.pid)) continue
       markRunning(process.options.gameDirectory, process.pid)
     }
-  }).catch(console.error)
+  }).catch(console.error).finally(() => {
+    initialized = true
+    exitedBeforeInitialization.clear()
+  })
 
   onScopeDispose(() => {
     launchService.removeListener('minecraft-start', onMinecraftStart)

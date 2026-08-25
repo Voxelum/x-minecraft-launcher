@@ -21,6 +21,12 @@ export function getDefaultInstanceSharingFiles(files: InstanceFile[]) {
     .map((file) => file.path)
 }
 
+export function resolveInstanceSharingPath(runningInstancePaths: string[], selectedInstancePath: string) {
+  return runningInstancePaths.includes(selectedInstancePath)
+    ? selectedInstancePath
+    : runningInstancePaths[0] ?? ''
+}
+
 export const useInstanceSharingPreferences = createGlobalState(() => {
   const filesByInstance = useLocalStorage<Record<string, string[]>>(
     'peerInstanceSharingFiles',

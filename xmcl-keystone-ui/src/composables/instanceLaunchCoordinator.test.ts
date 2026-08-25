@@ -4,10 +4,10 @@ import { describe, expect, it, vi } from 'vitest'
 import type { RendererCommandHost } from './commandHost'
 import { useInstanceLaunchCoordinator } from './instanceLaunchCoordinator'
 
-function createHarness() {
+function createHarness(initialProcesses: Promise<any[]> = Promise.resolve([])) {
   const listeners = new Map<string, Set<(event: any) => void>>()
   const launchService = {
-    getGameProcesses: vi.fn().mockResolvedValue([]),
+    getGameProcesses: vi.fn().mockReturnValue(initialProcesses),
     on: vi.fn((event: string, listener: (event: any) => void) => {
       const eventListeners = listeners.get(event) ?? new Set()
       eventListeners.add(listener)
@@ -60,6 +60,30 @@ describe('instance launch coordinator', () => {
     expect(coordinator.isRunning('instance-a')).toBe(true)
 
     emit('minecraft-exit', { pid: 2 })
+    expect(coordinator.isRunning('instance-a')).toBe(false)
+    scope.stop()
+  })
+
+  it('marks the instance running as soon as the launch command returns a pid', async () => {
+    const { coordinator, scope } = createHarness()
+
+    await coordinator.launch('instance-a', async () => 42)
+
+    expect(coordinator.isLaunching('instance-a')).toBe(false)
+    expect(coordinator.isRunning('instance-a')).toBe(true)
+    scope.stop()
+  })
+
+  it('does not restore a process that exits before the initial snapshot resolves', async () => {
+    let resolveProcesses!: (processes: any[]) => void
+    const initialProcesses = new Promise<any[]>((resolve) => { resolveProcesses = resolve })
+    const { coordinator, emit, scope } = createHarness(initialProcesses)
+
+    emit('minecraft-exit', { pid: 42 })
+    resolveProcesses([{ pid: 42, options: { gameDirectory: 'instance-a' } }])
+    await initialProcesses
+    await Promise.resolve()
+
     expect(coordinator.isRunning('instance-a')).toBe(false)
     scope.stop()
   })

@@ -8,6 +8,14 @@ import { useGlobalSettings, useSettingsState } from './setting'
 
 export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>> = Symbol('InstanceLaunch')
 
+export async function resolveLaunchId(
+  pid: number,
+  eventLaunchId: string | undefined,
+  getGameProcess: (pid: number) => Promise<{ launchId: string } | undefined>,
+) {
+  return eventLaunchId || (await getGameProcess(pid))?.launchId
+}
+
 export function useInstanceLaunch(
   instance: Ref<Instance>,
   version: Ref<string | undefined>,
@@ -18,7 +26,7 @@ export function useInstanceLaunch(
   mods: Ref<ModFile[]>,
 ) {
   const { refreshUser } = useService(UserServiceKey)
-  const { launch, kill, on, removeListener, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
+  const { launch, kill, on, removeListener, getGameProcess, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
   const { launch: launchBedrock } = useService(BedrockServiceKey)
   const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalPreExecuteCommand, globalPrependCommand, globalMcOptions, globalVmOptions, globalFastLaunch, globalEnv, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib, globalResolution } = useGlobalSettings(globalState)
   const { getOrInstallAuthlibInjector } = useService(AuthlibInjectorServiceKey)
@@ -228,6 +236,7 @@ export function useInstanceLaunch(
       on('minecraft-start', captureLaunch)
       const pid = await launch(options).finally(() => removeListener('minecraft-start', captureLaunch))
       if (pid) {
+        launchId = await resolveLaunchId(pid, launchId, getGameProcess)
         if (!launchId) throw new Error('Launch started but no launch ID was reported')
         mutate()
         if (state.aborted) {

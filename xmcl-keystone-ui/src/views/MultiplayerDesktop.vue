@@ -46,6 +46,15 @@
         <div class="rail-network-row mt-1 flex items-center gap-2 font-weight-medium">
           <span>{{ natIcons[natType] }}</span>
           <span>{{ tNatType[natType] }}</span>
+          <v-btn
+            class="ml-auto"
+            :aria-label="t('shared.refresh')"
+            icon="refresh"
+            size="x-small"
+            variant="text"
+            :loading="refreshingNatType"
+            @click="refreshNatType"
+          />
         </div>
         <button
           v-if="device"
@@ -200,14 +209,6 @@
             </div>
             <div class="flex items-center gap-2">
               <v-chip label size="small">{{ peerItems.length }}</v-chip>
-              <v-btn
-                :aria-label="t('shared.refresh')"
-                icon="refresh"
-                size="small"
-                variant="text"
-                :loading="refreshingNatType"
-                @click="refreshNatType"
-              />
             </div>
           </div>
 
@@ -279,7 +280,7 @@
                 prepend-icon="login"
                 size="small"
                 variant="tonal"
-                :disabled="!peer.connection?.sharing"
+                :disabled="!peer.connection?.sharing || isJoinedGameRunning(peer.connection?.id)"
                 :loading="joiningSession === peer.connection?.id"
                 @click="peer.connection && joinPeerGame(peer.connection, peer.lanServer, peer.member?.accountId)"
               >
@@ -474,7 +475,7 @@ const { show: showReceive } = useDialog('peer-receive')
 const { show: showShareInstance } = useDialog('share-instance')
 const { multiplayerTransport } = useSettings()
 const { instances } = injection(kInstances)
-const { launch } = injection(kInstanceLaunchCoordinator)
+const { isRunning, launch } = injection(kInstanceLaunchCoordinator)
 const commandHost = useRendererCommandHost()
 const { createInstance, editInstance } = useService(InstanceServiceKey)
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
@@ -521,6 +522,13 @@ const forwardedPort = ref(0)
 const preferredTurnserver = useLocalStorage('peerPreferredTurn', '', { writeDefaults: false })
 const joiningGroup = ref(false)
 const joiningSession = ref('')
+const joinedInstancePaths = reactive<Record<string, string>>({})
+const isJoinedGameRunning = (connectionId?: string) => !!connectionId &&
+  !!joinedInstancePaths[connectionId] &&
+  (
+    isRunning(joinedInstancePaths[connectionId]) ||
+    runningClientInstances.value.includes(joinedInstancePaths[connectionId])
+  )
 const joinError = ref('')
 
 const peerItems = computed(() => {
@@ -699,11 +707,14 @@ async function joinPeerGame(
         upstream,
       })
     }
-    await launch(instancePath, () => commandHost.dispatch('instance.launch', {
+    joinedInstancePaths[connection.id] = instancePath
+    const pid = await launch(instancePath, () => commandHost.dispatch('instance.launch', {
       instance: instancePath,
       server: { host: '127.0.0.1', port: server.port },
     }))
+    if (typeof pid !== 'number') delete joinedInstancePaths[connection.id]
   } catch (error) {
+    delete joinedInstancePaths[connection.id]
     joinError.value = getErrorMessage(error)
   } finally {
     joiningSession.value = ''

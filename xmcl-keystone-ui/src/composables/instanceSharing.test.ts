@@ -1,6 +1,6 @@
 import type { InstanceManifest } from '@xmcl/instance'
 import { describe, expect, it } from 'vitest'
-import { createScopedInstanceManifest, getDefaultInstanceSharingFiles, getInstanceSharingRevisionSource } from './instanceSharing'
+import { createScopedInstanceManifest, getDefaultInstanceSharingFiles, getInstanceSharingRevisionSource, resolveInstanceSharingPath } from './instanceSharing'
 
 const files = [
   { path: 'mods/enabled.jar', hashes: { sha1: 'enabled' } },
@@ -13,6 +13,12 @@ const files = [
 ]
 
 describe('instance sharing scope', () => {
+  it('prefers the selected running instance and otherwise uses the first running instance', () => {
+    expect(resolveInstanceSharingPath(['instance-a', 'instance-b'], 'instance-b')).toBe('instance-b')
+    expect(resolveInstanceSharingPath(['instance-a', 'instance-b'], 'instance-c')).toBe('instance-a')
+    expect(resolveInstanceSharingPath([], 'instance-a')).toBe('')
+  })
+
   it('defaults to common modpack files and excludes saves and disabled files', () => {
     expect(getDefaultInstanceSharingFiles(files)).toEqual([
       'mods/enabled.jar',

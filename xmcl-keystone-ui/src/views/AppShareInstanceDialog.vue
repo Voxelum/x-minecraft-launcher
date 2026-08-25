@@ -147,7 +147,7 @@
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
-import { createScopedInstanceManifest, useInstanceSharingPreferences } from '@/composables/instanceSharing'
+import { createScopedInstanceManifest, resolveInstanceSharingPath, useInstanceSharingPreferences } from '@/composables/instanceSharing'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstances } from '@/composables/instances'
 import { kPeerState } from '@/composables/peers'
@@ -272,18 +272,35 @@ watch(sharingPath, (instancePath) => {
   if (isShown.value && sharing.value && instancePath) void loadSharingManifest(instancePath)
 })
 
-watch(isShown, async (shown) => {
-  if (shown) {
-    windowController.focus()
-    if (parameter.value) {
-      manifest.value = parameter.value as any
-      selected.value = manifest.value?.files.map((file) => file.path) ?? []
-    } else {
-      const running = runningClientInstances.value
-      const target = running.includes(path.value) ? path.value : running[0] ?? ''
-      if (sharingPath.value === target && target) void loadSharingManifest(target)
-      else sharingPath.value = target
-    }
+watch(runningClientInstances, (running) => {
+  if (!isShown.value || !sharing.value) return
+  const target = resolveInstanceSharingPath(running, path.value)
+  if (sharingPath.value !== target) {
+    sharingPath.value = target
+  } else if (target && !manifest.value && !loading.value) {
+    void loadSharingManifest(target)
   }
 })
+
+watch(isShown, async (shown) => {
+  if (!shown) {
+    loadRevision++
+    loading.value = false
+    manifest.value = undefined
+    selected.value = []
+    return
+  }
+  windowController.focus()
+  if (parameter.value) {
+    loadRevision++
+    loading.value = false
+    manifest.value = parameter.value as any
+    selected.value = manifest.value?.files.map((file) => file.path) ?? []
+  } else {
+    const running = runningClientInstances.value
+    const target = resolveInstanceSharingPath(running, path.value)
+    if (sharingPath.value === target && target) void loadSharingManifest(target)
+    else sharingPath.value = target
+  }
+}, { immediate: true })
 </script>
