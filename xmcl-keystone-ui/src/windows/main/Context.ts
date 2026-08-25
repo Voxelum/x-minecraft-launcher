@@ -112,6 +112,7 @@ export default defineComponent({
         togetherMultiplayer.multiplayer,
         togetherMultiplayer.state,
         togetherMultiplayer.refreshNat,
+        instances.selectedInstance,
       ))
     }
     const instanceVersion = useInstanceVersion(

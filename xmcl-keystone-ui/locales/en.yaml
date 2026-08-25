@@ -1376,6 +1376,7 @@ modrinthCard:
   currentVersion: Current Version
 multiplayer:
   addFunds: Add funds
+  autoShareAmbiguous: Multiple games are running. Select the instance hosting the LAN world so XMCL can share it.
   availableBalance: Available balance
   balanceHint: Available for XMCL Together services
   billing: Billing
@@ -1433,6 +1434,7 @@ multiplayer:
     style="text-font: bold">Local token</span>.<br> You do not need to wait
     until the ICE status is complete. If the token below remains unchanged, you
     can copy it and send it to your peer."
+  gameAvailable: LAN game available
   groupId: Group Id
   master: Master
   masterHostsGameHint: The room master is the connection hub and should host the Minecraft LAN world. Transfer master before changing hosts.
@@ -1443,6 +1445,7 @@ multiplayer:
   joinConnection: >-
     If your peer has already initiated a connection, you need to Join
     Connection.
+  joinGame: Join game
   joinManual: Join
   joinOrCreateGroup: Join/Create Group
   joinOrCreateGroupHint: Get group id from your friends or create a group
@@ -1493,6 +1496,9 @@ multiplayer:
   trialDescription: One 7-day trial with 1 GB of relay traffic.
   trialTitle: Connectivity trial
   tryTogether: Try Together
+  updateSharedInstanceConfirm: Update and launch
+  updateSharedInstanceDescription: The shared mods differ from {instance}. Update this instance to match the host before launching? Existing changed files will be backed up.
+  updateSharedInstanceTitle: Update shared instance?
   month: month
   orderStatus: 'Waffo order: {status}'
   planDescription: 20 GB of managed relay traffic each month, plus AI troubleshooting for your modpack.

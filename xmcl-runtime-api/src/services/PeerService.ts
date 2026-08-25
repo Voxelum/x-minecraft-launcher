@@ -302,6 +302,7 @@ export interface MultiplayerLogEvent {
 interface PeerServiceEvents {
   share: { id: string; manifest?: InstanceManifest }
   'connection-unexpected-closed': { id: string }
+  'local-lan': import('@xmcl/client').LanServerInfo
   lan: import('@xmcl/client').LanServerInfo & { session: string }
 }
 

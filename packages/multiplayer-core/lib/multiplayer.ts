@@ -68,6 +68,7 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
   let exposedPortsListener: ((ports: [number, number][]) => void) | undefined
   const lanDiscoveryListener = (server: LocalLanServer) => {
     if (disposed || Array.from(peers.values()).some((peer) => peer.hasLocalProxy(server.port))) return
+    events.emit('local-lan', server)
     for (const peer of peers.values()) {
       if (peer.isMetadataOpen) peer.sendLan(server.port, server.motd)
     }

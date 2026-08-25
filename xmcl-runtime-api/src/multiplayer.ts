@@ -84,6 +84,7 @@ export interface Peer {
 interface MultiplayerEvents {
   share: { id: string; manifest?: InstanceManifest }
   'connection-unexpected-closed': { id: string }
+  'local-lan': LanServerInfo
   lan: LanServerInfo & { session: string }
 }
 

@@ -1167,6 +1167,7 @@ modrinthCard:
   currentVersion: 当前版本
 multiplayer:
   addFunds: 充值
+  autoShareAmbiguous: 检测到多个正在运行的游戏。请选择开放局域网世界的实例，XMCL 将自动分享它。
   availableBalance: 可用余额
   balanceHint: 可用于 XMCL Together 服务
   billing: 账单
@@ -1182,7 +1183,7 @@ multiplayer:
   connectionTogetherWarning: 有房间成员长时间无法连接到您。可以尝试 XMCL Together，改善房间内所有成员的联机体验；一个房间只需房间主控使用 Together。
   connectedToMaster: 已连接到房间主控
   natTogetherWarning: 您的路由器可能难以连接房间主控。如果确实无法连接，可以尝试 XMCL Together，改善您和朋友之间的联机体验。一个房间只需房间主控购买 Together。
-  connections: 用户连接管理
+  connections: 通过 P2P 联机
   copied: 已复制！
   copy: 复制
   copyGroupToFriendHint: 让您的小伙伴使用此 ID 加入联机群组
@@ -1202,6 +1203,7 @@ multiplayer:
   exposedPorts: 转发端口
   gatheringIce: >
     请将<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>发送给您的联机伙伴，您的联机伙伴在 <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> 加入连接 </span> 中输入这段文字。 <br> 期间 ICE 服务器可能需要时间收集足够信息来创建<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>。 <br> <span class="hint-text"> 您不需要等 ICE 服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，您可以提前将令牌复制给对方。 </span>
+  gameAvailable: 房主已开放局域网游戏
   groupId: 小组 ID
   master: 主控
   masterHostsGameHint: 房间主控是联机连接中心，应由主控开启 Minecraft 局域网世界。更换游戏宿主前请先转移主控。
@@ -1210,6 +1212,7 @@ multiplayer:
   illegalTokenDescription: 非法的令牌，请确认对方给您的令牌是完整且正确的。
   initiateConnection: 发起连接
   joinConnection: 如果您的伙伴已经创建了连接，您需要选择加入链接。
+  joinGame: 加入游戏
   joinManual: 加入连接
   joinOrCreateGroup: 加入/创建群组
   joinOrCreateGroupHint: 从您的小伙伴那获得群组 ID 或自己创建一个群组
@@ -1260,6 +1263,9 @@ multiplayer:
   sharingNotificationTitle: 同伴正在共享游戏配置
   start: 开始
   startNewP2PConnection: 点击开始按钮来新建一个新的点对点连接
+  updateSharedInstanceConfirm: 更新并启动
+  updateSharedInstanceDescription: 房主分享的模组与 {instance} 不一致。是否先将该实例更新为与房主一致再启动？被替换的文件会自动备份。
+  updateSharedInstanceTitle: 更新共享实例？
   waitingForMaster: 正在等待房间主控重新连接
 myStuff: 个人中心
 migrateMinecraft:

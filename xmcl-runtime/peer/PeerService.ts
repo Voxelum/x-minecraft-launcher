@@ -114,7 +114,10 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       setDownloadPort: (port) => { this.downloadPort = port },
     })
     host.on('share', (payload) => this.emit('share', payload))
-    host.on('connection-unexpected-closed', (payload) => this.emit('connection-unexpected-closed', payload))
+    host.on('connection-unexpected-closed', (payload) =>
+      this.emit('connection-unexpected-closed', payload),
+    )
+    host.on('local-lan', (payload) => this.emit('local-lan', payload))
     host.on('lan', (payload) => this.emit('lan', payload))
     return host
   }

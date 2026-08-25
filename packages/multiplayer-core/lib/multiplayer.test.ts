@@ -327,8 +327,11 @@ describe('Together multiplayer LAN discovery', () => {
     await multiplayer.start('local')
     await multiplayer.initiate()
     const channel = FakePeerConnection.instance.channel
+    const onLocalLan = vi.fn()
+    multiplayer.on('local-lan', onLocalLan)
 
     onLanDiscover?.({ motd: 'Local World', port: 25_565 })
+    expect(onLocalLan).toHaveBeenCalledWith({ motd: 'Local World', port: 25_565 })
     expect(channel.send).toHaveBeenCalledWith(
       JSON.stringify({ type: 'lan', payload: { port: 25_565, motd: 'Local World' } }),
     )
@@ -344,7 +347,9 @@ describe('Together multiplayer LAN discovery', () => {
     })
 
     channel.send.mockClear()
+    onLocalLan.mockClear()
     onLanDiscover?.({ motd: 'Remote World', port: 30_000 })
+    expect(onLocalLan).not.toHaveBeenCalled()
     expect(channel.send).not.toHaveBeenCalled()
   })
 

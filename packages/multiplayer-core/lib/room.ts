@@ -363,6 +363,7 @@ export class TogetherRoom {
       return
     }
     if (message.type === 'error') {
+      if (message.code === 'invalid_receiver') return
       const error = new Error(`multiplayer_room_${message.code}`)
       this.rejectTransfer(error)
       this.callbacks.onError(error)

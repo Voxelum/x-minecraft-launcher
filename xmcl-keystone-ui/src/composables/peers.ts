@@ -1,6 +1,7 @@
 import { useIntervalFn } from '@vueuse/core'
-import { GameProfileAndTexture, Multiplayer, PeerServiceKey, PeerState, SharedState } from '@xmcl/runtime-api'
+import { GameProfileAndTexture, InstanceManifestServiceKey, LaunchServiceKey, Multiplayer, PeerServiceKey, PeerState, SharedState } from '@xmcl/runtime-api'
 import { InjectionKey, onScopeDispose, Ref } from 'vue'
+import { resolveLanSharingInstance } from '@/util/multiplayerTogether'
 import { useDialog } from './dialog'
 import { AddInstanceDialogKey } from './instanceTemplates'
 import { useNotifier } from './notifier'
@@ -85,8 +86,13 @@ export function usePeerState(
   multiplayer: Multiplayer,
   sharedState?: PeerStateRef,
   refreshNat: () => Promise<void> = async () => {},
+  selectedInstancePath: Ref<string> = ref(''),
 ) {
-  const { exposePort, unexposePort } = useService(PeerServiceKey)
+  const { exposePort, unexposePort, shareInstance } = useService(PeerServiceKey)
+  const { getGameProcesses } = useService(LaunchServiceKey)
+  const { getInstanceManifest } = useService(InstanceManifestServiceKey)
+  const { notify } = useNotifier()
+  const { t } = useI18n()
   const {
     initiate,
     setRemoteDescription,
@@ -148,29 +154,75 @@ export function usePeerState(
   const error = computed(() => state.value?.groupError)
   const turnservers = computed(() => state.value?.turnservers || {})
 
-  let buffer = [] as Array<{ port: number; session: string }>
-  const otherExposedPorts = ref([] as Array<{ port: number; user: string }>)
-  const onLan = (msg: { port: number; session: string }) => {
-    buffer.push(msg)
+  let autoSharing: Promise<void> | undefined
+  let autoSharedInstancePath = ''
+  let warnedRunningInstances = ''
+  const autoShareLanInstance = async () => {
+    const processes = await getGameProcesses()
+    const instancePath = resolveLanSharingInstance(processes, selectedInstancePath.value)
+    if (!instancePath) {
+      const runningInstances = Array.from(new Set(
+        processes
+          .filter((process) => process.side === 'client')
+          .map((process) => process.options.gameDirectory),
+      )).sort()
+      const signature = runningInstances.join('\0')
+      if (runningInstances.length > 1 && signature !== warnedRunningInstances) {
+        warnedRunningInstances = signature
+        notify({
+          level: 'warning',
+          title: t('multiplayer.share'),
+          body: t('multiplayer.autoShareAmbiguous'),
+        })
+      } else if (runningInstances.length <= 1) {
+        warnedRunningInstances = ''
+      }
+      return
+    }
+    if (instancePath === autoSharedInstancePath) return
+    const manifest = await getInstanceManifest({ path: instancePath })
+    if (groupRole.value !== 'master') return
+    const currentProcesses = await getGameProcesses()
+    if (!currentProcesses.some((process) => process.side === 'client' && process.options.gameDirectory === instancePath)) return
+    await shareInstance({ manifest, instancePath })
+    autoSharedInstancePath = instancePath
+    warnedRunningInstances = ''
+  }
+  const onLocalLan = () => {
+    if (groupRole.value !== 'master' || autoSharing) return
+    autoSharing = autoShareLanInstance()
+      .catch((error) => console.warn('Failed to automatically share the LAN instance', error))
+      .finally(() => { autoSharing = undefined })
+  }
+  multiplayer.on('local-lan', onLocalLan)
+  onScopeDispose(() => multiplayer.removeListener('local-lan', onLocalLan))
+
+  const otherExposedPorts = ref([] as Array<{
+    port: number
+    user: string
+    session: string
+    motd: string
+    lastSeen: number
+  }>)
+  const onLan = (msg: { port: number; session: string; motd: string }) => {
+    const server = {
+      ...msg,
+      user:
+        connections.value.find((connection) => connection.id === msg.session)?.userInfo.name ||
+        msg.session.substring(0, 6),
+      lastSeen: Date.now(),
+    }
+    otherExposedPorts.value = [
+      ...otherExposedPorts.value.filter(({ session }) => session !== msg.session),
+      server,
+    ]
   }
   multiplayer.on('lan', onLan)
   onScopeDispose(() => multiplayer.removeListener('lan', onLan))
 
   useIntervalFn(() => {
-    if (buffer.length > 0) {
-      const b = buffer
-      otherExposedPorts.value = b.map(({ port, session }) => {
-        return {
-          port,
-          user:
-            connections.value.find((c) => c.id === session)?.userInfo.name ||
-            session.substring(0, 6),
-        }
-      })
-      buffer = []
-    } else if (otherExposedPorts.value.length > 0) {
-      otherExposedPorts.value = []
-    }
+    const active = otherExposedPorts.value.filter(({ lastSeen }) => Date.now() - lastSeen < 10_000)
+    if (active.length !== otherExposedPorts.value.length) otherExposedPorts.value = active
   }, 1000)
 
   function _setRemoteDescription(type: 'offer' | 'answer', description: string) {

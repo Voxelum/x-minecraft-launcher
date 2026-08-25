@@ -1,10 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import {
+  findInstanceManifestMatch,
+  getInstanceMatchCandidates,
+  getPeerInstanceUpdateCandidate,
   getTogetherRecommendationAction,
+  getVisibleRoomPeerMembers,
   hasLongConnectionProblem,
+  isInstanceManifestMatched,
   isProblematicNatType,
+  isRuntimeMatched,
   isWaffoCheckoutUrl,
   mergeRoomPeerConnections,
+  resolveLanSharingInstance,
   shouldRecommendTogether,
   updateConnectionProblemSince,
 } from './multiplayerTogether'
@@ -40,6 +47,144 @@ describe('Together peer list', () => {
       key: 'manual-peer',
       connection: manualConnection,
     })
+  })
+
+  it('shows members connected to the master topology only', () => {
+    const self = member('self', 'connected', 1_000)
+    const master = member('master', 'connected', 2_000)
+    const other = member('other', 'connected', 3_000)
+
+    expect(getVisibleRoomPeerMembers([self, master, other], 'self', 'master')).toEqual([master])
+    expect(getVisibleRoomPeerMembers([self, master, other], 'master', 'master')).toEqual([self, other])
+  })
+
+  it('matches all runtime layers before reusing an instance', () => {
+    expect(isRuntimeMatched(
+      { minecraft: '1.21.1', fabricLoader: '0.16.10' },
+      { minecraft: '1.21.1', fabricLoader: '0.16.10' },
+    )).toBe(true)
+    expect(isRuntimeMatched(
+      { minecraft: '1.21.1', fabricLoader: '0.16.9' },
+      { minecraft: '1.21.1', fabricLoader: '0.16.10' },
+    )).toBe(false)
+  })
+
+  it('matches instance runtime and mods with or without a transmitted fingerprint', () => {
+    const manifest = (sha1: string, fingerprint?: string) => ({
+      runtime: { minecraft: '1.21.1', fabricLoader: '0.16.10' },
+      files: [{ path: 'mods/example.jar', hashes: { sha1 } }],
+      fingerprint,
+    } as any)
+
+    expect(isInstanceManifestMatched(manifest('same'), manifest('same'))).toBe(true)
+    expect(isInstanceManifestMatched(manifest('same', 'fingerprint'), manifest('same', 'fingerprint'))).toBe(true)
+    expect(isInstanceManifestMatched(manifest('same', 'local'), manifest('same', 'remote'))).toBe(false)
+    expect(isInstanceManifestMatched(manifest('local'), manifest('remote'))).toBe(false)
+    expect(isInstanceManifestMatched(
+      manifest('same'),
+      { ...manifest('same'), runtime: { minecraft: '1.21.1', fabricLoader: '0.16.9' } },
+    )).toBe(false)
+  })
+
+  it('prioritizes matching peer provenance without skipping other runtime candidates', () => {
+    const instance = (
+      path: string,
+      upstream?: { type: string; id?: string; accountId?: string; fingerprint?: string },
+    ) => ({
+      path,
+      runtime: { minecraft: '1.21.1', fabricLoader: '0.16.10' },
+      upstream,
+    })
+    const candidates = [
+      instance('ordinary'),
+      instance('same-account', { type: 'peer', id: 'legacy', accountId: 'account-a' }),
+      instance('same-fingerprint', { type: 'peer', id: 'account-b', fingerprint: 'pack-a' }),
+      { ...instance('wrong-runtime'), runtime: { minecraft: '1.20.1' } },
+      { ...instance('bedrock'), edition: 'bedrock' },
+    ]
+
+    expect(getInstanceMatchCandidates(
+      candidates,
+      { runtime: { minecraft: '1.21.1', fabricLoader: '0.16.10' }, fingerprint: 'pack-a' },
+      'account-a',
+    ).map(({ path }) => path)).toEqual(['same-fingerprint', 'same-account', 'ordinary'])
+    expect(getInstanceMatchCandidates(
+      candidates,
+      { runtime: { minecraft: '1.21.1', fabricLoader: '0.16.10' } },
+    ).map(({ path }) => path)).toEqual(['ordinary', 'same-account', 'same-fingerprint'])
+  })
+
+  it('validates account indicators and falls back to another exact content match', async () => {
+    const remote = {
+      runtime: { minecraft: '1.21.1', forge: '', neoForged: '', fabricLoader: '', quiltLoader: '', optifine: '', labyMod: '' },
+      files: [{ path: 'mods/example.jar', hashes: { sha1: 'remote' } }],
+      fingerprint: 'remote-fingerprint',
+    } as any
+    const candidates = [
+      {
+        path: 'ordinary-exact',
+        runtime: remote.runtime,
+      },
+      {
+        path: 'same-account-but-modified',
+        runtime: remote.runtime,
+        upstream: { type: 'peer', id: 'account-a', accountId: 'account-a' },
+      },
+    ]
+    const checked: string[] = []
+
+    const matched = await findInstanceManifestMatch(
+      candidates,
+      remote,
+      'account-a',
+      async (candidate) => {
+        checked.push(candidate.path)
+        return candidate.path === 'ordinary-exact'
+          ? remote
+          : { ...remote, fingerprint: 'locally-modified' }
+      },
+    )
+
+    expect(checked).toEqual(['same-account-but-modified', 'ordinary-exact'])
+    expect(matched?.path).toBe('ordinary-exact')
+  })
+
+  it('selects only an unambiguous peer instance for a confirmed manifest update', () => {
+    const manifest = {
+      runtime: { minecraft: '1.21.1', fabricLoader: '0.16.10' },
+      fingerprint: 'pack-a',
+    }
+    const instance = (
+      path: string,
+      upstream: { type: string; id?: string; accountId?: string; fingerprint?: string },
+    ) => ({ path, runtime: manifest.runtime, upstream })
+
+    expect(getPeerInstanceUpdateCandidate([
+      instance('same-account', { type: 'peer', id: 'account-a', accountId: 'account-a' }),
+      instance('same-pack', { type: 'peer', id: 'account-b', fingerprint: 'pack-a' }),
+    ], manifest, 'account-a')?.path).toBe('same-pack')
+    expect(getPeerInstanceUpdateCandidate([
+      instance('only-account-instance', { type: 'peer', id: 'legacy', accountId: 'account-a' }),
+      instance('ordinary', { type: 'modrinth-modpack', id: 'project' }),
+    ], { ...manifest, fingerprint: undefined }, 'account-a')?.path).toBe('only-account-instance')
+    expect(getPeerInstanceUpdateCandidate([
+      instance('ambiguous-a', { type: 'peer', id: 'account-a', accountId: 'account-a' }),
+      instance('ambiguous-b', { type: 'peer', id: 'account-a', accountId: 'account-a' }),
+    ], { ...manifest, fingerprint: undefined }, 'account-a')).toBeUndefined()
+    expect(getPeerInstanceUpdateCandidate([
+      instance('duplicate-fingerprint-a', { type: 'peer', id: 'account-a', fingerprint: 'pack-a' }),
+      instance('duplicate-fingerprint-b', { type: 'peer', id: 'account-a', fingerprint: 'pack-a' }),
+    ], manifest, 'account-a')).toBeUndefined()
+  })
+
+  it('resolves the instance opening LAN without guessing across multiple games', () => {
+    const client = (gameDirectory: string) => ({ side: 'client' as const, options: { gameDirectory } })
+    const server = (gameDirectory: string) => ({ side: 'server' as const, options: { gameDirectory } })
+
+    expect(resolveLanSharingInstance([client('instance-a'), server('server-a')], '')).toBe('instance-a')
+    expect(resolveLanSharingInstance([client('instance-a'), client('instance-b')], 'instance-b')).toBe('instance-b')
+    expect(resolveLanSharingInstance([client('instance-a'), client('instance-b')], 'instance-c')).toBeUndefined()
+    expect(resolveLanSharingInstance([server('server-a')], 'server-a')).toBeUndefined()
   })
 })
 
