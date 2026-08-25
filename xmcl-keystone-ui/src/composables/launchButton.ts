@@ -169,7 +169,7 @@ export function useLaunchButton() {
       if (javaIssue.value) {
         showLaunchStatusDialog({ javaIssue: javaIssue.value })
       } else {
-        launch()
+        await launch()
         showLaunchStatusDialog()
       }
     },
@@ -253,8 +253,8 @@ export function useLaunchButton() {
             text: t('launch.launch'),
             color: 'primary',
             leftIcon: 'play_arrow',
-            onClick: () => {
-              launch()
+            onClick: async () => {
+              await launch()
             },
           }
         }
@@ -289,7 +289,7 @@ export function useLaunchButton() {
               if (javaIssue.value) {
                 showLaunchStatusDialog({ javaIssue: javaIssue.value })
               } else {
-                launch()
+                await launch()
                 showLaunchStatusDialog()
               }
             },
@@ -326,7 +326,7 @@ export function useLaunchButton() {
             if (javaIssue.value) {
               showLaunchStatusDialog({ javaIssue: javaIssue.value })
             } else {
-              launch()
+              await launch()
               showLaunchStatusDialog()
             }
           },
@@ -400,7 +400,7 @@ export function useLaunchButton() {
         return
       }
     }
-    launchButtonFacade.value.onClick()
+    await launchButtonFacade.value.onClick()
   }
 
   return {
