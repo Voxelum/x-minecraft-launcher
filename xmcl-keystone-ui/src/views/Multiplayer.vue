@@ -43,9 +43,10 @@
 
           <div class="flex-grow" />
           <v-btn
-            v-shared-tooltip.left="() => t('multiplayer.share')"
+            v-shared-tooltip.left="() => runningClientInstances.length === 0 ? t('multiplayer.noRunningInstanceToShare') : t('multiplayer.editSharingScope')"
             variant="text"
             icon
+            :disabled="runningClientInstances.length === 0"
             @click="showShareInstance()"
           >
             <v-icon>share</v-icon>
@@ -775,6 +776,7 @@ const {
   refreshingNatType,
   refreshNatType,
   refreshIceServers,
+  runningClientInstances,
   error: groupError,
 } = injection(kPeerState)
 const groupErrorVisible = ref(true)

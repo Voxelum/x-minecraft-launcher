@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: إنشاء لعبة
   serverTitle: أدخل عنوان السيرفر بتاعك
 AppShareInstanceDialog:
+  editScopeDescription: حدد الملفات التي يمكن للأقران سحبها بعد اكتشاف هذه اللعبة قيد التشغيل على الشبكة المحلية.
+  editScopeTitle: تحرير نطاق المشاركة
+  instanceToShare: اللعبة قيد التشغيل
   alterDownloadDescription: لو مش عاوز تلخبط النسخة الحالية، تقدر برضه تعمل نسخة جديدة من إعدادات زميلك. اضغط على الزرار اللي تحت لإنشاء نسخة جديدة.
   baseInfo: الإعدادات الأساسية
-  cancelShare: إلغاء المشاركة
   description: بعد ما تشارك ملف التعريف، الأجهزة التانية هتقدر تنزل الملفات دي من خلال كمبيوترك.
   downloadDescription: يرجى التحقق من الملفات اللي زميلك بعتها لك. حدد الملفات اللي عاوز تنزلها. هيتم وضعها في النسخة الحالية {name}.
   downloadNotifyTitle: تنزيل النسخة من {user}
   downloadTitle: تنزيل الملفات من أجهزة الزملاء التانية
   filesToDownload: اختر الملفات المراد تنزيلها
   filesToShare: اختر الملفات المراد مشاركتها
-  instanceShare: '{user} لسه مشارك النسخة الحالية معاك حالا'
   share: مشاركة
-  shareNotifyTitle: مشاركة النسخة
   shareTitle: مشاركة ملفات اللعبة مع لاعبين تانيين
 BaseSettingGeneral:
   title: عام
@@ -1013,6 +1013,14 @@ modrinth:
 modrinthCard:
   currentVersion: الإصدار الحالي
 multiplayer:
+  autoShareAmbiguous: هناك عدة ألعاب قيد التشغيل. حدد النسخة التي تستضيف عالم الشبكة المحلية لكي يتمكن XMCL من مشاركتها.
+  editSharingScope: تحرير نطاق المشاركة
+  gameAvailable: لعبة شبكة محلية متاحة
+  joinGame: الانضمام إلى اللعبة
+  noRunningInstanceToShare: شغّل لعبة قبل تحرير نطاق مشاركتها
+  updateSharedInstanceConfirm: التحديث والتشغيل
+  updateSharedInstanceDescription: تختلف التعديلات المشتركة عن {instance}. هل تريد تحديث هذه النسخة لتطابق المضيف قبل التشغيل؟ سيتم إنشاء نسخة احتياطية من الملفات المعدلة الحالية.
+  updateSharedInstanceTitle: تحديث النسخة المشتركة؟
   addFunds: "ضيف رصيد"
   availableBalance: "الرصيد المتاح"
   balanceHint: "متاح لخدمات XMCL Together"
@@ -1090,8 +1098,6 @@ multiplayer:
   sendTokenToRemote: إرسال الرمز للطرف الآخر
   share: مشاركة إعدادات النسخة
   sharing: جاري مشاركة الملفات...
-  sharingNotificationBody: تقدر تنزل أو تعمل نسخة جديدة من ملفات الإعدادات المشتركة لـ {name}.
-  sharingNotificationTitle: لاعب يشارك إعدادات اللعبة بتاعته
   start: البدء
   startNewP2PConnection: اضغط على زرار البدء لإنشاء اتصال جديد
 myStuff: حاجاتي

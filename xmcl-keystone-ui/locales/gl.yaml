@@ -3,10 +3,12 @@ AppAddInstanceDialog:
   createTitle: Game aanmaken
   serverTitle: Voer je serveradres in
 AppShareInstanceDialog:
+  editScopeDescription: Selecciona os ficheiros que os pares poderán obter despois de descubrir este xogo en execución na LAN.
+  editScopeTitle: Editar o alcance da compartición
+  instanceToShare: Xogo en execución
   alterDownloadDescription: >-
     Als je de huidige instantie niet wilt aanpassen, kun je ook een nieuwe instantie maken van de configuratie van de ander. Klik op de knop hieronder om een instantie te maken.
   baseInfo: Basisinstelling
-  cancelShare: Delen annuleren
   description: >-
     Nadat je het profiel hebt gedeeld, kunnen anderen deze bestanden via jouw PC downloaden.
   downloadDescription: >-
@@ -15,9 +17,7 @@ AppShareInstanceDialog:
   downloadTitle: Bestanden downloaden van anderen
   filesToDownload: Kies bestanden om te downloaden
   filesToShare: Kies bestanden om te delen
-  instanceShare: '{user} heeft zojuist de huidige instantie met je gedeeld'
   share: Delen
-  shareNotifyTitle: Instantie delen
   shareTitle: Deel gamebestanden met andere speler
 BaseSettingGeneral:
   title: Algemeen
@@ -963,6 +963,14 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
+  autoShareAmbiguous: Hai varios xogos en execución. Selecciona a instancia que aloxa o mundo LAN para que XMCL poida compartila.
+  editSharingScope: Editar o alcance da compartición
+  gameAvailable: Xogo LAN dispoñible
+  joinGame: Unirse ao xogo
+  noRunningInstanceToShare: Inicia un xogo antes de editar o seu alcance de compartición
+  updateSharedInstanceConfirm: Actualizar e iniciar
+  updateSharedInstanceDescription: Os mods compartidos son diferentes dos de {instance}. Queres actualizar esta instancia para que coincida co anfitrión antes de iniciala? Farase unha copia de seguranza dos ficheiros modificados.
+  updateSharedInstanceTitle: Actualizar a instancia compartida?
   addFunds: "Engadir fondos"
   availableBalance: "Saldo dispoñible"
   balanceHint: "Dispoñible para os servizos de XMCL Together"
@@ -1045,8 +1053,6 @@ multiplayer:
   sendTokenToRemote: Stuur Token naar Remote
   share: Deel Instantieconfiguratie
   sharing: Bestanden delen...
-  sharingNotificationBody: Je kunt downloaden of een instantie maken van {name} gedeelde config.
-  sharingNotificationTitle: Een peer deelt zijn gameconfiguratie
   start: Start
   startNewP2PConnection: Klik op de Start knop om een nieuwe peer-verbinding te maken
   connectionError: Erro de conexión

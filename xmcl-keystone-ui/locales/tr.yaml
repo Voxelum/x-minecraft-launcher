@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: Oyun Oluştur
   serverTitle: Sunucu adresini girin
 AppShareInstanceDialog:
+  editScopeDescription: Eşlerin LAN'da çalışan bu oyunu keşfettikten sonra alabileceği dosyaları seçin.
+  editScopeTitle: Paylaşım kapsamını düzenle
+  instanceToShare: Çalışan oyun
   alterDownloadDescription: Mevcut instance'ı bozmak istemiyorsanız, arkadaşınızın yapılandırmasından yeni bir instance oluşturabilirsiniz. Instance oluşturmak için aşağıdaki düğmeye tıklayın.
   baseInfo: Temel Ayarlar
-  cancelShare: Paylaşımı İptal Et
   description: Profili paylaştıktan sonra, diğer yerler bu dosyaları bilgisayarınız üzerinden indirebilir.
   downloadDescription: Lütfen arkadaşınızın sağladığı dosyaları doğrulayın. İndirmek istediğiniz dosyayı seçin. Mevcut instance {name} içine yerleştirilecektir.
   downloadNotifyTitle: '{user} kullanıcısından Instance İndir'
   downloadTitle: Diğer eşlerden dosya indir
   filesToDownload: İndirilecek dosyaları seçin
   filesToShare: Paylaşılacak dosyaları seçin
-  instanceShare: '{user} mevcut instance''ı sizinle paylaştı'
   share: Paylaş
-  shareNotifyTitle: Instance Paylaş
   shareTitle: Oyun dosyalarını diğer oyuncuyla paylaş
 BaseSettingGeneral:
   title: Genel
@@ -966,6 +966,14 @@ modrinth:
 modrinthCard:
   currentVersion: Mevcut Sürüm
 multiplayer:
+  autoShareAmbiguous: Birden fazla oyun çalışıyor. XMCL'nin paylaşabilmesi için LAN dünyasını barındıran örneği seçin.
+  editSharingScope: Paylaşım kapsamını düzenle
+  gameAvailable: LAN oyunu mevcut
+  joinGame: Oyuna katıl
+  noRunningInstanceToShare: Paylaşım kapsamını düzenlemeden önce bir oyun başlatın
+  updateSharedInstanceConfirm: Güncelle ve başlat
+  updateSharedInstanceDescription: Paylaşılan modlar {instance} ile farklı. Başlatmadan önce bu örnek ana bilgisayarla eşleşecek şekilde güncellensin mi? Değiştirilmiş mevcut dosyalar yedeklenecektir.
+  updateSharedInstanceTitle: Paylaşılan örnek güncellensin mi?
   addFunds: "Bakiye ekle"
   availableBalance: "Kullanılabilir bakiye"
   balanceHint: "XMCL Together hizmetleri için kullanılabilir"
@@ -1043,8 +1051,6 @@ multiplayer:
   sendTokenToRemote: Belirteci Uzaktakine Gönder
   share: Instance Yapılandırmasını Paylaş
   sharing: Dosyalar paylaşılıyor...
-  sharingNotificationBody: Paylaşılan yapılandırmadan {name} indirebilir veya bir instance oluşturabilirsiniz.
-  sharingNotificationTitle: Bir eş oyun yapılandırmasını paylaşıyor
   start: Başlat
   startNewP2PConnection: Yeni bir eş bağlantısı oluşturmak için Başlat düğmesine tıklayın
   connectionError: Bağlantı hatası

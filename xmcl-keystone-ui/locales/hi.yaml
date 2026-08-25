@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: गेम बनाएं
   serverTitle: अपना सर्वर पता दर्ज करें
 AppShareInstanceDialog:
+  editScopeDescription: LAN पर चल रहे इस गेम का पता लगने के बाद पीयर जिन फ़ाइलों को प्राप्त कर सकते हैं, उन्हें चुनें।
+  editScopeTitle: साझाकरण का दायरा संपादित करें
+  instanceToShare: चल रहा गेम
   alterDownloadDescription: यदि आप वर्तमान इंस्टेंस को खराब नहीं करना चाहते हैं। आप अपने साथी (peer) के कॉन्फ़िग से एक नया इंस्टेंस भी बना सकते हैं। इंस्टेंस बनाने के लिए नीचे दिए गए बटन पर क्लिक करें।
   baseInfo: मूल सेटिंग
-  cancelShare: साझा करना रद्द करें
   description: प्रोफ़ाइल साझा करने के बाद, अन्य लोग आपके पीसी के माध्यम से इन फ़ाइलों को डाउनलोड कर सकते हैं।
   downloadDescription: कृपया अपने साथी द्वारा प्रदान की गई फ़ाइलों को सत्यापित करें। वह फ़ाइल चुनें जिसे आप डाउनलोड करना चाहते हैं। इसे वर्तमान इंस्टेंस {name} में रखा जाएगा।
   downloadNotifyTitle: '{user} से इंस्टेंस डाउनलोड करें'
   downloadTitle: अन्य साथियों (peers) से फ़ाइलें डाउनलोड करें
   filesToDownload: डाउनलोड करने के लिए फ़ाइलें चुनें
   filesToShare: साझा करने के लिए फ़ाइलें चुनें
-  instanceShare: '{user} ने अभी आपके साथ वर्तमान इंस्टेंस साझा किया है'
   share: साझा करें
-  shareNotifyTitle: इंस्टेंस साझा करें
   shareTitle: अन्य खिलाड़ी के साथ गेम फ़ाइलें साझा करें
 BaseSettingGeneral:
   title: सामान्य
@@ -1013,6 +1013,14 @@ modrinth:
 modrinthCard:
   currentVersion: वर्तमान संस्करण
 multiplayer:
+  autoShareAmbiguous: एक से अधिक गेम चल रहे हैं। LAN वर्ल्ड होस्ट करने वाला इंस्टेंस चुनें ताकि XMCL उसे साझा कर सके।
+  editSharingScope: साझाकरण का दायरा संपादित करें
+  gameAvailable: LAN गेम उपलब्ध है
+  joinGame: गेम में शामिल हों
+  noRunningInstanceToShare: साझाकरण का दायरा संपादित करने से पहले कोई गेम शुरू करें
+  updateSharedInstanceConfirm: अपडेट करें और शुरू करें
+  updateSharedInstanceDescription: साझा किए गए मॉड {instance} से अलग हैं। शुरू करने से पहले इस इंस्टेंस को होस्ट के अनुरूप अपडेट करें? मौजूदा बदली हुई फ़ाइलों का बैकअप लिया जाएगा।
+  updateSharedInstanceTitle: साझा इंस्टेंस अपडेट करें?
   addFunds: "धनराशि जोड़ें"
   availableBalance: "उपलब्ध शेष राशि"
   balanceHint: "XMCL Together सेवाओं के लिए उपलब्ध"
@@ -1092,8 +1100,6 @@ multiplayer:
   sendTokenToRemote: रिमोट को टोकन भेजें
   share: इंस्टेंस कॉन्फ़िग शेयर करें
   sharing: फ़ाइलें शेयर की जा रही हैं...
-  sharingNotificationBody: आप {name} के शेयर किए गए कॉन्फ़िग से एक इंस्टेंस डाउनलोड या बना सकते हैं।
-  sharingNotificationTitle: एक पीयर अपना गेम कॉन्फ़िग शेयर कर रहा है
   start: शुरू करें
   startNewP2PConnection: नया पीयर कनेक्शन बनाने के लिए स्टार्ट बटन पर क्लिक करें
 myStuff: मेरी चीजें

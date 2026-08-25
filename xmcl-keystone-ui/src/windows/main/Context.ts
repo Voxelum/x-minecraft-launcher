@@ -45,7 +45,7 @@ import {
   useModrinthAuthenticatedAPI,
 } from '@/composables/modrinthAuthenticatedAPI'
 import { kLocalCollections, useLocalCollections } from '@/composables/localCollections'
-import { kPeerShared, kPeerState, usePeerConnections, usePeerState } from '@/composables/peers'
+import { kPeerState, usePeerState } from '@/composables/peers'
 import { kSearchModel, useSearchModel } from '@/composables/search'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
@@ -104,14 +104,13 @@ export default defineComponent({
     const togetherMultiplayer = typeof multiplayerNetworkDiagnostics !== 'undefined'
       ? useTogetherMultiplayer(multiplayerTransport)
       : undefined
-    provide(kPeerShared, usePeerConnections(togetherMultiplayer?.state))
-
     if (togetherMultiplayer) {
       provide(kPeerState, usePeerState(
         user.gameProfile,
         togetherMultiplayer.multiplayer,
         togetherMultiplayer.state,
         togetherMultiplayer.refreshNat,
+        instances.selectedInstance,
       ))
     }
     const instanceVersion = useInstanceVersion(

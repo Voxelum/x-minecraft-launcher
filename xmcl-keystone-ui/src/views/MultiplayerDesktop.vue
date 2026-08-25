@@ -46,6 +46,15 @@
         <div class="rail-network-row mt-1 flex items-center gap-2 font-weight-medium">
           <span>{{ natIcons[natType] }}</span>
           <span>{{ tNatType[natType] }}</span>
+          <v-btn
+            class="ml-auto"
+            :aria-label="t('shared.refresh')"
+            icon="refresh"
+            size="x-small"
+            variant="text"
+            :loading="refreshingNatType"
+            @click="refreshNatType"
+          />
         </div>
         <button
           v-if="device"
@@ -101,8 +110,13 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <v-btn variant="tonal" prepend-icon="share" @click="showShareInstance()">
-              {{ t('multiplayer.share') }}
+            <v-btn
+              variant="tonal"
+              prepend-icon="share"
+              :disabled="runningClientInstances.length === 0"
+              @click="showShareInstance()"
+            >
+              {{ t('multiplayer.editSharingScope') }}
             </v-btn>
             <v-menu location="bottom end">
               <template #activator="{ props }">
@@ -195,18 +209,13 @@
             </div>
             <div class="flex items-center gap-2">
               <v-chip label size="small">{{ peerItems.length }}</v-chip>
-              <v-btn
-                :aria-label="t('shared.refresh')"
-                icon="refresh"
-                size="small"
-                variant="text"
-                :loading="refreshingNatType"
-                @click="refreshNatType"
-              />
             </div>
           </div>
 
           <div v-if="peerItems.length" class="connection-list">
+            <v-alert v-if="joinError" class="mb-3" density="compact" type="error" closable @click:close="joinError = ''">
+              {{ joinError }}
+            </v-alert>
             <div v-for="peer in peerItems" :key="peer.key" class="connection-row">
               <PlayerAvatar
                 v-if="peer.connection?.userInfo.avatar"
@@ -231,16 +240,7 @@
                     {{ peer.member.peerId === groupMasterPeerId ? t('multiplayer.master') : t('multiplayer.member') }}
                   </v-chip>
                   <v-chip
-                    v-if="peer.member"
-                    size="x-small"
-                    label
-                    :color="stateToColor[peer.member.status === 'connected' ? 'connected' : 'connecting']"
-                  >
-                    <v-icon start>group</v-icon>
-                    {{ tConnectionStates[peer.member.status === 'connected' ? 'connected' : 'connecting'] }}
-                  </v-chip>
-                  <v-chip
-                    v-if="peer.connectionState"
+                    v-if="peer.connectionState && peer.connectionState !== 'connecting' && peer.connectionState !== 'new'"
                     size="x-small"
                     label
                     :color="stateToColor[peer.connectionState]"
@@ -262,8 +262,30 @@
                   >
                     {{ peer.connection.ping }}ms
                   </span>
+                  <v-chip v-if="peer.lanServer" size="x-small" label color="success">
+                    <v-icon start>sports_esports</v-icon>
+                    {{ t('multiplayer.gameAvailable') }}
+                  </v-chip>
                 </div>
               </div>
+              <v-progress-circular
+                v-if="!peer.connectionState || peer.connectionState === 'connecting' || peer.connectionState === 'new'"
+                indeterminate
+                :size="20"
+                :width="2"
+              />
+              <v-btn
+                v-if="peer.lanServer"
+                color="primary"
+                prepend-icon="login"
+                size="small"
+                variant="tonal"
+                :disabled="!peer.connection?.sharing || isJoinedGameRunning(peer.connection?.id)"
+                :loading="joiningSession === peer.connection?.id"
+                @click="peer.connection && joinPeerGame(peer.connection, peer.lanServer, peer.member?.accountId)"
+              >
+                {{ t('multiplayer.joinGame') }}
+              </v-btn>
               <v-btn
                 v-if="peer.connection && peer.connection.connectionState !== 'connected'"
                 icon="edit"
@@ -394,6 +416,19 @@
     >
       {{ t('multiplayer.disconnectDescription', { user: deletingName, id: deleting }) }}
     </SimpleDialog>
+    <SimpleDialog
+      v-model="updateInstanceModel"
+      :title="t('multiplayer.updateSharedInstanceTitle')"
+      :persistent="true"
+      :width="440"
+      color="primary"
+      confirm-icon="sync"
+      :confirm="t('multiplayer.updateSharedInstanceConfirm')"
+      @confirm="confirmUpdateInstance"
+      @cancel="cancelUpdateInstance"
+    >
+      {{ t('multiplayer.updateSharedInstanceDescription', { instance: updatingInstance?.instanceName }) }}
+    </SimpleDialog>
   </div>
 </template>
 
@@ -404,11 +439,19 @@ import SettingItem from '@/components/SettingItem.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
+import { useRendererCommandHost } from '@/composables/commandHost'
+import { kInstanceLaunchCoordinator } from '@/composables/instanceLaunchCoordinator'
+import { kInstances } from '@/composables/instances'
 import { kPeerState } from '@/composables/peers'
 import { useSettings } from '@/composables/setting'
+import { getErrorMessage } from '@/util/error'
 import { injection } from '@/util/inject'
+import { generateBaseName, generateDistinctName } from '@/util/instanceName'
 import {
+  findInstanceManifestMatch,
+  getPeerInstanceUpdateCandidate,
   getTogetherRecommendationAction,
+  getVisibleRoomPeerMembers,
   hasLongConnectionProblem,
   isProblematicNatType,
   isWaffoCheckoutUrl,
@@ -417,7 +460,7 @@ import {
   updateConnectionProblemSince,
 } from '@/util/multiplayerTogether'
 import { useEventListener, useIntervalFn, useLocalStorage } from '@vueuse/core'
-import { BaseServiceKey, XmclAccountServiceKey, type XmclTogetherOrder, type XmclTogetherOverview } from '@xmcl/runtime-api'
+import { BaseServiceKey, InstanceInstallServiceKey, InstanceManifestServiceKey, InstanceServiceKey, XmclAccountServiceKey, type Peer, type XmclTogetherOrder, type XmclTogetherOverview } from '@xmcl/runtime-api'
 import { useDialog, useSimpleDialog } from '../composables/dialog'
 import MultiplayerBilling from './MultiplayerBilling.vue'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
@@ -431,6 +474,12 @@ const { show: showInitiate } = useDialog('peer-initiate')
 const { show: showReceive } = useDialog('peer-receive')
 const { show: showShareInstance } = useDialog('share-instance')
 const { multiplayerTransport } = useSettings()
+const { instances } = injection(kInstances)
+const { isRunning, launch } = injection(kInstanceLaunchCoordinator)
+const commandHost = useRendererCommandHost()
+const { createInstance, editInstance } = useService(InstanceServiceKey)
+const { installInstanceFiles } = useService(InstanceInstallServiceKey)
+const { getInstanceManifest } = useService(InstanceManifestServiceKey)
 const multiplayerTransportItems = [
   { text: 'WebRTC', value: 'webrtc' },
   { text: 'node-datachannel', value: 'node-datachannel' },
@@ -440,6 +489,7 @@ const {
   exposedPorts,
   exposePort,
   unexposePort,
+  otherExposedPorts,
   connections,
   turnservers,
   group,
@@ -461,6 +511,7 @@ const {
   refreshingNatType,
   refreshNatType,
   refreshIceServers,
+  runningClientInstances,
   error: groupError,
 } = injection(kPeerState)
 
@@ -470,15 +521,39 @@ const hideIp = ref(true)
 const forwardedPort = ref(0)
 const preferredTurnserver = useLocalStorage('peerPreferredTurn', '', { writeDefaults: false })
 const joiningGroup = ref(false)
+const joiningSession = ref('')
+const joinedInstancePaths = reactive<Record<string, string>>({})
+const isJoinedGameRunning = (connectionId?: string) => !!connectionId &&
+  !!joinedInstancePaths[connectionId] &&
+  (
+    isRunning(joinedInstancePaths[connectionId]) ||
+    runningClientInstances.value.includes(joinedInstancePaths[connectionId])
+  )
+const joinError = ref('')
 
 const peerItems = computed(() => {
-  return mergeRoomPeerConnections(groupMembers.value, connections.value).map((peer) => {
+  const roomMemberIds = new Set(groupMembers.value.map(({ peerId }) => peerId))
+  const visibleMembers = getVisibleRoomPeerMembers(
+    groupMembers.value,
+    groupSelfPeerId.value,
+    groupMasterPeerId.value,
+  )
+  const visibleMemberIds = new Set(visibleMembers.map(({ peerId }) => peerId))
+  const visibleConnections = connections.value.filter((connection) =>
+    !connection.remoteId ||
+    !roomMemberIds.has(connection.remoteId) ||
+    visibleMemberIds.has(connection.remoteId),
+  )
+  return mergeRoomPeerConnections(visibleMembers, visibleConnections).map((peer) => {
     const { member, connection } = peer
     return {
       ...peer,
       member,
       connection,
       connectionState: connection?.connectionState,
+      lanServer: connection
+        ? otherExposedPorts.value.find(({ session }) => session === connection.id)
+        : undefined,
     }
   })
 })
@@ -562,6 +637,90 @@ const stateToColor: Record<string, string> = {
 const isRelay = (connection: (typeof connections.value)[number]) =>
   connection.selectedCandidate?.local.type === 'relay' || connection.selectedCandidate?.remote.type === 'relay'
 
+async function joinPeerGame(
+  connection: Peer,
+  server: { port: number },
+  accountId?: string,
+) {
+  if (!connection.sharing || joiningSession.value) return
+  joiningSession.value = connection.id
+  joinError.value = ''
+  try {
+    const manifest = connection.sharing
+    const upstream = {
+      type: 'peer' as const,
+      id: accountId || '',
+      ...(accountId ? { accountId } : {}),
+      ...(manifest.fingerprint ? { fingerprint: manifest.fingerprint } : {}),
+    }
+    const matchedInstance = await findInstanceManifestMatch(
+      instances.value,
+      manifest,
+      accountId,
+      (candidate) => getInstanceManifest({ path: candidate.path }),
+    )
+    let instancePath = matchedInstance?.path
+    if (matchedInstance) {
+      if (
+        matchedInstance.upstream?.type === 'peer' &&
+        (!matchedInstance.upstream.accountId || matchedInstance.upstream.accountId === accountId) &&
+        (
+          matchedInstance.upstream.accountId !== upstream.accountId ||
+          matchedInstance.upstream.fingerprint !== upstream.fingerprint
+        )
+      ) {
+        await editInstance({ instancePath: matchedInstance.path, upstream })
+      }
+    }
+    if (!instancePath) {
+      const updateCandidate = getPeerInstanceUpdateCandidate(instances.value, manifest, accountId)
+      if (updateCandidate) {
+        const confirmed = await requestInstanceUpdate(updateCandidate.name)
+        if (!confirmed) return
+        await installInstanceFiles({
+          path: updateCandidate.path,
+          files: JSON.parse(JSON.stringify(manifest.files)),
+          upstream,
+        })
+        await editInstance({ instancePath: updateCandidate.path, upstream })
+        instancePath = updateCandidate.path
+      }
+    }
+    if (!instancePath) {
+      const name = generateDistinctName(
+        manifest.name || generateBaseName(manifest.runtime),
+        instances.value.map((instance) => instance.name),
+      )
+      instancePath = await createInstance({
+        name,
+        description: manifest.description,
+        runtime: { ...manifest.runtime },
+        vmOptions: manifest.vmOptions ? [...manifest.vmOptions] : undefined,
+        mcOptions: manifest.mcOptions ? [...manifest.mcOptions] : undefined,
+        minMemory: manifest.minMemory,
+        maxMemory: manifest.maxMemory,
+        upstream,
+      })
+      await installInstanceFiles({
+        path: instancePath,
+        files: JSON.parse(JSON.stringify(manifest.files)),
+        upstream,
+      })
+    }
+    joinedInstancePaths[connection.id] = instancePath
+    const pid = await launch(instancePath, () => commandHost.dispatch('instance.launch', {
+      instance: instancePath,
+      server: { host: '127.0.0.1', port: server.port },
+    }))
+    if (typeof pid !== 'number') delete joinedInstancePaths[connection.id]
+  } catch (error) {
+    delete joinedInstancePaths[connection.id]
+    joinError.value = getErrorMessage(error)
+  } finally {
+    joiningSession.value = ''
+  }
+}
+
 async function onJoin() {
   if (joiningGroup.value) return
   joiningGroup.value = true
@@ -604,6 +763,38 @@ const {
   if (id) drop(id)
 })
 const deletingName = computed(() => connections.value.find((connection) => connection.id === deleting.value)?.userInfo.name)
+
+type InstanceUpdateConfirmation = {
+  instanceName: string
+}
+let resolveInstanceUpdate: ((confirmed: boolean) => void) | undefined
+const {
+  show: showUpdateInstance,
+  target: updatingInstance,
+  confirm: confirmUpdateInstance,
+  cancel: cancelUpdateInstance,
+  model: updateInstanceModel,
+} = useSimpleDialog<InstanceUpdateConfirmation>(
+  () => {
+    resolveInstanceUpdate?.(true)
+    resolveInstanceUpdate = undefined
+  },
+  () => {
+    resolveInstanceUpdate?.(false)
+    resolveInstanceUpdate = undefined
+  },
+)
+function requestInstanceUpdate(instanceName: string) {
+  return new Promise<boolean>((resolve) => {
+    resolveInstanceUpdate?.(false)
+    resolveInstanceUpdate = resolve
+    showUpdateInstance({ instanceName })
+  })
+}
+onScopeDispose(() => {
+  resolveInstanceUpdate?.(false)
+  resolveInstanceUpdate = undefined
+})
 
 const togetherOverview = shallowRef<XmclTogetherOverview>()
 const togetherOrder = shallowRef<XmclTogetherOrder>()

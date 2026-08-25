@@ -3,10 +3,12 @@ AppAddInstanceDialog:
   createTitle: Ойын жасау
   serverTitle: Сервер мекенжайын енгізіңіз
 AppShareInstanceDialog:
+  editScopeDescription: LAN желісінде іске қосылған осы ойынды анықтағаннан кейін пирлер жүктей алатын файлдарды таңдаңыз.
+  editScopeTitle: Бөлісу ауқымын өзгерту
+  instanceToShare: Іске қосылған ойын
   alterDownloadDescription: >-
     Ағымдағы жеке жағдайды бұзғыңыз келмесе, сіз өзіңіздің қарым-қатынас серігіңіздің конфигурациясынан жаңа жеке жағдай жасай аласыз. Жеке жағдай жасау үшін төмендегі батырманы басыңыз.
   baseInfo: Негізгі баптаулар
-  cancelShare: Бөлісуді болдырмау
   description: >-
     Профильді бөліскеннен кейін, басқа орындар сіздің компьютеріңіз арқылы бұл файлдарды жүктей алады.
   downloadDescription: >-
@@ -15,9 +17,7 @@ AppShareInstanceDialog:
   downloadTitle: Басқа қарым-қатынас серіктерінен файлдарды жүктеп алу
   filesToDownload: Жүктеп алуға арналған файлдарды таңдаңыз
   filesToShare: Бөлісу үшін файлдарды таңдаңыз
-  instanceShare: '{user} сізге ағымдағы жеке жағдайды жаңа бөлісті'
   share: Бөлісу
-  shareNotifyTitle: Жеке жағдайды бөлісу
   shareTitle: Ойын файлдарын басқа ойыншылармен бөлісу
 BaseSettingGeneral:
   title: Жалпы
@@ -957,6 +957,14 @@ modrinth:
 modrinthCard:
   currentVersion: Ағымдағы нұсқа
 multiplayer:
+  autoShareAmbiguous: Бірнеше ойын іске қосылған. XMCL бөлісе алуы үшін LAN әлемін орналастырып тұрған дананы таңдаңыз.
+  editSharingScope: Бөлісу ауқымын өзгерту
+  gameAvailable: LAN ойыны қолжетімді
+  joinGame: Ойынға қосылу
+  noRunningInstanceToShare: Бөлісу ауқымын өзгертпес бұрын ойынды іске қосыңыз
+  updateSharedInstanceConfirm: Жаңартып, іске қосу
+  updateSharedInstanceDescription: Бөлісілген модтар {instance} данасындағы модтардан өзгеше. Іске қоспас бұрын бұл дананы хостқа сәйкестендіріп жаңарту керек пе? Өзгертілген файлдардың сақтық көшірмесі жасалады.
+  updateSharedInstanceTitle: Бөлісілген дананы жаңарту керек пе?
   addFunds: "Қаражат қосу"
   availableBalance: "Қолжетімді баланс"
   balanceHint: "XMCL Together қызметтері үшін қолжетімді"
@@ -1039,9 +1047,6 @@ multiplayer:
   sendTokenToRemote: Токенді қашықтағанға жіберу
   share: Жеке жағдай конфигурациясын бөлісу
   sharing: Файлдар бөлісуде...
-  sharingNotificationBody: >-
-    Сіз {name} бөліскен конфигурациядан жүктеп ала аласыз немесе жеке жағдай жасай аласыз.
-  sharingNotificationTitle: Қарым-қатынас серігі өзінің ойын конфигурациясын бөлісуде
   start: Бастау
   startNewP2PConnection: Жаңа қарым-қатынас серігі байланысын жасау үшін Бастау батырмасын басыңыз
   connectionError: Байланыс қатесі

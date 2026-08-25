@@ -3,10 +3,12 @@ AppAddInstanceDialog:
   createTitle: Spel Aanmaken
   serverTitle: Voer je serveradres in
 AppShareInstanceDialog:
+  editScopeDescription: Selecteer de bestanden die peers kunnen ophalen nadat ze dit actieve spel op het LAN hebben gevonden.
+  editScopeTitle: Deelbereik bewerken
+  instanceToShare: Actief spel
   alterDownloadDescription: >-
     Als je je huidige instance niet wilt verstoren, kun je ook een nieuwe instance aanmaken vanuit de configuratie van je peer. Klik op de onderstaande knop om een instance aan te maken.
   baseInfo: Basisinstellingen
-  cancelShare: Delen Annuleren
   description: >-
     Nadat je het profiel deelt, kunnen anderen deze bestanden via jouw PC downloaden.
   downloadDescription: >-
@@ -15,9 +17,7 @@ AppShareInstanceDialog:
   downloadTitle: Bestanden downloaden van andere peers
   filesToDownload: Kies bestanden om te downloaden
   filesToShare: Kies bestanden om te delen
-  instanceShare: '{user} heeft zojuist de huidige instance met je gedeeld'
   share: Delen
-  shareNotifyTitle: Instance Delen
   shareTitle: Spelbestanden delen met andere spelers
 BaseSettingGeneral:
   title: Algemeen
@@ -968,6 +968,14 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
+  autoShareAmbiguous: Er zijn meerdere spellen actief. Selecteer de instantie die de LAN-wereld host, zodat XMCL deze kan delen.
+  editSharingScope: Deelbereik bewerken
+  gameAvailable: LAN-spel beschikbaar
+  joinGame: Deelnemen aan spel
+  noRunningInstanceToShare: Start een spel voordat u het deelbereik bewerkt
+  updateSharedInstanceConfirm: Bijwerken en starten
+  updateSharedInstanceDescription: De gedeelde mods verschillen van {instance}. Deze instantie bijwerken zodat deze overeenkomt met de host voordat u start? Bestaande gewijzigde bestanden worden geback-upt.
+  updateSharedInstanceTitle: Gedeelde instantie bijwerken?
   addFunds: "Tegoed toevoegen"
   availableBalance: "Beschikbaar saldo"
   balanceHint: "Beschikbaar voor XMCL Together-diensten"
@@ -1049,9 +1057,6 @@ multiplayer:
   sendTokenToRemote: Stuur Token naar Remote
   share: Instance Configuratie Delen
   sharing: Bestanden delen...
-  sharingNotificationBody: >-
-    U kunt downloaden of een instance aanmaken vanaf de gedeelde configuratie van {name}.
-  sharingNotificationTitle: Een peer deelt zijn spelconfiguratie
   start: Starten
   startNewP2PConnection: Klik op de Start knop om een nieuwe peer-verbinding te maken
   connectionError: Verbindingsfout

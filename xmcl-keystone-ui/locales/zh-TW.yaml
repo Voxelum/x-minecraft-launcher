@@ -5,21 +5,21 @@ AppAddInstanceDialog:
   createTitle: 建立遊戲
   serverTitle: 輸入您的伺服器位址
 AppShareInstanceDialog:
+  editScopeDescription: 選擇連線夥伴發現這個正在執行的區域網路遊戲後可以按需取得的檔案。
+  editScopeTitle: 編輯分享範圍
+  instanceToShare: 正在執行的遊戲
   alterDownloadDescription: |-
     如果您不想搞亂目前實例。
     您也可以從對等方的設定建立一個新實例。
     按一下下面的按鈕建立實例。
   baseInfo: 分享的基本設定
-  cancelShare: 取消分享
   description: 分享後，您的聯機夥伴將可以下載您分享的遊戲資源
   downloadDescription: 請確認您的聯機夥伴提供的檔案，並選擇您要下載的項目。檔案將下載到目前實例 {name} 中。
   downloadNotifyTitle: 從 {user} 下載實例
   downloadTitle: 從其他玩家那獲得遊戲資源
   filesToDownload: 選擇您想下載的檔案
   filesToShare: 選擇分享的檔案
-  instanceShare: '{user} 給您分享了他的遊戲設定'
   share: 分享
-  shareNotifyTitle: 分享設定
   shareTitle: 分享啟動設定給其他玩家
 BaseSettingGeneral:
   title: 一般設定
@@ -950,6 +950,14 @@ modrinth:
 modrinthCard:
   currentVersion: 目前版本
 multiplayer:
+  autoShareAmbiguous: 有多個遊戲正在執行。請選擇主持區域網路世界的實例，讓 XMCL 可以分享它。
+  editSharingScope: 編輯分享範圍
+  gameAvailable: 有可用的區域網路遊戲
+  joinGame: 加入遊戲
+  noRunningInstanceToShare: 請先啟動遊戲，再編輯它的分享範圍
+  updateSharedInstanceConfirm: 更新並啟動
+  updateSharedInstanceDescription: 房主分享的模組與 {instance} 不一致。是否先將此實例更新為與房主一致再啟動？被取代的檔案會自動備份。
+  updateSharedInstanceTitle: 更新分享的實例？
   addFunds: "儲值"
   availableBalance: "可用餘額"
   balanceHint: "可用於 XMCL Together 服務"
@@ -1029,8 +1037,6 @@ multiplayer:
   sendTokenToRemote: 將本地令牌給您的聯機夥伴
   share: 分享啟動設定
   sharing: 正在共享遊戲設定...
-  sharingNotificationBody: 您可以從 {name} 共用設定下載或建立實例。
-  sharingNotificationTitle: 同伴正在共享遊戲設定
   start: 開始
   startNewP2PConnection: 按一下開始按鈕來新建一個新的點對點連線
   connectionError: 連線錯誤

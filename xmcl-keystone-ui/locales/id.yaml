@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: Buat Game
   serverTitle: Masukkan alamat server Anda
 AppShareInstanceDialog:
+  editScopeDescription: Pilih berkas yang dapat diambil peer setelah menemukan game yang sedang berjalan ini di LAN.
+  editScopeTitle: Edit cakupan berbagi
+  instanceToShare: Game yang sedang berjalan
   alterDownloadDescription: Jika Anda tidak ingin mengacaukan instansi saat ini, Anda juga dapat membuat instansi baru dari konfigurasi rekan Anda. Klik tombol di bawah untuk membuat instansi.
   baseInfo: Pengaturan Dasar
-  cancelShare: Batal Bagikan
   description: Setelah Anda membagikan profil, tempat lain dapat mengunduh berkas-berkas ini melalui PC Anda.
   downloadDescription: Silakan verifikasi berkas yang diberikan oleh rekan Anda. Pilih berkas yang ingin Anda unduh. Berkas tersebut akan ditempatkan di instansi saat ini {name}.
   downloadNotifyTitle: Unduh Instansi dari {user}
   downloadTitle: Unduh berkas dari rekan lain
   filesToDownload: Pilih berkas untuk diunduh
   filesToShare: Pilih berkas untuk dibagikan
-  instanceShare: '{user} baru saja membagikan instansi saat ini kepada Anda'
   share: Bagikan
-  shareNotifyTitle: Bagikan Instansi
   shareTitle: Bagikan berkas game ke pemain lain
 BaseSettingGeneral:
   title: Umum
@@ -1013,6 +1013,14 @@ modrinth:
 modrinthCard:
   currentVersion: Versi Saat Ini
 multiplayer:
+  autoShareAmbiguous: Beberapa game sedang berjalan. Pilih instans yang menghosting dunia LAN agar XMCL dapat membagikannya.
+  editSharingScope: Edit cakupan berbagi
+  gameAvailable: Game LAN tersedia
+  joinGame: Gabung ke game
+  noRunningInstanceToShare: Jalankan game sebelum mengedit cakupan berbaginya
+  updateSharedInstanceConfirm: Perbarui dan jalankan
+  updateSharedInstanceDescription: Mod yang dibagikan berbeda dengan {instance}. Perbarui instans ini agar sesuai dengan host sebelum dijalankan? Berkas yang telah diubah akan dicadangkan.
+  updateSharedInstanceTitle: Perbarui instans yang dibagikan?
   addFunds: "Tambah dana"
   availableBalance: "Saldo tersedia"
   balanceHint: "Tersedia untuk layanan XMCL Together"
@@ -1092,8 +1100,6 @@ multiplayer:
   sendTokenToRemote: Kirim Token ke Jarak Jauh
   share: Bagikan Konfigurasi Instansi
   sharing: Membagikan berkas...
-  sharingNotificationBody: Anda dapat mengunduh atau membuat instansi dari konfigurasi bersama {name}.
-  sharingNotificationTitle: Rekan membagikan konfigurasi game mereka
   start: Mulai
   startNewP2PConnection: Klik tombol Mulai untuk membuat koneksi rekan baru
 myStuff: Barang Saya

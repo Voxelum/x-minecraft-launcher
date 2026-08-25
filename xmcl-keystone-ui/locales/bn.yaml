@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: গেম তৈরি করুন
   serverTitle: আপনার সার্ভার ঠিকানা লিখুন
 AppShareInstanceDialog:
+  editScopeDescription: ল্যানে চলমান এই গেমটি শনাক্ত করার পর পিয়াররা যেসব ফাইল আনতে পারবে সেগুলো নির্বাচন করুন।
+  editScopeTitle: শেয়ারের পরিধি সম্পাদনা করুন
+  instanceToShare: চলমান গেম
   alterDownloadDescription: আপনি যদি বর্তমান ইনস্ট্যান্সটি এলোমেলো করতে না চান, তবে আপনি অন্য পিয়ারের কনফিগারেশন থেকে একটি নতুন ইনস্ট্যান্স তৈরি করতে পারেন। ইনস্ট্যান্স তৈরি করতে নিচের বোতামে ক্লিক করুন।
   baseInfo: প্রাথমিক সেটিংস
-  cancelShare: শেয়ার করা বাতিল করুন
   description: আপনি প্রোফাইলটি শেয়ার করার পর, অন্য স্থান থেকে আপনার পিসির মাধ্যমে এই ফাইলগুলো ডাউনলোড করা যাবে।
   downloadDescription: অনুগ্রহ করে আপনার পিয়ারের প্রদান করা ফাইলগুলো যাচাই করুন। আপনি যে ফাইলটি ডাউনলোড করতে চান তা নির্বাচন করুন। এটি বর্তমান ইনস্ট্যান্স {name}-এ রাখা হবে।
   downloadNotifyTitle: '{user}-এর থেকে ইনস্ট্যান্স ডাউনলোড করুন'
   downloadTitle: অন্যান্য পিয়ারদের থেকে ফাইল ডাউনলোড করুন
   filesToDownload: ডাউনলোড করার জন্য ফাইল বেছে নিন
   filesToShare: শেয়ার করার জন্য ফাইল বেছে নিন
-  instanceShare: '{user} এইমাত্র আপনার সাথে বর্তমান ইনস্ট্যান্সটি শেয়ার করেছেন'
   share: শেয়ার করুন
-  shareNotifyTitle: ইনস্ট্যান্স শেয়ার করুন
   shareTitle: অন্যান্য খেলোয়াড়দের সাথে গেম ফাইল শেয়ার করুন
 BaseSettingGeneral:
   title: সাধারণ
@@ -1013,6 +1013,14 @@ modrinth:
 modrinthCard:
   currentVersion: বর্তমান সংস্করণ
 multiplayer:
+  autoShareAmbiguous: একাধিক গেম চলছে। XMCL যাতে শেয়ার করতে পারে, ল্যান ওয়ার্ল্ড হোস্ট করা ইনস্ট্যান্সটি নির্বাচন করুন।
+  editSharingScope: শেয়ারের পরিধি সম্পাদনা করুন
+  gameAvailable: ল্যান গেম উপলভ্য
+  joinGame: গেমে যোগ দিন
+  noRunningInstanceToShare: শেয়ারের পরিধি সম্পাদনার আগে একটি গেম চালু করুন
+  updateSharedInstanceConfirm: আপডেট করে চালু করুন
+  updateSharedInstanceDescription: শেয়ার করা মডগুলো {instance}-এর মডগুলোর থেকে আলাদা। চালুর আগে হোস্টের সঙ্গে মিলিয়ে এই ইনস্ট্যান্সটি আপডেট করবেন? বর্তমানে পরিবর্তিত ফাইলগুলোর ব্যাকআপ নেওয়া হবে।
+  updateSharedInstanceTitle: শেয়ার করা ইনস্ট্যান্স আপডেট করবেন?
   addFunds: "অর্থ যোগ করুন"
   availableBalance: "উপলভ্য ব্যালেন্স"
   balanceHint: "XMCL Together পরিষেবার জন্য উপলভ্য"
@@ -1092,8 +1100,6 @@ multiplayer:
   sendTokenToRemote: রিমোটে টোকেন পাঠান
   share: ইনস্ট্যান্স কনফিগারেশন শেয়ার করুন
   sharing: ফাইল শেয়ার করা হচ্ছে...
-  sharingNotificationBody: আপনি {name} এর শেয়ার করা কনফিগারেশন থেকে একটি ইনস্ট্যান্স ডাউনলোড বা তৈরি করতে পারেন।
-  sharingNotificationTitle: একজন পিয়ার তাদের গেম কনফিগারেশন শেয়ার করছেন
   start: শুরু করুন
   startNewP2PConnection: একটি নতুন পিয়ার সংযোগ তৈরি করতে শুরু করুন বোতামে ক্লিক করুন
 myStuff: আমার জিনিসপত্র

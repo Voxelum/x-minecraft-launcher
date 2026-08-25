@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: Tạo game
   serverTitle: Nhập địa chỉ máy chủ của bạn
 AppShareInstanceDialog:
+  editScopeDescription: Chọn các tệp mà người chơi khác có thể tải sau khi phát hiện trò chơi đang chạy này trên mạng LAN.
+  editScopeTitle: Chỉnh sửa phạm vi chia sẻ
+  instanceToShare: Trò chơi đang chạy
   alterDownloadDescription: Nếu bạn không muốn làm xáo trộn phiên bản hiện tại. Bạn cũng có thể tạo một phiên bản mới từ cấu hình của bạn bè. Nhấp vào nút bên dưới để tạo phiên bản.
   baseInfo: Thiết lập cơ bản
-  cancelShare: Hủy chia sẻ
   description: Sau khi bạn chia sẻ hồ sơ, các thiết bị khác có thể tải các tệp này xuống thông qua PC của bạn.
   downloadDescription: Vui lòng xác minh các tệp mà bạn bè đã cung cấp cho bạn. Chọn tệp bạn muốn tải xuống. Tệp sẽ được đặt vào phiên bản hiện tại {name}.
   downloadNotifyTitle: Tải xuống phiên bản từ {user}
   downloadTitle: Tải xuống các tệp từ các máy khác
   filesToDownload: Chọn tệp cần tải xuống
   filesToShare: Chọn tệp cần chia sẻ
-  instanceShare: '{user} vừa chia sẻ phiên bản hiện tại cho bạn'
   share: Chia sẻ
-  shareNotifyTitle: Chia sẻ phiên bản
   shareTitle: Chia sẻ tệp game cho người chơi khác
 BaseSettingGeneral:
   title: Chung
@@ -1013,6 +1013,14 @@ modrinth:
 modrinthCard:
   currentVersion: Phiên bản hiện tại
 multiplayer:
+  autoShareAmbiguous: Có nhiều trò chơi đang chạy. Hãy chọn phiên bản đang lưu trữ thế giới LAN để XMCL có thể chia sẻ.
+  editSharingScope: Chỉnh sửa phạm vi chia sẻ
+  gameAvailable: Có trò chơi LAN
+  joinGame: Tham gia trò chơi
+  noRunningInstanceToShare: Hãy khởi chạy trò chơi trước khi chỉnh sửa phạm vi chia sẻ
+  updateSharedInstanceConfirm: Cập nhật và khởi chạy
+  updateSharedInstanceDescription: Các mod được chia sẻ khác với {instance}. Cập nhật phiên bản này để khớp với máy chủ trước khi khởi chạy? Các tệp hiện có đã thay đổi sẽ được sao lưu.
+  updateSharedInstanceTitle: Cập nhật phiên bản được chia sẻ?
   addFunds: "Thêm tiền"
   availableBalance: "Số dư khả dụng"
   balanceHint: "Có thể sử dụng cho các dịch vụ XMCL Together"
@@ -1092,8 +1100,6 @@ multiplayer:
   sendTokenToRemote: Gửi token đến máy từ xa
   share: Chia sẻ cấu hình phiên bản
   sharing: Đang chia sẻ tệp...
-  sharingNotificationBody: Bạn có thể tải xuống hoặc tạo một phiên bản từ cấu hình chia sẻ của {name}.
-  sharingNotificationTitle: Một người bạn đang chia sẻ cấu hình game của họ
   start: Bắt đầu
   startNewP2PConnection: Nhấp vào nút Bắt đầu để tạo một kết nối ngang hàng (peer connection) mới
 myStuff: Kho của tôi
