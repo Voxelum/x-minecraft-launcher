@@ -1727,7 +1727,6 @@ userSkin:
   slim: Snello
   saveSuccess: Skin salvata sul disco!
   saveFailed: Impossibile salvare la skin sul disco
-  uploadSuccess: Skin applicata al tuo account!
   uploadFailed: Caricamento della skin non riuscito
   libraryTitle: Armadio locale
   librarySubtitle: Scegli, organizza e salva le tue skin in locale
@@ -1752,7 +1751,6 @@ userSkin:
   saveAndEquip: Salva e indossa
   equip: Indossa
   equipToAccount: Indossa sull'account Minecraft
-  currentlyActive: Attualmente attiva
   equipped: Indossata
   noSkinSelected: Nessuna skin selezionata
   saveCurrent: Salva quella attuale
@@ -1761,11 +1759,10 @@ userSkin:
   presets: Preimpostazioni
   noSkinsFound: Nessuna skin trovata
   tryAddingOne: Prova ad aggiungere una nuova skin con il pulsante qui sopra!
-  skinAdded: Skin aggiunta all'armadio!
   skinUpdated: Skin aggiornata!
-  skinDeleted: Skin rimossa dall'armadio!
   skinDeleteFailed: Impossibile rimuovere la skin dall'armadio
   edit: Modifica
+  delete: Elimina
   fetch: Carica
 version:
   checkIntegrity: Controlla l'integrità

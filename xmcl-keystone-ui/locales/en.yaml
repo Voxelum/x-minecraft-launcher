@@ -2508,7 +2508,6 @@ userSkin:
   skinType: 'Skin Type'
   slim: 'Slim'
   upload: 'Upload Skin'
-  uploadSuccess: 'Skin applied to your account!'
   uploadFailed: 'Skin Upload Failed'
   uploadRejected: 'Minecraft rejected this skin upload. Please try again later.'
   urlNotEmpty: 'Skin URL cannot be empty'
@@ -2537,7 +2536,6 @@ userSkin:
   saveAndEquip: 'Save & Equip'
   equip: 'Equip'
   equipToAccount: 'Equip to Minecraft Account'
-  currentlyActive: 'Currently Active'
   equipped: 'Equipped'
   noSkinSelected: 'No Skin Selected'
   saveCurrent: 'Save Current'
@@ -2546,11 +2544,10 @@ userSkin:
   presets: 'Presets'
   noSkinsFound: 'No skins found'
   tryAddingOne: 'Try adding a new skin with the button above!'
-  skinAdded: 'Skin added to closet!'
   skinUpdated: 'Skin updated!'
-  skinDeleted: 'Skin removed from closet!'
   skinDeleteFailed: 'Failed to remove skin from closet'
   edit: 'Edit'
+  delete: 'Delete'
   fetch: 'Load'
 version:
   checkIntegrity: Check Integrity

@@ -1877,7 +1877,6 @@ userSkin:
   slim: Schlank
   saveSuccess: Skin wurde auf der Festplatte gespeichert!
   saveFailed: Skin konnte nicht auf der Festplatte gespeichert werden
-  uploadSuccess: Skin wurde auf dein Konto angewendet!
   uploadFailed: Hochladen des Skins fehlgeschlagen
   libraryTitle: Lokaler Kleiderschrank
   librarySubtitle: Wähle, verwalte und speichere deine Skins lokal
@@ -1902,7 +1901,6 @@ userSkin:
   saveAndEquip: Speichern und ausrüsten
   equip: Ausrüsten
   equipToAccount: Im Minecraft-Konto ausrüsten
-  currentlyActive: Derzeit aktiv
   equipped: Ausgerüstet
   noSkinSelected: Kein Skin ausgewählt
   saveCurrent: Aktuellen speichern
@@ -1911,11 +1909,10 @@ userSkin:
   presets: Vorlagen
   noSkinsFound: Keine Skins gefunden
   tryAddingOne: Füge mit der Schaltfläche oben einen neuen Skin hinzu!
-  skinAdded: Skin wurde dem Kleiderschrank hinzugefügt!
   skinUpdated: Skin wurde aktualisiert!
-  skinDeleted: Skin wurde aus dem Kleiderschrank entfernt!
   skinDeleteFailed: Skin konnte nicht aus dem Kleiderschrank entfernt werden
   edit: Bearbeiten
+  delete: Löschen
   fetch: Laden
 version:
   checkIntegrity: Integrität überprüfen

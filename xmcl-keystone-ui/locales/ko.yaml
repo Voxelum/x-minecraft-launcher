@@ -1750,7 +1750,6 @@ userSkin:
   slim: 슬림
   saveSuccess: 스킨을 디스크에 저장했습니다!
   saveFailed: 스킨을 디스크에 저장하지 못했습니다
-  uploadSuccess: 계정에 스킨을 적용했습니다!
   uploadFailed: 스킨 업로드에 실패했습니다
   libraryTitle: 로컬 옷장
   librarySubtitle: 스킨을 선택하고 정리하여 로컬에 저장하세요
@@ -1775,7 +1774,6 @@ userSkin:
   saveAndEquip: 저장하고 착용
   equip: 착용
   equipToAccount: Minecraft 계정에 착용
-  currentlyActive: 현재 사용 중
   equipped: 착용됨
   noSkinSelected: 선택한 스킨 없음
   saveCurrent: 현재 스킨 저장
@@ -1784,11 +1782,10 @@ userSkin:
   presets: 프리셋
   noSkinsFound: 스킨을 찾을 수 없습니다
   tryAddingOne: 위 버튼으로 새 스킨을 추가해 보세요!
-  skinAdded: 스킨을 옷장에 추가했습니다!
   skinUpdated: 스킨을 업데이트했습니다!
-  skinDeleted: 스킨을 옷장에서 삭제했습니다!
   skinDeleteFailed: 스킨을 옷장에서 삭제하지 못했습니다
   edit: 편집
+  delete: 삭제
   fetch: 불러오기
 version:
   checkIntegrity: 무결성을 확인하십시오

@@ -1724,7 +1724,6 @@ userSkin:
   slim: Delgado
   saveSuccess: Gardouse a skin no disco!
   saveFailed: Non foi posible gardar a skin no disco
-  uploadSuccess: Aplicouse a skin á túa conta!
   uploadFailed: Produciuse un erro ao subir a skin
   libraryTitle: Armario local
   librarySubtitle: Escolle, organiza e garda as túas skins localmente
@@ -1749,7 +1748,6 @@ userSkin:
   saveAndEquip: Gardar e equipar
   equip: Equipar
   equipToAccount: Equipar na conta de Minecraft
-  currentlyActive: Activa actualmente
   equipped: Equipada
   noSkinSelected: Non se seleccionou ningunha skin
   saveCurrent: Gardar a actual
@@ -1758,11 +1756,10 @@ userSkin:
   presets: Predefinicións
   noSkinsFound: Non se atoparon skins
   tryAddingOne: Proba a engadir unha skin co botón de arriba!
-  skinAdded: Engadiuse a skin ao armario!
   skinUpdated: Actualizouse a skin!
-  skinDeleted: Retirouse a skin do armario!
   skinDeleteFailed: Non foi posible retirar a skin do armario
   edit: Editar
+  delete: Eliminar
   fetch: Cargar
 version:
   checkIntegrity: Controleer Integriteit

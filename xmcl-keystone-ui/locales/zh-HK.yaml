@@ -1965,7 +1965,6 @@ userSkin:
   useSlim: 使用細胳膊模型
   saveSuccess: 皮膚已儲存到本機！
   saveFailed: 無法將皮膚儲存到本機
-  uploadSuccess: 皮膚已套用到你嘅帳戶！
   uploadFailed: 皮膚上傳失敗
   libraryTitle: 本機衣櫥
   librarySubtitle: 喺本機揀選、管理同儲存你嘅皮膚
@@ -1990,7 +1989,6 @@ userSkin:
   saveAndEquip: 儲存並套用
   equip: 套用
   equipToAccount: 套用到 Minecraft 帳戶
-  currentlyActive: 目前使用中
   equipped: 已套用
   noSkinSelected: 未揀選皮膚
   saveCurrent: 儲存目前皮膚
@@ -1999,11 +1997,10 @@ userSkin:
   presets: 預設
   noSkinsFound: 搵唔到皮膚
   tryAddingOne: 試下用上面嘅按鈕新增皮膚啦！
-  skinAdded: 皮膚已加入衣櫥！
   skinUpdated: 皮膚已更新！
-  skinDeleted: 皮膚已從衣櫥移除！
   skinDeleteFailed: 無法從衣櫥移除皮膚
   edit: 編輯
+  delete: 刪除
   fetch: 載入
 version:
   checkIntegrity: 檢查完整性

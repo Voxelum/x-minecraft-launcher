@@ -1758,7 +1758,6 @@ userSkin:
   slim: İnce
   saveSuccess: Cilt diske kaydedildi!
   saveFailed: Cilt diske kaydedilemedi
-  uploadSuccess: Cilt hesabınıza uygulandı!
   uploadFailed: Cilt yüklenemedi
   libraryTitle: Yerel Gardırop
   librarySubtitle: Ciltlerinizi seçin, düzenleyin ve yerel olarak kaydedin
@@ -1783,7 +1782,6 @@ userSkin:
   saveAndEquip: Kaydet ve Giy
   equip: Giy
   equipToAccount: Minecraft Hesabında Giy
-  currentlyActive: Şu Anda Etkin
   equipped: Giyildi
   noSkinSelected: Cilt Seçilmedi
   saveCurrent: Geçerliyi Kaydet
@@ -1792,11 +1790,10 @@ userSkin:
   presets: Ön Ayarlar
   noSkinsFound: Cilt bulunamadı
   tryAddingOne: Yukarıdaki düğmeyle yeni bir cilt eklemeyi deneyin!
-  skinAdded: Cilt gardıroba eklendi!
   skinUpdated: Cilt güncellendi!
-  skinDeleted: Cilt gardıroptan kaldırıldı!
   skinDeleteFailed: Cilt gardıroptan kaldırılamadı
   edit: Düzenle
+  delete: Sil
   fetch: Yükle
 version:
   checkIntegrity: Bütünlüğü Kontrol Et

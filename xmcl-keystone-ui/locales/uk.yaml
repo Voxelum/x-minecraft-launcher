@@ -1766,7 +1766,6 @@ userSkin:
   saveFailed: 'Не вдалося зберегти скін на диск'
   skinType: 'Тип скіна'
   upload: 'Завантажити скін'
-  uploadSuccess: 'Скін успішно застосовано до вашого акаунта!'
   uploadFailed: 'Не вдалося завантажити скін'
   uploadRejected: 'Сервери Minecraft відхилили цей скін. Спробуйте пізніше.'
   urlNotEmpty: 'URL скіна не може бути порожнім'
@@ -1797,7 +1796,6 @@ userSkin:
   saveAndEquip: 'Зберегти та застосувати'
   equip: 'Застосувати'
   equipToAccount: 'Застосувати до акаунта Minecraft'
-  currentlyActive: 'Активний скін'
   equipped: 'Застосовано'
   noSkinSelected: 'Скін не вибрано'
   saveCurrent: 'Зберегти поточний'
@@ -1806,11 +1804,10 @@ userSkin:
   presets: 'Пресети'
   noSkinsFound: 'Скінів не знайдено'
   tryAddingOne: 'Спробуйте додати новий скін за допомогою кнопки вгорі!'
-  skinAdded: 'Скін додано до шафи!'
   skinUpdated: 'Скін оновлено!'
-  skinDeleted: 'Скін видалено з шафи!'
   skinDeleteFailed: 'Не вдалося видалити скін із шафи'
   edit: 'Редагувати'
+  delete: 'Видалити'
   fetch: 'Завантажити'
 version:
   checkIntegrity: Перевірте цілісність

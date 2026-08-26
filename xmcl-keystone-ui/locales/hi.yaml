@@ -1876,7 +1876,6 @@ userSkin:
   useSlim: स्लिम मॉडल का उपयोग करें
   saveSuccess: स्किन डिस्क पर सहेजी गई!
   saveFailed: स्किन को डिस्क पर सहेजा नहीं जा सका
-  uploadSuccess: स्किन आपके खाते पर लागू हो गई!
   uploadFailed: स्किन अपलोड नहीं हो सकी
   libraryTitle: स्थानीय अलमारी
   librarySubtitle: अपनी स्किन चुनें, व्यवस्थित करें और स्थानीय रूप से सहेजें
@@ -1901,7 +1900,6 @@ userSkin:
   saveAndEquip: सहेजें और पहनें
   equip: पहनें
   equipToAccount: Minecraft खाते पर पहनें
-  currentlyActive: अभी सक्रिय
   equipped: पहनी हुई
   noSkinSelected: कोई स्किन नहीं चुनी गई
   saveCurrent: वर्तमान स्किन सहेजें
@@ -1910,11 +1908,10 @@ userSkin:
   presets: प्रीसेट
   noSkinsFound: कोई स्किन नहीं मिली
   tryAddingOne: ऊपर दिए गए बटन से एक नई स्किन जोड़कर देखें!
-  skinAdded: स्किन अलमारी में जोड़ दी गई!
   skinUpdated: स्किन अपडेट हो गई!
-  skinDeleted: स्किन अलमारी से हटा दी गई!
   skinDeleteFailed: स्किन को अलमारी से हटाया नहीं जा सका
   edit: संपादित करें
+  delete: हटाएं
   fetch: लोड करें
 version:
   checkIntegrity: अखंडता की जाँच करें

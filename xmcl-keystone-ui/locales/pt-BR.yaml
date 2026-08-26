@@ -1732,7 +1732,6 @@ userSkin:
   slim: Slim
   saveSuccess: Skin salva no disco!
   saveFailed: Não foi possível salvar a skin no disco
-  uploadSuccess: Skin aplicada à sua conta!
   uploadFailed: Falha ao enviar a skin
   libraryTitle: Guarda-roupa local
   librarySubtitle: Escolha, organize e salve suas skins localmente
@@ -1757,7 +1756,6 @@ userSkin:
   saveAndEquip: Salvar e equipar
   equip: Equipar
   equipToAccount: Equipar na conta do Minecraft
-  currentlyActive: Ativa no momento
   equipped: Equipada
   noSkinSelected: Nenhuma skin selecionada
   saveCurrent: Salvar atual
@@ -1766,11 +1764,10 @@ userSkin:
   presets: Predefinições
   noSkinsFound: Nenhuma skin encontrada
   tryAddingOne: Tente adicionar uma nova skin usando o botão acima!
-  skinAdded: Skin adicionada ao guarda-roupa!
   skinUpdated: Skin atualizada!
-  skinDeleted: Skin removida do guarda-roupa!
   skinDeleteFailed: Não foi possível remover a skin do guarda-roupa
   edit: Editar
+  delete: Deletar
   fetch: Carregar
 version:
   checkIntegrity: Verifique a integridade

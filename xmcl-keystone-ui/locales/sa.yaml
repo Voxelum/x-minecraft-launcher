@@ -1874,7 +1874,6 @@ userSkin:
   useSlim: सूक्ष्मरूपं प्रयुङ्क्त
   saveSuccess: त्वचा डिस्के रक्षिता!
   saveFailed: त्वचां डिस्के रक्षितुं न शक्तम्
-  uploadSuccess: त्वचा भवतः लेखाय प्रयुक्ता!
   uploadFailed: त्वचायाः आरोपणं विफलम्
   libraryTitle: स्थानीयवेषागारः
   librarySubtitle: स्वत्वचाः चिनोतु व्यवस्थापयतु स्थानीयतया रक्षतु च
@@ -1899,7 +1898,6 @@ userSkin:
   saveAndEquip: रक्षतु धारयतु च
   equip: धारयतु
   equipToAccount: Minecraft-लेखे धारयतु
-  currentlyActive: अधुना सक्रिया
   equipped: धारिता
   noSkinSelected: कापि त्वचा न चिता
   saveCurrent: वर्तमानां रक्षतु
@@ -1908,11 +1906,10 @@ userSkin:
   presets: पूर्वनिर्धारणानि
   noSkinsFound: त्वचाः न प्राप्ताः
   tryAddingOne: उपरिस्थया कुञ्चिकया नवीनां त्वचां योजयतु!
-  skinAdded: त्वचा वेषागारे योजिता!
   skinUpdated: त्वचा अद्यतनीकृता!
-  skinDeleted: त्वचा वेषागारात् निष्कासिता!
   skinDeleteFailed: त्वचां वेषागारात् निष्कासयितुं न शक्तम्
   edit: सम्पादयतु
+  delete: लोपयतु
   fetch: आनयतु
 version:
   checkIntegrity: अखण्डतां परीक्षताम्

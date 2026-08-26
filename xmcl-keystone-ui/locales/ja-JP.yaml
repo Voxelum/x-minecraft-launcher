@@ -1743,7 +1743,6 @@ userSkin:
   slim: スリム
   saveSuccess: スキンをディスクに保存しました！
   saveFailed: スキンをディスクに保存できませんでした
-  uploadSuccess: スキンをアカウントに適用しました！
   uploadFailed: スキンのアップロードに失敗しました
   libraryTitle: ローカルクローゼット
   librarySubtitle: スキンを選び、整理してローカルに保存します
@@ -1768,7 +1767,6 @@ userSkin:
   saveAndEquip: 保存して装備
   equip: 装備
   equipToAccount: Minecraftアカウントに装備
-  currentlyActive: 現在使用中
   equipped: 装備済み
   noSkinSelected: スキンが選択されていません
   saveCurrent: 現在のスキンを保存
@@ -1777,11 +1775,10 @@ userSkin:
   presets: プリセット
   noSkinsFound: スキンが見つかりません
   tryAddingOne: 上のボタンから新しいスキンを追加してみましょう！
-  skinAdded: スキンをクローゼットに追加しました！
   skinUpdated: スキンを更新しました！
-  skinDeleted: スキンをクローゼットから削除しました！
   skinDeleteFailed: スキンをクローゼットから削除できませんでした
   edit: 編集
+  delete: 削除
   fetch: 読み込む
 version:
   checkIntegrity: 整合性を確認してください

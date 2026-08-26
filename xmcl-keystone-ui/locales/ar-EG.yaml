@@ -1874,7 +1874,6 @@ userSkin:
   useSlim: استخدام موديل نحيف (Slim)
   saveSuccess: السكن اتحفظ على الكمبيوتر!
   saveFailed: ما قدرناش نحفظ السكن على الكمبيوتر
-  uploadSuccess: السكن اتطبق على حسابك!
   uploadFailed: رفع السكن فشل
   libraryTitle: دولاب السكنات المحلي
   librarySubtitle: اختار سكناتك ونظّمها واحفظها عندك
@@ -1899,7 +1898,6 @@ userSkin:
   saveAndEquip: حفظ ولبس
   equip: لبس
   equipToAccount: لبس على حساب Minecraft
-  currentlyActive: مستخدم دلوقتي
   equipped: ملبوس
   noSkinSelected: مفيش سكن متختار
   saveCurrent: حفظ الحالي
@@ -1908,11 +1906,10 @@ userSkin:
   presets: إعدادات جاهزة
   noSkinsFound: ملقيناش سكنات
   tryAddingOne: جرّب تضيف سكن جديد من الزر اللي فوق!
-  skinAdded: السكن اتضاف للدولاب!
   skinUpdated: السكن اتحدّث!
-  skinDeleted: السكن اتمسح من الدولاب!
   skinDeleteFailed: ما قدرناش نمسح السكن من الدولاب
   edit: تعديل
+  delete: حذف
   fetch: تحميل
 version:
   checkIntegrity: التحقق من سلامة الملفات

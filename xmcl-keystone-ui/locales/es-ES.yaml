@@ -2091,7 +2091,6 @@ userSkin:
   useSlim: Usar modelo delgado
   saveSuccess: ¡Skin guardada en el disco!
   saveFailed: No se pudo guardar la skin en el disco
-  uploadSuccess: ¡Skin aplicada a tu cuenta!
   uploadFailed: Error al subir la skin
   libraryTitle: Armario local
   librarySubtitle: Elige, organiza y guarda tus skins localmente
@@ -2116,7 +2115,6 @@ userSkin:
   saveAndEquip: Guardar y equipar
   equip: Equipar
   equipToAccount: Equipar en la cuenta de Minecraft
-  currentlyActive: Activa actualmente
   equipped: Equipada
   noSkinSelected: Ninguna skin seleccionada
   saveCurrent: Guardar la actual
@@ -2125,11 +2123,10 @@ userSkin:
   presets: Preajustes
   noSkinsFound: No se encontraron skins
   tryAddingOne: ¡Prueba a añadir una skin nueva con el botón de arriba!
-  skinAdded: ¡Skin añadida al armario!
   skinUpdated: ¡Skin actualizada!
-  skinDeleted: ¡Skin eliminada del armario!
   skinDeleteFailed: No se pudo eliminar la skin del armario
   edit: Editar
+  delete: Eliminar
   fetch: Cargar
 version:
   checkIntegrity: Verificar la integridad

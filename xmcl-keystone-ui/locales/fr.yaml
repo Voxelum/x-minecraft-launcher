@@ -1777,7 +1777,6 @@ userSkin:
   slim: Mince
   saveSuccess: Skin enregistré sur le disque !
   saveFailed: Impossible d'enregistrer le skin sur le disque
-  uploadSuccess: Skin appliqué à votre compte !
   uploadFailed: Échec de l'envoi du skin
   libraryTitle: Garde-robe locale
   librarySubtitle: Choisissez, organisez et enregistrez vos skins localement
@@ -1802,7 +1801,6 @@ userSkin:
   saveAndEquip: Enregistrer et équiper
   equip: Équiper
   equipToAccount: Équiper sur le compte Minecraft
-  currentlyActive: Actuellement actif
   equipped: Équipé
   noSkinSelected: Aucun skin sélectionné
   saveCurrent: Enregistrer l'actuel
@@ -1811,11 +1809,10 @@ userSkin:
   presets: Préréglages
   noSkinsFound: Aucun skin trouvé
   tryAddingOne: Ajoutez un nouveau skin avec le bouton ci-dessus !
-  skinAdded: Skin ajouté à la garde-robe !
   skinUpdated: Skin mis à jour !
-  skinDeleted: Skin retiré de la garde-robe !
   skinDeleteFailed: Impossible de retirer le skin de la garde-robe
   edit: Modifier
+  delete: Supprimer
   fetch: Charger
 version:
   checkIntegrity: Vérifier l'intégrité

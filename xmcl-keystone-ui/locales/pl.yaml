@@ -1711,7 +1711,6 @@ userSkin:
   slim: Szczupły
   saveSuccess: Skórka została zapisana na dysku!
   saveFailed: Nie udało się zapisać skórki na dysku
-  uploadSuccess: Skórka została zastosowana na twoim koncie!
   uploadFailed: Nie udało się przesłać skórki
   libraryTitle: Lokalna garderoba
   librarySubtitle: Wybieraj, porządkuj i zapisuj skórki lokalnie
@@ -1736,7 +1735,6 @@ userSkin:
   saveAndEquip: Zapisz i załóż
   equip: Załóż
   equipToAccount: Załóż na koncie Minecraft
-  currentlyActive: Obecnie aktywna
   equipped: Założona
   noSkinSelected: Nie wybrano skórki
   saveCurrent: Zapisz obecną
@@ -1745,11 +1743,10 @@ userSkin:
   presets: Ustawienia
   noSkinsFound: Nie znaleziono skórek
   tryAddingOne: Dodaj nową skórkę za pomocą przycisku powyżej!
-  skinAdded: Skórka została dodana do garderoby!
   skinUpdated: Skórka została zaktualizowana!
-  skinDeleted: Skórka została usunięta z garderoby!
   skinDeleteFailed: Nie udało się usunąć skórki z garderoby
   edit: Edytuj
+  delete: Usuń
   fetch: Wczytaj
 downloadModMetadataDb:
   name: Pobierz bazę metadanych modów

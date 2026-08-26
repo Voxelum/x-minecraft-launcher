@@ -1718,7 +1718,6 @@ userSkin:
   slim: Жіңішке
   saveSuccess: Скин дискіге сақталды!
   saveFailed: Скинді дискіге сақтау мүмкін болмады
-  uploadSuccess: Скин тіркелгіңізге қолданылды!
   uploadFailed: Скинді жүктеп салу сәтсіз аяқталды
   libraryTitle: Жергілікті гардероб
   librarySubtitle: Скиндеріңізді таңдап, реттеп, жергілікті түрде сақтаңыз
@@ -1743,7 +1742,6 @@ userSkin:
   saveAndEquip: Сақтау және кию
   equip: Кию
   equipToAccount: Minecraft тіркелгісіне кию
-  currentlyActive: Қазір белсенді
   equipped: Киілген
   noSkinSelected: Скин таңдалмаған
   saveCurrent: Ағымдағысын сақтау
@@ -1752,11 +1750,10 @@ userSkin:
   presets: Дайын үлгілер
   noSkinsFound: Скиндер табылмады
   tryAddingOne: Жоғарыдағы батырмамен жаңа скин қосып көріңіз!
-  skinAdded: Скин гардеробқа қосылды!
   skinUpdated: Скин жаңартылды!
-  skinDeleted: Скин гардеробтан жойылды!
   skinDeleteFailed: Скинді гардеробтан жою мүмкін болмады
   edit: Өңдеу
+  delete: Жою
   fetch: Жүктеу
 version:
   checkIntegrity: Тұтастығын тексеру

@@ -2199,7 +2199,6 @@ userSkin:
   slim: 纤细
   saveSuccess: 皮肤已保存到本地！
   saveFailed: 无法将皮肤保存到本地
-  uploadSuccess: 皮肤已应用到你的账户！
   libraryTitle: 本地衣橱
   librarySubtitle: 在本地选择、管理和保存你的皮肤
   manage: 管理
@@ -2223,7 +2222,6 @@ userSkin:
   saveAndEquip: 保存并使用
   equip: 使用
   equipToAccount: 应用到 Minecraft 账户
-  currentlyActive: 当前正在使用
   equipped: 已使用
   noSkinSelected: 未选择皮肤
   saveCurrent: 保存当前皮肤
@@ -2232,11 +2230,10 @@ userSkin:
   presets: 预设
   noSkinsFound: 未找到皮肤
   tryAddingOne: 尝试使用上方按钮添加新皮肤吧！
-  skinAdded: 皮肤已添加到衣橱！
   skinUpdated: 皮肤已更新！
-  skinDeleted: 皮肤已从衣橱移除！
   skinDeleteFailed: 无法从衣橱移除皮肤
   edit: 编辑
+  delete: 删除
   fetch: 加载
 version:
   checkIntegrity: 检查完整性

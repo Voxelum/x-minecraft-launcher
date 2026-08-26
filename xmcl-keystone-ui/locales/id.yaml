@@ -1876,7 +1876,6 @@ userSkin:
   useSlim: Gunakan Model Slim
   saveSuccess: Skin disimpan ke disk!
   saveFailed: Gagal menyimpan skin ke disk
-  uploadSuccess: Skin diterapkan ke akun Anda!
   uploadFailed: Gagal mengunggah skin
   libraryTitle: Lemari Lokal
   librarySubtitle: Pilih, kelola, dan simpan skin Anda secara lokal
@@ -1901,7 +1900,6 @@ userSkin:
   saveAndEquip: Simpan dan Kenakan
   equip: Kenakan
   equipToAccount: Kenakan di Akun Minecraft
-  currentlyActive: Sedang Aktif
   equipped: Dikenakan
   noSkinSelected: Tidak Ada Skin yang Dipilih
   saveCurrent: Simpan yang Sekarang
@@ -1910,11 +1908,10 @@ userSkin:
   presets: Preset
   noSkinsFound: Skin tidak ditemukan
   tryAddingOne: Coba tambahkan skin baru dengan tombol di atas!
-  skinAdded: Skin ditambahkan ke lemari!
   skinUpdated: Skin diperbarui!
-  skinDeleted: Skin dihapus dari lemari!
   skinDeleteFailed: Gagal menghapus skin dari lemari
   edit: Edit
+  delete: Hapus
   fetch: Muat
 version:
   checkIntegrity: Periksa Integritas

@@ -49,10 +49,6 @@
             <div class="text-base font-bold truncate px-2" :title="previewName">
               {{ previewName || t('userSkin.noSkinSelected') }}
             </div>
-            <div v-if="isCurrentlyEquipped" class="text-xs text-green-400 font-medium flex items-center justify-center gap-1 mt-1">
-              <v-icon size="14">check_circle</v-icon>
-              {{ t('userSkin.currentlyActive') }}
-            </div>
           </div>
 
           <!-- Action Buttons -->
@@ -62,7 +58,7 @@
               :variant="isCurrentlyEquipped ? 'tonal' : 'elevated'"
               size="large"
               block
-              class="rounded-xl font-semibold"
+              class="font-semibold"
               :disabled="isEditorOpen || !selectedSkin || isCurrentlyEquipped || isUploading || !canUploadSkin"
               :loading="isUploading"
               @click="equipSelectedSkin()"
@@ -75,7 +71,7 @@
               <v-btn
                 variant="tonal"
                 size="default"
-                class="flex-1 rounded-xl"
+                class="flex-1"
                 height="40"
                 :disabled="isEditorOpen || !canSaveCurrentToLibrary"
                 @click="saveCurrentToLibrary"
@@ -88,7 +84,6 @@
                 variant="tonal"
                 size="default"
                 icon
-                class="rounded-xl"
                 width="40"
                 height="40"
                 :title="t('userSkin.saveTitle')"
@@ -125,17 +120,17 @@
             </v-btn>
           </div>
 
-          <v-alert
-            v-if="loadSkinError"
-            type="error"
-            variant="tonal"
-            density="compact"
-            closable
-            class="mb-4"
-            @click:close="loadSkinError = ''"
-          >
-            {{ loadSkinError }}
-          </v-alert>
+          <div v-if="loadSkinError" class="mb-4 flex-none">
+            <v-alert
+              type="error"
+              variant="tonal"
+              density="compact"
+              closable
+              @click:close="loadSkinError = ''"
+            >
+              {{ loadSkinError }}
+            </v-alert>
+          </div>
 
           <div class="flex-1 min-h-0 flex flex-col justify-between">
             <div class="flex flex-col gap-5 overflow-y-auto pr-1">
@@ -241,7 +236,7 @@
                           color="primary"
                           variant="tonal"
                           height="48"
-                          class="rounded-lg px-5 font-semibold flex-shrink-0"
+                          class="px-5 font-semibold flex-shrink-0"
                           :loading="isFetchingUrl"
                           :disabled="!urlInput"
                           @click="fetchFromUrl"
@@ -257,12 +252,12 @@
             </div>
 
             <div class="flex items-center justify-end gap-3 mt-5 pt-5 border-t border-[rgba(var(--v-theme-on-surface),0.08)]">
-              <v-btn variant="text" class="rounded-lg px-5" @click="closeEditor">
+              <v-btn variant="text" class="px-5" @click="closeEditor">
                 {{ t('shared.cancel') }}
               </v-btn>
               <v-btn
                 color="primary"
-                class="rounded-lg px-6 font-semibold"
+                class="px-6 font-semibold"
                 :disabled="!canSaveDraft"
                 @click="saveDraft(false)"
               >
@@ -271,7 +266,7 @@
               <v-btn
                 v-if="!editingSkin"
                 color="success"
-                class="rounded-lg px-6 font-semibold"
+                class="px-6 font-semibold"
                 :disabled="!canSaveDraft"
                 @click="saveDraft(true)"
               >
@@ -298,7 +293,7 @@
             <v-btn
               color="primary"
               size="default"
-              class="rounded-xl font-medium"
+              class="font-medium"
               @click="openAddEditor"
             >
               <v-icon start size="18">add</v-icon>
@@ -316,17 +311,17 @@
           </div>
         </div>
 
-        <v-alert
-          v-if="loadSkinError"
-          type="error"
-          variant="tonal"
-          density="compact"
-          closable
-          class="mb-4"
-          @click:close="loadSkinError = ''"
-        >
-          {{ loadSkinError }}
-        </v-alert>
+        <div v-if="loadSkinError" class="mb-4 flex-none">
+          <v-alert
+            type="error"
+            variant="tonal"
+            density="compact"
+            closable
+            @click:close="loadSkinError = ''"
+          >
+            {{ loadSkinError }}
+          </v-alert>
+        </div>
 
         <!-- Filter and Search Row -->
         <div class="flex items-center justify-between gap-3 mb-4">
@@ -642,7 +637,6 @@ async function onDeleteItem(item: SkinLibraryItem) {
     if (selectedSkin.value?.id === item.id) {
       selectedSkin.value = allSkins.value[0] || null
     }
-    notify({ level: 'info', title: t('userSkin.skinDeleted') })
   } catch (e) {
     notify({ level: 'error', title: t('userSkin.skinDeleteFailed'), body: toLocaleError(e) })
   }

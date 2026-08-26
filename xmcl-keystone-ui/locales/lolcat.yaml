@@ -1689,7 +1689,6 @@ userSkin:
   slim: SLIM
   saveSuccess: SKIN SAVD TO DISK!
   saveFailed: CUD NOT SAV SKIN TO DISK
-  uploadSuccess: SKIN IZ ON UR AKOWNT!
   uploadFailed: SKIN UPLOAD FAILD
   libraryTitle: LOCAL CLOZET
   librarySubtitle: CHOOZ, MANEJ AN SAV UR SKINZ LOCALLY
@@ -1714,7 +1713,6 @@ userSkin:
   saveAndEquip: SAV AN WEAR
   equip: WEAR
   equipToAccount: WEAR ON MINECRAFT AKOWNT
-  currentlyActive: UZIN RITE NAO
   equipped: IZ WEARIN
   noSkinSelected: NO SKIN CHOOZD
   saveCurrent: SAV CURRENT
@@ -1723,11 +1721,10 @@ userSkin:
   presets: PRESETZ
   noSkinsFound: NO SKINZ FOUND
   tryAddingOne: TRY ADDIN NEW SKIN WIF BUTTON UP THAR!
-  skinAdded: SKIN IZ IN CLOZET!
   skinUpdated: SKIN UPDATED!
-  skinDeleted: SKIN IZ OUTTA CLOZET!
   skinDeleteFailed: CUD NOT GET SKIN OUTTA CLOZET
   edit: EDIT
+  delete: DELET
   fetch: LOAD
 version:
   checkIntegrity: CHECK INTEGRITY

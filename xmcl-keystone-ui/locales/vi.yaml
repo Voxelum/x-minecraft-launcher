@@ -1876,7 +1876,6 @@ userSkin:
   useSlim: Sử dụng mô hình thon gọn (Slim)
   saveSuccess: Đã lưu skin vào ổ đĩa!
   saveFailed: Không thể lưu skin vào ổ đĩa
-  uploadSuccess: Đã áp dụng skin cho tài khoản của bạn!
   uploadFailed: Tải skin lên thất bại
   libraryTitle: Tủ đồ cục bộ
   librarySubtitle: Chọn, sắp xếp và lưu các skin của bạn trên máy
@@ -1901,7 +1900,6 @@ userSkin:
   saveAndEquip: Lưu và trang bị
   equip: Trang bị
   equipToAccount: Trang bị cho tài khoản Minecraft
-  currentlyActive: Đang hoạt động
   equipped: Đã trang bị
   noSkinSelected: Chưa chọn skin
   saveCurrent: Lưu skin hiện tại
@@ -1910,11 +1908,10 @@ userSkin:
   presets: Mẫu có sẵn
   noSkinsFound: Không tìm thấy skin
   tryAddingOne: Hãy thử thêm skin mới bằng nút ở trên!
-  skinAdded: Đã thêm skin vào tủ đồ!
   skinUpdated: Đã cập nhật skin!
-  skinDeleted: Đã xóa skin khỏi tủ đồ!
   skinDeleteFailed: Không thể xóa skin khỏi tủ đồ
   edit: Chỉnh sửa
+  delete: Xóa
   fetch: Tải
 version:
   checkIntegrity: Kiểm tra tính toàn vẹn

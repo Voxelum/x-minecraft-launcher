@@ -1830,7 +1830,6 @@ userSkin:
   slim: 纖細
   saveSuccess: 皮膚已儲存到本機！
   saveFailed: 無法將皮膚儲存到本機
-  uploadSuccess: 皮膚已套用到你的帳號！
   uploadFailed: 皮膚上傳失敗
   libraryTitle: 本機衣櫥
   librarySubtitle: 在本機選擇、管理並儲存你的皮膚
@@ -1855,7 +1854,6 @@ userSkin:
   saveAndEquip: 儲存並套用
   equip: 套用
   equipToAccount: 套用到 Minecraft 帳號
-  currentlyActive: 目前使用中
   equipped: 已套用
   noSkinSelected: 未選擇皮膚
   saveCurrent: 儲存目前皮膚
@@ -1864,11 +1862,10 @@ userSkin:
   presets: 預設
   noSkinsFound: 找不到皮膚
   tryAddingOne: 試著使用上方按鈕新增皮膚吧！
-  skinAdded: 皮膚已加入衣櫥！
   skinUpdated: 皮膚已更新！
-  skinDeleted: 皮膚已從衣櫥移除！
   skinDeleteFailed: 無法從衣櫥移除皮膚
   edit: 編輯
+  delete: 刪除
   fetch: 載入
 version:
   checkIntegrity: 檢查完整性

@@ -2173,7 +2173,6 @@ userSkin:
   useSlim: Use Slim Model
   saveSuccess: Skin saved to disk!
   saveFailed: Could not save the skin to disk
-  uploadSuccess: Skin applied to your account!
   uploadFailed: Skin upload failed
   libraryTitle: Local Wardrobe
   librarySubtitle: Choose, organise and save your skins locally
@@ -2198,7 +2197,6 @@ userSkin:
   saveAndEquip: Save and Equip
   equip: Equip
   equipToAccount: Equip to Minecraft Account
-  currentlyActive: Currently Active
   equipped: Equipped
   noSkinSelected: No Skin Selected
   saveCurrent: Save Current
@@ -2207,11 +2205,10 @@ userSkin:
   presets: Presets
   noSkinsFound: No skins found
   tryAddingOne: Try adding a new skin with the button above!
-  skinAdded: Skin added to the wardrobe!
   skinUpdated: Skin updated!
-  skinDeleted: Skin removed from the wardrobe!
   skinDeleteFailed: Could not remove the skin from the wardrobe
   edit: Edit
+  delete: Delete
   fetch: Load
 version:
   checkIntegrity: Check Integrity

@@ -1771,7 +1771,6 @@ userSkin:
   slim: Тонкая
   saveSuccess: Скин сохранён на диск!
   saveFailed: Не удалось сохранить скин на диск
-  uploadSuccess: Скин применён к вашей учётной записи!
   uploadFailed: Не удалось загрузить скин
   libraryTitle: Локальный гардероб
   librarySubtitle: Выбирайте, упорядочивайте и храните свои скины локально
@@ -1796,7 +1795,6 @@ userSkin:
   saveAndEquip: Сохранить и надеть
   equip: Надеть
   equipToAccount: Надеть в учётной записи Minecraft
-  currentlyActive: Сейчас активен
   equipped: Надет
   noSkinSelected: Скин не выбран
   saveCurrent: Сохранить текущий
@@ -1805,11 +1803,10 @@ userSkin:
   presets: Наборы
   noSkinsFound: Скины не найдены
   tryAddingOne: Добавьте новый скин с помощью кнопки выше!
-  skinAdded: Скин добавлен в гардероб!
   skinUpdated: Скин обновлён!
-  skinDeleted: Скин удалён из гардероба!
   skinDeleteFailed: Не удалось удалить скин из гардероба
   edit: Изменить
+  delete: Удалить
   fetch: Загрузить
 version:
   checkIntegrity: Проверьте целостность

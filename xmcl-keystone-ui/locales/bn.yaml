@@ -1875,7 +1875,6 @@ userSkin:
   useSlim: স্লিম মডেল ব্যবহার করুন
   saveSuccess: স্কিনটি ডিস্কে সংরক্ষিত হয়েছে!
   saveFailed: স্কিনটি ডিস্কে সংরক্ষণ করা যায়নি
-  uploadSuccess: স্কিনটি আপনার অ্যাকাউন্টে প্রয়োগ করা হয়েছে!
   uploadFailed: স্কিন আপলোড ব্যর্থ হয়েছে
   libraryTitle: স্থানীয় পোশাকের আলমারি
   librarySubtitle: আপনার স্কিন বেছে নিন, সাজিয়ে রাখুন এবং স্থানীয়ভাবে সংরক্ষণ করুন
@@ -1900,7 +1899,6 @@ userSkin:
   saveAndEquip: সংরক্ষণ করে পরুন
   equip: পরুন
   equipToAccount: Minecraft অ্যাকাউন্টে পরুন
-  currentlyActive: বর্তমানে সক্রিয়
   equipped: পরানো হয়েছে
   noSkinSelected: কোনো স্কিন নির্বাচন করা হয়নি
   saveCurrent: বর্তমানটি সংরক্ষণ করুন
@@ -1909,11 +1907,10 @@ userSkin:
   presets: পূর্বনির্ধারিত স্কিন
   noSkinsFound: কোনো স্কিন পাওয়া যায়নি
   tryAddingOne: উপরের বোতাম দিয়ে একটি নতুন স্কিন যোগ করে দেখুন!
-  skinAdded: স্কিনটি আলমারিতে যোগ করা হয়েছে!
   skinUpdated: স্কিনটি হালনাগাদ করা হয়েছে!
-  skinDeleted: স্কিনটি আলমারি থেকে সরানো হয়েছে!
   skinDeleteFailed: স্কিনটি আলমারি থেকে সরানো যায়নি
   edit: সম্পাদনা করুন
+  delete: মুছে ফেলুন
   fetch: লোড করুন
 version:
   checkIntegrity: অখণ্ডতা যাচাই করুন

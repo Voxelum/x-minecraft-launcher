@@ -1778,7 +1778,6 @@ userSkin:
   slim: Vékony
   saveSuccess: A kinézet lemezre mentve!
   saveFailed: Nem sikerült lemezre menteni a kinézetet
-  uploadSuccess: A kinézet beállítva a fiókodhoz!
   uploadFailed: Nem sikerült feltölteni a kinézetet
   libraryTitle: Helyi ruhatár
   librarySubtitle: Válaszd ki, kezeld és mentsd helyben a kinézeteidet
@@ -1803,7 +1802,6 @@ userSkin:
   saveAndEquip: Mentés és használat
   equip: Használat
   equipToAccount: Használat a Minecraft-fiókban
-  currentlyActive: Jelenleg aktív
   equipped: Használatban
   noSkinSelected: Nincs kiválasztott kinézet
   saveCurrent: Jelenlegi mentése
@@ -1812,11 +1810,10 @@ userSkin:
   presets: Készletek
   noSkinsFound: Nem találhatók kinézetek
   tryAddingOne: Adj hozzá egy új kinézetet a fenti gombbal!
-  skinAdded: A kinézet bekerült a ruhatárba!
   skinUpdated: A kinézet frissítve!
-  skinDeleted: A kinézet eltávolítva a ruhatárból!
   skinDeleteFailed: Nem sikerült eltávolítani a kinézetet a ruhatárból
   edit: Szerkesztés
+  delete: Törlés
   fetch: Betöltés
 version:
   checkIntegrity: Ellenőrizze az integritást

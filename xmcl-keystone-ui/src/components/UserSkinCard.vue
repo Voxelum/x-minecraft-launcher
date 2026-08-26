@@ -75,7 +75,7 @@
         </v-btn>
 
         <v-btn
-          v-shared-tooltip.top="() => t('shared.delete')"
+          v-shared-tooltip.top="() => t('userSkin.delete')"
           icon
           size="x-small"
           color="error"

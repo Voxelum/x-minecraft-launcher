@@ -243,13 +243,28 @@ export default defineComponent({
           ...vuetify.defaults.value?.VBtn,
           rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
         },
+        VBtnGroup: {
+          ...vuetify.defaults.value?.VBtnGroup,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
+          VBtn: {
+            rounded: null,
+          },
+        },
+        VBtnToggle: {
+          ...vuetify.defaults.value?.VBtnToggle,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
+        },
         VChip: {
           ...vuetify.defaults.value?.VChip,
           rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
         },
         VTextField: {
           ...vuetify.defaults.value?.VTextField,
-          rounded: enabled ? undefined : 0,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
+        },
+        VSelect: {
+          ...vuetify.defaults.value?.VSelect,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
         },
         VSwitch: {
           ...vuetify.defaults.value?.VSwitch,
