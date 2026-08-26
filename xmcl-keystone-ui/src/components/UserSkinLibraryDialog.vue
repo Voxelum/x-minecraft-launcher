@@ -46,8 +46,8 @@
         <!-- Selected Skin Title & Controls -->
         <div class="w-full flex flex-col gap-3">
           <div class="text-center">
-            <div class="text-base font-bold truncate px-2" :title="selectedSkin?.name">
-              {{ selectedSkin?.name || t('userSkin.noSkinSelected') }}
+            <div class="text-base font-bold truncate px-2" :title="previewName">
+              {{ previewName || t('userSkin.noSkinSelected') }}
             </div>
             <div v-if="isCurrentlyEquipped" class="text-xs text-green-400 font-medium flex items-center justify-center gap-1 mt-1">
               <v-icon size="14">check_circle</v-icon>
@@ -447,9 +447,11 @@ const authorityItems = computed(() => [
 ])
 const previewUrl = computed(() => isEditorOpen.value ? draftUrl.value : selectedSkin.value?.url || '')
 const previewSlim = computed(() => isEditorOpen.value ? draftSlim.value : selectedSkin.value?.slim || false)
+const previewName = computed(() => isEditorOpen.value ? draftName.value : selectedSkin.value?.name || '')
 const canSaveDraft = computed(() => !!draftUrl.value && !!draftName.value.trim())
 const activeProfileSkinUrl = computed(() => (props.profile?.skins ? props.profile.skins.find(s => s.state === 'ACTIVE')?.url : undefined) || props.profile?.textures?.SKIN?.url || '')
-const currentSkinDefaultName = computed(() => `${props.profile.name}@${props.user.authority}`)
+const currentSkinDefaultName = computed(() => `${props.profile.name}@${getAuthorityName(props.user.authority)}`)
+const currentSkinLegacyName = computed(() => `${props.profile.name}@${props.user.authority}`)
 const isSavingCurrentSkin = computed(() => savingCurrentSkinCount.value > 0)
 const accountKey = computed(() => `${props.user.id}:${props.profile.id}`)
 const activeProfileSlim = computed(() => {
@@ -466,7 +468,7 @@ const filteredSkins = computed(() => {
 
 const currentEquippedSkinId = computed(() => {
   if (activeProfileSkinUrl.value) {
-    const found = allSkins.value.find(s => s.url === activeProfileSkinUrl.value)
+    const found = allSkins.value.find(s => isSkinSource(s, activeProfileSkinUrl.value))
     if (found) return found.id
   }
   const equippedSkinId = equippedSkinIds.value[accountKey.value]
@@ -487,8 +489,31 @@ function isItemEquipped(item: SkinLibraryItem): boolean {
 
 const canSaveCurrentToLibrary = computed(() => {
   if (!activeProfileSkinUrl.value || isSavingCurrentSkin.value) return false
-  return !customSkins.value.some(s => s.url === activeProfileSkinUrl.value)
+  return !customSkins.value.some(s => isSkinSource(s, activeProfileSkinUrl.value) || isCurrentSkinDefault(s))
 })
+
+function getAuthorityName(authority: string) {
+  if (authority === AUTHORITY_MICROSOFT) return 'mojang'
+  if (authority.startsWith('http://') || authority.startsWith('https://')) {
+    return new URL(authority).hostname
+  }
+  return authority.replace(/^x:\/\//, '')
+}
+
+function isSkinSource(skin: SkinLibraryItem, source: string) {
+  return skin.source === source || skin.url === source
+}
+
+function isCurrentSkinDefault(skin: SkinLibraryItem) {
+  return skin.name === currentSkinDefaultName.value || skin.name === currentSkinLegacyName.value
+}
+
+async function normalizeCurrentSkinName(skin: SkinLibraryItem) {
+  if (skin.name === currentSkinLegacyName.value && skin.name !== currentSkinDefaultName.value) {
+    return updateSkin(skin.id, { name: currentSkinDefaultName.value })
+  }
+  return skin
+}
 
 watch([() => props.modelValue, accountKey, activeProfileSkinUrl], async ([open]) => {
   const request = ++selectionRequest
@@ -501,7 +526,7 @@ watch([() => props.modelValue, accountKey, activeProfileSkinUrl], async ([open])
     if (request !== selectionRequest || !props.modelValue) return
     const active = allSkins.value.find(s => isItemEquipped(s))
     if (active) {
-      selectedSkin.value = active
+      selectedSkin.value = await normalizeCurrentSkinName(active)
     } else if (activeProfileSkinUrl.value) {
       const saved = await persistCurrentSkin()
       if (saved && request === selectionRequest && props.modelValue) selectedSkin.value = saved
@@ -602,7 +627,7 @@ async function fetchFromUrl() {
       const resolved = await fetchSkinFromUsername(input, selectedAuthority.value)
       draftUrl.value = resolved.url
       draftSlim.value = resolved.slim
-      if (!draftName.value) draftName.value = `${input}@${selectedAuthority.value}`
+      if (!draftName.value) draftName.value = `${input}@${getAuthorityName(selectedAuthority.value)}`
     }
   } catch (e) {
     loadSkinError.value = toLocaleError(e)
@@ -652,8 +677,8 @@ async function persistCurrentSkin() {
   const name = currentSkinDefaultName.value
   const slim = activeProfileSlim.value
   if (!url) return undefined
-  const existing = customSkins.value.find(s => s.url === url)
-  if (existing) return existing
+  const existing = customSkins.value.find(s => isSkinSource(s, url) || isCurrentSkinDefault(s))
+  if (existing) return normalizeCurrentSkinName(existing)
 
   const saving = currentSkinSaves.get(url)
   if (saving) return saving

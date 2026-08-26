@@ -29,6 +29,7 @@ export class LocalSkinService extends AbstractService implements ILocalSkinServi
     super(app, async () => {
       await ensureDir(this.closetPath)
       this.state = await this.loadState()
+      await this.migrateRemoteSkins()
     })
     this.closetPath = this.getAppDataPath('closet')
     this.statePath = join(this.closetPath, 'index.json')
@@ -72,6 +73,50 @@ export class LocalSkinService extends AbstractService implements ILocalSkinServi
     const url = new URL('http://launcher/media')
     url.searchParams.set('path', path)
     return url.toString()
+  }
+
+  private async persistSource(source: string, target: string) {
+    const localSource = this.getLocalSource(source)
+    if (localSource) {
+      const { fileTypeFromFile } = await import('file-type')
+      const fileType = await fileTypeFromFile(localSource)
+      if (fileType?.mime !== 'image/png') {
+        throw new Error('The local skin must be a PNG image')
+      }
+      await copyFile(localSource, target)
+      return
+    }
+
+    const response = await this.app.fetch(source)
+    if (!response.ok) {
+      throw new Error(`Cannot download skin from ${source}`)
+    }
+    const content = Buffer.from(await response.arrayBuffer())
+    const { fileTypeFromBuffer } = await import('file-type')
+    const fileType = await fileTypeFromBuffer(content)
+    if (fileType?.mime !== 'image/png') {
+      throw new Error('The remote skin must be a PNG image')
+    }
+    await writeFile(target, content)
+  }
+
+  private async migrateRemoteSkins() {
+    let changed = false
+    for (const skin of this.state.skins) {
+      if (this.getLocalSource(skin.url)) continue
+      const source = skin.source || skin.url
+      const target = join(this.closetPath, `${skin.id}.png`)
+      try {
+        await this.persistSource(source, target)
+        skin.source = source
+        skin.url = this.getMediaUrl(target)
+        changed = true
+      } catch (e) {
+        this.warn(`Fail to migrate remote skin ${skin.id} to ${target}`)
+        this.warn(e as Error)
+      }
+    }
+    if (changed) await this.saveState()
   }
 
   async getState(): Promise<LocalSkinState> {
@@ -132,32 +177,13 @@ export class LocalSkinService extends AbstractService implements ILocalSkinServi
     await this.initialize()
     return this.mutex.of(LOCAL_SKIN_LOCK).runExclusive(async () => {
       const id = randomUUID()
-      const localSource = this.getLocalSource(options.source)
       const target = join(this.closetPath, `${id}.png`)
-      if (localSource) {
-        const { fileTypeFromFile } = await import('file-type')
-        const fileType = await fileTypeFromFile(localSource)
-        if (fileType?.mime !== 'image/png') {
-          throw new Error('The local skin must be a PNG image')
-        }
-        await copyFile(localSource, target)
-      } else {
-        const response = await this.app.fetch(options.source)
-        if (!response.ok) {
-          throw new Error(`Cannot download skin from ${options.source}`)
-        }
-        const content = Buffer.from(await response.arrayBuffer())
-        const { fileTypeFromBuffer } = await import('file-type')
-        const fileType = await fileTypeFromBuffer(content)
-        if (fileType?.mime !== 'image/png') {
-          throw new Error('The remote skin must be a PNG image')
-        }
-        await writeFile(target, content)
-      }
+      await this.persistSource(options.source, target)
       const skin: LocalSkin = {
         id,
         name: options.name.trim() || 'Custom Skin',
         url: this.getMediaUrl(target),
+        source: options.source,
         slim: options.slim,
         dateAdded: Date.now(),
       }

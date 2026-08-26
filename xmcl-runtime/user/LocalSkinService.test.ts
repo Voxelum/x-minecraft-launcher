@@ -1,5 +1,5 @@
 import { AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
-import { mkdtemp, pathExists, readJson, rm, writeFile } from 'fs-extra'
+import { ensureDir, mkdtemp, pathExists, readJson, rm, writeFile, writeJson } from 'fs-extra'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -56,6 +56,7 @@ describe('LocalSkinService', () => {
     await expect(pathExists(localPath)).resolves.toBe(true)
     expect(remotePath).toBe(join(appDataPath, 'closet', `${remote.id}.png`))
     await expect(pathExists(remotePath)).resolves.toBe(true)
+    expect(remote.source).toBe('https://example.com/skin.png')
     expect(service.app.fetch).toHaveBeenCalledWith('https://example.com/skin.png')
     expect(await readJson(join(appDataPath, 'closet', 'index.json'))).toMatchObject({
       skins: [{ id: remote.id, url: remote.url }, { id: local.id, url: local.url }],
@@ -64,6 +65,31 @@ describe('LocalSkinService', () => {
     await service.removeSkin(local.id)
     await expect(pathExists(localPath)).resolves.toBe(false)
     expect((await service.getState()).skins).toEqual([remote])
+  })
+
+  test('migrates legacy remote skins into the closet', async () => {
+    const closetPath = join(appDataPath, 'closet')
+    await ensureDir(closetPath)
+    await writeJson(join(closetPath, 'index.json'), {
+      skins: [{
+        id: 'legacy',
+        name: 'Legacy',
+        url: 'https://example.com/legacy.png',
+        slim: false,
+        dateAdded: 1,
+      }],
+      equippedSkinIds: {},
+    })
+
+    const state = await service.getState()
+    const [migrated] = state.skins
+    const migratedPath = new URL(migrated.url).searchParams.get('path')!
+    expect(migrated.source).toBe('https://example.com/legacy.png')
+    expect(migratedPath).toBe(join(closetPath, 'legacy.png'))
+    await expect(pathExists(migratedPath)).resolves.toBe(true)
+    await expect(readJson(join(closetPath, 'index.json'))).resolves.toMatchObject({
+      skins: [{ id: 'legacy', source: 'https://example.com/legacy.png', url: migrated.url }],
+    })
   })
 
   test('persists equipped skins independently for each account profile', async () => {

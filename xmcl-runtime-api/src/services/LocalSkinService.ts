@@ -4,6 +4,7 @@ export interface LocalSkin {
   id: string
   name: string
   url: string
+  source?: string
   slim: boolean
   dateAdded: number
 }
