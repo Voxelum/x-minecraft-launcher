@@ -1651,6 +1651,7 @@ shared:
   skipForNow: Überspringen Sie es vorerst
   upgrade: Aktualisieren
   'yes': Ja
+  delete: Löschen
 sidebar:
   pin: Anheften
   unpin: Lösen
@@ -1912,7 +1913,6 @@ userSkin:
   skinUpdated: Skin wurde aktualisiert!
   skinDeleteFailed: Skin konnte nicht aus dem Kleiderschrank entfernt werden
   edit: Bearbeiten
-  delete: Löschen
   fetch: Laden
 version:
   checkIntegrity: Integrität überprüfen

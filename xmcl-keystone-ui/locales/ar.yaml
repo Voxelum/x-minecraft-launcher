@@ -1614,6 +1614,7 @@ shared:
   skipForNow: 'تخطي الآن'
   upgrade: 'ترقية'
   'yes': 'نعم'
+  delete: 'حذف'
 sidebar:
   pin: 'دبوس'
   unpin: 'إزالة التثبيت'
@@ -1876,7 +1877,6 @@ userSkin:
   skinUpdated: 'تم تحديث الجلد!'
   skinDeleteFailed: 'تعذرت إزالة الجلد من الخزانة'
   edit: 'تعديل'
-  delete: 'حذف'
   fetch: 'تحميل'
 version:
   checkIntegrity: 'التحقق من النزاهة'

@@ -1582,6 +1582,7 @@ shared:
   skipForNow: Most hagyd ki
   upgrade: Frissítés
   'yes': Igen
+  delete: Törlés
 sidebar:
   pin: Rögzít
   unpin: Rögzítés feloldása
@@ -1813,7 +1814,6 @@ userSkin:
   skinUpdated: A kinézet frissítve!
   skinDeleteFailed: Nem sikerült eltávolítani a kinézetet a ruhatárból
   edit: Szerkesztés
-  delete: Törlés
   fetch: Betöltés
 version:
   checkIntegrity: Ellenőrizze az integritást

@@ -1565,6 +1565,7 @@ shared:
   skipForNow: 今すぐスキップする
   upgrade: アップグレード
   'yes': はい
+  delete: 削除
 sidebar:
   pin: ピン留めする
   unpin: 固定を解除する
@@ -1778,7 +1779,6 @@ userSkin:
   skinUpdated: スキンを更新しました！
   skinDeleteFailed: スキンをクローゼットから削除できませんでした
   edit: 編集
-  delete: 削除
   fetch: 読み込む
 version:
   checkIntegrity: 整合性を確認してください

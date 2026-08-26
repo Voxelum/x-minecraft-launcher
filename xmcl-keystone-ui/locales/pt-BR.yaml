@@ -1541,6 +1541,7 @@ shared:
   skipForNow: Pular por agora
   upgrade: Atualizar
   'yes': Sim
+  delete: Deletar
 sidebar:
   pin: Fixar
   unpin: Desafixar
@@ -1767,7 +1768,6 @@ userSkin:
   skinUpdated: Skin atualizada!
   skinDeleteFailed: Não foi possível remover a skin do guarda-roupa
   edit: Editar
-  delete: Deletar
   fetch: Carregar
 version:
   checkIntegrity: Verifique a integridade

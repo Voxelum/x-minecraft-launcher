@@ -1793,7 +1793,6 @@ userSkin:
   skinUpdated: Cilt güncellendi!
   skinDeleteFailed: Cilt gardıroptan kaldırılamadı
   edit: Düzenle
-  delete: Sil
   fetch: Yükle
 version:
   checkIntegrity: Bütünlüğü Kontrol Et

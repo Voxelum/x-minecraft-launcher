@@ -1911,7 +1911,6 @@ userSkin:
   skinUpdated: Đã cập nhật skin!
   skinDeleteFailed: Không thể xóa skin khỏi tủ đồ
   edit: Chỉnh sửa
-  delete: Xóa
   fetch: Tải
 version:
   checkIntegrity: Kiểm tra tính toàn vẹn

@@ -26,7 +26,7 @@
         <!-- 3D Skin Viewer -->
         <div class="w-full flex-1 flex items-center justify-center my-2 relative">
           <SkinView
-            v-if="previewUrl"
+            v-if="modelValue && previewUrl"
             :paused="false"
             :height="330"
             :skin="previewUrl"

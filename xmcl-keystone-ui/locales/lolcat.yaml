@@ -1508,6 +1508,7 @@ shared:
   skipForNow: SKIP FUR NAO
   upgrade: UPGRAYDD
   'yes': YAS
+  delete: DELET
 sidebar:
   pin: STIK IT
   unpin: UNSTIK IT
@@ -1724,7 +1725,6 @@ userSkin:
   skinUpdated: SKIN UPDATED!
   skinDeleteFailed: CUD NOT GET SKIN OUTTA CLOZET
   edit: EDIT
-  delete: DELET
   fetch: LOAD
 version:
   checkIntegrity: CHECK INTEGRITY

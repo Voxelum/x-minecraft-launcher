@@ -1526,6 +1526,7 @@ shared:
   skipForNow: Қазір өткізіп жіберу
   upgrade: Жаңарту
   'yes': Иә
+  delete: Жою
 sidebar:
   pin: Бекіту
   unpin: Бекітуді алып тастау
@@ -1753,7 +1754,6 @@ userSkin:
   skinUpdated: Скин жаңартылды!
   skinDeleteFailed: Скинді гардеробтан жою мүмкін болмады
   edit: Өңдеу
-  delete: Жою
   fetch: Жүктеу
 version:
   checkIntegrity: Тұтастығын тексеру

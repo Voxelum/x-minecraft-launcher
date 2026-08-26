@@ -1576,6 +1576,7 @@ shared:
   skipForNow: Пропустити зараз
   upgrade: Оновити
   'yes': Так
+  delete: 'Видалити'
 sidebar:
   pin: Закріпити
   unpin: Відкріпити
@@ -1807,7 +1808,6 @@ userSkin:
   skinUpdated: 'Скін оновлено!'
   skinDeleteFailed: 'Не вдалося видалити скін із шафи'
   edit: 'Редагувати'
-  delete: 'Видалити'
   fetch: 'Завантажити'
 version:
   checkIntegrity: Перевірте цілісність

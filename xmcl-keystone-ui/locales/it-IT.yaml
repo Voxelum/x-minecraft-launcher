@@ -1534,6 +1534,7 @@ shared:
   skipForNow: Salta per ora
   upgrade: Aggiorna
   'yes': Si
+  delete: Elimina
 sidebar:
   pin: Fissa
   unpin: Sblocca
@@ -1762,7 +1763,6 @@ userSkin:
   skinUpdated: Skin aggiornata!
   skinDeleteFailed: Impossibile rimuovere la skin dall'armadio
   edit: Modifica
-  delete: Elimina
   fetch: Carica
 version:
   checkIntegrity: Controlla l'integrità

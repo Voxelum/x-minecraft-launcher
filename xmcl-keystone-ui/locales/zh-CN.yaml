@@ -1994,6 +1994,7 @@ shared:
   skipForNow: 先跳过
   upgrade: 更新
   'yes': 是
+  delete: 删除
 sidebar:
   pin: 固定
   unpin: 取消固定
@@ -2233,7 +2234,6 @@ userSkin:
   skinUpdated: 皮肤已更新！
   skinDeleteFailed: 无法从衣橱移除皮肤
   edit: 编辑
-  delete: 删除
   fetch: 加载
 version:
   checkIntegrity: 检查完整性

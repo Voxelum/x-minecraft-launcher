@@ -1909,7 +1909,6 @@ userSkin:
   skinUpdated: السكن اتحدّث!
   skinDeleteFailed: ما قدرناش نمسح السكن من الدولاب
   edit: تعديل
-  delete: حذف
   fetch: تحميل
 version:
   checkIntegrity: التحقق من سلامة الملفات

@@ -1910,7 +1910,6 @@ userSkin:
   skinUpdated: স্কিনটি হালনাগাদ করা হয়েছে!
   skinDeleteFailed: স্কিনটি আলমারি থেকে সরানো যায়নি
   edit: সম্পাদনা করুন
-  delete: মুছে ফেলুন
   fetch: লোড করুন
 version:
   checkIntegrity: অখণ্ডতা যাচাই করুন

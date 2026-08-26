@@ -1536,6 +1536,7 @@ shared:
   skipForNow: Nu Overslaan
   upgrade: Bijwerken
   'yes': Ja
+  delete: Verwijderen
 sidebar:
   pin: Vastzetten
   unpin: Losmaken
@@ -1762,7 +1763,6 @@ userSkin:
   skinUpdated: Skin bijgewerkt!
   skinDeleteFailed: Skin kon niet uit de kledingkast worden verwijderd
   edit: Bewerken
-  delete: Verwijderen
   fetch: Laden
 version:
   checkIntegrity: Integriteit Controleren

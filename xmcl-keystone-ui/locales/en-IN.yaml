@@ -2208,7 +2208,6 @@ userSkin:
   skinUpdated: Skin updated!
   skinDeleteFailed: Could not remove the skin from the wardrobe
   edit: Edit
-  delete: Delete
   fetch: Load
 version:
   checkIntegrity: Check Integrity

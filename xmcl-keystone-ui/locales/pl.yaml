@@ -1521,6 +1521,7 @@ shared:
   server: Serwer
   skipForNow: Pomiń na razie
   upgrade: Aktualizuj
+  delete: Usuń
 sidebar:
   pin: Przypnij
   unpin: Odepnij
@@ -1746,7 +1747,6 @@ userSkin:
   skinUpdated: Skórka została zaktualizowana!
   skinDeleteFailed: Nie udało się usunąć skórki z garderoby
   edit: Edytuj
-  delete: Usuń
   fetch: Wczytaj
 downloadModMetadataDb:
   name: Pobierz bazę metadanych modów

@@ -2000,7 +2000,6 @@ userSkin:
   skinUpdated: 皮膚已更新！
   skinDeleteFailed: 無法從衣櫥移除皮膚
   edit: 編輯
-  delete: 刪除
   fetch: 載入
 version:
   checkIntegrity: 檢查完整性

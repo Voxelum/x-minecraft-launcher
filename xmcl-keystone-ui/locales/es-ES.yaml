@@ -2126,7 +2126,6 @@ userSkin:
   skinUpdated: ¡Skin actualizada!
   skinDeleteFailed: No se pudo eliminar la skin del armario
   edit: Editar
-  delete: Eliminar
   fetch: Cargar
 version:
   checkIntegrity: Verificar la integridad

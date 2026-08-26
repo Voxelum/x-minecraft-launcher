@@ -1533,6 +1533,7 @@ shared:
   skipForNow: Sla voor nu over
   upgrade: Bijwerken
   'yes': Ja
+  delete: Eliminar
 sidebar:
   pin: Fixar
   unpin: Desfixar
@@ -1759,7 +1760,6 @@ userSkin:
   skinUpdated: Actualizouse a skin!
   skinDeleteFailed: Non foi posible retirar a skin do armario
   edit: Editar
-  delete: Eliminar
   fetch: Cargar
 version:
   checkIntegrity: Controleer Integriteit

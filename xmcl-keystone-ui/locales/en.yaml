@@ -2547,7 +2547,6 @@ userSkin:
   skinUpdated: 'Skin updated!'
   skinDeleteFailed: 'Failed to remove skin from closet'
   edit: 'Edit'
-  delete: 'Delete'
   fetch: 'Load'
 version:
   checkIntegrity: Check Integrity

@@ -1564,6 +1564,7 @@ shared:
   skipForNow: Passer pour l'instant
   upgrade: Mettre à jour
   'yes': Oui
+  delete: Supprimer
 sidebar:
   pin: Épingler
   unpin: Désépingler
@@ -1812,7 +1813,6 @@ userSkin:
   skinUpdated: Skin mis à jour !
   skinDeleteFailed: Impossible de retirer le skin de la garde-robe
   edit: Modifier
-  delete: Supprimer
   fetch: Charger
 version:
   checkIntegrity: Vérifier l'intégrité

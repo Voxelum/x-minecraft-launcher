@@ -1577,6 +1577,7 @@ shared:
   skipForNow: Пропустить сейчас
   upgrade: Обновить
   'yes': Да
+  delete: Удалить
 sidebar:
   pin: Закрепить
   unpin: Открепить
@@ -1806,7 +1807,6 @@ userSkin:
   skinUpdated: Скин обновлён!
   skinDeleteFailed: Не удалось удалить скин из гардероба
   edit: Изменить
-  delete: Удалить
   fetch: Загрузить
 version:
   checkIntegrity: Проверьте целостность
