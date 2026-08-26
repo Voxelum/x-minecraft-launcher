@@ -4,10 +4,12 @@ AppAddInstanceDialog:
   createTitle: Criar jogos
   serverTitle: Insira o endereço do seu servidor
 AppShareInstanceDialog:
+  editScopeDescription: Selecione os arquivos que os outros jogadores poderão baixar após descobrirem este jogo em execução na LAN.
+  editScopeTitle: Editar escopo de compartilhamento
+  instanceToShare: Jogo em execução
   alterDownloadDescription: >-
     Se você não quiser atrapalhar a instância atual, também pode criar uma nova instância a partir da configuração do seu par. Clique no botão abaixo para criar a instância.
   baseInfo: Configurações básicas
-  cancelShare: Cancelar compartilhamento
   description: >-
     Após compartilhar o perfil, outros locais poderão baixar esses arquivos através
      do seu PC.
@@ -17,9 +19,7 @@ AppShareInstanceDialog:
   downloadTitle: Baixar arquivos de outros pares
   filesToDownload: Escolha os arquivos para baixar.
   filesToShare: Escolha os arquivos para compartilhar
-  instanceShare: '{user} acabou de compartilhar a instância atual com você'
   share: Compartilhar
-  shareNotifyTitle: Compartilhar instância
   shareTitle: Compartilhar arquivos do jogo com outro jogador
 BaseSettingGeneral:
   title: Geral
@@ -154,6 +154,7 @@ delete:
   'no': Não
   'yes': Deletar
 dependencies:
+  dependents: Mods que dependem deste mod
   embedded: Incorporado
   incompatible: Incompatível
   name: Dependências
@@ -667,6 +668,10 @@ logsCrashes:
   title: Logs ou Relatórios de falhas
   failures: Falhas de inicialização
 me:
+  groupByDate: Agrupar por data
+  groupByFolder: Agrupar por pasta
+  instanceViewMode: Modo de visualização das instâncias
+  listView: Visualização em lista
   news: Notícias
   recentPlay: Jogado recente
 migrationWindow:
@@ -969,11 +974,45 @@ modrinth:
 modrinthCard:
   currentVersion: Versão Atual
 multiplayer:
+  autoShareAmbiguous: Há vários jogos em execução. Selecione a instância que hospeda o mundo LAN para que o XMCL possa compartilhá-la.
+  editSharingScope: Editar escopo de compartilhamento
+  gameAvailable: Jogo LAN disponível
+  joinGame: Entrar no jogo
+  noRunningInstanceToShare: Inicie um jogo antes de editar seu escopo de compartilhamento
+  updateSharedInstanceConfirm: Atualizar e iniciar
+  updateSharedInstanceDescription: Os mods compartilhados são diferentes dos de {instance}. Deseja atualizar esta instância para corresponder ao anfitrião antes de iniciar? Será feito backup dos arquivos modificados existentes.
+  updateSharedInstanceTitle: Atualizar instância compartilhada?
+  addFunds: "Adicionar fundos"
+  availableBalance: "Saldo disponível"
+  balanceHint: "Disponível para os serviços do XMCL Together"
+  billing: "Cobrança"
+  billingDescription: "Gerencie o acesso ao relay, seu plano Together Home e os pagamentos."
+  billingError: "Não foi possível carregar a cobrança do Together. Tente novamente em instantes."
+  buyTogether: "Comprar Together"
+  cancelTogether: "Cancelar plano"
+  checkout: "Abrir checkout da Waffo"
+  connectionTogetherWarning: "Um membro da sala não consegue se conectar a você há algum tempo. Experimente o XMCL Together para melhorar a conectividade de todos na sala. Apenas o mestre da sala precisa do Together."
+  masterPurchaseHint: "Apenas o mestre da sala precisa do Together Home para melhorar a conectividade de todos na sala."
+  natTogetherWarning: "Seu roteador pode estar com dificuldades para se conectar ao mestre da sala. Se as conexões falharem, experimente o XMCL Together para melhorar a conectividade entre você e seus amigos. Apenas o mestre da sala precisa comprar o Together para a sala."
+  togetherName: "Minecraft Together"
+  trialDescription: "Uma avaliação de 7 dias com 1 GB de tráfego de relay."
+  trialTitle: "Avaliação de conectividade"
+  tryTogether: "Experimentar o Together"
+  month: "mês"
+  orderStatus: "Pedido da Waffo: {status}"
+  planDescription: "20 GB de tráfego de relay gerenciado por mês, além de solução de problemas com IA para seu modpack."
+  waffoHint: "Os pagamentos são concluídos com segurança na Waffo Pancake. O XMCL nunca recebe o número do seu cartão."
+  subscription:
+    active: "Ativa"
+    cancelled: "Cancelada"
+    payment_due: "Pagamento pendente"
+  trial:
+    active: "Avaliação ativa"
+    available: "Avaliação gratuita disponível"
+    expired: "Avaliação usada"
+    unavailable: "Avaliação indisponível"
   loginRequiredDescription: O modo multijogador P2P usa os serviços online do XMCL. Inicie sessão numa conta XMCL para continuar.
   loginRequiredTitle: Inicie sessão para o modo multijogador P2P
-  allowTurn: Ativar servidor de retransmissão
-  allowTurnHint: >-
-    Permita o servidor de retransmissão se você não conseguir se conectar com seu amigo. No entanto, o uso do servidor de retransmissão pode diminuir sua conexão. Use com cautela.
   complete: Completo
   confirm: Confirmar
   connections: Conexões
@@ -1023,16 +1062,11 @@ multiplayer:
   sendTokenToRemote: Enviar Token para Remoto
   share: Compartilhar Configuração da Instância
   sharing: Compartilhando arquivos...
-  sharingNotificationBody: >-
-    Você pode baixar ou criar uma instância a partir da configuração compartilhada de {name}.
-  sharingNotificationTitle: Um par está compartilhando sua configuração de jogo
   start: Iniciar
   startNewP2PConnection: Clique no botão Iniciar para criar uma nova conexão de par
   connectionError: Erro de conexão
   connectionFailedHint: >-
     Não foi possível estabelecer a conexão. Verifique se ambos os pares têm tipos de NAT compatíveis.
-  natWarning: >-
-    Seu tipo de NAT pode impedir conexões diretas. Tente ativar o servidor de relay nas configurações ou peça ao seu amigo para ser o anfitrião.
 myStuff: Minhas coisas
 natType:
   blocked: Bloqueado
@@ -1196,6 +1230,8 @@ serverStatus:
   refuse: §4Servidor recusado!
   timeout: §4Tempo de conexão do servidor expirado!
 agent:
+  accessRequiredHint: Assine o XMCL para usar o agente integrado ou configure seu próprio provedor de IA nas configurações.
+  subscribeXmcl: Assinar o XMCL
   notConfiguredHint: Configure uma chave de API, modelo e endpoint compatível com OpenAI em Configurações → Geral → Agente de IA. Por exemplo, use OpenAI ou um gateway compatível com Claude.
 setting:
   aiAgentApiKeyDescription: Configure um provedor compatível com OpenAI, como OpenAI ou um gateway para Claude. A chave é armazenada localmente neste dispositivo.
@@ -1475,6 +1511,7 @@ shaderPack:
   noPacks: Nenhum pacote de shader instalado
   search: Buscar pacotes de shader...
 shared:
+  pressKeyCombination: Pressione uma combinação de teclas...
   add: Adicionar
   author: Autor
   back: Voltar
@@ -1504,6 +1541,7 @@ shared:
   skipForNow: Pular por agora
   upgrade: Atualizar
   'yes': Sim
+  delete: Deletar
 sidebar:
   pin: Fixar
   unpin: Desafixar
@@ -1691,6 +1729,46 @@ userSkin:
   urlNotEmpty: A URL da Skin não pode estar vazia
   urlNotValid: A URL da Skin é Inválida
   useSlim: Usar Modelo Slim
+  classic: Clássico
+  slim: Slim
+  saveSuccess: Skin salva no disco!
+  saveFailed: Não foi possível salvar a skin no disco
+  uploadFailed: Falha ao enviar a skin
+  libraryTitle: Guarda-roupa local
+  librarySubtitle: Escolha, organize e salve suas skins localmente
+  manage: Gerenciar
+  all: Todas
+  currentSkin: Skin atual
+  savedCount: skins salvas
+  newSkin: Nova skin
+  addNewSkin: Adicionar nova skin
+  editSkin: Editar skin
+  skinName: Nome da skin
+  skinNamePlaceholder: 'ex.: Minha skin favorita'
+  localFile: Arquivo local
+  urlOrPlayer: URL / Nome do jogador
+  urlOrPlayerPlaceholder: Digite a URL da imagem ou o nome de usuário do Minecraft
+  urlOrPlayerHint: Digite a URL direta de uma imagem PNG ou o nome de um jogador para obter a skin da Mojang
+  dropFileHere: Solte o arquivo PNG da skin aqui ou clique para procurar
+  supportedFormats: 'Formato compatível: imagem PNG 64x64 ou 64x32'
+  preview: Prévia da skin
+  previewPlaceholder: Nenhuma prévia disponível
+  saveToLibrary: Salvar no guarda-roupa
+  saveAndEquip: Salvar e equipar
+  equip: Equipar
+  equipToAccount: Equipar na conta do Minecraft
+  equipped: Equipada
+  noSkinSelected: Nenhuma skin selecionada
+  saveCurrent: Salvar atual
+  officialPreset: Predefinição oficial
+  mySkins: Minhas skins
+  presets: Predefinições
+  noSkinsFound: Nenhuma skin encontrada
+  tryAddingOne: Tente adicionar uma nova skin usando o botão acima!
+  skinUpdated: Skin atualizada!
+  skinDeleteFailed: Não foi possível remover a skin do guarda-roupa
+  edit: Editar
+  fetch: Carregar
 version:
   checkIntegrity: Verifique a integridade
   name: Versão | Versões

@@ -7,10 +7,11 @@ AppShareInstanceDialog:
     If you don't want to mess up current instance. You can also create a new
     instance from your peer's config. Click the button below to create instance.
   baseInfo: Basic Setting
-  cancelShare: Cancel Share
   description: >-
     After you share the profile, other place can download these files through
     your PC.
+  editScopeDescription: Select the files peers can pull after discovering this running game on LAN.
+  editScopeTitle: Edit Sharing Scope
   downloadDescription: >-
     Please verify the files your peer provided to you. Select the file you want
     to download. It will be placed to current instance {name}.
@@ -18,9 +19,8 @@ AppShareInstanceDialog:
   downloadTitle: Download files from other peers
   filesToDownload: Choose files to download
   filesToShare: Choose files to share
-  instanceShare: '{user} just shared the current instance to you'
+  instanceToShare: Running Game
   share: Share
-  shareNotifyTitle: Share Instance
   shareTitle: Share game files to other player
 BaseSettingGeneral:
   title: General
@@ -38,6 +38,7 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 agent:
+  accessRequiredHint: Subscribe to XMCL to use the built-in Agent, or configure your own AI provider in Settings.
   abort: Stop generation
   callingTool: calling {name}…
   confirmAccept: Continue
@@ -56,6 +57,7 @@ agent:
     → AI Agent. For example, use OpenAI or a Claude-compatible gateway.
   notConfiguredTitle: Agent unavailable
   openSettings: Open settings
+  subscribeXmcl: Subscribe to XMCL
   passiveGameCrashed: Game crashed
   passiveGameExitCode: Exit code {code}
   passiveGameExited: Game exited
@@ -258,6 +260,7 @@ delete:
   'no': 'No'
   'yes': Delete
 dependencies:
+  dependents: Mods depending on this mod
   embedded: Embedded
   incompatible: Incompatible
   name: Dependencies
@@ -501,9 +504,9 @@ importModpack:
   selectVersionDescription: "Choose the version of {name} to install:"
   importVersion: Import Selected Version
 installAssets:
-  asset: Install {count} Assets
+  asset: Check {count} assets and install missing files
   assetIndex: Check Assets Index File
-  name: Install Asset Files
+  name: Check Asset Files
 installAuthlibInjector: Install authlib-injector
 installCurseforgeFile: Install Curseforge File
 installFabric:
@@ -926,6 +929,10 @@ logsCrashes:
   showFile: Show in Folder
   title: Logs or Crash Reports
 me:
+  groupByDate: Group by date
+  groupByFolder: Group by folder
+  instanceViewMode: Instance view mode
+  listView: List view
   news: News
   recentPlay: Recent Play
 migrateMinecraft:
@@ -1378,16 +1385,26 @@ modrinth:
 modrinthCard:
   currentVersion: Current Version
 multiplayer:
-  allowTurn: Enable relay server
-  allowTurnHint: >-
-    Allow relay server if you cannot connect with your friend. However, using
-    relay server may slow down your connection. Use it with caution.
+  addFunds: Add funds
+  autoShareAmbiguous: Multiple games are running. Select the instance hosting the LAN world so XMCL can share it.
+  availableBalance: Available balance
+  balanceHint: Available for XMCL Together services
+  billing: Billing
+  billingDescription: Manage relay access, your Together Home plan, and payments.
+  billingError: Together billing could not be loaded. Try again in a moment.
+  buyTogether: Buy Together
+  cancelTogether: Cancel plan
+  checkout: Open Waffo checkout
   complete: Complete
   confirm: Confirm
   connectionError: Connection Error
   connectionFailedHint: >-
     Unable to establish connection. Check if both peers have compatible NAT
     types.
+  connectionTogetherWarning: >-
+    A room member has been unable to connect to you for a while. Try XMCL
+    Together to improve connectivity for everyone in the room. Only the room
+    master needs Together.
   connectedToMaster: Connected to the room master
   connections: Connections
   copied: Copied!
@@ -1427,15 +1444,18 @@ multiplayer:
     style="text-font: bold">Local token</span>.<br> You do not need to wait
     until the ICE status is complete. If the token below remains unchanged, you
     can copy it and send it to your peer."
+  gameAvailable: LAN game available
   groupId: Group Id
   master: Master
   masterHostsGameHint: The room master is the connection hub and should host the Minecraft LAN world. Transfer master before changing hosts.
+  masterPurchaseHint: Only the room master needs Together Home to improve connectivity for everyone in the room.
   member: Member
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
   joinConnection: >-
     If your peer has already initiated a connection, you need to Join
     Connection.
+  joinGame: Join game
   joinManual: Join
   joinOrCreateGroup: Join/Create Group
   joinOrCreateGroupHint: Get group id from your friends or create a group
@@ -1450,9 +1470,10 @@ multiplayer:
   localToken: Local Token
   manualConnect: Manually Connect
   name: Multiplayer on LAN
-  natWarning: >-
-    Your NAT type may prevent direct connections. Try enabling relay server in
-    settings or ask your friend to be the room master instead.
+  natTogetherWarning: >-
+    Your router may have trouble connecting to the room master. If connections
+    fail, try XMCL Together to improve connectivity between you and your friends.
+    Only the room master needs to purchase Together for the room.
   networkInfo: Network Info (Click to toggle)
   next: Next
   otherExposedPortDescription: The port forwarded by {user}
@@ -1466,12 +1487,34 @@ multiplayer:
   relayConnection: Relay
   routerInfo: Router Info
   sendTokenToRemote: Send Token to Remote
+  editSharingScope: Edit Sharing Scope
+  noRunningInstanceToShare: Launch a game before editing its sharing scope
   share: Share Instance Config
   sharing: Sharing files...
-  sharingNotificationBody: You can download or create an instance from {name} shared config.
-  sharingNotificationTitle: A peer is sharing their game config
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
+  subscription:
+    active: Active
+    cancelled: Cancelled
+    payment_due: Payment due
+  togetherName: Minecraft Together
+  trial:
+    active: Trial active
+    available: Free trial available
+    expired: Trial used
+    unavailable: Trial unavailable
+  trialDescription: One 7-day trial with 1 GB of relay traffic.
+  trialTitle: Connectivity trial
+  tryTogether: Try Together
+  updateSharedInstanceConfirm: Update and launch
+  updateSharedInstanceDescription: The shared mods differ from {instance}. Update this instance to match the host before launching? Existing changed files will be backed up.
+  updateSharedInstanceTitle: Update shared instance?
+  month: month
+  orderStatus: 'Waffo order: {status}'
+  planDescription: 20 GB of managed relay traffic each month, plus AI troubleshooting for your modpack.
+  relayAllowanceSummary: '{remaining} remaining of {total} this period'
+  relayServiceAvailable: XMCL Together relay service available
+  waffoHint: Payments are completed securely on Waffo Pancake. XMCL never receives your card number.
   waitingForMaster: Waiting for the room master to reconnect
 myStuff: My Stuff
 natType:
@@ -1896,6 +1939,8 @@ serverStatus:
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
 setting:
+  multiplayerTransport: Together transport
+  multiplayerTransportDescription: Choose the WebRTC implementation used by Together. Changing transport disconnects active peers.
   about: About
   aboutBmclDescription: BMCL API provides convenient downloads for users in Chinese Mainland
   aboutContributors: 🧑‍💻 Contributors 🧑‍💻
@@ -2220,6 +2265,7 @@ shaderPack:
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
 shared:
+  pressKeyCombination: Press key combination...
   add: Add
   author: Author
   back: Back
@@ -2457,24 +2503,61 @@ userServices:
     password: No Password
     uuid: User UUID (Optional)
 userSkin:
-  classic: Classic
-  import: Import Skin
-  importFile: Open from File
-  importLink: Open from Link
-  invalidImage: Choose a valid Minecraft skin image.
-  invalidImageTitle: Invalid Skin Image
-  placeUrlHere: Place Skin URL here to import
-  reset: Reset
-  save: Save
-  saveTitle: Save Skin To Disk
-  skinType: Skin Type
-  slim: Slim
-  upload: Upload Skin
-  uploadFailed: Skin Upload Failed
-  uploadRejected: Minecraft rejected this skin upload. Please try again later.
-  urlNotEmpty: Skin URL cannot be empty
-  urlNotValid: Skin URL is Invalid
-  useSlim: Use Slim Model
+  classic: 'Classic'
+  import: 'Import Skin'
+  importFile: 'Open from File'
+  importLink: 'Open from Link'
+  invalidImage: 'Choose a valid Minecraft skin image.'
+  invalidImageTitle: 'Invalid Skin Image'
+  placeUrlHere: 'Place Skin URL here to import'
+  reset: 'Reset'
+  save: 'Save'
+  saveTitle: 'Save Skin To Disk'
+  saveSuccess: 'Skin saved to disk!'
+  saveFailed: 'Failed to save skin to disk'
+  skinType: 'Skin Type'
+  slim: 'Slim'
+  upload: 'Upload Skin'
+  uploadFailed: 'Skin Upload Failed'
+  uploadRejected: 'Minecraft rejected this skin upload. Please try again later.'
+  urlNotEmpty: 'Skin URL cannot be empty'
+  urlNotValid: 'Skin URL is Invalid'
+  useSlim: 'Use Slim Model'
+  libraryTitle: 'Local Closet'
+  librarySubtitle: 'Choose, manage and save your skins locally'
+  manage: 'Manage'
+  all: 'All'
+  currentSkin: 'Current Skin'
+  savedCount: 'saved skins'
+  newSkin: 'New Skin'
+  addNewSkin: 'Add New Skin'
+  editSkin: 'Edit Skin'
+  skinName: 'Skin Name'
+  skinNamePlaceholder: 'e.g. My Favorite Skin'
+  localFile: 'Local File'
+  urlOrPlayer: 'URL / Player Name'
+  urlOrPlayerPlaceholder: 'Enter Skin image URL or Minecraft username'
+  urlOrPlayerHint: 'Enter a direct .png image URL or player username to fetch skin from Mojang'
+  dropFileHere: 'Drop skin .PNG file here or click to browse'
+  supportedFormats: 'Supported format: 64x64 or 64x32 PNG image'
+  preview: 'Skin Preview'
+  previewPlaceholder: 'No skin preview available'
+  saveToLibrary: 'Save to Closet'
+  saveAndEquip: 'Save & Equip'
+  equip: 'Equip'
+  equipToAccount: 'Equip to Minecraft Account'
+  equipped: 'Equipped'
+  noSkinSelected: 'No Skin Selected'
+  saveCurrent: 'Save Current'
+  officialPreset: 'Official Preset'
+  mySkins: 'My Skins'
+  presets: 'Presets'
+  noSkinsFound: 'No skins found'
+  tryAddingOne: 'Try adding a new skin with the button above!'
+  skinUpdated: 'Skin updated!'
+  skinDeleteFailed: 'Failed to remove skin from closet'
+  edit: 'Edit'
+  fetch: 'Load'
 version:
   checkIntegrity: Check Integrity
   name: Version | Versions

@@ -294,7 +294,6 @@ import { kInstanceVersionInstall } from '@/composables/instanceVersionInstall'
 import { kInstances } from '@/composables/instances'
 import { kJavaContext } from '@/composables/java'
 import { useNotifier } from '@/composables/notifier'
-import { kPeerShared } from '@/composables/peers'
 import { kUserContext } from '@/composables/user'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
@@ -305,7 +304,6 @@ import {
   isException,
   ModpackException,
   ModpackServiceKey,
-  PeerServiceKey,
   waitModpackFiles,
   BedrockServiceKey,
   BaseServiceKey,
@@ -1057,26 +1055,7 @@ async function submitModpackUrl() {
 }
 
 // Peer
-const { on: onPeerService } = useService(PeerServiceKey)
 const { notify } = useNotifier()
-const { connections } = injection(kPeerShared)
-onPeerService('share', (event) => {
-  if (!event.manifest) {
-    return
-  }
-  const conn = connections.value.find((c) => c.id === event.id)
-  if (conn) {
-    notify({
-      level: 'info',
-      title: t('AppShareInstanceDialog.instanceShare', { user: conn.userInfo.name }),
-      more() {
-        if (!isShown.value && event.manifest) {
-          show({ format: 'manifest', manifest: event.manifest })
-        }
-      },
-    })
-  }
-})
 
 const { show: onMigrateFromOther } = useDialog('migrate-wizard')
 </script>

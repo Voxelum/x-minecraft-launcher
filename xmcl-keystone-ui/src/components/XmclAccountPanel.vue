@@ -250,6 +250,7 @@ const {
   busy,
   error,
   authorizeMicrosoft,
+  authorizeModrinth,
   authorizeProvider,
   prepareMerge,
   confirmMerge,
@@ -297,8 +298,9 @@ function openMicrosoftLogin() {
   authorizeMicrosoft()
 }
 
-function openModrinthLogin() {
-  void authenticateModrinth()
+async function openModrinthLogin() {
+  await authenticateModrinth()
+  await authorizeModrinth()
 }
 </script>
 

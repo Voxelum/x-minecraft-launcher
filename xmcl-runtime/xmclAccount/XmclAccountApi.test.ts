@@ -52,7 +52,12 @@ describe('XmclAccountApi', () => {
         }),
       )
       .mockResolvedValueOnce(Response.json(M1_LOCAL_AUTH_FIXTURE))
-    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
+    const api = new XmclAccountApi(
+      fetch,
+      'https://account.example.test/',
+      undefined,
+      'https://billing.example.test/',
+    )
 
     await api.beginBrowserAuthorization('google', {
       state: 'state-1',
@@ -116,7 +121,8 @@ describe('XmclAccountApi', () => {
     await api.getBackupStoragePolicy(credential)
 
     const [input, init] = fetch.mock.calls[0]!
-    const proof = (init?.headers as Headers).get('DPoP')!
+    const headers = init!.headers as Headers
+    const proof = headers.get('DPoP')!
     const [encodedHeader, encodedPayload, encodedSignature] = proof.split('.')
     const header = JSON.parse(Buffer.from(encodedHeader, 'base64url').toString())
     const payload = JSON.parse(Buffer.from(encodedPayload, 'base64url').toString())
@@ -128,7 +134,7 @@ describe('XmclAccountApi', () => {
       iat: expect.any(Number),
       ath: expect.any(String),
     })
-    expect((init?.headers as Headers).get('Authorization')).toBe(`DPoP ${credential.accessToken}`)
+    expect(headers.get('Authorization')).toBe(`DPoP ${credential.accessToken}`)
     expect(
       verify(
         'sha256',
@@ -313,5 +319,112 @@ describe('XmclAccountApi', () => {
     expect(prepareHeaders).toEqual(expect.any(Headers))
     expect((prepareHeaders as Headers).get('Idempotency-Key')).toBeTruthy()
     expect((confirmHeaders as Headers).get('Idempotency-Key')).toBeTruthy()
+  })
+
+  it('claims a Together trial and creates a Waffo checkout with authenticated idempotent requests', async () => {
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(
+        Response.json({
+          status: 'active',
+          durationSeconds: 604800,
+          turnEgressBytes: 1_000_000_000,
+          claimedAt: '2026-08-12T00:00:00.000Z',
+          expiresAt: '2026-08-19T00:00:00.000Z',
+        }),
+      )
+      .mockResolvedValueOnce(
+        Response.json({
+          orderId: 'order-1',
+          cashAmount: { currency: 'USD', amountMinor: 500 },
+          approvalUrl: 'https://checkout.waffo.ai/order-1',
+          status: 'pending',
+          createdAt: '2026-08-12T00:00:00.000Z',
+          updatedAt: '2026-08-12T00:00:00.000Z',
+        }),
+      )
+    const api = new XmclAccountApi(
+      fetch,
+      'https://account.example.test/',
+      undefined,
+      'https://billing.example.test/',
+    )
+
+    await api.claimTogetherTrial(M1_LOCAL_AUTH_FIXTURE.session)
+    await api.createTogetherOrder(M1_LOCAL_AUTH_FIXTURE.session, 500)
+
+    expect(String(fetch.mock.calls[0]![0])).toBe(
+      'https://billing.example.test/v1/xmcl-plus/trial',
+    )
+    expect(String(fetch.mock.calls[1]![0])).toBe(
+      'https://billing.example.test/v1/billing/waffo/orders',
+    )
+    const trialInit = fetch.mock.calls[0]![1]!
+    const orderInit = fetch.mock.calls[1]![1]!
+    expect(JSON.parse(String(orderInit.body))).toEqual({ amountMinor: 500 })
+    expect((trialInit.headers as Headers).get('Idempotency-Key')).toBeTruthy()
+    expect((orderInit.headers as Headers).get('Idempotency-Key')).toBeTruthy()
+  })
+
+  it('keeps billing available when the deployment has not published the trial route', async () => {
+    const fetch = vi.fn(async (input: string | URL) => {
+      const path = new URL(input).pathname
+      if (path === '/v1/xmcl-plus/offer') {
+        return Response.json({
+          offerId: 'xmcl-plus',
+          displayName: 'XMCL Together Home',
+          monthlyPrice: { currency: 'USD', amountMinor: 299 },
+          aiUnitsPerPeriod: 2_000_000,
+          turnEgressBytesPerPeriod: 20_000_000_000,
+        })
+      }
+      if (path === '/v1/xmcl-plus/trial') {
+        return new Response('Not Found', { status: 404 })
+      }
+      if (path === '/v1/xmcl-plus/status') return Response.json(null)
+      if (path === '/v1/xmcl-plus/allowances') {
+        return Response.json({
+          sources: [],
+          aiUnits: {
+            included: 0,
+            consumed: 0,
+            remaining: 0,
+            meteringStatus: 'active',
+          },
+          turnEgressBytes: {
+            included: 20_000_000_000,
+            consumed: 2_500_000_000,
+            remaining: 17_500_000_000,
+            meteringStatus: 'active',
+          },
+        })
+      }
+      if (path === '/v1/billing/balance') {
+        return Response.json({
+          accountId: 'account-1',
+          available: { currency: 'USD', amountMinor: 0 },
+          reserved: { currency: 'USD', amountMinor: 0 },
+        })
+      }
+      return new Response('Unexpected request', { status: 500 })
+    })
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
+
+    await expect(api.getTogetherOverview(M1_LOCAL_AUTH_FIXTURE.session)).resolves.toMatchObject({
+      trial: {
+        status: 'unavailable',
+        durationSeconds: 604_800,
+        turnEgressBytes: 1_000_000_000,
+      },
+      subscription: null,
+      allowances: {
+        turnEgressBytes: {
+          included: 20_000_000_000,
+          consumed: 2_500_000_000,
+          remaining: 17_500_000_000,
+        },
+      },
+      balance: { available: { amountMinor: 0 } },
+    })
   })
 })

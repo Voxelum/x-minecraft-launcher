@@ -1,4 +1,4 @@
-import { computed, InjectionKey, markRaw, Ref, ref, shallowRef, ShallowRef, toRaw, watch } from 'vue'
+import { computed, inject, InjectionKey, markRaw, provide, Ref, ref, shallowRef, ShallowRef, toRaw, watch } from 'vue'
 
 import { injection } from '@/util/inject'
 
@@ -130,6 +130,9 @@ export function useDialog<T = any>(dialogName: DialogKey<T> = '', onShown?: (par
   const { parameter, isShown, show, hide } = getOrCreate(model, dialogName)
 
   if (onShown || onHide) {
+    if (isShown.value) {
+      onShown?.(model.current.value.parameter)
+    }
     watch(isShown, (value) => {
       if (value) {
         onShown?.(model.current.value.parameter)

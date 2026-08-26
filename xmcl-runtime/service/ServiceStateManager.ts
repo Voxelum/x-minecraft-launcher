@@ -16,13 +16,14 @@ export class ServiceStateManager {
 
   constructor(private app: LauncherApp) {
     this.logger = this.app.getLogger('ServiceStateManager')
-    app.controller.handle('commit', (event, id, type, payload) => {
+    app.controller.handle('commit', async (event, id, type, payload) => {
       const stateProxy = this.containers[id]
       if (!stateProxy) return 'NOT_STATE_SERVICE'
       try {
-        stateProxy.commit(type, payload)
+        await stateProxy.commit(type, payload)
       } catch (e) {
         this.logger.error(e as any)
+        throw e
       }
     })
     app.controller.handle('unref', ({ sender }, id) => {

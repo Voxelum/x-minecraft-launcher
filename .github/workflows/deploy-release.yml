@@ -12,7 +12,7 @@ jobs:
       with:
         repository: "voxelum/x-minecraft-launcher"
         tag: ${{ github.event.release.tag_name }}
-        fileName: "*"
+        fileName: "xmcl.appinstaller"
         out-file-path: build
     - name: Upload to Azure
       uses: ci010/upload-blob-to-azure@master
@@ -29,21 +29,6 @@ jobs:
         token: ${{ secrets.PAT_GITHUB_TOKEN }}
         ref: 'master'
         repo: 'voxelum/xmcl-page'
-    - name: Create release version file
-      run: |
-        mkdir releases
-        echo ${{ github.event.release.tag_name }} > ./releases/VERSION
-        cat << EOF > ./releases/latest_version.json
-        ${{ toJSON(github.event.release) }}
-        EOF
-    - name: Upload release version file to Azure
-      uses: ci010/upload-blob-to-azure@master
-      env:
-        AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
-      with:
-        account: xmcl
-        container: releases
-        directory: ./releases
 
   publish-asar-npm:
     name: Publish app.asar to npm

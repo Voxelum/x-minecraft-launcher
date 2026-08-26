@@ -6,7 +6,7 @@ import { CollectionService } from '@xmcl/runtime/collection'
 import { XmclAccountService } from '@xmcl/runtime/xmclAccount'
 import { ExternalCredentialService } from '@xmcl/runtime/credential/ExternalCredentialService'
 import { ElyByService } from '@xmcl/runtime/elyby'
-import { InstallService, VersionMetadataService } from '@xmcl/runtime/install'
+import { VersionInstallService, VersionMetadataService } from '@xmcl/runtime/install'
 import {
   InstanceLogService,
   InstanceModsService,
@@ -38,7 +38,7 @@ import { PresenceService } from '@xmcl/runtime/presence'
 import { ResourcePackPreviewService } from '@xmcl/runtime/resourcePack'
 import { ServerStatusService } from '@xmcl/runtime/serverStatus'
 import { ThemeService } from '@xmcl/runtime/theme'
-import { OfficialUserService, UserService, MinecraftFriendsService } from '@xmcl/runtime/user'
+import { LocalSkinService, OfficialUserService, UserService, MinecraftFriendsService } from '@xmcl/runtime/user'
 import { ServerService } from './ServerService'
 
 export const definedServices = [
@@ -52,7 +52,7 @@ export const definedServices = [
   CollectionService,
   XmclAccountService,
   BedrockService,
-  InstallService,
+  VersionInstallService,
   ProjectMappingService,
   InstanceIOService,
   InstanceLogService,
@@ -80,6 +80,7 @@ export const definedServices = [
   OfficialUserService,
   MinecraftFriendsService,
   UserService,
+  LocalSkinService,
   VersionService,
   InstanceInstallService,
   ModMetadataService,

@@ -36,7 +36,6 @@ import { kJavaContext, useJavaContext } from '@/composables/java'
 import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
 import { kModDependenciesCheck, useModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModLibCleaner, useModLibCleaner } from '@/composables/modLibCleaner'
-import { kModsSearch, useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
 import { kModpackExport, useModpackExport } from '@/composables/modpack'
 import { kInstanceServerLaunch, useInstanceServerLaunch } from '@/composables/instanceServerLaunch'
@@ -46,9 +45,7 @@ import {
   useModrinthAuthenticatedAPI,
 } from '@/composables/modrinthAuthenticatedAPI'
 import { kLocalCollections, useLocalCollections } from '@/composables/localCollections'
-import { kPeerShared, usePeerConnections } from '@/composables/peers'
-import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
-import { kSaveSearch, useSavesSearch } from '@/composables/savesSearch'
+import { kPeerState, usePeerState } from '@/composables/peers'
 import { kSearchModel, useSearchModel } from '@/composables/search'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
@@ -68,7 +65,6 @@ import {
   kSurfaceTokens,
   useSurfaceTokens,
 } from '@/composables/surfaceTokens'
-import { kShaderPackSearch, useShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useTelemetryTrack } from '@/composables/telemetryTrack'
 import { kTheme, useTheme } from '@/composables/theme'
 import { kTutorial, useTutorialModel } from '@/composables/tutorial'
@@ -80,6 +76,7 @@ import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { kSupportedAuthorityMetadata, useSupportedAuthority } from '@/composables/yggrasil'
 import { vuetify } from '@/vuetify'
 import { provide, watchEffect } from 'vue'
+import { useTogetherMultiplayer } from './multiplayerTogether'
 
 export default defineComponent({
   setup(props, ctx) {
@@ -92,10 +89,30 @@ export default defineComponent({
     const java = useJavaContext()
     const localVersions = useLocalVersions()
     const instances = useInstances()
+    const router = useRouter()
+    const onNavigate = (route: string) => { void router.push(route) }
+    windowController.on('navigate', onNavigate)
+    onUnmounted(() => windowController.removeListener('navigate', onNavigate))
+    watch([instances.ready, instances.allInstances], ([ready, current], [wasReady, previous]) => {
+      if (ready && current.length === 0 && (!wasReady || previous.length > 0) && router.currentRoute.value.path !== '/me') {
+        router.replace('/me')
+      }
+    })
     const instance = useInstance(instances.selectedInstance, instances.instances)
-    provide(kPeerShared, usePeerConnections())
-
     const settings = useSettingsState()
+    const multiplayerTransport = computed(() => settings.state.value?.multiplayerTransport ?? 'webrtc')
+    const togetherMultiplayer = typeof multiplayerNetworkDiagnostics !== 'undefined'
+      ? useTogetherMultiplayer(multiplayerTransport)
+      : undefined
+    if (togetherMultiplayer) {
+      provide(kPeerState, usePeerState(
+        user.gameProfile,
+        togetherMultiplayer.multiplayer,
+        togetherMultiplayer.state,
+        togetherMultiplayer.refreshNat,
+        instances.selectedInstance,
+      ))
+    }
     const instanceVersion = useInstanceVersion(
       instance.instance,
       localVersions.versions,
@@ -114,7 +131,10 @@ export default defineComponent({
     const serverInfo = useInstanceServerInfo(instance.path)
     const resourcePacks = useInstanceResourcePacks(instance.path, options.gameOptions)
     const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
-    const blueprints = useInstanceBlueprints(instance.path)
+    const blueprints = useInstanceBlueprints(
+      instance.path,
+      computed(() => router.currentRoute.value.meta.blueprintState === true),
+    )
     const shaderPacks = useInstanceShaderPacks(
       instance.path,
       instance.runtime,
@@ -137,23 +157,11 @@ export default defineComponent({
     provide(kModrinthAuthenticatedAPI, modrinthAPI)
     provide(
       kXmclAccount,
-      useXmclAccount(
-        user.userProfile,
-        computed(() => modrinthAPI.userData.value?.id),
-      ),
+      useXmclAccount(),
     )
     provide(kLocalCollections, useLocalCollections())
     const searchModel = useSearchModel(instance.runtime)
     provide(kSearchModel, searchModel)
-    const modsSearch = useModsSearch(
-      instance.path,
-      instance.runtime,
-      instanceMods.mods,
-      instanceMods.isValidating,
-      settings.state,
-      modrinthAPI,
-      searchModel,
-    )
     const modUpgrade = useModUpgrade(
       instance.path,
       instance.runtime,
@@ -161,23 +169,12 @@ export default defineComponent({
       instanceMods.updateMetadataAndWait,
     )
 
-    const resourcePackSearch = useResourcePackSearch(
-      resourcePacks.enabled,
-      resourcePacks.disabled,
-      modrinthAPI,
-      searchModel,
-    )
-    const shaderPackSearch = useShaderPackSearch(shaderPacks.shaderPacks, modrinthAPI, searchModel)
-
     const install = useInstanceVersionInstallInstruction(
       instance.path,
       instance.instances,
       instanceVersion.resolvedVersion,
       instanceVersion.refreshResolvedVersion,
-      localVersions.versions,
-      localVersions.servers,
       java.all,
-      java.refresh,
     )
 
     useTelemetryTrack(settings.state)
@@ -207,9 +204,6 @@ export default defineComponent({
     provide(kInstanceVersionInstall, install)
 
     provide(kInstanceShaderPacks, shaderPacks)
-    provide(kResourcePackSearch, resourcePackSearch)
-    provide(kShaderPackSearch, shaderPackSearch)
-    provide(kModsSearch, modsSearch)
     provide(
       kModDependenciesCheck,
       useModDependenciesCheck(
@@ -220,7 +214,6 @@ export default defineComponent({
       ),
     )
     provide(kModLibCleaner, useModLibCleaner(instanceMods.mods, instanceMods.allowLoaders))
-    provide(kSaveSearch, useSavesSearch(saves.saves, saves.sharedSaves, searchModel))
     provide(kModUpgrade, modUpgrade)
     provide(kEnvironment, useEnvironment())
 
@@ -250,13 +243,28 @@ export default defineComponent({
           ...vuetify.defaults.value?.VBtn,
           rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
         },
+        VBtnGroup: {
+          ...vuetify.defaults.value?.VBtnGroup,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
+          VBtn: {
+            rounded: null,
+          },
+        },
+        VBtnToggle: {
+          ...vuetify.defaults.value?.VBtnToggle,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
+        },
         VChip: {
           ...vuetify.defaults.value?.VChip,
           rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
         },
         VTextField: {
           ...vuetify.defaults.value?.VTextField,
-          rounded: enabled ? undefined : 0,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
+        },
+        VSelect: {
+          ...vuetify.defaults.value?.VSelect,
+          rounded: enabled ? DEFAULT_SURFACE_BUTTON_RADIUS : 0,
         },
         VSwitch: {
           ...vuetify.defaults.value?.VSwitch,
@@ -277,7 +285,6 @@ export default defineComponent({
 
     useI18nSync(settings.state)
 
-    const router = useRouter()
     useExternalRoute(router)
 
     provide(kImageDialog, useImageDialog())

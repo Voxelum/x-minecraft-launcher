@@ -6,6 +6,7 @@ import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '~/constant'
 import { kClientToken, kFlights, kIsNewClient } from '~/infra'
 import { LaunchService } from '~/launch'
+import { createPostprocessTelemetryTracker } from '~/install/postprocessTelemetry'
 import { PeerService } from '~/peer'
 import { kResourceManager } from '~/resource'
 import { kSettings } from '~/settings'
@@ -31,20 +32,7 @@ const getSdkVersion = () => {
 }
 
 const installOperations: Record<string, ReadonlySet<string>> = {
-  InstallService: new Set([
-    'installMinecraft',
-    'installMinecraftJar',
-    'installForge',
-    'installNeoForged',
-    'installFabric',
-    'installQuilt',
-    'installOptifine',
-    'installOptifineAsMod',
-    'installLabyModVersion',
-    'installByProfile',
-    'installDependencies',
-    'reinstall',
-  ]),
+  VersionInstallService: new Set(['install']),
   InstanceInstallService: new Set([
     'installInstanceFiles',
     'resumeInstanceInstall',
@@ -236,13 +224,27 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     // resource data are enormous, so we need to handle them separately
     setupResourceTelemetryClient(appInsight, app, settings, appInsight.defaultClient.context.tags)
 
-    app.on('install-postprocess-fallback', (payload) => {
+    app.on('download-performance', (payload) => {
       if (settings.disableTelemetry) return
       defaultClient.trackEvent({
-        name: 'install-postprocess-fallback',
-        properties: payload,
+        name: 'download-performance',
+        properties: payload.properties,
+        measurements: payload.measurements,
       })
     })
+
+    app.on('install-manifest', createPostprocessTelemetryTracker((payload) => {
+      if (settings.disableTelemetry) return
+      defaultClient.trackEvent({
+        name: 'install-postprocess',
+        properties: payload.properties,
+        measurements: payload.measurements,
+        tagOverrides: {
+          [contract.operationId]: payload.operationId,
+          [contract.operationName]: 'install-postprocess',
+        },
+      })
+    }, randomUUID))
 
     app.on('microsoft-auth-telemetry', (payload) => {
       if (settings.disableTelemetry) return
@@ -261,17 +263,19 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     // operation records exactly one terminal outcome. `installInstanceFiles`
     // is intentionally included so modpack/file installs are measured beside
     // game, loader, and Java installs. No payload or local paths are sent.
-    app.on('service-call-end', (serviceName, serviceMethod, duration, success) => {
+    app.on('service-call-end', (serviceName, serviceMethod, duration, success, failureCategory) => {
       if (settings.disableTelemetry) return
       const operation = getInstallOperation(serviceName, serviceMethod)
       if (!operation) return
       defaultClient.trackEvent({
         name: 'install-operation',
         properties: {
+          schemaVersion: '2',
           operation,
           service: serviceName,
           method: serviceMethod,
           success: String(success),
+          failureCategory: success ? 'none' : failureCategory ?? 'unknown',
         },
         measurements: {
           durationMs: duration,

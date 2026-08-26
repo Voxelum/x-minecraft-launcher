@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { mergeInstanceInstallManifest, type InstanceFile } from './files'
+import { getInstanceManifestFingerprintSource, mergeInstanceInstallManifest, type InstanceFile } from './files'
 
 function file(path: string, projectId?: string, versionId = 'v1'): InstanceFile {
   return {
@@ -67,5 +67,43 @@ describe('mergeInstanceInstallManifest', () => {
 
     expect(updated.oldFiles).toEqual([file('mods/a-v1.jar', 'a', 'v1')])
     expect(updated.files).toEqual([file('mods/a-v3.jar', 'a', 'v3')])
+  })
+})
+
+describe('getInstanceManifestFingerprintSource', () => {
+  const manifest = (files: InstanceFile[], fabricLoader = '0.16.10') => ({
+    runtime: { minecraft: '1.21.1', fabricLoader },
+    files,
+  } as any)
+  const mod = (path: string, sha1: string): InstanceFile => ({ path, hashes: { sha1 } })
+
+  it('matches renamed mods while preserving content, state, and multiplicity', () => {
+    const source = getInstanceManifestFingerprintSource(manifest([
+      mod('mods/a.jar', 'a'),
+      mod('mods/b.jar.disabled', 'b'),
+      mod('config/options.json', 'ignored'),
+    ]))
+
+    expect(getInstanceManifestFingerprintSource(manifest([
+      mod('mods/renamed.jar.disabled', 'b'),
+      mod('mods/other-name.jar', 'a'),
+    ]))).toBe(source)
+    expect(getInstanceManifestFingerprintSource(manifest([
+      mod('mods/a.jar', 'a'),
+      mod('mods/b.jar', 'b'),
+    ]))).not.toBe(source)
+    expect(getInstanceManifestFingerprintSource(manifest([
+      mod('mods/a.jar', 'a'),
+      mod('mods/b.jar.disabled', 'different'),
+    ]))).not.toBe(source)
+    expect(getInstanceManifestFingerprintSource(manifest([
+      mod('mods/a.jar', 'a'),
+      mod('mods/b.jar.disabled', 'b'),
+      mod('mods/copy.jar', 'a'),
+    ]))).not.toBe(source)
+    expect(getInstanceManifestFingerprintSource(manifest([
+      mod('mods/a.jar', 'a'),
+      mod('mods/b.jar.disabled', 'b'),
+    ], '0.16.9'))).not.toBe(source)
   })
 })

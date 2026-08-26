@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: விளையாட்டை உருவாக்கு
   serverTitle: உங்கள் சர்வர் முகவரியை உள்ளிடவும்
 AppShareInstanceDialog:
+  editScopeDescription: LAN-இல் இயங்கும் இந்த விளையாட்டைக் கண்டறிந்த பிறகு மற்றவர்கள் பெறக்கூடிய கோப்புகளைத் தேர்ந்தெடுக்கவும்.
+  editScopeTitle: பகிர்வு வரம்பைத் திருத்து
+  instanceToShare: இயங்கும் விளையாட்டு
   alterDownloadDescription: தற்போதைய நிகழ்வை நீங்கள் குழப்ப விரும்பவில்லை என்றால், உங்கள் சக நண்பரின் கட்டமைப்பில் இருந்து புதிய நிகழ்வையும் உருவாக்கலாம். நிகழ்வை உருவாக்க கீழே உள்ள பொத்தானைக் கிளிக் செய்யவும்.
   baseInfo: அடிப்படை அமைப்பு
-  cancelShare: பகிர்வதை ரத்து செய்
   description: நீங்கள் சுயவிவரத்தைப் பகிர்ந்த பிறகு, மற்ற இடங்கள் உங்கள் கணினி மூலம் இந்த கோப்புகளைப் பதிவிறக்கலாம்.
   downloadDescription: உங்கள் சக நண்பர் உங்களுக்கு வழங்கிய கோப்புகளைச் சரிபார்க்கவும். நீங்கள் பதிவிறக்க விரும்பும் கோப்பைத் தேர்ந்தெடுக்கவும். அது தற்போதைய நிகழ்வான {name} இல் வைக்கப்படும்.
   downloadNotifyTitle: '{user} இலிருந்து நிகழ்வைப் பதிவிறக்கவும்'
   downloadTitle: மற்ற சக நண்பர்களிடமிருந்து கோப்புகளைப் பதிவிறக்கவும்
   filesToDownload: பதிவிறக்க வேண்டிய கோப்புகளைத் தேர்ந்தெடுக்கவும்
   filesToShare: பகிர வேண்டிய கோப்புகளைத் தேர்ந்தெடுக்கவும்
-  instanceShare: '{user} தற்போதைய நிகழ்வை உங்களுடன் பகிர்ந்துள்ளார்'
   share: பகிர்
-  shareNotifyTitle: நிகழ்வைப் பகிர்
   shareTitle: விளையாட்டு கோப்புகளை மற்ற வீரருடன் பகிர்ந்து கொள்ளுங்கள்
 BaseSettingGeneral:
   title: பொதுவானவை
@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: மூல கோப்பகத்தைத் தேர்ந்தெடுக்கவும்
 agent:
+  accessRequiredHint: உள்ளமைந்த முகவரைப் பயன்படுத்த XMCL-க்கு சந்தா செலுத்தவும் அல்லது அமைப்புகளில் உங்கள் சொந்த AI வழங்குநரைக் கட்டமைக்கவும்.
+  subscribeXmcl: XMCL-க்கு சந்தா செலுத்தவும்
   callingTool: '{name} ஐ அழைக்கிறது...'
   disabledPlaceholder: முகவர் முடக்கப்பட்டது
   emptyHint: உங்கள் நிகழ்வை ஆய்வு செய்ய, மோட்களை மாற்ற, பதிவுகளைப் படிக்க அல்லது செயலிழப்பைக் கண்டறிய முகவரிடம் கேளுங்கள்.
@@ -174,6 +176,7 @@ delete:
   'no': இல்லை
   'yes': அழி
 dependencies:
+  dependents: இந்த மோடைச் சார்ந்த மோட்கள்
   embedded: உட்பொதிக்கப்பட்டது
   incompatible: பொருந்தாதது
   name: சார்புகள்
@@ -684,6 +687,10 @@ logsCrashes:
   showFile: கோப்புறையில் காட்டு
   title: பதிவுகள் அல்லது செயலிழப்பு அறிக்கைகள்
 me:
+  groupByDate: தேதியின்படி குழுவாக்கு
+  groupByFolder: கோப்புறையின்படி குழுவாக்கு
+  instanceViewMode: இன்ஸ்டன்ஸ் காட்சி முறை
+  listView: பட்டியல் காட்சி
   news: செய்திகள்
   recentPlay: சமீபத்திய விளையாட்டு
 migrateMinecraft:
@@ -1006,10 +1013,45 @@ modrinth:
 modrinthCard:
   currentVersion: தற்போதைய பதிப்பு
 multiplayer:
+  autoShareAmbiguous: பல விளையாட்டுகள் இயங்குகின்றன. XMCL பகிர்வதற்காக LAN உலகை நடத்தும் நிகழ்வைத் தேர்ந்தெடுக்கவும்.
+  editSharingScope: பகிர்வு வரம்பைத் திருத்து
+  gameAvailable: LAN விளையாட்டு கிடைக்கிறது
+  joinGame: விளையாட்டில் சேர்
+  noRunningInstanceToShare: பகிர்வு வரம்பைத் திருத்துவதற்கு முன் ஒரு விளையாட்டைத் தொடங்கவும்
+  updateSharedInstanceConfirm: புதுப்பித்து தொடங்கு
+  updateSharedInstanceDescription: பகிரப்பட்ட மோட்கள் {instance} உடன் வேறுபடுகின்றன. தொடங்குவதற்கு முன் ஹோஸ்டுடன் பொருந்துமாறு இந்த நிகழ்வைப் புதுப்பிக்கவா? தற்போது மாற்றப்பட்ட கோப்புகள் காப்புப்பிரதி எடுக்கப்படும்.
+  updateSharedInstanceTitle: பகிரப்பட்ட நிகழ்வைப் புதுப்பிக்கவா?
+  addFunds: "நிதியைச் சேர்க்கவும்"
+  availableBalance: "கிடைக்கும் இருப்பு"
+  balanceHint: "XMCL Together சேவைகளுக்குக் கிடைக்கும்"
+  billing: "பில்லிங்"
+  billingDescription: "ரிலே அணுகல், உங்கள் Together Home திட்டம் மற்றும் கட்டணங்களை நிர்வகிக்கவும்."
+  billingError: "Together பில்லிங்கை ஏற்ற முடியவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்."
+  buyTogether: "Together வாங்கவும்"
+  cancelTogether: "திட்டத்தை ரத்து செய்யவும்"
+  checkout: "Waffo செக்அவுட்டைத் திறக்கவும்"
+  connectionTogetherWarning: "அறை உறுப்பினர் ஒருவர் சிறிது நேரமாக உங்களுடன் இணைக்க முடியவில்லை. அறையில் உள்ள அனைவருக்கும் இணைப்பை மேம்படுத்த XMCL Together முயற்சிக்கவும். அறை மாஸ்டருக்கு மட்டும் Together தேவை."
+  masterPurchaseHint: "அறையில் உள்ள அனைவருக்கும் இணைப்பை மேம்படுத்த அறை மாஸ்டருக்கு மட்டும் Together Home தேவை."
+  natTogetherWarning: "உங்கள் ரூட்டரால் அறை மாஸ்டருடன் இணைப்பதில் சிக்கல் இருக்கலாம். இணைப்பு தோல்வியுற்றால், உங்களுக்கும் உங்கள் நண்பர்களுக்கும் இடையிலான இணைப்பை மேம்படுத்த XMCL Together முயற்சிக்கவும். அறைக்காக Together வாங்க வேண்டியது அறை மாஸ்டர் மட்டுமே."
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB ரிலே போக்குவரத்துடன் ஒரு 7 நாள் சோதனை."
+  trialTitle: "இணைப்பு சோதனை"
+  tryTogether: "Together முயற்சிக்கவும்"
+  month: "மாதம்"
+  orderStatus: "Waffo ஆர்டர்: {status}"
+  planDescription: "ஒவ்வொரு மாதமும் 20 GB நிர்வகிக்கப்படும் ரிலே போக்குவரத்து, மேலும் உங்கள் மோட்பேக்கைச் சரிசெய்ய AI உதவி."
+  waffoHint: "Waffo Pancake-ல் கட்டணங்கள் பாதுகாப்பாக நிறைவேற்றப்படுகின்றன. XMCL உங்கள் அட்டை எண்ணைப் பெறாது."
+  subscription:
+    active: "செயலில்"
+    cancelled: "ரத்து செய்யப்பட்டது"
+    payment_due: "கட்டணம் செலுத்த வேண்டியது"
+  trial:
+    active: "சோதனை செயலில்"
+    available: "இலவச சோதனை கிடைக்கிறது"
+    expired: "சோதனை பயன்படுத்தப்பட்டது"
+    unavailable: "சோதனை கிடைக்கவில்லை"
   loginRequiredDescription: P2P மல்டிபிளேயர் XMCL ஆன்லைன் சேவைகளைப் பயன்படுத்துகிறது. தொடர XMCL கணக்கில் உள்நுழையவும்.
   loginRequiredTitle: P2P மல்டிபிளேயருக்காக உள்நுழைக
-  allowTurn: ரிலே சேவையகத்தை இயக்கு
-  allowTurnHint: உங்கள் நண்பருடன் இணைக்க முடியாவிட்டால் ரிலே சேவையகத்தை அனுமதிக்கவும். இருப்பினும், ரிலே சேவையகத்தைப் பயன்படுத்துவது உங்கள் இணைப்பை மெதுவாக்கலாம். எச்சரிக்கையுடன் பயன்படுத்தவும்.
   complete: முடிந்தது
   confirm: உறுதிப்படுத்து
   connectionError: இணைப்புப் பிழை
@@ -1046,7 +1088,6 @@ multiplayer:
   localToken: உள்ளூர் டோக்கன்
   manualConnect: கைமுறையாக இணைக்கவும்
   name: LAN இல் மல்டிபிளேயர்
-  natWarning: உங்கள் NAT வகை நேரடி இணைப்புகளைத் தடுக்கலாம். அமைப்புகளில் ரிலே சேவையகத்தை இயக்க முயற்சிக்கவும் அல்லது உங்கள் நண்பரை ஹோஸ்ட் செய்யச் சொல்லவும்.
   networkInfo: நெட்வொர்க் தகவல் (மாற்ற கிளிக் செய்யவும்)
   next: அடுத்து
   otherExposedPortDescription: '{user} முன்னனுப்பிய போர்ட்'
@@ -1059,8 +1100,6 @@ multiplayer:
   sendTokenToRemote: தொலைதூரத்திற்கு டோக்கனை அனுப்பவும்
   share: இன்ஸ்டன்ஸ் உள்ளமைவைப் பகிர்
   sharing: கோப்புகள் பகிரப்படுகின்றன...
-  sharingNotificationBody: '{name} பகிர்ந்த உள்ளமைவிலிருந்து நீங்கள் ஒரு இன்ஸ்டன்ஸை பதிவிறக்கலாம் அல்லது உருவாக்கலாம்.'
-  sharingNotificationTitle: ஒரு பயனர் தங்கள் விளையாட்டு உள்ளமைவைப் பகிர்கிறார்
   start: தொடங்கு
   startNewP2PConnection: புதிய இணைப்பை உருவாக்கத் தொடங்கு பொத்தானைக் கிளிக் செய்யவும்
 myStuff: எனது பொருட்கள்
@@ -1619,6 +1658,7 @@ shaderPack:
   showDirectory: ஷேடர் பேக் கோப்பகத்தைக் காட்டு
   showFile: இந்தக் கோப்புறையில் இந்த ஷேடர் பேக்கைக் காட்டு
 shared:
+  pressKeyCombination: விசைச் சேர்க்கையை அழுத்தவும்...
   add: சேர்
   author: ஆசிரியர்
   back: பின்னால்
@@ -1834,6 +1874,44 @@ userSkin:
   urlNotEmpty: தோல் URL காலியாக இருக்கக்கூடாது
   urlNotValid: தோல் URL செல்லுபடியாகாதது
   useSlim: மெலிதான மாதிரியைப் பயன்படுத்தவும்
+  saveSuccess: ஸ்கின் வட்டில் சேமிக்கப்பட்டது!
+  saveFailed: ஸ்கின்னை வட்டில் சேமிக்க முடியவில்லை
+  uploadFailed: ஸ்கின் பதிவேற்றம் தோல்வியடைந்தது
+  libraryTitle: உள்ளூர் அலமாரி
+  librarySubtitle: உங்கள் ஸ்கின்களைத் தேர்ந்தெடுத்து, ஒழுங்குபடுத்தி, உள்ளூரில் சேமிக்கவும்
+  manage: நிர்வகி
+  all: அனைத்தும்
+  currentSkin: தற்போதைய ஸ்கின்
+  savedCount: சேமித்த ஸ்கின்கள்
+  newSkin: புதிய ஸ்கின்
+  addNewSkin: புதிய ஸ்கின்னைச் சேர்
+  editSkin: ஸ்கின்னைத் திருத்து
+  skinName: ஸ்கின் பெயர்
+  skinNamePlaceholder: 'எ.கா. எனக்குப் பிடித்த ஸ்கின்'
+  localFile: உள்ளூர் கோப்பு
+  urlOrPlayer: URL / விளையாட்டாளர் பெயர்
+  urlOrPlayerPlaceholder: ஸ்கின் பட URL அல்லது Minecraft பயனர்பெயரை உள்ளிடவும்
+  urlOrPlayerHint: Mojang இலிருந்து ஸ்கின்னைப் பெற நேரடி PNG பட URL அல்லது விளையாட்டாளர் பெயரை உள்ளிடவும்
+  dropFileHere: ஸ்கின் PNG கோப்பை இங்கே விடவும் அல்லது தேர்ந்தெடுக்கக் கிளிக் செய்யவும்
+  supportedFormats: 'ஆதரிக்கப்படும் வடிவம்: 64x64 அல்லது 64x32 PNG படம்'
+  preview: ஸ்கின் முன்னோட்டம்
+  previewPlaceholder: ஸ்கின் முன்னோட்டம் கிடைக்கவில்லை
+  saveToLibrary: அலமாரியில் சேமி
+  saveAndEquip: சேமித்து அணிவி
+  equip: அணிவி
+  equipToAccount: Minecraft கணக்கில் அணிவி
+  equipped: அணிவிக்கப்பட்டது
+  noSkinSelected: ஸ்கின் தேர்ந்தெடுக்கப்படவில்லை
+  saveCurrent: தற்போதையதைச் சேமி
+  officialPreset: அதிகாரப்பூர்வ முன்தேர்வு
+  mySkins: என் ஸ்கின்கள்
+  presets: முன்தேர்வுகள்
+  noSkinsFound: ஸ்கின்கள் எதுவும் கிடைக்கவில்லை
+  tryAddingOne: மேலுள்ள பொத்தானைக் கொண்டு புதிய ஸ்கின்னைச் சேர்த்துப் பாருங்கள்!
+  skinUpdated: ஸ்கின் புதுப்பிக்கப்பட்டது!
+  skinDeleteFailed: ஸ்கின்னை அலமாரியிலிருந்து அகற்ற முடியவில்லை
+  edit: திருத்து
+  fetch: ஏற்று
 version:
   checkIntegrity: ஒருமைப்பாட்டைச் சரிபார்க்கவும்
   name: பதிப்பு | பதிப்புகள்

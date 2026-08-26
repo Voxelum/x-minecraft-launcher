@@ -3,10 +3,12 @@ AppAddInstanceDialog:
   createTitle: Spel Aanmaken
   serverTitle: Voer je serveradres in
 AppShareInstanceDialog:
+  editScopeDescription: Selecteer de bestanden die peers kunnen ophalen nadat ze dit actieve spel op het LAN hebben gevonden.
+  editScopeTitle: Deelbereik bewerken
+  instanceToShare: Actief spel
   alterDownloadDescription: >-
     Als je je huidige instance niet wilt verstoren, kun je ook een nieuwe instance aanmaken vanuit de configuratie van je peer. Klik op de onderstaande knop om een instance aan te maken.
   baseInfo: Basisinstellingen
-  cancelShare: Delen Annuleren
   description: >-
     Nadat je het profiel deelt, kunnen anderen deze bestanden via jouw PC downloaden.
   downloadDescription: >-
@@ -15,9 +17,7 @@ AppShareInstanceDialog:
   downloadTitle: Bestanden downloaden van andere peers
   filesToDownload: Kies bestanden om te downloaden
   filesToShare: Kies bestanden om te delen
-  instanceShare: '{user} heeft zojuist de huidige instance met je gedeeld'
   share: Delen
-  shareNotifyTitle: Instance Delen
   shareTitle: Spelbestanden delen met andere spelers
 BaseSettingGeneral:
   title: Algemeen
@@ -150,6 +150,7 @@ delete:
   'no': Nee
   'yes': Verwijderen
 dependencies:
+  dependents: Mods die afhankelijk zijn van deze mod
   embedded: Ingebed
   incompatible: Incompatibel
   name: Afhankelijkheden
@@ -662,6 +663,10 @@ logsCrashes:
   title: Logs of Crash Rapporten
   failures: Startfouten
 me:
+  groupByDate: Groeperen op datum
+  groupByFolder: Groeperen op map
+  instanceViewMode: Instantieweergave
+  listView: Lijstweergave
   news: Nieuws
   recentPlay: Onlangs Gespeeld
 migrationWindow:
@@ -963,11 +968,45 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
+  autoShareAmbiguous: Er zijn meerdere spellen actief. Selecteer de instantie die de LAN-wereld host, zodat XMCL deze kan delen.
+  editSharingScope: Deelbereik bewerken
+  gameAvailable: LAN-spel beschikbaar
+  joinGame: Deelnemen aan spel
+  noRunningInstanceToShare: Start een spel voordat u het deelbereik bewerkt
+  updateSharedInstanceConfirm: Bijwerken en starten
+  updateSharedInstanceDescription: De gedeelde mods verschillen van {instance}. Deze instantie bijwerken zodat deze overeenkomt met de host voordat u start? Bestaande gewijzigde bestanden worden geback-upt.
+  updateSharedInstanceTitle: Gedeelde instantie bijwerken?
+  addFunds: "Tegoed toevoegen"
+  availableBalance: "Beschikbaar saldo"
+  balanceHint: "Beschikbaar voor XMCL Together-diensten"
+  billing: "Facturering"
+  billingDescription: "Beheer relaytoegang, je Together Home-abonnement en betalingen."
+  billingError: "De facturering van Together kon niet worden geladen. Probeer het zo opnieuw."
+  buyTogether: "Together kopen"
+  cancelTogether: "Abonnement opzeggen"
+  checkout: "Waffo-betaling openen"
+  connectionTogetherWarning: "Een groepslid kan al een tijdje geen verbinding met je maken. Probeer XMCL Together om de verbinding voor iedereen in de groep te verbeteren. Alleen de groepsbeheerder heeft Together nodig."
+  masterPurchaseHint: "Alleen de groepsbeheerder heeft Together Home nodig om de verbinding voor iedereen in de groep te verbeteren."
+  natTogetherWarning: "Je router kan problemen hebben om verbinding te maken met de groepsbeheerder. Als verbindingen mislukken, probeer dan XMCL Together om de verbinding tussen jou en je vrienden te verbeteren. Alleen de groepsbeheerder hoeft Together voor de groep te kopen."
+  togetherName: "Minecraft Together"
+  trialDescription: "Een proefperiode van 7 dagen met 1 GB relayverkeer."
+  trialTitle: "Connectiviteitstest"
+  tryTogether: "Together proberen"
+  month: "maand"
+  orderStatus: "Waffo-bestelling: {status}"
+  planDescription: "20 GB beheerd relayverkeer per maand, plus probleemoplossing met AI voor je modpack."
+  waffoHint: "Betalingen worden veilig via Waffo Pancake uitgevoerd. XMCL ontvangt nooit je kaartnummer."
+  subscription:
+    active: "Actief"
+    cancelled: "Opgezegd"
+    payment_due: "Betaling verschuldigd"
+  trial:
+    active: "Proefperiode actief"
+    available: "Gratis proefperiode beschikbaar"
+    expired: "Proefperiode gebruikt"
+    unavailable: "Proefperiode niet beschikbaar"
   loginRequiredDescription: P2P-multiplayer gebruikt de online diensten van XMCL. Meld u aan bij een XMCL-account om door te gaan.
   loginRequiredTitle: Aanmelden voor P2P-multiplayer
-  allowTurn: Relay server inschakelen
-  allowTurnHint: >-
-    Sta een relay server toe als u niet met uw vriend kunt verbinden. Het gebruik van een relay server kan echter uw verbinding vertragen. Wees voorzichtig.
   complete: Voltooien
   confirm: Bevestigen
   connections: Verbindingen
@@ -1018,16 +1057,11 @@ multiplayer:
   sendTokenToRemote: Stuur Token naar Remote
   share: Instance Configuratie Delen
   sharing: Bestanden delen...
-  sharingNotificationBody: >-
-    U kunt downloaden of een instance aanmaken vanaf de gedeelde configuratie van {name}.
-  sharingNotificationTitle: Een peer deelt zijn spelconfiguratie
   start: Starten
   startNewP2PConnection: Klik op de Start knop om een nieuwe peer-verbinding te maken
   connectionError: Verbindingsfout
   connectionFailedHint: >-
     Kan geen verbinding maken. Controleer of beide peers compatibele NAT-types hebben.
-  natWarning: >-
-    Je NAT-type kan directe verbindingen verhinderen. Probeer de relay-server in de instellingen in te schakelen of vraag je vriend om host te zijn.
 myStuff: Mijn Spullen
 natType:
   blocked: Geblokkeerd
@@ -1201,6 +1235,8 @@ serverStatus:
   refuse: §4Server weigert!
   timeout: §4Verbinden met server timeout!
 agent:
+  accessRequiredHint: Abonneer je op XMCL om de ingebouwde agent te gebruiken, of configureer je eigen AI-provider in de instellingen.
+  subscribeXmcl: Abonneren op XMCL
   notConfiguredHint: Stel een API-sleutel, model en OpenAI-compatibel endpoint in via Instellingen → Algemeen → AI-agent. Gebruik bijvoorbeeld OpenAI of een Claude-compatibele gateway.
 setting:
   aiAgentApiKeyDescription: Configureer een OpenAI-compatibele provider, zoals OpenAI of een gateway voor Claude. De sleutel wordt lokaal op dit apparaat opgeslagen.
@@ -1470,6 +1506,7 @@ shaderPack:
   noPacks: Geen shaderpakketten geïnstalleerd
   search: Shaderpakketten zoeken...
 shared:
+  pressKeyCombination: Druk op een toetsencombinatie...
   add: Toevoegen
   author: Auteur
   back: Terug
@@ -1499,6 +1536,7 @@ shared:
   skipForNow: Nu Overslaan
   upgrade: Bijwerken
   'yes': Ja
+  delete: Verwijderen
 sidebar:
   pin: Vastzetten
   unpin: Losmaken
@@ -1686,6 +1724,46 @@ userSkin:
   urlNotEmpty: Skin URL mag niet leeg zijn
   urlNotValid: Skin URL is ongeldig
   useSlim: Gebruik Dun Model
+  classic: Klassiek
+  slim: Slank
+  saveSuccess: Skin opgeslagen op schijf!
+  saveFailed: Skin kon niet op schijf worden opgeslagen
+  uploadFailed: Uploaden van skin mislukt
+  libraryTitle: Lokale kledingkast
+  librarySubtitle: Kies, beheer en bewaar je skins lokaal
+  manage: Beheren
+  all: Alles
+  currentSkin: Huidige skin
+  savedCount: opgeslagen skins
+  newSkin: Nieuwe skin
+  addNewSkin: Nieuwe skin toevoegen
+  editSkin: Skin bewerken
+  skinName: Naam van skin
+  skinNamePlaceholder: 'bijv. Mijn favoriete skin'
+  localFile: Lokaal bestand
+  urlOrPlayer: URL / Spelersnaam
+  urlOrPlayerPlaceholder: Voer de URL van de skinafbeelding of Minecraft-gebruikersnaam in
+  urlOrPlayerHint: Voer een directe URL van een PNG-afbeelding of spelersnaam in om de skin bij Mojang op te halen
+  dropFileHere: Zet het PNG-bestand van de skin hier neer of klik om te bladeren
+  supportedFormats: 'Ondersteunde indeling: PNG-afbeelding van 64x64 of 64x32'
+  preview: Skinvoorbeeld
+  previewPlaceholder: Geen skinvoorbeeld beschikbaar
+  saveToLibrary: Opslaan in kledingkast
+  saveAndEquip: Opslaan en aantrekken
+  equip: Aantrekken
+  equipToAccount: Aantrekken op Minecraft-account
+  equipped: Aangetrokken
+  noSkinSelected: Geen skin geselecteerd
+  saveCurrent: Huidige opslaan
+  officialPreset: Officiële voorinstelling
+  mySkins: Mijn skins
+  presets: Voorinstellingen
+  noSkinsFound: Geen skins gevonden
+  tryAddingOne: Voeg een nieuwe skin toe met de knop hierboven!
+  skinUpdated: Skin bijgewerkt!
+  skinDeleteFailed: Skin kon niet uit de kledingkast worden verwijderd
+  edit: Bewerken
+  fetch: Laden
 version:
   checkIntegrity: Integriteit Controleren
   name: Versie | Versies

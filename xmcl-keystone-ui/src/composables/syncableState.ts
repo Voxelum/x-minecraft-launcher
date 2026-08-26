@@ -1,8 +1,27 @@
 import { SharedState } from '@xmcl/runtime-api'
-import { useEventListener } from '@vueuse/core'
-import { ref, shallowRef, triggerRef, watchEffect } from 'vue'
+import { onScopeDispose, ref, shallowRef, triggerRef, watchEffect } from 'vue'
 
 export type Handler<T> = { [k in keyof T]?: T[k] /* extends (...args: infer A) => infer R ? (state: T, ...args: A) => R : never */ }
+
+const revalidators = new Set<() => Promise<void>>()
+const revalidateAll = () => {
+  for (const revalidate of revalidators) void revalidate()
+}
+
+function registerRevalidator(revalidate: () => Promise<void>) {
+  if (revalidators.size === 0) {
+    document.addEventListener('visibilitychange', revalidateAll)
+    window.addEventListener('focus', revalidateAll)
+  }
+  revalidators.add(revalidate)
+  onScopeDispose(() => {
+    revalidators.delete(revalidate)
+    if (revalidators.size === 0) {
+      document.removeEventListener('visibilitychange', revalidateAll)
+      window.removeEventListener('focus', revalidateAll)
+    }
+  })
+}
 
 export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) => Promise<SharedState<T>> | undefined,
   Type: { prototype: Handler<T>; new(): T }) {
@@ -106,8 +125,7 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
     if (isValidating.value) return
     await state.value?.revalidate()
   }
-  useEventListener(document, 'visibilitychange', revalidateCall, false)
-  useEventListener(window, 'focus', revalidateCall, false)
+  registerRevalidator(revalidateCall)
   return {
     isValidating,
     state,

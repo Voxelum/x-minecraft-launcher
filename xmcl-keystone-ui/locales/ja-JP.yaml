@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: ゲームを作成
   serverTitle: サーバーアドレスを入力
 AppShareInstanceDialog:
+  editScopeDescription: LAN上で実行中のこのゲームを検出したピアが取得できるファイルを選択します。
+  editScopeTitle: 共有範囲を編集
+  instanceToShare: 実行中のゲーム
   alterDownloadDescription: 現在の起動構成をいじりたくなければ、ピアの構成から新しく起動構成を作ることができます。下のボタンをクリックすると起動構成を作成します。
   baseInfo: 基本的な設定
-  cancelShare: 共有を取り消す
   description: プロファイルを共有すると、他の場所からあなたのPCを通してファイルをダウンロードできるようになります。
   downloadDescription: ピアから提供されたファイルを確認し、ダウンロードするファイルを選択してください。これは現在の起動構成 {name} に配置されます。
   downloadNotifyTitle: '{user} から起動構成をダウンロード'
   downloadTitle: 他のピアからファイルをダウンロード
   filesToDownload: ダウンロードするファイルを選択
   filesToShare: 共有するファイルを選択
-  instanceShare: '{user} が現在の起動構成をあなたに共有しました。'
   share: 共有
-  shareNotifyTitle: 起動構成を共有
   shareTitle: ゲームファイルを他のプレイヤーに共有
 BaseSettingGeneral:
   title: 一般
@@ -146,6 +146,7 @@ delete:
   'no': いいえ
   'yes': はい
 dependencies:
+  dependents: この Mod に依存する Mod
   embedded: 埋め込み
   incompatible: 不適合
   name: 依存関係
@@ -628,6 +629,10 @@ logsCrashes:
   title: ログ、またはクラッシュレポート
   failures: 起動失敗
 me:
+  groupByDate: 日付でグループ化
+  groupByFolder: フォルダーでグループ化
+  instanceViewMode: インスタンス表示モード
+  listView: リスト表示
   news: ニュース
   recentPlay: プレイの履歴
 migrationWindow:
@@ -931,10 +936,45 @@ modrinth:
 modrinthCard:
   currentVersion: 現在のバージョン
 multiplayer:
+  autoShareAmbiguous: 複数のゲームが実行中です。XMCLで共有するLANワールドをホストしているインスタンスを選択してください。
+  editSharingScope: 共有範囲を編集
+  gameAvailable: LANゲームが利用可能
+  joinGame: ゲームに参加
+  noRunningInstanceToShare: 共有範囲を編集する前にゲームを起動してください
+  updateSharedInstanceConfirm: 更新して起動
+  updateSharedInstanceDescription: 共有されたModが{instance}と異なります。起動前にこのインスタンスをホストに合わせて更新しますか？変更済みの既存ファイルはバックアップされます。
+  updateSharedInstanceTitle: 共有インスタンスを更新しますか？
+  addFunds: "残高を追加"
+  availableBalance: "利用可能残高"
+  balanceHint: "XMCL Together のサービスに利用できます"
+  billing: "請求"
+  billingDescription: "リレーアクセス、Together Home プラン、お支払いを管理します。"
+  billingError: "Together の請求情報を読み込めませんでした。しばらくしてからもう一度お試しください。"
+  buyTogether: "Together を購入"
+  cancelTogether: "プランを解約"
+  checkout: "Waffo の決済を開く"
+  connectionTogetherWarning: "ルームメンバーの1人がしばらくあなたに接続できていません。ルーム全員の接続性を改善するには XMCL Together をお試しください。Together が必要なのはルームマスターだけです。"
+  masterPurchaseHint: "ルーム全員の接続性を改善するには、ルームマスターだけが Together Home を必要とします。"
+  natTogetherWarning: "ルーターがルームマスターへの接続に問題を抱えている可能性があります。接続に失敗する場合は、あなたと友達の接続性を改善するため XMCL Together をお試しください。ルームの Together を購入する必要があるのはルームマスターだけです。"
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB のリレートラフィックを含む7日間のトライアルを1回利用できます。"
+  trialTitle: "接続性トライアル"
+  tryTogether: "Together を試す"
+  month: "月"
+  orderStatus: "Waffo の注文: {status}"
+  planDescription: "毎月20 GBの管理リレートラフィックに加え、ModpackのAIトラブルシューティングを利用できます。"
+  waffoHint: "お支払いは Waffo Pancake で安全に完了します。XMCL がカード番号を受け取ることはありません。"
+  subscription:
+    active: "有効"
+    cancelled: "解約済み"
+    payment_due: "支払い期限"
+  trial:
+    active: "トライアル有効"
+    available: "無料トライアルを利用可能"
+    expired: "トライアル使用済み"
+    unavailable: "トライアル利用不可"
   loginRequiredDescription: P2P マルチプレイヤーでは XMCL のオンラインサービスを使用します。続行するには XMCL アカウントにサインインしてください。
   loginRequiredTitle: P2P マルチプレイヤーにサインイン
-  allowTurn: リレーサーバーを有効化
-  allowTurnHint: フレンドに接続できない場合はリレーサーバーを有効にしてください。リレーサーバーは接続速度を低下させる可能性があります。注意して使用してください。
   complete: 完了
   confirm: 続行
   connections: 接続
@@ -988,15 +1028,11 @@ multiplayer:
   sendTokenToRemote: リモートにトークンを送る
   share: 起動構成を共有する
   sharing: ファイルを共有中...
-  sharingNotificationBody: '{name} から起動構成、共有された設定をダウンロード/作成できます'
-  sharingNotificationTitle: ピアはゲームの設定を共有しています
   start: スタート
   startNewP2PConnection: スタートボタンをクリックして新しいピアへの接続を作成します
   connectionError: 接続エラー
   connectionFailedHint: >-
     接続を確立できません。両方のピアのNATタイプが互換性があるか確認してください。
-  natWarning: >-
-    NATタイプが直接接続を妨げている可能性があります。設定でリレーサーバーを有効にするか、フレンドにホストを依頼してください。
 myStuff: 私の作品
 natType:
   blocked: ブロックされた
@@ -1234,6 +1270,8 @@ serverStatus:
   refuse: §4サーバーが拒否しました!
   timeout: §4サーバーへの接続がタイムアウト!
 agent:
+  accessRequiredHint: 内蔵エージェントを使用するには XMCL に登録するか、設定で独自の AI プロバイダーを構成してください。
+  subscribeXmcl: XMCL に登録
   notConfiguredHint: 設定 → 一般 → AIエージェントで API キー、モデル、OpenAI 互換エンドポイントを設定してください。たとえば、OpenAI または Claude 互換ゲートウェイを使用します。
 setting:
   aiAgentApiKeyDescription: OpenAI や Claude 用ゲートウェイなど、OpenAI 互換プロバイダーを設定します。キーはこのデバイスにローカル保存されます。
@@ -1497,6 +1535,7 @@ shaderPack:
   noPacks: シェーダーパックがインストールされていません
   search: シェーダーパックを検索...
 shared:
+  pressKeyCombination: キーの組み合わせを押してください...
   add: 追加
   author: 著者
   back: 戻る
@@ -1526,6 +1565,7 @@ shared:
   skipForNow: 今すぐスキップする
   upgrade: アップグレード
   'yes': はい
+  delete: 削除
 sidebar:
   pin: ピン留めする
   unpin: 固定を解除する
@@ -1700,6 +1740,46 @@ userSkin:
   urlNotEmpty: スキンのURLは空白にできません
   urlNotValid: スキンのURLが無効です
   useSlim: スリムなスキンを使用
+  classic: クラシック
+  slim: スリム
+  saveSuccess: スキンをディスクに保存しました！
+  saveFailed: スキンをディスクに保存できませんでした
+  uploadFailed: スキンのアップロードに失敗しました
+  libraryTitle: ローカルクローゼット
+  librarySubtitle: スキンを選び、整理してローカルに保存します
+  manage: 管理
+  all: すべて
+  currentSkin: 現在のスキン
+  savedCount: 保存済みスキン
+  newSkin: 新しいスキン
+  addNewSkin: 新しいスキンを追加
+  editSkin: スキンを編集
+  skinName: スキン名
+  skinNamePlaceholder: '例: お気に入りのスキン'
+  localFile: ローカルファイル
+  urlOrPlayer: URL / プレイヤー名
+  urlOrPlayerPlaceholder: スキン画像のURLまたはMinecraftユーザー名を入力
+  urlOrPlayerHint: PNG画像の直接URLまたはプレイヤー名を入力してMojangからスキンを取得します
+  dropFileHere: スキンのPNGファイルをここにドロップするか、クリックして選択
+  supportedFormats: '対応形式: 64x64または64x32のPNG画像'
+  preview: スキンプレビュー
+  previewPlaceholder: スキンプレビューはありません
+  saveToLibrary: クローゼットに保存
+  saveAndEquip: 保存して装備
+  equip: 装備
+  equipToAccount: Minecraftアカウントに装備
+  equipped: 装備済み
+  noSkinSelected: スキンが選択されていません
+  saveCurrent: 現在のスキンを保存
+  officialPreset: 公式プリセット
+  mySkins: マイスキン
+  presets: プリセット
+  noSkinsFound: スキンが見つかりません
+  tryAddingOne: 上のボタンから新しいスキンを追加してみましょう！
+  skinUpdated: スキンを更新しました！
+  skinDeleteFailed: スキンをクローゼットから削除できませんでした
+  edit: 編集
+  fetch: 読み込む
 version:
   checkIntegrity: 整合性を確認してください
   name: バージョン | バージョン

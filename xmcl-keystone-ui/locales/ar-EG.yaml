@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: إنشاء لعبة
   serverTitle: أدخل عنوان السيرفر بتاعك
 AppShareInstanceDialog:
+  editScopeDescription: حدد الملفات التي يمكن للأقران سحبها بعد اكتشاف هذه اللعبة قيد التشغيل على الشبكة المحلية.
+  editScopeTitle: تحرير نطاق المشاركة
+  instanceToShare: اللعبة قيد التشغيل
   alterDownloadDescription: لو مش عاوز تلخبط النسخة الحالية، تقدر برضه تعمل نسخة جديدة من إعدادات زميلك. اضغط على الزرار اللي تحت لإنشاء نسخة جديدة.
   baseInfo: الإعدادات الأساسية
-  cancelShare: إلغاء المشاركة
   description: بعد ما تشارك ملف التعريف، الأجهزة التانية هتقدر تنزل الملفات دي من خلال كمبيوترك.
   downloadDescription: يرجى التحقق من الملفات اللي زميلك بعتها لك. حدد الملفات اللي عاوز تنزلها. هيتم وضعها في النسخة الحالية {name}.
   downloadNotifyTitle: تنزيل النسخة من {user}
   downloadTitle: تنزيل الملفات من أجهزة الزملاء التانية
   filesToDownload: اختر الملفات المراد تنزيلها
   filesToShare: اختر الملفات المراد مشاركتها
-  instanceShare: '{user} لسه مشارك النسخة الحالية معاك حالا'
   share: مشاركة
-  shareNotifyTitle: مشاركة النسخة
   shareTitle: مشاركة ملفات اللعبة مع لاعبين تانيين
 BaseSettingGeneral:
   title: عام
@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: اختر المجلد الرئيسي
 agent:
+  accessRequiredHint: اشترك في XMCL عشان تستخدم العميل المدمج، أو ظبّط مزود الذكاء الاصطناعي بتاعك في الإعدادات.
+  subscribeXmcl: اشترك في XMCL
   callingTool: بيستدعي {name}…
   disabledPlaceholder: العميل معطل
   emptyHint: اطلب من العميل يفحص النسخة بتاعتك، أو يفعل/يعطل المودات، أو يقرأ السجلات، أو يشخص سبب الكراش.
@@ -174,6 +176,7 @@ delete:
   'no': لا
   'yes': حذف
 dependencies:
+  dependents: التعديلات التي تعتمد على هذا التعديل
   embedded: مدمج
   incompatible: غير متوافق
   name: المتطلبات والتبعيات
@@ -684,6 +687,10 @@ logsCrashes:
   showFile: عرض في المجلد
   title: السجلات وتقارير الكراش
 me:
+  groupByDate: تجميع حسب التاريخ
+  groupByFolder: تجميع حسب المجلد
+  instanceViewMode: وضع عرض المثيلات
+  listView: عرض القائمة
   news: الأخبار
   recentPlay: لعبت مؤخراً
 migrateMinecraft:
@@ -1006,10 +1013,45 @@ modrinth:
 modrinthCard:
   currentVersion: الإصدار الحالي
 multiplayer:
+  autoShareAmbiguous: هناك عدة ألعاب قيد التشغيل. حدد النسخة التي تستضيف عالم الشبكة المحلية لكي يتمكن XMCL من مشاركتها.
+  editSharingScope: تحرير نطاق المشاركة
+  gameAvailable: لعبة شبكة محلية متاحة
+  joinGame: الانضمام إلى اللعبة
+  noRunningInstanceToShare: شغّل لعبة قبل تحرير نطاق مشاركتها
+  updateSharedInstanceConfirm: التحديث والتشغيل
+  updateSharedInstanceDescription: تختلف التعديلات المشتركة عن {instance}. هل تريد تحديث هذه النسخة لتطابق المضيف قبل التشغيل؟ سيتم إنشاء نسخة احتياطية من الملفات المعدلة الحالية.
+  updateSharedInstanceTitle: تحديث النسخة المشتركة؟
+  addFunds: "ضيف رصيد"
+  availableBalance: "الرصيد المتاح"
+  balanceHint: "متاح لخدمات XMCL Together"
+  billing: "الفوترة"
+  billingDescription: "إدارة الوصول للترحيل، وخطة Together Home، والمدفوعات."
+  billingError: "مش قادرين نحمّل فواتير Together. جرّب تاني بعد شوية."
+  buyTogether: "اشتري Together"
+  cancelTogether: "إلغاء الخطة"
+  checkout: "افتح الدفع على Waffo"
+  connectionTogetherWarning: "أحد أعضاء الغرفة مش قادر يتصل بيك بقاله فترة. جرّب XMCL Together عشان تحسّن الاتصال لكل الموجودين في الغرفة. قائد الغرفة بس هو اللي محتاج Together."
+  masterPurchaseHint: "قائد الغرفة بس هو اللي محتاج Together Home عشان يحسّن الاتصال لكل الموجودين في الغرفة."
+  natTogetherWarning: "ممكن الراوتر بتاعك يواجه مشكلة في الاتصال بقائد الغرفة. لو الاتصال فشل، جرّب XMCL Together عشان تحسّن الاتصال بينك وبين أصحابك. قائد الغرفة بس هو اللي محتاج يشتري Together للغرفة."
+  togetherName: "Minecraft Together"
+  trialDescription: "تجربة واحدة لمدة 7 أيام مع 1 GB من حركة مرور الترحيل."
+  trialTitle: "تجربة الاتصال"
+  tryTogether: "جرّب Together"
+  month: "شهر"
+  orderStatus: "طلب Waffo: {status}"
+  planDescription: "20 GB من حركة مرور الترحيل المُدارة كل شهر، بالإضافة إلى استكشاف أخطاء حزمة التعديلات وإصلاحها بالذكاء الاصطناعي."
+  waffoHint: "بتتم المدفوعات بأمان على Waffo Pancake. XMCL عمره ما بيستلم رقم بطاقتك."
+  subscription:
+    active: "نشطة"
+    cancelled: "ملغاة"
+    payment_due: "الدفع مستحق"
+  trial:
+    active: "التجربة مفعّلة"
+    available: "التجربة المجانية متاحة"
+    expired: "تم استخدام التجربة"
+    unavailable: "التجربة غير متاحة"
   loginRequiredDescription: تستخدم لعبة P2P الجماعية خدمات XMCL عبر الإنترنت. سجّل الدخول إلى حساب XMCL للمتابعة.
   loginRequiredTitle: سجّل الدخول لاستخدام اللعب الجماعي عبر P2P
-  allowTurn: تفعيل سيرفر الترحيل (relay)
-  allowTurnHint: فعل سيرفر الترحيل لو مش عارف تتصل بصاحبك. بس خد بالك، استخدامه ممكن يبطأ الاتصال شوية. استخدمه بحذر.
   complete: اكتمل
   confirm: تأكيد
   connectionError: خطأ في الاتصال
@@ -1044,7 +1086,6 @@ multiplayer:
   localToken: الرمز المحلي (Token)
   manualConnect: اتصال يدوي
   name: لعب جماعي عبر الشبكة المحلية (LAN)
-  natWarning: نوع الـ NAT بتاعك ممكن يمنع الاتصال المباشر. جرب تفعل سيرفر الترحيل (relay) في الإعدادات أو اطلب من صديقك يستضيف اللعبة بدالك.
   networkInfo: معلومات الشبكة (اضغط للتبديل)
   next: التالي
   otherExposedPortDescription: المنفذ المحول بواسطة {user}
@@ -1057,8 +1098,6 @@ multiplayer:
   sendTokenToRemote: إرسال الرمز للطرف الآخر
   share: مشاركة إعدادات النسخة
   sharing: جاري مشاركة الملفات...
-  sharingNotificationBody: تقدر تنزل أو تعمل نسخة جديدة من ملفات الإعدادات المشتركة لـ {name}.
-  sharingNotificationTitle: لاعب يشارك إعدادات اللعبة بتاعته
   start: البدء
   startNewP2PConnection: اضغط على زرار البدء لإنشاء اتصال جديد
 myStuff: حاجاتي
@@ -1617,6 +1656,7 @@ shaderPack:
   showDirectory: عرض مجلد حزم الشيدر
   showFile: عرض حزمة الشيدر دي في المجلد
 shared:
+  pressKeyCombination: اضغط مجموعة مفاتيح...
   add: إضافة
   author: المؤلف
   back: رجوع
@@ -1832,6 +1872,44 @@ userSkin:
   urlNotEmpty: عنوان الـ URL للسكن ما ينفعش يكون فاضي
   urlNotValid: عنوان الـ URL للسكن مش صالح
   useSlim: استخدام موديل نحيف (Slim)
+  saveSuccess: السكن اتحفظ على الكمبيوتر!
+  saveFailed: ما قدرناش نحفظ السكن على الكمبيوتر
+  uploadFailed: رفع السكن فشل
+  libraryTitle: دولاب السكنات المحلي
+  librarySubtitle: اختار سكناتك ونظّمها واحفظها عندك
+  manage: إدارة
+  all: الكل
+  currentSkin: السكن الحالي
+  savedCount: سكنات محفوظة
+  newSkin: سكن جديد
+  addNewSkin: إضافة سكن جديد
+  editSkin: تعديل السكن
+  skinName: اسم السكن
+  skinNamePlaceholder: 'مثال: السكن المفضل عندي'
+  localFile: ملف من الجهاز
+  urlOrPlayer: الرابط / اسم اللاعب
+  urlOrPlayerPlaceholder: اكتب رابط صورة السكن أو اسم مستخدم Minecraft
+  urlOrPlayerHint: اكتب رابط مباشر لصورة PNG أو اسم لاعب علشان تجيب السكن من Mojang
+  dropFileHere: اسحب ملف السكن بصيغة PNG هنا أو دوس علشان تختاره
+  supportedFormats: 'الصيغة المدعومة: صورة PNG بمقاس 64x64 أو 64x32'
+  preview: معاينة السكن
+  previewPlaceholder: مفيش معاينة للسكن
+  saveToLibrary: حفظ في الدولاب
+  saveAndEquip: حفظ ولبس
+  equip: لبس
+  equipToAccount: لبس على حساب Minecraft
+  equipped: ملبوس
+  noSkinSelected: مفيش سكن متختار
+  saveCurrent: حفظ الحالي
+  officialPreset: إعداد رسمي جاهز
+  mySkins: سكناتي
+  presets: إعدادات جاهزة
+  noSkinsFound: ملقيناش سكنات
+  tryAddingOne: جرّب تضيف سكن جديد من الزر اللي فوق!
+  skinUpdated: السكن اتحدّث!
+  skinDeleteFailed: ما قدرناش نمسح السكن من الدولاب
+  edit: تعديل
+  fetch: تحميل
 version:
   checkIntegrity: التحقق من سلامة الملفات
   name: إصدار | إصدارات

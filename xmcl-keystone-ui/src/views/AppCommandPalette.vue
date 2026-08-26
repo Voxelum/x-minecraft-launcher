@@ -386,6 +386,7 @@ import { useCommandPaletteVisible } from '@/composables/commandPalette'
 import { useOmniDialog } from '@/composables/omniDialog'
 import { useRendererCommandHost } from '@/composables/commandHost'
 import { kInstance } from '@/composables/instance'
+import { kInstanceLaunchCoordinator } from '@/composables/instanceLaunchCoordinator'
 import { kInstances } from '@/composables/instances'
 import { useGamepad } from '@/composables/gamepad'
 import { useModrinthSearchFunc } from '@/composables/modrinth'
@@ -432,6 +433,7 @@ const buttonB = gamepad.buttonB
 const labels = gamepad.labels
 
 const host = useRendererCommandHost()
+const { launch } = injection(kInstanceLaunchCoordinator)
 const { duplicateInstance: duplicateInstanceService } = useService(InstanceServiceKey)
 const instanceCtx = injection(kInstance)
 const instancesCtx = injection(kInstances)
@@ -661,7 +663,11 @@ async function launchInstance(inst: Instance) {
   const commandId = pendingInstanceAction.value ?? 'instance.launch'
   hide()
   try {
-    await host.dispatch(commandId, { instance: inst.path })
+    if (commandId === 'instance.launch') {
+      await launch(inst.path)
+    } else {
+      await host.dispatch(commandId, { instance: inst.path })
+    }
   } catch (e) {
     notify({ title: tError(e), level: 'error' })
   }

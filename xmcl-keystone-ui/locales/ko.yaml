@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: 게임 생성
   serverTitle: 서버 주소를 입력하세요.
 AppShareInstanceDialog:
+  editScopeDescription: LAN에서 실행 중인 이 게임을 발견한 피어가 가져갈 수 있는 파일을 선택하세요.
+  editScopeTitle: 공유 범위 편집
+  instanceToShare: 실행 중인 게임
   alterDownloadDescription: 현재 인스턴스를 망가트리고 싶지 않다면, 다른 사용자의 설정으로 새 인스턴스를 생성할 수도 있습니다.  아래 버튼을 눌러 인스턴스를 생성하세요.
   baseInfo: 기본 설정
-  cancelShare: 공유 취소
   description: 프로필을 공유하면 다른 곳에서 이 파일들을 사용자의 PC를  통해 다운로드 할 수 있습니다.
   downloadDescription: 상대방이 제공한 파일을 확인해주세요. 다운로드할 파일을 선택하면 현재 인스턴스 {name} 에 저장됩니다.
   downloadNotifyTitle: '{user} 에게서 인스턴트 다운로드'
   downloadTitle: 다른 사용자에게서 파일 다운로드
   filesToDownload: 다우놀드 받을 파일들을 선택해주세요.
   filesToShare: 공유할 파일들을 선택해주세요.
-  instanceShare: '{user} 가 당신에게 현재 인스턴트를 공유했어요.'
   share: 공유
-  shareNotifyTitle: 공유 인스턴스
   shareTitle: 다른 플레이어에게 게임 파일들을 공유
 BaseSettingGeneral:
   title: 기본
@@ -155,6 +155,7 @@ delete:
   'no': 아니오
   'yes': 삭제
 dependencies:
+  dependents: 이 모드에 의존하는 모드
   embedded: 내장됨
   incompatible: 호환되지 않음
   name: 의존성
@@ -659,6 +660,10 @@ logsCrashes:
   serverLogs: 서버 로그
   showFile: 폴더에 표시
 me:
+  groupByDate: 날짜별 그룹화
+  groupByFolder: 폴더별 그룹화
+  instanceViewMode: 인스턴스 보기 모드
+  listView: 목록 보기
   news: 뉴스
   recentPlay: 최근 플레이
 migrationWindow:
@@ -949,10 +954,45 @@ modrinth:
 modrinthCard:
   currentVersion: 현재 버전
 multiplayer:
+  autoShareAmbiguous: 여러 게임이 실행 중입니다. XMCL이 공유할 수 있도록 LAN 월드를 호스팅하는 인스턴스를 선택하세요.
+  editSharingScope: 공유 범위 편집
+  gameAvailable: LAN 게임 사용 가능
+  joinGame: 게임 참가
+  noRunningInstanceToShare: 공유 범위를 편집하기 전에 게임을 실행하세요
+  updateSharedInstanceConfirm: 업데이트 후 실행
+  updateSharedInstanceDescription: 공유된 모드가 {instance}와 다릅니다. 실행하기 전에 이 인스턴스를 호스트와 일치하도록 업데이트할까요? 기존에 변경된 파일은 백업됩니다.
+  updateSharedInstanceTitle: 공유 인스턴스를 업데이트할까요?
+  addFunds: "잔액 추가"
+  availableBalance: "사용 가능 잔액"
+  balanceHint: "XMCL Together 서비스에 사용 가능"
+  billing: "결제"
+  billingDescription: "릴레이 액세스, Together Home 플랜 및 결제를 관리합니다."
+  billingError: "Together 결제를 불러오지 못했습니다. 잠시 후 다시 시도하세요."
+  buyTogether: "Together 구매"
+  cancelTogether: "플랜 취소"
+  checkout: "Waffo 결제 열기"
+  connectionTogetherWarning: "방 구성원 한 명이 한동안 사용자에게 연결하지 못하고 있습니다. 방의 모든 구성원이 더 원활하게 연결되도록 XMCL Together를 사용해 보세요. Together는 방장만 필요합니다."
+  masterPurchaseHint: "방의 모든 구성원이 더 원활하게 연결되도록 Together Home은 방장만 필요합니다."
+  natTogetherWarning: "라우터가 방장에게 연결하는 데 문제가 있을 수 있습니다. 연결에 실패하면 사용자와 친구들의 연결을 개선하기 위해 XMCL Together를 사용해 보세요. 이 방에서 Together를 구매해야 하는 사람은 방장뿐입니다."
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB 릴레이 트래픽이 포함된 7일 체험판 1회입니다."
+  trialTitle: "연결성 체험판"
+  tryTogether: "Together 사용해 보기"
+  month: "개월"
+  orderStatus: "Waffo 주문: {status}"
+  planDescription: "매월 20 GB의 관리형 릴레이 트래픽과 모드팩 문제 해결을 위한 AI 지원을 제공합니다."
+  waffoHint: "결제는 Waffo Pancake에서 안전하게 처리됩니다. XMCL은 카드 번호를 받지 않습니다."
+  subscription:
+    active: "활성"
+    cancelled: "취소됨"
+    payment_due: "결제 기한 도래"
+  trial:
+    active: "체험 활성"
+    available: "무료 체험 사용 가능"
+    expired: "체험판 사용됨"
+    unavailable: "체험판 사용 불가"
   loginRequiredDescription: P2P 멀티플레이어는 XMCL 온라인 서비스를 사용합니다. 계속하려면 XMCL 계정에 로그인하세요.
   loginRequiredTitle: P2P 멀티플레이어 로그인
-  allowTurn: 릴레이 서버 사용
-  allowTurnHint: 친구와 연결할 수 없을 때 릴레이 서버를 허용합니다. 하지만 릴레이 서버 사용은 연결 속도를 느리게 할 수 있습니다. 주의해서 사용하세요.
   complete: 완료
   confirm: 확인
   connections: 연결
@@ -999,13 +1039,10 @@ multiplayer:
   sendTokenToRemote: 원격으로 토큰 보내기
   share: 인스턴스 설정 공유
   sharing: 파일 공유 중...
-  sharingNotificationBody: '{name} 의 공유 설정에서 인스턴스를 다운로드하거나 생성할 수 있습니다.'
-  sharingNotificationTitle: 피어가 게임 설정을 공유하고 있습니다
   start: 시작
   startNewP2PConnection: 시작 버튼을 클릭하여 새로운 피어 연결을 생성하세요
   connectionError: 연결 오류
   connectionFailedHint: 연결을 설정할 수 없습니다. 양쪽 피어의 NAT 유형이 호환되는지 확인하세요.
-  natWarning: NAT 유형이 직접 연결을 방해할 수 있습니다. 설정에서 릴레이 서버를 활성화하거나 친구에게 호스트를 부탁하세요.
 myStuff: 내 자료
 natType:
   blocked: 차단됨
@@ -1501,6 +1538,7 @@ shaderPack:
   noLocalPacksFound: 검색어와 일치하는 로컬 셰이더 팩을 찾을 수 없습니다.
   noPacksInstalled: 설치된 셰이더 팩이 없습니다.
 shared:
+  pressKeyCombination: 키 조합을 누르세요...
   add: 추가
   author: 작성자
   back: 뒤로
@@ -1710,6 +1748,44 @@ userSkin:
   useSlim: 슬림 모델 사용
   classic: 클래식
   slim: 슬림
+  saveSuccess: 스킨을 디스크에 저장했습니다!
+  saveFailed: 스킨을 디스크에 저장하지 못했습니다
+  uploadFailed: 스킨 업로드에 실패했습니다
+  libraryTitle: 로컬 옷장
+  librarySubtitle: 스킨을 선택하고 정리하여 로컬에 저장하세요
+  manage: 관리
+  all: 모두
+  currentSkin: 현재 스킨
+  savedCount: 저장된 스킨
+  newSkin: 새 스킨
+  addNewSkin: 새 스킨 추가
+  editSkin: 스킨 편집
+  skinName: 스킨 이름
+  skinNamePlaceholder: '예: 내가 좋아하는 스킨'
+  localFile: 로컬 파일
+  urlOrPlayer: URL / 플레이어 이름
+  urlOrPlayerPlaceholder: 스킨 이미지 URL 또는 Minecraft 사용자 이름 입력
+  urlOrPlayerHint: Mojang에서 스킨을 가져오려면 PNG 이미지 직접 URL 또는 플레이어 이름을 입력하세요
+  dropFileHere: 스킨 PNG 파일을 여기에 놓거나 클릭하여 찾아보세요
+  supportedFormats: '지원 형식: 64x64 또는 64x32 PNG 이미지'
+  preview: 스킨 미리 보기
+  previewPlaceholder: 스킨 미리 보기를 사용할 수 없습니다
+  saveToLibrary: 옷장에 저장
+  saveAndEquip: 저장하고 착용
+  equip: 착용
+  equipToAccount: Minecraft 계정에 착용
+  equipped: 착용됨
+  noSkinSelected: 선택한 스킨 없음
+  saveCurrent: 현재 스킨 저장
+  officialPreset: 공식 프리셋
+  mySkins: 내 스킨
+  presets: 프리셋
+  noSkinsFound: 스킨을 찾을 수 없습니다
+  tryAddingOne: 위 버튼으로 새 스킨을 추가해 보세요!
+  skinUpdated: 스킨을 업데이트했습니다!
+  skinDeleteFailed: 스킨을 옷장에서 삭제하지 못했습니다
+  edit: 편집
+  fetch: 불러오기
 version:
   checkIntegrity: 무결성을 확인하십시오
   name: 버전
@@ -1738,6 +1814,8 @@ migrateMinecraft:
 reinstall:
   name: '{version} 재설치'
 agent:
+  accessRequiredHint: 기본 제공 에이전트를 사용하려면 XMCL을 구독하거나 설정에서 자체 AI 제공자를 구성하세요.
+  subscribeXmcl: XMCL 구독
   callingTool: '{name} 호출 중…'
   disabledPlaceholder: 에이전트 비활성화됨
   emptyHint: 에이전트에게 인스턴스 검사, 모드 활성화/비활성화, 로그 읽기 또는 충돌 진단을 요청하세요.

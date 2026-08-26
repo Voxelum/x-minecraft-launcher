@@ -10,16 +10,16 @@ AppShareInstanceDialog:
     您还可以从对等方的配置创建一个新实例。
     单击下面的按钮创建实例。
   baseInfo: 分享的基本配置
-  cancelShare: 取消分享
   description: 分享后，您的联机伙伴将可以下载您分享的游戏资源
+  editScopeDescription: 选择联机伙伴发现这个正在运行的局域网游戏后可以按需拉取的文件。
+  editScopeTitle: 编辑分享范围
   downloadDescription: 请选择从您的小伙伴那下载的文件。文件将下载到当前实例 {name} 中。
   downloadNotifyTitle: 从 {user} 下载实例
   downloadTitle: 从其他玩家那获得游戏资源
   filesToDownload: 选择您想下载的文件
   filesToShare: 选择分享的文件
-  instanceShare: '{user} 给您分享了他的游戏配置'
+  instanceToShare: 正在运行的游戏
   share: 分享
-  shareNotifyTitle: 分享配置
   shareTitle: 分享启动配置给其他玩家
 BaseSettingGeneral:
   title: 常规设置
@@ -37,6 +37,7 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: 选择新的根目录
 agent:
+  accessRequiredHint: 订阅 XMCL 即可使用内置 Agent，或前往设置自行配置 AI 服务商。
   abort: 停止生成
   title: XMCL Agent
   statusReady: 就绪
@@ -47,6 +48,7 @@ agent:
   notConfiguredHint: >-
     请在设置 → 通用 → AI Agent 中填写 API Key、模型和 OpenAI 兼容 Endpoint，例如 OpenAI 或兼容 Claude 的网关。
   openSettings: 打开设置
+  subscribeXmcl: 订阅 XMCL
   setupGuide: 配置指南
   emptyHint: >-
     让 Agent 检查你的实例、启用/禁用模组、读取日志或诊断崩溃。
@@ -217,6 +219,7 @@ delete:
   'no': 取消
   'yes': 删除
 dependencies:
+  dependents: 依赖此 Mod 的 Mod
   embedded: 内嵌
   incompatible: 不兼容
   name: 依赖
@@ -400,9 +403,9 @@ importModpack:
 exportModpack:
   name: 导出整合包
 installAssets:
-  asset: 下载 {count} 个资源文件
-  assetIndex: 下载资源文件目录
-  name: 下载游戏资源文件
+  asset: 检查并下载缺失的资源文件（共 {count} 个）
+  assetIndex: 检查资源文件目录
+  name: 检查游戏资源文件
 installAuthlibInjector: 安装 authlib-injector
 installCurseforgeFile: 安装 Curseforge 文件
 installFabric:
@@ -770,6 +773,10 @@ logsCrashes:
   serverLogs: 服务器日志
   title: 日志或崩溃报告
 me:
+  groupByDate: 按日期分组
+  groupByFolder: 按文件夹分组
+  instanceViewMode: 实例视图模式
+  listView: 列表视图
   news: 新闻
   recentPlay: 最近游玩
 migrationWindow:
@@ -1159,15 +1166,24 @@ modrinth:
 modrinthCard:
   currentVersion: 当前版本
 multiplayer:
-  allowTurn: 允许转发服务
-  allowTurnHint: 当您和您的朋友连不上时可以尝试允许转发服务，但是转发服务可能会增加您的联机延迟。使用时请注意。
+  addFunds: 充值
+  autoShareAmbiguous: 检测到多个正在运行的游戏。请选择开放局域网世界的实例，XMCL 将自动分享它。
+  availableBalance: 可用余额
+  balanceHint: 可用于 XMCL Together 服务
+  billing: 账单
+  billingDescription: 管理中继服务、Together Home 套餐和付款。
+  billingError: 暂时无法加载 Together 账单，请稍后重试。
+  buyTogether: 购买 Together
+  cancelTogether: 取消套餐
+  checkout: 打开 Waffo 结账页
   complete: 完成
   confirm: 确定
   connectionError: 连接错误
   connectionFailedHint: 无法建立连接。请检查双方的 NAT 类型是否兼容。
+  connectionTogetherWarning: 有房间成员长时间无法连接到您。可以尝试 XMCL Together，改善房间内所有成员的联机体验；一个房间只需房间主控使用 Together。
   connectedToMaster: 已连接到房间主控
-  natWarning: 您的 NAT 类型可能阻碍直连。请尝试在设置中启用中继服务器，或让朋友担任房间主控。
-  connections: 用户连接管理
+  natTogetherWarning: 您的路由器可能难以连接房间主控。如果确实无法连接，可以尝试 XMCL Together，改善您和朋友之间的联机体验。一个房间只需房间主控购买 Together。
+  connections: 通过 P2P 联机
   copied: 已复制！
   copy: 复制
   copyGroupToFriendHint: 让您的小伙伴使用此 ID 加入联机群组
@@ -1187,13 +1203,16 @@ multiplayer:
   exposedPorts: 转发端口
   gatheringIce: >
     请将<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>发送给您的联机伙伴，您的联机伙伴在 <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> 加入连接 </span> 中输入这段文字。 <br> 期间 ICE 服务器可能需要时间收集足够信息来创建<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>。 <br> <span class="hint-text"> 您不需要等 ICE 服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，您可以提前将令牌复制给对方。 </span>
+  gameAvailable: 房主已开放局域网游戏
   groupId: 小组 ID
   master: 主控
   masterHostsGameHint: 房间主控是联机连接中心，应由主控开启 Minecraft 局域网世界。更换游戏宿主前请先转移主控。
+  masterPurchaseHint: 一个房间只需房间主控购买 Together Home，即可改善所有成员的联机体验。
   member: 成员
   illegalTokenDescription: 非法的令牌，请确认对方给您的令牌是完整且正确的。
   initiateConnection: 发起连接
   joinConnection: 如果您的伙伴已经创建了连接，您需要选择加入链接。
+  joinGame: 加入游戏
   joinManual: 加入连接
   joinOrCreateGroup: 加入/创建群组
   joinOrCreateGroupHint: 从您的小伙伴那获得群组 ID 或自己创建一个群组
@@ -1208,6 +1227,25 @@ multiplayer:
   localToken: 本地令牌
   manualConnect: 手动连接
   name: 跨局域网联机
+  togetherName: Minecraft Together
+  trial:
+    active: 试用中
+    available: 可免费试用
+    expired: 已试用
+    unavailable: 暂不可试用
+  trialDescription: 每个账户可试用一次，7 天内包含 1 GB 中继流量。
+  trialTitle: 联机试用
+  tryTogether: 试用 Together
+  month: 月
+  orderStatus: 'Waffo 订单：{status}'
+  planDescription: 每月包含 20 GB 托管中继流量，以及用于排查整合包问题的 AI 协助。
+  relayAllowanceSummary: 本周期剩余 {remaining}，共 {total}
+  relayServiceAvailable: XMCL Together 中继服务可用
+  subscription:
+    active: 使用中
+    cancelled: 已取消
+    payment_due: 待付款
+  waffoHint: 付款由 Waffo Pancake 安全处理，XMCL 不会接收您的银行卡号。
   networkInfo: 当前网络状况
   next: 下一步
   otherExposedPortDescription: '{user} 暴露给你的端口'
@@ -1219,12 +1257,15 @@ multiplayer:
   relayConnection: 中继
   routerInfo: 路由器信息
   sendTokenToRemote: 将本地令牌给您的联机伙伴
+  editSharingScope: 编辑分享范围
+  noRunningInstanceToShare: 请先启动游戏，再编辑它的分享范围
   share: 分享启动配置
   sharing: 正在共享游戏配置...
-  sharingNotificationBody: 您可以从 {name} 共享配置下载或创建实例。
-  sharingNotificationTitle: 同伴正在共享游戏配置
   start: 开始
   startNewP2PConnection: 点击开始按钮来新建一个新的点对点连接
+  updateSharedInstanceConfirm: 更新并启动
+  updateSharedInstanceDescription: 房主分享的模组与 {instance} 不一致。是否先将该实例更新为与房主一致再启动？被替换的文件会自动备份。
+  updateSharedInstanceTitle: 更新共享实例？
   waitingForMaster: 正在等待房间主控重新连接
 myStuff: 个人中心
 migrateMinecraft:
@@ -1619,6 +1660,8 @@ serverStatus:
   refuse: 服务器断开了连接！
   timeout: 服务器响应超时！
 setting:
+  multiplayerTransport: Together 传输核心
+  multiplayerTransportDescription: 选择 Together 使用的 WebRTC 实现。切换核心会断开当前连接。
   themeStore:
     name: 主题库
     description: 保存并管理全局主题
@@ -1916,6 +1959,7 @@ shaderPack:
   showDirectory: 显示光影文件夹
   showFile: 在文件夹中显示此光影包
 shared:
+  pressKeyCombination: 按下组合键...
   add: 添加
   author: 作者
   back: 返回
@@ -1950,6 +1994,7 @@ shared:
   skipForNow: 先跳过
   upgrade: 更新
   'yes': 是
+  delete: 删除
 sidebar:
   pin: 固定
   unpin: 取消固定
@@ -2153,6 +2198,43 @@ userSkin:
   useSlim: 使用细胳膊模型
   classic: 经典
   slim: 纤细
+  saveSuccess: 皮肤已保存到本地！
+  saveFailed: 无法将皮肤保存到本地
+  libraryTitle: 本地衣橱
+  librarySubtitle: 在本地选择、管理和保存你的皮肤
+  manage: 管理
+  all: 全部
+  currentSkin: 当前皮肤
+  savedCount: 个已保存皮肤
+  newSkin: 新皮肤
+  addNewSkin: 添加新皮肤
+  editSkin: 编辑皮肤
+  skinName: 皮肤名称
+  skinNamePlaceholder: 例如：我最喜欢的皮肤
+  localFile: 本地文件
+  urlOrPlayer: URL / 玩家名称
+  urlOrPlayerPlaceholder: 输入皮肤图片 URL 或 Minecraft 用户名
+  urlOrPlayerHint: 输入 PNG 图片直链或玩家名称以从 Mojang 获取皮肤
+  dropFileHere: 将皮肤 PNG 文件拖到此处，或点击浏览
+  supportedFormats: '支持的格式：64x64 或 64x32 PNG 图片'
+  preview: 皮肤预览
+  previewPlaceholder: 暂无皮肤预览
+  saveToLibrary: 保存到衣橱
+  saveAndEquip: 保存并使用
+  equip: 使用
+  equipToAccount: 应用到 Minecraft 账户
+  equipped: 已使用
+  noSkinSelected: 未选择皮肤
+  saveCurrent: 保存当前皮肤
+  officialPreset: 官方预设
+  mySkins: 我的皮肤
+  presets: 预设
+  noSkinsFound: 未找到皮肤
+  tryAddingOne: 尝试使用上方按钮添加新皮肤吧！
+  skinUpdated: 皮肤已更新！
+  skinDeleteFailed: 无法从衣橱移除皮肤
+  edit: 编辑
+  fetch: 加载
 version:
   checkIntegrity: 检查完整性
   name: 版本 | 版本

@@ -9,8 +9,6 @@ import { useMergedProjects, useProjectsSort } from './useMergedProjects'
 import { useLocalStorage } from '@vueuse/core'
 import { LocalSort } from './sortBy'
 
-export const kSaveSearch: InjectionKey<ReturnType<typeof useSavesSearch>> = Symbol('kSaveSearch')
-
 function useSaveLocalSearch({ keyword }: SearchModel, saves: Ref<InstanceSaveFile[]>, shared: Ref<InstanceSaveFile[]>) {
   const getProjectFromFile = (s: InstanceSaveFile) => {
     return {

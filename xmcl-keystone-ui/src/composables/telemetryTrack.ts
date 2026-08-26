@@ -20,11 +20,13 @@ export function useTelemetryTrack(settings: Ref<SharedState<Settings> | undefine
     appInsights.context.user.id = sessionId
     appInsights.context.session.id = sessionId
   })
-  watch(settings, (s) => {
+  watch(settings, (s, _, onCleanup) => {
     if (!s) return
     appInsights.config.disableTelemetry = !!s.disableTelemetry
-    s.subscribe('disableTelemetrySet', (v) => {
+    const onDisableTelemetrySet = (v: boolean) => {
       appInsights.config.disableTelemetry = !!v
-    })
+    }
+    s.subscribe('disableTelemetrySet', onDisableTelemetrySet)
+    onCleanup(() => s.unsubscribe('disableTelemetrySet', onDisableTelemetrySet))
   })
 }

@@ -3,11 +3,13 @@ AppAddInstanceDialog:
   createTitle: Create Game
   serverTitle: Input your server address
 AppShareInstanceDialog:
+  editScopeDescription: Select the files peers can pull after discovering this running game on LAN.
+  editScopeTitle: Edit Sharing Scope
+  instanceToShare: Running Game
   alterDownloadDescription: >-
     If you don't want to mess up current instance. You can also create a new
     instance from your peer's config. Click the button below to create instance.
   baseInfo: Basic Setting
-  cancelShare: Cancel Share
   description: >-
     After you share the profile, other place can download these files through
     your PC.
@@ -18,9 +20,7 @@ AppShareInstanceDialog:
   downloadTitle: Download files from other peers
   filesToDownload: Choose files to download
   filesToShare: Choose files to share
-  instanceShare: '{user} just shared the current instance to you'
   share: Share
-  shareNotifyTitle: Share Instance
   shareTitle: Share game files to other player
 BaseSettingGeneral:
   title: General
@@ -38,6 +38,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 agent:
+  accessRequiredHint: Subscribe to XMCL to use the built-in Agent, or configure your own AI provider in Settings.
+  subscribeXmcl: Subscribe to XMCL
   callingTool: calling {name}…
   disabledPlaceholder: Agent disabled
   emptyHint: >-
@@ -203,6 +205,7 @@ delete:
   'no': 'No'
   'yes': Delete
 dependencies:
+  dependents: Mods depending on this mod
   embedded: Embedded
   incompatible: Incompatible
   name: Dependencies
@@ -835,6 +838,10 @@ logsCrashes:
   showFile: Show in Folder
   title: Logs or Crash Reports
 me:
+  groupByDate: Group by date
+  groupByFolder: Group by folder
+  instanceViewMode: Instance view mode
+  listView: List view
   news: News
   recentPlay: Recent Play
 migrateMinecraft:
@@ -1173,12 +1180,45 @@ modrinth:
 modrinthCard:
   currentVersion: Current Version
 multiplayer:
+  autoShareAmbiguous: Multiple games are running. Select the instance hosting the LAN world so XMCL can share it.
+  editSharingScope: Edit Sharing Scope
+  gameAvailable: LAN game available
+  joinGame: Join game
+  noRunningInstanceToShare: Launch a game before editing its sharing scope
+  updateSharedInstanceConfirm: Update and launch
+  updateSharedInstanceDescription: The shared mods differ from {instance}. Update this instance to match the host before launching? Existing changed files will be backed up.
+  updateSharedInstanceTitle: Update shared instance?
+  addFunds: "Add funds"
+  availableBalance: "Available balance"
+  balanceHint: "Available for XMCL Together services"
+  billing: "Billing"
+  billingDescription: "Manage relay access, your Together Home plan, and payments."
+  billingError: "Together billing could not be loaded. Please try again in a moment."
+  buyTogether: "Buy Together"
+  cancelTogether: "Cancel plan"
+  checkout: "Open Waffo checkout"
+  connectionTogetherWarning: "A room member has been unable to connect to you for a while. Try XMCL Together to improve connectivity for everyone in the room. Only the room master needs Together."
+  masterPurchaseHint: "Only the room master needs Together Home to improve connectivity for everyone in the room."
+  natTogetherWarning: "Your router may have trouble connecting to the room master. If connections fail, try XMCL Together to improve connectivity between you and your friends. Only the room master needs to purchase Together for the room."
+  togetherName: "Minecraft Together"
+  trialDescription: "One 7-day trial with 1 GB of relay traffic."
+  trialTitle: "Connectivity trial"
+  tryTogether: "Try Together"
+  month: "month"
+  orderStatus: "Waffo order: {status}"
+  planDescription: "20 GB of managed relay traffic each month, plus AI troubleshooting for your modpack."
+  waffoHint: "Payments are completed securely on Waffo Pancake. XMCL never receives your card number."
+  subscription:
+    active: "Active"
+    cancelled: "Cancelled"
+    payment_due: "Payment due"
+  trial:
+    active: "Trial active"
+    available: "Free trial available"
+    expired: "Trial used"
+    unavailable: "Trial unavailable"
   loginRequiredDescription: P2P multiplayer uses XMCL online services. Sign in to an XMCL Account to continue.
   loginRequiredTitle: Sign in for P2P multiplayer
-  allowTurn: Enable relay server
-  allowTurnHint: >-
-    Allow relay server if you cannot connect with your friend. However, using
-    relay server may slow down your connection. Use it with caution.
   complete: Complete
   confirm: Confirm
   connectionError: Connection Error
@@ -1239,9 +1279,6 @@ multiplayer:
   localToken: Local Token
   manualConnect: Manually Connect
   name: Multiplayer on LAN
-  natWarning: >-
-    Your NAT type may prevent direct connections. Try enabling relay server in
-    settings or ask your friend to host instead.
   networkInfo: Network Info (Click to toggle)
   next: Next
   otherExposedPortDescription: The port forwarded by {user}
@@ -1256,8 +1293,6 @@ multiplayer:
   sendTokenToRemote: Send Token to Remote
   share: Share Instance Config
   sharing: Sharing files...
-  sharingNotificationBody: You can download or create an instance from {name} shared config.
-  sharingNotificationTitle: A peer is sharing their game config
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
 myStuff: My Stuff
@@ -1884,6 +1919,7 @@ shaderPack:
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
 shared:
+  pressKeyCombination: Press key combination...
   add: Add
   author: Author
   back: Back
@@ -2135,6 +2171,44 @@ userSkin:
   urlNotEmpty: Skin URL cannot be empty
   urlNotValid: Skin URL is Invalid
   useSlim: Use Slim Model
+  saveSuccess: Skin saved to disk!
+  saveFailed: Could not save the skin to disk
+  uploadFailed: Skin upload failed
+  libraryTitle: Local Wardrobe
+  librarySubtitle: Choose, organise and save your skins locally
+  manage: Manage
+  all: All
+  currentSkin: Current Skin
+  savedCount: saved skins
+  newSkin: New Skin
+  addNewSkin: Add New Skin
+  editSkin: Edit Skin
+  skinName: Skin Name
+  skinNamePlaceholder: e.g. My Favourite Skin
+  localFile: Local File
+  urlOrPlayer: URL / Player Name
+  urlOrPlayerPlaceholder: Enter the skin image URL or Minecraft username
+  urlOrPlayerHint: Enter a direct PNG image URL or player name to fetch the skin from Mojang
+  dropFileHere: Drop the skin PNG file here or click to browse
+  supportedFormats: 'Supported format: 64x64 or 64x32 PNG image'
+  preview: Skin Preview
+  previewPlaceholder: No skin preview available
+  saveToLibrary: Save to Wardrobe
+  saveAndEquip: Save and Equip
+  equip: Equip
+  equipToAccount: Equip to Minecraft Account
+  equipped: Equipped
+  noSkinSelected: No Skin Selected
+  saveCurrent: Save Current
+  officialPreset: Official Preset
+  mySkins: My Skins
+  presets: Presets
+  noSkinsFound: No skins found
+  tryAddingOne: Try adding a new skin with the button above!
+  skinUpdated: Skin updated!
+  skinDeleteFailed: Could not remove the skin from the wardrobe
+  edit: Edit
+  fetch: Load
 version:
   checkIntegrity: Check Integrity
   name: Version | Versions

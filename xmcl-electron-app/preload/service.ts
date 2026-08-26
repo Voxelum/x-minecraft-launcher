@@ -57,9 +57,6 @@ async function receive(_result: any, states: Record<string, WeakRef<SharedState<
   }
   const { result, error } = _result
   if (error) {
-    if (error.errorMessage) {
-      error.toString = () => error.errorMessage
-    }
     return Promise.reject(error)
   }
 
@@ -173,4 +170,4 @@ function createServiceChannels(): ServiceChannels {
 
 export const serviceChannels = createServiceChannels()
 
-contextBridge.exposeInMainWorld('serviceChannels', createServiceChannels())
+contextBridge.exposeInMainWorld('serviceChannels', serviceChannels)

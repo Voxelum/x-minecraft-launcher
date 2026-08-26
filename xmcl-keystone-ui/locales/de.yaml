@@ -5,6 +5,9 @@ AppAddInstanceDialog:
   createTitle: Eine Instanz erstellen
   serverTitle: Geben Sie Ihre Serveradresse ein
 AppShareInstanceDialog:
+  editScopeDescription: Wähle die Dateien aus, die andere Spieler abrufen können, nachdem sie dieses laufende Spiel im LAN gefunden haben.
+  editScopeTitle: Freigabebereich bearbeiten
+  instanceToShare: Laufendes Spiel
   alterDownloadDescription: >-
     Wenn Sie die aktuelle Instanz nicht durcheinander bringen möchten.
 
@@ -12,7 +15,6 @@ AppShareInstanceDialog:
 
     Klicken Sie auf die Schaltfläche unten, um eine Instanz zu erstellen.
   baseInfo: Grundlegende Einrichtung
-  cancelShare: Verteilen Sie nicht
   description: >-
     Nachdem Sie Ihr Profil freigegeben haben, können andere Benutzer die diese Dateien über Ihren PC installieren.
   downloadDescription: >-
@@ -25,9 +27,7 @@ AppShareInstanceDialog:
   downloadTitle: Dateien von anderen Peers installieren
   filesToDownload: Wählen Sie die zu installierenden Dateien aus
   filesToShare: Wählen Sie die Dateien aus, die Sie freigeben möchten
-  instanceShare: '{user} gerade die aktuelle Instanz mit Ihnen geteilt'
   share: Teilen Sie
-  shareNotifyTitle: Eine Kopie freigeben
   shareTitle: Teilen von Spieldateien mit anderen Spielern
 BaseSettingGeneral:
   title: Allgemein
@@ -167,6 +167,7 @@ delete:
   'no': Nein.
   'yes': Ja
 dependencies:
+  dependents: Mods, die von diesem Mod abhängen
   embedded: Eingebaut
   incompatible: Inkompatibel
   name: Abhängigkeiten
@@ -712,6 +713,10 @@ logsCrashes:
   title: Protokolle oder Fehlerberichte
   failures: Startfehler
 me:
+  groupByDate: Nach Datum gruppieren
+  groupByFolder: Nach Ordner gruppieren
+  instanceViewMode: Instanzansicht
+  listView: Listenansicht
   news: Nachrichten
   recentPlay: Neuestes Spiel
 migrationWindow:
@@ -1020,11 +1025,45 @@ modrinth:
 modrinthCard:
   currentVersion: Aktuelle Version
 multiplayer:
+  autoShareAmbiguous: Mehrere Spiele werden ausgeführt. Wähle die Instanz aus, die die LAN-Welt hostet, damit XMCL sie freigeben kann.
+  editSharingScope: Freigabebereich bearbeiten
+  gameAvailable: LAN-Spiel verfügbar
+  joinGame: Spiel beitreten
+  noRunningInstanceToShare: Starte ein Spiel, bevor du dessen Freigabebereich bearbeitest
+  updateSharedInstanceConfirm: Aktualisieren und starten
+  updateSharedInstanceDescription: Die freigegebenen Mods unterscheiden sich von {instance}. Soll diese Instanz vor dem Start an den Host angeglichen werden? Vorhandene geänderte Dateien werden gesichert.
+  updateSharedInstanceTitle: Freigegebene Instanz aktualisieren?
+  addFunds: "Guthaben hinzufügen"
+  availableBalance: "Verfügbares Guthaben"
+  balanceHint: "Für XMCL Together-Dienste verfügbar"
+  billing: "Abrechnung"
+  billingDescription: "Verwalte Relay-Zugriff, deinen Together Home-Tarif und Zahlungen."
+  billingError: "Die Together-Abrechnung konnte nicht geladen werden. Versuche es gleich noch einmal."
+  buyTogether: "Together kaufen"
+  cancelTogether: "Tarif kündigen"
+  checkout: "Waffo-Kasse öffnen"
+  connectionTogetherWarning: "Ein Raummitglied kann seit einiger Zeit keine Verbindung zu dir herstellen. Versuche XMCL Together, um die Verbindung für alle im Raum zu verbessern. Nur der Raumleiter benötigt Together."
+  masterPurchaseHint: "Nur der Raumleiter benötigt Together Home, um die Verbindung für alle im Raum zu verbessern."
+  natTogetherWarning: "Dein Router hat möglicherweise Schwierigkeiten, eine Verbindung zum Raumleiter herzustellen. Falls Verbindungen fehlschlagen, versuche XMCL Together, um die Verbindung zwischen dir und deinen Freunden zu verbessern. Nur der Raumleiter muss Together für den Raum kaufen."
+  togetherName: "Minecraft Together"
+  trialDescription: "Ein 7-tägiger Testzeitraum mit 1 GB Relay-Datenverkehr."
+  trialTitle: "Verbindungstest"
+  tryTogether: "Together testen"
+  month: "Monat"
+  orderStatus: "Waffo-Bestellung: {status}"
+  planDescription: "20 GB verwalteter Relay-Datenverkehr pro Monat sowie KI-Fehlerbehebung für dein Modpack."
+  waffoHint: "Zahlungen werden sicher über Waffo Pancake abgewickelt. XMCL erhält niemals deine Kartennummer."
+  subscription:
+    active: "Aktiv"
+    cancelled: "Gekündigt"
+    payment_due: "Zahlung fällig"
+  trial:
+    active: "Testzeitraum aktiv"
+    available: "Kostenloser Testzeitraum verfügbar"
+    expired: "Testzeitraum genutzt"
+    unavailable: "Testzeitraum nicht verfügbar"
   loginRequiredDescription: P2P-Multiplayer verwendet die XMCL-Onlinedienste. Melden Sie sich bei einem XMCL-Konto an, um fortzufahren.
   loginRequiredTitle: Für P2P-Multiplayer anmelden
-  allowTurn: Schalten Sie den Relay-Server ein
-  allowTurnHint: >-
-    Lassen Sie einen Relay-Server zu, wenn Sie keine Verbindung zu Ihrem Freund herstellen können. Die Verwendung eines Relay-Servers kann Ihre Verbindung jedoch verlangsamen. Verbindung verlangsamen. Verwenden Sie ihn mit Vorsicht.
   complete: Bereit
   confirm: Bestätigen Sie
   connections: Verbindungen
@@ -1098,16 +1137,11 @@ multiplayer:
   sendTokenToRemote: Senden eines Tokens an eine entfernte
   share: die Instanzkonfiguration freigeben
   sharing: Filesharing...
-  sharingNotificationBody: >-
-    Sie können eine Instanz aus der freigegebenen Konfiguration „{name}“ herunterladen oder erstellen.
-  sharingNotificationTitle: Ein Peer teilt die Spielkonfiguration
   start: Los geht's
   startNewP2PConnection: Klicken Sie auf Start, um eine neue Peer-to-Peer-Verbindung zu erstellen
   connectionError: Verbindungsfehler
   connectionFailedHint: >-
     Verbindung kann nicht hergestellt werden. Prüfen Sie, ob beide Seiten kompatible NAT-Typen haben.
-  natWarning: >-
-    Ihr NAT-Typ kann Direktverbindungen verhindern. Aktivieren Sie in den Einstellungen den Relay-Server oder lassen Sie Ihren Freund hosten.
 myStuff: Meine Materialien
 natType:
   blocked: Blockiert
@@ -1278,6 +1312,8 @@ serverStatus:
   refuse: §4Der Server wurde abgelehnt!
   timeout: §4Es ist Zeit, sich mit dem Server zu verbinden!
 agent:
+  accessRequiredHint: Abonniere XMCL, um den integrierten Agenten zu verwenden, oder konfiguriere deinen eigenen KI-Anbieter in den Einstellungen.
+  subscribeXmcl: XMCL abonnieren
   notConfiguredHint: Legen Sie einen API-Schlüssel, ein Modell und einen OpenAI-kompatiblen Endpunkt unter Einstellungen → Allgemein → KI-Agent fest. Verwenden Sie zum Beispiel OpenAI oder ein Claude-kompatibles Gateway.
 setting:
   aiAgentApiKeyDescription: Konfigurieren Sie einen OpenAI-kompatiblen Anbieter, z. B. OpenAI oder ein Gateway für Claude. Der Schlüssel wird lokal auf diesem Gerät gespeichert.
@@ -1585,6 +1621,7 @@ shaderPack:
   noPacks: Keine Shaderpakete installiert
   search: Shaderpakete suchen...
 shared:
+  pressKeyCombination: Tastenkombination drücken...
   add: hinzufügen
   author: Autor.
   back: Zurück
@@ -1614,6 +1651,7 @@ shared:
   skipForNow: Überspringen Sie es vorerst
   upgrade: Aktualisieren
   'yes': Ja
+  delete: Löschen
 sidebar:
   pin: Anheften
   unpin: Lösen
@@ -1836,6 +1874,46 @@ userSkin:
   urlNotEmpty: Die URL des Skins darf nicht leer sein
   urlNotValid: Ungültige URL auf dem Skin
   useSlim: Verwenden Sie ein dünnes Modell
+  classic: Klassisch
+  slim: Schlank
+  saveSuccess: Skin wurde auf der Festplatte gespeichert!
+  saveFailed: Skin konnte nicht auf der Festplatte gespeichert werden
+  uploadFailed: Hochladen des Skins fehlgeschlagen
+  libraryTitle: Lokaler Kleiderschrank
+  librarySubtitle: Wähle, verwalte und speichere deine Skins lokal
+  manage: Verwalten
+  all: Alle
+  currentSkin: Aktueller Skin
+  savedCount: gespeicherte Skins
+  newSkin: Neuer Skin
+  addNewSkin: Neuen Skin hinzufügen
+  editSkin: Skin bearbeiten
+  skinName: Name des Skins
+  skinNamePlaceholder: 'z. B. Mein Lieblingsskin'
+  localFile: Lokale Datei
+  urlOrPlayer: URL / Spielername
+  urlOrPlayerPlaceholder: URL des Skinbilds oder Minecraft-Benutzernamen eingeben
+  urlOrPlayerHint: Direkte URL eines PNG-Bilds oder Spielernamen eingeben, um den Skin von Mojang abzurufen
+  dropFileHere: PNG-Datei des Skins hier ablegen oder zum Auswählen klicken
+  supportedFormats: 'Unterstütztes Format: PNG-Bild mit 64x64 oder 64x32 Pixeln'
+  preview: Skin-Vorschau
+  previewPlaceholder: Keine Skin-Vorschau verfügbar
+  saveToLibrary: Im Kleiderschrank speichern
+  saveAndEquip: Speichern und ausrüsten
+  equip: Ausrüsten
+  equipToAccount: Im Minecraft-Konto ausrüsten
+  equipped: Ausgerüstet
+  noSkinSelected: Kein Skin ausgewählt
+  saveCurrent: Aktuellen speichern
+  officialPreset: Offizielle Vorlage
+  mySkins: Meine Skins
+  presets: Vorlagen
+  noSkinsFound: Keine Skins gefunden
+  tryAddingOne: Füge mit der Schaltfläche oben einen neuen Skin hinzu!
+  skinUpdated: Skin wurde aktualisiert!
+  skinDeleteFailed: Skin konnte nicht aus dem Kleiderschrank entfernt werden
+  edit: Bearbeiten
+  fetch: Laden
 version:
   checkIntegrity: Integrität überprüfen
   name: Version | Versionen

@@ -3,12 +3,14 @@ AppAddInstanceDialog:
   createTitle: Utwórz grę
   serverTitle: Wprowadź adres serwera
 AppShareInstanceDialog:
+  editScopeDescription: Wybierz pliki, które inni gracze będą mogli pobrać po wykryciu tej uruchomionej gry w sieci LAN.
+  editScopeTitle: Edytuj zakres udostępniania
+  instanceToShare: Uruchomiona gra
   alterDownloadDescription: |-
     Jeśli nie chcesz zepsuć bieżącej instancji.
     Możesz także utworzyć nową instancję na podstawie konfiguracji partnera.
     Kliknij przycisk poniżej, aby utworzyć instancję.
   baseInfo: Ustawienia podstawowe
-  cancelShare: Anuluj udostępnianie
   description: >-
     Po udostępnieniu profilu inne miejsce może pobrać te pliki za pośrednictwem komputera.
   downloadDescription: |-
@@ -19,9 +21,7 @@ AppShareInstanceDialog:
   downloadTitle: Pobieranie plików z innych urządzeń równorzędnych
   filesToDownload: Wybierz pliki do pobrania
   filesToShare: Wybierz pliki do udostępnienia
-  instanceShare: '{user} właśnie udostępnił ci bieżącą instancję'
   share: Udział
-  shareNotifyTitle: Instancja udostępniania
   shareTitle: Udostępnianie plików gry innym graczom
 BaseSettingGeneral:
   title: Ogólne
@@ -123,6 +123,7 @@ delete:
   'no': Nie
   'yes': Usuń
 dependencies:
+  dependents: Mody zależne od tego moda
   embedded: Wbudowany
   incompatible: Niezgodność
   name: Zależności
@@ -642,6 +643,10 @@ logsCrashes:
   title: Dzienniki lub raporty o wypadkach
   failures: Błędy uruchamiania
 me:
+  groupByDate: Grupuj według daty
+  groupByFolder: Grupuj według folderu
+  instanceViewMode: Tryb widoku instancji
+  listView: Widok listy
   news: Aktualności
   recentPlay: Ostatnia gra
 migrationWindow:
@@ -947,11 +952,45 @@ modrinth:
 modrinthCard:
   currentVersion: Aktualna wersja
 multiplayer:
+  autoShareAmbiguous: Uruchomionych jest wiele gier. Wybierz instancję hostującą świat LAN, aby XMCL mógł ją udostępnić.
+  editSharingScope: Edytuj zakres udostępniania
+  gameAvailable: Gra LAN jest dostępna
+  joinGame: Dołącz do gry
+  noRunningInstanceToShare: Uruchom grę przed edycją zakresu udostępniania
+  updateSharedInstanceConfirm: Zaktualizuj i uruchom
+  updateSharedInstanceDescription: Udostępnione mody różnią się od modów w {instance}. Zaktualizować tę instancję przed uruchomieniem, aby odpowiadała hostowi? Istniejące zmienione pliki zostaną zarchiwizowane.
+  updateSharedInstanceTitle: Zaktualizować udostępnioną instancję?
+  addFunds: "Dodaj środki"
+  availableBalance: "Dostępne saldo"
+  balanceHint: "Dostępne na usługi XMCL Together"
+  billing: "Rozliczenia"
+  billingDescription: "Zarządzaj dostępem do przekaźnika, planem Together Home i płatnościami."
+  billingError: "Nie udało się wczytać rozliczeń Together. Spróbuj ponownie za chwilę."
+  buyTogether: "Kup Together"
+  cancelTogether: "Anuluj plan"
+  checkout: "Otwórz płatność Waffo"
+  connectionTogetherWarning: "Jeden z członków pokoju od pewnego czasu nie może się z Tobą połączyć. Wypróbuj XMCL Together, aby poprawić łączność wszystkich osób w pokoju. Tylko właściciel pokoju potrzebuje Together."
+  masterPurchaseHint: "Tylko właściciel pokoju potrzebuje Together Home, aby poprawić łączność wszystkich osób w pokoju."
+  natTogetherWarning: "Twój router może mieć problemy z połączeniem z właścicielem pokoju. Jeśli połączenia się nie powiodą, wypróbuj XMCL Together, aby poprawić łączność między Tobą a znajomymi. Tylko właściciel pokoju musi kupić Together dla pokoju."
+  togetherName: "Minecraft Together"
+  trialDescription: "Jeden 7-dniowy okres próbny z 1 GB ruchu przez przekaźnik."
+  trialTitle: "Okres próbny łączności"
+  tryTogether: "Wypróbuj Together"
+  month: "miesiąc"
+  orderStatus: "Zamówienie Waffo: {status}"
+  planDescription: "20 GB zarządzanego ruchu przez przekaźnik miesięcznie oraz rozwiązywanie problemów z modpackiem przez AI."
+  waffoHint: "Płatności są bezpiecznie realizowane w Waffo Pancake. XMCL nigdy nie otrzymuje numeru Twojej karty."
+  subscription:
+    active: "Aktywna"
+    cancelled: "Anulowana"
+    payment_due: "Płatność wymagana"
+  trial:
+    active: "Okres próbny aktywny"
+    available: "Dostępny bezpłatny okres próbny"
+    expired: "Okres próbny wykorzystany"
+    unavailable: "Okres próbny niedostępny"
   loginRequiredDescription: Tryb wieloosobowy P2P korzysta z usług online XMCL. Zaloguj się na konto XMCL, aby kontynuować.
   loginRequiredTitle: Zaloguj się do trybu wieloosobowego P2P
-  allowTurn: Włącz serwer przekaźnikowy
-  allowTurnHint: >-
-    Zezwól na serwer przekaźnikowy, jeśli nie możesz połączyć się ze znajomym. Jednak korzystanie z może spowolnić połączenie. Należy używać go ostrożnie.
   complete: Kompletny
   confirm: Potwierdzenie
   connections: Połączenia
@@ -1009,15 +1048,11 @@ multiplayer:
   sendTokenToRemote: Wyślij token do pilota
   share: Konfiguracja wystąpienia udostępnionego
   sharing: Udostępnianie plików...
-  sharingNotificationBody: Możesz pobrać lub utworzyć instancję ze udostępnionej konfiguracji {name}.
-  sharingNotificationTitle: Kolega udostępnia konfigurację gry
   start: Start
   startNewP2PConnection: Kliknij przycisk Start, aby utworzyć nowe połączenie peer
   connectionError: Błąd połączenia
   connectionFailedHint: >-
     Nie można nawiązać połączenia. Sprawdź, czy obie strony mają zgodne typy NAT.
-  natWarning: >-
-    Twój typ NAT może uniemożliwiać bezpośrednie połączenia. Spróbuj włączyć serwer przekaźnikowy w ustawieniach lub poproś znajomego, aby był hostem.
 myStuff: Moje rzeczy
 natType:
   blocked: Zablokowany
@@ -1184,6 +1219,8 @@ serverStatus:
   refuse: §4Serwer odmówił!
   timeout: §4Limit czasu połączenia z serwerem!
 agent:
+  accessRequiredHint: Zasubskrybuj XMCL, aby używać wbudowanego agenta, lub skonfiguruj własnego dostawcę AI w ustawieniach.
+  subscribeXmcl: Subskrybuj XMCL
   notConfiguredHint: Ustaw klucz API, model i endpoint zgodny z OpenAI w Ustawienia → Ogólne → Agent AI. Na przykład użyj OpenAI albo bramki zgodnej z Claude.
 setting:
   aiAgentApiKeyDescription: Skonfiguruj dostawcę zgodnego z OpenAI, takiego jak OpenAI lub bramka dla Claude. Klucz jest przechowywany lokalnie na tym urządzeniu.
@@ -1455,6 +1492,7 @@ shaderPack:
   noPacks: Nie zainstalowano paczek shaderów
   search: Wyszukaj paczki shaderów...
 shared:
+  pressKeyCombination: Naciśnij kombinację klawiszy...
   add: Dodaj
   author: Autor
   back: Powrót
@@ -1483,6 +1521,7 @@ shared:
   server: Serwer
   skipForNow: Pomiń na razie
   upgrade: Aktualizuj
+  delete: Usuń
 sidebar:
   pin: Przypnij
   unpin: Odepnij
@@ -1669,6 +1708,46 @@ userSkin:
   urlNotEmpty: Adres URL skórki nie może być pusty
   urlNotValid: Adres URL skórki jest nieprawidłowy
   useSlim: Użyj modelu Slim
+  classic: Klasyczny
+  slim: Szczupły
+  saveSuccess: Skórka została zapisana na dysku!
+  saveFailed: Nie udało się zapisać skórki na dysku
+  uploadFailed: Nie udało się przesłać skórki
+  libraryTitle: Lokalna garderoba
+  librarySubtitle: Wybieraj, porządkuj i zapisuj skórki lokalnie
+  manage: Zarządzaj
+  all: Wszystkie
+  currentSkin: Obecna skórka
+  savedCount: zapisanych skórek
+  newSkin: Nowa skórka
+  addNewSkin: Dodaj nową skórkę
+  editSkin: Edytuj skórkę
+  skinName: Nazwa skórki
+  skinNamePlaceholder: 'np. Moja ulubiona skórka'
+  localFile: Plik lokalny
+  urlOrPlayer: URL / Nazwa gracza
+  urlOrPlayerPlaceholder: Wpisz URL obrazu skórki lub nazwę użytkownika Minecraft
+  urlOrPlayerHint: Wpisz bezpośredni URL obrazu PNG lub nazwę gracza, aby pobrać skórkę z Mojang
+  dropFileHere: Upuść tutaj plik PNG skórki lub kliknij, aby go wybrać
+  supportedFormats: 'Obsługiwany format: obraz PNG 64x64 lub 64x32'
+  preview: Podgląd skórki
+  previewPlaceholder: Podgląd skórki jest niedostępny
+  saveToLibrary: Zapisz w garderobie
+  saveAndEquip: Zapisz i załóż
+  equip: Załóż
+  equipToAccount: Załóż na koncie Minecraft
+  equipped: Założona
+  noSkinSelected: Nie wybrano skórki
+  saveCurrent: Zapisz obecną
+  officialPreset: Oficjalne ustawienie
+  mySkins: Moje skórki
+  presets: Ustawienia
+  noSkinsFound: Nie znaleziono skórek
+  tryAddingOne: Dodaj nową skórkę za pomocą przycisku powyżej!
+  skinUpdated: Skórka została zaktualizowana!
+  skinDeleteFailed: Nie udało się usunąć skórki z garderoby
+  edit: Edytuj
+  fetch: Wczytaj
 downloadModMetadataDb:
   name: Pobierz bazę metadanych modów
 duplicateInstance:

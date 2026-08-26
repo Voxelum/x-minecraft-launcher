@@ -84,6 +84,7 @@ export interface Peer {
 interface MultiplayerEvents {
   share: { id: string; manifest?: InstanceManifest }
   'connection-unexpected-closed': { id: string }
+  'local-lan': LanServerInfo
   lan: LanServerInfo & { session: string }
 }
 
@@ -146,6 +147,8 @@ export interface MultiplayerIceServerCredential {
   }>
 }
 
+export type MultiplayerTransport = 'webrtc' | 'node-datachannel'
+
 export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
   /**
    * Is the multiplayer module ready
@@ -156,7 +159,7 @@ export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
    */
   getPeers(): Peer[]
 
-  refreshNat(): Promise<void>
+  refreshIceServers(): Promise<void>
   /**
    * Set your user info
    */

@@ -42,7 +42,7 @@ export const DEFAULT_SURFACE_PILL_RADIUS = 9999
  * Applied through Vuetify's reactive `defaults` so buttons honor the
  * appearance toggle without per-element CSS overrides.
  */
-export const DEFAULT_SURFACE_BUTTON_RADIUS = 4
+export const DEFAULT_SURFACE_BUTTON_RADIUS = 'lg' as const
 
 // Cards — three intentional tiers. Apply via the `.surface-card`,
 // `.surface-card-subsection`, `.surface-card-item` utility classes

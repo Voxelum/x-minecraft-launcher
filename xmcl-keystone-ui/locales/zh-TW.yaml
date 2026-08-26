@@ -5,21 +5,21 @@ AppAddInstanceDialog:
   createTitle: 建立遊戲
   serverTitle: 輸入您的伺服器位址
 AppShareInstanceDialog:
+  editScopeDescription: 選擇連線夥伴發現這個正在執行的區域網路遊戲後可以按需取得的檔案。
+  editScopeTitle: 編輯分享範圍
+  instanceToShare: 正在執行的遊戲
   alterDownloadDescription: |-
     如果您不想搞亂目前實例。
     您也可以從對等方的設定建立一個新實例。
     按一下下面的按鈕建立實例。
   baseInfo: 分享的基本設定
-  cancelShare: 取消分享
   description: 分享後，您的聯機夥伴將可以下載您分享的遊戲資源
   downloadDescription: 請確認您的聯機夥伴提供的檔案，並選擇您要下載的項目。檔案將下載到目前實例 {name} 中。
   downloadNotifyTitle: 從 {user} 下載實例
   downloadTitle: 從其他玩家那獲得遊戲資源
   filesToDownload: 選擇您想下載的檔案
   filesToShare: 選擇分享的檔案
-  instanceShare: '{user} 給您分享了他的遊戲設定'
   share: 分享
-  shareNotifyTitle: 分享設定
   shareTitle: 分享啟動設定給其他玩家
 BaseSettingGeneral:
   title: 一般設定
@@ -153,6 +153,7 @@ delete:
   'no': 取消
   'yes': 刪除
 dependencies:
+  dependents: 依賴此 Mod 的 Mod
   embedded: 內嵌
   incompatible: 不相容
   name: 相依項
@@ -644,6 +645,10 @@ logsCrashes:
   failures: 啟動失敗
   serverLogs: 伺服器日誌
 me:
+  groupByDate: 按日期分組
+  groupByFolder: 按資料夾分組
+  instanceViewMode: 實例檢視模式
+  listView: 列表檢視
   news: 最新消息
   recentPlay: 最近遊玩
 migrationWindow:
@@ -945,10 +950,45 @@ modrinth:
 modrinthCard:
   currentVersion: 目前版本
 multiplayer:
+  autoShareAmbiguous: 有多個遊戲正在執行。請選擇主持區域網路世界的實例，讓 XMCL 可以分享它。
+  editSharingScope: 編輯分享範圍
+  gameAvailable: 有可用的區域網路遊戲
+  joinGame: 加入遊戲
+  noRunningInstanceToShare: 請先啟動遊戲，再編輯它的分享範圍
+  updateSharedInstanceConfirm: 更新並啟動
+  updateSharedInstanceDescription: 房主分享的模組與 {instance} 不一致。是否先將此實例更新為與房主一致再啟動？被取代的檔案會自動備份。
+  updateSharedInstanceTitle: 更新分享的實例？
+  addFunds: "儲值"
+  availableBalance: "可用餘額"
+  balanceHint: "可用於 XMCL Together 服務"
+  billing: "帳務"
+  billingDescription: "管理轉送連線存取權、Together Home 方案與付款。"
+  billingError: "無法載入 Together 帳務資訊。請稍後再試。"
+  buyTogether: "購買 Together"
+  cancelTogether: "取消方案"
+  checkout: "開啟 Waffo 付款頁面"
+  connectionTogetherWarning: "房間中有一名成員已經一段時間無法連線到你。請嘗試 XMCL Together，改善房間內所有人的連線品質。只有房主需要使用 Together。"
+  masterPurchaseHint: "只有房主需要 Together Home，就能改善房間內所有人的連線品質。"
+  natTogetherWarning: "你的路由器可能難以連線到房主。如果連線失敗，請嘗試 XMCL Together，改善你和朋友之間的連線。房間只需要由房主購買 Together。"
+  togetherName: "Minecraft Together"
+  trialDescription: "一次 7 天試用，包含 1 GB 轉送流量。"
+  trialTitle: "連線試用"
+  tryTogether: "試用 Together"
+  month: "月"
+  orderStatus: "Waffo 訂單：{status}"
+  planDescription: "每月 20 GB 的代管轉送流量，另提供模組包的 AI 疑難排解。"
+  waffoHint: "付款會在 Waffo Pancake 上安全完成。XMCL 絕不會取得你的卡號。"
+  subscription:
+    active: "使用中"
+    cancelled: "已取消"
+    payment_due: "待付款"
+  trial:
+    active: "試用方案使用中"
+    available: "提供免費試用"
+    expired: "試用已使用"
+    unavailable: "無法使用試用"
   loginRequiredDescription: P2P 多人遊戲使用 XMCL 線上服務。請登入 XMCL 帳戶以繼續。
   loginRequiredTitle: 登入以使用 P2P 多人遊戲
-  allowTurn: 啟用中繼伺服器
-  allowTurnHint: 當您和您的朋友連不上時可以嘗試啟用中繼伺服器，但是使用中繼伺服器可能會增加您的聯機延遲。使用時請注意。
   complete: 完成
   confirm: 確定
   connections: 使用者連線管理
@@ -997,13 +1037,10 @@ multiplayer:
   sendTokenToRemote: 將本地令牌給您的聯機夥伴
   share: 分享啟動設定
   sharing: 正在共享遊戲設定...
-  sharingNotificationBody: 您可以從 {name} 共用設定下載或建立實例。
-  sharingNotificationTitle: 同伴正在共享遊戲設定
   start: 開始
   startNewP2PConnection: 按一下開始按鈕來新建一個新的點對點連線
   connectionError: 連線錯誤
   connectionFailedHint: 無法建立連線。請檢查雙方的 NAT 類型是否相容。
-  natWarning: 您的 NAT 類型可能阻礙直連。請嘗試在設定中啟用中繼伺服器，或讓朋友作為主機。
 myStuff: 個人中心
 natType:
   blocked: 無法存取網際網路
@@ -1278,6 +1315,8 @@ serverStatus:
   refuse: 伺服器中斷了連線！
   timeout: 伺服器響應超時！
 agent:
+  accessRequiredHint: 訂閱 XMCL 即可使用內建 AI 助手，或前往設定自行配置 AI 供應商。
+  subscribeXmcl: 訂閱 XMCL
   notConfiguredHint: 請在設定 → 基本設定 → AI 助手中設定 API 金鑰、模型和 OpenAI 相容端點，例如 OpenAI 或相容 Claude 的閘道。
 setting:
   aiAgentApiKeyDescription: 配置 OpenAI 相容供應商，例如 OpenAI 或 Claude 閘道。API 金鑰僅儲存在本機裝置。
@@ -1556,6 +1595,7 @@ shaderPack:
   noPacks: 未安裝光影包
   search: 搜尋光影包...
 shared:
+  pressKeyCombination: 按下按鍵組合...
   add: 新增
   author: 作者
   back: 返回
@@ -1590,6 +1630,7 @@ shared:
   skipForNow: 暫時跳過
   upgrade: 更新
   'yes': 是
+  delete: 刪除
 sidebar:
   pin: 釘選
   unpin: 取消釘選
@@ -1788,6 +1829,44 @@ userSkin:
   useSlim: 使用細胳膊模型
   classic: 經典
   slim: 纖細
+  saveSuccess: 皮膚已儲存到本機！
+  saveFailed: 無法將皮膚儲存到本機
+  uploadFailed: 皮膚上傳失敗
+  libraryTitle: 本機衣櫥
+  librarySubtitle: 在本機選擇、管理並儲存你的皮膚
+  manage: 管理
+  all: 全部
+  currentSkin: 目前皮膚
+  savedCount: 個已儲存皮膚
+  newSkin: 新皮膚
+  addNewSkin: 新增皮膚
+  editSkin: 編輯皮膚
+  skinName: 皮膚名稱
+  skinNamePlaceholder: 例如：我最喜愛的皮膚
+  localFile: 本機檔案
+  urlOrPlayer: URL / 玩家名稱
+  urlOrPlayerPlaceholder: 輸入皮膚圖片 URL 或 Minecraft 使用者名稱
+  urlOrPlayerHint: 輸入 PNG 圖片直接連結或玩家名稱，以從 Mojang 取得皮膚
+  dropFileHere: 將皮膚 PNG 檔案拖曳至此，或點擊瀏覽
+  supportedFormats: '支援格式：64x64 或 64x32 PNG 圖片'
+  preview: 皮膚預覽
+  previewPlaceholder: 沒有可用的皮膚預覽
+  saveToLibrary: 儲存到衣櫥
+  saveAndEquip: 儲存並套用
+  equip: 套用
+  equipToAccount: 套用到 Minecraft 帳號
+  equipped: 已套用
+  noSkinSelected: 未選擇皮膚
+  saveCurrent: 儲存目前皮膚
+  officialPreset: 官方預設
+  mySkins: 我的皮膚
+  presets: 預設
+  noSkinsFound: 找不到皮膚
+  tryAddingOne: 試著使用上方按鈕新增皮膚吧！
+  skinUpdated: 皮膚已更新！
+  skinDeleteFailed: 無法從衣櫥移除皮膚
+  edit: 編輯
+  fetch: 載入
 version:
   checkIntegrity: 檢查完整性
   name: 版本 | 版本

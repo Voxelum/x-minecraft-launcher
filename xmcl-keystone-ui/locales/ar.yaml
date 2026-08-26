@@ -3,10 +3,12 @@ AppAddInstanceDialog:
   createTitle: 'إنشاء لعبة'
   serverTitle: 'أدخل عنوان الخادم الخاص بك'
 AppShareInstanceDialog:
+  editScopeDescription: حدد الملفات التي يمكن للأقران سحبها بعد اكتشاف هذه اللعبة قيد التشغيل على الشبكة المحلية.
+  editScopeTitle: تحرير نطاق المشاركة
+  instanceToShare: اللعبة قيد التشغيل
   alterDownloadDescription: >-
     إذا كنت لا ترغب في إفساد المثيل الحالي. يمكنك أيضًا إنشاء مثيل جديد من تكوين نظيرك. انقر فوق الزر أدناه لإنشاء مثيل.
   baseInfo: 'الإعداد الأساسي'
-  cancelShare: 'إلغاء المشاركة'
   description: >-
     بعد مشاركة ملف التعريف، يمكن لمكان آخر تنزيل هذه الملفات من خلال جهاز الكمبيوتر الخاص بك.
   downloadDescription: >-
@@ -15,9 +17,7 @@ AppShareInstanceDialog:
   downloadTitle: 'تنزيل الملفات من أقرانهم الآخرين'
   filesToDownload: 'اختر الملفات لتنزيلها'
   filesToShare: 'اختر الملفات لمشاركتها'
-  instanceShare: '{user} شارك للتو المثيل الحالي معك'
   share: 'يشارك'
-  shareNotifyTitle: 'مشاركة المثيل'
   shareTitle: 'مشاركة ملفات اللعبة مع لاعب آخر'
 BaseSettingGeneral:
   title: 'عام'
@@ -149,6 +149,7 @@ delete:
   'no': 'لا'
   'yes': 'يمسح'
 dependencies:
+  dependents: التعديلات التي تعتمد على هذا التعديل
   embedded: 'مغروس'
   incompatible: 'غير متوافق'
   name: 'التبعيات'
@@ -700,6 +701,10 @@ logsCrashes:
   placeholder: 'لم يتم العثور على ملفات'
   title: 'السجلات أو تقارير الأعطال'
 me:
+  groupByDate: تجميع حسب التاريخ
+  groupByFolder: تجميع حسب المجلد
+  instanceViewMode: وضع عرض المثيلات
+  listView: عرض القائمة
   news: 'أخبار'
   recentPlay: 'اللعب الأخير'
 migrateMinecraft:
@@ -1000,11 +1005,45 @@ modrinth:
 modrinthCard:
   currentVersion: 'الإصدار الحالي'
 multiplayer:
+  autoShareAmbiguous: هناك عدة ألعاب قيد التشغيل. حدد النسخة التي تستضيف عالم الشبكة المحلية لكي يتمكن XMCL من مشاركتها.
+  editSharingScope: تحرير نطاق المشاركة
+  gameAvailable: لعبة شبكة محلية متاحة
+  joinGame: الانضمام إلى اللعبة
+  noRunningInstanceToShare: شغّل لعبة قبل تحرير نطاق مشاركتها
+  updateSharedInstanceConfirm: التحديث والتشغيل
+  updateSharedInstanceDescription: تختلف التعديلات المشتركة عن {instance}. هل تريد تحديث هذه النسخة لتطابق المضيف قبل التشغيل؟ سيتم إنشاء نسخة احتياطية من الملفات المعدلة الحالية.
+  updateSharedInstanceTitle: تحديث النسخة المشتركة؟
+  addFunds: "إضافة أموال"
+  availableBalance: "الرصيد المتاح"
+  balanceHint: "متاح لخدمات XMCL Together"
+  billing: "الفوترة"
+  billingDescription: "إدارة الوصول إلى الترحيل، وخطة Together Home، والمدفوعات."
+  billingError: "تعذر تحميل فواتير Together. حاول مرة أخرى بعد قليل."
+  buyTogether: "شراء Together"
+  cancelTogether: "إلغاء الخطة"
+  checkout: "فتح صفحة الدفع في Waffo"
+  connectionTogetherWarning: "تعذر على أحد أعضاء الغرفة الاتصال بك منذ فترة. جرّب XMCL Together لتحسين الاتصال للجميع في الغرفة. يحتاج قائد الغرفة فقط إلى Together."
+  masterPurchaseHint: "يحتاج قائد الغرفة فقط إلى Together Home لتحسين الاتصال للجميع في الغرفة."
+  natTogetherWarning: "قد يواجه جهاز التوجيه لديك صعوبة في الاتصال بقائد الغرفة. إذا فشل الاتصال، فجرّب XMCL Together لتحسين الاتصال بينك وبين أصدقائك. يحتاج قائد الغرفة فقط إلى شراء Together للغرفة."
+  togetherName: "Minecraft Together"
+  trialDescription: "تجربة واحدة لمدة 7 أيام مع 1 GB من حركة مرور الترحيل."
+  trialTitle: "تجربة الاتصال"
+  tryTogether: "جرّب Together"
+  month: "شهر"
+  orderStatus: "طلب Waffo: {status}"
+  planDescription: "20 GB من حركة مرور الترحيل المُدارة كل شهر، بالإضافة إلى استكشاف أخطاء حزمة التعديلات وإصلاحها بالذكاء الاصطناعي."
+  waffoHint: "تُستكمل المدفوعات بأمان على Waffo Pancake. لا تتلقى XMCL رقم بطاقتك مطلقًا."
+  subscription:
+    active: "نشطة"
+    cancelled: "ملغاة"
+    payment_due: "الدفع مستحق"
+  trial:
+    active: "التجربة النشطة"
+    available: "تجربة مجانية متاحة"
+    expired: "تم استخدام التجربة"
+    unavailable: "التجربة غير متاحة"
   loginRequiredDescription: تستخدم لعبة P2P الجماعية خدمات XMCL عبر الإنترنت. سجّل الدخول إلى حساب XMCL للمتابعة.
   loginRequiredTitle: تسجيل الدخول للعب الجماعي عبر P2P
-  allowTurn: 'تمكين خادم الترحيل'
-  allowTurnHint: >-
-    السماح بخادم الترحيل إذا لم تتمكن من الاتصال بصديقك. ومع ذلك، فإن استخدام خادم الترحيل قد يؤدي إلى إبطاء اتصالك. استخدامه بحذر.
   complete: 'مكتمل'
   confirm: 'يتأكد'
   connectionError: 'خطأ في الاتصال'
@@ -1045,8 +1084,6 @@ multiplayer:
   localToken: 'الرمز المحلي'
   manualConnect: 'الاتصال يدويا'
   name: 'متعددة اللاعبين على الشبكة المحلية'
-  natWarning: >-
-    قد يمنع نوع NAT الخاص بك الاتصالات المباشرة. حاول تمكين خادم الترحيل في الإعدادات أو اطلب من صديقك الاستضافة بدلاً من ذلك.
   networkInfo: 'معلومات الشبكة (انقر للتبديل)'
   next: 'التالي'
   otherExposedPortDescription: 'تم إعادة توجيه المنفذ بواسطة {user}'
@@ -1062,8 +1099,6 @@ multiplayer:
   sendTokenToRemote: 'أرسل الرمز المميز إلى جهاز التحكم عن بعد'
   share: 'مشاركة تكوين المثيل'
   sharing: 'مشاركة الملفات...'
-  sharingNotificationBody: 'يمكنك تنزيل أو إنشاء مثيل من {name} التكوين المشترك.'
-  sharingNotificationTitle: 'يشارك أحد الأقران تكوين اللعبة الخاص به'
   start: 'يبدأ'
   startNewP2PConnection: 'انقر فوق الزر "ابدأ" لإنشاء اتصال نظير جديد'
   onlinePresenceActive: 'التواجد عبر الإنترنت نشط'
@@ -1274,6 +1309,8 @@ serverStatus:
   refuse: '§4تم رفض الخادم!'
   timeout: '§4 مهلة خادم الاتصال!'
 agent:
+  accessRequiredHint: اشترك في XMCL لاستخدام العميل المدمج، أو قم بتهيئة موفر الذكاء الاصطناعي الخاص بك في الإعدادات.
+  subscribeXmcl: الاشتراك في XMCL
   notConfiguredHint: اضبط مفتاح API والنموذج ونقطة نهاية متوافقة مع OpenAI في الإعدادات → عام → عميل الذكاء الاصطناعي. على سبيل المثال، استخدم OpenAI أو بوابة متوافقة مع Claude.
 setting:
   aiAgentApiKeyDescription: قم بتكوين موفر متوافق مع OpenAI، مثل OpenAI أو بوابة لـ Claude. يتم تخزين المفتاح محليًا على هذا الجهاز.
@@ -1547,6 +1584,7 @@ shaderPack:
   showDirectory: 'إظهار دليل حزمة التظليل'
   showFile: 'إظهار حزمة التظليل هذه في المجلد'
 shared:
+  pressKeyCombination: 'اضغط مجموعة مفاتيح...'
   add: 'يضيف'
   author: 'مؤلف'
   back: 'خلف'
@@ -1576,6 +1614,7 @@ shared:
   skipForNow: 'تخطي الآن'
   upgrade: 'ترقية'
   'yes': 'نعم'
+  delete: 'حذف'
 sidebar:
   pin: 'دبوس'
   unpin: 'إزالة التثبيت'
@@ -1801,6 +1840,44 @@ userSkin:
   useSlim: 'استخدم الطراز النحيف'
   classic: 'كلاسيكي'
   slim: 'نحيل'
+  saveSuccess: 'تم حفظ الجلد على القرص!'
+  saveFailed: 'تعذر حفظ الجلد على القرص'
+  uploadFailed: 'فشل رفع الجلد'
+  libraryTitle: 'خزانة الملابس المحلية'
+  librarySubtitle: 'اختر جلودك ونظّمها واحفظها محليًا'
+  manage: 'إدارة'
+  all: 'الكل'
+  currentSkin: 'الجلد الحالي'
+  savedCount: 'جلود محفوظة'
+  newSkin: 'جلد جديد'
+  addNewSkin: 'إضافة جلد جديد'
+  editSkin: 'تعديل الجلد'
+  skinName: 'اسم الجلد'
+  skinNamePlaceholder: 'مثال: جلدي المفضل'
+  localFile: 'ملف محلي'
+  urlOrPlayer: 'الرابط / اسم اللاعب'
+  urlOrPlayerPlaceholder: 'أدخل رابط صورة الجلد أو اسم مستخدم Minecraft'
+  urlOrPlayerHint: 'أدخل رابطًا مباشرًا لصورة PNG أو اسم لاعب لجلب الجلد من Mojang'
+  dropFileHere: 'أفلت ملف الجلد بصيغة PNG هنا أو انقر للتصفح'
+  supportedFormats: 'الصيغة المدعومة: صورة PNG بمقاس 64x64 أو 64x32'
+  preview: 'معاينة الجلد'
+  previewPlaceholder: 'لا تتوفر معاينة للجلد'
+  saveToLibrary: 'حفظ في الخزانة'
+  saveAndEquip: 'حفظ وارتداء'
+  equip: 'ارتداء'
+  equipToAccount: 'ارتداء في حساب Minecraft'
+  equipped: 'تم ارتداؤه'
+  noSkinSelected: 'لم يتم اختيار جلد'
+  saveCurrent: 'حفظ الحالي'
+  officialPreset: 'إعداد رسمي مسبق'
+  mySkins: 'جلودي'
+  presets: 'الإعدادات المسبقة'
+  noSkinsFound: 'لم يتم العثور على جلود'
+  tryAddingOne: 'جرّب إضافة جلد جديد باستخدام الزر أعلاه!'
+  skinUpdated: 'تم تحديث الجلد!'
+  skinDeleteFailed: 'تعذرت إزالة الجلد من الخزانة'
+  edit: 'تعديل'
+  fetch: 'تحميل'
 version:
   checkIntegrity: 'التحقق من النزاهة'
   name: 'النسخة | الإصدارات'

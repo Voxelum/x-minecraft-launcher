@@ -1,5 +1,4 @@
 import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue'
-import { useNotifier } from './notifier'
 import { useAgentConfirmation } from './agent/confirm'
 import { useAgentSettings } from './agent/settings'
 import { useOmniDialog } from './omniDialog'
@@ -44,37 +43,9 @@ export function useAgentChatOpen() {
 export function useAgentChatEntry() {
   const { open: openChat } = useAgentChatOpen()
   const settings = useAgentSettings()
-  const router = useRouter()
-  const { t } = useI18n()
-  const { notify } = useNotifier()
 
-  async function open() {
-    try {
-      await settings.ready
-    } catch (error) {
-      notify({
-        level: 'error',
-        title: t('agent.notConfiguredTitle'),
-        body: error instanceof Error ? error.message : String(error),
-      })
-      return
-    }
-    if (settings.configured.value) {
-      openChat()
-      return
-    }
-    notify({
-      level: 'warning',
-      title: t('agent.notConfiguredTitle'),
-      body: t('agent.notConfiguredHint'),
-      operations: [{
-        text: t('agent.openSettings'),
-        icon: 'settings',
-        handler: () => {
-          void router.push({ path: '/setting', query: { target: 'agent' } })
-        },
-      }],
-    })
+  function open() {
+    openChat()
   }
 
   return {
@@ -85,14 +56,14 @@ export function useAgentChatEntry() {
 
 /** Bind Ctrl/Cmd+Shift+A to open the agent chat. */
 export function useAgentChatHotkey(enabled: Ref<boolean> = ref(true)) {
-  const surface = useOmniDialog()
+  const { open } = useAgentChatEntry()
   function onKeyDown(e: KeyboardEvent) {
     if (!enabled.value) return
     const mod = e.ctrlKey || e.metaKey
     if (!mod || !e.shiftKey) return
     if (e.code === 'KeyA') {
       e.preventDefault()
-      surface.open('agent')
+      void open()
     }
   }
   onMounted(() => window.addEventListener('keydown', onKeyDown))

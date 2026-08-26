@@ -174,7 +174,7 @@ import { InstanceResourcePack, kInstanceResourcePacks } from '@/composables/inst
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
-import { ResourcePackProject, kResourcePackSearch } from '@/composables/resourcePackSearch'
+import { ResourcePackProject, useResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { injection } from '@/util/inject'
@@ -184,13 +184,15 @@ import ResourcePackDetailResource from './ResourcePackDetailResource.vue'
 import ResourcePackItem from './ResourcePackItem.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
+import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 
 import { useModUpgrade } from '@/composables/modUpgrade'
 
 const { runtime, path } = injection(kInstance)
-const { files, enabled, enable, disable, insert, revalidate } = injection(kInstanceResourcePacks)
+const { files, enabled, disabled, enable, disable, insert, revalidate } = injection(kInstanceResourcePacks)
+const searchModel = injection(kSearchModel)
 const { keyword, curseforgeCategory, modrinthCategories, currentView, gameVersion, isCurseforgeActive, isModrinthActive, sort: marketSort, source, selectedCollection } =
-  injection(kSearchModel)
+  searchModel
 
 const { refresh, refreshing, upgrade, plans, upgradePolicy, upgrading } = useModUpgrade(
   path,
@@ -208,7 +210,7 @@ const {
   collectionItems,
   effect,
   sortBy,
-} = injection(kResourcePackSearch)
+} = useResourcePackSearch(enabled, disabled, injection(kModrinthAuthenticatedAPI), searchModel)
 
 // Install-all works for any collection open in the Favorites view (local or
 // Modrinth collections/follows).

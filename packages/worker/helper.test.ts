@@ -279,6 +279,39 @@ describe('setHandler', () => {
     })
   })
 
+  it('should limit configured methods without blocking other handlers', async () => {
+    let releaseFirst = () => {}
+    const firstPending = new Promise<void>((resolve) => {
+      releaseFirst = resolve
+    })
+    const started: number[] = []
+    const handlers = {
+      checksum: async (id: number) => {
+        started.push(id)
+        if (id === 1) await firstPending
+        return id
+      },
+      parse: async () => 'parsed',
+    }
+
+    mockParentPortObj.value = mockPort as any
+    setHandler(handlers, getSerializedErrorFunc, { concurrency: { checksum: 1 } })
+
+    const first = mockPort.emit('message', { type: 'checksum', id: 1, args: [1] })
+    await Promise.resolve()
+    const second = mockPort.emit('message', { type: 'checksum', id: 2, args: [2] })
+    const parse = mockPort.emit('message', { type: 'parse', id: 3, args: [] })
+    await Promise.resolve()
+
+    expect(started).toEqual([1])
+    await parse
+    expect(mockPort.messages).toContainEqual({ id: 3, result: 'parsed' })
+
+    releaseFirst()
+    await Promise.all([first, second])
+    expect(started).toEqual([1, 2])
+  })
+
   it('should handle promises that resolve to undefined', async () => {
     const handlers = {
       returnUndefined: async () => undefined,

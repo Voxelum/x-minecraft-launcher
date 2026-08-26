@@ -1,5 +1,8 @@
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useOmniDialog } from './omniDialog'
+import { kSettingsState } from './setting'
+import { injection } from '@/util/inject'
+import { matchShortcut, parseShortcut } from '@/util/shortcut'
 
 /**
  * Shared reactive visibility of the command palette. Owned by AppCommandPalette
@@ -17,13 +20,22 @@ export function useCommandPaletteVisible() {
   })
 }
 
-/** Bind Ctrl/Cmd+Shift+C to open the command palette. */
+/** Bind configured shortcut (default Ctrl/Cmd+Shift+C) to open the command palette. */
 export function useCommandPaletteHotkey() {
   const surface = useOmniDialog()
+  const { state: settingsState } = injection(kSettingsState)
+
   function onKeyDown(e: KeyboardEvent) {
-    const mod = e.ctrlKey || e.metaKey
-    if (!mod || !e.shiftKey) return
-    if (e.code === 'KeyC') {
+    const configuredShortcut = settingsState.value?.quickActionShortcut ?? ''
+    const parsed = parseShortcut(configuredShortcut)
+    if (matchShortcut(e, parsed)) {
+      const target = e.target as HTMLElement | null
+      const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
+      const isFuncKey = /^f[1-9][0-2]?$/i.test(parsed.key)
+      const hasModifier = parsed.ctrl || parsed.shift || parsed.alt || parsed.meta || parsed.cmdOrCtrl
+      if (isInput && !hasModifier && !isFuncKey) {
+        return
+      }
       e.preventDefault()
       surface.open('command')
     }

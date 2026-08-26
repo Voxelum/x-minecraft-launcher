@@ -36,7 +36,6 @@ import MarketTextField from '@/components/MarketTextField.vue'
 import { kInstance } from '@/composables/instance'
 import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kSearchModel } from '@/composables/search'
-import { kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 import { useQuery } from '@/composables/query'
@@ -67,12 +66,11 @@ const extensionItems = computed(() => {
   return items
 })
 
-const { keyword, source, gameVersion, selectedCollection, modrinthCategories, sort, isModrinthActive } = injection(kSearchModel)
+const { keyword, source, gameVersion, modrinthCategories } = injection(kSearchModel)
 const focused = ref(false)
 provide('focused', focused)
 const selectedId = useQuery('id')
 watch(focused, (v) => { if (v) selectedId.value = '' })
 const { shaderMod } = injection(kInstanceShaderPacks)
-const { sortBy } = injection(kShaderPackSearch)
 const { t } = useI18n()
 </script>

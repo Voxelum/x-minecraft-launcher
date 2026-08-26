@@ -124,6 +124,63 @@ describe('BmclDownloadController', () => {
       await rm(dir, { recursive: true, force: true })
     }
   })
+
+  it('aggregates sanitized adaptive download telemetry and resets the window', () => {
+    const c = make()
+    c.onSample(sample({ speed: 500 }))
+    c.report({
+      origin: ORIGIN,
+      host: 'mirror-a.test',
+      received: 0,
+      duration: 5000,
+      speed: 0,
+      outcome: 'aborted',
+      abortReason: 'ttfb',
+      ranged: true,
+    })
+    c.report({
+      origin: 'https://piston-data.mojang.com',
+      host: 'piston-data.mojang.com',
+      received: 1024,
+      duration: 1000,
+      speed: 1024,
+      outcome: 'completed',
+      resumed: true,
+      fallback: true,
+    })
+    c.report({
+      origin: ORIGIN,
+      received: 0,
+      duration: 10,
+      speed: 0,
+      outcome: 'failed',
+      ranged: true,
+      failureReason: 'range-not-supported',
+    })
+
+    const snapshot = c.telemetrySnapshot()
+    expect(snapshot?.properties).toEqual({ schemaVersion: '1', breakerOpen: false })
+    expect(snapshot?.measurements).toMatchObject({
+      samples: 1,
+      stalledSamples: 1,
+      abortDecisions: 1,
+      attempts: 3,
+      completed: 1,
+      aborted: 1,
+      failed: 1,
+      abortTtfb: 1,
+      rangedAttempts: 2,
+      resumedAttempts: 1,
+      fallbackAttempts: 1,
+      rangeUnsupported: 1,
+      reassignableAttempts: 2,
+      fixedAttempts: 1,
+      reassignableMirrors: 1,
+    })
+    expect(JSON.stringify(snapshot)).not.toContain('mirror-a.test')
+    expect(JSON.stringify(snapshot)).not.toContain('piston-data.mojang.com')
+    expect(c.telemetrySnapshot()).toBeUndefined()
+  })
 })
 
 const OFFICIAL = 'https://launchermeta.mojang.com'
@@ -149,6 +206,18 @@ function completedFrom(origin: string, received = 5 * 1024 * 1024): DownloadResu
   return { origin, host: 'h', received, duration: 1000, speed: 1_000_000, outcome: 'completed' }
 }
 
+function slowAbort(): DownloadResult {
+  return {
+    origin: ORIGIN,
+    host: 'slow-mirror',
+    received: 128 * 1024,
+    duration: 3000,
+    speed: 32 * 1024,
+    outcome: 'aborted',
+    abortReason: 'slow',
+  }
+}
+
 describe('BmclDownloadController circuit breaker', () => {
   it('trips after consecutive no-data attempts and skips the CDN (never the official origin)', () => {
     const c = makeCb()
@@ -157,6 +226,9 @@ describe('BmclDownloadController circuit breaker', () => {
     expect(c.shouldSkip(ORIGIN)).toBe(true)
     // A fixed (official) origin is the last resort and is never skipped.
     expect(c.shouldSkip(OFFICIAL)).toBe(false)
+    const telemetry = c.telemetrySnapshot()
+    expect(telemetry?.properties.breakerOpen).toBe(true)
+    expect(telemetry?.measurements).toMatchObject({ breakerTrips: 1, breakerSkips: 1 })
   })
 
   it('closes the breaker as soon as the CDN delivers real data again', () => {
@@ -191,6 +263,41 @@ describe('BmclDownloadController circuit breaker', () => {
     const decisions = Array.from({ length: 6 }, () => c.shouldSkip(ORIGIN))
     // 1 in 3 requests is let through to probe for recovery.
     expect(decisions).toEqual([true, true, false, true, true, false])
+  })
+
+  it('quarantines a repeatedly slow CDN and keeps official traffic flowing', () => {
+    const c = makeCb({ slowCbThreshold: 3, slowCbCooldownMs: 30_000 })
+    for (let index = 0; index < 3; index++) c.report(slowAbort())
+    expect(c.shouldSkip(ORIGIN)).toBe(true)
+    expect(c.shouldSkip(OFFICIAL)).toBe(false)
+    c.report(completedFrom(OFFICIAL))
+    expect(c.shouldSkip(ORIGIN)).toBe(true)
+    expect(c.telemetrySnapshot()?.measurements).toMatchObject({ slowBreakerTrips: 1 })
+  })
+
+  it('reconsiders BMCL when the official fallback fails', () => {
+    const c = makeCb({ slowCbThreshold: 2, slowCbCooldownMs: 30_000 })
+    c.report(slowAbort())
+    c.report(slowAbort())
+    expect(c.shouldSkip(ORIGIN)).toBe(true)
+    c.report(noData(OFFICIAL, 'failed'))
+    expect(c.shouldSkip(ORIGIN)).toBe(false)
+  })
+
+  it('closes slow quarantine when a measurable BMCL probe is healthy', () => {
+    const c = makeCb({ slowCbThreshold: 2, slowCbCooldownMs: 30_000 })
+    c.report(slowAbort())
+    c.report(slowAbort())
+    expect(c.shouldSkip(ORIGIN)).toBe(true)
+    c.report(completedFrom(ORIGIN))
+    expect(c.shouldSkip(ORIGIN)).toBe(false)
+  })
+
+  it('does not count dispatch-time skips as CDN failures', () => {
+    const c = makeCb({ cbThreshold: 1, slowCbThreshold: 1 })
+    c.report({ ...noData(), abortReason: 'skip' })
+    expect(c.shouldSkip(ORIGIN)).toBe(false)
+    expect(c.telemetrySnapshot()?.measurements).toMatchObject({ abortSkip: 1 })
   })
 })
 

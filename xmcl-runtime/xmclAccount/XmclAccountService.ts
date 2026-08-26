@@ -1,11 +1,9 @@
 import {
-  AUTHORITY_MICROSOFT,
   XmclAccountServiceKey,
   XmclAccountState,
   type XmclAccountSnapshot,
   type XmclOAuthProvider,
   type XmclAccountService as IXmclAccountService,
-  type XmclMicrosoftBootstrapResult,
   type SharedState,
 } from '@xmcl/runtime-api'
 import { createHash, randomBytes } from 'crypto'
@@ -13,7 +11,6 @@ import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
-import { UserService } from '~/user'
 import { kFlights } from '~/infra'
 import {
   MICROSOFT_GRAPH_USER_READ_SCOPE,
@@ -121,6 +118,13 @@ export class XmclAccountService
         ).common
       },
       () => this.getDpopKey(),
+      async () => {
+        const flights = await app.registry.get(kFlights)
+        return resolveXmclApiEndpoints(
+          flights.xmclBillingApiBaseUrl,
+          () => app.getLogger('BillingApiBaseUrl').warn('Ignoring invalid xmclBillingApiBaseUrl flight; using the default XMCL API origin.'),
+        ).common
+      },
     )
 
     app.protocol.registerHandler('xmcl', ({ request, response }) => {
@@ -190,52 +194,6 @@ export class XmclAccountService
     )
   }
 
-  @Singleton((userId) => userId)
-  async bootstrapMicrosoft(userId: string): Promise<XmclMicrosoftBootstrapResult> {
-    await this.initialize()
-    const userState = await this.app.registry
-      .get(UserService)
-      .then((service) => service.getUserState())
-    const user = userState.users[userId]
-    if (!user || user.authority !== AUTHORITY_MICROSOFT || user.invalidated) {
-      return 'not-applicable'
-    }
-
-    const oauthClient = new MicrosoftOAuthClient(
-      (...args) => this.app.fetch(...args),
-      this.app.getLogger('XmclMicrosoftIdentity'),
-      MICROSOFT_LAUNCHER_CLIENT_ID,
-      async () => {
-        throw new Error('interactive_microsoft_auth_not_allowed')
-      },
-      async () => {
-        throw new Error('interactive_microsoft_auth_not_allowed')
-      },
-      () => {},
-      this.app.secretStorage,
-      () => this.app.controller.getNativeWindowHandle?.(),
-    )
-    let result: { accessToken: string }
-    try {
-      ;({ result } = await oauthClient.authenticate(
-        user.username,
-        [MICROSOFT_GRAPH_USER_READ_SCOPE],
-        {
-          slientOnly: true,
-          useNativeBroker: process.platform === 'win32',
-        },
-      ))
-    } catch (error) {
-      if (error instanceof Error && error.name === 'MicrosoftOAuthSlientFailed') {
-        this.warn('XMCL account bridge is waiting for Microsoft Graph consent.')
-        return 'pending-consent'
-      }
-      throw error
-    }
-    await this.bootstrapCredential('microsoft', result.accessToken)
-    return 'bootstrapped'
-  }
-
   @Singleton()
   async authorizeMicrosoft(): Promise<void> {
     await this.initialize()
@@ -274,7 +232,7 @@ export class XmclAccountService
   }
 
   @Singleton()
-  async bootstrapModrinth(): Promise<void> {
+  async authorizeModrinth(): Promise<void> {
     await this.initialize()
     const credential = await this.externalCredentials.getValidAccessToken('modrinth')
     if (credential.status !== 'valid') return
@@ -389,6 +347,42 @@ export class XmclAccountService
     const credential = await this.requireValidCredential()
     await this.api.revokeSession(credential, allDevices)
     await this.clearSession(credential.sessionId)
+  }
+
+  @Singleton()
+  async getTogetherOverview() {
+    await this.initialize()
+    return this.api.getTogetherOverview(await this.requireValidCredential())
+  }
+
+  @Singleton()
+  async claimTogetherTrial() {
+    await this.initialize()
+    return this.api.claimTogetherTrial(await this.requireValidCredential())
+  }
+
+  @Singleton((amountMinor) => amountMinor)
+  async createTogetherOrder(amountMinor: number) {
+    await this.initialize()
+    return this.api.createTogetherOrder(await this.requireValidCredential(), amountMinor)
+  }
+
+  @Singleton((orderId) => orderId)
+  async getTogetherOrder(orderId: string) {
+    await this.initialize()
+    return this.api.getTogetherOrder(await this.requireValidCredential(), orderId)
+  }
+
+  @Singleton()
+  async subscribeTogether() {
+    await this.initialize()
+    return this.api.subscribeTogether(await this.requireValidCredential())
+  }
+
+  @Singleton()
+  async cancelTogether() {
+    await this.initialize()
+    return this.api.cancelTogether(await this.requireValidCredential())
   }
 
   private async bootstrapCredential(

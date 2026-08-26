@@ -220,7 +220,7 @@ watch(isShown, (shown) => {
     originalKey.value = null
     pinAfterSave.value = false
   }
-})
+}, { immediate: true })
 
 async function onSave() {
   const p = params.value

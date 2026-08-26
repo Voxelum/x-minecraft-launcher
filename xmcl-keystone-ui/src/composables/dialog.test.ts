@@ -1,6 +1,6 @@
-import { nextTick } from 'vue'
+import { createRenderer, defineComponent, h, nextTick, provide } from 'vue'
 import { describe, expect, it } from 'vitest'
-import { useDialogModel, type DialogModelData } from './dialog'
+import { kDialogModel, useDialog, useDialogModel, type DialogModelData } from './dialog'
 
 class MemoryDialogChannel {
   static channels: MemoryDialogChannel[] = []
@@ -37,5 +37,43 @@ describe('dialog model', () => {
 
     expect(second.current.value.dialog).toBe('multiplayer-login')
     expect(MemoryDialogChannel.messages).toBe(1)
+  })
+
+  it('runs onShown when a dialog mounts after it was opened', () => {
+    MemoryDialogChannel.channels = []
+    const model = useDialogModel(new MemoryDialogChannel())
+    const parameter = { source: 'lazy-dialog' }
+    model.current.value = { dialog: 'lazy', parameter }
+    const shown: unknown[] = []
+    const renderer = createRenderer<Record<string, never>, Record<string, never>>({
+      patchProp() {},
+      insert() {},
+      remove() {},
+      createElement: () => ({}),
+      createText: () => ({}),
+      createComment: () => ({}),
+      setText() {},
+      setElementText() {},
+      parentNode: () => null,
+      nextSibling: () => null,
+    })
+    const Dialog = defineComponent({
+      setup() {
+        useDialog('lazy', value => shown.push(value))
+        return () => null
+      },
+    })
+    const Root = defineComponent({
+      setup() {
+        provide(kDialogModel, model)
+        return () => h(Dialog)
+      },
+    })
+
+    const app = renderer.createApp(Root)
+    app.mount({})
+
+    expect(shown).toEqual([parameter])
+    app.unmount()
   })
 })

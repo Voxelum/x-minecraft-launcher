@@ -46,11 +46,15 @@ export interface ControlledHandlerParams {
    * to finish or hit the dispatcher's own timeout. Default true.
    */
   abortable?: boolean
+  /** Re-check the source circuit breaker when a queued request is admitted. */
+  skippable?: boolean
   /**
    * Called after each write with the new absolute file offset, so a
    * multi-segment orchestrator can aggregate overall progress.
    */
   onAdvance?: (absolutePosition: number) => void
+  /** Abort the current dispatch even before Undici establishes a connection. */
+  abortRequest?: (error: Error) => void
 }
 
 /**
@@ -77,7 +81,9 @@ export class ControlledFileHandler extends FileHandler {
   private readonly requestStart: number
   private readonly noAbort: boolean
   private readonly abortable: boolean
+  private readonly skippable: boolean
   private readonly advance?: (absolutePosition: number) => void
+  private readonly abortRequest?: (error: Error) => void
 
   private firstByteAt = 0
   private lastByteAt = 0
@@ -104,7 +110,9 @@ export class ControlledFileHandler extends FileHandler {
     this.requestStart = params.requestStart ?? -1
     this.noAbort = params.noAbort ?? false
     this.abortable = params.abortable ?? true
+    this.skippable = params.skippable ?? false
     this.advance = params.onAdvance
+    this.abortRequest = params.abortRequest
 
     this.totalSize = this.segTotal || params.expectedTotal || 0
     this.progressInfo.total = params.expectedTotal ?? this.totalSize
@@ -117,17 +125,33 @@ export class ControlledFileHandler extends FileHandler {
       this.advance?.(this.position)
     }
     this.resolvers.promise.catch(() => {}).finally(() => this.clearTimers())
+  }
 
+  override onConnect(...args: any[]): void {
+    super.onConnect(...args)
+    this.onDispatch()
+  }
+
+  onDispatch() {
+    if (this.ttfbTimer || this.firstByteAt !== 0) return
+    if (this.skippable && this.controller.shouldSkip?.(this.origin)) {
+      const error = new ManagedAbortError('skip')
+      this.abortRequest?.(error)
+      this.resolvers.reject(error)
+      return
+    }
     // The TTFB deadline stays active even in committed mode: a mirror
     // that delivers no first byte is dead and must always be abandoned.
     // Only re-assignable origins are worth abandoning, though.
-    const ttfb = controller.ttfbDeadline ?? 0
+    const ttfb = this.controller.ttfbDeadline ?? 0
     if (ttfb > 0 && this.abortable) {
       this.ttfbTimer = setTimeout(() => {
         if (this.firstByteAt === 0) {
           // Connected (or redirected) but no bytes — re-roll fast.
           this.clearTimers()
-          this.resolvers.reject(new ManagedAbortError('ttfb'))
+          const error = new ManagedAbortError('ttfb')
+          this.abortRequest?.(error)
+          this.resolvers.reject(error)
         }
       }, ttfb)
       this.ttfbTimer.unref?.()
@@ -174,6 +198,12 @@ export class ControlledFileHandler extends FileHandler {
     if (this.rangeRejected) {
       return false
     }
+    const target = this.segTotal > 0 ? this.segStart + this.segTotal : this.totalSize
+    const remaining = target > 0 ? target - this.position : chunk.length
+    if (remaining <= 0) {
+      return false
+    }
+    const data = chunk.length > remaining ? chunk.subarray(0, remaining) : chunk
     const now = Date.now()
     this.lastByteAt = now
     if (this.firstByteAt === 0) {
@@ -182,8 +212,14 @@ export class ControlledFileHandler extends FileHandler {
       this.clearTtfb()
       this.startSampling()
     }
-    this.windowBytes += chunk.length
-    return super.onData(chunk)
+    this.windowBytes += data.length
+    const accepted = super.onData(data)
+    if (target > 0 && this.position >= target) {
+      this.clearTimers()
+      this.completeEarly()
+      return false
+    }
+    return accepted
   }
 
   override onComplete(trailers: string[] | null): void {

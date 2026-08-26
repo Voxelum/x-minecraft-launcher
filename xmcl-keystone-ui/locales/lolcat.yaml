@@ -3,10 +3,12 @@ AppAddInstanceDialog:
   createTitle: MAKE GAME
   serverTitle: TYP IN DA SERVR ADDWESS
 AppShareInstanceDialog:
+  editScopeDescription: CHOOZ TEH FILEZ PEEPS CAN GRAB AFTER DEY FIND DIS RUNNIN GAEM ON LAN.
+  editScopeTitle: EDIT SHARIN RANGE
+  instanceToShare: RUNNIN GAEM
   alterDownloadDescription: >-
     IF U NO WANT BREAK CURREN INSTANCE. U CAN ALSO MAKE NEW INSTANCE FROM UR FREN'S CONFIG. CLICK DA BUTTON BELOW TO MAKE INSTANCE.
   baseInfo: BASIC SETTINGZ
-  cancelShare: CANCEL SHAREZ
   description: >-
     AFTR U SHARE DA PROFILE, OTHR PLACE CAN DOWNLOD THESE FILEZ THRU UR COMPUTAH.
   downloadDescription: >-
@@ -15,9 +17,7 @@ AppShareInstanceDialog:
   downloadTitle: DOWNLOD FILEZ FROM OTHR FRENS
   filesToDownload: PICK FILEZ TO DOWNLOD
   filesToShare: PICK FILEZ TO SHARE
-  instanceShare: '{user} JUS SHARED DA CURREN INSTANCE TO U!'
   share: SHAREZ
-  shareNotifyTitle: SHARE INSTANCE
   shareTitle: SHARE GAME FILEZ TO OTHR PLAYR
 BaseSettingGeneral:
   title: GENERAL
@@ -149,6 +149,7 @@ delete:
   'no': 'NO'
   'yes': DELET
 dependencies:
+  dependents: MODZ DAT DEPEND ON DIS MOD
   embedded: EMBEDDED
   incompatible: BAD MATCH
   name: DEPENDENCIEZ
@@ -645,6 +646,10 @@ logsCrashes:
   title: LOGZ OR CRASH REPORTS
   failures: LANCH FAYLZ
 me:
+  groupByDate: GROOP BY DATE
+  groupByFolder: GROOP BY FOLDR
+  instanceViewMode: INSTANS VIEW MODE
+  listView: LIST VIEW
   news: NEWZ
   recentPlay: RECENT PLAY
 migrationWindow:
@@ -942,11 +947,45 @@ modrinth:
 modrinthCard:
   currentVersion: CURREN VERSHUN
 multiplayer:
+  autoShareAmbiguous: MANY GAEMS R RUNNIN. CHOOZ TEH INSTANCE HOSTIN TEH LAN WORLD SO XMCL CAN SHARE IT.
+  editSharingScope: EDIT SHARIN RANGE
+  gameAvailable: LAN GAEM IZ HERE
+  joinGame: JOIN GAEM
+  noRunningInstanceToShare: START A GAEM BFORE EDITIN ITS SHARIN RANGE
+  updateSharedInstanceConfirm: UPDAET AN PLAY
+  updateSharedInstanceDescription: SHARED MODZ R DIFFRUNT FROM {instance}. UPDAET DIS INSTANCE TO MATCH TEH HOST BFORE PLAYIN? CHANGED FILEZ WILL BE BAKD UP.
+  updateSharedInstanceTitle: UPDAET SHARED INSTANCE?
+  addFunds: "Add moar funds"
+  availableBalance: "Funds nao available"
+  balanceHint: "Usable for XMCL Together servicez"
+  billing: "Billz"
+  billingDescription: "Manage relay access, ur Together Home plan, and payz."
+  billingError: "Together billz cud not load. Try again in a lil moment."
+  buyTogether: "Buy Together"
+  cancelTogether: "Cancel plan"
+  checkout: "Open Waffo checkout"
+  connectionTogetherWarning: "Room member haz been unable to connect to u fur a while. Try XMCL Together to make connectivity better fur everybuddy in teh room. Only teh room master needs Together."
+  masterPurchaseHint: "Only teh room master needs Together Home to make connectivity better fur everybuddy in teh room."
+  natTogetherWarning: "Ur router may haf trouble connecting to teh room master. If connections fail, try XMCL Together to improve connectivity between u and ur frenz. Only teh room master needs to buy Together fur teh room."
+  togetherName: "Minecraft Together"
+  trialDescription: "One 7-day trial with 1 GB relay traffic. Much connect."
+  trialTitle: "Connectivity trial"
+  tryTogether: "Try Together"
+  month: "month"
+  orderStatus: "Waffo order: {status}"
+  planDescription: "20 GB managed relay traffic every month, plus AI troubleshooting fur ur modpack."
+  waffoHint: "Payments happen securely on Waffo Pancake. XMCL never gets ur card number, promise."
+  subscription:
+    active: "Active nao"
+    cancelled: "Cancelled nao"
+    payment_due: "Payment due nao"
+  trial:
+    active: "Trial active nao"
+    available: "Free trial available, yay"
+    expired: "Trial used up"
+    unavailable: "Trial unavailable nao"
   loginRequiredDescription: P2P multiplayer uses XMCL onlinez. Sign in 2 an XMCL Account 2 continue.
   loginRequiredTitle: Sign in 4 P2P multiplayer
-  allowTurn: ENABL RELAY SERVR
-  allowTurnHint: >-
-    ALLOW RELAY SERVR IF U CANNOT CONNECT WITH UR FREN. HOWEVER, USING RELAY SERVR MAY SLOW DOWN UR CONNEKSHUN. USE IT WITH CAUSHUN.
   complete: COMPLETE
   confirm: CONFIRM
   connections: CONNEKSHUNS
@@ -996,15 +1035,11 @@ multiplayer:
   sendTokenToRemote: SEND TOKEN TO REMOTE
   share: SHARE INSTANCE CONFIG
   sharing: SHARING FILEZ...
-  sharingNotificationBody: U CAN DOWNLOD OR MAKE AN INSTANCE FROM {name} SHARED CONFIG.
-  sharingNotificationTitle: A PEER IS SHARING THEIR GAME CONFIG
   start: START
   startNewP2PConnection: CLICK DA START BUTTON TO MAKE A NEW PEER CONNEKSHUN
   connectionError: CONNEKSHN BORKED
   connectionFailedHint: >-
     Cant connectz. Bof NAT typez maybe sad.
-  natWarning: >-
-    Ur NAT mite blockz directs. Try relayz in settingz or makez ur frend host plz.
 myStuff: MAH STUFF
 natType:
   blocked: BLOCKED
@@ -1174,6 +1209,8 @@ serverStatus:
   refuse: §4SERVER REFUSED!
   timeout: §4CONNECT SERVR TIMEOUT!
 agent:
+  accessRequiredHint: SUBSCRIEB TO XMCL TO USE TEH BUILT-IN AGENT, OR CONFIGURE UR OWN AI PROVIDR IN SETTINGZ.
+  subscribeXmcl: SUBSCRIEB TO XMCL
   notConfiguredHint: SET AN API KEY, MODEL AN OPENAI-COMPATIBL ENDPOINT IN SETTINGZ → GENERAL → AI AGENT. FUR EXAMPL, USE OPENAI OR A CLAUDE-COMPATIBL GATEWAY.
 setting:
   aiAgentApiKeyDescription: CONFIGUR AN OPENAI-COMPATIBL PROVIDR, SUCH AS OPENAI OR A GATEWAY FUR CLAUDE. TEH KEY IZ STORED LOCALY ON DIS DEVICE.
@@ -1441,6 +1478,7 @@ shaderPack:
   noPacks: No shadr packz instold
   search: Sniff shadr packz...
 shared:
+  pressKeyCombination: PRESS KEY COMBO...
   add: ADD
   author: AUTHOR
   back: BACK
@@ -1470,6 +1508,7 @@ shared:
   skipForNow: SKIP FUR NAO
   upgrade: UPGRAYDD
   'yes': YAS
+  delete: DELET
 sidebar:
   pin: STIK IT
   unpin: UNSTIK IT
@@ -1647,6 +1686,46 @@ userSkin:
   urlNotEmpty: SKIN URL CANNOT BE EMPTY
   urlNotValid: SKIN URL IS INVALID
   useSlim: USE SLIM MODEL
+  classic: CLASSIK
+  slim: SLIM
+  saveSuccess: SKIN SAVD TO DISK!
+  saveFailed: CUD NOT SAV SKIN TO DISK
+  uploadFailed: SKIN UPLOAD FAILD
+  libraryTitle: LOCAL CLOZET
+  librarySubtitle: CHOOZ, MANEJ AN SAV UR SKINZ LOCALLY
+  manage: MANEJ
+  all: ALL
+  currentSkin: CURRENT SKIN
+  savedCount: SAVD SKINZ
+  newSkin: NEW SKIN
+  addNewSkin: ADD NEW SKIN
+  editSkin: EDIT SKIN
+  skinName: SKIN NAEM
+  skinNamePlaceholder: 'LIKE: MAH FAVRIT SKIN'
+  localFile: LOCAL FILE
+  urlOrPlayer: URL / PLAYR NAEM
+  urlOrPlayerPlaceholder: TYPE SKIN IMAGE URL OR MINECRAFT YOOZRNAME
+  urlOrPlayerHint: TYPE DIRECT PNG URL OR PLAYR NAEM TO GET SKIN FROM MOJANG
+  dropFileHere: DROP SKIN PNG HERE OR KLIK TO BROWZ
+  supportedFormats: 'FORMATZ: 64x64 OR 64x32 PNG IMAGE'
+  preview: SKIN PREVYU
+  previewPlaceholder: NO SKIN PREVYU, SRY
+  saveToLibrary: SAV TO CLOZET
+  saveAndEquip: SAV AN WEAR
+  equip: WEAR
+  equipToAccount: WEAR ON MINECRAFT AKOWNT
+  equipped: IZ WEARIN
+  noSkinSelected: NO SKIN CHOOZD
+  saveCurrent: SAV CURRENT
+  officialPreset: OFFISHUL PRESET
+  mySkins: MAH SKINZ
+  presets: PRESETZ
+  noSkinsFound: NO SKINZ FOUND
+  tryAddingOne: TRY ADDIN NEW SKIN WIF BUTTON UP THAR!
+  skinUpdated: SKIN UPDATED!
+  skinDeleteFailed: CUD NOT GET SKIN OUTTA CLOZET
+  edit: EDIT
+  fetch: LOAD
 version:
   checkIntegrity: CHECK INTEGRITY
   name: VERSHUN | VERSHUNS

@@ -30,8 +30,8 @@ export async function getSerializedError(e: unknown, context: object): Promise<o
     error.stack = e.stack
     error.name = e.name
   } else {
-    if (error) {
-      error.message = error.toString()
+    if (e !== undefined && e !== null) {
+      error.message = String(e)
     }
   }
   return error

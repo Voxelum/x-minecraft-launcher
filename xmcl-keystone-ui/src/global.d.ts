@@ -38,3 +38,5 @@ interface File {
    */
   path: string
 }
+
+declare const multiplayerNetworkDiagnostics: import('@xmcl/runtime-api').NetworkDiagnostics

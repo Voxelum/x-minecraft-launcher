@@ -41,6 +41,10 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
     const _version = version.value
     const inst = instance.value
     const path = inst.path
+    if (!path) {
+      data.value = undefined
+      return
+    }
     if (_version && _version.instance !== path) {
       // Resolver is racing a not-yet-loaded version for a different
       // instance; skip without clobbering the current data.

@@ -19,6 +19,15 @@
       </v-fab-transition>
     </template>
     <v-btn
+      v-if="openLibrary"
+      v-shared-tooltip.left="() => t('userSkin.libraryTitle')"
+      icon="accessibility"
+      size="small"
+      color="purple"
+      :disabled="disabled"
+      @click="openLibrary"
+    />
+    <v-btn
       v-shared-tooltip.left="() => t('userSkin.importLink')"
       icon="link"
       size="small"
@@ -44,6 +53,7 @@ defineProps<{
   load(): void
   upload(): void
   save(): void
+  openLibrary?(): void
   disabled: boolean
   hasSkin: boolean
   hasCape: boolean

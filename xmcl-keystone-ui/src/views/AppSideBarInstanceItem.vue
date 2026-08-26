@@ -6,13 +6,19 @@
       v-shared-tooltip.right="() => ({ text: name, items: runtimes })"
       data-testid="instance-item"
       class="sidebar-instance non-moveable"
-      :class="{ 'sidebar-instance--active': isActive }"
+      :class="{
+        'sidebar-instance--active': isActive,
+        'sidebar-instance--launching': isLaunching(path),
+        'sidebar-instance--running': isRunning(path),
+      }"
       role="button"
       tabindex="0"
       :aria-label="name"
       :aria-pressed="isActive"
+      :aria-busy="isLaunching(path)"
       draggable="true"
       @click="navigate"
+      @dblclick="launchInstance"
       @keydown.enter.prevent="navigate"
       @keydown.space.prevent="navigate"
       @dragover.prevent
@@ -37,6 +43,12 @@
           v-else
           type="avatar"
         />
+        <span v-if="isLaunching(path)" class="sidebar-instance__status">
+          <v-progress-circular indeterminate :size="22" :width="3" color="white" />
+        </span>
+        <span v-else-if="isRunning(path)" class="sidebar-instance__status sidebar-instance__status--running">
+          <v-icon :size="14" color="white">play_arrow</v-icon>
+        </span>
       </span>
     </div>
     <!-- Pin indicator -->
@@ -53,6 +65,8 @@
 <script lang="ts" setup>
 import { kInstance } from '@/composables/instance'
 import { useInstanceContextMenuItems } from '@/composables/instanceContextMenu'
+import { kInstanceLaunchCoordinator } from '@/composables/instanceLaunchCoordinator'
+import { kLaunchButton } from '@/composables/launchButton'
 import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
 import { useInstanceServerStatus } from '../composables/serverStatus'
@@ -71,6 +85,8 @@ const props = defineProps<{
 const emit = defineEmits(['arrange', 'drop-save', 'group', 'toggle-pin'])
 
 const { instances, selectedInstance } = injection(kInstances)
+const { isLaunching, isRunning, launch } = injection(kInstanceLaunchCoordinator)
+const { onClick: onLaunchClick } = injection(kLaunchButton)
 const instance = computed(() => instances.value.find((i) => i.path === props.path))
 const name = computed(() => {
   if (!instance.value) return ''
@@ -121,6 +137,14 @@ const navigate = () => {
   } else {
     select(props.path)
   }
+}
+
+const launchInstance = () => {
+  void launch(props.path, async () => {
+    select(props.path)
+    await nextTick()
+    await onLaunchClick()
+  }).catch(console.error)
 }
 
 const onDragStart = (e: DragEvent) => {
@@ -198,6 +222,26 @@ const { dragging, overState, onDragEnd, onDragEnter, onDragLeave, onDragOver, on
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
+}
+
+.sidebar-instance__status {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+
+.sidebar-instance__status--running {
+  inset: auto 2px 2px auto;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgb(var(--v-theme-surface));
+  border-radius: 50%;
+  background: rgb(var(--v-theme-success));
 }
 
 .sidebar-instance__indicator {

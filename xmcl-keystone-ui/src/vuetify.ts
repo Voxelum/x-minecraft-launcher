@@ -70,6 +70,21 @@ export const vuetify = createVuetify({
     VBtn: {
       rounded: DEFAULT_SURFACE_BUTTON_RADIUS,
     },
+    VBtnGroup: {
+      rounded: DEFAULT_SURFACE_BUTTON_RADIUS,
+      VBtn: {
+        rounded: null,
+      },
+    },
+    VBtnToggle: {
+      rounded: DEFAULT_SURFACE_BUTTON_RADIUS,
+    },
+    VTextField: {
+      rounded: DEFAULT_SURFACE_BUTTON_RADIUS,
+    },
+    VSelect: {
+      rounded: DEFAULT_SURFACE_BUTTON_RADIUS,
+    },
     VChip: {
       rounded: DEFAULT_SURFACE_BUTTON_RADIUS,
     },

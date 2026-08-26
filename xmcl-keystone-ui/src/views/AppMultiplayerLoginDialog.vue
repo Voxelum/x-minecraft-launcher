@@ -61,26 +61,27 @@
 <script lang="ts" setup>
 import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 import { kMultiplayerEntry } from '@/composables/multiplayerEntry'
-import { useUserMenuControl } from '@/composables/userMenu'
+import { kXmclAccount } from '@/composables/xmclAccount'
 import { injection } from '@/util/inject'
 import type { XmclOAuthProvider } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
-const { account, busy, error, isShown, authorizeProvider, cancel, handoff } =
+const { account, busy, error, isShown, cancel } =
   injection(kMultiplayerEntry)
-const modrinth = injection(kModrinthAuthenticatedAPI)
-const { showAndWait: showUserProfileDialogAndWait } = useUserMenuControl()
+const { authorizeMicrosoft, authorizeModrinth, authorizeProvider } = injection(kXmclAccount)
+const { authenticate: authenticateModrinth } = injection(kModrinthAuthenticatedAPI)
 
 function onModelUpdate(value: boolean) {
   if (!value) cancel()
 }
 
 function openMicrosoftLogin() {
-  void handoff(() => showUserProfileDialogAndWait('login'))
+  authorizeMicrosoft()
 }
 
-function openModrinthLogin() {
-  void handoff(() => modrinth.interact())
+async function openModrinthLogin() {
+  await authenticateModrinth()
+  await authorizeModrinth()
 }
 
 function loginWithBrowser(provider: Extract<XmclOAuthProvider, 'google' | 'discord'>) {
