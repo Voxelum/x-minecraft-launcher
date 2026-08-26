@@ -1541,6 +1541,7 @@ shared:
   skipForNow: Pular por agora
   upgrade: Atualizar
   'yes': Sim
+  delete: Deletar
 sidebar:
   pin: Fixar
   unpin: Desafixar
@@ -1728,6 +1729,46 @@ userSkin:
   urlNotEmpty: A URL da Skin não pode estar vazia
   urlNotValid: A URL da Skin é Inválida
   useSlim: Usar Modelo Slim
+  classic: Clássico
+  slim: Slim
+  saveSuccess: Skin salva no disco!
+  saveFailed: Não foi possível salvar a skin no disco
+  uploadFailed: Falha ao enviar a skin
+  libraryTitle: Guarda-roupa local
+  librarySubtitle: Escolha, organize e salve suas skins localmente
+  manage: Gerenciar
+  all: Todas
+  currentSkin: Skin atual
+  savedCount: skins salvas
+  newSkin: Nova skin
+  addNewSkin: Adicionar nova skin
+  editSkin: Editar skin
+  skinName: Nome da skin
+  skinNamePlaceholder: 'ex.: Minha skin favorita'
+  localFile: Arquivo local
+  urlOrPlayer: URL / Nome do jogador
+  urlOrPlayerPlaceholder: Digite a URL da imagem ou o nome de usuário do Minecraft
+  urlOrPlayerHint: Digite a URL direta de uma imagem PNG ou o nome de um jogador para obter a skin da Mojang
+  dropFileHere: Solte o arquivo PNG da skin aqui ou clique para procurar
+  supportedFormats: 'Formato compatível: imagem PNG 64x64 ou 64x32'
+  preview: Prévia da skin
+  previewPlaceholder: Nenhuma prévia disponível
+  saveToLibrary: Salvar no guarda-roupa
+  saveAndEquip: Salvar e equipar
+  equip: Equipar
+  equipToAccount: Equipar na conta do Minecraft
+  equipped: Equipada
+  noSkinSelected: Nenhuma skin selecionada
+  saveCurrent: Salvar atual
+  officialPreset: Predefinição oficial
+  mySkins: Minhas skins
+  presets: Predefinições
+  noSkinsFound: Nenhuma skin encontrada
+  tryAddingOne: Tente adicionar uma nova skin usando o botão acima!
+  skinUpdated: Skin atualizada!
+  skinDeleteFailed: Não foi possível remover a skin do guarda-roupa
+  edit: Editar
+  fetch: Carregar
 version:
   checkIntegrity: Verifique a integridade
   name: Versão | Versões

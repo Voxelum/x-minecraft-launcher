@@ -21,6 +21,7 @@ import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { kDownloadOptions } from '~/network'
 import { ExposeServiceKey, Lock, ServiceStateManager, Singleton, StatefulService } from '~/service'
+import { writeFile, copyFile } from 'node:fs/promises'
 import { requireObject, requireString } from '~/util/object'
 import { YggdrasilSeriveRegistry, kYggdrasilSeriveRegistry } from './YggdrasilSeriveRegistry'
 import type { UserAccountSystem } from './accountSystems/AccountSystem'
@@ -217,6 +218,28 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     requireString(options.url)
     requireString(options.path)
     const { path, url } = options
+
+    if (url.startsWith('data:')) {
+      const base64 = url.substring(url.indexOf(',') + 1)
+      await writeFile(path, Buffer.from(base64, 'base64'))
+      return
+    }
+
+    if (url.startsWith('file://')) {
+      const srcPath = url.replace('file://', '')
+      await copyFile(srcPath, path)
+      return
+    }
+
+    if (url.startsWith('http://launcher/media')) {
+      const parsed = new URL(url)
+      const srcPath = parsed.searchParams.get('path')
+      if (srcPath) {
+        await copyFile(srcPath, path)
+        return
+      }
+    }
+
     const downloadOptions = await this.app.registry.get(kDownloadOptions)
     await download({ url, destination: path, ...downloadOptions })
   }

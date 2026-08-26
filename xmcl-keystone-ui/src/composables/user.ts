@@ -27,13 +27,16 @@ export function useUserContext() {
   const { state, isValidating, error } = useState(getUserState, class extends UserState {
     override gameProfileUpdate({ profile, userId }: { userId: string; profile: (GameProfileAndTexture | GameProfile) }) {
       const userProfile = this.users[userId]
-      if (profile.id in userProfile.profiles) {
-        const instance = { textures: { SKIN: { url: '' } }, ...profile }
-        userProfile.profiles[profile.id] = instance
-      } else {
-        userProfile.profiles[profile.id] = {
-          textures: { SKIN: { url: '' } },
-          ...profile }
+      if (!userProfile) return
+      const instance = { textures: { SKIN: { url: '' } }, ...profile }
+      // Replace the entire user object so the computed chain propagates
+      // through the shallowRef (same object reference === no reactivity)
+      this.users[userId] = {
+        ...userProfile,
+        profiles: {
+          ...userProfile.profiles,
+          [profile.id]: instance,
+        },
       }
     }
 
@@ -42,14 +45,23 @@ export function useUserContext() {
     }
 
     override userProfile(user: UserProfile) {
+      // MUST replace the user object entirely (not mutate in-place).
+      // The state is a shallowRef; triggerRef(state) forces `userProfile`
+      // computed to re-run, but if it returns the same object reference,
+      // Vue won't propagate to dependents like `gameProfile`.
+      // By creating a new object, the computed returns a fresh reference
+      // and the entire reactive chain updates correctly.
       if (this.users[user.id]) {
         const current = this.users[user.id]
-        current.avatar = user.avatar
-        current.expiredAt = user.expiredAt
-        current.profiles = user.profiles
-        current.username = user.username
-        current.selectedProfile = user.selectedProfile
-        current.invalidated = user.invalidated
+        this.users[user.id] = {
+          ...current,
+          avatar: user.avatar,
+          expiredAt: user.expiredAt,
+          profiles: user.profiles,
+          username: user.username,
+          selectedProfile: user.selectedProfile,
+          invalidated: user.invalidated,
+        }
       } else {
         this.users[user.id] = user
       }

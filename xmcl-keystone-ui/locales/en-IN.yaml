@@ -2171,6 +2171,44 @@ userSkin:
   urlNotEmpty: Skin URL cannot be empty
   urlNotValid: Skin URL is Invalid
   useSlim: Use Slim Model
+  saveSuccess: Skin saved to disk!
+  saveFailed: Could not save the skin to disk
+  uploadFailed: Skin upload failed
+  libraryTitle: Local Wardrobe
+  librarySubtitle: Choose, organise and save your skins locally
+  manage: Manage
+  all: All
+  currentSkin: Current Skin
+  savedCount: saved skins
+  newSkin: New Skin
+  addNewSkin: Add New Skin
+  editSkin: Edit Skin
+  skinName: Skin Name
+  skinNamePlaceholder: e.g. My Favourite Skin
+  localFile: Local File
+  urlOrPlayer: URL / Player Name
+  urlOrPlayerPlaceholder: Enter the skin image URL or Minecraft username
+  urlOrPlayerHint: Enter a direct PNG image URL or player name to fetch the skin from Mojang
+  dropFileHere: Drop the skin PNG file here or click to browse
+  supportedFormats: 'Supported format: 64x64 or 64x32 PNG image'
+  preview: Skin Preview
+  previewPlaceholder: No skin preview available
+  saveToLibrary: Save to Wardrobe
+  saveAndEquip: Save and Equip
+  equip: Equip
+  equipToAccount: Equip to Minecraft Account
+  equipped: Equipped
+  noSkinSelected: No Skin Selected
+  saveCurrent: Save Current
+  officialPreset: Official Preset
+  mySkins: My Skins
+  presets: Presets
+  noSkinsFound: No skins found
+  tryAddingOne: Try adding a new skin with the button above!
+  skinUpdated: Skin updated!
+  skinDeleteFailed: Could not remove the skin from the wardrobe
+  edit: Edit
+  fetch: Load
 version:
   checkIntegrity: Check Integrity
   name: Version | Versions

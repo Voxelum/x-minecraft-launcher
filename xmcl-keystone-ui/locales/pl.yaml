@@ -1521,6 +1521,7 @@ shared:
   server: Serwer
   skipForNow: Pomiń na razie
   upgrade: Aktualizuj
+  delete: Usuń
 sidebar:
   pin: Przypnij
   unpin: Odepnij
@@ -1707,6 +1708,46 @@ userSkin:
   urlNotEmpty: Adres URL skórki nie może być pusty
   urlNotValid: Adres URL skórki jest nieprawidłowy
   useSlim: Użyj modelu Slim
+  classic: Klasyczny
+  slim: Szczupły
+  saveSuccess: Skórka została zapisana na dysku!
+  saveFailed: Nie udało się zapisać skórki na dysku
+  uploadFailed: Nie udało się przesłać skórki
+  libraryTitle: Lokalna garderoba
+  librarySubtitle: Wybieraj, porządkuj i zapisuj skórki lokalnie
+  manage: Zarządzaj
+  all: Wszystkie
+  currentSkin: Obecna skórka
+  savedCount: zapisanych skórek
+  newSkin: Nowa skórka
+  addNewSkin: Dodaj nową skórkę
+  editSkin: Edytuj skórkę
+  skinName: Nazwa skórki
+  skinNamePlaceholder: 'np. Moja ulubiona skórka'
+  localFile: Plik lokalny
+  urlOrPlayer: URL / Nazwa gracza
+  urlOrPlayerPlaceholder: Wpisz URL obrazu skórki lub nazwę użytkownika Minecraft
+  urlOrPlayerHint: Wpisz bezpośredni URL obrazu PNG lub nazwę gracza, aby pobrać skórkę z Mojang
+  dropFileHere: Upuść tutaj plik PNG skórki lub kliknij, aby go wybrać
+  supportedFormats: 'Obsługiwany format: obraz PNG 64x64 lub 64x32'
+  preview: Podgląd skórki
+  previewPlaceholder: Podgląd skórki jest niedostępny
+  saveToLibrary: Zapisz w garderobie
+  saveAndEquip: Zapisz i załóż
+  equip: Załóż
+  equipToAccount: Załóż na koncie Minecraft
+  equipped: Założona
+  noSkinSelected: Nie wybrano skórki
+  saveCurrent: Zapisz obecną
+  officialPreset: Oficjalne ustawienie
+  mySkins: Moje skórki
+  presets: Ustawienia
+  noSkinsFound: Nie znaleziono skórek
+  tryAddingOne: Dodaj nową skórkę za pomocą przycisku powyżej!
+  skinUpdated: Skórka została zaktualizowana!
+  skinDeleteFailed: Nie udało się usunąć skórki z garderoby
+  edit: Edytuj
+  fetch: Wczytaj
 downloadModMetadataDb:
   name: Pobierz bazę metadanych modów
 duplicateInstance:

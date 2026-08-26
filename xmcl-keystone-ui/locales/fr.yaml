@@ -1564,6 +1564,7 @@ shared:
   skipForNow: Passer pour l'instant
   upgrade: Mettre à jour
   'yes': Oui
+  delete: Supprimer
 sidebar:
   pin: Épingler
   unpin: Désépingler
@@ -1773,6 +1774,46 @@ userSkin:
   urlNotEmpty: L'URL du skin ne peut pas être vide
   urlNotValid: L'URL du skin n'est pas valide
   useSlim: Utiliser le modèle mince
+  classic: Classique
+  slim: Mince
+  saveSuccess: Skin enregistré sur le disque !
+  saveFailed: Impossible d'enregistrer le skin sur le disque
+  uploadFailed: Échec de l'envoi du skin
+  libraryTitle: Garde-robe locale
+  librarySubtitle: Choisissez, organisez et enregistrez vos skins localement
+  manage: Gérer
+  all: Tous
+  currentSkin: Skin actuel
+  savedCount: skins enregistrés
+  newSkin: Nouveau skin
+  addNewSkin: Ajouter un skin
+  editSkin: Modifier le skin
+  skinName: Nom du skin
+  skinNamePlaceholder: 'p. ex. Mon skin préféré'
+  localFile: Fichier local
+  urlOrPlayer: URL / Nom du joueur
+  urlOrPlayerPlaceholder: Saisissez l'URL de l'image ou le pseudo Minecraft
+  urlOrPlayerHint: Saisissez l'URL directe d'une image PNG ou un pseudo pour récupérer le skin auprès de Mojang
+  dropFileHere: Déposez le fichier PNG du skin ici ou cliquez pour le parcourir
+  supportedFormats: 'Format pris en charge : image PNG 64x64 ou 64x32'
+  preview: Aperçu du skin
+  previewPlaceholder: Aucun aperçu du skin disponible
+  saveToLibrary: Enregistrer dans la garde-robe
+  saveAndEquip: Enregistrer et équiper
+  equip: Équiper
+  equipToAccount: Équiper sur le compte Minecraft
+  equipped: Équipé
+  noSkinSelected: Aucun skin sélectionné
+  saveCurrent: Enregistrer l'actuel
+  officialPreset: Préréglage officiel
+  mySkins: Mes skins
+  presets: Préréglages
+  noSkinsFound: Aucun skin trouvé
+  tryAddingOne: Ajoutez un nouveau skin avec le bouton ci-dessus !
+  skinUpdated: Skin mis à jour !
+  skinDeleteFailed: Impossible de retirer le skin de la garde-robe
+  edit: Modifier
+  fetch: Charger
 version:
   checkIntegrity: Vérifier l'intégrité
   name: |-

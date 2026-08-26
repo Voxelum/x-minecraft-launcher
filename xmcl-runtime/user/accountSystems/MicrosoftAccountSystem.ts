@@ -123,6 +123,9 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     if (typeof options.cape !== 'undefined') {
       if (options.cape === '') {
         await this.mojangClient.hideCape(token, signal)
+        if (userProfile.profiles[gameProfile.id]?.textures) {
+          userProfile.profiles[gameProfile.id].textures.CAPE = undefined
+        }
       } else {
         const target = gameProfile.capes?.find(c => c.url === options.cape)
         if (target) {
@@ -133,13 +136,16 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       }
     }
     if (typeof options.skin === 'object') {
-      if (options.skin === null) {
+      if (options.skin === null || !options.skin.url) {
         await this.mojangClient.resetSkin(token, signal)
+        if (userProfile.profiles[gameProfile.id]?.textures) {
+          userProfile.profiles[gameProfile.id].textures.SKIN = { url: '' }
+        }
       } else {
         try {
           newProfile = await this.mojangClient.setSkin(
             `${gameProfile.name}.png`,
-            await normalizeSkinData(options.skin?.url),
+            await normalizeSkinData(options.skin.url),
             options.skin?.slim ? 'slim' : 'classic',
             token,
             signal,
@@ -153,12 +159,8 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     }
 
     if (newProfile) {
-      // Mojang's PUT /minecraft/profile/skins occasionally returns 200 with an
-      // empty `skins` array (observed in telemetry: ~7 users / 54 events on
-      // 0.56.7). Guard against `skins[0]`/`capes[0]` being undefined instead of
-      // throwing a generic TypeError that leaks to App Insights.
-      const skin = newProfile.skins?.[0]
-      const cape = newProfile.capes?.[0]
+      const skin = newProfile.skins?.find((s: any) => s.state === 'ACTIVE') || newProfile.skins?.[0]
+      const cape = newProfile.capes?.find((c: any) => c.state === 'ACTIVE')
       // @ts-ignore
       userProfile.profiles[gameProfile.id] = {
         ...gameProfile,
@@ -175,7 +177,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
             ? {
               url: cape.url,
             }
-            : undefined,
+            : (typeof options.cape !== 'undefined' && options.cape === '' ? undefined : gameProfile.textures?.CAPE),
         },
       }
     }
@@ -352,7 +354,8 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
         }, 'Failed to get Microsoft account game profile', { cause: e })
       })
       this.logger.log('Successfully get game profile')
-      const skin: Skin | undefined = gameProfileResponse.skins?.[0]
+      const skin: Skin | undefined = gameProfileResponse.skins?.find(s => s.state === 'ACTIVE') || gameProfileResponse.skins?.[0]
+      const activeCape = gameProfileResponse.capes?.find(c => c.state === 'ACTIVE')
       const gameProfiles: GameProfileAndTexture[] = [{
         ...gameProfileResponse,
         id: gameProfileResponse.id,
@@ -362,9 +365,9 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
             url: skin?.url,
             metadata: { model: skin?.variant === 'CLASSIC' ? 'steve' : 'slim' },
           },
-          CAPE: gameProfileResponse.capes && gameProfileResponse.capes.length > 0
+          CAPE: activeCape
             ? {
-              url: gameProfileResponse.capes[0].url,
+              url: activeCape.url,
             }
             : undefined,
         },

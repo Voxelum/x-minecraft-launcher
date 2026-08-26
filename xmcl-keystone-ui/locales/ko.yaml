@@ -1748,6 +1748,44 @@ userSkin:
   useSlim: 슬림 모델 사용
   classic: 클래식
   slim: 슬림
+  saveSuccess: 스킨을 디스크에 저장했습니다!
+  saveFailed: 스킨을 디스크에 저장하지 못했습니다
+  uploadFailed: 스킨 업로드에 실패했습니다
+  libraryTitle: 로컬 옷장
+  librarySubtitle: 스킨을 선택하고 정리하여 로컬에 저장하세요
+  manage: 관리
+  all: 모두
+  currentSkin: 현재 스킨
+  savedCount: 저장된 스킨
+  newSkin: 새 스킨
+  addNewSkin: 새 스킨 추가
+  editSkin: 스킨 편집
+  skinName: 스킨 이름
+  skinNamePlaceholder: '예: 내가 좋아하는 스킨'
+  localFile: 로컬 파일
+  urlOrPlayer: URL / 플레이어 이름
+  urlOrPlayerPlaceholder: 스킨 이미지 URL 또는 Minecraft 사용자 이름 입력
+  urlOrPlayerHint: Mojang에서 스킨을 가져오려면 PNG 이미지 직접 URL 또는 플레이어 이름을 입력하세요
+  dropFileHere: 스킨 PNG 파일을 여기에 놓거나 클릭하여 찾아보세요
+  supportedFormats: '지원 형식: 64x64 또는 64x32 PNG 이미지'
+  preview: 스킨 미리 보기
+  previewPlaceholder: 스킨 미리 보기를 사용할 수 없습니다
+  saveToLibrary: 옷장에 저장
+  saveAndEquip: 저장하고 착용
+  equip: 착용
+  equipToAccount: Minecraft 계정에 착용
+  equipped: 착용됨
+  noSkinSelected: 선택한 스킨 없음
+  saveCurrent: 현재 스킨 저장
+  officialPreset: 공식 프리셋
+  mySkins: 내 스킨
+  presets: 프리셋
+  noSkinsFound: 스킨을 찾을 수 없습니다
+  tryAddingOne: 위 버튼으로 새 스킨을 추가해 보세요!
+  skinUpdated: 스킨을 업데이트했습니다!
+  skinDeleteFailed: 스킨을 옷장에서 삭제하지 못했습니다
+  edit: 편집
+  fetch: 불러오기
 version:
   checkIntegrity: 무결성을 확인하십시오
   name: 버전

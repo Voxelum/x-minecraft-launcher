@@ -1874,6 +1874,44 @@ userSkin:
   urlNotEmpty: त्वचा यूआरएल खाली नहीं हो सकता
   urlNotValid: त्वचा यूआरएल अमान्य है
   useSlim: स्लिम मॉडल का उपयोग करें
+  saveSuccess: स्किन डिस्क पर सहेजी गई!
+  saveFailed: स्किन को डिस्क पर सहेजा नहीं जा सका
+  uploadFailed: स्किन अपलोड नहीं हो सकी
+  libraryTitle: स्थानीय अलमारी
+  librarySubtitle: अपनी स्किन चुनें, व्यवस्थित करें और स्थानीय रूप से सहेजें
+  manage: प्रबंधित करें
+  all: सभी
+  currentSkin: वर्तमान स्किन
+  savedCount: सहेजी गई स्किन
+  newSkin: नई स्किन
+  addNewSkin: नई स्किन जोड़ें
+  editSkin: स्किन संपादित करें
+  skinName: स्किन का नाम
+  skinNamePlaceholder: 'जैसे: मेरी पसंदीदा स्किन'
+  localFile: स्थानीय फ़ाइल
+  urlOrPlayer: URL / खिलाड़ी का नाम
+  urlOrPlayerPlaceholder: स्किन की छवि का URL या Minecraft उपयोगकर्ता नाम दर्ज करें
+  urlOrPlayerHint: Mojang से स्किन लाने के लिए सीधे PNG छवि का URL या खिलाड़ी का नाम दर्ज करें
+  dropFileHere: स्किन की PNG फ़ाइल यहाँ छोड़ें या चुनने के लिए क्लिक करें
+  supportedFormats: 'समर्थित प्रारूप: 64x64 या 64x32 PNG छवि'
+  preview: स्किन पूर्वावलोकन
+  previewPlaceholder: स्किन का पूर्वावलोकन उपलब्ध नहीं है
+  saveToLibrary: अलमारी में सहेजें
+  saveAndEquip: सहेजें और पहनें
+  equip: पहनें
+  equipToAccount: Minecraft खाते पर पहनें
+  equipped: पहनी हुई
+  noSkinSelected: कोई स्किन नहीं चुनी गई
+  saveCurrent: वर्तमान स्किन सहेजें
+  officialPreset: आधिकारिक प्रीसेट
+  mySkins: मेरी स्किन
+  presets: प्रीसेट
+  noSkinsFound: कोई स्किन नहीं मिली
+  tryAddingOne: ऊपर दिए गए बटन से एक नई स्किन जोड़कर देखें!
+  skinUpdated: स्किन अपडेट हो गई!
+  skinDeleteFailed: स्किन को अलमारी से हटाया नहीं जा सका
+  edit: संपादित करें
+  fetch: लोड करें
 version:
   checkIntegrity: अखंडता की जाँच करें
   name: संस्करण | संस्करण

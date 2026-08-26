@@ -1651,6 +1651,7 @@ shared:
   skipForNow: Überspringen Sie es vorerst
   upgrade: Aktualisieren
   'yes': Ja
+  delete: Löschen
 sidebar:
   pin: Anheften
   unpin: Lösen
@@ -1873,6 +1874,46 @@ userSkin:
   urlNotEmpty: Die URL des Skins darf nicht leer sein
   urlNotValid: Ungültige URL auf dem Skin
   useSlim: Verwenden Sie ein dünnes Modell
+  classic: Klassisch
+  slim: Schlank
+  saveSuccess: Skin wurde auf der Festplatte gespeichert!
+  saveFailed: Skin konnte nicht auf der Festplatte gespeichert werden
+  uploadFailed: Hochladen des Skins fehlgeschlagen
+  libraryTitle: Lokaler Kleiderschrank
+  librarySubtitle: Wähle, verwalte und speichere deine Skins lokal
+  manage: Verwalten
+  all: Alle
+  currentSkin: Aktueller Skin
+  savedCount: gespeicherte Skins
+  newSkin: Neuer Skin
+  addNewSkin: Neuen Skin hinzufügen
+  editSkin: Skin bearbeiten
+  skinName: Name des Skins
+  skinNamePlaceholder: 'z. B. Mein Lieblingsskin'
+  localFile: Lokale Datei
+  urlOrPlayer: URL / Spielername
+  urlOrPlayerPlaceholder: URL des Skinbilds oder Minecraft-Benutzernamen eingeben
+  urlOrPlayerHint: Direkte URL eines PNG-Bilds oder Spielernamen eingeben, um den Skin von Mojang abzurufen
+  dropFileHere: PNG-Datei des Skins hier ablegen oder zum Auswählen klicken
+  supportedFormats: 'Unterstütztes Format: PNG-Bild mit 64x64 oder 64x32 Pixeln'
+  preview: Skin-Vorschau
+  previewPlaceholder: Keine Skin-Vorschau verfügbar
+  saveToLibrary: Im Kleiderschrank speichern
+  saveAndEquip: Speichern und ausrüsten
+  equip: Ausrüsten
+  equipToAccount: Im Minecraft-Konto ausrüsten
+  equipped: Ausgerüstet
+  noSkinSelected: Kein Skin ausgewählt
+  saveCurrent: Aktuellen speichern
+  officialPreset: Offizielle Vorlage
+  mySkins: Meine Skins
+  presets: Vorlagen
+  noSkinsFound: Keine Skins gefunden
+  tryAddingOne: Füge mit der Schaltfläche oben einen neuen Skin hinzu!
+  skinUpdated: Skin wurde aktualisiert!
+  skinDeleteFailed: Skin konnte nicht aus dem Kleiderschrank entfernt werden
+  edit: Bearbeiten
+  fetch: Laden
 version:
   checkIntegrity: Integrität überprüfen
   name: Version | Versionen

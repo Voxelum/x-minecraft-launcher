@@ -1508,6 +1508,7 @@ shared:
   skipForNow: SKIP FUR NAO
   upgrade: UPGRAYDD
   'yes': YAS
+  delete: DELET
 sidebar:
   pin: STIK IT
   unpin: UNSTIK IT
@@ -1685,6 +1686,46 @@ userSkin:
   urlNotEmpty: SKIN URL CANNOT BE EMPTY
   urlNotValid: SKIN URL IS INVALID
   useSlim: USE SLIM MODEL
+  classic: CLASSIK
+  slim: SLIM
+  saveSuccess: SKIN SAVD TO DISK!
+  saveFailed: CUD NOT SAV SKIN TO DISK
+  uploadFailed: SKIN UPLOAD FAILD
+  libraryTitle: LOCAL CLOZET
+  librarySubtitle: CHOOZ, MANEJ AN SAV UR SKINZ LOCALLY
+  manage: MANEJ
+  all: ALL
+  currentSkin: CURRENT SKIN
+  savedCount: SAVD SKINZ
+  newSkin: NEW SKIN
+  addNewSkin: ADD NEW SKIN
+  editSkin: EDIT SKIN
+  skinName: SKIN NAEM
+  skinNamePlaceholder: 'LIKE: MAH FAVRIT SKIN'
+  localFile: LOCAL FILE
+  urlOrPlayer: URL / PLAYR NAEM
+  urlOrPlayerPlaceholder: TYPE SKIN IMAGE URL OR MINECRAFT YOOZRNAME
+  urlOrPlayerHint: TYPE DIRECT PNG URL OR PLAYR NAEM TO GET SKIN FROM MOJANG
+  dropFileHere: DROP SKIN PNG HERE OR KLIK TO BROWZ
+  supportedFormats: 'FORMATZ: 64x64 OR 64x32 PNG IMAGE'
+  preview: SKIN PREVYU
+  previewPlaceholder: NO SKIN PREVYU, SRY
+  saveToLibrary: SAV TO CLOZET
+  saveAndEquip: SAV AN WEAR
+  equip: WEAR
+  equipToAccount: WEAR ON MINECRAFT AKOWNT
+  equipped: IZ WEARIN
+  noSkinSelected: NO SKIN CHOOZD
+  saveCurrent: SAV CURRENT
+  officialPreset: OFFISHUL PRESET
+  mySkins: MAH SKINZ
+  presets: PRESETZ
+  noSkinsFound: NO SKINZ FOUND
+  tryAddingOne: TRY ADDIN NEW SKIN WIF BUTTON UP THAR!
+  skinUpdated: SKIN UPDATED!
+  skinDeleteFailed: CUD NOT GET SKIN OUTTA CLOZET
+  edit: EDIT
+  fetch: LOAD
 version:
   checkIntegrity: CHECK INTEGRITY
   name: VERSHUN | VERSHUNS

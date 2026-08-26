@@ -1873,6 +1873,44 @@ userSkin:
   urlNotEmpty: স্কিন URL খালি হতে পারে না
   urlNotValid: স্কিন URL বৈধ নয়
   useSlim: স্লিম মডেল ব্যবহার করুন
+  saveSuccess: স্কিনটি ডিস্কে সংরক্ষিত হয়েছে!
+  saveFailed: স্কিনটি ডিস্কে সংরক্ষণ করা যায়নি
+  uploadFailed: স্কিন আপলোড ব্যর্থ হয়েছে
+  libraryTitle: স্থানীয় পোশাকের আলমারি
+  librarySubtitle: আপনার স্কিন বেছে নিন, সাজিয়ে রাখুন এবং স্থানীয়ভাবে সংরক্ষণ করুন
+  manage: পরিচালনা করুন
+  all: সব
+  currentSkin: বর্তমান স্কিন
+  savedCount: সংরক্ষিত স্কিন
+  newSkin: নতুন স্কিন
+  addNewSkin: নতুন স্কিন যোগ করুন
+  editSkin: স্কিন সম্পাদনা করুন
+  skinName: স্কিনের নাম
+  skinNamePlaceholder: 'যেমন: আমার প্রিয় স্কিন'
+  localFile: স্থানীয় ফাইল
+  urlOrPlayer: URL / খেলোয়াড়ের নাম
+  urlOrPlayerPlaceholder: স্কিন ছবির URL বা Minecraft ব্যবহারকারীর নাম লিখুন
+  urlOrPlayerHint: Mojang থেকে স্কিন আনতে সরাসরি PNG ছবির URL বা খেলোয়াড়ের নাম লিখুন
+  dropFileHere: স্কিনের PNG ফাইলটি এখানে ফেলুন অথবা খুঁজতে ক্লিক করুন
+  supportedFormats: 'সমর্থিত বিন্যাস: 64x64 বা 64x32 PNG ছবি'
+  preview: স্কিনের পূর্বরূপ
+  previewPlaceholder: স্কিনের কোনো পূর্বরূপ নেই
+  saveToLibrary: আলমারিতে সংরক্ষণ করুন
+  saveAndEquip: সংরক্ষণ করে পরুন
+  equip: পরুন
+  equipToAccount: Minecraft অ্যাকাউন্টে পরুন
+  equipped: পরানো হয়েছে
+  noSkinSelected: কোনো স্কিন নির্বাচন করা হয়নি
+  saveCurrent: বর্তমানটি সংরক্ষণ করুন
+  officialPreset: আনুষ্ঠানিক পূর্বনির্ধারিত স্কিন
+  mySkins: আমার স্কিন
+  presets: পূর্বনির্ধারিত স্কিন
+  noSkinsFound: কোনো স্কিন পাওয়া যায়নি
+  tryAddingOne: উপরের বোতাম দিয়ে একটি নতুন স্কিন যোগ করে দেখুন!
+  skinUpdated: স্কিনটি হালনাগাদ করা হয়েছে!
+  skinDeleteFailed: স্কিনটি আলমারি থেকে সরানো যায়নি
+  edit: সম্পাদনা করুন
+  fetch: লোড করুন
 version:
   checkIntegrity: অখণ্ডতা যাচাই করুন
   name: সংস্করণ | সংস্করণসমূহ

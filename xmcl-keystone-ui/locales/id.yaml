@@ -1874,6 +1874,44 @@ userSkin:
   urlNotEmpty: URL Skin tidak boleh kosong
   urlNotValid: URL Skin tidak valid
   useSlim: Gunakan Model Slim
+  saveSuccess: Skin disimpan ke disk!
+  saveFailed: Gagal menyimpan skin ke disk
+  uploadFailed: Gagal mengunggah skin
+  libraryTitle: Lemari Lokal
+  librarySubtitle: Pilih, kelola, dan simpan skin Anda secara lokal
+  manage: Kelola
+  all: Semua
+  currentSkin: Skin Saat Ini
+  savedCount: skin tersimpan
+  newSkin: Skin Baru
+  addNewSkin: Tambah Skin Baru
+  editSkin: Edit Skin
+  skinName: Nama Skin
+  skinNamePlaceholder: 'mis. Skin Favorit Saya'
+  localFile: Berkas Lokal
+  urlOrPlayer: URL / Nama Pemain
+  urlOrPlayerPlaceholder: Masukkan URL gambar skin atau nama pengguna Minecraft
+  urlOrPlayerHint: Masukkan URL langsung gambar PNG atau nama pemain untuk mengambil skin dari Mojang
+  dropFileHere: Letakkan berkas PNG skin di sini atau klik untuk memilih
+  supportedFormats: 'Format yang didukung: gambar PNG 64x64 atau 64x32'
+  preview: Pratinjau Skin
+  previewPlaceholder: Pratinjau skin tidak tersedia
+  saveToLibrary: Simpan ke Lemari
+  saveAndEquip: Simpan dan Kenakan
+  equip: Kenakan
+  equipToAccount: Kenakan di Akun Minecraft
+  equipped: Dikenakan
+  noSkinSelected: Tidak Ada Skin yang Dipilih
+  saveCurrent: Simpan yang Sekarang
+  officialPreset: Preset Resmi
+  mySkins: Skin Saya
+  presets: Preset
+  noSkinsFound: Skin tidak ditemukan
+  tryAddingOne: Coba tambahkan skin baru dengan tombol di atas!
+  skinUpdated: Skin diperbarui!
+  skinDeleteFailed: Gagal menghapus skin dari lemari
+  edit: Edit
+  fetch: Muat
 version:
   checkIntegrity: Periksa Integritas
   name: Versi | Versi

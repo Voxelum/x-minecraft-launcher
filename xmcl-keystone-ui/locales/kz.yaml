@@ -1526,6 +1526,7 @@ shared:
   skipForNow: Қазір өткізіп жіберу
   upgrade: Жаңарту
   'yes': Иә
+  delete: Жою
 sidebar:
   pin: Бекіту
   unpin: Бекітуді алып тастау
@@ -1714,6 +1715,46 @@ userSkin:
   urlNotEmpty: Тері URL-і бос болмауы керек
   urlNotValid: Тері URL-і жарамсыз
   useSlim: Жіңішке моделді қолдану
+  classic: Классикалық
+  slim: Жіңішке
+  saveSuccess: Скин дискіге сақталды!
+  saveFailed: Скинді дискіге сақтау мүмкін болмады
+  uploadFailed: Скинді жүктеп салу сәтсіз аяқталды
+  libraryTitle: Жергілікті гардероб
+  librarySubtitle: Скиндеріңізді таңдап, реттеп, жергілікті түрде сақтаңыз
+  manage: Басқару
+  all: Барлығы
+  currentSkin: Ағымдағы скин
+  savedCount: сақталған скин
+  newSkin: Жаңа скин
+  addNewSkin: Жаңа скин қосу
+  editSkin: Скинді өңдеу
+  skinName: Скин атауы
+  skinNamePlaceholder: 'мысалы, Менің сүйікті скинім'
+  localFile: Жергілікті файл
+  urlOrPlayer: URL / Ойыншы аты
+  urlOrPlayerPlaceholder: Скин суретінің URL мекенжайын немесе Minecraft пайдаланушы атын енгізіңіз
+  urlOrPlayerHint: Mojang-тан скин алу үшін PNG суретінің тікелей URL мекенжайын немесе ойыншы атын енгізіңіз
+  dropFileHere: Скиннің PNG файлын осында тастаңыз немесе таңдау үшін басыңыз
+  supportedFormats: 'Қолдау көрсетілетін пішім: 64x64 немесе 64x32 PNG суреті'
+  preview: Скинді алдын ала қарау
+  previewPlaceholder: Скинді алдын ала қарау қолжетімсіз
+  saveToLibrary: Гардеробқа сақтау
+  saveAndEquip: Сақтау және кию
+  equip: Кию
+  equipToAccount: Minecraft тіркелгісіне кию
+  equipped: Киілген
+  noSkinSelected: Скин таңдалмаған
+  saveCurrent: Ағымдағысын сақтау
+  officialPreset: Ресми дайын үлгі
+  mySkins: Менің скиндерім
+  presets: Дайын үлгілер
+  noSkinsFound: Скиндер табылмады
+  tryAddingOne: Жоғарыдағы батырмамен жаңа скин қосып көріңіз!
+  skinUpdated: Скин жаңартылды!
+  skinDeleteFailed: Скинді гардеробтан жою мүмкін болмады
+  edit: Өңдеу
+  fetch: Жүктеу
 version:
   checkIntegrity: Тұтастығын тексеру
   name: Нұсқа | Нұсқалар

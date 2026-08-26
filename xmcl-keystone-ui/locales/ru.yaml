@@ -1577,6 +1577,7 @@ shared:
   skipForNow: Пропустить сейчас
   upgrade: Обновить
   'yes': Да
+  delete: Удалить
 sidebar:
   pin: Закрепить
   unpin: Открепить
@@ -1767,6 +1768,46 @@ userSkin:
   urlNotEmpty: URL-адрес скина не может быть пустым
   urlNotValid: URL-адрес скина неверный
   useSlim: Использовать тонкие руки
+  classic: Классическая
+  slim: Тонкая
+  saveSuccess: Скин сохранён на диск!
+  saveFailed: Не удалось сохранить скин на диск
+  uploadFailed: Не удалось загрузить скин
+  libraryTitle: Локальный гардероб
+  librarySubtitle: Выбирайте, упорядочивайте и храните свои скины локально
+  manage: Управление
+  all: Все
+  currentSkin: Текущий скин
+  savedCount: сохранённых скинов
+  newSkin: Новый скин
+  addNewSkin: Добавить новый скин
+  editSkin: Изменить скин
+  skinName: Название скина
+  skinNamePlaceholder: 'например, Мой любимый скин'
+  localFile: Локальный файл
+  urlOrPlayer: URL / Имя игрока
+  urlOrPlayerPlaceholder: Введите URL изображения или имя пользователя Minecraft
+  urlOrPlayerHint: Введите прямой URL изображения PNG или имя игрока, чтобы получить скин от Mojang
+  dropFileHere: Перетащите сюда PNG-файл скина или нажмите, чтобы выбрать его
+  supportedFormats: 'Поддерживаемый формат: изображение PNG 64x64 или 64x32'
+  preview: Предпросмотр скина
+  previewPlaceholder: Предпросмотр скина недоступен
+  saveToLibrary: Сохранить в гардеробе
+  saveAndEquip: Сохранить и надеть
+  equip: Надеть
+  equipToAccount: Надеть в учётной записи Minecraft
+  equipped: Надет
+  noSkinSelected: Скин не выбран
+  saveCurrent: Сохранить текущий
+  officialPreset: Официальный набор
+  mySkins: Мои скины
+  presets: Наборы
+  noSkinsFound: Скины не найдены
+  tryAddingOne: Добавьте новый скин с помощью кнопки выше!
+  skinUpdated: Скин обновлён!
+  skinDeleteFailed: Не удалось удалить скин из гардероба
+  edit: Изменить
+  fetch: Загрузить
 version:
   checkIntegrity: Проверьте целостность
   name: Версия | Версии

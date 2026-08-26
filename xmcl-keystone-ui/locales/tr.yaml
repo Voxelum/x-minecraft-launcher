@@ -1756,6 +1756,44 @@ userSkin:
   useSlim: İnce Model Kullan
   classic: Klasik
   slim: İnce
+  saveSuccess: Cilt diske kaydedildi!
+  saveFailed: Cilt diske kaydedilemedi
+  uploadFailed: Cilt yüklenemedi
+  libraryTitle: Yerel Gardırop
+  librarySubtitle: Ciltlerinizi seçin, düzenleyin ve yerel olarak kaydedin
+  manage: Yönet
+  all: Tümü
+  currentSkin: Geçerli Cilt
+  savedCount: kayıtlı cilt
+  newSkin: Yeni Cilt
+  addNewSkin: Yeni Cilt Ekle
+  editSkin: Cildi Düzenle
+  skinName: Cilt Adı
+  skinNamePlaceholder: 'ör. En Sevdiğim Cilt'
+  localFile: Yerel Dosya
+  urlOrPlayer: URL / Oyuncu Adı
+  urlOrPlayerPlaceholder: Cilt görselinin URL'sini veya Minecraft kullanıcı adını girin
+  urlOrPlayerHint: Cildi Mojang'dan almak için doğrudan PNG görseli URL'si veya oyuncu adı girin
+  dropFileHere: Cildin PNG dosyasını buraya bırakın veya göz atmak için tıklayın
+  supportedFormats: 'Desteklenen biçim: 64x64 veya 64x32 PNG görseli'
+  preview: Cilt Önizlemesi
+  previewPlaceholder: Cilt önizlemesi yok
+  saveToLibrary: Gardıroba Kaydet
+  saveAndEquip: Kaydet ve Giy
+  equip: Giy
+  equipToAccount: Minecraft Hesabında Giy
+  equipped: Giyildi
+  noSkinSelected: Cilt Seçilmedi
+  saveCurrent: Geçerliyi Kaydet
+  officialPreset: Resmî Ön Ayar
+  mySkins: Ciltlerim
+  presets: Ön Ayarlar
+  noSkinsFound: Cilt bulunamadı
+  tryAddingOne: Yukarıdaki düğmeyle yeni bir cilt eklemeyi deneyin!
+  skinUpdated: Cilt güncellendi!
+  skinDeleteFailed: Cilt gardıroptan kaldırılamadı
+  edit: Düzenle
+  fetch: Yükle
 version:
   checkIntegrity: Bütünlüğü Kontrol Et
   name: Sürüm | Sürümler

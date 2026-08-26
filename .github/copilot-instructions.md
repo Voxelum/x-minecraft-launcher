@@ -8,13 +8,15 @@
 
 For UI behavior or Electron/main/preload/runtime integration, first test in the
 actual launcher started by the repository's `dev:main` and `dev:renderer`
-tasks. Connect Chrome DevTools to the active Electron debugging port (`9222` by
-default; VS Code launches may use another port), drive the complete workflow,
-and inspect renderer plus main-process logs.
+tasks. Load [`chrome-devtools-cli`](skills/chrome-devtools-cli/SKILL.md) and use
+the official `chrome-devtools` CLI, never Chrome DevTools MCP tools, to connect
+to the active Electron debugging port (`9222` by default; VS Code launches may
+use another port), drive the complete workflow, and inspect renderer plus
+main-process logs.
 
 Renderer changes normally hot-reload. After an Electron main/runtime change,
 confirm `xmcl-electron-app/dist/index.js` was rebuilt, restart only this
-repository's Electron app, reconnect DevTools, and rerun the same workflow.
+repository's Electron app, reconnect the CLI, and rerun the same workflow.
 Preserve user state and clean up temporary profiles, services, remote
 directories, credentials, and keys. See [`AGENTS.md`](../AGENTS.md) for the
 full procedure.

@@ -2089,6 +2089,44 @@ userSkin:
   urlNotEmpty: La URL de la skin no puede estar vacía
   urlNotValid: La URL de la skin no es válida
   useSlim: Usar modelo delgado
+  saveSuccess: ¡Skin guardada en el disco!
+  saveFailed: No se pudo guardar la skin en el disco
+  uploadFailed: Error al subir la skin
+  libraryTitle: Armario local
+  librarySubtitle: Elige, organiza y guarda tus skins localmente
+  manage: Gestionar
+  all: Todas
+  currentSkin: Skin actual
+  savedCount: skins guardadas
+  newSkin: Nueva skin
+  addNewSkin: Añadir nueva skin
+  editSkin: Editar skin
+  skinName: Nombre de la skin
+  skinNamePlaceholder: 'p. ej., Mi skin favorita'
+  localFile: Archivo local
+  urlOrPlayer: URL / Nombre del jugador
+  urlOrPlayerPlaceholder: Introduce la URL de la imagen o el nombre de usuario de Minecraft
+  urlOrPlayerHint: Introduce una URL directa de una imagen PNG o un jugador para obtener su skin de Mojang
+  dropFileHere: Suelta aquí el archivo PNG de la skin o haz clic para buscarlo
+  supportedFormats: 'Formato compatible: imagen PNG de 64x64 o 64x32'
+  preview: Vista previa de la skin
+  previewPlaceholder: No hay vista previa disponible
+  saveToLibrary: Guardar en el armario
+  saveAndEquip: Guardar y equipar
+  equip: Equipar
+  equipToAccount: Equipar en la cuenta de Minecraft
+  equipped: Equipada
+  noSkinSelected: Ninguna skin seleccionada
+  saveCurrent: Guardar la actual
+  officialPreset: Preajuste oficial
+  mySkins: Mis skins
+  presets: Preajustes
+  noSkinsFound: No se encontraron skins
+  tryAddingOne: ¡Prueba a añadir una skin nueva con el botón de arriba!
+  skinUpdated: ¡Skin actualizada!
+  skinDeleteFailed: No se pudo eliminar la skin del armario
+  edit: Editar
+  fetch: Cargar
 version:
   checkIntegrity: Verificar la integridad
   name: Versión | Versiones
