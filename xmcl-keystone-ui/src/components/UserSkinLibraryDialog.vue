@@ -15,26 +15,31 @@
           </div>
           <v-chip
             size="small"
-            :color="selectedSkin?.slim ? 'purple' : 'blue'"
+            :color="previewSlim ? 'purple' : 'blue'"
             variant="tonal"
             class="font-medium"
           >
-            {{ selectedSkin?.slim ? t('userSkin.slim') : t('userSkin.classic') }}
+            {{ previewSlim ? t('userSkin.slim') : t('userSkin.classic') }}
           </v-chip>
         </div>
 
         <!-- 3D Skin Viewer -->
         <div class="w-full flex-1 flex items-center justify-center my-2 relative">
           <SkinView
-            v-if="selectedSkin"
+            v-if="previewUrl"
             :paused="false"
             :height="330"
-            :skin="selectedSkin.url"
-            :slim="selectedSkin.slim"
+            :skin="previewUrl"
+            :slim="previewSlim"
             :cape="currentCape"
             :name="''"
             animation="idle"
+            @model="onModelDetected"
           />
+          <div v-else class="flex flex-col items-center gap-3 text-center opacity-40">
+            <v-icon size="56">person</v-icon>
+            <span class="text-sm font-medium">{{ t('userSkin.previewPlaceholder') }}</span>
+          </div>
         </div>
 
         <!-- Selected Skin Title & Controls -->
@@ -57,7 +62,7 @@
               size="large"
               block
               class="rounded-xl font-semibold"
-              :disabled="!selectedSkin || isCurrentlyEquipped || isUploading || !canUploadSkin"
+              :disabled="isEditorOpen || !selectedSkin || isCurrentlyEquipped || isUploading || !canUploadSkin"
               :loading="isUploading"
               @click="equipSelectedSkin()"
             >
@@ -65,12 +70,13 @@
               {{ isCurrentlyEquipped ? t('userSkin.equipped') : t('userSkin.equipToAccount') }}
             </v-btn>
 
-            <div class="flex gap-2">
+            <div class="flex items-center gap-2">
               <v-btn
                 variant="tonal"
                 size="default"
                 class="flex-1 rounded-xl"
-                :disabled="!canSaveCurrentToLibrary"
+                height="40"
+                :disabled="isEditorOpen || !canSaveCurrentToLibrary"
                 @click="saveCurrentToLibrary"
               >
                 <v-icon start size="16">bookmark_add</v-icon>
@@ -82,8 +88,10 @@
                 size="default"
                 icon
                 class="rounded-xl"
+                width="40"
+                height="40"
                 :title="t('userSkin.saveTitle')"
-                :disabled="!selectedSkin"
+                :disabled="isEditorOpen || !selectedSkin"
                 @click="exportSelectedSkin"
               >
                 <v-icon size="18">download</v-icon>
@@ -93,8 +101,151 @@
         </div>
       </div>
 
-      <!-- Right Panel: Skin Library Grid -->
+      <!-- Right Panel -->
       <div class="flex-1 flex flex-col p-6 overflow-hidden bg-surface">
+        <template v-if="isEditorOpen">
+          <div class="flex items-center justify-between gap-3 mb-5">
+            <div class="flex items-center gap-3 min-w-0">
+              <v-btn icon size="small" variant="text" @click="closeEditor">
+                <v-icon>arrow_back</v-icon>
+              </v-btn>
+              <div class="min-w-0">
+                <h2 class="text-xl font-bold truncate">
+                  {{ editingSkin ? t('userSkin.editSkin') : t('userSkin.addNewSkin') }}
+                </h2>
+                <div class="text-xs opacity-50 mt-0.5">
+                  {{ t('userSkin.librarySubtitle') }}
+                </div>
+              </div>
+            </div>
+
+            <v-btn icon size="small" variant="text" @click="$emit('update:modelValue', false)">
+              <v-icon>close</v-icon>
+            </v-btn>
+          </div>
+
+          <div class="flex-1 min-h-0 flex flex-col justify-between">
+            <div class="flex flex-col gap-5 overflow-y-auto pr-1">
+              <div>
+                <div class="text-xs font-bold uppercase opacity-70 mb-2">
+                  {{ t('userSkin.skinName') }}
+                </div>
+                <v-text-field
+                  v-model="draftName"
+                  :placeholder="t('userSkin.skinNamePlaceholder')"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details
+                />
+              </div>
+
+              <div>
+                <v-btn-toggle
+                  v-model="draftSlim"
+                  mandatory
+                  density="comfortable"
+                  class="w-full surface-panel"
+                  rounded="lg"
+                >
+                  <v-btn :value="false" class="flex-1 font-semibold">
+                    <v-icon size="18" class="mr-2">accessibility_new</v-icon>
+                    {{ t('userSkin.classic') }}
+                  </v-btn>
+                  <v-btn :value="true" class="flex-1 font-semibold">
+                    <v-icon size="18" class="mr-2">accessibility</v-icon>
+                    {{ t('userSkin.slim') }}
+                  </v-btn>
+                </v-btn-toggle>
+              </div>
+
+              <div v-if="!editingSkin">
+                <v-tabs v-model="importTab" density="compact" color="primary" class="mb-3">
+                  <v-tab value="file" class="font-semibold text-sm">
+                    <v-icon size="19" class="mr-2">folder_open</v-icon>
+                    {{ t('userSkin.localFile') }}
+                  </v-tab>
+                  <v-tab value="url" class="font-semibold text-sm">
+                    <v-icon size="19" class="mr-2">link</v-icon>
+                    {{ t('userSkin.urlOrPlayer') }}
+                  </v-tab>
+                </v-tabs>
+
+                <v-window v-model="importTab">
+                  <v-window-item value="file">
+                    <div
+                      class="file-drop-zone min-h-[205px] border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:border-primary hover:bg-primary/5"
+                      :class="draftUrl ? 'border-primary/60 bg-primary/5' : 'border-[rgba(var(--v-theme-on-surface),0.15)]'"
+                      @click="pickFile"
+                      @drop.prevent="onDropFile"
+                      @dragover.prevent
+                    >
+                      <v-icon size="46" color="primary" class="mb-3">upload_file</v-icon>
+                      <div class="text-base font-bold">{{ t('userSkin.dropFileHere') }}</div>
+                      <div class="text-xs opacity-50 mt-1.5">{{ t('userSkin.supportedFormats') }}</div>
+                    </div>
+                  </v-window-item>
+
+                  <v-window-item value="url">
+                    <div class="min-h-[205px] flex flex-col justify-center gap-3">
+                      <div class="flex gap-2.5 items-center">
+                        <v-text-field
+                          v-model="urlInput"
+                          :placeholder="t('userSkin.urlOrPlayerPlaceholder')"
+                          variant="outlined"
+                          density="comfortable"
+                          hide-details
+                          class="flex-1"
+                          :loading="isFetchingUrl"
+                          @keydown.enter.prevent="fetchFromUrl"
+                        />
+                        <v-btn
+                          color="primary"
+                          variant="tonal"
+                          height="48"
+                          class="rounded-lg px-5 font-semibold flex-shrink-0"
+                          :loading="isFetchingUrl"
+                          :disabled="!urlInput"
+                          @click="fetchFromUrl"
+                        >
+                          <v-icon start size="18">download</v-icon>
+                          {{ t('userSkin.fetch') }}
+                        </v-btn>
+                      </div>
+                      <div class="text-xs opacity-60 px-1">
+                        {{ t('userSkin.urlOrPlayerHint') }}
+                      </div>
+                    </div>
+                  </v-window-item>
+                </v-window>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 mt-5 pt-5 border-t border-[rgba(var(--v-theme-on-surface),0.08)]">
+              <v-btn variant="text" class="rounded-lg px-5" @click="closeEditor">
+                {{ t('shared.cancel') }}
+              </v-btn>
+              <v-btn
+                color="primary"
+                class="rounded-lg px-6 font-semibold"
+                :disabled="!canSaveDraft"
+                @click="saveDraft(false)"
+              >
+                {{ editingSkin ? t('shared.save') : t('userSkin.saveToLibrary') }}
+              </v-btn>
+              <v-btn
+                v-if="!editingSkin"
+                color="success"
+                class="rounded-lg px-6 font-semibold"
+                :disabled="!canSaveDraft"
+                @click="saveDraft(true)"
+              >
+                {{ t('userSkin.saveAndEquip') }}
+              </v-btn>
+            </div>
+          </div>
+        </template>
+
+        <template v-else>
         <!-- Top Toolbar -->
         <div class="flex items-center justify-between gap-3 mb-5">
           <div>
@@ -112,7 +263,7 @@
               color="primary"
               size="default"
               class="rounded-xl font-medium"
-              @click="openAddDialog"
+              @click="openAddEditor"
             >
               <v-icon start size="18">add</v-icon>
               {{ t('userSkin.newSkin') }}
@@ -176,22 +327,16 @@
             <div class="text-xs opacity-60 mt-1 max-w-[280px]">{{ t('userSkin.tryAddingOne') }}</div>
           </div>
         </div>
+        </template>
       </div>
     </v-card>
-
-    <!-- Add/Edit Dialog -->
-    <UserSkinAddDialog
-      v-model="isAddDialogOpen"
-      :edit-item="editingSkin"
-      @saved="onSkinSaved"
-    />
   </v-dialog>
 </template>
 
 <script lang="ts" setup>
 import SkinView from '@/components/SkinView.vue'
-import UserSkinAddDialog from '@/components/UserSkinAddDialog.vue'
 import UserSkinCard from '@/components/UserSkinCard.vue'
+import { getDropFilePaths } from '@/composables/dropHandler'
 import { useLocaleError } from '@/composables/error'
 import { useNotifier } from '@/composables/notifier'
 import { SkinLibraryItem, useUserSkinLibrary } from '@/composables/userSkinLibrary'
@@ -211,18 +356,28 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { notify } = useNotifier()
 const toLocaleError = useLocaleError()
-const { customSkins, allSkins, equippedSkinIds, addSkin, removeSkin, updateSkin, setEquippedSkin } = useUserSkinLibrary()
+const { customSkins, allSkins, equippedSkinIds, addSkin, removeSkin, updateSkin, setEquippedSkin, fetchSkinFromUsername } = useUserSkinLibrary()
+const { showOpenDialog } = windowController
 
 const skinModel = inject(UserSkinModel)
 const canUploadSkin = computed(() => skinModel?.canUploadSkin.value ?? false)
 
 const searchQuery = ref('')
 const selectedSkin = ref<SkinLibraryItem | null>(null)
-const isAddDialogOpen = ref(false)
+const isEditorOpen = ref(false)
 const editingSkin = ref<SkinLibraryItem | null>(null)
 const isUploading = ref(false)
+const draftName = ref('')
+const draftUrl = ref('')
+const draftSlim = ref(false)
+const importTab = ref('file')
+const urlInput = ref('')
+const isFetchingUrl = ref(false)
 
 const currentCape = computed(() => skinModel?.cape.value)
+const previewUrl = computed(() => isEditorOpen.value ? draftUrl.value : selectedSkin.value?.url || '')
+const previewSlim = computed(() => isEditorOpen.value ? draftSlim.value : selectedSkin.value?.slim || false)
+const canSaveDraft = computed(() => !!draftUrl.value && !!draftName.value.trim())
 const activeProfileSkinUrl = computed(() => (props.profile?.skins ? props.profile.skins.find(s => s.state === 'ACTIVE')?.url : undefined) || props.profile?.textures?.SKIN?.url || '')
 const accountKey = computed(() => `${props.user.id}:${props.profile.id}`)
 const activeProfileSlim = computed(() => {
@@ -265,6 +420,8 @@ const canSaveCurrentToLibrary = computed(() => {
 
 watch(() => props.modelValue, (open) => {
   if (open) {
+    isEditorOpen.value = false
+    editingSkin.value = null
     const active = allSkins.value.find(s => isItemEquipped(s))
     if (active) {
       selectedSkin.value = active
@@ -282,14 +439,75 @@ watch(() => props.modelValue, (open) => {
   }
 })
 
-function openAddDialog() {
+function openAddEditor() {
   editingSkin.value = null
-  isAddDialogOpen.value = true
+  draftName.value = ''
+  draftUrl.value = ''
+  draftSlim.value = false
+  urlInput.value = ''
+  importTab.value = 'file'
+  isEditorOpen.value = true
 }
 
 function onEditItem(item: SkinLibraryItem) {
   editingSkin.value = item
-  isAddDialogOpen.value = true
+  draftName.value = item.name
+  draftUrl.value = item.url
+  draftSlim.value = item.slim
+  isEditorOpen.value = true
+}
+
+function closeEditor() {
+  isEditorOpen.value = false
+  editingSkin.value = null
+}
+
+function onModelDetected(modelType: 'default' | 'slim') {
+  if (isEditorOpen.value && !editingSkin.value && !draftUrl.value.includes('http://launcher/media')) {
+    draftSlim.value = modelType === 'slim'
+  }
+}
+
+async function pickFile() {
+  const { filePaths } = await showOpenDialog({
+    title: t('userSkin.importFile'),
+    filters: [{ extensions: ['png'], name: 'PNG Images' }],
+  })
+  if (filePaths?.[0]) setFileSkin(filePaths[0])
+}
+
+function onDropFile(event: DragEvent) {
+  if (!event.dataTransfer) return
+  const [filePath] = getDropFilePaths(event.dataTransfer.files)
+  if (filePath?.toLowerCase().endsWith('.png')) setFileSkin(filePath)
+}
+
+function setFileSkin(filePath: string) {
+  draftUrl.value = `http://launcher/media?path=${filePath}`
+  if (!draftName.value) {
+    draftName.value = filePath.split(/[/\\]/).pop()?.replace(/\.png$/i, '') || 'Skin'
+  }
+}
+
+async function fetchFromUrl() {
+  const input = urlInput.value.trim()
+  if (!input) return
+  isFetchingUrl.value = true
+  try {
+    if (input.startsWith('http://') || input.startsWith('https://')) {
+      draftUrl.value = input
+      if (!draftName.value) draftName.value = 'Web Skin'
+    } else {
+      const resolved = await fetchSkinFromUsername(input)
+      draftUrl.value = resolved.url
+      draftSlim.value = resolved.slim
+      if (!draftName.value) draftName.value = input
+    }
+  } catch (e) {
+    notify({ level: 'error', title: t('shared.failed'), body: toLocaleError(e) })
+  } finally {
+    isFetchingUrl.value = false
+  }
 }
 
 async function onDeleteItem(item: SkinLibraryItem) {
@@ -304,19 +522,22 @@ async function onDeleteItem(item: SkinLibraryItem) {
   }
 }
 
-async function onSkinSaved(item: SkinLibraryItem, equipImmediately: boolean) {
+async function saveDraft(equipImmediately: boolean) {
+  if (!canSaveDraft.value) return
   try {
-    if (item.id) {
-      await updateSkin(item.id, { name: item.name, slim: item.slim })
+    if (editingSkin.value) {
+      const updated = await updateSkin(editingSkin.value.id, { name: draftName.value.trim(), slim: draftSlim.value })
+      selectedSkin.value = updated
       notify({ level: 'success', title: t('userSkin.skinUpdated') })
     } else {
-      const created = await addSkin(item)
+      const created = await addSkin({ name: draftName.value.trim(), url: draftUrl.value, slim: draftSlim.value })
       selectedSkin.value = created
       notify({ level: 'success', title: t('userSkin.skinAdded') })
       if (equipImmediately) {
         await equipSelectedSkin(created)
       }
     }
+    closeEditor()
   } catch (e) {
     notify({ level: 'error', title: t('userSkin.saveFailed'), body: toLocaleError(e) })
   }
@@ -391,5 +612,9 @@ function onEquipItem(item: SkinLibraryItem) {
 .skin-library-dialog {
   background: rgba(var(--v-theme-surface), 0.95);
   backdrop-filter: blur(20px);
+}
+
+.file-drop-zone {
+  background: rgba(var(--v-theme-surface), 0.5);
 }
 </style>
