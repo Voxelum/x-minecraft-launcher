@@ -17,7 +17,7 @@
       </div>
 
       <!-- Skin Library Button -->
-      <div v-if="isMicrosoftAccount" class="skin-row border-t px-3 py-2"
+      <div v-if="canUploadSkin" class="skin-row border-t px-3 py-2"
         style="border-color: rgba(var(--v-theme-on-surface), 0.06);"
       >
         <v-btn
@@ -285,7 +285,7 @@
 
     <!-- Master Skin Library Dialog -->
     <UserSkinLibraryDialog
-      v-if="isMicrosoftAccount"
+      v-if="canUploadSkin"
       v-model="isSkinLibraryOpen"
       :user="userProfile"
       :profile="gameProfile"
@@ -305,18 +305,16 @@ import { useDialog } from '@/composables/dialog'
 import { kMinecraftFriends } from '@/composables/minecraftFriends'
 import { kUserContext } from '@/composables/user'
 import { UserSkinModel, UserSkinRenderPaused, useUserSkin } from '@/composables/userSkin'
-import { SkinLibraryItem, useUserSkinLibrary } from '@/composables/userSkinLibrary'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { MinecraftFriendsServiceKey, AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
+import { MinecraftFriendsServiceKey } from '@xmcl/runtime-api'
 import type { MinecraftFriend } from '@xmcl/runtime-api'
 import { useId } from 'vue'
 
 const { t } = useI18n()
 
 const { userProfile, gameProfile } = injection(kUserContext)
-const isMicrosoftAccount = computed(() => userProfile.value.authority === AUTHORITY_MICROSOFT)
 const {
   data: friendsData,
   loading: friendsLoading,
@@ -336,21 +334,9 @@ const skinModel = useUserSkin(
   computed(() => userProfile.value),
 )
 provide(UserSkinModel, skinModel)
+const { canUploadSkin } = skinModel
 
-const { allSkins } = useUserSkinLibrary()
 const isSkinLibraryOpen = ref(false)
-const skinScroller = ref<HTMLElement | null>(null)
-
-function selectSkin(s: SkinLibraryItem) {
-  skinModel.skin.value = s.url
-  skinModel.slim.value = s.slim
-}
-
-function onSkinWheel(e: WheelEvent) {
-  if (skinScroller.value) {
-    skinScroller.value.scrollLeft += e.deltaY
-  }
-}
 
 const capes = computed(() => gameProfile.value?.capes ?? [])
 const capeScroller = ref<HTMLElement | null>(null)

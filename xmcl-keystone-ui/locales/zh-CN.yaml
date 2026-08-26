@@ -2197,6 +2197,47 @@ userSkin:
   useSlim: 使用细胳膊模型
   classic: 经典
   slim: 纤细
+  saveSuccess: 皮肤已保存到本地！
+  saveFailed: 无法将皮肤保存到本地
+  uploadSuccess: 皮肤已应用到你的账户！
+  libraryTitle: 本地衣橱
+  librarySubtitle: 在本地选择、管理和保存你的皮肤
+  manage: 管理
+  all: 全部
+  currentSkin: 当前皮肤
+  savedCount: 个已保存皮肤
+  newSkin: 新皮肤
+  addNewSkin: 添加新皮肤
+  editSkin: 编辑皮肤
+  skinName: 皮肤名称
+  skinNamePlaceholder: 例如：我最喜欢的皮肤
+  localFile: 本地文件
+  urlOrPlayer: URL / 玩家名称
+  urlOrPlayerPlaceholder: 输入皮肤图片 URL 或 Minecraft 用户名
+  urlOrPlayerHint: 输入 PNG 图片直链或玩家名称以从 Mojang 获取皮肤
+  dropFileHere: 将皮肤 PNG 文件拖到此处，或点击浏览
+  supportedFormats: '支持的格式：64x64 或 64x32 PNG 图片'
+  preview: 皮肤预览
+  previewPlaceholder: 暂无皮肤预览
+  saveToLibrary: 保存到衣橱
+  saveAndEquip: 保存并使用
+  equip: 使用
+  equipToAccount: 应用到 Minecraft 账户
+  currentlyActive: 当前正在使用
+  equipped: 已使用
+  noSkinSelected: 未选择皮肤
+  saveCurrent: 保存当前皮肤
+  officialPreset: 官方预设
+  mySkins: 我的皮肤
+  presets: 预设
+  noSkinsFound: 未找到皮肤
+  tryAddingOne: 尝试使用上方按钮添加新皮肤吧！
+  skinAdded: 皮肤已添加到衣橱！
+  skinUpdated: 皮肤已更新！
+  skinDeleted: 皮肤已从衣橱移除！
+  skinDeleteFailed: 无法从衣橱移除皮肤
+  edit: 编辑
+  fetch: 加载
 version:
   checkIntegrity: 检查完整性
   name: 版本 | 版本

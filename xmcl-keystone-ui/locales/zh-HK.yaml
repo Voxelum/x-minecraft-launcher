@@ -1963,6 +1963,48 @@ userSkin:
   urlNotEmpty: 皮膚 URL 唔能夠為空
   urlNotValid: 請輸入有效嘅皮膚 URL
   useSlim: 使用細胳膊模型
+  saveSuccess: 皮膚已儲存到本機！
+  saveFailed: 無法將皮膚儲存到本機
+  uploadSuccess: 皮膚已套用到你嘅帳戶！
+  uploadFailed: 皮膚上傳失敗
+  libraryTitle: 本機衣櫥
+  librarySubtitle: 喺本機揀選、管理同儲存你嘅皮膚
+  manage: 管理
+  all: 全部
+  currentSkin: 目前皮膚
+  savedCount: 個已儲存皮膚
+  newSkin: 新皮膚
+  addNewSkin: 新增皮膚
+  editSkin: 編輯皮膚
+  skinName: 皮膚名稱
+  skinNamePlaceholder: 例如：我最鍾意嘅皮膚
+  localFile: 本機檔案
+  urlOrPlayer: URL / 玩家名稱
+  urlOrPlayerPlaceholder: 輸入皮膚圖片 URL 或 Minecraft 用戶名稱
+  urlOrPlayerHint: 輸入 PNG 圖片直接連結或玩家名稱，以從 Mojang 取得皮膚
+  dropFileHere: 將皮膚 PNG 檔案拖到呢度，或者撳一下瀏覽
+  supportedFormats: '支援格式：64x64 或 64x32 PNG 圖片'
+  preview: 皮膚預覽
+  previewPlaceholder: 冇可用嘅皮膚預覽
+  saveToLibrary: 儲存到衣櫥
+  saveAndEquip: 儲存並套用
+  equip: 套用
+  equipToAccount: 套用到 Minecraft 帳戶
+  currentlyActive: 目前使用中
+  equipped: 已套用
+  noSkinSelected: 未揀選皮膚
+  saveCurrent: 儲存目前皮膚
+  officialPreset: 官方預設
+  mySkins: 我嘅皮膚
+  presets: 預設
+  noSkinsFound: 搵唔到皮膚
+  tryAddingOne: 試下用上面嘅按鈕新增皮膚啦！
+  skinAdded: 皮膚已加入衣櫥！
+  skinUpdated: 皮膚已更新！
+  skinDeleted: 皮膚已從衣櫥移除！
+  skinDeleteFailed: 無法從衣櫥移除皮膚
+  edit: 編輯
+  fetch: 載入
 version:
   checkIntegrity: 檢查完整性
   name: 版本 | 版本

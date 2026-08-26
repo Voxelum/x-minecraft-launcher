@@ -1872,6 +1872,48 @@ userSkin:
   urlNotEmpty: त्वचा URL रिक्तं न भवेत्
   urlNotValid: त्वचा URL अमान्यम् अस्ति
   useSlim: सूक्ष्मरूपं प्रयुङ्क्त
+  saveSuccess: त्वचा डिस्के रक्षिता!
+  saveFailed: त्वचां डिस्के रक्षितुं न शक्तम्
+  uploadSuccess: त्वचा भवतः लेखाय प्रयुक्ता!
+  uploadFailed: त्वचायाः आरोपणं विफलम्
+  libraryTitle: स्थानीयवेषागारः
+  librarySubtitle: स्वत्वचाः चिनोतु व्यवस्थापयतु स्थानीयतया रक्षतु च
+  manage: व्यवस्थापयतु
+  all: सर्वाः
+  currentSkin: वर्तमानत्वचा
+  savedCount: रक्षिताः त्वचाः
+  newSkin: नवीना त्वचा
+  addNewSkin: नवीनां त्वचां योजयतु
+  editSkin: त्वचां सम्पादयतु
+  skinName: त्वचायाः नाम
+  skinNamePlaceholder: 'उदाहरणम्: मम प्रियत्वचा'
+  localFile: स्थानीयसञ्चिका
+  urlOrPlayer: URL / क्रीडकस्य नाम
+  urlOrPlayerPlaceholder: त्वचाचित्रस्य URL अथवा Minecraft-उपयोक्तृनाम लिखतु
+  urlOrPlayerHint: Mojang तः त्वचां प्राप्तुं PNG-चित्रस्य प्रत्यक्षं URL अथवा क्रीडकनाम लिखतु
+  dropFileHere: त्वचायाः PNG-सञ्चिकाम् अत्र पातयतु अथवा चयनाय नुदतु
+  supportedFormats: 'समर्थितं प्रारूपम्: 64x64 अथवा 64x32 PNG-चित्रम्'
+  preview: त्वचापूर्वदर्शनम्
+  previewPlaceholder: त्वचापूर्वदर्शनं नोपलभ्यते
+  saveToLibrary: वेषागारे रक्षतु
+  saveAndEquip: रक्षतु धारयतु च
+  equip: धारयतु
+  equipToAccount: Minecraft-लेखे धारयतु
+  currentlyActive: अधुना सक्रिया
+  equipped: धारिता
+  noSkinSelected: कापि त्वचा न चिता
+  saveCurrent: वर्तमानां रक्षतु
+  officialPreset: आधिकारिकपूर्वनिर्धारणम्
+  mySkins: मम त्वचाः
+  presets: पूर्वनिर्धारणानि
+  noSkinsFound: त्वचाः न प्राप्ताः
+  tryAddingOne: उपरिस्थया कुञ्चिकया नवीनां त्वचां योजयतु!
+  skinAdded: त्वचा वेषागारे योजिता!
+  skinUpdated: त्वचा अद्यतनीकृता!
+  skinDeleted: त्वचा वेषागारात् निष्कासिता!
+  skinDeleteFailed: त्वचां वेषागारात् निष्कासयितुं न शक्तम्
+  edit: सम्पादयतु
+  fetch: आनयतु
 version:
   checkIntegrity: अखण्डतां परीक्षताम्
   name: संस्करणम् | संस्करणाणि

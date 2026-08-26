@@ -1739,6 +1739,50 @@ userSkin:
   urlNotEmpty: スキンのURLは空白にできません
   urlNotValid: スキンのURLが無効です
   useSlim: スリムなスキンを使用
+  classic: クラシック
+  slim: スリム
+  saveSuccess: スキンをディスクに保存しました！
+  saveFailed: スキンをディスクに保存できませんでした
+  uploadSuccess: スキンをアカウントに適用しました！
+  uploadFailed: スキンのアップロードに失敗しました
+  libraryTitle: ローカルクローゼット
+  librarySubtitle: スキンを選び、整理してローカルに保存します
+  manage: 管理
+  all: すべて
+  currentSkin: 現在のスキン
+  savedCount: 保存済みスキン
+  newSkin: 新しいスキン
+  addNewSkin: 新しいスキンを追加
+  editSkin: スキンを編集
+  skinName: スキン名
+  skinNamePlaceholder: '例: お気に入りのスキン'
+  localFile: ローカルファイル
+  urlOrPlayer: URL / プレイヤー名
+  urlOrPlayerPlaceholder: スキン画像のURLまたはMinecraftユーザー名を入力
+  urlOrPlayerHint: PNG画像の直接URLまたはプレイヤー名を入力してMojangからスキンを取得します
+  dropFileHere: スキンのPNGファイルをここにドロップするか、クリックして選択
+  supportedFormats: '対応形式: 64x64または64x32のPNG画像'
+  preview: スキンプレビュー
+  previewPlaceholder: スキンプレビューはありません
+  saveToLibrary: クローゼットに保存
+  saveAndEquip: 保存して装備
+  equip: 装備
+  equipToAccount: Minecraftアカウントに装備
+  currentlyActive: 現在使用中
+  equipped: 装備済み
+  noSkinSelected: スキンが選択されていません
+  saveCurrent: 現在のスキンを保存
+  officialPreset: 公式プリセット
+  mySkins: マイスキン
+  presets: プリセット
+  noSkinsFound: スキンが見つかりません
+  tryAddingOne: 上のボタンから新しいスキンを追加してみましょう！
+  skinAdded: スキンをクローゼットに追加しました！
+  skinUpdated: スキンを更新しました！
+  skinDeleted: スキンをクローゼットから削除しました！
+  skinDeleteFailed: スキンをクローゼットから削除できませんでした
+  edit: 編集
+  fetch: 読み込む
 version:
   checkIntegrity: 整合性を確認してください
   name: バージョン | バージョン

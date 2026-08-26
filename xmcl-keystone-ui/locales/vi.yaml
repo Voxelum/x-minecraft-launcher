@@ -1874,6 +1874,48 @@ userSkin:
   urlNotEmpty: URL skin không được để trống
   urlNotValid: URL skin không hợp lệ
   useSlim: Sử dụng mô hình thon gọn (Slim)
+  saveSuccess: Đã lưu skin vào ổ đĩa!
+  saveFailed: Không thể lưu skin vào ổ đĩa
+  uploadSuccess: Đã áp dụng skin cho tài khoản của bạn!
+  uploadFailed: Tải skin lên thất bại
+  libraryTitle: Tủ đồ cục bộ
+  librarySubtitle: Chọn, sắp xếp và lưu các skin của bạn trên máy
+  manage: Quản lý
+  all: Tất cả
+  currentSkin: Skin hiện tại
+  savedCount: skin đã lưu
+  newSkin: Skin mới
+  addNewSkin: Thêm skin mới
+  editSkin: Chỉnh sửa skin
+  skinName: Tên skin
+  skinNamePlaceholder: 'ví dụ: Skin yêu thích của tôi'
+  localFile: Tệp cục bộ
+  urlOrPlayer: URL / Tên người chơi
+  urlOrPlayerPlaceholder: Nhập URL hình ảnh skin hoặc tên người dùng Minecraft
+  urlOrPlayerHint: Nhập URL trực tiếp của hình ảnh PNG hoặc tên người chơi để lấy skin từ Mojang
+  dropFileHere: Thả tệp PNG của skin vào đây hoặc nhấp để duyệt
+  supportedFormats: 'Định dạng được hỗ trợ: hình ảnh PNG 64x64 hoặc 64x32'
+  preview: Xem trước skin
+  previewPlaceholder: Không có bản xem trước skin
+  saveToLibrary: Lưu vào tủ đồ
+  saveAndEquip: Lưu và trang bị
+  equip: Trang bị
+  equipToAccount: Trang bị cho tài khoản Minecraft
+  currentlyActive: Đang hoạt động
+  equipped: Đã trang bị
+  noSkinSelected: Chưa chọn skin
+  saveCurrent: Lưu skin hiện tại
+  officialPreset: Mẫu chính thức
+  mySkins: Skin của tôi
+  presets: Mẫu có sẵn
+  noSkinsFound: Không tìm thấy skin
+  tryAddingOne: Hãy thử thêm skin mới bằng nút ở trên!
+  skinAdded: Đã thêm skin vào tủ đồ!
+  skinUpdated: Đã cập nhật skin!
+  skinDeleted: Đã xóa skin khỏi tủ đồ!
+  skinDeleteFailed: Không thể xóa skin khỏi tủ đồ
+  edit: Chỉnh sửa
+  fetch: Tải
 version:
   checkIntegrity: Kiểm tra tính toàn vẹn
   name: Phiên bản | Các phiên bản

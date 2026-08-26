@@ -1874,6 +1874,48 @@ userSkin:
   urlNotEmpty: தோல் URL காலியாக இருக்கக்கூடாது
   urlNotValid: தோல் URL செல்லுபடியாகாதது
   useSlim: மெலிதான மாதிரியைப் பயன்படுத்தவும்
+  saveSuccess: ஸ்கின் வட்டில் சேமிக்கப்பட்டது!
+  saveFailed: ஸ்கின்னை வட்டில் சேமிக்க முடியவில்லை
+  uploadSuccess: ஸ்கின் உங்கள் கணக்கில் பயன்படுத்தப்பட்டது!
+  uploadFailed: ஸ்கின் பதிவேற்றம் தோல்வியடைந்தது
+  libraryTitle: உள்ளூர் அலமாரி
+  librarySubtitle: உங்கள் ஸ்கின்களைத் தேர்ந்தெடுத்து, ஒழுங்குபடுத்தி, உள்ளூரில் சேமிக்கவும்
+  manage: நிர்வகி
+  all: அனைத்தும்
+  currentSkin: தற்போதைய ஸ்கின்
+  savedCount: சேமித்த ஸ்கின்கள்
+  newSkin: புதிய ஸ்கின்
+  addNewSkin: புதிய ஸ்கின்னைச் சேர்
+  editSkin: ஸ்கின்னைத் திருத்து
+  skinName: ஸ்கின் பெயர்
+  skinNamePlaceholder: 'எ.கா. எனக்குப் பிடித்த ஸ்கின்'
+  localFile: உள்ளூர் கோப்பு
+  urlOrPlayer: URL / விளையாட்டாளர் பெயர்
+  urlOrPlayerPlaceholder: ஸ்கின் பட URL அல்லது Minecraft பயனர்பெயரை உள்ளிடவும்
+  urlOrPlayerHint: Mojang இலிருந்து ஸ்கின்னைப் பெற நேரடி PNG பட URL அல்லது விளையாட்டாளர் பெயரை உள்ளிடவும்
+  dropFileHere: ஸ்கின் PNG கோப்பை இங்கே விடவும் அல்லது தேர்ந்தெடுக்கக் கிளிக் செய்யவும்
+  supportedFormats: 'ஆதரிக்கப்படும் வடிவம்: 64x64 அல்லது 64x32 PNG படம்'
+  preview: ஸ்கின் முன்னோட்டம்
+  previewPlaceholder: ஸ்கின் முன்னோட்டம் கிடைக்கவில்லை
+  saveToLibrary: அலமாரியில் சேமி
+  saveAndEquip: சேமித்து அணிவி
+  equip: அணிவி
+  equipToAccount: Minecraft கணக்கில் அணிவி
+  currentlyActive: தற்போது செயலில் உள்ளது
+  equipped: அணிவிக்கப்பட்டது
+  noSkinSelected: ஸ்கின் தேர்ந்தெடுக்கப்படவில்லை
+  saveCurrent: தற்போதையதைச் சேமி
+  officialPreset: அதிகாரப்பூர்வ முன்தேர்வு
+  mySkins: என் ஸ்கின்கள்
+  presets: முன்தேர்வுகள்
+  noSkinsFound: ஸ்கின்கள் எதுவும் கிடைக்கவில்லை
+  tryAddingOne: மேலுள்ள பொத்தானைக் கொண்டு புதிய ஸ்கின்னைச் சேர்த்துப் பாருங்கள்!
+  skinAdded: ஸ்கின் அலமாரியில் சேர்க்கப்பட்டது!
+  skinUpdated: ஸ்கின் புதுப்பிக்கப்பட்டது!
+  skinDeleted: ஸ்கின் அலமாரியிலிருந்து அகற்றப்பட்டது!
+  skinDeleteFailed: ஸ்கின்னை அலமாரியிலிருந்து அகற்ற முடியவில்லை
+  edit: திருத்து
+  fetch: ஏற்று
 version:
   checkIntegrity: ஒருமைப்பாட்டைச் சரிபார்க்கவும்
   name: பதிப்பு | பதிப்புகள்

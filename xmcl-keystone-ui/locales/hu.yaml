@@ -1774,6 +1774,50 @@ userSkin:
   urlNotEmpty: Kinézet URL nem lehet üres
   urlNotValid: Kinézet URL érvénytelen
   useSlim: Vékony modell használata
+  classic: Klasszikus
+  slim: Vékony
+  saveSuccess: A kinézet lemezre mentve!
+  saveFailed: Nem sikerült lemezre menteni a kinézetet
+  uploadSuccess: A kinézet beállítva a fiókodhoz!
+  uploadFailed: Nem sikerült feltölteni a kinézetet
+  libraryTitle: Helyi ruhatár
+  librarySubtitle: Válaszd ki, kezeld és mentsd helyben a kinézeteidet
+  manage: Kezelés
+  all: Mind
+  currentSkin: Jelenlegi kinézet
+  savedCount: mentett kinézet
+  newSkin: Új kinézet
+  addNewSkin: Új kinézet hozzáadása
+  editSkin: Kinézet szerkesztése
+  skinName: Kinézet neve
+  skinNamePlaceholder: 'pl. A kedvenc kinézetem'
+  localFile: Helyi fájl
+  urlOrPlayer: URL / Játékosnév
+  urlOrPlayerPlaceholder: Add meg a kép URL-jét vagy a Minecraft-felhasználónevet
+  urlOrPlayerHint: Adj meg egy közvetlen PNG-kép URL-t vagy játékosnevet a kinézet Mojangtól való lekéréséhez
+  dropFileHere: Húzd ide a kinézet PNG-fájlját, vagy kattints a tallózáshoz
+  supportedFormats: 'Támogatott formátum: 64x64 vagy 64x32 méretű PNG-kép'
+  preview: Kinézet előnézete
+  previewPlaceholder: Nem érhető el előnézet
+  saveToLibrary: Mentés a ruhatárba
+  saveAndEquip: Mentés és használat
+  equip: Használat
+  equipToAccount: Használat a Minecraft-fiókban
+  currentlyActive: Jelenleg aktív
+  equipped: Használatban
+  noSkinSelected: Nincs kiválasztott kinézet
+  saveCurrent: Jelenlegi mentése
+  officialPreset: Hivatalos készlet
+  mySkins: Saját kinézetek
+  presets: Készletek
+  noSkinsFound: Nem találhatók kinézetek
+  tryAddingOne: Adj hozzá egy új kinézetet a fenti gombbal!
+  skinAdded: A kinézet bekerült a ruhatárba!
+  skinUpdated: A kinézet frissítve!
+  skinDeleted: A kinézet eltávolítva a ruhatárból!
+  skinDeleteFailed: Nem sikerült eltávolítani a kinézetet a ruhatárból
+  edit: Szerkesztés
+  fetch: Betöltés
 version:
   checkIntegrity: Ellenőrizze az integritást
   name: Verzió | Verzió

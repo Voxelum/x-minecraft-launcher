@@ -1723,6 +1723,50 @@ userSkin:
   urlNotEmpty: Skin URL mag niet leeg zijn
   urlNotValid: Skin URL is ongeldig
   useSlim: Gebruik Dun Model
+  classic: Klassiek
+  slim: Slank
+  saveSuccess: Skin opgeslagen op schijf!
+  saveFailed: Skin kon niet op schijf worden opgeslagen
+  uploadSuccess: Skin toegepast op je account!
+  uploadFailed: Uploaden van skin mislukt
+  libraryTitle: Lokale kledingkast
+  librarySubtitle: Kies, beheer en bewaar je skins lokaal
+  manage: Beheren
+  all: Alles
+  currentSkin: Huidige skin
+  savedCount: opgeslagen skins
+  newSkin: Nieuwe skin
+  addNewSkin: Nieuwe skin toevoegen
+  editSkin: Skin bewerken
+  skinName: Naam van skin
+  skinNamePlaceholder: 'bijv. Mijn favoriete skin'
+  localFile: Lokaal bestand
+  urlOrPlayer: URL / Spelersnaam
+  urlOrPlayerPlaceholder: Voer de URL van de skinafbeelding of Minecraft-gebruikersnaam in
+  urlOrPlayerHint: Voer een directe URL van een PNG-afbeelding of spelersnaam in om de skin bij Mojang op te halen
+  dropFileHere: Zet het PNG-bestand van de skin hier neer of klik om te bladeren
+  supportedFormats: 'Ondersteunde indeling: PNG-afbeelding van 64x64 of 64x32'
+  preview: Skinvoorbeeld
+  previewPlaceholder: Geen skinvoorbeeld beschikbaar
+  saveToLibrary: Opslaan in kledingkast
+  saveAndEquip: Opslaan en aantrekken
+  equip: Aantrekken
+  equipToAccount: Aantrekken op Minecraft-account
+  currentlyActive: Momenteel actief
+  equipped: Aangetrokken
+  noSkinSelected: Geen skin geselecteerd
+  saveCurrent: Huidige opslaan
+  officialPreset: Officiële voorinstelling
+  mySkins: Mijn skins
+  presets: Voorinstellingen
+  noSkinsFound: Geen skins gevonden
+  tryAddingOne: Voeg een nieuwe skin toe met de knop hierboven!
+  skinAdded: Skin toegevoegd aan de kledingkast!
+  skinUpdated: Skin bijgewerkt!
+  skinDeleted: Skin verwijderd uit de kledingkast!
+  skinDeleteFailed: Skin kon niet uit de kledingkast worden verwijderd
+  edit: Bewerken
+  fetch: Laden
 version:
   checkIntegrity: Integriteit Controleren
   name: Versie | Versies

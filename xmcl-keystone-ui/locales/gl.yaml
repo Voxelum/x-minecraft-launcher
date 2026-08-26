@@ -1720,6 +1720,50 @@ userSkin:
   urlNotEmpty: Skin URL mag niet leeg zijn
   urlNotValid: Skin URL is Ongeldig
   useSlim: Gebruik Slim Model
+  classic: Clásico
+  slim: Delgado
+  saveSuccess: Gardouse a skin no disco!
+  saveFailed: Non foi posible gardar a skin no disco
+  uploadSuccess: Aplicouse a skin á túa conta!
+  uploadFailed: Produciuse un erro ao subir a skin
+  libraryTitle: Armario local
+  librarySubtitle: Escolle, organiza e garda as túas skins localmente
+  manage: Xestionar
+  all: Todas
+  currentSkin: Skin actual
+  savedCount: skins gardadas
+  newSkin: Nova skin
+  addNewSkin: Engadir unha skin
+  editSkin: Editar a skin
+  skinName: Nome da skin
+  skinNamePlaceholder: 'p. ex. A miña skin favorita'
+  localFile: Ficheiro local
+  urlOrPlayer: URL / Nome do xogador
+  urlOrPlayerPlaceholder: Introduce o URL da imaxe ou o nome de usuario de Minecraft
+  urlOrPlayerHint: Introduce o URL directo dunha imaxe PNG ou un xogador para obter a skin de Mojang
+  dropFileHere: Solta aquí o ficheiro PNG da skin ou preme para buscalo
+  supportedFormats: 'Formato compatible: imaxe PNG de 64x64 ou 64x32'
+  preview: Vista previa da skin
+  previewPlaceholder: Non hai ningunha vista previa dispoñible
+  saveToLibrary: Gardar no armario
+  saveAndEquip: Gardar e equipar
+  equip: Equipar
+  equipToAccount: Equipar na conta de Minecraft
+  currentlyActive: Activa actualmente
+  equipped: Equipada
+  noSkinSelected: Non se seleccionou ningunha skin
+  saveCurrent: Gardar a actual
+  officialPreset: Predefinición oficial
+  mySkins: As miñas skins
+  presets: Predefinicións
+  noSkinsFound: Non se atoparon skins
+  tryAddingOne: Proba a engadir unha skin co botón de arriba!
+  skinAdded: Engadiuse a skin ao armario!
+  skinUpdated: Actualizouse a skin!
+  skinDeleted: Retirouse a skin do armario!
+  skinDeleteFailed: Non foi posible retirar a skin do armario
+  edit: Editar
+  fetch: Cargar
 version:
   checkIntegrity: Controleer Integriteit
   name: Versie | Versies

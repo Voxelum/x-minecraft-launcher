@@ -36,18 +36,13 @@ export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAnd
   const currentSkin = computed(() => activeSkinUrl.value)
   const currentSlim = computed(() => activeSlim.value)
   const currentCape = computed(() => activeCapeUrl.value)
-  const uploadable = computed(() => gameProfile.value?.uploadable ? gameProfile.value.uploadable : ['skin', 'cape'])
-  const isSkinUploadBlocked = computed(() => {
-    if (!user?.value) return false
-    const auth = user.value.authority || ''
-    // Only Microsoft and offline accounts can upload skins
-    if (auth === AUTHORITY_MICROSOFT || auth === AUTHORITY_DEV) {
-      return false
-    }
-    return true
+  const uploadable = computed(() => {
+    if (gameProfile.value?.uploadable) return gameProfile.value.uploadable
+    const authority = user?.value?.authority
+    return authority === AUTHORITY_MICROSOFT || authority === AUTHORITY_DEV ? ['skin', 'cape'] : []
   })
-  const canUploadSkin = computed(() => !isSkinUploadBlocked.value && uploadable.value.indexOf('skin') !== -1)
-  const canUploadCape = computed(() => !isSkinUploadBlocked.value && uploadable.value.indexOf('cape') !== -1)
+  const canUploadSkin = computed(() => uploadable.value.indexOf('skin') !== -1)
+  const canUploadCape = computed(() => uploadable.value.indexOf('cape') !== -1)
 
   function reset() {
     const prof = gameProfile.value

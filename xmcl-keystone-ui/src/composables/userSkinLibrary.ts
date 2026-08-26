@@ -1,49 +1,56 @@
-import { useLocalStorage } from '@vueuse/core'
-import { computed, Ref, ref } from 'vue'
-import steveSkin from '@/assets/steve_skin.png'
+import { createSharedComposable } from '@vueuse/core'
+import { computed, onMounted, ref } from 'vue'
+import { LocalSkin, LocalSkinServiceKey } from '@xmcl/runtime-api'
+import { useService } from '@/composables'
 
-export interface SkinLibraryItem {
-  id: string
-  name: string
-  url: string
-  slim: boolean
-  dateAdded: number
-  isPreset?: boolean
-}
+export type SkinLibraryItem = LocalSkin
 
 export const PRESET_SKINS: SkinLibraryItem[] = []
 
-export function useUserSkinLibrary() {
-  const customSkins = useLocalStorage<SkinLibraryItem[]>('xmcl_user_skin_library', [], { writeDefaults: true })
-  const equippedSkinId = useLocalStorage<string>('xmcl_equipped_skin_id', '', { writeDefaults: true })
+export const useUserSkinLibrary = createSharedComposable(() => {
+  const service = useService(LocalSkinServiceKey)
+  const customSkins = ref<SkinLibraryItem[]>([])
+  const equippedSkinIds = ref<Record<string, string>>({})
+  const loading = ref(false)
 
   const allSkins = computed(() => customSkins.value)
 
-  function addSkin(item: { name: string; url: string; slim: boolean }) {
-    const newSkin: SkinLibraryItem = {
-      id: 'skin-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7),
-      name: item.name.trim() || 'Custom Skin',
-      url: item.url,
-      slim: item.slim,
-      dateAdded: Date.now(),
+  async function refresh() {
+    loading.value = true
+    try {
+      const state = await service.getState()
+      customSkins.value = state.skins
+      equippedSkinIds.value = state.equippedSkinIds
+    } finally {
+      loading.value = false
     }
+  }
+
+  async function addSkin(item: { name: string; url: string; slim: boolean }) {
+    const newSkin = await service.addSkin({ name: item.name, source: item.url, slim: item.slim })
     customSkins.value = [newSkin, ...customSkins.value]
     return newSkin
   }
 
-  function removeSkin(id: string) {
+  async function removeSkin(id: string) {
+    await service.removeSkin(id)
     customSkins.value = customSkins.value.filter(s => s.id !== id)
+    equippedSkinIds.value = Object.fromEntries(Object.entries(equippedSkinIds.value).filter(([, skinId]) => skinId !== id))
   }
 
-  function updateSkin(id: string, updates: Partial<Pick<SkinLibraryItem, 'name' | 'slim'>>) {
+  async function updateSkin(id: string, updates: Partial<Pick<SkinLibraryItem, 'name' | 'slim'>>) {
+    const updated = await service.updateSkin(id, updates)
     const index = customSkins.value.findIndex(s => s.id === id)
     if (index !== -1) {
-      customSkins.value[index] = {
-        ...customSkins.value[index],
-        ...updates,
-      }
+      customSkins.value[index] = updated
       customSkins.value = [...customSkins.value]
     }
+    return updated
+  }
+
+  async function setEquippedSkin(account: string, id: string) {
+    await service.setEquippedSkin(account, id)
+    equippedSkinIds.value = { ...equippedSkinIds.value, [account]: id }
   }
 
   async function fetchSkinFromUsername(username: string): Promise<{ url: string; slim: boolean }> {
@@ -78,14 +85,18 @@ export function useUserSkinLibrary() {
     }
   }
 
+  onMounted(refresh)
+
   return {
     customSkins,
     presetSkins: PRESET_SKINS,
     allSkins,
-    equippedSkinId,
+    equippedSkinIds,
+    loading,
     addSkin,
     removeSkin,
     updateSkin,
+    setEquippedSkin,
     fetchSkinFromUsername,
   }
-}
+})

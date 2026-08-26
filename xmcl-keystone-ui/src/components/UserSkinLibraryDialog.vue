@@ -57,7 +57,7 @@
               size="large"
               block
               class="rounded-xl font-semibold"
-              :disabled="!selectedSkin || isCurrentlyEquipped || isUploading"
+              :disabled="!selectedSkin || isCurrentlyEquipped || isUploading || !canUploadSkin"
               :loading="isUploading"
               @click="equipSelectedSkin()"
             >
@@ -211,9 +211,10 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { notify } = useNotifier()
 const toLocaleError = useLocaleError()
-const { customSkins, allSkins, equippedSkinId, addSkin, removeSkin, updateSkin } = useUserSkinLibrary()
+const { customSkins, allSkins, equippedSkinIds, addSkin, removeSkin, updateSkin, setEquippedSkin } = useUserSkinLibrary()
 
 const skinModel = inject(UserSkinModel)
+const canUploadSkin = computed(() => skinModel?.canUploadSkin.value ?? false)
 
 const searchQuery = ref('')
 const selectedSkin = ref<SkinLibraryItem | null>(null)
@@ -223,6 +224,7 @@ const isUploading = ref(false)
 
 const currentCape = computed(() => skinModel?.cape.value)
 const activeProfileSkinUrl = computed(() => (props.profile?.skins ? props.profile.skins.find(s => s.state === 'ACTIVE')?.url : undefined) || props.profile?.textures?.SKIN?.url || '')
+const accountKey = computed(() => `${props.user.id}:${props.profile.id}`)
 const activeProfileSlim = computed(() => {
   const active = props.profile?.skins?.find(s => s.state === 'ACTIVE')
   if (active) return active.variant === 'SLIM'
@@ -240,8 +242,9 @@ const currentEquippedSkinId = computed(() => {
     const found = allSkins.value.find(s => s.url === activeProfileSkinUrl.value)
     if (found) return found.id
   }
-  if (equippedSkinId.value && allSkins.value.some(s => s.id === equippedSkinId.value)) {
-    return equippedSkinId.value
+  const equippedSkinId = equippedSkinIds.value[accountKey.value]
+  if (equippedSkinId && allSkins.value.some(s => s.id === equippedSkinId)) {
+    return equippedSkinId
   }
   return ''
 })
@@ -289,38 +292,50 @@ function onEditItem(item: SkinLibraryItem) {
   isAddDialogOpen.value = true
 }
 
-function onDeleteItem(item: SkinLibraryItem) {
-  removeSkin(item.id)
-  if (selectedSkin.value?.id === item.id) {
-    selectedSkin.value = allSkins.value[0] || null
-  }
-  notify({ level: 'info', title: t('userSkin.skinDeleted') })
-}
-
-function onSkinSaved(item: SkinLibraryItem, equipImmediately: boolean) {
-  if (item.id) {
-    updateSkin(item.id, { name: item.name, slim: item.slim })
-    notify({ level: 'success', title: t('userSkin.skinUpdated') })
-  } else {
-    const created = addSkin(item)
-    selectedSkin.value = created
-    notify({ level: 'success', title: t('userSkin.skinAdded') })
-    if (equipImmediately) {
-      equipSelectedSkin(created)
+async function onDeleteItem(item: SkinLibraryItem) {
+  try {
+    await removeSkin(item.id)
+    if (selectedSkin.value?.id === item.id) {
+      selectedSkin.value = allSkins.value[0] || null
     }
+    notify({ level: 'info', title: t('userSkin.skinDeleted') })
+  } catch (e) {
+    notify({ level: 'error', title: t('userSkin.skinDeleteFailed'), body: toLocaleError(e) })
   }
 }
 
-function saveCurrentToLibrary() {
+async function onSkinSaved(item: SkinLibraryItem, equipImmediately: boolean) {
+  try {
+    if (item.id) {
+      await updateSkin(item.id, { name: item.name, slim: item.slim })
+      notify({ level: 'success', title: t('userSkin.skinUpdated') })
+    } else {
+      const created = await addSkin(item)
+      selectedSkin.value = created
+      notify({ level: 'success', title: t('userSkin.skinAdded') })
+      if (equipImmediately) {
+        await equipSelectedSkin(created)
+      }
+    }
+  } catch (e) {
+    notify({ level: 'error', title: t('userSkin.saveFailed'), body: toLocaleError(e) })
+  }
+}
+
+async function saveCurrentToLibrary() {
   if (!activeProfileSkinUrl.value) return
-  const name = props.profile?.name ? `${props.profile.name}'s Skin` : 'My Skin'
-  const saved = addSkin({
-    name,
-    url: activeProfileSkinUrl.value,
-    slim: activeProfileSlim.value,
-  })
-  selectedSkin.value = saved
-  notify({ level: 'success', title: t('userSkin.skinAdded') })
+  try {
+    const name = props.profile?.name ? `${props.profile.name}'s Skin` : 'My Skin'
+    const saved = await addSkin({
+      name,
+      url: activeProfileSkinUrl.value,
+      slim: activeProfileSlim.value,
+    })
+    selectedSkin.value = saved
+    notify({ level: 'success', title: t('userSkin.skinAdded') })
+  } catch (e) {
+    notify({ level: 'error', title: t('userSkin.saveFailed'), body: toLocaleError(e) })
+  }
 }
 
 async function exportSelectedSkin() {
@@ -353,7 +368,7 @@ async function equipSelectedSkin(targetSkin?: SkinLibraryItem) {
     skinModel.skin.value = item.url
     skinModel.slim.value = item.slim
     await skinModel.save()
-    equippedSkinId.value = item.id
+    await setEquippedSkin(accountKey.value, item.id)
     selectedSkin.value = item
   } catch (e) {
     notify({
