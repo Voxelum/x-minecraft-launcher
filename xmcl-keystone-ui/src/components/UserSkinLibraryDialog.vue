@@ -532,7 +532,6 @@ async function saveDraft(equipImmediately: boolean) {
     } else {
       const created = await addSkin({ name: draftName.value.trim(), url: draftUrl.value, slim: draftSlim.value })
       selectedSkin.value = created
-      notify({ level: 'success', title: t('userSkin.skinAdded') })
       if (equipImmediately) {
         await equipSelectedSkin(created)
       }
@@ -553,7 +552,6 @@ async function saveCurrentToLibrary() {
       slim: activeProfileSlim.value,
     })
     selectedSkin.value = saved
-    notify({ level: 'success', title: t('userSkin.skinAdded') })
   } catch (e) {
     notify({ level: 'error', title: t('userSkin.saveFailed'), body: toLocaleError(e) })
   }
