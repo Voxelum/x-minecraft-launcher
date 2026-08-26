@@ -16,7 +16,9 @@ validation environment is the actual launcher started by the repository's
 development tasks. Do not write a scratch E2E spec merely to click through a
 change once. Direct DevTools debugging is faster, exercises real app state and
 IPC boundaries, and gives better access to renderer errors and main-process
-logs.
+logs. Use the official `chrome-devtools` CLI described in
+`.github/skills/chrome-devtools-cli/SKILL.md`; do not configure or call Chrome
+DevTools through MCP tools.
 
 For main-launcher UI viewport checks, use the dimensions declared in
 `xmcl-electron-app/main/defaultApp.ts`: `800x400` is the minimum supported
@@ -43,19 +45,20 @@ constraints or when the task explicitly changes those constraints.
   was overwritten, restart that task or otherwise trigger and confirm a
   fresh dev main rebuild before relaunching Electron. Verify `/json/list`
   reports a `localhost:3000` page before beginning normal UI validation.
-3. Connect to the launcher's Chrome DevTools endpoint. `xmcl-electron-app/dev.ts`
-   uses port `9222` by default, but VS Code launch configurations may choose a
-   different port such as `9300`. Discover the active port from process
-   arguments or task output, then inspect `/json/list` and select the real
-   `X Minecraft Launcher` page.
-4. Drive the real launcher through DevTools and validate the complete user
-   workflow, not only the changed control. Use accessibility snapshots,
+3. Load `.github/skills/chrome-devtools-cli/SKILL.md` and connect its CLI to the
+  launcher's Chrome DevTools endpoint. `xmcl-electron-app/dev.ts` uses port
+  `9222` by default, but VS Code launch configurations may choose a different
+  port such as `9300`. Discover the active port from process arguments or task
+  output, inspect `/json/list`, then use the CLI to select the real
+  `X Minecraft Launcher` page.
+4. Drive the real launcher through the CLI and validate the complete user
+  workflow, not only the changed control. Use accessibility snapshots,
   renderer console/network inspection, main logs, and the local/WSL environment.
 5. Renderer changes normally hot-reload. Electron main/runtime changes are
    rebuilt into `xmcl-electron-app/dist/index.js` but are not loaded by an
-   already-running main process. Confirm the watcher rebuilt the bundle, then
-   restart only this repository's Electron app, reconnect DevTools, and retry
-   the same workflow. Never terminate unrelated Electron processes.
+  already-running main process. Confirm the watcher rebuilt the bundle, then
+  restart only this repository's Electron app, reconnect the CLI, and retry
+  the same workflow. Never terminate unrelated Electron processes.
 6. Preserve user data. Record any instance/profile fields touched by the test,
    use uniquely named temporary remote directories, services, and credentials,
    and remove only those test resources afterward. Reopen or restart the app
