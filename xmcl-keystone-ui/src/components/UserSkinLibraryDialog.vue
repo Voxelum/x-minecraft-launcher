@@ -35,6 +35,7 @@
             :name="''"
             animation="idle"
             @model="onModelDetected"
+            @error="onSkinLoadError"
           />
           <div v-else class="flex flex-col items-center gap-3 text-center opacity-40">
             <v-icon size="56">person</v-icon>
@@ -124,6 +125,18 @@
             </v-btn>
           </div>
 
+          <v-alert
+            v-if="loadSkinError"
+            type="error"
+            variant="tonal"
+            density="compact"
+            closable
+            class="mb-4"
+            @click:close="loadSkinError = ''"
+          >
+            {{ loadSkinError }}
+          </v-alert>
+
           <div class="flex-1 min-h-0 flex flex-col justify-between">
             <div class="flex flex-col gap-5 overflow-y-auto pr-1">
               <div>
@@ -187,6 +200,32 @@
 
                   <v-window-item value="url">
                     <div class="min-h-[205px] flex flex-col justify-center gap-3">
+                      <v-select
+                        v-model="selectedAuthority"
+                        :items="authorityItems"
+                        item-title="title"
+                        item-value="value"
+                        variant="outlined"
+                        density="comfortable"
+                        hide-details
+                        class="w-full flex-grow-0"
+                      >
+                        <template #selection="{ item }">
+                          <div class="flex items-center gap-2 min-w-0">
+                            <v-avatar v-if="item.icon" :image="item.icon" size="20" />
+                            <v-icon v-else size="20">public</v-icon>
+                            <span class="truncate">{{ item.title }}</span>
+                          </div>
+                        </template>
+                        <template #item="{ props: itemProps, item }">
+                          <v-list-item v-bind="itemProps">
+                            <template #prepend>
+                              <v-avatar v-if="item.icon" :image="item.icon" size="22" />
+                              <v-icon v-else size="22">public</v-icon>
+                            </template>
+                          </v-list-item>
+                        </template>
+                      </v-select>
                       <div class="flex gap-2.5 items-center">
                         <v-text-field
                           v-model="urlInput"
@@ -210,9 +249,6 @@
                           <v-icon start size="18">download</v-icon>
                           {{ t('userSkin.fetch') }}
                         </v-btn>
-                      </div>
-                      <div class="text-xs opacity-60 px-1">
-                        {{ t('userSkin.urlOrPlayerHint') }}
                       </div>
                     </div>
                   </v-window-item>
@@ -280,6 +316,18 @@
           </div>
         </div>
 
+        <v-alert
+          v-if="loadSkinError"
+          type="error"
+          variant="tonal"
+          density="compact"
+          closable
+          class="mb-4"
+          @click:close="loadSkinError = ''"
+        >
+          {{ loadSkinError }}
+        </v-alert>
+
         <!-- Filter and Search Row -->
         <div class="flex items-center justify-between gap-3 mb-4">
           <v-text-field
@@ -339,9 +387,10 @@ import UserSkinCard from '@/components/UserSkinCard.vue'
 import { getDropFilePaths } from '@/composables/dropHandler'
 import { useLocaleError } from '@/composables/error'
 import { useNotifier } from '@/composables/notifier'
+import { useService } from '@/composables/service'
 import { SkinLibraryItem, useUserSkinLibrary } from '@/composables/userSkinLibrary'
 import { UserSkinModel } from '@/composables/userSkin'
-import { GameProfileAndTexture, UserProfile } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, AuthorityMetadata, GameProfileAndTexture, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   modelValue: boolean
@@ -356,8 +405,9 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { notify } = useNotifier()
 const toLocaleError = useLocaleError()
-const { customSkins, allSkins, equippedSkinIds, addSkin, removeSkin, updateSkin, setEquippedSkin, fetchSkinFromUsername } = useUserSkinLibrary()
+const { customSkins, allSkins, equippedSkinIds, refresh, addSkin, removeSkin, updateSkin, setEquippedSkin, fetchSkinFromUsername } = useUserSkinLibrary()
 const { showOpenDialog } = windowController
+const { getSupportedAuthorityMetadata } = useService(UserServiceKey)
 
 const skinModel = inject(UserSkinModel)
 const canUploadSkin = computed(() => skinModel?.canUploadSkin.value ?? false)
@@ -373,12 +423,34 @@ const draftSlim = ref(false)
 const importTab = ref('file')
 const urlInput = ref('')
 const isFetchingUrl = ref(false)
+const loadSkinError = ref('')
+const selectedAuthority = ref(AUTHORITY_MICROSOFT)
+const authorities = ref<AuthorityMetadata[]>([])
+const savingCurrentSkinCount = ref(0)
+const currentSkinSaves = new Map<string, Promise<SkinLibraryItem>>()
+let selectionRequest = 0
 
 const currentCape = computed(() => skinModel?.cape.value)
+const authorityItems = computed(() => [
+  {
+    title: 'Minecraft',
+    value: AUTHORITY_MICROSOFT,
+    icon: '',
+  },
+  ...authorities.value
+    .filter(metadata => metadata.kind === 'yggdrasil')
+    .map(metadata => ({
+      title: metadata.authlibInjector?.meta.serverName || new URL(metadata.authority).host,
+      value: metadata.authority,
+      icon: metadata.favicon || '',
+    })),
+])
 const previewUrl = computed(() => isEditorOpen.value ? draftUrl.value : selectedSkin.value?.url || '')
 const previewSlim = computed(() => isEditorOpen.value ? draftSlim.value : selectedSkin.value?.slim || false)
 const canSaveDraft = computed(() => !!draftUrl.value && !!draftName.value.trim())
 const activeProfileSkinUrl = computed(() => (props.profile?.skins ? props.profile.skins.find(s => s.state === 'ACTIVE')?.url : undefined) || props.profile?.textures?.SKIN?.url || '')
+const currentSkinDefaultName = computed(() => `${props.profile.name}@${props.user.authority}`)
+const isSavingCurrentSkin = computed(() => savingCurrentSkinCount.value > 0)
 const accountKey = computed(() => `${props.user.id}:${props.profile.id}`)
 const activeProfileSlim = computed(() => {
   const active = props.profile?.skins?.find(s => s.state === 'ACTIVE')
@@ -414,29 +486,37 @@ function isItemEquipped(item: SkinLibraryItem): boolean {
 }
 
 const canSaveCurrentToLibrary = computed(() => {
-  if (!activeProfileSkinUrl.value) return false
+  if (!activeProfileSkinUrl.value || isSavingCurrentSkin.value) return false
   return !customSkins.value.some(s => s.url === activeProfileSkinUrl.value)
 })
 
-watch(() => props.modelValue, (open) => {
-  if (open) {
-    isEditorOpen.value = false
-    editingSkin.value = null
+watch([() => props.modelValue, accountKey, activeProfileSkinUrl], async ([open]) => {
+  const request = ++selectionRequest
+  if (!open) return
+  loadSkinError.value = ''
+  isEditorOpen.value = false
+  editingSkin.value = null
+  try {
+    await refresh()
+    if (request !== selectionRequest || !props.modelValue) return
     const active = allSkins.value.find(s => isItemEquipped(s))
     if (active) {
       selectedSkin.value = active
     } else if (activeProfileSkinUrl.value) {
-      selectedSkin.value = {
-        id: 'current',
-        name: props.profile?.name || t('userSkin.currentSkin'),
-        url: activeProfileSkinUrl.value,
-        slim: activeProfileSlim.value,
-        dateAdded: Date.now(),
-      }
+      const saved = await persistCurrentSkin()
+      if (saved && request === selectionRequest && props.modelValue) selectedSkin.value = saved
     } else if (allSkins.value.length > 0) {
       selectedSkin.value = allSkins.value[0]
     }
+  } catch (e) {
+    if (request === selectionRequest) {
+      loadSkinError.value = toLocaleError(e)
+    }
   }
+})
+
+watch([urlInput, selectedAuthority, importTab], () => {
+  loadSkinError.value = ''
 })
 
 function openAddEditor() {
@@ -445,8 +525,22 @@ function openAddEditor() {
   draftUrl.value = ''
   draftSlim.value = false
   urlInput.value = ''
+  selectedAuthority.value = props.user.authority?.startsWith('http') ? props.user.authority : AUTHORITY_MICROSOFT
   importTab.value = 'file'
+  loadSkinError.value = ''
   isEditorOpen.value = true
+  void loadAuthorities()
+}
+
+async function loadAuthorities() {
+  try {
+    authorities.value = await getSupportedAuthorityMetadata()
+    if (!authorityItems.value.some(item => item.value === selectedAuthority.value)) {
+      selectedAuthority.value = AUTHORITY_MICROSOFT
+    }
+  } catch (e) {
+    notify({ level: 'error', title: t('shared.failed'), body: toLocaleError(e) })
+  }
 }
 
 function onEditItem(item: SkinLibraryItem) {
@@ -460,12 +554,17 @@ function onEditItem(item: SkinLibraryItem) {
 function closeEditor() {
   isEditorOpen.value = false
   editingSkin.value = null
+  loadSkinError.value = ''
 }
 
 function onModelDetected(modelType: 'default' | 'slim') {
   if (isEditorOpen.value && !editingSkin.value && !draftUrl.value.includes('http://launcher/media')) {
     draftSlim.value = modelType === 'slim'
   }
+}
+
+function onSkinLoadError() {
+  loadSkinError.value = t('userSkin.invalidImage')
 }
 
 async function pickFile() {
@@ -483,6 +582,7 @@ function onDropFile(event: DragEvent) {
 }
 
 function setFileSkin(filePath: string) {
+  loadSkinError.value = ''
   draftUrl.value = `http://launcher/media?path=${filePath}`
   if (!draftName.value) {
     draftName.value = filePath.split(/[/\\]/).pop()?.replace(/\.png$/i, '') || 'Skin'
@@ -492,19 +592,20 @@ function setFileSkin(filePath: string) {
 async function fetchFromUrl() {
   const input = urlInput.value.trim()
   if (!input) return
+  loadSkinError.value = ''
   isFetchingUrl.value = true
   try {
     if (input.startsWith('http://') || input.startsWith('https://')) {
       draftUrl.value = input
       if (!draftName.value) draftName.value = 'Web Skin'
     } else {
-      const resolved = await fetchSkinFromUsername(input)
+      const resolved = await fetchSkinFromUsername(input, selectedAuthority.value)
       draftUrl.value = resolved.url
       draftSlim.value = resolved.slim
-      if (!draftName.value) draftName.value = input
+      if (!draftName.value) draftName.value = `${input}@${selectedAuthority.value}`
     }
   } catch (e) {
-    notify({ level: 'error', title: t('shared.failed'), body: toLocaleError(e) })
+    loadSkinError.value = toLocaleError(e)
   } finally {
     isFetchingUrl.value = false
   }
@@ -538,31 +639,52 @@ async function saveDraft(equipImmediately: boolean) {
     }
     closeEditor()
   } catch (e) {
-    notify({ level: 'error', title: t('userSkin.saveFailed'), body: toLocaleError(e) })
+    if (editingSkin.value) {
+      notify({ level: 'error', title: t('userSkin.saveFailed'), body: toLocaleError(e) })
+    } else {
+      loadSkinError.value = toLocaleError(e)
+    }
+  }
+}
+
+async function persistCurrentSkin() {
+  const url = activeProfileSkinUrl.value
+  const name = currentSkinDefaultName.value
+  const slim = activeProfileSlim.value
+  if (!url) return undefined
+  const existing = customSkins.value.find(s => s.url === url)
+  if (existing) return existing
+
+  const saving = currentSkinSaves.get(url)
+  if (saving) return saving
+
+  const promise = addSkin({ name, url, slim })
+  currentSkinSaves.set(url, promise)
+  savingCurrentSkinCount.value++
+  try {
+    return await promise
+  } finally {
+    currentSkinSaves.delete(url)
+    savingCurrentSkinCount.value--
   }
 }
 
 async function saveCurrentToLibrary() {
-  if (!activeProfileSkinUrl.value) return
   try {
-    const name = props.profile?.name ? `${props.profile.name}'s Skin` : 'My Skin'
-    const saved = await addSkin({
-      name,
-      url: activeProfileSkinUrl.value,
-      slim: activeProfileSlim.value,
-    })
-    selectedSkin.value = saved
+    const saved = await persistCurrentSkin()
+    if (saved) selectedSkin.value = saved
   } catch (e) {
-    notify({ level: 'error', title: t('userSkin.saveFailed'), body: toLocaleError(e) })
+    loadSkinError.value = toLocaleError(e)
   }
 }
 
 async function exportSelectedSkin() {
   if (!selectedSkin.value) return
   const { showSaveDialog } = windowController
+  const fileName = selectedSkin.value.name.replace(/[<>:"/\\|?*]/g, '_')
   const { filePath } = await showSaveDialog({
     title: t('userSkin.saveTitle'),
-    defaultPath: `${selectedSkin.value.name}.png`,
+    defaultPath: `${fileName}.png`,
     filters: [{ extensions: ['png'], name: 'PNG Images' }],
   })
   if (filePath && skinModel?.exportTo) {
@@ -614,5 +736,9 @@ function onEquipItem(item: SkinLibraryItem) {
 
 .file-drop-zone {
   background: rgba(var(--v-theme-surface), 0.5);
+}
+
+.authority-select {
+  width: 190px;
 }
 </style>

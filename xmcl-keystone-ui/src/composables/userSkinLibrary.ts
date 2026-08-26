@@ -12,17 +12,21 @@ export const useUserSkinLibrary = createSharedComposable(() => {
   const customSkins = ref<SkinLibraryItem[]>([])
   const equippedSkinIds = ref<Record<string, string>>({})
   const loading = ref(false)
+  let refreshRequest = 0
 
   const allSkins = computed(() => customSkins.value)
 
   async function refresh() {
+    const request = ++refreshRequest
     loading.value = true
     try {
       const state = await service.getState()
-      customSkins.value = state.skins
-      equippedSkinIds.value = state.equippedSkinIds
+      if (request === refreshRequest) {
+        customSkins.value = state.skins
+        equippedSkinIds.value = state.equippedSkinIds
+      }
     } finally {
-      loading.value = false
+      if (request === refreshRequest) loading.value = false
     }
   }
 
@@ -53,36 +57,8 @@ export const useUserSkinLibrary = createSharedComposable(() => {
     equippedSkinIds.value = { ...equippedSkinIds.value, [account]: id }
   }
 
-  async function fetchSkinFromUsername(username: string): Promise<{ url: string; slim: boolean }> {
-    const cleanUser = username.trim()
-    try {
-      const profileRes = await fetch(`https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(cleanUser)}`)
-      if (profileRes.ok) {
-        const profileData = await profileRes.json()
-        if (profileData?.id) {
-          const sessionRes = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${profileData.id}`)
-          if (sessionRes.ok) {
-            const sessionData = await sessionRes.json()
-            const textureProp = sessionData?.properties?.find((p: any) => p.name === 'textures')
-            if (textureProp?.value) {
-              const decoded = JSON.parse(atob(textureProp.value))
-              const skinUrl = decoded?.textures?.SKIN?.url
-              const isSlim = decoded?.textures?.SKIN?.metadata?.model === 'slim'
-              if (skinUrl) {
-                return { url: skinUrl, slim: isSlim }
-              }
-            }
-          }
-        }
-      }
-    } catch {
-      // Fallback
-    }
-
-    return {
-      url: `https://minotar.net/skin/${encodeURIComponent(cleanUser)}`,
-      slim: false,
-    }
+  async function fetchSkinFromUsername(username: string, authority: string) {
+    return service.resolveSkin(authority, username)
   }
 
   onMounted(refresh)
@@ -93,6 +69,7 @@ export const useUserSkinLibrary = createSharedComposable(() => {
     allSkins,
     equippedSkinIds,
     loading,
+    refresh,
     addSkin,
     removeSkin,
     updateSkin,

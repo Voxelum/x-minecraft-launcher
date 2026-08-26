@@ -1,13 +1,20 @@
-import { AddLocalSkinOptions, LocalSkin, LocalSkinService as ILocalSkinService, LocalSkinServiceKey, LocalSkinState, UpdateLocalSkinOptions } from '@xmcl/runtime-api'
+import { AddLocalSkinOptions, AUTHORITY_MICROSOFT, LocalSkin, LocalSkinService as ILocalSkinService, LocalSkinServiceKey, LocalSkinState, ResolvedPlayerSkin, UpdateLocalSkinOptions } from '@xmcl/runtime-api'
 import { writeFile as writeAtomically } from 'atomically'
 import { randomUUID } from 'crypto'
-import { copyFile, ensureDir, readFile, remove } from 'fs-extra'
+import { copyFile, ensureDir, readFile, remove, writeFile } from 'fs-extra'
 import { isAbsolute, join, relative } from 'path'
 import { fileURLToPath } from 'url'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
+import { kYggdrasilSeriveRegistry, YggdrasilSeriveRegistry } from './YggdrasilSeriveRegistry'
 
 const LOCAL_SKIN_LOCK = 'local-skin-service'
+
+interface PlayerProfile {
+  id: string
+  name: string
+  properties?: Array<{ name: string; value: string }>
+}
 
 @ExposeServiceKey(LocalSkinServiceKey)
 export class LocalSkinService extends AbstractService implements ILocalSkinService {
@@ -15,7 +22,10 @@ export class LocalSkinService extends AbstractService implements ILocalSkinServi
   private readonly statePath: string
   private state: LocalSkinState = { skins: [], equippedSkinIds: {} }
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
+  constructor(
+    @Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(kYggdrasilSeriveRegistry) private readonly yggdrasilRegistry: YggdrasilSeriveRegistry,
+  ) {
     super(app, async () => {
       await ensureDir(this.closetPath)
       this.state = await this.loadState()
@@ -69,26 +79,85 @@ export class LocalSkinService extends AbstractService implements ILocalSkinServi
     return structuredClone(this.state)
   }
 
+  async resolveSkin(authority: string, username: string): Promise<ResolvedPlayerSkin> {
+    const cleanUsername = username.trim()
+    if (!cleanUsername) throw new Error('Player name is required')
+
+    let profile: PlayerProfile
+    if (authority === AUTHORITY_MICROSOFT) {
+      const profileResponse = await this.app.fetch(`https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(cleanUsername)}`)
+      if (!profileResponse.ok) throw new Error(`Cannot find Minecraft player ${cleanUsername}`)
+      profile = await profileResponse.json() as PlayerProfile
+      profile = await this.fetchProfile(AUTHORITY_MICROSOFT, profile.id)
+    } else {
+      if (!this.yggdrasilRegistry.getYggdrasilServices().some(service => service.url === authority)) {
+        throw new Error(`Unknown Yggdrasil authority ${authority}`)
+      }
+      const api = new URL(authority)
+      const profilesUrl = new URL(`${api.pathname.replace(/\/$/, '')}/api/profiles/minecraft`, api.origin)
+      const profileResponse = await this.app.fetch(profilesUrl, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify([cleanUsername]),
+      })
+      if (!profileResponse.ok) throw new Error(`Cannot query ${cleanUsername} from ${api.host}`)
+      const profiles = await profileResponse.json() as PlayerProfile[]
+      const matched = profiles.find(candidate => candidate.name.toLowerCase() === cleanUsername.toLowerCase()) ?? profiles[0]
+      if (!matched?.id) throw new Error(`Cannot find ${cleanUsername} from ${api.host}`)
+      profile = await this.fetchProfile(authority, matched.id)
+    }
+
+    const encodedTextures = profile.properties?.find(property => property.name === 'textures')?.value
+    if (!encodedTextures) throw new Error(`Player ${cleanUsername} does not have a skin`)
+    const textures = JSON.parse(Buffer.from(encodedTextures, 'base64').toString('utf-8')) as {
+      textures?: { SKIN?: { url?: string; metadata?: { model?: string } } }
+    }
+    const skin = textures.textures?.SKIN
+    if (!skin?.url) throw new Error(`Player ${cleanUsername} does not have a skin`)
+    return { url: skin.url, slim: skin.metadata?.model === 'slim' }
+  }
+
+  private async fetchProfile(authority: string, id: string): Promise<PlayerProfile> {
+    const api = authority === AUTHORITY_MICROSOFT ? new URL('https://sessionserver.mojang.com') : new URL(authority)
+    const profileUrl = authority === AUTHORITY_MICROSOFT
+      ? new URL(`/session/minecraft/profile/${encodeURIComponent(id)}`, api.origin)
+      : new URL(`${api.pathname.replace(/\/$/, '')}/sessionserver/session/minecraft/profile/${encodeURIComponent(id)}`, api.origin)
+    profileUrl.searchParams.set('unsigned', 'true')
+    const response = await this.app.fetch(profileUrl)
+    if (!response.ok) throw new Error(`Cannot load Minecraft profile ${id} from ${api.host}`)
+    return response.json() as Promise<PlayerProfile>
+  }
+
   async addSkin(options: AddLocalSkinOptions): Promise<LocalSkin> {
     await this.initialize()
     return this.mutex.of(LOCAL_SKIN_LOCK).runExclusive(async () => {
       const id = randomUUID()
       const localSource = this.getLocalSource(options.source)
-      let url = options.source
+      const target = join(this.closetPath, `${id}.png`)
       if (localSource) {
         const { fileTypeFromFile } = await import('file-type')
         const fileType = await fileTypeFromFile(localSource)
         if (fileType?.mime !== 'image/png') {
           throw new Error('The local skin must be a PNG image')
         }
-        const target = join(this.closetPath, `${id}.png`)
         await copyFile(localSource, target)
-        url = this.getMediaUrl(target)
+      } else {
+        const response = await this.app.fetch(options.source)
+        if (!response.ok) {
+          throw new Error(`Cannot download skin from ${options.source}`)
+        }
+        const content = Buffer.from(await response.arrayBuffer())
+        const { fileTypeFromBuffer } = await import('file-type')
+        const fileType = await fileTypeFromBuffer(content)
+        if (fileType?.mime !== 'image/png') {
+          throw new Error('The remote skin must be a PNG image')
+        }
+        await writeFile(target, content)
       }
       const skin: LocalSkin = {
         id,
         name: options.name.trim() || 'Custom Skin',
-        url,
+        url: this.getMediaUrl(target),
         slim: options.slim,
         dateAdded: Date.now(),
       }
@@ -97,7 +166,7 @@ export class LocalSkinService extends AbstractService implements ILocalSkinServi
         await this.saveState()
       } catch (e) {
         this.state.skins.shift()
-        if (localSource) await remove(join(this.closetPath, `${id}.png`))
+        await remove(target)
         throw e
       }
       return structuredClone(skin)
