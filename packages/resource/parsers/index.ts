@@ -1,5 +1,5 @@
 import { FileSystem, openFileSystem } from '@xmcl/system'
-import { getBlockCount, getMaterialList, getUsedBlocks, isAir, isBlueprintFile, readBlueprint } from '@xmcl/schematic'
+import { getBlockCount, getMaterialList, getUsedBlocks, isBlueprintFile, readBlueprint } from '@xmcl/schematic'
 import { readFile } from 'fs/promises'
 import { basename, extname } from 'path'
 import { fabricModParser } from './fabric_mod'
@@ -63,18 +63,6 @@ export class ResourceParser {
       try {
         const data = await readFile(args.path)
         const blueprint = await readBlueprint(data, args.path)
-        const { size, palette, blocks } = blueprint
-        const air = palette.map((s) => isAir(s))
-        const voxels: number[] = []
-        for (let y = 0; y < size.y; y++) {
-          for (let z = 0; z < size.z; z++) {
-            for (let x = 0; x < size.x; x++) {
-              const idx = blocks[x + size.x * (z + size.z * y)]
-              if (air[idx]) continue
-              voxels.push(x, y, z, idx)
-            }
-          }
-        }
         const metadata: ResourceMetadata = {
           [ResourceType.Blueprint]: {
             format: blueprint.format,
@@ -84,8 +72,6 @@ export class ResourceParser {
             dataVersion: blueprint.dataVersion,
             author: blueprint.author,
             materials: getMaterialList(blueprint),
-            palette: palette.map((s) => ({ name: s.name, properties: s.properties })),
-            voxels,
           },
         }
         return {

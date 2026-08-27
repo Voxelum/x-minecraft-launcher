@@ -79,7 +79,7 @@
             </v-btn>
           </div>
         </div>
-        <div class="flex flex-col gap-2 transition-all duration-400" :style="((active || dragover) && !isBedrock) ? { 'height': '8.5rem', overflow: selected === 1 ? 'auto' : 'unset' } : { 'height': '4rem' }">
+        <div class="invisible-scroll flex min-h-0 flex-col gap-2 overflow-x-hidden overflow-y-auto transition-all duration-400" :style="((active || dragover) && !isBedrock) ? { 'height': '8.5rem' } : { 'height': '4rem' }">
           <template v-if="selected === 1 && upstream?.type === 'server'">
             <HomeCardListItem
               v-if="serverUpstream.suggestedMinecraft.value"
@@ -496,6 +496,15 @@ const items = computed(() => {
         install: () => push('/save?source=remote'),
         setting: () => push('/save'),
         drop: onDropSave
+      },
+      {
+        icon: 'view_in_ar',
+        tooltip: t('blueprint.name', 2),
+        text: t('blueprint.name', 2),
+        highlighted: false,
+        install: () => push('/blueprints?source=market'),
+        setting: () => push('/blueprints'),
+        drop: () => {}
       }
     ]
   } else if (selected.value === 1) {

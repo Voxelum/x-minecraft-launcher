@@ -13,6 +13,7 @@ export class ResourceMigrateProvider implements MigrationProvider {
       2.4: v24,
       2.5: v25,
       2.6: v26,
+      2.7: v27,
     })
   }
 }
@@ -265,5 +266,17 @@ const v26: Migration = {
       return
     }
     await db.schema.alterTable('resources').addColumn(ResourceType.Blueprint, 'json').execute()
+  },
+}
+
+// Preview geometry is loaded on demand. Keeping it in every resource row makes
+// large blueprint libraries expensive to hydrate and synchronize.
+const v27: Migration = {
+  async up(db: Kysely<Database>): Promise<void> {
+    const columns = await sql`PRAGMA table_info(resources)`.execute(db)
+    if (!columns.rows.some((c: any) => c.name === ResourceType.Blueprint)) {
+      return
+    }
+    await sql`UPDATE resources SET blueprint = json_remove(blueprint, '$.palette', '$.voxels') WHERE blueprint IS NOT NULL`.execute(db)
   },
 }

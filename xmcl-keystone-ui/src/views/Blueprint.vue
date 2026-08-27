@@ -113,6 +113,7 @@
         :active="selected"
         data-testid="blueprint-item"
         v-on="on"
+        @vue:mounted="requestMaterials(asBp(rawItem))"
       >
         <template #prepend>
           <v-icon class="mr-3"> view_in_ar </v-icon>
@@ -527,6 +528,44 @@ type CompatibilityState = { state: 'compatible' | 'incompatible' | 'unknown'; mi
 // compatibility badge can be computed for them too.
 const lazyMaterials = ref<Record<string, { block: string; count: number }[]>>({})
 const lazyRequested = new Set<string>()
+const lazyQueue: BlueprintEntry[] = []
+let lazyActive = 0
+let lazyDisposed = false
+const lazyConcurrency = 2
+
+function runLazyQueue() {
+  if (lazyDisposed) return
+  while (lazyActive < lazyConcurrency && lazyQueue.length > 0) {
+    const bp = lazyQueue.shift()!
+    lazyActive += 1
+    getBlueprintInfo(path.value, bp.path)
+      .then((info) => {
+        if (lazyDisposed) return
+        lazyMaterials.value = { ...lazyMaterials.value, [bp.path]: info.materials ?? [] }
+      })
+      .catch(() => {
+        if (lazyDisposed) return
+        lazyMaterials.value = { ...lazyMaterials.value, [bp.path]: [] }
+      })
+      .finally(() => {
+        lazyActive -= 1
+        runLazyQueue()
+      })
+  }
+}
+
+function requestMaterials(bp: BlueprintEntry) {
+  if ((bp.materials && bp.materials.length > 0) || lazyRequested.has(bp.path)) return
+  lazyRequested.add(bp.path)
+  lazyQueue.push(bp)
+  queueMicrotask(runLazyQueue)
+}
+
+onBeforeUnmount(() => {
+  lazyDisposed = true
+  lazyQueue.length = 0
+})
+
 const compatibilityMap = computed<Record<string, CompatibilityState>>(() => {
   const avail = availableNamespaces.value
   const map: Record<string, CompatibilityState> = {}
@@ -544,23 +583,6 @@ const compatibilityMap = computed<Record<string, CompatibilityState>>(() => {
   }
   return map
 })
-watch(
-  localItems,
-  (list) => {
-    for (const bp of list) {
-      if ((bp.materials && bp.materials.length > 0) || lazyRequested.has(bp.path)) continue
-      lazyRequested.add(bp.path)
-      getBlueprintInfo(path.value, bp.path)
-        .then((info) => {
-          lazyMaterials.value = { ...lazyMaterials.value, [bp.path]: info.materials ?? [] }
-        })
-        .catch(() => {
-          lazyMaterials.value = { ...lazyMaterials.value, [bp.path]: [] }
-        })
-    }
-  },
-  { immediate: true },
-)
 
 const selectedId = useQuery('id')
 const active = computed(() => localItems.value.find((b) => b.id === selectedId.value))

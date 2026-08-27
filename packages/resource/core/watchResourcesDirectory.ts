@@ -180,7 +180,7 @@ function createWorkerQueue(
 
         onResourceEmit(job.file, job.record, metadata ?? {})
       }),
-    16,
+    domain === ResourceDomain.Blueprints ? 2 : 16,
     {
       retryCount: 7,
       shouldRetry: (e) => isSystemError(e) && (e.code === 'EMFILE' || e.code === 'EBUSY'),
