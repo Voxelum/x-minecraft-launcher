@@ -17,7 +17,7 @@ import os, { freemem, totalmem } from 'os'
 import { statfs } from 'fs/promises'
 import { join, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
-import { kClientToken, kGFW, kLogRoot } from '~/infra'
+import { kClientToken, kGFW, kLogRoot, launcherSessionId } from '~/infra'
 import { kNetworkInterface } from '~/network'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { kSettings } from '~/settings'
@@ -54,7 +54,11 @@ export class BaseService extends AbstractService implements IBaseService {
     return this.app.registry.get(kNetworkInterface).then((s) => s.getNetworkStatus())
   }
 
-  getSessionId() {
+  async getSessionId() {
+    return launcherSessionId
+  }
+
+  getDeviceId() {
     return this.app.registry.get(kClientToken)
   }
 

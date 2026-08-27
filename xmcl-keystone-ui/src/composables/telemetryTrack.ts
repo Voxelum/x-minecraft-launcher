@@ -1,11 +1,18 @@
-import { appInsights } from '@/telemetry'
+import { appInsights, setTelemetryDeviceId } from '@/telemetry'
 import { useService } from './service'
-import { BaseServiceKey, SharedState, Settings } from '@xmcl/runtime-api'
+import {
+  BaseServiceKey,
+  SharedState,
+  Settings,
+  XmclAccountServiceKey,
+  type XmclAccountSnapshot,
+} from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 
 export function useTelemetryTrack(settings: Ref<SharedState<Settings> | undefined>) {
   // const router = useRouter()
-  const { getEnvironment, getSessionId } = useService(BaseServiceKey)
+  const { getDeviceId, getEnvironment, getSessionId } = useService(BaseServiceKey)
+  const { getXmclAccountState } = useService(XmclAccountServiceKey)
   // router.afterEach((to, from) => {
   //   if (settings.value?.disableTelemetry) {
   //     return
@@ -17,8 +24,25 @@ export function useTelemetryTrack(settings: Ref<SharedState<Settings> | undefine
     appInsights.context.application.build = build.toString()
   })
   getSessionId().then((sessionId) => {
-    appInsights.context.user.id = sessionId
     appInsights.context.session.id = sessionId
+  })
+  let disposeAccountIdentity = () => {}
+  onScopeDispose(() => disposeAccountIdentity())
+  Promise.all([getDeviceId(), getXmclAccountState()]).then(([deviceId, accountState]) => {
+    const setUserId = (accountId?: string) => {
+      appInsights.context.user.id = accountId ?? `device:${deviceId}`
+    }
+    const onSnapshot = (snapshot: XmclAccountSnapshot) => setUserId(snapshot.account?.accountId)
+    const onGuest = () => setUserId()
+
+    setTelemetryDeviceId(deviceId)
+    setUserId(accountState.account?.accountId)
+    accountState.subscribe('snapshot', onSnapshot)
+    accountState.subscribe('guest', onGuest)
+    disposeAccountIdentity = () => {
+      accountState.unsubscribe('snapshot', onSnapshot)
+      accountState.unsubscribe('guest', onGuest)
+    }
   })
   watch(settings, (s, _, onCleanup) => {
     if (!s) return

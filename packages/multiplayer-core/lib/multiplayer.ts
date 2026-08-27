@@ -2,6 +2,10 @@ import type {
   ConnectionUserInfo,
   Multiplayer,
   MultiplayerIceServerCredential,
+  MultiplayerTelemetryEvent,
+  MultiplayerTelemetryFailureCode,
+  MultiplayerTelemetryOutcome,
+  MultiplayerTelemetryStage,
   Peer,
   PeerState,
   SetRemoteDescriptionOptions,
@@ -19,6 +23,8 @@ import { createPeerDownloadServer } from './peerDownload'
 import { TogetherRoom, type TogetherRoomApi } from './room'
 import type { PeerConnectionProvider } from './peerConnection'
 
+const metadataOpenTimeout = 15_000
+
 export interface TogetherMultiplayerOptions {
   roomApi: TogetherRoomApi
   localNetwork: LocalNetwork
@@ -27,6 +33,7 @@ export interface TogetherMultiplayerOptions {
   sharedFiles?: SharedFiles
   setDownloadPort?(port: number): Promise<void>
   logger?: MultiplayerLogger
+  createTelemetryAttempt?(): ((event: MultiplayerTelemetryEvent) => void) | undefined
 }
 
 export interface TogetherMultiplayer extends Multiplayer {
@@ -59,10 +66,12 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
   let iceServers: RTCIceServer[] = []
   let iceServersExpireAt = 0
   let iceServersRefresh: Promise<void> | undefined
+  let turnSessionId: string | undefined
   let room: TogetherRoom | undefined
   let roomOperation = 0
   const roomReconnectAttempts = new Map<string, number>()
   const roomReconnectTimers = new Map<string, ReturnType<typeof setTimeout>>()
+  const attempts = new Map<string, ReturnType<typeof createAttemptTelemetry>>()
   let exposedPorts: number[] = []
   let downloadServer: LocalServer | undefined
   let disposed = false
@@ -80,6 +89,11 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
 
   const dropPeer = (peer: TogetherPeer) => {
     if (peers.get(peer.id) !== peer) return
+    attempts.get(peer.id)?.complete(
+      disposed ? 'cancelled' : 'closed',
+      disposed ? 'launcher_shutdown' : 'peer_closed',
+    )
+    attempts.delete(peer.id)
     peers.delete(peer.id)
     for (const [remoteId, roomPeer] of roomPeers) {
       if (roomPeer === peer) roomPeers.delete(remoteId)
@@ -103,15 +117,22 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
       !peer.options.initiator ||
       roomPeers.get(remoteId) !== peer
     ) {
-      return
+      return false
     }
     clearRoomReconnectTimer(remoteId)
     const attempt = (roomReconnectAttempts.get(remoteId) ?? 0) + 1
+    const peerAttempt = attempts.get(peer.id)
+    if (!peerAttempt?.isTerminal) {
+      peerAttempt?.emit('ice_connection', 'timed_out', {
+        failureCode: 'ice_timeout',
+      })
+      peerAttempt?.complete('timed_out', 'ice_timeout')
+    }
     peer.close()
     if (attempt > 6) {
       roomReconnectAttempts.delete(remoteId)
       if (activeRoom.canRemove(remoteId)) activeRoom.remove(remoteId)
-      return
+      return true
     }
     roomReconnectAttempts.set(remoteId, attempt)
     logger.emit({
@@ -119,8 +140,16 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
       event: 'together.room.peer_reconnecting',
       data: { remoteId, session: peer.id, attempt },
     })
-    const replacement = createPeer({ remoteId, initiator: true })
+    const replacement = createPeer({
+      remoteId,
+      initiator: true,
+      mode: 'official_room',
+      role: activeRoom.role,
+      roomSessionId: activeRoom.roomSessionId,
+      retry: attempt,
+    })
     roomPeers.set(remoteId, replacement)
+    return true
   }
 
   const createPeer = (peerOptions: {
@@ -128,10 +157,73 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
     remoteId?: string
     initiator: boolean
     sharedTurnServer?: RTCIceServer
+    mode?: 'official_room' | 'manual_offer'
+    role?: 'master' | 'member'
+    roomSessionId?: string
+    retry?: number
   }) => {
     const session = peerOptions.session ?? crypto.randomUUID()
     const existing = peers.get(session)
     if (existing) return existing
+    const peerTurnSessionId = peerOptions.sharedTurnServer ? undefined : turnSessionId
+    let usedTurnSessionId: string | undefined
+    let selectedTelemetry: Pick<
+      MultiplayerTelemetryEvent,
+      'route' | 'localCandidateType' | 'remoteCandidateType' | 'networkProtocol'
+    > | undefined
+    const attemptContext = {
+      attemptId: crypto.randomUUID(),
+      roomSessionId: peerOptions.roomSessionId,
+      kind: 'peer_connection',
+      mode: peerOptions.mode ?? 'manual_offer',
+      role: peerOptions.role ?? (peerOptions.initiator ? 'master' : 'member'),
+      retry: peerOptions.retry ?? 0,
+    } satisfies Pick<
+      MultiplayerTelemetryEvent,
+      'attemptId' | 'roomSessionId' | 'kind' | 'mode' | 'role' | 'retry'
+    >
+    const attempt = createAttemptTelemetry(options.createTelemetryAttempt, attemptContext)
+    attempts.set(session, attempt)
+    attempt.emit('peer_created', 'started')
+    let iceClassification: Promise<void> | undefined
+    let metadataTimer: ReturnType<typeof setTimeout> | undefined
+    const classifyIceConnection = (current: TogetherPeer) => {
+      if (iceClassification) return iceClassification
+      iceClassification = selectedCandidateWithin(current, 1_000).then((selected) => {
+        if (peers.get(current.id) !== current || attempt.isTerminal) return
+        if (selected) {
+          state?.connectionSelectedCandidate({ id: current.id, ...selected })
+          logger.emit({
+            level: 'info',
+            event: 'together.connection.selected_candidate',
+            data: {
+              session: current.id,
+              remoteId: current.remoteId,
+              local: selected.local,
+              remote: selected.remote,
+            },
+          })
+        }
+        const localCandidateType = selected?.local.type
+        const remoteCandidateType = selected?.remote.type
+        usedTurnSessionId = localCandidateType === 'relay'
+          ? peerTurnSessionId
+          : undefined
+        attempt.setTurnSessionId(usedTurnSessionId)
+        selectedTelemetry = {
+          route: !selected
+            ? 'unknown'
+            : localCandidateType === 'relay' || remoteCandidateType === 'relay'
+              ? 'relay'
+              : 'direct',
+          localCandidateType,
+          remoteCandidateType,
+          networkProtocol: selected?.local.transportType,
+        }
+        attempt.emit('ice_connection', 'succeeded', selectedTelemetry)
+      })
+      return iceClassification
+    }
     const servers = peerOptions.sharedTurnServer
       ? [peerOptions.sharedTurnServer, ...iceServers]
       : iceServers
@@ -217,52 +309,90 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
             iceGatheringState: connection.iceGatheringState,
           })
           state?.signalingStateChange({ id: current.id, signalingState: connection.signalingState })
+          if (connection.iceGatheringState === 'complete') {
+            attempt.emit('ice_gathering', 'succeeded')
+          }
           if (connection.connectionState === 'connected') {
             if (current.remoteId) {
               clearRoomReconnectTimer(current.remoteId)
-              roomReconnectAttempts.delete(current.remoteId)
               room?.setRtcState(current.remoteId, 'connected')
             }
             for (const port of exposedPorts) current.sendLan(port)
-            void current.selectedCandidate().then((selected) => {
-              if (selected && peers.get(current.id) === current) {
-                state?.connectionSelectedCandidate({ id: current.id, ...selected })
-                logger.emit({
-                  level: 'info',
-                  event: 'together.connection.selected_candidate',
-                  data: {
-                    session: current.id,
-                    remoteId: current.remoteId,
-                    local: selected.local,
-                    remote: selected.remote,
-                  },
+            const classification = classifyIceConnection(current)
+            if (current.isMetadataOpen) {
+              if (metadataTimer) clearTimeout(metadataTimer)
+              metadataTimer = undefined
+              if (current.remoteId) roomReconnectAttempts.delete(current.remoteId)
+              attempt.emit('metadata_channel', 'succeeded')
+              void classification.then(() => attempt.complete('succeeded'))
+            } else if (!metadataTimer) {
+              metadataTimer = setTimeout(() => {
+                metadataTimer = undefined
+                if (current.isMetadataOpen || attempt.isTerminal) return
+                attempt.emit('metadata_channel', 'timed_out', {
+                  failureCode: 'metadata_timeout',
                 })
-              }
-            })
+                attempt.complete('timed_out', 'metadata_timeout')
+                if (!retryRoomPeer(current)) current.close()
+              }, metadataOpenTimeout)
+            }
+          } else if (connection.connectionState === 'failed') {
+            if (metadataTimer) clearTimeout(metadataTimer)
+            metadataTimer = undefined
+            const failureCode = attempt.outcomeFor('ice_connection') === 'succeeded'
+              ? 'data_channel_failed'
+              : 'ice_connection_failed'
+            attempt.emit('ice_connection', 'failed', { failureCode })
+            attempt.complete('failed', failureCode)
+            if (current.remoteId) {
+              room?.setRtcState(current.remoteId, 'negotiating')
+              retryRoomPeer(current)
+            }
           } else if (
             current.remoteId &&
-            (connection.connectionState === 'disconnected' ||
-              connection.connectionState === 'failed')
+            connection.connectionState === 'disconnected'
           ) {
             room?.setRtcState(current.remoteId, 'negotiating')
-            if (connection.connectionState === 'failed') {
-              retryRoomPeer(current)
-            } else if (!roomReconnectTimers.has(current.remoteId)) {
-              const remoteId = current.remoteId
-              roomReconnectTimers.set(remoteId, setTimeout(() => {
-                roomReconnectTimers.delete(remoteId)
-                if (current.connection.connectionState === 'disconnected') retryRoomPeer(current)
-              }, 5_000))
-            }
+            if (roomReconnectTimers.has(current.remoteId)) return
+            const remoteId = current.remoteId
+            roomReconnectTimers.set(remoteId, setTimeout(() => {
+              roomReconnectTimers.delete(remoteId)
+              if (current.connection.connectionState === 'disconnected') retryRoomPeer(current)
+            }, 5_000))
           }
         },
         onPing(current, ping) {
           state?.connectionPing({ id: current.id, ping })
         },
-        onClosed: dropPeer,
+        onClosed(current) {
+          if (metadataTimer) clearTimeout(metadataTimer)
+          metadataTimer = undefined
+          dropPeer(current)
+        },
+        onMinecraftBridge(bridgeAttemptId, outcome, failureCode) {
+          let bridgeAttempt = attempts.get(bridgeAttemptId)
+          if (!bridgeAttempt) {
+            bridgeAttempt = createAttemptTelemetry(options.createTelemetryAttempt, {
+              ...attemptContext,
+              attemptId: bridgeAttemptId,
+              kind: 'minecraft_bridge',
+              turnSessionId: usedTurnSessionId,
+              ...selectedTelemetry,
+            })
+            attempts.set(bridgeAttemptId, bridgeAttempt)
+          }
+          bridgeAttempt.emit('minecraft_bridge', outcome, { failureCode })
+          if (outcome !== 'started') {
+            bridgeAttempt.complete(outcome, failureCode)
+            attempts.delete(bridgeAttemptId)
+          }
+        },
         logger,
       })
     } catch (error) {
+      attempt.emit('peer_created', 'failed', { failureCode: 'unknown' })
+      attempt.complete('failed', 'unknown')
+      attempts.delete(session)
       logger.emit({
         level: 'error',
         event: 'together.connection.create_failed',
@@ -272,6 +402,7 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
       throw new Error(details.message, { cause: error })
     }
     peers.set(session, peer)
+    attempt.emit('peer_created', 'succeeded')
     state?.connectionAdd(toPeerState(peer, servers[0]))
     logger.emit({
       level: 'info',
@@ -280,6 +411,10 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
     })
     if (peerOptions.initiator) {
       void peer.initiate().catch((error) => {
+        attempt.emit('remote_description', 'failed', {
+          failureCode: 'signaling_state_invalid',
+        })
+        attempt.complete('failed', 'signaling_state_invalid')
         logger.emit({
           level: 'error',
           event: 'together.negotiation.failed',
@@ -295,6 +430,11 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
     type: 'offer' | 'answer',
     remoteId?: string,
     sharedTurnServer?: RTCIceServer,
+    roomContext?: {
+      role: 'master' | 'member'
+      roomSessionId?: string
+      retry?: number
+    },
   ) => {
     const peer =
       peers.get(description.session) ??
@@ -303,10 +443,24 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
         remoteId: remoteId || description.id,
         initiator: false,
         sharedTurnServer,
+        mode: roomContext ? 'official_room' : 'manual_offer',
+        role: roomContext?.role,
+        roomSessionId: roomContext?.roomSessionId,
+        retry: roomContext?.retry,
       })
     if (remoteId && !peer.remoteId) peer.remoteId = remoteId
     if (remoteId) roomPeers.set(remoteId, peer)
-    await peer.applyRemoteDescription({ type, sdp: description.sdp }, description.candidates)
+    const attempt = attempts.get(peer.id)
+    try {
+      await peer.applyRemoteDescription({ type, sdp: description.sdp }, description.candidates)
+      attempt?.emit('remote_description', 'succeeded')
+    } catch (error) {
+      attempt?.emit('remote_description', 'failed', {
+        failureCode: 'remote_description_invalid',
+      })
+      attempt?.complete('failed', 'remote_description_invalid')
+      throw error
+    }
     return peer.id
   }
 
@@ -328,7 +482,13 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
         return
       }
       if (existing) roomPeers.delete(remoteId)
-      const peer = createPeer({ remoteId, initiator: true })
+      const peer = createPeer({
+        remoteId,
+        initiator: true,
+        mode: 'official_room',
+        role: room?.role ?? 'member',
+        roomSessionId: room?.roomSessionId,
+      })
       roomPeers.set(remoteId, peer)
       logger.emit({
         level: 'info',
@@ -342,7 +502,10 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
       type: 'offer' | 'answer',
       sharedTurn?: RTCIceServer,
     ) {
-      void applyDescription(description, type, remoteId, sharedTurn).catch((error) => {
+      void applyDescription(description, type, remoteId, sharedTurn, {
+        role: room?.role ?? 'member',
+        roomSessionId: room?.roomSessionId,
+      }).catch((error) => {
         logger.emit({
           level: 'error',
           event: 'together.room.signal_failed',
@@ -396,6 +559,25 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
     onPing(ping: number, timestamp: number) {
       state?.pingSet({ ping, timestamp })
     },
+    onSocketAttempt(retry: number) {
+      const activeRoom = room
+      const attempt = createAttemptTelemetry(options.createTelemetryAttempt, {
+        attemptId: crypto.randomUUID(),
+        roomSessionId: activeRoom?.roomSessionId,
+        kind: 'signaling_socket',
+        mode: 'official_room',
+        role: activeRoom?.role ?? 'member',
+        retry,
+      })
+      attempt.emit('signaling_socket', 'started')
+      return (
+        outcome: Exclude<MultiplayerTelemetryOutcome, 'started'>,
+        failureCode?: MultiplayerTelemetryFailureCode,
+      ) => {
+        attempt.emit('signaling_socket', outcome, { failureCode })
+        attempt.complete(outcome, failureCode)
+      }
+    },
   })
 
   const enterRoom = async (
@@ -434,6 +616,9 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
     if (iceServersRefresh) return iceServersRefresh
     const refresh = options.roomApi.getIceServerCredential().then((credential) => {
       iceServers = normalizeIceServers(credential)
+      turnSessionId = credential.turnSessionId && validTelemetryId(credential.turnSessionId)
+        ? credential.turnSessionId
+        : undefined
       const ttl = Math.max(30, credential.ttl ?? 300)
       iceServersExpireAt = Date.now() + ttl * 900
       state?.validIceServerSet(
@@ -448,6 +633,84 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
     })
     iceServersRefresh = current
     return iceServersRefresh
+  }
+
+  function createAttemptTelemetry(
+    createTelemetryAttempt: TogetherMultiplayerOptions['createTelemetryAttempt'],
+    context: Pick<
+      MultiplayerTelemetryEvent,
+      'attemptId' | 'roomSessionId' | 'kind' | 'mode' | 'role' | 'retry'
+    > & Pick<
+      Partial<MultiplayerTelemetryEvent>,
+      | 'turnSessionId'
+      | 'route'
+      | 'localCandidateType'
+      | 'remoteCandidateType'
+      | 'networkProtocol'
+    >,
+  ) {
+    const startedAt = Date.now()
+    const telemetry = createTelemetryAttempt?.()
+    const lastOutcomes = new Map<
+      MultiplayerTelemetryStage,
+      MultiplayerTelemetryOutcome
+    >()
+    let lastStage: MultiplayerTelemetryStage = context.kind === 'peer_connection'
+      ? 'peer_created'
+      : context.kind
+    let attemptTurnSessionId = context.turnSessionId
+    let details: Pick<
+      Partial<MultiplayerTelemetryEvent>,
+      'route' | 'localCandidateType' | 'remoteCandidateType' | 'networkProtocol'
+    > = {
+      route: context.route,
+      localCandidateType: context.localCandidateType,
+      remoteCandidateType: context.remoteCandidateType,
+      networkProtocol: context.networkProtocol,
+    }
+    let terminal = false
+    return {
+      get isTerminal() {
+        return terminal
+      },
+      emit(
+        stage: MultiplayerTelemetryStage,
+        outcome: MultiplayerTelemetryOutcome,
+        nextDetails: Partial<MultiplayerTelemetryEvent> = {},
+      ) {
+        if (terminal) return
+        lastStage = stage
+        lastOutcomes.set(stage, outcome)
+        details = {
+          route: nextDetails.route ?? details.route,
+          localCandidateType: nextDetails.localCandidateType ?? details.localCandidateType,
+          remoteCandidateType: nextDetails.remoteCandidateType ?? details.remoteCandidateType,
+          networkProtocol: nextDetails.networkProtocol ?? details.networkProtocol,
+        }
+      },
+      outcomeFor(stage: MultiplayerTelemetryStage) {
+        return lastOutcomes.get(stage)
+      },
+      setTurnSessionId(value: string | undefined) {
+        attemptTurnSessionId = value
+      },
+      complete(outcome: MultiplayerTelemetryOutcome, failureCode?: MultiplayerTelemetryFailureCode) {
+        if (terminal || outcome === 'started') return
+        terminal = true
+        const failed = outcome !== 'succeeded'
+        const route = details.route
+        telemetry?.({
+          ...context,
+          ...details,
+          turnSessionId: route === 'relay' ? attemptTurnSessionId : undefined,
+          outcome,
+          failedStage: failed ? lastStage : undefined,
+          failureCode: failed ? failureCode : undefined,
+          durationMs: Math.max(0, Math.min(Date.now() - startedAt, 24 * 60 * 60 * 1_000)),
+        })
+      },
+    }
+
   }
 
   const ensureIceServers = async () => {
@@ -605,6 +868,27 @@ export function createTogetherMultiplayer(options: TogetherMultiplayerOptions): 
   }
 
   return api
+}
+
+function validTelemetryId(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    .test(value)
+}
+
+function selectedCandidateWithin(peer: TogetherPeer, timeoutMs: number) {
+  return new Promise<Awaited<ReturnType<TogetherPeer['selectedCandidate']>>>((resolve) => {
+    const timer = setTimeout(() => resolve(undefined), timeoutMs)
+    void peer.selectedCandidate().then(
+      (selected) => {
+        clearTimeout(timer)
+        resolve(selected)
+      },
+      () => {
+        clearTimeout(timer)
+        resolve(undefined)
+      },
+    )
+  })
 }
 
 function toPeerState(peer: TogetherPeer, iceServer?: RTCIceServer): Peer {

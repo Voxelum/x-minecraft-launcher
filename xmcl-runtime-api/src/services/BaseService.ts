@@ -103,6 +103,8 @@ export interface BaseService extends GenericEventEmitter<BaseServiceEventMap> {
 
   getSessionId(): Promise<string>
 
+  getDeviceId(): Promise<string>
+
   getSettings(): Promise<SharedState<Settings>>
 
   makeDesktopShortcut(): Promise<boolean>

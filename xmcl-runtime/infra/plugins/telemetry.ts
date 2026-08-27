@@ -1,16 +1,16 @@
 import { UpdateResourcePayload } from '@xmcl/resource'
-import { AGENT_TELEMETRY_FLIGHT, APP_INSIGHT_KEY, Exception, LaunchService as ILaunchService, Settings } from '@xmcl/runtime-api'
+import { AGENT_TELEMETRY_FLIGHT, APP_INSIGHT_KEY, Exception, LaunchService as ILaunchService, Settings, type XmclAccountSnapshot } from '@xmcl/runtime-api'
 import type { Contracts, TelemetryClient } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '~/constant'
-import { kClientToken, kFlights, kIsNewClient } from '~/infra'
+import { kClientToken, kFlights, kIsNewClient, launcherSessionId } from '~/infra'
 import { LaunchService } from '~/launch'
 import { createPostprocessTelemetryTracker } from '~/install/postprocessTelemetry'
-import { PeerService } from '~/peer'
 import { kResourceManager } from '~/resource'
 import { kSettings } from '~/settings'
 import { UserService } from '~/user'
+import { XmclAccountService } from '~/xmclAccount'
 import { parseStack } from '../errors'
 import { ErrorDiagnose } from '../errors/ErrorDiagnose'
 import { setupResourceTelemetryClient } from '../telemetry_resource'
@@ -85,8 +85,6 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   const contract = new appInsight.Contracts.ContextTagKeys()
   const diagnose = new ErrorDiagnose(app)
 
-  const sessionId = randomUUID()
-
   const clientSession = await app.registry.get(kClientToken)
   const isNewClient = await app.registry.get(kIsNewClient)
 
@@ -101,8 +99,8 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     .start()
 
   const tags = appInsight.defaultClient.context.tags
-  tags[contract.sessionId] = sessionId
-  tags[contract.userId] = clientSession
+  tags[contract.sessionId] = launcherSessionId
+  tags[contract.userId] = `device:${clientSession}`
   tags[contract.applicationVersion] = IS_DEV ? '0.0.0' : `${app.version}#${app.build}`
   tags[contract.operationParentId] = 'root'
   tags[contract.deviceModel] = app.platform.arch
@@ -134,6 +132,15 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   const sampled = ['UpdateMetadataError', 'NodeInternalError']
 
   defaultClient.addTelemetryProcessor((envelope, contextObjects) => {
+    const baseData = envelope.data.baseData as
+      | { properties?: Record<string, string> }
+      | undefined
+    if (baseData) {
+      baseData.properties = {
+        ...baseData.properties,
+        deviceId: clientSession,
+      }
+    }
     if (contextObjects?.error) {
       const exception = envelope.data.baseData as Contracts.ExceptionData
       const e = contextObjects?.error
@@ -149,12 +156,6 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   })
 
   logger.log('Telemetry client started')
-  defaultClient.trackEvent({
-    name: 'app-start',
-    properties: {
-      isNewClient,
-    },
-  })
 
   app.registryDisposer(async () => {
     defaultClient.trackEvent({
@@ -209,6 +210,31 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   app.waitEngineReady().then(async () => {
     const settings = await app.registry.get(kSettings)
 
+    try {
+      const state = await app.registry.get(XmclAccountService)
+        .then((service) => service.getXmclAccountState())
+      const setUserId = (accountId?: string) => {
+        tags[contract.userId] = accountId ?? `device:${clientSession}`
+      }
+      state.subscribe('snapshot', (snapshot: XmclAccountSnapshot) => {
+        setUserId(snapshot.account?.accountId)
+      })
+      state.subscribe('guest', () => {
+        setUserId()
+      })
+      setUserId(state.account?.accountId)
+    } catch {
+      logger.warn('Failed to initialize account-aware telemetry identity')
+    }
+    if (!settings.disableTelemetry) {
+      defaultClient.trackEvent({
+        name: 'app-start',
+        properties: {
+          isNewClient,
+        },
+      })
+    }
+
     app.registry.get(kResourceManager).then((manager) => {
       manager.context.event.on('resourceUpdateMetadataError', (payload: UpdateResourcePayload, err: any) => {
         if (settings.disableTelemetry) return
@@ -222,7 +248,13 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     })
 
     // resource data are enormous, so we need to handle them separately
-    setupResourceTelemetryClient(appInsight, app, settings, appInsight.defaultClient.context.tags)
+    setupResourceTelemetryClient(
+      appInsight,
+      app,
+      settings,
+      appInsight.defaultClient.context.tags,
+      clientSession,
+    )
 
     app.on('download-performance', (payload) => {
       if (settings.disableTelemetry) return
@@ -354,22 +386,5 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       })
     })
 
-    // Track peer connection quality
-    app.registry.get(PeerService).then(service => {
-      service.getPeerState().then(state => {
-        state.subscribe('connectionStateChange', (state) => {
-          if (state.connectionState === 'connected') {
-            defaultClient.trackEvent({
-              name: 'peer-connection-connected',
-            })
-          }
-        })
-        state.subscribe('connectionAdd', (conn) => {
-          defaultClient.trackEvent({
-            name: 'peer-connection-add',
-          })
-        })
-      })
-    })
   })
 }

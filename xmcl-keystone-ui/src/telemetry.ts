@@ -12,6 +12,12 @@ const appInsights = new ApplicationInsights({
 })
 appInsights.loadAppInsights()
 
+let telemetryDeviceId = ''
+
+export function setTelemetryDeviceId(deviceId: string) {
+  telemetryDeviceId = deviceId
+}
+
 const vuetifyDetachedOverlayMessage =
   "Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'."
 
@@ -50,6 +56,17 @@ export function isIgnorableRendererExceptionMessage(message: string) {
 // `route`, or `snippet`. The shape fix here reactivates the entire
 // suppression layer with no other behavioural changes.
 appInsights.addTelemetryInitializer((envelope) => {
+  if (telemetryDeviceId) {
+    const baseData = envelope.baseData as
+      | { properties?: Record<string, string> }
+      | undefined
+    if (baseData) {
+      baseData.properties = {
+        ...baseData.properties,
+        deviceId: telemetryDeviceId,
+      }
+    }
+  }
   if (envelope.baseType !== 'ExceptionData') return true
   const baseData = envelope.baseData as
     | { exceptions?: Array<{ typeName?: string; message?: string }> ; properties?: Record<string, any> }

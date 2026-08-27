@@ -13,9 +13,10 @@ import {
 import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
 import { kPeerFacade } from './PeerServiceFacade'
-import { kClientToken, kFlights } from '~/infra'
+import { kClientToken, kFlights, launcherSessionId } from '~/infra'
 import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
 import { kSettings } from '~/settings'
+import { XmclAccountService } from '~/xmclAccount'
 import {
   kMultiplayerHostFactory,
   type MultiplayerHost,
@@ -106,11 +107,17 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   private async createMultiplayerHost(transport: MultiplayerTransport) {
     const factory = await this.app.registry.get(kMultiplayerHostFactory)
+    const settings = await this.app.registry.get(kSettings)
+    const accountState = await this.app.registry
+      .get(XmclAccountService)
+      .then((service) => service.getXmclAccountState())
     const host = await factory({
       transport,
       state: this.state,
       init: await this.getMultiplayerInit(),
       log: (event) => { void this.logMultiplayer(event) },
+      isTelemetryEnabled: () => !settings.disableTelemetry,
+      getTelemetryAccountId: () => accountState.account?.accountId,
       setDownloadPort: (port) => { this.downloadPort = port },
     })
     host.on('share', (payload) => this.emit('share', payload))
@@ -179,6 +186,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       appDataPath: this.app.appDataPath,
       resourcePath,
       sessionId,
+      launcherSessionId,
       signalingBaseUrl,
     }
   }
@@ -190,7 +198,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     if (message.length > 8_192) return
     const multiplayerLogger = this.app.getLogger('WebRTC', 'multiplayer')
     if (event.level === 'error') {
-      multiplayerLogger.error(new Error(message))
+      multiplayerLogger.warn(`[error] ${message}`)
     } else if (event.level === 'warn') {
       multiplayerLogger.warn(message)
     } else {

@@ -4,6 +4,8 @@ import type {
   MultiplayerRoomAdmission,
   MultiplayerRoomMember,
   MultiplayerRoomState,
+  MultiplayerTelemetryFailureCode,
+  MultiplayerTelemetryOutcome,
   TransferDescription,
 } from '@xmcl/runtime-api'
 
@@ -111,6 +113,11 @@ export function parseRoomAdmission(input: unknown, signalingBaseUrl: string): Mu
   }
   return {
     roomId: admission.roomId,
+    roomSessionId: typeof admission.roomSessionId === 'string' &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+          .test(admission.roomSessionId)
+      ? admission.roomSessionId
+      : undefined,
     socketUrl: socketUrl.toString(),
     ticket: admission.ticket,
     peerId: admission.peerId,
@@ -131,6 +138,12 @@ export interface TogetherRoomCallbacks {
   onReset(): void
   onError(error: unknown): void
   onPing(ping: number, timestamp: number): void
+  onSocketAttempt?(
+    retry: number,
+  ): (
+    outcome: Exclude<MultiplayerTelemetryOutcome, 'started'>,
+    failureCode?: MultiplayerTelemetryFailureCode,
+  ) => void
 }
 
 export interface MultiplayerRoomSocket {
@@ -186,6 +199,10 @@ export class TogetherRoom {
         timer: ReturnType<typeof setTimeout>
       }
     | undefined
+  private socketAttempt = 0
+  private openingSocket:
+    | { socket: MultiplayerRoomSocket; cancel: () => void }
+    | undefined
 
   constructor(
     private admission: MultiplayerRoomAdmission,
@@ -202,6 +219,10 @@ export class TogetherRoom {
     return this.admission.roomId
   }
 
+  get roomSessionId() {
+    return this.admission.roomSessionId
+  }
+
   get role() {
     if (!this.hasSnapshot) return this.admission.role
     return this.selfPeerId === this.masterPeerId ? 'master' : 'member'
@@ -209,64 +230,99 @@ export class TogetherRoom {
 
   async connect() {
     if (this.closed) return
+    const reportAttempt = this.callbacks.onSocketAttempt?.(this.socketAttempt++)
+    let attemptFinished = false
+    const finishAttempt = (
+      outcome: Exclude<MultiplayerTelemetryOutcome, 'started'>,
+      failureCode?: MultiplayerTelemetryFailureCode,
+    ) => {
+      if (attemptFinished) return
+      attemptFinished = true
+      if (failureCode) reportAttempt?.(outcome, failureCode)
+      else reportAttempt?.(outcome)
+    }
     this.callbacks.onState('connecting')
     const url = new URL(this.admission.socketUrl)
     url.searchParams.set('ticket', this.admission.ticket)
     const socket = this.createSocket(url.toString())
     this.socket = socket
-    await new Promise<void>((resolve, reject) => {
-      let opened = false
-      let settled = false
-      const timer = setTimeout(() => {
-        if (settled) return
-        settled = true
-        socket.close(1000, 'Upgrade timeout')
-        reject(new Error('multiplayer_room_websocket_upgrade_timeout'))
-      }, openTimeout)
-      socket.onopen = () => {
-        opened = true
-        settled = true
-        clearTimeout(timer)
-        this.callbacks.onState('connected')
-        resolve()
-      }
-      socket.onmessage = ({ data }) => {
-        if (typeof data !== 'string') {
-          this.fail(new Error('multiplayer_room_protocol_error:non_text_message'), 1002)
-          return
-        }
-        try {
-          this.handle(parseMessage(JSON.parse(data)))
-        } catch (error) {
-          this.fail(error, 1002)
-        }
-      }
-      socket.onerror = () => {
-        if (!opened && !settled) {
+    try {
+      await new Promise<void>((resolve, reject) => {
+        let opened = false
+        let settled = false
+        const timer = setTimeout(() => {
+          if (settled) return
           settled = true
-          clearTimeout(timer)
-          reject(new Error('multiplayer_room_websocket_upgrade_failed'))
-        }
-      }
-      socket.onclose = ({ code, reason }) => {
-        if (socket !== this.socket) return
-        this.socket = undefined
-        if (!opened) {
-          if (!settled) {
+          socket.close(1000, 'Upgrade timeout')
+          reject(new Error('multiplayer_room_websocket_upgrade_timeout'))
+        }, openTimeout)
+        this.openingSocket = {
+          socket,
+          cancel: () => {
+            if (settled) return
             settled = true
             clearTimeout(timer)
-            reject(new Error(`multiplayer_room_websocket_closed_before_open:${code}`))
+            finishAttempt('cancelled', 'launcher_shutdown')
+            reject(new Error('multiplayer_room_websocket_upgrade_cancelled'))
+          },
+        }
+        socket.onopen = () => {
+          opened = true
+          settled = true
+          clearTimeout(timer)
+          if (this.openingSocket?.socket === socket) this.openingSocket = undefined
+          this.callbacks.onState('connected')
+          resolve()
+        }
+        socket.onmessage = ({ data }) => {
+          if (typeof data !== 'string') {
+            this.fail(new Error('multiplayer_room_protocol_error:non_text_message'), 1002)
+            return
           }
-          return
+          try {
+            this.handle(parseMessage(JSON.parse(data)))
+          } catch (error) {
+            this.fail(error, 1002)
+          }
         }
-        if (this.closed) return
-        if (code === 4000 || code === 4001 || code === 4003) {
-          this.fail(new Error(`multiplayer_room_closed:${code}:${reason}`))
-        } else {
-          void this.restore()
+        socket.onerror = () => {
+          if (!opened && !settled) {
+            settled = true
+            clearTimeout(timer)
+            reject(new Error('multiplayer_room_websocket_upgrade_failed'))
+          }
         }
-      }
-    })
+        socket.onclose = ({ code, reason }) => {
+          if (socket !== this.socket) return
+          this.socket = undefined
+          if (!opened) {
+            if (!settled) {
+              settled = true
+              clearTimeout(timer)
+              reject(new Error(`multiplayer_room_websocket_closed_before_open:${code}`))
+            }
+            return
+          }
+          if (this.closed) return
+          if (code === 4000 || code === 4001 || code === 4003) {
+            this.fail(new Error(`multiplayer_room_closed:${code}:${reason}`))
+          } else {
+            void this.restore()
+          }
+        }
+      })
+      finishAttempt('succeeded')
+    } catch (error) {
+      const timedOut = error instanceof Error &&
+        error.message === 'multiplayer_room_websocket_upgrade_timeout'
+      finishAttempt(
+        timedOut ? 'timed_out' : 'failed',
+        'signaling_open_failed',
+      )
+      throw error
+    } finally {
+      if (this.openingSocket?.socket === socket) this.openingSocket = undefined
+    }
   }
 
   sendDescription(
@@ -351,9 +407,10 @@ export class TogetherRoom {
     this.callbacks.onState('closing')
     this.closePeers()
     this.rejectTransfer(new Error('multiplayer_room_transfer_cancelled'))
-    if (wasMaster && !successor) await this.api.closeRoom(this.roomId).catch(this.callbacks.onError)
+    this.openingSocket?.cancel()
     this.socket?.close(1000, 'Client left')
     this.socket = undefined
+    if (wasMaster && !successor) await this.api.closeRoom(this.roomId).catch(this.callbacks.onError)
     this.callbacks.onState('closed')
   }
 

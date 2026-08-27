@@ -133,6 +133,15 @@ describe('Together room', () => {
     vi.stubGlobal('WebSocket', FakeWebSocket)
     const masterAdmission = { ...admission, role: 'master' as const }
     const callbacks = createCallbacks()
+    const socketAttempts: Array<{
+      retry: number
+      finish: ReturnType<typeof vi.fn>
+    }> = []
+    callbacks.onSocketAttempt = vi.fn((retry) => {
+      const finish = vi.fn()
+      socketAttempts.push({ retry, finish })
+      return finish
+    })
     const room = new TogetherRoom(
       masterAdmission,
       profile,
@@ -150,6 +159,9 @@ describe('Together room', () => {
     const firstSocket = FakeWebSocket.instances[0]
     firstSocket.open()
     await connected
+    expect(socketAttempts).toHaveLength(1)
+    expect(socketAttempts[0].retry).toBe(0)
+    expect(socketAttempts[0].finish).toHaveBeenCalledWith('succeeded')
     const snapshot = {
       type: 'room-state',
       selfPeerId: 'self',
@@ -168,11 +180,43 @@ describe('Together room', () => {
     const restoredSocket = FakeWebSocket.instances[1]
     restoredSocket.open()
     await vi.waitFor(() => expect(restoredSocket.readyState).toBe(FakeWebSocket.OPEN))
+    await vi.waitFor(() => expect(socketAttempts).toHaveLength(2))
+    expect(socketAttempts[1].retry).toBe(1)
+    expect(socketAttempts[1].finish).toHaveBeenCalledWith('succeeded')
     restoredSocket.receive(snapshot)
 
     expect(callbacks.drop).not.toHaveBeenCalled()
     expect(callbacks.initiate).toHaveBeenCalledTimes(2)
     expect(callbacks.initiate).toHaveBeenLastCalledWith('other')
+  })
+
+  it('cancels an in-flight signaling attempt when leaving the room', async () => {
+    vi.stubGlobal('WebSocket', FakeWebSocket)
+    const callbacks = createCallbacks()
+    const finishAttempt = vi.fn()
+    const closing = Promise.withResolvers<void>()
+    callbacks.onSocketAttempt = vi.fn(() => finishAttempt)
+    const room = new TogetherRoom(
+      { ...admission, role: 'master' },
+      profile,
+      {
+        createRoom: vi.fn(),
+        joinRoom: vi.fn(),
+        closeRoom: vi.fn(() => closing.promise),
+        getIceServerCredential: vi.fn(),
+      },
+      callbacks,
+      { emit: vi.fn() },
+    )
+
+    const connecting = room.connect()
+    const quitting = room.quit()
+
+    await expect(connecting).rejects.toThrow('multiplayer_room_websocket_upgrade_cancelled')
+    expect(finishAttempt).toHaveBeenCalledOnce()
+    expect(finishAttempt).toHaveBeenCalledWith('cancelled', 'launcher_shutdown')
+    closing.resolve()
+    await quitting
   })
 
   it('remaps a rejoined member without dropping its existing peer', async () => {
@@ -479,6 +523,7 @@ describe('Together room API', () => {
   it('normalizes admissions and uses authenticated requests', async () => {
     const response = {
       roomId: 'room',
+      roomSessionId: '73fb5ca7-b8ec-4524-a115-9413d3b55ef9',
       socketUrl: '/v1/multiplayer/rooms/room/socket',
       ticket: 'ticket',
       peerId: 'self',

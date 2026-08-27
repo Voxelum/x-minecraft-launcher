@@ -11,7 +11,7 @@ import { ServiceStateManager } from '~/service'
 const RESOURCE_TELEMETRY_CLIENT_STRING = 'InstrumentationKey=f0634ffa-7578-4751-8f64-581fd90bf347;IngestionEndpoint=https://eastasia-0.in.applicationinsights.azure.com/;LiveEndpoint=https://eastasia.livediagnostics.monitor.azure.com/;ApplicationId=4f19b6fd-9974-4da8-a399-77aac5b3e800'
 
 // resource data are enormous, so we need to handle them separately
-export async function setupResourceTelemetryClient(appInsight: typeof import('applicationinsights'), app: LauncherApp, settings: Settings, tags: Record<string, string>) {
+export async function setupResourceTelemetryClient(appInsight: typeof import('applicationinsights'), app: LauncherApp, settings: Settings, tags: Record<string, string>, deviceId: string) {
   const client = new appInsight.TelemetryClient(RESOURCE_TELEMETRY_CLIENT_STRING)
   const flights = await app.registry.get(kFlights)
   const stateManager = await app.registry.get(ServiceStateManager)
@@ -19,6 +19,15 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
   const MAX_MESSAGE_LENGTH = 32768;
 
   client.addTelemetryProcessor((envelope) => {
+    const baseData = envelope.data.baseData as
+      | { properties?: Record<string, string> }
+      | undefined
+    if (baseData) {
+      baseData.properties = {
+        ...baseData.properties,
+        deviceId,
+      }
+    }
     if (envelope.data.baseType === "MessageData") {
       const messageData = envelope.data.baseData;
 
@@ -54,9 +63,7 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
   })
 
 
-  client.context.tags = {
-    ...tags,
-  }
+  client.context.tags = tags
 
   const getPayload = (sha1: string, metadata: ResourceMetadata, name?: string, domain?: ResourceDomain) => {
     interface ResourceTracingPayload {

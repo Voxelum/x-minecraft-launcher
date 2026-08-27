@@ -1,6 +1,8 @@
 import type {
   ConnectionUserInfo,
   InstanceManifest,
+  MultiplayerTelemetryFailureCode,
+  MultiplayerTelemetryOutcome,
   SelectedCandidateInfo,
   TransferDescription,
 } from '@xmcl/runtime-api'
@@ -36,6 +38,11 @@ export interface TogetherPeerOptions {
   onState(peer: TogetherPeer): void
   onPing(peer: TogetherPeer, ping: number): void
   onClosed(peer: TogetherPeer): void
+  onMinecraftBridge?(
+    attemptId: string,
+    outcome: MultiplayerTelemetryOutcome,
+    failureCode?: MultiplayerTelemetryFailureCode,
+  ): void
   logger: MultiplayerLogger
 }
 
@@ -56,6 +63,8 @@ export class TogetherPeer {
   private readonly candidates: Array<{ candidate: string; mid: string }> = []
   private readonly remoteCandidates = new Set<string>()
   private readonly proxies = new Map<number, LocalServer>()
+  private readonly pendingProxies = new Set<number>()
+  private readonly pendingMinecraftBridges = new Set<string>()
   private localDescription: RTCSessionDescriptionInit | undefined
   private remoteDescription: RTCSessionDescriptionInit | undefined
   private descriptionTimer: ReturnType<typeof setTimeout> | undefined
@@ -219,6 +228,9 @@ export class TogetherPeer {
     if (this.descriptionTimer) clearTimeout(this.descriptionTimer)
     if (this.iceTimer) clearTimeout(this.iceTimer)
     if (this.heartbeatTimer) clearInterval(this.heartbeatTimer)
+    for (const attemptId of Array.from(this.pendingMinecraftBridges)) {
+      this.reportMinecraftBridge(attemptId, 'cancelled', 'peer_closed')
+    }
     for (const proxy of this.proxies.values()) proxy.close()
     this.proxies.clear()
     if (this.metadata?.readyState === 'open') this.metadata.close()
@@ -361,18 +373,33 @@ export class TogetherPeer {
       })
       this.remoteLanAvailable = true
       this.requestManifestIfNeeded()
-      void this.ensureProxy(Number(payload.port), payload.motd).catch((error) => {
-        this.options.logger.emit({
-          level: 'error',
-          event: 'together.lan.proxy_failed',
-          data: {
-            session: this.id,
-            remoteId: this.remoteId,
-            port: payload.port,
-            ...summarizeError(error),
-          },
+      const port = Number(payload.port)
+      if (this.proxies.has(port)) {
+        void this.ensureProxy(port, payload.motd)
+        return
+      }
+      if (this.pendingProxies.has(port)) {
+        return
+      }
+      this.pendingProxies.add(port)
+      const attemptId = crypto.randomUUID()
+      this.reportMinecraftBridge(attemptId, 'started')
+      void this.ensureProxy(port, payload.motd)
+        .then(() => this.reportMinecraftBridge(attemptId, 'succeeded'))
+        .catch((error) => {
+          this.reportMinecraftBridge(attemptId, 'failed', 'bridge_bind_failed')
+          this.options.logger.emit({
+            level: 'error',
+            event: 'together.lan.proxy_failed',
+            data: {
+              session: this.id,
+              remoteId: this.remoteId,
+              port: payload.port,
+              ...summarizeError(error),
+            },
+          })
         })
-      })
+        .finally(() => this.pendingProxies.delete(port))
     } else if (message.type === 'share') {
       const manifest = message.payload
       if (manifest === undefined || (manifest && typeof manifest === 'object')) {
@@ -517,6 +544,8 @@ export class TogetherPeer {
       },
     })
     server.onConnection((socket) => {
+      const telemetryAttemptId = crypto.randomUUID()
+      this.reportMinecraftBridge(telemetryAttemptId, 'started')
       const bridgeId = this.minecraftBridgeId(originalPort)
       this.options.logger.emit({
         level: 'info',
@@ -534,7 +563,11 @@ export class TogetherPeer {
         ordered: true,
         protocol: 'minecraft',
       })
-      bridge(channel, socket, this.bridgeContext(bridgeId, originalPort, 'proxy'))
+      bridge(
+        channel,
+        socket,
+        this.bridgeContext(bridgeId, originalPort, 'proxy', telemetryAttemptId),
+      )
     })
     this.options.onLan(this, { port: server.port, motd })
   }
@@ -546,8 +579,10 @@ export class TogetherPeer {
       return
     }
     const bridgeId = this.minecraftBridgeId(port)
-    const context = this.bridgeContext(bridgeId, port, 'host')
+    const telemetryAttemptId = crypto.randomUUID()
+    const context = this.bridgeContext(bridgeId, port, 'host', telemetryAttemptId)
     const pending = bufferChannelWhileConnecting(channel, context)
+    this.reportMinecraftBridge(telemetryAttemptId, 'started')
     this.options.logger.emit({
       level: 'info',
       event: 'together.minecraft.local_connecting',
@@ -564,6 +599,11 @@ export class TogetherPeer {
       .then((socket) => {
         if (channel.readyState === 'closed') {
           socket.close()
+          this.reportMinecraftBridge(
+            telemetryAttemptId,
+            'failed',
+            'data_channel_failed',
+          )
           return
         }
         this.options.logger.emit({
@@ -582,6 +622,11 @@ export class TogetherPeer {
         bridge(channel, socket, context, pending.take())
       })
       .catch((error) => {
+        this.reportMinecraftBridge(
+          telemetryAttemptId,
+          'failed',
+          'bridge_connect_failed',
+        )
         this.options.logger.emit({
           level: 'warn',
           event: 'together.minecraft.connect_failed',
@@ -595,7 +640,12 @@ export class TogetherPeer {
     return `${this.id}:${port}:${++this.nextMinecraftBridgeId}`
   }
 
-  private bridgeContext(bridgeId: string, port: number, side: 'proxy' | 'host') {
+  private bridgeContext(
+    bridgeId: string,
+    port: number,
+    side: 'proxy' | 'host',
+    telemetryAttemptId: string,
+  ) {
     return {
       bridgeId,
       session: this.id,
@@ -603,7 +653,24 @@ export class TogetherPeer {
       port,
       side,
       logger: this.options.logger,
+      onTelemetry: (attemptId, outcome, failureCode) => {
+        this.reportMinecraftBridge(attemptId, outcome, failureCode)
+      },
+      telemetryAttemptId,
     } satisfies MinecraftBridgeContext
+  }
+
+  private reportMinecraftBridge(
+    attemptId: string,
+    outcome: MultiplayerTelemetryOutcome,
+    failureCode?: MultiplayerTelemetryFailureCode,
+  ) {
+    if (outcome === 'started') {
+      this.pendingMinecraftBridges.add(attemptId)
+    } else {
+      if (!this.pendingMinecraftBridges.delete(attemptId)) return
+    }
+    this.options.onMinecraftBridge?.(attemptId, outcome, failureCode)
   }
 
   private sendMetadata(message: MetadataMessage) {
@@ -674,6 +741,8 @@ interface MinecraftBridgeContext {
   port: number
   side: 'proxy' | 'host'
   logger: MultiplayerLogger
+  onTelemetry?: TogetherPeerOptions['onMinecraftBridge']
+  telemetryAttemptId: string
 }
 
 function bufferChannelWhileConnecting(channel: RTCDataChannel, context: MinecraftBridgeContext) {
@@ -685,6 +754,11 @@ function bufferChannelWhileConnecting(channel: RTCDataChannel, context: Minecraf
     if (!buffer) return
     bytes += buffer.byteLength
     if (bytes > pendingSocketLimit) {
+      context.onTelemetry?.(
+        context.telemetryAttemptId,
+        'failed',
+        'data_channel_failed',
+      )
       context.logger.emit({
         level: 'warn',
         event: 'together.minecraft.pending_overflow',
@@ -722,12 +796,20 @@ function bridge(
   let loggedChannelData = false
   let loggedSocketWrite = false
   let closed = false
+  let connected = false
   const close = (reason: string, error?: Error) => {
     if (closed) return
     closed = true
     pending = []
     socket.close()
     if (channel.readyState !== 'closed') channel.close()
+    if (!connected) {
+      context.onTelemetry?.(
+        context.telemetryAttemptId,
+        error ? 'failed' : 'cancelled',
+        error ? 'data_channel_failed' : 'peer_closed',
+      )
+    }
     context.logger.emit({
       level: error ? 'warn' : 'info',
       event: 'together.minecraft.bridge_closed',
@@ -784,6 +866,10 @@ function bridge(
   socket.onClose(() => close('socket_closed'))
   socket.onError((error) => close('socket_error', error))
   channel.onopen = () => {
+    if (!connected) {
+      connected = true
+      context.onTelemetry?.(context.telemetryAttemptId, 'succeeded')
+    }
     context.logger.emit({
       level: 'info',
       event: 'together.minecraft.channel_open',

@@ -1,7 +1,7 @@
 import type { ConnectionUserInfo, InstanceManifest } from '@xmcl/runtime-api'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { FileTransferChannel, type TransferWritable } from './fileTransfer'
-import type { LocalSocket } from './localNetwork'
+import type { LocalServer, LocalSocket } from './localNetwork'
 import type { MultiplayerLogEvent } from './logger'
 import { TogetherPeer } from './peer'
 
@@ -79,6 +79,114 @@ afterEach(() => {
 })
 
 describe('Together peer negotiation', () => {
+  it('does not emit another bridge attempt for a repeated LAN advertisement', async () => {
+    vi.stubGlobal('RTCPeerConnection', FakePeerConnection)
+    const server: LocalServer = {
+      id: 'server',
+      port: 25_566,
+      close: vi.fn(),
+      onConnection: vi.fn(),
+    }
+    const onMinecraftBridge = vi.fn()
+    const listening = Promise.withResolvers<LocalServer>()
+    const listen = vi.fn(() => listening.promise)
+    const peer = new TogetherPeer({
+      id: 'session',
+      localId: 'local',
+      remoteId: 'remote',
+      initiator: true,
+      iceServers: [],
+      localNetwork: {
+        listen,
+        connect: vi.fn(),
+        discoverLan: vi.fn(),
+        broadcastLan: vi.fn(),
+      },
+      getUserInfo: () => profile,
+      getSharedManifest: () => undefined,
+      onDescription: vi.fn(),
+      onIdentity: vi.fn(),
+      onShare: vi.fn(),
+      onLan: vi.fn(),
+      onState: vi.fn(),
+      onPing: vi.fn(),
+      onClosed: vi.fn(),
+      onMinecraftBridge,
+      logger: { emit: vi.fn() },
+    })
+    const metadata = FakePeerConnection.instance.channels.get('metadata')!
+    const message = {
+      data: JSON.stringify({
+        type: 'lan',
+        payload: { port: 25_565, motd: 'Server' },
+      }),
+    } as MessageEvent
+
+    metadata.onmessage?.(message)
+    metadata.onmessage?.(message)
+    expect(listen).toHaveBeenCalledOnce()
+    expect(onMinecraftBridge).toHaveBeenCalledTimes(1)
+    listening.resolve(server)
+    await vi.waitFor(() => expect(onMinecraftBridge).toHaveBeenCalledTimes(2))
+    metadata.onmessage?.(message)
+    await Promise.resolve()
+
+    expect(listen).toHaveBeenCalledOnce()
+    expect(onMinecraftBridge.mock.calls).toEqual([
+      [expect.any(String), 'started', undefined],
+      [expect.any(String), 'succeeded', undefined],
+    ])
+    peer.close()
+  })
+
+  it('terminates a pending Minecraft bridge when the peer closes', () => {
+    vi.stubGlobal('RTCPeerConnection', FakePeerConnection)
+    const onMinecraftBridge = vi.fn()
+    const peer = new TogetherPeer({
+      id: 'session',
+      localId: 'local',
+      remoteId: 'remote',
+      initiator: false,
+      iceServers: [],
+      localNetwork: {
+        listen: vi.fn(),
+        connect: vi.fn(() => new Promise<LocalSocket>(() => {})),
+        discoverLan: vi.fn(),
+        broadcastLan: vi.fn(),
+      },
+      getUserInfo: () => profile,
+      getSharedManifest: () => undefined,
+      onDescription: vi.fn(),
+      onIdentity: vi.fn(),
+      onShare: vi.fn(),
+      onLan: vi.fn(),
+      onState: vi.fn(),
+      onPing: vi.fn(),
+      onClosed: vi.fn(),
+      onMinecraftBridge,
+      logger: { emit: vi.fn() },
+    })
+    const channel = new FakeDataChannel('25565', 'minecraft')
+    Object.defineProperty(channel, 'readyState', { value: 'connecting', configurable: true })
+
+    FakePeerConnection.instance.emit('datachannel', {
+      channel: channel as unknown as RTCDataChannel,
+    })
+    peer.close()
+
+    expect(onMinecraftBridge).toHaveBeenCalledTimes(2)
+    expect(onMinecraftBridge.mock.calls[0]).toEqual([
+      expect.any(String),
+      'started',
+      undefined,
+    ])
+    expect(onMinecraftBridge.mock.calls[1]).toEqual([
+      onMinecraftBridge.mock.calls[0][0],
+      'cancelled',
+      'peer_closed',
+    ])
+  })
+
   it('uses the injected peer connection provider', () => {
     const connection = new FakePeerConnection() as unknown as RTCPeerConnection
     const createPeerConnection = vi.fn(() => connection)

@@ -20,6 +20,8 @@ export interface MultiplayerHostOptions {
   state: SharedState<PeerState>
   init: MultiplayerInitPayload
   log(event: MultiplayerLogEvent): void
+  isTelemetryEnabled(): boolean
+  getTelemetryAccountId(): string | undefined
   setDownloadPort(port: number): void
 }
 

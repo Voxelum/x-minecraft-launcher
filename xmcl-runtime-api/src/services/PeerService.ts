@@ -290,6 +290,7 @@ export interface MultiplayerInitPayload {
   appDataPath: string
   resourcePath: string
   sessionId: string
+  launcherSessionId: string
   signalingBaseUrl: string
 }
 

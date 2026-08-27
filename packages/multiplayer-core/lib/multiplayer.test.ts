@@ -1,4 +1,4 @@
-import type { ConnectionUserInfo, MultiplayerIceServerCredential, MultiplayerRoomAdmission } from '@xmcl/runtime-api'
+import type { ConnectionUserInfo, MultiplayerIceServerCredential, MultiplayerRoomAdmission, MultiplayerTelemetryEvent } from '@xmcl/runtime-api'
 import type { LocalLanServer, LocalNetwork, LocalServer } from './localNetwork'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { MultiplayerLogEvent } from './logger'
@@ -105,10 +105,163 @@ const profile: ConnectionUserInfo = {
 afterEach(() => {
   FakePeerConnection.instances = []
   FakeWebSocket.instances = []
+  vi.useRealTimers()
   vi.unstubAllGlobals()
 })
 
 describe('Together multiplayer LAN discovery', () => {
+  it('emits one terminal event for a successful peer attempt', async () => {
+    vi.stubGlobal('RTCPeerConnection', FakePeerConnection)
+    const telemetry: MultiplayerTelemetryEvent[] = []
+    const connections: any[] = []
+    const multiplayer = createTogetherMultiplayer({
+      localNetwork: {
+        connect: vi.fn(),
+        listen: vi.fn(),
+        discoverLan: vi.fn(async () => {}),
+        broadcastLan: vi.fn(),
+      },
+      roomApi: {
+        createRoom: vi.fn(),
+        joinRoom: vi.fn(),
+        closeRoom: vi.fn(),
+        getIceServerCredential: vi.fn(async () => ({
+          stuns: [],
+          turnSessionId: 'f9dd11a0-7143-48e0-a202-9fa32968bd74',
+        })),
+      },
+      createTelemetryAttempt: () => (event) => telemetry.push(event),
+    })
+    multiplayer.setState({
+      connections,
+      exposedPorts: [],
+      connectionClear: vi.fn(),
+      connectionAdd: vi.fn((connection) => connections.push(connection)),
+      connectionDrop: vi.fn(),
+      connectionSelectedCandidate: vi.fn(),
+      groupReset: vi.fn(),
+      connectionLocalDescription: vi.fn(),
+      connectionStateChange: vi.fn(),
+      iceGatheringStateChange: vi.fn(),
+      signalingStateChange: vi.fn(),
+      validIceServerSet: vi.fn(),
+      turnserversSet: vi.fn(),
+      subscribe: vi.fn(),
+      unsubscribe: vi.fn(),
+    } as any)
+
+    await multiplayer.start('local')
+    const peerSessionId = await multiplayer.initiate()
+    expect(telemetry).toEqual([])
+    const connection = FakePeerConnection.instance
+    ;(connection as any).selectedCandidatePair = () => ({
+      local: { address: '192.0.2.1', port: 3478, type: 'relay', protocol: 'udp' },
+      remote: { address: '198.51.100.2', port: 50000, type: 'srflx', protocol: 'udp' },
+    })
+    connection.connectionState = 'connected'
+    connection.emit('connectionstatechange')
+    connection.channel.onopen?.()
+    connection.emit('connectionstatechange')
+    await vi.waitFor(() => expect(telemetry).toHaveLength(1))
+    await multiplayer.dispose()
+
+    expect(telemetry).toEqual([expect.objectContaining({
+      kind: 'peer_connection',
+      mode: 'manual_offer',
+      role: 'master',
+      outcome: 'succeeded',
+      route: 'relay',
+      localCandidateType: 'relay',
+      remoteCandidateType: 'srflx',
+      networkProtocol: 'udp',
+      turnSessionId: 'f9dd11a0-7143-48e0-a202-9fa32968bd74',
+    })])
+    expect(JSON.stringify(telemetry)).not.toContain('192.0.2.1')
+    expect(JSON.stringify(telemetry)).not.toContain('198.51.100.2')
+    expect(telemetry[0].attemptId).not.toBe(peerSessionId)
+    expect(telemetry[0].failedStage).toBeUndefined()
+    expect(telemetry[0].failureCode).toBeUndefined()
+  })
+
+  it('records manual ICE failures before remote identity is known', async () => {
+    vi.stubGlobal('RTCPeerConnection', FakePeerConnection)
+    const telemetry: MultiplayerTelemetryEvent[] = []
+    const multiplayer = createTogetherMultiplayer({
+      localNetwork: {
+        connect: vi.fn(),
+        listen: vi.fn(),
+        discoverLan: vi.fn(async () => {}),
+        broadcastLan: vi.fn(),
+      },
+      roomApi: {
+        createRoom: vi.fn(),
+        joinRoom: vi.fn(),
+        closeRoom: vi.fn(),
+        getIceServerCredential: vi.fn(async () => ({ stuns: [] })),
+      },
+      createTelemetryAttempt: () => (event) => telemetry.push(event),
+    })
+
+    await multiplayer.start('local')
+    const peerSessionId = await multiplayer.initiate()
+    const connection = FakePeerConnection.instance
+    connection.connectionState = 'failed'
+    connection.emit('connectionstatechange')
+    await multiplayer.dispose()
+
+    expect(telemetry).toEqual([
+      expect.objectContaining({
+        kind: 'peer_connection',
+        outcome: 'failed',
+        failedStage: 'ice_connection',
+        failureCode: 'ice_connection_failed',
+      }),
+    ])
+    expect(telemetry[0].attemptId).not.toBe(peerSessionId)
+  })
+
+  it('terminates a connected attempt when metadata never opens', async () => {
+    vi.useFakeTimers()
+    vi.stubGlobal('RTCPeerConnection', FakePeerConnection)
+    const telemetry: MultiplayerTelemetryEvent[] = []
+    const multiplayer = createTogetherMultiplayer({
+      localNetwork: {
+        connect: vi.fn(),
+        listen: vi.fn(),
+        discoverLan: vi.fn(async () => {}),
+        broadcastLan: vi.fn(),
+      },
+      roomApi: {
+        createRoom: vi.fn(),
+        joinRoom: vi.fn(),
+        closeRoom: vi.fn(),
+        getIceServerCredential: vi.fn(async () => ({ stuns: [] })),
+      },
+      createTelemetryAttempt: () => (event) => telemetry.push(event),
+    })
+
+    await multiplayer.start('local')
+    await multiplayer.initiate()
+    const connection = FakePeerConnection.instance
+    Object.defineProperty(connection.channel, 'readyState', {
+      value: 'connecting',
+      configurable: true,
+    })
+    connection.connectionState = 'connected'
+    connection.emit('connectionstatechange')
+    await vi.advanceTimersByTimeAsync(15_000)
+
+    expect(telemetry).toEqual([
+      expect.objectContaining({
+        kind: 'peer_connection',
+        outcome: 'timed_out',
+        failedStage: 'metadata_channel',
+        failureCode: 'metadata_timeout',
+      }),
+    ])
+    await multiplayer.dispose()
+  })
+
   it('retries ICE credentials before creating a peer after the startup refresh fails', async () => {
     vi.stubGlobal('RTCPeerConnection', FakePeerConnection)
     const getIceServerCredential = vi.fn()
@@ -470,6 +623,75 @@ describe('Together multiplayer LAN discovery', () => {
 
     expect(failed.close).toHaveBeenCalledOnce()
     await vi.waitFor(() => expect(FakePeerConnection.instances).toHaveLength(2))
+  })
+
+  it('keeps incrementing room retries until metadata opens', async () => {
+    vi.useFakeTimers()
+    vi.stubGlobal('RTCPeerConnection', FakePeerConnection)
+    vi.stubGlobal('WebSocket', FakeWebSocket)
+    const telemetry: MultiplayerTelemetryEvent[] = []
+    const admission: MultiplayerRoomAdmission = {
+      roomId: 'room',
+      socketUrl: 'wss://example.test/room',
+      ticket: 'ticket',
+      peerId: 'master',
+      expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      role: 'master',
+      maxPeers: 8,
+    }
+    const multiplayer = createTogetherMultiplayer({
+      localNetwork: {
+        connect: vi.fn(),
+        listen: vi.fn(),
+        discoverLan: vi.fn(async () => {}),
+        broadcastLan: vi.fn(),
+      },
+      roomApi: {
+        createRoom: vi.fn(async () => admission),
+        joinRoom: vi.fn(),
+        closeRoom: vi.fn(async () => {}),
+        getIceServerCredential: vi.fn(async () => ({ stuns: [] })),
+      },
+      createTelemetryAttempt: () => (event) => telemetry.push(event),
+    })
+
+    await multiplayer.start('local')
+    const joining = multiplayer.createGroup()
+    await vi.waitFor(() => expect(FakeWebSocket.instances).toHaveLength(1))
+    const socket = FakeWebSocket.instances[0]
+    socket.open()
+    await joining
+    socket.receive({
+      type: 'room-state',
+      selfPeerId: 'master',
+      masterPeerId: 'master',
+      members: [
+        { peerId: 'master', accountId: 'master-account', displayName: 'Master', status: 'connected', joinedAt: 1 },
+        { peerId: 'member', accountId: 'member-account', displayName: 'Member', status: 'negotiating', joinedAt: 2 },
+      ],
+      status: 'open',
+      maxPeers: 8,
+      revision: 1,
+    })
+    await vi.waitFor(() => expect(FakePeerConnection.instances).toHaveLength(1))
+
+    for (let index = 0; index < 2; index++) {
+      const connection = FakePeerConnection.instances[index]
+      Object.defineProperty(connection.channel, 'readyState', {
+        value: 'connecting',
+        configurable: true,
+      })
+      connection.connectionState = 'connected'
+      connection.emit('connectionstatechange')
+      await vi.advanceTimersByTimeAsync(15_000)
+      expect(FakePeerConnection.instances).toHaveLength(index + 2)
+    }
+
+    expect(telemetry.filter((event) => event.kind === 'peer_connection')).toEqual([
+      expect.objectContaining({ failureCode: 'metadata_timeout', retry: 0 }),
+      expect.objectContaining({ failureCode: 'metadata_timeout', retry: 1 }),
+    ])
+    await multiplayer.dispose()
   })
 
   it('releases renderer-owned resources when the transport is disposed', async () => {
