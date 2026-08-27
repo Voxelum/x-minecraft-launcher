@@ -5,7 +5,7 @@
     window
     role="toolbar"
     :aria-label="systemBarAriaLabel"
-    class="moveable static! flex w-full grow-0 gap-1 p-0 text-[.875rem]! bg-[transparent]! dark:color-[#ffffffb3] pr-0"
+    class="moveable static! flex w-full grow-0 gap-1 p-0 text-[.875rem]! bg-[transparent]! dark:color-[#ffffffb3] pr-0 max-h-[30px]"
     :style="{ 'backdrop-filter': `blur(${blurAppBar}px)` }"
   >
     <span
