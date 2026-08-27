@@ -149,13 +149,17 @@ export class InstanceFileOperationHandler {
    *
    * These tasks will do the phase 1 of the instance file operation.
    */
-  async prepareInstallFiles(file: InstanceFileUpdate[], signal: AbortSignal) {
+  async prepareInstallFiles(
+    file: InstanceFileUpdate[],
+    signal: AbortSignal,
+    materializeKeeps = false,
+  ) {
     assertNoCaseInsensitiveUpdatePathCollisions(file)
 
     const batchSize = 64;
     for (let i = 0; i < file.length; i += batchSize) {
         const batch = file.slice(i, i + batchSize);
-        await Promise.all(batch.map(f => this.#handleFile(f)));
+        await Promise.all(batch.map(f => this.#handleFile(f, materializeKeeps)));
     }
 
     const unhandled = [] as InstanceFile[]
@@ -182,11 +186,26 @@ export class InstanceFileOperationHandler {
   /**
    * Do the phase 2 and 3, move files from workspace location to instance location and link or copy existed files.
    */
-  async backupAndRename() {
+  async backupAndRename(updates?: InstanceFileUpdate[]) {
+    if (updates) assertNoCaseInsensitiveUpdatePathCollisions(updates)
+    const unresolvablePaths = new Set(this.unresolvable.map(file => file.path))
+    const backupQueue = updates
+      ? updates
+        .filter(({ file, operation }) =>
+          operation === 'remove' ||
+          operation === 'backup-remove' ||
+          (operation === 'backup-add' && !unresolvablePaths.has(file.path)),
+        )
+        .map(({ file }) => file)
+      : this.#backupQueue
+    const removeQueue = updates
+      ? updates.filter(({ operation }) => operation === 'remove').map(({ file }) => file)
+      : this.#removeQueue
+
     // phase 2, create the backup
     const phase2Finished = [] as [string, string][]
     try {
-      for (const file of this.#backupQueue) {
+      for (const file of backupQueue) {
         const src = join(this.instancePath, file.path)
         const dest = join(this.backupPath, file.path)
 
@@ -218,12 +237,19 @@ export class InstanceFileOperationHandler {
 
     // phase 3, move the workspace files to instance location
     await ensureDir(this.instancePath)
-    const files = [
-      ...this.#linkQueue.map((f) => f.file),
-      ...this.#unzipQueue.map((f) => f.file),
-      ...this.#httpsQueue.map((f) => f.file),
-      ...this.#readyQueue,
-    ]
+    const files = updates
+      ? updates
+        .filter(({ file, operation }) =>
+          (operation === 'add' || operation === 'backup-add') &&
+          !unresolvablePaths.has(file.path),
+        )
+        .map(({ file }) => file)
+      : [
+        ...this.#linkQueue.map((f) => f.file),
+        ...this.#unzipQueue.map((f) => f.file),
+        ...this.#httpsQueue.map((f) => f.file),
+        ...this.#readyQueue,
+      ]
 
     const phase3Finished = [] as [string, string][]
     try {
@@ -260,12 +286,12 @@ export class InstanceFileOperationHandler {
     }
     this.context.logger.log('Rename stage finished ' + phase3Finished.length)
 
-    for (const file of this.#removeQueue) {
+    for (const file of removeQueue) {
       const dest = join(this.backupPath, file.path)
       await unlink(dest).catch(() => undefined)
       await rmdir(dirname(dest)).catch(() => undefined)
     }
-    this.context.logger.log('Remove stage finished ' + this.#removeQueue.length)
+    this.context.logger.log('Remove stage finished ' + removeQueue.length)
 
     // Remove the workspace folder
     await remove(this.workspacePath)
@@ -274,7 +300,7 @@ export class InstanceFileOperationHandler {
   /**
    * Get a task to handle the instance file operation
    */
-  async #handleFile({ file, operation }: InstanceFileUpdate) {
+  async #handleFile({ file, operation }: InstanceFileUpdate, materializeKeeps: boolean) {
     const instancePath = this.instancePath
     const destination = join(instancePath, file.path)
 
@@ -283,6 +309,13 @@ export class InstanceFileOperationHandler {
     }
 
     if (operation === 'keep') {
+      if (materializeKeeps) {
+        this.#linkQueue.push({
+          file,
+          src: destination,
+          destination: join(this.workspacePath, file.path),
+        })
+      }
       return
     }
 
