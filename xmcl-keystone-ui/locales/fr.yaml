@@ -988,6 +988,10 @@ modrinth:
 modrinthCard:
   currentVersion: Version actuelle
 multiplayer:
+  joinDiscord: Rejoindre Discord
+  openConsumerPortal: Ouvrir le portail client
+  refundHint: Besoin d'un remboursement ? Rendez-vous sur le portail client Waffo pour gérer vos commandes et abonnements.
+  togetherSupportHint: Si le mode multijoueur ne fonctionne pas, rejoignez notre Discord et contactez l'équipe de développement. Nous vous aiderons à résoudre le problème.
   autoShareAmbiguous: Plusieurs jeux sont en cours d'exécution. Sélectionnez l'instance qui héberge le monde en réseau local afin que XMCL puisse la partager.
   editSharingScope: Modifier la portée du partage
   gameAvailable: Partie en réseau local disponible

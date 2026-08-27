@@ -1013,6 +1013,10 @@ modrinth:
 modrinthCard:
   currentVersion: বর্তমান সংস্করণ
 multiplayer:
+  joinDiscord: Discord-এ যোগ দিন
+  openConsumerPortal: কনজিউমার পোর্টাল খুলুন
+  refundHint: রিফান্ড প্রয়োজন? আপনার অর্ডার ও সাবস্ক্রিপশন পরিচালনা করতে Waffo কনজিউমার পোর্টালে যান।
+  togetherSupportHint: মাল্টিপ্লেয়ার কাজ না করলে Discord-এ যোগ দিয়ে ডেভেলপমেন্ট টিমের সঙ্গে যোগাযোগ করুন। আমরা সমস্যা সমাধানে সাহায্য করব।
   autoShareAmbiguous: একাধিক গেম চলছে। XMCL যাতে শেয়ার করতে পারে, ল্যান ওয়ার্ল্ড হোস্ট করা ইনস্ট্যান্সটি নির্বাচন করুন।
   editSharingScope: শেয়ারের পরিধি সম্পাদনা করুন
   gameAvailable: ল্যান গেম উপলভ্য

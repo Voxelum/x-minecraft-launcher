@@ -968,6 +968,10 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
+  joinDiscord: Deelnemen aan Discord
+  openConsumerPortal: Consumentenportaal openen
+  refundHint: Heb je een terugbetaling nodig? Ga naar het Waffo-consumentenportaal om je bestellingen en abonnementen te beheren.
+  togetherSupportHint: Werkt multiplayer niet? Neem dan deel aan onze Discord en neem contact op met het ontwikkelteam. We helpen je het probleem op te lossen.
   autoShareAmbiguous: Er zijn meerdere spellen actief. Selecteer de instantie die de LAN-wereld host, zodat XMCL deze kan delen.
   editSharingScope: Deelbereik bewerken
   gameAvailable: LAN-spel beschikbaar

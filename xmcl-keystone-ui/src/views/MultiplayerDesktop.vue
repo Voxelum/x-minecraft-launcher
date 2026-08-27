@@ -83,6 +83,21 @@
             {{ formatBytes(relayAllowance.remaining) }} / {{ formatBytes(relayAllowance.included) }}
           </div>
         </div>
+        <div v-if="hasTogetherHome" class="rail-support mt-3">
+          <div class="text-caption text-medium-emphasis">
+            {{ t('multiplayer.togetherSupportHint') }}
+          </div>
+          <v-btn
+            class="mt-2"
+            density="compact"
+            href="https://discord.gg/W5XVwYY7GQ"
+            prepend-icon="xmcl:discord"
+            target="browser"
+            variant="tonal"
+          >
+            {{ t('multiplayer.joinDiscord') }}
+          </v-btn>
+        </div>
       </div>
     </aside>
 
@@ -874,6 +889,9 @@ const relayAllowance = computed(() =>
     ? togetherOverview.value.allowances.turnEgressBytes
     : undefined,
 )
+const hasTogetherHome = computed(() =>
+  togetherOverview.value?.subscription?.status === 'active',
+)
 const turnserverItems = computed(() => Object.entries(turnservers.value).map(([value, text]) => ({ value, text })))
 function formatBytes(bytes: number) {
   const units = ['B', 'KB', 'MB', 'GB', 'TB']
@@ -980,6 +998,12 @@ function formatBytes(bytes: number) {
   border: 1px solid rgba(var(--v-theme-success), 0.28);
   border-radius: 6px;
   background: rgba(var(--v-theme-success), 0.08);
+}
+
+.rail-support {
+  padding: 9px 10px;
+  border-left: 2px solid rgb(var(--v-theme-primary));
+  background: rgba(var(--v-theme-primary), 0.06);
 }
 
 .desktop-main {

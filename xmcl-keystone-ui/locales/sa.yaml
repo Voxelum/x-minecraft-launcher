@@ -1013,6 +1013,10 @@ modrinth:
 modrinthCard:
   currentVersion: वर्तमानसंस्करणम्
 multiplayer:
+  joinDiscord: Discord मध्ये सामील व्हा
+  openConsumerPortal: ग्राहक पोर्टल उघडा
+  refundHint: परतावा हवा आहे? तुमच्या ऑर्डर आणि सदस्यता व्यवस्थापित करण्यासाठी Waffo ग्राहक पोर्टलला भेट द्या.
+  togetherSupportHint: मल्टीप्लेअर काम करत नसल्यास, आमच्या Discord मध्ये सामील व्हा आणि विकास कार्यसंघाशी संपर्क साधा. आम्ही समस्या सोडविण्यात मदत करू.
   autoShareAmbiguous: अनेकानि क्रीडनानि प्रचलन्ति। XMCL तद् सहभाजयितुं शक्नुयात् इति LAN-जगतः आतिथ्यं कुर्वन्तं दृष्टान्तं चिनुत।
   editSharingScope: सहभाजनसीमां सम्पादयतु
   gameAvailable: LAN-क्रीडनम् उपलब्धम्

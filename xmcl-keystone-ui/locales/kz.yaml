@@ -957,6 +957,10 @@ modrinth:
 modrinthCard:
   currentVersion: Ағымдағы нұсқа
 multiplayer:
+  joinDiscord: Discord-қа қосылу
+  openConsumerPortal: Тұтынушы порталын ашу
+  refundHint: Қаражатты қайтару керек пе? Тапсырыстар мен жазылымдарды басқару үшін Waffo тұтынушы порталына кіріңіз.
+  togetherSupportHint: Көп ойыншы режимі жұмыс істемесе, Discord-қа қосылып, әзірлеушілер тобымен хабарласыңыз. Мәселені шешуге көмектесеміз.
   autoShareAmbiguous: Бірнеше ойын іске қосылған. XMCL бөлісе алуы үшін LAN әлемін орналастырып тұрған дананы таңдаңыз.
   editSharingScope: Бөлісу ауқымын өзгерту
   gameAvailable: LAN ойыны қолжетімді

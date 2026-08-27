@@ -1013,6 +1013,10 @@ modrinth:
 modrinthCard:
   currentVersion: Versi Saat Ini
 multiplayer:
+  joinDiscord: Gabung ke Discord
+  openConsumerPortal: Buka Portal Konsumen
+  refundHint: Perlu pengembalian dana? Kunjungi Portal Konsumen Waffo untuk mengelola pesanan dan langganan Anda.
+  togetherSupportHint: Jika multipemain tidak berfungsi, bergabunglah ke Discord kami dan hubungi tim pengembang. Kami akan membantu menyelesaikan masalahnya.
   autoShareAmbiguous: Beberapa game sedang berjalan. Pilih instans yang menghosting dunia LAN agar XMCL dapat membagikannya.
   editSharingScope: Edit cakupan berbagi
   gameAvailable: Game LAN tersedia

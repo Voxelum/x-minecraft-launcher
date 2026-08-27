@@ -966,6 +966,10 @@ modrinth:
 modrinthCard:
   currentVersion: Mevcut Sürüm
 multiplayer:
+  joinDiscord: Discord'a Katıl
+  openConsumerPortal: Tüketici Portalını Aç
+  refundHint: Para iadesine mi ihtiyacınız var? Siparişlerinizi ve aboneliklerinizi yönetmek için Waffo Tüketici Portalı'nı ziyaret edin.
+  togetherSupportHint: Çok oyunculu mod çalışmıyorsa Discord'umuza katılın ve geliştirme ekibiyle iletişime geçin. Sorunu çözmenize yardımcı olacağız.
   autoShareAmbiguous: Birden fazla oyun çalışıyor. XMCL'nin paylaşabilmesi için LAN dünyasını barındıran örneği seçin.
   editSharingScope: Paylaşım kapsamını düzenle
   gameAvailable: LAN oyunu mevcut

@@ -963,6 +963,10 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
+  joinDiscord: Unirse a Discord
+  openConsumerPortal: Abrir o portal de consumidores
+  refundHint: Precisas un reembolso? Visita o portal de consumidores de Waffo para xestionar os teus pedidos e subscricións.
+  togetherSupportHint: Se o modo multixogador non funciona, únete ao noso Discord e contacta co equipo de desenvolvemento. Axudarémosche a resolver o problema.
   autoShareAmbiguous: Hai varios xogos en execución. Selecciona a instancia que aloxa o mundo LAN para que XMCL poida compartila.
   editSharingScope: Editar o alcance da compartición
   gameAvailable: Xogo LAN dispoñible

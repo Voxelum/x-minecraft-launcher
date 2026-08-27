@@ -1013,6 +1013,10 @@ modrinth:
 modrinthCard:
   currentVersion: वर्तमान संस्करण
 multiplayer:
+  joinDiscord: Discord से जुड़ें
+  openConsumerPortal: उपभोक्ता पोर्टल खोलें
+  refundHint: रिफंड चाहिए? अपने ऑर्डर और सब्सक्रिप्शन प्रबंधित करने के लिए Waffo उपभोक्ता पोर्टल पर जाएँ।
+  togetherSupportHint: यदि मल्टीप्लेयर काम नहीं कर रहा है, तो हमारे Discord से जुड़ें और डेवलपमेंट टीम से संपर्क करें। हम समस्या हल करने में आपकी मदद करेंगे।
   autoShareAmbiguous: एक से अधिक गेम चल रहे हैं। LAN वर्ल्ड होस्ट करने वाला इंस्टेंस चुनें ताकि XMCL उसे साझा कर सके।
   editSharingScope: साझाकरण का दायरा संपादित करें
   gameAvailable: LAN गेम उपलब्ध है

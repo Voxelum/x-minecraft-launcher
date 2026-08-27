@@ -1445,6 +1445,7 @@ multiplayer:
   joinConnection: >-
     If your peer has already initiated a connection, you need to Join
     Connection.
+  joinDiscord: Join Discord
   joinGame: Join game
   joinManual: Join
   joinOrCreateGroup: Join/Create Group
@@ -1463,6 +1464,8 @@ multiplayer:
   natTogetherWarning: >-
     Your router may have trouble connecting to the room master. If connections
     fail, try XMCL Together to improve connectivity between you and your friends.
+  openConsumerPortal: Open Consumer Portal
+  refundHint: Need a refund? Visit the Waffo Consumer Portal to manage your orders and subscriptions.
     Only the room master needs to purchase Together for the room.
   networkInfo: Network Info (Click to toggle)
   next: Next
@@ -1488,6 +1491,7 @@ multiplayer:
     cancelled: Cancelled
     payment_due: Payment due
   togetherName: Minecraft Together
+  togetherSupportHint: If multiplayer is not working, join our Discord and contact the development team. We will help you resolve the problem.
   trial:
     active: Trial active
     available: Free trial available

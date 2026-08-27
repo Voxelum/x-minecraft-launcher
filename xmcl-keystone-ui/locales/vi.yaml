@@ -1013,6 +1013,10 @@ modrinth:
 modrinthCard:
   currentVersion: Phiên bản hiện tại
 multiplayer:
+  joinDiscord: Tham gia Discord
+  openConsumerPortal: Mở Cổng thông tin khách hàng
+  refundHint: Bạn cần hoàn tiền? Hãy truy cập Cổng thông tin khách hàng Waffo để quản lý đơn hàng và gói đăng ký.
+  togetherSupportHint: Nếu chế độ nhiều người chơi không hoạt động, hãy tham gia Discord và liên hệ với nhóm phát triển. Chúng tôi sẽ giúp bạn giải quyết vấn đề.
   autoShareAmbiguous: Có nhiều trò chơi đang chạy. Hãy chọn phiên bản đang lưu trữ thế giới LAN để XMCL có thể chia sẻ.
   editSharingScope: Chỉnh sửa phạm vi chia sẻ
   gameAvailable: Có trò chơi LAN

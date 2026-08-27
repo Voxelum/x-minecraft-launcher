@@ -936,6 +936,10 @@ modrinth:
 modrinthCard:
   currentVersion: 現在のバージョン
 multiplayer:
+  joinDiscord: Discord に参加
+  openConsumerPortal: コンシューマーポータルを開く
+  refundHint: 返金をご希望ですか？Waffo コンシューマーポータルで注文とサブスクリプションを管理できます。
+  togetherSupportHint: マルチプレイが動作しない場合は、Discord に参加して開発チームへお問い合わせください。問題解決をお手伝いします。
   autoShareAmbiguous: 複数のゲームが実行中です。XMCLで共有するLANワールドをホストしているインスタンスを選択してください。
   editSharingScope: 共有範囲を編集
   gameAvailable: LANゲームが利用可能

@@ -1013,6 +1013,10 @@ modrinth:
 modrinthCard:
   currentVersion: الإصدار الحالي
 multiplayer:
+  joinDiscord: انضم إلى Discord
+  openConsumerPortal: افتح بوابة المستهلك
+  refundHint: هل تحتاج إلى استرداد أموالك؟ تفضل بزيارة بوابة Waffo للمستهلك لإدارة طلباتك واشتراكاتك.
+  togetherSupportHint: إذا لم يعمل اللعب الجماعي، انضم إلى Discord وتواصل مع فريق التطوير. سنساعدك في حل المشكلة.
   autoShareAmbiguous: هناك عدة ألعاب قيد التشغيل. حدد النسخة التي تستضيف عالم الشبكة المحلية لكي يتمكن XMCL من مشاركتها.
   editSharingScope: تحرير نطاق المشاركة
   gameAvailable: لعبة شبكة محلية متاحة

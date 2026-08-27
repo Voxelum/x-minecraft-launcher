@@ -952,6 +952,10 @@ modrinth:
 modrinthCard:
   currentVersion: Aktualna wersja
 multiplayer:
+  joinDiscord: Dołącz do Discorda
+  openConsumerPortal: Otwórz portal klienta
+  refundHint: Potrzebujesz zwrotu środków? Odwiedź portal klienta Waffo, aby zarządzać zamówieniami i subskrypcjami.
+  togetherSupportHint: Jeśli tryb wieloosobowy nie działa, dołącz do naszego Discorda i skontaktuj się z zespołem programistów. Pomożemy Ci rozwiązać problem.
   autoShareAmbiguous: Uruchomionych jest wiele gier. Wybierz instancję hostującą świat LAN, aby XMCL mógł ją udostępnić.
   editSharingScope: Edytuj zakres udostępniania
   gameAvailable: Gra LAN jest dostępna

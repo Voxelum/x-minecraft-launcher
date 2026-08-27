@@ -122,6 +122,20 @@
         {{ t('multiplayer.orderStatus', { status: order.status }) }}
       </v-alert>
     </v-card>
+
+    <div class="flex flex-wrap items-center justify-between gap-3 px-1">
+      <p class="min-w-48 flex-1 text-sm opacity-70">
+        {{ t('multiplayer.refundHint') }}
+      </p>
+      <v-btn
+        href="https://pancake.waffo.ai/consumer/portal/login"
+        prepend-icon="open_in_new"
+        target="browser"
+        variant="text"
+      >
+        {{ t('multiplayer.openConsumerPortal') }}
+      </v-btn>
+    </div>
   </div>
 </template>
 

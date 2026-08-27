@@ -996,6 +996,10 @@ modrinth:
 modrinthCard:
   currentVersion: Jelenlegi verzió
 multiplayer:
+  joinDiscord: Csatlakozás a Discordhoz
+  openConsumerPortal: Ügyfélportál megnyitása
+  refundHint: Visszatérítést szeretnél? Rendeléseid és előfizetéseid kezeléséhez keresd fel a Waffo ügyfélportálját.
+  togetherSupportHint: Ha a többjátékos mód nem működik, csatlakozz a Discordunkhoz, és lépj kapcsolatba a fejlesztőcsapattal. Segítünk megoldani a problémát.
   autoShareAmbiguous: Több játék is fut. Válaszd ki a LAN-világot futtató példányt, hogy az XMCL megoszthassa.
   editSharingScope: Megosztási kör szerkesztése
   gameAvailable: LAN-játék érhető el

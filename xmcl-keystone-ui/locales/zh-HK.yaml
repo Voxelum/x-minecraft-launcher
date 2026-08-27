@@ -1059,6 +1059,10 @@ modrinth:
 modrinthCard:
   currentVersion: 目前版本
 multiplayer:
+  joinDiscord: 加入 Discord
+  openConsumerPortal: 開啟消費者入口網站
+  refundHint: 如需退款，請前往 Waffo 消費者入口網站管理你的訂單及訂閱。
+  togetherSupportHint: 如果連線無法正常運作，請加入 Discord 聯絡開發團隊，我們會協助你解決問題。
   autoShareAmbiguous: 有多個遊戲正在運行。請選擇主持區域網絡世界的實例，讓 XMCL 可以分享它。
   editSharingScope: 編輯分享範圍
   gameAvailable: 有可用的區域網絡遊戲

@@ -1163,6 +1163,10 @@ modrinth:
   versions: Versiones
   wikiUrl: Wiki
 multiplayer:
+  joinDiscord: Únete a Discord
+  openConsumerPortal: Abrir el portal del consumidor
+  refundHint: ¿Necesitas un reembolso? Visita el portal del consumidor de Waffo para gestionar tus pedidos y suscripciones.
+  togetherSupportHint: Si el modo multijugador no funciona, únete a nuestro Discord y contacta con el equipo de desarrollo. Te ayudaremos a resolver el problema.
   autoShareAmbiguous: Hay varias partidas en ejecución. Selecciona la instancia que aloja el mundo LAN para que XMCL pueda compartirla.
   editSharingScope: Editar alcance compartido
   gameAvailable: Partida LAN disponible

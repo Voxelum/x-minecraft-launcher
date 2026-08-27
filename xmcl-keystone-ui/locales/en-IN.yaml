@@ -1180,6 +1180,10 @@ modrinth:
 modrinthCard:
   currentVersion: Current Version
 multiplayer:
+  joinDiscord: Join Discord
+  openConsumerPortal: Open Consumer Portal
+  refundHint: Need a refund? Visit the Waffo Consumer Portal to manage your orders and subscriptions.
+  togetherSupportHint: If multiplayer is not working, join our Discord and contact the development team. We will help you resolve the problem.
   autoShareAmbiguous: Multiple games are running. Select the instance hosting the LAN world so XMCL can share it.
   editSharingScope: Edit Sharing Scope
   gameAvailable: LAN game available

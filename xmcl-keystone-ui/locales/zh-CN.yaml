@@ -1183,6 +1183,8 @@ multiplayer:
   connectionTogetherWarning: 有房间成员长时间无法连接到您。可以尝试 XMCL Together，改善房间内所有成员的联机体验；一个房间只需房间主控使用 Together。
   connectedToMaster: 已连接到房间主控
   natTogetherWarning: 您的路由器可能难以连接房间主控。如果确实无法连接，可以尝试 XMCL Together，改善您和朋友之间的联机体验。一个房间只需房间主控购买 Together。
+  openConsumerPortal: 打开消费者门户
+  refundHint: 如需退款，请前往 Waffo 消费者门户管理您的订单和订阅。
   connections: 通过 P2P 联机
   copied: 已复制！
   copy: 复制
@@ -1212,6 +1214,7 @@ multiplayer:
   illegalTokenDescription: 非法的令牌，请确认对方给您的令牌是完整且正确的。
   initiateConnection: 发起连接
   joinConnection: 如果您的伙伴已经创建了连接，您需要选择加入链接。
+  joinDiscord: 加入 Discord
   joinGame: 加入游戏
   joinManual: 加入连接
   joinOrCreateGroup: 加入/创建群组
@@ -1228,6 +1231,7 @@ multiplayer:
   manualConnect: 手动连接
   name: 跨局域网联机
   togetherName: Minecraft Together
+  togetherSupportHint: 如果联机无法正常工作，请加入 Discord 联系开发团队，我们会帮助您解决问题。
   trial:
     active: 试用中
     available: 可免费试用
