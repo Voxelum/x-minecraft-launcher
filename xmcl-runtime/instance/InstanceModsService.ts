@@ -1,5 +1,5 @@
 import { Resource, ResourceDomain, ResourceManager, type ResourceMetadata, type ResourceState } from '@xmcl/resource'
-import { InstanceModsService as IInstanceModsService, InstanceModsServiceKey, ModMetadataService as IModMetadataService, Settings, SharedState, UpdateInstanceResourcesOptions, getInstanceModStateKey } from '@xmcl/runtime-api'
+import { InstanceModsService as IInstanceModsService, InstanceModsServiceKey, LockKey, ModMetadataService as IModMetadataService, Settings, SharedState, UpdateInstanceResourcesOptions, getInstanceModStateKey } from '@xmcl/runtime-api'
 import { emptyDir, ensureDir, readdir, rename, stat } from 'fs-extra'
 import { dirname, isAbsolute, join, relative, resolve } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
@@ -26,7 +26,7 @@ export class InstanceModsService extends AbstractInstanceDomainService implement
   }
 
   private getOperationLock(instancePath: string) {
-    return this.mutex.of(`${getInstanceModStateKey(resolve(instancePath))}/operation`)
+    return this.mutex.of(LockKey.instance(resolve(instancePath)))
   }
 
   async install(options: UpdateInstanceResourcesOptions): Promise<string[]> {
@@ -107,10 +107,7 @@ export class InstanceModsService extends AbstractInstanceDomainService implement
   }> {
     const stateManager = await this.app.registry.get(ServiceStateManager)
     const state = stateManager.get<SharedState<ResourceState>>(getInstanceModStateKey(instancePath))
-    const stateByPath = new Map(state?.files.map(resource => [
-      resolve(resource.path),
-      resource.metadata,
-    ]) ?? [])
+    const stateByPath = new Map(state?.files.map(resource => [resolve(resource.path), resource]) ?? [])
 
     const modsDirectory = join(instancePath, ResourceDomain.Mods)
     const entries = await readdir(modsDirectory, { withFileTypes: true })
@@ -120,13 +117,15 @@ export class InstanceModsService extends AbstractInstanceDomainService implement
       if (!entry.isFile()) {
         if (!entry.isSymbolicLink() || !(await stat(path).catch(() => undefined))?.isFile()) return
       }
-      const stateMetadata = stateByPath.get(resolve(path))
-      if (stateMetadata) return { path, metadata: stateMetadata }
       try {
         const snapshot = await this.resourceManager.getSnapshot(path)
         if (!snapshot) {
           complete = false
           return
+        }
+        const stateResource = stateByPath.get(resolve(path))
+        if (stateResource?.hash === snapshot.sha1) {
+          return { path, metadata: stateResource.metadata }
         }
         const metadata = await this.resourceManager.getMetadataByHash(snapshot.sha1)
         if (!metadata) complete = false
