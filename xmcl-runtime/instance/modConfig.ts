@@ -11,6 +11,7 @@ export function getModIds(metadata: ResourceMetadata): string[] {
   add(metadata.forge?.modid)
   for (const mod of metadata.forge?.modsToml ?? []) add(mod.modid)
   for (const mod of metadata.forge?.mcmodInfo ?? []) add(mod.modid)
+  for (const mod of metadata.forge?.modAnnotations ?? []) add(mod.modid)
   add(metadata.neoforge?.modid)
   for (const mod of metadata.neoforge?.children ?? []) add(mod.modid)
   const fabric = metadata.fabric

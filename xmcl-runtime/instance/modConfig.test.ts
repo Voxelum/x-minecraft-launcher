@@ -19,7 +19,11 @@ describe('mod config cleanup', () => {
 
   test('collects mod ids from supported metadata', () => {
     const metadata = {
-      forge: { modid: 'forge-mod', modsToml: [{ modid: 'forge-child' }] },
+      forge: {
+        modid: 'forge-mod',
+        modsToml: [{ modid: 'forge-child' }],
+        modAnnotations: [{ modid: 'forge-annotated' }],
+      },
       fabric: [{ id: 'fabric-mod' }],
       quilt: { quilt_loader: { id: 'quilt-mod' } },
       neoforge: { modid: 'neo-mod', children: [{ modid: 'neo-child' }] },
@@ -28,6 +32,7 @@ describe('mod config cleanup', () => {
     expect(getModIds(metadata)).toEqual([
       'forge-mod',
       'forge-child',
+      'forge-annotated',
       'neo-mod',
       'neo-child',
       'fabric-mod',

@@ -25,7 +25,19 @@ export class InstanceModsService extends AbstractInstanceDomainService implement
     super(app, ResourceDomain.Mods)
   }
 
+  private getOperationLock(instancePath: string) {
+    return this.mutex.of(`${getInstanceModStateKey(resolve(instancePath))}/operation`)
+  }
+
+  async install(options: UpdateInstanceResourcesOptions): Promise<string[]> {
+    return this.getOperationLock(options.path).runExclusive(() => super.install(options))
+  }
+
   async uninstall(options: UpdateInstanceResourcesOptions): Promise<void> {
+    await this.getOperationLock(options.path).runExclusive(() => this.uninstallAndCleanup(options))
+  }
+
+  private async uninstallAndCleanup(options: UpdateInstanceResourcesOptions): Promise<void> {
     if (!this.settings.deleteModConfigsOnRemoval) {
       return super.uninstall(options)
     }

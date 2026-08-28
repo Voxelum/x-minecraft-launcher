@@ -50,6 +50,9 @@ describe('InstanceModsService uninstall', () => {
     } as unknown as SharedState<ResourceState>
     const app = {
       getLogger: () => ({ log: vi.fn(), warn: vi.fn(), error: vi.fn() }),
+      mutex: {
+        of: () => ({ runExclusive: (operation: () => unknown) => operation() }),
+      },
       registry: {
         get: metadataFailure
           ? vi.fn().mockRejectedValue(new Error('metadata unavailable'))
