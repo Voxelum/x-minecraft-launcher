@@ -1,6 +1,6 @@
 import type { ResourceState, ResourceManager } from '@xmcl/resource'
 import type { ModMetadataService, Settings, SharedState } from '@xmcl/runtime-api'
-import { ensureDir, mkdtemp, pathExists, rm, writeFile } from 'fs-extra'
+import { ensureDir, mkdtemp, pathExists, rm, unlink, writeFile } from 'fs-extra'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -101,7 +101,7 @@ describe('InstanceModsService uninstall', () => {
   test('keeps shared configs when another requested mod fails to uninstall', async () => {
     const survivingModPath = join(instancePath, 'mods', 'surviving.jar')
     const sharedConfigPath = join(instancePath, 'config', 'shared.toml')
-    await ensureDir(survivingModPath)
+    await writeFile(survivingModPath, 'mod')
     await writeFile(sharedConfigPath, 'shared')
     const { service } = createService(true, false, [{
       path: survivingModPath,
@@ -110,6 +110,10 @@ describe('InstanceModsService uninstall', () => {
       example: ['shared.toml'],
       surviving: ['shared.toml'],
     })
+    ;(service as any).uninstallFiles = async () => {
+      await unlink(modPath)
+      return new Set([modPath])
+    }
 
     await service.uninstall({ path: instancePath, files: [modPath, survivingModPath] })
 

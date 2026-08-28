@@ -1,6 +1,6 @@
 import { Resource, ResourceDomain, ResourceManager, type ResourceMetadata, type ResourceState } from '@xmcl/resource'
 import { InstanceModsService as IInstanceModsService, InstanceModsServiceKey, ModMetadataService as IModMetadataService, Settings, SharedState, UpdateInstanceResourcesOptions, getInstanceModStateKey } from '@xmcl/runtime-api'
-import { emptyDir, ensureDir, pathExists, readdir, rename, stat } from 'fs-extra'
+import { emptyDir, ensureDir, readdir, rename, stat } from 'fs-extra'
 import { dirname, isAbsolute, join, relative, resolve } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
 import { ModMetadataService } from '~/moddb/ModMetadataService'
@@ -30,33 +30,35 @@ export class InstanceModsService extends AbstractInstanceDomainService implement
       return super.uninstall(options)
     }
 
-    let resources: Array<{ path: string; metadata: ResourceMetadata }> = []
+    let beforeRemoval: { resources: Array<{ path: string; metadata: ResourceMetadata }>; complete: boolean }
     try {
-      resources = await this.getInstalledModMetadata(options.path)
+      beforeRemoval = await this.getInstalledModMetadata(options.path)
     } catch (e) {
       this.warn('Failed to read installed mod metadata for config cleanup', e)
+      await super.uninstall(options)
+      return
     }
     const requestedPaths = this.getRequestedModPaths(options)
-    const removedResources = resources.filter(resource => requestedPaths.has(resolve(resource.path)))
-    const remainingResources = resources.filter(resource => !requestedPaths.has(resolve(resource.path)))
+    const removedResources = beforeRemoval.resources.filter(resource => requestedPaths.has(resolve(resource.path)))
+    const removedPaths = await this.uninstallFiles(options)
+    if (!beforeRemoval.complete) return
 
-    await super.uninstall(options)
+    let afterRemoval: { resources: Array<{ path: string; metadata: ResourceMetadata }>; complete: boolean }
+    try {
+      afterRemoval = await this.getInstalledModMetadata(options.path)
+    } catch (e) {
+      this.warn('Failed to verify remaining mod metadata for config cleanup', e)
+      return
+    }
+    if (!afterRemoval.complete) return
 
-    const removalResults = await Promise.all(removedResources.map(async resource => ({
-      resource,
-      removed: !(await pathExists(resource.path)),
-    })))
-    const removedAfterSuccessfulDelete = removalResults
-      .filter(result => result.removed)
-      .map(result => result.resource.metadata)
+    const removedAfterSuccessfulDelete = removedResources
+      .filter(resource => removedPaths.has(resolve(resource.path)))
+      .map(resource => resource.metadata)
     const removedModIds = new Set(removedAfterSuccessfulDelete.flatMap(metadata => metadata ? getModIds(metadata) : []))
     if (removedModIds.size === 0) return
 
-    const installedResources = [
-      ...remainingResources,
-      ...removalResults.filter(result => !result.removed).map(result => result.resource),
-    ]
-    const installedModIds = new Set(installedResources.flatMap(resource => getModIds(resource.metadata)))
+    const installedModIds = new Set(afterRemoval.resources.flatMap(resource => getModIds(resource.metadata)))
     const allModIds = [...new Set([...removedModIds, ...installedModIds])]
     try {
       const mappings = await this.modMetadataService.lookupModConfigPaths(allModIds)
@@ -87,25 +89,45 @@ export class InstanceModsService extends AbstractInstanceDomainService implement
     return result
   }
 
-  private async getInstalledModMetadata(instancePath: string): Promise<Array<{ path: string; metadata: ResourceMetadata }>> {
+  private async getInstalledModMetadata(instancePath: string): Promise<{
+    resources: Array<{ path: string; metadata: ResourceMetadata }>
+    complete: boolean
+  }> {
     const stateManager = await this.app.registry.get(ServiceStateManager)
     const state = stateManager.get<SharedState<ResourceState>>(getInstanceModStateKey(instancePath))
-    if (state) return state.files.map(resource => ({ path: resource.path, metadata: resource.metadata }))
+    const stateByPath = new Map(state?.files.map(resource => [
+      resolve(resource.path),
+      resource.metadata,
+    ]) ?? [])
 
     const modsDirectory = join(instancePath, ResourceDomain.Mods)
-    const entries = await readdir(modsDirectory, { withFileTypes: true }).catch(() => [])
-    const resources = await Promise.all(entries.filter(entry => entry.isFile()).map(async entry => {
+    const entries = await readdir(modsDirectory, { withFileTypes: true })
+    let complete = true
+    const resources = await Promise.all(entries.map(async entry => {
       const path = join(modsDirectory, entry.name)
+      if (!entry.isFile()) {
+        if (!entry.isSymbolicLink() || !(await stat(path).catch(() => undefined))?.isFile()) return
+      }
+      const stateMetadata = stateByPath.get(resolve(path))
+      if (stateMetadata) return { path, metadata: stateMetadata }
       try {
         const snapshot = await this.resourceManager.getSnapshot(path)
-        if (!snapshot) return
+        if (!snapshot) {
+          complete = false
+          return
+        }
         const metadata = await this.resourceManager.getMetadataByHash(snapshot.sha1)
+        if (!metadata) complete = false
         return metadata ? { path, metadata } : undefined
       } catch {
+        complete = false
         return
       }
     }))
-    return resources.filter((resource): resource is { path: string; metadata: ResourceMetadata } => !!resource)
+    return {
+      resources: resources.filter((resource): resource is { path: string; metadata: ResourceMetadata } => !!resource),
+      complete,
+    }
   }
 
   async enable({ files: mods, path }: UpdateInstanceResourcesOptions): Promise<void> {

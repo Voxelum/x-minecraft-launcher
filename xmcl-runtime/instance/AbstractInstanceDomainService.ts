@@ -188,8 +188,9 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
     }))
   }
 
-  async uninstall({ files, path }: UpdateInstanceResourcesOptions) {
+  protected async uninstallFiles({ files, path }: UpdateInstanceResourcesOptions) {
     let hasError = false
+    const removed = new Set<string>()
     const domainPath = resolve(path, this.domain)
     const validFiles = files.filter((f): f is string => typeof f === 'string' && f.length > 0)
     await Promise.all(validFiles.map(async (f) => {
@@ -199,7 +200,9 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
         hasError = true
         return
       }
-      await unlink(dest).catch(() => { 
+      await unlink(dest).then(() => {
+        removed.add(dest)
+      }).catch(() => {
         hasError = true
       })
     }))
@@ -208,6 +211,11 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
       const stateManager = await this.app.registry.get(ServiceStateManager)
       stateManager.revalidate(key)
     }
+    return removed
+  }
+
+  async uninstall(options: UpdateInstanceResourcesOptions) {
+    await this.uninstallFiles(options)
   }
 
   async watch(instancePath: string) {
