@@ -67,4 +67,17 @@ describe('mod config cleanup', () => {
     await expect(removeMappedConfigFile(instancePath, 'linked/keep.toml')).resolves.toBe(false)
     expect(await pathExists(outsideFile)).toBe(true)
   })
+
+  test.runIf(process.platform !== 'win32')('does not remove files through a symlinked config directory', async () => {
+    const configDirectory = join(instancePath, 'config')
+    const outsideDirectory = join(instancePath, 'outside')
+    const outsideFile = join(outsideDirectory, 'keep.toml')
+    await rm(configDirectory, { recursive: true })
+    await ensureDir(outsideDirectory)
+    await writeFile(outsideFile, 'outside')
+    await symlink(outsideDirectory, configDirectory)
+
+    await expect(removeMappedConfigFile(instancePath, 'keep.toml')).resolves.toBe(false)
+    expect(await pathExists(outsideFile)).toBe(true)
+  })
 })

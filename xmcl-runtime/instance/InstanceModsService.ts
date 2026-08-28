@@ -38,15 +38,24 @@ export class InstanceModsService extends AbstractInstanceDomainService implement
     }
     const requestedPaths = this.getRequestedModPaths(options)
     const removedResources = resources.filter(resource => requestedPaths.has(resolve(resource.path)))
-    const installedResources = resources.filter(resource => !requestedPaths.has(resolve(resource.path)))
+    const remainingResources = resources.filter(resource => !requestedPaths.has(resolve(resource.path)))
 
     await super.uninstall(options)
 
-    const removedAfterSuccessfulDelete = await Promise.all(removedResources.map(async resource =>
-      await pathExists(resource.path) ? undefined : resource.metadata))
+    const removalResults = await Promise.all(removedResources.map(async resource => ({
+      resource,
+      removed: !(await pathExists(resource.path)),
+    })))
+    const removedAfterSuccessfulDelete = removalResults
+      .filter(result => result.removed)
+      .map(result => result.resource.metadata)
     const removedModIds = new Set(removedAfterSuccessfulDelete.flatMap(metadata => metadata ? getModIds(metadata) : []))
     if (removedModIds.size === 0) return
 
+    const installedResources = [
+      ...remainingResources,
+      ...removalResults.filter(result => !result.removed).map(result => result.resource),
+    ]
     const installedModIds = new Set(installedResources.flatMap(resource => getModIds(resource.metadata)))
     const allModIds = [...new Set([...removedModIds, ...installedModIds])]
     try {

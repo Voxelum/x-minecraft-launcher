@@ -36,23 +36,28 @@ describe('InstanceModsService uninstall', () => {
     await rm(instancePath, { recursive: true, force: true })
   })
 
-  function createService(deleteModConfigsOnRemoval: boolean, metadataFailure = false) {
+  function createService(
+    deleteModConfigsOnRemoval: boolean,
+    metadataFailure = false,
+    additionalFiles: ResourceState['files'] = [],
+    mappings: Record<string, string[]> = { example: ['example.toml'] },
+  ) {
     const state = {
       files: [{
         path: modPath,
         metadata: { fabric: { id: 'example' } },
-      }],
+      }, ...additionalFiles],
     } as unknown as SharedState<ResourceState>
     const app = {
       getLogger: () => ({ log: vi.fn(), warn: vi.fn(), error: vi.fn() }),
       registry: {
         get: metadataFailure
           ? vi.fn().mockRejectedValue(new Error('metadata unavailable'))
-          : vi.fn().mockResolvedValue({ get: () => state }),
+          : vi.fn().mockResolvedValue({ get: () => state, revalidate: vi.fn() }),
       },
     }
     const modMetadataService = {
-      lookupModConfigPaths: vi.fn().mockResolvedValue({ example: ['example.toml'] }),
+      lookupModConfigPaths: vi.fn().mockResolvedValue(mappings),
     }
     const service = new InstanceModsService(
       app as any,
@@ -91,5 +96,25 @@ describe('InstanceModsService uninstall', () => {
     expect(await pathExists(modPath)).toBe(false)
     expect(await pathExists(configPath)).toBe(true)
     expect(modMetadataService.lookupModConfigPaths).not.toHaveBeenCalled()
+  })
+
+  test('keeps shared configs when another requested mod fails to uninstall', async () => {
+    const survivingModPath = join(instancePath, 'mods', 'surviving.jar')
+    const sharedConfigPath = join(instancePath, 'config', 'shared.toml')
+    await ensureDir(survivingModPath)
+    await writeFile(sharedConfigPath, 'shared')
+    const { service } = createService(true, false, [{
+      path: survivingModPath,
+      metadata: { fabric: { id: 'surviving' } },
+    }] as ResourceState['files'], {
+      example: ['shared.toml'],
+      surviving: ['shared.toml'],
+    })
+
+    await service.uninstall({ path: instancePath, files: [modPath, survivingModPath] })
+
+    expect(await pathExists(modPath)).toBe(false)
+    expect(await pathExists(survivingModPath)).toBe(true)
+    expect(await pathExists(sharedConfigPath)).toBe(true)
   })
 })

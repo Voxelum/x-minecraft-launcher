@@ -38,11 +38,16 @@ export async function removeMappedConfigFile(instancePath: string, configPath: s
   const relativeTarget = relative(configDirectory, target)
   if (!relativeTarget || relativeTarget.startsWith('..') || isAbsolute(relativeTarget)) return false
 
-  const [realConfigDirectory, realParent] = await Promise.all([
+  const configStat = await lstat(configDirectory).catch(() => undefined)
+  if (!configStat?.isDirectory() || configStat.isSymbolicLink()) return false
+  const [realInstancePath, realConfigDirectory, realParent] = await Promise.all([
+    realpath(instancePath),
     realpath(configDirectory),
     realpath(dirname(target)),
   ]).catch(() => [])
-  if (!realConfigDirectory || !realParent) return false
+  if (!realInstancePath || !realConfigDirectory || !realParent) return false
+  const relativeConfigDirectory = relative(realInstancePath, realConfigDirectory)
+  if (relativeConfigDirectory.startsWith('..') || isAbsolute(relativeConfigDirectory)) return false
   const relativeParent = relative(realConfigDirectory, realParent)
   if (relativeParent.startsWith('..') || isAbsolute(relativeParent)) return false
 
