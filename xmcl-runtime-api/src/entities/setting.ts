@@ -27,6 +27,7 @@ export class Settings implements SettingSchema {
   discordPresence = false
   developerMode = false
   disableTelemetry = false
+  deleteModConfigsOnRemoval = false
   multiplayerTransport: import('../multiplayer').MultiplayerTransport = 'webrtc'
   agentEndpoint = DEFAULT_AGENT_ENDPOINT
   agentModel = DEFAULT_AGENT_MODEL
@@ -116,6 +117,7 @@ export class Settings implements SettingSchema {
     this.discordPresence = config.discordPresence
     this.developerMode = config.developerMode
     this.disableTelemetry = config.disableTelemetry
+    this.deleteModConfigsOnRemoval = config.deleteModConfigsOnRemoval
     this.multiplayerTransport = config.multiplayerTransport
     this.agentEndpoint = config.agentEndpoint
     this.agentModel = config.agentModel
@@ -214,6 +216,10 @@ export class Settings implements SettingSchema {
 
   disableTelemetrySet(disable: boolean) {
     this.disableTelemetry = disable
+  }
+
+  deleteModConfigsOnRemovalSet(enabled: boolean) {
+    this.deleteModConfigsOnRemoval = enabled
   }
 
   multiplayerTransportSet(transport: import('../multiplayer').MultiplayerTransport) {

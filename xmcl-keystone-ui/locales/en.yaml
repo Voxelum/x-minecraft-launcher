@@ -2036,6 +2036,8 @@ setting:
   devModeLabel: DEV
   developerMode: Developer Mode
   developerModeDescription: Developer Mode is for testing your own mods
+  deleteModConfigsOnRemoval: Delete Mod Configs on Removal
+  deleteModConfigsOnRemovalDescription: Delete config files associated with a removed mod when they are recognized by the community metadata database.
   disableTelemetry: Disable Telemetry
   disableTelemetryDescription: XMCL will collect the game launch and user login events.
   enableDedicatedGPUOptimization: Assign Dedicated GPU

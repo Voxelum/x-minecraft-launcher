@@ -218,6 +218,10 @@ export function useSettings() {
     get: () => state.value?.disableTelemetry ?? false,
     set: v => state.value?.disableTelemetrySet(v),
   })
+  const deleteModConfigsOnRemoval = computed({
+    get: () => state.value?.deleteModConfigsOnRemoval ?? false,
+    set: v => state.value?.deleteModConfigsOnRemovalSet(v),
+  })
   const multiplayerTransport = computed({
     get: () => state.value?.multiplayerTransport ?? 'webrtc',
     set: v => state.value?.multiplayerTransportSet(v),
@@ -275,6 +279,7 @@ export function useSettings() {
     apiSetsPreference,
     apiSets,
     disableTelemetry,
+    deleteModConfigsOnRemoval,
     multiplayerTransport,
     error,
     isValidating,

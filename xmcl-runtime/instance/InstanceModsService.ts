@@ -1,13 +1,16 @@
-import { Resource, ResourceDomain, ResourceManager } from '@xmcl/resource'
-import { InstanceModsService as IInstanceModsService, InstanceModsServiceKey, UpdateInstanceResourcesOptions } from '@xmcl/runtime-api'
-import { emptyDir, ensureDir, rename, stat } from 'fs-extra'
-import { dirname, join } from 'path'
+import { Resource, ResourceDomain, ResourceManager, type ResourceMetadata, type ResourceState } from '@xmcl/resource'
+import { InstanceModsService as IInstanceModsService, InstanceModsServiceKey, ModMetadataService as IModMetadataService, Settings, SharedState, UpdateInstanceResourcesOptions, getInstanceModStateKey } from '@xmcl/runtime-api'
+import { emptyDir, ensureDir, pathExists, readdir, rename, stat } from 'fs-extra'
+import { dirname, isAbsolute, join, relative, resolve } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
+import { ModMetadataService } from '~/moddb/ModMetadataService'
 import { kResourceManager } from '~/resource'
-import { ExposeServiceKey } from '~/service'
+import { ExposeServiceKey, ServiceStateManager } from '~/service'
+import { kSettings } from '~/settings'
 import { LauncherApp } from '../app/LauncherApp'
 import { readdirIfPresent } from '../util/fs'
 import { AbstractInstanceDomainService } from './AbstractInstanceDomainService'
+import { getModIds, getRemovableConfigPaths, removeMappedConfigFile } from './modConfig'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
@@ -16,8 +19,84 @@ import { AbstractInstanceDomainService } from './AbstractInstanceDomainService'
 export class InstanceModsService extends AbstractInstanceDomainService implements IInstanceModsService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kResourceManager) private resourceManager: ResourceManager,
+    @Inject(kSettings) private settings: SharedState<Settings>,
+    @Inject(ModMetadataService) private modMetadataService: IModMetadataService,
   ) {
     super(app, ResourceDomain.Mods)
+  }
+
+  async uninstall(options: UpdateInstanceResourcesOptions): Promise<void> {
+    if (!this.settings.deleteModConfigsOnRemoval) {
+      return super.uninstall(options)
+    }
+
+    let resources: Array<{ path: string; metadata: ResourceMetadata }> = []
+    try {
+      resources = await this.getInstalledModMetadata(options.path)
+    } catch (e) {
+      this.warn('Failed to read installed mod metadata for config cleanup', e)
+    }
+    const requestedPaths = this.getRequestedModPaths(options)
+    const removedResources = resources.filter(resource => requestedPaths.has(resolve(resource.path)))
+    const installedResources = resources.filter(resource => !requestedPaths.has(resolve(resource.path)))
+
+    await super.uninstall(options)
+
+    const removedAfterSuccessfulDelete = await Promise.all(removedResources.map(async resource =>
+      await pathExists(resource.path) ? undefined : resource.metadata))
+    const removedModIds = new Set(removedAfterSuccessfulDelete.flatMap(metadata => metadata ? getModIds(metadata) : []))
+    if (removedModIds.size === 0) return
+
+    const installedModIds = new Set(installedResources.flatMap(resource => getModIds(resource.metadata)))
+    const allModIds = [...new Set([...removedModIds, ...installedModIds])]
+    try {
+      const mappings = await this.modMetadataService.lookupModConfigPaths(allModIds)
+      const configPaths = getRemovableConfigPaths(mappings, removedModIds, installedModIds)
+      await Promise.all(configPaths.map(async configPath => {
+        try {
+          if (await removeMappedConfigFile(options.path, configPath)) {
+            this.log(`Removed config/${configPath} with its mod`)
+          }
+        } catch (e) {
+          this.warn(`Failed to remove mapped mod config: ${configPath}`, e)
+        }
+      }))
+    } catch (e) {
+      this.warn('Failed to resolve mapped mod configs', e)
+    }
+  }
+
+  private getRequestedModPaths({ files, path }: UpdateInstanceResourcesOptions) {
+    const modsDirectory = resolve(path, ResourceDomain.Mods)
+    const result = new Set<string>()
+    for (const file of files) {
+      if (typeof file !== 'string' || !file) continue
+      const target = isAbsolute(file) ? resolve(file) : resolve(modsDirectory, file)
+      const relativeTarget = relative(modsDirectory, target)
+      if (!relativeTarget.startsWith('..') && !isAbsolute(relativeTarget)) result.add(target)
+    }
+    return result
+  }
+
+  private async getInstalledModMetadata(instancePath: string): Promise<Array<{ path: string; metadata: ResourceMetadata }>> {
+    const stateManager = await this.app.registry.get(ServiceStateManager)
+    const state = stateManager.get<SharedState<ResourceState>>(getInstanceModStateKey(instancePath))
+    if (state) return state.files.map(resource => ({ path: resource.path, metadata: resource.metadata }))
+
+    const modsDirectory = join(instancePath, ResourceDomain.Mods)
+    const entries = await readdir(modsDirectory, { withFileTypes: true }).catch(() => [])
+    const resources = await Promise.all(entries.filter(entry => entry.isFile()).map(async entry => {
+      const path = join(modsDirectory, entry.name)
+      try {
+        const snapshot = await this.resourceManager.getSnapshot(path)
+        if (!snapshot) return
+        const metadata = await this.resourceManager.getMetadataByHash(snapshot.sha1)
+        return metadata ? { path, metadata } : undefined
+      } catch {
+        return
+      }
+    }))
+    return resources.filter((resource): resource is { path: string; metadata: ResourceMetadata } => !!resource)
   }
 
   async enable({ files: mods, path }: UpdateInstanceResourcesOptions): Promise<void> {
