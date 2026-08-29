@@ -21,6 +21,7 @@ import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
 import { ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
 import { ProjectMapping, ProjectMappingServiceKey } from '@xmcl/runtime-api'
+import { getMarketRoutePathFromModrinthProjectType } from '@/util/marketRoute'
 import Hint from './Hint.vue'
 
 const props = defineProps<{
@@ -246,7 +247,10 @@ const onDelete = () => {
 
 const { push, currentRoute } = useRouter()
 const onOpenDependency = (dep: ProjectDependency) => {
-  push({ query: { ...currentRoute.value.query, id: `modrinth:${dep.id}` } })
+  const resolvedDep = deps.value?.find((d) => d.project.id === dep.id)
+  const path = getMarketRoutePathFromModrinthProjectType(resolvedDep?.project.project_type)
+  const query = { ...currentRoute.value.query, id: `modrinth:${dep.id}` }
+  push(path ? { path, query } : { query })
 }
 
 const curseforgeId = computed(
