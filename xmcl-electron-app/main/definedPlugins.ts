@@ -85,10 +85,10 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginFlights,
   pluginNetworkInterface,
   pluginExternalCredentialLifecycle,
+  pluginUserTokenStorage,
   pluginOfficialUserApi,
   pluginOffineUser,
   pluginUndiciLogger,
-  pluginUserTokenStorage,
 
   pluginModrinthAccess,
 

@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { UserService } from './UserService'
 import { pluginModrinthAccess } from './pluginModrinthAccess'
+import { formatModrinthAuthorization } from './utils/loginModrinth'
 
 vi.mock('./UserService', () => ({
   UserService: class UserService {},
@@ -41,11 +42,15 @@ describe('pluginModrinthAccess', () => {
       registry,
     })
     const credentials = new ExternalCredentialService(app as any)
-    await credentials.store('modrinth', { accessToken: 'modrinth-access-token' })
-    registry.get.mockResolvedValue(new EventEmitter())
+    await credentials.store('modrinth', { accessToken: 'test_modrinth_value' })
+    const userService = new EventEmitter()
+    vi.spyOn(userService, 'emit')
+    registry.get.mockResolvedValue(userService)
     registry.getOrCreate.mockResolvedValue(credentials)
 
     await pluginModrinthAccess(app as any, {} as any)
+    expect(registry.get).not.toHaveBeenCalled()
+    expect(registry.getOrCreate).not.toHaveBeenCalled()
 
     const request = {
       url: new URL('https://api.modrinth.com/v2/user'),
@@ -53,8 +58,20 @@ describe('pluginModrinthAccess', () => {
     }
     await handlers.get('https')!({ request, response: {} })
 
-    expect(request.headers.Authorization).toBe('Bearer modrinth-access-token')
-    expect(registry.get).toHaveBeenCalledWith(UserService)
+    expect(request.headers.Authorization).toBe(formatModrinthAuthorization('test_modrinth_value'))
+    expect(registry.get).not.toHaveBeenCalled()
     expect(registry.getOrCreate).toHaveBeenCalledWith(ExternalCredentialService)
+
+    const response = {} as Record<string, unknown>
+    handlers.get('xmcl')!({
+      request: {
+        url: new URL('xmcl://launcher/modrinth-auth?code=abc'),
+      },
+      response,
+    })
+
+    await vi.waitFor(() => expect(userService.emit).toHaveBeenCalledWith('modrinth-authorize-code', undefined, 'abc'))
+    expect(registry.get).toHaveBeenCalledWith(UserService)
+    expect(response.status).toBe(200)
   })
 })

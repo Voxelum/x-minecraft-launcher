@@ -100,7 +100,6 @@ export class XmclAccountService
 
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ExternalCredentialService) private externalCredentials: ExternalCredentialService,
     @Inject(ServiceStateManager) store: ServiceStateManager,
   ) {
     super(
@@ -194,6 +193,10 @@ export class XmclAccountService
     )
   }
 
+  private getExternalCredentials(): Promise<ExternalCredentialService> {
+    return this.app.registry.getOrCreate(ExternalCredentialService)
+  }
+
   @Singleton()
   async authorizeMicrosoft(): Promise<void> {
     await this.initialize()
@@ -234,7 +237,7 @@ export class XmclAccountService
   @Singleton()
   async authorizeModrinth(): Promise<void> {
     await this.initialize()
-    const credential = await this.externalCredentials.getValidAccessToken('modrinth')
+    const credential = await (await this.getExternalCredentials()).getValidAccessToken('modrinth')
     if (credential.status !== 'valid') return
     await this.bootstrapCredential('modrinth', credential.accessToken)
   }
