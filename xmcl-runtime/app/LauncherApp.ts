@@ -309,10 +309,8 @@ export class LauncherApp extends EventEmitter {
   // setup code
 
   async start(): Promise<void> {
-    await Promise.all([
-      this.setup(),
-      this.host.whenReady().then(() => this.onEngineReady()),
-    ])
+    await this.setup()
+    await this.host.whenReady().then(() => this.onEngineReady())
   }
 
   /**
