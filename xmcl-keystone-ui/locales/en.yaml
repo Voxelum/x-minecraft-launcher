@@ -830,12 +830,17 @@ logLevel:
 logView:
   searchPlaceholder: Search logs...
 login:
+  backToOfflineLogin: Back to Offline Login
+  createOfflineAccount: Create Offline Account
   dropHint: Drop the link with authcode here to manually login
   forgetPassword: Forget Password?
   login: Login
   manualLoginUrl: If the browser doesn't show up, please click this link to auth!
   signup: Sign up
   signupDescription: New to us?
+  offlineAccountCreationFailed: Could not create the offline account.
+  offlinePasswordConfirmation: Confirm Password
+  offlinePasswordsDoNotMatch: Passwords do not match.
   userRelogin: User access token is expired. Please re-login!
 loginError:
   acquireMicrosoftTokenFailed: >-
@@ -2494,9 +2499,13 @@ userServices:
   offline:
     account: Username
     name: Offline
-    password: No Password
+    password: Password (not required for Steve)
     uuid: User UUID (Optional)
 userSkin:
+  importCape: 'Import Cape'
+  saveCape: 'Save Cape To Disk'
+  capeUploaded: 'Cape uploaded'
+  capeSaved: 'Cape saved to disk!'
   classic: 'Classic'
   import: 'Import Skin'
   importFile: 'Open from File'
