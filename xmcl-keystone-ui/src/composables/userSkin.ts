@@ -2,6 +2,7 @@ import { computed, InjectionKey, onMounted, reactive, Ref, toRefs, watch } from 
 import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, GameProfileAndTexture, UserServiceKey, UserProfile } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 import steveSkin from '@/assets/steve_skin.png'
+import { normalizeSkinImage } from '@/util/normalizeSkin'
 
 export function usePlayerName(gameProfile: Ref<GameProfileAndTexture>) {
   const name = ref(gameProfile.value.name)
@@ -50,6 +51,9 @@ export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAnd
     data.cape = activeCapeUrl.value
     data.skin = activeSkinUrl.value
     data.slim = activeSlim.value
+    // Do not trust stale model metadata. SkinView will inspect the unused arm
+    // columns and report the model encoded by the actual PNG.
+    data.inferModelType = true
   }
   const skinModified = computed(() => data.skin !== currentSkin.value || data.slim !== currentSlim.value)
   const capeModified = computed(() => data.cape !== currentCape.value)
@@ -59,8 +63,11 @@ export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAnd
     data.loading = true
     try {
       if (!modified.value) return
+      const skin = skinModified.value
+        ? { url: await normalizeSkinImage(data.skin), slim: data.slim }
+        : undefined
       await uploadSkin({
-        skin: skinModified.value ? { url: data.skin, slim: data.slim } : undefined,
+        skin,
         cape: capeModified.value ? (data.cape ?? '') : undefined,
         userId: userId.value,
         gameProfileId: gameProfile.value.id,
