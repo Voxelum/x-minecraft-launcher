@@ -20,7 +20,6 @@
           icon
           variant="text"
           size="small"
-          :aria-label="t('shared.clear')"
           @click="clear"
         >
           <v-icon size="small">
@@ -100,8 +99,6 @@ function onBlur(e: FocusEvent) {
 function onClickField(e: MouseEvent) {
   searchTextFieldFocused.value = true
 }
-
-const { t } = useI18n()
 
 const searchTextField = shallowRef(undefined as any | undefined)
 const searchTextFieldFocused = inject('focused', ref(false))

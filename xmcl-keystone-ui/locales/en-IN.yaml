@@ -1929,7 +1929,6 @@ shared:
   back: Back
   browse: Browse
   cancel: Cancel
-  clear: Clear
   checkUpgrade: Check for Updates
   client: Client
   copied: Copied
