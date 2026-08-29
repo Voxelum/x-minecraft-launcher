@@ -111,7 +111,7 @@ const { isShown, hide, show, parameter } = useDialog<UnauthenticatedWarningParam
   AppUnauthenticatedWarningDialogKey,
 )
 const userMenu = useUserMenuControl()
-const { users } = injection(kUserContext)
+const { users, userProfile } = injection(kUserContext)
 const { usePreclickListener } = injection(kLaunchButton)
 
 // Intercept the launch flow when no account is signed in. Rejecting from the
@@ -119,7 +119,9 @@ const { usePreclickListener } = injection(kLaunchButton)
 // rejection); resolving lets it continue (used when the user picks "Play
 // Anyway").
 usePreclickListener(() => {
-  if (users.value.length > 0) return
+  // Check BOTH: users exist AND valid user selected
+  const hasValidUser = users.value.length > 0 && userProfile.value?.id
+  if (hasValidUser) return
   return new Promise<void>((resolve, reject) => {
     show({
       onPlay: resolve,
