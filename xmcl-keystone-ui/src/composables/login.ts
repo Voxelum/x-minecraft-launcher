@@ -32,6 +32,14 @@ export function useAccountSystemHistory() {
       ]
     },
   })
+  watch(authority, (value) => {
+    if (value === AUTHORITY_DEV) {
+      // Remove legacy passwordless offline suggestions. The actual account
+      // records remain removable from the account switcher; newly verified
+      // accounts are added back to this list after login.
+      history.value = history.value.filter((name) => name.toLowerCase() === 'steve')
+    }
+  }, { immediate: true })
   return {
     authority,
     history,
@@ -93,7 +101,9 @@ export function useAuthorityItems(authorities: Ref<AuthorityMetadata[] | undefin
     if (!authorities.value) return []
     const result = [] as AuthorityItem[]
     for (const v of authorities.value) {
-      if (!thirdParty.value && v.authority !== AUTHORITY_MICROSOFT) continue
+      // The built-in offline account system is not a third-party service and
+      // must remain available even when third-party authorities are hidden.
+      if (!thirdParty.value && v.authority !== AUTHORITY_MICROSOFT && v.authority !== AUTHORITY_DEV) continue
       if (v.authority === AUTHORITY_MICROSOFT) {
         result.push({
           value: AUTHORITY_MICROSOFT,
