@@ -16,6 +16,7 @@
         "build:docs": "tsx scripts/docs.ts",
         "postsign": "pnpm run --prefix=xmcl-electron-app postsign",
         "check": "pnpm run --prefix=xmcl-runtime-api check && pnpm run --prefix=xmcl-runtime check && pnpm run --prefix=xmcl-electron-app check && pnpm run --prefix=xmcl-keystone-ui check",
+        "dev": "tsx scripts/dev.ts",
         "dev:main": "pnpm run --prefix=xmcl-electron-app dev",
         "dev:renderer": "pnpm run --prefix=xmcl-keystone-ui dev",
         "lint": "oxlint -c ./.oxlintrc.json packages && pnpm run --prefix=xmcl-keystone-ui lint && pnpm run --prefix=xmcl-runtime lint && pnpm run --prefix=xmcl-runtime-api lint && pnpm run --prefix=xmcl-electron-app lint",
