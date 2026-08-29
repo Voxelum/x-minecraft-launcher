@@ -77,7 +77,10 @@
         :disabled="pending"
         :open-library="() => (isSkinLibraryDialogShown = true)"
         :upload="() => (isImportSkinDialogShown = true)"
+        :upload-cape="loadCape"
         :save="exportSkin"
+        :save-cape="exportCape"
+        :has-current-cape="!!cape"
         :load="loadSkin"
       />
       <v-fab-transition>
@@ -114,6 +117,7 @@ import {
 } from '../composables/userSkin'
 import ImportSkinUrlForm from './UserSkinImportUrlForm.vue'
 import SpeedDial from './UserSkinSpeedDial.vue'
+import { useUserMenuControl } from '@/composables/userMenu'
 
 const props = withDefaults(
   defineProps<{
@@ -128,6 +132,7 @@ const { t } = useI18n()
 const hover = ref(false)
 const { notify } = useNotifier()
 const toLocaleError = useLocaleError()
+const { show: showUserProfileDialog } = useUserMenuControl()
 
 const gameProfile = computed(() => props.profile)
 const selected = computed(() => props.user.selectedProfile === props.profile.id)
@@ -204,6 +209,25 @@ async function exportSkin() {
     exportTo({ path: filePath, url: skin.value })
   }
 }
+async function loadCape() {
+  if (!canUploadCape.value) return
+  const { filePaths } = await showOpenDialog({
+    title: t('userSkin.importCape'),
+    filters: [{ extensions: ['png'], name: 'PNG Images' }],
+  })
+  if (filePaths && filePaths[0]) {
+    cape.value = `http://launcher/media?path=${filePaths[0]}`
+  }
+}
+async function exportCape() {
+  if (!cape.value) return
+  const { filePath } = await showSaveDialog({
+    title: t('userSkin.saveCape'),
+    defaultPath: `${name.value}-cape.png`,
+    filters: [{ extensions: ['png'], name: 'PNG Images' }],
+  })
+  if (filePath) exportTo({ path: filePath, url: cape.value })
+}
 async function dropSkin(e: DragEvent) {
   if (!canUploadSkin.value) return
   if (e.dataTransfer) {
@@ -215,16 +239,30 @@ async function dropSkin(e: DragEvent) {
   }
 }
 
+function isOfflineSessionExpired(error: unknown): boolean {
+  if (!error) return false
+  if (typeof error === 'string') return error.toLowerCase().includes('offline account session expired') || error.toLowerCase() === 'unauthorized.'
+  if (typeof error !== 'object') return false
+  const value = error as { message?: unknown; cause?: unknown; exception?: unknown }
+  return isOfflineSessionExpired(value.message)
+    || isOfflineSessionExpired(value.cause)
+    || isOfflineSessionExpired(value.exception)
+}
+
 const save_ = async () => {
   try {
     await save()
     notify({ level: 'success', title: t('userSkin.upload') })
   } catch (e) {
+    const errorBody = toLocaleError(e)
     notify({
       level: 'error',
       title: t('userSkin.uploadFailed'),
-      body: toLocaleError(e),
+      body: errorBody,
     })
+    if (isOfflineSessionExpired(e) || errorBody.toLowerCase().includes('offline account session expired') || errorBody.toLowerCase() === 'unauthorized.') {
+      showUserProfileDialog('login')
+    }
   }
 }
 </script>
