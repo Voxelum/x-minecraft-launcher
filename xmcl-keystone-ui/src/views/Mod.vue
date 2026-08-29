@@ -223,7 +223,7 @@
         :loader="modLoader"
         :categories="modrinthCategories"
         :all-files="mods"
-        :dependents="getModDependents(selectedItem?.installed || getInstalledModrinth(selectedModrinthId))"
+        :dependents="getProjectDependents(selectedItem?.installed || getInstalledModrinth(selectedModrinthId))"
         :updating="updating"
         :game-version="gameVersion"
         :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
@@ -244,7 +244,7 @@
         :loader="modLoader"
         :category="curseforgeCategory"
         :all-files="mods"
-        :dependents="getModDependents(selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId))"
+        :dependents="getProjectDependents(selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId))"
         :updating="updating"
         :modrinth="selectedModrinthId"
         collection-content-type="mods"
@@ -267,7 +267,7 @@
         :files="selectedItem.files"
         :runtime="runtime"
         :installed="selectedItem.installed"
-        :dependents="getModDependents(selectedItem.installed)"
+        :dependents="getProjectDependents(selectedItem.installed)"
         @open-dependent="openModDependent"
       />
     </template>
@@ -340,7 +340,7 @@ import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { clientModrinthV2 } from '@/util/clients'
-import { ModFile, isModFile } from '@/util/mod'
+import { ModFile, getModDependents, isModFile } from '@/util/mod'
 import { flattenVisibleModGroups } from '@/util/modGroupFilter'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
@@ -426,27 +426,8 @@ const {
   isValidating,
 } = injection(kInstanceModsContext)
 
-function getModDependents(installedFiles: ProjectEntry['installed'] | undefined): ProjectDependent[] {
-  const installed = installedFiles?.filter(isModFile) ?? []
-  if (installed.length === 0) return []
-
-  const installedPaths = new Set(installed.map(file => file.path))
-  const providedIds = new Set(installed.flatMap(file => [file.modId, ...Object.keys(file.provideRuntime)]))
-  return mods.value.flatMap((candidate): ProjectDependent[] => {
-    if (installedPaths.has(candidate.path)) return []
-    const matched = Object.values(candidate.dependencies)
-      .flat()
-      .filter(dependency => providedIds.has(dependency.modId))
-    if (matched.length === 0) return []
-    return [{
-      id: candidate.modrinth?.projectId || candidate.curseforge?.projectId.toString() || candidate.name,
-      icon: candidate.icon,
-      title: candidate.name,
-      description: candidate.version,
-      type: matched.every(dependency => dependency.optional) ? 'optional' : 'required',
-    }]
-  })
-}
+const getProjectDependents = (installedFiles: ProjectEntry['installed'] | undefined): ProjectDependent[] =>
+  getModDependents(installedFiles, mods.value, modLoader.value)
 const { state: settingsState } = injection(kSettingsState)
 const modrinthAPI = injection(kModrinthAuthenticatedAPI)
 

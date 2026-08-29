@@ -6,6 +6,19 @@ import { ForgeModCommonMetadata, NeoforgeMetadata } from '@xmcl/runtime-api'
 import { ModDependencies, getModDependencies, getModProvides } from './modDependencies'
 import { ProjectFile } from './search'
 
+const runtimeDependencyIds = new Set([
+  'minecraft',
+  'java',
+  'forge',
+  'neoforge',
+  'fabric',
+  'fabricloader',
+  'fabric-loader',
+  'fabric_loader',
+  'quilt_loader',
+  'quilt-loader',
+])
+
 interface ModMetadata {
   /**
    * The extenral links
@@ -237,6 +250,55 @@ export function getModSide(mod: ModFile, runtime: 'fabric' | 'forge' | 'neoforge
 
 export function isModFile(file: ProjectFile): file is ModFile {
   return (file as ModFile).dependencies !== undefined
+}
+
+export interface ModDependent {
+  id: string
+  icon?: string
+  title: string
+  description: string
+  type: 'optional' | 'required'
+}
+
+/**
+ * Find installed mods whose declared dependencies point at the selected mod.
+ */
+export function getModDependents(
+  installedFiles: ProjectFile[] | undefined,
+  allMods: ModFile[],
+  fallbackLoader?: string,
+): ModDependent[] {
+  const installed = installedFiles?.filter(isModFile) ?? []
+  if (installed.length === 0) return []
+
+  const installedPaths = new Set(installed.map(file => file.path))
+  const targetIds = new Set(
+    installed
+      .map(file => file.modId)
+      .filter(id => id && !runtimeDependencyIds.has(id)),
+  )
+  if (targetIds.size === 0) return []
+
+  const loaders = new Set(installed.flatMap(file => file.modLoaders).filter(Boolean))
+  if (loaders.size === 0 && fallbackLoader) {
+    loaders.add(fallbackLoader)
+  }
+
+  return allMods.flatMap((candidate): ModDependent[] => {
+    if (installedPaths.has(candidate.path)) return []
+    const dependencies = loaders.size > 0
+      ? [...loaders].flatMap(loader => candidate.dependencies[loader] ?? [])
+      : Object.values(candidate.dependencies).flat()
+    const matched = dependencies.filter(dependency => targetIds.has(dependency.modId))
+    if (matched.length === 0) return []
+    return [{
+      id: candidate.modrinth?.projectId || candidate.curseforge?.projectId.toString() || candidate.name,
+      icon: candidate.icon,
+      title: candidate.name,
+      description: candidate.version,
+      type: matched.every(dependency => dependency.optional) ? 'optional' : 'required',
+    }]
+  })
 }
 
 export function getModMinecraftVersion(mod: ModFile) {
