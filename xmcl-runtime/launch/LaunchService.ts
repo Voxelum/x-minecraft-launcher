@@ -187,8 +187,8 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
   async #generateOptions(options: LaunchOptions, version: ResolvedVersion, accessToken?: string) {
     const user = options.user
-    const demo = !user.id && !user.selectedProfile && !user.username
-    const gameProfile = user.profiles[user.selectedProfile] ?? offline('Steve').selectedProfile
+    const gameProfile = user.profiles[user.selectedProfile]
+    const demo = !gameProfile && (!user.id && !user.selectedProfile && !user.username)
     const javaPath = options.java
     const yggdrasilAgent = options.yggdrasilAgent
 
@@ -260,6 +260,10 @@ export class LaunchService extends AbstractService implements ILaunchService {
         : launchOptions.yggdrasilAgent.server
       launchOptions.extraJVMArgs?.push(
         '-Dauthlibinjector.debug',
+        // Offline servers identify players by username and do not send
+        // Yggdrasil texture properties. Let authlib-injector ask our API for
+        // the skin through its legacy username-based polyfill.
+        '-Dauthlibinjector.legacySkinPolyfill=enabled',
       )
 
       const reg = await this.app.registry.get(kYggdrasilSeriveRegistry)
