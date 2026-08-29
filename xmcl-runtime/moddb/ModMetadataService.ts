@@ -45,6 +45,10 @@ interface Database {
     id: string
     version: string
   }
+  mod_config: {
+    mod_id: string
+    path: string
+  }
 }
 
 @ExposeServiceKey(ModMetadataServiceKey)
@@ -159,6 +163,28 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
       modrinth: modrinth ? { id: modrinth.project, version: modrinth.version } : undefined,
       curseforge: curseforge ? { id: curseforge.project, file: curseforge.file } : undefined,
     }
+  }
+
+  async lookupModConfigPaths(modIds: string[]): Promise<Record<string, string[]>> {
+    if (modIds.length === 0) return {}
+    const db = await this.#ensureDb()
+    let rows: Database['mod_config'][]
+    try {
+      rows = await db.selectFrom('mod_config')
+        .where('mod_id', 'in', modIds)
+        .selectAll()
+        .execute()
+    } catch (e) {
+      if (e instanceof Error && e.message.includes('no such table: mod_config')) {
+        return {}
+      }
+      throw e
+    }
+    return rows.reduce((result, row) => {
+      const paths = result[row.mod_id] ??= []
+      if (!paths.includes(row.path)) paths.push(row.path)
+      return result
+    }, {} as Record<string, string[]>)
   }
 
   async lookupModrinthId(curseforgeId: number): Promise<string | undefined> {

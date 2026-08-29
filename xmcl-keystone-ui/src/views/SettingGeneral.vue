@@ -45,6 +45,14 @@
       icon="privacy_tip"
     />
 
+    <v-divider class="my-3" />
+    <SettingItemSwitcher
+      v-model="deleteModConfigsOnRemoval"
+      :title="t('setting.deleteModConfigsOnRemoval')"
+      :description="t('setting.deleteModConfigsOnRemovalDescription')"
+      icon="delete_sweep"
+    />
+
     <!-- GPU Optimization (Windows/Linux only) -->
     <template v-if="env?.os === 'linux' || env?.os === 'windows'">
       <v-divider class="my-3" />
@@ -226,6 +234,7 @@ const {
   selectedLocale,
   replaceNative,
   disableTelemetry,
+  deleteModConfigsOnRemoval,
   enableDiscord,
   quickActionShortcut,
   locales: rawLocales,

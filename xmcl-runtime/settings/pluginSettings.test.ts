@@ -77,6 +77,7 @@ describe('pluginSettings', () => {
       autoDownload: true,
       theme: 'light',
       maxSockets: 32,
+      deleteModConfigsOnRemoval: true,
     })
 
     vi.mocked(fsExtra.readJson).mockResolvedValue(mockSettings)
@@ -90,6 +91,7 @@ describe('pluginSettings', () => {
     })
 
     expect(fsExtra.readJson).toHaveBeenCalledWith(join('/mock/app/data', 'setting.json'))
+    expect(mockState.deleteModConfigsOnRemoval).toBe(true)
   })
 
   test('should use host locale when no locale is set', async () => {
@@ -133,6 +135,7 @@ describe('pluginSettings', () => {
     expect(mockState.locale).toBe('en')
     expect(mockState.theme).toBe('dark')
     expect(mockState.developerMode).toBe(false)
+    expect(mockState.deleteModConfigsOnRemoval).toBe(false)
     expect(mockState.autoDownload).toBe(false)
     expect(mockState.httpProxy).toBe('')
     expect(mockState.httpProxyEnabled).toBe(false)
@@ -363,6 +366,7 @@ describe('pluginSettings', () => {
         discordPresence: true,
         developerMode: true,
         disableTelemetry: false,
+        deleteModConfigsOnRemoval: false,
         multiplayerTransport: 'webrtc',
         agentEndpoint: '',
         agentModel: '',
@@ -434,6 +438,7 @@ describe('pluginSettings', () => {
         discordPresence: true,
         developerMode: false,
         disableTelemetry: false,
+        deleteModConfigsOnRemoval: false,
         multiplayerTransport: 'webrtc',
         agentEndpoint: '',
         agentModel: '',

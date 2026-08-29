@@ -25,6 +25,7 @@ export interface ModMetadata {
 export interface ModMetadataService {
   getMetadataFromSha1(sha1: string): Promise<ModMetadata | undefined>
   getMetadataFromSha1s(sha1: string[]): Promise<ModMetadata[]>
+  lookupModConfigPaths(modIds: string[]): Promise<Record<string, string[]>>
 
   lookupModrinthId(projectId: number): Promise<string | undefined>
   lookupCurseforgeId(projectId: string): Promise<number | undefined>
