@@ -93,6 +93,31 @@
                 <v-icon size="18">download</v-icon>
               </v-btn>
             </div>
+
+            <div v-if="canUploadCape" class="flex items-center gap-2">
+              <v-btn
+                variant="tonal"
+                size="default"
+                class="flex-1"
+                height="40"
+                @click="uploadCape"
+              >
+                <v-icon start size="16">flag</v-icon>
+                {{ t('userSkin.importCape') }}
+              </v-btn>
+              <v-btn
+                v-if="currentCape"
+                variant="tonal"
+                size="default"
+                icon
+                width="40"
+                height="40"
+                :title="t('userSkin.saveCape')"
+                @click="exportCape"
+              >
+                <v-icon size="18">download</v-icon>
+              </v-btn>
+            </div>
           </div>
         </div>
       </div>
@@ -406,6 +431,7 @@ const { getSupportedAuthorityMetadata } = useService(UserServiceKey)
 
 const skinModel = inject(UserSkinModel)
 const canUploadSkin = computed(() => skinModel?.canUploadSkin.value ?? false)
+const canUploadCape = computed(() => skinModel?.canUploadCape.value ?? false)
 
 const searchQuery = ref('')
 const selectedSkin = ref<SkinLibraryItem | null>(null)
@@ -717,6 +743,38 @@ async function exportSelectedSkin() {
         body: toLocaleError(e),
       })
     }
+  }
+}
+
+async function uploadCape() {
+  if (!skinModel || !canUploadCape.value) return
+  const { filePaths } = await showOpenDialog({
+    title: t('userSkin.importCape'),
+    filters: [{ extensions: ['png'], name: 'PNG Images' }],
+  })
+  if (!filePaths?.[0]) return
+  try {
+    skinModel.cape.value = `http://launcher/media?path=${filePaths[0]}`
+    await skinModel.save()
+    notify({ level: 'success', title: t('userSkin.capeUploaded') })
+  } catch (e) {
+    notify({ level: 'error', title: t('userSkin.uploadFailed'), body: toLocaleError(e) })
+  }
+}
+
+async function exportCape() {
+  if (!currentCape.value || !skinModel?.exportTo) return
+  const { filePath } = await windowController.showSaveDialog({
+    title: t('userSkin.saveCape'),
+    defaultPath: `${props.profile.name}-cape.png`,
+    filters: [{ extensions: ['png'], name: 'PNG Images' }],
+  })
+  if (!filePath) return
+  try {
+    await skinModel.exportTo({ path: filePath, url: currentCape.value })
+    notify({ level: 'success', title: t('userSkin.capeSaved') })
+  } catch (e) {
+    notify({ level: 'error', title: t('userSkin.saveFailed'), body: toLocaleError(e) })
   }
 }
 
