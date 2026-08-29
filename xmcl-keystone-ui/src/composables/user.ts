@@ -6,7 +6,7 @@ import { useLocalStorage } from '@vueuse/core'
 import { useState } from './syncableState'
 import { GameProfile } from '@xmcl/user'
 
-const NO_USER_PROFILE: UserProfile = Object.freeze({
+export const NO_USER_PROFILE: UserProfile = Object.freeze({
   selectedProfile: '',
   invalidated: true,
   authority: '',
@@ -95,6 +95,12 @@ export function useUserContext() {
       }
     }
   })
+
+  watch(users, (userList) => {
+    if (userList.length > 0 && userProfile.value === NO_USER_PROFILE) {
+      select(userList[0].id)
+    }
+  }, { immediate: true })
 
   return {
     users,
