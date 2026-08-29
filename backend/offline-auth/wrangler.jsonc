@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "xmcl-offline-auth",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-29",
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "CORS_ORIGIN": "*"
+  }
+}
