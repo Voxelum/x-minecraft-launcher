@@ -7,7 +7,7 @@ import {
   resolveQuiltVersion,
 } from '@xmcl/runtime-api'
 import { isSystemError } from '@xmcl/utils'
-import { ensureDir, move, stat, unlink } from 'fs-extra'
+import { ensureDir, move, readFile, stat, unlink, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { LauncherAppPlugin, kGameDataPath } from '~/app'
 import { InstanceService } from '~/instance'
@@ -17,12 +17,141 @@ import { getManagedJavaComponent, JavaService, JavaValidation } from '~/java'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
 import { linkOrCopyDirectory, missing } from '~/util/fs'
+import { LocalSkinService } from '~/user/LocalSkinService'
 
 export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   const launchService = await app.registry.get(LaunchService)
   const getPath = await app.registry.get(kGameDataPath)
+  const localSkinService = await app.registry.get(LocalSkinService)
 
   const logger = app.getLogger('LaunchPrecheck')
+
+  const ensureOfflineSkinMod = async (gameDirectory: string, minecraftVersion: string, versionId: string) => {
+    const loader = ['fabric', 'forge', 'neoforge', 'quilt'].find((name) => versionId.toLowerCase().includes(name))
+    if (!loader) return
+
+    const modsDirectory = join(gameDirectory, 'mods')
+    const configDirectory = join(gameDirectory, 'CustomSkinLoader')
+    const apiUrl = new URL('https://api.modrinth.com/v2/project/customskinloader/version')
+    apiUrl.searchParams.set('loaders', JSON.stringify([loader]))
+    apiUrl.searchParams.set('game_versions', JSON.stringify([minecraftVersion]))
+    apiUrl.searchParams.set('limit', '1')
+
+    try {
+      const result = await app.fetch(apiUrl.toString())
+      if (!result.ok) {
+        logger.warn(`Unable to find CustomSkinLoader for ${minecraftVersion} (${loader}): ${result.status}`)
+        return
+      }
+      const versions = await result.json() as Array<{
+        files?: Array<{ url: string; filename: string; primary?: boolean }>
+      }>
+      const file = versions[0]?.files?.find((candidate) => candidate.primary) || versions[0]?.files?.[0]
+      if (!file) return
+
+      await ensureDir(modsDirectory)
+      const modPath = join(modsDirectory, file.filename)
+      if (!(await stat(modPath).catch(() => undefined))) {
+        const mod = await app.fetch(file.url)
+        if (!mod.ok) throw new Error(`CustomSkinLoader download failed: ${mod.status}`)
+        await writeFile(modPath, Buffer.from(await mod.arrayBuffer()))
+        logger.log(`Installed default CustomSkinLoader ${file.filename}`)
+      }
+
+      // Create a deterministic first-run config. CustomSkinLoader otherwise
+      // starts with its Mojang/default list and may persist stale profile
+      // results before the offline source is considered.
+      const configPath = join(configDirectory, 'CustomSkinLoader.json')
+      const offlineSource = {
+        name: 'Keystone Offline Auth',
+        type: 'Legacy',
+        skin: 'https://xmcl-offline-auth.kc-dev-py.workers.dev/skins/MinecraftSkins/{USERNAME}.png',
+        cape: 'https://xmcl-offline-auth.kc-dev-py.workers.dev/skins/MinecraftCapes/{USERNAME}.png',
+        model: 'auto',
+        checkPNG: true,
+      }
+      if (!(await stat(configPath).catch(() => undefined))) {
+        await ensureDir(configDirectory)
+        await writeFile(configPath, JSON.stringify({
+          loadlist: [offlineSource],
+          enableTransparentSkin: true,
+          forceLoadAllTextures: true,
+          enableCape: true,
+          threadPoolSize: 8,
+          cacheExpiry: 0,
+          forceUpdateSkull: true,
+          enableLocalProfileCache: false,
+          enableCacheAutoClean: true,
+          forceDisableCache: true,
+        }, null, 2))
+        logger.log('Created default CustomSkinLoader config with cache disabled')
+      } else {
+        try {
+          const config = JSON.parse(await readFile(configPath, 'utf8')) as Record<string, any>
+          const loadlist = Array.isArray(config.loadlist) ? config.loadlist : []
+          const existing = loadlist.find((entry: any) => entry?.name === offlineSource.name)
+          if (existing) Object.assign(existing, offlineSource)
+          else loadlist.unshift(offlineSource)
+          Object.assign(config, {
+            loadlist,
+            enableCape: true,
+            forceLoadAllTextures: true,
+            cacheExpiry: 0,
+            enableLocalProfileCache: false,
+            enableCacheAutoClean: true,
+            forceDisableCache: true,
+          })
+          await writeFile(configPath, JSON.stringify(config, null, 2))
+          logger.log('Updated CustomSkinLoader config with Keystone skin and cape source')
+        } catch (error) {
+          logger.warn(`Unable to update CustomSkinLoader config: %o`, error)
+        }
+      }
+
+      // ExtraList is consumed by CustomSkinLoader and places this source ahead
+      // of its public defaults, so our private account skins win over Mojang's
+      // empty/offline profile on cracked servers.
+      await ensureDir(join(configDirectory, 'ExtraList'))
+      await writeFile(join(configDirectory, 'ExtraList', 'keystone-offline-auth.json'), JSON.stringify(offlineSource, null, 2))
+    } catch (error) {
+      // Skin support must never prevent Minecraft itself from launching.
+      logger.warn(`Unable to install default CustomSkinLoader: %o`, error)
+    }
+  }
+
+  launchService.registerMiddleware({
+    name: 'install-offline-skin-mod',
+    async onBeforeLaunch(input, payload) {
+      if (payload.side !== 'client') return
+      await ensureOfflineSkinMod(input.gameDirectory, payload.version.minecraftVersion, payload.version.id)
+    },
+  })
+
+  launchService.registerMiddleware({
+    name: 'apply-equipped-skin',
+    async onBeforeLaunch(input, payload) {
+      if (payload.side !== 'client') return
+      const user = input.user
+      if (!user) return
+
+      const accountKey = `${user.id}:${user.selectedProfile}`
+      const state = await localSkinService.getState()
+      const equippedSkinId = state.equippedSkinIds[accountKey]
+      if (!equippedSkinId) return
+
+      const skin = state.skins.find((s) => s.id === equippedSkinId)
+      if (!skin) return
+
+      const gameProfile = user.profiles[user.selectedProfile]
+      if (!gameProfile) return
+
+      gameProfile.textures = gameProfile.textures || {}
+      gameProfile.textures.SKIN = {
+        url: skin.url,
+        metadata: { model: skin.slim ? 'slim' : 'steve' },
+      }
+    },
+  })
 
   // `libraries/` and `versions/` are read-mostly launcher-managed caches
   // (the game only consumes them, the installer writes the source-of-truth
