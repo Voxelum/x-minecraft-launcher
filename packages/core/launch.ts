@@ -842,6 +842,7 @@ export async function generateArguments(options: LaunchOption) {
   if (options.yggdrasilAgent) {
     cmd.push(`-javaagent:${options.yggdrasilAgent.jar}=${options.yggdrasilAgent.server}`)
     cmd.push('-Dauthlibinjector.side=client')
+    cmd.push('-Dauthlibinjector.legacySkinPolyfill=enabled')
     if (options.yggdrasilAgent.prefetched) {
       cmd.push(`-Dauthlibinjector.yggdrasil.prefetched=${options.yggdrasilAgent.prefetched}`)
     }
