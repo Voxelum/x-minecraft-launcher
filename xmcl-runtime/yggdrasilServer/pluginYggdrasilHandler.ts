@@ -9,17 +9,66 @@ import { UserService } from '~/user'
 
 export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('YggdrasilServer')
+  const offlineAuthUrl = (process.env.XMCL_OFFLINE_AUTH_URL || 'https://xmcl-offline-auth.kc-dev-py.workers.dev').replace(/\/$/, '')
+  const HOSTED_PROFILE_REFRESH_MS = 60_000
+
+  const loadHostedProfile = async (idOrName: string) => {
+    const looksLikeUuid = /^[0-9a-f]{32}$|^[0-9a-f-]{36}$/i.test(idOrName)
+    const url = looksLikeUuid
+      ? `${offlineAuthUrl}/yggdrasil/sessionserver/session/minecraft/profile/${encodeURIComponent(idOrName)}`
+      : `${offlineAuthUrl}/yggdrasil/sessionserver/session/minecraft/hasJoined?username=${encodeURIComponent(idOrName)}`
+    try {
+      const response = await app.fetch(url, { method: 'GET' })
+      if (!response.ok) return undefined
+      const remote = await response.json() as {
+        id: string
+        name: string
+        properties?: Array<{ name: string; value: string }>
+      }
+      const textureProperty = remote.properties?.find((property) => property.name === 'textures')
+      const textureInfo = textureProperty
+        ? JSON.parse(Buffer.from(textureProperty.value, 'base64').toString()) as YggdrasilTexturesInfo
+        : undefined
+      return {
+        id: remote.id.length === 32 ? remote.id.replace(/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/, '$1-$2-$3-$4-$5') : remote.id,
+        name: remote.name,
+        uploadable: ['skin', 'cape'] as ('skin' | 'cape')[],
+        textures: textureInfo?.textures || {},
+      }
+    } catch (error) {
+      logger.warn?.(`Failed to load hosted offline profile ${idOrName}: %o`, error)
+      return undefined
+    }
+  }
+
+  const hostedProfileCache = new Map<string, {
+    expiresAt: number
+    profile: Awaited<ReturnType<typeof loadHostedProfile>>
+  }>()
+
+  const loadHostedProfileWithRefresh = async (idOrName: string) => {
+    const key = idOrName.toLowerCase()
+    const cached = hostedProfileCache.get(key)
+    if (cached && cached.expiresAt > Date.now()) return cached.profile
+
+    const profile = await loadHostedProfile(idOrName)
+    hostedProfileCache.set(key, { expiresAt: Date.now() + HOSTED_PROFILE_REFRESH_MS, profile })
+    return profile
+  }
 
   const getProfile = async (name: string) => {
     const userService = await app.registry.get(UserService)
     const peerService = await app.registry.get(kPeerFacade)
-    const offline = Object.values(userService.state.users).find(v => v.authority === AUTHORITY_DEV)
-    if (offline) {
+    const offlineUsers = Object.values(userService.state.users).filter(v => v.authority === AUTHORITY_DEV)
+    // Re-query hosted accounts before falling back to the launcher's persisted
+    // profile. This lets updated skins propagate to multiplayer clients every
+    // 60 seconds without sending a request for every Yggdrasil lookup.
+    const hosted = await loadHostedProfileWithRefresh(name)
+    if (hosted) return hosted
+    for (const offline of offlineUsers) {
       const profiles = Object.values(offline.profiles)
       const founded = profiles.find(p => p.name === name || p.id === name || p.id.replaceAll('-', '') === name)
-      if (founded) {
-        return founded
-      }
+      if (founded) return founded
     }
     const founded = await peerService.queryGameProfile(name)
     if (founded) {
@@ -35,6 +84,10 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
     const addr = `http://localhost:${await app.serverPort}/yggdrasil`
     const transformTexture = (text?: YggdrasilTexture) => {
       if (!text) return text
+      // Public hosted textures must remain HTTPS URLs. Minecraft can fetch
+      // them directly; rewriting them to the local HTTP proxy can make the
+      // client reject the texture and silently render the default skin.
+      if (text.url.startsWith('https://')) return text
       return { ...text, url: `${addr}/textures?href=${encodeURIComponent(text.url)}` }
     }
     if (profile) {
@@ -91,9 +144,28 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
           },
           skinDomains: [
             'localhost',
+            'supabase.co',
           ],
           signaturePublickey: PUB,
         })
+      } else if (pathname.startsWith('/skins/MinecraftSkins/') && request.method === 'GET') {
+        const username = decodeURIComponent(pathname.slice('/skins/MinecraftSkins/'.length).replace(/\.png$/i, ''))
+        const profile = await getProfile(username)
+        const skin = profile?.textures.SKIN
+        if (!skin?.url) {
+          response.status = 204
+        } else {
+          await handle({
+            request: {
+              headers: request.headers,
+              body: request.body,
+              method: request.method,
+              url: new URL(skin.url),
+            },
+            response,
+            handle,
+          })
+        }
       } else if (pathname === '/sessionserver/session/minecraft/join' && request.method === 'POST') {
         if (request.body instanceof Readable) {
           request.body.resume()
