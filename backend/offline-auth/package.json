@@ -1,0 +1,15 @@
+{
+  "name": "xmcl-offline-auth-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260829.1",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.35.0"
+  }
+}
