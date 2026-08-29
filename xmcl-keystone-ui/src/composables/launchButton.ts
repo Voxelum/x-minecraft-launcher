@@ -13,11 +13,12 @@ import { useInstanceLaunchMenuItems } from './instanceLaunchMenuItems'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { kInstances } from './instances'
 import { LaunchStatusDialogKey } from './launch'
-import { kUserContext } from './user'
+import { kUserContext, NO_USER_PROFILE } from './user'
 import { kLaunchTask } from './launchTask'
 import { TaskState, BedrockServiceKey } from '@xmcl/runtime-api'
 import { useService } from './service'
 import { useTask } from './task'
+import { useUserMenuControl } from './userMenu'
 
 export interface LaunchMenuItem {
   title: string
@@ -33,6 +34,14 @@ export const kLaunchButton: InjectionKey<ReturnType<typeof useLaunchButton>> =
   Symbol('LaunchButton')
 
 export function useLaunchButton() {
+  const listeners = new Set<() => void | Promise<void>>()
+  function usePreclickListener(listener: () => void) {
+    listeners.add(listener)
+    onBeforeUnmount(() => {
+      listeners.delete(listener)
+    })
+  }
+
   const { show: showLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)
 
   const { path } = injection(kInstance)
@@ -118,6 +127,16 @@ export function useLaunchButton() {
   const { isValidating: refreshingJava } = injection(kInstanceJava)
   const { isValidating: refreshingFiles } = injection(kInstanceFiles)
   const { userProfile } = injection(kUserContext)
+
+  const { show: showUserProfileDialog } = useUserMenuControl()
+
+  // Ensure valid user selected before launch
+  usePreclickListener(() => {
+    if (!userProfile.value?.id || userProfile.value === NO_USER_PROFILE) {
+      showUserProfileDialog('login')
+      throw new Error('No user selected')
+    }
+  })
 
   const {
     fix: fixVersionIssues,
@@ -362,14 +381,6 @@ export function useLaunchButton() {
   const menuItems = computed<LaunchMenuItem[]>(() =>
     transition.value ? [] : launchButtonFacade.value.menu || [],
   )
-
-  const listeners = new Set<() => void | Promise<void>>()
-  function usePreclickListener(listener: () => void) {
-    listeners.add(listener)
-    onBeforeUnmount(() => {
-      listeners.delete(listener)
-    })
-  }
 
   /**
    * The button click listener.
