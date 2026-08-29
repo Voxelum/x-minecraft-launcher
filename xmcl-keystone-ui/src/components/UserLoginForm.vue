@@ -46,7 +46,7 @@
       hide-details="auto"
       @update:model-value="error = undefined"
       @keypress="error = undefined"
-      @keypress.enter="onLogin"
+      @keypress.enter="isCreatingOfflineAccount ? onCreateOfflineAccount() : onLogin()"
     />
     <v-text-field
       v-else
@@ -66,10 +66,10 @@
       hide-details="auto"
       @update:model-value="error = undefined"
       @keypress="error = undefined"
-      @keypress.enter="onLogin"
+      @keypress.enter="isCreatingOfflineAccount ? onCreateOfflineAccount() : onLogin()"
     />
     <v-text-field
-      v-if="!isOffline"
+      v-if="!isOffline || isCreatingOfflineAccount || requiresOfflinePassword"
       v-model="data.password"
       data-testid="login-password"
       class="flex-grow-0"
@@ -81,7 +81,7 @@
       required
       :label="passwordLabel"
       :placeholder="passwordPlaceholder"
-      :rules="!isPasswordReadonly ? passwordRules : []"
+      :rules="!isPasswordReadonly && (isCreatingOfflineAccount || requiresOfflinePassword) ? passwordRules : []"
       :disabled="isPasswordDisabled"
       :readonly="isPasswordReadonly"
       :error="!!errorMessage"
@@ -90,7 +90,25 @@
       @keypress.enter="onLogin"
     />
     <v-text-field
-      v-else
+      v-if="isOffline && isCreatingOfflineAccount"
+      v-model="data.passwordConfirmation"
+      data-testid="offline-account-password-confirmation"
+      class="flex-grow-0"
+      prepend-inner-icon="lock"
+      variant="outlined"
+      density="comfortable"
+      rounded="lg"
+      type="password"
+      required
+      :label="t('login.offlinePasswordConfirmation')"
+      :rules="confirmationRules"
+      :error="!!errorMessage"
+      hide-details="auto"
+      @update:model-value="error = undefined"
+      @keypress.enter="onCreateOfflineAccount"
+    />
+    <v-text-field
+      v-else-if="isOffline"
       v-model="data.uuid"
       class="flex-grow-0"
       variant="outlined"
@@ -140,10 +158,10 @@
         "
         :loading="isLogining && !hovered"
         :prepend-icon="isLogining ? undefined : 'login'"
-        @click="onLogin"
+        @click="isCreatingOfflineAccount ? onCreateOfflineAccount() : onLogin()"
       >
         <template v-if="!isLogining">
-          {{ t('login.login') }}
+          {{ isCreatingOfflineAccount ? t('login.createOfflineAccount') : t('login.login') }}
         </template>
         <template v-else>
           <v-icon start>close</v-icon>
@@ -211,6 +229,16 @@
       >
         {{ t('login.forgetPassword') }}
       </a>
+      <button
+        v-if="isOffline"
+        type="button"
+        class="hover:underline transition-colors opacity-70 hover:opacity-100"
+        style="color: rgba(var(--v-theme-on-surface), 0.8)"
+        data-testid="offline-account-create"
+        @click="isCreatingOfflineAccount = !isCreatingOfflineAccount; error = undefined"
+      >
+        {{ isCreatingOfflineAccount ? t('login.backToOfflineLogin') : t('login.createOfflineAccount') }}
+      </button>
       <div
         v-if="signUpLink"
         class="flex items-center gap-3 flex-wrap justify-center py-2 px-4 rounded-xl border w-full backdrop-blur-sm"
@@ -283,12 +311,15 @@ const { login, abortLogin, on } = useService(UserServiceKey)
 const data = reactive({
   username: '',
   password: '',
+  passwordConfirmation: '',
   uuid: '',
   useDeviceCode: false,
   useFast: false,
   verificationUri: '',
 })
 const isOffline = computed(() => authority.value === AUTHORITY_DEV)
+const isCreatingOfflineAccount = ref(false)
+const requiresOfflinePassword = computed(() => isOffline.value && data.username.trim().toLowerCase() !== 'steve')
 const isLogining = ref(false)
 
 // Label
@@ -333,7 +364,7 @@ const emailOnly = computed(() => {
   return false
 })
 const isPasswordReadonly = computed(
-  () => !currentAccountSystem.value?.flow.includes('password') || data.useDeviceCode,
+  () => !isCreatingOfflineAccount.value && !isOffline.value && (!currentAccountSystem.value?.flow.includes('password') || data.useDeviceCode),
 )
 const isPasswordDisabled = computed(() => isPasswordReadonly.value && !data.useDeviceCode)
 const passwordType = computed(() => (data.useDeviceCode ? 'text' : 'password'))
@@ -362,6 +393,9 @@ on('device-code', (code) => {
 
 // Rules
 const { usernameRules, passwordRules } = useLoginValidation(emailOnly, isOffline)
+const confirmationRules = computed(() => [
+  (value: string) => value === data.password || t('login.offlinePasswordsDoNotMatch'),
+])
 
 // Login Error
 const getUserException = (value: unknown): UserException['exception'] | undefined => {
@@ -502,6 +536,38 @@ const errorMessage = computed(() => {
 
 // Login
 const accountInput: Ref<any> = ref(null)
+const offlineAuthUrl = (import.meta.env.VITE_XMCL_OFFLINE_AUTH_URL || 'https://xmcl-offline-auth.kc-dev-py.workers.dev').replace(/\/$/, '')
+const onCreateOfflineAccount = async () => {
+  error.value = undefined
+  isLogining.value = true
+  try {
+    for (const rule of usernameRules.value) {
+      const result = rule(data.username)
+      if (result !== true) throw new Error(typeof result === 'string' ? result : 'Validation failed')
+    }
+    for (const rule of passwordRules) {
+      const result = rule(data.password)
+      if (result !== true) throw new Error(typeof result === 'string' ? result : 'Validation failed')
+    }
+    if (data.password !== data.passwordConfirmation) throw new Error(t('login.offlinePasswordsDoNotMatch').toString())
+    const response = await fetch(`${offlineAuthUrl}/v1/accounts/register`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ username: data.username, password: data.password, offlineUuid: crypto.randomUUID() }),
+    })
+    const result = await response.json().catch(() => undefined) as { error?: string; account?: { offlineUuid?: string } } | undefined
+    if (!response.ok) throw new Error(result?.error || t('login.offlineAccountCreationFailed').toString())
+    data.uuid = result?.account?.offlineUuid || ''
+    data.passwordConfirmation = ''
+    isCreatingOfflineAccount.value = false
+    isLogining.value = false
+    await onLogin()
+  } catch (cause) {
+    error.value = cause
+  } finally {
+    isLogining.value = false
+  }
+}
 const { refresh: onLogin, error } = useRefreshable(async () => {
   error.value = undefined
   accountInput.value.blur()
@@ -622,6 +688,7 @@ watch(
     if (!options) {
       data.username = history.value[0] ?? ''
       data.password = ''
+      data.passwordConfirmation = ''
       data.verificationUri = ''
       error.value = undefined
     } else {
