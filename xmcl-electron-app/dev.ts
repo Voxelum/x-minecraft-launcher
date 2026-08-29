@@ -27,11 +27,12 @@ function startElectron() {
   if (!existsSync(cwd)) {
     mkdirSync(cwd)
   }
+  const devPort = process.env.XMCL_DEV_PORT ?? '3000'
   const spawnProcess = spawn(electronPath, [
     '--inspect=5858',
     '--remote-debugging-port=9222',
     join(__dirname, './dist/index.js'),
-  ], { cwd })
+  ], { cwd, env: { ...process.env, XMCL_DEV_PORT: devPort } })
 
   function electronLog(data: string | Buffer) {
     const colorize = (line: string) => {
