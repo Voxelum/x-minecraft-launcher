@@ -39,6 +39,7 @@ import { pluginSettings } from '@xmcl/runtime/settings/pluginSettings'
 import { pluginSetup } from '@xmcl/runtime/setup/pluginSetup'
 import { pluginModrinthAccess } from '@xmcl/runtime/user/pluginModrinthAccess'
 import { pluginOfficialUserApi } from '@xmcl/runtime/user/pluginOfficialUserApi'
+import { pluginDefaultOfflineUser } from '@xmcl/runtime/user/pluginDefaultOfflineUser'
 import { pluginOffineUser } from '@xmcl/runtime/user/pluginOfflineUser'
 import { pluginUserTokenStorage } from '@xmcl/runtime/user/pluginUserTokenStorage'
 import { pluginYggdrasilApi } from '@xmcl/runtime/user/pluginYggdrasilApi'
@@ -87,6 +88,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginExternalCredentialLifecycle,
   pluginUserTokenStorage,
   pluginOfficialUserApi,
+  pluginDefaultOfflineUser,
   pluginOffineUser,
   pluginUndiciLogger,
 
