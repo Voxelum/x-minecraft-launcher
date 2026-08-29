@@ -88,8 +88,9 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       this.state.userData(userData)
       this.persistenceReady = true
 
-      // Refresh all users
-      Promise.all(Object.values(userData.users as Record<string, UserProfile>).map((user) => {
+      // Refresh all users without blocking the initial state. The renderer must
+      // be able to show persisted users even if a refresh stalls or fails.
+      void Promise.all(Object.values(userData.users as Record<string, UserProfile>).map((user) => {
         if (user.username) {
           return this.refreshUser(user.id, {
             silent: true,

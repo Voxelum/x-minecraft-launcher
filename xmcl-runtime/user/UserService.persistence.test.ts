@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { mkdtemp, readFile, rm, writeFile } from 'fs/promises'
 import { join } from 'path'
-import { UserState } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, UserState } from '@xmcl/runtime-api'
 import { UserService } from './UserService'
 
 vi.mock('~/app', () => ({
@@ -194,5 +194,53 @@ describe('UserService user persistence', () => {
 
     expect(logger.warn).toHaveBeenCalledWith('Failed to persist user profile changes.')
     expect(JSON.stringify(logger.warn.mock.calls)).not.toContain('access-token-secret')
+  })
+
+  test('exposes persisted users before startup refresh completes', async () => {
+    const directory = await mkdtemp(join(process.cwd(), '.test-user-service-'))
+    directories.push(directory)
+    const userJsonPath = join(directory, 'user.json')
+    await writeFile(userJsonPath, JSON.stringify({
+      users: {
+        offline: {
+          id: 'offline',
+          username: 'offline',
+          invalidated: false,
+          authority: AUTHORITY_DEV,
+          expiredAt: Date.now() + 60_000,
+          profiles: {},
+          selectedProfile: '',
+        },
+      },
+    }))
+
+    const state = new UserState() as UserState & { subscribeAll(callback: () => void): void }
+    state.subscribeAll = vi.fn()
+    const logger = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    const app = {
+      appDataPath: directory,
+      minecraftDataPath: directory,
+      getLogger: vi.fn(() => logger),
+      controller: { broadcast: vi.fn() },
+      registry: { get: vi.fn().mockResolvedValue(() => directory) },
+      registryDisposer: vi.fn(),
+      mutex: { of: vi.fn() },
+    } as any
+    const service = new UserService(
+      app,
+      {} as any,
+      { registerStatic: vi.fn(() => state) } as any,
+      {} as any,
+      {} as any,
+      {} as any,
+    )
+    service.registerAccountSystem(AUTHORITY_DEV, {
+      refresh: vi.fn(() => new Promise(() => undefined)),
+    } as any)
+
+    const sharedState = await service.getUserState()
+    expect(Object.values(sharedState.users)).toContainEqual(expect.objectContaining({
+      username: 'offline',
+    }))
   })
 })
