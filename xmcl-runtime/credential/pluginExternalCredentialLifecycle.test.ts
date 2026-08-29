@@ -21,7 +21,7 @@ const microsoftUser = (overrides: Partial<UserProfile> = {}): UserProfile => ({
 })
 
 describe('pluginExternalCredentialLifecycle', () => {
-  it('notifies the main-process lifecycle after a valid Microsoft login without a token', async () => {
+  it('lazily notifies the main-process lifecycle after a valid Microsoft login without a token', async () => {
     const userService = new EventEmitter()
     const credentials = {
       initialize: vi.fn().mockResolvedValue(undefined),
@@ -37,10 +37,13 @@ describe('pluginExternalCredentialLifecycle', () => {
 
     pluginExternalCredentialLifecycle(app as any, {} as any)
     await vi.waitFor(() => expect(userService.listenerCount('user-login-success')).toBe(1))
+    expect(app.registry.getOrCreate).not.toHaveBeenCalled()
+
     userService.emit('user-login-success', microsoftUser())
 
-    expect(credentials.notifyMicrosoftCredentialChanged).toHaveBeenCalledWith('microsoft-user-id')
+    await vi.waitFor(() => expect(credentials.notifyMicrosoftCredentialChanged).toHaveBeenCalledWith('microsoft-user-id'))
     expect(app.registry.getOrCreate).toHaveBeenCalledWith(ExternalCredentialService)
     expect(app.registry.get).toHaveBeenCalledWith(UserService)
+    expect(credentials.initialize).not.toHaveBeenCalled()
   })
 })

@@ -70,7 +70,7 @@ function createXmclService(stubBootstrapCredential = true) {
     secretStorage: { get: vi.fn().mockResolvedValue(''), put: vi.fn() },
   }
   const store = { registerStatic: vi.fn((state) => state) }
-  const service = new XmclAccountService(app as any, {} as any, store as any)
+  const service = new XmclAccountService(app as any, store as any)
   if (stubBootstrapCredential) {
     vi.spyOn(service as any, 'bootstrapCredential').mockResolvedValue(undefined)
   }
