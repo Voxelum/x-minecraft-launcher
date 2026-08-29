@@ -60,13 +60,10 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   private mojangSelectedUserId = ''
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ExternalCredentialService) private externalCredentials: ExternalCredentialService,
-    @Inject(ServiceStateManager) store: ServiceStateManager,
-    @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
-    @Inject(kYggdrasilAccountSystem) private yggdrasilAccountSystem: YggdrasilAccountSystem,
-    @Inject(kYggdrasilSeriveRegistry) private yggdrasilSeriveRegistry: YggdrasilSeriveRegistry
+    @Inject(ServiceStateManager) store: ServiceStateManager
   ) {
     super(app, () => store.registerStatic(new UserState(), UserServiceKey), async () => {
+      const tokenStorage = await this.getTokenStorage()
       const persisted = await this.userPersistence.load()
       const data = persisted.users
       const userData = {
@@ -121,8 +118,28 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     })
   }
 
+  private getExternalCredentials(): Promise<ExternalCredentialService> {
+    return this.app.registry.getOrCreate(ExternalCredentialService)
+  }
+
+  private getTokenStorage(): Promise<UserTokenStorage> {
+    return this.app.registry.get(kUserTokenStorage)
+  }
+
+  private getYggdrasilAccountSystem(): Promise<YggdrasilAccountSystem> {
+    return this.app.registry.get(kYggdrasilAccountSystem)
+  }
+
+  private getYggdrasilServiceRegistry(): Promise<YggdrasilSeriveRegistry> {
+    return this.app.registry.get(kYggdrasilSeriveRegistry)
+  }
+
+  private async resolveAccountSystem(authority: string): Promise<UserAccountSystem> {
+    return this.accountSystems[authority] || await this.getYggdrasilAccountSystem()
+  }
+
   async hasModrinthToken(): Promise<boolean> {
-    return !!await getModrinthAccessToken(this.app, this.externalCredentials)
+    return !!await getModrinthAccessToken(this.app, await this.getExternalCredentials())
   }
 
   // Dedupe concurrent calls so we never open multiple OAuth browser windows.
@@ -130,19 +147,19 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   // can still proceed even while a non-invalidating call is in flight.
   @Singleton((invalidate?: boolean) => `loginModrinth-${invalidate ? '1' : '0'}`)
   async loginModrinth(invalidate = false): Promise<void> {
-  await loginModrinth(this.app, this, ['USER_READ_EMAIL', 'USER_READ', 'USER_WRITE', 'COLLECTION_CREATE', 'COLLECTION_READ', 'COLLECTION_WRITE', 'COLLECTION_DELETE', 'PROJECT_CREATE', 'PROJECT_READ', 'PROJECT_WRITE', 'VERSION_CREATE', 'VERSION_READ', 'VERSION_WRITE'], invalidate, this.loginController?.signal, this.externalCredentials)
+    await loginModrinth(this.app, this, ['USER_READ_EMAIL', 'USER_READ', 'USER_WRITE', 'COLLECTION_CREATE', 'COLLECTION_READ', 'COLLECTION_WRITE', 'COLLECTION_DELETE', 'PROJECT_CREATE', 'PROJECT_READ', 'PROJECT_WRITE', 'VERSION_CREATE', 'VERSION_READ', 'VERSION_WRITE'], invalidate, this.loginController?.signal, await this.getExternalCredentials())
   }
 
-  addYggdrasilService(url: string): Promise<void> {
-    return this.yggdrasilSeriveRegistry.addYggdrasilService(url)
+  async addYggdrasilService(url: string): Promise<void> {
+    return (await this.getYggdrasilServiceRegistry()).addYggdrasilService(url)
   }
 
-  removeYggdrasilService(url: string): Promise<void> {
-    return this.yggdrasilSeriveRegistry.removeYggdrasilService(url)
+  async removeYggdrasilService(url: string): Promise<void> {
+    return (await this.getYggdrasilServiceRegistry()).removeYggdrasilService(url)
   }
 
   async getSupportedAuthorityMetadata(): Promise<AuthorityMetadata[]> {
-    const result = Object.values(this.accountSystems).concat(this.yggdrasilAccountSystem).map(s => s.getSupporetedAuthorityMetadata(true))
+    const result = Object.values(this.accountSystems).concat(await this.getYggdrasilAccountSystem()).map(s => s.getSupporetedAuthorityMetadata(true))
       .flat()
     return result
   }
@@ -161,7 +178,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
   @Lock('login')
   async login(options: LoginOptions): Promise<UserProfile> {
-    const system = this.accountSystems[options.authority] || this.yggdrasilAccountSystem
+    const system = await this.resolveAccountSystem(options.authority)
 
     this.loginController = new AbortController()
 
@@ -196,7 +213,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       })
     }
 
-    const sys = this.accountSystems[user.authority] || this.yggdrasilAccountSystem
+    const sys = await this.resolveAccountSystem(user.authority)
 
     if (skin) {
       if (typeof skin.slim !== 'boolean') skin.slim = false
@@ -257,7 +274,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       throw new AnyError('UserNotFound', `User ${userId} not found when refreshing user.`)
     }
 
-    const system = this.accountSystems[user.authority] || this.yggdrasilAccountSystem
+    const system = await this.resolveAccountSystem(user.authority)
     this.refreshController = new AbortController()
 
     const newUser = await system.refresh(user, this.refreshController.signal, options).finally(() => {
@@ -304,7 +321,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       await this.refreshUser(official.id, { silent: true }).catch((e) => {
         this.log(`Failed to refresh official user ${official.id} for getOfficialUserProfile`, e)
       })
-      const accessToken = await this.tokenStorage.get(official)
+      const accessToken = await (await this.getTokenStorage()).get(official)
       return { ...official, accessToken }
     }
     return undefined
