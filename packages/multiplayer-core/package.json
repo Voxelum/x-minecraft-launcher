@@ -1,5 +1,5 @@
 {
-  "version": "0.1.3",
+  "version": "0.2.0",
   "name": "@xmcl/multiplayer-core",
   "private": true,
   "description": "Browser-safe shared WebRTC primitives for XMCL multiplayer",
