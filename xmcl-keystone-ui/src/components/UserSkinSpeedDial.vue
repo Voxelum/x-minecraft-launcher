@@ -28,6 +28,24 @@
       @click="openLibrary"
     />
     <v-btn
+      v-if="hasCape"
+      v-shared-tooltip.left="() => t('userSkin.importCape')"
+      icon="flag"
+      size="small"
+      color="teal"
+      :disabled="disabled"
+      @click="uploadCape"
+    />
+    <v-btn
+      v-if="hasCape"
+      v-shared-tooltip.left="() => t('userSkin.saveCape')"
+      icon="download"
+      size="small"
+      color="indigo"
+      :disabled="disabled || !hasCurrentCape"
+      @click="saveCape"
+    />
+    <v-btn
       v-shared-tooltip.left="() => t('userSkin.importLink')"
       icon="link"
       size="small"
@@ -52,11 +70,14 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 defineProps<{
   load(): void
   upload(): void
+  uploadCape(): void
   save(): void
+  saveCape(): void
   openLibrary?(): void
   disabled: boolean
   hasSkin: boolean
   hasCape: boolean
+  hasCurrentCape: boolean
   value: boolean
 }>()
 
