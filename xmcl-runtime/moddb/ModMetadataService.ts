@@ -5,15 +5,23 @@ import { isValidModrinthId, ResourceDomain, ResourceManager, type Resource } fro
 import { kResourceManager } from '~/resource'
 import { ModMetadataServiceKey, type ModMetadataService as IModMetadataService, type ModMetadata, DownloadModMetadataDbTask, DownloadModMetadataDbTrackerEvents } from '@xmcl/runtime-api'
 import { createReadStream } from 'fs'
+import { unlink } from 'fs/promises'
+import { move } from 'fs-extra'
 import { Kysely } from 'kysely'
 import { DatabaseSync } from 'node:sqlite'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { kTasks, type Tasks } from '~/infra'
+import { kDownloadOptions } from '~/network'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { jsonObjectFrom, NodeSqliteDialect } from '@xmcl/sqlite'
 import { checksumFromStream } from '~/util/fs'
 import { isNonnull } from '~/util/object'
 import { getTracker } from '~/util/taskHelper'
+import {
+  createDatabaseDownloadController,
+  fetchDatabaseText,
+  getModMetadataDownloadUrls,
+} from './databaseDownload'
 
 interface Database {
   file: {
@@ -216,28 +224,45 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
 
   async #ensureDb() {
     if (this.db) return this.db
-    const sha1 = await (await this.app.fetch('https://xmcl.blob.core.windows.net/releases/db.sqlite.sha1')).text()
+    const fetcher = (input: string, init?: RequestInit) => this.app.fetch(input, init)
+    const sha1 = await fetchDatabaseText(
+      fetcher,
+      getModMetadataDownloadUrls('db.sqlite.sha1'),
+    )
+    if (!/^[a-f0-9]{40}$/i.test(sha1)) {
+      throw new Error('The mod metadata database checksum is invalid')
+    }
     const dbPath = this.getAppDataPath('db.sqlite')
     const actual = await checksumFromStream(createReadStream(dbPath), 'sha1').catch(() => '')
     if (actual !== sha1) {
-      const url = 'https://xmcl.blob.core.windows.net/releases/db.sqlite'
+      const urls = getModMetadataDownloadUrls('db.sqlite')
+      const tempPath = `${dbPath}.download`
       const task = this.tasks.create<DownloadModMetadataDbTask>({
         type: 'downloadModMetadataDb',
         key: 'download-mod-metadata-db',
       })
 
       const trackerCallback: Tracker<DownloadModMetadataDbTrackerEvents> = getTracker(task)
-      const tracker = onDownloadSingle(trackerCallback, 'download', { url })
+      const tracker = onDownloadSingle(trackerCallback, 'download', { url: urls[0] })
 
       try {
+        const downloadOptions = await this.app.registry.get(kDownloadOptions)
         await download({
-          url,
-          destination: dbPath,
+          ...downloadOptions,
+          url: urls,
+          destination: tempPath,
           signal: task.controller.signal,
           tracker,
+          controller: createDatabaseDownloadController(),
         })
+        const downloadedSha1 = await checksumFromStream(createReadStream(tempPath), 'sha1')
+        if (downloadedSha1 !== sha1) {
+          throw new Error('The downloaded mod metadata database checksum does not match')
+        }
+        await move(tempPath, dbPath, { overwrite: true })
         task.complete()
       } catch (error) {
+        await unlink(tempPath).catch(() => {})
         task.fail(error)
         throw error
       }

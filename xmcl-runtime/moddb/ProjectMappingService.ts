@@ -1,18 +1,25 @@
 import { ProjectMappingService as IProjectMappingService, ProjectMapping, ProjectMappingServiceKey, Settings } from '@xmcl/runtime-api'
+import { download } from '@xmcl/file-transfer'
 import { createHash } from 'crypto'
-import { existsSync, rmSync, writeFile } from 'fs-extra'
+import { existsSync, readFile, rmSync, unlink, writeFile } from 'fs-extra'
 import { Kysely } from 'kysely'
 import { DatabaseSync } from 'node:sqlite'
 import { join } from 'path'
 import { promisify } from 'util'
 import { gunzip } from 'zlib'
 import { Inject, LauncherAppKey } from '~/app'
-import { kGFW } from '~/infra'
+import { kDownloadOptions } from '~/network'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { kSettings } from '~/settings'
 import { NodeSqliteDialect } from '@xmcl/sqlite'
 import { LauncherApp } from '../app/LauncherApp'
 import { checksum } from '../util/fs'
+import {
+  createDatabaseDownloadController,
+  databaseAssetExists,
+  fetchDatabaseText,
+  getProjectMappingDownloadUrls,
+} from './databaseDownload'
 
 const PROJECT_MAPPING_OPEN_RETRY_DELAYS = [200, 500, 1_000, 2_000]
 
@@ -88,70 +95,49 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
   }
 
   private async ensureDatabaseFile(locale: string, forceDownload = false) {
-    const gfw = await this.app.registry.get(kGFW)
     const app = this.app
+    const fetcher = (input: string, init?: RequestInit) => app.fetch(input, init)
 
     let filePath = join(this.app.appDataPath, `project-mapping-${locale}.sqlite`)
     await this.mutex.of('project-mapping').runExclusive(async () => {
-      let original = `https://xmcl.blob.core.windows.net/project-mapping/${locale}.sqlite`
-
-      async function exists() {
-        try {
-          const resp = await app.fetch(original + '.sha256', { method: 'HEAD' })
-          if (!resp.ok) {
-            return false
-          }
-          return true
-        } catch {
-          return false
-        }
-      }
-
-      const hasLocaleDb = await exists()
+      let assetLocale = locale
+      const hasLocaleDb = await databaseAssetExists(
+        fetcher,
+        getProjectMappingDownloadUrls(`${locale}.sqlite.sha256`),
+      )
 
       if (!hasLocaleDb) {
-        original = 'https://xmcl.blob.core.windows.net/project-mapping/en.sqlite'
+        assetLocale = 'en'
         filePath = join(this.app.appDataPath, 'project-mapping-en.sqlite')
       }
 
-      const urls = gfw.inside && hasLocaleDb
-        ? [
-          original + '.gz',
-        ]
-        : [
-          original + '.gz',
-        ]
-      const errors = [] as any[]
-      const sha256 = await this.app.fetch(original + '.sha256').then((r) => r.text())
-      if (!sha256) {
-        return
+      const sha256 = await fetchDatabaseText(
+        fetcher,
+        getProjectMappingDownloadUrls(`${assetLocale}.sqlite.sha256`),
+      )
+      if (!/^[a-f0-9]{64}$/i.test(sha256)) {
+        throw new Error('The project mapping database checksum is invalid')
       }
       const currentSha256 = forceDownload ? '' : await checksum(filePath, 'sha256').catch(() => '')
       if (forceDownload || currentSha256 !== sha256) {
-        for (const url of urls) {
-          try {
-            const resp = await this.app.fetch(url)
-            if (!resp.ok) {
-              return undefined
-            }
-            const buf = await resp.arrayBuffer()
-            const data = await promisify(gunzip)(buf)
-            const hash = createHash('sha256').update(data as any).digest('hex')
-            if (hash !== sha256) {
-              continue
-            }
-            await writeFile(filePath, data as any)
-            return
-          } catch (e) {
-            errors.push(e)
+        const compressedPath = `${filePath}.download.gz`
+        try {
+          const downloadOptions = await this.app.registry.get(kDownloadOptions)
+          await download({
+            ...downloadOptions,
+            url: getProjectMappingDownloadUrls(`${assetLocale}.sqlite.gz`),
+            destination: compressedPath,
+            controller: createDatabaseDownloadController(),
+          })
+          const data = await promisify(gunzip)(await readFile(compressedPath))
+          const hash = createHash('sha256').update(data).digest('hex')
+          if (hash !== sha256) {
+            throw new Error('The downloaded project mapping database checksum does not match')
           }
+          await writeFile(filePath, data)
+        } finally {
+          await unlink(compressedPath).catch(() => {})
         }
-      }
-      if (errors.length === 1) {
-        throw errors[0]
-      }
-      if (errors.length) {
-        throw new AggregateError(errors.flatMap(e => e instanceof AggregateError ? e.errors : e))
       }
     })
 
