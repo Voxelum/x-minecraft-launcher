@@ -3,6 +3,7 @@
     :plans="plans"
     :items="groupedItems"
     :selection-mode="isLocalView && selectionMode"
+    :auto-selection-mode="isLocalView"
     :item-height="itemHeight"
     :loading="loading"
     :error="error"

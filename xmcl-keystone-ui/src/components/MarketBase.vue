@@ -109,6 +109,7 @@ import { useQuery } from '@/composables/query'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
+import { isMarketMultiSelectionClick, updateMarketSelection } from '@/util/marketSelection'
 import { ProjectEntry } from '@/util/search'
 
 const props = defineProps<{
@@ -116,6 +117,7 @@ const props = defineProps<{
   items: (ProjectEntry | ProjectGroup | string)[]
   itemHeight: number
   selectionMode?: boolean
+  autoSelectionMode?: boolean
   loading?: boolean
   error?: any
   minPercentage?: number
@@ -161,38 +163,23 @@ watch(() => props.selectionMode, (v) => {
 })
 
 const onSelect = (event: MouseEvent, i: ProjectEntry) => {
-  if (props.selectionMode && i.installed.length > 0) {
-    if (event.shiftKey) {
-      // Select all items between the anchor item and this item
-      const list = props.items
-      const anchor = anchorId.value ?? selectedId.value
-      const anchorIndex = list.findIndex((item) => typeof item === 'object' && 'id' in item && item.id === anchor)
-      const currentIndex = list.findIndex((item) => typeof item === 'object' && 'id' in item && item.id === i.id)
-      const start = Math.min(anchorIndex, currentIndex)
-      const end = Math.max(anchorIndex, currentIndex)
-      const range: Record<string, boolean> = {}
-      for (let idx = start; idx <= end; idx++) {
-        const item = list[idx]
-        if (typeof item === 'object' && 'id' in item) {
-          range[item.id] = true
-        }
-      }
-      // ctrl+shift adds the range to the existing selection instead of replacing it
-      selections.value = event.ctrlKey ? { ...selections.value, ...range } : range
-    } else if (event.ctrlKey) {
-      selections.value = {
-        ...selections.value,
-        [i.id]: !selections.value[i.id],
-      }
-      anchorId.value = i.id
-    } else {
-      // Plain left click toggles the selection in selection mode
-      selections.value = {
-        ...selections.value,
-        [i.id]: !selections.value[i.id],
-      }
-      anchorId.value = i.id
-    }
+  const modifiers = {
+    ctrlKey: event.ctrlKey,
+    metaKey: event.metaKey,
+    shiftKey: event.shiftKey,
+  }
+  if (i.installed.length > 0 && isMarketMultiSelectionClick(!!props.selectionMode, !!props.autoSelectionMode, modifiers)) {
+    if (!props.selectionMode) emit('update:selectionMode', true)
+    const next = updateMarketSelection(
+      props.items,
+      i.id,
+      selectedId.value || undefined,
+      anchorId.value,
+      selections.value,
+      modifiers,
+    )
+    selections.value = next.selections
+    anchorId.value = next.anchorId
   } else {
     selectedId.value = selectedId.value === i.id ? '' : i.id
     selections.value = {}
