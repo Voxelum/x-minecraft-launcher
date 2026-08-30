@@ -1,6 +1,5 @@
 import { injection } from '@/util/inject'
 import { isBedrockInstance } from '@xmcl/instance'
-import { watchOnce } from '@vueuse/core'
 import { InjectionKey } from 'vue'
 import { useDialog } from './dialog'
 import { kInstance } from './instance'
@@ -11,7 +10,6 @@ import { kInstanceLaunch } from './instanceLaunch'
 import { kInstanceVersion } from './instanceVersion'
 import { useInstanceLaunchMenuItems } from './instanceLaunchMenuItems'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
-import { kInstances } from './instances'
 import { LaunchStatusDialogKey } from './launch'
 import { kUserContext } from './user'
 import { kLaunchTask } from './launchTask'
@@ -114,8 +112,7 @@ export function useLaunchButton() {
     }
   })
 
-  const { isValidating } = injection(kInstances)
-  const { isValidating: refreshingJava } = injection(kInstanceJava)
+  const { status: javaStatus, isValidating: refreshingJava } = injection(kInstanceJava)
   const { isValidating: refreshingFiles } = injection(kInstanceFiles)
   const { userProfile } = injection(kUserContext)
 
@@ -148,7 +145,8 @@ export function useLaunchButton() {
     const currentPath = path.value
     return (
       currentPath !== instruction.value?.instance ||
-      currentPath !== instanceInstallStatus.value?.instance
+      currentPath !== instanceInstallStatus.value?.instance ||
+      currentPath !== javaStatus.value?.instance
     )
   })
 
@@ -159,13 +157,14 @@ export function useLaunchButton() {
     leftIcon?: string
     right?: boolean
     menu?: LaunchMenuItem[]
-    onClick: () => void | Promise<void>
+    onClick: (instancePath: string) => void | Promise<void>
   }>({
     text: t('launch.launch'),
     color: 'primary',
     leftIcon: 'play_arrow',
-    onClick: async () => {
-      await fixInstanceFileIssue()
+    onClick: async (instancePath) => {
+      await fixInstanceFileIssue(instancePath)
+      if (path.value !== instancePath) return
       if (javaIssue.value) {
         showLaunchStatusDialog({ javaIssue: javaIssue.value })
       } else {
@@ -284,8 +283,9 @@ export function useLaunchButton() {
             text: t('launch.launch'),
             color: !javaIssue.value ? 'primary' : 'primary darken-1',
             leftIcon: 'play_arrow',
-            onClick: async () => {
-              await fixInstanceFileIssue()
+            onClick: async (instancePath) => {
+              await fixInstanceFileIssue(instancePath)
+              if (path.value !== instancePath) return
               if (javaIssue.value) {
                 showLaunchStatusDialog({ javaIssue: javaIssue.value })
               } else {
@@ -312,8 +312,8 @@ export function useLaunchButton() {
           text: t('shared.install'),
           color: 'blue',
           menu: launchMenuItems.value.filter((i) => !i.noDisplay),
-          onClick: async () => {
-            Promise.allSettled([fixVersionIssues(), fixInstanceFileIssue()])
+          onClick: async (instancePath) => {
+            await Promise.allSettled([fixVersionIssues(instancePath), fixInstanceFileIssue(instancePath)])
           },
         }
       } else {
@@ -321,8 +321,9 @@ export function useLaunchButton() {
           text: t('launch.launch'),
           color: !javaIssue.value ? 'primary' : 'primary darken-1',
           leftIcon: 'play_arrow',
-          onClick: async () => {
-            await fixInstanceFileIssue()
+          onClick: async (instancePath) => {
+            await fixInstanceFileIssue(instancePath)
+            if (path.value !== instancePath) return
             if (javaIssue.value) {
               showLaunchStatusDialog({ javaIssue: javaIssue.value })
             } else {
@@ -352,9 +353,7 @@ export function useLaunchButton() {
       refreshingJava.value ||
       isRefreshingVersion.value ||
       loadingInstanceFiles.value ||
-      isValidating.value ||
       fixingInstance.value ||
-      transition.value ||
       checkingBedrock.value
   )
 
@@ -383,16 +382,9 @@ export function useLaunchButton() {
    * Such rejections are intentional and not propagated.
    */
   async function onClick() {
-    if (loading.value && !launching.value) {
-      await new Promise<void>((resolve) => {
-        const unwatch = watch(loading, (v) => {
-          if (v) return
-          unwatch()
-          resolve()
-        })
-      })
-      return
-    }
+    if ((loading.value || transition.value) && !launching.value) return
+    const instancePath = path.value
+    if (!instancePath) return
     for (const listener of listeners) {
       try {
         await listener()
@@ -400,7 +392,8 @@ export function useLaunchButton() {
         return
       }
     }
-    await launchButtonFacade.value.onClick()
+    if (path.value !== instancePath) return
+    await launchButtonFacade.value.onClick(instancePath)
   }
 
   return {

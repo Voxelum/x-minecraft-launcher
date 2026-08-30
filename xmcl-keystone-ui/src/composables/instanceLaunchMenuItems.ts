@@ -1,6 +1,8 @@
 import { injection } from '@/util/inject'
+import { getCurrentInstanceState } from '@/util/instanceLaunchState'
 import { getExpectVersion } from '@xmcl/runtime-api'
 import { useDialog } from './dialog'
+import { kInstance } from './instance'
 import { kInstanceFiles } from './instanceFiles'
 import { UnresolvedFilesDialogKey } from './instanceUpdate'
 import { LaunchMenuItem } from './launchButton'
@@ -25,6 +27,7 @@ export const enum LaunchMenuItemIssue {
 
 export function useInstanceLaunchMenuItems() {
   const { t } = useI18n()
+  const { path } = injection(kInstance)
   const { instruction } = injection(kInstanceVersionInstall)
   const { show: showUnresolvedFilesDialog } = useDialog(UnresolvedFilesDialogKey)
   const {
@@ -33,18 +36,20 @@ export function useInstanceLaunchMenuItems() {
     isResumingInstall,
     isValidating,
     unzipFileNotFound,
-    unresolvedFiles,
   } = injection(kInstanceFiles)
 
-  const hasUnresolvedFiles = computed(() => (unresolvedFiles.value?.length ?? 0) > 0)
+  const currentInstruction = computed(() => getCurrentInstanceState(instruction.value, path.value))
+  const currentInstallStatus = computed(() => getCurrentInstanceState(instanceInstallStatus.value, path.value))
+  const currentUnresolvedFiles = computed(() => currentInstallStatus.value?.unresolvedFiles ?? [])
+  const hasUnresolvedFiles = computed(() => currentUnresolvedFiles.value.length > 0)
 
   const issues = computed(() => {
     let flags = LaunchMenuItemIssue.None
-    const currentInstruction = instruction.value
+    const installInstruction = currentInstruction.value
 
     if (unzipFileNotFound.value) {
       flags |= LaunchMenuItemIssue.UnzipFileNotFound
-    } else if ((instanceInstallStatus.value?.pendingFileCount || 0) > 0) {
+    } else if ((currentInstallStatus.value?.pendingFileCount || 0) > 0) {
       flags |= LaunchMenuItemIssue.PendingFiles
     }
 
@@ -52,54 +57,55 @@ export function useInstanceLaunchMenuItems() {
       flags |= LaunchMenuItemIssue.UnresolvedFiles
     }
 
-    if (!currentInstruction) return flags
+    if (!installInstruction) return flags
 
-    if (!currentInstruction.resolvedVersion) {
+    if (!installInstruction.resolvedVersion) {
       flags |= LaunchMenuItemIssue.MissingVersion
     }
-    if (currentInstruction.java) {
+    if (installInstruction.java) {
       flags |= LaunchMenuItemIssue.MissingJava
     }
-    if (currentInstruction.profile) {
+    if (installInstruction.profile) {
       flags |= LaunchMenuItemIssue.BadProfile
     }
-    if (currentInstruction.jar) {
+    if (installInstruction.jar) {
       flags |= LaunchMenuItemIssue.CorruptedJar
     }
-    if (currentInstruction.libraries) {
-      const libs = currentInstruction.libraries
+    if (installInstruction.libraries) {
+      const libs = installInstruction.libraries
       if (libs.some((lib) => lib.type === 'corrupted')) {
         flags |= LaunchMenuItemIssue.CorruptedLibraries
       } else {
         flags |= LaunchMenuItemIssue.MissingLibraries
       }
     }
-    if (currentInstruction.assets) {
+    if (installInstruction.assets) {
       flags |= LaunchMenuItemIssue.CorruptedAssets
     }
-    if (currentInstruction.assetsIndex) {
+    if (installInstruction.assetsIndex) {
       flags |= LaunchMenuItemIssue.CorruptedAssetsIndex
     }
-    if (currentInstruction.forge) {
+    if (installInstruction.forge) {
       flags |= LaunchMenuItemIssue.BadForge
     }
-    if (currentInstruction.optifine) {
+    if (installInstruction.optifine) {
       flags |= LaunchMenuItemIssue.BadOptifine
     }
 
     return flags
   })
 
-  const fixInstanceFileIssue = async () => {
-    if (instanceInstallStatus.value && instanceInstallStatus.value.pendingFileCount > 0) {
-      await resumeInstall(instanceInstallStatus.value.instance).catch((e) => {
+  const fixInstanceFileIssue = async (instancePath = path.value) => {
+    const status = getCurrentInstanceState(instanceInstallStatus.value, instancePath)
+    if (status && status.pendingFileCount > 0) {
+      await resumeInstall(status.instance).catch((e) => {
         if (e.name === '') {
           throw e
         }
       })
       return
     }
-    if (hasUnresolvedFiles.value) {
+    if ((status?.unresolvedFiles.length ?? 0) > 0 && path.value === instancePath) {
       showUnresolvedFilesDialog()
     }
   }
@@ -107,15 +113,15 @@ export function useInstanceLaunchMenuItems() {
   const loadingInstanceFiles = computed(
     () =>
       isValidating.value ||
-      (instanceInstallStatus.value?.instance
-        ? (isResumingInstall(instanceInstallStatus.value.instance) ?? false)
+      (currentInstallStatus.value?.instance
+        ? (isResumingInstall(currentInstallStatus.value.instance) ?? false)
         : false),
   )
 
   const launchMenuItems = computed(() => {
     const items: LaunchMenuItem[] = []
     const flags = issues.value
-    const currentInstruction = instruction.value
+    const installInstruction = currentInstruction.value
 
     if (flags & LaunchMenuItemIssue.UnzipFileNotFound) {
       items.push({
@@ -128,7 +134,7 @@ export function useInstanceLaunchMenuItems() {
       items.push({
         title: t('diagnosis.instanceFiles.title'),
         description: t('diagnosis.instanceFiles.description', {
-          counts: instanceInstallStatus.value?.pendingFileCount,
+          counts: currentInstallStatus.value?.pendingFileCount,
         }),
       })
     }
@@ -137,19 +143,19 @@ export function useInstanceLaunchMenuItems() {
       items.push({
         title: t('diagnosis.unresolvedFiles.title'),
         description: t('diagnosis.unresolvedFiles.description', {
-          count: unresolvedFiles.value?.length ?? 0,
-        }, unresolvedFiles.value?.length ?? 0),
+          count: currentUnresolvedFiles.value.length,
+        }, currentUnresolvedFiles.value.length),
         icon: 'help_outline',
         onClick: () => showUnresolvedFilesDialog(),
       })
     }
 
-    if (!currentInstruction) return items
+    if (!installInstruction) return items
 
     if (flags & LaunchMenuItemIssue.MissingVersion) {
       items.push({
         title: t('diagnosis.missingVersion.name', {
-          version: getExpectVersion(currentInstruction.runtime),
+          version: getExpectVersion(installInstruction.runtime),
         }),
         description: t('diagnosis.missingVersion.message'),
         noDisplay: true,
@@ -163,18 +169,18 @@ export function useInstanceLaunchMenuItems() {
     }
     if (flags & LaunchMenuItemIssue.BadProfile) {
       items.push({
-        title: t('diagnosis.badInstall.name', { version: currentInstruction.resolvedVersion }),
+        title: t('diagnosis.badInstall.name', { version: installInstruction.resolvedVersion }),
         description: t('diagnosis.badInstall.message'),
       })
     }
     if (flags & LaunchMenuItemIssue.CorruptedJar) {
       items.push({
-        title: t('diagnosis.corruptedVersionJar.name', { version: currentInstruction.jar }),
+        title: t('diagnosis.corruptedVersionJar.name', { version: installInstruction.jar }),
         description: t('diagnosis.corruptedVersionJar.message'),
       })
     }
     if (flags & LaunchMenuItemIssue.CorruptedLibraries) {
-      const libs = currentInstruction.libraries!
+      const libs = installInstruction.libraries!
       const options = { count: libs.length, name: libs[0].path }
       items.push({
         title: t('diagnosis.corruptedLibraries.name', options, libs.length),
@@ -182,7 +188,7 @@ export function useInstanceLaunchMenuItems() {
       })
     }
     if (flags & LaunchMenuItemIssue.MissingLibraries) {
-      const libs = currentInstruction.libraries!
+      const libs = installInstruction.libraries!
       const options = { count: libs.length, name: libs[0].path }
       items.push({
         title: t('diagnosis.missingLibraries.name', options, libs.length),
@@ -190,7 +196,7 @@ export function useInstanceLaunchMenuItems() {
       })
     }
     if (flags & LaunchMenuItemIssue.CorruptedAssets) {
-      const assets = currentInstruction.assets!
+      const assets = installInstruction.assets!
       const count = assets.length
       const name = assets[0]?.name ?? ''
       items.push({
@@ -201,7 +207,7 @@ export function useInstanceLaunchMenuItems() {
     if (flags & LaunchMenuItemIssue.CorruptedAssetsIndex) {
       items.push({
         title: t('diagnosis.corruptedAssetsIndex.name', {
-          version: currentInstruction.assetsIndex!.id,
+          version: installInstruction.assetsIndex!.id,
         }),
         description: t('diagnosis.corruptedAssetsIndex.message'),
       })

@@ -28,7 +28,10 @@ export function useInstanceFiles(instancePath: Ref<string>) {
   interface ChecksumErrorFile { file: InstanceFile; expect: string; actual: string }
 
   const checksumErrorCount = shallowRef(undefined as undefined | { key: string; count: number; files: ChecksumErrorFile[] })
-  const unzipFileNotFound = shallowRef(undefined as undefined | string)
+  const unzipFileNotFoundState = shallowRef(undefined as undefined | { instance: string; file: string })
+  const unzipFileNotFound = computed(() => unzipFileNotFoundState.value?.instance === instancePath.value
+    ? unzipFileNotFoundState.value.file
+    : undefined)
   const shouldHintUserSkipChecksum = computed(() => checksumErrorCount.value?.count)
   const blockingFiles = computed(() => checksumErrorCount.value?.files)
   const unresolvedFiles = computed(() => instanceFileStatus.value?.unresolvedFiles)
@@ -58,7 +61,7 @@ export function useInstanceFiles(instancePath: Ref<string>) {
       }
       const unzipErrors = errors.filter(e => e.name === 'UnpackZipFileNotFoundError').map(e => e as { file: string })
       if (unzipErrors[0]?.file) {
-        unzipFileNotFound.value = unzipErrors[0].file
+        unzipFileNotFoundState.value = { instance: instancePath, file: unzipErrors[0].file }
       }
     }
   }

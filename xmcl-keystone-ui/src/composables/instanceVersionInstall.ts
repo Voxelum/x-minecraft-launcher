@@ -13,6 +13,7 @@ import { InstanceResolveVersion } from './instanceVersion'
 import { useNotifier } from './notifier'
 import { useService } from './service'
 import { Instance, PartialRuntimeVersions, RuntimeVersions } from '@xmcl/instance'
+import { useInstanceLoading } from './instanceLoading'
 
 export interface InstanceInstallInstruction extends InstallIssue {
   instance: string
@@ -99,7 +100,7 @@ export function useInstanceVersionInstallInstruction(
 
   let abortController = new AbortController()
   const instruction: ShallowRef<InstanceInstallInstruction | undefined> = shallowRef(undefined)
-  const loading = ref(0)
+  const { begin: beginLoading, isLoading: loading } = useInstanceLoading(path)
 
   const instanceLock: Record<string, Mutex> = {}
 
@@ -108,11 +109,12 @@ export function useInstanceVersionInstallInstruction(
     jres: JavaRecord[] = javas.value,
   ) {
     if (!version) return
+    const loadingInstance = version.instance
+    const endLoading = beginLoading(loadingInstance)
     abortController.abort()
     abortController = new AbortController()
     const timeStart = performance.now()
     try {
-      loading.value += 1
       const lock = getInstanceLock(path.value)
       await lock.runExclusive(async () => {
         try {
@@ -183,7 +185,7 @@ export function useInstanceVersionInstallInstruction(
       }
       throw e
     } finally {
-      loading.value -= 1
+      endLoading()
     }
   }
 
@@ -344,9 +346,9 @@ export function useInstanceVersionInstallInstruction(
     return fixingInstance.value[path] === true
   }
 
-  async function fix() {
+  async function fix(instancePath = path.value) {
     const inst = instruction.value
-    if (!inst) {
+    if (!inst || inst.instance !== instancePath) {
       return
     }
     // await refreshResolvedVersion()
@@ -394,7 +396,7 @@ export function useInstanceVersionInstallInstruction(
   return {
     instruction,
     fix,
-    loading: computed(() => loading.value > 0),
+    loading,
     getInstanceLock,
     isInstanceFixing,
 

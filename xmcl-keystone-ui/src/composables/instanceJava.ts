@@ -4,6 +4,7 @@ import { InstanceResolveVersion } from './instanceVersion'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
 import { Instance } from '@xmcl/instance'
+import { useInstanceLoading } from './instanceLoading'
 
 export { JavaCompatibleState }
 
@@ -36,7 +37,9 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
   // (`JavaState.javaUpdate` push/edit kept the same array reference, so
   // `all.value !== _all` was always false even when Java was added).
   let latestToken = 0
-  const { refresh: mutate, refreshing: isValidating, error } = useRefreshable(async () => {
+  const instancePath = computed(() => instance.value.path)
+  const { begin: beginLoading, isLoading: isValidating } = useInstanceLoading(instancePath)
+  const { refresh: mutate, error } = useRefreshable(async () => {
     const myToken = ++latestToken
     const _version = version.value
     const inst = instance.value
@@ -45,18 +48,23 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
       data.value = undefined
       return
     }
-    if (_version && _version.instance !== path) {
-      // Resolver is racing a not-yet-loaded version for a different
-      // instance; skip without clobbering the current data.
-      return
+    const endLoading = beginLoading(path)
+    try {
+      if (_version && _version.instance !== path) {
+        // Resolver is racing a not-yet-loaded version for a different
+        // instance; skip without clobbering the current data.
+        return
+      }
+      const result = await getInstanceJavaStatus(_version, inst)
+      if (myToken !== latestToken) {
+        // A newer `mutate()` superseded us while we were awaiting the
+        // resolver — discard rather than overwriting a fresher snapshot.
+        return
+      }
+      data.value = result
+    } finally {
+      endLoading()
     }
-    const result = await getInstanceJavaStatus(_version, inst)
-    if (myToken !== latestToken) {
-      // A newer `mutate()` superseded us while we were awaiting the
-      // resolver — discard rather than overwriting a fresher snapshot.
-      return
-    }
-    data.value = result
   })
 
   function getComputedJava(instance: Instance, version: InstanceResolveVersion | undefined) {
