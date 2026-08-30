@@ -6,7 +6,9 @@ import { kFlights } from '~/infra'
 import { InstanceService } from '~/instance'
 import { JavaService } from '~/java'
 import { LaunchService } from '~/launch'
+import { ModMetadataService } from '~/moddb/ModMetadataService'
 import { ServiceStateManager } from '~/service'
+import { ResourceTelemetryBatch, type ResourceTracingPayload } from './resourceTelemetryBatch'
 
 const RESOURCE_TELEMETRY_CLIENT_STRING = 'InstrumentationKey=f0634ffa-7578-4751-8f64-581fd90bf347;IngestionEndpoint=https://eastasia-0.in.applicationinsights.azure.com/;LiveEndpoint=https://eastasia.livediagnostics.monitor.azure.com/;ApplicationId=4f19b6fd-9974-4da8-a399-77aac5b3e800'
 
@@ -15,6 +17,8 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
   const client = new appInsight.TelemetryClient(RESOURCE_TELEMETRY_CLIENT_STRING)
   const flights = await app.registry.get(kFlights)
   const stateManager = await app.registry.get(ServiceStateManager)
+  const modMetadataService = await app.registry.get(ModMetadataService)
+  const logger = app.getLogger('ResourceTelemetry')
 
   const MAX_MESSAGE_LENGTH = 32768;
 
@@ -66,35 +70,6 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
   client.context.tags = tags
 
   const getPayload = (sha1: string, metadata: ResourceMetadata, name?: string, domain?: ResourceDomain) => {
-    interface ResourceTracingPayload {
-      name?: string
-      sha1: string
-      domain?: ResourceDomain
-      forge?: {
-        modId: string
-        version: string
-      }
-      fabric?: {
-        modId: string
-        version: string
-      }[]
-      neoforge?: {
-        modId: string
-        version: string
-      }
-      quilt?: {
-        modId: string
-        version: string
-      }
-      curseforge?: {
-        projectId: number
-        fileId: number
-      }
-      modrinth?: {
-        projectId: string
-        versionId: string
-      }
-    }
     const trace: ResourceTracingPayload = {
       name,
       sha1,
@@ -147,6 +122,18 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
     return trace
   }
 
+  const resourceTelemetry = new ResourceTelemetryBatch(
+    (sha1s) => modMetadataService.getLocalMetadataFactsFromSha1s(sha1s),
+    (item) => {
+      if (settings.disableTelemetry) return
+      client.trackTrace({
+        message: item.message,
+        properties: item.properties,
+      })
+    },
+    (error) => logger.warn('Failed to query the local mod metadata database for telemetry deduplication.', error),
+  )
+
   let javaService: JavaService | undefined
   app.registry.get(JavaService).then(service => {
     javaService = service
@@ -160,9 +147,7 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
   app.registry.get(kResourceManager).then((manager) => {
     manager.context.event.on('resourceParsed', (sha1: string, domain: ResourceDomain, metadata: ResourceMetadata) => {
       if (settings.disableTelemetry) return
-      client.trackTrace({
-        message: JSON.stringify(getPayload(sha1, metadata, undefined, domain)),
-      })
+      resourceTelemetry.enqueue(getPayload(sha1, metadata, undefined, domain))
     })
     manager.context.event.on('resourceUpdate', (payloads: UpdateResourcePayload[]) => {
       if (settings.disableTelemetry) return
@@ -175,11 +160,8 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
             }
           }
           if (Object.keys(copy).length > 0) {
-            client.trackTrace({
-              message: JSON.stringify(getPayload(payload.hash, copy, copy.name)),
-              properties: {
-                name: 'resource-metadata',
-              }
+            resourceTelemetry.enqueue(getPayload(payload.hash, copy, copy.name), {
+              name: 'resource-metadata',
             })
           }
         }
@@ -232,6 +214,7 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
   })
 
   app.registryDisposer(async () => {
+    await resourceTelemetry.dispose()
     await new Promise((resolve) => {
       client.flush({
         callback: resolve,

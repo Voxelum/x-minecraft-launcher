@@ -3,8 +3,8 @@ import { download } from '@xmcl/file-transfer'
 import { onDownloadSingle, Tracker } from '@xmcl/installer'
 import { isValidModrinthId, ResourceDomain, ResourceManager, type Resource } from '@xmcl/resource'
 import { kResourceManager } from '~/resource'
-import { ModMetadataServiceKey, type ModMetadataService as IModMetadataService, type ModMetadata, DownloadModMetadataDbTask, DownloadModMetadataDbTrackerEvents } from '@xmcl/runtime-api'
-import { createReadStream } from 'fs'
+import { ModMetadataServiceKey, type ModMetadataService as IModMetadataService, type ModMetadata, type ModMetadataFacts, DownloadModMetadataDbTask, DownloadModMetadataDbTrackerEvents } from '@xmcl/runtime-api'
+import { createReadStream, existsSync } from 'fs'
 import { unlink } from 'fs/promises'
 import { move } from 'fs-extra'
 import { Kysely } from 'kysely'
@@ -169,6 +169,65 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
     }
   }
 
+  async getLocalMetadataFactsFromSha1s(sha1s: string[]): Promise<ModMetadataFacts[] | undefined> {
+    if (sha1s.length === 0) return []
+    const dbPath = this.getAppDataPath('db.sqlite')
+    if (!existsSync(dbPath)) return undefined
+
+    // Keep this connection independent from the validated service database so
+    // telemetry cannot bypass the normal checksum and update path.
+    const database = new DatabaseSync(dbPath, { readOnly: true })
+    try {
+      const placeholders = sha1s.map(() => '?').join(',')
+      const files = database.prepare(
+        `SELECT sha1, name, domain FROM file WHERE sha1 IN (${placeholders})`,
+      ).all(...sha1s) as { sha1: string; name: string; domain: string }[]
+      const facts = new Map<string, ModMetadataFacts>(files.map((file) => [
+        file.sha1,
+        {
+          sha1: file.sha1,
+          name: file.name,
+          domain: file.domain as ResourceDomain,
+          forge: [],
+          fabric: [],
+          modrinth: [],
+          curseforge: [],
+        },
+      ]))
+      if (facts.size === 0) return []
+
+      const knownSha1s = [...facts.keys()]
+      const knownPlaceholders = knownSha1s.map(() => '?').join(',')
+      const forge = database.prepare(
+        `SELECT sha1, id, version FROM forge_mod WHERE sha1 IN (${knownPlaceholders})`,
+      ).all(...knownSha1s) as { sha1: string; id: string; version: string }[]
+      const fabric = database.prepare(
+        `SELECT sha1, id, version FROM fabric_mod WHERE sha1 IN (${knownPlaceholders})`,
+      ).all(...knownSha1s) as { sha1: string; id: string; version: string }[]
+      const modrinth = database.prepare(
+        `SELECT sha1, project, version FROM modrinth_version WHERE sha1 IN (${knownPlaceholders})`,
+      ).all(...knownSha1s) as { sha1: string; project: string; version: string }[]
+      const curseforge = database.prepare(
+        `SELECT sha1, project, file FROM curseforge_file WHERE sha1 IN (${knownPlaceholders})`,
+      ).all(...knownSha1s) as { sha1: string; project: number; file: number }[]
+      for (const entry of forge) {
+        facts.get(entry.sha1)?.forge.push({ id: entry.id, version: entry.version })
+      }
+      for (const entry of fabric) {
+        facts.get(entry.sha1)?.fabric.push({ id: entry.id, version: entry.version })
+      }
+      for (const entry of modrinth) {
+        facts.get(entry.sha1)?.modrinth.push({ id: entry.project, version: entry.version })
+      }
+      for (const entry of curseforge) {
+        facts.get(entry.sha1)?.curseforge.push({ id: entry.project, file: entry.file })
+      }
+      return [...facts.values()]
+    } finally {
+      database.close()
+    }
+  }
+
   async lookupModrinthId(curseforgeId: number): Promise<string | undefined> {
     const db = await this.#ensureDb()
     const result = await db.selectFrom('project_mapping')
@@ -267,6 +326,11 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
         throw error
       }
     }
+    return this.#openDb(dbPath)
+  }
+
+  #openDb(dbPath: string) {
+    if (this.db) return this.db
     const dialect = new NodeSqliteDialect({
       database: () => new DatabaseSync(dbPath, {
         readOnly: true,
