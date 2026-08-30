@@ -179,7 +179,7 @@
         :expanded="!groupCollapsedState[item.name]"
         :dense="denseView"
         @ungroup="ungroup(item.name)"
-        @expand="groupCollapsedState = { ...groupCollapsedState, [item.name]: $event }"
+        @expand="onGroupCollapse(item as ProjectGroup<ModFile>, $event)"
         @setting="renameGroup(item.name, $event.name)"
         @enable-all="enableAll(item)"
         @disable-all="disableAll(item)"
@@ -342,7 +342,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { clientModrinthV2 } from '@/util/clients'
 import { ModFile, getModDependents, isModFile } from '@/util/mod'
-import { flattenVisibleModGroups } from '@/util/modGroupFilter'
+import { flattenVisibleModGroups, isProjectInModGroup } from '@/util/modGroupFilter'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import { useDebounceFn } from '@vueuse/core'
@@ -747,6 +747,17 @@ const getInstalledCurseforge = (modId: number | undefined) => {
 }
 
 const route = useRoute()
+const { replace } = useRouter()
+
+function onGroupCollapse(group: ProjectGroup<ModFile>, collapsed: boolean) {
+  groupCollapsedState.value = { ...groupCollapsedState.value, [group.name]: collapsed }
+  if (collapsed && isProjectInModGroup(group, route.query.id as string | undefined)) {
+    const query = { ...route.query }
+    delete query.id
+    replace({ query })
+  }
+}
+
 watch(
   computed(() => route.fullPath),
   () => {
@@ -987,7 +998,6 @@ const updateSearch = useDebounceFn(() => {
     replace({ query: { ...route.query, keyword: '' } })
   }
 }, 500)
-const { replace } = useRouter()
 const keywordBuffer = ref(route.query.keyword as string)
 
 function openModDependent(dependent: ProjectDependent) {

@@ -5,6 +5,10 @@ import type { ProjectEntry } from '@/util/search'
 type ModEntry = ProjectEntry<ModFile>
 type ModGroup = ProjectGroup<ModFile>
 
+export function isProjectInModGroup(group: ModGroup, projectId: string | undefined): boolean {
+  return !!projectId && group.projects.some(project => project.id === projectId)
+}
+
 export function flattenVisibleModGroups(
   items: Array<ModEntry | ModGroup>,
   matches: (item: ModEntry) => boolean,

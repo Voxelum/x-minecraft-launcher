@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { flattenVisibleModGroups } from './modGroupFilter'
+import { flattenVisibleModGroups, isProjectInModGroup } from './modGroupFilter'
 
 function project(id: string) {
   return { id } as any
@@ -30,5 +30,18 @@ describe(flattenVisibleModGroups.name, () => {
     const group = { name: 'group', projects: [visible], mtime: 0 }
 
     expect(flattenVisibleModGroups([group], () => true, { group: true })).toEqual([group])
+  })
+})
+
+describe(isProjectInModGroup.name, () => {
+  const group = { name: 'group', projects: [project('first'), project('second')], mtime: 0 }
+
+  it('finds a selected project in the group', () => {
+    expect(isProjectInModGroup(group, 'second')).toBe(true)
+  })
+
+  it('rejects missing and unrelated selected projects', () => {
+    expect(isProjectInModGroup(group, 'other')).toBe(false)
+    expect(isProjectInModGroup(group, undefined)).toBe(false)
   })
 })
