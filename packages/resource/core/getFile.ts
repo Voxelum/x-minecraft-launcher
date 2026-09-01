@@ -29,6 +29,7 @@ export async function getFiles(dir: string, domain?: ResourceDomain): Promise<Fi
       const path = join(dir, file)
       const entry = await getFile(path, file)
       if (!entry) return
+      if (shouldIgnoreFile(file, domain, entry.isDirectory)) return
       if (domain === ResourceDomain.Blueprints && entry.isDirectory) {
         return getFiles(path, domain)
       }

@@ -214,9 +214,9 @@ function createWatcher(
     alwaysStat: true,
     ignorePermissionErrors: true,
     ignoreInitial: true,
-    ignored: (filePath) => {
+    ignored: (filePath, stat) => {
       if (resolve(filePath) === path) return false
-      return shouldIgnoreFile(filePath, domain)
+      return shouldIgnoreFile(filePath, domain, stat?.isDirectory())
     },
     // @ts-ignore
   }).on('error', (e) => {
@@ -231,7 +231,7 @@ function createWatcher(
     const depth = file.split(sep).length
     if (domain !== ResourceDomain.Blueprints && depth > 1) return
 
-    if (shouldIgnoreFile(file, domain)) return
+    if (shouldIgnoreFile(file, domain, stat?.isDirectory())) return
     if (file.endsWith('.txt')) return
     if (eventName === 'unlinkDir') {
       if (domain === ResourceDomain.Blueprints) revalidate()
