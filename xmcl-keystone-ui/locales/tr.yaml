@@ -143,7 +143,6 @@ curseforgeCategory:
   World Gen: Dünya Oluşturma
 dataMigration:
   apply: Ayarları Uygula
-  directoryCriteriaHint: Lütfen yeni dizin konumunun BOŞ bir dizin olduğundan emin olun!
   placeholder: Dizin seçmek için lütfen buraya tıklayın
   setRootCause: Bu işlem sırasında Başlatıcıyı kapatırsanız verilerinizi (Haritalar, Kaynak Paketleri, Modlar) kaybedeceksiniz!
   setRootDescription: Bu işlem, bu başlatıcının ve Minecraft'ın kök veri klasörünü değiştirecektir.
@@ -488,12 +487,7 @@ instances:
   addCurseForgeDescription: Curseforge veri klasöründen içe aktar. Curseforge'un kök veri klasörünü seçmeniz gerekir
   addDescription: Sıfırdan yeni bir instance oluştur
   addMMCDescription: Mevcut MultiMC instance'ını içe aktar. MultiMC'den veri klasörünü seçmeniz gerekir.
-  addManually: Manuel Olarak Oluştur
   addModrinthDescription: Mevcut Modrinth instance'ını içe aktar. Modrinth kök veri klasörünü seçmeniz gerekir.
-  addServer: Sunucudan oluştur
-  addServerDescription: Bu, doğrudan sunucuya bağlanan bir oyun oluşturacaktır.
-  addTemplate: İndirilen mod paketinden oluştur
-  addTemplateDescription: İndirilen Mod Paketinden içe aktar
   addVanilla: Vanilla benzeri Minecraft'tan oluştur
   addVanillaDescription: Yaygın .minecraft klasöründen içe aktar. Bu, orijinal oyun profilini XMCL'ye kopyalayacaktır.
   fix: Onar
@@ -1124,12 +1118,9 @@ resourcepack:
   incompatible: Uyumsuz Kaynak Paketi formatı({format}). Uyan {accept}. Mevcut {actual}.
   name: Kaynak Paketi | Kaynak Paketleri
   searchHint: Kaynak paketlerini arayın
-  searchOnCurseforge: Curseforge'da {name} ara
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Seçilen Kaynak Paketleri
   showDirectory: Kaynak paketi dizinini göster
   showFile: '{file} klasöründeki kaynak paketini göster'
-  showInCurseforge: Curseforge'da {name} göster
   unselected: Seçilmeyen Kaynak Paketleri
   noPacks: Kaynak paketi bulunamadı
   search: Kaynak paketleri ara...
@@ -1528,8 +1519,6 @@ setup:
 shaderPack:
   linkShared: Shader paketlerini örnekler arasında paylaş
   linkSharedHint: Bu örneğin shaderpacks klasörünü genel paylaşılan klasöre bağlayarak tüm örneklerin aynı shader paketlerini kullanmasını sağlayın. Mevcut paketler paylaşılan klasörde birleştirilir.
-  deletion: Gölgelendirici Paketini Sil
-  deletionHint: Bu işlem {path} gölgelendirici paketi dosyasını silecek ve geri alınamaz.
   disabled: Devre Dışı Bırakılan Gölgelendirici Paketleri
   dropHint: Gölgelendirici Paketi İçe Aktar
   empty: Gölgelendirici paketi atanmadı
@@ -1663,13 +1652,6 @@ tutorial:
     listTitle: Yüklü veya Aranan Mod
     searchDescription: Bu arama kutusuyla Modrinth, Curseforge veya yerel önbelleğinizden mod arayabilirsiniz.
     searchTitle: Mod Ara
-  multiplayer:
-    contentDescription: Siz ve eşleriniz arasındaki bağlantılar burada listelenecektir.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: Diğer oyuncularla bir grup oluşturabilir veya katılabilirsiniz. Başlatıcı, gruba göre siz ve arkadaşlarınız arasında P2P bağlantıları oluşturmaya çalışacaktır. Arkadaşlarınızın verdiği grup adını girebilirsiniz. Veya benzersiz bir ad oluşturabilirsiniz.
-    groupTitle: Bir gruba katıl
-    joinDescription: Bir grup adı girdikten sonra, gruba katılmak veya oluşturmak için bu düğmeye tıklabilirsiniz. Grup adı boşsa, başlatıcı sizin için bir ad oluşturacaktır.
-    manualDescription: Siz veya arkadaşınız gruba bağlanamıyorsanız, manuel bağlan'a tıklayarak belirteci manuel olarak takas etmeyi deneyebilirsiniz. Bu da başarısız olursa, bu bir internet sorunu olabilir.
   recentPlayDescription: Oluşturulan oyunlar burada listelenecektir. Yüklü sürümleri ve indirilen mod paketlerini de görmek için görünümleri buradan değiştirebilirsiniz.
   storePoupularModpackDescription: Bu bölümde Curseforge ve Modrinth'teki en popüler mod paketlerini göreceksiniz.
   storeSearchCategoryDescription: Kategorileri veya filtreleri buradan da değiştirebilirsiniz.

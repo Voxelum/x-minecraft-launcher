@@ -108,7 +108,6 @@ curseforgeCategory:
   Vanilla+: Vanilla+
 dataMigration:
   apply: Zastosuj ustawienia
-  directoryCriteriaHint: Upewnij się, że nowa lokalizacja katalogu to pusty katalog!
   placeholder: Kliknij tutaj, aby wybrać katalog
   setRootCause: >-
     Utracisz swoje dane (mapy, pakiety zasobów, mody), jeśli zamkniesz Launchera w tym momencie!
@@ -450,14 +449,9 @@ instances:
   addMMCDescription: |-
     Zaimportuj istniejącą instancję MultiMC.
     Musisz wybrać folder danych z MultiMC.
-  addManually: Ręczne tworzenie
   addModrinthDescription: |-
     Zaimportuj istniejącą instancję Modrinth.
     Musisz wybrać główny folder danych Modrinth.
-  addServer: Utwórz z serwera
-  addServerDescription: Spowoduje to bezpośrednie uruchomienie gry na serwerze.
-  addTemplate: Utwórz z pobranego pakietu modów
-  addTemplateDescription: Import z pobranego pakietu Modpack
   addVanilla: Tworzenie z Minecrafta w stylu vanilla
   addVanillaDescription: >-
     Import ze wspólnego folderu .minecraft. Spowoduje to zduplikowanie oryginalnego profilu gry do XMCL.
@@ -697,7 +691,7 @@ mod:
   modloaderSelectHint: |-
     Mod obsługuje następujące moduły ładujące mod.
     Wybierz jeden do zainstalowania.
-  modloaderSelectNotSupported: Nie znaleziono {modloadera} dla Minecrafta {minecraft}
+  modloaderSelectNotSupported: Nie znaleziono {modloader} dla Minecrafta {minecraft}
   mods: '{count} Mody'
   name: Mod | Mody
   newFolder: Nowy folder
@@ -892,7 +886,7 @@ modrinth:
     waterfall: Waterfall
     worldgen: World Gen
   clientSide: Strona klienta
-  copyTitle: Kopiuj tekst {titel} do schowka
+  copyTitle: Kopiuj tekst {title} do schowka
   createAt: Utworzony
   createCollection: Utwórz kolekcję
   description: Opis
@@ -935,7 +929,7 @@ modrinth:
     shader: Shader
     datapack: Pakiet danych
     plugin: Plugin
-  projects: '{Count} Projekty'
+  projects: '{count} Projekty'
   serverSide: Strona serwera
   sort:
     downloads: Liczba pobrań
@@ -1128,12 +1122,9 @@ resourcepack:
     Niezgodny format pakietu zasobów ({format}). Fitin {accept}. Aktualny {actual}.
   name: Pakiet zasobów | Pakiety zasobów
   searchHint: Przeszukaj pakiety zasobów
-  searchOnCurseforge: Wyszukaj {name} w curseforgeack
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Wybrane pakiety zasobów
   showDirectory: Otwórz folder z pakietami zasobów
   showFile: Pokaż pakiet zasobów w folderze {file}
-  showInCurseforge: Pokaż {name} w curseforge
   unselected: Niewybrane pakiety zasobów
   noPacks: Nie znaleziono paczek zasobów
   search: Wyszukaj paczki zasobów...
@@ -1475,9 +1466,6 @@ shaderPack:
     Połącz folder shaderpacks tej instancji z globalnym folderem
     współdzielonym, aby wszystkie instancje używały tych samych paczek shaderów.
     Istniejące paczki zostaną scalone do folderu współdzielonego.
-  deletion: Usuń pakiet shaderów
-  deletionHint: >-
-    Spowoduje to usunięcie pliku pakietu shaderów {path} i nie będzie można go przywrócić.
   disabled: Wyłączony pakiet shaderów
   dropHint: Import Shader Pack
   empty: No shader pack allocated
@@ -1608,16 +1596,6 @@ tutorial:
     searchDescription: >-
       Możesz wyszukiwać mody z Modrinth, Curseforge lub lokalnej pamięci podręcznej za pomocą to pole wyszukiwania.
     searchTitle: Wyszukiwanie modów
-  multiplayer:
-    contentDescription: Połączenia między Tobą a Twoimi rówieśnikami będą wymienione tutaj.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Możesz utworzyć lub dołączyć do grupy z innymi graczami. Program uruchamiający spróbuje utworzyć połączenia P2P między Tobą a Twoimi znajomymi według grupy. Możesz wprowadzić nazwę grupy podaną przez znajomych. Możesz też utworzyć własną, unikalną nazwę.
-    groupTitle: Dołącz do grupy
-    joinDescription: >-
-      Po wprowadzeniu nazwy grupy. Możesz kliknąć ten przycisk, aby dołączyć lub utworzyć grupy. Jeśli nazwa grupy jest pusta, program uruchamiający wygeneruje nazwę nazwę.
-    manualDescription: >-
-      Jeśli ty lub twój znajomy nie możecie połączyć się z grupą. Możesz spróbować ręcznie wymienić token, klikając opcję Połącz ręcznie. Jeśli to również się nie powiedzie może to być problem z internetem.
   recentPlayDescription: >-
     Utworzone gry zostaną wyświetlone tutaj. Możesz przełączać widoki tutaj, aby zobaczyć zainstalowane wersje i pobrane modpacki.
   storePoupularModpackDescription: >-

@@ -164,7 +164,6 @@ curseforgeCategory:
   World Gen: Tạo thế giới
 dataMigration:
   apply: Áp dụng cài đặt
-  directoryCriteriaHint: Vui lòng đảm bảo vị trí thư mục mới của bạn là một thư mục TRỐNG!
   placeholder: Vui lòng nhấp vào đây để chọn thư mục
   setRootCause: Bạn sẽ mất dữ liệu của mình (Bản đồ, Gói tài nguyên, Mod) nếu bạn đóng Trình khởi chạy trong quá trình này!
   setRootDescription: Thao tác này sẽ thay đổi thư mục dữ liệu gốc của trình khởi chạy này và minecraft.
@@ -519,13 +518,8 @@ instances:
   addCurseForgeDescription: Nhập từ thư mục dữ liệu Curseforge. Bạn cần chọn thư mục dữ liệu gốc của Curseforge
   addDescription: Tạo một phiên bản mới từ đầu
   addMMCDescription: Nhập phiên bản MultiMC hiện có. Bạn cần chọn thư mục dữ liệu từ MultiMC.
-  addManually: Tạo thủ công
   addModrinthDescription: Nhập phiên bản Modrinth hiện có. Bạn cần chọn thư mục dữ liệu gốc của Modrinth.
   addPrismDescription: Nhập phiên bản PrismLauncher hiện có.
-  addServer: Tạo từ máy chủ
-  addServerDescription: Thao tác này sẽ tạo một game để kết nối trực tiếp vào máy chủ.
-  addTemplate: Tạo từ modpack đã tải xuống
-  addTemplateDescription: Nhập từ Modpack đã tải xuống
   addVanilla: Tạo từ Minecraft vanilla
   addVanillaDescription: Nhập từ thư mục .minecraft thông thường. Thao tác này sẽ sao chép hồ sơ game gốc sang XMCL.
   edition: Phiên bản
@@ -1240,12 +1234,9 @@ resourcepack:
   noPacksInstalled: Bạn chưa cài đặt gói tài nguyên nào.
   search: Tìm kiếm gói tài nguyên...
   searchHint: Tìm kiếm gói tài nguyên
-  searchOnCurseforge: Tìm kiếm {name} trên CurseForge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Các gói tài nguyên đã chọn
   showDirectory: Hiển thị thư mục gói tài nguyên
   showFile: Hiển thị gói tài nguyên trong thư mục {file}
-  showInCurseforge: Hiển thị {name} trên CurseForge
   unselected: Các gói tài nguyên chưa chọn
 save:
   allowCheats: Cho phép gian lận (Cheats)
@@ -1638,8 +1629,6 @@ setup:
     name: Đặt ngôn ngữ
   path: Đường dẫn hiện tại
 shaderPack:
-  deletion: Xóa gói Shader
-  deletionHint: Thao tác này sẽ xóa tệp gói shader {path} và không thể hoàn tác.
   disabled: Gói Shader đã vô hiệu hóa
   dropHint: Nhập gói Shader
   empty: Không có gói shader nào được phân bổ
@@ -1775,13 +1764,6 @@ tutorial:
     listTitle: Mod đã cài đặt hoặc Tìm kiếm
     searchDescription: Bạn có thể tìm kiếm mod từ Modrinth, Curseforge hoặc bộ đệm cục bộ của bạn bằng hộp tìm kiếm này.
     searchTitle: Tìm kiếm Mod
-  multiplayer:
-    contentDescription: Các kết nối giữa bạn và những người chơi khác sẽ được liệt kê tại đây.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: Bạn có thể tạo hoặc tham gia một nhóm với những người chơi khác. Trình khởi chạy sẽ cố gắng tạo kết nối P2P giữa bạn và bạn bè của bạn tùy thuộc vào nhóm. Bạn có thể nhập tên nhóm do bạn bè cung cấp hoặc tạo một tên duy nhất.
-    groupTitle: Tham gia một nhóm
-    joinDescription: Khi bạn đã nhập tên nhóm, bạn có thể nhấp vào nút này để tham gia hoặc tạo nhóm. Nếu tên nhóm để trống, trình khởi chạy sẽ tự động tạo một tên cho bạn.
-    manualDescription: Nếu bạn hoặc bạn bè của bạn không thể kết nối vào nhóm, bạn có thể thử trao đổi mã token thủ công bằng cách nhấp vào kết nối thủ công. Nếu việc này cũng thất bại, đó có thể là do sự cố kết nối Internet.
   recentPlayDescription: Các trò chơi đã tạo sẽ được liệt kê tại đây. Bạn có thể chuyển đổi các chế độ xem tại đây để xem cả các phiên bản đã cài đặt và các modpack đã tải xuống.
   storePoupularModpackDescription: Bạn sẽ thấy các modpack phổ biến nhất trên Curseforge và Modrinth trong phần này.
   storeSearchCategoryDescription: Bạn cũng có thể bật tắt các danh mục hoặc bộ lọc tại đây.

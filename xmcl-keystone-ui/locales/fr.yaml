@@ -127,8 +127,6 @@ curseforgeCategory:
   World Gen: Génération du Monde
 dataMigration:
   apply: Appliquer le paramètre
-  directoryCriteriaHint: >-
-    Veuillez vous assurer que votre nouvel emplacement de répertoire est un répertoire VIDE !
   placeholder: Veuillez cliquer ici pour sélectionner le répertoire
   setRootCause: >-
     Vous perdrez vos données (cartes, packs de ressources, mods) si vous fermez le launcher maintenant !
@@ -476,14 +474,9 @@ instances:
   addMMCDescription: |-
     Importez une instance MultiMC existante.
     Vous devez sélectionner le dossier de données de MultiMC.
-  addManually: Créer manuellement
   addModrinthDescription: |-
     Importez l’instance Modrinth existante.
     Vous devez sélectionner le dossier de données racine Modrinth.
-  addServer: Créer à partir du serveur
-  addServerDescription: Cela créera un jeu directement lancé sur le serveur.
-  addTemplate: Créer à partir du modpack téléchargé
-  addTemplateDescription: Importer à partir du Modpack téléchargé
   addVanilla: Créez à partir de Minecraft de type vanille
   addVanillaDescription: |-
     Importer à partir du dossier commun .minecraft.
@@ -1154,12 +1147,9 @@ resourcepack:
     Format de pack de ressources incompatible ({format}). Fait pour {accept}. Actuel {actual}.
   name: Pack de Ressources | Packs de Ressources
   searchHint: Rechercher des packs de ressources
-  searchOnCurseforge: Rechercher {name} dans curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Packs de ressources sélectionnés
   showDirectory: Ouvrez le dossier contenant les packs de ressources
   showFile: Afficher le pack de ressources dans le dossier {file}
-  showInCurseforge: Afficher {name} dans curseforge
   unselected: Packs de ressources désélectionnés
   noPacks: Aucun pack de ressources trouvé
   search: Rechercher des packs de ressources...
@@ -1520,9 +1510,6 @@ shaderPack:
     Lier le dossier shaderpacks de cette instance au dossier partagé global afin
     que toutes les instances utilisent les mêmes packs de shaders. Les packs
     existants sont fusionnés dans le dossier partagé.
-  deletion: Supprimer le shaderpack
-  deletionHint: >-
-    Cela supprimera le fichier du shaderpack {path} et ne pourra pas être annulé.
   disabled: Pack de shaders désactivé
   empty: Vous avez 0 shaderpack
   enable: Utilisation du shaderpack {name}
@@ -1656,28 +1643,6 @@ tutorial:
     searchDescription: >-
       Vous pouvez rechercher des mods depuis Modrinth, Curseforge ou votre cache local grâce à ce champ de recherche.
     searchTitle: Rechercher des modules
-  multiplayer:
-    contentDescription: Les connexions entre vous et vos pairs seront répertoriées ici.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Vous pouvez créer ou rejoindre un groupe avec d'autres joueurs.
-
-      Le lanceur tentera de créer des connexions P2P entre vous et vos amis en fonction du groupe.
-
-      Vous pouvez saisir le nom du groupe donné par vos amis.
-
-      Ou vous pouvez créer un nom unique à partir du vôtre.
-    groupTitle: Rejoindre un groupe
-    joinDescription: |-
-      Une fois que vous avez saisi un nom de groupe.
-      Vous pouvez cliquer sur ce bouton pour rejoindre ou créer le groupe.
-      Si le nom du groupe est vide, le lanceur générera un nom pour vous.
-    manualDescription: >-
-      Si vous ou votre ami ne parvenez pas à vous connecter au groupe.
-
-      Vous pouvez essayer d'échanger manuellement le jeton en cliquant sur Se connecter manuellement.
-
-      Si cela échoue également, cela pourrait être un problème Internet.
   recentPlayDescription: >-
     Les jeux créés seront répertoriés ici.
 

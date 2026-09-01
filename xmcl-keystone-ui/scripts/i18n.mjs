@@ -8,7 +8,7 @@
  *   node scripts/i18n.mjs <command> [options]
  *
  * Commands:
- *   lint    [--missing|--unused|--extra] [--strict] [--json] [--watch] [--no-daemon]
+ *   lint    [--missing|--unused|--extra|--coverage] [--strict] [--json] [--watch] [--no-daemon]
  *   remove  <key> [<key> …]            [--dry-run] [--locale=en,zh] [--keep-empty]
  *   rename  <oldKey> <newKey>          [--dry-run] [--locale=en,zh] [--keep-empty]
  *   daemon                              run the watcher/server in the foreground
@@ -26,10 +26,10 @@ import { createHash } from 'node:crypto'
 import { existsSync, readdirSync, readFileSync, statSync, unlinkSync, watch, writeFileSync } from 'node:fs'
 import net from 'node:net'
 import os from 'node:os'
-import { dirname, join, resolve } from 'node:path'
+import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
-  BASE_LOCALE, LOCALES_DIR, SETTINGS_FILE, SRC_DIR, applyChange, buildState,
+  BASE_LOCALE, LOCALES_DIR, MAIN_SRC_DIR, SETTINGS_FILE, SRC_DIR, applyChange, buildMainState, buildState,
   computeLint, isSourceFile, removeKeys, renameKey,
 } from './i18n-core.mjs'
 
@@ -39,6 +39,7 @@ const PIPE = process.platform === 'win32'
   ? `\\\\.\\pipe\\xmcl-i18n-${idHash}`
   : join(os.tmpdir(), `xmcl-i18n-${idHash}.sock`)
 const PIDFILE = join(os.tmpdir(), `xmcl-i18n-${idHash}.pid`)
+const PROTOCOL_VERSION = 2
 
 const c = {
   red: (s) => `\x1b[31m${s}\x1b[0m`,
@@ -79,7 +80,12 @@ function request(req, timeout = 5000) {
     sock.on('data', (d) => {
       buf += d
       const i = buf.indexOf('\n')
-      if (i >= 0) { try { finish(JSON.parse(buf.slice(0, i))) } catch { finish(null) } }
+      if (i >= 0) {
+        try {
+          const response = JSON.parse(buf.slice(0, i))
+          finish(response?.protocol === PROTOCOL_VERSION ? response : null)
+        } catch { finish(null) }
+      }
     })
     sock.on('error', () => finish(null))
     sock.on('close', () => finish(null))
@@ -90,7 +96,7 @@ function request(req, timeout = 5000) {
 // Lint printing
 // ---------------------------------------------------------------------------
 function printLint(result, opts) {
-  const { missing, unused, extra, invalid = [] } = result
+  const { missing, unused, extra, invalid = [], warnings = [], coverage = [], main } = result
   const anyFilter = opts.onlyMissing || opts.onlyUnused || opts.onlyExtra
   const showMissing = !anyFilter || opts.onlyMissing
   const showUnused = !anyFilter || opts.onlyUnused
@@ -99,9 +105,12 @@ function printLint(result, opts) {
   if (opts.json) {
     console.log(JSON.stringify({
       invalid,
+      warnings,
       missing: showMissing ? missing : undefined,
       unused: showUnused ? unused : undefined,
       extra: showExtra ? extra : undefined,
+      coverage,
+      main,
     }, null, 2))
     return
   }
@@ -109,11 +118,17 @@ function printLint(result, opts) {
   // hard error regardless of which filters are active.
   if (invalid.length) {
     console.log(c.bold(c.red(`\n✖ ${invalid.length} invalid message(s)`)) + c.dim(' (unparseable YAML or uncompilable vue-i18n message)'))
-    for (const { locale, key, code, message } of invalid) {
+    for (const { locale, key, code, message, file } of invalid) {
       const where = key ? `${locale}  ${key}` : `${locale}  ${c.dim('(whole file)')}`
-      console.log(`  ${c.red(where)}  ${c.dim(`[${code}] ${message}`)}`)
+      console.log(`  ${c.red(where)}${file ? c.dim(`  ${file}`) : ''}  ${c.dim(`[${code}] ${message}`)}`)
     }
   } else console.log(c.green('✔ all locale messages parse & compile'))
+  if (warnings.length) {
+    console.log(c.bold(c.yellow(`\n⚠ ${warnings.length} locale message warning(s)`)))
+    for (const { locale, key, code, message, file } of warnings) {
+      console.log(`  ${c.yellow(`${locale}  ${key}`)}${file ? c.dim(`  ${file}`) : ''}  ${c.dim(`[${code}] ${message}`)}`)
+    }
+  } else console.log(c.green('✔ no locale message warnings'))
   if (showMissing) {
     if (missing.length) {
       console.log(c.bold(c.red(`\n✖ ${missing.length} missing key(s)`)) + c.dim(' (used in code, absent from en.yaml)'))
@@ -132,7 +147,18 @@ function printLint(result, opts) {
       for (const { locale, key } of extra) console.log(`  ${c.dim(locale)}  ${c.yellow(key)}`)
     } else console.log(c.green('✔ no extra keys in translation locales'))
   }
+  if (opts.coverage && coverage.length) {
+    console.log(c.bold('\nLocale coverage'))
+    for (const { locale, translated, total, missing: missingCount, percent } of coverage) {
+      const color = missingCount === 0 ? c.green : c.yellow
+      console.log(`  ${locale.padEnd(8)} ${color(`${percent.toFixed(1).padStart(5)}%`)}  ${c.dim(`${translated}/${total}, ${missingCount} missing`)}`)
+    }
+  }
   console.log('')
+  if (main) {
+    console.log(c.bold('Electron main-process locales'))
+    printLint(main, { ...opts, json: false })
+  }
 }
 
 function lintExitCode(result, opts) {
@@ -141,10 +167,16 @@ function lintExitCode(result, opts) {
   const showUnused = !anyFilter || opts.onlyUnused
   const showExtra = !anyFilter || opts.onlyExtra
   if (result.invalid?.length) return 1
+  if (opts.strict && result.warnings?.length) return 1
   if (showMissing && result.missing.length) return 1
   if (opts.strict && showUnused && result.unused.length) return 1
   if (opts.strict && showExtra && result.extra.length) return 1
+  if (result.main && lintExitCode(result.main, opts)) return 1
   return 0
+}
+
+function computeProjectLint(state) {
+  return { ...computeLint(state), main: computeLint(buildMainState()) }
 }
 
 // ---------------------------------------------------------------------------
@@ -195,7 +227,9 @@ function makeChangeApplier(state, after) {
       const changed = [...pending]
       pending.clear()
       let touched = false
-      for (const p of changed) if (applyChange(state, p)) touched = true
+      for (const p of changed) {
+        if (applyChange(state, p) || !relative(MAIN_SRC_DIR, p).startsWith('..')) touched = true
+      }
       if (touched) after(changed)
     }, 150)
   }
@@ -210,7 +244,7 @@ function runDaemon() {
   const apply = makeChangeApplier(state, (changed) => {
     console.log(c.dim(`[${new Date().toLocaleTimeString()}] refreshed (${changed.length} change(s))`))
   })
-  const stopWatch = watchTree([SRC_DIR, LOCALES_DIR], apply)
+  const stopWatch = watchTree([SRC_DIR, LOCALES_DIR, MAIN_SRC_DIR], apply)
 
   const handle = async (req) => {
     switch (req?.cmd) {
@@ -219,7 +253,7 @@ function runDaemon() {
         ok: true, pid: process.pid, locales: state.localeKeys.size,
         sourceFiles: state.fileScans.size, allowList: state.allowList.size,
       }
-      case 'lint': try { return { ok: true, result: computeLint(state) } } catch (e) { return { ok: false, error: String(e?.message || e) } }
+      case 'lint': try { return { ok: true, result: computeProjectLint(state) } } catch (e) { return { ok: false, error: String(e?.message || e) } }
       case 'stop': setTimeout(() => { stopWatch(); try { unlinkSync(PIDFILE) } catch {} process.exit(0) }, 10); return { ok: true, stopping: true }
       default: return { ok: false, error: `unknown cmd: ${req?.cmd}` }
     }
@@ -233,7 +267,7 @@ function runDaemon() {
       if (i < 0) return
       let req
       try { req = JSON.parse(buf.slice(0, i)) } catch { sock.end(); return }
-      handle(req).then((res) => sock.end(JSON.stringify(res) + '\n'))
+      handle(req).then((res) => sock.end(JSON.stringify({ ...res, protocol: PROTOCOL_VERSION }) + '\n'))
     })
     sock.on('error', () => {})
   })
@@ -258,7 +292,7 @@ function runDaemon() {
 async function cmdLint() {
   const opts = {
     onlyMissing: flags.has('--missing'), onlyUnused: flags.has('--unused'),
-    onlyExtra: flags.has('--extra'), strict: flags.has('--strict'), json: flags.has('--json'),
+    onlyExtra: flags.has('--extra'), coverage: flags.has('--coverage'), strict: flags.has('--strict'), json: flags.has('--json'),
   }
 
   if (flags.has('--watch')) {
@@ -266,12 +300,12 @@ async function cmdLint() {
     const state = buildState()
     const render = () => {
       if (!opts.json) process.stdout.write('\x1b[2J\x1b[H') // clear screen
-      printLint(computeLint(state), opts)
+      printLint(computeProjectLint(state), opts)
       console.log(c.dim('watching for changes… Ctrl+C to exit'))
     }
     render()
     const apply = makeChangeApplier(state, render)
-    watchTree([SRC_DIR, LOCALES_DIR], apply)
+    watchTree([SRC_DIR, LOCALES_DIR, MAIN_SRC_DIR], apply)
     return // keep process alive
   }
 
@@ -280,7 +314,7 @@ async function cmdLint() {
     const res = await request({ cmd: 'lint' })
     if (res?.ok) result = res.result
   }
-  if (!result) result = computeLint(buildState())
+  if (!result) result = computeProjectLint(buildState())
   printLint(result, opts)
   process.exit(lintExitCode(result, opts))
 }
@@ -356,7 +390,7 @@ async function cmdStatus() {
 const HELP = `Usage: i18n <command> [options]
 
 Commands:
-  lint     check missing / unused / extra keys   [--missing|--unused|--extra] [--strict] [--json] [--watch] [--no-daemon]
+  lint     check locale keys and messages         [--missing|--unused|--extra|--coverage] [--strict] [--json] [--watch] [--no-daemon]
   remove   delete one or more keys               <key> [<key> …] [--dry-run] [--locale=en,zh] [--keep-empty]
   rename   move/rename a key                      <oldKey> <newKey> [--dry-run] [--locale=en,zh] [--keep-empty]
   daemon   run the watcher/server (foreground)

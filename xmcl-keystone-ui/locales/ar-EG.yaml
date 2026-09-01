@@ -164,7 +164,6 @@ curseforgeCategory:
   World Gen: توليد العالم
 dataMigration:
   apply: تطبيق الإعدادات
-  directoryCriteriaHint: تأكد إن مجلد الوجهة الجديد مجلد فاضي تماماً!
   placeholder: اضغط هنا لاختيار المجلد
   setRootCause: هتخسر بياناتك (الخرائط، حزم الموارد، المودات) لو قفلت اللانشر أثناء العملية دي!
   setRootDescription: العملية دي هتغير المجلد الرئيسي لبيانات اللانشر وماينكرافت.
@@ -519,13 +518,8 @@ instances:
   addCurseForgeDescription: استيراد من مجلد بيانات CurseForge. لازم تختار مجلد البيانات الرئيسي لـ CurseForge
   addDescription: إنشاء نسخة جديدة من الصفر
   addMMCDescription: استيراد نسخة MultiMC موجودة. لازم تختار مجلد البيانات الخاص بـ MultiMC.
-  addManually: إنشاء يدوي
   addModrinthDescription: استيراد نسخة Modrinth موجودة. لازم تختار مجلد البيانات الرئيسي لـ Modrinth.
   addPrismDescription: استيراد نسخة PrismLauncher موجودة.
-  addServer: إنشاء من سيرفر
-  addServerDescription: الخيار ده هيعمل نسخة تدخل على السيرفر مباشرة عند التشغيل.
-  addTemplate: إنشاء من حزمة مودات متنزلة
-  addTemplateDescription: استيراد من حزمة مودات (Modpack) متنزلة
   addVanilla: إنشاء من لعبة ماينكرافت فانيلا
   addVanillaDescription: استيراد من مجلد .minecraft المعتاد. العملية دي هتكرر ملف اللعبة الأصلي لـ XMCL.
   edition: الإصدار (Edition)
@@ -1238,12 +1232,9 @@ resourcepack:
   noPacksInstalled: معندكش أي حزم موارد متثبتة.
   search: البحث في حزم الموارد...
   searchHint: البحث في حزم الموارد
-  searchOnCurseforge: البحث عن {name} في CurseForge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: حزم الموارد المحددة
   showDirectory: عرض مجلد حزم الموارد
   showFile: عرض حزمة الموارد في المجلد {file}
-  showInCurseforge: عرض {name} في CurseForge
   unselected: حزم الموارد غير المحددة
 save:
   allowCheats: السماح بالغش (Cheats)
@@ -1636,8 +1627,6 @@ setup:
     name: تحديد اللغة
   path: المسار الحالي
 shaderPack:
-  deletion: حذف حزمة الشيدر
-  deletionHint: العملية دي هتمسح ملف حزمة الشيدر {path} نهائياً وما ينفعش نرجع فيها.
   disabled: حزم الشيدر المعطلة
   dropHint: استيراد حزمة شيدر
   empty: مفيش حزم شيدر مخصصة
@@ -1773,13 +1762,6 @@ tutorial:
     listTitle: المودات المثبتة أو نتائج البحث
     searchDescription: تقدر تبحث عن المودات من Modrinth، أو Curseforge، أو من الكاش المحلي بتاعك باستخدام صندوق البحث ده.
     searchTitle: البحث في المودات
-  multiplayer:
-    contentDescription: الاتصالات بينك وبين اللاعبين التانيين هتظهر هنا في القائمة.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: تقدر تنشئ أو تنضم لمجموعة مع لاعبين تانيين. اللانشر هيحاول يعمل اتصال P2P بينك وبين أصحابك بناءً على المجموعة دي. تقدر تكتب اسم المجموعة اللي أصحابك عملوها، أو تعمل اسم فريد خاص بيك.
-    groupTitle: الانضمام لمجموعة
-    joinDescription: أول ما تكتب اسم المجموعة، تقدر تضغط على الزرار ده للانضمام أو لإنشائها. لو اسم المجموعة فاضي، اللانشر هيولد لك اسم عشوائي تلقائياً.
-    manualDescription: لو أنت أو صديقك مش عارفين تتصلوا بالمجموعة، تقدروا تجربوا تبادل الرموز (Tokens) يدوياً بالضغط على اتصال يدوياً. لو ده برضه فشل، فالمشكلة غالباً من مزود الإنترنت عندك أو عنده.
   recentPlayDescription: الألعاب والنسخ اللي عملتها هتظهر هنا في القائمة. تقدر تبدل طريقة العرض عشان تشوف برضه الإصدارات المثبتة وحزم المودات المتنزلة.
   storePoupularModpackDescription: هتشوف حزم المودات الأكثر شعبية ورواجاً على Curseforge و Modrinth في القسم ده.
   storeSearchCategoryDescription: تقدر برضه تبدل الفئات والتصنيفات أو الفلاتر من هنا.

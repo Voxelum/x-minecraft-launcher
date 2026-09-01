@@ -143,7 +143,6 @@ curseforgeCategory:
   World Gen: 월드 생성
 dataMigration:
   apply: 설정 적용
-  directoryCriteriaHint: 당신의 새로운 경로가 비어있는지 확인해주세요.
   placeholder: 여기를 클릭해 디렉터리 선택
   setRootCause: 이 과정에서 런처를 종료하면 데이터(맵, 리소스 팩, 모드)를 잃게 됩니다!
   setRootDescription: 이 작업은 런처와 마인크래프트의 루트 데이터 폴더를 변경합니다.
@@ -479,12 +478,7 @@ instances:
   addCurseForgeDescription: Curseforge 데이터 폴더에서 가져오기. Curseforge의 루트 데이터 폴더를 선택해야 합니다
   addDescription: 처음부터 새 인스턴스 생성
   addMMCDescription: 기존 MultiMC 인스턴스 가져오기. MultiMC의 데이터 폴더를 선택해야 합니다.
-  addManually: 수동 생성
   addModrinthDescription: 기존 Modrinth 인스턴스 가져오기. Modrinth 루트 데이터 폴더를 선택해야 합니다.
-  addServer: 서버에서 생성
-  addServerDescription: 서버로 직접 실행되는 게임을 생성합니다.
-  addTemplate: 다운로드된 모드팩에서 생성
-  addTemplateDescription: 다운로드된 모드팩에서 가져오기
   addVanilla: 바닐라 마인크래프트에서 생성
   addVanillaDescription: 일반 .minecraft 폴더에서 가져오기. 원본 게임 프로필을 XMCL로 복제합니다.
   fix: 수리
@@ -1112,12 +1106,9 @@ resourcepack:
   incompatible: 호환되지 않는 리소스 팩 형식( {format} ). {accept} 에 맞음. 현재 {actual}.
   name: 리소스 팩
   searchHint: 리소스 팩 검색
-  searchOnCurseforge: Curseforge에서 {name} 검색
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: 선택된 리소스 팩
   showDirectory: 리소스 팩 디렉터리 열기
   showFile: 폴더에서 리소스 팩 보기 {file}
-  showInCurseforge: Curseforge에서 {name} 보기
   unselected: 선택되지 않은 리소스 팩
   noPacks: 리소스 팩을 찾을 수 없음
   search: 리소스 팩 검색...
@@ -1520,8 +1511,6 @@ setup:
 shaderPack:
   linkShared: 인스턴스 간 셰이더팩 공유
   linkSharedHint: 이 인스턴스의 shaderpacks 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 셰이더팩을 사용하도록 합니다. 기존 팩은 공유 폴더로 병합됩니다.
-  deletion: 셰이더 팩 삭제
-  deletionHint: 셰이더 팩 파일 {path} 을(를) 삭제하며, 되돌릴 수 없습니다.
   disabled: 비활성화된 셰이더 팩
   dropHint: 셰이더 팩 가져오기
   empty: 할당된 셰이더 팩 없음
@@ -1655,13 +1644,6 @@ tutorial:
     listTitle: 설치된 모드 또는 모드 검색
     searchDescription: 이 검색 상자로 Modrinth, Curseforge 또는 로컬 캐시에서 모드를 검색할 수 있습니다.
     searchTitle: 모드 검색
-  multiplayer:
-    contentDescription: 당신과 피어 간의 연결이 여기에 나열됩니다.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: 다른 플레이어와 그룹을 생성하거나 참여할 수 있습니다. 런처는 그룹에 따라 당신과 친구들 간에 P2P 연결을 생성하려고 시도합니다. 친구들이 준 그룹 이름을 입력하거나 고유한 이름을 만들 수 있습니다.
-    groupTitle: 그룹 참여
-    joinDescription: 그룹 이름을 입력하면 이 버튼을 클릭하여 그룹에 참여하거나 생성할 수 있습니다. 그룹 이름이 비어 있으면 런처가 이름을 생성해 줍니다.
-    manualDescription: 당신이나 친구가 그룹에 연결할 수 없다면, 수동 연결을 클릭하여 토큰을 수동으로 교환해 볼 수 있습니다. 그것도 실패한다면 인터넷 문제일 수 있습니다.
   recentPlayDescription: 생성된 게임들이 여기에 나열됩니다. 여기서 뷰를 전환하여 설치된 버전과 다운로드된 모드팩도 볼 수 있습니다.
   storePoupularModpackDescription: 이 섹션에서 Curseforge와 Modrinth의 가장 인기 있는 모드팩을 볼 수 있습니다.
   storeSearchCategoryDescription: 여기서 카테고리나 필터를 토글할 수도 있습니다.

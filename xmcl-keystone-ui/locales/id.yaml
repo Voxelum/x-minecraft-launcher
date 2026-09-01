@@ -164,7 +164,6 @@ curseforgeCategory:
   World Gen: Generasi Dunia
 dataMigration:
   apply: Terapkan Pengaturan
-  directoryCriteriaHint: Pastikan lokasi direktori baru Anda adalah direktori KOSONG!
   placeholder: Silakan klik di sini untuk memilih direktori
   setRootCause: Anda akan kehilangan data Anda (Peta, Paket Sumber Daya, Mod) jika Anda menutup Peluncur pada proses ini!
   setRootDescription: Ini akan mengubah folder data utama dari peluncur ini dan minecraft.
@@ -519,13 +518,8 @@ instances:
   addCurseForgeDescription: Impor dari folder data CurseForge. Anda perlu memilih folder data utama CurseForge
   addDescription: Buat instansi baru dari awal
   addMMCDescription: Impor instansi MultiMC yang ada. Anda perlu memilih folder data dari MultiMC.
-  addManually: Buat Manual
   addModrinthDescription: Impor instansi Modrinth yang ada. Anda perlu memilih folder data utama Modrinth.
   addPrismDescription: Impor instansi PrismLauncher yang ada.
-  addServer: Buat dari server
-  addServerDescription: Ini akan membuat game yang langsung meluncur ke server.
-  addTemplate: Buat dari modpack yang diunduh
-  addTemplateDescription: Impor dari Modpack yang diunduh
   addVanilla: Buat dari Minecraft mirip vanilla
   addVanillaDescription: Impor dari folder .minecraft umum. Ini akan menduplikat profil game asli ke XMCL.
   edition: Edisi
@@ -1240,12 +1234,9 @@ resourcepack:
   noPacksInstalled: Anda tidak memiliki paket sumber daya terpasang.
   search: Cari Paket Sumber Daya...
   searchHint: Cari paket sumber daya
-  searchOnCurseforge: Cari {name} di CurseForge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Paket Sumber Daya Terpilih
   showDirectory: Tampilkan direktori paket sumber daya
   showFile: Tampilkan paket sumber daya di folder {file}
-  showInCurseforge: Tampilkan {name} di CurseForge
   unselected: Paket Sumber Daya Tidak Terpilih
 save:
   allowCheats: Izinkan Cheat
@@ -1638,8 +1629,6 @@ setup:
     name: Atur Bahasa
   path: Jalur Saat Ini
 shaderPack:
-  deletion: Hapus Paket Shader
-  deletionHint: Ini akan menghapus berkas paket shader {path} dan tidak dapat dibatalkan.
   disabled: Paket Shader Dinonaktifkan
   dropHint: Impor Paket Shader
   empty: Tidak ada paket shader yang dialokasikan
@@ -1775,13 +1764,6 @@ tutorial:
     listTitle: Mod Terpasang atau Cari
     searchDescription: Anda dapat mencari mod dari Modrinth, CurseForge, atau cache lokal Anda dengan kotak pencarian ini.
     searchTitle: Cari Mod
-  multiplayer:
-    contentDescription: Koneksi antara Anda dan rekan-rekan Anda akan terdaftar di sini.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: Anda dapat membuat atau bergabung dengan grup dengan pemain lain. Peluncur akan mencoba membuat koneksi P2P antara Anda dan teman-teman Anda sesuai dengan grup. Anda dapat memasukkan nama grup yang diberikan oleh teman Anda, atau membuat nama yang unik.
-    groupTitle: Bergabung dengan grup
-    joinDescription: Setelah Anda memasukkan nama grup, Anda dapat mengklik tombol ini untuk bergabung atau membuat grup. Jika nama grup kosong, peluncur akan menghasilkan nama untuk Anda.
-    manualDescription: Jika Anda atau teman Anda tidak dapat terhubung ke grup, Anda dapat mencoba menukar token secara manual dengan mengklik hubungkan secara manual. Jika itu juga gagal, mungkin ini masalah internet.
   recentPlayDescription: Game yang dibuat akan terdaftar di sini. Anda dapat beralih tampilan di sini untuk melihat versi terpasang dan modpack yang diunduh.
   storePoupularModpackDescription: Anda akan melihat modpack paling populer di CurseForge dan Modrinth di bagian ini.
   storeSearchCategoryDescription: Anda juga dapat beralih kategori atau filter di sini.

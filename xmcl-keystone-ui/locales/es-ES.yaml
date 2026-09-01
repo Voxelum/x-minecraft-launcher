@@ -2,10 +2,6 @@ AppAddInstanceDialog:
   choiceTitle: Se detectaron múltiples perfiles de lanzamiento. Selecciona uno para importar.
   createTitle: Crear una instancia
   serverTitle: Introduce la dirección de tu servidor
-  updateFound: Instancia Encontrada
-  updateFoundHint: Ya existe una instancia llamada "{name}". ¿Quieres actualizarla?
-  updateAction: Actualizar Existente
-  createNewAction: Crear Nueva
 AppShareInstanceDialog:
   editScopeDescription: Selecciona los archivos que otros jugadores podrán obtener después de detectar esta partida en ejecución en la LAN.
   editScopeTitle: Editar alcance compartido
@@ -202,7 +198,6 @@ dependencies:
   required: Requerida
 dataMigration:
   apply: Aplicar Configuración
-  directoryCriteriaHint: ¡Asegúrese de que su nueva ubicación de directorio sea un directorio VACÍO!
   placeholder: Haga clic aquí para seleccionar el directorio
   setRootCause: >-
     ¡Perderá sus datos (Mapas, Paquetes de Recursos, Mods) si cierra el Launcher en este proceso!
@@ -475,10 +470,6 @@ instance:
   iconHint: El icono podría ser un archivo o un enlace URL de Internet.
   iconUrl: URL del Icono
   installModpack: Actualizar instancia desde modpack
-  updateModpackName: Actualizar Modpack
-  updateModpackSelect: Seleccionar archivo de modpack...
-  updateModpackFiles: '{count} archivos instalados'
-  updateModpackNone: No hay archivos instalados aún
   lastPlayed: Última vez jugado
   launchArguments: Argumentos de Lanzamiento Previo
   launchServer: Iniciar el servidor localhost
@@ -588,7 +579,6 @@ instances:
   addCurseForgeDescription: |-
     Importar desde la carpeta de datos de curseforge.
     Debes seleccionar la carpeta de datos raíz de curseforge.
-  addManually: Crear manualmente
   addMMCDescription: |-
     Importa una instancia existente de MultiMC.
     Debes seleccionar la carpeta de datos de MultiMC.
@@ -596,10 +586,6 @@ instances:
     Importa una instancia existente de Modrinth. Debes seleccionar la carpeta
     raíz de datos de Modrinth.
   addPrismDescription: Importar una instancia existente de PrismLauncher.
-  addServer: Crear desde el servidor
-  addServerDescription: Esto creará un juego que se iniciará directamente en el servidor.
-  addTemplate: Crear desde modpack descargado
-  addTemplateDescription: Importar desde un modpack descargado
   addVanilla: Crear desde Minecraft vanilla
   addVanillaDescription: >-
     Importar desde una carpeta .minecraft común. Esto duplicará el perfil de
@@ -949,7 +935,7 @@ modInstall:
   releaseOnly: Ignorar versiones alfa y beta al actualizar
   installDependencies: Instalar dependencias faltantes
   installHint: Se instalará el archivo {file} con {dependencies} dependencias
-  noVersionSupported: Mod solo es compatible con Minecraft {compatible}.
+  noVersionSupported: Mod solo es compatible con Minecraft {supported}.
   recommendation: ¡Explora las modificaciones {first} en {modrinth} y {curseforge}!
   removeUnusedLibraries: Eliminar modificaciones de bibliotecas no utilizadas
   search: Resultado de la Búsqueda
@@ -1364,12 +1350,9 @@ resourcepack:
     Formato de Paquete de Recursos incompatible ({format}). Se ajusta a {accept}. Actual {actual}.
   name: Paquete de Recursos | Paquetes de Recursos
   searchHint: Buscar paquetes de recursos
-  searchOnCurseforge: Buscar {name} en CurseForge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Paquetes de Recursos Seleccionados
   showDirectory: Abra la carpeta con los paquetes de recursos
   showFile: Mostrar paquete de recursos en la carpeta {file}
-  showInCurseforge: Mostrar {name} en CurseForge
   unselected: Paquetes de Recursos No Seleccionados
   noLocalPacksFound: No se encontraron paquetes de recursos locales que coincidan con tu búsqueda
   noPacks: No se encontraron paquetes de recursos
@@ -1823,8 +1806,6 @@ shaderPack:
     Vincular la carpeta shaderpacks de esta instancia con la carpeta compartida
     global para que todas las instancias usen los mismos paquetes de shaders. Los
     paquetes existentes se combinan en la carpeta compartida.
-  deletion: Eliminar Pack de Shaders
-  deletionHint: Esto eliminará el archivo del pack de shaders {path} y no se podrá deshacer.
   dropHint: Arrastra y suelta el archivo del conjunto de sombreadores (.zip) aquí
   empty: No se ha asignado ningún pack de shaders
   enable: Usando el pack de shaders {name}
@@ -1974,23 +1955,6 @@ tutorial:
       Puedes buscar mods en Modrinth, CurseForge o en tu caché local con este
       cuadro de búsqueda.
     searchTitle: Buscar mods
-  multiplayer:
-    contentDescription: Las conexiones entre tú y tus pares se listarán aquí.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Puedes crear o unirte a un grupo con otros jugadores. El lanzador
-      intentará crear conexiones P2P entre tú y tus amigos según el grupo.
-      Puedes introducir el nombre del grupo dado por tus amigos. O puedes crear
-      un nombre único.
-    groupTitle: Unirse a un grupo
-    joinDescription: >-
-      Una vez que introduzcas un nombre de grupo, puedes hacer clic en este
-      botón para unirte o crear el grupo. Si el nombre del grupo está vacío, el
-      lanzador generará un nombre para ti.
-    manualDescription: >-
-      Si tú o tu amigo no podéis conectaros al grupo, podéis intentar
-      intercambiar el token manualmente haciendo clic en conectar manualmente.
-      Si eso también falla, puede ser un problema de Internet.
   recentPlayDescription: >-
     Los juegos creados se listarán aquí.
 
@@ -2140,7 +2104,6 @@ versionType:
   beta: Beta
   name: Estado
   release: Lanzamiento
-  checkIntegrity: Verificar la integridad
 minecraftFriends:
   accept: Aceptar
   add: Añadir amigo

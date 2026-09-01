@@ -11,6 +11,17 @@ t('dependencies.incompatible')
 t('dependencies.optional')
 t('dependencies.required')
 
+// Dynamic keys resolved through maps or runtime identifiers.
+t('command.')
+t('modrinth.projectType.')
+t('instance.nameInvalidChars')
+t('instance.namePathTraversal')
+t('instance.nameReservedName')
+t('instance.nameTrailingDotOrSpace')
+t('relative.hoursAgo')
+t('relative.minutesAgo')
+t('relative.secondsAgo')
+
 t('modrinth.categories.high')
 t('modrinth.categories.high')
 t('modrinth.categories.low')

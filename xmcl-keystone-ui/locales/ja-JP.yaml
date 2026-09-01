@@ -134,7 +134,6 @@ curseforgeCategory:
   World Gen: ワールド生成
 dataMigration:
   apply: 設定を適用
-  directoryCriteriaHint: 新しいディレクトリが空なことを確認してください!
   placeholder: ここをクリックしてディレクトリを選択
   setRootCause: このプロセス中にランチャーを閉じると、データ(マップ、リソースパック、Mod)は失われます!
   setRootDescription: このランチャーとMinecraftのルートフォルダーを変更します。
@@ -230,7 +229,7 @@ eula:
   body: このチェックボックスを押すことで、Minecraftの {eula} に同意したことになります。
 exception:
   http: >-
-    {url} へのHTTPリクエストに失敗しました。ステータスコードは {statusCode} です。再度試すか、ネットワーク接続を確認してください。エラーが続く場合は、レポートを開発者に送ってください。
+    {url} へのHTTPリクエストに失敗しました。エラーコードは {code}、ステータスコードは {statusCode} です。再度試すか、ネットワーク接続を確認してください。エラーが続く場合は、レポートを開発者に送ってください。
 extensions:
   mrpack: Modrinth Modpack
   zip: Zip ファイル
@@ -440,7 +439,7 @@ instanceUpdate:
   basic: 設定の更新
   files: ファイルのアップデート
   loaderChanged: >-
-    この起動構成のModloaderが変更されました。以前のModloaderは {modloader}, 現在のModloacerは {newModLoader}です。
+    この起動構成のModloaderが変更されました。以前のModloaderは {modloader}, 現在のModloacerは {newModloader}です。
   summary: |-
     {add}ファイルを追加します。
     {remove}ファイルを削除します。
@@ -456,14 +455,9 @@ instances:
   addMMCDescription: |-
     既存の MultiMC インスタンスをインポートします。
     MultiMC からデータ フォルダーを選択する必要があります。
-  addManually: 手動で作成
   addModrinthDescription: |-
     既存の Modrinth インスタンスをインポートします。
     Modrinth ルート データ フォルダーを選択する必要があります。
-  addServer: サーバーから作成
-  addServerDescription: ゲームから直接立ち上げられるサーバーを作成します。
-  addTemplate: ダウンロードしたmodpackから作成
-  addTemplateDescription: ダウンロードされたModpackからインポート
   addVanilla: Vanilla-LikeなMinecraftから作成
   addVanillaDescription: 一般的な.minecraftフォルダからインポートします。これは元のプロファイルをXMCLに複製します。
   fix: 直す
@@ -1157,12 +1151,9 @@ resourcepack:
   incompatible: 適合しないリソースパックフォーマットです({format}). フィット {accept}, 現在{actual}
   name: リソースパック | リソースパック
   searchHint: リソースパックを検索する
-  searchOnCurseforge: Curseforgeで {name} を検索
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: 選択されたリソースパック
   showDirectory: リソースパックのディレクトリを表示
   showFile: フォルダーの中からリソースパック {file} を見る
-  showInCurseforge: Curseforgeで {name} を見る
   unselected: リソースパックの選択が解除されました
   noPacks: リソースパックが見つかりません
   search: リソースパックを検索...
@@ -1519,8 +1510,6 @@ shaderPack:
   linkShared: シェーダーパックをインスタンス間で共有
   linkSharedHint: >-
     このインスタンスの shaderpacks フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じシェーダーパックを使用します。既存のパックは共有フォルダーに統合されます。
-  deletion: シェーダーパックを削除
-  deletionHint: シェーダーパック {path} を削除します。この操作は取り消せません。
   disabled: シェーダーパックが無効です
   dropHint: シェーダーパックをインポート
   empty: シェーダーパックがありません
@@ -1647,15 +1636,6 @@ tutorial:
     listTitle: インストール、またはModを検索
     searchDescription: Modrinth, CurseforgeからModを検索するか、ローカルのキャッシュで検索ボックスから探せます。
     searchTitle: Modを検索
-  multiplayer:
-    contentDescription: あなたとあなたのピアとの接続がここにリストされています。
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      あなたは他のプレイヤーとグループに参加/作成できます。ランチャーはあなたとあなたのフレンドをP2Pで接続を試みます。あなたはフレンドから渡されたグループ名を入力するか、あなたの独自の名前を入力できます。
-    groupTitle: グループに参加
-    joinDescription: グループ名を入力すると、このボタンでグループに参加/グループを作成できます。グループ名が空白だった場合、ランチャーは自動で名前を生成します。
-    manualDescription: >-
-      もしあなた、もしくはあなたのフレンドはグループに接続できない場合、手動で接続するためのトークンをここで取得できます。もしそれでも失敗したならば、おそらくネットワークの問題でしょう。
   recentPlayDescription: あなたが作成したゲームはここで見ることができます。インストールされたバージョンやダウンロードされたModpackにビューを切り替えられます。
   storePoupularModpackDescription: ここでCurseforgeやModrinthで最も有名なModpackを見ることができます。
   storeSearchCategoryDescription: ここでカテゴリーやフィルターを変更できます

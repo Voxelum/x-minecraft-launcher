@@ -164,7 +164,6 @@ curseforgeCategory:
   World Gen: संसारजननम्
 dataMigration:
   apply: विकल्पं प्रयुङ्क्त
-  directoryCriteriaHint: कृपया निश्चितं करोतु यत् भवतः नूतननिर्देशिका स्थानं रिक्ता निर्देशिका अस्ति!
   placeholder: निर्देशिकां चितुं कृपया अत्र नुदतु
   setRootCause: यदि भवान् एतस्यां प्रक्रियायां प्रवर्तकं बन्दं करोति, तर्हि स्वकीयं दत्तं (मानचित्राणि, संसाधनसञ्चयाः, मोड्स च) हारयिष्यति!
   setRootDescription: एतेन अस्याः प्रवर्तकस्य माइनक्राफ्ट् क्रीडायाः च मूलदत्तकोशः परिवर्तयिष्यते।
@@ -519,13 +518,8 @@ instances:
   addCurseForgeDescription: Curseforge दत्तकोशात् आयातयतु। भवतः Curseforge इत्यस्य मूलदत्तकोशः चितव्यः
   addDescription: शून्यात् नूतनं क्षणम् सृजतु
   addMMCDescription: विद्यमानं MultiMC क्षणम् आयातयतु।
-  addManually: हस्तेन सृजतु
   addModrinthDescription: विद्यमानं Modrinth क्षणम् आयातयतु।
   addPrismDescription: विद्यमानं PrismLauncher क्षणम् आयातयतु।
-  addServer: सेवाप्रदातुः सृजतु
-  addServerDescription: एतेन क्रीडा साक्षात् सेवाप्रदातरि प्रवर्तयितुं निर्मीयते।
-  addTemplate: अवतारीकृत-मोडप्याक् तः सृजतु
-  addTemplateDescription: अवतारीकृतात् मोडप्याक् तः आयातयतु
   addVanilla: वेनिला-सदृशात् माइनक्राफ्ट् तः सृजतु
   addVanillaDescription: साधारणात् .minecraft कोशात् आयातयतु।
   edition: संस्करणरूपम्
@@ -590,7 +584,7 @@ launchBlocked:
     description: प्रवर्तकस्य जावा निष्पादयितुं अनुमतिः नास्ति <span class="highlight"> {javaPath} </span>।
     title: प्रवर्तनाय अनुमतिः नास्ति
   launchNoProperJava:
-    description: क्रीडां प्रवर्तयितुं योग्यं जावा न चितम्।
+    description: क्रीडां प्रवर्तयितुं योग्यं जावा न चितम्। ({javaPath})
     title: योग्यं जावा न लब्धम्
   launchNoVersionInstalled:
     description: प्रवर्तनाय संस्करणं <span class="highlight">{version}</span> अन्वेष्टुं न शक्यते।
@@ -1229,7 +1223,7 @@ resourcepack:
     title: संसाधनसञ्चयं लोपयतु
   dropHint: आयातनाय संसाधनकोशं/जिप-सञ्चिकाम् अत्र क्षिपतु।
   enable: '{count} संसाधनसञ्चयाः सक्रियाः'
-  incompatible: असुसङ्गतं संसाधनप्रारूपम् ({format})।
+  incompatible: असुसङ्गतं संसाधनप्रारूपम् ({format})। अपेक्षितम् {accept}, वर्तमानम् {actual}।
   name: संसाधनसञ्चयः | संसाधनसञ्चयाः
   linkShared: क्षणेषु संसाधनसञ्चयान् साझयतु
   linkSharedHint: क्षणस्य संसाधनकोशं वैश्विक-साझितकोशेन सह शृङ्खलयतु।
@@ -1238,12 +1232,9 @@ resourcepack:
   noPacksInstalled: भवता कोऽपि संसाधनसञ्चयः न संस्थापितः।
   search: संसाधनसञ्चयान् अन्विषतु...
   searchHint: संसाधनसञ्चयान् अन्विषतु
-  searchOnCurseforge: Curseforge मध्ये {name} अन्विषतु
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: चयनित-संसाधनसञ्चयाः
   showDirectory: संसाधनकोशं दर्शयतु
   showFile: '{file} कोशे संसाधनसञ्चयं दर्शयतु'
-  showInCurseforge: Curseforge मध्ये {name} दर्शयतु
   unselected: अचयनिताः संसाधनसञ्चयाः
 save:
   allowCheats: छलसङ्केतानां (Cheats) अनुमतिं ददातु
@@ -1286,11 +1277,11 @@ save:
   clearSelection: चयनं मार्जयतु
   copyChunks: चङ्क्स् प्रतिलिप्यतु
   pasteChunks: '{count} चङ्क्स् लेपयतु'
-  pasteChunksPlaceHint: लेपनाय मूषकं चालयित्वा नुदतु।
+  pasteChunksPlaceHint: लेपनाय मूषकं चालयित्वा नुदतु। ({count})
   pasteChunksCancel: निरस्यतु
   deleteChunks: चङ्क्स् लोपयतु
   deleteChunksTitle: चयनितचङ्क्स् लोपयतु
-  deleteChunksHint: किं चयनितचङ्क्स् लोपयितुम् इच्छति? एतद् अपरिवर्तनीयम्।
+  deleteChunksHint: किं चयनितचङ्क्स् ({count}) लोपयितुम् इच्छति? एतद् अपरिवर्तनीयम्।
   mapLoading: मानचित्रं भारयति...
   noRegions: अस्मिन् संसारे पूर्वावलोकनाय किमपि क्षेत्रं न जनितम्।
   dimOverworld: मुख्यधरा (Overworld)
@@ -1636,8 +1627,6 @@ setup:
     name: भाषां निर्धारयतु
   path: वर्तमानपथः
 shaderPack:
-  deletion: छायाकारसञ्चयम् लोपयतु
-  deletionHint: एतेन छायाकारसञ्चिका {path} विनश्यति।
   disabled: निष्क्रियाः छायाकारसञ्चयाः
   dropHint: छायाकारसञ्चयम् आयातयतु
   empty: कोऽपि छायाकारसञ्चयः न विनियुक्तः
@@ -1773,13 +1762,6 @@ tutorial:
     listTitle: संस्थापितः अन्विष्यमाणः वा मोडः
     searchDescription: अनेन अन्वेषणपेटिकया मोड्स अन्वेष्टुं शक्यते।
     searchTitle: मोड्स अन्विषतु
-  multiplayer:
-    contentDescription: सम्पर्काः अत्र दर्शिताः।
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: भवान् अन्यक्रीडकैः सह समूहं निर्मातुं संयुजितुं च शक्नोति।
-    groupTitle: समूहे संयुजतु
-    joinDescription: समूहयोगार्थं नुदतु।
-    manualDescription: हस्तेन प्रतीकविनिमयं कर्तुं शक्यते।
   recentPlayDescription: सृष्टाः क्रीडाः अत्र दर्शिताः।
   storePoupularModpackDescription: लोकप्रियाः मोडप्याक्स् अत्र दर्शिताः।
   storeSearchCategoryDescription: वर्गाः शोधकाः च परिवर्तयितुं शक्यन्ते।
@@ -1932,7 +1914,7 @@ gamepad:
   disabledState: निष्क्रियम्
   toggle: परिवर्तयतु
   disabledNotify: क्रीडाफलकनियन्त्रणानि निष्कृतानि।
-  enabledNotify: क्रीडाफलकनियन्त्रणानि सक्रियाणि!
+  enabledNotify: क्रीडाफलकनियन्त्रणानि सक्रियाणि! {btnA}, {btnB}
   guide:
     confirm: चिनोतु
     navigate: सञ्चरतु

@@ -246,7 +246,6 @@ curseforgeCategory:
   World Gen: Peace Generator
 dataMigration:
   apply: Apply Setting
-  directoryCriteriaHint: Please make sure your new directory location is an EMPTY directory!
   placeholder: Please click here to select directory
   setRootCause: >-
     You will lose your data (Maps, Resource Packs, Mods) if you close the
@@ -666,15 +665,10 @@ instances:
   addMMCDescription: >-
     Import existing MultiMC instance. You need to select the data folder from
     MultiMC.
-  addManually: Manually Create
   addModrinthDescription: >-
     Import existing Modrinth instance. You need to select the Modrinth root data
     folder.
   addPrismDescription: Import existing PrismLauncher instance.
-  addServer: Create from server
-  addServerDescription: This will create a game directly launch to the server.
-  addTemplate: Create from downloaded modpack
-  addTemplateDescription: Import from downloaded Modpack
   addVanilla: Create from vanilla-like Minecraft
   addVanillaDescription: >-
     Import from common .minecraft folder. This will duplciate the original game
@@ -1548,10 +1542,15 @@ peerIceGatheringState:
 peerSignalingState:
   have-local-offer: Waiting peer description
 presence:
+  away: Away
   instance: Idle in Instance {instance}
   instanceSetting: 'Edit Instance Setting: {instance}'
   mod: Viewing Mods in {instance}
   modrinthProject: Viewing {name} in Modrinth
+  offline: Offline
+  online: Online
+  playing: Playing {game}
+  playingGeneric: Playing
   resourcePack: Viewing Resource Packs in {instance}
   save: Viewing Saves in {instance}
   setting: Viewing Setting Page
@@ -1653,12 +1652,9 @@ resourcepack:
   noPacksInstalled: You don't have any resource packs installed.
   search: Search Resource Packs...
   searchHint: Search resource packs
-  searchOnCurseforge: Search {name} in curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Selected Resource Packs
   showDirectory: Show resource pack directory
   showFile: Show resource pack in folder {file}
-  showInCurseforge: Show {name} in curseforge
   unselected: Unselected Resource Packs
 save:
   allowCheats: Allow Cheats
@@ -1762,14 +1758,8 @@ localCollection:
   corrupted: Your saved collections could not be read and have been reset. A backup was kept next to the data file.
   modrinthSection: Modrinth account
   installAll: Install all
-  installAllHint: Install every project in this collection compatible with the current Minecraft version and loader.
   incompatibleAlert: '1 project is not compatible with the current instance and was skipped: | {count} projects are not compatible with the current instance and were skipped:'
   projects: 'No projects | {count} project | {count} projects'
-  result:
-    failed: Failed
-    installed: Installed
-    skipped: Skipped
-    title: Collection Installation Result
 server:
   launch: Launch server
   stop: Stop server
@@ -2232,8 +2222,6 @@ setup:
     name: Set Language
   path: Current Path
 shaderPack:
-  deletion: Delete Shader Pack
-  deletionHint: This will delete the shader pack file {path} and cannot be reverted.
   disabled: Disabled Shader Packs
   dropHint: Import Shader Pack
   empty: No shader pack allocated
@@ -2277,6 +2265,7 @@ shared:
   download: Download
   edit: Edit
   enable: Enable
+  failed: Failed
   filter: Filter
   install: Install
   installed: Installed
@@ -2385,23 +2374,6 @@ tutorial:
       You could search mods from Modrinth, Curseforge or your local cache with
       this search box.
     searchTitle: Search Mods
-  multiplayer:
-    contentDescription: Connections between you and your peers will be listed here.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      You can create or join a group with other players. The launcher will try
-      to create P2P connections between you and your friends according to the
-      group. You can input the group name given by your friends. Or you can
-      create an unique name.
-    groupTitle: Join a group
-    joinDescription: >-
-      Once you input a group name, you can click this button to join or create
-      the group. If the group name is empty, the launcher will generate a name
-      for you.
-    manualDescription: >-
-      If you or your friend cannot connect to the group, you can try to manually
-      exchange the token by clicking manually connect. If that also failed, it
-      might be an internet issue.
   recentPlayDescription: >-
     The created games will be listed here. You can switch the views here to also
     see the installed versions and downloaded modpacks.

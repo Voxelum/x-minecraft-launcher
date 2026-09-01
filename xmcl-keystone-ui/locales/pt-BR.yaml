@@ -140,7 +140,6 @@ curseforgeCategory:
   World Gen: Geração de Mundo
 dataMigration:
   apply: Aplicar configurações
-  directoryCriteriaHint: Certifique-se de que o novo diretório esteja VAZIO!
   placeholder: Clique aqui para selecionar o diretório
   setRootCause: >-
     Você perderá seus dados (Mapas, Pacotes de Recursos, Mods) se fechar o launcher durante esse processo!
@@ -464,7 +463,7 @@ instanceUpdate:
   basic: Atualizar configurações
   files: Atualizar arquivos
   loaderChanged: >-
-    O modloader dessa instância foi alterado. O modload antigo era {modloader}, e o novo modloader é {newMod}
+    O modloader dessa instância foi alterado. O modload antigo era {modloader}, e o novo modloader é {newModloader}
   summary: |-
     Adicione os arquivos {add}.
     Remova os arquivos {remove}.
@@ -478,13 +477,8 @@ instances:
   addDescription: Criar uma nova instância a partir do zero
   addMMCDescription: >-
     Importar instância existente do MultiMC. Você precisa selecionar os arquivos do MultiMC.
-  addManually: Criar Manualmente
   addModrinthDescription: >-
     Importar instância existente do Modrinth. Você precisa selecionar a pasta raiz de dados do Modrinth.
-  addServer: Criar a partir do servidor
-  addServerDescription: Isso criará um jogo diretamente com lançamento para o servidor.
-  addTemplate: Criar a partir de um modpack baixado
-  addTemplateDescription: Importar do modpack baixado
   addVanilla: Criar a partir do Minecraft puro
   addVanillaDescription: >-
     Importar da pasta .minecraft comum. Isso duplicará o perfil do jogo original para o XMCL.
@@ -1141,12 +1135,9 @@ resourcepack:
     Formato de Pacote de Recursos incompatível ({format}). Aceita {accept}. Atual: {actual}.
   name: Pacote de Recursos | Pacotes de Recursos
   searchHint: Pesquisar pacotes de recursos
-  searchOnCurseforge: Buscar {name} no curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Pacotes de Recursos Selecionados
   showDirectory: Mostrar diretório de pacotes de recursos
   showFile: Mostrar pacote de recursos na pasta {file}
-  showInCurseforge: Mostrar {name} no curseforge
   unselected: Pacotes de Recursos Não Selecionados
   noPacks: Nenhum pacote de recursos encontrado
   search: Buscar pacotes de recursos...
@@ -1494,9 +1485,6 @@ shaderPack:
     Vincular a pasta shaderpacks desta instância à pasta compartilhada global
     para que todas as instâncias usem os mesmos pacotes de shaders. Os pacotes
     existentes são mesclados na pasta compartilhada.
-  deletion: Excluir Shaders Pack
-  deletionHint: >-
-    Isso excluirá o arquivo do shaders pack em {path} e não poderá ser revertido.
   disabled: Shader Packs Desabilitados
   dropHint: Importar Shaders Pack
   empty: Nenhum shaders pack alocado
@@ -1629,16 +1617,6 @@ tutorial:
     searchDescription: >-
       Você pode pesquisar mods no Modrinth, Curseforge ou no seu cache local usando esta caixa de busca.
     searchTitle: Pesquisar Mods
-  multiplayer:
-    contentDescription: As conexões entre você e seus colegas serão listadas aqui.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Você pode criar ou entrar em um grupo com outros jogadores. O launcher tentará criar conexões P2P entre você e seus amigos com base no grupo. Você pode inserir o nome do grupo fornecido pelos seus amigos ou criar um nome único.
-    groupTitle: Entrar em um grupo
-    joinDescription: >-
-      Depois de inserir um nome de grupo, você pode clicar neste botão para entrar ou criar o grupo. Se o nome do grupo estiver vazio, o launcher irá gerar um nome para você.
-    manualDescription: >-
-      Se você ou seu amigo não conseguirem se conectar ao grupo, tente trocar o token manualmente clicando em "conectar manualmente". Se isso também falhar, pode ser um problema de conexão com a internet.
   recentPlayDescription: >-
     Os jogos criados serão listados aqui. Você pode alternar as visualizações para as versões instaladas e os modpacks baixados.
   storePoupularModpackDescription: Você verá os modpacks mais populares do Curseforge e Modrinth nesta seção.

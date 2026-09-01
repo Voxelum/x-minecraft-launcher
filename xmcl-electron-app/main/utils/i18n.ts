@@ -24,7 +24,7 @@ export function createI18n(i18nMap: { [local: string]: LocalizationData }, defau
     if (!args) { return templateString }
     let result = templateString
     for (const [k, v] of Object.entries(args)) {
-      result = result.replace(`{${k}}`, v.toString())
+      result = result.replaceAll(`{${k}}`, v.toString())
     }
     return result
   }
@@ -39,7 +39,7 @@ export function createI18n(i18nMap: { [local: string]: LocalizationData }, defau
     t,
     use(locale: string) {
       usingLocale = locale
-      usingData = i18nMap[locale]
+      usingData = i18nMap[locale] ?? defaultData
     },
     get locales() { return Object.keys(i18nMap) },
     get locale() { return usingLocale },

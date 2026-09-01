@@ -150,7 +150,6 @@ curseforgeCategory:
   World Gen: Friedensgenerator
 dataMigration:
   apply: Einstellungen anwenden
-  directoryCriteriaHint: Stellen Sie sicher, dass der neue Katalog ein LEERER Katalog ist!
   placeholder: Klicken Sie hier, um einen Katalog auszuwählen
   setRootCause: |-
     Sie verlieren Daten (Maps, Texture Packs, Mods), wenn Sie den
@@ -508,14 +507,9 @@ instances:
   addMMCDescription: |-
     Vorhandene MultiMC-Instanz importieren.
     Sie müssen den Datenordner von MultiMC auswählen.
-  addManually: Manuell erstellen
   addModrinthDescription: |-
     Vorhandene Modrinth-Instanz importieren.
     Sie müssen den Modrinth-Stammdatenordner auswählen.
-  addServer: Vom Server aus erstellen
-  addServerDescription: Dadurch wird das Spiel direkt auf dem Server gestartet.
-  addTemplate: Aus heruntergeladenem Modpack erstellen
-  addTemplateDescription: Import aus einem heruntergeladenen Modpack
   addVanilla: Erstellen Sie mit Vanilla Minecraft
   addVanillaDescription: |-
     Importieren Sie aus dem gemeinsamen .minecraft-Ordner.
@@ -777,7 +771,7 @@ mod:
   openLink: Link zur Mod öffnen {url}
   search: Suche nach Änderungen
   searchGroups: Gruppen suchen...
-  searchOnMcWiki: Schlagen Sie {Name} in der MC-Enzyklopädie nach.
+  searchOnMcWiki: Schlagen Sie {name} in der MC-Enzyklopädie nach.
   selectOrCreateGroup: Gruppe auswählen oder erstellen
   showDirectory: Änderungskatalog anzeigen
   showFile: Den Weg zur Mode weisen {file}
@@ -1218,12 +1212,9 @@ resourcepack:
     Inkompatibles Textformat ({format}). Einschlägige {accept}. Aktuell {actual}.
   name: Texturpaket | Texturpakete
   searchHint: Suchen Sie nach Ressourcenpaketen
-  searchOnCurseforge: Suche nach. {name} in curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Ausgewählte Texturpakete
   showDirectory: Öffnen Sie den Ordner mit den Ressourcenpaketen
   showFile: Öffnen Sie das Texturpaket {file} im Ordner
-  showInCurseforge: anzeigen {name} in curseforge
   unselected: Unausgewählte Texturpakete
   noPacks: Keine Ressourcenpakete gefunden
   search: Ressourcenpakete suchen...
@@ -1603,9 +1594,6 @@ shaderPack:
     Den Ordner shaderpacks dieser Instanz mit dem globalen gemeinsamen Ordner
     verknüpfen, damit alle Instanzen dieselben Shaderpakete verwenden.
     Vorhandene Pakete werden in den gemeinsamen Ordner zusammengeführt.
-  deletion: Shader löschen
-  deletionHint: >-
-    Damit wird die Shader-Datei gelöscht {path} und es wird unmöglich sein, sie wiederherzustellen.
   disabled: Shader Pack ist deaktiviert
   dropHint: Ziehen Sie die Shader-Set-Datei (.zip) hierher und legen Sie sie ab
   empty: Shader nicht hervorgehoben
@@ -1751,31 +1739,6 @@ tutorial:
     searchDescription: >-
       Ви можете шукати моди з Modrinth, Curseforge або локального кешу за допомогою цього поля пошуку.
     searchTitle: Suchmodi
-  multiplayer:
-    contentDescription: >-
-      Hier werden die Verbindungen zwischen Ihnen und Ihren Kollegen aufgelistet.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Sie können eine Gruppe mit anderen Spielern erstellen oder ihr beitreten.
-
-      Der Launcher wird versuchen, eine P2P-Verbindung zwischen Ihnen und Ihren Freunden herzustellen. Freunden entsprechend der Gruppe herzustellen.
-
-      Sie können einen von Ihren Freunden vergebenen Gruppennamen eingeben.
-
-      Oder Sie können einen eigenen Namen erstellen.
-    groupTitle: Der Gruppe beitreten
-    joinDescription: >-
-      Nachdem Sie den Gruppennamen eingegeben haben.
-
-      Sie können auf diese Schaltfläche klicken, um einer Gruppe beizutreten oder eine Gruppe zu erstellen.
-
-      Wenn der Gruppenname leer ist, generiert der Launcher einen Namen für Sie.
-    manualDescription: >-
-      Wenn Sie oder Ihr Freund keine Verbindung zur Gruppe herstellen können.
-
-      Sie können versuchen, den Token manuell auszutauschen, indem Sie auf „Manuell verbinden“ klicken.
-
-      Wenn auch das fehlschlägt, liegt möglicherweise ein Internetproblem vor.
   recentPlayDescription: >-
     Die erstellten Spiele werden hier aufgelistet.
 

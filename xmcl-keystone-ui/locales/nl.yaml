@@ -137,7 +137,6 @@ curseforgeCategory:
   World Gen: Wereld Generatie
 dataMigration:
   apply: Instelling Toepassen
-  directoryCriteriaHint: Zorg ervoor dat uw nieuwe maplocatie een LEEGE map is!
   placeholder: Klik hier om een map te selecteren
   setRootCause: >-
     U verliest uw gegevens (Kaarten, Resource Packs, Mods) als u de launcher tijdens dit proces sluit!
@@ -214,7 +213,7 @@ duration:
   day: '{duration} dag | {duration} dagen'
   hour: '{duration} uur | {duration} uur'
   minute: '{duration} minuut | {duration} minuten'
-  second: '{duration} seconde | {second} seconden'
+  second: '{duration} seconde | {duration} seconden'
 env:
   select:
     all: Selecteer Alles
@@ -474,13 +473,8 @@ instances:
   addDescription: Maak een nieuwe instance helemaal opnieuw
   addMMCDescription: >-
     Importeer een bestaande MultiMC instance. U moet de datamap van MultiMC selecteren.
-  addManually: Handmatig Aanmaken
   addModrinthDescription: >-
     Importeer een bestaande Modrinth instance. U moet de Modrinth hoofddatamap selecteren.
-  addServer: Aanmaken vanaf server
-  addServerDescription: Dit maakt een spel dat direct naar de server start.
-  addTemplate: Aanmaken vanaf gedownload modpack
-  addTemplateDescription: Importeer vanuit gedownload Modpack
   addVanilla: Aanmaken vanaf vanilla-achtige Minecraft
   addVanillaDescription: >-
     Importeer vanuit een standaard .minecraft map. Dit zal het originele spelprofiel dupliceren naar XMCL.
@@ -1136,12 +1130,9 @@ resourcepack:
     Incompatibel resource pack formaat({format}). Past in {accept}. Huidige {actual}.
   name: Resource Pack | Resource Packs
   searchHint: Zoek naar bronpakketten
-  searchOnCurseforge: Zoek {name} in curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Geselecteerde Resource Packs
   showDirectory: Toon resource pack map
   showFile: Toon dit resource pack in map {file}
-  showInCurseforge: Toon {name} in curseforge
   unselected: Niet-geselecteerde Resource Packs
   noPacks: Geen resourcepakketten gevonden
   search: Resourcepakketten zoeken...
@@ -1489,9 +1480,6 @@ shaderPack:
     Koppel de map shaderpacks van deze instantie aan de globale gedeelde map
     zodat alle instanties dezelfde shaderpacks gebruiken. Bestaande packs worden
     samengevoegd in de gedeelde map.
-  deletion: Shader Pack Verwijderen
-  deletionHint: >-
-    Dit zal het shader pack bestand {path} verwijderen en kan niet ongedaan worden gemaakt.
   disabled: Uitgeschakelde Shader Packs
   dropHint: Importeer Shader Pack
   empty: Geen shader pack toegewezen
@@ -1623,16 +1611,6 @@ tutorial:
     searchDescription: >-
       U kunt mods zoeken van Modrinth, Curseforge of uw lokale cache met dit zoekvak.
     searchTitle: Zoek Mods
-  multiplayer:
-    contentDescription: Verbindingen tussen u en uw peers worden hier vermeld.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      U kunt een groep maken of joinen met andere spelers. De launcher zal proberen P2P-verbindingen tussen u en uw vrienden te creëren volgens de groep. U kunt de groepsnaam invoeren die door uw vrienden is gegeven. Of u kunt een unieke naam aanmaken.
-    groupTitle: Join een groep
-    joinDescription: >-
-      Zodra u een groepsnaam invoert, kunt u op deze knop klikken om de groep te joinen of aan te maken. Als de groepsnaam leeg is, zal de launcher een naam voor u genereren.
-    manualDescription: >-
-      Als u of uw vriend niet met de groep kunnen verbinden, kunt u proberen om handmatig het token uit te wisselen door op handmatig verbinden te klikken. Als dat ook mislukt, is het mogelijk een internetprobleem.
   recentPlayDescription: >-
     De gemaakte spellen worden hier vermeld. U kunt de weergaven hier ook wisselen om de geïnstalleerde versies en gedownloade modpacks te zien.
   storePoupularModpackDescription: >-

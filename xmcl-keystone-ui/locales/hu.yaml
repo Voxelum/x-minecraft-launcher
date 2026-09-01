@@ -142,7 +142,6 @@ curseforgeCategory:
   World Gen: Világgenerátor
 dataMigration:
   apply: Alkalmazás
-  directoryCriteriaHint: Kérlek, győződj meg róla, hogy az új könyvtárhelyed egy ÜRES könyvtár!
   placeholder: Kérlek kattints ide a könyvtár kiválasztásához
   setRootCause: >-
     Elveszíted az adataidat (pályák, forráscsomagok, modok), ha bezárod a Launcher-t ebben a folyamatban!
@@ -171,7 +170,7 @@ diagnosis:
     name: 'Sérült elem: {name} | Sérült elem {name} | {count} elem sérült'
   corruptedAssetsIndex:
     message: A launcher letölti a fájlok indexeit számodra
-    name: A {verzsion} eszközindexű fájlja sérült.
+    name: A {version} eszközindexű fájlja sérült.
   corruptedLibraries:
     message: A launcher telepíti a könyvtárakat
     name: 'Sérült könyvtár: {name} | Sérült könyvtár {name} | {count} elem könyvtár'
@@ -181,7 +180,7 @@ diagnosis:
   incompatibleJava:
     name: A java verzió {javaVersion} nem felel meg a {version}-nak!
   instanceFiles:
-    description: Ez lehet, hogy befejezetlen telepítés volt a múltkor
+    description: A példány telepítése {counts} fájlt tartalmaz.
     title: Befejezetlen példány
   invalidJava:
     name: Érvénytelen java hely.
@@ -488,14 +487,9 @@ instances:
   addMMCDescription: |-
     Importálja a meglévő MultiMC példányt.
     Ki kell választania az adatmappát a MultiMC-ből.
-  addManually: Manuális létrehozás
   addModrinthDescription: |-
     Importálja a meglévő Modrinth példányt.
     Ki kell választania a Modrinth gyökér adatmappát.
-  addServer: Létrehozás szerverről
-  addServerDescription: Ez létrehoz egy játékot közvetlenül a szerverre.
-  addTemplate: Hozzon létre a letöltött modpackből
-  addTemplateDescription: Importálás letöltött Modcsomagból
   addVanilla: Létrehozás vanilla-szerű Minecraftból
   addVanillaDescription: >-
     Importálás a közös .minecraft mappából. Ez duplikálja az eredeti játékprofilt az XMCL-be.
@@ -1169,12 +1163,9 @@ resourcepack:
     Nem kompatibilis forráscsomag formátum({format}). Elfogadott {accept}. Jelenlegi {actual}.
   name: Forráscsomag | Forráscsomagok
   searchHint: Keresés az erőforráscsomagokban
-  searchOnCurseforge: '{name} keresése curseforge-on'
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Kiválasztott forráscsomagok
   showDirectory: Nyissa meg az erőforrás csomagokat tartalmazó mappát
   showFile: '{file} megjelenítése fájlkezelőben'
-  showInCurseforge: '{name} megjelenítése curseforge-on'
   unselected: Nem kiválasztott forráscsomagok
   noPacks: Nem található erőforráscsomag
   search: Erőforráscsomagok keresése...
@@ -1536,8 +1527,6 @@ shaderPack:
     Kösse össze ennek a példánynak a shaderpacks mappáját a globális megosztott
     mappával, hogy minden példány ugyanazokat az árnyékolócsomagokat használja. A
     meglévő csomagok a megosztott mappába kerülnek.
-  deletion: Shader Pack törlése
-  deletionHint: Ez törli a shader pack fájlt {path} és nem lehet visszaállítani.
   disabled: Shader pack kikapcsolása
   dropHint: Shader pack importálása
   empty: Nincs kijelölt shader csomag
@@ -1672,16 +1661,6 @@ tutorial:
     searchDescription: >-
       A Modrinth, Curseforge vagy a helyi gyorsítótár modjait keresheted ezzel a keresőmezővel.
     searchTitle: Modok keresése
-  multiplayer:
-    contentDescription: Az Ön és társai közötti kapcsolatok itt lesznek felsorolva.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Létrehozhatsz egy csoportot, vagy csatlakozhatsz egy csoporthoz más játékosokkal. A launcher megpróbál P2P-kapcsolatokat létrehozni közted és barátaid között a csoportnak megfelelően. A barátaid által megadott csoportnevet megadhatod. Vagy létrehozhatsz egy egyedi nevet a sajátodból.
-    groupTitle: Csatlakozás egy csoporthoz
-    joinDescription: >-
-      Miután beírt egy csoportnevet. Erre a gombra kattintva csatlakozhat a csoporthoz vagy létrehozhatja azt. Ha a csoportnév üres, az indítóprogram generál egy nevet az Ön számára.
-    manualDescription: >-
-      Ha Ön vagy barátja nem tud csatlakozni a csoporthoz. Megpróbálhatja manuálisan kicserélni a tokent a manuális csatlakozás gombra kattintva. Ha ez is sikertelen, akkor az internetprobléma lehet.
   recentPlayDescription: >-
     A létrehozott játékok itt lesznek felsorolva.
 

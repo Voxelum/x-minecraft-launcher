@@ -25,7 +25,7 @@ BaseSettingGeneral:
   title: 一般設定
 HomeJavaIssueDialog:
   incompatibleJava: Java 版本可能不相容
-  incompatibleJavaHint: Java {javaVersion} 可能無法執行已選擇的 Minecraft 版本
+  incompatibleJavaHint: 目前 Java 可能無法執行已選擇的 Minecraft 版本
   missingJava: 沒有找到 Java
   missingJavaHint: 啟動器在您的電腦上沒有找到任何Java。您可以嘗試：
   optionSwitch:
@@ -141,7 +141,6 @@ curseforgeCategory:
   World Gen: 世界生成
 dataMigration:
   apply: 開始遷移
-  directoryCriteriaHint: 請確保您選擇的新資料夾<span class="font-bold text-lg mx-1">是空的！</span>
   placeholder: 按一下此處以選擇新的根目錄
   setRootCause: 請確保啟動器在此過程中不被中斷，否則某些資料（地圖、資源包、模組）會遺失！
   setRootDescription: 啟動器的根目錄將會被改變
@@ -470,14 +469,9 @@ instances:
   addMMCDescription: |-
     匯入現有的 MultiMC 實例。
     您需要從 MultiMC 中選擇儲存資料夾。
-  addManually: 手動建立
   addModrinthDescription: |-
     匯入現有的 Modrinth 實例。
     您需要選擇 Modrinth 根資料夾。
-  addServer: 從伺服器建立
-  addServerDescription: 這將建立一個直接啟動到伺服器的遊戲。
-  addTemplate: 從下載的模組包創建
-  addTemplateDescription: 從下載的模組包匯入
   addVanilla: 從原版 Minecraft 建立
   addVanillaDescription: |-
     從通用 .minecraft 資料夾匯入。
@@ -1165,12 +1159,9 @@ resourcepack:
   incompatible: 不相容的資源包格式({format})。適用範圍 {accept}。目前版本 {actual}。
   name: 資源包 | 資源包
   searchHint: 搜索資源包
-  searchOnCurseforge: 在 Curseforge 中查詢 {name}
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: 已選資源包
   showDirectory: 開啟包含資源套件的資料夾
   showFile: 在資料夾中顯示 {file}
-  showInCurseforge: 在 Curseforge 中顯示 {name}
   unselected: 未選資源包
   noPacks: 未找到資源包
   search: 搜尋資源包...
@@ -1251,7 +1242,6 @@ localCollection:
   corrupted: 無法讀取已儲存的收藏夾，已重設。備份已儲存在資料檔案旁邊。
   modrinthSection: Modrinth 帳戶
   installAll: 全部安裝
-  installAllHint: 安裝此收藏夾中與目前 Minecraft 版本和載入器相容的所有項目。
   incompatibleAlert: '有 {count} 個項目與目前執行個體不相容，已略過：'
   projects: '無項目 | {count} 個項目 | {count} 個項目'
 server:
@@ -1579,8 +1569,6 @@ shaderPack:
   linkShared: 在實例間共用光影包
   linkSharedHint: >-
     將此實例的 shaderpacks 資料夾連結到全域共用資料夾，讓所有實例共用相同的光影包。現有的光影包會被合併到共用資料夾中。
-  deletion: 刪除光影包
-  deletionHint: 這將把光影包檔案 {path} 永久刪除。
   disabled: 未啟用的光影
   dropHint: 匯入光影包
   empty: 沒有啟用光影包
@@ -1722,23 +1710,6 @@ tutorial:
     listTitle: 安裝/搜尋的模組
     searchDescription: 您可以透過此搜尋框從 Modrinth、Curseforge 或本地快取中搜尋模組。
     searchTitle: 搜尋、發現模組
-  multiplayer:
-    contentDescription: 您和您的同伴之間的聯絡將在此處列出。
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: |-
-      您可以與其他玩家建立或加入群組。
-      啟動器會嘗試根據群組在您和您的朋友之間建立 P2P 連線。
-      您可以輸入好友提供的群組名稱。
-      或者您可以自己建立一個獨特的名稱。
-    groupTitle: 和其他玩家組隊
-    joinDescription: |-
-      輸入組名稱後。
-      您可以按一下此按鈕加入或建立群組。
-      如果組名稱為空，啟動器將為您產生一個名稱。
-    manualDescription: |-
-      如果您或您的朋友無法連線到群組。
-      您可以嘗試透過按一下「手動連線」來手動交換令牌。
-      如果也失敗，則可能是網際網路問題。
   recentPlayDescription: |-
     建立的遊戲將在此處列出。
     您可以在此處切換檢視以檢視已安裝的版本和下載的模組包。

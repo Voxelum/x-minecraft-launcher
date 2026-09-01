@@ -25,7 +25,7 @@ BaseSettingGeneral:
   title: 一般設定
 HomeJavaIssueDialog:
   incompatibleJava: Java 版本可能唔相容
-  incompatibleJavaHint: Java {javaVersion} 可能無法執行已選擇嘅 Minecraft 版本
+  incompatibleJavaHint: 目前 Java 可能無法執行已選擇嘅 Minecraft 版本
   missingJava: 冇找到 Java
   missingJavaHint: 啟動器喺你嘅電腦上冇找到任何Java。你可以嘗試：
   optionSwitch:
@@ -169,7 +169,6 @@ curseforgeCategory:
   World Gen: 世界生成
 dataMigration:
   apply: 開始遷移
-  directoryCriteriaHint: 請確保你選擇嘅新資料夾<span class="font-bold text-lg mx-1">是空嘅！</span>
   placeholder: 按一下此處以選擇新嘅根目錄
   setRootCause: 請確保啟動器在此過程中唔被中斷，否則某些資料（地圖、資源包、模組）會遺失！
   setRootDescription: 啟動器嘅根目錄將會被改變
@@ -547,15 +546,10 @@ instances:
   addMMCDescription: |-
     匯入現有嘅 MultiMC 實例。
     你需要從 MultiMC 中選擇儲存資料夾。
-  addManually: 手動建立
   addModrinthDescription: |-
     匯入現有嘅 Modrinth 實例。
     你需要選擇 Modrinth 根資料夾。
   addPrismDescription: 匯入現有嘅 PrismLauncher 實例。
-  addServer: 從伺服器建立
-  addServerDescription: 呢個將會建立一個直接啟動到伺服器嘅遊戲。
-  addTemplate: 從下載嘅模組包創建
-  addTemplateDescription: 從下載嘅模組包匯入
   addVanilla: 從原版 Minecraft 建立
   addVanillaDescription: |-
     從通用 .minecraft 資料夾匯入。
@@ -1288,12 +1282,9 @@ resourcepack:
   noPacksInstalled: 你未安裝任何資源包。
   search: 搜尋資源包...
   searchHint: 搜索資源包
-  searchOnCurseforge: 喺 Curseforge 中查詢 {name}
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: 已選資源包
   showDirectory: 開啟包含資源套件嘅資料夾
   showFile: 喺資料夾中顯示 {file}
-  showInCurseforge: 喺 Curseforge 中顯示 {name}
   unselected: 未選資源包
 save:
   allowCheats: 允許作弊
@@ -1702,8 +1693,6 @@ setup:
     name: 設定語言
   path: 目前位置
 shaderPack:
-  deletion: 刪除光影包
-  deletionHint: 呢個將會把光影包檔案 {path} 永久刪除。
   disabled: 未啟用嘅光影
   dropHint: 匯入光影包
   empty: 冇啟用光影包
@@ -1850,23 +1839,6 @@ tutorial:
     listTitle: 安裝/搜尋嘅模組
     searchDescription: 你可以透過此搜尋框從 Modrinth、Curseforge 或本地快取中搜尋模組。
     searchTitle: 搜尋、發現模組
-  multiplayer:
-    contentDescription: 你和你嘅同伴之間嘅聯絡將在此處列出。
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: |-
-      你可以與其他玩家建立或加入群組。
-      啟動器會嘗試根據群組喺你和你嘅朋友之間建立 P2P 連線。
-      你可以輸入好友提供嘅群組名稱。
-      或者你可以自己建立一個獨特的名稱。
-    groupTitle: 和其他玩家組隊
-    joinDescription: |-
-      輸入組名稱後。
-      你可以按一下此按鈕加入或建立群組。
-      如果組名稱為空，啟動器將為你產生一個名稱。
-    manualDescription: |-
-      如果你或你嘅朋友無法連線到群組。
-      你可以嘗試透過按一下「手動連線」來手動交換Token。
-      如果也失敗，則可能是網際網絡問題。
   recentPlayDescription: |-
     建立嘅遊戲將在此處列出。
     你可以在此處切換檢視以檢視已安裝嘅版本和下載嘅模組包。

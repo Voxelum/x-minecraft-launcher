@@ -422,7 +422,7 @@ function openInBrowser(url: string) {
           :key="section.id"
           class="mb-6"
           role="region"
-          :aria-label="section.title || t('instances.name', 2)"
+          :aria-label="section.title || t('instance.name', 2)"
         >
           <div v-if="section.title" class="section-header-item mb-3">
             <v-icon size="small" class="mr-2" aria-hidden="true">{{ section.icon }}</v-icon>
@@ -432,7 +432,7 @@ function openInBrowser(url: string) {
           <div
             v-roving-tabindex
             role="group"
-            :aria-label="section.title || t('instances.name', 2)"
+            :aria-label="section.title || t('instance.name', 2)"
             class="instances-grid"
           >
             <div

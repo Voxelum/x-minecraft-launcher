@@ -136,7 +136,6 @@ curseforgeCategory:
   World Gen: 'مولد السلام'
 dataMigration:
   apply: 'تطبيق الإعداد'
-  directoryCriteriaHint: 'الرجاء التأكد من أن موقع الدليل الجديد الخاص بك هو دليل فارغ!'
   placeholder: 'الرجاء الضغط هنا لاختيار الدليل'
   setRootCause: >-
     ستفقد بياناتك (الخرائط، وحزم الموارد، والتعديلات) إذا قمت بإغلاق المشغل في هذه العملية!
@@ -493,14 +492,9 @@ instances:
   addDescription: 'إنشاء مثيل جديد من البداية'
   addMMCDescription: >-
     استيراد مثيل MultiMC الموجود. تحتاج إلى تحديد مجلد البيانات من MultiMC.
-  addManually: 'إنشاء يدويا'
   addModrinthDescription: >-
     استيراد مثيل Modrinth الموجود. تحتاج إلى تحديد مجلد البيانات الجذر Modrinth.
   addPrismDescription: 'استيراد مثيل PrismLauncher الموجود.'
-  addServer: 'إنشاء من الخادم'
-  addServerDescription: 'سيؤدي هذا إلى إنشاء لعبة يتم تشغيلها مباشرة على الخادم.'
-  addTemplate: 'قم بالإنشاء من modpack الذي تم تنزيله'
-  addTemplateDescription: 'الاستيراد من Modpack الذي تم تنزيله'
   addVanilla: 'اصنع من لعبة Minecraft الشبيهة بالفانيليا'
   addVanillaDescription: >-
     قم بالاستيراد من مجلد .minecraft المشترك. سيؤدي هذا إلى تكرار ملف تعريف اللعبة الأصلي إلى XMCL.
@@ -1098,29 +1092,11 @@ multiplayer:
   receiveRemoteTokenHint: 'الرجاء إدخال الرمز المميز من نظيرك هنا.'
   remoteToken: 'الرمز البعيد'
   routerInfo: 'معلومات جهاز التوجيه'
-  preferredTurn: 'موقع التتابع المفضل'
-  autoPreferredTurn: 'تلقائي (أقل اتصال)'
   sendTokenToRemote: 'أرسل الرمز المميز إلى جهاز التحكم عن بعد'
   share: 'مشاركة تكوين المثيل'
   sharing: 'مشاركة الملفات...'
   start: 'يبدأ'
   startNewP2PConnection: 'انقر فوق الزر "ابدأ" لإنشاء اتصال نظير جديد'
-  onlinePresenceActive: 'التواجد عبر الإنترنت نشط'
-  onlinePresenceInactive: 'التواجد على الإنترنت غير نشط'
-  friends: 'أصدقاء مايكروسوفت'
-  online: 'متصل'
-  offline: 'غير متصل'
-  microsoftRequired: 'مطلوب حساب Microsoft لميزة الأصدقاء.'
-  licenseRequiredDescription: 'مطلوب حساب Minecraft مرخص لعرض الأصدقاء ومزامنة حالة الاتصال بالإنترنت.'
-  loginMicrosoft: 'تسجيل الدخول مع مايكروسوفت'
-  buyLicense: 'شراء ترخيص ماينكرافت'
-  noFriends: 'لم تتم إضافة أي أصدقاء في Minecraft حتى الآن.'
-  allOffline: 'جميع الأصدقاء غير متصلين حاليًا.'
-  playing: 'اللعب'
-  joinWorld: 'انضم إلى العالم'
-  joinServer: 'الانضمام إلى الخادم'
-  joiningProgress: 'الاتصال ب'
-  groupRoom: 'مجموعة P2P متعددة اللاعبين'
 myStuff: 'أشيائي'
 natType:
   blocked: 'محظور'
@@ -1131,15 +1107,6 @@ natType:
   symmetricNat: 'NAT متماثل'
   symmetricUDPFirewall: 'جدار الحماية UDP المتماثل'
   unknown: 'مجهول'
-  explanations:
-    openInternet: 'اتصال مثالي! يمكنك استضافة الألعاب متعددة اللاعبين والانضمام إليها دون أي قيود. كل شيء مثالي.'
-    fullCone: 'اتصال ممتاز! يتيح جهاز التوجيه الخاص بك ممارسة الألعاب بسهولة. يمكنك استضافة الأصدقاء والانضمام إليهم دون أي مشاكل.'
-    restrictNat: 'اتصال عادي. يمكنك اللعب بدون مشاكل. إذا لم تتمكن من الاتصال بصديق، فحاول استضافة نفسك أو اطلب منه الاستضافة.'
-    restrictPortNat: 'اتصال آمن. يمكنك اللعب، لكن الاتصال قد يستغرق وقتًا أطول قليلاً. إذا فشلت، فاسمح لصديقك بمضيف أفضل من نوع NAT.'
-    symmetricUDPFirewall: 'جدار الحماية يمنع الاتصال. P2P المباشر أمر صعب. تحقق من جدار حماية Windows أو قم بتشغيل "خادم الترحيل" في علامة تبويب الإعدادات.'
-    symmetricNat: 'جهاز توجيه صارم (شبكة الهاتف المحمول أو شبكة Wi-Fi عامة). الاتصال المباشر مستحيل. للعب، يجب عليك تمكين "خادم الترحيل" في علامة تبويب الإعدادات.'
-    blocked: 'لا يوجد إنترنت أو اتصال محظور. لا يمكنك لعب لعبة متعددة اللاعبين الآن. الرجاء التحقق من اتصال الشبكة الخاصة بك.'
-    unknown: 'لم يتم التحقق من الشبكة بعد. انقر فوق زر التحديث (السهم الدائري) الموجود بجانبه لمعرفة ما إذا كان بإمكانك اللعب.'
 neoForgedVersion:
   disable: 'تعطيل نيوفورجد'
   empty: 'NeoForged لا يدعم {version}'
@@ -1210,12 +1177,9 @@ resourcepack:
   noLocalPacksFound: 'لم يتم العثور على حزم موارد محلية مطابقة لبحثك.'
   search: 'بحث في حزم الموارد...'
   searchHint: 'بحث في حزم الموارد'
-  searchOnCurseforge: 'ابحث عن {name} في Curseforge'
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: 'حزم الموارد المحددة'
   showDirectory: 'إظهار دليل حزمة الموارد'
   showFile: 'إظهار حزمة الموارد في المجلد {file}'
-  showInCurseforge: 'أظهر {name} في Curseforge'
   unselected: 'حزم الموارد غير المحددة'
 save:
   linkShared: مشاركة عوالم الحفظ بين النسخ
@@ -1566,8 +1530,6 @@ shaderPack:
   linkSharedHint: >-
     اربط مجلد shaderpacks لهذه النسخة بالمجلد المشترك العام حتى تستخدم
     جميع النسخ نفس حزم الشيدر. يتم دمج الحزم الموجودة في المجلد المشترك.
-  deletion: 'حذف حزمة التظليل'
-  deletionHint: 'سيؤدي هذا إلى حذف ملف حزمة التظليل {path} ولا يمكن التراجع عنه.'
   disabled: 'حزم تظليل المعوقين'
   dropHint: 'استيراد حزمة التظليل'
   empty: 'لم يتم تخصيص حزمة تظليل'
@@ -1701,16 +1663,6 @@ tutorial:
     searchDescription: >-
       يمكنك البحث عن التعديلات من Modrinth أو Curseforge أو ذاكرة التخزين المؤقت المحلية باستخدام مربع البحث هذا.
     searchTitle: 'تعديل البحث'
-  multiplayer:
-    contentDescription: 'سيتم إدراج الاتصالات بينك وبين زملائك هنا.'
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      يمكنك إنشاء مجموعة أو الانضمام إليها مع لاعبين آخرين. سيحاول المشغل إنشاء اتصالات P2P بينك وبين أصدقائك وفقًا للمجموعة. يمكنك إدخال اسم المجموعة التي قدمها أصدقائك. أو يمكنك إنشاء اسم فريد.
-    groupTitle: 'انضم إلى مجموعة'
-    joinDescription: >-
-      بمجرد إدخال اسم المجموعة، يمكنك النقر فوق هذا الزر للانضمام إلى المجموعة أو إنشائها. إذا كان اسم المجموعة فارغًا، فسيقوم المشغل بإنشاء اسم لك.
-    manualDescription: >-
-      إذا لم تتمكن أنت أو صديقك من الاتصال بالمجموعة، فيمكنك محاولة تبادل الرمز المميز يدويًا عن طريق النقر فوق الاتصال يدويًا. إذا فشل ذلك أيضًا، فقد تكون المشكلة تتعلق بالإنترنت.
   recentPlayDescription: >-
     سيتم إدراج الألعاب التي تم إنشاؤها هنا. يمكنك تبديل طرق العرض هنا لرؤية الإصدارات المثبتة وحزم التعديل التي تم تنزيلها أيضًا.
   storePoupularModpackDescription: >-
@@ -1752,7 +1704,6 @@ user:
   name: 'اسم المستخدم'
   nameHint: 'عرض الاسم في اللعبة'
   profile: 'حساب تعريفي'
-  info: 'معلومات ملف تعريف المستخدم'
   tokenExpired: 'منتهي الصلاحية'
   tokenValidUntil: 'رمز صالح حتى'
 userAccount:

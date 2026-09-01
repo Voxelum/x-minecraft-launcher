@@ -136,7 +136,6 @@ curseforgeCategory:
   World Gen: Wereldgeneratie
 dataMigration:
   apply: Instelling toepassen
-  directoryCriteriaHint: Zorg ervoor dat je nieuwe maplocatie een LEGE map is!
   placeholder: Klik hier om een map te selecteren
   setRootCause: >-
     Je verliest je gegevens (Mappen, Resourcepacks, Mods) als je de Launcher sluit tijdens dit proces!
@@ -470,13 +469,8 @@ instances:
   addDescription: Maak een nieuwe instantie vanaf nul
   addMMCDescription: >-
     Importeer bestaande MultiMC instantie. Je moet de datamap van MultiMC selecteren.
-  addManually: Handmatig aanmaken
   addModrinthDescription: >-
     Importeer bestaande Modrinth instantie. Je moet de Modrinth root datamap selecteren.
-  addServer: Aanmaken vanaf server
-  addServerDescription: Dit maakt een game die direct naar de server verbindt.
-  addTemplate: Aanmaken van gedownload modpack
-  addTemplateDescription: Importeren van gedownload Modpack
   addVanilla: Aanmaken van vanilla-achtige Minecraft
   addVanillaDescription: >-
     Importeer uit gewone .minecraft map. Dit dupliceert het originele game profiel naar XMCL.
@@ -1133,12 +1127,9 @@ resourcepack:
   name: Resourcepack | Resourcepacks
   noPacks: Non se atoparon paquetes de recursos
   searchHint: Busca paquetes de recursos
-  searchOnCurseforge: Zoek {name} in curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Geselecteerde Resourcepacks
   showDirectory: Toon resourcepack-map
   showFile: Toon resourcepack in map {file}
-  showInCurseforge: Toon {name} in curseforge
   unselected: Niet-geselecteerde Resourcepacks
   search: Buscar paquetes de recursos...
 save:
@@ -1486,9 +1477,6 @@ shaderPack:
     Vincular o cartafol shaderpacks desta instancia co cartafol compartido global
     para que todas as instancias usen os mesmos paquetes de shaders. Os paquetes
     existentes fusiónanse no cartafol compartido.
-  deletion: Verwijder Shader Pack
-  deletionHint: >-
-    Dit verwijdert het shaderpack-bestand {path} en kan niet ongedaan worden gemaakt.
   disabled: Uitgeschakelde Shader Packs
   dropHint: Importeer Shader Pack
   empty: Geen shader pack toegewezen
@@ -1621,16 +1609,6 @@ tutorial:
     searchDescription: >-
       Je kunt mods zoeken van Modrinth, Curseforge of je lokale cache met dit zoekvak.
     searchTitle: Zoek Mods
-  multiplayer:
-    contentDescription: Verbindingen tussen jou en je peers worden hier vermeld.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Je kunt een groep maken of lid worden met andere spelers. De launcher zal proberen P2P verbindingen te maken tussen jou en je vrienden volgens de groep. Je kunt de groepsnaam invoeren die je vrienden hebben gegeven. Of je kunt een unieke naam maken.
-    groupTitle: Word lid van een groep
-    joinDescription: >-
-      Zodra je een groepsnaam invoert, kun je op deze knop klikken om lid te worden of de groep te maken. Als de groepsnaam leeg is, genereert de launcher een naam voor je.
-    manualDescription: >-
-      Als jij of je vriend niet kunnen verbinden met de groep, kun je proberen handmatig het token uit te wisselen door op handmatig verbinden te klikken. Als dat ook mislukte, is het misschien een internetprobleem.
   recentPlayDescription: >-
     De gemaakte games worden hier vermeld. Je kunt de weergaven hier wisselen om ook de geïnstalleerde versies en gedownloade modpacks te zien.
   storePoupularModpackDescription: Je ziet de populairste modpacks in Curseforge en Modrinth in deze sectie.

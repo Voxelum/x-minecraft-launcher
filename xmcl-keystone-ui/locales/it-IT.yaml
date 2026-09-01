@@ -12,7 +12,7 @@ AppShareInstanceDialog:
   description: >-
     Dopo aver condiviso il profilo, altri luoghi possono scaricare questi file tramite il tuo PC.
   downloadDescription: >-
-    Verifica i file che ti sono stati forniti dal tuo peer.  Seleziona il file che desideri scaricare.  Verrà inserito nell'istanza corrente {nome}.
+    Verifica i file che ti sono stati forniti dal tuo peer.  Seleziona il file che desideri scaricare.  Verrà inserito nell'istanza corrente {name}.
   downloadNotifyTitle: Scarica l'istanza da {user}
   downloadTitle: Scarica i file da altri peer
   filesToDownload: Scegli i file da scaricare
@@ -115,7 +115,6 @@ curseforgeCategory:
   Vanilla+: Vanilla+
 dataMigration:
   apply: Applica impostazioni
-  directoryCriteriaHint: Assicurati che la nuova posizione della directory sia una directory VUOTA!
   placeholder: Fare clic qui per selezionare la directory
   setRootCause: >-
     Si perderanno i dati (Mappe, Pacchetti di risorse, Mod) se si chiude il Launcher durante questo processo!
@@ -456,14 +455,9 @@ instances:
   addMMCDescription: |-
     Importa l'istanza MultiMC esistente.
     È necessario selezionare la cartella dati da MultiMC.
-  addManually: Crea manualmente
   addModrinthDescription: |-
     Importa l'istanza Modrinth esistente.
     È necessario selezionare la cartella dei dati root di Modrinth.
-  addServer: Crea da server
-  addServerDescription: Questo creerà un gioco che si avvia direttamente nel server.
-  addTemplate: Crea dal modpack scaricato
-  addTemplateDescription: Importa da Modpack scaricato
   addVanilla: Crea da Minecraft vanilla
   addVanillaDescription: >-
     Importa dalla cartella .minecraft comune. Questo duplicherà il profilo di gioco originale in XMCL.
@@ -506,7 +500,7 @@ java:
   name: Java
   noMemory: Non limitare l'utilizzo della memoria
   refresh: Aggiorna Java locale
-  systemMemory: Memoria di sistema attuale
+  systemMemory: 'Memoria di sistema: {free} / {total}'
   allocation: Assegnato
   autoHint: Il minimo cresce con il numero di mod installate; il massimo usa la memoria di sistema disponibile.
   change: Cambia
@@ -733,7 +727,7 @@ modFilter:
   unusedOnly: Mostra solo mod biblioteche inutilizzate
 modInstall:
   archived: >-
-    {nome} è stato archiviato.
+    {name} è stato archiviato.
 
     {name} non riceverà ulteriori aggiornamenti a meno che l'autore non decida di annullare l'archiviazione del progetto.
   autoUpgrade:
@@ -1131,12 +1125,9 @@ resourcepack:
     Pacchetto risorse incompatibile ({format}). Fitin {accept}. Corrente {actual}.
   name: Pacchetto risorse | Pacchetti risorse
   searchHint: Cerca pacchetti di risorse
-  searchOnCurseforge: Ricerca {name} in curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Pacchetti risorse selezionati
   showDirectory: Aprite la cartella con i pacchetti di risorse
   showFile: Mostra il pacchetto risorse nella cartella {file}
-  showInCurseforge: Mostra {name} in curseforge
   unselected: Pacchetti risorse non selezionati
   noPacks: Nessun pacchetto risorse trovato
   search: Cerca pacchetti risorse...
@@ -1487,9 +1478,6 @@ shaderPack:
     Collega la cartella shaderpacks di questa istanza alla cartella condivisa
     globale in modo che tutte le istanze usino gli stessi shader pack. I
     pacchetti esistenti vengono uniti nella cartella condivisa.
-  deletion: Elimina Shader Pack
-  deletionHint: >-
-    Questa azione eliminerà il file del pacchetto shader {path} e non potrà essere annullata.
   disabled: Shader Pack disabilitato
   dropHint: Importa Shader Pack
   empty: Nessun shader pack allocato
@@ -1623,16 +1611,6 @@ tutorial:
     searchDescription: >-
       Puoi cercare mod da Modrinth, Curseforge o dalla tua cache locale utilizzando questa casella di ricerca.
     searchTitle: Cerca Mod
-  multiplayer:
-    contentDescription: Le connessioni tra te e i tuoi colleghi saranno elencate qui.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Puoi creare o unirti a un gruppo con altri giocatori. Il launcher tenterà di creare connessioni P2P tra te e i tuoi amici in base al gruppo. Puoi inserire il nome del gruppo fornito dai tuoi amici o crearne uno unico tuo.
-    groupTitle: Unisciti a un gruppo
-    joinDescription: >-
-      Una volta inserito un nome di gruppo, puoi fare clic su questo pulsante per unirti o creare il gruppo. Se il nome del gruppo è vuoto, il launcher genererà un nome per te.
-    manualDescription: >-
-      Se tu o un tuo amico non riuscite a connettervi al gruppo, potete provare a scambiare manualmente il token facendo clic su Connetti manualmente. Se anche questo tentativo fallisce, potrebbe trattarsi di un problema di connessione a Internet.
   recentPlayDescription: >-
     I giochi creati saranno elencati qui. Puoi cambiare le visualizzazioni qui per vedere anche le versioni installate e i modpack scaricati.
   storePoupularModpackDescription: In questa sezione vedrai i modpack più popolari in Curseforge e Modrinth.

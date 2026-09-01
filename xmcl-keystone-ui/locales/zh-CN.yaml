@@ -25,7 +25,7 @@ BaseSettingGeneral:
   title: 常规设置
 HomeJavaIssueDialog:
   incompatibleJava: 当前 Java 版本可能无法正常启动 Minecraft
-  incompatibleJavaHint: Java {javaVersion} 可能无法运行已选择的 Minecraft 版本
+  incompatibleJavaHint: 当前 Java 可能无法运行已选择的 Minecraft 版本
   missingJava: 没有找到 Java
   missingJavaHint: 启动器在您的电脑上没有找到任何Java。您可以尝试：
   optionSwitch:
@@ -207,7 +207,6 @@ curseforgeCategory:
   World Gen: 世界生成
 dataMigration:
   apply: 开始迁移
-  directoryCriteriaHint: 请确保您选择的新文件夹<span class="font-bold text-lg mx-1">是空的！</span>
   placeholder: 点击此处以选择新的根目录
   setRootCause: 请确保启动器在此过程中不被中断，否则某些数据会遗失！
   setRootDescription: 启动器的根目录将会被改变
@@ -441,7 +440,7 @@ installQuilt:
 installVersion:
   jar: 安装游戏 Jar 文件
   json: 安装游戏 JSON 文件
-  name: 安装{id}的游戏本体
+  name: 安装 {version} 的游戏本体
 instance:
   changeIcon: 更改图标
   contents: 内容
@@ -571,14 +570,9 @@ instances:
   addMMCDescription: |-
     导入现有的 MultiMC 实例。
     您需要从 MultiMC 中选择数据文件夹。
-  addManually: 手动创建
   addModrinthDescription: |-
     导入现有的 Modrinth 实例。
     您需要选择 Modrinth 根数据文件夹。
-  addServer: 从服务器创建
-  addServerDescription: 这将创建一个直接启动到服务器的游戏。
-  addTemplate: 从下载的整合包创建
-  addTemplateDescription: 从下载的整合包导入
   addVanilla: 从原版 Minecraft 创建
   addVanillaDescription: |-
     从通用 .minecraft 文件夹导入。
@@ -1404,12 +1398,9 @@ resourcepack:
   noLocalPacksFound: 未找到匹配搜索的本地资源包。
   search: 搜索资源包...
   searchHint: 搜索资源包
-  searchOnCurseforge: 在 Curseforge 中查找 {name}
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: 已选资源包
   showDirectory: 打开装有资源包的文件夹
   showFile: 在文件夹中显示 {file}
-  showInCurseforge: 在 Curseforge 中显示 {name}
   unselected: 未选资源包
 save:
   linkShared: 在实例间共享存档
@@ -1501,7 +1492,6 @@ localCollection:
   corrupted: 无法读取已保存的收藏夹，已重置。备份已保存在数据文件旁边。
   modrinthSection: Modrinth 账户
   installAll: 全部安装
-  installAllHint: 安装此收藏夹中与当前 Minecraft 版本和加载器兼容的所有项目。
   incompatibleAlert: '有 {count} 个项目与当前实例不兼容，已跳过：'
   projects: '无项目 | {count} 个项目 | {count} 个项目'
 server:
@@ -1941,8 +1931,6 @@ shaderPack:
   linkShared: 在实例间共享光影包
   linkSharedHint: >-
     将此实例的 shaderpacks 文件夹链接到全局共享文件夹，使所有实例共用相同的光影包。现有光影包会被合并到共享文件夹中。
-  deletion: 删除光影包
-  deletionHint: 这将把光影包文件 {path} 永久删除。
   disabled: 未启用的光影
   dropHint: 导入光影包
   empty: 没有启用光影包
@@ -2086,23 +2074,6 @@ tutorial:
     listTitle: 安装/搜索的模组
     searchDescription: 您可以通过此搜索框从 Modrinth、Curseforge 或本地缓存中搜索模组。
     searchTitle: 搜索、发现模组
-  multiplayer:
-    contentDescription: 您和您的同伴之间的联系将在此处列出。
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: |-
-      您可以与其他玩家创建或加入群组。
-      启动器会尝试根据群组在您和您的朋友之间创建 P2P 连接。
-      您可以输入好友提供的群组名称。
-      或者您可以自己创建一个独特的名称。
-    groupTitle: 和其他玩家组队
-    joinDescription: |-
-      输入组名称后。
-      您可以单击此按钮加入或创建群组。
-      如果组名称为空，启动器将为您生成一个名称。
-    manualDescription: |-
-      如果您或您的朋友无法连接到群组。
-      您可以尝试通过点击“手动连接”来手动交换令牌。
-      如果也失败，则可能是互联网问题。
   recentPlayDescription: |-
     创建的游戏将在此处列出。
     您可以在此处切换视图以查看已安装的版本和下载的整合包。
@@ -2162,7 +2133,6 @@ userService:
   manageServices: 管理服务
   register: 注册
   server: 服务器
-  service: null
   skinDomains: 皮肤域名
   title: 第三方玩家信息服务
   version: 版本
