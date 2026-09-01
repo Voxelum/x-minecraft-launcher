@@ -1,5 +1,5 @@
 {
-  "version": "0.3.6",
+  "version": "0.3.7",
   "name": "@xmcl/wrtc-multiplayer",
   "private": true,
   "description": "node-datachannel peer connection provider for XMCL multiplayer",
