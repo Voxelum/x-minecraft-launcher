@@ -19,7 +19,16 @@ export const pluginMultiplayer: LauncherAppPlugin = (rawApp) => {
 
   const createHost = async (options: Parameters<import('@xmcl/runtime/peer').MultiplayerHostFactory>[0]) => {
     const electronSession = app.session.getSession(defaultApp.url)
-    const localNetwork = createMainLocalNetwork()
+    const localNetwork = createMainLocalNetwork((family, error) => {
+      options.log({
+        level: 'warn',
+        event: 'together.lan.family_start_failed',
+        data: {
+          family,
+          error: error instanceof Error ? error.message : String(error),
+        },
+      })
+    })
     const sharedFiles = createMainSharedFiles()
     const telemetry = createMultiplayerTelemetryReporter({
       baseUrl: options.init.signalingBaseUrl,

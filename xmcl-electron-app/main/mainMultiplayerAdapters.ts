@@ -112,11 +112,15 @@ export interface MainLocalNetwork extends LocalNetwork {
   dispose(): Promise<void>
 }
 
-export function createMainLocalNetwork(): MainLocalNetwork {
+type LanFamily = 'udp4' | 'udp6'
+
+export function createMainLocalNetwork(
+  onLanDiscoveryError?: (family: LanFamily, error: unknown) => void,
+): MainLocalNetwork {
   const sockets = new Set<NodeLocalSocket>()
   const servers = new Set<NodeLocalServer>()
   const lanListeners = new Set<Listener<LocalLanServer>>()
-  let lanDiscover: MinecraftLanDiscover | undefined
+  const lanDiscovers = new Map<LanFamily, MinecraftLanDiscover>()
   let lanReady: Promise<void> | undefined
 
   const wrapSocket = (socket: Socket) => {
@@ -128,17 +132,30 @@ export function createMainLocalNetwork(): MainLocalNetwork {
 
   const ensureLanDiscovery = () => {
     if (lanReady) return lanReady
-    const discover = new MinecraftLanDiscover()
-    lanDiscover = discover
-    discover.on('discover', (server) => {
-      for (const listener of lanListeners) listener(server)
+    const attempts = (['udp4', 'udp6'] as const).map(async (family) => {
+      const discover = new MinecraftLanDiscover(family)
+      discover.on('discover', (server) => {
+        for (const listener of lanListeners) listener(server)
+      })
+      try {
+        await discover.bind()
+        lanDiscovers.set(family, discover)
+      } catch (error) {
+        await discover.destroy().catch(() => {})
+        onLanDiscoveryError?.(family, error)
+        throw error
+      }
     })
-    lanReady = discover.bind().catch((error) => {
-      lanDiscover = undefined
-      lanReady = undefined
-      void discover.destroy().catch(() => {})
-      throw error
-    })
+    lanReady = Promise.allSettled(attempts)
+      .then((results) => {
+        if (lanDiscovers.size > 0) return
+        const error = results.find((result) => result.status === 'rejected')
+        throw error?.status === 'rejected' ? error.reason : new Error('lan_discovery_start_failed')
+      })
+      .catch((error) => {
+        lanReady = undefined
+        throw error
+      })
     return lanReady
   }
 
@@ -179,25 +196,30 @@ export function createMainLocalNetwork(): MainLocalNetwork {
     },
     stopLanDiscovery(listener) {
       lanListeners.delete(listener)
-      if (lanListeners.size === 0 && lanDiscover) {
-        const discover = lanDiscover
-        lanDiscover = undefined
+      if (lanListeners.size === 0 && lanDiscovers.size > 0) {
+        const discovers = Array.from(lanDiscovers.values())
+        lanDiscovers.clear()
         lanReady = undefined
-        void discover.destroy().catch(() => {})
+        for (const discover of discovers) void discover.destroy().catch(() => {})
       }
     },
     async broadcastLan(server) {
       await ensureLanDiscovery()
-      await lanDiscover?.broadcast(server)
+      const results = await Promise.allSettled(
+        Array.from(lanDiscovers.values(), (discover) => discover.broadcast(server)),
+      )
+      if (results.some((result) => result.status === 'fulfilled')) return
+      const error = results.find((result) => result.status === 'rejected')
+      throw error?.status === 'rejected' ? error.reason : new Error('lan_broadcast_failed')
     },
     async dispose() {
       for (const server of Array.from(servers)) server.close()
       for (const socket of Array.from(sockets)) socket.close()
-      const discover = lanDiscover
-      lanDiscover = undefined
+      const discovers = Array.from(lanDiscovers.values())
+      lanDiscovers.clear()
       lanReady = undefined
       lanListeners.clear()
-      await discover?.destroy().catch(() => {})
+      await Promise.allSettled(discovers.map((discover) => discover.destroy()))
     },
   }
 }
