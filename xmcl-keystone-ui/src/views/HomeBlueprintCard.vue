@@ -21,13 +21,13 @@
 <script lang="ts" setup>
 import HomeCard from '@/components/HomeCard.vue'
 import { kInstance } from '@/composables/instance'
-import { useInstanceBlueprints } from '@/composables/instanceBlueprints'
+import { kInstanceBlueprints } from '@/composables/instanceBlueprints'
 import { injection } from '@/util/inject'
 
 const { t } = useI18n()
 const { push } = useRouter()
 const { path } = injection(kInstance)
-const { blueprints, isValidating } = useInstanceBlueprints(path)
+const { blueprints, isValidating } = injection(kInstanceBlueprints)
 
 const totalBlocks = computed(() => blueprints.value.reduce((sum, b) => sum + (b.blockCount ?? 0), 0))
 </script>

@@ -3,7 +3,7 @@ import { FSWatcher } from 'chokidar'
 import { basename, join, resolve, sep } from 'path'
 import { File } from '../File'
 import { ResourceContext } from '../ResourceContext'
-import { ResourceDomain } from '../ResourceDomain'
+import { getResourceTaskPriority, ResourceDomain } from '../ResourceDomain'
 import { ResourceType } from '../ResourceType'
 import { ResourceMetadata } from '../ResourceMetadata'
 import { ResourceWorkerQueuePayload } from '../ResourceWorkerQueuePayload'
@@ -164,12 +164,12 @@ function createWorkerQueue(
 
         if (job.record) {
           if (!isSnapshotValid(job.file, job.record)) {
-            job.record = await takeSnapshot(job.file, context, parse)
+            job.record = await takeSnapshot(job.file, context, parse, getResourceTaskPriority(domain))
           }
         }
 
         if (!job.record) {
-          job.record = await takeSnapshot(job.file, context, parse)
+          job.record = await takeSnapshot(job.file, context, parse, getResourceTaskPriority(domain))
         }
 
         const metadata = await getOrParseMetadata(job.file, job.record, domain, context, job, parse)

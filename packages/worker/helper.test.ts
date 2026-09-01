@@ -312,6 +312,43 @@ describe('setHandler', () => {
     expect(started).toEqual([1, 2])
   })
 
+  it('should prioritize queued work while preserving FIFO within a priority', async () => {
+    let releaseFirst = () => {}
+    const firstPending = new Promise<void>((resolve) => {
+      releaseFirst = resolve
+    })
+    const started: number[] = []
+    const handlers = {
+      hash: async (id: number) => {
+        started.push(id)
+        if (id === 1) await firstPending
+        return id
+      },
+      checksum: async (id: number) => {
+        started.push(id)
+        return id
+      },
+    }
+
+    mockParentPortObj.value = mockPort as any
+    setHandler(handlers, getSerializedErrorFunc, {
+      concurrency: { hashing: 1 },
+      concurrencyGroups: { hash: 'hashing', checksum: 'hashing' },
+      priorities: { hash: (_id: number, priority = 0) => priority },
+    })
+
+    const first = mockPort.emit('message', { type: 'hash', id: 1, args: [1] })
+    await Promise.resolve()
+    const background = mockPort.emit('message', { type: 'hash', id: 2, args: [2, -1] })
+    const normalFirst = mockPort.emit('message', { type: 'checksum', id: 3, args: [3] })
+    const normalSecond = mockPort.emit('message', { type: 'checksum', id: 4, args: [4] })
+    await Promise.resolve()
+
+    releaseFirst()
+    await Promise.all([first, background, normalFirst, normalSecond])
+    expect(started).toEqual([1, 3, 4, 2])
+  })
+
   it('should handle promises that resolve to undefined', async () => {
     const handlers = {
       returnUndefined: async () => undefined,
