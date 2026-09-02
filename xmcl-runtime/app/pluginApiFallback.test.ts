@@ -75,8 +75,36 @@ describe('pluginApiFallback', () => {
       headers,
     }
 
-    await handler({ request, response: {} })
+    const response: Record<string, any> = { headers: {} }
+    await handler({ request, response })
 
     expect(headers).toEqual({})
+    expect(response).toMatchObject({
+      status: 401,
+      handled: true,
+      headers: { 'content-type': 'application/json' },
+    })
+    expect(JSON.parse(response.body)).toEqual({
+      error: 'xmcl_account_session_missing',
+      message: 'xmcl_account_session_missing',
+    })
+  })
+
+  test('returns a local service error when authorization cannot be resolved', async () => {
+    const { handler } = createPlugin(async () => {
+      throw new Error('xmcl_account_server_time_unavailable')
+    })
+    const request = {
+      method: 'POST',
+      url: new URL('https://signaling.xmcl.app/v1/rtc/official'),
+      headers: {},
+    }
+    const response: Record<string, any> = { headers: {} }
+
+    await handler({ request, response })
+
+    expect(response.status).toBe(503)
+    expect(response.handled).toBe(true)
+    expect(JSON.parse(response.body).error).toBe('xmcl_account_server_time_unavailable')
   })
 })

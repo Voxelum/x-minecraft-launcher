@@ -17,10 +17,7 @@ import { kClientToken, kFlights, launcherSessionId } from '~/infra'
 import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
 import { kSettings } from '~/settings'
 import { XmclAccountService } from '~/xmclAccount'
-import {
-  kMultiplayerHostFactory,
-  type MultiplayerHost,
-} from './MultiplayerHost'
+import { kMultiplayerHostFactory, type MultiplayerHost } from './MultiplayerHost'
 
 function isMultiplayerLogEvent(value: unknown): value is MultiplayerLogEvent {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false
@@ -34,7 +31,8 @@ function isMultiplayerLogEvent(value: unknown): value is MultiplayerLogEvent {
   )
 }
 
-const sensitiveMultiplayerLogKey = /^(candidate|credential|description|password|sdp|token|username)$/i
+const sensitiveMultiplayerLogKey =
+  /^(candidate|credential|description|password|sdp|token|username)$/i
 
 function sanitizeMultiplayerLogValue(value: unknown, depth = 0): unknown {
   if (depth > 4) return '[truncated]'
@@ -115,10 +113,14 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       transport,
       state: this.state,
       init: await this.getMultiplayerInit(),
-      log: (event) => { void this.logMultiplayer(event) },
+      log: (event) => {
+        void this.logMultiplayer(event)
+      },
       isTelemetryEnabled: () => !settings.disableTelemetry,
       getTelemetryAccountId: () => accountState.account?.accountId,
-      setDownloadPort: (port) => { this.downloadPort = port },
+      setDownloadPort: (port) => {
+        this.downloadPort = port
+      },
     })
     host.on('share', (payload) => this.emit('share', payload))
     host.on('connection-unexpected-closed', (payload) =>
@@ -131,32 +133,37 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   private async ensureMultiplayerHost(transport: MultiplayerTransport) {
     let result: MultiplayerHost | undefined
-    const operation = this.hostTransition.catch(() => {}).then(async () => {
-      if (this.multiplayerHost && this.multiplayerHostTransport === transport) {
-        result = await this.multiplayerHost
-        return
-      }
-      await this.disposeCurrentMultiplayerHost()
-      this.multiplayerHostTransport = transport
-      const pending = this.createMultiplayerHost(transport)
-      this.multiplayerHost = pending
-      try {
-        result = await pending
-        void result.closed.then(() => {
+    const operation = this.hostTransition
+      .catch(() => {})
+      .then(async () => {
+        if (this.multiplayerHost && this.multiplayerHostTransport === transport) {
+          result = await this.multiplayerHost
+          return
+        }
+        await this.disposeCurrentMultiplayerHost()
+        this.multiplayerHostTransport = transport
+        const pending = this.createMultiplayerHost(transport)
+        this.multiplayerHost = pending
+        try {
+          result = await pending
+          void result.closed.then(() => {
+            if (this.multiplayerHost === pending) {
+              this.multiplayerHost = undefined
+              this.multiplayerHostTransport = undefined
+            }
+          })
+        } catch (error) {
           if (this.multiplayerHost === pending) {
             this.multiplayerHost = undefined
             this.multiplayerHostTransport = undefined
           }
-        })
-      } catch (error) {
-        if (this.multiplayerHost === pending) {
-          this.multiplayerHost = undefined
-          this.multiplayerHostTransport = undefined
+          throw error
         }
-        throw error
-      }
-    })
-    this.hostTransition = operation.then(() => {}, () => {})
+      })
+    this.hostTransition = operation.then(
+      () => {},
+      () => {},
+    )
     await operation
     if (!result) throw new Error('multiplayer_host_unavailable')
     return result
@@ -211,12 +218,21 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   private async disposeMultiplayerHost(): Promise<void> {
-    const operation = this.hostTransition.catch(() => {}).then(() => this.disposeCurrentMultiplayerHost())
-    this.hostTransition = operation.then(() => {}, () => {})
+    const operation = this.hostTransition
+      .catch(() => {})
+      .then(() => this.disposeCurrentMultiplayerHost())
+    this.hostTransition = operation.then(
+      () => {},
+      () => {},
+    )
     await operation
   }
 
   async multiplayerRefreshIceServers(): Promise<void> {
+    const accountState = await this.app.registry
+      .get(XmclAccountService)
+      .then((service) => service.getXmclAccountState())
+    if (!accountState.session) return
     await (await this.getMultiplayerHost()).refreshIceServers()
   }
 

@@ -15,7 +15,12 @@ import type {
   XmclTogetherSubscription,
   XmclTogetherTrial,
 } from '@xmcl/runtime-api'
-import { createXmclDpopProof, generateXmclDpopKey, type XmclDpopKey } from './XmclAccountDpop'
+import {
+  createXmclDpopProof,
+  generateXmclDpopKey,
+  XmclDpopClock,
+  type XmclDpopKey,
+} from './XmclAccountDpop'
 
 export const M1_LOCAL_CONTRACT_VERSION = 'm1-local-proposal-2026-07-22+shared-v1'
 export const XMCL_SHARED_CONTRACT_VERSION = 'shared/v1'
@@ -81,6 +86,8 @@ type BaseUrlProvider = string | (() => Promise<string>)
 
 export class XmclAccountApi {
   private dpopKeyPromise: Promise<XmclDpopKey> | undefined
+  private readonly dpopClock = new XmclDpopClock()
+  private dpopClockSyncPromise: Promise<void> | undefined
 
   constructor(
     private readonly fetch: FetchLike,
@@ -89,6 +96,35 @@ export class XmclAccountApi {
       generateXmclDpopKey(),
     private readonly togetherBaseUrl: BaseUrlProvider = baseUrl,
   ) {}
+
+  async synchronizeDpopClock(): Promise<void> {
+    if (this.dpopClock.synchronized) return
+    if (this.dpopClockSyncPromise) return this.dpopClockSyncPromise
+    const operation = (async () => {
+      const baseUrl = typeof this.baseUrl === 'function' ? await this.baseUrl() : this.baseUrl
+      const startedAt = performance.now()
+      const response = await this.fetch(new URL('/', baseUrl), {
+        method: 'HEAD',
+        cache: 'no-store',
+        signal: AbortSignal.timeout(5_000),
+      })
+      if (!this.dpopClock.observe(response.headers.get('date'), startedAt)) {
+        throw new Error('xmcl_account_server_time_unavailable')
+      }
+    })()
+    this.dpopClockSyncPromise = operation
+    try {
+      await operation
+    } finally {
+      if (this.dpopClockSyncPromise === operation) {
+        this.dpopClockSyncPromise = undefined
+      }
+    }
+  }
+
+  getServerNow() {
+    return this.dpopClock.now()
+  }
 
   private getDpopKey() {
     if (!this.dpopKeyPromise) {
@@ -319,8 +355,20 @@ export class XmclAccountApi {
 
   async getTogetherOverview(credential: XmclSessionCredential): Promise<XmclTogetherOverview> {
     const [offer, trial, subscription, allowances, balance] = await Promise.all([
-      this.request<unknown>('/v1/xmcl-plus/offer', { method: 'GET' }, credential, undefined, this.togetherBaseUrl),
-      this.request<unknown>('/v1/xmcl-plus/trial', { method: 'GET' }, credential, undefined, this.togetherBaseUrl).catch((error) => {
+      this.request<unknown>(
+        '/v1/xmcl-plus/offer',
+        { method: 'GET' },
+        credential,
+        undefined,
+        this.togetherBaseUrl,
+      ),
+      this.request<unknown>(
+        '/v1/xmcl-plus/trial',
+        { method: 'GET' },
+        credential,
+        undefined,
+        this.togetherBaseUrl,
+      ).catch((error) => {
         if (error instanceof XmclAccountApiError && error.status === 404) {
           return {
             status: 'unavailable',
@@ -330,9 +378,27 @@ export class XmclAccountApi {
         }
         throw error
       }),
-      this.request<unknown>('/v1/xmcl-plus/status', { method: 'GET' }, credential, undefined, this.togetherBaseUrl),
-      this.request<unknown>('/v1/xmcl-plus/allowances', { method: 'GET' }, credential, undefined, this.togetherBaseUrl),
-      this.request<unknown>('/v1/billing/balance', { method: 'GET' }, credential, undefined, this.togetherBaseUrl),
+      this.request<unknown>(
+        '/v1/xmcl-plus/status',
+        { method: 'GET' },
+        credential,
+        undefined,
+        this.togetherBaseUrl,
+      ),
+      this.request<unknown>(
+        '/v1/xmcl-plus/allowances',
+        { method: 'GET' },
+        credential,
+        undefined,
+        this.togetherBaseUrl,
+      ),
+      this.request<unknown>(
+        '/v1/billing/balance',
+        { method: 'GET' },
+        credential,
+        undefined,
+        this.togetherBaseUrl,
+      ),
     ])
     return {
       offer: parseTogetherOffer(offer),
@@ -392,9 +458,7 @@ export class XmclAccountApi {
     )
   }
 
-  async subscribeTogether(
-    credential: XmclSessionCredential,
-  ): Promise<XmclTogetherSubscription> {
+  async subscribeTogether(credential: XmclSessionCredential): Promise<XmclTogetherSubscription> {
     return parseTogetherSubscription(
       await this.request<unknown>(
         '/v1/xmcl-plus/subscribe',
@@ -406,9 +470,7 @@ export class XmclAccountApi {
     )
   }
 
-  async cancelTogether(
-    credential: XmclSessionCredential,
-  ): Promise<XmclTogetherSubscription> {
+  async cancelTogether(credential: XmclSessionCredential): Promise<XmclTogetherSubscription> {
     return parseTogetherSubscription(
       await this.request<unknown>(
         '/v1/xmcl-plus/cancel',
@@ -430,9 +492,8 @@ export class XmclAccountApi {
     const headers = new Headers(init.headers)
     headers.set('Accept', 'application/json')
     if (init.body) headers.set('Content-Type', 'application/json')
-    const baseUrl = typeof baseUrlProvider === 'function'
-      ? await baseUrlProvider()
-      : baseUrlProvider
+    const baseUrl =
+      typeof baseUrlProvider === 'function' ? await baseUrlProvider() : baseUrlProvider
     const url = new URL(path, baseUrl)
     if (credential) {
       const tokenType = credential.tokenType === 'DPoP' ? 'DPoP' : 'Bearer'
@@ -445,16 +506,19 @@ export class XmclAccountApi {
             init.method ?? 'GET',
             url,
             url.pathname === '/v1/sessions/refresh' ? undefined : credential.accessToken,
+            this.dpopClock.now(),
           ),
         )
       }
     }
     if (idempotencyKey) headers.set('Idempotency-Key', idempotencyKey)
 
+    const startedAt = performance.now()
     const response = await this.fetch(url, {
       ...init,
       headers,
     })
+    this.dpopClock.observe(response.headers.get('date'), startedAt)
     if (!response.ok) {
       const text = await response.text()
       let body: ApiErrorBody = {}

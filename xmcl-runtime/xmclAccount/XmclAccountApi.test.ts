@@ -87,7 +87,8 @@ describe('XmclAccountApi', () => {
   it('retries the DPoP key provider after a transient failure', async () => {
     const fetch = vi.fn(async () => Response.json(M1_LOCAL_AUTH_FIXTURE))
     const key = generateXmclDpopKey()
-    const keyProvider = vi.fn()
+    const keyProvider = vi
+      .fn()
       .mockRejectedValueOnce(new Error('Temporary secure storage failure'))
       .mockResolvedValue(key)
     const api = new XmclAccountApi(fetch, 'https://edge.example.test/', keyProvider)
@@ -100,9 +101,7 @@ describe('XmclAccountApi', () => {
       redirectUri: 'http://127.0.0.1:25555/commercial-auth',
     }
 
-    await expect(api.exchangeBrowser(request)).rejects.toThrow(
-      'Temporary secure storage failure',
-    )
+    await expect(api.exchangeBrowser(request)).rejects.toThrow('Temporary secure storage failure')
     await expect(api.exchangeBrowser(request)).resolves.toMatchObject({
       session: { accessToken: 'fixture-access-token' },
     })
@@ -145,6 +144,29 @@ describe('XmclAccountApi', () => {
     ).toBe(true)
     expect(Buffer.from(encodedSignature, 'base64url')).toHaveLength(64)
     expect(String(input)).toBe('https://edge.example.test/v1/backup-storage-policy')
+  })
+
+  it('anchors DPoP proof timestamps to the server clock', async () => {
+    const serverTime = new Date(Date.now() - 5 * 60_000)
+    serverTime.setMilliseconds(0)
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(null, { headers: { date: serverTime.toUTCString() } }))
+      .mockResolvedValueOnce(Response.json(M1_SHARED_V1_POLICY_FIXTURE))
+    const api = new XmclAccountApi(fetch, 'https://edge.example.test/')
+    const credential = { ...M1_LOCAL_AUTH_FIXTURE.session, tokenType: 'DPoP' as const }
+
+    await api.synchronizeDpopClock()
+    await api.getBackupStoragePolicy(credential)
+
+    const syncRequest = new URL(String(fetch.mock.calls[0]![0]))
+    expect(syncRequest.toString()).toBe('https://edge.example.test/')
+    expect(fetch.mock.calls[0]![1]).toMatchObject({ method: 'HEAD', cache: 'no-store' })
+    const headers = fetch.mock.calls[1]![1]?.headers as Headers
+    const payload = JSON.parse(
+      Buffer.from(headers.get('DPoP')!.split('.')[1]!, 'base64url').toString(),
+    )
+    expect(payload.iat).toBe(Math.floor(serverTime.getTime() / 1_000))
   })
 
   it('parses the wrapped refresh response and omits the access-token hash from its proof', async () => {
@@ -277,11 +299,12 @@ describe('XmclAccountApi', () => {
   })
 
   it('identifies a Cloudflare Worker plan-limit response', async () => {
-    const api = new XmclAccountApi(async () =>
-      new Response('error code: 1027\n', {
-        status: 429,
-        headers: { 'content-type': 'text/plain; charset=UTF-8' },
-      }),
+    const api = new XmclAccountApi(
+      async () =>
+        new Response('error code: 1027\n', {
+          status: 429,
+          headers: { 'content-type': 'text/plain; charset=UTF-8' },
+        }),
     )
 
     const error = await api.refreshSession(M1_LOCAL_AUTH_FIXTURE.session).catch((e) => e)
@@ -353,9 +376,7 @@ describe('XmclAccountApi', () => {
     await api.claimTogetherTrial(M1_LOCAL_AUTH_FIXTURE.session)
     await api.createTogetherOrder(M1_LOCAL_AUTH_FIXTURE.session, 500)
 
-    expect(String(fetch.mock.calls[0]![0])).toBe(
-      'https://billing.example.test/v1/xmcl-plus/trial',
-    )
+    expect(String(fetch.mock.calls[0]![0])).toBe('https://billing.example.test/v1/xmcl-plus/trial')
     expect(String(fetch.mock.calls[1]![0])).toBe(
       'https://billing.example.test/v1/billing/waffo/orders',
     )

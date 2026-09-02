@@ -284,6 +284,82 @@ describe('XmclAccountService automatic session refresh', () => {
     expect(api.refreshSession).not.toHaveBeenCalled()
   })
 
+  it('uses synchronized server time for signaling DPoP proofs', async () => {
+    const { service } = createXmclService()
+    const serverNow = Date.now() - 5 * 60_000
+    const credential = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'current-access-token',
+      refreshToken: 'current-refresh-token',
+      tokenType: 'DPoP' as const,
+      scopes: ['account:read'],
+      issuedAt: new Date(serverNow - 60 * 60_000).toISOString(),
+      expiresAt: new Date(serverNow + 10 * 60_000).toISOString(),
+    }
+    ;(service as any).credential = credential
+    ;(service as any).dpopKey = generateXmclDpopKey()
+    ;(service as any).state.snapshot({
+      account: {
+        accountId: credential.accountId,
+        status: 'active',
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: credential,
+    })
+    const api = (service as any).api
+    api.synchronizeDpopClock = vi.fn().mockResolvedValue(undefined)
+    api.getServerNow = vi.fn(() => serverNow)
+
+    const authorization = await (service as any)[kXmclSessionAuthorization]({
+      method: 'POST',
+      url: 'https://signaling.xmcl.app/v1/rtc/official',
+    })
+
+    const payload = JSON.parse(
+      Buffer.from(authorization.dpopProof.split('.')[1], 'base64url').toString(),
+    )
+    expect(payload.iat).toBe(Math.floor(serverNow / 1_000))
+  })
+
+  it('synchronizes the DPoP clock before a forced session refresh', async () => {
+    const { service } = createXmclService()
+    const current = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'current-access-token',
+      refreshToken: 'current-refresh-token',
+      tokenType: 'DPoP' as const,
+      scopes: ['account:read'],
+      issuedAt: new Date(Date.now() - 60 * 60_000).toISOString(),
+      expiresAt: new Date(Date.now() + 10 * 60_000).toISOString(),
+    }
+    const rotated = {
+      ...current,
+      accessToken: 'rotated-access-token',
+      refreshToken: 'rotated-refresh-token',
+    }
+    ;(service as any).credential = current
+    ;(service as any).state.snapshot({
+      account: {
+        accountId: current.accountId,
+        status: 'active',
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: current,
+    })
+    const api = (service as any).api
+    api.synchronizeDpopClock = vi.fn().mockResolvedValue(undefined)
+    api.refreshSession = vi.fn().mockResolvedValue(rotated)
+    api.getSnapshot = vi.fn().mockRejectedValue(new Error('snapshot unavailable'))
+
+    await service.refreshSession()
+
+    expect(api.synchronizeDpopClock).toHaveBeenCalledBefore(api.refreshSession)
+  })
+
   it('does not let a delayed account read restore a rotated credential', async () => {
     const { app, service } = createXmclService()
     const previous = {
@@ -320,10 +396,7 @@ describe('XmclAccountService automatic session refresh', () => {
 
     const refreshAccount = service.refreshAccount()
     await vi.waitFor(() => expect(api.getSnapshot).toHaveBeenCalledTimes(1))
-    await (service as any).applySnapshot(
-      { ...oldSnapshot, session: rotated },
-      rotated,
-    )
+    await (service as any).applySnapshot({ ...oldSnapshot, session: rotated }, rotated)
     resolveSnapshot(oldSnapshot)
     await refreshAccount
 
@@ -369,6 +442,45 @@ describe('XmclAccountService automatic session refresh', () => {
     )
   })
 
+  it('clears a DPoP session when its proof remains invalid after clock synchronization', async () => {
+    const { app, service } = createXmclService()
+    const expiring = {
+      sessionId: 'session-1',
+      accountId: 'account-1',
+      accessToken: 'invalid-dpop-access-token',
+      refreshToken: 'invalid-dpop-refresh-token',
+      tokenType: 'DPoP' as const,
+      scopes: ['account:read'],
+      issuedAt: new Date(Date.now() - 60 * 60_000).toISOString(),
+      expiresAt: new Date(Date.now() + 60_000).toISOString(),
+    }
+    ;(service as any).credential = expiring
+    ;(service as any).state.snapshot({
+      account: {
+        accountId: expiring.accountId,
+        status: 'active',
+        createdAt: '2026-07-23T00:00:00.000Z',
+      },
+      identities: [],
+      session: expiring,
+    })
+    ;(service as any).api.synchronizeDpopClock = vi.fn().mockResolvedValue(undefined)
+    ;(service as any).api.getServerNow = vi.fn(() => Date.now())
+    ;(service as any).api.refreshSession = vi
+      .fn()
+      .mockRejectedValue(new XmclAccountApiError(401, 'invalid_dpop_proof'))
+
+    await expect((service as any)[kXmclSessionAuthorization]()).resolves.toBeUndefined()
+
+    expect((service as any).credential).toBeUndefined()
+    expect((service as any).state.account).toBeUndefined()
+    expect(app.secretStorage.put).toHaveBeenLastCalledWith(
+      'xmcl-xmcl-account',
+      'current-session',
+      '',
+    )
+  })
+
   it('clears a rotated session when the successful refresh response is invalid', async () => {
     const { app, service } = createXmclService()
     const previous = {
@@ -394,9 +506,7 @@ describe('XmclAccountService automatic session refresh', () => {
       .fn()
       .mockRejectedValue(new XmclAccountSessionResponseError())
 
-    await expect(service.refreshSession()).rejects.toBeInstanceOf(
-      XmclAccountSessionResponseError,
-    )
+    await expect(service.refreshSession()).rejects.toBeInstanceOf(XmclAccountSessionResponseError)
     expect((service as any).credential).toBeUndefined()
     expect((service as any).state.account).toBeUndefined()
     expect(app.secretStorage.put).toHaveBeenLastCalledWith(
@@ -567,9 +677,7 @@ describe('XmclAccountService provider bootstrap queue', () => {
     resolveExchange(result)
     await expect(stale).rejects.toThrow('xmcl_account_session_changed')
 
-    await expect(
-      bootstrapCredential('microsoft', 'microsoft-credential'),
-    ).resolves.toBeUndefined()
+    await expect(bootstrapCredential('microsoft', 'microsoft-credential')).resolves.toBeUndefined()
     expect(launcherExchange).toHaveBeenCalledTimes(2)
   })
 
@@ -583,9 +691,7 @@ describe('XmclAccountService provider bootstrap queue', () => {
     const bootstrapCredential = (service as any).bootstrapCredential.bind(service)
 
     const stale = bootstrapCredential('microsoft', 'microsoft-credential')
-    await vi.waitFor(() =>
-      expect((service as any).api.launcherExchange).toHaveBeenCalledTimes(1),
-    )
+    await vi.waitFor(() => expect((service as any).api.launcherExchange).toHaveBeenCalledTimes(1))
     await (service as any).clearSession()
     rejectExchange(new XmclAccountApiError(409, 'identity_conflict', undefined, 'merge-1'))
 
@@ -744,6 +850,8 @@ describe('XmclAccountService DPoP device key lifecycle', () => {
       identities: [],
       session: credential,
     })
+    ;(service as any).api.synchronizeDpopClock = vi.fn().mockResolvedValue(undefined)
+    ;(service as any).api.getServerNow = vi.fn(() => Date.now())
     ;(service as any).api.revokeSession = vi.fn()
 
     await service.revokeSession()
