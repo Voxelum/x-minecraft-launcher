@@ -1,75 +1,97 @@
-import { ResourceDomain, ResourceManager, type ResourceMetadata, type ResourceState, type UpdateResourcePayload } from '@xmcl/resource'
+import {
+  ResourceDomain,
+  ResourceManager,
+  type ResourceMetadata,
+  type ResourceState,
+  type UpdateResourcePayload,
+} from '@xmcl/resource'
 import { kResourceManager } from '~/resource'
 import { getInstanceModStateKey, Settings } from '@xmcl/runtime-api'
 import { LauncherApp } from '~/app'
-import { kFlights } from '~/infra'
+import { kFlights, launcherSessionId } from '~/infra'
 import { InstanceService } from '~/instance'
 import { JavaService } from '~/java'
 import { LaunchService } from '~/launch'
 import { ModMetadataService } from '~/moddb/ModMetadataService'
 import { ServiceStateManager } from '~/service'
 import { ResourceTelemetryBatch, type ResourceTracingPayload } from './resourceTelemetryBatch'
+import { AzureMonitorLogExporter } from '@azure/monitor-opentelemetry-exporter'
+import { SeverityNumber } from '@opentelemetry/api-logs'
+import { resourceFromAttributes } from '@opentelemetry/resources'
+import { BatchLogRecordProcessor, LoggerProvider } from '@opentelemetry/sdk-logs'
+import { IS_DEV } from '~/constant'
+import {
+  isDeterministicallySampled,
+  RESOURCE_METADATA_SAMPLE_RATE,
+} from './telemetry_sampling'
 
-const RESOURCE_TELEMETRY_CLIENT_STRING = 'InstrumentationKey=f0634ffa-7578-4751-8f64-581fd90bf347;IngestionEndpoint=https://eastasia-0.in.applicationinsights.azure.com/;LiveEndpoint=https://eastasia.livediagnostics.monitor.azure.com/;ApplicationId=4f19b6fd-9974-4da8-a399-77aac5b3e800'
+const RESOURCE_TELEMETRY_CLIENT_STRING =
+  'InstrumentationKey=f0634ffa-7578-4751-8f64-581fd90bf347;IngestionEndpoint=https://eastasia-0.in.applicationinsights.azure.com/;LiveEndpoint=https://eastasia.livediagnostics.monitor.azure.com/;ApplicationId=4f19b6fd-9974-4da8-a399-77aac5b3e800'
 
 // resource data are enormous, so we need to handle them separately
-export async function setupResourceTelemetryClient(appInsight: typeof import('applicationinsights'), app: LauncherApp, settings: Settings, tags: Record<string, string>, deviceId: string) {
-  const client = new appInsight.TelemetryClient(RESOURCE_TELEMETRY_CLIENT_STRING)
+export async function setupResourceTelemetryClient(
+  app: LauncherApp,
+  settings: Settings,
+  deviceId: string,
+) {
+  const provider = new LoggerProvider({
+    resource: resourceFromAttributes({
+      'service.name': app.env,
+      'service.namespace': 'xmcl',
+      'service.version': IS_DEV ? '0.0.0' : `${app.version}#${app.build}`,
+      'service.instance.id': launcherSessionId,
+      'device.id': deviceId,
+      'device.model.identifier': app.platform.arch,
+      'os.type': app.platform.os,
+      'os.version': app.platform.osRelease,
+    }),
+    processors: [
+      new BatchLogRecordProcessor({
+        exporter: new AzureMonitorLogExporter({
+          connectionString: RESOURCE_TELEMETRY_CLIENT_STRING,
+        }),
+      }),
+    ],
+  })
+  const telemetryLogger = provider.getLogger('xmcl-resource')
   const flights = await app.registry.get(kFlights)
   const stateManager = await app.registry.get(ServiceStateManager)
   const modMetadataService = await app.registry.get(ModMetadataService)
   const logger = app.getLogger('ResourceTelemetry')
 
-  const MAX_MESSAGE_LENGTH = 32768;
+  const MAX_MESSAGE_LENGTH = 32768
 
-  client.addTelemetryProcessor((envelope) => {
-    const baseData = envelope.data.baseData as
-      | { properties?: Record<string, string> }
-      | undefined
-    if (baseData) {
-      baseData.properties = {
-        ...baseData.properties,
+  const trackTrace = (message: string, properties?: Record<string, unknown>) => {
+    const totalChunks = Math.ceil(message.length / MAX_MESSAGE_LENGTH)
+    for (let index = 0; index < totalChunks; index++) {
+      const attributes: Record<string, string | number | boolean> = {
         deviceId,
       }
-    }
-    if (envelope.data.baseType === "MessageData") {
-      const messageData = envelope.data.baseData;
-
-      if (!messageData) {
-        return false;
+      for (const [key, value] of Object.entries(properties ?? {})) {
+        attributes[key] =
+          typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
+            ? value
+            : JSON.stringify(value)
       }
-
-      if (messageData.message.length > MAX_MESSAGE_LENGTH) {
-        const originalMessage = messageData.message;
-        const chunkSize = MAX_MESSAGE_LENGTH;
-        const totalChunks = Math.ceil(originalMessage.length / chunkSize);
-
-        for (let i = 0; i < totalChunks; i++) {
-          const chunk = originalMessage.substring(i * chunkSize, (i + 1) * chunkSize);
-
-          client.trackTrace({
-            message: chunk,
-            severity: messageData.severityLevel,
-            properties: {
-              ...messageData.properties,
-              chunkId: i + 1,
-              totalChunks: totalChunks,
-              originalMessageLength: originalMessage.length,
-            },
-          });
-        }
-
-        return false;
+      if (totalChunks > 1) {
+        attributes.chunkId = index + 1
+        attributes.totalChunks = totalChunks
+        attributes.originalMessageLength = message.length
       }
+      telemetryLogger.emit({
+        body: message.substring(index * MAX_MESSAGE_LENGTH, (index + 1) * MAX_MESSAGE_LENGTH),
+        severityNumber: SeverityNumber.INFO,
+        attributes,
+      })
     }
+  }
 
-    return true;
-  })
-
-
-  client.context.tags = tags
-
-  const getPayload = (sha1: string, metadata: ResourceMetadata, name?: string, domain?: ResourceDomain) => {
+  const getPayload = (
+    sha1: string,
+    metadata: ResourceMetadata,
+    name?: string,
+    domain?: ResourceDomain,
+  ) => {
     const trace: ResourceTracingPayload = {
       name,
       sha1,
@@ -107,15 +129,17 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
     }
     if (metadata.fabric) {
       if (metadata.fabric instanceof Array) {
-        trace.fabric = metadata.fabric.map(f => ({
+        trace.fabric = metadata.fabric.map((f) => ({
           modId: f.id,
           version: f.version,
         }))
       } else {
-        trace.fabric = [{
-          modId: metadata.fabric.id,
-          version: metadata.fabric.version,
-        }]
+        trace.fabric = [
+          {
+            modId: metadata.fabric.id,
+            version: metadata.fabric.version,
+          },
+        ]
       }
     }
 
@@ -126,29 +150,37 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
     (sha1s) => modMetadataService.getLocalMetadataFactsFromSha1s(sha1s),
     (item) => {
       if (settings.disableTelemetry) return
-      client.trackTrace({
-        message: item.message,
-        properties: item.properties,
-      })
+      trackTrace(item.message, item.properties)
     },
-    (error) => logger.warn('Failed to query the local mod metadata database for telemetry deduplication.', error),
+    (error) =>
+      logger.warn(
+        'Failed to query the local mod metadata database for telemetry deduplication.',
+        error,
+      ),
+    1_000,
+    256,
+    (payload) =>
+      isDeterministicallySampled(payload.sha1.toLowerCase(), RESOURCE_METADATA_SAMPLE_RATE),
   )
 
   let javaService: JavaService | undefined
-  app.registry.get(JavaService).then(service => {
+  app.registry.get(JavaService).then((service) => {
     javaService = service
   })
   let instanceService: InstanceService | undefined
-  app.registry.get(InstanceService).then(service => {
+  app.registry.get(InstanceService).then((service) => {
     instanceService = service
   })
 
   // Collect resource metadata
   app.registry.get(kResourceManager).then((manager) => {
-    manager.context.event.on('resourceParsed', (sha1: string, domain: ResourceDomain, metadata: ResourceMetadata) => {
-      if (settings.disableTelemetry) return
-      resourceTelemetry.enqueue(getPayload(sha1, metadata, undefined, domain))
-    })
+    manager.context.event.on(
+      'resourceParsed',
+      (sha1: string, domain: ResourceDomain, metadata: ResourceMetadata) => {
+        if (settings.disableTelemetry) return
+        resourceTelemetry.enqueue(getPayload(sha1, metadata, undefined, domain))
+      },
+    )
     manager.context.event.on('resourceUpdate', (payloads: UpdateResourcePayload[]) => {
       if (settings.disableTelemetry) return
       for (const payload of payloads) {
@@ -175,9 +207,12 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
       service.registerMiddleware({
         name: 'minecraft-run-telemetry',
         async onBeforeLaunch(_, payload, ctx) {
-          const path = payload.side === 'client' ? payload.options.gamePath : payload.options.extraExecOption!.cwd as string
+          const path =
+            payload.side === 'client'
+              ? payload.options.gamePath
+              : (payload.options.extraExecOption!.cwd as string)
           const state = stateManager.get<ResourceState>(getInstanceModStateKey(path))
-          const mods = state?.files.map(m => m.hash)
+          const mods = state?.files.map((m) => m.hash)
           const runtime = instanceService?.state.all[path]?.runtime
           if (mods) {
             ctx.mods = mods
@@ -215,11 +250,6 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
 
   app.registryDisposer(async () => {
     await resourceTelemetry.dispose()
-    await new Promise((resolve) => {
-      client.flush({
-        callback: resolve,
-      })
-    })
-    appInsight.dispose()
+    await provider.shutdown()
   })
 }

@@ -1,12 +1,27 @@
 import { useService } from '@/composables'
 import { ModFile } from '@/util/mod'
 import { Instance, isBedrockInstance } from '@xmcl/instance'
-import { AuthlibInjectorServiceKey, BedrockServiceKey, JavaRecord, LaunchOptions, LaunchServiceKey, UserProfile, UserServiceKey, generateLaunchOptionsWithGlobal } from '@xmcl/runtime-api'
+import {
+  AuthlibInjectorServiceKey,
+  BedrockServiceKey,
+  JavaRecord,
+  LaunchOptions,
+  LaunchServiceKey,
+  UserProfile,
+  UserServiceKey,
+  generateLaunchOptionsWithGlobal,
+} from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { InjectionKey, Ref } from 'vue'
 import { useGlobalSettings, useSettingsState } from './setting'
+import {
+  isRuntimeServiceError,
+  runRendererAction,
+  type RendererActionScope,
+} from '@/rendererAction'
 
-export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>> = Symbol('InstanceLaunch')
+export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>> =
+  Symbol('InstanceLaunch')
 
 export async function resolveLaunchId(
   pid: number,
@@ -26,12 +41,35 @@ export function useInstanceLaunch(
   mods: Ref<ModFile[]>,
 ) {
   const { refreshUser } = useService(UserServiceKey)
-  const { launch, kill, on, removeListener, getGameProcess, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
+  const { launch, kill, on, removeListener, getGameProcess, getGameProcesses } =
+    useService(LaunchServiceKey)
   const { launch: launchBedrock } = useService(BedrockServiceKey)
-  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalPreExecuteCommand, globalPrependCommand, globalMcOptions, globalVmOptions, globalFastLaunch, globalEnv, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib, globalResolution } = useGlobalSettings(globalState)
+  const {
+    globalAssignMemory,
+    globalMaxMemory,
+    globalMinMemory,
+    globalPreExecuteCommand,
+    globalPrependCommand,
+    globalMcOptions,
+    globalVmOptions,
+    globalFastLaunch,
+    globalEnv,
+    globalHideLauncher,
+    globalShowLog,
+    globalDisableAuthlibInjector,
+    globalDisableElyByAuthlib,
+    globalResolution,
+  } = useGlobalSettings(globalState)
   const { getOrInstallAuthlibInjector } = useService(AuthlibInjectorServiceKey)
 
-  type LaunchStatus = '' | 'spawning-process' | 'refreshing-user' | 'preparing-authlib' | 'assigning-memory' | 'checking-permission' | 'launching'
+  type LaunchStatus =
+    | ''
+    | 'spawning-process'
+    | 'refreshing-user'
+    | 'preparing-authlib'
+    | 'assigning-memory'
+    | 'checking-permission'
+    | 'launching'
   type LaunchStatusState = {
     status: LaunchStatus
     controllers: Record<string, AbortController>
@@ -40,7 +78,9 @@ export function useInstanceLaunch(
   const allLaunchingStatus = shallowRef({} as Record<string, LaunchStatusState>)
   const launchToken = computed(() => getLaunchToken(userProfile.value, instance.value.path))
   const launchingStatus = computed(() => allLaunchingStatus.value[launchToken.value]?.status ?? '')
-  const launching = computed(() => Object.values(allLaunchingStatus.value).some(v => v.status.length > 0))
+  const launching = computed(() =>
+    Object.values(allLaunchingStatus.value).some((v) => v.status.length > 0),
+  )
 
   function assignStatus(token: string, status: LaunchStatus, controller?: AbortController) {
     const oldVal = allLaunchingStatus.value
@@ -60,76 +100,65 @@ export function useInstanceLaunch(
 
   const error = ref<any | undefined>(undefined)
 
-  const { data, mutate } = useSWRV(computed(() => `/${instance.value.path}/games`), async () => {
-    console.log('revalidate game processes')
-    const processes = await getGameProcesses()
-    const filtered = processes.filter(p => p.options.gameDirectory === instance.value.path)
-    return filtered
-  })
+  const { data, mutate } = useSWRV(
+    computed(() => `/${instance.value.path}/games`),
+    async () => {
+      console.log('revalidate game processes')
+      const processes = await getGameProcesses()
+      const filtered = processes.filter((p) => p.options.gameDirectory === instance.value.path)
+      return filtered
+    },
+  )
   watch(instance, () => {
     mutate()
   })
 
   const gameProcesses = computed(() => data.value || [])
-  const count = computed(() => data.value?.filter(v => v.side === 'client').length ?? 0)
-  const serverCount = computed(() => data.value?.filter(v => v.side === 'server').length ?? 0)
+  const count = computed(() => data.value?.filter((v) => v.side === 'client').length ?? 0)
+  const serverCount = computed(() => data.value?.filter((v) => v.side === 'server').length ?? 0)
 
   const windowReady = computed(() => {
-    return data.value?.every(p => p.ready)
+    return data.value?.every((p) => p.ready)
   })
 
   on('minecraft-window-ready', ({ pid }) => {
-    const game = data.value?.find(p => p.pid === pid)
+    const game = data.value?.find((p) => p.pid === pid)
     if (game) {
       game.ready = true
     }
   })
 
   on('minecraft-exit', ({ pid }) => {
-    data.value = data.value?.filter(p => p.pid !== pid)
+    data.value = data.value?.filter((p) => p.pid !== pid)
   })
 
-  async function track<T>(token: string, p: Promise<T>, name: LaunchStatus, id: string) {
-    const start = performance.now()
-    if (id) {
-      reportOperation({
-        name,
-        operationId: id,
-      })
-    }
-    try {
-      const controller = new AbortController()
-      if (id) {
-        assignStatus(token, name, controller)
-      }
-      const v = await Promise.race([p, new Promise<T>((resolve, reject) => {
+  async function track<T>(
+    action: RendererActionScope | undefined,
+    token: string,
+    operation: () => Promise<T>,
+    name: LaunchStatus,
+  ) {
+    const controller = new AbortController()
+    assignStatus(token, name, controller)
+    return Promise.race([
+      action ? action.run(operation) : operation(),
+      new Promise<T>((resolve, reject) => {
         controller.signal.onabort = () => {
           reject(new Error('Aborted'))
         }
-      })])
-      if (id) {
-        reportOperation({
-          duration: performance.now() - start,
-          name,
-          operationId: id,
-          success: true,
-        })
-      }
-      return v
-    } catch (e) {
-      if (id) {
-        reportOperation({
-          duration: performance.now() - start,
-          name,
-          operationId: id,
-          success: false,
-        })
-      }
-      throw e
-    }
+      }),
+    ])
   }
 
-  async function generateLaunchOptions(instancePath: string, userProfile: UserProfile, operationId: string, side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>, dry = false) {
+  async function generateLaunchOptions(
+    instancePath: string,
+    userProfile: UserProfile,
+    operationId: string,
+    side = 'client' as 'client' | 'server',
+    overrides?: Partial<LaunchOptions>,
+    dry = false,
+    action?: RendererActionScope,
+  ) {
     const ver = overrides?.version ?? (side === 'client' ? version.value : serverVersion.value)
     const token = getLaunchToken(userProfile, instancePath)
 
@@ -160,8 +189,9 @@ export function useInstanceLaunch(
         globalResolution: globalResolution.value,
         modCount: mods.value.length,
         getOrInstallAuthlibInjector,
-        track: track as any,
-      }
+        track: ((token: string, operation: () => Promise<any>, name: LaunchStatus) =>
+          track(action, token, operation, name)) as any,
+      },
     )
   }
 
@@ -170,7 +200,7 @@ export function useInstanceLaunch(
       return true
     }
     const allMods = mods.value
-    return allMods.some(m => m.modId === 'voicechat')
+    return allMods.some((m) => m.modId === 'voicechat')
   }
 
   function getLaunchToken(userProfile: UserProfile, instancePath: string) {
@@ -178,7 +208,14 @@ export function useInstanceLaunch(
     // return instancePath
   }
 
-  async function _launch(instancePath: string, user: UserProfile, operationId: string, side: 'client' | 'server', overrides?: Partial<LaunchOptions>) {
+  async function _launch(
+    action: RendererActionScope,
+    instancePath: string,
+    user: UserProfile,
+    operationId: string,
+    side: 'client' | 'server',
+    overrides?: Partial<LaunchOptions>,
+  ) {
     const token = getLaunchToken(user, instancePath)
     // Bedrock instances are launched through the Microsoft Store UWP package
     // (Windows only). They have no JVM, version or asset pipeline, so bypass
@@ -187,9 +224,9 @@ export function useInstanceLaunch(
       try {
         error.value = undefined
         assignStatus(token, 'spawning-process')
-        await launchBedrock()
+        await action.run(() => launchBedrock())
       } catch (e) {
-        console.error(e)
+        if (!isRuntimeServiceError(e)) console.error(e)
         error.value = e as any
         throw e
       } finally {
@@ -199,7 +236,15 @@ export function useInstanceLaunch(
     }
     try {
       error.value = undefined
-      const options = await generateLaunchOptions(instancePath, user, operationId, side, overrides)
+      const options = await generateLaunchOptions(
+        instancePath,
+        user,
+        operationId,
+        side,
+        overrides,
+        false,
+        action,
+      )
 
       // Always refresh the access token before launching so the game uses
       // a fresh one. The Singleton lock on refreshUser dedupes with the
@@ -208,17 +253,32 @@ export function useInstanceLaunch(
       // the slow asset check is also enabled — fast launch keeps fast.
       if (user.id && side === 'client') {
         try {
-          await track(token, refreshUser(user.id, { validate: !options.skipAssetsCheck }).then((profile) => { user = profile }), 'refreshing-user', operationId)
+          await track(
+            action,
+            token,
+            () =>
+              refreshUser(user.id, { validate: !options.skipAssetsCheck }).then(
+                (profile: UserProfile) => {
+                user = profile
+                },
+              ),
+            'refreshing-user',
+          )
         } catch (e) {
-          console.error(e)
+          if (!isRuntimeServiceError(e)) console.error(e)
         }
       }
 
       if (shouldEnableVoiceChat() && side === 'client') {
         try {
-          await track(token, windowController.queryAudioPermission(), 'checking-permission', operationId)
+          await track(
+            action,
+            token,
+            () => windowController.queryAudioPermission(),
+            'checking-permission',
+          )
         } catch (e) {
-          console.error(e)
+          if (!isRuntimeServiceError(e)) console.error(e)
         }
       }
 
@@ -234,13 +294,17 @@ export function useInstanceLaunch(
         if (event.operationId === operationId) launchId = event.launchId
       }
       on('minecraft-start', captureLaunch)
-      const pid = await launch(options).finally(() => removeListener('minecraft-start', captureLaunch))
+      const pid = await action
+        .run(() => launch(options))
+        .finally(() => removeListener('minecraft-start', captureLaunch))
       if (pid) {
-        launchId = await resolveLaunchId(pid, launchId, getGameProcess)
+        launchId = await resolveLaunchId(pid, launchId, (pid) =>
+          action.run(() => getGameProcess(pid)),
+        )
         if (!launchId) throw new Error('Launch started but no launch ID was reported')
         mutate()
         if (state.aborted) {
-          await kill(pid)
+          await action.run(() => kill(pid))
         } else {
           data.value?.push({
             pid,
@@ -254,7 +318,7 @@ export function useInstanceLaunch(
       }
       return { operationId }
     } catch (e) {
-      console.error(e)
+      if (!isRuntimeServiceError(e)) console.error(e)
       error.value = e as any
       throw e
     } finally {
@@ -262,19 +326,62 @@ export function useInstanceLaunch(
     }
   }
 
-  async function launchWithTracking(side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>) {
-    const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
-    const instancePath = instance.value.path
-    const user = userProfile.value
-    const token = getLaunchToken(user, instancePath)
-    return await track(token, _launch(instancePath, user, operationId, side, overrides), 'launching', operationId)
+  async function launchWithTracking(
+    side = 'client' as 'client' | 'server',
+    overrides?: Partial<LaunchOptions>,
+    parentAction?: RendererActionScope,
+  ) {
+    return runRendererAction(
+      parentAction,
+      'user_action.minecraft.launch',
+      async (action) => {
+        const operationId =
+          action.context?.traceparent.split('-')[1] ??
+          crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
+        const instancePath = instance.value.path
+        const user = userProfile.value
+        const token = getLaunchToken(user, instancePath)
+        return await track(
+          action,
+          token,
+          () => _launch(action, instancePath, user, operationId, side, overrides),
+          'launching',
+        )
+      },
+      {
+        'game.side': side,
+        'instance.edition': instance.value.edition,
+      },
+    )
   }
 
-  async function launchAs(user: UserProfile, side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>) {
-    const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
-    const instancePath = instance.value.path
-    const token = getLaunchToken(user, instancePath)
-    return await track(token, _launch(instancePath, user, operationId, side, overrides), 'launching', operationId)
+  async function launchAs(
+    user: UserProfile,
+    side = 'client' as 'client' | 'server',
+    overrides?: Partial<LaunchOptions>,
+    parentAction?: RendererActionScope,
+  ) {
+    return runRendererAction(
+      parentAction,
+      'user_action.minecraft.launch',
+      async (action) => {
+        const operationId =
+          action.context?.traceparent.split('-')[1] ??
+          crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
+        const instancePath = instance.value.path
+        const token = getLaunchToken(user, instancePath)
+        return await track(
+          action,
+          token,
+          () => _launch(action, instancePath, user, operationId, side, overrides),
+          'launching',
+        )
+      },
+      {
+        'game.side': side,
+        'instance.edition': instance.value.edition,
+      },
+    )
   }
 
   async function killGame(side: 'client' | 'server' = 'client', force?: boolean) {

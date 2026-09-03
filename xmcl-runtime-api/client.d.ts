@@ -4,6 +4,7 @@
  */
 declare const taskMonitor: import('.').TaskMonitor
 declare const serviceChannels: import('.').ServiceChannels
+declare const rendererTelemetry: import('.').RendererTelemetryChannel
 declare const windowController: import('.').WindowController
 declare const multiplayer: import('.').Multiplayer
 declare const appsHost: import('.').AppsHost

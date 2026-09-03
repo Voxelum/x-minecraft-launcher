@@ -185,7 +185,7 @@ export const launchInstanceCommand = defineCommand({
         globalPreExecuteCommand: settings.globalPreExecuteCommand,
         globalResolution: undefined,
         modCount: input.modCount,
-        track: async (_, p) => p,
+        track: async (_, operation) => operation(),
         getOrInstallAuthlibInjector: () =>
           ctx.call(AuthlibInjectorServiceKey, 'getOrInstallAuthlibInjector'),
       },

@@ -29,8 +29,6 @@ interface LaunchServiceEventMap {
   }
   'minecraft-stdout': { pid: number; stdout: string }
   'minecraft-stderr': { pid: number; stderr: string }
-  'launch-performance-pre': { id: string; name: string }
-  'launch-performance': { id: string; name: string; duration: number; success: boolean }
   'error': LaunchException | Error
 }
 
@@ -158,20 +156,6 @@ export interface GameProcess {
   options: LaunchOptions
 }
 
-export interface ReportOperationPayload {
-  operationId: string
-  /**
-   * Name of the operation
-   */
-  name: string
-  /**
-   * The duration of the operation. If empty, it means the operation is just started
-   */
-  duration?: number
-
-  success?: boolean
-}
-
 export interface CreateLaunchShortcutOptions {
   instancePath: string
   userId: string
@@ -206,10 +190,6 @@ export interface LaunchService extends GenericEventEmitter<LaunchServiceEventMap
    * Get all game processes
    */
   getGameProcesses(): Promise<GameProcess[]>
-  /**
-   * Only used for telemetry
-   */
-  reportOperation(options: ReportOperationPayload): Promise<void>
   /**
    * Create a launch shortcut
    */

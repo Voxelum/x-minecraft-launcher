@@ -1,6 +1,8 @@
 import { Task, TaskState } from '@xmcl/runtime-api'
+import { SpanStatusCode } from '@opentelemetry/api'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '~/app'
+import { startRuntimeInternalSpan } from '../telemetry_context'
 import { TaskInstance, kTasks } from '../task'
 
 export const pluginTasks: LauncherAppPlugin = (app) => {
@@ -75,6 +77,19 @@ export const pluginTasks: LauncherAppPlugin = (app) => {
   app.registry.register(kTasks, {
     getActiveTask,
     create: (task) => {
+      const taskType = /^[a-zA-Z0-9_.-]{1,64}$/.test(task.type) ? task.type : 'unknown'
+      const taskOperation =
+        'operation' in task &&
+        typeof task.operation === 'string' &&
+        /^[a-zA-Z0-9_.-]{1,64}$/.test(task.operation)
+          ? task.operation
+          : undefined
+      const taskSpan = startRuntimeInternalSpan('task.execute', {
+        'task.type': taskType,
+        'task.concurrent': active.filter((value) => value.state === TaskState.Running).length + 1,
+        ...(taskOperation ? { 'task.operation': taskOperation } : {}),
+      })
+      let taskSpanEnded = false
       const obj = {
         ...task,
         id: randomUUID(),
@@ -84,12 +99,38 @@ export const pluginTasks: LauncherAppPlugin = (app) => {
         error: undefined,
       } as TaskInstance<any>
       const controller = new AbortController()
+      const endTaskSpan = (
+        outcome: 'success' | 'error' | 'cancelled',
+        error?: unknown,
+      ) => {
+        if (taskSpanEnded) return
+        taskSpanEnded = true
+        taskSpan?.setAttribute('task.outcome', outcome)
+        if (obj.progress && typeof obj.progress === 'object') {
+          if (typeof obj.progress.progress === 'number') {
+            taskSpan?.setAttribute('task.progress.current', obj.progress.progress)
+          }
+          if (typeof obj.progress.total === 'number') {
+            taskSpan?.setAttribute('task.progress.total', obj.progress.total)
+          }
+        }
+        if (outcome === 'error') {
+          taskSpan?.setStatus({ code: SpanStatusCode.ERROR })
+          taskSpan?.setAttribute(
+            'error.type',
+            error instanceof Error ? error.name : typeof error,
+          )
+        }
+        taskSpan?.end()
+      }
       controller.signal.addEventListener('abort', () => {
         obj.state = TaskState.Cancelled
+        endTaskSpan('cancelled')
         checkTaskCompleted()
       })
       const onComplete = () => {
         obj.state = TaskState.Succeed
+        endTaskSpan('success')
         checkTaskCompleted()
       }
       const onFail = (error: unknown) => {
@@ -98,6 +139,7 @@ export const pluginTasks: LauncherAppPlugin = (app) => {
         }
         obj.state = TaskState.Failed
         obj.error = error as any
+        endTaskSpan('error', error)
         checkTaskCompleted()
       }
       Object.defineProperties(obj, {

@@ -7,6 +7,7 @@ import { kInstanceFiles } from './instanceFiles'
 import { UnresolvedFilesDialogKey } from './instanceUpdate'
 import { LaunchMenuItem } from './launchButton'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
+import type { RendererActionScope } from '@/rendererAction'
 
 export const enum LaunchMenuItemIssue {
   None = 0,
@@ -39,7 +40,9 @@ export function useInstanceLaunchMenuItems() {
   } = injection(kInstanceFiles)
 
   const currentInstruction = computed(() => getCurrentInstanceState(instruction.value, path.value))
-  const currentInstallStatus = computed(() => getCurrentInstanceState(instanceInstallStatus.value, path.value))
+  const currentInstallStatus = computed(() =>
+    getCurrentInstanceState(instanceInstallStatus.value, path.value),
+  )
   const currentUnresolvedFiles = computed(() => currentInstallStatus.value?.unresolvedFiles ?? [])
   const hasUnresolvedFiles = computed(() => currentUnresolvedFiles.value.length > 0)
 
@@ -95,10 +98,10 @@ export function useInstanceLaunchMenuItems() {
     return flags
   })
 
-  const fixInstanceFileIssue = async (instancePath = path.value) => {
+  const fixInstanceFileIssue = async (instancePath = path.value, action?: RendererActionScope) => {
     const status = getCurrentInstanceState(instanceInstallStatus.value, instancePath)
     if (status && status.pendingFileCount > 0) {
-      await resumeInstall(status.instance).catch((e) => {
+      await resumeInstall(status.instance, undefined, action).catch((e) => {
         if (e.name === '') {
           throw e
         }
@@ -142,9 +145,13 @@ export function useInstanceLaunchMenuItems() {
     if (flags & LaunchMenuItemIssue.UnresolvedFiles) {
       items.push({
         title: t('diagnosis.unresolvedFiles.title'),
-        description: t('diagnosis.unresolvedFiles.description', {
-          count: currentUnresolvedFiles.value.length,
-        }, currentUnresolvedFiles.value.length),
+        description: t(
+          'diagnosis.unresolvedFiles.description',
+          {
+            count: currentUnresolvedFiles.value.length,
+          },
+          currentUnresolvedFiles.value.length,
+        ),
         icon: 'help_outline',
         onClick: () => showUnresolvedFilesDialog(),
       })

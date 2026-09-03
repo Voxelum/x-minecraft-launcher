@@ -301,6 +301,7 @@
   </SettingCard>
 </template>
 <script lang="ts" setup>
+import { runInRendererAction, type RendererActionScope } from '@/rendererAction'
 import SettingCard from '@/components/SettingCard.vue'
 import { useRefreshable } from '@/composables'
 import { kInstance } from '@/composables/instance'
@@ -798,11 +799,11 @@ function getDesiredConfiguration(): InstanceServerConfig {
   }
 }
 
-async function persistDesiredConfiguration() {
-  await editInstance({
+async function persistDesiredConfiguration(action?: RendererActionScope) {
+  await runInRendererAction(action, () => editInstance({
     instancePath: path.value,
     serverConfig: getDesiredConfiguration(),
-  })
+  }))
 }
 
 const persistDesiredConfigurationDebounced = useDebounceFn(persistDesiredConfiguration, 300)
@@ -820,55 +821,55 @@ watch([
   if (initialized.value) persistDesiredConfigurationDebounced()
 }, { deep: true })
 
-async function applyLocalConfiguration() {
+async function applyLocalConfiguration(action?: RendererActionScope) {
   const instPath = path.value
   const _maxPlayers = maxPlayers.value
   const _port = port.value
   const _motd = motd.value
   const _onlineMode = onlineMode.value
 
-  await persistDesiredConfiguration()
-  await setEULA(instPath, isAcceptEula.value)
-  await setServerProperties(instPath, {
+  await persistDesiredConfiguration(action)
+  await runInRendererAction(action, () => setEULA(instPath, isAcceptEula.value))
+  await runInRendererAction(action, () => setServerProperties(instPath, {
     port: _port ?? 25565,
     motd: _motd || 'A Minecraft Server',
     'max-players': _maxPlayers ?? 20,
     'online-mode': _onlineMode ?? false,
-  })
+  }))
 }
 
-async function applyConfiguration() {
+async function applyConfiguration(action?: RendererActionScope) {
   if (target !== 'remote') return
-  const original = parseServerProperties(await remote.readRemoteFile('server.properties'))
-  await remote.writeRemoteFile('eula.txt', `#By agreeing to the Minecraft EULA.\neula=${isAcceptEula.value}\n`)
-  await remote.writeRemoteFile('server.properties', stringifyServerProperties({
+  const original = parseServerProperties(await runInRendererAction(action, () => remote.readRemoteFile('server.properties')))
+  await runInRendererAction(action, () => remote.writeRemoteFile('eula.txt', `#By agreeing to the Minecraft EULA.\neula=${isAcceptEula.value}\n`))
+  await runInRendererAction(action, () => remote.writeRemoteFile('server.properties', stringifyServerProperties({
     ...original,
     port: port.value ?? 25565,
     motd: motd.value || 'A Minecraft Server',
     'max-players': maxPlayers.value ?? 20,
     'online-mode': onlineMode.value ?? false,
-  }))
+  })))
 }
 
-async function prepareServer() {
+async function prepareServer(action?: RendererActionScope) {
   const instPath = path.value
   const _mods = selectedMods.value
 
-  await applyLocalConfiguration()
+  await applyLocalConfiguration(action)
 
-  const version = await install()
+  const version = await install(action)
 
   if (worldMode.value === 'instance' && linkedWorld.value) {
-    await linkSaveAsServerWorld({
+    await runInRendererAction(action, () => linkSaveAsServerWorld({
       instancePath: instPath,
       saveName: linkedWorld.value,
-    })
+    }))
   }
   if (!serverModsLocked.value) {
-    await installToServerInstance({
+    await runInRendererAction(action, () => installToServerInstance({
       path: instPath,
       files: _mods.map(v => v.path),
-    })
+    }))
   }
 
   return version

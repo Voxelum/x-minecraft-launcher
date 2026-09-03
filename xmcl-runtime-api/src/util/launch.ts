@@ -34,7 +34,12 @@ export interface GenerateLaunchOptions {
   globalResolution?: { width?: number; height?: number; fullscreen?: boolean; monitor?: string }
   modCount: number
   getOrInstallAuthlibInjector: () => Promise<string>
-  track: <T, S = string>(token: string, p: Promise<T>, name: S, id: string) => Promise<T>
+  track: <T, S = string>(
+    token: string,
+    operation: () => Promise<T>,
+    name: S,
+    id: string,
+  ) => Promise<T>
 }
 
 export async function generateLaunchOptionsWithGlobal(
@@ -91,7 +96,7 @@ export async function generateLaunchOptionsWithGlobal(
   ) {
     try {
       yggdrasilAgent = {
-        jar: await track(token, getOrInstallAuthlibInjector(), 'preparing-authlib', operationId),
+        jar: await track(token, getOrInstallAuthlibInjector, 'preparing-authlib', operationId),
         server: userProfile.authority,
       }
     } catch {

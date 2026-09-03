@@ -81,4 +81,25 @@ describe('resource telemetry deduplication', () => {
     expect(onLookupError).toHaveBeenCalledWith(error)
     expect(send).toHaveBeenCalledOnce()
   })
+
+  it('applies deterministic sampling before lookup and deduplication', async () => {
+    const lookup = vi.fn().mockResolvedValue(undefined)
+    const send = vi.fn()
+    const batch = new ResourceTelemetryBatch(
+      lookup,
+      send,
+      vi.fn(),
+      1_000,
+      256,
+      (payload) => payload.sha1 === 'sampled',
+    )
+
+    batch.enqueue({ sha1: 'dropped', domain: ResourceDomain.Mods })
+    batch.enqueue({ sha1: 'sampled', domain: ResourceDomain.Mods })
+    await batch.flush()
+
+    expect(lookup).toHaveBeenCalledWith(['sampled'])
+    expect(send).toHaveBeenCalledOnce()
+    expect(send.mock.calls[0][0].payload.sha1).toBe('sampled')
+  })
 })

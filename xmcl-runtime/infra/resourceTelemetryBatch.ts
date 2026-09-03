@@ -86,11 +86,12 @@ export class ResourceTelemetryBatch {
     private readonly onLookupError: (error: unknown) => void,
     private readonly debounceMs = 1_000,
     private readonly maxBatchSize = 256,
+    private readonly shouldSample: (payload: ResourceTracingPayload) => boolean = () => true,
   ) {
   }
 
   enqueue(payload: ResourceTracingPayload, properties?: Record<string, string>) {
-    if (this.disposed) return
+    if (this.disposed || !this.shouldSample(payload)) return
     const message = JSON.stringify(payload)
     if (this.seen.has(message)) return
     this.seen.add(message)

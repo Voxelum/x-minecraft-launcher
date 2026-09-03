@@ -17,7 +17,16 @@ import os, { freemem, totalmem } from 'os'
 import { statfs } from 'fs/promises'
 import { join, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
-import { kClientToken, kGFW, kLogRoot, launcherSessionId } from '~/infra'
+import {
+  endRendererAction,
+  getActiveRendererActionId,
+  getActiveTraceparent,
+  kClientToken,
+  kGFW,
+  kLogRoot,
+  launcherSessionId,
+  setActiveSpanAttributes,
+} from '~/infra'
 import { kNetworkInterface } from '~/network'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { kSettings } from '~/settings'
@@ -209,6 +218,14 @@ export class BaseService extends AbstractService implements IBaseService {
   async quitAndInstall() {
     const settings = await this.getSettings()
     if (settings.updateStatus === 'ready' && settings.updateInfo) {
+      const actionId = getActiveRendererActionId()
+      if (actionId) {
+        endRendererAction({
+          id: actionId,
+          outcome: 'success',
+          attributes: { 'update.phase': 'apply' },
+        })
+      }
       await this.app.updater.installUpdateAndQuit(settings.updateInfo)
     } else {
       this.warn('There is no update available!')
@@ -225,6 +242,10 @@ export class BaseService extends AbstractService implements IBaseService {
       const settings = await this.getSettings()
       this.log('Check update')
       const info = await this.app.updater.checkUpdateTask()
+      setActiveSpanAttributes({
+        'update.available': info.newUpdate,
+        'update.phase': 'check',
+      })
       settings.updateInfoSet(info)
       if (info.newUpdate) {
         settings.updateStatusSet('pending')
@@ -250,6 +271,10 @@ export class BaseService extends AbstractService implements IBaseService {
       throw new Error("Cannot download update if we don't check the version update!")
     }
     const updateInfo = settings.updateInfo
+    setActiveSpanAttributes({
+      'update.operation': updateInfo.operation,
+      'update.phase': 'download',
+    })
 
     this.log(`Start to download update: ${updateInfo.name} operation=${updateInfo.operation}`)
     const task = this.tasks.create<DownloadUpdateTask>({
@@ -333,21 +358,35 @@ export class BaseService extends AbstractService implements IBaseService {
       return
     }
 
-    // Drop any stale `--migrate <path>` left in argv by a previous migration.
+    // Drop any stale migration arguments left in argv by a previous migration.
     // The relaunched process reads the migration target from argv, so a
     // leftover flag would otherwise win over the new destination and make the
     // migration silently do nothing.
     const argv = process.argv.slice(1)
     const cleaned: string[] = []
     for (let i = 0; i < argv.length; i++) {
-      if (argv[i] === '--migrate') {
+      if (argv[i] === '--migrate' || argv[i] === '--migration-traceparent') {
         i++ // also skip its value
         continue
       }
       cleaned.push(argv[i])
     }
 
-    this.app.relaunch([...cleaned, '--migrate', destination])
+    const actionId = getActiveRendererActionId()
+    const traceparent = getActiveTraceparent()
+    if (actionId) {
+      endRendererAction({
+        id: actionId,
+        outcome: 'success',
+        attributes: { 'migration.phase': 'requested' },
+      })
+    }
+    this.app.relaunch([
+      ...cleaned,
+      '--migrate',
+      destination,
+      ...(traceparent ? ['--migration-traceparent', traceparent] : []),
+    ])
     this.app.quit()
   }
 
@@ -390,7 +429,7 @@ export class BaseService extends AbstractService implements IBaseService {
             freeBytes: diskInfo.bavail * diskInfo.bsize,
           }
         : undefined,
-      gpus: (gpuInfo.gpuDevice ?? []).map(gpu => ({
+      gpus: (gpuInfo.gpuDevice ?? []).map((gpu) => ({
         active: gpu.active,
         vendorId: gpu.vendorId,
         deviceId: gpu.deviceId,

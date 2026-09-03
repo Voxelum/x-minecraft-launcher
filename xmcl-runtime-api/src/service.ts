@@ -12,8 +12,7 @@ interface SyncableEventMap {
 /**
  * Low level syncable channel to communicate with server to sync state.
  */
-export interface SyncableStateChannel<T> extends GenericEventEmitter<SyncableEventMap> {
-}
+export interface SyncableStateChannel<T> extends GenericEventEmitter<SyncableEventMap> {}
 
 type ServiceEventMap<T> = T extends GenericEventEmitter<infer Events> ? Events : {}
 
@@ -31,7 +30,19 @@ export type ServiceChannel<T> = {
     method: M,
     ...payload: MT extends (...args: infer A) => any ? A : never
   ): Promise<MT extends (...args: any) => any ? Awaited<ReturnType<MT>> : never>
+  callWithTrace<M extends keyof T, MT = T[M]>(
+    traceContext: ServiceCallTraceContext,
+    method: M,
+    ...payload: MT extends (...args: infer A) => any ? A : never
+  ): Promise<MT extends (...args: any) => any ? Awaited<ReturnType<MT>> : never>
 } & GenericEventEmitter<SyncableEventMap & ServiceEventMap<T>>
+
+export interface ServiceCallTraceContext {
+  traceparent: string
+  tracestate?: string
+  actionId?: string
+  baggage?: string
+}
 
 export interface StateMetadata {
   /**

@@ -1,6 +1,8 @@
 import { InjectionKey } from 'vue'
+import type { RendererActionScope } from '@/rendererAction'
 
-export const kInstanceServerLaunch: InjectionKey<ReturnType<typeof useInstanceServerLaunch>> = Symbol('InstanceServerLaunch')
+export const kInstanceServerLaunch: InjectionKey<ReturnType<typeof useInstanceServerLaunch>> =
+  Symbol('InstanceServerLaunch')
 
 /**
  * Shared state + action bridge for launching the dedicated local server.
@@ -24,33 +26,30 @@ export function useInstanceServerLaunch() {
 
   let onLaunch: (() => Promise<void> | void) | undefined
   let onKill: (() => void) | undefined
-  let onPrepare: (() => Promise<string>) | undefined
-  let onApplyConfiguration: (() => Promise<void>) | undefined
+  let onPrepare: ((action?: RendererActionScope) => Promise<string>) | undefined
+  let onApplyConfiguration: ((action?: RendererActionScope) => Promise<void>) | undefined
 
-  function setHandlers(handlers: {
-    launch?: () => Promise<void> | void
-    kill?: () => void
-  }) {
+  function setHandlers(handlers: { launch?: () => Promise<void> | void; kill?: () => void }) {
     onLaunch = handlers.launch
     onKill = handlers.kill
   }
 
   function setPreparationHandlers(handlers: {
-    prepare?: () => Promise<string>
-    applyConfiguration?: () => Promise<void>
+    prepare?: (action?: RendererActionScope) => Promise<string>
+    applyConfiguration?: (action?: RendererActionScope) => Promise<void>
   }) {
     onPrepare = handlers.prepare
     onApplyConfiguration = handlers.applyConfiguration
   }
 
-  async function prepareServer() {
+  async function prepareServer(action?: RendererActionScope) {
     if (!onPrepare) throw new Error('Server configuration is not ready.')
-    return onPrepare()
+    return onPrepare(action)
   }
 
-  async function applyServerConfiguration() {
+  async function applyServerConfiguration(action?: RendererActionScope) {
     if (!onApplyConfiguration) throw new Error('Server configuration is not ready.')
-    await onApplyConfiguration()
+    await onApplyConfiguration(action)
   }
 
   async function launchServer() {

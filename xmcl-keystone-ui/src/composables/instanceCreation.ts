@@ -1,13 +1,27 @@
 import { useService } from '@/composables'
 import { injection } from '@/util/inject'
-import { generateBaseName, generateDistinctName, getEffectiveInstanceName } from '@/util/instanceName'
-import { InstanceInstallServiceKey, InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, VersionMetadataServiceKey } from '@xmcl/runtime-api'
+import {
+  generateBaseName,
+  generateDistinctName,
+  getEffectiveInstanceName,
+} from '@/util/instanceName'
+import {
+  InstanceInstallServiceKey,
+  InstanceOptionsServiceKey,
+  InstanceResourcePacksServiceKey,
+  InstanceSavesServiceKey,
+  InstanceServerInfoServiceKey,
+  InstanceServiceKey,
+  InstanceShaderPacksServiceKey,
+  VersionMetadataServiceKey,
+} from '@xmcl/runtime-api'
 import type { GameProfile } from '@xmcl/user'
 import { useLocalStorage } from '@vueuse/core'
 import { InjectionKey, Ref, reactive } from 'vue'
 import { kLatestMinecraftVersion } from './version'
 import { useNotifier } from './notifier'
 import { CreateInstanceOptions, Instance, InstanceData, InstanceFile } from '@xmcl/instance'
+import { withRendererAction } from '@/rendererAction'
 
 export type InstanceCreation = ReturnType<typeof useInstanceCreation>
 
@@ -64,15 +78,23 @@ export interface InstanceLinkOperations {
  */
 export async function applyInstanceLinkPreferences(
   instancePath: string,
-  preferences: Pick<InstanceCreationLinkPreferences, 'saves' | 'resourcepacks' | 'shaderpacks' | 'options' | 'servers'>,
+  preferences: Pick<
+    InstanceCreationLinkPreferences,
+    'saves' | 'resourcepacks' | 'shaderpacks' | 'options' | 'servers'
+  >,
   operations: InstanceLinkOperations,
 ): Promise<string[]> {
   const tasks: Array<{ folder: string; run: () => Promise<void> }> = []
-  if (preferences.saves) tasks.push({ folder: 'saves', run: () => operations.linkSaves(instancePath) })
-  if (preferences.resourcepacks) tasks.push({ folder: 'resourcepacks', run: () => operations.linkResourcePacks(instancePath) })
-  if (preferences.shaderpacks) tasks.push({ folder: 'shaderpacks', run: () => operations.linkShaderPacks(instancePath) })
-  if (preferences.options) tasks.push({ folder: 'options', run: () => operations.linkOptions(instancePath) })
-  if (preferences.servers) tasks.push({ folder: 'servers', run: () => operations.linkServers(instancePath) })
+  if (preferences.saves)
+    tasks.push({ folder: 'saves', run: () => operations.linkSaves(instancePath) })
+  if (preferences.resourcepacks)
+    tasks.push({ folder: 'resourcepacks', run: () => operations.linkResourcePacks(instancePath) })
+  if (preferences.shaderpacks)
+    tasks.push({ folder: 'shaderpacks', run: () => operations.linkShaderPacks(instancePath) })
+  if (preferences.options)
+    tasks.push({ folder: 'options', run: () => operations.linkOptions(instancePath) })
+  if (preferences.servers)
+    tasks.push({ folder: 'servers', run: () => operations.linkServers(instancePath) })
   const failed: string[] = []
   for (const task of tasks) {
     try {
@@ -106,9 +128,15 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
   })
   const placeHolderName = computed(() => {
     if (data.edition === 'bedrock') {
-      return generateDistinctName('Bedrock', instances.value.map(i => i.name))
+      return generateDistinctName(
+        'Bedrock',
+        instances.value.map((i) => i.name),
+      )
     }
-    return generateDistinctName(generateBaseName(data.runtime), instances.value.map(i => i.name))
+    return generateDistinctName(
+      generateBaseName(data.runtime),
+      instances.value.map((i) => i.name),
+    )
   })
   const getNewRuntime = () => ({
     minecraft: release.value || '',
@@ -177,8 +205,8 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     data.java = template.java ?? ''
     data.showLog = template.showLog
     data.hideLauncher = template.hideLauncher
-    data.vmOptions = [...template.vmOptions ?? []]
-    data.mcOptions = [...template.mcOptions ?? []]
+    data.vmOptions = [...(template.vmOptions ?? [])]
+    data.mcOptions = [...(template.mcOptions ?? [])]
     data.maxMemory = template.maxMemory ?? 0
     data.minMemory = template.minMemory ?? 0
     data.author = template.author ?? ''
@@ -235,73 +263,104 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
      * Commit this creation. It will create and select the instance.
      */
     async create(onCreated?: (newPath: string) => void) {
-      try {
-        loading.value = true
-        // Snapshot the manual-create link intent BEFORE `reset()` runs (reset
-        // flips `isManual` back to true and the folder links must never be
-        // synthesized for an import/template flow).
-        const shouldApplyLinks = isManual.value && data.edition !== 'bedrock'
-        const linkSnapshot: InstanceCreationLinkPreferences = { ...linkPreferences.value }
-        const name = getEffectiveInstanceName(data.name, placeHolderName.value)
-        if (!name) {
-          error.value = new Error('Instance name is required')
-          return
-        }
-        data.name = name
-        // Convert reactive refs into plain serializable objects for service calls.
-        const pendingFiles = JSON.parse(JSON.stringify(files.value)) as InstanceFile[]
-        const pendingUpstream = data.upstream
-          ? JSON.parse(JSON.stringify(data.upstream))
-          : undefined
-        const payload = JSON.parse(JSON.stringify({
-          ...data,
-          resourcepacks: pendingFiles.some(f => f.path.startsWith('resourcepacks')),
-          shaderpacks: pendingFiles.some(f => f.path.startsWith('shaderpacks')),
-        })) as CreateInstanceOptions
-        if (!payload.minMemory) payload.minMemory = undefined
-        if (!payload.maxMemory) payload.maxMemory = undefined
-        if (payload.vmOptions?.length === 0) payload.vmOptions = undefined
-        if (payload.mcOptions?.length === 0) payload.mcOptions = undefined
-        delete payload.hideLauncher
-        delete payload.showLog
-        const newPath = await create(payload)
-        onCreated?.(newPath)
-        reset()
-        if (pendingFiles.length > 0) {
-          await installInstanceFiles(pendingUpstream ? {
-            path: newPath,
-            files: pendingFiles,
-            upstream: pendingUpstream,
-          } : {
-            path: newPath,
-            oldFiles: [],
-            files: pendingFiles,
-          }).catch((e) => {
-            console.error(e)
-          })
-        }
-        // Manual-create only: link the selected shared folders using the same
-        // runtime services as the local link switches. Each link is applied
-        // independently so one failure does not hide the others, and the
-        // instance stays usable with an ordinary folder for any failed link.
-        if (shouldApplyLinks && (linkSnapshot.saves || linkSnapshot.resourcepacks || linkSnapshot.shaderpacks || linkSnapshot.options || linkSnapshot.servers)) {
-          const failed = await applyInstanceLinkPreferences(newPath, linkSnapshot, {
-            linkSaves: linkSharedSave,
-            linkResourcePacks: linkSharedResourcePacks,
-            linkShaderPacks: linkSharedShaderPacks,
-            linkOptions: linkGameOptions,
-            linkServers: linkServersList,
-          })
-          for (const folder of failed) {
-            notify({ level: 'error', title: t('instances.linkFailed', { folder }) })
+      return withRendererAction(
+        'user_action.instance.create',
+        async (action) => {
+          try {
+            loading.value = true
+            // Snapshot the manual-create link intent BEFORE `reset()` runs (reset
+            // flips `isManual` back to true and the folder links must never be
+            // synthesized for an import/template flow).
+            const shouldApplyLinks = isManual.value && data.edition !== 'bedrock'
+            const linkSnapshot: InstanceCreationLinkPreferences = { ...linkPreferences.value }
+            const name = getEffectiveInstanceName(data.name, placeHolderName.value)
+            if (!name) {
+              error.value = new Error('Instance name is required')
+              action.fail(error.value)
+              return
+            }
+            data.name = name
+            // Convert reactive refs into plain serializable objects for service calls.
+            const pendingFiles = JSON.parse(JSON.stringify(files.value)) as InstanceFile[]
+            const pendingUpstream = data.upstream
+              ? JSON.parse(JSON.stringify(data.upstream))
+              : undefined
+            const payload = JSON.parse(
+              JSON.stringify({
+                ...data,
+                resourcepacks: pendingFiles.some((f) => f.path.startsWith('resourcepacks')),
+                shaderpacks: pendingFiles.some((f) => f.path.startsWith('shaderpacks')),
+              }),
+            ) as CreateInstanceOptions
+            if (!payload.minMemory) payload.minMemory = undefined
+            if (!payload.maxMemory) payload.maxMemory = undefined
+            if (payload.vmOptions?.length === 0) payload.vmOptions = undefined
+            if (payload.mcOptions?.length === 0) payload.mcOptions = undefined
+            delete payload.hideLauncher
+            delete payload.showLog
+            const newPath = await action.run(() => create(payload))
+            onCreated?.(newPath)
+            reset()
+            if (pendingFiles.length > 0) {
+              await action
+                .run(() =>
+                  installInstanceFiles(
+                    pendingUpstream
+                      ? {
+                          path: newPath,
+                          files: pendingFiles,
+                          upstream: pendingUpstream,
+                        }
+                      : {
+                          path: newPath,
+                          oldFiles: [],
+                          files: pendingFiles,
+                        },
+                  ),
+                )
+                .catch((e) => {
+                  action.fail(e)
+                  console.error(e)
+                })
+            }
+            // Manual-create only: link the selected shared folders using the same
+            // runtime services as the local link switches. Each link is applied
+            // independently so one failure does not hide the others, and the
+            // instance stays usable with an ordinary folder for any failed link.
+            if (
+              shouldApplyLinks &&
+              (linkSnapshot.saves ||
+                linkSnapshot.resourcepacks ||
+                linkSnapshot.shaderpacks ||
+                linkSnapshot.options ||
+                linkSnapshot.servers)
+            ) {
+              const failed = await applyInstanceLinkPreferences(newPath, linkSnapshot, {
+                linkSaves: (path) => action.run(() => linkSharedSave(path)),
+                linkResourcePacks: (path) => action.run(() => linkSharedResourcePacks(path)),
+                linkShaderPacks: (path) => action.run(() => linkSharedShaderPacks(path)),
+                linkOptions: (path) => action.run(() => linkGameOptions(path)),
+                linkServers: (path) => action.run(() => linkServersList(path)),
+              })
+              if (failed.length > 0) {
+                action.fail(new Error(`Failed to link ${failed.length} shared instance folders`))
+              }
+              for (const folder of failed) {
+                notify({ level: 'error', title: t('instances.linkFailed', { folder }) })
+              }
+            }
+            return newPath
+          } catch (e) {
+            action.fail(e)
+            error.value = e
+          } finally {
+            loading.value = false
           }
-        }
-        return newPath
-      } catch (e) {
-        error.value = e
-      } finally {
-        loading.value = false
-      }
+        },
+        {
+          'instance.edition': data.edition,
+        },
+      )
     },
     /**
      * Reset the change

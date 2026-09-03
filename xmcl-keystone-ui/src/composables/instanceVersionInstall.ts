@@ -1,12 +1,9 @@
-import { appInsights } from '@/telemetry'
+import { runRendererAction, withRendererAction, type RendererActionScope } from '@/rendererAction'
+import { isRuntimeServiceError, trackRendererException } from '@/telemetry'
 import { AnyError, getErrorMessage, isDownloadError } from '@/util/error'
 import type { JavaVersion, ResolvedVersion } from '@xmcl/core'
 import type { InstallIssue } from '@xmcl/installer'
-import {
-  InstanceServiceKey,
-  JavaRecord,
-  VersionInstallServiceKey,
-} from '@xmcl/runtime-api'
+import { InstanceServiceKey, JavaRecord, VersionInstallServiceKey } from '@xmcl/runtime-api'
 import { Mutex } from 'async-mutex'
 import { InjectionKey, Ref, ShallowRef } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
@@ -28,6 +25,16 @@ export const kInstanceVersionInstall = Symbol('InstanceVersionInstall') as Injec
 >
 const kAbort = Symbol('Aborted')
 
+function getLoaderType(runtime: PartialRuntimeVersions) {
+  if (runtime.neoForged) return 'neoforge'
+  if (runtime.forge) return 'forge'
+  if (runtime.fabricLoader) return 'fabric'
+  if (runtime.quiltLoader) return 'quilt'
+  if (runtime.optifine) return 'optifine'
+  if (runtime.labyMod) return 'labymod'
+  return 'vanilla'
+}
+
 function getJavaPathOrInstall(
   instances: Instance[],
   javas: JavaRecord[],
@@ -47,35 +54,68 @@ function getJavaPathOrInstall(
 function useInstanceVersionInstall() {
   const { install: installVersion } = useService(VersionInstallServiceKey)
 
-  async function install(runtime: PartialRuntimeVersions, instancePath = '', selectedVersion = '') {
-    try {
-      const result = await installVersion({
-        type: 'instance',
-        instancePath,
-        runtime,
-        selectedVersion,
-      })
-      console.log('[install-plan]', result)
-      return result.version
-    } catch (e) {
-      const exception = e instanceof Error
-        ? e
-        : new AnyError(
-            'InstallMinecraftClientError',
-            getErrorMessage(e),
-            undefined,
-            e && typeof e === 'object' && !Array.isArray(e) ? e : undefined,
+  async function install(
+    runtime: PartialRuntimeVersions,
+    instancePath = '',
+    selectedVersion = '',
+    parentAction?: RendererActionScope,
+  ) {
+    return runRendererAction(
+      parentAction,
+      'user_action.instance.install',
+      async (action) => {
+        try {
+          const result = await action.run(() =>
+            installVersion({
+              type: 'instance',
+              instancePath,
+              runtime,
+              selectedVersion,
+            }),
           )
-      if (exception.name === 'Error') {
-        exception.name = 'InstallMinecraftClientError'
-      }
-      appInsights.trackException({ exception })
-      throw exception
-    }
+          console.log('[install-plan]', result)
+          return result.version
+        } catch (e) {
+          if (isRuntimeServiceError(e)) {
+            throw e
+          }
+          const exception =
+            e instanceof Error
+              ? e
+              : new AnyError(
+                  'InstallMinecraftClientError',
+                  getErrorMessage(e),
+                  undefined,
+                  e && typeof e === 'object' && !Array.isArray(e) ? e : undefined,
+                )
+          if (exception.name === 'Error') {
+            exception.name = 'InstallMinecraftClientError'
+          }
+          void trackRendererException(exception)
+          throw exception
+        }
+      },
+      {
+        'game.side': 'client',
+        'loader.type': getLoaderType(runtime),
+      },
+    )
   }
 
-  async function installServer(runtime: RuntimeVersions, path: string) {
-    return installVersion({ type: 'server', runtime, path })
+  async function installServer(
+    runtime: RuntimeVersions,
+    path: string,
+    parentAction?: RendererActionScope,
+  ) {
+    return runRendererAction(
+      parentAction,
+      'user_action.instance.install',
+      (action) => action.run(() => installVersion({ type: 'server', runtime, path })),
+      {
+        'game.side': 'server',
+        'loader.type': getLoaderType(runtime),
+      },
+    )
   }
 
   return {
@@ -107,6 +147,7 @@ export function useInstanceVersionInstallInstruction(
   async function update(
     version: InstanceResolveVersion | undefined,
     jres: JavaRecord[] = javas.value,
+    action?: RendererActionScope,
   ) {
     if (!version) return
     const loadingInstance = version.instance
@@ -138,6 +179,7 @@ export function useInstanceVersionInstallInstruction(
             resolved,
             jres,
             abortController.signal,
+            action,
           )
           console.log(
             '[installProfile]',
@@ -175,12 +217,7 @@ export function useInstanceVersionInstallInstruction(
     } catch (e) {
       if (e === kAbort) {
         const timeEnd = performance.now()
-        console.log(
-          '[installProfile]',
-          'Aborted install profile update',
-          timeEnd - timeStart,
-          'ms',
-        )
+        console.log('[installProfile]', 'Aborted install profile update', timeEnd - timeStart, 'ms')
         return
       }
       throw e
@@ -213,6 +250,7 @@ export function useInstanceVersionInstallInstruction(
     resolved: ResolvedVersion | undefined,
     javas: JavaRecord[],
     abortSignal?: AbortSignal,
+    action?: RendererActionScope,
   ): Promise<InstanceInstallInstruction> {
     const result: InstanceInstallInstruction = {
       instance,
@@ -230,7 +268,9 @@ export function useInstanceVersionInstallInstruction(
       result.java = javaInstallOrPath
     }
 
-    const issue = await diagnose({ version: resolved.id, side: 'client' })
+    const issue = await (action
+      ? action.run(() => diagnose({ version: resolved.id, side: 'client' }))
+      : diagnose({ version: resolved.id, side: 'client' }))
     if (abortSignal?.aborted) {
       throw kAbort
     }
@@ -243,102 +283,126 @@ export function useInstanceVersionInstallInstruction(
     return markRaw(result)
   }
 
-  async function handleInstallInstruction(instruction: InstanceInstallInstruction) {
-    const commit = (version: string) => {
-      // due to the async, we need to check if the instance is still proper to edit
-      const old = instruction.runtime
-      const inst = instances.value.find((i) => i.path === instruction.instance)
-      const cur = inst?.runtime
-      const valid =
-        old.minecraft === cur?.minecraft &&
-        old.forge === cur?.forge &&
-        old.fabricLoader === cur?.fabricLoader &&
-        old.optifine === cur?.optifine &&
-        old.neoForged === cur?.neoForged &&
-        old.labyMod === cur?.labyMod &&
-        old.quiltLoader === cur?.quiltLoader
-      if (!valid) return
-      if (instruction.version !== inst?.version) return
+  async function handleInstallInstruction(
+    instruction: InstanceInstallInstruction,
+    parentAction?: RendererActionScope,
+  ) {
+    return runRendererAction(
+      parentAction,
+      'user_action.instance.install',
+      async (action) => {
+        const commit = (version: string) => {
+          // due to the async, we need to check if the instance is still proper to edit
+          const old = instruction.runtime
+          const inst = instances.value.find((i) => i.path === instruction.instance)
+          const cur = inst?.runtime
+          const valid =
+            old.minecraft === cur?.minecraft &&
+            old.forge === cur?.forge &&
+            old.fabricLoader === cur?.fabricLoader &&
+            old.optifine === cur?.optifine &&
+            old.neoForged === cur?.neoForged &&
+            old.labyMod === cur?.labyMod &&
+            old.quiltLoader === cur?.quiltLoader
+          if (!valid) return
+          if (instruction.version !== inst?.version) return
 
-      return editInstance({
-        instancePath: instruction.instance,
-        version,
-      })
-    }
-
-    try {
-      const version = await install(
-        instruction.runtime,
-        instruction.instance,
-        instruction.version,
-      )
-      if (version !== instruction.resolvedVersion) {
-        await commit(version)
-      }
-      if (instruction.assetsIndex) {
-        refreshResolvedVersion()
-      }
-    } catch (e) {
-      const err = e as Error
-      const code = (typeof e === 'object' && e && 'code' in e && typeof e.code === 'string') ? e.code : undefined
-      const isPermissionError = code === 'EPERM' || code === 'EACCES'
-      const isDiskFull = code === 'ENOSPC'
-      const isDownloadFailure = isDownloadError(e)
-      // The main process never replied to a `service-call` IPC invoke even
-      // though this renderer is still alive to catch the rejection. That means
-      // the IPC bridge to the backend is broken - nothing else in the launcher
-      // will work either, and retrying the install in place cannot recover it.
-      // The only real fix is to relaunch, so we surface a clear "please restart"
-      // hint instead of a generic install-failed toast.
-      const isBackendUnresponsiveError = (err?.message?.includes('reply was never sent') ?? false) ||
-        (err?.message?.includes('render frame was disposed') ?? false)
-
-      // Only report unknown failures to telemetry. Environment errors
-      // (anti-virus, disk full, broken network) are not bugs and otherwise
-      // generate per-user storms - the user already gets a clear toast below.
-      if (err.name && !isPermissionError && !isDiskFull && !isDownloadFailure) {
-        if (isBackendUnresponsiveError) {
-          // Otherwise reported as a generic 'Error'. Give it a distinct,
-          // searchable name so the broken-IPC signal is not silently lumped
-          // together with genuine install bugs.
-          err.name = 'LauncherBackendUnresponsiveError'
-        } else if (err.name === 'Error') {
-          err.name = 'InstallInstallInstructionError'
+          return action.run(() =>
+            editInstance({
+              instancePath: instruction.instance,
+              version,
+            }),
+          )
         }
-        appInsights.trackException({ exception: err })
-      }
 
-      // Always tell the user *something* went wrong. Previously only EPERM
-      // produced a (hard-coded English) notification; every other install
-      // failure was silently swallowed and the user just saw the install
-      // button keep failing with no explanation.
-      if (isBackendUnresponsiveError) {
-        notify({
-          title: t('errors.InstallBackendUnresponsive.title'),
-          body: t('errors.InstallBackendUnresponsive.body'),
-          level: 'error',
-        })
-      } else if (isPermissionError) {
-        notify({
-          title: t('errors.InstallPermissionDenied.title'),
-          body: t('errors.InstallPermissionDenied.body'),
-          level: 'error',
-        })
-      } else if (isDiskFull) {
-        notify({
-          title: t('errors.DiskIsFull'),
-          level: 'error',
-        })
-      } else if (isDownloadFailure) {
-        // Download failures remain visible and actionable in the task manager.
-      } else {
-        notify({
-          title: t('errors.InstallInstructionFailed.title'),
-          body: t('errors.InstallInstructionFailed.body', { name: err?.name ?? 'Error', message: err?.message ?? '' }),
-          level: 'error',
-        })
-      }
-    }
+        try {
+          const version = await install(
+            instruction.runtime,
+            instruction.instance,
+            instruction.version,
+            action,
+          )
+          if (version !== instruction.resolvedVersion) {
+            await commit(version)
+          }
+          if (instruction.assetsIndex) {
+            refreshResolvedVersion()
+          }
+        } catch (e) {
+          action.fail(e)
+          const err = e as Error
+          const code =
+            typeof e === 'object' && e && 'code' in e && typeof e.code === 'string'
+              ? e.code
+              : undefined
+          const isPermissionError = code === 'EPERM' || code === 'EACCES'
+          const isDiskFull = code === 'ENOSPC'
+          const isDownloadFailure = isDownloadError(e)
+          // The main process never replied to a `service-call` IPC invoke even
+          // though this renderer is still alive to catch the rejection. That means
+          // the IPC bridge to the backend is broken - nothing else in the launcher
+          // will work either, and retrying the install in place cannot recover it.
+          // The only real fix is to relaunch, so we surface a clear "please restart"
+          // hint instead of a generic install-failed toast.
+          const isBackendUnresponsiveError =
+            (err?.message?.includes('reply was never sent') ?? false) ||
+            (err?.message?.includes('render frame was disposed') ?? false)
+
+          // Only report unknown failures to telemetry. Environment errors
+          // (anti-virus, disk full, broken network) are not bugs and otherwise
+          // generate per-user storms - the user already gets a clear toast below.
+          if (err.name && !isPermissionError && !isDiskFull && !isDownloadFailure) {
+            if (isBackendUnresponsiveError) {
+              // Otherwise reported as a generic 'Error'. Give it a distinct,
+              // searchable name so the broken-IPC signal is not silently lumped
+              // together with genuine install bugs.
+              err.name = 'LauncherBackendUnresponsiveError'
+            } else if (err.name === 'Error') {
+              err.name = 'InstallInstallInstructionError'
+            }
+            void trackRendererException(err)
+          }
+
+          // Always tell the user *something* went wrong. Previously only EPERM
+          // produced a (hard-coded English) notification; every other install
+          // failure was silently swallowed and the user just saw the install
+          // button keep failing with no explanation.
+          if (isBackendUnresponsiveError) {
+            notify({
+              title: t('errors.InstallBackendUnresponsive.title'),
+              body: t('errors.InstallBackendUnresponsive.body'),
+              level: 'error',
+            })
+          } else if (isPermissionError) {
+            notify({
+              title: t('errors.InstallPermissionDenied.title'),
+              body: t('errors.InstallPermissionDenied.body'),
+              level: 'error',
+            })
+          } else if (isDiskFull) {
+            notify({
+              title: t('errors.DiskIsFull'),
+              level: 'error',
+            })
+          } else if (isDownloadFailure) {
+            // Download failures remain visible and actionable in the task manager.
+          } else {
+            notify({
+              title: t('errors.InstallInstructionFailed.title'),
+              body: t('errors.InstallInstructionFailed.body', {
+                name: err?.name ?? 'Error',
+                message: err?.message ?? '',
+              }),
+              level: 'error',
+            })
+          }
+        }
+      },
+      {
+        'game.side': 'client',
+        'loader.type': getLoaderType(instruction.runtime),
+      },
+    )
   }
 
   const fixingInstance = shallowRef<Record<string, boolean>>({})
@@ -346,7 +410,7 @@ export function useInstanceVersionInstallInstruction(
     return fixingInstance.value[path] === true
   }
 
-  async function fix(instancePath = path.value) {
+  async function fix(instancePath = path.value, parentAction?: RendererActionScope) {
     const inst = instruction.value
     if (!inst || inst.instance !== instancePath) {
       return
@@ -359,10 +423,23 @@ export function useInstanceVersionInstallInstruction(
       [inst.instance]: true,
     }
     try {
-      await lock.runExclusive(() => handleInstallInstruction(inst)).catch(() => {})
-      if (last === resolvedVersion.value) {
-        await update(last)
-      }
+      await runRendererAction(
+        parentAction,
+        'user_action.instance.repair',
+        async (action) => {
+          await lock
+            .runExclusive(() => handleInstallInstruction(inst, action))
+            .catch((error) => {
+              action.fail(error)
+            })
+          if (last === resolvedVersion.value) {
+            await update(last, javas.value, action)
+          }
+        },
+        {
+          'loader.type': getLoaderType(inst.runtime),
+        },
+      )
     } finally {
       fixingInstance.value = {
         ...fixingInstance.value,
@@ -373,15 +450,25 @@ export function useInstanceVersionInstallInstruction(
 
   async function installRuntime(instancePath: string, runtime: RuntimeVersions) {
     const lock = getInstanceLock(instancePath)
-    return lock.runExclusive(async () => {
-      const version = await install(runtime, instancePath)
-      await editInstance({
-        instancePath,
-        runtime,
-        version,
-      })
-      return version
-    })
+    return withRendererAction(
+      'user_action.instance.install',
+      (action) =>
+        lock.runExclusive(async () => {
+          const version = await install(runtime, instancePath, '', action)
+          await action.run(() =>
+            editInstance({
+              instancePath,
+              runtime,
+              version,
+            }),
+          )
+          return version
+        }),
+      {
+        'game.side': 'client',
+        'loader.type': getLoaderType(runtime),
+      },
+    )
   }
 
   watch(

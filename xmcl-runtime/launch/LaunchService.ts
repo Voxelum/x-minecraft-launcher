@@ -1,5 +1,5 @@
 import { MinecraftFolder, type LaunchOption as ResolvedLaunchOptions, type ResolvedVersion, type ServerOptions, type ResolvedServerVersion, createMinecraftProcessWatcher, generateArguments, generateArgumentsServer, launch, launchServer } from '@xmcl/core'
-import { AUTHORITY_DEV, type CreateLaunchShortcutOptions, type GameProcess, type LaunchService as ILaunchService, LaunchException, type LaunchOptions, LaunchServiceKey, type ReportOperationPayload } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, type CreateLaunchShortcutOptions, type GameProcess, type LaunchService as ILaunchService, LaunchException, type LaunchOptions, LaunchServiceKey } from '@xmcl/runtime-api'
 import { offline } from '@xmcl/user'
 import { ChildProcess, spawn } from 'child_process'
 import createDesktopShortcut, { type ShortcutOptions } from 'create-desktop-shortcuts'
@@ -26,6 +26,7 @@ import { UTF8 } from '../util/encoding'
 import type { LaunchMiddleware } from './LaunchMiddleware'
 import { ensureDir } from '@xmcl/installer/utils'
 import { LaunchHistoryStore } from './LaunchHistoryStore'
+import { runWithInternalSpan } from '../infra/telemetry_context'
 
 type TrackedGameProcess = GameProcess & {
   process: ChildProcess
@@ -346,17 +347,15 @@ export class LaunchService extends AbstractService implements ILaunchService {
     }
   }
 
-  async #track<T>(promise: Promise<T>, name: string, id: string): Promise<T> {
-    const start = performance.now()
-    this.emit('launch-performance-pre', { id, name })
-    try {
-      const result = await promise
-      this.emit('launch-performance', { id, name, duration: performance.now() - start, success: true })
-      return result
-    } catch (e) {
-      this.emit('launch-performance', { id, name, duration: performance.now() - start, success: false })
-      throw e
-    }
+  async #track<T>(
+    operation: () => Promise<T>,
+    phase: string,
+    attributes?: Record<string, string>,
+  ): Promise<T> {
+    return runWithInternalSpan(`launch.${phase}`, operation, {
+      'launch.phase': phase,
+      ...attributes,
+    })
   }
 
   /**
@@ -409,9 +408,15 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       try {
         if (side === 'client') {
-          version = await this.#track(this.versionService.resolveLocalVersion(options.version), 'parse-version', operationId)
+          version = await this.#track(
+            () => this.versionService.resolveLocalVersion(options.version),
+            'resolve_version',
+          )
         } else {
-          version = await this.#track(this.versionService.resolveServerVersion(options.version), 'parse-version', operationId)
+          version = await this.#track(
+            () => this.versionService.resolveServerVersion(options.version),
+            'resolve_version',
+          )
         }
       } catch (e) {
         throw new LaunchException({
@@ -429,19 +434,31 @@ export class LaunchService extends AbstractService implements ILaunchService {
       // Execute pre-launch command if specified
       if (options.preExecuteCommand) {
         this.log(`Executing pre-execute command: ${options.preExecuteCommand}`)
-        await this.#track(this.#execPreCommand(options.preExecuteCommand, options.gameDirectory), 'pre-execute-command', operationId)
+        await this.#track(
+          () => this.#execPreCommand(options.preExecuteCommand!, options.gameDirectory),
+          'pre_execute_command',
+        )
       }
 
       let process: ChildProcess
       const context: Record<string, any> = {}
       let launchOptions: (ResolvedLaunchOptions | ServerOptions)
       if ('inheritances' in version) {
-        const accessToken = user ? await this.#track(this.userTokenStorage.get(user).catch(() => undefined), 'get-user-token', operationId) : undefined
+        const accessToken = user
+          ? await this.#track(
+              () => this.userTokenStorage.get(user).catch(() => undefined),
+              'get_user_token',
+            )
+          : undefined
         const op = await this.#generateOptions(options, version, accessToken)
         launchOptions = op
         for (const plugin of this.middlewares) {
           try {
-            await this.#track(plugin.onBeforeLaunch(options, { version, options: op, side: 'client' }, context), plugin.name, operationId)
+            await this.#track(
+              () => plugin.onBeforeLaunch(options, { version, options: op, side: 'client' }, context),
+              'middleware',
+              { 'launch.middleware.name': plugin.name },
+            )
           } catch (e) {
             this.warn('Fail to run plugin')
             this.error(e as any)
@@ -456,7 +473,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         this.log('Launching client with these option...')
         this.log(JSON.stringify(op, (k, v) => (k === 'accessToken' ? '***' : v), 2))
         try {
-          process = await this.#track(launch(op), 'spawn-minecraft-process', operationId)
+          process = await this.#track(() => launch(op), 'spawn_process')
         } catch (e) {
           if (isSystemError(e) && e.code === 'EPERM') {
             throw new LaunchException({ type: 'launchJavaNoPermission', javaPath: op.javaPath }, 'Fail to spawn process')
@@ -467,7 +484,11 @@ export class LaunchService extends AbstractService implements ILaunchService {
         launchOptions = await this.generateServerOptions(options, version)
         for (const plugin of this.middlewares) {
           try {
-            await this.#track(plugin.onBeforeLaunch(options, { side: 'server', version, options: launchOptions }, context), plugin.name, operationId)
+            await this.#track(
+              () => plugin.onBeforeLaunch(options, { side: 'server', version, options: launchOptions }, context),
+              'middleware',
+              { 'launch.middleware.name': plugin.name },
+            )
           } catch (e) {
             this.warn('Fail to run plugin', plugin)
             this.error(e as any)
@@ -477,7 +498,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
         this.log('Launching server with these option...')
         this.log(JSON.stringify(launchOptions, (k, v) => (k === 'accessToken' ? '***' : v), 2))
-        process = await this.#track(launchServer(launchOptions), 'spawn-minecraft-process', operationId)
+        process = await this.#track(() => launchServer(launchOptions), 'spawn_process')
       }
 
       if (typeof process.pid !== 'number') {
@@ -767,21 +788,6 @@ export class LaunchService extends AbstractService implements ILaunchService {
     return false
   }
 
-  async reportOperation(payload: ReportOperationPayload): Promise<void> {
-    if ('duration' in payload) {
-      this.emit('launch-performance', {
-        id: payload.operationId,
-        name: payload.name,
-        duration: payload.duration,
-        success: payload.success,
-      })
-    } else {
-      this.emit('launch-performance-pre', {
-        id: payload.operationId,
-        name: payload.name,
-      })
-    }
-  }
   async createLaunchShortcut(options: CreateLaunchShortcutOptions): Promise<void> {
     const iconUrl = options.icon
 

@@ -6,18 +6,21 @@ import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { kInstances } from './instances'
 import { kJavaContext } from './java'
 import { useService } from './service'
+import { runRendererAction, withRendererAction, type RendererActionScope } from '@/rendererAction'
 
-export type InstallModpackOptions = {
-  market: MarketType.CurseForge
-  modId: number
-  fileId: number
-  icon?: string
-} | {
-  market: MarketType.Modrinth
-  projectId: string
-  versionId: string
-  icon?: string
-}
+export type InstallModpackOptions =
+  | {
+      market: MarketType.CurseForge
+      modId: number
+      fileId: number
+      icon?: string
+    }
+  | {
+      market: MarketType.Modrinth
+      projectId: string
+      versionId: string
+      icon?: string
+    }
 
 /**
  * Payload for the "update existing instance or create a new one" dialog shown
@@ -40,7 +43,8 @@ export interface ModpackUpdateDialogPayload {
   instanceName: string
 }
 
-export const ModpackUpdateDialogKey: DialogKey<ModpackUpdateDialogPayload> = 'modpack-update-or-create'
+export const ModpackUpdateDialogKey: DialogKey<ModpackUpdateDialogPayload> =
+  'modpack-update-or-create'
 
 function toUpstream(f: InstallModpackOptions): InstanceData['upstream'] {
   if (f.market === MarketType.CurseForge) {
@@ -67,24 +71,55 @@ export function useModpackFinishInstall() {
   const { selectedInstance } = injection(kInstances)
   const { importModpack } = useService(ModpackServiceKey)
   const { resolveLocalVersion } = useService(VersionServiceKey)
-  const { getInstanceLock, getInstallInstruction, handleInstallInstruction } = injection(kInstanceVersionInstall)
+  const { getInstanceLock, getInstallInstruction, handleInstallInstruction } =
+    injection(kInstanceVersionInstall)
   const { all } = injection(kJavaContext)
   const { currentRoute, push } = useRouter()
 
-  return async function finishModpackInstall(modpackFile: string, icon: string | undefined, upstream: InstanceData['upstream'], instancePath?: string) {
-    const { instancePath: resultPath, version, runtime } = await importModpack(modpackFile, icon, upstream, instancePath)
+  return async function finishModpackInstall(
+    modpackFile: string,
+    icon: string | undefined,
+    upstream: InstanceData['upstream'],
+    instancePath?: string,
+    parentAction?: RendererActionScope,
+  ) {
+    return runRendererAction(
+      parentAction,
+      'user_action.modpack.install',
+      async (action) => {
+        const {
+          instancePath: resultPath,
+          version,
+          runtime,
+        } = await action.run(() => importModpack(modpackFile, icon, upstream, instancePath))
 
-    selectedInstance.value = resultPath
-    if (currentRoute.value.path !== '/') {
-      push('/')
-    }
+        selectedInstance.value = resultPath
+        if (currentRoute.value.path !== '/') {
+          await push('/')
+        }
 
-    const lock = getInstanceLock(resultPath)
-    lock.runExclusive(async () => {
-      const resolved = version ? await resolveLocalVersion(version) : undefined
-      const instruction = await getInstallInstruction(resultPath, runtime, '', resolved, all.value)
-      await handleInstallInstruction(instruction)
-    })
+        const lock = getInstanceLock(resultPath)
+        await lock.runExclusive(async () => {
+          const resolved = version
+            ? await action.run(() => resolveLocalVersion(version))
+            : undefined
+          const instruction = await getInstallInstruction(
+            resultPath,
+            runtime,
+            '',
+            resolved,
+            all.value,
+            undefined,
+            action,
+          )
+          await handleInstallInstruction(instruction, action)
+        })
+      },
+      {
+        'modpack.operation': instancePath ? 'update' : 'install',
+        'modpack.source': upstream?.type ?? 'local',
+      },
+    )
   }
 }
 
@@ -95,33 +130,46 @@ export function useModpackInstaller() {
   const finishModpackInstall = useModpackFinishInstall()
 
   const installModpack = async (f: InstallModpackOptions) => {
-    const [modpackFile] = await installModapckFromMarket(f.market === MarketType.CurseForge
-      ? {
-        market: MarketType.CurseForge,
-        file: { fileId: f.fileId, icon: f.icon },
-      }
-      : {
-        market: MarketType.Modrinth,
-        version: { versionId: f.versionId, icon: f.icon },
-      })
-    const icon = f.icon
-    const upstream = toUpstream(f)
+    return withRendererAction(
+      'user_action.modpack.install',
+      async (action) => {
+        const [modpackFile] = await action.run(() =>
+          installModapckFromMarket(
+            f.market === MarketType.CurseForge
+              ? {
+                  market: MarketType.CurseForge,
+                  file: { fileId: f.fileId, icon: f.icon },
+                }
+              : {
+                  market: MarketType.Modrinth,
+                  version: { versionId: f.versionId, icon: f.icon },
+                },
+          ),
+        )
+        const icon = f.icon
+        const upstream = toUpstream(f)
 
-    // If an instance for this modpack already exists, ask the user whether to
-    // update it or create a new one instead of silently creating a duplicate.
-    const existing = findInstanceForModpack(instances.value, { upstream })
-    if (existing) {
-      showUpdateDialog({
-        modpackFile,
-        icon,
-        upstream,
-        instancePath: existing.path,
-        instanceName: existing.name,
-      })
-      return
-    }
+        // If an instance for this modpack already exists, ask the user whether to
+        // update it or create a new one instead of silently creating a duplicate.
+        const existing = findInstanceForModpack(instances.value, { upstream })
+        if (existing) {
+          showUpdateDialog({
+            modpackFile,
+            icon,
+            upstream,
+            instancePath: existing.path,
+            instanceName: existing.name,
+          })
+          return
+        }
 
-    await finishModpackInstall(modpackFile, icon, upstream)
+        await finishModpackInstall(modpackFile, icon, upstream, undefined, action)
+      },
+      {
+        'modpack.market': f.market,
+        'modpack.operation': 'install',
+      },
+    )
   }
   return installModpack
 }
