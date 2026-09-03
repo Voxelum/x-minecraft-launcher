@@ -1,4 +1,4 @@
-import { ensureDir, pathExists, readdir, readFile, stat, unlink, writeFile } from 'fs-extra'
+import { ensureDir, pathExists, pathExistsSync, readdir, readFile, stat, unlink, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { deflateSync, gunzipSync, gzipSync, inflateSync } from 'zlib'
 import { getBlockColor, TRANSPARENT_BLOCKS } from './blockColors'
@@ -30,16 +30,20 @@ const DIMENSION_DIRS: Record<string, string> = {
 }
 
 function getDimensionDir(savePath: string, dimension: string): string {
+  const [namespace, path] = dimension.split(':')
+  const dimensionPath = namespace && path
+    ? join(savePath, 'dimensions', namespace, ...path.split('/'))
+    : undefined
+  if (dimensionPath && pathExistsSync(join(dimensionPath, 'region'))) {
+    return dimensionPath
+  }
+
   const known = DIMENSION_DIRS[dimension]
   if (known) {
     return known === '.' ? savePath : join(savePath, known)
   }
   // Custom dimension: namespace:path -> dimensions/namespace/path
-  const [namespace, path] = dimension.split(':')
-  if (namespace && path) {
-    return join(savePath, 'dimensions', namespace, ...path.split('/'))
-  }
-  return savePath
+  return dimensionPath ?? savePath
 }
 
 function getRegionDir(savePath: string, dimension: string): string {
@@ -50,10 +54,10 @@ function getRegionDir(savePath: string, dimension: string): string {
  * List the dimensions that contain region data for a save.
  */
 export async function listSaveDimensions(savePath: string): Promise<string[]> {
-  const result: string[] = []
+  const result = new Set<string>()
   for (const [dimension] of Object.entries(DIMENSION_DIRS)) {
     if (await pathExists(getRegionDir(savePath, dimension))) {
-      result.push(dimension)
+      result.add(dimension)
     }
   }
   // Custom datapack dimensions under `dimensions/<namespace>/<path>`
@@ -66,12 +70,12 @@ export async function listSaveDimensions(savePath: string): Promise<string[]> {
       const paths = await readdir(namespaceDir).catch(() => [])
       for (const path of paths) {
         if (await pathExists(join(namespaceDir, path, 'region'))) {
-          result.push(`${namespace}:${path}`)
+          result.add(`${namespace}:${path}`)
         }
       }
     }
   }
-  return result
+  return [...result]
 }
 
 /**
