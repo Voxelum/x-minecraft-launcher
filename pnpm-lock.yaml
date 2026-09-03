@@ -1295,7 +1295,7 @@ importers:
         version: 5.2.1
       js-yaml:
         specifier: ^4.2.0
-        version: 4.3.0
+        version: 4.3.1
       lightningcss:
         specifier: ^1.32.0
         version: 1.32.0
@@ -1487,7 +1487,7 @@ importers:
         version: 0.6.3
       js-yaml:
         specifier: ^4.2.0
-        version: 4.3.0
+        version: 4.3.1
       jschardet:
         specifier: 3.1.2
         version: 3.1.2
@@ -4806,6 +4806,10 @@ packages:
 
   js-yaml@4.3.0:
     resolution: {integrity: sha512-1td788aAnnZ5qs7V2QIRl1owjtYpbKt749Y3xauqQgwIIGF/xXWz1wMTEBx5O3LK3lXLVuqXPdPxj2BoFHaW9Q==}
+    hasBin: true
+
+  js-yaml@4.3.1:
+    resolution: {integrity: sha512-CY6crGq313MX8GkwvB7tzgp99vjQxY1++5y10/BKN/GUfHqWaOGQMNZkBvqSzsZKWk/ijwHlWzzkLulsGHhjWQ==}
     hasBin: true
 
   jschardet@3.1.2:
@@ -9689,6 +9693,10 @@ snapshots:
   js-tokens@9.0.1: {}
 
   js-yaml@4.3.0:
+    dependencies:
+      argparse: 2.0.1
+
+  js-yaml@4.3.1:
     dependencies:
       argparse: 2.0.1
 
