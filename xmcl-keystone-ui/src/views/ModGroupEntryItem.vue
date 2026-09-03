@@ -10,7 +10,7 @@
     class="non-moveable sidebar-item flex-1 flex-grow-0"
     :class="{ expanded }"
     :title="name"
-    :subtitle="!dense ? t('mod.mods', { count: items.length }) : undefined"
+    :subtitle="!dense ? countLabel(items.length) : undefined"
     :aria-label="name"
     :aria-expanded="expanded"
     @dragover.prevent
@@ -48,23 +48,30 @@
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { useDialog } from '@/composables/dialog'
 import { vContextMenu } from '@/directives/contextMenu'
-import { ModFile } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
 
-const props = defineProps<{
-  items: ProjectEntry<ModFile>[]
+const props = withDefaults(defineProps<{
+  items: ProjectEntry[]
   name: string
   color?: string
   expanded?: boolean
   dense?: boolean
   height?: number
-}>()
+  countLabel?: (count: number) => string
+  toggleAll?: boolean
+  groupRules?: boolean
+}>(), {
+  countLabel: undefined,
+  toggleAll: true,
+  groupRules: true,
+})
 
 const avatars = computed(() => props.items.map((item) => item.icon).filter((icon): icon is string => !!icon))
 
 const emit = defineEmits(['expand', 'setting', 'ungroup', 'enable-all', 'disable-all', 'apply-group-rules', 'save-group-rules'])
 
 const { t } = useI18n()
+const countLabel = (count: number) => props.countLabel?.(count) ?? t('mod.mods', { count })
 
 const { show } = useDialog('folder-setting')
 const mutableState = reactive({
@@ -99,7 +106,7 @@ function getContextMenu() {
   ]
 
   // Add enable/disable options if not all are in the same state
-  if (!allEnabled) {
+  if (props.toggleAll && !allEnabled) {
     items.push({
       icon: 'flash_on',
       text: t('mod.enableAll'),
@@ -110,7 +117,7 @@ function getContextMenu() {
     })
   }
 
-  if (!allDisabled) {
+  if (props.toggleAll && !allDisabled) {
     items.push({
       icon: 'flash_off',
       text: t('mod.disableAll'),
@@ -130,23 +137,25 @@ function getContextMenu() {
     },
   })
 
-  items.push({
-    icon: 'bookmarks',
-    text: t('mod.applyGroupRules'),
-    section: 'rules',
-    onClick: () => {
-      emit('apply-group-rules')
-    },
-  })
+  if (props.groupRules) {
+    items.push({
+      icon: 'bookmarks',
+      text: t('mod.applyGroupRules'),
+      section: 'rules',
+      onClick: () => {
+        emit('apply-group-rules')
+      },
+    })
 
-  items.push({
-    icon: 'book',
-    text: t('mod.syncGroupRules'),
-    section: 'rules',
-    onClick: () => {
-      emit('save-group-rules')
-    },
-  })
+    items.push({
+      icon: 'book',
+      text: t('mod.syncGroupRules'),
+      section: 'rules',
+      onClick: () => {
+        emit('save-group-rules')
+      },
+    })
+  }
 
   return items
 }

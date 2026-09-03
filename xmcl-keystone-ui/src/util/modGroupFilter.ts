@@ -1,20 +1,16 @@
 import type { ProjectGroup } from '@/composables/modGroup'
-import type { ModFile } from '@/util/mod'
-import type { ProjectEntry } from '@/util/search'
+import type { ProjectEntry, ProjectFile } from '@/util/search'
 
-type ModEntry = ProjectEntry<ModFile>
-type ModGroup = ProjectGroup<ModFile>
-
-export function isProjectInModGroup(group: ModGroup, projectId: string | undefined): boolean {
+export function isProjectInModGroup<T extends ProjectFile>(group: ProjectGroup<T>, projectId: string | undefined): boolean {
   return !!projectId && group.projects.some(project => project.id === projectId)
 }
 
-export function flattenVisibleModGroups(
-  items: Array<ModEntry | ModGroup>,
-  matches: (item: ModEntry) => boolean,
+export function flattenVisibleModGroups<T extends ProjectFile>(
+  items: Array<ProjectEntry<T> | ProjectGroup<T>>,
+  matches: (item: ProjectEntry<T>) => boolean,
   collapsed: Record<string, boolean>,
-): Array<ModEntry | ModGroup> {
-  const result: Array<ModEntry | ModGroup> = []
+): Array<ProjectEntry<T> | ProjectGroup<T>> {
+  const result: Array<ProjectEntry<T> | ProjectGroup<T>> = []
   for (const item of items) {
     if ('projects' in item) {
       const visibleProjects = item.projects.filter(matches)

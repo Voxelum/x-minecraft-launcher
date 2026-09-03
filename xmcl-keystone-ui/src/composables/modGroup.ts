@@ -2,6 +2,7 @@ import { sort as sortFunc } from "@/composables/sortBy";
 import { ModFile } from "@/util/mod";
 import { ProjectEntry, ProjectFile } from "@/util/search";
 import {
+  InstanceContentGroupType,
   InstanceModsGroupServiceKey,
   InstanceModsGroupState,
   ModGroupData,
@@ -18,11 +19,14 @@ export type ProjectGroup<T extends ProjectFile = ProjectFile> = {
   mtime: number;
 };
 
-export function useModGroups(
+export type GroupableProjectFile = ProjectFile & { fileName: string };
+
+export function useModGroups<T extends GroupableProjectFile = ModFile>(
   isLocalView: Ref<boolean>,
   path: Ref<string>,
-  items: Ref<ProjectEntry<ModFile>[]>,
-  sortBy: Ref<string>
+  items: Ref<ProjectEntry<T>[]>,
+  sortBy: Ref<string>,
+  contentType: InstanceContentGroupType = "mods",
 ) {
   const {
     getGroupState,
@@ -31,11 +35,12 @@ export function useModGroups(
     updateSharedGroupRules,
   } = useService(InstanceModsGroupServiceKey);
   const { state } = useState(
-    () => getGroupState(path.value),
+    () => getGroupState(path.value, contentType),
     InstanceModsGroupState
   );
 
   onMounted(() => {
+    if (contentType !== "mods") return;
     const cache = localStorage.getItem("modsGrouping");
     if (cache) {
       const parsed = JSON.parse(cache) as Record<
@@ -50,7 +55,7 @@ export function useModGroups(
           }
           result[group].files.push(file);
         }
-        updateModsGroups(path, result);
+        updateModsGroups(path, result, contentType);
       }
       localStorage.removeItem("modsGrouping");
     }
@@ -59,16 +64,20 @@ export function useModGroups(
   const instanceModGroupping = computed({
     get: () => state.value?.groups ?? {},
     set: (v) => {
-      updateModsGroups(path.value, v);
+      updateModsGroups(path.value, v, contentType);
     },
   });
 
   const { t } = useI18n();
+  const getGroupRuleId = (file: T) =>
+    contentType === "mods" && "modId" in file && typeof file.modId === "string"
+      ? file.modId
+      : undefined;
 
-  type GroupOrProject = ProjectGroup<ModFile> | ProjectEntry<ModFile>;
+  type GroupOrProject = ProjectGroup<T> | ProjectEntry<T>;
 
   // Persistent group collapsed state using localStorage with instance path as key
-  const getStorageKey = () => `modGroupsCollapsed:${path.value}`;
+  const getStorageKey = () => `${contentType}GroupsCollapsed:${path.value}`;
   const loadCollapsedState = (): Record<string, boolean> => {
     try {
       const stored = localStorage.getItem(getStorageKey());
@@ -171,10 +180,10 @@ export function useModGroups(
     // Separate groups from individual items
     const groups = result.filter(
       (item) => "projects" in item
-    ) as ProjectGroup<ModFile>[];
+    ) as ProjectGroup<T>[];
     const individuals = result.filter(
       (item) => !("projects" in item)
-    ) as ProjectEntry<ModFile>[];
+    ) as ProjectEntry<T>[];
 
     // Always sort groups by name first (alphabetical with numeric sorting)
     groups.sort((a, b) =>
@@ -212,8 +221,8 @@ export function useModGroups(
   const localGroupedItems = computed(() => {
     if (!isLocalView.value) return [];
     const result = items.value;
-    const resultByGroup = {} as Record<string, ProjectGroup<ModFile>>;
-    const ungrouped = [] as ProjectEntry<ModFile>[];
+    const resultByGroup = {} as Record<string, ProjectGroup<T>>;
+    const ungrouped = [] as ProjectEntry<T>[];
     const _groupMap = groupMap.value;
 
     for (const i of result) {
@@ -274,7 +283,7 @@ export function useModGroups(
   }
 
   function getContextMenuItemsForGroup(
-    proj: ProjectEntry<ModFile>,
+    proj: ProjectEntry<T>,
     showDialog?: (fileNames: string[]) => void
   ) {
     const fileName = proj.installed?.[0]?.fileName;
@@ -282,8 +291,8 @@ export function useModGroups(
 
     const result = [] as ContextMenuItem[];
 
-    result.push(
-      {
+    if (contentType === "mods") {
+      result.push({
         icon: "bookmarks",
         text: t("mod.applyGroupRules"),
         onClick: () => {
@@ -296,8 +305,8 @@ export function useModGroups(
         onClick: () => {
           syncGroupRules();
         },
-      }
-    );
+      });
+    }
 
     if (Object.values(instanceModGroupping.value).length === 0) {
       result.push({
@@ -399,12 +408,13 @@ export function useModGroups(
       const fileName = file.fileName;
       const normalizedFileName = normalizeModFileName(fileName);
       const group = groupMap.value[normalizedFileName];
+      const groupRuleId = getGroupRuleId(file);
       if (group) {
         if (!currentRules[group]) {
           currentRules[group] = [];
         }
-        if (!currentRules[group].includes(file.modId)) {
-          currentRules[group].push(file.modId);
+        if (groupRuleId && !currentRules[group].includes(groupRuleId)) {
+          currentRules[group].push(groupRuleId);
         }
       }
     }
@@ -435,7 +445,8 @@ export function useModGroups(
     const instanceModIds = new Set<string>();
     for (const mod of items.value) {
       const file = mod.installed?.[0];
-      if (file) instanceModIds.add(file.modId);
+      const groupRuleId = file ? getGroupRuleId(file) : undefined;
+      if (groupRuleId) instanceModIds.add(groupRuleId);
     }
 
     const result = {} as Record<string, string[]>;
@@ -480,7 +491,8 @@ export function useModGroups(
     for (const i of items.value) {
       const file = i.installed?.[0];
       if (!file) continue;
-      const modId = file.modId;
+      const modId = getGroupRuleId(file);
+      if (!modId) continue;
       const fileName = file.fileName;
       const normalizedFileName = normalizeModFileName(fileName);
       const expectedGroup = modIdToGroup[modId];

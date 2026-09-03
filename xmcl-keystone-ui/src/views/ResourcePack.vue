@@ -94,12 +94,31 @@
         :draggable="currentView === 'local' && !(item as ResourcePackProject).disabled"
         :selection-mode="selectionMode"
         :item-height="itemHeight"
+        :indent="isLocalView && isInGroup((item as ResourcePackProject).installed?.[0]?.fileName)"
+        :indent-color="getGroupColor((item as ResourcePackProject).installed?.[0]?.fileName)"
         :selected="selected"
         :has-update="hasUpdate"
         :checked="checked"
         :install="onInstallProject"
+        :get-context-menu-items="getGroupingContextMenuItems"
         @drop="onDrop(item as ResourcePackProject, $event)"
         @click="on.click"
+      />
+      <ModGroupEntryItem
+        v-else-if="typeof item === 'object'"
+        :key="`folder-${item.name}-${item.projects.length}`"
+        :items="item.projects"
+        :height="itemHeight"
+        :name="item.name"
+        :expanded="!groupCollapsedState[item.name]"
+        :dense="denseView"
+        :count-label="resourcePackCountLabel"
+        :group-rules="false"
+        @ungroup="ungroup(item.name)"
+        @expand="onGroupCollapse(item as ProjectGroup<InstanceResourcePack>, $event)"
+        @setting="renameGroup(item.name, $event.name)"
+        @enable-all="enableAll(item as ProjectGroup<InstanceResourcePack>)"
+        @disable-all="disableAll(item as ProjectGroup<InstanceResourcePack>)"
       />
     </template>
     <template #content="{ selectedModrinthId, selectedItem, selectedCurseforgeId }">
@@ -171,6 +190,7 @@ import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curs
 import { getDropFilePaths, useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { InstanceResourcePack, kInstanceResourcePacks } from '@/composables/instanceResourcePack'
+import { ProjectGroup, useModGroups } from '@/composables/modGroup'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
@@ -179,6 +199,9 @@ import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
+import { ContextMenuItem } from '@/composables/contextMenu'
+import { useDialog } from '@/composables/dialog'
+import { flattenVisibleModGroups } from '@/util/modGroupFilter'
 import { InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
 import ResourcePackDetailResource from './ResourcePackDetailResource.vue'
 import ResourcePackItem from './ResourcePackItem.vue'
@@ -187,6 +210,7 @@ import { sort } from '@/composables/sortBy'
 import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 
 import { useModUpgrade } from '@/composables/modUpgrade'
+import ModGroupEntryItem from './ModGroupEntryItem.vue'
 
 const { runtime, path } = injection(kInstance)
 const { files, enabled, disabled, enable, disable, insert, revalidate } = injection(kInstanceResourcePacks)
@@ -221,10 +245,28 @@ effect()
 
 const isLocalFile = (f: any): f is ProjectEntry<InstanceResourcePack> => !!f
 
+const isLocalView = computed(() => currentView.value === 'local')
+const {
+  localGroupedItems,
+  groupCollapsedState,
+  renameGroup,
+  ungroup,
+  group,
+  addToGroup,
+  isInGroup,
+  getGroupColor,
+  getContextMenuItemsForGroup,
+  groupsRaw,
+  groupModCounts,
+} = useModGroups(isLocalView, path, originalItems, sortBy, 'resourcepacks')
+
 const items = computed(() => {
   const result: (string | ProjectEntry)[] = []
 
   if (currentView.value === 'local') {
+    if (Object.keys(groupsRaw.value).length > 0) {
+      return flattenVisibleModGroups(localGroupedItems.value, () => true, groupCollapsedState.value)
+    }
     const { enabled, disabled, others } = originalItems.value.reduce(
       (arrays, item) => {
         if (item.installed && item.installed.length > 0) {
@@ -300,6 +342,7 @@ onUnmounted(() => {
 
 // Presence
 const { t } = useI18n()
+const resourcePackCountLabel = (count: number) => `${count} ${t('resourcepack.name', count)}`
 const { name } = injection(kInstance)
 usePresence(computed(() => t('presence.resourcePack', { instance: name.value })))
 
@@ -346,6 +389,49 @@ function onUpdateSelectionMode(v: boolean) {
 watch(currentView, (view) => {
   if (view !== 'local') onUpdateSelectionMode(false)
 })
+
+const { show: showGroupSelectDialog } = useDialog('mod-group-select')
+
+function showGroupDialog(fileNames: string[]) {
+  showGroupSelectDialog({
+    groups: groupsRaw.value,
+    groupModCounts: groupModCounts.value,
+    countLabel: resourcePackCountLabel,
+    onSelect: (groupName: string | null, newName?: string) => {
+      if (groupName) addToGroup(fileNames, groupName)
+      else if (newName) group(fileNames, newName)
+    },
+  })
+}
+
+function getGroupingContextMenuItems(project: ResourcePackProject) {
+  const selected = new Set(Object.keys(selections.value).filter(key => selections.value[key]))
+  if (selected.size <= 1) return getContextMenuItemsForGroup(project, showGroupDialog)
+
+  const fileNames = originalItems.value
+    .filter(item => selected.has(item.id))
+    .map(item => item.installed[0]?.fileName)
+    .filter((name): name is string => !!name)
+  const result: ContextMenuItem[] = [{
+    text: t('mod.group'),
+    icon: 'label',
+    section: 'group',
+    onClick: () => showGroupDialog(fileNames),
+  }]
+  return result
+}
+
+function onGroupCollapse(group: ProjectGroup<InstanceResourcePack>, expanded: boolean) {
+  groupCollapsedState.value = { ...groupCollapsedState.value, [group.name]: expanded }
+}
+
+function enableAll(group: ProjectGroup<InstanceResourcePack>) {
+  enable(group.projects.flatMap(project => project.installed))
+}
+
+function disableAll(group: ProjectGroup<InstanceResourcePack>) {
+  disable(group.projects.flatMap(project => project.installed))
+}
 
 const onInstallProject = useProjectInstall(
   runtime,
