@@ -1,7 +1,19 @@
 import { describe, expect, it } from 'vitest'
-import { isMarketMultiSelectionClick, updateMarketSelection } from './marketSelection'
+import { hasMarketSelectionContent, isMarketMultiSelectionClick, updateMarketSelection } from './marketSelection'
 
 const plainClick = { ctrlKey: false, metaKey: false, shiftKey: false }
+
+describe(hasMarketSelectionContent.name, () => {
+  it('restores the filter panel when a local selection is no longer visible', () => {
+    expect(hasMarketSelectionContent('selected-mod', undefined)).toBe(false)
+  })
+
+  it('keeps content visible for available and directly linked projects', () => {
+    expect(hasMarketSelectionContent('selected-mod', { id: 'selected-mod' })).toBe(true)
+    expect(hasMarketSelectionContent('modrinth:sodium', undefined)).toBe(true)
+    expect(hasMarketSelectionContent('curseforge:238222', undefined)).toBe(true)
+  })
+})
 
 describe(isMarketMultiSelectionClick.name, () => {
   it('enters selection mode for modifier clicks when enabled', () => {

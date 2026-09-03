@@ -13,6 +13,10 @@ interface MarketSelectionItem {
   id: string
 }
 
+export function hasMarketSelectionContent(selectedId: string, selectedItem: unknown): boolean {
+  return !!selectedItem || selectedId.startsWith('modrinth:') || selectedId.startsWith('curseforge:')
+}
+
 export function isMarketMultiSelectionClick(
   selectionMode: boolean,
   autoSelectionMode: boolean,

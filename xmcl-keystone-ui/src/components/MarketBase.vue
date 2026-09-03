@@ -75,7 +75,7 @@
         >
           <Transition name="market-pane-fade">
             <div
-              v-show="!selectedId && $slots.filter"
+              v-show="!hasSelectedContent && $slots.filter"
               class="market-filter-cache absolute inset-0"
             >
               <slot name="filter" />
@@ -83,7 +83,7 @@
           </Transition>
           <Transition name="market-pane-fade" mode="out-in">
             <slot
-              v-if="selectedId || !$slots.filter"
+              v-if="hasSelectedContent || !$slots.filter"
               name="content"
               :key="selectedId || 'market-content'"
               :selected-item="selectedItem"
@@ -109,7 +109,7 @@ import { useQuery } from '@/composables/query'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { isMarketMultiSelectionClick, updateMarketSelection } from '@/util/marketSelection'
+import { hasMarketSelectionContent, isMarketMultiSelectionClick, updateMarketSelection } from '@/util/marketSelection'
 import { ProjectEntry } from '@/util/search'
 
 const props = defineProps<{
@@ -133,6 +133,7 @@ const selectedItem = computed(() => {
   if (!selectedId.value) return undefined
   return props.items.find((i) => typeof i === 'object' && 'id' in i && i.id === selectedId.value) as ProjectEntry | undefined
 })
+const hasSelectedContent = computed(() => hasMarketSelectionContent(selectedId.value, selectedItem.value))
 
 const selectedModrinthId = computed(() => {
   const id = selectedId.value
