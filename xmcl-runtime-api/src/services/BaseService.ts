@@ -88,6 +88,28 @@ export interface PoolStats {
   size: number
 }
 
+export interface ReportPreviewFile {
+  name: string
+  size: number
+  content: string
+  date?: string
+  timestamp?: number
+  category?: 'current' | 'archive'
+}
+
+export interface ReportPreview {
+  timestamp: number
+  device: {
+    sessionId: string
+    platform: string
+    arch: string
+    version: string
+    release: string
+    type: string
+  }
+  files: Array<ReportPreviewFile>
+}
+
 export type InvalidDirectoryErrorCode = 'bad' | 'invalidchar' | 'nondictionary' | 'noperm' | 'exists' | undefined
 
 export interface BaseServiceEventMap {
@@ -152,7 +174,15 @@ export interface BaseService extends GenericEventEmitter<BaseServiceEventMap> {
   /**
    * Generate a report file
    */
-  reportItNow(options: { destination: string }): Promise<void>
+  reportItNow(options: { destination: string; anonymizeIp?: boolean }): Promise<void>
+  /**
+   * Get the diagnostic report preview without saving to a file
+   */
+  getReportPreview(options?: { anonymizeIp?: boolean }): Promise<ReportPreview>
+  /**
+   * Delete all logs and old crash/report archives
+   */
+  clearLogs(): Promise<void>
   /**
    * Get the game data directory folder.
    */

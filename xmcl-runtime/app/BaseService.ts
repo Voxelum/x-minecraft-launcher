@@ -11,11 +11,13 @@ import {
   type SharedState,
   DownloadUpdateTask,
   NetworkStatus,
+  ReportPreview,
 } from '@xmcl/runtime-api'
-import { readFile, readdir, stat, pathExists } from 'fs-extra'
+import { readFile, readdir, stat, pathExists, unlink, truncate } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { statfs } from 'fs/promises'
-import { join, resolve } from 'path'
+import { join, resolve, basename } from 'path'
+import { open, readAllEntries, readEntry } from '@xmcl/unzip'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
 import {
   endRendererAction,
@@ -39,6 +41,7 @@ import { ZipFile } from 'yazl'
 import { getTracker } from '~/util/taskHelper'
 import { addSteamShortcutToVdf } from './steamShortcut'
 import { writeFile as writeAtomically } from 'atomically'
+import { anonymizeIpAddresses } from '~/util/ipAnonymizer'
 
 @ExposeServiceKey(BaseServiceKey)
 export class BaseService extends AbstractService implements IBaseService {
@@ -299,23 +302,63 @@ export class BaseService extends AbstractService implements IBaseService {
     this.app.exit(code)
   }
 
-  async reportItNow(options: { destination: string }): Promise<void> {
+  async reportItNow(options: { destination: string; anonymizeIp?: boolean }): Promise<void> {
     const zipFile = new ZipFile()
     const logsDir = await this.app.registry.get(kLogRoot)
     const files = await readdir(logsDir)
+    const anonymize = options.anonymizeIp !== false
 
     for (const file of files) {
       const filePath = join(logsDir, file)
       const fStat = await stat(filePath).catch(() => undefined)
       if (fStat?.isFile()) {
-        // Read the log into a buffer first. Log files may still be written to
-        // while we export, and yazl's addFile defers reading until the zip is
-        // finalized. If the file size changes between stat and read, the entry
-        // becomes corrupt. Snapshotting via addBuffer captures size + content
-        // atomically and avoids producing a broken zip.
         const content = await readFile(filePath).catch(() => undefined)
         if (content) {
-          zipFile.addBuffer(content, join('logs', file))
+          if (file.endsWith('.zip')) {
+            if (anonymize) {
+              try {
+                const innerZip = await open(filePath)
+                const entries = await readAllEntries(innerZip)
+                const rezipped = new ZipFile()
+                for (const entry of entries) {
+                  const buf = await readEntry(innerZip, entry)
+                  if (entry.fileName.endsWith('.log') || entry.fileName.endsWith('.txt') || entry.fileName.endsWith('.json')) {
+                    try {
+                      const text = buf.toString('utf-8')
+                      const sanitized = await anonymizeIpAddresses(text)
+                      rezipped.addBuffer(Buffer.from(sanitized, 'utf-8'), entry.fileName)
+                    } catch {
+                      rezipped.addBuffer(buf, entry.fileName)
+                    }
+                  } else {
+                    rezipped.addBuffer(buf, entry.fileName)
+                  }
+                }
+                const chunks: Buffer[] = []
+                await new Promise<void>((res, rej) => {
+                  rezipped.outputStream.on('data', (c) => chunks.push(c))
+                  rezipped.outputStream.on('end', () => res())
+                  rezipped.outputStream.on('error', rej)
+                  rezipped.end()
+                })
+                zipFile.addBuffer(Buffer.concat(chunks), join('logs', file))
+              } catch {
+                zipFile.addBuffer(content, join('logs', file))
+              }
+            } else {
+              zipFile.addBuffer(content, join('logs', file))
+            }
+          } else if (anonymize && (file.endsWith('.log') || file.endsWith('.txt') || file.endsWith('.json'))) {
+            try {
+              const text = content.toString('utf-8')
+              const sanitized = await anonymizeIpAddresses(text)
+              zipFile.addBuffer(Buffer.from(sanitized, 'utf-8'), join('logs', file))
+            } catch {
+              zipFile.addBuffer(content, join('logs', file))
+            }
+          } else {
+            zipFile.addBuffer(content, join('logs', file))
+          }
         }
       }
     }
@@ -338,6 +381,102 @@ export class BaseService extends AbstractService implements IBaseService {
     await writeZipFile(zipFile, options.destination)
 
     this.showItemInDirectory(options.destination)
+  }
+
+  async getReportPreview(options?: { anonymizeIp?: boolean }): Promise<ReportPreview> {
+    const logsDir = await this.app.registry.get(kLogRoot)
+    const files = await readdir(logsDir).catch(() => [] as string[])
+    const anonymize = options?.anonymizeIp !== false
+    const previewFiles: ReportPreview['files'] = []
+
+    for (const file of files) {
+      const filePath = join(logsDir, file)
+      const fStat = await stat(filePath).catch(() => undefined)
+      if (fStat?.isFile()) {
+        if (file.endsWith('.zip')) {
+          try {
+            const innerZip = await open(filePath)
+            const entries = await readAllEntries(innerZip)
+            const match = file.match(/(\d{4}-\d{2}-\d{2})T(\d{2})[!:](\d{2})[!:](\d{2})/)
+            const dateStr = match ? match[1] : new Date(fStat.mtimeMs).toISOString().split('T')[0]
+            const timestamp = match ? new Date(`${match[1]}T${match[2]}:${match[3]}:${match[4]}Z`).getTime() : fStat.mtimeMs
+
+            for (const entry of entries) {
+              if (entry.fileName.endsWith('.log') || entry.fileName.endsWith('.txt') || entry.fileName.endsWith('.json')) {
+                const buf = await readEntry(innerZip, entry)
+                let text = buf.toString('utf-8')
+                if (text.length > 256 * 1024) {
+                  text = '... [truncated, showing last 256KB]\n' + text.slice(-256 * 1024)
+                }
+                if (anonymize) {
+                  try {
+                    text = await anonymizeIpAddresses(text)
+                  } catch {}
+                }
+                previewFiles.push({
+                  name: `${file} (${basename(entry.fileName)})`,
+                  size: entry.uncompressedSize,
+                  content: text,
+                  date: dateStr,
+                  timestamp,
+                  category: 'archive',
+                })
+              }
+            }
+          } catch {}
+        } else {
+          const content = await readFile(filePath).catch(() => undefined)
+          if (content) {
+            let text = content.toString('utf-8')
+            if (text.length > 256 * 1024) {
+              text = '... [truncated, showing last 256KB]\n' + text.slice(-256 * 1024)
+            }
+            if (anonymize && (file.endsWith('.log') || file.endsWith('.txt') || file.endsWith('.json'))) {
+              try {
+                text = await anonymizeIpAddresses(text)
+              } catch {}
+            }
+            const dateStr = new Date(fStat.mtimeMs).toISOString().split('T')[0]
+            previewFiles.push({
+              name: file,
+              size: fStat.size,
+              content: text,
+              date: dateStr,
+              timestamp: fStat.mtimeMs,
+              category: 'current',
+            })
+          }
+        }
+      }
+    }
+
+    const sessionId = await this.app.registry.get(kClientToken)
+
+    return {
+      timestamp: Date.now(),
+      device: {
+        sessionId,
+        platform: os.platform(),
+        arch: os.arch(),
+        version: os.version(),
+        release: os.release(),
+        type: os.type(),
+      },
+      files: previewFiles,
+    }
+  }
+
+  async clearLogs(): Promise<void> {
+    const logsDir = await this.app.registry.get(kLogRoot)
+    const files = await readdir(logsDir).catch(() => [] as string[])
+    for (const file of files) {
+      const filePath = join(logsDir, file)
+      try {
+        await unlink(filePath).catch(async () => {
+          await truncate(filePath, 0).catch(() => {})
+        })
+      } catch {}
+    }
   }
 
   async migrate(options: MigrateOptions) {
