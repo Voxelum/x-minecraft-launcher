@@ -118,7 +118,32 @@ async function verifyDownloadedFile(
 }
 
 /**
+ * Maximum number of times a failed instance file download will be retried
+ * before its error is propagated to the caller.
+ */
+const MAX_RETRY_COUNT = 3
+
+function toDownloadOptions(opt: { options: DownloadMultipleOption; file: InstanceFile }) {
+  return {
+    url: opt.options.url,
+    destination: opt.options.destination,
+    headers: opt.options.headers,
+    expectedTotal: (
+      typeof opt.options.url === 'string'
+        ? opt.options.url.includes('edge.forgecdn.net')
+        : opt.options.url.some((u) => u.includes('edge.forgecdn.net'))
+    )
+      ? undefined
+      : opt.options.expectedTotal,
+  }
+}
+
+/**
  * Download instance files with progress tracking.
+ *
+ * Failed downloads (transport failures or post-download hash
+ * verification failures) are retried up to {@link MAX_RETRY_COUNT}
+ * times before their errors are aggregated and thrown.
  */
 export async function downloadInstanceFiles(
   options: Array<{ options: DownloadMultipleOption; file: InstanceFile }>,
@@ -134,25 +159,10 @@ export async function downloadInstanceFiles(
   }
   const parent = onDownloadMultiple(tracker, 'install-instance.download', { count: options.length })
 
-  const results = await downloadMultiple({
-    options: options.map((opt) => ({
-      url: opt.options.url,
-      destination: opt.options.destination,
-      headers: opt.options.headers,
-      expectedTotal: (
-        typeof opt.options.url === 'string'
-          ? opt.options.url.includes('edge.forgecdn.net')
-          : opt.options.url.some((u) => u.includes('edge.forgecdn.net'))
-      )
-        ? undefined
-        : opt.options.expectedTotal,
-    })),
-    signal: signal,
-    tracker: parent,
-    ...downloadOptions,
-  })
-
-  // Mark finished files and collect errors.
+  // Run a single download + verification pass over the provided
+  // options, returning the errors and the subset of options that
+  // failed (so they can be retried).
+  //
   // For each successfully-downloaded file, verify its content matches
   // the manifest's declared hash. The underlying file-transfer download
   // primitive does NOT enforce the `validator` field, so we re-check
@@ -164,27 +174,52 @@ export async function downloadInstanceFiles(
   // set (HTTPS-only) — on a multi-GB modpack with hundreds of small
   // mods on edge.forgecdn.net this avoids a full second-pass disk
   // read + hash for each file.
-  const errors: Error[] = []
-  await Promise.all(
-    results.map(async (result, i) => {
-      if (result.status === 'rejected') {
-        errors.push(result.reason)
-        return
-      }
-      const { file, options: opts } = options[i]
-      try {
-        if (!isTrustedDownload(opts.url, trustCfg)) {
-          await verifyDownloadedFile(file, opts.destination)
+  const runPass = async (
+    pass: Array<{ options: DownloadMultipleOption; file: InstanceFile }>,
+  ) => {
+    const results = await downloadMultiple({
+      options: pass.map(toDownloadOptions),
+      signal: signal,
+      tracker: parent,
+      ...downloadOptions,
+    })
+
+    const passErrors: Error[] = []
+    const passPending: typeof pass = []
+    await Promise.all(
+      results.map(async (result, i) => {
+        if (result.status === 'rejected') {
+          passErrors.push(result.reason)
+          passPending.push(pass[i])
+          return
         }
-        finished.add(file.path)
-      } catch (e) {
-        // Bad content must NOT remain on disk where it could be picked
-        // up by a later resume that thinks the file is good.
-        await unlink(opts.destination).catch(() => undefined)
-        errors.push(e as Error)
-      }
-    }),
-  )
+        const { file, options: opts } = pass[i]
+        try {
+          if (!isTrustedDownload(opts.url, trustCfg)) {
+            await verifyDownloadedFile(file, opts.destination)
+          }
+          finished.add(file.path)
+        } catch (e) {
+          // Bad content must NOT remain on disk where it could be picked
+          // up by a later resume that thinks the file is good.
+          await unlink(opts.destination).catch(() => undefined)
+          passErrors.push(e as Error)
+          passPending.push(pass[i])
+        }
+      }),
+    )
+
+    return { errors: passErrors, pending: passPending }
+  }
+
+  let { errors, pending } = await runPass(options)
+
+  for (let attempt = 0; attempt < MAX_RETRY_COUNT && pending.length > 0; attempt++) {
+    signal.throwIfAborted()
+    const next = await runPass(pending)
+    errors = next.errors
+    pending = next.pending
+  }
 
   if (errors.length > 0) {
     throw new AggregateError(errors)
