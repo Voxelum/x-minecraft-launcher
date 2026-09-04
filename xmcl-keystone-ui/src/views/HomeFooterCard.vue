@@ -560,7 +560,7 @@ const items = computed<FooterItem[]>(() => {
       return {
         id: c.id,
         icon: 'dns',
-        tooltip: `${t('server.name')} · ${c.label}`,
+        tooltip: `${t('server.serverName')} · ${c.label}`,
         text: c.label,
         buttonText: t('launch.launch'),
         buttonIcon: 'play_arrow',
