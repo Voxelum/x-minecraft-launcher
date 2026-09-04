@@ -81,7 +81,6 @@
 
         <!-- Agent -->
         <AppSideBarNotchItem
-          v-if="developerMode"
           data-testid="nav-agent"
           icon="smart_toy"
           :icon-size="iconSize"
@@ -115,8 +114,9 @@
           data-testid="nav-multiplayer"
           icon="hub"
           :icon-size="iconSize"
-          :tooltip="() => ({ text: t('multiplayer.name'), direction: tooltipDirection })"
+          :tooltip="() => ({ text: t('multiplayer.togetherName'), direction: tooltipDirection })"
           clickable
+          :active="isMultiplayerActive"
           @click="goMultiplayer"
         />
 
@@ -170,14 +170,15 @@ const { gameProfile } = injection(kUserContext)
 const { request: openMultiplayer } = injection(kMultiplayerEntry)
 const { position, align, scale, autoHide } = useInjectSidebarSettings()
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
-const developerMode = computed(() => state.value?.developerMode ?? false)
 const { open: openAgent } = useAgentChatEntry()
 const agentChatStatus = useAgentChatStatus()
 const agentRunningInBackground = computed(() => agentChatStatus.running.value && !agentChatStatus.shown.value)
 const agentConfirmationPending = agentChatStatus.confirmationPending
 
 const { t } = useI18n()
+const route = useRoute()
 const agentAriaLabel = computed(() => agentConfirmationPending.value ? `${t('agent.title')}: ${t('agent.confirmPending')}` : t('agent.title'))
+const isMultiplayerActive = computed(() => route.path === '/multiplayer')
 
 // Hover state for auto-hide
 const isHovered = ref(false)

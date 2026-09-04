@@ -22,9 +22,20 @@ export interface ModMetadata {
   curseforge?: { id: number; file: number }
 }
 
+export interface ModMetadataFacts {
+  sha1: string
+  name: string
+  domain: ResourceDomain
+  forge: { id: string; version: string }[]
+  fabric: { id: string; version: string }[]
+  modrinth: { id: string; version: string }[]
+  curseforge: { id: number; file: number }[]
+}
+
 export interface ModMetadataService {
   getMetadataFromSha1(sha1: string): Promise<ModMetadata | undefined>
   getMetadataFromSha1s(sha1: string[]): Promise<ModMetadata[]>
+  getLocalMetadataFactsFromSha1s(sha1s: string[]): Promise<ModMetadataFacts[] | undefined>
 
   lookupModrinthId(projectId: number): Promise<string | undefined>
   lookupCurseforgeId(projectId: string): Promise<number | undefined>

@@ -5,6 +5,7 @@ import { useDebounceFn } from '@vueuse/core'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
+import { useInstanceLoading } from './instanceLoading'
 
 export const kInstanceVersion: InjectionKey<ReturnType<typeof useInstanceVersion>> = Symbol('InstanceVersion')
 
@@ -58,68 +59,77 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
       if (err.name === 'MissingVersionJson' || err.name === 'CorruptedVersionJson') {
         return undefined
       }
-      throw e
+      console.warn(e)
+      return undefined
     }
   }
 
   const resolvedVersion = shallowRef<InstanceResolveVersion | undefined>(undefined)
   const { editInstance } = useService(InstanceServiceKey)
-  const { refreshing: isValidating, refresh: mutate, error } = useRefreshable<Instance>(async (i) => {
+  const instancePath = computed(() => instance.value.path)
+  const { begin: beginLoading, isLoading: isValidating } = useInstanceLoading(instancePath)
+  const { refresh: mutate, error } = useRefreshable<Instance>(async (i) => {
     console.log('refresh instance version', i.path, i.version, i.runtime)
     const _path = i.path
     if (!_path) {
+      resolvedVersion.value = undefined
       return undefined
     }
 
-    const header = findMatchedVersion(local.value,
-      i.version,
-      {
-        ...instance.value.runtime,
-      })
+    const endLoading = beginLoading(_path)
+    try {
+      const header = findMatchedVersion(local.value,
+        i.version,
+        {
+          ...instance.value.runtime,
+        })
 
-    const _version = i.version
-    const start = performance.now()
-    const version = await getResolvedVersion(header, _version)
-    console.log('getResolvedVersion', performance.now() - start, 'ms', 'version:', version?.id || 'not installed')
-    if (instance.value.version !== _version ||
-      _path !== instance.value.path) {
-      console.log('instance changed during version resolving, skip applying the resolved version', 'instance:', instance.value, 'path:', _path)
-      return
-    }
-    if (version) {
-      const computedHeader = getResolvedVersionHeader(version)
-      const rt = instance.value.runtime
-      const expectRt = {
-        minecraft: computedHeader.minecraft,
-        forge: computedHeader.forge,
-        neoForged: computedHeader.neoForged,
-        fabricLoader: computedHeader.fabric,
-        optifine: computedHeader.optifine,
-        quiltLoader: computedHeader.quilt,
-        labyMod: computedHeader.labyMod,
+      const _version = i.version
+      const start = performance.now()
+      const version = await getResolvedVersion(header, _version)
+      console.log('getResolvedVersion', performance.now() - start, 'ms', 'version:', version?.id || 'not installed')
+      if (instance.value.version !== _version ||
+        _path !== instance.value.path) {
+        console.log('instance changed during version resolving, skip applying the resolved version', 'instance:', instance.value, 'path:', _path)
+        return
       }
-      if (expectRt.minecraft !== rt.minecraft ||
-        expectRt.forge !== rt.forge ||
-        expectRt.neoForged !== rt.neoForged ||
-        expectRt.fabricLoader !== rt.fabricLoader ||
-        expectRt.optifine !== rt.optifine ||
-        expectRt.quiltLoader !== rt.quiltLoader ||
-        expectRt.labyMod !== rt.labyMod
-      ) {
-        console.warn(`The instance ${_path}'s runtime ${JSON.stringify(rt, (k, v) => !v ? undefined : v)} is mismatched with it's version ${version.id} ${JSON.stringify(expectRt, (k, v) => !v ? undefined : v)}.`)
-        // editInstance({
-        //   instancePath: _path,
-        //   runtime: expectRt,
-        // })
+      if (version) {
+        const computedHeader = getResolvedVersionHeader(version)
+        const rt = instance.value.runtime
+        const expectRt = {
+          minecraft: computedHeader.minecraft,
+          forge: computedHeader.forge,
+          neoForged: computedHeader.neoForged,
+          fabricLoader: computedHeader.fabric,
+          optifine: computedHeader.optifine,
+          quiltLoader: computedHeader.quilt,
+          labyMod: computedHeader.labyMod,
+        }
+        if (expectRt.minecraft !== rt.minecraft ||
+          expectRt.forge !== rt.forge ||
+          expectRt.neoForged !== rt.neoForged ||
+          expectRt.fabricLoader !== rt.fabricLoader ||
+          expectRt.optifine !== rt.optifine ||
+          expectRt.quiltLoader !== rt.quiltLoader ||
+          expectRt.labyMod !== rt.labyMod
+        ) {
+          console.warn(`The instance ${_path}'s runtime ${JSON.stringify(rt, (k, v) => !v ? undefined : v)} is mismatched with it's version ${version.id} ${JSON.stringify(expectRt, (k, v) => !v ? undefined : v)}.`)
+          // editInstance({
+          //   instancePath: _path,
+          //   runtime: expectRt,
+          // })
+        }
       }
+
+      const unresolvedVersion: UnresolvedVersion = { requirements: { ...instance.value.runtime }, version: _version, instance: _path }
+
+      console.log('set resolved version', version ? version.id : 'unresolved')
+      resolvedVersion.value = version
+        ? { ...version, ...unresolvedVersion }
+        : unresolvedVersion
+    } finally {
+      endLoading()
     }
-
-    const unresolvedVersion: UnresolvedVersion = { requirements: { ...instance.value.runtime }, version: _version, instance: _path }
-
-    console.log('set resolved version', version ? version.id : 'unresolved')
-    resolvedVersion.value = version
-      ? { ...version, ...unresolvedVersion }
-      : unresolvedVersion
   })
 
   // update on instance/instance version/versions changed

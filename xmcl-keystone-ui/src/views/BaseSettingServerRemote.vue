@@ -331,6 +331,7 @@ import { kRemoteServer } from '@/composables/remoteServer'
 import { kUserContext } from '@/composables/user'
 import { injection } from '@/util/inject'
 import { getErrorMessage } from '@/util/error'
+import { runInRendererAction, withRendererAction, type RendererActionScope } from '@/rendererAction'
 import { InstanceServerConfigSchema, type InstanceFile, type RemoteServerConnection, type ServerDeploymentPolicy } from '@xmcl/instance'
 import { InstanceManifestServiceKey, InstanceServiceKey, ModpackServiceKey, type ExportFileDirective, type ServerDeploymentCategory, type ServerDeploymentFile, type ServerDeploymentPlan, type ServerDeploymentPreview } from '@xmcl/runtime-api'
 
@@ -422,10 +423,10 @@ function syncDeploymentFromInstance() {
   extraSelection.value = deployment.extra.files ?? []
 }
 
-async function refreshDeploymentFiles() {
+async function refreshDeploymentFiles(action?: RendererActionScope) {
   const [clientManifest, serverManifest] = await Promise.all([
-    getInstanceManifest({ path: path.value }),
-    getInstanceServerManifest({ path: path.value }),
+    runInRendererAction(action, () => getInstanceManifest({ path: path.value })),
+    runInRendererAction(action, () => getInstanceServerManifest({ path: path.value })),
   ])
   clientFiles.value = clientManifest.files
   serverFiles.value = serverManifest
@@ -435,7 +436,7 @@ async function refreshDeploymentFiles() {
   }
 }
 onMounted(refreshDeploymentFiles)
-watch(path, refreshDeploymentFiles)
+watch(path, () => refreshDeploymentFiles())
 const offlineServerFiles = computed(() => {
   const selected = new Set(modpackMetadata.emittedServerFiles)
   return selected.size
@@ -552,22 +553,22 @@ const { refresh: onSave, refreshing: saving } = useRefreshable(async () => {
 })
 
 const deploymentError = ref('')
-async function recordSuccessfulDeployment() {
+async function recordSuccessfulDeployment(action?: RendererActionScope) {
   const revision = desiredRevision.value
-  await remote.setDeploymentRevision(revision)
-  await remote.saveProfile({ lastSyncedRevision: revision, lastSyncedAt: Date.now() })
+  await runInRendererAction(action, () => remote.setDeploymentRevision(revision))
+  await runInRendererAction(action, () => remote.saveProfile({ lastSyncedRevision: revision, lastSyncedAt: Date.now() }))
 }
 
-async function deployCurrentState() {
+async function deployCurrentState(action: RendererActionScope) {
   const credentials = secret.value
     ? form.authMethod === 'password' ? { password: secret.value } : { passphrase: secret.value }
     : undefined
-  const version = await serverLaunch.prepareServer()
-  await refreshDeploymentFiles()
-  deploymentPreview.value = await previewServerDeployment(deploymentPlan.value)
-  const options = await generateLaunchOptions(path.value, userProfile.value, '', 'server', { version }, true)
-  await uploadServer(options, deploymentPlan.value, credentials)
-  await serverLaunch.applyServerConfiguration()
+  const version = await serverLaunch.prepareServer(action)
+  await refreshDeploymentFiles(action)
+  deploymentPreview.value = await action.run(() => previewServerDeployment(deploymentPlan.value))
+  const options = await generateLaunchOptions(path.value, userProfile.value, '', 'server', { version }, true, action)
+  await action.run(() => uploadServer(options, deploymentPlan.value, credentials))
+  await serverLaunch.applyServerConfiguration(action)
 }
 
 const deploymentPreview = ref<ServerDeploymentPreview>()
@@ -584,16 +585,19 @@ const { refresh: onPreviewDeployment, refreshing: previewingDeployment } = useRe
 })
 
 const { refresh: onDeployServer, refreshing: deployingServer } = useRefreshable(async () => {
-  deploymentError.value = ''
-  try {
-    await onSave()
-    await refreshStatus()
-    await deployCurrentState()
-    await recordSuccessfulDeployment()
-    await refreshStatus()
-  } catch (error) {
-    deploymentError.value = getErrorMessage(error)
-  }
+  await withRendererAction('user_action.remote_server.deploy', async (action) => {
+    deploymentError.value = ''
+    try {
+      await action.run(onSave)
+      await action.run(refreshStatus)
+      await deployCurrentState(action)
+      await recordSuccessfulDeployment(action)
+      await action.run(refreshStatus)
+    } catch (error) {
+      action.fail(error)
+      deploymentError.value = getErrorMessage(error)
+    }
+  })
 })
 
 const { refresh: onBuildOfflinePackage, refreshing: buildingOfflinePackage } = useRefreshable(async () => {
@@ -637,55 +641,60 @@ const { refresh: onTestConnection, refreshing: testing } = useRefreshable(async 
 const actionMessage = ref<{ ok: boolean; message?: string } | undefined>()
 
 const { refresh: onStop, refreshing: stopping } = useRefreshable(async () => {
-  actionMessage.value = await remote.stopService()
-  await refreshStatus()
+  await withRendererAction('user_action.remote_server.control', async (action) => {
+    actionMessage.value = await action.run(remote.stopService)
+    await action.run(refreshStatus)
+  }, { 'remote_server.operation': 'stop' })
 })
 
 const { refresh: onLaunchRemote, refreshing: launchingRemote } = useRefreshable(async () => {
-  actionMessage.value = undefined
-  deploymentError.value = ''
-  reconcileDetail.value = ''
-  try {
-    reconcilePhase.value = 'connect'
-    await onSave()
-    const connection = await remote.testConnection()
-    if (!connection.ok) throw new Error(connection.message || t('server.remoteTestConnection'))
+  await withRendererAction('user_action.remote_server.reconcile', async (action) => {
+    actionMessage.value = undefined
+    deploymentError.value = ''
+    reconcileDetail.value = ''
+    try {
+      reconcilePhase.value = 'connect'
+      await action.run(onSave)
+      const connection = await action.run(remote.testConnection)
+      if (!connection.ok) throw new Error(connection.message || t('server.remoteTestConnection'))
 
-    reconcilePhase.value = 'inspect'
-    await refreshStatus()
-    const snapshot = status.value
-    if (snapshot?.platform !== 'Linux') throw new Error(t('server.remoteLinuxRequired'))
-    if (!snapshot.javaAvailable) throw new Error(t('server.remoteJavaRequired'))
-    if (!snapshot.systemdAvailable) throw new Error(t('server.remoteSystemdRequired'))
-    if (!snapshot.remotePathWritable) throw new Error(t('server.remotePathNotWritable'))
+      reconcilePhase.value = 'inspect'
+      await action.run(refreshStatus)
+      const snapshot = status.value
+      if (snapshot?.platform !== 'Linux') throw new Error(t('server.remoteLinuxRequired'))
+      if (!snapshot.javaAvailable) throw new Error(t('server.remoteJavaRequired'))
+      if (!snapshot.systemdAvailable) throw new Error(t('server.remoteSystemdRequired'))
+      if (!snapshot.remotePathWritable) throw new Error(t('server.remotePathNotWritable'))
 
-    const needsSync = !snapshot.serverInstalled || snapshot.appliedRevision !== desiredRevision.value
-    if (needsSync) {
-      reconcilePhase.value = snapshot.serverInstalled ? 'sync' : 'install'
-      await deployCurrentState()
-      await recordSuccessfulDeployment()
+      const needsSync = !snapshot.serverInstalled || snapshot.appliedRevision !== desiredRevision.value
+      if (needsSync) {
+        reconcilePhase.value = snapshot.serverInstalled ? 'sync' : 'install'
+        await deployCurrentState(action)
+        await recordSuccessfulDeployment(action)
+      }
+
+      reconcilePhase.value = 'service'
+      const installed = await action.run(remote.installService)
+      if (!installed.ok) throw new Error(installed.message || t('server.remoteInstallService'))
+
+      reconcilePhase.value = 'start'
+      const started = await action.run(remote.startService)
+      if (!started.ok) throw new Error(started.message || t('server.remoteStartService'))
+
+      reconcilePhase.value = 'logs'
+      watchingLog.value = true
+      await action.run(refreshStatus)
+      actionMessage.value = started
+      reconcilePhase.value = 'ready'
+      reconcileDetail.value = t('server.remoteReconcileReady')
+    } catch (error) {
+      action.fail(error)
+      const message = getErrorMessage(error)
+      reconcilePhase.value = 'error'
+      reconcileDetail.value = message
+      actionMessage.value = { ok: false, message }
     }
-
-    reconcilePhase.value = 'service'
-    const installed = await remote.installService()
-    if (!installed.ok) throw new Error(installed.message || t('server.remoteInstallService'))
-
-    reconcilePhase.value = 'start'
-    const started = await remote.startService()
-    if (!started.ok) throw new Error(started.message || t('server.remoteStartService'))
-
-    reconcilePhase.value = 'logs'
-    watchingLog.value = true
-    await refreshStatus()
-    actionMessage.value = started
-    reconcilePhase.value = 'ready'
-    reconcileDetail.value = t('server.remoteReconcileReady')
-  } catch (error) {
-    const message = getErrorMessage(error)
-    reconcilePhase.value = 'error'
-    reconcileDetail.value = message
-    actionMessage.value = { ok: false, message }
-  }
+  })
 })
 
 watch(() => status.value?.serviceActive, (value) => { serverLaunch.running.value = !!value }, { immediate: true })

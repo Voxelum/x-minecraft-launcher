@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: Buat Game
   serverTitle: Masukkan alamat server Anda
 AppShareInstanceDialog:
+  editScopeDescription: Pilih berkas yang dapat diambil peer setelah menemukan game yang sedang berjalan ini di LAN.
+  editScopeTitle: Edit cakupan berbagi
+  instanceToShare: Game yang sedang berjalan
   alterDownloadDescription: Jika Anda tidak ingin mengacaukan instansi saat ini, Anda juga dapat membuat instansi baru dari konfigurasi rekan Anda. Klik tombol di bawah untuk membuat instansi.
   baseInfo: Pengaturan Dasar
-  cancelShare: Batal Bagikan
   description: Setelah Anda membagikan profil, tempat lain dapat mengunduh berkas-berkas ini melalui PC Anda.
   downloadDescription: Silakan verifikasi berkas yang diberikan oleh rekan Anda. Pilih berkas yang ingin Anda unduh. Berkas tersebut akan ditempatkan di instansi saat ini {name}.
   downloadNotifyTitle: Unduh Instansi dari {user}
   downloadTitle: Unduh berkas dari rekan lain
   filesToDownload: Pilih berkas untuk diunduh
   filesToShare: Pilih berkas untuk dibagikan
-  instanceShare: '{user} baru saja membagikan instansi saat ini kepada Anda'
   share: Bagikan
-  shareNotifyTitle: Bagikan Instansi
   shareTitle: Bagikan berkas game ke pemain lain
 BaseSettingGeneral:
   title: Umum
@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Pilih Direktori Utama
 agent:
+  accessRequiredHint: Berlangganan XMCL untuk menggunakan Agen bawaan, atau konfigurasikan penyedia AI Anda sendiri di Pengaturan.
+  subscribeXmcl: Berlangganan XMCL
   callingTool: memanggil {name}…
   disabledPlaceholder: Agen dinonaktifkan
   emptyHint: Minta agen untuk memeriksa instansi Anda, mengaktifkan/menonaktifkan mod, membaca log, atau mendiagnosis crash.
@@ -162,7 +164,6 @@ curseforgeCategory:
   World Gen: Generasi Dunia
 dataMigration:
   apply: Terapkan Pengaturan
-  directoryCriteriaHint: Pastikan lokasi direktori baru Anda adalah direktori KOSONG!
   placeholder: Silakan klik di sini untuk memilih direktori
   setRootCause: Anda akan kehilangan data Anda (Peta, Paket Sumber Daya, Mod) jika Anda menutup Peluncur pada proses ini!
   setRootDescription: Ini akan mengubah folder data utama dari peluncur ini dan minecraft.
@@ -174,6 +175,7 @@ delete:
   'no': Tidak
   'yes': Hapus
 dependencies:
+  dependents: Mod yang bergantung pada mod ini
   embedded: Tertanam
   incompatible: Tidak Kompatibel
   name: Dependensi
@@ -516,13 +518,8 @@ instances:
   addCurseForgeDescription: Impor dari folder data CurseForge. Anda perlu memilih folder data utama CurseForge
   addDescription: Buat instansi baru dari awal
   addMMCDescription: Impor instansi MultiMC yang ada. Anda perlu memilih folder data dari MultiMC.
-  addManually: Buat Manual
   addModrinthDescription: Impor instansi Modrinth yang ada. Anda perlu memilih folder data utama Modrinth.
   addPrismDescription: Impor instansi PrismLauncher yang ada.
-  addServer: Buat dari server
-  addServerDescription: Ini akan membuat game yang langsung meluncur ke server.
-  addTemplate: Buat dari modpack yang diunduh
-  addTemplateDescription: Impor dari Modpack yang diunduh
   addVanilla: Buat dari Minecraft mirip vanilla
   addVanillaDescription: Impor dari folder .minecraft umum. Ini akan menduplikat profil game asli ke XMCL.
   edition: Edisi
@@ -684,6 +681,10 @@ logsCrashes:
   showFile: Tampilkan di Folder
   title: Log atau Laporan Crash
 me:
+  groupByDate: Kelompokkan berdasarkan tanggal
+  groupByFolder: Kelompokkan berdasarkan folder
+  instanceViewMode: Mode tampilan instans
+  listView: Tampilan daftar
   news: Berita
   recentPlay: Baru Saja Dimainkan
 migrateMinecraft:
@@ -1006,10 +1007,49 @@ modrinth:
 modrinthCard:
   currentVersion: Versi Saat Ini
 multiplayer:
+  joinDiscord: Gabung ke Discord
+  openConsumerPortal: Buka Portal Konsumen
+  refundHint: Perlu pengembalian dana? Kunjungi Portal Konsumen Waffo untuk mengelola pesanan dan langganan Anda.
+  togetherSupportHint: Jika multipemain tidak berfungsi, bergabunglah ke Discord kami dan hubungi tim pengembang. Kami akan membantu menyelesaikan masalahnya.
+  autoShareAmbiguous: Beberapa game sedang berjalan. Pilih instans yang menghosting dunia LAN agar XMCL dapat membagikannya.
+  editSharingScope: Edit cakupan berbagi
+  gameAvailable: Game LAN tersedia
+  joinGame: Gabung ke game
+  noRunningInstanceToShare: Jalankan game sebelum mengedit cakupan berbaginya
+  updateSharedInstanceConfirm: Perbarui dan jalankan
+  updateSharedInstanceDescription: Mod yang dibagikan berbeda dengan {instance}. Perbarui instans ini agar sesuai dengan host sebelum dijalankan? Berkas yang telah diubah akan dicadangkan.
+  updateSharedInstanceTitle: Perbarui instans yang dibagikan?
+  addFunds: "Tambah dana"
+  availableBalance: "Saldo tersedia"
+  balanceHint: "Tersedia untuk layanan XMCL Together"
+  billing: "Penagihan"
+  billingDescription: "Kelola akses relay, paket Together Home, dan pembayaran Anda."
+  billingError: "Penagihan Together tidak dapat dimuat. Coba lagi sebentar."
+  buyTogether: "Beli Together"
+  cancelTogether: "Batalkan paket"
+  checkout: "Buka pembayaran Waffo"
+  connectionTogetherWarning: "Seorang anggota ruangan tidak dapat terhubung ke Anda selama beberapa waktu. Coba XMCL Together untuk meningkatkan konektivitas semua orang di ruangan. Hanya master ruangan yang memerlukan Together."
+  masterPurchaseHint: "Hanya master ruangan yang memerlukan Together Home untuk meningkatkan konektivitas semua orang di ruangan."
+  natTogetherWarning: "Router Anda mungkin mengalami masalah saat terhubung ke master ruangan. Jika koneksi gagal, coba XMCL Together untuk meningkatkan koneksi antara Anda dan teman-teman. Hanya master ruangan yang perlu membeli Together untuk ruangan ini."
+  togetherName: "Minecraft Together"
+  trialDescription: "Satu uji coba selama 7 hari dengan 1 GB lalu lintas relay."
+  trialTitle: "Uji coba konektivitas"
+  tryTogether: "Coba Together"
+  month: "bulan"
+  orderStatus: "Pesanan Waffo: {status}"
+  planDescription: "20 GB lalu lintas relay terkelola setiap bulan, ditambah pemecahan masalah modpack dengan AI."
+  waffoHint: "Pembayaran diselesaikan dengan aman di Waffo Pancake. XMCL tidak pernah menerima nomor kartu Anda."
+  subscription:
+    active: "Aktif"
+    cancelled: "Dibatalkan"
+    payment_due: "Pembayaran jatuh tempo"
+  trial:
+    active: "Uji coba aktif"
+    available: "Uji coba gratis tersedia"
+    expired: "Uji coba telah digunakan"
+    unavailable: "Uji coba tidak tersedia"
   loginRequiredDescription: Multipemain P2P menggunakan layanan online XMCL. Masuk ke Akun XMCL untuk melanjutkan.
   loginRequiredTitle: Masuk untuk multipemain P2P
-  allowTurn: Aktifkan server relai
-  allowTurnHint: Izinkan server relai jika Anda tidak dapat terhubung dengan teman Anda. Namun, menggunakan server relai dapat memperlambat koneksi Anda. Gunakan dengan hati-hati.
   complete: Selesai
   confirm: Konfirmasi
   connectionError: Kesalahan Koneksi
@@ -1046,7 +1086,6 @@ multiplayer:
   localToken: Token Lokal
   manualConnect: Hubungkan Manual
   name: Multipemain di LAN
-  natWarning: Tipe NAT Anda dapat mencegah koneksi langsung. Coba aktifkan server relai di pengaturan atau minta teman Anda untuk menjadi host.
   networkInfo: Info Jaringan (Klik untuk beralih)
   next: Berikutnya
   otherExposedPortDescription: Port yang diteruskan oleh {user}
@@ -1059,8 +1098,6 @@ multiplayer:
   sendTokenToRemote: Kirim Token ke Jarak Jauh
   share: Bagikan Konfigurasi Instansi
   sharing: Membagikan berkas...
-  sharingNotificationBody: Anda dapat mengunduh atau membuat instansi dari konfigurasi bersama {name}.
-  sharingNotificationTitle: Rekan membagikan konfigurasi game mereka
   start: Mulai
   startNewP2PConnection: Klik tombol Mulai untuk membuat koneksi rekan baru
 myStuff: Barang Saya
@@ -1197,12 +1234,9 @@ resourcepack:
   noPacksInstalled: Anda tidak memiliki paket sumber daya terpasang.
   search: Cari Paket Sumber Daya...
   searchHint: Cari paket sumber daya
-  searchOnCurseforge: Cari {name} di CurseForge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Paket Sumber Daya Terpilih
   showDirectory: Tampilkan direktori paket sumber daya
   showFile: Tampilkan paket sumber daya di folder {file}
-  showInCurseforge: Tampilkan {name} di CurseForge
   unselected: Paket Sumber Daya Tidak Terpilih
 save:
   allowCheats: Izinkan Cheat
@@ -1595,8 +1629,6 @@ setup:
     name: Atur Bahasa
   path: Jalur Saat Ini
 shaderPack:
-  deletion: Hapus Paket Shader
-  deletionHint: Ini akan menghapus berkas paket shader {path} dan tidak dapat dibatalkan.
   disabled: Paket Shader Dinonaktifkan
   dropHint: Impor Paket Shader
   empty: Tidak ada paket shader yang dialokasikan
@@ -1619,6 +1651,7 @@ shaderPack:
   showDirectory: Tampilkan direktori paket shader
   showFile: Tampilkan paket shader ini di folder
 shared:
+  pressKeyCombination: Tekan kombinasi tombol...
   add: Tambah
   author: Pembuat
   back: Kembali
@@ -1731,13 +1764,6 @@ tutorial:
     listTitle: Mod Terpasang atau Cari
     searchDescription: Anda dapat mencari mod dari Modrinth, CurseForge, atau cache lokal Anda dengan kotak pencarian ini.
     searchTitle: Cari Mod
-  multiplayer:
-    contentDescription: Koneksi antara Anda dan rekan-rekan Anda akan terdaftar di sini.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: Anda dapat membuat atau bergabung dengan grup dengan pemain lain. Peluncur akan mencoba membuat koneksi P2P antara Anda dan teman-teman Anda sesuai dengan grup. Anda dapat memasukkan nama grup yang diberikan oleh teman Anda, atau membuat nama yang unik.
-    groupTitle: Bergabung dengan grup
-    joinDescription: Setelah Anda memasukkan nama grup, Anda dapat mengklik tombol ini untuk bergabung atau membuat grup. Jika nama grup kosong, peluncur akan menghasilkan nama untuk Anda.
-    manualDescription: Jika Anda atau teman Anda tidak dapat terhubung ke grup, Anda dapat mencoba menukar token secara manual dengan mengklik hubungkan secara manual. Jika itu juga gagal, mungkin ini masalah internet.
   recentPlayDescription: Game yang dibuat akan terdaftar di sini. Anda dapat beralih tampilan di sini untuk melihat versi terpasang dan modpack yang diunduh.
   storePoupularModpackDescription: Anda akan melihat modpack paling populer di CurseForge dan Modrinth di bagian ini.
   storeSearchCategoryDescription: Anda juga dapat beralih kategori atau filter di sini.
@@ -1834,6 +1860,44 @@ userSkin:
   urlNotEmpty: URL Skin tidak boleh kosong
   urlNotValid: URL Skin tidak valid
   useSlim: Gunakan Model Slim
+  saveSuccess: Skin disimpan ke disk!
+  saveFailed: Gagal menyimpan skin ke disk
+  uploadFailed: Gagal mengunggah skin
+  libraryTitle: Lemari Lokal
+  librarySubtitle: Pilih, kelola, dan simpan skin Anda secara lokal
+  manage: Kelola
+  all: Semua
+  currentSkin: Skin Saat Ini
+  savedCount: skin tersimpan
+  newSkin: Skin Baru
+  addNewSkin: Tambah Skin Baru
+  editSkin: Edit Skin
+  skinName: Nama Skin
+  skinNamePlaceholder: 'mis. Skin Favorit Saya'
+  localFile: Berkas Lokal
+  urlOrPlayer: URL / Nama Pemain
+  urlOrPlayerPlaceholder: Masukkan URL gambar skin atau nama pengguna Minecraft
+  urlOrPlayerHint: Masukkan URL langsung gambar PNG atau nama pemain untuk mengambil skin dari Mojang
+  dropFileHere: Letakkan berkas PNG skin di sini atau klik untuk memilih
+  supportedFormats: 'Format yang didukung: gambar PNG 64x64 atau 64x32'
+  preview: Pratinjau Skin
+  previewPlaceholder: Pratinjau skin tidak tersedia
+  saveToLibrary: Simpan ke Lemari
+  saveAndEquip: Simpan dan Kenakan
+  equip: Kenakan
+  equipToAccount: Kenakan di Akun Minecraft
+  equipped: Dikenakan
+  noSkinSelected: Tidak Ada Skin yang Dipilih
+  saveCurrent: Simpan yang Sekarang
+  officialPreset: Preset Resmi
+  mySkins: Skin Saya
+  presets: Preset
+  noSkinsFound: Skin tidak ditemukan
+  tryAddingOne: Coba tambahkan skin baru dengan tombol di atas!
+  skinUpdated: Skin diperbarui!
+  skinDeleteFailed: Gagal menghapus skin dari lemari
+  edit: Edit
+  fetch: Muat
 version:
   checkIntegrity: Periksa Integritas
   name: Versi | Versi

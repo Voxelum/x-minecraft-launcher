@@ -6,7 +6,7 @@ import { ProjectEntry } from '@/util/search'
 import { getDiceCoefficient, mergeSorted } from '@/util/sort'
 import { notNullish, useLocalStorage } from '@vueuse/core'
 import { InstanceModsServiceKey, ProjectMapping, ProjectMappingServiceKey, Settings } from '@xmcl/runtime-api'
-import { InjectionKey, Ref } from 'vue'
+import { Ref } from 'vue'
 import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
 import { useI18nSearch } from './i18nSearch'
@@ -18,8 +18,6 @@ import { useService } from './service'
 import { useMergedProjects, useProjectsSort } from './useMergedProjects'
 import { InstanceData, RuntimeVersions } from '@xmcl/instance'
 import { Resource } from '@xmcl/resource'
-
-export const kModsSearch: InjectionKey<ReturnType<typeof useModsSearch>> = Symbol('ModsSearch')
 
 const kCached = Symbol('cached')
 

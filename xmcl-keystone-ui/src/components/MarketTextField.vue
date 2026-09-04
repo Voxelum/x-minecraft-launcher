@@ -14,6 +14,19 @@
     @click="onClickField"
   >
     <template #append-inner>
+      <v-slide-x-transition>
+        <v-btn
+          v-if="clearable"
+          icon
+          variant="text"
+          size="small"
+          @click="clear"
+        >
+          <v-icon size="small">
+            close
+          </v-icon>
+        </v-btn>
+      </v-slide-x-transition>
       <v-chip
         v-if="gameVersion"
         label
@@ -40,7 +53,8 @@
   </v-text-field>
 </template>
 
-<script lang=ts setup>
+<script lang="ts" setup>
+import { clearSearch } from './marketTextField'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 
 const props = defineProps<{
@@ -75,8 +89,7 @@ const search = (v: string | undefined) => {
 }
 
 const clear = () => {
-  _keyword.value = ''
-  emit('clear')
+  clearSearch(_keyword, emit)
 }
 
 function onBlur(e: FocusEvent) {
@@ -86,8 +99,6 @@ function onBlur(e: FocusEvent) {
 function onClickField(e: MouseEvent) {
   searchTextFieldFocused.value = true
 }
-
-const { t } = useI18n()
 
 const searchTextField = shallowRef(undefined as any | undefined)
 const searchTextFieldFocused = inject('focused', ref(false))

@@ -11,8 +11,9 @@ import { ensureDir, move, stat, unlink } from 'fs-extra'
 import { join } from 'path'
 import { LauncherAppPlugin, kGameDataPath } from '~/app'
 import { InstanceService } from '~/instance'
+import { VersionInstallService } from '~/install/InstallService'
 import { isLinkTo, readlinkSafe } from '~/instance/utils/readLinkSafe'
-import { JavaService, JavaValidation } from '~/java'
+import { getManagedJavaComponent, JavaService, JavaValidation } from '~/java'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
 import { linkOrCopyDirectory, missing } from '~/util/fs'
@@ -94,16 +95,33 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
 
   launchService.registerMiddleware({
     name: 'java-validation',
-    async onBeforeLaunch(input) {
+    async onBeforeLaunch(input, payload) {
       const javaService = await app.registry.getOrCreate(JavaService)
       const javaPath = input.java
+      let resolved
       try {
-        const result = await javaService.validateJavaPath(javaPath)
-        if (result === JavaValidation.NotExisted) {
-          throw new LaunchException({ type: 'launchInvalidJavaPath', javaPath })
-        }
-        if (result === JavaValidation.NoPermission) {
-          throw new LaunchException({ type: 'launchJavaNoPermission', javaPath })
+        resolved = await javaService.resolveJava(javaPath)
+        if (!resolved) {
+          const managed = getManagedJavaComponent(javaPath, getPath('jre'))
+          const cached = javaService.state.all.find((java) => java.path === javaPath)
+          const target = ('javaVersion' in payload.version
+            ? payload.version.javaVersion
+            : undefined) ?? (managed && cached?.majorVersion
+              ? { component: managed.component, majorVersion: cached.majorVersion }
+              : undefined)
+          if (managed && target) {
+            await javaService.removeJava(javaPath)
+            const installer = await app.registry.getOrCreate(VersionInstallService)
+            resolved = await installer.install({
+              type: 'java',
+              target,
+              forceZulu: managed.forceZulu,
+            })
+          }
+          if (resolved) {
+            input.java = resolved.path
+            payload.options.javaPath = resolved.path
+          }
         }
       } catch (e) {
         throw new LaunchException(
@@ -112,6 +130,19 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
           { cause: e },
         )
       }
+      if (resolved) return
+
+      const validation = await javaService.validateJavaPath(javaPath)
+      if (validation === JavaValidation.NotExisted) {
+        throw new LaunchException({ type: 'launchInvalidJavaPath', javaPath })
+      }
+      if (validation === JavaValidation.NoPermission) {
+        throw new LaunchException({ type: 'launchJavaNoPermission', javaPath })
+      }
+      throw new LaunchException(
+        { type: 'launchNoProperJava', javaPath },
+        'Java executable exists but the JVM cannot start',
+      )
     },
   })
   launchService.registerMiddleware({

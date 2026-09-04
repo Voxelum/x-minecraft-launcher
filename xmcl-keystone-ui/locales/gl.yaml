@@ -3,10 +3,12 @@ AppAddInstanceDialog:
   createTitle: Game aanmaken
   serverTitle: Voer je serveradres in
 AppShareInstanceDialog:
+  editScopeDescription: Selecciona os ficheiros que os pares poderán obter despois de descubrir este xogo en execución na LAN.
+  editScopeTitle: Editar o alcance da compartición
+  instanceToShare: Xogo en execución
   alterDownloadDescription: >-
     Als je de huidige instantie niet wilt aanpassen, kun je ook een nieuwe instantie maken van de configuratie van de ander. Klik op de knop hieronder om een instantie te maken.
   baseInfo: Basisinstelling
-  cancelShare: Delen annuleren
   description: >-
     Nadat je het profiel hebt gedeeld, kunnen anderen deze bestanden via jouw PC downloaden.
   downloadDescription: >-
@@ -15,9 +17,7 @@ AppShareInstanceDialog:
   downloadTitle: Bestanden downloaden van anderen
   filesToDownload: Kies bestanden om te downloaden
   filesToShare: Kies bestanden om te delen
-  instanceShare: '{user} heeft zojuist de huidige instantie met je gedeeld'
   share: Delen
-  shareNotifyTitle: Instantie delen
   shareTitle: Deel gamebestanden met andere speler
 BaseSettingGeneral:
   title: Algemeen
@@ -136,7 +136,6 @@ curseforgeCategory:
   World Gen: Wereldgeneratie
 dataMigration:
   apply: Instelling toepassen
-  directoryCriteriaHint: Zorg ervoor dat je nieuwe maplocatie een LEGE map is!
   placeholder: Klik hier om een map te selecteren
   setRootCause: >-
     Je verliest je gegevens (Mappen, Resourcepacks, Mods) als je de Launcher sluit tijdens dit proces!
@@ -149,6 +148,7 @@ delete:
   'no': Nee
   'yes': Verwijderen
 dependencies:
+  dependents: Mods que dependen deste mod
   embedded: Ingesloten
   incompatible: Incompatibel
   name: Afhankelijkheden
@@ -469,13 +469,8 @@ instances:
   addDescription: Maak een nieuwe instantie vanaf nul
   addMMCDescription: >-
     Importeer bestaande MultiMC instantie. Je moet de datamap van MultiMC selecteren.
-  addManually: Handmatig aanmaken
   addModrinthDescription: >-
     Importeer bestaande Modrinth instantie. Je moet de Modrinth root datamap selecteren.
-  addServer: Aanmaken vanaf server
-  addServerDescription: Dit maakt een game die direct naar de server verbindt.
-  addTemplate: Aanmaken van gedownload modpack
-  addTemplateDescription: Importeren van gedownload Modpack
   addVanilla: Aanmaken van vanilla-achtige Minecraft
   addVanillaDescription: >-
     Importeer uit gewone .minecraft map. Dit dupliceert het originele game profiel naar XMCL.
@@ -658,6 +653,10 @@ logsCrashes:
   title: Logs of Crashrapporten
   failures: Fallos de inicio
 me:
+  groupByDate: Agrupar por data
+  groupByFolder: Agrupar por cartafol
+  instanceViewMode: Modo de vista das instancias
+  listView: Vista de lista
   news: Nieuws
   recentPlay: Recent gespeeld
 migrationWindow:
@@ -958,11 +957,49 @@ modrinth:
 modrinthCard:
   currentVersion: Huidige Versie
 multiplayer:
+  joinDiscord: Unirse a Discord
+  openConsumerPortal: Abrir o portal de consumidores
+  refundHint: Precisas un reembolso? Visita o portal de consumidores de Waffo para xestionar os teus pedidos e subscricións.
+  togetherSupportHint: Se o modo multixogador non funciona, únete ao noso Discord e contacta co equipo de desenvolvemento. Axudarémosche a resolver o problema.
+  autoShareAmbiguous: Hai varios xogos en execución. Selecciona a instancia que aloxa o mundo LAN para que XMCL poida compartila.
+  editSharingScope: Editar o alcance da compartición
+  gameAvailable: Xogo LAN dispoñible
+  joinGame: Unirse ao xogo
+  noRunningInstanceToShare: Inicia un xogo antes de editar o seu alcance de compartición
+  updateSharedInstanceConfirm: Actualizar e iniciar
+  updateSharedInstanceDescription: Os mods compartidos son diferentes dos de {instance}. Queres actualizar esta instancia para que coincida co anfitrión antes de iniciala? Farase unha copia de seguranza dos ficheiros modificados.
+  updateSharedInstanceTitle: Actualizar a instancia compartida?
+  addFunds: "Engadir fondos"
+  availableBalance: "Saldo dispoñible"
+  balanceHint: "Dispoñible para os servizos de XMCL Together"
+  billing: "Facturación"
+  billingDescription: "Xestiona o acceso ao relay, o teu plan Together Home e os pagamentos."
+  billingError: "Non se puido cargar a facturación de Together. Téntao de novo nun momento."
+  buyTogether: "Mercar Together"
+  cancelTogether: "Cancelar o plan"
+  checkout: "Abrir o pagamento de Waffo"
+  connectionTogetherWarning: "Un membro da sala non puido conectarse contigo durante un tempo. Proba XMCL Together para mellorar a conectividade de todos na sala. Só o mestre da sala necesita Together."
+  masterPurchaseHint: "Só o mestre da sala necesita Together Home para mellorar a conectividade de todos na sala."
+  natTogetherWarning: "É posible que o teu router teña problemas para conectarse ao mestre da sala. Se fallan as conexións, proba XMCL Together para mellorar a conectividade entre ti e os teus amigos. Só o mestre da sala ten que mercar Together para a sala."
+  togetherName: "Minecraft Together"
+  trialDescription: "Unha proba de 7 días con 1 GB de tráfico de relay."
+  trialTitle: "Proba de conectividade"
+  tryTogether: "Probar Together"
+  month: "mes"
+  orderStatus: "Pedido de Waffo: {status}"
+  planDescription: "20 GB de tráfico de relay xestionado ao mes, ademais de resolución de problemas con IA para o teu modpack."
+  waffoHint: "Os pagamentos complétanse de forma segura en Waffo Pancake. XMCL nunca recibe o teu número de tarxeta."
+  subscription:
+    active: "Activa"
+    cancelled: "Cancelada"
+    payment_due: "Pagamento pendente"
+  trial:
+    active: "Proba activa"
+    available: "Proba gratuíta dispoñible"
+    expired: "Proba utilizada"
+    unavailable: "Proba non dispoñible"
   loginRequiredDescription: O multixogador P2P usa os servizos en liña de XMCL. Inicia sesión nunha conta de XMCL para continuar.
   loginRequiredTitle: Inicia sesión para o multixogador P2P
-  allowTurn: Schakel relay-server in
-  allowTurnHint: >-
-    Sta relay-server toe als je geen verbinding kunt maken met je vriend. Echter, gebruik van relay-server kan je verbinding vertragen. Gebruik het met voorzichtigheid.
   complete: Voltooid
   confirm: Bevestigen
   connections: Verbindingen
@@ -1014,15 +1051,11 @@ multiplayer:
   sendTokenToRemote: Stuur Token naar Remote
   share: Deel Instantieconfiguratie
   sharing: Bestanden delen...
-  sharingNotificationBody: Je kunt downloaden of een instantie maken van {name} gedeelde config.
-  sharingNotificationTitle: Een peer deelt zijn gameconfiguratie
   start: Start
   startNewP2PConnection: Klik op de Start knop om een nieuwe peer-verbinding te maken
   connectionError: Erro de conexión
   connectionFailedHint: >-
     Non se pode establecer a conexión. Comproba que ambos os pares teñan tipos de NAT compatibles.
-  natWarning: >-
-    O teu tipo de NAT pode impedir conexións directas. Tenta activar o servidor de relé na configuración ou pídelle ao teu amigo que sexa o anfitrión.
 myStuff: Mijn Spullen
 natType:
   blocked: Geblokkeerd
@@ -1094,12 +1127,9 @@ resourcepack:
   name: Resourcepack | Resourcepacks
   noPacks: Non se atoparon paquetes de recursos
   searchHint: Busca paquetes de recursos
-  searchOnCurseforge: Zoek {name} in curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Geselecteerde Resourcepacks
   showDirectory: Toon resourcepack-map
   showFile: Toon resourcepack in map {file}
-  showInCurseforge: Toon {name} in curseforge
   unselected: Niet-geselecteerde Resourcepacks
   search: Buscar paquetes de recursos...
 save:
@@ -1196,6 +1226,8 @@ serverStatus:
   refuse: §4Server weigerde!
   timeout: §4Verbind server time-out!
 agent:
+  accessRequiredHint: Subscríbete a XMCL para usar o axente integrado ou configura o teu propio provedor de IA nos axustes.
+  subscribeXmcl: Subscribirse a XMCL
   notConfiguredHint: Stel een API-sleutel, model en OpenAI-compatibel endpoint in via Instellingen → Algemeen → AI-agent. Gebruik bijvoorbeeld OpenAI of een Claude-compatibele gateway.
 setting:
   aiAgentApiKeyDescription: Configureer een OpenAI-compatibele provider, zoals OpenAI of een gateway voor Claude. De sleutel wordt lokaal op dit apparaat opgeslagen.
@@ -1445,9 +1477,6 @@ shaderPack:
     Vincular o cartafol shaderpacks desta instancia co cartafol compartido global
     para que todas as instancias usen os mesmos paquetes de shaders. Os paquetes
     existentes fusiónanse no cartafol compartido.
-  deletion: Verwijder Shader Pack
-  deletionHint: >-
-    Dit verwijdert het shaderpack-bestand {path} en kan niet ongedaan worden gemaakt.
   disabled: Uitgeschakelde Shader Packs
   dropHint: Importeer Shader Pack
   empty: Geen shader pack toegewezen
@@ -1466,6 +1495,7 @@ shaderPack:
   market: Mercado de shaders
   search: Buscar shaders...
 shared:
+  pressKeyCombination: Preme unha combinación de teclas...
   add: Toevoegen
   author: Auteur
   back: Terug
@@ -1495,6 +1525,7 @@ shared:
   skipForNow: Sla voor nu over
   upgrade: Bijwerken
   'yes': Ja
+  delete: Eliminar
 sidebar:
   pin: Fixar
   unpin: Desfixar
@@ -1578,16 +1609,6 @@ tutorial:
     searchDescription: >-
       Je kunt mods zoeken van Modrinth, Curseforge of je lokale cache met dit zoekvak.
     searchTitle: Zoek Mods
-  multiplayer:
-    contentDescription: Verbindingen tussen jou en je peers worden hier vermeld.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Je kunt een groep maken of lid worden met andere spelers. De launcher zal proberen P2P verbindingen te maken tussen jou en je vrienden volgens de groep. Je kunt de groepsnaam invoeren die je vrienden hebben gegeven. Of je kunt een unieke naam maken.
-    groupTitle: Word lid van een groep
-    joinDescription: >-
-      Zodra je een groepsnaam invoert, kun je op deze knop klikken om lid te worden of de groep te maken. Als de groepsnaam leeg is, genereert de launcher een naam voor je.
-    manualDescription: >-
-      Als jij of je vriend niet kunnen verbinden met de groep, kun je proberen handmatig het token uit te wisselen door op handmatig verbinden te klikken. Als dat ook mislukte, is het misschien een internetprobleem.
   recentPlayDescription: >-
     De gemaakte games worden hier vermeld. Je kunt de weergaven hier wisselen om ook de geïnstalleerde versies en gedownloade modpacks te zien.
   storePoupularModpackDescription: Je ziet de populairste modpacks in Curseforge en Modrinth in deze sectie.
@@ -1682,6 +1703,46 @@ userSkin:
   urlNotEmpty: Skin URL mag niet leeg zijn
   urlNotValid: Skin URL is Ongeldig
   useSlim: Gebruik Slim Model
+  classic: Clásico
+  slim: Delgado
+  saveSuccess: Gardouse a skin no disco!
+  saveFailed: Non foi posible gardar a skin no disco
+  uploadFailed: Produciuse un erro ao subir a skin
+  libraryTitle: Armario local
+  librarySubtitle: Escolle, organiza e garda as túas skins localmente
+  manage: Xestionar
+  all: Todas
+  currentSkin: Skin actual
+  savedCount: skins gardadas
+  newSkin: Nova skin
+  addNewSkin: Engadir unha skin
+  editSkin: Editar a skin
+  skinName: Nome da skin
+  skinNamePlaceholder: 'p. ex. A miña skin favorita'
+  localFile: Ficheiro local
+  urlOrPlayer: URL / Nome do xogador
+  urlOrPlayerPlaceholder: Introduce o URL da imaxe ou o nome de usuario de Minecraft
+  urlOrPlayerHint: Introduce o URL directo dunha imaxe PNG ou un xogador para obter a skin de Mojang
+  dropFileHere: Solta aquí o ficheiro PNG da skin ou preme para buscalo
+  supportedFormats: 'Formato compatible: imaxe PNG de 64x64 ou 64x32'
+  preview: Vista previa da skin
+  previewPlaceholder: Non hai ningunha vista previa dispoñible
+  saveToLibrary: Gardar no armario
+  saveAndEquip: Gardar e equipar
+  equip: Equipar
+  equipToAccount: Equipar na conta de Minecraft
+  equipped: Equipada
+  noSkinSelected: Non se seleccionou ningunha skin
+  saveCurrent: Gardar a actual
+  officialPreset: Predefinición oficial
+  mySkins: As miñas skins
+  presets: Predefinicións
+  noSkinsFound: Non se atoparon skins
+  tryAddingOne: Proba a engadir unha skin co botón de arriba!
+  skinUpdated: Actualizouse a skin!
+  skinDeleteFailed: Non foi posible retirar a skin do armario
+  edit: Editar
+  fetch: Cargar
 version:
   checkIntegrity: Controleer Integriteit
   name: Versie | Versies

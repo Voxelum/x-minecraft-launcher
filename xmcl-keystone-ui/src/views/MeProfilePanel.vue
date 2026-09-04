@@ -1,5 +1,5 @@
 <template>
-  <div class="me-profile-panel flex flex-col h-full overflow-hidden select-none">
+  <div class="me-profile-panel workspace-side-panel flex flex-col h-full overflow-hidden select-none">
     <UserAccountSwitcher class="profile-header px-3 pt-3 pb-2 flex-shrink-0" show-inline-delete />
 
     <!-- Skin & Cape Card -->
@@ -12,7 +12,25 @@
           :user="userProfile"
           :profile="gameProfile"
           :inspect="false"
+          :hide-controls="true"
         />
+      </div>
+
+      <!-- Skin Library Button -->
+      <div v-if="canUploadSkin" class="skin-row border-t px-3 py-2"
+        style="border-color: rgba(var(--v-theme-on-surface), 0.06);"
+      >
+        <v-btn
+          variant="tonal"
+          size="small"
+          block
+          color="primary"
+          class="rounded-lg font-medium text-xs tracking-normal"
+          @click="isSkinLibraryOpen = true"
+        >
+          <v-icon start size="16">accessibility</v-icon>
+          {{ t('userSkin.libraryTitle') }}
+        </v-btn>
       </div>
 
       <!-- Cape row -->
@@ -264,14 +282,24 @@
         <div class="text-xs">{{ t('minecraftFriends.requiresMicrosoft') }}</div>
       </div>
     </div>
+
+    <!-- Master Skin Library Dialog -->
+    <UserSkinLibraryDialog
+      v-if="canUploadSkin"
+      v-model="isSkinLibraryOpen"
+      :user="userProfile"
+      :profile="gameProfile"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
 import MinecraftFriendRow from '@/components/MinecraftFriendRow.vue'
 import PlayerCape from '@/components/PlayerCape.vue'
+import SkinView from '@/components/SkinView.vue'
 import UserAccountSwitcher from '@/components/UserAccountSwitcher.vue'
 import UserSkin from '@/components/UserSkin.vue'
+import UserSkinLibraryDialog from '@/components/UserSkinLibraryDialog.vue'
 import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
 import { kMinecraftFriends } from '@/composables/minecraftFriends'
@@ -306,6 +334,10 @@ const skinModel = useUserSkin(
   computed(() => userProfile.value),
 )
 provide(UserSkinModel, skinModel)
+const { canUploadSkin } = skinModel
+
+const isSkinLibraryOpen = ref(false)
+
 const capes = computed(() => gameProfile.value?.capes ?? [])
 const capeScroller = ref<HTMLElement | null>(null)
 
@@ -346,13 +378,10 @@ async function onRemoveFriend(f: MinecraftFriend) {
 
 <style scoped>
 .me-profile-panel {
-  width: 280px;
-  min-width: 280px;
-  border-right: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  background: rgba(var(--v-theme-surface), 0.6);
-  backdrop-filter: blur(12px);
+  --workspace-side-panel-width: 280px;
 }
 
+.skin-thumb,
 .cape-thumb {
   width: 36px;
   height: 52px;
@@ -366,10 +395,12 @@ async function onRemoveFriend(f: MinecraftFriend) {
   transform-origin: top left;
 }
 
+.skin-scroll,
 .cape-scroll {
   scrollbar-width: none;
 }
 
+.skin-scroll::-webkit-scrollbar,
 .cape-scroll::-webkit-scrollbar {
   height: 0;
   display: none;

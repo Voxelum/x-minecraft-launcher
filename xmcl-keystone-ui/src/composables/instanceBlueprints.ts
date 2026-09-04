@@ -1,5 +1,5 @@
 import { InstanceBlueprintsServiceKey } from '@xmcl/runtime-api'
-import { InjectionKey, Ref } from 'vue'
+import { InjectionKey, Ref, ref } from 'vue'
 import { useResourceParseErrorNotifier } from './resourceParseError'
 import { useService } from './service'
 import { useState } from './syncableState'
@@ -26,11 +26,11 @@ export interface InstanceBlueprintFile {
 
 export const kInstanceBlueprints: InjectionKey<ReturnType<typeof useInstanceBlueprints>> = Symbol('InstanceBlueprints')
 
-export function useInstanceBlueprints(instancePath: Ref<string>) {
+export function useInstanceBlueprints(instancePath: Ref<string>, active: Ref<boolean> = ref(true)) {
   const { watch: watchBlueprints } = useService(InstanceBlueprintsServiceKey)
 
   const { state, error, isValidating, revalidate } = useState(
-    () => instancePath.value ? watchBlueprints(instancePath.value) : undefined,
+    () => active.value && instancePath.value ? watchBlueprints(instancePath.value) : undefined,
     ReactiveResourceState,
   )
 

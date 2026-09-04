@@ -8,4 +8,6 @@ const handler: SaveWorker = {
     renderSaveRegion(savePath, dimension, regionX, regionZ, maxHeight),
 }
 
-setHandler(handler, getSerializedError)
+setHandler(handler, getSerializedError, {
+  concurrency: { renderSaveRegion: 2 },
+})

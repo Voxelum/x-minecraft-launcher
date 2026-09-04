@@ -13,16 +13,18 @@
 <script lang=ts setup>
 import { useDialog } from '../composables/dialog'
 import TaskView from './AppTaskDialogTaskView.vue'
+import { onScopeDispose } from 'vue'
 
 const { hide, isShown } = useDialog('task', () => {
   windowController.focus()
 })
 const router = useRouter()
-router.afterEach((g) => {
+const removeAfterEach = router.afterEach(() => {
   if (isShown.value) {
     hide()
   }
 })
+onScopeDispose(removeAfterEach)
 </script>
 
 <style scoped=true>

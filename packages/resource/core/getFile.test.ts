@@ -19,6 +19,8 @@ describe('getFiles', () => {
     await writeFile(join(directory, 'a.nbt'), '')
     await writeFile(join(directory, 'folder', 'b.nbt'), '')
     await writeFile(join(directory, 'folder', 'c.nbt'), '')
+    await writeFile(join(directory, 'folder', 'preview.png'), '')
+    await writeFile(join(directory, 'folder', 'README'), '')
 
     const files = await getFiles(directory, ResourceDomain.Blueprints)
 

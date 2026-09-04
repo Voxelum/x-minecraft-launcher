@@ -2,7 +2,7 @@ import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
-import { InjectionKey, Ref } from 'vue'
+import { Ref } from 'vue'
 import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
 import { InstanceShaderFile } from './instanceShaderPack'
@@ -14,8 +14,6 @@ import { useMergedProjects, useProjectsSort } from './useMergedProjects'
 import { useLocalStorage } from '@vueuse/core'
 import { LocalSort } from './sortBy'
 import { mergeSorted } from '@/util/sort'
-
-export const kShaderPackSearch: InjectionKey<ReturnType<typeof useShaderPackSearch>> = Symbol('ShaderPackSearch')
 
 export enum ShaderLoaderFilter {
   optifine = 'optifine',

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MarketProjectDetail, { ProjectDependency } from '@/components/MarketProjectDetail.vue'
+import MarketProjectDetail, { ProjectDependency, ProjectDependent } from '@/components/MarketProjectDetail.vue'
 import { ProjectVersion as ProjectDetailVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useInCollection, useModrinthFollow } from '@/composables/modrinthAuthenticatedAPI'
 import { getModrinthDependenciesModel } from '@/composables/modrinthDependencies'
@@ -9,6 +9,7 @@ import {
   useModrinthProjectDetailData,
   useModrinthProjectDetailVersions,
 } from '@/composables/modrinthProjectDetailData'
+import { includeModrinthUpgradeVersion } from '@/composables/modrinthProjectVersions'
 import { getModrinthVersionModel, useModrinthTask } from '@/composables/modrinthVersions'
 import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
 import { useService } from '@/composables/service'
@@ -18,18 +19,21 @@ import { kTaskManager } from '@/composables/taskManager'
 import { getSWRV } from '@/util/swrvGet'
 import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
-import { SearchResultHit } from '@xmcl/modrinth'
+import { ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
 import { ProjectMapping, ProjectMappingServiceKey } from '@xmcl/runtime-api'
+import { getMarketRoutePathFromModrinthProjectType } from '@/util/marketRoute'
 import Hint from './Hint.vue'
 
 const props = defineProps<{
   modrinth?: SearchResultHit
   projectId: string
+  upgradeVersion?: ProjectVersion
   installed: ProjectFile[]
   loader?: string
   categories: string[]
   gameVersion: string
   allFiles: ProjectFile[]
+  dependents?: ProjectDependent[]
   updating?: boolean
   curseforge?: number
   disableInstall?: boolean
@@ -41,6 +45,7 @@ const emit = defineEmits<{
   (event: 'uninstall', files: ProjectFile[]): void
   (event: 'enable', file: ProjectFile): void
   (event: 'disable', file: ProjectFile): void
+  (event: 'open-dependent', dependent: ProjectDependent): void
 }>()
 
 // Project
@@ -85,8 +90,9 @@ const { data: versions, isValidating: loadingVersions } = useSWRVModel(
   ),
   inject(kSWRVConfig),
 )
+const detailVersions = computed(() => includeModrinthUpgradeVersion(versions.value, props.upgradeVersion))
 const modVersions = useModrinthProjectDetailVersions(
-  versions,
+  detailVersions,
   computed(() => props.installed),
 )
 
@@ -102,7 +108,7 @@ const supportedVersions = computed(() => {
 })
 
 // Dependencies
-const version = computed(() => versions.value?.find((v) => v.id === selectedVersion.value?.id))
+const version = computed(() => detailVersions.value.find((v) => v.id === selectedVersion.value?.id))
 const { data: deps, isValidating } = useSWRVModel(
   getModrinthDependenciesModel(version, modLoader),
   { revalidateOnFocus: false },
@@ -178,7 +184,7 @@ const onInstall = async (v: ProjectDetailVersion) => {
   if (installing.value) return
   try {
     installing.value = true
-    const selectedVersion = versions.value?.find((version) => version.id === v.id)
+    const selectedVersion = detailVersions.value.find((version) => version.id === v.id)
     let resolvedDeps = deps.value
     if (!resolvedDeps) {
       resolvedDeps = await getSWRV(
@@ -241,7 +247,10 @@ const onDelete = () => {
 
 const { push, currentRoute } = useRouter()
 const onOpenDependency = (dep: ProjectDependency) => {
-  push({ query: { ...currentRoute.value.query, id: `modrinth:${dep.id}` } })
+  const resolvedDep = deps.value?.find((d) => d.project.id === dep.id)
+  const path = getMarketRoutePathFromModrinthProjectType(resolvedDep?.project.project_type)
+  const query = { ...currentRoute.value.query, id: `modrinth:${dep.id}` }
+  push(path ? { path, query } : { query })
 }
 
 const curseforgeId = computed(
@@ -298,6 +307,7 @@ const { t } = useI18n()
     :updating="innerUpdating || installing || updating"
     :loading-dependencies="isValidating"
     :dependencies="dependencies"
+    :dependents="dependents"
     :loading="loading"
     :loading-versions="loadingVersions"
     :modrinth="projectId"
@@ -311,6 +321,7 @@ const { t } = useI18n()
     @collection="onAddOrRemove"
     current-target="modrinth"
     @open-dependency="onOpenDependency"
+    @open-dependent="emit('open-dependent', $event)"
     @install="onInstall"
     @enable="enabled = $event"
     @delete="onDelete"

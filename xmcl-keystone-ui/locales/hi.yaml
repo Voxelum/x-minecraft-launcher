@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: गेम बनाएं
   serverTitle: अपना सर्वर पता दर्ज करें
 AppShareInstanceDialog:
+  editScopeDescription: LAN पर चल रहे इस गेम का पता लगने के बाद पीयर जिन फ़ाइलों को प्राप्त कर सकते हैं, उन्हें चुनें।
+  editScopeTitle: साझाकरण का दायरा संपादित करें
+  instanceToShare: चल रहा गेम
   alterDownloadDescription: यदि आप वर्तमान इंस्टेंस को खराब नहीं करना चाहते हैं। आप अपने साथी (peer) के कॉन्फ़िग से एक नया इंस्टेंस भी बना सकते हैं। इंस्टेंस बनाने के लिए नीचे दिए गए बटन पर क्लिक करें।
   baseInfo: मूल सेटिंग
-  cancelShare: साझा करना रद्द करें
   description: प्रोफ़ाइल साझा करने के बाद, अन्य लोग आपके पीसी के माध्यम से इन फ़ाइलों को डाउनलोड कर सकते हैं।
   downloadDescription: कृपया अपने साथी द्वारा प्रदान की गई फ़ाइलों को सत्यापित करें। वह फ़ाइल चुनें जिसे आप डाउनलोड करना चाहते हैं। इसे वर्तमान इंस्टेंस {name} में रखा जाएगा।
   downloadNotifyTitle: '{user} से इंस्टेंस डाउनलोड करें'
   downloadTitle: अन्य साथियों (peers) से फ़ाइलें डाउनलोड करें
   filesToDownload: डाउनलोड करने के लिए फ़ाइलें चुनें
   filesToShare: साझा करने के लिए फ़ाइलें चुनें
-  instanceShare: '{user} ने अभी आपके साथ वर्तमान इंस्टेंस साझा किया है'
   share: साझा करें
-  shareNotifyTitle: इंस्टेंस साझा करें
   shareTitle: अन्य खिलाड़ी के साथ गेम फ़ाइलें साझा करें
 BaseSettingGeneral:
   title: सामान्य
@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: रूट निर्देशिका चुनें
 agent:
+  accessRequiredHint: बिल्ट-इन एजेंट का उपयोग करने के लिए XMCL की सदस्यता लें, या सेटिंग्स में अपना AI प्रदाता कॉन्फ़िगर करें।
+  subscribeXmcl: XMCL की सदस्यता लें
   callingTool: '{name} को कॉल किया जा रहा है...'
   disabledPlaceholder: एजेंट अक्षम
   emptyHint: एजेंट से अपने इंस्टेंस का निरीक्षण करने, मॉड टॉगल करने, लॉग पढ़ने या क्रैश का निदान करने के लिए कहें।
@@ -162,7 +164,6 @@ curseforgeCategory:
   World Gen: विश्व जनरेशन
 dataMigration:
   apply: सेटिंग लागू करें
-  directoryCriteriaHint: कृपया सुनिश्चित करें कि आपका नया निर्देशिका स्थान एक खाली निर्देशिका है!
   placeholder: निर्देशिका का चयन करने के लिए कृपया यहाँ क्लिक करें
   setRootCause: यदि आप इस प्रक्रिया में लॉन्चर बंद करते हैं तो आप अपना डेटा (नक्शे, रिसोर्स पैक, मॉड) खो देंगे!
   setRootDescription: यह इस लॉन्चर और माइनक्राफ्ट के रूट डेटा फ़ोल्डर को बदल देगा।
@@ -174,6 +175,7 @@ delete:
   'no': नहीं
   'yes': हटाएं
 dependencies:
+  dependents: इस मॉड पर निर्भर मॉड
   embedded: एम्बेडेड
   incompatible: असंगत
   name: निर्भरताएँ
@@ -516,13 +518,8 @@ instances:
   addCurseForgeDescription: कर्सफ़ोर्ज डेटा फ़ोल्डर से आयात करें। आपको कर्सफ़ोर्ज के रूट डेटा फ़ोल्डर का चयन करना होगा
   addDescription: शुरुआत से एक नया इंस्टेंस बनाएं
   addMMCDescription: मौजूदा MultiMC इंस्टेंस आयात करें। आपको MultiMC से डेटा फ़ोल्डर का चयन करना होगा।
-  addManually: मैन्युअल रूप से बनाएं
   addModrinthDescription: मौजूदा मोडरिंथ इंस्टेंस आयात करें। आपको मोडरिंथ रूट डेटा फ़ोल्डर का चयन करना होगा।
   addPrismDescription: मौजूदा PrismLauncher इंस्टेंस आयात करें।
-  addServer: सर्वर से बनाएं
-  addServerDescription: यह सीधे सर्वर पर लॉन्च करने के लिए एक गेम बनाएगा।
-  addTemplate: डाउनलोड किए गए मॉडपैक से बनाएं
-  addTemplateDescription: डाउनलोड किए गए मॉडपैक से आयात करें
   addVanilla: वेनिला जैसे माइनक्राफ्ट से बनाएं
   addVanillaDescription: सामान्य .minecraft फ़ोल्डर से आयात करें। यह मूल गेम प्रोफ़ाइल को XMCL में डुप्लिकेट कर देगा।
   edition: संस्करण (Edition)
@@ -684,6 +681,10 @@ logsCrashes:
   showFile: फ़ोल्डर में दिखाएं
   title: लॉग या क्रैश रिपोर्ट
 me:
+  groupByDate: दिनांक के अनुसार समूहित करें
+  groupByFolder: फ़ोल्डर के अनुसार समूहित करें
+  instanceViewMode: इंस्टेंस दृश्य मोड
+  listView: सूची दृश्य
   news: समाचार
   recentPlay: हालिया खेल
 migrateMinecraft:
@@ -1006,10 +1007,49 @@ modrinth:
 modrinthCard:
   currentVersion: वर्तमान संस्करण
 multiplayer:
+  joinDiscord: Discord से जुड़ें
+  openConsumerPortal: उपभोक्ता पोर्टल खोलें
+  refundHint: रिफंड चाहिए? अपने ऑर्डर और सब्सक्रिप्शन प्रबंधित करने के लिए Waffo उपभोक्ता पोर्टल पर जाएँ।
+  togetherSupportHint: यदि मल्टीप्लेयर काम नहीं कर रहा है, तो हमारे Discord से जुड़ें और डेवलपमेंट टीम से संपर्क करें। हम समस्या हल करने में आपकी मदद करेंगे।
+  autoShareAmbiguous: एक से अधिक गेम चल रहे हैं। LAN वर्ल्ड होस्ट करने वाला इंस्टेंस चुनें ताकि XMCL उसे साझा कर सके।
+  editSharingScope: साझाकरण का दायरा संपादित करें
+  gameAvailable: LAN गेम उपलब्ध है
+  joinGame: गेम में शामिल हों
+  noRunningInstanceToShare: साझाकरण का दायरा संपादित करने से पहले कोई गेम शुरू करें
+  updateSharedInstanceConfirm: अपडेट करें और शुरू करें
+  updateSharedInstanceDescription: साझा किए गए मॉड {instance} से अलग हैं। शुरू करने से पहले इस इंस्टेंस को होस्ट के अनुरूप अपडेट करें? मौजूदा बदली हुई फ़ाइलों का बैकअप लिया जाएगा।
+  updateSharedInstanceTitle: साझा इंस्टेंस अपडेट करें?
+  addFunds: "धनराशि जोड़ें"
+  availableBalance: "उपलब्ध शेष राशि"
+  balanceHint: "XMCL Together सेवाओं के लिए उपलब्ध"
+  billing: "बिलिंग"
+  billingDescription: "रिले एक्सेस, अपने Together Home प्लान और भुगतानों को प्रबंधित करें।"
+  billingError: "Together की बिलिंग लोड नहीं की जा सकी। कुछ देर बाद फिर कोशिश करें।"
+  buyTogether: "Together खरीदें"
+  cancelTogether: "प्लान रद्द करें"
+  checkout: "Waffo चेकआउट खोलें"
+  connectionTogetherWarning: "कमरे का एक सदस्य कुछ समय से आपसे कनेक्ट नहीं कर पा रहा है। कमरे में सभी के कनेक्शन को बेहतर बनाने के लिए XMCL Together आज़माएँ। केवल कमरे के मास्टर को Together की आवश्यकता है।"
+  masterPurchaseHint: "कमरे में सभी के कनेक्शन को बेहतर बनाने के लिए केवल कमरे के मास्टर को Together Home की आवश्यकता है।"
+  natTogetherWarning: "आपके राउटर को कमरे के मास्टर से कनेक्ट होने में समस्या हो सकती है। कनेक्शन विफल होने पर, अपने दोस्तों के साथ कनेक्शन बेहतर बनाने के लिए XMCL Together आज़माएँ। कमरे के लिए केवल कमरे के मास्टर को Together खरीदना होगा।"
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB रिले ट्रैफ़िक के साथ एक 7-दिन का ट्रायल।"
+  trialTitle: "कनेक्टिविटी ट्रायल"
+  tryTogether: "Together आज़माएँ"
+  month: "महीना"
+  orderStatus: "Waffo ऑर्डर: {status}"
+  planDescription: "हर महीने 20 GB प्रबंधित रिले ट्रैफ़िक, साथ ही आपके मॉडपैक की समस्याओं के समाधान के लिए AI सहायता।"
+  waffoHint: "भुगतान Waffo Pancake पर सुरक्षित रूप से पूरे किए जाते हैं। XMCL को आपका कार्ड नंबर कभी नहीं मिलता।"
+  subscription:
+    active: "सक्रिय"
+    cancelled: "रद्द किया गया"
+    payment_due: "भुगतान देय"
+  trial:
+    active: "ट्रायल सक्रिय"
+    available: "निःशुल्क ट्रायल उपलब्ध"
+    expired: "ट्रायल इस्तेमाल हो चुका है"
+    unavailable: "ट्रायल उपलब्ध नहीं है"
   loginRequiredDescription: P2P मल्टीप्लेयर XMCL ऑनलाइन सेवाओं का उपयोग करता है। जारी रखने के लिए XMCL खाते में साइन इन करें।
   loginRequiredTitle: P2P मल्टीप्लेयर के लिए साइन इन करें
-  allowTurn: रिले सर्वर सक्षम करें
-  allowTurnHint: यदि आप अपने मित्र से कनेक्ट नहीं हो पाते हैं तो रिले सर्वर की अनुमति दें। हालाँकि, रिले सर्वर का उपयोग करने से आपका कनेक्शन धीमा हो सकता है। सावधानी से इसका प्रयोग करें।
   complete: पूर्ण
   confirm: पुष्टि करें
   connectionError: कनेक्शन त्रुटि
@@ -1046,7 +1086,6 @@ multiplayer:
   localToken: लोकल टोकन
   manualConnect: मैन्युअल रूप से कनेक्ट करें
   name: LAN पर मल्टीप्लेयर
-  natWarning: आपका NAT प्रकार सीधे कनेक्शन को रोक सकता है। सेटिंग्स में रिले सर्वर को सक्षम करने का प्रयास करें या अपने मित्र से होस्ट करने के लिए कहें।
   networkInfo: नेटवर्क जानकारी (टॉगल करने के लिए क्लिक करें)
   next: अगला
   otherExposedPortDescription: '{user} द्वारा फॉरवर्ड किया गया पोर्ट'
@@ -1059,8 +1098,6 @@ multiplayer:
   sendTokenToRemote: रिमोट को टोकन भेजें
   share: इंस्टेंस कॉन्फ़िग शेयर करें
   sharing: फ़ाइलें शेयर की जा रही हैं...
-  sharingNotificationBody: आप {name} के शेयर किए गए कॉन्फ़िग से एक इंस्टेंस डाउनलोड या बना सकते हैं।
-  sharingNotificationTitle: एक पीयर अपना गेम कॉन्फ़िग शेयर कर रहा है
   start: शुरू करें
   startNewP2PConnection: नया पीयर कनेक्शन बनाने के लिए स्टार्ट बटन पर क्लिक करें
 myStuff: मेरी चीजें
@@ -1197,12 +1234,9 @@ resourcepack:
   noPacksInstalled: आपके पास कोई रिसोर्स पैक इंस्टॉल नहीं है।
   search: रिसोर्स पैक खोजें...
   searchHint: रिसोर्स पैक खोजें
-  searchOnCurseforge: कर्सफोर्ज में {name} खोजें
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: चयनित रिसोर्स पैक
   showDirectory: रिसोर्स पैक डायरेक्टरी दिखाएँ
   showFile: फ़ोल्डर {file} में रिसोर्स पैक दिखाएं
-  showInCurseforge: CurseForge में {name} दिखाएँ
   unselected: गैर-चयनित रिसोर्स पैक
 save:
   allowCheats: चीट्स की अनुमति दें
@@ -1595,8 +1629,6 @@ setup:
     name: भाषा सेट करें
   path: वर्तमान पाथ
 shaderPack:
-  deletion: शेडर पैक हटाएँ
-  deletionHint: इससे शेडर पैक फ़ाइल {path} हटा दी जाएगी और इसे पूर्ववत नहीं किया जा सकता।
   disabled: अक्षम शेडर पैक
   dropHint: शेडर पैक आयात करें
   empty: कोई शेडर पैक आवंटित नहीं
@@ -1619,6 +1651,7 @@ shaderPack:
   showDirectory: शेडर पैक डायरेक्टरी दिखाएँ
   showFile: इस शेडर पैक को फ़ोल्डर में दिखाएँ
 shared:
+  pressKeyCombination: कुंजी संयोजन दबाएँ...
   add: Add
   author: लेखक
   back: वापस
@@ -1731,13 +1764,6 @@ tutorial:
     listTitle: मॉड इंस्टॉल करें या खोजें
     searchDescription: आप इस खोज बॉक्स से मोडरिंथ, कर्सफोर्ज या अपने स्थानीय कैश से मॉड खोज सकते हैं।
     searchTitle: मॉड खोजें
-  multiplayer:
-    contentDescription: आप और आपके पीयर के बीच कनेक्शन यहाँ सूचीबद्ध होंगे।
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: आप अन्य खिलाड़ियों के साथ एक समूह बना सकते हैं या उसमें शामिल हो सकते हैं। लॉन्चर समूह के अनुसार आपके और आपके दोस्तों के बीच P2P कनेक्शन बनाने का प्रयास करेगा। आप अपने दोस्तों द्वारा दिए गए समूह का नाम दर्ज कर सकते हैं। या आप एक अनूठा नाम बना सकते हैं।
-    groupTitle: एक ग्रुप जॉइन करें
-    joinDescription: एक बार आप समूह का नाम दर्ज कर लेते हैं, तो आप समूह में शामिल होने या बनाने के लिए इस बटन पर क्लिक कर सकते हैं। यदि समूह का नाम खाली है, तो लॉन्चर आपके लिए एक नाम तैयार करेगा।
-    manualDescription: यदि आप या आपका मित्र समूह से कनेक्ट नहीं हो सकते हैं, तो आप मैन्युअल रूप से कनेक्ट पर क्लिक करके मैन्युअल रूप से टोकन का आदान-प्रदान करने का प्रयास कर सकते हैं। यदि वह भी विफल रहा, तो यह एक इंटरनेट समस्या हो सकती है।
   recentPlayDescription: बनाए गए गेम यहाँ सूचीबद्ध होंगे। आप यहाँ विचारों को स्विच करके स्थापित संस्करणों और डाउनलोड किए गए मॉडपैक को भी देख सकते हैं।
   storePoupularModpackDescription: आप इस अनुभाग में कर्सफोर्ज और मोडरिंथ के सबसे लोकप्रिय मॉडपैक देखेंगे।
   storeSearchCategoryDescription: आप यहाँ श्रेणियों या फ़िल्टर को भी टॉगल कर सकते हैं।
@@ -1834,6 +1860,44 @@ userSkin:
   urlNotEmpty: त्वचा यूआरएल खाली नहीं हो सकता
   urlNotValid: त्वचा यूआरएल अमान्य है
   useSlim: स्लिम मॉडल का उपयोग करें
+  saveSuccess: स्किन डिस्क पर सहेजी गई!
+  saveFailed: स्किन को डिस्क पर सहेजा नहीं जा सका
+  uploadFailed: स्किन अपलोड नहीं हो सकी
+  libraryTitle: स्थानीय अलमारी
+  librarySubtitle: अपनी स्किन चुनें, व्यवस्थित करें और स्थानीय रूप से सहेजें
+  manage: प्रबंधित करें
+  all: सभी
+  currentSkin: वर्तमान स्किन
+  savedCount: सहेजी गई स्किन
+  newSkin: नई स्किन
+  addNewSkin: नई स्किन जोड़ें
+  editSkin: स्किन संपादित करें
+  skinName: स्किन का नाम
+  skinNamePlaceholder: 'जैसे: मेरी पसंदीदा स्किन'
+  localFile: स्थानीय फ़ाइल
+  urlOrPlayer: URL / खिलाड़ी का नाम
+  urlOrPlayerPlaceholder: स्किन की छवि का URL या Minecraft उपयोगकर्ता नाम दर्ज करें
+  urlOrPlayerHint: Mojang से स्किन लाने के लिए सीधे PNG छवि का URL या खिलाड़ी का नाम दर्ज करें
+  dropFileHere: स्किन की PNG फ़ाइल यहाँ छोड़ें या चुनने के लिए क्लिक करें
+  supportedFormats: 'समर्थित प्रारूप: 64x64 या 64x32 PNG छवि'
+  preview: स्किन पूर्वावलोकन
+  previewPlaceholder: स्किन का पूर्वावलोकन उपलब्ध नहीं है
+  saveToLibrary: अलमारी में सहेजें
+  saveAndEquip: सहेजें और पहनें
+  equip: पहनें
+  equipToAccount: Minecraft खाते पर पहनें
+  equipped: पहनी हुई
+  noSkinSelected: कोई स्किन नहीं चुनी गई
+  saveCurrent: वर्तमान स्किन सहेजें
+  officialPreset: आधिकारिक प्रीसेट
+  mySkins: मेरी स्किन
+  presets: प्रीसेट
+  noSkinsFound: कोई स्किन नहीं मिली
+  tryAddingOne: ऊपर दिए गए बटन से एक नई स्किन जोड़कर देखें!
+  skinUpdated: स्किन अपडेट हो गई!
+  skinDeleteFailed: स्किन को अलमारी से हटाया नहीं जा सका
+  edit: संपादित करें
+  fetch: लोड करें
 version:
   checkIntegrity: अखंडता की जाँच करें
   name: संस्करण | संस्करण

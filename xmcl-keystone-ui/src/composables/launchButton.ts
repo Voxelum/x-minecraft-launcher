@@ -1,6 +1,5 @@
 import { injection } from '@/util/inject'
 import { isBedrockInstance } from '@xmcl/instance'
-import { watchOnce } from '@vueuse/core'
 import { InjectionKey } from 'vue'
 import { useDialog } from './dialog'
 import { kInstance } from './instance'
@@ -11,13 +10,13 @@ import { kInstanceLaunch } from './instanceLaunch'
 import { kInstanceVersion } from './instanceVersion'
 import { useInstanceLaunchMenuItems } from './instanceLaunchMenuItems'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
-import { kInstances } from './instances'
 import { LaunchStatusDialogKey } from './launch'
 import { kUserContext } from './user'
 import { kLaunchTask } from './launchTask'
 import { TaskState, BedrockServiceKey } from '@xmcl/runtime-api'
 import { useService } from './service'
 import { useTask } from './task'
+import { withRendererAction, type RendererActionScope } from '@/rendererAction'
 
 export interface LaunchMenuItem {
   title: string
@@ -39,7 +38,12 @@ export function useLaunchButton() {
   const { instance } = injection(kInstance)
   const isBedrock = computed(() => isBedrockInstance(instance.value))
 
-  const { getInstallation, install: installBedrock, isRunning: isRunningBedrock, killGame: killBedrock } = useService(BedrockServiceKey)
+  const {
+    getInstallation,
+    install: installBedrock,
+    isRunning: isRunningBedrock,
+    killGame: killBedrock,
+  } = useService(BedrockServiceKey)
   const bedrockInstalled = ref(true)
   const checkingBedrock = ref(false)
   const bedrockGameRunning = ref(false)
@@ -75,23 +79,31 @@ export function useLaunchButton() {
 
   let checkInterval: any = null
 
-  watch(instance, () => {
-    checkBedrockInstallation()
-    updateBedrockRunningStatus()
-  }, { immediate: true })
-
-  watch(isBedrock, (active) => {
-    if (checkInterval) {
-      clearInterval(checkInterval)
-      checkInterval = null
-    }
-    if (active) {
+  watch(
+    instance,
+    () => {
+      checkBedrockInstallation()
       updateBedrockRunningStatus()
-      checkInterval = setInterval(updateBedrockRunningStatus, 2000)
-    } else {
-      bedrockGameRunning.value = false
-    }
-  }, { immediate: true })
+    },
+    { immediate: true },
+  )
+
+  watch(
+    isBedrock,
+    (active) => {
+      if (checkInterval) {
+        clearInterval(checkInterval)
+        checkInterval = null
+      }
+      if (active) {
+        updateBedrockRunningStatus()
+        checkInterval = setInterval(updateBedrockRunningStatus, 2000)
+      } else {
+        bedrockGameRunning.value = false
+      }
+    },
+    { immediate: true },
+  )
 
   onBeforeUnmount(() => {
     if (checkInterval) {
@@ -99,7 +111,11 @@ export function useLaunchButton() {
     }
   })
 
-  const { task: installTask, progress: installProgress, total: installTotal } = useTask((t) => t.type === 'installBedrock')
+  const {
+    task: installTask,
+    progress: installProgress,
+    total: installTotal,
+  } = useTask((t) => t.type === 'installBedrock')
   const isInstalling = computed(() => installTask.value !== undefined)
   const installPercentage = computed(() => {
     if (installTotal.value > 0) {
@@ -114,8 +130,7 @@ export function useLaunchButton() {
     }
   })
 
-  const { isValidating } = injection(kInstances)
-  const { isValidating: refreshingJava } = injection(kInstanceJava)
+  const { status: javaStatus, isValidating: refreshingJava } = injection(kInstanceJava)
   const { isValidating: refreshingFiles } = injection(kInstanceFiles)
   const { userProfile } = injection(kUserContext)
 
@@ -123,7 +138,7 @@ export function useLaunchButton() {
     fix: fixVersionIssues,
     instruction,
     loading: loadingVersionIssues,
-    isInstanceFixing
+    isInstanceFixing,
   } = injection(kInstanceVersionInstall)
   const { issue: javaIssue } = injection(kInstanceJavaDiagnose)
   const { isValidating: isRefreshingVersion } = injection(kInstanceVersion)
@@ -148,7 +163,8 @@ export function useLaunchButton() {
     const currentPath = path.value
     return (
       currentPath !== instruction.value?.instance ||
-      currentPath !== instanceInstallStatus.value?.instance
+      currentPath !== instanceInstallStatus.value?.instance ||
+      currentPath !== javaStatus.value?.instance
     )
   })
 
@@ -159,17 +175,20 @@ export function useLaunchButton() {
     leftIcon?: string
     right?: boolean
     menu?: LaunchMenuItem[]
-    onClick: () => void | Promise<void>
+    actionName?: string
+    onClick: (instancePath: string, action?: RendererActionScope) => void | Promise<void>
   }>({
     text: t('launch.launch'),
     color: 'primary',
     leftIcon: 'play_arrow',
-    onClick: async () => {
-      await fixInstanceFileIssue()
+    actionName: 'user_action.minecraft.launch',
+    onClick: async (instancePath, action) => {
+      await fixInstanceFileIssue(instancePath, action)
+      if (path.value !== instancePath) return
       if (javaIssue.value) {
         showLaunchStatusDialog({ javaIssue: javaIssue.value })
       } else {
-        launch()
+        await launch('client', undefined, action)
         showLaunchStatusDialog()
       }
     },
@@ -239,10 +258,13 @@ export function useLaunchButton() {
             text: t('shared.install'),
             color: 'primary',
             leftIcon: 'get_app',
-            onClick: async () => {
+            actionName: 'user_action.instance.install',
+            onClick: async (_, action) => {
               try {
-                await installBedrock()
-                await checkBedrockInstallation()
+                await (action ? action.run(() => installBedrock()) : installBedrock())
+                await (action
+                  ? action.run(() => checkBedrockInstallation())
+                  : checkBedrockInstallation())
               } catch (e) {
                 console.error(e)
               }
@@ -253,8 +275,9 @@ export function useLaunchButton() {
             text: t('launch.launch'),
             color: 'primary',
             leftIcon: 'play_arrow',
-            onClick: () => {
-              launch()
+            actionName: 'user_action.minecraft.launch',
+            onClick: async (_, action) => {
+              await launch('client', undefined, action)
             },
           }
         }
@@ -284,12 +307,14 @@ export function useLaunchButton() {
             text: t('launch.launch'),
             color: !javaIssue.value ? 'primary' : 'primary darken-1',
             leftIcon: 'play_arrow',
-            onClick: async () => {
-              await fixInstanceFileIssue()
+            actionName: 'user_action.minecraft.launch',
+            onClick: async (instancePath, action) => {
+              await fixInstanceFileIssue(instancePath, action)
+              if (path.value !== instancePath) return
               if (javaIssue.value) {
                 showLaunchStatusDialog({ javaIssue: javaIssue.value })
               } else {
-                launch()
+                await launch('client', undefined, action)
                 showLaunchStatusDialog()
               }
             },
@@ -312,8 +337,12 @@ export function useLaunchButton() {
           text: t('shared.install'),
           color: 'blue',
           menu: launchMenuItems.value.filter((i) => !i.noDisplay),
-          onClick: async () => {
-            Promise.allSettled([fixVersionIssues(), fixInstanceFileIssue()])
+          actionName: 'user_action.instance.repair',
+          onClick: async (instancePath, action) => {
+            await Promise.allSettled([
+              fixVersionIssues(instancePath, action),
+              fixInstanceFileIssue(instancePath, action),
+            ])
           },
         }
       } else {
@@ -321,12 +350,14 @@ export function useLaunchButton() {
           text: t('launch.launch'),
           color: !javaIssue.value ? 'primary' : 'primary darken-1',
           leftIcon: 'play_arrow',
-          onClick: async () => {
-            await fixInstanceFileIssue()
+          actionName: 'user_action.minecraft.launch',
+          onClick: async (instancePath, action) => {
+            await fixInstanceFileIssue(instancePath, action)
+            if (path.value !== instancePath) return
             if (javaIssue.value) {
               showLaunchStatusDialog({ javaIssue: javaIssue.value })
             } else {
-              launch()
+              await launch('client', undefined, action)
               showLaunchStatusDialog()
             }
           },
@@ -352,10 +383,8 @@ export function useLaunchButton() {
       refreshingJava.value ||
       isRefreshingVersion.value ||
       loadingInstanceFiles.value ||
-      isValidating.value ||
       fixingInstance.value ||
-      transition.value ||
-      checkingBedrock.value
+      checkingBedrock.value,
   )
 
   const leftIcon = computed(() => launchButtonFacade.value.leftIcon)
@@ -383,16 +412,9 @@ export function useLaunchButton() {
    * Such rejections are intentional and not propagated.
    */
   async function onClick() {
-    if (loading.value && !launching.value) {
-      await new Promise<void>((resolve) => {
-        const unwatch = watch(loading, (v) => {
-          if (v) return
-          unwatch()
-          resolve()
-        })
-      })
-      return
-    }
+    if ((loading.value || transition.value) && !launching.value) return
+    const instancePath = path.value
+    if (!instancePath) return
     for (const listener of listeners) {
       try {
         await listener()
@@ -400,7 +422,17 @@ export function useLaunchButton() {
         return
       }
     }
-    launchButtonFacade.value.onClick()
+    if (path.value !== instancePath) return
+    const facade = launchButtonFacade.value
+    if (facade.actionName) {
+      await withRendererAction(
+        facade.actionName,
+        (action) => Promise.resolve(facade.onClick(instancePath, action)),
+        { 'instance.edition': instance.value.edition },
+      )
+    } else {
+      await facade.onClick(instancePath)
+    }
   }
 
   return {

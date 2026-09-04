@@ -43,6 +43,9 @@ jobs:
     - name: Lint
       run: |
         pnpm lint
+    - name: Lint locales
+      run: |
+        pnpm lint:i18n -- --no-daemon
     - name: Check
       run: |
         pnpm check

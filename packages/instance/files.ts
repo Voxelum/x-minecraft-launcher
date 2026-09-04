@@ -164,6 +164,44 @@ export const InstanceManifest = InstanceDataFieldsSchema.partial().extend({
   runtime: RuntimeVersionsSchema,
   /** List of instance files */
   files: z.array(InstanceFile),
+  /** Stable identity derived from the runtime and installed mods */
+  fingerprint: z.string().optional(),
 })
 
 export type InstanceManifest = z.infer<typeof InstanceManifest>
+
+const manifestRuntimeKeys = [
+  'minecraft',
+  'forge',
+  'neoForged',
+  'fabricLoader',
+  'quiltLoader',
+  'optifine',
+  'labyMod',
+] as const
+
+function getManifestModIdentity(file: InstanceFile) {
+  const path = file.path.replace(/\\/g, '/')
+  if (!path.startsWith('mods/')) return undefined
+  const hash = ['sha1', 'sha256', 'sha512', 'crc32']
+    .map((algorithm) => [algorithm, file.hashes[algorithm]] as const)
+    .find((entry) => entry[1])
+  const enabled = path.endsWith('.disabled') ? 'disabled' : 'enabled'
+  return hash
+    ? `${enabled}:${hash[0]}:${hash[1]}`
+    : `${enabled}:missing:${path}:${file.size ?? ''}`
+}
+
+export function getInstanceManifestFingerprintSource(
+  manifest: Pick<InstanceManifest, 'runtime' | 'files'>,
+) {
+  const runtime = manifestRuntimeKeys
+    .map((key) => `${key}:${manifest.runtime[key] ?? ''}`)
+    .join('|')
+  const mods = manifest.files
+    .map(getManifestModIdentity)
+    .filter((identity): identity is string => !!identity)
+    .sort()
+    .join('|')
+  return `v1|${runtime}|mods|${mods}`
+}

@@ -9,7 +9,7 @@
     <AppSystemBar :back="sidebarStyle === 'notch'" />
     <div
       class="app-layout flex-grow relative flex overflow-auto"
-      :class="layoutClasses"
+      :class="[layoutClasses, { 'workspace-side-panel-attached': hasAttachedWorkspacePanel }]"
     >
       <AppSideBarClassic v-if="sidebarStyle === 'classic'" />
       <AppSideBarNotch v-else />
@@ -23,30 +23,16 @@
     </div>
     <AppContextMenu />
     <AppNotifier />
-    <AppOmniDialog :agent-enabled="developerMode" />
-    <AppFeedbackDialog />
-    <AppTaskDialog />
+    <AppOmniDialog :agent-enabled="true" />
     <AppAddInstanceDialog />
-    <AppModpackUpdateDialog />
-    <AppShareInstanceDialog />
-    <AppInstanceDeleteDialog />
     <AppGameExitDialog />
-    <AppLaunchBlockedDialog />
     <AppUnauthenticatedWarningDialog />
     <AppMultiplayerLoginDialog />
     <AppImageDialog />
-    <AppJoinServerDialog />
     <AppSharedTooltip />
-    <AppInstallSkipDialog />
-    <AppMigrateWizardDialog />
-    <AppMinecraftFriendsDialog />
     <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
-    <AppModrinthLoginDialog />
-    <AppModrinthProjectCreateDialog />
-    <AppModrinthProjectBindDialog />
-    <AppModrinthVersionPublishDialog />
+    <component :is="lazyDialogComponent" v-if="lazyDialogComponent" />
     <AppSideBarGroupSettingDialog :default-color="defaultColor" />
-    <ModGroupSelectDialog />
     <AppGamepadPrompt />
   </v-app>
   <v-app v-else class="h-full max-h-screen overflow-hidden" :class="{ 'dark': isDark }">
@@ -55,7 +41,7 @@
       <Setup @ready="onReady" />
     </div>
     <UserProfileDialog :value="userProfileDialogShown" @input="userProfileDialogShown = $event" />
-    <AppFeedbackDialog />
+    <component :is="lazyDialogComponent" v-if="lazyDialogComponent" />
     <AppGamepadPrompt />
   </v-app>
 </template>
@@ -68,8 +54,10 @@ import { useAuthProfileImportNotification } from '@/composables/authProfileImpor
 import { useAgentChatHotkey } from '@/composables/agentChat'
 import { kAgent, installAgentDevLauncher, useAgent } from '@/composables/agent'
 import { useCommandPaletteHotkey } from '@/composables/commandPalette'
+import { kDialogModel } from '@/composables/dialog'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { kInstance } from '@/composables/instance'
+import { kInstanceLaunchCoordinator, useInstanceLaunchCoordinator } from '@/composables/instanceLaunchCoordinator'
 import { kLaunchButton, useLaunchButton } from '@/composables/launchButton'
 import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
 import { useNotifier } from '@/composables/notifier'
@@ -82,31 +70,17 @@ import { kSidebarSettings, useInjectSidebarSettings, useSidebarSettings } from '
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
-import AppModpackUpdateDialog from '@/views/AppModpackUpdateDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
 import AppOmniDialog from '@/views/AppOmniDialog.vue'
 import AppContextMenu from '@/views/AppContextMenu.vue'
-import AppFeedbackDialog from '@/views/AppFeedbackDialog.vue'
 import AppGameExitDialog from '@/views/AppGameExitDialog.vue'
-import AppInstallSkipDialog from '@/views/AppInstallSkipDialog.vue'
-import AppInstanceDeleteDialog from '@/views/AppInstanceDeleteDialog.vue'
-import AppLaunchBlockedDialog from '@/views/AppLaunchBlockedDialog.vue'
 import AppMultiplayerLoginDialog from '@/views/AppMultiplayerLoginDialog.vue'
 import AppUnauthenticatedWarningDialog from '@/views/AppUnauthenticatedWarningDialog.vue'
-import AppJoinServerDialog from '@/views/AppJoinServerDialog.vue'
-import AppMigrateWizardDialog from '@/views/AppMigrateWizardDialog.vue'
-import AppMinecraftFriendsDialog from '@/views/AppMinecraftFriendsDialog.vue'
 import UserProfileDialog from '@/components/UserProfileDialog.vue'
-import AppModrinthLoginDialog from '@/views/AppModrinthLoginDialog.vue'
-import AppModrinthProjectCreateDialog from '@/views/AppModrinthProjectCreateDialog.vue'
-import AppModrinthProjectBindDialog from '@/views/AppModrinthProjectBindDialog.vue'
-import AppModrinthVersionPublishDialog from '@/views/AppModrinthVersionPublishDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
-import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
 import AppSideBarClassic from '@/views/AppSideBarClassic.vue'
 import AppSideBarNotch from '@/views/AppSideBarNotch.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
-import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
 import { useLocalStorage, useMediaQuery, usePreferredColorScheme, usePreferredDark } from '@vueuse/core'
 import { kInstanceLauncher, useInstanceLauncher } from '@/composables/instanceLauncher'
@@ -114,13 +88,32 @@ import { kMinecraftFriends, useMinecraftFriendsImpl } from '@/composables/minecr
 import { useUserMenuControl } from '@/composables/userMenu'
 import { UserSkinRenderPaused } from '@/composables/userSkin'
 import AppSideBarGroupSettingDialog from '@/views/AppSideBarGroupSettingDialog.vue'
-import ModGroupSelectDialog from '@/views/ModGroupSelectDialog.vue'
 import AppGamepadPrompt from '@/views/AppGamepadPrompt.vue'
 import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 import { kMultiplayerEntry, useMultiplayerEntry } from '@/composables/multiplayerEntry'
 
+const lazyDialogComponents = {
+  'task': defineAsyncComponent(() => import('@/views/AppTaskDialog.vue')),
+  'feedback': defineAsyncComponent(() => import('@/views/AppFeedbackDialog.vue')),
+  'share-instance': defineAsyncComponent(() => import('@/views/AppShareInstanceDialog.vue')),
+  'delete-instance': defineAsyncComponent(() => import('@/views/AppInstanceDeleteDialog.vue')),
+  'launch-blocked': defineAsyncComponent(() => import('@/views/AppLaunchBlockedDialog.vue')),
+  'InstanceInstallSkipDialog': defineAsyncComponent(() => import('@/views/AppInstallSkipDialog.vue')),
+  'modpack-update-or-create': defineAsyncComponent(() => import('@/views/AppModpackUpdateDialog.vue')),
+  'instance-server-edit': defineAsyncComponent(() => import('@/views/AppJoinServerDialog.vue')),
+  'migrate-wizard': defineAsyncComponent(() => import('@/views/AppMigrateWizardDialog.vue')),
+  'minecraft-friends': defineAsyncComponent(() => import('@/views/AppMinecraftFriendsDialog.vue')),
+  'mod-group-select': defineAsyncComponent(() => import('@/views/ModGroupSelectDialog.vue')),
+  'modrinth-login': defineAsyncComponent(() => import('@/views/AppModrinthLoginDialog.vue')),
+  'modrinth-project-create': defineAsyncComponent(() => import('@/views/AppModrinthProjectCreateDialog.vue')),
+  'modrinth-project-bind': defineAsyncComponent(() => import('@/views/AppModrinthProjectBindDialog.vue')),
+  'modrinth-version-publish': defineAsyncComponent(() => import('@/views/AppModrinthVersionPublishDialog.vue')),
+}
+
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
+const dialogModel = injection(kDialogModel)
+const lazyDialogComponent = computed(() => lazyDialogComponents[dialogModel.current.value.dialog as keyof typeof lazyDialogComponents])
 const developerMode = computed(() => state.value?.developerMode ?? false)
 
 
@@ -134,20 +127,22 @@ provide(kMinecraftFriends, useMinecraftFriendsImpl())
 // and `inject` only resolves on descendants.
 const agent = useAgent()
 provide(kAgent, agent)
-// The window.__xmcl_agent debug surface follows developer mode: the whole agent
-// feature is developer-mode gated, so it is never exposed to a default install.
+// Keep the window.__xmcl_agent debug surface restricted to developer mode.
 installAgentDevLauncher(agent, developerMode)
 
 // User profile dialog — moved from AppSystemBarUserMenu to App root
 const userMenu = useUserMenuControl()
 const userProfileDialogShown = userMenu.shown
 const route = useRoute()
+const hasAttachedWorkspacePanel = computed(
+  () => route.meta.workspaceSidePanel === true && sidebarPosition.value === 'left',
+)
 provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value && route.path !== '/me'))
 
 // Bind Ctrl/Cmd+Shift+C to open the command palette.
 useCommandPaletteHotkey()
 // Bind Ctrl/Cmd+Shift+A to open the agent chat panel.
-useAgentChatHotkey(developerMode)
+useAgentChatHotkey()
 
 const defaultColor = useInstanceGroupDefaultColor()
 
@@ -173,6 +168,7 @@ provide(kInFocusMode, computed({
 }))
 
 provide(kLaunchButton, useLaunchButton())
+provide(kInstanceLaunchCoordinator, useInstanceLaunchCoordinator())
 provide(kMultiplayerEntry, useMultiplayerEntry())
 
 const sidebarSettings = useSidebarSettings()
@@ -249,5 +245,15 @@ img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+.workspace-side-panel-attached :deep(.sidebar) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.workspace-side-panel-attached :deep(.sidebar-notch--left .sidebar-notch__container) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 </style>

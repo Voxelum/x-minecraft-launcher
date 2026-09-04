@@ -134,7 +134,7 @@
     </div>
 
     <div
-      v-if="loading"
+      v-if="loading || renderingRegions > 0"
       class="absolute right-3 top-3 flex items-center gap-2 rounded bg-[rgba(0,0,0,0.55)] px-2 py-1 text-white"
     >
       <v-progress-circular indeterminate size="16" width="2" />
@@ -180,6 +180,7 @@ import { InstanceSavesServiceKey, SaveRegionInfo } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 import { useSavesChunkClipboard } from '@/composables/savesChunkClipboard'
 import { useLocalStorage } from '@vueuse/core'
+import { createConcurrencyGate } from '@/util/concurrencyGate'
 import SimpleDialog from './SimpleDialog.vue'
 
 const props = defineProps<{
@@ -198,6 +199,7 @@ const dimensions = ref<string[]>([])
 const dimension = ref('minecraft:overworld')
 const regions = shallowRef<SaveRegionInfo[]>([])
 const loading = ref(false)
+const renderingRegions = ref(0)
 const deleting = ref(false)
 const pasting = ref(false)
 const confirmDeleteShown = ref(false)
@@ -273,6 +275,8 @@ const tileCache = new Map<string, ImageBitmap | 'loading' | 'empty'>()
 const chunkCache = new Map<string, boolean[]>()
 // Selected chunks, keyed by `${chunkX},${chunkZ}`.
 const selected = new Set<string>()
+const regionRenderGate = createConcurrencyGate(2)
+let tileGeneration = 0
 
 let ctx: CanvasRenderingContext2D | null = null
 let rafHandle = 0
@@ -335,14 +339,26 @@ async function ensureRegionLoaded(rx: number, rz: number) {
   const key = regionKey(rx, rz)
   if (tileCache.has(key)) return
   tileCache.set(key, 'loading')
+  const generation = tileGeneration
+  const savePath = props.savePath
+  const selectedDimension = dimension.value
+  const maxHeight = atTop.value ? undefined : renderHeight.value
+  const release = await regionRenderGate.acquire()
+  if (!release) return
+  if (generation !== tileGeneration) {
+    release()
+    return
+  }
+  renderingRegions.value++
   try {
     const { data, chunks } = await renderSaveRegion(
-      props.savePath,
-      dimension.value,
+      savePath,
+      selectedDimension,
       rx,
       rz,
-      atTop.value ? undefined : renderHeight.value,
+      maxHeight,
     )
+    if (generation !== tileGeneration) return
     chunkCache.set(key, chunks)
     const buffer = data instanceof Uint8Array ? data : new Uint8Array(data as ArrayBufferLike)
     const imageData = new ImageData(
@@ -351,11 +367,22 @@ async function ensureRegionLoaded(rx: number, rz: number) {
       512,
     )
     const bitmap = await createImageBitmap(imageData)
-    tileCache.set(key, bitmap)
+    if (generation === tileGeneration) {
+      tileCache.set(key, bitmap)
+    } else {
+      bitmap.close()
+    }
   } catch (e) {
-    tileCache.set(key, 'empty')
+    if (generation === tileGeneration) {
+      tileCache.set(key, 'empty')
+    }
+  } finally {
+    renderingRegions.value--
+    release()
+    if (generation === tileGeneration) {
+      requestRender()
+    }
   }
-  requestRender()
 }
 
 function visibleRegions() {
@@ -843,6 +870,8 @@ async function loadDimension() {
 // Re-render all tiles when the height cap changes (debounced for slider drags).
 let heightTimer: ReturnType<typeof setTimeout> | undefined
 function invalidateTiles() {
+  tileGeneration++
+  regionRenderGate.clear()
   for (const tile of tileCache.values()) {
     if (tile && tile !== 'loading' && tile !== 'empty') tile.close()
   }
@@ -911,6 +940,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  tileGeneration++
+  regionRenderGate.clear()
   resizeObserver?.disconnect()
   window.removeEventListener('keydown', syncModifiers)
   window.removeEventListener('keyup', syncModifiers)

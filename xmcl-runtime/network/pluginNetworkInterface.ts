@@ -1,4 +1,4 @@
-import { DefaultRangePolicy } from '@xmcl/file-transfer'
+import { ConcurrencyDispatcher, DefaultRangePolicy } from '@xmcl/file-transfer'
 import { NetworkStatus } from '@xmcl/runtime-api'
 import { join } from 'path'
 import {
@@ -12,9 +12,12 @@ import { IS_DEV } from '~/constant'
 import { kFlights } from '~/infra'
 import { kSettings } from '~/settings'
 import { BmclDownloadController } from './BmclDownloadController'
+import { DownloadPerformanceWindow } from './DownloadPerformanceWindow'
 import { NetworkAgent, ProxySettingController } from './NetworkAgent'
 import { SpeedMonitor, TrackSpeedHandler } from './TrackSpeedHandler'
 import { kDownloadController, kDownloadOptions, kNetworkInterface } from './networkInterface'
+import { kInstallFileDownloader } from '~/install/InstallManifestService'
+import { createFileTransferInstallDownloader } from './FileTransferInstallDownloader'
 
 export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('NetworkInterface')
@@ -99,6 +102,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
 
   const speedMonitor = new SpeedMonitor()
   const speedMonitorSnapshot = new SpeedMonitor()
+  const speedMonitorTelemetry = new SpeedMonitor()
   let onNetworkActivityChangeCallback = (v: boolean) => {}
   const agent = new NetworkAgent(
     {
@@ -161,12 +165,68 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   )
 
   proxyControl.add(agent)
+  const rangePolicy = new DefaultRangePolicy(
+    1024 * 1024 * 5, // 5MB
+    4,
+  )
+  const downloadGate = new ConcurrencyDispatcher(agent, () => Math.max(1, maxConnection))
+  const downloadDispatcher = downloadGate.compose((dispatch) => (options, handler) =>
+    dispatch(options, new TrackSpeedHandler(handler, speedMonitorTelemetry)))
   app.registry.register(kDownloadOptions, {
-    dispatcher: agent,
-    rangePolicy: new DefaultRangePolicy(
-      1024 * 1024 * 5, // 5MB
-      4,
-    ),
+    dispatcher: downloadDispatcher,
+    rangePolicy,
+  })
+  app.registry.register(kInstallFileDownloader, createFileTransferInstallDownloader({
+    dispatcher: downloadDispatcher,
+    rangePolicy,
+  }, downloadController))
+
+  const performanceWindow = new DownloadPerformanceWindow()
+  const sampleDownloadPerformance = () => {
+    const sample = speedMonitorTelemetry.drain()
+    performanceWindow.add({
+      ...sample,
+      active: downloadGate.active,
+      pending: downloadGate.pending,
+      limit: downloadGate.limit,
+    })
+  }
+  const performanceSampleTimer = setInterval(sampleDownloadPerformance, 1_000)
+  performanceSampleTimer.unref?.()
+
+  const emitDownloadTelemetry = (sampleNow = false) => {
+    if (sampleNow) sampleDownloadPerformance()
+    const performance = performanceWindow.flush()
+    const gate = downloadGate.telemetrySnapshot()
+    const snapshot = downloadController.telemetrySnapshot()
+    if (!performance && !gate && !snapshot) return
+    const payload = snapshot ?? {
+      properties: {
+        schemaVersion: '1',
+        breakerOpen: false,
+      },
+      measurements: {},
+    }
+    payload.properties.performanceSchemaVersion = '1'
+    Object.assign(payload.measurements, performance, {
+      gateRequests: gate?.requests ?? 0,
+      gateQueuedRequests: gate?.queuedRequests ?? 0,
+      gateQueuedAborted: gate?.queuedAborted ?? 0,
+      gateMaxActive: gate?.maxActive ?? 0,
+      gateMaxPending: gate?.maxPending ?? 0,
+      gateQueueWaitMs: gate?.queueWaitMs ?? 0,
+      gateMaxQueueWaitMs: gate?.maxQueueWaitMs ?? 0,
+      gateMinLimit: gate?.minLimit ?? downloadGate.limit,
+      gateMaxLimit: gate?.maxLimit ?? downloadGate.limit,
+    })
+    app.emit('download-performance', payload)
+  }
+  const downloadTelemetryTimer = setInterval(emitDownloadTelemetry, 60_000)
+  downloadTelemetryTimer.unref?.()
+  app.registryDisposer(() => {
+    clearInterval(performanceSampleTimer)
+    clearInterval(downloadTelemetryTimer)
+    emitDownloadTelemetry(true)
   })
 
   const getNetworkStatus = () => {
@@ -240,6 +300,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
         const aggSpeed = speedMonitorSnapshot.sample()
         logger.log(
           `[dl-snapshot] realAgg=${(aggSpeed / 1024 / 1024).toFixed(2)}MB/s ` +
+            `gate{active:${downloadGate.active} pending:${downloadGate.pending} limit:${downloadGate.limit}} ` +
             `conns{connected:${totalConnected} running:${totalRunning} pending:${totalPending} queued:${totalQueued}} ` +
             (controllerLine ? `| ${controllerLine} ` : '') +
             (pools.length ? `| pools: ${pools.slice(0, 8).join(' ')}` : ''),

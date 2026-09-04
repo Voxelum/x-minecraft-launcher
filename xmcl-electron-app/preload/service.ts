@@ -51,15 +51,17 @@ if (process.env.NODE_ENV === 'development') {
   console.log('serivce.ts preload')
 }
 
-async function receive(_result: any, states: Record<string, WeakRef<SharedState<any>>>, pendingCommits: Record<string, { type: string; payload: any }[]>, gc: FinalizationRegistry<string>) {
+async function receive(
+  _result: any,
+  states: Record<string, WeakRef<SharedState<any>>>,
+  pendingCommits: Record<string, { type: string; payload: any }[]>,
+  gc: FinalizationRegistry<string>,
+) {
   if (typeof _result !== 'object') {
     return
   }
   const { result, error } = _result
   if (error) {
-    if (error.errorMessage) {
-      error.toString = () => error.errorMessage
-    }
     return Promise.reject(error)
   }
 
@@ -85,8 +87,8 @@ async function receive(_result: any, states: Record<string, WeakRef<SharedState<
     queueMicrotask(() => {
       if (pendingCommits[id]) {
         for (const mutation of pendingCommits[id]) {
-          (state as any)[kEmitter].emit(mutation.type, mutation.payload);
-          (state as any)[kEmitter].emit('*', mutation.type, mutation.payload)
+          ;(state as any)[kEmitter].emit(mutation.type, mutation.payload)
+          ;(state as any)[kEmitter].emit('*', mutation.type, mutation.payload)
         }
         delete pendingCommits[id]
       }
@@ -111,7 +113,7 @@ function createServiceChannels(): ServiceChannels {
   ipcRenderer.on('state-validating', (_, { id, semaphore }) => {
     const state = states[id]?.deref()
     if (state) {
-      (state as any)[kEmitter].emit('state-validating', semaphore)
+      ;(state as any)[kEmitter].emit('state-validating', semaphore)
     }
   })
 
@@ -125,8 +127,8 @@ function createServiceChannels(): ServiceChannels {
   ipcRenderer.on('commit', (_, id, type, payload) => {
     const state = states[id]?.deref()
     if (state) {
-      (state as any)[kEmitter].emit(type, payload);
-      (state as any)[kEmitter].emit('*', type, payload)
+      ;(state as any)[kEmitter].emit(type, payload)
+      ;(state as any)[kEmitter].emit('*', type, payload)
     } else {
       // pending commit
       if (!pendingCommits[id]) {
@@ -166,6 +168,16 @@ function createServiceChannels(): ServiceChannels {
           const result = await ipcRenderer.invoke('service-call', serviceKey, method, ...payload)
           return receive(result, states, pendingCommits, gc)
         },
+        async callWithTrace(traceContext, method, ...payload) {
+          const result = await ipcRenderer.invoke(
+            'service-call-traced',
+            traceContext,
+            serviceKey,
+            method,
+            ...payload,
+          )
+          return receive(result, states, pendingCommits, gc)
+        },
       }
     },
   }
@@ -173,4 +185,4 @@ function createServiceChannels(): ServiceChannels {
 
 export const serviceChannels = createServiceChannels()
 
-contextBridge.exposeInMainWorld('serviceChannels', createServiceChannels())
+contextBridge.exposeInMainWorld('serviceChannels', serviceChannels)

@@ -5,6 +5,7 @@ import MarketProjectDetail, {
   Info,
   ModGallery,
   ProjectDependency,
+  ProjectDependent,
   ProjectDetail,
 } from '@/components/MarketProjectDetail.vue'
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
@@ -51,6 +52,7 @@ const props = defineProps<{
   gameVersion: string
   loader?: string
   allFiles: ProjectFile[]
+  dependents?: ProjectDependent[]
   category?: number
   updating?: boolean
   modrinth?: string
@@ -63,6 +65,7 @@ const emit = defineEmits<{
   (event: 'uninstall', files: ProjectFile[]): void
   (event: 'enable', file: ProjectFile): void
   (event: 'disable', file: ProjectFile): void
+  (event: 'open-dependent', dependent: ProjectDependent): void
 }>()
 
 const { getDateString } = useDateString()
@@ -496,6 +499,7 @@ const { collectionId, onAddOrRemove, loadingCollections } = useInCollection(modr
     :enabled="enabled"
     :selected-installed="installed"
     :dependencies="dependencies"
+    :dependents="dependents"
     :supported-versions="curseforgeProject?.latestFilesIndexes.map((v) => v.gameVersion) ?? []"
     :has-installed-version="hasInstalledVersion"
     :loading="loading"
@@ -519,6 +523,7 @@ const { collectionId, onAddOrRemove, loadingCollections } = useInCollection(modr
     @enable="enabled = $event"
     @load-more="onLoadMore"
     @open-dependency="onOpenDependency"
+    @open-dependent="emit('open-dependent', $event)"
     @install="onInstall"
     @install-dependency="installDependency"
     @select:category="emit('category', Number($event))"

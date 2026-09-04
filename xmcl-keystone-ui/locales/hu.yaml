@@ -3,12 +3,14 @@ AppAddInstanceDialog:
   createTitle: Játék létrehozása
   serverTitle: Add meg a kiszolgáló címét
 AppShareInstanceDialog:
+  editScopeDescription: Válaszd ki azokat a fájlokat, amelyeket a társak letölthetnek, miután felfedezték ezt a LAN-on futó játékot.
+  editScopeTitle: Megosztási kör szerkesztése
+  instanceToShare: Futó játék
   alterDownloadDescription: |-
     Ha nem akarja elrontani az aktuális példányt.
     Létrehozhat egy új példányt a partner konfigurációjából is.
     Példány létrehozásához kattintson az alábbi gombra.
   baseInfo: Alapvető beállítások
-  cancelShare: Megosztás visszavonása
   description: >-
     Miután megosztottad a profilt, más helyről is letöltheted ezeket a fájlokat az alábbi módon a számítógépeden keresztül.
   downloadDescription: |-
@@ -19,9 +21,7 @@ AppShareInstanceDialog:
   downloadTitle: Fájlok letöltése más társaidtól
   filesToDownload: Letölteni kívánt fájlok kiválasztása
   filesToShare: Megosztani kívánt fájlok kiválasztása
-  instanceShare: '{user} épp most osztotta meg veled az aktuális példányt.'
   share: Megosztás
-  shareNotifyTitle: Példány megosztása
   shareTitle: Játék fájlok megosztása másokkal
 BaseSettingGeneral:
   title: Általános
@@ -142,7 +142,6 @@ curseforgeCategory:
   World Gen: Világgenerátor
 dataMigration:
   apply: Alkalmazás
-  directoryCriteriaHint: Kérlek, győződj meg róla, hogy az új könyvtárhelyed egy ÜRES könyvtár!
   placeholder: Kérlek kattints ide a könyvtár kiválasztásához
   setRootCause: >-
     Elveszíted az adataidat (pályák, forráscsomagok, modok), ha bezárod a Launcher-t ebben a folyamatban!
@@ -156,6 +155,7 @@ delete:
   'no': Nem
   'yes': Törlés
 dependencies:
+  dependents: Ettől a modtól függő modok
   embedded: Beépített
   incompatible: Inkompatibilis
   name: Szükségletek
@@ -170,7 +170,7 @@ diagnosis:
     name: 'Sérült elem: {name} | Sérült elem {name} | {count} elem sérült'
   corruptedAssetsIndex:
     message: A launcher letölti a fájlok indexeit számodra
-    name: A {verzsion} eszközindexű fájlja sérült.
+    name: A {version} eszközindexű fájlja sérült.
   corruptedLibraries:
     message: A launcher telepíti a könyvtárakat
     name: 'Sérült könyvtár: {name} | Sérült könyvtár {name} | {count} elem könyvtár'
@@ -180,7 +180,7 @@ diagnosis:
   incompatibleJava:
     name: A java verzió {javaVersion} nem felel meg a {version}-nak!
   instanceFiles:
-    description: Ez lehet, hogy befejezetlen telepítés volt a múltkor
+    description: A példány telepítése {counts} fájlt tartalmaz.
     title: Befejezetlen példány
   invalidJava:
     name: Érvénytelen java hely.
@@ -487,14 +487,9 @@ instances:
   addMMCDescription: |-
     Importálja a meglévő MultiMC példányt.
     Ki kell választania az adatmappát a MultiMC-ből.
-  addManually: Manuális létrehozás
   addModrinthDescription: |-
     Importálja a meglévő Modrinth példányt.
     Ki kell választania a Modrinth gyökér adatmappát.
-  addServer: Létrehozás szerverről
-  addServerDescription: Ez létrehoz egy játékot közvetlenül a szerverre.
-  addTemplate: Hozzon létre a letöltött modpackből
-  addTemplateDescription: Importálás letöltött Modcsomagból
   addVanilla: Létrehozás vanilla-szerű Minecraftból
   addVanillaDescription: >-
     Importálás a közös .minecraft mappából. Ez duplikálja az eredeti játékprofilt az XMCL-be.
@@ -682,6 +677,10 @@ logsCrashes:
   title: Napló vagy összeomlás jelentések
   failures: Indítási hibák
 me:
+  groupByDate: Dátum szerinti csoportosítás
+  groupByFolder: Mappa szerinti csoportosítás
+  instanceViewMode: Példánynézet mód
+  listView: Listanézet
   news: Hírek
   recentPlay: Legutóbbi játék
 migrationWindow:
@@ -991,11 +990,49 @@ modrinth:
 modrinthCard:
   currentVersion: Jelenlegi verzió
 multiplayer:
+  joinDiscord: Csatlakozás a Discordhoz
+  openConsumerPortal: Ügyfélportál megnyitása
+  refundHint: Visszatérítést szeretnél? Rendeléseid és előfizetéseid kezeléséhez keresd fel a Waffo ügyfélportálját.
+  togetherSupportHint: Ha a többjátékos mód nem működik, csatlakozz a Discordunkhoz, és lépj kapcsolatba a fejlesztőcsapattal. Segítünk megoldani a problémát.
+  autoShareAmbiguous: Több játék is fut. Válaszd ki a LAN-világot futtató példányt, hogy az XMCL megoszthassa.
+  editSharingScope: Megosztási kör szerkesztése
+  gameAvailable: LAN-játék érhető el
+  joinGame: Csatlakozás a játékhoz
+  noRunningInstanceToShare: A megosztási kör szerkesztése előtt indíts el egy játékot
+  updateSharedInstanceConfirm: Frissítés és indítás
+  updateSharedInstanceDescription: A megosztott modok eltérnek a(z) {instance} modjaitól. Frissíted ezt a példányt, hogy indítás előtt megegyezzen a gazdagépével? A meglévő módosított fájlokról biztonsági másolat készül.
+  updateSharedInstanceTitle: Megosztott példány frissítése?
+  addFunds: "Egyenleg feltöltése"
+  availableBalance: "Elérhető egyenleg"
+  balanceHint: "XMCL Together-szolgáltatásokhoz használható"
+  billing: "Számlázás"
+  billingDescription: "Kezeld a relay-hozzáférést, a Together Home-csomagodat és a fizetéseidet."
+  billingError: "A Together számlázása nem tölthető be. Próbáld újra egy pillanat múlva."
+  buyTogether: "Together megvásárlása"
+  cancelTogether: "Csomag lemondása"
+  checkout: "Waffo fizetés megnyitása"
+  connectionTogetherWarning: "Egy szobatag egy ideje nem tud kapcsolódni hozzád. Próbáld ki az XMCL Together szolgáltatást, hogy mindenki számára javuljon a kapcsolat a szobában. Csak a szobamesternek van szüksége Togetherre."
+  masterPurchaseHint: "Csak a szobamesternek van szüksége Together Home-ra, hogy mindenki számára javuljon a kapcsolat a szobában."
+  natTogetherWarning: "Lehet, hogy az útválasztód nehezen tud kapcsolódni a szobamesterhez. Ha a kapcsolatok sikertelenek, próbáld ki az XMCL Togethert, hogy javuljon a kapcsolat közted és a barátaid között. A szobához csak a szobamesternek kell megvásárolnia a Togethert."
+  togetherName: "Minecraft Together"
+  trialDescription: "Egy 7 napos próbaidőszak 1 GB relay-forgalommal."
+  trialTitle: "Kapcsolati próbaidőszak"
+  tryTogether: "Together kipróbálása"
+  month: "hónap"
+  orderStatus: "Waffo-rendelés: {status}"
+  planDescription: "Havonta 20 GB kezelt relay-forgalom, valamint AI-alapú hibaelhárítás a modcsomagodhoz."
+  waffoHint: "A fizetések biztonságosan a Waffo Pancake-en keresztül zajlanak. Az XMCL soha nem kapja meg a kártyaszámodat."
+  subscription:
+    active: "Aktív"
+    cancelled: "Lemondva"
+    payment_due: "Fizetés esedékes"
+  trial:
+    active: "A próbaidőszak aktív"
+    available: "Ingyenes próbaidőszak érhető el"
+    expired: "A próbaidőszak felhasználva"
+    unavailable: "A próbaidőszak nem érhető el"
   loginRequiredDescription: A P2P többjátékos mód az XMCL online szolgáltatásait használja. A folytatáshoz jelentkezzen be egy XMCL-fiókba.
   loginRequiredTitle: Bejelentkezés a P2P többjátékos módhoz
-  allowTurn: Relay szerver engedélyezése
-  allowTurnHint: >-
-    Engedélyezd a relé-kiszolgálót, ha nem tudsz csatlakozni a barátodhoz. A relés szerver használata azonban lelassíthatja a kapcsolatot. Használd óvatosan.
   complete: Kész
   confirm: Megerősítés
   connections: Kapcsolatok
@@ -1051,16 +1088,11 @@ multiplayer:
   sendTokenToRemote: Token küldése a távolra
   share: Példány konfigurációjánask megosztása
   sharing: Fájlok megosztása...
-  sharingNotificationBody: >-
-    Letöltheti vagy létrehozhatja a példányt a {name} megosztott konfigurációjából.
-  sharingNotificationTitle: Egy társ megosztja a játék konfigurációját
   start: Indítás
   startNewP2PConnection: Kattints az Indítás gombra egy új kapcsolat létrehozásához.
   connectionError: Kapcsolódási hiba
   connectionFailedHint: >-
     Nem sikerült kapcsolatot létesíteni. Ellenőrizze, hogy mindkét fél kompatibilis NAT-típussal rendelkezik-e.
-  natWarning: >-
-    A NAT-típusod akadályozhatja a közvetlen kapcsolatot. Próbáld engedélyezni a továbbító szervert a beállításokban, vagy kérd meg a barátodat, hogy ő legyen a házigazda.
 myStuff: Dolgaid
 natType:
   blocked: Blokkolva
@@ -1131,12 +1163,9 @@ resourcepack:
     Nem kompatibilis forráscsomag formátum({format}). Elfogadott {accept}. Jelenlegi {actual}.
   name: Forráscsomag | Forráscsomagok
   searchHint: Keresés az erőforráscsomagokban
-  searchOnCurseforge: '{name} keresése curseforge-on'
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Kiválasztott forráscsomagok
   showDirectory: Nyissa meg az erőforrás csomagokat tartalmazó mappát
   showFile: '{file} megjelenítése fájlkezelőben'
-  showInCurseforge: '{name} megjelenítése curseforge-on'
   unselected: Nem kiválasztott forráscsomagok
   noPacks: Nem található erőforráscsomag
   search: Erőforráscsomagok keresése...
@@ -1237,6 +1266,8 @@ serverStatus:
   refuse: §4A szerver elutasítot!
   timeout: §4Szerver csatlakozási időtúllépés!
 agent:
+  accessRequiredHint: Fizess elő az XMCL-re a beépített ügynök használatához, vagy állítsd be a saját AI-szolgáltatódat a beállításokban.
+  subscribeXmcl: Előfizetés az XMCL-re
   notConfiguredHint: Állítson be egy API-kulcsot, modellt és OpenAI-kompatibilis végpontot a Beállítások → Általános → AI ügynök alatt. Használhat például OpenAI-t vagy Claude-kompatibilis átjárót.
 setting:
   aiAgentApiKeyDescription: Állítson be OpenAI-kompatibilis szolgáltatót, például OpenAI-t vagy Claude-hoz használható átjárót. A kulcs helyileg, ezen az eszközön lesz tárolva.
@@ -1496,8 +1527,6 @@ shaderPack:
     Kösse össze ennek a példánynak a shaderpacks mappáját a globális megosztott
     mappával, hogy minden példány ugyanazokat az árnyékolócsomagokat használja. A
     meglévő csomagok a megosztott mappába kerülnek.
-  deletion: Shader Pack törlése
-  deletionHint: Ez törli a shader pack fájlt {path} és nem lehet visszaállítani.
   disabled: Shader pack kikapcsolása
   dropHint: Shader pack importálása
   empty: Nincs kijelölt shader csomag
@@ -1516,6 +1545,7 @@ shaderPack:
   noPacks: Nincs shadercsomag telepítve
   search: Shadercsomagok keresése...
 shared:
+  pressKeyCombination: Nyomjon meg egy billentyűkombinációt...
   add: Új
   author: Készítő
   back: Vissza
@@ -1545,6 +1575,7 @@ shared:
   skipForNow: Most hagyd ki
   upgrade: Frissítés
   'yes': Igen
+  delete: Törlés
 sidebar:
   pin: Rögzít
   unpin: Rögzítés feloldása
@@ -1630,16 +1661,6 @@ tutorial:
     searchDescription: >-
       A Modrinth, Curseforge vagy a helyi gyorsítótár modjait keresheted ezzel a keresőmezővel.
     searchTitle: Modok keresése
-  multiplayer:
-    contentDescription: Az Ön és társai közötti kapcsolatok itt lesznek felsorolva.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Létrehozhatsz egy csoportot, vagy csatlakozhatsz egy csoporthoz más játékosokkal. A launcher megpróbál P2P-kapcsolatokat létrehozni közted és barátaid között a csoportnak megfelelően. A barátaid által megadott csoportnevet megadhatod. Vagy létrehozhatsz egy egyedi nevet a sajátodból.
-    groupTitle: Csatlakozás egy csoporthoz
-    joinDescription: >-
-      Miután beírt egy csoportnevet. Erre a gombra kattintva csatlakozhat a csoporthoz vagy létrehozhatja azt. Ha a csoportnév üres, az indítóprogram generál egy nevet az Ön számára.
-    manualDescription: >-
-      Ha Ön vagy barátja nem tud csatlakozni a csoporthoz. Megpróbálhatja manuálisan kicserélni a tokent a manuális csatlakozás gombra kattintva. Ha ez is sikertelen, akkor az internetprobléma lehet.
   recentPlayDescription: >-
     A létrehozott játékok itt lesznek felsorolva.
 
@@ -1737,6 +1758,46 @@ userSkin:
   urlNotEmpty: Kinézet URL nem lehet üres
   urlNotValid: Kinézet URL érvénytelen
   useSlim: Vékony modell használata
+  classic: Klasszikus
+  slim: Vékony
+  saveSuccess: A kinézet lemezre mentve!
+  saveFailed: Nem sikerült lemezre menteni a kinézetet
+  uploadFailed: Nem sikerült feltölteni a kinézetet
+  libraryTitle: Helyi ruhatár
+  librarySubtitle: Válaszd ki, kezeld és mentsd helyben a kinézeteidet
+  manage: Kezelés
+  all: Mind
+  currentSkin: Jelenlegi kinézet
+  savedCount: mentett kinézet
+  newSkin: Új kinézet
+  addNewSkin: Új kinézet hozzáadása
+  editSkin: Kinézet szerkesztése
+  skinName: Kinézet neve
+  skinNamePlaceholder: 'pl. A kedvenc kinézetem'
+  localFile: Helyi fájl
+  urlOrPlayer: URL / Játékosnév
+  urlOrPlayerPlaceholder: Add meg a kép URL-jét vagy a Minecraft-felhasználónevet
+  urlOrPlayerHint: Adj meg egy közvetlen PNG-kép URL-t vagy játékosnevet a kinézet Mojangtól való lekéréséhez
+  dropFileHere: Húzd ide a kinézet PNG-fájlját, vagy kattints a tallózáshoz
+  supportedFormats: 'Támogatott formátum: 64x64 vagy 64x32 méretű PNG-kép'
+  preview: Kinézet előnézete
+  previewPlaceholder: Nem érhető el előnézet
+  saveToLibrary: Mentés a ruhatárba
+  saveAndEquip: Mentés és használat
+  equip: Használat
+  equipToAccount: Használat a Minecraft-fiókban
+  equipped: Használatban
+  noSkinSelected: Nincs kiválasztott kinézet
+  saveCurrent: Jelenlegi mentése
+  officialPreset: Hivatalos készlet
+  mySkins: Saját kinézetek
+  presets: Készletek
+  noSkinsFound: Nem találhatók kinézetek
+  tryAddingOne: Adj hozzá egy új kinézetet a fenti gombbal!
+  skinUpdated: A kinézet frissítve!
+  skinDeleteFailed: Nem sikerült eltávolítani a kinézetet a ruhatárból
+  edit: Szerkesztés
+  fetch: Betöltés
 version:
   checkIntegrity: Ellenőrizze az integritást
   name: Verzió | Verzió

@@ -2,17 +2,15 @@ AppAddInstanceDialog:
   choiceTitle: Se detectaron múltiples perfiles de lanzamiento. Selecciona uno para importar.
   createTitle: Crear una instancia
   serverTitle: Introduce la dirección de tu servidor
-  updateFound: Instancia Encontrada
-  updateFoundHint: Ya existe una instancia llamada "{name}". ¿Quieres actualizarla?
-  updateAction: Actualizar Existente
-  createNewAction: Crear Nueva
 AppShareInstanceDialog:
+  editScopeDescription: Selecciona los archivos que otros jugadores podrán obtener después de detectar esta partida en ejecución en la LAN.
+  editScopeTitle: Editar alcance compartido
+  instanceToShare: Partida en ejecución
   alterDownloadDescription: >-
     Si no quieres estropear la instancia actual. También puedes crear una nueva
     instancia desde la configuración de tu par. Haz clic en el botón de abajo
     para crear una instancia.
   baseInfo: Configuración Básica
-  cancelShare: Cancelar Compartir
   description: >-
     Después de compartir, otros compañeros podran descargar los archivos del juego que compartiste a través de tu PC.
   downloadDescription: |-
@@ -23,9 +21,7 @@ AppShareInstanceDialog:
   downloadTitle: Descargar archivos de otros compañeros
   filesToDownload: Elija archivos para descargar
   filesToShare: Elija archivos para compartir
-  instanceShare: '{user} acaba de compartir archivos del juego contigo'
   share: Compartir
-  shareNotifyTitle: Compartir Instancia
   shareTitle: Comparte archivos de juego con otro jugador
 BaseSettingGeneral:
   title: General
@@ -56,6 +52,8 @@ askAICrash:
     selectPlatform: Abre una plataforma de IA y pega el mensaje que acabas de copiar.
     setupAgent: Configurar el agente IA
 agent:
+  accessRequiredHint: Suscríbete a XMCL para usar el agente integrado o configura tu propio proveedor de IA en Ajustes.
+  subscribeXmcl: Suscribirse a XMCL
   callingTool: llamando a {name}…
   disabledPlaceholder: Agente desactivado
   emptyHint: >-
@@ -192,6 +190,7 @@ curseforgeCategory:
   Vanilla+: Vanilla+
   World Gen: Generador de Mundos
 dependencies:
+  dependents: Mods que dependen de este mod
   embedded: Integrada
   incompatible: Incompatible
   name: Dependencias
@@ -199,7 +198,6 @@ dependencies:
   required: Requerida
 dataMigration:
   apply: Aplicar Configuración
-  directoryCriteriaHint: ¡Asegúrese de que su nueva ubicación de directorio sea un directorio VACÍO!
   placeholder: Haga clic aquí para seleccionar el directorio
   setRootCause: >-
     ¡Perderá sus datos (Mapas, Paquetes de Recursos, Mods) si cierra el Launcher en este proceso!
@@ -472,10 +470,6 @@ instance:
   iconHint: El icono podría ser un archivo o un enlace URL de Internet.
   iconUrl: URL del Icono
   installModpack: Actualizar instancia desde modpack
-  updateModpackName: Actualizar Modpack
-  updateModpackSelect: Seleccionar archivo de modpack...
-  updateModpackFiles: '{count} archivos instalados'
-  updateModpackNone: No hay archivos instalados aún
   lastPlayed: Última vez jugado
   launchArguments: Argumentos de Lanzamiento Previo
   launchServer: Iniciar el servidor localhost
@@ -585,7 +579,6 @@ instances:
   addCurseForgeDescription: |-
     Importar desde la carpeta de datos de curseforge.
     Debes seleccionar la carpeta de datos raíz de curseforge.
-  addManually: Crear manualmente
   addMMCDescription: |-
     Importa una instancia existente de MultiMC.
     Debes seleccionar la carpeta de datos de MultiMC.
@@ -593,10 +586,6 @@ instances:
     Importa una instancia existente de Modrinth. Debes seleccionar la carpeta
     raíz de datos de Modrinth.
   addPrismDescription: Importar una instancia existente de PrismLauncher.
-  addServer: Crear desde el servidor
-  addServerDescription: Esto creará un juego que se iniciará directamente en el servidor.
-  addTemplate: Crear desde modpack descargado
-  addTemplateDescription: Importar desde un modpack descargado
   addVanilla: Crear desde Minecraft vanilla
   addVanillaDescription: >-
     Importar desde una carpeta .minecraft común. Esto duplicará el perfil de
@@ -844,6 +833,10 @@ logsCrashes:
   showFile: Mostrar en la carpeta
   title: Registros o Informes de Errores
 me:
+  groupByDate: Agrupar por fecha
+  groupByFolder: Agrupar por carpeta
+  instanceViewMode: Modo de vista de instancias
+  listView: Vista de lista
   news: Noticias
   recentPlay: Juego Reciente
 migrationWindow:
@@ -942,7 +935,7 @@ modInstall:
   releaseOnly: Ignorar versiones alfa y beta al actualizar
   installDependencies: Instalar dependencias faltantes
   installHint: Se instalará el archivo {file} con {dependencies} dependencias
-  noVersionSupported: Mod solo es compatible con Minecraft {compatible}.
+  noVersionSupported: Mod solo es compatible con Minecraft {supported}.
   recommendation: ¡Explora las modificaciones {first} en {modrinth} y {curseforge}!
   removeUnusedLibraries: Eliminar modificaciones de bibliotecas no utilizadas
   search: Resultado de la Búsqueda
@@ -1156,13 +1149,49 @@ modrinth:
   versions: Versiones
   wikiUrl: Wiki
 multiplayer:
+  joinDiscord: Únete a Discord
+  openConsumerPortal: Abrir el portal del consumidor
+  refundHint: ¿Necesitas un reembolso? Visita el portal del consumidor de Waffo para gestionar tus pedidos y suscripciones.
+  togetherSupportHint: Si el modo multijugador no funciona, únete a nuestro Discord y contacta con el equipo de desarrollo. Te ayudaremos a resolver el problema.
+  autoShareAmbiguous: Hay varias partidas en ejecución. Selecciona la instancia que aloja el mundo LAN para que XMCL pueda compartirla.
+  editSharingScope: Editar alcance compartido
+  gameAvailable: Partida LAN disponible
+  joinGame: Unirse a la partida
+  noRunningInstanceToShare: Inicia una partida antes de editar su alcance compartido
+  updateSharedInstanceConfirm: Actualizar e iniciar
+  updateSharedInstanceDescription: Los mods compartidos difieren de los de {instance}. ¿Quieres actualizar esta instancia para que coincida con el anfitrión antes de iniciarla? Se hará una copia de seguridad de los archivos modificados.
+  updateSharedInstanceTitle: ¿Actualizar la instancia compartida?
+  addFunds: "Añadir fondos"
+  availableBalance: "Saldo disponible"
+  balanceHint: "Disponible para los servicios de XMCL Together"
+  billing: "Facturación"
+  billingDescription: "Gestiona el acceso al relay, tu plan Together Home y los pagos."
+  billingError: "No se ha podido cargar la facturación de Together. Inténtalo de nuevo en un momento."
+  buyTogether: "Comprar Together"
+  cancelTogether: "Cancelar plan"
+  checkout: "Abrir el pago de Waffo"
+  connectionTogetherWarning: "Un miembro de la sala no ha podido conectarse contigo durante un tiempo. Prueba XMCL Together para mejorar la conectividad de todos en la sala. Solo el anfitrión de la sala necesita Together."
+  masterPurchaseHint: "Solo el anfitrión de la sala necesita Together Home para mejorar la conectividad de todos en la sala."
+  natTogetherWarning: "Es posible que tu router tenga problemas para conectarse al anfitrión de la sala. Si las conexiones fallan, prueba XMCL Together para mejorar la conectividad entre tú y tus amigos. Solo el anfitrión de la sala debe comprar Together para la sala."
+  togetherName: "Minecraft Together"
+  trialDescription: "Una prueba de 7 días con 1 GB de tráfico de relay."
+  trialTitle: "Prueba de conectividad"
+  tryTogether: "Probar Together"
+  month: "mes"
+  orderStatus: "Pedido de Waffo: {status}"
+  planDescription: "20 GB de tráfico de relay gestionado al mes, además de asistencia de IA para solucionar problemas de tu modpack."
+  waffoHint: "Los pagos se completan de forma segura en Waffo Pancake. XMCL nunca recibe tu número de tarjeta."
+  subscription:
+    active: "Activa"
+    cancelled: "Cancelada"
+    payment_due: "Pago pendiente"
+  trial:
+    active: "Prueba activa"
+    available: "Prueba gratuita disponible"
+    expired: "Prueba utilizada"
+    unavailable: "Prueba no disponible"
   loginRequiredDescription: El multijugador P2P utiliza los servicios en línea de XMCL. Inicia sesión en una cuenta de XMCL para continuar.
   loginRequiredTitle: Inicia sesión para jugar en multijugador P2P
-  allowTurn: Activar servidor de retransmisión
-  allowTurnHint: >-
-    Activa el servidor de retransmisión si no puedes conectarte con tu amigo.
-    Sin embargo, usar el servidor de retransmisión puede ralentizar tu conexión.
-    Úsalo con precaución.
   complete: Completado
   confirm: Confirmar
   connectionError: Error de conexión
@@ -1222,9 +1251,6 @@ multiplayer:
   localToken: Token local
   manualConnect: Conectar manualmente
   name: Multijugador en LAN
-  natWarning: >-
-    Tu tipo de NAT puede impedir conexiones directas. Activa el servidor de
-    retransmisión en ajustes o pide a tu amigo que sea el anfitrión.
   networkInfo: Información de red (clic para alternar)
   next: Siguiente
   otherExposedPortDescription: Puerto reenviado por {user}
@@ -1239,8 +1265,6 @@ multiplayer:
   sendTokenToRemote: Enviar token al remoto
   share: Compartir configuración de instancia
   sharing: Compartiendo archivos...
-  sharingNotificationBody: Puedes descargar o crear una instancia desde la configuración compartida de {name}.
-  sharingNotificationTitle: Un compañero está compartiendo la configuración de su juego
   start: Iniciar
   startNewP2PConnection: Haz clic en Iniciar para crear una nueva conexión entre pares
 myStuff: Mis Cosas
@@ -1326,12 +1350,9 @@ resourcepack:
     Formato de Paquete de Recursos incompatible ({format}). Se ajusta a {accept}. Actual {actual}.
   name: Paquete de Recursos | Paquetes de Recursos
   searchHint: Buscar paquetes de recursos
-  searchOnCurseforge: Buscar {name} en CurseForge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Paquetes de Recursos Seleccionados
   showDirectory: Abra la carpeta con los paquetes de recursos
   showFile: Mostrar paquete de recursos en la carpeta {file}
-  showInCurseforge: Mostrar {name} en CurseForge
   unselected: Paquetes de Recursos No Seleccionados
   noLocalPacksFound: No se encontraron paquetes de recursos locales que coincidan con tu búsqueda
   noPacks: No se encontraron paquetes de recursos
@@ -1785,8 +1806,6 @@ shaderPack:
     Vincular la carpeta shaderpacks de esta instancia con la carpeta compartida
     global para que todas las instancias usen los mismos paquetes de shaders. Los
     paquetes existentes se combinan en la carpeta compartida.
-  deletion: Eliminar Pack de Shaders
-  deletionHint: Esto eliminará el archivo del pack de shaders {path} y no se podrá deshacer.
   dropHint: Arrastra y suelta el archivo del conjunto de sombreadores (.zip) aquí
   empty: No se ha asignado ningún pack de shaders
   enable: Usando el pack de shaders {name}
@@ -1808,6 +1827,7 @@ shaderPack:
   noPacksInstalled: No tienes ningún pack de shaders instalado
   search: Buscar shaders...
 shared:
+  pressKeyCombination: Pulsa una combinación de teclas...
   add: Añadir
   author: Autor
   back: Atrás
@@ -1935,23 +1955,6 @@ tutorial:
       Puedes buscar mods en Modrinth, CurseForge o en tu caché local con este
       cuadro de búsqueda.
     searchTitle: Buscar mods
-  multiplayer:
-    contentDescription: Las conexiones entre tú y tus pares se listarán aquí.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Puedes crear o unirte a un grupo con otros jugadores. El lanzador
-      intentará crear conexiones P2P entre tú y tus amigos según el grupo.
-      Puedes introducir el nombre del grupo dado por tus amigos. O puedes crear
-      un nombre único.
-    groupTitle: Unirse a un grupo
-    joinDescription: >-
-      Una vez que introduzcas un nombre de grupo, puedes hacer clic en este
-      botón para unirte o crear el grupo. Si el nombre del grupo está vacío, el
-      lanzador generará un nombre para ti.
-    manualDescription: >-
-      Si tú o tu amigo no podéis conectaros al grupo, podéis intentar
-      intercambiar el token manualmente haciendo clic en conectar manualmente.
-      Si eso también falla, puede ser un problema de Internet.
   recentPlayDescription: >-
     Los juegos creados se listarán aquí.
 
@@ -2054,6 +2057,44 @@ userSkin:
   urlNotEmpty: La URL de la skin no puede estar vacía
   urlNotValid: La URL de la skin no es válida
   useSlim: Usar modelo delgado
+  saveSuccess: ¡Skin guardada en el disco!
+  saveFailed: No se pudo guardar la skin en el disco
+  uploadFailed: Error al subir la skin
+  libraryTitle: Armario local
+  librarySubtitle: Elige, organiza y guarda tus skins localmente
+  manage: Gestionar
+  all: Todas
+  currentSkin: Skin actual
+  savedCount: skins guardadas
+  newSkin: Nueva skin
+  addNewSkin: Añadir nueva skin
+  editSkin: Editar skin
+  skinName: Nombre de la skin
+  skinNamePlaceholder: 'p. ej., Mi skin favorita'
+  localFile: Archivo local
+  urlOrPlayer: URL / Nombre del jugador
+  urlOrPlayerPlaceholder: Introduce la URL de la imagen o el nombre de usuario de Minecraft
+  urlOrPlayerHint: Introduce una URL directa de una imagen PNG o un jugador para obtener su skin de Mojang
+  dropFileHere: Suelta aquí el archivo PNG de la skin o haz clic para buscarlo
+  supportedFormats: 'Formato compatible: imagen PNG de 64x64 o 64x32'
+  preview: Vista previa de la skin
+  previewPlaceholder: No hay vista previa disponible
+  saveToLibrary: Guardar en el armario
+  saveAndEquip: Guardar y equipar
+  equip: Equipar
+  equipToAccount: Equipar en la cuenta de Minecraft
+  equipped: Equipada
+  noSkinSelected: Ninguna skin seleccionada
+  saveCurrent: Guardar la actual
+  officialPreset: Preajuste oficial
+  mySkins: Mis skins
+  presets: Preajustes
+  noSkinsFound: No se encontraron skins
+  tryAddingOne: ¡Prueba a añadir una skin nueva con el botón de arriba!
+  skinUpdated: ¡Skin actualizada!
+  skinDeleteFailed: No se pudo eliminar la skin del armario
+  edit: Editar
+  fetch: Cargar
 version:
   checkIntegrity: Verificar la integridad
   name: Versión | Versiones
@@ -2063,7 +2104,6 @@ versionType:
   beta: Beta
   name: Estado
   release: Lanzamiento
-  checkIntegrity: Verificar la integridad
 minecraftFriends:
   accept: Aceptar
   add: Añadir amigo

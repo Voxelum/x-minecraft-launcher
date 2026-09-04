@@ -3,7 +3,7 @@ import { FSWatcher } from 'chokidar'
 import { basename, join, resolve, sep } from 'path'
 import { File } from '../File'
 import { ResourceContext } from '../ResourceContext'
-import { ResourceDomain } from '../ResourceDomain'
+import { getResourceTaskPriority, ResourceDomain } from '../ResourceDomain'
 import { ResourceType } from '../ResourceType'
 import { ResourceMetadata } from '../ResourceMetadata'
 import { ResourceWorkerQueuePayload } from '../ResourceWorkerQueuePayload'
@@ -164,12 +164,12 @@ function createWorkerQueue(
 
         if (job.record) {
           if (!isSnapshotValid(job.file, job.record)) {
-            job.record = await takeSnapshot(job.file, context, parse)
+            job.record = await takeSnapshot(job.file, context, parse, getResourceTaskPriority(domain))
           }
         }
 
         if (!job.record) {
-          job.record = await takeSnapshot(job.file, context, parse)
+          job.record = await takeSnapshot(job.file, context, parse, getResourceTaskPriority(domain))
         }
 
         const metadata = await getOrParseMetadata(job.file, job.record, domain, context, job, parse)
@@ -180,7 +180,7 @@ function createWorkerQueue(
 
         onResourceEmit(job.file, job.record, metadata ?? {})
       }),
-    16,
+    domain === ResourceDomain.Blueprints ? 2 : 16,
     {
       retryCount: 7,
       shouldRetry: (e) => isSystemError(e) && (e.code === 'EMFILE' || e.code === 'EBUSY'),
@@ -214,9 +214,9 @@ function createWatcher(
     alwaysStat: true,
     ignorePermissionErrors: true,
     ignoreInitial: true,
-    ignored: (filePath) => {
+    ignored: (filePath, stat) => {
       if (resolve(filePath) === path) return false
-      return shouldIgnoreFile(filePath, domain)
+      return shouldIgnoreFile(filePath, domain, stat?.isDirectory())
     },
     // @ts-ignore
   }).on('error', (e) => {
@@ -231,7 +231,7 @@ function createWatcher(
     const depth = file.split(sep).length
     if (domain !== ResourceDomain.Blueprints && depth > 1) return
 
-    if (shouldIgnoreFile(file, domain)) return
+    if (shouldIgnoreFile(file, domain, stat?.isDirectory())) return
     if (file.endsWith('.txt')) return
     if (eventName === 'unlinkDir') {
       if (domain === ResourceDomain.Blueprints) revalidate()

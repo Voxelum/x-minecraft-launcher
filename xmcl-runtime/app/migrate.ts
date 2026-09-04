@@ -1,9 +1,30 @@
-import { chmod, copyFile, ensureDir, lstat, readdir, readlink, remove, rename, rmdir, symlink, utimes, writeFile } from 'fs-extra'
+import {
+  chmod,
+  copyFile,
+  ensureDir,
+  lstat,
+  readdir,
+  readlink,
+  remove,
+  rename,
+  rmdir,
+  symlink,
+  utimes,
+  writeFile,
+} from 'fs-extra'
 import { join, resolve } from 'path'
-import { Logger } from '~/infra'
+import type { Logger } from '~/infra'
 import type { LauncherApp } from './LauncherApp'
 import { isSystemError } from '@xmcl/utils'
 import type { MigrationProgress } from '@xmcl/runtime-api'
+
+type MigrationLogger = Pick<Logger, 'log' | 'warn'>
+type MigrationApp = Pick<LauncherApp, 'appDataPath'> & {
+  controller: Pick<
+    LauncherApp['controller'],
+    'startMigrate' | 'handle' | 'broadcast' | 'endMigrate'
+  >
+}
 
 /**
  * Called for every file that is physically copied across volumes, with the
@@ -45,10 +66,10 @@ async function move(from: string, to: string, onCopied?: OnCopied) {
     // precheck relinks any stale target to the new root on next launch.
     const target = await readlink(from).catch(() => null)
     if (target) {
-      await remove(to).catch(() => { })
-      await symlink(target, to).catch(() => { })
+      await remove(to).catch(() => {})
+      await symlink(target, to).catch(() => {})
     }
-    await remove(from).catch(() => { })
+    await remove(from).catch(() => {})
     return
   }
 
@@ -61,7 +82,7 @@ async function move(from: string, to: string, onCopied?: OnCopied) {
       await move(join(from, child), join(to, child), onCopied)
     }
     // Only removes the source directory once it is empty.
-    await rmdir(from).catch(() => { })
+    await rmdir(from).catch(() => {})
     return
   }
 
@@ -81,7 +102,7 @@ async function move(from: string, to: string, onCopied?: OnCopied) {
         for (const child of children) {
           await move(join(from, child), join(to, child), onCopied)
         }
-        await rmdir(from).catch(() => { })
+        await rmdir(from).catch(() => {})
       } else {
         // A regular file across volumes (symlinks were handled above). Copy
         // with the low-level `copyFile` to avoid fs-extra's per-file `mkdirs`
@@ -95,8 +116,8 @@ async function move(from: string, to: string, onCopied?: OnCopied) {
         // (resource caches key off mtime); failures here must not abort the
         // migration on filesystems that ignore these attributes (e.g. NTFS
         // mounted via ntfs-3g).
-        await chmod(to, fromStat.mode).catch(() => { })
-        await utimes(to, fromStat.atime, fromStat.mtime).catch(() => { })
+        await chmod(to, fromStat.mode).catch(() => {})
+        await utimes(to, fromStat.atime, fromStat.mtime).catch(() => {})
         await remove(from)
         onCopied?.(fromStat.size, to)
       }
@@ -134,7 +155,29 @@ async function computeSize(path: string): Promise<{ bytes: number; files: number
   return { bytes: s.size, files: 1 }
 }
 
-export async function handleMigrateRoot(source: string, logger: Logger, app: LauncherApp) {
+export interface CompletedMigrationTelemetry {
+  traceparent?: string
+  startTime: number
+  endTime: number
+  outcome: 'success' | 'error'
+  copiedBytes: number
+  copiedFiles: number
+  error?: { name: string; message: string; stack?: string }
+}
+
+let completedMigrationTelemetry: CompletedMigrationTelemetry | undefined
+
+export function takeCompletedMigrationTelemetry() {
+  const telemetry = completedMigrationTelemetry
+  completedMigrationTelemetry = undefined
+  return telemetry
+}
+
+export async function handleMigrateRoot(
+  source: string,
+  logger: MigrationLogger,
+  app: MigrationApp,
+) {
   // Use the last occurrence: a stale `--migrate` can be carried forward into a
   // relaunch (e.g. by the updater reusing the current argv), so the freshest
   // destination wins.
@@ -149,6 +192,9 @@ export async function handleMigrateRoot(source: string, logger: Logger, app: Lau
   if (resolve(source) === resolve(destination)) {
     return source
   }
+  const traceparentIndex = process.argv.lastIndexOf('--migration-traceparent')
+  const traceparent = traceparentIndex === -1 ? undefined : process.argv[traceparentIndex + 1]
+  const startTime = Date.now()
   const candidates = [
     'assets',
     'instances',
@@ -167,7 +213,20 @@ export async function handleMigrateRoot(source: string, logger: Logger, app: Lau
     'options.txt',
     'servers.dat',
   ]
-  const finished = [] as Array<{ from: string, to: string }>
+  const finished = [] as Array<{ from: string; to: string }>
+  // The single source of truth for the progress window. Mutated in place and
+  // pushed to the renderer on a throttle so a fast stream of tiny-file copies
+  // cannot flood the IPC channel.
+  const state: MigrationProgress = {
+    from: source,
+    to: destination,
+    file: '',
+    copiedBytes: 0,
+    totalBytes: 0,
+    copiedFiles: 0,
+    totalFiles: 0,
+    phase: 'scanning',
+  }
   try {
     logger.log(`Try to use rename to migrate the files: ${source} -> ${destination}`)
 
@@ -177,19 +236,6 @@ export async function handleMigrateRoot(source: string, logger: Logger, app: Lau
       logger.warn('Failed to show the migration window', e)
     })
 
-    // The single source of truth for the progress window. Mutated in place and
-    // pushed to the renderer on a throttle so a fast stream of tiny-file copies
-    // cannot flood the IPC channel.
-    const state: MigrationProgress = {
-      from: source,
-      to: destination,
-      file: '',
-      copiedBytes: 0,
-      totalBytes: 0,
-      copiedFiles: 0,
-      totalFiles: 0,
-      phase: 'scanning',
-    }
     app.controller.handle('migration-get-progress', () => ({ ...state }))
 
     let lastBroadcast = 0
@@ -202,7 +248,9 @@ export async function handleMigrateRoot(source: string, logger: Logger, app: Lau
       app.controller.broadcast('migration-event', { event: 'progress', payload: { ...state } })
     }
 
-    const files = await readdir(source).then(files => files.filter(file => candidates.includes(file)))
+    const files = await readdir(source).then((files) =>
+      files.filter((file) => candidates.includes(file)),
+    )
 
     // Phase 1: scan sizes so the bar can be determinate. Metadata only, so it
     // is cheap next to the copy that follows.
@@ -242,7 +290,10 @@ export async function handleMigrateRoot(source: string, logger: Logger, app: Lau
         broadcast(true)
       } catch (e) {
         logger.warn(`Fail to move ${from} -> ${to}`, e)
-        app.controller.broadcast('migration-event', { event: 'error', payload: { file: from, error: e } })
+        app.controller.broadcast('migration-event', {
+          event: 'error',
+          payload: { file: from, error: e },
+        })
         throw e
       }
     }
@@ -252,12 +303,33 @@ export async function handleMigrateRoot(source: string, logger: Logger, app: Lau
     broadcast(true)
 
     await writeFile(join(app.appDataPath, 'root'), destination)
+    completedMigrationTelemetry = {
+      traceparent,
+      startTime,
+      endTime: Date.now(),
+      outcome: 'success',
+      copiedBytes: state.copiedBytes,
+      copiedFiles: state.copiedFiles,
+    }
     app.controller.endMigrate({
       from: source,
       to: destination,
     })
     return destination
   } catch (e) {
+    completedMigrationTelemetry = {
+      traceparent,
+      startTime,
+      endTime: Date.now(),
+      outcome: 'error',
+      copiedBytes: state.copiedBytes,
+      copiedFiles: state.copiedFiles,
+      error: {
+        name: e instanceof Error ? e.name : 'Error',
+        message: e instanceof Error ? e.message : String(e),
+        stack: e instanceof Error ? e.stack : undefined,
+      },
+    }
     // rollback
     logger.warn(`Fail to migrate, rollback`, e)
     for (const { from, to } of finished) {

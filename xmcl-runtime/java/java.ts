@@ -5,7 +5,7 @@ import { isSystemError } from '@xmcl/utils'
 import { ENOENT_ERROR, EPERM_ERROR } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Platform } from '@xmcl/runtime-api'
-import { join } from 'path'
+import { isAbsolute, join, relative, resolve, sep } from 'path'
 
 export enum JavaValidation {
   Okay,
@@ -83,6 +83,19 @@ export function getJavaExeFilePath(javaPath: string, platform: Platform) {
     ? join(javaPath, 'jre.bundle', 'Contents', 'Home', 'bin', 'java')
     : join(javaPath, 'bin',
       platform.os === 'windows' ? 'java.exe' : 'java')
+}
+
+export function getManagedJavaComponent(javaPath: string, jreRoot: string) {
+  const pathFromRoot = relative(resolve(jreRoot), resolve(javaPath))
+  if (!pathFromRoot || isAbsolute(pathFromRoot) || pathFromRoot === '..' || pathFromRoot.startsWith(`..${sep}`)) {
+    return undefined
+  }
+  const folder = pathFromRoot.split(sep)[0]
+  const forceZulu = folder.endsWith('-zulu')
+  return {
+    component: forceZulu ? folder.slice(0, -'-zulu'.length) : folder,
+    forceZulu,
+  }
 }
 
 export async function validateJavaPath(javaPath: string): Promise<JavaValidation> {

@@ -1,6 +1,8 @@
 import { z } from 'zod'
 import { AuthlibInjectorServiceKey } from '../../services/AuthlibInjectorService'
 import { BaseServiceKey } from '../../services/BaseService'
+import { VersionInstallServiceKey } from '../../services/InstallService'
+import { InstanceServiceKey } from '../../services/InstanceService'
 import { JavaServiceKey } from '../../services/JavaService'
 import { LaunchServiceKey } from '../../services/LaunchService'
 import { UserServiceKey } from '../../services/UserService'
@@ -86,21 +88,49 @@ export const launchInstanceCommand = defineCommand({
   async handler(input, ctx): Promise<LaunchInstanceResult> {
     const operationId = input.operationId ?? createOperationId()
 
-    const instance = await ctx.resolveInstance(input.instance)
+    let instance = await ctx.resolveInstance(input.instance)
     const user = await ctx.resolveUser(input.user)
-    const refreshedUser = await ctx.call(UserServiceKey, 'refreshUser', user.id)
 
-    // Resolve the matching local version for the instance.
-    const localVersions = await ctx.call(VersionServiceKey, 'getLocalVersions')
-    const versionHeader = findMatchedVersion(
-      localVersions.local,
-      instance.version,
-      { ...instance.runtime },
-    )
-    if (!versionHeader) {
-      throw new Error(`No local version matches instance '${instance.path}'`)
+    let versionId: string
+    if (input.dry) {
+      const localVersions = await ctx.call(VersionServiceKey, 'getLocalVersions')
+      const versionHeader = findMatchedVersion(
+        localVersions.local,
+        instance.version,
+        { ...instance.runtime },
+      )
+      if (!versionHeader) {
+        throw new Error(`No local version matches instance '${instance.path}'`)
+      }
+      versionId = versionHeader.id
+    } else {
+      const requestedVersion = instance.version
+      const requestedRuntime = { ...instance.runtime }
+      const installed = await ctx.call(VersionInstallServiceKey, 'installInstance', {
+        type: 'instance',
+        instancePath: instance.path,
+        runtime: requestedRuntime,
+        selectedVersion: requestedVersion,
+      })
+      versionId = installed.version
+
+      const latest = await ctx.resolveInstance(instance.path)
+      const runtimeUnchanged = Object.entries(requestedRuntime).every(
+        ([key, value]) => latest.runtime[key as keyof typeof latest.runtime] === value,
+      )
+      if (latest.version !== requestedVersion || !runtimeUnchanged) {
+        throw new Error(`Instance '${instance.path}' changed while preparing launch`)
+      }
+      if (latest.version !== versionId) {
+        await ctx.call(InstanceServiceKey, 'editInstance', {
+          instancePath: latest.path,
+          version: versionId,
+        })
+      }
+      instance = { ...latest, version: versionId }
     }
-    const resolvedVersion = await ctx.call(VersionServiceKey, 'resolveLocalVersion', versionHeader.id)
+    const resolvedVersion = await ctx.call(VersionServiceKey, 'resolveLocalVersion', versionId)
+    const refreshedUser = await ctx.call(UserServiceKey, 'refreshUser', user.id)
 
     // Pull global settings (resolved once, read-only).
     const settings = await ctx.call(BaseServiceKey, 'getSettings')
@@ -132,7 +162,7 @@ export const launchInstanceCommand = defineCommand({
     const launchOptions = await generateLaunchOptionsWithGlobal(
       instance,
       refreshedUser,
-      versionHeader.id,
+      versionId,
       {
         token: '',
         operationId,
@@ -155,7 +185,7 @@ export const launchInstanceCommand = defineCommand({
         globalPreExecuteCommand: settings.globalPreExecuteCommand,
         globalResolution: undefined,
         modCount: input.modCount,
-        track: async (_, p) => p,
+        track: async (_, operation) => operation(),
         getOrInstallAuthlibInjector: () =>
           ctx.call(AuthlibInjectorServiceKey, 'getOrInstallAuthlibInjector'),
       },

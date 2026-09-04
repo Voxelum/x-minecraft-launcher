@@ -36,8 +36,9 @@ import {
 import { Tracker } from '@xmcl/installer'
 import { AnyError, isSystemError } from '@xmcl/utils'
 import { FSWatcher } from 'chokidar'
+import { randomUUID } from 'crypto'
 import filenamify from 'filenamify'
-import { readFile, readJSON, readJson, unlink, writeFile, writeJson } from 'fs-extra'
+import { readFile, readJSON, readJson, remove, unlink, writeFile, writeJson } from 'fs-extra'
 import { basename, dirname, join, resolve } from 'path'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { ZipManager, kTasks, type Tasks } from '~/infra'
@@ -216,8 +217,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
     //   1. Register a strong-ref abort callback so deleteInstance can
     //      cancel us fast (held to keep the closure alive — previously
     //      handlers were WeakRef'd and could be GC'd mid-install).
-    //   2. Move every fs op into a single runExclusive on the same
-    //      LockKey.instance(p) that deleteInstance now waits on.
+    //   2. Serialize every instance mutation on the same LockKey.instance(p)
+    //      that deleteInstance waits on. Local diff installs may prepare in
+    //      an isolated workspace before taking this lock.
     const instanceService = await this.app.registry.get(InstanceService)
     const abortOnRemove = () => task.controller.abort()
     const unregisterRemoveHandler = instanceService.registerRemoveHandler(
@@ -267,7 +269,131 @@ export class InstanceInstallService extends AbstractService implements IInstance
     // Create tracker that updates task substate
     const tracker: Tracker<InstallInstanceTrackerEvents> = getTracker(task)
 
+    const createHandler = (finished: Set<string>) => new InstanceFileOperationHandlerV2(
+      instancePath,
+      finished,
+      targetState.workspace,
+      targetState.backup,
+      {
+        worker: this.worker,
+        logger: this,
+        onSpecialFile: (file) => {
+          resourceToUpdate.push({
+            hash: file.hashes.sha1,
+            metadata: {
+              modrinth: file.modrinth,
+              curseforge: file.curseforge,
+            },
+            uris: file.downloads || [],
+            destination: file.path,
+          })
+        },
+        getCachedResource: (sha1) =>
+          this.resourceManager
+            .getSnapshotByHash(sha1)
+            .then((resource) => resource ? this.resourceManager.validateSnapshotFile(resource) : undefined)
+            .then((resource) => resource?.path),
+        getPeerActualUrl: (url) =>
+          this.app.registry
+            .getIfPresent(kPeerFacade)
+            .then((peers) => peers?.getHttpDownloadUrl(url)),
+        unzipFiles: (payloads, finished, signal) =>
+          unzipInstanceFiles(zipManager, payloads, finished, signal, tracker),
+        downloadFiles: (payloads, finished, signal) =>
+          downloadInstanceFiles(
+            payloads.map((value) => ({
+              options: {
+                url: value.options.urls,
+                validator: value.options.sha1 ? { algorithm: 'sha1', hash: value.options.sha1 } : undefined,
+                destination: value.options.destination,
+                expectedTotal: value.options.size,
+              },
+              file: value.file,
+            })),
+            finished,
+            signal,
+            downloadOptions,
+            tracker,
+          ),
+        linkFiles: (payloads, finished, unhandled, signal) =>
+          linkInstanceFiles(payloads, this.app.platform, finished, unhandled, signal, tracker),
+      },
+    )
+
+    const resolveAddedFiles = async (fileDelta: InstanceFileUpdate[]) => {
+      try {
+        const newAddedFiles = fileDelta
+          .filter((file) => file.operation === 'add' || file.operation === 'backup-add')
+          .map((file) => file.file)
+        return await resolveInstanceFiles(
+          newAddedFiles,
+          curseforgeClient,
+          modrinthClient,
+          task.controller.signal,
+        )
+      } catch {
+        return false
+      }
+    }
+
+    const reconcileUnresolved = async (unresolvable: InstanceFile[]) => {
+      const unresolvedFilesPath = join(instancePath, 'unresolved-files.json')
+      const attemptedPaths = new Set(targetState.files.map((file) => file.path))
+      const existingUnresolved: InstanceFile[] = await readJSON(unresolvedFilesPath).catch(
+        () => [],
+      )
+      const mergedUnresolved = existingUnresolved
+        .filter((file) => !attemptedPaths.has(file.path))
+        .concat(unresolvable)
+      if (mergedUnresolved.length > 0) {
+        await writeFile(unresolvedFilesPath, JSON.stringify(mergedUnresolved))
+      } else {
+        await unlink(unresolvedFilesPath).catch(() => undefined)
+      }
+    }
+
     try {
+      if (noLock) {
+        const initialDelta = await this.#getDelta(
+          instancePath,
+          lockState,
+          targetState.upstream,
+          targetState.files,
+        )
+        const handler = createHandler(new Set())
+        await resolveAddedFiles(initialDelta)
+        await handler.prepareInstallFiles(initialDelta, task.controller.signal, true)
+
+        await lock.runExclusive(async () => {
+          task.controller.signal.throwIfAborted()
+          const refreshedDelta = await this.#getDelta(
+            instancePath,
+            lockState,
+            targetState.upstream,
+            targetState.files,
+          )
+          await writeJson(currentStatePath, InstanceInstallLock.parse({
+            ...targetState,
+            finishedPath: Array.from(handler.finished),
+            mtime: Date.now(),
+          }))
+          await handler.backupAndRename(refreshedDelta)
+          await unlink(currentStatePath).catch(() => undefined)
+          const unresolvedPaths = new Set(
+            refreshedDelta
+              .filter(update => update.operation === 'add' || update.operation === 'backup-add')
+              .map(update => update.file.path),
+          )
+          await reconcileUnresolved(
+            handler.unresolvable.filter(file => unresolvedPaths.has(file.path)),
+          )
+        })
+
+        await updateResources()
+        task.complete()
+        return
+      }
+
       await lock.runExclusive(async () => {
         task.controller.signal.throwIfAborted()
 
@@ -288,69 +414,11 @@ export class InstanceInstallService extends AbstractService implements IInstance
         task.controller.signal.throwIfAborted()
 
         // Update handler context with tracker
-        const handlerWithTracker = new InstanceFileOperationHandlerV2(
-          instancePath,
-          new Set(targetState.finishedPath),
-          targetState.workspace,
-          targetState.backup,
-          {
-            worker: this.worker,
-            logger: this,
-            onSpecialFile: (file) => {
-              resourceToUpdate.push({
-                hash: file.hashes.sha1,
-                metadata: {
-                  modrinth: file.modrinth,
-                  curseforge: file.curseforge,
-                },
-                uris: file.downloads || [],
-                destination: file.path,
-              })
-            },
-            getCachedResource: (sha1) =>
-              this.resourceManager
-                .getSnapshotByHash(sha1)
-                .then((r) => (r ? this.resourceManager.validateSnapshotFile(r) : undefined))
-                .then((r) => r?.path),
-            getPeerActualUrl: (url) =>
-              this.app.registry
-                .getIfPresent(kPeerFacade)
-                .then((peers) => peers?.getHttpDownloadUrl(url)),
-            unzipFiles: (payloads, finished, signal) =>
-              unzipInstanceFiles(zipManager, payloads, finished, signal, tracker),
-            downloadFiles: (payloads, finished, signal) =>
-              downloadInstanceFiles(
-                payloads.map((v) => ({
-                  options: {
-                    url: v.options.urls,
-                    validator: v.options.sha1 ? { algorithm: 'sha1', hash: v.options.sha1 } : undefined,
-                    destination: v.options.destination,
-                    expectedTotal: v.options.size,
-                  },
-                  file: v.file,
-                })),
-                finished,
-                signal,
-                downloadOptions,
-                tracker,
-              ),
-            linkFiles: (payloads, finished, unhandled, signal) =>
-              linkInstanceFiles(payloads, this.app.platform, finished, unhandled, signal, tracker),
-          },
-        )
+        const handlerWithTracker = createHandler(new Set(targetState.finishedPath))
 
         const runInstallTasks = async () => {
           try {
-            const newAddedFiles = fileDelta
-              .filter((f) => f.operation === 'add' || f.operation === 'backup-add')
-              .map((f) => f.file)
-
-            const hasUpdate = await resolveInstanceFiles(
-              newAddedFiles,
-              curseforgeClient,
-              modrinthClient,
-              task.controller.signal,
-            )
+            const hasUpdate = await resolveAddedFiles(fileDelta)
 
             if (hasUpdate) {
               // save current state
@@ -427,19 +495,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
         // failed again. Files that were not part of this run (e.g. a
         // partial/diff install that only resolved a subset) are preserved so
         // they are not silently lost.
-        const unresolvedFilesPath = join(instancePath, 'unresolved-files.json')
-        const attemptedPaths = new Set(targetState.files.map((f) => f.path))
-        const existingUnresolved: InstanceFile[] = await readJSON(unresolvedFilesPath).catch(
-          () => [],
-        )
-        const mergedUnresolved = existingUnresolved
-          .filter((f) => !attemptedPaths.has(f.path))
-          .concat(handlerWithTracker.unresolvable)
-        if (mergedUnresolved.length > 0) {
-          await writeFile(unresolvedFilesPath, JSON.stringify(mergedUnresolved))
-        } else {
-          await unlink(unresolvedFilesPath).catch(() => undefined)
-        }
+        await reconcileUnresolved(handlerWithTracker.unresolvable)
       })
 
       task.complete()
@@ -469,6 +525,12 @@ export class InstanceInstallService extends AbstractService implements IInstance
         },
       })
     } finally {
+      if (noLock) {
+        await Promise.all([
+          remove(targetState.workspace).catch(() => undefined),
+          unlink(currentStatePath).catch(() => undefined),
+        ])
+      }
       unregisterRemoveHandler()
     }
   }
@@ -762,6 +824,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       const files = options.files
       const instanceDir = dirname(instancePath)
       const instanceName = basename(instancePath)
+      const operationId = randomUUID()
 
       const lockState: InstanceLockSchema = {
         version: 1,
@@ -784,9 +847,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
         backup: join(
           instancePath,
           '.backups',
-          filenamify(new Date().toLocaleString(), { replacement: '-' }),
+          operationId,
         ),
-        workspace: join(instanceDir, `.${instanceName}-install-${id ?? timestamp}`),
+        workspace: join(instanceDir, `.${instanceName}-install-${operationId}`),
         finishedPath: [],
       }
 

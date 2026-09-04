@@ -4,10 +4,12 @@ AppAddInstanceDialog:
   createTitle: Создать экземпляр
   serverTitle: Введите адрес вашего сервера
 AppShareInstanceDialog:
+  editScopeDescription: Выберите файлы, которые другие участники смогут получить после обнаружения этой запущенной игры в локальной сети.
+  editScopeTitle: Изменить область общего доступа
+  instanceToShare: Запущенная игра
   alterDownloadDescription: >-
     Если вы не хотите менять текущий экземпляр, вы можете создать новый экземпляр из конфигурации вашего пользователя. Нажмите на кнопку ниже, чтобы создать экземпляр.
   baseInfo: Локальные настройки
-  cancelShare: Отменить обмен
   description: >-
     После того, как вы разрешите обмен экземпляром, другие пользователи смогут загружать эти файлы через ваш компьютер.
   downloadDescription: >-
@@ -16,9 +18,7 @@ AppShareInstanceDialog:
   downloadTitle: Скачивание файлов от других пользователей
   filesToDownload: Выберите файлы для загрузки
   filesToShare: Выберите файлы для обмена
-  instanceShare: '{user} только что поделился текущим экземпляром с вами'
   share: Обмен
-  shareNotifyTitle: Обмен экземпляром
   shareTitle: Обмен игровыми файлами с другими игроками
 BaseSettingGeneral:
   title: Общие
@@ -37,6 +37,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Выбрать корневой каталог
 agent:
+  accessRequiredHint: Оформите подписку XMCL, чтобы использовать встроенный Agent, или настройте собственного поставщика ИИ в настройках.
+  subscribeXmcl: Оформить подписку XMCL
   title: XMCL Agent
   statusReady: Готов
   statusWorking: Работаю…
@@ -161,7 +163,6 @@ curseforgeCategory:
   World Gen: Генератор мира
 dataMigration:
   apply: Применить настройки
-  directoryCriteriaHint: Пожалуйста, убедитесь, что новое расположение является пустым каталогом!
   placeholder: Нажмите здесь, чтобы выбрать каталог
   setRootCause: >-
     Вы потеряете свои данные (карты, наборы ресурсов, моды), если закроете лаунчер во время переноса!
@@ -176,6 +177,7 @@ delete:
   'no': Нет
   'yes': Удалить
 dependencies:
+  dependents: Моды, зависящие от этого мода
   embedded: Встраиваемые
   incompatible: Несовместимые
   name: Зависимости
@@ -499,14 +501,9 @@ instances:
   addMMCDescription: |-
     Импортируйте существующий экземпляр MultiMC.
     Вам нужно выбрать папку с данными из MultiMC.
-  addManually: Создать вручную
   addModrinthDescription: |-
     Импортируйте существующий экземпляр Modrinth.
     Вам необходимо выбрать корневую папку данных Modrinth.
-  addServer: Создать из сервера
-  addServerDescription: Это создаст экземпляр, который запустится непосредственно на сервере.
-  addTemplate: Создать из скачанного модпака
-  addTemplateDescription: Импортировать из загруженной сборки модов
   addVanilla: Создать из стандартного Minecraft
   addVanillaDescription: >-
     Импортировать из обычной папки (.minecraft). Это дублирует оригинальный профиль экземпляра в XMCL.
@@ -694,6 +691,10 @@ logsCrashes:
   title: Журналы и отчёты об ошибках
   failures: Ошибки запуска
 me:
+  groupByDate: Группировать по дате
+  groupByFolder: Группировать по папке
+  instanceViewMode: Режим отображения сборок
+  listView: В виде списка
   news: Новости
   recentPlay: Последние игры
 migrationWindow:
@@ -789,7 +790,7 @@ modInstall:
   dependencyHint: Установлена ​​другая версия {version}
   releaseOnly: Игнорировать альфа- и бета-версии при обновлении
   installDependencies: Установить недостающие зависимости
-  installHint: Будет установлен файл {file} с зависимостями {dependents}
+  installHint: Будет установлен файл {file} с зависимостями {dependencies}
   noVersionSupported: Мод поддерживает только Minecraft {supported}.
   recommendation: Исследуйте {first} моды в {modrinth} и ​​{curseforge}!
   removeUnusedLibraries: Удалить неиспользованные моды библиотеков
@@ -1002,11 +1003,49 @@ modrinth:
 modrinthCard:
   currentVersion: Текущая версия
 multiplayer:
+  joinDiscord: Присоединиться к Discord
+  openConsumerPortal: Открыть портал клиента
+  refundHint: Нужен возврат средств? Перейдите на клиентский портал Waffo, чтобы управлять заказами и подписками.
+  togetherSupportHint: Если многопользовательский режим не работает, присоединитесь к нашему Discord и свяжитесь с командой разработчиков. Мы поможем решить проблему.
+  autoShareAmbiguous: Запущено несколько игр. Выберите сборку, в которой открыт мир для локальной сети, чтобы XMCL мог поделиться ею.
+  editSharingScope: Изменить область общего доступа
+  gameAvailable: Доступна игра в локальной сети
+  joinGame: Присоединиться к игре
+  noRunningInstanceToShare: Запустите игру перед изменением области общего доступа
+  updateSharedInstanceConfirm: Обновить и запустить
+  updateSharedInstanceDescription: Общие моды отличаются от модов в {instance}. Обновить эту сборку в соответствии со сборкой хоста перед запуском? Для изменённых файлов будет создана резервная копия.
+  updateSharedInstanceTitle: Обновить общую сборку?
+  addFunds: "Пополнить баланс"
+  availableBalance: "Доступный баланс"
+  balanceHint: "Доступно для сервисов XMCL Together"
+  billing: "Оплата"
+  billingDescription: "Управляйте доступом к ретранслятору, планом Together Home и платежами."
+  billingError: "Не удалось загрузить данные об оплате Together. Повторите попытку через некоторое время."
+  buyTogether: "Купить Together"
+  cancelTogether: "Отменить план"
+  checkout: "Открыть оплату Waffo"
+  connectionTogetherWarning: "Один из участников комнаты уже некоторое время не может подключиться к вам. Попробуйте XMCL Together, чтобы улучшить соединение для всех участников комнаты. Together нужен только владельцу комнаты."
+  masterPurchaseHint: "Together Home нужен только владельцу комнаты, чтобы улучшить соединение для всех участников комнаты."
+  natTogetherWarning: "У вашего роутера могут возникать проблемы с подключением к владельцу комнаты. Если подключения не работают, попробуйте XMCL Together, чтобы улучшить соединение между вами и друзьями. Купить Together для комнаты должен только её владелец."
+  togetherName: "Minecraft Together"
+  trialDescription: "Один 7-дневный пробный период с 1 GB ретрансляционного трафика."
+  trialTitle: "Пробный период подключения"
+  tryTogether: "Попробовать Together"
+  month: "месяц"
+  orderStatus: "Заказ Waffo: {status}"
+  planDescription: "20 GB управляемого ретрансляционного трафика в месяц, а также устранение неполадок модпака с помощью ИИ."
+  waffoHint: "Платежи безопасно обрабатываются через Waffo Pancake. XMCL никогда не получает номер вашей карты."
+  subscription:
+    active: "Активна"
+    cancelled: "Отменена"
+    payment_due: "Требуется оплата"
+  trial:
+    active: "Пробный период активен"
+    available: "Доступен бесплатный пробный период"
+    expired: "Пробный период использован"
+    unavailable: "Пробный период недоступен"
   loginRequiredDescription: Для сетевой игры P2P используются онлайн-сервисы XMCL. Войдите в аккаунт XMCL, чтобы продолжить.
   loginRequiredTitle: Войдите для игры по сети P2P
-  allowTurn: Разрешить сервер-ретранслятор
-  allowTurnHint: >-
-    Включите ретранслятор, если связь напрямую не работает.  Он может замедлить соединение, используйте осторожно. Включите ретранслятор, если связь напрямую не работает.  Он может замедлить соединение, используйте осторожно.
   complete: Завершено
   confirm: Подтвердить
   connections: Соединения
@@ -1058,15 +1097,11 @@ multiplayer:
   sendTokenToRemote: Отправить токен
   share: Поделиться конфигурацией экземпляра
   sharing: Обмен файлами...
-  sharingNotificationBody: Вы можете загрузить или создать экземпляр из общих настроек {name}.
-  sharingNotificationTitle: Пользователь делится настройками экземпляра
   start: Начать
   startNewP2PConnection: Нажмите на кнопку "Начать", чтобы создать новое p2p-соединение
   connectionError: Ошибка соединения
   connectionFailedHint: >-
     Не удалось установить соединение. Проверьте, что у обеих сторон совместимые типы NAT.
-  natWarning: >-
-    Ваш тип NAT может препятствовать прямым соединениям. Попробуйте включить релейный сервер в настройках или попросите друга стать хостом.
 myStuff: Мой контент
 natType:
   blocked: Заблокирован
@@ -1135,12 +1170,9 @@ resourcepack:
     Несовместимый формат набора ресурсов ({format}). Подходящий {accept}. Текущий {actual}.
   name: Набор ресурсов | Наборы ресурсов
   searchHint: Поиск пакетов ресурсов
-  searchOnCurseforge: Поиск {name} на CurseForge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Выбранные наборы ресурсов
   showDirectory: Открыть папку с наборами ресурсов
   showFile: Показать путь к набору ресурсов {file}
-  showInCurseforge: Показать {name} на CurseForge
   unselected: Невыбранные наборы ресурсов
   noPacks: Ресурс-паки не найдены
   search: Поиск ресурс-паков...
@@ -1488,9 +1520,6 @@ shaderPack:
   linkShared: Общие пакеты шейдеров для всех сборок
   linkSharedHint: >-
     Связать папку shaderpacks этой сборки с общей глобальной папкой, чтобы все сборки использовали одни и те же пакеты шейдеров. Существующие пакеты будут перемещены в общую папку.
-  deletion: Удалить набор шейдеров
-  deletionHint: >-
-    Это приведёт к удалению файла набора шейдеров {path} и его будет невозможно восстановить.
   disabled: Невыбранные наборы шейдеров
   dropHint: Перетащите сюда файл набора шейдеров (.zip)
   empty: Не выделен ни один набор шейдеров
@@ -1505,11 +1534,12 @@ shaderPack:
   searchHint: Поиск набора шейдеров
   selectSearchHint: Найдите и выберите Shader Pack
   showDirectory: Открыть папку с наборами шейдеров
-  showFile: Показать путь к набору шейдеров {file}
+  showFile: Показать набор шейдеров в папке
   market: Магазин шейдеров
   noPacks: Шейдер-паки не установлены
   search: Поиск шейдер-паков...
 shared:
+  pressKeyCombination: Нажмите сочетание клавиш...
   add: Добавить
   author: Автор
   back: Назад
@@ -1539,6 +1569,7 @@ shared:
   skipForNow: Пропустить сейчас
   upgrade: Обновить
   'yes': Да
+  delete: Удалить
 sidebar:
   pin: Закрепить
   unpin: Открепить
@@ -1623,16 +1654,6 @@ tutorial:
     searchDescription: >-
       Вы можете искать моды из Modrinth, CurseForge или вашего локального кэша с помощью этого поля поиска.
     searchTitle: Поиск модов
-  multiplayer:
-    contentDescription: Соединения между вами и пользователями будут перечислены здесь.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Вы можете создать или присоединиться к группе с другими пользователями. Лаунчер попытается создать P2P-соединения между вами и пользователями в соответствии с группой. Вы можете ввести имя группы, предоставленное пользователями. Или же вы можете создать уникальное имя самостоятельно.
-    groupTitle: Присоединиться к группе
-    joinDescription: >-
-      Как только вы введёте имя группы, вы можете нажать на эту кнопку, чтобы присоединиться или создать группу. Если имя группы пустое, лаунчер сгенерирует имя для вас.
-    manualDescription: >-
-      Если вы или пользователь не можете подключиться к группе, вы можете попытаться вручную обменяться токеном, нажав на "ручное соединение". Если это также не удалось, возможно у вас могут быть проблемы с интернетом.
   recentPlayDescription: >-
     Созданные экземпляры будут перечислены здесь. Вы можете переключать представления здесь, чтобы также увидеть установленные версии и загруженные сборки модов.
   storePoupularModpackDescription: >-
@@ -1729,6 +1750,46 @@ userSkin:
   urlNotEmpty: URL-адрес скина не может быть пустым
   urlNotValid: URL-адрес скина неверный
   useSlim: Использовать тонкие руки
+  classic: Классическая
+  slim: Тонкая
+  saveSuccess: Скин сохранён на диск!
+  saveFailed: Не удалось сохранить скин на диск
+  uploadFailed: Не удалось загрузить скин
+  libraryTitle: Локальный гардероб
+  librarySubtitle: Выбирайте, упорядочивайте и храните свои скины локально
+  manage: Управление
+  all: Все
+  currentSkin: Текущий скин
+  savedCount: сохранённых скинов
+  newSkin: Новый скин
+  addNewSkin: Добавить новый скин
+  editSkin: Изменить скин
+  skinName: Название скина
+  skinNamePlaceholder: 'например, Мой любимый скин'
+  localFile: Локальный файл
+  urlOrPlayer: URL / Имя игрока
+  urlOrPlayerPlaceholder: Введите URL изображения или имя пользователя Minecraft
+  urlOrPlayerHint: Введите прямой URL изображения PNG или имя игрока, чтобы получить скин от Mojang
+  dropFileHere: Перетащите сюда PNG-файл скина или нажмите, чтобы выбрать его
+  supportedFormats: 'Поддерживаемый формат: изображение PNG 64x64 или 64x32'
+  preview: Предпросмотр скина
+  previewPlaceholder: Предпросмотр скина недоступен
+  saveToLibrary: Сохранить в гардеробе
+  saveAndEquip: Сохранить и надеть
+  equip: Надеть
+  equipToAccount: Надеть в учётной записи Minecraft
+  equipped: Надет
+  noSkinSelected: Скин не выбран
+  saveCurrent: Сохранить текущий
+  officialPreset: Официальный набор
+  mySkins: Мои скины
+  presets: Наборы
+  noSkinsFound: Скины не найдены
+  tryAddingOne: Добавьте новый скин с помощью кнопки выше!
+  skinUpdated: Скин обновлён!
+  skinDeleteFailed: Не удалось удалить скин из гардероба
+  edit: Изменить
+  fetch: Загрузить
 version:
   checkIntegrity: Проверьте целостность
   name: Версия | Версии

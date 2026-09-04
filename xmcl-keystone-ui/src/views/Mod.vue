@@ -3,6 +3,7 @@
     :plans="plans"
     :items="groupedItems"
     :selection-mode="isLocalView && selectionMode"
+    :auto-selection-mode="isLocalView"
     :item-height="itemHeight"
     :loading="loading"
     :error="error"
@@ -178,7 +179,7 @@
         :expanded="!groupCollapsedState[item.name]"
         :dense="denseView"
         @ungroup="ungroup(item.name)"
-        @expand="groupCollapsedState = { ...groupCollapsedState, [item.name]: $event }"
+        @expand="onGroupCollapse(item as ProjectGroup<ModFile>, $event)"
         @setting="renameGroup(item.name, $event.name)"
         @enable-all="enableAll(item)"
         @disable-all="disableAll(item)"
@@ -218,14 +219,17 @@
         :key="selectedModrinthId"
         :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
+        :upgrade-version="getModrinthUpgradeVersion(selectedModrinthId)"
         :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
         :loader="modLoader"
         :categories="modrinthCategories"
         :all-files="mods"
+        :dependents="getProjectDependents(selectedItem?.installed || getInstalledModrinth(selectedModrinthId))"
         :updating="updating"
         :game-version="gameVersion"
         :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
         collection-content-type="mods"
+        @open-dependent="openModDependent"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -241,9 +245,11 @@
         :loader="modLoader"
         :category="curseforgeCategory"
         :all-files="mods"
+        :dependents="getProjectDependents(selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId))"
         :updating="updating"
         :modrinth="selectedModrinthId"
         collection-content-type="mods"
+        @open-dependent="openModDependent"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -262,6 +268,8 @@
         :files="selectedItem.files"
         :runtime="runtime"
         :installed="selectedItem.installed"
+        :dependents="getProjectDependents(selectedItem.installed)"
+        @open-dependent="openModDependent"
       />
     </template>
     <v-dialog v-model="wizardModel" width="600">
@@ -302,6 +310,7 @@
 
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
+import type { ProjectDependent } from '@/components/MarketProjectDetail.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketFilterPanel from '@/components/MarketFilterPanel.vue'
 import MarketListHeader from '@/components/MarketListHeader.vue'
@@ -318,7 +327,7 @@ import { kInstance } from '@/composables/instance'
 import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { ProjectGroup, useModGroups } from '@/composables/modGroup'
-import { kModsSearch } from '@/composables/modSearch'
+import { useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade } from '@/composables/modUpgrade'
 import { ArtifactLoader, resolveArtifactModrinthDependencies } from '@/composables/modArtifactDependencies'
 import { useModWizard } from '@/composables/modWizard'
@@ -332,8 +341,8 @@ import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { clientModrinthV2 } from '@/util/clients'
-import { ModFile } from '@/util/mod'
-import { flattenVisibleModGroups } from '@/util/modGroupFilter'
+import { ModFile, getModDependents, isModFile } from '@/util/mod'
+import { flattenVisibleModGroups, isProjectInModGroup } from '@/util/modGroupFilter'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import { useDebounceFn } from '@vueuse/core'
@@ -347,6 +356,8 @@ import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModLibCleaner } from '@/composables/modLibCleaner'
 import { basename } from '@/util/basename'
 import { kSearchModel, ModLoaderFilter } from '@/composables/search'
+import { kSettingsState } from '@/composables/setting'
+import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 import ModOptionsPage from './ModOptionsPage.vue'
 
 const localizedTexts = computed(() =>
@@ -388,6 +399,7 @@ const localizedTexts = computed(() =>
 
 const { runtime, path } = injection(kInstance)
 
+const searchModel = injection(kSearchModel)
 const {
   keyword,
   modrinthCategories,
@@ -401,7 +413,24 @@ const {
   sort,
   selectedCollection,
   modrinthEnvironment,
-} = injection(kSearchModel)
+} = searchModel
+
+const {
+  mods,
+  conflicted,
+  revalidate,
+  incompatible,
+  compatibility,
+  loaderIncompatibilities,
+  enable,
+  disable,
+  isValidating,
+} = injection(kInstanceModsContext)
+
+const getProjectDependents = (installedFiles: ProjectEntry['installed'] | undefined): ProjectDependent[] =>
+  getModDependents(installedFiles, mods.value, modLoader.value)
+const { state: settingsState } = injection(kSettingsState)
+const modrinthAPI = injection(kModrinthAuthenticatedAPI)
 
 // Ensure mod search effect is applied
 const {
@@ -416,7 +445,7 @@ const {
   localFilter,
   loadMore,
   totalAvailable,
-} = injection(kModsSearch)
+} = useModsSearch(path, runtime, mods, isValidating, settingsState, modrinthAPI, searchModel)
 
 effect()
 
@@ -656,6 +685,11 @@ const isOptifineProject = (v: ProjectEntry<ProjectFile> | undefined): v is Proje
 // Upgrade
 const { plans, error: upgradeError } = injection(kModUpgrade)
 
+const getModrinthUpgradeVersion = (projectId: string) => {
+  const plan = plans.value[projectId]
+  return plan && 'version' in plan ? plan.version : undefined
+}
+
 const updateErrorMessage = computed(() => {
   if (upgradeError) return (upgradeError.value as any).message
   return ''
@@ -698,9 +732,6 @@ const shouldShowCurseforge = (
   return true
 }
 
-const { mods, conflicted, revalidate, incompatible, compatibility, loaderIncompatibilities, enable, disable } =
-  injection(kInstanceModsContext)
-
 // Install-all is available for any collection open in the Favorites view —
 // launcher-owned local collections as well as Modrinth collections/follows.
 const showInstallAll = computed(() => source.value === 'favorite')
@@ -716,6 +747,17 @@ const getInstalledCurseforge = (modId: number | undefined) => {
 }
 
 const route = useRoute()
+const { replace } = useRouter()
+
+function onGroupCollapse(group: ProjectGroup<ModFile>, collapsed: boolean) {
+  groupCollapsedState.value = { ...groupCollapsedState.value, [group.name]: collapsed }
+  if (collapsed && isProjectInModGroup(group, route.query.id as string | undefined)) {
+    const query = { ...route.query }
+    delete query.id
+    replace({ query })
+  }
+}
+
 watch(
   computed(() => route.fullPath),
   () => {
@@ -956,8 +998,14 @@ const updateSearch = useDebounceFn(() => {
     replace({ query: { ...route.query, keyword: '' } })
   }
 }, 500)
-const { replace } = useRouter()
 const keywordBuffer = ref(route.query.keyword as string)
+
+function openModDependent(dependent: ProjectDependent) {
+  keywordBuffer.value = ''
+  localFilter.value = ''
+  replace({ query: { ...route.query, keyword: '', id: dependent.id } })
+}
+
 onMounted(() => {
   keywordBuffer.value = (route.query.keyword as string) ?? ''
 })

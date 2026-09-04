@@ -5,7 +5,7 @@ import { basename, extname, isAbsolute, join, relative, resolve } from 'path'
 import { kGameDataPath, LauncherApp } from '~/app'
 import { InstanceService } from '~/instance'
 import { kMarketProvider } from '~/market'
-import { Resource, ResourceDomain, UpdateResourcePayload } from '@xmcl/resource'
+import { getResourceTaskPriority, Resource, ResourceDomain, UpdateResourcePayload } from '@xmcl/resource'
 import { kResourceManager, kResourceWorker } from '~/resource'
 import { AbstractService, ServiceStateManager } from '~/service'
 import { isSystemError } from '@xmcl/utils'
@@ -181,7 +181,7 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
       if (!fileStat.isFile()) throw new Error(`Only files can be staged in an instance manifest: ${file}`)
       return {
         path: `${this.domain}/${basename(file)}`,
-        hashes: { sha1: await worker.checksum(file, 'sha1') },
+        hashes: { sha1: await worker.checksum(file, 'sha1', getResourceTaskPriority(this.domain)) },
         downloads: [pathToFileURL(file).toString()],
         size: fileStat.size,
       }
@@ -273,7 +273,7 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
     const entries = (await Promise.all(filePaths.map(async (path) => {
       try {
         const [sha1, fingerprint] = await Promise.all([
-          worker.checksum(path, 'sha1'),
+          worker.checksum(path, 'sha1', getResourceTaskPriority(this.domain)),
           worker.fingerprint(path),
         ])
         return { path, sha1, fingerprint }

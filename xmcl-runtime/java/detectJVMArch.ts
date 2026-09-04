@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { LauncherApp } from '~/app'
-import { exec } from 'child_process'
+import { execFile } from 'child_process'
 import { existsSync, writeFile } from 'fs-extra'
 // @ts-ignore
 import javaProxy from './JavaProxy.class'
@@ -18,7 +18,7 @@ export async function getJavaArch(serv: JavaService, javaPath: string) {
       await writeFile(dest, javaProxy)
     }
     const stdout = await new Promise<string>((resolve, reject) => {
-      exec(`"${javaPath}" JavaProxy -jvm_info`, { cwd: serv.app.appDataPath }, (err, stdout, stderr) => {
+      execFile(javaPath, ['JavaProxy', '-jvm_info'], { cwd: serv.app.appDataPath }, (err, stdout) => {
         if (err) reject(err)
         else resolve(stdout)
       })

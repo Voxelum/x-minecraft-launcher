@@ -12,6 +12,7 @@ export class RangeRequestHandler extends FileHandler {
 
   private childrenResolvers = Promise.withResolvers<void>()
   private children: FileHandler[] = []
+  private childRequestFailed = false
 
   constructor(
     readonly options: Dispatcher.DispatchOptions & {
@@ -59,6 +60,10 @@ export class RangeRequestHandler extends FileHandler {
 
     const remainingStart = this.start + this.contentLength
     const remainingEnd = total - 1
+    if (remainingStart > remainingEnd) {
+      this.childrenResolvers.resolve()
+      return
+    }
 
     const ranges = this.rangePolicy.computeRangesInRange(remainingStart, remainingEnd)
 
@@ -85,7 +90,10 @@ export class RangeRequestHandler extends FileHandler {
 
     Promise.all(childrenPromises)
       .then(() => this.childrenResolvers.resolve())
-      .catch((err) => this.childrenResolvers.reject(err))
+      .catch((err) => {
+        this.childRequestFailed = true
+        this.childrenResolvers.reject(err)
+      })
   }
 
   onWritten = (bytesWritten: number) => {
@@ -95,5 +103,9 @@ export class RangeRequestHandler extends FileHandler {
 
   override wait(): Promise<void> {
     return Promise.all([super.wait(), this.childrenResolvers.promise]).then(() => {})
+  }
+
+  get childFailed() {
+    return this.childRequestFailed
   }
 }

@@ -4,6 +4,7 @@ import { pluginIconProtocol } from './pluginIconProtocol'
 import { pluginDiscreteGPULinux } from './pluginDiscreteGPULinux'
 import { pluginLinuxDisplay } from './pluginLinuxDisplay'
 import { pluginPowerMonitor } from './pluginPowerMonitor'
+import { pluginMultiplayer } from './pluginMultiplayer'
 
 import { pluginApiFallback } from '@xmcl/runtime/app/pluginApiFallback'
 import { pluginAgentProtocol } from '@xmcl/runtime/agent'
@@ -11,8 +12,6 @@ import { pluginCommonProtocol } from '@xmcl/runtime/app/pluginCommonProtocol'
 import { pluginMediaProtocol } from '@xmcl/runtime/app/pluginMediaProtocol'
 import { pluginCli } from '@xmcl/runtime/commands/pluginCli'
 import { pluginCommandHost } from '@xmcl/runtime/commands/pluginCommandHost'
-import { pluginXmclAccountMicrosoftBridge } from '@xmcl/runtime/xmclAccount/pluginXmclAccountMicrosoftBridge'
-import { pluginXmclAccountModrinthBridge } from '@xmcl/runtime/xmclAccount/pluginXmclAccountModrinthBridge'
 import { pluginExternalCredentialLifecycle } from '@xmcl/runtime/credential/pluginExternalCredentialLifecycle'
 import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
 import { pluginEncodingWorker } from '@xmcl/runtime/encoding/pluginEncodingWorker'
@@ -49,6 +48,7 @@ import { LauncherAppPlugin } from '~/app'
 import { definedServices } from './definedServices'
 
 export const definedPlugins: LauncherAppPlugin[] = [
+  pluginMultiplayer,
   pluginAgentDocuments,
   pluginAgentProtocol,
   pluginCommandHost({ services: definedServices }),
@@ -85,14 +85,12 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginFlights,
   pluginNetworkInterface,
   pluginExternalCredentialLifecycle,
+  pluginUserTokenStorage,
   pluginOfficialUserApi,
   pluginOffineUser,
   pluginUndiciLogger,
-  pluginUserTokenStorage,
 
   pluginModrinthAccess,
-  pluginXmclAccountMicrosoftBridge,
-  pluginXmclAccountModrinthBridge,
 
   pluginCommonProtocol,
 ]

@@ -1,18 +1,12 @@
 /* eslint-disable n/no-unsupported-features/node-builtins */
 import { MinecraftFolder, MinecraftLocation, ResolvedLibrary, ResolvedVersion } from '@xmcl/core'
 import { isNotNull } from '@xmcl/core/utils'
-import { open, readAllEntries, walkEntriesGenerator } from '@xmcl/unzip'
-import {
-  DownloadBaseOptions,
-  downloadMultiple,
-  DownloadMultipleOption,
-  getDownloadBaseOptions,
-} from '@xmcl/file-transfer'
+import { open, walkEntriesGenerator } from '@xmcl/unzip'
 import { stat } from 'fs/promises'
 import { join } from 'path'
 import { diagnoseFile } from './diagnose'
-import { InstallError } from './error'
-import { Tracker, onDownloadMultiple, WithDownload } from './tracker'
+import { type InstallFile } from './installManifest'
+import { Tracker, WithDownload } from './tracker'
 import { WithDiagnose } from './utils'
 import { joinUrl, normalizeArray } from './utils.browser'
 
@@ -28,7 +22,7 @@ export type LibraryHost = (library: ResolvedLibrary) => string | string[] | unde
 /**
  * Change the library host url
  */
-export interface LibraryOptions extends DownloadBaseOptions, WithDiagnose {
+export interface LibraryOptions extends WithDiagnose {
   /**
    * A more flexiable way to control library download url.
    * @see mavenHost
@@ -54,78 +48,22 @@ export interface LibraryOptions extends DownloadBaseOptions, WithDiagnose {
 
 export type InstallLibraryVersion = Pick<ResolvedVersion, 'libraries' | 'minecraftDirectory'>
 
-/**
- * Install all the libraries of providing version
- * @param version The target version
- * @param options The library host swap option
- */
-export async function installLibraries(
-  version: ResolvedVersion,
-  options: LibraryOptions = {},
-): Promise<void> {
-  return installResolvedLibraries(version.libraries, version.minecraftDirectory, options)
-}
-
-/**
- * Only install several resolved libraries
- * @param libraries The resolved libraries
- * @param minecraft The minecraft location
- * @param option The install option
- */
-export async function installResolvedLibraries(
+export function resolveLibraryInstallFiles(
   libraries: ResolvedLibrary[],
-  minecraft: MinecraftLocation,
-  option: LibraryOptions = {},
-): Promise<void> {
-  const folder = MinecraftFolder.from(typeof minecraft === 'string' ? minecraft : minecraft.root)
-
-  await diagnoseLibraries(libraries, folder, {
-    signal: option.signal,
-    checksum: option.checksum,
-    strict: option.strict,
-  }).then(async (libs) => {
-    if (libs.length === 0) {
-      return
-    }
-    if (option.diagnose) {
-      throw new InstallError({
-        libraries: libs,
-      })
-    }
-    const results = await downloadMultiple({
-      options: libs.map((lib) => {
-        const libraryPath = lib.download.path
-        const destination = join(folder.libraries, libraryPath)
-        const urls: string[] = resolveLibraryDownloadUrls(lib, option)
-        if (urls.length > 2) {
-          urls.push(...urls)
-        }
-        return {
-          url: urls,
-          destination,
-          expectedTotal: lib.download.size,
-        } as DownloadMultipleOption
-      }),
-      signal: option.signal,
-      tracker: onDownloadMultiple(option.tracker, 'libraries', { count: libraries.length }),
-      ...getDownloadBaseOptions(option),
-    })
-
-    if (option.signal?.aborted) {
-      throw option.signal.reason
-    }
-
-    const error = results
-      .map((r, i) => [r, libs[i]] as const)
-      .filter(([r]) => r.status === 'rejected')
-    if (error.length > 0) {
-      throw new InstallError(
-        {
-          libraries: error.map(([_, lib]) => lib),
-        },
-        '',
-        new AggregateError(error.map(([r]) => (r as PromiseRejectedResult).reason)),
-      )
+  minecraft: MinecraftFolder,
+  options: LibraryOptions = {},
+): InstallFile[] {
+  return libraries.map((library) => {
+    const urls = resolveLibraryDownloadUrls(library, options)
+    return {
+      path: join(minecraft.libraries, library.download.path),
+      urls: urls.length > 2 ? urls.concat(urls) : urls,
+      size: library.download.size,
+      checksum: library.download.sha1
+        ? { algorithm: 'sha1', value: library.download.sha1 }
+        : undefined,
+      validator: library.download.sha1 ? undefined : 'zip',
+      validatedAt: options.timestamp,
     }
   })
 }
@@ -171,6 +109,7 @@ export async function diagnoseLibraries(
     signal?: AbortSignal
     strict?: boolean
     checksum?: (file: string, algorithm: string) => Promise<string>
+    timestamp?: number
   },
 ): Promise<Array<ResolvedLibrary>> {
   const signal = options?.signal
@@ -187,7 +126,7 @@ export async function diagnoseLibraries(
               file: libPath,
               expectedChecksum: lib.download.sha1,
               role: 'library',
-              hint: 'Problem on library! Please consider to use Installer.installLibraries to fix.',
+              hint: 'Reinstall the library files.',
             },
             options,
           )
@@ -219,7 +158,7 @@ export async function diagnoseLibraries(
               file: libPath,
               expectedChecksum: lib.download.sha1,
               role: 'library',
-              hint: 'Problem on library! Please consider to use Installer.installLibraries to fix.',
+              hint: 'Reinstall the library files.',
             },
             options,
           )

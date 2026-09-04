@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: গেম তৈরি করুন
   serverTitle: আপনার সার্ভার ঠিকানা লিখুন
 AppShareInstanceDialog:
+  editScopeDescription: ল্যানে চলমান এই গেমটি শনাক্ত করার পর পিয়াররা যেসব ফাইল আনতে পারবে সেগুলো নির্বাচন করুন।
+  editScopeTitle: শেয়ারের পরিধি সম্পাদনা করুন
+  instanceToShare: চলমান গেম
   alterDownloadDescription: আপনি যদি বর্তমান ইনস্ট্যান্সটি এলোমেলো করতে না চান, তবে আপনি অন্য পিয়ারের কনফিগারেশন থেকে একটি নতুন ইনস্ট্যান্স তৈরি করতে পারেন। ইনস্ট্যান্স তৈরি করতে নিচের বোতামে ক্লিক করুন।
   baseInfo: প্রাথমিক সেটিংস
-  cancelShare: শেয়ার করা বাতিল করুন
   description: আপনি প্রোফাইলটি শেয়ার করার পর, অন্য স্থান থেকে আপনার পিসির মাধ্যমে এই ফাইলগুলো ডাউনলোড করা যাবে।
   downloadDescription: অনুগ্রহ করে আপনার পিয়ারের প্রদান করা ফাইলগুলো যাচাই করুন। আপনি যে ফাইলটি ডাউনলোড করতে চান তা নির্বাচন করুন। এটি বর্তমান ইনস্ট্যান্স {name}-এ রাখা হবে।
   downloadNotifyTitle: '{user}-এর থেকে ইনস্ট্যান্স ডাউনলোড করুন'
   downloadTitle: অন্যান্য পিয়ারদের থেকে ফাইল ডাউনলোড করুন
   filesToDownload: ডাউনলোড করার জন্য ফাইল বেছে নিন
   filesToShare: শেয়ার করার জন্য ফাইল বেছে নিন
-  instanceShare: '{user} এইমাত্র আপনার সাথে বর্তমান ইনস্ট্যান্সটি শেয়ার করেছেন'
   share: শেয়ার করুন
-  shareNotifyTitle: ইনস্ট্যান্স শেয়ার করুন
   shareTitle: অন্যান্য খেলোয়াড়দের সাথে গেম ফাইল শেয়ার করুন
 BaseSettingGeneral:
   title: সাধারণ
@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: রুট ডিরেক্টরি নির্বাচন করুন
 agent:
+  accessRequiredHint: বিল্ট-ইন এজেন্ট ব্যবহার করতে XMCL-এ সাবস্ক্রাইব করুন, অথবা সেটিংসে নিজের AI প্রদানকারী কনফিগার করুন।
+  subscribeXmcl: XMCL-এ সাবস্ক্রাইব করুন
   callingTool: '{name}-কে কল করা হচ্ছে…'
   disabledPlaceholder: এজেন্ট নিষ্ক্রিয়
   emptyHint: এজেন্টকে আপনার ইনস্ট্যান্স পরীক্ষা করতে, মড চালু/বন্ধ করতে, লগ পড়তে অথবা ক্র্যাশ নির্ণয় করতে বলুন।
@@ -162,7 +164,6 @@ curseforgeCategory:
   World Gen: শান্তি জেনারেটর
 dataMigration:
   apply: সেটিং প্রয়োগ করুন
-  directoryCriteriaHint: অনুগ্রহ করে নিশ্চিত করুন যে আপনার নতুন ডিরেক্টরি অবস্থানটি একটি খালি ডিরেক্টরি!
   placeholder: ডিরেক্টরি নির্বাচন করতে অনুগ্রহ করে এখানে ক্লিক করুন
   setRootCause: আপনি যদি এই প্রক্রিয়া চলাকালীন লঞ্চারটি বন্ধ করেন, তবে আপনি আপনার ডেটা (মানচিত্র, রিসোর্স প্যাক, মড) হারাবেন!
   setRootDescription: এটি এই লঞ্চার এবং মাইনক্রাফ্টের রুট ডেটা ফোল্ডারটি পরিবর্তন করবে।
@@ -174,6 +175,7 @@ delete:
   'no': না
   'yes': মুছে ফেলুন
 dependencies:
+  dependents: এই মডের উপর নির্ভরশীল মডগুলি
   embedded: এমবেডেড
   incompatible: অসামঞ্জস্যপূর্ণ
   name: নির্ভরতা
@@ -516,13 +518,8 @@ instances:
   addCurseForgeDescription: curseforge ডেটা ফোল্ডার থেকে ইম্পোর্ট করুন। আপনাকে curseforge-এর রুট ডেটা ফোল্ডারটি নির্বাচন করতে হবে
   addDescription: নতুন করে একটি নতুন ইন্সট্যান্স তৈরি করুন
   addMMCDescription: বিদ্যমান MultiMC ইন্সট্যান্স ইম্পোর্ট করুন। আপনাকে MultiMC থেকে ডেটা ফোল্ডারটি নির্বাচন করতে হবে।
-  addManually: ম্যানুয়ালি তৈরি করুন
   addModrinthDescription: বিদ্যমান Modrinth ইন্সট্যান্স ইম্পোর্ট করুন। আপনাকে Modrinth রুট ডেটা ফোল্ডারটি নির্বাচন করতে হবে।
   addPrismDescription: বিদ্যমান PrismLauncher ইন্সট্যান্স ইম্পোর্ট করুন।
-  addServer: সার্ভার থেকে তৈরি করুন
-  addServerDescription: এটি সরাসরি সার্ভারে চালু করার জন্য একটি গেম তৈরি করবে।
-  addTemplate: ডাউনলোড করা মডপ্যাক থেকে তৈরি করুন
-  addTemplateDescription: ডাউনলোড করা মডপ্যাক থেকে ইম্পোর্ট করুন
   addVanilla: ভ্যানিলা-সদৃশ Minecraft থেকে তৈরি করুন
   addVanillaDescription: সাধারণ .minecraft ফোল্ডার থেকে ইম্পোর্ট করুন। এটি আসল গেম প্রোফাইলটিকে XMCL-এ অনুলিপি (duplicate) করবে।
   edition: সংস্করণ
@@ -684,6 +681,10 @@ logsCrashes:
   showFile: ফোল্ডারে দেখান
   title: লগ অথবা ক্র্যাশ রিপোর্ট
 me:
+  groupByDate: তারিখ অনুযায়ী গ্রুপ করুন
+  groupByFolder: ফোল্ডার অনুযায়ী গ্রুপ করুন
+  instanceViewMode: ইনস্ট্যান্স দেখার মোড
+  listView: তালিকা দৃশ্য
   news: খবর
   recentPlay: সাম্প্রতিক খেলা
 migrateMinecraft:
@@ -1006,10 +1007,49 @@ modrinth:
 modrinthCard:
   currentVersion: বর্তমান সংস্করণ
 multiplayer:
+  joinDiscord: Discord-এ যোগ দিন
+  openConsumerPortal: কনজিউমার পোর্টাল খুলুন
+  refundHint: রিফান্ড প্রয়োজন? আপনার অর্ডার ও সাবস্ক্রিপশন পরিচালনা করতে Waffo কনজিউমার পোর্টালে যান।
+  togetherSupportHint: মাল্টিপ্লেয়ার কাজ না করলে Discord-এ যোগ দিয়ে ডেভেলপমেন্ট টিমের সঙ্গে যোগাযোগ করুন। আমরা সমস্যা সমাধানে সাহায্য করব।
+  autoShareAmbiguous: একাধিক গেম চলছে। XMCL যাতে শেয়ার করতে পারে, ল্যান ওয়ার্ল্ড হোস্ট করা ইনস্ট্যান্সটি নির্বাচন করুন।
+  editSharingScope: শেয়ারের পরিধি সম্পাদনা করুন
+  gameAvailable: ল্যান গেম উপলভ্য
+  joinGame: গেমে যোগ দিন
+  noRunningInstanceToShare: শেয়ারের পরিধি সম্পাদনার আগে একটি গেম চালু করুন
+  updateSharedInstanceConfirm: আপডেট করে চালু করুন
+  updateSharedInstanceDescription: শেয়ার করা মডগুলো {instance}-এর মডগুলোর থেকে আলাদা। চালুর আগে হোস্টের সঙ্গে মিলিয়ে এই ইনস্ট্যান্সটি আপডেট করবেন? বর্তমানে পরিবর্তিত ফাইলগুলোর ব্যাকআপ নেওয়া হবে।
+  updateSharedInstanceTitle: শেয়ার করা ইনস্ট্যান্স আপডেট করবেন?
+  addFunds: "অর্থ যোগ করুন"
+  availableBalance: "উপলভ্য ব্যালেন্স"
+  balanceHint: "XMCL Together পরিষেবার জন্য উপলভ্য"
+  billing: "বিলিং"
+  billingDescription: "রিলে অ্যাক্সেস, আপনার Together Home প্ল্যান এবং পেমেন্ট পরিচালনা করুন।"
+  billingError: "Together-এর বিলিং লোড করা যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।"
+  buyTogether: "Together কিনুন"
+  cancelTogether: "প্ল্যান বাতিল করুন"
+  checkout: "Waffo চেকআউট খুলুন"
+  connectionTogetherWarning: "একজন রুম সদস্য কিছুক্ষণ ধরে আপনার সঙ্গে সংযোগ করতে পারছেন না। রুমের সবার সংযোগ উন্নত করতে XMCL Together ব্যবহার করে দেখুন। শুধু রুম মাস্টারের Together প্রয়োজন।"
+  masterPurchaseHint: "রুমের সবার সংযোগ উন্নত করতে শুধু রুম মাস্টারের Together Home প্রয়োজন।"
+  natTogetherWarning: "আপনার রাউটারের রুম মাস্টারের সঙ্গে সংযোগ করতে সমস্যা হতে পারে। সংযোগ ব্যর্থ হলে, আপনার বন্ধুদের সঙ্গে সংযোগ উন্নত করতে XMCL Together ব্যবহার করে দেখুন। রুমের জন্য শুধু রুম মাস্টারকেই Together কিনতে হবে।"
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB রিলে ট্র্যাফিকসহ 7 দিনের একটি ট্রায়াল।"
+  trialTitle: "সংযোগ ট্রায়াল"
+  tryTogether: "Together ব্যবহার করে দেখুন"
+  month: "মাস"
+  orderStatus: "Waffo অর্ডার: {status}"
+  planDescription: "প্রতি মাসে 20 GB পরিচালিত রিলে ট্র্যাফিক, সঙ্গে আপনার মডপ্যাকের সমস্যা সমাধানে AI সহায়তা।"
+  waffoHint: "Waffo Pancake-এ পেমেন্ট নিরাপদে সম্পন্ন হয়। XMCL কখনও আপনার কার্ড নম্বর পায় না।"
+  subscription:
+    active: "সক্রিয়"
+    cancelled: "বাতিল করা হয়েছে"
+    payment_due: "পেমেন্ট বাকি"
+  trial:
+    active: "ট্রায়াল সক্রিয়"
+    available: "বিনামূল্যের ট্রায়াল উপলভ্য"
+    expired: "ট্রায়াল ব্যবহার করা হয়েছে"
+    unavailable: "ট্রায়াল উপলভ্য নয়"
   loginRequiredDescription: P2P মাল্টিপ্লেয়ার XMCL অনলাইন পরিষেবা ব্যবহার করে। চালিয়ে যেতে একটি XMCL অ্যাকাউন্টে সাইন ইন করুন।
   loginRequiredTitle: P2P মাল্টিপ্লেয়ারের জন্য সাইন ইন করুন
-  allowTurn: রিলে সার্ভার সক্ষম করুন
-  allowTurnHint: আপনি যদি আপনার বন্ধুর সাথে সংযোগ করতে না পারেন তবে রিলে সার্ভার অনুমোদন করুন। তবে, রিলে সার্ভার ব্যবহার করলে আপনার সংযোগ ধীর হতে পারে। এটি সতর্কতার সাথে ব্যবহার করুন।
   complete: সম্পন্ন
   confirm: নিশ্চিত করুন
   connectionError: সংযোগ ত্রুটি
@@ -1046,7 +1086,6 @@ multiplayer:
   localToken: লোকাল টোকেন
   manualConnect: ম্যানুয়ালি সংযোগ করুন
   name: ল্যান (LAN) এ মাল্টিপ্লেয়ার
-  natWarning: আপনার NAT এর ধরন সরাসরি সংযোগ করতে বাধা দিতে পারে। সেটিংসে রিলে সার্ভার সক্রিয় করার চেষ্টা করুন অথবা এর পরিবর্তে আপনার বন্ধুকে হোস্ট করতে বলুন।
   networkInfo: নেটওয়ার্ক তথ্য (টগল করতে ক্লিক করুন)
   next: পরবর্তী
   otherExposedPortDescription: '{user} দ্বারা ফরওয়ার্ড করা পোর্ট'
@@ -1059,8 +1098,6 @@ multiplayer:
   sendTokenToRemote: রিমোটে টোকেন পাঠান
   share: ইনস্ট্যান্স কনফিগারেশন শেয়ার করুন
   sharing: ফাইল শেয়ার করা হচ্ছে...
-  sharingNotificationBody: আপনি {name} এর শেয়ার করা কনফিগারেশন থেকে একটি ইনস্ট্যান্স ডাউনলোড বা তৈরি করতে পারেন।
-  sharingNotificationTitle: একজন পিয়ার তাদের গেম কনফিগারেশন শেয়ার করছেন
   start: শুরু করুন
   startNewP2PConnection: একটি নতুন পিয়ার সংযোগ তৈরি করতে শুরু করুন বোতামে ক্লিক করুন
 myStuff: আমার জিনিসপত্র
@@ -1197,12 +1234,9 @@ resourcepack:
   noPacksInstalled: আপনার কোনো রিসোর্স প্যাক ইনস্টল করা নেই।
   search: রিসোর্স প্যাক খুঁজুন...
   searchHint: রিসোর্স প্যাক খুঁজুন
-  searchOnCurseforge: Curseforge-এ {name} খুঁজুন
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: নির্বাচিত রিসোর্স প্যাকসমূহ
   showDirectory: রিসোর্স প্যাক ডিরেক্টরি দেখান
   showFile: ফোল্ডারে রিসোর্স প্যাক দেখান {file}
-  showInCurseforge: CurseForge-এ {name} দেখান
   unselected: অনির্বাচিত রিসোর্স প্যাকসমূহ
 save:
   allowCheats: চিট ব্যবহারের অনুমতি দিন
@@ -1595,8 +1629,6 @@ setup:
     name: ভাষা সেট করুন
   path: বর্তমান পাথ
 shaderPack:
-  deletion: শেডার প্যাক মুছুন
-  deletionHint: এটি শেডার প্যাক ফাইল {path} মুছে ফেলবে এবং এটি পূর্বাবস্থায় ফেরানো যাবে না।
   disabled: নিষ্ক্রিয় শেডার প্যাকসমূহ
   dropHint: শেডার প্যাক ইম্পোর্ট করুন
   empty: কোনো শেডার প্যাক বরাদ্দ করা হয়নি
@@ -1619,6 +1651,7 @@ shaderPack:
   showDirectory: শেডার প্যাক ডিরেক্টরি দেখান
   showFile: ফোল্ডারে এই শেডার প্যাকটি দেখান
 shared:
+  pressKeyCombination: কী সমন্বয় চাপুন...
   add: যোগ করুন
   author: লেখক
   back: ফিরে যান
@@ -1730,13 +1763,6 @@ tutorial:
     listTitle: ইনস্টলকৃত বা অনুসন্ধান করা মড
     searchDescription: আপনি এই অনুসন্ধান বক্সটির সাহায্যে Modrinth, Curseforge বা আপনার স্থানীয় ক্যাশ থেকে মড অনুসন্ধান করতে পারেন।
     searchTitle: মড অনুসন্ধান করুন
-  multiplayer:
-    contentDescription: আপনার এবং আপনার সহকর্মীদের (পিয়ার) মধ্যকার সংযোগগুলো এখানে তালিকাভুক্ত করা হবে।
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: আপনি অন্য খেলোয়াড়দের সাথে একটি গ্রুপ তৈরি করতে বা যোগ দিতে পারেন। গ্রুপ অনুযায়ী লঞ্চার আপনার এবং আপনার বন্ধুদের মধ্যে P2P সংযোগ তৈরি করার চেষ্টা করবে। আপনি আপনার বন্ধুদের দেওয়া গ্রুপের নাম লিখতে পারেন। অথবা আপনি একটি অনন্য নাম তৈরি করতে পারেন।
-    groupTitle: একটি গ্রুপে যোগ দিন
-    joinDescription: গ্রুপের নাম দেওয়ার পর, আপনি গ্রুপে যোগ দিতে বা তৈরি করতে এই বোতামটিতে ক্লিক করতে পারেন। যদি গ্রুপের নাম খালি থাকে, তবে লঞ্চার আপনার জন্য একটি নাম তৈরি করবে।
-    manualDescription: যদি আপনি বা আপনার বন্ধু গ্রুপে সংযোগ করতে না পারেন, তবে ম্যানুয়ালি কানেক্ট-এ ক্লিক করে ম্যানুয়ালি টোকেন বিনিময় করার চেষ্টা করতে পারেন। যদি সেটিও ব্যর্থ হয়, তবে এটি একটি ইন্টারনেট সমস্যা হতে পারে।
   recentPlayDescription: তৈরি করা গেমগুলি এখানে তালিকাভুক্ত করা হবে। ইনস্টল করা সংস্করণ এবং ডাউনলোড করা মডপ্যাকগুলি দেখতে আপনি এখানে ভিউ পরিবর্তন করতে পারেন।
   storePoupularModpackDescription: আপনি এই বিভাগে Curseforge এবং Modrinth-এর সবচেয়ে জনপ্রিয় মডপ্যাকগুলি দেখতে পাবেন।
   storeSearchCategoryDescription: আপনি এখানে বিভাগ বা ফিল্টারগুলিও পরিবর্তন করতে পারেন।
@@ -1833,6 +1859,44 @@ userSkin:
   urlNotEmpty: স্কিন URL খালি হতে পারে না
   urlNotValid: স্কিন URL বৈধ নয়
   useSlim: স্লিম মডেল ব্যবহার করুন
+  saveSuccess: স্কিনটি ডিস্কে সংরক্ষিত হয়েছে!
+  saveFailed: স্কিনটি ডিস্কে সংরক্ষণ করা যায়নি
+  uploadFailed: স্কিন আপলোড ব্যর্থ হয়েছে
+  libraryTitle: স্থানীয় পোশাকের আলমারি
+  librarySubtitle: আপনার স্কিন বেছে নিন, সাজিয়ে রাখুন এবং স্থানীয়ভাবে সংরক্ষণ করুন
+  manage: পরিচালনা করুন
+  all: সব
+  currentSkin: বর্তমান স্কিন
+  savedCount: সংরক্ষিত স্কিন
+  newSkin: নতুন স্কিন
+  addNewSkin: নতুন স্কিন যোগ করুন
+  editSkin: স্কিন সম্পাদনা করুন
+  skinName: স্কিনের নাম
+  skinNamePlaceholder: 'যেমন: আমার প্রিয় স্কিন'
+  localFile: স্থানীয় ফাইল
+  urlOrPlayer: URL / খেলোয়াড়ের নাম
+  urlOrPlayerPlaceholder: স্কিন ছবির URL বা Minecraft ব্যবহারকারীর নাম লিখুন
+  urlOrPlayerHint: Mojang থেকে স্কিন আনতে সরাসরি PNG ছবির URL বা খেলোয়াড়ের নাম লিখুন
+  dropFileHere: স্কিনের PNG ফাইলটি এখানে ফেলুন অথবা খুঁজতে ক্লিক করুন
+  supportedFormats: 'সমর্থিত বিন্যাস: 64x64 বা 64x32 PNG ছবি'
+  preview: স্কিনের পূর্বরূপ
+  previewPlaceholder: স্কিনের কোনো পূর্বরূপ নেই
+  saveToLibrary: আলমারিতে সংরক্ষণ করুন
+  saveAndEquip: সংরক্ষণ করে পরুন
+  equip: পরুন
+  equipToAccount: Minecraft অ্যাকাউন্টে পরুন
+  equipped: পরানো হয়েছে
+  noSkinSelected: কোনো স্কিন নির্বাচন করা হয়নি
+  saveCurrent: বর্তমানটি সংরক্ষণ করুন
+  officialPreset: আনুষ্ঠানিক পূর্বনির্ধারিত স্কিন
+  mySkins: আমার স্কিন
+  presets: পূর্বনির্ধারিত স্কিন
+  noSkinsFound: কোনো স্কিন পাওয়া যায়নি
+  tryAddingOne: উপরের বোতাম দিয়ে একটি নতুন স্কিন যোগ করে দেখুন!
+  skinUpdated: স্কিনটি হালনাগাদ করা হয়েছে!
+  skinDeleteFailed: স্কিনটি আলমারি থেকে সরানো যায়নি
+  edit: সম্পাদনা করুন
+  fetch: লোড করুন
 version:
   checkIntegrity: অখণ্ডতা যাচাই করুন
   name: সংস্করণ | সংস্করণসমূহ

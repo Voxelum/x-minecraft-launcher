@@ -12,10 +12,16 @@ import {
   type InstanceFile,
   type MMCModpackManifest,
   type ModpackInstallProfile,
-  type ModrinthModpackManifest
+  type ModrinthModpackManifest,
 } from '@xmcl/instance'
 import { ModerinthApiError, ModrinthV2Client, type ModrinthUploadFile } from '@xmcl/modrinth'
-import { isValidCurseforgeRef, isValidModrinthRef, ResourceManager, ResourceMetadata, UpdateResourcePayload } from '@xmcl/resource'
+import {
+  isValidCurseforgeRef,
+  isValidModrinthRef,
+  ResourceManager,
+  ResourceMetadata,
+  UpdateResourcePayload,
+} from '@xmcl/resource'
 import {
   ModpackException,
   ModpackServiceKey,
@@ -65,7 +71,11 @@ import { createMcbbsHandler } from './utils/mcbbsHandler'
 import { createMmcHandler } from './utils/mmcHandler'
 import { createModrinthHandler } from './utils/modrinthHandler'
 import { remapModpackZipDownloads } from './utils/remapZipDownloads'
-import { addExportFileAsOverride, getModrinthProfileFiles, isServerOnlyExportFile } from './exportArchiveFiles'
+import {
+  addExportFileAsOverride,
+  getModrinthProfileFiles,
+  isServerOnlyExportFile,
+} from './exportArchiveFiles'
 
 export interface ModpackDownloadableFile {
   destination: string
@@ -81,13 +91,7 @@ export interface ModpackDownloadableFile {
  */
 function isMMCModpackManifest(manifest: unknown): manifest is MMCModpackManifest {
   const m = manifest as MMCModpackManifest | undefined
-  return (
-    !!m &&
-    typeof m === 'object' &&
-    !!m.cfg &&
-    !!m.json &&
-    Array.isArray(m.json.components)
-  )
+  return !!m && typeof m === 'object' && !!m.cfg && !!m.json && Array.isArray(m.json.components)
 }
 
 type SelectedXMCLFields = Pick<
@@ -250,11 +254,12 @@ export class ModpackService extends AbstractService implements IModpackService {
     // detection keeps working and the runtime is left untouched.
     let mmcVersionId: string | undefined
     if (isMMCModpackManifest(manifest)) {
-      mmcVersionId = await this.#applyMmcStandaloneVersion(manifest, zip.file, entries, name)
-        .catch((e) => {
+      mmcVersionId = await this.#applyMmcStandaloneVersion(manifest, zip.file, entries, name).catch(
+        (e) => {
           this.warn(new AnyError('ImportModpackError', `Failed to apply MultiMC patches: ${e}`))
           return undefined
-        })
+        },
+      )
     }
 
     const matchedVersion = findMatchedVersion(versionService.state.local, '', instance.runtime)
@@ -289,19 +294,21 @@ export class ModpackService extends AbstractService implements IModpackService {
     let path: string
     if (existing) {
       path = existing.path
-      await this.instanceService.editInstance({
-        instancePath: path,
-        runtime: options.runtime,
-        version: options.version,
-        ...(options.upstream ? { upstream: options.upstream } : {}),
-      }).catch((e) => {
-        this.error(e)
-      })
+      await this.instanceService
+        .editInstance({
+          instancePath: path,
+          runtime: options.runtime,
+          version: options.version,
+          ...(options.upstream ? { upstream: options.upstream } : {}),
+        })
+        .catch((e) => {
+          this.error(e)
+        })
     } else {
       path = await this.instanceService.createInstance(options)
     }
 
-    instanceInstallService
+    await instanceInstallService
       .installInstanceFiles(
         upstream
           ? {
@@ -317,6 +324,7 @@ export class ModpackService extends AbstractService implements IModpackService {
       )
       .catch((e) => {
         this.error(e)
+        throw e
       })
 
     return {
@@ -332,9 +340,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     )
       .then(InstanceLockSchema.parse)
       .catch(() => undefined)
-    return Object.fromEntries(
-      instanceLockContent?.files.map((f) => [f.path, f]) || [],
-    )
+    return Object.fromEntries(instanceLockContent?.files.map((f) => [f.path, f]) || [])
   }
 
   private async lookupExportFile(
@@ -355,8 +361,7 @@ export class ModpackService extends AbstractService implements IModpackService {
       const modrinthOk =
         !emitModrinth ||
         (!!lockedFile.modrinth && !!lockedFile.hashes?.sha1 && !!lockedFile.hashes?.sha512)
-      const curseforgeOk =
-        !emitCurseforge || (!!lockedFile.curseforge && !!lockedFile.hashes?.sha1)
+      const curseforgeOk = !emitCurseforge || (!!lockedFile.curseforge && !!lockedFile.hashes?.sha1)
       if (modrinthOk && curseforgeOk) {
         return lockedFile
       }
@@ -401,19 +406,29 @@ export class ModpackService extends AbstractService implements IModpackService {
     }
 
     const lockHashLookup = await this.getInstanceLockLookup(instancePath)
-    const entries: Array<{ path: string; linked: boolean; reason?: 'missing-file' | 'not-linked-to-modrinth' | 'no-downloadable-url' }> = []
+    const entries: Array<{
+      path: string
+      linked: boolean
+      reason?: 'missing-file' | 'not-linked-to-modrinth' | 'no-downloadable-url'
+    }> = []
     const pending: Array<{ path: string; filePath: string; sha1: string }> = []
 
     for (const file of files) {
-      const isCandidate = !file.override && (
-        file.path.startsWith('mods/') ||
-        file.path.startsWith('resourcepacks/') ||
-        file.path.startsWith('shaderpacks/')
-      )
+      const isCandidate =
+        !file.override &&
+        (file.path.startsWith('mods/') ||
+          file.path.startsWith('resourcepacks/') ||
+          file.path.startsWith('shaderpacks/'))
       if (!isCandidate) continue
 
       const filePath = join(instancePath, file.source || file.path)
-      const fileLike = await this.lookupExportFile(instancePath, filePath, lockHashLookup, true, false)
+      const fileLike = await this.lookupExportFile(
+        instancePath,
+        filePath,
+        lockHashLookup,
+        true,
+        false,
+      )
       if (!fileLike) {
         entries.push({ path: file.path, linked: false, reason: 'missing-file' })
         continue
@@ -422,7 +437,9 @@ export class ModpackService extends AbstractService implements IModpackService {
         entries.push({ path: file.path, linked: false, reason: 'not-linked-to-modrinth' })
         continue
       }
-      const availableDownloads = (fileLike.downloads || []).filter((u) => isAllowInModrinthModpack(u, strictModeInModrinth))
+      const availableDownloads = (fileLike.downloads || []).filter((u) =>
+        isAllowInModrinthModpack(u, strictModeInModrinth),
+      )
       if (availableDownloads.length > 0) {
         entries.push({ path: file.path, linked: true })
       } else {
@@ -434,7 +451,10 @@ export class ModpackService extends AbstractService implements IModpackService {
     if (pending.length > 0) {
       const modrinthClient = await this.app.registry.get(ModrinthV2Client)
       const result = await modrinthClient
-        .getProjectVersionsByHash(pending.map((p) => p.sha1), 'sha1')
+        .getProjectVersionsByHash(
+          pending.map((p) => p.sha1),
+          'sha1',
+        )
         .catch(() => ({}) as Record<string, { files: Array<{ hashes: { sha1: string } }> }>)
       for (const p of pending) {
         const version = result[p.sha1]
@@ -475,7 +495,9 @@ export class ModpackService extends AbstractService implements IModpackService {
     const metadata = await this.instanceService.getInstanceModpackMetadata(instancePath)
     const previousFiles = metadata?.modrinth.lastPublishedFiles ?? []
     const isRelevant = (path: string) =>
-      path.startsWith('mods/') || path.startsWith('resourcepacks/') || path.startsWith('shaderpacks/')
+      path.startsWith('mods/') ||
+      path.startsWith('resourcepacks/') ||
+      path.startsWith('shaderpacks/')
 
     const currentSet = new Set(files.map((f) => f.path).filter(isRelevant))
     const previousSet = new Set(previousFiles.filter(isRelevant))
@@ -574,14 +596,22 @@ export class ModpackService extends AbstractService implements IModpackService {
     const sanitizedName = filenamify(name, { replacement: '_' })
     const sanitizedVersion = filenamify(version, { replacement: '_' })
     const curseforgeZip = emitCurseforge ? new ZipFile() : undefined
-    const curseforgeZipPath = emitCurseforge ? join(parentDir, `${sanitizedName}-${sanitizedVersion}.zip`) : ''
+    const curseforgeZipPath = emitCurseforge
+      ? join(parentDir, `${sanitizedName}-${sanitizedVersion}.zip`)
+      : ''
     const hasCurseforgeServerPack = !!emitCurseforge && files.some(isServerOnlyExportFile)
     const curseforgeServerZip = hasCurseforgeServerPack ? new ZipFile() : undefined
-    const curseforgeServerZipPath = hasCurseforgeServerPack ? join(parentDir, `${sanitizedName}-server-${sanitizedVersion}.zip`) : ''
+    const curseforgeServerZipPath = hasCurseforgeServerPack
+      ? join(parentDir, `${sanitizedName}-server-${sanitizedVersion}.zip`)
+      : ''
     const modrinthZip = emitModrinth ? new ZipFile() : undefined
-    const modrinthZipPath = emitModrinth ? join(parentDir, `${sanitizedName}-${sanitizedVersion}.mrpack`) : ''
+    const modrinthZipPath = emitModrinth
+      ? join(parentDir, `${sanitizedName}-${sanitizedVersion}.mrpack`)
+      : ''
     const offlineZip = emitOffline ? new ZipFile() : undefined
-    const offlineZipPath = emitOffline ? join(parentDir, `${sanitizedName}-${sanitizedVersion}-offline.zip`) : ''
+    const offlineZipPath = emitOffline
+      ? join(parentDir, `${sanitizedName}-${sanitizedVersion}-offline.zip`)
+      : ''
 
     curseforgeZip?.addEmptyDirectory('overrides')
     modrinthZip?.addEmptyDirectory('overrides')
@@ -595,7 +625,8 @@ export class ModpackService extends AbstractService implements IModpackService {
     const backfillCurseforge: { filePath: string; relativePath: string; sha1: string }[] = []
     const lockHashLookup = await this.getInstanceLockLookup(instancePath)
 
-    const lookupFile = (filePath: string) => this.lookupExportFile(instancePath, filePath, lockHashLookup, emitModrinth, emitCurseforge)
+    const lookupFile = (filePath: string) =>
+      this.lookupExportFile(instancePath, filePath, lockHashLookup, emitModrinth, emitCurseforge)
 
     if (offlineZip) {
       const versionService = await this.app.registry.get(VersionService)
@@ -603,7 +634,11 @@ export class ModpackService extends AbstractService implements IModpackService {
       await exportOfflineModpack(offlineZip, this.getPath(), resolved)
     }
 
-    const addAsOverride = (src: string, path: string, env?: ExportModpackOptions['files'][number]['env']) => {
+    const addAsOverride = (
+      src: string,
+      path: string,
+      env?: ExportModpackOptions['files'][number]['env'],
+    ) => {
       addExportFileAsOverride(
         { curseforge: curseforgeZip, curseforgeServer: curseforgeServerZip, modrinth: modrinthZip },
         src,
@@ -821,7 +856,12 @@ export class ModpackService extends AbstractService implements IModpackService {
         await writeZipFile(curseforgeZip, curseforgeZipPath, task.controller.signal, tracker)
       }
       if (curseforgeServerZip) {
-        await writeZipFile(curseforgeServerZip, curseforgeServerZipPath, task.controller.signal, tracker)
+        await writeZipFile(
+          curseforgeServerZip,
+          curseforgeServerZipPath,
+          task.controller.signal,
+          tracker,
+        )
       }
       if (modrinthZip) {
         await writeZipFile(modrinthZip, modrinthZipPath, task.controller.signal, tracker)
@@ -856,15 +896,28 @@ export class ModpackService extends AbstractService implements IModpackService {
     const icon = options.iconPath
       ? {
           fileName: basename(options.iconPath),
-          data: new Blob([await readFile(options.iconPath)], { type: getImageMimeType(options.iconPath) }),
+          data: new Blob([await readFile(options.iconPath)], {
+            type: getImageMimeType(options.iconPath),
+          }),
         }
       : undefined
     const { requested_status: ignoredRequestedStatus, ...draftProject } = options.project
-    const requestedStatus = options.requestedStatus ?? (ignoredRequestedStatus === 'approved' || ignoredRequestedStatus === 'unlisted' || ignoredRequestedStatus === 'private' ? ignoredRequestedStatus : undefined)
-    const project = await this.callAuthenticatedModrinth((client) => client.createProject({
-      ...draftProject,
-      status: 'draft',
-    }, icon))
+    const requestedStatus =
+      options.requestedStatus ??
+      (ignoredRequestedStatus === 'approved' ||
+      ignoredRequestedStatus === 'unlisted' ||
+      ignoredRequestedStatus === 'private'
+        ? ignoredRequestedStatus
+        : undefined)
+    const project = await this.callAuthenticatedModrinth((client) =>
+      client.createProject(
+        {
+          ...draftProject,
+          status: 'draft',
+        },
+        icon,
+      ),
+    )
     const metadata = await this.instanceService.getInstanceModpackMetadata(options.instancePath)
     await this.instanceService.setInstanceModpackMetadata(options.instancePath, {
       ...(metadata ?? createDefaultModpackMetadata()),
@@ -880,11 +933,16 @@ export class ModpackService extends AbstractService implements IModpackService {
   async bindModrinthProject(instancePath: string, projectId: string) {
     const instance = this.instanceService.state.all[instancePath]
     if (!instance) throw new TypeError(`Cannot bind project to unmanaged instance ${instancePath}`)
-    const [project, user, members] = await this.callAuthenticatedModrinth((client) => Promise.all([
-      client.getProject(projectId), client.getAuthenticatedUser(), client.getProjectTeamMembers(projectId),
-    ]))
+    const [project, user, members] = await this.callAuthenticatedModrinth((client) =>
+      Promise.all([
+        client.getProject(projectId),
+        client.getAuthenticatedUser(),
+        client.getProjectTeamMembers(projectId),
+      ]),
+    )
     const membership = members.find((member) => member.user.id === user.id && member.accepted)
-    if (!membership || (membership.permissions & 1) === 0) throw new TypeError(`Current Modrinth account cannot upload versions to project ${projectId}`)
+    if (!membership || (membership.permissions & 1) === 0)
+      throw new TypeError(`Current Modrinth account cannot upload versions to project ${projectId}`)
     const metadata = await this.instanceService.getInstanceModpackMetadata(instancePath)
     await this.instanceService.setInstanceModpackMetadata(instancePath, {
       ...(metadata ?? createDefaultModpackMetadata()),
@@ -895,7 +953,8 @@ export class ModpackService extends AbstractService implements IModpackService {
 
   async unbindModrinthProject(instancePath: string) {
     const instance = this.instanceService.state.all[instancePath]
-    if (!instance) throw new TypeError(`Cannot unbind project from unmanaged instance ${instancePath}`)
+    if (!instance)
+      throw new TypeError(`Cannot unbind project from unmanaged instance ${instancePath}`)
     const metadata = await this.instanceService.getInstanceModpackMetadata(instancePath)
     if (!metadata?.modrinth.projectId) return
     const defaults = createDefaultModpackMetadata()
@@ -915,21 +974,30 @@ export class ModpackService extends AbstractService implements IModpackService {
     if (!metadata || metadata.modrinth.projectId !== options.projectId) {
       throw new TypeError(`Modrinth project ${options.projectId} is not bound to this instance`)
     }
-    await this.callAuthenticatedModrinth((client) => client.updateProject(options.projectId, options.project))
+    await this.callAuthenticatedModrinth((client) =>
+      client.updateProject(options.projectId, options.project),
+    )
     if (options.iconPath) {
-      const icon = new Blob([await readFile(options.iconPath)], { type: getImageMimeType(options.iconPath) })
-      await this.callAuthenticatedModrinth((client) => client.updateProjectIcon(options.projectId, icon, extname(options.iconPath!)))
+      const icon = new Blob([await readFile(options.iconPath)], {
+        type: getImageMimeType(options.iconPath),
+      })
+      await this.callAuthenticatedModrinth((client) =>
+        client.updateProjectIcon(options.projectId, icon, extname(options.iconPath!)),
+      )
     }
     return await this.callAuthenticatedModrinth((client) => client.getProject(options.projectId))
   }
 
   private async requireBoundModrinthProject(instancePath: string, projectId: string) {
     const metadata = await this.instanceService.getInstanceModpackMetadata(instancePath)
-    if (!metadata || metadata.modrinth.projectId !== projectId) throw new TypeError(`Modrinth project ${projectId} is not bound to this instance`)
+    if (!metadata || metadata.modrinth.projectId !== projectId)
+      throw new TypeError(`Modrinth project ${projectId} is not bound to this instance`)
     return await this.app.registry.get(ModrinthV2Client)
   }
 
-  private async callAuthenticatedModrinth<T>(action: (client: ModrinthV2Client) => Promise<T>): Promise<T> {
+  private async callAuthenticatedModrinth<T>(
+    action: (client: ModrinthV2Client) => Promise<T>,
+  ): Promise<T> {
     const client = await this.app.registry.get(ModrinthV2Client)
     try {
       return await action(client)
@@ -949,14 +1017,21 @@ export class ModpackService extends AbstractService implements IModpackService {
   private throwModrinthApiError(error: unknown): never {
     if (error instanceof ModerinthApiError) {
       let payload: { error?: string; description?: string } = {}
-      try { payload = JSON.parse(error.body) } catch { }
+      try {
+        payload = JSON.parse(error.body)
+      } catch {}
       const description = payload.description || payload.error || error.message
-      throw new AnyError('ModrinthApiError', description, { cause: error }, {
-        status: error.status,
+      throw new AnyError(
+        'ModrinthApiError',
         description,
-        error: payload.error,
-        url: error.url,
-      })
+        { cause: error },
+        {
+          status: error.status,
+          description,
+          error: payload.error,
+          url: error.url,
+        },
+      )
     }
     throw error
   }
@@ -965,9 +1040,11 @@ export class ModpackService extends AbstractService implements IModpackService {
     const metadata = await this.instanceService.getInstanceModpackMetadata(instancePath)
     const requestedStatus = metadata?.modrinth.pendingProjectStatus
     if (!metadata || !requestedStatus) return
-    await this.callAuthenticatedModrinth((client) => client.updateProject(projectId, {
-      requested_status: requestedStatus,
-    }))
+    await this.callAuthenticatedModrinth((client) =>
+      client.updateProject(projectId, {
+        requested_status: requestedStatus,
+      }),
+    )
     await this.instanceService.setInstanceModpackMetadata(instancePath, {
       ...metadata,
       modrinth: {
@@ -979,20 +1056,33 @@ export class ModpackService extends AbstractService implements IModpackService {
 
   async addModrinthGalleryImage(options: AddModrinthGalleryImageOptions) {
     await this.requireBoundModrinthProject(options.instancePath, options.projectId)
-    const image = new Blob([await readFile(options.imagePath)], { type: getImageMimeType(options.imagePath) })
-    await this.callAuthenticatedModrinth((client) => client.addProjectGalleryImage(options.projectId, image, extname(options.imagePath), options))
+    const image = new Blob([await readFile(options.imagePath)], {
+      type: getImageMimeType(options.imagePath),
+    })
+    await this.callAuthenticatedModrinth((client) =>
+      client.addProjectGalleryImage(options.projectId, image, extname(options.imagePath), options),
+    )
     return await this.callAuthenticatedModrinth((client) => client.getProject(options.projectId))
   }
 
-  async updateModrinthGalleryImage(instancePath: string, projectId: string, imageUrl: string, data: { featured?: boolean; title?: string; description?: string; ordering?: number }) {
+  async updateModrinthGalleryImage(
+    instancePath: string,
+    projectId: string,
+    imageUrl: string,
+    data: { featured?: boolean; title?: string; description?: string; ordering?: number },
+  ) {
     await this.requireBoundModrinthProject(instancePath, projectId)
-    await this.callAuthenticatedModrinth((client) => client.updateProjectGalleryImage(projectId, imageUrl, data))
+    await this.callAuthenticatedModrinth((client) =>
+      client.updateProjectGalleryImage(projectId, imageUrl, data),
+    )
     return await this.callAuthenticatedModrinth((client) => client.getProject(projectId))
   }
 
   async deleteModrinthGalleryImage(instancePath: string, projectId: string, imageUrl: string) {
     await this.requireBoundModrinthProject(instancePath, projectId)
-    await this.callAuthenticatedModrinth((client) => client.deleteProjectGalleryImage(projectId, imageUrl))
+    await this.callAuthenticatedModrinth((client) =>
+      client.deleteProjectGalleryImage(projectId, imageUrl),
+    )
     return await this.callAuthenticatedModrinth((client) => client.getProject(projectId))
   }
 
@@ -1002,13 +1092,17 @@ export class ModpackService extends AbstractService implements IModpackService {
     if (!instance) {
       throw new TypeError(`Cannot publish unmanaged instance ${options.instancePath}`)
     }
-    const privateFile = options.files.find((file) => isPrivateModrinthPath(file.path) || isPrivateModrinthPath(file.source || ''))
+    const privateFile = options.files.find(
+      (file) => isPrivateModrinthPath(file.path) || isPrivateModrinthPath(file.source || ''),
+    )
     if (privateFile) {
       throw new TypeError(`Sensitive file cannot be published: ${privateFile.path}`)
     }
 
     let projectId = 'id' in options.project ? options.project.id : ''
-    const previousMetadata = await this.instanceService.getInstanceModpackMetadata(options.instancePath)
+    const previousMetadata = await this.instanceService.getInstanceModpackMetadata(
+      options.instancePath,
+    )
     if (!projectId && previousMetadata?.modrinth.projectId) {
       projectId = previousMetadata.modrinth.projectId
     }
@@ -1020,7 +1114,9 @@ export class ModpackService extends AbstractService implements IModpackService {
             data: new Blob([await readFile(options.project.iconPath)]),
           }
         : undefined
-      const project = await this.callAuthenticatedModrinth((client) => client.createProject(projectToCreate, icon))
+      const project = await this.callAuthenticatedModrinth((client) =>
+        client.createProject(projectToCreate, icon),
+      )
       projectId = project.id
       await this.instanceService.setInstanceModpackMetadata(options.instancePath, {
         ...(previousMetadata ?? {
@@ -1064,20 +1160,28 @@ export class ModpackService extends AbstractService implements IModpackService {
     }
 
     if ('id' in options.project) {
-      const [user, members] = await this.callAuthenticatedModrinth((client) => Promise.all([
-        client.getAuthenticatedUser(),
-        client.getProjectTeamMembers(projectId),
-      ]))
+      const [user, members] = await this.callAuthenticatedModrinth((client) =>
+        Promise.all([client.getAuthenticatedUser(), client.getProjectTeamMembers(projectId)]),
+      )
       const membership = members.find((member) => member.user.id === user.id && member.accepted)
       if (!membership || (membership.permissions & 1) === 0) {
-        throw new TypeError(`Current Modrinth account cannot upload versions to project ${projectId}`)
+        throw new TypeError(
+          `Current Modrinth account cannot upload versions to project ${projectId}`,
+        )
       }
     }
 
-    const existingVersions = await this.callAuthenticatedModrinth((client) => client.getProjectVersions(projectId))
-    const existing = existingVersions.find((version) => version.version_number === options.release.version_number)
+    const existingVersions = await this.callAuthenticatedModrinth((client) =>
+      client.getProjectVersions(projectId),
+    )
+    const existing = existingVersions.find(
+      (version) => version.version_number === options.release.version_number,
+    )
     if (existing) {
-      if (previousMetadata?.modrinth.pendingProjectStatus && previousMetadata.modrinth.lastVersionId === existing.id) {
+      if (
+        previousMetadata?.modrinth.pendingProjectStatus &&
+        previousMetadata.modrinth.lastVersionId === existing.id
+      ) {
         await this.applyPendingModrinthProjectStatus(options.instancePath, projectId)
         return {
           projectId,
@@ -1085,7 +1189,9 @@ export class ModpackService extends AbstractService implements IModpackService {
           artifacts: previousMetadata.modrinth.artifacts,
         }
       }
-      throw new TypeError(`Modrinth version ${options.release.version_number} already exists (${existing.id})`)
+      throw new TypeError(
+        `Modrinth version ${options.release.version_number} already exists (${existing.id})`,
+      )
     }
 
     const archiveDirectory = join(
@@ -1095,12 +1201,11 @@ export class ModpackService extends AbstractService implements IModpackService {
       options.release.version_number,
     )
     await ensureDir(archiveDirectory)
-    const profiles: Array<Exclude<ModrinthPackProfile, 'split'>> = options.profile === 'split'
-      ? ['universal', 'client', 'server']
-      : [options.profile]
+    const profiles: Array<Exclude<ModrinthPackProfile, 'split'>> =
+      options.profile === 'split' ? ['universal', 'client', 'server'] : [options.profile]
     const artifacts: PublishModrinthResult['artifacts'] = []
-    const selectedFiles = options.files.filter(file =>
-      !isPrivateModrinthPath(file.path) && !isPrivateModrinthPath(file.source || ''),
+    const selectedFiles = options.files.filter(
+      (file) => !isPrivateModrinthPath(file.path) && !isPrivateModrinthPath(file.source || ''),
     )
 
     for (const profile of profiles) {
@@ -1122,21 +1227,35 @@ export class ModpackService extends AbstractService implements IModpackService {
       artifacts.push({ profile, path: result.modrinth })
     }
 
-    const uploadFiles: ModrinthUploadFile[] = await Promise.all(artifacts.map(async (artifact) => ({
-      partName: artifact.profile,
-      fileName: basename(artifact.path),
-      data: new Blob([await readFile(artifact.path)]),
-    })))
-    const primaryFile = options.profile === 'client' ? 'client' : options.profile === 'server' ? 'server' : 'universal'
-    const changelog = options.profile === 'split'
-      ? `${options.release.changelog || ''}\n\nFiles:\n- ${options.name}-${options.version}.mrpack: universal client/server pack\n- ${options.name}-client-${options.version}.mrpack: client-only pack\n- ${options.name}-server-${options.version}.mrpack: dedicated-server-only pack`.trim()
-      : options.release.changelog
-    const version = await this.callAuthenticatedModrinth((client) => client.createVersion({
-      ...options.release,
-      changelog,
-      project_id: projectId,
-      status: 'draft',
-    }, uploadFiles, primaryFile))
+    const uploadFiles: ModrinthUploadFile[] = await Promise.all(
+      artifacts.map(async (artifact) => ({
+        partName: artifact.profile,
+        fileName: basename(artifact.path),
+        data: new Blob([await readFile(artifact.path)]),
+      })),
+    )
+    const primaryFile =
+      options.profile === 'client'
+        ? 'client'
+        : options.profile === 'server'
+          ? 'server'
+          : 'universal'
+    const changelog =
+      options.profile === 'split'
+        ? `${options.release.changelog || ''}\n\nFiles:\n- ${options.name}-${options.version}.mrpack: universal client/server pack\n- ${options.name}-client-${options.version}.mrpack: client-only pack\n- ${options.name}-server-${options.version}.mrpack: dedicated-server-only pack`.trim()
+        : options.release.changelog
+    const version = await this.callAuthenticatedModrinth((client) =>
+      client.createVersion(
+        {
+          ...options.release,
+          changelog,
+          project_id: projectId,
+          status: 'draft',
+        },
+        uploadFiles,
+        primaryFile,
+      ),
+    )
 
     const metadata = await this.instanceService.getInstanceModpackMetadata(options.instancePath)
     if (metadata) {
@@ -1165,7 +1284,10 @@ export class ModpackService extends AbstractService implements IModpackService {
     await this.requireBoundModrinthProject(options.instancePath, options.projectId)
     await this.callAuthenticatedModrinth(async (client) => {
       const project = await client.getProject(options.projectId)
-      const hasPublicationTarget = project.requested_status === 'approved' || project.requested_status === 'unlisted' || project.requested_status === 'private'
+      const hasPublicationTarget =
+        project.requested_status === 'approved' ||
+        project.requested_status === 'unlisted' ||
+        project.requested_status === 'private'
       if (project.status === 'draft' && !hasPublicationTarget) {
         await client.updateProject(options.projectId, { requested_status: 'approved' })
       }
@@ -1268,7 +1390,9 @@ export class ModpackService extends AbstractService implements IModpackService {
         // telemetry (issue #1469 — 79 users in 0.56.4, ~all .rar /
         // .rar.zip / corrupted Forge installers).
         if (e?.name === 'InvalidZipFile' || e?.name === 'InvalidZipFileError') {
-          throw new ModpackException({ type: 'invalidModpack', path: modpackFile }, undefined, { cause: e })
+          throw new ModpackException({ type: 'invalidModpack', path: modpackFile }, undefined, {
+            cause: e,
+          })
         }
         throw e
       })
@@ -1295,11 +1419,15 @@ export class ModpackService extends AbstractService implements IModpackService {
 
       let mmcVersionId: string | undefined
       if (isMMCModpackManifest(manifest)) {
-        mmcVersionId = await this.#applyMmcStandaloneVersion(manifest, zip.file, entries, instance.name)
-          .catch((e) => {
-            this.warn(new AnyError('OpenModpackError', `Failed to apply MultiMC patches: ${e}`))
-            return undefined
-          })
+        mmcVersionId = await this.#applyMmcStandaloneVersion(
+          manifest,
+          zip.file,
+          entries,
+          instance.name,
+        ).catch((e) => {
+          this.warn(new AnyError('OpenModpackError', `Failed to apply MultiMC patches: ${e}`))
+          return undefined
+        })
       }
 
       let xmclCache: SelectedXMCLFields | undefined
@@ -1421,7 +1549,8 @@ export class ModpackService extends AbstractService implements IModpackService {
           entries.find(
             (e) =>
               e.fileName.startsWith(prefix) &&
-              (e.fileName.endsWith(`/libraries/${fileName}`) || e.fileName.endsWith(`/${fileName}`)),
+              (e.fileName.endsWith(`/libraries/${fileName}`) ||
+                e.fileName.endsWith(`/${fileName}`)),
           )
         if (!entry) {
           this.warn(`Cannot find local library ${libName} (${fileName}) in the MultiMC modpack`)

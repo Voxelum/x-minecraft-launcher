@@ -1,93 +1,50 @@
 import { useIntervalFn } from '@vueuse/core'
-import { GameProfileAndTexture, PeerServiceKey, PeerState } from '@xmcl/runtime-api'
-import { InjectionKey, Ref } from 'vue'
-import { useDialog } from './dialog'
-import { AddInstanceDialogKey } from './instanceTemplates'
+import { GameProfileAndTexture, InstanceManifestServiceKey, LaunchServiceKey, Multiplayer, PeerServiceKey, PeerState, SharedState } from '@xmcl/runtime-api'
+import { InjectionKey, onScopeDispose, Ref } from 'vue'
+import { resolveLanSharingInstance } from '@/util/multiplayerTogether'
+import { createScopedInstanceManifest, getInstanceSharingRevisionSource, useInstanceSharingPreferences } from './instanceSharing'
 import { useNotifier } from './notifier'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
 import { useState } from './syncableState'
 
-export const kPeerShared: InjectionKey<ReturnType<typeof usePeerConnections>> = Symbol('PeerState')
+type PeerStateRef = Ref<SharedState<PeerState> | undefined>
 
-export function usePeerConnections() {
+function usePeerStateRef() {
   const { getPeerState } = useService(PeerServiceKey)
-  const { state } = useState(getPeerState, PeerState)
-  const { notify } = useNotifier()
-  const { t } = useI18n()
-  const { show: showShareInstance } = useDialog('share-instance')
-  const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
-  watch(state, (s) => {
-    if (!s) return
-    s.subscribe('connectionShareManifest', ({ id, manifest }) => {
-      const info = s.connections.find((c) => c.id === id)
-      const name = info?.userInfo.name || id.substring(0, 6)
-      const show = () => {
-        if (manifest) {
-          notify({
-            icon: info?.userInfo.avatar,
-            title: t('multiplayer.sharingNotificationTitle'),
-            body: t('multiplayer.sharingNotificationBody', { name }),
-            operations: [
-              {
-                text: t('shared.download'),
-                icon: 'download',
-                handler() {
-                  showShareInstance(manifest)
-                },
-              },
-              {
-                text: t('instances.add'),
-                icon: 'add',
-                color: 'primary',
-                handler() {
-                  showAddInstance({
-                    format: 'manifest',
-                    manifest,
-                  })
-                },
-              },
-            ],
-          })
-        }
-      }
-      if (!document.hasFocus()) {
-        windowController.flashFrame()
-        window.addEventListener(
-          'focus',
-          () => {
-            show()
-          },
-          { once: true },
-        )
-      } else {
-        show()
-      }
-    })
-  })
-  return {
-    connections: computed(() => state.value?.connections ?? []),
-  }
+  return useState(getPeerState, PeerState).state
 }
 
 export const kPeerState: InjectionKey<ReturnType<typeof usePeerState>> = Symbol('PeerState')
 
-export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
-  const { getPeerState, exposePort, unexposePort } = useService(PeerServiceKey)
+export function usePeerState(
+  gameProfile: Ref<GameProfileAndTexture>,
+  multiplayer: Multiplayer,
+  sharedState?: PeerStateRef,
+  refreshNat: () => Promise<void> = async () => {},
+  selectedInstancePath: Ref<string> = ref(''),
+) {
+  const { exposePort, unexposePort, shareInstance } = useService(PeerServiceKey)
+  const launchService = useService(LaunchServiceKey)
+  const { getGameProcesses } = launchService
+  const { getInstanceManifest } = useService(InstanceManifestServiceKey)
+  const { notify } = useNotifier()
+  const { t } = useI18n()
+  const sharingPreferences = useInstanceSharingPreferences()
   const {
     initiate,
     setRemoteDescription,
     drop,
-    refreshNat,
     isReady,
     setUserInfo,
     leaveGroup,
     createGroup,
     joinGroup,
     transferGroupMaster,
+    refreshIceServers,
   } = multiplayer
 
-  const { state } = useState(getPeerState, PeerState)
+  const state = sharedState ?? usePeerStateRef()
 
   const refreshNatType = useRefreshable(() => refreshNat())
 
@@ -135,27 +92,97 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
   const error = computed(() => state.value?.groupError)
   const turnservers = computed(() => state.value?.turnservers || {})
 
-  let buffer = [] as Array<{ port: number; session: string }>
-  const otherExposedPorts = ref([] as Array<{ port: number; user: string }>)
-  multiplayer.on('lan', (msg) => {
-    buffer.push(msg)
+  const runningClientInstances = ref<string[]>([])
+  const refreshRunningClientInstances = async () => {
+    runningClientInstances.value = Array.from(new Set(
+      (await getGameProcesses())
+        .filter((process) => process.side === 'client')
+        .map((process) => process.options.gameDirectory),
+    ))
+  }
+  const onMinecraftProcessChanged = () => { void refreshRunningClientInstances() }
+  launchService.on('minecraft-start', onMinecraftProcessChanged)
+  launchService.on('minecraft-exit', onMinecraftProcessChanged)
+  void refreshRunningClientInstances()
+  onScopeDispose(() => {
+    launchService.removeListener('minecraft-start', onMinecraftProcessChanged)
+    launchService.removeListener('minecraft-exit', onMinecraftProcessChanged)
   })
 
-  useIntervalFn(() => {
-    if (buffer.length > 0) {
-      const b = buffer
-      otherExposedPorts.value = b.map(({ port, session }) => {
-        return {
-          port,
-          user:
-            connections.value.find((c) => c.id === session)?.userInfo.name ||
-            session.substring(0, 6),
-        }
-      })
-      buffer = []
-    } else if (otherExposedPorts.value.length > 0) {
-      otherExposedPorts.value = []
+  let autoSharing: Promise<void> | undefined
+  let autoSharedManifestSignature = ''
+  let warnedRunningInstances = ''
+  const autoShareLanInstance = async () => {
+    const processes = await getGameProcesses()
+    const instancePath = resolveLanSharingInstance(processes, selectedInstancePath.value)
+    if (!instancePath) {
+      const runningInstances = Array.from(new Set(
+        processes
+          .filter((process) => process.side === 'client')
+          .map((process) => process.options.gameDirectory),
+      )).sort()
+      const signature = runningInstances.join('\0')
+      if (runningInstances.length > 1 && signature !== warnedRunningInstances) {
+        warnedRunningInstances = signature
+        notify({
+          level: 'warning',
+          title: t('multiplayer.share'),
+          body: t('multiplayer.autoShareAmbiguous'),
+        })
+      } else if (runningInstances.length <= 1) {
+        warnedRunningInstances = ''
+      }
+      return
     }
+    const fullManifest = await getInstanceManifest({ path: instancePath })
+    const manifest = await createScopedInstanceManifest(
+      fullManifest,
+      sharingPreferences.getFiles(instancePath, fullManifest.files),
+    )
+    const signature = `${instancePath}\0${getInstanceSharingRevisionSource(manifest)}`
+    if (signature === autoSharedManifestSignature) return
+    if (groupRole.value !== 'master') return
+    const currentProcesses = await getGameProcesses()
+    if (!currentProcesses.some((process) => process.side === 'client' && process.options.gameDirectory === instancePath)) return
+    await shareInstance({ manifest, instancePath })
+    autoSharedManifestSignature = signature
+    warnedRunningInstances = ''
+  }
+  const onLocalLan = () => {
+    if (groupRole.value !== 'master' || autoSharing) return
+    autoSharing = autoShareLanInstance()
+      .catch((error) => console.warn('Failed to automatically share the LAN instance', error))
+      .finally(() => { autoSharing = undefined })
+  }
+  multiplayer.on('local-lan', onLocalLan)
+  onScopeDispose(() => multiplayer.removeListener('local-lan', onLocalLan))
+
+  const otherExposedPorts = ref([] as Array<{
+    port: number
+    user: string
+    session: string
+    motd: string
+    lastSeen: number
+  }>)
+  const onLan = (msg: { port: number; session: string; motd: string }) => {
+    const server = {
+      ...msg,
+      user:
+        connections.value.find((connection) => connection.id === msg.session)?.userInfo.name ||
+        msg.session.substring(0, 6),
+      lastSeen: Date.now(),
+    }
+    otherExposedPorts.value = [
+      ...otherExposedPorts.value.filter(({ session }) => session !== msg.session),
+      server,
+    ]
+  }
+  multiplayer.on('lan', onLan)
+  onScopeDispose(() => multiplayer.removeListener('lan', onLan))
+
+  useIntervalFn(() => {
+    const active = otherExposedPorts.value.filter(({ lastSeen }) => Date.now() - lastSeen < 10_000)
+    if (active.length !== otherExposedPorts.value.length) otherExposedPorts.value = active
   }, 1000)
 
   function _setRemoteDescription(type: 'offer' | 'answer', description: string) {
@@ -191,12 +218,14 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
     groupPing,
     groupLastTimestamp,
     groupState,
+    runningClientInstances,
     connections,
     drop,
     leaveGroup,
     createGroup,
     joinGroup,
     transferGroupMaster,
+    refreshIceServers,
     error,
   }
 }

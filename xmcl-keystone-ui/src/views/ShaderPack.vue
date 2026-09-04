@@ -84,16 +84,34 @@
           t('modInstall.search') }}
       </v-list-subheader>
       <ShaderPackItem
-        v-else
+        v-else-if="typeof item === 'object' && 'id' in item"
         :pack="(item as ShaderPackProject)"
         :selection-mode="selectionMode"
         :selected="selected"
         :dense="denseView"
         :item-height="itemHeight"
+        :indent="isLocalView && isInGroup((item as ShaderPackProject).installed?.[0]?.fileName)"
+        :indent-color="getGroupColor((item as ShaderPackProject).installed?.[0]?.fileName)"
         :has-update="hasUpdate"
         :checked="checked"
         :install="onInstallProject"
+        :get-context-menu-items="getGroupingContextMenuItems"
         @click="on.click"
+      />
+      <ModGroupEntryItem
+        v-else-if="typeof item === 'object'"
+        :key="`folder-${item.name}-${item.projects.length}`"
+        :items="item.projects"
+        :height="itemHeight"
+        :name="item.name"
+        :expanded="!groupCollapsedState[item.name]"
+        :dense="denseView"
+        :count-label="shaderPackCountLabel"
+        :toggle-all="false"
+        :group-rules="false"
+        @ungroup="ungroup(item.name)"
+        @expand="onGroupCollapse(item as ProjectGroup<InstanceShaderFile>, $event)"
+        @setting="renameGroup(item.name, $event.name)"
       />
     </template>
     <template #content="{ selectedModrinthId, selectedCurseforgeId, selectedItem }">
@@ -287,28 +305,34 @@ import AppCollectionInstallAll from '@/components/AppCollectionInstallAll.vue'
 import { useModUpgrade } from '@/composables/modUpgrade'
 import { useLocalStorage } from '@vueuse/core'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
-import { useSimpleDialog } from '@/composables/dialog'
+import { useDialog, useSimpleDialog } from '@/composables/dialog'
 import { getDropFilePaths, useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { InstanceShaderFile, kInstanceShaderPacks } from '@/composables/instanceShaderPack'
+import { ProjectGroup, useModGroups } from '@/composables/modGroup'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
 import { kCompact } from '@/composables/scrollTop'
 import { useService } from '@/composables/service'
-import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
+import { ShaderPackProject, useShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { BuiltinImages } from '@/constant'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
+import { ContextMenuItem } from '@/composables/contextMenu'
+import { flattenVisibleModGroups } from '@/util/modGroupFilter'
 import { InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
 import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
+import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
+import ModGroupEntryItem from './ModGroupEntryItem.vue'
 
+const searchModel = injection(kSearchModel)
 const {
   gameVersion,
   modrinthCategories,
@@ -320,7 +344,10 @@ const {
   sort: marketSort,
   source,
   selectedCollection,
-} = injection(kSearchModel)
+} = searchModel
+
+const { runtime, path } = injection(kInstance)
+const { shaderPacks, revalidate } = injection(kInstanceShaderPacks)
 
 const {
   error,
@@ -330,9 +357,22 @@ const {
   items: originalItems,
   collectionItems,
   sortBy,
-} = injection(kShaderPackSearch)
+} = useShaderPackSearch(shaderPacks, injection(kModrinthAuthenticatedAPI), searchModel)
 
-const { runtime, path } = injection(kInstance)
+const isLocalView = computed(() => currentView.value === 'local')
+const {
+  localGroupedItems,
+  groupCollapsedState,
+  renameGroup,
+  ungroup,
+  group,
+  addToGroup,
+  isInGroup,
+  getGroupColor,
+  getContextMenuItemsForGroup,
+  groupsRaw,
+  groupModCounts,
+} = useModGroups(isLocalView, path, originalItems, sortBy, 'shaderpacks')
 
 const { model, show: showInstallShaderWizard, confirm } = useSimpleDialog<(bypass: boolean) => void>((f) => {
   console.log('skip')
@@ -346,8 +386,6 @@ const shouldDisableOculus = computed(() => !!runtime.value.fabricLoader || !!run
 const shouldDisableOptifine = computed(() => !!runtime.value.fabricLoader || !!runtime.value.neoForged || !!runtime.value.quiltLoader)
 
 effect()
-
-const { shaderPacks, revalidate } = injection(kInstanceShaderPacks)
 
 const { refresh, refreshing, upgrade, plans, upgradePolicy, upgrading } = useModUpgrade(
   path,
@@ -373,6 +411,9 @@ const all = computed(() => {
   const result: (string | ProjectEntry)[] = []
 
   if (currentView.value === 'local') {
+    if (Object.keys(groupsRaw.value).length > 0) {
+      return flattenVisibleModGroups(localGroupedItems.value, () => true, groupCollapsedState.value)
+    }
     const {
       enabled,
       disabled,
@@ -419,6 +460,7 @@ const all = computed(() => {
 const toggleCategory = useToggleCategories(modrinthCategories)
 
 const { t } = useI18n()
+const shaderPackCountLabel = (count: number) => `${count} ${t('shaderPack.name', count)}`
 
 const isShaderPackProject = (p: ProjectEntry<ProjectFile> | undefined): p is ShaderPackProject => !!p
 
@@ -515,6 +557,41 @@ function onUpdateSelectionMode(v: boolean) {
 watch(currentView, (view) => {
   if (view !== 'local') onUpdateSelectionMode(false)
 })
+
+const { show: showGroupSelectDialog } = useDialog('mod-group-select')
+
+function showGroupDialog(fileNames: string[]) {
+  showGroupSelectDialog({
+    groups: groupsRaw.value,
+    groupModCounts: groupModCounts.value,
+    countLabel: shaderPackCountLabel,
+    onSelect: (groupName: string | null, newName?: string) => {
+      if (groupName) addToGroup(fileNames, groupName)
+      else if (newName) group(fileNames, newName)
+    },
+  })
+}
+
+function getGroupingContextMenuItems(project: ShaderPackProject) {
+  const selected = new Set(Object.keys(selections.value).filter(key => selections.value[key]))
+  if (selected.size <= 1) return getContextMenuItemsForGroup(project, showGroupDialog)
+
+  const fileNames = originalItems.value
+    .filter(item => selected.has(item.id))
+    .map(item => item.installed[0]?.fileName)
+    .filter((name): name is string => !!name)
+  const result: ContextMenuItem[] = [{
+    text: t('mod.group'),
+    icon: 'label',
+    section: 'group',
+    onClick: () => showGroupDialog(fileNames),
+  }]
+  return result
+}
+
+function onGroupCollapse(group: ProjectGroup<InstanceShaderFile>, expanded: boolean) {
+  groupCollapsedState.value = { ...groupCollapsedState.value, [group.name]: expanded }
+}
 
 const onInstallProject = useProjectInstall(
   runtime,

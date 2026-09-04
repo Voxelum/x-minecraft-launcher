@@ -89,12 +89,12 @@ export interface BlueprintMetadata {
   /**
    * Block state palette; index 0 is air.
    */
-  palette: { name: string; properties?: Record<string, string> }[]
+  palette?: { name: string; properties?: Record<string, string> }[]
   /**
    * Flattened `[x, y, z, paletteIndex]` quadruples for every non-air block,
    * used by the 3D preview.
    */
-  voxels: number[]
+  voxels?: number[]
 }
 
 export interface ResourceMetadata {

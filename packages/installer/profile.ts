@@ -2,20 +2,20 @@ import {
   LibraryInfo,
   MinecraftFolder,
   MinecraftLocation,
+  ResolvedLibrary,
   Version,
   Version as VersionJson,
 } from '@xmcl/core'
-import { filterEntries, open, readEntry, walkEntriesGenerator } from '@xmcl/unzip'
-import { spawn } from 'child_process'
-import { readFile, writeFile } from 'fs/promises'
-import { delimiter, dirname, join, relative, sep } from 'path'
+import { open, readEntry, walkEntriesGenerator } from '@xmcl/unzip'
+import { stat } from 'fs/promises'
+import { delimiter, join } from 'path'
 import { ZipFile } from '@xmcl/yauzl'
 import { diagnoseFile, Issue } from './diagnose'
-import { LibrariesTrackerEvents, LibraryOptions, installResolvedLibraries } from './libraries'
-import { convertClasspathToMaven, parseManifest } from './manifest'
+import type { InstallJavaTask, InstallOutput, JavaCommand } from './installManifest'
+import { LibrariesTrackerEvents, LibraryOptions } from './libraries'
 import { InstallSideOption } from './minecraft'
-import { Tracker, onProgress } from './tracker'
-import { ProcessExitError, SpawnJavaOptions, WithDiagnose, missing, waitProcess } from './utils'
+import { Tracker } from './tracker'
+import { SpawnJavaOptions, WithDiagnose } from './utils'
 
 export interface ProfileTrackerEvents {
   postprocess: { count: number }
@@ -34,6 +34,8 @@ export interface PostProcessor {
   outputs?: { [key: string]: string }
   sides?: Array<'client' | 'server'>
 }
+
+export const POST_PROCESS_BATCH_PROTOCOL = 'isolated-classloader-v1'
 
 export interface InstallProfile {
   spec?: number
@@ -90,6 +92,13 @@ export interface PostProcessOptions extends SpawnJavaOptions, WithDiagnose {
     postprocess: () => Promise<void>,
   ) => Promise<void>
 
+  executePlan?: (
+    processors: PostProcessor[],
+    libraries: ResolvedLibrary[],
+    minecraftFolder: MinecraftFolder,
+    options: PostProcessOptions,
+  ) => Promise<void>
+
   tracker?: Tracker<ProfileTrackerEvents>
   /**
    * Custom checksum function for file validation
@@ -124,6 +133,7 @@ export async function diagnoseProfile(
   installProfile: InstallProfile,
   minecraftLocation: MinecraftLocation,
   side: 'client' | 'server' = 'client',
+  options?: { signal?: AbortSignal; checksum?: (file: string, algorithm: string) => Promise<string>; timestamp?: number },
 ): Promise<boolean> {
   const mc = MinecraftFolder.from(minecraftLocation)
   const processors: PostProcessor[] = resolveProcessors(side, installProfile, mc)
@@ -131,19 +141,22 @@ export async function diagnoseProfile(
   const issues = await Promise.all(
     Version.resolveLibraries(installProfile.libraries).map(async (lib) => {
       const libPath = mc.getLibraryByPath(lib.download.path)
-      return await diagnoseFile({
-        role: 'library',
-        file: libPath,
-        expectedChecksum: lib.download.sha1,
-        hint: 'Problem on install_profile! Please consider to use Installer.installByProfile to fix.',
-      })
+      return await diagnoseFile(
+        {
+          role: 'library',
+          file: libPath,
+          expectedChecksum: lib.download.sha1,
+          hint: 'Reinstall this installer profile.',
+        },
+        options,
+      )
     }),
   )
 
   for (const proc of processors) {
     if (proc.outputs) {
       for (const [file, checksum] of Object.entries(proc.outputs)) {
-        issues.push(await diagnoseProcessorOutput(file, checksum.replace(/'/g, '')))
+        issues.push(await diagnoseProcessorOutput(file, checksum.replace(/'/g, ''), options))
       }
     }
   }
@@ -246,217 +259,87 @@ export function resolveProcessors(
   return processors
 }
 
-/**
- * Install by install profile. The install profile usually contains some preprocess should run before installing dependencies.
- *
- * @param installProfile The install profile
- * @param minecraft The minecraft location
- * @param options The options to install
- * @throws {@link PostProcessError}
- */
-export async function installByProfile(
-  installProfile: InstallProfile,
-  minecraft: MinecraftLocation,
-  options: InstallProfileOption = {},
-): Promise<void> {
-  const minecraftFolder = MinecraftFolder.from(minecraft)
-
-  const side = options.side === 'server' ? 'server' : 'client'
-
-  const processor = resolveProcessors(side, installProfile, minecraftFolder)
-
-  const installRequiredLibs = VersionJson.resolveLibraries(installProfile.libraries)
-
-  await installResolvedLibraries(installRequiredLibs, minecraft, options)
-
-  if (options.postprocess) {
-    await options.postprocess(processor, minecraftFolder, options, () =>
-      postsrocess(processor, minecraftFolder, options),
-    )
-  } else {
-    await postsrocess(processor, minecraftFolder, options)
+export async function resolvePostProcessJavaTask(options: {
+  id: string
+  processors: PostProcessor[]
+  minecraft: MinecraftLocation
+  java: string
+  batch?: {
+    classpath: string
+    cwd?: string
+    javaArgs?: string[]
+  }
+  javaArgs?: string[]
+  dependsOn?: string[]
+  metadata?: Record<string, string | number | boolean>
+}): Promise<InstallJavaTask> {
+  const minecraft = MinecraftFolder.from(options.minecraft)
+  const commands: JavaCommand[] = []
+  const batchInvocations: string[] = []
+  for (const processor of options.processors) {
+    const jar = minecraft.getLibraryByPath(LibraryInfo.resolve(processor.jar).path)
+    const classpathEntries = [...processor.classpath, processor.jar]
+      .map(LibraryInfo.resolve)
+      .map((library) => minecraft.getLibraryByPath(library.path))
+    const mainClass = await findMainClass(jar)
+    commands.push({
+      executable: options.java,
+      args: [
+        ...(options.javaArgs ?? []),
+        '-cp',
+        classpathEntries.join(delimiter),
+        mainClass,
+        ...processor.args,
+      ],
+    })
+    batchInvocations.push(Buffer.from([
+      mainClass,
+      String(classpathEntries.length),
+      ...classpathEntries,
+      ...processor.args,
+    ].join('\0')).toString('base64'))
   }
 
-  if (side === 'client') {
-    const versionJson: VersionJson = await readFile(
-      minecraftFolder.getVersionJson(installProfile.version),
-    )
-      .then((b) => b.toString())
-      .then(JSON.parse)
-    const libraries = VersionJson.resolveLibraries(versionJson.libraries)
-    await installResolvedLibraries(libraries, minecraft, options)
-  } else {
-    const argsText = process.platform === 'win32' ? 'win_args.txt' : 'unix_args.txt'
-
-    if (!installProfile.processors) {
-      return
+  const outputs = new Map<string, InstallOutput>()
+  for (const processor of options.processors) {
+    for (const [path, rawChecksum] of Object.entries(processor.outputs ?? {})) {
+      const mappings = /mappings\.tsrg$/i.test(path)
+      const checksum = mappings ? '' : rawChecksum.replace(/'/g, '')
+      outputs.set(path, {
+        path,
+        checksum: checksum ? { algorithm: 'sha1', value: checksum } : undefined,
+        validator: !mappings && /\.(jar|zip)$/i.test(path) ? 'zip' : 'file',
+      })
     }
+  }
 
-    let txtPath: string | undefined
-    for (const p of installProfile.processors) {
-      txtPath = p.args.find((a) => a.startsWith('{ROOT}') && a.endsWith(argsText))
-      if (txtPath) {
-        txtPath = txtPath.replace('{ROOT}', minecraftFolder.root)
-        if (await missing(txtPath)) {
-          throw new Error(`No ${argsText} found in the forge jar`)
-        }
-        break
-      }
-    }
-    const serverProfile: Version = {
-      id: installProfile.version,
-      libraries: [],
-      type: 'release',
-      arguments: {
-        game: [],
-        jvm: [],
-      },
-      releaseTime: new Date().toJSON(),
-      time: new Date().toJSON(),
-      minimumLauncherVersion: 13,
-      mainClass: '',
-      inheritsFrom: installProfile.minecraft,
-    }
-
-    let jar: string | undefined
-
-    if (!txtPath) {
-      // legacy
-      const info = LibraryInfo.resolve(installProfile.path)
-      const libPath = minecraftFolder.getLibraryByPath(info.path)
-      jar = libPath
-    } else {
-      const content = await readFile(txtPath, 'utf-8')
-      jar = parseArgumentsFromArgsFile(content, dirname(txtPath), serverProfile)
-    }
-
-    if (jar) {
-      await parseJar(minecraftFolder, jar, installProfile, serverProfile)
-    }
-
-    // NOTE: the NeoForge `:universal` artifact is intentionally NOT added to
-    // the server libraries. It is already downloaded via
-    // `installProfile.libraries` (so it lives in the library directory), and
-    // the official server `-classpath` does NOT list it — FML discovers both
-    // `:universal` AND the patched minecraft jar at runtime via
-    // `-DlibraryDirectory`. If `:universal` is placed on the server classpath,
-    // FML's `RequiredSystemFiles` check picks it as the minecraft system jar,
-    // fails to find `net/minecraft/DetectedVersion.class` inside it, and aborts
-    // with "The patched Minecraft jar is missing".
-    const neoFormVersion = serverProfile.arguments?.game.find(
-      (v, i, arr) => arr[i - 1] === '--fml.neoFormVersion',
-    )
-    if (neoFormVersion) {
-      // The neoForm `:extra` (minecraft resources) and `:srg` (SRG-mapped
-      // server) jars are PROCESSOR OUTPUTS generated locally during
-      // postprocess — they are never published to maven. The legacy MCP
-      // pipeline emits them, but modern NeoForge (the unified
-      // `PROCESS_MINECRAFT_JAR` task) produces only the patched jar and never
-      // these. Reference them only when they actually exist on disk, otherwise
-      // the dependency install tries to download them and 404s.
-      const candidates = [
-        `net.minecraft:server:${installProfile.minecraft}-${neoFormVersion}:extra`,
-        `net.minecraft:server:${installProfile.minecraft}-${neoFormVersion}:srg`,
-      ]
-      for (const name of candidates) {
-        const libPath = minecraftFolder.getLibraryByPath(LibraryInfo.resolve(name).path)
-        if (!(await missing(libPath))) {
-          serverProfile.libraries.push({ name })
-        }
-      }
-    }
-
-    const forgeShim = serverProfile.libraries.find(
-      (l) => l.name.startsWith('net.minecraftforge:forge') && l.name.endsWith(':shim'),
-    )
-    if (forgeShim) {
-      let zip: ZipFile | undefined
-      try {
-        zip = await open(minecraftFolder.getLibraryByPath(LibraryInfo.resolve(forgeShim.name).path))
-        for await (const entry of walkEntriesGenerator(zip)) {
-          if (entry.fileName === 'bootstrap-shim.list') {
-            const content = await readEntry(zip, entry).then((e) =>
-              e
-                .toString()
-                .split('\n')
-                .map((v) => v.trim())
-                .filter((v) => v)
-                .map((l) => {
-                  const [sha1, name, path] = l.split('\t')
-                  return { name }
-                }),
-            )
-            serverProfile.libraries.push(...content)
-            break
-          }
-        }
-      } finally {
-        zip?.close()
-      }
-    }
-
-    if (!serverProfile.mainClass) {
-      throw new PostProcessNoMainClassError(jar!)
-    }
-
-    // Record the full server launch classpath as server.json libraries.
-    //
-    // The launch rebuilds `-cp` purely from server.json libraries
-    // (`Version.parseServer` does NOT inherit the vanilla version), so every jar
-    // on the classpath must be listed here or the server dies with
-    // `ClassNotFoundException` / `NoClassDefFoundError` (e.g.
-    // `net.neoforged.fml.startup.Server` from `loader-*.jar`, or
-    // `org.apache.logging.log4j...` from `log4j-core-*.jar`).
-    //
-    // The authoritative, complete list is the `-classpath` token parsed from
-    // win_args.txt — the same one the official `run.sh`/`run.bat` use. Most of
-    // these libraries are NOT downloadable from maven: the vanilla libs (log4j,
-    // netty, guava, authlib, ...) are EXTRACTED from the minecraft server
-    // "bundler" jar by the `PROCESS_MINECRAFT_JAR` processor
-    // (`--extract-libraries-to libraries/`), which has already run by this point,
-    // so they exist on disk and the dependency install skips them. Where a
-    // library is declared in the installer's version.json we reuse that entry
-    // (it carries the proper download url for the FancyModLoader stack);
-    // otherwise we add a bare name and rely on the on-disk file.
-    const clientVersionJson: VersionJson | undefined = await readFile(
-      minecraftFolder.getVersionJson(installProfile.version),
-    )
-      .then((b) => JSON.parse(b.toString()) as VersionJson)
-      .catch(() => undefined)
-    const versionLibByName = new Map<string, Version['libraries'][number]>()
-    for (const lib of clientVersionJson?.libraries ?? []) {
-      versionLibByName.set(lib.name, lib)
-    }
-
-    const jvmArgs = serverProfile.arguments!.jvm
-    const cpIndex = jvmArgs.findIndex((a) => a === '-classpath' || a === '-cp')
-    const cpValue = cpIndex !== -1 ? jvmArgs[cpIndex + 1] : undefined
-    if (typeof cpValue === 'string') {
-      // Drop the verbatim `-classpath <...>` from the jvm args. Its entries are
-      // paths relative to the minecraft root, but the server process runs from
-      // the `server/` working directory, so they would not resolve. The
-      // launcher rebuilds an absolute `-cp` from the libraries below instead.
-      jvmArgs.splice(cpIndex, 2)
-      const existingNames = new Set(serverProfile.libraries.map((l) => l.name))
-      for (const entry of cpValue.split(delimiter)) {
-        if (!entry) continue
-        const name = classpathEntryToLibraryName(entry)
-        if (!name || existingNames.has(name)) continue
-        existingNames.add(name)
-        serverProfile.libraries.push(versionLibByName.get(name) ?? { name })
-      }
-    }
-
-    await writeFile(
-      join(minecraftFolder.getVersionRoot(serverProfile.id), 'server.json'),
-      JSON.stringify(serverProfile, null, 4),
-    )
-
-    const resolvedLibraries = VersionJson.resolveLibraries(serverProfile.libraries)
-    await installResolvedLibraries(resolvedLibraries, minecraft, options)
+  return {
+    id: options.id,
+    type: 'java',
+    strategies: [
+      ...(options.batch ? [[{
+        executable: options.java,
+        args: [
+          ...(options.batch.javaArgs ?? []),
+          '-cp',
+          options.batch.classpath,
+          'MultiJarLauncher',
+          ...batchInvocations,
+        ],
+        cwd: options.batch.cwd,
+      }]] : []),
+      commands,
+    ],
+    outputs: [...outputs.values()],
+    dependsOn: options.dependsOn,
+    metadata: {
+      telemetryKind: 'postprocess',
+      protocolVersion: options.batch ? POST_PROCESS_BATCH_PROTOCOL : 'direct',
+      processorCount: options.processors.length,
+      ...options.metadata,
+    },
   }
 }
-
 /**
  * Convert a single `-classpath` entry of a forge/neoforge server args file
  * (a path relative to the minecraft root, e.g.
@@ -558,44 +441,6 @@ export function parseArgumentsFromArgsFile(content: string, parentDir: string, s
   return jar
 }
 
-async function parseJar(
-  minecraftFolder: MinecraftFolder,
-  jar: string,
-  installProfile: InstallProfile,
-  serverVersion: Version,
-) {
-  let zip: ZipFile | undefined
-  try {
-    const jsonContent: Version = JSON.parse(
-      await readFile(minecraftFolder.getVersionJson(installProfile.version), 'utf-8'),
-    )
-    zip = await open(jar, { lazyEntries: true, autoClose: false })
-    const [entry] = await filterEntries(zip, ['META-INF/MANIFEST.MF'])
-    if (entry) {
-      const manifestContent = await readEntry(zip, entry).then((b) => b.toString())
-      const result = parseManifest(manifestContent)
-      serverVersion.mainClass = result.mainClass
-      const cp = [
-        ...result.classPath,
-        relative(minecraftFolder.libraries, jar).replaceAll(sep, '/'),
-      ]
-      serverVersion.libraries.push(
-        ...jsonContent.libraries.filter((l) => !l.name.endsWith(':client')),
-      )
-      const mavenPaths = convertClasspathToMaven(cp)
-      for (const name of mavenPaths) {
-        if (serverVersion.libraries.find((l) => l.name === name)) continue
-        if (name.startsWith(':')) continue
-        serverVersion.libraries.push({ name })
-      }
-    }
-  } catch (e) {
-    throw new PostProcessBadJarError(jar, e as any)
-  } finally {
-    zip?.close()
-  }
-}
-
 export class PostProcessBadJarError extends Error {
   constructor(
     public jarPath: string,
@@ -636,10 +481,6 @@ export class PostProcessFailedError extends Error {
     this.exitCode = options?.exitCode
     this.processSignal = options?.signal
     this.processorOutput = options?.output
-    // Commands include user-local paths and make Application Insights group
-    // every failure as a unique problemId. Runtime recovery still reads these
-    // fields directly; keeping them non-enumerable only removes them from
-    // serialized telemetry.
     Object.defineProperties(this, {
       jarPath: { enumerable: false },
       commands: { enumerable: false },
@@ -662,12 +503,6 @@ export class PostProcessValidationFailedError extends PostProcessFailedError {
   }
 
   name = 'PostProcessValidationFailedError'
-}
-
-function sanitizePostProcessOutput(output: string) {
-  return output
-    .replace(/(?:[A-Za-z]:[\\/]|\/(?:home|Users)\/)[^\r\n]*/g, '<path>')
-    .slice(0, 4096)
 }
 
 async function findMainClass(lib: string) {
@@ -737,7 +572,7 @@ export async function isEmptyOrCorruptArchive(file: string, signal?: AbortSignal
 async function diagnoseProcessorOutput(
   file: string,
   expectedChecksum: string,
-  options?: { signal?: AbortSignal; checksum?: (file: string, algorithm: string) => Promise<string> },
+  options?: { signal?: AbortSignal; checksum?: (file: string, algorithm: string) => Promise<string>; timestamp?: number },
 ): Promise<Issue | undefined> {
   const isMappings = /mappings\.tsrg$/i.test(file)
   const issue = await diagnoseFile(
@@ -751,6 +586,10 @@ async function diagnoseProcessorOutput(
   )
   if (issue) return issue
   if (!isMappings && expectedChecksum === '' && /\.(jar|zip)$/i.test(file)) {
+    if (options?.timestamp !== undefined) {
+      const fileStat = await stat(file).catch(() => undefined)
+      if (fileStat && fileStat.mtimeMs <= options.timestamp) return undefined
+    }
     if (await isEmptyOrCorruptArchive(file, options?.signal)) {
       return {
         type: 'corrupted',
@@ -771,7 +610,7 @@ async function diagnoseProcessorOutput(
  */
 export async function diagnoseProcessorOutputs(
   processors: PostProcessor[],
-  options?: { signal?: AbortSignal; checksum?: (file: string, algorithm: string) => Promise<string> },
+  options?: { signal?: AbortSignal; checksum?: (file: string, algorithm: string) => Promise<string>; timestamp?: number },
 ): Promise<Issue[]> {
   const issues: Issue[] = []
   for (const proc of processors) {
@@ -782,88 +621,4 @@ export async function diagnoseProcessorOutputs(
     }
   }
   return issues
-}
-
-async function postProcessOne(
-  mc: MinecraftFolder,
-  proc: PostProcessor,
-  options: PostProcessOptions,
-) {
-  if (await options.handler?.(proc).catch(() => false)) {
-    return
-  }
-
-  const jarRealPath = mc.getLibraryByPath(LibraryInfo.resolve(proc.jar).path)
-  const mainClass = await findMainClass(jarRealPath)
-  const cp = [...proc.classpath, proc.jar]
-    .map(LibraryInfo.resolve)
-    .map((p) => mc.getLibraryByPath(p.path))
-    .join(delimiter)
-  const cmd = ['-cp', cp, mainClass, ...proc.args]
-  try {
-    await new Promise((resolve, reject) => {
-      const process = (options?.spawn ?? spawn)(options.java ?? 'java', cmd, {
-        signal: options.signal,
-      })
-      waitProcess(process).then(resolve, reject)
-    })
-  } catch (e) {
-    if (e instanceof ProcessExitError || (e instanceof Error && e.name === 'Error')) {
-      throw new PostProcessFailedError(
-        proc.jar,
-        [options.java ?? 'java', ...cmd],
-        sanitizePostProcessOutput(e.message),
-        e instanceof ProcessExitError
-          ? {
-              exitCode: e.exitCode,
-              signal: e.signal,
-              output: sanitizePostProcessOutput(e.stderr),
-            }
-          : undefined,
-      )
-    }
-    throw e
-  }
-
-  // Validate the processor outputs after running it. A processor that exits
-  // with code 0 but writes an empty/corrupt output (e.g. binarypatcher fed a
-  // corrupt lzma emitting a 22-byte empty client jar) must fail loudly here
-  // instead of being cached as a successful install.
-  if (proc.outputs) {
-    for (const [file, expected] of Object.entries(proc.outputs)) {
-      const expectedChecksum = expected.replace(/'/g, '')
-      const issue = await diagnoseProcessorOutput(file, expectedChecksum, {
-        signal: options.signal,
-        checksum: options.checksum,
-      })
-      if (issue) {
-        throw new PostProcessValidationFailedError(
-          proc.jar,
-          [options.java ?? 'java', ...cmd],
-          `Post processor ${proc.jar} produced ${issue.type} output ${file}` +
-            (expectedChecksum
-              ? ` (expected sha1 ${expectedChecksum}, got ${issue.receivedChecksum || 'none'})`
-              : ' (empty or unreadable archive)'),
-          file,
-          expectedChecksum,
-          issue.receivedChecksum,
-        )
-      }
-
-    }
-  }
-}
-
-async function postsrocess(
-  processors: PostProcessor[],
-  minecraft: MinecraftFolder,
-  options: PostProcessOptions,
-): Promise<void> {
-  const tracker = onProgress(options.tracker, 'postprocess', { count: processors.length })
-  tracker.total = processors.length
-  for (let i = 0; i < processors.length; i++) {
-    const proc = processors[i]
-    await postProcessOne(minecraft, proc, options)
-    tracker.progress = i
-  }
 }

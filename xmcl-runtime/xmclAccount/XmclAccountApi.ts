@@ -6,8 +6,21 @@ import type {
   XmclMergePreview,
   XmclOAuthProvider,
   XmclSessionSummary,
+  XmclTogetherAllowance,
+  XmclTogetherAllowances,
+  XmclTogetherBalance,
+  XmclTogetherOffer,
+  XmclTogetherOrder,
+  XmclTogetherOverview,
+  XmclTogetherSubscription,
+  XmclTogetherTrial,
 } from '@xmcl/runtime-api'
-import { createXmclDpopProof, generateXmclDpopKey, type XmclDpopKey } from './XmclAccountDpop'
+import {
+  createXmclDpopProof,
+  generateXmclDpopKey,
+  XmclDpopClock,
+  type XmclDpopKey,
+} from './XmclAccountDpop'
 
 export const M1_LOCAL_CONTRACT_VERSION = 'm1-local-proposal-2026-07-22+shared-v1'
 export const XMCL_SHARED_CONTRACT_VERSION = 'shared/v1'
@@ -73,13 +86,45 @@ type BaseUrlProvider = string | (() => Promise<string>)
 
 export class XmclAccountApi {
   private dpopKeyPromise: Promise<XmclDpopKey> | undefined
+  private readonly dpopClock = new XmclDpopClock()
+  private dpopClockSyncPromise: Promise<void> | undefined
 
   constructor(
     private readonly fetch: FetchLike,
     private readonly baseUrl: BaseUrlProvider = 'https://api.xmcl.app',
     private readonly dpopKeyProvider: () => Promise<XmclDpopKey> | XmclDpopKey = () =>
       generateXmclDpopKey(),
+    private readonly togetherBaseUrl: BaseUrlProvider = baseUrl,
   ) {}
+
+  async synchronizeDpopClock(): Promise<void> {
+    if (this.dpopClock.synchronized) return
+    if (this.dpopClockSyncPromise) return this.dpopClockSyncPromise
+    const operation = (async () => {
+      const baseUrl = typeof this.baseUrl === 'function' ? await this.baseUrl() : this.baseUrl
+      const startedAt = performance.now()
+      const response = await this.fetch(new URL('/', baseUrl), {
+        method: 'HEAD',
+        cache: 'no-store',
+        signal: AbortSignal.timeout(5_000),
+      })
+      if (!this.dpopClock.observe(response.headers.get('date'), startedAt)) {
+        throw new Error('xmcl_account_server_time_unavailable')
+      }
+    })()
+    this.dpopClockSyncPromise = operation
+    try {
+      await operation
+    } finally {
+      if (this.dpopClockSyncPromise === operation) {
+        this.dpopClockSyncPromise = undefined
+      }
+    }
+  }
+
+  getServerNow() {
+    return this.dpopClock.now()
+  }
 
   private getDpopKey() {
     if (!this.dpopKeyPromise) {
@@ -308,16 +353,147 @@ export class XmclAccountApi {
     )
   }
 
+  async getTogetherOverview(credential: XmclSessionCredential): Promise<XmclTogetherOverview> {
+    const [offer, trial, subscription, allowances, balance] = await Promise.all([
+      this.request<unknown>(
+        '/v1/xmcl-plus/offer',
+        { method: 'GET' },
+        credential,
+        undefined,
+        this.togetherBaseUrl,
+      ),
+      this.request<unknown>(
+        '/v1/xmcl-plus/trial',
+        { method: 'GET' },
+        credential,
+        undefined,
+        this.togetherBaseUrl,
+      ).catch((error) => {
+        if (error instanceof XmclAccountApiError && error.status === 404) {
+          return {
+            status: 'unavailable',
+            durationSeconds: 7 * 24 * 60 * 60,
+            turnEgressBytes: 1_000_000_000,
+          }
+        }
+        throw error
+      }),
+      this.request<unknown>(
+        '/v1/xmcl-plus/status',
+        { method: 'GET' },
+        credential,
+        undefined,
+        this.togetherBaseUrl,
+      ),
+      this.request<unknown>(
+        '/v1/xmcl-plus/allowances',
+        { method: 'GET' },
+        credential,
+        undefined,
+        this.togetherBaseUrl,
+      ),
+      this.request<unknown>(
+        '/v1/billing/balance',
+        { method: 'GET' },
+        credential,
+        undefined,
+        this.togetherBaseUrl,
+      ),
+    ])
+    return {
+      offer: parseTogetherOffer(offer),
+      trial: parseTogetherTrial(trial),
+      subscription: subscription === null ? null : parseTogetherSubscription(subscription),
+      allowances: parseTogetherAllowances(allowances),
+      balance: parseTogetherBalance(balance),
+    }
+  }
+
+  async claimTogetherTrial(credential: XmclSessionCredential): Promise<XmclTogetherTrial> {
+    return parseTogetherTrial(
+      await this.request<unknown>(
+        '/v1/xmcl-plus/trial',
+        { method: 'POST' },
+        credential,
+        crypto.randomUUID(),
+        this.togetherBaseUrl,
+      ),
+    )
+  }
+
+  async createTogetherOrder(
+    credential: XmclSessionCredential,
+    amountMinor: number,
+  ): Promise<XmclTogetherOrder> {
+    if (!Number.isSafeInteger(amountMinor) || amountMinor <= 0) {
+      throw new RangeError('Together top-up amount must be a positive safe integer')
+    }
+    return parseTogetherOrder(
+      await this.request<unknown>(
+        '/v1/billing/waffo/orders',
+        {
+          method: 'POST',
+          body: JSON.stringify({ amountMinor }),
+        },
+        credential,
+        crypto.randomUUID(),
+        this.togetherBaseUrl,
+      ),
+    )
+  }
+
+  async getTogetherOrder(
+    credential: XmclSessionCredential,
+    orderId: string,
+  ): Promise<XmclTogetherOrder> {
+    if (!orderId) throw new RangeError('Together order id is required')
+    return parseTogetherOrder(
+      await this.request<unknown>(
+        `/v1/billing/orders/${encodeURIComponent(orderId)}`,
+        { method: 'GET' },
+        credential,
+        undefined,
+        this.togetherBaseUrl,
+      ),
+    )
+  }
+
+  async subscribeTogether(credential: XmclSessionCredential): Promise<XmclTogetherSubscription> {
+    return parseTogetherSubscription(
+      await this.request<unknown>(
+        '/v1/xmcl-plus/subscribe',
+        { method: 'POST' },
+        credential,
+        crypto.randomUUID(),
+        this.togetherBaseUrl,
+      ),
+    )
+  }
+
+  async cancelTogether(credential: XmclSessionCredential): Promise<XmclTogetherSubscription> {
+    return parseTogetherSubscription(
+      await this.request<unknown>(
+        '/v1/xmcl-plus/cancel',
+        { method: 'POST' },
+        credential,
+        crypto.randomUUID(),
+        this.togetherBaseUrl,
+      ),
+    )
+  }
+
   private async request<T = unknown>(
     path: string,
     init: RequestInit,
     credential?: XmclSessionCredential,
     idempotencyKey?: string,
+    baseUrlProvider: BaseUrlProvider = this.baseUrl,
   ): Promise<T> {
     const headers = new Headers(init.headers)
     headers.set('Accept', 'application/json')
     if (init.body) headers.set('Content-Type', 'application/json')
-    const baseUrl = typeof this.baseUrl === 'function' ? await this.baseUrl() : this.baseUrl
+    const baseUrl =
+      typeof baseUrlProvider === 'function' ? await baseUrlProvider() : baseUrlProvider
     const url = new URL(path, baseUrl)
     if (credential) {
       const tokenType = credential.tokenType === 'DPoP' ? 'DPoP' : 'Bearer'
@@ -330,16 +506,19 @@ export class XmclAccountApi {
             init.method ?? 'GET',
             url,
             url.pathname === '/v1/sessions/refresh' ? undefined : credential.accessToken,
+            this.dpopClock.now(),
           ),
         )
       }
     }
     if (idempotencyKey) headers.set('Idempotency-Key', idempotencyKey)
 
+    const startedAt = performance.now()
     const response = await this.fetch(url, {
       ...init,
       headers,
     })
+    this.dpopClock.observe(response.headers.get('date'), startedAt)
     if (!response.ok) {
       const text = await response.text()
       let body: ApiErrorBody = {}
@@ -419,6 +598,165 @@ function parseBackupStoragePolicy(value: unknown): XmclBackupStoragePolicy {
   return {
     freeBytes: 1_073_741_824,
     policyVersion: 1,
+  }
+}
+
+function parseTogetherMoney(value: unknown) {
+  if (
+    !isRecord(value) ||
+    typeof value.currency !== 'string' ||
+    !/^[A-Z]{3}$/.test(value.currency) ||
+    !Number.isSafeInteger(value.amountMinor)
+  ) {
+    throw new TypeError('Invalid Together money response')
+  }
+  return { currency: value.currency, amountMinor: value.amountMinor }
+}
+
+function parseTogetherOffer(value: unknown): XmclTogetherOffer {
+  if (
+    !isRecord(value) ||
+    value.offerId !== 'xmcl-plus' ||
+    typeof value.displayName !== 'string' ||
+    !Number.isSafeInteger(value.aiUnitsPerPeriod) ||
+    !Number.isSafeInteger(value.turnEgressBytesPerPeriod)
+  ) {
+    throw new TypeError('Invalid Together offer response')
+  }
+  return {
+    offerId: 'xmcl-plus',
+    displayName: value.displayName,
+    monthlyPrice: parseTogetherMoney(value.monthlyPrice),
+    aiUnitsPerPeriod: value.aiUnitsPerPeriod,
+    turnEgressBytesPerPeriod: value.turnEgressBytesPerPeriod,
+  }
+}
+
+function parseTogetherTrial(value: unknown): XmclTogetherTrial {
+  if (
+    !isRecord(value) ||
+    !['available', 'active', 'expired', 'unavailable'].includes(value.status) ||
+    !Number.isSafeInteger(value.durationSeconds) ||
+    !Number.isSafeInteger(value.turnEgressBytes) ||
+    (value.claimedAt !== undefined && typeof value.claimedAt !== 'string') ||
+    (value.expiresAt !== undefined && typeof value.expiresAt !== 'string')
+  ) {
+    throw new TypeError('Invalid Together trial response')
+  }
+  return {
+    status: value.status as XmclTogetherTrial['status'],
+    durationSeconds: value.durationSeconds,
+    turnEgressBytes: value.turnEgressBytes,
+    claimedAt: value.claimedAt,
+    expiresAt: value.expiresAt,
+  }
+}
+
+function parseTogetherSubscription(value: unknown): XmclTogetherSubscription {
+  if (
+    !isRecord(value) ||
+    typeof value.subscriptionId !== 'string' ||
+    typeof value.accountId !== 'string' ||
+    !['active', 'payment_due', 'cancelled'].includes(value.status) ||
+    typeof value.currentPeriodStartedAt !== 'string' ||
+    typeof value.currentPeriodEndsAt !== 'string' ||
+    typeof value.createdAt !== 'string' ||
+    typeof value.updatedAt !== 'string' ||
+    (value.cancelAtPeriodEnd !== undefined && value.cancelAtPeriodEnd !== true)
+  ) {
+    throw new TypeError('Invalid Together subscription response')
+  }
+  return {
+    subscriptionId: value.subscriptionId,
+    accountId: value.accountId,
+    status: value.status as XmclTogetherSubscription['status'],
+    currentPeriodStartedAt: value.currentPeriodStartedAt,
+    currentPeriodEndsAt: value.currentPeriodEndsAt,
+    createdAt: value.createdAt,
+    updatedAt: value.updatedAt,
+    cancelAtPeriodEnd: value.cancelAtPeriodEnd,
+  }
+}
+
+function parseTogetherAllowance(value: unknown): XmclTogetherAllowance {
+  if (
+    !isRecord(value) ||
+    !Number.isSafeInteger(value.included) ||
+    !Number.isSafeInteger(value.consumed) ||
+    !Number.isSafeInteger(value.remaining) ||
+    !['not_configured', 'active'].includes(value.meteringStatus as string)
+  ) {
+    throw new TypeError('Invalid Together allowance response')
+  }
+  return {
+    included: value.included as number,
+    consumed: value.consumed as number,
+    remaining: value.remaining as number,
+    meteringStatus: value.meteringStatus as XmclTogetherAllowance['meteringStatus'],
+  }
+}
+
+function parseTogetherAllowances(value: unknown): XmclTogetherAllowances {
+  if (!isRecord(value) || !Array.isArray(value.sources)) {
+    throw new TypeError('Invalid Together allowances response')
+  }
+  const sources = value.sources.map((source) => {
+    if (
+      !isRecord(source) ||
+      !['plus', 'shared_hosting'].includes(source.source as string) ||
+      typeof source.referenceId !== 'string' ||
+      !Number.isSafeInteger(source.aiUnits) ||
+      !Number.isSafeInteger(source.turnEgressBytes) ||
+      typeof source.periodStartedAt !== 'string' ||
+      typeof source.periodEndsAt !== 'string'
+    ) {
+      throw new TypeError('Invalid Together allowance source response')
+    }
+    return {
+      source: source.source as 'plus' | 'shared_hosting',
+      referenceId: source.referenceId,
+      aiUnits: source.aiUnits as number,
+      turnEgressBytes: source.turnEgressBytes as number,
+      periodStartedAt: source.periodStartedAt,
+      periodEndsAt: source.periodEndsAt,
+    }
+  })
+  return {
+    sources,
+    aiUnits: parseTogetherAllowance(value.aiUnits),
+    turnEgressBytes: parseTogetherAllowance(value.turnEgressBytes),
+  }
+}
+
+function parseTogetherBalance(value: unknown): XmclTogetherBalance {
+  if (!isRecord(value) || typeof value.accountId !== 'string') {
+    throw new TypeError('Invalid Together balance response')
+  }
+  return {
+    accountId: value.accountId,
+    available: parseTogetherMoney(value.available),
+    reserved: parseTogetherMoney(value.reserved),
+  }
+}
+
+function parseTogetherOrder(value: unknown): XmclTogetherOrder {
+  if (
+    !isRecord(value) ||
+    typeof value.orderId !== 'string' ||
+    !['pending', 'completed', 'failed'].includes(value.status) ||
+    (value.approvalUrl !== undefined && typeof value.approvalUrl !== 'string') ||
+    typeof value.createdAt !== 'string' ||
+    typeof value.updatedAt !== 'string'
+  ) {
+    throw new TypeError('Invalid Together order response')
+  }
+  return {
+    orderId: value.orderId,
+    cashAmount: parseTogetherMoney(value.cashAmount),
+    approvalUrl: value.approvalUrl,
+    status: value.status as XmclTogetherOrder['status'],
+    createdAt: value.createdAt,
+    updatedAt: value.updatedAt,
   }
 }
 

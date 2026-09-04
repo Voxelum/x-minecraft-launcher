@@ -11,6 +11,8 @@
     :draggable="draggable"
     :dense="dense"
     :height="itemHeight"
+    :indent="indent"
+    :indent-color="indentColor"
     :get-context-menu-items="isBuiltIn ? undefined : getContextMenuItems"
     :install="install"
     @drop="emit('drop', $event)"
@@ -84,6 +86,9 @@ const props = defineProps<{
   hasUpdate?: boolean
   dense?: boolean
   itemHeight?: number
+  indent?: boolean
+  indentColor?: string
+  getContextMenuItems?: (item: ResourcePackProject) => ContextMenuItem[]
   install: (p: ProjectEntry) => Promise<void>
 }>()
 
@@ -181,7 +186,7 @@ const getContextMenuItems = () => {
   //     icon: 'search',
   //   })
   // }
-  return all
+  return all.concat(props.getContextMenuItems?.(props.pack) ?? [])
 }
 
 </script>

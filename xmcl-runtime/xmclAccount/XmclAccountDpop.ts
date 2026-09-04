@@ -21,6 +21,31 @@ export interface XmclDpopKey {
   publicJwk: XmclDpopJwk
 }
 
+export class XmclDpopClock {
+  private serverTimeAtObservation: number | undefined
+  private observationTime: number | undefined
+
+  get synchronized() {
+    return this.serverTimeAtObservation !== undefined && this.observationTime !== undefined
+  }
+
+  observe(serverDate: string | null, requestStartedAt: number, observedAt = performance.now()) {
+    const serverTime = serverDate ? Date.parse(serverDate) : Number.NaN
+    if (!Number.isFinite(serverTime)) return false
+    const halfRoundTrip = Math.max(0, observedAt - requestStartedAt) / 2
+    this.serverTimeAtObservation = serverTime + halfRoundTrip
+    this.observationTime = observedAt
+    return true
+  }
+
+  now(observedAt = performance.now()) {
+    if (this.serverTimeAtObservation === undefined || this.observationTime === undefined) {
+      return Date.now()
+    }
+    return this.serverTimeAtObservation + Math.max(0, observedAt - this.observationTime)
+  }
+}
+
 export function generateXmclDpopKey(): XmclDpopKey {
   const { privateKey, publicKey } = generateKeyPairSync('ec', {
     namedCurve: 'prime256v1',
@@ -49,6 +74,7 @@ export function createXmclDpopProof(
   method: string,
   url: string | URL,
   accessToken?: string,
+  now = Date.now(),
 ): string {
   const normalizedUrl = new URL(url)
   normalizedUrl.search = ''
@@ -62,7 +88,7 @@ export function createXmclDpopProof(
     jti: randomUUID(),
     htm: method.toUpperCase(),
     htu: normalizedUrl.toString(),
-    iat: Math.floor(Date.now() / 1000),
+    iat: Math.floor(now / 1000),
   }
   if (accessToken !== undefined) {
     payload.ath = createHash('sha256').update(accessToken).digest('base64url')

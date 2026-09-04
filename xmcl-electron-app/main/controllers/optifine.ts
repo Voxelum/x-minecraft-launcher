@@ -1,14 +1,16 @@
 import { ElectronController } from '@/ElectronController'
 import optifinePreload from '@preload/optifine'
 import { OptifineVersion } from '@xmcl/runtime-api'
+import { AnyError } from '@xmcl/utils'
 import { BrowserWindow } from 'electron'
 import { Readable } from 'stream'
-import { setTimeout } from 'timers/promises'
+import { setTimeout as delay } from 'timers/promises'
 import type { Context } from '~/app'
 import { kGFW } from '~/infra'
 import { kOptifineInstaller } from '~/install'
 import { kSettings, shouldOverrideApiSet } from '~/settings'
 import { ControllerPlugin } from './plugin'
+import { resolveOptifineDownloadSource } from './optifineSource'
 
 const OPTIFINE_HOST = 'https://optifined.net'
 
@@ -32,7 +34,6 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
 
   const app = this.app
   const gfw = await this.app.registry.get(kGFW)
-  const shouldOverride = testShouldOverride()
   async function testShouldOverride() {
     const setting = await app.registry.get(kSettings)
     const isInside = (await gfw.signal) === 'cn'
@@ -47,10 +48,10 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
       pooled = win
       clearTimeout?.abort()
       clearTimeout = new AbortController()
-      setTimeout(60_000, undefined, { signal: clearTimeout.signal }).then(() => {
+      delay(60_000, undefined, { signal: clearTimeout.signal }).then(() => {
         pooled?.close()
         pooled = undefined
-      })
+      }).catch(() => undefined)
     }
   }
 
@@ -58,6 +59,8 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
     if (pooled) {
       const current = pooled
       pooled = undefined
+      clearTimeout?.abort()
+      clearTimeout = undefined
 
       return current
     }
@@ -79,56 +82,66 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
     return win
   }
 
+  function loadOptifinePage<T>(win: BrowserWindow, url: string, channel: string) {
+    return new Promise<T>((resolve, reject) => {
+      let settled = false
+      const complete = (result: { value: T } | { error: Error }) => {
+        if (settled) return
+        settled = true
+        globalThis.clearTimeout(timeout)
+        win.webContents.removeListener('ipc-message', onMessage)
+        win.webContents.removeListener('did-fail-load', onLoadFailure)
+        win.removeListener('closed', onClosed)
+        if ('value' in result) resolve(result.value)
+        else reject(result.error)
+      }
+      const onMessage = (_event: Electron.Event, received: string, ...args: unknown[]) => {
+        if (received === channel) complete({ value: args[0] as T })
+      }
+      const onLoadFailure = (
+        _event: Electron.Event,
+        code: number,
+        description: string,
+        _validatedUrl: string,
+        isMainFrame: boolean,
+      ) => {
+        if (isMainFrame) complete({ error: Object.assign(new Error(description), { code }) })
+      }
+      const onClosed = () => complete({ error: new Error('OptiFine resolver window was closed') })
+      const timeout = globalThis.setTimeout(() => {
+        complete({ error: new Error(`OptiFine resolver timed out after 15000ms: ${channel}`) })
+      }, 15_000)
+      win.webContents.on('ipc-message', onMessage)
+      win.webContents.on('did-fail-load', onLoadFailure)
+      win.once('closed', onClosed)
+      win.loadURL(url).catch((error) => complete({ error }))
+    })
+  }
+
   async function getDownloads() {
     const win = createBrowserWindow()
 
-    const versions = await new Promise<OptifineVersion[]>((resolve) => {
-      win.loadURL(`${OPTIFINE_HOST}/downloads`)
-      win.webContents.once('ipc-message', (ev, channel, ...args) => {
-        if (channel === 'optifine-downloads') {
-          resolve(args[0])
-        }
-      })
-      win.once('closed', () => {
-        resolve([])
-      })
-    })
-
-    poolWindow(win)
-
-    return versions
-  }
-
-  async function getDownloadUrl(version: OptifineVersion) {
-    const win = createBrowserWindow()
-
-    const fileName = version.patch.startsWith('pre')
-      ? `preview_OptiFine_${version.mcversion}_${version.type}_${version.patch}.jar`
-      : `OptiFine_${version.mcversion}_${version.type}_${version.patch}.jar`
-
-    const url = await new Promise<string>((resolve) => {
-      win.loadURL(`${OPTIFINE_HOST}/adloadx?f=${fileName}`)
-      win.webContents.once('ipc-message', (ev, channel, ...args) => {
-        if (channel === 'optifine-download') {
-          resolve(args[0])
-        }
-      })
-    })
-
-    poolWindow(win)
-
-    return url
+    try {
+      const versions = await loadOptifinePage<OptifineVersion[]>(
+        win,
+        `${OPTIFINE_HOST}/downloads`,
+        'optifine-downloads',
+      )
+      poolWindow(win)
+      return versions
+    } catch (error) {
+      win.close()
+      throw error
+    }
   }
 
   this.app.registry.register(kOptifineInstaller, async (version) => {
-    if (await shouldOverride) {
-      return getDownloadUrl(version)
-    }
-    let ver = version.mcversion
-    if (ver === '1.9' || ver === '1.8') {
-      ver += '.0'
-    }
-    return `https://bmclapi2.bangbang93.com/optifine/${ver}/${version.type}/${version.patch}`
+    const source = resolveOptifineDownloadSource(version, await testShouldOverride())
+    if (source.type === 'mirror') return source.url
+    throw new AnyError(
+      'OptifineNoMirrorError',
+      'OptiFine can only be downloaded from the BMCLAPI mirror, which is disabled by your API source preference.',
+    )
   })
 
   const fetchBmclList = async (ctx: Context) => {
@@ -143,49 +156,35 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
 
   this.app.protocol.registerHandler('https', async (ctx) => {
     if (ctx.request.url.toString() === 'https://bmclapi2.bangbang93.com/optifine/versionList') {
-      const tryScrape = async () => {
-        const result = await Promise.race([getDownloads(), setTimeout(15_000)])
-        return result && result.length > 0 ? result : undefined
-      }
+      const tryScrape = async () => getDownloads().then(
+        (result) => result.length > 0 ? result : undefined,
+        () => undefined,
+      )
 
-      if (await shouldOverride) {
-        const result = await tryScrape()
-        if (result) {
-          ctx.response.status = 200
-          ctx.response.headers = { 'Content-Type': 'application/json' }
-          ctx.response.body = JSON.stringify(result)
-          return
-        }
-        // Scrape failed — fall back to BMCL rather than returning a fake timeout.
+      if (await testShouldOverride()) {
         const resp = await fetchBmclList(ctx).catch(() => undefined)
-        if (resp) {
+        if (resp?.ok) {
           ctx.response.status = resp.status
           ctx.response.headers = resp.headers
           ctx.response.body = adaptWebBody(resp.body as any)
         } else {
-          ctx.response.status = 504
+          const result = await tryScrape()
+          ctx.response.status = result ? 200 : 504
           ctx.response.headers = { 'Content-Type': 'application/json' }
-          ctx.response.body = JSON.stringify({ error: 'Timeout' })
+          ctx.response.body = JSON.stringify(result ?? { error: 'Timeout' })
         }
         return
       }
 
-      const resp = await fetchBmclList(ctx)
-      if (resp.ok) {
-        ctx.response.status = resp.status
-        ctx.response.headers = resp.headers
-        ctx.response.body = adaptWebBody(resp.body as any)
-        return
-      }
       const result = await tryScrape()
       if (result) {
         ctx.response.status = 200
         ctx.response.headers = { 'Content-Type': 'application/json' }
         ctx.response.body = JSON.stringify(result)
       } else {
-        ctx.response.status = resp.status
-        ctx.response.headers = resp.headers
-        ctx.response.body = adaptWebBody(resp.body as any)
+        ctx.response.status = 504
+        ctx.response.headers = { 'Content-Type': 'application/json' }
+        ctx.response.body = JSON.stringify({ error: 'Timeout' })
       }
     }
   })

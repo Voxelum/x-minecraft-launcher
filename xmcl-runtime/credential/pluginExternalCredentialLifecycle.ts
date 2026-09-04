@@ -9,26 +9,20 @@ function isValidMicrosoftUser(user: UserProfile) {
 
 /**
  * Keeps Microsoft in the credential lifecycle without reading or copying the
- * opaque MSAL cache. Modrinth storage migration is initialized here as well.
+ * opaque MSAL cache.
  */
 export const pluginExternalCredentialLifecycle: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('ExternalCredentialLifecycle')
-  const credentials = app.registry.getOrCreate(ExternalCredentialService).then(async (service) => {
-    await service.initialize()
-    return service
-  })
-
-  void credentials.catch(() => {
-    logger.warn('Unable to initialize external credential lifecycle.')
-  })
-
   void app.registry
     .get(UserService)
-    .then(async (userService) => {
-      const service = await credentials
+    .then((userService) => {
       const notify = (user: UserProfile) => {
         if (isValidMicrosoftUser(user)) {
-          service.notifyMicrosoftCredentialChanged(user.id)
+          void app.registry.getOrCreate(ExternalCredentialService)
+            .then(service => service.notifyMicrosoftCredentialChanged(user.id))
+            .catch(() => {
+              logger.warn('Unable to notify Microsoft credential lifecycle event.')
+            })
         }
       }
       userService.on('user-login-success', notify)

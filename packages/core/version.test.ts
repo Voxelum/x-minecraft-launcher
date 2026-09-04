@@ -1,7 +1,7 @@
 import { join } from 'path'
 import { describe, expect, test } from 'vitest'
 import { getPlatform } from './platform'
-import { LibraryInfo, ResolvedLibrary, Version } from './version'
+import { isCorruptedVersionJsonError, isMissingVersionJsonError, LibraryInfo, ResolvedLibrary, Version } from './version'
 
 describe('Version', () => {
   describe('#resolveFromPath', () => {
@@ -426,6 +426,10 @@ describe('Version', () => {
         version: '1.12',
         path: join(mock, 'versions', '1.12', '1.12.json'),
       })
+    })
+    test('should recognize parse errors after IPC rehydration', () => {
+      expect(isMissingVersionJsonError(Object.assign(new Error(), { name: 'MissingVersionJson' }))).toBe(true)
+      expect(isCorruptedVersionJsonError(Object.assign(new Error(), { name: 'CorruptedVersionJson' }))).toBe(true)
     })
     test('should be able to parse extended profile for forge', async ({ mock }) => {
       const version = await Version.parse(mock, '1.7.10-Forge10.13.3.1400-1.7.10')

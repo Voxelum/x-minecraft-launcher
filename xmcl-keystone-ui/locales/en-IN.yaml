@@ -3,11 +3,13 @@ AppAddInstanceDialog:
   createTitle: Create Game
   serverTitle: Input your server address
 AppShareInstanceDialog:
+  editScopeDescription: Select the files peers can pull after discovering this running game on LAN.
+  editScopeTitle: Edit Sharing Scope
+  instanceToShare: Running Game
   alterDownloadDescription: >-
     If you don't want to mess up current instance. You can also create a new
     instance from your peer's config. Click the button below to create instance.
   baseInfo: Basic Setting
-  cancelShare: Cancel Share
   description: >-
     After you share the profile, other place can download these files through
     your PC.
@@ -18,9 +20,7 @@ AppShareInstanceDialog:
   downloadTitle: Download files from other peers
   filesToDownload: Choose files to download
   filesToShare: Choose files to share
-  instanceShare: '{user} just shared the current instance to you'
   share: Share
-  shareNotifyTitle: Share Instance
   shareTitle: Share game files to other player
 BaseSettingGeneral:
   title: General
@@ -38,6 +38,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 agent:
+  accessRequiredHint: Subscribe to XMCL to use the built-in Agent, or configure your own AI provider in Settings.
+  subscribeXmcl: Subscribe to XMCL
   callingTool: calling {name}…
   disabledPlaceholder: Agent disabled
   emptyHint: >-
@@ -189,7 +191,6 @@ curseforgeCategory:
   World Gen: Peace Generator
 dataMigration:
   apply: Apply Setting
-  directoryCriteriaHint: Please make sure your new directory location is an EMPTY directory!
   placeholder: Please click here to select directory
   setRootCause: >-
     You will lose your data (Maps, Resource Packs, Mods) if you close the
@@ -203,6 +204,7 @@ delete:
   'no': 'No'
   'yes': Delete
 dependencies:
+  dependents: Mods depending on this mod
   embedded: Embedded
   incompatible: Incompatible
   name: Dependencies
@@ -600,15 +602,10 @@ instances:
   addMMCDescription: >-
     Import existing MultiMC instance. You need to select the data folder from
     MultiMC.
-  addManually: Manually Create
   addModrinthDescription: >-
     Import existing Modrinth instance. You need to select the Modrinth root data
     folder.
   addPrismDescription: Import existing PrismLauncher instance.
-  addServer: Create from server
-  addServerDescription: This will create a game directly launch to the server.
-  addTemplate: Create from downloaded modpack
-  addTemplateDescription: Import from downloaded Modpack
   addVanilla: Create from vanilla-like Minecraft
   addVanillaDescription: >-
     Import from common .minecraft folder. This will duplciate the original game
@@ -835,6 +832,10 @@ logsCrashes:
   showFile: Show in Folder
   title: Logs or Crash Reports
 me:
+  groupByDate: Group by date
+  groupByFolder: Group by folder
+  instanceViewMode: Instance view mode
+  listView: List view
   news: News
   recentPlay: Recent Play
 migrateMinecraft:
@@ -1173,12 +1174,49 @@ modrinth:
 modrinthCard:
   currentVersion: Current Version
 multiplayer:
+  joinDiscord: Join Discord
+  openConsumerPortal: Open Consumer Portal
+  refundHint: Need a refund? Visit the Waffo Consumer Portal to manage your orders and subscriptions.
+  togetherSupportHint: If multiplayer is not working, join our Discord and contact the development team. We will help you resolve the problem.
+  autoShareAmbiguous: Multiple games are running. Select the instance hosting the LAN world so XMCL can share it.
+  editSharingScope: Edit Sharing Scope
+  gameAvailable: LAN game available
+  joinGame: Join game
+  noRunningInstanceToShare: Launch a game before editing its sharing scope
+  updateSharedInstanceConfirm: Update and launch
+  updateSharedInstanceDescription: The shared mods differ from {instance}. Update this instance to match the host before launching? Existing changed files will be backed up.
+  updateSharedInstanceTitle: Update shared instance?
+  addFunds: "Add funds"
+  availableBalance: "Available balance"
+  balanceHint: "Available for XMCL Together services"
+  billing: "Billing"
+  billingDescription: "Manage relay access, your Together Home plan, and payments."
+  billingError: "Together billing could not be loaded. Please try again in a moment."
+  buyTogether: "Buy Together"
+  cancelTogether: "Cancel plan"
+  checkout: "Open Waffo checkout"
+  connectionTogetherWarning: "A room member has been unable to connect to you for a while. Try XMCL Together to improve connectivity for everyone in the room. Only the room master needs Together."
+  masterPurchaseHint: "Only the room master needs Together Home to improve connectivity for everyone in the room."
+  natTogetherWarning: "Your router may have trouble connecting to the room master. If connections fail, try XMCL Together to improve connectivity between you and your friends. Only the room master needs to purchase Together for the room."
+  togetherName: "Minecraft Together"
+  trialDescription: "One 7-day trial with 1 GB of relay traffic."
+  trialTitle: "Connectivity trial"
+  tryTogether: "Try Together"
+  month: "month"
+  orderStatus: "Waffo order: {status}"
+  planDescription: "20 GB of managed relay traffic each month, plus AI troubleshooting for your modpack."
+  waffoHint: "Payments are completed securely on Waffo Pancake. XMCL never receives your card number."
+  subscription:
+    active: "Active"
+    cancelled: "Cancelled"
+    payment_due: "Payment due"
+  trial:
+    active: "Trial active"
+    available: "Free trial available"
+    expired: "Trial used"
+    unavailable: "Trial unavailable"
   loginRequiredDescription: P2P multiplayer uses XMCL online services. Sign in to an XMCL Account to continue.
   loginRequiredTitle: Sign in for P2P multiplayer
-  allowTurn: Enable relay server
-  allowTurnHint: >-
-    Allow relay server if you cannot connect with your friend. However, using
-    relay server may slow down your connection. Use it with caution.
   complete: Complete
   confirm: Confirm
   connectionError: Connection Error
@@ -1239,9 +1277,6 @@ multiplayer:
   localToken: Local Token
   manualConnect: Manually Connect
   name: Multiplayer on LAN
-  natWarning: >-
-    Your NAT type may prevent direct connections. Try enabling relay server in
-    settings or ask your friend to host instead.
   networkInfo: Network Info (Click to toggle)
   next: Next
   otherExposedPortDescription: The port forwarded by {user}
@@ -1256,8 +1291,6 @@ multiplayer:
   sendTokenToRemote: Send Token to Remote
   share: Share Instance Config
   sharing: Sharing files...
-  sharingNotificationBody: You can download or create an instance from {name} shared config.
-  sharingNotificationTitle: A peer is sharing their game config
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
 myStuff: My Stuff
@@ -1403,12 +1436,9 @@ resourcepack:
   noPacksInstalled: You don't have any resource packs installed.
   search: Search Resource Packs...
   searchHint: Search resource packs
-  searchOnCurseforge: Search {name} in curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Selected Resource Packs
   showDirectory: Show resource pack directory
   showFile: Show resource pack in folder {file}
-  showInCurseforge: Show {name} in curseforge
   unselected: Unselected Resource Packs
 save:
   allowCheats: Allow Cheats
@@ -1857,8 +1887,6 @@ setup:
     name: Set Language
   path: Current Path
 shaderPack:
-  deletion: Delete Shader Pack
-  deletionHint: This will delete the shader pack file {path} and cannot be reverted.
   disabled: Disabled Shader Packs
   dropHint: Import Shader Pack
   empty: No shader pack allocated
@@ -1884,6 +1912,7 @@ shaderPack:
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
 shared:
+  pressKeyCombination: Press key combination...
   add: Add
   author: Author
   back: Back
@@ -2009,23 +2038,6 @@ tutorial:
       You could search mods from Modrinth, Curseforge or your local cache with
       this search box.
     searchTitle: Search Mods
-  multiplayer:
-    contentDescription: Connections between you and your peers will be listed here.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      You can create or join a group with other players. The launcher will try
-      to create P2P connections between you and your friends according to the
-      group. You can input the group name given by your friends. Or you can
-      create an unique name.
-    groupTitle: Join a group
-    joinDescription: >-
-      Once you input a group name, you can click this button to join or create
-      the group. If the group name is empty, the launcher will generate a name
-      for you.
-    manualDescription: >-
-      If you or your friend cannot connect to the group, you can try to manually
-      exchange the token by clicking manually connect. If that also failed, it
-      might be an internet issue.
   recentPlayDescription: >-
     The created games will be listed here. You can switch the views here to also
     see the installed versions and downloaded modpacks.
@@ -2135,6 +2147,44 @@ userSkin:
   urlNotEmpty: Skin URL cannot be empty
   urlNotValid: Skin URL is Invalid
   useSlim: Use Slim Model
+  saveSuccess: Skin saved to disk!
+  saveFailed: Could not save the skin to disk
+  uploadFailed: Skin upload failed
+  libraryTitle: Local Wardrobe
+  librarySubtitle: Choose, organise and save your skins locally
+  manage: Manage
+  all: All
+  currentSkin: Current Skin
+  savedCount: saved skins
+  newSkin: New Skin
+  addNewSkin: Add New Skin
+  editSkin: Edit Skin
+  skinName: Skin Name
+  skinNamePlaceholder: e.g. My Favourite Skin
+  localFile: Local File
+  urlOrPlayer: URL / Player Name
+  urlOrPlayerPlaceholder: Enter the skin image URL or Minecraft username
+  urlOrPlayerHint: Enter a direct PNG image URL or player name to fetch the skin from Mojang
+  dropFileHere: Drop the skin PNG file here or click to browse
+  supportedFormats: 'Supported format: 64x64 or 64x32 PNG image'
+  preview: Skin Preview
+  previewPlaceholder: No skin preview available
+  saveToLibrary: Save to Wardrobe
+  saveAndEquip: Save and Equip
+  equip: Equip
+  equipToAccount: Equip to Minecraft Account
+  equipped: Equipped
+  noSkinSelected: No Skin Selected
+  saveCurrent: Save Current
+  officialPreset: Official Preset
+  mySkins: My Skins
+  presets: Presets
+  noSkinsFound: No skins found
+  tryAddingOne: Try adding a new skin with the button above!
+  skinUpdated: Skin updated!
+  skinDeleteFailed: Could not remove the skin from the wardrobe
+  edit: Edit
+  fetch: Load
 version:
   checkIntegrity: Check Integrity
   name: Version | Versions
@@ -2179,4 +2229,3 @@ gamepad:
   steamDeckDesc: We detected that you are running on Steam Deck. Would you like to add XMCL to your Steam Library as a non-Steam game for full Steam overlay and controller integration in Gaming Mode?
   steamDeckAddBtn: Add to Steam ({btn})
   steamDeckCancelBtn: Cancel ({btn})
-

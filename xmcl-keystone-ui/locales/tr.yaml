@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: Oyun Oluştur
   serverTitle: Sunucu adresini girin
 AppShareInstanceDialog:
+  editScopeDescription: Eşlerin LAN'da çalışan bu oyunu keşfettikten sonra alabileceği dosyaları seçin.
+  editScopeTitle: Paylaşım kapsamını düzenle
+  instanceToShare: Çalışan oyun
   alterDownloadDescription: Mevcut instance'ı bozmak istemiyorsanız, arkadaşınızın yapılandırmasından yeni bir instance oluşturabilirsiniz. Instance oluşturmak için aşağıdaki düğmeye tıklayın.
   baseInfo: Temel Ayarlar
-  cancelShare: Paylaşımı İptal Et
   description: Profili paylaştıktan sonra, diğer yerler bu dosyaları bilgisayarınız üzerinden indirebilir.
   downloadDescription: Lütfen arkadaşınızın sağladığı dosyaları doğrulayın. İndirmek istediğiniz dosyayı seçin. Mevcut instance {name} içine yerleştirilecektir.
   downloadNotifyTitle: '{user} kullanıcısından Instance İndir'
   downloadTitle: Diğer eşlerden dosya indir
   filesToDownload: İndirilecek dosyaları seçin
   filesToShare: Paylaşılacak dosyaları seçin
-  instanceShare: '{user} mevcut instance''ı sizinle paylaştı'
   share: Paylaş
-  shareNotifyTitle: Instance Paylaş
   shareTitle: Oyun dosyalarını diğer oyuncuyla paylaş
 BaseSettingGeneral:
   title: Genel
@@ -143,7 +143,6 @@ curseforgeCategory:
   World Gen: Dünya Oluşturma
 dataMigration:
   apply: Ayarları Uygula
-  directoryCriteriaHint: Lütfen yeni dizin konumunun BOŞ bir dizin olduğundan emin olun!
   placeholder: Dizin seçmek için lütfen buraya tıklayın
   setRootCause: Bu işlem sırasında Başlatıcıyı kapatırsanız verilerinizi (Haritalar, Kaynak Paketleri, Modlar) kaybedeceksiniz!
   setRootDescription: Bu işlem, bu başlatıcının ve Minecraft'ın kök veri klasörünü değiştirecektir.
@@ -155,6 +154,7 @@ delete:
   'no': Hayır
   'yes': Sil
 dependencies:
+  dependents: Bu moda bağlı modlar
   embedded: Gömülü
   incompatible: Uyumsuz
   name: Bağımlılıklar
@@ -487,12 +487,7 @@ instances:
   addCurseForgeDescription: Curseforge veri klasöründen içe aktar. Curseforge'un kök veri klasörünü seçmeniz gerekir
   addDescription: Sıfırdan yeni bir instance oluştur
   addMMCDescription: Mevcut MultiMC instance'ını içe aktar. MultiMC'den veri klasörünü seçmeniz gerekir.
-  addManually: Manuel Olarak Oluştur
   addModrinthDescription: Mevcut Modrinth instance'ını içe aktar. Modrinth kök veri klasörünü seçmeniz gerekir.
-  addServer: Sunucudan oluştur
-  addServerDescription: Bu, doğrudan sunucuya bağlanan bir oyun oluşturacaktır.
-  addTemplate: İndirilen mod paketinden oluştur
-  addTemplateDescription: İndirilen Mod Paketinden içe aktar
   addVanilla: Vanilla benzeri Minecraft'tan oluştur
   addVanillaDescription: Yaygın .minecraft klasöründen içe aktar. Bu, orijinal oyun profilini XMCL'ye kopyalayacaktır.
   fix: Onar
@@ -671,6 +666,10 @@ logsCrashes:
   serverLogs: Sunucu Günlükleri
   showFile: Klasörde Göster
 me:
+  groupByDate: Tarihe göre grupla
+  groupByFolder: Klasöre göre grupla
+  instanceViewMode: Oyun örneği görünüm modu
+  listView: Liste görünümü
   news: Haberler
   recentPlay: Son Oynananlar
 migrationWindow:
@@ -961,10 +960,49 @@ modrinth:
 modrinthCard:
   currentVersion: Mevcut Sürüm
 multiplayer:
+  joinDiscord: Discord'a Katıl
+  openConsumerPortal: Tüketici Portalını Aç
+  refundHint: Para iadesine mi ihtiyacınız var? Siparişlerinizi ve aboneliklerinizi yönetmek için Waffo Tüketici Portalı'nı ziyaret edin.
+  togetherSupportHint: Çok oyunculu mod çalışmıyorsa Discord'umuza katılın ve geliştirme ekibiyle iletişime geçin. Sorunu çözmenize yardımcı olacağız.
+  autoShareAmbiguous: Birden fazla oyun çalışıyor. XMCL'nin paylaşabilmesi için LAN dünyasını barındıran örneği seçin.
+  editSharingScope: Paylaşım kapsamını düzenle
+  gameAvailable: LAN oyunu mevcut
+  joinGame: Oyuna katıl
+  noRunningInstanceToShare: Paylaşım kapsamını düzenlemeden önce bir oyun başlatın
+  updateSharedInstanceConfirm: Güncelle ve başlat
+  updateSharedInstanceDescription: Paylaşılan modlar {instance} ile farklı. Başlatmadan önce bu örnek ana bilgisayarla eşleşecek şekilde güncellensin mi? Değiştirilmiş mevcut dosyalar yedeklenecektir.
+  updateSharedInstanceTitle: Paylaşılan örnek güncellensin mi?
+  addFunds: "Bakiye ekle"
+  availableBalance: "Kullanılabilir bakiye"
+  balanceHint: "XMCL Together hizmetleri için kullanılabilir"
+  billing: "Faturalandırma"
+  billingDescription: "Aktarma erişimini, Together Home planını ve ödemelerini yönet."
+  billingError: "Together faturalandırması yüklenemedi. Biraz sonra tekrar dene."
+  buyTogether: "Together satın al"
+  cancelTogether: "Planı iptal et"
+  checkout: "Waffo ödeme sayfasını aç"
+  connectionTogetherWarning: "Bir oda üyesi bir süredir sana bağlanamıyor. Odadaki herkesin bağlantısını iyileştirmek için XMCL Together'ı dene. Together'a yalnızca oda sahibi ihtiyaç duyar."
+  masterPurchaseHint: "Odadaki herkesin bağlantısını iyileştirmek için Together Home'a yalnızca oda sahibinin ihtiyacı vardır."
+  natTogetherWarning: "Yönlendiricin oda sahibine bağlanmakta zorlanıyor olabilir. Bağlantılar başarısız olursa, seninle arkadaşların arasındaki bağlantıyı iyileştirmek için XMCL Together'ı dene. Oda için Together'ı yalnızca oda sahibinin satın alması gerekir."
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB aktarma trafiği içeren 7 günlük bir deneme."
+  trialTitle: "Bağlantı denemesi"
+  tryTogether: "Together'ı dene"
+  month: "ay"
+  orderStatus: "Waffo siparişi: {status}"
+  planDescription: "Aylık 20 GB yönetilen aktarma trafiği ve modpack'in için yapay zekâ destekli sorun giderme."
+  waffoHint: "Ödemeler Waffo Pancake üzerinden güvenli bir şekilde tamamlanır. XMCL kart numaranı asla almaz."
+  subscription:
+    active: "Aktif"
+    cancelled: "İptal edildi"
+    payment_due: "Ödeme bekleniyor"
+  trial:
+    active: "Deneme etkin"
+    available: "Ücretsiz deneme kullanılabilir"
+    expired: "Deneme kullanıldı"
+    unavailable: "Deneme kullanılamıyor"
   loginRequiredDescription: P2P çok oyunculu oyun XMCL çevrimiçi hizmetlerini kullanır. Devam etmek için bir XMCL Hesabında oturum açın.
   loginRequiredTitle: P2P çok oyunculu oyun için giriş yapın
-  allowTurn: Geçiş (relay) sunucusunu etkinleştir
-  allowTurnHint: Arkadaşınızla bağlantı kuramıyorsanız geçiş sunucusuna izin verin. Ancak, geçiş sunucusu kullanmak bağlantınızı yavaşlatabilir. Dikkatli kullanın.
   complete: Tamamla
   confirm: Onayla
   connections: Bağlantılar
@@ -1011,13 +1049,10 @@ multiplayer:
   sendTokenToRemote: Belirteci Uzaktakine Gönder
   share: Instance Yapılandırmasını Paylaş
   sharing: Dosyalar paylaşılıyor...
-  sharingNotificationBody: Paylaşılan yapılandırmadan {name} indirebilir veya bir instance oluşturabilirsiniz.
-  sharingNotificationTitle: Bir eş oyun yapılandırmasını paylaşıyor
   start: Başlat
   startNewP2PConnection: Yeni bir eş bağlantısı oluşturmak için Başlat düğmesine tıklayın
   connectionError: Bağlantı hatası
   connectionFailedHint: Bağlantı kurulamıyor. Her iki tarafın da uyumlu NAT türlerine sahip olduğunu kontrol edin.
-  natWarning: NAT türünüz doğrudan bağlantıyı engelleyebilir. Ayarlardan röle sunucusunu etkinleştirmeyi deneyin veya arkadaşınızdan ev sahibi olmasını isteyin.
 myStuff: Eşyalarım
 natType:
   blocked: Engellendi
@@ -1083,12 +1118,9 @@ resourcepack:
   incompatible: Uyumsuz Kaynak Paketi formatı({format}). Uyan {accept}. Mevcut {actual}.
   name: Kaynak Paketi | Kaynak Paketleri
   searchHint: Kaynak paketlerini arayın
-  searchOnCurseforge: Curseforge'da {name} ara
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Seçilen Kaynak Paketleri
   showDirectory: Kaynak paketi dizinini göster
   showFile: '{file} klasöründeki kaynak paketini göster'
-  showInCurseforge: Curseforge'da {name} göster
   unselected: Seçilmeyen Kaynak Paketleri
   noPacks: Kaynak paketi bulunamadı
   search: Kaynak paketleri ara...
@@ -1487,8 +1519,6 @@ setup:
 shaderPack:
   linkShared: Shader paketlerini örnekler arasında paylaş
   linkSharedHint: Bu örneğin shaderpacks klasörünü genel paylaşılan klasöre bağlayarak tüm örneklerin aynı shader paketlerini kullanmasını sağlayın. Mevcut paketler paylaşılan klasörde birleştirilir.
-  deletion: Gölgelendirici Paketini Sil
-  deletionHint: Bu işlem {path} gölgelendirici paketi dosyasını silecek ve geri alınamaz.
   disabled: Devre Dışı Bırakılan Gölgelendirici Paketleri
   dropHint: Gölgelendirici Paketi İçe Aktar
   empty: Gölgelendirici paketi atanmadı
@@ -1509,6 +1539,7 @@ shaderPack:
   noLocalPacksFound: Aramanızla eşleşen yerel gölgelendirici paketi bulunamadı.
   noPacksInstalled: Hiç gölgelendirici paketiniz yüklü değil.
 shared:
+  pressKeyCombination: Tuş kombinasyonuna basın...
   add: Ekle
   author: Yazar
   back: Geri
@@ -1621,13 +1652,6 @@ tutorial:
     listTitle: Yüklü veya Aranan Mod
     searchDescription: Bu arama kutusuyla Modrinth, Curseforge veya yerel önbelleğinizden mod arayabilirsiniz.
     searchTitle: Mod Ara
-  multiplayer:
-    contentDescription: Siz ve eşleriniz arasındaki bağlantılar burada listelenecektir.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: Diğer oyuncularla bir grup oluşturabilir veya katılabilirsiniz. Başlatıcı, gruba göre siz ve arkadaşlarınız arasında P2P bağlantıları oluşturmaya çalışacaktır. Arkadaşlarınızın verdiği grup adını girebilirsiniz. Veya benzersiz bir ad oluşturabilirsiniz.
-    groupTitle: Bir gruba katıl
-    joinDescription: Bir grup adı girdikten sonra, gruba katılmak veya oluşturmak için bu düğmeye tıklabilirsiniz. Grup adı boşsa, başlatıcı sizin için bir ad oluşturacaktır.
-    manualDescription: Siz veya arkadaşınız gruba bağlanamıyorsanız, manuel bağlan'a tıklayarak belirteci manuel olarak takas etmeyi deneyebilirsiniz. Bu da başarısız olursa, bu bir internet sorunu olabilir.
   recentPlayDescription: Oluşturulan oyunlar burada listelenecektir. Yüklü sürümleri ve indirilen mod paketlerini de görmek için görünümleri buradan değiştirebilirsiniz.
   storePoupularModpackDescription: Bu bölümde Curseforge ve Modrinth'teki en popüler mod paketlerini göreceksiniz.
   storeSearchCategoryDescription: Kategorileri veya filtreleri buradan da değiştirebilirsiniz.
@@ -1718,6 +1742,44 @@ userSkin:
   useSlim: İnce Model Kullan
   classic: Klasik
   slim: İnce
+  saveSuccess: Cilt diske kaydedildi!
+  saveFailed: Cilt diske kaydedilemedi
+  uploadFailed: Cilt yüklenemedi
+  libraryTitle: Yerel Gardırop
+  librarySubtitle: Ciltlerinizi seçin, düzenleyin ve yerel olarak kaydedin
+  manage: Yönet
+  all: Tümü
+  currentSkin: Geçerli Cilt
+  savedCount: kayıtlı cilt
+  newSkin: Yeni Cilt
+  addNewSkin: Yeni Cilt Ekle
+  editSkin: Cildi Düzenle
+  skinName: Cilt Adı
+  skinNamePlaceholder: 'ör. En Sevdiğim Cilt'
+  localFile: Yerel Dosya
+  urlOrPlayer: URL / Oyuncu Adı
+  urlOrPlayerPlaceholder: Cilt görselinin URL'sini veya Minecraft kullanıcı adını girin
+  urlOrPlayerHint: Cildi Mojang'dan almak için doğrudan PNG görseli URL'si veya oyuncu adı girin
+  dropFileHere: Cildin PNG dosyasını buraya bırakın veya göz atmak için tıklayın
+  supportedFormats: 'Desteklenen biçim: 64x64 veya 64x32 PNG görseli'
+  preview: Cilt Önizlemesi
+  previewPlaceholder: Cilt önizlemesi yok
+  saveToLibrary: Gardıroba Kaydet
+  saveAndEquip: Kaydet ve Giy
+  equip: Giy
+  equipToAccount: Minecraft Hesabında Giy
+  equipped: Giyildi
+  noSkinSelected: Cilt Seçilmedi
+  saveCurrent: Geçerliyi Kaydet
+  officialPreset: Resmî Ön Ayar
+  mySkins: Ciltlerim
+  presets: Ön Ayarlar
+  noSkinsFound: Cilt bulunamadı
+  tryAddingOne: Yukarıdaki düğmeyle yeni bir cilt eklemeyi deneyin!
+  skinUpdated: Cilt güncellendi!
+  skinDeleteFailed: Cilt gardıroptan kaldırılamadı
+  edit: Düzenle
+  fetch: Yükle
 version:
   checkIntegrity: Bütünlüğü Kontrol Et
   name: Sürüm | Sürümler
@@ -1742,6 +1804,8 @@ migrateMinecraft:
 reinstall:
   name: '{version} yeniden kur'
 agent:
+  accessRequiredHint: Yerleşik temsilciyi kullanmak için XMCL’ye abone olun veya ayarlarda kendi yapay zeka sağlayıcınızı yapılandırın.
+  subscribeXmcl: XMCL’ye abone ol
   callingTool: '{name} çağrılıyor…'
   disabledPlaceholder: Temsilci devre dışı
   emptyHint: Temsilciden örneğinizi incelemesini, modları değiştirmesini, günlükleri okumasını veya çökmeyi teşhis etmesini isteyin.

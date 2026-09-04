@@ -7,6 +7,8 @@
     :checked="checked"
     :dense="dense"
     :height="itemHeight"
+    :indent="indent"
+    :indent-color="indentColor"
     :get-context-menu-items="getContextMenuItems"
     :install="install"
     @click="emit('click', $event)"
@@ -31,6 +33,9 @@ const props = defineProps<{
   hasUpdate?: boolean
   dense?: boolean
   itemHeight?: number
+  indent?: boolean
+  indentColor?: string
+  getContextMenuItems?: (item: ShaderPackProject) => ContextMenuItem[]
   install: (p: ProjectEntry) => Promise<void>
 }>()
 
@@ -74,7 +79,7 @@ const getContextMenuItems = () => {
   //     icon: 'xmcl:modrinth',
   //   })
   // }
-  return all
+  return all.concat(props.getContextMenuItems?.(props.pack) ?? [])
 }
 
 </script>

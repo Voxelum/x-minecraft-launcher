@@ -30,7 +30,7 @@ import { LauncherApp, LauncherAppPlugin, kGameDataPath } from '~/app'
 import { ImageStorage, ZipManager } from '~/infra'
 import { ServiceStateManager } from '~/service'
 import { kSettings } from '~/settings'
-import { kResourceContext, kResourceManager } from './index'
+import { kResourceContext, kResourceDatabaseTelemetry, kResourceManager } from './index'
 // eslint-disable-next-line import/default
 import createResourceWorker from './resource.worker?worker'
 import { ResourceWorker, kResourceWorker } from './worker'
@@ -91,9 +91,14 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   // absolute paths that are stale at the new location anyway, so the index is
   // rebuilt rather than moved).
   const dbPath = join(app.appDataPath, 'resources.sqlite')
+  const databaseStartedAt = Date.now()
 
   let db: Kysely<Database> | undefined
+  let databaseReady = false
+  let migrationFailures = 0
+  let attempts = 0
   for (let i = 0; i < 3; i++) {
+    attempts = i + 1
     if (db) {
       db.destroy()
       const bkPath = dbPath + '.' + Date.now() + '.bk'
@@ -119,6 +124,8 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
       if (results) {
         for (const result of results) {
           if (result.status === 'Error') {
+            migrationFailures++
+            success = false
             logger.error(
               new AnyError(
                 'ResourceDatabaseMigration',
@@ -130,6 +137,7 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
       }
       success = true
     } catch (e) {
+      migrationFailures++
       logger.error(
         Object.assign(e as any, {
           cause: 'ResourceDatabaseMigration',
@@ -141,6 +149,7 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     if (!success) {
       continue
     }
+    databaseReady = true
     app.registry.get(kSettings).then((settings) => settings.databaseReadySet(true))
 
     // Fire-and-forget: walk the resources table once and null out any
@@ -163,12 +172,19 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   }
 
   // Set database ready status to false if initialization failed after all attempts
-  if (!db) {
+  if (!databaseReady) {
     app.registry.get(kSettings).then((settings) => settings.databaseReadySet(false))
     logger.warn(
       'Resource database initialization failed after 3 attempts. Some features may not work properly.',
     )
   }
+  app.registry.register(kResourceDatabaseTelemetry, {
+    attempts,
+    durationMs: Date.now() - databaseStartedAt,
+    migrationFailures,
+    ready: databaseReady,
+    recovered: databaseReady && attempts > 1,
+  })
 
   const imageStorage = await app.registry.get(ImageStorage)
   const getPath = await app.registry.get(kGameDataPath)

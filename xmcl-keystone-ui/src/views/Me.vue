@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import Hint from '@/components/Hint.vue'
 import { useDateString } from '@/composables/date'
 import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
@@ -6,6 +7,7 @@ import { useInstanceContextMenuFunc } from '@/composables/instanceContextMenu'
 import { useInstanceGroup } from '@/composables/instanceGroup'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstances } from '@/composables/instances'
+import { kLaunchButton } from '@/composables/launchButton'
 import { LauncherNews, useLauncherNews } from '@/composables/launcherNews'
 import { useMojangNews } from '@/composables/mojangNews'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
@@ -19,7 +21,7 @@ import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
 import { useFocus, useLocalStorage } from '@vueuse/core'
 import { Instance } from '@xmcl/instance'
-import { Ref, computed, ref } from 'vue'
+import { Ref, computed, nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import MeProfilePanel from './MeProfilePanel.vue'
 
@@ -240,12 +242,19 @@ const instanceSections = computed((): InstanceSection[] => {
 const { show: openAddInstanceDialog } = useDialog(AddInstanceDialogKey)
 
 const router = useRouter()
+const { onClick: onLaunchClick } = injection(kLaunchButton)
 
 function selectInstance(instancePath: string) {
   path.value = instancePath
   if (router.currentRoute.value.path !== '/') {
     router.push('/')
   }
+}
+
+async function launchInstance(instancePath: string) {
+  path.value = instancePath
+  await nextTick()
+  await onLaunchClick()
 }
 
 const getInstanceContextMenu = useInstanceContextMenuFunc()
@@ -339,31 +348,31 @@ function openInBrowser(url: string) {
             <v-icon class="section-icon" color="primary" aria-hidden="true">apps</v-icon>
             <h2 class="section-title">{{ t('instance.current', 2) }}</h2>
           </div>
-          <div class="d-flex align-center gap-2">
+          <div v-if="instances.length > 0" class="d-flex align-center gap-2">
             <v-btn-toggle
               v-roving-tabindex
               v-model="instanceViewMode"
               density="compact"
               mandatory
               class="mr-2"
-              aria-label="Instance view mode"
+              :aria-label="t('me.instanceViewMode')"
             >
               <v-btn
-                v-shared-tooltip="() => 'Group by folder'"
+                v-shared-tooltip="() => t('me.groupByFolder')"
                 value="folder"
                 size="small"
               >
                 <v-icon size="small" aria-hidden="true">folder</v-icon>
               </v-btn>
               <v-btn
-                v-shared-tooltip="() => 'Group by date'"
+                v-shared-tooltip="() => t('me.groupByDate')"
                 value="date"
                 size="small"
               >
                 <v-icon size="small" aria-hidden="true">schedule</v-icon>
               </v-btn>
               <v-btn
-                v-shared-tooltip="() => 'List view'"
+                v-shared-tooltip="() => t('me.listView')"
                 value=""
                 size="small"
               >
@@ -378,6 +387,7 @@ function openInBrowser(url: string) {
         </div>
 
         <v-text-field
+          v-if="instances.length > 0"
           ref="filter"
           v-model="filterKey"
           :placeholder="t('shared.filter')"
@@ -388,13 +398,31 @@ function openInBrowser(url: string) {
           class="search-field mb-4"
         />
 
+        <Hint
+          v-if="instances.length === 0"
+          icon="sports_esports"
+          :text="t('instances.addDescription')"
+          class="instances-empty"
+        >
+          <v-btn
+            color="primary"
+            variant="flat"
+            prepend-icon="add"
+            size="small"
+            class="mt-2"
+            @click="openAddInstanceDialog"
+          >
+            {{ t('instances.add') }}
+          </v-btn>
+        </Hint>
+
         <!-- Unified Instance Sections -->
         <div
           v-for="section in instanceSections"
           :key="section.id"
           class="mb-6"
           role="region"
-          :aria-label="section.title || t('instances.name', 2)"
+          :aria-label="section.title || t('instance.name', 2)"
         >
           <div v-if="section.title" class="section-header-item mb-3">
             <v-icon size="small" class="mr-2" aria-hidden="true">{{ section.icon }}</v-icon>
@@ -404,7 +432,7 @@ function openInBrowser(url: string) {
           <div
             v-roving-tabindex
             role="group"
-            :aria-label="section.title || t('instances.name', 2)"
+            :aria-label="section.title || t('instance.name', 2)"
             class="instances-grid"
           >
             <div
@@ -433,6 +461,16 @@ function openInBrowser(url: string) {
                 <div class="instance-name">{{ instance.name }}</div>
                 <div class="instance-version">{{ instance.runtime.minecraft }}</div>
               </div>
+              <v-btn
+                v-shared-tooltip="() => t('launch.launch')"
+                class="instance-play-button"
+                color="primary"
+                variant="text"
+                size="small"
+                icon="play_arrow"
+                :aria-label="t('launch.launch')"
+                @click.stop="launchInstance(instance.path)"
+              />
             </div>
           </div>
         </div>
@@ -615,6 +653,10 @@ function openInBrowser(url: string) {
   user-select: none;
 }
 
+.instances-empty {
+  min-height: 180px;
+}
+
 .search-field {
   max-width: 400px;
   border-radius: 8px;
@@ -665,6 +707,15 @@ function openInBrowser(url: string) {
   gap: 12px;
   padding: 12px 16px;
   /* radius / border / cursor / transition / hover come from .surface-card-row */
+}
+
+.instance-item--active {
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-primary));
+}
+
+.instance-play-button {
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .instance-avatar-wrapper {

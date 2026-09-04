@@ -23,7 +23,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
 
   const logger = app.getLogger('OfficialUserSystem')
 
-  const userService = await app.registry.get(UserService)
+  const userService = await app.registry.getOrCreate(UserService)
   const headers = {}
 
   const system = new MicrosoftAccountSystem(logger,
@@ -93,6 +93,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
     ), app)
 
   userService.registerAccountSystem(AUTHORITY_MICROSOFT, system)
+  await userService.initialize()
 
   app.protocol.registerHandler('xmcl', ({ request, response }) => {
     const parsed = request.url

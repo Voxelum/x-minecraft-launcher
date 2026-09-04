@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: 게임 생성
   serverTitle: 서버 주소를 입력하세요.
 AppShareInstanceDialog:
+  editScopeDescription: LAN에서 실행 중인 이 게임을 발견한 피어가 가져갈 수 있는 파일을 선택하세요.
+  editScopeTitle: 공유 범위 편집
+  instanceToShare: 실행 중인 게임
   alterDownloadDescription: 현재 인스턴스를 망가트리고 싶지 않다면, 다른 사용자의 설정으로 새 인스턴스를 생성할 수도 있습니다.  아래 버튼을 눌러 인스턴스를 생성하세요.
   baseInfo: 기본 설정
-  cancelShare: 공유 취소
   description: 프로필을 공유하면 다른 곳에서 이 파일들을 사용자의 PC를  통해 다운로드 할 수 있습니다.
   downloadDescription: 상대방이 제공한 파일을 확인해주세요. 다운로드할 파일을 선택하면 현재 인스턴스 {name} 에 저장됩니다.
   downloadNotifyTitle: '{user} 에게서 인스턴트 다운로드'
   downloadTitle: 다른 사용자에게서 파일 다운로드
   filesToDownload: 다우놀드 받을 파일들을 선택해주세요.
   filesToShare: 공유할 파일들을 선택해주세요.
-  instanceShare: '{user} 가 당신에게 현재 인스턴트를 공유했어요.'
   share: 공유
-  shareNotifyTitle: 공유 인스턴스
   shareTitle: 다른 플레이어에게 게임 파일들을 공유
 BaseSettingGeneral:
   title: 기본
@@ -143,7 +143,6 @@ curseforgeCategory:
   World Gen: 월드 생성
 dataMigration:
   apply: 설정 적용
-  directoryCriteriaHint: 당신의 새로운 경로가 비어있는지 확인해주세요.
   placeholder: 여기를 클릭해 디렉터리 선택
   setRootCause: 이 과정에서 런처를 종료하면 데이터(맵, 리소스 팩, 모드)를 잃게 됩니다!
   setRootDescription: 이 작업은 런처와 마인크래프트의 루트 데이터 폴더를 변경합니다.
@@ -155,6 +154,7 @@ delete:
   'no': 아니오
   'yes': 삭제
 dependencies:
+  dependents: 이 모드에 의존하는 모드
   embedded: 내장됨
   incompatible: 호환되지 않음
   name: 의존성
@@ -478,12 +478,7 @@ instances:
   addCurseForgeDescription: Curseforge 데이터 폴더에서 가져오기. Curseforge의 루트 데이터 폴더를 선택해야 합니다
   addDescription: 처음부터 새 인스턴스 생성
   addMMCDescription: 기존 MultiMC 인스턴스 가져오기. MultiMC의 데이터 폴더를 선택해야 합니다.
-  addManually: 수동 생성
   addModrinthDescription: 기존 Modrinth 인스턴스 가져오기. Modrinth 루트 데이터 폴더를 선택해야 합니다.
-  addServer: 서버에서 생성
-  addServerDescription: 서버로 직접 실행되는 게임을 생성합니다.
-  addTemplate: 다운로드된 모드팩에서 생성
-  addTemplateDescription: 다운로드된 모드팩에서 가져오기
   addVanilla: 바닐라 마인크래프트에서 생성
   addVanillaDescription: 일반 .minecraft 폴더에서 가져오기. 원본 게임 프로필을 XMCL로 복제합니다.
   fix: 수리
@@ -659,6 +654,10 @@ logsCrashes:
   serverLogs: 서버 로그
   showFile: 폴더에 표시
 me:
+  groupByDate: 날짜별 그룹화
+  groupByFolder: 폴더별 그룹화
+  instanceViewMode: 인스턴스 보기 모드
+  listView: 목록 보기
   news: 뉴스
   recentPlay: 최근 플레이
 migrationWindow:
@@ -949,10 +948,49 @@ modrinth:
 modrinthCard:
   currentVersion: 현재 버전
 multiplayer:
+  joinDiscord: Discord 참여
+  openConsumerPortal: 소비자 포털 열기
+  refundHint: 환불이 필요하신가요? Waffo 소비자 포털에서 주문과 구독을 관리하세요.
+  togetherSupportHint: 멀티플레이가 작동하지 않으면 Discord에 참여하여 개발팀에 문의하세요. 문제 해결을 도와드리겠습니다.
+  autoShareAmbiguous: 여러 게임이 실행 중입니다. XMCL이 공유할 수 있도록 LAN 월드를 호스팅하는 인스턴스를 선택하세요.
+  editSharingScope: 공유 범위 편집
+  gameAvailable: LAN 게임 사용 가능
+  joinGame: 게임 참가
+  noRunningInstanceToShare: 공유 범위를 편집하기 전에 게임을 실행하세요
+  updateSharedInstanceConfirm: 업데이트 후 실행
+  updateSharedInstanceDescription: 공유된 모드가 {instance}와 다릅니다. 실행하기 전에 이 인스턴스를 호스트와 일치하도록 업데이트할까요? 기존에 변경된 파일은 백업됩니다.
+  updateSharedInstanceTitle: 공유 인스턴스를 업데이트할까요?
+  addFunds: "잔액 추가"
+  availableBalance: "사용 가능 잔액"
+  balanceHint: "XMCL Together 서비스에 사용 가능"
+  billing: "결제"
+  billingDescription: "릴레이 액세스, Together Home 플랜 및 결제를 관리합니다."
+  billingError: "Together 결제를 불러오지 못했습니다. 잠시 후 다시 시도하세요."
+  buyTogether: "Together 구매"
+  cancelTogether: "플랜 취소"
+  checkout: "Waffo 결제 열기"
+  connectionTogetherWarning: "방 구성원 한 명이 한동안 사용자에게 연결하지 못하고 있습니다. 방의 모든 구성원이 더 원활하게 연결되도록 XMCL Together를 사용해 보세요. Together는 방장만 필요합니다."
+  masterPurchaseHint: "방의 모든 구성원이 더 원활하게 연결되도록 Together Home은 방장만 필요합니다."
+  natTogetherWarning: "라우터가 방장에게 연결하는 데 문제가 있을 수 있습니다. 연결에 실패하면 사용자와 친구들의 연결을 개선하기 위해 XMCL Together를 사용해 보세요. 이 방에서 Together를 구매해야 하는 사람은 방장뿐입니다."
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB 릴레이 트래픽이 포함된 7일 체험판 1회입니다."
+  trialTitle: "연결성 체험판"
+  tryTogether: "Together 사용해 보기"
+  month: "개월"
+  orderStatus: "Waffo 주문: {status}"
+  planDescription: "매월 20 GB의 관리형 릴레이 트래픽과 모드팩 문제 해결을 위한 AI 지원을 제공합니다."
+  waffoHint: "결제는 Waffo Pancake에서 안전하게 처리됩니다. XMCL은 카드 번호를 받지 않습니다."
+  subscription:
+    active: "활성"
+    cancelled: "취소됨"
+    payment_due: "결제 기한 도래"
+  trial:
+    active: "체험 활성"
+    available: "무료 체험 사용 가능"
+    expired: "체험판 사용됨"
+    unavailable: "체험판 사용 불가"
   loginRequiredDescription: P2P 멀티플레이어는 XMCL 온라인 서비스를 사용합니다. 계속하려면 XMCL 계정에 로그인하세요.
   loginRequiredTitle: P2P 멀티플레이어 로그인
-  allowTurn: 릴레이 서버 사용
-  allowTurnHint: 친구와 연결할 수 없을 때 릴레이 서버를 허용합니다. 하지만 릴레이 서버 사용은 연결 속도를 느리게 할 수 있습니다. 주의해서 사용하세요.
   complete: 완료
   confirm: 확인
   connections: 연결
@@ -999,13 +1037,10 @@ multiplayer:
   sendTokenToRemote: 원격으로 토큰 보내기
   share: 인스턴스 설정 공유
   sharing: 파일 공유 중...
-  sharingNotificationBody: '{name} 의 공유 설정에서 인스턴스를 다운로드하거나 생성할 수 있습니다.'
-  sharingNotificationTitle: 피어가 게임 설정을 공유하고 있습니다
   start: 시작
   startNewP2PConnection: 시작 버튼을 클릭하여 새로운 피어 연결을 생성하세요
   connectionError: 연결 오류
   connectionFailedHint: 연결을 설정할 수 없습니다. 양쪽 피어의 NAT 유형이 호환되는지 확인하세요.
-  natWarning: NAT 유형이 직접 연결을 방해할 수 있습니다. 설정에서 릴레이 서버를 활성화하거나 친구에게 호스트를 부탁하세요.
 myStuff: 내 자료
 natType:
   blocked: 차단됨
@@ -1071,12 +1106,9 @@ resourcepack:
   incompatible: 호환되지 않는 리소스 팩 형식( {format} ). {accept} 에 맞음. 현재 {actual}.
   name: 리소스 팩
   searchHint: 리소스 팩 검색
-  searchOnCurseforge: Curseforge에서 {name} 검색
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: 선택된 리소스 팩
   showDirectory: 리소스 팩 디렉터리 열기
   showFile: 폴더에서 리소스 팩 보기 {file}
-  showInCurseforge: Curseforge에서 {name} 보기
   unselected: 선택되지 않은 리소스 팩
   noPacks: 리소스 팩을 찾을 수 없음
   search: 리소스 팩 검색...
@@ -1479,8 +1511,6 @@ setup:
 shaderPack:
   linkShared: 인스턴스 간 셰이더팩 공유
   linkSharedHint: 이 인스턴스의 shaderpacks 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 셰이더팩을 사용하도록 합니다. 기존 팩은 공유 폴더로 병합됩니다.
-  deletion: 셰이더 팩 삭제
-  deletionHint: 셰이더 팩 파일 {path} 을(를) 삭제하며, 되돌릴 수 없습니다.
   disabled: 비활성화된 셰이더 팩
   dropHint: 셰이더 팩 가져오기
   empty: 할당된 셰이더 팩 없음
@@ -1501,6 +1531,7 @@ shaderPack:
   noLocalPacksFound: 검색어와 일치하는 로컬 셰이더 팩을 찾을 수 없습니다.
   noPacksInstalled: 설치된 셰이더 팩이 없습니다.
 shared:
+  pressKeyCombination: 키 조합을 누르세요...
   add: 추가
   author: 작성자
   back: 뒤로
@@ -1613,13 +1644,6 @@ tutorial:
     listTitle: 설치된 모드 또는 모드 검색
     searchDescription: 이 검색 상자로 Modrinth, Curseforge 또는 로컬 캐시에서 모드를 검색할 수 있습니다.
     searchTitle: 모드 검색
-  multiplayer:
-    contentDescription: 당신과 피어 간의 연결이 여기에 나열됩니다.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: 다른 플레이어와 그룹을 생성하거나 참여할 수 있습니다. 런처는 그룹에 따라 당신과 친구들 간에 P2P 연결을 생성하려고 시도합니다. 친구들이 준 그룹 이름을 입력하거나 고유한 이름을 만들 수 있습니다.
-    groupTitle: 그룹 참여
-    joinDescription: 그룹 이름을 입력하면 이 버튼을 클릭하여 그룹에 참여하거나 생성할 수 있습니다. 그룹 이름이 비어 있으면 런처가 이름을 생성해 줍니다.
-    manualDescription: 당신이나 친구가 그룹에 연결할 수 없다면, 수동 연결을 클릭하여 토큰을 수동으로 교환해 볼 수 있습니다. 그것도 실패한다면 인터넷 문제일 수 있습니다.
   recentPlayDescription: 생성된 게임들이 여기에 나열됩니다. 여기서 뷰를 전환하여 설치된 버전과 다운로드된 모드팩도 볼 수 있습니다.
   storePoupularModpackDescription: 이 섹션에서 Curseforge와 Modrinth의 가장 인기 있는 모드팩을 볼 수 있습니다.
   storeSearchCategoryDescription: 여기서 카테고리나 필터를 토글할 수도 있습니다.
@@ -1710,6 +1734,44 @@ userSkin:
   useSlim: 슬림 모델 사용
   classic: 클래식
   slim: 슬림
+  saveSuccess: 스킨을 디스크에 저장했습니다!
+  saveFailed: 스킨을 디스크에 저장하지 못했습니다
+  uploadFailed: 스킨 업로드에 실패했습니다
+  libraryTitle: 로컬 옷장
+  librarySubtitle: 스킨을 선택하고 정리하여 로컬에 저장하세요
+  manage: 관리
+  all: 모두
+  currentSkin: 현재 스킨
+  savedCount: 저장된 스킨
+  newSkin: 새 스킨
+  addNewSkin: 새 스킨 추가
+  editSkin: 스킨 편집
+  skinName: 스킨 이름
+  skinNamePlaceholder: '예: 내가 좋아하는 스킨'
+  localFile: 로컬 파일
+  urlOrPlayer: URL / 플레이어 이름
+  urlOrPlayerPlaceholder: 스킨 이미지 URL 또는 Minecraft 사용자 이름 입력
+  urlOrPlayerHint: Mojang에서 스킨을 가져오려면 PNG 이미지 직접 URL 또는 플레이어 이름을 입력하세요
+  dropFileHere: 스킨 PNG 파일을 여기에 놓거나 클릭하여 찾아보세요
+  supportedFormats: '지원 형식: 64x64 또는 64x32 PNG 이미지'
+  preview: 스킨 미리 보기
+  previewPlaceholder: 스킨 미리 보기를 사용할 수 없습니다
+  saveToLibrary: 옷장에 저장
+  saveAndEquip: 저장하고 착용
+  equip: 착용
+  equipToAccount: Minecraft 계정에 착용
+  equipped: 착용됨
+  noSkinSelected: 선택한 스킨 없음
+  saveCurrent: 현재 스킨 저장
+  officialPreset: 공식 프리셋
+  mySkins: 내 스킨
+  presets: 프리셋
+  noSkinsFound: 스킨을 찾을 수 없습니다
+  tryAddingOne: 위 버튼으로 새 스킨을 추가해 보세요!
+  skinUpdated: 스킨을 업데이트했습니다!
+  skinDeleteFailed: 스킨을 옷장에서 삭제하지 못했습니다
+  edit: 편집
+  fetch: 불러오기
 version:
   checkIntegrity: 무결성을 확인하십시오
   name: 버전
@@ -1738,6 +1800,8 @@ migrateMinecraft:
 reinstall:
   name: '{version} 재설치'
 agent:
+  accessRequiredHint: 기본 제공 에이전트를 사용하려면 XMCL을 구독하거나 설정에서 자체 AI 제공자를 구성하세요.
+  subscribeXmcl: XMCL 구독
   callingTool: '{name} 호출 중…'
   disabledPlaceholder: 에이전트 비활성화됨
   emptyHint: 에이전트에게 인스턴스 검사, 모드 활성화/비활성화, 로그 읽기 또는 충돌 진단을 요청하세요.

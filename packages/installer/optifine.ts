@@ -1,9 +1,13 @@
 import { ClassReader, ClassVisitor, Opcodes } from '@xmcl/asm'
 import { MinecraftFolder, MinecraftLocation, Version } from '@xmcl/core'
 import { getEntriesRecord, open, readAllEntries, readEntry } from '@xmcl/unzip'
-import { writeFile } from 'fs/promises'
-import { Tracker, WithProgress, onProgress } from './tracker'
-import { InstallOptions, SpawnJavaOptions, ensureFile, spawnProcess } from './utils'
+import {
+  type InstallMaterializeOperation,
+  type InstallOutput,
+  type InstallManifest,
+} from './installManifest'
+import { Tracker, WithProgress } from './tracker'
+import { InstallOptions, SpawnJavaOptions, spawnProcess } from './utils'
 
 export interface OptifineTrackerEvents {
   'optifine.unpack': WithProgress<{ version: string; path: string; minecraft: string }>
@@ -66,20 +70,11 @@ export function generateOptifineVersion(
   }
 }
 
-/**
- * Install optifine by optifine installer
- *
- * @param installer The installer jar file path
- * @param minecraft The minecraft location
- * @param options The option to install
- * @beta Might be changed and don't break the major version
- * @throws {@link BadOptifineJarError}
- */
-export async function installOptifine(
+export async function resolveOptifineInstallManifest(
   installer: string,
   minecraft: MinecraftLocation,
   options: InstallOptifineOptions = {},
-): Promise<string> {
+): Promise<{ version: string; plan: InstallManifest }> {
   options.signal?.throwIfAborted()
 
   const mc = MinecraftFolder.from(minecraft)
@@ -125,51 +120,53 @@ export async function installOptifine(
   )
   const versionJSONPath = mc.getVersionJson(versionJSON.id)
 
-  const progress = onProgress(options.tracker, 'optifine.unpack', {
-    version: versionJSON.id,
-    path: installer,
-    minecraft: mcversion,
-  })
-  progress.total = 3
-  // write version json
-  options.signal?.throwIfAborted()
-  await ensureFile(versionJSONPath)
-  await writeFile(versionJSONPath, JSON.stringify(versionJSON, null, 4), {
-    signal: options.signal,
-  })
-  progress.progress = 1
-
   const launchWrapperEntry = record[`launchwrapper-of-${launchWrapperVersion}.jar`]
-  // write launch wrapper
+  const materialize: InstallMaterializeOperation[] = [{
+    type: 'write' as const,
+    path: versionJSONPath,
+    content: JSON.stringify(versionJSON, null, 4),
+  }]
+  const materializedOutputs: InstallOutput[] = [{ path: versionJSONPath, validator: 'json' }]
   if (launchWrapperEntry) {
-    options.signal?.throwIfAborted()
     const wrapperDest = mc.getLibraryByPath(
       `optifine/launchwrapper-of/${launchWrapperVersion}/launchwrapper-of-${launchWrapperVersion}.jar`,
     )
-    await ensureFile(wrapperDest)
-    await writeFile(wrapperDest, await readEntry(zip, launchWrapperEntry), {
-      signal: options.signal,
+    materialize.push({
+      type: 'extract',
+      archive: installer,
+      entry: launchWrapperEntry.fileName,
+      path: wrapperDest,
     })
-    progress.progress = 2
+    materializedOutputs.push({ path: wrapperDest, validator: 'file' })
   }
 
-  // write the optifine
-  options.signal?.throwIfAborted()
   const dest = mc.getLibraryByPath(
     `optifine/Optifine/${mcversion}_${editionRelease}/Optifine-${mcversion}_${editionRelease}.jar`,
   )
   const mcJar = mc.getVersionJar(mcversion)
-
-  await ensureFile(dest)
-  await spawnProcess(options, ['-cp', installer, 'optifine.Patcher', mcJar, installer, dest], {
-    signal: options.signal,
-  }).catch((e) => {
-    e.name = 'OptifinePatchError'
-    throw e
-  })
-  progress.progress = progress.total
-
-  return versionJSON.id
+  return {
+    version: versionJSON.id,
+    plan: {
+      schemaVersion: 1,
+      tasks: [
+        {
+          id: 'optifine-materialize',
+          type: 'materialize',
+          operations: materialize,
+          outputs: materializedOutputs,
+        },
+        {
+          id: 'optifine-patcher',
+          type: 'java',
+          strategies: [[{
+            executable: options.java ?? 'java',
+            args: ['-cp', installer, 'optifine.Patcher', mcJar, installer, dest],
+          }]],
+          outputs: [{ path: dest, validator: 'zip' }],
+        },
+      ],
+    },
+  }
 }
 
 export class BadOptifineJarError extends Error {

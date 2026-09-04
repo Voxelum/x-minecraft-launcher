@@ -14,7 +14,12 @@ import { router } from './router'
 import { kFlights } from '@/composables/flights'
 import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
 import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
-import { appInsights, isIgnorableRendererExceptionMessage } from '@/telemetry'
+import {
+  flushRendererTelemetry,
+  isIgnorableRendererExceptionMessage,
+  isRuntimeServiceError,
+  trackRendererException,
+} from '@/telemetry'
 
 // to prevent the universal drop activated on self element dragging
 document.addEventListener('dragstart', (e) => {
@@ -27,12 +32,11 @@ function handleMigrate(from: string, to: string) {
   const modsGrouping = localStorage.getItem('modsGrouping')
   if (modsGrouping) {
     const value = JSON.parse(modsGrouping)
-    const transformed = Object.fromEntries(Object.entries(value).map(([key, value]) => {
-      return [
-        key.replace(from, to),
-        value
-      ]
-    }))
+    const transformed = Object.fromEntries(
+      Object.entries(value).map(([key, value]) => {
+        return [key.replace(from, to), value]
+      }),
+    )
     localStorage.setItem('modsGrouping', JSON.stringify(transformed))
   }
 
@@ -40,10 +44,12 @@ function handleMigrate(from: string, to: string) {
   if (instanceGroup) {
     const value = JSON.parse(instanceGroup) as (string | { instances: string[] })[]
     const transformed = value.map((value) => {
-      return typeof value === 'string' ? value.replace(from, to) : {
-        ...value,
-        instances: value.instances.map((instance) => instance.replace(from, to))
-      }
+      return typeof value === 'string'
+        ? value.replace(from, to)
+        : {
+            ...value,
+            instances: value.instances.map((instance) => instance.replace(from, to)),
+          }
     })
     localStorage.setItem('instanceGroup', JSON.stringify(transformed))
   }
@@ -51,12 +57,11 @@ function handleMigrate(from: string, to: string) {
   const remoteSSHServers = localStorage.getItem('remoteSSHServers')
   if (remoteSSHServers) {
     const value = JSON.parse(remoteSSHServers)
-    const transformed = Object.fromEntries(Object.entries(value).map(([key, value]) => {
-      return [
-        key.replace(from, to),
-        value
-      ]
-    }))
+    const transformed = Object.fromEntries(
+      Object.entries(value).map(([key, value]) => {
+        return [key.replace(from, to), value]
+      }),
+    )
     localStorage.setItem('remoteSSHServers', JSON.stringify(transformed))
   }
 
@@ -106,28 +111,30 @@ function handleMigrate(from: string, to: string) {
   }
 }
 
-const app = createApp(defineComponent({
-  setup() {
-    document.body.classList.remove('unloaded')
-    // get from to from the query
-    const query = new URLSearchParams(window.location.search)
-    const from = query.get('from')
-    const to = query.get('to')
-    if (from && to) {
-      handleMigrate(from, to)
-    }
+const app = createApp(
+  defineComponent({
+    setup() {
+      document.body.classList.remove('unloaded')
+      // get from to from the query
+      const query = new URLSearchParams(window.location.search)
+      const from = query.get('from')
+      const to = query.get('to')
+      if (from && to) {
+        handleMigrate(from, to)
+      }
 
-    provide(kFlights, (window as any).flights || {})
-    provide(kNotificationQueue, useNotificationQueue())
-    provide(kExceptionHandlers, useExceptionHandlers())
-    provide(kTaskManager, useTaskManager())
-    provide(kServiceFactory, useServiceFactory())
-    provide(kDialogModel, useDialogModel())
-    provide(kSWRVConfig, useSWRVConfig())
+      provide(kFlights, (window as any).flights || {})
+      provide(kNotificationQueue, useNotificationQueue())
+      provide(kExceptionHandlers, useExceptionHandlers())
+      provide(kTaskManager, useTaskManager())
+      provide(kServiceFactory, useServiceFactory())
+      provide(kDialogModel, useDialogModel())
+      provide(kSWRVConfig, useSWRVConfig())
 
-    return () => h(Context, null, { default: () => h(App) })
-  },
-}))
+      return () => h(Context, null, { default: () => h(App) })
+    },
+  }),
+)
 
 app.use(i18n)
 app.use(vuetify)
@@ -140,13 +147,16 @@ app.config.warnHandler = (msg, vm, trace) => {
   console.warn(msg)
 
   if (level === 4) {
-    appInsights.flush(false, () => {
+    void flushRendererTelemetry().finally(() => {
       window.location.reload()
     })
   }
 }
 
 app.config.errorHandler = (err: any, vm, info) => {
+  if (isRuntimeServiceError(err)) {
+    return
+  }
   if (err?.message?.indexOf('ResizeObserver') !== -1) {
     // ignore ResizeObserver error
     return
@@ -156,14 +166,11 @@ app.config.errorHandler = (err: any, vm, info) => {
   }
 
   const level = err?.message?.indexOf('TypeError') !== -1 ? 4 : 3
-  appInsights.trackException({
-    exception: err,
-    severityLevel: level,
-  })
+  const tracked = trackRendererException(err)
   console.error(err)
 
   if (level === 4) {
-    appInsights.flush(false, () => {
+    void tracked.then(flushRendererTelemetry).finally(() => {
       window.location.reload()
     })
   }

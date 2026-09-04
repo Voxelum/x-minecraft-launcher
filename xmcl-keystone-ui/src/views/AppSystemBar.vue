@@ -5,7 +5,7 @@
     window
     role="toolbar"
     :aria-label="systemBarAriaLabel"
-    class="moveable static! flex w-full grow-0 gap-1 p-0 text-[.875rem]! bg-[transparent]! dark:color-[#ffffffb3] pr-0"
+    class="moveable static! flex w-full grow-0 gap-1 p-0 text-[.875rem]! bg-[transparent]! dark:color-[#ffffffb3] pr-0 max-h-[30px]"
     :style="{ 'backdrop-filter': `blur(${blurAppBar}px)` }"
   >
     <span
@@ -144,6 +144,9 @@ import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getExpectedSize } from '@/util/size'
 
+import { kSettingsState } from '@/composables/setting'
+import { formatShortcutDisplay } from '@/util/shortcut'
+
 const props = defineProps<{
   noUser?: boolean
   noTask?: boolean
@@ -152,6 +155,7 @@ const props = defineProps<{
 }>()
 
 const { blurAppBar } = injection(kTheme)
+const { state: settingsState } = injection(kSettingsState)
 const { maximize, minimize, close, hide } = windowController
 const { shouldShiftBackControl, hideWindowControl } = useWindowStyle()
 const { show: showFeedbackDialog } = useDialog('feedback')
@@ -185,7 +189,8 @@ const paletteShortcut = computed(() => {
     // Start / Menu button opens the palette in gamepad mode.
     return gamepadLabels.value.menu
   }
-  return navigator.platform.toLowerCase().includes('mac') ? '⌘⇧C' : 'Ctrl+Shift+C'
+  const custom = settingsState.value?.quickActionShortcut
+  return formatShortcutDisplay(custom || '')
 })
 const gamepadLabel = computed(() => gamepadName.value || t('gamepad.connected'))
 const openPalette = () => { paletteShown.value = true }

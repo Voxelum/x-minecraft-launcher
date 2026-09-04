@@ -1,5 +1,22 @@
 import { describe, expect, test } from 'vitest'
-import { getModUpgradeFilenameMappings, migrateModGroupFilenames } from './InstanceModsGroupService'
+import {
+  getInstanceGroupFileName,
+  getModUpgradeFilenameMappings,
+  InstanceGroupStateKey,
+  migrateModGroupFilenames,
+} from './InstanceModsGroupService'
+
+describe('instance content group storage', () => {
+  test('keeps mod storage compatible and isolates other content types', () => {
+    expect(getInstanceGroupFileName()).toBe('mod-groups.json')
+    expect(getInstanceGroupFileName('resourcepacks')).toBe('resourcepacks-groups.json')
+    expect(getInstanceGroupFileName('shaderpacks')).toBe('shaderpacks-groups.json')
+
+    expect(InstanceGroupStateKey('instance')).toBe('instance-mods-group-state://instance')
+    expect(InstanceGroupStateKey('instance', 'resourcepacks')).toBe('instance-resourcepacks-group-state://instance')
+    expect(InstanceGroupStateKey('instance', 'shaderpacks')).toBe('instance-shaderpacks-group-state://instance')
+  })
+})
 
 describe('mod group filename migration', () => {
   test('maps provider upgrades and preserves unrelated group entries', () => {

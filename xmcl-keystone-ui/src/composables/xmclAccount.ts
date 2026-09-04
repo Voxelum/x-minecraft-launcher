@@ -1,20 +1,15 @@
 import {
-  AUTHORITY_MICROSOFT,
   XmclAccountServiceKey,
   XmclAccountState,
   type XmclOAuthProvider,
-  type UserProfile,
 } from '@xmcl/runtime-api'
-import type { InjectionKey, Ref } from 'vue'
+import type { InjectionKey } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
 
 export const kXmclAccount: InjectionKey<ReturnType<typeof useXmclAccount>> = Symbol('XmclAccount')
 
-export function useXmclAccount(
-  selectedGameAccount: Ref<UserProfile>,
-  modrinthUserId: Ref<string | undefined>,
-) {
+export function useXmclAccount() {
   const service = useService(XmclAccountServiceKey)
   const {
     state,
@@ -68,32 +63,6 @@ export function useXmclAccount(
     }
   }
 
-  const microsoftBootstrapTarget = computed(() => {
-    const { id, authority, invalidated, expiredAt } = selectedGameAccount.value
-    return id && authority === AUTHORITY_MICROSOFT && !invalidated && expiredAt > Date.now()
-      ? id
-      : undefined
-  })
-  watch(
-    microsoftBootstrapTarget,
-    (id) => {
-      if (id) {
-        run(async () => {
-          await service.bootstrapMicrosoft(id)
-        })
-      }
-    },
-    { immediate: true },
-  )
-
-  watch(
-    modrinthUserId,
-    (id) => {
-      if (id) run(service.bootstrapModrinth)
-    },
-    { immediate: true },
-  )
-
   const account = computed(() => state.value?.account)
   const identities = computed(() => state.value?.identities ?? [])
   const session = computed(() => state.value?.session)
@@ -117,6 +86,7 @@ export function useXmclAccount(
     isValidating,
     error: computed(() => actionError.value ?? state.value?.error ?? stateError.value),
     authorizeMicrosoft: () => run(service.authorizeMicrosoft),
+    authorizeModrinth: () => run(service.authorizeModrinth),
     authorizeProvider: (provider: Extract<XmclOAuthProvider, 'google' | 'discord'>) =>
       run(() => service.authorizeProvider(provider)),
     prepareMerge: () => run(service.prepareMerge),

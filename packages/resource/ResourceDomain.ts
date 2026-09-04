@@ -9,3 +9,10 @@ export const enum ResourceDomain {
   Blueprints = 'schematics',
   Unclassified = 'unclassified',
 }
+
+export function getResourceTaskPriority(domain: ResourceDomain) {
+  if (domain === ResourceDomain.Mods) return -1
+  if (domain === ResourceDomain.ResourcePacks) return -2
+  if (domain === ResourceDomain.ShaderPacks) return -3
+  return -4
+}

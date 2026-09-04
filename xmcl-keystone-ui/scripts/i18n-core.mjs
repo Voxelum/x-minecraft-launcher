@@ -6,10 +6,13 @@
  * surgical line-based key removal / renaming. No side effects on import.
  */
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
-import { createRequire } from 'node:module'
 import { dirname, extname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { baseCompile } from '@intlify/message-compiler'
+import { NodeTypes, baseParse } from '@vue/compiler-dom'
+import { parse as parseSfc } from '@vue/compiler-sfc'
 import yaml from 'js-yaml'
+import ts from 'typescript'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 export const UI_ROOT = resolve(__dirname, '..')
@@ -18,31 +21,17 @@ export const REPO_ROOT = resolve(UI_ROOT, '..')
 // ---------------------------------------------------------------------------
 // vue-i18n message compiler — used to validate that every locale string
 // actually compiles, catching the `createCompileError` / SyntaxError class of
-// bugs (e.g. unbalanced braces) that otherwise only surface at runtime in the
-// user's browser. `baseCompile` is the exact compiler vue-i18n uses, pulled in
-// transitively via `vue-i18n`; try normal resolution first, then fall back to
-// pnpm's virtual store. Returns null if it can't be found (validation is then
-// limited to YAML parsing).
+// bugs (e.g. unbalanced braces) that otherwise only surface at runtime.
 // ---------------------------------------------------------------------------
-const require = createRequire(import.meta.url)
-function loadBaseCompile() {
-  try { return require('@intlify/message-compiler').baseCompile } catch { /* not hoisted */ }
-  try {
-    const pnpmDir = join(REPO_ROOT, 'node_modules', '.pnpm')
-    const entry = readdirSync(pnpmDir).find((n) => n.startsWith('@intlify+message-compiler@'))
-    if (entry) {
-      return require(join(pnpmDir, entry, 'node_modules', '@intlify', 'message-compiler')).baseCompile
-    }
-  } catch { /* store layout differs — give up gracefully */ }
-  return null
-}
-const baseCompile = loadBaseCompile()
 export const LOCALES_DIR = join(UI_ROOT, 'locales')
 export const SRC_DIR = join(UI_ROOT, 'src')
+export const MAIN_SRC_DIR = join(REPO_ROOT, 'xmcl-electron-app', 'main')
+export const MAIN_LOCALES_DIR = join(MAIN_SRC_DIR, 'locales')
+export const MAIN_DEFINED_LOCALES_FILE = join(MAIN_SRC_DIR, 'definedLocales.ts')
 export const SETTINGS_FILE = join(REPO_ROOT, '.vscode', 'settings.json')
 export const BASE_LOCALE = 'en'
 export const INDENT = 2
-const SRC_EXTS = ['.vue', '.ts']
+const SRC_EXTS = ['.vue', '.ts', '.tsx', '.js', '.jsx']
 
 // ---------------------------------------------------------------------------
 // YAML / object helpers
@@ -101,20 +90,64 @@ export function listSourceFiles(dir = SRC_DIR, out = []) {
     const full = join(dir, name)
     const st = statSync(full)
     if (st.isDirectory()) listSourceFiles(full, out)
-    else if (SRC_EXTS.includes(extname(name))) out.push(full)
+    else if (SRC_EXTS.includes(extname(name)) && !/\.(?:test|spec)\.[^.]+$/.test(name)) out.push(full)
   }
   return out
 }
 
 export const isSourceFile = (p) => SRC_EXTS.includes(extname(p))
 
+function loadLocaleKeys(directory, locales) {
+  const localeKeys = new Map()
+  const localeErrors = new Map()
+  const localeNames = new Set()
+  for (const file of readdirSync(directory).filter((name) => name.endsWith('.yaml'))) {
+    const locale = file.replace(/\.yaml$/, '')
+    if (locales && !locales.has(locale)) continue
+    localeNames.add(locale)
+    try {
+      localeKeys.set(locale, flatten(yaml.load(readFileSync(join(directory, file), 'utf8'))))
+    } catch (e) {
+      localeErrors.set(locale, String(e?.message || e).split('\n')[0])
+    }
+  }
+  return { localeKeys, localeErrors, localeNames }
+}
+
+function readDefinedMainLocales() {
+  const content = readFileSync(MAIN_DEFINED_LOCALES_FILE, 'utf8')
+  const sourceFile = ts.createSourceFile(MAIN_DEFINED_LOCALES_FILE, content, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+  const imports = new Map()
+  let initializer
+  for (const statement of sourceFile.statements) {
+    if (ts.isImportDeclaration(statement) && statement.importClause?.name && ts.isStringLiteral(statement.moduleSpecifier)) {
+      const match = /\.\/locales\/([^/]+)\.yaml$/.exec(statement.moduleSpecifier.text)
+      if (match) imports.set(statement.importClause.name.text, match[1])
+    }
+    if (ts.isVariableStatement(statement)) {
+      for (const declaration of statement.declarationList.declarations) {
+        if (ts.isIdentifier(declaration.name) && declaration.name.text === 'definedLocales') initializer = declaration.initializer
+      }
+    }
+  }
+  if (!initializer || !ts.isObjectLiteralExpression(initializer)) throw new Error('Cannot read definedLocales from Electron main process')
+  const locales = new Set()
+  for (const property of initializer.properties) {
+    if (ts.isShorthandPropertyAssignment(property)) {
+      const locale = imports.get(property.name.text)
+      if (locale) locales.add(locale)
+    } else if (ts.isPropertyAssignment(property) && ts.isIdentifier(property.initializer)) {
+      const locale = imports.get(property.initializer.text)
+      if (locale) locales.add(locale)
+    }
+  }
+  return locales
+}
+
 // ---------------------------------------------------------------------------
 // Source scanning (vue-i18n usages)
 // ---------------------------------------------------------------------------
-const CALL_RE = /(?<![\w$])\$?t[cem]?\(\s*(['"`])((?:\\.|(?!\1)[\s\S])*?)\1/g
-const KEYPATH_RE = /\bkeypath\s*=\s*"([^"${}]+)"/g
-const I18N_BLOCK_RE = /<i18n\b([^>]*)>([\s\S]*?)<\/i18n>/g
-const TPL_RE = /`((?:\\.|[^`\\])*)`/g
+const TRANSLATION_FUNCTION_RE = /^\$?t[cem]?$/
 
 /** Scan one source file -> { staticKeys, prefixes, localDefined, locations }. */
 export function scanSource(file, content) {
@@ -122,18 +155,9 @@ export function scanSource(file, content) {
   const staticKeys = new Set()
   const prefixes = new Set()
   const localDefined = new Set()
+  const localMessages = new Map()
+  const localErrors = new Map()
   const locations = new Map()
-
-  const bodyForUsage = content.replace(I18N_BLOCK_RE, (whole, attrs, inner) => {
-    const localeMatch = /locale\s*=\s*["']([^"']+)["']/.exec(attrs)
-    const locale = localeMatch ? localeMatch[1] : BASE_LOCALE
-    if (locale === BASE_LOCALE) {
-      try {
-        for (const key of flatten(yaml.load(inner)).keys()) localDefined.add(key)
-      } catch { /* ignore malformed inline block */ }
-    }
-    return whole.replace(/[^\n]/g, ' ')
-  })
 
   const lineAt = (index) => content.slice(0, index).split('\n').length
   const record = (raw, index) => {
@@ -150,22 +174,85 @@ export function scanSource(file, content) {
     if (!locations.has(key)) locations.set(key, `${rel}:${lineAt(index)}`)
   }
 
-  let m
-  CALL_RE.lastIndex = 0
-  while ((m = CALL_RE.exec(bodyForUsage))) record(m[2], m.index)
-  KEYPATH_RE.lastIndex = 0
-  while ((m = KEYPATH_RE.exec(bodyForUsage))) record(m[1], m.index)
-  TPL_RE.lastIndex = 0
-  while ((m = TPL_RE.exec(bodyForUsage))) {
-    const lit = m[1]
-    const idx = lit.indexOf('${')
-    if (idx < 0) continue
-    const prefix = lit.slice(0, idx)
-    const dot = prefix.lastIndexOf('.')
-    if (dot <= 0) continue
-    prefixes.add(prefix.slice(0, dot + 1))
+  const isTranslationCall = (expression) => {
+    if (ts.isIdentifier(expression)) return TRANSLATION_FUNCTION_RE.test(expression.text)
+    return ts.isPropertyAccessExpression(expression) && TRANSLATION_FUNCTION_RE.test(expression.name.text)
   }
-  return { staticKeys, prefixes, localDefined, locations }
+  const scanScript = (source, offset, scriptKind = ts.ScriptKind.TS) => {
+    const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, scriptKind)
+    const recordArgument = (argument) => {
+      if (ts.isStringLiteral(argument) || ts.isNoSubstitutionTemplateLiteral(argument)) {
+        record(argument.text, offset + argument.getStart(sourceFile))
+      } else if (ts.isTemplateExpression(argument)) {
+        record(`${argument.head.text}\${}`, offset + argument.getStart(sourceFile))
+      } else if (ts.isConditionalExpression(argument)) {
+        recordArgument(argument.whenTrue)
+        recordArgument(argument.whenFalse)
+      } else if (ts.isParenthesizedExpression(argument)) {
+        recordArgument(argument.expression)
+      } else if (ts.isBinaryExpression(argument) && [ts.SyntaxKind.BarBarToken, ts.SyntaxKind.QuestionQuestionToken].includes(argument.operatorToken.kind)) {
+        recordArgument(argument.left)
+        recordArgument(argument.right)
+      }
+    }
+    const visit = (node) => {
+      if (ts.isCallExpression(node) && isTranslationCall(node.expression)) {
+        const argument = node.arguments[0]
+        if (argument) recordArgument(argument)
+      }
+      ts.forEachChild(node, visit)
+    }
+    visit(sourceFile)
+  }
+
+  if (extname(file) !== '.vue') {
+    const scriptKind = extname(file).includes('x') ? ts.ScriptKind.TSX : extname(file) === '.js' ? ts.ScriptKind.JS : ts.ScriptKind.TS
+    scanScript(content, 0, scriptKind)
+    return { staticKeys, prefixes, localDefined, localMessages, localErrors, source: rel, locations }
+  }
+
+  const { descriptor } = parseSfc(content, { filename: file })
+  for (const block of [descriptor.script, descriptor.scriptSetup]) {
+    if (block) scanScript(block.content, block.loc.start.offset, block.lang === 'js' ? ts.ScriptKind.JS : ts.ScriptKind.TS)
+  }
+  for (const block of descriptor.customBlocks.filter((candidate) => candidate.type === 'i18n')) {
+    const locale = block.attrs.locale ?? BASE_LOCALE
+    try {
+      const messages = flatten(yaml.load(block.content))
+      const existing = localMessages.get(locale) ?? new Map()
+      for (const [key, value] of messages) existing.set(key, value)
+      localMessages.set(locale, existing)
+      if (locale === BASE_LOCALE) for (const key of messages.keys()) localDefined.add(key)
+    } catch (e) {
+      localErrors.set(locale, String(e?.message || e).split('\n')[0])
+    }
+  }
+
+  if (descriptor.template) {
+    const templateOffset = descriptor.template.loc.start.offset
+    const root = baseParse(descriptor.template.content, { onError() {} })
+    const scanExpression = (expression) => {
+      if (expression?.type === NodeTypes.SIMPLE_EXPRESSION && !expression.isStatic) {
+        scanScript(expression.content, templateOffset + expression.loc.start.offset)
+      }
+    }
+    const walk = (node) => {
+      if (node.type === NodeTypes.INTERPOLATION) scanExpression(node.content)
+      if (node.type === NodeTypes.ELEMENT) {
+        for (const prop of node.props) {
+          if (prop.type === NodeTypes.ATTRIBUTE && prop.name === 'keypath' && prop.value) {
+            record(prop.value.content, templateOffset + prop.value.loc.start.offset)
+          } else if (prop.type === NodeTypes.DIRECTIVE) {
+            scanExpression(prop.exp)
+          }
+        }
+      }
+      if (node.children) for (const child of node.children) walk(child)
+      if (node.branches) for (const branch of node.branches) walk(branch)
+    }
+    walk(root)
+  }
+  return { staticKeys, prefixes, localDefined, localMessages, localErrors, source: rel, locations }
 }
 
 // ---------------------------------------------------------------------------
@@ -174,23 +261,21 @@ export function scanSource(file, content) {
 
 /** Build the full state by reading every locale + source file once. */
 export function buildState() {
-  const localeKeys = new Map()
-  const localeErrors = new Map()
-  for (const file of readdirSync(LOCALES_DIR).filter((f) => f.endsWith('.yaml'))) {
-    const locale = file.replace(/\.yaml$/, '')
-    try {
-      localeKeys.set(locale, flatten(yaml.load(readFileSync(join(LOCALES_DIR, file), 'utf8'))))
-    } catch (e) {
-      // A malformed YAML must not crash the whole lint — record it so it can be
-      // reported as an `invalid` finding instead.
-      localeErrors.set(locale, String(e?.message || e).split('\n')[0])
-    }
-  }
+  const { localeKeys, localeErrors, localeNames } = loadLocaleKeys(LOCALES_DIR)
   const fileScans = new Map()
   for (const file of listSourceFiles()) {
     fileScans.set(file, scanSource(file, readFileSync(file, 'utf8')))
   }
-  return { localeKeys, localeErrors, fileScans, allowList: loadAllowList() }
+  return { localeKeys, localeErrors, localeNames, fileScans, allowList: loadAllowList() }
+}
+
+export function buildMainState() {
+  const { localeKeys, localeErrors, localeNames } = loadLocaleKeys(MAIN_LOCALES_DIR, readDefinedMainLocales())
+  const fileScans = new Map()
+  for (const file of listSourceFiles(MAIN_SRC_DIR)) {
+    fileScans.set(file, scanSource(file, readFileSync(file, 'utf8')))
+  }
+  return { localeKeys, localeErrors, localeNames, fileScans, allowList: new Set() }
 }
 
 /** Apply a single changed/added/removed path to an existing state (in place). */
@@ -205,6 +290,7 @@ export function applyChange(state, p) {
   if (inLocales && abs.endsWith('.yaml')) {
     const locale = abs.slice(LOCALES_DIR.length + 1).replace(/\.yaml$/, '')
     if (exists) {
+      state.localeNames?.add(locale)
       try {
         state.localeKeys.set(locale, flatten(yaml.load(readFileSync(abs, 'utf8'))))
         state.localeErrors?.delete(locale)
@@ -215,6 +301,7 @@ export function applyChange(state, p) {
     } else {
       state.localeKeys.delete(locale)
       state.localeErrors?.delete(locale)
+      state.localeNames?.delete(locale)
     }
     return 'locale'
   }
@@ -235,12 +322,10 @@ export function computeLint(state) {
 
   const usedStatic = new Set()
   const usedPrefixes = new Set()
-  const localDefined = new Set()
   const usageLocations = new Map()
   for (const res of state.fileScans.values()) {
-    for (const k of res.staticKeys) usedStatic.add(k)
+    for (const k of res.staticKeys) if (!res.localDefined.has(k)) usedStatic.add(k)
     for (const p of res.prefixes) usedPrefixes.add(p)
-    for (const k of res.localDefined) localDefined.add(k)
     for (const [k, loc] of res.locations) if (!usageLocations.has(k)) usageLocations.set(k, loc)
   }
 
@@ -249,23 +334,47 @@ export function computeLint(state) {
     for (const p of usedPrefixes) if (key.startsWith(p)) return true
     return false
   }
-  const isDefined = (key) => {
-    if (baseKeys.has(key) || localDefined.has(key) || state.allowList.has(key)) return true
-    const prefix = key + '.'
-    for (const k of baseKeys.keys()) if (k.startsWith(prefix)) return true
-    return false
+  const missingByKey = new Map()
+  for (const res of state.fileScans.values()) {
+    for (const key of res.staticKeys) {
+      if (baseKeys.has(key) || res.localDefined.has(key) || state.allowList.has(key)) continue
+      if (!missingByKey.has(key)) missingByKey.set(key, { key, at: res.locations.get(key) ?? '' })
+    }
   }
-
-  const missing = [...usedStatic].filter((k) => !isDefined(k)).sort()
-    .map((k) => ({ key: k, at: usageLocations.get(k) ?? '' }))
+  const missing = [...missingByKey.values()].sort((a, b) => a.key.localeCompare(b.key))
   const unused = [...baseKeys.keys()].filter((k) => !isUsed(k)).sort()
   const extra = []
-  for (const [locale, keys] of state.localeKeys) {
+  const coverage = []
+  const { invalid, warnings } = computeMessageDiagnostics(state)
+  const invalidKeys = new Set(invalid.filter(({ key }) => key !== null).map(({ locale, key }) => `${locale}\0${key}`))
+  const localeNames = state.localeNames ?? new Set([...state.localeKeys.keys(), ...state.localeErrors.keys()])
+  for (const locale of localeNames) {
     if (locale === BASE_LOCALE) continue
+    const keys = state.localeKeys.get(locale) ?? new Map()
     for (const k of keys.keys()) if (!baseKeys.has(k)) extra.push({ locale, key: k })
+    const translated = state.localeErrors.has(locale)
+      ? 0
+      : [...baseKeys.keys()].filter((key) => keys.has(key) && !invalidKeys.has(`${locale}\0${key}`)).length
+    coverage.push({
+      locale,
+      translated,
+      total: baseKeys.size,
+      missing: baseKeys.size - translated,
+      percent: Number((translated * 100 / baseKeys.size).toFixed(1)),
+    })
   }
   extra.sort((a, b) => a.locale.localeCompare(b.locale) || a.key.localeCompare(b.key))
-  return { missing, unused, extra, invalid: computeInvalid(state) }
+  coverage.sort((a, b) => b.percent - a.percent || a.locale.localeCompare(b.locale))
+  for (const result of state.fileScans.values()) {
+    if (!result.localMessages?.size && !result.localErrors?.size) continue
+    const inline = computeMessageDiagnostics({ localeKeys: result.localMessages, localeErrors: result.localErrors })
+    invalid.push(...inline.invalid.map((diagnostic) => ({ ...diagnostic, file: result.source })))
+    warnings.push(...inline.warnings.map((diagnostic) => ({ ...diagnostic, file: result.source })))
+  }
+  const sortDiagnostics = (a, b) => a.locale.localeCompare(b.locale) || String(a.key).localeCompare(String(b.key)) || String(a.file).localeCompare(String(b.file))
+  invalid.sort(sortDiagnostics)
+  warnings.sort(sortDiagnostics)
+  return { missing, unused, extra, invalid, warnings, coverage }
 }
 
 /**
@@ -275,27 +384,78 @@ export function computeLint(state) {
  * a stray `@`/`|`) and previously reached users. Returns an array of
  * { locale, key, code, message }. `key` is null for whole-file YAML errors.
  */
-export function computeInvalid(state) {
-  const out = []
+function computeMessageDiagnostics(state) {
+  const invalid = []
+  const warnings = []
+  const argumentsByLocale = new Map()
   if (state.localeErrors) {
     for (const [locale, message] of state.localeErrors) {
-      out.push({ locale, key: null, code: 'yaml', message })
+      invalid.push({ locale, key: null, code: 'yaml', message })
     }
   }
-  if (baseCompile) {
-    for (const [locale, keys] of state.localeKeys) {
-      for (const [key, value] of keys) {
-        if (typeof value !== 'string' || value.length === 0) continue
-        try {
-          baseCompile(value, { onError(e) { throw e } })
-        } catch (e) {
-          out.push({ locale, key, code: `compile${e?.code ?? ''}`, message: String(e?.message || e).split('\n')[0] })
+  for (const [locale, keys] of state.localeKeys) {
+    const localeArguments = new Map()
+    argumentsByLocale.set(locale, localeArguments)
+    for (const [key, value] of keys) {
+      if (typeof value !== 'string') {
+        const type = value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value
+        invalid.push({ locale, key, code: 'type', message: `Expected a string message, got ${type}` })
+        continue
+      }
+      if (value.trim().length === 0) {
+        invalid.push({ locale, key, code: 'empty', message: 'Message must not be empty' })
+        continue
+      }
+      try {
+        const { ast } = baseCompile(value, { onError(e) { throw e } })
+        const argumentsUsed = new Set()
+        const visit = (node) => {
+          if (!node || typeof node !== 'object') return
+          // @intlify/message-compiler uses node types 4 and 5 for named and list interpolations.
+          if (node.type === 4 && typeof node.key === 'string') argumentsUsed.add(node.key)
+          if (node.type === 5 && Number.isInteger(node.index)) argumentsUsed.add(`#${node.index}`)
+          for (const child of Object.values(node)) {
+            if (Array.isArray(child)) child.forEach(visit)
+            else visit(child)
+          }
         }
+        visit(ast)
+        localeArguments.set(key, argumentsUsed)
+      } catch (e) {
+        invalid.push({ locale, key, code: `compile${e?.code ?? ''}`, message: String(e?.message || e).split('\n')[0] })
       }
     }
   }
-  out.sort((a, b) => a.locale.localeCompare(b.locale) || String(a.key).localeCompare(String(b.key)))
-  return out
+  const baseArguments = argumentsByLocale.get(BASE_LOCALE) ?? new Map()
+  for (const [locale, keys] of argumentsByLocale) {
+    if (locale === BASE_LOCALE) continue
+    for (const [key, actual] of keys) {
+      const expected = baseArguments.get(key)
+      if (!expected) continue
+      const missing = [...expected].filter((name) => !actual.has(name)).sort()
+      const extra = [...actual].filter((name) => !expected.has(name)).sort()
+      if (extra.length) {
+        const parts = []
+        if (missing.length) parts.push(`missing: ${missing.join(', ')}`)
+        if (extra.length) parts.push(`extra: ${extra.join(', ')}`)
+        invalid.push({ locale, key, code: 'placeholders', message: `Placeholder mismatch (${parts.join('; ')})`, missing, extra })
+      } else if (missing.length) {
+        warnings.push({ locale, key, code: 'placeholders-missing', message: `Translation omits placeholders: ${missing.join(', ')}`, missing })
+      }
+    }
+  }
+  const sortDiagnostics = (a, b) => a.locale.localeCompare(b.locale) || String(a.key).localeCompare(String(b.key))
+  invalid.sort(sortDiagnostics)
+  warnings.sort(sortDiagnostics)
+  return { invalid, warnings }
+}
+
+export function computeInvalid(state) {
+  return computeMessageDiagnostics(state).invalid
+}
+
+export function computeWarnings(state) {
+  return computeMessageDiagnostics(state).warnings
 }
 
 // ---------------------------------------------------------------------------

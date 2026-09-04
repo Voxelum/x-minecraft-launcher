@@ -377,6 +377,45 @@
               </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
+          <v-expansion-panels
+            v-if="dependents?.length"
+            class="mb-4"
+            variant="accordion"
+          >
+            <v-expansion-panel>
+              <v-expansion-panel-title>
+                <span class="flex items-center gap-2">
+                  {{ t('dependencies.dependents') }}
+                  <v-chip size="x-small" label variant="tonal" color="primary">
+                    {{ dependents.length }}
+                  </v-chip>
+                </span>
+              </v-expansion-panel-title>
+              <v-expansion-panel-text>
+                <v-list lines="two" class="bg-transparent pa-0">
+                  <v-list-item
+                    v-for="dependent of dependents"
+                    :key="dependent.id"
+                    :title="dependent.title"
+                    :subtitle="dependent.description"
+                    class="cursor-pointer"
+                    @click="emit('open-dependent', dependent)"
+                  >
+                    <template #prepend>
+                      <v-avatar>
+                        <v-img :src="dependent.icon" />
+                      </v-avatar>
+                    </template>
+                    <template #append>
+                      <v-chip size="x-small" label variant="tonal">
+                        {{ tDepType(dependent.type) }}
+                      </v-chip>
+                    </template>
+                  </v-list-item>
+                </v-list>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
           <v-card-text v-if="loading" class="overflow-auto">
             <v-skeleton-loader
               type="heading, list-item, paragraph, card, sentences, image, paragraph, paragraph"
@@ -649,6 +688,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { vFallbackImg } from '@/directives/fallbackImage'
 import { BuiltinImages } from '@/constant'
 import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
+import { getMarketRoutePathFromCurseforgeUrl, getMarketRoutePathFromModrinthUrl } from '@/util/marketRoute'
 import { CollectionContentType, CollectionProvider } from '@xmcl/runtime-api'
 import AppCollectionList from './AppCollectionList.vue'
 import AppLocalCollectionList from './AppLocalCollectionList.vue'
@@ -660,6 +700,7 @@ const props = defineProps<{
   error?: any
   updating?: boolean
   dependencies: ProjectDependency[]
+  dependents?: ProjectDependent[]
   loading: boolean
   loadingDependencies?: boolean
   loadingVersions: boolean
@@ -699,6 +740,7 @@ const emit = defineEmits<{
   (event: 'delete'): void
   (event: 'enable', value: boolean): void
   (event: 'open-dependency', dep: ProjectDependency): void
+  (event: 'open-dependent', dependent: ProjectDependent): void
   (event: 'select:category', category: string): void
   (event: 'refresh'): void
   (event: 'description-link-clicked', e: MouseEvent, href: string): void
@@ -741,6 +783,14 @@ export interface ProjectDependency {
    * The version of the dependency that is installed but different from the required version
    */
   installedDifferentVersion?: string
+}
+
+export interface ProjectDependent {
+  id: string
+  icon?: string
+  title: string
+  description: string
+  type: 'required' | 'optional'
 }
 
 export interface ModGallery {
@@ -1013,19 +1063,10 @@ function onDescriptionLinkClicked(e: MouseEvent, href: string) {
   const url = new URL(href)
   if (url.host === 'modrinth.com') {
     const slug = url.pathname.split('/')[2] ?? ''
-    let domain: string = ''
-    if (url.pathname.startsWith('/mod/')) {
-      domain = 'mods'
-    } else if (url.pathname.startsWith('/shaders/')) {
-      domain = 'shaderpacks'
-    } else if (url.pathname.startsWith('/resourcepacks/')) {
-      domain = 'resourcepacks'
-    } else if (url.pathname.startsWith('/modpacks')) {
-      domain = 'modpacks'
-    }
+    const path = getMarketRoutePathFromModrinthUrl(url)
 
-    if (domain !== 'modpacks' && slug && domain) {
-      push({ query: { ...currentRoute.value.query, id: `modrinth:${slug}` } })
+    if (slug && path) {
+      push({ path, query: { ...currentRoute.value.query, id: `modrinth:${slug}` } })
       e.preventDefault()
       e.stopPropagation()
     }
@@ -1035,20 +1076,13 @@ function onDescriptionLinkClicked(e: MouseEvent, href: string) {
     url.pathname.startsWith('/minecraft')
   ) {
     const slug = url.pathname.split('/')[3] ?? ''
-    let domain: string = ''
-    if (url.pathname.startsWith('/minecraft/mc-mods/')) {
-      domain = 'mods'
-    } else if (url.pathname.startsWith('/texture-packs/')) {
-      domain = 'resourcepacks'
-    } else if (url.pathname.startsWith('/modpacks')) {
-      domain = 'modpacks'
-    }
+    const path = getMarketRoutePathFromCurseforgeUrl(url)
 
-    if (domain && domain !== 'modpacks' && slug) {
+    if (path && slug) {
       clientCurseforgeV1.searchMods({ slug, pageSize: 1 }).then((result) => {
         const id = result.data[0]?.id
         if (id) {
-          push({ query: { ...currentRoute.value.query, id: `curseforge:${id}` } })
+          push({ path, query: { ...currentRoute.value.query, id: `curseforge:${id}` } })
         } else {
           window.open(href, '_blank')
         }

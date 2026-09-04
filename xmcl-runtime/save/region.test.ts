@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { join } from 'path'
 import { tmpdir } from 'os'
-import { mkdtemp, rm } from 'fs-extra'
+import { copyFile, ensureDir, mkdtemp, rm } from 'fs-extra'
 import { getSaveRegions, listSaveDimensions, readSaveChunks, relocateSaveChunks, renderSaveRegion, writeSaveChunks } from './region'
 
 const mockRoot = join(__dirname, '..', '..', 'mock', 'saves')
@@ -15,6 +15,25 @@ describe('region', () => {
   test('getSaveRegions lists r.0.0', async () => {
     const regions = await getSaveRegions(join(mockRoot, '1.19.3'), 'minecraft:overworld')
     expect(regions).toContainEqual({ regionX: 0, regionZ: 0 })
+  })
+
+  test('supports standard dimensions stored under the dimensions directory', async () => {
+    const save = await mkdtemp(join(tmpdir(), 'xmcl-modern-dimensions-'))
+    const regionDir = join(save, 'dimensions', 'minecraft', 'overworld', 'region')
+    try {
+      await ensureDir(regionDir)
+      await copyFile(
+        join(mockRoot, '1.19.3', 'region', 'r.0.0.mca'),
+        join(regionDir, 'r.0.0.mca'),
+      )
+
+      await expect(listSaveDimensions(save)).resolves.toEqual(['minecraft:overworld'])
+      await expect(getSaveRegions(save, 'minecraft:overworld')).resolves.toContainEqual({ regionX: 0, regionZ: 0 })
+      const rendered = await renderSaveRegion(save, 'minecraft:overworld', 0, 0)
+      expect(rendered.chunks.some(Boolean)).toBe(true)
+    } finally {
+      await rm(save, { recursive: true, force: true })
+    }
   })
 
   test.each(['1.16.5', '1.19.3'])('renderSaveRegion produces non-empty image for %s', async (version) => {

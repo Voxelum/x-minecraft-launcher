@@ -131,7 +131,7 @@ export interface BadVersionJsonError {
   version: string
 }
 export function isBadVersionJsonError(e: any): e is BadVersionJsonError {
-  return e && e.error === 'BadVersionJson'
+  return e && (e.error === 'BadVersionJson' || e.name === 'BadVersionJson')
 }
 export interface CorruptedVersionJsonError {
   error: 'CorruptedVersionJson'
@@ -139,7 +139,7 @@ export interface CorruptedVersionJsonError {
   json: string
 }
 export function isCorruptedVersionJsonError(e: any): e is CorruptedVersionJsonError {
-  return e && e.error === 'CorruptedVersionJson'
+  return e && (e.error === 'CorruptedVersionJson' || e.name === 'CorruptedVersionJson')
 }
 export interface MissingVersionJsonError {
   error: 'MissingVersionJson'
@@ -147,7 +147,7 @@ export interface MissingVersionJsonError {
   path: string
 }
 export function isMissingVersionJsonError(e: any): e is MissingVersionJsonError {
-  return e && e.error === 'MissingVersionJson'
+  return e && (e.error === 'MissingVersionJson' || e.name === 'MissingVersionJson')
 }
 
 export interface CircularDependenciesError {

@@ -13,6 +13,7 @@ import {
   InstanceNotFoundError,
   PromptSpec,
   SelectOptions,
+  type ServiceKey,
   TaskHandle,
   UserNotFoundError,
   commands as defaultCommands,
@@ -22,6 +23,7 @@ import { Instance } from '@xmcl/instance'
 import { UserProfile } from '@xmcl/runtime-api'
 import { InjectionKey } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { withRendererAction, type RendererActionScope } from '@/rendererAction'
 
 /**
  * Renderer-side command host. Wires {@link CommandContext} to the
@@ -31,7 +33,13 @@ import { useI18n } from 'vue-i18n'
  */
 export interface RendererCommandHost {
   registry: CommandRegistry
-  list(): Array<{ id: string; title: string; description: string; category: string; ui?: { icon?: string } }>
+  list(): Array<{
+    id: string
+    title: string
+    description: string
+    category: string
+    ui?: { icon?: string }
+  }>
   dispatch<O = unknown>(id: string, input: unknown): Promise<O>
 }
 
@@ -51,7 +59,9 @@ const hiddenRendererCommands = new Set([
  * Creates the command host backed by injected stores. Must be called
  * within a Vue setup that has `kInstances` and `kUserContext` provided.
  */
-export function useRendererCommandHost(registry: CommandRegistry = defaultCommands): RendererCommandHost {
+export function useRendererCommandHost(
+  registry: CommandRegistry = defaultCommands,
+): RendererCommandHost {
   // Ensure built-ins are registered. Idempotent — safe to call multiple times.
   registerBuiltinCommands()
 
@@ -65,6 +75,20 @@ export function useRendererCommandHost(registry: CommandRegistry = defaultComman
   const userMenu = useUserMenuControl()
   const { t, te, locale } = useI18n()
 
+  async function callService(
+    action: RendererActionScope | undefined,
+    key: ServiceKey<any>,
+    method: string,
+    ...args: any[]
+  ) {
+    const service = factory.getService(key)
+    const fn = (service as any)[method]
+    if (typeof fn !== 'function') {
+      throw new Error(`Service '${String(key)}' has no method '${String(method)}'`)
+    }
+    return action ? action.run(() => fn.apply(service, args)) : fn.apply(service, args)
+  }
+
   function getCurrentInstance() {
     return instancesCtx.instances.value.find((instance) => instance.path === instanceCtx.path.value)
   }
@@ -73,12 +97,7 @@ export function useRendererCommandHost(registry: CommandRegistry = defaultComman
     mode: 'renderer',
     signal: new AbortController().signal,
     async call(key, method, ...args) {
-      const service = factory.getService(key)
-      const fn = (service as any)[method]
-      if (typeof fn !== 'function') {
-        throw new Error(`Service '${String(key)}' has no method '${String(method)}'`)
-      }
-      return fn.apply(service, args)
+      return callService(undefined, key, String(method), ...args)
     },
     async state() {
       throw new Error('CommandContext.state is not implemented for the renderer host')
@@ -153,7 +172,8 @@ export function useRendererCommandHost(registry: CommandRegistry = defaultComman
       // Explicitly read `locale` so that callers wrapping `list()` in a
       // `computed` will re-evaluate when the active language changes.
       void locale.value
-      return registry.list({ mode: 'renderer' })
+      return registry
+        .list({ mode: 'renderer' })
         .filter((command) => !hiddenRendererCommands.has(command.id))
         .map((command) => {
           const titleKey = `command.${command.id}.title`
@@ -163,7 +183,8 @@ export function useRendererCommandHost(registry: CommandRegistry = defaultComman
           return {
             id: command.id,
             title: translated !== titleKey ? translated : command.title,
-            description: translatedDesc !== descKey ? translatedDesc : (command.description ?? command.id),
+            description:
+              translatedDesc !== descKey ? translatedDesc : (command.description ?? command.id),
             category: command.category,
             ui: command.ui,
           }
@@ -177,7 +198,9 @@ export function useRendererCommandHost(registry: CommandRegistry = defaultComman
 
       if (id === 'instance.delete') {
         const raw = (input ?? {}) as { instance?: string }
-        const target = raw.instance ? await ctx.resolveInstance(raw.instance) : await ctx.pickInstance()
+        const target = raw.instance
+          ? await ctx.resolveInstance(raw.instance)
+          : await ctx.pickInstance()
         showDeleteInstanceDialog({ name: target.name, path: target.path })
         return undefined as O
       }
@@ -185,6 +208,18 @@ export function useRendererCommandHost(registry: CommandRegistry = defaultComman
       if (id === 'user.login') {
         userMenu.show('login')
         return undefined as O
+      }
+
+      if (id === 'instance.launch') {
+        return withRendererAction(
+          'user_action.minecraft.launch',
+          (action) =>
+            registry.dispatch<O>(id, input, {
+              ...ctx,
+              call: (key, method, ...args) => callService(action, key, String(method), ...args),
+            }),
+          { 'xmcl.action.source': 'command' },
+        )
       }
 
       return registry.dispatch<O>(id, input, ctx)

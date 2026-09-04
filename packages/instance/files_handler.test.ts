@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mkdtemp, rm, writeFile, ensureDir, pathExists, readFile } from 'fs-extra'
+import { copyFile, mkdtemp, rm, writeFile, ensureDir, pathExists, readFile, unlink } from 'fs-extra'
 import { tmpdir } from 'os'
 import { join, dirname } from 'path'
 import {
@@ -162,6 +162,73 @@ describe('InstanceFileOperationHandler', () => {
       expect((await readFile(installed)).toString()).toBe('downloaded')
     } finally {
       // best-effort cleanup
+    }
+  })
+
+  it('materializes keeps so a refreshed delta can commit them later', async () => {
+    const { root, instance, workspace, backup } = await setupDirs()
+    try {
+      const instanceFile = join(instance, 'mods', 'a.jar')
+      await ensureDir(join(instance, 'mods'))
+      await writeFile(instanceFile, 'prepared')
+      const ctx = createContext({
+        linkFiles: async (payloads, finished) => {
+          for (const payload of payloads) {
+            await ensureDir(join(workspace, 'mods'))
+            await copyFile(payload.src, payload.destination)
+            finished.add(payload.file.path)
+          }
+        },
+      })
+      const handler = new InstanceFileOperationHandler(
+        instance,
+        new Set(),
+        workspace,
+        backup,
+        ctx,
+      )
+      const target = file('mods/a.jar', 'AAA')
+
+      await handler.prepareInstallFiles(
+        [{ file: target, operation: 'keep' }],
+        new AbortController().signal,
+        true,
+      )
+      await unlink(instanceFile)
+      await handler.backupAndRename([{ file: target, operation: 'add' }])
+
+      expect(await readFile(instanceFile, 'utf8')).toBe('prepared')
+    } finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+
+  it('does not back up an existing file when its replacement is unresolved', async () => {
+    const { root, instance, workspace, backup } = await setupDirs()
+    try {
+      const instanceFile = join(instance, 'mods', 'a.jar')
+      await ensureDir(join(instance, 'mods'))
+      await writeFile(instanceFile, 'existing')
+      const handler = new InstanceFileOperationHandler(
+        instance,
+        new Set(),
+        workspace,
+        backup,
+        createContext(),
+      )
+      const target = file('mods/a.jar', 'AAA')
+
+      await handler.prepareInstallFiles(
+        [{ file: target, operation: 'add' }],
+        new AbortController().signal,
+        true,
+      )
+      await handler.backupAndRename([{ file: target, operation: 'backup-add' }])
+
+      expect(await readFile(instanceFile, 'utf8')).toBe('existing')
+      expect(await pathExists(join(backup, 'mods', 'a.jar'))).toBe(false)
+    } finally {
+      await rm(root, { recursive: true, force: true })
     }
   })
 

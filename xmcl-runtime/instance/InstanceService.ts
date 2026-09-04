@@ -26,7 +26,7 @@ import { ensureDir, readdir, readlink, readJson, rename, rm, writeFile, writeJso
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { ImageStorage, kTasks, Tasks } from '~/infra'
-import { VersionMetadataService } from '~/install'
+import { VersionMetadataService } from '~/install/VersionMetadataService'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'

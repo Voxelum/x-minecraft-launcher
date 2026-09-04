@@ -6,12 +6,10 @@
   position: relative;
   overflow: hidden;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(18, 18, 22, 0.92);
+  border: var(--surface-border);
+  background: var(--surface-bg);
   backdrop-filter: blur(24px) saturate(1.8);
-  box-shadow:
-    0 24px 80px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  box-shadow: var(--surface-shadow);
 }
 
 .gp-dialog__content {
@@ -243,9 +241,10 @@
   border-radius: 6px;
   font-size: 11px;
   font-weight: 700;
-  background: rgba(0, 0, 0, 0.25);
-  color: rgba(255, 255, 255, 0.85);
+  background: rgba(var(--v-theme-on-surface), 0.12);
+  color: rgba(var(--v-theme-on-surface), 0.85);
 }
 .gp-btn__key--primary {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(var(--v-theme-on-primary), 0.2);
+  color: rgb(var(--v-theme-on-primary));
 }

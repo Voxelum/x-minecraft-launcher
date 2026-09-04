@@ -84,6 +84,7 @@ export interface Peer {
 interface MultiplayerEvents {
   share: { id: string; manifest?: InstanceManifest }
   'connection-unexpected-closed': { id: string }
+  'local-lan': LanServerInfo
   lan: LanServerInfo & { session: string }
 }
 
@@ -107,6 +108,7 @@ export interface SetRemoteDescriptionOptions {
 
 export interface MultiplayerRoomAdmission {
   roomId: string
+  roomSessionId?: string
   socketUrl: string
   ticket: string
   peerId: string
@@ -133,6 +135,7 @@ export interface MultiplayerRoomState {
 }
 
 export interface MultiplayerIceServerCredential {
+  turnSessionId?: string
   uris?: string[]
   ttl?: number
   password?: string
@@ -146,6 +149,64 @@ export interface MultiplayerIceServerCredential {
   }>
 }
 
+export type MultiplayerTransport = 'webrtc' | 'node-datachannel'
+
+export type MultiplayerTelemetryStage =
+  | 'signaling_socket'
+  | 'peer_created'
+  | 'remote_description'
+  | 'ice_gathering'
+  | 'ice_connection'
+  | 'metadata_channel'
+  | 'minecraft_bridge'
+
+export type MultiplayerTelemetryAttemptKind =
+  | 'signaling_socket'
+  | 'peer_connection'
+  | 'minecraft_bridge'
+
+export type MultiplayerTelemetryOutcome =
+  | 'started'
+  | 'succeeded'
+  | 'failed'
+  | 'timed_out'
+  | 'cancelled'
+  | 'closed'
+
+export type MultiplayerTelemetryFailureCode =
+  | 'signaling_open_failed'
+  | 'signaling_closed'
+  | 'signaling_state_invalid'
+  | 'remote_description_invalid'
+  | 'ice_gathering_failed'
+  | 'ice_connection_failed'
+  | 'ice_timeout'
+  | 'data_channel_failed'
+  | 'metadata_timeout'
+  | 'bridge_bind_failed'
+  | 'bridge_connect_failed'
+  | 'peer_closed'
+  | 'launcher_shutdown'
+  | 'unknown'
+
+export interface MultiplayerTelemetryEvent {
+  attemptId: string
+  roomSessionId?: string
+  turnSessionId?: string
+  kind: MultiplayerTelemetryAttemptKind
+  mode: 'official_room' | 'manual_offer'
+  role: 'master' | 'member'
+  outcome: Exclude<MultiplayerTelemetryOutcome, 'started'>
+  failedStage?: MultiplayerTelemetryStage
+  failureCode?: MultiplayerTelemetryFailureCode
+  route?: 'unknown' | 'direct' | 'relay'
+  localCandidateType?: SelectedCandidateInfo['type']
+  remoteCandidateType?: SelectedCandidateInfo['type']
+  networkProtocol?: SelectedCandidateInfo['transportType']
+  retry: number
+  durationMs?: number
+}
+
 export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
   /**
    * Is the multiplayer module ready
@@ -156,7 +217,7 @@ export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
    */
   getPeers(): Peer[]
 
-  refreshNat(): Promise<void>
+  refreshIceServers(): Promise<void>
   /**
    * Set your user info
    */

@@ -9,7 +9,7 @@ export interface ResourceContext {
 
   readonly root: string
 
-  hashAndFileType(file: string, size: number, isDir?: boolean): Promise<[string, string]>
+  hashAndFileType(file: string, size: number, isDir?: boolean, priority?: number): Promise<[string, string]>
 
   parse(resource: ParseResourceArgs): Promise<ParseResourceResult>
 

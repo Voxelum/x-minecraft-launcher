@@ -1,7 +1,7 @@
 {
   "name": "@xmcl/worker",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Worker utility of the xmcl",
   "main": "./index.ts",
   "scripts": {

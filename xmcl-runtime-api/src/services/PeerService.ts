@@ -34,6 +34,14 @@ export interface NatDeviceInfo {
   serialNumber: string
   UDN: string
 }
+
+export interface NetworkDiagnostics {
+  refresh(iceServers: RTCIceServer[]): Promise<{
+    device?: NatDeviceInfo
+    ips: string[]
+    natType: NatType
+  }>
+}
 export class PeerState {
   connections = [] as Peer[]
   validIceServers = [] as string[]
@@ -181,10 +189,11 @@ export class PeerState {
   }
 
   connectionLocalDescription(update: { id: string; description: string }) {
-    const conn = this.connections.find((c) => c.id === update.id)
-    if (conn) {
-      conn.localDescriptionSDP = update.description
-    }
+    this.connections = this.connections.map((connection) =>
+      connection.id === update.id
+        ? { ...connection, localDescriptionSDP: update.description }
+        : connection,
+    )
   }
 
   connectionStateChange(update: { id: string; connectionState: ConnectionState }) {
@@ -277,12 +286,39 @@ export interface ShareInstanceOptions {
   manifest?: InstanceManifest
 }
 
+export interface MultiplayerInitPayload {
+  appDataPath: string
+  resourcePath: string
+  sessionId: string
+  launcherSessionId: string
+  signalingBaseUrl: string
+}
+
+export interface MultiplayerLogEvent {
+  level: 'info' | 'warn' | 'error'
+  event: string
+  data?: Record<string, unknown>
+}
+
 interface PeerServiceEvents {
   share: { id: string; manifest?: InstanceManifest }
+  'connection-unexpected-closed': { id: string }
+  'local-lan': import('@xmcl/client').LanServerInfo
+  lan: import('@xmcl/client').LanServerInfo & { session: string }
 }
 
 export interface PeerService extends GenericEventEmitter<PeerServiceEvents> {
   getPeerState(): Promise<SharedState<PeerState>>
+  setMultiplayerTransport(transport: import('../multiplayer').MultiplayerTransport): Promise<void>
+  multiplayerRefreshIceServers(): Promise<void>
+  multiplayerSetUserInfo(info: import('../multiplayer').ConnectionUserInfo): Promise<void>
+  multiplayerInitiate(): Promise<string>
+  multiplayerSetRemoteDescription(options: import('../multiplayer').SetRemoteDescriptionOptions): Promise<string>
+  multiplayerDrop(id: string): Promise<void>
+  multiplayerCreateGroup(): Promise<void>
+  multiplayerJoinGroup(groupId: string): Promise<void>
+  multiplayerTransferGroupMaster(peerId: string): Promise<void>
+  multiplayerLeaveGroup(): Promise<void>
   /**
    * Share the instance to other peers
    */

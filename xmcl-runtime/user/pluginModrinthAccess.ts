@@ -1,13 +1,10 @@
 import { LauncherAppPlugin } from '~/app'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { UserService } from './UserService'
-import { formatModrinthAuthorization, getModrinthAccessToken } from './utils/loginModrinth'
+import { formatModrinthAuthorization } from './utils/loginModrinth'
 
-export const pluginModrinthAccess: LauncherAppPlugin = async (app) => {
+export const pluginModrinthAccess: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('ModrinthAccess')
-
-  const userService = await app.registry.get(UserService)
-  const credentials = await app.registry.getOrCreate(ExternalCredentialService)
 
   app.protocol.registerHandler('xmcl', ({ request, response }) => {
     const parsed = request.url
@@ -20,7 +17,13 @@ export const pluginModrinthAccess: LauncherAppPlugin = async (app) => {
         ;(error as any).error = err
       }
       const code = parsed.searchParams.get('code') as string
-      userService.emit('modrinth-authorize-code', error, code)
+      void app.registry.get(UserService)
+        .then((userService) => {
+          userService.emit('modrinth-authorize-code', error, code)
+        })
+        .catch(() => {
+          logger.warn('Unable to emit Modrinth authorization code.')
+        })
       response.status = 200
       try {
         response.body = app.controller.getLoginSuccessHTML()
@@ -44,9 +47,10 @@ export const pluginModrinthAccess: LauncherAppPlugin = async (app) => {
       return
     }
 
+    const credentials = await app.registry.getOrCreate(ExternalCredentialService)
     const token = await credentials.getValidAccessToken('modrinth')
     if (token.status === 'valid') {
-  request.headers['Authorization'] = formatModrinthAuthorization(token.accessToken)
+      request.headers['Authorization'] = formatModrinthAuthorization(token.accessToken)
     }
   })
 }

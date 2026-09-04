@@ -7,6 +7,8 @@ export interface ModGroupData {
   files: string[]
 }
 
+export type InstanceContentGroupType = 'mods' | 'resourcepacks' | 'shaderpacks'
+
 export function normalizeModFileName(path: string) {
   const normalizedPath = path.replace(/\\/g, '/')
   return normalizedPath.slice(normalizedPath.lastIndexOf('/') + 1).replace(/\.disabled$/, '')
@@ -68,10 +70,14 @@ export interface ModGroupRules extends Record<string, string[]> {
 }
 
 /**
- * Function to get the instance group state key
+ * Function to get the instance content group state key
  */
-export function InstanceGroupStateKey(path: string) {
-  return 'instance-mods-group-state://' + path
+export function InstanceGroupStateKey(path: string, type: InstanceContentGroupType = 'mods') {
+  return `instance-${type}-group-state://${path}`
+}
+
+export function getInstanceGroupFileName(type: InstanceContentGroupType = 'mods') {
+  return type === 'mods' ? 'mod-groups.json' : `${type}-groups.json`
 }
 
 /**
@@ -80,21 +86,21 @@ export function InstanceGroupStateKey(path: string) {
 export const SharedGroupRulesKey = 'shared-mod-group-rules'
 
 /**
- * Service to manage mod groups within instances and import/export modlists with group information
+ * Service to manage content groups within instances and import/export modlists with group information
  */
 export interface InstanceModsGroupService {
   /**
-   * Get the shared state object for mod groups in an instance
+   * Get the shared state object for one content type's groups in an instance
    * @param instancePath The instance path
    */
-  getGroupState(instancePath: string): Promise<SharedState<InstanceModsGroupState>>
+  getGroupState(instancePath: string, type?: InstanceContentGroupType): Promise<SharedState<InstanceModsGroupState>>
 
   /**
-   * Update all mod group assignments for an instance
+   * Update all group assignments for one content type in an instance
    * @param instancePath The instance path
-   * @param groups Object mapping group names to arrays of mod hashes
+   * @param groups Object mapping group names to grouped file names
    */
-  updateModsGroups(instancePath: string, groups: Record<string, ModGroupData>): Promise<void>
+  updateModsGroups(instancePath: string, groups: Record<string, ModGroupData>, type?: InstanceContentGroupType): Promise<void>
   
   /**
    * Get the shared group rules that map mod IDs to group names

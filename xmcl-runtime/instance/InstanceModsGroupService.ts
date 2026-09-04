@@ -1,4 +1,4 @@
-import { InstanceModsGroupService as IInstanceModsGroupService, InstanceModsGroupState, InstanceGroupStateKey, InstanceModsGroupServiceKey, ModGroupRules, SharedState, ModGroupData } from '@xmcl/runtime-api'
+import { getInstanceGroupFileName, InstanceContentGroupType, InstanceModsGroupService as IInstanceModsGroupService, InstanceModsGroupState, InstanceGroupStateKey, InstanceModsGroupServiceKey, ModGroupRules, SharedState, ModGroupData } from '@xmcl/runtime-api'
 import { FSWatcher } from 'chokidar'
 import { ensureFile, pathExists, readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
@@ -20,15 +20,18 @@ export class InstanceModsGroupService extends AbstractService implements IInstan
    * Get the shared state object for mod groups in an instance
    * @param instancePath The instance path
    */
-  async getGroupState(instancePath: string): Promise<SharedState<InstanceModsGroupState>> {
+  async getGroupState(instancePath: string, type: InstanceContentGroupType = 'mods'): Promise<SharedState<InstanceModsGroupState>> {
     if (!instancePath) throw new AnyError('GetGroupStateError', 'Cannot get group state on empty path')
+    if (type !== 'mods' && type !== 'resourcepacks' && type !== 'shaderpacks') {
+      throw new AnyError('GetGroupStateError', `Unsupported content group type: ${type}`)
+    }
 
     const stateManager = await this.app.registry.get(ServiceStateManager)
 
-    return stateManager.registerOrGet(InstanceGroupStateKey(instancePath), async () => {
+    return stateManager.registerOrGet(InstanceGroupStateKey(instancePath, type), async () => {
       const state = new InstanceModsGroupState()
 
-      const groupsPath = join(instancePath, 'mod-groups.json')
+      const groupsPath = join(instancePath, getInstanceGroupFileName(type))
 
       const loadGroups = async () => {
         const data = await readFile(groupsPath, 'utf-8').catch(() => undefined)
@@ -69,9 +72,9 @@ export class InstanceModsGroupService extends AbstractService implements IInstan
    * @param instancePath The instance path
    * @param groups Object mapping group names to arrays of mod hashes
    */
-  async updateModsGroups(instancePath: string, groups: Record<string, ModGroupData>): Promise<void> {
-    const groupState = await this.getGroupState(instancePath)
-    const groupsPath = join(instancePath, 'mod-groups.json')
+  async updateModsGroups(instancePath: string, groups: Record<string, ModGroupData>, type: InstanceContentGroupType = 'mods'): Promise<void> {
+    const groupState = await this.getGroupState(instancePath, type)
+    const groupsPath = join(instancePath, getInstanceGroupFileName(type))
 
     // Update all groups at once
     groupState.groupsSet(groups)
@@ -82,7 +85,7 @@ export class InstanceModsGroupService extends AbstractService implements IInstan
       this.warn(`Failed to save mod groups to ${groupsPath}`, e)
     }
 
-    this.log(`Updated mod groups for instance ${instancePath} with ${Object.keys(groups).length} groups`)
+    this.log(`Updated ${type} groups for instance ${instancePath} with ${Object.keys(groups).length} groups`)
   }
 
   /**

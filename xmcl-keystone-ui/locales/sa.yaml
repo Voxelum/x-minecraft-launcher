@@ -3,18 +3,18 @@ AppAddInstanceDialog:
   createTitle: क्रीडां सृजतु
   serverTitle: स्वकीय-सेवाप्रदाता-सङ्केतम् लिखतु
 AppShareInstanceDialog:
+  editScopeDescription: LAN-जाले प्रचलितमिदं क्रीडनं ज्ञात्वा समकक्षाः याः सञ्चिकाः प्राप्तुं शक्नुवन्ति ताः चिनुत।
+  editScopeTitle: सहभाजनसीमां सम्पादयतु
+  instanceToShare: प्रचलितं क्रीडनम्
   alterDownloadDescription: यदि भवान् वर्तमानक्षणं न नाशयितुम् इच्छति, तर्हि भवान् स्वसहयोगिनः संरचनया नूतनक्षणं निर्मातुं शक्नोति। क्षणनिर्माणाय अधः नुदतु।
   baseInfo: मूलसंरचना
-  cancelShare: सहभाजनं निरस्यतु
   description: प्रोफाइल-सहभाजनात् परं, अन्ये जनाः भवतः सङ्गणकद्वारा एतान् सञ्चिकान् अवतारेतुं शक्नुवन्ति।
   downloadDescription: कृपया स्वसहयोगिना प्रदत्तानां सञ्चिकानां सत्यापनं करोतु। यां सञ्चिकाम् अवतारेतुम् इच्छति तां चिनोतु। इयं वर्तमानक्षणे {name} स्थापयिष्यते।
   downloadNotifyTitle: '{user} तः क्षणम् अवतारयतु'
   downloadTitle: सहयोगिभ्यः सञ्चिकाः अवतारयतु
   filesToDownload: अवतारेतुं सञ्चिकाः चिनोतु
   filesToShare: सहभाजनाय सञ्चिकाः चिनोतु
-  instanceShare: '{user} इदानीमेव वर्तमानक्षणं भवता सह साझितवान्'
   share: सहभाजनं करोतु
-  shareNotifyTitle: क्षणसहभाजनं करोतु
   shareTitle: क्रीडासञ्चिकाः अन्यक्रीडकेन सह साझयतु
 BaseSettingGeneral:
   title: सामान्यम्
@@ -32,6 +32,8 @@ HomeLaunchMultiInstanceDialog:
 SettingMigrationDialog:
   selectRootDirectory: मूलनिर्देशिकां चिनोतु
 agent:
+  accessRequiredHint: अन्तर्निर्मितप्रतिनिधिम् उपयोक्तुं XMCL-सदस्यतां गृह्णातु, अथवा विकल्पेषु स्वकीयम् AI-प्रदातारं विन्यस्यतु।
+  subscribeXmcl: XMCL-सदस्यतां गृह्णातु
   callingTool: '{name} आह्वयति...'
   disabledPlaceholder: प्रतिनिधिः असमर्थितः
   emptyHint: स्वक्षणं परीक्षितुं, मोड्स परिवर्तयितुं, वृत्तलेखं पठितुं, अथवा पतनस्य निदानं कर्तुं प्रतिनिधिं पृच्छतु।
@@ -162,7 +164,6 @@ curseforgeCategory:
   World Gen: संसारजननम्
 dataMigration:
   apply: विकल्पं प्रयुङ्क्त
-  directoryCriteriaHint: कृपया निश्चितं करोतु यत् भवतः नूतननिर्देशिका स्थानं रिक्ता निर्देशिका अस्ति!
   placeholder: निर्देशिकां चितुं कृपया अत्र नुदतु
   setRootCause: यदि भवान् एतस्यां प्रक्रियायां प्रवर्तकं बन्दं करोति, तर्हि स्वकीयं दत्तं (मानचित्राणि, संसाधनसञ्चयाः, मोड्स च) हारयिष्यति!
   setRootDescription: एतेन अस्याः प्रवर्तकस्य माइनक्राफ्ट् क्रीडायाः च मूलदत्तकोशः परिवर्तयिष्यते।
@@ -174,6 +175,7 @@ delete:
   'no': न
   'yes': लोपयतु
 dependencies:
+  dependents: अस्मिन् मोड् इत्यस्मिन् आश्रिताः मोड्
   embedded: अन्तर्निहितम्
   incompatible: असुसङ्गतम्
   name: अधीनताः
@@ -516,13 +518,8 @@ instances:
   addCurseForgeDescription: Curseforge दत्तकोशात् आयातयतु। भवतः Curseforge इत्यस्य मूलदत्तकोशः चितव्यः
   addDescription: शून्यात् नूतनं क्षणम् सृजतु
   addMMCDescription: विद्यमानं MultiMC क्षणम् आयातयतु।
-  addManually: हस्तेन सृजतु
   addModrinthDescription: विद्यमानं Modrinth क्षणम् आयातयतु।
   addPrismDescription: विद्यमानं PrismLauncher क्षणम् आयातयतु।
-  addServer: सेवाप्रदातुः सृजतु
-  addServerDescription: एतेन क्रीडा साक्षात् सेवाप्रदातरि प्रवर्तयितुं निर्मीयते।
-  addTemplate: अवतारीकृत-मोडप्याक् तः सृजतु
-  addTemplateDescription: अवतारीकृतात् मोडप्याक् तः आयातयतु
   addVanilla: वेनिला-सदृशात् माइनक्राफ्ट् तः सृजतु
   addVanillaDescription: साधारणात् .minecraft कोशात् आयातयतु।
   edition: संस्करणरूपम्
@@ -587,7 +584,7 @@ launchBlocked:
     description: प्रवर्तकस्य जावा निष्पादयितुं अनुमतिः नास्ति <span class="highlight"> {javaPath} </span>।
     title: प्रवर्तनाय अनुमतिः नास्ति
   launchNoProperJava:
-    description: क्रीडां प्रवर्तयितुं योग्यं जावा न चितम्।
+    description: क्रीडां प्रवर्तयितुं योग्यं जावा न चितम्। ({javaPath})
     title: योग्यं जावा न लब्धम्
   launchNoVersionInstalled:
     description: प्रवर्तनाय संस्करणं <span class="highlight">{version}</span> अन्वेष्टुं न शक्यते।
@@ -684,6 +681,10 @@ logsCrashes:
   showFile: कोशे दर्शयतु
   title: वृत्तलेखाः पतनविवरणानि च
 me:
+  groupByDate: दिनाङ्कानुसारं समूहीकरोतु
+  groupByFolder: पुटिकानुसारं समूहीकरोतु
+  instanceViewMode: दृष्टान्तदर्शनविधिः
+  listView: सूचीदर्शनम्
   news: वृत्तान्ताः
   recentPlay: सद्यः क्रीडितम्
 migrateMinecraft:
@@ -1006,10 +1007,49 @@ modrinth:
 modrinthCard:
   currentVersion: वर्तमानसंस्करणम्
 multiplayer:
+  joinDiscord: Discord मध्ये सामील व्हा
+  openConsumerPortal: ग्राहक पोर्टल उघडा
+  refundHint: परतावा हवा आहे? तुमच्या ऑर्डर आणि सदस्यता व्यवस्थापित करण्यासाठी Waffo ग्राहक पोर्टलला भेट द्या.
+  togetherSupportHint: मल्टीप्लेअर काम करत नसल्यास, आमच्या Discord मध्ये सामील व्हा आणि विकास कार्यसंघाशी संपर्क साधा. आम्ही समस्या सोडविण्यात मदत करू.
+  autoShareAmbiguous: अनेकानि क्रीडनानि प्रचलन्ति। XMCL तद् सहभाजयितुं शक्नुयात् इति LAN-जगतः आतिथ्यं कुर्वन्तं दृष्टान्तं चिनुत।
+  editSharingScope: सहभाजनसीमां सम्पादयतु
+  gameAvailable: LAN-क्रीडनम् उपलब्धम्
+  joinGame: क्रीडने सम्मिलतु
+  noRunningInstanceToShare: सहभाजनसीमां सम्पादयितुं पूर्वं क्रीडनं प्रारभताम्
+  updateSharedInstanceConfirm: अद्यतनीकृत्य प्रारभताम्
+  updateSharedInstanceDescription: सहभाजिताः मोडाः {instance} इत्यस्य मोडेभ्यः भिन्नाः सन्ति। प्रारम्भात् पूर्वम् आतिथेयेन सह मेलयितुं दृष्टान्तमिमम् अद्यतनीकरोतु? परिवर्तितानां सञ्चिकानां प्रतिलिपिः रक्ष्यते।
+  updateSharedInstanceTitle: सहभाजितं दृष्टान्तम् अद्यतनीकरोतु?
+  addFunds: "धनं योजयतु"
+  availableBalance: "उपलब्धं शेषधनम्"
+  balanceHint: "XMCL Together-सेवानां कृते उपलब्धम्"
+  billing: "भुगतानम्"
+  billingDescription: "रिले-प्रवेशं, भवतः Together Home योजनां, भुगतांश्च प्रबन्धयतु।"
+  billingError: "Together-भुगतानं लोडितुं न शक्यम्। किञ्चित्कालानन्तरं पुनः प्रयतताम्।"
+  buyTogether: "Together क्रीणातु"
+  cancelTogether: "योजना निरस्यतु"
+  checkout: "Waffo-भुगतानं उद्घाटयतु"
+  connectionTogetherWarning: "कक्षस्य एकः सदस्यः किञ्चित्कालात् भवता सह संयोजितुं न शक्नोति। कक्षे सर्वेषां संयोजनं सुधारयितुं XMCL Together प्रयतताम्। केवलं कक्षस्वामिनः Together आवश्यकम्।"
+  masterPurchaseHint: "कक्षे सर्वेषां संयोजनं सुधारयितुं केवलं कक्षस्वामिनः Together Home आवश्यकम्।"
+  natTogetherWarning: "भवतः रूटरेण कक्षस्वामिना सह संयोजने समस्या भवितुं शक्नोति। संयोजनं विफलं चेत्, भवद्भिः मित्रैः सह संयोजनं सुधारयितुं XMCL Together प्रयतताम्। कक्षस्य कृते Together क्रेतुं केवलं कक्षस्वामी आवश्यकः।"
+  togetherName: "Minecraft Together"
+  trialDescription: "1 GB रिले-यातायातेन सह एकं 7-दिवसीयं परीक्षणम्।"
+  trialTitle: "संयोजन-परीक्षणम्"
+  tryTogether: "Together प्रयतताम्"
+  month: "मासः"
+  orderStatus: "Waffo-आदेशः: {status}"
+  planDescription: "प्रतिमासं 20 GB प्रबन्धितं रिले-यातायातम्, तथा च भवतः मोडपैकस्य समस्यासु AI-सहायता।"
+  waffoHint: "भुगतानानि Waffo Pancake इत्यत्र सुरक्षिततया सम्पन्नानि भवन्ति। XMCL कदापि भवतः कार्ड-सङ्ख्यां न प्राप्नोति।"
+  subscription:
+    active: "सक्रियम्"
+    cancelled: "निरस्तम्"
+    payment_due: "भुगतानं देयम्"
+  trial:
+    active: "परीक्षणं सक्रियम्"
+    available: "निःशुल्कं परीक्षणं उपलब्धम्"
+    expired: "परीक्षणं प्रयुक्तम्"
+    unavailable: "परीक्षणं अनुपलब्धम्"
   loginRequiredDescription: P2P बहुक्रीडनं XMCL अन्तर्जालसेवान् उपयुङ्क्ते। अग्रे गन्तुं XMCL खाते प्रवेशं कुर्वन्तु।
   loginRequiredTitle: P2P बहुक्रीडनाय प्रवेशं कुर्वन्तु
-  allowTurn: रिले (relay) सेवाप्रदाता समर्थं करोतु
-  allowTurnHint: यदि भवान् मित्रैः सह सन्धितुं न शक्नोति तर्हि रिले सेवाप्रदातुः अनुमतिं ददातु।
   complete: पूर्णम्
   confirm: दृढीकरोतु
   connectionError: सम्पर्कदोषः
@@ -1044,7 +1084,6 @@ multiplayer:
   localToken: स्थानिकं प्रतीकम्
   manualConnect: हस्तेन सम्पर्कं करोतु
   name: LAN इत्यत्र बहुक्रीडकम्
-  natWarning: भवतः NAT प्रकारः साक्षात्सम्पर्कं बाधितुं शक्नोति।
   networkInfo: जालसूचना (परिवर्तनाय नुदतु)
   next: अग्रिमम्
   otherExposedPortDescription: '{user} द्वारा प्रेषितः पोर्ट (port)'
@@ -1057,8 +1096,6 @@ multiplayer:
   sendTokenToRemote: दूरस्थाय प्रतीकं प्रेषयतु
   share: क्षणसंरचनां साझयतु
   sharing: सञ्चिकाः साझयति...
-  sharingNotificationBody: भवान् {name} इत्यस्य साझितसंरचनातः क्षणम् अवतारेतुं सृजितुं च शक्नोति।
-  sharingNotificationTitle: एकः क्रीडकः स्वकीयां क्रीडासंरचनां साझयति
   start: आरम्भः
   startNewP2PConnection: नूतन-सहयोगि-सम्पर्कं निर्मातुं आरम्भ-नुदं नुदतु
 myStuff: मम सामग्री
@@ -1186,7 +1223,7 @@ resourcepack:
     title: संसाधनसञ्चयं लोपयतु
   dropHint: आयातनाय संसाधनकोशं/जिप-सञ्चिकाम् अत्र क्षिपतु।
   enable: '{count} संसाधनसञ्चयाः सक्रियाः'
-  incompatible: असुसङ्गतं संसाधनप्रारूपम् ({format})।
+  incompatible: असुसङ्गतं संसाधनप्रारूपम् ({format})। अपेक्षितम् {accept}, वर्तमानम् {actual}।
   name: संसाधनसञ्चयः | संसाधनसञ्चयाः
   linkShared: क्षणेषु संसाधनसञ्चयान् साझयतु
   linkSharedHint: क्षणस्य संसाधनकोशं वैश्विक-साझितकोशेन सह शृङ्खलयतु।
@@ -1195,12 +1232,9 @@ resourcepack:
   noPacksInstalled: भवता कोऽपि संसाधनसञ्चयः न संस्थापितः।
   search: संसाधनसञ्चयान् अन्विषतु...
   searchHint: संसाधनसञ्चयान् अन्विषतु
-  searchOnCurseforge: Curseforge मध्ये {name} अन्विषतु
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: चयनित-संसाधनसञ्चयाः
   showDirectory: संसाधनकोशं दर्शयतु
   showFile: '{file} कोशे संसाधनसञ्चयं दर्शयतु'
-  showInCurseforge: Curseforge मध्ये {name} दर्शयतु
   unselected: अचयनिताः संसाधनसञ्चयाः
 save:
   allowCheats: छलसङ्केतानां (Cheats) अनुमतिं ददातु
@@ -1243,11 +1277,11 @@ save:
   clearSelection: चयनं मार्जयतु
   copyChunks: चङ्क्स् प्रतिलिप्यतु
   pasteChunks: '{count} चङ्क्स् लेपयतु'
-  pasteChunksPlaceHint: लेपनाय मूषकं चालयित्वा नुदतु।
+  pasteChunksPlaceHint: लेपनाय मूषकं चालयित्वा नुदतु। ({count})
   pasteChunksCancel: निरस्यतु
   deleteChunks: चङ्क्स् लोपयतु
   deleteChunksTitle: चयनितचङ्क्स् लोपयतु
-  deleteChunksHint: किं चयनितचङ्क्स् लोपयितुम् इच्छति? एतद् अपरिवर्तनीयम्।
+  deleteChunksHint: किं चयनितचङ्क्स् ({count}) लोपयितुम् इच्छति? एतद् अपरिवर्तनीयम्।
   mapLoading: मानचित्रं भारयति...
   noRegions: अस्मिन् संसारे पूर्वावलोकनाय किमपि क्षेत्रं न जनितम्।
   dimOverworld: मुख्यधरा (Overworld)
@@ -1593,8 +1627,6 @@ setup:
     name: भाषां निर्धारयतु
   path: वर्तमानपथः
 shaderPack:
-  deletion: छायाकारसञ्चयम् लोपयतु
-  deletionHint: एतेन छायाकारसञ्चिका {path} विनश्यति।
   disabled: निष्क्रियाः छायाकारसञ्चयाः
   dropHint: छायाकारसञ्चयम् आयातयतु
   empty: कोऽपि छायाकारसञ्चयः न विनियुक्तः
@@ -1617,6 +1649,7 @@ shaderPack:
   showDirectory: छायाकारनिर्देशिकां दर्शयतु
   showFile: कोशे एतं छायाकारसञ्चयं दर्शयतु
 shared:
+  pressKeyCombination: कुञ्जीसंयोजनं नुदतु...
   add: योजयतु
   author: लेखकः
   back: पृष्ठतः
@@ -1729,13 +1762,6 @@ tutorial:
     listTitle: संस्थापितः अन्विष्यमाणः वा मोडः
     searchDescription: अनेन अन्वेषणपेटिकया मोड्स अन्वेष्टुं शक्यते।
     searchTitle: मोड्स अन्विषतु
-  multiplayer:
-    contentDescription: सम्पर्काः अत्र दर्शिताः।
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: भवान् अन्यक्रीडकैः सह समूहं निर्मातुं संयुजितुं च शक्नोति।
-    groupTitle: समूहे संयुजतु
-    joinDescription: समूहयोगार्थं नुदतु।
-    manualDescription: हस्तेन प्रतीकविनिमयं कर्तुं शक्यते।
   recentPlayDescription: सृष्टाः क्रीडाः अत्र दर्शिताः।
   storePoupularModpackDescription: लोकप्रियाः मोडप्याक्स् अत्र दर्शिताः।
   storeSearchCategoryDescription: वर्गाः शोधकाः च परिवर्तयितुं शक्यन्ते।
@@ -1832,6 +1858,44 @@ userSkin:
   urlNotEmpty: त्वचा URL रिक्तं न भवेत्
   urlNotValid: त्वचा URL अमान्यम् अस्ति
   useSlim: सूक्ष्मरूपं प्रयुङ्क्त
+  saveSuccess: त्वचा डिस्के रक्षिता!
+  saveFailed: त्वचां डिस्के रक्षितुं न शक्तम्
+  uploadFailed: त्वचायाः आरोपणं विफलम्
+  libraryTitle: स्थानीयवेषागारः
+  librarySubtitle: स्वत्वचाः चिनोतु व्यवस्थापयतु स्थानीयतया रक्षतु च
+  manage: व्यवस्थापयतु
+  all: सर्वाः
+  currentSkin: वर्तमानत्वचा
+  savedCount: रक्षिताः त्वचाः
+  newSkin: नवीना त्वचा
+  addNewSkin: नवीनां त्वचां योजयतु
+  editSkin: त्वचां सम्पादयतु
+  skinName: त्वचायाः नाम
+  skinNamePlaceholder: 'उदाहरणम्: मम प्रियत्वचा'
+  localFile: स्थानीयसञ्चिका
+  urlOrPlayer: URL / क्रीडकस्य नाम
+  urlOrPlayerPlaceholder: त्वचाचित्रस्य URL अथवा Minecraft-उपयोक्तृनाम लिखतु
+  urlOrPlayerHint: Mojang तः त्वचां प्राप्तुं PNG-चित्रस्य प्रत्यक्षं URL अथवा क्रीडकनाम लिखतु
+  dropFileHere: त्वचायाः PNG-सञ्चिकाम् अत्र पातयतु अथवा चयनाय नुदतु
+  supportedFormats: 'समर्थितं प्रारूपम्: 64x64 अथवा 64x32 PNG-चित्रम्'
+  preview: त्वचापूर्वदर्शनम्
+  previewPlaceholder: त्वचापूर्वदर्शनं नोपलभ्यते
+  saveToLibrary: वेषागारे रक्षतु
+  saveAndEquip: रक्षतु धारयतु च
+  equip: धारयतु
+  equipToAccount: Minecraft-लेखे धारयतु
+  equipped: धारिता
+  noSkinSelected: कापि त्वचा न चिता
+  saveCurrent: वर्तमानां रक्षतु
+  officialPreset: आधिकारिकपूर्वनिर्धारणम्
+  mySkins: मम त्वचाः
+  presets: पूर्वनिर्धारणानि
+  noSkinsFound: त्वचाः न प्राप्ताः
+  tryAddingOne: उपरिस्थया कुञ्चिकया नवीनां त्वचां योजयतु!
+  skinUpdated: त्वचा अद्यतनीकृता!
+  skinDeleteFailed: त्वचां वेषागारात् निष्कासयितुं न शक्तम्
+  edit: सम्पादयतु
+  fetch: आनयतु
 version:
   checkIntegrity: अखण्डतां परीक्षताम्
   name: संस्करणम् | संस्करणाणि
@@ -1850,7 +1914,7 @@ gamepad:
   disabledState: निष्क्रियम्
   toggle: परिवर्तयतु
   disabledNotify: क्रीडाफलकनियन्त्रणानि निष्कृतानि।
-  enabledNotify: क्रीडाफलकनियन्त्रणानि सक्रियाणि!
+  enabledNotify: क्रीडाफलकनियन्त्रणानि सक्रियाणि! {btnA}, {btnB}
   guide:
     confirm: चिनोतु
     navigate: सञ्चरतु

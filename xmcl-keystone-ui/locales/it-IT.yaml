@@ -3,21 +3,21 @@ AppAddInstanceDialog:
   createTitle: Crea gioco
   serverTitle: Inserisci l'indirizzo del server
 AppShareInstanceDialog:
+  editScopeDescription: Seleziona i file che gli altri peer potranno scaricare dopo aver rilevato questo gioco in esecuzione sulla LAN.
+  editScopeTitle: Modifica ambito di condivisione
+  instanceToShare: Gioco in esecuzione
   alterDownloadDescription: >-
     "Se non vuoi rovinare l'istanza corrente. Puoi anche creare una nuova istanza dalla configurazione del tuo peer. Fai clic sul pulsante qui sotto per creare un'istanza."
   baseInfo: Impostazioni di base
-  cancelShare: Annulla condivisione
   description: >-
     Dopo aver condiviso il profilo, altri luoghi possono scaricare questi file tramite il tuo PC.
   downloadDescription: >-
-    Verifica i file che ti sono stati forniti dal tuo peer.  Seleziona il file che desideri scaricare.  Verrà inserito nell'istanza corrente {nome}.
+    Verifica i file che ti sono stati forniti dal tuo peer.  Seleziona il file che desideri scaricare.  Verrà inserito nell'istanza corrente {name}.
   downloadNotifyTitle: Scarica l'istanza da {user}
   downloadTitle: Scarica i file da altri peer
   filesToDownload: Scegli i file da scaricare
   filesToShare: Scegli i file da condividere
-  instanceShare: '{user} ha appena condiviso l''istanza corrente con te'
   share: Condividi
-  shareNotifyTitle: Condividi l'istanza
   shareTitle: Condividi i file di gioco con altri giocatori
 BaseSettingGeneral:
   title: Generale
@@ -115,7 +115,6 @@ curseforgeCategory:
   Vanilla+: Vanilla+
 dataMigration:
   apply: Applica impostazioni
-  directoryCriteriaHint: Assicurati che la nuova posizione della directory sia una directory VUOTA!
   placeholder: Fare clic qui per selezionare la directory
   setRootCause: >-
     Si perderanno i dati (Mappe, Pacchetti di risorse, Mod) se si chiude il Launcher durante questo processo!
@@ -129,6 +128,7 @@ delete:
   'no': 'No'
   'yes': Elimina
 dependencies:
+  dependents: Mod che dipendono da questa mod
   embedded: Incorporato
   incompatible: Incompatibile
   name: Dipendenze
@@ -455,14 +455,9 @@ instances:
   addMMCDescription: |-
     Importa l'istanza MultiMC esistente.
     È necessario selezionare la cartella dati da MultiMC.
-  addManually: Crea manualmente
   addModrinthDescription: |-
     Importa l'istanza Modrinth esistente.
     È necessario selezionare la cartella dei dati root di Modrinth.
-  addServer: Crea da server
-  addServerDescription: Questo creerà un gioco che si avvia direttamente nel server.
-  addTemplate: Crea dal modpack scaricato
-  addTemplateDescription: Importa da Modpack scaricato
   addVanilla: Crea da Minecraft vanilla
   addVanillaDescription: >-
     Importa dalla cartella .minecraft comune. Questo duplicherà il profilo di gioco originale in XMCL.
@@ -505,7 +500,7 @@ java:
   name: Java
   noMemory: Non limitare l'utilizzo della memoria
   refresh: Aggiorna Java locale
-  systemMemory: Memoria di sistema attuale
+  systemMemory: 'Memoria di sistema: {free} / {total}'
   allocation: Assegnato
   autoHint: Il minimo cresce con il numero di mod installate; il massimo usa la memoria di sistema disponibile.
   change: Cambia
@@ -650,6 +645,10 @@ logsCrashes:
   title: Log o report arresto anomalo
   failures: Errori di avvio
 me:
+  groupByDate: Raggruppa per data
+  groupByFolder: Raggruppa per cartella
+  instanceViewMode: Modalità di visualizzazione delle istanze
+  listView: Vista elenco
   news: Notizie
   recentPlay: Giocato di recente
 migrationWindow:
@@ -728,7 +727,7 @@ modFilter:
   unusedOnly: Mostra solo mod biblioteche inutilizzate
 modInstall:
   archived: >-
-    {nome} è stato archiviato.
+    {name} è stato archiviato.
 
     {name} non riceverà ulteriori aggiornamenti a meno che l'autore non decida di annullare l'archiviazione del progetto.
   autoUpgrade:
@@ -958,11 +957,49 @@ modrinth:
 modrinthCard:
   currentVersion: Versione corrente
 multiplayer:
+  joinDiscord: Unisciti a Discord
+  openConsumerPortal: Apri il portale clienti
+  refundHint: Hai bisogno di un rimborso? Visita il portale clienti Waffo per gestire ordini e abbonamenti.
+  togetherSupportHint: Se la modalità multigiocatore non funziona, unisciti al nostro Discord e contatta il team di sviluppo. Ti aiuteremo a risolvere il problema.
+  autoShareAmbiguous: Sono in esecuzione più giochi. Seleziona l'istanza che ospita il mondo LAN affinché XMCL possa condividerla.
+  editSharingScope: Modifica ambito di condivisione
+  gameAvailable: Partita LAN disponibile
+  joinGame: Partecipa alla partita
+  noRunningInstanceToShare: Avvia un gioco prima di modificarne l'ambito di condivisione
+  updateSharedInstanceConfirm: Aggiorna e avvia
+  updateSharedInstanceDescription: Le mod condivise sono diverse da quelle di {instance}. Aggiornare questa istanza in modo che corrisponda all'host prima dell'avvio? Verrà eseguito il backup dei file modificati esistenti.
+  updateSharedInstanceTitle: Aggiornare l'istanza condivisa?
+  addFunds: "Aggiungi fondi"
+  availableBalance: "Saldo disponibile"
+  balanceHint: "Disponibile per i servizi XMCL Together"
+  billing: "Fatturazione"
+  billingDescription: "Gestisci l'accesso al relay, il tuo piano Together Home e i pagamenti."
+  billingError: "Impossibile caricare la fatturazione di Together. Riprova tra poco."
+  buyTogether: "Acquista Together"
+  cancelTogether: "Annulla piano"
+  checkout: "Apri il pagamento Waffo"
+  connectionTogetherWarning: "Un membro della stanza non riesce a connettersi a te da un po'. Prova XMCL Together per migliorare la connettività di tutti nella stanza. Solo il master della stanza ha bisogno di Together."
+  masterPurchaseHint: "Solo il master della stanza ha bisogno di Together Home per migliorare la connettività di tutti nella stanza."
+  natTogetherWarning: "Il tuo router potrebbe avere difficoltà a connettersi al master della stanza. Se le connessioni falliscono, prova XMCL Together per migliorare la connettività tra te e i tuoi amici. Solo il master della stanza deve acquistare Together per la stanza."
+  togetherName: "Minecraft Together"
+  trialDescription: "Una prova di 7 giorni con 1 GB di traffico relay."
+  trialTitle: "Prova di connettività"
+  tryTogether: "Prova Together"
+  month: "mese"
+  orderStatus: "Ordine Waffo: {status}"
+  planDescription: "20 GB di traffico relay gestito al mese, oltre alla risoluzione dei problemi del tuo modpack con l'IA."
+  waffoHint: "I pagamenti vengono completati in modo sicuro su Waffo Pancake. XMCL non riceve mai il numero della tua carta."
+  subscription:
+    active: "Attivo"
+    cancelled: "Annullato"
+    payment_due: "Pagamento dovuto"
+  trial:
+    active: "Prova attiva"
+    available: "Prova gratuita disponibile"
+    expired: "Prova utilizzata"
+    unavailable: "Prova non disponibile"
   loginRequiredDescription: Il multiplayer P2P utilizza i servizi online di XMCL. Accedi a un account XMCL per continuare.
   loginRequiredTitle: Accedi per il multiplayer P2P
-  allowTurn: Abilita il server di relay
-  allowTurnHint: >-
-    Abilita il server relay se non riesci a connetterti con il tuo amico. Tuttavia, l'utilizzo di un server di relay potrebbe rallentare la tua connessione. Usalo con cautela.
   complete: Completo
   confirm: Conferma
   connections: Connessioni
@@ -1013,15 +1050,11 @@ multiplayer:
   sendTokenToRemote: Invia token al remoto
   share: Condividi configurazione istanza
   sharing: Condivisione file...
-  sharingNotificationBody: Puoi scaricare o creare un'istanza dalla configurazione condivisa di {name}.
-  sharingNotificationTitle: Un peer sta condividendo la configurazione del gioco
   start: Inizia
   startNewP2PConnection: Fare clic sul pulsante Start per creare una nuova connessione peer
   connectionError: Errore di connessione
   connectionFailedHint: >-
     Impossibile stabilire la connessione. Verifica che entrambi i peer abbiano tipi di NAT compatibili.
-  natWarning: >-
-    Il tuo tipo di NAT potrebbe impedire le connessioni dirette. Prova ad abilitare il server di relay nelle impostazioni o chiedi al tuo amico di fare da host.
 myStuff: Le mie cose
 natType:
   blocked: Bloccato
@@ -1092,12 +1125,9 @@ resourcepack:
     Pacchetto risorse incompatibile ({format}). Fitin {accept}. Corrente {actual}.
   name: Pacchetto risorse | Pacchetti risorse
   searchHint: Cerca pacchetti di risorse
-  searchOnCurseforge: Ricerca {name} in curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Pacchetti risorse selezionati
   showDirectory: Aprite la cartella con i pacchetti di risorse
   showFile: Mostra il pacchetto risorse nella cartella {file}
-  showInCurseforge: Mostra {name} in curseforge
   unselected: Pacchetti risorse non selezionati
   noPacks: Nessun pacchetto risorse trovato
   search: Cerca pacchetti risorse...
@@ -1187,6 +1217,8 @@ serverStatus:
   refuse: §4Server rufiutato!
   timeout: §4Tmeout della conessione del server!
 agent:
+  accessRequiredHint: Abbonati a XMCL per usare l’agente integrato, oppure configura il tuo provider IA nelle impostazioni.
+  subscribeXmcl: Abbonati a XMCL
   notConfiguredHint: Configura una chiave API, un modello e un endpoint compatibile con OpenAI in Impostazioni → Generale → Agente IA. Ad esempio, usa OpenAI o un gateway compatibile con Claude.
 setting:
   aiAgentApiKeyDescription: Configura un provider compatibile con OpenAI, come OpenAI o un gateway per Claude. La chiave viene archiviata localmente su questo dispositivo.
@@ -1446,9 +1478,6 @@ shaderPack:
     Collega la cartella shaderpacks di questa istanza alla cartella condivisa
     globale in modo che tutte le istanze usino gli stessi shader pack. I
     pacchetti esistenti vengono uniti nella cartella condivisa.
-  deletion: Elimina Shader Pack
-  deletionHint: >-
-    Questa azione eliminerà il file del pacchetto shader {path} e non potrà essere annullata.
   disabled: Shader Pack disabilitato
   dropHint: Importa Shader Pack
   empty: Nessun shader pack allocato
@@ -1467,6 +1496,7 @@ shaderPack:
   noPacks: Nessun pacchetto shader installato
   search: Cerca pacchetti shader...
 shared:
+  pressKeyCombination: Premi una combinazione di tasti...
   add: Aggiungi
   author: Autore
   back: Indietro
@@ -1496,6 +1526,7 @@ shared:
   skipForNow: Salta per ora
   upgrade: Aggiorna
   'yes': Si
+  delete: Elimina
 sidebar:
   pin: Fissa
   unpin: Sblocca
@@ -1580,16 +1611,6 @@ tutorial:
     searchDescription: >-
       Puoi cercare mod da Modrinth, Curseforge o dalla tua cache locale utilizzando questa casella di ricerca.
     searchTitle: Cerca Mod
-  multiplayer:
-    contentDescription: Le connessioni tra te e i tuoi colleghi saranno elencate qui.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Puoi creare o unirti a un gruppo con altri giocatori. Il launcher tenterà di creare connessioni P2P tra te e i tuoi amici in base al gruppo. Puoi inserire il nome del gruppo fornito dai tuoi amici o crearne uno unico tuo.
-    groupTitle: Unisciti a un gruppo
-    joinDescription: >-
-      Una volta inserito un nome di gruppo, puoi fare clic su questo pulsante per unirti o creare il gruppo. Se il nome del gruppo è vuoto, il launcher genererà un nome per te.
-    manualDescription: >-
-      Se tu o un tuo amico non riuscite a connettervi al gruppo, potete provare a scambiare manualmente il token facendo clic su Connetti manualmente. Se anche questo tentativo fallisce, potrebbe trattarsi di un problema di connessione a Internet.
   recentPlayDescription: >-
     I giochi creati saranno elencati qui. Puoi cambiare le visualizzazioni qui per vedere anche le versioni installate e i modpack scaricati.
   storePoupularModpackDescription: In questa sezione vedrai i modpack più popolari in Curseforge e Modrinth.
@@ -1685,6 +1706,46 @@ userSkin:
   urlNotEmpty: Inserisci l'URL della Skin non può essere vuoto
   urlNotValid: Inserisci l'URL della Skin non è valido
   useSlim: Usa modello Skin
+  classic: Classico
+  slim: Snello
+  saveSuccess: Skin salvata sul disco!
+  saveFailed: Impossibile salvare la skin sul disco
+  uploadFailed: Caricamento della skin non riuscito
+  libraryTitle: Armadio locale
+  librarySubtitle: Scegli, organizza e salva le tue skin in locale
+  manage: Gestisci
+  all: Tutte
+  currentSkin: Skin attuale
+  savedCount: skin salvate
+  newSkin: Nuova skin
+  addNewSkin: Aggiungi nuova skin
+  editSkin: Modifica skin
+  skinName: Nome della skin
+  skinNamePlaceholder: 'es. La mia skin preferita'
+  localFile: File locale
+  urlOrPlayer: URL / Nome giocatore
+  urlOrPlayerPlaceholder: Inserisci l'URL dell'immagine o il nome utente Minecraft
+  urlOrPlayerHint: Inserisci l'URL diretto di un'immagine PNG o il nome di un giocatore per ottenere la skin da Mojang
+  dropFileHere: Trascina qui il file PNG della skin o fai clic per sfogliare
+  supportedFormats: 'Formato supportato: immagine PNG 64x64 o 64x32'
+  preview: Anteprima skin
+  previewPlaceholder: Nessuna anteprima disponibile
+  saveToLibrary: Salva nell'armadio
+  saveAndEquip: Salva e indossa
+  equip: Indossa
+  equipToAccount: Indossa sull'account Minecraft
+  equipped: Indossata
+  noSkinSelected: Nessuna skin selezionata
+  saveCurrent: Salva quella attuale
+  officialPreset: Preimpostazione ufficiale
+  mySkins: Le mie skin
+  presets: Preimpostazioni
+  noSkinsFound: Nessuna skin trovata
+  tryAddingOne: Prova ad aggiungere una nuova skin con il pulsante qui sopra!
+  skinUpdated: Skin aggiornata!
+  skinDeleteFailed: Impossibile rimuovere la skin dall'armadio
+  edit: Modifica
+  fetch: Carica
 version:
   checkIntegrity: Controlla l'integrità
   name: Version | Versioni

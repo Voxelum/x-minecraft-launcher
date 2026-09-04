@@ -38,9 +38,10 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
       return { ...text, url: `${addr}/textures?href=${encodeURIComponent(text.url)}` }
     }
     if (profile) {
+      const unsignedProfileId = profile.id.replaceAll('-', '')
       const textureInfo: YggdrasilTexturesInfo = {
         timestamp: Date.now(),
-        profileId: profile.id,
+        profileId: unsignedProfileId,
         profileName: profile.name,
         textures: {
           SKIN: transformTexture(profile.textures.SKIN),
@@ -59,7 +60,7 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
         })
         : undefined
       const transformed = {
-        id: profile.id,
+        id: unsignedProfileId,
         name: profile.name,
         properties: [
           { name: 'uploadableTextures', value: 'skin,cape' },
@@ -71,7 +72,6 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
         ],
       }
       logger.log(`Encode profile for ${id}: %o`, transformed)
-      transformed.id = id
       return JSON.stringify(transformed)
     }
     return undefined
@@ -96,6 +96,7 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
         })
       } else if (pathname === '/sessionserver/session/minecraft/join' && request.method === 'POST') {
         if (request.body instanceof Readable) {
+          request.body.resume()
           await finished(request.body)
         }
         response.status = 240

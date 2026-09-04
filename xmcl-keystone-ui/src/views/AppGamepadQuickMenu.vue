@@ -303,9 +303,10 @@ watch(visible, (v) => {
   width: min(340px, calc(50vw - min(360px, 46vw) - 32px));
   padding: 22px;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(18, 18, 22, 0.95);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  border: var(--surface-border);
+  background: var(--surface-bg);
+  backdrop-filter: blur(24px) saturate(1.8);
+  box-shadow: var(--surface-shadow);
   overflow: hidden;
   pointer-events: auto;
   box-sizing: border-box;

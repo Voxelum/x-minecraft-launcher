@@ -1,11 +1,9 @@
 import {
-  AUTHORITY_MICROSOFT,
   XmclAccountServiceKey,
   XmclAccountState,
   type XmclAccountSnapshot,
   type XmclOAuthProvider,
   type XmclAccountService as IXmclAccountService,
-  type XmclMicrosoftBootstrapResult,
   type SharedState,
 } from '@xmcl/runtime-api'
 import { createHash, randomBytes } from 'crypto'
@@ -13,7 +11,6 @@ import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { resolveXmclApiEndpoints } from '~/app/xmclApiBaseUrl'
 import { ExternalCredentialService } from '~/credential/ExternalCredentialService'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
-import { UserService } from '~/user'
 import { kFlights } from '~/infra'
 import {
   MICROSOFT_GRAPH_USER_READ_SCOPE,
@@ -103,7 +100,6 @@ export class XmclAccountService
 
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ExternalCredentialService) private externalCredentials: ExternalCredentialService,
     @Inject(ServiceStateManager) store: ServiceStateManager,
   ) {
     super(
@@ -115,19 +111,28 @@ export class XmclAccountService
       (input, init) => app.fetch(input, init),
       async () => {
         const flights = await app.registry.get(kFlights)
-        return resolveXmclApiEndpoints(
-          flights.xmclApiBaseUrl,
-          () => app.getLogger('ApiBaseUrl').warn('Ignoring invalid xmclApiUrl flight; using default XMCL API origins.'),
+        return resolveXmclApiEndpoints(flights.xmclApiBaseUrl, () =>
+          app
+            .getLogger('ApiBaseUrl')
+            .warn('Ignoring invalid xmclApiUrl flight; using default XMCL API origins.'),
         ).common
       },
       () => this.getDpopKey(),
+      async () => {
+        const flights = await app.registry.get(kFlights)
+        return resolveXmclApiEndpoints(flights.xmclBillingApiBaseUrl, () =>
+          app
+            .getLogger('BillingApiBaseUrl')
+            .warn(
+              'Ignoring invalid xmclBillingApiBaseUrl flight; using the default XMCL API origin.',
+            ),
+        ).common
+      },
     )
 
     app.protocol.registerHandler('xmcl', ({ request, response }) => {
-      if (
-        request.url.host !== 'launcher' ||
-        request.url.pathname !== BROWSER_AUTH_CALLBACK_PATH
-      ) return
+      if (request.url.host !== 'launcher' || request.url.pathname !== BROWSER_AUTH_CALLBACK_PATH)
+        return
       const state = request.url.searchParams.get('state') ?? ''
       const pending = this.pendingBrowserAuthorizations.get(state)
       if (!pending) {
@@ -166,6 +171,7 @@ export class XmclAccountService
             request.method,
             request.url,
             credential.accessToken,
+            this.api.getServerNow(),
           )
         : undefined
     return {
@@ -190,50 +196,8 @@ export class XmclAccountService
     )
   }
 
-  @Singleton((userId) => userId)
-  async bootstrapMicrosoft(userId: string): Promise<XmclMicrosoftBootstrapResult> {
-    await this.initialize()
-    const userState = await this.app.registry
-      .get(UserService)
-      .then((service) => service.getUserState())
-    const user = userState.users[userId]
-    if (!user || user.authority !== AUTHORITY_MICROSOFT || user.invalidated) {
-      return 'not-applicable'
-    }
-
-    const oauthClient = new MicrosoftOAuthClient(
-      (...args) => this.app.fetch(...args),
-      this.app.getLogger('XmclMicrosoftIdentity'),
-      MICROSOFT_LAUNCHER_CLIENT_ID,
-      async () => {
-        throw new Error('interactive_microsoft_auth_not_allowed')
-      },
-      async () => {
-        throw new Error('interactive_microsoft_auth_not_allowed')
-      },
-      () => {},
-      this.app.secretStorage,
-      () => this.app.controller.getNativeWindowHandle?.(),
-    )
-    let result: { accessToken: string }
-    try {
-      ;({ result } = await oauthClient.authenticate(
-        user.username,
-        [MICROSOFT_GRAPH_USER_READ_SCOPE],
-        {
-          slientOnly: true,
-          useNativeBroker: process.platform === 'win32',
-        },
-      ))
-    } catch (error) {
-      if (error instanceof Error && error.name === 'MicrosoftOAuthSlientFailed') {
-        this.warn('XMCL account bridge is waiting for Microsoft Graph consent.')
-        return 'pending-consent'
-      }
-      throw error
-    }
-    await this.bootstrapCredential('microsoft', result.accessToken)
-    return 'bootstrapped'
+  private getExternalCredentials(): Promise<ExternalCredentialService> {
+    return this.app.registry.getOrCreate(ExternalCredentialService)
   }
 
   @Singleton()
@@ -248,35 +212,27 @@ export class XmclAccountService
         if (!openMicrosoftLogin) {
           throw new Error('interactive_microsoft_auth_not_supported')
         }
-        return openMicrosoftLogin.call(
-          this.app.controller,
-          url,
-          redirectUri,
-          signal,
-          authAttemptId,
-        )
+        return openMicrosoftLogin.call(this.app.controller, url, redirectUri, signal, authAttemptId)
       },
       async () => {
-        const port = await this.app.serverPort ?? 25555
+        const port = (await this.app.serverPort) ?? 25555
         return `http://localhost:${port}/auth`
       },
       () => {},
       this.app.secretStorage,
       () => this.app.controller.getNativeWindowHandle?.(),
-      event => this.app.emit('microsoft-auth-telemetry', event),
+      (event) => this.app.emit('microsoft-auth-telemetry', event),
     )
-    const { result } = await oauthClient.authenticate(
-      '',
-      [MICROSOFT_GRAPH_USER_READ_SCOPE],
-      { useNativeBroker: process.platform === 'win32' },
-    )
+    const { result } = await oauthClient.authenticate('', [MICROSOFT_GRAPH_USER_READ_SCOPE], {
+      useNativeBroker: process.platform === 'win32',
+    })
     await this.bootstrapCredential('microsoft', result.accessToken)
   }
 
   @Singleton()
-  async bootstrapModrinth(): Promise<void> {
+  async authorizeModrinth(): Promise<void> {
     await this.initialize()
-    const credential = await this.externalCredentials.getValidAccessToken('modrinth')
+    const credential = await (await this.getExternalCredentials()).getValidAccessToken('modrinth')
     if (credential.status !== 'valid') return
     await this.bootstrapCredential('modrinth', credential.accessToken)
   }
@@ -391,6 +347,42 @@ export class XmclAccountService
     await this.clearSession(credential.sessionId)
   }
 
+  @Singleton()
+  async getTogetherOverview() {
+    await this.initialize()
+    return this.api.getTogetherOverview(await this.requireValidCredential())
+  }
+
+  @Singleton()
+  async claimTogetherTrial() {
+    await this.initialize()
+    return this.api.claimTogetherTrial(await this.requireValidCredential())
+  }
+
+  @Singleton((amountMinor) => amountMinor)
+  async createTogetherOrder(amountMinor: number) {
+    await this.initialize()
+    return this.api.createTogetherOrder(await this.requireValidCredential(), amountMinor)
+  }
+
+  @Singleton((orderId) => orderId)
+  async getTogetherOrder(orderId: string) {
+    await this.initialize()
+    return this.api.getTogetherOrder(await this.requireValidCredential(), orderId)
+  }
+
+  @Singleton()
+  async subscribeTogether() {
+    await this.initialize()
+    return this.api.subscribeTogether(await this.requireValidCredential())
+  }
+
+  @Singleton()
+  async cancelTogether() {
+    await this.initialize()
+    return this.api.cancelTogether(await this.requireValidCredential())
+  }
+
   private async bootstrapCredential(
     provider: Extract<XmclOAuthProvider, 'microsoft' | 'modrinth'>,
     providerCredential: string,
@@ -433,7 +425,10 @@ export class XmclAccountService
     return queued
   }
 
-  private async applyAuthResult(result: XmclAuthResult, expectedGeneration = this.sessionGeneration) {
+  private async applyAuthResult(
+    result: XmclAuthResult,
+    expectedGeneration = this.sessionGeneration,
+  ) {
     const snapshot: XmclAccountSnapshot = {
       account: result.account,
       identities: result.identities ?? this.state.identities,
@@ -460,8 +455,12 @@ export class XmclAccountService
   private async getValidCredential(): Promise<XmclSessionCredential | undefined> {
     const credential = this.credential
     if (!credential) return undefined
+    if (credential.tokenType === 'DPoP') {
+      await this.api.synchronizeDpopClock()
+    }
     const expiresAt = Date.parse(credential.expiresAt)
-    if (Number.isFinite(expiresAt) && expiresAt > Date.now() + SESSION_REFRESH_SKEW) {
+    const now = credential.tokenType === 'DPoP' ? this.api.getServerNow() : Date.now()
+    if (Number.isFinite(expiresAt) && expiresAt > now + SESSION_REFRESH_SKEW) {
       return credential
     }
     try {
@@ -472,8 +471,10 @@ export class XmclAccountService
       }
       const fallback = this.credential
       const fallbackExpiresAt = fallback ? Date.parse(fallback.expiresAt) : Number.NaN
-      if (fallback && Number.isFinite(fallbackExpiresAt) && fallbackExpiresAt > Date.now()) {
-        this.warn('XMCL session refresh failed; the current access token will be used until expiry.')
+      if (fallback && Number.isFinite(fallbackExpiresAt) && fallbackExpiresAt > now) {
+        this.warn(
+          'XMCL session refresh failed; the current access token will be used until expiry.',
+        )
         return fallback
       }
       this.warn('XMCL session refresh failed and the current access token is expired.')
@@ -485,6 +486,9 @@ export class XmclAccountService
     if (this.refreshCredentialPromise) return this.refreshCredentialPromise
     const operation = (async () => {
       const current = this.requireCredential()
+      if (current.tokenType === 'DPoP') {
+        await this.api.synchronizeDpopClock()
+      }
       const generation = this.sessionGeneration
       let next: XmclSessionCredential
       try {
@@ -529,14 +533,13 @@ export class XmclAccountService
     retainCredentialOnPersistenceFailure = false,
   ) {
     return this.enqueueSessionMutation(async () => {
-      if (
-        expectedGeneration !== undefined &&
-        expectedGeneration !== this.sessionGeneration
-      ) return false
+      if (expectedGeneration !== undefined && expectedGeneration !== this.sessionGeneration)
+        return false
       if (
         expectedSnapshotGeneration !== undefined &&
         expectedSnapshotGeneration !== this.snapshotGeneration
-      ) return false
+      )
+        return false
       if (credential.tokenType === 'DPoP' && !this.dpopKey) {
         await this.getDpopKey()
       }
@@ -671,11 +674,7 @@ export class XmclAccountService
 
   private persistDpopKey(key: XmclDpopKey) {
     const stored: StoredXmclDpopKey = { privateJwk: serializeXmclDpopKey(key) }
-    return this.app.secretStorage.put(
-      DPOP_KEY_SERVICE,
-      DPOP_KEY_ACCOUNT,
-      JSON.stringify(stored),
-    )
+    return this.app.secretStorage.put(DPOP_KEY_SERVICE, DPOP_KEY_ACCOUNT, JSON.stringify(stored))
   }
 
   private removeEmbeddedDpopKey(stored: StoredXmclSession) {
@@ -760,12 +759,14 @@ function isStoredSession(value: StoredXmclSession): value is StoredXmclSession {
 
 function isTerminalSessionRefreshError(error: unknown) {
   return (
-    error instanceof XmclAccountApiError &&
-    [
-      'invalid_refresh_token',
-      'refresh_token_expired',
-      'refresh_token_replayed',
-      'session_revoked',
-    ].includes(error.code)
-  ) || (error instanceof Error && error.message === 'xmcl_account_refresh_token_missing')
+    (error instanceof XmclAccountApiError &&
+      [
+        'invalid_refresh_token',
+        'refresh_token_expired',
+        'refresh_token_replayed',
+        'session_revoked',
+        'invalid_dpop_proof',
+      ].includes(error.code)) ||
+    (error instanceof Error && error.message === 'xmcl_account_refresh_token_missing')
+  )
 }
