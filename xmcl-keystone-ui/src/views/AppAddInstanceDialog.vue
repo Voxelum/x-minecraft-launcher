@@ -149,17 +149,44 @@
         @quit="quit"
       >
         <div v-if="type === 'template' || type === 'manual' || !type" class="flex justify-end">
-          <v-btn
-            data-testid="add-instance-import"
-            :loading="loading"
-            variant="tonal"
-            color="primary"
-            rounded="pill"
-            @click="onImportModpack"
-          >
-            <v-icon start> folder_zip </v-icon>
-            {{ t('importModpack.name') }}
-          </v-btn>
+          <v-menu location="top end">
+            <template #activator="{ props }">
+              <v-btn
+                data-testid="add-instance-import"
+                v-bind="props"
+                :loading="loading || urlLoading"
+                variant="tonal"
+                color="primary"
+                rounded="pill"
+              >
+                <v-icon start> folder_zip </v-icon>
+                {{ t('importModpack.name') }}
+                <v-icon end> arrow_drop_down </v-icon>
+              </v-btn>
+            </template>
+            <v-list class="surface-card rounded-xl">
+              <v-list-item
+                data-testid="add-instance-import-file"
+                @click="onImportModpack"
+              >
+                <template #prepend>
+                  <v-icon color="primary">folder</v-icon>
+                </template>
+                <v-list-item-title>{{ t('importModpack.fromFile') }}</v-list-item-title>
+                <v-list-item-subtitle class="text-xs opacity-60">.zip, .mrpack</v-list-item-subtitle>
+              </v-list-item>
+              <v-list-item
+                data-testid="add-instance-import-url"
+                @click="openUrlDialog"
+              >
+                <template #prepend>
+                  <v-icon color="primary">link</v-icon>
+                </template>
+                <v-list-item-title>{{ t('importModpack.fromUrl') }}</v-list-item-title>
+                <v-list-item-subtitle class="text-xs opacity-60">http://, https://, curseforge://</v-list-item-subtitle>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
         <div v-if="error" class="pointer-events-none left-0 flex w-full justify-center">
           <v-alert density="compact" variant="tonal" rounded="lg" class="w-[50%]" type="error">
@@ -168,6 +195,92 @@
         </div>
       </StepperFooter>
     </div>
+
+    <!-- Import Modpack from URL Dialog -->
+    <v-dialog v-model="showUrlDialog" max-width="520">
+      <v-card class="rounded-2xl p-4">
+        <v-card-title class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-primary/10">
+            <v-icon color="primary">link</v-icon>
+          </div>
+          <span>{{ t('importModpack.fromUrlTitle') }}</span>
+        </v-card-title>
+        <v-card-text class="pt-3">
+          <p class="text-sm opacity-80 mb-3">
+            {{ t('importModpack.fromUrlDescription') }}
+          </p>
+          <v-text-field
+            v-model="modpackUrl"
+            variant="filled"
+            density="comfortable"
+            prepend-inner-icon="link"
+            clearable
+            :placeholder="t('importModpack.fromUrlPlaceholder')"
+            :error-messages="urlError"
+            @keydown.enter="submitModpackUrl"
+          />
+        </v-card-text>
+        <v-card-actions class="justify-end gap-2 px-4 pb-2">
+          <v-btn variant="text" @click="showUrlDialog = false">
+            {{ t('shared.cancel') }}
+          </v-btn>
+          <v-btn
+            color="primary"
+            variant="elevated"
+            :loading="urlLoading"
+            :disabled="!modpackUrl.trim()"
+            @click="submitModpackUrl"
+          >
+            <v-icon start>download</v-icon>
+            {{ t('importModpack.import') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Version Select Dialog -->
+    <v-dialog v-model="showVersionSelectDialog" max-width="560">
+      <v-card class="rounded-2xl p-4">
+        <v-card-title class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-primary/10">
+            <v-icon color="primary" size="24" :icon="selectedSourceIcon" />
+          </div>
+          <div class="flex flex-col">
+            <span class="text-base font-bold">{{ t('importModpack.selectVersion') }}</span>
+            <span class="text-xs opacity-60 font-normal">{{ selectedProjectName }}</span>
+          </div>
+        </v-card-title>
+        <v-card-text class="pt-3">
+          <p class="text-sm opacity-80 mb-3">
+            {{ t('importModpack.selectVersionDescription', { name: selectedProjectName }) }}
+          </p>
+          <v-select
+            v-model="selectedVersionId"
+            :items="availableVersions"
+            item-title="title"
+            item-value="id"
+            variant="filled"
+            density="comfortable"
+            hide-details
+          />
+        </v-card-text>
+        <v-card-actions class="justify-end gap-2 px-4 pb-2">
+          <v-btn variant="text" @click="showVersionSelectDialog = false">
+            {{ t('shared.cancel') }}
+          </v-btn>
+          <v-btn
+            color="primary"
+            variant="elevated"
+            :loading="versionLoading"
+            :disabled="!selectedVersionId"
+            @click="confirmVersionSelect"
+          >
+            <v-icon start>download</v-icon>
+            {{ t('importModpack.importVersion') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-dialog>
 </template>
 
@@ -193,6 +306,8 @@ import {
   ModpackServiceKey,
   waitModpackFiles,
   BedrockServiceKey,
+  BaseServiceKey,
+  MarketType,
 } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
@@ -203,7 +318,7 @@ import { useHasMinecraftLicense } from '@/composables/minecraftLicense'
 // import { kLocalCollections } from '@/composables/localCollections'
 // import { runBulkInstall, candidateToMarketOption } from '@/composables/collectionInstall'
 // import { resolveCollectionEntry } from '@/composables/collectionResolver'
-// import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
+import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 // import { getModrinthModLoaders } from '@/util/modrinth'
 // import {
 //   CollectionContentType,
@@ -242,6 +357,9 @@ const onSelectModpack = async (modpack: string) => {
       error.value = openedModpack.error
     }
     if (openedModpack.config) {
+      if (selectedProjectName.value) {
+        openedModpack.config.name = selectedProjectName.value
+      }
       await update(openedModpack.config, waitModpackFiles(openedModpack))
       const matched = findInstanceForModpack(instances.value, {
         upstream: openedModpack.config.upstream,
@@ -583,6 +701,357 @@ const onImportModpack = () => {
         loading.value = false
       }
     })
+}
+
+// URL Import & Version Selection
+const { installModapckFromMarket } = useService(ModpackServiceKey)
+const { handleUrl } = useService(BaseServiceKey)
+const showUrlDialog = ref(false)
+const modpackUrl = ref('')
+const urlLoading = ref(false)
+const urlError = ref('')
+
+const showVersionSelectDialog = ref(false)
+const selectedProjectName = ref('')
+const selectedVersionId = ref<number | string | undefined>(undefined)
+const availableVersions = ref<{ id: number | string; title: string }[]>([])
+const selectedMarketType = ref<MarketType>(MarketType.Modrinth)
+const selectedSource = ref<'modrinth' | 'curseforge' | 'github' | 'technic' | 'url'>('url')
+const selectedSourceIcon = computed(() => {
+  switch (selectedSource.value) {
+    case 'modrinth': return 'xmcl:modrinth'
+    case 'curseforge': return 'xmcl:curseforge'
+    case 'github': return 'xmcl:github'
+    case 'technic': return 'xmcl:technic'
+    default: return 'folder_zip'
+  }
+})
+const versionLoading = ref(false)
+
+function openUrlDialog() {
+  modpackUrl.value = ''
+  urlError.value = ''
+  showUrlDialog.value = true
+}
+
+async function confirmVersionSelect() {
+  if (!selectedVersionId.value) return
+  versionLoading.value = true
+  try {
+    if (
+      typeof selectedVersionId.value === 'string' &&
+      (selectedVersionId.value.startsWith('http://') || selectedVersionId.value.startsWith('https://'))
+    ) {
+      showVersionSelectDialog.value = false
+      showUrlDialog.value = false
+      await onSelectModpack(selectedVersionId.value)
+      type.value = 'template'
+      nextTick(() => {
+        step.value = 1
+      })
+      return
+    }
+
+    const [downloadedFile] = await installModapckFromMarket(
+      selectedMarketType.value === MarketType.CurseForge
+        ? {
+            market: MarketType.CurseForge,
+            file: { fileId: selectedVersionId.value as number },
+          }
+        : {
+            market: MarketType.Modrinth,
+            version: { versionId: selectedVersionId.value as string },
+          }
+    )
+    if (downloadedFile) {
+      showVersionSelectDialog.value = false
+      showUrlDialog.value = false
+      await onSelectModpack(downloadedFile)
+      type.value = 'template'
+      nextTick(() => {
+        step.value = 1
+      })
+    }
+  } catch (e: any) {
+    urlError.value = e?.message || String(e)
+  } finally {
+    versionLoading.value = false
+  }
+}
+
+async function submitModpackUrl() {
+  const inputUrl = modpackUrl.value.trim()
+  if (!inputUrl) return
+
+  if (
+    !inputUrl.startsWith('http://') &&
+    !inputUrl.startsWith('https://') &&
+    !inputUrl.startsWith('xmcl://') &&
+    !inputUrl.startsWith('curseforge://') &&
+    !inputUrl.startsWith('modrinth://')
+  ) {
+    urlError.value = t('importModpack.invalidUrl')
+    return
+  }
+
+  urlLoading.value = true
+  urlError.value = ''
+
+  try {
+    // 1. Resolve Modrinth web URL: e.g. https://modrinth.com/modpack/zombie-invade-100-days?version=1.20.1&loader=forge
+    const modrinthMatch = inputUrl.match(/modrinth\.com\/modpack\/([a-zA-Z0-9\-\_]+)/i)
+    if (modrinthMatch) {
+      const slug = modrinthMatch[1]
+      let reqVersion: string | null = null
+      let reqLoader: string | null = null
+      try {
+        const urlObj = new URL(inputUrl)
+        reqVersion = urlObj.searchParams.get('version')
+        reqLoader = urlObj.searchParams.get('loader')
+      } catch { }
+
+      const project = await clientModrinthV2.getProject(slug).catch(() => null)
+      const versions = await clientModrinthV2.getProjectVersions(slug).catch(() => [])
+
+      if (versions && versions.length > 0) {
+        selectedSource.value = 'modrinth'
+        selectedProjectName.value = project?.title || slug
+        selectedMarketType.value = MarketType.Modrinth
+        availableVersions.value = versions.map((v: any) => ({
+          id: v.id,
+          title: `${v.name || v.version_number} (${v.game_versions?.join(', ') || ''}${v.loaders?.length ? ' - ' + v.loaders.join(', ') : ''})`,
+        }))
+
+        // Pre-select matching version if query params provided
+        if (reqVersion || reqLoader) {
+          const matched = versions.find((v: any) => {
+            let match = true
+            if (reqVersion && Array.isArray(v.game_versions)) match = match && v.game_versions.includes(reqVersion)
+            if (reqLoader && Array.isArray(v.loaders)) match = match && v.loaders.includes(reqLoader)
+            return match
+          })
+          if (matched && matched.id) {
+            selectedVersionId.value = matched.id
+          } else {
+            selectedVersionId.value = availableVersions.value[0]?.id
+          }
+        } else {
+          selectedVersionId.value = availableVersions.value[0]?.id
+        }
+
+        showUrlDialog.value = false
+        showVersionSelectDialog.value = true
+        return
+      }
+    }
+
+    // 2. Resolve CurseForge web URL: e.g. https://www.curseforge.com/minecraft/modpacks/all-the-mods-10
+    const curseforgeMatch = inputUrl.match(/curseforge\.com\/minecraft\/modpacks\/([a-zA-Z0-9\-\_]+)/i)
+    if (curseforgeMatch) {
+      const slug = curseforgeMatch[1]
+      let versionsList: { id: number; title: string }[] = []
+
+      // Try clientCurseforgeV1 first
+      try {
+        const searchRes = await clientCurseforgeV1.searchMods({ slug, classId: 4471 }).catch(() => ({ data: [] }))
+        let mod = searchRes.data?.[0]
+        if (!mod) {
+          const fallbackRes = await clientCurseforgeV1.searchMods({ slug }).catch(() => ({ data: [] }))
+          mod = fallbackRes.data?.[0]
+        }
+        if (mod) {
+          selectedProjectName.value = mod.name || slug
+          const filesRes = await clientCurseforgeV1.getModFiles({ modId: mod.id }).catch(() => ({ data: [] }))
+          if (filesRes.data && filesRes.data.length > 0) {
+            versionsList = filesRes.data.map((f: any) => ({
+              id: f.id,
+              title: `${f.displayName} (${f.gameVersions?.filter((v: string) => !v.includes('Java') && !v.includes('Client'))?.join(', ') || ''})`,
+            }))
+          }
+        }
+      } catch { }
+
+      // HTML Fallback if API returned 403 or empty
+      if (versionsList.length === 0) {
+        try {
+          const pageRes = await fetch(`https://www.curseforge.com/minecraft/modpacks/${slug}/files`).catch(() => null)
+          if (pageRes && pageRes.ok) {
+            const html = await pageRes.text()
+            selectedProjectName.value = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+            // Match file links and version titles
+            const regex = /href="\/minecraft\/modpacks\/[^"]+\/files\/(\d+)"[^>]*>([^<]+)<\/a>/g
+            let match: RegExpExecArray | null
+            while ((match = regex.exec(html)) !== null) {
+              const fileId = parseInt(match[1], 10)
+              const title = match[2].trim()
+              if (fileId && title && !versionsList.some(v => v.id === fileId)) {
+                versionsList.push({ id: fileId, title })
+              }
+            }
+          }
+        } catch { }
+      }
+
+      if (versionsList.length > 0) {
+        selectedSource.value = 'curseforge'
+        selectedMarketType.value = MarketType.CurseForge
+        availableVersions.value = versionsList
+        selectedVersionId.value = versionsList[0]?.id
+        showUrlDialog.value = false
+        showVersionSelectDialog.value = true
+        return
+      }
+    }
+
+    // 3. Resolve TechnicPack web URL: e.g. https://www.technicpack.net/modpack/the-1122-pack.1406454
+    const technicMatch = inputUrl.match(/(?:technicpack\.net\/modpack\/|technic:\/\/modpack\/)([a-zA-Z0-9\-\_\.]+)/i)
+    if (technicMatch) {
+      const slug = technicMatch[1].split('.')[0]
+      let resolvedUrl: string | undefined = undefined
+
+      try {
+        const pageUrl = inputUrl.startsWith('http') ? inputUrl : `https://www.technicpack.net/modpack/${slug}`
+        const pageRes = await fetch(pageUrl).catch(() => null)
+        if (pageRes && pageRes.ok) {
+          const html = await pageRes.text()
+          const titleMatch = html.match(/<h1[^>]*>([^<]+)<\/h1>/i) || html.match(/<title>([^<\|]+)/i)
+          if (titleMatch) {
+            selectedProjectName.value = titleMatch[1].trim()
+          }
+          const zipMatch =
+            html.match(/href="([^"]*servers\.technicpack\.net[^"]*\.zip[^"]*)"/i) ||
+            html.match(/href="([^"]*(?:cdn|mirror|servers)\.technicpack\.net[^"]*\.zip[^"]*)"/i) ||
+            html.match(/href="([^"]+\.zip[^"]*)"/i) ||
+            html.match(/(https?:\/\/[^"'\s]+\.zip[^\s"']*)/i)
+          if (zipMatch) {
+            resolvedUrl = zipMatch[1]
+          }
+        }
+      } catch { }
+
+      if (!resolvedUrl) {
+        try {
+          const res = await fetch(`https://api.technicpack.net/modpack/${slug}?build=600`).catch(() => null)
+          if (res && res.ok) {
+            const json = await res.json().catch(() => null)
+            if (json && json.url) {
+              resolvedUrl = json.url
+            }
+          }
+        } catch { }
+      }
+
+      if (resolvedUrl) {
+        selectedSource.value = 'technic'
+        showUrlDialog.value = false
+        await onSelectModpack(resolvedUrl)
+        type.value = 'template'
+        nextTick(() => {
+          step.value = 1
+        })
+        return
+      }
+    }
+
+    // 4. Resolve GitHub repository / release URLs: e.g. https://github.com/Fabulously-Optimized/fabulously-optimized
+    const githubMatch = inputUrl.match(/github\.com\/([^\/]+)\/([^\/\?\#]+)/i)
+    if (githubMatch) {
+      const owner = githubMatch[1]
+      const repo = githubMatch[2].replace(/\.git$/, '')
+
+      selectedProjectName.value = repo
+        .replace(/[_-]/g, ' ')
+        .replace(/\b\w/g, (c) => c.toUpperCase())
+
+      const versionsList: { id: string; title: string }[] = []
+
+      // 1. Query GitHub Releases API
+      try {
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases`).catch(() => null)
+        if (res && res.ok) {
+          const releases = await res.json()
+          if (Array.isArray(releases) && releases.length > 0) {
+            for (const rel of releases) {
+              if (Array.isArray(rel.assets)) {
+                for (const asset of rel.assets) {
+                  const name = asset.name || ''
+                  if (name.endsWith('.mrpack') || name.endsWith('.zip')) {
+                    versionsList.push({
+                      id: asset.browser_download_url,
+                      title: `${rel.name || rel.tag_name} - ${name}`,
+                    })
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch { }
+
+      // 2. Fallback: Parse GitHub Releases HTML if API rate-limited or failed
+      if (versionsList.length === 0) {
+        try {
+          const pageRes = await fetch(`https://github.com/${owner}/${repo}/releases`).catch(() => null)
+          if (pageRes && pageRes.ok) {
+            const html = await pageRes.text()
+            const assetRegex = /href="(\/[^\/]+\/[^\/]+\/releases\/download\/[^"]+\.(?:mrpack|zip))"/gi
+            let m: RegExpExecArray | null
+            while ((m = assetRegex.exec(html)) !== null) {
+              const downloadUrl = `https://github.com${m[1]}`
+              const filename = m[1].split('/').pop() || ''
+              const tag = m[1].split('/')[4] || ''
+              if (!versionsList.some((v) => v.id === downloadUrl)) {
+                versionsList.push({
+                  id: downloadUrl,
+                  title: `${tag} - ${filename}`,
+                })
+              }
+            }
+          }
+        } catch { }
+      }
+
+      // 3. Fallback: If no releases found, provide source zip archive
+      if (versionsList.length === 0) {
+        const defaultBranchZip = `https://github.com/${owner}/${repo}/archive/refs/heads/main.zip`
+        versionsList.push({
+          id: defaultBranchZip,
+          title: `${selectedProjectName.value} (main branch)`,
+        })
+      }
+
+      if (versionsList.length > 0) {
+        selectedSource.value = 'github'
+        availableVersions.value = versionsList
+        selectedVersionId.value = versionsList[0]?.id
+        showUrlDialog.value = false
+        showVersionSelectDialog.value = true
+        return
+      }
+    }
+
+    // 5. Try handling via protocol URL
+    const handled = await handleUrl(inputUrl)
+    if (handled) {
+      showUrlDialog.value = false
+      quit()
+      return
+    }
+
+    // 6. Direct download URL
+    if (inputUrl.startsWith('http://') || inputUrl.startsWith('https://')) {
+      await onSelectModpack(inputUrl)
+      type.value = 'template'
+      nextTick(() => {
+        step.value = 1
+      })
+      showUrlDialog.value = false
+    }
+  } catch (e: any) {
+    urlError.value = e?.message || String(e)
+  } finally {
+    urlLoading.value = false
+  }
 }
 
 // Peer
