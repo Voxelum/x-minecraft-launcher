@@ -4,13 +4,15 @@
     flat
     data-gamepad-section
     class="surface-card-subsection overflow-hidden tabs-card"
+    v-context-menu="getBackgroundMenu"
   >
     <HomeScreenshotCard
-      v-if="selected === 0"
+      v-if="selected === 0 && !isScreenshotHidden"
       class="h-full"
       :height="240"
       :instance="instance"
       :galleries="galleries"
+      v-context-menu="() => getCardMenu(String(CardType.Screenshots))"
     >
       <template v-if="hasPinnedServer" #leading>
         <div class="flex items-center justify-center h-full w-full px-3">
@@ -79,7 +81,7 @@
             </v-btn>
           </div>
         </div>
-        <div class="invisible-scroll flex min-h-0 flex-col gap-2 overflow-x-hidden overflow-y-auto transition-all duration-400" :style="((active || dragover) && !isBedrock) ? { 'height': '8.5rem' } : { 'height': '4rem' }">
+        <div class="invisible-scroll flex min-h-0 flex-col gap-2 overflow-x-hidden overflow-y-auto transition-all duration-400" :style="{ height: contentListHeight }">
           <template v-if="selected === 1 && upstream?.type === 'server'">
             <HomeCardListItem
               v-if="serverUpstream.suggestedMinecraft.value"
@@ -102,15 +104,27 @@
               @drop="() => {}"
             />
           </template>
+          <div
+            v-else-if="items.length === 0"
+            class="flex items-center justify-center h-full text-xs text-medium-emphasis py-4"
+          >
+            {{ t('instance.showHiddenCards') }}
+          </div>
           <HomeCardListItem
             v-else
             v-for="item in items"
-            :key="item.icon + item.text"
+            :id="item.id"
+            :key="item.id || (item.icon + item.text)"
+            :draggable="!!item.id"
             :icon="item.icon"
             :tooltip="item.tooltip"
             :text="item.text"
             :highlighted="item.highlighted"
             :loading="updating"
+            :button-text="item.buttonText"
+            :button-icon="item.buttonIcon"
+            v-context-menu="() => getCardMenu(item.id, currentItemIds)"
+            @reorder="onReorder($event, item.id!)"
             @install="item.install"
             @setting="item.setting"
             @drop="item.drop"
@@ -138,6 +152,7 @@ import { getCurseforgeProjectFilesModel } from '@/composables/curseforge'
 import { getDropFilePaths, kDropHandler } from '@/composables/dropHandler'
 import { useUpstreamData } from '@/composables/upstreamData'
 import { kInstance } from '@/composables/instance'
+import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { kInstanceSave } from '@/composables/instanceSave'
@@ -147,10 +162,12 @@ import { getModrinthVersionModel } from '@/composables/modrinthVersions'
 import { useSWRVModel } from '@/composables/swrv'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
+import { vContextMenu } from '@/directives/contextMenu'
+import { CardType, getParam, useHomeFocusCards } from '@/composables/homeCards'
 import { getCurseforgeFileGameVersions, getCursforgeFileModLoaders } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { useElementHover, useElementSize } from '@vueuse/core'
-import { InstanceModsServiceKey, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceShaderPacksServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceShaderPacksServiceKey, ModpackServiceKey, parseServerAddress } from '@xmcl/runtime-api'
 import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeUpstreamHeader from './HomeUpstreamHeader.vue'
 import { useDialog } from '@/composables/dialog'
@@ -160,6 +177,25 @@ import { useDateString } from '@/composables/date'
 const { enabledMods } = injection(kInstanceModsContext)
 const { enabled: enabledResourcePacks } = injection(kInstanceResourcePacks)
 const { shaderPack } = injection(kInstanceShaderPacks)
+const { launch } = injection(kInstanceLaunch)
+
+const {
+  serverCards,
+  worldCards,
+  cardOrder,
+  reorderCards,
+  isHidden,
+  getCardMenu,
+  getBackgroundMenu,
+} = useHomeFocusCards()
+
+const currentItemIds = computed(() => items.value.map((i) => i.id).filter(Boolean) as string[])
+
+function onReorder(fromId: string, toId: string) {
+  reorderCards(fromId, toId, currentItemIds.value)
+}
+
+const isScreenshotHidden = computed(() => isHidden(CardType.Screenshots))
 
 const isFocus = useInFocusMode()
 
@@ -444,69 +480,132 @@ async function onInstallVersion(v: StoreProjectVersion) {
   }
 }
 
+export interface FooterItem {
+  id?: string
+  icon: string
+  tooltip?: string
+  text?: string
+  highlighted?: boolean
+  loading?: boolean
+  buttonText?: string
+  buttonIcon?: string
+  install: () => void
+  setting: () => void
+  drop: (e: DragEvent) => void
+}
+
 const { getDateString } = useDateString()
-const items = computed(() => {
+const items = computed<FooterItem[]>(() => {
   if (selected.value === 0) {
-    if (isBedrock.value) {
-      return [
-        {
-          icon: 'map',
-          tooltip: t('save.name'),
-          text: dragover.value ? t('save.dropHint') : t('save.createdWorlds', { count: savesLength.value }),
-          highlighted: false,
-          install: () => push('/save?source=remote'),
-          setting: () => push('/save'),
-          drop: onDropSave
-        }
-      ]
-    }
-    return [
+    const defaultItems: FooterItem[] = isBedrock.value ? [
       {
-        icon: 'extension',
-        tooltip: t('mod.name'),
-        text: dragover.value ? t('mod.dropHint') : t('mod.enabled', { count: enabledMods.value.length }),
-        highlighted: false,
-        install: () => push('/mods?source=remote'),
-        setting: () => push('/mods'),
-        drop: onDropMod
-      },
-      {
-        icon: 'palette',
-        tooltip: t('resourcepack.name'),
-        text: dragover.value ? t('resourcepack.dropHint') : t('resourcepack.enable', { count: enabledResourcePacks.value.length }),
-        highlighted: false,
-        install: () => push('/resourcepacks?source=remote'),
-        setting: () => push('/resourcepacks'),
-        drop: onDropResourcePack
-      },
-      {
-        icon: 'gradient',
-        tooltip: t('shaderPack.name'),
-        text: dragover.value ? t('shaderPack.dropHint') : !shaderPack.value ? t('shaderPack.empty') : shaderPack.value,
-        highlighted: false,
-        install: () => push('/shaderpacks?source=remote'),
-        setting: () => push('/shaderpacks'),
-        drop: onDropShaderPack
-      },
-      {
+        id: String(CardType.Save),
         icon: 'map',
         tooltip: t('save.name'),
         text: dragover.value ? t('save.dropHint') : t('save.createdWorlds', { count: savesLength.value }),
-        highlighted: false,
         install: () => push('/save?source=remote'),
         setting: () => push('/save'),
-        drop: onDropSave
+        drop: onDropSave,
+      },
+    ] : [
+      {
+        id: String(CardType.Mod),
+        icon: 'extension',
+        tooltip: t('mod.name'),
+        text: dragover.value ? t('mod.dropHint') : t('mod.enabled', { count: enabledMods.value.length }),
+        install: () => push('/mods?source=remote'),
+        setting: () => push('/mods'),
+        drop: onDropMod,
       },
       {
+        id: String(CardType.ResourcePack),
+        icon: 'palette',
+        tooltip: t('resourcepack.name'),
+        text: dragover.value ? t('resourcepack.dropHint') : t('resourcepack.enable', { count: enabledResourcePacks.value.length }),
+        install: () => push('/resourcepacks?source=remote'),
+        setting: () => push('/resourcepacks'),
+        drop: onDropResourcePack,
+      },
+      {
+        id: String(CardType.ShaderPack),
+        icon: 'gradient',
+        tooltip: t('shaderPack.name'),
+        text: dragover.value ? t('shaderPack.dropHint') : (shaderPack.value || t('shaderPack.empty')),
+        install: () => push('/shaderpacks?source=remote'),
+        setting: () => push('/shaderpacks'),
+        drop: onDropShaderPack,
+      },
+      {
+        id: String(CardType.Save),
+        icon: 'map',
+        tooltip: t('save.name'),
+        text: dragover.value ? t('save.dropHint') : t('save.createdWorlds', { count: savesLength.value }),
+        install: () => push('/save?source=remote'),
+        setting: () => push('/save'),
+        drop: onDropSave,
+      },
+      {
+        id: String(CardType.Blueprint),
         icon: 'view_in_ar',
         tooltip: t('blueprint.name', 2),
         text: t('blueprint.name', 2),
-        highlighted: false,
         install: () => push('/blueprints?source=market'),
         setting: () => push('/blueprints'),
-        drop: () => {}
-      }
+        drop: () => {},
+      },
     ]
+
+    const serverItems: FooterItem[] = serverCards.value.map((c) => {
+      const address = getParam(c.id) || ''
+      return {
+        id: c.id,
+        icon: 'dns',
+        tooltip: `${t('server.name')} · ${c.label}`,
+        text: c.label,
+        buttonText: t('launch.launch'),
+        buttonIcon: 'play_arrow',
+        install: () => {
+          const parsed = address ? parseServerAddress(address) : undefined
+          if (parsed) launch('client', { server: { host: parsed.host, port: parsed.port } })
+        },
+        setting: () => push('/servers'),
+        drop: () => {},
+      }
+    })
+
+    const worldItems: FooterItem[] = worldCards.value.map((c) => {
+      const worldName = getParam(c.id) || ''
+      return {
+        id: c.id,
+        icon: 'public',
+        tooltip: `${t('save.world', 1)} · ${c.label}`,
+        text: c.label,
+        buttonText: t('launch.launch'),
+        buttonIcon: 'play_arrow',
+        install: () => {
+          if (worldName) launch('client', { world: worldName })
+        },
+        setting: () => push('/save'),
+        drop: onDropSave,
+      }
+    })
+
+    const unordered = [...defaultItems, ...serverItems, ...worldItems].filter((i) => !isHidden(i.id!))
+    if (!cardOrder.value.length) return unordered
+
+    const map = new Map(unordered.map((i) => [i.id!, i]))
+    const ordered: FooterItem[] = []
+    for (const id of cardOrder.value) {
+      const item = map.get(id)
+      if (item) {
+        ordered.push(item)
+        map.delete(id)
+      }
+    }
+    for (const item of map.values()) {
+      ordered.push(item)
+    }
+    return ordered
   } else if (selected.value === 1) {
     return latestVersions.value.map((v) => {
       const version: StoreProjectVersion = 'name' in v ? {
@@ -549,6 +648,15 @@ const items = computed(() => {
       drop: onDropMod
     }]
   }
+})
+
+const contentListHeight = computed(() => {
+  if (!((active.value || dragover.value) && !isBedrock.value)) {
+    return '4rem'
+  }
+  const count = Math.max(1, items.value.length)
+  const displayCount = count > 5 ? 5.2 : Math.max(2, count)
+  return `${displayCount * 2.25 - 0.5}rem`
 })
 
 const selected = ref(0)

@@ -65,14 +65,20 @@
 </template>
 <script lang="ts" setup>
 import { ContextMenuItem } from '@/composables/contextMenu'
+import {
+  buildRestoreMenuItems,
+  CardDescriptor,
+  CardType,
+  cardIcon,
+  getParam,
+  isType,
+  useAllCards,
+} from '@/composables/homeCards'
 import { kInstance } from '@/composables/instance'
-import { kInstanceSave } from '@/composables/instanceSave'
-import { kInstanceServerInfo } from '@/composables/instanceServerInfo'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { vContextMenu } from '@/directives/contextMenu'
 import { injection } from '@/util/inject'
 import { useLocalStorage, useResizeObserver } from '@vueuse/core'
-import { formatServerAddress, parseServerAddress } from '@xmcl/runtime-api'
 import { useDebounceFn } from '@vueuse/core'
 import { GridItem, GridLayout } from 'grid-layout-plus'
 import HomeModCard from './HomeModCard.vue'
@@ -86,41 +92,7 @@ import HomeBlueprintCard from './HomeBlueprintCard.vue'
 
 const { t } = useI18n()
 const { instance } = injection(kInstance)
-const { servers: datServers } = injection(kInstanceServerInfo)
-const { saves } = injection(kInstanceSave)
-
-enum CardType {
-  Mod,
-  ResourcePack,
-  ShaderPack,
-  Save,
-  Screenshots,
-  Server,
-  World,
-  Blueprint,
-}
-
-const cardIcon: Record<number, string> = {
-  [CardType.Mod]: 'extension',
-  [CardType.ResourcePack]: 'palette',
-  [CardType.ShaderPack]: 'gradient',
-  [CardType.Save]: 'map',
-  [CardType.Screenshots]: 'image',
-  [CardType.Server]: 'dns',
-  [CardType.World]: 'public',
-  [CardType.Blueprint]: 'view_in_ar',
-}
-
-const cardLabel: Record<number, () => string> = {
-  [CardType.Mod]: () => t('mod.name'),
-  [CardType.ResourcePack]: () => t('resourcepack.name'),
-  [CardType.ShaderPack]: () => t('shaderPack.name'),
-  [CardType.Save]: () => t('save.name'),
-  [CardType.Screenshots]: () => t('screenshots.gallery'),
-  [CardType.Server]: () => t('server.serversListTitle'),
-  [CardType.World]: () => t('save.world', 2),
-  [CardType.Blueprint]: () => t('blueprint.name'),
-}
+const { allCards } = useAllCards()
 
 provide(
   kUpstream,
@@ -129,17 +101,6 @@ provide(
     minecraft: instance.value.runtime.minecraft,
   })),
 )
-
-function isType(id: string, type: CardType) {
-  const [typeString] = id.split('@')
-  return Number(typeString) === type
-}
-
-/** Extract the per-instance discriminator from a card id (`type@param`). */
-function getParam(id: string): string | undefined {
-  const idx = id.indexOf('@')
-  return idx >= 0 ? id.slice(idx + 1) : undefined
-}
 
 interface GridGeom {
   x: number
@@ -254,75 +215,7 @@ function getBreakpoint(width: number): Breakpoint {
   return 'xs'
 }
 
-/**
- * A single rendered card. Singleton cards (mods, screenshots, …) have an id
- * equal to their `CardType`. Multi-instance cards (one per world / per server)
- * use `type@param`, where `param` uniquely identifies the world (save folder
- * name) or server (`host[:port]`). The `param` doubles as the per-card key in
- * {@link cardState}, so each world / server remembers its own geometry and
- * hidden flag.
- */
-interface CardDescriptor {
-  id: string
-  type: CardType
-  /** Human-readable label used in the show/hide context menu. */
-  label: string
-}
 
-/** Card types that render exactly once per instance. */
-const SINGLETON_TYPES = [
-  CardType.Mod,
-  CardType.ResourcePack,
-  CardType.ShaderPack,
-  CardType.Save,
-  CardType.Screenshots,
-  CardType.Blueprint,
-]
-
-/**
- * One Server card per distinct server — the pinned server first, then every
- * `servers.dat` entry, de-duplicated by `host:port`.
- */
-const serverCards = computed<CardDescriptor[]>(() => {
-  const seen = new Set<string>()
-  const result: CardDescriptor[] = []
-  const pinned = instance.value?.server
-  if (pinned?.host) {
-    const key = formatServerAddress({ host: pinned.host, port: pinned.port })
-    seen.add(key)
-    result.push({ id: `${CardType.Server}@${key}`, type: CardType.Server, label: pinned.name || pinned.host })
-  }
-  for (const s of datServers.value) {
-    const parsed = parseServerAddress(s.ip)
-    if (!parsed) continue
-    const key = formatServerAddress(parsed)
-    if (seen.has(key)) continue
-    seen.add(key)
-    result.push({ id: `${CardType.Server}@${key}`, type: CardType.Server, label: s.name || parsed.host })
-  }
-  return result
-})
-
-/** One World card per save, keyed by the save folder name. */
-const worldCards = computed<CardDescriptor[]>(() =>
-  saves.value.map((s) => ({
-    id: `${CardType.World}@${s.name}`,
-    type: CardType.World,
-    label: s.levelName || s.name,
-  })),
-)
-
-/** The full set of cards to render, before applying the per-card hidden flag. */
-const allCards = computed<CardDescriptor[]>(() => {
-  const result: CardDescriptor[] = SINGLETON_TYPES.map((type) => ({
-    id: String(type),
-    type,
-    label: cardLabel[type](),
-  }))
-  result.push(...worldCards.value)
-  result.push(...serverCards.value)
-  return result
-})
 
 /**
  * Card types that start hidden. Per-world / per-server cards are opt-in: the
@@ -478,12 +371,7 @@ function restoreCard(id: string) {
 const hiddenCards = computed(() => allCards.value.filter((c) => isHidden(c)))
 
 function getRestoreMenuItems(): ContextMenuItem[] {
-  return hiddenCards.value.map((c) => ({
-    text: t('instance.showHiddenCards') + ': ' + c.label,
-    icon: cardIcon[c.type] ?? 'visibility',
-    section: 'restore',
-    onClick: () => restoreCard(c.id),
-  }))
+  return buildRestoreMenuItems(t, hiddenCards.value, restoreCard)
 }
 
 function getCardMenu(id: string): ContextMenuItem[] {

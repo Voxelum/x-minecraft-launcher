@@ -1,5 +1,10 @@
 <template>
-  <div ref="scrollElement" class="select-none">
+  <div
+    ref="scrollElement"
+    class="select-none"
+    :class="{ 'h-full': isFocus }"
+    v-context-menu="isFocus ? getFocusBackgroundMenu : undefined"
+  >
     <HomeCriticalError />
     <transition name="slide-y-reverse-transition" mode="out-in">
       <div v-if="!isFocus" class="mx-3 relative">
@@ -49,6 +54,8 @@ import { kUpstream } from '@/composables/instanceUpdate'
 import { kCompact } from '@/composables/scrollTop'
 import { useTutorial } from '@/composables/tutorial'
 import { useInFocusMode } from '@/composables/uiLayout'
+import { useHomeFocusCards } from '@/composables/homeCards'
+import { vContextMenu } from '@/directives/contextMenu'
 import { injection } from '@/util/inject'
 import { isBedrockInstance } from '@xmcl/instance'
 import type { DriveStep } from 'driver.js'
@@ -61,6 +68,7 @@ import HomeUpstreamFeedTheBeast from './HomeUpstreamFeedTheBeast.vue'
 import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
 
 const isFocus = useInFocusMode()
+const { getBackgroundMenu: getFocusBackgroundMenu } = useHomeFocusCards()
 const { instance } = injection(kInstance)
 const isBedrock = computed(() => isBedrockInstance(instance.value))
 
