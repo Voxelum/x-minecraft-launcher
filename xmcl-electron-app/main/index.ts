@@ -6,10 +6,10 @@ import { app } from 'electron'
 // eslint-disable-next-line import/first
 import ElectronLauncherApp from './ElectronLauncherApp'
 
-// Disable sandbox for AppImage to avoid chrome-sandbox permission issues
-// AppImage mounts to /tmp which cannot have proper setuid permissions
+// AppImage read-only squashfs prevents SUID, and user namespaces fail with ESRCH. See #1522.
 if (process.env.APPIMAGE) {
   app.commandLine.appendSwitch('no-sandbox')
+  app.commandLine.appendSwitch('disable-setuid-sandbox')
 }
 
 // E2E-only network probe. Dispatches exactly one HTTP request through the SAME
