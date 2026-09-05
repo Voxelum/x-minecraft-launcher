@@ -106,6 +106,9 @@ export function parseJavaVersion(
     if (!str) {
       return undefined
     }
+    if (!/(?:^|\s)(?:openjdk|java(?:[ _]version)?)(?:\s|=)/im.test(str)) {
+      return undefined
+    }
     const match = /(\d+)\.(\d)+\.(\d+)(_\d+)?/.exec(str)
     if (match === null) {
       // Fallback: handle modern major-only version strings such as

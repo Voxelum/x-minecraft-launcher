@@ -26,7 +26,7 @@ async function transform(
 ): Promise<Uint8Array> {
   const writer = stream.writable.getWriter()
   const output = new Response(stream.readable).arrayBuffer()
-  await writer.write(input.slice().buffer)
+  await writer.write(input.slice())
   await writer.close()
   return new Uint8Array(await output)
 }

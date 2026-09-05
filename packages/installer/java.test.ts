@@ -22,6 +22,9 @@ describe('JavaInstaller', () => {
       const inf = parseJavaVersion(version)
       expect(inf).toEqual(undefined)
     })
+    test('should not treat Node.js version output as Java', () => {
+      expect(parseJavaVersion('v22.23.2')).toBeUndefined()
+    })
     test('should parse', () => {
       const inf = parseJavaVersion(`openjdk version "1.8.0-262"
 OpenJDK Runtime Environment (build 1.8.0-262-b10)
