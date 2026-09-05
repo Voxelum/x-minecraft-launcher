@@ -17,8 +17,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@xmcl/nbt": "workspace:^*",
-    "@xmcl/system": "workspace:^*"
+    "@xmcl/nbt": "workspace:^",
+    "@xmcl/system": "workspace:^"
   },
   "repository": {
     "type": "git",
@@ -41,7 +41,7 @@
   "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
   "devDependencies": {
     "@types/node": "^24.13.3",
-    "@xmcl/oxlint-config": "workspace:^*",
+    "@xmcl/oxlint-config": "workspace:^",
     "tslib": "^2.5.0",
     "esbuild": "^0.25.12",
     "oxlint": "^1.63.0",

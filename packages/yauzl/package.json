@@ -43,7 +43,7 @@
     "LICENSE.upstream"
   ],
   "devDependencies": {
-    "@xmcl/oxlint-config": "workspace:^*",
+    "@xmcl/oxlint-config": "workspace:^",
     "@types/node": "^24.13.3",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"

@@ -117,7 +117,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -138,7 +138,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -159,7 +159,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       bytebuffer:
         specifier: ^5.0.1
@@ -180,20 +180,20 @@ importers:
   packages/client:
     dependencies:
       '@xmcl/bytebuffer':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../bytebuffer
       '@xmcl/nbt':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../nbt
       '@xmcl/text-component':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../text-component
     devDependencies:
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -214,14 +214,14 @@ importers:
   packages/core:
     dependencies:
       '@xmcl/unzip':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../unzip
     devDependencies:
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -246,7 +246,7 @@ importers:
         specifier: ^0.28.1
         version: 0.28.1
       undici-shim:
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../undici-shim
       vitest:
         specifier: ^4.1.0
@@ -265,7 +265,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -287,7 +287,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -309,7 +309,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -327,17 +327,17 @@ importers:
   packages/game-data:
     dependencies:
       '@xmcl/nbt':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../nbt
       '@xmcl/system':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../system
     devDependencies:
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -361,7 +361,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -379,22 +379,22 @@ importers:
   packages/installer:
     dependencies:
       '@xmcl/asm':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../asm
       '@xmcl/core':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../core
       '@xmcl/file-transfer':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../file-transfer
       '@xmcl/forge-site-parser':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../forge-site-parser
       '@xmcl/unzip':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../unzip
       '@xmcl/yauzl':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../yauzl
       tar-stream:
         specifier: ^3.1.7
@@ -416,7 +416,7 @@ importers:
         specifier: ^2.4.5
         version: 2.4.5
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -468,10 +468,10 @@ importers:
   packages/mod-parser:
     dependencies:
       '@xmcl/asm':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../asm
       '@xmcl/system':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../system
       smol-toml:
         specifier: ^1.7.0
@@ -481,7 +481,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -502,7 +502,7 @@ importers:
         specifier: ^0.150.0
         version: 0.150.2
       '@xmcl/resourcepack':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../resourcepack
       three:
         specifier: 0.156.1
@@ -512,7 +512,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -534,7 +534,7 @@ importers:
         specifier: ^0.28.1
         version: 0.28.1
       undici-shim:
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../undici-shim
       vitest:
         specifier: ^4.1.0
@@ -584,7 +584,7 @@ importers:
   packages/nbt:
     dependencies:
       '@xmcl/bytebuffer':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../bytebuffer
       pako:
         specifier: ^2.1.0
@@ -597,7 +597,7 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -682,7 +682,7 @@ importers:
   packages/resourcepack:
     dependencies:
       '@xmcl/system':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../system
     devDependencies:
       '@types/node':
@@ -698,14 +698,14 @@ importers:
   packages/schematic:
     dependencies:
       '@xmcl/nbt':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../nbt
     devDependencies:
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -726,7 +726,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -744,7 +744,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -762,10 +762,10 @@ importers:
   packages/system:
     dependencies:
       '@xmcl/unzip':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../unzip
       '@xmcl/yauzl':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../yauzl
       jszip:
         specifier: ^3.10.1
@@ -775,7 +775,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -796,7 +796,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -816,14 +816,14 @@ importers:
   packages/unzip:
     dependencies:
       '@xmcl/yauzl':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../yauzl
     devDependencies:
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       esbuild:
         specifier: ^0.28.1
@@ -854,10 +854,10 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
       undici-shim:
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../undici-shim
       user-offline-uuid:
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../user-offline-uuid
       vitest:
         specifier: ^4.1.0
@@ -959,7 +959,7 @@ importers:
         specifier: ^24.13.3
         version: 24.13.3
       '@xmcl/oxlint-config':
-        specifier: workspace:^*
+        specifier: workspace:^
         version: link:../oxlint-config
       typescript:
         specifier: ^5.9.3

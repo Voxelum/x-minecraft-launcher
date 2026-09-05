@@ -20,8 +20,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@xmcl/unzip": "workspace:^*",
-    "@xmcl/yauzl": "workspace:^*",
+    "@xmcl/unzip": "workspace:^",
+    "@xmcl/yauzl": "workspace:^",
     "jszip": "^3.10.1"
   },
   "repository": {
@@ -39,7 +39,7 @@
   ],
   "devDependencies": {
     "@types/node": "^24.13.3",
-    "@xmcl/oxlint-config": "workspace:^*",
+    "@xmcl/oxlint-config": "workspace:^",
     "esbuild": "^0.25.12",
     "oxlint": "^1.63.0",
     "typescript": "^5.9.3",

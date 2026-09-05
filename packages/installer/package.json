@@ -18,12 +18,12 @@
     "module": "./dist/index.mjs"
   },
   "dependencies": {
-    "@xmcl/asm": "workspace:^*",
-    "@xmcl/core": "workspace:^*",
-    "@xmcl/file-transfer": "workspace:^*",
-    "@xmcl/forge-site-parser": "workspace:^*",
-    "@xmcl/unzip": "workspace:^*",
-    "@xmcl/yauzl": "workspace:^*",
+    "@xmcl/asm": "workspace:^",
+    "@xmcl/core": "workspace:^",
+    "@xmcl/file-transfer": "workspace:^",
+    "@xmcl/forge-site-parser": "workspace:^",
+    "@xmcl/unzip": "workspace:^",
+    "@xmcl/yauzl": "workspace:^",
     "tar-stream": "^3.1.7",
     "undici": "^7.24.0",
     "yazl": "^2.5.1"
@@ -50,7 +50,7 @@
     "@types/tar-stream": "^3.1.3",
     "@types/node": "^24.13.3",
     "@types/yazl": "^2.4.5",
-    "@xmcl/oxlint-config": "workspace:^*",
+    "@xmcl/oxlint-config": "workspace:^",
     "esbuild": "^0.25.12",
     "oxlint": "^1.63.0",
     "typescript": "^5.9.3",

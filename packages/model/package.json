@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@types/three": "^0.150.0",
-    "@xmcl/resourcepack": "workspace:^*",
+    "@xmcl/resourcepack": "workspace:^",
     "three": "0.156.1"
   },
   "repository": {
@@ -39,7 +39,7 @@
   "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
   "devDependencies": {
     "@types/node": "^24.13.3",
-    "@xmcl/oxlint-config": "workspace:^*",
+    "@xmcl/oxlint-config": "workspace:^",
     "esbuild": "^0.25.12",
     "oxlint": "^1.63.0",
     "typescript": "^5.9.3"

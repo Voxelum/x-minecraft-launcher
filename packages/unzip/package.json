@@ -20,7 +20,7 @@
     "@xmcl/yauzl": "^2.10.0"
   },
   "dependencies": {
-    "@xmcl/yauzl": "workspace:^*"
+    "@xmcl/yauzl": "workspace:^"
   },
   "repository": {
     "type": "git",
@@ -42,7 +42,7 @@
   },
   "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
   "devDependencies": {
-    "@xmcl/oxlint-config": "workspace:^*",
+    "@xmcl/oxlint-config": "workspace:^",
     "esbuild": "^0.25.12",
     "@types/node": "^24.13.3",
     "typescript": "^5.9.3",

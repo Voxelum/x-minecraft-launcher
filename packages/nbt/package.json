@@ -33,7 +33,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@xmcl/bytebuffer": "workspace:^*",
+    "@xmcl/bytebuffer": "workspace:^",
     "pako": "^2.1.0"
   },
   "bugs": {
@@ -43,7 +43,7 @@
   "devDependencies": {
     "@types/node": "^24.13.3",
     "@types/pako": "^2.0.0",
-    "@xmcl/oxlint-config": "workspace:^*",
+    "@xmcl/oxlint-config": "workspace:^",
     "esbuild": "^0.25.12",
     "oxlint": "^1.63.0",
     "typescript": "^5.9.3",
