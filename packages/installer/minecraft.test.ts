@@ -27,7 +27,7 @@ test('can resolve the version JSON install file', async ({ temp }) => {
   })
 })
 
-test('can resolve the minecraft jar install file', async ({ temp }) => {
+test('always strictly validates the minecraft jar install file', async ({ temp }) => {
   const id = '1.17.1'
   const folder = MinecraftFolder.from(temp)
   const version = {
@@ -43,7 +43,7 @@ test('can resolve the minecraft jar install file', async ({ temp }) => {
     },
   } as ResolvedVersion
 
-  const file = resolveMinecraftJarInstallFile(version)
+  const file = resolveMinecraftJarInstallFile(version, { timestamp: Date.now() })
 
   expect(file).toEqual({
     path: folder.getVersionJar(id, 'client'),

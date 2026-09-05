@@ -92,7 +92,10 @@ export function resolveMinecraftJarInstallFile(
       ? { algorithm: 'sha1', value: downloadInfo.sha1 }
       : undefined,
     validator: 'zip',
-    validatedAt: options.timestamp,
+    // The game jar is a critical input for Forge/NeoForge processors. Always
+    // checksum it because restored or externally modified files can retain an
+    // mtime older than the install lock and bypass timestamp-based validation.
+    validatedAt: undefined,
   }
 }
 

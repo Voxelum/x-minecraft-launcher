@@ -1298,7 +1298,6 @@ export class InstallCoordinator {
         version: minecraft,
       })
       const options = this.getInstallOptions({ side: 'client' }, task)
-      const baseOptions = { ...options, timestamp: baseTimestamp }
       const libraryOptions = this.getInstallOptions({ side: 'client', timestamp: baseTimestamp }, librariesTask)
       const assetOptions = this.getInstallOptions({ side: 'client', timestamp: baseTimestamp }, assetsTask)
       let resolved = await this.versionService.resolveLocalVersion(minecraft).catch(() => undefined)
@@ -1318,7 +1317,7 @@ export class InstallCoordinator {
         resolved = await this.versionService.resolveLocalVersion(minecraft)
       }
       const java = resolveJava(minecraft)
-      const jarFile = resolveMinecraftJarInstallFile(resolved, baseOptions)
+      const jarFile = resolveMinecraftJarInstallFile(resolved, options)
       const jar = jarFile
         ? this.executePrimitivePlan(
             {

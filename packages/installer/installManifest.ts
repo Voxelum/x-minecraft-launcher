@@ -188,6 +188,10 @@ async function invalidOutputs(outputs: InstallOutput[], runtime: InstallRuntime)
   return outputs.filter((_, index) => !validity[index])
 }
 
+async function removeOutputs(outputs: InstallOutput[], runtime: InstallRuntime) {
+  await runtime.remove([...new Set(outputs.map((output) => output.path))])
+}
+
 async function executeFiles(
   task: InstallFilesTask,
   runtime: InstallRuntime,
@@ -262,14 +266,13 @@ async function executeJava(
       for (const command of strategy) await runtime.java(command)
       const invalid = await invalidOutputs(task.outputs, runtime)
       if (task.outputs.length === 0 || invalid.length === 0) return
-      await runtime.remove(invalid.map((output) => output.path))
+      await removeOutputs(task.outputs, runtime)
       lastError = new Error(`Java strategy produced ${invalid.length} invalid output(s): ${invalid.map((output) => output.path).join(', ')}`)
       onStrategyFailed?.(strategyIndex, lastError)
     } catch (error) {
       lastError = error
       onStrategyFailed?.(strategyIndex, error)
-      const invalid = await invalidOutputs(task.outputs, runtime)
-      await runtime.remove(invalid.map((output) => output.path))
+      await removeOutputs(task.outputs, runtime)
     }
   }
   throw lastError ?? new Error(`No Java strategy produced valid outputs for ${task.id}`)

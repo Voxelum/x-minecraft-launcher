@@ -263,12 +263,18 @@ describe('install manifest executor', () => {
   })
 
   test('falls back from one Java strategy to another and validates outputs', async () => {
-    const { runtime, files, commands } = createRuntime()
+    const { runtime, files, commands } = createRuntime(new Map([
+      ['stale-output.jar', { content: 'valid', mtimeMs: 100 }],
+    ]))
     const events: InstallEvent[] = []
     runtime.java = async (command) => {
       commands.push(command)
       if (command.args[0] === 'batch') throw new Error('batch failed')
+      if (command.args[0] === 'processor-1') {
+        expect(files.has('stale-output.jar')).toBe(false)
+      }
       files.set('output.jar', { content: 'valid', mtimeMs: 200 })
+      files.set('stale-output.jar', { content: 'valid', mtimeMs: 200 })
     }
 
     await executeInstallManifest({
@@ -283,7 +289,10 @@ describe('install manifest executor', () => {
             { executable: 'java', args: ['processor-2'] },
           ],
         ],
-        outputs: [{ path: 'output.jar', checksum: { algorithm: 'sha1', value: 'valid' }, validator: 'zip' }],
+        outputs: [
+          { path: 'output.jar', checksum: { algorithm: 'sha1', value: 'valid' }, validator: 'zip' },
+          { path: 'stale-output.jar', checksum: { algorithm: 'sha1', value: 'valid' }, validator: 'zip' },
+        ],
       }],
     }, runtime, { onEvent: (event) => events.push(event) })
 
