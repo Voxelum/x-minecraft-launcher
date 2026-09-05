@@ -466,6 +466,7 @@ instance:
   fullscreen: Pantalla completa
   height: Altura
   hideCard: Ocultar esta tarjeta
+  moveToTop: Mover arriba
   icon: Icono de perfil
   iconHint: El icono podría ser un archivo o un enlace URL de Internet.
   iconUrl: URL del Icono

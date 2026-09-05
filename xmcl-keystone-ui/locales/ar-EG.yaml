@@ -427,6 +427,7 @@ instance:
   fullscreen: ملء الشاشة
   height: الارتفاع
   hideCard: إخفاء الكارت ده
+  moveToTop: نقل لفوق
   icon: أيقونة الملف الشخصي
   iconHint: الأيقونة ممكن تكون ملف محلي أو رابط إنترنت.
   iconUrl: رابط الأيقونة

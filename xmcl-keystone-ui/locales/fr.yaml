@@ -367,6 +367,8 @@ instance:
     URL permettant de synchroniser les fichiers d'instance à partir d'un serveur de configuration distant.
   fullscreen: Plein écran
   height: Hauteur
+  hideCard: Masquer cette carte
+  moveToTop: Déplacer en haut
   icon: Icône de profil
   iconHint: L'icône peut être un fichier ou un lien URL Internet.
   iconUrl: URL de l'icône
@@ -392,6 +394,7 @@ instance:
   requireName: Le nom est requis
   resolution: Résolution de fenêtres
   resolutionPreset: Résolution préréglé
+  showHiddenCards: Afficher les cartes masquées
   showInstance: Afficher le dossier du jeu
   updates: Mises à jour
   useSharedOptions: Utiliser les paramètres de jeu partagés

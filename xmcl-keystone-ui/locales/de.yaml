@@ -396,6 +396,8 @@ instance:
     URL zum Synchronisieren von Instanzdateien von einem entfernten Server Konfiguration.
   fullscreen: Vollbild
   height: Höhe
+  hideCard: Diese Karte ausblenden
+  moveToTop: Nach oben verschieben
   icon: Profil-Symbol
   iconHint: Das Symbol könnte eine Datei oder ein Internet-URL-Link sein.
   iconUrl: Url-Symbol
@@ -424,6 +426,7 @@ instance:
   requireName: Der Name ist erforderlich
   resolution: Fensterauflösung
   resolutionPreset: Auflösung Voreinstellung
+  showHiddenCards: Ausgeblendete Karten anzeigen
   showInstance: Spieleordner anzeigen
   updates: Aktualisierungen
   useSharedOptions: Verwenden Sie gemeinsame Spieleinstellungen

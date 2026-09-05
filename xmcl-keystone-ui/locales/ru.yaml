@@ -396,6 +396,8 @@ instance:
   fileApiHint: URL для синхронизации файлов экземпляра с удалённым сервером конфигурации.
   fullscreen: Полноэкранный
   height: Высота
+  hideCard: Скрыть эту карточку
+  moveToTop: Переместить наверх
   icon: Иконка профиля
   iconHint: Значок может представлять собой файл или ссылку на URL-адрес в Интернете.
   iconUrl: URL-адрес иконки
@@ -423,6 +425,7 @@ instance:
   requireName: Требуется имя
   resolution: Разрешение окна
   resolutionPreset: Резолюция предустановлена
+  showHiddenCards: Показать скрытые карточки
   showInstance: Открыть папку экземпляра
   updates: Обновления
   useSharedOptions: Использовать общие настройки игры
