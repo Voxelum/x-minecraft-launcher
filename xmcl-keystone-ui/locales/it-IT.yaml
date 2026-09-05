@@ -348,6 +348,8 @@ instance:
     L'URL per sincronizzare i file dell'istanza da un server di configurazione remoto.
   fullscreen: A schermo intero
   height: Altezza
+  hideCard: Nascondi questa scheda
+  moveToTop: Sposta in alto
   icon: Icona profilo
   iconHint: L'icona potrebbe essere un file o un collegamento URL Internet.
   iconUrl: Icona Url
@@ -375,6 +377,7 @@ instance:
   requireName: Il nome è obbligatorio
   resolution: Risoluzione della finestra
   resolutionPreset: Preimpostazione della risoluzione
+  showHiddenCards: Mostra schede nascoste
   showInstance: Mostra la cartella del gioco
   updates: Aggiornamenti
   useSharedOptions: Utilizza le impostazioni di gioco condivise

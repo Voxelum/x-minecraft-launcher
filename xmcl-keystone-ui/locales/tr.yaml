@@ -432,6 +432,7 @@ instance:
   fileApiPlaceholder: Kaynak senkronizasyonunu sürdürmek istiyorsanız uzak senkronizasyon URL'sini buraya girin
   deleteHintBedrock: Minecraft Bedrock Sürümü ve tüm verileri bilgisayarınızdan tamamen silinecektir. Emin misiniz?
   hideCard: Bu kartı gizle
+  moveToTop: En üste taşı
   nameInvalidChars: 'Ad şu karakterleri içeremez: < > : " / \\ | ? *'
   namePathTraversal: Ad dizin geçişi ("..") içeremez
   nameReservedName: Bu ad sistem tarafından ayrılmıştır ve kullanılamaz

@@ -368,6 +368,8 @@ instance:
   fileApiHint: TEH URL TO SYNCHRONIZE INSTANCE FILEZ FROM A REMOTE CONFIG SERVER.
   fullscreen: FULLSCREEN
   height: HEIGHT
+  hideCard: HIDE DIS CARD
+  moveToTop: MOOV 2 TOP
   icon: PROFILE ICON
   iconHint: TEH ICON CUD BE A FILE OR INTERNET URL LINK.
   iconUrl: ICON URL
@@ -394,6 +396,7 @@ instance:
   requireName: TEH NAME IS REQUIRED
   resolution: RESOLUSHUN
   resolutionPreset: RESOLUSHUN PRESET
+  showHiddenCards: SHOW HIDDEN CARDZ
   showInstance: SHOW GAME FOLDR
   updates: UPDATS
   useSharedOptions: USE SHARED GAME SETTINGZ

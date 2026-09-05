@@ -378,6 +378,8 @@ instance:
     Az url a példányfájlok szinkronizálásához egy távoli konfigurációs kiszolgálóról.
   fullscreen: Teljes képernyő
   height: Magasság
+  hideCard: Kártya elrejtése
+  moveToTop: Áthelyezés legfelülre
   icon: Profil ikon
   iconHint: Az ikon lehet fájl vagy internetes URL-hivatkozás.
   iconUrl: Ikon Url
@@ -405,6 +407,7 @@ instance:
   requireName: A név megadása kötelező
   resolution: Ablakfelbontás
   resolutionPreset: Felbontás
+  showHiddenCards: Rejtett kártyák megjelenítése
   showInstance: Játék mappa megjelenítése
   updates: Frissítések
   useSharedOptions: Használja a megosztott játékbeállításokat

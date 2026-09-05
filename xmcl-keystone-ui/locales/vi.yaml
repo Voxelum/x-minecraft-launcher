@@ -427,6 +427,7 @@ instance:
   fullscreen: Toàn màn hình
   height: Chiều cao
   hideCard: Ẩn thẻ này
+  moveToTop: Di chuyển lên đầu
   icon: Biểu tượng hồ sơ
   iconHint: Biểu tượng có thể là một tệp hoặc liên kết URL internet.
   iconUrl: URL biểu tượng

@@ -104,11 +104,45 @@
               @drop="() => {}"
             />
           </template>
+          <v-menu
+            v-else-if="selected === 0 && items.length === 0"
+          >
+            <template #activator="{ props }">
+              <div class="flex items-center justify-center h-full py-4">
+                <v-btn
+                  v-bind="props"
+                  variant="text"
+                  size="small"
+                  prepend-icon="visibility"
+                >
+                  {{ t('instance.showHiddenCards') }}
+                </v-btn>
+              </div>
+            </template>
+            <v-list density="compact">
+              <v-list-item
+                v-for="card in hiddenCards"
+                :key="card.id"
+                :title="card.label"
+                @click="restoreCard(card.id)"
+              >
+                <template #prepend>
+                  <v-icon>{{ cardIcon[card.type] || 'visibility' }}</v-icon>
+                </template>
+              </v-list-item>
+            </v-list>
+          </v-menu>
           <div
-            v-else-if="items.length === 0"
+            v-else-if="selected === 1 && items.length === 0"
             class="flex items-center justify-center h-full text-xs text-medium-emphasis py-4"
           >
-            {{ t('instance.showHiddenCards') }}
+            <v-progress-circular
+              v-if="loadingUpdates"
+              indeterminate
+              size="20"
+              width="2"
+            />
+            <span v-else>{{ t('launcherUpdate.noUpdateAvailable') }}</span>
           </div>
           <HomeCardListItem
             v-else
@@ -163,7 +197,7 @@ import { useSWRVModel } from '@/composables/swrv'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vContextMenu } from '@/directives/contextMenu'
-import { CardType, getParam, useHomeFocusCards } from '@/composables/homeCards'
+import { CardType, cardIcon, getParam, useHomeFocusCards } from '@/composables/homeCards'
 import { getCurseforgeFileGameVersions, getCursforgeFileModLoaders } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { useElementHover, useElementSize } from '@vueuse/core'
@@ -185,6 +219,8 @@ const {
   cardOrder,
   reorderCards,
   isHidden,
+  hiddenCards,
+  restoreCard,
   getCardMenu,
   getBackgroundMenu,
 } = useHomeFocusCards()
@@ -257,6 +293,11 @@ const latestVersions = computed(() => {
     return (curseforgeFiles.data.value )?.data || []
   }
   return []
+})
+const loadingUpdates = computed(() => {
+  if (upstream.value?.type === 'modrinth-modpack') return modrinthVersions.isValidating.value
+  if (upstream.value?.type === 'curseforge-modpack') return curseforgeFiles.isValidating.value
+  return false
 })
 
 // Convert versions to StoreProjectVersion format

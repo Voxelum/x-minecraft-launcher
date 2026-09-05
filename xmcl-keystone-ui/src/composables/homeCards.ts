@@ -55,6 +55,28 @@ export function getParam(id: string): string | undefined {
   return idx >= 0 ? id.slice(idx + 1) : undefined
 }
 
+export function reorderCardIds(currentIds: string[], fromId: string, toId: string): string[] {
+  if (fromId === toId) return currentIds
+  const ids = [...currentIds]
+  const fromIdx = ids.indexOf(fromId)
+  const toIdx = ids.indexOf(toId)
+  if (fromIdx === -1 || toIdx === -1) return currentIds
+  ids.splice(fromIdx, 1)
+  ids.splice(fromIdx < toIdx ? toIdx - 1 : toIdx, 0, fromId)
+  return ids
+}
+
+export function updateInstanceState<T>(
+  states: Record<string, T>,
+  instancePath: string,
+  update: (current: T | undefined) => T,
+): Record<string, T> {
+  return {
+    ...states,
+    [instancePath]: update(states[instancePath]),
+  }
+}
+
 export interface CardDescriptor {
   id: string
   type: CardType
@@ -168,15 +190,14 @@ export interface FocusCardMeta {
 export const useHomeFocusCards = createSharedComposable(() => {
   const { t } = useI18n()
   const { allCards, serverCards, worldCards } = useAllCards()
+  const { path: instancePath } = injection(kInstance)
 
   const STORE_KEY = 'homeFocusCardsState'
   const ORDER_KEY = 'homeFocusCardsOrder'
-  const cardState = useLocalStorage<Record<string, FocusCardMeta>>(STORE_KEY, {}, { deep: false, writeDefaults: false })
-  const cardOrder = useLocalStorage<string[]>(ORDER_KEY, [], { deep: false, writeDefaults: false })
-
-  function saveCardState() {
-    localStorage.setItem(STORE_KEY, JSON.stringify(cardState.value))
-  }
+  const cardStates = useLocalStorage<Record<string, Record<string, FocusCardMeta>>>(STORE_KEY, {}, { deep: false, writeDefaults: false })
+  const cardOrders = useLocalStorage<Record<string, string[]>>(ORDER_KEY, {}, { deep: false, writeDefaults: false })
+  const cardState = computed(() => cardStates.value[instancePath.value] ?? {})
+  const cardOrder = computed(() => cardOrders.value[instancePath.value] ?? [])
 
   const DEFAULT_HIDDEN_TYPES = new Set<CardType>([CardType.World, CardType.Server])
 
@@ -188,27 +209,22 @@ export const useHomeFocusCards = createSharedComposable(() => {
   }
 
   function setHidden(id: string, hidden: boolean) {
-    cardState.value = { ...cardState.value, [id]: { ...cardState.value[id], hidden } }
-    saveCardState()
+    cardStates.value = updateInstanceState(cardStates.value, instancePath.value, (current = {}) => ({
+      ...current,
+      [id]: { ...current[id], hidden },
+    }))
   }
 
   function reorderCards(fromId: string, toId: string, currentIds: string[]) {
-    if (fromId === toId) return
-    const ids = [...currentIds]
-    const fromIdx = ids.indexOf(fromId)
-    const toIdx = ids.indexOf(toId)
-    if (fromIdx === -1 || toIdx === -1) return
-    ids.splice(fromIdx, 1)
-    ids.splice(toIdx, 0, fromId)
-    cardOrder.value = ids
-    localStorage.setItem(ORDER_KEY, JSON.stringify(ids))
+    const ids = reorderCardIds(currentIds, fromId, toId)
+    if (ids === currentIds) return
+    cardOrders.value = { ...cardOrders.value, [instancePath.value]: ids }
   }
 
   function moveToTop(id: string, currentIds: string[]) {
     const ids = currentIds.filter((x) => x !== id)
     ids.unshift(id)
-    cardOrder.value = ids
-    localStorage.setItem(ORDER_KEY, JSON.stringify(ids))
+    cardOrders.value = { ...cardOrders.value, [instancePath.value]: ids }
   }
 
   const hiddenCards = computed(() => allCards.value.filter((c) => isHidden(c)))

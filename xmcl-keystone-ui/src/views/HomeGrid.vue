@@ -1,6 +1,33 @@
 <template>
   <div ref="gridRoot" data-testid="home-grid" v-context-menu="getBackgroundMenu">
+    <v-menu v-if="layout.length === 0">
+      <template #activator="{ props }">
+        <div class="flex min-h-40 items-center justify-center">
+          <v-btn
+            v-bind="props"
+            variant="text"
+            size="small"
+            prepend-icon="visibility"
+          >
+            {{ t('instance.showHiddenCards') }}
+          </v-btn>
+        </div>
+      </template>
+      <v-list density="compact">
+        <v-list-item
+          v-for="card in hiddenCards"
+          :key="card.id"
+          :title="card.label"
+          @click="restoreCard(card.id)"
+        >
+          <template #prepend>
+            <v-icon>{{ cardIcon[card.type] || 'visibility' }}</v-icon>
+          </template>
+        </v-list-item>
+      </v-list>
+    </v-menu>
     <GridLayout
+      v-else
       class="z-1"
       v-model:layout="layout"
       :is-draggable="true"
@@ -72,6 +99,7 @@ import {
   cardIcon,
   getParam,
   isType,
+  updateInstanceState,
   useAllCards,
 } from '@/composables/homeCards'
 import { kInstance } from '@/composables/instance'
@@ -91,7 +119,7 @@ import HomeWorldCard from './HomeWorldCard.vue'
 import HomeBlueprintCard from './HomeBlueprintCard.vue'
 
 const { t } = useI18n()
-const { instance } = injection(kInstance)
+const { instance, path: instancePath } = injection(kInstance)
 const { allCards } = useAllCards()
 
 provide(
@@ -122,9 +150,9 @@ type Breakpoint = 'lg' | 'md' | 'sm' | 'xs'
 /**
  * Persisted, per-card metadata. Keyed by the card type so adding or removing
  * a `CardType` never corrupts the stored shape: an unknown key is simply
- * ignored, a missing key falls back to {@link DEFAULTS}. `hidden` is global
- * (a hidden card stays hidden in every breakpoint); `layout` holds the
- * user's per-breakpoint position/size overrides.
+ * ignored, a missing key falls back to {@link DEFAULTS}. `hidden` applies to
+ * every breakpoint within the current instance; `layout` holds the user's
+ * per-breakpoint position/size overrides.
  */
 interface CardMeta {
   hidden?: boolean
@@ -202,10 +230,11 @@ const DEFAULTS: Record<Breakpoint, Partial<Record<CardType, GridGeom>>> = {
 }
 
 const STORE_KEY = 'homeCardsState'
-const cardState = useLocalStorage<Record<string, CardMeta>>(STORE_KEY, {}, { deep: false, writeDefaults: false })
+const cardStates = useLocalStorage<Record<string, Record<string, CardMeta>>>(STORE_KEY, {}, { deep: false, writeDefaults: false })
+const cardState = computed(() => cardStates.value[instancePath.value] ?? {})
 
-function saveCardState() {
-  localStorage.setItem(STORE_KEY, JSON.stringify(cardState.value))
+function setCardState(instance: string, state: Record<string, CardMeta>) {
+  cardStates.value = updateInstanceState(cardStates.value, instance, () => state)
 }
 
 function getBreakpoint(width: number): Breakpoint {
@@ -291,7 +320,10 @@ useResizeObserver(gridRoot, (entries) => {
 
 // Rebuild when the set of cards changes (a world or server is added / removed)
 // so the corresponding card shows up / drops out without a reload.
-watch(() => allCards.value.map((c) => c.id).join('|'), () => {
+watch([instancePath, () => allCards.value.map((c) => c.id).join('|')], ([newPath], [oldPath]) => {
+  if (oldPath && newPath !== oldPath) {
+    writeLayout(oldPath, currentBreakpoint.value, layout.value)
+  }
   layout.value = buildLayout(currentBreakpoint.value)
 })
 
@@ -305,19 +337,26 @@ const containerWidths = reactive({
 const screenshotHeight = ref(0)
 
 /** Write the current breakpoint's live geometry back into the per-card store. */
-const writeLayout = () => {
-  const bp = currentBreakpoint.value
-  for (const item of layout.value) {
-    const meta = cardState.value[item.i] ?? (cardState.value[item.i] = {})
-    const byBreakpoint = meta.layout ?? (meta.layout = {})
-    byBreakpoint[bp] = { x: item.x, y: item.y, w: item.w, h: item.h }
+function writeLayout(instance: string, bp: Breakpoint, items: GridItemType[]) {
+  const nextState = { ...cardStates.value[instance] }
+  for (const item of items) {
+    const meta = nextState[item.i] ?? {}
+    nextState[item.i] = {
+      ...meta,
+      layout: {
+        ...meta.layout,
+        [bp]: { x: item.x, y: item.y, w: item.w, h: item.h },
+      },
+    }
   }
-  saveCardState()
+  setCardState(instance, nextState)
 }
-const persist = useDebounceFn(writeLayout, 500)
+const persist = useDebounceFn((instance: string, bp: Breakpoint, items: GridItemType[]) => {
+  writeLayout(instance, bp, items)
+}, 500)
 
 function onLayoutUpdated() {
-  persist()
+  persist(instancePath.value, currentBreakpoint.value, layout.value.map((item) => ({ ...item })))
 }
 
 // The home view is not kept alive, so navigating away unmounts this component.
@@ -326,7 +365,7 @@ function onLayoutUpdated() {
 // navigation would never reach localStorage and the layout would appear to
 // reset on return.
 onBeforeUnmount(() => {
-  writeLayout()
+  writeLayout(instancePath.value, currentBreakpoint.value, layout.value)
 })
 
 let screenshotItem = undefined as undefined | HTMLElement
@@ -346,7 +385,7 @@ const onResized = (i: string, newH: number, newW: number, newHPx: number, newWPx
       screenshotHeight.value = Number(newHPx)
     }
   }
-  persist()
+  persist(instancePath.value, currentBreakpoint.value, layout.value.map((item) => ({ ...item })))
 }
 
 const getRowCount = (width: number) => (width ? Math.floor((width - 34) / 30) : 7)
@@ -355,16 +394,18 @@ const modRowCount = computed(() => getRowCount(containerWidths[CardType.Mod]))
 const saveRowCount = computed(() => getRowCount(containerWidths[CardType.Save]))
 
 function hideCard(id: string) {
-  const meta = cardState.value[id] ?? (cardState.value[id] = {})
-  meta.hidden = true
-  saveCardState()
+  setCardState(instancePath.value, {
+    ...cardState.value,
+    [id]: { ...cardState.value[id], hidden: true },
+  })
   layout.value = buildLayout(currentBreakpoint.value)
 }
 
 function restoreCard(id: string) {
-  const meta = cardState.value[id] ?? (cardState.value[id] = {})
-  meta.hidden = false
-  saveCardState()
+  setCardState(instancePath.value, {
+    ...cardState.value,
+    [id]: { ...cardState.value[id], hidden: false },
+  })
   layout.value = buildLayout(currentBreakpoint.value)
 }
 
