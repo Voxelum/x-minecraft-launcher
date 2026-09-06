@@ -181,7 +181,7 @@ jobs:
         shell: bash
         env:
           # Capture child-process output emitted before Electron launch returns.
-          DEBUG: pw:browser
+          DEBUG: pw:browser,pw:protocol
 
       - name: Upload artifacts
         if: always()
