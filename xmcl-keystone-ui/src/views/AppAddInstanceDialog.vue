@@ -140,7 +140,7 @@
       <v-divider class="mx-6 opacity-20" />
       <StepperFooter
         class="px-6 pb-6 pt-4"
-        :disabled="!valid || loading"
+        :disabled="!valid || loading || !creation.canCreate.value"
         :creating="loading"
         :next="step !== steps.length"
         :create="step === steps.length"
@@ -233,6 +233,7 @@ const { all: javas } = injection(kJavaContext)
 const modpackFilePath = ref('')
 const existingInstance = ref(undefined as { path: string; name: string } | undefined)
 const onSelectModpack = async (modpack: string) => {
+  creation.prepareImport()
   try {
     loading.value = true
     existingInstance.value = undefined
@@ -256,6 +257,7 @@ const onSelectModpack = async (modpack: string) => {
   }
 }
 const onSelectFTB = async (ftb: CachedFTBModpackVersionManifest) => {
+  creation.prepareImport()
   try {
     loading.value = true
     existingInstance.value = undefined
@@ -470,7 +472,8 @@ const onCreate = async () => {
     path.value = newPath
     if (router.currentRoute.value.path !== '/') router.push('/')
     hide()
-  })
+  }).catch(() => undefined)
+  if (!newPath) return
   if (isBedrock) {
     try {
       const instStatus = await getInstallation()
@@ -504,11 +507,11 @@ const onUpdateExisting = async () => {
       creation.data.upstream,
       existing.path,
     )
-    hide()
   } catch (e) {
     error.value = e
   } finally {
     loading.value = false
+    hide()
   }
 }
 

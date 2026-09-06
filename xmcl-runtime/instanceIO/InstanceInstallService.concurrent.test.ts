@@ -146,7 +146,7 @@ describe('InstanceInstallService concurrent diff installs', () => {
     expect(await pathExists(join(instancePath, 'mods', 'first.jar'))).toBe(true)
     expect(await pathExists(join(instancePath, 'mods', 'second.jar'))).toBe(true)
 
-    await Promise.all([
+    const overlapping = await Promise.allSettled([
       install({
         path: 'mods/shared.jar',
         hashes: { sha1: 'first-version' },
@@ -159,8 +159,8 @@ describe('InstanceInstallService concurrent diff installs', () => {
       }),
     ])
 
-    expect(['first-version', 'second-version']).toContain(
-      await readFile(join(instancePath, 'mods', 'shared.jar'), 'utf8'),
-    )
+    expect(overlapping[1].status).toBe('fulfilled')
+    if (overlapping[0].status === 'rejected') expect(overlapping[0].reason.name).toBe('AbortError')
+    expect(await readFile(join(instancePath, 'mods', 'shared.jar'), 'utf8')).toBe('second-version')
   })
 })

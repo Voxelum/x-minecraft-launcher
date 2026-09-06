@@ -38,8 +38,9 @@ import { AnyError, isSystemError } from '@xmcl/utils'
 import { FSWatcher } from 'chokidar'
 import { randomUUID } from 'crypto'
 import filenamify from 'filenamify'
-import { readFile, readJSON, readJson, remove, unlink, writeFile, writeJson } from 'fs-extra'
-import { basename, dirname, join, resolve } from 'path'
+import { unwatchFile, watchFile, type Stats } from 'fs'
+import { ensureDir, pathExists, readJSON, readJson, remove, rename, rmdir, stat, unlink, writeFile, writeJson } from 'fs-extra'
+import { basename, dirname, join, relative, resolve } from 'path'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { ZipManager, kTasks, type Tasks } from '~/infra'
 import { InstanceService } from '~/instance/InstanceService'
@@ -53,12 +54,18 @@ import { linkInstanceFiles } from './utils/linkInstanceFiles'
 import { unzipInstanceFiles } from './utils/unzipInstanceFiles'
 import { resolveInstanceFiles } from './utils/resolveInstanceFiles'
 import { getTracker } from '~/util/taskHelper'
+import { readPendingInstalls, writeInstallState } from './utils/pendingInstall'
+import { activeInstallFiles, hasInstallWork, installPathKey, supersedeInstallPlans } from './utils/installPlan'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
 @ExposeServiceKey(InstanceInstallServiceKey)
 export class InstanceInstallService extends AbstractService implements IInstanceInstallService {
+  private readonly pendingInstallRefreshers = new Map<string, () => Promise<void>>()
+  private readonly activeInstallTasks = new Map<string, AbortController>()
+  private readonly installRegistrations = new Map<string, Promise<void>>()
+
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kResourceManager) private resourceManager: ResourceManager,
@@ -126,16 +133,23 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const snapshot = await this.resourceManager.getSnapshotByDomainedPath(
       getDomainedPath(file.path, instancePath),
     )
-    if (snapshot) {
+    if (snapshot && snapshot.mtime === file.mtime && snapshot.ino === file.ino) {
       return snapshot.sha1
     }
-    const newSnapshot = await this.resourceManager.getSnapshot(file)
-    return newSnapshot.sha1
+    return this.worker.checksum(file.path, 'sha1')
+  }
+
+  private getInstallFile = async (path: string) => {
+    const file = await getFile(path)
+    return file?.isDirectory ? undefined : file
   }
 
   private getCrc32 = async (instancePath: string, file: File) => {
     return await this.worker.checksum(file.path, 'crc32')
   }
+
+  private getChecksum = async (_instancePath: string, file: File, algorithm: string) =>
+    this.worker.checksum(file.path, algorithm)
 
   async #getDelta(
     instancePath: string,
@@ -144,7 +158,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     newFiles: InstanceFile[],
   ) {
     let fileDelta: InstanceFileUpdate[] = []
-    const fs = { getFile, getSha1: this.getSha1, getCrc32: this.getCrc32, join }
+    const fs = { getFile: this.getInstallFile, getSha1: this.getSha1, getCrc32: this.getCrc32, getChecksum: this.getChecksum, join }
 
     if (lockState) {
       // check if upstream are the same
@@ -181,9 +195,58 @@ export class InstanceInstallService extends AbstractService implements IInstance
     targetState: InstanceInstallLock,
     id?: string,
     noLock?: boolean,
+    profilePath = join(instancePath, '.install-profile'),
+    resuming = false,
+    legacyBaseline?: { upstream: InstanceUpstream; files: InstanceFile[] } | null,
+  ) {
+    const previousRegistration = this.installRegistrations.get(instancePath)
+    const registered = Promise.withResolvers<void>()
+    if (!resuming) this.installRegistrations.set(instancePath, registered.promise)
+    const releaseRegistration = () => {
+      registered.resolve()
+      if (this.installRegistrations.get(instancePath) === registered.promise) this.installRegistrations.delete(instancePath)
+    }
+    return this.mutex.of(`instance-install-operation:${profilePath}`).runExclusive(async () => {
+      if (!resuming) await previousRegistration
+      if (resuming) {
+        const saved = await readJson(profilePath).then(InstanceInstallLock.parse).catch((error) => {
+          if (isSystemError(error) && error.code === 'ENOENT') return undefined
+          throw error
+        })
+        if (!saved) return false
+        targetState = { ...saved, files: targetState.files, oldFiles: targetState.oldFiles }
+        await this.mutex.of(LockKey.instance(instancePath)).runExclusive(async () => {
+          await stat(instancePath)
+          if (dirname(targetState.workspace) === dirname(instancePath) &&
+              basename(targetState.workspace).startsWith(`.${basename(instancePath)}-install-`)) {
+            const workspace = join(instancePath, '.install', randomUUID(), 'files')
+            await ensureDir(dirname(workspace))
+            if (await pathExists(targetState.workspace)) await rename(targetState.workspace, workspace)
+            targetState.workspace = workspace
+            await writeInstallState(profilePath, targetState)
+          }
+        })
+      }
+      return this.#runInstall(
+        instancePath, lockState, targetState, id, noLock, profilePath, resuming, releaseRegistration, legacyBaseline,
+      )
+    }).finally(releaseRegistration)
+  }
+
+  async #runInstall(
+    instancePath: string,
+    lockState: InstanceLockSchema | undefined,
+    targetState: InstanceInstallLock,
+    id: string | undefined,
+    noLock: boolean | undefined,
+    profilePath: string,
+    resuming: boolean,
+    releaseRegistration: () => void,
+    legacyBaseline?: { upstream: InstanceUpstream; files: InstanceFile[] } | null,
   ) {
     const lockFilePath = join(instancePath, 'instance-lock.json')
-    const currentStatePath = join(instancePath, '.install-profile')
+    const currentStatePath = profilePath
+    const originalDirectory = await stat(instancePath)
 
     const curseforgeClient = this.curseforgeClient
     const modrinthClient = this.modrinthClient
@@ -209,6 +272,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       instancePath,
       taskId: id,
     })
+    this.activeInstallTasks.set(profilePath, task.controller)
 
     // Race fix: deleteInstance and #install used to take different
     // mutex keys, so `rm -rf <instance>` could run while our install
@@ -221,17 +285,43 @@ export class InstanceInstallService extends AbstractService implements IInstance
     //      that deleteInstance waits on. Local diff installs may prepare in
     //      an isolated workspace before taking this lock.
     const instanceService = await this.app.registry.get(InstanceService)
-    const abortOnRemove = () => task.controller.abort()
+    let removing = false
+    let preparing = false
+    const writersSettled = Promise.withResolvers<void>()
+    const abortOnRemove = () => {
+      removing = true
+      task.controller.abort()
+      // Preparation runs outside the instance mutex. Deletion must wait
+      // for its writers, but not for the commit that also needs that mutex.
+      return preparing ? writersSettled.promise : undefined
+    }
     const unregisterRemoveHandler = instanceService.registerRemoveHandler(
       instancePath,
       abortOnRemove,
     )
+    const checkInstance = async () => {
+      const directory = await stat(instancePath).catch((error) => {
+        if (isSystemError(error) && error.code === 'ENOENT') return undefined
+        throw error
+      })
+      if (removing || !directory || directory.ino !== originalDirectory.ino) {
+        removing = true
+        task.controller.abort()
+        throw task.controller.signal.reason
+      }
+    }
+    const onDirectoryChange = (current: Stats) => {
+      if (current.nlink === 0 || current.ino !== originalDirectory.ino) void abortOnRemove()
+    }
+    watchFile(instancePath, { interval: 100, persistent: false }, onDirectoryChange)
 
     const updateResources = async () => {
       try {
         if (resourceToUpdate.length > 0) {
+          const publishedDestinations = new Set([...handler.committed].map(path => join(instancePath, path)))
           const options = await Promise.all(
-            resourceToUpdate.map(async ({ hash, metadata, uris, destination }) => {
+            resourceToUpdate.filter(resource => publishedDestinations.has(resource.destination))
+              .map(async ({ hash, metadata, uris, destination }) => {
               const actualSha1 =
                 hash ?? (await this.worker.checksum(destination, 'sha1').catch(() => undefined))
               return {
@@ -285,7 +375,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
               curseforge: file.curseforge,
             },
             uris: file.downloads || [],
-            destination: file.path,
+            destination: join(instancePath, file.path),
           })
         },
         getCachedResource: (sha1) =>
@@ -331,175 +421,309 @@ export class InstanceInstallService extends AbstractService implements IInstance
           modrinthClient,
           task.controller.signal,
         )
-      } catch {
+      } catch (error) {
+        this.warn('Failed to refresh instance file download sources', error)
         return false
       }
     }
 
     const reconcileUnresolved = async (unresolvable: InstanceFile[]) => {
       const unresolvedFilesPath = join(instancePath, 'unresolved-files.json')
-      const attemptedPaths = new Set(targetState.files.map((file) => file.path))
-      const existingUnresolved: InstanceFile[] = await readJSON(unresolvedFilesPath).catch(
-        () => [],
-      )
+      const targetPaths = new Set(activeInstallFiles(targetState).map(file => installPathKey(file.path)))
+      const attemptedPaths = new Set([
+        ...targetPaths,
+        ...activeInstallFiles(targetState, true).map(file => installPathKey(file.path)),
+      ])
+      const existingUnresolved: InstanceFile[] = await readJSON(unresolvedFilesPath).catch((error) => {
+        if (isSystemError(error) && error.code === 'ENOENT') return []
+        throw error
+      })
       const mergedUnresolved = existingUnresolved
-        .filter((file) => !attemptedPaths.has(file.path))
-        .concat(unresolvable)
+        .filter((file) => !attemptedPaths.has(installPathKey(file.path)))
+        .concat(unresolvable.filter(file => targetPaths.has(installPathKey(file.path))))
       if (mergedUnresolved.length > 0) {
-        await writeFile(unresolvedFilesPath, JSON.stringify(mergedUnresolved))
+        await writeInstallState(unresolvedFilesPath, mergedUnresolved)
       } else {
-        await unlink(unresolvedFilesPath).catch(() => undefined)
+        await unlink(unresolvedFilesPath).catch((error) => {
+          if (!isSystemError(error) || error.code !== 'ENOENT') throw error
+        })
+      }
+    }
+
+    const errors: unknown[] = []
+    let superseded = false
+    let acceptingReady = false
+    let flushTimer: ReturnType<typeof setTimeout> | undefined
+    let flushing: Promise<void> | undefined
+    const batchSize = 256
+    const finished = new class extends Set<string> {
+      add(path: string) {
+        super.add(path)
+        scheduleFlush()
+        return this
+      }
+    }()
+    const handler = createHandler(finished)
+    const refreshStatus = () => this.pendingInstallRefreshers.get(instancePath)?.()
+    const readLock = () => readJson(lockFilePath).then(InstanceLockSchema.parse).catch((error) => {
+      if (isSystemError(error) && error.code === 'ENOENT') return undefined
+      throw error
+    })
+    const loadCurrentPlan = async () => {
+      const profiles = await readPendingInstalls(instancePath)
+      const current = profiles.find(profile => profile.path === profilePath)
+      if (!current) {
+        superseded = true
+        throw new DOMException('Installation superseded by a newer plan', 'AbortError')
+      }
+      targetState = current.state
+      // Also covers a crash between publishing a newer plan and recording its
+      // ownership transfers in the older profiles.
+      for (const newer of profiles.filter(profile =>
+        (profile.state.revision ?? 0) > (targetState.revision ?? 0),
+      )) {
+        const result = supersedeInstallPlans(newer.state, [{ path: profilePath, state: targetState }])
+        if (result.superseded[0]) targetState = result.superseded[0].state
+      }
+      if (!hasInstallWork(targetState) && targetState.supersededPaths?.length) {
+        superseded = true
+        throw new DOMException('Installation superseded by a newer plan', 'AbortError')
+      }
+    }
+    const delta = (ready?: Set<string>) => {
+      const files = activeInstallFiles(targetState)
+      const baseline = activeInstallFiles(targetState, true)
+      return computeFileUpdates(
+        instancePath,
+        ready ? baseline.filter(file => ready.has(file.path)) : baseline,
+        ready ? files.filter(file => ready.has(file.path)) : files,
+        noLock ? undefined : targetState.baseline?.mtime,
+        { getFile: this.getInstallFile, getSha1: this.getSha1, getCrc32: this.getCrc32, getChecksum: this.getChecksum },
+      )
+    }
+    const initialize = async () => {
+      task.controller.signal.throwIfAborted()
+      await checkInstance()
+      lockState = await readLock()
+      const profiles = await readPendingInstalls(instancePath)
+      const saved = profiles.find(profile => profile.path === profilePath)?.state
+      if (saved) targetState = { ...targetState, ...saved, files: targetState.files }
+      if (!noLock && lockState && !isUpstreamIsSameOrigin(lockState.upstream, targetState.upstream)) {
+        throw new AnyError('InstanceUpstreamError', 'The instance is locked by another upstream')
+      }
+      if (!targetState.baseline) {
+        const legacy = !noLock && !lockState
+          ? (legacyBaseline !== undefined ? legacyBaseline : await this.getLegacyLock(instancePath))
+          : undefined
+        if (legacy && !isUpstreamIsSameOrigin(legacy.upstream, targetState.upstream)) {
+          throw new AnyError('InstanceUpstreamError', 'The instance is locked by another upstream')
+        }
+        targetState.baseline = {
+          files: noLock ? targetState.oldFiles ?? [] : lockState?.files ?? legacy?.files ?? [],
+          mtime: noLock ? undefined : lockState?.mtime,
+        }
+      }
+      targetState.operationId ??= randomUUID()
+      targetState.revision ??= resuming ? targetState.mtime : Math.max(Date.now(), ...profiles.map(profile => profile.state.revision ?? 0)) + 1
+      const previous = profiles.filter(profile => profile.path !== profilePath &&
+        (profile.state.revision ?? 0) < targetState.revision!)
+      const transfer = supersedeInstallPlans(targetState, previous)
+      targetState = transfer.plan
+      await ensureDir(dirname(currentStatePath))
+      await ensureDir(targetState.workspace)
+      await writeInstallState(currentStatePath, targetState)
+      for (const older of transfer.superseded) {
+        await writeInstallState(older.path, older.state)
+        if (!hasInstallWork(older.state)) {
+          const active = this.activeInstallTasks.get(older.path)
+          if (active) {
+            active.abort(new DOMException('Installation superseded by a newer plan', 'AbortError'))
+          } else {
+            await remove(older.state.workspace)
+            if (dirname(dirname(older.state.workspace)) === join(instancePath, '.install')) {
+              await rmdir(dirname(older.state.workspace)).catch((error) => {
+                if (!isSystemError(error) || !['ENOENT', 'ENOTEMPTY'].includes(error.code)) throw error
+              })
+            }
+            await unlink(older.path)
+          }
+        }
+      }
+      await loadCurrentPlan()
+      await refreshStatus()
+      return delta()
+    }
+    const prepare = async (updates: InstanceFileUpdate[]) => {
+      try {
+        await resolveAddedFiles(updates)
+        await lock.runExclusive(async () => {
+          await checkInstance()
+          await loadCurrentPlan()
+          const refreshed = new Map(updates.map(update => [update.file.path, update.file]))
+          targetState.files = targetState.files.map(file => refreshed.get(file.path) ?? file)
+          await writeInstallState(currentStatePath, targetState)
+        })
+        task.controller.signal.throwIfAborted()
+        preparing = true
+        acceptingReady = true
+        await handler.prepareInstallFiles(updates, task.controller.signal, true)
+        task.controller.signal.throwIfAborted()
+      } catch (error) {
+        errors.push(error)
+        logger.warn('Install instance files error', error)
+      } finally {
+        preparing = false
+        writersSettled.resolve()
+      }
+    }
+    const commit = async (updates: InstanceFileUpdate[], final: boolean) => {
+      await checkInstance()
+      try {
+        await handler.commitReadyFiles(updates, final && errors.length === 0 && !task.controller.signal.aborted, checkInstance)
+      } catch (error) {
+        errors.push(error)
+      }
+      for (const path of handler.committed) handler.finished.delete(path)
+      await checkInstance()
+      const missing = updates.filter(({ file, operation }) =>
+        (operation === 'add' || operation === 'backup-add') && !handler.committed.has(file.path),
+      )
+      if (final && missing.length && errors.length === 0) {
+        errors.push(new AnyError('UnresolvedInstanceFilesError', `Unable to install ${missing.length} instance files`))
+      }
+      if (final && task.controller.signal.aborted && errors.length === 0) errors.push(task.controller.signal.reason)
+
+      // A lock describes what was actually published, never the entire target
+      // of a failed installation. Keep the old timestamp until completion so
+      // user edits to files that have not been replaced remain protected.
+      try {
+        if (!noLock) {
+          const latestLock = await readLock()
+          const existingFiles = latestLock?.files ?? (await Promise.all(
+            (targetState.baseline?.files ?? []).map(async file =>
+              await this.getInstallFile(join(instancePath, file.path)) ? file : undefined),
+          )).filter(file => file !== undefined)
+          const actual = new Map(existingFiles.map(file => [file.path, file]))
+          for (const file of activeInstallFiles(targetState)) {
+            if (handler.committed.has(file.path)) actual.set(file.path, file)
+          }
+          for (const path of handler.removed) actual.delete(path)
+          await writeInstallState(lockFilePath, InstanceLockSchema.parse({
+            version: 1,
+            files: final && !errors.length && !targetState.supersededPaths?.length ? targetState.files : [...actual.values()],
+            upstream: targetState.supersededPaths?.length ? latestLock?.upstream ?? targetState.upstream : targetState.upstream,
+            mtime: final && !errors.length && !targetState.supersededPaths?.length ? Date.now() : (targetState.baseline?.mtime ?? 0),
+          }))
+        }
+        const published = new Set(final ? [] : targetState.committedPath ?? [])
+        for (const path of handler.committed) published.add(path)
+        targetState.committedPath = [...published].filter(path =>
+          !targetState.supersededPaths?.includes(installPathKey(path)),
+        )
+        targetState.finishedPath = [...handler.finished]
+        await writeInstallState(currentStatePath, targetState)
+        await refreshStatus()
+        if (final) await reconcileUnresolved(handler.unresolvable)
+      } catch (error) {
+        errors.push(error)
+      }
+      if (!final) return
+      await updateResources()
+      if (errors.length === 1) throw errors[0]
+      if (errors.length) throw new AggregateError(errors)
+      await cleanup()
+    }
+    const cleanup = async () => {
+      await remove(targetState.workspace)
+      await unlink(currentStatePath).catch((error) => {
+        if (!isSystemError(error) || error.code !== 'ENOENT') throw error
+      })
+      await refreshStatus()
+      const stagingRoot = join(instancePath, '.install')
+      if (dirname(dirname(targetState.workspace)) === stagingRoot) {
+        for (const directory of [dirname(targetState.workspace), stagingRoot]) {
+          await rmdir(directory).catch((error) => {
+            if (isSystemError(error) && ['ENOENT', 'ENOTEMPTY', 'EEXIST'].includes(error.code)) return
+            throw error
+          })
+        }
+      }
+    }
+
+    const flushReady = async () => {
+      await lock.runExclusive(async () => {
+        await checkInstance()
+        await loadCurrentPlan()
+        const active = new Set(activeInstallFiles(targetState).map(file => file.path))
+        for (const path of handler.finished) {
+          if (!active.has(path)) handler.finished.delete(path)
+        }
+        const ready = new Set([...handler.finished].slice(0, batchSize))
+        if (ready.size) {
+          await commit(await delta(ready), false)
+          if (errors.length) throw errors[errors.length - 1]
+        }
+      })
+    }
+    const startFlush = () => {
+      flushTimer = undefined
+      if (flushing || !acceptingReady) return
+      flushing = flushReady().catch((error) => {
+        if (!errors.includes(error)) errors.push(error)
+        task.controller.abort(error)
+      }).finally(() => {
+        flushing = undefined
+        if (acceptingReady && !errors.length && handler.finished.size) scheduleFlush()
+      })
+    }
+    function scheduleFlush() {
+      if (!acceptingReady || flushing || errors.length) return
+      if (handler.finished.size >= batchSize) {
+        if (flushTimer) clearTimeout(flushTimer)
+        startFlush()
+      } else if (!flushTimer) {
+        flushTimer = setTimeout(startFlush, 1000)
       }
     }
 
     try {
-      if (noLock) {
-        const initialDelta = await this.#getDelta(
-          instancePath,
-          lockState,
-          targetState.upstream,
-          targetState.files,
-        )
-        const handler = createHandler(new Set())
-        await resolveAddedFiles(initialDelta)
-        await handler.prepareInstallFiles(initialDelta, task.controller.signal, true)
-
-        await lock.runExclusive(async () => {
-          task.controller.signal.throwIfAborted()
-          const refreshedDelta = await this.#getDelta(
-            instancePath,
-            lockState,
-            targetState.upstream,
-            targetState.files,
-          )
-          await writeJson(currentStatePath, InstanceInstallLock.parse({
-            ...targetState,
-            finishedPath: Array.from(handler.finished),
-            mtime: Date.now(),
-          }))
-          await handler.backupAndRename(refreshedDelta)
-          await unlink(currentStatePath).catch(() => undefined)
-          const unresolvedPaths = new Set(
-            refreshedDelta
-              .filter(update => update.operation === 'add' || update.operation === 'backup-add')
-              .map(update => update.file.path),
-          )
-          await reconcileUnresolved(
-            handler.unresolvable.filter(file => unresolvedPaths.has(file.path)),
-          )
-        })
-
-        await updateResources()
-        task.complete()
-        return
-      }
-
+      const updates = await lock.runExclusive(initialize)
+      releaseRegistration()
+      await prepare(updates)
+      acceptingReady = false
+      if (flushTimer) clearTimeout(flushTimer)
+      await flushing
       await lock.runExclusive(async () => {
-        task.controller.signal.throwIfAborted()
-
-        // Persist pending-install marker INSIDE the lock so a
-        // concurrent deleteInstance cannot rm the parent dir
-        // mid-write (caller `installInstanceFiles` used to do this
-        // unlocked, which is one of the ENOENT-on-.install-profile
-        // shapes we saw in telemetry).
-        await writeJson(currentStatePath, InstanceInstallLock.parse(targetState))
-
-        const fileDelta: InstanceFileUpdate[] = await this.#getDelta(
-          instancePath,
-          lockState,
-          targetState.upstream,
-          targetState.files,
-        )
-        this.log('Instance install delta', fileDelta.length)
-        task.controller.signal.throwIfAborted()
-
-        // Update handler context with tracker
-        const handlerWithTracker = createHandler(new Set(targetState.finishedPath))
-
-        const runInstallTasks = async () => {
-          try {
-            const hasUpdate = await resolveAddedFiles(fileDelta)
-
-            if (hasUpdate) {
-              // save current state
-              logger.log('Save current state due to refresh', instancePath)
-              await writeJson(
-                currentStatePath,
-                InstanceInstallLock.parse({
-                  ...targetState,
-                  mtime: Date.now(),
-                }),
-              )
-            }
-          } catch {
-            // Ignore
-          }
-
-          try {
-            await handlerWithTracker.prepareInstallFiles(fileDelta, task.controller.signal)
-            logger.log('Finished install tasks')
-          } catch (e) {
-            logger.warn('Install instance files error', e)
-            // Guarded: if this writeJson itself fails (e.g. AV held
-            // the file, ENOSPC) we MUST keep the original `e` —
-            // previously the inner throw replaced it, which is why
-            // production telemetry only ever saw the generic
-            // "ENOENT open .install-profile" wrapper and never the
-            // real cause (download/zip/network).
-            await writeJson(
-              currentStatePath,
-              InstanceInstallLock.parse({
-                ...targetState,
-                finishedPath: Array.from(handlerWithTracker.finished),
-                mtime: Date.now(),
-              }),
-            ).catch((writeErr) => {
-              logger.warn('Failed to save partial install state', writeErr)
-            })
-            throw e
-          }
-
-          task.controller.signal.throwIfAborted()
-          await handlerWithTracker.backupAndRename()
-
-          await updateResources()
+        await checkInstance()
+        try {
+          await loadCurrentPlan()
+        } catch (error) {
+          if (superseded) await cleanup()
+          throw error
         }
-
-        await runInstallTasks()
-
-        task.controller.signal.throwIfAborted()
-
-        // update the lock file
-        if (!noLock) {
-          await writeJson(
-            lockFilePath,
-            InstanceLockSchema.parse({
-              version: 1,
-              files: targetState.files,
-              upstream: targetState.upstream,
-              mtime: Date.now(),
-            }),
-          )
-        }
-
-        // remove the install lock
-        await unlink(currentStatePath).catch(() => {
-          /* ignored */
-        })
-
-        // Reconcile the unresolved-files list. Merge the freshly-computed
-        // unresolvable files with the ones that were already pending from
-        // earlier runs. Every file we attempted in THIS run
-        // (targetState.files) is dropped from the existing list — those either
-        // succeeded (no longer unresolved) or are re-added right below if they
-        // failed again. Files that were not part of this run (e.g. a
-        // partial/diff install that only resolved a subset) are preserved so
-        // they are not silently lost.
-        await reconcileUnresolved(handlerWithTracker.unresolvable)
+        await commit(await delta(), true)
       })
-
       task.complete()
+      return true
     } catch (e) {
+      writersSettled.resolve()
+      if (superseded) {
+        await lock.runExclusive(async () => {
+          await checkInstance()
+          await cleanup()
+        })
+        if (resuming) {
+          task.complete()
+          return false
+        }
+      }
+      const attachInstance = (error: unknown) => {
+        if (error instanceof Error) Object.assign(error, { installInstance: { instancePath } })
+        // IPC unwraps aggregate errors, so retained-instance information must
+        // also travel on each leaf error.
+        if (error instanceof AggregateError) error.errors.forEach(attachInstance)
+      }
+      attachInstance(e)
       task.fail(e as Error)
       // AbortError = deleteInstance triggered our remove handler, or
       // the user cancelled the task. ErrorDiagnose:118 already drops
@@ -525,13 +749,13 @@ export class InstanceInstallService extends AbstractService implements IInstance
         },
       })
     } finally {
-      if (noLock) {
-        await Promise.all([
-          remove(targetState.workspace).catch(() => undefined),
-          unlink(currentStatePath).catch(() => undefined),
-        ])
-      }
+      acceptingReady = false
+      if (flushTimer) clearTimeout(flushTimer)
+      await flushing
+      writersSettled.resolve()
+      unwatchFile(instancePath, onDirectoryChange)
       unregisterRemoveHandler()
+      this.activeInstallTasks.delete(profilePath)
     }
   }
 
@@ -547,7 +771,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       return delta
     }
 
-    const fs = { getFile, getSha1: this.getSha1, getCrc32: this.getCrc32, join }
+    const fs = { getFile: this.getInstallFile, getSha1: this.getSha1, getCrc32: this.getCrc32, getChecksum: this.getChecksum, join }
     return await computeFileUpdates(instancePath, options.oldFiles, options.files, Date.now(), fs)
   }
 
@@ -599,7 +823,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
         oldFiles: manifest.oldFiles,
         files: manifest.files,
         id,
-      })
+      }, manifest.updatedAt)
       await unlink(join(path, '.install-manifest')).catch(() => undefined)
     })
   }
@@ -613,18 +837,25 @@ export class InstanceInstallService extends AbstractService implements IInstance
     instancePath: string,
     overrides?: InstanceFile[],
   ): Promise<void | InstallFileError[]> {
+    return this.mutex.of(`${LockKey.instance(instancePath)}:resume`).runExclusive(async () => {
+      const profiles = await readPendingInstalls(instancePath)
+      for (const profile of profiles) {
+        const result = await this.resumeInstallProfile(instancePath, profile.path, profile.state, overrides)
+        if (result) return result
+      }
+    })
+  }
+
+  private async resumeInstallProfile(
+    instancePath: string,
+    currentStatePath: string,
+    currentState: InstanceInstallLock,
+    overrides?: InstanceFile[],
+  ): Promise<void | InstallFileError[]> {
     const lockFilePath = join(instancePath, 'instance-lock.json')
     const lockState = await readJson(lockFilePath)
       .then(InstanceLockSchema.parse)
       .catch(() => undefined)
-
-    const currentStatePath = join(instancePath, '.install-profile')
-    const currentState = await readJson(currentStatePath)
-      .then(InstanceInstallLock.parse)
-      .catch(() => undefined)
-    if (!currentState) {
-      return
-    }
 
     if (overrides) {
       currentState.files = currentState.files.map(
@@ -633,24 +864,46 @@ export class InstanceInstallService extends AbstractService implements IInstance
     }
 
     try {
-      return await this.#install(instancePath, lockState, currentState)
+      if (currentState.oldFiles === undefined &&
+          currentState.upstream.type === 'peer' && currentState.upstream.id === '') {
+        currentState.oldFiles = []
+      }
+      const installed = await this.#install(
+        instancePath, lockState, currentState, undefined, currentState.oldFiles !== undefined, currentStatePath, true,
+      )
+      if (!installed) return
+      if (currentState.oldFiles) {
+        await this.#migrateModGroupFilenames(instancePath, currentState.oldFiles, currentState.files)
+      }
+      if (currentState.manifestUpdatedAt !== undefined) {
+        await this.mutex.of(LockKey.instanceManifest(instancePath)).runExclusive(async () => {
+          const manifest = await this.getInstanceInstallManifest(instancePath)
+          if (manifest?.updatedAt === currentState.manifestUpdatedAt) {
+            await unlink(join(instancePath, '.install-manifest'))
+          }
+        })
+      }
     } catch (e) {
       const isChecksumError = (
         err: unknown,
       ): err is Error & { file: string; expect: string; actual: string } =>
         err instanceof Error && err.name === 'ChecksumNotMatchError'
+      const findChecksumFile = (path: string) => currentState.files.find(file =>
+        resolve(currentState.workspace, file.path) === resolve(path) ||
+        resolve(instancePath, file.path) === resolve(path),
+      )
 
       if (e instanceof AggregateError) {
-        if (e.errors.every(isChecksumError)) {
+        if (e.errors.every(err => isChecksumError(err) && findChecksumFile(err.file))) {
           return e.errors.map((err) => ({
-            file: currentState.files.find((f) => f.path === resolve(instancePath, err.file))!,
+            file: findChecksumFile(err.file)!,
             name: 'ChecksumNotMatchError' as const,
             expect: err.expect,
             actual: err.actual,
           }))
         }
       } else if (isChecksumError(e)) {
-        const file = currentState.files.find((f) => f.path === resolve(instancePath, e.file))
+        const file = findChecksumFile(e.file)
         if (file) {
           return [
             {
@@ -662,10 +915,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
           ]
         }
       } else {
-        if (e instanceof Error && e.name === 'InstanceUpstreamError') {
-          // remove profile
-          unlink(join(instancePath, '.install-profile')).catch(() => {})
-        } else if (isSystemError(e) && e.code === 'ENOENT') {
+        if (isSystemError(e) && e.code === 'ENOENT') {
           const path = e.path
           if (path) {
             const zipFileIsMissing = currentState.files.find(
@@ -692,9 +942,37 @@ export class InstanceInstallService extends AbstractService implements IInstance
     return stateManager.registerOrGet(`instance-install://${path}`, async () => {
       const status = new InstanceInstallStatus()
       status.instance = path
+      let disposed = false
+      let revision = 0
+      const refreshPending = async () => {
+        const currentRevision = ++revision
+        try {
+          const profiles = await readPendingInstalls(path)
+          const count = profiles.reduce((total, { state }) => {
+            if (!hasInstallWork(state) && state.supersededPaths?.length) return total
+            const committed = new Set(state.committedPath ?? [])
+            // A pending deletion/finalization still requires Continue even if
+            // every target file has already been published.
+            return total + Math.max(1, activeInstallFiles(state).filter(file => !committed.has(file.path)).length)
+          }, 0)
+          if (!disposed && currentRevision === revision) status.pendingFileCountSet(count)
+        } catch (error) {
+          this.warn('Failed to read pending instance installs', error)
+          if (!disposed && currentRevision === revision) status.pendingFileCountSet(Math.max(1, status.pendingFileCount))
+        }
+      }
+      // Native watchers can coalesce atomic replacements or lose a removed
+      // staging directory. Our own writes explicitly refresh the shared state.
+      this.pendingInstallRefreshers.set(path, refreshPending)
+      await refreshPending()
       const watcher = new FSWatcher({
         cwd: path,
-        depth: 1,
+        depth: 2,
+        ignored: (candidate) => {
+          const entry = relative(path, resolve(path, candidate)).replace(/\\/g, '/')
+          return entry !== '' && entry !== '.install' && entry !== '.install-profile' &&
+            entry !== 'unresolved-files.json' && !/^\.install\/[^/]+\.json$/.test(entry)
+        },
       })
         // Chokidar internally calls `fs.stat`/`lstat` on each watched
         // path; failures (EPERM/EBUSY/EACCES from AV/OneDrive, ENOENT
@@ -716,83 +994,52 @@ export class InstanceInstallService extends AbstractService implements IInstance
           }
         })
         .on('all', async (ev, filePath) => {
+          if (filePath === '.install' || filePath === '.install-profile' ||
+              (dirname(filePath) === '.install' && filePath.endsWith('.json'))) {
+            await refreshPending()
+            return
+          }
           if (ev === 'add' || ev === 'change') {
-            if (filePath === '.install-profile') {
-              const currentStatePath = join(path, '.install-profile')
-              const lock = await readFile(currentStatePath, 'utf-8').then(
-                (content) => {
-                  try {
-                    if (content.trim().length === 0) {
-                      return undefined
-                    }
-                    return JSON.parse(content) as InstanceInstallLock
-                  } catch (e) {
-                    Object.assign(e as any, {
-                      content,
-                    })
-                    throw e
-                  }
-                },
-                (e) => {
-                  if (isSystemError(e) && e.code === 'ENOENT') {
-                    return undefined
-                  }
-                  if (e.name === 'Error') {
-                    e.name = 'InstanceInstallProfileError'
-                  }
-                  this.error(e)
-                },
-              )
-              let count = 0
-              if (lock?.files instanceof Array && lock.finishedPath instanceof Array) {
-                count = lock.files.length - lock.finishedPath.length
-              } else if (lock?.files instanceof Array) {
-                count = lock.files.length
-              }
-              status.pendingFileCountSet(count || 0)
-            } else if (filePath === 'unresolved-files.json') {
+            if (filePath === 'unresolved-files.json') {
               const unresolvedFilesPath = join(path, 'unresolved-files.json')
               const unresolvedFiles = await readJSON(unresolvedFilesPath).catch(() => [])
               status.unresolvedFilesSet(unresolvedFiles)
             }
           } else if (ev === 'unlink') {
-            if (filePath === '.install-profile') {
-              status.pendingFileCountSet(0)
-            } else if (filePath === 'unresolved-files.json') {
+            if (filePath === 'unresolved-files.json') {
               status.unresolvedFilesSet([])
             }
           }
         })
-        .add('.install-profile')
-        .add('unresolved-files.json')
+        .add('.')
 
       return [
         status,
         () => {
+          disposed = true
+          if (this.pendingInstallRefreshers.get(path) === refreshPending) {
+            this.pendingInstallRefreshers.delete(path)
+          }
           watcher.close()
         },
+        refreshPending,
       ]
     })
   }
 
-  async installInstanceFiles(options: InstallInstanceOptions): Promise<void> {
+  async installInstanceFiles(
+    options: InstallInstanceOptions,
+    manifestUpdatedAt?: number,
+    legacyBaseline?: { upstream: InstanceUpstream; files: InstanceFile[] } | null,
+  ): Promise<void> {
     const { path: instancePath, files, id } = options
 
     const timestamp = Date.now()
     this.log('Install instance files', instancePath, id)
 
     if ('upstream' in options) {
+      const operationId = randomUUID()
       const upstream = options.upstream
-      const lockFilePath = join(instancePath, 'instance-lock.json')
-      /**
-       * Lock file represent the previous install.
-       */
-      const lockState = await readJson(lockFilePath)
-        .then(InstanceLockSchema.parse)
-        .catch(() => undefined)
-
-      const instanceDir = dirname(instancePath)
-      const instanceName = basename(instancePath)
       const currentState: InstanceInstallLock = {
         version: 0,
         files,
@@ -801,29 +1048,21 @@ export class InstanceInstallService extends AbstractService implements IInstance
         backup: join(
           instancePath,
           '.backups',
-          filenamify(new Date().toLocaleString(), { replacement: '-' }),
+          `${filenamify(new Date().toLocaleString(), { replacement: '-' })}-${operationId}`,
         ),
-        workspace: join(instanceDir, `.${instanceName}-install-${timestamp}`),
+        workspace: join(instancePath, '.install', operationId, 'files'),
         finishedPath: [],
+        operationId,
       }
 
-      // Note: the .install-profile marker is now written by #install
-      // INSIDE its instance-lock critical section, so a concurrent
-      // deleteInstance cannot rm the parent directory mid-write.
-
-      this.log('Install instance files with lock', !!lockState)
-      return this.#install(instancePath, lockState, currentState, id).catch((e) => {
-        if (e.name === 'InstanceUpstreamError') {
-          // remove profile
-          unlink(join(instancePath, '.install-profile')).catch(() => {})
-        }
-        throw e
-      })
+      this.log('Install instance files with upstream')
+      await this.#install(
+        instancePath, undefined, currentState, id, false, join(instancePath, '.install', `${operationId}.json`),
+        false, legacyBaseline,
+      )
     } else {
       const oldFiles = options.oldFiles
       const files = options.files
-      const instanceDir = dirname(instancePath)
-      const instanceName = basename(instancePath)
       const operationId = randomUUID()
 
       const lockState: InstanceLockSchema = {
@@ -849,14 +1088,18 @@ export class InstanceInstallService extends AbstractService implements IInstance
           '.backups',
           operationId,
         ),
-        workspace: join(instanceDir, `.${instanceName}-install-${operationId}`),
+        workspace: join(instancePath, '.install', operationId, 'files'),
         finishedPath: [],
+        oldFiles,
+        manifestUpdatedAt,
+        operationId,
       }
 
       this.log('Install instance files with diff')
-      const result = await this.#install(instancePath, lockState, currentState, id, true)
+      await this.#install(
+        instancePath, lockState, currentState, id, true, join(instancePath, '.install', `${operationId}.json`),
+      )
       await this.#migrateModGroupFilenames(instancePath, oldFiles, files)
-      return result
     }
   }
 

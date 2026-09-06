@@ -7,6 +7,8 @@ import { kInstances } from './instances'
 import { kJavaContext } from './java'
 import { useService } from './service'
 import { runRendererAction, withRendererAction, type RendererActionScope } from '@/rendererAction'
+import { getErrorMessage } from '@/util/error'
+import { useNotifier } from './notifier'
 
 export type InstallModpackOptions =
   | {
@@ -61,6 +63,25 @@ function toUpstream(f: InstallModpackOptions): InstanceData['upstream'] {
   }
 }
 
+function getRetainedInstance(error: unknown, seen = new Set<object>()): string | undefined {
+  if (!error || typeof error !== 'object' || seen.has(error)) return
+  seen.add(error)
+  if ('installInstance' in error) {
+    const details = error.installInstance
+    if (details && typeof details === 'object' && 'instancePath' in details &&
+        typeof details.instancePath === 'string' && details.instancePath) return details.instancePath
+  }
+  if (Array.isArray(error)) {
+    for (const entry of error) {
+      const path = getRetainedInstance(entry, seen)
+      if (path) return path
+    }
+  } else {
+    const errorsPath = 'errors' in error ? getRetainedInstance(error.errors, seen) : undefined
+    return errorsPath || ('cause' in error ? getRetainedInstance(error.cause, seen) : undefined)
+  }
+}
+
 /**
  * Shared logic to finish installing a downloaded modpack file, either into a
  * new instance (when `instancePath` is omitted) or into an existing instance
@@ -68,6 +89,8 @@ function toUpstream(f: InstallModpackOptions): InstanceData['upstream'] {
  * install.
  */
 export function useModpackFinishInstall() {
+  const { notify } = useNotifier()
+  const { t } = useI18n()
   const { selectedInstance } = injection(kInstances)
   const { importModpack } = useService(ModpackServiceKey)
   const { resolveLocalVersion } = useService(VersionServiceKey)
@@ -87,33 +110,45 @@ export function useModpackFinishInstall() {
       parentAction,
       'user_action.modpack.install',
       async (action) => {
-        const {
-          instancePath: resultPath,
-          version,
-          runtime,
-        } = await action.run(() => importModpack(modpackFile, icon, upstream, instancePath))
-
-        selectedInstance.value = resultPath
-        if (currentRoute.value.path !== '/') {
-          await push('/')
-        }
-
-        const lock = getInstanceLock(resultPath)
-        await lock.runExclusive(async () => {
-          const resolved = version
-            ? await action.run(() => resolveLocalVersion(version))
-            : undefined
-          const instruction = await getInstallInstruction(
-            resultPath,
+        try {
+          const {
+            instancePath: resultPath,
+            version,
             runtime,
-            '',
-            resolved,
-            all.value,
-            undefined,
-            action,
-          )
-          await handleInstallInstruction(instruction, action)
-        })
+          } = await action.run(() => importModpack(modpackFile, icon, upstream, instancePath))
+
+          selectedInstance.value = resultPath
+          if (currentRoute.value.path !== '/') {
+            await push('/')
+          }
+
+          const lock = getInstanceLock(resultPath)
+          await lock.runExclusive(async () => {
+            const resolved = version
+              ? await action.run(() => resolveLocalVersion(version))
+              : undefined
+            const instruction = await getInstallInstruction(
+              resultPath,
+              runtime,
+              '',
+              resolved,
+              all.value,
+              undefined,
+              action,
+            )
+            await handleInstallInstruction(instruction, action)
+          })
+        } catch (error) {
+          const retainedPath = instancePath || getRetainedInstance(error)
+          if (retainedPath) {
+            selectedInstance.value = retainedPath
+            if (currentRoute.value.path !== '/') {
+              await push('/').catch(console.error)
+            }
+          }
+          notify({ level: 'error', title: t('installInstance.name'), body: getErrorMessage(error) })
+          throw error
+        }
       },
       {
         'modpack.operation': instancePath ? 'update' : 'install',

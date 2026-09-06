@@ -1,10 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { downloadInstanceFiles } from './downloadInstanceFiles'
 import { createServer, Server } from 'http'
 import { mkdtemp, rm, readFile, pathExists } from 'fs-extra'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { createHash } from 'crypto'
+import { MockAgent } from 'undici'
 
 function sha1(content: string) {
   return createHash('sha1').update(content).digest('hex')
@@ -24,6 +25,37 @@ async function startServer(content: string) {
 }
 
 describe('downloadInstanceFiles', () => {
+  it('verifies and marks each completed file ready before another download finishes', async () => {
+    const content = 'ready'
+    const release = Promise.withResolvers<void>()
+    const server = createServer(async (request, response) => {
+      response.writeHead(200, { 'Content-Length': content.length })
+      if (request.url === '/slow') await release.promise
+      response.end(content)
+    })
+    await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))
+    const address = server.address()
+    if (!address || typeof address === 'string') throw new Error('Missing HTTP fixture address')
+    const root = await mkdtemp(join(tmpdir(), 'xmcl-dl-progressive-'))
+    const finished = new Set<string>()
+    let settled = false
+    const downloading = downloadInstanceFiles(['ready', 'slow'].map(path => ({
+      options: { url: `http://127.0.0.1:${address.port}/${path}`, destination: join(root, path) },
+      file: { path, hashes: { sha1: sha1(content) } },
+    })), finished, new AbortController().signal, {}).then(() => { settled = true })
+    try {
+      await vi.waitFor(() => expect([...finished]).toEqual(['ready']))
+      expect(settled).toBe(false)
+      expect(await readFile(join(root, 'ready'), 'utf8')).toBe(content)
+    } finally {
+      release.resolve()
+      await downloading
+      server.close()
+      await rm(root, { recursive: true, force: true })
+    }
+    expect([...finished].sort()).toEqual(['ready', 'slow'])
+  })
+
   it('successfully downloads a file when content matches', async () => {
     const content = 'CORRECT-CONTENT'
     const { server, baseUrl } = await startServer(content)
@@ -166,68 +198,50 @@ describe('downloadInstanceFiles', () => {
     }
   })
 
-  /**
-   * Performance optimization: when every candidate URL for a file is
-   * HTTPS AND the hostname is on a configured trusted-host allowlist
-   * (e.g. CurseForge edge CDN), skip the post-download streaming hash
-   * check. The trust assumption is that:
-   *   - HTTPS prevents in-flight tampering
-   *   - the named CDN is operationally trusted to return correct bytes
-   *
-   * On a multi-GB modpack this saves a full second-pass disk read +
-   * hash for every file.
-   *
-   * The local HTTP test server cannot speak HTTPS, so to verify the
-   * skip logic we instead use a custom trusted-host set that lists
-   * 127.0.0.1 with a relaxed protocol allowance for tests.  Real
-   * production code only honours HTTPS hosts.
-   */
-  it('skips verification when all URLs are on the trusted-host list', async () => {
+  it('verifies the strongest hash even for a known HTTPS CDN and a matching weaker hash', async () => {
     const wrongContent = 'BAD-BYTES'
     const expectedContent = 'EXPECTED-MOD-CONTENT'
-    const { server, baseUrl } = await startServer(wrongContent)
+    const dispatcher = new MockAgent()
+    dispatcher.disableNetConnect()
+    dispatcher.get('https://cdn.modrinth.com').intercept({ path: '/a.jar' }).reply(200, wrongContent, {
+      headers: { 'content-length': String(wrongContent.length) },
+    })
     const dir = await mkdtemp(join(tmpdir(), 'xmcl-dl-trust-'))
     try {
       const dest = join(dir, 'a.jar')
       const finished = new Set<string>()
 
-      // Bypass the HTTPS requirement for the local test server by
-      // using the test-only trustedHosts override that includes
-      // http: explicitly via the helper.
-      await downloadInstanceFiles(
+      await expect(downloadInstanceFiles(
         [
           {
             options: {
-              url: [`${baseUrl}/a.jar`],
+              url: ['https://cdn.modrinth.com/a.jar'],
               destination: dest,
               expectedTotal: wrongContent.length,
             },
             file: {
               path: 'a.jar',
-              hashes: { sha1: sha1(expectedContent) },
-              downloads: [`${baseUrl}/a.jar`],
+              hashes: {
+                sha512: createHash('sha512').update(expectedContent).digest('hex'),
+                sha1: sha1(wrongContent),
+              },
             },
           },
         ],
         finished,
         new AbortController().signal,
-        {},
-        undefined,
-        // Trust the local server explicitly. We pass the URL prefix
-        // matcher form so the test does not need to fake HTTPS.
-        { allowInsecureForTests: true, hosts: new Set(['127.0.0.1']) },
-      )
+        { dispatcher },
+      )).rejects.toMatchObject({ errors: [expect.objectContaining({ name: 'ChecksumNotMatchError', algorithm: 'sha512' })] })
 
-      // Skipped → file is in finished even though content does not match
-      expect(finished.has('a.jar')).toBe(true)
-      expect((await readFile(dest)).toString()).toBe(wrongContent)
+      expect(finished.has('a.jar')).toBe(false)
+      expect(await pathExists(dest)).toBe(false)
     } finally {
-      server.close()
+      await dispatcher.close()
       await rm(dir, { recursive: true, force: true })
     }
   })
 
-  it('still verifies when ONE of the candidate URLs is not trusted', async () => {
+  it('verifies downloads with fallback URLs', async () => {
     const wrongContent = 'BAD-BYTES'
     const expectedContent = 'EXPECTED'
     const { server, baseUrl } = await startServer(wrongContent)
@@ -255,8 +269,6 @@ describe('downloadInstanceFiles', () => {
           finished,
           new AbortController().signal,
           {},
-          undefined,
-          { allowInsecureForTests: true, hosts: new Set(['127.0.0.1']) },
         ),
       ).rejects.toThrow()
 
@@ -267,7 +279,7 @@ describe('downloadInstanceFiles', () => {
     }
   })
 
-  it('still verifies when URL is HTTP even if hostname is on the trusted list', async () => {
+  it('verifies HTTP downloads', async () => {
     const wrongContent = 'BAD-BYTES'
     const expectedContent = 'EXPECTED'
     const { server, baseUrl } = await startServer(wrongContent)
@@ -276,8 +288,6 @@ describe('downloadInstanceFiles', () => {
       const dest = join(dir, 'a.jar')
       const finished = new Set<string>()
 
-      // No allowInsecureForTests flag — production-style call. HTTP
-      // must NOT be trusted regardless of hostname.
       await expect(
         downloadInstanceFiles(
           [
@@ -297,8 +307,6 @@ describe('downloadInstanceFiles', () => {
           finished,
           new AbortController().signal,
           {},
-          undefined,
-          { hosts: new Set(['127.0.0.1']) },
         ),
       ).rejects.toThrow()
     } finally {

@@ -36,6 +36,13 @@ export const InstanceFile = z.object({
 
 export type InstanceFile = z.infer<typeof InstanceFile>
 
+export function isInstanceInstallPath(path: string) {
+  const root = path.replace(/\\/g, '/').split('/')[0].toLowerCase()
+  return root === '.install' || root === '.install-profile' || root === '.install-profile.tmp' ||
+    root === '.install-manifest' || root === 'instance-lock.json' || root === 'instance-lock.json.tmp' ||
+    root === 'unresolved-files.json'
+}
+
 /**
  * File update operation types
  */
@@ -77,13 +84,28 @@ export const InstanceInstallLock = InstanceLockSchema.extend({
   backup: z.string(),
   /** The install workspace path */
   workspace: z.string(),
+  /** Present for a local diff install, which must not replace the upstream lock. */
+  oldFiles: z.array(InstanceFile).optional(),
+  /** Files already published to the instance, not merely staged. */
+  committedPath: z.array(z.string()).optional(),
+  /** Revision of a staged manifest applied by this operation. */
+  manifestUpdatedAt: z.number().optional(),
+  operationId: z.string().optional(),
+  revision: z.number().optional(),
+  /** Original files remain available even after publishing a partial lock. */
+  baseline: z.object({
+    files: z.array(InstanceFile),
+    mtime: z.number().optional(),
+  }).optional(),
+  /** Paths whose ownership was transferred to a newer installation plan. */
+  supersededPaths: z.array(z.string()).optional(),
 })
 
 export type InstanceInstallLock = z.infer<typeof InstanceInstallLock>
 
 /**
  * Pending file changes for an instance. The manifest is built incrementally
- * and applied as one install transaction.
+ * and retained until its resumable installation completes.
  */
 export const InstanceInstallManifest = z.object({
   version: z.literal(1),

@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { Instance } from './instance'
-import { InstanceFile, InstanceManifest } from './files'
+import { InstanceFile, InstanceManifest, isInstanceInstallPath } from './files'
 import { decorateInstanceFiles, getInstanceFiles } from './files_discovery'
 import { ChecksumWorker, Logger, ResourceManager } from './internal_type'
 import { Stats } from 'fs-extra'
@@ -20,6 +20,7 @@ export interface GetManifestOptions {
 }
 
 export function shouldBeExcluded(relativePath: string, stat: Stats): boolean {
+  if (isInstanceInstallPath(relativePath)) return true
   if (relativePath.startsWith('.backups')) {
     return true // exclude
   }
@@ -181,6 +182,7 @@ export function createDefaultFileFilter() {
 
     // Exclude system files
     if (
+      isInstanceInstallPath(relativePath) ||
       relativePath.startsWith('.backups') ||
       relativePath.endsWith('.DS_Store') ||
       relativePath.endsWith('.gitignore') ||

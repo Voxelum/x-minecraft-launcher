@@ -3,18 +3,13 @@ import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance';
 import { kInstanceFiles } from '@/composables/instanceFiles';
 import { injection } from '@/util/inject';
+import { instanceFileChecksumOverride } from '@/util/instanceFileChecksumOverride'
 
 const { isShown } = useDialog('InstanceInstallSkipDialog')
-const { shouldHintUserSkipChecksum, blockingFiles, resetChecksumError, resumeInstall } = injection(kInstanceFiles)
+const { blockingFiles, resetChecksumError, resumeInstall } = injection(kInstanceFiles)
 const { path } = injection(kInstance)
 
 const { t } = useI18n()
-
-watch(shouldHintUserSkipChecksum, (count) => {
-  if (count && count >= 1) {
-    isShown.value = true
-  }
-}, { immediate: true })
 
 function onCancel() {
   isShown.value = false
@@ -22,11 +17,7 @@ function onCancel() {
 
 function onSkip() {
   if (blockingFiles.value) {
-    const files = blockingFiles.value.map((f) => ({
-      ...f.file, hashes: {
-        sha1: f.actual,
-      }
-    }))
+    const files = blockingFiles.value.map(instanceFileChecksumOverride)
     resetChecksumError()
     resumeInstall(path.value, files)
   }

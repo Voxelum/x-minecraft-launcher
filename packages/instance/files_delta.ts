@@ -1,22 +1,41 @@
 import { join } from 'path'
 import { InstanceFile, InstanceFileUpdate } from './files'
+import {
+  getInstanceFileChecksum,
+  instanceFileChecksumAlgorithms,
+  normalizeInstanceFileChecksum,
+  type InstanceFileChecksumAlgorithm,
+} from './files_integrity'
 
 /**
  * File system abstraction for checking files
  */
+interface FileInfo {
+  size: number
+  mtime: number
+}
+
 interface FileSystem {
   /**
    * Get file information
    */
-  getFile(path: string): Promise<{ size: number; mtime: number } | undefined>
+  getFile(path: string): Promise<FileInfo | undefined>
   /**
    * Compute SHA1 hash
    */
-  getSha1(instancePath: string, file: { size: number; mtime: number }): Promise<string>
+  getSha1(instancePath: string, file: FileInfo): Promise<string>
   /**
    * Compute CRC32 hash
    */
-  getCrc32(instancePath: string, file: { size: number; mtime: number }): Promise<number>
+  getCrc32(instancePath: string, file: FileInfo): Promise<number>
+  /**
+   * Compute any supported checksum
+   */
+  getChecksum?(
+    instancePath: string,
+    file: FileInfo,
+    algorithm: InstanceFileChecksumAlgorithm,
+  ): Promise<string | number>
 }
 
 /**
@@ -30,6 +49,9 @@ export async function computeFileUpdates(
   fs: FileSystem,
   caseInsensitive = process.platform === 'win32',
 ): Promise<InstanceFileUpdate[]> {
+  const supportedAlgorithms = fs.getChecksum
+    ? instanceFileChecksumAlgorithms
+    : ['sha1', 'crc32'] as const
   const toAdd: Record<string, InstanceFile> = {}
   const oldFilesMap: Record<string, InstanceFile> = {}
   const oldPathsByKey = new Map<string, string>()
@@ -59,21 +81,43 @@ export async function computeFileUpdates(
         })
       }
     } else {
-      let currentSha1 = ''
-      let currentCrc32 = 0
+      const currentChecksums = new Map<InstanceFileChecksumAlgorithm, string>()
+
+      const getCurrentChecksum = async (algorithm: InstanceFileChecksumAlgorithm) => {
+        const cached = currentChecksums.get(algorithm)
+        if (cached !== undefined) return cached
+
+        const value = normalizeInstanceFileChecksum(
+          algorithm,
+          fs.getChecksum
+            ? await fs.getChecksum(instancePath, file, algorithm)
+            : algorithm === 'sha1'
+              ? await fs.getSha1(instancePath, file)
+              : await fs.getCrc32(instancePath, file),
+        ) ?? ''
+        currentChecksums.set(algorithm, value)
+        return value
+      }
+
+      const isFileDifferentFromManifest = async (target: InstanceFile) => {
+        const checksum = getInstanceFileChecksum(target)
+        if (checksum) {
+          if (!supportedAlgorithms.some(algorithm => algorithm === checksum.algorithm)) return undefined
+          return (await getCurrentChecksum(checksum.algorithm)) !== checksum.value
+        }
+        if (typeof target.size === 'number') {
+          return file.size !== target.size
+        }
+        return undefined
+      }
 
       // Check if file changed compared to old install
       const isFileChangedComparedToOldFile =
         typeof oldInstallTime === 'number'
           ? oldInstallTime < file.mtime
-          : oldFilesMap[p]?.hashes.sha1
-            ? oldFilesMap[p]?.hashes.sha1 !== (currentSha1 = await fs.getSha1(instancePath, file))
-            : oldFilesMap[p]?.hashes.crc32
-              ? Number.parseInt(oldFilesMap[p]?.hashes.crc32) !==
-                (currentCrc32 = await fs.getCrc32(instancePath, file))
-              : oldFilesMap[p]?.size
-                ? oldFilesMap[p]?.size !== file.size
-                : undefined
+          : oldFilesMap[p]
+            ? await isFileDifferentFromManifest(oldFilesMap[p])
+            : undefined
 
       // Compare the on-disk file against the desired new file. Used both
       // when the file is unchanged from the last install (cheap update
@@ -81,27 +125,12 @@ export async function computeFileUpdates(
       // unnecessary backup if their content already matches the new
       // modpack version).
       const isFileDiffFromNew = async (toAddFile: InstanceFile): Promise<boolean> => {
-        if ('sha1' in toAddFile.hashes) {
-          return (
-            (currentSha1 || (currentSha1 = await fs.getSha1(instancePath, file))) !==
-            toAddFile.hashes.sha1
-          )
+        const checksumDiff = await isFileDifferentFromManifest(toAddFile)
+        if (checksumDiff !== undefined) {
+          return checksumDiff
         }
-        const crcDiff =
-          'crc32' in toAddFile.hashes
-            ? (currentCrc32 || (currentCrc32 = await fs.getCrc32(instancePath, file))) !==
-              Number.parseInt(toAddFile.hashes.crc32)
-            : undefined
-        const sizeDiff = 'size' in toAddFile ? file.size !== toAddFile.size : undefined
-
-        if (crcDiff || sizeDiff) {
-          return true
-        }
-        if (crcDiff === undefined && sizeDiff === undefined) {
-          // No way to determine difference
-          return true
-        }
-        return false
+        // No supported way to determine difference
+        return true
       }
 
       if (isFileChangedComparedToOldFile) {

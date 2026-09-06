@@ -9,8 +9,16 @@ import type { InstanceFile } from './files'
  * and content hashes.
  */
 function createFs(
-  map: Record<string, { size: number; mtime: number; sha1?: string; crc32?: number }>,
+  map: Record<string, {
+    size: number
+    mtime: number
+    sha1?: string
+    sha256?: string
+    sha512?: string
+    crc32?: number | string
+  }>,
   instancePath: string,
+  options?: { withGetChecksum?: boolean },
 ) {
   const norm = (path: string) => {
     const fwd = path.replace(/\\/g, '/')
@@ -37,8 +45,22 @@ function createFs(
       const entry = Object.values(map).find(
         (v) => v.size === file.size && v.mtime === file.mtime,
       )
-      return entry?.crc32 ?? 0
+      return Number(entry?.crc32 ?? 0)
     },
+    ...(options?.withGetChecksum
+      ? {
+          async getChecksum(
+            _instancePath: string,
+            file: { size: number; mtime: number },
+            algorithm: 'sha1' | 'sha256' | 'sha512' | 'crc32',
+          ) {
+            const entry = Object.values(map).find(
+              (v) => v.size === file.size && v.mtime === file.mtime,
+            )
+            return entry?.[algorithm] ?? ''
+          },
+        }
+      : {}),
   }
 }
 
@@ -241,5 +263,78 @@ describe('computeFileUpdates', () => {
     )
     // dontKnowOldFile=true → backup-add when different
     expect(updates[0].operation).toBe('backup-add')
+  })
+
+  it('does not keep a same-size sha512-only file when stronger hashes are unavailable', async () => {
+    const target: InstanceFile = {
+      path: 'mods/a.jar',
+      hashes: { sha512: 'EXPECTED' },
+      size: 100,
+    }
+    const fs = createFs(
+      { 'mods/a.jar': { size: 100, mtime: 1000, sha512: 'ACTUAL' } },
+      INSTANCE,
+    )
+    const updates = await computeFileUpdates(
+      INSTANCE,
+      [target],
+      [target],
+      2000,
+      fs,
+    )
+    expect(updates[0].operation).toBe('add')
+  })
+
+  it('uses sha256 checksums instead of size when getChecksum is available', async () => {
+    const target: InstanceFile = {
+      path: 'mods/a.jar',
+      hashes: { sha256: 'EXPECTED' },
+      size: 100,
+    }
+    const fs = createFs(
+      { 'mods/a.jar': { size: 100, mtime: 1000, sha256: 'ACTUAL' } },
+      INSTANCE,
+      { withGetChecksum: true },
+    )
+    const updates = await computeFileUpdates(
+      INSTANCE,
+      [target],
+      [target],
+      2000,
+      fs,
+    )
+    expect(updates[0].operation).toBe('add')
+  })
+
+  it.each([false, true])('never lets a weaker matching checksum override sha512 (generic worker: %s)', async (withGetChecksum) => {
+    const target: InstanceFile = {
+      path: 'mods/a.jar', size: 100, hashes: { sha512: 'EXPECTED', sha1: 'MATCHING' },
+    }
+    const fs = createFs({
+      'mods/a.jar': { size: 100, mtime: 1000, sha1: 'MATCHING', sha512: 'WRONG' },
+    }, INSTANCE, { withGetChecksum })
+    const updates = await computeFileUpdates(INSTANCE, [], [target], undefined, fs)
+    expect(updates[0].operation).toBe('backup-add')
+  })
+
+  it('uses sha512 checksums instead of size when getChecksum is available', async () => {
+    const target: InstanceFile = {
+      path: 'mods/a.jar',
+      hashes: { sha512: 'EXPECTED' },
+      size: 100,
+    }
+    const fs = createFs(
+      { 'mods/a.jar': { size: 100, mtime: 1000, sha512: 'ACTUAL' } },
+      INSTANCE,
+      { withGetChecksum: true },
+    )
+    const updates = await computeFileUpdates(
+      INSTANCE,
+      [target],
+      [target],
+      2000,
+      fs,
+    )
+    expect(updates[0].operation).toBe('add')
   })
 })

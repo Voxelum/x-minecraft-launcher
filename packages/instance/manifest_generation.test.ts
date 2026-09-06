@@ -15,6 +15,16 @@ const logger = {
 }
 
 describe('manifest_generation', () => {
+  it.each([
+    '.install', '.install/op/files/mods/a.jar', '.install\\op.json',
+    '.install-profile', '.install-profile.tmp', '.install-manifest',
+    'instance-lock.json', 'instance-lock.json.tmp', 'unresolved-files.json',
+  ])('excludes installer-owned path %s from export and discovery', (path) => {
+    const stats = new Stats()
+    expect(shouldBeExcluded(path, stats)).toBe(true)
+    expect(createDefaultFileFilter()(path, stats)).toBe(true)
+  })
+
   it('should exclude correct paths', () => {
     const dirStat = { isDirectory: () => true } as unknown as Stats
     const fileStat = { isDirectory: () => false } as unknown as Stats

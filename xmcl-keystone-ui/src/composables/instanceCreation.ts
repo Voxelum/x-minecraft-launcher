@@ -22,6 +22,7 @@ import { kLatestMinecraftVersion } from './version'
 import { useNotifier } from './notifier'
 import { CreateInstanceOptions, Instance, InstanceData, InstanceFile } from '@xmcl/instance'
 import { withRendererAction } from '@/rendererAction'
+import { getErrorMessage } from '@/util/error'
 
 export type InstanceCreation = ReturnType<typeof useInstanceCreation>
 
@@ -112,7 +113,7 @@ export async function applyInstanceLinkPreferences(
  */
 export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Ref<Instance[]>) {
   const { createInstance: create } = useService(InstanceServiceKey)
-  const { installInstanceFiles } = useService(InstanceInstallServiceKey)
+  const { installInstanceFiles, resumeInstanceInstall } = useService(InstanceInstallServiceKey)
   const { linkSharedSave } = useService(InstanceSavesServiceKey)
   const { linkShared: linkSharedResourcePacks } = useService(InstanceResourcePacksServiceKey)
   const { linkShared: linkSharedShaderPacks } = useService(InstanceShaderPacksServiceKey)
@@ -171,8 +172,11 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
   })
   // TODO: check if we can use shallowRef
   const files: Ref<InstanceFile[]> = ref([])
+  const filesResolved = ref(true)
   const loading = ref(false)
   const error = shallowRef<any>(null)
+  let createdPath = ''
+  let creating = false
 
   /**
    * Persisted launcher-wide manual-create link preferences. Missing or
@@ -193,9 +197,18 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
    * restores it to `true` for the next manual creation.
    */
   const isManual = ref(true)
+  const canCreate = computed(() => isManual.value || filesResolved.value)
+
+  function prepareImport() {
+    createdPath = ''
+    isManual.value = false
+    error.value = null
+    files.value = []
+    filesResolved.value = false
+  }
 
   async function update(template: CreateInstanceOptions, filesPromise: Promise<InstanceFile[]>) {
-    isManual.value = false
+    prepareImport()
     data.name = template.name
     data.version = template.version ?? ''
     if (template.runtime) {
@@ -219,14 +232,17 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     try {
       loading.value = true
       files.value = await filesPromise
+      filesResolved.value = true
     } catch (e) {
       error.value = e
+      throw e
     } finally {
       loading.value = false
     }
   }
 
   function reset() {
+    createdPath = ''
     data.name = ''
     data.runtime = getNewRuntime()
     data.version = ''
@@ -240,6 +256,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     data.minMemory = 0
     data.author = gameProfile.value.name
     data.description = ''
+    data.upstream = undefined
     data.resolution = undefined
     data.url = ''
     data.icon = ''
@@ -247,6 +264,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     data.description = ''
     error.value = null
     files.value = []
+    filesResolved.value = true
     loading.value = false
     isManual.value = true
   }
@@ -258,16 +276,35 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     placeHolderName,
     linkPreferences,
     isManual,
+    canCreate,
+    prepareImport,
     update,
     /**
      * Commit this creation. It will create and select the instance.
      */
     async create(onCreated?: (newPath: string) => void) {
+      if (creating) return
+      creating = true
       return withRendererAction(
         'user_action.instance.create',
         async (action) => {
           try {
             loading.value = true
+            if (!canCreate.value) {
+              throw error.value ?? new Error('Instance files are not resolved')
+            }
+            error.value = null
+            if (createdPath) {
+              // A retry of the same form must finish the retained instance, not create another.
+              const retainedPath = createdPath
+              onCreated?.(retainedPath)
+              const errors = await action.run(() => resumeInstanceInstall(retainedPath))
+              if (errors?.length) {
+                throw new AggregateError(errors, 'Failed to resume instance installation')
+              }
+              reset()
+              return retainedPath
+            }
             // Snapshot the manual-create link intent BEFORE `reset()` runs (reset
             // flips `isManual` back to true and the folder links must never be
             // synthesized for an import/template flow).
@@ -299,29 +336,25 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
             delete payload.hideLauncher
             delete payload.showLog
             const newPath = await action.run(() => create(payload))
+            createdPath = newPath
+            // Keep the pending instance reachable even if file installation fails.
             onCreated?.(newPath)
-            reset()
             if (pendingFiles.length > 0) {
-              await action
-                .run(() =>
-                  installInstanceFiles(
-                    pendingUpstream
-                      ? {
-                          path: newPath,
-                          files: pendingFiles,
-                          upstream: pendingUpstream,
-                        }
-                      : {
-                          path: newPath,
-                          oldFiles: [],
-                          files: pendingFiles,
-                        },
-                  ),
-                )
-                .catch((e) => {
-                  action.fail(e)
-                  console.error(e)
-                })
+              await action.run(() =>
+                installInstanceFiles(
+                  pendingUpstream
+                    ? {
+                        path: newPath,
+                        files: pendingFiles,
+                        upstream: pendingUpstream,
+                      }
+                    : {
+                        path: newPath,
+                        oldFiles: [],
+                        files: pendingFiles,
+                      },
+                ),
+              )
             }
             // Manual-create only: link the selected shared folders using the same
             // runtime services as the local link switches. Each link is applied
@@ -349,10 +382,13 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
                 notify({ level: 'error', title: t('instances.linkFailed', { folder }) })
               }
             }
+            reset()
             return newPath
           } catch (e) {
             action.fail(e)
             error.value = e
+            notify({ level: 'error', title: t('installInstance.name'), body: getErrorMessage(e) })
+            throw e
           } finally {
             loading.value = false
           }
@@ -360,7 +396,9 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
         {
           'instance.edition': data.edition,
         },
-      )
+      ).finally(() => {
+        creating = false
+      })
     },
     /**
      * Reset the change

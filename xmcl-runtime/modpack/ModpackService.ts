@@ -291,6 +291,7 @@ export class ModpackService extends AbstractService implements IModpackService {
       (this.instanceService.state.all[instancePath] ||
         this.instanceService.state.instances.find((i) => i.path === instancePath))
 
+    const legacyBaseline = existing ? await instanceInstallService.getLegacyLock(existing.path) ?? null : null
     let path: string
     if (existing) {
       path = existing.path
@@ -308,8 +309,8 @@ export class ModpackService extends AbstractService implements IModpackService {
       path = await this.instanceService.createInstance(options)
     }
 
-    await instanceInstallService
-      .installInstanceFiles(
+    try {
+      await instanceInstallService.installInstanceFiles(
         upstream
           ? {
               path,
@@ -321,11 +322,17 @@ export class ModpackService extends AbstractService implements IModpackService {
               files,
               oldFiles: [],
             },
+        undefined,
+        legacyBaseline,
       )
-      .catch((e) => {
-        this.error(e)
-        throw e
-      })
+    } catch (installError) {
+      this.error(
+        installError instanceof Error
+          ? installError
+          : new Error('Failed to install modpack files', { cause: installError }),
+      )
+      throw installError
+    }
 
     return {
       instancePath: path,

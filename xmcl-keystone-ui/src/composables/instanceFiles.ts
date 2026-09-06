@@ -5,6 +5,7 @@ import { useService } from './service'
 import { useState } from './syncableState'
 import { InstanceFile } from '@xmcl/instance'
 import { runRendererAction, type RendererActionScope } from '@/rendererAction'
+import { useDialog } from './dialog'
 
 export const kInstanceFiles: InjectionKey<ReturnType<typeof useInstanceFiles>> =
   Symbol('InstanceFiles')
@@ -15,6 +16,7 @@ export interface InstanceFilesStatus {
 }
 
 export function useInstanceFiles(instancePath: Ref<string>) {
+  const { show: showChecksumDialog } = useDialog('InstanceInstallSkipDialog')
   const { watchInstanceInstall, resumeInstanceInstall } = useService(InstanceInstallServiceKey)
   const {
     error,
@@ -61,6 +63,7 @@ export function useInstanceFiles(instancePath: Ref<string>) {
     } else {
       checksumErrorCount.value = { key, count: 1, files: files.filter((f) => !!f.file) }
     }
+    showChecksumDialog()
   }
 
   const resumingInstall = shallowRef({} as Record<string, boolean>)

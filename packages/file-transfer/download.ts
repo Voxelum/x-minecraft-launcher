@@ -75,6 +75,8 @@ export interface DownloadMultipleOptions extends DownloadBaseOptions {
   tracker?: ProgressTrackerMultiple
 
   signal?: AbortSignal
+  /** Runs after each file is closed, before that download is considered complete. */
+  onFileComplete?: (index: number) => Promise<void>
 }
 
 export async function downloadMultiple(
@@ -98,13 +100,13 @@ export async function downloadMultiple(
   }
 
   return Promise.allSettled(
-    options.options.map((opt) =>
+    options.options.map((opt, index) =>
       download({
         ...baseOptions,
         ...opt,
         tracker: tracker?.subSingle(),
         signal: options.signal,
-      }),
+      }).then(() => options.onFileComplete?.(index)),
     ),
   )
 }

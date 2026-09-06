@@ -1,7 +1,13 @@
-import { ensureDir, remove, rename, rmdir, stat, unlink } from 'fs-extra'
-import { dirname, join, relative } from 'path'
+import { constants, copyFile, ensureDir, remove, rename, rmdir, stat, unlink } from 'fs-extra'
+import { dirname, isAbsolute, join, relative } from 'path'
 import { fileURLToPath } from 'url'
-import { InstanceFile, InstanceFileUpdate } from './files'
+import { InstanceFile, InstanceFileUpdate, isInstanceInstallPath } from './files'
+import {
+  getInstanceFileChecksum,
+  normalizeInstanceFileChecksum,
+  type InstanceFileChecksum,
+  type InstanceFileChecksumAlgorithm,
+} from './files_integrity'
 import { ChecksumWorker, Logger } from './internal_type'
 
 export interface InstanceFileOperationHandlerContext {
@@ -86,15 +92,10 @@ export function assertNoCaseInsensitiveUpdatePathCollisions(
  * 2. workspace location: the location where the files are downloaded and unzipped
  * 3. backup location: the location where the files are backuped or removed
  *
- * The whole process is divided into three phases:
- * 1. Link or copy existed files to workspace folder. Download and unzip news files into workspace location. The linked failed files will be downloaded.
- * 2. Move files which need to be removed or backup to backup location
- * 3. Rename workspace location files into instance location
- *
- * The step 2 and 3 will modify the original instance files.
- * If the process is interrupted, the instance files need to be restored to the original state.
- * The backup folder will only exist if the whole process is successfully finished.
- * The workspace location will be kept if the process is interrupted, or it will be removed if it's successfully finished.
+ * Preparation writes only to the workspace. `commitReadyFiles` publishes
+ * successful files even after a preparation failure, retaining backups and
+ * deferring deletions until the complete target is ready. `backupAndRename`
+ * remains available for callers that require whole-batch rollback.
  */
 export class InstanceFileOperationHandler {
   // Phase 1: Download and unzip files into a workspace location
@@ -132,6 +133,8 @@ export class InstanceFileOperationHandler {
    * This will be recomputed each time the handler is processed.
    */
   readonly unresolvable: InstanceFile[] = []
+  readonly committed = new Set<string>()
+  readonly removed = new Set<string>()
 
   constructor(
     private instancePath: string,
@@ -154,12 +157,16 @@ export class InstanceFileOperationHandler {
     signal: AbortSignal,
     materializeKeeps = false,
   ) {
-    assertNoCaseInsensitiveUpdatePathCollisions(file)
+    this.#validateUpdates(file)
 
-    const batchSize = 64;
+    const batchSize = 64
     for (let i = 0; i < file.length; i += batchSize) {
-        const batch = file.slice(i, i + batchSize);
-        await Promise.all(batch.map(f => this.#handleFile(f, materializeKeeps)));
+      signal.throwIfAborted()
+      const results = await Promise.allSettled(
+        file.slice(i, i + batchSize).map(f => this.#handleFile(f, materializeKeeps)),
+      )
+      const errors = results.filter(r => r.status === 'rejected').map(r => r.reason)
+      if (errors.length) throw new AggregateError(errors)
     }
 
     const unhandled = [] as InstanceFile[]
@@ -180,7 +187,108 @@ export class InstanceFileOperationHandler {
     if (this.#httpsQueue.length > 0) {
       phase1Promises.push(this.context.downloadFiles(this.#httpsQueue, this.finished, signal))
     }
-    await Promise.all(phase1Promises)
+    // Finalization and cleanup must wait for every writer, even when another
+    // source fails. Individual completed paths can be published in the meantime.
+    const results = await Promise.allSettled(phase1Promises)
+    const errors = results.filter(r => r.status === 'rejected').map(r => r.reason)
+    if (errors.length === 1) throw errors[0]
+    if (errors.length) throw new AggregateError(errors)
+  }
+
+  #validateUpdates(updates: InstanceFileUpdate[]) {
+    assertNoCaseInsensitiveUpdatePathCollisions(updates)
+    for (const { file: { path } } of updates) {
+      const normalized = relative(this.instancePath, join(this.instancePath, path))
+      if (!normalized || isAbsolute(path) || normalized === '..' ||
+          normalized.startsWith(`..\\`) || normalized.startsWith('../') ||
+          isInstanceInstallPath(normalized)) {
+        throw new Error(`Invalid instance install path: ${path}`)
+      }
+    }
+  }
+
+  /**
+   * Publish completed files individually. A failed replacement leaves the old
+   * file intact; removals are deferred until all target files are available.
+   * The caller persists `committed`/`removed` even if this method rejects.
+   */
+  async commitReadyFiles(updates: InstanceFileUpdate[], complete: boolean, checkInstance: () => Promise<void>) {
+    this.committed.clear()
+    this.removed.clear()
+    this.#validateUpdates(updates)
+    const errors: unknown[] = []
+    for (const { file, operation } of updates) {
+      if (operation === 'keep') {
+        this.committed.add(file.path)
+        continue
+      }
+      if (operation !== 'add' && operation !== 'backup-add') continue
+      if (!this.finished.has(file.path)) continue
+      try {
+        await checkInstance()
+        const src = join(this.workspacePath, file.path)
+        const dest = join(this.instancePath, file.path)
+        await ensureDir(dirname(dest))
+        if (operation === 'backup-add') {
+          const backup = join(this.backupPath, file.path)
+          await ensureDir(dirname(backup))
+          try {
+            // Keep the original in place until the verified replacement can
+            // atomically replace it. Never overwrite a backup on retry.
+            await this.#copyToDistinctBackup(dest, backup)
+          } catch (e) {
+            if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e
+          }
+        }
+        await rename(src, dest)
+        this.committed.add(file.path)
+        this.finished.delete(file.path)
+      } catch (e) {
+        errors.push(e)
+      }
+    }
+    const allInstalled = updates.every(({ file, operation }) =>
+      operation === 'remove' || operation === 'backup-remove' || this.committed.has(file.path),
+    )
+    if (complete && allInstalled && errors.length === 0) {
+      const pathKey = (path: string) => process.platform === 'win32' ? join(path).toLowerCase() : join(path)
+      const targets = new Set(updates.filter(update =>
+        update.operation !== 'remove' && update.operation !== 'backup-remove',
+      ).map(update => pathKey(update.file.path)))
+      for (const { file, operation } of updates) {
+        if (operation !== 'remove' && operation !== 'backup-remove') continue
+        if (targets.has(pathKey(file.path))) {
+          this.removed.add(file.path)
+          continue
+        }
+        try {
+          await checkInstance()
+          const dest = join(this.instancePath, file.path)
+          if (operation === 'backup-remove') {
+            const backup = join(this.backupPath, file.path)
+            await ensureDir(dirname(backup))
+            try {
+              await this.#copyToDistinctBackup(dest, backup)
+            } catch (e) {
+              if ((e as NodeJS.ErrnoException).code === 'ENOENT') {
+                this.removed.add(file.path)
+                continue
+              }
+              throw e
+            }
+            await unlink(dest)
+          } else {
+            await unlink(dest)
+          }
+          this.removed.add(file.path)
+        } catch (e) {
+          if ((e as NodeJS.ErrnoException).code === 'ENOENT') this.removed.add(file.path)
+          else errors.push(e)
+        }
+      }
+    }
+    if (errors.length === 1) throw errors[0]
+    if (errors.length) throw new AggregateError(errors)
   }
 
   /**
@@ -425,10 +533,19 @@ export class InstanceFileOperationHandler {
               `Rejecting file:// URL for ${file.path}: no sha1 hash to verify against`,
             )
           } else {
-            const actualSha1 = await this.context.worker
-              .checksum(filePath, 'sha1')
-              .catch(() => undefined)
+            const actualSha1 = await this.#readChecksum(filePath, 'sha1').catch(() => undefined)
             if (actualSha1 === expectedSha1) {
+              const strongestChecksum = getInstanceFileChecksum(file)
+              if (strongestChecksum && strongestChecksum.algorithm !== 'sha1') {
+                const actualStrongestChecksum = await this.#readChecksum(filePath, strongestChecksum.algorithm)
+                  .catch(() => undefined)
+                if (actualStrongestChecksum !== strongestChecksum.value) {
+                  this.context.logger.warn(
+                    `Rejecting file:// URL for ${file.path}: ${strongestChecksum.algorithm} mismatch (expected ${strongestChecksum.value}, got ${actualStrongestChecksum})`,
+                  )
+                  return
+                }
+              }
               this.#linkQueue.push({ file, src: filePath, destination })
               return true
             }
@@ -444,6 +561,11 @@ export class InstanceFileOperationHandler {
 
     const resourcePath = await this.context.getCachedResource(sha1)
     if (resourcePath) {
+      const strongest = getInstanceFileChecksum(file)
+      if (strongest && strongest.algorithm !== 'sha1' && !await this.#matchesChecksum(resourcePath, strongest)) {
+        this.context.logger.warn(`Rejecting cached resource for ${file.path}: ${strongest.algorithm} mismatch`)
+        return
+      }
       this.#linkQueue.push({ file, destination, src: resourcePath })
       return true
     }
@@ -455,29 +577,11 @@ export class InstanceFileOperationHandler {
     // Check if file already exists with correct checksum
     const fStat = await stat(destination).catch(() => undefined)
     if (fStat && fStat.isFile()) {
-      if (file.hashes.sha1) {
-        const existingSha1 = await this.context.worker.checksum(destination, 'sha1')
-        if (existingSha1 === file.hashes.sha1) {
-          this.#readyQueue.push(file)
-          this.finished.add(file.path)
-          return
-        }
-      }
-      if (file.hashes.crc32) {
-        const existingCrc32 = await this.context.worker.checksum(destination, 'crc32')
-        if (existingCrc32 === file.hashes.crc32) {
-          this.#readyQueue.push(file)
-          this.finished.add(file.path)
-          return
-        }
-      }
-      if (file.hashes.sha256) {
-        const existingSha256 = await this.context.worker.checksum(destination, 'sha256')
-        if (existingSha256 === file.hashes.sha256) {
-          this.#readyQueue.push(file)
-          this.finished.add(file.path)
-          return
-        }
+      const checksum = getInstanceFileChecksum(file)
+      if (checksum && await this.#matchesChecksum(destination, checksum)) {
+        this.#readyQueue.push(file)
+        this.finished.add(file.path)
+        return
       }
     }
 
@@ -504,5 +608,51 @@ export class InstanceFileOperationHandler {
     if (await this.#handleHttp(file, destination, sha1)) return
 
     this.unresolvable.push(file)
+  }
+
+  async #copyToDistinctBackup(src: string, preferredDestination: string) {
+    for (let suffix = 0; ; suffix += 1) {
+      const destination = suffix === 0 ? preferredDestination : `${preferredDestination}.${suffix}`
+      const destinationStat = await stat(destination).catch((error) => {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined
+        throw error
+      })
+      if (destinationStat) {
+        if (destinationStat.isFile() && await this.#isSameFile(src, destination)) {
+          return
+        }
+        continue
+      }
+      try {
+        await copyFile(src, destination, constants.COPYFILE_EXCL)
+        return
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'EEXIST') continue
+        throw error
+      }
+    }
+  }
+
+  async #isSameFile(left: string, right: string) {
+    const [leftStat, rightStat] = await Promise.all([stat(left), stat(right)])
+    if (!leftStat.isFile() || !rightStat.isFile() || leftStat.size !== rightStat.size) {
+      return false
+    }
+    const [leftChecksum, rightChecksum] = await Promise.all([
+      this.#readChecksum(left, 'sha256'),
+      this.#readChecksum(right, 'sha256'),
+    ])
+    return leftChecksum === rightChecksum
+  }
+
+  async #matchesChecksum(filePath: string, checksum: InstanceFileChecksum) {
+    return (await this.#readChecksum(filePath, checksum.algorithm)) === checksum.value
+  }
+
+  async #readChecksum(filePath: string, algorithm: InstanceFileChecksumAlgorithm) {
+    return normalizeInstanceFileChecksum(
+      algorithm,
+      await this.context.worker.checksum(filePath, algorithm),
+    ) ?? ''
   }
 }

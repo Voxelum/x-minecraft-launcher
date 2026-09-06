@@ -1,36 +1,49 @@
-import { InstanceFile } from '@xmcl/instance'
+import { InstanceFile, getInstanceFileChecksum } from '@xmcl/instance'
 import { Tracker, onProgress } from '@xmcl/installer'
 import { openEntryReadStream } from '@xmcl/unzip'
 import { WorkerQueue, isSystemError } from '@xmcl/utils'
 import { createWriteStream } from 'fs'
-import { ensureDir, stat } from 'fs-extra'
+import { ensureDir } from 'fs-extra'
 import { dirname } from 'path'
 import { pipeline } from 'stream/promises'
 import { Entry, ZipFile } from '@xmcl/yauzl'
 import { ZipManager } from '~/infra'
 import { InstallInstanceTrackerEvents } from '@xmcl/runtime-api'
+import { Crc32 } from '@aws-crypto/crc32'
+import { createHash } from 'crypto'
+import { assertInstanceFileChecksum } from './verifyInstanceFile'
 
 async function processEntry(
   zip: ZipFile,
   entry: Entry,
+  file: InstanceFile,
   destination: string,
   signal: AbortSignal,
   progress: { progress: number; total: number },
 ) {
+  signal.throwIfAborted()
   await ensureDir(dirname(destination))
-  const fstat = await stat(destination).catch(() => undefined)
-  if (fstat && entry.uncompressedSize === fstat.size) {
-    progress.progress += entry.uncompressedSize
-    return
-  }
+  signal.throwIfAborted()
   const stream = await openEntryReadStream(zip, entry)
+  const checksum = new Crc32()
+  const expected = getInstanceFileChecksum(file)
+  const hash = expected && expected.algorithm !== 'crc32' ? createHash(expected.algorithm) : undefined
   stream.on('data', (chunk) => {
+    checksum.update(chunk)
+    hash?.update(chunk)
     progress.progress += chunk.length
   })
-  signal.addEventListener('abort', () => {
-    stream.destroy(signal.reason)
-  })
-  await pipeline(stream, createWriteStream(destination))
+  await pipeline(stream, createWriteStream(destination), { signal })
+  const actual = checksum.digest()
+  if (actual !== entry.crc32) {
+    throw Object.assign(new Error(`Checksum mismatch for ZIP entry: ${entry.fileName}`), {
+      name: 'ChecksumNotMatchError',
+      file: destination,
+      expect: String(entry.crc32),
+      actual: String(actual),
+    })
+  }
+  if (expected) assertInstanceFileChecksum(expected, destination, hash ? hash.digest('hex') : String(actual))
 }
 
 /**
@@ -52,11 +65,14 @@ export async function unzipInstanceFiles(
     destination: string
   }>(
     async ({ file, zipPath, entryName, destination }) => {
+      signal.throwIfAborted()
       const { file: zip, entries } = await zipManager.open(zipPath)
       const entry = entries[entryName]
-      if (entry) {
+      if (!entry) {
+        throw Object.assign(new Error(`Missing ZIP entry: ${entryName}`), { zipPath, entryName })
+      } else {
         try {
-          await processEntry(zip, entry, destination, signal, progress)
+          await processEntry(zip, entry, file, destination, signal, progress)
           finished.add(file.path)
         } catch (e) {
           Object.assign(e as any, {
@@ -81,6 +97,7 @@ export async function unzipInstanceFiles(
 
   // Update the total size
   for (const { zipPath, entryName } of queue) {
+    signal.throwIfAborted()
     const zip = await zipManager.open(zipPath).catch((e) => {
       if (isSystemError(e) && e.code === 'ENOENT') {
         e.name = 'UnzipFileNotFoundError'

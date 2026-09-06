@@ -40,9 +40,16 @@ export function useInstanceLaunchMenuItems() {
   } = injection(kInstanceFiles)
 
   const currentInstruction = computed(() => getCurrentInstanceState(instruction.value, path.value))
-  const currentInstallStatus = computed(() =>
-    getCurrentInstanceState(instanceInstallStatus.value, path.value),
-  )
+  const currentInstallStatus = computed(() => {
+    const status = getCurrentInstanceState(instanceInstallStatus.value, path.value)
+    // Shared state mutates in place. Returning it directly would let computed
+    // stability hide count changes from the launch button after a resume.
+    return status && {
+      instance: status.instance,
+      pendingFileCount: status.pendingFileCount,
+      unresolvedFiles: [...status.unresolvedFiles],
+    }
+  })
   const currentUnresolvedFiles = computed(() => currentInstallStatus.value?.unresolvedFiles ?? [])
   const hasUnresolvedFiles = computed(() => currentUnresolvedFiles.value.length > 0)
 

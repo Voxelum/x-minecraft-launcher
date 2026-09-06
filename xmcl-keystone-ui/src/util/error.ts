@@ -8,7 +8,8 @@ export class AnyError extends Error {
   }
 }
 
-export function getErrorMessage(error: unknown) {
+export function getErrorMessage(error: unknown): string {
+  if (Array.isArray(error)) return error.map(getErrorMessage).join('\n')
   if (typeof error === 'string') return error
   if (error instanceof Error && error.message) return error.message
   if (error && typeof error === 'object') {

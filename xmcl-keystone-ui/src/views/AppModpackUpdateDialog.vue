@@ -78,9 +78,11 @@ async function run(instancePath?: string) {
   try {
     const rawUpstream = p.upstream ? JSON.parse(JSON.stringify(toRaw(p.upstream))) : undefined
     await finishModpackInstall(p.modpackFile, p.icon, rawUpstream, instancePath)
-    isShown.value = false
+  } catch {
+    // The installer reports the failure and selects any retained pending instance.
   } finally {
     installing.value = false
+    isShown.value = false
   }
 }
 
