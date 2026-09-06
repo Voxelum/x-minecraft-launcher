@@ -1,6 +1,6 @@
 {
   "name": "@xmcl/file-transfer",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "main": "./index.ts",
   "description": "A high performance downloader based on undici",
   "engines": {
