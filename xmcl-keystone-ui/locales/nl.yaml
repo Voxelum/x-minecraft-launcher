@@ -373,6 +373,8 @@ instance:
     De URL om instance-bestanden te synchroniseren vanaf een externe configuratieserver.
   fullscreen: Volledig Scherm
   height: Hoogte
+  hideCard: Deze kaart verbergen
+  moveToTop: Naar boven verplaatsen
   icon: Profielpictogram
   iconHint: Het pictogram kan een bestand of een internet-URL-link zijn.
   iconUrl: Pictogram URL
@@ -399,6 +401,7 @@ instance:
   requireName: Naam is verplicht
   resolution: Resolutie
   resolutionPreset: Resolutie Preset
+  showHiddenCards: Verborgen kaarten tonen
   showInstance: Toon spelmap
   updates: Updates
   useSharedOptions: Gebruik gedeelde spelinstellingen

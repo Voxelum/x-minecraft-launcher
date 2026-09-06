@@ -427,6 +427,7 @@ instance:
   fullscreen: ফুলস্ক্রিন
   height: উচ্চতা
   hideCard: এই কার্ডটি লুকান
+  moveToTop: শীর্ষে সরান
   icon: প্রোফাইল আইকন
   iconHint: আইকনটি একটি ফাইল অথবা ইন্টারনেটের URL লিঙ্ক হতে পারে।
   iconUrl: আইকন URL

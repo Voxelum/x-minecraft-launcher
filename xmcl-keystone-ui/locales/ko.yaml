@@ -427,6 +427,7 @@ instance:
   fileApiPlaceholder: 리소스 동기화를 유지하려면 여기에 원격 동기화 URL을 입력하세요
   deleteHintBedrock: 마인크래프트 베드락 에디션과 모든 데이터가 컴퓨터에서 완전히 삭제됩니다. 정말 삭제하시겠습니까?
   hideCard: 이 카드 숨기기
+  moveToTop: 맨 위로 이동
   nameInvalidChars: '이름에는 다음 문자를 포함할 수 없습니다: < > : " / \\ | ? *'
   namePathTraversal: 이름에는 경로 탐색("..")을 포함할 수 없습니다.
   nameReservedName: 이 이름은 시스템에서 예약한 이름이므로 사용할 수 없습니다.
