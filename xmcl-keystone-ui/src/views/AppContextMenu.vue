@@ -16,7 +16,66 @@
         v-for="(item, index) in items"
         :key="item.text"
       >
+        <v-menu
+          v-if="item.children"
+          location="end"
+          open-on-hover
+          transition="fade-transition"
+          :open-delay="0"
+          :close-delay="100"
+        >
+          <template #activator="{ props }">
+            <v-list-item
+              class="min-w-40 mx-1"
+              :title="item.text"
+              v-bind="props"
+              @click="item.onClick"
+            >
+              <template
+                v-if="item.icon"
+                #prepend
+              >
+                <v-icon
+                  :size="item.icon === 'xmcl:curseforge' ? 22 : undefined"
+                  :color="item.color || ''"
+                >
+                  {{ item.icon }}
+                </v-icon>
+              </template>
+              <template #append>
+                <v-icon size="small">{{ submenuIcon }}</v-icon>
+              </template>
+            </v-list-item>
+          </template>
+
+          <v-list
+            density="compact"
+            :color="isDark ? 'secondary' : ''"
+          >
+            <v-list-item
+              v-for="child in item.children"
+              :key="child.text"
+              :title="child.text"
+              class="min-w-40 mx-1"
+              @click="child.onClick(); shown = false"
+            >
+              <template
+                v-if="child.icon"
+                #prepend
+              >
+                <v-icon
+                  :size="child.icon === 'xmcl:curseforge' ? 22 : undefined"
+                  :color="child.color || ''"
+                >
+                  {{ child.icon }}
+                </v-icon>
+              </template>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
         <v-list-item
+          v-else
           class="min-w-40 mx-1"
           :title="item.text"
           @click="item.onClick"
@@ -32,49 +91,6 @@
               {{ item.icon }}
             </v-icon>
           </template>
-          <v-menu
-            v-if="item.children"
-            location="end"
-            open-on-hover
-            transition="fade-transition"
-            :open-delay="0"
-            :close-delay="0"
-          >
-            <template #activator="{ props }">
-              <v-list-item-action
-                class="w-[100%] justify-end"
-                v-bind="props"
-                @click.stop="item.onClick"
-              >
-                <v-icon>{{ submenuIcon }}</v-icon>
-              </v-list-item-action>
-            </template>
-
-            <v-list
-              density="compact"
-              :color="isDark ? 'secondary' : ''"
-            >
-              <v-list-item
-                v-for="child in item.children"
-                :key="child.text"
-                :title="child.text"
-                class="min-w-40 mx-1"
-                @click="child.onClick(); shown = false"
-              >
-                <template
-                  v-if="child.icon"
-                  #prepend
-                >
-                  <v-icon
-                    :size="child.icon === 'xmcl:curseforge' ? 22 : undefined"
-                    :color="child.color || ''"
-                  >
-                    {{ child.icon }}
-                  </v-icon>
-                </template>
-              </v-list-item>
-            </v-list>
-          </v-menu>
         </v-list-item>
         <v-divider
           v-if="index !== items.length - 1 && showDividerAfter(index)"

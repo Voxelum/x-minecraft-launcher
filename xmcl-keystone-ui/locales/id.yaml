@@ -427,6 +427,7 @@ instance:
   fullscreen: Layar Penuh
   height: Tinggi
   hideCard: Sembunyikan kartu ini
+  moveToTop: Pindahkan ke atas
   icon: Ikon Profil
   iconHint: Ikon dapat berupa berkas atau tautan URL internet.
   iconUrl: URL Ikon

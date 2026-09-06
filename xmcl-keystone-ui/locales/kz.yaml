@@ -372,6 +372,8 @@ instance:
     Қашықтаған конфигурация серверінен жеке жағдай файлдарын синхрондауға арналған URL.
   fullscreen: Толық экранды
   height: биіктігі
+  hideCard: Бұл картаны жасыру
+  moveToTop: Жоғарыға жылжыту
   icon: Профиль таңбашасы
   iconHint: Таңбаша файл немесе интернет URL сілтемесі болуы мүмкін.
   iconUrl: Таңбаша URL-ы
@@ -398,6 +400,7 @@ instance:
   requireName: Атау міндетті
   resolution: Ажыратымдылық
   resolutionPreset: Ажыратымдылық алдын-ала орнатуы
+  showHiddenCards: Жасырын карталарды көрсету
   showInstance: Ойын қалтасын көрсету
   updates: Жаңартулар
   useSharedOptions: Ортақ ойын баптауларын қолдану

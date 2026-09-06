@@ -496,6 +496,7 @@ instance:
   fullscreen: Fullscreen
   height: Height
   hideCard: Hide this card
+  moveToTop: Move to top
   icon: Profile Icon
   iconHint: The icon could be a file or internet url link.
   iconUrl: Icon Url

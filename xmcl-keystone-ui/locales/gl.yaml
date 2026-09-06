@@ -373,6 +373,8 @@ instance:
     De url om instantiebestanden te synchroniseren vanaf een externe configuratieserver.
   fullscreen: Volledig scherm
   height: Hoogte
+  hideCard: Ocultar esta tarxeta
+  moveToTop: Mover arriba
   icon: Profielicoon
   iconHint: Het icoon kan een bestand of internet url-link zijn.
   iconUrl: Icoon Url
@@ -399,6 +401,7 @@ instance:
   requireName: De naam is verplicht
   resolution: Resolutie
   resolutionPreset: Resolutie voorinstelling
+  showHiddenCards: Mostrar as tarxetas ocultas
   showInstance: Toon gamemap
   updates: Updates
   useSharedOptions: Gebruik gedeelde game-instellingen

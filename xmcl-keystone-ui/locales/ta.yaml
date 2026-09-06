@@ -427,6 +427,7 @@ instance:
   fullscreen: முழுத்திரை
   height: உயரம்
   hideCard: இந்த அட்டையை மறை
+  moveToTop: மேலே நகர்த்து
   icon: சுயவிவரச் சின்னம்
   iconHint: சின்னம் ஒரு கோப்பாகவோ அல்லது இணைய url இணைப்பாகவோ இருக்கலாம்.
   iconUrl: சின்னத்தின் Url

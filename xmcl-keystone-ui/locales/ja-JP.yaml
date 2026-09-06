@@ -356,6 +356,8 @@ instance:
   fileApiHint: このURLはリモートの同期サーバーから起動構成ファイルを同期します。
   fullscreen: 全画面表示
   height: 身長
+  hideCard: このカードを非表示
+  moveToTop: 一番上へ移動
   icon: プロファイルアイコン
   iconHint: ファイルか画像のURLが使用できます。
   iconUrl: アイコンのURL
@@ -383,6 +385,7 @@ instance:
   requireName: 名前は必須項目です
   resolution: 解像度
   resolutionPreset: 解像度プリセット
+  showHiddenCards: 非表示のカードを表示
   showInstance: ゲームフォルダを開く
   updates: アップデート
   useSharedOptions: 一般的なゲーム設定を使用する

@@ -438,6 +438,7 @@ instance:
   fullscreen: 全屏幕
   height: 高度
   hideCard: 隱藏此卡片
+  moveToTop: 移到最頂
   icon: 實例圖示
   iconHint: 該圖示可以是檔案或網際網絡 URL 連結。
   iconUrl: 圖片 URL
