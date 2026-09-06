@@ -25,6 +25,16 @@ on:
   # (Mojang / Modrinth / CurseForge / loaders) and takes 10-30 min per journey.
   workflow_dispatch:
     inputs:
+      suite:
+        description: 'Test groups to run'
+        type: choice
+        options: [all, packaged-boot]
+        default: all
+      packaged_os:
+        description: 'Platform for the packaged-boot group'
+        type: choice
+        options: [all, ubuntu-latest, windows-latest, macos-latest]
+        default: all
       locales:
         description: 'Comma-separated locales to capture (e.g. "en,zh-CN")'
         required: false
@@ -37,6 +47,7 @@ jobs:
   # ---------------------------------------------------------------------------
   safety-net:
     name: safety-net (${{ matrix.os }})
+    if: github.event_name != 'workflow_dispatch' || inputs.suite != 'packaged-boot'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -111,7 +122,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: ${{ fromJSON(github.event_name == 'workflow_dispatch' && inputs.packaged_os != '' && inputs.packaged_os != 'all' && format('["{0}"]', inputs.packaged_os) || '["ubuntu-latest","windows-latest","macos-latest"]') }}
     timeout-minutes: 60
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
@@ -168,6 +179,9 @@ jobs:
       - name: Run e2e packaged-boot group
         run: ${{ runner.os == 'Linux' && 'xvfb-run --auto-servernum' || '' }} pnpm test:e2e:release
         shell: bash
+        env:
+          # Capture child-process output emitted before Electron launch returns.
+          DEBUG: pw:browser
 
       - name: Upload artifacts
         if: always()
@@ -180,7 +194,7 @@ jobs:
   # ---------------------------------------------------------------------------
   showcase:
     name: showcase (${{ matrix.os }})
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && inputs.suite != 'packaged-boot'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

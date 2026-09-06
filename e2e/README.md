@@ -30,6 +30,18 @@ bundle's `__dirname` IS the output root). It needs a full pack, so it stays
 off basic per-PR validation and only guards the release PR. See
 [`.github/workflows/e2e.yml`](../.github/workflows/e2e.yml).
 
+To investigate packaged startup on just one CI platform, dispatch the workflow
+with `suite=packaged-boot` and `packaged_os=ubuntu-latest` (or `windows-latest` /
+`macos-latest`). This skips safety-net and live-network showcase jobs. The
+default `all` options preserve the existing full manual run.
+
+Packaged runs retain `packaged-main-state` and `packaged-stdio` attachments plus
+`launcher-logs/` in each test's output directory, including failed launches.
+The main-process snapshot distinguishes missing entry initialization, missing
+windows, and windows stuck loading. CI also records early Electron output via
+`DEBUG=pw:browser`. Only isolated launcher log files are copied, not profiles,
+credentials, or the process environment; the temporary profile is then removed.
+
 The **showcase** group drives the launcher through the common user journeys
 against the real environment and captures a captioned screenshot at each
 step. Those screenshots double as the promotional material and the generated
