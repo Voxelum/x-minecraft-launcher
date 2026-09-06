@@ -37,6 +37,7 @@ When a scratch spec is warranted:
 
    ```bash
    pnpm e2e:install        # first time only — Playwright is opt-in
+   pnpm --prefix=e2e exec playwright install ffmpeg # recorder only; no browsers
    pnpm build:renderer
    pnpm --prefix=xmcl-electron-app compile
    pnpm test:e2e:scratch        # add `xvfb-run --auto-servernum` on Linux

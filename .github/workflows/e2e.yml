@@ -80,6 +80,9 @@ jobs:
         # stays lean for UI/runtime contributors. Install it explicitly here.
         run: pnpm e2e:install --frozen-lockfile
 
+      - name: Install video recorder
+        run: pnpm --prefix=e2e exec playwright install ffmpeg
+
       - name: Build renderer
         run: pnpm build:renderer
         env:
@@ -163,6 +166,9 @@ jobs:
       - name: Install e2e dependencies
         run: pnpm e2e:install --frozen-lockfile
 
+      - name: Install video recorder
+        run: pnpm --prefix=e2e exec playwright install ffmpeg
+
       - name: Build renderer
         run: pnpm run --prefix xmcl-keystone-ui build
         env:
@@ -181,7 +187,7 @@ jobs:
         shell: bash
         env:
           # Capture child-process output emitted before Electron launch returns.
-          DEBUG: pw:browser,pw:protocol
+          DEBUG: pw:browser
 
       - name: Upload artifacts
         if: always()
@@ -223,6 +229,9 @@ jobs:
 
       - name: Install e2e dependencies
         run: pnpm e2e:install --frozen-lockfile
+
+      - name: Install video recorder
+        run: pnpm --prefix=e2e exec playwright install ffmpeg
 
       - name: Build renderer
         run: pnpm build:renderer

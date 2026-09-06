@@ -135,14 +135,17 @@ PR — you do not need to clean them up.
 ```bash
 pnpm install --frozen-lockfile     # first time only
 pnpm e2e:install --frozen-lockfile # first time only — installs Playwright (e2e is outside the workspace)
+pnpm --prefix=e2e exec playwright install ffmpeg # recorder only; also after Playwright upgrades
 pnpm build:renderer                # required after any xmcl-keystone-ui change
 pnpm --prefix=xmcl-electron-app compile
 pnpm test:e2e:scratch
 ```
 
-> Electron tests do **not** need `playwright install` — `_electron.launch()`
-> uses the bundled Electron Chromium, not Playwright's downloaded browsers.
-> Skipping that step saves ~660 MB and 1–2 minutes per CI run.
+> Electron tests do **not** need Playwright's downloaded browsers:
+> `_electron.launch()` uses the bundled Electron Chromium. The fixtures do
+> record video, so install only FFmpeg with the command above. A missing
+> recorder can leave a newly attached renderer paused before navigation.
+> Skipping the full browser set still saves roughly 660 MB per CI run.
 
 Linux runners need `xvfb-run --auto-servernum pnpm test:e2e:scratch` because
 the launcher is an Electron app.

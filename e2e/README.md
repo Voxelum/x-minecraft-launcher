@@ -83,6 +83,7 @@ Modrinth, CurseForge) so flakiness is expected on poor connections.
 ```bash
 pnpm install                      # repo root — no Playwright pulled
 pnpm e2e:install                  # one-time — Playwright into e2e/node_modules
+pnpm --prefix=e2e exec playwright install ffmpeg # video recorder only, no browsers
 pnpm build:renderer && pnpm --prefix=xmcl-electron-app compile
 pnpm test:e2e:ci         # safety-net group (fast, deterministic — the CI gate)
 pnpm test:e2e:release    # packaged-boot group (needs `xmcl-electron-app build` first)
@@ -96,12 +97,13 @@ pnpm build:tutorial      # compile showcase screenshots → docs/tutorial/
 > default CI path stays cheap. Use `pnpm --prefix=e2e test:all` to run both
 > groups in one shot locally.
 
-> **No `playwright install` required.** These tests drive Electron via
-> `_electron.launch()`, which uses the launcher's bundled Chromium. The
-> ~660 MB Playwright browser cache is unnecessary; set
-> `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1` if you also use Playwright for
-> non-Electron projects on the same machine and want to suppress the
-> first-run hint.
+> **No Playwright browser download required.** `_electron.launch()` uses
+> Electron's bundled Chromium, but both launcher fixtures enable video recording
+> and therefore require `playwright install ffmpeg`. Repeat that small install
+> after upgrading Playwright. Without its recorder binary, page initialization
+> can fail before Playwright resumes a newly attached renderer, leaving a blank
+> window indefinitely. `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1` is compatible with
+> explicitly installing only FFmpeg; do not download the full browser set.
 
 ## Architecture
 
