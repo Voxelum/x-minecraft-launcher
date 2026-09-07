@@ -1511,11 +1511,11 @@ server:
   entryCount: '{count} 个服务器'
   expectedVersions: 已支持的版本
   export: 导出服务器
-  exportNoFilesHint: |-
+  exportNoFilesHint: >-
     找不到服务器文件。
     请先安装一次服务端以生成所需文件。
   exportOption: 服务器导出选项
-  exportSSHAuthenticationFailed: |-
+  exportSSHAuthenticationFailed: >-
     所有身份验证方法都失败了。
     请检查用户名/密码或私钥。
   exportSSHOptions: SSH选项
@@ -1596,7 +1596,7 @@ server:
   remoteServiceActive: 运行中
   remoteServiceName: 服务名称
   remoteServiceNameHint: systemd --user 单元名称，例如 mc-server
-  remoteSelectedFiles: 已选择 {count} 个服务端文件
+  remoteSelectedFiles: '已选择 {count} 个服务端文件'
   remoteSelectFiles: 选择文件
   remoteStartCommand: 启动命令
   remoteStartCommandHint: 例如 java -jar server.jar nogui
@@ -1643,12 +1643,13 @@ server:
   upload: 上传服务器
   upstreamUpdateAvailable: '服务器现在运行 Minecraft {version}，点击应用。'
   upstreamUpdateHint: 将建议的 Minecraft 版本应用到此实例。
-  upstreamUpToDate: 您的实例与服务器版本一致（{version}）。
+  upstreamUpToDate: '您的实例与服务器版本一致（{version}）。'
   upstreamUpToDateHint: 无需升级，点击可重新 Ping 服务器。
   useAsUpstreamHint: 此实例将跟随服务器所报告的 Minecraft 版本。
   version: 服务器推荐版本
   versionHint: Ping 使用的 Minecraft 版本
   worldPreserve: 保留目标现有世界
+  nameHint: 多人游戏列表中显示的名称
 serverStatus:
   nohost: 找不到服务器！
   ping: 延迟
@@ -2005,6 +2006,7 @@ store:
   name: 整合包市场
   searchResult: 搜索结果
   trending: 流行趋势
+  searchHint: 搜索整合包...
 tag:
   create: 创建标签
   createSelected: 为所有选中的创建标签
@@ -2048,12 +2050,32 @@ tutorial:
     您可以在左侧看到新闻展示柜。
     单击此按钮可以隐藏该展示案例。
   instance:
+    appearanceThemeDescription: 为该特定实例自定义背景、颜色和视觉风格。
+    appearanceThemeTitle: 实例外观
     iconDescription: 点击更改图标。
-    iconTitle: 游戏图标
-    javaDescription: 切换 Java 版本。
-    javaImportDescription: 从本地导入 Java。
+    iconTitle: 实例图标
+    javaDescription: 选择或切换 Java 版本。
+    javaImportDescription: 从本地存储导入 Java。
     javaImportTitle: 导入 Java
-    javaTitle: 已有 Java 列表
+    javaTitle: Java 列表
+    modpackExportDescription: 构建并将配置好的实例打包为随时可分享的整合包。
+    modpackExportTitle: 导出整合包
+    modpackFilesDescription: 选择客户端和服务端需要打包的配置文件、模组与资源。
+    modpackFilesTitle: 包含的文件
+    modpackMetaDescription: 指定整合包版本、作者、描述及网站信息。
+    modpackMetaTitle: 整合包详情
+    modpackOptionsDescription: 选择目标导出文件夹及格式（如 Modrinth 或 CurseForge 整合包）。
+    modpackOptionsTitle: 导出选项
+    serverLaunchDescription: 直接从头部启动或停止此实例的专用服务端。
+    serverLaunchTitle: 启动 / 停止服务器
+    serverPropertiesDescription: 配置端口、难度、MOTD、玩家上限和游戏规则等服务器属性。
+    serverPropertiesTitle: 服务器配置
+    serverServiceDescription: 将服务端作为操作系统后台服务（systemd 或 Windows 服务）管理以保持长期稳定运行。
+    serverServiceTitle: 系统服务
+    serverTargetDescription: 选择在本地电脑运行服务端，或通过 SSH 管理远程 Linux 服务器。
+    serverTargetTitle: 服务器目标
+    versionDescription: 选择 Minecraft 版本以及 Forge、Fabric、Quilt 或 NeoForge 加载器。
+    versionTitle: Minecraft 与加载器版本
   instanceAddDescription: 单击此按钮可导入现有的 Minecraft，从整合包创建一个新的 Minecraft，或从头开始创建一个新的 Minecraft 实例
   instanceSelectDescription: 单击此按钮将导航至选择游戏和阅读新闻的页面。
   launchDescription: 点击此按钮安装或启动游戏。
@@ -2085,6 +2107,59 @@ tutorial:
     按 Enter 键搜索。
   storeSearchResultDescription: 您将看到此处列出的所有搜索结果。
   userAccountDescription: 单击此图标可添加或管理您的 Minecraft 帐户。
+  tooltip: 帮助与引导
+  done: 知道了！
+  helpDescription: 启动器及当前页面的交互式导航指南。
+  blueprint:
+    searchTitle: 搜索蓝图
+    searchDescription: 按名称或标签搜索本地和社区蓝图。
+    listTitle: 蓝图列表
+    listDescription: 查看和管理所有已保存的实例蓝图和模版。
+    detailTitle: 蓝图详情
+    detailDescription: 检查蓝图内容、包含的模组，并以此创建新实例。
+  me:
+    instancesTitle: 实例管理
+    instancesDescription: 查看所有已安装的实例，按文件夹或日期分组，筛选并启动。
+    profileTitle: 账户与个人资料
+    profileDescription: 在您的账户之间切换并管理登录凭据。
+    skinTitle: 皮肤与披风自定义
+    skinDescription: 3D 预览您的角色，更换皮肤并穿戴披风。
+  multiplayer:
+    railTitle: 网络与导航
+    railDescription: 检查 NAT 类型、网络连接状态，并在连接与设置间切换。
+    groupTitle: 加入或主持房间
+    groupDescription: 输入房间代码加入好友，或留空点击创建您自己的房间。
+    joinDescription: 点击加入已有房间或创建新房间。
+    contentTitle: 已连接成员与内容
+    contentDescription: 管理已连接的成员，查看延迟并分享运行中的 Minecraft 游戏。
+    manualDescription: 使用 SDP 交换与好友进行手动直接 P2P 连接。
+  resourcepack:
+    searchTitle: 搜索材质包
+    searchDescription: 从 Modrinth、CurseForge 或本地文件中搜索材质包。
+    listTitle: 材质包列表
+    listDescription: 浏览已安装的材质包，启用或禁用它们并调整加载优先级。
+    detailTitle: 材质包详情
+    detailDescription: 查看屏幕截图、描述、兼容的 Minecraft 版本及文件详情。
+  save:
+    searchTitle: 搜索世界存档
+    searchDescription: 按名称筛选并搜索当前实例中的世界存档。
+    listTitle: 存档列表
+    listDescription: 查看所有已保存的世界，包含游戏模式、最后游玩日期与文件大小。
+    detailTitle: 世界详情与操作
+    detailDescription: 备份、导出、检查 level.dat 或管理世界设置。
+  settings:
+    navDescription: 在常规、外观、全局游戏设置和网络之间切换。
+    generalDescription: 配置启动器语言、数据目录、更新通道和启动选项。
+    appearanceDescription: 自定义主题、背景壁纸、强调色与界面布局风格。
+    globalDescription: 设置默认 Java 运行时、内存分配和 JVM 启动参数。
+    networkDescription: 配置下载镜像源、代理设置和并发任务限制。
+  shaderpack:
+    searchTitle: 搜索光影包
+    searchDescription: 从 Modrinth、CurseForge 或本地缓存中搜索光影包。
+    listTitle: 光影包列表
+    listDescription: 浏览已安装的光影包并快速切换启用。
+    detailTitle: 光影包详情
+    detailDescription: 查看光影作者信息、分辨率要求、预设配置与配置选项。
 universalDrop:
   unknownResource: 无法解析
 unresolvedFiles:

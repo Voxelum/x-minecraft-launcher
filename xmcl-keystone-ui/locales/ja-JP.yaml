@@ -1229,19 +1229,26 @@ search:
   noResults: 結果が見つかりません
   pageSize: 1ページあたりの結果数
 server:
+  launch: サーバーを起動
+  stop: サーバーを停止
   acceptingMinecraftVersion: Minecraftバージョンを使用中
+  addServer: サーバーを追加
+  address: サーバーアドレス
+  addressHint: '例: mc.hypixel.net'
+  bindUpstream: アップストリームとしてバインド
+  boundUpstream: アップストリームサーバーをバインド済み
+  boundUpstreamHint: このインスタンスはバインドされたサーバーのMinecraftバージョンに追従します。
   creationHint: サーバーアドレスを入力し、pingしてください
+  editServer: サーバーを編集
+  emptyHint: このインスタンスのservers.datにはまだサーバーがありません。追加してください。
+  entryCount: '{count} 件のサーバー'
   expectedVersions: サポートされたバージョン
   export: エクスポートサーバー
-  exportNoFilesHint: |-
-    サーバーファイルは見つかりません。
-    ローカルでサーバーを1回実行して、いくつかのファイルを生成できます。
+  exportNoFilesHint: サーバーファイルは見つかりません。 ローカルでサーバーを1回実行して、いくつかのファイルを生成できます。
   exportOption: サーバーエクスポートオプション
-  exportSSHAuthenticationFailed: |-
-    すべての認証方法が失敗しました。
-    ユーザー名/パスワードまたは秘密鍵を確認してください。
+  exportSSHAuthenticationFailed: すべての認証方法が失敗しました。 ユーザー名/パスワードまたは秘密鍵を確認してください。
   exportSSHOptions: SSHオプション
-  exportSSHPrivateKeyPath: SSH秘密キーパス
+  exportSSHPrivateKeyPath: SSH秘密鍵のパス
   exportSSHRemotePath: リモートサーバーパス
   exportToFolder: フォルダーにエクスポートします
   filterVersion: 対応したMinecraftバージョンのサーバーをフィルターします
@@ -1249,19 +1256,129 @@ server:
   hostHint: サーバーのホスト(とポート)
   hostRequired: サーバーIPアドレスを入力してください
   ipAddress: IP アドレス
+  launchClient: 代わりにクライアントを起動
+  launchPinned: 固定中
+  launchTargetHint: このインスタンスは固定されたサーバーに直接接続します。クライアント起動に戻しますか？
   maxPlayers: 最大プレイヤー数
   motd: サーバー MOTD
+  nameHint: マルチプレイリストに表示される表示名
   nogui: サーバーのGUIなし
   onlineMode: オンラインモード
+  pin: サーバーをピン留め
+  pinAfterSave: 保存後にデフォルトの起動ターゲットとしてピン留めする
   ping: Ping
   pings: Ping
+  pinnedHeader: 'ピン留め: {name}'
   players: プレイヤー数
   port: ポート
+  clearLog: ログをクリア
+  log: サーバーログ
+  logWaiting: サーバー出力は起動後にここに表示されます。
+  remoteActionSuccess: Done.
+  remoteAdmin: リモートサーバー管理
+  remoteAuthMethod: 認証方式
+  remoteAuthPassword: パスワード
+  remoteAuthPrivateKey: 秘密鍵
+  remoteBuildOfflinePackage: オフラインパッケージの作成
+  remoteConnected: 接続済み
+  remoteConnection: 接続
+  remoteDeployment: デプロイ
+  remoteDeploy: デプロイ
+  remoteDisk: ディスク
+  remoteConfigFiles: 設定ファイル
+  remoteExtraFiles: その他の追加ファイル
+  remoteForgetCredentials: 保存された認証情報を削除
+  remoteInstallService: サービスをインストール
+  remoteLoad: 平均負荷
+  remoteLog: リモートログ
+  remoteMemory: メモリ
+  remoteMods: Mod
+  remoteNoWorldSelected: インスタンスのワールドが選択されていません
+  remoteJavaRequired: リモートのLinuxホストでJavaが見つかりません。
+  remoteLinuxRequired: Linux SSHターゲットのみサポートされています。
+  remoteNotConfiguredHint: 上記の接続情報を入力して保存すると、ステータス、サービス制御、ログ追跡が有効になります。
+  remotePathNotWritable: リモートサーバーディレクトリに書き込み権限がありません。
+  remotePathWritable: ディレクトリ書き込み可能
+  remotePolicyInitialize: 初回のみ初期化
+  remotePolicyMirror: ミラー同期
+  remotePolicyOverlay: 上書き配置
+  remotePolicyPreserve: 現状を維持
+  remotePreview: 変更内容のプレビュー
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: 認証情報を記憶する (OSキーチェーン)
+  remoteReconcileReady: ターゲットはこのインスタンスと一致しており、コンソールが接続されています。
+  remoteRestartService: 再起動
+  remoteSavedCredentialsHint: 保存された認証情報を使用中 — 空欄のまま維持、または入力して上書き。
+  remoteService: systemd サービス
+  remoteServiceActive: 実行中
+  remoteServerInstalled: サーバーファイル配置済み
+  remoteServiceName: サービス名
+  remoteServiceNameHint: 'systemd --user のユニット名、例: mc-server'
+  remoteSelectedFiles: '{count} 個のサーバーファイルが選択されています'
+  remoteSelectFiles: ファイルを選択
+  remoteStartCommand: 起動コマンド
+  remoteStartCommandHint: '例: java -jar server.jar nogui'
+  remoteStartService: 開始
+  remoteStatus: ステータス
+  remoteSystemdRequired: リモートLinuxホストでsystemdユーザーサービスが利用できません。
+  remoteTargetName: ターゲット名
+  remoteStopService: 停止
+  remoteStopWatchLog: ログ追跡を停止
+  remoteTestConnection: 接続テスト
+  remoteTestConnectionSuccess: 接続に成功しました。
+  remoteUninstallConfirmMessage: リモートホストのsystemdユニットを無効化して削除します。サーバーファイルはそのまま残ります。
+  remoteUninstallService: サービスをアンインストール
+  remoteRunInstall: インストールまたは修復
+  remoteWatchLog: リアルタイムログを表示
+  remoteWorldAlways: 同期ごとに毎回置き換える
+  remoteWorldDeployment: インスタンスワールドの配置
+  remoteWorldDeploymentHint: このポリシーで明示的に許可されない限り、通常の同期でワールドデータは転送されません。
+  remoteWorldFirstInstall: ターゲットにワールドが存在しない場合のみ初期化
+  remoteWorldNever: ワールドをアップロードしない
+  remoteWorldPresent: ターゲット側ワールド
+  remoteWorld: ワールド
+  remoteWorldWillDeploy: この同期で選択されたワールドがアップロードされます。
+  serverName: サーバー名
+  serviceInstall: サービスをインストール
+  serviceManagedLaunch: 起動および停止アクションに OS サービスを使用する
+  serviceManager: システムサービス
+  serviceName: サービス名
+  serviceNameHint: 文字、数字、ドット、ハイフンを含む識別子
+  serviceNotInstalled: 未インストール
+  serviceStartCommand: 起動コマンド
+  serviceSystemd: systemd --user
+  serviceWindows: Windows サービス
+  serviceWindowsCommandHint: Java コマンドはこのインスタンスから生成されます。
+  serversListTitle: サーバー一覧
+  target: サーバーのターゲット
+  targetLocal: localhost
+  targetLocalHint: このコンピューターにサーバーをインストールして実行します。
+  targetRemote: SSH ターゲット
+  targetRemoteHint: SSH 経由でサーバーを接続、インストール、起動、監視します。
+  unbindUpstream: バインド解除
   unknown: 未知のサーバー
   unknownDescription: 未知のサーバーです。情報を更新してください。
+  unpin: Unpin
   upload: サーバーをアップロードします
+  upstreamUpToDate: インスタンスはサーバーバージョンと一致しています ({version})。
+  upstreamUpToDateHint: 更新の必要はありません。クリックして再チェックします。
+  upstreamUpdateAvailable: サーバーが Minecraft {version} で稼働しています。クリックして適用。
+  upstreamUpdateHint: 提案されたMinecraftバージョンをこのインスタンスに適用します。
+  useAsUpstreamHint: インスタンスはサーバーから報告されたMinecraftバージョンに追従します。
   version: サーバーの要求するバージョン
   versionHint: PingするMinecraftのバージョン
+  worldPreserve: ターゲット側のワールドを保持
 serverStatus:
   nohost: §4ホストが見つかりません!
   ping: Ping...
@@ -1579,6 +1696,7 @@ store:
   trending: トレンド
   empty: Modpackが見つかりません
   emptyHint: フィルターまたは検索条件を調整してみてください。
+  searchHint: Modパックを検索...
 tag:
   create: タグを作成
   createSelected: 選択されたもので新しいタグを作る
@@ -1620,18 +1738,37 @@ tutorial:
   feedbackDescription: 問題に遭遇した場合は、このボタンを押してフィードバックを送ってください!
   hideNewsHeaderDescription: ニュースを左で見れます。このボタンを押すことで隠せます
   instance:
-    iconDescription: クリックしてアイコンを変える
-    iconTitle: 起動構成のアイコン
-    javaDescription: Javaを選ぶか切り替える
-    javaImportDescription: Javaをローカルストレージからインポート
-    javaImportTitle: Javaをインポート
-    javaTitle: Javaのリスト
+    appearanceThemeDescription: このインスタンス専用の背景、テーマカラー、視覚スタイルを設定します。
+    appearanceThemeTitle: インスタンスの外観
+    iconDescription: クリックしてアイコンを変更します。
+    iconTitle: インスタンスアイコン
+    javaDescription: Javaバージョンの選択と切り替えを行います。
+    javaImportDescription: ローカルストレージからJavaランタイムを取り込みます。
+    javaImportTitle: Javaのインポート
+    javaTitle: Java一覧
+    modpackExportDescription: 設定済みインスタンスを配布可能なModパック形式にパッケージ化します。
+    modpackExportTitle: Modパックのエクスポート
+    modpackFilesDescription: クライアントやサーバーに同梱する設定ファイル、Mod、リソースを選択します。
+    modpackFilesTitle: 含まれるファイル
+    modpackMetaDescription: Modパックのバージョン、作者、説明、Webサイト情報を設定します。
+    modpackMetaTitle: Modパック情報
+    modpackOptionsDescription: 出力先フォルダとフォーマット（ModrinthやCurseForge形式）を選択します。
+    modpackOptionsTitle: エクスポートオプション
+    serverLaunchDescription: ヘッダーから直接このインスタンスの専用サーバーを起動・停止します。
+    serverLaunchTitle: サーバーの起動 / 停止
+    serverPropertiesDescription: ポート番号、難易度、MOTD、最大プレイヤー数、ゲームルールを設定します。
+    serverPropertiesTitle: サーバープロパティ設定
+    serverServiceDescription: OSの常駐サービス（systemdやWindowsサービス）として登録し常時稼働させます。
+    serverServiceTitle: システムサービス
+    serverTargetDescription: ローカルPCでの実行か、SSH経由のリモートLinuxサーバー管理かを選択します。
+    serverTargetTitle: サーバーの実行先
+    versionDescription: MinecraftバージョンとForge、Fabric、Quilt、NeoForgeを選択します。
+    versionTitle: Minecraftおよびローダーバージョン
   instanceAddDescription: このボタンを押して既存の起動構成やModpackからインポートするか、新しく作れます。
   instanceSelectDescription: このボタンをクリックしてニュースを見たりゲームを選んだりできます。
   launchDescription: このボタンを押してゲームをインストールするか起動します
   mod:
-    defaultSourceDescription: >-
-      ここでModの詳細のソースを選択できます。もしModrinthとCurseforgeの両方に公開されているModがあり、これら2つのコンテンツプロバイダーを切り替える場合は、ここで値を変更できます。
+    defaultSourceDescription: ここでModの詳細のソースを選択できます。もしModrinthとCurseforgeの両方に公開されているModがあり、これら2つのコンテンツプロバイダーを切り替える場合は、ここで値を変更できます。
     defaultSourceTitle: Modのソースを選ぶ
     detailDescription: 左でアイテムを選ぶと、Modの詳細を見ることができます。Modrinth、Curseforgeまたは他のModを見ることができます
     detailTitle: Modの詳細
@@ -1645,6 +1782,59 @@ tutorial:
   storeSearchDescription: このテキストボックスに入力することでModpackを検索できます。Enterで検索します。
   storeSearchResultDescription: すべての検索履歴
   userAccountDescription: このアイコンをクリックしてMinecraftアカウントを追加/管理できます
+  tooltip: ヘルプとガイド
+  done: 了解！
+  helpDescription: ランチャーと現在開いているページのインタラクティブガイドです。
+  blueprint:
+    searchTitle: ブループリントの検索
+    searchDescription: 名前やタグでローカルおよびコミュニティのブループリントを検索します。
+    listTitle: ブループリント一覧
+    listDescription: 保存されたインスタンスブループリントやテンプレートを表示・管理します。
+    detailTitle: ブループリントの詳細
+    detailDescription: ブループリントの内容、含まれるModを確認し、新しいインスタンスを作成します。
+  me:
+    instancesTitle: インスタンス管理
+    instancesDescription: インストール済みインスタンスを一覧表示し、フォルダや日付で整理して起動します。
+    profileTitle: アカウントとプロファイル
+    profileDescription: アカウントの切り替えとログイン認証情報の管理を行います。
+    skinTitle: スキンとマントのカスタマイズ
+    skinDescription: キャラクターを3Dプレビューし、スキン変更やマント装着ができます。
+  multiplayer:
+    railTitle: ネットワークとナビゲーション
+    railDescription: NATタイプ、ネットワーク接続状況を確認し、接続と設定を切り替えます。
+    groupTitle: ルームに参加または作成
+    groupDescription: ルームコードを入力して参加するか、空欄のままクリックして部屋を作成します。
+    joinDescription: クリックして既存のルームに参加するか、新規作成します。
+    contentTitle: 接続メンバーとコンテンツ
+    contentDescription: 接続中のメンバー管理、レイテンシ確認、起動中Minecraftの共有を行います。
+    manualDescription: SDP交換を用いた友人との手動直接P2P接続。
+  resourcepack:
+    searchTitle: リソースパックの検索
+    searchDescription: Modrinth、CurseForge、またはローカルファイルからリソースパックを検索します。
+    listTitle: リソースパック一覧
+    listDescription: インストール済みパックを一覧し、有効化/無効化や優先順位を変更します。
+    detailTitle: リソースパックの詳細
+    detailDescription: スクリーンショット、説明文、対応バージョン、ファイル詳細を確認します。
+  save:
+    searchTitle: ワールドデータの検索
+    searchDescription: 現在のインスタンス内のワールドを名前で検索・フィルタリングします。
+    listTitle: ワールド一覧
+    listDescription: 保存済みワールドのゲームモード、最終プレイ日時、ファイルサイズを表示します。
+    detailTitle: ワールドの詳細と操作
+    detailDescription: バックアップ、エクスポート、level.datの確認やワールド設定の管理を行います。
+  settings:
+    navDescription: 一般、外観、ゲーム全体設定、ネットワーク設定を切り替えます。
+    generalDescription: 言語、データフォルダ、更新チャンネル、起動オプションを設定します。
+    appearanceDescription: テーマ、壁紙、アクセントカラー、レイアウトスタイルをカスタマイズします。
+    globalDescription: デフォルトJava、メモリ割り当て量、JVM起動引数を設定します。
+    networkDescription: ダウンロードミラー、プロキシ設定、同時タスク数を構成します。
+  shaderpack:
+    searchTitle: シェーダーパックの検索
+    searchDescription: Modrinth、CurseForge、またはローカルキャッシュからシェーダーを検索します。
+    listTitle: シェーダーパック一覧
+    listDescription: インストール済みシェーダーを一覧し、ワンクリックで切り替えます。
+    detailTitle: シェーダーパックの詳細
+    detailDescription: 製作者情報、解像度要件、プリセット、詳細設定オプションを確認します。
 universalDrop:
   unknownResource: 未知
 unresolvedFiles:

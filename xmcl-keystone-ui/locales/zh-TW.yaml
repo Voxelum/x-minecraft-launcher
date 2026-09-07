@@ -1246,64 +1246,160 @@ localCollection:
   incompatibleAlert: '有 {count} 個項目與目前執行個體不相容，已略過：'
   projects: '無項目 | {count} 個項目 | {count} 個項目'
 server:
+  launch: 啟動伺服端
+  stop: 停止伺服端
   acceptingMinecraftVersion: 接受 Minecraft 版本
-  addServer: 新增伺服器
-  address: 伺服器位址
+  addServer: 添加伺服器
+  address: 伺服器地址
   addressHint: 例如 mc.hypixel.net
-  bindUpstream: 綁定為上游
-  boundUpstream: 已綁定伺服器上游
-  boundUpstreamHint: 此執行個體將跟隨所綁定伺服器的 Minecraft 版本。
-  creationHint: 請填寫伺服器位址並嘗試 Ping 伺服器
-  editServer: 編輯伺服器
-  emptyHint: 此執行個體的 servers.dat 中尚無伺服器，新增一個以開始。
-  entryCount: '{count} 個伺服器'
-  expectedVersions: 已支援的版本
+  bindUpstream: 绑定为上游
+  boundUpstream: 已绑定伺服器上游
+  boundUpstreamHint: 此執行個體将跟随所绑定伺服器的 Minecraft 版本。
+  creationHint: 请填写伺服器地址并尝试 Ping 伺服器
+  editServer: 编辑伺服器
+  emptyHint: 此執行個體的 servers.dat 中暂无伺服器，添加一个以开始。
+  entryCount: '{count} 个伺服器'
+  expectedVersions: 已支持的版本
   export: 匯出伺服器
-  exportNoFilesHint: |-
+  exportNoFilesHint: >-
     找不到伺服器檔案。
-    您可以一次在本地運行伺服器來產生一些檔案。
-  exportOption: 伺服器匯出選項
-  exportSSHAuthenticationFailed: |-
-    所有身份驗證方法都失敗了。
-    請檢查用戶名/密碼或私鑰。
-  exportSSHOptions: SSH 選項
-  exportSSHPrivateKeyPath: SSH 私鑰路徑
-  exportSSHRemotePath: 遠端伺服器路徑
-  exportToFolder: 匯出到資料夾
-  filterVersion: 篩選伺服器相應的 Minecraft 版本
-  host: 伺服器位址
-  hostHint: 伺服器的 IP 位址（和埠號）
-  hostRequired: 請輸入伺服器 IP 位址
-  ipAddress: IP 位址
-  launchClient: 改為啟動用戶端
-  launchPinned: 已釘選
-  launchTargetHint: 此執行個體會直接啟動進入已釘選的伺服器，要切換回用戶端嗎？
-  maxPlayers: 最大玩家數
+    请先安裝一次伺服端以生成所需檔案。
+  exportOption: 伺服器匯出选项
+  exportSSHAuthenticationFailed: >-
+    所有身份驗證方法都失败了。
+    请检查用户名/密碼或私鑰。
+  exportSSHOptions: SSH选项
+  exportSSHPrivateKeyPath: SSH私鑰路径
+  exportSSHRemotePath: 遠端伺服器路径
+  exportToFolder: 匯出到檔案夹
+  filterVersion: 筛选伺服器相应的 Minecraft 版本
+  host: 伺服器地址
+  hostHint: 伺服器的 IP 地址（和連接埠号）
+  hostRequired: 请輸入伺服器IP地址
+  ipAddress: IP 地址
+  launchClient: 改为啟動用戶端
+  launchPinned: 已固定
+  launchTargetHint: 此執行個體会直接啟動进入已固定的伺服器，要切换回用戶端吗？
+  maxPlayers: 最大玩家数
   motd: 伺服器 MOTD
-  nameHint: 顯示在多人遊戲清單中的名稱
-  nogui: 無伺服器 GUI
-  onlineMode: 線上模式
-  pin: 釘選伺服器
-  pinAfterSave: 儲存後釘選為預設啟動目標
-  pinnedHeader: '已釘選：{name}'
+  nameHint: 多人遊戲列表中顯示的名稱
+  nogui: 隐藏伺服器 GUI
+  onlineMode: 線上模式 (只允许正版)
+  pin: 固定伺服器
+  pinAfterSave: 儲存后固定为預設啟動目标
   ping: Ping 伺服器
-  pings: 延遲
+  pings: 延迟
+  pinnedHeader: '已固定：{name}'
   players: 玩家
-  port: 埠
-  serverName: 伺服器名稱
-  serversListTitle: 伺服器清單
-  unbindUpstream: 解除綁定
+  port: 連接埠
+  clearLog: 清空日志
+  log: 伺服端日志
+  logWaiting: 啟動伺服端后，输出将显示在这里。
+  remoteActionSuccess: 操作完成。
+  remoteAdmin: SSH 伺服端
+  remoteAuthMethod: 身份驗證
+  remoteAuthPassword: 密碼
+  remoteAuthPrivateKey: 私鑰
+  remoteBuildOfflinePackage: 生成離線包
+  remoteConnected: 已連線
+  remoteConnection: SSH 連線
+  remoteDeployment: 部署
+  remoteDeploy: 部署
+  remoteDisk: 磁碟
+  remoteConfigFiles: 配置檔案
+  remoteExtraFiles: 其他檔案
+  remoteForgetCredentials: 忘记已儲存的憑據
+  remoteInstallService: 安裝服务
+  remoteLoad: 系统负载
+  remoteLog: 遠端日志
+  remoteMemory: 記憶體
+  remoteMods: 模组
+  remoteNoWorldSelected: 未選擇執行個體世界
+  remoteJavaRequired: 遠端 Linux 主机上未找到 Java。
+  remoteLinuxRequired: 仅支持 Linux SSH 目标。
+  remoteNotConfiguredHint: 请填写并儲存連線信息，以启用狀態检查、服务控制和日志监控。
+  remotePathNotWritable: 遠端伺服端目录不可写。
+  remotePathWritable: 目录可写
+  remotePolicyInitialize: 仅初始化一次
+  remotePolicyMirror: 镜像同步
+  remotePolicyOverlay: 覆蓋写入
+  remotePolicyPreserve: 保留远端
+  remotePreview: 預覽变更
+  remotePhase:
+    connect: 正在連線
+    error: 协调失败
+    idle: 等待协调
+    inspect: 正在检查目标
+    install: 正在安裝伺服端
+    logs: 正在連線控制台
+    ready: 已套用期望狀態
+    service: 正在确保 systemd 服务
+    start: 正在啟動伺服端
+    sync: 正在同步期望狀態
+    world: 正在套用世界策略
+  remoteRememberCredentials: 在系统憑據库中记住憑據
+  remoteReconcileReady: 目标已与執行個體配置一致，控制台已連線。
+  remoteRestartService: 重新啟動
+  remoteSavedCredentialsHint: 正在使用已儲存的憑據；留空以保持不变，輸入新值可替换。
+  remoteService: systemd 服务
+  remoteServiceActive: 執行中
+  remoteServerInstalled: 已安裝伺服端檔案
+  remoteServiceName: 服务名称
+  remoteServiceNameHint: systemd --user 单元名称，例如 mc-server
+  remoteSelectedFiles: '已選擇 {count} 个伺服端檔案'
+  remoteSelectFiles: 選擇檔案
+  remoteStartCommand: 啟動命令
+  remoteStartCommandHint: 例如 java -jar server.jar nogui
+  remoteStartService: 啟動
+  remoteStatus: 狀態
+  remoteSystemdRequired: 遠端 Linux 主机不支持 systemd 用户服务。
+  remoteTargetName: 目标名称
+  remoteStopService: 停止
+  remoteStopWatchLog: 停止监控
+  remoteTestConnection: 测试連線
+  remoteTestConnectionSuccess: 連線成功。
+  remoteUninstallConfirmMessage: 这会禁用并移除遠端主机上的 systemd 单元，不会删除伺服端檔案。
+  remoteUninstallService: 解除安裝服务
+  remoteRunInstall: 安裝或修复
+  remoteWatchLog: 监控实时日志
+  remoteWorldAlways: 每次协调时覆蓋
+  remoteWorldDeployment: 執行個體世界部署
+  remoteWorldDeploymentHint: 常规同步不会上传世界数据，只有此策略明确允许时才会上传。
+  remoteWorldFirstInstall: 仅在目标没有世界时初始化
+  remoteWorldNever: 永不上传世界
+  remoteWorldPresent: 目标世界
+  remoteWorld: 世界
+  remoteWorldWillDeploy: 本次协调将上传所选執行個體世界。
+  serverName: 伺服器名称
+  serviceInstall: 安裝服务
+  serviceManagedLaunch: 使用系统服务执行啟動和停止操作
+  serviceManager: 系统服务
+  serviceName: 服务名称
+  serviceNameHint: 仅使用字母、数字、点、下划线或连字符的稳定标识
+  serviceNotInstalled: 未安裝
+  serviceStartCommand: 啟動命令
+  serviceSystemd: systemd --user
+  serviceWindows: Windows 服务
+  serviceWindowsCommandHint: 安裝服务时会根据目前執行個體自动生成 Java 啟動命令。
+  serversListTitle: 伺服器列表
+  target: 伺服端目标
+  targetLocal: localhost
+  targetLocalHint: 在此电脑上安裝并執行伺服端。
+  targetRemote: SSH 目标
+  targetRemoteHint: 通过 SSH 連線、安裝、啟動并监控伺服端。
+  unbindUpstream: 解绑
   unknown: 未知伺服器
-  unknownDescription: 未知伺服器，請重新整理。
-  unpin: 取消釘選
-  upload: 上傳伺服器
-  upstreamUpdateAvailable: '伺服器現在執行 Minecraft {version}，點選套用。'
-  upstreamUpdateHint: 將建議的 Minecraft 版本套用至此執行個體。
-  upstreamUpToDate: 您的執行個體與伺服器版本一致（{version}）。
-  upstreamUpToDateHint: 無需升級，點選可重新 Ping 伺服器。
-  useAsUpstreamHint: 此執行個體將跟隨伺服器所回報的 Minecraft 版本。
-  version: 伺服器推薦版本
+  unknownDescription: 未知伺服器，请刷新。
+  unpin: 取消固定
+  upload: 上传伺服器
+  upstreamUpToDate: '您的執行個體与伺服器版本一致（{version}）。'
+  upstreamUpToDateHint: 无需升级，点击可重新 Ping 伺服器。
+  upstreamUpdateAvailable: '伺服器现在執行 Minecraft {version}，点击套用。'
+  upstreamUpdateHint: 将建议的 Minecraft 版本套用到此執行個體。
+  useAsUpstreamHint: 此執行個體将跟随伺服器所报告的 Minecraft 版本。
+  version: 伺服器推荐版本
   versionHint: Ping 使用的 Minecraft 版本
+  worldPreserve: 保留目标现有世界
 serverStatus:
   nohost: 找不到伺服器！
   ping: 延遲
@@ -1641,6 +1737,7 @@ store:
   trending: 流行趨勢
   empty: 沒有找到整合包
   emptyHint: 請嘗試調整篩選條件或搜尋關鍵字。
+  searchHint: 搜尋整合包...
 tag:
   create: 建立標籤
   createSelected: 為所有選中的建立標籤
@@ -1684,12 +1781,32 @@ tutorial:
     您可以在左側看到最新消息展示區。
     按一下此按鈕可以隱藏該展示區。
   instance:
-    iconDescription: 按一下更改圖示。
-    iconTitle: 遊戲圖示
-    javaDescription: 切換 Java 版本。
-    javaImportDescription: 從本地匯入 Java。
+    appearanceThemeDescription: 為此特定實例自訂背景、顏色與視覺風格。
+    appearanceThemeTitle: 實例自訂外觀
+    iconDescription: 點選以更換圖示。
+    iconTitle: 實例圖示
+    javaDescription: 選擇或切換 Java 版本。
+    javaImportDescription: 從本機儲存空間匯入 Java。
     javaImportTitle: 匯入 Java
-    javaTitle: 已有 Java 列表
+    javaTitle: Java 清單
+    modpackExportDescription: 建置並將設定好的實例打包為隨時可分享的整合包。
+    modpackExportTitle: 匯出整合包
+    modpackFilesDescription: 選擇客戶端與伺服器端需要打包的設定檔、模組與資源。
+    modpackFilesTitle: 包含的檔案
+    modpackMetaDescription: 指定整合包版本、作者、描述及網站資訊。
+    modpackMetaTitle: 整合包詳情
+    modpackOptionsDescription: 選擇目標匯出資料夾及格式（如 Modrinth 或 CurseForge 整合包）。
+    modpackOptionsTitle: 匯出選項
+    serverLaunchDescription: 直接從頂部啟動或停止此實例的專用伺服器。
+    serverLaunchTitle: 啟動 / 停止伺服器
+    serverPropertiesDescription: 設定連接埠、難度、MOTD、玩家上限和遊戲規則等伺服器屬性。
+    serverPropertiesTitle: 伺服器設定
+    serverServiceDescription: 將伺服器作為作業系統後台服務（systemd 或 Windows 服務）管理以維持長期穩定運行。
+    serverServiceTitle: 系統服務
+    serverTargetDescription: 選擇在本機電腦執行伺服器，或透過 SSH 管理遠端 Linux 伺服器。
+    serverTargetTitle: 伺服器目標
+    versionDescription: 選擇 Minecraft 版本以及 Forge、Fabric、Quilt 或 NeoForge 載入器。
+    versionTitle: Minecraft 與載入器版本
   instanceAddDescription: 按一下此按鈕可匯入現有的 Minecraft，從模組包建立一個新的 Minecraft，或從頭開始建立一個新的 Minecraft 實例
   instanceSelectDescription: 按一下此按鈕將導航至選擇遊戲和閱讀最新消息的頁面。
   launchDescription: 按一下此按鈕安裝或啟動遊戲。
@@ -1721,6 +1838,59 @@ tutorial:
     按 Enter 鍵搜尋。
   storeSearchResultDescription: 您將看到此處列出的所有搜尋結果。
   userAccountDescription: 按一下此圖示可新增或管理您的 Minecraft 帳戶。
+  tooltip: 說明與引導
+  done: 知道了！
+  helpDescription: 啟動器及當前頁面的互動式導覽指南。
+  blueprint:
+    searchTitle: 搜尋藍圖
+    searchDescription: 按名稱或標籤搜尋本地與社群藍圖。
+    listTitle: 藍圖清單
+    listDescription: 檢視並管理所有已儲存的實例藍圖與範本。
+    detailTitle: 藍圖詳情
+    detailDescription: 檢查藍圖內容、包含的模組，並以此建立新實例。
+  me:
+    instancesTitle: 實例管理
+    instancesDescription: 檢視所有已安裝的實例，按資料夾或日期分組，篩選並啟動。
+    profileTitle: 帳號與個人資料
+    profileDescription: 在您的帳號之間切換並管理登入認證。
+    skinTitle: 外觀與披風自訂
+    skinDescription: 3D 預覽您的角色，更換外觀並佩戴披風。
+  multiplayer:
+    railTitle: 網路與導覽
+    railDescription: 檢查 NAT 類型、網路連線狀態，並在連線與設定間切換。
+    groupTitle: 加入或主持房間
+    groupDescription: 輸入房間代碼加入好友，或留空點選以建立您自己的房間。
+    joinDescription: 點選加入現有房間或建立新房間。
+    contentTitle: 已連線成員與內容
+    contentDescription: 管理已連線成員，檢視延遲並分享執行中的 Minecraft 遊戲。
+    manualDescription: 使用 SDP 交換與好友進行手動直接 P2P 連線。
+  resourcepack:
+    searchTitle: 搜尋材質包
+    searchDescription: 從 Modrinth、CurseForge 或本機檔案中搜尋材質包。
+    listTitle: 材質包清單
+    listDescription: 瀏覽已安裝的材質包，啟用或停用它們並調整載入優先權。
+    detailTitle: 材質包詳情
+    detailDescription: 檢視螢幕截圖、描述、相容的 Minecraft 版本及檔案詳情。
+  save:
+    searchTitle: 搜尋世界存檔
+    searchDescription: 依名稱篩選並搜尋目前實例中的世界存檔。
+    listTitle: 存檔清單
+    listDescription: 檢視所有已儲存的世界，包含遊戲模式、上次遊玩日期與檔案大小。
+    detailTitle: 世界詳情與操作
+    detailDescription: 備份、匯出、檢查 level.dat 或管理世界設定。
+  settings:
+    navDescription: 在一般、外觀、全域遊戲設定和網路之間切換。
+    generalDescription: 設定啟動器語言、資料目錄、更新通道與啟動選項。
+    appearanceDescription: 自訂主題、背景桌布、強調色與介面版面風格。
+    globalDescription: 設定預設 Java 執行環境、記憶體配置與 JVM 啟動參數。
+    networkDescription: 設定下載鏡像站、代理設定與並行任務限制。
+  shaderpack:
+    searchTitle: 搜尋光影包
+    searchDescription: 從 Modrinth、CurseForge 或本機快取中搜尋光影包。
+    listTitle: 光影包清單
+    listDescription: 瀏覽已安裝的光影包並快速切換啟用。
+    detailTitle: 光影包詳情
+    detailDescription: 檢視光影作者資訊、解析度要求、預設設定與配置選項。
 universalDrop:
   unknownResource: 無法解析
 unresolvedFiles:

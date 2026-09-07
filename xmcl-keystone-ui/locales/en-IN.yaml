@@ -1535,6 +1535,8 @@ search:
   noResults: No results found
   pageSize: Results per page
 server:
+  launch: Launch server
+  stop: Stop server
   acceptingMinecraftVersion: Accepting Minecraft Version
   addServer: Add Server
   address: Server Address
@@ -1548,13 +1550,9 @@ server:
   entryCount: '{count} server | {count} servers'
   expectedVersions: Supported Versions
   export: Export Server
-  exportNoFilesHint: >-
-    No server files found. You can run server on local once to generate some
-    files.
+  exportNoFilesHint: No server files found. You can run server on local once to generate some files.
   exportOption: Server Export Options
-  exportSSHAuthenticationFailed: >-
-    All authentication methods failed. Please check username/password or private
-    key.
+  exportSSHAuthenticationFailed: All authentication methods failed. Please check username/password or private key.
   exportSSHOptions: SSH Options
   exportSSHPrivateKeyPath: SSH Private Key Path
   exportSSHRemotePath: Remote Server Path
@@ -1566,9 +1564,7 @@ server:
   ipAddress: IP Address
   launchClient: Launch client instead
   launchPinned: Pinned
-  launchTargetHint: >-
-    This instance launches straight into the pinned server. Switch back to the
-    client?
+  launchTargetHint: This instance launches straight into the pinned server. Switch back to the client?
   maxPlayers: Max Players
   motd: Server MOTD
   nameHint: Display name shown in the Multiplayer list
@@ -1581,20 +1577,114 @@ server:
   pinnedHeader: 'pinned: {name}'
   players: Players
   port: Port
+  clearLog: Clear log
+  log: Server Log
+  logWaiting: Server output will appear here after launch.
+  remoteActionSuccess: Done.
+  remoteAdmin: Remote Server Admin
+  remoteAuthMethod: Authentication
+  remoteAuthPassword: Password
+  remoteAuthPrivateKey: Private key
+  remoteBuildOfflinePackage: Build offline package
+  remoteConnected: Connected
+  remoteConnection: Connection
+  remoteDeployment: Deployment
+  remoteDeploy: Deploy
+  remoteDisk: Disk
+  remoteConfigFiles: Configuration files
+  remoteExtraFiles: Extra files
+  remoteForgetCredentials: Forget saved credentials
+  remoteInstallService: Install service
+  remoteLoad: Load average
+  remoteLog: Remote Log
+  remoteMemory: Memory
+  remoteMods: Mods
+  remoteNoWorldSelected: No instance world selected
+  remoteJavaRequired: Java is not available on the remote Linux host.
+  remoteLinuxRequired: Only Linux SSH targets are supported.
+  remoteNotConfiguredHint: Fill in the connection details above and save to enable status, service control, and log tailing.
+  remotePathNotWritable: The remote server directory is not writable.
+  remotePathWritable: Directory writable
+  remotePolicyInitialize: Initialize once
+  remotePolicyMirror: Mirror
+  remotePolicyOverlay: Overlay
+  remotePolicyPreserve: Preserve
+  remotePreview: Preview changes
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: Remember credentials (OS keychain)
+  remoteReconcileReady: The target matches this instance and the console is attached.
+  remoteRestartService: Restart
+  remoteSavedCredentialsHint: Using saved credentials — leave blank to keep, or type to replace.
+  remoteService: systemd Service
+  remoteServiceActive: Running
+  remoteServerInstalled: Server files installed
+  remoteServiceName: Service name
+  remoteServiceNameHint: systemd --user unit name, e.g. mc-server
+  remoteSelectedFiles: '{count} server files selected'
+  remoteSelectFiles: Select files
+  remoteStartCommand: Start command
+  remoteStartCommandHint: e.g. java -jar server.jar nogui
+  remoteStartService: Start
+  remoteStatus: Status
+  remoteSystemdRequired: systemd user services are not available on the remote Linux host.
+  remoteTargetName: Target name
+  remoteStopService: Stop
+  remoteStopWatchLog: Stop watching
+  remoteTestConnection: Test connection
+  remoteTestConnectionSuccess: Connection successful.
+  remoteUninstallConfirmMessage: This disables and removes the systemd unit on the remote host. Server files are not touched.
+  remoteUninstallService: Uninstall service
+  remoteRunInstall: Install or repair
+  remoteWatchLog: Watch live log
+  remoteWorldAlways: Replace on every reconciliation
+  remoteWorldDeployment: Instance world deployment
+  remoteWorldDeploymentHint: Routine sync never uploads world data unless this policy explicitly allows it.
+  remoteWorldFirstInstall: Initialize only when the target has no world
+  remoteWorldNever: Never upload a world
+  remoteWorldPresent: Target world
+  remoteWorld: World
+  remoteWorldWillDeploy: The selected instance world will be uploaded by this reconciliation.
   serverName: Server name
+  serviceInstall: Install service
+  serviceManagedLaunch: Use the OS service for launch and stop actions
+  serviceManager: System service
+  serviceName: Service name
+  serviceNameHint: Stable identifier containing letters, numbers, dot, underscore, or hyphen
+  serviceNotInstalled: Not installed
+  serviceStartCommand: Start command
+  serviceSystemd: systemd --user
+  serviceWindows: Windows Service
+  serviceWindowsCommandHint: The Java command is generated from this instance when the service is installed.
   serversListTitle: Server List
+  target: Server target
+  targetLocal: localhost
+  targetLocalHint: Install and run the server on this computer.
+  targetRemote: SSH target
+  targetRemoteHint: Connect, install, launch, and monitor a server over SSH.
   unbindUpstream: Unbind
   unknown: Unknown Server
   unknownDescription: Unknown Server. Please Refresh
   unpin: Unpin
   upload: Upload Server
-  upstreamUpToDate: Your instance matches the server ({version}).
+  upstreamUpToDate: 'Your instance matches the server ({version}).'
   upstreamUpToDateHint: No upgrade needed. Click to re-ping the server.
-  upstreamUpdateAvailable: Server now runs Minecraft {version}. Click to apply.
+  upstreamUpdateAvailable: 'Server now runs Minecraft {version}. Click to apply.'
   upstreamUpdateHint: Applies the suggested Minecraft version to this instance.
   useAsUpstreamHint: The instance will follow the server's reported Minecraft version.
   version: Server Requires Version
   versionHint: The Minecraft Version To Ping
+  worldPreserve: Preserve target world
 serverStatus:
   nohost: §4Cannot find host!
   ping: Ping...
@@ -1967,6 +2057,7 @@ store:
   name: Modpack Market
   searchResult: Search Result
   trending: Trending
+  searchHint: Search modpacks...
 tag:
   create: Create Tag
   createSelected: Create Tag for Selected
@@ -2006,51 +2097,105 @@ turnRegion:
   po: Poland
 tutorial:
   feedbackDescription: If you encounter any problems, please click this button to send feedback!
-  hideNewsHeaderDescription: >-
-    You can see the News showcase on the left. Clicking this button can hide
-    this showcase.
+  hideNewsHeaderDescription: You can see the News showcase on the left. Clicking this button can hide this showcase.
   instance:
+    appearanceThemeDescription: Customize the background, colors, and visual styling for this specific instance.
+    appearanceThemeTitle: Instance Appearance
     iconDescription: Click to change icon.
     iconTitle: Instance icon
     javaDescription: Choose or switch java version.
     javaImportDescription: Import java from local storage.
     javaImportTitle: Import java
     javaTitle: Java list
-  instanceAddDescription: >-
-    Click this button to import existing Minecraft instance or create a new one
-    from scratch or modpack.
+    modpackExportDescription: Build and package your configured instance into a ready-to-share modpack.
+    modpackExportTitle: Export Modpack
+    modpackFilesDescription: Select which configuration files, mods, and resources to include for client and server.
+    modpackFilesTitle: Included Files
+    modpackMetaDescription: Specify the modpack version, author, description, and website information.
+    modpackMetaTitle: Modpack Details
+    modpackOptionsDescription: Choose the target export folder and formats (such as Modrinth or CurseForge modpack).
+    modpackOptionsTitle: Export Options
+    serverLaunchDescription: Launch or stop the dedicated server for this instance directly from the header.
+    serverLaunchTitle: Launch / Stop Server
+    serverPropertiesDescription: Configure server properties such as port, difficulty, MOTD, player limits, and game rules.
+    serverPropertiesTitle: Server Configuration
+    serverServiceDescription: Manage the server as a background OS service (systemd or Windows Service) for persistent automatic uptime.
+    serverServiceTitle: System Service
+    serverTargetDescription: Choose between running the server locally on your machine or managing a remote Linux server via SSH.
+    serverTargetTitle: Server Target
+    versionDescription: Select Minecraft version, Forge, Fabric, Quilt, or NeoForge loaders.
+    versionTitle: Minecraft & Loader Version
+  instanceAddDescription: Click this button to import existing Minecraft instance or create a new one from scratch or modpack.
   instanceSelectDescription: Clicking this button will navigate to the page to select game and read news.
   launchDescription: Click this button to install or launch the game.
   mod:
-    defaultSourceDescription: >-
-      You can choose the source of mods details here. There are the mods
-      published to both Modrinth and Curseforge. If you want to switch between
-      these two content providers, you can change the value here.
+    defaultSourceDescription: You can choose the source of mods details here. There are the mods published to both Modrinth and Curseforge. If you want to switch between these two content providers, you can change the value here.
     defaultSourceTitle: Select Mod Content Source
-    detailDescription: >-
-      When you select an item on the left. You will see the details of the mod.
-      The content can come from Modrinth, Curseforge or parsed mod's content.
+    detailDescription: When you select an item on the left. You will see the details of the mod. The content can come from Modrinth, Curseforge or parsed mod's content.
     detailTitle: Mod Detail
-    listDescription: >-
-      We will display installed mods when you don't have any input. You will see
-      the searched mods once your input has a keyword or category selected.
+    listDescription: We will display installed mods when you don't have any input. You will see the searched mods once your input has a keyword or category selected.
     listTitle: Installed or Search Mod
-    searchDescription: >-
-      You could search mods from Modrinth, Curseforge or your local cache with
-      this search box.
+    searchDescription: You could search mods from Modrinth, Curseforge or your local cache with this search box.
     searchTitle: Search Mods
-  recentPlayDescription: >-
-    The created games will be listed here. You can switch the views here to also
-    see the installed versions and downloaded modpacks.
-  storePoupularModpackDescription: >-
-    You will see the most popular modpacks in Curseforge and Modrinth in this
-    section.
+  recentPlayDescription: The created games will be listed here. You can switch the views here to also see the installed versions and downloaded modpacks.
+  storePoupularModpackDescription: You will see the most popular modpacks in Curseforge and Modrinth in this section.
   storeSearchCategoryDescription: You can also toggle the categories or filters here.
-  storeSearchDescription: >-
-    You can search Modpacks by inputting in this text box. Press Enter to
-    search.
+  storeSearchDescription: You can search Modpacks by inputting in this text box. Press Enter to search.
   storeSearchResultDescription: You will see all search results listed here.
   userAccountDescription: Click this icon to add or manage your Minecraft account.
+  tooltip: Help & Walkthrough
+  done: Got it!
+  helpDescription: Interactive guide for the launcher and current page.
+  blueprint:
+    searchTitle: Search Blueprints
+    searchDescription: Search local and community blueprints by name or tag.
+    listTitle: Blueprint List
+    listDescription: View and manage all your saved instance blueprints and templates.
+    detailTitle: Blueprint Details
+    detailDescription: Inspect blueprint contents, included mods, and create new instances from it.
+  me:
+    instancesTitle: Instance Management
+    instancesDescription: View all your installed instances, group them by folder or date, and launch.
+    profileTitle: Account & Profile
+    profileDescription: Switch between your accounts and manage login credentials.
+    skinTitle: Skin & Cape Customizer
+    skinDescription: Preview your character in 3D, change skins, and equip capes.
+  multiplayer:
+    railTitle: Network & Navigation
+    railDescription: Check NAT type, network health, and switch between connections and settings.
+    groupTitle: Join or Host Room
+    groupDescription: Enter a room code to join friends, or leave it empty to host your own room.
+    joinDescription: Click to join an existing room or create a new one.
+    contentTitle: Connected Peers & Content
+    contentDescription: Manage connected members, view latency, and share your running Minecraft instances.
+    manualDescription: Direct manual P2P connection with friends using SDP exchange.
+  resourcepack:
+    searchTitle: Search Resource Packs
+    searchDescription: Search resource packs from Modrinth, CurseForge, or local files.
+    listTitle: Resource Pack List
+    listDescription: Browse installed resource packs, enable or disable them, and reorder priority.
+    detailTitle: Resource Pack Details
+    detailDescription: View screenshots, description, compatible Minecraft versions, and file details.
+  save:
+    searchTitle: Search Saves & Worlds
+    searchDescription: Filter and search worlds in the current instance by name.
+    listTitle: World List
+    listDescription: View all saved worlds with game mode, last played date, and file size.
+    detailTitle: World Details & Actions
+    detailDescription: Backup, export, inspect level.dat, or manage world settings.
+  settings:
+    navDescription: Switch between General, Appearance, Global Game Settings, and Network.
+    generalDescription: Configure launcher language, data directory, update channels, and startup options.
+    appearanceDescription: Customize theme, background wallpapers, accent colors, and layout style.
+    globalDescription: Set default Java runtime, memory allocation, and JVM launch arguments.
+    networkDescription: Configure download mirrors, proxy settings, and concurrent task limits.
+  shaderpack:
+    searchTitle: Search Shader Packs
+    searchDescription: Search shader packs from Modrinth, CurseForge, or local cache.
+    listTitle: Shader Pack List
+    listDescription: Browse installed shaders and switch between them quickly.
+    detailTitle: Shader Pack Details
+    detailDescription: Shader author details, resolution requirements, profile presets, and options.
 unauthenticatedWarning:
   cancel: Cancel
   description: >-
