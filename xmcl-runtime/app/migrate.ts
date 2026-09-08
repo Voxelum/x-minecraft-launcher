@@ -235,6 +235,7 @@ export async function handleMigrateRoot(
     Promise.resolve(app.controller.startMigrate()).catch((e) => {
       logger.warn('Failed to show the migration window', e)
     })
+    await ensureDir(destination)
 
     app.controller.handle('migration-get-progress', () => ({ ...state }))
 
@@ -311,7 +312,7 @@ export async function handleMigrateRoot(
       copiedBytes: state.copiedBytes,
       copiedFiles: state.copiedFiles,
     }
-    app.controller.endMigrate({
+    await app.controller.endMigrate({
       from: source,
       to: destination,
     })
@@ -340,7 +341,7 @@ export async function handleMigrateRoot(
         logger.warn(`Fail to rollback ${to} -> ${from}`, e)
       }
     }
-    app.controller.endMigrate()
+    await app.controller.endMigrate()
     return source
   }
 }

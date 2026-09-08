@@ -177,7 +177,7 @@ function formatSize(size: unknown): string | undefined {
     if (Array.isArray(arr) && arr.length >= 3) return `${arr[0]}×${arr[1]}×${arr[2]}`
   } catch {
     // CMS sizes use the form `10✖8✖12`.
-    return size.replace(/✖/g, '×')
+    return size.replaceAll('✖', '×')
   }
   return size
 }
@@ -220,7 +220,7 @@ function parseCmsHtml(html: string): BlueprintMarketItem[] {
       author,
       description: desc,
       icon: img ? (img.startsWith('http') ? img : `https://www.creativemechanicserver.com${img}`) : undefined,
-      size: size?.replace(/✖/g, '×'),
+      size: size?.replaceAll('✖', '×'),
       downloadCount: download ? Number(download.match(/\d+/)?.[0] ?? 0) : undefined,
       tags: allTags.length ? Array.from(new Set(allTags)) : undefined,
       uploadTime,
