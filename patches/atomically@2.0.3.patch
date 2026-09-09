@@ -1,5 +1,5 @@
 diff --git a/dist/index.js b/dist/index.js
-index afec4cab0f79c6472484f8a601cb692be3a6e0e3..78dee6523ad40b67beb0c18bcb3b032db3629e1e 100644
+index afec4cab0f79c6472484f8a601cb692be3a6e0e3..a649fcc4fece9864445afbc1ca80e71418fdbd02 100644
 --- a/dist/index.js
 +++ b/dist/index.js
 @@ -1,5 +1,6 @@
@@ -9,7 +9,7 @@ index afec4cab0f79c6472484f8a601cb692be3a6e0e3..78dee6523ad40b67beb0c18bcb3b032d
  import fs from 'stubborn-fs';
  import { DEFAULT_ENCODING, DEFAULT_FILE_MODE, DEFAULT_FOLDER_MODE, DEFAULT_READ_OPTIONS, DEFAULT_WRITE_OPTIONS, DEFAULT_USER_UID, DEFAULT_USER_GID, DEFAULT_TIMEOUT_ASYNC, DEFAULT_TIMEOUT_SYNC, IS_POSIX } from './constants.js';
  import { isException, isFunction, isString, isUndefined } from './utils/lang.js';
-@@ -95,9 +96,29 @@ async function writeFileAsync(filePath, data, options = DEFAULT_WRITE_OPTIONS) {
+@@ -95,9 +96,62 @@ async function writeFileAsync(filePath, data, options = DEFAULT_WRITE_OPTIONS) {
          catch (error) {
              if (!isException(error))
                  throw error;
@@ -17,17 +17,50 @@ index afec4cab0f79c6472484f8a601cb692be3a6e0e3..78dee6523ad40b67beb0c18bcb3b032d
 +            // AppX virtualization can redirect even sibling paths across volumes.
 +            // Copying is not atomic, but keeps the completed write and scheduler lock.
 +            if (error.code === 'EXDEV') {
-+                await nativeFs.promises.copyFile(tempPath, filePath);
-+                if (options.fsync !== false) {
-+                    fd = await fs.retry.open(timeout)(filePath, 'r+');
-+                    if (options.fsyncWait !== false) {
-+                        await fs.retry.fsync(timeout)(fd);
++                const [backupPath, disposeBackup] = filePathExists
++                    ? Temp.get(filePath, Temp.create, false)
++                    : [null, () => {}];
++                let replacing = false;
++                let preserveBackup = false;
++                try {
++                    if (backupPath) {
++                        await nativeFs.promises.copyFile(filePath, backupPath);
++                        await syncCopy(backupPath, options, timeout);
 +                    }
-+                    else {
-+                        fs.attempt.fsync(fd);
++                    replacing = true;
++                    await nativeFs.promises.copyFile(tempPath, filePath);
++                    await syncCopy(filePath, options, timeout);
++                }
++                catch (copyError) {
++                    if (replacing) {
++                        try {
++                            if (backupPath) {
++                                await nativeFs.promises.copyFile(backupPath, filePath);
++                                await syncCopy(filePath, options, timeout);
++                            }
++                            else {
++                                await nativeFs.promises.rm(filePath, { force: true });
++                            }
++                        }
++                        catch (restoreError) {
++                            preserveBackup = true;
++                            const recoveryError = Object.assign(
++                                new AggregateError([copyError, restoreError], `Failed to restore ${filePath}`, { cause: copyError }),
++                                { backupPath, temporaryPath: tempPath },
++                            );
++                            // Keep both complete versions available for manual recovery.
++                            tempDisposer();
++                            tempPath = null;
++                            throw recoveryError;
++                        }
 +                    }
-+                    await fs.retry.close(timeout)(fd);
-+                    fd = null;
++                    throw copyError;
++                }
++                finally {
++                    disposeBackup();
++                    if (backupPath && !preserveBackup) {
++                        await nativeFs.promises.rm(backupPath, { force: true });
++                    }
 +                }
 +                await nativeFs.promises.unlink(tempPath);
 +            }
@@ -41,23 +74,55 @@ index afec4cab0f79c6472484f8a601cb692be3a6e0e3..78dee6523ad40b67beb0c18bcb3b032d
          }
          tempDisposer();
          tempPath = null;
-@@ -178,9 +199,27 @@ function writeFileSync(filePath, data, options = DEFAULT_WRITE_OPTIONS) {
+@@ -178,9 +232,59 @@ function writeFileSync(filePath, data, options = DEFAULT_WRITE_OPTIONS) {
          catch (error) {
              if (!isException(error))
                  throw error;
 -            if (error.code !== 'ENAMETOOLONG')
 +            if (error.code === 'EXDEV') {
-+                nativeFs.copyFileSync(tempPath, filePath);
-+                if (options.fsync !== false) {
-+                    fd = fs.retry.openSync(timeout)(filePath, 'r+');
-+                    if (options.fsyncWait !== false) {
-+                        fs.retry.fsyncSync(timeout)(fd);
++                const [backupPath, disposeBackup] = filePathExists
++                    ? Temp.get(filePath, Temp.create, false)
++                    : [null, () => {}];
++                let replacing = false;
++                let preserveBackup = false;
++                try {
++                    if (backupPath) {
++                        nativeFs.copyFileSync(filePath, backupPath);
++                        syncCopySync(backupPath, options, timeout);
 +                    }
-+                    else {
-+                        fs.attempt.fsyncSync(fd);
++                    replacing = true;
++                    nativeFs.copyFileSync(tempPath, filePath);
++                    syncCopySync(filePath, options, timeout);
++                }
++                catch (copyError) {
++                    if (replacing) {
++                        try {
++                            if (backupPath) {
++                                nativeFs.copyFileSync(backupPath, filePath);
++                                syncCopySync(filePath, options, timeout);
++                            }
++                            else {
++                                nativeFs.rmSync(filePath, { force: true });
++                            }
++                        }
++                        catch (restoreError) {
++                            preserveBackup = true;
++                            const recoveryError = Object.assign(
++                                new AggregateError([copyError, restoreError], `Failed to restore ${filePath}`, { cause: copyError }),
++                                { backupPath, temporaryPath: tempPath },
++                            );
++                            tempDisposer();
++                            tempPath = null;
++                            throw recoveryError;
++                        }
 +                    }
-+                    fs.retry.closeSync(timeout)(fd);
-+                    fd = null;
++                    throw copyError;
++                }
++                finally {
++                    disposeBackup();
++                    if (backupPath && !preserveBackup) {
++                        nativeFs.rmSync(backupPath, { force: true });
++                    }
 +                }
 +                nativeFs.unlinkSync(tempPath);
 +            }
@@ -71,3 +136,41 @@ index afec4cab0f79c6472484f8a601cb692be3a6e0e3..78dee6523ad40b67beb0c18bcb3b032d
          }
          tempDisposer();
          tempPath = null;
+@@ -192,5 +296,37 @@ function writeFileSync(filePath, data, options = DEFAULT_WRITE_OPTIONS) {
+             Temp.purge(tempPath);
+     }
+ }
++async function syncCopy(filePath, options, timeout) {
++    if (options.fsync === false)
++        return;
++    const fd = await fs.retry.open(timeout)(filePath, 'r+');
++    try {
++        if (options.fsyncWait !== false) {
++            await fs.retry.fsync(timeout)(fd);
++        }
++        else {
++            fs.attempt.fsync(fd);
++        }
++    }
++    finally {
++        await fs.retry.close(timeout)(fd);
++    }
++}
++function syncCopySync(filePath, options, timeout) {
++    if (options.fsync === false)
++        return;
++    const fd = fs.retry.openSync(timeout)(filePath, 'r+');
++    try {
++        if (options.fsyncWait !== false) {
++            fs.retry.fsyncSync(timeout)(fd);
++        }
++        else {
++            fs.attempt.fsyncSync(fd);
++        }
++    }
++    finally {
++        fs.retry.closeSync(timeout)(fd);
++    }
++}
+ /* EXPORT */
+ export { readFile, readFileSync, writeFile, writeFileSync };

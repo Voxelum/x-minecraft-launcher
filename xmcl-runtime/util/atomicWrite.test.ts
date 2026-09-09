@@ -16,6 +16,8 @@ const script = `
 import fs from 'node:fs'
 const options = JSON.parse(process.argv[1])
 const events = []
+let targetCopies = 0
+let syncs = 0
 const failure = code => Object.assign(new Error(code), { code })
 const rename = fs.rename
 const renameSync = fs.renameSync
@@ -33,22 +35,44 @@ const copy = fs.promises.copyFile
 const copySync = fs.copyFileSync
 fs.promises.copyFile = async (...args) => {
   events.push('copy')
-  if (options.copyError) throw failure(options.copyError)
+  if (args[1] === options.target) {
+    targetCopies += 1
+    if (targetCopies === 1 && options.copyError) {
+      if (options.partialCopy) await fs.promises.writeFile(args[1], 'partial')
+      throw failure(options.copyError)
+    }
+    if (targetCopies > 1 && options.restoreError) throw failure(options.restoreError)
+  } else if (options.backupError) {
+    await fs.promises.writeFile(args[1], 'partial backup')
+    throw failure(options.backupError)
+  }
   await copy(...args)
 }
 fs.copyFileSync = (...args) => {
   events.push('copy')
-  if (options.copyError) throw failure(options.copyError)
+  if (args[1] === options.target) {
+    targetCopies += 1
+    if (targetCopies === 1 && options.copyError) {
+      if (options.partialCopy) fs.writeFileSync(args[1], 'partial')
+      throw failure(options.copyError)
+    }
+    if (targetCopies > 1 && options.restoreError) throw failure(options.restoreError)
+  } else if (options.backupError) {
+    fs.writeFileSync(args[1], 'partial backup')
+    throw failure(options.backupError)
+  }
   return copySync(...args)
 }
 const fsync = fs.fsync
 const fsyncSync = fs.fsyncSync
 fs.fsync = (fd, callback) => {
   events.push('fsync')
+  if (++syncs === options.fsyncErrorOn) return callback(failure('ENOSPC'))
   fsync(fd, callback)
 }
 fs.fsyncSync = fd => {
   events.push('fsync')
+  if (++syncs === options.fsyncErrorOn) throw failure('ENOSPC')
   return fsyncSync(fd)
 }
 const unlink = fs.promises.unlink
@@ -72,7 +96,11 @@ try {
   }
   console.log(JSON.stringify({ events }))
 } catch (error) {
-  console.log(JSON.stringify({ code: error.code, events }))
+  console.log(JSON.stringify({
+    code: error.code, events, message: error.message,
+    backupPath: error.backupPath, temporaryPath: error.temporaryPath,
+    errors: error.errors?.map(error => error.code),
+  }))
 }
 `
 
@@ -91,9 +119,20 @@ describe('atomically EXDEV dependency patch', () => {
     sync?: boolean
     code?: string
     copyError?: string
+    partialCopy?: boolean
+    backupError?: string
+    restoreError?: string
+    fsyncErrorOn?: number
     fsync?: boolean
     contents?: string[]
-  }): Promise<{ code?: string; events: string[] }> {
+  }): Promise<{
+    code?: string
+    message?: string
+    events: string[]
+    backupPath?: string
+    temporaryPath?: string
+    errors?: string[]
+  }> {
     const { stdout } = await exec(process.execPath, [
       '--input-type=module',
       '-e',
@@ -118,7 +157,9 @@ describe('atomically EXDEV dependency patch', () => {
       const result = await run({ sync, code: 'EXDEV' })
 
       expect(result.code).toBeUndefined()
-      expect(result.events).toEqual(['fsync', 'rename', 'copy', 'fsync', 'unlink'])
+      expect(result.events).toEqual(existing
+        ? ['fsync', 'rename', 'copy', 'fsync', 'copy', 'fsync', 'unlink']
+        : ['fsync', 'rename', 'copy', 'fsync', 'unlink'])
       expect(await readFile(target, 'utf8')).toBe('new')
       expect(await readdir(root)).toEqual(['index.json'])
     })
@@ -150,6 +191,52 @@ describe('atomically EXDEV dependency patch', () => {
       expect(await readFile(target, 'utf8')).toBe('original')
       expect(await readdir(root)).toEqual(['index.json'])
     })
+
+    test.each([false, true])('recovers after a copy partially overwrites the destination (existing=%s)', async (existing) => {
+      if (existing) await writeFile(target, 'original')
+      const result = await run({ sync, code: 'EXDEV', copyError: 'ENOSPC', partialCopy: true })
+
+      expect(result.code).toBe('ENOSPC')
+      if (existing) {
+        expect(await readFile(target, 'utf8')).toBe('original')
+        expect(await readdir(root)).toEqual(['index.json'])
+      } else {
+        expect(await readdir(root)).toEqual([])
+      }
+    })
+
+    test('does not overwrite the original when preparing its backup fails', async () => {
+      await writeFile(target, 'original')
+      const result = await run({ sync, code: 'EXDEV', backupError: 'ENOSPC' })
+
+      expect(result.code).toBe('ENOSPC')
+      expect(await readFile(target, 'utf8')).toBe('original')
+      expect(await readdir(root)).toEqual(['index.json'])
+    })
+
+    test('restores the original when syncing the new destination fails', async () => {
+      await writeFile(target, 'original')
+      const result = await run({ sync, code: 'EXDEV', fsyncErrorOn: 3 })
+
+      expect(result.code).toBe('ENOSPC')
+      expect(await readFile(target, 'utf8')).toBe('original')
+      expect(await readdir(root)).toEqual(['index.json'])
+    })
+
+    test('retains both complete recovery files if restoration also fails', async () => {
+      await writeFile(target, 'original')
+      const result = await run({
+        sync, code: 'EXDEV', copyError: 'ENOSPC', partialCopy: true, restoreError: 'EACCES',
+      })
+
+      expect(result.message).toContain('Failed to restore')
+      expect(result.errors).toEqual(['ENOSPC', 'EACCES'])
+      expect(result.backupPath).toBeDefined()
+      expect(result.temporaryPath).toBeDefined()
+      expect(await readFile(result.backupPath!, 'utf8')).toBe('original')
+      expect(await readFile(result.temporaryPath!, 'utf8')).toBe('new')
+      expect(await readdir(root)).toHaveLength(3)
+    })
   })
 
   test('keeps concurrent writes serialized through the complete fallback', async () => {
@@ -158,7 +245,7 @@ describe('atomically EXDEV dependency patch', () => {
     expect(result.code).toBeUndefined()
     expect(result.events).toEqual([
       'fsync', 'rename', 'copy', 'fsync', 'unlink',
-      'fsync', 'rename', 'copy', 'fsync', 'unlink',
+      'fsync', 'rename', 'copy', 'fsync', 'copy', 'fsync', 'unlink',
     ])
     expect(await readFile(target, 'utf8')).toBe('second')
     expect(await readdir(root)).toEqual(['index.json'])
