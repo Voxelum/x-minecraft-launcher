@@ -1324,17 +1324,19 @@ search:
   noResults: কোনো ফলাফল পাওয়া যায়নি
   pageSize: প্রতি পৃষ্ঠায় ফলাফলের সংখ্যা
 server:
+  launch: সার্ভার চালু করুন
+  stop: সার্ভার বন্ধ করুন
   acceptingMinecraftVersion: মাইনক্রাফট সংস্করণ গ্রহণ করা হচ্ছে
   addServer: সার্ভার যোগ করুন
-  address: সার্ভার ঠিকানা
-  addressHint: 'যেমন: mc.hypixel.net'
-  bindUpstream: আপস্ট্রিম হিসেবে বাইন্ড করুন
-  boundUpstream: সার্ভার আপস্ট্রিম বাইন্ড করা হয়েছে
-  boundUpstreamHint: এই ইনস্ট্যান্সটি বাইন্ড করা সার্ভারের মাইনক্রাফট সংস্করণ অনুসরণ করে।
+  address: সার্ভারের ঠিকানা
+  addressHint: যেমন mc.hypixel.net
+  bindUpstream: আপস্ট্রিম হিসেবে বাঁধুন
+  boundUpstream: আপস্ট্রিম সার্ভার আবদ্ধ
+  boundUpstreamHint: এই ইনস্ট্যান্সটি আবদ্ধ সার্ভারের Minecraft সংস্করণ অনুসরণ করে।
   creationHint: অনুগ্রহ করে সার্ভারের ঠিকানাটি পূরণ করুন এবং সার্ভারে পিং করুন
-  editServer: সার্ভার সম্পাদনা করুন
-  emptyHint: এই ইনস্ট্যান্সের servers.dat-এ এখনও কোনো সার্ভার নেই। শুরু করতে একটি যোগ করুন।
-  entryCount: '{count}টি সার্ভার | {count}টি সার্ভার'
+  editServer: সার্ভার সম্পাদনা
+  emptyHint: এই ইনস্ট্যান্সের servers.dat এ কোনো সার্ভার নেই। শুরু করতে একটি যোগ করুন।
+  entryCount: '{count}টি সার্ভার'
   expectedVersions: সমর্থিত সংস্করণসমূহ
   export: সার্ভার এক্সপোর্ট করুন
   exportNoFilesHint: কোনো সার্ভার ফাইল পাওয়া যায়নি। কিছু ফাইল তৈরি করতে আপনি লোকালভাবে সার্ভারটি একবার চালাতে পারেন।
@@ -1351,7 +1353,7 @@ server:
   ipAddress: আইপি ঠিকানা
   launchClient: পরিবর্তে ক্লায়েন্ট চালু করুন
   launchPinned: পিন করা
-  launchTargetHint: এই ইনস্ট্যান্সটি সরাসরি পিন করা সার্ভারে চালু হয়। পুনরায় ক্লায়েন্টে ফিরে যাবেন?
+  launchTargetHint: এই ইনস্ট্যান্সটি সরাসরি পিন করা সার্ভারে চালু হয়। ক্লায়েন্টে ফিরে যাবেন?
   maxPlayers: সর্বোচ্চ খেলোয়াড়
   motd: সার্ভারের MOTD
   nameHint: মাল্টিপ্লেয়ার তালিকায় প্রদর্শিত নাম
@@ -1364,20 +1366,114 @@ server:
   pinnedHeader: 'পিন করা: {name}'
   players: খেলোয়াড়বৃন্দ
   port: পোর্ট
+  clearLog: লগ সাফ করুন
+  log: সার্ভার লগ
+  logWaiting: সার্ভার আউটপুটের জন্য অপেক্ষা করা হচ্ছে...
+  remoteActionSuccess: Done.
+  remoteAdmin: রিমোট সার্ভার অ্যাডমিন
+  remoteAuthMethod: প্রমাণীকরণ
+  remoteAuthPassword: পাসওয়ার্ড
+  remoteAuthPrivateKey: প্রাইভেট কী
+  remoteBuildOfflinePackage: অফলাইন প্যাকেজ তৈরি করুন
+  remoteConnected: সংযুক্ত
+  remoteConnection: সংযোগ
+  remoteDeployment: স্থাপনা
+  remoteDeploy: স্থাপন করুন
+  remoteDisk: Disk
+  remoteConfigFiles: কনফিগারেশন ফাইল
+  remoteExtraFiles: অতিরিক্ত ফাইল
+  remoteForgetCredentials: সংরক্ষিত তথ্য ভুলে যান
+  remoteInstallService: সার্ভিস ইনস্টল করুন
+  remoteLoad: লোড
+  remoteLog: রিমোট সার্ভার লগ
+  remoteMemory: মেমরি
+  remoteMods: Mods
+  remoteNoWorldSelected: কোনো বিশ্ব নির্বাচিত হয়নি
+  remoteJavaRequired: রিমোট লিনাক্স হোস্টে জাভা পাওয়া যায়নি।
+  remoteLinuxRequired: শুধুমাত্র SSH এর মাধ্যমে লিনাক্স সমর্থিত।
+  remoteNotConfiguredHint: স্ট্যাটাস, সার্ভিস এবং লগ সক্রিয় করতে উপরের সংযোগ বিবরণ পূরণ করুন।
+  remotePathNotWritable: রিমোট সার্ভার ডিরেক্টরিতে লেখার অনুমতি নেই।
+  remotePathWritable: ডিরেক্টরিটি লেখার যোগ্য
+  remotePolicyInitialize: একবার আরম্ভ করুন
+  remotePolicyMirror: মিরর
+  remotePolicyOverlay: ওভারলে
+  remotePolicyPreserve: সংরক্ষণ করুন
+  remotePreview: পরিবর্তনগুলোর পূর্বরূপ
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: তথ্য মনে রাখুন (OS কীচেন)
+  remoteReconcileReady: টার্গেট এই ইনস্ট্যান্সের সাথে মেলে এবং কনসোল সংযুক্ত।
+  remoteRestartService: সার্ভিস পুনরায় চালু করুন
+  remoteSavedCredentialsHint: সংরক্ষিত তথ্য ব্যবহার হচ্ছে — অপরিবর্তিত রাখতে ফাঁকা রাখুন।
+  remoteService: systemd সার্ভিস
+  remoteServiceActive: চলমান
+  remoteServerInstalled: সার্ভার ফাইল ইনস্টল করা হয়েছে
+  remoteServiceName: সার্ভিসের নাম
+  remoteServiceNameHint: systemd --user ইউনিট নাম, যেমন mc-server
+  remoteSelectedFiles: '{count}টি সার্ভার ফাইল নির্বাচিত'
+  remoteSelectFiles: ফাইল নির্বাচন করুন
+  remoteStartCommand: স্টার্ট কমান্ড
+  remoteStartCommandHint: যেমন java -jar server.jar nogui
+  remoteStartService: Start
+  remoteStatus: স্ট্যাটাস
+  remoteSystemdRequired: রিমোট হোস্টে systemd সার্ভিস উপলব্ধ নেই।
+  remoteTargetName: টার্গেট নাম
+  remoteStopService: Stop
+  remoteStopWatchLog: পর্যবেক্ষণ বন্ধ করুন
+  remoteTestConnection: সংযোগ পরীক্ষা করুন
+  remoteTestConnectionSuccess: সংযোগ সফল হয়েছে।
+  remoteUninstallConfirmMessage: এটি রিমোট হোস্টে systemd ইউনিটটি মুছে ফেলবে। সার্ভার ফাইল অপরিবর্তিত থাকবে।
+  remoteUninstallService: সার্ভিস আনইনস্টল করুন
+  remoteRunInstall: ইনস্টল বা মেরামত
+  remoteWatchLog: সরাসরি লগ দেখুন
+  remoteWorldAlways: প্রতিবার প্রতিস্থাপন করুন
+  remoteWorldDeployment: বিশ্ব স্থাপনা
+  remoteWorldDeploymentHint: অনুমতি না থাকলে রুটিন সিঙ্ক কখনো বিশ্ব আপলোড করবে না।
+  remoteWorldFirstInstall: টার্গেটে বিশ্ব না থাকলেই কেবল আরম্ভ করুন
+  remoteWorldNever: কখনো বিশ্ব আপলোড করবেন না
+  remoteWorldPresent: টার্গেট বিশ্ব
+  remoteWorld: World
+  remoteWorldWillDeploy: নির্বাচিত বিশ্বটি এই সিঙ্কে আপলোড করা হবে।
   serverName: সার্ভারের নাম
+  serviceInstall: সার্ভিস ইনস্টল
+  serviceManagedLaunch: সার্ভিস পরিচালিত লঞ্চ
+  serviceManager: সার্ভিস ম্যানেজার
+  serviceName: সার্ভিসের নাম
+  serviceNameHint: সিস্টেম সার্ভিসের নাম
+  serviceNotInstalled: সার্ভিস ইনস্টল করা নেই
+  serviceStartCommand: সার্ভিস স্টার্ট কমান্ড
+  serviceSystemd: systemd --user
+  serviceWindows: Windows সার্ভিস
+  serviceWindowsCommandHint: Windows সার্ভিস কমান্ড
   serversListTitle: সার্ভার তালিকা
-  unbindUpstream: আনবাইন্ড করুন
+  target: টার্গেট
+  targetLocal: localhost
+  targetLocalHint: এই কম্পিউটারে স্থানীয়ভাবে চালান
+  targetRemote: রিমোট সার্ভার (SSH)
+  targetRemoteHint: SSH দিয়ে রিমোট লিনাক্স সার্ভার পরিচালনা করুন
+  unbindUpstream: আনবাইন্ড
   unknown: অজানা সার্ভার
   unknownDescription: অজানা সার্ভার। অনুগ্রহ করে রিফ্রেশ করুন
   unpin: আনপিন করুন
   upload: সার্ভার আপলোড করুন
-  upstreamUpToDate: আপনার ইনস্ট্যান্সটি সার্ভারের সাথে মিলে গেছে ({version})।
-  upstreamUpToDateHint: কোনো আপগ্রেডের প্রয়োজন নেই। সার্ভারটি পুনরায় পিং করতে ক্লিক করুন।
-  upstreamUpdateAvailable: সার্ভারে এখন মাইনক্রাফট {version} চলছে। প্রয়োগ করতে ক্লিক করুন।
-  upstreamUpdateHint: প্রস্তাবিত মাইনক্রাফট সংস্করণটি এই ইনস্ট্যান্সে প্রয়োগ করে।
-  useAsUpstreamHint: ইনস্ট্যান্সটি সার্ভারের রিপোর্ট করা মাইনক্রাফট সংস্করণটি অনুসরণ করবে।
+  upstreamUpToDate: আপনার ইনস্ট্যান্স সার্ভারের সাথে মেলে ({version})।
+  upstreamUpToDateHint: আপগ্রেডের প্রয়োজন নেই। পুনরায় পরীক্ষা করতে ক্লিক করুন।
+  upstreamUpdateAvailable: সার্ভার এখন Minecraft {version} চালাচ্ছে। প্রয়োগ করতে ক্লিক করুন।
+  upstreamUpdateHint: এই ইনস্ট্যান্সে প্রস্তাবিত Minecraft সংস্করণ প্রয়োগ করে।
+  useAsUpstreamHint: ইনস্ট্যান্সটি সার্ভারের জানানো Minecraft সংস্করণ অনুসরণ করবে।
   version: সার্ভারের জন্য প্রয়োজনীয় সংস্করণ
   versionHint: পিং করার জন্য মাইনক্রাফট সংস্করণ
+  worldPreserve: টার্গেট বিশ্ব সংরক্ষণ করুন
 serverStatus:
   nohost: §4হোস্ট খুঁজে পাওয়া যাচ্ছে না!
   ping: পিং করা হচ্ছে...
@@ -1705,6 +1801,7 @@ store:
   name: মডপ্যাক মার্কেট
   searchResult: অনুসন্ধানের ফলাফল
   trending: ট্রেন্ডিং
+  searchHint: মডপ্যাক খুঁজুন...
 tag:
   create: ট্যাগ তৈরি করুন
   createSelected: নির্বাচিত অংশের জন্য ট্যাগ তৈরি করুন
@@ -1746,12 +1843,32 @@ tutorial:
   feedbackDescription: আপনি যদি কোনো সমস্যার সম্মুখীন হন, অনুগ্রহ করে প্রতিক্রিয়া পাঠাতে এই বোতামটিতে ক্লিক করুন!
   hideNewsHeaderDescription: আপনি বাম দিকে খবরের প্রদর্শনী দেখতে পাচ্ছেন। এই বোতামে ক্লিক করে এই প্রদর্শনীটি লুকানো যাবে।
   instance:
+    appearanceThemeDescription: এই নির্দিষ্ট ইনস্ট্যান্সের জন্য ব্যাকগ্রাউন্ড, রঙ এবং ভিজ্যুয়াল স্টাইল কাস্টমাইজ করুন।
+    appearanceThemeTitle: ইনস্ট্যান্সের রূপরেখা
     iconDescription: আইকন পরিবর্তন করতে ক্লিক করুন।
-    iconTitle: ইন্সট্যান্স আইকন
-    javaDescription: জাভা সংস্করণ চয়ন বা পরিবর্তন করুন।
-    javaImportDescription: স্থানীয় স্টোরেজ থেকে জাভা ইমপোর্ট করুন।
-    javaImportTitle: জাভা ইমপোর্ট করুন
-    javaTitle: জাভা তালিকা
+    iconTitle: ইনস্ট্যান্স আইকন
+    javaDescription: Java সংস্করণ চয়ন করুন বা পরিবর্তন করুন।
+    javaImportDescription: স্থানীয় স্টোরেজ থেকে Java আমদানি করুন।
+    javaImportTitle: Java আমদানি করুন
+    javaTitle: Java তালিকা
+    modpackExportDescription: কনফিগার করা ইনস্ট্যান্সটি শেয়ারযোগ্য মডপ্যাকে প্যাকেজ করুন।
+    modpackExportTitle: মডপ্যাক রপ্তানি করুন
+    modpackFilesDescription: ক্লায়েন্ট এবং সার্ভারের জন্য কনফিগারেশন ফাইল, মড এবং রিসোর্স নির্বাচন করুন।
+    modpackFilesTitle: অন্তর্ভুক্ত ফাইলসমূহ
+    modpackMetaDescription: মডপ্যাকের সংস্করণ, লেখক, বিবরণ এবং ওয়েবসাইটের লিঙ্ক উল্লেখ করুন।
+    modpackMetaTitle: মডপ্যাকের বিবরণ
+    modpackOptionsDescription: টার্গেট ফোল্ডার এবং ফরম্যাট (যেমন Modrinth বা CurseForge) চয়ন করুন।
+    modpackOptionsTitle: রপ্তানি বিকল্প
+    serverLaunchDescription: সরাসরি হেডার থেকে এই ইনস্ট্যান্সের ডেডিকেটেড সার্ভার চালু বা বন্ধ করুন।
+    serverLaunchTitle: সার্ভার চালু / বন্ধ
+    serverPropertiesDescription: পোর্ট, অসুবিধা, MOTD, প্লেয়ার সীমা এবং গেমের নিয়মাবলী কনফিগার করুন।
+    serverPropertiesTitle: সার্ভার কনফিগারেশন
+    serverServiceDescription: সার্ভারকে ব্যাকগ্রাউন্ড ওএস সার্ভিস হিসেবে পরিচালনা করুন নিরবচ্ছিন্নভাবে চলার জন্য।
+    serverServiceTitle: সিস্টেম সার্ভিস
+    serverTargetDescription: লোকাল পিসিতে চালানো বা SSH এর মাধ্যমে রিমোট লিনাক্স সার্ভার পরিচালনার মধ্যে বেছে নিন।
+    serverTargetTitle: সার্ভার টার্গেট
+    versionDescription: Minecraft সংস্করণ এবং Forge, Fabric, Quilt বা NeoForge লোডার নির্বাচন করুন।
+    versionTitle: Minecraft এবং লোডার সংস্করণ
   instanceAddDescription: বিদ্যমান মাইনক্রাফ্ট ইন্সট্যান্স ইমপোর্ট করতে বা স্ক্র্যাচ অথবা মডপ্যাক থেকে নতুন একটি তৈরি করতে এই বোতামটিতে ক্লিক করুন।
   instanceSelectDescription: এই বোতামটিতে ক্লিক করলে গেম নির্বাচন এবং খবর পড়ার পৃষ্ঠায় নিয়ে যাওয়া হবে।
   launchDescription: গেমটি ইনস্টল বা চালু করতে এই বোতামটিতে ক্লিক করুন।
@@ -1770,6 +1887,59 @@ tutorial:
   storeSearchDescription: আপনি এই টেক্সট বক্সে লিখে মডপ্যাকগুলি অনুসন্ধান করতে পারেন। অনুসন্ধান করতে এন্টার চাপুন।
   storeSearchResultDescription: আপনি এখানে সমস্ত অনুসন্ধান ফলাফল তালিকাভুক্ত দেখতে পাবেন।
   userAccountDescription: আপনার মাইনক্রাফ্ট অ্যাকাউন্ট যোগ করতে বা পরিচালনা করতে এই আইকনটিতে ক্লিক করুন।
+  tooltip: সহায়তা ও নির্দেশিকা
+  done: বুঝেছি!
+  helpDescription: লঞ্চার এবং বর্তমান পৃষ্ঠার জন্য নির্দেশিকা।
+  blueprint:
+    searchTitle: ব্লুপ্রিন্ট খুঁজুন
+    searchDescription: নাম বা ট্যাগ অনুসারে স্থানীয় এবং কমিউনিটি ব্লুপ্রিন্ট অনুসন্ধান করুন।
+    listTitle: ব্লুপ্রিন্ট তালিকা
+    listDescription: সংরক্ষিত সব ইনস্ট্যান্স ব্লুপ্রিন্ট এবং টেমপ্লেট দেখুন ও পরিচালনা করুন।
+    detailTitle: ব্লুপ্রিন্ট বিবরণ
+    detailDescription: ব্লুপ্রিন্টের বিষয়বস্তু, মডসমূহ পরীক্ষা করুন এবং নতুন ইনস্ট্যান্স তৈরি করুন।
+  me:
+    instancesTitle: ইনস্ট্যান্স পরিচালনা
+    instancesDescription: ইনস্টল করা ইনস্ট্যান্সগুলি দেখুন, ফোল্ডার বা তারিখ অনুযায়ী সাজান এবং চালু করুন।
+    profileTitle: অ্যাকাউন্ট ও প্রোফাইল
+    profileDescription: অ্যাকাউন্টের মধ্যে স্যুইচ করুন এবং লগইন তথ্য পরিচালনা করুন।
+    skinTitle: স্কিন ও কেপ পরিবর্তন
+    skinDescription: 3D-তে চরিত্র দেখুন, স্কিন পরিবর্তন করুন এবং কেপ পরিধান করুন।
+  multiplayer:
+    railTitle: নেটওয়ার্ক ও নেভিগেশন
+    railDescription: NAT প্রকার, নেটওয়ার্ক অবস্থা পরীক্ষা করুন এবং সংযোগ ও সেটিংসে স্যুইচ করুন।
+    groupTitle: রুমে যোগ দিন বা তৈরি করুন
+    groupDescription: বন্ধুদের সাথে যোগ দিতে রুম কোড দিন বা নিজস্ব রুম তৈরি করুন।
+    joinDescription: রুমটিতে যোগ দিতে বা নতুন রুম তৈরি করতে ক্লিক করুন।
+    contentTitle: সংযুক্ত সদস্য ও বিষয়বস্তু
+    contentDescription: সদস্য পরিচালনা করুন, পিং দেখুন এবং চলমান Minecraft গেম শেয়ার করুন।
+    manualDescription: SDP বিনিময়ের মাধ্যমে বন্ধুদের সাথে সরাসরি ম্যানুয়াল P2P সংযোগ।
+  resourcepack:
+    searchTitle: রিসোর্স প্যাক খুঁজুন
+    searchDescription: Modrinth, CurseForge বা স্থানীয় ফাইল থেকে রিসোর্স প্যাক অনুসন্ধান করুন।
+    listTitle: রিসোর্স প্যাক তালিকা
+    listDescription: ইনস্টল করা প্যাকগুলি ব্রাউজ করুন, সক্রিয়/নিষ্ক্রিয় করুন এবং অগ্রাধিকার পরিবর্তন করুন।
+    detailTitle: রিসোর্স প্যাকের বিবরণ
+    detailDescription: স্ক্রিনশট, বিবরণ, সামঞ্জস্যপূর্ণ সংস্করণ এবং ফাইলের বিবরণ দেখুন।
+  save:
+    searchTitle: সংরক্ষিত বিশ্ব খুঁজুন
+    searchDescription: নাম অনুসারে বর্তমান ইনস্ট্যান্সের বিশ্বগুলি অনুসন্ধান করুন।
+    listTitle: বিশ্বের তালিকা
+    listDescription: গেম মোড, খেলার তারিখ এবং ফাইল সাইজ সহ সংরক্ষিত বিশ্বগুলি দেখুন।
+    detailTitle: বিশ্বের বিবরণ ও পদক্ষেপ
+    detailDescription: ব্যাকআপ নিন, রপ্তানি করুন, level.dat পরীক্ষা করুন বা সেটিংস পরিচালনা করুন।
+  settings:
+    navDescription: সাধারণ, রূপরেখা, গ্লোবাল গেম সেটিংস এবং নেটওয়ার্কের মধ্যে স্যুইচ করুন।
+    generalDescription: লঞ্চারের ভাষা, ডেটা ডিরেক্টরি, আপডেট চ্যানেল এবং স্টার্টআপ বিকল্প কনফিগার করুন।
+    appearanceDescription: থিম, পটভূমির ওয়ালপেপার, অ্যাকসেন্ট রঙ এবং ইন্টারফেস শৈলী কাস্টমাইজ করুন।
+    globalDescription: ডিফল্ট Java রানটাইম, মেমরি বরাদ্দ এবং JVM আর্গুমেন্ট সেট করুন।
+    networkDescription: ডাউনলোড মিরর, প্রক্সি সেটিংস এবং একযোগে কাজের সীমা কনফিগার করুন।
+  shaderpack:
+    searchTitle: শেডার প্যাক খুঁজুন
+    searchDescription: Modrinth, CurseForge বা লোকাল ক্যাশ থেকে শেডার অনুসন্ধান করুন।
+    listTitle: শেডার প্যাকের তালিকা
+    listDescription: ইনস্টল করা শেডারগুলি ব্রাউজ করুন এবং দ্রুত স্যুইচ করুন।
+    detailTitle: শেডারের বিবরণ
+    detailDescription: শেডারের লেখক, রেজোলিউশনের প্রয়োজনীয়তা, প্রিসেট এবং বিকল্পগুলি দেখুন।
 unauthenticatedWarning:
   cancel: বাতিল
   description: আপনি কোনো অ্যাকাউন্টে লগ ইন করেননি। গেমটি ডেমো মোডে চালু হবে। সম্পূর্ণ বৈশিষ্ট্য অ্যাক্সেস করতে, দয়া করে সাইন ইন করুন।

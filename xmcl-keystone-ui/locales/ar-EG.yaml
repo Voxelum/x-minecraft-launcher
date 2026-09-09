@@ -1322,17 +1322,19 @@ search:
   noResults: ملقناش نتائج للبحث
   pageSize: عدد النتائج في كل صفحة
 server:
+  launch: تشغيل السيرفر
+  stop: إيقاف السيرفر
   acceptingMinecraftVersion: يقبل نسخة ماينكرافت
   addServer: إضافة سيرفر
   address: عنوان السيرفر
   addressHint: 'مثال: mc.hypixel.net'
-  bindUpstream: ربطه كسيرفر رئيسي (upstream)
+  bindUpstream: ربط كأصل رئيسي
   boundUpstream: تم ربط السيرفر الرئيسي
-  boundUpstreamHint: النسخة دي هتتبع إصدار ماينكرافت الخاص بالسيرفر المربوط.
+  boundUpstreamHint: النسخة دي بتمشي مع إصدار ماينكرافت بتاع السيرفر المربوط.
   creationHint: يرجى كتابة عنوان السيرفر وعمل بينج (ping) ليه
   editServer: تعديل السيرفر
-  emptyHint: مفيش سيرفرات في ملف servers.dat للنسخة دي لسه. ضيف واحد للبدء.
-  entryCount: '{count} سيرفر | {count} سيرفرات'
+  emptyHint: مفيش سيرفرات في servers.dat هنا. ضيف سيرفر عشان تبدأ.
+  entryCount: '{count} سيرفر'
   expectedVersions: الإصدارات المدعومة
   export: تصدير السيرفر
   exportNoFilesHint: ملقناش ملفات سيرفر. تقدر تشغل السيرفر محلياً مرة واحدة عشان تولد الملفات دي.
@@ -1347,12 +1349,12 @@ server:
   hostHint: مضيف السيرفر (مع المنفذ)
   hostRequired: يرجى كتابة عنوان IP السيرفر
   ipAddress: عنوان الـ IP
-  launchClient: تشغيل العميل بدلاً من ذلك
+  launchClient: تشغيل اللعبة العادية بدلاً منه
   launchPinned: مثبت
-  launchTargetHint: النسخة دي بتدخل مباشرة على السيرفر المثبت. تحب ترجع للعميل العادي؟
+  launchTargetHint: النسخة دي بتدخل مباشرة على السيرفر المثبت. تحب ترجع للتشغيل العادي؟
   maxPlayers: الحد الأقصى للاعبين
   motd: رسالة السيرفر اليومية (MOTD)
-  nameHint: الاسم المعروض في قائمة اللعب الجماعي
+  nameHint: الاسم الظاهر في قائمة السيرفرات
   nogui: بدون واجهة رسومية للسيرفر
   onlineMode: الوضع المتصل (Online Mode)
   pin: تثبيت السيرفر
@@ -1362,20 +1364,114 @@ server:
   pinnedHeader: 'مثبت: {name}'
   players: اللاعبين
   port: المنفذ
+  clearLog: مسح السجل
+  log: سجل السيرفر
+  logWaiting: مستني مخرجات السيرفر...
+  remoteActionSuccess: Done.
+  remoteAdmin: إدارة سيرفر عن بُعد
+  remoteAuthMethod: طريقة الدخول
+  remoteAuthPassword: كلمة السر
+  remoteAuthPrivateKey: المفتاح الخاص
+  remoteBuildOfflinePackage: عمل حزمة أوفلاين
+  remoteConnected: متصل
+  remoteConnection: الاتصال
+  remoteDeployment: النشر
+  remoteDeploy: نشر
+  remoteDisk: Disk
+  remoteConfigFiles: ملفات الإعدادات
+  remoteExtraFiles: ملفات إضافية
+  remoteForgetCredentials: مسح بيانات الدخول المحفوظة
+  remoteInstallService: تثبيت الخدمة
+  remoteLoad: تحميل
+  remoteLog: سجل السيرفر البعيد
+  remoteMemory: الرامات
+  remoteMods: Mods
+  remoteNoWorldSelected: مفيش عالم متحدد للنسخة
+  remoteJavaRequired: الجافا مش متوفرة على جهاز اللينكس البعيد.
+  remoteLinuxRequired: السيرفرات المدعومة هي لينكس عبر SSH فقط.
+  remoteNotConfiguredHint: املا بيانات الاتصال فوق واحفظها عشان تشغل الحالة وخدمات السيرفر والسجلات.
+  remotePathNotWritable: الفولدر على السيرفر البعيد مش مسموح بالكتابة فيه.
+  remotePathWritable: الفولدر مسموح بالكتابة فيه
+  remotePolicyInitialize: تهيئة مرة واحدة بس
+  remotePolicyMirror: مرآة (Mirror)
+  remotePolicyOverlay: تراكب (Overlay)
+  remotePolicyPreserve: الحفاظ على الموجود
+  remotePreview: معاينة التغييرات
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: حفظ بيانات الدخول في النظام
+  remoteReconcileReady: السيرفر متوافق مع النسخة والكونسول شغال.
+  remoteRestartService: إعادة تشغيل الخدمة
+  remoteSavedCredentialsHint: بيتم استخدام البيانات المحفوظة — سيبها فاضية لو عايز تحتفظ بيها.
+  remoteService: خدمة systemd
+  remoteServiceActive: شغال
+  remoteServerInstalled: ملفات السيرفر اتثبتت
+  remoteServiceName: اسم الخدمة
+  remoteServiceNameHint: 'اسم خدمة systemd --user، زي: mc-server'
+  remoteSelectedFiles: تم تحديد {count} ملف سيرفر
+  remoteSelectFiles: تحديد الملفات
+  remoteStartCommand: أمر التشغيل
+  remoteStartCommandHint: 'زي: java -jar server.jar nogui'
+  remoteStartService: Start
+  remoteStatus: الحالة
+  remoteSystemdRequired: خدمات systemd للمستخدم مش شغالة على السيرفر البعيد.
+  remoteTargetName: اسم الهدف
+  remoteStopService: Stop
+  remoteStopWatchLog: إيقاف المتابعة
+  remoteTestConnection: تجربة الاتصال
+  remoteTestConnectionSuccess: الاتصال نجح تمام.
+  remoteUninstallConfirmMessage: ده هيعطل ويشيل خدمة systemd على السيرفر البعيد من غير ما يمسح الملفات.
+  remoteUninstallService: إلغاء تثبيت الخدمة
+  remoteRunInstall: تثبيت أو إصلاح
+  remoteWatchLog: متابعة السجل المباشر
+  remoteWorldAlways: استبدال العالم في كل مرة
+  remoteWorldDeployment: نشر عالم النسخة
+  remoteWorldDeploymentHint: المزامنة العادية مش هترفع العالم إلا لو الإعداد ده متفعل.
+  remoteWorldFirstInstall: رفع العالم لو السيرفر ملوش عالم بس
+  remoteWorldNever: عدم رفع العالم نهائياً
+  remoteWorldPresent: عالم السيرفر البعيد
+  remoteWorld: World
+  remoteWorldWillDeploy: العالم المختار هيترفع في المزامنة دي.
   serverName: اسم السيرفر
-  serversListTitle: قائمة السيرفرات
-  unbindUpstream: فك الارتباط
+  serviceInstall: تثبيت الخدمة
+  serviceManagedLaunch: تشغيل عبر خدمة النظام
+  serviceManager: مدير الخدمات
+  serviceName: اسم الخدمة
+  serviceNameHint: اسم خدمة النظام
+  serviceNotInstalled: الخدمة مش متثبتة
+  serviceStartCommand: أمر تشغيل الخدمة
+  serviceSystemd: systemd --user
+  serviceWindows: خدمة Windows
+  serviceWindowsCommandHint: أمر خدمة ويندوز
+  serversListTitle: السيرفرات
+  target: الهدف
+  targetLocal: localhost
+  targetLocalHint: تشغيل محلي على الكمبيوتر ده
+  targetRemote: سيرفر بعيد (SSH)
+  targetRemoteHint: إدارة سيرفر لينكس عن بعد عبر SSH
+  unbindUpstream: إلغاء الربط
   unknown: سيرفر غير معروف
   unknownDescription: سيرفر غير معروف. يرجى التحديث
   unpin: إلغاء التثبيت
   upload: رفع السيرفر
-  upstreamUpToDate: نسختك متوافقة مع السيرفر ({version}).
-  upstreamUpToDateHint: مش محتاج ترقية. اضغط لإعادة عمل بينج للسيرفر.
-  upstreamUpdateAvailable: السيرفر شغال دلوقتي على نسخة ماينكرافت {version}. اضغط للتطبيق.
-  upstreamUpdateHint: هيطبق نسخة ماينكرافت المقترحة على النسخة دي.
-  useAsUpstreamHint: النسخة دي هتتبع إصدار ماينكرافت المعلن من السيرفر.
+  upstreamUpToDate: النسخة متوافقة مع السيرفر ({version}).
+  upstreamUpToDateHint: مفيش تحديث مطلوب. اضغط لإعادة الفحص.
+  upstreamUpdateAvailable: السيرفر شغال دلوقتي على ماينكرافت {version}. اضغط للتطبيق.
+  upstreamUpdateHint: تطبيق إصدار السيرفر على النسخة دي.
+  useAsUpstreamHint: النسخة هتتبع إصدار ماينكرافت اللي السيرفر شغال بيه.
   version: السيرفر بيتطلب نسخة
   versionHint: إصدار ماينكرافت المراد عمل بينج ليه
+  worldPreserve: الحفاظ على عالم السيرفر البعيد
 serverStatus:
   nohost: §4مش قادرين نلاقي المضيف!
   ping: جاري البينج...
@@ -1704,6 +1800,7 @@ store:
   name: سوق حزم المودات (Modpack Market)
   searchResult: نتائج البحث
   trending: الأكثر رواجاً (Trending)
+  searchHint: ابحث عن مودباك...
 tag:
   create: إنشاء وسم (Tag)
   createSelected: إنشاء وسم للمحدد
@@ -1745,12 +1842,32 @@ tutorial:
   feedbackDescription: لو واجهتك أي مشكلة، اضغط على الزرار ده لإرسال الشكاوى والآراء!
   hideNewsHeaderDescription: تقدر تشوف قسم الأخبار على الشمال. الضغط على الزرار ده هيخفي القسم ده.
   instance:
+    appearanceThemeDescription: تخصيص الخلفية والألوان والشكل البصري للنسخة دي.
+    appearanceThemeTitle: مظهر النسخة
     iconDescription: اضغط لتغيير الأيقونة.
     iconTitle: أيقونة النسخة
-    javaDescription: اختر أو بدل نسخة جافا.
-    javaImportDescription: استورد نسخة جافا من على جهازك.
+    javaDescription: اختر أو بدل إصدار جافا.
+    javaImportDescription: استيراد إصدار جافا من الجهاز.
     javaImportTitle: استيراد جافا
-    javaTitle: قائمة الجافا
+    javaTitle: قائمة جافا
+    modpackExportDescription: تجهيز وتجميع نسختك في مودباك جاهز للمشاركة.
+    modpackExportTitle: تصدير المودباك
+    modpackFilesDescription: اختر ملفات الكونفج والمودات والموارد للعميل والسيرفر.
+    modpackFilesTitle: الملفات المتضمنة
+    modpackMetaDescription: حدد إصدار المودباك والمؤلف والوصف وروابط الموقع.
+    modpackMetaTitle: تفاصيل المودباك
+    modpackOptionsDescription: اختر فولدر التصدير والتنسيقات (زي Modrinth أو CurseForge).
+    modpackOptionsTitle: خيارات التصدير
+    serverLaunchDescription: شغل أو وقف السيرفر المخصص للنسخة دي مباشرة من الشريط العلوي.
+    serverLaunchTitle: تشغيل / إيقاف السيرفر
+    serverPropertiesDescription: ضبط البورت والصعوبة ورسالة MOTD وأقصى عدد للاعبين والقواعد.
+    serverPropertiesTitle: إعدادات السيرفر
+    serverServiceDescription: إدارة السيرفر كخدمة نظام بالخلفية لضمان استمرار تشغيله تلقائياً.
+    serverServiceTitle: خدمة النظام
+    serverTargetDescription: اختر بين تشغيل السيرفر محلياً على جهازك أو إدارة سيرفر لينكس عبر SSH.
+    serverTargetTitle: مكان تشغيل السيرفر
+    versionDescription: اختر إصدار ماينكرافت ومود لودر مثل Forge أو Fabric أو Quilt أو NeoForge.
+    versionTitle: إصدار ماينكرافت والمود لودر
   instanceAddDescription: اضغط على الزرار ده لاستيراد نسخة ماينكرافت موجودة أو إنشاء نسخة جديدة تماماً من الصفر أو من حزمة مودات.
   instanceSelectDescription: الضغط على الزرار ده هيوديك لصفحة اختيار اللعبة وقراءة الأخبار.
   launchDescription: اضغط على الزرار ده لتثبيت أو تشغيل اللعبة.
@@ -1769,6 +1886,59 @@ tutorial:
   storeSearchDescription: تقدر تبحث عن حزم المودات بالكتابة في الصندوق ده. اضغط Enter للبحث.
   storeSearchResultDescription: هتشوف كل نتائج البحث معروضة هنا في القائمة.
   userAccountDescription: اضغط على الأيقونة دي لإضافة أو إدارة حساب ماينكرافت بتاعك.
+  tooltip: المساعدة والجولة الإرشادية
+  done: فهمت!
+  helpDescription: دليل تفاعلي للمشغل وللصفحة الحالية.
+  blueprint:
+    searchTitle: البحث عن المخططات
+    searchDescription: ابحث في المخططات المحلية ومخططات المجتمع حسب الاسم أو الوسم.
+    listTitle: قائمة المخططات
+    listDescription: عرض وإدارة كل مخططات ونماذج النسخ المحفوظة.
+    detailTitle: تفاصيل المخطط
+    detailDescription: افحص محتويات المخطط والمودات المتضمنة وأنشئ نسخ جديدة منه.
+  me:
+    instancesTitle: إدارة النسخ
+    instancesDescription: عرض كل النسخ المثبتة وتنظيمها حسب الفولدر أو التاريخ وتشغيلها.
+    profileTitle: الحساب والبروفايل
+    profileDescription: التبديل بين حساباتك وإدارة بيانات تسجيل الدخول.
+    skinTitle: تخصيص السكن والكاب
+    skinDescription: معاينة شخصيتك 3D وتغيير السكن وارتداء الكاب.
+  multiplayer:
+    railTitle: الشبكة والتنقل
+    railDescription: فحص نوع NAT وحالة الشبكة والتنقل بين الاتصالات والإعدادات.
+    groupTitle: الانضمام أو استضافة غرفة
+    groupDescription: اكتب كود الغرفة للانضمام لأصحابك أو سيبها فاضية لعمل غرفة جديدة.
+    joinDescription: اضغط للانضمام لغرفة موجودة أو عمل غرفة جديدة.
+    contentTitle: الأعضاء المتصلون والمحتوى
+    contentDescription: إدارة الأعضاء ومتابعة البينج ومشاركة ألعاب ماينكرافت الشغالة.
+    manualDescription: اتصال مباشر P2P مع الأصدقاء باستخدام تبادل SDP.
+  resourcepack:
+    searchTitle: البحث عن ريسورس باك
+    searchDescription: ابحث عن الريسورس باكس في Modrinth أو CurseForge أو الملفات المحلية.
+    listTitle: قائمة الريسورس باك
+    listDescription: تصفح الباكات المثبتة وتفعيلها أو تعطيلها وتعديل أولوية التحميل.
+    detailTitle: تفاصيل الريسورس باك
+    detailDescription: عرض سكرين شوتس والوصف وإصدارات ماينكرافت المتوافقة وتفاصيل الملفات.
+  save:
+    searchTitle: البحث عن العوالم
+    searchDescription: تصفية والبحث عن عوالم النسخة الحالية بالاسم.
+    listTitle: قائمة العوالم
+    listDescription: عرض كل العوالم المحفوظة مع طور اللعب وتاريخ آخر لعب وحجم الملف.
+    detailTitle: تفاصيل العالم والإجراءات
+    detailDescription: عمل نسخ احتياطية وتصديرها وفحص level.dat أو تعديل إعدادات العالم.
+  settings:
+    navDescription: التبديل بين عام والمظهر وإعدادات اللعبة العامة والشبكة.
+    generalDescription: ضبط لغة المشغل ومجلد البيانات وقنوات التحديث وخيارات البدء.
+    appearanceDescription: تخصيص الثيم وخلفيات الشاشة وألوان الواجهة.
+    globalDescription: تحديد إصدار جافا الافتراضي والرامات ووسائط JVM.
+    networkDescription: ضبط سيرفرات التنزيل والبروكسي وحدود المهام المتزامنة.
+  shaderpack:
+    searchTitle: البحث عن شيدر باك
+    searchDescription: ابحث عن الشيدر في Modrinth أو CurseForge أو الكاش المحلي.
+    listTitle: قائمة الشيدر باك
+    listDescription: تصفح الشيدرات المثبتة والتبديل بينهم بسرعة.
+    detailTitle: تفاصيل الشيدر باك
+    detailDescription: معرفة صانع الشيدر ومتطلبات الرزوليوشن والإعدادات والخيارات.
 unauthenticatedWarning:
   cancel: إلغاء
   description: أنت مش مسجل دخول بأي حساب. اللعبة هتشتغل في وضع التجربة (Demo). لتجربة كل الميزات واللعب بحرية، يرجى تسجيل الدخول بحسابك.

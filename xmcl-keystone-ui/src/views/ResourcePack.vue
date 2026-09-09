@@ -193,6 +193,7 @@ import { InstanceResourcePack, kInstanceResourcePacks } from '@/composables/inst
 import { ProjectGroup, useModGroups } from '@/composables/modGroup'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
+import { useTutorial } from '@/composables/tutorial'
 import { useProjectInstall } from '@/composables/projectInstall'
 import { ResourcePackProject, useResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kCompact } from '@/composables/scrollTop'
@@ -454,6 +455,32 @@ const getInstalledCurseforge = (modId: number | undefined) => {
 // dense
 const denseView = useLocalStorage('resource-pack-dense-view', false, { writeDefaults: false })
 const itemHeight = computed(() => (denseView.value ? 48 : 96))
+
+useTutorial(
+  computed(() => [
+    {
+      element: '#search-text-field',
+      popover: {
+        title: t('tutorial.resourcepack.searchTitle') + ' (ctrl + f)',
+        description: t('tutorial.resourcepack.searchDescription'),
+      },
+    },
+    {
+      element: '#left-pane',
+      popover: {
+        title: t('tutorial.resourcepack.listTitle'),
+        description: t('tutorial.resourcepack.listDescription'),
+      },
+    },
+    {
+      element: '#right-pane',
+      popover: {
+        title: t('tutorial.resourcepack.detailTitle'),
+        description: t('tutorial.resourcepack.detailDescription'),
+      },
+    },
+  ]),
+)
 </script>
 
 <style scoped>

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
+import { useTutorial } from '@/composables/tutorial'
 import { useDateString } from '@/composables/date'
 import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
@@ -266,6 +267,32 @@ useTextFieldBehavior(filter, focused)
 function openInBrowser(url: string) {
   window.open(url, '_blank', 'noopener,noreferrer')
 }
+
+useTutorial(
+  computed(() => [
+    {
+      element: '.profile-header',
+      popover: {
+        title: t('tutorial.me.profileTitle'),
+        description: t('tutorial.me.profileDescription'),
+      },
+    },
+    {
+      element: '.skin-cape-card',
+      popover: {
+        title: t('tutorial.me.skinTitle'),
+        description: t('tutorial.me.skinDescription'),
+      },
+    },
+    {
+      element: '.instances-section',
+      popover: {
+        title: t('tutorial.me.instancesTitle'),
+        description: t('tutorial.me.instancesDescription'),
+      },
+    },
+  ]),
+)
 </script>
 
 <template>

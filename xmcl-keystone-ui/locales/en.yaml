@@ -1777,13 +1777,9 @@ server:
   entryCount: '{count} server | {count} servers'
   expectedVersions: Supported Versions
   export: Export Server
-  exportNoFilesHint: >-
-    No server files found. Install the server once to generate the required
-    files.
+  exportNoFilesHint: No server files found. Install the server once to generate the required files.
   exportOption: Server Export Options
-  exportSSHAuthenticationFailed: >-
-    All authentication methods failed. Please check username/password or private
-    key.
+  exportSSHAuthenticationFailed: All authentication methods failed. Please check username/password or private key.
   exportSSHOptions: SSH Options
   exportSSHPrivateKeyPath: SSH Private Key Path
   exportSSHRemotePath: Remote Server Path
@@ -1795,9 +1791,7 @@ server:
   ipAddress: IP Address
   launchClient: Launch client instead
   launchPinned: Pinned
-  launchTargetHint: >-
-    This instance launches straight into the pinned server. Switch back to the
-    client?
+  launchTargetHint: This instance launches straight into the pinned server. Switch back to the client?
   maxPlayers: Max Players
   motd: Server MOTD
   nameHint: Display name shown in the Multiplayer list
@@ -1863,7 +1857,7 @@ server:
   remoteServiceActive: Running
   remoteServerInstalled: Server files installed
   remoteServiceName: Service name
-  remoteServiceNameHint: 'systemd --user unit name, e.g. mc-server'
+  remoteServiceNameHint: systemd --user unit name, e.g. mc-server
   remoteSelectedFiles: '{count} server files selected'
   remoteSelectFiles: Select files
   remoteStartCommand: Start command
@@ -1910,9 +1904,9 @@ server:
   unknownDescription: Unknown Server. Please Refresh
   unpin: Unpin
   upload: Upload Server
-  upstreamUpToDate: Your instance matches the server ({version}).
+  upstreamUpToDate: 'Your instance matches the server ({version}).'
   upstreamUpToDateHint: No upgrade needed. Click to re-ping the server.
-  upstreamUpdateAvailable: Server now runs Minecraft {version}. Click to apply.
+  upstreamUpdateAvailable: 'Server now runs Minecraft {version}. Click to apply.'
   upstreamUpdateHint: Applies the suggested Minecraft version to this instance.
   useAsUpstreamHint: The instance will follow the server's reported Minecraft version.
   version: Server Requires Version
@@ -2301,6 +2295,7 @@ store:
   emptyHint: Try adjusting your filters or search query.
   latestMinecraft: Latest Minecraft Version
   name: Modpack Market
+  searchHint: Search mods, modpacks, resource packs...
   searchResult: Search Result
   trending: Trending
 tag:
@@ -2341,17 +2336,90 @@ turnRegion:
   liaoning: Liaoning, China
   po: Poland
 tutorial:
+  blueprint:
+    detailDescription: Inspect blueprint contents, included mods, and create new instances from it.
+    detailTitle: Blueprint Details
+    listDescription: View and manage all your saved instance blueprints and templates.
+    listTitle: Blueprint List
+    searchDescription: Search local and community blueprints by name or tag.
+    searchTitle: Search Blueprints
+  done: Got it!
+  helpDescription: Interactive guide for the launcher and current page.
+  me:
+    instancesDescription: View all your installed instances, group them by folder or date, filter, and launch.
+    instancesTitle: Instance Management
+    profileDescription: Switch between your accounts and manage login credentials.
+    profileTitle: Account & Profile
+    skinDescription: Preview your character in 3D, change skins, and equip capes.
+    skinTitle: Skin & Cape Customizer
+  multiplayer:
+    contentDescription: Manage connected members, view latency, and share your running Minecraft instances.
+    contentTitle: Connected Peers & Content
+    groupDescription: Enter a room code to join friends, or leave it empty and click to host your own room.
+    groupTitle: Join or Host Room
+    joinDescription: Click to join an existing room or create a new one.
+    manualDescription: Direct manual P2P connection with friends using SDP exchange.
+    railDescription: Check NAT type, network health, and switch between connections, settings, and billing.
+    railTitle: Network & Navigation
+  resourcepack:
+    detailDescription: View screenshots, description, compatible Minecraft versions, and file details.
+    detailTitle: Resource Pack Details
+    listDescription: Browse installed resource packs, enable or disable them, and reorder priority.
+    listTitle: Resource Pack List
+    searchDescription: Search resource packs from Modrinth, CurseForge, or local files.
+    searchTitle: Search Resource Packs
+  save:
+    detailDescription: Backup, export, inspect level.dat, or manage world settings.
+    detailTitle: World Details & Actions
+    listDescription: View all saved worlds with game mode, last played date, and file size.
+    listTitle: World List
+    searchDescription: Filter and search worlds in the current instance by name.
+    searchTitle: Search Saves & Worlds
+  settings:
+    appearanceDescription: Customize theme, background wallpapers, accent colors, and layout style.
+    generalDescription: Configure launcher language, data directory, update channels, and startup options.
+    globalDescription: Set default Java runtime, memory allocation, and JVM launch arguments.
+    navDescription: Switch between General, Appearance, Global Game Settings, and Network.
+    networkDescription: Configure download mirrors, proxy settings, and concurrent task limits.
+  shaderpack:
+    detailDescription: Shader author details, resolution requirements, profile presets, and shader options.
+    detailTitle: Shader Pack Details
+    listDescription: Browse installed shaders and switch between them quickly.
+    listTitle: Shader Pack List
+    searchDescription: Search shader packs from Modrinth, CurseForge, or local cache.
+    searchTitle: Search Shader Packs
+  tooltip: Help & Walkthrough
   feedbackDescription: If you encounter any problems, please click this button to send feedback!
   hideNewsHeaderDescription: >-
     You can see the News showcase on the left. Clicking this button can hide
     this showcase.
   instance:
+    appearanceThemeDescription: Customize the background, colors, and visual styling for this specific instance.
+    appearanceThemeTitle: Instance Appearance
     iconDescription: Click to change icon.
     iconTitle: Instance icon
     javaDescription: Choose or switch java version.
     javaImportDescription: Import java from local storage.
     javaImportTitle: Import java
     javaTitle: Java list
+    modpackExportDescription: Build and package your configured instance into a ready-to-share modpack.
+    modpackExportTitle: Export Modpack
+    modpackFilesDescription: Select which configuration files, mods, and resources to include in the exported modpack for client and server.
+    modpackFilesTitle: Included Files
+    modpackMetaDescription: Specify the modpack version, author, description, and website information.
+    modpackMetaTitle: Modpack Details
+    modpackOptionsDescription: Choose the target export folder and formats (such as Modrinth or CurseForge modpack).
+    modpackOptionsTitle: Export Options
+    serverLaunchDescription: Launch or stop the dedicated server for this instance directly from the header.
+    serverLaunchTitle: Launch / Stop Server
+    serverPropertiesDescription: Configure server properties such as port, difficulty, MOTD, player limits, and game rules.
+    serverPropertiesTitle: Server Configuration
+    serverServiceDescription: Manage the server as a background OS service (systemd or Windows Service) for persistent automatic uptime.
+    serverServiceTitle: System Service
+    serverTargetDescription: Choose between running the server locally on your machine or managing a remote Linux server via SSH.
+    serverTargetTitle: Server Target
+    versionDescription: Select Minecraft version, Forge, Fabric, Quilt, or NeoForge loaders.
+    versionTitle: Minecraft & Loader Version
   instanceAddDescription: >-
     Click this button to import existing Minecraft instance or create a new one
     from scratch or modpack.

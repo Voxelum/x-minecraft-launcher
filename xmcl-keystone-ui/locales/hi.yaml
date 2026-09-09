@@ -1324,24 +1324,26 @@ search:
   noResults: कोई परिणाम नहीं मिला
   pageSize: प्रति पृष्ठ परिणाम
 server:
+  launch: सर्वर लॉन्च करें
+  stop: सर्वर रोकें
   acceptingMinecraftVersion: माइनक्राफ्ट संस्करण स्वीकार कर रहा है
   addServer: सर्वर जोड़ें
   address: सर्वर पता
-  addressHint: जैसे mc.hypixel.net
-  bindUpstream: अपस्ट्रीम के रूप में बाँधें
-  boundUpstream: सर्वर अपस्ट्रीम बँध गया
-  boundUpstreamHint: यह इंस्टेंस बाध्य सर्वर के माइनक्राफ्ट संस्करण का अनुसरण करता है।
+  addressHint: उदा. mc.hypixel.net
+  bindUpstream: अपस्ट्रीम के रूप में बाइंड करें
+  boundUpstream: सर्वर अपस्ट्रीम बाउंड
+  boundUpstreamHint: यह इंस्टेंस बाउंड सर्वर के Minecraft संस्करण का पालन करता है।
   creationHint: कृपया सर्वर पता भरें और सर्वर को पिंग करें
   editServer: सर्वर संपादित करें
-  emptyHint: इस इंस्टेंस के servers.dat में अभी तक कोई सर्वर नहीं है। शुरू करने के लिए एक जोड़ें।
-  entryCount: '{count} सर्वर | {count} सर्वर'
+  emptyHint: इस इंस्टेंस के servers.dat में अभी कोई सर्वर नहीं है। शुरू करने के लिए जोड़ें।
+  entryCount: '{count} सर्वर'
   expectedVersions: समर्थित संस्करण
   export: सर्वर निर्यात करें
   exportNoFilesHint: कोई सर्वर फ़ाइल नहीं मिली। कुछ फ़ाइलें जनरेट करने के लिए एक बार स्थानीय सर्वर चलाएँ।
   exportOption: सर्वर निर्यात विकल्प
   exportSSHAuthenticationFailed: सभी प्रमाणीकरण विधियाँ विफल रहीं। कृपया यूज़रनेम/पासवर्ड या निजी कुंजी की जाँच करें।
   exportSSHOptions: SSH विकल्प
-  exportSSHPrivateKeyPath: SSH प्राइवेट की पाथ
+  exportSSHPrivateKeyPath: SSH निजी कुंजी पथ
   exportSSHRemotePath: रिमोट सर्वर पाथ
   exportToFolder: फ़ोल्डर में निर्यात करें
   filterVersion: सर्वर द्वारा रिपोर्ट किए गए Minecraft संस्करण को फ़िल्टर करें
@@ -1351,10 +1353,10 @@ server:
   ipAddress: IP पता
   launchClient: इसके बजाय क्लाइंट लॉन्च करें
   launchPinned: पिन किया गया
-  launchTargetHint: यह इंस्टेंस सीधे पिन किए गए सर्वर में लॉन्च होता है। क्लाइंट पर वापस जाएँ?
+  launchTargetHint: यह इंस्टेंस सीधे पिन किए गए सर्वर में लॉन्च होता है। क्लाइंट पर वापस जाएं?
   maxPlayers: अधिकतम खिलाड़ी
   motd: सर्वर MOTD
-  nameHint: मल्टीप्लेयर सूची में दिखाया जाने वाला नाम
+  nameHint: मल्टीप्लेयर सूची में प्रदर्शित नाम
   nogui: सर्वर GUI नहीं
   onlineMode: ऑनलाइन मोड
   pin: सर्वर पिन करें
@@ -1364,20 +1366,114 @@ server:
   pinnedHeader: 'पिन किया गया: {name}'
   players: खिलाड़ी
   port: पोर्ट
+  clearLog: लॉग साफ़ करें
+  log: सर्वर लॉग
+  logWaiting: सर्वर आउटपुट की प्रतीक्षा है...
+  remoteActionSuccess: Done.
+  remoteAdmin: रिमोट सर्वर व्यवस्थापक
+  remoteAuthMethod: प्रमाणीकरण
+  remoteAuthPassword: पासवर्ड
+  remoteAuthPrivateKey: निजी कुंजी
+  remoteBuildOfflinePackage: ऑफ़लाइन पैकेज बनाएं
+  remoteConnected: कनेक्टेड
+  remoteConnection: कनेक्शन
+  remoteDeployment: तैनाती
+  remoteDeploy: तैनात करें
+  remoteDisk: Disk
+  remoteConfigFiles: कॉन्फ़िगरेशन फ़ाइलें
+  remoteExtraFiles: अतिरिक्त फ़ाइलें
+  remoteForgetCredentials: सहेजे गए क्रेडेंशियल भूलें
+  remoteInstallService: सेवा स्थापित करें
+  remoteLoad: लोड
+  remoteLog: रिमोट सर्वर लॉग
+  remoteMemory: मेमोरी
+  remoteMods: Mods
+  remoteNoWorldSelected: कोई इंस्टेंस विश्व चयनित नहीं
+  remoteJavaRequired: रिमोट लिनक्स होस्ट पर जावा उपलब्ध नहीं है।
+  remoteLinuxRequired: केवल लिनक्स SSH लक्ष्य समर्थित हैं।
+  remoteNotConfiguredHint: स्थिति, सेवा नियंत्रण और लॉग सक्षम करने के लिए ऊपर दिए गए विवरण भरें।
+  remotePathNotWritable: रिमोट सर्वर निर्देशिका लिखने योग्य नहीं है।
+  remotePathWritable: निर्देशिका लिखने योग्य है
+  remotePolicyInitialize: एक बार आरंभ करें
+  remotePolicyMirror: दर्पण (Mirror)
+  remotePolicyOverlay: ओवरले
+  remotePolicyPreserve: संरक्षित रखें
+  remotePreview: परिवर्तनों का पूर्वावलोकन
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: क्रेडेंशियल याद रखें (OS कीचेन)
+  remoteReconcileReady: लक्ष्य इस इंस्टेंस से मेल खाता है और कंसोल जुड़ा हुआ है।
+  remoteRestartService: सेवा पुनरारंभ करें
+  remoteSavedCredentialsHint: सहेजे गए क्रेडेंशियल का उपयोग कर रहे हैं — रखने के लिए खाली छोड़ें।
+  remoteService: systemd सेवा
+  remoteServiceActive: चल रहा है
+  remoteServerInstalled: सर्वर फ़ाइलें स्थापित
+  remoteServiceName: सेवा का नाम
+  remoteServiceNameHint: systemd --user इकाई नाम, उदा. mc-server
+  remoteSelectedFiles: '{count} सर्वर फ़ाइलें चयनित'
+  remoteSelectFiles: फ़ाइलें चुनें
+  remoteStartCommand: प्रारंभ आदेश
+  remoteStartCommandHint: उदा. java -jar server.jar nogui
+  remoteStartService: Start
+  remoteStatus: स्थिति
+  remoteSystemdRequired: रिमोट होस्ट पर systemd उपयोगकर्ता सेवाएं उपलब्ध नहीं हैं।
+  remoteTargetName: लक्ष्य नाम
+  remoteStopService: Stop
+  remoteStopWatchLog: निगरानी रोकें
+  remoteTestConnection: कनेक्शन का परीक्षण करें
+  remoteTestConnectionSuccess: कनेक्शन सफल रहा।
+  remoteUninstallConfirmMessage: यह रिमोट होस्ट पर systemd इकाई को हटाता है। सर्वर फ़ाइलें सुरक्षित रहेंगी।
+  remoteUninstallService: सेवा अनइंस्टॉल करें
+  remoteRunInstall: स्थापित करें या मरम्मत करें
+  remoteWatchLog: लाइव लॉग देखें
+  remoteWorldAlways: हर मिलान पर बदलें
+  remoteWorldDeployment: इंस्टेंस विश्व तैनाती
+  remoteWorldDeploymentHint: नियमित सिंक कभी भी विश्व डेटा अपलोड नहीं करता जब तक स्पष्ट अनुमति न हो।
+  remoteWorldFirstInstall: केवल तभी आरंभ करें जब लक्ष्य में कोई विश्व न हो
+  remoteWorldNever: कभी भी विश्व अपलोड न करें
+  remoteWorldPresent: लक्ष्य सर्वर विश्व
+  remoteWorld: World
+  remoteWorldWillDeploy: चयनित इंस्टेंस विश्व इस सिंक द्वारा अपलोड किया जाएगा।
   serverName: सर्वर का नाम
+  serviceInstall: सेवा स्थापित करें
+  serviceManagedLaunch: सेवा-प्रबंधित लॉन्च
+  serviceManager: सेवा प्रबंधक
+  serviceName: सेवा का नाम
+  serviceNameHint: सिस्टम सेवा नाम
+  serviceNotInstalled: सेवा स्थापित नहीं है
+  serviceStartCommand: सेवा प्रारंभ आदेश
+  serviceSystemd: systemd --user
+  serviceWindows: Windows सेवा
+  serviceWindowsCommandHint: Windows सेवा आदेश
   serversListTitle: सर्वर सूची
+  target: लक्ष्य
+  targetLocal: localhost
+  targetLocalHint: इस कंप्यूटर पर स्थानीय रूप से चलाएं
+  targetRemote: रिमोट सर्वर (SSH)
+  targetRemoteHint: SSH के माध्यम से रिमोट लिनक्स सर्वर प्रबंधित करें
   unbindUpstream: अनबाइंड करें
   unknown: अज्ञात सर्वर
   unknownDescription: अज्ञात सर्वर। कृपया रिफ्रेश करें
   unpin: अनपिन करें
   upload: सर्वर अपलोड करें
   upstreamUpToDate: आपका इंस्टेंस सर्वर ({version}) से मेल खाता है।
-  upstreamUpToDateHint: कोई अपग्रेड आवश्यक नहीं। सर्वर को फिर से पिंग करने के लिए क्लिक करें।
-  upstreamUpdateAvailable: सर्वर अब Minecraft {version} चला रहा है। लागू करने के लिए क्लिक करें।
-  upstreamUpdateHint: सुझाया गया Minecraft संस्करण इस इंस्टेंस पर लागू करता है।
-  useAsUpstreamHint: इंस्टेंस सर्वर के रिपोर्ट किए गए Minecraft संस्करण का अनुसरण करेगा।
+  upstreamUpToDateHint: किसी अपग्रेड की आवश्यकता नहीं है। पुनः जांचने के लिए क्लिक करें।
+  upstreamUpdateAvailable: सर्वर अब Minecraft {version} चलाता है। लागू करने के लिए क्लिक करें।
+  upstreamUpdateHint: इस इंस्टेंस पर सुझाए गए Minecraft संस्करण को लागू करता है।
+  useAsUpstreamHint: इंस्टेंस सर्वर द्वारा रिपोर्ट किए गए Minecraft संस्करण का पालन करेगा।
   version: सर्वर के लिए आवश्यक संस्करण
   versionHint: पिंग करने के लिए Minecraft संस्करण
+  worldPreserve: लक्ष्य विश्व को संरक्षित रखें
 serverStatus:
   nohost: §4होस्ट नहीं मिल रहा!
   ping: पिंग किया जा रहा है...
@@ -1706,6 +1802,7 @@ store:
   name: मॉडपैक मार्केट
   searchResult: खोज परिणाम
   trending: ट्रेंडिंग
+  searchHint: मॉडपैक खोजें...
 tag:
   create: टैग बनाएँ
   createSelected: चुने हुए के लिए टैग बनाएँ
@@ -1747,12 +1844,32 @@ tutorial:
   feedbackDescription: यदि आपको कोई समस्या आती है, तो कृपया प्रतिक्रिया भेजने के लिए इस बटन पर क्लिक करें!
   hideNewsHeaderDescription: आप बाईं ओर समाचार शोकेस देख सकते हैं। इस बटन पर क्लिक करने से यह शोकेस छिप सकता है।
   instance:
+    appearanceThemeDescription: इस विशिष्ट इंस्टेंस के लिए पृष्ठभूमि, रंग और दृश्य शैली को कस्टमाइज़ करें।
+    appearanceThemeTitle: इंस्टेंस का रूप
     iconDescription: आइकन बदलने के लिए क्लिक करें।
     iconTitle: इंस्टेंस आइकन
-    javaDescription: Java संस्करण चुनें या बदलें।
-    javaImportDescription: स्थानीय स्टोरेज से Java आयात करें।
-    javaImportTitle: Java आयात करें
-    javaTitle: Java सूची
+    javaDescription: जावा संस्करण चुनें या बदलें।
+    javaImportDescription: स्थानीय स्टोरेज से जावा आयात करें।
+    javaImportTitle: जावा आयात करें
+    javaTitle: जावा सूची
+    modpackExportDescription: अपने कॉन्फ़िगर किए गए इंस्टेंस को साझा करने योग्य मॉडपैक में पैकेज करें।
+    modpackExportTitle: मॉडपैक निर्यात करें
+    modpackFilesDescription: क्लाइंट और सर्वर के लिए शामिल की जाने वाली कॉन्फ़िगरेशन फ़ाइलें, मॉड और संसाधन चुनें।
+    modpackFilesTitle: शामिल फ़ाइलें
+    modpackMetaDescription: मॉडपैक संस्करण, लेखक, विवरण और वेबसाइट जानकारी निर्दिष्ट करें।
+    modpackMetaTitle: मॉडपैक विवरण
+    modpackOptionsDescription: लक्ष्य फ़ोल्डर और प्रारूप (जैसे Modrinth या CurseForge) चुनें।
+    modpackOptionsTitle: निर्यात विकल्प
+    serverLaunchDescription: शीर्षक से सीधे इस इंस्टेंस के लिए समर्पित सर्वर लॉन्च करें या रोकें।
+    serverLaunchTitle: सर्वर लॉन्च / रोकें
+    serverPropertiesDescription: पोर्ट, कठिनाई, MOTD, खिलाड़ी सीमा और गेम नियम कॉन्फ़िगर करें।
+    serverPropertiesTitle: सर्वर कॉन्फ़िगरेशन
+    serverServiceDescription: निरंतर अपटाइम के लिए सर्वर को बैकग्राउंड OS सेवा के रूप में प्रबंधित करें।
+    serverServiceTitle: सिस्टम सेवा
+    serverTargetDescription: कंप्यूटर पर स्थानीय रूप से चलाने या SSH के माध्यम से रिमोट लिनक्स सर्वर प्रबंधित करने में से चुनें।
+    serverTargetTitle: सर्वर लक्ष्य
+    versionDescription: Minecraft संस्करण और Forge, Fabric, Quilt या NeoForge लोडर चुनें।
+    versionTitle: Minecraft और लोडर संस्करण
   instanceAddDescription: मौजूदा माइनक्राफ्ट इंस्टेंस को आयात करने या शुरुआत से या मॉडपैक से एक नया बनाने के लिए इस बटन पर क्लिक करें।
   instanceSelectDescription: इस बटन पर क्लिक करने से गेम चुनने और समाचार पढ़ने के लिए पेज पर नेविगेट किया जाएगा।
   launchDescription: गेम इंस्टॉल करने या लॉन्च करने के लिए इस बटन पर क्लिक करें।
@@ -1771,6 +1888,59 @@ tutorial:
   storeSearchDescription: आप इस टेक्स्ट बॉक्स में इनपुट करके मॉडपैक खोज सकते हैं। खोजने के लिए Enter दबाएं।
   storeSearchResultDescription: आपको यहाँ सूचीबद्ध सभी खोज परिणाम दिखाई देंगे।
   userAccountDescription: अपना माइनक्राफ्ट खाता जोड़ने या प्रबंधित करने के लिए इस आइकन पर क्लिक करें।
+  tooltip: सहायता और मार्गदर्शन
+  done: समझ गया!
+  helpDescription: लॉन्चर और वर्तमान पृष्ठ के लिए इंटरैक्टिव गाइड।
+  blueprint:
+    searchTitle: ब्लूप्रिंट खोजें
+    searchDescription: नाम या टैग द्वारा स्थानीय और समुदाय ब्लूप्रिंट खोजें।
+    listTitle: ब्लूप्रिंट सूची
+    listDescription: सभी सहेजे गए इंस्टेंस ब्लूप्रिंट और टेम्प्लेट देखें और प्रबंधित करें।
+    detailTitle: ब्लूप्रिंट विवरण
+    detailDescription: ब्लूप्रिंट सामग्री, शामिल मॉड देखें और इससे नए इंस्टेंस बनाएं।
+  me:
+    instancesTitle: इंस्टेंस प्रबंधन
+    instancesDescription: सभी इंस्टॉल किए गए इंस्टेंस देखें, फ़ोल्डर या तारीख के अनुसार समूहित करें और लॉन्च करें।
+    profileTitle: खाता और प्रोफ़ाइल
+    profileDescription: अपने खातों के बीच स्विच करें और लॉगिन क्रेडेंशियल प्रबंधित करें।
+    skinTitle: स्किन और केप कस्टमाइज़र
+    skinDescription: 3D में अपने पात्र का पूर्वावलोकन करें, स्किन बदलें और केप पहनें।
+  multiplayer:
+    railTitle: नेटवर्क और नेविगेशन
+    railDescription: NAT प्रकार, नेटवर्क स्थिति जांचें और कनेक्शन और सेटिंग्स के बीच स्विच करें।
+    groupTitle: रूम में शामिल हों या होस्ट करें
+    groupDescription: मित्रों से जुड़ने के लिए रूम कोड दर्ज करें या अपना खुद का रूम बनाएं।
+    joinDescription: किसी मौजूदा रूम में शामिल होने या नया रूम बनाने के लिए क्लिक करें।
+    contentTitle: जुड़े सदस्य और सामग्री
+    contentDescription: सदस्यों को प्रबंधित करें, लेटेंसी देखें और चल रहे Minecraft गेम साझा करें।
+    manualDescription: SDP एक्सचेंज का उपयोग करके दोस्तों के साथ सीधा मैन्युअल P2P कनेक्शन।
+  resourcepack:
+    searchTitle: रिसोर्स पैक खोजें
+    searchDescription: Modrinth, CurseForge या स्थानीय फ़ाइलों से रिसोर्स पैक खोजें।
+    listTitle: रिसोर्स पैक सूची
+    listDescription: इंस्टॉल किए गए पैक ब्राउज़ करें, चालू/बंद करें और प्राथमिकता बदलें।
+    detailTitle: रिसोर्स पैक विवरण
+    detailDescription: स्क्रीनशॉट, विवरण, संगत Minecraft संस्करण और फ़ाइल विवरण देखें।
+  save:
+    searchTitle: सहेजे गए विश्व खोजें
+    searchDescription: नाम से वर्तमान इंस्टेंस में सहेजी गई दुनिया को फ़िल्टर और खोजें।
+    listTitle: विश्व सूची
+    listDescription: गेम मोड, अंतिम बार खेले गए दिनांक और फ़ाइल आकार के साथ सभी सहेजे गए विश्व देखें।
+    detailTitle: विश्व विवरण और क्रियाएं
+    detailDescription: बैकअप लें, निर्यात करें, level.dat का निरीक्षण करें या विश्व सेटिंग्स प्रबंधित करें।
+  settings:
+    navDescription: सामान्य, रूप-रंग, वैश्विक गेम सेटिंग्स और नेटवर्क के बीच स्विच करें।
+    generalDescription: लॉन्चर भाषा, डेटा निर्देशिका, अपडेट चैनल और स्टार्टअप विकल्प कॉन्फ़िगर करें।
+    appearanceDescription: थीम, बैकग्राउंड वॉलपेपर, एक्सेंट रंग और लेआउट कस्टमाइज़ करें।
+    globalDescription: डिफ़ॉल्ट जावा रनटाइम, मेमोरी आवंटन और JVM तर्क सेट करें।
+    networkDescription: डाउनलोड मिरर, प्रॉक्सी सेटिंग्स और समवर्ती कार्य सीमाएं कॉन्फ़िगर करें।
+  shaderpack:
+    searchTitle: शेडर पैक खोजें
+    searchDescription: Modrinth, CurseForge या स्थानीय कैश से शेडर खोजें।
+    listTitle: शेडर पैक सूची
+    listDescription: इंस्टॉल किए गए शेडर्स ब्राउज़ करें और उनके बीच त्वरित रूप से स्विच करें।
+    detailTitle: शेडर विवरण
+    detailDescription: शेडर लेखक, रिज़ॉल्यूशन आवश्यकताएं, प्रोफ़ाइल प्रीसेट और विकल्प देखें।
 unauthenticatedWarning:
   cancel: रद्द करें
   description: आप किसी भी खाते में लॉग इन नहीं हैं। गेम डेमो मोड में लॉन्च होगा। पूर्ण सुविधाओं के लिए कृपया साइन इन करें।

@@ -1200,8 +1200,19 @@ search:
   noResults: 결과를 찾을 수 없습니다
   pageSize: 페이지당 결과 수
 server:
+  launch: 서버 시작
+  stop: 서버 중지
   acceptingMinecraftVersion: 허용하는 마인크래프트 버전
+  addServer: 서버 추가
+  address: 서버 주소
+  addressHint: '예: mc.hypixel.net'
+  bindUpstream: 업스트림으로 연결
+  boundUpstream: 서버 업스트림 연결됨
+  boundUpstreamHint: 이 인스턴스는 연결된 서버의 Minecraft 버전을 따릅니다.
   creationHint: 서버 주소를 입력하고 서버에 핑을 보내세요
+  editServer: 서버 편집
+  emptyHint: 이 인스턴스의 servers.dat에 등록된 서버가 없습니다. 시작하려면 추가하세요.
+  entryCount: '{count}개의 서버'
   expectedVersions: 지원되는 버전
   export: 서버 내보내기
   exportNoFilesHint: 서버 파일을 찾을 수 없습니다. 일부 파일을 생성하려면 로컬에서 서버를 한 번 실행해 보세요.
@@ -1216,44 +1227,129 @@ server:
   hostHint: 서버의 호스트(포트 포함)
   hostRequired: 서버 IP 주소를 입력하세요
   ipAddress: IP 주소
-  maxPlayers: 최대 플레이어
-  motd: 서버 MOTD
-  nogui: 서버 GUI 없음
-  onlineMode: 온라인 모드
-  ping: 핑
-  pings: 핑들
-  players: 플레이어
-  port: 포트
-  unknown: 알 수 없는 서버
-  unknownDescription: 알 수 없는 서버입니다. 새로고침하세요
-  upload: 서버 업로드
-  version: 서버가 요구하는 버전
-  versionHint: 핑을 보낼 마인크래프트 버전
-  addServer: 서버 추가
-  address: 서버 주소
-  addressHint: '예: mc.hypixel.net'
-  bindUpstream: 업스트림으로 결합
-  boundUpstream: 서버 업스트림 결합됨
-  boundUpstreamHint: 이 인스턴스는 결합된 서버의 마인크래프트 버전을 따릅니다.
-  editServer: 서버 편집
-  emptyHint: 이 인스턴스의 servers.dat에 아직 서버가 없습니다. 시작하려면 서버를 추가하세요.
-  entryCount: 서버 {count}개 | 서버 {count}개
   launchClient: 대신 클라이언트 실행
   launchPinned: 고정됨
-  launchTargetHint: 이 인스턴스는 고정된 서버로 바로 실행됩니다. 클라이언트로 돌아가시겠습니까?
-  nameHint: 멀티플레이어 목록에 표시될 이름
+  launchTargetHint: 이 인스턴스는 고정된 서버로 즉시 접속합니다. 클라이언트로 전환하시겠습니까?
+  maxPlayers: 최대 플레이어
+  motd: 서버 MOTD
+  nameHint: 멀티플레이 목록에 표시될 이름
+  nogui: 서버 GUI 없음
+  onlineMode: 온라인 모드
   pin: 서버 고정
-  pinAfterSave: 저장 후 기본 실행 대상으로 고정
+  pinAfterSave: 저장 후 기본 시작 대상으로 고정
+  ping: 핑
+  pings: 핑들
   pinnedHeader: '고정됨: {name}'
+  players: 플레이어
+  port: 포트
+  clearLog: 로그 지우기
+  log: 서버 로그
+  logWaiting: 서버 출력은 시작 후 여기에 표시됩니다.
+  remoteActionSuccess: Done.
+  remoteAdmin: 원격 서버 관리
+  remoteAuthMethod: 인증 방식
+  remoteAuthPassword: 비밀번호
+  remoteAuthPrivateKey: 개인 키
+  remoteBuildOfflinePackage: 오프라인 패키지 빌드
+  remoteConnected: 연결됨
+  remoteConnection: 연결
+  remoteDeployment: 배포
+  remoteDeploy: 배포
+  remoteDisk: 디스크
+  remoteConfigFiles: 설정 파일
+  remoteExtraFiles: 추가 파일
+  remoteForgetCredentials: 저장된 인증 정보 지우기
+  remoteInstallService: 서비스 설치
+  remoteLoad: 평균 부하
+  remoteLog: 원격 로그
+  remoteMemory: 메모리
+  remoteMods: 모드
+  remoteNoWorldSelected: 선택된 인스턴스 월드가 없습니다
+  remoteJavaRequired: 원격 Linux 호스트에서 Java를 찾을 수 없습니다.
+  remoteLinuxRequired: Linux SSH 대상만 지원됩니다.
+  remoteNotConfiguredHint: 위의 연결 세부 정보를 입력하고 저장하여 상태, 서비스 제어 및 로그를 활성화하세요.
+  remotePathNotWritable: 원격 서버 디렉터리에 쓰기 권한이 없습니다.
+  remotePathWritable: 디렉터리 쓰기 가능
+  remotePolicyInitialize: 최초 1회 초기화
+  remotePolicyMirror: 미러 동기화
+  remotePolicyOverlay: 오버레이
+  remotePolicyPreserve: 유지
+  remotePreview: 변경 사항 미리보기
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: 자격 증명 기억 (OS 키체인)
+  remoteReconcileReady: 원격 대상이 이 인스턴스와 일치하며 콘솔이 연결되었습니다.
+  remoteRestartService: 재시작
+  remoteSavedCredentialsHint: 저장된 자격 증명 사용 중 — 유지하려면 비워 두고, 변경하려면 입력하세요.
+  remoteService: systemd 서비스
+  remoteServiceActive: 실행 중
+  remoteServerInstalled: 서버 파일 설치됨
+  remoteServiceName: 서비스 이름
+  remoteServiceNameHint: 'systemd --user 유닛 이름, 예: mc-server'
+  remoteSelectedFiles: '{count}개의 서버 파일 선택됨'
+  remoteSelectFiles: 파일 선택
+  remoteStartCommand: 시작 명령
+  remoteStartCommandHint: '예: java -jar server.jar nogui'
+  remoteStartService: 시작
+  remoteStatus: 상태
+  remoteSystemdRequired: 원격 호스트에서 systemd 사용자 서비스를 사용할 수 없습니다.
+  remoteTargetName: 대상 이름
+  remoteStopService: 중지
+  remoteStopWatchLog: 로그 감시 중지
+  remoteTestConnection: 연결 테스트
+  remoteTestConnectionSuccess: 연결 성공.
+  remoteUninstallConfirmMessage: 원격 호스트의 systemd 유닛을 비활성화하고 제거합니다. 서버 파일은 유지됩니다.
+  remoteUninstallService: 서비스 제거
+  remoteRunInstall: 설치 또는 복구
+  remoteWatchLog: 실시간 로그 보기
+  remoteWorldAlways: 동기화할 때마다 교체
+  remoteWorldDeployment: 인스턴스 월드 배포
+  remoteWorldDeploymentHint: 이 정책에서 허용하지 않는 한 일반 동기화 시 월드 데이터는 업로드되지 않습니다.
+  remoteWorldFirstInstall: 대상에 월드가 없을 때만 초기화
+  remoteWorldNever: 월드 업로드 안 함
+  remoteWorldPresent: 대상 서버 월드
+  remoteWorld: 월드
+  remoteWorldWillDeploy: 이번 동기화에서 선택된 인스턴스 월드가 업로드됩니다.
   serverName: 서버 이름
+  serviceInstall: 서비스 설치
+  serviceManagedLaunch: 시작 및 중지 작업에 OS 서비스 사용
+  serviceManager: 시스템 서비스
+  serviceName: 서비스 이름
+  serviceNameHint: 문자, 숫자, 점, 하이픈이 포함된 고유 식별자
+  serviceNotInstalled: 설치되지 않음
+  serviceStartCommand: 시작 명령
+  serviceSystemd: systemd --user
+  serviceWindows: Windows 서비스
+  serviceWindowsCommandHint: Java 명령은 이 인스턴스에서 생성됩니다.
   serversListTitle: 서버 목록
-  unbindUpstream: 결합 해제
+  target: 서버 대상
+  targetLocal: localhost
+  targetLocalHint: 이 컴퓨터에 서버를 설치하고 실행합니다.
+  targetRemote: SSH 대상
+  targetRemoteHint: SSH를 통해 서버를 연결, 설치, 시작 및 모니터링합니다.
+  unbindUpstream: 연결 해제
+  unknown: 알 수 없는 서버
+  unknownDescription: 알 수 없는 서버입니다. 새로고침하세요
   unpin: 고정 해제
-  upstreamUpToDate: 인스턴스가 서버 버전({version})과 일치합니다.
-  upstreamUpToDateHint: 업그레이드가 필요하지 않습니다. 서버 핑을 다시 확인하려면 클릭하세요.
-  upstreamUpdateAvailable: 서버가 현재 마인크래프트 {version} 버전을 실행 중입니다. 적용하려면 클릭하세요.
-  upstreamUpdateHint: 이 인스턴스에 제안된 마인크래프트 버전을 적용합니다.
-  useAsUpstreamHint: 인스턴스가 서버에서 보고한 마인크래프트 버전을 따릅니다.
+  upload: 서버 업로드
+  upstreamUpToDate: 인스턴스가 서버 버전과 일치합니다 ({version}).
+  upstreamUpToDateHint: 업그레이드가 필요하지 않습니다. 다시 확인하려면 클릭하세요.
+  upstreamUpdateAvailable: 서버가 현재 Minecraft {version} 버전입니다. 적용하려면 클릭하세요.
+  upstreamUpdateHint: 제안된 Minecraft 버전을 이 인스턴스에 적용합니다.
+  useAsUpstreamHint: 인스턴스가 서버에서 보고된 Minecraft 버전을 따르게 됩니다.
+  version: 서버가 요구하는 버전
+  versionHint: 핑을 보낼 마인크래프트 버전
+  worldPreserve: 대상 서버 월드 보존
 serverStatus:
   nohost: §4호스트를 찾을 수 없습니다!
   ping: 핑 중...
@@ -1586,6 +1682,7 @@ store:
   trending: 인기 급상승
   empty: 모드팩을 찾을 수 없음
   emptyHint: 필터 또는 검색어를 조정해 보세요.
+  searchHint: 모드팩 검색...
 tag:
   create: 태그 생성
   createSelected: 선택된 항목에 태그 생성
@@ -1627,12 +1724,32 @@ tutorial:
   feedbackDescription: 문제가 발생하면 이 버튼을 클릭하여 피드백을 보내세요!
   hideNewsHeaderDescription: 왼쪽에서 뉴스 쇼케이스를 볼 수 있습니다. 이 버튼을 클릭하면 쇼케이스를 숨길 수 있습니다.
   instance:
-    iconDescription: 클릭하여 아이콘을 변경하세요.
+    appearanceThemeDescription: 이 인스턴스 전용 배경, 색상 및 시각 스타일을 설정합니다.
+    appearanceThemeTitle: 인스턴스 외형
+    iconDescription: 아이콘을 클릭하여 변경합니다.
     iconTitle: 인스턴스 아이콘
-    javaDescription: 자바 버전을 선택하거나 전환하세요.
-    javaImportDescription: 로컬 저장소에서 자바를 가져오세요.
-    javaImportTitle: 자바 가져오기
-    javaTitle: 자바 목록
+    javaDescription: Java 버전을 선택하거나 변경합니다.
+    javaImportDescription: 로컬 스토리지에서 Java 버전을 가져옵니다.
+    javaImportTitle: Java 가져오기
+    javaTitle: Java 목록
+    modpackExportDescription: 구성된 인스턴스를 공유 가능한 모드팩 파일로 패키징합니다.
+    modpackExportTitle: 모드팩 내보내기
+    modpackFilesDescription: 클라이언트 및 서버용으로 포함할 설정 파일, 모드, 리소스를 선택합니다.
+    modpackFilesTitle: 포함할 파일
+    modpackMetaDescription: 모드팩 버전, 작성자, 설명 및 웹사이트 정보를 지정합니다.
+    modpackMetaTitle: 모드팩 정보
+    modpackOptionsDescription: 대상 폴더 및 내보내기 형식(Modrinth 또는 CurseForge)을 선택합니다.
+    modpackOptionsTitle: 내보내기 옵션
+    serverLaunchDescription: 상단 헤더에서 이 인스턴스의 전용 서버를 직접 시작하거나 중지합니다.
+    serverLaunchTitle: 서버 시작 / 중지
+    serverPropertiesDescription: 포트, 난이도, MOTD, 최대 인원, 게임 규칙을 설정합니다.
+    serverPropertiesTitle: 서버 속성 설정
+    serverServiceDescription: 서버를 상시 백그라운드 OS 서비스(systemd 또는 Windows 서비스)로 관리합니다.
+    serverServiceTitle: 시스템 서비스
+    serverTargetDescription: 로컬 컴퓨터에서 실행하거나 SSH를 통해 원격 Linux 서버를 관리합니다.
+    serverTargetTitle: 서버 실행 대상
+    versionDescription: Minecraft 버전 및 Forge, Fabric, Quilt, NeoForge 로더를 선택합니다.
+    versionTitle: Minecraft 및 로더 버전
   instanceAddDescription: 이 버튼을 클릭하여 기존 마인크래프트 인스턴스를 가져오거나 처음부터 또는 모드팩으로 새로 생성하세요.
   instanceSelectDescription: 이 버튼을 클릭하면 게임을 선택하고 뉴스를 읽을 수 있는 페이지로 이동합니다.
   launchDescription: 이 버튼을 클릭하여 게임을 설치하거나 실행하세요.
@@ -1651,6 +1768,59 @@ tutorial:
   storeSearchDescription: 이 텍스트 상자에 입력하여 모드팩을 검색할 수 있습니다. Enter를 눌러 검색하세요.
   storeSearchResultDescription: 모든 검색 결과가 여기에 나열됩니다.
   userAccountDescription: 이 아이콘을 클릭하여 마인크래프트 계정을 추가하거나 관리하세요.
+  tooltip: 도움말 및 둘러보기
+  done: 알겠습니다!
+  helpDescription: 런처 및 현재 페이지를 위한 대화형 안내서입니다.
+  blueprint:
+    searchTitle: 청사진 검색
+    searchDescription: 이름이나 태그로 로컬 및 커뮤니티 청사진을 검색합니다.
+    listTitle: 청사진 목록
+    listDescription: 저장된 모든 인스턴스 청사진과 템플릿을 확인하고 관리합니다.
+    detailTitle: 청사진 세부 정보
+    detailDescription: 청사진 내용과 포함된 모드를 확인하고 새 인스턴스를 생성합니다.
+  me:
+    instancesTitle: 인스턴스 관리
+    instancesDescription: 설치된 모든 인스턴스를 폴더나 날짜별로 정리하고 실행합니다.
+    profileTitle: 계정 및 프로필
+    profileDescription: 계정을 전환하고 로그인 자격 증명을 관리합니다.
+    skinTitle: 스킨 및 망토 사용자 정의
+    skinDescription: 캐릭터를 3D로 미리 보고 스킨을 변경하며 망토를 착용합니다.
+  multiplayer:
+    railTitle: 네트워크 및 탐색
+    railDescription: NAT 유형, 네트워크 상태를 확인하고 연결과 설정을 전환합니다.
+    groupTitle: 방 참가 또는 호스팅
+    groupDescription: 방 코드를 입력하여 참가하거나 빈 칸으로 두어 직접 방을 엽니다.
+    joinDescription: 클릭하여 기존 방에 참가하거나 새 방을 만듭니다.
+    contentTitle: 연결된 멤버 및 콘텐츠
+    contentDescription: 멤버 관리, 핑 확인 및 실행 중인 Minecraft 게임을 공유합니다.
+    manualDescription: SDP 교환을 통한 친구와의 수동 직접 P2P 연결.
+  resourcepack:
+    searchTitle: 리소스팩 검색
+    searchDescription: Modrinth, CurseForge 또는 로컬 파일에서 리소스팩을 검색합니다.
+    listTitle: 리소스팩 목록
+    listDescription: 설치된 리소스팩을 탐색하고 활성화/비활성화 및 우선순위를 조정합니다.
+    detailTitle: 리소스팩 세부 정보
+    detailDescription: 스크린샷, 설명, 호환되는 Minecraft 버전 및 파일 세부 정보를 확인합니다.
+  save:
+    searchTitle: 월드(세이브) 검색
+    searchDescription: 현재 인스턴스의 월드를 이름으로 필터링하고 검색합니다.
+    listTitle: 월드 목록
+    listDescription: 게임 모드, 최근 플레이 날짜, 파일 크기와 함께 저장된 모든 월드를 확인합니다.
+    detailTitle: 월드 세부 정보 및 작업
+    detailDescription: 백업, 내보내기, level.dat 검사 및 월드 설정을 관리합니다.
+  settings:
+    navDescription: 일반, 모양, 전역 게임 설정, 네트워크 설정 간을 전환합니다.
+    generalDescription: 언어, 데이터 디렉터리, 업데이트 채널 및 시작 옵션을 구성합니다.
+    appearanceDescription: 테마, 배경 화면, 테마 색상 및 레이아웃 스타일을 사용자 정의합니다.
+    globalDescription: 기본 Java 런타임, 메모리 할당량 및 JVM 인수를 설정합니다.
+    networkDescription: 다운로드 미러, 프록시 설정 및 동시 작업 제한을 구성합니다.
+  shaderpack:
+    searchTitle: 셰이더팩 검색
+    searchDescription: Modrinth, CurseForge 또는 로컬 캐시에서 셰이더를 검색합니다.
+    listTitle: 셰이더팩 목록
+    listDescription: 설치된 셰이더를 탐색하고 간편하게 전환합니다.
+    detailTitle: 셰이더팩 세부 정보
+    detailDescription: 제작자, 요구 해상도, 프리셋 및 세부 옵션을 확인합니다.
 universalDrop:
   unknownResource: 알 수 없음
 unresolvedFiles:

@@ -1227,15 +1227,24 @@ search:
   noResults: Нічого не знайдено
   pageSize: Результатів на сторінці
 server:
+  launch: Запустити сервер
+  stop: Зупинити сервер
   acceptingMinecraftVersion: Приймає версію Minecraft
+  addServer: Додати сервер
+  address: Адреса сервера
+  addressHint: наприклад mc.hypixel.net
+  bindUpstream: Прив'язати як апстрім
+  boundUpstream: Апстрім сервера прив'язано
+  boundUpstreamHint: Цей екземпляр слідує версії Minecraft прив'язаного сервера.
   creationHint: Будь ласка, заповніть адресу сервера та пропінгуйте сервер
+  editServer: Редагувати сервер
+  emptyHint: У servers.dat цього екземпляра ще немає серверів. Додайте один, щоб почати.
+  entryCount: '{count} сервер | {count} сервери | {count} серверів'
   expectedVersions: Підтримувані версії
   export: Експортувати сервер
-  exportNoFilesHint: >-
-    Файлів сервера не знайдено. Ви можете один раз запустити сервер локально, щоб згенерувати деякі файли.
+  exportNoFilesHint: Файлів сервера не знайдено. Встановіть сервер один раз, щоб згенерувати потрібні файли.
   exportOption: Опції експорту сервера
-  exportSSHAuthenticationFailed: >-
-    Усі методи автентифікації не вдалися. Будь ласка, перевірте ім'я користувача/пароль або приватний ключ.
+  exportSSHAuthenticationFailed: Усі методи автентифікації не вдалися. Перевірте ім'я користувача/пароль або приватний ключ.
   exportSSHOptions: Опції SSH
   exportSSHPrivateKeyPath: Шлях до приватного ключа SSH
   exportSSHRemotePath: Віддалений шлях сервера
@@ -1245,19 +1254,129 @@ server:
   hostHint: Хост (з портом) сервера
   hostRequired: Будь ласка, введіть IP-адресу сервера
   ipAddress: IP-адреса
+  launchClient: Запустити клієнт
+  launchPinned: Закріплено
+  launchTargetHint: Цей екземпляр запускається безпосередньо у закріплений сервер. Перемкнутися назад на клієнт?
   maxPlayers: Макс. гравців
   motd: MOTD сервера
+  nameHint: Відображувана назва у списку мережевої гри
   nogui: Без графічного інтерфейсу сервера
-  onlineMode: Онлайн-режим
+  onlineMode: Онлайн-режим (тільки ліцензія)
+  pin: Закріпити сервер
+  pinAfterSave: Закріпити як ціль запуску за замовчуванням після збереження
   ping: Пінг
   pings: Пінги
+  pinnedHeader: 'закріплено: {name}'
   players: Гравці
   port: Порт
+  clearLog: Очистити журнал
+  log: Журнал сервера
+  logWaiting: Вивід сервера з'явиться тут після запуску.
+  remoteActionSuccess: Готово.
+  remoteAdmin: Керування віддаленим сервером
+  remoteAuthMethod: Автентифікація
+  remoteAuthPassword: Пароль
+  remoteAuthPrivateKey: Приватний ключ
+  remoteBuildOfflinePackage: Створити автономний пакет
+  remoteConnected: Підключено
+  remoteConnection: З'єднання
+  remoteDeployment: Розгортання
+  remoteDeploy: Розгорнути
+  remoteDisk: Диск
+  remoteConfigFiles: Файли конфігурації
+  remoteExtraFiles: Додаткові файли
+  remoteForgetCredentials: Забути збережені облікові дані
+  remoteInstallService: Встановити службу
+  remoteLoad: Середнє навантаження
+  remoteLog: Віддалений журнал
+  remoteMemory: Пам'ять
+  remoteMods: Моди
+  remoteNoWorldSelected: Світ екземпляра не вибрано
+  remoteJavaRequired: Java недоступна на віддаленому хості Linux.
+  remoteLinuxRequired: Підтримуються лише цілі Linux через SSH.
+  remoteNotConfiguredHint: Заповніть дані підключення вище та збережіть, щоб увімкнути статус, керування службою та журнал.
+  remotePathNotWritable: Віддалена папка сервера недоступна для запису.
+  remotePathWritable: Папка доступна для запису
+  remotePolicyInitialize: Ініціалізувати один раз
+  remotePolicyMirror: Дзеркало
+  remotePolicyOverlay: Накладання
+  remotePolicyPreserve: Зберегти
+  remotePreview: Попередній перегляд змін
+  remotePhase:
+    connect: Підключення
+    error: Помилка узгодження
+    idle: Готово до узгодження
+    inspect: Перевірка цілі
+    install: Встановлення сервера
+    logs: Підключення консолі
+    ready: Бажаний стан застосовано
+    service: Забезпечення служби systemd
+    start: Запуск сервера
+    sync: Синхронізація бажаного стану
+    world: Застосування політики світу
+  remoteRememberCredentials: Запам'ятати облікові дані (зв'язка ключів ОС)
+  remoteReconcileReady: Ціль відповідає цьому екземпляру, консоль підключена.
+  remoteRestartService: Перезапустити
+  remoteSavedCredentialsHint: Використовуються збережені дані — залиште порожнім, щоб зберегти, або введіть нові.
+  remoteService: Служба systemd
+  remoteServiceActive: Працює
+  remoteServerInstalled: Файли сервера встановлено
+  remoteServiceName: Назва служби
+  remoteServiceNameHint: назва юніта systemd --user, наприклад mc-server
+  remoteSelectedFiles: 'Вибрано {count} файлів сервера'
+  remoteSelectFiles: Вибрати файли
+  remoteStartCommand: Команда запуску
+  remoteStartCommandHint: наприклад java -jar server.jar nogui
+  remoteStartService: Запустити
+  remoteStatus: Стан
+  remoteSystemdRequired: Користувацькі служби systemd недоступні на віддаленому хості Linux.
+  remoteTargetName: Назва цілі
+  remoteStopService: Зупинити
+  remoteStopWatchLog: Зупинити стеження
+  remoteTestConnection: Перевірити з'єднання
+  remoteTestConnectionSuccess: З'єднання успішне.
+  remoteUninstallConfirmMessage: Це вимкне та видалить юніт systemd на віддаленому хості. Файли сервера не видаляються.
+  remoteUninstallService: Видалити службу
+  remoteRunInstall: Встановити або відновити
+  remoteWatchLog: Стежити за журналом наживо
+  remoteWorldAlways: Замінювати під час кожного узгодження
+  remoteWorldDeployment: Розгортання світу екземпляра
+  remoteWorldDeploymentHint: Звичайна синхронізація ніколи не завантажує світ, якщо це явно не дозволено цією політикою.
+  remoteWorldFirstInstall: Ініціалізувати, лише якщо на цілі немає світу
+  remoteWorldNever: Ніколи не завантажувати світ
+  remoteWorldPresent: Світ на цілі
+  remoteWorld: Світ
+  remoteWorldWillDeploy: Вибраний світ екземпляра буде завантажено цим узгодженням.
+  serverName: Назва сервера
+  serviceInstall: Встановити службу
+  serviceManagedLaunch: Використовувати службу ОС для запуску та зупинки
+  serviceManager: Системна служба
+  serviceName: Назва служби
+  serviceNameHint: Стабільний ідентифікатор із літер, цифр, крапок, підкреслень або дефісів
+  serviceNotInstalled: Не встановлено
+  serviceStartCommand: Команда запуску
+  serviceSystemd: systemd --user
+  serviceWindows: Служба Windows
+  serviceWindowsCommandHint: Команда Java генерується з цього екземпляра під час встановлення служби.
+  serversListTitle: Список серверів
+  target: Ціль сервера
+  targetLocal: localhost
+  targetLocalHint: Встановити та запустити сервер на цьому комп'ютері.
+  targetRemote: SSH-сервер
+  targetRemoteHint: Підключення, встановлення, запуск та моніторинг сервера через SSH.
+  unbindUpstream: Відв'язати
   unknown: Невідомий сервер
   unknownDescription: Невідомий сервер. Будь ласка, оновіть
+  unpin: Відкріпити
   upload: Завантажити сервер
+  upstreamUpToDate: 'Ваш екземпляр відповідає серверу ({version}).'
+  upstreamUpToDateHint: Оновлення не потрібне. Натисніть для повторного пінгу сервера.
+  upstreamUpdateAvailable: 'На сервері працює Minecraft {version}. Натисніть, щоб застосувати.'
+  upstreamUpdateHint: Застосовує рекомендовану версію Minecraft до цього екземпляра.
+  useAsUpstreamHint: Екземпляр слідуватиме за версією Minecraft, про яку повідомляє сервер.
   version: Сервер вимагає версію
   versionHint: Версія Minecraft для пінгування
+  worldPreserve: Зберегти світ на цілі
 serverStatus:
   nohost: §4Не вдалося знайти хост!
   ping: Пінг...
@@ -1589,6 +1708,7 @@ store:
   trending: В тренді
   empty: Модпаки не знайдено
   emptyHint: Спробуйте змінити фільтри або пошуковий запит.
+  searchHint: Пошук модпаків...
 tag:
   create: Створити тег
   createSelected: Створити тег для вибраного
@@ -1627,45 +1747,106 @@ turnRegion:
   liaoning: Ляонін, Китай
   po: Польща
 tutorial:
-  feedbackDescription: >-
-    Якщо у вас виникнуть проблеми, будь ласка, натисніть цю кнопку, щоб надіслати відгук!
-  hideNewsHeaderDescription: >-
-    Зліва ви бачите вітрину новин. Натискання цієї кнопки може приховати цю вітрину.
+  feedbackDescription: Якщо у вас виникнуть проблеми, будь ласка, натисніть цю кнопку, щоб надіслати відгук!
+  hideNewsHeaderDescription: Зліва ви бачите вітрину новин. Натискання цієї кнопки може приховати цю вітрину.
   instance:
+    appearanceThemeDescription: Налаштуйте фонове зображення, кольори та візуальне оформлення для цього екземпляра.
+    appearanceThemeTitle: Зовнішній вигляд екземпляра
     iconDescription: Натисніть, щоб змінити іконку.
     iconTitle: Іконка екземпляра
     javaDescription: Виберіть або змініть версію Java.
     javaImportDescription: Імпортувати Java з локального сховища.
     javaImportTitle: Імпортувати Java
     javaTitle: Список Java
-  instanceAddDescription: >-
-    Натисніть цю кнопку, щоб імпортувати наявний екземпляр Minecraft або створити новий з нуля чи з модпаку.
-  instanceSelectDescription: >-
-    Натискання цієї кнопки перенаправить на сторінку вибору гри та читання новин.
+    modpackExportDescription: Зберіть та запакуйте налаштований екземпляр у готовий для поширення модпак.
+    modpackExportTitle: Експорт модпаку
+    modpackFilesDescription: Виберіть, які конфігураційні файли, моди та ресурси слід включити в експортований модпак для клієнта та сервера.
+    modpackFilesTitle: Файли для включення
+    modpackMetaDescription: Вкажіть версію модпаку, автора, опис та посилання на сайт.
+    modpackMetaTitle: Інформація про модпак
+    modpackOptionsDescription: Виберіть папку для експорту та формати (такі як модпак Modrinth або CurseForge).
+    modpackOptionsTitle: Параметри експорту
+    serverLaunchDescription: Запуск або зупинка виділеного сервера для цього екземпляра безпосередньо з заголовка.
+    serverLaunchTitle: Запуск / зупинка сервера
+    serverPropertiesDescription: Налаштуйте параметри сервера, такі як порт, складність, MOTD, ліміт гравців та правила гри.
+    serverPropertiesTitle: Налаштування сервера
+    serverServiceDescription: Керуйте сервером як фоновою службою ОС (systemd або Windows Service) для постійної роботи у фоні.
+    serverServiceTitle: Системна служба
+    serverTargetDescription: Виберіть між локальним запуском сервера на комп'ютері або керуванням віддаленим Linux-сервером через SSH.
+    serverTargetTitle: Ціль сервера
+    versionDescription: Виберіть версію Minecraft, завантажувачі Forge, Fabric, Quilt або NeoForge.
+    versionTitle: Версія Minecraft та завантажувача
+  instanceAddDescription: Натисніть цю кнопку, щоб імпортувати наявний екземпляр Minecraft або створити новий з нуля чи з модпаку.
+  instanceSelectDescription: Натискання цієї кнопки перенаправить на сторінку вибору гри та читання новин.
   launchDescription: Натисніть цю кнопку, щоб встановити або запустити гру.
   mod:
-    defaultSourceDescription: >-
-      Тут ви можете вибрати джерело деталей модів. Є моди, опубліковані як на Modrinth, так і на Curseforge. Якщо ви хочете перемикатися між цими двома постачальниками контенту, ви можете змінити значення тут.
+    defaultSourceDescription: Тут ви можете вибрати джерело деталей модів. Є моди, опубліковані як на Modrinth, так і на Curseforge. Якщо ви хочете перемикатися між цими двома постачальниками контенту, ви можете змінити значення тут.
     defaultSourceTitle: Вибрати джерело контенту модів
-    detailDescription: >-
-      Коли ви вибираєте елемент зліва, ви побачите деталі мода. Контент може надходити з Modrinth, Curseforge або бути розібраним з вмісту мода.
+    detailDescription: Коли ви вибираєте елемент зліва, ви побачите деталі мода. Контент може надходити з Modrinth, Curseforge або бути розібраним з вмісту мода.
     detailTitle: Деталі мода
-    listDescription: >-
-      Ми відображатимемо встановлені моди, коли у вас немає жодного введення. Ви побачите знайдені моди, як тільки ваше введення міститиме ключове слово або вибрану категорію.
+    listDescription: Ми відображатимемо встановлені моди, коли у вас немає жодного введення. Ви побачите знайдені моди, як тільки ваше введення міститиме ключове слово або вибрану категорію.
     listTitle: Встановлений або пошуковий мод
-    searchDescription: >-
-      За допомогою цього поля пошуку ви можете шукати моди на Modrinth, Curseforge або у вашому локальному кеші.
+    searchDescription: За допомогою цього поля пошуку ви можете шукати моди на Modrinth, Curseforge або у вашому локальному кеші.
     searchTitle: Шукати моди
-  recentPlayDescription: >-
-    Створені ігри будуть перераховані тут. Ви можете перемикати види тут, щоб також бачити встановлені версії та завантажені модпаки.
-  storePoupularModpackDescription: >-
-    У цьому розділі ви побачите найпопулярніші модпаки на Curseforge та Modrinth.
+  recentPlayDescription: Створені ігри будуть перераховані тут. Ви можете перемикати види тут, щоб також бачити встановлені версії та завантажені модпаки.
+  storePoupularModpackDescription: У цьому розділі ви побачите найпопулярніші модпаки на Curseforge та Modrinth.
   storeSearchCategoryDescription: Тут ви також можете перемикати категорії або фільтри.
-  storeSearchDescription: >-
-    Ви можете шукати модпаки, вводячи текст у це поле. Натисніть Enter для пошуку.
+  storeSearchDescription: Ви можете шукати модпаки, вводячи текст у це поле. Натисніть Enter для пошуку.
   storeSearchResultDescription: Тут ви побачите всі результати пошуку.
-  userAccountDescription: >-
-    Натисніть цю іконку, щоб додати або керувати вашим обліковим записом Minecraft.
+  userAccountDescription: Натисніть цю іконку, щоб додати або керувати вашим обліковим записом Minecraft.
+  tooltip: Довідка та огляд
+  done: Зрозуміло!
+  helpDescription: Інтерактивний посібник із лаунчера та поточної сторінки.
+  blueprint:
+    searchTitle: Пошук креслень
+    searchDescription: Шукайте локальні та спільнотні креслення за назвою чи тегом.
+    listTitle: Список креслень
+    listDescription: Переглядайте всі збережені креслення екземплярів та шаблони.
+    detailTitle: Деталі креслення
+    detailDescription: Переглядайте вміст креслення, моди та створюйте нові екземпляри.
+  me:
+    instancesTitle: Керування екземплярами
+    instancesDescription: Переглядайте всі встановлені екземпляри, групуйте за папками чи датою та запускайте.
+    profileTitle: Профіль та акаунти
+    profileDescription: Перемикайтеся між акаунтами та керуйте обліковими записами.
+    skinTitle: Налаштування скіна й плаща
+    skinDescription: Переглядайте персонажа у 3D, змінюйте скіни та надягайте плащі.
+  multiplayer:
+    railTitle: Мережа та навігація
+    railDescription: Перевіряйте тип NAT, стан мережі та перемикайтеся між підключеннями й налаштуваннями.
+    groupTitle: Приєднання або створення кімнати
+    groupDescription: Введіть код кімнати, щоб приєднатися до друзів, або залиште порожнім для створення власної.
+    joinDescription: Натисніть, щоб приєднатися до наявної кімнати або створити нову.
+    contentTitle: Підключені учасники та контент
+    contentDescription: Керуйте учасниками, переглядайте пінг та діліться запущеними клієнтами Minecraft.
+    manualDescription: Ручне пряме P2P-з'єднання з друзями через обмін даними SDP.
+  resourcepack:
+    searchTitle: Пошук ресурспаків
+    searchDescription: Шукайте ресурспаки на Modrinth, CurseForge або у локальних файлах.
+    listTitle: Список ресурспаків
+    listDescription: Переглядайте встановлені ресурспаки, вмикайте або вимикайте їх та змінюйте порядок.
+    detailTitle: Деталі ресурспаку
+    detailDescription: Переглядайте скріншоти, опис, сумісні версії Minecraft та файли.
+  save:
+    searchTitle: Пошук світів
+    searchDescription: Фільтруйте та знаходьте світи поточного екземпляра за назвою.
+    listTitle: Список світів
+    listDescription: Переглядайте всі збережені світи з ігровим режимом, датою та розміром.
+    detailTitle: Деталі світу та дії
+    detailDescription: Створюйте резервні копії, експортуйте, переглядайте level.dat та налаштування світу.
+  settings:
+    navDescription: Перемикайтеся між основними, візуальними, глобальними ігровими та мережевими налаштуваннями.
+    generalDescription: Налаштуйте мову лаунчера, каталог даних, канали оновлень та параметри запуску.
+    appearanceDescription: Налаштуйте тему, шпалери, акцентні кольори та стиль інтерфейсу.
+    globalDescription: Встановіть стандартну версію Java, виділення пам'яті та аргументи JVM.
+    networkDescription: Налаштуйте дзеркала завантаження, параметри проксі та обмеження завдань.
+  shaderpack:
+    searchTitle: Пошук шейдерпаків
+    searchDescription: Шукайте шейдерпаки на Modrinth, CurseForge або в локальному кеші.
+    listTitle: Список шейдерпаків
+    listDescription: Переглядайте встановлені шейдери та швидко перемикайтеся між ними.
+    detailTitle: Деталі шейдерпаку
+    detailDescription: Інформація про автора шейдера, роздільну здатність, пресети та опції.
 universalDrop:
   unknownResource: Невідомий ресурс
 unresolvedFiles:

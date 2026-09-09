@@ -4,7 +4,7 @@
     class="d-flex fill-height setting-page"
   >
     <!-- Navigation Sidebar (Only in Wide/Scroll Mode) -->
-    <nav v-if="!isNarrowView" class="setting-sidebar pt-6 pl-4 pr-2" :aria-label="t('setting.name', 2)">
+    <nav v-if="!isNarrowView" id="settings-nav" class="setting-sidebar pt-6 pl-4 pr-2" :aria-label="t('setting.name', 2)">
       <v-card class="surface-card-subsection" :elevation="tokens.cardSubsectionElevation.value">
         <v-list nav density="compact" color="transparent" :selected="[activeSectionIndex]" @update:selected="v => activeSectionIndex = (v[0] as number) ?? 0">
           <v-list-subheader class="text-uppercase font-weight-bold grey--text text--darken-1 text-caption pl-4 mb-1">
@@ -112,6 +112,7 @@ import SettingGlobal from './SettingGlobal.vue'
 import SettingAbout from './SettingAbout.vue'
 import SettingNetwork from './SettingNetwork.vue'
 import { usePresence } from '@/composables/presence'
+import { useTutorial } from '@/composables/tutorial'
 import { kUpdateSettings, useUpdateSettings } from '@/composables/setting'
 import { kSurfaceTokens } from '@/composables/surfaceTokens'
 import { injection } from '@/util/inject'
@@ -205,6 +206,46 @@ function onScroll() {
     }
   }
 }
+
+useTutorial(
+  computed(() => [
+    {
+      element: '#settings-nav',
+      popover: {
+        title: t('setting.name', 2),
+        description: t('tutorial.settings.navDescription'),
+      },
+    },
+    {
+      element: '#general',
+      popover: {
+        title: t('setting.general'),
+        description: t('tutorial.settings.generalDescription'),
+      },
+    },
+    {
+      element: '#appearance',
+      popover: {
+        title: t('setting.appearance'),
+        description: t('tutorial.settings.appearanceDescription'),
+      },
+    },
+    {
+      element: '#global',
+      popover: {
+        title: t('setting.globalSetting'),
+        description: t('tutorial.settings.globalDescription'),
+      },
+    },
+    {
+      element: '#network',
+      popover: {
+        title: t('setting.network'),
+        description: t('tutorial.settings.networkDescription'),
+      },
+    },
+  ]),
+)
 </script>
 
 <style scoped>

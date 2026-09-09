@@ -1186,15 +1186,24 @@ search:
   noResults: Нәтиже табылмады
   pageSize: Беттегі нәтижелер саны
 server:
+  launch: Серверді іске қосу
+  stop: Серверді тоқтату
   acceptingMinecraftVersion: Қабылдайтын Minecraft нұсқасы
+  addServer: Сервер қосу
+  address: Сервер мекенжайы
+  addressHint: мыс. mc.hypixel.net
+  bindUpstream: Негізгі ретінде байлау
+  boundUpstream: Негізгі сервер байланды
+  boundUpstreamHint: Бұл инстанс байланған сервердің Minecraft нұсқасын бақылайды.
   creationHint: Сервер мекенжайын толтырып, серверге ping жасаңыз
+  editServer: Серверді өңдеу
+  emptyHint: Бұл инстанстың servers.dat файлында әзірге серверлер жоқ. Бастау үшін қосыңыз.
+  entryCount: '{count} сервер'
   expectedVersions: Қолдау көрсетілетін нұсқалар
   export: Серверді экспорттау
-  exportNoFilesHint: >-
-    Сервер файлдары табылмады. Кейбір файлдарды генерациялау үшін серверді жергіліктіде бір рет іске қосыңыз.
+  exportNoFilesHint: Сервер файлдары табылмады. Кейбір файлдарды генерациялау үшін серверді жергіліктіде бір рет іске қосыңыз.
   exportOption: Сервер экспорттау опциялары
-  exportSSHAuthenticationFailed: >-
-    Барлық аутентификация әдістері сәтсіз аяқталды. Пайдаланушы аты/құпиясөзді немесе жеке кілтті тексеріңіз.
+  exportSSHAuthenticationFailed: Барлық аутентификация әдістері сәтсіз аяқталды. Пайдаланушы аты/құпиясөзді немесе жеке кілтті тексеріңіз.
   exportSSHOptions: SSH опциялары
   exportSSHPrivateKeyPath: SSH жеке кілт жолы
   exportSSHRemotePath: Қашықтағы сервер жолы
@@ -1204,19 +1213,129 @@ server:
   hostHint: Сервердің хосты (портымен бірге)
   hostRequired: Сервер IP мекенжайын енгізіңіз
   ipAddress: IP мекенжайы
+  launchClient: Оның орнына клиентті іске қосу
+  launchPinned: Бекітілген
+  launchTargetHint: Бұл инстанс тікелей бекітілген серверге қосылады. Клиентке қайта ауысу керек пе?
   maxPlayers: Максимал ойыншылар
   motd: Сервер MOTD
+  nameHint: Желілік тізімде көрсетілетін атау
   nogui: Сервер интерфейсі жоқ
   onlineMode: Онлайн режим
+  pin: Серверді бекіту
+  pinAfterSave: Сақтағаннан кейін әдепкі іске қосу мақсаты ретінде бекіту
   ping: Ping
   pings: Ping-тер
+  pinnedHeader: 'Бекітілген: {name}'
   players: Ойыншылар
   port: Порт
+  clearLog: Журналды тазалау
+  log: Сервер журналы
+  logWaiting: Сервер деректері күтілуде...
+  remoteActionSuccess: Done.
+  remoteAdmin: Қашықтағы сервер әкімшісі
+  remoteAuthMethod: Аутентификация
+  remoteAuthPassword: Құпия сөз
+  remoteAuthPrivateKey: Жеке кілт
+  remoteBuildOfflinePackage: Офлайн пакет жасау
+  remoteConnected: Қосылған
+  remoteConnection: Қосылым
+  remoteDeployment: Орналастыру
+  remoteDeploy: Орналастыру
+  remoteDisk: Disk
+  remoteConfigFiles: Баптау файлдары
+  remoteExtraFiles: Қосымша файлдар
+  remoteForgetCredentials: Сақталған деректерді ұмыту
+  remoteInstallService: Қызметті орнату
+  remoteLoad: Жүктеу
+  remoteLog: Қашықтағы сервер журналы
+  remoteMemory: Жад
+  remoteMods: Mods
+  remoteNoWorldSelected: Инстанс әлемі таңдалмаған
+  remoteJavaRequired: Қашықтағы Linux хостында Java табылмады.
+  remoteLinuxRequired: Тек SSH арқылы Linux қолдау табады.
+  remoteNotConfiguredHint: Күйді, қызметті және журналдарды қосу үшін жоғарыдағы қосылым мәліметтерін толтырыңыз.
+  remotePathNotWritable: Қашықтағы сервер каталогына жазу рұқсаты жоқ.
+  remotePathWritable: Каталогқа жазуға болады
+  remotePolicyInitialize: Бір рет іске қосу
+  remotePolicyMirror: Айна (Mirror)
+  remotePolicyOverlay: Қабаттастыру
+  remotePolicyPreserve: Сақтау
+  remotePreview: Өзгерістерді алдын ала қарау
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: Деректерді есте сақтау (ОЖ кілттер қоймасы)
+  remoteReconcileReady: Нысана осы инстансқа сәйкес келеді және консоль қосылған.
+  remoteRestartService: Қызметті қайта қосу
+  remoteSavedCredentialsHint: Сақталған деректер қолданылуда — өзгеріссіз қалдыру үшін бос қойыңыз.
+  remoteService: systemd қызметі
+  remoteServiceActive: Жұмыс істеп тұр
+  remoteServerInstalled: Сервер файлдары орнатылды
+  remoteServiceName: Қызмет атауы
+  remoteServiceNameHint: systemd --user бірлік атауы, мыс. mc-server
+  remoteSelectedFiles: '{count} сервер файлы таңдалды'
+  remoteSelectFiles: Файлдарды таңдау
+  remoteStartCommand: Іске қосу пәрмені
+  remoteStartCommandHint: мыс. java -jar server.jar nogui
+  remoteStartService: Start
+  remoteStatus: Күйі
+  remoteSystemdRequired: Қашықтағы хостта systemd пайдаланушы қызметтері қолжетімсіз.
+  remoteTargetName: Нысана атауы
+  remoteStopService: Stop
+  remoteStopWatchLog: Бақылауды тоқтату
+  remoteTestConnection: Қосылымды тексеру
+  remoteTestConnectionSuccess: Қосылым сәтті аяқталды.
+  remoteUninstallConfirmMessage: Бұл қашықтағы хосттағы systemd бірлігін өшіреді. Сервер файлдары өзгеріссіз қалады.
+  remoteUninstallService: Қызметті жою
+  remoteRunInstall: Орнату немесе жөндеу
+  remoteWatchLog: Журналды тікелей бақылау
+  remoteWorldAlways: Әр синхрондауда ауыстыру
+  remoteWorldDeployment: Инстанс әлемін орналастыру
+  remoteWorldDeploymentHint: Арнайы рұқсат берілмесе, кәдімгі синхрондау әлемді ешқашан жүктемейді.
+  remoteWorldFirstInstall: Тек серверде әлем болмағанда ғана іске қосу
+  remoteWorldNever: Әлемді ешқашан жүктемеу
+  remoteWorldPresent: Сервердегі әлем
+  remoteWorld: World
+  remoteWorldWillDeploy: Таңдалған әлем осы синхрондау кезінде жүктеледі.
+  serverName: Сервер атауы
+  serviceInstall: Қызметті орнату
+  serviceManagedLaunch: Қызмет арқылы басқарылатын іске қосу
+  serviceManager: Қызмет реттегіші
+  serviceName: Қызмет атауы
+  serviceNameHint: Жүйелік қызмет атауы
+  serviceNotInstalled: Қызмет орнатылмаған
+  serviceStartCommand: Қызметті іске қосу пәрмені
+  serviceSystemd: systemd --user
+  serviceWindows: Windows қызметі
+  serviceWindowsCommandHint: Windows қызметінің пәрмені
+  serversListTitle: Серверлер
+  target: Нысана
+  targetLocal: localhost
+  targetLocalHint: Осы компьютерде жергілікті орындау
+  targetRemote: Қашықтағы сервер (SSH)
+  targetRemoteHint: SSH арқылы қашықтағы Linux серверін басқару
+  unbindUpstream: Байланысты үзу
   unknown: Белгісіз сервер
   unknownDescription: Белгісіз сервер. Жаңартып көріңіз
+  unpin: Unpin
   upload: Серверді жүктеп салу
+  upstreamUpToDate: Инстансыңыз серверге сәйкес келеді ({version}).
+  upstreamUpToDateHint: Жаңарту қажет емес. Қайта тексеру үшін басыңыз.
+  upstreamUpdateAvailable: Сервер қазір Minecraft {version} нұсқасын орындайды. Қолдану үшін басыңыз.
+  upstreamUpdateHint: Ұсынылған Minecraft нұсқасын осы инстансқа қолданады.
+  useAsUpstreamHint: Инстанс сервер хабарлаған Minecraft нұсқасын бақылайтын болады.
   version: Сервер қажет ететін нұсқа
   versionHint: Ping жасау үшін Minecraft нұсқасы
+  worldPreserve: Сервердегі әлемді сақтау
 serverStatus:
   nohost: §4Хост табылмады!
   ping: Ping...
@@ -1540,6 +1659,7 @@ store:
   trending: Trending
   empty: Модпак табылмады
   emptyHint: Сүзгілерді немесе іздеу сұрауын реттеп көріңіз.
+  searchHint: Модпактарды іздеу...
 tag:
   create: Тег жасау
   createSelected: Таңдалғандар үшін тег жасау
@@ -1577,43 +1697,106 @@ turnRegion:
   liaoning: Ляонин, Қытай
   po: Польша
 tutorial:
-  feedbackDescription: >-
-    Егер сізде кез келген мәселе туындаса, бұл батырманы басып, кері байланыс жіберуіңізге болады!
-  hideNewsHeaderDescription: >-
-    Сіз сол жақта жаңалықтар көрмесін көре аласыз. Бұл көрмесіні жасыру үшін бұл батырманы басыңыз.
+  feedbackDescription: Егер сізде кез келген мәселе туындаса, бұл батырманы басып, кері байланыс жіберуіңізге болады!
+  hideNewsHeaderDescription: Сіз сол жақта жаңалықтар көрмесін көре аласыз. Бұл көрмесіні жасыру үшін бұл батырманы басыңыз.
   instance:
-    iconDescription: Таңбашаны өзгерту үшін басыңыз.
-    iconTitle: Жеке жағдай таңбашасы
+    appearanceThemeDescription: Осы инстанс үшін фондық суретті, түстерді және визуалды стильді баптаңыз.
+    appearanceThemeTitle: Инстанстың сыртқы көрінісі
+    iconDescription: Белгішені өзгерту үшін басыңыз.
+    iconTitle: Инстанс белгішесі
     javaDescription: Java нұсқасын таңдаңыз немесе ауыстырыңыз.
-    javaImportDescription: Java-ны жергілікті сақтау орнынан импорттаңыз.
+    javaImportDescription: Жергілікті жадтан Java ортасын импорттаңыз.
     javaImportTitle: Java импорттау
     javaTitle: Java тізімі
-  instanceAddDescription: >-
-    Бар болып тұрған Minecraft жеке жағдайын импорттау немесе нөлден немесе мод-пактан жаңасын жасау үшін бұл батырманы басыңыз.
+    modpackExportDescription: Бапталған инстансты бөлісуге дайын модпак ретінде жинақтаңыз.
+    modpackExportTitle: Модпакты экспорттау
+    modpackFilesDescription: Клиент пен сервер үшін қамтылатын конфигурацияларды, модтар мен ресурстарды таңдаңыз.
+    modpackFilesTitle: Қосылған файлдар
+    modpackMetaDescription: Модпак нұсқасын, авторын, сипаттамасын және сайт сілтемесін көрсетіңіз.
+    modpackMetaTitle: Модпак мәліметтері
+    modpackOptionsDescription: Мақсатты қалтаны және пішімдерді (Modrinth немесе CurseForge сияқты) таңдаңыз.
+    modpackOptionsTitle: Экспорт опциялары
+    serverLaunchDescription: Осы инстанстың жеке серверін тікелей тақырыпшадан іске қосыңыз немесе тоқтатыңыз.
+    serverLaunchTitle: Серверді қосу / тоқтату
+    serverPropertiesDescription: Портты, қиындықты, MOTD, ойыншылар шегін және ойын ережелерін баптаңыз.
+    serverPropertiesTitle: Сервер конфигурациясы
+    serverServiceDescription: Тұрақты жұмыс істеуі үшін серверді фондық ОЖ қызметі ретінде басқарыңыз.
+    serverServiceTitle: Жүйелік қызмет
+    serverTargetDescription: Компьютерде жергілікті орындау немесе SSH арқылы қашықтағы Linux серверін басқару.
+    serverTargetTitle: Сервер мақсаты
+    versionDescription: Minecraft нұсқасын және Forge, Fabric, Quilt немесе NeoForge жүктеуіштерін таңдаңыз.
+    versionTitle: Minecraft және Жүктеуіш нұсқасы
+  instanceAddDescription: Бар болып тұрған Minecraft жеке жағдайын импорттау немесе нөлден немесе мод-пактан жаңасын жасау үшін бұл батырманы басыңыз.
   instanceSelectDescription: Бұл батырманы басу ойынды таңдау және жаңалықтарды оқу бетіне өтеді.
   launchDescription: Ойынды орнату немесе іске қосу үшін бұл батырманы басыңыз.
   mod:
-    defaultSourceDescription: >-
-      Модтардың егжей-тегжейлі көзін осы жерден таңдай аласыз. Модтар Modrinth және Curseforge-ке жарияланған. Егер сіз осы екі контент провайдері арасында ауысуғы келсеңіз, мәнін осы жерден өзгерте аласыз.
+    defaultSourceDescription: Модтардың егжей-тегжейлі көзін осы жерден таңдай аласыз. Модтар Modrinth және Curseforge-ке жарияланған. Егер сіз осы екі контент провайдері арасында ауысуғы келсеңіз, мәнін осы жерден өзгерте аласыз.
     defaultSourceTitle: Мод контент көзін таңдау
-    detailDescription: >-
-      Сіз сол жақта элементті таңдағанда, модтың егжей-тегжейлерін көресіз. Контент Modrinth, Curseforge немесе талданған модтың мазмұнынан келуі мүмкін.
+    detailDescription: Сіз сол жақта элементті таңдағанда, модтың егжей-тегжейлерін көресіз. Контент Modrinth, Curseforge немесе талданған модтың мазмұнынан келуі мүмкін.
     detailTitle: Мод егжей-тегжейлі
-    listDescription: >-
-      Сізде ешқандай енгізу болмағанда орнатылған модтарды көрсетеміз. Сіздің енгізуіңізде кілт сөз немесе санат таңдалғанда ізделген модтарды көресіз.
+    listDescription: Сізде ешқандай енгізу болмағанда орнатылған модтарды көрсетеміз. Сіздің енгізуіңізде кілт сөз немесе санат таңдалғанда ізделген модтарды көресіз.
     listTitle: Орнатылған немесе ізделген мод
-    searchDescription: >-
-      Сіз осы іздеу жолы арқылы Modrinth, Curseforge немесе жергілікті кэштен модтарды іздеуіңізге болады.
+    searchDescription: Сіз осы іздеу жолы арқылы Modrinth, Curseforge немесе жергілікті кэштен модтарды іздеуіңізге болады.
     searchTitle: Модтарды іздеу
-  recentPlayDescription: >-
-    Жасалған ойындар осы жерде тізіледі. Сіз орнатылған нұсқаларды және жүктелген мод-пактарды көру үшін көріністерді ауыстыра аласыз.
-  storePoupularModpackDescription: >-
-    Сіз бұл бөлімде Curseforge және Modrinth-тегі ең танымал мод-пактарды көресіз.
+  recentPlayDescription: Жасалған ойындар осы жерде тізіледі. Сіз орнатылған нұсқаларды және жүктелген мод-пактарды көру үшін көріністерді ауыстыра аласыз.
+  storePoupularModpackDescription: Сіз бұл бөлімде Curseforge және Modrinth-тегі ең танымал мод-пактарды көресіз.
   storeSearchCategoryDescription: Сіз осы жерден санаттарды немесе сүзгілерді ауыстыра аласыз.
-  storeSearchDescription: >-
-    Мод-пактарды іздеу үшін осы мәтін жолына енгізіңіз. Іздеу үшін Enter басыңыз.
+  storeSearchDescription: Мод-пактарды іздеу үшін осы мәтін жолына енгізіңіз. Іздеу үшін Enter басыңыз.
   storeSearchResultDescription: Сіз барлық іздеу нәтижелерінің тізімі осы жерде көрсетілетінін көресіз.
   userAccountDescription: Minecraft тіркелгіңізді қосу немесе басқару үшін бұл белгішені басыңыз.
+  tooltip: Анықтама және Нұсқаулық
+  done: Түсінікті!
+  helpDescription: Лаунчер мен ағымдағы бетке арналған интерактивті нұсқаулық.
+  blueprint:
+    searchTitle: Блюпринттерді іздеу
+    searchDescription: Жергілікті және қауымдастық блюпринттерін атауы немесе тегі бойынша іздеңіз.
+    listTitle: Блюпринттер тізімі
+    listDescription: Сақталған инстанс блюпринттері мен үлгілерін қараңыз және басқарыңыз.
+    detailTitle: Блюпринт мәліметтері
+    detailDescription: Блюпринт мазмұнын, модтарды тексеріп, жаңа инстанстар жасаңыз.
+  me:
+    instancesTitle: Инстанстарды басқару
+    instancesDescription: Орнатылған барлық инстанстарды көріңіз, топтастырыңыз және іске қосыңыз.
+    profileTitle: Тіркелгі және Профиль
+    profileDescription: Тіркелгілер арасында ауысыңыз және кіру деректерін басқарыңыз.
+    skinTitle: Скин және Плащты баптау
+    skinDescription: Кейіпкерді 3D форматта қараңыз, скиндерді ауыстырыңыз және плащ тағыңыз.
+  multiplayer:
+    railTitle: Желі және Навигация
+    railDescription: NAT түрін, желі күйін тексеріңіз және қосылымдар мен параметрлерді ауыстырыңыз.
+    groupTitle: Бөлмеге қосылу немесе ашу
+    groupDescription: Достарыңызға қосылу үшін бөлме кодын енгізіңіз немесе өз бөлмеңізді ашыңыз.
+    joinDescription: Бар бөлмеге қосылу немесе жаңасын жасау үшін басыңыз.
+    contentTitle: Қосылған қатысушылар мен Мазмұн
+    contentDescription: Қатысушыларды басқарыңыз, пингті тексеріңіз және Minecraft ойындарын бөлісіңіз.
+    manualDescription: SDP алмасу арқылы достармен тікелей қолмен P2P қосылымы.
+  resourcepack:
+    searchTitle: Ресурспактарды іздеу
+    searchDescription: Modrinth, CurseForge немесе жергілікті файлдардан ресурспактарды іздеңіз.
+    listTitle: Ресурспактар тізімі
+    listDescription: Орнатылған пактарды көріңіз, қосыңыз/өшіріңіз және басымдығын реттеңіз.
+    detailTitle: Ресурспак мәліметтері
+    detailDescription: Скриншоттарды, сипаттамасын, үйлесімді нұсқаларын және файлдарды көріңіз.
+  save:
+    searchTitle: Әлемдерді іздеу
+    searchDescription: Ағымдағы инстанстағы әлемдерді аты бойынша іздеңіз.
+    listTitle: Әлемдер тізімі
+    listDescription: Ойын режимі, соңғы ойналған күні және өлшемі көрсетілген әлемдерді көріңіз.
+    detailTitle: Әлем мәліметтері мен Әрекеттер
+    detailDescription: Сақтық көшірме жасаңыз, экспорттаңыз, level.dat қараңыз немесе баптауларды өзгертіңіз.
+  settings:
+    navDescription: Жалпы, Сыртқы көрініс, Ойын параметрлері және Желі арасында ауысыңыз.
+    generalDescription: Лаунчер тілін, деректер каталогын, жаңарту арналарын және қосу параметрлерін реттеңіз.
+    appearanceDescription: Тақырыпты, тұсқағаздарды, түстерді және интерфейс стилін баптаңыз.
+    globalDescription: Әдепкі Java нұсқасын, жад көлемін және JVM параметрлерін көрсетіңіз.
+    networkDescription: Жүктеу айналарын, прокси параметрлерін және бір мезгілдегі тапсырмалар шегін баптаңыз.
+  shaderpack:
+    searchTitle: Шейдерпактарды іздеу
+    searchDescription: Modrinth, CurseForge немесе жергілікті кэштен шейдерлерді іздеңіз.
+    listTitle: Шейдерпактар тізімі
+    listDescription: Орнатылған шейдерлерді қараңыз және олардың арасында жылдам ауысыңыз.
+    detailTitle: Шейдерпак мәліметтері
+    detailDescription: Авторын, ажыратымдылық талаптарын, алдын ала орнатуларды және параметрлерді қараңыз.
 universalDrop:
   unknownResource: Белгісіз
 unresolvedFiles:

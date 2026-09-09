@@ -1324,24 +1324,26 @@ search:
   noResults: முடிவுகள் எதுவும் கிடைக்கவில்லை
   pageSize: ஒரு பக்கத்திற்கான முடிவுகள்
 server:
+  launch: சேவையகத்தைத் தொடங்கு
+  stop: சேவையகத்தை நிறுத்து
   acceptingMinecraftVersion: Minecraft பதிப்பை ஏற்றுக்கொள்கிறது
   addServer: சேவையகத்தைச் சேர்
   address: சேவையக முகவரி
   addressHint: எ.கா. mc.hypixel.net
-  bindUpstream: அப்ஸ்ட்ரீமாக பிணைக்கவும் (Bind as upstream)
-  boundUpstream: சேவையக அப்ஸ்ட்ரீம் பிணைக்கப்பட்டது
-  boundUpstreamHint: இந்த இன்ஸ்டன்ஸ் பிணைக்கப்பட்ட சேவையகத்தின் Minecraft பதிப்பைப் பின்பற்றுகிறது.
+  bindUpstream: அப்ஸ்ட்ரீமாக இணைக்கவும்
+  boundUpstream: அப்ஸ்ட்ரீம் சேவையகம் இணைக்கப்பட்டது
+  boundUpstreamHint: இந்த நிகழ்வு இணைக்கப்பட்ட சேவையகத்தின் Minecraft பதிப்பைப் பின்தொடரும்.
   creationHint: சேவையக முகவரியை நிரப்பி, சேவையகத்தை பிங் செய்யவும்
   editServer: சேவையகத்தைத் திருத்து
-  emptyHint: இந்த இன்ஸ்டன்ஸின் servers.dat இல் இன்னும் சேவையகங்கள் இல்லை. தொடங்க ஒன்றைச் சேர்க்கவும்.
-  entryCount: '{count} சேவையகம் | {count} சேவையகங்கள்'
+  emptyHint: இந்த நிகழ்வின் servers.dat-ல் சேவையகங்கள் எதுவும் இல்லை. தொடங்க ஒன்றைச் சேர்க்கவும்.
+  entryCount: '{count} சேவையகம்'
   expectedVersions: ஆதரிக்கப்படும் பதிப்புகள்
   export: சேவையகத்தை ஏற்றுமதி செய்
   exportNoFilesHint: சேவையக கோப்புகள் எதுவும் கிடைக்கவில்லை. சில கோப்புகளை உருவாக்க உள்ளூரில் ஒரு முறை சேவையகத்தை இயக்கலாம்.
   exportOption: சேவையக ஏற்றுமதி விருப்பங்கள்
   exportSSHAuthenticationFailed: அனைத்து அங்கீகார முறைகளும் தோல்வியடைந்தன. பயனர்பெயர்/கடவுச்சொல் அல்லது தனிப்பட்ட விசையைச் சரிபார்க்கவும்.
   exportSSHOptions: SSH விருப்பங்கள்
-  exportSSHPrivateKeyPath: SSH தனிப்பட்ட விசை பாதை
+  exportSSHPrivateKeyPath: SSH தனியார் விசை பாதை
   exportSSHRemotePath: தொலைதூர சேவையக பாதை
   exportToFolder: கோப்புறைக்கு ஏற்றுமதி செய்
   filterVersion: பதிலளித்த Minecraft பதிப்பை வடிகட்டவும்
@@ -1349,35 +1351,129 @@ server:
   hostHint: சேவையகத்தின் ஹோஸ்ட் (போர்ட்டுடன்)
   hostRequired: சேவையக ஐபி முகவரியை உள்ளிடவும்
   ipAddress: ஐபி முகவரி
-  launchClient: அதற்கு பதிலாக கிளையன்ட்டைத் தொடங்கவும்
-  launchPinned: பின் செய்யப்பட்டது
-  launchTargetHint: இந்த இன்ஸ்டன்ஸ் நேரடியாக பின் செய்யப்பட்ட சேவையகத்தில் தொடங்குகிறது. மீண்டும் கிளையன்ட்டிற்கு மாற வேண்டுமா?
+  launchClient: அதற்குப் பதிலாக கிளையண்டைத் தொடங்கு
+  launchPinned: பின்தொடரப்பட்டது
+  launchTargetHint: இந்த நிகழ்வு நேரடியாக பின் செய்யப்பட்ட சேவையகத்துடன் இணைகிறது. கிளையண்டிற்கு மாறவா?
   maxPlayers: அதிகபட்ச வீரர்கள்
   motd: சேவையகத்தின் MOTD
   nameHint: மல்டிபிளேயர் பட்டியலில் காட்டப்படும் பெயர்
   nogui: சேவையக வரைகலை இடைமுகம் இல்லை (No Server Gui)
   onlineMode: ஆன்லைன் முறை
   pin: சேவையகத்தைப் பின் செய்
-  pinAfterSave: சேமித்த பிறகு இயல்புநிலை தொடக்க இலக்காக பின் செய்
+  pinAfterSave: சேமித்த பிறகு இயல்புநிலை தொடக்க இலக்காக பின் செய்யவும்
   ping: பிங் (Ping)
   pings: பிங்குகள்
   pinnedHeader: 'பின் செய்யப்பட்டது: {name}'
   players: வீரர்கள்
   port: போர்ட்
-  serverName: சேவையகப் பெயர்
-  serversListTitle: சேவையகப் பட்டியல்
-  unbindUpstream: பிணைப்பை நீக்கு
+  clearLog: பதிவை அழி
+  log: சேவையக பதிவு
+  logWaiting: வெளியீட்டிற்காக காத்திருக்கிறது...
+  remoteActionSuccess: Done.
+  remoteAdmin: தொலை சேவையக நிர்வாகம்
+  remoteAuthMethod: அங்கீகாரம்
+  remoteAuthPassword: கடவுச்சொல்
+  remoteAuthPrivateKey: தனியார் விசை
+  remoteBuildOfflinePackage: ஆஃப்லைன் தொகுப்பை உருவாக்கவும்
+  remoteConnected: இணைக்கப்பட்டது
+  remoteConnection: இணைப்பு
+  remoteDeployment: வரிசைப்படுத்தல்
+  remoteDeploy: வரிசைப்படுத்து
+  remoteDisk: Disk
+  remoteConfigFiles: கட்டமைப்பு கோப்புகள்
+  remoteExtraFiles: கூடுதல் கோப்புகள்
+  remoteForgetCredentials: சேமிக்கப்பட்ட விவரங்களை மறந்துவிடு
+  remoteInstallService: சேவையை நிறுவவும்
+  remoteLoad: ஏற்று
+  remoteLog: தொலை சேவையக பதிவு
+  remoteMemory: நினைவகம்
+  remoteMods: Mods
+  remoteNoWorldSelected: எந்த உலகமும் தேர்ந்தெடுக்கப்படவில்லை
+  remoteJavaRequired: தொலை லினக்ஸ் கணினியில் Java கிடைக்கவில்லை.
+  remoteLinuxRequired: SSH வழியாக லினக்ஸ் இலக்குகள் மட்டுமே ஆதரிக்கப்படுகின்றன.
+  remoteNotConfiguredHint: நிலை, சேவைக் கட்டுப்பாடு மற்றும் பதிவுகளை இயக்க மேலே உள்ள விவரங்களை நிரப்பவும்.
+  remotePathNotWritable: தொலை சேவையக அடைவு எழுதக்கூடியதாக இல்லை.
+  remotePathWritable: அடைவு எழுதக்கூடியது
+  remotePolicyInitialize: ஒரு முறை தொடங்கவும்
+  remotePolicyMirror: மிரர்
+  remotePolicyOverlay: மேலடுக்கு
+  remotePolicyPreserve: பாதுகாக்கவும்
+  remotePreview: மாற்றங்களை முன்னோட்டமிடுங்கள்
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: விவரங்களை நினைவில் கொள்க
+  remoteReconcileReady: இலக்கு இந்த நிகழ்வோடு பொருந்துகிறது மற்றும் கன்சோல் இணைக்கப்பட்டுள்ளது.
+  remoteRestartService: சேவையை மறுதொடக்கம் செய்
+  remoteSavedCredentialsHint: சேமிக்கப்பட்ட விவரங்கள் பயன்பாட்டில் உள்ளன — மாற்ற விரும்பினால் தட்டச்சு செய்க.
+  remoteService: systemd சேவை
+  remoteServiceActive: செயலில் உள்ளது
+  remoteServerInstalled: சேவையக கோப்புகள் நிறுவப்பட்டன
+  remoteServiceName: சேவையின் பெயர்
+  remoteServiceNameHint: systemd --user அலகு பெயர், எ.கா. mc-server
+  remoteSelectedFiles: '{count} சேவையக கோப்புகள் தேர்ந்தெடுக்கப்பட்டன'
+  remoteSelectFiles: கோப்புகளைத் தேர்ந்தெடு
+  remoteStartCommand: தொடக்க கட்டளை
+  remoteStartCommandHint: எ.கா. java -jar server.jar nogui
+  remoteStartService: Start
+  remoteStatus: நிலை
+  remoteSystemdRequired: systemd பயனர் சேவைகள் தொலை கணினியில் கிடைக்கவில்லை.
+  remoteTargetName: இலக்கு பெயர்
+  remoteStopService: Stop
+  remoteStopWatchLog: கண்காணிப்பதை நிறுத்து
+  remoteTestConnection: இணைப்பைச் சோதிக்கவும்
+  remoteTestConnectionSuccess: இணைப்பு வெற்றிகரமாக முடிந்தது.
+  remoteUninstallConfirmMessage: இது systemd அலகை நீக்கும். சேவையக கோப்புகள் பாதிக்கப்படாது.
+  remoteUninstallService: சேவையை நீக்கு
+  remoteRunInstall: நிறுவவும் அல்லது சரிசெய்யவும்
+  remoteWatchLog: நேரலை பதிவைப் பார்க்கவும்
+  remoteWorldAlways: ஒவ்வொரு முறையும் மாற்றவும்
+  remoteWorldDeployment: நிகழ்வு உலக வரிசைப்படுத்தல்
+  remoteWorldDeploymentHint: அனுமதிக்கப்படாவிட்டால் வழக்கமான ஒத்திசைவு உலக தரவை பதிவேற்றாது.
+  remoteWorldFirstInstall: இலக்கில் உலகம் இல்லையென்றால் மட்டுமே தொடங்கவும்
+  remoteWorldNever: ஒருபோதும் உலகத்தைப் பதிவேற்ற வேண்டாம்
+  remoteWorldPresent: இலக்கு உலகம்
+  remoteWorld: World
+  remoteWorldWillDeploy: தேர்ந்தெடுக்கப்பட்ட உலகம் இந்த ஒத்திசைவில் பதிவேற்றப்படும்.
+  serverName: சேவையகத்தின் பெயர்
+  serviceInstall: சேவையை நிறுவு
+  serviceManagedLaunch: சேவை நிர்வகிக்கும் தொடக்கம்
+  serviceManager: சேவை மேலாளர்
+  serviceName: சேவையின் பெயர்
+  serviceNameHint: கணினி சேவையின் பெயர்
+  serviceNotInstalled: சேவை நிறுவப்படவில்லை
+  serviceStartCommand: சேவை தொடக்க கட்டளை
+  serviceSystemd: systemd --user
+  serviceWindows: Windows சேவை
+  serviceWindowsCommandHint: Windows சேவை கட்டளை
+  serversListTitle: சேவையகங்கள்
+  target: இலக்கு
+  targetLocal: localhost
+  targetLocalHint: இந்த கணினியில் இயக்கவும்
+  targetRemote: தொலை சேவையகம் (SSH)
+  targetRemoteHint: SSH வழியாக தொலை லினக்ஸ் சேவையகத்தை நிர்வகிக்கவும்
+  unbindUpstream: இணைப்பை நீக்கு
   unknown: தெரியாத சேவையகம்
   unknownDescription: தெரியாத சேவையகம். புதுப்பிக்கவும்
   unpin: பினை நீக்கு (Unpin)
   upload: சேவையகத்தைப் பதிவேற்று
-  upstreamUpToDate: உங்கள் இன்ஸ்டன்ஸ் சேவையகத்துடன் பொருந்துகிறது ({version}).
-  upstreamUpToDateHint: மேம்படுத்தல் தேவையில்லை. சேவையகத்தை மீண்டும் பிங் செய்ய கிளிக் செய்யவும்.
-  upstreamUpdateAvailable: சேவையகம் இப்போது Minecraft {version} ஐ இயக்குகிறது. பயன்படுத்த கிளிக் செய்யவும்.
-  upstreamUpdateHint: பரிந்துரைக்கப்பட்ட Minecraft பதிப்பை இந்த இன்ஸ்டன்ஸிற்குப் பயன்படுத்துகிறது.
-  useAsUpstreamHint: இன்ஸ்டன்ஸ் சேவையகம் தெரிவிக்கும் Minecraft பதிப்பைப் பின்பற்றும்.
+  upstreamUpToDate: உங்கள் நிகழ்வு சேவையக பதிப்போடு பொருந்துகிறது ({version}).
+  upstreamUpToDateHint: மேம்படுத்தல் தேவையில்லை. மீண்டும் சரிபார்க்க கிளிக் செய்க.
+  upstreamUpdateAvailable: சேவையகம் இப்போது Minecraft {version}-ஐ இயக்குகிறது. பயன்படுத்த கிளிக் செய்க.
+  upstreamUpdateHint: பரிந்துரைக்கப்பட்ட Minecraft பதிப்பை இந்த நிகழ்வுக்குப் பயன்படுத்துகிறது.
+  useAsUpstreamHint: சேவையகம் தெரிவிக்கும் Minecraft பதிப்பை இந்த நிகழ்வு பின்தொடரும்.
   version: சேவையகத்திற்குத் தேவையான பதிப்பு
   versionHint: பிங் செய்ய வேண்டிய Minecraft பதிப்பு
+  worldPreserve: இலக்கு உலகத்தைப் பாதுகாக்கவும்
 serverStatus:
   nohost: §4ஹோஸ்டைக் கண்டறிய முடியவில்லை!
   ping: பிங் செய்யப்படுகிறது...
@@ -1706,6 +1802,7 @@ store:
   name: மோட்பேக் சந்தை
   searchResult: தேடல் முடிவு
   trending: பிரபலமடைபவை
+  searchHint: மோட்பேக்குகளைத் தேடுங்கள்...
 tag:
   create: குறிச்சொல்லை உருவாக்கு
   createSelected: தேர்ந்தெடுக்கப்பட்டவற்றிற்கு குறிச்சொல்லை உருவாக்கு
@@ -1747,12 +1844,32 @@ tutorial:
   feedbackDescription: ஏதேனும் சிக்கல்களைச் சந்தித்தால், கருத்து அனுப்ப இந்த பொத்தானைக் கிளிக் செய்யவும்!
   hideNewsHeaderDescription: இடதுபுறத்தில் நீங்கள் செய்தி காட்சியைக் காணலாம். இந்த பொத்தானைக் கிளிக் செய்வதன் மூலம் இந்தக் காட்சியை மறைக்க முடியும்.
   instance:
+    appearanceThemeDescription: இந்த நிகழ்விற்கான பின்னணி, வண்ணங்கள் மற்றும் காட்சி பாணியைத் தனிப்பயனாக்கவும்.
+    appearanceThemeTitle: நிகழ்வின் தோற்றம்
     iconDescription: ஐகானை மாற்ற கிளிக் செய்யவும்.
     iconTitle: நிகழ்வு ஐகான்
-    javaDescription: ஜாவா பதிப்பைத் தேர்ந்தெடுக்கவும் அல்லது மாற்றவும்.
-    javaImportDescription: உள்ளூர் சேமிப்பகத்திலிருந்து ஜாவாவை இறக்குமதி செய்யவும்.
-    javaImportTitle: ஜாவாவை இறக்குமதி செய்
-    javaTitle: ஜாவா பட்டியல்
+    javaDescription: Java பதிப்பைத் தேர்வுசெய்யவும் அல்லது மாற்றவும்.
+    javaImportDescription: உள்ளூர் சேமிப்பகத்திலிருந்து Java-வை இறக்குமதி செய்யவும்.
+    javaImportTitle: Java இறக்குமதி செய்
+    javaTitle: Java பட்டியல்
+    modpackExportDescription: நிகழ்வை பகிரக்கூடிய மோட்பேக் கோப்பாக தொகுக்கவும்.
+    modpackExportTitle: மோட்பேக்கை ஏற்றுமதி செய்
+    modpackFilesDescription: கிளையண்ட் மற்றும் சேவையகத்திற்காக தொகுக்க வேண்டிய கோப்புகளைத் தேர்ந்தெடுக்கவும்.
+    modpackFilesTitle: சேர்க்கப்பட்ட கோப்புகள்
+    modpackMetaDescription: பதிப்பு, ஆசிரியர், விளக்கம் மற்றும் வலைத்தளத்தைக் குறிப்பிடவும்.
+    modpackMetaTitle: மோட்பேக் விவரங்கள்
+    modpackOptionsDescription: இலக்கு கோப்புறை மற்றும் வடிவங்களைத் தேர்வு செய்யவும்.
+    modpackOptionsTitle: ஏற்றுமதி விருப்பங்கள்
+    serverLaunchDescription: தலைப்பிலிருந்து நேரடியாக பிரத்யேக சேவையகத்தைத் தொடங்கவும் அல்லது நிறுத்தவும்.
+    serverLaunchTitle: சேவையகத்தைத் தொடங்கு / நிறுத்து
+    serverPropertiesDescription: போர்ட், சிரமம், MOTD மற்றும் விளையாட்டு விதிகளை உள்ளமைக்கவும்.
+    serverPropertiesTitle: சேவையக கட்டமைப்பு
+    serverServiceDescription: தொடர்ச்சியான இயக்கத்திற்காக கணினி பின்னணி சேவையாக நிர்வகிக்கவும்.
+    serverServiceTitle: கணினி சேவை
+    serverTargetDescription: கணினியில் இயக்குவது அல்லது SSH வழியாக லினக்ஸ் சேவையகத்தை நிர்வகிப்பது ஆகியவற்றில் தேர்வு செய்யவும்.
+    serverTargetTitle: சேவையக இலக்கு
+    versionDescription: Minecraft பதிப்பு மற்றும் Forge, Fabric, Quilt அல்லது NeoForge-ஐத் தேர்ந்தெடுக்கவும்.
+    versionTitle: Minecraft மற்றும் லோடர் பதிப்பு
   instanceAddDescription: ஏற்கனவே உள்ள மைன்கிராஃப்ட் நிகழ்வை இறக்குமதி செய்ய அல்லது புதிதாக அல்லது மோட்பேக்கிலிருந்து புதிய ஒன்றை உருவாக்க இந்தப் பொத்தானைக் கிளிக் செய்யவும்.
   instanceSelectDescription: இந்தப் பொத்தானைக் கிளிக் செய்வதன் மூலம் விளையாட்டைத் தேர்ந்தெடுக்கும் மற்றும் செய்திகளைப் படிக்கும் பக்கத்திற்குச் செல்லலாம்.
   launchDescription: விளையாட்டை நிறுவ அல்லது தொடங்க இந்தப் பொத்தானைக் கிளிக் செய்யவும்.
@@ -1771,6 +1888,59 @@ tutorial:
   storeSearchDescription: இந்த உரை பெட்டியில் உள்ளிடுவதன் மூலம் மோட்பேக்குகளைத் தேடலாம். தேட Enter ஐ அழுத்தவும்.
   storeSearchResultDescription: அனைத்து தேடல் முடிவுகளையும் இங்கே பட்டியலிடப்பட்டு காண்பீர்கள்.
   userAccountDescription: உங்கள் மைன்கிராஃப்ட் கணக்கைச் சேர்க்க அல்லது நிர்வகிக்க இந்த ஐகானைக் கிளிக் செய்யவும்.
+  tooltip: உதவி மற்றும் வழிகாட்டி
+  done: புரிந்தது!
+  helpDescription: லாஞ்சர் மற்றும் தற்போதைய பக்கத்திற்கான ஊடாடும் வழிகாட்டி.
+  blueprint:
+    searchTitle: ப்ளூபிரிண்ட்களைத் தேடுங்கள்
+    searchDescription: பெயர் அல்லது குறிச்சொல் மூலம் உள்ளூர் மற்றும் சமூக ப்ளூபிரிண்ட்களைத் தேடுங்கள்.
+    listTitle: ப்ளூபிரிண்ட் பட்டியல்
+    listDescription: சேமிக்கப்பட்ட அனைத்து ப்ளூபிரிண்ட்களையும் வார்ப்புருக்களையும் நிர்வகிக்கவும்.
+    detailTitle: ப்ளூபிரிண்ட் விவரங்கள்
+    detailDescription: ப்ளூபிரிண்ட் உள்ளடக்கம், மோட்களை ஆய்வு செய்து புதிய நிகழ்வுகளை உருவாக்கவும்.
+  me:
+    instancesTitle: நிகழ்வு மேலாண்மை
+    instancesDescription: நிறுவப்பட்ட அனைத்து நிகழ்வுகளையும் பார்த்து, குழுவாக்கி இயக்கவும்.
+    profileTitle: கணக்கு மற்றும் சுயவிவரம்
+    profileDescription: கணக்குகளுக்கு இடையே மாறவும் உள்நுழைவு விவரங்களை நிர்வகிக்கவும்.
+    skinTitle: தோல் மற்றும் ஆடை தனிப்பயனாக்கம்
+    skinDescription: 3D-யில் உங்கள் கதாபாத்திரத்தைப் பார்க்கவும், தோல்களை மாற்றவும்.
+  multiplayer:
+    railTitle: பிணையம் மற்றும் வழிசெலுத்தல்
+    railDescription: NAT வகை, பிணைய நிலையை சரிபார்த்து இணைப்புகளுக்கு இடையே மாறவும்.
+    groupTitle: அறையில் சேரவும் அல்லது உருவாக்கவும்
+    groupDescription: நண்பர்களுடன் சேர அறை குறியீட்டை உள்ளிடவும் அல்லது சொந்த அறையை உருவாக்கவும்.
+    joinDescription: அறையில் சேர அல்லது புதியதை உருவாக்க கிளிக் செய்க.
+    contentTitle: இணைக்கப்பட்ட உறுப்பினர்கள்
+    contentDescription: உறுப்பினர்களை நிர்வகிக்கவும், தாமதத்தைக் கண்காணிக்கவும் மற்றும் விளையாட்டுகளைப் பகிரவும்.
+    manualDescription: SDP பரிமாற்றத்தைப் பயன்படுத்தி நண்பர்களுடன் நேரடி P2P இணைப்பு.
+  resourcepack:
+    searchTitle: ரிசோர்ஸ் பேக்குகளைத் தேடுங்கள்
+    searchDescription: Modrinth, CurseForge அல்லது உள்ளூர் கோப்புகளிலிருந்து தேடுங்கள்.
+    listTitle: ரிசோர்ஸ் பேக் பட்டியல்
+    listDescription: நிறுவப்பட்ட பேக்குகளை உலாவவும், முன்னுரிமையை மாற்றவும்.
+    detailTitle: பேக் விவரங்கள்
+    detailDescription: திரைக்காட்சிகள், விளக்கம் மற்றும் கோப்பு விவரங்களைக் காண்க.
+  save:
+    searchTitle: உலகங்களைத் தேடுங்கள்
+    searchDescription: தற்போதைய நிகழ்வின் சேமிக்கப்பட்ட உலகங்களை பெயரால் தேடுங்கள்.
+    listTitle: உலகங்களின் பட்டியல்
+    listDescription: விளையாட்டு முறை, தேதி மற்றும் அளவோடு உலகங்களைக் காண்க.
+    detailTitle: உலக விவரங்கள் மற்றும் செயல்கள்
+    detailDescription: காப்புப் பிரதி எடுக்கவும், ஏற்றுமதி செய்யவும் மற்றும் உலக அமைப்புகளை நிர்வகிக்கவும்.
+  settings:
+    navDescription: பொதுவானவை, தோற்றம், விளையாட்டு அமைப்புகள் மற்றும் பிணையத்திற்கு இடையே மாறவும்.
+    generalDescription: மொழி, தரவு அடைவு, புதுப்பிப்பு சேனல்கள் மற்றும் தொடக்க விருப்பங்களை அமைக்கவும்.
+    appearanceDescription: தீம், வால்பேப்பர்கள், வண்ணங்கள் மற்றும் அமைப்பைத் தனிப்பயனாக்கவும்.
+    globalDescription: இயல்புநிலை Java, நினைவக ஒதுக்கீடு மற்றும் JVM வாதங்களை அமைக்கவும்.
+    networkDescription: பதிவிறக்க கண்ணாடிகள், ப்ராக்ஸி மற்றும் ஒரே நேர பணி வரம்புகளை அமைக்கவும்.
+  shaderpack:
+    searchTitle: ஷேடர் பேக்குகளைத் தேடுங்கள்
+    searchDescription: Modrinth, CurseForge அல்லது உள்ளூர் தற்காலிக சேமிப்பிலிருந்து தேடுங்கள்.
+    listTitle: ஷேடர் பேக் பட்டியல்
+    listDescription: நிறுவப்பட்ட ஷேடர்களை உலாவவும் எளிதாக மாற்றவும்.
+    detailTitle: ஷேடர் விவரங்கள்
+    detailDescription: ஆசிரியர், தெளிவுத்திறன் தேவைகள் மற்றும் விருப்பங்களைச் சரிபார்க்கவும்.
 unauthenticatedWarning:
   cancel: ரத்துசெய்
   description: நீங்கள் எந்தக் கணக்கிலும் உள்நுழையவில்லை. விளையாட்டு டெமோ பயன்முறையில் தொடங்கும். முழு அம்சங்களையும் அணுக, தயவுசெய்து உள்நுழையவும்.
