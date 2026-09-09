@@ -18,6 +18,7 @@ const options = JSON.parse(process.argv[1])
 const events = []
 let targetCopies = 0
 let syncs = 0
+let stagedPath
 const failure = code => Object.assign(new Error(code), { code })
 const rename = fs.rename
 const renameSync = fs.renameSync
@@ -78,16 +79,17 @@ fs.fsyncSync = fd => {
 const unlink = fs.promises.unlink
 const unlinkSync = fs.unlinkSync
 fs.promises.unlink = async path => {
-  events.push('unlink')
+  if (path === stagedPath) events.push('unlink')
   await unlink(path)
 }
 fs.unlinkSync = path => {
-  events.push('unlink')
+  // rmSync can also call unlinkSync internally when cleaning backups on POSIX.
+  if (path === stagedPath) events.push('unlink')
   return unlinkSync(path)
 }
 const atomic = await import(options.module)
 try {
-  const writeOptions = { timeout: 1, fsync: options.fsync }
+  const writeOptions = { timeout: 1, fsync: options.fsync, tmpCreated: path => { stagedPath = path } }
   if (options.sync) {
     atomic.writeFileSync(options.target, 'new', writeOptions)
   } else {
