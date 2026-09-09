@@ -40,6 +40,9 @@ overrides:
 
 packageExtensionsChecksum: sha256-W6XTOoW6VEuHfMMNvfHK+GqTlJq4359UxTUPBI9HzXw=
 
+patchedDependencies:
+  atomically@2.0.3: 9dfad98db64061412c4e6b4560fb93f3905edefc411028a115e36ef4258b126b
+
 importers:
 
   .:
@@ -1457,7 +1460,7 @@ importers:
         version: 0.5.0
       atomically:
         specifier: ^2.0.3
-        version: 2.0.3
+        version: 2.0.3(patch_hash=9dfad98db64061412c4e6b4560fb93f3905edefc411028a115e36ef4258b126b)
       chokidar:
         specifier: ^4.0.3
         version: 4.0.3
@@ -8574,7 +8577,7 @@ snapshots:
 
   at-least-node@1.0.0: {}
 
-  atomically@2.0.3:
+  atomically@2.0.3(patch_hash=9dfad98db64061412c4e6b4560fb93f3905edefc411028a115e36ef4258b126b):
     dependencies:
       stubborn-fs: 1.2.5
       when-exit: 2.1.2
