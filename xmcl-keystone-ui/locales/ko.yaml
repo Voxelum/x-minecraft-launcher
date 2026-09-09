@@ -463,6 +463,8 @@ instanceSetting:
   icon: 이미지 선택
   showLog: 마인크래프트 로그 표시
   showLogHint: 게임 시작 후 마인크래프트 로그를 스트리밍하는 창이 팝업됩니다
+  syncGameLanguage: 게임 언어 동기화
+  syncGameLanguageDescription: 실행 시 마인크래프트의 언어를 런처 언어와 자동으로 동기화합니다
 instanceTemplate:
   ftb: 이것은 FTB 모드팩입니다
   preview: 모드팩 미리보기

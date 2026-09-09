@@ -11,6 +11,7 @@ import { type ReleaseInfo } from './update'
 export class Settings implements SettingSchema {
   globalDisableAuthlibInjector = false
   globalDisableElyByAuthlib = false
+  globalSyncGameLanguage = false
   globalMinMemory = 0
   globalMaxMemory = 0
   globalAssignMemory: 'auto' | boolean = false
@@ -110,6 +111,7 @@ export class Settings implements SettingSchema {
     this.globalHideLauncher = config.globalHideLauncher
     this.globalShowLog = config.globalShowLog
     this.globalDisableElyByAuthlib = config.globalDisableElyByAuthlib
+    this.globalSyncGameLanguage = config.globalSyncGameLanguage ?? false
     this.globalDisableAuthlibInjector = config.globalDisableAuthlibInjector
     this.globalPreExecuteCommand = config.globalPreExecuteCommand
     this.globalEnv = config.globalEnv
@@ -269,6 +271,7 @@ export class Settings implements SettingSchema {
     globalShowLog: boolean
     globalDisableAuthlibInjector: boolean
     globalDisableElyByAuthlib: boolean
+    globalSyncGameLanguage?: boolean
     globalPrependCommand: string
     globalPreExecuteCommand: string
     globalEnv: Record<string, string>
@@ -285,6 +288,9 @@ export class Settings implements SettingSchema {
     this.globalShowLog = settings.globalShowLog
     this.globalDisableAuthlibInjector = settings.globalDisableAuthlibInjector
     this.globalDisableElyByAuthlib = settings.globalDisableElyByAuthlib
+    if (typeof settings.globalSyncGameLanguage === 'boolean') {
+      this.globalSyncGameLanguage = settings.globalSyncGameLanguage
+    }
     this.globalPrependCommand = settings.globalPrependCommand
     this.globalPreExecuteCommand = settings.globalPreExecuteCommand
     this.globalEnv = settings.globalEnv

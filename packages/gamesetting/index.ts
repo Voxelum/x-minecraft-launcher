@@ -520,3 +520,83 @@ export function stringify(
 }
 
 export type GameSetting = ReturnType<typeof getDefaultFrame>
+
+const LOCALE_TO_MC_LANG: Record<string, string> = {
+  ar: 'ar_sa',
+  ar_eg: 'ar_sa',
+  bn: 'bn_bd',
+  cs: 'cs_cz',
+  de: 'de_de',
+  en: 'en_us',
+  en_in: 'en_us',
+  en_us: 'en_us',
+  en_gb: 'en_gb',
+  es: 'es_es',
+  es_es: 'es_es',
+  fr: 'fr_fr',
+  gl: 'gl_es',
+  hi: 'hi_in',
+  hu: 'hu_hu',
+  id: 'id_id',
+  it: 'it_it',
+  it_it: 'it_it',
+  ja: 'ja_jp',
+  ja_jp: 'ja_jp',
+  ko: 'ko_kr',
+  kz: 'kk_kz',
+  kk: 'kk_kz',
+  lolcat: 'lol_aa',
+  nl: 'nl_nl',
+  pl: 'pl_pl',
+  pt_br: 'pt_br',
+  pt: 'pt_pt',
+  ru: 'ru_ru',
+  sa: 'sa_in',
+  ta: 'ta_in',
+  th: 'th_th',
+  tr: 'tr_tr',
+  uk: 'uk_ua',
+  vi: 'vi_vn',
+  zh_cn: 'zh_cn',
+  zh_tw: 'zh_tw',
+  zh_hk: 'zh_hk',
+  zh: 'zh_cn',
+}
+
+function isLegacyMinecraftVersion(version: string): boolean {
+  const match = version.match(/^1\.(\d+)/)
+  if (match) {
+    const minor = parseInt(match[1], 10)
+    return minor < 13
+  }
+  return false
+}
+
+/**
+ * Map an app/locale string (e.g. `zh-CN`, `uk`, `en`, `de`) to Minecraft's language code
+ * (e.g. `zh_cn`, `uk_ua`, `en_us` for 1.13+, or `zh_CN`, `uk_UA`, `en_US` for legacy <1.13).
+ */
+export function toMinecraftLanguage(locale: string, minecraftVersion?: string): string {
+  const norm = (locale || 'en').toLowerCase().replace('-', '_')
+  const mcCode = LOCALE_TO_MC_LANG[norm] ?? (norm.includes('_') ? norm : `${norm}_${norm}`)
+
+  if (minecraftVersion && isLegacyMinecraftVersion(minecraftVersion)) {
+    const [lang, region] = mcCode.split('_')
+    return region ? `${lang}_${region.toUpperCase()}` : lang
+  }
+
+  return mcCode
+}
+
+/**
+ * Safely update or insert the `lang:` line in options.txt content without modifying other settings.
+ */
+export function setGameSettingLanguage(content: string, lang: string): string {
+  if (/^lang:.*$/m.test(content)) {
+    return content.replace(/^lang:.*$/m, `lang:${lang}`)
+  }
+  if (!content) {
+    return `lang:${lang}\n`
+  }
+  return content.endsWith('\n') ? `${content}lang:${lang}\n` : `${content}\nlang:${lang}\n`
+}

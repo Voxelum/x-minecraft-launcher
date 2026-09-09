@@ -297,6 +297,7 @@ export const InstanceDataSchema = z.object({
   fastLaunch: z.boolean().optional().catch(undefined),
   disableElybyAuthlib: z.boolean().optional().catch(undefined),
   disableAuthlibInjector: z.boolean().optional().catch(undefined),
+  syncGameLanguage: z.boolean().optional().catch(undefined),
   /** Use latest version settings */
   useLatest: z
     .union([z.literal(false), z.literal('release'), z.literal('alpha')])

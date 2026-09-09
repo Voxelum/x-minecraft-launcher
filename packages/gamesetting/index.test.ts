@@ -237,4 +237,51 @@ modelPart_hat:true
       expect(set.resourcePacks).toStrictEqual(['a\\b.zip'])
     })
   })
+
+  describe('toMinecraftLanguage', () => {
+    test('maps common modern locales to lowercase minecraft codes', () => {
+      expect(GameSetting.toMinecraftLanguage('zh-CN')).toBe('zh_cn')
+      expect(GameSetting.toMinecraftLanguage('uk')).toBe('uk_ua')
+      expect(GameSetting.toMinecraftLanguage('en')).toBe('en_us')
+      expect(GameSetting.toMinecraftLanguage('ja-JP')).toBe('ja_jp')
+      expect(GameSetting.toMinecraftLanguage('de')).toBe('de_de')
+      expect(GameSetting.toMinecraftLanguage('fr')).toBe('fr_fr')
+      expect(GameSetting.toMinecraftLanguage('pt-BR')).toBe('pt_br')
+      expect(GameSetting.toMinecraftLanguage('ar')).toBe('ar_sa')
+      expect(GameSetting.toMinecraftLanguage('lolcat')).toBe('lol_aa')
+    })
+
+    test('maps legacy Minecraft versions (< 1.13) to uppercase region codes', () => {
+      expect(GameSetting.toMinecraftLanguage('zh-CN', '1.12.2')).toBe('zh_CN')
+      expect(GameSetting.toMinecraftLanguage('uk', '1.12.2')).toBe('uk_UA')
+      expect(GameSetting.toMinecraftLanguage('en', '1.7.10')).toBe('en_US')
+      expect(GameSetting.toMinecraftLanguage('ru', '1.12')).toBe('ru_RU')
+    })
+
+    test('maps modern Minecraft versions (>= 1.13) to lowercase codes', () => {
+      expect(GameSetting.toMinecraftLanguage('zh-CN', '1.13')).toBe('zh_cn')
+      expect(GameSetting.toMinecraftLanguage('zh-CN', '1.20.4')).toBe('zh_cn')
+      expect(GameSetting.toMinecraftLanguage('uk', '1.21.1')).toBe('uk_ua')
+      expect(GameSetting.toMinecraftLanguage('en', '24w10a')).toBe('en_us')
+    })
+  })
+
+  describe('setGameSettingLanguage', () => {
+    test('replaces existing lang line while preserving other settings and comments', () => {
+      const original = 'fov:90\nlang:en_us\ngamma:1.0\n'
+      const updated = GameSetting.setGameSettingLanguage(original, 'zh_cn')
+      expect(updated).toBe('fov:90\nlang:zh_cn\ngamma:1.0\n')
+    })
+
+    test('appends lang line when missing', () => {
+      const original = 'fov:90\ngamma:1.0\n'
+      const updated = GameSetting.setGameSettingLanguage(original, 'uk_ua')
+      expect(updated).toBe('fov:90\ngamma:1.0\nlang:uk_ua\n')
+    })
+
+    test('handles empty content', () => {
+      const updated = GameSetting.setGameSettingLanguage('', 'zh_cn')
+      expect(updated).toBe('lang:zh_cn\n')
+    })
+  })
 })

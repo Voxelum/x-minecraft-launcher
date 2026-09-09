@@ -503,6 +503,8 @@ instanceSetting:
   icon: ஒரு படத்தை தேர்வு செய்யவும்
   showLog: Minecraft பதிவைக் காட்டு
   showLogHint: இது விளையாட்டு தொடங்கிய பிறகு Minecraft பதிவை ஸ்ட்ரீம் செய்ய ஒரு சாளரத்தை பாப்அப் செய்யும்
+  syncGameLanguage: விளையாட்டு மொழியை ஒத்திசைக்கவும்
+  syncGameLanguageDescription: துவக்கும்போது Minecraft மொழியை துவக்கி மொழியுடன் தானாக ஒத்திசைக்கவும்
 instanceTemplate:
   ftb: இது ஒரு FTB மாட்பேக்
   preview: மாட்பேக் முன்னோட்டம்

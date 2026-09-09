@@ -75,6 +75,8 @@ export const SettingSchema = z.object({
   globalDisableAuthlibInjector: z.boolean().catch(false),
   /** Global disable Ely.by authlib */
   globalDisableElyByAuthlib: z.boolean().catch(false),
+  /** Global sync game language setting */
+  globalSyncGameLanguage: z.boolean().catch(false),
   /** Global prepend command */
   globalPrependCommand: z.string().catch(''),
   /** Global pre-execute command */

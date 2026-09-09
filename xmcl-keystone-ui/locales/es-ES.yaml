@@ -558,6 +558,8 @@ instanceSetting:
   showLog: Mostrar Registro de Minecraft
   showLogHint: >-
     Esto abrirá una ventana para mostrar el registro de Minecraft después de iniciar el juego
+  syncGameLanguage: Sincronizar idioma del juego
+  syncGameLanguageDescription: Sincronizar automáticamente el idioma de Minecraft con el del iniciador al iniciar
 instanceTemplate:
   ftb: Este es un modpack de FTB
   preview: Vista Previa del Modpack
