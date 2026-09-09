@@ -313,6 +313,7 @@ import { InstanceShaderFile, kInstanceShaderPacks } from '@/composables/instance
 import { ProjectGroup, useModGroups } from '@/composables/modGroup'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
+import { useTutorial } from '@/composables/tutorial'
 import { useProjectInstall } from '@/composables/projectInstall'
 import { kCompact } from '@/composables/scrollTop'
 import { useService } from '@/composables/service'
@@ -607,4 +608,30 @@ const onInstallProject = useProjectInstall(
 // dense
 const denseView = useLocalStorage('shader-pack-dense-view', false, { writeDefaults: false })
 const itemHeight = computed(() => denseView.value ? 48 : 80)
+
+useTutorial(
+  computed(() => [
+    {
+      element: '#search-text-field',
+      popover: {
+        title: t('tutorial.shaderpack.searchTitle') + ' (ctrl + f)',
+        description: t('tutorial.shaderpack.searchDescription'),
+      },
+    },
+    {
+      element: '#left-pane',
+      popover: {
+        title: t('tutorial.shaderpack.listTitle'),
+        description: t('tutorial.shaderpack.listDescription'),
+      },
+    },
+    {
+      element: '#right-pane',
+      popover: {
+        title: t('tutorial.shaderpack.detailTitle'),
+        description: t('tutorial.shaderpack.detailDescription'),
+      },
+    },
+  ]),
+)
 </script>

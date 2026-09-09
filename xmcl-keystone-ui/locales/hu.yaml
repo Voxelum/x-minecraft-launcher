@@ -1229,20 +1229,26 @@ search:
   noResults: Nincs találat
   pageSize: Találatok oldalanként
 server:
+  launch: Szerver indítása
+  stop: Szerver leállítása
   acceptingMinecraftVersion: Minecraft verzió elfogadása
+  addServer: Szerver hozzáadása
+  address: Szerver címe
+  addressHint: pl. mc.hypixel.net
+  bindUpstream: Összekapcsolás forrásként (upstream)
+  boundUpstream: Forrásszerver összekapcsolva
+  boundUpstreamHint: Ez a példány a csatlakoztatott szerver Minecraft verzióját követi.
   creationHint: Kérlek, töltsd ki a szerver címét és pingeld a szervert
+  editServer: Szerver szerkesztése
+  emptyHint: Még nincsenek szerverek a példány servers.dat fájljában. Adj hozzá egyet a kezdéshez.
+  entryCount: '{count} szerver'
   expectedVersions: Támogatott verziók
   export: Exportáló szerver
-  exportNoFilesHint: >-
-    Nincs kiszolgáló fájl.
-
-    Egyszerre futtathatja a kiszolgálót a Local -on, hogy néhány fájlt generáljon.
+  exportNoFilesHint: Nincs kiszolgáló fájl. Egyszerre futtathatja a kiszolgálót a Local -on, hogy néhány fájlt generáljon.
   exportOption: Szerver exportálási beállítások
-  exportSSHAuthenticationFailed: |-
-    Az összes hitelesítési módszer sikertelen.
-    Kérjük, ellenőrizze a felhasználónevet/jelszót vagy a privát kulcsot.
+  exportSSHAuthenticationFailed: Az összes hitelesítési módszer sikertelen. Kérjük, ellenőrizze a felhasználónevet/jelszót vagy a privát kulcsot.
   exportSSHOptions: SSH opciók
-  exportSSHPrivateKeyPath: SSH privát kulcsút
+  exportSSHPrivateKeyPath: SSH privát kulcs elérési útja
   exportSSHRemotePath: Távoli kiszolgáló elérési útja
   exportToFolder: Exportálás a mappába
   filterVersion: Szűrő szerver válaszolt Minecraft verzió
@@ -1250,19 +1256,129 @@ server:
   hostHint: A kiszolgáló állomáshelye (porttal együtt)
   hostRequired: Kérjük, írja be a szerver IP -címét
   ipAddress: IP cím
+  launchClient: Kliens indítása helyette
+  launchPinned: Rögzítve
+  launchTargetHint: Ez a példány közvetlenül a rögzített szerverhez csatlakozik. Visszaváltasz a kliensre?
   maxPlayers: Maximális játékosokg
   motd: Szerver MOTD
+  nameHint: A többjátékos listában megjelenő név
   nogui: Nincs Server Gui
   onlineMode: Online mód
+  pin: Szerver rögzítése
+  pinAfterSave: Mentés után rögzítés alapértelmezett indítási célként
   ping: Ping
   pings: Pingek
+  pinnedHeader: 'Rögzítve: {name}'
   players: Játékosok
   port: Port
+  clearLog: Napló törlése
+  log: Szervernapló
+  logWaiting: A szerver kimenete az indítás után itt jelenik meg.
+  remoteActionSuccess: Done.
+  remoteAdmin: Távoli szerver adminisztráció
+  remoteAuthMethod: Hitelesítés
+  remoteAuthPassword: Jelszó
+  remoteAuthPrivateKey: Privát kulcs
+  remoteBuildOfflinePackage: Offline csomag összeállítása
+  remoteConnected: Csatlakozva
+  remoteConnection: Kapcsolat
+  remoteDeployment: Telepítés
+  remoteDeploy: Telepítés
+  remoteDisk: Lemez
+  remoteConfigFiles: Konfigurációs fájlok
+  remoteExtraFiles: További fájlok
+  remoteForgetCredentials: Mentett adatok elfelejtése
+  remoteInstallService: Szolgáltatás telepítése
+  remoteLoad: Átlagos terhelés
+  remoteLog: Távoli napló
+  remoteMemory: Memória
+  remoteMods: Modok
+  remoteNoWorldSelected: Nincs kiválasztva példányvilág
+  remoteJavaRequired: A Java nem érhető el a távoli Linux gépen.
+  remoteLinuxRequired: Csak Linux SSH célpontok támogatottak.
+  remoteNotConfiguredHint: Töltsd ki a fenti kapcsolat adatait az állapot, vezérlés és naplózás engedélyezéséhez.
+  remotePathNotWritable: A távoli szerverkönyvtár nem írható.
+  remotePathWritable: A könyvtár írható
+  remotePolicyInitialize: Egyszeri inicializálás
+  remotePolicyMirror: Tükrözés (Mirror)
+  remotePolicyOverlay: Ráhelyezés (Overlay)
+  remotePolicyPreserve: Megőrzés
+  remotePreview: Módosítások előnézete
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: Adatok megjegyzése (OS kulcstartó)
+  remoteReconcileReady: A célpont megegyezik a példánnyal, a konzol csatlakoztatva.
+  remoteRestartService: Újraindítás
+  remoteSavedCredentialsHint: Mentett adatok érvényben — hagyd üresen a megtartáshoz, vagy írd át a módosításhoz.
+  remoteService: systemd szolgáltatás
+  remoteServiceActive: Fut
+  remoteServerInstalled: Szerverfájlok telepítve
+  remoteServiceName: Szolgáltatás neve
+  remoteServiceNameHint: systemd --user egységnév, pl. mc-server
+  remoteSelectedFiles: '{count} szerverfájl kiválasztva'
+  remoteSelectFiles: Fájlok kiválasztása
+  remoteStartCommand: Indítási parancs
+  remoteStartCommandHint: pl. java -jar server.jar nogui
+  remoteStartService: Indítás
+  remoteStatus: Állapot
+  remoteSystemdRequired: A systemd felhasználói szolgáltatások nem érhetők el a távoli gépen.
+  remoteTargetName: Célpont neve
+  remoteStopService: Leállítás
+  remoteStopWatchLog: Követés leállítása
+  remoteTestConnection: Kapcsolat tesztelése
+  remoteTestConnectionSuccess: Sikeres kapcsolat.
+  remoteUninstallConfirmMessage: Ez letiltja és eltávolítja a systemd egységet a távoli gépen. A szerverfájlok megmaradnak.
+  remoteUninstallService: Szolgáltatás eltávolítása
+  remoteRunInstall: Telepítés vagy javítás
+  remoteWatchLog: Élő napló megtekintése
+  remoteWorldAlways: Csere minden szinkronizáláskor
+  remoteWorldDeployment: Példányvilág telepítése
+  remoteWorldDeploymentHint: A rutinszerű szinkronizálás soha nem tölt fel világot, hac穎k ez a szabály megengedi.
+  remoteWorldFirstInstall: Csak akkor inicializáljon, ha a célon nincs még világ
+  remoteWorldNever: Soha ne töltsön fel világot
+  remoteWorldPresent: Célállomás világa
+  remoteWorld: Világ
+  remoteWorldWillDeploy: A kiválasztott világ feltöltésre kerül ebben a szinkronizálásban.
+  serverName: Szerver neve
+  serviceInstall: Szolgáltatás telepítése
+  serviceManagedLaunch: Használja az OS szolgáltatást az indításhoz és leállításhoz
+  serviceManager: Rendszerszolgáltatás
+  serviceName: Szolgáltatás neve
+  serviceNameHint: Azonosító betűkkel, számokkal, pontokkal vagy kötőjelekkel
+  serviceNotInstalled: Nincs telepítve
+  serviceStartCommand: Indítási parancs
+  serviceSystemd: systemd --user
+  serviceWindows: Windows szolgáltatás
+  serviceWindowsCommandHint: A Java parancs ebből a példányból generálódik.
+  serversListTitle: Szerverlista
+  target: Szerver cél
+  targetLocal: localhost
+  targetLocalHint: Telepítse és futtassa a szervert ezen a számítógépen.
+  targetRemote: SSH cél
+  targetRemoteHint: Csatlakozás, telepítés, indítás és figyelés SSH-n keresztül.
+  unbindUpstream: Szétkapcsolás
   unknown: Ismeretlen szerver
   unknownDescription: Ismeretlen szerver. Frissítsd újra
+  unpin: Unpin
   upload: Feltöltő szerver
+  upstreamUpToDate: A példányod verziója megegyezik a szerverével ({version}).
+  upstreamUpToDateHint: Nincs szükség frissítésre. Kattints az újraellenőrzéshez.
+  upstreamUpdateAvailable: A szerveren már a Minecraft {version} fut. Kattints az alkalmazáshoz.
+  upstreamUpdateHint: A szerver Minecraft verziójának beállítása erre a példányra.
+  useAsUpstreamHint: A példány a szerver által jelentett verziót fogja követni.
   version: A szerver verzióigénye
   versionHint: A Minecraft verzió a Pinghez
+  worldPreserve: Célvilág megőrzése
 serverStatus:
   nohost: §4Nem található a kiszolgáló!
   ping: Pingelés...
@@ -1596,6 +1712,7 @@ store:
   trending: Felkapott
   empty: Nem található modpack
   emptyHint: Próbáld módosítani a szűrőket vagy a keresést.
+  searchHint: Modpackok keresése...
 tag:
   create: Címke létrehozása
   createSelected: Címke létrehozása a kiválasztotthoz
@@ -1634,39 +1751,51 @@ turnRegion:
   liaoning: Liaoning, Kína
   po: Lengyelország
 tutorial:
-  feedbackDescription: >-
-    Ha bármilyen probléma merül fel, kérlek, kattints erre a gombra, hogy visszajelzést küldj!
+  feedbackDescription: Ha bármilyen probléma merül fel, kérlek, kattints erre a gombra, hogy visszajelzést küldj!
   hideNewsHeaderDescription: |-
     Bal oldalon a Hírek bemutatója látható.
     Erre a gombra kattintva elrejtheti ezt a kirakatot.
   instance:
-    iconDescription: Kattints az ikon megváltoztatásához.`
+    appearanceThemeDescription: Egyéni háttérkép, színek és vizuális stílus beállítása ehhez a példányhoz.
+    appearanceThemeTitle: Példány megjelenése
+    iconDescription: Kattints az ikon megváltoztatásához.
     iconTitle: Példány ikonja
-    javaDescription: Válassz vagy válts java verziót.
-    javaImportDescription: Java importálása a helyi tárolóból.
+    javaDescription: Válassz vagy válts Java verziót.
+    javaImportDescription: Importálj Java futtatókörnyezetet helyi tárhelyről.
     javaImportTitle: Java importálása
     javaTitle: Java lista
-  instanceAddDescription: >-
-    Erre a gombra kattintva importálhatsz létező Minecraftot vagy hozhatsz létre egy újat a vagy modcsomagot.
-  instanceSelectDescription: >-
-    Erre a gombra kattintva a játék kiválasztásához és a hírek olvasásához szükséges oldalra navigál.
+    modpackExportDescription: Építsd fel és csomagold be a konfigurált példányt megosztható modpackké.
+    modpackExportTitle: Modpack exportálása
+    modpackFilesDescription: Válaszd ki a klienshez és szerverhez csomagolandó konfigurációkat, modokat és erőforrásokat.
+    modpackFilesTitle: Mellékelt fájlok
+    modpackMetaDescription: Add meg a modpack verzióját, készítőjét, leírását és weboldalát.
+    modpackMetaTitle: Modpack részletei
+    modpackOptionsDescription: Válaszd ki a célmappát és a formátumot (pl. Modrinth vagy CurseForge modpack).
+    modpackOptionsTitle: Exportálási beállítások
+    serverLaunchDescription: Indítsd el vagy állítsd le a példány dedikált szerverét közvetlenül a fejlécre kattintva.
+    serverLaunchTitle: Szerver indítása / leállítása
+    serverPropertiesDescription: Állítsd be a portot, nehézséget, MOTD-t, játékoskorlátot és játékszabályokat.
+    serverPropertiesTitle: Szerver konfigurációja
+    serverServiceDescription: Kezeld a szervert háttérben futó rendszerszolgáltatásként (systemd vagy Windows szolgáltatás).
+    serverServiceTitle: Rendszerszolgáltatás
+    serverTargetDescription: Válassz a helyi futtatás vagy a távoli Linux szerver SSH-n keresztüli kezelése között.
+    serverTargetTitle: Szerver célpontja
+    versionDescription: Válassz Minecraft verziót és Forge, Fabric, Quilt vagy NeoForge betöltőt.
+    versionTitle: Minecraft és Betöltő verzió
+  instanceAddDescription: Erre a gombra kattintva importálhatsz létező Minecraftot vagy hozhatsz létre egy újat a vagy modcsomagot.
+  instanceSelectDescription: Erre a gombra kattintva a játék kiválasztásához és a hírek olvasásához szükséges oldalra navigál.
   launchDescription: Kattints erre a gombra a játék telepítéséhez vagy elindításához.
   mod:
-    defaultSourceDescription: >-
-      Itt kiválaszthatja a modok forrását. Vannak a Modrinth és a Curseforge által közzétett modok. Ha váltani akarsz e két tartalomszolgáltató között. Itt módosíthatod az értéket.
+    defaultSourceDescription: Itt kiválaszthatja a modok forrását. Vannak a Modrinth és a Curseforge által közzétett modok. Ha váltani akarsz e két tartalomszolgáltató között. Itt módosíthatod az értéket.
     defaultSourceTitle: Mod tartalom forrásának kiválasztása
-    detailDescription: >-
-      Amikor kiválaszt egy elemet a bal oldalon. Látni fogja a mod részleteit. A tartalom származhat Modrinth, Curseforge vagy elemzett mod tartalmából.
+    detailDescription: Amikor kiválaszt egy elemet a bal oldalon. Látni fogja a mod részleteit. A tartalom származhat Modrinth, Curseforge vagy elemzett mod tartalmából.
     detailTitle: Mod részletek
-    listDescription: >-
-      Megjelenítjük a telepített modokat, ha nincs inputja. A keresett modokat akkor fogja látni, ha a kulcsszó vagy a kategória kiválasztása megtörtént.
+    listDescription: Megjelenítjük a telepített modokat, ha nincs inputja. A keresett modokat akkor fogja látni, ha a kulcsszó vagy a kategória kiválasztása megtörtént.
     listTitle: Installed or Searched Mod
-    searchDescription: >-
-      A Modrinth, Curseforge vagy a helyi gyorsítótár modjait keresheted ezzel a keresőmezővel.
+    searchDescription: A Modrinth, Curseforge vagy a helyi gyorsítótár modjait keresheted ezzel a keresőmezővel.
     searchTitle: Modok keresése
-  recentPlayDescription: >-
+  recentPlayDescription: |-
     A létrehozott játékok itt lesznek felsorolva.
-
     Itt váltogathatja a nézeteket, hogy megtekinthesse a telepített verziókat és a letöltött modpackokat is.
   storePoupularModpackDescription: Ebben a részben láthatja a Curseforge és Modrinth legnépszerűbb modpackjait.
   storeSearchCategoryDescription: Itt is válthat a kategóriák és a szűrők között.
@@ -1675,6 +1804,59 @@ tutorial:
     Nyomja meg az Entert a kereséshez.
   storeSearchResultDescription: Itt látni fogja az összes keresési eredményt.
   userAccountDescription: Erre az ikonra kattintva adhatod hozzá vagy kezelheted Minecraft-fiókodat.
+  tooltip: Súgó és Vezetés
+  done: Értem!
+  helpDescription: Interaktív útmutató az indítóhoz és az aktuális oldalhoz.
+  blueprint:
+    searchTitle: Tervrajzok keresése
+    searchDescription: Keress helyi és közösségi tervrajzokat név vagy címke alapján.
+    listTitle: Tervrajzok listája
+    listDescription: Tekintsd meg és kezeld a mentett példány-tervrajzokat és sablonokat.
+    detailTitle: Tervrajz részletei
+    detailDescription: Ellenőrizd a tervrajz tartalmát, a modokat, és hozz létre új példányokat.
+  me:
+    instancesTitle: Példányok kezelése
+    instancesDescription: Tekintsd meg az összes telepített példányt, rendezd mappa vagy dátum szerint, és indítsd el.
+    profileTitle: Fiók és Profil
+    profileDescription: Válts fiókjaid között és kezeld a bejelentkezési adatokat.
+    skinTitle: Kinézet és Köpeny testreszabása
+    skinDescription: Tekintsd meg karaktered 3D-ben, válts kinézetet és ölts köpenyt.
+  multiplayer:
+    railTitle: Hálózat és Navigáció
+    railDescription: Ellenőrizd a NAT típust, hálózati állapotot, és válts kapcsolatok és beállítások között.
+    groupTitle: Csatlakozás vagy Szoba létrehozása
+    groupDescription: Adj meg egy szobakódot a csatlakozáshoz, vagy hagyd üresen saját szoba nyitásához.
+    joinDescription: Kattints meglévő szobához csatlakozáshoz vagy új készítéséhez.
+    contentTitle: Csatlakozott tagok és Tartalom
+    contentDescription: Kezeld a tagokat, figyeld a késleltetést és oszd meg a futó játékot.
+    manualDescription: Közvetlen kézi P2P kapcsolat ismerősökkel SDP adatcsere révén.
+  resourcepack:
+    searchTitle: Erőforráscsomagok keresése
+    searchDescription: Keress erőforráscsomagokat a Modrinth-en, CurseForge-on vagy helyi fájlokban.
+    listTitle: Erőforráscsomagok listája
+    listDescription: Böngészd a telepített csomagokat, kapcsold be/ki őket és állítsd be a prioritást.
+    detailTitle: Csomag részletei
+    detailDescription: Képernyőképek, leírások, kompatibilis Minecraft verziók és fájlok megtekintése.
+  save:
+    searchTitle: Világok keresése
+    searchDescription: Szűrd és keresd a jelenlegi példány világait név szerint.
+    listTitle: Világok listája
+    listDescription: Minden mentett világ játékmóddal, utolsó játékidővel és fájlmérettel.
+    detailTitle: Világ részletei és Műveletek
+    detailDescription: Készíts biztonsági mentést, exportáld, vizsgáld a level.dat-ot vagy módosítsd a beállításokat.
+  settings:
+    navDescription: Váltás az Általános, Megjelenés, Globális játékbeállítások és Hálózat között.
+    generalDescription: Nyelv, adatmappa, frissítési csatornák és indítási beállítások konfigurálása.
+    appearanceDescription: Téma, háttérképek, kiemelő színek és felületi elrendezés testreszabása.
+    globalDescription: Alapértelmezett Java verzió, memóriakiosztás és JVM argumentumok megadása.
+    networkDescription: Letöltési tükrök, proxy beállítások és párhuzamos feladatok határértékei.
+  shaderpack:
+    searchTitle: Shader csomagok keresése
+    searchDescription: Keress shadereket a Modrinth-en, CurseForge-on vagy a helyi gyorsítótárban.
+    listTitle: Shader csomagok listája
+    listDescription: Böngészd a telepített shadereket és válts közöttük gyorsan.
+    detailTitle: Shader részletei
+    detailDescription: Tekintsd meg a készítőt, felbontási követelményeket, profilokat és opciókat.
 universalDrop:
   unknownResource: Ismeretlen
 unresolvedFiles:

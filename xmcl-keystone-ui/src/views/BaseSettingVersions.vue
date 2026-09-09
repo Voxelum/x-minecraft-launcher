@@ -1,5 +1,5 @@
 <template>
-  <SettingCard :title="t('version.name', 2)" icon="layers">
+  <SettingCard id="version-card" :title="t('version.name', 2)" icon="layers">
     <template #header-action>
       <v-btn
         :disabled="!versionHeader || isModified"

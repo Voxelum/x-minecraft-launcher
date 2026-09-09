@@ -1324,24 +1324,26 @@ search:
   noResults: Không tìm thấy kết quả
   pageSize: Số kết quả mỗi trang
 server:
+  launch: Khởi chạy máy chủ
+  stop: Dừng máy chủ
   acceptingMinecraftVersion: Chấp nhận phiên bản Minecraft
   addServer: Thêm máy chủ
   address: Địa chỉ máy chủ
-  addressHint: 'ví dụ: mc.hypixel.net'
-  bindUpstream: Liên kết làm máy chủ gốc (Upstream)
-  boundUpstream: Đã liên kết máy chủ gốc
-  boundUpstreamHint: Phiên bản này sẽ tuân theo phiên bản Minecraft của máy chủ được liên kết.
+  addressHint: 'vd: mc.hypixel.net'
+  bindUpstream: Liên kết làm nguồn
+  boundUpstream: Đã liên kết máy chủ nguồn
+  boundUpstreamHint: Bản cài đặt này sẽ đi theo phiên bản Minecraft của máy chủ được liên kết.
   creationHint: Vui lòng điền địa chỉ máy chủ và ping máy chủ
   editServer: Chỉnh sửa máy chủ
-  emptyHint: Chưa có máy chủ nào trong tệp servers.dat của phiên bản này. Hãy thêm một cái để bắt đầu.
-  entryCount: '{count} máy chủ | {count} máy chủ'
+  emptyHint: Chưa có máy chủ nào trong servers.dat của bản cài đặt này. Hãy thêm một máy chủ.
+  entryCount: '{count} máy chủ'
   expectedVersions: Phiên bản được hỗ trợ
   export: Xuất máy chủ
   exportNoFilesHint: Không tìm thấy tệp máy chủ nào. Bạn có thể chạy máy chủ cục bộ một lần để tạo một số tệp.
   exportOption: Tùy chọn xuất máy chủ
   exportSSHAuthenticationFailed: Tất cả các phương thức xác thực đều thất bại. Vui lòng kiểm tra tên đăng nhập/mật khẩu hoặc khóa riêng tư.
   exportSSHOptions: Tùy chọn SSH
-  exportSSHPrivateKeyPath: Đường dẫn khóa riêng tư SSH
+  exportSSHPrivateKeyPath: Đường dẫn khóa riêng SSH
   exportSSHRemotePath: Đường dẫn máy chủ từ xa
   exportToFolder: Xuất vào thư mục
   filterVersion: Lọc phiên bản Minecraft máy chủ phản hồi
@@ -1349,12 +1351,12 @@ server:
   hostHint: Địa chỉ host (kèm cổng) của máy chủ
   hostRequired: Vui lòng nhập địa chỉ IP máy chủ
   ipAddress: Địa chỉ IP
-  launchClient: Thay vào đó khởi chạy client
+  launchClient: Khởi chạy client thay vào đó
   launchPinned: Đã ghim
-  launchTargetHint: Phiên bản này sẽ khởi chạy thẳng vào máy chủ được ghim. Quay lại khởi chạy client thông thường?
+  launchTargetHint: Bản cài đặt này sẽ vào thẳng máy chủ được ghim. Quay lại mở client?
   maxPlayers: Số người chơi tối đa
   motd: MOTD của máy chủ
-  nameHint: Tên hiển thị trong danh sách Chơi mạng
+  nameHint: Tên hiển thị trong danh sách chơi mạng
   nogui: Không hiển thị giao diện máy chủ
   onlineMode: Chế độ chơi mạng bản quyền (Online Mode)
   pin: Ghim máy chủ
@@ -1364,20 +1366,114 @@ server:
   pinnedHeader: 'Đã ghim: {name}'
   players: Người chơi
   port: Cổng
+  clearLog: Xóa nhật ký
+  log: Nhật ký máy chủ
+  logWaiting: Đầu ra máy chủ sẽ xuất hiện ở đây sau khi khởi chạy.
+  remoteActionSuccess: Done.
+  remoteAdmin: Quản trị máy chủ từ xa
+  remoteAuthMethod: Xác thực
+  remoteAuthPassword: Mật khẩu
+  remoteAuthPrivateKey: Khóa riêng (Private Key)
+  remoteBuildOfflinePackage: Tạo gói cài đặt ngoại tuyến
+  remoteConnected: Đã kết nối
+  remoteConnection: Kết nối
+  remoteDeployment: Triển khai
+  remoteDeploy: Triển khai
+  remoteDisk: Ổ đĩa
+  remoteConfigFiles: Tệp cấu hình
+  remoteExtraFiles: Tệp bổ sung
+  remoteForgetCredentials: Xóa thông tin đăng nhập đã lưu
+  remoteInstallService: Cài đặt dịch vụ
+  remoteLoad: Tải trung bình
+  remoteLog: Nhật ký từ xa
+  remoteMemory: Bộ nhớ
+  remoteMods: Mod
+  remoteNoWorldSelected: Chưa chọn thế giới nào
+  remoteJavaRequired: Không tìm thấy Java trên máy chủ Linux từ xa.
+  remoteLinuxRequired: Chỉ hỗ trợ máy chủ Linux qua SSH.
+  remoteNotConfiguredHint: Điền thông tin kết nối ở trên và lưu để kích hoạt trạng thái, quản lý dịch vụ và xem nhật ký.
+  remotePathNotWritable: Thư mục trên máy chủ từ xa không có quyền ghi.
+  remotePathWritable: Thư mục có thể ghi
+  remotePolicyInitialize: Khởi tạo một lần
+  remotePolicyMirror: Đồng bộ gương (Mirror)
+  remotePolicyOverlay: Ghi đè (Overlay)
+  remotePolicyPreserve: Bảo lưu
+  remotePreview: Xem trước thay đổi
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: Ghi nhớ đăng nhập (Chuỗi khóa hệ điều hành)
+  remoteReconcileReady: Máy chủ đích khớp với bản cài đặt này và bảng điều khiển đã kết nối.
+  remoteRestartService: Khởi động lại
+  remoteSavedCredentialsHint: Đang dùng thông tin đã lưu — để trống để giữ nguyên hoặc nhập để thay thế.
+  remoteService: Dịch vụ systemd
+  remoteServiceActive: Đang chạy
+  remoteServerInstalled: Tệp máy chủ đã được cài đặt
+  remoteServiceName: Tên dịch vụ
+  remoteServiceNameHint: 'Tên đơn vị systemd --user, vd: mc-server'
+  remoteSelectedFiles: Đã chọn {count} tệp máy chủ
+  remoteSelectFiles: Chọn tệp
+  remoteStartCommand: Lệnh khởi động
+  remoteStartCommandHint: 'vd: java -jar server.jar nogui'
+  remoteStartService: Khởi chạy
+  remoteStatus: Trạng thái
+  remoteSystemdRequired: Dịch vụ người dùng systemd không khả dụng trên máy chủ Linux từ xa.
+  remoteTargetName: Tên mục tiêu
+  remoteStopService: Dừng
+  remoteStopWatchLog: Dừng theo dõi
+  remoteTestConnection: Kiểm tra kết nối
+  remoteTestConnectionSuccess: Kết nối thành công.
+  remoteUninstallConfirmMessage: Thao tác này sẽ gỡ bỏ đơn vị systemd trên máy chủ từ xa. Tệp máy chủ sẽ được giữ nguyên.
+  remoteUninstallService: Gỡ cài đặt dịch vụ
+  remoteRunInstall: Cài đặt hoặc sửa chữa
+  remoteWatchLog: Xem nhật ký trực tiếp
+  remoteWorldAlways: Thay thế trong mỗi lần đồng bộ
+  remoteWorldDeployment: Triển khai thế giới
+  remoteWorldDeploymentHint: Đồng bộ định kỳ không bao giờ tải lên dữ liệu thế giới trừ khi chính sách này cho phép.
+  remoteWorldFirstInstall: Chỉ khởi tạo khi máy chủ chưa có thế giới
+  remoteWorldNever: Không bao giờ tải lên thế giới
+  remoteWorldPresent: Thế giới trên máy chủ đích
+  remoteWorld: Thế giới
+  remoteWorldWillDeploy: Thế giới đã chọn sẽ được tải lên trong lần đồng bộ này.
   serverName: Tên máy chủ
+  serviceInstall: Cài đặt dịch vụ
+  serviceManagedLaunch: Sử dụng dịch vụ hệ điều hành cho khởi chạy và dừng
+  serviceManager: Dịch vụ hệ thống
+  serviceName: Tên dịch vụ
+  serviceNameHint: Định danh chứa chữ cái, số, dấu chấm hoặc gạch nối
+  serviceNotInstalled: Chưa cài đặt
+  serviceStartCommand: Lệnh khởi chạy
+  serviceSystemd: systemd --user
+  serviceWindows: Dịch vụ Windows
+  serviceWindowsCommandHint: Lệnh Java được tạo từ phiên bản này.
   serversListTitle: Danh sách máy chủ
+  target: Mục tiêu máy chủ
+  targetLocal: localhost
+  targetLocalHint: Cài đặt và chạy máy chủ trên máy tính này.
+  targetRemote: Mục tiêu SSH
+  targetRemoteHint: Kết nối, cài đặt, khởi chạy và giám sát máy chủ qua SSH.
   unbindUpstream: Hủy liên kết
   unknown: Máy chủ không xác định
   unknownDescription: Máy chủ không xác định. Vui lòng làm mới
   unpin: Bỏ ghim
   upload: Tải lên máy chủ
-  upstreamUpToDate: Phiên bản của bạn phù hợp với máy chủ ({version}).
-  upstreamUpToDateHint: Không cần nâng cấp. Nhấp để ping lại máy chủ.
-  upstreamUpdateAvailable: Máy chủ hiện chạy Minecraft {version}. Nhấp để áp dụng.
-  upstreamUpdateHint: Áp dụng phiên bản Minecraft được gợi ý cho phiên bản này.
-  useAsUpstreamHint: Phiên bản này sẽ tuân theo phiên bản Minecraft được báo cáo từ máy chủ.
+  upstreamUpToDate: Bản cài đặt của bạn khớp với phiên bản máy chủ ({version}).
+  upstreamUpToDateHint: Không cần nâng cấp. Nhấp để kiểm tra lại.
+  upstreamUpdateAvailable: Máy chủ hiện đang chạy Minecraft {version}. Nhấp để áp dụng.
+  upstreamUpdateHint: Áp dụng phiên bản Minecraft này cho bản cài đặt.
+  useAsUpstreamHint: Bản cài đặt sẽ tự động điều chỉnh theo phiên bản Minecraft của máy chủ.
   version: Phiên bản yêu cầu của máy chủ
   versionHint: Phiên bản Minecraft cần Ping
+  worldPreserve: Bảo lưu thế giới trên máy chủ đích
 serverStatus:
   nohost: §4Không tìm thấy máy chủ!
   ping: Đang ping...
@@ -1706,6 +1802,7 @@ store:
   name: Chợ Modpack
   searchResult: Kết quả tìm kiếm
   trending: Xu hướng
+  searchHint: Tìm kiếm gói mod...
 tag:
   create: Tạo thẻ (Tag)
   createSelected: Tạo thẻ cho phần đã chọn
@@ -1747,12 +1844,32 @@ tutorial:
   feedbackDescription: Nếu bạn gặp bất kỳ sự cố nào, vui lòng nhấp vào nút này để gửi phản hồi!
   hideNewsHeaderDescription: Bạn có thể thấy phần tin tức hiển thị ở bên trái. Nhấp vào nút này có thể ẩn phần hiển thị này.
   instance:
+    appearanceThemeDescription: Tùy chỉnh hình nền, màu sắc và phong cách giao diện cho phiên bản này.
+    appearanceThemeTitle: Giao diện phiên bản
     iconDescription: Nhấp để thay đổi biểu tượng.
     iconTitle: Biểu tượng phiên bản
-    javaDescription: Chọn hoặc chuyển đổi phiên bản Java.
-    javaImportDescription: Nhập Java từ bộ nhớ cục bộ.
+    javaDescription: Chọn hoặc thay đổi phiên bản Java.
+    javaImportDescription: Nhập môi trường Java từ bộ nhớ máy tính.
     javaImportTitle: Nhập Java
     javaTitle: Danh sách Java
+    modpackExportDescription: Đóng gói phiên bản đã cấu hình thành một gói mod sẵn sàng chia sẻ.
+    modpackExportTitle: Xuất gói mod
+    modpackFilesDescription: Chọn tệp cấu hình, mod và tài nguyên để đóng gói cho client và server.
+    modpackFilesTitle: Các tệp được bao gồm
+    modpackMetaDescription: Chỉ định phiên bản modpack, tác giả, mô tả và liên kết trang web.
+    modpackMetaTitle: Chi tiết gói mod
+    modpackOptionsDescription: Chọn thư mục đích và định dạng xuất (Modrinth hoặc CurseForge).
+    modpackOptionsTitle: Tùy chọn xuất
+    serverLaunchDescription: Bật hoặc tắt máy chủ chuyên dụng của phiên bản này trực tiếp từ thanh tiêu đề.
+    serverLaunchTitle: Khởi chạy / Dừng máy chủ
+    serverPropertiesDescription: Điều chỉnh cổng, độ khó, MOTD, giới hạn người chơi và luật trò chơi.
+    serverPropertiesTitle: Cấu hình máy chủ
+    serverServiceDescription: Quản lý máy chủ dưới dạng dịch vụ nền của hệ điều hành để chạy liên tục.
+    serverServiceTitle: Dịch vụ hệ thống
+    serverTargetDescription: Chọn giữa chạy cục bộ trên máy tính hoặc quản lý máy chủ Linux từ xa qua SSH.
+    serverTargetTitle: Mục tiêu máy chủ
+    versionDescription: Chọn phiên bản Minecraft và các bộ nạp Forge, Fabric, Quilt hoặc NeoForge.
+    versionTitle: Phiên bản Minecraft & Bộ nạp
   instanceAddDescription: Nhấp vào nút này để nhập phiên bản Minecraft hiện có hoặc tạo một phiên bản mới từ đầu hoặc từ modpack.
   instanceSelectDescription: Nhấp vào nút này sẽ chuyển hướng đến trang để chọn trò chơi và đọc tin tức.
   launchDescription: Nhấp vào nút này để cài đặt hoặc khởi chạy trò chơi.
@@ -1771,6 +1888,59 @@ tutorial:
   storeSearchDescription: Bạn có thể tìm kiếm các Modpack bằng cách nhập vào hộp văn bản này. Nhấn Enter để tìm kiếm.
   storeSearchResultDescription: Bạn sẽ thấy tất cả kết quả tìm kiếm được liệt kê tại đây.
   userAccountDescription: Nhấp vào biểu tượng này để thêm hoặc quản lý tài khoản Minecraft của bạn.
+  tooltip: Trợ giúp & Hướng dẫn
+  done: Đã hiểu!
+  helpDescription: Hướng dẫn tương tác cho trình khởi chạy và trang hiện tại.
+  blueprint:
+    searchTitle: Tìm kiếm bản thiết kế
+    searchDescription: Tìm bản thiết kế cục bộ và cộng đồng theo tên hoặc thẻ.
+    listTitle: Danh sách bản thiết kế
+    listDescription: Xem và quản lý tất cả các bản thiết kế và mẫu phiên bản đã lưu.
+    detailTitle: Chi tiết bản thiết kế
+    detailDescription: Kiểm tra nội dung bản thiết kế, các bản mod đi kèm và tạo phiên bản mới.
+  me:
+    instancesTitle: Quản lý phiên bản
+    instancesDescription: Xem tất cả phiên bản đã cài đặt, sắp xếp theo thư mục hoặc ngày và khởi chạy.
+    profileTitle: Tài khoản & Hồ sơ
+    profileDescription: Chuyển đổi giữa các tài khoản và quản lý thông tin đăng nhập.
+    skinTitle: Tùy chỉnh Skin & Áo choàng
+    skinDescription: Xem trước nhân vật dạng 3D, thay đổi trang phục và đeo áo choàng.
+  multiplayer:
+    railTitle: Mạng & Điều hướng
+    railDescription: Kiểm tra loại NAT, tình trạng mạng và chuyển đổi giữa kết nối và cài đặt.
+    groupTitle: Tham gia hoặc Tạo phòng
+    groupDescription: Nhập mã phòng để tham gia cùng bạn bè hoặc tạo phòng của riêng bạn.
+    joinDescription: Nhấp để tham gia phòng hiện có hoặc tạo phòng mới.
+    contentTitle: Thành viên kết nối & Nội dung
+    contentDescription: Quản lý thành viên, kiểm tra độ trễ và chia sẻ Minecraft đang chạy.
+    manualDescription: Kết nối P2P trực tiếp thủ công với bạn bè qua trao đổi SDP.
+  resourcepack:
+    searchTitle: Tìm gói tài nguyên
+    searchDescription: Tìm gói tài nguyên từ Modrinth, CurseForge hoặc tệp cục bộ.
+    listTitle: Danh sách gói tài nguyên
+    listDescription: Duyệt các gói đã cài, bật/tắt và thay đổi thứ tự ưu tiên.
+    detailTitle: Chi tiết gói tài nguyên
+    detailDescription: Xem ảnh chụp màn hình, mô tả, phiên bản Minecraft tương thích và tệp.
+  save:
+    searchTitle: Tìm kiếm thế giới
+    searchDescription: Lọc và tìm kiếm thế giới trong phiên bản hiện tại theo tên.
+    listTitle: Danh sách thế giới
+    listDescription: Xem tất cả thế giới đã lưu với chế độ chơi, ngày chơi gần nhất và kích thước.
+    detailTitle: Chi tiết thế giới & Thao tác
+    detailDescription: Sao lưu, xuất ra tệp, kiểm tra level.dat hoặc quản lý cài đặt thế giới.
+  settings:
+    navDescription: Chuyển đổi giữa Cài đặt chung, Giao diện, Cài đặt trò chơi chung và Mạng.
+    generalDescription: Định cấu hình ngôn ngữ, thư mục dữ liệu, kênh cập nhật và tùy chọn khởi động.
+    appearanceDescription: Tùy chỉnh chủ đề, hình nền, màu nhấn và bố cục giao diện.
+    globalDescription: Đặt môi trường Java mặc định, dung lượng RAM và tham số khởi chạy JVM.
+    networkDescription: Cấu hình máy chủ tải xuống, proxy và giới hạn tác vụ đồng thời.
+  shaderpack:
+    searchTitle: Tìm kiếm gói shader
+    searchDescription: Tìm shader trên Modrinth, CurseForge hoặc bộ nhớ đệm cục bộ.
+    listTitle: Danh sách gói shader
+    listDescription: Duyệt qua các gói shader đã cài đặt và chuyển đổi nhanh chóng.
+    detailTitle: Chi tiết gói shader
+    detailDescription: Xem tác giả, yêu cầu độ phân giải, cấu hình sẵn và tùy chọn.
 unauthenticatedWarning:
   cancel: Hủy
   description: Bạn chưa đăng nhập vào bất kỳ tài khoản nào. Trò chơi sẽ khởi chạy ở chế độ chơi thử (demo). Để trải nghiệm đầy đủ các tính năng, vui lòng đăng nhập.

@@ -332,16 +332,101 @@ onBeforeUnmount(() => {
 
 usePresence(computed(() => t('presence.instanceSetting', { instance: name.value })))
 
-useTutorial(computed(() => [{
-  element: '#instance-icon',
-  popover: { title: t('tutorial.instance.iconTitle'), description: t('tutorial.instance.iconDescription') },
-}, {
-  element: '#java-list',
-  popover: { title: t('tutorial.instance.javaTitle'), description: t('tutorial.instance.javaDescription') },
-}, {
-  element: '#java-import',
-  popover: { title: t('tutorial.instance.javaImportTitle'), description: t('tutorial.instance.javaImportDescription') },
-}]))
+useTutorial(computed(() => {
+  if (targetQuery.value === 'server' && !isBedrock.value) {
+    return [
+      {
+        element: '[data-testid="server-tab-launch"]',
+        popover: {
+          title: t('tutorial.instance.serverLaunchTitle'),
+          description: t('tutorial.instance.serverLaunchDescription'),
+        },
+      },
+      {
+        element: '[data-testid="server-target-selector"]',
+        popover: {
+          title: t('tutorial.instance.serverTargetTitle'),
+          description: t('tutorial.instance.serverTargetDescription'),
+        },
+      },
+      {
+        element: '[data-testid="server-service-manager"]',
+        popover: {
+          title: t('tutorial.instance.serverServiceTitle'),
+          description: t('tutorial.instance.serverServiceDescription'),
+        },
+      },
+      {
+        element: '[data-testid="server-properties"]',
+        popover: {
+          title: t('tutorial.instance.serverPropertiesTitle'),
+          description: t('tutorial.instance.serverPropertiesDescription'),
+        },
+      },
+    ]
+  }
+  if (targetQuery.value === 'modpack' && !isBedrock.value) {
+    return [
+      {
+        element: '#modpack-metadata-card',
+        popover: {
+          title: t('tutorial.instance.modpackMetaTitle'),
+          description: t('tutorial.instance.modpackMetaDescription'),
+        },
+      },
+      {
+        element: '#modpack-options-card',
+        popover: {
+          title: t('tutorial.instance.modpackOptionsTitle'),
+          description: t('tutorial.instance.modpackOptionsDescription'),
+        },
+      },
+      {
+        element: '#modpack-files-card',
+        popover: {
+          title: t('tutorial.instance.modpackFilesTitle'),
+          description: t('tutorial.instance.modpackFilesDescription'),
+        },
+      },
+      {
+        element: '#modpack-export-button',
+        popover: {
+          title: t('tutorial.instance.modpackExportTitle'),
+          description: t('tutorial.instance.modpackExportDescription'),
+        },
+      },
+    ]
+  }
+  if (targetQuery.value === 'appearance') {
+    return [
+      {
+        element: '[data-testid="instance-theme-card"]',
+        popover: {
+          title: t('tutorial.instance.appearanceThemeTitle'),
+          description: t('tutorial.instance.appearanceThemeDescription'),
+        },
+      },
+    ]
+  }
+  return [
+    {
+      element: '#instance-icon',
+      popover: { title: t('tutorial.instance.iconTitle'), description: t('tutorial.instance.iconDescription') },
+    },
+    {
+      element: '#version-card',
+      popover: { title: t('tutorial.instance.versionTitle'), description: t('tutorial.instance.versionDescription') },
+    },
+    {
+      element: '#java-card',
+      popover: { title: t('tutorial.instance.javaTitle'), description: t('tutorial.instance.javaDescription') },
+    },
+    {
+      element: '#java-import',
+      popover: { title: t('tutorial.instance.javaImportTitle'), description: t('tutorial.instance.javaImportDescription') },
+    },
+  ]
+}))
 
 </script>
 

@@ -1324,17 +1324,19 @@ search:
   noResults: Tidak menemukan hasil
   pageSize: Hasil per halaman
 server:
+  launch: Luncurkan server
+  stop: Hentikan server
   acceptingMinecraftVersion: Menerima Versi Minecraft
   addServer: Tambah Server
   address: Alamat Server
   addressHint: mis. mc.hypixel.net
-  bindUpstream: Ikat sebagai hulu
-  boundUpstream: Hulu server terikat
-  boundUpstreamHint: Instansi ini mengikuti versi Minecraft server yang terikat.
+  bindUpstream: Tautkan sebagai hulu (upstream)
+  boundUpstream: Server hulu tertaut
+  boundUpstreamHint: Instansi ini mengikuti versi Minecraft server yang ditautkan.
   creationHint: Silakan isi alamat server dan ping server
-  editServer: Ubah Server
-  emptyHint: Belum ada server di servers.dat instansi ini. Tambahkan satu untuk memulai.
-  entryCount: '{count} server | {count} server'
+  editServer: Edit Server
+  emptyHint: Belum ada server di servers.dat instansi ini. Tambahkan untuk memulai.
+  entryCount: '{count} server'
   expectedVersions: Versi yang Didukung
   export: Ekspor Server
   exportNoFilesHint: Tidak menemukan berkas server. Anda dapat menjalankan server secara lokal sekali untuk menghasilkan beberapa berkas.
@@ -1349,35 +1351,129 @@ server:
   hostHint: Host (dengan port) dari server
   hostRequired: Silakan masukkan alamat IP server
   ipAddress: Alamat IP
-  launchClient: Luncurkan klien saja
+  launchClient: Luncurkan klien sebagai gantinya
   launchPinned: Disematkan
-  launchTargetHint: Instansi ini meluncur langsung ke server yang disematkan. Beralih kembali ke klien?
+  launchTargetHint: Instansi ini langsung terhubung ke server yang disematkan. Kembali ke klien?
   maxPlayers: Pemain Maks
   motd: MOTD Server
-  nameHint: Nama tampilan yang ditunjukkan di daftar Multipemain
+  nameHint: Nama yang ditampilkan di daftar multipemain
   nogui: Tanpa GUI Server
   onlineMode: Mode Online
   pin: Sematkan server
   pinAfterSave: Sematkan sebagai target peluncuran default setelah disimpan
   ping: Ping
   pings: Ping
-  pinnedHeader: 'disematkan: {name}'
+  pinnedHeader: 'Disematkan: {name}'
   players: Pemain
   port: Port
+  clearLog: Bersihkan log
+  log: Log server
+  logWaiting: Keluaran server akan muncul di sini setelah peluncuran.
+  remoteActionSuccess: Done.
+  remoteAdmin: Admin Server Jarak Jauh
+  remoteAuthMethod: Autentikasi
+  remoteAuthPassword: Kata Sandi
+  remoteAuthPrivateKey: Kunci privat
+  remoteBuildOfflinePackage: Buat paket luring
+  remoteConnected: Terhubung
+  remoteConnection: Koneksi
+  remoteDeployment: Penyebaran
+  remoteDeploy: Sebarkan
+  remoteDisk: Disk
+  remoteConfigFiles: File konfigurasi
+  remoteExtraFiles: File tambahan
+  remoteForgetCredentials: Lupakan kredensial tersimpan
+  remoteInstallService: Pasang layanan
+  remoteLoad: Beban rata-rata
+  remoteLog: Log jarak jauh
+  remoteMemory: Memori
+  remoteMods: Mod
+  remoteNoWorldSelected: Tidak ada dunia instansi yang dipilih
+  remoteJavaRequired: Java tidak tersedia di host Linux jarak jauh.
+  remoteLinuxRequired: Hanya target Linux SSH yang didukung.
+  remoteNotConfiguredHint: Isi detail koneksi di atas dan simpan untuk mengaktifkan status, kontrol layanan, dan log.
+  remotePathNotWritable: Direktori server jarak jauh tidak dapat ditulisi.
+  remotePathWritable: Direktori dapat ditulisi
+  remotePolicyInitialize: Inisialisasi sekali
+  remotePolicyMirror: Cermin (Mirror)
+  remotePolicyOverlay: Lapisan (Overlay)
+  remotePolicyPreserve: Pertahankan
+  remotePreview: Pratinjau perubahan
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: Ingat kredensial (Gantungan kunci OS)
+  remoteReconcileReady: Target cocok dengan instansi ini dan konsol terhubung.
+  remoteRestartService: Mulai ulang
+  remoteSavedCredentialsHint: Menggunakan kredensial tersimpan — biarkan kosong untuk mempertahankan atau ketik untuk mengganti.
+  remoteService: Layanan systemd
+  remoteServiceActive: Berjalan
+  remoteServerInstalled: File server terpasang
+  remoteServiceName: Nama layanan
+  remoteServiceNameHint: Nama unit systemd --user, mis. mc-server
+  remoteSelectedFiles: '{count} file server dipilih'
+  remoteSelectFiles: Pilih file
+  remoteStartCommand: Perintah mulai
+  remoteStartCommandHint: mis. java -jar server.jar nogui
+  remoteStartService: Mulai
+  remoteStatus: Status
+  remoteSystemdRequired: Layanan pengguna systemd tidak tersedia di host Linux jarak jauh.
+  remoteTargetName: Nama target
+  remoteStopService: Hentikan
+  remoteStopWatchLog: Berhenti memantau
+  remoteTestConnection: Uji koneksi
+  remoteTestConnectionSuccess: Koneksi berhasil.
+  remoteUninstallConfirmMessage: Ini akan menonaktifkan dan menghapus unit systemd pada host jarak jauh. File server tidak disentuh.
+  remoteUninstallService: Copot pemasangan layanan
+  remoteRunInstall: Pasang atau perbaiki
+  remoteWatchLog: Pantau log langsung
+  remoteWorldAlways: Ganti pada setiap sinkronisasi
+  remoteWorldDeployment: Penerapan dunia instansi
+  remoteWorldDeploymentHint: Sinkronisasi rutin tidak pernah mengunggah dunia kecuali diizinkan secara eksplisit.
+  remoteWorldFirstInstall: Inisialisasi hanya jika target belum memiliki dunia
+  remoteWorldNever: Jangan pernah mengunggah dunia
+  remoteWorldPresent: Dunia target
+  remoteWorld: Dunia
+  remoteWorldWillDeploy: Dunia yang dipilih akan diunggah oleh rekonsiliasi ini.
   serverName: Nama server
+  serviceInstall: Instal layanan
+  serviceManagedLaunch: Gunakan layanan OS untuk tindakan peluncuran dan penghentian
+  serviceManager: Layanan sistem
+  serviceName: Nama layanan
+  serviceNameHint: Pengidentifikasi dengan huruf, angka, titik, atau tanda hubung
+  serviceNotInstalled: Belum diinstal
+  serviceStartCommand: Perintah mulai
+  serviceSystemd: systemd --user
+  serviceWindows: Layanan Windows
+  serviceWindowsCommandHint: Perintah Java dibuat dari instans ini.
   serversListTitle: Daftar Server
-  unbindUpstream: Lepas Ikatan
+  target: Target server
+  targetLocal: localhost
+  targetLocalHint: Instal dan jalankan server di komputer ini.
+  targetRemote: Target SSH
+  targetRemoteHint: Hubungkan, instal, luncurkan, dan pantau server via SSH.
+  unbindUpstream: Lepaskan tautan
   unknown: Server Tidak Dikenal
   unknownDescription: Server Tidak Dikenal. Silakan Segarkan
   unpin: Batal Sematkan
   upload: Unggah Server
   upstreamUpToDate: Instansi Anda cocok dengan server ({version}).
-  upstreamUpToDateHint: Tidak perlu peningkatan. Klik untuk melakukan ping ulang server.
+  upstreamUpToDateHint: Tidak perlu pembaruan. Klik untuk ping ulang server.
   upstreamUpdateAvailable: Server sekarang menjalankan Minecraft {version}. Klik untuk menerapkan.
   upstreamUpdateHint: Terapkan versi Minecraft yang disarankan ke instansi ini.
   useAsUpstreamHint: Instansi akan mengikuti versi Minecraft yang dilaporkan server.
   version: Server Memerlukan Versi
   versionHint: Versi Minecraft Untuk Di-ping
+  worldPreserve: Pertahankan dunia target
 serverStatus:
   nohost: §4Tidak dapat menemukan host!
   ping: Ping...
@@ -1706,6 +1802,7 @@ store:
   name: Pasar Modpack
   searchResult: Hasil Pencarian
   trending: Tren
+  searchHint: Cari modpack...
 tag:
   create: Buat Tag
   createSelected: Buat Tag untuk yang Terpilih
@@ -1747,12 +1844,32 @@ tutorial:
   feedbackDescription: Jika Anda mengalami masalah, silakan klik tombol ini untuk mengirim umpan balik!
   hideNewsHeaderDescription: Anda dapat melihat Berita di sebelah kiri. Mengklik tombol ini dapat menyembunyikan tampilan tersebut.
   instance:
+    appearanceThemeDescription: Sesuaikan latar belakang, warna, dan gaya visual untuk instansi khusus ini.
+    appearanceThemeTitle: Tampilan Instansi
     iconDescription: Klik untuk mengubah ikon.
-    iconTitle: Ikon instansi
-    javaDescription: Pilih atau beralih versi Java.
-    javaImportDescription: Impor Java dari penyimpanan lokal.
+    iconTitle: Ikon Instansi
+    javaDescription: Pilih atau ganti versi Java.
+    javaImportDescription: Impor versi Java dari penyimpanan lokal.
     javaImportTitle: Impor Java
     javaTitle: Daftar Java
+    modpackExportDescription: Bangun dan kemas instansi Anda menjadi modpack yang siap dibagikan.
+    modpackExportTitle: Ekspor Modpack
+    modpackFilesDescription: Pilih file konfigurasi, mod, dan sumber daya yang akan disertakan untuk klien dan server.
+    modpackFilesTitle: File yang Disertakan
+    modpackMetaDescription: Tentukan versi modpack, pembuat, deskripsi, dan tautan situs web.
+    modpackMetaTitle: Detail Modpack
+    modpackOptionsDescription: Pilih folder tujuan dan format ekspor (seperti Modrinth atau CurseForge).
+    modpackOptionsTitle: Opsi Ekspor
+    serverLaunchDescription: Luncurkan atau hentikan server khusus instansi ini langsung dari bilah atas.
+    serverLaunchTitle: Luncurkan / Hentikan Server
+    serverPropertiesDescription: Atur port, tingkat kesulitan, MOTD, batas pemain, dan aturan permainan.
+    serverPropertiesTitle: Konfigurasi Server
+    serverServiceDescription: Kelola server sebagai layanan latar belakang sistem operasi untuk waktu aktif terus-menerus.
+    serverServiceTitle: Layanan Sistem
+    serverTargetDescription: Pilih antara menjalankan server secara lokal di komputer atau mengelola server Linux jarak jauh via SSH.
+    serverTargetTitle: Target Server
+    versionDescription: Pilih versi Minecraft dan pemuat Forge, Fabric, Quilt, atau NeoForge.
+    versionTitle: Versi Minecraft & Pemuat
   instanceAddDescription: Klik tombol ini untuk mengimpor instansi Minecraft yang ada atau membuat yang baru dari awal atau modpack.
   instanceSelectDescription: Mengklik tombol ini akan mengarahkan ke halaman untuk memilih game dan membaca berita.
   launchDescription: Klik tombol ini untuk memasang atau meluncurkan game.
@@ -1771,6 +1888,59 @@ tutorial:
   storeSearchDescription: Anda dapat mencari Modpack dengan memasukkan teks di kotak ini. Tekan Enter untuk mencari.
   storeSearchResultDescription: Anda akan melihat semua hasil pencarian terdaftar di sini.
   userAccountDescription: Klik ikon ini untuk menambahkan atau mengelola akun Minecraft Anda.
+  tooltip: Bantuan & Panduan
+  done: Paham!
+  helpDescription: Panduan interaktif untuk peluncur dan halaman saat ini.
+  blueprint:
+    searchTitle: Cari Cetak Biru
+    searchDescription: Cari cetak biru lokal dan komunitas berdasarkan nama atau label.
+    listTitle: Daftar Cetak Biru
+    listDescription: Lihat dan kelola semua cetak biru dan templat instansi yang tersimpan.
+    detailTitle: Detail Cetak Biru
+    detailDescription: Periksa isi cetak biru, mod yang disertakan, dan buat instansi baru darinya.
+  me:
+    instancesTitle: Manajemen Instansi
+    instancesDescription: Lihat semua instansi terpasang, kelompokkan berdasarkan folder atau tanggal, dan luncurkan.
+    profileTitle: Akun & Profil
+    profileDescription: Beralih antar akun dan kelola kredensial login Anda.
+    skinTitle: Kustomisasi Skin & Jubah
+    skinDescription: Pratinjau karakter Anda dalam 3D, ganti skin, dan pasang jubah.
+  multiplayer:
+    railTitle: Jaringan & Navigasi
+    railDescription: Periksa jenis NAT, status jaringan, dan beralih antara koneksi dan pengaturan.
+    groupTitle: Gabung atau Buat Ruangan
+    groupDescription: Masukkan kode ruangan untuk bergabung dengan teman, atau buat ruangan sendiri.
+    joinDescription: Klik untuk bergabung dengan ruangan yang ada atau buat ruangan baru.
+    contentTitle: Anggota Terhubung & Konten
+    contentDescription: Kelola anggota yang terhubung, periksa latensi, dan bagikan Minecraft yang sedang berjalan.
+    manualDescription: Koneksi P2P langsung manual dengan teman menggunakan pertukaran SDP.
+  resourcepack:
+    searchTitle: Cari Paket Sumber Daya
+    searchDescription: Cari paket sumber daya dari Modrinth, CurseForge, atau file lokal.
+    listTitle: Daftar Paket Sumber Daya
+    listDescription: Jelajahi paket yang terpasang, aktifkan/nonaktifkan, dan ubah prioritasnya.
+    detailTitle: Detail Paket Sumber Daya
+    detailDescription: Lihat tangkapan layar, deskripsi, versi Minecraft yang kompatibel, dan detail file.
+  save:
+    searchTitle: Cari Dunia Tersimpan
+    searchDescription: Saring dan cari dunia di instansi saat ini berdasarkan nama.
+    listTitle: Daftar Dunia
+    listDescription: Lihat semua dunia tersimpan dengan mode permainan, tanggal terakhir dimainkan, dan ukuran file.
+    detailTitle: Detail Dunia & Aksi
+    detailDescription: Cadangkan, ekspor, periksa level.dat, atau kelola pengaturan dunia.
+  settings:
+    navDescription: Beralih antara Umum, Tampilan, Pengaturan Permainan Global, dan Jaringan.
+    generalDescription: Konfigurasikan bahasa peluncur, direktori data, saluran pembaruan, dan opsi awal.
+    appearanceDescription: Sesuaikan tema, wallpaper latar belakang, warna aksen, dan gaya tata letak.
+    globalDescription: Tetapkan runtime Java bawaan, alokasi memori, dan argumen JVM.
+    networkDescription: Konfigurasikan cermin unduhan, proksi, dan batas tugas bersamaan.
+  shaderpack:
+    searchTitle: Cari Paket Shader
+    searchDescription: Cari shader di Modrinth, CurseForge, atau cache lokal.
+    listTitle: Daftar Paket Shader
+    listDescription: Jelajahi shader yang terpasang dan beralih di antaranya dengan cepat.
+    detailTitle: Detail Paket Shader
+    detailDescription: Lihat pembuat, persyaratan resolusi, preset profil, dan opsi shader.
 unauthenticatedWarning:
   cancel: Batal
   description: Anda tidak masuk ke akun apa pun. Game akan diluncurkan dalam mode demo. Untuk mengakses fitur lengkap, silakan masuk.

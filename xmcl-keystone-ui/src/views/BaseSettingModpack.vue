@@ -1,5 +1,5 @@
 <template>
-  <SettingCard :title="t('modpack.name', 1)" icon="folder_zip">
+  <SettingCard id="modpack-metadata-card" :title="t('modpack.name', 1)" icon="folder_zip">
     <SettingItem long-action :title="t('modpack.modpackVersion')" :description="t('modpack.modpackVersion')">
       <template #preaction>
         <v-icon>history</v-icon>

@@ -1196,17 +1196,26 @@ search:
   noResults: Geen resultaten gevonden
   pageSize: Resultaten per pagina
 server:
+  launch: Server starten
+  stop: Server stoppen
   acceptingMinecraftVersion: Accepteert Minecraft Versie
+  addServer: Server toevoegen
+  address: Serveradres
+  addressHint: bijv. mc.hypixel.net
+  bindUpstream: Koppelen als upstream
+  boundUpstream: Upstream-server gekoppeld
+  boundUpstreamHint: Deze instantie volgt de Minecraft-versie van de gekoppelde server.
   creationHint: Vul het serveradres in en ping de server
+  editServer: Server bewerken
+  emptyHint: Nog geen servers in de servers.dat van deze instantie. Voeg er een toe om te beginnen.
+  entryCount: '{count} server | {count} servers'
   expectedVersions: Ondersteunde Versies
   export: Server Exporteren
-  exportNoFilesHint: >-
-    Geen serverbestanden gevonden. U kunt de server een keer lokaal uitvoeren om enkele bestanden te genereren.
+  exportNoFilesHint: Geen serverbestanden gevonden. U kunt de server een keer lokaal uitvoeren om enkele bestanden te genereren.
   exportOption: Server Export Opties
-  exportSSHAuthenticationFailed: >-
-    Alle authenticatiemethoden mislukt. Controleer gebruikersnaam/wachtwoord of private key.
+  exportSSHAuthenticationFailed: Alle authenticatiemethoden mislukt. Controleer gebruikersnaam/wachtwoord of private key.
   exportSSHOptions: SSH Opties
-  exportSSHPrivateKeyPath: SSH Private Key Pad
+  exportSSHPrivateKeyPath: Pad naar SSH-privésleutel
   exportSSHRemotePath: Remote Server Pad
   exportToFolder: Exporteren Naar Map
   filterVersion: Filter server reageerde Minecraft versie
@@ -1214,19 +1223,129 @@ server:
   hostHint: De host (met poort) van de server
   hostRequired: Voer het server IP-adres in
   ipAddress: IP Adres
+  launchClient: Start in plaats daarvan de client
+  launchPinned: Vastgezet
+  launchTargetHint: Deze instantie verbindt direct met de vastgezette server. Terugschakelen naar de client?
   maxPlayers: Max Spelers
   motd: Server MOTD
+  nameHint: Weergavenaam in de multiplayerlijst
   nogui: Geen Server GUI
   onlineMode: Online Modus
+  pin: Server vastzetten
+  pinAfterSave: Na opslaan vastzetten als standaard startdoel
   ping: Ping
   pings: Pings
+  pinnedHeader: 'Vastgezet: {name}'
   players: Spelers
   port: Poort
+  clearLog: Logboek wissen
+  log: Serverlogboek
+  logWaiting: Serveruitvoer verschijnt hier na het starten.
+  remoteActionSuccess: Done.
+  remoteAdmin: Externe serverbeheer
+  remoteAuthMethod: Authenticatie
+  remoteAuthPassword: Wachtwoord
+  remoteAuthPrivateKey: Privésleutel
+  remoteBuildOfflinePackage: Offline pakket bouwen
+  remoteConnected: Verbonden
+  remoteConnection: Verbinding
+  remoteDeployment: Implementatie
+  remoteDeploy: Implementeren
+  remoteDisk: Schijf
+  remoteConfigFiles: Configuratiebestanden
+  remoteExtraFiles: Extra bestanden
+  remoteForgetCredentials: Opgeslagen inloggegevens vergeten
+  remoteInstallService: Service installeren
+  remoteLoad: Gemiddelde belasting
+  remoteLog: Extern logboek
+  remoteMemory: Geheugen
+  remoteMods: Mods
+  remoteNoWorldSelected: Geen wereld geselecteerd
+  remoteJavaRequired: Java is niet beschikbaar op de externe Linux-host.
+  remoteLinuxRequired: Alleen Linux SSH-doelen worden ondersteund.
+  remoteNotConfiguredHint: Vul de verbindingsgegevens in om status, servicesturing en live logs te activeren.
+  remotePathNotWritable: De map op de externe server is niet beschrijfbaar.
+  remotePathWritable: Map is beschrijfbaar
+  remotePolicyInitialize: Eenmalig initialiseren
+  remotePolicyMirror: Spiegelen
+  remotePolicyOverlay: Overlapping
+  remotePolicyPreserve: Behouden
+  remotePreview: Voorbeeld van wijzigingen
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: Inloggegevens onthouden (OS-sleutelhanger)
+  remoteReconcileReady: Het doel komt overeen met deze instantie en de console is verbonden.
+  remoteRestartService: Herstarten
+  remoteSavedCredentialsHint: Opgeslagen inloggegevens actief — leeg laten om te behouden of typen om te vervangen.
+  remoteService: systemd-service
+  remoteServiceActive: Actief
+  remoteServerInstalled: Serverbestanden geïnstalleerd
+  remoteServiceName: Servicenaam
+  remoteServiceNameHint: systemd --user unitnaam, bijv. mc-server
+  remoteSelectedFiles: '{count} serverbestanden geselecteerd'
+  remoteSelectFiles: Bestanden selecteren
+  remoteStartCommand: Startopdracht
+  remoteStartCommandHint: bijv. java -jar server.jar nogui
+  remoteStartService: Starten
+  remoteStatus: Status
+  remoteSystemdRequired: systemd gebruikersservices zijn niet beschikbaar op de externe host.
+  remoteTargetName: Doelnaam
+  remoteStopService: Stoppen
+  remoteStopWatchLog: Stoppen met volgen
+  remoteTestConnection: Verbinding testen
+  remoteTestConnectionSuccess: Verbinding geslaagd.
+  remoteUninstallConfirmMessage: Dit schakelt de systemd-eenheid uit en verwijdert deze. Serverbestanden blijven behouden.
+  remoteUninstallService: Service verwijderen
+  remoteRunInstall: Installeren of herstellen
+  remoteWatchLog: Live logboek volgen
+  remoteWorldAlways: Bij elke synchronisatie overschrijven
+  remoteWorldDeployment: Implementatie van instantiewereld
+  remoteWorldDeploymentHint: Routinesynchronisatie uploadt nooit wereldgegevens tenzij uitdrukkelijk toegestaan.
+  remoteWorldFirstInstall: Alleen initialiseren als het doel nog geen wereld heeft
+  remoteWorldNever: Nooit een wereld uploaden
+  remoteWorldPresent: Doelwereld
+  remoteWorld: Wereld
+  remoteWorldWillDeploy: De geselecteerde wereld wordt geüpload tijdens deze synchronisatie.
+  serverName: Servernaam
+  serviceInstall: Service installeren
+  serviceManagedLaunch: Gebruik de besturingssysteemservice voor start- en stopacties
+  serviceManager: Systeemservice
+  serviceName: Servicenaam
+  serviceNameHint: Identificatie met letters, cijfers, punten of koppeltekens
+  serviceNotInstalled: Niet geïnstalleerd
+  serviceStartCommand: Startopdracht
+  serviceSystemd: systemd --user
+  serviceWindows: Windows-service
+  serviceWindowsCommandHint: De Java-opdracht wordt gegenereerd vanuit deze instantie.
+  serversListTitle: Serverlijst
+  target: Serverdoel
+  targetLocal: localhost
+  targetLocalHint: De server installeren en uitvoeren op deze computer.
+  targetRemote: SSH-doel
+  targetRemoteHint: Verbind, installeer, start en bewaak een server via SSH.
+  unbindUpstream: Ontkoppelen
   unknown: Onbekende Server
   unknownDescription: Onbekende Server. Vernieuw
+  unpin: Unpin
   upload: Server Uploaden
+  upstreamUpToDate: Je instantie komt overeen met de server ({version}).
+  upstreamUpToDateHint: Geen update nodig. Klik om de server opnieuw te pingen.
+  upstreamUpdateAvailable: Server draait nu Minecraft {version}. Klik om toe te passen.
+  upstreamUpdateHint: Past de voorgestelde Minecraft-versie toe op deze instantie.
+  useAsUpstreamHint: De instantie volgt de gerapporteerde versie van de server.
   version: Server Vereist Versie
   versionHint: De Minecraft Versie Om Te Pingen
+  worldPreserve: Doelwereld behouden
 serverStatus:
   nohost: §4Kan host niet vinden!
   ping: Pingen...
@@ -1549,6 +1668,7 @@ store:
   trending: Populair
   empty: Geen modpacks gevonden
   emptyHint: Pas je filters of zoekopdracht aan.
+  searchHint: Zoek modpacks...
 tag:
   create: Tag Aanmaken
   createSelected: Tag Aanmaken voor Geselecteerde
@@ -1587,42 +1707,105 @@ turnRegion:
   po: Polen
 tutorial:
   feedbackDescription: Als u problemen tegenkomt, klik dan op deze knop om feedback te sturen!
-  hideNewsHeaderDescription: >-
-    U kunt de nieuws showcase aan de linkerkant zien. Door op deze knop te klikken kunt u deze showcase verbergen.
+  hideNewsHeaderDescription: U kunt de nieuws showcase aan de linkerkant zien. Door op deze knop te klikken kunt u deze showcase verbergen.
   instance:
-    iconDescription: Klik om pictogram te wijzigen.
-    iconTitle: Instance pictogram
-    javaDescription: Kies of wissel Java versie.
-    javaImportDescription: Importeer Java van lokale opslag.
-    javaImportTitle: Importeer Java
-    javaTitle: Java lijst
-  instanceAddDescription: >-
-    Klik op deze knop om een bestaande Minecraft instance te importeren of een nieuwe aan te maken vanaf nul of een modpack.
-  instanceSelectDescription: >-
-    Klik op deze knop om naar de pagina te navigeren om een spel te selecteren en nieuws te lezen.
+    appearanceThemeDescription: Pas achtergrond, kleuren en visuele stijl aan voor deze specifieke instantie.
+    appearanceThemeTitle: Uiterlijk van instantie
+    iconDescription: Klik om het pictogram te wijzigen.
+    iconTitle: Instantiepictogram
+    javaDescription: Kies of wissel van Java-versie.
+    javaImportDescription: Importeer Java vanuit de lokale opslag.
+    javaImportTitle: Java importeren
+    javaTitle: Java-lijst
+    modpackExportDescription: Bouw en verpak je instantie in een deelbaar modpack.
+    modpackExportTitle: Modpack exporteren
+    modpackFilesDescription: Selecteer welke configuratiebestanden, mods en bronnen worden ingepakt.
+    modpackFilesTitle: Inbegrepen bestanden
+    modpackMetaDescription: Specificeer modpack-versie, auteur, beschrijving en websitelinks.
+    modpackMetaTitle: Modpack-details
+    modpackOptionsDescription: Kies de doelmap en formaten (zoals Modrinth of CurseForge).
+    modpackOptionsTitle: Exportopties
+    serverLaunchDescription: Start of stop de dedicated server van deze instantie direct vanuit de koptekst.
+    serverLaunchTitle: Server starten / stoppen
+    serverPropertiesDescription: Configureer poort, moeilijkheidsgraad, MOTD, spelerlimieten en regels.
+    serverPropertiesTitle: Serverconfiguratie
+    serverServiceDescription: Beheer de server als besturingssysteemservice voor continue achtergrondwerking.
+    serverServiceTitle: Systeemservice
+    serverTargetDescription: Kies tussen lokaal draaien op je pc of een externe Linux-server beheren via SSH.
+    serverTargetTitle: Serverdoel
+    versionDescription: Selecteer Minecraft-versie en loaders zoals Forge, Fabric, Quilt of NeoForge.
+    versionTitle: Minecraft & Loader-versie
+  instanceAddDescription: Klik op deze knop om een bestaande Minecraft instance te importeren of een nieuwe aan te maken vanaf nul of een modpack.
+  instanceSelectDescription: Klik op deze knop om naar de pagina te navigeren om een spel te selecteren en nieuws te lezen.
   launchDescription: Klik op deze knop om het spel te installeren of te starten.
   mod:
-    defaultSourceDescription: >-
-      U kunt hier de bron van mod-details kiezen. Er zijn mods die zowel naar Modrinth als Curseforge zijn gepubliceerd. Als u tussen deze twee contentproviders wilt wisselen, kunt u de waarde hier wijzigen.
+    defaultSourceDescription: U kunt hier de bron van mod-details kiezen. Er zijn mods die zowel naar Modrinth als Curseforge zijn gepubliceerd. Als u tussen deze twee contentproviders wilt wisselen, kunt u de waarde hier wijzigen.
     defaultSourceTitle: Selecteer Mod Content Bron
-    detailDescription: >-
-      Wanneer u een item aan de linkerkant selecteert. Zult u de details van de mod zien. De content kan afkomstig zijn van Modrinth, Curseforge of geparseerde mod-content.
+    detailDescription: Wanneer u een item aan de linkerkant selecteert. Zult u de details van de mod zien. De content kan afkomstig zijn van Modrinth, Curseforge of geparseerde mod-content.
     detailTitle: Mod Detail
-    listDescription: >-
-      We zullen geïnstalleerde mods weergeven wanneer u geen invoer heeft. U zult de gezochte mods zien zodra uw invoer een trefwoord of categorie heeft geselecteerd.
+    listDescription: We zullen geïnstalleerde mods weergeven wanneer u geen invoer heeft. U zult de gezochte mods zien zodra uw invoer een trefwoord of categorie heeft geselecteerd.
     listTitle: Geïnstalleerde of Zoek Mod
-    searchDescription: >-
-      U kunt mods zoeken van Modrinth, Curseforge of uw lokale cache met dit zoekvak.
+    searchDescription: U kunt mods zoeken van Modrinth, Curseforge of uw lokale cache met dit zoekvak.
     searchTitle: Zoek Mods
-  recentPlayDescription: >-
-    De gemaakte spellen worden hier vermeld. U kunt de weergaven hier ook wisselen om de geïnstalleerde versies en gedownloade modpacks te zien.
-  storePoupularModpackDescription: >-
-    U zult de meest populaire modpacks in Curseforge en Modrinth in deze sectie zien.
+  recentPlayDescription: De gemaakte spellen worden hier vermeld. U kunt de weergaven hier ook wisselen om de geïnstalleerde versies en gedownloade modpacks te zien.
+  storePoupularModpackDescription: U zult de meest populaire modpacks in Curseforge en Modrinth in deze sectie zien.
   storeSearchCategoryDescription: U kunt hier ook de categorieën of filters omschakelen.
-  storeSearchDescription: >-
-    U kunt modpacks zoeken door in dit tekstvak in te voeren. Druk op Enter om te zoeken.
+  storeSearchDescription: U kunt modpacks zoeken door in dit tekstvak in te voeren. Druk op Enter om te zoeken.
   storeSearchResultDescription: U zult hier alle zoekresultaten zien weergegeven.
   userAccountDescription: Klik op dit pictogram om uw Minecraft-account toe te voegen of te beheren.
+  tooltip: Hulp & Rondleiding
+  done: Begrepen!
+  helpDescription: Interactieve gids voor de launcher en de huidige pagina.
+  blueprint:
+    searchTitle: Blauwdrukken zoeken
+    searchDescription: Zoek lokale en community-blauwdrukken op naam of tag.
+    listTitle: Blauwdrukkenlijst
+    listDescription: Bekijk en beheer al je opgeslagen instantie-blauwdrukken en sjablonen.
+    detailTitle: Blauwdrukdetails
+    detailDescription: Bekijk de inhoud van de blauwdruk, inbegrepen mods en maak nieuwe instanties.
+  me:
+    instancesTitle: Instantiebeheer
+    instancesDescription: Bekijk alle geïnstalleerde instanties, groepeer per map of datum en start ze.
+    profileTitle: Account & Profiel
+    profileDescription: Schakel tussen accounts en beheer inloggegevens.
+    skinTitle: Skin & Cape aanpassen
+    skinDescription: Bekijk je personage in 3D, verander van skin en draag capes.
+  multiplayer:
+    railTitle: Netwerk & Navigatie
+    railDescription: Controleer NAT-type, netwerkstatus en schakel tussen verbindingen en instellingen.
+    groupTitle: Kamer binnengaan of hosten
+    groupDescription: Voer een kamercode in om mee te doen of maak je eigen kamer aan.
+    joinDescription: Klik om deel te nemen aan een kamer of een nieuwe te maken.
+    contentTitle: Verbonden leden & Inhoud
+    contentDescription: Beheer verbonden spelers, bekijk ping en deel actieve Minecraft-sessies.
+    manualDescription: Directe handmatige P2P-verbinding met vrienden via SDP-uitwisseling.
+  resourcepack:
+    searchTitle: Bronpakketten zoeken
+    searchDescription: Zoek bronpakketten op Modrinth, CurseForge of in lokale bestanden.
+    listTitle: Bronpakkettenlijst
+    listDescription: Blader door geïnstalleerde pakketten, schakel ze in/uit en pas prioriteit aan.
+    detailTitle: Pakketdetails
+    detailDescription: Bekijk screenshots, beschrijving, ondersteunde Minecraft-versies en bestanden.
+  save:
+    searchTitle: Werelden zoeken
+    searchDescription: Filter en doorzoek werelden in de huidige instantie op naam.
+    listTitle: Wereldenlijst
+    listDescription: Bekijk alle opgeslagen werelden met spelmodus, datum en bestandsgrootte.
+    detailTitle: Werelddetails & Acties
+    detailDescription: Maak back-ups, exporteer, inspecteer level.dat of wijzig wereldinstellingen.
+  settings:
+    navDescription: Schakel tussen Algemeen, Uiterlijk, Globale spelinstellingen en Netwerk.
+    generalDescription: Stel launchertaal, gegevensmap, updatekanalen en opstartopties in.
+    appearanceDescription: Pas thema, achtergronden, accentkleuren en interfacestijl aan.
+    globalDescription: Kies standaard Java-runtime, geheugentoewijzing en JVM-argumenten.
+    networkDescription: Stel download-mirrors, proxies en limieten voor gelijktijdige taken in.
+  shaderpack:
+    searchTitle: Shaderpakketten zoeken
+    searchDescription: Zoek shaders op Modrinth, CurseForge of in lokale cache.
+    listTitle: Shaderpakkettenlijst
+    listDescription: Blader door geïnstalleerde shaders en schakel er snel tussen.
+    detailTitle: Shaderdetails
+    detailDescription: Bekijk auteur, resolutievereisten, voorinstellingen en opties van de shader.
 universalDrop:
   unknownResource: Onbekend
 unresolvedFiles:

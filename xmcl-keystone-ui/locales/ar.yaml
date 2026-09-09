@@ -1243,37 +1243,156 @@ search:
   noResults: 'لا توجد نتائج'
   pageSize: عدد النتائج في كل صفحة
 server:
-  acceptingMinecraftVersion: 'قبول نسخة ماينكرافت'
-  creationHint: 'يرجى ملء عنوان الخادم واختبار اتصال الخادم'
-  expectedVersions: 'الإصدارات المدعومة'
-  export: 'خادم التصدير'
-  exportNoFilesHint: >-
-    لم يتم العثور على ملفات الخادم. يمكنك تشغيل الخادم على المستوى المحلي مرة واحدة لإنشاء بعض الملفات.
-  exportOption: 'خيارات تصدير الخادم'
-  exportSSHAuthenticationFailed: >-
-    فشلت كافة طرق المصادقة. يرجى التحقق من اسم المستخدم/كلمة المرور أو المفتاح الخاص.
-  exportSSHOptions: 'خيارات SSH'
-  exportSSHPrivateKeyPath: 'مسار مفتاح SSH الخاص'
-  exportSSHRemotePath: 'مسار الخادم البعيد'
-  exportToFolder: 'تصدير إلى مجلد'
-  filterVersion: 'استجاب خادم التصفية لإصدار Minecraft'
-  host: 'يستضيف'
-  hostHint: 'المضيف (مع المنفذ) للخادم'
-  hostRequired: 'الرجاء إدخال عنوان IP للخادم'
-  ipAddress: 'عنوان IP'
-  maxPlayers: 'ماكس اللاعبين'
-  motd: 'خادم MOTD'
-  nogui: 'لا يوجد خادم واجهة المستخدم الرسومية'
-  onlineMode: 'الوضع على الانترنت'
-  ping: 'بينغ'
-  pings: 'الأصوات'
-  players: 'اللاعبين'
-  port: 'ميناء'
-  unknown: 'خادم غير معروف'
-  unknownDescription: 'خادم غير معروف. يرجى التحديث'
-  upload: 'تحميل الخادم'
-  version: 'يتطلب الخادم الإصدار'
-  versionHint: 'نسخة ماينكرافت إلى Ping'
+  launch: تشغيل الخادم
+  stop: إيقاف الخادم
+  acceptingMinecraftVersion: قبول نسخة ماينكرافت
+  addServer: إضافة خادم
+  address: عنوان الخادم
+  addressHint: 'مثال: mc.hypixel.net'
+  bindUpstream: ربط كمصدر رئيسي
+  boundUpstream: تم ربط الخادم الرئيسي
+  boundUpstreamHint: يتبع هذا المثيل إصدار Minecraft الخاص بالخادم المرتبط.
+  creationHint: يرجى ملء عنوان الخادم واختبار اتصال الخادم
+  editServer: تعديل الخادم
+  emptyHint: لا توجد خوادم في servers.dat لهذا المثيل. أضف خادماً للبدء.
+  entryCount: '{count} خادم'
+  expectedVersions: الإصدارات المدعومة
+  export: خادم التصدير
+  exportNoFilesHint: لم يتم العثور على ملفات الخادم. يمكنك تشغيل الخادم على المستوى المحلي مرة واحدة لإنشاء بعض الملفات.
+  exportOption: خيارات تصدير الخادم
+  exportSSHAuthenticationFailed: فشلت كافة طرق المصادقة. يرجى التحقق من اسم المستخدم/كلمة المرور أو المفتاح الخاص.
+  exportSSHOptions: خيارات SSH
+  exportSSHPrivateKeyPath: مسار مفتاح SSH الخاص
+  exportSSHRemotePath: مسار الخادم البعيد
+  exportToFolder: تصدير إلى مجلد
+  filterVersion: استجاب خادم التصفية لإصدار Minecraft
+  host: يستضيف
+  hostHint: المضيف (مع المنفذ) للخادم
+  hostRequired: الرجاء إدخال عنوان IP للخادم
+  ipAddress: عنوان IP
+  launchClient: تشغيل العميل بدلاً من ذلك
+  launchPinned: مثبت
+  launchTargetHint: يقوم هذا المثيل بالاتصال مباشرة بالخادم المثبت. العودة لتشغيل العميل؟
+  maxPlayers: ماكس اللاعبين
+  motd: خادم MOTD
+  nameHint: الاسم المعروض في قائمة اللعب الجماعي
+  nogui: لا يوجد خادم واجهة المستخدم الرسومية
+  onlineMode: الوضع على الانترنت
+  pin: تثبيت الخادم
+  pinAfterSave: تثبيت كهدف تشغيل افتراضي بعد الحفظ
+  ping: بينغ
+  pings: الأصوات
+  pinnedHeader: 'مثبت: {name}'
+  players: اللاعبين
+  port: ميناء
+  clearLog: مسح السجل
+  log: سجل الخادم
+  logWaiting: في انتظار مخرجات الخادم...
+  remoteActionSuccess: Done.
+  remoteAdmin: إدارة الخادم عن بعد
+  remoteAuthMethod: المصادقة
+  remoteAuthPassword: كلمة المرور
+  remoteAuthPrivateKey: المفتاح الخاص
+  remoteBuildOfflinePackage: إنشاء حزمة دون اتصال
+  remoteConnected: متصل
+  remoteConnection: الاتصال
+  remoteDeployment: النشر
+  remoteDeploy: نشر
+  remoteDisk: Disk
+  remoteConfigFiles: ملفات التكوين
+  remoteExtraFiles: ملفات إضافية
+  remoteForgetCredentials: نسيان بيانات الاعتماد المحفوظة
+  remoteInstallService: تثبيت الخدمة
+  remoteLoad: تحميل
+  remoteLog: سجل الخادم البعيد
+  remoteMemory: الذاكرة
+  remoteMods: Mods
+  remoteNoWorldSelected: لم يتم تحديد عالم للمثيل
+  remoteJavaRequired: جافا غير متوفرة على مضيف لينكس البعيد.
+  remoteLinuxRequired: يتم دعم خوادم لينكس عبر SSH فقط.
+  remoteNotConfiguredHint: املأ تفاصيل الاتصال أعلاه واحفظها لتمكين الحالة والتحكم في الخدمة والسجلات.
+  remotePathNotWritable: دليل الخادم البعيد غير قابل للكتابة.
+  remotePathWritable: الدليل قابل للكتابة
+  remotePolicyInitialize: تهيئة لمرة واحدة
+  remotePolicyMirror: مرآة (Mirror)
+  remotePolicyOverlay: تراكب (Overlay)
+  remotePolicyPreserve: إبقاء الحالي
+  remotePreview: معاينة التغييرات
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: تذكر بيانات الاعتماد (سلسلة مفاتيح النظام)
+  remoteReconcileReady: الهدف يطابق هذا المثيل ووحدة التحكم متصلة.
+  remoteRestartService: إعادة تشغيل الخدمة
+  remoteSavedCredentialsHint: استخدام بيانات الاعتماد المحفوظة — اتركها فارغة للاحتفاظ بها أو اكتب للاستبدال.
+  remoteService: خدمة systemd
+  remoteServiceActive: يعمل
+  remoteServerInstalled: تم تثبيت ملفات الخادم
+  remoteServiceName: اسم الخدمة
+  remoteServiceNameHint: 'اسم وحدة systemd --user، مثال: mc-server'
+  remoteSelectedFiles: تم تحديد {count} ملف خادم
+  remoteSelectFiles: تحديد الملفات
+  remoteStartCommand: أمر التشغيل
+  remoteStartCommandHint: 'مثال: java -jar server.jar nogui'
+  remoteStartService: Start
+  remoteStatus: الحالة
+  remoteSystemdRequired: خدمات مستخدم systemd غير متوفرة على المضيف البعيد.
+  remoteTargetName: اسم الهدف
+  remoteStopService: Stop
+  remoteStopWatchLog: إيقاف المراقبة
+  remoteTestConnection: اختبار الاتصال
+  remoteTestConnectionSuccess: تم الاتصال بنجاح.
+  remoteUninstallConfirmMessage: يؤدي هذا إلى تعطيل وإزالة وحدة systemd على المضيف البعيد. ملفات الخادم لن تتأثر.
+  remoteUninstallService: إلغاء تثبيت الخدمة
+  remoteRunInstall: تثبيت أو إصلاح
+  remoteWatchLog: مراقبة السجل المباشر
+  remoteWorldAlways: استبدال في كل مزامنة
+  remoteWorldDeployment: نشر عالم المثيل
+  remoteWorldDeploymentHint: المزامنة الروتينية لا ترفع بيانات العالم إلا إذا سمحت هذه السياسة صراحة بذلك.
+  remoteWorldFirstInstall: تهيئة فقط إذا لم يكن لدى الخادم عالم
+  remoteWorldNever: عدم رفع العالم أبداً
+  remoteWorldPresent: عالم الخادم البعيد
+  remoteWorld: World
+  remoteWorldWillDeploy: سيتم رفع العالم المحدد في هذه المزامنة.
+  serverName: اسم الخادم
+  serviceInstall: تثبيت الخدمة
+  serviceManagedLaunch: تشغيل مُدار عبر الخدمة
+  serviceManager: مدير الخدمات
+  serviceName: اسم الخدمة
+  serviceNameHint: اسم خدمة النظام
+  serviceNotInstalled: الخدمة غير مثبتة
+  serviceStartCommand: أمر بدء الخدمة
+  serviceSystemd: systemd --user
+  serviceWindows: خدمة Windows
+  serviceWindowsCommandHint: أمر بدء خدمة الويندوز
+  serversListTitle: الخوادم
+  target: الهدف
+  targetLocal: localhost
+  targetLocalHint: تشغيل محلي على هذا الكمبيوتر
+  targetRemote: خادم بعيد (SSH)
+  targetRemoteHint: إدارة خادم لينكس بعيد عبر بروتوكول SSH
+  unbindUpstream: إلغاء الربط
+  unknown: خادم غير معروف
+  unknownDescription: خادم غير معروف. يرجى التحديث
+  unpin: Unpin
+  upload: تحميل الخادم
+  upstreamUpToDate: المثيل يطابق إصدار الخادم ({version}).
+  upstreamUpToDateHint: لا يلزم الترقية. انقر لإعادة الفحص.
+  upstreamUpdateAvailable: الخادم يعمل الآن بإصدار Minecraft {version}. انقر للتطبيق.
+  upstreamUpdateHint: تطبيق إصدار Minecraft المقترح على هذا المثيل.
+  useAsUpstreamHint: سيتبع المثيل إصدار Minecraft المُبلغ عنه من الخادم.
+  version: يتطلب الخادم الإصدار
+  versionHint: نسخة ماينكرافت إلى Ping
+  worldPreserve: الحفاظ على عالم الخادم البعيد
 serverStatus:
   nohost: '§4لا يمكن العثور على المضيف!'
   ping: 'بينغ...'
@@ -1594,13 +1713,14 @@ sortBy:
   timeAsc: 'الترتيب حسب وقت التعديل (تصاعدي)'
   timeDesc: 'الترتيب حسب وقت التعديل (تنازلي)'
 store:
-  discover: 'يكتشف'
-  empty: 'لم يتم العثور على حزم Modpacks'
-  emptyHint: 'حاول تعديل عوامل التصفية أو استعلام البحث.'
-  latestMinecraft: 'أحدث نسخة ماين كرافت'
-  name: 'سوق مودباك'
-  searchResult: 'نتيجة البحث'
-  trending: 'تتجه'
+  discover: يكتشف
+  empty: لم يتم العثور على حزم Modpacks
+  emptyHint: حاول تعديل عوامل التصفية أو استعلام البحث.
+  latestMinecraft: أحدث نسخة ماين كرافت
+  name: سوق مودباك
+  searchResult: نتيجة البحث
+  trending: تتجه
+  searchHint: البحث عن حزم التعديلات...
 tag:
   create: 'إنشاء علامة'
   createSelected: 'إنشاء علامة للتحديد'
@@ -1639,42 +1759,106 @@ turnRegion:
   liaoning: 'لياونينغ، الصين'
   po: 'بولندا'
 tutorial:
-  feedbackDescription: 'إذا واجهت أي مشاكل، الرجاء الضغط على هذا الزر لإرسال ردود الفعل!'
-  hideNewsHeaderDescription: >-
-    يمكنك رؤية عرض الأخبار على اليسار. يمكن أن يؤدي النقر على هذا الزر إلى إخفاء هذه الواجهة.
+  feedbackDescription: إذا واجهت أي مشاكل، الرجاء الضغط على هذا الزر لإرسال ردود الفعل!
+  hideNewsHeaderDescription: يمكنك رؤية عرض الأخبار على اليسار. يمكن أن يؤدي النقر على هذا الزر إلى إخفاء هذه الواجهة.
   instance:
-    iconDescription: 'انقر لتغيير الرمز.'
-    iconTitle: 'رمز المثيل'
-    javaDescription: 'اختر أو قم بتبديل إصدار جافا.'
-    javaImportDescription: 'استيراد جافا من التخزين المحلي.'
-    javaImportTitle: 'استيراد جافا'
-    javaTitle: 'قائمة جافا'
-  instanceAddDescription: >-
-    انقر فوق هذا الزر لاستيراد مثيل Minecraft الموجود أو إنشاء مثيل جديد من البداية أو modpack.
-  instanceSelectDescription: 'سيؤدي النقر فوق هذا الزر إلى الانتقال إلى الصفحة لتحديد اللعبة وقراءة الأخبار.'
-  launchDescription: 'انقر فوق هذا الزر لتثبيت اللعبة أو تشغيلها.'
+    appearanceThemeDescription: تخصيص الخلفية والألوان والأسلوب البصري لهذا المثيل المحدد.
+    appearanceThemeTitle: مظهر المثيل
+    iconDescription: انقر لتغيير الأيقونة.
+    iconTitle: أيقونة المثيل
+    javaDescription: اختر إصدار Java أو قم بالتبديل بينها.
+    javaImportDescription: استيراد بيئة تشغيل Java من التخزين المحلي.
+    javaImportTitle: استيراد Java
+    javaTitle: قائمة Java
+    modpackExportDescription: بناء وتجميع المثيل المكوّن في حزمة تعديلات جاهزة للمشاركة.
+    modpackExportTitle: تصدير حزمة التعديلات
+    modpackFilesDescription: اختر ملفات التكوين والتعديلات والموارد المراد تضمينها للعميل والخادم.
+    modpackFilesTitle: الملفات المتضمنة
+    modpackMetaDescription: حدد إصدار الحزمة والمؤلف والوصف وروابط الموقع.
+    modpackMetaTitle: تفاصيل حزمة التعديلات
+    modpackOptionsDescription: اختر مجلد التصدير وتنسيقات الحزم (مثل Modrinth أو CurseForge).
+    modpackOptionsTitle: خيارات التصدير
+    serverLaunchDescription: قم بتشغيل أو إيقاف الخادم المخصص لهذا المثيل مباشرة من شريط العنوان.
+    serverLaunchTitle: تشغيل / إيقاف الخادم
+    serverPropertiesDescription: تكوين المنفذ والصعوبة ورسالة اليوم MOTD وحدود اللاعبين وقواعد اللعبة.
+    serverPropertiesTitle: تكوين الخادم
+    serverServiceDescription: إدارة الخادم كخدمة خلفية لنظام التشغيل (systemd أو خدمة Windows) لضمان استمراره.
+    serverServiceTitle: خدمة النظام
+    serverTargetDescription: اختر بين التشغيل محلياً على جهازك أو إدارة خادم Linux عن بعد عبر SSH.
+    serverTargetTitle: وجهة الخادم
+    versionDescription: اختر إصدار Minecraft وأدوات Forge أو Fabric أو Quilt أو NeoForge.
+    versionTitle: إصدار Minecraft وأداة التحميل
+  instanceAddDescription: انقر فوق هذا الزر لاستيراد مثيل Minecraft الموجود أو إنشاء مثيل جديد من البداية أو modpack.
+  instanceSelectDescription: سيؤدي النقر فوق هذا الزر إلى الانتقال إلى الصفحة لتحديد اللعبة وقراءة الأخبار.
+  launchDescription: انقر فوق هذا الزر لتثبيت اللعبة أو تشغيلها.
   mod:
-    defaultSourceDescription: >-
-      يمكنك اختيار مصدر تفاصيل التعديلات هنا. هناك تعديلات تم نشرها لكل من Modrinth وCurseforge. إذا كنت تريد التبديل بين موفري المحتوى هذين، فيمكنك تغيير القيمة هنا.
-    defaultSourceTitle: 'حدد مصدر محتوى التعديل'
-    detailDescription: >-
-      عند تحديد عنصر على اليسار. سترى تفاصيل الوضع. يمكن أن يأتي المحتوى من محتوى Modrinth أو Curseforge أو التعديل الذي تم تحليله.
-    detailTitle: 'تفاصيل التعديل'
-    listDescription: >-
-      سنعرض التعديلات المثبتة عندما لا يكون لديك أي مدخلات. سترى التعديلات التي تم البحث عنها بمجرد تحديد كلمة رئيسية أو فئة لمدخلاتك.
-    listTitle: 'تم التثبيت أو البحث في Mod'
-    searchDescription: >-
-      يمكنك البحث عن التعديلات من Modrinth أو Curseforge أو ذاكرة التخزين المؤقت المحلية باستخدام مربع البحث هذا.
-    searchTitle: 'تعديل البحث'
-  recentPlayDescription: >-
-    سيتم إدراج الألعاب التي تم إنشاؤها هنا. يمكنك تبديل طرق العرض هنا لرؤية الإصدارات المثبتة وحزم التعديل التي تم تنزيلها أيضًا.
-  storePoupularModpackDescription: >-
-    سترى حزم التعديل الأكثر شيوعًا في Curseforge وModrinth في هذا القسم.
-  storeSearchCategoryDescription: 'يمكنك أيضًا تبديل الفئات أو المرشحات هنا.'
-  storeSearchDescription: >-
-    يمكنك البحث في Modpacks عن طريق الإدخال في مربع النص هذا. اضغط على Enter للبحث.
-  storeSearchResultDescription: 'سترى جميع نتائج البحث مدرجة هنا.'
-  userAccountDescription: 'انقر فوق هذا الرمز لإضافة حساب Minecraft الخاص بك أو إدارته.'
+    defaultSourceDescription: يمكنك اختيار مصدر تفاصيل التعديلات هنا. هناك تعديلات تم نشرها لكل من Modrinth وCurseforge. إذا كنت تريد التبديل بين موفري المحتوى هذين، فيمكنك تغيير القيمة هنا.
+    defaultSourceTitle: حدد مصدر محتوى التعديل
+    detailDescription: عند تحديد عنصر على اليسار. سترى تفاصيل الوضع. يمكن أن يأتي المحتوى من محتوى Modrinth أو Curseforge أو التعديل الذي تم تحليله.
+    detailTitle: تفاصيل التعديل
+    listDescription: سنعرض التعديلات المثبتة عندما لا يكون لديك أي مدخلات. سترى التعديلات التي تم البحث عنها بمجرد تحديد كلمة رئيسية أو فئة لمدخلاتك.
+    listTitle: تم التثبيت أو البحث في Mod
+    searchDescription: يمكنك البحث عن التعديلات من Modrinth أو Curseforge أو ذاكرة التخزين المؤقت المحلية باستخدام مربع البحث هذا.
+    searchTitle: تعديل البحث
+  recentPlayDescription: سيتم إدراج الألعاب التي تم إنشاؤها هنا. يمكنك تبديل طرق العرض هنا لرؤية الإصدارات المثبتة وحزم التعديل التي تم تنزيلها أيضًا.
+  storePoupularModpackDescription: سترى حزم التعديل الأكثر شيوعًا في Curseforge وModrinth في هذا القسم.
+  storeSearchCategoryDescription: يمكنك أيضًا تبديل الفئات أو المرشحات هنا.
+  storeSearchDescription: يمكنك البحث في Modpacks عن طريق الإدخال في مربع النص هذا. اضغط على Enter للبحث.
+  storeSearchResultDescription: سترى جميع نتائج البحث مدرجة هنا.
+  userAccountDescription: انقر فوق هذا الرمز لإضافة حساب Minecraft الخاص بك أو إدارته.
+  tooltip: المساعدة والجولة الإرشادية
+  done: فهمت!
+  helpDescription: دليل تفاعلي للمشغل وللصفحة الحالية.
+  blueprint:
+    searchTitle: البحث عن المخططات
+    searchDescription: ابحث في المخططات المحلية ومخططات المجتمع حسب الاسم أو العلامة.
+    listTitle: قائمة المخططات
+    listDescription: عرض وإدارة جميع مخططات ونماذج المثيلات المحفوظة.
+    detailTitle: تفاصيل المخطط
+    detailDescription: فحص محتويات المخطط والتعديلات المتضمنة وإنشاء مثيلات جديدة منه.
+  me:
+    instancesTitle: إدارة المثيلات
+    instancesDescription: عرض جميع المثيلات المثبتة وتجميعها حسب المجلد أو التاريخ وتشغيلها.
+    profileTitle: الحساب والملف الشخصي
+    profileDescription: التبديل بين حساباتك وإدارة بيانات الاعتماد.
+    skinTitle: تخصيص المظهر والرداء
+    skinDescription: معاينة شخصيتك ثلاثية الأبعاد وتغيير المظهر وارتداء الرداء.
+  multiplayer:
+    railTitle: الشبكة والتنقل
+    railDescription: التحقق من نوع NAT وحالة الشبكة والتبديل بين الاتصالات والإعدادات.
+    groupTitle: الانضمام إلى غرفة أو إنشاؤها
+    groupDescription: أدخل رمز الغرفة للانضمام إلى الأصدقاء أو اتركها فارغة لإنشاء غرفتك الخاصة.
+    joinDescription: انقر للانضمام إلى غرفة حالية أو إنشاء غرفة جديدة.
+    contentTitle: الأعضاء المتصلون والمحتوى
+    contentDescription: إدارة الأعضاء والتحقق من زمن الاستجابة ومشاركة ألعاب Minecraft الجارية.
+    manualDescription: اتصال مباشر من نظير إلى نظير P2P مع الأصدقاء باستخدام تبادل SDP.
+  resourcepack:
+    searchTitle: البحث عن حزم الموارد
+    searchDescription: ابحث عن حزم الموارد في Modrinth أو CurseForge أو الملفات المحلية.
+    listTitle: قائمة حزم الموارد
+    listDescription: تصفح الحزم المثبتة وتفعيلها أو تعطيلها وتعديل أولوية التحميل.
+    detailTitle: تفاصيل حزمة الموارد
+    detailDescription: عرض لقطات الشاشة والوصف وإصدارات Minecraft المتوافقة وتفاصيل الملفات.
+  save:
+    searchTitle: البحث عن العوالم
+    searchDescription: تصفية العوالم والبحث عنها في المثيل الحالي بالاسم.
+    listTitle: قائمة العوالم
+    listDescription: عرض جميع العوالم المحفوظة مع نمط اللعب وتاريخ آخر لعب وحجم الملف.
+    detailTitle: تفاصيل العالم والإجراءات
+    detailDescription: إنشاء نسخ احتياطية وتصديرها وفحص level.dat أو إدارة إعدادات العالم.
+  settings:
+    navDescription: التبديل بين الإعدادات العامة والمظهر وإعدادات اللعبة العامة والشبكة.
+    generalDescription: تكوين لغة المشغل ودليل البيانات وقنوات التحديث وخيارات البدء.
+    appearanceDescription: تخصيص السمة وخلفيات الشاشة وألوان التمييز ونمط الواجهة.
+    globalDescription: تعيين بيئة تشغيل Java الافتراضية وتخصيص الذاكرة ووسائط JVM.
+    networkDescription: تكوين خوادم التنزيل والوكيل وحدود المهام المتزامنة.
+  shaderpack:
+    searchTitle: البحث عن حزم التظليل
+    searchDescription: ابحث عن حزم التظليل في Modrinth أو CurseForge أو الذاكرة المؤقتة المحلية.
+    listTitle: قائمة حزم التظليل
+    listDescription: تصفح حزم التظليل المثبتة والتبديل بينها بسرعة.
+    detailTitle: تفاصيل حزمة التظليل
+    detailDescription: التحقق من المؤلف ومتطلبات الدقة والإعدادات المسبقة والخيارات.
 universalDrop:
   unknownResource: 'مجهول'
 unresolvedFiles:
