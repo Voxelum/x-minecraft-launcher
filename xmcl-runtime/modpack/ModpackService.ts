@@ -3,8 +3,6 @@ import {
   InstanceLockSchema,
   PartialRuntimeVersions,
   getCurseforgeModpackFromInstance,
-  getMmcLocalLibraryNames,
-  getMmcVersionFromManifest,
   getModrinthModpackFromInstance,
   type CurseforgeModpackManifest,
   type Instance,
@@ -47,9 +45,8 @@ import {
 } from '@xmcl/runtime-api'
 import { readEntry } from '@xmcl/unzip'
 import { AnyError } from '@xmcl/utils'
-import { LibraryInfo } from '@xmcl/core'
 import filenamify from 'filenamify'
-import { ensureDir, ensureFile, readFile, readJson, stat, unlink, writeFile } from 'fs-extra'
+import { ensureDir, readFile, readJson, stat, unlink } from 'fs-extra'
 import { basename, dirname, extname, join, relative } from 'path'
 import { Entry, ZipFile as YauzlZipFile } from '@xmcl/yauzl'
 import { ZipFile } from 'yazl'
@@ -64,6 +61,7 @@ import { kResourceManager, kResourceWorker, type ResourceWorker } from '~/resour
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { getTracker } from '~/util/taskHelper'
 import { requireObject } from '../util/object'
+import { persistMmcStandaloneVersion } from '../util/mmcStandaloneVersion'
 import { ZipTrackerEvents, writeZipFile } from '../util/zip'
 import { createCurseforgeHandler } from './utils/curseforgeHandler'
 import { exportOfflineModpack } from './utils/exportOffline'
@@ -254,12 +252,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     // detection keeps working and the runtime is left untouched.
     let mmcVersionId: string | undefined
     if (isMMCModpackManifest(manifest)) {
-      mmcVersionId = await this.#applyMmcStandaloneVersion(manifest, zip.file, entries, name).catch(
-        (e) => {
-          this.warn(new AnyError('ImportModpackError', `Failed to apply MultiMC patches: ${e}`))
-          return undefined
-        },
-      )
+      mmcVersionId = await this.#applyMmcStandaloneVersion(manifest, zip.file, entries, name)
     }
 
     const matchedVersion = findMatchedVersion(versionService.state.local, '', instance.runtime)
@@ -1431,10 +1424,7 @@ export class ModpackService extends AbstractService implements IModpackService {
           zip.file,
           entries,
           instance.name,
-        ).catch((e) => {
-          this.warn(new AnyError('OpenModpackError', `Failed to apply MultiMC patches: ${e}`))
-          return undefined
-        })
+        )
       }
 
       let xmclCache: SelectedXMCLFields | undefined
@@ -1529,50 +1519,28 @@ export class ModpackService extends AbstractService implements IModpackService {
     entries: Entry[],
     name: string,
   ): Promise<string | undefined> {
-    const versionId = filenamify(name || '').trim()
-    if (!versionId) return undefined
-
-    const version = getMmcVersionFromManifest(manifest, versionId)
-    if (!version) return undefined
-
-    const jsonPath = this.getPath('versions', versionId, `${versionId}.json`)
-    await ensureFile(jsonPath)
-    await writeFile(jsonPath, JSON.stringify(version, null, 2))
-
-    const localLibraries = getMmcLocalLibraryNames(version)
-    if (localLibraries.length) {
-      // Copy the bundled local libraries into the shared libraries folder by
-      // their maven path so the version resolver can find them on the classpath.
-      const prefix = manifest.prefix ?? ''
-      // Prism / MultiMC store bundled local libraries flat as
-      // `<prefix>libraries/<jar-filename>`, so the exact-path lookup below is
-      // deterministic; the linear fallback only covers non-standard layouts.
-      const byName = new Map(entries.map((e) => [e.fileName, e] as const))
-      for (const libName of localLibraries) {
-        const info = LibraryInfo.resolve(libName)
-        const fileName = basename(info.path)
+    const prefix = manifest.prefix ?? ''
+    const byName = new Map(entries.map((e) => [e.fileName, e] as const))
+    const versionService = await this.app.registry.get(VersionService)
+    return persistMmcStandaloneVersion({
+      manifest,
+      name,
+      gameDirectory: this.getPath(),
+      refreshVersion: (id) => versionService.refreshVersion(id),
+      readLocalLibrary: async (mavenPath) => {
+        const fileName = basename(mavenPath)
         const entry =
           byName.get(`${prefix}libraries/${fileName}`) ??
+          byName.get(`${prefix}libraries/${mavenPath}`) ??
           entries.find(
             (e) =>
               e.fileName.startsWith(prefix) &&
               (e.fileName.endsWith(`/libraries/${fileName}`) ||
                 e.fileName.endsWith(`/${fileName}`)),
           )
-        if (!entry) {
-          this.warn(`Cannot find local library ${libName} (${fileName}) in the MultiMC modpack`)
-          continue
-        }
-        const dest = this.getPath('libraries', ...info.path.split('/'))
-        await ensureFile(dest)
-        await writeFile(dest, await readEntry(zip, entry))
-      }
-    }
-
-    const versionService = await this.app.registry.get(VersionService)
-    await versionService.refreshVersion(versionId).catch((e) => this.warn(e))
-
-    return versionId
+        return entry ? readEntry(zip, entry) : undefined
+      },
+    })
   }
 
   private async getManifestAndHandler(zip: YauzlZipFile, entries: Entry[]) {

@@ -24,6 +24,12 @@
           <v-icon>arrow_drop_down</v-icon>
         </v-btn>
       </v-toolbar>
+      <ErrorView
+        v-if="error"
+        class="mx-6 my-4"
+        :error="error"
+        no-refresh
+      />
       <v-window
         v-model="step"
         class="visible-scroll overflow-y-auto"
@@ -87,28 +93,12 @@
             </template>
             <StepperFooter
               class="px-6 pb-6 pt-4"
-              :disabled="false"
-              :creating="false"
+              :disabled="importing"
+              :creating="importing"
               create
               @quit="cancel"
               @create="onConfirm"
-            >
-              <div
-                v-if="error"
-                class="pointer-events-none absolute left-0 flex w-full justify-center"
-              >
-                <v-alert
-                  dense
-                  class="w-[50%]"
-                  type="error"
-                >
-                  {{ errorText ?? error }}
-                  <div>
-                    {{ error?.path }}
-                  </div>
-                </v-alert>
-              </div>
-            </StepperFooter>
+            />
           </v-window-item>
         </v-window>
       </v-card>
@@ -116,6 +106,7 @@
 </template>
 <script setup lang="ts">
 import InstanceItem from '@/components/InstanceItem.vue'
+import ErrorView from '@/components/ErrorView.vue'
 import StepperFooter from '@/components/StepperFooter.vue'
 import StepSelect from '@/components/StepSelect.vue'
 import { useDialog } from '@/composables/dialog'
@@ -125,7 +116,8 @@ import { InstanceIOServiceKey, InstanceType, ThirdPartyLauncherManifest } from '
 
 const { t } = useI18n()
 const step = ref(1)
-const error = shallowRef(undefined as any)
+const error = shallowRef<unknown>()
+const importing = ref(false)
 const manifest = shallowRef(undefined as ThirdPartyLauncherManifest | undefined)
 const { isShown, hide: cancel } = useDialog('migrate-wizard', () => {
   step.value = 1
@@ -133,7 +125,6 @@ const { isShown, hide: cancel } = useDialog('migrate-wizard', () => {
   manifest.value = undefined
 })
 
-const errorText = computed(() => t('errors.BadInstanceType', {}))
 const included = shallowRef([] as string[])
 
 const { getGameDefaultPath, importLauncherData, parseLauncherData } = useService(InstanceIOServiceKey)
@@ -154,6 +145,7 @@ const onSelectType = async (type: InstanceType) => {
     return
   }
   const instancePath = dir.filePaths[0]
+  error.value = undefined
   const man = await parseLauncherData(instancePath, type).catch((e) => {
     error.value = e
     return undefined
@@ -190,8 +182,8 @@ const onSelectType = async (type: InstanceType) => {
 
 const activeFolders = computed(() => manifest.value ? Object.values(manifest.value.folder).filter(v => !!v) : [])
 
-function onConfirm() {
-  if (!manifest.value) {
+async function onConfirm() {
+  if (!manifest.value || importing.value) {
     return
   }
   const man = manifest.value
@@ -206,9 +198,16 @@ function onConfirm() {
     },
   }
 
-  cancel()
-
-  importLauncherData(newMan)
+  importing.value = true
+  error.value = undefined
+  try {
+    await importLauncherData(newMan)
+    cancel()
+  } catch (e) {
+    error.value = e
+  } finally {
+    importing.value = false
+  }
 }
 
 function onEnableFolder(folder: string) {

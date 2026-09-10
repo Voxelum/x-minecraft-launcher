@@ -3,7 +3,7 @@ import { isRuntimeServiceError, trackRendererException } from '@/telemetry'
 import { AnyError, getErrorMessage, isDownloadError } from '@/util/error'
 import type { JavaVersion, ResolvedVersion } from '@xmcl/core'
 import type { InstallIssue } from '@xmcl/installer'
-import { InstanceServiceKey, JavaRecord, VersionInstallServiceKey } from '@xmcl/runtime-api'
+import { getAutoSelectedJava, InstanceServiceKey, JavaRecord, VersionInstallServiceKey } from '@xmcl/runtime-api'
 import { Mutex } from 'async-mutex'
 import { InjectionKey, Ref, ShallowRef } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
@@ -35,7 +35,7 @@ function getLoaderType(runtime: PartialRuntimeVersions) {
   return 'vanilla'
 }
 
-function getJavaPathOrInstall(
+export function getJavaPathOrInstall(
   instances: Instance[],
   javas: JavaRecord[],
   resolved: ResolvedVersion,
@@ -45,10 +45,13 @@ function getJavaPathOrInstall(
   if (inst?.java) {
     return inst.java
   }
-  const validJava = javas.find(
-    (v) => v.majorVersion === resolved.javaVersion.majorVersion && v.valid,
+  const selected = getAutoSelectedJava(
+    javas,
+    inst?.runtime.minecraft ?? resolved.minecraftVersion,
+    inst?.runtime.forge,
+    resolved,
   )
-  return validJava ? validJava.path : resolved.javaVersion
+  return selected.java?.path ?? selected.javaVersion
 }
 
 function useInstanceVersionInstall() {
