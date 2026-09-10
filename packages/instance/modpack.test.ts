@@ -322,6 +322,11 @@ describe('Modpack Conversion Functions', () => {
           assetIndex: { id: '1.7.10', sha1: 'abc', size: 1, totalSize: 1, url: 'https://example/1.7.10.json' },
           assets: '1.7.10',
           type: 'release',
+          compatibleJavaMajors: [17, 21, 23, 24, 25],
+          mainJar: {
+            name: 'com.mojang:minecraft:1.7.10:client',
+            downloads: { artifact: { sha1: 'client-sha1', size: 123, url: 'https://example/client.jar' } },
+          },
           libraries: [{ name: 'net.minecraft:client:1.7.10' }],
         } as any,
         'net.minecraftforge': {
@@ -356,6 +361,12 @@ describe('Modpack Conversion Functions', () => {
       // Base metadata comes from the net.minecraft component.
       expect(version!.assetIndex?.id).toBe('1.7.10')
       expect(version!.minecraftArguments).toContain('${auth_player_name}')
+      expect(version!.clientVersion).toBe('1.7.10')
+      expect(version!.downloads?.client).toEqual({
+        sha1: 'client-sha1', size: 123, url: 'https://example/client.jar',
+      })
+      expect(version!.compatibleJavaMajors).toEqual([17, 21, 23, 24, 25])
+      expect(version!.javaVersion).toEqual({ component: 'java-runtime-gamma', majorVersion: 17 })
       // Libraries appear in `order` sequence (minecraft, lwjgl3ify, forge).
       expect(version!.libraries.map((l) => l.name)).toEqual([
         'net.minecraft:client:1.7.10',
@@ -369,6 +380,21 @@ describe('Modpack Conversion Functions', () => {
       expect(getMmcLocalLibraryNames(version)).toEqual([
         'com.github.GTNewHorizons:lwjgl3ify:2.1.16:forgePatches',
       ])
+    })
+
+    it('uses the last declared Java compatibility override in patch order', () => {
+      const manifest = gtnhManifest()
+      manifest.patches!['me.eigenraven.lwjgl3ify.launchargs'].compatibleJavaMajors = [21, 25]
+      manifest.patches!['net.minecraft'].javaVersion = { component: 'jre-legacy', majorVersion: 8 }
+      const version = getMmcVersionFromManifest(manifest, 'GTNH')!
+      expect(version.compatibleJavaMajors).toEqual([21, 25])
+      expect(version.javaVersion).toEqual({ component: 'java-runtime-delta', majorVersion: 21 })
+    })
+
+    it('ignores Java metadata from undeclared stale patches', () => {
+      const manifest = gtnhManifest()
+      manifest.patches!.stale = { uid: 'stale', order: 999, compatibleJavaMajors: [8] }
+      expect(getMmcVersionFromManifest(manifest, 'GTNH')!.javaVersion?.majorVersion).toBe(17)
     })
 
     it('returns undefined when the manifest has no patches', () => {

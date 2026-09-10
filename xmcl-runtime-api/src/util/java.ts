@@ -1,6 +1,7 @@
 import { Java } from '../entities/java.schema'
 import { JavaRecord } from '../entities/java'
 import type { JavaVersion, ResolvedVersion } from '@xmcl/core'
+import { getCompatibleJavaVersion } from '@xmcl/core'
 import { parseVersion } from './mavenVersion'
 
 export enum JavaCompatibleState {
@@ -97,6 +98,21 @@ export function getVersionPreference<T extends object>(
   const JAVA_FORWARD_COMPAT_THRESHOLD = 16
 
   let javaVersion = selectedVersion && 'javaVersion' in selectedVersion ? selectedVersion?.javaVersion : undefined
+  const compatibleJavaMajors = selectedVersion && 'compatibleJavaMajors' in selectedVersion
+    ? selectedVersion.compatibleJavaMajors
+    : undefined
+  if (compatibleJavaMajors) {
+    javaVersion = getCompatibleJavaVersion(compatibleJavaMajors, javaVersion)
+    const match = (java: Java) => compatibleJavaMajors.includes(java.majorVersion)
+    return {
+      javaVersion,
+      versionPref: {
+        match,
+        okay: match,
+        requirement: [...new Set(compatibleJavaMajors)].sort((a, b) => a - b).map(major => `=${major}`).join(' || '),
+      },
+    }
+  }
   const resolvedMcVersion = parseVersion(minecraft)
   const minecraftMinor = resolvedMcVersion.minorVersion!
 
