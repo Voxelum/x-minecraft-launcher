@@ -9,6 +9,7 @@
 
     <!--#region Sidebar Filters -->
     <aside
+      id="store-filters"
       class="store-sidebar w-auto lg:(w-88 h-full overflow-y-auto pb-20) flex-none border-b lg:(border-b-0 border-r) border-divider/40 px-4 pt-6 flex flex-col gap-6 custom-scrollbar"
     >
       <div class="flex flex-col gap-4 flex-shrink-0">
@@ -112,6 +113,7 @@
          search bar sit above the filters and stick to the top. -->
     <div class="contents lg:(flex flex-col flex-1 overflow-hidden relative)">
       <div
+        id="store-search"
         class="store-search-bar order-first lg:order-none flex-none px-6 lg:px-10 py-5 sticky top-0 z-10 backdrop-blur-md border-b border-divider/40"
       >
         <div class="max-w-3xl">
@@ -124,7 +126,7 @@
             hide-details
             rounded="xl"
             density="comfortable"
-            :placeholder="t('shared.search')"
+            :placeholder="t('store.searchHint')"
             prepend-inner-icon="search"
             class="elevated-search"
           >
@@ -138,7 +140,7 @@
       </div>
 
       <!-- Main Content -->
-      <div class="p-6 lg:(flex-1 overflow-y-auto p-10) custom-scrollbar relative" ref="container">
+      <div id="store-content" class="p-6 lg:(flex-1 overflow-y-auto p-10) custom-scrollbar relative" ref="container">
         <!-- Featured Carousel -->
         <div v-if="!keyword && selectedCount === 0" class="mb-12">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
@@ -315,6 +317,7 @@ import { useSearchedItems } from '@/composables/useSearchedItems'
 import { useGamepadInnerNav } from '@/composables/gamepad'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { injection } from '@/util/inject'
+import { useTutorial } from '@/composables/tutorial'
 import { useFocus } from '@vueuse/core'
 import { useId } from 'vue'
 
@@ -556,6 +559,32 @@ const hasFilters = computed(() => selectedCount.value > 0 || !!keyword.value)
 const filter = ref<HTMLElement | null>(null)
 const { focused } = useFocus(filter)
 useTextFieldBehavior(filter, focused)
+
+useTutorial(
+  computed(() => [
+    {
+      element: '#store-search',
+      popover: {
+        title: t('modSearch.searchInMarket'),
+        description: t('tutorial.storeSearchDescription'),
+      },
+    },
+    {
+      element: '#store-filters',
+      popover: {
+        title: t('curseforge.category'),
+        description: t('tutorial.storeSearchCategoryDescription'),
+      },
+    },
+    {
+      element: '#store-content',
+      popover: {
+        title: t('store.trending'),
+        description: t('tutorial.storePoupularModpackDescription'),
+      },
+    },
+  ]),
+)
 </script>
 
 <style scoped>

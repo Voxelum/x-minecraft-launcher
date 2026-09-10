@@ -1205,20 +1205,26 @@ search:
   noResults: Aucun résultat trouvé
   pageSize: Résultats par page
 server:
+  launch: Lancer le serveur
+  stop: Arrêter le serveur
   acceptingMinecraftVersion: Accepter la version Minecraft
+  addServer: Ajouter un serveur
+  address: Adresse du serveur
+  addressHint: ex. mc.hypixel.net
+  bindUpstream: Lier en amont
+  boundUpstream: Serveur amont lié
+  boundUpstreamHint: Cette instance s'aligne sur la version Minecraft du serveur lié.
   creationHint: Veuillez remplir l'adresse du serveur et envoyer un ping au serveur
+  editServer: Modifier le serveur
+  emptyHint: Aucun serveur dans le fichier servers.dat de cette instance. Ajoutez-en un pour commencer.
+  entryCount: '{count} serveur | {count} serveurs'
   expectedVersions: Versions prises en charge
   export: Serveur d'exportation
-  exportNoFilesHint: >-
-    Aucun fichier de serveur trouvé.
-
-    Vous pouvez exécuter un serveur sur local une fois pour générer des fichiers.
+  exportNoFilesHint: Aucun fichier de serveur trouvé. Vous pouvez exécuter un serveur sur local une fois pour générer des fichiers.
   exportOption: Options d'exportation de serveur
-  exportSSHAuthenticationFailed: |-
-    Toutes les méthodes d'authentification ont échoué.
-    Veuillez vérifier le nom d'utilisateur / mot de passe ou la clé privée.
+  exportSSHAuthenticationFailed: Toutes les méthodes d'authentification ont échoué. Veuillez vérifier le nom d'utilisateur / mot de passe ou la clé privée.
   exportSSHOptions: Options SSH
-  exportSSHPrivateKeyPath: Chemin de clé privée SSH
+  exportSSHPrivateKeyPath: Chemin de la clé privée SSH
   exportSSHRemotePath: Chemin de serveur distant
   exportToFolder: Exporter vers le dossier
   filterVersion: Le serveur de filtrage a répondu à la version de Minecraft
@@ -1226,19 +1232,129 @@ server:
   hostHint: L'hôte (avec le port) du serveur
   hostRequired: Veuillez saisir l'adresse IP du serveur
   ipAddress: Adresse IP
+  launchClient: Lancer le client à la place
+  launchPinned: Épinglé
+  launchTargetHint: Cette instance se lance directement sur le serveur épinglé. Revenir au client ?
   maxPlayers: Le maximum de joueurs
   motd: Serveur MOTD
+  nameHint: Nom affiché dans la liste Multijoueur
   nogui: Pas d'interface graphique du serveur
   onlineMode: Mode en ligne
+  pin: Épingler le serveur
+  pinAfterSave: Épingler comme cible de lancement par défaut après enregistrement
   ping: Ping
   pings: Pings
+  pinnedHeader: 'Épinglé : {name}'
   players: Joueurs
   port: Port
+  clearLog: Effacer le journal
+  log: Journal du serveur
+  logWaiting: La sortie du serveur apparaîtra ici après le lancement.
+  remoteActionSuccess: Done.
+  remoteAdmin: Administration serveur distant
+  remoteAuthMethod: Authentification
+  remoteAuthPassword: Mot de passe
+  remoteAuthPrivateKey: Clé privée
+  remoteBuildOfflinePackage: Créer un package hors ligne
+  remoteConnected: Connecté
+  remoteConnection: Connexion
+  remoteDeployment: Déploiement
+  remoteDeploy: Déployer
+  remoteDisk: Disque
+  remoteConfigFiles: Fichiers de configuration
+  remoteExtraFiles: Fichiers supplémentaires
+  remoteForgetCredentials: Oublier les identifiants enregistrés
+  remoteInstallService: Installer le service
+  remoteLoad: Charge moyenne
+  remoteLog: Journal distant
+  remoteMemory: Mémoire
+  remoteMods: Mods
+  remoteNoWorldSelected: Aucun monde d'instance sélectionné
+  remoteJavaRequired: Java n'est pas disponible sur l'hôte Linux distant.
+  remoteLinuxRequired: Seules les cibles Linux SSH sont prises en charge.
+  remoteNotConfiguredHint: Renseignez les détails de connexion ci-dessus pour activer le statut, le service et les journaux.
+  remotePathNotWritable: Le répertoire du serveur distant n'est pas accessible en écriture.
+  remotePathWritable: Répertoire accessible en écriture
+  remotePolicyInitialize: Initialiser une fois
+  remotePolicyMirror: Miroir
+  remotePolicyOverlay: Superposition
+  remotePolicyPreserve: Préserver
+  remotePreview: Aperçu des modifications
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: Mémoriser les identifiants (trousseau d'accès OS)
+  remoteReconcileReady: La cible correspond à cette instance et la console est attachée.
+  remoteRestartService: Redémarrer
+  remoteSavedCredentialsHint: Identifiants enregistrés actifs — laissez vide pour conserver, ou tapez pour remplacer.
+  remoteService: Service systemd
+  remoteServiceActive: En cours d'exécution
+  remoteServerInstalled: Fichiers serveur installés
+  remoteServiceName: Nom du service
+  remoteServiceNameHint: Nom de l'unité systemd --user, ex. mc-server
+  remoteSelectedFiles: '{count} fichiers serveur sélectionnés'
+  remoteSelectFiles: Sélectionner des fichiers
+  remoteStartCommand: Commande de démarrage
+  remoteStartCommandHint: ex. java -jar server.jar nogui
+  remoteStartService: Démarrer
+  remoteStatus: Statut
+  remoteSystemdRequired: Les services utilisateur systemd ne sont pas disponibles sur l'hôte Linux distant.
+  remoteTargetName: Nom de la cible
+  remoteStopService: Arrêter
+  remoteStopWatchLog: Arrêter de suivre
+  remoteTestConnection: Tester la connexion
+  remoteTestConnectionSuccess: Connexion réussie.
+  remoteUninstallConfirmMessage: Cela désactive et supprime l'unité systemd sur l'hôte distant. Les fichiers du serveur ne sont pas modifiés.
+  remoteUninstallService: Désinstaller le service
+  remoteRunInstall: Installer ou réparer
+  remoteWatchLog: Suivre le journal en direct
+  remoteWorldAlways: Remplacer à chaque synchronisation
+  remoteWorldDeployment: Déploiement du monde de l'instance
+  remoteWorldDeploymentHint: La synchronisation de routine n'envoie jamais le monde sauf autorisation explicite de cette règle.
+  remoteWorldFirstInstall: Initialiser uniquement lorsque la cible n'a pas de monde
+  remoteWorldNever: Ne jamais téléverser de monde
+  remoteWorldPresent: Monde cible
+  remoteWorld: Monde
+  remoteWorldWillDeploy: Le monde sélectionné sera téléversé lors de cette réconciliation.
+  serverName: Nom du serveur
+  serviceInstall: Installer le service
+  serviceManagedLaunch: Utiliser le service du système pour les actions de lancement et d'arrêt
+  serviceManager: Service système
+  serviceName: Nom du service
+  serviceNameHint: Identifiant contenant lettres, chiffres, points, tirets
+  serviceNotInstalled: Non installé
+  serviceStartCommand: Commande de démarrage
+  serviceSystemd: systemd --user
+  serviceWindows: Service Windows
+  serviceWindowsCommandHint: La commande Java est générée à partir de cette instance.
+  serversListTitle: Liste des serveurs
+  target: Cible du serveur
+  targetLocal: localhost
+  targetLocalHint: Installer et exécuter le serveur sur cet ordinateur.
+  targetRemote: Cible SSH
+  targetRemoteHint: Connecter, installer, lancer et surveiller un serveur via SSH.
+  unbindUpstream: Dissocier
   unknown: Serveur inconnu
   unknownDescription: Serveur inconnu. Veuillez rafraîchir
+  unpin: Unpin
   upload: Télécharger le serveur
+  upstreamUpToDate: Votre instance correspond au serveur ({version}).
+  upstreamUpToDateHint: Aucune mise à niveau nécessaire. Cliquez pour réinterroger le serveur.
+  upstreamUpdateAvailable: Le serveur tourne maintenant sous Minecraft {version}. Cliquez pour appliquer.
+  upstreamUpdateHint: Applique la version suggérée de Minecraft à cette instance.
+  useAsUpstreamHint: L'instance suivra la version de Minecraft rapportée par le serveur.
   version: Le serveur nécessite une version
   versionHint: La version Minecraft à pinger
+  worldPreserve: Préserver le monde cible
 serverStatus:
   nohost: §4Impossible de trouver l'hôte !
   ping: Ping...
@@ -1574,6 +1690,7 @@ store:
   trending: Tendance
   empty: Aucun modpack trouvé
   emptyHint: Essayez d'ajuster vos filtres ou votre recherche.
+  searchHint: Rechercher un modpack...
 tag:
   create: Créer un tag
   createSelected: Créer un tag pour la sélection
@@ -1613,16 +1730,39 @@ turnRegion:
   liaoning: Liaoning, China
   po: Pologne
 tutorial:
-  feedbackDescription: "Si vous rencontrez un problème, veuillez cliquer sur ce bouton pour envoyer vos commentaires !"
+  feedbackDescription: "Si vous rencontrez un problème, veuillez cliquer sur ce bouton pour envoyer vos commentaires\_!"
   hideNewsHeaderDescription: |-
     Vous pouvez voir la vitrine Actualités sur la gauche.
     Cliquer sur ce bouton peut masquer cette vitrine.
   instance:
-    javaImportTitle: Importación de Java
-  instanceAddDescription: >-
-    Cliquez sur ce bouton pour importer Minecraft existant ou en créer un nouveau à partir de zéro ou un modpack.
-  instanceSelectDescription: >-
-    En cliquant sur ce bouton, vous accéderez à la page pour sélectionner le jeu et lire les actualités.
+    appearanceThemeDescription: Personnalisez l'arrière-plan, les couleurs et le style visuel de cette instance.
+    appearanceThemeTitle: Apparence de l'instance
+    iconDescription: Cliquez pour changer d'icône.
+    iconTitle: Icône de l'instance
+    javaDescription: Sélectionnez ou modifiez la version de Java.
+    javaImportDescription: Importer une version de Java depuis le stockage local.
+    javaImportTitle: Importer Java
+    javaTitle: Liste Java
+    modpackExportDescription: Assemblez et compressez votre instance en un modpack prêt à partager.
+    modpackExportTitle: Exporter le modpack
+    modpackFilesDescription: Sélectionnez les fichiers de configuration, mods et ressources pour client et serveur.
+    modpackFilesTitle: Fichiers inclus
+    modpackMetaDescription: Spécifiez la version du modpack, l'auteur, la description et le site web.
+    modpackMetaTitle: Détails du modpack
+    modpackOptionsDescription: Choisissez le dossier d'exportation et les formats (Modrinth ou CurseForge).
+    modpackOptionsTitle: Options d'exportation
+    serverLaunchDescription: Démarrez ou arrêtez le serveur dédié de cette instance directement depuis l'en-tête.
+    serverLaunchTitle: Démarrer / Arrêter le serveur
+    serverPropertiesDescription: Configurez le port, la difficulté, le MOTD, la limite de joueurs et les règles.
+    serverPropertiesTitle: Configuration du serveur
+    serverServiceDescription: Gérez le serveur en tant que service système d'arrière-plan pour une disponibilité continue.
+    serverServiceTitle: Service système
+    serverTargetDescription: Choisissez d'exécuter en local sur votre PC ou de gérer un serveur Linux distant par SSH.
+    serverTargetTitle: Cible du serveur
+    versionDescription: Choisissez la version de Minecraft et les chargeurs Forge, Fabric, Quilt ou NeoForge.
+    versionTitle: Version Minecraft & Chargeur
+  instanceAddDescription: Cliquez sur ce bouton pour importer Minecraft existant ou en créer un nouveau à partir de zéro ou un modpack.
+  instanceSelectDescription: En cliquant sur ce bouton, vous accéderez à la page pour sélectionner le jeu et lire les actualités.
   launchDescription: Cliquez sur ce bouton pour installer ou lancer le jeu.
   mod:
     defaultSourceDescription: |-
@@ -1631,33 +1771,80 @@ tutorial:
       Si vous souhaitez basculer entre ces deux fournisseurs de contenu.
       Vous pouvez modifier la valeur ici.
     defaultSourceTitle: Sélectionnez la source de contenu du module
-    detailDescription: >-
+    detailDescription: |-
       Lorsque vous sélectionnez un élément sur la gauche.
-
       Vous verrez le détail du mod.
-
       Le contenu peut provenir de Modrinth, Curseforge ou du contenu analysé du mod.
     detailTitle: Détails du module
-    listDescription: >-
+    listDescription: |-
       Nous afficherons les mods installés lorsque vous n’avez aucune entrée.
-
       Vous verrez les mods recherchés une fois que vous aurez saisi le mot-clé ou la catégorie sélectionné.
     listTitle: Mod installé ou recherché
-    searchDescription: >-
-      Vous pouvez rechercher des mods depuis Modrinth, Curseforge ou votre cache local grâce à ce champ de recherche.
+    searchDescription: Vous pouvez rechercher des mods depuis Modrinth, Curseforge ou votre cache local grâce à ce champ de recherche.
     searchTitle: Rechercher des modules
-  recentPlayDescription: >-
+  recentPlayDescription: |-
     Les jeux créés seront répertoriés ici.
-
     Vous pouvez changer les vues ici pour voir également les versions installées et les modpacks téléchargés.
-  storePoupularModpackDescription: >-
-    Vous verrez les modpacks les plus populaires de Curseforge et Modrinth dans cette section.
+  storePoupularModpackDescription: Vous verrez les modpacks les plus populaires de Curseforge et Modrinth dans cette section.
   storeSearchCategoryDescription: Vous pouvez également basculer les catégories ou les filtres ici.
   storeSearchDescription: |-
     Vous pouvez rechercher Modpack en saisissant dans cette zone de texte.
     Appuyez sur Entrée pour lancer la recherche.
   storeSearchResultDescription: Vous verrez tous les résultats de recherche répertoriés ici.
   userAccountDescription: Cliquez sur cette icône pour ajouter ou gérer votre compte Minecraft.
+  tooltip: Aide & Visite guidée
+  done: Compris !
+  helpDescription: Guide interactif pour le lanceur et la page actuelle.
+  blueprint:
+    searchTitle: Rechercher des plans
+    searchDescription: Recherchez des plans locaux ou de la communauté par nom ou tag.
+    listTitle: Liste des plans
+    listDescription: Consultez et gérez vos plans d'instances et modèles enregistrés.
+    detailTitle: Détails du plan
+    detailDescription: Inspectez le contenu du plan, les mods inclus et créez de nouvelles instances.
+  me:
+    instancesTitle: Gestion des instances
+    instancesDescription: Affichez toutes vos instances installées, regroupez-les par dossier ou date, et lancez-les.
+    profileTitle: Compte & Profil
+    profileDescription: Basculez entre vos comptes et gérez vos identifiants.
+    skinTitle: Personnalisation du skin & cape
+    skinDescription: Prévisualisez votre personnage en 3D, changez de skin et équipez des capes.
+  multiplayer:
+    railTitle: Réseau & Navigation
+    railDescription: Vérifiez le type de NAT, l'état du réseau et basculez entre connexions et paramètres.
+    groupTitle: Rejoindre ou héberger une salle
+    groupDescription: Entrez un code de salle pour rejoindre des amis ou créez votre propre salon.
+    joinDescription: Cliquez pour rejoindre un salon existant ou en créer un nouveau.
+    contentTitle: Membres connectés & Contenu
+    contentDescription: Gérez les membres connectés, vérifiez le ping et partagez vos jeux Minecraft en cours.
+    manualDescription: Connexion P2P directe avec des amis par échange manuel SDP.
+  resourcepack:
+    searchTitle: Rechercher des packs de ressources
+    searchDescription: Recherchez des packs sur Modrinth, CurseForge ou dans vos fichiers locaux.
+    listTitle: Liste des packs de ressources
+    listDescription: Parcourez les packs installés, activez/désactivez et réorganisez leur priorité.
+    detailTitle: Détails du pack
+    detailDescription: Consultez les captures d'écran, descriptions, versions compatibles et détails.
+  save:
+    searchTitle: Rechercher des mondes
+    searchDescription: Filtrez et recherchez les mondes de l'instance actuelle par nom.
+    listTitle: Liste des mondes
+    listDescription: Affichez tous les mondes enregistrés avec mode de jeu, date de dernière session et taille.
+    detailTitle: Détails du monde & Actions
+    detailDescription: Sauvegardez, exportez, inspectez level.dat ou modifiez les paramètres du monde.
+  settings:
+    navDescription: Basculez entre Général, Apparence, Paramètres globaux du jeu et Réseau.
+    generalDescription: Configurez la langue, le répertoire de données, les canaux de mise à jour et le démarrage.
+    appearanceDescription: Personnalisez le thème, les fonds d'écran, les couleurs d'accentuation et le style.
+    globalDescription: Définissez la version Java par défaut, l'allocation de mémoire et les arguments JVM.
+    networkDescription: Configurez les miroirs de téléchargement, les proxys et les limites de tâches.
+  shaderpack:
+    searchTitle: Rechercher des shaders
+    searchDescription: Recherchez des shaders sur Modrinth, CurseForge ou dans le cache local.
+    listTitle: Liste des shaders
+    listDescription: Parcourez les shaders installés et basculez rapidement entre eux.
+    detailTitle: Détails du shader
+    detailDescription: Consultez l'auteur, les exigences de résolution, les profils et les options.
 universalDrop:
   unknownResource: Inconnu
 unresolvedFiles:

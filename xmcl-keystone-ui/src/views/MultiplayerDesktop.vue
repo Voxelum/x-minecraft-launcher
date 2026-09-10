@@ -5,7 +5,7 @@
     @dragover.prevent
     @drop="onDrop"
   >
-    <aside class="desktop-rail workspace-side-panel">
+    <aside id="multiplayer-rail" class="desktop-rail workspace-side-panel">
       <div>
         <div class="rail-brand">
           <v-avatar color="primary" variant="tonal" size="38">
@@ -102,7 +102,7 @@
     </aside>
 
     <div class="desktop-main">
-      <section class="join-panel">
+      <section id="multiplayer-join" class="join-panel">
         <div class="join-heading">
           <div>
             <div class="flex items-center gap-2">
@@ -215,7 +215,7 @@
         </v-alert>
       </section>
 
-      <section class="content-panel">
+      <section id="multiplayer-content" class="content-panel">
         <template v-if="section === 'connections'">
           <div class="panel-heading">
             <div>
@@ -449,6 +449,7 @@
 
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
+import { useTutorial } from '@/composables/tutorial'
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import SettingItem from '@/components/SettingItem.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
@@ -898,6 +899,32 @@ function formatBytes(bytes: number) {
   const index = bytes > 0 ? Math.min(Math.floor(Math.log(bytes) / Math.log(1000)), units.length - 1) : 0
   return `${new Intl.NumberFormat(locale.value, { maximumFractionDigits: 2 }).format(bytes / 1000 ** index)} ${units[index]}`
 }
+
+useTutorial(
+  computed(() => [
+    {
+      element: '#multiplayer-rail',
+      popover: {
+        title: t('tutorial.multiplayer.railTitle'),
+        description: t('tutorial.multiplayer.railDescription'),
+      },
+    },
+    {
+      element: '#multiplayer-join',
+      popover: {
+        title: t('tutorial.multiplayer.groupTitle'),
+        description: t('tutorial.multiplayer.groupDescription'),
+      },
+    },
+    {
+      element: '#multiplayer-content',
+      popover: {
+        title: t('tutorial.multiplayer.contentTitle'),
+        description: t('tutorial.multiplayer.contentDescription'),
+      },
+    },
+  ]),
+)
 </script>
 
 <style scoped>

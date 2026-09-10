@@ -1171,16 +1171,26 @@ search:
   noResults: NO REZULTS FOUNDZ
   pageSize: REZULTS PER PAGEZ
 server:
+  launch: LAUNCH SERVR
+  stop: STOP SERVR
   acceptingMinecraftVersion: ACCEPTING MINECWAFT VERSHUN
+  addServer: ADD SERVR
+  address: SERVR ADDRSS
+  addressHint: E.G. mc.hypixel.net
+  bindUpstream: BIND 2 UPSTREAM
+  boundUpstream: UPSTREAM SERVR BOUND
+  boundUpstreamHint: DIS INSTANC FOLLOWZ MINECRAFT VERSION OF DIS SERVR.
   creationHint: PLZ FILL DA SERVR ADDWESS AN PING DA SERVR
+  editServer: EDIT SERVR
+  emptyHint: NO SERVRZ IN SERVERS.DAT YET. ADD ONE PLZ!
+  entryCount: '{count} SERVR | {count} SERVRZ'
   expectedVersions: SUPPORTED VERSHUNS
   export: EXPORT SERVR
   exportNoFilesHint: NO SERVR FILEZ FOUND. U CAN RUN SERVR ON LOCAL ONCE TO GENERATE SOME FILEZ.
   exportOption: SERVER EXPORT OPSHUNS
-  exportSSHAuthenticationFailed: >-
-    ALL AUTHENTICASHUN METHODS FAILED. PLZ CHECK USERNAME/PASSWORD OR PRIVATE KEY.
+  exportSSHAuthenticationFailed: ALL AUTHENTICASHUN METHODS FAILED. PLZ CHECK USERNAME/PASSWORD OR PRIVATE KEY.
   exportSSHOptions: SSH OPSHUNS
-  exportSSHPrivateKeyPath: SSH PRIVATE KEY PATH
+  exportSSHPrivateKeyPath: SSH PRIVAT KEY PATH
   exportSSHRemotePath: REMOTE SERVR PATH
   exportToFolder: EXPORT TO FOLDR
   filterVersion: FILTR SERVR RESPONDED MINECWAFT VERSHUN
@@ -1188,19 +1198,129 @@ server:
   hostHint: TEH HOST (WITH PORT) OF DA SERVR
   hostRequired: PLZ ENTER DA SERVR IP ADDWESS
   ipAddress: IP ADDWESS
+  launchClient: LAUNCH CLIENT INSTEAD LOL
+  launchPinned: PINNED
+  launchTargetHint: DIS INSTANC JUMPS STRAIGHT INTO PINNED SERVR. SWITCH 2 CLIENT?
   maxPlayers: MAX PLAYRZ
   motd: SERVER MOTD
+  nameHint: NAME IN MULTIPLAYR LIST
   nogui: NO SERVER GUI
   onlineMode: ONLINE MODE
+  pin: PIN SERVR
+  pinAfterSave: PIN AS DEFAULT LAUNCH TARGET AFTER SAVIN
   ping: PING
   pings: PINGS
+  pinnedHeader: 'PINNED: {name}'
   players: PLAYRZ
   port: PORT
+  clearLog: CLEAR LOG
+  log: SERVR LOG
+  logWaiting: SERVR OUTPUT APPEARS HER AFTUR LAUNCH.
+  remoteActionSuccess: Done.
+  remoteAdmin: REMOTE SERVR BOSS
+  remoteAuthMethod: LOGIN WAY
+  remoteAuthPassword: PASSWURD
+  remoteAuthPrivateKey: SECRET KEY
+  remoteBuildOfflinePackage: MAEK OFFLINE PACKAG
+  remoteConnected: CONNECTD
+  remoteConnection: CONNECTSHUN
+  remoteDeployment: DEPLOYMNT
+  remoteDeploy: DEPLOY
+  remoteDisk: DISK
+  remoteConfigFiles: CONFIG FILEZ
+  remoteExtraFiles: EXTRA FILEZ
+  remoteForgetCredentials: FORGET SAVED LOGINS
+  remoteInstallService: INSTALL SERVIZ
+  remoteLoad: LOAD AVRG
+  remoteLog: REMOT LOG
+  remoteMemory: MEMORI
+  remoteMods: MODZ
+  remoteNoWorldSelected: NO WORLD PICKED
+  remoteJavaRequired: NO JAVA ON REMOTE LINUX BOX.
+  remoteLinuxRequired: ONLY LINUX SSH TARGETS ALLOWED.
+  remoteNotConfiguredHint: FILL IN CONNECTION DEETS ABOVE N SAVE 2 GET STATUS N LOGZ.
+  remotePathNotWritable: CANT WRITE 2 REMOTE SERVR DIR.
+  remotePathWritable: DIR IS WRITABLE YAY
+  remotePolicyInitialize: INIT ONCE
+  remotePolicyMirror: MIRROR
+  remotePolicyOverlay: OVERLAY
+  remotePolicyPreserve: KEEP ALONE
+  remotePreview: PREVIEW CHANGEZ
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: REMEMBER LOGINS (KEYCHAIN)
+  remoteReconcileReady: TARGET MATCHES INSTANC N CONSOLE IS CONNECTED.
+  remoteRestartService: RESTART
+  remoteSavedCredentialsHint: USIN SAVED LOGINS — LEAVE BLANK 2 KEEP.
+  remoteService: systemd SERVIZ
+  remoteServiceActive: RUNNIN
+  remoteServerInstalled: SERVR FILEZ INSTALLED
+  remoteServiceName: SERVIZ NAME
+  remoteServiceNameHint: systemd --user NAME, E.G. mc-server
+  remoteSelectedFiles: '{count} SERVR FILEZ PICKED'
+  remoteSelectFiles: PICK FILEZ
+  remoteStartCommand: START COMMAND
+  remoteStartCommandHint: E.G. java -jar server.jar nogui
+  remoteStartService: START
+  remoteStatus: STATUS
+  remoteSystemdRequired: systemd USER SERVIZ NOT FOUND ON REMOTE BOX.
+  remoteTargetName: TARGET NAME
+  remoteStopService: STOP
+  remoteStopWatchLog: STOP WATCHIN LOG
+  remoteTestConnection: TEST CONNECTION
+  remoteTestConnectionSuccess: CONNECTED OK!
+  remoteUninstallConfirmMessage: DIS DISABLEZ N REMOVES systemd UNIT ON REMOTE BOX. FILES STAY.
+  remoteUninstallService: UNINSTALL SERVIC
+  remoteRunInstall: INSTALL OR FIX
+  remoteWatchLog: WATCH LIVE LOGZ
+  remoteWorldAlways: REPLACE ON EVRY SYNC
+  remoteWorldDeployment: INSTANC WORLD UPLOAD
+  remoteWorldDeploymentHint: ROUTINE SYNC NEVER TOUCHES WORLD UNLESS TOLD 2.
+  remoteWorldFirstInstall: ONLY UPLOAD IF TARGET HAS NO WORLD
+  remoteWorldNever: NEVER UPLOAD WORLD
+  remoteWorldPresent: TARGET WORLD
+  remoteWorld: WURLD
+  remoteWorldWillDeploy: SELECTED WORLD WILL BE UPLOADED IN DIS SYNC.
+  serverName: SERVR NAME
+  serviceInstall: INSTALL SERVIC
+  serviceManagedLaunch: USE OS SERVIC 4 LAUNCH N STOP ACTIONZ
+  serviceManager: SYSTM SERVIC
+  serviceName: SERVIC NAME
+  serviceNameHint: IDENTIFIR WIT LETTRS, NUMBRS, DOTS OR DASHES
+  serviceNotInstalled: NOT INSTALLD
+  serviceStartCommand: START COMMND
+  serviceSystemd: systemd --user
+  serviceWindows: Windows Servic
+  serviceWindowsCommandHint: JAVA COMMND IS GENERATD FRUM DIS INSTANZ.
+  serversListTitle: SERVR LIST
+  target: SERVR TARGET
+  targetLocal: localhost
+  targetLocalHint: INSTALL N RUN SERVR ON DIS COMPUTUR.
+  targetRemote: SSH TARGET
+  targetRemoteHint: CONNECT, INSTALL, LAUNCH N WATCH SERVR OVER SSH.
+  unbindUpstream: UNBIND
   unknown: UNKNOWN SERVR
   unknownDescription: UNKNOWN SERVR. PLZ REFRESH
+  unpin: Unpin
   upload: UPLOAD SERVR
+  upstreamUpToDate: UR INSTANC MATCHES SERVR ({version}).
+  upstreamUpToDateHint: NO UPGRADE NEEDED. CLICK 2 PING AGAIN.
+  upstreamUpdateAvailable: SERVR NOW RUNS MINECRAFT {version}. CLICK 2 APPLY.
+  upstreamUpdateHint: APPLIES MINECRAFT VERSION 2 DIS INSTANC.
+  useAsUpstreamHint: INSTANC WILL FOLLOW SERVR MINECRAFT VERSION.
   version: SERVER REQUIRES VERSHUN
   versionHint: TEH MINECWAFT VERSHUN TO PING
+  worldPreserve: KEEP TARGET WORLD
 serverStatus:
   nohost: §4CANNOT FIND HOST!
   ping: PING...
@@ -1522,6 +1642,7 @@ store:
   trending: Trending
   empty: No modpaks fownd
   emptyHint: Tweekz ur filterz or sniff query.
+  searchHint: LOOK 4 MODPAX...
 tag:
   create: MAKE TAG
   createSelected: MAKE TAG FUR SELECTED
@@ -1561,32 +1682,99 @@ turnRegion:
   po: POLAND
 tutorial:
   feedbackDescription: IF U ENCOUNTER ANY PROBLEMZ, PLZ CLICK THIS BUTTON TO SEND FEEDBACK!
-  hideNewsHeaderDescription: >-
-    U CAN SEE DA NEWZ SHOWCASE ON DA LEFT. CLICKING THIS BUTTON CAN HIDE THIS SHOWCASE.
+  hideNewsHeaderDescription: U CAN SEE DA NEWZ SHOWCASE ON DA LEFT. CLICKING THIS BUTTON CAN HIDE THIS SHOWCASE.
   instance:
-    iconDescription: CLICK TO CHANGE ICON.
-    iconTitle: INSTANCE ICON
-    javaDescription: PICK OR SWITCH JAVA VERSHUN.
-    javaImportDescription: IMPORT JAVA FROM LOCAL STORAGE.
+    appearanceThemeDescription: SET WALLPAPER N COLORS FOR DIS INSTANC.
+    appearanceThemeTitle: INSTANC LOOKZ
+    iconDescription: CLICK 2 CHANGE PICTUR.
+    iconTitle: INSTANC PICTUR
+    javaDescription: PICK UR JAVA.
+    javaImportDescription: IMPORT JAVA FROM LOCAL DISK.
     javaImportTitle: IMPORT JAVA
     javaTitle: JAVA LIST
-  instanceAddDescription: >-
-    CLICK THIS BUTTON TO IMPORT EXISTING MINECWAFT INSTANCE OR MAKE A NEW ONE FROM SCRATCH OR MODPACK.
+    modpackExportDescription: BUILD UR INSTANC INTO READY 2 SHARE PACK.
+    modpackExportTitle: EXPORT PACK
+    modpackFilesDescription: CHOOSE CONFIGS, MODS N STUFF 4 CLIENT N SERVR.
+    modpackFilesTitle: FILEZ IN PACK
+    modpackMetaDescription: SET VERSION, AUTHOR, WORDS N LINKS.
+    modpackMetaTitle: MODPACK DEETS
+    modpackOptionsDescription: PICK TARGET FOLDER N FORMAT (MODRINTH OR CURSEFORGE).
+    modpackOptionsTitle: EXPORT WAYS
+    serverLaunchDescription: START OR STOP DEDICATED SERVR FROM HEADER.
+    serverLaunchTitle: START / STOP SERVR
+    serverPropertiesDescription: PORT, HARDNESS, MOTD, PLAYER LIMIT N RULES.
+    serverPropertiesTitle: SERVR SETTINZ
+    serverServiceDescription: RUN AS BACKGROUND SERVIZ (SYSTEMD OR WINDOWS).
+    serverServiceTitle: SYSTEM SERVIZ
+    serverTargetDescription: RUN ON LOCAL DISK OR REMOTE LINUX WIF SSH.
+    serverTargetTitle: SERVR MACHINE
+    versionDescription: PICK MINECRAFT VERSION & FORGE, FABRIC, QUILT OR NEOFORGE.
+    versionTitle: MINECRAFT & LOADER
+  instanceAddDescription: CLICK THIS BUTTON TO IMPORT EXISTING MINECWAFT INSTANCE OR MAKE A NEW ONE FROM SCRATCH OR MODPACK.
   instanceSelectDescription: CLICKING THIS BUTTON WILL NAVIGATE TO DA PAGE TO PICK GAME AN READ NEWZ.
   launchDescription: CLICK THIS BUTTON TO INSTALL OR LAUNCH DA GAME.
   mod:
-    defaultSourceDescription: >-
-      U CAN PICK DA SOURCE OF MODZ DETAILS HERE. THERE ARE DA MODZ PUBLISHED TO BOTH MODRINTH AN CURSEFORGE. IF U WANT TO SWITCH BETWEEN THESE TWO CONTENT PROVIDERS, U CAN CHANGE DA VALUE HERE.
+    defaultSourceDescription: U CAN PICK DA SOURCE OF MODZ DETAILS HERE. THERE ARE DA MODZ PUBLISHED TO BOTH MODRINTH AN CURSEFORGE. IF U WANT TO SWITCH BETWEEN THESE TWO CONTENT PROVIDERS, U CAN CHANGE DA VALUE HERE.
     defaultSourceTitle: PICK MOD CONTENT SOURC
-    detailDescription: >-
-      WHEN U PICK AN ITEM ON DA LEFT. U WILL SEE DA DETAILS OF DA MOD. TEH CONTENT CAN COME FROM MODRINTH, CURSEFORGE OR PARSED MOD'S CONTENT.
+    detailDescription: WHEN U PICK AN ITEM ON DA LEFT. U WILL SEE DA DETAILS OF DA MOD. TEH CONTENT CAN COME FROM MODRINTH, CURSEFORGE OR PARSED MOD'S CONTENT.
     detailTitle: MOD DEETAIL
-    listDescription: >-
-      WE WILL DISPLAY INSTALLED MODZ WHEN U DONT HAZ ANY INPUT. U WILL SEE DA SEARCHED MODZ ONCE UR INPUT HAZ A KEYWORD OR CATEGORY SELECTED.
+    listDescription: WE WILL DISPLAY INSTALLED MODZ WHEN U DONT HAZ ANY INPUT. U WILL SEE DA SEARCHED MODZ ONCE UR INPUT HAZ A KEYWORD OR CATEGORY SELECTED.
     listTitle: INSTALLED OR SEARCH MOD
-    searchDescription: >-
-      U CUD SEARCH MODZ FROM MODRINTH, CURSEFORGE OR UR LOCAL CACHE WITH THIS SEARCH BOX.
+    searchDescription: U CUD SEARCH MODZ FROM MODRINTH, CURSEFORGE OR UR LOCAL CACHE WITH THIS SEARCH BOX.
     searchTitle: SEARCH MODZ
+  tooltip: HALP & TOOR
+  done: K THX BYE!
+  helpDescription: HOW 2 USE DIS LAUNCHR N DIS PAGE.
+  blueprint:
+    searchTitle: LOOK 4 BLUEPRINTS
+    searchDescription: FIND UR BLUEPRINTS BY NAME OR TAG LOL.
+    listTitle: ALL TEH BLUEPRINTS
+    listDescription: SEE ALL SAVED INSTANCS N TEMPLATES.
+    detailTitle: BLUEPRINT STUFF
+    detailDescription: CHECK MODS IN BLUEPRINT N MAEK NEW INSTANC.
+  me:
+    instancesTitle: MAEK INSTANCS GO
+    instancesDescription: SEE UR INSTANCS, GROUP DEM BY FOLDUR N PLAY!
+    profileTitle: UR ACCOONT
+    profileDescription: SWAP UR ACCOONTS N LOGINS.
+    skinTitle: PRETTY SKINZ N CAPEZ
+    skinDescription: 3D PREVIEW UR CAT, SWAP SKINZ N WEAR CAPEZ.
+  multiplayer:
+    railTitle: INTERWEBS N STUFF
+    railDescription: CHECK NAT, INTERWEB STATUS N SETTINZ.
+    groupTitle: JOIN OR HOST ROOM
+    groupDescription: PUT IN ROOM CODE OR MAEK UR OWN ROOM PLZ.
+    joinDescription: CLICK 2 JOIN OR MAEK NEW ROOM.
+    contentTitle: FANZ IN ROOM
+    contentDescription: SEE PING N SHARE RUNNIN MINECRAFT TO TEH SQUAD.
+    manualDescription: DIRECT P2P WIF FRENZ USIN SDP HAX.
+  resourcepack:
+    searchTitle: FIND TEXTUREZ
+    searchDescription: SEARCH PACKS ON MODRINTH, CURSEFORGE OR DISK.
+    listTitle: TEH TEXTURE PACKS
+    listDescription: SEE ALL PACKS, TURN ON/OFF N MOVE UP/DOWN.
+    detailTitle: TEXTURE DETAILS
+    detailDescription: PICTURES, WORDS N VERSIONS FOR PACK.
+  save:
+    searchTitle: FIND WORLDZ
+    searchDescription: SEARCH SAVED WORLDS IN DIS INSTANC.
+    listTitle: ALL UR WORLDZ
+    listDescription: ALL SAVED WORLDS WIF GAME MODE N SIZE.
+    detailTitle: WORLD DETAILZ & BUTTONZ
+    detailDescription: BACKUP, EXPORT N CHECK LEVEL.DAT.
+  settings:
+    navDescription: SWITCH GENRAL, LOOKS, GAME OPTS N NETWERK.
+    generalDescription: LANGUAGE, DATA FOLDER, UPDATEZ N STARTUP.
+    appearanceDescription: THEMES, PURR-TY WALLPAPERS N COLORS.
+    globalDescription: JAVA VERSION, RAM ALLOCASHUN N JVM ARGS.
+    networkDescription: DOWNLOAD MIRRORS, PROXIES N LIMITS.
+  shaderpack:
+    searchTitle: FIND SHINIES (SHADERS)
+    searchDescription: SEARCH SHADERS ON MODRINTH, CURSEFORGE OR CACHE.
+    listTitle: SHINY SHADERS LIST
+    listDescription: BROWSE SHADERS N SWITCH FAST.
+    detailTitle: SHADER INFO
+    detailDescription: MAKER, RES REQUIREMENTS N PRESETS.
 universalDrop:
   unknownResource: UNKNOWN
 unresolvedFiles:

@@ -214,6 +214,7 @@ import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
 import { InstanceDatapackFile, useInstanceSavesDatapacks, useSaveDatapackInstallers } from '@/composables/instanceSaveDatapack'
 import { useNotifier } from '@/composables/notifier'
 import { usePresence } from '@/composables/presence'
+import { useTutorial } from '@/composables/tutorial'
 import { useSavesSearch } from '@/composables/savesSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { BuiltinImages } from '@/constant'
@@ -438,4 +439,30 @@ const { dragover } = useGlobalDrop({
     }
   },
 })
+
+useTutorial(
+  computed(() => [
+    {
+      element: '#search-text-field',
+      popover: {
+        title: t('tutorial.save.searchTitle') + ' (ctrl + f)',
+        description: t('tutorial.save.searchDescription'),
+      },
+    },
+    {
+      element: '#left-pane',
+      popover: {
+        title: t('tutorial.save.listTitle'),
+        description: t('tutorial.save.listDescription'),
+      },
+    },
+    {
+      element: '#right-pane',
+      popover: {
+        title: t('tutorial.save.detailTitle'),
+        description: t('tutorial.save.detailDescription'),
+      },
+    },
+  ]),
+)
 </script>

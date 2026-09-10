@@ -38,6 +38,7 @@
         class="flex items-center justify-end overflow-hidden"
       >
         <v-btn
+          id="modpack-export-button"
           rounded="pill"
           color="primary"
           :loading="exporting || loading"

@@ -1212,8 +1212,19 @@ search:
   noResults: Sonuç bulunamadı
   pageSize: Sayfa başına sonuç
 server:
+  launch: Sunucuyu Başlat
+  stop: Sunucuyu Durdur
   acceptingMinecraftVersion: Kabul Edilen Minecraft Sürümü
+  addServer: Sunucu Ekle
+  address: Sunucu Adresi
+  addressHint: örn. mc.hypixel.net
+  bindUpstream: Üst kaynak olarak bağla
+  boundUpstream: Üst sunucu bağlandı
+  boundUpstreamHint: Bu örnek bağlı sunucunun Minecraft sürümünü takip eder.
   creationHint: Lütfen sunucu adresini doldurun ve sunucuya ping atın
+  editServer: Sunucuyu Düzenle
+  emptyHint: Bu örneğin servers.dat dosyasında sunucu yok. Başlamak için bir tane ekleyin.
+  entryCount: '{count} sunucu'
   expectedVersions: Desteklenen Sürümler
   export: Sunucuyu Dışa Aktar
   exportNoFilesHint: Sunucu dosyası bulunamadı. Bazı dosyalar oluşturmak için sunucuyu yerel olarak bir kez çalıştırabilirsiniz.
@@ -1228,44 +1239,129 @@ server:
   hostHint: Sunucunun ana bilgisayarı (port ile)
   hostRequired: Lütfen sunucu ip adresini girin
   ipAddress: IP Adresi
-  maxPlayers: Maks Oyuncu
-  motd: Sunucu MOTD
-  nogui: Sunucu Arayüzü Yok
-  onlineMode: Çevrimiçi Mod
-  ping: Ping
-  pings: Pingler
-  players: Oyuncular
-  port: Port
-  unknown: Bilinmeyen Sunucu
-  unknownDescription: Bilinmeyen Sunucu. Lütfen Yenileyin
-  upload: Sunucu Yükle
-  version: Sunucu Sürümü Gerektiriyor
-  versionHint: Ping Atılacak Minecraft Sürümü
-  addServer: Sunucu Ekle
-  address: Sunucu Adresi
-  addressHint: mc.hypixel.net
-  bindUpstream: Yukarı akış olarak bağla
-  boundUpstream: Sunucu yukarı akışı bağlandı
-  boundUpstreamHint: Bu örnek, bağlı sunucunun Minecraft sürümünü takip eder.
-  editServer: Sunucuyu Düzenle
-  emptyHint: Bu örneğin servers.dat dosyasında henüz sunucu yok. Başlamak için bir tane ekleyin.
-  entryCount: '{count} sunucu | {count} sunucu'
   launchClient: Bunun yerine istemciyi başlat
   launchPinned: Sabitlendi
-  launchTargetHint: Bu örnek doğrudan sabitlenmiş sunucuya başlatılır. İstemciye geri dönülsün mü?
-  nameHint: Çok Oyunculu listesinde gösterilen görünen ad
+  launchTargetHint: Bu örnek doğrudan sabitlenen sunucuya bağlanır. İstemciye dönmek ister misiniz?
+  maxPlayers: Maks Oyuncu
+  motd: Sunucu MOTD
+  nameHint: Çok oyunculu listesinde görünen ad
+  nogui: Sunucu Arayüzü Yok
+  onlineMode: Çevrimiçi Mod
   pin: Sunucuyu sabitle
   pinAfterSave: Kaydettikten sonra varsayılan başlatma hedefi olarak sabitle
-  pinnedHeader: 'sabitlendi: {name}'
+  ping: Ping
+  pings: Pingler
+  pinnedHeader: 'Sabitlendi: {name}'
+  players: Oyuncular
+  port: Port
+  clearLog: Günlüğü temizle
+  log: Sunucu Günlüğü
+  logWaiting: Sunucu çıktısı başlatıldıktan sonra burada görünecektir.
+  remoteActionSuccess: Done.
+  remoteAdmin: Uzak Sunucu Yönetimi
+  remoteAuthMethod: Kimlik Doğrulama
+  remoteAuthPassword: Şifre
+  remoteAuthPrivateKey: Özel anahtar
+  remoteBuildOfflinePackage: Çevrimdışı paket oluştur
+  remoteConnected: Bağlandı
+  remoteConnection: Bağlantı
+  remoteDeployment: Dağıtım
+  remoteDeploy: Dağıt
+  remoteDisk: Disk
+  remoteConfigFiles: Yapılandırma dosyaları
+  remoteExtraFiles: Ek dosyalar
+  remoteForgetCredentials: Kayıtlı giriş bilgilerini unut
+  remoteInstallService: Hizmeti yükle
+  remoteLoad: Ortalama yük
+  remoteLog: Uzak Günlük
+  remoteMemory: Bellek
+  remoteMods: Modlar
+  remoteNoWorldSelected: Hiçbir örnek dünyası seçilmedi
+  remoteJavaRequired: Uzak Linux sunucusunda Java bulunamadı.
+  remoteLinuxRequired: Yalnızca SSH üzerinden Linux hedefleri desteklenir.
+  remoteNotConfiguredHint: Durum, hizmet kontrolü ve günlükleri etkinleştirmek için yukarıdaki bağlantı bilgilerini doldurun.
+  remotePathNotWritable: Uzak sunucu dizinine yazma izni yok.
+  remotePathWritable: Dizin yazılabilir
+  remotePolicyInitialize: Bir kez başlat
+  remotePolicyMirror: Ayna (Mirror)
+  remotePolicyOverlay: Üzerine yaz (Overlay)
+  remotePolicyPreserve: Koru
+  remotePreview: Değişiklikleri önizle
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: Kimlik bilgilerini hatırla (İşletim sistemi anahtarlığı)
+  remoteReconcileReady: Hedef bu örnekle eşleşiyor ve konsol bağlı.
+  remoteRestartService: Yeniden Başlat
+  remoteSavedCredentialsHint: Kayıtlı kimlik bilgileri etkin — korumak için boş bırakın veya değiştirmek için yazın.
+  remoteService: systemd Hizmeti
+  remoteServiceActive: Çalışıyor
+  remoteServerInstalled: Sunucu dosyaları yüklendi
+  remoteServiceName: Hizmet adı
+  remoteServiceNameHint: systemd --user birim adı, örn. mc-server
+  remoteSelectedFiles: '{count} sunucu dosyası seçildi'
+  remoteSelectFiles: Dosyaları seç
+  remoteStartCommand: Başlatma komutu
+  remoteStartCommandHint: örn. java -jar server.jar nogui
+  remoteStartService: Başlat
+  remoteStatus: Durum
+  remoteSystemdRequired: Uzak sunucuda systemd kullanıcı hizmetleri kullanılamıyor.
+  remoteTargetName: Hedef adı
+  remoteStopService: Durdur
+  remoteStopWatchLog: İzlemeyi durdur
+  remoteTestConnection: Bağlantıyı test et
+  remoteTestConnectionSuccess: Bağlantı başarılı.
+  remoteUninstallConfirmMessage: Bu işlem uzak ana bilgisayardaki systemd birimini kaldırır. Dosyalar silinmez.
+  remoteUninstallService: Hizmeti kaldır
+  remoteRunInstall: Yükle veya onar
+  remoteWatchLog: Canlı günlüğü izle
+  remoteWorldAlways: Her eşitlemede değiştir
+  remoteWorldDeployment: Örnek dünyası dağıtımı
+  remoteWorldDeploymentHint: Rutin eşitleme açıkça izin verilmedikçe dünya verilerini asla yüklemez.
+  remoteWorldFirstInstall: Yalnızca hedefte dünya yoksa başlat
+  remoteWorldNever: Asla dünya yükleme
+  remoteWorldPresent: Hedef dünya
+  remoteWorld: Dünya
+  remoteWorldWillDeploy: Seçilen örnek dünyası bu eşitlemede yüklenecektir.
   serverName: Sunucu adı
+  serviceInstall: Hizmeti kur
+  serviceManagedLaunch: Başlatma ve durdurma işlemleri için işletim sistemi hizmetini kullanın
+  serviceManager: Sistem hizmeti
+  serviceName: Hizmet adı
+  serviceNameHint: Harf, rakam, nokta veya tire içeren tanımlayıcı
+  serviceNotInstalled: Kurulu değil
+  serviceStartCommand: Başlatma komutu
+  serviceSystemd: systemd --user
+  serviceWindows: Windows Hizmeti
+  serviceWindowsCommandHint: Java komutu bu örnekten oluşturulur.
   serversListTitle: Sunucu Listesi
-  unbindUpstream: Bağlantıyı Kes
+  target: Sunucu hedefi
+  targetLocal: localhost
+  targetLocalHint: Sunucuyu bu bilgisayara kurun ve çalıştırın.
+  targetRemote: SSH hedefi
+  targetRemoteHint: SSH üzerinden sunucuya bağlanın, kurun, başlatın ve izleyin.
+  unbindUpstream: Bağı kaldır
+  unknown: Bilinmeyen Sunucu
+  unknownDescription: Bilinmeyen Sunucu. Lütfen Yenileyin
   unpin: Sabitlemeyi Kaldır
-  upstreamUpToDate: Örneğiniz sunucu ile eşleşiyor ({version}).
-  upstreamUpToDateHint: Yükseltmeye gerek yok. Sunucuya yeniden ping atmak için tıklayın.
-  upstreamUpdateAvailable: Sunucu artık Minecraft {version} sürümünü çalıştırıyor. Uygulamak için tıklayın.
+  upload: Sunucu Yükle
+  upstreamUpToDate: Örneğiniz sunucuyla eşleşiyor ({version}).
+  upstreamUpToDateHint: Yükseltme gerekmiyor. Tekrar kontrol etmek için tıklayın.
+  upstreamUpdateAvailable: Sunucu artık Minecraft {version} çalıştırıyor. Uygulamak için tıklayın.
   upstreamUpdateHint: Önerilen Minecraft sürümünü bu örneğe uygular.
   useAsUpstreamHint: Örnek, sunucunun bildirdiği Minecraft sürümünü takip edecektir.
+  version: Sunucu Sürümü Gerektiriyor
+  versionHint: Ping Atılacak Minecraft Sürümü
+  worldPreserve: Hedef dünyayı koru
 serverStatus:
   nohost: §4Ana bilgisayar bulunamıyor!
   ping: Ping...
@@ -1594,6 +1690,7 @@ store:
   trending: Trend olan
   empty: Modpack bulunamadı
   emptyHint: Filtrelerinizi veya aramanızı değiştirmeyi deneyin.
+  searchHint: Mod paketlerini ara...
 tag:
   create: Etiket Oluştur
   createSelected: Seçilenler için Etiket Oluştur
@@ -1635,12 +1732,32 @@ tutorial:
   feedbackDescription: Herhangi bir sorunla karşılaşırsanız, geri bildirim göndermek için lütfen bu düğmeye tıklayın!
   hideNewsHeaderDescription: Solda Haber vitrinini görebilirsiniz. Bu düğmeye tıklamak bu vitrini gizleyebilir.
   instance:
-    iconDescription: Simgeyi değiştirmek için tıklayın.
-    iconTitle: Instance simgesi
+    appearanceThemeDescription: Bu örneğe özel arka planı, renkleri ve görsel stili özelleştirin.
+    appearanceThemeTitle: Örnek Görünümü
+    iconDescription: Simgesini değiştirmek için tıklayın.
+    iconTitle: Örnek Simgesi
     javaDescription: Java sürümünü seçin veya değiştirin.
-    javaImportDescription: Yerel depolamadan java içe aktarın.
-    javaImportTitle: Java içe aktar
-    javaTitle: Java listesi
+    javaImportDescription: Yerel depolamadan Java sürümünü içe aktarın.
+    javaImportTitle: Java İçe Aktar
+    javaTitle: Java Listesi
+    modpackExportDescription: Yapılandırılmış örneğinizi paylaşıma hazır bir mod paketine dönüştürün.
+    modpackExportTitle: Mod Paketini Dışa Aktar
+    modpackFilesDescription: İstemci ve sunucu için paketlenecek yapılandırma dosyalarını ve modları seçin.
+    modpackFilesTitle: Dahil Edilen Dosyalar
+    modpackMetaDescription: Mod paketi sürümünü, yazarını, açıklamasını ve bağlantılarını belirtin.
+    modpackMetaTitle: Mod Paketi Bilgisi
+    modpackOptionsDescription: Hedef klasörü ve formatları (Modrinth veya CurseForge gibi) seçin.
+    modpackOptionsTitle: Dışa Aktarma Seçenekleri
+    serverLaunchDescription: Bu örneğin özel sunucusunu doğrudan başlıktan başlatın veya durdurun.
+    serverLaunchTitle: Sunucuyu Başlat / Durdur
+    serverPropertiesDescription: Port, zorluk, MOTD, oyuncu sınırları ve oyun kurallarını ayarlayın.
+    serverPropertiesTitle: Sunucu Yapılandırması
+    serverServiceDescription: Sunucuyu sürekli çalışma için bir sistem arka plan hizmeti olarak yönetin.
+    serverServiceTitle: Sistem Hizmeti
+    serverTargetDescription: Bilgisayarınızda yerel çalıştırma veya SSH ile uzak Linux sunucu yönetimi arasında seçim yapın.
+    serverTargetTitle: Sunucu Hedefi
+    versionDescription: Minecraft sürümünü ve Forge, Fabric, Quilt veya NeoForge yükleyicilerini seçin.
+    versionTitle: Minecraft ve Yükleyici Sürümü
   instanceAddDescription: Mevcut Minecraft instance'ını içe aktarmak veya sıfırdan ya da mod paketinden yeni bir tane oluşturmak için bu düğmeye tıklayın.
   instanceSelectDescription: Bu düğmeye tıklamak oyun seçme ve haber okuma sayfasına gidecektir.
   launchDescription: Oyunu yüklemek veya başlatmak için bu düğmeye tıklayın.
@@ -1659,6 +1776,59 @@ tutorial:
   storeSearchDescription: Bu metin kutusuna giriş yaparak Mod Paketlerini arayabilirsiniz. Aramak için Enter tuşuna basın.
   storeSearchResultDescription: Tüm arama sonuçlarını burada listelenmiş olarak göreceksiniz.
   userAccountDescription: Minecraft hesabınızı eklemek veya yönetmek için bu simgeye tıklayın.
+  tooltip: Yardım ve Rehber
+  done: Anladım!
+  helpDescription: Başlatıcı ve geçerli sayfa için etkileşimli kılavuz.
+  blueprint:
+    searchTitle: Taslakları Ara
+    searchDescription: Yerel ve topluluk taslaklarını ada veya etikete göre arayın.
+    listTitle: Taslak Listesi
+    listDescription: Kayıtlı örnek taslaklarını ve şablonlarını görüntüleyin ve yönetin.
+    detailTitle: Taslak Detayları
+    detailDescription: Taslak içeriğini, modları inceleyin ve bundan yeni örnekler oluşturun.
+  me:
+    instancesTitle: Örnek Yönetimi
+    instancesDescription: Yüklü tüm örnekleri görün, klasöre veya tarihe göre sıralayın ve başlatın.
+    profileTitle: Hesap ve Profil
+    profileDescription: Hesaplarınız arasında geçiş yapın ve giriş bilgilerinizi yönetin.
+    skinTitle: Görünüm ve Pelerin Özelleştirme
+    skinDescription: Karakterinizi 3D olarak görüntüleyin, dış görünüşü değiştirin ve pelerin takın.
+  multiplayer:
+    railTitle: Ağ ve Gezinme
+    railDescription: NAT türünü, ağ durumunu kontrol edin ve bağlantılar ile ayarlar arasında geçiş yapın.
+    groupTitle: Odaya Katıl veya Kur
+    groupDescription: Arkadaşlarınıza katılmak için oda kodu girin veya kendi odanızı açın.
+    joinDescription: Mevcut bir odaya katılmak veya yeni bir oda kurmak için tıklayın.
+    contentTitle: Bağlı Üyeler ve İçerik
+    contentDescription: Üyeleri yönetin, gecikmeyi kontrol edin ve açık Minecraft oyunlarını paylaşın.
+    manualDescription: SDP değişimi kullanarak arkadaşlarınızla doğrudan manuel P2P bağlantısı.
+  resourcepack:
+    searchTitle: Kaynak Paketlerini Ara
+    searchDescription: Modrinth, CurseForge veya yerel dosyalardan kaynak paketi arayın.
+    listTitle: Kaynak Paketi Listesi
+    listDescription: Yüklü paketleri inceleyin, açıp kapatın ve öncelik sırasını düzenleyin.
+    detailTitle: Paket Detayları
+    detailDescription: Ekran görüntülerini, açıklamayı, uyumlu Minecraft sürümlerini inceleyin.
+  save:
+    searchTitle: Dünyaları Ara
+    searchDescription: Geçerli örnekteki kayıtlı dünyaları ada göre filtreleyin ve arayın.
+    listTitle: Dünya Listesi
+    listDescription: Oyun modu, son oynanma tarihi ve dosya boyutuyla kayıtlı dünyaları görün.
+    detailTitle: Dünya Detayları ve İşlemler
+    detailDescription: Yedek alın, dışa aktarın, level.dat inceleyin veya dünya ayarlarını yönetin.
+  settings:
+    navDescription: Genel, Görünüm, Genel Oyun Ayarları ve Ağ arasında geçiş yapın.
+    generalDescription: Başlatıcı dilini, veri klasörünü, güncelleme kanallarını ve açılış ayarlarını yapılandırın.
+    appearanceDescription: Temayı, arka plan görsellerini, vurgu renklerini ve arayüz stilini özelleştirin.
+    globalDescription: Varsayılan Java sürümünü, bellek tahsisini ve JVM argümanlarını belirleyin.
+    networkDescription: İndirme yansılarını, proxy ayarlarını ve eşzamanlı görev limitlerini ayarlayın.
+  shaderpack:
+    searchTitle: Gölgelendirici Paketlerini Ara
+    searchDescription: Modrinth, CurseForge veya yerel önbellekten gölgelendirici arayın.
+    listTitle: Gölgelendirici Listesi
+    listDescription: Yüklü gölgelendiricileri listeleyin ve aralarında hızla geçiş yapın.
+    detailTitle: Gölgelendirici Detayları
+    detailDescription: Geliştiriciyi, çözünürlük gereksinimlerini, önayarları ve seçenekleri inceleyin.
 universalDrop:
   unknownResource: Bilinmeyen
 unresolvedFiles:

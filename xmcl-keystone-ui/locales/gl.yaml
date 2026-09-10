@@ -1192,17 +1192,26 @@ search:
   noResults: Non se atoparon resultados
   pageSize: Resultados por páxina
 server:
+  launch: Launch server
+  stop: Stop server
   acceptingMinecraftVersion: Accepteert Minecraft Versie
+  addServer: Engadir servidor
+  address: Enderezo do servidor
+  addressHint: ex. mc.hypixel.net
+  bindUpstream: Vincular como upstream
+  boundUpstream: Servidor upstream vinculado
+  boundUpstreamHint: Esta instancia segue a versión de Minecraft do servidor vinculado.
   creationHint: Vul het serveradres in en ping de server
+  editServer: Editar servidor
+  emptyHint: Non hai servidores no ficheiro servers.dat desta instancia. Engade un para comezar.
+  entryCount: '{count} servidor | {count} servidores'
   expectedVersions: Ondersteunde Versies
   export: Exporteer Server
-  exportNoFilesHint: >-
-    Geen serverbestanden gevonden. Je kunt server lokaal eens draaien om enkele bestanden te genereren.
+  exportNoFilesHint: Geen serverbestanden gevonden. Je kunt server lokaal eens draaien om enkele bestanden te genereren.
   exportOption: Server Exportopties
-  exportSSHAuthenticationFailed: >-
-    Alle authenticatiemethoden mislukt. Controleer gebruikersnaam/wachtwoord of privésleutel.
+  exportSSHAuthenticationFailed: Alle authenticatiemethoden mislukt. Controleer gebruikersnaam/wachtwoord of privésleutel.
   exportSSHOptions: SSH Opties
-  exportSSHPrivateKeyPath: SSH Privésleutel Pad
+  exportSSHPrivateKeyPath: Ruta da chave privada SSH
   exportSSHRemotePath: Remote Server Pad
   exportToFolder: Exporteer Naar Map
   filterVersion: Filter server reageerde Minecraft-versie
@@ -1210,19 +1219,129 @@ server:
   hostHint: De host (met poort) van de server
   hostRequired: Voer het server ip-adres in
   ipAddress: IP Adres
+  launchClient: Iniciar cliente no seu lugar
+  launchPinned: Fixado
+  launchTargetHint: Esta instancia conéctase directamente ao servidor fixado. Volver ao cliente?
   maxPlayers: Max Spelers
   motd: Server MOTD
+  nameHint: Nome amosado na lista multixogador
   nogui: Geen Server Gui
   onlineMode: Online Modus
+  pin: Fixar servidor
+  pinAfterSave: Fixar como destino predeterminado tras gardar
   ping: Ping
   pings: Pings
+  pinnedHeader: 'Fixado: {name}'
   players: Spelers
   port: Poort
+  clearLog: Limpar rexistro
+  log: Rexistro do servidor
+  logWaiting: Agardando pola saída do servidor...
+  remoteActionSuccess: Done.
+  remoteAdmin: Administración de servidor remoto
+  remoteAuthMethod: Autenticación
+  remoteAuthPassword: Contrasinal
+  remoteAuthPrivateKey: Chave privada
+  remoteBuildOfflinePackage: Crear paquete fóra de liña
+  remoteConnected: Conectado
+  remoteConnection: Conexión
+  remoteDeployment: Despregamento
+  remoteDeploy: Despregar
+  remoteDisk: Disk
+  remoteConfigFiles: Ficheiros de configuración
+  remoteExtraFiles: Ficheiros adicionais
+  remoteForgetCredentials: Esquecer credenciais gardadas
+  remoteInstallService: Instalar servizo
+  remoteLoad: Cargar
+  remoteLog: Rexistro do servidor remoto
+  remoteMemory: Memoria
+  remoteMods: Mods
+  remoteNoWorldSelected: Ningún mundo seleccionado
+  remoteJavaRequired: Java non está dispoñible no servidor Linux remoto.
+  remoteLinuxRequired: Só se admiten destinos Linux mediante SSH.
+  remoteNotConfiguredHint: Enche os datos de conexión arriba para habilitar estado, servizo e rexistros.
+  remotePathNotWritable: O directorio do servidor remoto non ten permisos de escritura.
+  remotePathWritable: Directorio con permisos de escritura
+  remotePolicyInitialize: Inicializar unha vez
+  remotePolicyMirror: Espello (Mirror)
+  remotePolicyOverlay: Superposición (Overlay)
+  remotePolicyPreserve: Conservar
+  remotePreview: Vista previa dos cambios
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: Lembrar credenciais (chaveiro do SO)
+  remoteReconcileReady: O destino coincide con esta instancia e a consola está conectada.
+  remoteRestartService: Reiniciar servizo
+  remoteSavedCredentialsHint: Usando credenciais gardadas — deixa en branco para manter ou escribe para substituír.
+  remoteService: Servizo systemd
+  remoteServiceActive: En execución
+  remoteServerInstalled: Ficheiros do servidor instalados
+  remoteServiceName: Nome do servizo
+  remoteServiceNameHint: Nome da unidade systemd --user, ex. mc-server
+  remoteSelectedFiles: '{count} ficheiros do servidor seleccionados'
+  remoteSelectFiles: Seleccionar ficheiros
+  remoteStartCommand: Orde de inicio
+  remoteStartCommandHint: ex. java -jar server.jar nogui
+  remoteStartService: Start
+  remoteStatus: Estado
+  remoteSystemdRequired: Os servizos de usuario systemd non están dispoñibles no servidor remoto.
+  remoteTargetName: Nome do destino
+  remoteStopService: Stop
+  remoteStopWatchLog: Deter seguimento
+  remoteTestConnection: Probar conexión
+  remoteTestConnectionSuccess: Conexión correcta.
+  remoteUninstallConfirmMessage: Isto desactiva e elimina a unidade systemd no servidor remoto. Os ficheiros non se tocan.
+  remoteUninstallService: Desinstalar servizo
+  remoteRunInstall: Instalar ou reparar
+  remoteWatchLog: Ver rexistro en directo
+  remoteWorldAlways: Substituír en cada sincronización
+  remoteWorldDeployment: Despregamento do mundo da instancia
+  remoteWorldDeploymentHint: A sincronización rutineira nunca envía mundos agás autorización expresa.
+  remoteWorldFirstInstall: Inicializar só se o destino non ten mundo
+  remoteWorldNever: Nunca subir un mundo
+  remoteWorldPresent: Mundo do destino
+  remoteWorld: World
+  remoteWorldWillDeploy: O mundo seleccionado subirase durante esta sincronización.
+  serverName: Nome do servidor
+  serviceInstall: Instalar servizo
+  serviceManagedLaunch: Inicio xestionado polo servizo
+  serviceManager: Xestor de servizos
+  serviceName: Nome do servizo
+  serviceNameHint: Nome do servizo do sistema
+  serviceNotInstalled: Servizo non instalado
+  serviceStartCommand: Orde de inicio do servizo
+  serviceSystemd: systemd --user
+  serviceWindows: Servizo de Windows
+  serviceWindowsCommandHint: Orde do servizo de Windows
+  serversListTitle: Servidores
+  target: Destino
+  targetLocal: localhost
+  targetLocalHint: Executar localmente neste ordenador
+  targetRemote: Servidor remoto (SSH)
+  targetRemoteHint: Xestionar un servidor Linux remoto a través de SSH
+  unbindUpstream: Desvincular
   unknown: Onbekende Server
   unknownDescription: Onbekende Server. Vernieuw aub
+  unpin: Unpin
   upload: Upload Server
+  upstreamUpToDate: A túa instancia coincide co servidor ({version}).
+  upstreamUpToDateHint: Non se require actualización. Fai clic para volver comprobar.
+  upstreamUpdateAvailable: O servidor agora executa Minecraft {version}. Fai clic para aplicar.
+  upstreamUpdateHint: Aplica a versión suxerida de Minecraft a esta instancia.
+  useAsUpstreamHint: A instancia seguirá a versión de Minecraft indicada polo servidor.
   version: Server Vereist Versie
   versionHint: De Minecraft Versie Om Te Pingen
+  worldPreserve: Conservar mundo de destino
 serverStatus:
   nohost: §4Kan host niet vinden!
   ping: Pingen...
@@ -1546,6 +1665,7 @@ store:
   trending: Tendencias
   empty: Non se atoparon modpacks
   emptyHint: Proba a axustar os filtros ou a busca.
+  searchHint: Buscar paquetes de mods...
 tag:
   create: Maak Tag
   createSelected: Maak Tag voor Geselecteerde
@@ -1585,41 +1705,105 @@ turnRegion:
   po: Polen
 tutorial:
   feedbackDescription: Als je problemen tegenkomt, klik op deze knop om feedback te sturen!
-  hideNewsHeaderDescription: >-
-    Je kunt de Nieuws showcase aan de linkerkant zien. Klikken op deze knop kan deze showcase verbergen.
+  hideNewsHeaderDescription: Je kunt de Nieuws showcase aan de linkerkant zien. Klikken op deze knop kan deze showcase verbergen.
   instance:
-    iconDescription: Klik om icoon te wijzigen.
-    iconTitle: Instantie icoon
-    javaDescription: Kies of wissel java versie.
-    javaImportDescription: Importeer java van lokale opslag.
-    javaImportTitle: Importeer java
-    javaTitle: Java lijst
-  instanceAddDescription: >-
-    Klik op deze knop om bestaande Minecraft instantie te importeren of een nieuwe te maken vanaf nul of modpack.
-  instanceSelectDescription: >-
-    Klikken op deze knop navigeert naar de pagina om game te selecteren en nieuws te lezen.
+    appearanceThemeDescription: Personaliza o fondo, cores e estilo visual desta instancia.
+    appearanceThemeTitle: Aparencia da instancia
+    iconDescription: Fai clic para cambiar a icona.
+    iconTitle: Icona da instancia
+    javaDescription: Selecciona ou cambia a versión de Java.
+    javaImportDescription: Importa unha versión de Java dende o almacenamento local.
+    javaImportTitle: Importar Java
+    javaTitle: Lista de Java
+    modpackExportDescription: Compila a túa instancia nun modpack listo para compartir.
+    modpackExportTitle: Exportar modpack
+    modpackFilesDescription: Elixe os ficheiros de configuración, mods e recursos para cliente e servidor.
+    modpackFilesTitle: Ficheiros incluídos
+    modpackMetaDescription: Especifica a versión do modpack, autor, descrición e ligazóns.
+    modpackMetaTitle: Detalles do modpack
+    modpackOptionsDescription: Selecciona o cartafol de destino e o formato (Modrinth ou CurseForge).
+    modpackOptionsTitle: Opcións de exportación
+    serverLaunchDescription: Inicia ou detén o servidor dedicado desta instancia directamente dende a cabeceira.
+    serverLaunchTitle: Iniciar / Deter servidor
+    serverPropertiesDescription: Configura porto, dificultade, MOTD, límite de xogadores e regras.
+    serverPropertiesTitle: Configuración do servidor
+    serverServiceDescription: Xestiona o servidor como servizo do sistema operativo para mantelo activo.
+    serverServiceTitle: Servizo do sistema
+    serverTargetDescription: Elixe entre executalo localmente no equipo ou xestionar un servidor Linux por SSH.
+    serverTargetTitle: Destino do servidor
+    versionDescription: Selecciona a versión de Minecraft e cargadores Forge, Fabric, Quilt ou NeoForge.
+    versionTitle: Versión de Minecraft e Cargador
+  instanceAddDescription: Klik op deze knop om bestaande Minecraft instantie te importeren of een nieuwe te maken vanaf nul of modpack.
+  instanceSelectDescription: Klikken op deze knop navigeert naar de pagina om game te selecteren en nieuws te lezen.
   launchDescription: Klik op deze knop om de game te installeren of te starten.
   mod:
-    defaultSourceDescription: >-
-      Je kunt hier de bron van mods details kiezen. Er zijn mods gepubliceerd op zowel Modrinth als Curseforge. Als je wilt wisselen tussen deze twee content providers, kun je de waarde hier wijzigen.
+    defaultSourceDescription: Je kunt hier de bron van mods details kiezen. Er zijn mods gepubliceerd op zowel Modrinth als Curseforge. Als je wilt wisselen tussen deze twee content providers, kun je de waarde hier wijzigen.
     defaultSourceTitle: Selecteer Mod Content Bron
-    detailDescription: >-
-      Wanneer je een item aan de linkerkant selecteert. Zie je de details van de mod. De inhoud kan komen van Modrinth, Curseforge of geparseerde mod's inhoud.
+    detailDescription: Wanneer je een item aan de linkerkant selecteert. Zie je de details van de mod. De inhoud kan komen van Modrinth, Curseforge of geparseerde mod's inhoud.
     detailTitle: Mod Detail
-    listDescription: >-
-      We tonen geïnstalleerde mods wanneer je geen invoer hebt. Je ziet de gezochte mods zodra je invoer een trefwoord of categorie geselecteerd heeft.
+    listDescription: We tonen geïnstalleerde mods wanneer je geen invoer hebt. Je ziet de gezochte mods zodra je invoer een trefwoord of categorie geselecteerd heeft.
     listTitle: Geïnstalleerde of Zoek Mod
-    searchDescription: >-
-      Je kunt mods zoeken van Modrinth, Curseforge of je lokale cache met dit zoekvak.
+    searchDescription: Je kunt mods zoeken van Modrinth, Curseforge of je lokale cache met dit zoekvak.
     searchTitle: Zoek Mods
-  recentPlayDescription: >-
-    De gemaakte games worden hier vermeld. Je kunt de weergaven hier wisselen om ook de geïnstalleerde versies en gedownloade modpacks te zien.
+  recentPlayDescription: De gemaakte games worden hier vermeld. Je kunt de weergaven hier wisselen om ook de geïnstalleerde versies en gedownloade modpacks te zien.
   storePoupularModpackDescription: Je ziet de populairste modpacks in Curseforge en Modrinth in deze sectie.
   storeSearchCategoryDescription: Je kunt hier ook de categorieën of filters schakelen.
-  storeSearchDescription: >-
-    Je kunt Modpacks zoeken door in dit tekstvak in te voeren. Druk op Enter om te zoeken.
+  storeSearchDescription: Je kunt Modpacks zoeken door in dit tekstvak in te voeren. Druk op Enter om te zoeken.
   storeSearchResultDescription: Je ziet alle zoekresultaten hier vermeld.
   userAccountDescription: Klik op dit icoon om je Minecraft-account toe te voegen of te beheren.
+  tooltip: Axuda e Guía
+  done: Entendido!
+  helpDescription: Guía interactiva para o iniciador e a páxina actual.
+  blueprint:
+    searchTitle: Buscar planos
+    searchDescription: Busca planos locais e da comunidade por nome ou etiqueta.
+    listTitle: Lista de planos
+    listDescription: Revisa e xestiona todos os planos e modelos de instancias gardados.
+    detailTitle: Detalles do plano
+    detailDescription: Inspecciona o contido do plano, mods incluídos e crea novas instancias.
+  me:
+    instancesTitle: Xestión de instancias
+    instancesDescription: Mira todas as instancias instaladas, agrúpaas por cartafol ou data e iníciaas.
+    profileTitle: Conta e Perfil
+    profileDescription: Cambia entre as túas contas e xestiona as credenciais de acceso.
+    skinTitle: Personalizador de aspecto e capa
+    skinDescription: Visualiza o teu personaxe en 3D, cambia de aspecto e equipa capas.
+  multiplayer:
+    railTitle: Rede e Navegación
+    railDescription: Comproba o tipo de NAT, estado da rede e cambia entre conexións e axustes.
+    groupTitle: Unirse ou Crear Sala
+    groupDescription: Introduce un código para unirte ou déixao baleiro para crear a túa propia sala.
+    joinDescription: Fai clic para unirte a unha sala existente ou crear unha nova.
+    contentTitle: Membros Conectados e Contido
+    contentDescription: Xestiona membros, comproba a latencia e comparte xogos en execución.
+    manualDescription: Conexión directa P2P manual con amigos mediante intercambio de SDP.
+  resourcepack:
+    searchTitle: Buscar paquetes de recursos
+    searchDescription: Busca paquetes de recursos en Modrinth, CurseForge ou ficheiros locais.
+    listTitle: Lista de paquetes de recursos
+    listDescription: Explora os paquetes instalados, actívaos/desactívaos e reordena prioridades.
+    detailTitle: Detalles do paquete de recursos
+    detailDescription: Revisa capturas, descrición, versións compatibles de Minecraft e ficheiros.
+  save:
+    searchTitle: Buscar mundos
+    searchDescription: Filtra e busca mundos na instancia actual por nome.
+    listTitle: Lista de mundos
+    listDescription: Mira todos os mundos gardados con modo de xogo, data e tamaño.
+    detailTitle: Detalles do mundo e Accións
+    detailDescription: Fai copias de seguranza, exporta, inspecciona level.dat ou xestiona axustes.
+  settings:
+    navDescription: Cambia entre Xeral, Aparencia, Axustes globais do xogo e Rede.
+    generalDescription: Configura o idioma, cartafol de datos, canles de actualización e arranque.
+    appearanceDescription: Personaliza o tema, fondos de pantalla, cores de acento e estilo visual.
+    globalDescription: Establece a versión de Java por defecto, memoria e argumentos JVM.
+    networkDescription: Configura espellos de descarga, proxies e límites de tarefas.
+  shaderpack:
+    searchTitle: Buscar paquetes de shaders
+    searchDescription: Busca shaders en Modrinth, CurseForge ou na caché local.
+    listTitle: Lista de paquetes de shaders
+    listDescription: Explora os shaders instalados e cambia rapidamente entre eles.
+    detailTitle: Detalles do shader
+    detailDescription: Consulta autor, resolución recomendada, perfís e opcións.
 universalDrop:
   unknownResource: Onbekend
 unresolvedFiles:

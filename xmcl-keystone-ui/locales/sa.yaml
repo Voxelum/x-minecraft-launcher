@@ -1322,24 +1322,26 @@ search:
   noResults: कोऽपि परिणामः न मिलितः
   pageSize: प्रत्येकपृष्ठे परिणामसंख्या
 server:
+  launch: वितरकं चालयतु
+  stop: वितरकं विरमयतु
   acceptingMinecraftVersion: स्वीक्रियमाणं संस्करणम्
-  addServer: सेवाप्रदातां योजयतु
-  address: सेवाप्रदातासङ्केतः
-  addressHint: यथा mc.hypixel.net
-  bindUpstream: अपस्ट्रीम (upstream) रूपेण बध्नातु
-  boundUpstream: अपस्ट्रीम बद्धम्
-  boundUpstreamHint: एषः क्षणः बद्धसेवाप्रदातुः संस्करणम् अनुसरति।
+  addServer: वितरकं योजयतु
+  address: वितरकस्य सङ्केतः
+  addressHint: उदा. mc.hypixel.net
+  bindUpstream: उपरिप्रवाहरूपेण संयोजयतु
+  boundUpstream: उपरिप्रवाहवितरकः संयोजितः
+  boundUpstreamHint: इदमुदाहरणं संयोजितवितरकस्य Minecraft आवृत्तेः अनुसरणं करोति।
   creationHint: कृपया सेवाप्रदातासङ्केतं लिखत्वा पिङ्ग् (ping) करोतु
-  editServer: सेवाप्रदातां संस्करोतु
-  emptyHint: अस्मिन् क्षणे अद्यापि कोऽपि सेवाप्रदाता नास्ति।
-  entryCount: '{count} सेवाप्रदाता | {count} सेवाप्रदातारः'
+  editServer: वितरकं सम्पादयतु
+  emptyHint: अस्योदाहरणस्य servers.dat मध्ये अद्यापि वितरकाः न सन्ति। आरब्धुं योजयन्तु।
+  entryCount: '{count} वितरकाः'
   expectedVersions: समर्थितसंस्करणाणि
   export: सेवाप्रदातां निर्यातयतु
   exportNoFilesHint: कोऽपि सेवाप्रदातासञ्चिका न लब्धा।
   exportOption: सेवाप्रदातानिर्यातनविकल्पाः
   exportSSHAuthenticationFailed: सर्वप्रमाणीकरणपद्धतयः विफलाः।
   exportSSHOptions: SSH विकल्पाः
-  exportSSHPrivateKeyPath: SSH निजीकुञ्जीपथः
+  exportSSHPrivateKeyPath: SSH निजकुञ्चिकायाः मार्गः
   exportSSHRemotePath: दूरस्थसेवाप्रदातापथः
   exportToFolder: कोशे निर्यातयतु
   filterVersion: सेवाप्रदातासंस्करणाणि शोधयतु
@@ -1347,35 +1349,129 @@ server:
   hostHint: सेवाप्रदातुः यजमानः (पोर्ट युक्तः)
   hostRequired: कृपया सेवाप्रदातुः IP सङ्केतं लिखतु
   ipAddress: IP सङ्केतः
-  launchClient: ' may take client'
+  launchClient: स्थाने प्रयोक्तारं चालयतु
   launchPinned: कीलितम्
-  launchTargetHint: एषः क्षणः कीलितसेवाप्रदातरि साक्षात् प्रवर्तते।
+  launchTargetHint: इदमुदाहरणं कीलितवितरके साक्षात् प्रचलति। प्रयोक्तारं प्रति गन्तव्यम्?
   maxPlayers: अधिकतमाः क्रीडकाः
   motd: सेवाप्रदाता MOTD
-  nameHint: बहुक्रीडकसूच्यां प्रदर्श्यमानं नाम
+  nameHint: बहुक्रीडकसूच्यां दृश्यमानं नाम
   nogui: GUI विना सेवाप्रदाता
   onlineMode: सङ्गतिप्रणाली (Online Mode)
-  pin: सेवाप्रदातां कीलयतु
-  pinAfterSave: रक्षणानन्तरं पूर्वनिर्धारितरूपेण कीलयतु
+  pin: वितरकं कीलयतु
+  pinAfterSave: रक्षणानन्तरं मूलभूतप्रचालनलक्ष्यरूपेण कीलयतु
   ping: पिङ्ग् (Ping)
   pings: पिङ्ग्स्
   pinnedHeader: 'कीलितम्: {name}'
   players: क्रीडकाः
   port: पोर्ट (Port)
-  serverName: सेवाप्रदातानाम
-  serversListTitle: सेवाप्रदातासूची
-  unbindUpstream: विबन्धयतु
+  clearLog: विवरणं मार्जयतु
+  log: वितरकविवरणम्
+  logWaiting: वितरकनिर्गमस्य प्रतीक्षा अस्ति...
+  remoteActionSuccess: Done.
+  remoteAdmin: दूरस्थवितरकप्रशासकः
+  remoteAuthMethod: प्रमाणीकरणम्
+  remoteAuthPassword: कूटशब्दः
+  remoteAuthPrivateKey: निजकुञ्चिका
+  remoteBuildOfflinePackage: जालहीनपुटं रचयतु
+  remoteConnected: संयोजितम्
+  remoteConnection: संयोजनम्
+  remoteDeployment: विनियोगः
+  remoteDeploy: विनियुङ्क्ष्व
+  remoteDisk: Disk
+  remoteConfigFiles: विन्याससञ्चिकाः
+  remoteExtraFiles: अतिरिक्ताः सञ्चिकाः
+  remoteForgetCredentials: रक्षितविवरणं विस्मरतु
+  remoteInstallService: सेवा संस्थाप्यताम्
+  remoteLoad: भारयतु
+  remoteLog: दूरस्थवितरकविवरणम्
+  remoteMemory: स्मृतिः
+  remoteMods: Mods
+  remoteNoWorldSelected: किमपि लोकं न चितम्
+  remoteJavaRequired: दूरस्थे Linux यन्त्रे Java न प्राप्यते।
+  remoteLinuxRequired: केवलं SSH द्वारा Linux लक्ष्याणि समर्थितानि सन्ति।
+  remoteNotConfiguredHint: स्थितिं सेवानियन्त्रणं विवरणं च समर्थयितुम् उपरि संयोजनाविवरणं पूरयन्तु।
+  remotePathNotWritable: दूरस्थवितरकानुक्रमणी लेखनयोग्या नास्ति।
+  remotePathWritable: अनुक्रमणी लेखनयोग्या
+  remotePolicyInitialize: एकवारम् आरभताम्
+  remotePolicyMirror: दर्पणम् (Mirror)
+  remotePolicyOverlay: उपर्यावरणम् (Overlay)
+  remotePolicyPreserve: रक्षतु
+  remotePreview: परिवर्तनानां पूर्वावलोकनम्
+  remotePhase:
+    connect: Connecting
+    error: Reconciliation failed
+    idle: Ready to reconcile
+    inspect: Inspecting target
+    install: Installing server
+    logs: Attaching console
+    ready: Desired state applied
+    service: Ensuring systemd service
+    start: Starting server
+    sync: Syncing desired state
+    world: Applying world policy
+  remoteRememberCredentials: प्रवेशविवरणं स्मरतु
+  remoteReconcileReady: लक्ष्यम् अनेनोदाहरणेन सह सङ्गच्छते कन्सोलं च संयोजितम्।
+  remoteRestartService: सेवा पुनः प्रचाल्यताम्
+  remoteSavedCredentialsHint: रक्षितविवरणं प्रयुज्यते — स्थापयितुं रिक्तं त्यजन्तु।
+  remoteService: systemd सेवा
+  remoteServiceActive: प्रचलति
+  remoteServerInstalled: वितरकस्य सञ्चिकाः संस्थापिताः
+  remoteServiceName: सेवानाम
+  remoteServiceNameHint: systemd --user एककनाम, उदा. mc-server
+  remoteSelectedFiles: '{count} वितरकसञ्चिकाः चिताः'
+  remoteSelectFiles: सञ्चिकाः वृणुध्वम्
+  remoteStartCommand: प्रारम्भादेशः
+  remoteStartCommandHint: उदा. java -jar server.jar nogui
+  remoteStartService: Start
+  remoteStatus: स्थितिः
+  remoteSystemdRequired: दूरस्थयन्त्रे systemd प्रयोक्तृसेवा न लभ्यते।
+  remoteTargetName: लक्ष्यनाम
+  remoteStopService: Stop
+  remoteStopWatchLog: अवलोकनं विरम
+  remoteTestConnection: संयोजनं परीक्ष्यताम्
+  remoteTestConnectionSuccess: संयोजनं सफलम्।
+  remoteUninstallConfirmMessage: अनेन दूरस्थयन्त्रे systemd एककं निष्कास्यते। सञ्चिकाः न स्पृश्यन्ते।
+  remoteUninstallService: सेवा निष्कास्यताम्
+  remoteRunInstall: संस्थापयतु वा संस्करोतु
+  remoteWatchLog: प्रत्यक्षविवरणं पश्यतु
+  remoteWorldAlways: प्रत्येकसंवादे परिवर्तयतु
+  remoteWorldDeployment: उदाहरणलोकविनियोगः
+  remoteWorldDeploymentHint: नियमोऽयं यावत् नानुमन्यते तावत् लोकदत्तांशः नोत्थाप्यते।
+  remoteWorldFirstInstall: लक्ष्ये लोको नास्ति चेदेव आरभताम्
+  remoteWorldNever: लोकं कदापि मा उत्थापयतु
+  remoteWorldPresent: लक्ष्यलोकः
+  remoteWorld: World
+  remoteWorldWillDeploy: चितलोकः अस्मिन् संवादे उत्थापयिष्यते।
+  serverName: वितरकस्य नाम
+  serviceInstall: सेवा संस्थाप्यताम्
+  serviceManagedLaunch: सेवानियन्त्रितप्रचालनम्
+  serviceManager: सेवाप्रबन्धकः
+  serviceName: सेवानाम
+  serviceNameHint: तन्त्रसेवानाम
+  serviceNotInstalled: सेवा न संस्थापिता
+  serviceStartCommand: सेवाप्रारम्भादेशः
+  serviceSystemd: systemd --user
+  serviceWindows: Windows सेवा
+  serviceWindowsCommandHint: Windows सेवादेशः
+  serversListTitle: वितरकाः
+  target: लक्ष्यम्
+  targetLocal: localhost
+  targetLocalHint: अस्मिन् सङ्गणके स्थानिकतया चालयतु
+  targetRemote: दूरस्थवितरकः (SSH)
+  targetRemoteHint: SSH द्वारा दूरस्थ-Linux-वितरकं प्रबन्धयतु
+  unbindUpstream: संयोजनं विमोचयतु
   unknown: अज्ञातसेवाप्रदाता
   unknownDescription: अज्ञातसेवाप्रदाता। कृपया पुनः पश्यतु
   unpin: अकीलनं करोतु
   upload: सेवाप्रदाताम् आरोपयतु
-  upstreamUpToDate: भवतः क्षणः सेवाप्रदात्रा ({version}) सह मिलति।
-  upstreamUpToDateHint: नवीकरणं मा अपेक्षते।
-  upstreamUpdateAvailable: सेवाप्रदाता इदानीं माइनक्राफ्ट् {version} चालयति।
-  upstreamUpdateHint: सूचितां माइनक्राफ्ट् संस्करणं क्षणे प्रयुङ्क्ते।
-  useAsUpstreamHint: क्षणः सेवाप्रदातुः माइनक्राफ्ट् संस्करणम् अनुसरिष्यति।
+  upstreamUpToDate: भवत उदाहरणं वितरकेण सह सङ्गच्छते ({version})।
+  upstreamUpToDateHint: उन्नयनं नापेक्षितम्। पुनः परीक्षार्थं नुदन्तु।
+  upstreamUpdateAvailable: वितरकः अधुना Minecraft {version} चालयति। प्रयोक्तुं नुदन्तु।
+  upstreamUpdateHint: इदमुदाहरणाय प्रस्तावित-Minecraft-आवृत्तिं प्रयोजयति।
+  useAsUpstreamHint: इदमुदाहरणं वितरकेण निवेदितां Minecraft आवृत्तिम् अनुसरिष्यति।
   version: सेवाप्रदातुः आवश्यकं संस्करणम्
   versionHint: पिङ्ग् कर्तुं माइनक्राफ्ट् संस्करणम्
+  worldPreserve: लक्ष्यलोकं रक्षतु
 serverStatus:
   nohost: §4यजमानः न लब्धः!
   ping: पिङ्ग्...
@@ -1704,6 +1800,7 @@ store:
   name: मोडप्याक् विपणिः
   searchResult: अन्वेषणपरिणामः
   trending: लोकप्रियम्
+  searchHint: मोडपुटं अन्विष्यताम्...
 tag:
   create: ट्याग् (Tag) सृजतु
   createSelected: चयनितस्य कृते ट्याग् सृजतु
@@ -1745,12 +1842,32 @@ tutorial:
   feedbackDescription: यदि कापि समस्या भवेत् तर्हि प्रतिपुष्टिं प्रेषयितुं अत्र नुदतु!
   hideNewsHeaderDescription: भवान् वामतः वृत्तान्तप्रदर्शनं द्रष्टुं शक्नोति।
   instance:
-    iconDescription: चिह्नपरिवर्तनाय नुदतु।
-    iconTitle: क्षणचिह्नम्
-    javaDescription: जावा संस्करणं चिनोतु परिवर्तयतु वा।
-    javaImportDescription: स्थानिकसङ्ग्रहात् जावा आयातयतु।
-    javaImportTitle: जावा आयातयतु
-    javaTitle: जावासूची
+    appearanceThemeDescription: अस्योदाहरणाय पृष्ठभूमिं वर्णान् रूपशैलीं चानुकूलयन्तु।
+    appearanceThemeTitle: उदाहरणस्य रूपम्
+    iconDescription: प्रतीकं परिवर्तयितुं नुदन्तु।
+    iconTitle: उदाहरणप्रतीकम्
+    javaDescription: Java आवृत्तिं वृणुध्वं परिवर्तयन्तु वा।
+    javaImportDescription: स्थानिकात् सञ्चयात् Java आयातयन्तु।
+    javaImportTitle: Java आयातयन्तु
+    javaTitle: Java सूची
+    modpackExportDescription: संसाधितोदाहरणं वितरणयोग्ये सम्पुटे संयोजयन्तु।
+    modpackExportTitle: मोडपुटं निर्हरन्तु
+    modpackFilesDescription: सञ्चिकाः, मोड्स सम्पदश्च योजयितुं चिनुत।
+    modpackFilesTitle: अन्तर्भूताः सञ्चिकाः
+    modpackMetaDescription: मोडपुटस्यावृत्तिं, रचयितारं, विवरणं जालपुटं च निर्दिशन्तु।
+    modpackMetaTitle: मोडपुटविवरणम्
+    modpackOptionsDescription: लक्ष्यपुटं प्रारूपं च (Modrinth वा CurseForge वा) वृणुध्वम्।
+    modpackOptionsTitle: निर्हरणविकल्पाः
+    serverLaunchDescription: अस्योदाहरणस्य वितरकं साक्षात् शीर्षकात् चालयन्तु विरमन्तु वा।
+    serverLaunchTitle: वितरकस्य चालनम् / विरामः
+    serverPropertiesDescription: द्वारम्, काठिन्यम्, MOTD, क्रीडकसीमाः क्रीडानियमांश्च विन्यस्यन्तु।
+    serverPropertiesTitle: वितरकविन्यासः
+    serverServiceDescription: निरन्तरप्रचालनाय वितरकं तन्त्रसेवारूपेण प्रबन्धयन्तु।
+    serverServiceTitle: तन्त्रसेवा
+    serverTargetDescription: स्थानिकसङ्गणके चालनं SSH द्वारा दूरस्थ-Linux-वितरकप्रबन्धनं वा वृणुध्वम्।
+    serverTargetTitle: वितरकलक्ष्यम्
+    versionDescription: Minecraft आवृत्तिं Forge, Fabric, Quilt, NeoForge लोडर् च वृणुध्वम्।
+    versionTitle: Minecraft तथा लोडर् आवृत्तिः
   instanceAddDescription: विद्यमानं क्षणम् आयातुम् नूतनं वा निर्मातुं एतत् नुदतु।
   instanceSelectDescription: क्रीडाचयनपृष्ठे वृत्तान्तपृष्ठे च गमनं भविष्यति।
   launchDescription: क्रीडासंस्थापनाय प्रवर्तनाय च एतत् नुदतु।
@@ -1769,6 +1886,59 @@ tutorial:
   storeSearchDescription: अन्वेषणाय अत्र लिखत्वा Enter नुदतु।
   storeSearchResultDescription: परिणामाः अत्र प्रदर्शिताः।
   userAccountDescription: माइनक्राफ्ट् लेखाप्रबन्धनाय एतच्चिह्नं नुदतु।
+  tooltip: साहाय्यं मार्गदर्शनं च
+  done: अवगतम्!
+  helpDescription: प्रचालकस्य वर्तमानपृष्ठस्य च संवादात्मकं मार्गदर्शनम्।
+  blueprint:
+    searchTitle: रूपरेखा अन्विष्यताम्
+    searchDescription: नाम्ना ट्याग् द्वारा वा स्थानीय-सामाजिक-रूपरेखा अन्विष्यताम्।
+    listTitle: रूपरेखासूचिः
+    listDescription: सर्वाः रक्षिताः उदाहरणरूपरेखाः आदर्शाः च दृश्यन्तां प्रबन्ध्यन्तां च।
+    detailTitle: रूपरेखाविवरणम्
+    detailDescription: अन्तर्वस्तुनि मोड्स च परीक्ष्य नूतनानि उदाहरणानि रचयन्तु।
+  me:
+    instancesTitle: उदाहरणप्रबन्धनम्
+    instancesDescription: संस्थापितानि उदाहरणानि पश्यन्तु, सञ्चिकानुसारं संयोज्य प्रचालयन्तु च।
+    profileTitle: खाता विवरणं च
+    profileDescription: खातानां मध्ये परिवर्तनं कुर्वन्तु प्रवेशविवरणं च प्रबन्धयन्तु।
+    skinTitle: त्वक् उत्तरीयस्य चानुकूलनम्
+    skinDescription: पात्रस्य 3D पूर्वावलोकनं कुर्वन्तु, त्वचं परिवर्तयन्तु उत्तरीयं च धरन्तु।
+  multiplayer:
+    railTitle: जालं सञ्चरणं च
+    railDescription: NAT प्रकारं जालस्थितिं च परीक्ष्य संयोजनेषु सञ्चरन्तु।
+    groupTitle: प्रकोष्ठे प्रवेशः निर्माणं वा
+    groupDescription: मित्रेण सह योजयितुं कूटं प्रविशन्तु अथवा स्वप्रकोष्ठं रचयन्तु।
+    joinDescription: प्रकोष्ठे प्रवेष्टुं नूतनं निर्मातुं वा नुदन्तु।
+    contentTitle: संयुक्ताः सदस्याः विषयाः च
+    contentDescription: सदस्यान् प्रबन्धयन्तु, पिङ्ग् परीक्ष्यतां प्रचलन् Minecraft च वितर्यताम्।
+    manualDescription: SDP विनिमयेन मित्रैः सह प्रत्यक्षः P2P सम्बन्धः।
+  resourcepack:
+    searchTitle: सम्पत्पुटाः अन्विष्यन्ताम्
+    searchDescription: Modrinth, CurseForge स्थानात् स्थानीयसञ्चिकाभ्यः वा अन्विष्यताम्।
+    listTitle: सम्पत्पुटसूची
+    listDescription: संस्थापितान् पुटान् पश्यन्तु, प्रचालयन्तु पिदधतु प्राधान्यं च परिवर्तयन्तु।
+    detailTitle: सम्पत्पुटविवरणम्
+    detailDescription: चित्राणि, विवरणं, युक्ताः Minecraft आवृत्तयः सञ्चिकाविवरणं च दृश्यताम्।
+  save:
+    searchTitle: लोकाः अन्विष्यन्ताम्
+    searchDescription: वर्तमानोदाहरणे नाम्ना सञ्चितलोकान् अन्विषन्तु।
+    listTitle: लोकसूची
+    listDescription: क्रीडामार्गेण सञ्चितदिनाङ्केन च सह रक्षिताः लोकाः दृश्यन्ताम्।
+    detailTitle: लोकविवरणं क्रियाः च
+    detailDescription: रक्षितां प्रतिकृतिं कुर्वन्तु, निर्हरन्तु, level.dat परीक्ष्यताम्।
+  settings:
+    navDescription: सामान्येषु, रूपे, क्रीडाविन्यासे जाले च परिवर्तयन्तु।
+    generalDescription: भाषां, दत्तांशनिर्देशिकां, नवीकरणमार्गान् प्रारम्भविकल्पान् च विन्यस्यन्तु।
+    appearanceDescription: विषयवस्तु, भित्तिचित्राणि, वर्णाः विन्यासशैलीं चानुकूलयन्तु।
+    globalDescription: मूलभूत-Java, स्मृतिविनियोगं JVM तर्कांश्च निर्धारयन्तु।
+    networkDescription: अवरोहणप्रतिबिम्बानि, प्रोक्सी समकालिककार्यसीमाः च विन्यस्यन्तु।
+  shaderpack:
+    searchTitle: छायापुटाः अन्विष्यन्ताम्
+    searchDescription: Modrinth, CurseForge स्थानात् छायापुटाः अन्विष्यन्ताम्।
+    listTitle: छायापुटसूची
+    listDescription: संस्थापितान् छायापुटान् पश्यन्तु क्षिप्रं च परिवर्तयन्तु।
+    detailTitle: छायापुटविवरणम्
+    detailDescription: निर्मातारं, विभेदनम्, पूर्वविन्यासान् विकल्पांश्च पश्यन्तु।
 unauthenticatedWarning:
   cancel: निरस्यतु
   description: भवान् कस्मिन्नपि लेखायां न प्रविष्टः। क्रीडा पूर्वावलोकनप्रणाल्यां (demo mode) प्रवर्तते।

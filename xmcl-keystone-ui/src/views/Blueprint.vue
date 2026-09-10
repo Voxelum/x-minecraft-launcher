@@ -473,6 +473,7 @@ import { useQuery } from '@/composables/query'
 import { useService } from '@/composables/service'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { injection } from '@/util/inject'
+import { useTutorial } from '@/composables/tutorial'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import {
   BlueprintMarketItem,
@@ -919,6 +920,32 @@ const { dragover } = useGlobalDrop({
     }
   },
 })
+
+useTutorial(
+  computed(() => [
+    {
+      element: '#search-text-field',
+      popover: {
+        title: t('tutorial.blueprint.searchTitle') + ' (ctrl + f)',
+        description: t('tutorial.blueprint.searchDescription'),
+      },
+    },
+    {
+      element: '#left-pane',
+      popover: {
+        title: t('tutorial.blueprint.listTitle'),
+        description: t('tutorial.blueprint.listDescription'),
+      },
+    },
+    {
+      element: '#right-pane',
+      popover: {
+        title: t('tutorial.blueprint.detailTitle'),
+        description: t('tutorial.blueprint.detailDescription'),
+      },
+    },
+  ]),
+)
 </script>
 
 <style scoped>
