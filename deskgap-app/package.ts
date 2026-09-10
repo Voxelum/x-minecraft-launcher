@@ -42,7 +42,7 @@ async function main() {
   await mkdir(release, { recursive: true })
   run([join(scripts, 'package-click-to-run.mjs'), bootstrap, runtimeStaging, application, join(release, names.runtime), version])
   await assertClickToRun(join(release, names.runtime), version)
-  console.log(`Unsigned DeskGap release artifacts: ${release}`)
+  console.log(`DeskGap UNSIGNED PREVIEW (manual installation only): ${release}`)
 }
 
 main().catch(error => {

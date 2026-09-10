@@ -173,6 +173,12 @@ The normal `.github/workflows/build.yml` builds Electron and an additional
 DeskGap ships a single Windows x64 executable. There is no separate DeskGap tag,
 update manifest, signing key, or published application-only archive.
 
+**Current status: UNSIGNED PREVIEW, manual installation only.** Download and
+run the DeskGap EXE manually; Windows may warn because it is not signed.
+Production DeskGap signing and automatic updates are not enabled. The launcher
+still checks signatures and will reject unsigned preview EXEs as automatic
+updates; this is intentional, not a reason to disable verification.
+
 The pinned runtime version is `config.deskgapVersion` in
 `deskgap-app/package.json`. Windows CI obtains the runtime ZIP and `SHA256SUMS`
 from `Voxelum/DeskGap` release `v<runtime-version>` and the packaging helpers from
@@ -214,21 +220,25 @@ available as a separate asset in the runtime release.
 **Do not use `DeskGap-<runtime-version>-win32-x64.exe`**: that is the runtime's
 already-packaged default-app click-to-run executable, which XMCL packaging rejects.
 
-The existing `.github/workflows/sign-release.yml` signs both the APPX and DeskGap
-EXE before publishing the regular release. It reuses SignPath project
-`x-minecraft-launcher`, policy `release-signing`, and `CODE_SIGN_TOKEN`, with separate
-artifact configurations: existing `appx` and new `deskgap-exe`. An administrator
-must register `.github/signpath/deskgap-exe.xml` and approve its workflow/project
-access in SignPath before the EXE signing request can succeed. Merely committing
-the XML does not configure SignPath.
+The existing `.github/workflows/sign-release.yml` continues to sign only the APPX,
+hash its final signed bytes, upload it and publish the regular release. It does
+not download, sign, verify or replace the DeskGap preview EXE. An unsigned or
+absent DeskGap EXE and the lack of a SignPath `deskgap-exe` configuration do not
+block the APPX signing path, including older APPX-only drafts.
 
-The returned EXE must have a valid Authenticode signature with the full subject
-`CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US`.
-Only then are hashes calculated and both signed binaries/checksums uploaded to the
-draft. The usual final publish step runs after both signing requests complete.
-Never rebuild, append a payload, or otherwise modify the EXE after signing.
+DeskGap signing is a comment-only placeholder in that workflow.
+`.github/signpath/deskgap-exe.xml` and
+`.github/scripts/verify-deskgap-signature.ps1` are retained for future activation,
+not invoked by the current release workflow. When signing is enabled, an
+administrator must register `deskgap-exe` in the existing SignPath project
+`x-minecraft-launcher`, policy `release-signing`, and approve workflow access.
+The existing `CODE_SIGN_TOKEN` is reused; no new private key is needed.
+The returned EXE must have a valid signature with the full subject
+`CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US`;
+only then may its final signed bytes be hashed and uploaded. Never rebuild,
+append a payload, or otherwise modify the EXE after signing.
 
-Updates select the Windows DeskGap EXE from normal GitHub releases, respecting
+The update adapter selects Windows DeskGap EXEs from normal releases, respecting
 the prerelease preference and version ordering. Download progress, cancellation
 and retries use the normal XMCL downloader. SHA-256 and HTTPS do not replace
 publisher verification: downloads become ready only after native Authenticode
@@ -236,9 +246,10 @@ verification. Installation copies to a private staging location and rechecks the
 recorded SHA-256 and publisher before spawning the wait-for-PID installer; XMCL
 then flushes and quits without relaunching the old runtime.
 
-Release acceptance requires a real SignPath-signed EXE, including old-EXE reopen,
-tamper/wrong-publisher rejection and wait-for-PID handoff. Unsigned local builds
-are not evidence that the production signing/update chain is ready.
+Before enabling production DeskGap signing/automatic updates, validate a real
+SignPath-signed EXE, including old-EXE reopen, tamper/wrong-publisher rejection and
+wait-for-PID handoff. That work is explicitly deferred for the unsigned preview;
+shipping it does not establish a working production signed-update workflow.
 
 The retained local `0.69.0` smoke EXE with SHA-256
 `adc11b0be2b572951ed6d17d47c62c5351d65eb412c72d3c79cfe453e1cb7024`

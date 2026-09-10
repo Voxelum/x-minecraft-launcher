@@ -1,7 +1,7 @@
 name: Sign Release
 
-# Sign the APPX and DeskGap EXE in the same regular release via SignPath,
-# then upload their final signed bytes and checksums before publishing.
+# Sign the APPX via SignPath, then upload its signed bytes and checksum
+# before publishing. DeskGap remains an UNSIGNED PREVIEW for manual install.
 #
 # Why a separate workflow?
 #   SignPath signing requires a human to approve the request in the SignPath
@@ -15,8 +15,8 @@ name: Sign Release
 #      containing the unsigned `.appx` and DeskGap `.exe`.
 #   2. When ready, run this workflow with the release tag (e.g. `v0.56.7`).
 #   3. Approve the request in SignPath when prompted.
-#   4. Both signed binaries and their `.sha256` files replace the unsigned ones,
-#      and the draft is automatically flipped to a published release.
+#   4. The signed APPX and its `.sha256` replace the unsigned APPX, and the
+#      draft is automatically published. The DeskGap EXE is left untouched.
 #
 # NOTE: The SignPath project trust config must allow this workflow file
 # path (`.github/workflows/sign-release.yml`) in addition to (or instead
@@ -70,7 +70,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Cannot read the release; refusing to sign or publish' }
           if (!(($release | ConvertFrom-Json).isDraft)) { throw 'Only unsigned drafts may be signed; never replace published binaries' }
           "tag=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          "deskgap=xmcl-deskgap-$($tag.Substring(1))-win32-x64.exe" >> $env:GITHUB_OUTPUT
 
       - name: Download .appx from release
         env:
@@ -85,17 +84,6 @@ jobs:
             throw "No .appx asset found on release ${{ steps.resolve-tag.outputs.tag }}"
           }
           $appx | ForEach-Object { Write-Host "Downloaded $($_.Name) ($([math]::Round($_.Length/1MB,2)) MB)" }
-
-      - name: Download DeskGap EXE from the same draft
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_TAG: ${{ steps.resolve-tag.outputs.tag }}
-          DESKGAP_NAME: ${{ steps.resolve-tag.outputs.deskgap }}
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force signing-deskgap | Out-Null
-          gh release download "$env:RELEASE_TAG" --pattern "$env:DESKGAP_NAME" --dir signing-deskgap
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload .appx as workflow artifact
         id: upload-artifact
@@ -116,38 +104,20 @@ jobs:
           wait-for-completion: true
           output-artifact-directory: signed/
 
-      - name: Upload DeskGap EXE as workflow artifact
-        id: upload-deskgap
-        uses: actions/upload-artifact@v6
-        with:
-          name: deskgap-exe
-          path: signing-deskgap/*.exe
-          if-no-files-found: error
+      # DeskGap signing placeholder — deliberately NOT enabled.
+      # Future configuration: .github/signpath/deskgap-exe.xml in the same
+      # project/policy. Once approved, sign the complete EXE, verify its full
+      # publisher subject, then hash the final signed bytes before uploading.
+      # Until then, never require/download/verify a DeskGap EXE here: even
+      # APPX-only drafts must retain the existing signing and publishing path.
+      # The native updater must continue rejecting unsigned preview EXEs.
 
-      - name: Submit DeskGap EXE signing request
-        uses: signpath/github-action-submit-signing-request@v2
-        with:
-          api-token: ${{ secrets.CODE_SIGN_TOKEN }}
-          organization-id: ab51b40d-a5bd-4d25-ae54-66ccabf86161
-          project-slug: x-minecraft-launcher
-          signing-policy-slug: release-signing
-          github-artifact-id: ${{ steps.upload-deskgap.outputs.artifact-id }}
-          artifact-configuration-slug: deskgap-exe
-          wait-for-completion: true
-          output-artifact-directory: signed-deskgap/
-
-      - name: Verify DeskGap signature and compute final binary hashes
-        env:
-          DESKGAP_NAME: ${{ steps.resolve-tag.outputs.deskgap }}
+      - name: Compute sha256 for signed .appx
         shell: pwsh
         run: |
-          $exe = Join-Path signed-deskgap $env:DESKGAP_NAME
-          .\.github\scripts\verify-deskgap-signature.ps1 -Path $exe
-          Copy-Item -LiteralPath $exe -Destination signed\
-          $exe = Join-Path signed $env:DESKGAP_NAME
           $appx = @(Get-ChildItem signed -Filter *.appx)
           if ($appx.Count -eq 0) { throw 'SignPath did not return a signed APPX' }
-          @($appx) + @(Get-Item $exe) | ForEach-Object {
+          $appx | ForEach-Object {
             $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
             $shaFile = "$($_.FullName).sha256"
             [System.IO.File]::WriteAllText($shaFile, $hash)
@@ -160,15 +130,11 @@ jobs:
         shell: pwsh
         run: |
           # --clobber replaces existing assets with the same name, so the
-          # unsigned binaries are swapped for the final SignPath output.
-          # Checksums always describe those signed bytes, never build inputs.
+          # unsigned APPX is swapped for the final SignPath output.
+          # The unsigned DeskGap preview asset is not touched by this workflow.
           gh release upload "${{ steps.resolve-tag.outputs.tag }}" (Get-ChildItem signed -Filter *.appx).FullName --clobber
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           gh release upload "${{ steps.resolve-tag.outputs.tag }}" (Get-ChildItem signed -Filter *.appx.sha256).FullName --clobber
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          gh release upload "${{ steps.resolve-tag.outputs.tag }}" (Get-ChildItem signed -Filter xmcl-deskgap-*-win32-x64.exe).FullName --clobber
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          gh release upload "${{ steps.resolve-tag.outputs.tag }}" (Get-ChildItem signed -Filter xmcl-deskgap-*-win32-x64.exe.sha256).FullName --clobber
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Publish release

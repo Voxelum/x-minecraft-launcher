@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
+import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { deskGapPublisherNames } from './src/updater'
@@ -57,10 +58,10 @@ describe('regular DeskGap Windows release workflow', () => {
     expect(buildSteps.find(step => step.name === 'Upload Build')!.with?.path).toBe('xmcl-electron-app/build/output/\n')
   })
 
-  it('uses separate APPX/PE configurations but the same SignPath project, policy and token', () => {
+  it('signs only APPX with the existing policy and keeps DeskGap signing as a future template', () => {
     const requests = steps.filter(step => step.uses?.startsWith('signpath/'))
-    expect(requests).toHaveLength(2)
-    expect(requests.map(step => step.with?.['artifact-configuration-slug'])).toEqual(['appx', 'deskgap-exe'])
+    expect(requests).toHaveLength(1)
+    expect(requests[0].with?.['artifact-configuration-slug']).toBe('appx')
     for (const request of requests) {
       expect(request.with).toMatchObject({
         'project-slug': 'x-minecraft-launcher',
@@ -71,26 +72,73 @@ describe('regular DeskGap Windows release workflow', () => {
       expect(request.if).toBeUndefined()
       expect(request['continue-on-error']).toBeUndefined()
     }
-    expect(requests[0].with?.['output-artifact-directory']).not.toBe(requests[1].with?.['output-artifact-directory'])
+    expect(requests[0].with?.['output-artifact-directory']).toBe('signed/')
+    expect(JSON.stringify(steps)).not.toContain('artifact-configuration-slug":"deskgap-exe')
+    expect(steps.some(step => step.name?.includes('DeskGap'))).toBe(false)
+    expect(steps.map(step => step.run).join('\n')).not.toContain('verify-deskgap-signature.ps1')
+    expect(steps.map(step => step.run).join('\n')).not.toContain('Get-AuthenticodeSignature')
     const xml = readFileSync(join(root, '.github', 'signpath', 'deskgap-exe.xml'), 'utf8')
     expect(xml).toContain('<pe-file path="xmcl-deskgap-*-win32-x64.exe">')
     expect(xml).toContain('<authenticode-sign />')
   })
 
-  it('requires a regular draft, verifies returned signed bytes before hashing, and publishes last', () => {
+  it('requires a regular draft, hashes signed APPX bytes, and publishes without an EXE dependency', () => {
     const resolveTag = steps.find(step => step.name === 'Resolve release tag')!.run!
     expect(resolveTag).toContain('Only unsigned drafts may be signed')
     expect(resolveTag).toContain('Use a regular v<version> release tag')
-    const verification = steps.find(step => step.name === 'Verify DeskGap signature and compute final binary hashes')!
+    const hashing = steps.find(step => step.name === 'Compute sha256 for signed .appx')!
     const upload = steps.find(step => step.name === 'Upload signed assets to release')!
     const publish = steps.find(step => step.name === 'Publish release')!
-    expect(steps.indexOf(verification)).toBeGreaterThan(steps.findIndex(step => step.name === 'Submit DeskGap EXE signing request'))
-    expect(verification.run!.indexOf('verify-deskgap-signature.ps1')).toBeLessThan(verification.run!.indexOf('Get-FileHash'))
-    expect(steps.indexOf(upload)).toBeGreaterThan(steps.indexOf(verification))
-    expect(upload.run?.match(/if \(\$LASTEXITCODE -ne 0\)/g)).toHaveLength(4)
+    expect(steps.indexOf(hashing)).toBeGreaterThan(steps.findIndex(step => step.name === 'Submit APPX signing request'))
+    expect(hashing.run).toContain('Get-FileHash')
+    expect(hashing.run).toContain('Get-ChildItem signed -Filter *.appx')
+    expect(steps.indexOf(upload)).toBeGreaterThan(steps.indexOf(hashing))
+    expect(upload.run?.match(/if \(\$LASTEXITCODE -ne 0\)/g)).toHaveLength(2)
+    expect(upload.run).not.toContain('-Filter xmcl-deskgap')
     expect(steps.indexOf(publish)).toBeGreaterThan(steps.indexOf(upload))
     expect(steps.at(-1)).toBe(publish)
     expect(publish.run).toContain('--draft=false')
+  })
+
+  it('labels the regular release EXE as an unsigned manual-install preview', () => {
+    const release = build.jobs.release.steps.find(step => step.name === 'Draft Release')!
+    expect(release.with?.draft).toBe(true)
+    expect(release.with?.body).toContain('${{ steps.release_note.outputs.body }}')
+    expect(release.with?.body).toContain('UNSIGNED PREVIEW')
+    expect(release.with?.body).toContain('manual installation only')
+    expect(release.with?.body).toContain('intentionally rejects unsigned EXEs')
+    expect(release.with?.body).toContain('xmcl-deskgap-${{ steps.prepare_release.outputs.version }}-win32-x64.exe')
+  })
+
+  it.skipIf(process.platform !== 'win32').each([false, true])('can hash/upload/publish APPX with unsigned preview present: %s', (withPreview) => {
+    const fixture = mkdtempSync(join(tmpdir(), 'xmcl-appx-only-'))
+    try {
+      mkdirSync(join(fixture, 'signed'))
+      writeFileSync(join(fixture, 'signed', 'xmcl.appx'), 'returned SignPath APPX fixture')
+      if (withPreview) writeFileSync(join(fixture, 'xmcl-deskgap-0.70.0-win32-x64.exe'), 'unsigned preview fixture')
+      const commands = ['Compute sha256 for signed .appx', 'Upload signed assets to release', 'Publish release']
+        .map(name => steps.find(step => step.name === name)!.run!.replace(/\$\{\{[\s\S]*?\}\}/g, 'v0.70.0')).join('\n')
+      const result = powershell(`
+        $ErrorActionPreference = 'Stop'
+        Set-Location -LiteralPath $env:APPX_FIXTURE
+        function gh {
+          if ($args -contains 'upload') {
+            $files = @($args | Where-Object { $_ -match '\\.appx(?:\\.sha256)?$' })
+            if ($files.Count -ne 1 -or !(Test-Path -LiteralPath $files[0])) { throw 'Expected APPX or APPX checksum only' }
+          }
+          if ($args -match '\\.exe') { throw 'APPX publication must not depend on a DeskGap EXE' }
+          $global:LASTEXITCODE = 0
+          Write-Output ('GH_FIXTURE ' + ($args -join ' '))
+        }
+        ${commands}
+      `, { APPX_FIXTURE: fixture })
+      expect(result.status, result.stderr || String(result.error)).toBe(0)
+      expect(result.stdout).toContain('release edit v0.70.0 --draft=false')
+      expect(readFileSync(join(fixture, 'signed', 'xmcl.appx.sha256'), 'utf8')).toMatch(/^[a-f0-9]{64}$/)
+      if (withPreview) expect(readFileSync(join(fixture, 'xmcl-deskgap-0.70.0-win32-x64.exe'), 'utf8')).toBe('unsigned preview fixture')
+    } finally {
+      rmSync(fixture, { recursive: true, force: true })
+    }
   })
 
   it.skipIf(process.platform !== 'win32')('parses the actual PowerShell workflow scripts and SignPath XML', () => {

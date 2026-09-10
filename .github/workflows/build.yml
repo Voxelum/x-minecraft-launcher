@@ -140,8 +140,8 @@ jobs:
             xmcl-electron-app/dist/renderer/assets/*.js.map
       - name: Upload Build
         # Windows .appx and DeskGap .exe in this artifact are UNSIGNED. The `release` job
-        # publishes it to a *draft* release; signing happens out-of-band via
-        # the manual `Sign Release` workflow before the draft is published.
+        # creates a draft; `Sign Release` signs APPX before publication.
+        # DeskGap signing is not enabled: its EXE remains a manual-install preview.
         if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
         uses: actions/upload-artifact@v6
         with:
@@ -447,7 +447,14 @@ jobs:
           release_name: ${{ steps.prepare_release.outputs.tag }}
           draft: true
           prerelease: false
-          body: ${{ steps.release_note.outputs.body }}
+          body: |
+            ${{ steps.release_note.outputs.body }}
+
+            ### DeskGap Windows x64 — UNSIGNED PREVIEW
+
+            [Download the DeskGap EXE](https://github.com/${{ github.repository }}/releases/download/${{ steps.prepare_release.outputs.tag }}/xmcl-deskgap-${{ steps.prepare_release.outputs.version }}-win32-x64.exe) for **manual installation only**.
+            This preview is not Authenticode-signed. Production DeskGap signing and automatic updates are not enabled; the launcher intentionally rejects unsigned EXEs as automatic updates.
+            Electron/APPX signing and publishing are unchanged. This preview is not evidence of a completed signed DeskGap update workflow.
           asset_dir_path: ./build
       - name: Checkout Website
         uses: actions/checkout@v5
