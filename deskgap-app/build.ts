@@ -51,7 +51,18 @@ async function main() {
   await build({
     ...sharedConfig,
     entryPoints: [join(root, 'src/main.ts')],
-    external: [...(sharedConfig.external ?? []), 'deskgap'],
+    external: ['deskgap'],
+    plugins: [
+      {
+        name: 'reject-electron-runtime',
+        setup(build) {
+          build.onResolve({ filter: /^electron(?:\/|$)/ }, () => ({
+            errors: [{ text: 'DeskGap bundles must not depend on Electron' }],
+          }))
+        },
+      },
+      ...(sharedConfig.plugins ?? []).filter(plugin => process.env.NODE_ENV !== 'production' || plugin.name !== 'sourcemap'),
+    ],
     define: {
       ...sharedConfig.define,
       'process.env.CURSEFORGE_API_KEY': JSON.stringify(process.env.CURSEFORGE_API_KEY ?? ''),
@@ -62,6 +73,7 @@ async function main() {
     outdir: dist,
     outExtension: { '.js': '.cjs' },
     metafile: false,
+    sourcemap: process.env.NODE_ENV !== 'production',
     target: 'node20',
   })
   await assertAsciiBundle(join(dist, 'main.cjs'))

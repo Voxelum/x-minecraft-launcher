@@ -36,12 +36,11 @@ import { pluginOffineUser } from '@xmcl/runtime/user/pluginOfflineUser'
 import { pluginUserTokenStorage } from '@xmcl/runtime/user/pluginUserTokenStorage'
 import { pluginYggdrasilApi } from '@xmcl/runtime/user/pluginYggdrasilApi'
 import { pluginYggdrasilHandler } from '@xmcl/runtime/yggdrasilServer/pluginYggdrasilHandler'
-import { pluginXmclAccountMicrosoftBridge } from '@xmcl/runtime/xmclAccount/pluginXmclAccountMicrosoftBridge'
-import { pluginXmclAccountModrinthBridge } from '@xmcl/runtime/xmclAccount/pluginXmclAccountModrinthBridge'
 import localeMappings from '../../assets/locales.json'
 import { pluginGameLaunch } from './pluginGameLaunch'
 import { pluginOptifine } from './pluginOptifine'
 import { definedServices } from './services'
+import { pluginDeskGapUpdate } from './updaterHost'
 
 const pluginLocalization: LauncherAppPlugin = async (app) => {
   const settings = await app.registry.get(kSettings)
@@ -74,6 +73,7 @@ export const plugins: LauncherAppPlugin[] = [
   pluginTelemetry,
   pluginLogConsumer,
   pluginSettings,
+  pluginDeskGapUpdate,
   pluginLocalization,
   pluginGFW,
   pluginTasks,
@@ -85,7 +85,5 @@ export const plugins: LauncherAppPlugin[] = [
   pluginOffineUser,
   pluginUserTokenStorage,
   pluginModrinthAccess,
-  pluginXmclAccountMicrosoftBridge,
-  pluginXmclAccountModrinthBridge,
   pluginCommonProtocol,
 ]

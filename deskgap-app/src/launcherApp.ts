@@ -1,5 +1,5 @@
-import type { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
-import { BaseService, LauncherApp, type LauncherAppUpdater, type SecretStorage, type Shell } from '@xmcl/runtime/app'
+import type { InstalledAppManifest } from '@xmcl/runtime-api'
+import { BaseService, LauncherApp, type SecretStorage, type Shell } from '@xmcl/runtime/app'
 import { LAUNCHER_NAME } from '@xmcl/runtime/constant'
 import { kSettings } from '@xmcl/runtime/settings'
 import { app, credentials, Menu, nativeTheme, session, shell, Tray } from 'deskgap'
@@ -17,6 +17,8 @@ import { createI18n } from '../../xmcl-electron-app/main/utils/i18n'
 import { DeskGapController } from './controller'
 import { plugins } from './plugins'
 import { toWebResponseBody } from './transport'
+import { DeskGapUpdater } from './updater'
+import { createDeskGapUpdater } from './updaterHost'
 
 const manifest = {
   name: 'X Minecraft Launcher',
@@ -71,29 +73,6 @@ class DeskGapSecretStorage implements SecretStorage {
   }
 }
 
-class LocalDevelopmentUpdater implements LauncherAppUpdater {
-  constructor(private readonly version: string) {}
-
-  async checkUpdateTask(): Promise<ReleaseInfo> {
-    return {
-      name: this.version,
-      body: '',
-      date: '',
-      files: [],
-      newUpdate: false,
-      operation: 'manual',
-    }
-  }
-
-  async downloadUpdate(): Promise<void> {
-    throw new Error('Launcher updates are disabled in the local DeskGap development host.')
-  }
-
-  async installUpdateAndQuit(): Promise<void> {
-    throw new Error('Launcher updates are disabled in the local DeskGap development host.')
-  }
-}
-
 const host = {
   ...app,
   isDefaultProtocolClient: app.isDefaultProtocolClient.bind(app),
@@ -133,7 +112,7 @@ export class DeskGapLauncherApp extends LauncherApp {
       new DeskGapShell(),
       new DeskGapSecretStorage(),
       launcher => new DeskGapController(launcher as DeskGapLauncherApp),
-      launcher => new LocalDevelopmentUpdater(launcher.version),
+      createDeskGapUpdater,
       manifest,
       'raw',
       plugins,
@@ -161,6 +140,13 @@ export class DeskGapLauncherApp extends LauncherApp {
 
   setProxy(url: string) {
     void this.networkSession.setProxy(url ? { proxyRules: url } : { mode: 'system' })
+  }
+
+  override async quit() {
+    if (this.updater instanceof DeskGapUpdater && (await this.registry.get(kSettings)).autoInstallOnAppQuit) {
+      await this.updater.installOnQuit()
+    }
+    await super.quit()
   }
 
   getWindowIcon(appManifest: InstalledAppManifest) {

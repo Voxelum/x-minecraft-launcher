@@ -166,6 +166,98 @@ If you use VSCode to launch the launcher, after you changed the code, you can pr
 
 If you don't use VSCode to launch, it should close Electron and reload automatically.
 
+### DeskGap Windows EXE in the regular release
+
+The normal `.github/workflows/build.yml` builds Electron and an additional
+`xmcl-deskgap-<version>-win32-x64.exe` in the **same `v<version>` draft release**.
+DeskGap ships a single Windows x64 executable. There is no separate DeskGap tag,
+update manifest, signing key, or published application-only archive.
+
+The pinned runtime version is `config.deskgapVersion` in
+`deskgap-app/package.json`. Windows CI obtains the runtime ZIP and `SHA256SUMS`
+from `Voxelum/DeskGap` release `v<runtime-version>` and the packaging helpers from
+that same tag. Missing releases or mismatched checksums fail the build; a local,
+uncommitted runtime build is not a substitute for this release dependency.
+
+The runtime must provide `windowsExecutable.verifySignature` and `install`,
+Windows Authenticode verification against the expected full publisher subject,
+and a bootstrap that can load an Authenticode-signed click-to-run EXE. It must also
+support `--deskgap-wait-for-pid=<pid>` before installation/activation, strip that
+argument before launching XMCL, and preserve the newest valid installed bundle
+when the original EXE is opened again.
+
+For local unsigned packaging, install the workspace dependencies and the matching
+runtime source's packaging dependencies, then run with Node.js 24:
+
+```powershell
+pnpm build:renderer
+$runtimeVersion = (Get-Content deskgap-app\package.json -Raw | ConvertFrom-Json).config.deskgapVersion
+pnpm --prefix=deskgap-app package C:\path\to\pinned-DeskGap C:\extracted\DeskGap "C:\extracted\DeskGapBootstrap-v$runtimeVersion-win32-x64.exe"
+pnpm exec vitest run deskgap-app\packaging.test.ts
+```
+
+`package` builds a production host and stages `deskgap-app/build/output/app`
+with identity `xmcl-deskgap` / **XMCL DeskGap**, root workspace version,
+`dist/main.cjs`, and the bundled renderer/native assets. The compressed application
+payload is internal to the EXE, not a separate release asset. Source maps and
+development files are excluded. Output is
+`deskgap-app/build/output/release/xmcl-deskgap-<version>-win32-x64.exe`.
+
+The runtime is copied into `deskgap-app/build/output/runtime-staging`, excluding
+its default `resources/app` demo and local `DeskGap.exe.WebView2` browser data.
+Bundling mutable browser data can invalidate installed runtime integrity checks
+and cause an older click-to-run executable to roll back a completed update.
+The supplied runtime directory is never modified. The ZIP's
+`DeskGapBootstrap-v<runtime-version>-win32-x64.exe` is at its root, alongside the
+`DeskGap` directory, not inside that directory. The same raw bootstrap is also
+available as a separate asset in the runtime release.
+**Do not use `DeskGap-<runtime-version>-win32-x64.exe`**: that is the runtime's
+already-packaged default-app click-to-run executable, which XMCL packaging rejects.
+
+The existing `.github/workflows/sign-release.yml` signs both the APPX and DeskGap
+EXE before publishing the regular release. It reuses SignPath project
+`x-minecraft-launcher`, policy `release-signing`, and `CODE_SIGN_TOKEN`, with separate
+artifact configurations: existing `appx` and new `deskgap-exe`. An administrator
+must register `.github/signpath/deskgap-exe.xml` and approve its workflow/project
+access in SignPath before the EXE signing request can succeed. Merely committing
+the XML does not configure SignPath.
+
+The returned EXE must have a valid Authenticode signature with the full subject
+`CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US`.
+Only then are hashes calculated and both signed binaries/checksums uploaded to the
+draft. The usual final publish step runs after both signing requests complete.
+Never rebuild, append a payload, or otherwise modify the EXE after signing.
+
+Updates select the Windows DeskGap EXE from normal GitHub releases, respecting
+the prerelease preference and version ordering. Download progress, cancellation
+and retries use the normal XMCL downloader. SHA-256 and HTTPS do not replace
+publisher verification: downloads become ready only after native Authenticode
+verification. Installation copies to a private staging location and rechecks the
+recorded SHA-256 and publisher before spawning the wait-for-PID installer; XMCL
+then flushes and quits without relaunching the old runtime.
+
+Release acceptance requires a real SignPath-signed EXE, including old-EXE reopen,
+tamper/wrong-publisher rejection and wait-for-PID handoff. Unsigned local builds
+are not evidence that the production signing/update chain is ready.
+
+The retained local `0.69.0` smoke EXE with SHA-256
+`adc11b0be2b572951ed6d17d47c62c5351d65eb412c72d3c79cfe453e1cb7024`
+is a **legacy sample, not a release candidate**. It uses a disposable test public
+key and an older runtime predating the entry-containment and Authenticode changes.
+Its private key was discarded. Do not sign or distribute this sample as the new
+release; rebuild from the published pinned runtime using the flow above.
+
+This is not a complete cross-platform parity claim. Linux and non-x64 installers
+have not been exercised by this release path. The current macOS WKWebView runtime
+does not provide the persistent/named sessions and per-session proxy support used
+by this host (`persist:main` and `xmcl-network`); those runtime APIs must be
+implemented before enabling a macOS release job.
+
+Another known host gap is direct upstream OptiFine downloading: disabling the
+BMCLAPI mirror in Network Settings and requesting an OptiFine installation
+produces `OptifineNoMirrorError`. The DeskGap host currently supports the mirror
+route only; its update/release support does not imply that this gap is resolved.
+
 ### Found something wrong in launcher core
 
 The launcher core is in [separated project](https://github.com/voxelum/minecraft-launcher-core-node) written in TypeScript.

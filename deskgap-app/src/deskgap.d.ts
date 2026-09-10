@@ -18,6 +18,17 @@ declare module 'deskgap' {
     preventDefault(): void
   }
 
+  export const windowsExecutable: {
+    isSupported(): boolean
+    verifySignature(filePath: string, publisherNames: readonly string[]): Promise<void>
+    install(filePath: string, options: {
+      publisherNames: readonly string[]
+      args?: string[]
+      quit?: boolean
+      sha256?: string
+    }): Promise<void>
+  }
+
   export interface TransportChannel {
     readonly writable: WritableStream<ArrayBuffer | ArrayBufferView>
     close(code?: number, reason?: string): void
@@ -127,6 +138,7 @@ declare module 'deskgap' {
     quit(): void
     relaunch(options?: { args?: string[] }): void
     requestSingleInstanceLock(): boolean
+    releaseSingleInstanceLock(): void
     setAppUserModelId(id: string): void
     setAsDefaultProtocolClient(protocol: string): boolean
     setPath(name: string, value: string): void
