@@ -503,6 +503,8 @@ instanceSetting:
   icon: Pilih gambar
   showLog: Tampilkan Log Minecraft
   showLogHint: Ini akan memunculkan jendela untuk mengalirkan log Minecraft setelah game dimulai
+  syncGameLanguage: Sinkronkan Bahasa Game
+  syncGameLanguageDescription: Sinkronkan bahasa Minecraft secara otomatis dengan bahasa peluncur saat memulai
 instanceTemplate:
   ftb: Ini adalah modpack FTB
   preview: Pratinjau Modpack

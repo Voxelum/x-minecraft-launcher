@@ -476,6 +476,8 @@ instanceSetting:
   icon: 'اختر صورة'
   showLog: 'عرض سجل ماين كرافت'
   showLogHint: 'سيؤدي هذا إلى ظهور نافذة لدفق سجل Minecraft بعد بدء اللعبة'
+  syncGameLanguage: 'مزامنة لغة اللعبة'
+  syncGameLanguageDescription: 'مزامنة لغة Minecraft تلقائيًا مع لغة المشغل عند بدء التشغيل'
 instanceTemplate:
   ftb: 'هذه حزمة تعديل FTB'
   preview: 'معاينة مودباك'

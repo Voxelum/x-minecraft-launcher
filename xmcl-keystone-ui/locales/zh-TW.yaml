@@ -445,6 +445,8 @@ instanceSetting:
   icon: 選擇圖片
   showLog: Minecraft 啟動後顯示日誌
   showLogHint: 遊戲開啟後將彈出一個顯示 Minecraft 日誌的視窗
+  syncGameLanguage: 同步遊戲語言
+  syncGameLanguageDescription: 啟動遊戲時自動將 Minecraft 語言同步為啟動器當前語言
 instanceTemplate:
   ftb: 這是一個 FTB 的模組包設定
   preview: 預覽

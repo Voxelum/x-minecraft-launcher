@@ -503,6 +503,8 @@ instanceSetting:
   icon: اختر صورة
   showLog: عرض سجل ماينكرافت (Minecraft Log)
   showLogHint: الخيار ده هيفتح نافذة منبثقة لعرض سجل اللعبة مباشرة بعد تشغيلها
+  syncGameLanguage: مزامنة لغة اللعبة
+  syncGameLanguageDescription: مزامنة لغة Minecraft تلقائيًا مع لغة المشغل عند التشغيل
 instanceTemplate:
   ftb: دي حزمة مودات FTB
   preview: معاينة حزمة المودات

@@ -51,6 +51,7 @@ export function useInstanceEdit(
     globalVmOptions,
     globalDisableAuthlibInjector,
     globalDisableElyByAuthlib,
+    globalSyncGameLanguage,
     globalPrependCommand,
     globalPreExecuteCommand,
     globalEnv,
@@ -93,6 +94,7 @@ export function useInstanceEdit(
     showLog: instance.value?.showLog,
     disableElyByAuthlib: instance.value?.disableElybyAuthlib,
     disableAuthlibInjector: instance.value?.disableAuthlibInjector,
+    syncGameLanguage: instance.value?.syncGameLanguage,
 
     assignMemory: instance.value?.assignMemory,
 
@@ -115,6 +117,7 @@ export function useInstanceEdit(
   const isGlobalShowLog = computed(() => data.showLog === undefined)
   const isGlobalDisableElyByAuthlib = computed(() => data.disableElyByAuthlib === undefined)
   const isGlobalDisableAuthlibInjector = computed(() => data.disableAuthlibInjector === undefined)
+  const isGlobalSyncGameLanguage = computed(() => data.syncGameLanguage === undefined)
   const isGlobalPrependCommand = computed(() => data.prependCommand === undefined)
   const isGlobalPreExecuteCommand = computed(() => data.preExecuteCommand === undefined)
   const isGlobalResolution = computed(() => data.resolution === undefined)
@@ -164,6 +167,10 @@ export function useInstanceEdit(
   }
   const resetDisableElyByAuthlib = () => {
     data.disableElyByAuthlib = undefined
+    saveJIT()
+  }
+  const resetSyncGameLanguage = () => {
+    data.syncGameLanguage = undefined
     saveJIT()
   }
 
@@ -254,6 +261,13 @@ export function useInstanceEdit(
     get: () => data.disableElyByAuthlib ?? globalDisableElyByAuthlib.value,
     set: (v) => {
       data['disableElyByAuthlib'] = v
+      saveJIT()
+    },
+  })
+  const syncGameLanguage = computed({
+    get: () => data.syncGameLanguage ?? globalSyncGameLanguage.value,
+    set: (v) => {
+      data['syncGameLanguage'] = v
       saveJIT()
     },
   })
@@ -351,6 +365,7 @@ export function useInstanceEdit(
       java: data.javaPath,
       disableAuthlibInjector: data.disableAuthlibInjector,
       disableElybyAuthlib: data.disableElyByAuthlib,
+      syncGameLanguage: data.syncGameLanguage,
       prependCommand: data.prependCommand,
       preExecuteCommand: data.preExecuteCommand,
       author: data.author,
@@ -423,6 +438,7 @@ export function useInstanceEdit(
       data.icon = current.icon
       data.disableAuthlibInjector = current.disableAuthlibInjector
       data.disableElyByAuthlib = current.disableElybyAuthlib
+      data.syncGameLanguage = current.syncGameLanguage
       data.prependCommand = current.prependCommand
       data.preExecuteCommand = current.preExecuteCommand
       data.env = current.env ?? {}
@@ -455,6 +471,7 @@ export function useInstanceEdit(
     isGlobalShowLog,
     isGlobalDisableElyByAuthlib,
     isGlobalDisableAuthlibInjector,
+    isGlobalSyncGameLanguage,
     isGlobalPrependCommand,
     isGlobalPreExecuteCommand,
     assignMemory,
@@ -463,6 +480,7 @@ export function useInstanceEdit(
     fastLaunch,
     hideLauncher,
     showLog,
+    syncGameLanguage,
     javaPath,
     disableAuthlibInjector,
     disableElyByAuthlib,
@@ -476,6 +494,7 @@ export function useInstanceEdit(
     resetShowLog,
     resetDisableAuthlibInjector,
     resetDisableElyByAuthlib,
+    resetSyncGameLanguage,
     resetPrependCommand,
     resetPreExecuteCommand,
     resetResolution,

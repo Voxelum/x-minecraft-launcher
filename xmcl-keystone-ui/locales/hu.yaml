@@ -466,6 +466,8 @@ instanceSetting:
   showLog: Minecraft napló megnézése
   showLogHint: >-
     Felugrik egy ablak a Minecraft naplójának streamelésére a játék elindulása után.
+  syncGameLanguage: Játék nyelvének szinkronizálása
+  syncGameLanguageDescription: Indításkor automatikusan szinkronizálja a Minecraft nyelvét az indító nyelvével
 instanceTemplate:
   ftb: Ez egy FTB modcsomag
   preview: Modcsomag előznézet

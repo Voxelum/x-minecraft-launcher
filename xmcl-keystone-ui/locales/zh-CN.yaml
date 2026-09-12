@@ -546,6 +546,8 @@ instanceSetting:
   icon: 选择图片
   showLog: Minecraft 启动后显示日志
   showLogHint: 游戏开启后将弹出一个显示 Minecraft 日志的窗口
+  syncGameLanguage: 同步游戏语言
+  syncGameLanguageDescription: 启动游戏时自动将 Minecraft 语言同步为启动器当前语言
 instanceTemplate:
   ftb: 这是一个 FTB 的整合包配置
   preview: 预览
