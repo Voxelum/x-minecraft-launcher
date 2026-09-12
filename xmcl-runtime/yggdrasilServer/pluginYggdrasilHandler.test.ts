@@ -59,6 +59,7 @@ describe('pluginYggdrasilHandler', () => {
     const textureProperty = payload.properties.find((property: { name: string }) => property.name === 'textures')
     const textureInfo = JSON.parse(Buffer.from(textureProperty.value, 'base64').toString())
     expect(textureInfo.profileId).toBe('12345678123412341234123456789abc')
+    expect(textureInfo.profileName).toBe(profile.name)
 
     const profileResponse: Record<string, any> = { headers: {} }
     await handler({

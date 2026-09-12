@@ -19,6 +19,7 @@ function trackClient(client: Client, container: ServiceStateContainer) {
     tracked = { containers, onDestroyed }
     trackedClients.set(client, tracked)
     client.on('destroyed', onDestroyed)
+    client.on('renderer-disconnected', onDestroyed)
   }
   tracked.containers.add(container)
 }
@@ -29,6 +30,7 @@ function untrackClient(client: Client, container: ServiceStateContainer) {
   tracked.containers.delete(container)
   if (tracked.containers.size === 0) {
     client.removeListener('destroyed', tracked.onDestroyed)
+    client.removeListener('renderer-disconnected', tracked.onDestroyed)
     trackedClients.delete(client)
   }
 }

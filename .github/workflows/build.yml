@@ -9,6 +9,7 @@ on:
       - "xmcl-runtime-api/**"
       - "xmcl-keystone-ui/**"
       - "xmcl-electron-app/**"
+      - "deskgap-app/**"
       - "packages/**"
       - "package.json"
       - "pnpm-lock.yaml"
@@ -71,6 +72,64 @@ jobs:
           RELEASE: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
           PUBLISHER: CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US
+      - name: Resolve pinned DeskGap runtime
+        if: ${{ runner.os == 'Windows' }}
+        id: deskgap
+        shell: pwsh
+        run: |
+          $version = (Get-Content deskgap-app\package.json -Raw | ConvertFrom-Json).config.deskgapVersion
+          if ($version -notmatch '^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$') { throw 'Pin an exact published DeskGap version in deskgap-app/package.json' }
+          "version=$version" >> $env:GITHUB_OUTPUT
+      - name: Checkout matching DeskGap packaging helpers
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/checkout@v5
+        with:
+          repository: Voxelum/DeskGap
+          ref: v${{ steps.deskgap.outputs.version }}
+          path: deskgap-runtime-source
+          persist-credentials: false
+      - name: Use Node.js 24 for DeskGap packaging
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Install DeskGap packaging helpers
+        if: ${{ runner.os == 'Windows' }}
+        working-directory: deskgap-runtime-source
+        run: npm ci
+      - name: Download pinned DeskGap Windows runtime
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        env:
+          DESKGAP_VERSION: ${{ steps.deskgap.outputs.version }}
+        run: |
+          $name = "deskgap-v$env:DESKGAP_VERSION-win32-x64.zip"
+          $base = "https://github.com/Voxelum/DeskGap/releases/download/v$env:DESKGAP_VERSION"
+          $directory = 'deskgap-app\build\runtime'
+          New-Item -ItemType Directory -Force $directory | Out-Null
+          Invoke-WebRequest "$base/SHA256SUMS" -OutFile "$directory\SHA256SUMS"
+          $pattern = '^([a-fA-F0-9]{64})\s+\*?' + [regex]::Escape($name) + '$'
+          $entries = @(Get-Content "$directory\SHA256SUMS" | Where-Object { $_ -match $pattern })
+          if ($entries.Count -ne 1) { throw "Expected exactly one checksum for $name in the pinned runtime release" }
+          $expected = [regex]::Match($entries[0], $pattern).Groups[1].Value
+          Invoke-WebRequest "$base/$name" -OutFile "$directory\$name"
+          if ((Get-FileHash "$directory\$name" -Algorithm SHA256).Hash -ne $expected) { throw 'DeskGap runtime checksum mismatch' }
+          Expand-Archive "$directory\$name" "$directory\extracted"
+      - name: Build DeskGap single EXE alongside Electron
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        env:
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
+          DESKGAP_VERSION: ${{ steps.deskgap.outputs.version }}
+        run: |
+          $source = Join-Path $env:GITHUB_WORKSPACE 'deskgap-runtime-source'
+          $extracted = Join-Path $env:GITHUB_WORKSPACE 'deskgap-app\build\runtime\extracted'
+          $runtime = Join-Path $extracted 'DeskGap'
+          $bootstrap = Join-Path $extracted "DeskGapBootstrap-v$env:DESKGAP_VERSION-win32-x64.exe"
+          pnpm --prefix=deskgap-app package "$source" "$runtime" "$bootstrap"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          Copy-Item "deskgap-app\build\output\release\xmcl-deskgap-$version-win32-x64.exe" xmcl-electron-app\build\output\
       - name: Upload Source Maps
         if: ${{ runner.os == 'Windows' }}
         uses: actions/upload-artifact@v6
@@ -80,9 +139,9 @@ jobs:
             xmcl-electron-app/dist/*.js.map
             xmcl-electron-app/dist/renderer/assets/*.js.map
       - name: Upload Build
-        # Windows .appx in this artifact is UNSIGNED. The `release` job
-        # publishes it to a *draft* release; signing happens out-of-band via
-        # the manual `Sign Release` workflow before the draft is published.
+        # Windows .appx and DeskGap .exe in this artifact are UNSIGNED. The `release` job
+        # creates a draft; `Sign Release` signs APPX before publication.
+        # DeskGap signing is not enabled: its EXE remains a manual-install preview.
         if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
         uses: actions/upload-artifact@v6
         with:
@@ -388,7 +447,14 @@ jobs:
           release_name: ${{ steps.prepare_release.outputs.tag }}
           draft: true
           prerelease: false
-          body: ${{ steps.release_note.outputs.body }}
+          body: |
+            ${{ steps.release_note.outputs.body }}
+
+            ### DeskGap Windows x64 — UNSIGNED PREVIEW
+
+            [Download the DeskGap EXE](https://github.com/${{ github.repository }}/releases/download/${{ steps.prepare_release.outputs.tag }}/xmcl-deskgap-${{ steps.prepare_release.outputs.version }}-win32-x64.exe) for **manual installation only**.
+            This preview is not Authenticode-signed. Production DeskGap signing and automatic updates are not enabled; the launcher intentionally rejects unsigned EXEs as automatic updates.
+            Electron/APPX signing and publishing are unchanged. This preview is not evidence of a completed signed DeskGap update workflow.
           asset_dir_path: ./build
       - name: Checkout Website
         uses: actions/checkout@v5
