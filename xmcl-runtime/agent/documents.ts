@@ -62,10 +62,26 @@ async function readMetadata(directory: string, file: string): Promise<AgentDocum
 }
 
 export class AgentDocumentStore {
-  constructor(private readonly directory: string) {}
+  private warnedMissingDirectory = false
+
+  constructor(
+    private readonly directory: string,
+    private readonly warn: (message: string) => void = () => undefined,
+  ) {}
 
   private async loadDocuments() {
-    const files = (await readdir(this.directory, { withFileTypes: true }))
+    let entries
+    try {
+      entries = await readdir(this.directory, { withFileTypes: true })
+    } catch (error) {
+      if (!isFileNotFoundError(error)) throw error
+      if (!this.warnedMissingDirectory) {
+        this.warnedMissingDirectory = true
+        this.warn('Agent document directory is unavailable; continuing without built-in documents.')
+      }
+      return []
+    }
+    const files = entries
       .filter(entry => entry.isFile() && entry.name.endsWith('.md'))
       .map(entry => entry.name)
       .sort()
@@ -112,4 +128,8 @@ export class AgentDocumentStore {
     const { bodyOffset, ...currentDocument } = parseFrontmatter(document.file, content)
     return { ...metadata(currentDocument), body: content.slice(bodyOffset) }
   }
+}
+
+function isFileNotFoundError(error: unknown): error is NodeJS.ErrnoException {
+  return error instanceof Error && 'code' in error && error.code === 'ENOENT'
 }

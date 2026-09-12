@@ -219,13 +219,50 @@ export interface AgentRunTrace {
   outcome: AgentRunState
   stopReason: string
   tools: Record<string, number>
+  toolSuccesses: Record<string, number>
+  toolFailures: Record<string, number>
   turnCount: number
   toolCallCount: number
   toolFailureCount: number
+  providerRequestCount: number
+  providerResponseCount: number
+  providerStatusClass: AgentProviderStatusClass
+  firstResponseDurationMs: number
+  firstToolDurationMs: number
+  documentCount: number
+  failureStage: AgentRunFailureStage
+  failureCode: AgentRunFailureCode
   inputTokens: number
   outputTokens: number
   durationMs: number
 }
+
+export type AgentRunFailureStage =
+  | 'none'
+  | 'setup'
+  | 'documents'
+  | 'compaction'
+  | 'provider_request'
+  | 'provider_response'
+  | 'tool_execution'
+  | 'persistence'
+
+export type AgentRunFailureCode =
+  | 'none'
+  | 'authentication'
+  | 'billing'
+  | 'rate_limit'
+  | 'model_not_found'
+  | 'network'
+  | 'timeout'
+  | 'context_limit'
+  | 'response_format'
+  | 'documents_unavailable'
+  | 'tool_execution'
+  | 'provider'
+  | 'unknown'
+
+export type AgentProviderStatusClass = 'none' | '1xx' | '2xx' | '3xx' | '4xx' | '5xx' | 'other'
 
 export interface AgentService {
   getProviderSettings(): Promise<AgentProviderSettings>
