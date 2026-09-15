@@ -2050,6 +2050,7 @@ sortBy:
   timeAsc: Sort by modification time (ascending)
   timeDesc: Sort by modification time (descending)
 store:
+  popularity: Popularity / follows
   discover: Discover
   empty: No Modpacks Found
   emptyHint: Try adjusting your filters or search query.

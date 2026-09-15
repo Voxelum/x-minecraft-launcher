@@ -1664,6 +1664,7 @@ sortBy:
   timeDesc: Classificar por tempo de modificação (descendente)
   name: Ordenar por
 store:
+  popularity: Popularidade / seguidores
   discover: Descobrir
   latestMinecraft: Última Versão do Minecraft
   name: Mercado de Modpacks

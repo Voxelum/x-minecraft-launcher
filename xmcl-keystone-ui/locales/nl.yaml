@@ -1661,6 +1661,7 @@ sortBy:
   timeDesc: Sorteren op wijzigingstijd (aflopend)
   name: Sorteren op
 store:
+  popularity: Populariteit / aantal volgers
   discover: Ontdekken
   latestMinecraft: Laatste Minecraft Versie
   name: Modpack Markt

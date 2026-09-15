@@ -1635,6 +1635,7 @@ sortBy:
   timeDesc: SORT BY MODIFICASHUN TIME (DESCENDING)
   name: Sorrt By
 store:
+  popularity: POPULARITY / FOLLOW COUNT
   discover: Discover
   latestMinecraft: LATEST MINECWAFT VERSHUN
   name: MODPACK MARKET

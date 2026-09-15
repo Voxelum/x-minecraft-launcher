@@ -1701,6 +1701,7 @@ sortBy:
   timeDesc: Сортувати за часом модифікації (за спаданням)
   name: Сортувати за
 store:
+  popularity: Популярність / підписники
   discover: Відкрийте для себе
   latestMinecraft: Остання версія Minecraft
   name: Ринок модпаків
@@ -2067,4 +2068,3 @@ gamepad:
   steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати XMCL до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
   steamDeckAddBtn: Додати до Steam ({btn})
   steamDeckCancelBtn: Скасувати ({btn})
-

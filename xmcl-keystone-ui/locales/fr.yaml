@@ -1685,6 +1685,7 @@ sortBy:
   timeDesc: Trier par temps de modification (descendant)
   name: Trier par
 store:
+  popularity: Popularité / abonnés
   discover: Découvrir
   searchResult: Résultat de la recherche
   trending: Tendance

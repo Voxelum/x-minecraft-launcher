@@ -1,6 +1,6 @@
 import { MockAgent, fetch as _fetch } from 'undici'
 import { describe, expect, test } from 'vitest'
-import { CurseforgeV1Client, getCurseforgeFileDownloadUrls } from './index'
+import { CurseforgeV1Client, getCurseforgeFileDownloadUrls, ModsSearchSortField } from './index'
 
 describe('CurseforgeV1Client', () => {
   const agent = new MockAgent()
@@ -147,6 +147,29 @@ describe('CurseforgeV1Client', () => {
     const client = new CurseforgeV1Client('key', { fetch })
     const result = await client.searchMods({})
     expect(result).toStrictEqual({ data: [] })
+  })
+  test('#searchMods defaults to descending creation-time ordering on subsequent pages', async () => {
+    agent.get('https://api.curseforge.com')
+      .intercept({
+        path: '/v1/mods/search',
+        query: {
+          gameId: '432',
+          classId: '4471',
+          sortField: '11',
+          sortOrder: 'desc',
+          index: '20',
+          pageSize: '20',
+        },
+      })
+      .reply(200, { data: [], pagination: { index: 20, totalCount: 100 } })
+    const client = new CurseforgeV1Client('key', { fetch })
+    const result = await client.searchMods({
+      classId: 4471,
+      sortField: ModsSearchSortField.ReleasedDate,
+      index: 20,
+      pageSize: 20,
+    })
+    expect(result.pagination.index).toBe(20)
   })
 })
 

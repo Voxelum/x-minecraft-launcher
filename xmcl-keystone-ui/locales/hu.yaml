@@ -1705,6 +1705,7 @@ sortBy:
   timeDesc: Rendezés módosítási idő szerint (csökkenő)
   name: Rendezés
 store:
+  popularity: Népszerűség / követések
   discover: Fedezze fel
   latestMinecraft: Legfrissebb Minecraft verzió
   name: Modcsomag piac

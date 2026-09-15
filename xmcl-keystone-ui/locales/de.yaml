@@ -1772,6 +1772,7 @@ sortBy:
   timeDesc: Sortieren nach Änderungszeit (absteigend)
   name: Sortieren nach
 store:
+  popularity: Beliebtheit / Abonnenten
   discover: Entdecken
   latestMinecraft: Die neueste Version von Minecraft
   name: Shop für Mod-Kits

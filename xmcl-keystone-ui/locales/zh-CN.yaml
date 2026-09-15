@@ -2004,6 +2004,7 @@ store:
   emptyHint: 请尝试调整筛选条件或搜索关键词。
   latestMinecraft: 使用近期 Minecraft 版本
   name: 整合包市场
+  popularity: 热度 / 关注数
   searchResult: 搜索结果
   trending: 流行趋势
   searchHint: 搜索整合包...

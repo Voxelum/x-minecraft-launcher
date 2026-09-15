@@ -1652,6 +1652,7 @@ sortBy:
   timeDesc: Өзгерту уақыты бойынша (кему)
   name: Реттеу бойынша
 store:
+  popularity: Танымалдық / жазылушылар саны
   discover: Discover
   latestMinecraft: Ең соңғы Minecraft нұсқасы
   name: Мод-пак нарығы

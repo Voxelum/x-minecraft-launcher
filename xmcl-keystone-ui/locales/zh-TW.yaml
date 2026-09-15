@@ -1730,6 +1730,7 @@ sortBy:
   timeDesc: 通過修改時間（下降）排序
   name: 排序方式
 store:
+  popularity: 熱度 / 追蹤數
   discover: 發現
   latestMinecraft: 使用近期 Minecraft 版本
   name: 模組包市集

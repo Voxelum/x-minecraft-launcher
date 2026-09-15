@@ -1657,6 +1657,7 @@ sortBy:
   timeDesc: Ordina per tempo di modifica (discendente)
   name: Ordina per
 store:
+  popularity: Popolarità / follower
   discover: Scoprire
   latestMinecraft: Ultima versione di Minecraft
   name: Store dei modpack

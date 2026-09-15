@@ -1675,6 +1675,7 @@ sortBy:
   timeDesc: 수정 시간순 정렬 (내림차순)
   name: 정렬 기준
 store:
+  popularity: 인기도 / 팔로우 수
   discover: 발견하다
   latestMinecraft: 최신 마인크래프트 버전
   name: 모드팩 마켓

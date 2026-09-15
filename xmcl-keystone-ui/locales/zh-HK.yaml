@@ -1859,6 +1859,7 @@ sortBy:
   timeAsc: 按修改時間（上升）排序
   timeDesc: 通過修改時間（下降）排序
 store:
+  popularity: 熱度 / 追蹤數
   discover: 發現
   empty: 冇找到整合包
   emptyHint: 請嘗試調整篩選條件或搜尋關鍵字。

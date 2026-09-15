@@ -1658,6 +1658,7 @@ sortBy:
   timeDesc: Sorteer op wijzigingstijd (aflopend)
   name: Ordenar por
 store:
+  popularity: Popularidade / seguidores
   discover: Descubrir
   latestMinecraft: Laatste Minecraft Versie
   name: Modpack Markt
