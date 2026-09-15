@@ -406,7 +406,7 @@ instance:
   vmOptions: JVM OPSHUNS
   vmOptionsHint: EXTRA ARGUMENTS TO PASS TO DA JVM
   vmVar: ENVIRONMENT VARIABLEZ
-  vmVarHint: CLICK + BUTTON TO ADD ENVIRONEMNT VARIABLEZ
+  vmVarHint: CLICK + BUTTON TO ADD ENVIRONMENT VARIABLEZ
   width: WIDTH
   envVarKey: Keey
   envVarValue: Vallue

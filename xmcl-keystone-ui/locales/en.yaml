@@ -601,7 +601,7 @@ instance:
   vmOptions: JVM Options
   vmOptionsHint: Extra arguments to pass to the JVM
   vmVar: Environment Variables
-  vmVarHint: Click + button to add environemnt variables
+  vmVarHint: Click + button to add environment variables
   width: Width
 instanceAge:
   older: Older
