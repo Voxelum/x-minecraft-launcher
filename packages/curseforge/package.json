@@ -1,6 +1,6 @@
 {
   "name": "@xmcl/curseforge",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "main": "./index.ts",
   "module": "./index.ts",
   "sideEffects": false,
