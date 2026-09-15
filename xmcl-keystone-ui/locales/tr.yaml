@@ -472,6 +472,8 @@ instanceSetting:
   icon: Bir resim seçin
   showLog: Minecraft Günlüğünü Göster
   showLogHint: Bu, oyun başladıktan sonra Minecraft günlüğünü yayınlamak için bir pencere açacaktır
+  syncGameLanguage: Oyun Dilini Senkronize Et
+  syncGameLanguageDescription: Başlatma sırasında Minecraft dilini başlatıcı diliyle otomatik olarak senkronize et
 instanceTemplate:
   ftb: Bu bir FTB mod paketidir
   preview: Mod Paketi Önizlemesi

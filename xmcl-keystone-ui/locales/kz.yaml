@@ -453,6 +453,8 @@ instanceSetting:
   icon: Суретті таңдаңыз
   showLog: Minecraft журналын көрсету
   showLogHint: Бұл ойын басталғаннан кейін Minecraft журналын ағындату үшін терезе ашады
+  syncGameLanguage: Ойын тілін синхрондау
+  syncGameLanguageDescription: Іске қосу кезінде Minecraft тілін іске қосқыш тілімен автоматты түрде синхрондау
 instanceTemplate:
   ftb: Бұл FTB мод-пагы
   preview: Мод-пак алдын-ала қарауы

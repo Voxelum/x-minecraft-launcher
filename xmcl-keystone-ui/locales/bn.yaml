@@ -503,6 +503,8 @@ instanceSetting:
   icon: একটি ছবি বেছে নিন
   showLog: Minecraft লগ দেখান
   showLogHint: গেম শুরু হওয়ার পর এটি Minecraft লগ স্ট্রিম করার জন্য একটি উইন্ডো পপআপ করবে
+  syncGameLanguage: গেমের ভাষা সিঙ্ক করুন
+  syncGameLanguageDescription: লঞ্চ করার সময় স্বয়ংক্রিয়ভাবে মাইনক্রাফ্টের ভাষা লঞ্চারের ভাষার সাথে সিঙ্ক করুন
 instanceTemplate:
   ftb: এটি একটি FTB মডপ্যাক
   preview: মডপ্যাক প্রিভিউ

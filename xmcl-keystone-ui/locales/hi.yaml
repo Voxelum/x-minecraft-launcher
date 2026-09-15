@@ -503,6 +503,8 @@ instanceSetting:
   icon: एक छवि चुनें
   showLog: माइनक्राफ्ट लॉग दिखाएं
   showLogHint: यह गेम शुरू होने के बाद माइनक्राफ्ट लॉग स्ट्रीम करने के लिए एक विंडो पॉपअप करेगा
+  syncGameLanguage: गेम भाषा सिंक करें
+  syncGameLanguageDescription: लॉन्च के समय Minecraft की भाषा को लॉन्चर भाषा के साथ स्वचालित रूप से सिंक करें
 instanceTemplate:
   ftb: यह एक FTB मॉडपैक है
   preview: मॉडपैक पूर्वावलोकन

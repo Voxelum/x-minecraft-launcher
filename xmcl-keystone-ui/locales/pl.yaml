@@ -427,6 +427,8 @@ instanceSetting:
   showLog: Pokaż dziennik Minecraft
   showLogHint: >-
     Spowoduje to wyświetlenie okna do strumieniowego przesyłania dziennika Minecraft po uruchomieniu gry
+  syncGameLanguage: Synchronizuj język gry
+  syncGameLanguageDescription: Automatycznie synchronizuj język Minecrafta z językiem launchera podczas uruchamiania
 instanceTemplate:
   ftb: To jest modpack FTB
   preview: Podgląd modpacka

@@ -76,6 +76,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
   const globalShowLog = computed(() => state.value?.globalShowLog ?? false)
   const globalDisableAuthlibInjector = computed(() => state.value?.globalDisableAuthlibInjector ?? true)
   const globalDisableElyByAuthlib = computed(() => state.value?.globalDisableElyByAuthlib ?? false)
+  const globalSyncGameLanguage = computed(() => state.value?.globalSyncGameLanguage ?? false)
   const globalPrependCommand = computed(() => state.value?.globalPrependCommand ?? '')
   const globalPreExecuteCommand = computed(() => state.value?.globalPreExecuteCommand ?? '')
   const globalEnv = computed(() => state.value?.globalEnv ?? {})
@@ -92,6 +93,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalShowLog: boolean
     globalDisableAuthlibInjector: boolean
     globalDisableElyByAuthlib: boolean
+    globalSyncGameLanguage?: boolean
     globalPrependCommand: string
     globalPreExecuteCommand: string
     globalEnv: Record<string, string>
@@ -112,6 +114,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalShowLog,
     globalDisableAuthlibInjector,
     globalDisableElyByAuthlib,
+    globalSyncGameLanguage,
     globalPrependCommand,
     globalPreExecuteCommand,
     globalEnv,

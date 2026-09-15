@@ -123,6 +123,9 @@
 
     <!-- Minecraft Options Card -->
     <SettingCard :title="t('setting.minecraftOptions')" icon="videogame_asset">
+      <SettingItemCheckbox v-model="syncGameLanguage" :title="t('instanceSetting.syncGameLanguage')"
+        :description="t('instanceSetting.syncGameLanguageDescription')" />
+      <v-divider class="my-3" />
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <div class="font-weight-medium mb-2">
@@ -193,6 +196,7 @@ const {
   globalShowLog,
   globalDisableAuthlibInjector,
   globalDisableElyByAuthlib,
+  globalSyncGameLanguage,
   globalPrependCommand,
   globalPreExecuteCommand,
   globalEnv,
@@ -233,6 +237,7 @@ const hideLauncher = ref(globalHideLauncher.value)
 const showLog = ref(globalShowLog.value)
 const disableAuthlibInjector = ref(globalDisableAuthlibInjector.value)
 const disableElyByAuthlib = ref(globalDisableElyByAuthlib.value)
+const syncGameLanguage = ref(globalSyncGameLanguage.value)
 const env = ref({ ...globalEnv.value })
 const adding = ref(false) // For adding environment variables
 
@@ -271,6 +276,7 @@ onMounted(() => {
   showLog.value = globalShowLog.value
   disableAuthlibInjector.value = globalDisableAuthlibInjector.value
   disableElyByAuthlib.value = globalDisableElyByAuthlib.value
+  syncGameLanguage.value = globalSyncGameLanguage.value
   prependCommand.value = globalPrependCommand.value
   preExecuteCommand.value = globalPreExecuteCommand.value
   if (globalResolution.value) {
@@ -295,6 +301,7 @@ function save() {
     globalShowLog: showLog.value,
     globalDisableAuthlibInjector: disableAuthlibInjector.value,
     globalDisableElyByAuthlib: disableElyByAuthlib.value,
+    globalSyncGameLanguage: syncGameLanguage.value,
     globalPrependCommand: prependCommand.value,
     globalPreExecuteCommand: preExecuteCommand.value,
     // Deep-clone reactive proxies before sending over IPC so structured clone
