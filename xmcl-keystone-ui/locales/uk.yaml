@@ -329,6 +329,31 @@ feedback:
   discord: Discord
   discordDescription: Приєднатися до каналу Discord
   discordJoin: Приєднатися
+  anonymizeIp: Анонімізувати IP-адреси
+  anonymizeIpHint: Замінює публічні IP-адреси в логах на код країни для захисту приватності
+  notAnonymized: Звичайний IP
+  previewReport: Переглянути звіт
+  previewTitle: Попередній перегляд звіту
+  previewSubtitle: Перевірте інформацію про пристрій та логи застосунку перед надсиланням
+  previewTimestamp: Час генерації
+  previewPlatform: Платформа
+  previewOsRelease: Реліз ОС
+  previewFiles: Файли
+  previewFilesCount: файлів
+  previewDevice: Система та пристрій (device.json)
+  previewSearchPlaceholder: Фільтрувати рядки логу...
+  previewLines: рядків
+  previewNoContent: Вміст логу порожній
+  noLogs: Логів не знайдено
+  filterDateAll: Усі
+  filterDateToday: Сьогодні
+  filterByDate: За датою
+  searchCatalog: Знайти файл...
+  currentLogs: Поточна сесія
+  archivedLogs: Архіви звітів
+  clearLogs: Видалити всі логи
+  logsCleared: Усі логи та старі звіти успішно видалено
+  copy: Копіювати
   generateReport: Сгенерувати звіт
   generateSaveAs: Зберегти звіт як
   github: Проблема на Github

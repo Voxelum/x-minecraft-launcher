@@ -454,6 +454,31 @@ feedback:
   discord: Discord
   discordDescription: Join Discord Channel
   discordJoin: Join
+  anonymizeIp: Anonymize IP addresses
+  anonymizeIpHint: Replaces public IP addresses in logs with country codes to protect privacy
+  notAnonymized: Raw IP
+  previewReport: Preview Report
+  previewTitle: Diagnostic Report Preview
+  previewSubtitle: Inspect device details and application logs before sharing
+  previewTimestamp: Generated At
+  previewPlatform: Platform
+  previewOsRelease: OS Release
+  previewFiles: Files
+  previewFilesCount: files
+  previewDevice: System & Device (device.json)
+  previewSearchPlaceholder: Filter log lines...
+  previewLines: lines
+  previewNoContent: No log content found
+  noLogs: No logs found
+  filterDateAll: All
+  filterDateToday: Today
+  filterByDate: By date
+  searchCatalog: Find file...
+  currentLogs: Current Session
+  archivedLogs: Archived Reports
+  clearLogs: Clear all logs
+  logsCleared: All logs and old reports have been cleared
+  copy: Copy
   generateReport: Generate Report
   generateSaveAs: Save the report to
   github: Github Issue
