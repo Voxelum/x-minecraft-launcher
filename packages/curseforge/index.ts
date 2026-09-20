@@ -461,6 +461,7 @@ export const enum ModsSearchSortField {
   TotalDownloads = 6,
   Category = 7,
   GameVersion = 8,
+  ReleasedDate = 11,
 }
 
 /**

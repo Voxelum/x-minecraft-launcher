@@ -1,31 +1,27 @@
 import { ModsSearchSortField } from '@xmcl/curseforge'
-import { Ref } from 'vue'
+import { computed, Ref } from 'vue'
+
+export type MarketSort = 'relevance' | 'downloads' | 'follows' | 'updated' | 'newest'
+
+export function normalizeMarketSort(sort: number | string): MarketSort {
+  switch (sort) {
+    case 0: case '0': case 'relevance': return 'relevance'
+    case 2: case '2': case 'popularity': case 'follows': return 'follows'
+    case 3: case '3': case 'updated': return 'updated'
+    case 4: case '4': case 'created': case 'newest': return 'newest'
+    default: return 'downloads'
+  }
+}
 
 export function useMarketSort<V extends number | string = number>(sort: Ref<V>) {
-  const modrinthSort = ref(undefined as 'relevance' | 'downloads' | 'follows' | 'newest' | 'updated' | undefined)
-  const curseforgeSort = ref(undefined as ModsSearchSortField | undefined)
-  const set = (i: V) => {
-    if (i === 0 || i === 'relevance') {
-      modrinthSort.value = 'relevance'
-      curseforgeSort.value = ModsSearchSortField.Name
-    } else if (i === 1 || i === 'downloads') {
-      modrinthSort.value = 'downloads'
-      curseforgeSort.value = ModsSearchSortField.TotalDownloads
-    } else if (i === 2 || i === 'follows') {
-      modrinthSort.value = 'follows'
-      curseforgeSort.value = ModsSearchSortField.Popularity
-    } else if (i === 3 || i === 'updated') {
-      modrinthSort.value = 'updated'
-      curseforgeSort.value = ModsSearchSortField.LastUpdated
-    } else if (i === 4 || i === 'newest') {
-      modrinthSort.value = 'newest'
-      curseforgeSort.value = ModsSearchSortField.LastUpdated
-    } else {
-      modrinthSort.value = 'downloads'
-      curseforgeSort.value = ModsSearchSortField.TotalDownloads
-    }
-  }
-  watch(sort, (nv) => set(nv as V))
+  const modrinthSort = computed(() => normalizeMarketSort(sort.value))
+  const curseforgeSort = computed(() => ({
+    relevance: ModsSearchSortField.Popularity,
+    downloads: ModsSearchSortField.TotalDownloads,
+    follows: ModsSearchSortField.Popularity,
+    updated: ModsSearchSortField.LastUpdated,
+    newest: ModsSearchSortField.ReleasedDate,
+  })[modrinthSort.value])
   return {
     sort,
     modrinthSort,

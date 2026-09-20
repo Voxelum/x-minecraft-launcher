@@ -30,6 +30,17 @@ import { createAgentToolFailureGuard, stringifyAgentToolEventResult, wrapAgentTo
 import { createAgentPassiveContextMessage, readAgentSessionContext, resolveAgentSessionSystemPrompt, type AgentPassiveContext } from './context'
 import { createAgentPassiveEventMessage, registerAgentPassiveEventConsumer, type AgentPassiveEvent } from './passiveEvents'
 import { clearAgentConfirmationScope, registerAgentConfirmationScope } from './confirm'
+import {
+  classifyAgentRunFailure,
+  createAgentRunTelemetryState,
+  recordAgentProviderRequest,
+  recordAgentProviderResponse,
+  recordAgentResponseEvent,
+  recordAgentToolEnd,
+  recordAgentToolStart,
+  setAgentRunTelemetryTools,
+  type AgentRunTelemetryState,
+} from './telemetry'
 
 export interface AgentRunContext {
   agentId: AgentId
@@ -85,10 +96,12 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
   let loadVersion = 0
   let conversationContext: Record<string, unknown> = {}
   let activeBuiltInContext: XmclBuiltInAgentContext | undefined
+  let activeRunTelemetry: AgentRunTelemetryState | undefined
 
   const providerApi = openAICompletionsApi()
   const streamFn: StreamFunction<Api, SimpleStreamOptions> = (model, context, streamOptions) => {
     const transportModel = createAgentModel(BUILTIN_AGENT_ENDPOINT, model.id)
+    if (activeRunTelemetry) recordAgentProviderRequest(activeRunTelemetry)
     return providerApi.streamSimple(transportModel, context, {
       ...streamOptions,
       apiKey: 'runtime-managed',
@@ -98,6 +111,10 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
             return createXmclBuiltInPayload(payload, activeBuiltInContext)
           }
         : streamOptions?.onPayload,
+      onResponse: async (response, responseModel) => {
+        if (activeRunTelemetry) recordAgentProviderResponse(activeRunTelemetry, response.status)
+        await streamOptions?.onResponse?.(response, responseModel)
+      },
     })
   }
 
@@ -244,7 +261,47 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
     const scope = options.getScope()
     if (scope !== currentScope) await load(scope)
     const permissionScope = createAgentId()
+    const startedAt = Date.now()
+    const telemetry = createAgentRunTelemetryState(startedAt)
+    const providerModel = createAgentModel(settings.resolvedEndpoint.value, settings.resolvedModel.value)
+    let documentCount = 0
+    let turnCount = 0
+    let inputTokens = 0
+    let outputTokens = 0
+    let traceReported = false
+    activeRunTelemetry = telemetry
 
+    const reportTrace = async (outcome: AgentRunTrace['outcome'], stopReason: string, error?: unknown) => {
+      const failed = outcome === 'failed'
+      traceReported = true
+      await service.reportRunTrace({
+        runId: permissionScope,
+        agentId: options.agentId,
+        provider: providerModel.provider,
+        model: providerModel.id,
+        outcome,
+        stopReason,
+        tools: telemetry.tools,
+        toolSuccesses: telemetry.toolSuccesses,
+        toolFailures: telemetry.toolFailures,
+        turnCount,
+        toolCallCount: telemetry.toolCallCount,
+        toolFailureCount: telemetry.toolFailureCount,
+        providerRequestCount: telemetry.providerRequestCount,
+        providerResponseCount: telemetry.providerResponseCount,
+        providerStatusClass: telemetry.providerStatusClass,
+        firstResponseDurationMs: telemetry.firstResponseDurationMs,
+        firstToolDurationMs: telemetry.firstToolDurationMs,
+        documentCount,
+        failureStage: failed ? telemetry.failureStage : 'none',
+        failureCode: failed ? classifyAgentRunFailure(error, telemetry.failureStage) : 'none',
+        inputTokens,
+        outputTokens,
+        durationMs: Date.now() - startedAt,
+      })
+    }
+
+    try {
     const runContext: AgentRunContext = {
       agentId: options.agentId,
       scope,
@@ -258,11 +315,14 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
     const tools = supportsArtifacts
       ? wrapAgentToolsWithResultSpill(createdTools, (content, toolName) => service.writeArtifact(artifactKey, { content, toolName }))
       : createdTools
-    const providerModel = createAgentModel(settings.resolvedEndpoint.value, settings.resolvedModel.value)
+    setAgentRunTelemetryTools(telemetry, tools.map(tool => tool.name))
     const role = options.agentId === 'css' ? 'css-main' : options.agentId === 'modpack-changelog' ? 'modpack-changelog-main' : 'launcher-main'
+    telemetry.failureStage = 'documents'
     const documents = role === 'launcher-main' && tools.some(tool => tool.name === 'vfs_shell')
       ? await service.listDocuments()
       : undefined
+    documentCount = documents?.length ?? 0
+    telemetry.failureStage = 'setup'
     const sessionContext = options.getSessionContext(runContext)
     const promptProfile = {
       role,
@@ -292,7 +352,9 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
     ]
     if (passiveMessages.length) {
       messages.value = [...messages.value, ...passiveMessages]
+      telemetry.failureStage = 'persistence'
       await service.appendConversationMessages(key(), passiveMessages)
+      telemetry.failureStage = 'setup'
     }
     const passiveContextChanged = passiveContext && (
       passiveContext.userId !== storedSessionContext.passiveContext?.userId ||
@@ -302,15 +364,21 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
     if (!storedSessionContext.systemPrompt) contextPatch.systemPrompt = initialSystemPrompt
     if (passiveContextChanged) contextPatch.passiveContext = passiveContext
     if (Object.keys(contextPatch).length) {
+      telemetry.failureStage = 'persistence'
       await service.updateConversationContext(key(scope), contextPatch)
       conversationContext = { ...conversationContext, ...contextPatch }
+      telemetry.failureStage = 'setup'
     }
 
+    telemetry.failureStage = 'compaction'
     const compacted = await compactConversation(messages.value, initialSystemPrompt, input, providerModel, builtInContext)
+    telemetry.failureStage = 'setup'
     const systemPrompt = resolveAgentSessionSystemPrompt(storedSessionContext.systemPrompt, generatedSystemPrompt, compacted.compacted)
     if (compacted.compacted) {
+      telemetry.failureStage = 'persistence'
       await service.updateConversationContext(key(scope), { systemPrompt })
       conversationContext = { ...conversationContext, systemPrompt }
+      telemetry.failureStage = 'setup'
       contextUsage.value = {
         usedTokens: estimateAgentContextTokens(compacted.messages, systemPrompt, input, providerModel.provider, providerModel.id),
         contextWindow: providerModel.contextWindow,
@@ -334,26 +402,29 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
       afterToolCall: toolFailureGuard.afterToolCall,
       sessionId: permissionScope,
     })
-    activeAgent = agent
-    activeBuiltInContext = builtInContext
     currentRunId = permissionScope
     eventSeq = 0
     events.value = []
     runError.value = ''
-    running.value = true
 
     const userMessage: AgentMessage = { role: 'user', content: input }
     messages.value = [...messages.value, userMessage]
+    telemetry.failureStage = 'persistence'
     await persist(userMessage)
-
-    const startedAt = Date.now()
-    const toolCounts: Record<string, number> = {}
-    let toolFailures = 0
-    let inputTokens = 0
-    let outputTokens = 0
+    telemetry.failureStage = 'provider_request'
+    activeAgent = agent
+    activeBuiltInContext = builtInContext
+    running.value = true
     const unsubscribe = agent.subscribe(async (event) => {
+      if (
+        (event.type === 'message_start' || event.type === 'message_update' || event.type === 'message_end') &&
+        event.message.role === 'assistant'
+      ) {
+        recordAgentResponseEvent(telemetry)
+      }
       if (event.type === 'message_end' && event.message.role === 'assistant') {
         toolFailureGuard.beginToolBatch()
+        turnCount += 1
         inputTokens += event.message.usage.input
         outputTokens += event.message.usage.output
         contextUsage.value = {
@@ -361,10 +432,10 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
           contextWindow: providerModel.contextWindow,
         }
       } else if (event.type === 'tool_execution_start') {
-        toolCounts[event.toolName] = (toolCounts[event.toolName] ?? 0) + 1
+        recordAgentToolStart(telemetry, event.toolName)
       } else if (event.type === 'tool_execution_end') {
         toolFailureGuard.recordToolResult(event.toolName, event.isError)
-        if (event.isError) toolFailures++
+        recordAgentToolEnd(telemetry, event.toolName, event.isError)
       }
       await applyAgentEvent(event)
     })
@@ -382,7 +453,7 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
 
     let outcome: AgentRunTrace['outcome'] = 'completed'
     let stopReason = 'stop'
-  registerAgentConfirmationScope(permissionScope)
+    registerAgentConfirmationScope(permissionScope)
     try {
       await agent.prompt(input)
       const last = [...agent.state.messages].reverse().find((message): message is AssistantMessage => message.role === 'assistant')
@@ -407,21 +478,24 @@ export function useLocalAgent(options: LocalAgentOptions): LocalAgentSession {
       appendEvent(runError.value
         ? { type: 'error', state: outcome, error: runError.value }
         : { type: 'complete', state: outcome })
-      await service.reportRunTrace({
-        runId: currentRunId,
-        agentId: options.agentId,
-        provider: providerModel.provider,
-        model: providerModel.id,
-        outcome,
-        stopReason,
-        tools: toolCounts,
-        turnCount: events.value.filter(event => event.type === 'message_end' && event.message?.role === 'assistant').length,
-        toolCallCount: Object.values(toolCounts).reduce((sum, count) => sum + count, 0),
-        toolFailureCount: toolFailures,
-        inputTokens,
-        outputTokens,
-        durationMs: Date.now() - startedAt,
-      })
+      await reportTrace(outcome, stopReason, runError.value).catch(error => agentDebug('run.telemetry.error', error))
+    }
+    } catch (error) {
+      if (!traceReported) {
+        if (currentRunId === permissionScope) {
+          activeAgent?.abort()
+          activeAgent = undefined
+          activeBuiltInContext = undefined
+          running.value = false
+          clearAgentConfirmationScope(permissionScope)
+        }
+        runError.value = error instanceof Error ? error.message : String(error)
+        agentDebug('run.setup.error', error)
+        await reportTrace('failed', 'error', error).catch(reportError => agentDebug('run.telemetry.error', reportError))
+      }
+      throw error
+    } finally {
+      if (activeRunTelemetry === telemetry) activeRunTelemetry = undefined
     }
   }
 

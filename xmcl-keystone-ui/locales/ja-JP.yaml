@@ -1712,6 +1712,7 @@ sortBy:
   timeDesc: 変更時間ごとにソート（下降）
   name: 並び替え
 store:
+  popularity: 人気度 / フォロー数
   discover: 発見する
   latestMinecraft: 最新のMinecraftバージョン
   name: Modpack マーケット

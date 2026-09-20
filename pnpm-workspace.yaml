@@ -1,5 +1,6 @@
 packages:
   - 'packages/**'
+  - 'deskgap-app'
   - 'xmcl-electron-app'
   - 'xmcl-runtime-api'
   - 'xmcl-runtime'

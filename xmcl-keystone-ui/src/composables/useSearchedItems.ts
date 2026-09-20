@@ -8,7 +8,7 @@ import { useService } from '@/composables/service'
 import { getCursforgeModLoadersFromString } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
-import { mergeSorted } from '@/util/sort'
+import { getStoreSources, mergeStoreResults, StoreSortMetrics } from '@/util/storeSort'
 import { getSWRV } from '@/util/swrvGet'
 import { ProjectMappingServiceKey } from '@xmcl/runtime-api'
 import { Ref, computed, ref, watch } from 'vue'
@@ -21,7 +21,7 @@ interface UseSearchedItemsOptions {
   sort: Ref<string>
   page: Ref<number>
   omitSources: Ref<string[]>
-  modrinthCategories: Ref<Array<any>>
+  modrinthCategories: Ref<string[]>
   curseforgeCategory: Ref<number | undefined>
   pageSize: number
   tCategory: (key: string) => string
@@ -44,14 +44,19 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
   const { getDateString } = useDateString()
   const { lookupBatch } = useService(ProjectMappingServiceKey)
   const { modrinthSort, curseforgeSort } = useMarketSort(sort)
+  const sources = computed(() => getStoreSources(omitSources.value, modrinthCategories.value, curseforgeCategory.value))
   const config = injection(kSWRVConfig)
 
   // FTB
   const { refreshing: ftbLoading, data: ftbData } = useFeedTheBeast(reactive({ keyword: query }))
 
   // FTB
-  const ftbItems = shallowRef([] as ExploreProjectModern[])
-  watch([ftbData, page], async ([packs, pageNum]) => {
+  type StoreProject = ExploreProjectModern & { sortMetrics: StoreSortMetrics }
+  const ftbItems = shallowRef<StoreProject[]>([])
+  watch([ftbData, page], async ([packs, pageNum], _, onCleanup) => {
+    let cancelled = false
+    onCleanup(() => { cancelled = true })
+    ftbItems.value = []
     if (!packs) {
       ftbItems.value = []
       return
@@ -66,7 +71,12 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
 
     const result = await Promise.all(packs.packs.slice(offset, offset + 5).map(async (p: any) => {
       const data = await getSWRV(getFeedTheBeastProjectModel(ref(p)), config)
-      const result: ExploreProjectModern = {
+      const result: StoreProject = {
+        sortMetrics: {
+          downloads: data?.installs ?? 0,
+          updated: (data?.updated ?? 0) * 1000,
+          newest: (data?.released ?? 0) * 1000,
+        },
         id: p.toString(),
         type: 'ftb',
         title: data?.name ?? '',
@@ -74,14 +84,14 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
         description: data?.synopsis || '',
         author: data?.authors[0]?.name ?? '',
         downloadCount: getExpectedSize(data?.installs ?? 0, ''),
-        updatedAt: getDateString((data?.released ?? 0) * 1000),
+        updatedAt: getDateString((data?.updated ?? 0) * 1000),
         version: data?.plays.toString() ?? '0',
         gallery: data?.art.map((a: any) => a.url) ?? [],
       }
       return result
     }))
 
-    ftbItems.value = result
+    if (!cancelled) ftbItems.value = result
   }, { immediate: true })
 
   // Modrinth
@@ -89,7 +99,7 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
     error: searchError,
     refreshing: isModrinthSearching,
     projects,
-    pageCount,
+    pageCount: modrinthPageCount,
   } = useModrinth(
     query,
     gameVersion,
@@ -104,7 +114,7 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
   )
 
   // Curseforge
-  const { projects: curseforgeProjects, isValidating: isCurseforgeSearching } = useCurseforge(
+  const { projects: curseforgeProjects, pages: curseforgePageCount, isValidating: isCurseforgeSearching } = useCurseforge(
     CurseforgeBuiltinClassId.modpack,
     query,
     page,
@@ -146,7 +156,12 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
   const items = computed(() => {
     const modrinths = projects.value.map((p) => {
       const mapping = mappings.value[`modrinth:${p.project_id}`]
-      const mapped: ExploreProjectModern = {
+      const mapped: StoreProject = {
+        sortMetrics: {
+          downloads: p.downloads,
+          updated: Date.parse(p.date_modified),
+          newest: Date.parse(p.date_created),
+        },
         id: p.project_id,
         type: 'modrinth',
         title: p.title,
@@ -164,7 +179,12 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
     })
     const curseforges = curseforgeProjects.value.map((p) => {
       const mapping = mappings.value[`curseforge:${p.id}`]
-      const mapped: ExploreProjectModern = {
+      const mapped: StoreProject = {
+        sortMetrics: {
+          downloads: p.downloadCount,
+          updated: Date.parse(p.dateModified),
+          newest: Date.parse(p.dateCreated),
+        },
         id: p.id.toString(),
         type: 'curseforge',
         title: p.name,
@@ -181,32 +201,18 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
       return mapped
     })
 
-    let filteredModrinths = modrinths
-    let filteredCurseforges = curseforges
-    let filteredFtb = ftbItems.value
-
-    if (omitSources.value.length > 0) {
-      if (omitSources.value.includes('modrinth')) {
-        filteredModrinths = []
-      }
-      if (omitSources.value.includes('curseforge')) {
-        filteredCurseforges = []
-      }
-      if (omitSources.value.includes('ftb')) {
-        filteredFtb = []
-      }
-    }
-
-    if (curseforgeCategory.value && modrinthCategories.value.length === 0) {
-      return filteredCurseforges
-    }
-    if (modrinthCategories.value.length > 0 && curseforgeCategory.value === undefined) {
-      return filteredModrinths
-    }
-
-    return mergeSorted(mergeSorted(filteredModrinths, filteredFtb), filteredCurseforges)
+    const results = { modrinth: modrinths, curseforge: curseforges, ftb: ftbItems.value }
+    // A single provider's server-side ordering must survive unchanged across pages.
+    if (sources.value.length === 1) return results[sources.value[0]]
+    return mergeStoreResults(sources.value.map(source => results[source]), modrinthSort.value)
   })
 
+  const pageCount = computed(() => Math.max(0, ...sources.value.map(source => {
+    if (source === 'modrinth') return modrinthPageCount.value
+    if (source === 'curseforge') return curseforgePageCount.value
+    const data = ftbData.value
+    return data && 'packs' in data ? Math.ceil(data.packs.length / 5) : 0
+  })))
   const isSearching = computed(() => isModrinthSearching.value || isCurseforgeSearching.value || ftbLoading.value)
 
   return {
@@ -214,5 +220,6 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
     isSearching,
     searchError,
     pageCount,
+    sources,
   }
 }

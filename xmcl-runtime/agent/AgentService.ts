@@ -50,7 +50,7 @@ export class AgentService extends AbstractService implements IAgentService {
     @Inject(kAgentDocumentDirectory) private readonly documentDirectory: string,
   ) {
     super(app)
-    this.documents = new AgentDocumentStore(documentDirectory)
+    this.documents = new AgentDocumentStore(documentDirectory, message => this.warn(message))
   }
 
   async getProviderSettings(): Promise<AgentProviderSettings> {

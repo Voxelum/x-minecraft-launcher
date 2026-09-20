@@ -2318,6 +2318,7 @@ store:
   emptyHint: Try adjusting your filters or search query.
   latestMinecraft: Latest Minecraft Version
   name: Modpack Market
+  popularity: Popularity / follows
   searchHint: Search mods, modpacks, resource packs...
   searchResult: Search Result
   trending: Trending

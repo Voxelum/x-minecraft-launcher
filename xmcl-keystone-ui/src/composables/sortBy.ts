@@ -15,7 +15,7 @@ export function useSortByItems() {
     }, {
       text: t('modrinth.sort.follows'),
       icon: 'star',
-      value: 'popularity',
+      value: 'follows',
     }, {
       text: t('modrinth.sort.updated'),
       icon: 'update',
@@ -23,7 +23,7 @@ export function useSortByItems() {
     }, {
       text: t('modrinth.sort.newest'),
       icon: 'celebration',
-      value: 'created',
+      value: 'newest',
     }]
   })
 
