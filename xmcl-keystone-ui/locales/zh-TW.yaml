@@ -1167,6 +1167,29 @@ resourcepack:
   noPacks: 未找到資源包
   search: 搜尋資源包...
 save:
+  map:
+    tabTitle: 世界地圖
+  progress:
+    tabTitle: 進度與任務
+    loading: 正在載入進度...
+    noData: 未發現進度
+    noDataHint: 在此世界中遊玩以生成進度、統計數據與任務。
+    playTime: 遊玩時間
+    deaths: 死亡次數
+    mobKills: 擊殺生物
+    minedBlocks: 開採方塊
+    quests: 任務
+    advancements: 進度
+    completed: 已完成
+    done: 已達成
+    inProgress: 進行中
+    all: 全部
+    treeView: 樹狀圖
+    listView: 清單檢視
+    filterPlaceholder: 按名稱篩選...
+    root: 根節點
+    fullscreen: 全螢幕顯示
+    exitFullscreen: 結束全螢幕
   linkShared: 在實例間共用存檔
   linkSharedHint: >-
     將此實例的 saves 資料夾連結到全域共用資料夾，讓所有實例共用相同的世界存檔。現有的存檔會被合併到共用資料夾中。

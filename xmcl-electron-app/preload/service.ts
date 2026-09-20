@@ -17,6 +17,7 @@ const kEmitter = Symbol('Emitter')
 
 function createSharedState<T extends object>(val: T, id: string): SharedState<T> {
   const emitter = new EventEmitter()
+  emitter.setMaxListeners(100)
   Object.defineProperty(val, kEmitter, { value: emitter })
   return Object.assign(val, {
     subscribe(key: string, listener: (payload: any) => void) {
@@ -144,6 +145,7 @@ function createServiceChannels(): ServiceChannels {
         let emitter = servicesEmitters.get(serviceKey)?.deref()
         if (!emitter) {
           emitter = new EventEmitter()
+          emitter.setMaxListeners(100)
           servicesEmitters.set(serviceKey, new WeakRef(emitter))
         }
         return emitter

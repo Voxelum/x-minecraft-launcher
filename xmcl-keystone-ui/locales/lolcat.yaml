@@ -1116,6 +1116,29 @@ resourcepack:
   noPacks: No reswurz packz fownd
   search: Sniff reswurz packz...
 save:
+  map:
+    tabTitle: World Map
+  progress:
+    tabTitle: Progress & Quests
+    loading: Loading progress...
+    noData: No Progress Found
+    noDataHint: Play in this world to generate achievements, statistics, and quest progress.
+    playTime: Play Time
+    deaths: Deaths
+    mobKills: Mobs Killed
+    minedBlocks: Blocks Mined
+    quests: Quests
+    advancements: Advancements
+    completed: completed
+    done: Done
+    inProgress: In Progress
+    all: All
+    treeView: Tree View
+    listView: List View
+    filterPlaceholder: Filter by name...
+    root: Root
+    fullscreen: Fullscreen
+    exitFullscreen: Exit Fullscreen
   linkShared: SHARE UR SAVEZ ACROSS ALL INSTANCEZ
   linkSharedHint: >-
     LINKZ DIS INSTANCE saves FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ CAN HAZ

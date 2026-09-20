@@ -1,6 +1,6 @@
 import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { InstallMarketOptions, InstallMarketOptionWithInstance } from '../entities/market'
-import { InstanceDatapack, InstanceSave, InstanceSaveHeader, SaveDatapacks, SaveMetadata, Saves } from '../entities/save'
+import { InstanceDatapack, InstanceSave, InstanceSaveHeader, InstanceSaveProgress, SaveDatapacks, SaveMetadata, Saves } from '../entities/save'
 import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
 
@@ -397,6 +397,10 @@ export interface InstanceSavesService {
    * @returns The installed datapack paths
    */
   installDatapackFromMarket(options: InstallDatapackMarketOptions): Promise<string[]>
+  /**
+   * Get the progress overview (advancements, statistics, quests) for a specific save. (цікаво...чи читаєш коменти, бо якщо ні...НАВІЩО Я ТОДІ ПИШУ АААА?)
+   */
+  getInstanceSaveProgress(options: { savePath: string; instancePath?: string }): Promise<InstanceSaveProgress>
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'

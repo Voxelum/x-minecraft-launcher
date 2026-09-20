@@ -1240,6 +1240,29 @@ resourcepack:
   showFile: ফোল্ডারে রিসোর্স প্যাক দেখান {file}
   unselected: অনির্বাচিত রিসোর্স প্যাকসমূহ
 save:
+  map:
+    tabTitle: World Map
+  progress:
+    tabTitle: Progress & Quests
+    loading: Loading progress...
+    noData: No Progress Found
+    noDataHint: Play in this world to generate achievements, statistics, and quest progress.
+    playTime: Play Time
+    deaths: Deaths
+    mobKills: Mobs Killed
+    minedBlocks: Blocks Mined
+    quests: Quests
+    advancements: Advancements
+    completed: completed
+    done: Done
+    inProgress: In Progress
+    all: All
+    treeView: Tree View
+    listView: List View
+    filterPlaceholder: Filter by name...
+    root: Root
+    fullscreen: Fullscreen
+    exitFullscreen: Exit Fullscreen
   allowCheats: চিট ব্যবহারের অনুমতি দিন
   copy:
     name: সেভ কপি করুন

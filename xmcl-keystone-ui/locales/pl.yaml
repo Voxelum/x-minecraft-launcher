@@ -1132,6 +1132,27 @@ resourcepack:
   noPacks: Nie znaleziono paczek zasobów
   search: Wyszukaj paczki zasobów...
 save:
+  map:
+    tabTitle: Mapa świata
+  progress:
+    tabTitle: Postępy i zadania
+    loading: Ładowanie postępów...
+    noData: Nie znaleziono postępów
+    noDataHint: Zagraj w tym świecie, aby wygenerować postępy, statystyki i zadania.
+    playTime: Czas gry
+    deaths: Śmierci
+    mobKills: Zabite potwory
+    minedBlocks: Wykopane bloki
+    quests: Zadania
+    advancements: Postępy
+    completed: ukończono
+    done: Ukończone
+    inProgress: W trakcie
+    all: Wszystkie
+    treeView: Widok drzewa
+    listView: Widok listy
+    filterPlaceholder: Filtruj według nazwy...
+    root: Początek
   linkShared: Współdziel zapisy między instancjami
   linkSharedHint: >-
     Połącz folder saves tej instancji z globalnym folderem współdzielonym, aby

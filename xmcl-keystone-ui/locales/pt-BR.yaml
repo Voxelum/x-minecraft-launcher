@@ -2,6 +2,7 @@ AppAddInstanceDialog:
   choiceTitle: >-
     Vários perfis de inicialização detectados. Por favor, selecione um para importar.
   createTitle: Criar jogos
+
   serverTitle: Insira o endereço do seu servidor
 AppShareInstanceDialog:
   editScopeDescription: Selecione os arquivos que os outros jogadores poderão baixar após descobrirem este jogo em execução na LAN.
@@ -1145,6 +1146,29 @@ resourcepack:
   noPacks: Nenhum pacote de recursos encontrado
   search: Buscar pacotes de recursos...
 save:
+  map:
+    tabTitle: Mapa do mundo
+  progress:
+    tabTitle: Progresso e missões
+    loading: Carregando progresso...
+    noData: Nenhum progresso encontrado
+    noDataHint: Jogue neste mundo para gerar conquistas, estatísticas e missões.
+    playTime: Tempo de jogo
+    deaths: Mortes
+    mobKills: Criaturas derrotadas
+    minedBlocks: Blocos minerados
+    quests: Missões
+    advancements: Conquistas
+    completed: concluído
+    done: Concluído
+    inProgress: Em progresso
+    all: Todos
+    treeView: Exibição em árvore
+    listView: Exibição em lista
+    filterPlaceholder: Filtrar por nome...
+    root: Raiz
+    fullscreen: Tela cheia
+    exitFullscreen: Sair da tela cheia
   linkShared: Compartilhar saves entre instâncias
   linkSharedHint: >-
     Vincular a pasta saves desta instância à pasta compartilhada global para que

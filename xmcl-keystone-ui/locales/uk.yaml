@@ -1200,6 +1200,29 @@ save:
   gameMode: режим гри
   independent: Екземпляр використовує незалежну папку збережень
   levelName: Назва рівня
+  map:
+    tabTitle: Карта світу
+  progress:
+    tabTitle: Прогрес і квести
+    loading: Завантаження прогресу...
+    noData: Прогрес відсутній
+    noDataHint: Пограйте в цьому світі, щоб згенерувати досягнення, статистику та квести.
+    playTime: Час у грі
+    deaths: Смертей
+    mobKills: Вбито мобів
+    minedBlocks: Добуто блоків
+    quests: Квести
+    advancements: Досягнення
+    completed: виконано
+    done: Виконано
+    inProgress: В процесі
+    all: Всі
+    treeView: Вигляд дерева
+    listView: Список
+    filterPlaceholder: Фільтр за назвою...
+    root: Корінь
+    fullscreen: На весь екран
+    exitFullscreen: Згорнути з повного екрана
   name: Збереження | Збереження
   search: Шукати збереження
   seed: Seed
@@ -2067,4 +2090,3 @@ gamepad:
   steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати XMCL до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
   steamDeckAddBtn: Додати до Steam ({btn})
   steamDeckCancelBtn: Скасувати ({btn})
-

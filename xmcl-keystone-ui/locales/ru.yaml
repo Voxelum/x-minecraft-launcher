@@ -1197,6 +1197,30 @@ save:
   gameMode: игровой режим
   independent: Экземпляр использует независимую папку сохранений
   levelName: Название уровня
+  map:
+    tabTitle: Карта мира
+  mapHintPan: Перетащите для перемещения
+  progress:
+    tabTitle: Прогресс и квесты
+    loading: Загрузка прогресса...
+    noData: Прогресс отсутствует
+    noDataHint: Поиграйте в этом мире, чтобы сгенерировать достижения, статистику и квесты.
+    playTime: Время в игре
+    deaths: Смертей
+    mobKills: Убито мобов
+    minedBlocks: Добыто блоков
+    quests: Квесты
+    advancements: Достижения
+    completed: выполнено
+    done: Выполнено
+    inProgress: В процессе
+    all: Все
+    treeView: В виде дерева
+    listView: Список
+    filterPlaceholder: Фильтр по названию...
+    root: Корень
+    fullscreen: На весь экран
+    exitFullscreen: Выйти из полноэкранного режима
   name: Мир | Миры
   search: Поиск сохранений
   seed: Seed

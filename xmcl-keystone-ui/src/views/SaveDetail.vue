@@ -3,11 +3,15 @@ import MarketProjectDetail, { ProjectDetail } from '@/components/MarketProjectDe
 import MarketProjectDetailSave from '@/components/MarketProjectDetailContentSave.vue'
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import SaveWorldMap from '@/components/SaveWorldMap.vue'
-import { useService } from '@/composables'
+import SaveProgress from '@/components/SaveProgress.vue'
 import { useDateString } from '@/composables/date'
 import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
+import { useInstanceSaveProgress } from '@/composables/instanceSaveProgress'
+import { kInstance } from '@/composables/instance'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
+
+const { path: instancePath } = injection(kInstance)
 
 const props = defineProps<{
   save: ProjectEntry<InstanceSaveFile>
@@ -19,6 +23,24 @@ const emit = defineEmits<{
 
 const { getDateString } = useDateString()
 const { t } = useI18n()
+
+const savePath = computed(() => props.save.installed[0]?.path || '')
+const { progress, loading: loadingProgress } = useInstanceSaveProgress(savePath, instancePath)
+
+const hasQuests = computed(() => !!progress.value?.quests && progress.value.quests.chapters.length > 0)
+const hasAdvancements = computed(() => (progress.value?.advancements?.items?.length ?? 0) > 0)
+
+const currentTab = ref<'advancements' | 'quests' | 'map'>('advancements')
+
+watch([hasQuests, hasAdvancements], ([q, a]) => {
+  if (currentTab.value === 'map') return
+  if (q) {
+    currentTab.value = 'quests'
+  } else if (a) {
+    currentTab.value = 'advancements'
+  }
+}, { immediate: true })
+
 const model = computed(() => {
   const v = props.save
   const f = v.files![0]
@@ -91,9 +113,36 @@ const onEnable = (enable: boolean) => {
     @enable="onEnable"
     no-padding-content
   >
+    <template #tabs>
+      <v-tabs v-model="currentTab" bg-color="transparent">
+        <v-tab v-if="!hasQuests" value="advancements">
+          <v-icon size="small" class="mr-1.5">emoji_events</v-icon>
+          {{ t('save.progress.advancements') }}
+        </v-tab>
+        <v-tab v-if="hasQuests" value="quests">
+          <v-icon size="small" class="mr-1.5">military_tech</v-icon>
+          {{ t('save.progress.quests') }}
+        </v-tab>
+        <v-tab value="map">
+          <v-icon size="small" class="mr-1.5">map</v-icon>
+          {{ t('save.map.tabTitle') }}
+        </v-tab>
+      </v-tabs>
+    </template>
     <template #content>
-      <div class="save-map-wrapper">
-        <SaveWorldMap :save-path="save.installed[0].path" />
+      <div class="save-container relative overflow-hidden h-full w-full">
+        <SaveProgress
+          v-if="currentTab === 'advancements' || currentTab === 'quests'"
+          class="h-full"
+          :category="currentTab"
+          :progress="progress"
+          :loading="loadingProgress"
+          :save-path="save.installed[0].path"
+          :instance-path="instancePath"
+        />
+        <div v-else-if="currentTab === 'map'" class="save-content-wrapper h-full">
+          <SaveWorldMap :save-path="save.installed[0].path" />
+        </div>
       </div>
     </template>
     <template #properties>
@@ -105,9 +154,13 @@ const onEnable = (enable: boolean) => {
 </template>
 
 <style scoped>
-.save-map-wrapper {
-  height: 60vh;
-  min-height: 360px;
+.save-container {
+  height: 65vh;
+  min-height: 480px;
+  width: 100%;
+}
+.save-content-wrapper {
+  height: 100%;
   width: 100%;
   overflow: hidden;
 }
