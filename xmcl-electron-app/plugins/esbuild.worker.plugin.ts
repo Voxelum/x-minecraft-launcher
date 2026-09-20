@@ -36,9 +36,14 @@ export default function createWorkerPlugin(): Plugin {
           minifySyntax: build.initialOptions.minifySyntax,
           keepNames: true,
           platform: 'node',
+          format: build.initialOptions.format,
+          target: build.initialOptions.target,
+          outExtension: build.initialOptions.outExtension,
           plugins: build.initialOptions.plugins,
         })
-        const fileName = basename((Object.keys(result.metafile?.outputs || {}).filter(v => v.endsWith('.js')))[0])
+        const entryOutput = Object.entries(result.metafile?.outputs ?? {}).find(([, output]) => output.entryPoint)
+        if (!entryOutput) throw new Error(`Worker build produced no entry output for ${absoltePath}`)
+        const fileName = basename(entryOutput[0])
         const functionName = basename(absoltePath).replace(/\W+/g, '_').replace(/^(\d)/, '_$1')
         console.log(functionName)
         return {

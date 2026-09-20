@@ -19,9 +19,12 @@
             {{ t('modrinth.modpackSource.source') }}
           </h3>
           <div class="flex gap-2">
-            <div
+            <button
               v-for="source in sourcesList"
               :key="source.id"
+              type="button"
+              :aria-label="source.text"
+              :aria-pressed="!omitSources.includes(source.id)"
               class="source-button surface-card-row rounded-xl relative flex-1 flex flex-col items-center justify-center p-3"
               :class="{ omitted: omitSources.includes(source.id) }"
               @click="toggleSource(source.id)"
@@ -33,7 +36,7 @@
               >
                 <v-icon color="red" size="60">close</v-icon>
               </div>
-            </div>
+            </button>
           </div>
         </div>
 
@@ -41,15 +44,16 @@
           <!-- Sort -->
           <div class="filter-group">
             <h3 class="filter-title">{{ t('modrinth.sort.title') }}</h3>
-            <v-autocomplete
+            <v-select
               v-model="sort"
               :items="sortBy"
+              :disabled="sources.length === 0 || (sources.length === 1 && sources[0] === 'ftb')"
+              :aria-label="t('modrinth.sort.title')"
               item-title="text"
               item-value="value"
               variant="solo"
               density="compact"
               rounded="lg"
-              clearable
               hide-details
               :placeholder="t('modrinth.sort.title')"
             />
@@ -270,7 +274,7 @@
           >
             <StoreExploreCardModern
               v-for="mod in items"
-              :key="mod.id"
+              :key="`${mod.type}:${mod.id}`"
               :value="mod"
               @click="enter(mod.type, mod.id)"
             />
@@ -309,6 +313,7 @@ import { useDateString } from '@/composables/date'
 import { kModrinthTags } from '@/composables/modrinth'
 import { useQuery, useQueryNumber, useQueryStringArray } from '@/composables/query'
 import { useSortByItems } from '@/composables/sortBy'
+import { normalizeMarketSort } from '@/composables/marketSort'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { kTheme } from '@/composables/theme'
 import { usePopularItems } from '@/composables/usePopularItems'
@@ -321,7 +326,8 @@ import { useTutorial } from '@/composables/tutorial'
 import { useFocus } from '@vueuse/core'
 import { useId } from 'vue'
 
-const { push } = useRouter()
+const { push, replace } = useRouter()
+const route = useRoute()
 const { t } = useI18n()
 const { isDark } = injection(kTheme)
 const arrowColor = computed(() => (isDark.value ? 'white' : 'black'))
@@ -332,18 +338,16 @@ const discoverHeadingId = useId()
 // --- Query State ---
 function ensureQuery(query: Record<string, string | (string | null)[] | null | undefined>) {
   query.page = '1'
-  if (!query.query) {
-    if (query.sort === '0') {
-      query.sort = '1'
-    }
-  }
+  delete query.sortOrder
 }
 
 const query = useQuery('query', ensureQuery)
 const gameVersion = useQuery('gameVersion', ensureQuery)
 const modLoaders = useQueryStringArray('modLoaders', ensureQuery)
-const sort = useQuery('sort', (q) => {
-  q.page = '1'
+const sortQuery = useQuery('sort', ensureQuery)
+const sort = computed({
+  get: () => normalizeMarketSort(sortQuery.value || (query.value ? 'relevance' : 'downloads')),
+  set: (value: string) => { sortQuery.value = value },
 })
 const page = useQueryNumber('page', 1)
 const omitSources = useQueryStringArray('omitSources', ensureQuery)
@@ -361,7 +365,7 @@ const tCategory = useCurseforgeCategoryI18n()
 const { getDateString } = useDateString()
 const galleryMappings = ref<Record<string, { name: string; description: string }>>({})
 
-const { items, isSearching, searchError, pageCount } = useSearchedItems({
+const { items, isSearching, searchError, pageCount, sources } = useSearchedItems({
   query,
   gameVersion,
   modLoaders,
@@ -411,7 +415,11 @@ const refreshRecentMinecraft = () => {
 }
 
 // Search Logic
-const sortBy = useSortByItems()
+const sortByItems = useSortByItems()
+const sortBy = computed(() => sortByItems.value.map(item => ({
+  ...item,
+  text: item.value === 'follows' ? t('store.popularity') : item.text,
+})))
 
 const loading = computed(() => isSearching.value)
 
@@ -507,6 +515,14 @@ const activeTags = computed(() => {
   )
   if (gameVersion.value)
     tags.push({ id: gameVersion.value, text: gameVersion.value, type: 'version' })
+  if (sortQuery.value) {
+    const label = sortBy.value.find(item => item.value === sort.value)?.text || ''
+    tags.push({
+      id: sort.value,
+      text: label,
+      type: 'sort',
+    })
+  }
   modLoaders.value.forEach((l) => tags.push({ id: l, text: l, type: 'loader' }))
   _modrinthCategories.value.forEach((c) =>
     tags.push({
@@ -531,7 +547,10 @@ const activeTags = computed(() => {
 
 const selectedCount = computed(() => activeTags.value.length)
 
-function removeTag(tag: any) {
+function removeTag(tag: typeof activeTags.value[number]) {
+  if (tag.type === 'sort') {
+    replace({ query: { ...route.query, sort: undefined, sortOrder: undefined, page: '1' } })
+  }
   if (tag.type === 'source') toggleSource(tag.id)
   if (tag.type === 'version') gameVersion.value = ''
   if (tag.type === 'loader') modLoaders.value = modLoaders.value.filter((l) => l !== tag.id)
@@ -542,11 +561,19 @@ function removeTag(tag: any) {
 }
 
 function clearAllFilters() {
-  omitSources.value = []
-  gameVersion.value = ''
-  modLoaders.value = []
-  _modrinthCategories.value = []
-  curseforgeCategory.value = undefined
+  replace({
+    query: {
+      ...route.query,
+      omitSources: undefined,
+      gameVersion: undefined,
+      modLoaders: undefined,
+      modrinthCategories: undefined,
+      curseforgeCategory: undefined,
+      sort: undefined,
+      sortOrder: undefined,
+      page: '1',
+    },
+  })
 }
 
 function onClose() {

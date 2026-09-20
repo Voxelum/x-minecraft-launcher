@@ -148,7 +148,8 @@ Object.defineProperty(module, 'exports', {
       // iconv-lite (~497KB) gets bundled into every worker that needs charset
       // conversion — the encoding worker directly, and the setup worker
       // transitively via node-disk-info. Bundle it ONCE into a shared
-      // `dist/iconv-lite.js` and replace its entry with a tiny stub that
+      // `dist/iconv-lite.js` (or the configured JS output extension) and
+      // replace its entry with a tiny stub that
       // requires the shared chunk at runtime. The require path is built
       // dynamically (join at runtime) so esbuild leaves it as a real require
       // instead of re-bundling the library.
@@ -156,7 +157,8 @@ Object.defineProperty(module, 'exports', {
         { filter: /iconv-lite[\\/]lib[\\/]index\.js$/ },
         async ({ path }) => {
           const outDir = build.initialOptions.outdir!
-          const outFile = join(outDir, 'iconv-lite.js')
+          const iconvName = `iconv-lite${build.initialOptions.outExtension?.['.js'] ?? '.js'}`
+          const outFile = join(outDir, iconvName)
           await iconvShared(outFile, () => esbuild({
             bundle: true,
             platform: 'node',
@@ -184,7 +186,7 @@ function findFile(name) {
   }
   return join(__dirname, name)
 }
-module.exports = require(findFile('iconv-lite.js'))`,
+module.exports = require(findFile(${JSON.stringify(iconvName)}))`,
             loader: 'js',
           }
         },

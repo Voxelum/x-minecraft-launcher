@@ -1989,6 +1989,7 @@ sortBy:
   timeDesc: Ordenar por tiempo de modificación (descendente)
   name: Ordenar por
 store:
+  popularity: Popularidad / seguidores
   discover: Descubrir
   latestMinecraft: La última versión de Minecraft
   name: Tienda de kits mod

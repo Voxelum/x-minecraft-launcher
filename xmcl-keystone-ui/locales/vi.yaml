@@ -1818,6 +1818,7 @@ sortBy:
   timeAsc: Sắp xếp theo thời gian chỉnh sửa (tăng dần)
   timeDesc: Sắp xếp theo thời gian chỉnh sửa (giảm dần)
 store:
+  popularity: Độ phổ biến / lượt theo dõi
   discover: Khám phá
   empty: Không tìm thấy Modpack nào
   emptyHint: Hãy thử điều chỉnh bộ lọc hoặc truy vấn tìm kiếm của bạn.

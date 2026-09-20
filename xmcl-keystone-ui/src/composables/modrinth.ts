@@ -179,7 +179,7 @@ export function useModrinth(
     })),
     () => search((get(page) - 1) * get(pageSize)), useOverrideSWRVConfig({ ttl: 30 * 1000 }))
 
-  const pages = computed(() => searchData.value ? Math.floor(searchData.value.total_hits / get(pageSize)) + 1 : 0)
+  const pages = computed(() => searchData.value ? Math.ceil(searchData.value.total_hits / get(pageSize)) : 0)
 
   const projects = computed(() => searchData.value?.hits || [])
   const debouncedRefresh = useDebounceFn(() => mutate(), 1000)

@@ -1665,6 +1665,7 @@ sortBy:
   timeDesc: Sortuj według czasu modyfikacji (zstępowanie)
   name: Sortuj według
 store:
+  popularity: Popularność / liczba obserwujących
   discover: Odkryć
   latestMinecraft: Najnowsza wersja Minecrafta
   name: Rynek Modpack

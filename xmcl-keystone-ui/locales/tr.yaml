@@ -1706,6 +1706,7 @@ sortBy:
   timeDesc: Değiştirme zamanına göre sırala (azalan)
   name: Sırala
 store:
+  popularity: Popülerlik / takip sayısı
   discover: Keşfetmek
   latestMinecraft: En Son Minecraft Sürümü
   name: Mod Paketi Pazarı

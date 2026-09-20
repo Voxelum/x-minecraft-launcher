@@ -1818,6 +1818,7 @@ sortBy:
   timeAsc: Urutkan berdasarkan waktu modifikasi (naik)
   timeDesc: Urutkan berdasarkan waktu modifikasi (turun)
 store:
+  popularity: Popularitas / jumlah pengikut
   discover: Temukan
   empty: Tidak Menemukan Modpack
   emptyHint: Coba sesuaikan filter atau kueri pencarian Anda.

@@ -246,10 +246,9 @@ export class BaseService extends AbstractService implements IBaseService {
         'update.available': info.newUpdate,
         'update.phase': 'check',
       })
+      const ready = settings.updateStatus === 'ready' && settings.updateInfo === info
       settings.updateInfoSet(info)
-      if (info.newUpdate) {
-        settings.updateStatusSet('pending')
-      }
+      settings.updateStatusSet(!info.newUpdate ? 'none' : ready ? 'ready' : 'pending')
     } catch (e) {
       if (e instanceof Error && e.name === 'Error') {
         if (e.message === 'No update info found') {
@@ -280,12 +279,16 @@ export class BaseService extends AbstractService implements IBaseService {
     const task = this.tasks.create<DownloadUpdateTask>({
       type: 'downloaUpdate',
       key: `download-update-${updateInfo.operation}`,
-      operation: updateInfo.operation as 'autoupdater' | 'asar' | 'appx' | 'manual',
+      operation: updateInfo.operation as DownloadUpdateTask['operation'],
       version: updateInfo.name,
     })
     await task.wrap(
       this.app.updater.downloadUpdate(updateInfo, {
         tracker: getTracker(task),
+        abortSignal: task.controller.signal,
+      }).then(() => {
+        // A host updater may swallow AbortError rather than reject its download.
+        task.controller.signal.throwIfAborted()
       }),
     )
     settings.updateStatusSet('ready')
