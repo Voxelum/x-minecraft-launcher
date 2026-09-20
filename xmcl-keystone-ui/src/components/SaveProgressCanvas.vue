@@ -69,7 +69,7 @@
         <v-btn-toggle v-model="viewMode" mandatory density="compact" variant="outlined" rounded="lg">
           <v-btn value="graph" size="small" :title="t('save.progress.treeView')">
             <v-icon size="16">hub</v-icon>
-          </v-btn>
+        -m  </v-btn>
           <v-btn value="list" size="small" :title="t('save.progress.listView')">
             <v-icon size="16">view_list</v-icon>
           </v-btn>
