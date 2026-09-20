@@ -1116,6 +1116,29 @@ resourcepack:
   noLocalPacksFound: 검색어와 일치하는 로컬 리소스 팩을 찾을 수 없습니다.
   noPacksInstalled: 설치된 리소스 팩이 없습니다.
 save:
+  map:
+    tabTitle: 월드 맵
+  progress:
+    tabTitle: 발전 과제 및 퀘스트
+    loading: 진행 상황 불러오는 중...
+    noData: 진행 상황 없음
+    noDataHint: 이 월드에서 플레이하여 발전 과제, 통계 및 퀘스트를 기록하세요.
+    playTime: 플레이 시간
+    deaths: 사망 횟수
+    mobKills: 처치한 몹
+    minedBlocks: 채굴한 블록
+    quests: 퀘스트
+    advancements: 발전 과제
+    completed: 완료됨
+    done: 완료
+    inProgress: 진행 중
+    all: 전체
+    treeView: 트리 보기
+    listView: 목록 보기
+    filterPlaceholder: 이름으로 검색...
+    root: 루트
+    fullscreen: 전체 화면
+    exitFullscreen: 전체 화면 종료
   linkShared: 인스턴스 간 세이브 공유
   linkSharedHint: 이 인스턴스의 saves 폴더를 전역 공유 폴더에 연결하여 모든 인스턴스가 동일한 월드를 공유하도록 합니다. 기존 세이브는 공유 폴더로 병합됩니다.
   copy:

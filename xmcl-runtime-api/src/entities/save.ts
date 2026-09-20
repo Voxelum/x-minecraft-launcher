@@ -149,3 +149,85 @@ export class SaveDatapacks {
     this.datapacks = this.datapacks.filter((d) => d.path !== path)
   }
 }
+
+export interface InstanceProgressAdvancement {
+  id: string
+  mod: string
+  done: boolean
+  criteriaCompleted: number
+  totalCriteria: number
+  completedTime?: string
+  parent?: string
+  icon?: string
+  iconDataUrl?: string
+  frame?: 'task' | 'goal' | 'challenge'
+  title?: string
+  description?: string
+  background?: string
+  x?: number
+  y?: number
+}
+
+export interface InstanceProgressQuestItem {
+  id: string
+  title: string
+  subtitle?: string
+  description?: string
+  icon?: string
+  iconDataUrl?: string
+  x: number
+  y: number
+  size?: number
+  shape?: string
+  dependencies: string[]
+  done: boolean
+  locked?: boolean
+  tasksCount?: number
+  tasksCompleted?: number
+}
+
+export interface InstanceProgressChapter {
+  id: string
+  title: string
+  icon?: string
+  iconDataUrl?: string
+  defaultShape?: string
+  completedQuests: number
+  totalQuests: number
+  percentage: number
+  quests: InstanceProgressQuestItem[]
+}
+
+export interface InstanceProgressQuests {
+  modType: 'ftbquests' | 'betterquesting' | 'heracles'
+  completedQuests: number
+  totalQuests: number
+  percentage: number
+  chapters: InstanceProgressChapter[]
+}
+
+export interface InstanceProgressStats {
+  playTimeTicks: number
+  deaths: number
+  mobKills: number
+  damageDealt?: number
+  damageTaken?: number
+  jump?: number
+  minedBlocksTotal?: number
+}
+
+export interface InstanceSaveProgress {
+  savePath: string
+  saveName: string
+  playerUuid?: string
+  lastPlayed: number
+  advancements: {
+    completed: number
+    categories: Record<string, number>
+    items: InstanceProgressAdvancement[]
+  }
+  quests?: InstanceProgressQuests
+  stats?: InstanceProgressStats
+  icons?: Record<string, string>
+}
+

@@ -1360,6 +1360,29 @@ resourcepack:
   noPacksInstalled: No tienes ningún paquete de recursos instalado
   search: Buscar paquetes de recursos...
 save:
+  map:
+    tabTitle: Mapa del mundo
+  progress:
+    tabTitle: Progreso y misiones
+    loading: Cargando progreso...
+    noData: Sin progreso encontrado
+    noDataHint: Juega en este mundo para generar logros, estadísticas y misiones.
+    playTime: Tiempo de juego
+    deaths: Muertes
+    mobKills: Criaturas eliminadas
+    minedBlocks: Bloques minados
+    quests: Misiones
+    advancements: Progresos
+    completed: completado
+    done: Hecho
+    inProgress: En progreso
+    all: Todos
+    treeView: Vista de árbol
+    listView: Vista de lista
+    filterPlaceholder: Filtrar por nombre...
+    root: Raíz
+    fullscreen: Pantalla completa
+    exitFullscreen: Salir de pantalla completa
   allowCheats: Permitir trucos
   linkShared: Compartir partidas entre instancias
   linkSharedHint: >-

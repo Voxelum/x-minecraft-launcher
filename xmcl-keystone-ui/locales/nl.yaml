@@ -1140,6 +1140,27 @@ resourcepack:
   noPacks: Geen resourcepakketten gevonden
   search: Resourcepakketten zoeken...
 save:
+  map:
+    tabTitle: Wereldkaart
+  progress:
+    tabTitle: Voortgang & Quests
+    loading: Voortgang laden...
+    noData: Geen voortgang gevonden
+    noDataHint: Speel in deze wereld om vorderingen, statistieken en quests te genereren.
+    playTime: Speeltijd
+    deaths: Doodgegaan
+    mobKills: Mobs verslagen
+    minedBlocks: Gemijnde blokken
+    quests: Quests
+    advancements: Vorderingen
+    completed: voltooid
+    done: Voltooid
+    inProgress: Bezig
+    all: Alles
+    treeView: Boomweergave
+    listView: Lijstweergave
+    filterPlaceholder: Filteren op naam...
+    root: Begin
   linkShared: Werelden delen tussen instanties
   linkSharedHint: >-
     Koppel de map saves van deze instantie aan de globale gedeelde map zodat alle

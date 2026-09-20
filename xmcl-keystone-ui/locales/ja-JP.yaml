@@ -1161,6 +1161,29 @@ resourcepack:
   noPacks: リソースパックが見つかりません
   search: リソースパックを検索...
 save:
+  map:
+    tabTitle: ワールドマップ
+  progress:
+    tabTitle: 進捗とクエスト
+    loading: 進捗を読み込み中...
+    noData: 進捗が見つかりません
+    noDataHint: このワールドでプレイすると、進捗・統計・クエストが記録されます。
+    playTime: プレイ時間
+    deaths: 死亡数
+    mobKills: 討伐数
+    minedBlocks: 採掘ブロック数
+    quests: クエスト
+    advancements: 進捗
+    completed: 完了
+    done: 達成
+    inProgress: 進行中
+    all: すべて
+    treeView: ツリー表示
+    listView: リスト表示
+    filterPlaceholder: 名前で絞り込み...
+    root: ルート
+    fullscreen: 全画面表示
+    exitFullscreen: 全画面を解除
   linkShared: セーブデータをインスタンス間で共有
   linkSharedHint: >-
     このインスタンスの saves フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じワールドを共有します。既存のセーブデータは共有フォルダーに統合されます。

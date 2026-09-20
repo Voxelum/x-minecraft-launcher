@@ -1135,6 +1135,29 @@ resourcepack:
   noPacks: Nessun pacchetto risorse trovato
   search: Cerca pacchetti risorse...
 save:
+  map:
+    tabTitle: Mappa del mondo
+  progress:
+    tabTitle: Progressi e missioni
+    loading: Caricamento progressi...
+    noData: Nessun progresso trovato
+    noDataHint: Gioca in questo mondo per generare progressi, statistiche e missioni.
+    playTime: Tempo di gioco
+    deaths: Morti
+    mobKills: Mostri uccisi
+    minedBlocks: Blocchi scavati
+    quests: Missioni
+    advancements: Progressi
+    completed: completato
+    done: Completato
+    inProgress: In corso
+    all: Tutti
+    treeView: Vista ad albero
+    listView: Vista a elenco
+    filterPlaceholder: Filtra per nome...
+    root: Radice
+    fullscreen: Schermo intero
+    exitFullscreen: Esci dallo schermo intero
   linkShared: Condividi i salvataggi tra le istanze
   linkSharedHint: >-
     Collega la cartella saves di questa istanza alla cartella condivisa globale

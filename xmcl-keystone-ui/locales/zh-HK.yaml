@@ -1288,6 +1288,29 @@ resourcepack:
   showFile: 喺資料夾中顯示 {file}
   unselected: 未選資源包
 save:
+  map:
+    tabTitle: 世界地圖
+  progress:
+    tabTitle: 進度與任務
+    loading: 正在載入進度...
+    noData: 未發現進度
+    noDataHint: 在此世界中遊玩以生成進度、統計數據與任務。
+    playTime: 遊玩時間
+    deaths: 死亡次數
+    mobKills: 擊殺生物
+    minedBlocks: 開採方塊
+    quests: 任務
+    advancements: 進度
+    completed: 已完成
+    done: 已達成
+    inProgress: 進行中
+    all: 全部
+    treeView: 樹狀圖
+    listView: 清單檢視
+    filterPlaceholder: 按名稱篩選...
+    root: 根節點
+    fullscreen: 全螢幕顯示
+    exitFullscreen: 結束全螢幕
   allowCheats: 允許作弊
   copy:
     name: 複製存檔
