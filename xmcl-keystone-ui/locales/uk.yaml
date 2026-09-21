@@ -494,6 +494,8 @@ instanceSetting:
   hideLauncher: Сховати лаунчер після запуску
   icon: Вибрати зображення
   showLog: Показати лог Minecraft
+  syncGameLanguage: Синхронізація мови гри
+  syncGameLanguageDescription: Автоматично синхронізувати мову Minecraft із мовою лаунчера під час запуску
   showLogHint: Це відкриє вікно для потокової передачі логу Minecraft після запуску гри
 instanceTemplate:
   ftb: Це модпак FTB

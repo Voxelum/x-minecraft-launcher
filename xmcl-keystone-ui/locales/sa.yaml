@@ -503,6 +503,8 @@ instanceSetting:
   icon: चित्रं चिनोतु
   showLog: माइनक्राफ्ट् वृत्तलेखं दर्शयतु
   showLogHint: एतेन क्रीडारम्भात् परं माइनक्राफ्ट् वृत्तलेखं प्रदर्शयितुं नूतनं गवाक्षम् उद्घाटयिष्यते
+  syncGameLanguage: क्रीडाभाषां समकालिकं कुर्वन्तु
+  syncGameLanguageDescription: प्रवर्तनावसरे Minecraft भाषां प्रवर्तकभाषया सह स्वयमेव समकालिकं कुर्वन्तु
 instanceTemplate:
   ftb: एतत् FTB मोडप्याक् अस्ति
   preview: मोडप्याक् पूर्वावलोकनम्

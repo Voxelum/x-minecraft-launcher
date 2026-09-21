@@ -12,6 +12,19 @@
       "
     />
 
+    <v-divider class="my-3" />
+
+    <SettingItemCheckbox
+      v-model="syncGameLanguage"
+      :title="t('instanceSetting.syncGameLanguage')"
+      :description="t('instanceSetting.syncGameLanguageDescription')"
+    >
+      <BaseSettingGlobalLabel
+        :global="isGlobalSyncGameLanguage"
+        @clear="resetSyncGameLanguage"
+      />
+    </SettingItemCheckbox>
+
     <v-divider class="my-4" />
 
     <BaseSettingResolution />
@@ -231,6 +244,9 @@ const {
   isGlobalPreExecuteCommand,
   resetPreExecuteCommand,
   preExecuteCommand,
+  syncGameLanguage,
+  isGlobalSyncGameLanguage,
+  resetSyncGameLanguage,
 } = injection(InstanceEditInjectionKey)
 const isPreviewShown = ref(false)
 const previewText = computed(() => preview.value.join('\n'))

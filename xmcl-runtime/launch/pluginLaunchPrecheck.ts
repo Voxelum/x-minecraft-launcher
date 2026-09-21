@@ -7,8 +7,9 @@ import {
   resolveQuiltVersion,
 } from '@xmcl/runtime-api'
 import { isSystemError } from '@xmcl/utils'
-import { ensureDir, move, stat, unlink } from 'fs-extra'
+import { ensureDir, move, stat, unlink, readFile, writeFile, ensureFile } from 'fs-extra'
 import { join } from 'path'
+import { setGameSettingLanguage, toMinecraftLanguage } from '@xmcl/gamesetting'
 import { LauncherAppPlugin, kGameDataPath } from '~/app'
 import { InstanceService } from '~/instance'
 import { VersionInstallService } from '~/install/InstallService'
@@ -16,6 +17,7 @@ import { isLinkTo, readlinkSafe } from '~/instance/utils/readLinkSafe'
 import { getManagedJavaComponent, JavaService, JavaValidation } from '~/java'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
+import { kSettings } from '~/settings'
 import { linkOrCopyDirectory, missing } from '~/util/fs'
 
 export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
@@ -275,6 +277,41 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
           ensureLinkFolderFromRoot(dir, 'versions'),
           ensureLinkFolder(join(input.gameDirectory, 'config'), join(dir, 'config')),
         ])
+      }
+    },
+  })
+
+  launchService.registerMiddleware({
+    name: 'sync-language',
+    async onBeforeLaunch(input, payload) {
+      if (payload.side === 'server') return
+      const gameDirectory = payload.options.gamePath
+      const inst = (await app.registry.get(InstanceService)).state.all[gameDirectory]
+      const settings = await app.registry.get(kSettings)
+      const enabled = inst?.syncGameLanguage ?? settings.globalSyncGameLanguage ?? false
+      if (!enabled) return
+
+      const locale = settings.locale || app.host.getLocale() || 'en'
+      const minecraftVersion = 'version' in payload ? payload.version.minecraftVersion : inst?.runtime.minecraft
+      const mcLang = toMinecraftLanguage(locale, minecraftVersion)
+
+      const optionsTxtPath = join(gameDirectory, 'options.txt')
+      try {
+        const content = await readFile(optionsTxtPath, 'utf-8').catch((e) => {
+          if (isSystemError(e) && e.code === 'ENOENT') return undefined
+          throw e
+        })
+        if (content === undefined) {
+          await ensureFile(optionsTxtPath)
+          await writeFile(optionsTxtPath, `lang:${mcLang}\n`)
+        } else {
+          const newContent = setGameSettingLanguage(content, mcLang)
+          if (newContent !== content) {
+            await writeFile(optionsTxtPath, newContent)
+          }
+        }
+      } catch (e) {
+        logger.warn(`Failed to sync game language to options.txt: ${e}`)
       }
     },
   })

@@ -453,6 +453,8 @@ instanceSetting:
   icon: Kies een afbeelding
   showLog: Toon Minecraft Log
   showLogHint: Dit opent een venster om Minecraft-log te streamen nadat de game is gestart
+  syncGameLanguage: Sincronizar idioma do xogo
+  syncGameLanguageDescription: Sincronizar automaticamente o idioma de Minecraft co do iniciador ao iniciar
 instanceTemplate:
   ftb: Dit is een FTB modpack
   preview: Modpack voorbeeld

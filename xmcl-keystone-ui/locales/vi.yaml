@@ -503,6 +503,8 @@ instanceSetting:
   icon: Chọn một ảnh
   showLog: Hiển thị nhật ký Minecraft
   showLogHint: Thao tác này sẽ hiển thị một cửa sổ để truyền nhật ký Minecraft sau khi game bắt đầu
+  syncGameLanguage: Đồng bộ hóa ngôn ngữ trò chơi
+  syncGameLanguageDescription: Tự động đồng bộ hóa ngôn ngữ của Minecraft với ngôn ngữ trình khởi chạy khi khởi động
 instanceTemplate:
   ftb: Đây là một modpack FTB
   preview: Xem trước Modpack
