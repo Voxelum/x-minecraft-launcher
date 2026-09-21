@@ -1,3 +1,4 @@
+import { join } from 'path'
 import { describe, expect, it, vi } from 'vitest'
 import { getOzonePlatform } from './ozonePlatform'
 
@@ -10,7 +11,7 @@ describe('getOzonePlatform', () => {
       WAYLAND_DISPLAY: 'wayland-0',
       XDG_RUNTIME_DIR: '/run/user/1000',
     }, exists)).toBe('x11')
-    expect(exists).toHaveBeenCalledWith('/run/user/1000/wayland-0')
+    expect(exists).toHaveBeenCalledWith(join('/run/user/1000', 'wayland-0'))
   })
 
   it('keeps automatic selection when the Wayland socket is available', () => {

@@ -179,6 +179,7 @@
       </v-card>
 
       <v-list
+        id="multiplayer-content"
         lines="two"
         class="flex flex-col justify-start gap-2 overflow-auto pb-16 pt-2"
         style="width: 100%; background: transparent"
@@ -617,6 +618,7 @@
 </template>
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
+import { useTutorial } from '@/composables/tutorial'
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
@@ -1003,10 +1005,10 @@ const onJoin = () => {
   }
 }
 
-// useTutorial(computed(() => [
-//   { element: '#group-input', popover: { title: t('tutorial.multiplayer.groupTitle'), description: t('tutorial.multiplayer.groupDescription') } },
-//   { element: '#join-group-button', popover: { title: t('tutorial.multiplayer.groupTitle'), description: t('tutorial.multiplayer.joinDescription') } },
-//   { element: '.multiplayer-content', popover: { title: t('tutorial.multiplayer.contentTitle'), description: t('tutorial.multiplayer.contentDescription') } },
-//   { element: '#manual-connect-button', popover: { title: t('multiplayer.manualConnect'), description: t('tutorial.multiplayer.manualDescription') } },
-// ]))
+useTutorial(computed(() => [
+  { element: '#group-input', popover: { title: t('tutorial.multiplayer.groupTitle'), description: t('tutorial.multiplayer.groupDescription') } },
+  { element: '#join-group-button', popover: { title: t('tutorial.multiplayer.groupTitle'), description: t('tutorial.multiplayer.joinDescription') } },
+  { element: '#multiplayer-content', popover: { title: t('tutorial.multiplayer.contentTitle'), description: t('tutorial.multiplayer.contentDescription') } },
+  { element: '#manual-connect-button', popover: { title: t('multiplayer.manualConnect'), description: t('tutorial.multiplayer.manualDescription') } },
+]))
 </script>

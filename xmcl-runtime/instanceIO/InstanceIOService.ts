@@ -13,7 +13,7 @@ import {
   type ThirdPartyLauncherManifest,
 } from '@xmcl/runtime-api'
 import { AnyError, isSystemError } from '@xmcl/utils'
-import { basename, join } from 'path'
+import { join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { SSHManager } from '~/infra'
 import { InstanceService } from '~/instance'
@@ -23,6 +23,7 @@ import { VersionService } from '~/launch'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, isPathDiskRootPath } from '../util/fs'
 import { uploadSSH } from './utils/uploadSSH'
+import { importLauncherInstance } from './utils/importLauncherInstance'
 
 @ExposeServiceKey(InstanceIOServiceKey)
 export class InstanceIOService extends AbstractService implements IInstanceIOService {
@@ -128,29 +129,13 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       await copyPassively(folder.jre, this.getPath('jre'))
     }
 
-    await Promise.allSettled(
-      instances.map(async ({ path, options }) => {
-        options.name = options.name || basename(path)
-        const instPath = await this.instanceService.createInstance(options)
-        await copyPassively(path, instPath, (name) => {
-          if (name === 'libraries') {
-            return false
-          }
-          if (name === 'assets') {
-            return false
-          }
-          if (name === 'versions') {
-            return false
-          }
-          if (name === 'java_versions') {
-            return false
-          }
-          if (name === 'jre') {
-            return false
-          }
-          return true
-        })
-      }),
-    )
+    for (const instance of instances) {
+      await importLauncherInstance(
+        instance,
+        this.getPath(),
+        (options) => this.instanceService.createInstance(options),
+        (id) => this.versionService.refreshVersion(id),
+      )
+    }
   }
 }

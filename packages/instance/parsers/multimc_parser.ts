@@ -1,10 +1,10 @@
-import { dirname, join } from 'path'
+import { basename, dirname, join } from 'path'
 import { pathToFileURL } from 'url'
-import { RuntimeVersions } from '../instance'
 import { InstanceFile } from '../files'
 import { getInstanceFiles } from '../files_discovery'
-import { existsSync, readFile } from 'fs-extra'
+import { existsSync, readFile, readdir } from 'fs-extra'
 import { CreateInstanceOptions } from '../create'
+import { getInstanceConfigFromMmcModpack, type MMCComponentPatch, type MMCModpackManifest } from '../modpack'
 
 /**
  * MultiMC instance configuration interface
@@ -86,9 +86,29 @@ export function detectMMCRoot(path: string): string {
 }
 
 /**
- * Parse MultiMC instance configuration
+ * Accept either the launcher instance folder or its Minecraft data directory.
  */
-export async function parseMultiMCInstance(path: string): Promise<CreateInstanceOptions> {
+export function getMultiMCInstancePath(path: string): string {
+  if (['minecraft', '.minecraft'].includes(basename(path)) && existsSync(join(dirname(path), 'instance.cfg'))) {
+    return dirname(path)
+  }
+  return path
+}
+
+export function isMultiMCInstance(path: string): boolean {
+  const root = getMultiMCInstancePath(path)
+  // Keep incomplete instances visible to the parser so missing metadata is an
+  // import error, not a silently skipped instance or an unflattened game folder.
+  return existsSync(join(root, 'instance.cfg')) || existsSync(join(root, 'mmc-pack.json'))
+}
+
+export function getMultiMCGameDirectory(path: string): string {
+  const root = getMultiMCInstancePath(path)
+  return existsSync(join(root, '.minecraft')) ? join(root, '.minecraft') : join(root, 'minecraft')
+}
+
+export async function readMultiMCManifest(path: string): Promise<MMCModpackManifest> {
+  path = getMultiMCInstancePath(path)
   const instanceCFGText = await readFile(join(path, 'instance.cfg'), 'utf-8')
   const instanceCFG = instanceCFGText.split(/\r?\n/).reduce(
     (acc, line) => {
@@ -102,21 +122,52 @@ export async function parseMultiMCInstance(path: string): Promise<CreateInstance
       return acc
     },
     {} as Record<string, string>,
-  ) as any as MultiMCConfig
+  )
 
-  const instancePack = JSON.parse(
-    await readFile(join(path, 'mmc-pack.json'), 'utf-8'),
-  ) as MultiMCManifest
-
-  const instanceOptions: CreateInstanceOptions = {
-    name: instanceCFG.name,
+  const json = JSON.parse(await readFile(join(path, 'mmc-pack.json'), 'utf-8'))
+  if (json?.formatVersion !== 1 || !Array.isArray(json.components) ||
+    !json.components.every((c: any) => c && typeof c.uid === 'string') ||
+    !json.components.some((c: any) => c?.uid === 'net.minecraft')) {
+    throw new Error(`Invalid MultiMC manifest: ${path}`)
   }
+
+  const patches: Record<string, MMCComponentPatch> = Object.create(null)
+  const patchFiles = await readdir(join(path, 'patches')).catch((error) => {
+    if (error.code === 'ENOENT') return []
+    throw error
+  })
+  for (const file of patchFiles.sort()) {
+    if (!file.endsWith('.json')) continue
+    const patch = JSON.parse(await readFile(join(path, 'patches', file), 'utf-8'))
+    if (!patch || typeof patch.uid !== 'string' || !patch.uid) {
+      throw new Error(`Invalid MultiMC patch: ${join(path, 'patches', file)}`)
+    }
+    patches[patch.uid] = patch
+  }
+
+  return {
+    json,
+    cfg: { name: '', notes: '', ...instanceCFG },
+    patches: Object.keys(patches).length ? patches : undefined,
+  }
+}
+
+/**
+ * Parse directory-only settings on top of the shared ZIP/directory patch merger.
+ */
+export async function parseMultiMCInstance(
+  path: string,
+  manifest?: MMCModpackManifest,
+): Promise<CreateInstanceOptions> {
+  manifest ??= await readMultiMCManifest(path)
+  const instanceCFG = manifest.cfg
+  const instanceOptions: CreateInstanceOptions = getInstanceConfigFromMmcModpack(manifest)
 
   if (instanceCFG.JavaPath) {
     instanceOptions.java = instanceCFG.JavaPath
   }
 
-  if (instanceCFG.JoinServerOnLaunch && instanceCFG.JoinServerOnLaunchAddress) {
+  if (instanceCFG.JoinServerOnLaunch === 'true' && instanceCFG.JoinServerOnLaunchAddress) {
     const [host, port] = instanceCFG.JoinServerOnLaunchAddress.split(':')
     instanceOptions.server = {
       host,
@@ -124,20 +175,11 @@ export async function parseMultiMCInstance(path: string): Promise<CreateInstance
     }
   }
 
-  if (instanceCFG.MinMemAlloc) {
-    instanceOptions.minMemory = parseInt(instanceCFG.MinMemAlloc)
-  }
-  if (instanceCFG.MaxMemAlloc) {
-    instanceOptions.maxMemory = parseInt(instanceCFG.MaxMemAlloc)
-  }
   if (instanceCFG.ShowConsole) {
     instanceOptions.showLog = instanceCFG.ShowConsole === 'true'
   }
   if (instanceCFG.notes) {
     instanceOptions.description = instanceCFG.notes
-  }
-  if (instanceCFG.JvmArgs) {
-    instanceOptions.vmOptions = instanceCFG.JvmArgs.split(' ')
   }
   if (instanceCFG.lastTimePlayed) {
     instanceOptions.lastPlayedDate = parseInt(instanceCFG.lastTimePlayed)
@@ -153,36 +195,8 @@ export async function parseMultiMCInstance(path: string): Promise<CreateInstance
     }
   }
 
-  // gh #1386 — Import per-instance commands from MultiMC's instance.cfg.
-  // MultiMC only honors the per-instance commands when `OverrideCommands=true`;
-  // global commands are not exposed in instance.cfg so we cannot import them
-  // here. PostExitCommand has no xmcl equivalent and is dropped.
-  if (instanceCFG.OverrideCommands === 'true') {
-    if (instanceCFG.PreLaunchCommand) {
-      instanceOptions.preExecuteCommand = instanceCFG.PreLaunchCommand
-    }
-    if (instanceCFG.WrapperCommand) {
-      instanceOptions.prependCommand = instanceCFG.WrapperCommand
-    }
-  }
-
-  if (instancePack.formatVersion === 1) {
-    const minecraft = instancePack.components.find((c) => c.uid === 'net.minecraft')?.version ?? ''
-    const forge = instancePack.components.find((c) => c.uid === 'net.minecraftforge')?.version ?? ''
-    const optifine =
-      instancePack.components.find((c) => c.uid === 'optifine.Optifine')?.version ?? ''
-    const fabricLoader =
-      instancePack.components.find((c) => c.uid === 'net.fabricmc.fabric-loader')?.version ?? ''
-    const quiltLoader =
-      instancePack.components.find((c) => c.uid === 'org.quiltmc.quilt-loader')?.version ?? ''
-    instanceOptions.runtime = {
-      minecraft,
-      forge,
-      optifine,
-      fabricLoader,
-      quiltLoader,
-    }
-  }
+  instanceOptions.runtime!.optifine = manifest.json.components.find((c) => c.uid === 'optifine.Optifine')?.version ?? ''
+  instanceOptions.runtime!.quiltLoader ||= manifest.json.components.find((c) => c.uid === 'org.quiltmc.quilt-loader')?.version ?? ''
 
   instanceOptions.resourcepacks = true
   instanceOptions.shaderpacks = true
@@ -194,10 +208,12 @@ export async function parseMultiMCInstance(path: string): Promise<CreateInstance
  * Parse MultiMC instance files
  */
 export async function parseMultiMCInstanceFiles(instancePath: string): Promise<InstanceFile[]> {
-  const files = await getInstanceFiles(instancePath)
+  const gameDirectory = getMultiMCGameDirectory(instancePath)
+  const sharedFolders = new Set(['libraries', 'assets', 'versions', 'java_versions', 'jre'])
+  const files = await getInstanceFiles(gameDirectory, undefined, (path) => sharedFolders.has(path.split('/')[0]))
 
   for (const [f] of files) {
-    f.downloads = [pathToFileURL(join(instancePath, f.path)).toString()]
+    f.downloads = [pathToFileURL(join(gameDirectory, f.path)).toString()]
   }
 
   return files.map(([file]) => file)

@@ -1,7 +1,7 @@
 import { mkdtemp, rm, writeFile } from 'fs/promises'
 import { tmpdir } from 'os'
 import { join } from 'path'
-import { afterEach, beforeEach, describe, expect, test } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { AgentDocumentStore } from './documents'
 
 const shaderpackDocument = `---
@@ -70,5 +70,15 @@ describe('AgentDocumentStore', () => {
     await writeFile(join(directory, 'duplicate.md'), shaderpackDocument)
     const store = new AgentDocumentStore(directory)
     await expect(store.list()).rejects.toThrow('Duplicate Agent document id')
+  })
+
+  test('continues without documents when the packaged directory is missing and warns once', async () => {
+    const warn = vi.fn()
+    const store = new AgentDocumentStore(directory, warn)
+    await rm(directory, { recursive: true })
+
+    await expect(store.list()).resolves.toEqual([])
+    await expect(store.search('shaderpack')).resolves.toEqual([])
+    expect(warn).toHaveBeenCalledTimes(1)
   })
 })

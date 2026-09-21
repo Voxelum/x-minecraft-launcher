@@ -1,6 +1,6 @@
 import type { ResolvedVersion, VersionParseError } from '@xmcl/core'
 import { Instance, PartialRuntimeVersions, RuntimeVersions } from '@xmcl/instance'
-import { InstanceServiceKey, ServerVersionHeader, VersionHeader, VersionServiceKey, findMatchedVersion, getResolvedVersionHeader } from '@xmcl/runtime-api'
+import { InstanceServiceKey, ServerVersionHeader, VersionHeader, VersionServiceKey, findMatchedVersion, getResolvedVersionHeader, isSameForgeVersion } from '@xmcl/runtime-api'
 import { useDebounceFn } from '@vueuse/core'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
@@ -106,7 +106,7 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
           labyMod: computedHeader.labyMod,
         }
         if (expectRt.minecraft !== rt.minecraft ||
-          expectRt.forge !== rt.forge ||
+          !isSameForgeVersion(rt.forge, expectRt.forge, rt.minecraft) ||
           expectRt.neoForged !== rt.neoForged ||
           expectRt.fabricLoader !== rt.fabricLoader ||
           expectRt.optifine !== rt.optifine ||

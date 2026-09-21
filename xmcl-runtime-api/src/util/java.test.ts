@@ -18,6 +18,47 @@ function rec(over: Partial<JavaRecord>): JavaRecord {
   }
 }
 
+describe('Prism explicit Java compatibility', () => {
+  const version = {
+    javaVersion: { component: 'jre-legacy', majorVersion: 8 },
+    compatibleJavaMajors: [17, 21, 23, 24, 25],
+  }
+
+  test.each([17, 21, 23, 24, 25])('accepts declared Java %i for Minecraft 1.7.10', (majorVersion) => {
+    const { versionPref } = getVersionPreference('1.7.10', '10.13.4.1614', version)
+    expect(versionPref.match(rec({ majorVersion }))).toBe(true)
+  })
+
+  test.each([8, 11, 16, 18, 22, 26])('rejects undeclared Java %i without forward-compat guessing', (majorVersion) => {
+    const { versionPref } = getVersionPreference('1.7.10', '10.13.4.1614', version)
+    expect(versionPref.match(rec({ majorVersion }))).toBe(false)
+    expect(versionPref.okay(rec({ majorVersion }))).toBe(false)
+  })
+
+  test('auto-selects installed Java 21 over Java 8 and does not request Java 17', () => {
+    const java21 = rec({ majorVersion: 21, path: '/java21' })
+    const selected = getAutoSelectedJava([rec({ majorVersion: 8 }), java21], '1.7.10', undefined, version)
+    expect(selected.java?.path).toBe(java21.path)
+    expect(selected.preference.requirement).toBe('=17 || =21 || =23 || =24 || =25')
+  })
+
+  test('requests a compatible downloadable runtime when only Java 8 is installed', () => {
+    const selected = getAutoSelectedJava([rec({ majorVersion: 8 })], '1.7.10', undefined, version)
+    expect(selected.java).toBeUndefined()
+    expect(selected.javaVersion).toEqual({ component: 'java-runtime-gamma', majorVersion: 17 })
+  })
+
+  test('manually selected Java 17 is matched, while pinned Java 8 stays incompatible', async () => {
+    const java17 = rec({ majorVersion: 17, path: '/java17' })
+    const java8 = rec({ majorVersion: 8, path: '/java8' })
+    const selected = getAutoSelectedJava([java8, java17], '1.7.10', undefined, version)
+    const compatible = await getAutoOrManuallJava(selected, async () => java17, java17.path)
+    const incompatible = await getAutoOrManuallJava(selected, async () => java8, java8.path)
+    expect(compatible.quality).toBe(JavaCompatibleState.Matched)
+    expect(incompatible.quality).toBe(JavaCompatibleState.VeryLikelyIncompatible)
+  })
+})
+
 describe('getVersionPreference - okay predicate for MC < 1.13', () => {
   test('Java 8 is the matched (best) version', () => {
     const { versionPref } = getVersionPreference('1.12.2', undefined)

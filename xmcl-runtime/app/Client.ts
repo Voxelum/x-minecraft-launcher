@@ -4,8 +4,8 @@
 export interface Client {
   isDestroyed(): boolean
 
-  on(event: 'destroyed', listener: () => void): this
-  removeListener(event: 'destroyed', listener: () => void): this
+  on(event: 'destroyed' | 'renderer-disconnected', listener: () => void): this
+  removeListener(event: 'destroyed' | 'renderer-disconnected', listener: () => void): this
   /**
    * Send the message to the client in a specific channel
    */

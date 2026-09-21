@@ -56,6 +56,18 @@ const cfInstance = await parseCurseforgeInstance('/path/to/cf/instance')
 const vanillaInstances = await parseVanillaInstance('/path/to/.minecraft')
 ```
 
+### Prism / MultiMC Component Patches
+
+`getMmcVersionFromManifest(manifest, id)` merges declared component patches into
+a standalone version. Importers must persist that version, copy the libraries
+returned by `getMmcLocalLibraryNames()`, and pin the instance to its ID rather
+than regenerating a standard Forge version.
+
+The merged version preserves `mainJar` as the client download and
+`compatibleJavaMajors` as an explicit allowlist. This lets packs such as GTNH
+use their declared Java 17/21/25 runtimes despite targeting Minecraft 1.7.10;
+packs without that metadata retain normal Minecraft Java selection.
+
 ### Generate Instance Manifest
 
 ```typescript

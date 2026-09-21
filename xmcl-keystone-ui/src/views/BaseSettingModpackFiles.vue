@@ -3,7 +3,7 @@
     <BaseSettingModrinthProjectCard :project-id="boundProjectId" :last-version-id="modpackMetadata.modrinth.lastVersionId" :bind-loading="bindingProject" :create-loading="creatingProject" :unbinding="unbindingProject" @bind="openBindDialog" @create="openCreateDialog" @publish="openPublishDialog" @unbind="unbindProject" />
   </Teleport>
 
-  <SettingCard :title="t('modpack.export')" icon="ios_share">
+  <SettingCard id="modpack-options-card" :title="t('modpack.export')" icon="ios_share">
     <SettingItem
       long-action
       :title="t('modpack.exportDirectory')"
@@ -95,7 +95,7 @@
     </template>
   </SettingCard>
 
-  <SettingCard class="base-setting-card--wide" :title="t('modpack.includes', 1)" icon="folder_zip">
+  <SettingCard id="modpack-files-card" class="base-setting-card--wide" :title="t('modpack.includes', 1)" icon="folder_zip">
     <template #header-action>
       <div class="flex items-center gap-2 min-w-0">
         <v-tabs v-model="fileSide" density="compact" color="primary" class="modpack-file-tabs">

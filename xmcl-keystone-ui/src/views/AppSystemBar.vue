@@ -74,6 +74,7 @@
     <AppSystemBarBadge
       v-if="tutor"
       id="tutor-button"
+      v-shared-tooltip.bottom="() => t('tutorial.tooltip')"
       icon="quiz"
       :text="t('help')"
       can-hide-text

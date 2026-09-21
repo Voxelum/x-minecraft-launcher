@@ -1,4 +1,5 @@
 import type { Version } from '@xmcl/core'
+import { getCompatibleJavaVersion } from '@xmcl/core'
 import { InstanceData, PartialRuntimeVersions, RuntimeVersions } from './instance'
 import { InstanceFile } from './files'
 import { CreateInstanceOptions } from './create'
@@ -157,6 +158,12 @@ export interface MMCComponentPatch {
   mainClass?: string
   appletClass?: string
   minecraftArguments?: string
+  compatibleJavaMajors?: number[]
+  javaVersion?: Version['javaVersion']
+  mainJar?: {
+    name: string
+    downloads: { artifact: Version.Download }
+  }
   /** Additive JVM args merged on top of the parent component. */
   '+jvmArgs'?: string[]
   /** Additive tweaker class names (legacy Forge). */
@@ -442,6 +449,7 @@ export function getMmcVersionFromManifest(
   let type: string | undefined
   let jar: string | undefined
   let javaVersion: Version['javaVersion']
+  let compatibleJavaMajors: number[] | undefined
   let downloads: Version['downloads']
   let time: string | undefined
   let releaseTime: string | undefined
@@ -460,7 +468,9 @@ export function getMmcVersionFromManifest(
     if (typeof patch.type === 'string') type = patch.type
     if (typeof patch.jar === 'string') jar = patch.jar
     if (patch.javaVersion) javaVersion = patch.javaVersion
+    if (patch.compatibleJavaMajors) compatibleJavaMajors = patch.compatibleJavaMajors
     if (patch.downloads) downloads = patch.downloads
+    if (patch.mainJar) downloads = { ...downloads, client: patch.mainJar.downloads.artifact }
     if (typeof patch.time === 'string') time = patch.time
     if (typeof patch.releaseTime === 'string') releaseTime = patch.releaseTime
     if (typeof patch.minimumLauncherVersion === 'number') {
@@ -503,13 +513,19 @@ export function getMmcVersionFromManifest(
     minimumLauncherVersion: minimumLauncherVersion ?? 0,
     mainClass,
     libraries,
+    clientVersion: components.find(component => component.uid === 'net.minecraft')?.version,
   } as Version
 
   if (jar) version.jar = jar
   if (assetIndex) version.assetIndex = assetIndex
   if (assets) version.assets = assets
   if (downloads) version.downloads = downloads
-  if (javaVersion) version.javaVersion = javaVersion
+  if (compatibleJavaMajors) {
+    version.compatibleJavaMajors = compatibleJavaMajors
+    version.javaVersion = getCompatibleJavaVersion(compatibleJavaMajors, javaVersion)
+  } else if (javaVersion) {
+    version.javaVersion = javaVersion
+  }
   if (minecraftArguments) version.minecraftArguments = minecraftArguments
   if (gameArgs.length || jvmArgs.length) {
     version.arguments = { game: gameArgs, jvm: jvmArgs }

@@ -45,6 +45,12 @@ export async function resolveLauncherJavaInstallManifest(
   target: JavaVersion,
   forceZulu = false,
 ): Promise<JavaInstallManifest> {
+  if (!target.component) {
+    throw new AnyError(
+      'UnsupportedJavaRuntime',
+      `Java ${target.majorVersion} cannot be installed automatically. Select a compatible local Java runtime.`,
+    )
+  }
   const flights = await app.registry.get(kFlights)
   forceZulu ||= flights.forceZuluJre
 

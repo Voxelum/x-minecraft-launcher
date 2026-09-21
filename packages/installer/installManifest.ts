@@ -1,7 +1,7 @@
 import { open, openEntryReadStream, readAllEntries, walkEntriesGenerator } from '@xmcl/unzip'
 import { spawn } from 'child_process'
 import { createReadStream, createWriteStream } from 'fs'
-import { chmod, copyFile, link, mkdir, readFile, rename, rm, stat, symlink, unlink, writeFile } from 'fs/promises'
+import { chmod, copyFile, link, mkdir, readFile, rm, stat, symlink, unlink, writeFile } from 'fs/promises'
 import { dirname, join, sep } from 'path'
 import { pipeline } from 'stream/promises'
 import { setTimeout as wait } from 'timers/promises'
@@ -9,6 +9,7 @@ import { extract } from 'tar-stream'
 import { createGunzip } from 'zlib'
 import { ZipFile as WriteableZipFile } from 'yazl'
 import { checksum as checksumFile, waitProcess } from './utils'
+import { move } from './move'
 
 export interface InstallFileChecksum {
   algorithm: string
@@ -287,7 +288,11 @@ async function executeMaterialize(task: InstallMaterializeTask, runtime: Install
     }
     await transaction.commit()
   } catch (error) {
-    await transaction.rollback()
+    try {
+      await transaction.rollback()
+    } catch (rollbackError) {
+      throw new AggregateError([error, rollbackError], 'Failed to roll back materialization', { cause: error })
+    }
     throw error
   }
 }
@@ -536,19 +541,31 @@ export function createNodeInstallRuntime(options: NodeInstallRuntimeOptions = {}
         created?: boolean
       }> = []
       const rollback = async () => {
+        const errors: unknown[] = []
         for (const entry of [...prepared].reverse()) {
-          if (entry.operation.type === 'ensure-directory') {
-            if (entry.created) await rm(entry.operation.path, { recursive: true, force: true }).catch(() => undefined)
-            continue
+          try {
+            if (entry.operation.type === 'ensure-directory') {
+              if (entry.created) await rm(entry.operation.path, { recursive: true, force: true })
+              continue
+            }
+            if (entry.replaced || entry.backup) {
+              await rm(entry.operation.path, { recursive: true, force: true })
+            }
+            if (entry.backup) {
+              await move(entry.backup, entry.operation.path)
+            }
+          } catch (error) {
+            errors.push(error)
           }
-          if (entry.replaced && entry.operation.type !== 'remove') {
-            await rm(entry.operation.path, { recursive: true, force: true }).catch(() => undefined)
+          if (entry.temporary) {
+            try {
+              await rm(entry.temporary, { recursive: true, force: true })
+            } catch (error) {
+              errors.push(error)
+            }
           }
-          if (entry.backup) {
-            await rename(entry.backup, entry.operation.path).catch(() => undefined)
-          }
-          if (entry.temporary) await rm(entry.temporary, { recursive: true, force: true }).catch(() => undefined)
         }
+        if (errors.length > 0) throw new AggregateError(errors, 'Failed to restore materialized paths')
       }
       try {
         for (const operation of operations) {
@@ -624,17 +641,20 @@ export function createNodeInstallRuntime(options: NodeInstallRuntimeOptions = {}
           if (entry.operation.type === 'ensure-directory') continue
           const backup = `${entry.operation.path}.backup-${process.pid}-${Math.random().toString(36).slice(2)}`
           if (await stat(entry.operation.path).then(() => true, () => false)) {
-            await rename(entry.operation.path, backup)
-            entry.backup = backup
-          }
-          if (entry.operation.type !== 'remove' && entry.temporary) {
-            await rename(entry.temporary, entry.operation.path)
-            entry.temporary = undefined
+            await move(entry.operation.path, backup, () => { entry.backup = backup })
           }
           entry.replaced = true
+          if (entry.operation.type !== 'remove' && entry.temporary) {
+            await move(entry.temporary, entry.operation.path)
+            entry.temporary = undefined
+          }
         }
       } catch (error) {
-        await rollback()
+        try {
+          await rollback()
+        } catch (rollbackError) {
+          throw new AggregateError([error, rollbackError], 'Failed to roll back materialization', { cause: error })
+        }
         throw error
       }
 

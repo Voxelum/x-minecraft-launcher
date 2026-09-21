@@ -1583,6 +1583,7 @@ sortBy:
   timeDesc: Сортировать по времени модификации (спуск)
   name: Сортировать по
 store:
+  popularity: Популярность / подписчики
   discover: Обнаружить
   latestMinecraft: Последняя версия Minecraft
   name: Магазин сборок модов

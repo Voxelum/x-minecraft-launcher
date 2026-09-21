@@ -1,5 +1,6 @@
 <template>
   <SettingCard
+    data-testid="instance-theme-card"
     :title="t('setting.instanceTheme.name')"
     :subtitle="
       !instanceTheme

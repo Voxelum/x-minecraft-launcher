@@ -9,13 +9,14 @@ import { defineConfig } from 'vite'
 import vuetify from 'vite-plugin-vuetify'
 
 const devPort = Number(process.env.XMCL_DEV_PORT ?? 3000)
+const rootDir = import.meta.dirname
 
 // Multi-page renderer — one html entry per launcher window (main /
 // app / browser / logger / migration / multiplayer). All html files in
 // `src/` are picked up automatically.
-const entries = readdirSync(join(__dirname, './src'))
+const entries = readdirSync(join(rootDir, './src'))
   .filter((f) => f.endsWith('.html'))
-  .map((f) => join(__dirname, './src', f))
+  .map((f) => join(rootDir, './src', f))
 
 /**
  * Vite shared config, assign alias and root dir
@@ -24,7 +25,7 @@ export default defineConfig({
   server: {
     port: devPort,
   },
-  root: join(__dirname, './src'),
+  root: join(rootDir, './src'),
   base: '', // has to set to empty string so the html assets path will be relative
   build: {
     // Vite 8 treats `rollupOptions` as an alias of `rolldownOptions` and,
@@ -43,16 +44,16 @@ export default defineConfig({
       keep_classnames: true,
       keep_fnames: true,
     },
-    outDir: resolve(__dirname, './dist'),
+    outDir: resolve(rootDir, './dist'),
     assetsInlineLimit: 0,
   },
   resolve: {
     alias: {
       undici: 'undici-shim',
-      '@': join(__dirname, './src'),
-      '~main': join(__dirname, './src/windows/main'),
-      '~logger': join(__dirname, './src/windows/logger'),
-      '~setup': join(__dirname, './src/windows/setup'),
+      '@': join(rootDir, './src'),
+      '~main': join(rootDir, './src/windows/main'),
+      '~logger': join(rootDir, './src/windows/logger'),
+      '~setup': join(rootDir, './src/windows/setup'),
     },
   },
   css: {
@@ -101,7 +102,7 @@ export default defineConfig({
 
     VueI18n({
       include: [
-        resolve(__dirname, 'locales/**'),
+        resolve(rootDir, 'locales/**'),
       ],
       strictMessage: false,
     }),
@@ -129,4 +130,3 @@ export default defineConfig({
     }),
   ],
 })
-

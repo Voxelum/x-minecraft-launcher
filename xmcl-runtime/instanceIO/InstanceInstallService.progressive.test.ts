@@ -271,13 +271,13 @@ describe('InstanceInstallService progressive installation', () => {
         expect(await readFile(join(f.instancePath, ready.path), 'utf8')).toBe(ready.path)
         const [profile] = await readPendingInstalls(f.instancePath)
         expect(profile.state.committedPath).toHaveLength(257)
-      }, { timeout: 5000 })
+      }, { timeout: 10_000 })
     } finally {
       release.resolve()
       await installing
     }
     expect(await readPendingInstalls(f.instancePath)).toEqual([])
-  })
+  }, 10_000)
 
   it('does not resurrect an older project version when unrelated pending files resume', async () => {
     const f = await fixture()

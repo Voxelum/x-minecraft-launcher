@@ -80,8 +80,10 @@ export const config = {
     },
   },
   win: {
-    certificateFile: undefined as string | undefined,
-    publisherName: 'CI010',
+    signtoolOptions: {
+      certificateFile: undefined as string | undefined,
+      publisherName: 'CI010',
+    },
     icon: 'icons/dark.ico',
     electronLanguages: ['en-US'],
     target: [
@@ -99,8 +101,10 @@ export const config = {
     executableName: 'xmcl',
     electronLanguages: ['en-US'],
     desktop: {
-      MimeType: 'x-scheme-handler/xmcl',
-      StartupWMClass: 'xmcl',
+      entry: {
+        MimeType: 'x-scheme-handler/xmcl',
+        StartupWMClass: 'xmcl',
+      },
     },
     category: 'Game',
     icon: 'icons/dark.icns',

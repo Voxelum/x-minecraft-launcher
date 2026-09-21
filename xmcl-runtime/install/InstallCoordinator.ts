@@ -50,6 +50,7 @@ import {
 import {
   DiagnoseOptions,
   findMatchedVersion,
+  getAutoSelectedJava,
   getResolvedVersionHeader,
   InstallAssetsTask,
   InstallFabricTask,
@@ -1269,10 +1270,13 @@ export class InstallCoordinator {
         return this.ensureJava(recipe.java.fallback).then((java) => java.path)
       }
       const resolved = await this.versionService.resolveLocalVersion(version)
-      const matched = this.javaService.state.all.find(
-        (java) => java.valid && java.majorVersion === resolved.javaVersion.majorVersion,
+      const selected = getAutoSelectedJava(
+        this.javaService.state.all,
+        resolved.minecraftVersion,
+        undefined,
+        resolved,
       )
-      return matched?.path ?? this.ensureJava(resolved.javaVersion).then((java) => java.path)
+      return selected.java?.path ?? this.ensureJava(selected.javaVersion).then((java) => java.path)
     }
     const settle = async <T>(primary: Promise<T>, work: Promise<unknown>[]) => {
       const results = await Promise.allSettled([primary, ...work])
@@ -1468,7 +1472,9 @@ export class InstallCoordinator {
         { count: (issue.libraries?.length ?? 0) + (issue.assets?.length ?? 0) + (issue.jar ? 1 : 0) },
       )
       const resolved = await this.versionService.resolveLocalVersion(recipe.version)
-      const java = resolveJava(issue.forge?.minecraft ?? recipe.runtime.minecraft ?? recipe.version)
+      // Standalone Prism versions contain their own Java requirements and may
+      // have no separate vanilla version JSON installed.
+      const java = resolveJava(recipe.version)
       const jarFile = issue.jar ? resolveMinecraftJarInstallFile(resolved, options) : undefined
       const jar = jarFile
         ? this.executePrimitivePlan(

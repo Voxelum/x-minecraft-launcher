@@ -3,6 +3,7 @@ import { Platform, getPlatform } from './platform'
 import { extname } from 'path'
 import { readFile } from 'fs/promises'
 import { isNotNull } from './utils'
+import { getCompatibleJavaVersion } from './java'
 
 interface PartialResolvedVersion extends Version {
   libraries: ResolvedLibrary[]
@@ -60,6 +61,10 @@ export interface ResolvedVersion {
    * Recommended java version
    */
   javaVersion: JavaVersion
+  /**
+   * Explicit supported Java majors supplied by a Prism / MultiMC pack.
+   */
+  compatibleJavaMajors?: number[]
   /**
    * The minecraft version of this version
    */
@@ -509,6 +514,7 @@ export namespace Version {
       rootVersion.clientVersion ?? rootVersion._minecraftVersion ?? rootVersion.id
     let location: string
     let javaVersion: JavaVersion = { majorVersion: 8, component: 'jre-legacy' }
+    let compatibleJavaMajors: number[] | undefined
 
     const chains: string[] = hierarchy.map((j) => folder.getVersionRoot(j.id))
     const inheritances = hierarchy.map((j) => j.id)
@@ -535,6 +541,7 @@ export namespace Version {
       mainClass = json.mainClass || mainClass
       assetIndex = json.assetIndex || assetIndex
       javaVersion = json.javaVersion || javaVersion
+      compatibleJavaMajors = json.compatibleJavaMajors ?? compatibleJavaMajors
       if (json.libraries) {
         json.libraries.forEach((lib) => {
           let libOrgName = `${lib.groupId}:${lib.artifactId}`
@@ -550,7 +557,8 @@ export namespace Version {
       }
       if (json.downloads) {
         for (const key in json.downloads) {
-          downloadsMap[key] = json.downloads[key]
+          const download = json.downloads[key]
+          if (download) downloadsMap[key] = download
         }
       }
     } while (hierarchy.length !== 0)
@@ -583,7 +591,10 @@ export namespace Version {
       logging,
       pathChain: chains,
       minecraftDirectory: location,
-      javaVersion,
+      javaVersion: compatibleJavaMajors
+        ? getCompatibleJavaVersion(compatibleJavaMajors, javaVersion)
+        : javaVersion,
+      ...(compatibleJavaMajors ? { compatibleJavaMajors } : {}),
     } as ResolvedVersion
   }
 
@@ -989,9 +1000,9 @@ export interface Version {
   assetIndex?: Version.AssetIndex
   assets?: string
   downloads?: {
-    client: Version.Download
-    server: Version.Download
-    [key: string]: Version.Download
+    client?: Version.Download
+    server?: Version.Download
+    [key: string]: Version.Download | undefined
   }
 
   client?: string
@@ -1005,6 +1016,8 @@ export interface Version {
   }
 
   javaVersion?: JavaVersion
+  /** Explicit supported Java majors supplied by a Prism / MultiMC pack. */
+  compatibleJavaMajors?: number[]
   /**
    * NON CONVERSION! This only present in some third party launcher like PCL to mark the real minecraft version
    */

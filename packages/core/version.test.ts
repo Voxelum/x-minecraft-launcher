@@ -4,6 +4,39 @@ import { getPlatform } from './platform'
 import { isCorruptedVersionJsonError, isMissingVersionJsonError, LibraryInfo, ResolvedLibrary, Version } from './version'
 
 describe('Version', () => {
+  describe('Prism Java compatibility', () => {
+    const normalize = (id: string, extra: Partial<Version> = {}) => Version.normalizeVersionJson(
+      JSON.stringify({ id, mainClass: 'example.Main', libraries: [], ...extra }),
+      'minecraft',
+    )
+
+    test('preserves explicit majors and overrides the legacy default after resolution', () => {
+      const resolved = Version.resolve('minecraft', [normalize('GTNH', {
+        clientVersion: '1.7.10',
+        compatibleJavaMajors: [17, 21, 23, 24, 25],
+      })])
+      expect(resolved.minecraftVersion).toBe('1.7.10')
+      expect(resolved.compatibleJavaMajors).toEqual([17, 21, 23, 24, 25])
+      expect(resolved.javaVersion).toEqual({ component: 'java-runtime-gamma', majorVersion: 17 })
+    })
+
+    test('inherits the list unless a child overrides it', () => {
+      const parent = () => normalize('parent', { compatibleJavaMajors: [17, 21] })
+      expect(Version.resolve('minecraft', [normalize('child'), parent()]).compatibleJavaMajors)
+        .toEqual([17, 21])
+      const resolved = Version.resolve('minecraft', [
+        normalize('child', { compatibleJavaMajors: [21, 25] }), parent(),
+      ])
+      expect(resolved.compatibleJavaMajors).toEqual([21, 25])
+      expect(resolved.javaVersion).toEqual({ component: 'java-runtime-delta', majorVersion: 21 })
+    })
+
+    test('keeps ordinary legacy Minecraft on Java 8', () => {
+      const resolved = Version.resolve('minecraft', [normalize('1.7.10')])
+      expect(resolved.compatibleJavaMajors).toBeUndefined()
+      expect(resolved.javaVersion).toEqual({ component: 'jre-legacy', majorVersion: 8 })
+    })
+  })
   describe('#resolveFromPath', () => {
     test('should be able to infer from path', () => {
       const path = 'org/lwjgl/lwjgl-stb/3.2.1/lwjgl-stb-3.2.1.jar'

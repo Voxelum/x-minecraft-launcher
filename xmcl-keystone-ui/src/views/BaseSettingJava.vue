@@ -1,5 +1,5 @@
 <template>
-  <SettingCard title="Java" icon="coffee">
+  <SettingCard id="java-card" title="Java" icon="coffee">
     <!-- Hero Java row -->
     <div class="java-hero flex items-center gap-3 px-2">
       <v-avatar

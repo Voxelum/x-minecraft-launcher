@@ -44,6 +44,7 @@
 </template>
 <script lang="ts" setup>
 import VersionMenu from './VersionMenu.vue'
+import { useVersionAutoSelect } from '@/composables/versionAutoSelect'
 
 export interface VersionItem {
   tag?: string
@@ -79,11 +80,5 @@ const emit = defineEmits<{
   (event: 'update:snapshot', value: boolean): void
 }>()
 
-const autoSelected = ref(false)
-
-watch([() => props.autoSelect, () => props.items], ([autoSelect, newItems]) => {
-  if (!autoSelect || autoSelected.value || !newItems.some((item) => item.name === autoSelect)) return
-  autoSelected.value = true
-  emit('input', autoSelect)
-}, { immediate: true })
+useVersionAutoSelect(props, version => emit('input', version))
 </script>

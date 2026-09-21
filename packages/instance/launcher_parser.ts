@@ -1,22 +1,19 @@
 import { isSystemError } from '@xmcl/utils'
-import { existsSync, readdir } from 'fs-extra'
+import { existsSync, readdir, readdirSync } from 'fs-extra'
 import { join } from 'path'
 import type { InstanceType, ThirdPartyLauncherManifest } from './modpack'
 import { parseCurseforgeInstance, parseCurseforgeInstanceFiles } from './parsers/curseforge_parser'
 import { parseModrinthInstance, parseModrinthInstanceFiles } from './parsers/modrinth_parser'
 import {
   detectMMCRoot,
+  getMultiMCInstancePath,
+  isMultiMCInstance,
   parseMultiMCInstance,
   parseMultiMCInstanceFiles,
 } from './parsers/multimc_parser'
 import { parseVanillaInstance, parseVanillaInstanceFiles } from './parsers/vanilla_parser'
 
-/**
- * Check if a path is a MultiMC instance
- */
-function isMultiMCInstance(path: string): boolean {
-  return existsSync(join(path, 'instance.cfg')) && existsSync(join(path, 'mmc-pack.json'))
-}
+export { getMultiMCGameDirectory, isMultiMCInstance, parseMultiMCInstance, readMultiMCManifest } from './parsers/multimc_parser'
 
 /**
  * Check if a path is a Modrinth instance
@@ -43,9 +40,13 @@ function isVanillaMinecraft(path: string): boolean {
  * Auto-detect the launcher type from a path
  */
 export function detectLauncherType(path: string): InstanceType | null {
+  const mmcRoot = detectMMCRoot(path)
   if (
     isMultiMCInstance(path) ||
-    (detectMMCRoot(path) !== path && existsSync(join(detectMMCRoot(path), 'instances')))
+    existsSync(join(path, 'prismlauncher.cfg')) ||
+    existsSync(join(path, 'multimc.cfg')) ||
+    (existsSync(join(mmcRoot, 'instances')) &&
+      readdirSync(join(mmcRoot, 'instances')).some((instance) => isMultiMCInstance(join(mmcRoot, 'instances', instance))))
   ) {
     return 'mmc'
   }
@@ -81,13 +82,17 @@ export async function parseLauncherData(
   try {
     switch (actualType) {
       case 'mmc': {
-        const rootPath = detectMMCRoot(path)
+        const instancePath = getMultiMCInstancePath(path)
+        const rootPath = detectMMCRoot(instancePath)
         const instancesPath = join(rootPath, 'instances')
-        const instances = await readdir(instancesPath)
+        const instances = isMultiMCInstance(instancePath)
+          ? [instancePath]
+          : (await readdir(instancesPath))
+              .map((instance) => join(instancesPath, instance))
+              .filter(isMultiMCInstance)
 
-        const manifests = await Promise.allSettled(
-          instances.map(async (instance) => {
-            const instancePath = join(instancesPath, instance)
+        const manifests = await Promise.all(
+          instances.map(async (instancePath) => {
             const options = await parseMultiMCInstance(instancePath)
             return {
               options,
@@ -98,14 +103,12 @@ export async function parseLauncherData(
 
         return {
           folder: {
-            assets: join(rootPath, 'assets'),
-            libraries: join(rootPath, 'libraries'),
+            assets: existsSync(join(rootPath, 'assets')) ? join(rootPath, 'assets') : '',
+            libraries: existsSync(join(rootPath, 'libraries')) ? join(rootPath, 'libraries') : '',
             versions: '',
             jre: undefined,
           },
-          instances: manifests
-            .filter((m): m is PromiseFulfilledResult<any> => m.status === 'fulfilled')
-            .map((m) => m.value),
+          instances: manifests,
         }
       }
 
