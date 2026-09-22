@@ -3,24 +3,61 @@
       <!-- Disabled state -->
       <div
         v-if="!available"
-        class="agent-disabled-card"
+        class="agent-disabled-wrapper flex items-center justify-center flex-1 p-6"
       >
-        <v-avatar size="72" color="warning" variant="tonal">
-          <v-icon size="40">vpn_key_off</v-icon>
-        </v-avatar>
-        <div class="text-lg font-medium">
-          {{ t('agent.notConfiguredTitle') }}
-        </div>
-        <div class="text-sm text-medium-emphasis max-w-xs">
-          {{ t('agent.accessRequiredHint') }}
-        </div>
-        <div class="flex flex-wrap items-center justify-center gap-2 mt-1">
-          <v-btn color="primary" variant="flat" prepend-icon="workspace_premium" @click="openSubscription">
-            {{ t('agent.subscribeXmcl') }}
-          </v-btn>
-          <v-btn color="primary" variant="flat" prepend-icon="settings" @click="openSettings">
-            {{ t('agent.openSettings') }}
-          </v-btn>
+        <div class="agent-setup-card relative overflow-hidden flex flex-col items-center text-center p-8 max-w-lg w-full rounded-2xl">
+          <!-- Ambient warm glow -->
+          <div class="agent-setup-glow pointer-events-none" />
+
+          <!-- Icon badge -->
+          <div class="agent-setup-icon-badge flex items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/30 text-amber-400 p-4 shadow-lg shadow-amber-950/40 mb-4">
+            <v-icon size="36">smart_toy</v-icon>
+          </div>
+
+          <h2 class="text-xl font-bold tracking-tight mb-2">
+            {{ t('agent.notConfiguredTitle') }}
+          </h2>
+
+          <p class="text-sm opacity-75 max-w-sm mb-6 leading-relaxed">
+            {{ t('agent.accessRequiredHint') }}
+          </p>
+
+          <!-- 2 Action Option Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full">
+            <!-- Option 1: Subscribe / Official Cloud -->
+            <button
+              type="button"
+              data-testid="agent-subscribe-btn"
+              class="agent-option-card agent-option-card--primary"
+              @click="openSubscription"
+            >
+              <div class="agent-option-icon">
+                <v-icon size="24" color="amber">workspace_premium</v-icon>
+              </div>
+              <div class="agent-option-info">
+                <div class="agent-option-title">{{ t('agent.subscribeXmcl') }}</div>
+                <div class="agent-option-desc">XMCL Cloud AI</div>
+              </div>
+              <v-icon size="16" class="agent-option-arrow">arrow_forward</v-icon>
+            </button>
+
+            <!-- Option 2: Settings / Custom Provider -->
+            <button
+              type="button"
+              data-testid="agent-settings-btn"
+              class="agent-option-card agent-option-card--secondary"
+              @click="openSettings"
+            >
+              <div class="agent-option-icon">
+                <v-icon size="24" color="primary">settings</v-icon>
+              </div>
+              <div class="agent-option-info">
+                <div class="agent-option-title">{{ t('agent.openSettings') }}</div>
+                <div class="agent-option-desc">OpenAI, Claude, Ollama...</div>
+              </div>
+              <v-icon size="16" class="agent-option-arrow">arrow_forward</v-icon>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -187,7 +224,10 @@
       <Teleport v-if="isShown" defer to="#omni-mode-specific-controls">
         <div class="agent-mode-controls">
           <div class="agent-mode-meta text-xs text-medium-emphasis flex min-w-0 items-center gap-2">
-            <span v-if="!available" class="agent-composer-status">{{ t('agent.statusDisabled') }}</span>
+            <span v-if="!available" class="agent-status-pill agent-status-pill--disabled">
+              <v-icon size="13" class="mr-1">warning_amber</v-icon>
+              {{ t('agent.statusDisabled') }}
+            </span>
             <span v-else-if="developerMode" data-testid="agent-context-usage" class="tabular-nums" :title="contextUsageTitle">
               Context {{ contextUsageLabel }}
             </span>
@@ -683,16 +723,127 @@ watch([transcriptItems, events, confirmationShown, displayError], async () => {
   padding: 24px;
   color: rgba(var(--v-theme-on-surface), 0.72);
 }
-.agent-disabled-card {
+.agent-disabled-wrapper {
+  min-height: 100%;
+}
+
+.agent-setup-card {
+  background: rgba(var(--v-theme-surface), 0.94) !important;
+  backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(var(--v-theme-on-surface), 0.04);
+}
+
+.agent-setup-glow {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  height: 160px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.18) 0%, rgba(249, 115, 22, 0.08) 50%, transparent 70%);
+  filter: blur(36px);
+}
+
+.agent-setup-icon-badge {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.agent-setup-icon-badge:hover {
+  transform: scale(1.08) rotate(4deg);
+}
+
+.agent-option-card {
   display: flex;
-  min-height: 0;
-  flex: 1 1 auto;
-  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(var(--v-theme-on-surface), 0.04);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+  color: inherit;
+}
+
+.agent-option-card:hover {
+  transform: translateY(-2px);
+  background: rgba(var(--v-theme-on-surface), 0.07);
+  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.25);
+}
+
+.agent-option-card:active {
+  transform: translateY(0);
+}
+
+.agent-option-card--primary:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 8px 20px -4px rgba(245, 158, 11, 0.2);
+}
+
+.agent-option-card--secondary:hover {
+  border-color: rgba(var(--v-theme-primary), 0.5);
+  box-shadow: 0 8px 20px -4px rgba(var(--v-theme-primary), 0.2);
+}
+
+.agent-option-icon {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 32px;
-  text-align: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(var(--v-theme-on-surface), 0.05);
+  flex-shrink: 0;
+}
+
+.agent-option-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.agent-option-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: rgb(var(--v-theme-on-surface));
+}
+
+.agent-option-desc {
+  font-size: 0.725rem;
+  opacity: 0.6;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+.agent-option-arrow {
+  opacity: 0.4;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.agent-option-card:hover .agent-option-arrow {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.agent-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.725rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.agent-status-pill--disabled {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.25);
 }
 .agent-live-card {
   display: flex;

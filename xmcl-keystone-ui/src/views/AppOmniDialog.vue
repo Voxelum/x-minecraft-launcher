@@ -26,6 +26,15 @@
           @compositionend="composing = false"
           @keydown="onInputKeydown"
         >
+          <template #prepend-inner>
+            <v-icon
+              :color="mode === 'command' ? undefined : 'primary'"
+              class="omni-input-icon"
+              size="20"
+            >
+              {{ mode === 'command' ? 'search' : 'smart_toy' }}
+            </v-icon>
+          </template>
           <template v-if="mode === 'agent'" #append-inner>
             <v-btn
               v-if="!agentRunning"
@@ -49,25 +58,44 @@
             />
           </template>
         </v-textarea>
-        <v-divider />
+        <div class="omni-divider" />
         <div class="omni-mode-controls">
-          <v-btn-toggle
-            v-model="mode"
-            density="compact"
-            variant="outlined"
-            color="primary"
-            mandatory
-            divided
+          <div
+            class="omni-mode-tabs"
+            role="tablist"
+            :aria-label="t('commandPalette.commands')"
           >
-            <v-btn value="command" size="x-small">
-              <v-icon size="small" start>search</v-icon>
-              {{ t('commandPalette.commands') }}
-            </v-btn>
-            <v-btn v-if="agentEnabled" value="agent" size="x-small">
-              <v-icon size="small" start>smart_toy</v-icon>
-              {{ t('agent.title') }}
-            </v-btn>
-          </v-btn-toggle>
+            <button
+              type="button"
+              role="tab"
+              data-testid="omni-tab-command"
+              :aria-selected="mode === 'command'"
+              class="omni-tab-btn"
+              :class="{ 'omni-tab-btn--active': mode === 'command' }"
+              @click="mode = 'command'"
+            >
+              <v-icon size="15" class="tab-icon">search</v-icon>
+              <span>{{ t('commandPalette.commands') }}</span>
+            </button>
+            <button
+              v-if="agentEnabled"
+              type="button"
+              role="tab"
+              data-testid="omni-tab-agent"
+              :aria-selected="mode === 'agent'"
+              class="omni-tab-btn"
+              :class="{ 'omni-tab-btn--active': mode === 'agent' }"
+              @click="switchToAgentMode"
+            >
+              <v-icon size="15" class="tab-icon">smart_toy</v-icon>
+              <span>{{ t('agent.title') }}</span>
+              <span
+                v-if="!agentAvailable"
+                class="tab-status-dot"
+                :title="t('agent.statusDisabled')"
+              />
+            </button>
+          </div>
           <div id="omni-mode-specific-controls" class="omni-mode-specific-controls" />
         </div>
       </div>
@@ -88,6 +116,7 @@
 <script lang="ts" setup>
 import { useOmniDialog } from '@/composables/omniDialog'
 import { shouldSubmitAgentInput } from '@/composables/agent/input'
+import { useNotifier } from '@/composables/notifier'
 import AppAgentChat from '@/views/AppAgentChat.vue'
 import AppCommandPalette from '@/views/AppCommandPalette.vue'
 import { computed, nextTick, ref, watch } from 'vue'
@@ -98,6 +127,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const { notify } = useNotifier()
 const { shown, mode, commandInput, agentInput, open, close } = useOmniDialog()
 const commandPanel = ref<InstanceType<typeof AppCommandPalette> | null>(null)
 const agentPanel = ref<InstanceType<typeof AppAgentChat> | null>(null)
@@ -123,6 +153,25 @@ function sendAgentInput() {
   void agentPanel.value?.send()
 }
 
+function switchToAgentMode() {
+  if (!props.agentEnabled) return
+  if (commandInput.value.trim()) {
+    agentInput.value = commandInput.value.trim()
+  }
+  mode.value = 'agent'
+  if (!agentAvailable.value) {
+    notify({
+      title: t('agent.notConfiguredTitle'),
+      body: t('agent.accessRequiredHint'),
+      level: 'warning',
+    })
+  } else if (agentInput.value.trim()) {
+    void nextTick(() => {
+      sendAgentInput()
+    })
+  }
+}
+
 function onInputKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') {
     event.preventDefault()
@@ -137,7 +186,7 @@ function onInputKeydown(event: KeyboardEvent) {
   }
   if (event.altKey && event.key === 'Enter') {
     event.preventDefault()
-    commandPanel.value?.askAi()
+    switchToAgentMode()
     return
   }
   if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
@@ -176,13 +225,13 @@ watch([shown, mode], async ([visible]) => {
   min-height: 0;
   flex-direction: column;
   align-items: flex-end;
-  gap: 8px;
+  gap: 10px;
   --surface-blur: 0px;
   --surface-border: none;
   --surface-shadow: none;
   --surface-bg: transparent;
   --surface-dialog-radius: 0px;
-  --omni-content-width: 720px;
+  --omni-content-width: 740px;
   transform: translateY(clamp(24px, 5vh, 48px));
   background: transparent !important;
 }
@@ -197,27 +246,109 @@ watch([shown, mode], async ([visible]) => {
   flex: 0 0 auto;
   align-self: center;
   overflow: hidden;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.16);
-  border-radius: 8px;
-  background: rgb(var(--v-theme-surface));
-  box-shadow: 0 6px 20px rgb(0 0 0 / 0.22);
+  border-radius: 16px;
+  background: rgba(var(--v-theme-surface), 0.94) !important;
+  backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.48), 0 0 0 1px rgba(var(--v-theme-on-surface), 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.omni-input-card:focus-within {
+  border-color: rgba(var(--v-theme-primary), 0.45);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(var(--v-theme-primary), 0.25);
 }
 
 .omni-input {
-  padding: 6px 10px 3px;
+  padding: 8px 14px 4px;
+}
+
+.omni-input-icon {
+  margin-top: 4px;
+  margin-right: 4px;
+  opacity: 0.55;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.omni-input-card:focus-within .omni-input-icon {
+  opacity: 0.9;
 }
 
 .omni-input :deep(textarea) {
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 14.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+.omni-divider {
+  height: 1px;
+  background: rgba(var(--v-theme-on-surface), 0.07);
 }
 
 .omni-mode-controls {
   display: flex;
-  min-height: 44px;
+  min-height: 42px;
   align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 12px;
+  background: rgba(var(--v-theme-on-surface), 0.02);
+}
+
+.omni-mode-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(var(--v-theme-on-surface), 0.05);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  flex-shrink: 0;
+}
+
+.omni-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font-size: 0.775rem;
+  font-weight: 500;
+  color: rgba(var(--v-theme-on-surface), 0.65);
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.omni-tab-btn:hover:not(.omni-tab-btn--active) {
+  color: rgba(var(--v-theme-on-surface), 0.95);
+  background: rgba(var(--v-theme-on-surface), 0.06);
+}
+
+.omni-tab-btn--active {
+  color: rgb(var(--v-theme-primary));
+  background: rgba(var(--v-theme-primary), 0.14);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.omni-tab-btn--active .tab-icon {
+  color: rgb(var(--v-theme-primary));
+}
+
+.tab-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #f59e0b;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
+  flex-shrink: 0;
+  margin-left: 2px;
 }
 
 .omni-mode-specific-controls {
@@ -225,6 +356,7 @@ watch([shown, mode], async ([visible]) => {
   min-width: 0;
   flex: 1 1 auto;
   align-items: center;
+  justify-content: flex-end;
 }
 
 @media (max-width: 700px) {

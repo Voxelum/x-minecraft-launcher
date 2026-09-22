@@ -319,7 +319,7 @@
       </v-list>
 
       <Teleport v-if="isShown" defer to="#omni-mode-specific-controls">
-      <div class="palette-footer text-medium-emphasis text-caption flex w-full items-center gap-2 flex-wrap">
+      <div class="palette-footer flex w-full items-center justify-end gap-2.5 flex-nowrap overflow-x-auto invisible-scroll">
         <template v-if="gamepadActive">
           <span class="palette-footer__group">
             <kbd class="gp-btn__key">D-Pad</kbd>
@@ -341,14 +341,15 @@
             <kbd class="gp-btn__key">{{ buttonB }}</kbd>
             <span class="palette-footer__label">{{ t('commandPalette.hintClose') }}</span>
           </span>
-          <v-spacer />
           <span class="palette-footer__group">
             <kbd class="gp-btn__key">{{ labels.menu }}</kbd>
           </span>
         </template>
         <template v-else>
           <span class="palette-footer__group">
-            <kbd>↑</kbd><kbd>↓</kbd>
+            <span class="palette-footer__keys">
+              <kbd>↑</kbd><kbd>↓</kbd>
+            </span>
             <span class="palette-footer__label">{{ t('commandPalette.hintNavigate') }}</span>
           </span>
           <span class="palette-footer__group">
@@ -367,11 +368,18 @@
             <kbd>Esc</kbd>
             <span class="palette-footer__label">{{ t('commandPalette.hintClose') }}</span>
           </span>
-          <v-spacer />
-          <span v-if="canAskAi" class="palette-footer__group">
-            <kbd>Alt</kbd><kbd>Enter</kbd>
+          <button
+            v-if="canAskAi"
+            type="button"
+            class="palette-footer__group palette-footer__group--ai"
+            @click="askAi"
+          >
+            <span class="palette-footer__keys">
+              <kbd>Alt</kbd><kbd>Enter</kbd>
+            </span>
             <span class="palette-footer__label">{{ t('commandPalette.hintAskAgent') }}</span>
-          </span>
+            <v-icon size="12" class="ml-0.5 opacity-80">auto_awesome</v-icon>
+          </button>
         </template>
       </div>
       </Teleport>
@@ -649,7 +657,7 @@ function switchToAgent() {
 }
 
 function askAi() {
-  if (!canAskAi.value || !query.value.trim()) return
+  if (!canAskAi.value) return
   switchToAgent()
 }
 
@@ -1008,6 +1016,15 @@ defineExpose({
   text-overflow: ellipsis;
 }
 
+.palette-card {
+  width: var(--omni-content-width, 740px);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  border-radius: 16px !important;
+  background: rgba(var(--v-theme-surface), 0.94) !important;
+  backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.48), 0 0 0 1px rgba(var(--v-theme-on-surface), 0.04);
+}
+
 .palette-footer {
   min-height: 28px;
 }
@@ -1015,23 +1032,56 @@ defineExpose({
 .palette-footer__group {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.palette-footer__keys {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .palette-footer__label {
-  margin-left: 2px;
-  opacity: 0.8;
+  font-size: 0.725rem;
+  font-weight: 500;
+  color: rgba(var(--v-theme-on-surface), 0.55);
+}
+
+.palette-footer__group--ai {
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(var(--v-theme-primary), 0.08);
+  border: 1px solid rgba(var(--v-theme-primary), 0.22);
+}
+
+.palette-footer__group--ai .palette-footer__label {
+  color: rgb(var(--v-theme-primary));
+  font-weight: 600;
 }
 
 kbd {
-  font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 0.7rem;
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
   line-height: 1;
-  padding: 3px 6px;
-  border-radius: 6px;
-  border: 1px solid rgba(125, 125, 125, 0.28);
-  background: rgba(125, 125, 125, 0.14);
-  min-width: 18px;
+  padding: 2.5px 5px;
+  border-radius: 5px;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.14);
+  background: rgba(var(--v-theme-on-surface), 0.07);
+  color: rgba(var(--v-theme-on-surface), 0.85);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+  min-width: 17px;
   text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.palette-footer__group--ai kbd {
+  border-color: rgba(var(--v-theme-primary), 0.3);
+  background: rgba(var(--v-theme-primary), 0.14);
+  color: rgb(var(--v-theme-primary));
 }
 </style>
