@@ -466,6 +466,7 @@ import MarketBase from '@/components/MarketBase.vue'
 import BlueprintPreview from './BlueprintPreview.vue'
 import SplitPane from '@/components/SplitPane.vue'
 import Hint from '@/components/Hint.vue'
+import { blockTextureUrl } from '@/util/blockTexture'
 import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kInstanceBlueprints, InstanceBlueprintFile } from '@/composables/instanceBlueprints'
@@ -717,7 +718,7 @@ const materialGroups = computed(() => {
 })
 
 function blockIconUrl(block: string) {
-  return `http://launcher/block-texture?block=${encodeURIComponent(block)}`
+  return blockTextureUrl(block, path.value)
 }
 function onIconError(e: Event) {
   ;(e.target as HTMLImageElement).style.visibility = 'hidden'

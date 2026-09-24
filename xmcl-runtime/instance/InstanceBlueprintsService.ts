@@ -27,6 +27,7 @@ import { LauncherApp } from '../app/LauncherApp'
 import { AbstractInstanceDomainService } from './AbstractInstanceDomainService'
 
 interface TexContext {
+  instancePath?: string
   /** namespace (modid) -> jar path */
   nsJar: Map<string, string>
   /**
@@ -51,13 +52,11 @@ interface TexContext {
 @ExposeServiceKey(InstanceBlueprintsServiceKey)
 export class InstanceBlueprintsService extends AbstractInstanceDomainService implements IInstanceBlueprintsService {
   /**
-   * Global texture lookup cache: the resolved `namespace -> jar` map, the
-   * lazily-opened jars, and the memoized lang files and block-texture PNGs.
-   * Evicted together after a short idle so file handles aren't held open and
-   * the memoized buffers don't grow unbounded. A block id (`namespace:id`) maps
-   * to immutable texture content, so the cache is shared across instances.
+   * Texture lookup cache keyed by instance path (or '__global__'): the resolved
+   * `namespace -> jar` map, lazily-opened jars, and memoized block-texture PNGs.
+   * Evicted together after an idle timeout so file handles aren't held open.
    */
-  private texContext?: Promise<TexContext>
+  private texContexts = new Map<string, Promise<TexContext>>()
 
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
@@ -65,20 +64,22 @@ export class InstanceBlueprintsService extends AbstractInstanceDomainService imp
   ) {
     super(app, ResourceDomain.Blueprints)
 
-    // Serve block textures over a cacheable, instance-independent URL so the
-    // renderer leverages the browser HTTP cache instead of round-tripping
-    // base64 through IPC. The block id is unique and its texture is immutable,
-    // so it is the whole cache key: http://launcher/block-texture?block=ns:id
+    // Serve block textures over a cacheable URL so the renderer leverages the
+    // browser HTTP cache. When an instance is specified, textures are prioritized
+    // from that instance's version and mods, falling back to the latest installed
+    // vanilla Minecraft client jar.
     app.protocol.registerHandler('http', async ({ request, response }) => {
       if (request.url.host !== 'launcher' || request.url.pathname !== '/block-texture') {
         return
       }
       const block = request.url.searchParams.get('block')
+      const instance = request.url.searchParams.get('instance') || undefined
+      const face = request.url.searchParams.get('face') || undefined
       if (!block) {
         response.status = 400
         return
       }
-      const png = await this.getBlockTexturePng(block).catch(() => undefined)
+      const png = await this.getBlockTexturePng(block, instance, face).catch(() => undefined)
       if (!png) {
         response.status = 404
         return
@@ -131,58 +132,203 @@ export class InstanceBlueprintsService extends AbstractInstanceDomainService imp
    * don't reopen jars. The resolved PNG (or a negative result) is memoized per
    * block id so repeated requests skip all jar I/O entirely.
    */
-  private async getBlockTexturePng(block: string): Promise<Buffer | undefined> {
+  /**
+   * Resolve a single block's texture PNG, reusing a cache of the
+   * `namespace -> jar` map and opened jars so concurrent per-block requests
+   * don't reopen jars. The resolved PNG (or a negative result) is memoized per
+   * block id so repeated requests skip all jar I/O entirely.
+   */
+  private async getBlockTexturePng(block: string, instancePath?: string, face?: string): Promise<Buffer | undefined> {
     if (!block || block === 'minecraft:air') return undefined
-    const ctx = await this.getTexContext()
+    const ctx = await this.getTexContext(instancePath)
     ctx.touch()
-    const memo = ctx.png.get(block)
+    const memoKey = face ? `${block}|${face}` : block
+    const memo = ctx.png.get(memoKey)
     if (memo !== undefined) return memo ?? undefined
 
-    const png = await this.resolveBlockTexturePng(ctx, block)
-    ctx.png.set(block, png ?? null)
+    const png = await this.resolveBlockTexturePng(ctx, block, face)
+    ctx.png.set(memoKey, png ?? null)
     return png
   }
 
-  private async resolveBlockTexturePng(ctx: TexContext, block: string): Promise<Buffer | undefined> {
-    // Read a jar entry directly and treat a missing entry as `undefined`.
-    // Probing with `existsFile` first is O(N) over every jar entry on a miss
-    // (tens of thousands in a vanilla client jar), and most blocks miss the
-    // direct-texture path, so we rely on the O(1) entry lookup inside readFile.
+  private async resolveBlockTexturePng(ctx: TexContext, block: string, face?: string): Promise<Buffer | undefined> {
     const read = async (namespace: string, assetPath: string): Promise<Buffer | undefined> => {
       const fs = await this.ensureNamespaceFs(ctx, namespace)
       if (!fs) return undefined
       try {
         return Buffer.from(await fs.readFileBuffered(assetPath))
       } catch {
-        // missing entry or broken source
         return undefined
       }
     }
 
     const [namespace, name] = splitNamespaced(block)
-    const direct = await read(namespace, `assets/${namespace}/textures/block/${name}.png`)
+
+    // Helper to check multiple texture paths in order
+    const tryPaths = async (paths: string[]): Promise<Buffer | undefined> => {
+      for (const p of paths) {
+        const buf = await read(namespace, p)
+        if (buf) return buf
+      }
+      return undefined
+    }
+
+    // Specific face handling when requested (e.g. grass top vs side, barrel top vs side, log top vs side)
+    if (face === 'top') {
+      if (name === 'grass_block') {
+        const top = await read(namespace, `assets/${namespace}/textures/block/grass_block_top.png`)
+        if (top) return top
+      }
+      const topBuf = await tryPaths([
+        `assets/${namespace}/textures/block/${name}_top.png`,
+        `assets/${namespace}/textures/block/${name}_end.png`,
+        `assets/${namespace}/textures/block/${name}_up.png`,
+      ])
+      if (topBuf) return topBuf
+    } else if (face === 'bottom') {
+      if (name === 'grass_block' || name === 'podzol' || name === 'mycelium' || name === 'dirt_path') {
+        const dirt = await read(namespace, `assets/${namespace}/textures/block/dirt.png`)
+        if (dirt) return dirt
+      }
+      const bottomBuf = await tryPaths([
+        `assets/${namespace}/textures/block/${name}_bottom.png`,
+        `assets/${namespace}/textures/block/${name}_end.png`,
+        `assets/${namespace}/textures/block/${name}_down.png`,
+      ])
+      if (bottomBuf) return bottomBuf
+    } else if (face === 'side') {
+      const sideBuf = await tryPaths([
+        `assets/${namespace}/textures/block/${name}_side.png`,
+        `assets/${namespace}/textures/block/${name}.png`,
+      ])
+      if (sideBuf) return sideBuf
+    }
+
+    // 1. Direct block texture lookups
+    const direct = await tryPaths([
+      `assets/${namespace}/textures/block/${name}.png`,
+      `assets/${namespace}/textures/blocks/${name}.png`,
+      `assets/${namespace}/textures/block/${name}_side.png`,
+      `assets/${namespace}/textures/block/${name}_top.png`,
+      `assets/${namespace}/textures/block/${name}_front.png`,
+    ])
     if (direct) return direct
 
+    // 2. Common Minecraft block naming variations
+    const variantCandidates: string[] = []
+    if (name.endsWith('_block')) {
+      const b = name.slice(0, -6)
+      variantCandidates.push(`assets/${namespace}/textures/block/${b}.png`, `assets/${namespace}/textures/blocks/${b}.png`)
+    }
+    if (name.endsWith('_stairs')) {
+      const base = name.slice(0, -7)
+      variantCandidates.push(
+        `assets/${namespace}/textures/block/${base}.png`,
+        `assets/${namespace}/textures/block/${base}_planks.png`,
+        `assets/${namespace}/textures/block/${base}_bricks.png`,
+      )
+    }
+    if (name.endsWith('_slab')) {
+      const base = name.slice(0, -5)
+      variantCandidates.push(
+        `assets/${namespace}/textures/block/${base}.png`,
+        `assets/${namespace}/textures/block/${base}_side.png`,
+        `assets/${namespace}/textures/block/${name}_side.png`,
+        `assets/${namespace}/textures/block/${base}_planks.png`,
+        `assets/${namespace}/textures/block/${base}_bricks.png`,
+      )
+    }
+    if (name.endsWith('_wall')) {
+      const base = name.slice(0, -5)
+      variantCandidates.push(
+        `assets/${namespace}/textures/block/${base}.png`,
+        `assets/${namespace}/textures/block/${base}_bricks.png`,
+      )
+    }
+    if (name.endsWith('_fence_gate') || name.endsWith('_fence')) {
+      const base = name.replace(/_fence(_gate)?$/, '')
+      variantCandidates.push(
+        `assets/${namespace}/textures/block/${base}_planks.png`,
+        `assets/${namespace}/textures/block/${base}.png`,
+      )
+    }
+    if (name.endsWith('_carpet')) {
+      const base = name.replace(/_carpet$/, '')
+      variantCandidates.push(`assets/${namespace}/textures/block/${base}_wool.png`)
+    }
+    if (name.endsWith('_pane')) {
+      const base = name.replace(/_pane$/, '')
+      variantCandidates.push(`assets/${namespace}/textures/block/${base}.png`)
+    }
+    if (name.endsWith('_pressure_plate') || name.endsWith('_button')) {
+      const base = name.replace(/(_pressure_plate|_button)$/, '')
+      variantCandidates.push(
+        `assets/${namespace}/textures/block/${base}.png`,
+        `assets/${namespace}/textures/block/${base}_planks.png`,
+      )
+    }
+    if (name.endsWith('_door')) {
+      variantCandidates.push(
+        `assets/${namespace}/textures/block/${name}_top.png`,
+        `assets/${namespace}/textures/block/${name}_bottom.png`,
+      )
+    }
+    if (variantCandidates.length > 0) {
+      const variantBuf = await tryPaths(variantCandidates)
+      if (variantBuf) return variantBuf
+    }
+
+    // 3. Model JSON lookup with parent inheritance and merged texture definitions
     const modelBytes = await read(namespace, `assets/${namespace}/models/block/${name}.json`)
     if (modelBytes) {
       try {
-        const model = JSON.parse(modelBytes.toString('utf-8'))
-        const ref = pickTextureRef(model.textures ?? {})
+        let model = JSON.parse(modelBytes.toString('utf-8'))
+        let mergedTextures: Record<string, string> = { ...(model.textures ?? {}) }
+        let depth = 0
+        let currentModel = model
+        while (currentModel.parent && depth < 3) {
+          depth++
+          const [parentNs, parentPath] = splitNamespaced(currentModel.parent)
+          const normParent = parentPath.startsWith('block/') ? parentPath : `block/${parentPath}`
+          const parentBytes = await read(parentNs, `assets/${parentNs}/models/${normParent}.json`)
+          if (!parentBytes) break
+          currentModel = JSON.parse(parentBytes.toString('utf-8'))
+          mergedTextures = { ...(currentModel.textures ?? {}), ...mergedTextures }
+        }
+
+        let ref: string | undefined
+        if (face === 'top') {
+          ref = mergedTextures.top || mergedTextures.up || mergedTextures.end
+        } else if (face === 'bottom') {
+          ref = mergedTextures.bottom || mergedTextures.down || mergedTextures.end
+        } else if (face === 'side') {
+          ref = mergedTextures.side || mergedTextures.north || mergedTextures.front
+        }
+        if (!ref) {
+          ref = pickTextureRef(mergedTextures)
+        }
+
         if (ref) {
           const [texNs, texPath] = splitNamespaced(ref)
-          return await read(texNs, `assets/${texNs}/textures/${texPath}.png`)
+          const cleanTexPath = texPath.replace(/^textures\//, '')
+          const png = (await read(texNs, `assets/${texNs}/textures/${cleanTexPath}.png`))
+            || (await read(texNs, `assets/${texNs}/textures/block/${cleanTexPath}.png`))
+            || (await read(texNs, `assets/${texNs}/textures/blocks/${cleanTexPath}.png`))
+          if (png) return png
         }
       } catch {
         // ignore malformed model
       }
     }
-    return undefined
+
+    // 4. Last resort item texture fallback
+    return await read(namespace, `assets/${namespace}/textures/item/${name}.png`)
   }
 
-  async getBlockNames(blocks: string[], locale: string): Promise<Record<string, string>> {
+  async getBlockNames(blocks: string[], locale: string, instancePath?: string): Promise<Record<string, string>> {
     const mcLang = toMcLang(locale)
     const result: Record<string, string> = {}
-    const ctx = await this.getTexContext()
+    const ctx = await this.getTexContext(instancePath)
     ctx.touch()
 
     const namespaces = new Set(blocks.map((b) => splitNamespaced(b)[0]))
@@ -257,29 +403,33 @@ export class InstanceBlueprintsService extends AbstractInstanceDomainService imp
     return undefined
   }
 
-  private getTexContext(): Promise<TexContext> {
-    if (this.texContext) return this.texContext
-    this.texContext = (async () => {
-      const nsJar = await this.buildNamespaceJarMap().catch(() => new Map<string, string>())
+  private getTexContext(instancePath?: string): Promise<TexContext> {
+    const key = instancePath || '__global__'
+    let existing = this.texContexts.get(key)
+    if (existing) return existing
+
+    existing = (async () => {
+      const nsJar = await this.buildNamespaceJarMap(instancePath).catch(() => new Map<string, string>())
       const fs = new Map<string, Promise<FileSystem | null>>()
       let timer: ReturnType<typeof setTimeout>
       const dispose = () => {
-        this.log('Evicting idle texture jar handles')
-        this.texContext = undefined
+        this.log(`Evicting idle texture jar handles for ${key}`)
+        this.texContexts.delete(key)
         for (const pending of fs.values()) {
           pending.then((f) => { try { f?.close() } catch { /* ignore */ } }).catch(() => { /* ignore */ })
         }
       }
       const touch = () => {
-        this.log('Touching texture jar handles')
+        this.log(`Touching texture jar handles for ${key}`)
         clearTimeout(timer)
         timer = setTimeout(dispose, 60_000)
       }
-      const ctx: TexContext = { nsJar, fs, png: new Map(), lang: new Map(), touch }
+      const ctx: TexContext = { instancePath, nsJar, fs, png: new Map(), lang: new Map(), touch }
       touch()
       return ctx
     })()
-    return this.texContext
+    this.texContexts.set(key, existing)
+    return existing
   }
 
   private ensureNamespaceFs(ctx: TexContext, namespace: string): Promise<FileSystem | undefined> {
@@ -287,7 +437,7 @@ export class InstanceBlueprintsService extends AbstractInstanceDomainService imp
     if (!pending) {
       pending = (async (): Promise<FileSystem | null> => {
         if (namespace === 'minecraft') {
-          return (await this.resolveVanillaFs()) ?? null
+          return (await this.resolveVanillaFs(ctx.instancePath)) ?? null
         }
         const jar = ctx.nsJar.get(namespace)
         if (!jar) return null
@@ -300,20 +450,53 @@ export class InstanceBlueprintsService extends AbstractInstanceDomainService imp
 
   /**
    * Open an installed Minecraft client jar that actually contains vanilla block
-   * textures. Modded version folders (forge/fabric) often ship a thin jar with
-   * no `assets/minecraft/...`, so we prefer pure-vanilla version folders
-   * (newest first) and verify a sentinel texture before accepting a jar.
+   * textures. If an instancePath is provided, first checks that instance's
+   * configured Minecraft version jar. Otherwise, scans installed versions and
+   * selects the newest vanilla version (e.g. 1.21.x > 1.20.x).
    */
-  private async resolveVanillaFs(): Promise<FileSystem | undefined> {
+  private async resolveVanillaFs(instancePath?: string): Promise<FileSystem | undefined> {
     const versionsDir = join(this.getPath(), 'versions')
+
+    // 1. If an instance is specified, try its configured Minecraft version first
+    if (instancePath) {
+      try {
+        const config = await readJson(join(instancePath, 'instance.json')).catch(() => undefined)
+        const candidates = [
+          config?.runtime?.minecraft,
+          config?.version,
+        ].filter((c): c is string => typeof c === 'string' && !!c)
+
+        for (const ver of candidates) {
+          const jar = join(versionsDir, ver, `${ver}.jar`)
+          if (await pathExists(jar)) {
+            const fs = await openFileSystem(jar).catch(() => undefined)
+            if (fs) {
+              try {
+                await fs.readFile('assets/minecraft/textures/block/stone.png')
+                return fs
+              } catch {
+                try { fs.close() } catch { /* ignore */ }
+              }
+            }
+          }
+        }
+      } catch {
+        // ignore instance reading errors
+      }
+    }
+
+    // 2. Scan installed versions.
+    // Real vanilla releases start with 1. (e.g. 1.21.1, 1.20.4, 1.12.2).
+    // Sorting with numeric: true ensures newest releases come first.
     const dirs = await readdir(versionsDir).catch(() => [] as string[])
-    const isVanilla = (d: string) => /^\d+(\.\d+)+$/.test(d)
+    const isVanilla = (d: string) => /^1\.\d+(\.\d+)*$/.test(d)
     const sorted = [...dirs].sort((a, b) => {
       const av = isVanilla(a)
       const bv = isVanilla(b)
       if (av !== bv) return av ? -1 : 1
       return b.localeCompare(a, undefined, { numeric: true })
     })
+
     for (const dir of sorted) {
       const jar = join(versionsDir, dir, `${dir}.jar`)
       if (!await pathExists(jar)) continue
@@ -331,12 +514,28 @@ export class InstanceBlueprintsService extends AbstractInstanceDomainService imp
   }
 
   /**
-   * Build a global `namespace -> jar path` map from the cached mod metadata of
-   * every known mod (a texture namespace equals the modid for the vast majority
-   * of mods), so a namespace resolves to a single jar without scanning files.
+   * Build a `namespace -> jar path` map from the instance's local mods and the
+   * cached mod metadata of every known mod, so namespaces resolve directly.
    */
-  private async buildNamespaceJarMap(): Promise<Map<string, string>> {
+  private async buildNamespaceJarMap(instancePath?: string): Promise<Map<string, string>> {
     const map = new Map<string, string>()
+
+    // 1. If an instance has local mods in <instance>/mods, register them
+    if (instancePath) {
+      const modsDir = join(instancePath, 'mods')
+      const files = await readdir(modsDir).catch(() => [] as string[])
+      for (const file of files) {
+        if (!file.endsWith('.jar')) continue
+        const jarPath = join(modsDir, file)
+        const base = file.replace(/\.jar$/, '').toLowerCase()
+        const simpleName = base.split(/[-_+]/)[0]
+        if (simpleName && !map.has(simpleName)) {
+          map.set(simpleName, jarPath)
+        }
+      }
+    }
+
+    // 2. Query resource manager database
     const resourceManager = await this.app.registry.getOrCreate(kResourceManager)
     if (!resourceManager?.context) return map
     const root = resourceManager.context.root

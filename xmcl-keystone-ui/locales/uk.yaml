@@ -2068,3 +2068,55 @@ gamepad:
   steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати XMCL до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
   steamDeckAddBtn: Додати до Steam ({btn})
   steamDeckCancelBtn: Скасувати ({btn})
+blueprint:
+  name: Креслення | Креслення
+  count: '{count} креслень'
+  searchLocal: Шукати креслення...
+  searchOnline: Шукати в мережі...
+  market: Ринок
+  local: Локальні
+  provider: Джерело
+  import: Імпортувати
+  openFolder: Відкрити папку
+  refresh: Оновити
+  empty: Креслень не знайдено. Імпортуйте файл .litematic / .schem / .nbt або відкрийте ринок.
+  dropHint: Перетягніть файли креслень (.litematic / .schem / .nbt) сюди для імпорту.
+  selectHint: Виберіть креслення для перегляду.
+  blocks: '{count} блоків'
+  materials: Матеріали
+  allNamespaces: Всі
+  findMod: Знайти мод для цього простору імен
+  compatible: Сумісно
+  incompatible: Відсутні моди
+  missingNamespaces: 'Відсутні моди для: {namespaces}'
+  delete: Видалити
+  cancel: Скасувати
+  install: Встановити
+  goTo: Вебсайт
+  byAuthor: від {author}
+  noDescription: Опис відсутній.
+  loadMore: Завантажити ще
+  cmsBrowseOnly: Це джерело тільки для перегляду; відкрийте вебсайт для завантаження.
+  mixedSources: Результати об'єднані з усіх джерел. Деякі тільки для перегляду — відкрийте їх вебсайт для завантаження.
+  formats:
+    structure: Ванільна структура
+  preview:
+    title: 3D Перегляд
+    loading: Завантаження перегляду...
+    empty: Це креслення не містить блоків для відображення.
+    hint: '{count} блоків · {x}×{y}×{z}'
+    controls: 'WASD (ЦФИВ): Рух · Пробіл/Shift: Вгору/Вниз · Перетягування: Огляд · Колесо: Масштаб'
+  convert:
+    title: Конвертувати формат
+    hint: Конвертувати це креслення в інший формат. Буде створено новий файл.
+    target: Цільовий формат
+    action: Конвертувати
+  replace:
+    title: Замінити блоки
+    simple: Проста
+    precise: Точна
+    simpleHint: Збіг лише за ID блоку, зберігаючи наявні властивості стану.
+    preciseHint: Точний збіг за ID та всіма властивостями стану блоку.
+    from: Замінити
+    to: На
+    action: Замінити блоки

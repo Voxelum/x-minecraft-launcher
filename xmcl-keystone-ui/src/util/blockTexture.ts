@@ -14,36 +14,44 @@ import * as THREE from 'three'
 const loader = new THREE.TextureLoader()
 const cache = new Map<string, THREE.Texture | null | Promise<THREE.Texture | null>>()
 
-export function blockTextureUrl(block: string) {
-  return `http://launcher/block-texture?block=${encodeURIComponent(block)}`
+export function blockTextureUrl(block: string, instancePath?: string, face?: string) {
+  let url = `http://launcher/block-texture?block=${encodeURIComponent(block)}`
+  if (instancePath) {
+    url += `&instance=${encodeURIComponent(instancePath)}`
+  }
+  if (face) {
+    url += `&face=${encodeURIComponent(face)}`
+  }
+  return url
 }
 
 /**
- * Load a block's texture, deduped by block id. Resolves to `null` when the
+ * Load a block's texture, deduped by block id, instance, and face. Resolves to `null` when the
  * block has no resolvable texture (HTTP 404), so callers keep a fallback color.
  */
-export function loadBlockTexture(block: string): Promise<THREE.Texture | null> {
-  const existing = cache.get(block)
+export function loadBlockTexture(block: string, instancePath?: string, face?: string): Promise<THREE.Texture | null> {
+  const cacheKey = `${instancePath || ''}|${block}|${face || 'default'}`
+  const existing = cache.get(cacheKey)
   if (existing instanceof Promise) return existing
   if (existing !== undefined) return Promise.resolve(existing)
 
   const promise = new Promise<THREE.Texture | null>((resolve) => {
     loader.load(
-      blockTextureUrl(block),
+      blockTextureUrl(block, instancePath, face),
       (texture) => {
         texture.magFilter = THREE.NearestFilter
         texture.minFilter = THREE.NearestFilter
         ;(texture as any).colorSpace = (THREE as any).SRGBColorSpace
-        cache.set(block, texture)
+        cache.set(cacheKey, texture)
         resolve(texture)
       },
       undefined,
       () => {
-        cache.set(block, null)
+        cache.set(cacheKey, null)
         resolve(null)
       },
     )
   })
-  cache.set(block, promise)
+  cache.set(cacheKey, promise)
   return promise
 }
