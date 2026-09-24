@@ -1612,7 +1612,7 @@ blueprint:
     loading: Loading preview...
     empty: This blueprint has no blocks to display.
     hint: '{count} blocks · {x}×{y}×{z}'
-    controls: Drag to look · WASD move · Space/Shift up/down
+    controls: 'WASD: Move · Space/Shift: Up/Down · Drag: Look · Scroll: Zoom'
   convert:
     title: Convert format
     hint: Convert this blueprint to another format. A new file will be created.
