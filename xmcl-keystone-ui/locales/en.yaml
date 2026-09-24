@@ -492,6 +492,25 @@ help: Help
 home: Home
 importModpack:
   name: Import Modpack
+  fromFile: Local File...
+  fromFileSubtitle: Choose .zip or .mrpack file
+  fromUrl: From Link / URL...
+  fromUrlSubtitle: Install from a modpack URL
+  fromUrlTitle: Import Modpack from Link
+  fromUrlDescription: "Enter or paste the modpack URL:"
+  fromUrlPlaceholder: "https://..."
+  invalidUrl: "Please enter a valid URL (http:// or https://)"
+  import: Import & Install
+  selectVersion: Select Modpack Version
+  selectVersionDescription: "Choose the version of {name} to install:"
+  importVersion: Install Version
+  resolving: "Resolving modpack..."
+  pmcProtected: "Planet Minecraft is protected by Cloudflare. Please copy the direct download or mirror link from the page."
+  netdiskTitle: Cloud Drive Download
+  netdiskDescription: "This modpack version is hosted on an external cloud drive. Click below to open the download page in your browser, then drag & drop the downloaded .zip or .mrpack into XMCL."
+  openNetdisk: Open Cloud Drive
+  netdiskOpened: "Cloud drive link opened in your browser and copied to clipboard."
+  noReleasesFound: "No .mrpack or .zip modpack releases found for this repository."
 installAssets:
   asset: Check {count} assets and install missing files
   assetIndex: Check Assets Index File

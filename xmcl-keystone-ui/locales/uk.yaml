@@ -365,6 +365,25 @@ help: Допомога
 home: Головна
 importModpack:
   name: Імпортувати модпак
+  fromFile: Локальний файл...
+  fromFileSubtitle: Виберіть файл .zip або .mrpack
+  fromUrl: Через посилання / URL...
+  fromUrlSubtitle: Встановити за посиланням на модпак
+  fromUrlTitle: Імпорт модпаку за посиланням
+  fromUrlDescription: "Вставте посилання на модпак:"
+  fromUrlPlaceholder: "https://..."
+  invalidUrl: "Будь ласка, введіть коректне посилання (http:// або https://)"
+  import: Імпортувати та встановити
+  selectVersion: Оберіть версію модпаку
+  selectVersionDescription: "Виберіть версію {name} для встановлення:"
+  importVersion: Встановити версію
+  resolving: "Отримання інформації про модпак..."
+  pmcProtected: "Planet Minecraft захищений Cloudflare. Будь ласка, скопіюйте пряме посилання для завантаження або дзеркало зі сторінки."
+  netdiskTitle: Завантаження з хмарного диску
+  netdiskDescription: "Ця версія модпаку розміщена на хмарному диску (Quark / Baidu / 123pan). Натисніть кнопку нижче, щоб відкрити сторінку завантаження, а після звантаження перетягніть отриманий файл .zip або .mrpack у вікно XMCL."
+  openNetdisk: Відкрити хмарний диск
+  netdiskOpened: "Посилання на хмарний диск скопійовано та відкрито у вашому браузері."
+  noReleasesFound: "У цьому репозиторії не знайдено релізів модпаків (.mrpack або .zip)."
 installAssets:
   asset: Встановити {count} ресурсів
   assetIndex: Перевірити індексний файл ресурсів

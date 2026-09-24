@@ -25,6 +25,7 @@
     <AppNotifier />
     <AppOmniDialog :agent-enabled="true" />
     <AppAddInstanceDialog />
+    <AppImportUrlDialog />
     <AppGameExitDialog />
     <AppUnauthenticatedWarningDialog />
     <AppMultiplayerLoginDialog />
@@ -52,6 +53,7 @@ import AppImageDialog from '@/components/AppImageDialog.vue'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
 import { useAgentChatHotkey } from '@/composables/agentChat'
+import { useModpackUrlPaste } from '@/composables/modpackPaste'
 import { kAgent, installAgentDevLauncher, useAgent } from '@/composables/agent'
 import { useCommandPaletteHotkey } from '@/composables/commandPalette'
 import { kDialogModel } from '@/composables/dialog'
@@ -70,6 +72,7 @@ import { kSidebarSettings, useInjectSidebarSettings, useSidebarSettings } from '
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
+import AppImportUrlDialog from '@/views/AppImportUrlDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
 import AppOmniDialog from '@/views/AppOmniDialog.vue'
 import AppContextMenu from '@/views/AppContextMenu.vue'
@@ -143,6 +146,8 @@ provide(UserSkinRenderPaused, computed(() => !userProfileDialogShown.value && ro
 useCommandPaletteHotkey()
 // Bind Ctrl/Cmd+Shift+A to open the agent chat panel.
 useAgentChatHotkey()
+// Bind Ctrl/Cmd+V to import modpack from clipboard URL.
+useModpackUrlPaste()
 
 const defaultColor = useInstanceGroupDefaultColor()
 
