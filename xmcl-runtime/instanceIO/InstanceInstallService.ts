@@ -491,8 +491,16 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
     }
     const delta = (ready?: Set<string>) => {
-      const files = activeInstallFiles(targetState)
-      const baseline = activeInstallFiles(targetState, true)
+      let files = activeInstallFiles(targetState)
+      let baseline = activeInstallFiles(targetState, true)
+      if (process.platform === 'win32') {
+        const seenFiles = new Map<string, InstanceFile>()
+        for (const f of files) seenFiles.set(f.path.toLowerCase(), f)
+        files = Array.from(seenFiles.values())
+        const seenBaseline = new Map<string, InstanceFile>()
+        for (const f of baseline) seenBaseline.set(f.path.toLowerCase(), f)
+        baseline = Array.from(seenBaseline.values())
+      }
       return computeFileUpdates(
         instancePath,
         ready ? baseline.filter(file => ready.has(file.path)) : baseline,
@@ -1032,7 +1040,15 @@ export class InstanceInstallService extends AbstractService implements IInstance
     manifestUpdatedAt?: number,
     legacyBaseline?: { upstream: InstanceUpstream; files: InstanceFile[] } | null,
   ): Promise<void> {
-    const { path: instancePath, files, id } = options
+    const { path: instancePath, id } = options
+    let files = options.files
+    if (process.platform === 'win32') {
+      const seen = new Map<string, InstanceFile>()
+      for (const file of files) {
+        seen.set(file.path.toLowerCase(), file)
+      }
+      files = Array.from(seen.values())
+    }
 
     const timestamp = Date.now()
     this.log('Install instance files', instancePath, id)
@@ -1062,7 +1078,6 @@ export class InstanceInstallService extends AbstractService implements IInstance
       )
     } else {
       const oldFiles = options.oldFiles
-      const files = options.files
       const operationId = randomUUID()
 
       const lockState: InstanceLockSchema = {

@@ -16,7 +16,10 @@ export type AddInstanceDialogParameter = {
 } | {
   format: 'modpack'
   path: string
-}
+} | {
+  format: 'url'
+  url: string
+} | string
 
 export const AddInstanceDialogKey: DialogKey<AddInstanceDialogParameter> = 'add-instance-dialog'
 

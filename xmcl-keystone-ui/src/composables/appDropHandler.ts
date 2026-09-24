@@ -5,6 +5,7 @@ import { useDialog } from './dialog'
 import { kDropHandler } from './dropHandler'
 import { kInstance } from './instance'
 import { AddInstanceDialogKey } from './instanceTemplates'
+import { isModpackUrl, ImportUrlDialogKey } from './modpackPaste'
 
 export interface DropItem {
   id: string
@@ -34,6 +35,7 @@ export function useAppDropHandler() {
   const { registerHandler, dragover } = injection(kDropHandler)
   const { path } = injection(kInstance)
   const { show } = useDialog(AddInstanceDialogKey)
+  const { show: showImportUrl } = useDialog(ImportUrlDialogKey)
 
   registerHandler({
     onEnter: () => {
@@ -48,6 +50,8 @@ export function useAppDropHandler() {
             const content = await new Promise<string>((resolve) => item.getAsString(resolve))
             if (content.startsWith('authlib-injector:yggdrasil-server:')) {
               promises.push(onAuthServiceDropped(content))
+            } else if (isModpackUrl(content)) {
+              showImportUrl({ url: content })
             } else if (content.startsWith('https://github.com/') || content.startsWith('https://gitlab.com')) {
               promises.push(onGitURLDropped(content))
             }

@@ -57,6 +57,8 @@ import { InstanceInstallService } from '~/instanceIO'
 import { VersionService } from '~/launch'
 import { UserService } from '~/user'
 import { kMarketProvider } from '~/market'
+import { downloadStaged } from '../market/downloadStaged'
+import { kDownloadOptions } from '~/network'
 import { kResourceManager, kResourceWorker, type ResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { getTracker } from '~/util/taskHelper'
@@ -68,6 +70,7 @@ import { exportOfflineModpack } from './utils/exportOffline'
 import { createMcbbsHandler } from './utils/mcbbsHandler'
 import { createMmcHandler } from './utils/mmcHandler'
 import { createModrinthHandler } from './utils/modrinthHandler'
+import { createTechnicHandler } from './utils/technicHandler'
 import { remapModpackZipDownloads } from './utils/remapZipDownloads'
 import {
   addExportFileAsOverride,
@@ -155,6 +158,13 @@ const transformFile = (file: InstanceFile) => {
 
 const transformInstance = <T extends { files: InstanceFile[] }>(o: T) => {
   for (const file of o.files) transformFile(file)
+  if (process.platform === 'win32') {
+    const seen = new Map<string, InstanceFile>()
+    for (const file of o.files) {
+      seen.set(file.path.toLowerCase(), file)
+    }
+    o.files = Array.from(seen.values())
+  }
   return o
 }
 
@@ -194,6 +204,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     this.handlers['mcbbs'] = createMcbbsHandler(app)
     this.handlers['mmc'] = createMmcHandler(app)
     this.handlers['modrinth'] = createModrinthHandler(app)
+    this.handlers['technic'] = createTechnicHandler(app)
   }
 
   async installModapckFromMarket(options: InstallMarketOptions): Promise<string[]> {
@@ -242,7 +253,20 @@ export class ModpackService extends AbstractService implements IModpackService {
     const versionService = await this.app.registry.get(VersionService)
     const files = await this.#processFiles(handler, modpackFile, manifest, cached.sha1, entries)
 
-    const name = instance.name
+    let name = instance.name
+    if (!name || name === 'Technic Modpack') {
+      const raw = basename(modpackFile, extname(modpackFile))
+      name = raw
+        .replace(/[_-]1\.\d+(\.\d+)?/g, '')
+        .replace(/[_-]v?\d+(\.\d+)+/g, '')
+        .replace(/[_-]/g, ' ')
+        .replace(/1122/g, '1.12.2')
+        .replace(/1710/g, '1.7.10')
+        .replace(/1165/g, '1.16.5')
+        .replace(/1201/g, '1.20.1')
+        .replace(/\b\w/g, (c) => c.toUpperCase())
+        .trim() || raw
+    }
 
     // Prism / MultiMC packs can override the launch configuration (mainClass,
     // extra classpath libraries, ...) via `patches/*.json`. When they do, bake
@@ -1371,12 +1395,35 @@ export class ModpackService extends AbstractService implements IModpackService {
       transformFile(file)
     }
 
+    if (process.platform === 'win32') {
+      const seen = new Map<string, InstanceFile>()
+      for (const file of files) {
+        seen.set(file.path.toLowerCase(), file)
+      }
+      return Array.from(seen.values())
+    }
+
     return files
   }
 
   async openModpack(modpackFile: string): Promise<SharedState<ModpackState>> {
     if (typeof modpackFile !== 'string' || modpackFile.length === 0) {
       throw new ModpackException({ type: 'invalidModpack', path: '' })
+    }
+    if (modpackFile.startsWith('http://') || modpackFile.startsWith('https://')) {
+      const urlObj = new URL(modpackFile)
+      const filename = decodeURIComponent(urlObj.pathname.split('/').pop() || 'modpack.zip')
+      const dest = this.getPath('modpacks', filename)
+      if (!await stat(dest).then(() => true, () => false)) {
+        const downloadOptions = await this.app.registry.get(kDownloadOptions)
+        await ensureDir(this.getPath('modpacks'))
+        await downloadStaged({
+          url: modpackFile,
+          destination: dest,
+          ...downloadOptions,
+        })
+      }
+      modpackFile = dest
     }
     const store = await this.app.registry.get(ServiceStateManager)
     const zipManager = await this.app.registry.getOrCreate(ZipManager)
@@ -1435,8 +1482,24 @@ export class ModpackService extends AbstractService implements IModpackService {
         } catch {}
       }
 
+      let instanceName = instance.name
+      if (!instanceName || instanceName === 'Technic Modpack') {
+        const raw = basename(modpackFile, extname(modpackFile))
+        instanceName = raw
+          .replace(/[_-]1\.\d+(\.\d+)?/g, '')
+          .replace(/[_-]v?\d+(\.\d+)+/g, '')
+          .replace(/[_-]/g, ' ')
+          .replace(/1122/g, '1.12.2')
+          .replace(/1710/g, '1.7.10')
+          .replace(/1165/g, '1.16.5')
+          .replace(/1201/g, '1.20.1')
+          .replace(/\b\w/g, (c) => c.toUpperCase())
+          .trim() || raw
+      }
+
       state.config = {
         ...instance,
+        name: instanceName,
         ...xmclCache,
         upstream: cached.upstream,
         ...(mmcVersionId ? { version: mmcVersionId } : {}),

@@ -56,6 +56,8 @@ export class ZipManager {
       }
       zip.once('close', dispose)
 
+      Object.assign(zip, { fileName: filePath })
+
       const file: ManagedZipFile = {
         file: zip,
         entries: Object.fromEntries((await readAllEntries(zip)).map(e => [e.fileName, e])),

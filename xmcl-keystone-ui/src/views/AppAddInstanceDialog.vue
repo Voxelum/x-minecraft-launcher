@@ -149,17 +149,73 @@
         @quit="quit"
       >
         <div v-if="type === 'template' || type === 'manual' || !type" class="flex justify-end">
-          <v-btn
-            data-testid="add-instance-import"
-            :loading="loading"
-            variant="tonal"
-            color="primary"
-            rounded="pill"
-            @click="onImportModpack"
+          <v-menu
+            location="top end"
+            :offset="10"
+            transition="slide-y-reverse-transition"
           >
-            <v-icon start> folder_zip </v-icon>
-            {{ t('importModpack.name') }}
-          </v-btn>
+            <template #activator="{ props }">
+              <v-btn
+                data-testid="add-instance-import"
+                v-bind="props"
+                :loading="loading"
+                variant="tonal"
+                color="primary"
+                rounded="pill"
+                class="font-semibold shadow-sm hover:shadow-md transition-all"
+              >
+                <v-icon start> folder_zip </v-icon>
+                {{ t('importModpack.name') }}
+                <v-icon end> arrow_drop_down </v-icon>
+              </v-btn>
+            </template>
+            <div class="surface-card rounded-2xl p-2 min-w-[320px] shadow-2xl flex flex-col gap-1.5 backdrop-blur-xl">
+              <div
+                data-testid="add-instance-import-file"
+                class="surface-card-row flex items-center p-3 rounded-xl gap-3 cursor-pointer group"
+                @click="onImportModpack"
+              >
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-primary/15 text-primary transition-transform group-hover:scale-105">
+                  <v-icon size="22">folder_zip</v-icon>
+                </div>
+                <div class="flex flex-col flex-grow min-w-0">
+                  <div class="text-sm font-semibold tracking-tight leading-snug">
+                    {{ t('importModpack.fromFile') }}
+                  </div>
+                  <div class="text-xs opacity-65 leading-tight mt-0.5">
+                    {{ t('importModpack.fromFileSubtitle') }}
+                  </div>
+                </div>
+                <div class="flex gap-1 flex-shrink-0">
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 opacity-75 font-mono">.zip</span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-primary/15 text-primary font-mono">.mrpack</span>
+                </div>
+              </div>
+
+              <div
+                data-testid="add-instance-import-url"
+                class="surface-card-row flex items-center p-3 rounded-xl gap-3 cursor-pointer group"
+                @click="openUrlDialog"
+              >
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-secondary/15 text-secondary transition-transform group-hover:scale-105">
+                  <v-icon size="22">link</v-icon>
+                </div>
+                <div class="flex flex-col flex-grow min-w-0">
+                  <div class="text-sm font-semibold tracking-tight leading-snug flex items-center gap-1.5">
+                    <span>{{ t('importModpack.fromUrl') }}</span>
+                  </div>
+                  <div class="text-xs opacity-65 leading-tight mt-0.5">
+                    {{ t('importModpack.fromUrlSubtitle') }}
+                  </div>
+                </div>
+                <div class="flex items-center flex-shrink-0">
+                  <span class="text-[11px] px-2 py-0.5 rounded-md bg-white/10 border border-white/10 font-mono opacity-80 flex items-center gap-0.5 shadow-sm">
+                    Ctrl+V
+                  </span>
+                </div>
+              </div>
+            </div>
+          </v-menu>
         </div>
         <div v-if="error" class="pointer-events-none left-0 flex w-full justify-center">
           <v-alert density="compact" variant="tonal" rounded="lg" class="w-[50%]" type="error">
@@ -168,6 +224,7 @@
         </div>
       </StepperFooter>
     </div>
+
   </v-dialog>
 </template>
 
@@ -193,17 +250,20 @@ import {
   ModpackServiceKey,
   waitModpackFiles,
   BedrockServiceKey,
+  BaseServiceKey,
+  MarketType,
 } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
+import { ImportUrlDialogKey } from '@/composables/modpackPaste'
 import { useModpackFinishInstall } from '@/composables/modpackInstaller'
 import { useHasMinecraftLicense } from '@/composables/minecraftLicense'
 // TODO: collection integration for Add Instance is disabled pending a redesign.
 // import { kLocalCollections } from '@/composables/localCollections'
 // import { runBulkInstall, candidateToMarketOption } from '@/composables/collectionInstall'
 // import { resolveCollectionEntry } from '@/composables/collectionResolver'
-// import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
+import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 // import { getModrinthModLoaders } from '@/util/modrinth'
 // import {
 //   CollectionContentType,
@@ -223,6 +283,15 @@ const type = ref(
     | 'prism'
     | undefined,
 )
+
+// Instance create data
+const { t } = useI18n()
+const { gameProfile } = injection(kUserContext)
+const { instances } = injection(kInstances)
+const { path } = injection(kInstance)
+const creation = useInstanceCreation(gameProfile, instances)
+const { create, reset, error, update, loading } = creation
+provide(kInstanceCreation, creation)
 
 // Dialog model
 const { openModpack } = useService(ModpackServiceKey)
@@ -295,6 +364,7 @@ const onSelectManifest = async (man: InstanceManifest) => {
   }
 }
 
+const { show: showImportUrl } = useDialog(ImportUrlDialogKey)
 const { isShown, show, hide } = useDialog(
   AddInstanceDialogKey,
   (param) => {
@@ -325,7 +395,15 @@ const { isShown, show, hide } = useDialog(
         onSelectFTB(param.manifest).then(after)
       } else if (param.format === 'manifest') {
         onSelectManifest(param.manifest).then(after)
+      } else if (param.format === 'url' || 'url' in param) {
+        hide()
+        showImportUrl(param)
+        return
       }
+    } else if (typeof param === 'string' && (param.startsWith('http://') || param.startsWith('https://') || param.startsWith('curseforge://') || param.startsWith('modrinth://') || param.startsWith('technic://'))) {
+      hide()
+      showImportUrl(param)
+      return
     }
   },
   () => {
@@ -357,16 +435,6 @@ window.addEventListener('keydown', (e) => {
     hide()
   }
 })
-
-const { t } = useI18n()
-
-// Instance create data
-const { gameProfile } = injection(kUserContext)
-const { instances } = injection(kInstances)
-const { path } = injection(kInstance)
-const creation = useInstanceCreation(gameProfile, instances)
-const { create, reset, error, update, loading } = creation
-provide(kInstanceCreation, creation)
 
 // Install
 const router = useRouter()
@@ -586,6 +654,11 @@ const onImportModpack = () => {
         loading.value = false
       }
     })
+}
+
+function openUrlDialog() {
+  hide()
+  showImportUrl()
 }
 
 // Peer
