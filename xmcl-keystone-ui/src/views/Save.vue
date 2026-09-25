@@ -131,13 +131,18 @@
         v-else-if="isDatapackEntry(selectedItem) && (selectedItem?.modrinth || selectedModrinthId)"
         :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
-        :installed="[]"
+        :installed="
+          selectedItem?.installed?.length
+            ? selectedItem.installed
+            : getInstalledModrinthDatapacks(selectedModrinthId || selectedItem?.modrinth?.project_id)
+        "
         :game-version="gameVersion"
         :categories="modrinthCategories"
-        :all-files="[]"
+        :all-files="allDatapackFiles"
         :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
         :disable-install="saves.length === 0"
         @category="toggleModrinthCategory"
+        @installed="refreshDatapacks"
       >
         <template v-if="saves.length > 0" #install-target>
           <SaveTargetSelect
@@ -150,13 +155,18 @@
         v-else-if="isDatapackEntry(selectedItem) && (selectedItem?.curseforge || selectedCurseforgeId)"
         :curseforge="selectedItem?.curseforge"
         :curseforge-id="Number(selectedItem?.curseforge?.id || selectedCurseforgeId)"
-        :installed="[]"
+        :installed="
+          selectedItem?.installed?.length
+            ? selectedItem.installed
+            : getInstalledCurseforgeDatapacks(Number(selectedItem?.curseforge?.id || selectedCurseforgeId))
+        "
         :game-version="gameVersion"
         :category="curseforgeDatapackCategory"
-        :all-files="[]"
+        :all-files="allDatapackFiles"
         :modrinth="selectedItem?.modrinth?.project_id || selectedModrinthId"
         :disable-install="saves.length === 0"
         @category="curseforgeDatapackCategory = $event"
+        @installed="refreshDatapacks"
       >
         <template v-if="saves.length > 0" #install-target>
           <SaveTargetSelect
@@ -169,12 +179,17 @@
         v-else-if="selectedItem && (selectedItem.curseforge || selectedCurseforgeId)"
         :curseforge="selectedItem.curseforge"
         :curseforge-id="Number(selectedCurseforgeId)"
-        :installed="selectedItem.installed"
+        :installed="
+          selectedItem?.installed?.length
+            ? selectedItem.installed
+            : getInstalledCurseforgeWorlds(Number(selectedCurseforgeId || selectedItem?.curseforge?.id))
+        "
         :game-version="gameVersion"
-        :all-files="[]"
+        :all-files="saves"
         :category="curseforgeCategory"
         :updating="updating"
         @category="curseforgeCategory = $event"
+        @installed="revalidate"
       />
       <SaveDetail v-else-if="isSaveProject(selectedItem)" :save="selectedItem" @delete="onDelete" />
     </template>
@@ -214,6 +229,7 @@ import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
 import { InstanceDatapackFile, useInstanceSavesDatapacks, useSaveDatapackInstallers } from '@/composables/instanceSaveDatapack'
 import { useNotifier } from '@/composables/notifier'
 import { usePresence } from '@/composables/presence'
+import { useQuery } from '@/composables/query'
 import { useTutorial } from '@/composables/tutorial'
 import { useSavesSearch } from '@/composables/savesSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
@@ -234,9 +250,19 @@ import { sort } from '@/composables/sortBy'
 const { path } = injection(kInstance)
 const { error, deleteSave, saves, sharedSaves, revalidate } = injection(kInstanceSave)
 
+// Installed datapacks across all saves, grouped by save path. Rendered as
+// indented child rows under their save in the local (installed) view.
+const { datapacksBySave, refresh: refreshDatapacks } = useInstanceSavesDatapacks(path)
+
+const allDatapackFiles = computed(() => {
+  return Object.values(datapacksBySave.value).flat()
+})
+
 const searchModel = injection(kSearchModel)
 const { curseforgeCategory, gameVersion, currentView, keyword, source, isCurseforgeActive, isModrinthActive, modrinthCategories, sort: marketSort } = searchModel
-const { effect, items, sortBy, loadMore, loading, error: searchError, curseforgeDatapackCategory } = useSavesSearch(saves, sharedSaves, searchModel)
+watch(currentView, (v) => { if (v === 'local') refreshDatapacks() })
+
+const { effect, items, sortBy, loadMore, loading, error: searchError, curseforgeDatapackCategory } = useSavesSearch(saves, sharedSaves, searchModel, allDatapackFiles)
 
 effect()
 
@@ -245,11 +271,6 @@ const isSaveProject = (v: ProjectEntry | undefined): v is ProjectEntry<InstanceS
 
 const denseView = useLocalStorage('savesDenseView', false, { writeDefaults: false })
 const itemHeight = computed(() => (denseView.value ? 40 : 88))
-
-// Installed datapacks across all saves, grouped by save path. Rendered as
-// indented child rows under their save in the local (installed) view.
-const { datapacksBySave, refresh: refreshDatapacks } = useInstanceSavesDatapacks(path)
-watch(currentView, (v) => { if (v === 'local') refreshDatapacks() })
 
 const isDatapackChild = (item: ProjectEntry | undefined) =>
   !!item && item.contentType === 'datapack' && (item.installed?.length ?? 0) > 0
@@ -325,12 +346,22 @@ const { importSave, installFromMarket, importDatapack, deleteDatapack } = useSer
 const { showItemInDirectory } = useService(BaseServiceKey)
 const { notify } = useNotifier()
 
+const currentDatapackInstalled = computed(() => {
+  if (!targetSavePath.value) return []
+  return datapacksBySave.value[targetSavePath.value] || []
+})
+
 // The save market lists two content types side by side. Track the entry the
 // user last opened so the shared installers know whether to install a world
 // (into `saves/`) or a data pack (into the selected save's `datapacks/`).
 // Note: Modrinth returns `project_type: "mod"` for data packs and only marks
 // them via the `datapack` category, so we detect that instead of project_type.
+const selectedId = useQuery('id')
 const currentSelected = ref<ProjectEntry | undefined>(undefined)
+const currentItem = computed(() => {
+  if (!selectedId.value) return currentSelected.value
+  return items.value.find((i) => i.id === selectedId.value) || currentSelected.value
+})
 const isDatapackEntry = (e: ProjectEntry | undefined) => {
   if (!e) return false
   // Primary: reliable tag set by the save search composable.
@@ -345,7 +376,7 @@ const isDatapackEntry = (e: ProjectEntry | undefined) => {
   }
   return false
 }
-const isDatapackSelected = computed(() => isDatapackEntry(currentSelected.value))
+const isDatapackSelected = computed(() => isDatapackEntry(currentItem.value) || isDatapackEntry(currentSelected.value))
 
 // Target save selector for data pack installs.
 const targetSavePath = ref('')
@@ -358,22 +389,46 @@ watch(saves, () => {
 
 const toggleModrinthCategory = useToggleCategories(modrinthCategories)
 
+const getInstalledModrinthDatapacks = (projectId: string | undefined) => {
+  if (!projectId || !targetSavePath.value) return []
+  const list = datapacksBySave.value[targetSavePath.value] || []
+  return list.filter((m) => m.modrinth?.projectId === projectId)
+}
+const getInstalledCurseforgeDatapacks = (modId: number | undefined) => {
+  if (!modId || isNaN(modId) || !targetSavePath.value) return []
+  const list = datapacksBySave.value[targetSavePath.value] || []
+  return list.filter((m) => m.curseforge?.projectId === modId)
+}
+const getInstalledCurseforgeWorlds = (modId: number | undefined) => {
+  if (!modId || isNaN(modId)) return []
+  return saves.value.filter((s) => s.curseforge?.projectId === modId)
+}
+
 // World (CurseForge only) installer -> installs into the instance `saves/` folder.
 const worldInstaller = {
   install: async (file: any) => {
-    await installFromMarket({ market: MarketType.CurseForge, instancePath: path.value, file })
+    const fileId = typeof file === 'number' ? file : (file?.fileId ?? file?.id)
+    await installFromMarket({ market: MarketType.CurseForge, instancePath: path.value, file: { fileId, icon: file?.icon } })
+    await revalidate()
   },
   installWithDependencies: async (id: number, _loaders: string[], icon: string | undefined) => {
     await installFromMarket({ market: MarketType.CurseForge, instancePath: path.value, file: { fileId: id, icon } })
+    await revalidate()
   },
 }
 
 // Data pack installers -> install into the currently selected target save.
 const { curseforgeInstaller: datapackCurseforge, modrinthInstaller: datapackModrinth } =
-  useSaveDatapackInstallers(targetSavePath, () => refreshDatapacks())
+  useSaveDatapackInstallers(targetSavePath, async () => {
+    await refreshDatapacks()
+  })
 
 const ensureTargetSave = () => {
   if (!targetSavePath.value) {
+    if (saves.value.length > 0) {
+      targetSavePath.value = saves.value[0].path
+      return true
+    }
     notify({ level: 'warning', title: t('save.datapack.noSaveHint') })
     return false
   }
@@ -424,7 +479,6 @@ const onImportDatapack = async ({ save, paths }: { save: InstanceSaveFile; paths
     await importDatapack({ savePath: save.path, path: p })
   }
   refreshDatapacks()
-  notify({ level: 'success', title: t('save.datapack.imported', { save: save.name }) })
 }
 
 const { t } = useI18n()

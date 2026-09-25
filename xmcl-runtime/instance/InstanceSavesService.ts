@@ -27,7 +27,7 @@ import { AnyError, isSystemError } from '@xmcl/utils'
 import { FSWatcher } from 'chokidar'
 import filenamify from 'filenamify'
 import { createWriteStream, existsSync } from 'fs'
-import { ensureDir, ensureFile, readdir, rename, rm, rmdir, stat, unlink, writeFile } from 'fs-extra'
+import { ensureDir, ensureFile, readFile, readdir, rename, rm, rmdir, stat, unlink, writeFile } from 'fs-extra'
 import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from 'path'
 import { ZipFile } from 'yazl'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
@@ -242,7 +242,11 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
         .add(savesDir)
 
       const revalidate = async () => {
-        // TODO: getWatched and revalidate
+        const saves = await readdirIfPresent(savesDir).then(a => a.filter(s => !s.startsWith('.')))
+        const metadatas = await Promise.all(saves
+          .map(s => resolve(savesDir, s))
+          .map((p) => readInstanceSaveMetadata(p, baseName).catch(() => undefined)))
+        state.instanceSaves(metadatas.filter(isNonnull))
       }
 
       const dispose = () => {
@@ -306,6 +310,12 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     }
 
     await rm(savePath, { recursive: true, force: true })
+
+    if (instancePath) {
+      const stateManager = await this.app.registry.get(ServiceStateManager)
+      const state = stateManager.get<Saves>(getInstanceSaveKey(instancePath))
+      state?.instanceSaveRemove(savePath)
+    }
   }
 
   async shareSave(options: ShareSaveOptions): Promise<void> {
@@ -425,6 +435,15 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
         projectId: curseforge.projectId,
         fileId: curseforge.fileId,
       }))
+    }
+
+    const stateManager = await this.app.registry.get(ServiceStateManager)
+    const state = stateManager.get<Saves>(getInstanceSaveKey(instancePath))
+    if (state) {
+      const meta = await readInstanceSaveMetadata(dest, basename(instancePath)).catch(() => undefined)
+      if (meta) {
+        state.instanceSaveUpdate(meta)
+      }
     }
 
     return dest
@@ -630,6 +649,33 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     try {
       const { metadata, icon } = await readPackMetaAndIcon(fullPath)
       const description = flattenPackDescription(metadata.description)
+
+      let curseforge: { projectId: number; fileId: number } | undefined
+      let modrinth: { projectId: string; versionId: string } | undefined
+
+      const cfSidecar = join(savePath, 'datapacks', `.${fileName}.curseforge`)
+      if (existsSync(cfSidecar)) {
+        curseforge = await readFile(cfSidecar, 'utf-8').then(JSON.parse).catch(() => undefined)
+      }
+      const mrSidecar = join(savePath, 'datapacks', `.${fileName}.modrinth`)
+      if (existsSync(mrSidecar)) {
+        modrinth = await readFile(mrSidecar, 'utf-8').then(JSON.parse).catch(() => undefined)
+      }
+
+      if (!curseforge && !modrinth) {
+        const resourceManager = await this.app.registry.get(kResourceManager).catch(() => undefined)
+        if (resourceManager) {
+          const snapshot = await resourceManager.getSnapshot(fullPath).catch(() => undefined)
+          if (snapshot?.sha1) {
+            const meta = await resourceManager.getMetadataByHash(snapshot.sha1).catch(() => undefined)
+            if (meta) {
+              curseforge = meta.curseforge
+              modrinth = meta.modrinth
+            }
+          }
+        }
+      }
+
       return {
         path: fullPath,
         savePath,
@@ -639,6 +685,8 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
         description,
         packFormat: metadata.pack_format ?? -1,
         mtime: fstat.mtimeMs,
+        curseforge,
+        modrinth,
       }
     } catch (e) {
       this.warn(`Fail to parse datapack ${fullPath}. Skip it.`)
@@ -695,7 +743,13 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
         watcher?.close()
       }
 
-      return [state, dispose, async () => { }]
+      const revalidate = async () => {
+        const files = await readdirIfPresent(datapacksDir)
+        const parsed = await Promise.all(files.filter(f => !f.startsWith('.')).map(f => this.readDatapack(savePath, f)))
+        state.saveDatapacks(parsed.filter(isNonnull))
+      }
+
+      return [state, dispose, revalidate]
     })
   }
 
@@ -736,6 +790,11 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     const target = join(savePath, 'datapacks', fileName)
     if (await missing(target)) return
     await rm(target, { recursive: true, force: true })
+    await rm(join(savePath, 'datapacks', `.${fileName}.curseforge`), { force: true }).catch(() => undefined)
+    await rm(join(savePath, 'datapacks', `.${fileName}.modrinth`), { force: true }).catch(() => undefined)
+    const stateManager = await this.app.registry.get(ServiceStateManager)
+    const state = stateManager.get<SaveDatapacks>(getInstanceSaveDatapacksKey(savePath))
+    state?.saveDatapackRemove(target)
   }
 
   async installDatapackFromMarket(options: InstallDatapackMarketOptions) {
@@ -748,6 +807,27 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       ...options,
       directory: datapacksDir,
     })
+
+    for (const r of results) {
+      if (r.metadata?.curseforge) {
+        await writeFile(join(datapacksDir, `.${basename(r.path)}.curseforge`), JSON.stringify(r.metadata.curseforge)).catch(() => undefined)
+      }
+      if (r.metadata?.modrinth) {
+        await writeFile(join(datapacksDir, `.${basename(r.path)}.modrinth`), JSON.stringify(r.metadata.modrinth)).catch(() => undefined)
+      }
+    }
+
+    const stateManager = await this.app.registry.get(ServiceStateManager)
+    const state = stateManager.get<SaveDatapacks>(getInstanceSaveDatapacksKey(savePath))
+    if (state) {
+      for (const r of results) {
+        const dp = await this.readDatapack(savePath, basename(r.path)).catch(() => undefined)
+        if (dp) {
+          state.saveDatapackUpdate(dp)
+        }
+      }
+    }
+
     return results.map(r => r.path)
   }
 }

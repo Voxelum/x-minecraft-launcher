@@ -7,6 +7,7 @@ import { useModrinthSearch } from './modrinthSearch'
 import { SearchModel } from './search'
 import { useMergedProjects, useProjectsSort } from './useMergedProjects'
 import { useLocalStorage } from '@vueuse/core'
+import { InstanceDatapackFile } from './instanceSaveDatapack'
 import { LocalSort } from './sortBy'
 
 function useSaveLocalSearch({ keyword }: SearchModel, saves: Ref<InstanceSaveFile[]>, shared: Ref<InstanceSaveFile[]>) {
@@ -20,6 +21,7 @@ function useSaveLocalSearch({ keyword }: SearchModel, saves: Ref<InstanceSaveFil
       disabled: !s.enabled,
       installed: [s],
       files: [s],
+      curseforgeProjectId: s.curseforge?.projectId,
     }
   }
 
@@ -58,8 +60,12 @@ function useSaveLocalSearch({ keyword }: SearchModel, saves: Ref<InstanceSaveFil
   }
 }
 
-export function useSavesSearch(saves: Ref<InstanceSaveFile[]>, sharedSaves: Ref<InstanceSaveFile[]>,
-  searchModel: SearchModel) {
+export function useSavesSearch(
+  saves: Ref<InstanceSaveFile[]>,
+  sharedSaves: Ref<InstanceSaveFile[]>,
+  searchModel: SearchModel,
+  datapacksList?: Ref<InstanceDatapackFile[]>,
+) {
   // The save market mixes two content types:
   // - Worlds (CurseForge only, classId 17) filtered by `curseforgeCategory`
   // - Data packs (CurseForge classId 6945 + Modrinth `datapack`) which are
@@ -88,6 +94,26 @@ export function useSavesSearch(saves: Ref<InstanceSaveFile[]>, sharedSaves: Ref<
   const { instanceSaves, sharedSaves: _sharedSaves } = useSaveLocalSearch(searchModel, saves, sharedSaves)
   const { currentView, keyword } = searchModel
 
+  const localDatapacks = computed(() => {
+    const result = [] as ProjectEntry[]
+    for (const d of datapacksList?.value || []) {
+      result.push({
+        id: d.path,
+        icon: d.icon,
+        title: d.name,
+        description: d.description,
+        author: '',
+        disabled: false,
+        installed: [d],
+        files: [d],
+        contentType: 'datapack' as const,
+        curseforgeProjectId: d.curseforge?.projectId,
+        modrinthProjectId: d.modrinth?.projectId,
+      })
+    }
+    return result
+  })
+
   // Tag data pack results so the view can reliably distinguish them from worlds
   // regardless of CurseForge classId gaps or Modrinth's `project_type: mod`.
   const datapacks = computed(() => {
@@ -106,7 +132,7 @@ export function useSavesSearch(saves: Ref<InstanceSaveFile[]>, sharedSaves: Ref<
       }
       return [
         mergeSorted(worlds.value, datapacks.value),
-        [..._sharedSaves.value, ...instanceSaves.value],
+        [..._sharedSaves.value, ...instanceSaves.value, ...localDatapacks.value],
       ]
     }),
   )

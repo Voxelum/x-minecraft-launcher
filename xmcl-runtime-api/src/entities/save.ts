@@ -123,6 +123,14 @@ export interface InstanceDatapack {
    * The last modified time.
    */
   mtime: number
+  curseforge?: {
+    projectId: number
+    fileId: number
+  }
+  modrinth?: {
+    projectId: string
+    versionId: string
+  }
 }
 
 export function getInstanceSaveDatapacksKey(savePath: string) {
