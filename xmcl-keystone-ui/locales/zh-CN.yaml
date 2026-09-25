@@ -1455,6 +1455,11 @@ save:
   deleteTitle: 删除该存档
   difficulty: 难度
   dropHint: 将地图 Zip 或文件夹拖入此处来导入
+  datapack:
+    name: 数据包 | 数据包
+    noSaveHint: 请先创建或选择一个世界来安装此数据包
+    packFormat: '数据包格式：{format}'
+    imported: 数据包已导入至 {save}
   duplicate: 复制存档
   export: 导出地图
   exportMessage: 将存档导出为 Zip
