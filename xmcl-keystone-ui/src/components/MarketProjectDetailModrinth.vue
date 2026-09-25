@@ -46,6 +46,7 @@ const emit = defineEmits<{
   (event: 'enable', file: ProjectFile): void
   (event: 'disable', file: ProjectFile): void
   (event: 'open-dependent', dependent: ProjectDependent): void
+  (event: 'installed', version?: ProjectDetailVersion): void
 }>()
 
 // Project
@@ -91,9 +92,19 @@ const { data: versions, isValidating: loadingVersions } = useSWRVModel(
   inject(kSWRVConfig),
 )
 const detailVersions = computed(() => includeModrinthUpgradeVersion(versions.value, props.upgradeVersion))
+const effectiveInstalled = computed(() => {
+  if (props.installed && props.installed.length > 0) {
+    return props.installed
+  }
+  if (props.projectId) {
+    const matched = props.allFiles?.filter(f => f.modrinth?.projectId === props.projectId)
+    if (matched && matched.length > 0) return matched
+  }
+  return props.installed || []
+})
 const modVersions = useModrinthProjectDetailVersions(
   detailVersions,
-  computed(() => props.installed),
+  effectiveInstalled,
 )
 
 const selectedVersion = shallowRef(
@@ -169,7 +180,7 @@ watch(
   },
 )
 watch(
-  () => props.installed,
+  effectiveInstalled,
   () => {
     innerUpdating.value = false
   },
@@ -196,14 +207,17 @@ const onInstall = async (v: ProjectDetailVersion) => {
         config,
       )
     }
-    await installWithDependencies(
+    const result = await installWithDependencies(
       v.id,
       v.loaders,
       project.value?.icon_url,
-      props.installed,
+      effectiveInstalled.value,
       resolvedDeps ?? [],
       (selectedVersion?.files.find(file => file.primary) ?? selectedVersion?.files[0])?.url,
     )
+    if (result !== false) {
+      emit('installed', v)
+    }
   } finally {
     installing.value = false
   }
@@ -234,7 +248,7 @@ const onInstallDependency = async (dep: ProjectDependency) => {
 
 const { enabled, installed, hasInstalledVersion } = useProjectDetailEnable(
   selectedVersion,
-  computed(() => props.installed),
+  effectiveInstalled,
   innerUpdating,
   (f) => emit('enable', f),
   (f) => emit('disable', f),
