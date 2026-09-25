@@ -124,32 +124,34 @@
       <MarketProjectDetailModrinth
         v-if="(selectedItem?.modrinth || selectedModrinthId)"
         :modrinth="selectedItem?.modrinth"
-        :project-id="selectedModrinthId"
-        :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
+        :project-id="selectedItem?.modrinth?.project_id || selectedModrinthId"
+        :installed="selectedItem?.installed?.length ? selectedItem.installed : getInstalledModrinth(selectedItem?.modrinth?.project_id || selectedModrinthId)"
         :game-version="gameVersion"
         :categories="modrinthCategories"
         :all-files="shaderPacks"
-        :curseforge="selectedItem?.curseforge?.id || selectedItem?.curseforgeProjectId"
+        :curseforge="selectedItem?.curseforge?.id || selectedItem?.curseforgeProjectId || selectedCurseforgeId"
         collection-content-type="shaderpacks"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
         @category="toggleCategory"
+        @installed="onInstalled"
       />
       <MarketProjectDetailCurseforge
         v-else-if="(selectedItem?.curseforge || selectedCurseforgeId)"
         :curseforge="selectedItem?.curseforge"
-        :curseforge-id="Number(selectedCurseforgeId)"
-        :installed="selectedItem?.installed || getInstalledCurseforge(Number(selectedCurseforgeId))"
+        :curseforge-id="Number(selectedItem?.curseforge?.id || selectedCurseforgeId)"
+        :installed="selectedItem?.installed?.length ? selectedItem.installed : getInstalledCurseforge(Number(selectedItem?.curseforge?.id || selectedCurseforgeId))"
         :game-version="gameVersion"
         :category="curseforgeCategory"
         :all-files="shaderPacks"
-        :modrinth="selectedModrinthId"
+        :modrinth="selectedItem?.modrinth?.project_id || selectedModrinthId"
         collection-content-type="shaderpacks"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
         @category="curseforgeCategory = $event"
+        @installed="onInstalled"
       />
       <ShaderPackDetailResource
         v-else-if="isShaderPackProject(selectedItem)"
@@ -400,10 +402,12 @@ const { refresh, refreshing, upgrade, plans, upgradePolicy, upgrading } = useMod
 // Modrinth collections/follows).
 const showInstallAll = computed(() => source.value === 'favorite')
 const getInstalledModrinth = (projectId: string) => {
+  if (!projectId) return []
   const allPacks = shaderPacks.value
   return allPacks.filter((m) => m.modrinth?.projectId === projectId)
 }
 const getInstalledCurseforge = (modId: number | undefined) => {
+  if (!modId || isNaN(modId)) return []
   const allPacks = shaderPacks.value
   return allPacks.filter((m) => m.curseforge?.projectId === modId)
 }
@@ -527,13 +531,17 @@ function navigateToMod(type: string) {
 }
 
 const { resolveFromMarket, install, uninstall } = useService(InstanceShaderPacksServiceKey)
+const onInstalled = async () => {
+  await revalidate()
+}
+
 // modrinth installer
 const modrinthInstaller = useModrinthInstaller(
   path,
   runtime,
   shaderPacks,
   resolveFromMarket,
-  installModloaders,
+  async () => true,
 )
 provide(kModrinthInstaller, modrinthInstaller)
 
@@ -543,7 +551,7 @@ const curseforgeInstaller = useCurseforgeInstaller(
   runtime,
   shaderPacks,
   resolveFromMarket,
-  installModloaders,
+  async () => true,
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 
