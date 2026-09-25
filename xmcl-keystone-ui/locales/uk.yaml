@@ -1741,10 +1741,19 @@ task:
   connections: Мережеві з'єднання
   empty: Немає активних завдань
   failed: Невдача
-  manager: Менеджер завдань
+  manager: Диспетчер задач
   nTaskRunning: '{count} завдань виконується'
   name: Завдання | Завдання
   pause: Пауза
+  running: Виконується...
+  succeed: Завершено
+  eta: ~{time} залишилось
+  remaining: '{size} залишилось'
+  totalRemaining: 'Залишилось {size}'
+  op:
+    update: Оновлення
+    export: Експорт
+    duplicate: Дублювання
 theme:
   selectImage: Вибрати зображення
   selectMusic: Вибрати музику

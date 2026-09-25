@@ -1717,6 +1717,15 @@ tag:
   create: タグを作成
   createSelected: 選択されたもので新しいタグを作る
 task:
+  running: 実行中...
+  succeed: 完了
+  eta: 残り約 {time}
+  remaining: '残り {size}'
+  totalRemaining: '残り {size}'
+  op:
+    update: 更新
+    export: エクスポート
+    duplicate: 複製
   cancelled: キャンセルされました
   clear: 終了したタスクをクリア
   connection:

@@ -1692,6 +1692,15 @@ tag:
   create: Criar uma Tag
   createSelected: Criar uma Tag para os Selecionados
 task:
+  running: Executando...
+  succeed: Concluído
+  eta: ~{time} restante
+  remaining: '{size} restante'
+  totalRemaining: '{size} restante'
+  op:
+    update: Atualizar
+    export: Exportar
+    duplicate: Duplicar
   cancelled: Cancelada
   clear: Limpar tarefas finalizadas
   connection:

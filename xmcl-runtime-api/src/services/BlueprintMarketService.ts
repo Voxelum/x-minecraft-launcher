@@ -1,4 +1,11 @@
+import type { Task } from '../task'
 import { ServiceKey } from './Service'
+
+export interface InstallBlueprintTask extends Task {
+  type: 'installBlueprint'
+  title: string
+  icon?: string
+}
 
 export type BlueprintMarketProvider = 'mcschematic' | 'cms' | 'minecraft-schematics'
 

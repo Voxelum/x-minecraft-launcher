@@ -1686,6 +1686,15 @@ tag:
   create: Maak Tag
   createSelected: Maak Tag voor Geselecteerde
 task:
+  running: Executando...
+  succeed: Completado
+  eta: restan ~{time}
+  remaining: 'restan {size}'
+  totalRemaining: '{size} restante'
+  op:
+    update: Actualizar
+    export: Exportar
+    duplicate: Duplicar
   cancelled: Geannuleerd
   clear: Wis Voltooide Taken
   connection:

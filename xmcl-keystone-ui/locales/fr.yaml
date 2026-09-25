@@ -1711,6 +1711,15 @@ tag:
   create: Créer un tag
   createSelected: Créer un tag pour la sélection
 task:
+  running: En cours d'exécution...
+  succeed: Terminé
+  eta: ~{time} restante(s)
+  remaining: '{size} restant(e)'
+  totalRemaining: '{size} restant(e)'
+  op:
+    update: Mettre à jour
+    export: Exporter
+    duplicate: Dupliquer
   cancelled: Annulé
   clear: Effacer les tâches terminées
   connection:

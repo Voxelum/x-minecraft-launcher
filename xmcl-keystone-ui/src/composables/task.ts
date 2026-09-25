@@ -1,6 +1,6 @@
 import { injection } from '@/util/inject'
 import { TaskState, Tasks } from '@xmcl/runtime-api'
-import { Ref, computed } from 'vue'
+import { Ref, computed, inject, shallowRef } from 'vue'
 import { kTaskManager } from './taskManager'
 
 export function useTaskCount() {
@@ -11,6 +11,47 @@ export function useTaskCount() {
     () => tasks.value.filter((t: Tasks) => t.state === TaskState.Running).length,
   )
   return { count }
+}
+
+export function useTaskOverallProgress() {
+  const tasks = inject(kTaskManager, undefined)?.tasks ?? shallowRef<Tasks[]>([])
+
+  const runningTasks = computed(() => tasks.value.filter((t: Tasks) => t.state === TaskState.Running))
+  const count = computed(() => runningTasks.value.length)
+
+  const progress = computed(() => {
+    let currentBytes = 0
+    let totalBytes = 0
+    let totalSpeed = 0
+    let hasDeterminate = false
+
+    for (const t of runningTasks.value) {
+      if (t.progress && t.progress.total > 0) {
+        currentBytes += t.progress.progress
+        totalBytes += t.progress.total
+        hasDeterminate = true
+      }
+      if (t.progress && 'speed' in t.progress && typeof (t.progress as any).speed === 'number' && (t.progress as any).speed > 0) {
+        totalSpeed += (t.progress as any).speed
+      }
+    }
+
+    const remainingBytes = hasDeterminate && totalBytes > currentBytes ? totalBytes - currentBytes : 0
+    const percent = hasDeterminate && totalBytes > 0
+      ? Math.min(100, Math.max(0, (currentBytes / totalBytes) * 100))
+      : 0
+
+    return {
+      percent,
+      current: currentBytes,
+      total: totalBytes,
+      remaining: remainingBytes,
+      speed: totalSpeed,
+      indeterminate: !hasDeterminate && runningTasks.value.length > 0,
+    }
+  })
+
+  return { tasks, count, runningTasks, progress }
 }
 
 export interface LocalizedTask {
@@ -170,7 +211,8 @@ export function useLocalizedTaskFunc() {
 
     // Install Instance Task
     if (task.type === 'installInstance') {
-      const title = t('installInstance.name')
+      const name = (task as any).instanceName
+      const fileName = (task as any).fileName
       let subtitle = ''
       if (task.substate.type === 'install-instance.resolve') {
         subtitle = t('installInstance.resolve')
@@ -181,7 +223,13 @@ export function useLocalizedTaskFunc() {
       } else if (task.substate.type === 'install-instance.link') {
         subtitle = t('installInstance.link', { count: task.substate.count ?? 0 })
       }
-      return { title, subtitle }
+      const title = fileName || name || t('installInstance.name')
+      return {
+        title,
+        subtitle: fileName
+          ? (name ? name + (subtitle ? ' • ' + subtitle : '') : subtitle)
+          : (name ? (t('installInstance.name') + (subtitle ? ' • ' + subtitle : '')) : subtitle),
+      }
     }
 
     // Export Modpack Task
@@ -222,15 +270,16 @@ export function useLocalizedTaskFunc() {
 
     // Install Modrinth File Task
     if (task.type === 'installModrinthFile') {
-      const title = t('installModrinthFile.name')
-      const subtitle = task.filename
+      const title = (task as any).title || task.filename || t('installModrinthFile.name')
+      const subtitle = (task as any).title ? task.filename : t('installModrinthFile.name')
       return { title, subtitle }
     }
 
     // Install Curseforge File Task
     if (task.type === 'installCurseforgeFile') {
-      const title = t('installCurseforgeFile')
-      return { title, subtitle: '' }
+      const title = (task as any).title || (task as any).filename || t('installCurseforgeFile')
+      const subtitle = (task as any).title ? (task as any).filename : ''
+      return { title, subtitle }
     }
 
     // Download Update Task
@@ -243,6 +292,12 @@ export function useLocalizedTaskFunc() {
     if (task.type === 'migrateMinecraft') {
       const title = t('migrateMinecraft.name')
       return { title, subtitle: '' }
+    }
+
+    // Install Blueprint Task
+    if (task.type === 'installBlueprint') {
+      const title = (task as any).title || t('blueprint.name')
+      return { title, subtitle: t('blueprint.install') }
     }
 
     // Fallback for unknown task types (exhaustive check)

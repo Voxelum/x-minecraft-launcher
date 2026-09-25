@@ -1822,6 +1822,15 @@ tag:
   create: ট্যাগ তৈরি করুন
   createSelected: নির্বাচিত অংশের জন্য ট্যাগ তৈরি করুন
 task:
+  running: চলছে...
+  succeed: সম্পন্ন
+  eta: প্রায় {time} বাকি
+  remaining: '{size} বাকি'
+  totalRemaining: '{size} বাকি'
+  op:
+    update: আপডেট
+    export: রপ্তানি
+    duplicate: ডুপ্লিকেট
   cancelled: বাতিল করা হয়েছে
   clear: সমাপ্ত কাজগুলো সাফ করুন
   connection:

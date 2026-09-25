@@ -1711,6 +1711,15 @@ tag:
   create: Etiket Oluştur
   createSelected: Seçilenler için Etiket Oluştur
 task:
+  running: Çalışıyor...
+  succeed: Tamamlandı
+  eta: kalan ~{time}
+  remaining: '{size} kaldı'
+  totalRemaining: '{size} kaldı'
+  op:
+    update: Güncelle
+    export: Dışa aktar
+    duplicate: Çoğalt
   cancelled: İptal Edildi
   clear: Biten Görevleri Temizle
   connection:

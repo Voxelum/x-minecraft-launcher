@@ -1800,6 +1800,15 @@ tag:
   create: Einen Tag erstellen
   createSelected: Stvoriti-Tag für Inverse
 task:
+  running: Wird ausgeführt...
+  succeed: Abgeschlossen
+  eta: ca. {time} verbleibend
+  remaining: '{size} verbleibend'
+  totalRemaining: '{size} verbleibend'
+  op:
+    update: Aktualisieren
+    export: Exportieren
+    duplicate: Duplizieren
   cancelled: Abgesagt
   clear: Erledigte Aufgaben löschen
   connection:

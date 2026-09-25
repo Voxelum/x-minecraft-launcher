@@ -2043,6 +2043,15 @@ task:
   nTaskRunning: '{count} 个任务运行中'
   name: 任务 | 任务
   pause: 暂停
+  running: 运行中...
+  succeed: 已完成
+  eta: 剩余约 {time}
+  remaining: 剩余 {size}
+  totalRemaining: 剩余 {size}
+  op:
+    update: 更新
+    export: 导出
+    duplicate: 复制
 theme:
   selectImage: 选择图像
   selectMusic: 选择音乐

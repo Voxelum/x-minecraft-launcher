@@ -1823,6 +1823,15 @@ tag:
   create: குறிச்சொல்லை உருவாக்கு
   createSelected: தேர்ந்தெடுக்கப்பட்டவற்றிற்கு குறிச்சொல்லை உருவாக்கு
 task:
+  running: இயங்குகிறது...
+  succeed: முடிந்தது
+  eta: ~{time} மீதமுள்ளது
+  remaining: '{size} மீதமுள்ளது'
+  totalRemaining: '{size} மீதமுள்ளது'
+  op:
+    update: புதுப்பித்தல்
+    export: ஏற்றுமதி
+    duplicate: நகல்
   cancelled: ரத்துசெய்யப்பட்டது
   clear: முடிந்த பணிகளை அழி
   connection:

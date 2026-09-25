@@ -1663,6 +1663,15 @@ tag:
   create: MAKE TAG
   createSelected: MAKE TAG FUR SELECTED
 task:
+  running: RUNNIN NAO...
+  succeed: DONE!!
+  eta: ~{time} LEFT
+  remaining: '{size} LEFT'
+  totalRemaining: '{size} REMAININ'
+  op:
+    update: UPDATIN
+    export: EXPORTIN
+    duplicate: DUPLICATIN
   cancelled: CANCELLED
   clear: CLEAR FINISHED TASKZ
   connection:

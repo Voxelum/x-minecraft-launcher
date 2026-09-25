@@ -1823,6 +1823,15 @@ tag:
   create: Tạo thẻ (Tag)
   createSelected: Tạo thẻ cho phần đã chọn
 task:
+  running: Đang chạy...
+  succeed: Đã hoàn thành
+  eta: còn lại ~{time}
+  remaining: 'còn {size}'
+  totalRemaining: 'Còn lại {size}'
+  op:
+    update: Cập nhật
+    export: Xuất
+    duplicate: Nhân bản
   cancelled: Đã hủy
   clear: Xóa các tác vụ đã hoàn thành
   connection:
