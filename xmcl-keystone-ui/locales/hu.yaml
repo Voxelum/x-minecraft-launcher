@@ -1733,6 +1733,15 @@ tag:
   create: Címke létrehozása
   createSelected: Címke létrehozása a kiválasztotthoz
 task:
+  running: Folyamatban...
+  succeed: Befejezve
+  eta: kb. {time} van hátra
+  remaining: '{size} van hátra'
+  totalRemaining: '{size} maradt'
+  op:
+    update: Frissítés
+    export: Exportálás
+    duplicate: Kettőzés
   cancelled: Törölt
   clear: Befejezett folyamatok törlése
   connection:

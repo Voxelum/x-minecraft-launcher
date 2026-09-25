@@ -1887,6 +1887,15 @@ tag:
   create: 建立標籤
   createSelected: 為所有選中嘅建立標籤
 task:
+  running: 執行中...
+  succeed: 已完成
+  eta: 剩餘約 {time}
+  remaining: '剩餘 {size}'
+  totalRemaining: '剩餘 {size}'
+  op:
+    update: 更新
+    export: 匯出
+    duplicate: 複製
   cancelled: 已取消
   clear: 清除已完成嘅任務
   connection:

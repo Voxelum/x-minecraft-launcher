@@ -1689,6 +1689,15 @@ tag:
   create: Tag Aanmaken
   createSelected: Tag Aanmaken voor Geselecteerde
 task:
+  running: Bezig met uitvoeren...
+  succeed: Voltooid
+  eta: ongeveer {time} over
+  remaining: '{size} over'
+  totalRemaining: '{size} resterend'
+  op:
+    update: Bijwerken
+    export: Exporteren
+    duplicate: Dupliceren
   cancelled: Geannuleerd
   clear: Voltooide Taken Wissen
   connection:

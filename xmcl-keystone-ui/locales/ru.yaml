@@ -1622,10 +1622,19 @@ task:
   connections: Сетевые подключения
   empty: Нет запущенных задач
   failed: Не удалось выполнить
-  manager: Менеджер задач
+  manager: Диспетчер задач
   nTaskRunning: '{count} задач выполняется'
   name: Задача | Задачи
   pause: Приостановить
+  running: Выполняется...
+  succeed: Завершено
+  eta: ~{time} осталось
+  remaining: '{size} осталось'
+  totalRemaining: 'Осталось {size}'
+  op:
+    update: Обновление
+    export: Экспорт
+    duplicate: Дублирование
 theme:
   selectImage: Выберите изображение
   selectMusic: Выберите музыку
@@ -1843,6 +1852,7 @@ blueprint:
   searchLocal: Поиск схем...
   searchOnline: Поиск в интернете...
   market: Магазин
+  local: Локальные
   provider: Источник
   import: Импорт
   openFolder: Открыть папку
@@ -1852,16 +1862,22 @@ blueprint:
   selectHint: Выберите схему для просмотра.
   blocks: '{count} блоков'
   materials: Материалы
+  allNamespaces: Все
   findMod: Найти мод для этого пространства имён
   compatible: Совместимо
   incompatible: Не хватает модов
   missingNamespaces: 'Не хватает модов для: {namespaces}'
+  delete: Удалить
+  cancel: Отмена
   install: Установить
   goTo: Веб-сайт
   byAuthor: 'автор: {author}'
   noDescription: Описание отсутствует.
+  loadMore: Загрузить ещё
+  cmsBrowseOnly: Этот источник доступен только для просмотра; откройте сайт для загрузки.
   mixedSources: Результаты объединены из всех источников. Некоторые доступны только для просмотра — откройте их сайт для загрузки.
   preview:
+    title: 3D Предпросмотр
     loading: Загрузка предпросмотра...
     empty: В этой схеме нет блоков для отображения.
     hint: '{count} блоков · {x}×{y}×{z}'

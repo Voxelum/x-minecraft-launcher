@@ -1680,6 +1680,15 @@ tag:
   create: Тег жасау
   createSelected: Таңдалғандар үшін тег жасау
 task:
+  running: Орындалуда...
+  succeed: Аяқталды
+  eta: ~{time} қалды
+  remaining: '{size} қалды'
+  totalRemaining: '{size} қалды'
+  op:
+    update: Жаңарту
+    export: Экспорттау
+    duplicate: Көшіру
   cancelled: Болдырылған
   clear: Аяқталған тапсырмаларды тазалау
   connection:

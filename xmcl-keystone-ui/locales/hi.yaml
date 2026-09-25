@@ -1823,6 +1823,15 @@ tag:
   create: टैग बनाएँ
   createSelected: चुने हुए के लिए टैग बनाएँ
 task:
+  running: चल रहा है...
+  succeed: पूर्ण हुआ
+  eta: लगभग {time} शेष
+  remaining: '{size} शेष'
+  totalRemaining: '{size} शेष'
+  op:
+    update: अपडेट
+    export: निर्यात
+    duplicate: डुप्लिकेट
   cancelled: रद्द किया गया
   clear: पूर्ण कार्य साफ़ करें
   connection:

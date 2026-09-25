@@ -1821,6 +1821,15 @@ tag:
   create: ट्याग् (Tag) सृजतु
   createSelected: चयनितस्य कृते ट्याग् सृजतु
 task:
+  running: प्रचलति...
+  succeed: सम्पन्नम्
+  eta: ~{time} अवशिष्टम्
+  remaining: '{size} अवशिष्टम्'
+  totalRemaining: '{size} अवशिष्टम्'
+  op:
+    update: नवीकरोति
+    export: निर्यापयति
+    duplicate: प्रतिलिपिं करोति
   cancelled: निरस्तम्
   clear: समाप्तानि कार्याणि मार्जयतु
   connection:

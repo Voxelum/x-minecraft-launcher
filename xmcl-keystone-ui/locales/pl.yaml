@@ -1672,6 +1672,15 @@ tag:
   create: Utwórz tag
   createSelected: Utwórz znacznik dla wybranych
 task:
+  running: Wykonywanie...
+  succeed: Ukończono
+  eta: pozostało ~{time}
+  remaining: 'pozostało {size}'
+  totalRemaining: 'Pozostało {size}'
+  op:
+    update: Aktualizacja
+    export: Eksport
+    duplicate: Duplikowanie
   cancelled: Anulowane
   clear: Wyczyść ukończone zadania
   connection:

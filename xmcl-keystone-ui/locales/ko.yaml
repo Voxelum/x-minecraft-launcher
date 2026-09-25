@@ -1703,6 +1703,15 @@ tag:
   create: 태그 생성
   createSelected: 선택된 항목에 태그 생성
 task:
+  running: 실행 중...
+  succeed: 완료됨
+  eta: 약 {time} 남음
+  remaining: '{size} 남음'
+  totalRemaining: '{size} 남음'
+  op:
+    update: 업데이트
+    export: 내보내기
+    duplicate: 복제
   cancelled: 취소됨
   clear: 완료된 작업 지우기
   connection:

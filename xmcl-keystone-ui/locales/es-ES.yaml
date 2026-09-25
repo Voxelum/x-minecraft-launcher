@@ -1994,6 +1994,15 @@ tag:
   create: Crear Etiqueta
   createSelected: Crear Etiqueta para la Selección
 task:
+  running: En ejecución...
+  succeed: Completado
+  eta: ~{time} restante
+  remaining: '{size} restante'
+  totalRemaining: '{size} restante'
+  op:
+    update: Actualizar
+    export: Exportar
+    duplicate: Duplicar
   cancelled: Cancelada
   clear: Borrar tareas terminadas
   connection:

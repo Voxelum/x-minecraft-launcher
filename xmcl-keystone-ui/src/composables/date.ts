@@ -1,4 +1,24 @@
-import { TimeFormatOptions, TimeUnit, getAgoOrDate } from '@/util/date'
+import { TimeFormatOptions, TimeUnit, getAgoOrDate, getHumanizeDuration } from '@/util/date'
+
+export function useDuration() {
+  const { t } = useI18n()
+  const formatDuration = (seconds: number) => {
+    if (!Number.isFinite(seconds) || seconds <= 0) return ''
+    const [text, value, unit] = getHumanizeDuration(Math.ceil(seconds) * TimeUnit.Second)
+    const duration = Number(text).toString()
+    switch (unit) {
+      case TimeUnit.Second:
+        return t('duration.second', { duration }, { plural: value })
+      case TimeUnit.Minute:
+        return t('duration.minute', { duration }, { plural: value })
+      case TimeUnit.Hour:
+        return t('duration.hour', { duration }, { plural: value })
+      case TimeUnit.Day:
+        return t('duration.day', { duration }, { plural: value })
+    }
+  }
+  return { formatDuration }
+}
 
 export function useDateString() {
   const { t } = useI18n()

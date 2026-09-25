@@ -2334,6 +2334,15 @@ task:
   nTaskRunning: '{count} tasks are running'
   name: Task | Tasks
   pause: Pause
+  running: Running...
+  succeed: Completed
+  eta: ~{time} left
+  remaining: '{size} left'
+  totalRemaining: '{size} remaining'
+  op:
+    update: Update
+    export: Export
+    duplicate: Duplicate
 theme:
   selectImage: Select Image
   selectMusic: Select Music

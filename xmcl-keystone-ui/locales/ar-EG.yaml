@@ -1821,6 +1821,15 @@ tag:
   create: إنشاء وسم (Tag)
   createSelected: إنشاء وسم للمحدد
 task:
+  running: قيد التشغيل...
+  succeed: اكتملت
+  eta: متبقي ~{time}
+  remaining: 'متبقي {size}'
+  totalRemaining: 'المتبقي {size}'
+  op:
+    update: تحديث
+    export: تصدير
+    duplicate: تكرار
   cancelled: ملغاة
   clear: مسح المهام المنتهية
   connection:

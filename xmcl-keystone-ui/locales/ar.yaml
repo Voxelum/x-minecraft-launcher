@@ -1741,6 +1741,15 @@ tag:
   create: 'إنشاء علامة'
   createSelected: 'إنشاء علامة للتحديد'
 task:
+  running: قيد التشغيل...
+  succeed: اكتملت
+  eta: متبقي ~{time}
+  remaining: 'متبقي {size}'
+  totalRemaining: 'المتبقي {size}'
+  op:
+    update: تحديث
+    export: تصدير
+    duplicate: تكرار
   cancelled: 'تم الإلغاء'
   clear: 'مسح المهام المنتهية'
   connection:

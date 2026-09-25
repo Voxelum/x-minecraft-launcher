@@ -179,6 +179,7 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
         projectId: instFile.modrinth.projectId,
         versionId: instFile.modrinth.versionId,
         filename: basename(instFile.path),
+        icon: instFile.icon,
       })
 
       const tracker = getTracker<InstallModrinthFileTrackerEvents>(task)
@@ -201,6 +202,8 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
         key: `installCurseforgeFile-${instFile.curseforge!.projectId}-${instFile.curseforge!.fileId}`,
         projectId: instFile.curseforge!.projectId,
         fileId: instFile.curseforge!.fileId,
+        filename: basename(instFile.path),
+        icon: instFile.icon,
       })
 
       const tracker: Tracker<InstallCurseforgeFileTrackerEvents> = getTracker(task)

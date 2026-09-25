@@ -2078,6 +2078,15 @@ tag:
   create: Create Tag
   createSelected: Create Tag for Selected
 task:
+  running: Running...
+  succeed: Completed
+  eta: ~{time} left
+  remaining: '{size} left'
+  totalRemaining: '{size} remaining'
+  op:
+    update: Update
+    export: Export
+    duplicate: Duplicate
   cancelled: Cancelled
   clear: Clear Finished Tasks
   connection:
