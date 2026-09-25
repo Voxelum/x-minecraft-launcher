@@ -304,7 +304,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
       task.controller.abort()
       // Preparation runs outside the instance mutex. Deletion must wait
       // for its writers, but not for the commit that also needs that mutex.
-      return preparing ? writersSettled.promise : undefined
+      if (!preparing) return undefined
+      return writersSettled.promise
     }
     const unregisterRemoveHandler = instanceService.registerRemoveHandler(
       instancePath,
