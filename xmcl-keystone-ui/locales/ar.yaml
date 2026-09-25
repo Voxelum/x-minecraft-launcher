@@ -1160,6 +1160,7 @@ resourceError:
     تعذر تحليل "{path}" ({code}). قد يكون الملف تالفًا أو مقفلاً أو
     غير مكتمل. حاول إعادة تنزيله أو إزالته.
 resourcepack:
+  installed: تم تثبيت حزمة الموارد
   linkShared: مشاركة حزم الموارد بين النسخ
   linkSharedHint: >-
     اربط مجلد resourcepacks لهذه النسخة بالمجلد المشترك العام حتى تستخدم
@@ -1648,6 +1649,7 @@ setup:
     name: 'ضبط اللغة'
   path: 'المسار الحالي'
 shaderPack:
+  installed: تم تثبيت حزمة الظلال
   linkShared: مشاركة حزم الشيدر بين النسخ
   linkSharedHint: >-
     اربط مجلد shaderpacks لهذه النسخة بالمجلد المشترك العام حتى تستخدم
@@ -1726,6 +1728,17 @@ tag:
   create: 'إنشاء علامة'
   createSelected: 'إنشاء علامة للتحديد'
 task:
+  running: قيد التشغيل...
+  succeed: اكتملت
+  eta: متبقي ~{time}
+  remaining: 'متبقي {size}'
+  totalRemaining: 'المتبقي {size}'
+  op:
+    download: تنزيل
+    update: تحديث
+    install: تثبيت
+    export: تصدير
+    duplicate: تكرار
   cancelled: 'تم الإلغاء'
   clear: 'مسح المهام المنتهية'
   connection:

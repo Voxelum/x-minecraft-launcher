@@ -63,14 +63,87 @@
     </AppSystemBarBadge>
 
 
-    <AppSystemBarBadge
+    <!-- Task Manager Button with Live Progress and Icon -->
+    <button
       v-if="!noTask"
+      type="button"
       v-shared-tooltip.bottom="() => taskTooltip"
-      icon="assignment"
-      :can-hide-text="!taskInlineText"
-      :text="taskInlineText"
+      class="system-bar-badge task-manager-btn non-moveable relative flex flex-grow-0 cursor-pointer items-center rounded-lg px-2 py-1 transition-all"
+      :class="{ 'task-manager-btn--active': count > 0 || isJustFinished }"
+      :aria-label="taskTooltip"
       @click="showTaskDialog()"
-    />
+    >
+      <!-- Active Running Task or Just Finished State -->
+      <template v-if="count > 0 || isJustFinished">
+        <!-- Icon of downloading/finished item with animated operation badge -->
+        <div class="relative flex items-center justify-center mr-1.5 shrink-0">
+          <img
+            v-if="displayTaskIcon.type === 'image' && displayTaskIcon.src"
+            :src="displayTaskIcon.src"
+            class="w-4 h-4 rounded object-cover shadow-sm"
+          />
+          <v-icon
+            v-else
+            size="18"
+            :class="[
+              isJustFinished ? 'text-success' : `text-${displayOpInfo.color}`,
+              isJustFinished ? '' : displayOpInfo.iconAnimClass,
+            ]"
+          >
+            {{ displayTaskIcon.icon || (isJustFinished ? 'check_circle' : displayOpInfo.icon) }}
+          </v-icon>
+
+          <!-- Tiny operation badge in corner of button icon -->
+          <div
+            class="absolute -bottom-1 -right-1 w-2.5 h-2.5 rounded-full flex items-center justify-center shadow"
+            :class="isJustFinished ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : displayOpInfo.badgeBg"
+          >
+            <v-icon size="7" :class="isJustFinished ? '' : displayOpInfo.iconAnimClass">
+              {{ isJustFinished ? 'check' : displayOpInfo.icon }}
+            </v-icon>
+          </div>
+        </div>
+
+        <!-- Percentage / Status text -->
+        <div class="flex items-center gap-1.5 text-xs font-semibold tabular-nums">
+          <template v-if="isJustFinished">
+            <span class="font-bold text-success">
+              100%
+            </span>
+            <span class="text-[11px] text-success/80 badge-text">
+              {{ t('task.succeed') }}
+            </span>
+          </template>
+          <template v-else>
+            <span class="font-bold" :class="`text-${displayOpInfo.color}`">
+              {{ totalProgress.indeterminate ? (taskSpeedText || t('task.running')) : `${Math.round(totalProgress.percent)}%` }}
+            </span>
+            <span v-if="!totalProgress.indeterminate && (taskSpeedText || primaryEtaText)" class="text-[11px] opacity-70 badge-text">
+              {{ taskSpeedText || primaryEtaText }}
+            </span>
+          </template>
+        </div>
+
+        <!-- Mini Progress Bar Line at bottom of button -->
+        <div class="task-manager-progress-track absolute bottom-0 left-1 right-1 h-[2.5px] rounded-full bg-white/10 overflow-hidden">
+          <div
+            class="h-full transition-all duration-300 rounded-full"
+            :class="[
+              isJustFinished ? 'bg-success' : `bg-${displayOpInfo.color}`,
+              { 'w-full animate-pulse': !isJustFinished && totalProgress.indeterminate },
+            ]"
+            :style="{ width: isJustFinished ? '100%' : (totalProgress.indeterminate ? '100%' : `${totalProgress.percent}%`) }"
+          />
+        </div>
+      </template>
+
+      <!-- Idle state: No running tasks (Clipboard icon) -->
+      <template v-else>
+        <v-icon size="20" class="badge-icon opacity-80" aria-hidden="true">
+          assignment
+        </v-icon>
+      </template>
+    </button>
     <AppSystemBarBadge
       v-if="tutor"
       id="tutor-button"
@@ -130,8 +203,10 @@
 </template>
 <script lang="ts" setup>
 import { useDialog } from '../composables/dialog'
-import { useTaskCount } from '../composables/task'
+import { useTaskOverallProgress, useLocalizedTaskFunc } from '../composables/task'
+import { useTaskIcon, useTaskOperation } from '@/composables/taskIcon'
 import { useGamepad } from '@/composables/gamepad'
+import { Tasks } from '@xmcl/runtime-api'
 
 import { injection } from '@/util/inject'
 import { useWindowStyle } from '@/composables/windowStyle'
@@ -143,7 +218,7 @@ import { useCommandPaletteVisible } from '@/composables/commandPalette'
 import { kNetworkStatus } from '@/composables/useNetworkStatus'
 import { vRovingTabindex } from '@/directives/rovingTabindex'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
-import { getExpectedSize } from '@/util/size'
+import { formatDuration, getExpectedSize } from '@/util/size'
 
 import { kSettingsState } from '@/composables/setting'
 import { formatShortcutDisplay } from '@/util/shortcut'
@@ -161,26 +236,80 @@ const { maximize, minimize, close, hide } = windowController
 const { shouldShiftBackControl, hideWindowControl } = useWindowStyle()
 const { show: showFeedbackDialog } = useDialog('feedback')
 const { show: showTaskDialog } = useDialog('task')
-const { t } = useI18n()
-const { count } = useTaskCount()
+const { t, locale } = useI18n()
+const { count, runningTasks, progress: totalProgress } = useTaskOverallProgress()
+const { getTaskIcon } = useTaskIcon()
+const { getTaskOperation } = useTaskOperation()
+const localizeTask = useLocalizedTaskFunc()
+
+const justFinishedTask = shallowRef<Tasks | null>(null)
+let finishedTimer: any = null
+
+watch(runningTasks, (newTasks, oldTasks) => {
+  if (oldTasks && oldTasks.length > 0 && newTasks.length === 0) {
+    const finished = oldTasks[0]
+    justFinishedTask.value = finished
+    clearTimeout(finishedTimer)
+    finishedTimer = setTimeout(() => {
+      justFinishedTask.value = null
+    }, 3000)
+  }
+})
+
+const primaryRunningTask = computed(() => runningTasks.value[0])
+const displayTask = computed(() => primaryRunningTask.value || justFinishedTask.value)
+const isJustFinished = computed(() => !primaryRunningTask.value && !!justFinishedTask.value)
+const displayTaskIcon = computed(() => getTaskIcon(displayTask.value || undefined))
+const displayOpInfo = computed(() => getTaskOperation(displayTask.value || undefined))
+const displayTaskLocalized = computed(() => displayTask.value ? localizeTask(displayTask.value) : null)
+
 // Optional: the standalone multiplayer/app windows don't provide network status.
 const networkStatus = inject(kNetworkStatus, undefined)?.status ?? ref(null)
 const tutor = inject(kTutorial, undefined)
 
-const taskSpeedText = computed(() => networkStatus.value?.downloadSpeed
-  ? `${getExpectedSize(networkStatus.value.downloadSpeed)}/s`
-  : '')
+const taskSpeedText = computed(() => {
+  const speed = networkStatus.value?.downloadSpeed || totalProgress.value.speed || 0
+  return speed > 0 ? `${getExpectedSize(speed)}/s` : ''
+})
+
+const primaryRemainingText = computed(() => {
+  if (totalProgress.value.remaining > 0) {
+    return t('task.totalRemaining', { size: getExpectedSize(totalProgress.value.remaining) })
+  }
+  return ''
+})
+
+const primaryEtaText = computed(() => {
+  const speed = networkStatus.value?.downloadSpeed || totalProgress.value.speed || 0
+  if (speed > 0 && totalProgress.value.remaining > 0) {
+    const seconds = Math.ceil(totalProgress.value.remaining / speed)
+    return t('task.eta', { time: formatDuration(seconds, locale.value) })
+  }
+  return ''
+})
+
 const taskCountText = computed(() => count.value === 0
   ? t('task.empty')
   : t('task.nTaskRunning', { count: count.value }))
+
 const taskInlineText = computed(() => {
   if (count.value === 0) return ''
   return taskSpeedText.value || taskCountText.value
 })
+
 const taskTooltip = computed(() => {
-  if (count.value === 0) return t('task.empty')
-  if (taskSpeedText.value) return `${taskCountText.value} · ${taskSpeedText.value}`
-  return taskCountText.value
+  if (count.value === 0 && !isJustFinished.value) return t('task.empty')
+  const opPrefix = displayOpInfo.value.label ? `[${displayOpInfo.value.label}] ` : ''
+  const taskName = displayTaskLocalized.value?.title ? `${opPrefix}${displayTaskLocalized.value.title}` : ''
+  if (isJustFinished.value) {
+    return `${taskName} · 100% (${t('task.succeed')})`
+  }
+  const percentStr = totalProgress.value.indeterminate ? '' : `${Math.round(totalProgress.value.percent)}%`
+  const parts = [taskName, percentStr, primaryRemainingText.value, primaryEtaText.value, taskSpeedText.value].filter(Boolean).join(' · ')
+  if (count.value > 1) {
+    return `${parts} (${t('task.nTaskRunning', { count: count.value })})`
+  }
+  return parts || taskCountText.value
 })
 
 const paletteShown = useCommandPaletteVisible()
@@ -273,5 +402,75 @@ const windowControlsAriaLabel = 'Window controls'
   .palette-hotkey {
     margin-left: 4px;
   }
+}
+
+.task-manager-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: inherit;
+  font: inherit;
+  appearance: none;
+  min-height: 28px;
+}
+
+.task-manager-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.task-manager-btn--active {
+  background: rgba(var(--v-theme-primary), 0.12);
+  border-color: rgba(var(--v-theme-primary), 0.3);
+  box-shadow: 0 0 12px rgba(var(--v-theme-primary), 0.15);
+}
+
+.task-manager-btn--active:hover {
+  background: rgba(var(--v-theme-primary), 0.22);
+  border-color: rgba(var(--v-theme-primary), 0.45);
+}
+
+.task-manager-progress-track {
+  pointer-events: none;
+}
+
+/* Operation Animations */
+@keyframes taskRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes taskBounceSubtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+}
+
+@keyframes taskPulseSubtle {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.85;
+  }
+}
+
+.task-anim-rotate {
+  animation: taskRotate 2.2s linear infinite;
+}
+
+.task-anim-download {
+  animation: taskBounceSubtle 1.2s ease-in-out infinite;
+}
+
+.task-anim-pulse {
+  animation: taskPulseSubtle 1.6s ease-in-out infinite;
 }
 </style>

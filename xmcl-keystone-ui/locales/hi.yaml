@@ -1219,6 +1219,7 @@ blueprint:
     newFile: नई फ़ाइल के रूप में सहेजें
     action: बदलें
 resourcepack:
+  installed: रिसोर्स पैक इंस्टॉल हो गया
   compatible: '{version} के साथ संगत प्रारूप {format}'
   defaultDescription: माइनक्राफ्ट का डिफ़ॉल्ट रूप और अनुभव
   delete:
@@ -1726,6 +1727,7 @@ setup:
     name: भाषा सेट करें
   path: वर्तमान पाथ
 shaderPack:
+  installed: शेडर पैक इंस्टॉल हो गया
   disabled: अक्षम शेडर पैक
   dropHint: शेडर पैक आयात करें
   empty: कोई शेडर पैक आवंटित नहीं
@@ -1808,6 +1810,17 @@ tag:
   create: टैग बनाएँ
   createSelected: चुने हुए के लिए टैग बनाएँ
 task:
+  running: चल रहा है...
+  succeed: पूर्ण हुआ
+  eta: लगभग {time} शेष
+  remaining: '{size} शेष'
+  totalRemaining: '{size} शेष'
+  op:
+    download: डाउनलोड
+    update: अपडेट
+    install: इंस्टॉल
+    export: निर्यात
+    duplicate: डुप्लिकेट
   cancelled: रद्द किया गया
   clear: पूर्ण कार्य साफ़ करें
   connection:

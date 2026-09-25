@@ -1630,6 +1630,7 @@ blueprint:
     newFile: Save as a new file
     action: Replace
 resourcepack:
+  installed: Resource pack installed
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft
   delete:
@@ -1675,6 +1676,7 @@ save:
     packFormat: 'Pack format: {format}'
     imported: Data pack imported into {save}
   duplicate: Duplicate Save
+  installed: World installed
   export: Export Save
   exportMessage: Export the Save as zip
   exportTitle: Export the Save
@@ -2217,6 +2219,7 @@ setup:
     name: Set Language
   path: Current Path
 shaderPack:
+  installed: Shader pack installed
   disabled: Disabled Shader Packs
   dropHint: Import Shader Pack
   empty: No shader pack allocated
@@ -2319,6 +2322,17 @@ task:
   nTaskRunning: '{count} tasks are running'
   name: Task | Tasks
   pause: Pause
+  running: Running...
+  succeed: Completed
+  eta: ~{time} left
+  remaining: '{size} left'
+  totalRemaining: '{size} remaining'
+  op:
+    download: Download
+    update: Update
+    install: Install
+    export: Export
+    duplicate: Duplicate
 theme:
   selectImage: Select Image
   selectMusic: Select Music

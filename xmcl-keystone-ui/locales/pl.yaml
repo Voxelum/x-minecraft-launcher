@@ -1107,6 +1107,7 @@ quiltVersion:
   disable: Wyłącz kołdrę
   empty: Quilt nie obsługuje gry Minecraft {version}
 resourcepack:
+  installed: Paczka zasobów zainstalowana
   linkShared: Współdziel paczki zasobów między instancjami
   linkSharedHint: >-
     Połącz folder resourcepacks tej instancji z globalnym folderem
@@ -1581,6 +1582,7 @@ setup:
     name: Ustaw język
   path: Bieżąca ścieżka
 shaderPack:
+  installed: Paczka shaderów zainstalowana
   linkShared: Współdziel paczki shaderów między instancjami
   linkSharedHint: >-
     Połącz folder shaderpacks tej instancji z globalnym folderem
@@ -1657,6 +1659,17 @@ tag:
   create: Utwórz tag
   createSelected: Utwórz znacznik dla wybranych
 task:
+  running: Wykonywanie...
+  succeed: Ukończono
+  eta: pozostało ~{time}
+  remaining: 'pozostało {size}'
+  totalRemaining: 'Pozostało {size}'
+  op:
+    download: Pobieranie
+    update: Aktualizacja
+    install: Instalacja
+    export: Eksport
+    duplicate: Duplikowanie
   cancelled: Anulowane
   clear: Wyczyść ukończone zadania
   connection:

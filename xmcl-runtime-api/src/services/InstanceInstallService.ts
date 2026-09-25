@@ -14,6 +14,10 @@ export interface InstallInstanceTrackerEvents {
 export interface InstallInstanceTask extends Task {
   type: 'installInstance'
   instancePath: string
+  instanceName?: string
+  fileName?: string
+  icon?: string
+  isUpdate?: boolean
   taskId?: string
   substate:
     | SubState<InstallInstanceTrackerEvents, 'install-instance.resolve'>

@@ -1219,6 +1219,7 @@ blueprint:
     newFile: புதிய கோப்பாகச் சேமி
     action: மாற்று
 resourcepack:
+  installed: வளப் பொதி நிறுவப்பட்டது
   compatible: '{version} உடன் இணக்கமான வடிவம் {format}'
   defaultDescription: Minecraft இன் இயல்புநிலை தோற்றம் மற்றும் உணர்வு
   delete:
@@ -1726,6 +1727,7 @@ setup:
     name: மொழியை அமை
   path: தற்போதைய பாதை
 shaderPack:
+  installed: ஷேடர் பொதி நிறுவப்பட்டது
   disabled: முடக்கப்பட்ட ஷேடர் பேக்குகள்
   dropHint: ஷேடர் பேக்கை இறக்குமதி செய்
   empty: ஷேடர் பேக் எதுவும் ஒதுக்கப்படவில்லை
@@ -1808,6 +1810,17 @@ tag:
   create: குறிச்சொல்லை உருவாக்கு
   createSelected: தேர்ந்தெடுக்கப்பட்டவற்றிற்கு குறிச்சொல்லை உருவாக்கு
 task:
+  running: இயங்குகிறது...
+  succeed: முடிந்தது
+  eta: ~{time} மீதமுள்ளது
+  remaining: '{size} மீதமுள்ளது'
+  totalRemaining: '{size} மீதமுள்ளது'
+  op:
+    download: பதிவிறக்கம்
+    update: புதுப்பித்தல்
+    install: நிறுவுதல்
+    export: ஏற்றுமதி
+    duplicate: நகல்
   cancelled: ரத்துசெய்யப்பட்டது
   clear: முடிந்த பணிகளை அழி
   connection:

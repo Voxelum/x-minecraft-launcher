@@ -1217,6 +1217,7 @@ blueprint:
     newFile: नूतनसञ्चिकारूपेण रक्षतु
     action: प्रतिस्थापयतु
 resourcepack:
+  installed: संसाधनसंकुलं संस्थापितम्
   compatible: '{version} सह सुसङ्गतं प्रारूपम् {format}'
   defaultDescription: माइनक्राफ्ट् इत्यस्य पूर्वनिर्धारितं रूपम्
   delete:
@@ -1724,6 +1725,7 @@ setup:
     name: भाषां निर्धारयतु
   path: वर्तमानपथः
 shaderPack:
+  installed: छायाकसंकुलं संस्थापितम्
   disabled: निष्क्रियाः छायाकारसञ्चयाः
   dropHint: छायाकारसञ्चयम् आयातयतु
   empty: कोऽपि छायाकारसञ्चयः न विनियुक्तः
@@ -1806,6 +1808,17 @@ tag:
   create: ट्याग् (Tag) सृजतु
   createSelected: चयनितस्य कृते ट्याग् सृजतु
 task:
+  running: प्रचलति...
+  succeed: सम्पन्नम्
+  eta: ~{time} अवशिष्टम्
+  remaining: '{size} अवशिष्टम्'
+  totalRemaining: '{size} अवशिष्टम्'
+  op:
+    download: अधोभारयति
+    update: नवीकरोति
+    install: संस्थापयति
+    export: निर्यापयति
+    duplicate: प्रतिलिपिं करोति
   cancelled: निरस्तम्
   clear: समाप्तानि कार्याणि मार्जयतु
   connection:

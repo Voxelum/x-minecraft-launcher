@@ -1,18 +1,41 @@
 <template>
-  <v-card flat class="task-dialog flex flex-col overflow-hidden min-h-[280px] max-w-full">
+  <v-card flat class="task-dialog surface-card flex flex-col overflow-hidden min-h-[320px] max-w-full rounded-2xl border border-white/10 shadow-2xl backdrop-blur-xl">
     <!-- Header -->
-    <div class="task-dialog__header flex items-center gap-3 px-5 py-4 flex-grow-0">
-      <div class="task-dialog__icon flex items-center justify-center rounded-xl">
-        <v-icon size="22" color="primary">task_alt</v-icon>
+    <div class="task-dialog__header flex items-center gap-3 px-5 py-4 flex-grow-0 border-b border-white/5">
+      <div
+        class="task-dialog__icon flex items-center justify-center rounded-xl"
+        :class="{
+          'task-dialog__icon--pulse': taskStats.running > 0 && primaryOp.type !== 'update',
+          'task-dialog__icon--rotate': taskStats.running > 0 && primaryOp.type === 'update',
+        }"
+      >
+        <v-icon
+          size="22"
+          :color="taskStats.running > 0 ? primaryOp.color : 'primary'"
+          :class="taskStats.running > 0 ? primaryOp.iconAnimClass : ''"
+        >
+          {{ taskStats.running > 0 ? primaryOp.icon : 'task_alt' }}
+        </v-icon>
       </div>
       <div class="flex-1 min-w-0">
         <div class="text-base font-bold leading-tight">
           {{ t('task.manager') }}
         </div>
-        <div class="text-xs text-medium-emphasis mt-0.5">
+        <div class="text-xs text-medium-emphasis mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <template v-if="tab === 0">
-            <span v-if="taskStats.running > 0" class="text-primary font-semibold">
+            <span v-if="taskStats.running > 0" class="text-primary font-semibold flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping inline-block" />
               {{ t('task.nTaskRunning', { count: taskStats.running }) }}
+            </span>
+            <span v-if="taskStats.running > 0 && totalRemainingText" class="opacity-40">•</span>
+            <span v-if="taskStats.running > 0 && totalRemainingText" class="text-white/80 tabular-nums">
+              {{ totalRemainingText }}
+            </span>
+            <span v-if="taskStats.running > 0 && totalEtaText" class="text-amber-400 font-medium tabular-nums">
+              • {{ totalEtaText }}
+            </span>
+            <span v-if="taskStats.running > 0 && totalSpeedText" class="text-primary font-semibold tabular-nums">
+              • {{ totalSpeedText }}
             </span>
             <span v-else-if="tasks.length > 0">
               {{ tasks.length }} {{ t('task.name', tasks.length) }}
@@ -24,20 +47,20 @@
           </template>
         </div>
       </div>
-      <v-btn icon variant="text" size="small" @click="hide">
-        <v-icon>close</v-icon>
+      <v-btn icon variant="text" size="small" class="opacity-70 hover:opacity-100" @click="hide">
+        <v-icon size="20">close</v-icon>
       </v-btn>
     </div>
 
     <!-- Tabs -->
-    <v-tabs v-model="tab" align-tabs="start" density="compact" class="px-3 flex-grow-0 min-h-10">
+    <v-tabs v-model="tab" align-tabs="start" density="compact" class="px-3 flex-grow-0 min-h-10 border-b border-white/5">
       <v-tab :value="0" class="text-none font-semibold">
         <v-icon start size="18">list_alt</v-icon>
         {{ t('task.name', 2) }}
         <v-chip
           v-if="tasks.length > 0"
           size="x-small"
-          class="ml-2"
+          class="ml-2 font-bold"
           :color="taskStats.running > 0 ? 'primary' : undefined"
           variant="tonal"
         >
@@ -57,7 +80,6 @@
         </v-chip>
       </v-tab>
     </v-tabs>
-    <v-divider />
 
     <!-- Body -->
     <v-card-text class="visible-scroll flex-1 overflow-auto pa-0">
@@ -66,21 +88,25 @@
         <v-tabs-window-item :value="0">
           <div
             v-if="tasks.length === 0"
-            class="task-dialog__empty flex flex-col items-center justify-center text-center py-12 px-6"
+            class="task-dialog__empty flex flex-col items-center justify-center text-center py-16 px-6"
           >
-            <v-icon size="56" class="task-dialog__empty-icon">inbox</v-icon>
-            <div class="text-sm text-medium-emphasis mt-3">
+            <div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-3 shadow-inner">
+              <v-icon size="32" class="opacity-40">task_alt</v-icon>
+            </div>
+            <div class="text-sm font-semibold opacity-80">
               {{ t('task.empty') }}
             </div>
           </div>
-          <v-list v-else color="transparent" class="py-0">
-            <AppTaskDialogTaskItem
-              v-for="item in tasks"
-              :key="item.id"
-              :item="item"
-              @cancel="cancel(item)"
-            />
-          </v-list>
+          <div v-else class="py-2.5 px-3">
+            <transition-group name="task-item-anim" tag="div" class="flex flex-col gap-1.5">
+              <AppTaskDialogTaskItem
+                v-for="item in tasks"
+                :key="item.id"
+                :item="item"
+                @cancel="cancel(item)"
+              />
+            </transition-group>
+          </div>
         </v-tabs-window-item>
 
         <!-- Connections tab -->
@@ -219,16 +245,17 @@
 
     <!-- Footer -->
     <v-divider />
-    <v-card-actions class="px-4 py-2 flex-grow-0">
+    <v-card-actions class="px-5 py-2.5 flex-grow-0">
       <v-spacer />
       <v-btn
         v-if="tab === 0"
         size="small"
-        variant="text"
+        variant="tonal"
+        rounded="pill"
         :disabled="finishedCount === 0"
         @click="onClear"
       >
-        <v-icon start>delete_forever</v-icon>
+        <v-icon start size="16">delete_sweep</v-icon>
         {{ t('task.clear') }}
       </v-btn>
     </v-card-actions>
@@ -238,18 +265,55 @@
 <script lang="ts" setup>
 import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
+import { useTaskOverallProgress } from '@/composables/task'
+import { useTaskOperation } from '@/composables/taskIcon'
 import { kTaskManager } from '@/composables/taskManager'
+import { kNetworkStatus } from '@/composables/useNetworkStatus'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
+import { formatDuration, getExpectedSize } from '@/util/size'
 import { BaseServiceKey, TaskState } from '@xmcl/runtime-api'
 import AppTaskDialogTaskItem from './AppTaskDialogTaskItem.vue'
-import { kNetworkStatus } from '@/composables/useNetworkStatus'
 
 const tab = ref(0)
 
-const { tasks, cancel, clear } = injection(kTaskManager)
+const { tasks, cancel, clear, poll } = injection(kTaskManager)
+onMounted(() => {
+  poll()
+})
 const { status } = injection(kNetworkStatus)
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const { getTaskOperation } = useTaskOperation()
+const { runningTasks, progress: overallProgress } = useTaskOverallProgress()
+
+const primaryRunningTask = computed(() => runningTasks.value[0])
+const primaryOp = computed(() => getTaskOperation(primaryRunningTask.value))
+
+const downloadSpeed = computed(() => {
+  return status.value?.downloadSpeed || overallProgress.value.speed || 0
+})
+
+const totalSpeedText = computed(() => {
+  if (downloadSpeed.value > 0) {
+    return `${getExpectedSize(downloadSpeed.value)}/s`
+  }
+  return ''
+})
+
+const totalRemainingText = computed(() => {
+  if (overallProgress.value.remaining > 0) {
+    return t('task.totalRemaining', { size: getExpectedSize(overallProgress.value.remaining) })
+  }
+  return ''
+})
+
+const totalEtaText = computed(() => {
+  if (downloadSpeed.value > 0 && overallProgress.value.remaining > 0) {
+    const seconds = Math.ceil(overallProgress.value.remaining / downloadSpeed.value)
+    return t('task.eta', { time: formatDuration(seconds, locale.value) })
+  }
+  return ''
+})
 
 const taskStats = computed(() => {
   const stats = { running: 0, succeed: 0, failed: 0, cancelled: 0 }
@@ -301,7 +365,7 @@ function onClear() {
 
 <style scoped>
 .task-dialog {
-  border-radius: 12px;
+  border-radius: 16px;
 }
 
 .task-dialog__icon {
@@ -309,6 +373,82 @@ function onClear() {
   height: 40px;
   flex-shrink: 0;
   background-color: rgba(var(--v-theme-primary), 0.12);
+  transition: all 0.3s ease;
+}
+
+.task-dialog__icon--pulse {
+  background-color: rgba(var(--v-theme-primary), 0.2);
+  animation: task-icon-pulse 2s ease-in-out infinite;
+}
+
+.task-dialog__icon--rotate {
+  background-color: rgba(var(--v-theme-warning), 0.2);
+  animation: task-icon-pulse 2s ease-in-out infinite;
+}
+
+.task-anim-rotate {
+  animation: taskRotate 2.2s linear infinite;
+}
+
+.task-anim-download {
+  animation: taskBounceSubtle 1.2s ease-in-out infinite;
+}
+
+.task-anim-pulse {
+  animation: taskPulseSubtle 1.6s ease-in-out infinite;
+}
+
+@keyframes taskRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes taskBounceSubtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+}
+
+@keyframes taskPulseSubtle {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.85;
+  }
+}
+
+@keyframes task-icon-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 6px rgba(var(--v-theme-primary), 0);
+  }
+}
+
+.task-item-anim-enter-active,
+.task-item-anim-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.task-item-anim-enter-from {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+.task-item-anim-leave-to {
+  opacity: 0;
+  transform: translateX(16px);
 }
 
 .task-dialog__empty-icon {

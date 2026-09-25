@@ -1111,6 +1111,7 @@ quiltVersion:
   disable: Disabilita Quilt
   empty: Quilt non supporta Minecraft {version}
 resourcepack:
+  installed: Pacchetto di risorse installato
   linkShared: Condividi i resource pack tra le istanze
   linkSharedHint: >-
     Collega la cartella resourcepacks di questa istanza alla cartella condivisa
@@ -1593,6 +1594,7 @@ setup:
     name: Imposta lingua
   path: Percorso corrente
 shaderPack:
+  installed: Pacchetto shader installato
   linkShared: Condividi gli shader pack tra le istanze
   linkSharedHint: >-
     Collega la cartella shaderpacks di questa istanza alla cartella condivisa
@@ -1670,6 +1672,17 @@ tag:
   create: Crea tag
   createSelected: Crea tag per selezionato
 task:
+  running: In esecuzione...
+  succeed: Completato
+  eta: ~{time} rimanente
+  remaining: '{size} rimanente'
+  totalRemaining: '{size} rimanente'
+  op:
+    download: Scarica
+    update: Aggiorna
+    install: Installa
+    export: Esporta
+    duplicate: Duplica
   cancelled: Annullato
   clear: Cancella attività completate
   connection:

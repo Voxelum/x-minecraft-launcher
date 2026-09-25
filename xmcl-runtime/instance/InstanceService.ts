@@ -587,16 +587,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           if (deleteData) {
             await this.moveSavesToShared(path)
             try {
-              await rm(path, { recursive: true, force: true, maxRetries: 1 })
+              await rm(path, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 })
             } catch (e) {
-              if (isSystemError(e) && (e.code === ENOENT_ERROR || e.code === 'EPERM')) {
-                this.warn(`Fail to remove instance ${path}`)
-              } else {
-                if ((e as any).name === 'Error') {
-                  ;(e as any).name = 'InstanceDeleteError'
-                }
-                throw e
-              }
+              this.warn(`Fail to completely remove instance files at ${path}: ${e}`)
             }
           } else {
             // Rename to hidden

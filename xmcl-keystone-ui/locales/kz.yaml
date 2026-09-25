@@ -1106,6 +1106,7 @@ quiltVersion:
   disable: Quilt-ті өшіру
   empty: Quilt Minecraft {version} нұсқасын қолдамайды
 resourcepack:
+  installed: Ресурспак орнатылды
   linkShared: Даналар арасында ресурс пакеттерін бөлісу
   linkSharedHint: >-
     Барлық даналар бірдей ресурс пакеттерін пайдалануы үшін осы дананың
@@ -1588,6 +1589,7 @@ setup:
     name: Тілді орнату
   path: Ағымдағы жол
 shaderPack:
+  installed: Шейдер орнатылды
   linkShared: Даналар арасында шейдер пакеттерін бөлісу
   linkSharedHint: >-
     Барлық даналар бірдей шейдер пакеттерін пайдалануы үшін осы дананың
@@ -1665,6 +1667,17 @@ tag:
   create: Тег жасау
   createSelected: Таңдалғандар үшін тег жасау
 task:
+  running: Орындалуда...
+  succeed: Аяқталды
+  eta: ~{time} қалды
+  remaining: '{size} қалды'
+  totalRemaining: '{size} қалды'
+  op:
+    download: Жүктеу
+    update: Жаңарту
+    install: Орнату
+    export: Экспорттау
+    duplicate: Көшіру
   cancelled: Болдырылған
   clear: Аяқталған тапсырмаларды тазалау
   connection:

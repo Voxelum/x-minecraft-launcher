@@ -1141,6 +1141,7 @@ blueprint:
     newFile: 新しいファイルとして保存
     action: 置換
 resourcepack:
+  installed: リソースパックがインストールされました
   linkShared: リソースパックをインスタンス間で共有
   linkSharedHint: >-
     このインスタンスの resourcepacks フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じリソースパックを使用します。既存のパックは共有フォルダーに統合されます。
@@ -1627,6 +1628,7 @@ setup:
     name: 言語を設定
   path: 現在のパス
 shaderPack:
+  installed: シェーダーパックがインストールされました
   linkShared: シェーダーパックをインスタンス間で共有
   linkSharedHint: >-
     このインスタンスの shaderpacks フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じシェーダーパックを使用します。既存のパックは共有フォルダーに統合されます。
@@ -1702,6 +1704,17 @@ tag:
   create: タグを作成
   createSelected: 選択されたもので新しいタグを作る
 task:
+  running: 実行中...
+  succeed: 完了
+  eta: 残り約 {time}
+  remaining: '残り {size}'
+  totalRemaining: '残り {size}'
+  op:
+    download: ダウンロード
+    update: 更新
+    install: インストール
+    export: エクスポート
+    duplicate: 複製
   cancelled: キャンセルされました
   clear: 終了したタスクをクリア
   connection:

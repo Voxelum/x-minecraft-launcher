@@ -263,13 +263,24 @@ export class InstanceInstallService extends AbstractService implements IInstance
   // eslint-disable-next-line @typescript-eslint/no-this-alias
     const logger = this
 
+    const instanceService = await this.app.registry.get(InstanceService)
+    const inst = instanceService.state.all[instancePath]
+    const singleFile = targetState.files && targetState.files.length === 1 ? targetState.files[0] : undefined
+    const singleFileIcon = singleFile ? (singleFile as any)?.icon : undefined
+    const singleFileName = singleFile ? basename(singleFile.path) : undefined
+
     // Track the task at service level. Created BEFORE the lock so the
     // abort handler below has a stable controller to flip when
     // deleteInstance fires while we're still waiting for the lock.
+    const isUpdate = !!(targetState.oldFiles && targetState.oldFiles.length > 0)
     const task = this.tasks.create<InstallInstanceTask>({
       type: 'installInstance',
       key: `install-instance-${instancePath}`,
       instancePath,
+      instanceName: inst?.name,
+      fileName: singleFileName,
+      icon: singleFileIcon || inst?.icon,
+      isUpdate,
       taskId: id,
     })
     this.activeInstallTasks.set(profilePath, task.controller)
@@ -284,7 +295,6 @@ export class InstanceInstallService extends AbstractService implements IInstance
     //   2. Serialize every instance mutation on the same LockKey.instance(p)
     //      that deleteInstance waits on. Local diff installs may prepare in
     //      an isolated workspace before taking this lock.
-    const instanceService = await this.app.registry.get(InstanceService)
     let removing = false
     let preparing = false
     const writersSettled = Promise.withResolvers<void>()
@@ -293,7 +303,11 @@ export class InstanceInstallService extends AbstractService implements IInstance
       task.controller.abort()
       // Preparation runs outside the instance mutex. Deletion must wait
       // for its writers, but not for the commit that also needs that mutex.
-      return preparing ? writersSettled.promise : undefined
+      if (!preparing) return undefined
+      return Promise.race([
+        writersSettled.promise,
+        new Promise<void>((resolve) => setTimeout(resolve, 3000)),
+      ])
     }
     const unregisterRemoveHandler = instanceService.registerRemoveHandler(
       instancePath,

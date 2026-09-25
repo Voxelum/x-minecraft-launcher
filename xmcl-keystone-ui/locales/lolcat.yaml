@@ -1094,6 +1094,7 @@ quiltVersion:
   disable: DISABL QUILT
   empty: QUILT DOES NOT SUPPORT MINECWAFT {version}
 resourcepack:
+  installed: RESOURCE PACK INSTELED
   linkShared: SHARE UR RESOURCE PACKZ ACROSS ALL INSTANCEZ
   linkSharedHint: >-
     LINKZ DIS INSTANCE resourcepacks FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ
@@ -1572,6 +1573,7 @@ setup:
     name: SET LANGUAG
   path: CURREN PATH
 shaderPack:
+  installed: SHADR PACK INSTELED
   linkShared: SHARE UR SHADR PACKZ ACROSS ALL INSTANCEZ
   linkSharedHint: >-
     LINKZ DIS INSTANCE shaderpacks FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ
@@ -1648,6 +1650,17 @@ tag:
   create: MAKE TAG
   createSelected: MAKE TAG FUR SELECTED
 task:
+  running: RUNNIN NAO...
+  succeed: DONE!!
+  eta: ~{time} LEFT
+  remaining: '{size} LEFT'
+  totalRemaining: '{size} REMAININ'
+  op:
+    download: DOWNLOADIN
+    update: UPDATIN
+    install: INSTALIN
+    export: EXPORTIN
+    duplicate: DUPLICATIN
   cancelled: CANCELLED
   clear: CLEAR FINISHED TASKZ
   connection:

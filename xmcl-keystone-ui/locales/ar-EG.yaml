@@ -1217,6 +1217,7 @@ blueprint:
     newFile: حفظ كملف جديد
     action: استبدال
 resourcepack:
+  installed: تم تثبيت حزمة الموارد
   compatible: صيغة متوافقة {format} مع {version}
   defaultDescription: المظهر والأسلوب الافتراضي لماينكرافت
   delete:
@@ -1724,6 +1725,7 @@ setup:
     name: تحديد اللغة
   path: المسار الحالي
 shaderPack:
+  installed: تم تثبيت حزمة الظلال
   disabled: حزم الشيدر المعطلة
   dropHint: استيراد حزمة شيدر
   empty: مفيش حزم شيدر مخصصة
@@ -1806,6 +1808,17 @@ tag:
   create: إنشاء وسم (Tag)
   createSelected: إنشاء وسم للمحدد
 task:
+  running: قيد التشغيل...
+  succeed: اكتملت
+  eta: متبقي ~{time}
+  remaining: 'متبقي {size}'
+  totalRemaining: 'المتبقي {size}'
+  op:
+    download: تنزيل
+    update: تحديث
+    install: تثبيت
+    export: تصدير
+    duplicate: تكرار
   cancelled: ملغاة
   clear: مسح المهام المنتهية
   connection:
