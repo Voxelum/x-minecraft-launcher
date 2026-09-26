@@ -264,7 +264,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const logger = this
 
     const instanceService = await this.app.registry.get(InstanceService)
-    const inst = instanceService.state.all[instancePath]
+    const inst = instanceService.state?.all?.[instancePath]
     const singleFile = targetState.files && targetState.files.length === 1 ? targetState.files[0] : undefined
     const singleFileIcon = singleFile ? (singleFile as any)?.icon : undefined
     const singleFileName = singleFile ? basename(singleFile.path) : undefined
