@@ -1,5 +1,6 @@
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { basename } from '@/util/basename'
+import { isNoModLoader } from '@/util/isNoModloader'
 import { ProjectFile } from '@/util/search'
 import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
@@ -35,9 +36,11 @@ export function useModrinthInstaller(
     const _path = path.value
     const _runtime = runtime.value
     const _allFiles = allFiles.value
-    const success = await installDefaultModLoader(_path, _runtime, loaders)
-    if (!success) {
-      return false
+    if (isNoModLoader(runtime.value)) {
+      const success = await installDefaultModLoader(_path, _runtime, loaders)
+      if (!success) {
+        return false
+      }
     }
     const installedProjects = new Set(_allFiles.flatMap(file => file.modrinth ? [file.modrinth.projectId] : []))
     const versions = getRequiredModrinthInstallVersions({ id: versionId, icon }, deps, installedProjects)

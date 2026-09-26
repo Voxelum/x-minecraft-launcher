@@ -1414,6 +1414,7 @@ blueprint:
     newFile: Save as a new file
     action: Replace
 resourcepack:
+  installed: Resource pack installed
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft
   delete:
@@ -1978,6 +1979,7 @@ setup:
     name: Set Language
   path: Current Path
 shaderPack:
+  installed: Shader pack installed
   disabled: Disabled Shader Packs
   dropHint: Import Shader Pack
   empty: No shader pack allocated
@@ -2063,6 +2065,17 @@ tag:
   create: Create Tag
   createSelected: Create Tag for Selected
 task:
+  running: Running...
+  succeed: Completed
+  eta: ~{time} left
+  remaining: '{size} left'
+  totalRemaining: '{size} remaining'
+  op:
+    download: Download
+    update: Update
+    install: Install
+    export: Export
+    duplicate: Duplicate
   cancelled: Cancelled
   clear: Clear Finished Tasks
   connection:

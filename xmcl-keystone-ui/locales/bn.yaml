@@ -1219,6 +1219,7 @@ blueprint:
     newFile: নতুন ফাইল হিসেবে সংরক্ষণ করুন
     action: প্রতিস্থাপন করুন
 resourcepack:
+  installed: রিসোর্স প্যাক ইনস্টল করা হয়েছে
   compatible: '{version}-এর সাথে সামঞ্জস্যপূর্ণ বিন্যাস {format}'
   defaultDescription: মাইনক্রাফ্ট-এর ডিফল্ট রূপ ও অনুভূতি
   delete:
@@ -1726,6 +1727,7 @@ setup:
     name: ভাষা সেট করুন
   path: বর্তমান পাথ
 shaderPack:
+  installed: শেডার প্যাক ইনস্টল করা হয়েছে
   disabled: নিষ্ক্রিয় শেডার প্যাকসমূহ
   dropHint: শেডার প্যাক ইম্পোর্ট করুন
   empty: কোনো শেডার প্যাক বরাদ্দ করা হয়নি
@@ -1807,6 +1809,17 @@ tag:
   create: ট্যাগ তৈরি করুন
   createSelected: নির্বাচিত অংশের জন্য ট্যাগ তৈরি করুন
 task:
+  running: চলছে...
+  succeed: সম্পন্ন
+  eta: প্রায় {time} বাকি
+  remaining: '{size} বাকি'
+  totalRemaining: '{size} বাকি'
+  op:
+    download: ডাউনলোড
+    update: আপডেট
+    install: ইনস্টল
+    export: রপ্তানি
+    duplicate: ডুপ্লিকেট
   cancelled: বাতিল করা হয়েছে
   clear: সমাপ্ত কাজগুলো সাফ করুন
   connection:

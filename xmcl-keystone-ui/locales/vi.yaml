@@ -1219,6 +1219,7 @@ blueprint:
     newFile: Lưu thành tệp mới
     action: Thay thế
 resourcepack:
+  installed: Gói tài nguyên đã cài đặt
   compatible: Định dạng tương thích {format} với {version}
   defaultDescription: Diện mạo mặc định của Minecraft
   delete:
@@ -1726,6 +1727,7 @@ setup:
     name: Đặt ngôn ngữ
   path: Đường dẫn hiện tại
 shaderPack:
+  installed: Gói shader đã cài đặt
   disabled: Gói Shader đã vô hiệu hóa
   dropHint: Nhập gói Shader
   empty: Không có gói shader nào được phân bổ
@@ -1808,6 +1810,17 @@ tag:
   create: Tạo thẻ (Tag)
   createSelected: Tạo thẻ cho phần đã chọn
 task:
+  running: Đang chạy...
+  succeed: Đã hoàn thành
+  eta: còn lại ~{time}
+  remaining: 'còn {size}'
+  totalRemaining: 'Còn lại {size}'
+  op:
+    download: Tải xuống
+    update: Cập nhật
+    install: Cài đặt
+    export: Xuất
+    duplicate: Nhân bản
   cancelled: Đã hủy
   clear: Xóa các tác vụ đã hoàn thành
   connection:

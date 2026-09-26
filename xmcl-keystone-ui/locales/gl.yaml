@@ -1112,6 +1112,7 @@ quiltVersion:
   disable: Quilt uitschakelen
   empty: Quilt ondersteunt Minecraft {version} niet
 resourcepack:
+  installed: Paquete de recursos instalado
   linkShared: Compartir paquetes de recursos entre instancias
   linkSharedHint: >-
     Vincular o cartafol resourcepacks desta instancia co cartafol compartido
@@ -1594,6 +1595,7 @@ setup:
     name: Stel Taal In
   path: Huidig Pad
 shaderPack:
+  installed: Paquete de shaders instalado
   linkShared: Compartir paquetes de shaders entre instancias
   linkSharedHint: >-
     Vincular o cartafol shaderpacks desta instancia co cartafol compartido global
@@ -1671,6 +1673,17 @@ tag:
   create: Maak Tag
   createSelected: Maak Tag voor Geselecteerde
 task:
+  running: Executando...
+  succeed: Completado
+  eta: restan ~{time}
+  remaining: 'restan {size}'
+  totalRemaining: '{size} restante'
+  op:
+    download: Descargar
+    update: Actualizar
+    install: Instalar
+    export: Exportar
+    duplicate: Duplicar
   cancelled: Geannuleerd
   clear: Wis Voltooide Taken
   connection:

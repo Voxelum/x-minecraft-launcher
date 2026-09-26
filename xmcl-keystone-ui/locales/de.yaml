@@ -1196,6 +1196,7 @@ quiltVersion:
   disable: Ausschalten Quilt
   empty: Quilt unterstützt Minecraft nicht {version}
 resourcepack:
+  installed: Ressourcenpaket installiert
   linkShared: Ressourcenpakete zwischen Instanzen teilen
   linkSharedHint: >-
     Den Ordner resourcepacks dieser Instanz mit dem globalen gemeinsamen Ordner
@@ -1707,6 +1708,7 @@ setup:
     name: Sprache einstellen
   path: Aktueller Pfad
 shaderPack:
+  installed: Shaderpaket installiert
   linkShared: Shaderpakete zwischen Instanzen teilen
   linkSharedHint: >-
     Den Ordner shaderpacks dieser Instanz mit dem globalen gemeinsamen Ordner
@@ -1785,6 +1787,17 @@ tag:
   create: Einen Tag erstellen
   createSelected: Stvoriti-Tag für Inverse
 task:
+  running: Wird ausgeführt...
+  succeed: Abgeschlossen
+  eta: ca. {time} verbleibend
+  remaining: '{size} verbleibend'
+  totalRemaining: '{size} verbleibend'
+  op:
+    download: Herunterladen
+    update: Aktualisieren
+    install: Installieren
+    export: Exportieren
+    duplicate: Duplizieren
   cancelled: Abgesagt
   clear: Erledigte Aufgaben löschen
   connection:

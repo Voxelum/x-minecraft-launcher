@@ -78,8 +78,11 @@ export function useSaveDatapackInstallers(savePath: Ref<string>, onInstalled?: (
   const { installDatapackFromMarket } = useService(InstanceSavesServiceKey)
 
   const curseforgeInstaller = {
-    install: (file: { fileId: number; icon?: string } | { fileId: number; icon?: string }[]) =>
-      installDatapackFromMarket({ market: MarketType.CurseForge, file, savePath: savePath.value }),
+    install: async (file: { fileId: number; icon?: string } | { fileId: number; icon?: string }[]) => {
+      const res = await installDatapackFromMarket({ market: MarketType.CurseForge, file, savePath: savePath.value })
+      await onInstalled?.()
+      return res
+    },
     installWithDependencies: async (
       fileId: number,
       _loaders: string[],
@@ -92,13 +95,16 @@ export function useSaveDatapackInstallers(savePath: Ref<string>, onInstalled?: (
         .map((v) => ({ fileId: v.file.id, icon: v.project.logo?.url }))
       files.push({ fileId, icon })
       await installDatapackFromMarket({ market: MarketType.CurseForge, file: files, savePath: savePath.value })
-      onInstalled?.()
+      await onInstalled?.()
     },
   }
 
   const modrinthInstaller = {
-    install: (version: { versionId: string; icon?: string } | { versionId: string; icon?: string }[]) =>
-      installDatapackFromMarket({ market: MarketType.Modrinth, version, savePath: savePath.value }),
+    install: async (version: { versionId: string; icon?: string } | { versionId: string; icon?: string }[]) => {
+      const res = await installDatapackFromMarket({ market: MarketType.Modrinth, version, savePath: savePath.value })
+      await onInstalled?.()
+      return res
+    },
     installWithDependencies: async (
       versionId: string,
       _loaders: string[],
@@ -111,7 +117,7 @@ export function useSaveDatapackInstallers(savePath: Ref<string>, onInstalled?: (
         .map((v) => ({ versionId: v.recommendedVersion.id, icon: v.project.icon_url }))
       versions.push({ versionId, icon })
       await installDatapackFromMarket({ market: MarketType.Modrinth, version: versions, savePath: savePath.value })
-      onInstalled?.()
+      await onInstalled?.()
       return true
     },
   }

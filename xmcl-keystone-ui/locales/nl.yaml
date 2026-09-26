@@ -1116,6 +1116,7 @@ quiltVersion:
   disable: Quilt Uitschakelen
   empty: Quilt ondersteunt Minecraft {version} niet
 resourcepack:
+  installed: Bronpakket geïnstalleerd
   linkShared: Resourcepacks delen tussen instanties
   linkSharedHint: >-
     Koppel de map resourcepacks van deze instantie aan de globale gedeelde map
@@ -1597,6 +1598,7 @@ setup:
     name: Stel Taal In
   path: Huidig Pad
 shaderPack:
+  installed: Shaderpakket geïnstalleerd
   linkShared: Shaderpacks delen tussen instanties
   linkSharedHint: >-
     Koppel de map shaderpacks van deze instantie aan de globale gedeelde map
@@ -1674,6 +1676,17 @@ tag:
   create: Tag Aanmaken
   createSelected: Tag Aanmaken voor Geselecteerde
 task:
+  running: Bezig met uitvoeren...
+  succeed: Voltooid
+  eta: ongeveer {time} over
+  remaining: '{size} over'
+  totalRemaining: '{size} resterend'
+  op:
+    download: Downloaden
+    update: Bijwerken
+    install: Installeren
+    export: Exporteren
+    duplicate: Dupliceren
   cancelled: Geannuleerd
   clear: Voltooide Taken Wissen
   connection:

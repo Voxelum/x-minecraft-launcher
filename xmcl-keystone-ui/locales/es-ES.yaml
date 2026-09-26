@@ -1334,6 +1334,7 @@ resourceError:
     bloqueado o incompleto. Intenta descargarlo de nuevo o eliminarlo.
   title: No se puede leer {file}
 resourcepack:
+  installed: Paquete de recursos instalado
   linkShared: Compartir paquetes de recursos entre instancias
   linkSharedHint: >-
     Vincular la carpeta resourcepacks de esta instancia con la carpeta
@@ -1893,6 +1894,7 @@ setup:
     name: Establecer Idioma
   path: Ruta Actual
 shaderPack:
+  installed: Paquete de shaders instalado
   linkShared: Compartir paquetes de shaders entre instancias
   linkSharedHint: >-
     Vincular la carpeta shaderpacks de esta instancia con la carpeta compartida
@@ -1979,6 +1981,17 @@ tag:
   create: Crear Etiqueta
   createSelected: Crear Etiqueta para la Selección
 task:
+  running: En ejecución...
+  succeed: Completado
+  eta: ~{time} restante
+  remaining: '{size} restante'
+  totalRemaining: '{size} restante'
+  op:
+    download: Descargar
+    update: Actualizar
+    install: Instalar
+    export: Exportar
+    duplicate: Duplicar
   cancelled: Cancelada
   clear: Borrar tareas terminadas
   connection:

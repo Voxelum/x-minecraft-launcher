@@ -1219,6 +1219,7 @@ blueprint:
     newFile: Simpan sebagai berkas baru
     action: Ganti
 resourcepack:
+  installed: Paket sumber daya terpasang
   compatible: Format kompatibel {format} dengan {version}
   defaultDescription: Tampilan dan nuansa default Minecraft
   delete:
@@ -1726,6 +1727,7 @@ setup:
     name: Atur Bahasa
   path: Jalur Saat Ini
 shaderPack:
+  installed: Paket shader terpasang
   disabled: Paket Shader Dinonaktifkan
   dropHint: Impor Paket Shader
   empty: Tidak ada paket shader yang dialokasikan
@@ -1808,6 +1810,17 @@ tag:
   create: Buat Tag
   createSelected: Buat Tag untuk yang Terpilih
 task:
+  running: Sedang berjalan...
+  succeed: Selesai
+  eta: tersisa ~{time}
+  remaining: 'tersisa {size}'
+  totalRemaining: 'Tersisa {size}'
+  op:
+    download: Unduh
+    update: Perbarui
+    install: Pasang
+    export: Ekspor
+    duplicate: Duplikat
   cancelled: Dibatalkan
   clear: Bersihkan Tugas yang Selesai
   connection:

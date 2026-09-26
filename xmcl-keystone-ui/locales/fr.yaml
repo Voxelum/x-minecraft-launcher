@@ -1131,6 +1131,7 @@ quiltVersion:
   disable: Désactiver Quilt
   empty: Quilt ne prend pas en charge Minecraft {version}
 resourcepack:
+  installed: Pack de ressources installé
   linkShared: Partager les packs de ressources entre les instances
   linkSharedHint: >-
     Lier le dossier resourcepacks de cette instance au dossier partagé global
@@ -1624,6 +1625,7 @@ setup:
     name: choisir la langue
   path: Chemin actuel
 shaderPack:
+  installed: Pack de shaders installé
   linkShared: Partager les packs de shaders entre les instances
   linkSharedHint: >-
     Lier le dossier shaderpacks de cette instance au dossier partagé global afin
@@ -1696,6 +1698,17 @@ tag:
   create: Créer un tag
   createSelected: Créer un tag pour la sélection
 task:
+  running: En cours d'exécution...
+  succeed: Terminé
+  eta: ~{time} restante(s)
+  remaining: '{size} restant(e)'
+  totalRemaining: '{size} restant(e)'
+  op:
+    download: Télécharger
+    update: Mettre à jour
+    install: Installer
+    export: Exporter
+    duplicate: Dupliquer
   cancelled: Annulé
   clear: Effacer les tâches terminées
   connection:

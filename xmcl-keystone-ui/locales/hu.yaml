@@ -1149,6 +1149,7 @@ quiltVersion:
   disable: Quilt letiltása
   empty: Quilt nem támogatja a {version} verziót
 resourcepack:
+  installed: Erőforráscsomag telepítve
   linkShared: Erőforráscsomagok megosztása példányok között
   linkSharedHint: >-
     Kösse össze ennek a példánynak a resourcepacks mappáját a globális megosztott
@@ -1641,6 +1642,7 @@ setup:
     name: Nyelv beállítása
   path: Jelenlegi útvonal
 shaderPack:
+  installed: Shader csomag telepítve
   linkShared: Árnyékolócsomagok megosztása példányok között
   linkSharedHint: >-
     Kösse össze ennek a példánynak a shaderpacks mappáját a globális megosztott
@@ -1718,6 +1720,17 @@ tag:
   create: Címke létrehozása
   createSelected: Címke létrehozása a kiválasztotthoz
 task:
+  running: Folyamatban...
+  succeed: Befejezve
+  eta: kb. {time} van hátra
+  remaining: '{size} van hátra'
+  totalRemaining: '{size} maradt'
+  op:
+    download: Letöltés
+    update: Frissítés
+    install: Telepítés
+    export: Exportálás
+    duplicate: Kettőzés
   cancelled: Törölt
   clear: Befejezett folyamatok törlése
   connection:

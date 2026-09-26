@@ -16,21 +16,34 @@ export function useTaskManager() {
     taskMonitor.cancel(task.id)
   }
 
-  const { counter, reset, pause, resume } = useInterval(1000, {
+  const poll = async () => {
+    try {
+      const ts = await taskMonitor.poll()
+      tasks.value = ts
+    } catch {
+      // ignore
+    }
+  }
+
+  const { counter, reset, pause, resume } = useInterval(250, {
     controls: true,
     immediate: false,
   })
 
   onMounted(() => {
     taskMonitor.on('task-activated', (v) => {
+      poll()
       if (v) {
         resume()
       } else {
         pause()
         reset()
+        setTimeout(poll, 100)
+        setTimeout(poll, 300)
       }
     })
     taskMonitor.check().then((active) => {
+      poll()
       if (active) {
         resume()
       }
@@ -38,9 +51,7 @@ export function useTaskManager() {
   })
 
   watch(counter, () => {
-    taskMonitor.poll().then((ts) => {
-      tasks.value = ts
-    })
+    poll()
   })
 
   function clear() {
@@ -59,5 +70,6 @@ export function useTaskManager() {
     clear,
     tasks,
     cancel,
+    poll,
   }
 }

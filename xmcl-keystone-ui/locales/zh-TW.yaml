@@ -1147,6 +1147,7 @@ blueprint:
     newFile: 另存為新檔案
     action: 取代
 resourcepack:
+  installed: 材質包已安裝
   linkShared: 在實例間共用資源包
   linkSharedHint: >-
     將此實例的 resourcepacks 資料夾連結到全域共用資料夾，讓所有實例共用相同的資源包。現有的資源包會被合併到共用資料夾中。
@@ -1663,6 +1664,7 @@ setup:
     name: 設定語言
   path: 目前位置
 shaderPack:
+  installed: 光影包已安裝
   linkShared: 在實例間共用光影包
   linkSharedHint: >-
     將此實例的 shaderpacks 資料夾連結到全域共用資料夾，讓所有實例共用相同的光影包。現有的光影包會被合併到共用資料夾中。
@@ -1743,6 +1745,17 @@ tag:
   create: 建立標籤
   createSelected: 為所有選中的建立標籤
 task:
+  running: 執行中...
+  succeed: 已完成
+  eta: 剩餘約 {time}
+  remaining: '剩餘 {size}'
+  totalRemaining: '剩餘 {size}'
+  op:
+    download: 下載
+    update: 更新
+    install: 安裝
+    export: 匯出
+    duplicate: 複製
   cancelled: 已取消
   clear: 清除已完成的任務
   connection:

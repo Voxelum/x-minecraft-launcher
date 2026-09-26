@@ -1382,6 +1382,7 @@ blueprint:
     newFile: 另存为新文件
     action: 替换
 resourcepack:
+  installed: 材质包已安装
   linkShared: 在实例间共享资源包
   linkSharedHint: >-
     将此实例的 resourcepacks 文件夹链接到全局共享文件夹，使所有实例共用相同的资源包。现有资源包会被合并到共享文件夹中。
@@ -1440,6 +1441,12 @@ save:
   deleteTitle: 删除该存档
   difficulty: 难度
   dropHint: 将地图 Zip 或文件夹拖入此处来导入
+  installed: 地图已安装
+  datapack:
+    name: 数据包 | 数据包
+    noSaveHint: 请先创建或选择一个世界来安装此数据包
+    packFormat: '数据包格式：{format}'
+    imported: 数据包已导入至 {save}
   duplicate: 复制存档
   export: 导出地图
   exportMessage: 将存档导出为 Zip
@@ -1930,6 +1937,7 @@ setup:
     name: 设置语言
   path: 当前位置
 shaderPack:
+  installed: 光影已安装
   linkShared: 在实例间共享光影包
   linkSharedHint: >-
     将此实例的 shaderpacks 文件夹链接到全局共享文件夹，使所有实例共用相同的光影包。现有光影包会被合并到共享文件夹中。
@@ -2028,6 +2036,17 @@ task:
   nTaskRunning: '{count} 个任务运行中'
   name: 任务 | 任务
   pause: 暂停
+  running: 运行中...
+  succeed: 已完成
+  eta: 剩余约 {time}
+  remaining: 剩余 {size}
+  totalRemaining: 剩余 {size}
+  op:
+    download: 下载
+    update: 更新
+    install: 安装
+    export: 导出
+    duplicate: 复制
 theme:
   selectImage: 选择图像
   selectMusic: 选择音乐

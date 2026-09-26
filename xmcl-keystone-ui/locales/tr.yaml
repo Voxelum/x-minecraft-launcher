@@ -1107,6 +1107,7 @@ quiltVersion:
   disable: Quilt'i Devre Dışı Bırak
   empty: Quilt Minecraft {version} sürümünü desteklemiyor
 resourcepack:
+  installed: Kaynak paketi yüklendi
   linkShared: Kaynak paketlerini örnekler arasında paylaş
   linkSharedHint: Bu örneğin resourcepacks klasörünü genel paylaşılan klasöre bağlayarak tüm örneklerin aynı kaynak paketlerini kullanmasını sağlayın. Mevcut paketler paylaşılan klasörde birleştirilir.
   compatible: '{format} formatı {version} ile uyumlu'
@@ -1614,6 +1615,7 @@ setup:
     name: Dili Ayarla
   path: Mevcut Yol
 shaderPack:
+  installed: Gölgelendirici paketi yüklendi
   linkShared: Shader paketlerini örnekler arasında paylaş
   linkSharedHint: Bu örneğin shaderpacks klasörünü genel paylaşılan klasöre bağlayarak tüm örneklerin aynı shader paketlerini kullanmasını sağlayın. Mevcut paketler paylaşılan klasörde birleştirilir.
   disabled: Devre Dışı Bırakılan Gölgelendirici Paketleri
@@ -1696,6 +1698,17 @@ tag:
   create: Etiket Oluştur
   createSelected: Seçilenler için Etiket Oluştur
 task:
+  running: Çalışıyor...
+  succeed: Tamamlandı
+  eta: kalan ~{time}
+  remaining: '{size} kaldı'
+  totalRemaining: '{size} kaldı'
+  op:
+    download: İndir
+    update: Güncelle
+    install: Yükle
+    export: Dışa aktar
+    duplicate: Çoğalt
   cancelled: İptal Edildi
   clear: Biten Görevleri Temizle
   connection:

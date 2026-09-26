@@ -10,6 +10,8 @@ export interface InstallModrinthFileTask extends Task {
   projectId: string
   versionId: string
   filename: string
+  icon?: string
+  title?: string
   substate: SubState<InstallModrinthFileTrackerEvents, 'download'>
 }
 
@@ -21,5 +23,8 @@ export interface InstallCurseforgeFileTask extends Task {
   type: 'installCurseforgeFile'
   projectId: number
   fileId: number
+  filename?: string
+  icon?: string
+  title?: string
   substate: SubState<InstallCurseforgeFileTrackerEvents, 'download'>
 }

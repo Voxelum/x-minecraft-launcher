@@ -30,7 +30,7 @@ function useLocalSearch(enabled: Ref<InstanceResourcePack[]>, disabled: Ref<Inst
       const curseforgeId = m.curseforge?.projectId
       const modrinthId = m.modrinth?.projectId
       const name = m.name.startsWith('file/') ? m.name.slice(5) : m.name
-      const obj = indices[name] || (modrinthId && indices[modrinthId]) || (curseforgeId && indices[curseforgeId])
+      const obj = indices[name] || (m.fileName && indices[m.fileName]) || (modrinthId && indices[modrinthId]) || (curseforgeId && indices[curseforgeId])
       if (obj) {
         obj.files?.push(m)
         obj.installed?.push(m)
@@ -51,6 +51,9 @@ function useLocalSearch(enabled: Ref<InstanceResourcePack[]>, disabled: Ref<Inst
           files: [m],
         } as ResourcePackProject)
         indices[name] = proj
+        if (m.fileName) {
+          indices[m.fileName] = proj
+        }
         if (modrinthId) {
           indices[modrinthId] = proj
         }

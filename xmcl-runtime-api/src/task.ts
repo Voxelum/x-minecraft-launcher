@@ -22,6 +22,7 @@ import { DownloadModMetadataDbTask } from './services/ModMetadataService'
 import { DuplicateInstanceTask } from './services/InstanceService'
 import { InstallModrinthFileTask, InstallCurseforgeFileTask } from './services/MarketService'
 import { InstallBedrockTask, InstallBedrockVersionTask } from './services/BedrockService'
+import { InstallBlueprintTask } from './services/BlueprintMarketService'
 
 export enum TaskState {
   Running,
@@ -120,6 +121,7 @@ export type Tasks =
   | InstallCurseforgeFileTask
   | InstallBedrockTask
   | InstallBedrockVersionTask
+  | InstallBlueprintTask
 
 export function isTask<T extends Tasks>(key: T['type'], task: Tasks): task is T {
   return task.type === key
