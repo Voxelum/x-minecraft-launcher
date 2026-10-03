@@ -320,6 +320,19 @@ gameType:
 help: Ajuda
 home: Início
 importModpack:
+  fromFileSubtitle: Escolha um arquivo .zip ou .mrpack
+  fromUrl: Por link / URL...
+  fromUrlSubtitle: Instale um modpack por uma URL
+  fromUrlDescription: 'Digite ou cole a URL do modpack:'
+  invalidUrl: Digite uma URL válida (http:// ou https://)
+  selectVersion: Selecione a versão do modpack
+  selectVersionDescription: 'Escolha a versão de {name} para instalar:'
+  pmcProtected: O Planet Minecraft é protegido pelo Cloudflare. Copie o link de download direto ou um link alternativo da página.
+  netdiskTitle: Download da nuvem
+  netdiskDescription: Esta versão do modpack está hospedada em um serviço de armazenamento em nuvem externo. Clique abaixo para abrir a página de download no navegador e depois arraste o arquivo .zip ou .mrpack baixado para o XMCL.
+  openNetdisk: Abrir armazenamento em nuvem
+  netdiskOpened: O link do armazenamento em nuvem foi aberto no navegador e copiado para a área de transferência.
+  noReleasesFound: Nenhuma versão de modpack .mrpack ou .zip foi encontrada neste repositório.
   name: Importar Modpack
 installAssets:
   asset: Instalar {count} Arquivos de Recursos
@@ -460,6 +473,8 @@ instanceSetting:
   showLog: Exibir Minecraft Log
   showLogHint: >-
     Esta opção abrirá uma janela para transmitir o log do Minecraft após o início do jogo.
+  syncGameLanguage: Sincronizar idioma do jogo
+  syncGameLanguageDescription: Sincroniza automaticamente o idioma do Minecraft com o do inicializador ao iniciar
 instanceTemplate:
   ftb: Este é um modpack FTB
   preview: Pré-visualização do Modpack
@@ -1694,6 +1709,15 @@ tag:
   create: Criar uma Tag
   createSelected: Criar uma Tag para os Selecionados
 task:
+  running: Executando...
+  succeed: Concluído
+  eta: ~{time} restante
+  remaining: '{size} restante'
+  totalRemaining: '{size} restante'
+  op:
+    update: Atualizar
+    export: Exportar
+    duplicate: Duplicar
   cancelled: Cancelada
   clear: Limpar tarefas finalizadas
   connection:
@@ -1981,3 +2005,51 @@ migrateMinecraft:
   name: Migrar arquivos do Minecraft
 reinstall:
   name: Reinstalar {version}
+
+blueprint:
+  name: Projeto | Projetos
+  count: '{count} projetos'
+  searchLocal: Pesquisar projetos...
+  searchOnline: Pesquisar online...
+  market: Mercado
+  provider: Fonte
+  import: Importar
+  openFolder: Abrir pasta
+  refresh: Atualizar
+  empty: Nenhum projeto encontrado. Importe um arquivo .litematic / .schem / .nbt ou explore o mercado.
+  dropHint: Solte arquivos de projeto (.litematic / .schem / .nbt) aqui para importar.
+  selectHint: Selecione um projeto para visualizá-lo.
+  blocks: '{count} blocos'
+  materials: Materiais
+  findMod: Encontrar o mod para este namespace
+  compatible: Compatível
+  incompatible: Mods ausentes
+  missingNamespaces: 'Mods ausentes para: {namespaces}'
+  install: Instalar
+  goTo: Site
+  byAuthor: por {author}
+  noDescription: Nenhuma descrição fornecida.
+  mixedSources: Resultados misturados de todas as fontes. Alguns permitem apenas navegar — abra o site para baixar.
+  preview:
+    loading: Carregando visualização...
+    empty: Este projeto não tem blocos para exibir.
+    hint: '{count} blocos · {x}×{y}×{z}'
+    controls: 'WASD: mover · Espaço/Shift: cima/baixo · Arrastar: olhar · Rolar: zoom'
+  convert:
+    title: Converter formato
+    hint: Converta este projeto para outro formato. Um novo arquivo será criado.
+    target: Formato de destino
+    action: Converter
+  replace:
+    title: Substituir blocos
+    simple: Substituição simples
+    precise: Substituição precisa
+    simpleHint: Substituir todos os blocos de um tipo.
+    preciseHint: Substituir apenas blocos com as propriedades indicadas.
+    from: De
+    to: Para
+    addRule: Adicionar regra
+    newFile: Novo arquivo
+    action: Substituir
+  formats:
+    structure: Estrutura Vanilla

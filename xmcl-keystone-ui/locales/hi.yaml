@@ -364,6 +364,19 @@ gameType:
 help: सहायता
 home: होम
 importModpack:
+  fromFileSubtitle: .zip या .mrpack फ़ाइल चुनें
+  fromUrl: लिंक / URL से...
+  fromUrlSubtitle: URL से मॉडपैक इंस्टॉल करें
+  fromUrlDescription: 'मॉडपैक का URL दर्ज करें या पेस्ट करें:'
+  invalidUrl: कृपया मान्य URL दर्ज करें (http:// या https://)
+  selectVersion: मॉडपैक का संस्करण चुनें
+  selectVersionDescription: 'इंस्टॉल करने के लिए {name} का संस्करण चुनें:'
+  pmcProtected: Planet Minecraft, Cloudflare द्वारा सुरक्षित है। कृपया पेज से सीधा डाउनलोड लिंक या मिरर लिंक कॉपी करें।
+  netdiskTitle: क्लाउड ड्राइव से डाउनलोड
+  netdiskDescription: मॉडपैक का यह संस्करण बाहरी क्लाउड ड्राइव पर है। ब्राउज़र में डाउनलोड पेज खोलने के लिए नीचे क्लिक करें, फिर डाउनलोड की गई .zip या .mrpack फ़ाइल को खींचकर XMCL में छोड़ें।
+  openNetdisk: क्लाउड ड्राइव खोलें
+  netdiskOpened: क्लाउड ड्राइव का लिंक ब्राउज़र में खोल दिया गया है और क्लिपबोर्ड पर कॉपी कर दिया गया है।
+  noReleasesFound: इस रिपॉज़िटरी में .mrpack या .zip मॉडपैक रिलीज़ नहीं मिली।
   name: मॉडपैक आयात करें
 installAssets:
   asset: '{count} संपत्तियां स्थापित करें'
@@ -503,6 +516,8 @@ instanceSetting:
   icon: एक छवि चुनें
   showLog: माइनक्राफ्ट लॉग दिखाएं
   showLogHint: यह गेम शुरू होने के बाद माइनक्राफ्ट लॉग स्ट्रीम करने के लिए एक विंडो पॉपअप करेगा
+  syncGameLanguage: गेम भाषा सिंक करें
+  syncGameLanguageDescription: लॉन्च के समय Minecraft की भाषा को लॉन्चर भाषा के साथ स्वचालित रूप से सिंक करें
 instanceTemplate:
   ftb: यह एक FTB मॉडपैक है
   preview: मॉडपैक पूर्वावलोकन
@@ -1201,7 +1216,7 @@ blueprint:
     loading: पूर्वावलोकन लोड किया जा रहा है...
     empty: इस ब्लूप्रिंट में प्रदर्शित करने के लिए कोई ब्लॉक नहीं है।
     hint: '{count} ब्लॉक · {x}×{y}×{z}'
-    controls: देखने के लिए खींचें · WASD स्थानांतरित करें · Space/Shift ऊपर/नीचे
+    controls: 'WASD से चलें · Space/Shift से ऊपर/नीचे जाएँ · खींचकर देखें · स्क्रॉल से ज़ूम करें'
   convert:
     title: प्रारूप बदलें
     hint: इस ब्लूप्रिंट को दूसरे फॉर्मेट में बदलें। एक नई फ़ाइल बनाई जाएगी।
@@ -1824,6 +1839,15 @@ tag:
   create: टैग बनाएँ
   createSelected: चुने हुए के लिए टैग बनाएँ
 task:
+  running: चल रहा है...
+  succeed: पूर्ण हुआ
+  eta: लगभग {time} शेष
+  remaining: '{size} शेष'
+  totalRemaining: '{size} शेष'
+  op:
+    update: अपडेट
+    export: निर्यात
+    duplicate: डुप्लिकेट
   cancelled: रद्द किया गया
   clear: पूर्ण कार्य साफ़ करें
   connection:

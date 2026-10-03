@@ -332,6 +332,19 @@ gameType:
 help: 도움말
 home: 홈
 importModpack:
+  fromFileSubtitle: .zip 또는 .mrpack 파일 선택
+  fromUrl: 링크 / URL에서...
+  fromUrlSubtitle: URL에서 모드팩 설치
+  fromUrlDescription: '모드팩 URL을 입력하거나 붙여넣으세요:'
+  invalidUrl: 올바른 URL을 입력하세요 (http:// 또는 https://)
+  selectVersion: 모드팩 버전 선택
+  selectVersionDescription: '설치할 {name} 버전을 선택하세요:'
+  pmcProtected: Planet Minecraft는 Cloudflare로 보호됩니다. 페이지에서 직접 다운로드 링크 또는 미러 링크를 복사하세요.
+  netdiskTitle: 클라우드 드라이브에서 다운로드
+  netdiskDescription: 이 모드팩 버전은 외부 클라우드 드라이브에 저장되어 있습니다. 아래 버튼을 눌러 브라우저에서 다운로드 페이지를 연 다음, 다운로드한 .zip 또는 .mrpack 파일을 XMCL로 끌어다 놓으세요.
+  openNetdisk: 클라우드 드라이브 열기
+  netdiskOpened: 클라우드 드라이브 링크를 브라우저에서 열고 클립보드에 복사했습니다.
+  noReleasesFound: 이 저장소에서 .mrpack 또는 .zip 모드팩 릴리스를 찾을 수 없습니다.
   name: 모드팩 가져오기
 installAssets:
   asset: 에셋 {count} 개 설치
@@ -463,6 +476,8 @@ instanceSetting:
   icon: 이미지 선택
   showLog: 마인크래프트 로그 표시
   showLogHint: 게임 시작 후 마인크래프트 로그를 스트리밍하는 창이 팝업됩니다
+  syncGameLanguage: 게임 언어 동기화
+  syncGameLanguageDescription: 실행 시 마인크래프트의 언어를 런처 언어와 자동으로 동기화합니다
 instanceTemplate:
   ftb: 이것은 FTB 모드팩입니다
   preview: 모드팩 미리보기
@@ -1704,6 +1719,15 @@ tag:
   create: 태그 생성
   createSelected: 선택된 항목에 태그 생성
 task:
+  running: 실행 중...
+  succeed: 완료됨
+  eta: 약 {time} 남음
+  remaining: '{size} 남음'
+  totalRemaining: '{size} 남음'
+  op:
+    update: 업데이트
+    export: 내보내기
+    duplicate: 복제
   cancelled: 취소됨
   clear: 완료된 작업 지우기
   connection:
@@ -2089,7 +2113,7 @@ blueprint:
     loading: 미리보기 로딩 중...
     empty: 이 설계도에는 표시할 블록이 없습니다.
     hint: '{count}개 블록 · {x}×{y}×{z}'
-    controls: 드래그하여 둘러보기 · WASD 이동 · Space/Shift 위/아래
+    controls: 'WASD: 이동 · Space/Shift: 위/아래 · 드래그: 둘러보기 · 스크롤: 확대/축소'
   convert:
     title: 포맷 변환
     hint: 이 설계도를 다른 포맷으로 변환합니다. 새 파일이 생성됩니다.

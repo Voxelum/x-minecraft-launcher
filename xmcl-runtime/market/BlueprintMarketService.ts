@@ -5,11 +5,13 @@ import {
   BlueprintMarketSearchResult,
   BlueprintMarketService as IBlueprintMarketService,
   BlueprintMarketServiceKey,
+  InstallBlueprintTask,
 } from '@xmcl/runtime-api'
 import { ensureDir, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
+import { kTasks, Tasks } from '~/infra'
 import { LauncherApp } from '../app/LauncherApp'
 
 const MCS_PAGE_SIZE = 15
@@ -33,7 +35,10 @@ const MCS_TYPE_EXT: Record<number, string> = {
  */
 @ExposeServiceKey(BlueprintMarketServiceKey)
 export class BlueprintMarketService extends AbstractService implements IBlueprintMarketService {
-  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
+  constructor(
+    @Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(kTasks) private tasks: Tasks,
+  ) {
     super(app)
   }
 
@@ -155,18 +160,57 @@ export class BlueprintMarketService extends AbstractService implements IBlueprin
     if (item.provider !== 'mcschematic' || !item.installable) {
       throw new Error('This blueprint provider does not support direct install')
     }
-    const response = await this.app.fetch(`https://mcschematic.top/api/schematicFile?uuid=${item.id}`)
-    if (!response.ok) {
-      throw new Error(`Failed to download blueprint: ${response.status}`)
+
+    const task = this.tasks.create<InstallBlueprintTask>({
+      type: 'installBlueprint',
+      key: `install-blueprint-${item.id}`,
+      title: item.title,
+      icon: item.icon,
+    })
+
+    try {
+      const response = await this.app.fetch(`https://mcschematic.top/api/schematicFile?uuid=${item.id}`)
+      if (!response.ok) {
+        throw new Error(`Failed to download blueprint: ${response.status}`)
+      }
+      const contentLength = Number(response.headers.get('content-length') || 0)
+      if (contentLength > 0) {
+        task.progress = { progress: 0, total: contentLength }
+      }
+
+      let buffer: Buffer
+      const reader = response.body?.getReader()
+      if (reader) {
+        const chunks: Uint8Array[] = []
+        let received = 0
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          if (value) {
+            chunks.push(value)
+            received += value.length
+            if (contentLength > 0) {
+              task.progress = { progress: received, total: contentLength }
+            }
+          }
+        }
+        buffer = Buffer.concat(chunks)
+      } else {
+        buffer = Buffer.from(await response.arrayBuffer())
+      }
+
+      const dir = join(instancePath, 'schematics')
+      await ensureDir(dir)
+      const ext = item.fileType ?? 'schem'
+      const name = `${sanitize(item.title) || item.id}.${ext}`
+      const dest = join(dir, name)
+      await writeFile(dest, buffer)
+      task.complete()
+      return dest
+    } catch (e) {
+      task.fail(e)
+      throw e
     }
-    const buffer = Buffer.from(await response.arrayBuffer())
-    const dir = join(instancePath, 'schematics')
-    await ensureDir(dir)
-    const ext = item.fileType ?? 'schem'
-    const name = `${sanitize(item.title) || item.id}.${ext}`
-    const dest = join(dir, name)
-    await writeFile(dest, buffer)
-    return dest
   }
 }
 

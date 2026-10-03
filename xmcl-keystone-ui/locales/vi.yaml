@@ -364,6 +364,19 @@ gameType:
 help: Trợ giúp
 home: Trang chủ
 importModpack:
+  fromFileSubtitle: Chọn tệp .zip hoặc .mrpack
+  fromUrl: Từ liên kết / URL...
+  fromUrlSubtitle: Cài đặt modpack từ URL
+  fromUrlDescription: 'Nhập hoặc dán URL của modpack:'
+  invalidUrl: Vui lòng nhập URL hợp lệ (http:// hoặc https://)
+  selectVersion: Chọn phiên bản modpack
+  selectVersionDescription: 'Chọn phiên bản của {name} để cài đặt:'
+  pmcProtected: Planet Minecraft được Cloudflare bảo vệ. Vui lòng sao chép liên kết tải trực tiếp hoặc liên kết dự phòng từ trang đó.
+  netdiskTitle: Tải từ ổ đĩa đám mây
+  netdiskDescription: Phiên bản modpack này được lưu trên ổ đĩa đám mây bên ngoài. Nhấn bên dưới để mở trang tải xuống trong trình duyệt, sau đó kéo và thả tệp .zip hoặc .mrpack đã tải vào XMCL.
+  openNetdisk: Mở ổ đĩa đám mây
+  netdiskOpened: Liên kết ổ đĩa đám mây đã được mở trong trình duyệt và sao chép vào bộ nhớ tạm.
+  noReleasesFound: Không tìm thấy bản phát hành modpack .mrpack hoặc .zip trong kho lưu trữ này.
   name: Nhập Modpack
 installAssets:
   asset: Cài đặt {count} tài nguyên
@@ -503,6 +516,8 @@ instanceSetting:
   icon: Chọn một ảnh
   showLog: Hiển thị nhật ký Minecraft
   showLogHint: Thao tác này sẽ hiển thị một cửa sổ để truyền nhật ký Minecraft sau khi game bắt đầu
+  syncGameLanguage: Đồng bộ hóa ngôn ngữ trò chơi
+  syncGameLanguageDescription: Tự động đồng bộ hóa ngôn ngữ của Minecraft với ngôn ngữ trình khởi chạy khi khởi động
 instanceTemplate:
   ftb: Đây là một modpack FTB
   preview: Xem trước Modpack
@@ -1201,7 +1216,7 @@ blueprint:
     loading: Đang tải xem trước...
     empty: Bản thiết kế này không có khối nào để hiển thị.
     hint: '{count} khối · {x}×{y}×{z}'
-    controls: Kéo để nhìn · Di chuyển bằng WASD · Lên/Xuống bằng Space/Shift
+    controls: 'WASD: di chuyển · Space/Shift: lên/xuống · Kéo: xoay nhìn · Cuộn: thu phóng'
   convert:
     title: Chuyển đổi định dạng
     hint: Chuyển đổi bản thiết kế này sang định dạng khác. Một tệp mới sẽ được tạo.
@@ -1824,6 +1839,15 @@ tag:
   create: Tạo thẻ (Tag)
   createSelected: Tạo thẻ cho phần đã chọn
 task:
+  running: Đang chạy...
+  succeed: Đã hoàn thành
+  eta: còn lại ~{time}
+  remaining: 'còn {size}'
+  totalRemaining: 'Còn lại {size}'
+  op:
+    update: Cập nhật
+    export: Xuất
+    duplicate: Nhân bản
   cancelled: Đã hủy
   clear: Xóa các tác vụ đã hoàn thành
   connection:

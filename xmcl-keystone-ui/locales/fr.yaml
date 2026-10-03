@@ -315,6 +315,19 @@ gameType:
 help: Aider
 home: Accueil
 importModpack:
+  fromFileSubtitle: Choisir un fichier .zip ou .mrpack
+  fromUrl: Depuis un lien / une URL...
+  fromUrlSubtitle: Installer un modpack depuis une URL
+  fromUrlDescription: 'Saisissez ou collez l’URL du modpack :'
+  invalidUrl: Veuillez saisir une URL valide (http:// ou https://)
+  selectVersion: Choisir la version du modpack
+  selectVersionDescription: 'Choisissez la version de {name} à installer :'
+  pmcProtected: Planet Minecraft est protégé par Cloudflare. Veuillez copier le lien de téléchargement direct ou un lien miroir depuis la page.
+  netdiskTitle: Téléchargement depuis le stockage en ligne
+  netdiskDescription: Cette version du modpack est hébergée sur un stockage en ligne externe. Cliquez ci-dessous pour ouvrir la page de téléchargement dans votre navigateur, puis glissez-déposez le fichier .zip ou .mrpack téléchargé dans XMCL.
+  openNetdisk: Ouvrir le stockage en ligne
+  netdiskOpened: Le lien du stockage en ligne a été ouvert dans votre navigateur et copié dans le presse-papiers.
+  noReleasesFound: Aucune version de modpack .mrpack ou .zip trouvée dans ce dépôt.
   name: Importer un pack de modules
 installAssets:
   asset: "Installer {count} éléments"
@@ -452,6 +465,8 @@ instanceSetting:
   showLog: Afficher les logs de Minecraft
   showLogHint: >-
     Cela ouvrira une fenêtre pour afficher les logs Minecraft après le lancement du jeu
+  syncGameLanguage: Synchroniser la langue du jeu
+  syncGameLanguageDescription: Synchroniser automatiquement la langue de Minecraft avec celle du lanceur au lancement
 instanceTemplate:
   ftb: Ceci est un modpack FTB
   preview: Aperçu du Modpack
@@ -1712,6 +1727,15 @@ tag:
   create: Créer un tag
   createSelected: Créer un tag pour la sélection
 task:
+  running: En cours d'exécution...
+  succeed: Terminé
+  eta: ~{time} restante(s)
+  remaining: '{size} restant(e)'
+  totalRemaining: '{size} restant(e)'
+  op:
+    update: Mettre à jour
+    export: Exporter
+    duplicate: Dupliquer
   cancelled: Annulé
   clear: Effacer les tâches terminées
   connection:
@@ -2019,3 +2043,51 @@ migrateMinecraft:
   name: Migrer les fichiers Minecraft
 reinstall:
   name: Réinstaller {version}
+
+blueprint:
+  name: Plan | Plans
+  count: '{count} plans'
+  searchLocal: Rechercher des plans...
+  searchOnline: Rechercher en ligne...
+  market: Marché
+  provider: Source
+  import: Importer
+  openFolder: Ouvrir le dossier
+  refresh: Actualiser
+  empty: Aucun plan trouvé. Importez un fichier .litematic / .schem / .nbt ou parcourez le marché.
+  dropHint: Déposez les fichiers de plan (.litematic / .schem / .nbt) ici pour les importer.
+  selectHint: Sélectionnez un plan pour le prévisualiser.
+  blocks: '{count} blocs'
+  materials: Matériaux
+  findMod: Trouver le mod pour cet espace de noms
+  compatible: Compatible
+  incompatible: Mods manquants
+  missingNamespaces: 'Mods manquants pour : {namespaces}'
+  install: Installer
+  goTo: Site web
+  byAuthor: par {author}
+  noDescription: Aucune description fournie.
+  mixedSources: Résultats mélangés de toutes les sources. Certains sont uniquement consultables — ouvrez leur site pour télécharger.
+  preview:
+    loading: Chargement de la prévisualisation...
+    empty: Ce plan ne contient aucun bloc à afficher.
+    hint: '{count} blocs · {x}×{y}×{z}'
+    controls: 'WASD : déplacer · Espace/Maj : haut/bas · Glisser : regarder · Défilement : zoomer'
+  convert:
+    title: Convertir le format
+    hint: Convertissez ce plan dans un autre format. Un nouveau fichier sera créé.
+    target: Format cible
+    action: Convertir
+  replace:
+    title: Remplacer les blocs
+    simple: Remplacement simple
+    precise: Remplacement précis
+    simpleHint: Remplacer tous les blocs d’un type.
+    preciseHint: Remplacer uniquement les blocs correspondant aux propriétés indiquées.
+    from: De
+    to: Vers
+    addRule: Ajouter une règle
+    newFile: Nouveau fichier
+    action: Remplacer
+  formats:
+    structure: Structure Vanilla

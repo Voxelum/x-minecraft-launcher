@@ -52,6 +52,7 @@ import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/servic
 import { downloadInstanceFiles } from './utils/downloadInstanceFiles'
 import { linkInstanceFiles } from './utils/linkInstanceFiles'
 import { unzipInstanceFiles } from './utils/unzipInstanceFiles'
+import { deduplicateInstanceFiles } from '~/util/deduplicateInstanceFiles'
 import { resolveInstanceFiles } from './utils/resolveInstanceFiles'
 import { getTracker } from '~/util/taskHelper'
 import { readPendingInstalls, writeInstallState } from './utils/pendingInstall'
@@ -263,13 +264,24 @@ export class InstanceInstallService extends AbstractService implements IInstance
   // eslint-disable-next-line @typescript-eslint/no-this-alias
     const logger = this
 
+    const instanceService = await this.app.registry.get(InstanceService)
+    const inst = instanceService.state?.all?.[instancePath]
+    const singleFile = targetState.files && targetState.files.length === 1 ? targetState.files[0] : undefined
+    const singleFileIcon = singleFile ? (singleFile as any)?.icon : undefined
+    const singleFileName = singleFile ? basename(singleFile.path) : undefined
+
     // Track the task at service level. Created BEFORE the lock so the
     // abort handler below has a stable controller to flip when
     // deleteInstance fires while we're still waiting for the lock.
+    const isUpdate = !!(targetState.oldFiles && targetState.oldFiles.length > 0)
     const task = this.tasks.create<InstallInstanceTask>({
       type: 'installInstance',
       key: `install-instance-${instancePath}`,
       instancePath,
+      instanceName: inst?.name,
+      fileName: singleFileName,
+      icon: singleFileIcon || inst?.icon,
+      isUpdate,
       taskId: id,
     })
     this.activeInstallTasks.set(profilePath, task.controller)
@@ -284,7 +296,6 @@ export class InstanceInstallService extends AbstractService implements IInstance
     //   2. Serialize every instance mutation on the same LockKey.instance(p)
     //      that deleteInstance waits on. Local diff installs may prepare in
     //      an isolated workspace before taking this lock.
-    const instanceService = await this.app.registry.get(InstanceService)
     let removing = false
     let preparing = false
     const writersSettled = Promise.withResolvers<void>()
@@ -293,7 +304,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
       task.controller.abort()
       // Preparation runs outside the instance mutex. Deletion must wait
       // for its writers, but not for the commit that also needs that mutex.
-      return preparing ? writersSettled.promise : undefined
+      if (!preparing) return undefined
+      return writersSettled.promise
     }
     const unregisterRemoveHandler = instanceService.registerRemoveHandler(
       instancePath,
@@ -491,8 +503,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
     }
     const delta = (ready?: Set<string>) => {
-      const files = activeInstallFiles(targetState)
-      const baseline = activeInstallFiles(targetState, true)
+      const files = deduplicateInstanceFiles(activeInstallFiles(targetState))
+      const baseline = deduplicateInstanceFiles(activeInstallFiles(targetState, true))
       return computeFileUpdates(
         instancePath,
         ready ? baseline.filter(file => ready.has(file.path)) : baseline,
@@ -1032,7 +1044,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
     manifestUpdatedAt?: number,
     legacyBaseline?: { upstream: InstanceUpstream; files: InstanceFile[] } | null,
   ): Promise<void> {
-    const { path: instancePath, files, id } = options
+    const { path: instancePath, id } = options
+    const files = deduplicateInstanceFiles(options.files)
 
     const timestamp = Date.now()
     this.log('Install instance files', instancePath, id)
@@ -1062,7 +1075,6 @@ export class InstanceInstallService extends AbstractService implements IInstance
       )
     } else {
       const oldFiles = options.oldFiles
-      const files = options.files
       const operationId = randomUUID()
 
       const lockState: InstanceLockSchema = {

@@ -647,7 +647,7 @@ describe('InstanceInstallService progressive installation', () => {
     expect(await readPendingInstalls(f.instancePath)).toEqual([])
   })
 
-  it('managed removal waits for outside-lock writers and no install writer resurrects the root', async () => {
+  it('managed removal waits beyond three seconds for outside-lock writers without resurrecting the root', async () => {
     const f = await fixture()
     const file = f.file('mods/late.jar')
     const started = Promise.withResolvers<void>()
@@ -688,6 +688,7 @@ describe('InstanceInstallService progressive installation', () => {
       expect(downloadSignal?.aborted).toBe(true)
       expect(handlerResults).toHaveLength(1)
       expect(handlerResults[0]).toBeInstanceOf(Promise)
+      await new Promise(resolve => setTimeout(resolve, 3200))
       expect(events).toEqual([])
       expect(await pathExists(f.instancePath)).toBe(true)
     } finally {
@@ -701,7 +702,7 @@ describe('InstanceInstallService progressive installation', () => {
     expect(await pathExists(f.instancePath)).toBe(false)
     expect(await readdir(f.root)).toEqual([])
     expect(f.removeHandlers.size).toBe(0)
-  })
+  }, 10000)
 
   it('does not deadlock deletion while initialization is still waiting for the instance mutex', async () => {
     const f = await fixture()

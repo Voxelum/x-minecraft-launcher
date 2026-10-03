@@ -304,6 +304,19 @@ gameType:
 help: ヘルプ
 home: ホーム
 importModpack:
+  fromFileSubtitle: .zip または .mrpack ファイルを選択
+  fromUrl: リンク / URL から...
+  fromUrlSubtitle: URL から Mod パックをインストール
+  fromUrlDescription: 'Mod パックの URL を入力または貼り付けてください:'
+  invalidUrl: 有効な URL（http:// または https://）を入力してください
+  selectVersion: Mod パックのバージョンを選択
+  selectVersionDescription: 'インストールする {name} のバージョンを選択してください:'
+  pmcProtected: Planet Minecraft は Cloudflare で保護されています。ページから直接ダウンロードリンクまたはミラーリンクをコピーしてください。
+  netdiskTitle: クラウドドライブからダウンロード
+  netdiskDescription: この Mod パックのバージョンは外部のクラウドドライブに保存されています。下のボタンをクリックしてブラウザーでダウンロードページを開き、ダウンロードした .zip または .mrpack ファイルを XMCL にドラッグ＆ドロップしてください。
+  openNetdisk: クラウドドライブを開く
+  netdiskOpened: クラウドドライブのリンクをブラウザーで開き、クリップボードにコピーしました。
+  noReleasesFound: このリポジトリに .mrpack または .zip 形式の Mod パックのリリースが見つかりませんでした。
   name: Modpackをインポート
 installAssets:
   asset: '{count} 個のアセットをインストール'
@@ -435,6 +448,8 @@ instanceSetting:
   icon: 画像を選択
   showLog: Minecraftのログを表示
   showLogHint: ゲーム起動後にMinecraftのログを流すポップアップウィンドウを表示します
+  syncGameLanguage: ゲームの言語を同期
+  syncGameLanguageDescription: 起動時にMinecraftの言語をランチャーの言語と自動的に同期します
 instanceTemplate:
   ftb: FTB のModpackです
   preview: Modpackのプレビュー
@@ -1123,7 +1138,7 @@ blueprint:
     loading: プレビューを読み込み中...
     empty: この設計図には表示できるブロックがありません。
     hint: '{count} 個のブロック · {x}×{y}×{z}'
-    controls: ドラッグで視点移動 · WASD で移動 · スペース/Shift で上昇/下降
+    controls: 'WASD：移動 · スペース/Shift：上昇/下降 · ドラッグ：視点移動 · スクロール：ズーム'
   convert:
     title: フォーマットを変換
     hint: この設計図を別のフォーマットに変換します。新しいファイルが作成されます。
@@ -1718,6 +1733,15 @@ tag:
   create: タグを作成
   createSelected: 選択されたもので新しいタグを作る
 task:
+  running: 実行中...
+  succeed: 完了
+  eta: 残り約 {time}
+  remaining: '残り {size}'
+  totalRemaining: '残り {size}'
+  op:
+    update: 更新
+    export: エクスポート
+    duplicate: 複製
   cancelled: キャンセルされました
   clear: 終了したタスクをクリア
   connection:

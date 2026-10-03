@@ -364,6 +364,19 @@ gameType:
 help: Bantuan
 home: Beranda
 importModpack:
+  fromFileSubtitle: Pilih berkas .zip atau .mrpack
+  fromUrl: Dari tautan / URL...
+  fromUrlSubtitle: Pasang modpack dari URL
+  fromUrlDescription: 'Masukkan atau tempel URL modpack:'
+  invalidUrl: Masukkan URL yang valid (http:// atau https://)
+  selectVersion: Pilih versi modpack
+  selectVersionDescription: 'Pilih versi {name} yang ingin dipasang:'
+  pmcProtected: Planet Minecraft dilindungi oleh Cloudflare. Salin tautan unduhan langsung atau tautan cermin dari halaman tersebut.
+  netdiskTitle: Unduh dari penyimpanan awan
+  netdiskDescription: Versi modpack ini tersedia di penyimpanan awan eksternal. Klik di bawah untuk membuka halaman unduhan di peramban, lalu seret dan lepas berkas .zip atau .mrpack yang telah diunduh ke XMCL.
+  openNetdisk: Buka penyimpanan awan
+  netdiskOpened: Tautan penyimpanan awan telah dibuka di peramban dan disalin ke papan klip.
+  noReleasesFound: Tidak ditemukan rilis modpack .mrpack atau .zip di repositori ini.
   name: Impor Modpack
 installAssets:
   asset: Pasang {count} Aset
@@ -503,6 +516,8 @@ instanceSetting:
   icon: Pilih gambar
   showLog: Tampilkan Log Minecraft
   showLogHint: Ini akan memunculkan jendela untuk mengalirkan log Minecraft setelah game dimulai
+  syncGameLanguage: Sinkronkan Bahasa Game
+  syncGameLanguageDescription: Sinkronkan bahasa Minecraft secara otomatis dengan bahasa peluncur saat memulai
 instanceTemplate:
   ftb: Ini adalah modpack FTB
   preview: Pratinjau Modpack
@@ -1201,7 +1216,7 @@ blueprint:
     loading: Memuat pratinjau...
     empty: Cetak biru ini tidak memiliki blok untuk ditampilkan.
     hint: '{count} blok · {x}×{y}×{z}'
-    controls: Tarik untuk melihat · Tombol WASD untuk bergerak · Space/Shift untuk naik/turun
+    controls: 'WASD: bergerak · Spasi/Shift: naik/turun · Seret: melihat · Gulir: zoom'
   convert:
     title: Ubah format
     hint: Ubah cetak biru ini ke format lain. Berkas baru akan dibuat.
@@ -1824,6 +1839,15 @@ tag:
   create: Buat Tag
   createSelected: Buat Tag untuk yang Terpilih
 task:
+  running: Sedang berjalan...
+  succeed: Selesai
+  eta: tersisa ~{time}
+  remaining: 'tersisa {size}'
+  totalRemaining: 'Tersisa {size}'
+  op:
+    update: Perbarui
+    export: Ekspor
+    duplicate: Duplikat
   cancelled: Dibatalkan
   clear: Bersihkan Tugas yang Selesai
   connection:

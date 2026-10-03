@@ -375,6 +375,19 @@ gameType:
 help: 幫助
 home: 主頁
 importModpack:
+  fromFileSubtitle: 選擇 .zip 或 .mrpack 檔案
+  fromUrl: 透過連結 / URL...
+  fromUrlSubtitle: 透過模組包連結安裝
+  fromUrlDescription: 請輸入或貼上模組包連結：
+  invalidUrl: 請輸入有效的連結（http:// 或 https://）
+  selectVersion: 選擇模組包版本
+  selectVersionDescription: 請選擇要安裝的 {name} 版本：
+  pmcProtected: Planet Minecraft 受到 Cloudflare 保護。請從頁面複製直接下載連結或鏡像連結。
+  netdiskTitle: 雲端硬碟下載
+  netdiskDescription: 此模組包版本存放於外部雲端硬碟。按下方按鈕在瀏覽器中開啟下載頁面，然後將下載的 .zip 或 .mrpack 檔案拖放至 XMCL。
+  openNetdisk: 開啟雲端硬碟
+  netdiskOpened: 雲端硬碟連結已在瀏覽器中開啟並複製至剪貼簿。
+  noReleasesFound: 此儲存庫中找不到 .mrpack 或 .zip 格式的模組包發行版本。
   name: 匯入模組包
 installAssets:
   asset: 下載 {count} 個資源檔案
@@ -522,6 +535,8 @@ instanceSetting:
   icon: 選擇圖片
   showLog: Minecraft 啟動後顯示日誌
   showLogHint: 遊戲開啟後將彈出一個顯示 Minecraft 日誌嘅視窗
+  syncGameLanguage: 同步遊戲語言
+  syncGameLanguageDescription: 啟動遊戲時自動將 Minecraft 語言同步為啟動器當前語言
 instanceTemplate:
   ftb: 呢個係一個 FTB 嘅模組包設定
   preview: 預覽
@@ -1249,7 +1264,7 @@ blueprint:
     loading: 正在載入預覽...
     empty: 此藍圖冇可顯示嘅方塊。
     hint: '{count} 個方塊 · {x}×{y}×{z}'
-    controls: 拖曳以觀察 · WASD 移動 · 空白鍵/Shift 上升/下降
+    controls: 'WASD：移動 · 空白鍵/Shift：上升/下降 · 拖曳：觀察 · 滾動：縮放'
   convert:
     title: 轉換格式
     hint: 將此藍圖轉換為其他格式。將建立一個新檔案。
@@ -1888,6 +1903,15 @@ tag:
   create: 建立標籤
   createSelected: 為所有選中嘅建立標籤
 task:
+  running: 執行中...
+  succeed: 已完成
+  eta: 剩餘約 {time}
+  remaining: '剩餘 {size}'
+  totalRemaining: '剩餘 {size}'
+  op:
+    update: 更新
+    export: 匯出
+    duplicate: 複製
   cancelled: 已取消
   clear: 清除已完成嘅任務
   connection:

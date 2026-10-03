@@ -408,6 +408,19 @@ gameType:
 help: Ayuda
 home: Inicio
 importModpack:
+  fromFileSubtitle: Elige un archivo .zip o .mrpack
+  fromUrl: Desde un enlace / URL...
+  fromUrlSubtitle: Instala un modpack desde una URL
+  fromUrlDescription: 'Introduce o pega la URL del modpack:'
+  invalidUrl: Introduce una URL válida (http:// o https://)
+  selectVersion: Selecciona la versión del modpack
+  selectVersionDescription: 'Elige la versión de {name} que quieres instalar:'
+  pmcProtected: Planet Minecraft está protegido por Cloudflare. Copia el enlace de descarga directa o un enlace alternativo de la página.
+  netdiskTitle: Descarga desde la nube
+  netdiskDescription: Esta versión del modpack está alojada en un servicio de almacenamiento en la nube externo. Haz clic abajo para abrir la página de descarga en el navegador y después arrastra el archivo .zip o .mrpack descargado a XMCL.
+  openNetdisk: Abrir almacenamiento en la nube
+  netdiskOpened: El enlace del almacenamiento en la nube se ha abierto en el navegador y se ha copiado al portapapeles.
+  noReleasesFound: No se han encontrado versiones de modpacks .mrpack o .zip en este repositorio.
   name: Importar paquete de modificaciones
 installAssets:
   asset: Instalar {count} recursos
@@ -558,6 +571,8 @@ instanceSetting:
   showLog: Mostrar Registro de Minecraft
   showLogHint: >-
     Esto abrirá una ventana para mostrar el registro de Minecraft después de iniciar el juego
+  syncGameLanguage: Sincronizar idioma del juego
+  syncGameLanguageDescription: Sincronizar automáticamente el idioma de Minecraft con el del iniciador al iniciar
 instanceTemplate:
   ftb: Este es un modpack de FTB
   preview: Vista Previa del Modpack
@@ -1995,6 +2010,15 @@ tag:
   create: Crear Etiqueta
   createSelected: Crear Etiqueta para la Selección
 task:
+  running: En ejecución...
+  succeed: Completado
+  eta: ~{time} restante
+  remaining: '{size} restante'
+  totalRemaining: '{size} restante'
+  op:
+    update: Actualizar
+    export: Exportar
+    duplicate: Duplicar
   cancelled: Cancelada
   clear: Borrar tareas terminadas
   connection:
@@ -2337,7 +2361,7 @@ blueprint:
     loading: Cargando vista previa...
     empty: Este blueprint no tiene bloques para mostrar.
     hint: '{count} bloques · {x}×{y}×{z}'
-    controls: Arrastra para mirar · WASD mover · Space/Shift arriba/abajo
+    controls: 'WASD: mover · Espacio/Shift: arriba/abajo · Arrastrar: mirar · Desplazar: zoom'
   convert:
     title: Convertir formato
     hint: Convierte este blueprint a otro formato. Se creará un nuevo archivo.

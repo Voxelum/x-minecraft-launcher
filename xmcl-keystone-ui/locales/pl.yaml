@@ -285,6 +285,19 @@ gameType:
 help: Pomoc
 home: Strona główna
 importModpack:
+  fromFileSubtitle: Wybierz plik .zip lub .mrpack
+  fromUrl: Z linku / adresu URL...
+  fromUrlSubtitle: Zainstaluj paczkę modów z adresu URL
+  fromUrlDescription: 'Wpisz lub wklej adres URL paczki modów:'
+  invalidUrl: Wpisz poprawny adres URL (http:// lub https://)
+  selectVersion: Wybierz wersję paczki modów
+  selectVersionDescription: 'Wybierz wersję {name} do zainstalowania:'
+  pmcProtected: Planet Minecraft jest chroniony przez Cloudflare. Skopiuj ze strony bezpośredni lub alternatywny link do pobrania.
+  netdiskTitle: Pobieranie z dysku w chmurze
+  netdiskDescription: Ta wersja paczki modów znajduje się na zewnętrznym dysku w chmurze. Kliknij poniżej, aby otworzyć stronę pobierania w przeglądarce, a następnie przeciągnij pobrany plik .zip lub .mrpack do XMCL.
+  openNetdisk: Otwórz dysk w chmurze
+  netdiskOpened: Link do dysku w chmurze został otwarty w przeglądarce i skopiowany do schowka.
+  noReleasesFound: Nie znaleziono wydań paczek modów .mrpack lub .zip w tym repozytorium.
   name: Importuj pakiet modów
 installAssets:
   asset: 'Zainstaluj zasoby: {count}'
@@ -427,6 +440,8 @@ instanceSetting:
   showLog: Pokaż dziennik Minecraft
   showLogHint: >-
     Spowoduje to wyświetlenie okna do strumieniowego przesyłania dziennika Minecraft po uruchomieniu gry
+  syncGameLanguage: Synchronizuj język gry
+  syncGameLanguageDescription: Automatycznie synchronizuj język Minecrafta z językiem launchera podczas uruchamiania
 instanceTemplate:
   ftb: To jest modpack FTB
   preview: Podgląd modpacka
@@ -1673,6 +1688,15 @@ tag:
   create: Utwórz tag
   createSelected: Utwórz znacznik dla wybranych
 task:
+  running: Wykonywanie...
+  succeed: Ukończono
+  eta: pozostało ~{time}
+  remaining: 'pozostało {size}'
+  totalRemaining: 'Pozostało {size}'
+  op:
+    update: Aktualizacja
+    export: Eksport
+    duplicate: Duplikowanie
   cancelled: Anulowane
   clear: Wyczyść ukończone zadania
   connection:
@@ -1948,3 +1972,51 @@ migrateMinecraft:
   name: Migruj pliki Minecraft
 reinstall:
   name: Zainstaluj ponownie {version}
+
+blueprint:
+  name: Schemat | Schematy
+  count: '{count} schematów'
+  searchLocal: Szukaj schematów...
+  searchOnline: Szukaj online...
+  market: Rynek
+  provider: Źródło
+  import: Importuj
+  openFolder: Otwórz folder
+  refresh: Odśwież
+  empty: Nie znaleziono schematów. Zaimportuj plik .litematic / .schem / .nbt lub przeglądaj rynek.
+  dropHint: Upuść tutaj pliki schematów (.litematic / .schem / .nbt), aby je zaimportować.
+  selectHint: Wybierz schemat do podglądu.
+  blocks: '{count} bloków'
+  materials: Materiały
+  findMod: Znajdź moda dla tej przestrzeni nazw
+  compatible: Zgodny
+  incompatible: Brakujące mody
+  missingNamespaces: 'Brakujące mody dla: {namespaces}'
+  install: Zainstaluj
+  goTo: Strona internetowa
+  byAuthor: 'autor: {author}'
+  noDescription: Brak opisu.
+  mixedSources: Wyniki pochodzą ze wszystkich źródeł. Niektóre służą tylko do przeglądania — otwórz ich stronę, aby pobrać.
+  preview:
+    loading: Ładowanie podglądu...
+    empty: Ten schemat nie zawiera bloków do wyświetlenia.
+    hint: '{count} bloków · {x}×{y}×{z}'
+    controls: 'WASD: ruch · Spacja/Shift: góra/dół · Przeciąganie: rozglądanie · Przewijanie: zoom'
+  convert:
+    title: Konwertuj format
+    hint: Konwertuj ten schemat do innego formatu. Zostanie utworzony nowy plik.
+    target: Format docelowy
+    action: Konwertuj
+  replace:
+    title: Zastąp bloki
+    simple: Prosta zamiana
+    precise: Precyzyjna zamiana
+    simpleHint: Zastąp wszystkie bloki jednego typu.
+    preciseHint: Zastąp tylko bloki pasujące do podanych właściwości.
+    from: Z
+    to: Na
+    addRule: Dodaj regułę
+    newFile: Nowy plik
+    action: Zastąp
+  formats:
+    structure: Struktura Vanilla

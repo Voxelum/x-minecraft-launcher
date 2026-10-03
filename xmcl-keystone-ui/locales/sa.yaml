@@ -364,6 +364,19 @@ gameType:
 help: सहायता
 home: मुख्यम्
 importModpack:
+  fromFileSubtitle: .zip अथवा .mrpack सञ्चिकां चिनोतु
+  fromUrl: सङ्केतात् / URL तः...
+  fromUrlSubtitle: URL द्वारा मोड्पैक् स्थापयतु
+  fromUrlDescription: 'मोड्पैक् इत्यस्य URL लिखतु अथवा स्थापयतु:'
+  invalidUrl: कृपया वैधं URL लिखतु (http:// अथवा https://)
+  selectVersion: मोड्पैक्-संस्करणं चिनोतु
+  selectVersionDescription: 'स्थापनाय {name} इत्यस्य संस्करणं चिनोतु:'
+  pmcProtected: Planet Minecraft इति जालस्थलं Cloudflare द्वारा सुरक्षितम् अस्ति। कृपया पृष्ठात् प्रत्यक्षावतारणसङ्केतम् अथवा वैकल्पिकसङ्केतं प्रतिलिपिं करोतु।
+  netdiskTitle: मेघसञ्चयात् अवतारणम्
+  netdiskDescription: इदं मोड्पैक्-संस्करणं बाह्यमेघसञ्चये अस्ति। जालविचारके अवतारणपृष्ठं उद्घाटयितुम् अधः नुदतु, ततः अवतारितां .zip अथवा .mrpack सञ्चिकाम् XMCL मध्ये आकर्ष्य मुञ्चतु।
+  openNetdisk: मेघसञ्चयम् उद्घाटयतु
+  netdiskOpened: मेघसञ्चयसङ्केतः जालविचारके उद्घाटितः प्रतिलिपिफलके च प्रतिलिपीकृतः।
+  noReleasesFound: अस्मिन् भाण्डागारे .mrpack अथवा .zip मोड्पैक्-प्रकाशनानि न प्राप्तानि।
   name: मोडप्याक् (Modpack) आयातयतु
 installAssets:
   asset: '{count} सम्पदः संस्थापयतु'
@@ -503,6 +516,8 @@ instanceSetting:
   icon: चित्रं चिनोतु
   showLog: माइनक्राफ्ट् वृत्तलेखं दर्शयतु
   showLogHint: एतेन क्रीडारम्भात् परं माइनक्राफ्ट् वृत्तलेखं प्रदर्शयितुं नूतनं गवाक्षम् उद्घाटयिष्यते
+  syncGameLanguage: क्रीडाभाषां समकालिकं कुर्वन्तु
+  syncGameLanguageDescription: प्रवर्तनावसरे Minecraft भाषां प्रवर्तकभाषया सह स्वयमेव समकालिकं कुर्वन्तु
 instanceTemplate:
   ftb: एतत् FTB मोडप्याक् अस्ति
   preview: मोडप्याक् पूर्वावलोकनम्
@@ -1199,7 +1214,7 @@ blueprint:
     loading: पूर्वावलोकनं भारयति...
     empty: दर्शयितुं कोऽपि खण्डः नास्ति।
     hint: '{count} खण्डाः · {x}×{y}×{z}'
-    controls: सञ्चरणाय WASD, उपरि/अधः गन्तुं Space/Shift
+    controls: 'WASD सञ्चरणाय · Space/Shift ऊर्ध्वम्/अधः · कर्षणेन अवलोकनम् · स्क्रोलेन विस्तारः'
   convert:
     title: प्रारूपं परिवर्तयतु
     hint: रेखाचित्रम् अन्यप्रारूपे परिवर्तयतु।
@@ -1822,6 +1837,15 @@ tag:
   create: ट्याग् (Tag) सृजतु
   createSelected: चयनितस्य कृते ट्याग् सृजतु
 task:
+  running: प्रचलति...
+  succeed: सम्पन्नम्
+  eta: ~{time} अवशिष्टम्
+  remaining: '{size} अवशिष्टम्'
+  totalRemaining: '{size} अवशिष्टम्'
+  op:
+    update: नवीकरोति
+    export: निर्यापयति
+    duplicate: प्रतिलिपिं करोति
   cancelled: निरस्तम्
   clear: समाप्तानि कार्याणि मार्जयतु
   connection:
