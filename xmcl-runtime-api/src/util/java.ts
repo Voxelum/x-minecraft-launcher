@@ -116,6 +116,18 @@ export function getVersionPreference<T extends object>(
   const resolvedMcVersion = parseVersion(minecraft)
   const minecraftMinor = resolvedMcVersion.minorVersion!
 
+  // Forge's bundled bytecode tooling is not necessarily compatible with newer
+  // JDKs. Keep the Java 17 generation on 17 unless explicit compatibility
+  // metadata above declares otherwise.
+  if (forge && resolvedMcVersion.majorVersion === 1 &&
+    (minecraftMinor === 18 || minecraftMinor === 19 ||
+      (minecraftMinor === 20 && (resolvedMcVersion.incrementalVersion ?? 0) <= 4)) &&
+    (!javaVersion || javaVersion.majorVersion === 17)) {
+    javaVersion ??= { component: 'java-runtime-gamma', majorVersion: 17 }
+    const match = (java: Java) => java.majorVersion === 17
+    return { javaVersion, versionPref: { match, okay: match, requirement: '=17' } }
+  }
+
   const getBuilderNumber = (v: string) => {
     const [, build] = v.split('_')
     const buildNumber = Number(build)

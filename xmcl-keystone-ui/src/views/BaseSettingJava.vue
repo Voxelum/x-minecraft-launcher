@@ -1,7 +1,7 @@
 <template>
   <SettingCard id="java-card" title="Java" icon="coffee">
     <!-- Hero Java row -->
-    <div class="java-hero flex items-center gap-3 px-2">
+    <div class="java-hero flex flex-wrap items-center gap-3 px-2">
       <v-avatar
         size="48"
         rounded="lg"
@@ -20,7 +20,7 @@
         <v-icon v-else>memory</v-icon>
       </v-avatar>
 
-      <div class="flex-1 min-w-0">
+      <div class="flex-1 min-w-[160px]">
         <div class="flex items-center gap-2 text-subtitle-1 font-weight-medium">
           <template v-if="displayJava.path && displayJava.valid">
             Java {{ displayJava.version }}
@@ -90,28 +90,7 @@
 
       <v-divider vertical class="mx-1 my-2" />
 
-      <v-btn
-        v-shared-tooltip="() => t('java.refresh')"
-        icon
-        variant="text"
-        density="comfortable"
-        size="small"
-        :loading="refreshing"
-        @click="onRefresh"
-      >
-        <v-icon>refresh</v-icon>
-      </v-btn>
-      <v-btn
-        id="java-import"
-        v-shared-tooltip="() => t('java.importFromFile')"
-        icon
-        variant="text"
-        density="comfortable"
-        size="small"
-        @click="browseFile"
-      >
-        <v-icon>add</v-icon>
-      </v-btn>
+      <JavaActions @added="pickerOpen = true" />
 
       <v-menu
         v-model="pickerOpen"
@@ -245,11 +224,12 @@
 import EnvVarAddItem from '@/components/EnvVarAddItem.vue'
 import EnvVarTableItem from '@/components/EnvVarTableItem.vue'
 import SettingCard from '@/components/SettingCard.vue'
+import JavaActions from '@/components/JavaActions.vue'
 import { useService } from '@/composables'
 import { kInstanceJava } from '@/composables/instanceJava'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { BaseServiceKey, JavaRecord, JavaServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, JavaRecord } from '@xmcl/runtime-api'
 import { resolvePinChoice, shouldClearPinOnRemove } from '@/util/javaPin'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { kJavaContext } from '../composables/java'
@@ -259,17 +239,11 @@ import SettingJavaMemory from './SettingJavaMemory.vue'
 import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
 
 const { t } = useI18n()
-const { showOpenDialog } = windowController
-const { all: javas, remove: removeJava, refreshing, refresh } = injection(kJavaContext)
+const { all: javas, remove: removeJava } = injection(kJavaContext)
 const { java: selectedJava, status: javaStatus } = injection(kInstanceJava)
-const { resolveJava: add } = useService(JavaServiceKey)
 const { showItemInDirectory } = useService(BaseServiceKey)
 
 const pickerOpen = ref(false)
-
-function onRefresh() {
-  refresh(true)
-}
 
 function onPickJava(value: JavaRecord) {
   const next = resolvePinChoice(value, isAuto.value, selectedJava.value?.path)
@@ -384,13 +358,6 @@ const heroAvatar = computed(() => {
 const { push } = useRouter()
 const gotoSetting = () => {
   push('/setting')
-}
-
-async function browseFile() {
-  const { filePaths } = await showOpenDialog({
-    title: t('java.importFromFile'),
-  })
-  filePaths.forEach(add)
 }
 
 const adding = ref(false)

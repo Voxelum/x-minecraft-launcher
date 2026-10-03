@@ -30,6 +30,7 @@ import { readdirIfPresent } from '../util/fs'
 import { requireString } from '../util/object'
 import { ensureClass, getJavaArch } from './detectJVMArch'
 import {
+  getAdoptiumJavaPaths,
   getJavaPathsLinux,
   getJavaPathsLinuxSDK,
   getJavaPathsOSX,
@@ -64,7 +65,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         this.log(`Loaded ${valid.length} java from cache.`)
         this.state.javaUpdate(valid)
 
-        this.refreshLocalJava()
+        this.refreshLocalJava().catch(e => this.error(e))
 
         this.state.subscribeAll(() => {
           const all = []
@@ -193,30 +194,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
    */
   @Singleton()
   async refreshLocalJava(force?: boolean) {
-    if (this.state.all.length === 0 || force) {
-      this.log('Force update or no local cache found. Scan java through the disk.')
-      const commonLocations = [] as string[]
-      if (this.app.platform.os === 'windows') {
-        commonLocations.push(
-          ...(await getMojangJavaPaths()),
-          ...(await getOrcaleJavaPaths()),
-          ...(await getOpenJdkPaths()),
-          ...(await getZuluJdkPath()),
-        )
-      } else if (this.app.platform.os === 'linux') {
-        commonLocations.push(...(await getJavaPathsLinux()))
-        commonLocations.push(...(await getJavaPathsLinuxSDK()))
-      } else if (this.app.platform.os === 'osx') {
-        commonLocations.push(...(await getJavaPathsOSX()))
-      }
-      const javas = await scanLocalJava(commonLocations)
-      const infos = await Promise.all(
-        javas.map(async (j) => ({ ...j, valid: true, arch: await getJavaArch(this, j.path) })),
-      )
-
-      this.log(`Found ${infos.length} java.`)
-      this.state.javaUpdate(infos)
-    } else {
+    if (this.state.all.length > 0 && !force) {
       this.log(`Re-validate cached ${this.state.all.length} java locations.`)
       const javas: JavaRecord[] = []
       const visited = new Set<number>()
@@ -253,6 +231,30 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       }
       this.state.javaUpdate(javas)
     }
+
+    // A populated cache must not hide Java installations added since the last scan.
+    this.log('Scan local Java installations.')
+    const commonLocations: string[] = []
+    if (this.app.platform.os === 'windows') {
+      commonLocations.push(
+        ...(await getMojangJavaPaths()),
+        ...(await getOrcaleJavaPaths()),
+        ...(await getOpenJdkPaths()),
+        ...(await getAdoptiumJavaPaths()),
+        ...(await getZuluJdkPath()),
+      )
+    } else if (this.app.platform.os === 'linux') {
+      commonLocations.push(...(await getJavaPathsLinux()))
+      commonLocations.push(...(await getJavaPathsLinuxSDK()))
+    } else if (this.app.platform.os === 'osx') {
+      commonLocations.push(...(await getJavaPathsOSX()))
+    }
+    const discovered = await scanLocalJava(commonLocations)
+    const infos = await Promise.all(
+      discovered.map(async (j) => ({ ...j, valid: true, arch: await getJavaArch(this, j.path) })),
+    )
+    this.log(`Found ${infos.length} java.`)
+    this.state.javaUpdate(infos)
 
     const jreDir = this.getPath('jre')
     const cached = await readdirIfPresent(jreDir)

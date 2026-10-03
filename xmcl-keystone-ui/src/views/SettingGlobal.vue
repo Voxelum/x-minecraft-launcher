@@ -22,7 +22,7 @@
 
     <!-- Java Preference Card -->
     <SettingCard :title="t('java.name')" icon="coffee">
-      <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center gap-3">
         <v-avatar
           size="40"
           rounded="lg"
@@ -37,7 +37,7 @@
           </span>
           <v-icon v-else>smart_toy</v-icon>
         </v-avatar>
-        <div class="flex-1 min-w-0">
+        <div class="flex-1 min-w-[160px]">
           <div class="text-subtitle-2 font-weight-medium">
             {{ t('setting.globalJava') }}
           </div>
@@ -51,6 +51,7 @@
             {{ t('setting.globalJavaHint') }}
           </div>
         </div>
+        <JavaActions @added="javaPickerOpen = true" />
         <v-menu
           v-model="javaPickerOpen"
           :close-on-content-click="false"
@@ -179,6 +180,7 @@ import JavaList from './BaseSettingJavaList.vue'
 import EnvVarTableItem from '@/components/EnvVarTableItem.vue'
 import EnvVarAddItem from '@/components/EnvVarAddItem.vue'
 import SettingCard from '@/components/SettingCard.vue'
+import JavaActions from '@/components/JavaActions.vue'
 
 const { t } = useI18n()
 const {

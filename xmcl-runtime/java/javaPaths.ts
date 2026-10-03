@@ -1,6 +1,7 @@
-import { lstat, readdir } from 'fs-extra'
-import { join } from 'path'
+import { readdir } from 'fs-extra'
+import { join, win32 } from 'path'
 import { homedir } from 'os'
+import { readdirIfPresent } from '../util/fs'
 
 export async function getMojangJavaPaths() {
   const runtimeDir = 'C:\\Program Files (x86)\\Minecraft Launcher\\runtime'
@@ -19,6 +20,19 @@ export async function getOrcaleJavaPaths() {
 export async function getOpenJdkPaths() {
   const files = await readdir('C:\\Program Files\\AdoptOpenJDK').catch(() => [])
   return files.map(f => join('C:\\Program Files\\AdoptOpenJDK', f, 'bin', 'java.exe'))
+}
+
+export async function getAdoptiumJavaPaths(environment = process.env) {
+  const roots = new Set([
+    environment.ProgramW6432 || 'C:\\Program Files',
+    environment.ProgramFiles || 'C:\\Program Files',
+    environment['ProgramFiles(x86)'] || 'C:\\Program Files (x86)',
+  ].map(root => win32.join(root, 'Eclipse Adoptium')))
+  const paths = await Promise.all([...roots].map(async (root) => {
+    const files = await readdirIfPresent(root)
+    return files.map(file => win32.join(root, file, 'bin', 'java.exe'))
+  }))
+  return paths.flat()
 }
 
 export async function getZuluJdkPath() {

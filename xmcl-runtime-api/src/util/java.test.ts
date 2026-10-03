@@ -204,6 +204,47 @@ describe('getAutoOrManuallJava - stale / invalid pinned path', () => {
   })
 })
 
+describe('Forge Java 17 compatibility', () => {
+  const version = { javaVersion: { component: 'java-runtime-gamma', majorVersion: 17 } }
+  const java8 = rec({ majorVersion: 8, path: '/java8' })
+  const java17 = rec({ majorVersion: 17, path: '/adoptium17' })
+  const java25 = rec({ majorVersion: 25, path: '/java25' })
+
+  test('selects Java 17 for Minecraft 1.20.1 Forge 47.2.0 even when Java 25 is preferred', () => {
+    const result = getAutoSelectedJava([java8, java25, java17], '1.20.1', '47.2.0', version, java25.path)
+    expect(result.java?.path).toBe(java17.path)
+    expect(result.preference.requirement).toBe('=17')
+  })
+
+  test.each([version, undefined])('requests Java 17 instead of using Java 25, with metadata %j', metadata => {
+    const result = getAutoSelectedJava([java8, java25], '1.20.1', '47.2.0', metadata)
+    expect(result.java).toBeUndefined()
+    expect(result.javaVersion).toEqual(version.javaVersion)
+    expect(result.preference.okay(java25)).toBe(false)
+  })
+
+  test.each(['1.18', '1.18.2', '1.19.4', '1.20', '1.20.4'])('keeps the Java 17 Forge generation on 17: %s', minecraft => {
+    const { versionPref } = getVersionPreference(minecraft, 'forge')
+    expect(versionPref.match(java17)).toBe(true)
+    expect(versionPref.match(java25)).toBe(false)
+  })
+
+  test('preserves explicit compatible Java metadata for customized Forge installations', () => {
+    const result = getAutoSelectedJava([java25], '1.20.1', '47.2.0', {
+      ...version, compatibleJavaMajors: [17, 25],
+    })
+    expect(result.java?.path).toBe(java25.path)
+  })
+
+  test('does not restrict the Java 21 generation to Java 17', () => {
+    const { versionPref } = getVersionPreference('1.20.6', '50.0.0', {
+      javaVersion: { component: 'java-runtime-delta', majorVersion: 21 },
+    })
+    expect(versionPref.match(java17)).toBe(false)
+    expect(versionPref.match(rec({ majorVersion: 21 }))).toBe(true)
+  })
+})
+
 describe('getVersionPreference - forward compatibility from Java 16', () => {
   // Historical bug: the forward-compat threshold was Java 21, so a Java 25
   // install was rejected as "no compatible Java" when a version asked for

@@ -32,7 +32,7 @@ export function useJavaContext() {
   const missing = computed(() => state.value?.all.length === 0)
 
   const { refreshLocalJava } = useService(JavaServiceKey)
-  const { refreshing, refresh } = useRefreshable(refreshLocalJava)
+  const { refreshing, refresh, error: refreshError } = useRefreshable(refreshLocalJava)
 
   return {
     isValidating,
@@ -44,5 +44,6 @@ export function useJavaContext() {
     },
     refresh: (v?: boolean) => refresh(v),
     refreshing,
+    refreshError,
   }
 }

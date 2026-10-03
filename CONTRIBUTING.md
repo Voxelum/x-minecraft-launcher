@@ -166,6 +166,26 @@ If you use VSCode to launch the launcher, after you changed the code, you can pr
 
 If you don't use VSCode to launch, it should close Electron and reload automatically.
 
+### Java detection and manual selection
+
+On Windows, Java discovery includes Eclipse Adoptium (Temurin) installations
+under both native and x86 Program Files, alongside the existing Java vendors.
+Startup refreshes discovery even when a Java cache already exists.
+
+The Java cards in global settings and instance settings both provide
+**Refresh Local Java** and **Import Java From File**. Import the executable
+(for example, `C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot\bin\java.exe`),
+not the JDK directory. XMCL validates it, adds it to the shared Java list, and
+opens the picker so you can explicitly select it. Canceling or importing an
+invalid executable leaves the current selection unchanged; invalid imports
+show an error notification.
+
+Forge on Minecraft 1.18 through 1.20.4 defaults to Java 17 rather than assuming
+all newer Java versions work with Forge's bundled bytecode tooling. This
+includes Minecraft 1.20.1 with Forge 47.2.0, where Java 25 can fail with
+`Unsupported class file major version 69`. Explicit `compatibleJavaMajors`
+metadata takes precedence for customized installations.
+
 ### DeskGap Windows EXE in the regular release
 
 The normal `.github/workflows/build.yml` builds Electron and an additional
