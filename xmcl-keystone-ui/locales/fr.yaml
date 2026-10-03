@@ -452,6 +452,8 @@ instanceSetting:
   showLog: Afficher les logs de Minecraft
   showLogHint: >-
     Cela ouvrira une fenêtre pour afficher les logs Minecraft après le lancement du jeu
+  syncGameLanguage: Synchroniser la langue du jeu
+  syncGameLanguageDescription: Synchroniser automatiquement la langue de Minecraft avec celle du lanceur au lancement
 instanceTemplate:
   ftb: Ceci est un modpack FTB
   preview: Aperçu du Modpack

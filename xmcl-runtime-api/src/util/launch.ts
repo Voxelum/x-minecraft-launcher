@@ -30,6 +30,7 @@ export interface GenerateLaunchOptions {
   globalFastLaunch?: boolean
   globalDisableAuthlibInjector?: boolean
   globalDisableElyByAuthlib?: boolean
+  globalSyncGameLanguage?: boolean
   globalPreExecuteCommand?: string
   globalResolution?: { width?: number; height?: number; fullscreen?: boolean; monitor?: string }
   modCount: number
@@ -65,6 +66,7 @@ export async function generateLaunchOptionsWithGlobal(
     globalFastLaunch,
     globalDisableAuthlibInjector,
     globalDisableElyByAuthlib,
+    globalSyncGameLanguage,
     globalPreExecuteCommand,
     globalResolution,
     modCount,
