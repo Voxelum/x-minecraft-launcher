@@ -567,14 +567,14 @@ function isLegacyMinecraftVersion(version: string): boolean {
   const match = version.match(/^1\.(\d+)/)
   if (match) {
     const minor = parseInt(match[1], 10)
-    return minor < 13
+    return minor < 11
   }
   return false
 }
 
 /**
  * Map an app/locale string (e.g. `zh-CN`, `uk`, `en`, `de`) to Minecraft's language code
- * (e.g. `zh_cn`, `uk_ua`, `en_us` for 1.13+, or `zh_CN`, `uk_UA`, `en_US` for legacy <1.13).
+ * (e.g. `zh_cn`, `uk_ua`, `en_us` for 1.11+, or `zh_CN`, `uk_UA`, `en_US` for legacy <1.11).
  */
 export function toMinecraftLanguage(locale: string, minecraftVersion?: string): string {
   const norm = (locale || 'en').toLowerCase().replace('-', '_')

@@ -251,11 +251,18 @@ modelPart_hat:true
       expect(GameSetting.toMinecraftLanguage('lolcat')).toBe('lol_aa')
     })
 
-    test('maps legacy Minecraft versions (< 1.13) to uppercase region codes', () => {
-      expect(GameSetting.toMinecraftLanguage('zh-CN', '1.12.2')).toBe('zh_CN')
-      expect(GameSetting.toMinecraftLanguage('uk', '1.12.2')).toBe('uk_UA')
+    test('maps legacy Minecraft versions (< 1.11) to uppercase region codes', () => {
+      expect(GameSetting.toMinecraftLanguage('zh-CN', '1.10.2')).toBe('zh_CN')
+      expect(GameSetting.toMinecraftLanguage('uk', '1.10.2')).toBe('uk_UA')
       expect(GameSetting.toMinecraftLanguage('en', '1.7.10')).toBe('en_US')
-      expect(GameSetting.toMinecraftLanguage('ru', '1.12')).toBe('ru_RU')
+      expect(GameSetting.toMinecraftLanguage('ru', '1.10')).toBe('ru_RU')
+    })
+
+    test.each(['1.11', '1.11.2', '1.12', '1.12.2'])('maps Minecraft %s to lowercase codes', (version) => {
+      expect(GameSetting.toMinecraftLanguage('zh-CN', version)).toBe('zh_cn')
+      expect(GameSetting.toMinecraftLanguage('uk', version)).toBe('uk_ua')
+      expect(GameSetting.toMinecraftLanguage('en', version)).toBe('en_us')
+      expect(GameSetting.toMinecraftLanguage('ru', version)).toBe('ru_ru')
     })
 
     test('maps modern Minecraft versions (>= 1.13) to lowercase codes', () => {
