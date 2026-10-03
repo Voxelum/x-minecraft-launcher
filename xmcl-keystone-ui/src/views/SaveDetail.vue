@@ -3,11 +3,15 @@ import MarketProjectDetail, { ProjectDetail } from '@/components/MarketProjectDe
 import MarketProjectDetailSave from '@/components/MarketProjectDetailContentSave.vue'
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import SaveWorldMap from '@/components/SaveWorldMap.vue'
-import { useService } from '@/composables'
+import SaveProgress from '@/components/SaveProgress.vue'
 import { useDateString } from '@/composables/date'
 import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
+import { useInstanceSaveProgress } from '@/composables/instanceSaveProgress'
+import { kInstance } from '@/composables/instance'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
+
+const { path: instancePath, instance } = injection(kInstance)
 
 const props = defineProps<{
   save: ProjectEntry<InstanceSaveFile>
@@ -19,6 +23,15 @@ const emit = defineEmits<{
 
 const { getDateString } = useDateString()
 const { t } = useI18n()
+
+const savePath = computed(() => props.save.installed[0]?.path || '')
+const version = computed(() => JSON.stringify([instance.value.version, instance.value.runtime]))
+const { progress, loading: loadingProgress, error: progressError, refresh: refreshProgress } = useInstanceSaveProgress(savePath, instancePath, version)
+
+const hasQuests = computed(() => !!progress.value?.quests && progress.value.quests.chapters.length > 0)
+const progressCategory = computed(() => hasQuests.value ? 'quests' : 'advancements')
+const currentTab = ref<'progress' | 'map'>('progress')
+
 const model = computed(() => {
   const v = props.save
   const f = v.files![0]
@@ -91,9 +104,34 @@ const onEnable = (enable: boolean) => {
     @enable="onEnable"
     no-padding-content
   >
+    <template #tabs>
+      <v-tabs v-model="currentTab" bg-color="transparent">
+        <v-tab value="progress">
+          <v-icon size="small" class="mr-1.5">{{ hasQuests ? 'military_tech' : 'emoji_events' }}</v-icon>
+          {{ t(`save.progress.${progressCategory}`) }}
+        </v-tab>
+        <v-tab value="map">
+          <v-icon size="small" class="mr-1.5">map</v-icon>
+          {{ t('save.map.tabTitle') }}
+        </v-tab>
+      </v-tabs>
+    </template>
     <template #content>
-      <div class="save-map-wrapper">
-        <SaveWorldMap :save-path="save.installed[0].path" />
+      <div class="save-container relative overflow-hidden h-full w-full">
+        <SaveProgress
+          v-if="currentTab === 'progress'"
+          class="h-full"
+          :category="progressCategory"
+          :progress="progress"
+          :loading="loadingProgress"
+          :error="progressError"
+          @refresh="refreshProgress"
+          :save-path="save.installed[0].path"
+          :instance-path="instancePath"
+        />
+        <div v-else-if="currentTab === 'map'" class="save-content-wrapper h-full">
+          <SaveWorldMap :save-path="save.installed[0].path" />
+        </div>
       </div>
     </template>
     <template #properties>
@@ -105,9 +143,12 @@ const onEnable = (enable: boolean) => {
 </template>
 
 <style scoped>
-.save-map-wrapper {
-  height: 60vh;
-  min-height: 360px;
+.save-container {
+  height: clamp(320px, calc(100vh - 260px), 640px);
+  width: 100%;
+}
+.save-content-wrapper {
+  height: 100%;
   width: 100%;
   overflow: hidden;
 }

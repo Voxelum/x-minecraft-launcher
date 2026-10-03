@@ -364,6 +364,19 @@ gameType:
 help: المساعدة
 home: الرئيسية
 importModpack:
+  fromFileSubtitle: اختار ملف .zip أو .mrpack
+  fromUrl: من لينك / URL...
+  fromUrlSubtitle: ثبّت حزمة مودات من لينك
+  fromUrlDescription: 'اكتب أو الصق لينك حزمة المودات:'
+  invalidUrl: من فضلك اكتب لينك صحيح (http:// أو https://)
+  selectVersion: اختار إصدار حزمة المودات
+  selectVersionDescription: 'اختار إصدار {name} اللي عايز تثبّته:'
+  pmcProtected: موقع Planet Minecraft محمي بـ Cloudflare. انسخ لينك التحميل المباشر أو لينك بديل من الصفحة.
+  netdiskTitle: تحميل من التخزين السحابي
+  netdiskDescription: الإصدار ده من حزمة المودات موجود على خدمة تخزين سحابي خارجية. اضغط تحت عشان تفتح صفحة التحميل في المتصفح، وبعدها اسحب ملف .zip أو .mrpack اللي حمّلته وحطّه في XMCL.
+  openNetdisk: افتح التخزين السحابي
+  netdiskOpened: لينك التخزين السحابي اتفتح في المتصفح واتنسخ في الحافظة.
+  noReleasesFound: مفيش إصدارات حزم مودات بصيغة .mrpack أو .zip في المستودع ده.
   name: استيراد حزمة مودات (Modpack)
 installAssets:
   asset: تثبيت {count} موارد
@@ -503,6 +516,8 @@ instanceSetting:
   icon: اختر صورة
   showLog: عرض سجل ماينكرافت (Minecraft Log)
   showLogHint: الخيار ده هيفتح نافذة منبثقة لعرض سجل اللعبة مباشرة بعد تشغيلها
+  syncGameLanguage: مزامنة لغة اللعبة
+  syncGameLanguageDescription: مزامنة لغة Minecraft تلقائيًا مع لغة المشغل عند التشغيل
 instanceTemplate:
   ftb: دي حزمة مودات FTB
   preview: معاينة حزمة المودات
@@ -1199,7 +1214,7 @@ blueprint:
     loading: جاري تحميل المعاينة...
     empty: المخطط ده ملوش بلوكات لعرضها.
     hint: '{count} بلوكة · {x}×{y}×{z}'
-    controls: اسحب للالتفاف · WASD للحركة · Space/Shift للصعود/الهبوط
+    controls: 'اسحب للنظر · WASD للحركة · Space/Shift للصعود/الهبوط · التمرير للتكبير'
   convert:
     title: تحويل الصيغة
     hint: تحويل مخطط البناء ده لصيغة تانية. هيتم إنشاء ملف جديد.
@@ -1238,6 +1253,24 @@ resourcepack:
   showFile: عرض حزمة الموارد في المجلد {file}
   unselected: حزم الموارد غير المحددة
 save:
+  map:
+    tabTitle: "خريطة العالم"
+  progress:
+    zoomIn: تكبير
+    zoomOut: تصغير
+    loading: "جاري تحميل التقدم…"
+    noData: "مفيش تقدم مسجّل"
+    noDataHint: "العب في العالم ده علشان تسجّل الإنجازات والإحصائيات وتقدم المهام."
+    quests: "المهام"
+    advancements: "الإنجازات"
+    done: "مكتمل"
+    inProgress: "قيد التنفيذ"
+    all: "الكل"
+    treeView: "عرض شجري"
+    filterPlaceholder: "تصفية حسب الاسم…"
+    root: "البداية"
+    exitFullscreen: "الخروج من ملء الشاشة"
+    locked: "مقفول"
   allowCheats: السماح بالغش (Cheats)
   copy:
     name: نسخ العالم
@@ -1806,6 +1839,15 @@ tag:
   create: إنشاء وسم (Tag)
   createSelected: إنشاء وسم للمحدد
 task:
+  running: قيد التشغيل...
+  succeed: اكتملت
+  eta: متبقي ~{time}
+  remaining: 'متبقي {size}'
+  totalRemaining: 'المتبقي {size}'
+  op:
+    update: تحديث
+    export: تصدير
+    duplicate: تكرار
   cancelled: ملغاة
   clear: مسح المهام المنتهية
   connection:

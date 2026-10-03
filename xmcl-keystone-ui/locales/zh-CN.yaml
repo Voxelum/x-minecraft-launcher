@@ -398,6 +398,19 @@ gameType:
 help: 帮助
 home: 主页
 importModpack:
+  fromFileSubtitle: 选择 .zip 或 .mrpack 文件
+  fromUrl: 通过链接 / URL...
+  fromUrlSubtitle: 通过整合包链接安装
+  fromUrlDescription: 请输入或粘贴整合包链接：
+  invalidUrl: 请输入有效的链接（http:// 或 https://）
+  selectVersion: 选择整合包版本
+  selectVersionDescription: 请选择要安装的 {name} 版本：
+  pmcProtected: Planet Minecraft 受 Cloudflare 保护。请从页面复制直接下载链接或镜像链接。
+  netdiskTitle: 网盘下载
+  netdiskDescription: 此整合包版本存放在外部网盘中。点击下方按钮在浏览器中打开下载页面，然后将下载的 .zip 或 .mrpack 文件拖入 XMCL。
+  openNetdisk: 打开网盘
+  netdiskOpened: 网盘链接已在浏览器中打开并复制到剪贴板。
+  noReleasesFound: 此仓库中未找到 .mrpack 或 .zip 格式的整合包发行版。
   name: 导入整合包
 exportModpack:
   name: 导出整合包
@@ -546,6 +559,8 @@ instanceSetting:
   icon: 选择图片
   showLog: Minecraft 启动后显示日志
   showLogHint: 游戏开启后将弹出一个显示 Minecraft 日志的窗口
+  syncGameLanguage: 同步游戏语言
+  syncGameLanguageDescription: 启动游戏时自动将 Minecraft 语言同步为启动器当前语言
 instanceTemplate:
   ftb: 这是一个 FTB 的整合包配置
   preview: 预览
@@ -1364,7 +1379,7 @@ blueprint:
     loading: 正在加载预览...
     empty: 此蓝图没有可显示的方块。
     hint: '{count} 个方块 · {x}×{y}×{z}'
-    controls: 拖动以观察 · WASD 移动 · 空格/Shift 上升/下降
+    controls: 'WASD：移动 · 空格/Shift：上升/下降 · 拖动：观察 · 滚动：缩放'
   convert:
     title: 转换格式
     hint: 将此蓝图转换为其他格式。将创建一个新文件。
@@ -1404,6 +1419,24 @@ resourcepack:
   showFile: 在文件夹中显示 {file}
   unselected: 未选资源包
 save:
+  map:
+    tabTitle: "世界地图"
+  progress:
+    zoomIn: 放大
+    zoomOut: 缩小
+    loading: "正在加载进度…"
+    noData: "未找到进度"
+    noDataHint: "在此世界中游玩后，即可查看进度、统计数据和任务完成情况。"
+    quests: "任务"
+    advancements: "进度"
+    done: "已完成"
+    inProgress: "进行中"
+    all: "全部"
+    treeView: "树状视图"
+    filterPlaceholder: "按名称筛选…"
+    root: "起点"
+    exitFullscreen: "退出全屏"
+    locked: "未解锁"
   linkShared: 在实例间共享存档
   linkSharedHint: >-
     将此实例的 saves 文件夹链接到全局共享文件夹，使所有实例共用相同的世界存档。现有存档会被合并到共享文件夹中。
@@ -1440,6 +1473,11 @@ save:
   deleteTitle: 删除该存档
   difficulty: 难度
   dropHint: 将地图 Zip 或文件夹拖入此处来导入
+  datapack:
+    name: 数据包 | 数据包
+    noSaveHint: 请先创建或选择一个世界来安装此数据包
+    packFormat: '数据包格式：{format}'
+    imported: 数据包已导入至 {save}
   duplicate: 复制存档
   export: 导出地图
   exportMessage: 将存档导出为 Zip
@@ -1953,6 +1991,7 @@ shaderPack:
   showDirectory: 显示光影文件夹
   showFile: 在文件夹中显示此光影包
 shared:
+  close: 关闭
   pressKeyCombination: 按下组合键...
   add: 添加
   author: 作者
@@ -2028,6 +2067,15 @@ task:
   nTaskRunning: '{count} 个任务运行中'
   name: 任务 | 任务
   pause: 暂停
+  running: 运行中...
+  succeed: 已完成
+  eta: 剩余约 {time}
+  remaining: 剩余 {size}
+  totalRemaining: 剩余 {size}
+  op:
+    update: 更新
+    export: 导出
+    duplicate: 复制
 theme:
   selectImage: 选择图像
   selectMusic: 选择音乐

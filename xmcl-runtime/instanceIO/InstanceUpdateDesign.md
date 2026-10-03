@@ -14,6 +14,13 @@ If a new instance is created with modpack or manifest, the launcher should downl
 
 It will also generate a `instance-lock.json` file to lock the expected files.
 
+Deleting a managed instance aborts its active installs and waits for staging
+writers to settle, without a timeout, before removing the instance directory.
+The deletion holds the instance mutex while waiting for writers, not for the
+install's final commit (which needs the same mutex). Unexpected removal errors,
+such as `EBUSY`, propagate and retain the instance in launcher state for retry;
+the existing warning-only handling of `ENOENT` and `EPERM` is unchanged.
+
 ## Instance Update
 
 User want to update the instance via new modpack version from modrinth and curseforge. At the same time, user might also have some tweak over the old version modpack.

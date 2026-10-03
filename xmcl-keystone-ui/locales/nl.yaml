@@ -320,6 +320,19 @@ gameType:
 help: Help
 home: Home
 importModpack:
+  fromFileSubtitle: Kies een .zip- of .mrpack-bestand
+  fromUrl: Via link / URL...
+  fromUrlSubtitle: Installeer een modpack via een URL
+  fromUrlDescription: 'Voer de modpack-URL in of plak deze:'
+  invalidUrl: Voer een geldige URL in (http:// of https://)
+  selectVersion: Modpackversie selecteren
+  selectVersionDescription: 'Kies de versie van {name} die je wilt installeren:'
+  pmcProtected: Planet Minecraft wordt beschermd door Cloudflare. Kopieer de directe downloadlink of een mirrorlink van de pagina.
+  netdiskTitle: Downloaden uit cloudopslag
+  netdiskDescription: Deze modpackversie staat op externe cloudopslag. Klik hieronder om de downloadpagina in je browser te openen en sleep daarna het gedownloade .zip- of .mrpack-bestand naar XMCL.
+  openNetdisk: Cloudopslag openen
+  netdiskOpened: De cloudopslaglink is in je browser geopend en naar het klembord gekopieerd.
+  noReleasesFound: Geen modpackreleases met .mrpack- of .zip-bestanden gevonden in deze repository.
   name: Modpack Importeren
 installAssets:
   asset: Installeer {count} Assets
@@ -457,6 +470,8 @@ instanceSetting:
   showLog: Toon Minecraft Log
   showLogHint: >-
     Dit zal een venster openen om de Minecraft-log te streamen nadat de game is gestart
+  syncGameLanguage: Speltaal synchroniseren
+  syncGameLanguageDescription: Synchroniseer automatisch de Minecraft-taal met de taal van het opstartprogramma bij het starten
 instanceTemplate:
   ftb: Dit is een FTB modpack
   preview: Modpack Voorbeeld
@@ -1140,6 +1155,26 @@ resourcepack:
   noPacks: Geen resourcepakketten gevonden
   search: Resourcepakketten zoeken...
 save:
+  resetView: Weergave herstellen
+  mapHintPan: Sleep om de weergave te verplaatsen
+  map:
+    tabTitle: "Wereldkaart"
+  progress:
+    zoomIn: Inzoomen
+    zoomOut: Uitzoomen
+    loading: "Voortgang laden…"
+    noData: "Geen voortgang gevonden"
+    noDataHint: "Speel in deze wereld om vooruitgang, statistieken en missievoortgang vast te leggen."
+    quests: "Missies"
+    advancements: "Vooruitgang"
+    done: "Voltooid"
+    inProgress: "Bezig"
+    all: "Alles"
+    treeView: "Boomweergave"
+    filterPlaceholder: "Filteren op naam…"
+    root: "Beginpunt"
+    exitFullscreen: "Volledig scherm verlaten"
+    locked: "Vergrendeld"
   linkShared: Werelden delen tussen instanties
   linkSharedHint: >-
     Koppel de map saves van deze instantie aan de globale gedeelde map zodat alle
@@ -1620,6 +1655,7 @@ shaderPack:
   noPacks: Geen shaderpakketten geïnstalleerd
   search: Shaderpakketten zoeken...
 shared:
+  close: Sluiten
   pressKeyCombination: Druk op een toetsencombinatie...
   add: Toevoegen
   author: Auteur
@@ -1674,6 +1710,15 @@ tag:
   create: Tag Aanmaken
   createSelected: Tag Aanmaken voor Geselecteerde
 task:
+  running: Bezig met uitvoeren...
+  succeed: Voltooid
+  eta: ongeveer {time} over
+  remaining: '{size} over'
+  totalRemaining: '{size} resterend'
+  op:
+    update: Bijwerken
+    export: Exporteren
+    duplicate: Dupliceren
   cancelled: Geannuleerd
   clear: Voltooide Taken Wissen
   connection:
@@ -1956,3 +2001,51 @@ migrateMinecraft:
   name: Minecraft-bestanden migreren
 reinstall:
   name: '{version} opnieuw installeren'
+
+blueprint:
+  name: Blauwdruk | Blauwdrukken
+  count: '{count} blauwdrukken'
+  searchLocal: Blauwdrukken zoeken...
+  searchOnline: Online zoeken...
+  market: Markt
+  provider: Bron
+  import: Importeren
+  openFolder: Map openen
+  refresh: Vernieuwen
+  empty: Geen blauwdrukken gevonden. Importeer een .litematic / .schem / .nbt-bestand of bekijk de markt.
+  dropHint: Sleep blauwdrukbestanden (.litematic / .schem / .nbt) hierheen om te importeren.
+  selectHint: Selecteer een blauwdruk om een voorbeeld te bekijken.
+  blocks: '{count} blokken'
+  materials: Materialen
+  findMod: Mod voor deze namespace zoeken
+  compatible: Compatibel
+  incompatible: Ontbrekende mods
+  missingNamespaces: 'Ontbrekende mods voor: {namespaces}'
+  install: Installeren
+  goTo: Website
+  byAuthor: door {author}
+  noDescription: Geen beschrijving beschikbaar.
+  mixedSources: Resultaten uit alle bronnen. Sommige zijn alleen om te bekijken — open hun website om te downloaden.
+  preview:
+    loading: Voorbeeld laden...
+    empty: Deze blauwdruk bevat geen blokken om weer te geven.
+    hint: '{count} blokken · {x}×{y}×{z}'
+    controls: 'WASD: bewegen · Spatie/Shift: omhoog/omlaag · Slepen: kijken · Scrollen: zoomen'
+  convert:
+    title: Formaat converteren
+    hint: Converteer deze blauwdruk naar een ander formaat. Er wordt een nieuw bestand gemaakt.
+    target: Doelformaat
+    action: Converteren
+  replace:
+    title: Blokken vervangen
+    simple: Eenvoudig vervangen
+    precise: Nauwkeurig vervangen
+    simpleHint: Alle blokken van één type vervangen.
+    preciseHint: Alleen blokken met de opgegeven eigenschappen vervangen.
+    from: Van
+    to: Naar
+    addRule: Regel toevoegen
+    newFile: Nieuw bestand
+    action: Vervangen
+  formats:
+    structure: Vanilla-structuur

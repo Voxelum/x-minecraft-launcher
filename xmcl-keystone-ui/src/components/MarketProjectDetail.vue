@@ -264,21 +264,33 @@
       </div>
     </div>
 
-    <v-tabs v-roving-tabindex role="tablist" v-model="tab" bg-color="transparent">
-      <v-tab :value="0">
-        {{ t('modrinth.description') }}
-      </v-tab>
-      <v-tab :value="1" :disabled="props.detail.galleries.length === 0">
-        {{ t('modrinth.gallery') }}
-      </v-tab>
-      <v-tab v-if="versions.length > 0 && !noVersion" :value="2">
-        {{ t('modrinth.versions') }}
-      </v-tab>
-    </v-tabs>
+    <div v-roving-tabindex role="tablist">
+      <slot name="tabs">
+        <v-tabs v-model="tab" bg-color="transparent">
+          <v-tab :value="0">
+            {{ t('modrinth.description') }}
+          </v-tab>
+          <v-tab :value="1" :disabled="props.detail.galleries.length === 0">
+            {{ t('modrinth.gallery') }}
+          </v-tab>
+          <v-tab v-if="versions.length > 0 && !noVersion" :value="2">
+            {{ t('modrinth.versions') }}
+          </v-tab>
+        </v-tabs>
+      </slot>
+    </div>
     <v-divider />
 
     <div class="grid w-full grid-cols-4 gap-2">
+      <div
+        v-if="$slots.content && $slots.tabs"
+        class="main-content h-full max-h-full max-w-full bg-transparent!"
+        :style="{ padding: noPaddingContent ? '0' : '1rem' }"
+      >
+        <slot name="content" />
+      </div>
       <v-tabs-window
+        v-else
         v-model="tab"
         class="main-content h-full max-h-full max-w-full bg-transparent!"
         :style="{ padding: noPaddingContent ? '0' : '1rem' }"

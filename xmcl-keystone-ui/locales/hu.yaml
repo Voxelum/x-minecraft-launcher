@@ -324,6 +324,19 @@ gameType:
 help: Súgó
 home: Kezdőlap
 importModpack:
+  fromFileSubtitle: Válassz egy .zip vagy .mrpack fájlt
+  fromUrl: Hivatkozásból / URL-ből...
+  fromUrlSubtitle: Modcsomag telepítése URL-ről
+  fromUrlDescription: 'Írd be vagy illeszd be a modcsomag URL-jét:'
+  invalidUrl: Adj meg egy érvényes URL-t (http:// vagy https://)
+  selectVersion: Modcsomagverzió kiválasztása
+  selectVersionDescription: 'Válaszd ki a(z) {name} telepítendő verzióját:'
+  pmcProtected: A Planet Minecraftot a Cloudflare védi. Másold ki az oldalról a közvetlen letöltési vagy tükörhivatkozást.
+  netdiskTitle: Letöltés felhőtárhelyről
+  netdiskDescription: Ez a modcsomagverzió külső felhőtárhelyen található. Kattints alább a letöltési oldal böngészőben való megnyitásához, majd húzd a letöltött .zip vagy .mrpack fájlt az XMCL-be.
+  openNetdisk: Felhőtárhely megnyitása
+  netdiskOpened: A felhőtárhely hivatkozása megnyílt a böngészőben, és a vágólapra lett másolva.
+  noReleasesFound: Nem található .mrpack vagy .zip modcsomagkiadás ebben a tárolóban.
   name: Modpack importálása
 installAssets:
   asset: Telepítsen {count} eszközt
@@ -466,6 +479,8 @@ instanceSetting:
   showLog: Minecraft napló megnézése
   showLogHint: >-
     Felugrik egy ablak a Minecraft naplójának streamelésére a játék elindulása után.
+  syncGameLanguage: Játék nyelvének szinkronizálása
+  syncGameLanguageDescription: Indításkor automatikusan szinkronizálja a Minecraft nyelvét az indító nyelvével
 instanceTemplate:
   ftb: Ez egy FTB modcsomag
   preview: Modcsomag előznézet
@@ -1173,6 +1188,26 @@ resourcepack:
   noPacks: Nem található erőforráscsomag
   search: Erőforráscsomagok keresése...
 save:
+  resetView: Nézet visszaállítása
+  mapHintPan: Húzással mozgathatod a nézetet
+  map:
+    tabTitle: "Világtérkép"
+  progress:
+    zoomIn: Nagyítás
+    zoomOut: Kicsinyítés
+    loading: "Előrehaladás betöltése…"
+    noData: "Nincs előrehaladás"
+    noDataHint: "Játssz ebben a világban az előrelépések, statisztikák és küldetések állapotának rögzítéséhez."
+    quests: "Küldetések"
+    advancements: "Előrelépések"
+    done: "Kész"
+    inProgress: "Folyamatban"
+    all: "Összes"
+    treeView: "Fa nézet"
+    filterPlaceholder: "Szűrés név alapján…"
+    root: "Kezdőpont"
+    exitFullscreen: "Kilépés a teljes képernyőből"
+    locked: "Zárolva"
   linkShared: Mentések megosztása példányok között
   linkSharedHint: >-
     Kösse össze ennek a példánynak a saves mappáját a globális megosztott
@@ -1664,6 +1699,7 @@ shaderPack:
   noPacks: Nincs shadercsomag telepítve
   search: Shadercsomagok keresése...
 shared:
+  close: Bezárás
   pressKeyCombination: Nyomjon meg egy billentyűkombinációt...
   add: Új
   author: Készítő
@@ -1718,6 +1754,15 @@ tag:
   create: Címke létrehozása
   createSelected: Címke létrehozása a kiválasztotthoz
 task:
+  running: Folyamatban...
+  succeed: Befejezve
+  eta: kb. {time} van hátra
+  remaining: '{size} van hátra'
+  totalRemaining: '{size} maradt'
+  op:
+    update: Frissítés
+    export: Exportálás
+    duplicate: Kettőzés
   cancelled: Törölt
   clear: Befejezett folyamatok törlése
   connection:
@@ -2011,3 +2056,51 @@ migrateMinecraft:
   name: Minecraft-fájlok migrálása
 reinstall:
   name: 'Újratelepítés: {version}'
+
+blueprint:
+  name: Tervrajz | Tervrajzok
+  count: '{count} tervrajz'
+  searchLocal: Tervrajzok keresése...
+  searchOnline: Keresés online...
+  market: Piac
+  provider: Forrás
+  import: Importálás
+  openFolder: Mappa megnyitása
+  refresh: Frissítés
+  empty: Nem találhatók tervrajzok. Importálj .litematic / .schem / .nbt fájlt, vagy böngéssz a piacon.
+  dropHint: Húzd ide a tervrajzfájlokat (.litematic / .schem / .nbt) az importáláshoz.
+  selectHint: Válassz ki egy tervrajzot az előnézethez.
+  blocks: '{count} blokk'
+  materials: Anyagok
+  findMod: Mod keresése ehhez a névtérhez
+  compatible: Kompatibilis
+  incompatible: Hiányzó modok
+  missingNamespaces: 'Hiányzó modok ehhez: {namespaces}'
+  install: Telepítés
+  goTo: Webhely
+  byAuthor: 'szerző: {author}'
+  noDescription: Nincs leírás.
+  mixedSources: Az eredmények minden forrásból származnak. Néhány csak böngészhető — letöltéshez nyisd meg a webhelyét.
+  preview:
+    loading: Előnézet betöltése...
+    empty: Ez a tervrajz nem tartalmaz megjeleníthető blokkokat.
+    hint: '{count} blokk · {x}×{y}×{z}'
+    controls: 'WASD: mozgás · Szóköz/Shift: fel/le · Húzás: nézés · Görgetés: zoom'
+  convert:
+    title: Formátum átalakítása
+    hint: Alakítsd át ezt a tervrajzot más formátumra. Új fájl jön létre.
+    target: Célformátum
+    action: Átalakítás
+  replace:
+    title: Blokkok cseréje
+    simple: Egyszerű csere
+    precise: Pontos csere
+    simpleHint: Egy típus minden blokkjának cseréje.
+    preciseHint: Csak a megadott tulajdonságoknak megfelelő blokkok cseréje.
+    from: Erről
+    to: Erre
+    addRule: Szabály hozzáadása
+    newFile: Új fájl
+    action: Csere
+  formats:
+    structure: Vanilla struktúra

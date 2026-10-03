@@ -319,6 +319,19 @@ gameType:
 help: Help
 home: Home
 importModpack:
+  fromFileSubtitle: Escolle un ficheiro .zip ou .mrpack
+  fromUrl: Desde unha ligazón / URL...
+  fromUrlSubtitle: Instala un modpack desde un URL
+  fromUrlDescription: 'Introduce ou pega o URL do modpack:'
+  invalidUrl: Introduce un URL válido (http:// ou https://)
+  selectVersion: Selecciona a versión do modpack
+  selectVersionDescription: 'Escolle a versión de {name} que queres instalar:'
+  pmcProtected: Planet Minecraft está protexido por Cloudflare. Copia a ligazón de descarga directa ou unha ligazón alternativa da páxina.
+  netdiskTitle: Descarga desde a nube
+  netdiskDescription: Esta versión do modpack está aloxada nun servizo de almacenamento na nube externo. Preme embaixo para abrir a páxina de descarga no navegador e despois arrastra o ficheiro .zip ou .mrpack descargado a XMCL.
+  openNetdisk: Abrir o almacenamento na nube
+  netdiskOpened: A ligazón do almacenamento na nube abriuse no navegador e copiouse ao portapapeis.
+  noReleasesFound: Non se atoparon versións de modpacks .mrpack ou .zip neste repositorio.
   name: Modpack importeren
 installAssets:
   asset: Installeer {count} Assets
@@ -453,6 +466,8 @@ instanceSetting:
   icon: Kies een afbeelding
   showLog: Toon Minecraft Log
   showLogHint: Dit opent een venster om Minecraft-log te streamen nadat de game is gestart
+  syncGameLanguage: Sincronizar idioma do xogo
+  syncGameLanguageDescription: Sincronizar automaticamente o idioma de Minecraft co do iniciador ao iniciar
 instanceTemplate:
   ftb: Dit is een FTB modpack
   preview: Modpack voorbeeld
@@ -1136,6 +1151,26 @@ resourcepack:
   unselected: Niet-geselecteerde Resourcepacks
   search: Buscar paquetes de recursos...
 save:
+  resetView: Restablecer a vista
+  mapHintPan: Arrastra para desprazar a vista
+  map:
+    tabTitle: "Mapa do mundo"
+  progress:
+    zoomIn: Achegar
+    zoomOut: Afastar
+    loading: "Cargando progreso…"
+    noData: "Non se atopou progreso"
+    noDataHint: "Xoga neste mundo para xerar progresos, estatísticas e avances nas misións."
+    quests: "Misións"
+    advancements: "Progresos"
+    done: "Completado"
+    inProgress: "En curso"
+    all: "Todos"
+    treeView: "Vista en árbore"
+    filterPlaceholder: "Filtrar por nome…"
+    root: "Raíz"
+    exitFullscreen: "Saír da pantalla completa"
+    locked: "Bloqueado"
   linkShared: Compartir partidas entre instancias
   linkSharedHint: >-
     Vincular o cartafol saves desta instancia co cartafol compartido global para
@@ -1617,6 +1652,7 @@ shaderPack:
   market: Mercado de shaders
   search: Buscar shaders...
 shared:
+  close: Pechar
   pressKeyCombination: Preme unha combinación de teclas...
   add: Toevoegen
   author: Auteur
@@ -1671,6 +1707,15 @@ tag:
   create: Maak Tag
   createSelected: Maak Tag voor Geselecteerde
 task:
+  running: Executando...
+  succeed: Completado
+  eta: restan ~{time}
+  remaining: 'restan {size}'
+  totalRemaining: '{size} restante'
+  op:
+    update: Actualizar
+    export: Exportar
+    duplicate: Duplicar
   cancelled: Geannuleerd
   clear: Wis Voltooide Taken
   connection:
@@ -1954,3 +1999,51 @@ migrateMinecraft:
   name: Migrar arquivos de Minecraft
 reinstall:
   name: Reinstalar {version}
+
+blueprint:
+  name: Plano | Planos
+  count: '{count} planos'
+  searchLocal: Buscar planos...
+  searchOnline: Buscar en liña...
+  market: Mercado
+  provider: Fonte
+  import: Importar
+  openFolder: Abrir cartafol
+  refresh: Actualizar
+  empty: Non se atoparon planos. Importa un ficheiro .litematic / .schem / .nbt ou explora o mercado.
+  dropHint: Solta aquí os ficheiros de plano (.litematic / .schem / .nbt) para importalos.
+  selectHint: Selecciona un plano para previsualizalo.
+  blocks: '{count} bloques'
+  materials: Materiais
+  findMod: Atopar o mod para este espazo de nomes
+  compatible: Compatible
+  incompatible: Mods que faltan
+  missingNamespaces: 'Mods que faltan para: {namespaces}'
+  install: Instalar
+  goTo: Sitio web
+  byAuthor: por {author}
+  noDescription: Non hai descrición.
+  mixedSources: Resultados mesturados de todas as fontes. Algúns só permiten explorar — abre o seu sitio web para descargar.
+  preview:
+    loading: Cargando a previsualización...
+    empty: Este plano non ten bloques para mostrar.
+    hint: '{count} bloques · {x}×{y}×{z}'
+    controls: 'WASD: mover · Espazo/Maiús: arriba/abaixo · Arrastrar: mirar · Roda: zoom'
+  convert:
+    title: Converter formato
+    hint: Converte este plano a outro formato. Crearase un ficheiro novo.
+    target: Formato de destino
+    action: Converter
+  replace:
+    title: Substituír bloques
+    simple: Substitución simple
+    precise: Substitución precisa
+    simpleHint: Substituír todos os bloques dun tipo.
+    preciseHint: Substituír só os bloques coas propiedades indicadas.
+    from: Desde
+    to: Ata
+    addRule: Engadir regra
+    newFile: Ficheiro novo
+    action: Substituír
+  formats:
+    structure: Estrutura de Vanilla

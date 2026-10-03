@@ -34,7 +34,7 @@ function useLocalSearch(shaderProjectFiles: Ref<InstanceShaderFile[]>, { keyword
       const curseforgeId = m.curseforge?.projectId
       const modrinthId = m.modrinth?.projectId
       const name = basename(m.path)
-      const obj = indices[name] || (modrinthId && indices[modrinthId]) || (curseforgeId && indices[curseforgeId])
+      const obj = indices[name] || (m.fileName && indices[m.fileName]) || (modrinthId && indices[modrinthId]) || (curseforgeId && indices[curseforgeId])
       if (obj) {
         obj.installed?.push(m)
         obj.files?.push(m)
@@ -55,6 +55,9 @@ function useLocalSearch(shaderProjectFiles: Ref<InstanceShaderFile[]>, { keyword
           files: [m],
         })
         indices[name] = proj
+        if (m.fileName) {
+          indices[m.fileName] = proj
+        }
         if (modrinthId) {
           indices[modrinthId] = proj
         }

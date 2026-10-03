@@ -6,7 +6,7 @@ This file is the contract between the launcher UI in `xmcl-keystone-ui/` and the
 
 If the anchor you need is not here, add a `data-testid="…"` attribute to the corresponding Vue component, then re-run `pnpm gen:testids`.
 
-**Total anchors:** 261 (in 295 Vue files)
+**Total anchors:** 269 (in 300 Vue files)
 
 | Test ID | Defined in |
 |---|---|
@@ -21,7 +21,9 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `add-instance-edition` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L35`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L35) |
 | `add-instance-edition-bedrock` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L55`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L55) |
 | `add-instance-edition-java` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L46`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L46) |
-| `add-instance-import` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L153`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L153) |
+| `add-instance-import` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L159`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L159) |
+| `add-instance-import-file` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L173`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L173) |
+| `add-instance-import-url` | [`xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L185`](../xmcl-keystone-ui/src/views/AppAddInstanceDialog.vue#L185) |
 | `add-instance-link-options` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L86`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L86) |
 | `add-instance-link-resourcepacks` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L66`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L66) |
 | `add-instance-link-saves` | [`xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L56`](../xmcl-keystone-ui/src/components/StepperAdvanceContent.vue#L56) |
@@ -90,8 +92,8 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `gamepad-hints-card` | [`xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L7`](../xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L7) |
 | `gamepad-key-guide` | [`xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L13`](../xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L13) |
 | `gamepad-toggle-card` | [`xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L37`](../xmcl-keystone-ui/src/views/AppGamepadQuickMenu.vue#L37) |
-| `global-fullscreen-switch` | [`xmcl-keystone-ui/src/views/SettingGlobal.vue#L154`](../xmcl-keystone-ui/src/views/SettingGlobal.vue#L154) |
-| `global-monitor-select` | [`xmcl-keystone-ui/src/views/SettingGlobal.vue#L157`](../xmcl-keystone-ui/src/views/SettingGlobal.vue#L157) |
+| `global-fullscreen-switch` | [`xmcl-keystone-ui/src/views/SettingGlobal.vue#L157`](../xmcl-keystone-ui/src/views/SettingGlobal.vue#L157) |
+| `global-monitor-select` | [`xmcl-keystone-ui/src/views/SettingGlobal.vue#L160`](../xmcl-keystone-ui/src/views/SettingGlobal.vue#L160) |
 | `home-bedrock` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L3`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L3) |
 | `home-bedrock-install` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L60`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L60) |
 | `home-bedrock-installed` | [`xmcl-keystone-ui/src/views/HomeBedrock.vue#L48`](../xmcl-keystone-ui/src/views/HomeBedrock.vue#L48) |
@@ -203,6 +205,12 @@ If the anchor you need is not here, add a `data-testid="…"` attribute to the c
 | `nav-multiplayer` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L95`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L95)<br>[`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L214`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L214)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L114`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L114) |
 | `nav-settings` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L108`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L108)<br>[`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L226`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L226)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L127`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L127) |
 | `nav-store` | [`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L39`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L39)<br>[`xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L165`](../xmcl-keystone-ui/src/views/AppSideBarClassic.vue#L165)<br>[`xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L45`](../xmcl-keystone-ui/src/views/AppSideBarNotch.vue#L45) |
+| `p2p-login-close-button` | [`xmcl-keystone-ui/src/views/AppMultiplayerLoginDialog.vue#L30`](../xmcl-keystone-ui/src/views/AppMultiplayerLoginDialog.vue#L30) |
+| `p2p-login-dialog` | [`xmcl-keystone-ui/src/views/AppMultiplayerLoginDialog.vue#L9`](../xmcl-keystone-ui/src/views/AppMultiplayerLoginDialog.vue#L9) |
+| `p2p-login-provider-discord` | [`xmcl-keystone-ui/src/views/AppMultiplayerLoginDialog.vue#L131`](../xmcl-keystone-ui/src/views/AppMultiplayerLoginDialog.vue#L131) |
+| `p2p-login-provider-google` | [`xmcl-keystone-ui/src/views/AppMultiplayerLoginDialog.vue#L108`](../xmcl-keystone-ui/src/views/AppMultiplayerLoginDialog.vue#L108) |
+| `p2p-login-provider-microsoft` | [`xmcl-keystone-ui/src/views/AppMultiplayerLoginDialog.vue#L62`](../xmcl-keystone-ui/src/views/AppMultiplayerLoginDialog.vue#L62) |
+| `p2p-login-provider-modrinth` | [`xmcl-keystone-ui/src/views/AppMultiplayerLoginDialog.vue#L85`](../xmcl-keystone-ui/src/views/AppMultiplayerLoginDialog.vue#L85) |
 | `refresh-all-servers` | [`xmcl-keystone-ui/src/views/BaseSettingServer.vue#L54`](../xmcl-keystone-ui/src/views/BaseSettingServer.vue#L54) |
 | `remote-server-connection-advanced` | [`xmcl-keystone-ui/src/views/BaseSettingServerRemote.vue#L35`](../xmcl-keystone-ui/src/views/BaseSettingServerRemote.vue#L35) |
 | `remote-server-deploy` | [`xmcl-keystone-ui/src/views/BaseSettingServerRemote.vue#L195`](../xmcl-keystone-ui/src/views/BaseSettingServerRemote.vue#L195) |

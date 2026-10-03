@@ -66,6 +66,7 @@ const emit = defineEmits<{
   (event: 'enable', file: ProjectFile): void
   (event: 'disable', file: ProjectFile): void
   (event: 'open-dependent', dependent: ProjectDependent): void
+  (event: 'installed', mod: ProjectVersion): void
 }>()
 
 const { getDateString } = useDateString()
@@ -259,12 +260,27 @@ const modId = ref(0)
 const fileId = ref(undefined as number | undefined)
 const { changelog, isValidating } = useCurseforgeChangelog(modId, fileId)
 
+const effectiveInstalled = computed(() => {
+  if (props.installed && props.installed.length > 0) {
+    return props.installed
+  }
+  if (props.curseforgeId) {
+    const matched = props.allFiles?.filter(f => f.curseforge?.projectId === props.curseforgeId)
+    if (matched && matched.length > 0) return matched
+  }
+  return props.installed || []
+})
+
 const modVersions = computed(() => {
   const versions: ProjectVersion[] = []
-  const installed = [...props.installed]
+  const installed = [...effectiveInstalled.value]
   for (const file of files.value) {
-    const installedFileIndex = installed.findIndex((f) => f.curseforge?.fileId === file.id)
-    const f = installedFileIndex === -1 ? undefined : installed.splice(installedFileIndex, 1)
+    const installedFileIndex = installed.findIndex((f) =>
+      f.curseforge?.fileId === file.id ||
+      ('fileName' in f && (f.fileName === file.fileName || f.fileName === file.displayName)) ||
+      (f.path && (basename(f.path) === file.fileName || basename(f.path) === file.displayName))
+    )
+    const f = installedFileIndex === -1 ? undefined : installed.splice(installedFileIndex, 1)[0]
 
     versions.push(
       reactive({
@@ -276,6 +292,7 @@ const modVersions = computed(() => {
         changelogLoading: isValidating,
         type: releaseTypes[file.releaseType],
         installed: !!f,
+        installedFile: f,
         downloadCount: file.downloadCount,
         loaders: getCursforgeFileModLoaders(file),
         minecraftVersion: getCurseforgeFileGameVersions(file).join(', '),
@@ -330,7 +347,7 @@ watch(
   },
 )
 watch(
-  () => props.installed,
+  effectiveInstalled,
   () => {
     innerUpdating.value = false
   },
@@ -339,7 +356,7 @@ watch(
 
 const { enabled, installed, hasInstalledVersion } = useProjectDetailEnable(
   selectedVersion,
-  computed(() => props.installed),
+  effectiveInstalled,
   innerUpdating,
   (f) => emit('enable', f),
   (f) => emit('disable', f),
@@ -437,10 +454,11 @@ const onInstall = async (mod: ProjectVersion) => {
       Number(mod.id),
       mod.loaders,
       curseforgeProject.value?.logo.url,
-      props.installed,
+      effectiveInstalled.value,
       resolvedDeps ?? [],
       curseforgeFile.value?.downloadUrl,
     )
+    emit('installed', mod)
   } finally {
     installing.value = false
   }
