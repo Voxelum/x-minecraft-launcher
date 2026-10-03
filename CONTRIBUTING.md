@@ -186,6 +186,24 @@ includes Minecraft 1.20.1 with Forge 47.2.0, where Java 25 can fail with
 `Unsupported class file major version 69`. Explicit `compatibleJavaMajors`
 metadata takes precedence for customized installations.
 
+### macOS local network access
+
+The Electron macOS package declares `NSLocalNetworkUsageDescription` through
+`mac.extendInfo` in `xmcl-electron-app/build/electron-builder.config.ts`.
+macOS 15 and later require local network authorization for LAN connections,
+including those made by Minecraft child processes attributed to XMCL. If LAN
+connections fail with `NoRouteToHostException`, check XMCL in **System Settings >
+Privacy & Security > Local Network** and allow access, then retry the connection.
+
+Validate this behavior using a newly packaged `XMCL.app` launched from Finder,
+not just the development launcher or its executable run from Terminal. Terminal
+launches and their child processes are automatically allowed local network access
+and can mask missing app authorization. Changes to `mac.extendInfo` require
+repackaging the app; renderer hot reload and application-only ASAR updates do not
+update `Contents/Info.plist`. If the authorization entry is missing or enabling
+it does not help, inspect the packaged app's code signature and main executable
+UUID as described in [Apple TN3179](https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy).
+
 ### DeskGap Windows EXE in the regular release
 
 The normal `.github/workflows/build.yml` builds Electron and an additional

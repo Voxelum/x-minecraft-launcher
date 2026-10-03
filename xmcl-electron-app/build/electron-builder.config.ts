@@ -73,6 +73,7 @@ export const config = {
       },
     ],
     extendInfo: {
+      NSLocalNetworkUsageDescription: 'XMCL and Minecraft need access to your local network to discover and connect to LAN games and servers.',
       NSMicrophoneUsageDescription: 'A Minecraft mod wants to access your microphone.',
       NSCameraUsageDescription: 'Please give us access to your camera',
       'com.apple.security.device.audio-input': true,
