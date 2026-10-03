@@ -1422,6 +1422,8 @@ save:
   map:
     tabTitle: "世界地图"
   progress:
+    zoomIn: 放大
+    zoomOut: 缩小
     loading: "正在加载进度…"
     noData: "未找到进度"
     noDataHint: "在此世界中游玩后，即可查看进度、统计数据和任务完成情况。"

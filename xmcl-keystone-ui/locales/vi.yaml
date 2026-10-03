@@ -1258,6 +1258,8 @@ save:
   map:
     tabTitle: "Bản đồ thế giới"
   progress:
+    zoomIn: Phóng to
+    zoomOut: Thu nhỏ
     loading: "Đang tải tiến trình…"
     noData: "Không tìm thấy tiến trình"
     noDataHint: "Chơi trong thế giới này để ghi lại tiến trình, thống kê và tiến độ nhiệm vụ."

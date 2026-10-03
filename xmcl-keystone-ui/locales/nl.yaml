@@ -1158,6 +1158,8 @@ save:
   map:
     tabTitle: "Wereldkaart"
   progress:
+    zoomIn: Inzoomen
+    zoomOut: Uitzoomen
     loading: "Voortgang laden…"
     noData: "Geen voortgang gevonden"
     noDataHint: "Speel in deze wereld om vooruitgang, statistieken en missievoortgang vast te leggen."

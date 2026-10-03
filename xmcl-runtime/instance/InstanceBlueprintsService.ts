@@ -18,7 +18,7 @@ import {
   InstanceBlueprintsService as IInstanceBlueprintsService,
   InstanceBlueprintsServiceKey,
 } from '@xmcl/runtime-api'
-import { pathExists, readdir, readFile, writeFile } from 'fs-extra'
+import { pathExists, readdir, readFile, readJson, writeFile } from 'fs-extra'
 import { isAbsolute, join } from 'path'
 import { Inject, kGameDataPath, LauncherAppKey, type PathResolver } from '~/app'
 import { kResourceManager } from '~/resource'

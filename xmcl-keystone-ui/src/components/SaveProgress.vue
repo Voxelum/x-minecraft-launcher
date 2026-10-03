@@ -3,16 +3,16 @@
     <!-- Loading State -->
     <div v-if="actualLoading" class="flex flex-col items-center justify-center flex-1 gap-3">
       <v-progress-circular indeterminate color="primary" size="36" />
-      <span class="text-xs text-neutral-400">{{ t('save.progress.loading') }}</span>
+      <span class="text-sm text-medium-emphasis" role="status">{{ t('save.progress.loading') }}</span>
     </div>
 
     <ErrorView v-else-if="actualError" class="min-h-0 flex-1 overflow-auto" :error="actualError" @refresh="refresh" />
 
     <!-- Empty State -->
-    <div v-else-if="!actualProgress || (!hasAdvancements && !hasQuests && !hasStats)" class="flex flex-col items-center justify-center flex-1 gap-2 text-neutral-500">
+    <div v-else-if="!actualProgress || (!hasAdvancements && !hasQuests && !hasStats)" class="flex flex-col items-center justify-center flex-1 gap-2 px-4 text-medium-emphasis" role="status">
       <v-icon size="40">history_toggle_off</v-icon>
       <span class="text-sm font-medium">{{ t('save.progress.noData') }}</span>
-      <span class="text-xs text-center max-w-sm">{{ t('save.progress.noDataHint') }}</span>
+      <span class="text-sm text-center max-w-sm">{{ t('save.progress.noDataHint') }}</span>
     </div>
 
     <!-- Main Content -->
@@ -32,9 +32,9 @@
         transition="dialog-bottom-transition"
         @keydown.esc="isModalOpen = false"
       >
-        <v-card class="h-full w-full flex flex-col bg-[#12141a] overflow-hidden">
+        <v-card class="save-progress-dialog h-full w-full flex flex-col overflow-hidden">
           <!-- Window Header Bar -->
-          <v-toolbar density="compact" color="surface" class="border-b border-white/10 px-3 flex-shrink-0">
+          <v-toolbar density="compact" color="surface" class="border-b px-3 flex-shrink-0">
             <v-icon start color="primary">{{ category === 'quests' ? 'military_tech' : 'emoji_events' }}</v-icon>
             <v-toolbar-title class="text-sm font-bold">{{ category === 'quests' ? t('save.progress.quests') : t('save.progress.advancements') }}</v-toolbar-title>
             <v-spacer />
@@ -98,3 +98,9 @@ const hasStats = computed(() => !!actualProgress.value?.stats)
 
 const isModalOpen = ref(false)
 </script>
+
+<style scoped>
+.save-progress-dialog {
+  border-radius: 0 !important;
+}
+</style>

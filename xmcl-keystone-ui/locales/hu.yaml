@@ -1191,6 +1191,8 @@ save:
   map:
     tabTitle: "Világtérkép"
   progress:
+    zoomIn: Nagyítás
+    zoomOut: Kicsinyítés
     loading: "Előrehaladás betöltése…"
     noData: "Nincs előrehaladás"
     noDataHint: "Játssz ebben a világban az előrelépések, statisztikák és küldetések állapotának rögzítéséhez."

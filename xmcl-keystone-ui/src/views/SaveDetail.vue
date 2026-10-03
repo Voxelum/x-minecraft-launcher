@@ -29,18 +29,8 @@ const version = computed(() => JSON.stringify([instance.value.version, instance.
 const { progress, loading: loadingProgress, error: progressError, refresh: refreshProgress } = useInstanceSaveProgress(savePath, instancePath, version)
 
 const hasQuests = computed(() => !!progress.value?.quests && progress.value.quests.chapters.length > 0)
-const hasAdvancements = computed(() => (progress.value?.advancements?.items?.length ?? 0) > 0)
-
-const currentTab = ref<'advancements' | 'quests' | 'map'>('advancements')
-
-watch([hasQuests, hasAdvancements], ([q, a]) => {
-  if (currentTab.value === 'map') return
-  if (q) {
-    currentTab.value = 'quests'
-  } else if (a) {
-    currentTab.value = 'advancements'
-  }
-}, { immediate: true })
+const progressCategory = computed(() => hasQuests.value ? 'quests' : 'advancements')
+const currentTab = ref<'progress' | 'map'>('progress')
 
 const model = computed(() => {
   const v = props.save
@@ -116,13 +106,9 @@ const onEnable = (enable: boolean) => {
   >
     <template #tabs>
       <v-tabs v-model="currentTab" bg-color="transparent">
-        <v-tab v-if="!hasQuests" value="advancements">
-          <v-icon size="small" class="mr-1.5">emoji_events</v-icon>
-          {{ t('save.progress.advancements') }}
-        </v-tab>
-        <v-tab v-if="hasQuests" value="quests">
-          <v-icon size="small" class="mr-1.5">military_tech</v-icon>
-          {{ t('save.progress.quests') }}
+        <v-tab value="progress">
+          <v-icon size="small" class="mr-1.5">{{ hasQuests ? 'military_tech' : 'emoji_events' }}</v-icon>
+          {{ t(`save.progress.${progressCategory}`) }}
         </v-tab>
         <v-tab value="map">
           <v-icon size="small" class="mr-1.5">map</v-icon>
@@ -133,9 +119,9 @@ const onEnable = (enable: boolean) => {
     <template #content>
       <div class="save-container relative overflow-hidden h-full w-full">
         <SaveProgress
-          v-if="currentTab === 'advancements' || currentTab === 'quests'"
+          v-if="currentTab === 'progress'"
           class="h-full"
-          :category="currentTab"
+          :category="progressCategory"
           :progress="progress"
           :loading="loadingProgress"
           :error="progressError"
@@ -158,8 +144,7 @@ const onEnable = (enable: boolean) => {
 
 <style scoped>
 .save-container {
-  height: 65vh;
-  min-height: 480px;
+  height: clamp(320px, calc(100vh - 260px), 640px);
   width: 100%;
 }
 .save-content-wrapper {

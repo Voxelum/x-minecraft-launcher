@@ -6,7 +6,7 @@ import { describe, expect, test } from 'vitest'
 
 const directory = new URL('../../locales/', import.meta.url)
 const files = readdirSync(directory).filter(file => file.endsWith('.yaml'))
-const keys = ['loading', 'noData', 'noDataHint', 'quests', 'advancements', 'done', 'inProgress', 'all', 'treeView', 'filterPlaceholder', 'root', 'exitFullscreen', 'locked']
+const keys = ['loading', 'noData', 'noDataHint', 'quests', 'advancements', 'done', 'inProgress', 'all', 'treeView', 'filterPlaceholder', 'root', 'exitFullscreen', 'locked', 'zoomIn', 'zoomOut']
 const removed = ['tabTitle', 'completed', 'deaths', 'minedBlocks', 'mobKills', 'playTime', 'fullscreen', 'listView']
 interface Messages {
   save: { map: { tabTitle: string }; progress: Record<string, string> }

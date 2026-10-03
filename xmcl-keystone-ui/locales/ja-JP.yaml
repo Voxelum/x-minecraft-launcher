@@ -1179,6 +1179,8 @@ save:
   map:
     tabTitle: "ワールドマップ"
   progress:
+    zoomIn: 拡大
+    zoomOut: 縮小
     loading: "進捗を読み込み中…"
     noData: "進捗が見つかりません"
     noDataHint: "このワールドでプレイすると、進捗、統計、クエストの達成状況が記録されます。"

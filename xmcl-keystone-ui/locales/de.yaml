@@ -1240,6 +1240,8 @@ save:
   map:
     tabTitle: "Weltkarte"
   progress:
+    zoomIn: Vergrößern
+    zoomOut: Verkleinern
     loading: "Fortschritt wird geladen…"
     noData: "Kein Fortschritt gefunden"
     noDataHint: "Spiele in dieser Welt, um Fortschritte, Statistiken und Questfortschritte zu erfassen."

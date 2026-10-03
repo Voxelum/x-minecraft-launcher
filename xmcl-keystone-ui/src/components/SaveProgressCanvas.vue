@@ -1,7 +1,7 @@
 <template>
-  <div class="h-full flex flex-col overflow-hidden relative select-none">
+  <div class="progress-root h-full min-w-0 flex flex-col overflow-hidden relative select-none">
     <!-- Top Toolbar -->
-    <div class="flex items-center justify-between px-3 py-1.5 border-b border-white/10 gap-2 flex-wrap flex-shrink-0 bg-neutral-900/60 z-20">
+    <div class="progress-toolbar flex items-center justify-between px-3 py-2 border-b gap-2 flex-wrap flex-shrink-0 z-20">
       <!-- Category Mode & Progress -->
       <div class="flex items-center gap-2">
         <template v-if="!category">
@@ -11,7 +11,6 @@
             mandatory
             density="compact"
             variant="outlined"
-            rounded="lg"
           >
             <v-btn value="quests" size="small">
               <v-icon start size="16">military_tech</v-icon>
@@ -39,7 +38,7 @@
       </div>
 
       <!-- Controls: Search, Zoom, Mode, Modal -->
-      <div class="flex items-center gap-1.5">
+      <div class="progress-controls flex items-center gap-2 flex-wrap min-w-0">
         <v-text-field
           v-model="searchQuery"
           density="compact"
@@ -47,30 +46,31 @@
           hide-details
           prepend-inner-icon="search"
           :placeholder="t('save.progress.filterPlaceholder')"
-          class="w-32 sm:w-44 text-xs"
+          :aria-label="t('save.progress.filterPlaceholder')"
+          class="progress-search"
           clearable
         />
 
         <!-- Zoom Controls -->
-        <div v-if="viewMode === 'graph'" class="flex items-center bg-white/5 rounded-lg border border-white/10 p-0.5">
-          <v-btn icon size="x-small" variant="text" @click="zoomOut">
-            <v-icon size="14">remove</v-icon>
+        <div v-if="viewMode === 'graph'" class="progress-zoom flex items-center border p-0.5">
+          <v-btn icon size="small" density="comfortable" variant="text" :aria-label="t('save.progress.zoomOut')" :title="t('save.progress.zoomOut')" @click="zoomOut">
+            <v-icon size="18">remove</v-icon>
           </v-btn>
           <span class="text-[10px] font-mono px-1 min-w-[32px] text-center">{{ Math.round(scale * 100) }}%</span>
-          <v-btn icon size="x-small" variant="text" @click="zoomIn">
-            <v-icon size="14">add</v-icon>
+          <v-btn icon size="small" density="comfortable" variant="text" :aria-label="t('save.progress.zoomIn')" :title="t('save.progress.zoomIn')" @click="zoomIn">
+            <v-icon size="18">add</v-icon>
           </v-btn>
-          <v-btn icon size="x-small" variant="text" @click="centerCamera">
-            <v-icon size="14">center_focus_strong</v-icon>
+          <v-btn icon size="small" density="comfortable" variant="text" :aria-label="t('save.resetView')" :title="t('save.resetView')" @click="centerCamera">
+            <v-icon size="18">center_focus_strong</v-icon>
           </v-btn>
         </div>
 
         <!-- View Mode Switcher -->
-        <v-btn-toggle v-model="viewMode" mandatory density="compact" variant="outlined" rounded="lg">
-          <v-btn value="graph" size="small" :title="t('save.progress.treeView')">
+        <v-btn-toggle v-model="viewMode" mandatory density="compact" variant="outlined">
+          <v-btn value="graph" size="small" :title="t('save.progress.treeView')" :aria-label="t('save.progress.treeView')">
             <v-icon size="16">hub</v-icon>
-        -m  </v-btn>
-          <v-btn value="list" size="small" :title="t('me.listView')">
+          </v-btn>
+          <v-btn value="list" size="small" :title="t('me.listView')" :aria-label="t('me.listView')">
             <v-icon size="16">view_list</v-icon>
           </v-btn>
         </v-btn-toggle>
@@ -81,6 +81,7 @@
           size="small"
           variant="text"
           :title="isModal ? t('save.progress.exitFullscreen') : t('instance.fullscreen')"
+          :aria-label="isModal ? t('save.progress.exitFullscreen') : t('instance.fullscreen')"
           @click="toggleModal"
         >
           <v-icon size="18">{{ isModal ? 'close_fullscreen' : 'open_in_full' }}</v-icon>
@@ -89,7 +90,7 @@
     </div>
 
     <!-- Chapter / Branch Tabs (Native Launcher v-tabs) -->
-    <div v-if="currentTabs.length > 1" class="border-b border-white/10 bg-neutral-900/30 flex-shrink-0 z-10 px-2">
+    <div v-if="currentTabs.length > 1" class="progress-chapters border-b flex-shrink-0 z-10 px-2 min-w-0">
       <v-tabs
         v-model="selectedTabId"
         density="compact"
@@ -101,6 +102,7 @@
           v-for="tab in currentTabs"
           :key="tab.id"
           :value="tab.id"
+          :title="tab.title"
           class="text-xs font-medium"
         >
           <img v-if="tab.iconDataUrl" :src="tab.iconDataUrl" class="w-4 h-4 mr-1.5 pixelated object-contain flex-shrink-0" />
@@ -147,10 +149,13 @@
         </svg>
 
         <!-- Nodes -->
-        <div
+        <button
           v-for="node in currentNodes"
           :key="node.id"
-          class="absolute cursor-pointer transition-transform hover:scale-110"
+          type="button"
+          class="graph-node-button absolute cursor-pointer"
+          :aria-label="`${node.title}: ${nodeStatus(node)}`"
+          :aria-pressed="selectedNode?.id === node.id"
           :style="{
             left: `${node.screenX}px`,
             top: `${node.screenY}px`,
@@ -158,6 +163,9 @@
           }"
           @mouseenter="onNodeMouseEnter($event, node)"
           @mouseleave="onNodeMouseLeave"
+          @focus="onNodeFocus($event, node)"
+          @blur="onNodeMouseLeave"
+          @mousedown.stop
           @click.stop="selectedNode = node"
         >
           <div
@@ -188,11 +196,11 @@
               <v-icon size="9" color="grey-lighten-2">lock</v-icon>
             </div>
           </div>
-        </div>
+        </button>
       </div>
 
       <!-- Drag Hint (Floating Bottom Left) -->
-      <div class="absolute bottom-3 left-3 pointer-events-none text-[10px] text-neutral-400 font-mono flex items-center gap-1 bg-black/60 backdrop-blur px-2.5 py-1 rounded border border-white/5">
+      <div class="progress-pan-hint absolute bottom-3 left-3 pointer-events-none text-xs text-neutral-200 flex items-center gap-1 bg-black/80 px-2.5 py-1 border border-white/10">
         <v-icon size="12">pan_tool</v-icon>
         <span>{{ t('save.mapHintPan') }}</span>
       </div>
@@ -200,7 +208,7 @@
       <!-- Stats Bar (Floating Bottom Right - Native Launcher Overlay) -->
       <div
         v-if="hasStats"
-        class="absolute bottom-3 right-3 flex items-center gap-3 rounded bg-black/60 px-3 py-1 text-xs text-neutral-300 backdrop-blur border border-white/10 pointer-events-none z-10 font-mono"
+        class="progress-stats absolute bottom-3 right-3 flex items-center gap-3 bg-black/80 px-3 py-1 text-xs text-neutral-200 border border-white/10 pointer-events-none z-10 font-mono"
       >
         <span class="flex items-center gap-1"><v-icon size="13" color="cyan">schedule</v-icon> {{ formattedPlayTime }}</span>
         <span class="flex items-center gap-1"><v-icon size="13" color="red">heart_broken</v-icon> {{ progress?.stats?.deaths ?? 0 }}</span>
@@ -213,24 +221,25 @@
     <transition name="fade">
       <div
         v-if="hoveredNode"
+        ref="tooltipRef"
         class="absolute pointer-events-none z-30"
         :style="{ left: `${tooltipPos.x}px`, top: `${tooltipPos.y}px` }"
       >
-        <v-card class="p-2.5 flex flex-col gap-1 shadow-2xl max-w-xs border border-white/10" color="surface">
+        <v-card class="progress-tooltip p-3 flex flex-col gap-2 border" color="surface">
           <div class="flex items-center justify-between gap-2">
-            <span class="font-bold text-xs text-amber-300">{{ hoveredNode.title }}</span>
+            <span class="font-bold text-sm min-w-0">{{ hoveredNode.title }}</span>
             <v-chip
               size="x-small"
-              :color="hoveredNode.done ? 'success' : hoveredNode.locked ? 'grey' : 'amber'"
-              variant="flat"
-              class="font-bold text-[10px]"
+              :color="hoveredNode.done ? 'success' : undefined"
+              variant="tonal"
+              class="font-bold flex-shrink-0"
             >
               {{ hoveredNode.done ? t('save.progress.done') : hoveredNode.locked ? t('save.progress.locked') : t('save.progress.inProgress') }}
             </v-chip>
           </div>
-          <span v-if="hoveredNode.subtitle" class="text-[11px] text-purple-300 italic">{{ hoveredNode.subtitle }}</span>
-          <p v-if="hoveredNode.description" class="text-[11px] text-neutral-300 whitespace-pre-line leading-snug">{{ hoveredNode.description }}</p>
-          <div class="flex items-center justify-between pt-1 border-t border-white/10 text-[10px] font-mono text-neutral-400">
+          <span v-if="hoveredNode.subtitle" class="text-xs text-medium-emphasis">{{ hoveredNode.subtitle }}</span>
+          <p v-if="hoveredNode.description" class="text-xs whitespace-pre-line leading-snug">{{ hoveredNode.description }}</p>
+          <div class="flex items-center justify-between pt-1 border-t text-xs font-mono text-medium-emphasis">
             <span v-if="hoveredNode.tasksCount !== undefined">{{ hoveredNode.tasksCompleted }}/{{ hoveredNode.tasksCount }}</span>
             <span v-if="hoveredNode.completedTime" class="ml-auto">{{ hoveredNode.completedTime }}</span>
           </div>
@@ -239,31 +248,28 @@
     </transition>
 
     <!-- Alternative List View -->
-    <div v-if="viewMode === 'list'" class="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
+    <div v-if="viewMode === 'list'" class="progress-list flex-1 min-h-0 overflow-y-auto p-3 flex flex-col gap-2">
       <div
         v-for="item in currentNodes"
         :key="item.id"
-        class="p-2.5 rounded-lg flex items-center justify-between bg-white/5 border border-white/10 hover:border-white/20 transition-all"
-        :class="{ 'border-emerald-500/40 bg-emerald-950/10': item.done, 'opacity-60': item.locked }"
+        class="progress-row surface-card-subsection p-3 flex items-center justify-between gap-3"
       >
         <div class="flex items-center gap-3 min-w-0">
-          <div class="w-9 h-9 rounded flex items-center justify-center bg-black/40 border border-white/10 flex-shrink-0">
+          <div class="progress-item-icon w-9 h-9 flex items-center justify-center border flex-shrink-0">
             <img v-if="item.iconDataUrl" :src="item.iconDataUrl" class="w-6 h-6 pixelated object-contain" />
-            <v-icon v-else size="18" :color="item.done ? 'emerald-accent-3' : 'grey'">{{ item.fallbackIcon }}</v-icon>
+            <v-icon v-else size="18" :color="item.done ? 'success' : undefined">{{ item.fallbackIcon }}</v-icon>
           </div>
           <div class="flex flex-col min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-xs text-neutral-100 truncate">{{ item.title }}</span>
-              <v-chip v-if="item.subtitle" size="x-small" variant="text" class="text-purple-300 italic text-[10px]">{{ item.subtitle }}</v-chip>
-            </div>
-            <span v-if="item.description" class="text-[11px] text-neutral-400 truncate max-w-lg">{{ item.description }}</span>
+            <span class="font-semibold text-sm progress-item-title">{{ item.title }}</span>
+            <span v-if="item.subtitle" class="text-xs text-medium-emphasis progress-item-title">{{ item.subtitle }}</span>
+            <span v-if="item.description" class="text-xs text-medium-emphasis progress-item-title">{{ item.description }}</span>
           </div>
         </div>
         <v-chip
           size="x-small"
-          :color="item.done ? 'success' : item.locked ? 'grey' : 'amber'"
+          :color="item.done ? 'success' : undefined"
           variant="tonal"
-          class="font-bold text-[10px] flex-shrink-0 ml-3"
+          class="font-medium flex-shrink-0"
         >
           {{ item.done ? t('save.progress.done') : item.locked ? t('save.progress.locked') : t('save.progress.inProgress') }}
         </v-chip>
@@ -317,9 +323,10 @@ const activeCategory = ref<'quests' | 'advancements'>(props.category || 'advance
 const selectedTabId = ref<string>('')
 const viewMode = ref<'graph' | 'list'>('graph')
 const searchQuery = ref('')
-const selectedNode = ref<any>(null)
-const hoveredNode = ref<any>(null)
+const selectedNode = ref<RenderNode | null>(null)
+const hoveredNode = ref<RenderNode | null>(null)
 const tooltipPos = ref({ x: 0, y: 0 })
+const tooltipRef = ref<HTMLElement | null>(null)
 
 const canvasRef = ref<HTMLElement | null>(null)
 const panX = ref(100)
@@ -626,14 +633,32 @@ function zoomOut() {
 }
 
 function onNodeMouseEnter(e: MouseEvent, node: RenderNode) {
+  showNodeDetails(node, e.clientX, e.clientY)
+}
+
+function onNodeFocus(e: FocusEvent, node: RenderNode) {
+  const button = e.currentTarget
+  if (!(button instanceof HTMLElement)) return
+  const rect = button.getBoundingClientRect()
+  showNodeDetails(node, rect.right, rect.bottom)
+}
+
+function showNodeDetails(node: RenderNode, clientX: number, clientY: number) {
   hoveredNode.value = node
-  if (canvasRef.value) {
-    const rect = canvasRef.value.getBoundingClientRect()
+  nextTick(() => {
+    const root = canvasRef.value?.parentElement
+    const tooltip = tooltipRef.value
+    if (!root || !tooltip || hoveredNode.value?.id !== node.id) return
+    const rect = root.getBoundingClientRect()
     tooltipPos.value = {
-      x: e.clientX - rect.left + 15,
-      y: e.clientY - rect.top + 15,
+      x: Math.max(8, Math.min(clientX - rect.left + 12, rect.width - tooltip.offsetWidth - 8)),
+      y: Math.max(8, Math.min(clientY - rect.top + 12, rect.height - tooltip.offsetHeight - 8)),
     }
-  }
+  })
+}
+
+function nodeStatus(node: RenderNode) {
+  return t(node.done ? 'save.progress.done' : node.locked ? 'save.progress.locked' : 'save.progress.inProgress')
 }
 
 function onNodeMouseLeave() {
@@ -727,6 +752,8 @@ watch(currentTabs, (tabs) => {
 }, { immediate: true })
 
 watch([selectedTabId, activeCategory], () => {
+  hoveredNode.value = null
+  selectedNode.value = null
   nextTick(() => centerCamera())
 }, { immediate: true })
 
@@ -736,6 +763,83 @@ watch(currentNodes, () => {
 </script>
 
 <style scoped>
+.progress-root {
+  container-type: inline-size;
+  color: rgb(var(--v-theme-on-surface));
+  background: rgb(var(--v-theme-surface));
+}
+
+.progress-toolbar,
+.progress-chapters {
+  background: rgb(var(--v-theme-surface));
+}
+
+.progress-controls {
+  max-width: 100%;
+}
+
+.progress-search {
+  width: 176px;
+  flex: 1 1 176px;
+}
+
+.progress-zoom {
+  border-radius: var(--card-item-radius);
+  background: rgba(var(--v-theme-on-surface), 0.04);
+  flex-shrink: 0;
+}
+
+.progress-row {
+  flex-shrink: 0;
+}
+
+.progress-item-icon,
+.progress-pan-hint,
+.progress-stats {
+  border-radius: var(--card-item-radius);
+}
+
+.progress-item-icon {
+  background: rgba(var(--v-theme-on-surface), 0.04);
+}
+
+.progress-item-title {
+  overflow-wrap: anywhere;
+}
+
+.progress-tooltip {
+  width: 288px;
+  max-width: calc(100cqw - 16px);
+  overflow-wrap: anywhere;
+}
+
+.graph-node-button {
+  border: 0;
+  padding: 3px;
+  background: transparent;
+  border-radius: 4px;
+}
+
+.graph-node-button:focus-visible,
+.graph-node-button[aria-pressed="true"] {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+@container (max-width: 560px) {
+  .progress-controls {
+    width: 100%;
+  }
+
+  .progress-search {
+    flex-basis: 100%;
+  }
+
+  .progress-pan-hint {
+    display: none;
+  }
+}
+
 .progress-canvas {
   background-color: #14161d;
   background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 0);

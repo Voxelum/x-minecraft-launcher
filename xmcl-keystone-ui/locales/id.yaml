@@ -1258,6 +1258,8 @@ save:
   map:
     tabTitle: "Peta Dunia"
   progress:
+    zoomIn: Perbesar
+    zoomOut: Perkecil
     loading: "Memuat progres…"
     noData: "Tidak Ada Progres"
     noDataHint: "Mainkan dunia ini untuk mencatat kemajuan, statistik, dan progres misi."

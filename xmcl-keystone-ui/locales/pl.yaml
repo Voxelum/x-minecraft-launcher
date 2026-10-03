@@ -1150,6 +1150,8 @@ save:
   map:
     tabTitle: "Mapa świata"
   progress:
+    zoomIn: Przybliż
+    zoomOut: Oddal
     loading: "Wczytywanie postępów…"
     noData: "Nie znaleziono postępów"
     noDataHint: "Graj w tym świecie, aby zapisywać postępy, statystyki i postęp zadań."

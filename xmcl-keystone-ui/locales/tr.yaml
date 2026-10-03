@@ -1146,6 +1146,8 @@ save:
   map:
     tabTitle: "Dünya Haritası"
   progress:
+    zoomIn: Yakınlaştır
+    zoomOut: Uzaklaştır
     loading: "İlerleme yükleniyor…"
     noData: "İlerleme Bulunamadı"
     noDataHint: "Gelişimleri, istatistikleri ve görev ilerlemesini kaydetmek için bu dünyada oynayın."

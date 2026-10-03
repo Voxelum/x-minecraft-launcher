@@ -1175,6 +1175,8 @@ save:
   map:
     tabTitle: "Carte du monde"
   progress:
+    zoomIn: Agrandir
+    zoomOut: Réduire
     loading: "Chargement de la progression…"
     noData: "Aucune progression trouvée"
     noDataHint: "Jouez dans ce monde pour générer des progrès, des statistiques et une progression des quêtes."

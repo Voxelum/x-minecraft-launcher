@@ -1134,6 +1134,8 @@ save:
   map:
     tabTitle: "Wurld Map"
   progress:
+    zoomIn: Zoom in
+    zoomOut: Zoom out
     loading: "Loadin ur progress..."
     noData: "No progress heer"
     noDataHint: "Play in dis wurld to get shiny advancements, stats, an quest progress!"

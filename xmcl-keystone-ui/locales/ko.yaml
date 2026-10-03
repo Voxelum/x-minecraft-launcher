@@ -1134,6 +1134,8 @@ save:
   map:
     tabTitle: "세계 지도"
   progress:
+    zoomIn: 확대
+    zoomOut: 축소
     loading: "진행 상황 불러오는 중…"
     noData: "진행 상황이 없습니다"
     noDataHint: "이 세계에서 플레이하면 발전 과제, 통계 및 퀘스트 진행 상황이 기록됩니다."

@@ -1153,6 +1153,8 @@ save:
   map:
     tabTitle: "Mappa del mondo"
   progress:
+    zoomIn: Ingrandisci
+    zoomOut: Riduci
     loading: "Caricamento dei progressi…"
     noData: "Nessun progresso trovato"
     noDataHint: "Gioca in questo mondo per generare progressi, statistiche e avanzamenti nelle missioni."
