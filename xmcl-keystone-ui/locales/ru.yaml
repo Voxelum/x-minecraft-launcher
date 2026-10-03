@@ -1821,3 +1821,51 @@ migrateMinecraft:
   name: Перенести файлы Minecraft
 reinstall:
   name: Переустановить {version}
+
+blueprint:
+  name: Схема | Схемы
+  count: '{count} схем'
+  searchLocal: Поиск схем...
+  searchOnline: Поиск в интернете...
+  market: Магазин
+  provider: Источник
+  import: Импорт
+  openFolder: Открыть папку
+  refresh: Обновить
+  empty: Схемы не найдены. Импортируйте файл .litematic / .schem / .nbt или откройте магазин.
+  dropHint: Перетащите сюда файлы схем (.litematic / .schem / .nbt) для импорта.
+  selectHint: Выберите схему для просмотра.
+  blocks: '{count} блоков'
+  materials: Материалы
+  findMod: Найти мод для этого пространства имён
+  compatible: Совместимо
+  incompatible: Не хватает модов
+  missingNamespaces: 'Не хватает модов для: {namespaces}'
+  install: Установить
+  goTo: Веб-сайт
+  byAuthor: 'автор: {author}'
+  noDescription: Описание отсутствует.
+  mixedSources: Результаты объединены из всех источников. Некоторые доступны только для просмотра — откройте их сайт для загрузки.
+  preview:
+    loading: Загрузка предпросмотра...
+    empty: В этой схеме нет блоков для отображения.
+    hint: '{count} блоков · {x}×{y}×{z}'
+    controls: 'WASD: движение · Пробел/Shift: вверх/вниз · Перетаскивание: обзор · Прокрутка: масштаб'
+  convert:
+    title: Преобразовать формат
+    hint: Преобразуйте эту схему в другой формат. Будет создан новый файл.
+    target: Целевой формат
+    action: Преобразовать
+  replace:
+    title: Заменить блоки
+    simple: Простая замена
+    precise: Точная замена
+    simpleHint: Заменить все блоки одного типа.
+    preciseHint: Заменить только блоки с указанными свойствами.
+    from: Из
+    to: В
+    addRule: Добавить правило
+    newFile: Новый файл
+    action: Заменить
+  formats:
+    structure: Структура Vanilla

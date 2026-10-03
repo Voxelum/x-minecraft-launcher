@@ -1956,3 +1956,51 @@ migrateMinecraft:
   name: Minecraft-bestanden migreren
 reinstall:
   name: '{version} opnieuw installeren'
+
+blueprint:
+  name: Blauwdruk | Blauwdrukken
+  count: '{count} blauwdrukken'
+  searchLocal: Blauwdrukken zoeken...
+  searchOnline: Online zoeken...
+  market: Markt
+  provider: Bron
+  import: Importeren
+  openFolder: Map openen
+  refresh: Vernieuwen
+  empty: Geen blauwdrukken gevonden. Importeer een .litematic / .schem / .nbt-bestand of bekijk de markt.
+  dropHint: Sleep blauwdrukbestanden (.litematic / .schem / .nbt) hierheen om te importeren.
+  selectHint: Selecteer een blauwdruk om een voorbeeld te bekijken.
+  blocks: '{count} blokken'
+  materials: Materialen
+  findMod: Mod voor deze namespace zoeken
+  compatible: Compatibel
+  incompatible: Ontbrekende mods
+  missingNamespaces: 'Ontbrekende mods voor: {namespaces}'
+  install: Installeren
+  goTo: Website
+  byAuthor: door {author}
+  noDescription: Geen beschrijving beschikbaar.
+  mixedSources: Resultaten uit alle bronnen. Sommige zijn alleen om te bekijken — open hun website om te downloaden.
+  preview:
+    loading: Voorbeeld laden...
+    empty: Deze blauwdruk bevat geen blokken om weer te geven.
+    hint: '{count} blokken · {x}×{y}×{z}'
+    controls: 'WASD: bewegen · Spatie/Shift: omhoog/omlaag · Slepen: kijken · Scrollen: zoomen'
+  convert:
+    title: Formaat converteren
+    hint: Converteer deze blauwdruk naar een ander formaat. Er wordt een nieuw bestand gemaakt.
+    target: Doelformaat
+    action: Converteren
+  replace:
+    title: Blokken vervangen
+    simple: Eenvoudig vervangen
+    precise: Nauwkeurig vervangen
+    simpleHint: Alle blokken van één type vervangen.
+    preciseHint: Alleen blokken met de opgegeven eigenschappen vervangen.
+    from: Van
+    to: Naar
+    addRule: Regel toevoegen
+    newFile: Nieuw bestand
+    action: Vervangen
+  formats:
+    structure: Vanilla-structuur

@@ -1954,3 +1954,51 @@ migrateMinecraft:
   name: Migrar arquivos de Minecraft
 reinstall:
   name: Reinstalar {version}
+
+blueprint:
+  name: Plano | Planos
+  count: '{count} planos'
+  searchLocal: Buscar planos...
+  searchOnline: Buscar en liña...
+  market: Mercado
+  provider: Fonte
+  import: Importar
+  openFolder: Abrir cartafol
+  refresh: Actualizar
+  empty: Non se atoparon planos. Importa un ficheiro .litematic / .schem / .nbt ou explora o mercado.
+  dropHint: Solta aquí os ficheiros de plano (.litematic / .schem / .nbt) para importalos.
+  selectHint: Selecciona un plano para previsualizalo.
+  blocks: '{count} bloques'
+  materials: Materiais
+  findMod: Atopar o mod para este espazo de nomes
+  compatible: Compatible
+  incompatible: Mods que faltan
+  missingNamespaces: 'Mods que faltan para: {namespaces}'
+  install: Instalar
+  goTo: Sitio web
+  byAuthor: por {author}
+  noDescription: Non hai descrición.
+  mixedSources: Resultados mesturados de todas as fontes. Algúns só permiten explorar — abre o seu sitio web para descargar.
+  preview:
+    loading: Cargando a previsualización...
+    empty: Este plano non ten bloques para mostrar.
+    hint: '{count} bloques · {x}×{y}×{z}'
+    controls: 'WASD: mover · Espazo/Maiús: arriba/abaixo · Arrastrar: mirar · Roda: zoom'
+  convert:
+    title: Converter formato
+    hint: Converte este plano a outro formato. Crearase un ficheiro novo.
+    target: Formato de destino
+    action: Converter
+  replace:
+    title: Substituír bloques
+    simple: Substitución simple
+    precise: Substitución precisa
+    simpleHint: Substituír todos os bloques dun tipo.
+    preciseHint: Substituír só os bloques coas propiedades indicadas.
+    from: Desde
+    to: Ata
+    addRule: Engadir regra
+    newFile: Ficheiro novo
+    action: Substituír
+  formats:
+    structure: Estrutura de Vanilla
