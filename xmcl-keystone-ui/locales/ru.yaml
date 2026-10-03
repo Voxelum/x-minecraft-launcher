@@ -480,6 +480,8 @@ instanceSetting:
   icon: Выбрать изображение
   showLog: Показывать журнал Minecraft
   showLogHint: Это откроет окно журнала Minecraft после запуска экземпляра
+  syncGameLanguage: Синхронизировать язык игры
+  syncGameLanguageDescription: Автоматически синхронизировать язык Minecraft с языком лаунчера при запуске
 instanceTemplate:
   ftb: Это сборка модов FTB
   preview: Предварительный просмотр сборки модов
