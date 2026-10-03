@@ -195,6 +195,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     @Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kResourceManager) private resourceManager: ResourceManager,
     @Inject(InstanceService) private instanceService: InstanceService,
+    @Inject(InstanceInstallService) private instanceInstallService: InstanceInstallService,
     @Inject(kTasks) private tasks: Tasks,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(kGameDataPath) private getPath: PathResolver,
@@ -240,7 +241,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     const zipManager = await this.app.registry.getOrCreate(ZipManager)
     const cached = await this.getCachedInstallProfile(modpackFile)
     const zip = await zipManager.open(modpackFile)
-    const instanceInstallService = await this.app.registry.get(InstanceInstallService)
+    const { instanceInstallService } = this
 
     const entries = Object.values(zip.entries)
     const [manifest, handler] = await this.getManifestAndHandler(zip.file, entries)

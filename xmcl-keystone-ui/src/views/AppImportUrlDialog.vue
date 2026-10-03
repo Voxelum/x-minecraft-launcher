@@ -57,7 +57,7 @@
           variant="elevated"
           rounded="pill"
           :loading="urlLoading"
-          :disabled="!modpackUrl.trim()"
+          :disabled="!urlInput.url"
           @click="submitModpackUrl"
         >
           <v-icon start>download</v-icon>
@@ -137,6 +137,7 @@
 <script lang="ts" setup>
 import { useDialog } from '@/composables/dialog'
 import { ImportUrlDialogKey } from '@/composables/modpackPaste'
+import { parseModpackUrlInput, routeModpackUrlInput } from '@/composables/modpackUrlInput'
 import { useModpackInstaller, useModpackFinishInstall } from '@/composables/modpackInstaller'
 import { useService } from '@/composables'
 import { BaseServiceKey, MarketType, ModpackServiceKey, InstanceInstallServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
@@ -162,7 +163,8 @@ const finishModpackInstall = useModpackFinishInstall()
 // Dialog states
 const isShownDialog = ref(false)
 const dialogStep = ref<'input' | 'version'>('input')
-const modpackUrl = ref('')
+const modpackUrl = ref<string | null>('')
+const urlInput = computed(() => parseModpackUrlInput(modpackUrl.value))
 const urlLoading = ref(false)
 const urlError = ref('')
 
@@ -480,16 +482,11 @@ async function confirmVersionSelect() {
 }
 
 async function submitModpackUrl() {
-  const inputUrl = modpackUrl.value.trim()
+  const input = urlInput.value
+  const inputUrl = input.url
   if (!inputUrl) return
 
-  if (
-    !inputUrl.startsWith('http://') &&
-    !inputUrl.startsWith('https://') &&
-    !inputUrl.startsWith('curseforge://') &&
-    !inputUrl.startsWith('modrinth://') &&
-    !inputUrl.startsWith('technic://')
-  ) {
+  if (input.kind === 'invalid') {
     urlError.value = t('importModpack.invalidUrl')
     return
   }
@@ -674,7 +671,7 @@ async function submitModpackUrl() {
       const owner = githubMatch[1]
       const repo = githubMatch[2].replace(/\.git$/, '')
 
-      const directAssetMatch = inputUrl.match(/\/releases\/download\/([^/]+)\/([^/?#]+\.(?:mrpack|zip))/i)
+      const directAssetMatch = inputUrl.match(/\/releases\/download\/([^/]+)\/([^/?#]+)(?:[?#]|$)/i)
       const directTag = directAssetMatch ? decodeURIComponent(directAssetMatch[1]) : null
       const directFilename = directAssetMatch ? decodeURIComponent(directAssetMatch[2]) : null
 
@@ -763,19 +760,13 @@ async function submitModpackUrl() {
       }
     }
 
-    // 8. Try protocol URL
-    const handled = await handleUrl(inputUrl)
-    if (handled) {
-      closeAll()
-      return
-    }
-
-    // 9. Direct download URL (.mrpack / .zip)
-    if (/\.(mrpack|zip)(\?.*)?$/i.test(inputUrl)) {
-      const opened = await openModpack(inputUrl)
+    const handled = await routeModpackUrlInput(input, async (url) => {
+      const opened = await openModpack(url)
       if (opened.modpackPath) {
         await finishModpackInstall(opened.modpackPath, undefined, undefined, undefined)
       }
+    }, handleUrl)
+    if (handled) {
       closeAll()
       return
     }
