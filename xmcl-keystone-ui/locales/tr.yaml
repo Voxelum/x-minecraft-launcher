@@ -2074,7 +2074,7 @@ blueprint:
     loading: Önizleme yükleniyor...
     empty: Bu şemada gösterilecek blok yok.
     hint: '{count} blok · {x}×{y}×{z}'
-    controls: Bakmak için sürükleyin · WASD hareket · Boşluk/Shift yukarı/aşağı
+    controls: 'WASD: Hareket · Boşluk/Shift: Yukarı/Aşağı · Sürükleme: Bakış · Kaydırma: Yakınlaştırma'
   convert:
     title: Biçimi dönüştür
     hint: Bu şemayı başka bir biçime dönüştürün. Yeni bir dosya oluşturulacak.

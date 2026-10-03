@@ -163,13 +163,13 @@ watch(() => props.selectionMode, (v) => {
   anchorId.value = v ? (selectedId.value || undefined) : undefined
 })
 
-const onSelect = (event: MouseEvent, i: ProjectEntry) => {
+const onSelect = (event: MouseEvent, i: any) => {
   const modifiers = {
     ctrlKey: event.ctrlKey,
     metaKey: event.metaKey,
     shiftKey: event.shiftKey,
   }
-  if (i.installed.length > 0 && isMarketMultiSelectionClick(!!props.selectionMode, !!props.autoSelectionMode, modifiers)) {
+  if (i.installed && i.installed.length > 0 && isMarketMultiSelectionClick(!!props.selectionMode, !!props.autoSelectionMode, modifiers)) {
     if (!props.selectionMode) emit('update:selectionMode', true)
     const next = updateMarketSelection(
       props.items,
@@ -209,7 +209,7 @@ const onKeyPress = (e: KeyboardEvent) => {
     const _selections: Record<string, boolean> = {}
     for (const item of props.items) {
       if (typeof item === 'string' || !('id' in item)) continue
-      if (item.installed.length > 0) {
+      if ('installed' in item && Array.isArray((item as any).installed) && (item as any).installed.length > 0) {
         _selections[item.id] = true
       }
     }

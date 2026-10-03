@@ -1934,3 +1934,51 @@ migrateMinecraft:
   name: Migruj pliki Minecraft
 reinstall:
   name: Zainstaluj ponownie {version}
+
+blueprint:
+  name: Schemat | Schematy
+  count: '{count} schematów'
+  searchLocal: Szukaj schematów...
+  searchOnline: Szukaj online...
+  market: Rynek
+  provider: Źródło
+  import: Importuj
+  openFolder: Otwórz folder
+  refresh: Odśwież
+  empty: Nie znaleziono schematów. Zaimportuj plik .litematic / .schem / .nbt lub przeglądaj rynek.
+  dropHint: Upuść tutaj pliki schematów (.litematic / .schem / .nbt), aby je zaimportować.
+  selectHint: Wybierz schemat do podglądu.
+  blocks: '{count} bloków'
+  materials: Materiały
+  findMod: Znajdź moda dla tej przestrzeni nazw
+  compatible: Zgodny
+  incompatible: Brakujące mody
+  missingNamespaces: 'Brakujące mody dla: {namespaces}'
+  install: Zainstaluj
+  goTo: Strona internetowa
+  byAuthor: 'autor: {author}'
+  noDescription: Brak opisu.
+  mixedSources: Wyniki pochodzą ze wszystkich źródeł. Niektóre służą tylko do przeglądania — otwórz ich stronę, aby pobrać.
+  preview:
+    loading: Ładowanie podglądu...
+    empty: Ten schemat nie zawiera bloków do wyświetlenia.
+    hint: '{count} bloków · {x}×{y}×{z}'
+    controls: 'WASD: ruch · Spacja/Shift: góra/dół · Przeciąganie: rozglądanie · Przewijanie: zoom'
+  convert:
+    title: Konwertuj format
+    hint: Konwertuj ten schemat do innego formatu. Zostanie utworzony nowy plik.
+    target: Format docelowy
+    action: Konwertuj
+  replace:
+    title: Zastąp bloki
+    simple: Prosta zamiana
+    precise: Precyzyjna zamiana
+    simpleHint: Zastąp wszystkie bloki jednego typu.
+    preciseHint: Zastąp tylko bloki pasujące do podanych właściwości.
+    from: Z
+    to: Na
+    addRule: Dodaj regułę
+    newFile: Nowy plik
+    action: Zastąp
+  formats:
+    structure: Struktura Vanilla

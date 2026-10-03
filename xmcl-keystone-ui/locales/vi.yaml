@@ -1203,7 +1203,7 @@ blueprint:
     loading: Đang tải xem trước...
     empty: Bản thiết kế này không có khối nào để hiển thị.
     hint: '{count} khối · {x}×{y}×{z}'
-    controls: Kéo để nhìn · Di chuyển bằng WASD · Lên/Xuống bằng Space/Shift
+    controls: 'WASD: di chuyển · Space/Shift: lên/xuống · Kéo: xoay nhìn · Cuộn: thu phóng'
   convert:
     title: Chuyển đổi định dạng
     hint: Chuyển đổi bản thiết kế này sang định dạng khác. Một tệp mới sẽ được tạo.

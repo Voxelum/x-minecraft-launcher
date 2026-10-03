@@ -2032,3 +2032,51 @@ versionType:
   beta: 'بيتا'
   name: 'حالة'
   release: 'يطلق'
+
+blueprint:
+  name: مخطط | مخططات
+  count: '{count} مخططات'
+  searchLocal: البحث في المخططات...
+  searchOnline: البحث عبر الإنترنت...
+  market: المتجر
+  provider: المصدر
+  import: استيراد
+  openFolder: فتح المجلد
+  refresh: تحديث
+  empty: لم يتم العثور على مخططات. استورد ملف .litematic / .schem / .nbt أو تصفح المتجر.
+  dropHint: أسقط ملفات المخططات (.litematic / .schem / .nbt) هنا لاستيرادها.
+  selectHint: اختر مخططًا لمعاينته.
+  blocks: '{count} كتل'
+  materials: المواد
+  findMod: العثور على التعديل الخاص بمساحة الأسماء هذه
+  compatible: متوافق
+  incompatible: تعديلات مفقودة
+  missingNamespaces: 'تعديلات مفقودة لـ: {namespaces}'
+  install: تثبيت
+  goTo: الموقع الإلكتروني
+  byAuthor: بواسطة {author}
+  noDescription: لا يوجد وصف.
+  mixedSources: النتائج مدمجة من جميع المصادر. بعضها للتصفح فقط — افتح موقعها للتنزيل.
+  preview:
+    loading: جارٍ تحميل المعاينة...
+    empty: لا يحتوي هذا المخطط على كتل لعرضها.
+    hint: '{count} كتل · {x}×{y}×{z}'
+    controls: 'WASD: حركة · Space/Shift: أعلى/أسفل · السحب: نظر · التمرير: تكبير'
+  convert:
+    title: تحويل التنسيق
+    hint: حوّل هذا المخطط إلى تنسيق آخر. سيتم إنشاء ملف جديد.
+    target: التنسيق الهدف
+    action: تحويل
+  replace:
+    title: استبدال الكتل
+    simple: استبدال بسيط
+    precise: استبدال دقيق
+    simpleHint: استبدال جميع الكتل من نوع واحد.
+    preciseHint: استبدال الكتل المطابقة للخصائص المحددة فقط.
+    from: من
+    to: إلى
+    addRule: إضافة قاعدة
+    newFile: اسم الملف الجديد
+    action: استبدال
+  formats:
+    structure: بنية فانيلا

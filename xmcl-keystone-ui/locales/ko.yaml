@@ -2075,7 +2075,7 @@ blueprint:
     loading: 미리보기 로딩 중...
     empty: 이 설계도에는 표시할 블록이 없습니다.
     hint: '{count}개 블록 · {x}×{y}×{z}'
-    controls: 드래그하여 둘러보기 · WASD 이동 · Space/Shift 위/아래
+    controls: 'WASD: 이동 · Space/Shift: 위/아래 · 드래그: 둘러보기 · 스크롤: 확대/축소'
   convert:
     title: 포맷 변환
     hint: 이 설계도를 다른 포맷으로 변환합니다. 새 파일이 생성됩니다.

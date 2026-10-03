@@ -1960,3 +1960,51 @@ migrateMinecraft:
   name: Migra i file di Minecraft
 reinstall:
   name: Reinstalla {version}
+
+blueprint:
+  name: Progetto | Progetti
+  count: '{count} progetti'
+  searchLocal: Cerca progetti...
+  searchOnline: Cerca online...
+  market: Mercato
+  provider: Fonte
+  import: Importa
+  openFolder: Apri cartella
+  refresh: Aggiorna
+  empty: Nessun progetto trovato. Importa un file .litematic / .schem / .nbt o esplora il mercato.
+  dropHint: Trascina qui i file progetto (.litematic / .schem / .nbt) per importarli.
+  selectHint: Seleziona un progetto per visualizzarne l’anteprima.
+  blocks: '{count} blocchi'
+  materials: Materiali
+  findMod: Trova la mod per questo namespace
+  compatible: Compatibile
+  incompatible: Mod mancanti
+  missingNamespaces: 'Mod mancanti per: {namespaces}'
+  install: Installa
+  goTo: Sito web
+  byAuthor: di {author}
+  noDescription: Nessuna descrizione fornita.
+  mixedSources: Risultati misti da tutte le fonti. Alcuni sono solo consultabili — apri il loro sito per scaricare.
+  preview:
+    loading: Caricamento anteprima...
+    empty: Questo progetto non contiene blocchi da visualizzare.
+    hint: '{count} blocchi · {x}×{y}×{z}'
+    controls: 'WASD: muovi · Spazio/Maiusc: su/giù · Trascina: guarda · Scorri: zoom'
+  convert:
+    title: Converti formato
+    hint: Converti questo progetto in un altro formato. Verrà creato un nuovo file.
+    target: Formato di destinazione
+    action: Converti
+  replace:
+    title: Sostituisci blocchi
+    simple: Sostituzione semplice
+    precise: Sostituzione precisa
+    simpleHint: Sostituisci tutti i blocchi di un tipo.
+    preciseHint: Sostituisci solo i blocchi con le proprietà indicate.
+    from: Da
+    to: A
+    addRule: Aggiungi regola
+    newFile: Nuovo file
+    action: Sostituisci
+  formats:
+    structure: Struttura Vanilla

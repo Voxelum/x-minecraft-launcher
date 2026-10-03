@@ -1366,7 +1366,7 @@ blueprint:
     loading: 正在加载预览...
     empty: 此蓝图没有可显示的方块。
     hint: '{count} 个方块 · {x}×{y}×{z}'
-    controls: 拖动以观察 · WASD 移动 · 空格/Shift 上升/下降
+    controls: 'WASD：移动 · 空格/Shift：上升/下降 · 拖动：观察 · 滚动：缩放'
   convert:
     title: 转换格式
     hint: 将此蓝图转换为其他格式。将创建一个新文件。
