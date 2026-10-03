@@ -1,13 +1,15 @@
 <template>
   <div class="save-progress h-full flex flex-col select-none overflow-hidden relative">
     <!-- Loading State -->
-    <div v-if="loading" class="flex flex-col items-center justify-center flex-1 gap-3">
+    <div v-if="actualLoading" class="flex flex-col items-center justify-center flex-1 gap-3">
       <v-progress-circular indeterminate color="primary" size="36" />
       <span class="text-xs text-neutral-400">{{ t('save.progress.loading') }}</span>
     </div>
 
+    <ErrorView v-else-if="actualError" :error="actualError" @refresh="refresh" />
+
     <!-- Empty State -->
-    <div v-else-if="!progress || (!hasAdvancements && !hasQuests && !hasStats)" class="flex flex-col items-center justify-center flex-1 gap-2 text-neutral-500">
+    <div v-else-if="!actualProgress || (!hasAdvancements && !hasQuests && !hasStats)" class="flex flex-col items-center justify-center flex-1 gap-2 text-neutral-500">
       <v-icon size="40">history_toggle_off</v-icon>
       <span class="text-sm font-medium">{{ t('save.progress.noData') }}</span>
       <span class="text-xs text-center max-w-sm">{{ t('save.progress.noDataHint') }}</span>
@@ -62,6 +64,7 @@ import { useInstanceSaveProgress } from '@/composables/instanceSaveProgress'
 import { InstanceSaveProgress } from '@xmcl/runtime-api'
 import { toRef, ref, computed } from 'vue'
 import SaveProgressCanvas from './SaveProgressCanvas.vue'
+import ErrorView from './ErrorView.vue'
 
 const props = defineProps<{
   savePath: string
@@ -69,18 +72,25 @@ const props = defineProps<{
   category?: 'advancements' | 'quests'
   progress?: InstanceSaveProgress
   loading?: boolean
+  error?: unknown
 }>()
 
+const emit = defineEmits<{ (event: 'refresh'): void }>()
 const { t } = useI18n()
 const savePathRef = toRef(props, 'savePath')
 const instancePathRef = toRef(props, 'instancePath')
 
-const internal = props.progress === undefined
+const internal = props.loading === undefined && props.progress === undefined
   ? useInstanceSaveProgress(savePathRef, instancePathRef)
-  : { progress: ref(undefined), loading: ref(false) }
+  : undefined
 
-const actualProgress = computed(() => props.progress !== undefined ? props.progress : internal.progress.value)
-const actualLoading = computed(() => props.loading !== undefined ? props.loading : internal.loading.value)
+const actualProgress = computed(() => internal ? internal.progress.value : props.progress)
+const actualLoading = computed(() => internal ? internal.loading.value : props.loading)
+const actualError = computed(() => internal ? internal.error.value : props.error)
+function refresh() {
+  if (internal) internal.refresh()
+  else emit('refresh')
+}
 
 const hasAdvancements = computed(() => (actualProgress.value?.advancements?.items?.length ?? 0) > 0)
 const hasQuests = computed(() => !!actualProgress.value?.quests && actualProgress.value.quests.chapters.length > 0)

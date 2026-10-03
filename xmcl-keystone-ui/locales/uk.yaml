@@ -1201,28 +1201,21 @@ save:
   independent: Екземпляр використовує незалежну папку збережень
   levelName: Назва рівня
   map:
-    tabTitle: Карта світу
+    tabTitle: "Карта світу"
   progress:
-    tabTitle: Прогрес і квести
-    loading: Завантаження прогресу...
-    noData: Прогрес відсутній
-    noDataHint: Пограйте в цьому світі, щоб згенерувати досягнення, статистику та квести.
-    playTime: Час у грі
-    deaths: Смертей
-    mobKills: Вбито мобів
-    minedBlocks: Добуто блоків
-    quests: Квести
-    advancements: Досягнення
-    completed: виконано
-    done: Виконано
-    inProgress: В процесі
-    all: Всі
-    treeView: Вигляд дерева
-    listView: Список
-    filterPlaceholder: Фільтр за назвою...
-    root: Корінь
-    fullscreen: На весь екран
-    exitFullscreen: Згорнути з повного екрана
+    loading: "Завантаження прогресу…"
+    noData: "Прогрес не знайдено"
+    noDataHint: "Грайте в цьому світі, щоб з’явилися досягнення, статистика та прогрес завдань."
+    quests: "Завдання"
+    advancements: "Досягнення"
+    done: "Завершено"
+    inProgress: "У процесі"
+    all: "Усі"
+    treeView: "Дерево"
+    filterPlaceholder: "Фільтр за назвою…"
+    root: "Початок"
+    exitFullscreen: "Вийти з повноекранного режиму"
+    locked: "Заблоковано"
   name: Збереження | Збереження
   search: Шукати збереження
   seed: Seed

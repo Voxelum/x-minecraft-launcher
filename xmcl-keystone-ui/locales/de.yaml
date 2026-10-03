@@ -1223,28 +1223,21 @@ resourcepack:
   search: Ressourcenpakete suchen...
 save:
   map:
-    tabTitle: Weltkarte
+    tabTitle: "Weltkarte"
   progress:
-    tabTitle: Fortschritt & Quests
-    loading: Fortschritt wird geladen...
-    noData: Kein Fortschritt gefunden
-    noDataHint: Spiele in dieser Welt, um Erfolge, Statistiken und Quests zu generieren.
-    playTime: Spielzeit
-    deaths: Tode
-    mobKills: Getötete Monster
-    minedBlocks: Abgebaute Blöcke
-    quests: Quests
-    advancements: Fortschritte
-    completed: abgeschlossen
-    done: Fertig
-    inProgress: In Bearbeitung
-    all: Alle
-    treeView: Strukturansicht
-    listView: Listenansicht
-    filterPlaceholder: Nach Name filtern...
-    root: Wurzel
-    fullscreen: Vollbild
-    exitFullscreen: Vollbild beenden
+    loading: "Fortschritt wird geladen…"
+    noData: "Kein Fortschritt gefunden"
+    noDataHint: "Spiele in dieser Welt, um Fortschritte, Statistiken und Questfortschritte zu erfassen."
+    quests: "Quests"
+    advancements: "Fortschritte"
+    done: "Abgeschlossen"
+    inProgress: "In Bearbeitung"
+    all: "Alle"
+    treeView: "Baumansicht"
+    filterPlaceholder: "Nach Namen filtern…"
+    root: "Wurzel"
+    exitFullscreen: "Vollbild verlassen"
+    locked: "Gesperrt"
   linkShared: Spielstände zwischen Instanzen teilen
   linkSharedHint: >-
     Den Ordner saves dieser Instanz mit dem globalen gemeinsamen Ordner

@@ -1137,28 +1137,21 @@ resourcepack:
   search: Buscar paquetes de recursos...
 save:
   map:
-    tabTitle: World Map
+    tabTitle: "Mapa do mundo"
   progress:
-    tabTitle: Progress & Quests
-    loading: Loading progress...
-    noData: No Progress Found
-    noDataHint: Play in this world to generate achievements, statistics, and quest progress.
-    playTime: Play Time
-    deaths: Deaths
-    mobKills: Mobs Killed
-    minedBlocks: Blocks Mined
-    quests: Quests
-    advancements: Advancements
-    completed: completed
-    done: Done
-    inProgress: In Progress
-    all: All
-    treeView: Tree View
-    listView: List View
-    filterPlaceholder: Filter by name...
-    root: Root
-    fullscreen: Fullscreen
-    exitFullscreen: Exit Fullscreen
+    loading: "Cargando progreso…"
+    noData: "Non se atopou progreso"
+    noDataHint: "Xoga neste mundo para xerar progresos, estatísticas e avances nas misións."
+    quests: "Misións"
+    advancements: "Progresos"
+    done: "Completado"
+    inProgress: "En curso"
+    all: "Todos"
+    treeView: "Vista en árbore"
+    filterPlaceholder: "Filtrar por nome…"
+    root: "Raíz"
+    exitFullscreen: "Saír da pantalla completa"
+    locked: "Bloqueado"
   linkShared: Compartir partidas entre instancias
   linkSharedHint: >-
     Vincular o cartafol saves desta instancia co cartafol compartido global para

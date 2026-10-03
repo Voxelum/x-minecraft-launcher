@@ -11,15 +11,11 @@ import { pathExists, readdir, readFile, stat } from 'fs-extra'
 import { basename, dirname, join } from 'path'
 import { exists } from '../util/fs'
 import { parseSnbt } from './snbt'
+import { AdvancementDefinition, readAdvancementDefinitions, resolveProgressVersion } from './advancements'
 
-function normalizeId(id: any): string {
+function normalizeId(id: unknown): string {
   if (id === undefined || id === null) return ''
-  let s = String(id).trim().replace(/^[+]/, '').replace(/[bslfdBSLFD]$/, '')
-  if (s.startsWith('0x') || s.startsWith('0X')) {
-    s = s.substring(2)
-  }
-  const stripped = s.replace(/^0+/, '')
-  return (stripped || '0').toLowerCase()
+  return String(id)
 }
 
 export function extractCleanItemId(raw: any): string {
@@ -51,123 +47,6 @@ export function cleanTitle(title?: string): string {
   return cleaned || title.trim()
 }
 
-// Fallback metadata for standard vanilla advancements to ensure rich UI even if client JAR is minimal
-// Comprehensive metadata for standard vanilla advancements
-type AdvMeta = [id: string, icon: string, frame: 'task' | 'goal' | 'challenge', title: string, description: string, parent?: string]
-
-const RAW_ADVANCEMENTS: AdvMeta[] = [
-  // Story Branch
-  ['minecraft:story/root', 'minecraft:crafting_table', 'task', 'Minecraft', 'The heart and story of the game'],
-  ['minecraft:story/mine_stone', 'minecraft:wooden_pickaxe', 'task', 'Stone Age', 'Mine stone with your new pickaxe', 'minecraft:story/root'],
-  ['minecraft:story/upgrade_gear', 'minecraft:stone_pickaxe', 'task', 'Getting an Upgrade', 'Construct a better pickaxe', 'minecraft:story/mine_stone'],
-  ['minecraft:story/smelt_iron', 'minecraft:iron_ingot', 'task', 'Acquire Hardware', 'Smelt an iron ingot', 'minecraft:story/upgrade_gear'],
-  ['minecraft:story/obtain_armor', 'minecraft:iron_chestplate', 'task', 'Suit Up', 'Protect yourself with a piece of iron armor', 'minecraft:story/smelt_iron'],
-  ['minecraft:story/lava_bucket', 'minecraft:lava_bucket', 'task', 'Hot Stuff', 'Fill a bucket with lava', 'minecraft:story/smelt_iron'],
-  ['minecraft:story/iron_tools', 'minecraft:iron_pickaxe', 'task', 'Isn\'t It Iron Pick', 'Upgrade your pickaxe', 'minecraft:story/smelt_iron'],
-  ['minecraft:story/deflect_arrow', 'minecraft:shield', 'task', 'Not Today, Thank You', 'Deflect a projectile with a shield', 'minecraft:story/obtain_armor'],
-  ['minecraft:story/form_obsidian', 'minecraft:obsidian', 'task', 'Ice Bucket Challenge', 'Obtain a block of obsidian', 'minecraft:story/lava_bucket'],
-  ['minecraft:story/mine_diamond', 'minecraft:diamond', 'task', 'Diamonds!', 'Acquire diamonds', 'minecraft:story/iron_tools'],
-  ['minecraft:story/enter_the_nether', 'minecraft:flint_and_steel', 'task', 'We Need to Go Deeper', 'Build, light, and enter a Nether Portal', 'minecraft:story/form_obsidian'],
-  ['minecraft:story/shiny_gear', 'minecraft:diamond_chestplate', 'challenge', 'Cover Me with Diamonds', 'Diamond armor saves lives', 'minecraft:story/mine_diamond'],
-  ['minecraft:story/enchant_item', 'minecraft:enchanted_book', 'task', 'Enchanter', 'Enchant an item at an Enchanting Table', 'minecraft:story/mine_diamond'],
-  ['minecraft:story/cure_zombie_villager', 'minecraft:golden_apple', 'goal', 'Zombie Doctor', 'Weaken and cure a Zombie Villager', 'minecraft:story/mine_diamond'],
-  ['minecraft:story/follow_ender_eye', 'minecraft:ender_eye', 'task', 'Eye Spy', 'Follow an Eye of Ender', 'minecraft:story/enter_the_nether'],
-  ['minecraft:story/enter_the_end', 'minecraft:end_portal_frame', 'task', 'The End?', 'Enter the End Portal', 'minecraft:story/follow_ender_eye'],
-
-  // Nether Branch
-  ['minecraft:nether/root', 'minecraft:red_nether_bricks', 'task', 'Nether', 'Bring summer clothes'],
-  ['minecraft:nether/fast_travel', 'minecraft:map', 'challenge', 'Subspace Bubble', 'Use the Nether to travel 7km in the Overworld', 'minecraft:nether/root'],
-  ['minecraft:nether/find_fortress', 'minecraft:nether_bricks', 'task', 'A Terrible Fortress', 'Break your way into a Nether Fortress', 'minecraft:nether/root'],
-  ['minecraft:nether/return_to_sender', 'minecraft:fire_charge', 'challenge', 'Return to Sender', 'Destroy a Ghast with a fireball', 'minecraft:nether/root'],
-  ['minecraft:nether/find_bastion', 'minecraft:polished_blackstone_bricks', 'task', 'Those Were the Days', 'Enter a bastion remnant', 'minecraft:nether/root'],
-  ['minecraft:nether/obtain_crying_obsidian', 'minecraft:crying_obsidian', 'task', 'Who is Cutting Onions?', 'Obtain crying obsidian', 'minecraft:nether/root'],
-  ['minecraft:nether/distract_piglin', 'minecraft:gold_ingot', 'task', 'Oh Shiny', 'Distract a piglin with gold', 'minecraft:nether/root'],
-  ['minecraft:nether/ride_strider', 'minecraft:warped_fungus_on_a_stick', 'task', 'This Boat Has Legs', 'Ride a strider with a warped fungus on a stick', 'minecraft:nether/root'],
-  ['minecraft:nether/obtain_blaze_rod', 'minecraft:blaze_rod', 'task', 'Into Fire', 'Relieve a Blaze of its rod', 'minecraft:nether/find_fortress'],
-  ['minecraft:nether/loot_bastion', 'minecraft:chest', 'task', 'War Pigs', 'Loot a chest in a bastion remnant', 'minecraft:nether/find_bastion'],
-  ['minecraft:nether/brew_potion', 'minecraft:potion', 'task', 'Local Brewery', 'Brew a potion', 'minecraft:nether/obtain_blaze_rod'],
-  ['minecraft:nether/get_wither_skull', 'minecraft:wither_skeleton_skull', 'task', 'Spooky Scary Skeleton', 'Obtain a Wither Skeleton Skull', 'minecraft:nether/find_fortress'],
-  ['minecraft:nether/summon_wither', 'minecraft:nether_star', 'challenge', 'Withering Heights', 'Summon the Wither', 'minecraft:nether/get_wither_skull'],
-  ['minecraft:nether/create_beacon', 'minecraft:beacon', 'task', 'Bring Home the Beacon', 'Construct and place a Beacon', 'minecraft:nether/summon_wither'],
-  ['minecraft:nether/create_full_beacon', 'minecraft:beacon', 'goal', 'Beaconator', 'Bring a beacon to full power', 'minecraft:nether/create_beacon'],
-  ['minecraft:nether/explore_nether', 'minecraft:netherite_boots', 'challenge', 'Hot Tourist Destinations', 'Explore all Nether biomes', 'minecraft:nether/root'],
-  ['minecraft:nether/all_potions', 'minecraft:milk_bucket', 'challenge', 'A Furious Cocktail', 'Have every potion effect applied at the same time', 'minecraft:nether/brew_potion'],
-  ['minecraft:nether/all_effects', 'minecraft:bucket', 'challenge', 'How Did We Get Here?', 'Have every effect applied at the same time', 'minecraft:nether/all_potions'],
-  ['minecraft:nether/charge_respawn_anchor', 'minecraft:respawn_anchor', 'task', 'Not Quite "Nine" Lives', 'Charge a respawn anchor to the maximum', 'minecraft:nether/obtain_crying_obsidian'],
-  ['minecraft:nether/netherite_armor', 'minecraft:netherite_chestplate', 'challenge', 'Cover Me in Debris', 'Get a full suit of netherite armor', 'minecraft:nether/obtain_crying_obsidian'],
-  ['minecraft:nether/uneasy_alliance', 'minecraft:ghast_tear', 'challenge', 'Uneasy Alliance', 'Rescue a Ghast from the Nether, bring it safely home... and kill it', 'minecraft:nether/return_to_sender'],
-
-  // End Branch
-  ['minecraft:end/root', 'minecraft:end_stone', 'task', 'The End', 'Or the beginning?'],
-  ['minecraft:end/kill_dragon', 'minecraft:dragon_head', 'task', 'Free the End', 'Good luck', 'minecraft:end/root'],
-  ['minecraft:end/dragon_egg', 'minecraft:dragon_egg', 'goal', 'The Next Generation', 'Hold the Dragon Egg', 'minecraft:end/kill_dragon'],
-  ['minecraft:end/enter_end_gateway', 'minecraft:ender_pearl', 'task', 'Remote Getaway', 'Escape the island', 'minecraft:end/kill_dragon'],
-  ['minecraft:end/respawn_dragon', 'minecraft:end_crystal', 'goal', 'The End... Again...', 'Respawn the Ender Dragon', 'minecraft:end/kill_dragon'],
-  ['minecraft:end/dragon_breath', 'minecraft:dragon_breath', 'goal', 'You Need a Mint', 'Collect dragon\'s breath in a glass bottle', 'minecraft:end/kill_dragon'],
-  ['minecraft:end/find_end_city', 'minecraft:purpur_block', 'task', 'The City at the End of the Game', 'Go on in', 'minecraft:end/enter_end_gateway'],
-  ['minecraft:end/elytra', 'minecraft:elytra', 'goal', 'Sky\'s the Limit', 'Find Elytra', 'minecraft:end/find_end_city'],
-  ['minecraft:end/levitate', 'minecraft:shulker_shell', 'challenge', 'Great View From Up Here', 'Levitate up 50 blocks from the attacks of a Shulker', 'minecraft:end/find_end_city'],
-
-  // Adventure Branch
-  ['minecraft:adventure/root', 'minecraft:map', 'task', 'Adventure', 'Adventure, exploration and combat'],
-  ['minecraft:adventure/kill_a_mob', 'minecraft:iron_sword', 'task', 'Monster Hunter', 'Kill any hostile monster', 'minecraft:adventure/root'],
-  ['minecraft:adventure/shoot_arrow', 'minecraft:bow', 'task', 'Take Aim', 'Shoot something with an arrow', 'minecraft:adventure/kill_a_mob'],
-  ['minecraft:adventure/sleep_in_bed', 'minecraft:red_bed', 'task', 'Sweet Dreams', 'Sleep in a bed to change your respawn point', 'minecraft:adventure/root'],
-  ['minecraft:adventure/trade', 'minecraft:emerald', 'task', 'What a Deal!', 'Successfully trade with a Villager', 'minecraft:adventure/root'],
-  ['minecraft:adventure/trade_at_world_height', 'minecraft:emerald', 'goal', 'Star Trader', 'Trade with a villager at the build height limit', 'minecraft:adventure/trade'],
-  ['minecraft:adventure/honey_block_slide', 'minecraft:honey_block', 'task', 'Sticky Situation', 'Jump into a honey block to break your fall', 'minecraft:adventure/root'],
-  ['minecraft:adventure/ol_betsy', 'minecraft:crossbow', 'task', 'Ol\' Betsy', 'Shoot a crossbow', 'minecraft:adventure/kill_a_mob'],
-  ['minecraft:adventure/whos_the_pillager_now', 'minecraft:crossbow', 'task', 'Who\'s the Pillager Now?', 'Give a Pillager a taste of their own medicine', 'minecraft:adventure/ol_betsy'],
-  ['minecraft:adventure/two_birds_one_arrow', 'minecraft:crossbow', 'challenge', 'Two Birds, One Arrow', 'Kill two Phantoms with a piercing arrow', 'minecraft:adventure/ol_betsy'],
-  ['minecraft:adventure/arbalistic', 'minecraft:crossbow', 'challenge', 'Arbalistic', 'Kill five unique mobs with one crossbow shot', 'minecraft:adventure/ol_betsy'],
-  ['minecraft:adventure/voluntary_exile', 'minecraft:ominous_banner', 'task', 'Voluntary Exile', 'Kill a raid captain', 'minecraft:adventure/root'],
-  ['minecraft:adventure/hero_of_the_village', 'minecraft:emerald', 'challenge', 'Hero of the Village', 'Successfully defend a village from a raid', 'minecraft:adventure/voluntary_exile'],
-  ['minecraft:adventure/sniper_duel', 'minecraft:arrow', 'challenge', 'Sniper Duel', 'Kill a Skeleton from more than 50 meters away', 'minecraft:adventure/shoot_arrow'],
-  ['minecraft:adventure/bullseye', 'minecraft:target', 'challenge', 'Bullseye', 'Hit the bullseye of a Target block from at least 30 meters away', 'minecraft:adventure/shoot_arrow'],
-  ['minecraft:adventure/totem_of_undying', 'minecraft:totem_of_undying', 'goal', 'Postmortal', 'Use a Totem of Undying to cheat death', 'minecraft:adventure/kill_a_mob'],
-  ['minecraft:adventure/adventuring_time', 'minecraft:diamond_boots', 'challenge', 'Adventuring Time', 'Discover every biome', 'minecraft:adventure/root'],
-  ['minecraft:adventure/fall_from_world_height', 'minecraft:water_bucket', 'task', 'Caves & Cliffs', 'Free fall from the top of the world to the bottom and survive', 'minecraft:adventure/root'],
-  ['minecraft:adventure/spyglass_at_parrot', 'minecraft:spyglass', 'task', 'Is It a Bird?', 'Look at a parrot through a spyglass', 'minecraft:adventure/root'],
-  ['minecraft:adventure/spyglass_at_ghast', 'minecraft:spyglass', 'task', 'Is It a Balloon?', 'Look at a Ghast through a spyglass', 'minecraft:adventure/spyglass_at_parrot'],
-  ['minecraft:adventure/spyglass_at_dragon', 'minecraft:spyglass', 'task', 'Is It a Plane?', 'Look at the Ender Dragon through a spyglass', 'minecraft:adventure/spyglass_at_ghast'],
-
-  // Husbandry Branch
-  ['minecraft:husbandry/root', 'minecraft:hay_block', 'task', 'Husbandry', 'The world is full of friends and food'],
-  ['minecraft:husbandry/breed_an_animal', 'minecraft:wheat', 'task', 'The Parrots and the Bats', 'Breed two animals together', 'minecraft:husbandry/root'],
-  ['minecraft:husbandry/plant_seed', 'minecraft:wheat_seeds', 'task', 'A Seedy Place', 'Plant a seed and watch it grow', 'minecraft:husbandry/root'],
-  ['minecraft:husbandry/balanced_diet', 'minecraft:apple', 'challenge', 'A Balanced Diet', 'Eat everything that is edible', 'minecraft:husbandry/plant_seed'],
-  ['minecraft:husbandry/tame_an_animal', 'minecraft:lead', 'task', 'Best Friends Forever', 'Tame an animal', 'minecraft:husbandry/root'],
-  ['minecraft:husbandry/fishy_business', 'minecraft:fishing_rod', 'task', 'Fishy Business', 'Catch a fish', 'minecraft:husbandry/root'],
-  ['minecraft:husbandry/tactical_fishing', 'minecraft:pufferfish_bucket', 'task', 'Tactical Fishing', 'Catch a fish... without a fishing rod!', 'minecraft:husbandry/root'],
-  ['minecraft:husbandry/bred_all_animals', 'minecraft:golden_carrot', 'challenge', 'Two by Two', 'Breed all the animals!', 'minecraft:husbandry/breed_an_animal'],
-  ['minecraft:husbandry/complete_catalogue', 'minecraft:cod', 'challenge', 'A Complete Catalogue', 'Tame all cat variants!', 'minecraft:husbandry/tame_an_animal'],
-  ['minecraft:husbandry/obtain_netherite_hoe', 'minecraft:netherite_hoe', 'challenge', 'Serious Dedication', 'Upgrade a hoe with Netherite', 'minecraft:husbandry/root'],
-  ['minecraft:husbandry/safely_harvest_honey', 'minecraft:honey_bottle', 'task', 'Bee Our Guest', 'Collect Honey from a Beehive without aggravating the bees', 'minecraft:husbandry/root'],
-  ['minecraft:husbandry/silk_touch_nest', 'minecraft:bee_nest', 'task', 'Total Beelocation', 'Move a Bee Nest with 3 bees inside using Silk Touch', 'minecraft:husbandry/safely_harvest_honey'],
-  ['minecraft:husbandry/wax_on', 'minecraft:honeycomb', 'task', 'Wax On', 'Apply Honeycomb to a Copper block', 'minecraft:husbandry/safely_harvest_honey'],
-  ['minecraft:husbandry/wax_off', 'minecraft:stone_axe', 'task', 'Wax Off', 'Scrape wax off of a Copper block', 'minecraft:husbandry/wax_on'],
-  ['minecraft:husbandry/axolotl_in_a_bucket', 'minecraft:axolotl_bucket', 'task', 'The Cutest Predator', 'Catch an Axolotl in a bucket', 'minecraft:husbandry/tactical_fishing'],
-  ['minecraft:husbandry/kill_axolotl_target', 'minecraft:tropical_fish_bucket', 'task', 'The Healing Power of Friendship!', 'Team up with an axolotl and win a fight', 'minecraft:husbandry/axolotl_in_a_bucket'],
-  ['minecraft:husbandry/make_a_sign_glow', 'minecraft:glow_ink_sac', 'task', 'Glow and Behold!', 'Make the text of a sign glow', 'minecraft:husbandry/root'],
-  ['minecraft:husbandry/ride_a_boat_with_a_goat', 'minecraft:oak_boat', 'task', 'Whatever Floats Your Goat!', 'Get in a boat and float with a goat', 'minecraft:husbandry/root'],
-  ['minecraft:husbandry/leash_all_frog_variants', 'minecraft:lead', 'challenge', 'When the Squad Hops into Town', 'Get each frog variant on a lead', 'minecraft:husbandry/breed_an_animal'],
-  ['minecraft:husbandry/froglights', 'minecraft:ochre_froglight', 'challenge', 'With Our Powers Combined!', 'Have all Froglights in your inventory', 'minecraft:husbandry/root'],
-  ['minecraft:husbandry/allay_drop_item_in_note_block', 'minecraft:note_block', 'task', 'Birthday Song', 'Have an Allay drop a cake at a Note Block', 'minecraft:husbandry/root'],
-  ['minecraft:husbandry/tadpole_in_a_bucket', 'minecraft:tadpole_bucket', 'task', 'Bukkit Bukkit', 'Catch a Tadpole in a bucket', 'minecraft:husbandry/tactical_fishing'],
-]
-
-const VANILLA_ADVANCEMENT_METADATA: Record<string, {
-  parent?: string
-  icon: string
-  frame: 'task' | 'goal' | 'challenge'
-  title: string
-  description: string
-}> = {}
-
-for (const [id, icon, frame, title, description, parent] of RAW_ADVANCEMENTS) {
-  VANILLA_ADVANCEMENT_METADATA[id] = { parent, icon, frame, title, description }
-}
-
 async function findLatestFile(dir: string, preferredUuid?: string): Promise<{ file: string; uuid: string } | undefined> {
   if (!await exists(dir)) return undefined
   const files = await readdir(dir).catch(() => [] as string[])
@@ -190,7 +69,9 @@ async function findLatestFile(dir: string, preferredUuid?: string): Promise<{ fi
         latestMtime = s.mtimeMs
         latestFile = f
       }
-    } catch {}
+    } catch (cause) {
+      throw new Error(`Cannot inspect progress file: ${join(dir, f)}`, { cause })
+    }
   }
 
   return { file: join(dir, latestFile), uuid: latestFile.replace(/\.json$/, '') }
@@ -198,7 +79,7 @@ async function findLatestFile(dir: string, preferredUuid?: string): Promise<{ fi
 
 export async function parseAdvancements(
   filePath?: string,
-  extraDefinitions?: Record<string, { parent?: string; icon: string; frame: 'task' | 'goal' | 'challenge'; title: string; description: string }>,
+  extraDefinitions: Record<string, AdvancementDefinition> = {},
   includeUnearned: boolean = false,
 ): Promise<{
   completed: number
@@ -216,10 +97,7 @@ export async function parseAdvancements(
     const categories: Record<string, number> = {}
     let completed = 0
 
-    const allDefs: Record<string, { parent?: string; icon?: string; frame?: 'task' | 'goal' | 'challenge'; title?: string; description?: string }> = {
-      ...VANILLA_ADVANCEMENT_METADATA,
-      ...(extraDefinitions || {}),
-    }
+    const allDefs = extraDefinitions
 
     const validPlayerKeys = Object.keys(json).filter(k => k !== 'DataVersion' && !k.includes('recipes/'))
     const keys = includeUnearned
@@ -246,7 +124,7 @@ export async function parseAdvancements(
         mod,
         done,
         criteriaCompleted,
-        totalCriteria: criteriaCompleted,
+        totalCriteria: def?.totalCriteria ?? criteriaCompleted,
         completedTime: done && criteriaCompleted > 0 ? (Object.values(criteria)[0] as string) : undefined,
         parent: def?.parent,
         icon: def?.icon || '',
@@ -266,8 +144,8 @@ export async function parseAdvancements(
     })
 
     return { completed, categories, items }
-  } catch {
-    return { completed: 0, categories: {}, items: [] }
+  } catch (cause) {
+    throw new Error(`Cannot read advancements: ${filePath}`, { cause })
   }
 }
 
@@ -429,7 +307,9 @@ export async function readCompletedQuestIds(playerProgressFile: string): Promise
         }
       }
     }
-  } catch {}
+  } catch (cause) {
+    throw new Error(`Cannot read quest progress ${playerProgressFile}: ${String(cause)}`, { cause })
+  }
   return completedQuestIds
 }
 
@@ -577,7 +457,9 @@ export async function parseFtbQuests(
             quests: questItems,
           })
         }
-      } catch {}
+      } catch (cause) {
+        throw new Error(`Cannot read quest chapter ${join(chaptersDir, file)}: ${String(cause)}`, { cause })
+      }
     }
 
     if (totalAllQuests === 0) return undefined
@@ -591,8 +473,8 @@ export async function parseFtbQuests(
       percentage: overallPercentage,
       chapters,
     }
-  } catch {
-    return undefined
+  } catch (cause) {
+    throw new Error(`Cannot read quests for save ${savePath}: ${String(cause)}`, { cause })
   }
 }
 
@@ -620,30 +502,6 @@ const NS_ALIASES: Record<string, string[]> = {
 }
 
 
-async function resolveClientJarPath(instancePath: string, gameDataPath?: string): Promise<string | undefined> {
-  if (!gameDataPath) return undefined
-  try {
-    const versionsDir = join(gameDataPath, 'versions')
-    if (!await pathExists(versionsDir)) return undefined
-
-    const instFile = join(instancePath, 'instance.json')
-    if (await pathExists(instFile)) {
-      const instJson = JSON.parse(await readFile(instFile, 'utf-8'))
-      const ver = instJson?.runtime?.minecraft || instJson?.version
-      if (ver) {
-        const candidate = join(versionsDir, ver, `${ver}.jar`)
-        if (await pathExists(candidate)) return candidate
-      }
-    }
-    const dirs = await readdir(versionsDir).catch(() => [] as string[])
-    for (const d of dirs.reverse()) {
-      const jar = join(versionsDir, d, `${d}.jar`)
-      if (await pathExists(jar)) return jar
-    }
-  } catch {}
-  return undefined
-}
-
 function getTextureSubpaths(name: string): string[] {
   const clean = name.replace(/^\/+/, '').replace(/\.png$/i, '')
   if (name.includes('/') || name.endsWith('.png')) {
@@ -663,15 +521,16 @@ function getTextureSubpaths(name: string): string[] {
 async function extractLocalTextures(
   itemIds: string[],
   instancePath: string,
-  gameDataPath?: string,
-  existingClientFs?: FileSystem,
+  clientJarPath?: string,
 ): Promise<Record<string, string>> {
   const result: Record<string, string> = {}
   if (itemIds.length === 0) return result
+  const clientStat = clientJarPath && await pathExists(clientJarPath) ? await stat(clientJarPath) : undefined
+  const cacheKey = (id: string) => JSON.stringify([instancePath, clientJarPath, clientStat?.mtimeMs, clientStat?.size, id])
 
   const missingIds: string[] = []
   for (const id of itemIds) {
-    const cached = localTextureCache.get(id)
+    const cached = localTextureCache.get(cacheKey(id))
     if (cached !== undefined) {
       if (cached) result[id] = cached
     } else {
@@ -683,13 +542,10 @@ async function extractLocalTextures(
   const openedFs: FileSystem[] = []
 
   try {
-    let clientFs: FileSystem | undefined = existingClientFs
-    if (!clientFs && gameDataPath) {
-      const clientJarPath = await resolveClientJarPath(instancePath, gameDataPath)
-      if (clientJarPath) {
-        clientFs = await openFileSystem(clientJarPath).catch(() => undefined)
-        if (clientFs) openedFs.push(clientFs)
-      }
+    let clientFs: FileSystem | undefined
+    if (clientJarPath) {
+      clientFs = await openFileSystem(clientJarPath).catch(() => undefined)
+      if (clientFs) openedFs.push(clientFs)
     }
 
     // Search local instance disk assets (KubeJS, openloader, resources, resourcepacks)
@@ -778,11 +634,8 @@ async function extractLocalTextures(
       if (foundDataUrl) {
         result[itemId] = foundDataUrl
         result[cleanId] = foundDataUrl
-        localTextureCache.set(itemId, foundDataUrl)
-        localTextureCache.set(cleanId, foundDataUrl)
-      } else {
-        localTextureCache.set(itemId, '')
-        localTextureCache.set(cleanId, '')
+        localTextureCache.set(cacheKey(itemId), foundDataUrl)
+        localTextureCache.set(cacheKey(cleanId), foundDataUrl)
       }
     }))
 
@@ -843,28 +696,13 @@ async function readTextureFromFs(fs: FileSystem, ns: string, name: string): Prom
   return undefined
 }
 
-interface ProgressCacheEntry {
-  savePath: string
-  instancePath: string
-  playerUuid?: string
-  levelDatMtime: number
-  advFile?: string
-  advMtime: number
-  statsFile?: string
-  statsMtime: number
-  questPlayerFile?: string
-  questPlayerMtime: number
-  data: InstanceSaveProgress
-}
-
-const progressBackendCache = new Map<string, ProgressCacheEntry>()
-let cachedClientFs: { path: string; fs: FileSystem } | undefined
-
 export async function readSaveProgress(
   savePath: string,
   instancePath: string,
   gameDataPath?: string,
   preferredPlayerUuid?: string,
+  locale = 'en',
+  versionId?: string,
 ): Promise<InstanceSaveProgress> {
   const saveName = basename(savePath)
 
@@ -878,127 +716,22 @@ export async function readSaveProgress(
   const advInfo = await findLatestFile(join(savePath, 'advancements'), preferredPlayerUuid)
   const statsInfo = await findLatestFile(join(savePath, 'stats'), preferredPlayerUuid || advInfo?.uuid)
   const playerUuid = advInfo?.uuid || statsInfo?.uuid || preferredPlayerUuid
-  const questPlayerFile = await locateFtbPlayerFile(savePath, playerUuid)
-
-  let advMtime = 0
-  if (advInfo?.file) {
-    try {
-      const s = await stat(advInfo.file).catch(() => undefined)
-      if (s) advMtime = s.mtimeMs
-    } catch {}
-  }
-
-  let statsMtime = 0
-  if (statsInfo?.file) {
-    try {
-      const s = await stat(statsInfo.file).catch(() => undefined)
-      if (s) statsMtime = s.mtimeMs
-    } catch {}
-  }
-
-  let questPlayerMtime = 0
-  if (questPlayerFile) {
-    try {
-      const s = await stat(questPlayerFile).catch(() => undefined)
-      if (s) questPlayerMtime = s.mtimeMs
-    } catch {}
-  }
-
-  const cached = progressBackendCache.get(savePath)
-  if (cached && cached.instancePath === instancePath && cached.playerUuid === playerUuid) {
-    const isLevelUnchanged = cached.levelDatMtime === levelDatMtime
-    const isAdvUnchanged = cached.advMtime === advMtime
-    const isStatsUnchanged = cached.statsMtime === statsMtime
-    const isQuestUnchanged = cached.questPlayerMtime === questPlayerMtime
-
-    // 1. Fully unchanged -> return cached data immediately (< 0.1ms)
-    if (isLevelUnchanged && isAdvUnchanged && isStatsUnchanged && isQuestUnchanged) {
-      return cached.data
-    }
-
-    // 2. Incremental update when player progress changed (< 1ms)
-    let canIncremental = true
-
-    if (!isQuestUnchanged && cached.data.quests && questPlayerFile) {
-      const newDoneIds = await readCompletedQuestIds(questPlayerFile)
-      let totalCompleted = 0
-      let totalAll = 0
-      for (const ch of cached.data.quests.chapters) {
-        let chCompleted = 0
-        for (const q of ch.quests) {
-          q.done = newDoneIds.has(q.id)
-          if (q.done) chCompleted++
-          if (!q.done && q.dependencies?.length) {
-            q.locked = q.dependencies.some(d => !newDoneIds.has(d))
-          } else {
-            q.locked = false
-          }
-        }
-        ch.completedQuests = chCompleted
-        ch.percentage = ch.totalQuests > 0 ? Math.round((chCompleted / ch.totalQuests) * 100) : 0
-        totalCompleted += chCompleted
-        totalAll += ch.totalQuests
-      }
-      cached.data.quests.completedQuests = totalCompleted
-      cached.data.quests.percentage = totalAll > 0 ? Math.round((totalCompleted / totalAll) * 100) : 0
-      cached.questPlayerMtime = questPlayerMtime
-    } else if (!isQuestUnchanged && !cached.data.quests && questPlayerFile) {
-      canIncremental = false
-    }
-
-    if (!isAdvUnchanged && cached.data.advancements && advInfo?.file) {
-      try {
-        const content = await readFile(advInfo.file, 'utf-8')
-        const json = JSON.parse(content)
-        let completed = 0
-        const categories: Record<string, number> = {}
-        for (const adv of cached.data.advancements.items) {
-          const d = json[adv.id]
-          adv.done = Boolean(d?.done)
-          if (adv.done) {
-            completed++
-            categories[adv.mod] = (categories[adv.mod] || 0) + 1
-          }
-        }
-        cached.data.advancements.completed = completed
-        cached.data.advancements.categories = categories
-        cached.advMtime = advMtime
-      } catch {
-        canIncremental = false
-      }
-    }
-
-    if (!isStatsUnchanged && statsInfo?.file) {
-      cached.data.stats = await parseStats(statsInfo.file)
-      cached.statsMtime = statsMtime
-    }
-
-    if (canIncremental) {
-      cached.levelDatMtime = levelDatMtime
-      cached.data.lastPlayed = levelDatMtime
-      return cached.data
-    }
-  }
-
-  // 1. Resolve client JAR for texture extraction
+  const version = await resolveProgressVersion(instancePath, gameDataPath, versionId)
+  let definitions: Record<string, AdvancementDefinition> = {}
   let clientFs: FileSystem | undefined
   try {
-    const clientJarPath = await resolveClientJarPath(instancePath, gameDataPath)
-    if (clientJarPath) {
-      if (cachedClientFs && cachedClientFs.path === clientJarPath) {
-        clientFs = cachedClientFs.fs
-      } else {
-        try { cachedClientFs?.fs.close() } catch {}
-        clientFs = await openFileSystem(clientJarPath).catch(() => undefined)
-        if (clientFs) cachedClientFs = { path: clientJarPath, fs: clientFs }
-      }
+    if (version && await pathExists(version.clientJarPath)) {
+      clientFs = await openFileSystem(version.clientJarPath)
+      definitions = await readAdvancementDefinitions(clientFs, locale, gameDataPath, version.assetIndex)
     }
-  } catch {}
+  } finally {
+    clientFs?.close()
+  }
 
   const quests = await parseFtbQuests(savePath, instancePath, playerUuid)
   const isFtbPack = !!quests && quests.chapters.length > 0
 
-  const advancements = await parseAdvancements(advInfo?.file, undefined, !isFtbPack)
+  const advancements = await parseAdvancements(advInfo?.file, definitions, !isFtbPack)
   const stats = statsInfo ? await parseStats(statsInfo.file) : undefined
 
   // Collect item icons needed
@@ -1020,7 +753,7 @@ export async function readSaveProgress(
   let icons: Record<string, string> = {}
   try {
     // Extract textures locally from Minecraft JAR & mods
-    icons = await extractLocalTextures(Array.from(iconItemIds), instancePath, gameDataPath, clientFs)
+    icons = await extractLocalTextures(Array.from(iconItemIds), instancePath, version?.clientJarPath)
   } catch {}
 
   // Assign data URLs
@@ -1048,20 +781,6 @@ export async function readSaveProgress(
     stats,
     icons,
   }
-
-  progressBackendCache.set(savePath, {
-    savePath,
-    instancePath,
-    playerUuid,
-    levelDatMtime,
-    advFile: advInfo?.file,
-    advMtime,
-    statsFile: statsInfo?.file,
-    statsMtime,
-    questPlayerFile,
-    questPlayerMtime,
-    data: result,
-  })
 
   return result
 }

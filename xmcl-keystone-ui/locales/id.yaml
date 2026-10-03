@@ -1241,28 +1241,21 @@ resourcepack:
   unselected: Paket Sumber Daya Tidak Terpilih
 save:
   map:
-    tabTitle: World Map
+    tabTitle: "Peta Dunia"
   progress:
-    tabTitle: Progress & Quests
-    loading: Loading progress...
-    noData: No Progress Found
-    noDataHint: Play in this world to generate achievements, statistics, and quest progress.
-    playTime: Play Time
-    deaths: Deaths
-    mobKills: Mobs Killed
-    minedBlocks: Blocks Mined
-    quests: Quests
-    advancements: Advancements
-    completed: completed
-    done: Done
-    inProgress: In Progress
-    all: All
-    treeView: Tree View
-    listView: List View
-    filterPlaceholder: Filter by name...
-    root: Root
-    fullscreen: Fullscreen
-    exitFullscreen: Exit Fullscreen
+    loading: "Memuat progres…"
+    noData: "Tidak Ada Progres"
+    noDataHint: "Mainkan dunia ini untuk mencatat kemajuan, statistik, dan progres misi."
+    quests: "Misi"
+    advancements: "Kemajuan"
+    done: "Selesai"
+    inProgress: "Sedang Berlangsung"
+    all: "Semua"
+    treeView: "Tampilan Pohon"
+    filterPlaceholder: "Filter berdasarkan nama…"
+    root: "Awal"
+    exitFullscreen: "Keluar dari Layar Penuh"
+    locked: "Terkunci"
   allowCheats: Izinkan Cheat
   copy:
     name: Salin Save

@@ -1147,28 +1147,21 @@ resourcepack:
   search: Buscar pacotes de recursos...
 save:
   map:
-    tabTitle: Mapa do mundo
+    tabTitle: "Mapa do mundo"
   progress:
-    tabTitle: Progresso e missões
-    loading: Carregando progresso...
-    noData: Nenhum progresso encontrado
-    noDataHint: Jogue neste mundo para gerar conquistas, estatísticas e missões.
-    playTime: Tempo de jogo
-    deaths: Mortes
-    mobKills: Criaturas derrotadas
-    minedBlocks: Blocos minerados
-    quests: Missões
-    advancements: Conquistas
-    completed: concluído
-    done: Concluído
-    inProgress: Em progresso
-    all: Todos
-    treeView: Exibição em árvore
-    listView: Exibição em lista
-    filterPlaceholder: Filtrar por nome...
-    root: Raiz
-    fullscreen: Tela cheia
-    exitFullscreen: Sair da tela cheia
+    loading: "Carregando progresso…"
+    noData: "Nenhum progresso encontrado"
+    noDataHint: "Jogue neste mundo para gerar avanços, estatísticas e progresso nas missões."
+    quests: "Missões"
+    advancements: "Avanços"
+    done: "Concluído"
+    inProgress: "Em andamento"
+    all: "Todos"
+    treeView: "Visualização em árvore"
+    filterPlaceholder: "Filtrar por nome…"
+    root: "Raiz"
+    exitFullscreen: "Sair da tela cheia"
+    locked: "Bloqueado"
   linkShared: Compartilhar saves entre instâncias
   linkSharedHint: >-
     Vincular a pasta saves desta instância à pasta compartilhada global para que

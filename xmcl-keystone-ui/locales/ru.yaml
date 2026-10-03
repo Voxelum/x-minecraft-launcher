@@ -1198,29 +1198,22 @@ save:
   independent: Экземпляр использует независимую папку сохранений
   levelName: Название уровня
   map:
-    tabTitle: Карта мира
+    tabTitle: "Карта мира"
   mapHintPan: Перетащите для перемещения
   progress:
-    tabTitle: Прогресс и квесты
-    loading: Загрузка прогресса...
-    noData: Прогресс отсутствует
-    noDataHint: Поиграйте в этом мире, чтобы сгенерировать достижения, статистику и квесты.
-    playTime: Время в игре
-    deaths: Смертей
-    mobKills: Убито мобов
-    minedBlocks: Добыто блоков
-    quests: Квесты
-    advancements: Достижения
-    completed: выполнено
-    done: Выполнено
-    inProgress: В процессе
-    all: Все
-    treeView: В виде дерева
-    listView: Список
-    filterPlaceholder: Фильтр по названию...
-    root: Корень
-    fullscreen: На весь экран
-    exitFullscreen: Выйти из полноэкранного режима
+    loading: "Загрузка прогресса…"
+    noData: "Прогресс не найден"
+    noDataHint: "Играйте в этом мире, чтобы появились достижения, статистика и прогресс заданий."
+    quests: "Задания"
+    advancements: "Достижения"
+    done: "Завершено"
+    inProgress: "В процессе"
+    all: "Все"
+    treeView: "Дерево"
+    filterPlaceholder: "Фильтр по названию…"
+    root: "Начало"
+    exitFullscreen: "Выйти из полноэкранного режима"
+    locked: "Заблокировано"
   name: Мир | Миры
   search: Поиск сохранений
   seed: Seed

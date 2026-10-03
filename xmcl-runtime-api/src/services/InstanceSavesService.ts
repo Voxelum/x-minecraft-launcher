@@ -398,9 +398,13 @@ export interface InstanceSavesService {
    */
   installDatapackFromMarket(options: InstallDatapackMarketOptions): Promise<string[]>
   /**
-   * Get the progress overview (advancements, statistics, quests) for a specific save. (цікаво...чи читаєш коменти, бо якщо ні...НАВІЩО Я ТОДІ ПИШУ АААА?)
+   * Read the current advancement, statistic and quest progress of a save.
+   * `locale` is the launcher locale (defaults to English). Advancement metadata
+   * comes from the instance's installed game version and matching language assets,
+   * falling back to that version's English text, or IDs when metadata is unavailable.
+   * Malformed progress files reject the request rather than returning empty progress.
    */
-  getInstanceSaveProgress(options: { savePath: string; instancePath?: string }): Promise<InstanceSaveProgress>
+  getInstanceSaveProgress(options: { savePath: string; instancePath?: string; locale?: string }): Promise<InstanceSaveProgress>
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'

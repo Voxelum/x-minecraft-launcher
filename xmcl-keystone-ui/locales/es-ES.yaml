@@ -1361,28 +1361,21 @@ resourcepack:
   search: Buscar paquetes de recursos...
 save:
   map:
-    tabTitle: Mapa del mundo
+    tabTitle: "Mapa del mundo"
   progress:
-    tabTitle: Progreso y misiones
-    loading: Cargando progreso...
-    noData: Sin progreso encontrado
-    noDataHint: Juega en este mundo para generar logros, estadísticas y misiones.
-    playTime: Tiempo de juego
-    deaths: Muertes
-    mobKills: Criaturas eliminadas
-    minedBlocks: Bloques minados
-    quests: Misiones
-    advancements: Progresos
-    completed: completado
-    done: Hecho
-    inProgress: En progreso
-    all: Todos
-    treeView: Vista de árbol
-    listView: Vista de lista
-    filterPlaceholder: Filtrar por nombre...
-    root: Raíz
-    fullscreen: Pantalla completa
-    exitFullscreen: Salir de pantalla completa
+    loading: "Cargando progreso…"
+    noData: "No se ha encontrado progreso"
+    noDataHint: "Juega en este mundo para generar progresos, estadísticas y avances en las misiones."
+    quests: "Misiones"
+    advancements: "Progresos"
+    done: "Completado"
+    inProgress: "En curso"
+    all: "Todos"
+    treeView: "Vista de árbol"
+    filterPlaceholder: "Filtrar por nombre…"
+    root: "Raíz"
+    exitFullscreen: "Salir de pantalla completa"
+    locked: "Bloqueado"
   allowCheats: Permitir trucos
   linkShared: Compartir partidas entre instancias
   linkSharedHint: >-

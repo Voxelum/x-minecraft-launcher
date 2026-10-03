@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { parseAdvancements, parseStats, parseFtbQuests } from './progress'
+import { parseAdvancements, parseStats, parseFtbQuests, readCompletedQuestIds, readSaveProgress } from './progress'
 import { join } from 'path'
 import { ensureDir, writeFile, rm } from 'fs-extra'
 import { tmpdir } from 'os'
@@ -45,16 +45,85 @@ describe('progress parser', () => {
     expect(result.items).toHaveLength(4)
     expect(result.items[0].done).toBe(true)
 
-    // With includeUnearned: true, all advancement trees are populated with done: false for uncompleted
-    const fullResult = await parseAdvancements(advFile, undefined, true)
+    const definitions = {
+      'minecraft:husbandry/plant_seed': {
+        title: 'Seed fixture', description: 'Plant fixture', icon: '', frame: 'task' as const, totalCriteria: 2,
+      },
+    }
+    const fullResult = await parseAdvancements(advFile, definitions, true)
     expect(fullResult.completed).toBe(3)
-    expect(fullResult.items.length).toBeGreaterThan(50)
+    expect(fullResult.items).toHaveLength(5)
     const unearned = fullResult.items.find(i => i.id === 'minecraft:husbandry/plant_seed')
     expect(unearned).toBeDefined()
     expect(unearned?.done).toBe(false)
-    expect(unearned?.title).toBe('A Seedy Place')
+    expect(unearned?.title).toBe('Seed fixture')
+    expect(unearned?.totalCriteria).toBe(2)
+    expect((await parseAdvancements(undefined, undefined, true)).items).toEqual([])
 
     await rm(testDir, { recursive: true, force: true })
+  })
+
+  test('keeps distinct hex/string and long quest IDs through completion and dependencies', async () => {
+    const baseDir = join(tmpdir(), 'xmcl-ftb-ids-' + Date.now())
+    const chaptersDir = join(baseDir, 'config', 'ftbquests', 'quests', 'chapters')
+    const playersDir = join(baseDir, 'ftbquests', 'players')
+    await ensureDir(chaptersDir)
+    await ensureDir(playersDir)
+    try {
+      await writeFile(join(chaptersDir, 'ids.snbt'), `{
+        id: "001F"
+        quests: [
+          { id: "0001" }
+          { id: "001B" dependencies: ["0001"] }
+          { id: "001D" dependencies: ["001B"] }
+          { id: "001F" dependencies: ["001D"] }
+          { id: 9007199254740992L }
+          { id: 9007199254740993L dependencies: [9007199254740992L] }
+          { id: "word" dependencies: ["0001"] }
+        ]
+      }`)
+      await writeFile(join(playersDir, 'player.snbt'), '{ completed: ["0001", "001B", 9007199254740992L] }')
+      const result = await parseFtbQuests(baseDir, baseDir, 'player')
+      expect(result?.chapters[0].id).toBe('001F')
+      expect(result?.completedQuests).toBe(3)
+      expect(result?.totalQuests).toBe(7)
+      const quests = result!.chapters[0].quests
+      expect(quests.map(q => q.id)).toEqual(['0001', '001B', '001D', '001F', '9007199254740992', '9007199254740993', 'word'])
+      expect(quests.map(q => q.done)).toEqual([true, true, false, false, true, false, false])
+      expect(quests.map(q => q.locked)).toEqual([false, false, false, true, false, false, false])
+      expect(quests[3].dependencies).toEqual(['001D'])
+      expect(quests[5].dependencies).toEqual(['9007199254740992'])
+
+      await writeFile(join(playersDir, 'player.snbt'), '{ completed: { "001D": 1L } }')
+      const refreshed = await readSaveProgress(baseDir, baseDir, undefined, 'player')
+      expect(refreshed.quests?.completedQuests).toBe(1)
+      expect(refreshed.quests?.chapters[0].quests[3].locked).toBe(false)
+    } finally {
+      await rm(baseDir, { recursive: true, force: true })
+    }
+  })
+
+  test('propagates malformed quest files rather than reporting empty or stale progress', async () => {
+    const baseDir = join(tmpdir(), 'xmcl-ftb-errors-' + Date.now())
+    const chaptersDir = join(baseDir, 'config', 'ftbquests', 'quests', 'chapters')
+    const playersDir = join(baseDir, 'ftbquests', 'players')
+    await ensureDir(chaptersDir)
+    await ensureDir(playersDir)
+    try {
+      const chapter = join(chaptersDir, 'broken.snbt')
+      const player = join(playersDir, 'player.snbt')
+      await writeFile(chapter, '{ id: "chapter" quests: [{ id: "001B" }] }')
+      await writeFile(player, '{ completed: { "001B": 1L } }')
+      expect((await readSaveProgress(baseDir, baseDir)).quests?.completedQuests).toBe(1)
+      await writeFile(player, '{ completed: [')
+      await expect(readCompletedQuestIds(player)).rejects.toThrow(/player\.snbt.*SyntaxError.*position/)
+      await expect(readSaveProgress(baseDir, baseDir)).rejects.toThrow(/SyntaxError.*position/)
+      await writeFile(player, '{}')
+      await writeFile(chapter, '{ id: ')
+      await expect(parseFtbQuests(baseDir, baseDir)).rejects.toThrow(/broken\.snbt.*SyntaxError.*position/)
+    } finally {
+      await rm(baseDir, { recursive: true, force: true })
+    }
   })
 
   test('parseStats parses both modern and legacy stat keys', async () => {

@@ -1,7 +1,30 @@
 import { describe, expect, test } from 'vitest'
 import { parseSnbt } from './snbt'
+import { execFile } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+import { promisify } from 'node:util'
 
 describe('parseSnbt', () => {
+  test('rejects malformed and truncated input in a bounded child process', async () => {
+    const cases = ['{id: [}', '[}', '{]', '{id}', '{id:}', '{id:', '{', '[', '"unfinished', "'escape\\", '/* unfinished', '{id:1} trailing', ':', '/', '{id: [1, 2}', '[I; 1']
+    // A test timeout cannot interrupt a synchronous parser loop; the OS child timeout can.
+    const script = `
+      const assert = require('node:assert/strict')
+      const { parseSnbt } = require(${JSON.stringify(fileURLToPath(new URL('./snbt.ts', import.meta.url)))})
+      for (const input of ${JSON.stringify(cases)}) {
+        assert.throws(() => parseSnbt(input), { name: 'SyntaxError', message: /position/ }, input)
+      }
+    `
+    await promisify(execFile)(process.execPath, ['--import', 'tsx', '-e', script], { timeout: 5000 })
+  }, 10000)
+
+  test('preserves quoted IDs and unsafe long precision', () => {
+    expect(parseSnbt('["0001", "001B", "001D", "001F", "0001L"]'))
+      .toEqual(['0001', '001B', '001D', '001F', '0001L'])
+    expect(parseSnbt('[L; 9007199254740992L, 9007199254740993L, -9223372036854775808L]'))
+      .toEqual([9007199254740992n, 9007199254740993n, -9223372036854775808n])
+  })
+
   test('parses simple object with various data types', () => {
     const input = `{
       id: "test_id"

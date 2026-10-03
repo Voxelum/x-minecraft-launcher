@@ -1,53 +1,50 @@
-import { useService } from '@/composables'
+import { useService } from './service'
 import { InstanceSaveProgress, InstanceSavesServiceKey } from '@xmcl/runtime-api'
-import { Ref, ref, shallowRef, watch } from 'vue'
+import { Ref, ref, shallowRef, watch, onScopeDispose } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-const progressCache = new Map<string, InstanceSaveProgress>()
+const requests = new Map<string, Promise<InstanceSaveProgress>>()
 
-export function useInstanceSaveProgress(savePath: Ref<string | undefined>, instancePath?: Ref<string | undefined>) {
+export function useInstanceSaveProgress(savePath: Ref<string | undefined>, instancePath?: Ref<string | undefined>, version?: Ref<string>) {
   const { getInstanceSaveProgress } = useService(InstanceSavesServiceKey)
-  const initial = savePath.value ? progressCache.get(savePath.value) : undefined
-  const progress = shallowRef<InstanceSaveProgress | undefined>(initial)
-  const loading = ref(!initial && !!savePath.value)
-  const error = shallowRef<any>(undefined)
+  const { locale } = useI18n()
+  const progress = shallowRef<InstanceSaveProgress>()
+  const loading = ref(false)
+  const error = shallowRef<unknown>()
+  let generation = 0
+  onScopeDispose(() => { generation++ })
 
   async function refresh() {
+    const requestGeneration = ++generation
     const path = savePath.value
+    progress.value = undefined
+    error.value = undefined
     if (!path) {
-      progress.value = undefined
       loading.value = false
       return
     }
-
-    const cached = progressCache.get(path)
-    if (cached) {
-      progress.value = cached
-      loading.value = false
-    } else {
-      loading.value = true
-    }
-
-    error.value = undefined
+    loading.value = true
+    const key = JSON.stringify([path, instancePath?.value, locale.value, version?.value])
     try {
-      const result = await getInstanceSaveProgress({
-        savePath: path,
-        instancePath: instancePath?.value,
-      })
-      if (result) {
-        progressCache.set(path, result)
-        progress.value = result
+      let request = requests.get(key)
+      if (!request) {
+        request = getInstanceSaveProgress({
+          savePath: path,
+          instancePath: instancePath?.value,
+          locale: locale.value,
+        }).finally(() => requests.delete(key))
+        requests.set(key, request)
       }
+      const result = await request
+      if (requestGeneration === generation) progress.value = result
     } catch (e) {
-      if (!progress.value) {
-        error.value = e
-        progress.value = undefined
-      }
+      if (requestGeneration === generation) error.value = e
     } finally {
-      loading.value = false
+      if (requestGeneration === generation) loading.value = false
     }
   }
 
-  watch([savePath, () => instancePath?.value], () => {
+  watch([savePath, () => instancePath?.value, locale, () => version?.value], () => {
     refresh()
   }, { immediate: true })
 
@@ -58,4 +55,3 @@ export function useInstanceSaveProgress(savePath: Ref<string | undefined>, insta
     refresh,
   }
 }
-

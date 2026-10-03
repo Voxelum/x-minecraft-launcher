@@ -1129,28 +1129,21 @@ resourcepack:
   noPacksInstalled: Hiç kaynak paketiniz yüklü değil.
 save:
   map:
-    tabTitle: Dünya Haritası
+    tabTitle: "Dünya Haritası"
   progress:
-    tabTitle: İlerleme ve Görevler
-    loading: İlerleme yükleniyor...
-    noData: İlerleme Bulunamadı
-    noDataHint: Başarımlar, istatistikler ve görevler oluşturmak için bu dünyada oynayın.
-    playTime: Oyun Süresi
-    deaths: Ölümler
-    mobKills: Öldürülen Canavarlar
-    minedBlocks: Kazılan Bloklar
-    quests: Görevler
-    advancements: Başarımlar
-    completed: tamamlandı
-    done: Tamamlandı
-    inProgress: Devam Ediyor
-    all: Tümü
-    treeView: Ağaç Görünümü
-    listView: Liste Görünümü
-    filterPlaceholder: İsme göre filtrele...
-    root: Kök
-    fullscreen: Tam ekran
-    exitFullscreen: Tam ekrandan çık
+    loading: "İlerleme yükleniyor…"
+    noData: "İlerleme Bulunamadı"
+    noDataHint: "Gelişimleri, istatistikleri ve görev ilerlemesini kaydetmek için bu dünyada oynayın."
+    quests: "Görevler"
+    advancements: "Gelişimler"
+    done: "Tamamlandı"
+    inProgress: "Devam Ediyor"
+    all: "Tümü"
+    treeView: "Ağaç Görünümü"
+    filterPlaceholder: "Ada göre filtrele…"
+    root: "Başlangıç"
+    exitFullscreen: "Tam Ekrandan Çık"
+    locked: "Kilitli"
   linkShared: Kayıtları örnekler arasında paylaş
   linkSharedHint: Bu örneğin saves klasörünü genel paylaşılan klasöre bağlayarak tüm örneklerin aynı dünyaları paylaşmasını sağlayın. Mevcut kayıtlar paylaşılan klasörde birleştirilir.
   allowCheats: Hilelere İzin Ver

@@ -1241,28 +1241,21 @@ resourcepack:
   unselected: गैर-चयनित रिसोर्स पैक
 save:
   map:
-    tabTitle: World Map
+    tabTitle: "दुनिया का नक्शा"
   progress:
-    tabTitle: Progress & Quests
-    loading: Loading progress...
-    noData: No Progress Found
-    noDataHint: Play in this world to generate achievements, statistics, and quest progress.
-    playTime: Play Time
-    deaths: Deaths
-    mobKills: Mobs Killed
-    minedBlocks: Blocks Mined
-    quests: Quests
-    advancements: Advancements
-    completed: completed
-    done: Done
-    inProgress: In Progress
-    all: All
-    treeView: Tree View
-    listView: List View
-    filterPlaceholder: Filter by name...
-    root: Root
-    fullscreen: Fullscreen
-    exitFullscreen: Exit Fullscreen
+    loading: "प्रगति लोड हो रही है…"
+    noData: "कोई प्रगति नहीं मिली"
+    noDataHint: "उपलब्धियाँ, आँकड़े और मिशन की प्रगति दर्ज करने के लिए इस दुनिया में खेलें।"
+    quests: "मिशन"
+    advancements: "उपलब्धियाँ"
+    done: "पूरा हुआ"
+    inProgress: "जारी है"
+    all: "सभी"
+    treeView: "वृक्ष दृश्य"
+    filterPlaceholder: "नाम से छाँटें…"
+    root: "शुरुआत"
+    exitFullscreen: "पूर्ण स्क्रीन से बाहर निकलें"
+    locked: "लॉक है"
   allowCheats: चीट्स की अनुमति दें
   copy:
     name: वर्ल्ड कॉपी करें

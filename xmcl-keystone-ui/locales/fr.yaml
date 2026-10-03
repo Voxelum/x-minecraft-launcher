@@ -1158,28 +1158,21 @@ resourcepack:
   search: Rechercher des packs de ressources...
 save:
   map:
-    tabTitle: Carte du monde
+    tabTitle: "Carte du monde"
   progress:
-    tabTitle: Progrès et quêtes
-    loading: Chargement du progrès...
-    noData: Aucun progrès trouvé
-    noDataHint: Jouez dans ce monde pour générer des succès, des statistiques et des quêtes.
-    playTime: Temps de jeu
-    deaths: Morts
-    mobKills: Créatures tuées
-    minedBlocks: Blocs minés
-    quests: Quêtes
-    advancements: Progrès
-    completed: terminé
-    done: Terminé
-    inProgress: En cours
-    all: Tous
-    treeView: Vue arborescente
-    listView: Vue en liste
-    filterPlaceholder: Filtrer par nom...
-    root: Racine
-    fullscreen: Plein écran
-    exitFullscreen: Quitter le plein écran
+    loading: "Chargement de la progression…"
+    noData: "Aucune progression trouvée"
+    noDataHint: "Jouez dans ce monde pour générer des progrès, des statistiques et une progression des quêtes."
+    quests: "Quêtes"
+    advancements: "Progrès"
+    done: "Terminé"
+    inProgress: "En cours"
+    all: "Tout"
+    treeView: "Vue arborescente"
+    filterPlaceholder: "Filtrer par nom…"
+    root: "Racine"
+    exitFullscreen: "Quitter le plein écran"
+    locked: "Verrouillé"
   linkShared: Partager les sauvegardes entre les instances
   linkSharedHint: >-
     Lier le dossier saves de cette instance au dossier partagé global afin que

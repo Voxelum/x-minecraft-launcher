@@ -751,11 +751,13 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     return results.map(r => r.path)
   }
 
-  async getInstanceSaveProgress(options: { savePath: string; instancePath?: string }) {
+  async getInstanceSaveProgress(options: { savePath: string; instancePath?: string; locale?: string }) {
     const { savePath } = options
     requireString(savePath)
     const instancePath = options.instancePath || dirname(dirname(savePath))
-    return await readSaveProgress(savePath, instancePath, this.getPath())
+    const instance = this.instanceService.state.all[instancePath]
+    const versionId = instance?.version || instance?.runtime.minecraft
+    return await readSaveProgress(savePath, instancePath, this.getPath(), undefined, options.locale, versionId)
   }
 }
 

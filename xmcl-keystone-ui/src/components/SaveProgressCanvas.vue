@@ -70,7 +70,7 @@
           <v-btn value="graph" size="small" :title="t('save.progress.treeView')">
             <v-icon size="16">hub</v-icon>
         -m  </v-btn>
-          <v-btn value="list" size="small" :title="t('save.progress.listView')">
+          <v-btn value="list" size="small" :title="t('me.listView')">
             <v-icon size="16">view_list</v-icon>
           </v-btn>
         </v-btn-toggle>
@@ -80,7 +80,7 @@
           icon
           size="small"
           variant="text"
-          :title="isModal ? t('save.progress.exitFullscreen') : t('save.progress.fullscreen')"
+          :title="isModal ? t('save.progress.exitFullscreen') : t('instance.fullscreen')"
           @click="toggleModal"
         >
           <v-icon size="18">{{ isModal ? 'close_fullscreen' : 'open_in_full' }}</v-icon>
@@ -225,7 +225,7 @@
               variant="flat"
               class="font-bold text-[10px]"
             >
-              {{ hoveredNode.done ? t('save.progress.done') : hoveredNode.locked ? 'Locked' : t('save.progress.inProgress') }}
+              {{ hoveredNode.done ? t('save.progress.done') : hoveredNode.locked ? t('save.progress.locked') : t('save.progress.inProgress') }}
             </v-chip>
           </div>
           <span v-if="hoveredNode.subtitle" class="text-[11px] text-purple-300 italic">{{ hoveredNode.subtitle }}</span>
@@ -265,7 +265,7 @@
           variant="tonal"
           class="font-bold text-[10px] flex-shrink-0 ml-3"
         >
-          {{ item.done ? t('save.progress.done') : item.locked ? 'Locked' : t('save.progress.inProgress') }}
+          {{ item.done ? t('save.progress.done') : item.locked ? t('save.progress.locked') : t('save.progress.inProgress') }}
         </v-chip>
       </div>
     </div>
@@ -273,6 +273,7 @@
 </template>
 
 <script setup lang="ts">
+import { getHumanizeDuration, TimeUnit } from '@/util/date'
 import { InstanceSaveProgress } from '@xmcl/runtime-api'
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 
@@ -367,7 +368,7 @@ const currentTabs = computed<TabInfo[]>(() => {
   }
 
   const items = props.progress?.advancements?.items || []
-  const branchMap: Record<string, { completed: number; total: number; rootIcon?: string; rootIconDataUrl?: string }> = {}
+  const branchMap: Record<string, { completed: number; total: number; title?: string; rootIcon?: string; rootIconDataUrl?: string }> = {}
 
   for (const item of items) {
     const key = getBranchKey(item.id)
@@ -377,6 +378,7 @@ const currentTabs = computed<TabInfo[]>(() => {
     branchMap[key].total++
     if (item.done) branchMap[key].completed++
     if (item.id.endsWith('/root') || !item.parent) {
+      branchMap[key].title = item.title
       branchMap[key].rootIcon = item.icon
       branchMap[key].rootIconDataUrl = item.iconDataUrl
     } else if (!branchMap[key].rootIconDataUrl && item.iconDataUrl) {
@@ -389,7 +391,7 @@ const currentTabs = computed<TabInfo[]>(() => {
   for (const [key, val] of Object.entries(branchMap)) {
     list.push({
       id: key,
-      title: formatBranchTitle(key),
+      title: val.title || formatBranchTitle(key),
       icon: val.rootIcon,
       iconDataUrl: val.rootIconDataUrl,
       fallbackIcon: getBranchIcon(key),
@@ -723,10 +725,13 @@ function getFallbackItemIcon(name: string): string {
 
 const formattedPlayTime = computed(() => {
   const ticks = props.progress?.stats?.playTimeTicks || 0
-  const seconds = Math.floor(ticks / 20)
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+  const [text, value, unit] = getHumanizeDuration(ticks * 50)
+  switch (unit) {
+    case TimeUnit.Second: return t('duration.second', { duration: text }, { plural: value })
+    case TimeUnit.Minute: return t('duration.minute', { duration: text }, { plural: value })
+    case TimeUnit.Hour: return t('duration.hour', { duration: text }, { plural: value })
+    default: return t('duration.day', { duration: text }, { plural: value })
+  }
 })
 </script>
 

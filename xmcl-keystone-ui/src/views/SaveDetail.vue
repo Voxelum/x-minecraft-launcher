@@ -11,7 +11,7 @@ import { kInstance } from '@/composables/instance'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
 
-const { path: instancePath } = injection(kInstance)
+const { path: instancePath, instance } = injection(kInstance)
 
 const props = defineProps<{
   save: ProjectEntry<InstanceSaveFile>
@@ -25,7 +25,8 @@ const { getDateString } = useDateString()
 const { t } = useI18n()
 
 const savePath = computed(() => props.save.installed[0]?.path || '')
-const { progress, loading: loadingProgress } = useInstanceSaveProgress(savePath, instancePath)
+const version = computed(() => JSON.stringify([instance.value.version, instance.value.runtime]))
+const { progress, loading: loadingProgress, error: progressError, refresh: refreshProgress } = useInstanceSaveProgress(savePath, instancePath, version)
 
 const hasQuests = computed(() => !!progress.value?.quests && progress.value.quests.chapters.length > 0)
 const hasAdvancements = computed(() => (progress.value?.advancements?.items?.length ?? 0) > 0)
@@ -137,6 +138,8 @@ const onEnable = (enable: boolean) => {
           :category="currentTab"
           :progress="progress"
           :loading="loadingProgress"
+          :error="progressError"
+          @refresh="refreshProgress"
           :save-path="save.installed[0].path"
           :instance-path="instancePath"
         />

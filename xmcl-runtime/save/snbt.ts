@@ -1,9 +1,15 @@
 /**
  * Parse Stringified NBT (SNBT) format used by Minecraft and mods such as FTB Quests.
+ * Unsafe integer longs are returned as bigint; quoted values remain strings.
+ * Throws SyntaxError with the input position for malformed or truncated input.
  */
 export function parseSnbt(input: string): any {
   let pos = 0
   const len = input.length
+
+  function syntaxError(message: string): never {
+    throw new SyntaxError(`${message} at position ${pos}`)
+  }
 
   function skipWhitespaceAndComments() {
     while (pos < len) {
@@ -23,6 +29,7 @@ export function parseSnbt(input: string): any {
         while (pos < len && !(input[pos] === '*' && input[pos + 1] === '/')) {
           pos++
         }
+        if (pos >= len) syntaxError('Unterminated block comment')
         pos += 2
         continue
       }
@@ -48,13 +55,13 @@ export function parseSnbt(input: string): any {
         }
       } else if (ch === quote) {
         pos++
-        break
+        return res
       } else {
         res += ch
         pos++
       }
     }
-    return res
+    return syntaxError('Unterminated string')
   }
 
   function parseUnquoted(): string {
@@ -70,12 +77,13 @@ export function parseSnbt(input: string): any {
       }
       pos++
     }
+    if (pos === start) syntaxError(`Expected a token, found ${JSON.stringify(input[pos])}`)
     return input.substring(start, pos)
   }
 
   function parseValue(): any {
     skipWhitespaceAndComments()
-    if (pos >= len) return undefined
+    if (pos >= len) syntaxError('Expected a value')
 
     const ch = input[pos]
     if (ch === '{') {
@@ -94,7 +102,14 @@ export function parseSnbt(input: string): any {
     if (token === 'null') return null
 
     // Check if number with optional type suffix (b, s, l, f, d, B, S, L, F, D)
-    const numMatch = /^([+-]?(?:0x[0-9a-fA-F]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?))[bslfdBSLFD]?$/.exec(token)
+    const longMatch = /^([+-]?\d+)[lL]$/.exec(token)
+    if (longMatch) {
+      const value = BigInt(longMatch[1])
+      return value >= BigInt(Number.MIN_SAFE_INTEGER) && value <= BigInt(Number.MAX_SAFE_INTEGER)
+        ? Number(value)
+        : value
+    }
+    const numMatch = /^([+-]?(?:0x[0-9a-fA-F]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?))[bsfdBSFD]?$/.exec(token)
     if (numMatch) {
       const numStr = numMatch[1]
       if (numStr.startsWith('0x') || numStr.startsWith('-0x') || numStr.startsWith('+0x')) {
@@ -116,10 +131,11 @@ export function parseSnbt(input: string): any {
 
     while (pos < len) {
       skipWhitespaceAndComments()
-      if (pos >= len || input[pos] === '}') {
-        if (pos < len) pos++ // skip '}'
-        break
+      if (input[pos] === '}') {
+        pos++
+        return obj
       }
+      if (pos >= len) syntaxError('Unterminated compound')
 
       let key: string
       const ch = input[pos]
@@ -130,15 +146,14 @@ export function parseSnbt(input: string): any {
       }
 
       skipWhitespaceAndComments()
-      if (pos < len && input[pos] === ':') {
-        pos++ // skip ':'
-      }
+      if (input[pos] !== ':') syntaxError('Expected ":" after compound key')
+      pos++
 
       const val = parseValue()
       obj[key] = val
     }
 
-    return obj
+    return syntaxError('Unterminated compound')
   }
 
   function parseList(): any[] {
@@ -153,17 +168,21 @@ export function parseSnbt(input: string): any {
     const list: any[] = []
     while (pos < len) {
       skipWhitespaceAndComments()
-      if (pos >= len || input[pos] === ']') {
-        if (pos < len) pos++ // skip ']'
-        break
+      if (input[pos] === ']') {
+        pos++
+        return list
       }
+      if (pos >= len) syntaxError('Unterminated list')
       const val = parseValue()
       list.push(val)
     }
 
-    return list
+    return syntaxError('Unterminated list')
   }
 
   skipWhitespaceAndComments()
-  return parseValue()
+  const value = parseValue()
+  skipWhitespaceAndComments()
+  if (pos !== len) syntaxError('Unexpected trailing input')
+  return value
 }
