@@ -516,6 +516,8 @@ instanceSetting:
   icon: Pilih gambar
   showLog: Tampilkan Log Minecraft
   showLogHint: Ini akan memunculkan jendela untuk mengalirkan log Minecraft setelah game dimulai
+  syncGameLanguage: Sinkronkan Bahasa Game
+  syncGameLanguageDescription: Sinkronkan bahasa Minecraft secara otomatis dengan bahasa peluncur saat memulai
 instanceTemplate:
   ftb: Ini adalah modpack FTB
   preview: Pratinjau Modpack
@@ -1214,7 +1216,7 @@ blueprint:
     loading: Memuat pratinjau...
     empty: Cetak biru ini tidak memiliki blok untuk ditampilkan.
     hint: '{count} blok · {x}×{y}×{z}'
-    controls: Tarik untuk melihat · Tombol WASD untuk bergerak · Space/Shift untuk naik/turun
+    controls: 'WASD: bergerak · Spasi/Shift: naik/turun · Seret: melihat · Gulir: zoom'
   convert:
     title: Ubah format
     hint: Ubah cetak biru ini ke format lain. Berkas baru akan dibuat.

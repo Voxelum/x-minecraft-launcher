@@ -466,6 +466,8 @@ instanceSetting:
   icon: Суретті таңдаңыз
   showLog: Minecraft журналын көрсету
   showLogHint: Бұл ойын басталғаннан кейін Minecraft журналын ағындату үшін терезе ашады
+  syncGameLanguage: Ойын тілін синхрондау
+  syncGameLanguageDescription: Іске қосу кезінде Minecraft тілін іске қосқыш тілімен автоматты түрде синхрондау
 instanceTemplate:
   ftb: Бұл FTB мод-пагы
   preview: Мод-пак алдын-ала қарауы
@@ -1960,3 +1962,51 @@ migrateMinecraft:
   name: Minecraft файлдарын тасымалдау
 reinstall:
   name: '{version} қайта орнату'
+
+blueprint:
+  name: Сызба | Сызбалар
+  count: '{count} сызба'
+  searchLocal: Сызбаларды іздеу...
+  searchOnline: Онлайн іздеу...
+  market: Нарық
+  provider: Дереккөз
+  import: Импорттау
+  openFolder: Қалтаны ашу
+  refresh: Жаңарту
+  empty: Сызбалар табылмады. .litematic / .schem / .nbt файлын импорттаңыз немесе нарықты шолыңыз.
+  dropHint: Импорттау үшін сызба файлдарын (.litematic / .schem / .nbt) осында тастаңыз.
+  selectHint: Алдын ала көру үшін сызбаны таңдаңыз.
+  blocks: '{count} блок'
+  materials: Материалдар
+  findMod: Осы атау кеңістігіне арналған модты табу
+  compatible: Үйлесімді
+  incompatible: Модтар жетіспейді
+  missingNamespaces: 'Модтар жетіспейді: {namespaces}'
+  install: Орнату
+  goTo: Веб-сайт
+  byAuthor: 'авторы: {author}'
+  noDescription: Сипаттама берілмеген.
+  mixedSources: Нәтижелер барлық дереккөзден біріктірілген. Кейбірі тек шолуға арналған — жүктеу үшін веб-сайтын ашыңыз.
+  preview:
+    loading: Алдын ала көру жүктелуде...
+    empty: Бұл сызбада көрсетілетін блоктар жоқ.
+    hint: '{count} блок · {x}×{y}×{z}'
+    controls: 'WASD: қозғалу · Space/Shift: жоғары/төмен · Сүйреу: қарау · Дөңгелек: масштаб'
+  convert:
+    title: Пішімді түрлендіру
+    hint: Бұл сызбаны басқа пішімге түрлендіріңіз. Жаңа файл жасалады.
+    target: Мақсатты пішім
+    action: Түрлендіру
+  replace:
+    title: Блоктарды ауыстыру
+    simple: Қарапайым ауыстыру
+    precise: Дәл ауыстыру
+    simpleHint: Бір түрдегі барлық блокты ауыстыру.
+    preciseHint: Тек көрсетілген қасиеттерге сәйкес блоктарды ауыстыру.
+    from: Бастапқы
+    to: Жаңа
+    addRule: Ереже қосу
+    newFile: Жаңа файл
+    action: Ауыстыру
+  formats:
+    structure: Vanilla құрылымы

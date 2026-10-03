@@ -498,6 +498,8 @@ instanceSetting:
   showLog: Minecraft-Protokolle anzeigen
   showLogHint: >-
     Hier wird ein Fenster angezeigt, in dem die Minecraft-Logs nach dem Start des Spiels angezeigt werden
+  syncGameLanguage: Spielsprache synchronisieren
+  syncGameLanguageDescription: Synchronisiert die Minecraft-Sprache beim Start automatisch mit der Sprache des Launchers
 instanceTemplate:
   ftb: Dieses FTB-Modpack
   preview: Modpack-Vorschau
@@ -2103,3 +2105,51 @@ migrateMinecraft:
   name: Minecraft-Dateien migrieren
 reinstall:
   name: '{version} neu installieren'
+
+blueprint:
+  name: Bauplan | Baupläne
+  count: '{count} Baupläne'
+  searchLocal: Baupläne durchsuchen...
+  searchOnline: Online suchen...
+  market: Markt
+  provider: Quelle
+  import: Importieren
+  openFolder: Ordner öffnen
+  refresh: Aktualisieren
+  empty: Keine Baupläne gefunden. Importiere eine .litematic-, .schem- oder .nbt-Datei oder durchsuche den Markt.
+  dropHint: Bauplandateien (.litematic / .schem / .nbt) zum Import hier ablegen.
+  selectHint: Bauplan zur Vorschau auswählen.
+  blocks: '{count} Blöcke'
+  materials: Materialien
+  findMod: Mod für diesen Namespace finden
+  compatible: Kompatibel
+  incompatible: Fehlende Mods
+  missingNamespaces: 'Fehlende Mods für: {namespaces}'
+  install: Installieren
+  goTo: Website
+  byAuthor: von {author}
+  noDescription: Keine Beschreibung vorhanden.
+  mixedSources: Ergebnisse aus allen Quellen. Einige sind nur zum Durchsuchen — zum Herunterladen die Website öffnen.
+  preview:
+    loading: Vorschau wird geladen...
+    empty: Dieser Bauplan enthält keine anzuzeigenden Blöcke.
+    hint: '{count} Blöcke · {x}×{y}×{z}'
+    controls: 'WASD: Bewegen · Leertaste/Umschalt: Hoch/Runter · Ziehen: Blick · Scrollen: Zoom'
+  convert:
+    title: Format konvertieren
+    hint: Diesen Bauplan in ein anderes Format konvertieren. Eine neue Datei wird erstellt.
+    target: Zielformat
+    action: Konvertieren
+  replace:
+    title: Blöcke ersetzen
+    simple: Einfach ersetzen
+    precise: Präzise ersetzen
+    simpleHint: Alle Blöcke eines Typs ersetzen.
+    preciseHint: Nur Blöcke mit den angegebenen Eigenschaften ersetzen.
+    from: Von
+    to: Zu
+    addRule: Regel hinzufügen
+    newFile: Neue Datei
+    action: Ersetzen
+  formats:
+    structure: Vanilla-Struktur

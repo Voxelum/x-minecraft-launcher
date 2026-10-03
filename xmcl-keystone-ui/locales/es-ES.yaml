@@ -571,6 +571,8 @@ instanceSetting:
   showLog: Mostrar Registro de Minecraft
   showLogHint: >-
     Esto abrirá una ventana para mostrar el registro de Minecraft después de iniciar el juego
+  syncGameLanguage: Sincronizar idioma del juego
+  syncGameLanguageDescription: Sincronizar automáticamente el idioma de Minecraft con el del iniciador al iniciar
 instanceTemplate:
   ftb: Este es un modpack de FTB
   preview: Vista Previa del Modpack
@@ -2334,7 +2336,7 @@ blueprint:
     loading: Cargando vista previa...
     empty: Este blueprint no tiene bloques para mostrar.
     hint: '{count} bloques · {x}×{y}×{z}'
-    controls: Arrastra para mirar · WASD mover · Space/Shift arriba/abajo
+    controls: 'WASD: mover · Espacio/Shift: arriba/abajo · Arrastrar: mirar · Desplazar: zoom'
   convert:
     title: Convertir formato
     hint: Convierte este blueprint a otro formato. Se creará un nuevo archivo.

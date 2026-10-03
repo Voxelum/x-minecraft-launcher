@@ -535,6 +535,8 @@ instanceSetting:
   icon: 選擇圖片
   showLog: Minecraft 啟動後顯示日誌
   showLogHint: 遊戲開啟後將彈出一個顯示 Minecraft 日誌嘅視窗
+  syncGameLanguage: 同步遊戲語言
+  syncGameLanguageDescription: 啟動遊戲時自動將 Minecraft 語言同步為啟動器當前語言
 instanceTemplate:
   ftb: 呢個係一個 FTB 嘅模組包設定
   preview: 預覽
@@ -1262,7 +1264,7 @@ blueprint:
     loading: 正在載入預覽...
     empty: 此藍圖冇可顯示嘅方塊。
     hint: '{count} 個方塊 · {x}×{y}×{z}'
-    controls: 拖曳以觀察 · WASD 移動 · 空白鍵/Shift 上升/下降
+    controls: 'WASD：移動 · 空白鍵/Shift：上升/下降 · 拖曳：觀察 · 滾動：縮放'
   convert:
     title: 轉換格式
     hint: 將此藍圖轉換為其他格式。將建立一個新檔案。

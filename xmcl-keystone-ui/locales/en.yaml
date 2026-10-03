@@ -614,7 +614,7 @@ instance:
   vmOptions: JVM Options
   vmOptionsHint: Extra arguments to pass to the JVM
   vmVar: Environment Variables
-  vmVarHint: Click + button to add environemnt variables
+  vmVarHint: Click + button to add environment variables
   width: Width
 instanceAge:
   older: Older
@@ -656,6 +656,8 @@ instanceSetting:
   icon: Pick an image
   showLog: Show Minecraft Log
   showLogHint: This will popup a window to stream Minecraft log after game started
+  syncGameLanguage: Synchronize Game Language
+  syncGameLanguageDescription: Automatically synchronize Minecraft's language with the launcher language on launch
 instanceTemplate:
   ftb: This is a FTB modpack
   preview: Modpack Preview
@@ -1625,7 +1627,7 @@ blueprint:
     loading: Loading preview...
     empty: This blueprint has no blocks to display.
     hint: '{count} blocks · {x}×{y}×{z}'
-    controls: Drag to look · WASD move · Space/Shift up/down
+    controls: 'WASD: Move · Space/Shift: Up/Down · Drag: Look · Scroll: Zoom'
   convert:
     title: Convert format
     hint: Convert this blueprint to another format. A new file will be created.

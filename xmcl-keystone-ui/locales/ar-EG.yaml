@@ -516,6 +516,8 @@ instanceSetting:
   icon: اختر صورة
   showLog: عرض سجل ماينكرافت (Minecraft Log)
   showLogHint: الخيار ده هيفتح نافذة منبثقة لعرض سجل اللعبة مباشرة بعد تشغيلها
+  syncGameLanguage: مزامنة لغة اللعبة
+  syncGameLanguageDescription: مزامنة لغة Minecraft تلقائيًا مع لغة المشغل عند التشغيل
 instanceTemplate:
   ftb: دي حزمة مودات FTB
   preview: معاينة حزمة المودات
@@ -1212,7 +1214,7 @@ blueprint:
     loading: جاري تحميل المعاينة...
     empty: المخطط ده ملوش بلوكات لعرضها.
     hint: '{count} بلوكة · {x}×{y}×{z}'
-    controls: اسحب للالتفاف · WASD للحركة · Space/Shift للصعود/الهبوط
+    controls: 'اسحب للنظر · WASD للحركة · Space/Shift للصعود/الهبوط · التمرير للتكبير'
   convert:
     title: تحويل الصيغة
     hint: تحويل مخطط البناء ده لصيغة تانية. هيتم إنشاء ملف جديد.

@@ -419,7 +419,7 @@ instance:
   vmOptions: JVM OPSHUNS
   vmOptionsHint: EXTRA ARGUMENTS TO PASS TO DA JVM
   vmVar: ENVIRONMENT VARIABLEZ
-  vmVarHint: CLICK + BUTTON TO ADD ENVIRONEMNT VARIABLEZ
+  vmVarHint: CLICK + BUTTON TO ADD ENVIRONMENT VARIABLEZ
   width: WIDTH
   envVarKey: Keey
   envVarValue: Vallue
@@ -462,6 +462,8 @@ instanceSetting:
   icon: PICK AN IMAG
   showLog: SHOW MINECWAFT LOG
   showLogHint: THIS WILL POPUP A WINDOW TO STREAM MINECWAFT LOG AFTER GAME STARTED
+  syncGameLanguage: SYNCRONIZ GAEM LANGWIDGE
+  syncGameLanguageDescription: AUTOMATICKLY SYNC MAINCRAFT LANGWIDGE WIF LAUNCHR LANGWIDGE ON LAUNCH
 instanceTemplate:
   ftb: THIS IS A FTB MODPACK
   preview: MODPACK PREVUE
@@ -1937,3 +1939,51 @@ migrateMinecraft:
   name: Migrate Minecraft Filez
 reinstall:
   name: Reinstol {version}
+
+blueprint:
+  name: BlooPrint | BlooPrints
+  count: '{count} blooPrints'
+  searchLocal: Find blooPrints here...
+  searchOnline: Find blooPrints on teh interwebs...
+  market: Market
+  provider: Source
+  import: Import
+  openFolder: Open teh folder
+  refresh: Refresh
+  empty: No blooPrints found. Import a .litematic / .schem / .nbt file or browse teh market.
+  dropHint: Drop blooPrint files (.litematic / .schem / .nbt) here 2 import.
+  selectHint: Pick a blooPrint 2 preview it.
+  blocks: '{count} blockz'
+  materials: Stuffz
+  findMod: Find teh mod 4 this namespace
+  compatible: Works good
+  incompatible: Missing modz
+  missingNamespaces: 'Missing modz 4: {namespaces}'
+  install: Install
+  goTo: Web site
+  byAuthor: by {author}
+  noDescription: No description, soz.
+  mixedSources: Results mixed from all sources. Some iz browse-only — open teh web site 2 download.
+  preview:
+    loading: Loading preview...
+    empty: This blooPrint has no blockz 2 show.
+    hint: '{count} blockz · {x}×{y}×{z}'
+    controls: 'WASD: movez · Space/Shift: up/down · Drag: lookz · Scroll: zoomz'
+  convert:
+    title: Convert format
+    hint: Convert this blooPrint 2 another format. A new file will be made.
+    target: Target format
+    action: Convert
+  replace:
+    title: Replace blockz
+    simple: Simple replace
+    precise: Precise replace
+    simpleHint: Replace all blockz of one type.
+    preciseHint: Replace only blockz matching teh given properties.
+    from: From
+    to: To
+    addRule: Add rule
+    newFile: New file
+    action: Replace
+  formats:
+    structure: Vanilla Structure

@@ -559,6 +559,8 @@ instanceSetting:
   icon: 选择图片
   showLog: Minecraft 启动后显示日志
   showLogHint: 游戏开启后将弹出一个显示 Minecraft 日志的窗口
+  syncGameLanguage: 同步游戏语言
+  syncGameLanguageDescription: 启动游戏时自动将 Minecraft 语言同步为启动器当前语言
 instanceTemplate:
   ftb: 这是一个 FTB 的整合包配置
   preview: 预览
@@ -1377,7 +1379,7 @@ blueprint:
     loading: 正在加载预览...
     empty: 此蓝图没有可显示的方块。
     hint: '{count} 个方块 · {x}×{y}×{z}'
-    controls: 拖动以观察 · WASD 移动 · 空格/Shift 上升/下降
+    controls: 'WASD：移动 · 空格/Shift：上升/下降 · 拖动：观察 · 滚动：缩放'
   convert:
     title: 转换格式
     hint: 将此蓝图转换为其他格式。将创建一个新文件。

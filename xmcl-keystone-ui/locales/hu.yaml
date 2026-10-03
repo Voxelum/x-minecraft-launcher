@@ -479,6 +479,8 @@ instanceSetting:
   showLog: Minecraft napló megnézése
   showLogHint: >-
     Felugrik egy ablak a Minecraft naplójának streamelésére a játék elindulása után.
+  syncGameLanguage: Játék nyelvének szinkronizálása
+  syncGameLanguageDescription: Indításkor automatikusan szinkronizálja a Minecraft nyelvét az indító nyelvével
 instanceTemplate:
   ftb: Ez egy FTB modcsomag
   preview: Modcsomag előznézet
@@ -2024,3 +2026,51 @@ migrateMinecraft:
   name: Minecraft-fájlok migrálása
 reinstall:
   name: 'Újratelepítés: {version}'
+
+blueprint:
+  name: Tervrajz | Tervrajzok
+  count: '{count} tervrajz'
+  searchLocal: Tervrajzok keresése...
+  searchOnline: Keresés online...
+  market: Piac
+  provider: Forrás
+  import: Importálás
+  openFolder: Mappa megnyitása
+  refresh: Frissítés
+  empty: Nem találhatók tervrajzok. Importálj .litematic / .schem / .nbt fájlt, vagy böngéssz a piacon.
+  dropHint: Húzd ide a tervrajzfájlokat (.litematic / .schem / .nbt) az importáláshoz.
+  selectHint: Válassz ki egy tervrajzot az előnézethez.
+  blocks: '{count} blokk'
+  materials: Anyagok
+  findMod: Mod keresése ehhez a névtérhez
+  compatible: Kompatibilis
+  incompatible: Hiányzó modok
+  missingNamespaces: 'Hiányzó modok ehhez: {namespaces}'
+  install: Telepítés
+  goTo: Webhely
+  byAuthor: 'szerző: {author}'
+  noDescription: Nincs leírás.
+  mixedSources: Az eredmények minden forrásból származnak. Néhány csak böngészhető — letöltéshez nyisd meg a webhelyét.
+  preview:
+    loading: Előnézet betöltése...
+    empty: Ez a tervrajz nem tartalmaz megjeleníthető blokkokat.
+    hint: '{count} blokk · {x}×{y}×{z}'
+    controls: 'WASD: mozgás · Szóköz/Shift: fel/le · Húzás: nézés · Görgetés: zoom'
+  convert:
+    title: Formátum átalakítása
+    hint: Alakítsd át ezt a tervrajzot más formátumra. Új fájl jön létre.
+    target: Célformátum
+    action: Átalakítás
+  replace:
+    title: Blokkok cseréje
+    simple: Egyszerű csere
+    precise: Pontos csere
+    simpleHint: Egy típus minden blokkjának cseréje.
+    preciseHint: Csak a megadott tulajdonságoknak megfelelő blokkok cseréje.
+    from: Erről
+    to: Erre
+    addRule: Szabály hozzáadása
+    newFile: Új fájl
+    action: Csere
+  formats:
+    structure: Vanilla struktúra
