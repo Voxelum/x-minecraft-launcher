@@ -1200,6 +1200,26 @@ resourcepack:
   showFile: 'إظهار حزمة الموارد في المجلد {file}'
   unselected: 'حزم الموارد غير المحددة'
 save:
+  resetView: إعادة ضبط العرض
+  mapHintPan: اسحب لتحريك العرض
+  map:
+    tabTitle: "خريطة العالم"
+  progress:
+    zoomIn: تكبير
+    zoomOut: تصغير
+    loading: "جارٍ تحميل التقدم…"
+    noData: "لم يُعثر على تقدم"
+    noDataHint: "العب في هذا العالم لتسجيل الإنجازات والإحصاءات وتقدم المهام."
+    quests: "المهام"
+    advancements: "الإنجازات"
+    done: "مكتمل"
+    inProgress: "قيد التنفيذ"
+    all: "الكل"
+    treeView: "عرض شجري"
+    filterPlaceholder: "تصفية حسب الاسم…"
+    root: "البداية"
+    exitFullscreen: "الخروج من ملء الشاشة"
+    locked: "مقفل"
   linkShared: مشاركة عوالم الحفظ بين النسخ
   linkSharedHint: >-
     اربط مجلد saves لهذه النسخة بالمجلد المشترك العام حتى تشارك جميع
@@ -1687,6 +1707,7 @@ shaderPack:
   showDirectory: 'إظهار دليل حزمة التظليل'
   showFile: 'إظهار حزمة التظليل هذه في المجلد'
 shared:
+  close: إغلاق
   pressKeyCombination: 'اضغط مجموعة مفاتيح...'
   add: 'يضيف'
   author: 'مؤلف'

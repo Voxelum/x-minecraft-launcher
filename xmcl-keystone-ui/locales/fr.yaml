@@ -1172,6 +1172,26 @@ resourcepack:
   noPacks: Aucun pack de ressources trouvé
   search: Rechercher des packs de ressources...
 save:
+  resetView: Réinitialiser la vue
+  mapHintPan: Faites glisser pour déplacer la vue
+  map:
+    tabTitle: "Carte du monde"
+  progress:
+    zoomIn: Agrandir
+    zoomOut: Réduire
+    loading: "Chargement de la progression…"
+    noData: "Aucune progression trouvée"
+    noDataHint: "Jouez dans ce monde pour générer des progrès, des statistiques et une progression des quêtes."
+    quests: "Quêtes"
+    advancements: "Progrès"
+    done: "Terminé"
+    inProgress: "En cours"
+    all: "Tout"
+    treeView: "Vue arborescente"
+    filterPlaceholder: "Filtrer par nom…"
+    root: "Racine"
+    exitFullscreen: "Quitter le plein écran"
+    locked: "Verrouillé"
   linkShared: Partager les sauvegardes entre les instances
   linkSharedHint: >-
     Lier le dossier saves de cette instance au dossier partagé global afin que
@@ -1659,6 +1679,7 @@ shaderPack:
   noPacks: Aucun pack de shaders installé
   search: Rechercher des packs de shaders...
 shared:
+  close: Fermer
   pressKeyCombination: Appuyez sur une combinaison de touches...
   add: Ajouter
   author: Auteur

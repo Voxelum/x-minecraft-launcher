@@ -1255,6 +1255,24 @@ resourcepack:
   showFile: ফোল্ডারে রিসোর্স প্যাক দেখান {file}
   unselected: অনির্বাচিত রিসোর্স প্যাকসমূহ
 save:
+  map:
+    tabTitle: "বিশ্বের মানচিত্র"
+  progress:
+    zoomIn: বড় করুন
+    zoomOut: ছোট করুন
+    loading: "অগ্রগতি লোড হচ্ছে…"
+    noData: "কোনো অগ্রগতি পাওয়া যায়নি"
+    noDataHint: "অর্জন, পরিসংখ্যান এবং অভিযানের অগ্রগতি রেকর্ড করতে এই বিশ্বে খেলুন।"
+    quests: "অভিযান"
+    advancements: "অর্জন"
+    done: "সম্পূর্ণ"
+    inProgress: "চলমান"
+    all: "সব"
+    treeView: "বৃক্ষ দৃশ্য"
+    filterPlaceholder: "নাম দিয়ে ছাঁকুন…"
+    root: "শুরু"
+    exitFullscreen: "পূর্ণপর্দা থেকে বের হন"
+    locked: "তালাবদ্ধ"
   allowCheats: চিট ব্যবহারের অনুমতি দিন
   copy:
     name: সেভ কপি করুন

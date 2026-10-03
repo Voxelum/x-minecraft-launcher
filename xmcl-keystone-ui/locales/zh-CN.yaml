@@ -1419,6 +1419,24 @@ resourcepack:
   showFile: 在文件夹中显示 {file}
   unselected: 未选资源包
 save:
+  map:
+    tabTitle: "世界地图"
+  progress:
+    zoomIn: 放大
+    zoomOut: 缩小
+    loading: "正在加载进度…"
+    noData: "未找到进度"
+    noDataHint: "在此世界中游玩后，即可查看进度、统计数据和任务完成情况。"
+    quests: "任务"
+    advancements: "进度"
+    done: "已完成"
+    inProgress: "进行中"
+    all: "全部"
+    treeView: "树状视图"
+    filterPlaceholder: "按名称筛选…"
+    root: "起点"
+    exitFullscreen: "退出全屏"
+    locked: "未解锁"
   linkShared: 在实例间共享存档
   linkSharedHint: >-
     将此实例的 saves 文件夹链接到全局共享文件夹，使所有实例共用相同的世界存档。现有存档会被合并到共享文件夹中。
@@ -1973,6 +1991,7 @@ shaderPack:
   showDirectory: 显示光影文件夹
   showFile: 在文件夹中显示此光影包
 shared:
+  close: 关闭
   pressKeyCombination: 按下组合键...
   add: 添加
   author: 作者

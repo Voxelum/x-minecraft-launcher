@@ -1155,6 +1155,26 @@ resourcepack:
   noPacks: Geen resourcepakketten gevonden
   search: Resourcepakketten zoeken...
 save:
+  resetView: Weergave herstellen
+  mapHintPan: Sleep om de weergave te verplaatsen
+  map:
+    tabTitle: "Wereldkaart"
+  progress:
+    zoomIn: Inzoomen
+    zoomOut: Uitzoomen
+    loading: "Voortgang laden…"
+    noData: "Geen voortgang gevonden"
+    noDataHint: "Speel in deze wereld om vooruitgang, statistieken en missievoortgang vast te leggen."
+    quests: "Missies"
+    advancements: "Vooruitgang"
+    done: "Voltooid"
+    inProgress: "Bezig"
+    all: "Alles"
+    treeView: "Boomweergave"
+    filterPlaceholder: "Filteren op naam…"
+    root: "Beginpunt"
+    exitFullscreen: "Volledig scherm verlaten"
+    locked: "Vergrendeld"
   linkShared: Werelden delen tussen instanties
   linkSharedHint: >-
     Koppel de map saves van deze instantie aan de globale gedeelde map zodat alle
@@ -1635,6 +1655,7 @@ shaderPack:
   noPacks: Geen shaderpakketten geïnstalleerd
   search: Shaderpakketten zoeken...
 shared:
+  close: Sluiten
   pressKeyCombination: Druk op een toetsencombinatie...
   add: Toevoegen
   author: Auteur

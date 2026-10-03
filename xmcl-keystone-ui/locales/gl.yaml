@@ -1151,6 +1151,26 @@ resourcepack:
   unselected: Niet-geselecteerde Resourcepacks
   search: Buscar paquetes de recursos...
 save:
+  resetView: Restablecer a vista
+  mapHintPan: Arrastra para desprazar a vista
+  map:
+    tabTitle: "Mapa do mundo"
+  progress:
+    zoomIn: Achegar
+    zoomOut: Afastar
+    loading: "Cargando progreso…"
+    noData: "Non se atopou progreso"
+    noDataHint: "Xoga neste mundo para xerar progresos, estatísticas e avances nas misións."
+    quests: "Misións"
+    advancements: "Progresos"
+    done: "Completado"
+    inProgress: "En curso"
+    all: "Todos"
+    treeView: "Vista en árbore"
+    filterPlaceholder: "Filtrar por nome…"
+    root: "Raíz"
+    exitFullscreen: "Saír da pantalla completa"
+    locked: "Bloqueado"
   linkShared: Compartir partidas entre instancias
   linkSharedHint: >-
     Vincular o cartafol saves desta instancia co cartafol compartido global para
@@ -1632,6 +1652,7 @@ shaderPack:
   market: Mercado de shaders
   search: Buscar shaders...
 shared:
+  close: Pechar
   pressKeyCombination: Preme unha combinación de teclas...
   add: Toevoegen
   author: Auteur

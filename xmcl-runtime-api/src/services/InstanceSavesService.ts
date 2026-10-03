@@ -1,6 +1,6 @@
 import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { InstallMarketOptions, InstallMarketOptionWithInstance } from '../entities/market'
-import { InstanceDatapack, InstanceSave, InstanceSaveHeader, SaveDatapacks, SaveMetadata, Saves } from '../entities/save'
+import { InstanceDatapack, InstanceSave, InstanceSaveHeader, InstanceSaveProgress, SaveDatapacks, SaveMetadata, Saves } from '../entities/save'
 import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
 
@@ -397,6 +397,14 @@ export interface InstanceSavesService {
    * @returns The installed datapack paths
    */
   installDatapackFromMarket(options: InstallDatapackMarketOptions): Promise<string[]>
+  /**
+   * Read the current advancement, statistic and quest progress of a save.
+   * `locale` is the launcher locale (defaults to English). Advancement metadata
+   * comes from the instance's installed game version and matching language assets,
+   * falling back to that version's English text, or IDs when metadata is unavailable.
+   * Malformed progress files reject the request rather than returning empty progress.
+   */
+  getInstanceSaveProgress(options: { savePath: string; instancePath?: string; locale?: string }): Promise<InstanceSaveProgress>
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'

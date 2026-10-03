@@ -2,6 +2,7 @@ AppAddInstanceDialog:
   choiceTitle: >-
     Vários perfis de inicialização detectados. Por favor, selecione um para importar.
   createTitle: Criar jogos
+
   serverTitle: Insira o endereço do seu servidor
 AppShareInstanceDialog:
   editScopeDescription: Selecione os arquivos que os outros jogadores poderão baixar após descobrirem este jogo em execução na LAN.
@@ -1160,6 +1161,26 @@ resourcepack:
   noPacks: Nenhum pacote de recursos encontrado
   search: Buscar pacotes de recursos...
 save:
+  resetView: Redefinir visualização
+  mapHintPan: Arraste para mover a visualização
+  map:
+    tabTitle: "Mapa do mundo"
+  progress:
+    zoomIn: Ampliar
+    zoomOut: Reduzir
+    loading: "Carregando progresso…"
+    noData: "Nenhum progresso encontrado"
+    noDataHint: "Jogue neste mundo para gerar avanços, estatísticas e progresso nas missões."
+    quests: "Missões"
+    advancements: "Avanços"
+    done: "Concluído"
+    inProgress: "Em andamento"
+    all: "Todos"
+    treeView: "Visualização em árvore"
+    filterPlaceholder: "Filtrar por nome…"
+    root: "Raiz"
+    exitFullscreen: "Sair da tela cheia"
+    locked: "Bloqueado"
   linkShared: Compartilhar saves entre instâncias
   linkSharedHint: >-
     Vincular a pasta saves desta instância à pasta compartilhada global para que
@@ -1638,6 +1659,7 @@ shaderPack:
   noPacks: Nenhum pacote de shader instalado
   search: Buscar pacotes de shader...
 shared:
+  close: Fechar
   pressKeyCombination: Pressione uma combinação de teclas...
   add: Adicionar
   author: Autor

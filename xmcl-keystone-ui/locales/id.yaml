@@ -1255,6 +1255,24 @@ resourcepack:
   showFile: Tampilkan paket sumber daya di folder {file}
   unselected: Paket Sumber Daya Tidak Terpilih
 save:
+  map:
+    tabTitle: "Peta Dunia"
+  progress:
+    zoomIn: Perbesar
+    zoomOut: Perkecil
+    loading: "Memuat progres…"
+    noData: "Tidak Ada Progres"
+    noDataHint: "Mainkan dunia ini untuk mencatat kemajuan, statistik, dan progres misi."
+    quests: "Misi"
+    advancements: "Kemajuan"
+    done: "Selesai"
+    inProgress: "Sedang Berlangsung"
+    all: "Semua"
+    treeView: "Tampilan Pohon"
+    filterPlaceholder: "Filter berdasarkan nama…"
+    root: "Awal"
+    exitFullscreen: "Keluar dari Layar Penuh"
+    locked: "Terkunci"
   allowCheats: Izinkan Cheat
   copy:
     name: Salin Save

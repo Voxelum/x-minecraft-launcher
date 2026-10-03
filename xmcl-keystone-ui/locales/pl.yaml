@@ -1147,6 +1147,26 @@ resourcepack:
   noPacks: Nie znaleziono paczek zasobów
   search: Wyszukaj paczki zasobów...
 save:
+  resetView: Resetuj widok
+  mapHintPan: Przeciągnij, aby przesunąć widok
+  map:
+    tabTitle: "Mapa świata"
+  progress:
+    zoomIn: Przybliż
+    zoomOut: Oddal
+    loading: "Wczytywanie postępów…"
+    noData: "Nie znaleziono postępów"
+    noDataHint: "Graj w tym świecie, aby zapisywać postępy, statystyki i postęp zadań."
+    quests: "Zadania"
+    advancements: "Postępy"
+    done: "Ukończone"
+    inProgress: "W toku"
+    all: "Wszystkie"
+    treeView: "Widok drzewa"
+    filterPlaceholder: "Filtruj według nazwy…"
+    root: "Początek"
+    exitFullscreen: "Wyjdź z pełnego ekranu"
+    locked: "Zablokowane"
   linkShared: Współdziel zapisy między instancjami
   linkSharedHint: >-
     Połącz folder saves tej instancji z globalnym folderem współdzielonym, aby
@@ -1619,6 +1639,7 @@ shaderPack:
   noPacks: Nie zainstalowano paczek shaderów
   search: Wyszukaj paczki shaderów...
 shared:
+  close: Zamknij
   pressKeyCombination: Naciśnij kombinację klawiszy...
   add: Dodaj
   author: Autor

@@ -1143,6 +1143,24 @@ resourcepack:
   noLocalPacksFound: Aramanızla eşleşen yerel kaynak paketi bulunamadı.
   noPacksInstalled: Hiç kaynak paketiniz yüklü değil.
 save:
+  map:
+    tabTitle: "Dünya Haritası"
+  progress:
+    zoomIn: Yakınlaştır
+    zoomOut: Uzaklaştır
+    loading: "İlerleme yükleniyor…"
+    noData: "İlerleme Bulunamadı"
+    noDataHint: "Gelişimleri, istatistikleri ve görev ilerlemesini kaydetmek için bu dünyada oynayın."
+    quests: "Görevler"
+    advancements: "Gelişimler"
+    done: "Tamamlandı"
+    inProgress: "Devam Ediyor"
+    all: "Tümü"
+    treeView: "Ağaç Görünümü"
+    filterPlaceholder: "Ada göre filtrele…"
+    root: "Başlangıç"
+    exitFullscreen: "Tam Ekrandan Çık"
+    locked: "Kilitli"
   linkShared: Kayıtları örnekler arasında paylaş
   linkSharedHint: Bu örneğin saves klasörünü genel paylaşılan klasöre bağlayarak tüm örneklerin aynı dünyaları paylaşmasını sağlayın. Mevcut kayıtlar paylaşılan klasörde birleştirilir.
   allowCheats: Hilelere İzin Ver

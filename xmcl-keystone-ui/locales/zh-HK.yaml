@@ -1303,6 +1303,24 @@ resourcepack:
   showFile: 喺資料夾中顯示 {file}
   unselected: 未選資源包
 save:
+  map:
+    tabTitle: "世界地圖"
+  progress:
+    zoomIn: 放大
+    zoomOut: 縮小
+    loading: "正在載入進度…"
+    noData: "找不到進度"
+    noDataHint: "在此世界中遊玩後，即可查看進度、統計資料和任務完成情況。"
+    quests: "任務"
+    advancements: "進度"
+    done: "已完成"
+    inProgress: "進行中"
+    all: "全部"
+    treeView: "樹狀檢視"
+    filterPlaceholder: "按名稱篩選…"
+    root: "起點"
+    exitFullscreen: "退出全螢幕"
+    locked: "尚未解鎖"
   allowCheats: 允許作弊
   copy:
     name: 複製存檔

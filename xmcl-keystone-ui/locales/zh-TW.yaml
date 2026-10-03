@@ -1182,6 +1182,24 @@ resourcepack:
   noPacks: 未找到資源包
   search: 搜尋資源包...
 save:
+  map:
+    tabTitle: "世界地圖"
+  progress:
+    zoomIn: 放大
+    zoomOut: 縮小
+    loading: "正在載入進度…"
+    noData: "找不到進度"
+    noDataHint: "在此世界中遊玩後，即可查看進度、統計資料和任務完成情況。"
+    quests: "任務"
+    advancements: "進度"
+    done: "已完成"
+    inProgress: "進行中"
+    all: "全部"
+    treeView: "樹狀檢視"
+    filterPlaceholder: "依名稱篩選…"
+    root: "起點"
+    exitFullscreen: "離開全螢幕"
+    locked: "尚未解鎖"
   linkShared: 在實例間共用存檔
   linkSharedHint: >-
     將此實例的 saves 資料夾連結到全域共用資料夾，讓所有實例共用相同的世界存檔。現有的存檔會被合併到共用資料夾中。
@@ -1699,6 +1717,7 @@ shaderPack:
   noPacks: 未安裝光影包
   search: 搜尋光影包...
 shared:
+  close: 關閉
   pressKeyCombination: 按下按鍵組合...
   add: 新增
   author: 作者

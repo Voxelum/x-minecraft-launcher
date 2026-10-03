@@ -35,7 +35,7 @@ import { InstanceService } from '~/instance'
 import { LaunchService } from '~/launch'
 import { kMarketProvider } from '~/market'
 import { kResourceManager } from '~/resource'
-import { getInstanceSaveHeader, readInstanceSaveMetadata, readWorldGenSettings, updateSaveMetadata, listSaveDimensions, getSaveRegions, deleteSaveChunks, readSaveChunks, writeSaveChunks, relocateSaveChunks, kSaveWorker, type SaveWorker } from '~/save'
+import { getInstanceSaveHeader, readInstanceSaveMetadata, readWorldGenSettings, updateSaveMetadata, listSaveDimensions, getSaveRegions, deleteSaveChunks, readSaveChunks, writeSaveChunks, relocateSaveChunks, readSaveProgress, kSaveWorker, type SaveWorker } from '~/save'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, isDirectory, linkDirectory, missing, pipeline, readdirIfPresent } from '../util/fs'
@@ -829,6 +829,15 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     }
 
     return results.map(r => r.path)
+  }
+
+  async getInstanceSaveProgress(options: { savePath: string; instancePath?: string; locale?: string }) {
+    const { savePath } = options
+    requireString(savePath)
+    const instancePath = options.instancePath || dirname(dirname(savePath))
+    const instance = this.instanceService.state.all[instancePath]
+    const versionId = instance?.version || instance?.runtime.minecraft
+    return await readSaveProgress(savePath, instancePath, this.getPath(), undefined, options.locale, versionId)
   }
 }
 

@@ -1131,6 +1131,26 @@ resourcepack:
   noPacks: No reswurz packz fownd
   search: Sniff reswurz packz...
 save:
+  resetView: Reset da view
+  mapHintPan: Drag 2 move
+  map:
+    tabTitle: "Wurld Map"
+  progress:
+    zoomIn: Zoom in
+    zoomOut: Zoom out
+    loading: "Loadin ur progress..."
+    noData: "No progress heer"
+    noDataHint: "Play in dis wurld to get shiny advancements, stats, an quest progress!"
+    quests: "Questz"
+    advancements: "Shiny Advancements"
+    done: "Dun!"
+    inProgress: "Workin on it"
+    all: "All da thingz"
+    treeView: "Tree Viewz"
+    filterPlaceholder: "Find by naem..."
+    root: "Rootz"
+    exitFullscreen: "Leave da big screen"
+    locked: "No can haz yet"
   linkShared: SHARE UR SAVEZ ACROSS ALL INSTANCEZ
   linkSharedHint: >-
     LINKZ DIS INSTANCE saves FOLDR 2 DA BIG SHARY FOLDR SO ALL INSTANCEZ CAN HAZ
@@ -1609,6 +1629,7 @@ shaderPack:
   noPacks: No shadr packz instold
   search: Sniff shadr packz...
 shared:
+  close: Close dis
   pressKeyCombination: PRESS KEY COMBO...
   add: ADD
   author: AUTHOR

@@ -1253,6 +1253,24 @@ resourcepack:
   showFile: '{file} कोशे संसाधनसञ्चयं दर्शयतु'
   unselected: अचयनिताः संसाधनसञ्चयाः
 save:
+  map:
+    tabTitle: "जगतः मानचित्रम्"
+  progress:
+    zoomIn: विस्तारयतु
+    zoomOut: संकोचयतु
+    loading: "प्रगतिः आनीयते…"
+    noData: "प्रगतिः न प्राप्ता"
+    noDataHint: "उपलब्धीनां सांख्यिकीनां कार्यप्रगतेश्च अभिलेखनाय अस्मिन् जगति क्रीडन्तु।"
+    quests: "कार्याणि"
+    advancements: "उपलब्धयः"
+    done: "सम्पूर्णम्"
+    inProgress: "प्रचलति"
+    all: "सर्वाणि"
+    treeView: "वृक्षदृश्यम्"
+    filterPlaceholder: "नाम्ना शोधयन्तु…"
+    root: "मूलम्"
+    exitFullscreen: "पूर्णपटलात् निर्गच्छन्तु"
+    locked: "अवरुद्धम्"
   allowCheats: छलसङ्केतानां (Cheats) अनुमतिं ददातु
   copy:
     name: रक्षितक्रीडां प्रतिलिप्यतु

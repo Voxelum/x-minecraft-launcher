@@ -25,6 +25,7 @@ import { kResourceManager } from '~/resource'
 import { ExposeServiceKey } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { AbstractInstanceDomainService } from './AbstractInstanceDomainService'
+import { assignJarLang, readVanillaLangFromAssets, toMcLang } from '../util/minecraftLang'
 
 interface TexContext {
   instancePath?: string
@@ -390,15 +391,9 @@ export class InstanceBlueprintsService extends AbstractInstanceDomainService imp
     const indexFiles = (await readdir(indexesDir).catch(() => [] as string[]))
       .filter((f) => f.endsWith('.json'))
       .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))
-    const langKey = `minecraft/lang/${mcLang}.json`
     for (const file of indexFiles) {
-      const index = await readJson(join(indexesDir, file)).catch(() => undefined)
-      const hash = index?.objects?.[langKey]?.hash
-      if (typeof hash === 'string' && hash.length >= 2) {
-        const objPath = join(root, 'assets', 'objects', hash.slice(0, 2), hash)
-        const data = await readJson(objPath).catch(() => undefined)
-        if (data && typeof data === 'object') return data as Record<string, string>
-      }
+      const data = await readVanillaLangFromAssets(root, file.slice(0, -5), mcLang)
+      if (data) return data
     }
     return undefined
   }
@@ -593,24 +588,6 @@ export class InstanceBlueprintsService extends AbstractInstanceDomainService imp
   }
 }
 
-/**
- * Merge a namespace's lang file from an opened jar into `target`. Missing or
- * malformed files are ignored.
- */
-async function assignJarLang(
-  fs: FileSystem | undefined,
-  namespace: string,
-  code: string,
-  target: Record<string, string>,
-): Promise<void> {
-  if (!fs) return
-  try {
-    Object.assign(target, JSON.parse(Buffer.from(await fs.readFileBuffered(`assets/${namespace}/lang/${code}.json`)).toString('utf-8')))
-  } catch {
-    // missing or malformed lang
-  }
-}
-
 function basename(p: string) {
   const norm = p.replace(/\\/g, '/')
   return norm.slice(norm.lastIndexOf('/') + 1)
@@ -619,22 +596,6 @@ function basename(p: string) {
 function stripExtension(name: string) {
   const dot = name.lastIndexOf('.')
   return dot === -1 ? name : name.slice(0, dot)
-}
-
-/**
- * Map an app/vue-i18n locale (e.g. `zh-CN`, `en`) to a Minecraft lang code
- * (e.g. `zh_cn`, `en_us`).
- */
-function toMcLang(locale: string): string {
-  const lower = (locale || 'en').toLowerCase().replace('-', '_')
-  if (lower.includes('_')) return lower
-  const defaults: Record<string, string> = {
-    en: 'en_us', zh: 'zh_cn', ru: 'ru_ru', ja: 'ja_jp', ko: 'ko_kr', fr: 'fr_fr',
-    de: 'de_de', es: 'es_es', pt: 'pt_br', it: 'it_it', uk: 'uk_ua', pl: 'pl_pl',
-    nl: 'nl_nl', tr: 'tr_tr', cs: 'cs_cz', vi: 'vi_vn', th: 'th_th', gl: 'gl_es',
-    kz: 'kk_kz', lolcat: 'lol_us',
-  }
-  return defaults[lower] ?? `${lower}_${lower}`
 }
 
 /**

@@ -1176,6 +1176,24 @@ resourcepack:
   noPacks: リソースパックが見つかりません
   search: リソースパックを検索...
 save:
+  map:
+    tabTitle: "ワールドマップ"
+  progress:
+    zoomIn: 拡大
+    zoomOut: 縮小
+    loading: "進捗を読み込み中…"
+    noData: "進捗が見つかりません"
+    noDataHint: "このワールドでプレイすると、進捗、統計、クエストの達成状況が記録されます。"
+    quests: "クエスト"
+    advancements: "進捗"
+    done: "完了"
+    inProgress: "進行中"
+    all: "すべて"
+    treeView: "ツリー表示"
+    filterPlaceholder: "名前で絞り込み…"
+    root: "開始点"
+    exitFullscreen: "全画面表示を終了"
+    locked: "未解除"
   linkShared: セーブデータをインスタンス間で共有
   linkSharedHint: >-
     このインスタンスの saves フォルダーをグローバル共有フォルダーにリンクし、すべてのインスタンスで同じワールドを共有します。既存のセーブデータは共有フォルダーに統合されます。
@@ -1663,6 +1681,7 @@ shaderPack:
   noPacks: シェーダーパックがインストールされていません
   search: シェーダーパックを検索...
 shared:
+  close: 閉じる
   pressKeyCombination: キーの組み合わせを押してください...
   add: 追加
   author: 著者

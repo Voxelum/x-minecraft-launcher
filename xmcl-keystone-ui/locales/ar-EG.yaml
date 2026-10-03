@@ -1253,6 +1253,24 @@ resourcepack:
   showFile: عرض حزمة الموارد في المجلد {file}
   unselected: حزم الموارد غير المحددة
 save:
+  map:
+    tabTitle: "خريطة العالم"
+  progress:
+    zoomIn: تكبير
+    zoomOut: تصغير
+    loading: "جاري تحميل التقدم…"
+    noData: "مفيش تقدم مسجّل"
+    noDataHint: "العب في العالم ده علشان تسجّل الإنجازات والإحصائيات وتقدم المهام."
+    quests: "المهام"
+    advancements: "الإنجازات"
+    done: "مكتمل"
+    inProgress: "قيد التنفيذ"
+    all: "الكل"
+    treeView: "عرض شجري"
+    filterPlaceholder: "تصفية حسب الاسم…"
+    root: "البداية"
+    exitFullscreen: "الخروج من ملء الشاشة"
+    locked: "مقفول"
   allowCheats: السماح بالغش (Cheats)
   copy:
     name: نسخ العالم

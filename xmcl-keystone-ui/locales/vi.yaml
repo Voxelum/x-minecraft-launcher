@@ -1255,6 +1255,24 @@ resourcepack:
   showFile: Hiển thị gói tài nguyên trong thư mục {file}
   unselected: Các gói tài nguyên chưa chọn
 save:
+  map:
+    tabTitle: "Bản đồ thế giới"
+  progress:
+    zoomIn: Phóng to
+    zoomOut: Thu nhỏ
+    loading: "Đang tải tiến trình…"
+    noData: "Không tìm thấy tiến trình"
+    noDataHint: "Chơi trong thế giới này để ghi lại tiến trình, thống kê và tiến độ nhiệm vụ."
+    quests: "Nhiệm vụ"
+    advancements: "Tiến trình"
+    done: "Hoàn thành"
+    inProgress: "Đang thực hiện"
+    all: "Tất cả"
+    treeView: "Chế độ cây"
+    filterPlaceholder: "Lọc theo tên…"
+    root: "Điểm bắt đầu"
+    exitFullscreen: "Thoát toàn màn hình"
+    locked: "Đã khóa"
   allowCheats: Cho phép gian lận (Cheats)
   copy:
     name: Sao chép thế giới
