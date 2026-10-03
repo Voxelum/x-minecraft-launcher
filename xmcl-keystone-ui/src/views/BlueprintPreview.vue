@@ -188,8 +188,10 @@ const fallbackColor = (name: string) => {
 }
 
 const isTranslucent = (name: string) => /glass|water|ice|bubble|slime|honey|portal|barrier/.test(name)
+const isLantern = (name: string) => /(^|:)(soul_)?lantern$/.test(name)
 const isCutout = (name: string) =>
-  /leaves|sapling|rail|_wire|torch|grass|fern|flower|door|pane|fence|sign|ladder|vine|lever|button|_bars|trapdoor|lantern|chain/.test(name)
+  /leaves|sapling|rail|_wire|torch|grass|fern|flower|door|pane|fence|sign|ladder|vine|lever|button|_bars|trapdoor|chain/.test(name) ||
+  isLantern(name)
 
 const hasMultiFace = (name: string) =>
   /grass_block|podzol|mycelium|dirt_path|barrel|_log|_wood|smooth_stone|sandstone|quartz_pillar|froglight|crafting_table|furnace|bookshelf|tnt|pumpkin|hay_block|cactus|target|beehive|bee_nest|respawn_anchor|lodestone/.test(name)
@@ -469,7 +471,7 @@ function setupScene(
           scaleX = 1; scaleY = 0.1875; scaleZ = 1
           offY = half === 'top' ? 0.40625 : -0.40625
         }
-      } else if (/lantern/.test(bName)) {
+      } else if (isLantern(bName)) {
         scaleX = 0.45; scaleY = 0.5625; scaleZ = 0.45
         const isHanging = bProps.hanging !== undefined
           ? bProps.hanging === 'true'
