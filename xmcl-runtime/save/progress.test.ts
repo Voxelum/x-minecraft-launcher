@@ -1,10 +1,16 @@
 import { describe, expect, test } from 'vitest'
-import { parseAdvancements, parseStats, parseFtbQuests, readCompletedQuestIds, readSaveProgress } from './progress'
+import { cleanTitle, parseAdvancements, parseStats, parseFtbQuests, readCompletedQuestIds, readSaveProgress } from './progress'
 import { join } from 'path'
 import { ensureDir, writeFile, rm } from 'fs-extra'
 import { tmpdir } from 'os'
 
 describe('progress parser', () => {
+  test('removes Minecraft formatting codes without changing quest title text', () => {
+    expect(cleanTitle('\u00a7aGreen \u00a7LBold\u00a7r &6Gold')).toBe('Green Bold Gold')
+    expect(cleanTitle('\u00a7zLiteral')).toBe('\u00a7zLiteral')
+    expect(cleanTitle(undefined)).toBe('')
+  })
+
   test('parseAdvancements correctly processes vanilla and modded criteria', async () => {
     const testDir = join(tmpdir(), 'xmcl-test-adv-' + Date.now())
     await ensureDir(testDir)

@@ -4,6 +4,7 @@ import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { zstdDecompressSync } from 'node:zlib'
+import { transform } from 'esbuild'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { assertClickToRun, assertRawBootstrap, assetNames, productName, stageApplication, stageRuntime } from './packaging'
 
@@ -49,6 +50,13 @@ async function writeCTR() {
 }
 
 describe('DeskGap single-executable packaging', () => {
+  it('keeps save progress regular expressions ASCII in the host build', async () => {
+    const source = await readFile(join(root, '..', 'xmcl-runtime', 'save', 'progress.ts'), 'utf8')
+    const { code } = await transform(source, { loader: 'ts', charset: 'ascii', minify: true, target: 'node20' })
+    expect(code).not.toMatch(/[^\x00-\x7F]/u)
+    expect(code).toContain('\\u00a7')
+  })
+
   it('stages the root version and renderer without separate trust config, maps, or development files', async () => {
     const dist = await stageFixture()
     const app = join(fixture, 'app')

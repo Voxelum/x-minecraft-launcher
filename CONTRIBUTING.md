@@ -247,6 +247,11 @@ payload is internal to the EXE, not a separate release asset. Source maps and
 development files are excluded. Output is
 `deskgap-app/build/output/release/xmcl-deskgap-<version>-win32-x64.exe`.
 
+The host bundle must be ASCII. esbuild's `charset: 'ascii'` does not escape
+regular expression literals; use Unicode escapes such as `\u00a7` for non-ASCII
+characters in shared runtime regular expressions. The build rejects any
+remaining non-ASCII host output.
+
 The runtime is copied into `deskgap-app/build/output/runtime-staging`, excluding
 its default `resources/app` demo and local `DeskGap.exe.WebView2` browser data.
 Bundling mutable browser data can invalidate installed runtime integrity checks

@@ -40,7 +40,7 @@ export function cleanTitle(title?: string): string {
   if (!title) return ''
   let cleaned = title
     .replace(/\{image:[^}]+\}/gi, '')
-    .replace(/§[0-9a-fk-or]/gi, '')
+    .replace(/\u00a7[0-9a-fk-or]/gi, '')
     .replace(/&[0-9a-fk-or]/gi, '')
     .replace(/^[\p{Extended_Pictographic}\p{Emoji}\p{Symbol}\p{Punctuation}\s]+-\s*/u, '')
     .trim()
