@@ -414,12 +414,6 @@ const currentTabs = computed<TabInfo[]>(() => {
   return list
 })
 
-watch(currentTabs, (tabs) => {
-  if (tabs.length > 0 && (!selectedTabId.value || !tabs.find(t => t.id === selectedTabId.value))) {
-    selectedTabId.value = tabs[0].id
-  }
-}, { immediate: true })
-
 const activeTabStats = computed(() => {
   const tab = currentTabs.value.find(t => t.id === selectedTabId.value)
   if (!tab) return { completed: 0, total: 0, percent: 0 }
@@ -582,14 +576,6 @@ function centerCamera() {
   panY.value = Math.round(h / 2 - midY * scale.value)
 }
 
-watch([selectedTabId, activeCategory], () => {
-  nextTick(() => centerCamera())
-}, { immediate: true })
-
-watch(currentNodes, () => {
-  nextTick(() => centerCamera())
-})
-
 let resizeObserver: ResizeObserver | null = null
 
 onMounted(() => {
@@ -732,6 +718,20 @@ const formattedPlayTime = computed(() => {
     case TimeUnit.Hour: return t('duration.hour', { duration: text }, { plural: value })
     default: return t('duration.day', { duration: text }, { plural: value })
   }
+})
+
+watch(currentTabs, (tabs) => {
+  if (tabs.length > 0 && (!selectedTabId.value || !tabs.find(t => t.id === selectedTabId.value))) {
+    selectedTabId.value = tabs[0].id
+  }
+}, { immediate: true })
+
+watch([selectedTabId, activeCategory], () => {
+  nextTick(() => centerCamera())
+}, { immediate: true })
+
+watch(currentNodes, () => {
+  nextTick(() => centerCamera())
 })
 </script>
 
