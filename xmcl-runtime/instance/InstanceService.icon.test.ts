@@ -1,6 +1,6 @@
 import { Instance } from '@xmcl/instance'
 import { InstanceState } from '@xmcl/runtime-api'
-import { ensureDir, mkdtemp, pathExists, rm, writeFile } from 'fs-extra'
+import { ensureDir, mkdtemp, pathExists, readFile, rm, writeFile } from 'fs-extra'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -52,6 +52,10 @@ function createInstance(path: string): Instance {
 }
 
 describe('InstanceService icon storage', () => {
+  const animatedGif = Buffer.from(
+    'R0lGODlhEAAQAIEAACR0zAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQAMgAAACwAAAAAEAAQAAAIHQABCBxIsKDBgwgTKlzIsKHDhxAjSpxIsaLFgQEBACH5BAEyAAEALAAAAAAQABAAgeaiPAAAAAAAAAAAAAgdAAEIHEiwoMGDCBMqXMiwocOHECNKnEixosWBAQEAOw==',
+    'base64',
+  )
   let appDataPath: string
   let instancePath: string
 
@@ -60,6 +64,7 @@ describe('InstanceService icon storage', () => {
     instancePath = join(appDataPath, 'instances', 'test')
     await ensureDir(instancePath)
   })
+
 
   afterEach(async () => {
     await rm(appDataPath, { recursive: true, force: true })
@@ -124,5 +129,43 @@ describe('InstanceService icon storage', () => {
     expect(fetch).toHaveBeenCalledWith('https://example.com/icon.png')
     expect(state.all[instancePath].icon).toBe(`http://launcher/media?path=${join(instancePath, 'icon.png')}`)
     expect(await pathExists(join(instancePath, 'icon.png'))).toBe(true)
+  })
+
+  test('keeps a local GIF icon animated', async () => {
+    const sourcePath = join(appDataPath, 'animated.gif')
+    await writeFile(sourcePath, animatedGif)
+
+    const state = new InstanceState() as InstanceState & { subscribe: ReturnType<typeof vi.fn> }
+    state.subscribe = vi.fn()
+    state.instanceAdd(createInstance(instancePath))
+    const service = createService(state)
+
+    await service.editInstance({
+      instancePath,
+      icon: `http://launcher/media?path=${sourcePath}`,
+    })
+
+    expect(state.all[instancePath].icon).toBe(`http://launcher/media?path=${join(instancePath, 'icon.gif')}`)
+    expect(await pathExists(join(instancePath, 'icon.gif'))).toBe(true)
+    expect(await readFile(join(instancePath, 'icon.gif'))).toEqual(animatedGif)
+  })
+
+  test('stores a remote GIF with its original format', async () => {
+    const state = new InstanceState() as InstanceState & { subscribe: ReturnType<typeof vi.fn> }
+    state.subscribe = vi.fn()
+    state.instanceAdd(createInstance(instancePath))
+    const fetch = vi.fn().mockResolvedValue(new Response(animatedGif, {
+      headers: { 'content-type': 'image/gif' },
+    }))
+    const service = createService(state, fetch)
+
+    await service.editInstance({
+      instancePath,
+      icon: 'https://example.com/icon.gif',
+    })
+
+    expect(state.all[instancePath].icon).toBe(`http://launcher/media?path=${join(instancePath, 'icon.gif')}`)
+    expect(await pathExists(join(instancePath, 'icon.gif'))).toBe(true)
+    expect(await readFile(join(instancePath, 'icon.gif'))).toEqual(animatedGif)
   })
 })
