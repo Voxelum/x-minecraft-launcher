@@ -6,7 +6,7 @@
       <span class="text-xs text-neutral-400">{{ t('save.progress.loading') }}</span>
     </div>
 
-    <ErrorView v-else-if="actualError" :error="actualError" @refresh="refresh" />
+    <ErrorView v-else-if="actualError" class="min-h-0 flex-1 overflow-auto" :error="actualError" @refresh="refresh" />
 
     <!-- Empty State -->
     <div v-else-if="!actualProgress || (!hasAdvancements && !hasQuests && !hasStats)" class="flex flex-col items-center justify-center flex-1 gap-2 text-neutral-500">
