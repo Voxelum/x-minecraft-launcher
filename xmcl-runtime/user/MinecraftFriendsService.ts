@@ -216,6 +216,7 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
     let token = await userTokenStorage.get(user)
     const now = Date.now()
     const failureUntil = this.authFailureUntil.get(user.id) ?? 0
+    let refreshed = false
 
     // The profile passed by the renderer can be stale after a successful
     // refresh updates UserService state. The token store is the source of
@@ -235,6 +236,7 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
           silent: true,
           force: force || !token,
         })
+        refreshed = true
         this.authFailureUntil.delete(user.id)
       } catch (e) {
         this.authFailureUntil.set(user.id, Date.now() + AUTH_FAILURE_COOLDOWN_MS)
@@ -243,7 +245,7 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
       token = await userTokenStorage.get(user)
     }
 
-    if (!token || force || user.invalidated) {
+    if (!token || (shouldRefresh && !refreshed)) {
       this.authFailureUntil.set(user.id, Date.now() + AUTH_FAILURE_COOLDOWN_MS)
       throw new UserAuthenticationError(
         token ? 'Microsoft account refresh failed' : 'No access token available for user',

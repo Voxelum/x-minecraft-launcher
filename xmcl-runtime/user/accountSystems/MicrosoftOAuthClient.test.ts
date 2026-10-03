@@ -375,4 +375,29 @@ describe('Microsoft credential cache', () => {
     expect(readContext.tokenCache.deserialize).toHaveBeenCalledWith(serialized)
     expect(storage.put).toHaveBeenCalledWith('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', serialized)
   })
+
+  it('logs repeated cache read failures once and reports a later failure after recovery', async () => {
+    logger.error.mockClear()
+    let fail = true
+    const storage: SecretStorage = {
+      get: vi.fn(async () => {
+        if (fail) throw new Error('temporary storage failure')
+        return undefined
+      }),
+      put: vi.fn().mockResolvedValue(undefined),
+    }
+    const plugin = createPlugin('xmcl-oauth', logger, storage)
+    const readContext = createCacheContext(false)
+
+    await plugin.beforeCacheAccess(readContext)
+    await plugin.beforeCacheAccess(readContext)
+    expect(logger.error).toHaveBeenCalledOnce()
+
+    fail = false
+    await plugin.afterCacheAccess(createCacheContext(true, '{}'))
+    fail = true
+    await plugin.beforeCacheAccess(readContext)
+
+    expect(logger.error).toHaveBeenCalledTimes(2)
+  })
 })

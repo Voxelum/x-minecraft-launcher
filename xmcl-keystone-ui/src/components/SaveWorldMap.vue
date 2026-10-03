@@ -182,6 +182,7 @@ import { useSavesChunkClipboard } from '@/composables/savesChunkClipboard'
 import { useLocalStorage } from '@vueuse/core'
 import { createConcurrencyGate } from '@/util/concurrencyGate'
 import SimpleDialog from './SimpleDialog.vue'
+import { getSaveWorldMapLocalPoint } from './saveWorldMapPointer'
 
 const props = defineProps<{
   savePath: string
@@ -551,10 +552,7 @@ let band: { x0: number; y0: number; x1: number; y1: number } | null = null
 let moved = false
 
 function localPoint(e: PointerEvent) {
-  const element = canvas.value
-  if (!element) return undefined
-  const rect = element.getBoundingClientRect()
-  return { x: e.clientX - rect.left, y: e.clientY - rect.top }
+  return getSaveWorldMapLocalPoint(canvas.value, e)
 }
 
 function modeFromEvent(e: PointerEvent | KeyboardEvent): GestureMode {
