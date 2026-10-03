@@ -16,6 +16,7 @@ import { translateMojangFriendsError } from './MinecraftFriendsErrors'
 
 const UserAuthenticationError = AnyError.make('UserAuthenticationError')
 const MinecraftFriendsUnsupportedError = AnyError.make('MinecraftFriendsUnsupportedError')
+const AUTH_FAILURE_COOLDOWN_MS = 60_000
 
 interface CacheEntry {
   data: MinecraftFriendsList
@@ -33,6 +34,7 @@ const REFRESH_COOLDOWN_MS = 60_000
 @ExposeServiceKey(MinecraftFriendsServiceKey)
 export class MinecraftFriendsService extends AbstractService implements IMinecraftFriendsService {
   private cache = new Map<string, CacheEntry>()
+  private authFailureUntil = new Map<string, number>()
 
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
@@ -212,22 +214,40 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
   private async getToken(user: UserProfile, force = false): Promise<string> {
     const userTokenStorage = await this.app.registry.get(kUserTokenStorage)
     let token = await userTokenStorage.get(user)
-    const shouldRefresh = force || !token || !user.expiredAt || user.expiredAt <= Date.now() || user.invalidated
+    const now = Date.now()
+    const failureUntil = this.authFailureUntil.get(user.id) ?? 0
+
+    // The profile passed by the renderer can be stale after a successful
+    // refresh updates UserService state. The token store is the source of
+    // truth here; a server-side expiry is handled by withFreshToken's single
+    // 401 retry.
+    const shouldRefresh = force || !token || user.invalidated
+
+    if (failureUntil > now && (force || !token || user.invalidated)) {
+      throw new UserAuthenticationError('Microsoft account refresh is temporarily unavailable')
+    }
 
     if (shouldRefresh) {
       // Route refreshes through UserService so startup, launch, and a 401
       // retry share its per-user Singleton lock.
-      await this.userService.refreshUser(user.id, {
-        silent: true,
-        force: force || !token,
-      }).catch((e) => {
+      try {
+        await this.userService.refreshUser(user.id, {
+          silent: true,
+          force: force || !token,
+        })
+        this.authFailureUntil.delete(user.id)
+      } catch (e) {
+        this.authFailureUntil.set(user.id, Date.now() + AUTH_FAILURE_COOLDOWN_MS)
         this.log(`Failed to refresh user ${user.id} before MinecraftFriends call`, e)
-      })
+      }
       token = await userTokenStorage.get(user)
     }
 
-    if (!token) {
-      throw new UserAuthenticationError('No access token available for user')
+    if (!token || force || user.invalidated) {
+      this.authFailureUntil.set(user.id, Date.now() + AUTH_FAILURE_COOLDOWN_MS)
+      throw new UserAuthenticationError(
+        token ? 'Microsoft account refresh failed' : 'No access token available for user',
+      )
     }
     return token
   }

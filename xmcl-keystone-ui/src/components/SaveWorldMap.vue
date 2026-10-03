@@ -551,7 +551,9 @@ let band: { x0: number; y0: number; x1: number; y1: number } | null = null
 let moved = false
 
 function localPoint(e: PointerEvent) {
-  const rect = canvas.value!.getBoundingClientRect()
+  const element = canvas.value
+  if (!element) return undefined
+  const rect = element.getBoundingClientRect()
   return { x: e.clientX - rect.left, y: e.clientY - rect.top }
 }
 
@@ -564,6 +566,7 @@ function modeFromEvent(e: PointerEvent | KeyboardEvent): GestureMode {
 function onPointerDown(e: PointerEvent) {
   canvas.value?.setPointerCapture(e.pointerId)
   const p = localPoint(e)
+  if (!p) return
   pointerStart = p
   lastPointer = p
   dragging.value = true
@@ -579,6 +582,7 @@ function onPointerDown(e: PointerEvent) {
 
 function onPointerMove(e: PointerEvent) {
   const p = localPoint(e)
+  if (!p) return
   // The paste footprint tracks the cursor even before the pointer goes down.
   if (placing.value) {
     updateGhostFromScreen(p.x, p.y)

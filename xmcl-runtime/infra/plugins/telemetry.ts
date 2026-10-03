@@ -52,6 +52,7 @@ import {
   isDeterministicallySampled,
   XmclRootTraceSampler,
 } from '../telemetry_sampling'
+import { disableAzureMonitorDiagnostics } from '../telemetry_exporter'
 
 const installOperations: Record<string, ReadonlySet<string>> = {
   VersionInstallService: new Set(['install', 'installInstance']),
@@ -68,6 +69,7 @@ function getInstallOperation(serviceName: string, serviceMethod: string) {
 export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('Telemtry')
   const diagnose = new ErrorDiagnose(app)
+  disableAzureMonitorDiagnostics()
 
   const clientSession = await app.registry.get(kClientToken)
   const isNewClient = await app.registry.get(kIsNewClient)
