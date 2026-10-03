@@ -1188,6 +1188,8 @@ resourcepack:
   noPacks: Nem található erőforráscsomag
   search: Erőforráscsomagok keresése...
 save:
+  resetView: Nézet visszaállítása
+  mapHintPan: Húzással mozgathatod a nézetet
   map:
     tabTitle: "Világtérkép"
   progress:
@@ -1697,6 +1699,7 @@ shaderPack:
   noPacks: Nincs shadercsomag telepítve
   search: Shadercsomagok keresése...
 shared:
+  close: Bezárás
   pressKeyCombination: Nyomjon meg egy billentyűkombinációt...
   add: Új
   author: Készítő

@@ -1155,6 +1155,8 @@ resourcepack:
   noPacks: Geen resourcepakketten gevonden
   search: Resourcepakketten zoeken...
 save:
+  resetView: Weergave herstellen
+  mapHintPan: Sleep om de weergave te verplaatsen
   map:
     tabTitle: "Wereldkaart"
   progress:
@@ -1653,6 +1655,7 @@ shaderPack:
   noPacks: Geen shaderpakketten geïnstalleerd
   search: Shaderpakketten zoeken...
 shared:
+  close: Sluiten
   pressKeyCombination: Druk op een toetsencombinatie...
   add: Toevoegen
   author: Auteur

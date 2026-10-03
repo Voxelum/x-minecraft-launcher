@@ -1681,6 +1681,7 @@ shaderPack:
   noPacks: シェーダーパックがインストールされていません
   search: シェーダーパックを検索...
 shared:
+  close: 閉じる
   pressKeyCombination: キーの組み合わせを押してください...
   add: 追加
   author: 著者

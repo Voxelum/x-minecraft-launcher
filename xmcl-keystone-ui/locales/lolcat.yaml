@@ -1131,6 +1131,8 @@ resourcepack:
   noPacks: No reswurz packz fownd
   search: Sniff reswurz packz...
 save:
+  resetView: Reset da view
+  mapHintPan: Drag 2 move
   map:
     tabTitle: "Wurld Map"
   progress:
@@ -1627,6 +1629,7 @@ shaderPack:
   noPacks: No shadr packz instold
   search: Sniff shadr packz...
 shared:
+  close: Close dis
   pressKeyCombination: PRESS KEY COMBO...
   add: ADD
   author: AUTHOR

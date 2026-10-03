@@ -1237,6 +1237,8 @@ resourcepack:
   noPacks: Keine Ressourcenpakete gefunden
   search: Ressourcenpakete suchen...
 save:
+  resetView: Ansicht zurücksetzen
+  mapHintPan: Ziehen zum Verschieben
   map:
     tabTitle: "Weltkarte"
   progress:
@@ -1764,6 +1766,7 @@ shaderPack:
   noPacks: Keine Shaderpakete installiert
   search: Shaderpakete suchen...
 shared:
+  close: Schließen
   pressKeyCombination: Tastenkombination drücken...
   add: hinzufügen
   author: Autor.

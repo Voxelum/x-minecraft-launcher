@@ -1145,6 +1145,8 @@ resourcepack:
   noPacks: Ресурс пакеттері табылмады
   search: Ресурс пакеттерін іздеу...
 save:
+  resetView: Көріністі қалпына келтіру
+  mapHintPan: Көріністі жылжыту үшін сүйреңіз
   map:
     tabTitle: "Әлем картасы"
   progress:
@@ -1644,6 +1646,7 @@ shaderPack:
   noPacks: Шейдер пакеттері орнатылмаған
   search: Шейдер пакеттерін іздеу...
 shared:
+  close: Жабу
   pressKeyCombination: Пернелер тіркесімін басыңыз...
   add: Қосу
   author: Автор

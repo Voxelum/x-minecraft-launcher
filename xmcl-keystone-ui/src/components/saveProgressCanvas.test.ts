@@ -4,7 +4,11 @@ import * as vue from 'vue'
 import { compileScript, parse } from 'vue/compiler-sfc'
 import { renderToString } from 'vue/server-renderer'
 import { ModuleKind, transpileModule } from 'typescript'
+import { load as loadYaml } from 'js-yaml'
+import { createI18n } from 'vue-i18n'
 import * as date from '../util/date'
+
+interface LocaleMessages { [key: string]: string | LocaleMessages }
 
 const source = readFileSync(new URL('./SaveProgressCanvas.vue', import.meta.url), 'utf8')
 const { descriptor, errors } = parse(source)
@@ -20,10 +24,21 @@ const load = (name: string) => {
 new Function('require', 'exports', 'useI18n', compiled)(load, exports, () => ({ t: (key: string) => key }))
 
 const renderScript = compileScript(descriptor, { id: 'save-progress-render-test', inlineTemplate: true })
-const renderModule: { default?: vue.Component } = {}
-new Function('require', 'exports', 'useI18n', transpileModule(renderScript.content, {
+const renderCompiled = transpileModule(renderScript.content, {
   compilerOptions: { module: ModuleKind.CommonJS },
-}).outputText)(load, renderModule, () => ({ t: (key: string) => key }))
+}).outputText
+function renderedApp(props: Record<string, unknown>, useI18n: () => unknown = () => ({ t: (key: string) => key })) {
+  const renderModule: { default?: vue.Component } = {}
+  new Function('require', 'exports', 'useI18n', renderCompiled)(load, renderModule, useI18n)
+  const app = vue.createSSRApp(renderModule.default!, props)
+  for (const [name, tag] of Object.entries({
+    VBtn: 'button', VBtnToggle: 'div', VIcon: 'span', VChip: 'span',
+    VTextField: 'input', VTabs: 'div', VTab: 'button', VCard: 'div',
+  })) {
+    app.component(name, vue.defineComponent({ setup: (_, { attrs, slots }) => () => vue.h(tag, attrs, slots.default?.()) }))
+  }
+  return app
+}
 
 describe('save progress canvas initialization', () => {
   test.each(['advancements', 'quests'])('initializes populated %s before eager watchers run', async category => {
@@ -61,14 +76,7 @@ describe('save progress canvas initialization', () => {
         }],
       },
     }
-    const app = vue.createSSRApp(renderModule.default!, { progress, category: 'quests' })
-    for (const [name, tag] of Object.entries({
-      VBtn: 'button', VBtnToggle: 'div', VIcon: 'span', VChip: 'span',
-      VTextField: 'input', VTabs: 'div', VTab: 'button', VCard: 'div',
-    })) {
-      app.component(name, vue.defineComponent({ setup: (_, { attrs, slots }) => () => vue.h(tag, attrs, slots.default?.()) }))
-    }
-    const html = await renderToString(app)
+    const html = await renderToString(renderedApp({ progress, category: 'quests' }))
     expect(html).toContain('aria-label="save.progress.zoomIn"')
     expect(html).toContain('aria-label="save.progress.zoomOut"')
     expect(html).toContain('aria-label="save.resetView"')
@@ -78,6 +86,26 @@ describe('save progress canvas initialization', () => {
     expect(html).toContain('aria-pressed="false"')
     expect(html).toContain('First: save.progress.done')
     expect(html).not.toMatch(/>\s*-m\s*</)
+  })
+
+  test('renders the French graph hint, toolbar instructions and playtime without English fallback', async () => {
+    const messages = loadYaml(readFileSync(new URL('../../locales/fr.yaml', import.meta.url), 'utf8')) as LocaleMessages
+    const i18n = createI18n({ legacy: false, locale: 'fr', fallbackLocale: false, messages: { fr: messages } })
+    const app = renderedApp({
+      category: 'quests',
+      isModal: true,
+      progress: {
+        quests: { chapters: [{ id: 'chapter', title: 'Chapitre', completedQuests: 0, totalQuests: 0, quests: [] }] },
+        stats: { playTimeTicks: 108000 },
+      },
+    }, () => i18n.global)
+    const html = await renderToString(app)
+    expect(html).toContain('Faites glisser pour déplacer la vue')
+    for (const label of ['Réinitialiser la vue', 'Agrandir', 'Réduire', 'Vue arborescente', 'Vue en liste', 'Quitter le plein écran']) {
+      expect(html).toContain(`aria-label="${label}"`)
+    }
+    expect(html).toContain('1.50 heures')
+    expect(html).not.toMatch(/Drag to pan|Reset View|Zoom in|Zoom out|Exit fullscreen|save\.progress\./)
   })
 
   test('keeps launcher chrome on shared surface and radius tokens, with wrapping controls', () => {

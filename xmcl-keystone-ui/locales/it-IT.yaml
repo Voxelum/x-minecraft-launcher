@@ -1150,6 +1150,8 @@ resourcepack:
   noPacks: Nessun pacchetto risorse trovato
   search: Cerca pacchetti risorse...
 save:
+  resetView: Ripristina vista
+  mapHintPan: Trascina per spostare la vista
   map:
     tabTitle: "Mappa del mondo"
   progress:
@@ -1649,6 +1651,7 @@ shaderPack:
   noPacks: Nessun pacchetto shader installato
   search: Cerca pacchetti shader...
 shared:
+  close: Chiudi
   pressKeyCombination: Premi una combinazione di tasti...
   add: Aggiungi
   author: Autore

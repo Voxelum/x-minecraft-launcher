@@ -1200,6 +1200,8 @@ resourcepack:
   showFile: 'إظهار حزمة الموارد في المجلد {file}'
   unselected: 'حزم الموارد غير المحددة'
 save:
+  resetView: إعادة ضبط العرض
+  mapHintPan: اسحب لتحريك العرض
   map:
     tabTitle: "خريطة العالم"
   progress:
@@ -1705,6 +1707,7 @@ shaderPack:
   showDirectory: 'إظهار دليل حزمة التظليل'
   showFile: 'إظهار حزمة التظليل هذه في المجلد'
 shared:
+  close: إغلاق
   pressKeyCombination: 'اضغط مجموعة مفاتيح...'
   add: 'يضيف'
   author: 'مؤلف'
