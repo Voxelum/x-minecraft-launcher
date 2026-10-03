@@ -1129,7 +1129,7 @@ blueprint:
     loading: 正在載入預覽...
     empty: 此藍圖沒有可顯示的方塊。
     hint: '{count} 個方塊 · {x}×{y}×{z}'
-    controls: 拖曳以觀察 · WASD 移動 · 空白鍵/Shift 上升/下降
+    controls: 'WASD：移動 · 空白鍵/Shift：上升/下降 · 拖曳：觀察 · 捲動：縮放'
   convert:
     title: 轉換格式
     hint: 將此藍圖轉換為其他格式。將建立一個新檔案。

@@ -2321,7 +2321,7 @@ blueprint:
     loading: Cargando vista previa...
     empty: Este blueprint no tiene bloques para mostrar.
     hint: '{count} bloques · {x}×{y}×{z}'
-    controls: Arrastra para mirar · WASD mover · Space/Shift arriba/abajo
+    controls: 'WASD: mover · Espacio/Shift: arriba/abajo · Arrastrar: mirar · Desplazar: zoom'
   convert:
     title: Convertir formato
     hint: Convierte este blueprint a otro formato. Se creará un nuevo archivo.

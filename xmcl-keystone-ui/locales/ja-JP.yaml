@@ -1123,7 +1123,7 @@ blueprint:
     loading: プレビューを読み込み中...
     empty: この設計図には表示できるブロックがありません。
     hint: '{count} 個のブロック · {x}×{y}×{z}'
-    controls: ドラッグで視点移動 · WASD で移動 · スペース/Shift で上昇/下降
+    controls: 'WASD：移動 · スペース/Shift：上昇/下降 · ドラッグ：視点移動 · スクロール：ズーム'
   convert:
     title: フォーマットを変換
     hint: この設計図を別のフォーマットに変換します。新しいファイルが作成されます。

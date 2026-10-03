@@ -5,50 +5,21 @@ import { describe, expect, test } from 'vitest'
 import yaml from 'js-yaml'
 
 const localeDir = join(dirname(fileURLToPath(import.meta.url)), '../../locales')
-const blueprintKeys = [
-  'blocks',
-  'byAuthor',
-  'compatible',
-  'convert.action',
-  'convert.hint',
-  'convert.target',
-  'convert.title',
-  'count',
-  'dropHint',
-  'empty',
-  'findMod',
-  'formats.structure',
-  'goTo',
-  'import',
-  'incompatible',
-  'install',
-  'market',
-  'materials',
-  'missingNamespaces',
-  'mixedSources',
-  'name',
-  'noDescription',
-  'openFolder',
-  'preview.controls',
-  'preview.empty',
-  'preview.hint',
-  'preview.loading',
-  'provider',
-  'refresh',
-  'replace.action',
-  'replace.addRule',
-  'replace.from',
-  'replace.newFile',
-  'replace.precise',
-  'replace.preciseHint',
-  'replace.simple',
-  'replace.simpleHint',
-  'replace.title',
-  'replace.to',
-  'searchLocal',
-  'searchOnline',
-  'selectHint',
+const sourceFiles = [
+  'Blueprint.vue',
+  'BlueprintActions.vue',
+  'BlueprintExtension.vue',
+  'BlueprintPreview.vue',
+  'HomeBlueprintCard.vue',
+  'HomeFooterCard.vue',
 ]
+const blueprintKeys = new Set(
+  sourceFiles.flatMap((fileName) => {
+    const source = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../views', fileName), 'utf8')
+    return [...source.matchAll(/(?:t|\$t)\(\s*['"](blueprint(?:\.[A-Za-z0-9_]+)+)/g)]
+      .map((match) => match[1].replace(/^blueprint\./, ''))
+  }),
+)
 
 function getValue(value: unknown, key: string): unknown {
   return key.split('.').reduce((current, part) => {
