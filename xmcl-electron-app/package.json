@@ -58,7 +58,7 @@
         "create-desktop-shortcuts": "^1.10.1",
         "cross-env": "^5.2.1",
         "dotenv": "16.0.1",
-        "electron": "43.1.0",
+        "electron": "43.5.0",
         "electron-builder": "^26.15.3",
         "electron-devtools-installer": "^4.0.0",
         "electron-updater": "^6.8.9",
