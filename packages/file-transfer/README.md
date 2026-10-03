@@ -129,6 +129,11 @@ await download({
 Or supply your own `RangePolicy` implementation if you need a
 different chunking strategy.
 
+When a `controller` is supplied, its `rangeSplitThreshold` and
+`rangeConcurrency` control splitting instead. Set `rangeSplitThreshold: 0`
+to disable splitting. Downloads without a known positive `expectedTotal`
+use a single stream; they still fetch and write the complete response.
+
 ### Sharing a dispatcher
 
 Callers that issue many downloads should share a single undici
@@ -144,4 +149,3 @@ await Promise.all([
   download({ url: '...', destination: '...', dispatcher }),
 ])
 ```
-

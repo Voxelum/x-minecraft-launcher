@@ -272,7 +272,7 @@ async function downloadWithController(params: ControlledDownloadParams): Promise
     const splitThreshold = controller.rangeSplitThreshold ?? 4 * 1024 * 1024
     const concurrency = controller.rangeConcurrency ?? 4
 
-    if (expectedTotal >= splitThreshold && concurrency > 1) {
+    if (splitThreshold > 0 && expectedTotal >= splitThreshold && concurrency > 1) {
       try {
         await downloadRanged(params, concurrency)
         return

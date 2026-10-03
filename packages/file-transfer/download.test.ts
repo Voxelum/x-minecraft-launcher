@@ -856,6 +856,67 @@ describe('@xmcl/file-transfer download (controller range-split)', () => {
     rangeConcurrency: 4,
   }
 
+  it.each([
+    { name: 'disabled splitting with no expected size', rangeSplitThreshold: 0, expectedTotal: undefined },
+    { name: 'disabled splitting with an unknown size', rangeSplitThreshold: 0, expectedTotal: 0 },
+    { name: 'disabled splitting with a known size', rangeSplitThreshold: 0, expectedTotal: 8 * 1024 },
+    { name: 'default splitting with an unknown size', rangeSplitThreshold: undefined, expectedTotal: 0 },
+    { name: 'enabled splitting with an unknown size', rangeSplitThreshold: 1024, expectedTotal: 0 },
+  ])('downloads a single complete stream for $name', async ({ rangeSplitThreshold, expectedTotal }) => {
+    const full = patterned(8 * 1024)
+    const ranges: (string | undefined)[] = []
+    const { server, baseUrl } = await startServer({
+      '/f': {
+        handle: (req, res) => {
+          ranges.push(req.headers.range)
+          serveRange(full, req, res)
+        },
+      },
+    })
+    const dir = await tempDir()
+    try {
+      const dest = join(dir, 'f.bin')
+      const tracker = new ProgressTrackerSingle()
+      await download({
+        url: `${baseUrl}/f`,
+        destination: dest,
+        controller: { ...splitController, rangeSplitThreshold },
+        expectedTotal,
+        tracker,
+      })
+
+      expect(ranges).toEqual([undefined])
+      expect(await readFile(dest)).toEqual(full)
+      expect(tracker.progress).toBe(full.length)
+      expect(tracker.done).toBe(true)
+    } finally {
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('rejects HTTP failures instead of completing an empty download when splitting is disabled', async () => {
+    const { server, baseUrl } = await startServer({
+      '/missing': { status: 404 },
+    })
+    const dir = await tempDir()
+    try {
+      const dest = join(dir, 'missing.bin')
+      const tracker = new ProgressTrackerSingle()
+      await expect(download({
+        url: `${baseUrl}/missing`,
+        destination: dest,
+        controller: { rangeSplitThreshold: 0 },
+        tracker,
+      })).rejects.toMatchObject({ statusCode: 404 })
+      expect(tracker.done).toBe(true)
+      await expect(stat(dest)).rejects.toMatchObject({ code: 'ENOENT' })
+    } finally {
+      server.close()
+      await rm(dir, { recursive: true, force: true })
+    }
+  })
+
   it('range-splits a large file into parallel segments and reconstructs it', async () => {
     const full = patterned(8 * 1024)
     const ranges: string[] = []
@@ -1126,4 +1187,3 @@ describe('@xmcl/file-transfer download (controller range-split)', () => {
     }
   })
 })
-
