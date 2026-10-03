@@ -149,17 +149,47 @@
         @quit="quit"
       >
         <div v-if="type === 'template' || type === 'manual' || !type" class="flex justify-end">
-          <v-btn
-            data-testid="add-instance-import"
-            :loading="loading"
-            variant="tonal"
-            color="primary"
-            rounded="pill"
-            @click="onImportModpack"
+          <v-menu
+            location="top end"
+            :offset="10"
+            transition="slide-y-reverse-transition"
           >
-            <v-icon start> folder_zip </v-icon>
-            {{ t('importModpack.name') }}
-          </v-btn>
+            <template #activator="{ props }">
+              <v-btn
+                data-testid="add-instance-import"
+                v-bind="props"
+                :loading="loading"
+                variant="tonal"
+                color="primary"
+                rounded="pill"
+              >
+                <v-icon start> folder_zip </v-icon>
+                {{ t('importModpack.name') }}
+                <v-icon end> arrow_drop_down </v-icon>
+              </v-btn>
+            </template>
+            <v-list min-width="320">
+              <v-list-item
+                data-testid="add-instance-import-file"
+                :title="t('userSkin.localFile')"
+                :subtitle="t('importModpack.fromFileSubtitle')"
+                prepend-icon="folder_zip"
+                @click="onImportModpack"
+              >
+                <template #append>
+                  <span class="ml-3 text-xs opacity-70">.zip / .mrpack</span>
+                </template>
+              </v-list-item>
+
+              <v-list-item
+                data-testid="add-instance-import-url"
+                :title="t('importModpack.fromUrl')"
+                :subtitle="t('importModpack.fromUrlSubtitle')"
+                prepend-icon="link"
+                @click="openUrlDialog"
+              />
+            </v-list>
+          </v-menu>
         </div>
         <div v-if="error" class="pointer-events-none left-0 flex w-full justify-center">
           <v-alert density="compact" variant="tonal" rounded="lg" class="w-[50%]" type="error">
@@ -168,6 +198,7 @@
         </div>
       </StepperFooter>
     </div>
+
   </v-dialog>
 </template>
 
@@ -197,13 +228,13 @@ import {
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
+import { ImportUrlDialogKey } from '@/composables/modpackPaste'
 import { useModpackFinishInstall } from '@/composables/modpackInstaller'
 import { useHasMinecraftLicense } from '@/composables/minecraftLicense'
 // TODO: collection integration for Add Instance is disabled pending a redesign.
 // import { kLocalCollections } from '@/composables/localCollections'
 // import { runBulkInstall, candidateToMarketOption } from '@/composables/collectionInstall'
 // import { resolveCollectionEntry } from '@/composables/collectionResolver'
-// import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 // import { getModrinthModLoaders } from '@/util/modrinth'
 // import {
 //   CollectionContentType,
@@ -223,6 +254,15 @@ const type = ref(
     | 'prism'
     | undefined,
 )
+
+// Instance create data
+const { t } = useI18n()
+const { gameProfile } = injection(kUserContext)
+const { instances } = injection(kInstances)
+const { path } = injection(kInstance)
+const creation = useInstanceCreation(gameProfile, instances)
+const { create, reset, error, update, loading } = creation
+provide(kInstanceCreation, creation)
 
 // Dialog model
 const { openModpack } = useService(ModpackServiceKey)
@@ -295,6 +335,7 @@ const onSelectManifest = async (man: InstanceManifest) => {
   }
 }
 
+const { show: showImportUrl } = useDialog(ImportUrlDialogKey)
 const { isShown, show, hide } = useDialog(
   AddInstanceDialogKey,
   (param) => {
@@ -325,7 +366,15 @@ const { isShown, show, hide } = useDialog(
         onSelectFTB(param.manifest).then(after)
       } else if (param.format === 'manifest') {
         onSelectManifest(param.manifest).then(after)
+      } else if (param.format === 'url' || 'url' in param) {
+        hide()
+        showImportUrl(param)
+        return
       }
+    } else if (typeof param === 'string' && (param.startsWith('http://') || param.startsWith('https://') || param.startsWith('curseforge://') || param.startsWith('modrinth://') || param.startsWith('technic://'))) {
+      hide()
+      showImportUrl(param)
+      return
     }
   },
   () => {
@@ -357,16 +406,6 @@ window.addEventListener('keydown', (e) => {
     hide()
   }
 })
-
-const { t } = useI18n()
-
-// Instance create data
-const { gameProfile } = injection(kUserContext)
-const { instances } = injection(kInstances)
-const { path } = injection(kInstance)
-const creation = useInstanceCreation(gameProfile, instances)
-const { create, reset, error, update, loading } = creation
-provide(kInstanceCreation, creation)
 
 // Install
 const router = useRouter()
@@ -586,6 +625,11 @@ const onImportModpack = () => {
         loading.value = false
       }
     })
+}
+
+function openUrlDialog() {
+  hide()
+  showImportUrl()
 }
 
 // Peer

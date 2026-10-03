@@ -319,6 +319,19 @@ gameType:
 help: Көмек
 home: Басты бет
 importModpack:
+  fromFileSubtitle: .zip немесе .mrpack файлын таңдаңыз
+  fromUrl: Сілтеме / URL арқылы...
+  fromUrlSubtitle: Модпакты URL арқылы орнату
+  fromUrlDescription: 'Модпактың URL мекенжайын енгізіңіз немесе қойыңыз:'
+  invalidUrl: Жарамды URL енгізіңіз (http:// немесе https://)
+  selectVersion: Модпак нұсқасын таңдау
+  selectVersionDescription: 'Орнатылатын {name} нұсқасын таңдаңыз:'
+  pmcProtected: Planet Minecraft сайты Cloudflare арқылы қорғалған. Беттен тікелей жүктеу сілтемесін немесе айна сілтемесін көшіріңіз.
+  netdiskTitle: Бұлттық дискіден жүктеу
+  netdiskDescription: Модпактың бұл нұсқасы сыртқы бұлттық дискіде орналасқан. Жүктеу бетін браузерде ашу үшін төмендегі түймені басыңыз, содан кейін жүктелген .zip немесе .mrpack файлын XMCL терезесіне сүйреп апарыңыз.
+  openNetdisk: Бұлттық дискіні ашу
+  netdiskOpened: Бұлттық диск сілтемесі браузерде ашылып, алмасу буферіне көшірілді.
+  noReleasesFound: Бұл репозиторийде .mrpack немесе .zip пішіміндегі модпак шығарылымдары табылмады.
   name: Мод-пак импорттау
 installAssets:
   asset: '{count} ресурс орнату'
@@ -453,6 +466,8 @@ instanceSetting:
   icon: Суретті таңдаңыз
   showLog: Minecraft журналын көрсету
   showLogHint: Бұл ойын басталғаннан кейін Minecraft журналын ағындату үшін терезе ашады
+  syncGameLanguage: Ойын тілін синхрондау
+  syncGameLanguageDescription: Іске қосу кезінде Minecraft тілін іске қосқыш тілімен автоматты түрде синхрондау
 instanceTemplate:
   ftb: Бұл FTB мод-пагы
   preview: Мод-пак алдын-ала қарауы
@@ -1130,6 +1145,26 @@ resourcepack:
   noPacks: Ресурс пакеттері табылмады
   search: Ресурс пакеттерін іздеу...
 save:
+  resetView: Көріністі қалпына келтіру
+  mapHintPan: Көріністі жылжыту үшін сүйреңіз
+  map:
+    tabTitle: "Әлем картасы"
+  progress:
+    zoomIn: Үлкейту
+    zoomOut: Кішірейту
+    loading: "Прогресс жүктелуде…"
+    noData: "Прогресс табылмады"
+    noDataHint: "Жетістіктерді, статистиканы және тапсырмалар барысын тіркеу үшін осы әлемде ойнаңыз."
+    quests: "Тапсырмалар"
+    advancements: "Жетістіктер"
+    done: "Аяқталды"
+    inProgress: "Орындалуда"
+    all: "Барлығы"
+    treeView: "Ағаш көрінісі"
+    filterPlaceholder: "Атауы бойынша сүзу…"
+    root: "Бастапқы нүкте"
+    exitFullscreen: "Толық экраннан шығу"
+    locked: "Құлыпталған"
   linkShared: Даналар арасында сақтауларды бөлісу
   linkSharedHint: >-
     Барлық даналар бірдей әлемдерді пайдалануы үшін осы дананың saves
@@ -1611,6 +1646,7 @@ shaderPack:
   noPacks: Шейдер пакеттері орнатылмаған
   search: Шейдер пакеттерін іздеу...
 shared:
+  close: Жабу
   pressKeyCombination: Пернелер тіркесімін басыңыз...
   add: Қосу
   author: Автор
@@ -1665,6 +1701,15 @@ tag:
   create: Тег жасау
   createSelected: Таңдалғандар үшін тег жасау
 task:
+  running: Орындалуда...
+  succeed: Аяқталды
+  eta: ~{time} қалды
+  remaining: '{size} қалды'
+  totalRemaining: '{size} қалды'
+  op:
+    update: Жаңарту
+    export: Экспорттау
+    duplicate: Көшіру
   cancelled: Болдырылған
   clear: Аяқталған тапсырмаларды тазалау
   connection:
@@ -1947,3 +1992,51 @@ migrateMinecraft:
   name: Minecraft файлдарын тасымалдау
 reinstall:
   name: '{version} қайта орнату'
+
+blueprint:
+  name: Сызба | Сызбалар
+  count: '{count} сызба'
+  searchLocal: Сызбаларды іздеу...
+  searchOnline: Онлайн іздеу...
+  market: Нарық
+  provider: Дереккөз
+  import: Импорттау
+  openFolder: Қалтаны ашу
+  refresh: Жаңарту
+  empty: Сызбалар табылмады. .litematic / .schem / .nbt файлын импорттаңыз немесе нарықты шолыңыз.
+  dropHint: Импорттау үшін сызба файлдарын (.litematic / .schem / .nbt) осында тастаңыз.
+  selectHint: Алдын ала көру үшін сызбаны таңдаңыз.
+  blocks: '{count} блок'
+  materials: Материалдар
+  findMod: Осы атау кеңістігіне арналған модты табу
+  compatible: Үйлесімді
+  incompatible: Модтар жетіспейді
+  missingNamespaces: 'Модтар жетіспейді: {namespaces}'
+  install: Орнату
+  goTo: Веб-сайт
+  byAuthor: 'авторы: {author}'
+  noDescription: Сипаттама берілмеген.
+  mixedSources: Нәтижелер барлық дереккөзден біріктірілген. Кейбірі тек шолуға арналған — жүктеу үшін веб-сайтын ашыңыз.
+  preview:
+    loading: Алдын ала көру жүктелуде...
+    empty: Бұл сызбада көрсетілетін блоктар жоқ.
+    hint: '{count} блок · {x}×{y}×{z}'
+    controls: 'WASD: қозғалу · Space/Shift: жоғары/төмен · Сүйреу: қарау · Дөңгелек: масштаб'
+  convert:
+    title: Пішімді түрлендіру
+    hint: Бұл сызбаны басқа пішімге түрлендіріңіз. Жаңа файл жасалады.
+    target: Мақсатты пішім
+    action: Түрлендіру
+  replace:
+    title: Блоктарды ауыстыру
+    simple: Қарапайым ауыстыру
+    precise: Дәл ауыстыру
+    simpleHint: Бір түрдегі барлық блокты ауыстыру.
+    preciseHint: Тек көрсетілген қасиеттерге сәйкес блоктарды ауыстыру.
+    from: Бастапқы
+    to: Жаңа
+    addRule: Ереже қосу
+    newFile: Жаңа файл
+    action: Ауыстыру
+  formats:
+    structure: Vanilla құрылымы

@@ -492,6 +492,19 @@ help: Help
 home: Home
 importModpack:
   name: Import Modpack
+  fromFileSubtitle: Choose .zip or .mrpack file
+  fromUrl: From Link / URL...
+  fromUrlSubtitle: Install from a modpack URL
+  fromUrlDescription: "Enter or paste the modpack URL:"
+  invalidUrl: "Please enter a valid URL (http:// or https://)"
+  selectVersion: Select Modpack Version
+  selectVersionDescription: "Choose the version of {name} to install:"
+  pmcProtected: "Planet Minecraft is protected by Cloudflare. Please copy the direct download or mirror link from the page."
+  netdiskTitle: Cloud Drive Download
+  netdiskDescription: "This modpack version is hosted on an external cloud drive. Click below to open the download page in your browser, then drag & drop the downloaded .zip or .mrpack into XMCL."
+  openNetdisk: Open Cloud Drive
+  netdiskOpened: "Cloud drive link opened in your browser and copied to clipboard."
+  noReleasesFound: "No .mrpack or .zip modpack releases found for this repository."
 installAssets:
   asset: Check {count} assets and install missing files
   assetIndex: Check Assets Index File
@@ -601,7 +614,7 @@ instance:
   vmOptions: JVM Options
   vmOptionsHint: Extra arguments to pass to the JVM
   vmVar: Environment Variables
-  vmVarHint: Click + button to add environemnt variables
+  vmVarHint: Click + button to add environment variables
   width: Width
 instanceAge:
   older: Older
@@ -643,6 +656,8 @@ instanceSetting:
   icon: Pick an image
   showLog: Show Minecraft Log
   showLogHint: This will popup a window to stream Minecraft log after game started
+  syncGameLanguage: Synchronize Game Language
+  syncGameLanguageDescription: Automatically synchronize Minecraft's language with the launcher language on launch
 instanceTemplate:
   ftb: This is a FTB modpack
   preview: Modpack Preview
@@ -1612,7 +1627,7 @@ blueprint:
     loading: Loading preview...
     empty: This blueprint has no blocks to display.
     hint: '{count} blocks · {x}×{y}×{z}'
-    controls: Drag to look · WASD move · Space/Shift up/down
+    controls: 'WASD: Move · Space/Shift: Up/Down · Drag: Look · Scroll: Zoom'
   convert:
     title: Convert format
     hint: Convert this blueprint to another format. A new file will be created.
@@ -1687,6 +1702,24 @@ save:
     folder.
   levelName: Level Name
   loadMap: Load Map
+  map:
+    tabTitle: "World Map"
+  progress:
+    zoomIn: Zoom in
+    zoomOut: Zoom out
+    loading: "Loading progress..."
+    noData: "No Progress Found"
+    noDataHint: "Play in this world to generate advancements, statistics, and quest progress."
+    quests: "Quests"
+    advancements: "Advancements"
+    done: "Done"
+    inProgress: "In Progress"
+    all: "All"
+    treeView: "Tree View"
+    filterPlaceholder: "Filter by name..."
+    root: "Root"
+    exitFullscreen: "Exit Fullscreen"
+    locked: "Locked"
   mapError: Map Error
   mapInfo: 'Interactive 3D world preview:'
   mapLoaded: Map Loaded
@@ -2319,6 +2352,15 @@ task:
   nTaskRunning: '{count} tasks are running'
   name: Task | Tasks
   pause: Pause
+  running: Running...
+  succeed: Completed
+  eta: ~{time} left
+  remaining: '{size} left'
+  totalRemaining: '{size} remaining'
+  op:
+    update: Update
+    export: Export
+    duplicate: Duplicate
 theme:
   selectImage: Select Image
   selectMusic: Select Music

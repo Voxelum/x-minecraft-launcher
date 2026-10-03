@@ -365,6 +365,19 @@ help: Допомога
 home: Головна
 importModpack:
   name: Імпортувати модпак
+  fromFileSubtitle: Виберіть файл .zip або .mrpack
+  fromUrl: Через посилання / URL...
+  fromUrlSubtitle: Встановити за посиланням на модпак
+  fromUrlDescription: "Вставте посилання на модпак:"
+  invalidUrl: "Будь ласка, введіть коректне посилання (http:// або https://)"
+  selectVersion: Оберіть версію модпаку
+  selectVersionDescription: "Виберіть версію {name} для встановлення:"
+  pmcProtected: "Planet Minecraft захищений Cloudflare. Будь ласка, скопіюйте пряме посилання для завантаження або дзеркало зі сторінки."
+  netdiskTitle: Завантаження з хмарного диску
+  netdiskDescription: "Ця версія модпаку розміщена на хмарному диску (Quark / Baidu / 123pan). Натисніть кнопку нижче, щоб відкрити сторінку завантаження, а після звантаження перетягніть отриманий файл .zip або .mrpack у вікно XMCL."
+  openNetdisk: Відкрити хмарний диск
+  netdiskOpened: "Посилання на хмарний диск скопійовано та відкрито у вашому браузері."
+  noReleasesFound: "У цьому репозиторії не знайдено релізів модпаків (.mrpack або .zip)."
 installAssets:
   asset: Встановити {count} ресурсів
   assetIndex: Перевірити індексний файл ресурсів
@@ -494,6 +507,8 @@ instanceSetting:
   hideLauncher: Сховати лаунчер після запуску
   icon: Вибрати зображення
   showLog: Показати лог Minecraft
+  syncGameLanguage: Синхронізація мови гри
+  syncGameLanguageDescription: Автоматично синхронізувати мову Minecraft із мовою лаунчера під час запуску
   showLogHint: Це відкриє вікно для потокової передачі логу Minecraft після запуску гри
 instanceTemplate:
   ftb: Це модпак FTB
@@ -1183,6 +1198,8 @@ resourcepack:
   noPacks: Ресурспаки не знайдено
   search: Пошук ресурспаків...
 save:
+  resetView: Скинути вигляд
+  mapHintPan: Перетягніть, щоб перемістити огляд
   linkShared: Спільні збереження для всіх збірок
   linkSharedHint: >-
     Пов'язати папку saves цієї збірки зі спільною глобальною папкою, щоб усі збірки використовували однакові світи. Наявні збереження буде перенесено до спільної папки.
@@ -1194,12 +1211,35 @@ save:
     Цю операцію неможливо скасувати. Ви назавжди втратите дані збереження. Ви впевнені, що хочете видалити це збереження?
   deleteTitle: Видалити збереження
   dropHint: Перетягніть сюди zip-файл збереження для імпорту
+  datapack:
+    name: Дата-пак | Дата-паки
+    noSaveHint: Спочатку створіть або виберіть світ для встановлення дата-пака
+    packFormat: 'Формат пака: {format}'
+    imported: Дата-пак імпортовано до {save}
   export: Експортувати збереження
   exportMessage: Експортувати збереження як zip-файл
   exportTitle: Експортувати збереження
   gameMode: режим гри
   independent: Екземпляр використовує незалежну папку збережень
   levelName: Назва рівня
+  map:
+    tabTitle: "Карта світу"
+  progress:
+    zoomIn: Наблизити
+    zoomOut: Віддалити
+    loading: "Завантаження прогресу…"
+    noData: "Прогрес не знайдено"
+    noDataHint: "Грайте в цьому світі, щоб з’явилися досягнення, статистика та прогрес завдань."
+    quests: "Завдання"
+    advancements: "Досягнення"
+    done: "Завершено"
+    inProgress: "У процесі"
+    all: "Усі"
+    treeView: "Дерево"
+    filterPlaceholder: "Фільтр за назвою…"
+    root: "Початок"
+    exitFullscreen: "Вийти з повноекранного режиму"
+    locked: "Заблоковано"
   name: Збереження | Збереження
   search: Шукати збереження
   seed: Seed
@@ -1660,6 +1700,7 @@ shaderPack:
   noPacks: Шейдерпаки не встановлені
   search: Пошук шейдерпаків...
 shared:
+  close: Закрити
   pressKeyCombination: Натисніть комбінацію клавіш...
   add: Додати
   author: Автор
@@ -1726,10 +1767,19 @@ task:
   connections: Мережеві з'єднання
   empty: Немає активних завдань
   failed: Невдача
-  manager: Менеджер завдань
+  manager: Диспетчер задач
   nTaskRunning: '{count} завдань виконується'
   name: Завдання | Завдання
   pause: Пауза
+  running: Виконується...
+  succeed: Завершено
+  eta: ~{time} залишилось
+  remaining: '{size} залишилось'
+  totalRemaining: 'Залишилось {size}'
+  op:
+    update: Оновлення
+    export: Експорт
+    duplicate: Дублювання
 theme:
   selectImage: Вибрати зображення
   selectMusic: Вибрати музику
@@ -2068,3 +2118,57 @@ gamepad:
   steamDeckDesc: Ми виявили, що ви граєте на Steam Deck. Бажаєте додати XMCL до вашої бібліотеки Steam як сторонню гру для повної інтеграції оверлея та контролера в Gaming Mode?
   steamDeckAddBtn: Додати до Steam ({btn})
   steamDeckCancelBtn: Скасувати ({btn})
+blueprint:
+  name: Креслення | Креслення
+  count: '{count} креслень'
+  searchLocal: Шукати креслення...
+  searchOnline: Шукати в мережі...
+  market: Ринок
+  local: Локальні
+  provider: Джерело
+  import: Імпортувати
+  openFolder: Відкрити папку
+  refresh: Оновити
+  empty: Креслень не знайдено. Імпортуйте файл .litematic / .schem / .nbt або відкрийте ринок.
+  dropHint: Перетягніть файли креслень (.litematic / .schem / .nbt) сюди для імпорту.
+  selectHint: Виберіть креслення для перегляду.
+  blocks: '{count} блоків'
+  materials: Матеріали
+  allNamespaces: Всі
+  findMod: Знайти мод для цього простору імен
+  compatible: Сумісно
+  incompatible: Відсутні моди
+  missingNamespaces: 'Відсутні моди для: {namespaces}'
+  delete: Видалити
+  cancel: Скасувати
+  install: Встановити
+  goTo: Вебсайт
+  byAuthor: від {author}
+  noDescription: Опис відсутній.
+  loadMore: Завантажити ще
+  cmsBrowseOnly: Це джерело тільки для перегляду; відкрийте вебсайт для завантаження.
+  mixedSources: Результати об'єднані з усіх джерел. Деякі тільки для перегляду — відкрийте їх вебсайт для завантаження.
+  formats:
+    structure: Ванільна структура
+  preview:
+    title: 3D Перегляд
+    loading: Завантаження перегляду...
+    empty: Це креслення не містить блоків для відображення.
+    hint: '{count} блоків · {x}×{y}×{z}'
+    controls: 'WASD (ЦФИВ): Рух · Пробіл/Shift: Вгору/Вниз · Перетягування: Огляд · Колесо: Масштаб'
+  convert:
+    title: Конвертувати формат
+    hint: Конвертувати це креслення в інший формат. Буде створено новий файл.
+    target: Цільовий формат
+    action: Конвертувати
+  replace:
+    title: Замінити блоки
+    simple: Проста
+    precise: Точна
+    simpleHint: Збіг лише за ID блоку, зберігаючи наявні властивості стану.
+    preciseHint: Точний збіг за ID та всіма властивостями стану блоку.
+    from: Замінити
+    to: На
+    addRule: Додати правило
+    newFile: Новий файл
+    action: Замінити блоки

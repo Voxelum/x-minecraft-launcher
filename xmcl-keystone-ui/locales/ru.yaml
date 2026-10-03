@@ -343,6 +343,19 @@ gameType:
 help: Справка
 home: Главная
 importModpack:
+  fromFileSubtitle: Выберите файл .zip или .mrpack
+  fromUrl: По ссылке / URL...
+  fromUrlSubtitle: Установить сборку модов по ссылке
+  fromUrlDescription: 'Введите или вставьте ссылку на сборку модов:'
+  invalidUrl: Введите корректную ссылку (http:// или https://)
+  selectVersion: Выберите версию сборки модов
+  selectVersionDescription: 'Выберите версию {name} для установки:'
+  pmcProtected: Planet Minecraft защищён Cloudflare. Скопируйте со страницы прямую ссылку на скачивание или ссылку на зеркало.
+  netdiskTitle: Скачивание с облачного диска
+  netdiskDescription: Эта версия сборки размещена на внешнем облачном диске. Нажмите ниже, чтобы открыть страницу скачивания в браузере, затем перетащите скачанный файл .zip или .mrpack в XMCL.
+  openNetdisk: Открыть облачный диск
+  netdiskOpened: Ссылка на облачный диск открыта в браузере и скопирована в буфер обмена.
+  noReleasesFound: В этом репозитории не найдены выпуски сборок модов в формате .mrpack или .zip.
   name: Импортировать сборку модов
 installAssets:
   asset: Установить {count} ресурсов
@@ -480,6 +493,8 @@ instanceSetting:
   icon: Выбрать изображение
   showLog: Показывать журнал Minecraft
   showLogHint: Это откроет окно журнала Minecraft после запуска экземпляра
+  syncGameLanguage: Синхронизировать язык игры
+  syncGameLanguageDescription: Автоматически синхронизировать язык Minecraft с языком лаунчера при запуске
 instanceTemplate:
   ftb: Это сборка модов FTB
   preview: Предварительный просмотр сборки модов
@@ -1180,6 +1195,7 @@ resourcepack:
   noPacks: Ресурс-паки не найдены
   search: Поиск ресурс-паков...
 save:
+  resetView: Сбросить вид
   linkShared: Общие сохранения для всех сборок
   linkSharedHint: >-
     Связать папку saves этой сборки с общей глобальной папкой, чтобы все сборки использовали одни и те же миры. Существующие сохранения будут перемещены в общую папку.
@@ -1191,12 +1207,36 @@ save:
     Эта операция не может быть отменена. Вы навсегда потеряете данные этого мира. Вы уверены, что хотите удалить это мир?
   deleteTitle: Удалить мир
   dropHint: Перетащите zip-архив сюда, чтобы импортировать
+  datapack:
+    name: Дата-пак | Дата-паки
+    noSaveHint: Сначала создайте или выберите мир для установки дата-пака
+    packFormat: 'Формат пака: {format}'
+    imported: Дата-пак импортирован в {save}
   export: Экспорт сохранения
   exportMessage: Экспортировать мир в zip-архив
   exportTitle: Экспортировать мир
   gameMode: игровой режим
   independent: Экземпляр использует независимую папку сохранений
   levelName: Название уровня
+  map:
+    tabTitle: "Карта мира"
+  mapHintPan: Перетащите для перемещения
+  progress:
+    zoomIn: Приблизить
+    zoomOut: Отдалить
+    loading: "Загрузка прогресса…"
+    noData: "Прогресс не найден"
+    noDataHint: "Играйте в этом мире, чтобы появились достижения, статистика и прогресс заданий."
+    quests: "Задания"
+    advancements: "Достижения"
+    done: "Завершено"
+    inProgress: "В процессе"
+    all: "Все"
+    treeView: "Дерево"
+    filterPlaceholder: "Фильтр по названию…"
+    root: "Начало"
+    exitFullscreen: "Выйти из полноэкранного режима"
+    locked: "Заблокировано"
   name: Мир | Миры
   search: Поиск сохранений
   seed: Seed
@@ -1542,6 +1582,7 @@ shaderPack:
   noPacks: Шейдер-паки не установлены
   search: Поиск шейдер-паков...
 shared:
+  close: Закрыть
   pressKeyCombination: Нажмите сочетание клавиш...
   add: Добавить
   author: Автор
@@ -1607,10 +1648,19 @@ task:
   connections: Сетевые подключения
   empty: Нет запущенных задач
   failed: Не удалось выполнить
-  manager: Менеджер задач
+  manager: Диспетчер задач
   nTaskRunning: '{count} задач выполняется'
   name: Задача | Задачи
   pause: Приостановить
+  running: Выполняется...
+  succeed: Завершено
+  eta: ~{time} осталось
+  remaining: '{size} осталось'
+  totalRemaining: 'Осталось {size}'
+  op:
+    update: Обновление
+    export: Экспорт
+    duplicate: Дублирование
 theme:
   selectImage: Выберите изображение
   selectMusic: Выберите музыку
@@ -1821,3 +1871,58 @@ migrateMinecraft:
   name: Перенести файлы Minecraft
 reinstall:
   name: Переустановить {version}
+
+blueprint:
+  name: Схема | Схемы
+  count: '{count} схем'
+  searchLocal: Поиск схем...
+  searchOnline: Поиск в интернете...
+  market: Магазин
+  local: Локальные
+  provider: Источник
+  import: Импорт
+  openFolder: Открыть папку
+  refresh: Обновить
+  empty: Схемы не найдены. Импортируйте файл .litematic / .schem / .nbt или откройте магазин.
+  dropHint: Перетащите сюда файлы схем (.litematic / .schem / .nbt) для импорта.
+  selectHint: Выберите схему для просмотра.
+  blocks: '{count} блоков'
+  materials: Материалы
+  allNamespaces: Все
+  findMod: Найти мод для этого пространства имён
+  compatible: Совместимо
+  incompatible: Не хватает модов
+  missingNamespaces: 'Не хватает модов для: {namespaces}'
+  delete: Удалить
+  cancel: Отмена
+  install: Установить
+  goTo: Веб-сайт
+  byAuthor: 'автор: {author}'
+  noDescription: Описание отсутствует.
+  loadMore: Загрузить ещё
+  cmsBrowseOnly: Этот источник доступен только для просмотра; откройте сайт для загрузки.
+  mixedSources: Результаты объединены из всех источников. Некоторые доступны только для просмотра — откройте их сайт для загрузки.
+  preview:
+    title: 3D Предпросмотр
+    loading: Загрузка предпросмотра...
+    empty: В этой схеме нет блоков для отображения.
+    hint: '{count} блоков · {x}×{y}×{z}'
+    controls: 'WASD: движение · Пробел/Shift: вверх/вниз · Перетаскивание: обзор · Прокрутка: масштаб'
+  convert:
+    title: Преобразовать формат
+    hint: Преобразуйте эту схему в другой формат. Будет создан новый файл.
+    target: Целевой формат
+    action: Преобразовать
+  replace:
+    title: Заменить блоки
+    simple: Простая замена
+    precise: Точная замена
+    simpleHint: Заменить все блоки одного типа.
+    preciseHint: Заменить только блоки с указанными свойствами.
+    from: Из
+    to: В
+    addRule: Добавить правило
+    newFile: Новый файл
+    action: Заменить
+  formats:
+    structure: Структура Vanilla

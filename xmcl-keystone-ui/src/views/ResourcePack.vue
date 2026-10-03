@@ -140,6 +140,7 @@
         @enable="onEnable"
         @disable="onDisable"
         @category="toggleCategory"
+        @installed="onInstalled"
       />
       <MarketProjectDetailCurseforge
         v-else-if="selectedItem?.curseforge || selectedCurseforgeId"
@@ -158,6 +159,7 @@
         @enable="onEnable"
         @disable="onDisable"
         @category="curseforgeCategory = $event"
+        @installed="onInstalled"
       />
       <ResourcePackDetailResource
         v-else-if="isLocalFile(selectedItem)"
@@ -367,7 +369,7 @@ const { dragover } = useGlobalDrop({
 })
 
 // modrinth installer
-const modrinthInstaller = useModrinthInstaller(path, runtime, files, resolveFromMarket)
+const modrinthInstaller = useModrinthInstaller(path, runtime, files, resolveFromMarket, async () => true)
 provide(kModrinthInstaller, modrinthInstaller)
 
 // curseforge installer
@@ -376,8 +378,13 @@ const curseforgeInstaller = useCurseforgeInstaller(
   runtime,
   files,
   resolveFromMarket,
+  async () => true,
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
+
+const onInstalled = async () => {
+  await revalidate()
+}
 
 const selections = ref({} as Record<string, boolean>)
 provide('selections', selections)
@@ -446,9 +453,11 @@ const onInstallProject = useProjectInstall(
 )
 
 const getInstalledModrinth = (projectId: string) => {
+  if (!projectId) return []
   return files.value.filter((m) => m.modrinth?.projectId === projectId)
 }
 const getInstalledCurseforge = (modId: number | undefined) => {
+  if (!modId || isNaN(modId)) return []
   return files.value.filter((m) => m.curseforge?.projectId === modId)
 }
 

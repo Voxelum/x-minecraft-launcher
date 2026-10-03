@@ -139,6 +139,8 @@ export interface ProjectVersion {
   createdDate?: string | number
   changelog?: string
   changelogLoading?: boolean
+  installedFile?: any
+  files?: string[]
 }
 
 const loaders = computed(() => props.version.loaders.map(l => {

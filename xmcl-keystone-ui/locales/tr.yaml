@@ -337,6 +337,19 @@ gameType:
 help: Yardım
 home: Ana Sayfa
 importModpack:
+  fromFileSubtitle: Bir .zip veya .mrpack dosyası seçin
+  fromUrl: Bağlantı / URL ile...
+  fromUrlSubtitle: Bir URL üzerinden mod paketi yükleyin
+  fromUrlDescription: 'Mod paketi URL’sini girin veya yapıştırın:'
+  invalidUrl: Geçerli bir URL girin (http:// veya https://)
+  selectVersion: Mod paketi sürümünü seçin
+  selectVersionDescription: '{name} için yüklenecek sürümü seçin:'
+  pmcProtected: Planet Minecraft, Cloudflare tarafından korunuyor. Sayfadan doğrudan indirme veya yansı bağlantısını kopyalayın.
+  netdiskTitle: Bulut depolamadan indirme
+  netdiskDescription: Bu mod paketi sürümü harici bir bulut depolama hizmetinde barındırılıyor. İndirme sayfasını tarayıcınızda açmak için aşağıya tıklayın, ardından indirilen .zip veya .mrpack dosyasını XMCL’ye sürükleyip bırakın.
+  openNetdisk: Bulut depolamayı aç
+  netdiskOpened: Bulut depolama bağlantısı tarayıcınızda açıldı ve panoya kopyalandı.
+  noReleasesFound: Bu depoda .mrpack veya .zip mod paketi sürümü bulunamadı.
   name: Mod Paketi İçe Aktar
 installAssets:
   asset: '{count} Varlık Yükle'
@@ -472,6 +485,8 @@ instanceSetting:
   icon: Bir resim seçin
   showLog: Minecraft Günlüğünü Göster
   showLogHint: Bu, oyun başladıktan sonra Minecraft günlüğünü yayınlamak için bir pencere açacaktır
+  syncGameLanguage: Oyun Dilini Senkronize Et
+  syncGameLanguageDescription: Başlatma sırasında Minecraft dilini başlatıcı diliyle otomatik olarak senkronize et
 instanceTemplate:
   ftb: Bu bir FTB mod paketidir
   preview: Mod Paketi Önizlemesi
@@ -1128,6 +1143,24 @@ resourcepack:
   noLocalPacksFound: Aramanızla eşleşen yerel kaynak paketi bulunamadı.
   noPacksInstalled: Hiç kaynak paketiniz yüklü değil.
 save:
+  map:
+    tabTitle: "Dünya Haritası"
+  progress:
+    zoomIn: Yakınlaştır
+    zoomOut: Uzaklaştır
+    loading: "İlerleme yükleniyor…"
+    noData: "İlerleme Bulunamadı"
+    noDataHint: "Gelişimleri, istatistikleri ve görev ilerlemesini kaydetmek için bu dünyada oynayın."
+    quests: "Görevler"
+    advancements: "Gelişimler"
+    done: "Tamamlandı"
+    inProgress: "Devam Ediyor"
+    all: "Tümü"
+    treeView: "Ağaç Görünümü"
+    filterPlaceholder: "Ada göre filtrele…"
+    root: "Başlangıç"
+    exitFullscreen: "Tam Ekrandan Çık"
+    locked: "Kilitli"
   linkShared: Kayıtları örnekler arasında paylaş
   linkSharedHint: Bu örneğin saves klasörünü genel paylaşılan klasöre bağlayarak tüm örneklerin aynı dünyaları paylaşmasını sağlayın. Mevcut kayıtlar paylaşılan klasörde birleştirilir.
   allowCheats: Hilelere İzin Ver
@@ -1696,6 +1729,15 @@ tag:
   create: Etiket Oluştur
   createSelected: Seçilenler için Etiket Oluştur
 task:
+  running: Çalışıyor...
+  succeed: Tamamlandı
+  eta: kalan ~{time}
+  remaining: '{size} kaldı'
+  totalRemaining: '{size} kaldı'
+  op:
+    update: Güncelle
+    export: Dışa aktar
+    duplicate: Çoğalt
   cancelled: İptal Edildi
   clear: Biten Görevleri Temizle
   connection:
@@ -2072,7 +2114,7 @@ blueprint:
     loading: Önizleme yükleniyor...
     empty: Bu şemada gösterilecek blok yok.
     hint: '{count} blok · {x}×{y}×{z}'
-    controls: Bakmak için sürükleyin · WASD hareket · Boşluk/Shift yukarı/aşağı
+    controls: 'WASD: Hareket · Boşluk/Shift: Yukarı/Aşağı · Sürükleme: Bakış · Kaydırma: Yakınlaştırma'
   convert:
     title: Biçimi dönüştür
     hint: Bu şemayı başka bir biçime dönüştürün. Yeni bir dosya oluşturulacak.

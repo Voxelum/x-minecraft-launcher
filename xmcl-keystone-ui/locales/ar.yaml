@@ -334,6 +334,19 @@ gameType:
 help: 'يساعد'
 home: 'بيت'
 importModpack:
+  fromFileSubtitle: اختر ملف .zip أو .mrpack
+  fromUrl: من رابط / URL...
+  fromUrlSubtitle: تثبيت حزمة تعديلات من رابط
+  fromUrlDescription: 'أدخل رابط حزمة التعديلات أو الصقه:'
+  invalidUrl: يرجى إدخال رابط صالح (http:// أو https://)
+  selectVersion: اختر إصدار حزمة التعديلات
+  selectVersionDescription: 'اختر إصدار {name} المراد تثبيته:'
+  pmcProtected: موقع Planet Minecraft محمي بواسطة Cloudflare. يرجى نسخ رابط التنزيل المباشر أو رابط بديل من الصفحة.
+  netdiskTitle: التنزيل من التخزين السحابي
+  netdiskDescription: هذا الإصدار من حزمة التعديلات مستضاف على خدمة تخزين سحابي خارجية. انقر أدناه لفتح صفحة التنزيل في المتصفح، ثم اسحب ملف .zip أو .mrpack الذي نزّلته وأفلته في XMCL.
+  openNetdisk: فتح التخزين السحابي
+  netdiskOpened: فُتح رابط التخزين السحابي في المتصفح ونُسخ إلى الحافظة.
+  noReleasesFound: لم يُعثر على إصدارات حزم تعديلات بصيغة .mrpack أو .zip في هذا المستودع.
   name: 'استيراد مودباك'
 installAssets:
   asset: 'تثبيت {count} الأصول'
@@ -476,6 +489,8 @@ instanceSetting:
   icon: 'اختر صورة'
   showLog: 'عرض سجل ماين كرافت'
   showLogHint: 'سيؤدي هذا إلى ظهور نافذة لدفق سجل Minecraft بعد بدء اللعبة'
+  syncGameLanguage: 'مزامنة لغة اللعبة'
+  syncGameLanguageDescription: 'مزامنة لغة Minecraft تلقائيًا مع لغة المشغل عند بدء التشغيل'
 instanceTemplate:
   ftb: 'هذه حزمة تعديل FTB'
   preview: 'معاينة مودباك'
@@ -1185,6 +1200,26 @@ resourcepack:
   showFile: 'إظهار حزمة الموارد في المجلد {file}'
   unselected: 'حزم الموارد غير المحددة'
 save:
+  resetView: إعادة ضبط العرض
+  mapHintPan: اسحب لتحريك العرض
+  map:
+    tabTitle: "خريطة العالم"
+  progress:
+    zoomIn: تكبير
+    zoomOut: تصغير
+    loading: "جارٍ تحميل التقدم…"
+    noData: "لم يُعثر على تقدم"
+    noDataHint: "العب في هذا العالم لتسجيل الإنجازات والإحصاءات وتقدم المهام."
+    quests: "المهام"
+    advancements: "الإنجازات"
+    done: "مكتمل"
+    inProgress: "قيد التنفيذ"
+    all: "الكل"
+    treeView: "عرض شجري"
+    filterPlaceholder: "تصفية حسب الاسم…"
+    root: "البداية"
+    exitFullscreen: "الخروج من ملء الشاشة"
+    locked: "مقفل"
   linkShared: مشاركة عوالم الحفظ بين النسخ
   linkSharedHint: >-
     اربط مجلد saves لهذه النسخة بالمجلد المشترك العام حتى تشارك جميع
@@ -1672,6 +1707,7 @@ shaderPack:
   showDirectory: 'إظهار دليل حزمة التظليل'
   showFile: 'إظهار حزمة التظليل هذه في المجلد'
 shared:
+  close: إغلاق
   pressKeyCombination: 'اضغط مجموعة مفاتيح...'
   add: 'يضيف'
   author: 'مؤلف'
@@ -1726,6 +1762,15 @@ tag:
   create: 'إنشاء علامة'
   createSelected: 'إنشاء علامة للتحديد'
 task:
+  running: قيد التشغيل...
+  succeed: اكتملت
+  eta: متبقي ~{time}
+  remaining: 'متبقي {size}'
+  totalRemaining: 'المتبقي {size}'
+  op:
+    update: تحديث
+    export: تصدير
+    duplicate: تكرار
   cancelled: 'تم الإلغاء'
   clear: 'مسح المهام المنتهية'
   connection:
@@ -2030,3 +2075,51 @@ versionType:
   beta: 'بيتا'
   name: 'حالة'
   release: 'يطلق'
+
+blueprint:
+  name: مخطط | مخططات
+  count: '{count} مخططات'
+  searchLocal: البحث في المخططات...
+  searchOnline: البحث عبر الإنترنت...
+  market: المتجر
+  provider: المصدر
+  import: استيراد
+  openFolder: فتح المجلد
+  refresh: تحديث
+  empty: لم يتم العثور على مخططات. استورد ملف .litematic / .schem / .nbt أو تصفح المتجر.
+  dropHint: أسقط ملفات المخططات (.litematic / .schem / .nbt) هنا لاستيرادها.
+  selectHint: اختر مخططًا لمعاينته.
+  blocks: '{count} كتل'
+  materials: المواد
+  findMod: العثور على التعديل الخاص بمساحة الأسماء هذه
+  compatible: متوافق
+  incompatible: تعديلات مفقودة
+  missingNamespaces: 'تعديلات مفقودة لـ: {namespaces}'
+  install: تثبيت
+  goTo: الموقع الإلكتروني
+  byAuthor: بواسطة {author}
+  noDescription: لا يوجد وصف.
+  mixedSources: النتائج مدمجة من جميع المصادر. بعضها للتصفح فقط — افتح موقعها للتنزيل.
+  preview:
+    loading: جارٍ تحميل المعاينة...
+    empty: لا يحتوي هذا المخطط على كتل لعرضها.
+    hint: '{count} كتل · {x}×{y}×{z}'
+    controls: 'WASD: حركة · Space/Shift: أعلى/أسفل · السحب: نظر · التمرير: تكبير'
+  convert:
+    title: تحويل التنسيق
+    hint: حوّل هذا المخطط إلى تنسيق آخر. سيتم إنشاء ملف جديد.
+    target: التنسيق الهدف
+    action: تحويل
+  replace:
+    title: استبدال الكتل
+    simple: استبدال بسيط
+    precise: استبدال دقيق
+    simpleHint: استبدال جميع الكتل من نوع واحد.
+    preciseHint: استبدال الكتل المطابقة للخصائص المحددة فقط.
+    from: من
+    to: إلى
+    addRule: إضافة قاعدة
+    newFile: اسم الملف الجديد
+    action: استبدال
+  formats:
+    structure: بنية فانيلا
