@@ -4,6 +4,7 @@ import {
   type MinecraftFriendsPreferences,
   type MinecraftFriendsService as IMinecraftFriendsService,
   MinecraftFriendsServiceKey,
+  Exception,
   type UserProfile,
 } from '@xmcl/runtime-api'
 import { MojangClient, MojangFriendsError, UnauthorizedError } from '@xmcl/user'
@@ -14,7 +15,13 @@ import { kUserTokenStorage } from '~/user'
 import { UserService } from './UserService'
 import { translateMojangFriendsError } from './MinecraftFriendsErrors'
 
-const UserAuthenticationError = AnyError.make('UserAuthenticationError')
+class UserAuthenticationError extends Exception<{ type: 'userAuthentication' }> {
+  name = 'UserAuthenticationError'
+
+  constructor(message: string, options?: ErrorOptions) {
+    super({ type: 'userAuthentication' }, message, options)
+  }
+}
 const MinecraftFriendsUnsupportedError = AnyError.make('MinecraftFriendsUnsupportedError')
 const AUTH_FAILURE_COOLDOWN_MS = 60_000
 

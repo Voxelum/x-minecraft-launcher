@@ -1,5 +1,5 @@
 import { describe, expect, afterEach, it, vi } from 'vitest'
-import { AUTHORITY_MICROSOFT, type UserProfile } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, Exception, type UserProfile } from '@xmcl/runtime-api'
 import { UnauthorizedError } from '@xmcl/user'
 import { MinecraftFriendsService } from './MinecraftFriendsService'
 
@@ -62,8 +62,11 @@ describe('MinecraftFriendsService authentication retry policy', () => {
     const { service, refreshUser } = createService({ first: undefined, second: undefined })
     refreshUser.mockRejectedValue(new Error('refresh unavailable'))
 
-    await expect((service as any).getToken(createUser('first'))).rejects.toThrow('No access token')
-    await expect((service as any).getToken(createUser('first'))).rejects.toThrow('temporarily unavailable')
+    await expect((service as any).getToken(createUser('first'))).rejects.toMatchObject({
+      name: 'UserAuthenticationError',
+      exception: { type: 'userAuthentication' },
+    })
+    await expect((service as any).getToken(createUser('first'))).rejects.toBeInstanceOf(Exception)
     await expect((service as any).getToken(createUser('second'))).rejects.toThrow('No access token')
 
     expect(refreshUser).toHaveBeenCalledTimes(2)
