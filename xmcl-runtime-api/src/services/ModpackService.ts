@@ -277,6 +277,11 @@ export interface ModpackService {
    */
   openModpack(modpackPath: string): Promise<SharedState<ModpackState>>
   /**
+   * Download fresh overrides without inferring a modpack manifest or runtime.
+   * The retained archive backs the returned zip:// downloads.
+   */
+  getModpackArchiveFiles(source: string): Promise<InstanceFile[]>
+  /**
    * Import the modpack as an instance
    * @param modpackPath The modpack file path
    * @param iconUrl The icon url of the modpack

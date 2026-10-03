@@ -52,6 +52,7 @@ import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/servic
 import { downloadInstanceFiles } from './utils/downloadInstanceFiles'
 import { linkInstanceFiles } from './utils/linkInstanceFiles'
 import { unzipInstanceFiles } from './utils/unzipInstanceFiles'
+import { deduplicateInstanceFiles } from '~/util/deduplicateInstanceFiles'
 import { resolveInstanceFiles } from './utils/resolveInstanceFiles'
 import { getTracker } from '~/util/taskHelper'
 import { readPendingInstalls, writeInstallState } from './utils/pendingInstall'
@@ -491,16 +492,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
     }
     const delta = (ready?: Set<string>) => {
-      let files = activeInstallFiles(targetState)
-      let baseline = activeInstallFiles(targetState, true)
-      if (process.platform === 'win32') {
-        const seenFiles = new Map<string, InstanceFile>()
-        for (const f of files) seenFiles.set(f.path.toLowerCase(), f)
-        files = Array.from(seenFiles.values())
-        const seenBaseline = new Map<string, InstanceFile>()
-        for (const f of baseline) seenBaseline.set(f.path.toLowerCase(), f)
-        baseline = Array.from(seenBaseline.values())
-      }
+      const files = deduplicateInstanceFiles(activeInstallFiles(targetState))
+      const baseline = deduplicateInstanceFiles(activeInstallFiles(targetState, true))
       return computeFileUpdates(
         instancePath,
         ready ? baseline.filter(file => ready.has(file.path)) : baseline,
@@ -1041,14 +1034,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     legacyBaseline?: { upstream: InstanceUpstream; files: InstanceFile[] } | null,
   ): Promise<void> {
     const { path: instancePath, id } = options
-    let files = options.files
-    if (process.platform === 'win32') {
-      const seen = new Map<string, InstanceFile>()
-      for (const file of files) {
-        seen.set(file.path.toLowerCase(), file)
-      }
-      files = Array.from(seen.values())
-    }
+    const files = deduplicateInstanceFiles(options.files)
 
     const timestamp = Date.now()
     this.log('Install instance files', instancePath, id)

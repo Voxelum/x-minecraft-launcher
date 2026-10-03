@@ -72,6 +72,8 @@ import { createModrinthHandler } from './utils/modrinthHandler'
 import { createTechnicHandler } from './utils/technicHandler'
 import { remapModpackZipDownloads } from './utils/remapZipDownloads'
 import { downloadModpackUrl } from './downloadModpackUrl'
+import { getArchiveFiles } from './utils/archiveFiles'
+import { deduplicateInstanceFiles } from '~/util/deduplicateInstanceFiles'
 import {
   addExportFileAsOverride,
   getModrinthProfileFiles,
@@ -158,13 +160,7 @@ const transformFile = (file: InstanceFile) => {
 
 const transformInstance = <T extends { files: InstanceFile[] }>(o: T) => {
   for (const file of o.files) transformFile(file)
-  if (process.platform === 'win32') {
-    const seen = new Map<string, InstanceFile>()
-    for (const file of o.files) {
-      seen.set(file.path.toLowerCase(), file)
-    }
-    o.files = Array.from(seen.values())
-  }
+  o.files = deduplicateInstanceFiles(o.files)
   return o
 }
 
@@ -205,7 +201,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     this.handlers['mcbbs'] = createMcbbsHandler(app)
     this.handlers['mmc'] = createMmcHandler(app)
     this.handlers['modrinth'] = createModrinthHandler(app)
-    this.handlers['technic'] = createTechnicHandler(app)
+    this.handlers['technic'] = createTechnicHandler()
   }
 
   async installModapckFromMarket(options: InstallMarketOptions): Promise<string[]> {
@@ -1396,15 +1392,15 @@ export class ModpackService extends AbstractService implements IModpackService {
       transformFile(file)
     }
 
-    if (process.platform === 'win32') {
-      const seen = new Map<string, InstanceFile>()
-      for (const file of files) {
-        seen.set(file.path.toLowerCase(), file)
-      }
-      return Array.from(seen.values())
-    }
+    return deduplicateInstanceFiles(files)
+  }
 
-    return files
+  async getModpackArchiveFiles(source: string): Promise<InstanceFile[]> {
+    const downloadOptions = await this.app.registry.get(kDownloadOptions)
+    const path = await downloadModpackUrl(source, this.getPath('modpacks'), downloadOptions)
+    const zipManager = await this.app.registry.getOrCreate(ZipManager)
+    const zip = await zipManager.open(path)
+    return transformInstance({ files: getArchiveFiles(path, Object.values(zip.entries)) }).files
   }
 
   async openModpack(modpackFile: string): Promise<SharedState<ModpackState>> {

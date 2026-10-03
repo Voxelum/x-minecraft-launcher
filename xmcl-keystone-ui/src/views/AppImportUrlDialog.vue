@@ -3,11 +3,12 @@
     v-model="isShownDialog"
     max-width="560"
     transition="fade-transition"
+    :persistent="versionLoading"
   >
     <!-- Step 1: Modpack URL Input -->
-    <v-card v-if="dialogStep === 'input'" class="surface-card rounded-2xl p-5 border border-white/10 shadow-2xl backdrop-blur-xl">
-      <v-card-title class="flex items-center gap-3 px-2 pt-1 pb-2">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-primary/15 text-primary">
+    <v-card v-if="dialogStep === 'input'" class="p-5 flex flex-col">
+      <v-card-title class="shrink-0 flex items-center gap-3 px-2 pt-1 pb-2">
+        <div class="surface-rounded-item w-10 h-10 flex items-center justify-center bg-primary/15 text-primary">
           <v-icon size="24">link</v-icon>
         </div>
         <div class="flex flex-col">
@@ -15,18 +16,19 @@
           <span class="text-xs opacity-60 font-normal">{{ t('importModpack.fromUrlSubtitle') }}</span>
         </div>
       </v-card-title>
-      <v-card-text class="px-2 py-3">
+      <v-card-text class="min-h-0 overflow-y-auto px-2 py-3">
         <p class="text-sm opacity-80 mb-3">
           {{ t('importModpack.fromUrlDescription') }}
         </p>
         <v-text-field
           v-model="modpackUrl"
           placeholder="https://..."
+          :aria-label="t('importModpack.fromUrlDescription')"
           :error-messages="urlError"
           :loading="urlLoading"
           variant="filled"
           density="comfortable"
-          rounded="xl"
+          :disabled="urlLoading"
           clearable
           hide-details="auto"
           autofocus
@@ -41,6 +43,8 @@
               variant="text"
               size="small"
               class="opacity-70 hover:opacity-100"
+              :aria-label="t('importModpack.fromUrlDescription')"
+              :disabled="urlLoading"
               @click="pasteFromClipboard"
             >
               <v-icon size="18">content_paste</v-icon>
@@ -48,7 +52,7 @@
           </template>
         </v-text-field>
       </v-card-text>
-      <v-card-actions class="justify-end gap-2 px-2 pb-1">
+      <v-card-actions class="shrink-0 justify-end gap-2 px-2 pb-1">
         <v-btn variant="text" rounded="pill" @click="closeAll">
           {{ t('shared.cancel') }}
         </v-btn>
@@ -56,28 +60,29 @@
           color="primary"
           variant="elevated"
           rounded="pill"
+          class="!px-6"
           :loading="urlLoading"
-          :disabled="!urlInput.url"
+          :disabled="!urlInput.url || urlLoading"
           @click="submitModpackUrl"
         >
-          <v-icon start>download</v-icon>
+          <v-icon start class="!ml-0">download</v-icon>
           {{ t('shared.install') }}
         </v-btn>
       </v-card-actions>
     </v-card>
 
     <!-- Step 2: Version Select Dialog -->
-    <v-card v-else class="surface-card rounded-2xl p-5 border border-white/10 shadow-2xl backdrop-blur-xl">
-      <v-card-title class="flex items-center gap-3 px-2 pt-1 pb-2">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-primary/15 text-primary">
+    <v-card v-else class="p-5 flex flex-col">
+      <v-card-title class="shrink-0 flex items-center gap-3 px-2 pt-1 pb-2">
+        <div class="surface-rounded-item w-10 h-10 shrink-0 flex items-center justify-center bg-primary/15 text-primary">
           <v-icon size="24" :icon="selectedSourceIcon" />
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col min-w-0">
           <span class="text-base font-bold">{{ t('importModpack.selectVersion') }}</span>
-          <span class="text-xs opacity-60 font-normal">{{ selectedProjectName }}</span>
+          <span class="text-xs opacity-60 font-normal truncate">{{ selectedProjectName }}</span>
         </div>
       </v-card-title>
-      <v-card-text class="px-2 py-3">
+      <v-card-text class="min-h-0 overflow-y-auto px-2 py-3">
         <p class="text-sm opacity-80 mb-3">
           {{ t('importModpack.selectVersionDescription', { name: selectedProjectName }) }}
         </p>
@@ -86,10 +91,12 @@
           :items="availableVersions"
           item-title="title"
           item-value="id"
+          :label="t('importModpack.selectVersion')"
+          :disabled="versionLoading"
+          :error-messages="urlError"
           variant="filled"
           density="comfortable"
-          rounded="xl"
-          hide-details
+          hide-details="auto"
         />
 
         <!-- Netdisk notice if version is hosted on a cloud disk -->
@@ -98,8 +105,7 @@
           type="info"
           variant="tonal"
           density="compact"
-          rounded="xl"
-          class="mt-3 text-xs"
+          class="surface-rounded-item mt-3 text-xs"
         >
           <div class="font-semibold text-sm mb-1 flex items-center gap-1.5">
             <v-icon size="16">cloud_download</v-icon>
@@ -110,23 +116,24 @@
           </div>
         </v-alert>
       </v-card-text>
-      <v-card-actions class="justify-end gap-2 px-2 pb-1">
-        <v-btn variant="text" rounded="pill" @click="dialogStep = 'input'">
+      <v-card-actions class="shrink-0 justify-end gap-2 px-2 pb-1">
+        <v-btn variant="text" rounded="pill" :disabled="versionLoading" @click="dialogStep = 'input'; urlError = ''">
           <v-icon start size="16">arrow_back</v-icon>
           {{ t('shared.back') }}
         </v-btn>
-        <v-btn variant="text" rounded="pill" @click="closeAll">
+        <v-btn variant="text" rounded="pill" :disabled="versionLoading" @click="closeAll">
           {{ t('shared.cancel') }}
         </v-btn>
         <v-btn
           color="primary"
           variant="elevated"
           rounded="pill"
+          class="!px-6"
           :loading="versionLoading"
-          :disabled="!selectedVersionId"
+          :disabled="!selectedVersionId || versionLoading"
           @click="confirmVersionSelect"
         >
-          <v-icon start>{{ isSelectedVersionNetdisk ? 'open_in_new' : 'download' }}</v-icon>
+          <v-icon start class="!ml-0">{{ isSelectedVersionNetdisk ? 'open_in_new' : 'download' }}</v-icon>
           {{ isSelectedVersionNetdisk ? t('importModpack.openNetdisk') : t('shared.install') }}
         </v-btn>
       </v-card-actions>
@@ -137,7 +144,7 @@
 <script lang="ts" setup>
 import { useDialog } from '@/composables/dialog'
 import { ImportUrlDialogKey } from '@/composables/modpackPaste'
-import { parseModpackUrlInput, routeModpackUrlInput } from '@/composables/modpackUrlInput'
+import { getModpackProviderPath, parseModpackUrlInput, routeModpackUrlInput } from '@/composables/modpackUrlInput'
 import { useModpackInstaller, useModpackFinishInstall } from '@/composables/modpackInstaller'
 import { useService } from '@/composables'
 import { BaseServiceKey, MarketType, ModpackServiceKey, InstanceInstallServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
@@ -146,19 +153,24 @@ import { useNotifier } from '@/composables/notifier'
 import { injection } from '@/util/inject'
 import { kInstances } from '@/composables/instances'
 import { InstanceFile } from '@xmcl/instance'
-import { getErrorMessage } from '@/util/error'
+import { useLocaleError } from '@/composables/error'
+import { kInstanceVersionInstall } from '@/composables/instanceVersionInstall'
+import { kJavaContext } from '@/composables/java'
 
 const { t } = useI18n()
+const formatError = useLocaleError()
 const { notify } = useNotifier()
 const router = useRouter()
 const { selectedInstance, instances } = injection(kInstances)
 
-const { installModapckFromMarket, openModpack } = useService(ModpackServiceKey)
+const { openModpack, getModpackArchiveFiles } = useService(ModpackServiceKey)
 const { handleUrl } = useService(BaseServiceKey)
 const { createInstance, editInstance } = useService(InstanceServiceKey)
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const installModpack = useModpackInstaller()
 const finishModpackInstall = useModpackFinishInstall()
+const { getInstanceLock, getInstallInstruction, handleInstallInstruction } = injection(kInstanceVersionInstall)
+const { all: javas } = injection(kJavaContext)
 
 // Dialog states
 const isShownDialog = ref(false)
@@ -174,9 +186,23 @@ const availableVersions = ref<{ id: number | string; title: string; raw?: any }[
 const selectedMarketType = ref<MarketType>(MarketType.Modrinth)
 const selectedSource = ref<'modrinth' | 'curseforge' | 'atlauncher' | 'bbsmc' | 'github' | 'technic' | 'url'>('url')
 const versionLoading = ref(false)
+let revision = 0
+
+function operation() {
+  const id = ++revision
+  return {
+    current: () => id === revision,
+    async wait<T>(promise: Promise<T>): Promise<T> {
+      const result = await promise
+      if (id !== revision) throw new DOMException('Import dialog closed', 'AbortError')
+      return result
+    },
+  }
+}
 
 // Context data for ATLauncher / BBSMC
 const atlauncherData = ref<{ safeName: string; packName: string } | null>(null)
+const atlauncherInstallTarget = ref<{ source: string; path: string }>()
 const bbsmcData = ref<{ slug: string; versions: any[] } | null>(null)
 
 function isNetdiskUrl(url?: string): boolean {
@@ -201,8 +227,8 @@ const isSelectedVersionNetdisk = computed(() => {
   if (!raw) return false
   if (raw.disk_only) return true
   if (raw.disk_urls && raw.disk_urls.length > 0) return true
-  const firstUrl = raw.files?.[0]?.url
-  return isNetdiskUrl(firstUrl)
+  const file = raw.files?.find((file: { primary?: boolean }) => file.primary) || raw.files?.[0]
+  return isNetdiskUrl(file?.url)
 })
 
 const selectedSourceIcon = computed(() => {
@@ -218,6 +244,7 @@ const selectedSourceIcon = computed(() => {
 })
 
 function closeAll() {
+  revision++
   isShownDialog.value = false
   hide()
   dialogStep.value = 'input'
@@ -226,16 +253,27 @@ function closeAll() {
 }
 
 async function pasteFromClipboard() {
+  const id = revision
   try {
     const text = await navigator.clipboard.readText()
-    if (text) {
+    if (text && id === revision) {
       modpackUrl.value = text.trim()
       urlError.value = ''
     }
-  } catch { }
+  } catch (e) {
+    if (id === revision) urlError.value = formatError(e)
+  }
 }
 
 const { isShown, show, hide } = useDialog(ImportUrlDialogKey, (param) => {
+  revision++
+  availableVersions.value = []
+  selectedVersionId.value = undefined
+  selectedSource.value = 'url'
+  selectedProjectName.value = ''
+  atlauncherData.value = null
+  atlauncherInstallTarget.value = undefined
+  bbsmcData.value = null
   let targetUrl = ''
   if (typeof param === 'string') {
     targetUrl = param
@@ -251,8 +289,9 @@ const { isShown, show, hide } = useDialog(ImportUrlDialogKey, (param) => {
 
   if (targetUrl) {
     modpackUrl.value = targetUrl
+    const id = revision
     nextTick(() => {
-      submitModpackUrl()
+      if (id === revision) submitModpackUrl()
     })
   } else {
     modpackUrl.value = ''
@@ -261,31 +300,35 @@ const { isShown, show, hide } = useDialog(ImportUrlDialogKey, (param) => {
 
 watch(isShownDialog, (val) => {
   if (!val) {
+    revision++
     hide()
   }
-})
+}, { flush: 'sync' })
 
 watch(isShown, (val) => {
   if (!val) {
+    revision++
     isShownDialog.value = false
   }
-})
+}, { flush: 'sync' })
 
 async function confirmVersionSelect() {
-  if (!selectedVersionId.value) return
+  if (!selectedVersionId.value || versionLoading.value || urlLoading.value) return
+  const op = operation()
   versionLoading.value = true
+  urlError.value = ''
   const targetProjectName = selectedProjectName.value
   try {
     // 1. Modrinth
     if (selectedSource.value === 'modrinth') {
       const selectedVer = availableVersions.value.find((v) => v.id === selectedVersionId.value)
       const projectId = (selectedVer?.raw as any)?.project_id || targetProjectName
-      closeAll()
-      await installModpack({
+      await op.wait(installModpack({
         market: MarketType.Modrinth,
         projectId,
         versionId: selectedVersionId.value as string,
-      })
+      }))
+      closeAll()
       return
     }
 
@@ -293,12 +336,12 @@ async function confirmVersionSelect() {
     if (selectedSource.value === 'curseforge') {
       const selectedVer = availableVersions.value.find((v) => v.id === selectedVersionId.value)
       const modId = (selectedVer?.raw as any)?.modId
-      closeAll()
-      await installModpack({
+      await op.wait(installModpack({
         market: MarketType.CurseForge,
         modId,
         fileId: selectedVersionId.value as number,
-      })
+      }))
+      closeAll()
       return
     }
 
@@ -306,16 +349,15 @@ async function confirmVersionSelect() {
     if (selectedSource.value === 'atlauncher' && atlauncherData.value) {
       const { safeName, packName } = atlauncherData.value
       const versionStr = selectedVersionId.value as string
-      closeAll()
-
       let configUrl = `https://download.nodecdn.net/containers/atl/packs/${safeName}/versions/${versionStr}/Configs.json`
-      let res = await fetch(configUrl)
+      let res = await op.wait(fetch(configUrl))
       if (!res.ok) {
         configUrl = `https://download.nodecdn.net/containers/atl/packs/${safeName.toLowerCase()}/versions/${versionStr}/Configs.json`
-        res = await fetch(configUrl)
+        res = await op.wait(fetch(configUrl))
       }
       if (!res.ok) throw new Error(`Failed to fetch ATLauncher configs: ${res.statusText}`)
-      const config = await res.json()
+      const config = await op.wait(res.json())
+      if (!config.minecraft) throw new Error('ATLauncher configs are missing the Minecraft version')
 
       const runtime: any = {
         minecraft: config.minecraft,
@@ -340,42 +382,34 @@ async function confirmVersionSelect() {
           size: m.filesize,
         }))
 
-      // Create instance
-      const instanceName = `${packName} - ${versionStr}`
-      const newPath = await createInstance({
-        name: instanceName,
-        runtime,
-      })
-
-      // Download Configs.zip if present
+      // Overrides have no modpack manifest and must never supply a guessed runtime.
+      let overrides: InstanceFile[] = []
       if (config.configs && config.configs.filesize > 0) {
-        let configsZipUrl = `https://download.nodecdn.net/containers/atl/packs/${safeName}/versions/${versionStr}/Configs.zip`
-        try {
-          let openedZip = await openModpack(configsZipUrl).catch(() => null)
-          if (!openedZip) {
-            configsZipUrl = `https://download.nodecdn.net/containers/atl/packs/${safeName.toLowerCase()}/versions/${versionStr}/Configs.zip`
-            openedZip = await openModpack(configsZipUrl)
-          }
-          if (openedZip && openedZip.modpackPath) {
-            await finishModpackInstall(openedZip.modpackPath, undefined, undefined, newPath)
-          }
-        } catch (e) {
-          console.warn('Failed to install Configs.zip for ATLauncher pack:', e)
-        }
+        overrides = await op.wait(getModpackArchiveFiles(configUrl.replace(/Configs\.json$/, 'Configs.zip')))
       }
 
-      // Install mods
-      if (modFiles.length > 0) {
-        await installInstanceFiles({
+      const instanceName = `${packName} - ${versionStr}`
+      const source = `${safeName}/${versionStr}`
+      const newPath = atlauncherInstallTarget.value?.source === source
+        ? atlauncherInstallTarget.value.path
+        : await op.wait(createInstance({ name: instanceName, runtime }))
+      atlauncherInstallTarget.value = { source, path: newPath }
+      // Both layers belong to one install operation, not competing replacement locks.
+      if (modFiles.length > 0 || overrides.length > 0) {
+        await op.wait(installInstanceFiles({
           path: newPath,
           oldFiles: [],
-          files: modFiles,
-        })
+          files: [...overrides, ...modFiles],
+        }))
       }
+      await op.wait(getInstanceLock(newPath).runExclusive(async () => {
+        const instruction = await getInstallInstruction(newPath, runtime, '', undefined, javas.value)
+        await handleInstallInstruction(instruction)
+      }))
 
       selectedInstance.value = newPath
       if (router.currentRoute.value.path !== '/') {
-        await router.push('/')
+        await op.wait(router.push('/'))
       }
 
       notify({
@@ -383,6 +417,7 @@ async function confirmVersionSelect() {
         title: t('importModpack.name'),
         body: instanceName,
       })
+      closeAll()
       return
     }
 
@@ -390,7 +425,7 @@ async function confirmVersionSelect() {
     if (selectedSource.value === 'bbsmc' && bbsmcData.value) {
       const selectedVer = currentSelectedVersion.value
       const rawVer = selectedVer?.raw
-      const file = rawVer?.files?.[0]
+      const file = rawVer?.files?.find((file: { primary?: boolean }) => file.primary) || rawVer?.files?.[0]
       const fileUrl = (file?.url as string) || ''
       const diskUrl = rawVer?.disk_urls?.[0]?.url || (isNetdiskUrl(fileUrl) ? fileUrl : '')
 
@@ -399,9 +434,7 @@ async function confirmVersionSelect() {
         const targetDiskUrl = diskUrl || fileUrl
         if (targetDiskUrl) {
           window.open(targetDiskUrl, '_blank')
-          try {
-            await navigator.clipboard.writeText(targetDiskUrl)
-          } catch { }
+          await op.wait(navigator.clipboard.writeText(targetDiskUrl))
           notify({
             level: 'info',
             title: t('importModpack.name'),
@@ -414,23 +447,26 @@ async function confirmVersionSelect() {
 
       if (fileUrl) {
         // Check if CurseForge download URL
-        const cfMatch = fileUrl.match(/curseforge\.com\/minecraft\/modpacks\/[^/]+\/download\/(\d+)/i)
+        const cfMatch = getModpackProviderPath(fileUrl).match(/^(?:www\.)?curseforge\.com\/minecraft\/modpacks\/[^/]+\/(?:download|files)\/(\d+)/i)
         if (cfMatch) {
           const fileId = parseInt(cfMatch[1], 10)
-          closeAll()
-          await installModpack({
+          const files = await op.wait(clientCurseforgeV1.getFiles([fileId]))
+          const file = files.find(file => file.id === fileId)
+          if (!file) throw new Error(t('importModpack.noReleasesFound'))
+          await op.wait(installModpack({
             market: MarketType.CurseForge,
-            modId: 0,
+            modId: file.modId,
             fileId,
-          })
+          }))
+          closeAll()
           return
         }
 
         // Direct download
-        closeAll()
-        const opened = await openModpack(fileUrl)
+        const opened = await op.wait(openModpack(fileUrl))
+        if (opened.error) throw opened.error
         if (opened.modpackPath) {
-          await finishModpackInstall(opened.modpackPath, undefined, undefined, undefined)
+          await op.wait(finishModpackInstall(opened.modpackPath, undefined, undefined, undefined))
           if (targetProjectName && selectedInstance.value) {
             const current = instances.value.find((i) => i.path === selectedInstance.value)
             if (current && (current.name === 'Technic Modpack' || /^\d+\.\d+/.test(current.name))) {
@@ -440,6 +476,7 @@ async function confirmVersionSelect() {
               })
             }
           }
+          closeAll()
           return
         }
       }
@@ -451,10 +488,10 @@ async function confirmVersionSelect() {
       (selectedVersionId.value.startsWith('http://') || selectedVersionId.value.startsWith('https://'))
     ) {
       const targetUrl = selectedVersionId.value
-      closeAll()
-      const opened = await openModpack(targetUrl)
+      const opened = await op.wait(openModpack(targetUrl))
+      if (opened.error) throw opened.error
       if (opened.modpackPath) {
-        await finishModpackInstall(opened.modpackPath, undefined, undefined, undefined)
+        await op.wait(finishModpackInstall(opened.modpackPath, undefined, undefined, undefined))
         if (targetProjectName && selectedInstance.value) {
           const current = instances.value.find((i) => i.path === selectedInstance.value)
           if (current && (current.name === 'Technic Modpack' || /^\d+\.\d+/.test(current.name))) {
@@ -465,23 +502,19 @@ async function confirmVersionSelect() {
           }
         }
       }
+      closeAll()
       return
     }
+    throw new Error(t('importModpack.noReleasesFound'))
   } catch (e: any) {
-    const msg = getErrorMessage(e)
-    urlError.value = msg
-    closeAll()
-    notify({
-      level: 'error',
-      title: t('importModpack.name'),
-      body: msg,
-    })
+    if (op.current()) urlError.value = formatError(e)
   } finally {
-    versionLoading.value = false
+    if (op.current()) versionLoading.value = false
   }
 }
 
 async function submitModpackUrl() {
+  if (urlLoading.value || versionLoading.value) return
   const input = urlInput.value
   const inputUrl = input.url
   if (!inputUrl) return
@@ -493,17 +526,19 @@ async function submitModpackUrl() {
 
   urlLoading.value = true
   urlError.value = ''
+  const op = operation()
+  const providerPath = getModpackProviderPath(inputUrl)
 
   try {
     // 1. Modrinth URL
-    const modrinthMatch = inputUrl.match(/modrinth\.com\/(?:modpack|project)\/([a-zA-Z0-9\-_]+)/i)
+    const modrinthMatch = providerPath.match(/^(?:www\.)?modrinth\.com\/(?:modpack|project)\/([a-zA-Z0-9\-_]+)/i)
     if (modrinthMatch) {
       const slug = modrinthMatch[1]
-      const versionMatch = inputUrl.match(/\/version\/([a-zA-Z0-9\-_]+)/i)
+      const versionMatch = providerPath.match(/\/version\/([a-zA-Z0-9\-_]+)/i)
       const reqVersionId = versionMatch ? versionMatch[1] : null
 
-      const project = await clientModrinthV2.getProject(slug).catch(() => null)
-      const versions = await clientModrinthV2.getProjectVersions(slug).catch(() => [])
+      const project = await op.wait(clientModrinthV2.getProject(slug))
+      const versions = await op.wait(clientModrinthV2.getProjectVersions(slug))
 
       if (versions && versions.length > 0) {
         selectedSource.value = 'modrinth'
@@ -517,7 +552,8 @@ async function submitModpackUrl() {
 
         if (reqVersionId) {
           const directMatch = versions.find((v: any) => v.id === reqVersionId || v.version_number === reqVersionId || v.name === reqVersionId)
-          selectedVersionId.value = directMatch ? directMatch.id : availableVersions.value[0]?.id
+          if (!directMatch) throw new Error(t('importModpack.noReleasesFound'))
+          selectedVersionId.value = directMatch.id
         } else {
           selectedVersionId.value = availableVersions.value[0]?.id
         }
@@ -525,26 +561,33 @@ async function submitModpackUrl() {
         dialogStep.value = 'version'
         return
       }
+      throw new Error(t('importModpack.noReleasesFound'))
     }
 
     // 2. CurseForge URL
-    const curseforgeMatch = inputUrl.match(/curseforge\.com\/minecraft\/modpacks\/([a-zA-Z0-9\-_]+)/i)
+    const curseforgeMatch = providerPath.match(/^(?:www\.)?curseforge\.com\/minecraft\/modpacks\/([a-zA-Z0-9\-_]+)/i)
     if (curseforgeMatch) {
       const slug = curseforgeMatch[1]
-      const fileIdMatch = inputUrl.match(/\/files\/(\d+)/i)
+      const fileIdMatch = providerPath.match(/\/(?:files|download)\/(\d+)/i)
       const reqFileId = fileIdMatch ? parseInt(fileIdMatch[1], 10) : null
       let versionsList: { id: number; title: string; raw?: any }[] = []
 
-      try {
-        const searchRes = await clientCurseforgeV1.searchMods({ slug, classId: 4471 }).catch(() => ({ data: [] }))
+      {
+        const searchRes = await op.wait(clientCurseforgeV1.searchMods({ slug, classId: 4471 }))
         let mod = searchRes.data?.[0]
         if (!mod) {
-          const fallbackRes = await clientCurseforgeV1.searchMods({ slug }).catch(() => ({ data: [] }))
+          const fallbackRes = await op.wait(clientCurseforgeV1.searchMods({ slug }))
           mod = fallbackRes.data?.[0]
         }
         if (mod) {
           selectedProjectName.value = mod.name || slug
-          const filesRes = await clientCurseforgeV1.getModFiles({ modId: mod.id }).catch(() => ({ data: [] }))
+          const filesRes = await op.wait(clientCurseforgeV1.getModFiles({ modId: mod.id }))
+          if (reqFileId && !filesRes.data.some(file => file.id === reqFileId)) {
+            const requested = await op.wait(clientCurseforgeV1.getFiles([reqFileId]))
+            const file = requested.find(file => file.id === reqFileId && file.modId === mod.id)
+            if (!file) throw new Error(t('importModpack.noReleasesFound'))
+            filesRes.data.push(file)
+          }
           if (filesRes.data && filesRes.data.length > 0) {
             versionsList = filesRes.data.map((f: any) => ({
               id: f.id,
@@ -553,7 +596,7 @@ async function submitModpackUrl() {
             }))
           }
         }
-      } catch { }
+      }
 
       if (versionsList.length > 0) {
         selectedSource.value = 'curseforge'
@@ -562,7 +605,8 @@ async function submitModpackUrl() {
 
         if (reqFileId) {
           const matched = versionsList.find((v) => v.id === reqFileId)
-          selectedVersionId.value = matched ? matched.id : versionsList[0]?.id
+          if (!matched) throw new Error(t('importModpack.noReleasesFound'))
+          selectedVersionId.value = matched.id
         } else {
           selectedVersionId.value = versionsList[0]?.id
         }
@@ -570,15 +614,17 @@ async function submitModpackUrl() {
         dialogStep.value = 'version'
         return
       }
+      throw new Error(t('importModpack.noReleasesFound'))
     }
 
     // 3. ATLauncher URL: e.g. https://atlauncher.com/pack/PixelmonMod
-    const atlauncherMatch = inputUrl.match(/atlauncher\.com\/pack\/([a-zA-Z0-9\-_]+)/i)
+    const atlauncherMatch = providerPath.match(/^(?:www\.)?atlauncher\.com\/pack\/([a-zA-Z0-9\-_]+)/i)
     if (atlauncherMatch) {
       const packSlug = atlauncherMatch[1]
-      const res = await fetch(`https://api.atlauncher.com/v1/pack/${packSlug}`)
+      const res = await op.wait(fetch(`https://api.atlauncher.com/v1/pack/${packSlug}`))
+      if (!res.ok) throw new Error(`ATLauncher: ${res.status} ${res.statusText}`)
       if (res.ok) {
-        const json = await res.json()
+        const json = await op.wait(res.json())
         if (json.data && Array.isArray(json.data.versions) && json.data.versions.length > 0) {
           selectedSource.value = 'atlauncher'
           selectedProjectName.value = json.data.name || packSlug
@@ -599,19 +645,22 @@ async function submitModpackUrl() {
       }
     }
 
+    if (atlauncherMatch) throw new Error(t('importModpack.noReleasesFound'))
+
     // 4. BBSMC URL: e.g. https://bbsmc.net/modpack/vefc or https://bbsmc.net/project/the-fool
-    const bbsmcMatch = inputUrl.match(/bbsmc\.net\/(?:modpack|project)\/([a-zA-Z0-9\-_]+)/i)
+    const bbsmcMatch = providerPath.match(/^(?:www\.)?bbsmc\.net\/(?:modpack|project)\/([a-zA-Z0-9\-_]+)/i)
     if (bbsmcMatch) {
       const slug = bbsmcMatch[1]
-      const versionMatch = inputUrl.match(/\/version\/([a-zA-Z0-9\-_]+)/i)
+      const versionMatch = providerPath.match(/\/version\/([a-zA-Z0-9\-_]+)/i)
       const reqVersionId = versionMatch ? versionMatch[1] : null
 
-      const projRes = await fetch(`https://api.bbsmc.net/v2/project/${slug}`).catch(() => null)
-      const verRes = await fetch(`https://api.bbsmc.net/v2/project/${slug}/version`).catch(() => null)
+      const projRes = await op.wait(fetch(`https://api.bbsmc.net/v2/project/${slug}`))
+      const verRes = await op.wait(fetch(`https://api.bbsmc.net/v2/project/${slug}/version`))
+      if (!projRes.ok || !verRes.ok) throw new Error(`BBSMC: ${!projRes.ok ? projRes.status : verRes.status}`)
 
       if (verRes && verRes.ok) {
-        const versions = await verRes.json()
-        const project = projRes && projRes.ok ? await projRes.json() : null
+        const versions = await op.wait(verRes.json())
+        const project = await op.wait(projRes.json())
 
         if (Array.isArray(versions) && versions.length > 0) {
           selectedSource.value = 'bbsmc'
@@ -625,19 +674,21 @@ async function submitModpackUrl() {
 
           if (reqVersionId) {
             const matched = availableVersions.value.find((v) => v.id === reqVersionId)
-            selectedVersionId.value = matched ? matched.id : availableVersions.value[0]?.id
+            if (!matched) throw new Error(t('importModpack.noReleasesFound'))
+            selectedVersionId.value = matched.id
           } else {
             selectedVersionId.value = availableVersions.value[0]?.id
           }
-
           dialogStep.value = 'version'
           return
         }
       }
     }
 
+    if (bbsmcMatch) throw new Error(t('importModpack.noReleasesFound'))
+
     // 5. Planet Minecraft URL: e.g. https://www.planetminecraft.com/mod/...
-    const pmcMatch = inputUrl.match(/planetminecraft\.com\/(?:mod|data-pack|texture-pack|project|mods\/tag\/modpacks)\/([a-zA-Z0-9\-_/]+)/i)
+    const pmcMatch = providerPath.match(/^(?:www\.)?planetminecraft\.com\/(?:mod|data-pack|texture-pack|project|mods\/tag\/modpacks)(?:\/|$)/i)
     if (pmcMatch) {
       // Planet Minecraft has Cloudflare challenge on direct scraper requests
       urlError.value = t('importModpack.pmcProtected')
@@ -645,37 +696,40 @@ async function submitModpackUrl() {
     }
 
     // 6. Technic URL: e.g. https://www.technicpack.net/modpack/the-1122-pack.1406454
-    const technicMatch = inputUrl.match(/(?:technicpack\.net\/modpack\/|technic:\/\/modpack\/)([a-zA-Z0-9\-_.]+)/i)
+    const technicMatch = providerPath.match(/^(?:(?:www\.)?technicpack\.net\/modpack\/|technic:\/\/modpack\/)([a-zA-Z0-9\-_.]+)/i)
     if (technicMatch) {
       const slugOrId = technicMatch[1]
-      try {
-        const res = await fetch(`https://api.technicpack.net/modpack/${slugOrId}?build=launchercore`).catch(() => null)
+      {
+        const res = await op.wait(fetch(`https://api.technicpack.net/modpack/${slugOrId}?build=launchercore`))
+        if (!res.ok) throw new Error(`Technic: ${res.status} ${res.statusText}`)
         if (res && res.ok) {
-          const pack = await res.json()
+          const pack = await op.wait(res.json())
           if (pack && pack.url) {
             selectedProjectName.value = pack.displayName || pack.name || slugOrId
-            const opened = await openModpack(pack.url)
+            const opened = await op.wait(openModpack(pack.url))
+            if (opened.error) throw opened.error
             if (opened.modpackPath) {
-              await finishModpackInstall(opened.modpackPath, pack.icon?.url, undefined, undefined)
+              await op.wait(finishModpackInstall(opened.modpackPath, pack.icon?.url, undefined, undefined))
             }
             closeAll()
             return
           }
         }
-      } catch { }
+      }
+      throw new Error(t('importModpack.noReleasesFound'))
     }
 
     // 7. GitHub URL: e.g. https://github.com/Fabulously-Optimized/fabulously-optimized
-    const githubMatch = inputUrl.match(/github\.com\/([^/\s]+)\/([^/?#\s]+)/i)
+    const githubMatch = providerPath.match(/^(?:www\.)?github\.com\/([^/\s]+)\/([^/?#\s]+)(?:\/releases(?:\/|$)|\/?$)/i)
     if (githubMatch) {
       const owner = githubMatch[1]
       const repo = githubMatch[2].replace(/\.git$/, '')
 
-      const directAssetMatch = inputUrl.match(/\/releases\/download\/([^/]+)\/([^/?#]+)(?:[?#]|$)/i)
+      const directAssetMatch = providerPath.match(/\/releases\/download\/([^/]+)\/([^/?#]+)$/i)
       const directTag = directAssetMatch ? decodeURIComponent(directAssetMatch[1]) : null
       const directFilename = directAssetMatch ? decodeURIComponent(directAssetMatch[2]) : null
 
-      const tagMatch = inputUrl.match(/\/releases\/tag\/([^/?#]+)/i)
+      const tagMatch = providerPath.match(/\/releases\/tag\/([^/?#]+)/i)
       const targetTag = tagMatch ? decodeURIComponent(tagMatch[1]) : directTag
 
       selectedProjectName.value = repo
@@ -683,6 +737,7 @@ async function submitModpackUrl() {
         .replace(/\b\w/g, (c) => c.toUpperCase())
 
       const versionsList: { id: string; title: string }[] = []
+      let releaseError: unknown
 
       if (directAssetMatch && directFilename) {
         versionsList.push({
@@ -691,13 +746,14 @@ async function submitModpackUrl() {
         })
       }
 
-      try {
-        const headers: Record<string, string> = {
-          Accept: 'application/vnd.github.v3+json',
-        }
-        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases`, { headers }).catch(() => null)
-        if (res && res.ok) {
-          const releases = await res.json()
+      if (!directAssetMatch) {
+        try {
+          const headers: Record<string, string> = {
+            Accept: 'application/vnd.github.v3+json',
+          }
+          const res = await op.wait(fetch(`https://api.github.com/repos/${owner}/${repo}/releases`, { headers }))
+          if (!res.ok) throw new Error(`GitHub: ${res.status} ${res.statusText}`)
+          const releases = await op.wait(res.json())
           if (Array.isArray(releases) && releases.length > 0) {
             for (const rel of releases) {
               if (Array.isArray(rel.assets)) {
@@ -716,29 +772,32 @@ async function submitModpackUrl() {
               }
             }
           }
+        } catch (e) {
+          if (!op.current()) throw e
+          // Preserve the release-page fallback, but report the API error if it has no assets either.
+          releaseError = e
         }
-      } catch { }
+      }
 
       if (versionsList.length === 0) {
-        try {
-          const pageRes = await fetch(`https://github.com/${owner}/${repo}/releases`).catch(() => null)
-          if (pageRes && pageRes.ok) {
-            const html = await pageRes.text()
-            const assetRegex = /href="(\/[^/]+\/[^/]+\/releases\/download\/[^"]+\.(?:mrpack|zip))"/gi
-            let m: RegExpExecArray | null
-            while ((m = assetRegex.exec(html)) !== null) {
-              const downloadUrl = `https://github.com${m[1]}`
-              const filename = decodeURIComponent(m[1].split('/').pop() || '')
-              const tag = decodeURIComponent(m[1].split('/')[4] || '')
-              if (!versionsList.some((v) => v.id === downloadUrl)) {
-                versionsList.push({
-                  id: downloadUrl,
-                  title: `${tag} - ${filename}`,
-                })
-              }
+        const pageRes = await op.wait(fetch(`https://github.com/${owner}/${repo}/releases`))
+        if (!pageRes.ok) throw releaseError || new Error(`GitHub: ${pageRes.status} ${pageRes.statusText}`)
+        if (pageRes && pageRes.ok) {
+          const html = await op.wait(pageRes.text())
+          const assetRegex = /href="(\/[^/]+\/[^/]+\/releases\/download\/[^"]+\.(?:mrpack|zip))"/gi
+          let m: RegExpExecArray | null
+          while ((m = assetRegex.exec(html)) !== null) {
+            const downloadUrl = `https://github.com${m[1]}`
+            const filename = decodeURIComponent(m[1].split('/').pop() || '')
+            const tag = decodeURIComponent(m[1].split('/')[5] || '')
+            if (!versionsList.some((v) => v.id === downloadUrl)) {
+              versionsList.push({
+                id: downloadUrl,
+                title: `${tag} - ${filename}`,
+              })
             }
           }
-        } catch { }
+        }
       }
 
       if (versionsList.length > 0) {
@@ -746,8 +805,12 @@ async function submitModpackUrl() {
         availableVersions.value = versionsList
 
         if (targetTag) {
-          const matched = versionsList.find((v) => v.title.startsWith(targetTag) || v.id.includes(`/${targetTag}/`))
-          selectedVersionId.value = matched ? matched.id : versionsList[0]?.id
+          const matched = versionsList.find(v => {
+            const tag = new URL(v.id).pathname.match(/\/releases\/download\/([^/]+)\//)?.[1]
+            return tag !== undefined && decodeURIComponent(tag) === targetTag
+          })
+          if (!matched) throw new Error(t('importModpack.noReleasesFound'))
+          selectedVersionId.value = matched.id
         } else {
           selectedVersionId.value = versionsList[0]?.id
         }
@@ -755,17 +818,19 @@ async function submitModpackUrl() {
         dialogStep.value = 'version'
         return
       } else {
+        if (releaseError) throw releaseError
         urlError.value = t('importModpack.noReleasesFound')
         return
       }
     }
 
     const handled = await routeModpackUrlInput(input, async (url) => {
-      const opened = await openModpack(url)
+      const opened = await op.wait(openModpack(url))
+      if (opened.error) throw opened.error
       if (opened.modpackPath) {
-        await finishModpackInstall(opened.modpackPath, undefined, undefined, undefined)
+        await op.wait(finishModpackInstall(opened.modpackPath, undefined, undefined, undefined))
       }
-    }, handleUrl)
+    }, (url) => op.wait(handleUrl(url)))
     if (handled) {
       closeAll()
       return
@@ -773,9 +838,9 @@ async function submitModpackUrl() {
 
     urlError.value = t('importModpack.invalidUrl')
   } catch (e: any) {
-    urlError.value = getErrorMessage(e)
+    if (op.current()) urlError.value = formatError(e)
   } finally {
-    urlLoading.value = false
+    if (op.current()) urlLoading.value = false
   }
 }
 </script>

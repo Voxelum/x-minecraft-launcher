@@ -19,6 +19,14 @@ export function parseModpackUrlInput(value: string | null): {
   return { url, kind: 'invalid' }
 }
 
+/** Match providers against their actual host/path, never a query or fragment. */
+export function getModpackProviderPath(value: string): string {
+  const input = parseModpackUrlInput(value)
+  if (input.kind === 'invalid') return ''
+  const url = new URL(input.url)
+  return input.kind === 'http' ? `${url.hostname}${url.pathname}` : input.url
+}
+
 /** Route inputs left over after provider-specific resolution. */
 export async function routeModpackUrlInput(
   input: ReturnType<typeof parseModpackUrlInput>,

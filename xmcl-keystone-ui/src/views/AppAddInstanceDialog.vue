@@ -162,59 +162,33 @@
                 variant="tonal"
                 color="primary"
                 rounded="pill"
-                class="font-semibold shadow-sm hover:shadow-md transition-all"
               >
                 <v-icon start> folder_zip </v-icon>
                 {{ t('importModpack.name') }}
                 <v-icon end> arrow_drop_down </v-icon>
               </v-btn>
             </template>
-            <div class="surface-card rounded-2xl p-2 min-w-[320px] shadow-2xl flex flex-col gap-1.5 backdrop-blur-xl">
-              <div
+            <v-list min-width="320">
+              <v-list-item
                 data-testid="add-instance-import-file"
-                class="surface-card-row flex items-center p-3 rounded-xl gap-3 cursor-pointer group"
+                :title="t('userSkin.localFile')"
+                :subtitle="t('importModpack.fromFileSubtitle')"
+                prepend-icon="folder_zip"
                 @click="onImportModpack"
               >
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-primary/15 text-primary transition-transform group-hover:scale-105">
-                  <v-icon size="22">folder_zip</v-icon>
-                </div>
-                <div class="flex flex-col flex-grow min-w-0">
-                  <div class="text-sm font-semibold tracking-tight leading-snug">
-                    {{ t('userSkin.localFile') }}
-                  </div>
-                  <div class="text-xs opacity-65 leading-tight mt-0.5">
-                    {{ t('importModpack.fromFileSubtitle') }}
-                  </div>
-                </div>
-                <div class="flex gap-1 flex-shrink-0">
-                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 opacity-75 font-mono">.zip</span>
-                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-primary/15 text-primary font-mono">.mrpack</span>
-                </div>
-              </div>
+                <template #append>
+                  <span class="ml-3 text-xs opacity-70">.zip / .mrpack</span>
+                </template>
+              </v-list-item>
 
-              <div
+              <v-list-item
                 data-testid="add-instance-import-url"
-                class="surface-card-row flex items-center p-3 rounded-xl gap-3 cursor-pointer group"
+                :title="t('importModpack.fromUrl')"
+                :subtitle="t('importModpack.fromUrlSubtitle')"
+                prepend-icon="link"
                 @click="openUrlDialog"
-              >
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-secondary/15 text-secondary transition-transform group-hover:scale-105">
-                  <v-icon size="22">link</v-icon>
-                </div>
-                <div class="flex flex-col flex-grow min-w-0">
-                  <div class="text-sm font-semibold tracking-tight leading-snug flex items-center gap-1.5">
-                    <span>{{ t('importModpack.fromUrl') }}</span>
-                  </div>
-                  <div class="text-xs opacity-65 leading-tight mt-0.5">
-                    {{ t('importModpack.fromUrlSubtitle') }}
-                  </div>
-                </div>
-                <div class="flex items-center flex-shrink-0">
-                  <span class="text-[11px] px-2 py-0.5 rounded-md bg-white/10 border border-white/10 font-mono opacity-80 flex items-center gap-0.5 shadow-sm">
-                    Ctrl+V
-                  </span>
-                </div>
-              </div>
-            </div>
+              />
+            </v-list>
           </v-menu>
         </div>
         <div v-if="error" class="pointer-events-none left-0 flex w-full justify-center">
@@ -250,8 +224,6 @@ import {
   ModpackServiceKey,
   waitModpackFiles,
   BedrockServiceKey,
-  BaseServiceKey,
-  MarketType,
 } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
@@ -263,7 +235,6 @@ import { useHasMinecraftLicense } from '@/composables/minecraftLicense'
 // import { kLocalCollections } from '@/composables/localCollections'
 // import { runBulkInstall, candidateToMarketOption } from '@/composables/collectionInstall'
 // import { resolveCollectionEntry } from '@/composables/collectionResolver'
-import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 // import { getModrinthModLoaders } from '@/util/modrinth'
 // import {
 //   CollectionContentType,

@@ -2,8 +2,7 @@ import { InstanceFile } from '@xmcl/instance'
 import { readEntry } from '@xmcl/unzip'
 import { Entry, ZipFile as YauzlZipFile } from '@xmcl/yauzl'
 import { basename, extname } from 'path'
-import { LauncherApp } from '~/app'
-import { ModpackHandler } from '../ModpackService'
+import type { ModpackHandler } from '../ModpackService'
 
 export interface TechnicManifest {
   name: string
@@ -14,7 +13,7 @@ export interface TechnicManifest {
   icon?: string
 }
 
-export function createTechnicHandler(app: LauncherApp): ModpackHandler<TechnicManifest> {
+export function createTechnicHandler(): ModpackHandler<TechnicManifest> {
   return {
     async resolveModpackMarketMetadata() {
       return undefined
@@ -56,7 +55,7 @@ export function createTechnicHandler(app: LauncherApp): ModpackHandler<TechnicMa
       // Extract clean name from zip filename if available: e.g. "the-1122-pack_1.6.6.zip" -> "The 1.12.2 Pack"
       const zipFileName = (zipFile as any).fileName as string | undefined
       const rawName = zipFileName ? basename(zipFileName, extname(zipFileName)) : ''
-      let name = rawName
+      const name = rawName
         ? rawName
             .replace(/[_-]1\.\d+(\.\d+)?/g, '')
             .replace(/[_-]v?\d+(\.\d+)+/g, '')
@@ -79,6 +78,7 @@ export function createTechnicHandler(app: LauncherApp): ModpackHandler<TechnicMa
             minecraft = json.inheritsFrom
           }
           if (json.id) {
+            if (/^1\.\d+(?:\.\d+)?$/.test(json.id)) minecraft = json.id
             const forgeMatch = json.id.match(/([0-9.]+)-forge-?([0-9.]*)/i) || json.id.match(/([0-9.]+)-forge/i)
             if (forgeMatch) {
               minecraft = forgeMatch[1]
@@ -87,7 +87,9 @@ export function createTechnicHandler(app: LauncherApp): ModpackHandler<TechnicMa
             const fabricMatch = json.id.match(/fabric-loader-?([0-9.]*)/i)
             if (fabricMatch) fabricLoader = fabricMatch[1]
           }
-        } catch { }
+        } catch (error) {
+          throw new Error('Invalid Technic version.json', { cause: error })
+        }
       }
 
       // 2. Check forge / fabric / minecraft server jar files in root or bin
@@ -121,29 +123,8 @@ export function createTechnicHandler(app: LauncherApp): ModpackHandler<TechnicMa
         }
       }
 
-      // 3. Fallback: inspect mod filenames in mods/ to detect game version
-      if (!minecraft) {
-        for (const e of entries) {
-          const mcMatch = e.fileName.match(/-(1\.\d+(?:\.\d+)?)-/i) || e.fileName.match(/\[(1\.\d+(?:\.\d+)?)\]/i) || e.fileName.match(/-(1\.\d+(?:\.\d+)?)\.jar/i)
-          if (mcMatch) {
-            minecraft = mcMatch[1]
-            break
-          }
-        }
-      }
-
-      // Default fallback
-      if (!minecraft) {
-        minecraft = '1.12.2'
-      }
-
-      // Default Forge if Forge modpack without specific version
-      if (!forge && !fabricLoader) {
-        if (minecraft === '1.12.2') forge = '14.23.5.2860'
-        else if (minecraft === '1.7.10') forge = '10.13.4.1614'
-        else if (minecraft === '1.16.5') forge = '36.2.39'
-        else if (minecraft === '1.20.1') forge = '47.3.0'
-      }
+      // A configs/mods-only ZIP is not enough evidence for a game or loader version.
+      if (!minecraft) return undefined
 
       return {
         name,

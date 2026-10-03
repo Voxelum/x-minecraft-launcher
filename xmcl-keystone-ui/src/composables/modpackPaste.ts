@@ -1,5 +1,6 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 import { DialogKey, useDialog } from './dialog'
+import { getModpackProviderPath, parseModpackUrlInput } from './modpackUrlInput'
 
 export const ImportUrlDialogKey: DialogKey<string | { url?: string }> = 'import-url-dialog'
 
@@ -9,34 +10,36 @@ export const ImportUrlDialogKey: DialogKey<string | { url?: string }> = 'import-
  */
 export function isModpackUrl(url: string): boolean {
   if (!url || typeof url !== 'string') return false
-  const trimmed = url.trim()
-  if (!/^(https?|curseforge|modrinth|technic|xmcl):\/\//i.test(trimmed)) return false
+  const input = parseModpackUrlInput(url)
+  const trimmed = getModpackProviderPath(url)
+  if (input.kind === 'invalid') return false
+  if (input.kind === 'protocol') return true
 
   // Modrinth modpack or project
-  if (/modrinth\.com\/(?:modpack|project)\/([a-zA-Z0-9\-_]+)/i.test(trimmed)) return true
+  if (/^(?:www\.)?modrinth\.com\/(?:modpack|project)\/([a-zA-Z0-9\-_]+)/i.test(trimmed)) return true
   if (/^modrinth:\/\//i.test(trimmed)) return true
 
   // CurseForge modpack or protocol
-  if (/curseforge\.com\/minecraft\/modpacks\/([a-zA-Z0-9\-_]+)/i.test(trimmed)) return true
+  if (/^(?:www\.)?curseforge\.com\/minecraft\/modpacks\/([a-zA-Z0-9\-_]+)/i.test(trimmed)) return true
   if (/^curseforge:\/\//i.test(trimmed)) return true
 
   // TechnicPack modpack or protocol
-  if (/(?:technicpack\.net\/modpack\/|technic:\/\/modpack\/)([a-zA-Z0-9\-_.]+)/i.test(trimmed)) return true
+  if (/^(?:www\.)?technicpack\.net\/modpack\/([a-zA-Z0-9\-_.]+)/i.test(trimmed)) return true
 
   // ATLauncher modpack
-  if (/atlauncher\.com\/pack\/([a-zA-Z0-9\-_]+)/i.test(trimmed)) return true
+  if (/^(?:www\.)?atlauncher\.com\/pack\/([a-zA-Z0-9\-_]+)/i.test(trimmed)) return true
 
   // BBSMC modpack or project
-  if (/bbsmc\.net\/(?:modpack|project)\/([a-zA-Z0-9\-_]+)/i.test(trimmed)) return true
+  if (/^(?:www\.)?bbsmc\.net\/(?:modpack|project)\/([a-zA-Z0-9\-_]+)/i.test(trimmed)) return true
 
   // PlanetMinecraft modpack or project
-  if (/planetminecraft\.com\/(?:mod|data-pack|texture-pack|project|mods\/tag\/modpacks)(?:\/|$|\?)/i.test(trimmed)) return true
+  if (/^(?:www\.)?planetminecraft\.com\/(?:mod|data-pack|texture-pack|project|mods\/tag\/modpacks)(?:\/|$)/i.test(trimmed)) return true
 
   // GitHub repository or releases
-  if (/github\.com\/([^/\s]+)\/([^/\s?#]+)/i.test(trimmed)) return true
+  if (/^(?:www\.)?github\.com\/([^/\s]+)\/([^/\s?#]+)/i.test(trimmed)) return true
 
   // Direct .mrpack or .zip file URL
-  if (/\.(mrpack|zip)(\?.*)?$/i.test(trimmed)) return true
+  if (/\.(mrpack|zip)$/i.test(new URL(input.url).pathname)) return true
 
   return false
 }

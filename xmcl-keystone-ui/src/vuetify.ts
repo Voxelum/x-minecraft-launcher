@@ -32,6 +32,7 @@ const xmcl: IconSet = {
       case 'google': return h(GoogleIcon)
       case 'discord': return h(DiscordIcon)
       case 'github': return h(GithubIcon)
+      case 'reddit': return h(RedditIcon)
       case 'technic': return h(TechnicIcon)
       case 'forge': return h(ImageIcon, { src: BuiltinImages.forge })
       case 'fabric': return h(ImageIcon, { src: BuiltinImages.fabric })
@@ -107,4 +108,3 @@ export const vuetify = createVuetify({
     },
   },
 })
-
