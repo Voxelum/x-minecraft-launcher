@@ -24,5 +24,5 @@ describe('task manager locales', () => {
     expect(result.invalid.filter(({ key }) => key === null || labels.includes(key))).toEqual([])
     expect(result.warnings.filter(({ key }) => labels.includes(key))).toEqual([])
     expect(result.unused.filter(key => labels.includes(key))).toEqual([])
-  })
+  }, 30_000) // Scans the entire source tree and all locales, including under V8 coverage.
 })
