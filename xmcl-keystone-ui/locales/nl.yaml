@@ -457,6 +457,8 @@ instanceSetting:
   showLog: Toon Minecraft Log
   showLogHint: >-
     Dit zal een venster openen om de Minecraft-log te streamen nadat de game is gestart
+  syncGameLanguage: Speltaal synchroniseren
+  syncGameLanguageDescription: Synchroniseer automatisch de Minecraft-taal met de taal van het opstartprogramma bij het starten
 instanceTemplate:
   ftb: Dit is een FTB modpack
   preview: Modpack Voorbeeld

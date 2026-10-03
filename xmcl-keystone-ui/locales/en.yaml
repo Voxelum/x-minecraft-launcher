@@ -643,6 +643,8 @@ instanceSetting:
   icon: Pick an image
   showLog: Show Minecraft Log
   showLogHint: This will popup a window to stream Minecraft log after game started
+  syncGameLanguage: Synchronize Game Language
+  syncGameLanguageDescription: Automatically synchronize Minecraft's language with the launcher language on launch
 instanceTemplate:
   ftb: This is a FTB modpack
   preview: Modpack Preview
