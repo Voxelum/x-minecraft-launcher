@@ -398,6 +398,19 @@ gameType:
 help: 帮助
 home: 主页
 importModpack:
+  fromFileSubtitle: 选择 .zip 或 .mrpack 文件
+  fromUrl: 通过链接 / URL...
+  fromUrlSubtitle: 通过整合包链接安装
+  fromUrlDescription: 请输入或粘贴整合包链接：
+  invalidUrl: 请输入有效的链接（http:// 或 https://）
+  selectVersion: 选择整合包版本
+  selectVersionDescription: 请选择要安装的 {name} 版本：
+  pmcProtected: Planet Minecraft 受 Cloudflare 保护。请从页面复制直接下载链接或镜像链接。
+  netdiskTitle: 网盘下载
+  netdiskDescription: 此整合包版本存放在外部网盘中。点击下方按钮在浏览器中打开下载页面，然后将下载的 .zip 或 .mrpack 文件拖入 XMCL。
+  openNetdisk: 打开网盘
+  netdiskOpened: 网盘链接已在浏览器中打开并复制到剪贴板。
+  noReleasesFound: 此仓库中未找到 .mrpack 或 .zip 格式的整合包发行版。
   name: 导入整合包
 exportModpack:
   name: 导出整合包

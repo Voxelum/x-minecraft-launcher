@@ -180,7 +180,7 @@
                 </div>
                 <div class="flex flex-col flex-grow min-w-0">
                   <div class="text-sm font-semibold tracking-tight leading-snug">
-                    {{ t('importModpack.fromFile') }}
+                    {{ t('userSkin.localFile') }}
                   </div>
                   <div class="text-xs opacity-65 leading-tight mt-0.5">
                     {{ t('importModpack.fromFileSubtitle') }}

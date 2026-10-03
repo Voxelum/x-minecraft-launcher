@@ -316,6 +316,19 @@ gameType:
 help: HALP
 home: HOME
 importModpack:
+  fromFileSubtitle: PICK A .zip OR .mrpack FILE
+  fromUrl: FROM LINK / URL...
+  fromUrlSubtitle: INSTALL MODPACK FROM URL
+  fromUrlDescription: 'TYPE OR PASTE TEH MODPACK URL:'
+  invalidUrl: PLZ GIV VALID URL (http:// OR https://)
+  selectVersion: PICK MODPACK VERSHUN
+  selectVersionDescription: 'PICK TEH VERSHUN OF {name} TO INSTALL:'
+  pmcProtected: Planet Minecraft IZ GUARDED BY Cloudflare. PLZ COPY DIRECT DOWNLOD OR MIRROR LINK FROM TEH PAGE.
+  netdiskTitle: CLOUD DRIVE DOWNLOD
+  netdiskDescription: DIS MODPACK VERSHUN LIVES ON AN OUTSIDE CLOUD DRIVE. CLICK BELOW TO OPEN DOWNLOD PAGE IN UR BROWSER, THEN DRAG AN DROP TEH DOWNLOADED .zip OR .mrpack INTO XMCL.
+  openNetdisk: OPEN CLOUD DRIVE
+  netdiskOpened: CLOUD DRIVE LINK OPENED IN UR BROWSER AN COPIED TO CLIPBOARD.
+  noReleasesFound: NO .mrpack OR .zip MODPACK RELEASEZ FOUND IN DIS REPO.
   name: IMPORT MODPACK
 installAssets:
   asset: INSTALL {count} ASSETZ

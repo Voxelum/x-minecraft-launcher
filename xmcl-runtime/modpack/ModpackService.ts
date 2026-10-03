@@ -57,7 +57,6 @@ import { InstanceInstallService } from '~/instanceIO'
 import { VersionService } from '~/launch'
 import { UserService } from '~/user'
 import { kMarketProvider } from '~/market'
-import { downloadStaged } from '../market/downloadStaged'
 import { kDownloadOptions } from '~/network'
 import { kResourceManager, kResourceWorker, type ResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
@@ -72,6 +71,7 @@ import { createMmcHandler } from './utils/mmcHandler'
 import { createModrinthHandler } from './utils/modrinthHandler'
 import { createTechnicHandler } from './utils/technicHandler'
 import { remapModpackZipDownloads } from './utils/remapZipDownloads'
+import { downloadModpackUrl } from './downloadModpackUrl'
 import {
   addExportFileAsOverride,
   getModrinthProfileFiles,
@@ -1411,19 +1411,8 @@ export class ModpackService extends AbstractService implements IModpackService {
       throw new ModpackException({ type: 'invalidModpack', path: '' })
     }
     if (modpackFile.startsWith('http://') || modpackFile.startsWith('https://')) {
-      const urlObj = new URL(modpackFile)
-      const filename = decodeURIComponent(urlObj.pathname.split('/').pop() || 'modpack.zip')
-      const dest = this.getPath('modpacks', filename)
-      if (!await stat(dest).then(() => true, () => false)) {
-        const downloadOptions = await this.app.registry.get(kDownloadOptions)
-        await ensureDir(this.getPath('modpacks'))
-        await downloadStaged({
-          url: modpackFile,
-          destination: dest,
-          ...downloadOptions,
-        })
-      }
-      modpackFile = dest
+      const downloadOptions = await this.app.registry.get(kDownloadOptions)
+      modpackFile = await downloadModpackUrl(modpackFile, this.getPath('modpacks'), downloadOptions)
     }
     const store = await this.app.registry.get(ServiceStateManager)
     const zipManager = await this.app.registry.getOrCreate(ZipManager)

@@ -11,7 +11,7 @@
           <v-icon size="24">link</v-icon>
         </div>
         <div class="flex flex-col">
-          <span class="text-base font-bold">{{ t('importModpack.fromUrlTitle') }}</span>
+          <span class="text-base font-bold">{{ t('importModpack.name') }}</span>
           <span class="text-xs opacity-60 font-normal">{{ t('importModpack.fromUrlSubtitle') }}</span>
         </div>
       </v-card-title>
@@ -21,7 +21,7 @@
         </p>
         <v-text-field
           v-model="modpackUrl"
-          :placeholder="t('importModpack.fromUrlPlaceholder')"
+          placeholder="https://..."
           :error-messages="urlError"
           :loading="urlLoading"
           variant="filled"
@@ -61,7 +61,7 @@
           @click="submitModpackUrl"
         >
           <v-icon start>download</v-icon>
-          {{ t('importModpack.import') }}
+          {{ t('shared.install') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -127,7 +127,7 @@
           @click="confirmVersionSelect"
         >
           <v-icon start>{{ isSelectedVersionNetdisk ? 'open_in_new' : 'download' }}</v-icon>
-          {{ isSelectedVersionNetdisk ? t('importModpack.openNetdisk') : t('importModpack.importVersion') }}
+          {{ isSelectedVersionNetdisk ? t('importModpack.openNetdisk') : t('shared.install') }}
         </v-btn>
       </v-card-actions>
     </v-card>

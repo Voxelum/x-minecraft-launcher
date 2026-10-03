@@ -270,7 +270,10 @@ export interface ModpackService {
    */
   previewModrinthChangelogContext(instancePath: string, files: ExportFileDirective[]): Promise<ModrinthChangelogContext>
   /**
-   * Open an modpack to install. Use the `installInstanceFiles` to create an instance.
+   * Open a local modpack or HTTP(S) archive URL to install.
+   * URLs are downloaded afresh into separate local archives on each call, so
+   * existing profiles and their ZIP download paths keep referring to the same bytes.
+   * Use `installInstanceFiles` to create an instance.
    */
   openModpack(modpackPath: string): Promise<SharedState<ModpackState>>
   /**

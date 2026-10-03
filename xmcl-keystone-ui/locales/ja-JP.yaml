@@ -304,6 +304,19 @@ gameType:
 help: ヘルプ
 home: ホーム
 importModpack:
+  fromFileSubtitle: .zip または .mrpack ファイルを選択
+  fromUrl: リンク / URL から...
+  fromUrlSubtitle: URL から Mod パックをインストール
+  fromUrlDescription: 'Mod パックの URL を入力または貼り付けてください:'
+  invalidUrl: 有効な URL（http:// または https://）を入力してください
+  selectVersion: Mod パックのバージョンを選択
+  selectVersionDescription: 'インストールする {name} のバージョンを選択してください:'
+  pmcProtected: Planet Minecraft は Cloudflare で保護されています。ページから直接ダウンロードリンクまたはミラーリンクをコピーしてください。
+  netdiskTitle: クラウドドライブからダウンロード
+  netdiskDescription: この Mod パックのバージョンは外部のクラウドドライブに保存されています。下のボタンをクリックしてブラウザーでダウンロードページを開き、ダウンロードした .zip または .mrpack ファイルを XMCL にドラッグ＆ドロップしてください。
+  openNetdisk: クラウドドライブを開く
+  netdiskOpened: クラウドドライブのリンクをブラウザーで開き、クリップボードにコピーしました。
+  noReleasesFound: このリポジトリに .mrpack または .zip 形式の Mod パックのリリースが見つかりませんでした。
   name: Modpackをインポート
 installAssets:
   asset: '{count} 個のアセットをインストール'

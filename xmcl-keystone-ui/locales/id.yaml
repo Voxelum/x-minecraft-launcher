@@ -364,6 +364,19 @@ gameType:
 help: Bantuan
 home: Beranda
 importModpack:
+  fromFileSubtitle: Pilih berkas .zip atau .mrpack
+  fromUrl: Dari tautan / URL...
+  fromUrlSubtitle: Pasang modpack dari URL
+  fromUrlDescription: 'Masukkan atau tempel URL modpack:'
+  invalidUrl: Masukkan URL yang valid (http:// atau https://)
+  selectVersion: Pilih versi modpack
+  selectVersionDescription: 'Pilih versi {name} yang ingin dipasang:'
+  pmcProtected: Planet Minecraft dilindungi oleh Cloudflare. Salin tautan unduhan langsung atau tautan cermin dari halaman tersebut.
+  netdiskTitle: Unduh dari penyimpanan awan
+  netdiskDescription: Versi modpack ini tersedia di penyimpanan awan eksternal. Klik di bawah untuk membuka halaman unduhan di peramban, lalu seret dan lepas berkas .zip atau .mrpack yang telah diunduh ke XMCL.
+  openNetdisk: Buka penyimpanan awan
+  netdiskOpened: Tautan penyimpanan awan telah dibuka di peramban dan disalin ke papan klip.
+  noReleasesFound: Tidak ditemukan rilis modpack .mrpack atau .zip di repositori ini.
   name: Impor Modpack
 installAssets:
   asset: Pasang {count} Aset

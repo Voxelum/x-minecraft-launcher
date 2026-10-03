@@ -364,6 +364,19 @@ gameType:
 help: সাহায্য
 home: হোম
 importModpack:
+  fromFileSubtitle: .zip বা .mrpack ফাইল বেছে নিন
+  fromUrl: লিঙ্ক / URL থেকে...
+  fromUrlSubtitle: URL থেকে মডপ্যাক ইনস্টল করুন
+  fromUrlDescription: 'মডপ্যাকের URL লিখুন বা পেস্ট করুন:'
+  invalidUrl: একটি বৈধ URL লিখুন (http:// বা https://)
+  selectVersion: মডপ্যাকের সংস্করণ বেছে নিন
+  selectVersionDescription: 'ইনস্টল করার জন্য {name}-এর সংস্করণ বেছে নিন:'
+  pmcProtected: Planet Minecraft সাইটটি Cloudflare দ্বারা সুরক্ষিত। পৃষ্ঠা থেকে সরাসরি ডাউনলোড লিঙ্ক বা মিরর লিঙ্ক কপি করুন।
+  netdiskTitle: ক্লাউড ড্রাইভ থেকে ডাউনলোড
+  netdiskDescription: মডপ্যাকের এই সংস্করণটি একটি বাহ্যিক ক্লাউড ড্রাইভে রাখা আছে। ব্রাউজারে ডাউনলোড পৃষ্ঠা খুলতে নিচে ক্লিক করুন, তারপর ডাউনলোড করা .zip বা .mrpack ফাইলটি টেনে XMCL-এ ছেড়ে দিন।
+  openNetdisk: ক্লাউড ড্রাইভ খুলুন
+  netdiskOpened: ক্লাউড ড্রাইভের লিঙ্ক ব্রাউজারে খোলা হয়েছে এবং ক্লিপবোর্ডে কপি করা হয়েছে।
+  noReleasesFound: এই রিপোজিটরিতে .mrpack বা .zip মডপ্যাক রিলিজ পাওয়া যায়নি।
   name: মডপ্যাক ইম্পোর্ট করুন
 installAssets:
   asset: '{count}টি অ্যাসেট ইনস্টল করুন'

@@ -337,6 +337,19 @@ gameType:
 help: Yardım
 home: Ana Sayfa
 importModpack:
+  fromFileSubtitle: Bir .zip veya .mrpack dosyası seçin
+  fromUrl: Bağlantı / URL ile...
+  fromUrlSubtitle: Bir URL üzerinden mod paketi yükleyin
+  fromUrlDescription: 'Mod paketi URL’sini girin veya yapıştırın:'
+  invalidUrl: Geçerli bir URL girin (http:// veya https://)
+  selectVersion: Mod paketi sürümünü seçin
+  selectVersionDescription: '{name} için yüklenecek sürümü seçin:'
+  pmcProtected: Planet Minecraft, Cloudflare tarafından korunuyor. Sayfadan doğrudan indirme veya yansı bağlantısını kopyalayın.
+  netdiskTitle: Bulut depolamadan indirme
+  netdiskDescription: Bu mod paketi sürümü harici bir bulut depolama hizmetinde barındırılıyor. İndirme sayfasını tarayıcınızda açmak için aşağıya tıklayın, ardından indirilen .zip veya .mrpack dosyasını XMCL’ye sürükleyip bırakın.
+  openNetdisk: Bulut depolamayı aç
+  netdiskOpened: Bulut depolama bağlantısı tarayıcınızda açıldı ve panoya kopyalandı.
+  noReleasesFound: Bu depoda .mrpack veya .zip mod paketi sürümü bulunamadı.
   name: Mod Paketi İçe Aktar
 installAssets:
   asset: '{count} Varlık Yükle'
