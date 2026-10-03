@@ -319,6 +319,19 @@ gameType:
 help: Ajuda
 home: Início
 importModpack:
+  fromFileSubtitle: Escolha um arquivo .zip ou .mrpack
+  fromUrl: Por link / URL...
+  fromUrlSubtitle: Instale um modpack por uma URL
+  fromUrlDescription: 'Digite ou cole a URL do modpack:'
+  invalidUrl: Digite uma URL válida (http:// ou https://)
+  selectVersion: Selecione a versão do modpack
+  selectVersionDescription: 'Escolha a versão de {name} para instalar:'
+  pmcProtected: O Planet Minecraft é protegido pelo Cloudflare. Copie o link de download direto ou um link alternativo da página.
+  netdiskTitle: Download da nuvem
+  netdiskDescription: Esta versão do modpack está hospedada em um serviço de armazenamento em nuvem externo. Clique abaixo para abrir a página de download no navegador e depois arraste o arquivo .zip ou .mrpack baixado para o XMCL.
+  openNetdisk: Abrir armazenamento em nuvem
+  netdiskOpened: O link do armazenamento em nuvem foi aberto no navegador e copiado para a área de transferência.
+  noReleasesFound: Nenhuma versão de modpack .mrpack ou .zip foi encontrada neste repositório.
   name: Importar Modpack
 installAssets:
   asset: Instalar {count} Arquivos de Recursos

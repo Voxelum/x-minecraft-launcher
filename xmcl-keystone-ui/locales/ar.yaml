@@ -334,6 +334,19 @@ gameType:
 help: 'يساعد'
 home: 'بيت'
 importModpack:
+  fromFileSubtitle: اختر ملف .zip أو .mrpack
+  fromUrl: من رابط / URL...
+  fromUrlSubtitle: تثبيت حزمة تعديلات من رابط
+  fromUrlDescription: 'أدخل رابط حزمة التعديلات أو الصقه:'
+  invalidUrl: يرجى إدخال رابط صالح (http:// أو https://)
+  selectVersion: اختر إصدار حزمة التعديلات
+  selectVersionDescription: 'اختر إصدار {name} المراد تثبيته:'
+  pmcProtected: موقع Planet Minecraft محمي بواسطة Cloudflare. يرجى نسخ رابط التنزيل المباشر أو رابط بديل من الصفحة.
+  netdiskTitle: التنزيل من التخزين السحابي
+  netdiskDescription: هذا الإصدار من حزمة التعديلات مستضاف على خدمة تخزين سحابي خارجية. انقر أدناه لفتح صفحة التنزيل في المتصفح، ثم اسحب ملف .zip أو .mrpack الذي نزّلته وأفلته في XMCL.
+  openNetdisk: فتح التخزين السحابي
+  netdiskOpened: فُتح رابط التخزين السحابي في المتصفح ونُسخ إلى الحافظة.
+  noReleasesFound: لم يُعثر على إصدارات حزم تعديلات بصيغة .mrpack أو .zip في هذا المستودع.
   name: 'استيراد مودباك'
 installAssets:
   asset: 'تثبيت {count} الأصول'

@@ -319,6 +319,19 @@ gameType:
 help: Көмек
 home: Басты бет
 importModpack:
+  fromFileSubtitle: .zip немесе .mrpack файлын таңдаңыз
+  fromUrl: Сілтеме / URL арқылы...
+  fromUrlSubtitle: Модпакты URL арқылы орнату
+  fromUrlDescription: 'Модпактың URL мекенжайын енгізіңіз немесе қойыңыз:'
+  invalidUrl: Жарамды URL енгізіңіз (http:// немесе https://)
+  selectVersion: Модпак нұсқасын таңдау
+  selectVersionDescription: 'Орнатылатын {name} нұсқасын таңдаңыз:'
+  pmcProtected: Planet Minecraft сайты Cloudflare арқылы қорғалған. Беттен тікелей жүктеу сілтемесін немесе айна сілтемесін көшіріңіз.
+  netdiskTitle: Бұлттық дискіден жүктеу
+  netdiskDescription: Модпактың бұл нұсқасы сыртқы бұлттық дискіде орналасқан. Жүктеу бетін браузерде ашу үшін төмендегі түймені басыңыз, содан кейін жүктелген .zip немесе .mrpack файлын XMCL терезесіне сүйреп апарыңыз.
+  openNetdisk: Бұлттық дискіні ашу
+  netdiskOpened: Бұлттық диск сілтемесі браузерде ашылып, алмасу буферіне көшірілді.
+  noReleasesFound: Бұл репозиторийде .mrpack немесе .zip пішіміндегі модпак шығарылымдары табылмады.
   name: Мод-пак импорттау
 installAssets:
   asset: '{count} ресурс орнату'

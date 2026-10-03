@@ -324,6 +324,19 @@ gameType:
 help: Súgó
 home: Kezdőlap
 importModpack:
+  fromFileSubtitle: Válassz egy .zip vagy .mrpack fájlt
+  fromUrl: Hivatkozásból / URL-ből...
+  fromUrlSubtitle: Modcsomag telepítése URL-ről
+  fromUrlDescription: 'Írd be vagy illeszd be a modcsomag URL-jét:'
+  invalidUrl: Adj meg egy érvényes URL-t (http:// vagy https://)
+  selectVersion: Modcsomagverzió kiválasztása
+  selectVersionDescription: 'Válaszd ki a(z) {name} telepítendő verzióját:'
+  pmcProtected: A Planet Minecraftot a Cloudflare védi. Másold ki az oldalról a közvetlen letöltési vagy tükörhivatkozást.
+  netdiskTitle: Letöltés felhőtárhelyről
+  netdiskDescription: Ez a modcsomagverzió külső felhőtárhelyen található. Kattints alább a letöltési oldal böngészőben való megnyitásához, majd húzd a letöltött .zip vagy .mrpack fájlt az XMCL-be.
+  openNetdisk: Felhőtárhely megnyitása
+  netdiskOpened: A felhőtárhely hivatkozása megnyílt a böngészőben, és a vágólapra lett másolva.
+  noReleasesFound: Nem található .mrpack vagy .zip modcsomagkiadás ebben a tárolóban.
   name: Modpack importálása
 installAssets:
   asset: Telepítsen {count} eszközt

@@ -342,6 +342,19 @@ gameType:
 help: Referenz.
 home: Startseite
 importModpack:
+  fromFileSubtitle: Datei im Format .zip oder .mrpack auswählen
+  fromUrl: Über Link / URL...
+  fromUrlSubtitle: Modpack über eine URL installieren
+  fromUrlDescription: 'Modpack-URL eingeben oder einfügen:'
+  invalidUrl: Bitte eine gültige URL eingeben (http:// oder https://)
+  selectVersion: Modpack-Version auswählen
+  selectVersionDescription: 'Zu installierende Version von {name} auswählen:'
+  pmcProtected: Planet Minecraft ist durch Cloudflare geschützt. Bitte den direkten Download-Link oder einen Mirror-Link von der Seite kopieren.
+  netdiskTitle: Download vom Cloud-Speicher
+  netdiskDescription: Diese Modpack-Version liegt auf einem externen Cloud-Speicher. Unten klicken, um die Download-Seite im Browser zu öffnen, und anschließend die heruntergeladene .zip- oder .mrpack-Datei in XMCL ziehen.
+  openNetdisk: Cloud-Speicher öffnen
+  netdiskOpened: Der Cloud-Speicher-Link wurde im Browser geöffnet und in die Zwischenablage kopiert.
+  noReleasesFound: In diesem Repository wurden keine Modpack-Veröffentlichungen im Format .mrpack oder .zip gefunden.
   name: Modpack importieren
 installAssets:
   asset: Installieren Sie {count} Assets

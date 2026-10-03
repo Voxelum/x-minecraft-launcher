@@ -320,6 +320,19 @@ gameType:
 help: Help
 home: Home
 importModpack:
+  fromFileSubtitle: Kies een .zip- of .mrpack-bestand
+  fromUrl: Via link / URL...
+  fromUrlSubtitle: Installeer een modpack via een URL
+  fromUrlDescription: 'Voer de modpack-URL in of plak deze:'
+  invalidUrl: Voer een geldige URL in (http:// of https://)
+  selectVersion: Modpackversie selecteren
+  selectVersionDescription: 'Kies de versie van {name} die je wilt installeren:'
+  pmcProtected: Planet Minecraft wordt beschermd door Cloudflare. Kopieer de directe downloadlink of een mirrorlink van de pagina.
+  netdiskTitle: Downloaden uit cloudopslag
+  netdiskDescription: Deze modpackversie staat op externe cloudopslag. Klik hieronder om de downloadpagina in je browser te openen en sleep daarna het gedownloade .zip- of .mrpack-bestand naar XMCL.
+  openNetdisk: Cloudopslag openen
+  netdiskOpened: De cloudopslaglink is in je browser geopend en naar het klembord gekopieerd.
+  noReleasesFound: Geen modpackreleases met .mrpack- of .zip-bestanden gevonden in deze repository.
   name: Modpack Importeren
 installAssets:
   asset: Installeer {count} Assets

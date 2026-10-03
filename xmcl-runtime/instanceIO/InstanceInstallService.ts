@@ -52,6 +52,7 @@ import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/servic
 import { downloadInstanceFiles } from './utils/downloadInstanceFiles'
 import { linkInstanceFiles } from './utils/linkInstanceFiles'
 import { unzipInstanceFiles } from './utils/unzipInstanceFiles'
+import { deduplicateInstanceFiles } from '~/util/deduplicateInstanceFiles'
 import { resolveInstanceFiles } from './utils/resolveInstanceFiles'
 import { getTracker } from '~/util/taskHelper'
 import { readPendingInstalls, writeInstallState } from './utils/pendingInstall'
@@ -491,8 +492,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
     }
     const delta = (ready?: Set<string>) => {
-      const files = activeInstallFiles(targetState)
-      const baseline = activeInstallFiles(targetState, true)
+      const files = deduplicateInstanceFiles(activeInstallFiles(targetState))
+      const baseline = deduplicateInstanceFiles(activeInstallFiles(targetState, true))
       return computeFileUpdates(
         instancePath,
         ready ? baseline.filter(file => ready.has(file.path)) : baseline,
@@ -1032,7 +1033,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
     manifestUpdatedAt?: number,
     legacyBaseline?: { upstream: InstanceUpstream; files: InstanceFile[] } | null,
   ): Promise<void> {
-    const { path: instancePath, files, id } = options
+    const { path: instancePath, id } = options
+    const files = deduplicateInstanceFiles(options.files)
 
     const timestamp = Date.now()
     this.log('Install instance files', instancePath, id)
@@ -1062,7 +1064,6 @@ export class InstanceInstallService extends AbstractService implements IInstance
       )
     } else {
       const oldFiles = options.oldFiles
-      const files = options.files
       const operationId = randomUUID()
 
       const lockState: InstanceLockSchema = {
