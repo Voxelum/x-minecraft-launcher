@@ -89,4 +89,31 @@ describe('MinecraftFriendsService authentication retry policy', () => {
     await expect((service as any).withFreshToken(createUser('user'), operation)).rejects.toThrow('temporarily unavailable')
     expect(refreshUser).toHaveBeenCalledOnce()
   })
+
+  it('uses a refreshed token and permits recovery after the cooldown expires', async () => {
+    vi.useFakeTimers()
+    const tokens = { user: 'stale-token' }
+    const { service, refreshUser } = createService(tokens)
+    let refreshCount = 0
+    refreshUser.mockImplementation(async () => {
+      tokens.user = `fresh-token-${++refreshCount}`
+    })
+    const operation = vi.fn()
+      .mockRejectedValueOnce(new UnauthorizedError({}))
+      .mockResolvedValueOnce('recovered')
+      .mockRejectedValueOnce(new UnauthorizedError({}))
+      .mockRejectedValueOnce(new UnauthorizedError({}))
+      .mockRejectedValueOnce(new UnauthorizedError({}))
+      .mockRejectedValueOnce(new UnauthorizedError({}))
+      .mockResolvedValueOnce('recovered-after-cooldown')
+
+    await expect((service as any).withFreshToken(createUser('user'), operation)).resolves.toBe('recovered')
+    await expect((service as any).withFreshToken(createUser('user'), operation)).rejects.toBeInstanceOf(UnauthorizedError)
+    await expect((service as any).withFreshToken(createUser('user'), operation)).rejects.toThrow('temporarily unavailable')
+    vi.advanceTimersByTime(60_001)
+    await expect((service as any).withFreshToken(createUser('user'), operation)).resolves.toBe('recovered-after-cooldown')
+
+    expect(tokens.user).toBe('fresh-token-3')
+    expect(refreshUser).toHaveBeenCalledTimes(3)
+  })
 })
