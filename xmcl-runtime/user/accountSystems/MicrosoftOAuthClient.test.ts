@@ -376,28 +376,48 @@ describe('Microsoft credential cache', () => {
     expect(storage.put).toHaveBeenCalledWith('xmcl-oauth', 'XMCL_MICROSOFT_ACCOUNT', serialized)
   })
 
-  it('logs repeated cache read failures once and reports a later failure after recovery', async () => {
+  it('retries transient reads and resumes reporting after repaired cache data', async () => {
     logger.error.mockClear()
-    let fail = true
+    let readError: Error | undefined = new Error('temporary storage failure')
+    let secret = 'broken'
+    let deserializeError: Error | undefined = new Error('invalid cache')
     const storage: SecretStorage = {
       get: vi.fn(async () => {
-        if (fail) throw new Error('temporary storage failure')
-        return undefined
+        if (readError) throw readError
+        return secret
       }),
       put: vi.fn().mockResolvedValue(undefined),
     }
     const plugin = createPlugin('xmcl-oauth', logger, storage)
     const readContext = createCacheContext(false)
+    readContext.tokenCache.deserialize = vi.fn(() => {
+      if (deserializeError) throw deserializeError
+    })
 
     await plugin.beforeCacheAccess(readContext)
     await plugin.beforeCacheAccess(readContext)
     expect(logger.error).toHaveBeenCalledOnce()
 
-    fail = false
-    await plugin.afterCacheAccess(createCacheContext(true, '{}'))
-    fail = true
+    readError = undefined
+    deserializeError = undefined
     await plugin.beforeCacheAccess(readContext)
+    expect(readContext.tokenCache.deserialize).toHaveBeenCalledWith('broken')
 
+    readError = new Error('second storage failure')
+    await plugin.beforeCacheAccess(readContext)
     expect(logger.error).toHaveBeenCalledTimes(2)
+
+    readError = undefined
+    secret = 'repaired'
+    deserializeError = new Error('repaired cache is broken')
+    await plugin.beforeCacheAccess(readContext)
+    expect(logger.error).toHaveBeenCalledTimes(3)
+
+    deserializeError = undefined
+    await plugin.beforeCacheAccess(readContext)
+    deserializeError = new Error('invalid cache')
+    await plugin.beforeCacheAccess(readContext)
+    expect(logger.error).toHaveBeenCalledTimes(4)
+    expect(storage.put).not.toHaveBeenCalled()
   })
 })

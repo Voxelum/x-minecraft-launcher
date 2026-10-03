@@ -229,9 +229,9 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
     // refresh updates UserService state. The token store is the source of
     // truth here; a server-side expiry is handled by withFreshToken's single
     // 401 retry.
-    const shouldRefresh = force || !token || user.invalidated
+    const shouldRefresh = force || !token
 
-    if (failureUntil > now && (force || !token || user.invalidated)) {
+    if (failureUntil > now && (force || !token)) {
       throw new UserAuthenticationError('Microsoft account refresh is temporarily unavailable')
     }
 
@@ -273,7 +273,14 @@ export class MinecraftFriendsService extends AbstractService implements IMinecra
     } catch (e) {
       if (!(e instanceof UnauthorizedError)) throw e
       const refreshed = await this.getToken(user, true)
-      return op(refreshed)
+      try {
+        return await op(refreshed)
+      } catch (retryError) {
+        if (retryError instanceof UnauthorizedError) {
+          this.authFailureUntil.set(user.id, Date.now() + AUTH_FAILURE_COOLDOWN_MS)
+        }
+        throw retryError
+      }
     }
   }
 

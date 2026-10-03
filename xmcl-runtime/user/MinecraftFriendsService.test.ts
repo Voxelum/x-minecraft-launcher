@@ -51,11 +51,11 @@ describe('MinecraftFriendsService authentication retry policy', () => {
 
   it('accepts the token after recovering a stale invalidated profile', async () => {
     const { service, refreshUser } = createService({ user: 'fresh-token' })
-    refreshUser.mockResolvedValue(undefined)
 
     await expect((service as any).getToken({ ...createUser('user'), invalidated: true })).resolves.toBe('fresh-token')
+    await expect((service as any).getToken({ ...createUser('user'), invalidated: true })).resolves.toBe('fresh-token')
 
-    expect(refreshUser).toHaveBeenCalledOnce()
+    expect(refreshUser).not.toHaveBeenCalled()
   })
 
   it('bounds missing-token refreshes per user', async () => {
@@ -74,26 +74,19 @@ describe('MinecraftFriendsService authentication retry policy', () => {
     expect(refreshUser).toHaveBeenNthCalledWith(2, 'second', { silent: true, force: true })
   })
 
-  it('bounds a 401 retry and recovers after the cooldown', async () => {
+  it('bounds repeated 401 retries after a refreshed token is rejected', async () => {
     vi.useFakeTimers()
     const tokens = { user: 'stale-token' }
     const { service, refreshUser } = createService(tokens)
-    refreshUser.mockRejectedValueOnce(new Error('refresh unavailable'))
+    refreshUser.mockResolvedValueOnce(undefined)
 
     const operation = vi.fn()
       .mockRejectedValueOnce(new UnauthorizedError({}))
       .mockRejectedValueOnce(new UnauthorizedError({}))
       .mockRejectedValueOnce(new UnauthorizedError({}))
       .mockResolvedValueOnce('ok')
-    await expect((service as any).withFreshToken(createUser('user'), operation)).rejects.toThrow('refresh failed')
+    await expect((service as any).withFreshToken(createUser('user'), operation)).rejects.toBeInstanceOf(UnauthorizedError)
     await expect((service as any).withFreshToken(createUser('user'), operation)).rejects.toThrow('temporarily unavailable')
     expect(refreshUser).toHaveBeenCalledOnce()
-
-    vi.advanceTimersByTime(60_001)
-    tokens.user = 'fresh-token'
-    refreshUser.mockResolvedValueOnce(createUser('user', Date.now() + 3_600_000))
-
-    await expect((service as any).withFreshToken(createUser('user'), operation)).resolves.toBe('ok')
-    expect(refreshUser).toHaveBeenCalledTimes(2)
   })
 })
