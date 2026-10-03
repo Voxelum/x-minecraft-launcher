@@ -275,6 +275,21 @@ The launcher core is in [separated project](https://github.com/voxelum/minecraft
 
 Please open issue there if you identify any issue related to it.
 
+### Windows server service paths
+
+APPX can redirect files written under AppData to a package-private location.
+When working on local server services, resolve existing executables, configuration
+files and launch directories with `fs/promises.realpath` before passing them to
+elevated processes or storing them in the WinSW configuration. Keep instance
+identifiers based on the original instance path so existing services remain
+discoverable.
+
+Service commands use PowerShell `Start-Process -Verb RunAs -Wait -PassThru` and
+check the child exit code. The bundled `elevate.exe` does not propagate child
+exit codes, even with `-wait`, so it cannot report service installation failures
+reliably. Validate APPX separately from the unpackaged development launcher;
+the latter does not reproduce AppData virtualization.
+
 #### Recommended way to interact with Vuex
 
 - Create a new file for hook in `src/renderer/composables` folder, and export the hook throw `src/renderer/composables/index.ts`

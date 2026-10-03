@@ -1,7 +1,8 @@
 import { createHash } from 'crypto'
 import { execFile } from 'child_process'
 import { ensureDir, pathExists, readFile, remove, rename, writeFile } from 'fs-extra'
-import { join } from 'path'
+import { realpath } from 'fs/promises'
+import { dirname, join } from 'path'
 import {
   ServerServiceKey,
   type InstallServerServiceOptions,
@@ -14,7 +15,6 @@ import { Inject, LauncherAppKey, type LauncherApp } from '@xmcl/runtime/app'
 import { LaunchService } from '@xmcl/runtime/launch'
 import { RemoteServerService } from '@xmcl/runtime/remoteServer'
 import { AbstractService, ExposeServiceKey } from '@xmcl/runtime/service'
-import { ensureElevateExe } from './utils/elevate'
 
 const WINSW_VERSION = '2.12.0'
 const WINSW_URL = `https://github.com/winsw/winsw/releases/download/v${WINSW_VERSION}/WinSW-x64.exe`
@@ -79,7 +79,7 @@ export class ServerService extends AbstractService implements IServerService {
     const valid = await readFile(destination)
       .then(data => createHash('sha256').update(data).digest('hex') === WINSW_SHA256)
       .catch(() => false)
-    if (valid) return destination
+    if (valid) return realpath(destination)
 
     await ensureDir(directory)
     const response = await this.app.fetch(WINSW_URL)
@@ -92,12 +92,33 @@ export class ServerService extends AbstractService implements IServerService {
     await writeFile(temporary, data)
     await remove(destination).catch(() => undefined)
     await rename(temporary, destination)
-    return destination
+    return realpath(destination)
   }
 
   async #runElevated(file: string, args: string[]) {
-    const elevate = await ensureElevateExe(this.app.appDataPath)
-    return run(elevate, [file, ...args])
+    // elevate.exe neither waits by default nor propagates the child's exit code.
+    const script = [
+      '[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)',
+      "$ErrorActionPreference = 'Stop'",
+      "$ProgressPreference = 'SilentlyContinue'",
+      `$command = '${file.replaceAll("'", "''")}'`,
+      `$arguments = '${args.map(quoteWindowsArgument).join(' ').replaceAll("'", "''")}'`,
+      'try {',
+      '  $child = Start-Process -FilePath $command -ArgumentList $arguments -WorkingDirectory $env:SystemRoot -Verb RunAs -Wait -PassThru -WindowStyle Hidden',
+      '  if ($child.ExitCode -ne 0) { throw ("{0} failed with exit code {1}." -f $command, $child.ExitCode) }',
+      '} catch {',
+      '  [Console]::Error.WriteLine($_.Exception.Message)',
+      '  exit 1',
+      '}',
+    ].join('\n')
+    try {
+      return await run('powershell.exe', [
+        '-NoProfile', '-NonInteractive', '-OutputFormat', 'Text', '-EncodedCommand', Buffer.from(script, 'utf16le').toString('base64'),
+      ])
+    } catch (error) {
+      const stderr = (error as { stderr?: string }).stderr?.trim()
+      throw new Error(`Failed to run ${file} ${args[0]}: ${stderr || (error as Error).message}`, { cause: error })
+    }
   }
 
   async #getLocalStatus(instancePath: string): Promise<ServerServiceStatus> {
@@ -172,17 +193,23 @@ export class ServerService extends AbstractService implements IServerService {
       validateServiceName(options.name)
       const serviceDirectory = this.#serviceDirectory(options.instancePath)
       const configPath = this.#serviceConfigPath(options.instancePath)
-      const serverDirectory = join(options.instancePath, 'server')
       const winSW = await this.#ensureWinSW()
       const previousConfig = await readFile(configPath, 'utf8').catch(() => '')
       const previousName = previousConfig.match(/<id>([^<]+)<\/id>/)?.[1]
       if (previousName && previousName !== options.name) {
-        await this.#runElevated(winSW, ['uninstall', configPath])
+        await this.#runElevated(winSW, ['uninstall', await realpath(configPath)])
       }
-      const launchOptions = { ...options.launchOptions, side: 'server' as const }
-      const args = await this.launchService.generateArguments(launchOptions)
       await ensureDir(serviceDirectory)
-      await ensureDir(serverDirectory)
+      await ensureDir(join(options.instancePath, 'server'))
+      // APPX merges virtual AppData paths into the launcher only. Elevated
+      // processes and the service account need the physical paths instead.
+      const [java, gameDirectory, serverDirectory] = await Promise.all([
+        realpath(options.launchOptions.java),
+        realpath(options.launchOptions.gameDirectory),
+        realpath(join(options.instancePath, 'server')),
+      ])
+      const launchOptions = { ...options.launchOptions, java, gameDirectory, side: 'server' as const }
+      const args = await this.launchService.generateArguments(launchOptions)
 
       const config = [
         '<service>',
@@ -207,12 +234,16 @@ export class ServerService extends AbstractService implements IServerService {
         '',
       ].join('\n')
       await writeFile(configPath, config, 'utf8')
+      const physicalConfigPath = await realpath(configPath)
 
-      await this.#runElevated('icacls.exe', [join(this.app.appDataPath, 'server-services'), '/grant', '*S-1-5-19:(OI)(CI)RX'])
+      for (const directory of new Set([dirname(winSW), dirname(physicalConfigPath)])) {
+        await this.#runElevated('icacls.exe', [directory, '/grant', '*S-1-5-19:(OI)(CI)RX'])
+      }
       await this.#runElevated('icacls.exe', [serverDirectory, '/grant', '*S-1-5-19:(OI)(CI)M'])
-      await this.#runElevated(winSW, ['install', configPath])
+      await this.#runElevated(winSW, ['install', physicalConfigPath])
       return { ok: true }
     } catch (error) {
+      this.error(error as Error)
       return { ok: false, message: (error as Error).message }
     }
   }
@@ -223,10 +254,11 @@ export class ServerService extends AbstractService implements IServerService {
       const configPath = this.#serviceConfigPath(instancePath)
       if (!await pathExists(configPath)) return { ok: true }
       const winSW = await this.#ensureWinSW()
-      await this.#runElevated(winSW, ['uninstall', configPath])
+      await this.#runElevated(winSW, ['uninstall', await realpath(configPath)])
       await remove(this.#serviceDirectory(instancePath))
       return { ok: true }
     } catch (error) {
+      this.error(error as Error)
       return { ok: false, message: (error as Error).message }
     }
   }
@@ -237,9 +269,10 @@ export class ServerService extends AbstractService implements IServerService {
       const configPath = this.#serviceConfigPath(instancePath)
       if (!await pathExists(configPath)) return { ok: false, message: 'Install the Windows service first.' }
       const winSW = await this.#ensureWinSW()
-      await this.#runElevated(winSW, [action, configPath])
+      await this.#runElevated(winSW, [action, await realpath(configPath)])
       return { ok: true }
     } catch (error) {
+      this.error(error as Error)
       return { ok: false, message: (error as Error).message }
     }
   }
