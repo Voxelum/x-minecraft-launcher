@@ -171,7 +171,13 @@ const _installing = ref(false)
 const onInstall = (v: StoreProjectVersion) => {
   if (!proj.value) return
   _installing.value = true
-  installModpack({ modId: proj.value!.id, fileId: Number(v.id), icon: project.value?.iconUrl, market: 1 }).finally(() => {
+  installModpack({
+    modId: proj.value.id,
+    fileId: Number(v.id),
+    // Animated originals can exceed the instance icon download limit.
+    icon: proj.value.logo?.thumbnailUrl || project.value?.iconUrl,
+    market: 1,
+  }).finally(() => {
     _installing.value = false
   })
 }

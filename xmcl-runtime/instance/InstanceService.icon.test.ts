@@ -1,6 +1,6 @@
 import { Instance } from '@xmcl/instance'
 import { InstanceState } from '@xmcl/runtime-api'
-import { ensureDir, mkdtemp, pathExists, readFile, rm, writeFile } from 'fs-extra'
+import { ensureDir, mkdtemp, pathExists, readFile, readJson, rm, writeFile } from 'fs-extra'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
@@ -167,5 +167,27 @@ describe('InstanceService icon storage', () => {
     expect(state.all[instancePath].icon).toBe(`http://launcher/media?path=${join(instancePath, 'icon.gif')}`)
     expect(await pathExists(join(instancePath, 'icon.gif'))).toBe(true)
     expect(await readFile(join(instancePath, 'icon.gif'))).toEqual(animatedGif)
+  })
+
+  test('persists an animated remote thumbnail when creating a modpack instance', async () => {
+    const state = new InstanceState() as InstanceState & { subscribe: ReturnType<typeof vi.fn> }
+    state.subscribe = vi.fn()
+    const icon = 'https://media.forgecdn.net/avatars/thumbnails/1735/273/256/256/icon_animated.gif'
+    const fetch = vi.fn().mockResolvedValue(new Response(animatedGif, {
+      headers: { 'content-type': 'image/gif', 'content-length': String(animatedGif.byteLength) },
+    }))
+    const service = createService(state, fetch)
+
+    const path = await service.createInstance({
+      name: 'GIF modpack',
+      runtime: { minecraft: '1.20.1' },
+      icon,
+      upstream: { type: 'curseforge-modpack', modId: 385053, fileId: 8813051 },
+    })
+
+    expect(fetch).toHaveBeenCalledExactlyOnceWith(icon)
+    expect(state.all[path].icon).toBe(`http://launcher/media?path=${join(path, 'icon.gif')}`)
+    expect((await readJson(join(path, 'instance.json'))).icon).toBe('icon.gif')
+    expect(await readFile(join(path, 'icon.gif'))).toEqual(animatedGif)
   })
 })
