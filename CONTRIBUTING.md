@@ -275,6 +275,14 @@ regular expression literals; use Unicode escapes such as `\u00a7` for non-ASCII
 characters in shared runtime regular expressions. The build rejects any
 remaining non-ASCII host output.
 
+The published DeskGap Node runtime does not include ICU and cannot parse Unicode
+property escapes such as `\p{Emoji}` in regular expression literals. The
+DeskGap-only `unicodeRegexPlugin` expands those properties into explicit character
+ranges before esbuild bundles the host and its workers. Keep this transformation
+in both development and production builds; targeting Node 20/24 or setting
+`charset: 'ascii'` alone does not provide this compatibility. Shared runtime
+sources and Electron builds retain their original regular expressions.
+
 The runtime is copied into `deskgap-app/build/output/runtime-staging`, excluding
 its default `resources/app` demo and local `DeskGap.exe.WebView2` browser data.
 Bundling mutable browser data can invalidate installed runtime integrity checks

@@ -4,6 +4,7 @@ import { readFile, readdir, writeFile } from 'node:fs/promises'
 import { dirname, extname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import electronConfig from '../xmcl-electron-app/esbuild.config'
+import { unicodeRegexPlugin } from './unicodeRegex'
 
 const root = dirname(fileURLToPath(import.meta.url))
 const dist = join(root, 'dist')
@@ -53,6 +54,7 @@ async function main() {
     entryPoints: [join(root, 'src/main.ts')],
     external: ['deskgap'],
     plugins: [
+      unicodeRegexPlugin(),
       {
         name: 'reject-electron-runtime',
         setup(build) {
