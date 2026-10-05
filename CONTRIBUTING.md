@@ -204,6 +204,29 @@ update `Contents/Info.plist`. If the authorization entry is missing or enabling
 it does not help, inspect the packaged app's code signature and main executable
 UUID as described in [Apple TN3179](https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy).
 
+### Linux system-package sandbox
+
+The deb, rpm and pacman packages use the templates in
+`xmcl-electron-app/build/linux` for installation, removal and AppArmor.
+Keep their paths aligned with the existing `/opt/xmcl` package layout.
+Installation and upgrades configure only `chrome-sandbox` as `root:root`
+with mode `4755`, and reject symlinked, non-root-owned, or group-/other-writable
+installation directories. Do not determine desktop-user namespace support
+with a root-only `unshare` probe, or disable Chromium sandboxing to hide
+installation errors.
+
+The AppArmor profile grants `userns` to `/opt/xmcl/xmcl` on supported
+systems. Unsupported older AppArmor versions retain the SUID sandbox.
+The FPM `--after-upgrade` hook explicitly reuses the same install script;
+pacman does not invoke `post_install` on upgrades. These scripts must also
+work when embedded in FPM's `/bin/sh` maintainer scripts.
+Removal unregisters the same executable path and unloads the profile;
+removal of an old package during an upgrade must not undo the new install.
+These changes require a newly built system package: an application-only
+ASAR update cannot repair installed helper permissions or AppArmor policy.
+AppImage, tar.xz and the portable script installer are separate installation
+paths and are not changed by these system-package hooks.
+
 ### DeskGap Windows EXE in the regular release
 
 The normal `.github/workflows/build.yml` builds Electron and an additional

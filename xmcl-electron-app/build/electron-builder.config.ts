@@ -1,8 +1,16 @@
 /* eslint-disable no-template-curly-in-string */
 import { config as dotenv } from 'dotenv'
 import type { Configuration } from 'electron-builder'
+import { resolve } from 'path'
 
 dotenv()
+
+const linuxPackageScripts = {
+  afterInstall: 'build/linux/after-install.tpl',
+  afterRemove: 'build/linux/after-remove.tpl',
+  appArmorProfile: 'build/linux/apparmor-profile.tpl',
+  fpm: [`--after-upgrade=${resolve(__dirname, 'linux', 'after-install.tpl')}`],
+}
 
 export const config = {
   productName: 'XMCL',
@@ -118,6 +126,9 @@ export const config = {
       { target: 'pacman', arch: ['x64', 'arm64'] },
     ],
   },
+  deb: linuxPackageScripts,
+  rpm: linuxPackageScripts,
+  pacman: linuxPackageScripts,
   snap: {
     publish: [
       'github',
