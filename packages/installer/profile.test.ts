@@ -4,7 +4,10 @@ import { delimiter, dirname, join } from 'path'
 import { pipeline } from 'stream/promises'
 import { afterEach, expect, test } from 'vitest'
 import { ZipFile } from 'yazl'
-import { classpathEntryToLibraryName, isEmptyOrCorruptArchive, parseArgumentsFromArgsFile, resolvePostProcessJavaTask } from './profile'
+import { MinecraftFolder } from '@xmcl/core'
+import { createNodeInstallRuntime, executeInstallWorkflow } from './installManifest'
+import { createProfileInstallWorkflow } from './forgeWorkflow'
+import { classpathEntryToLibraryName, diagnoseProcessorOutputs, diagnoseProfile, isEmptyOrCorruptArchive, parseArgumentsFromArgsFile, resolvePostProcessJavaTask, resolveProcessors, type InstallProfile } from './profile'
 
 let cleanup: string | undefined
 
@@ -231,3 +234,133 @@ test('resolvePostProcessJavaTask isolates each batch processor classpath', async
     ['-Ddirect=true', '-cp', [secondDependency, secondJar].join(delimiter), 'example.SecondProcessor', '--value', 'two'],
   ])
 })
+
+function processorProfile(args: string[], outputs?: Record<string, string>): InstallProfile {
+  return {
+    profile: 'neoforge', version: 'neoforge-21.1.255', minecraft: '1.21.1', json: '', path: '', libraries: [],
+    processors: [{ jar: 'example:processor:1.0', classpath: [], args, outputs }],
+  }
+}
+
+test.each([
+  '{ROOT}/libraries/',
+  '{ROOT}\\libraries\\',
+  '{ROOT}/libraries',
+  '{ROOT}/libraries/.',
+  '{LIBRARY_DIR}',
+  '{ROOT}',
+  '{ROOT}/extracted/',
+])('does not infer a file output for the directory %s', (output) => {
+  const [processor] = resolveProcessors('client', processorProfile(['--output', output]), new MinecraftFolder('D:\\.minecraftx'))
+  expect(processor.outputs).toEqual({})
+})
+
+test.each([
+  ['net.minecraftforge:installertools:1.4.1', '--libraries'],
+  ['net.minecraftforge:installertools:1.4.1', '--all'],
+  ['net.neoforged.installertools:installertools:2.1.2', '--libraries'],
+  ['net.neoforged.installertools:installertools:2.1.2', '--all'],
+])('recognizes BUNDLER_EXTRACT directory modes without a trailing separator (%s %s)', (jar, mode) => {
+  const minecraft = new MinecraftFolder('minecraft')
+  const profile = processorProfile([
+    '--task', 'BUNDLER_EXTRACT', '--input', '{MINECRAFT_JAR}', '--output', '{ROOT}/extracted.data', mode,
+  ])
+  profile.processors![0].jar = jar
+  const [processor] = resolveProcessors('server', profile, minecraft)
+  expect(processor.outputs).toEqual({})
+})
+
+test.each(['--output', '--out-jar'])('preserves inferred file outputs from %s and declared checksums', (flag) => {
+  const minecraft = new MinecraftFolder('minecraft')
+  const profile = processorProfile([flag, '{ROOT}/patched.jar'], { '{ROOT}/patched.jar': "'expected-sha1'" })
+  const [processor] = resolveProcessors('client', profile, minecraft)
+  expect(processor.outputs).toEqual({ 'minecraft/patched.jar': 'expected-sha1' })
+  expect(profile.processors![0].outputs).toEqual({ '{ROOT}/patched.jar': "'expected-sha1'" })
+  expect(resolveProcessors('client', processorProfile([flag, '{ROOT}/patched.jar']), minecraft)[0].outputs)
+    .toEqual({ 'minecraft/patched.jar': '' })
+})
+
+test('retains extensionless file outputs and BUNDLER_EXTRACT single-jar outputs', () => {
+  const minecraft = new MinecraftFolder('minecraft')
+  expect(resolveProcessors('client', processorProfile(['--output', '{ROOT}/mappings']), minecraft)[0].outputs)
+    .toEqual({ 'minecraft/mappings': '' })
+  expect(resolveProcessors('server', processorProfile([
+    '--task', 'BUNDLER_EXTRACT', '--output', '{ROOT}/server.jar', '--jar-only',
+  ]), minecraft)[0].outputs).toEqual({ 'minecraft/server.jar': '' })
+})
+
+test('retains an out-jar output when --output is a directory', () => {
+  const [processor] = resolveProcessors('client', processorProfile([
+    '--output', '{ROOT}/libraries/', '--out-jar', '{ROOT}/patched.jar',
+  ]), new MinecraftFolder('minecraft'))
+  expect(processor.outputs).toEqual({ 'minecraft/patched.jar': '' })
+})
+
+test('never discards an explicitly declared output checksum based on directory inference', () => {
+  const [processor] = resolveProcessors('client', processorProfile([
+    '--output', '{ROOT}/libraries/',
+  ], { '{ROOT}/libraries/': 'declared-checksum' }), new MinecraftFolder('minecraft'))
+  expect(processor.outputs).toEqual({ 'minecraft/libraries/': 'declared-checksum' })
+})
+
+for (const mode of ['batch', 'fallback', 'failure']) {
+  test(`profile workflow protects shared directories and runs extraction (${mode})`, async ({ temp }) => {
+    cleanup = join(temp, `profile-directory-${mode}`)
+    const minecraft = new MinecraftFolder(cleanup)
+    const processorJar = minecraft.getLibraryByPath('example/processor/1.0/processor-1.0.jar')
+    await writeProcessorArchive(processorJar, 'example.Processor')
+    const sibling = join(minecraft.libraries, 'keep.txt')
+    await writeFile(sibling, 'pre-existing library')
+    const patched = join(minecraft.root, 'patched.jar')
+    await writeArchive(patched, Buffer.from('already valid output'))
+    const profile = processorProfile(['--task', 'BUNDLER_EXTRACT', '--output', '{ROOT}/libraries/', '--libraries'])
+    profile.processors!.push({
+      jar: 'example:processor:1.0', classpath: [], args: ['--out-jar', patched],
+    })
+    const versionJson = minecraft.getVersionJson(profile.version)
+    await mkdir(dirname(versionJson), { recursive: true })
+    await writeFile(versionJson, JSON.stringify({
+      id: profile.version, type: 'release', mainClass: 'example.Main',
+      arguments: { game: [], jvm: [] }, libraries: [],
+    }))
+    const processors = resolveProcessors('client', profile, minecraft)
+    expect(await diagnoseProcessorOutputs(processors)).toEqual([])
+    const calls: string[][] = []
+    const extracted = join(minecraft.libraries, 'extracted.txt')
+    const removed: string[] = []
+    const runtime = createNodeInstallRuntime({
+      runJava: async (command) => {
+        calls.push(command.args)
+        if (mode === 'failure') throw new Error('all processors failed')
+        if (command.args.includes('MultiJarLauncher')) {
+          if (mode === 'fallback') throw new Error('retry with direct processors')
+          await writeFile(extracted, 'extracted')
+        } else if (command.args.includes('--libraries')) {
+          await writeFile(extracted, 'extracted')
+        } else {
+          await writeArchive(patched, Buffer.from('recreated output'))
+        }
+      },
+    })
+    const remove = runtime.remove
+    runtime.remove = async (paths) => { removed.push(...paths); await remove(paths) }
+    const execution = executeInstallWorkflow(createProfileInstallWorkflow({
+      id: 'directory-regression', profile, minecraft, java: 'not-executed', installOptions: {},
+      batchLauncher: { path: join(minecraft.root, 'MultiJarLauncher.class'), content: 'mock launcher' },
+    }), runtime)
+
+    if (mode === 'failure') {
+      await expect(execution).rejects.toThrow('all processors failed')
+      expect(calls).toHaveLength(2)
+      expect(removed).toContain(patched)
+    } else {
+      expect(await execution).toBe(profile.version)
+      expect(calls).toHaveLength(mode === 'fallback' ? 3 : 1)
+      expect(await readFile(extracted, 'utf8')).toBe('extracted')
+      expect(await diagnoseProcessorOutputs(processors)).toEqual([])
+      expect(await diagnoseProfile(profile, minecraft)).toBe(false)
+    }
+    expect(removed).not.toContain(`${minecraft.root}/libraries/`)
+    expect(await readFile(sibling, 'utf8')).toBe('pre-existing library')
+  })
+}

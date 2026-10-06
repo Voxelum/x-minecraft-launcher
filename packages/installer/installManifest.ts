@@ -57,6 +57,8 @@ export interface InstallJavaTask {
   /** Strategies are tried in order. Commands inside one strategy run sequentially. */
   strategies: JavaCommand[][]
   outputs: InstallOutput[]
+  /** Set false when output files do not cover every command's side effects. */
+  skipIfOutputsValid?: boolean
   dependsOn?: string[]
   metadata?: Record<string, string | number | boolean>
 }
@@ -101,6 +103,7 @@ export interface InstallManifest {
 }
 
 export interface InstallRuntime {
+  /** Return undefined for missing paths and non-files, including directories. */
   stat(path: string): Promise<{ size: number; mtimeMs: number } | undefined>
   checksum(path: string, algorithm: string): Promise<string>
   download(files: InstallFile[]): Promise<void>
@@ -258,7 +261,7 @@ async function executeJava(
   onStrategyStart?: (strategy: number) => void,
   onStrategyFailed?: (strategy: number, error: unknown) => void,
 ) {
-  if (task.outputs.length > 0 && (await invalidOutputs(task.outputs, runtime)).length === 0) return
+  if (task.skipIfOutputsValid !== false && task.outputs.length > 0 && (await invalidOutputs(task.outputs, runtime)).length === 0) return
   let lastError: unknown
   for (let strategyIndex = 0; strategyIndex < task.strategies.length; strategyIndex++) {
     const strategy = task.strategies[strategyIndex]
@@ -514,7 +517,7 @@ async function mergeZipArchives(
 
 export function createNodeInstallRuntime(options: NodeInstallRuntimeOptions = {}): InstallRuntime {
   return {
-    stat: (path) => stat(path).then(({ size, mtimeMs }) => ({ size, mtimeMs }), () => undefined),
+    stat: (path) => stat(path).then((entry) => entry.isFile() ? { size: entry.size, mtimeMs: entry.mtimeMs } : undefined, () => undefined),
     checksum: options.checksum ?? checksumFile,
     download: options.download ?? (async (files) => {
       throw new Error(`No install download adapter for ${files.length} file(s)`)
@@ -671,7 +674,7 @@ export function createNodeInstallRuntime(options: NodeInstallRuntimeOptions = {}
       await Promise.all(paths.map((path) => unlink(path).catch(() => undefined)))
     },
     validate: async (path, validator) => {
-      if (validator === 'file') return !!await stat(path).catch(() => undefined)
+      if (validator === 'file') return stat(path).then((entry) => entry.isFile(), () => false)
       if (validator === 'json') {
         return readFile(path, 'utf8').then((content) => {
           JSON.parse(content)

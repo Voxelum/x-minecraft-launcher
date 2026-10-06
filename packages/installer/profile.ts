@@ -8,7 +8,7 @@ import {
 } from '@xmcl/core'
 import { open, readEntry, walkEntriesGenerator } from '@xmcl/unzip'
 import { stat } from 'fs/promises'
-import { delimiter, join } from 'path'
+import { delimiter, join, resolve } from 'path'
 import { ZipFile } from '@xmcl/yauzl'
 import { diagnoseFile, Issue } from './diagnose'
 import type { InstallJavaTask, InstallOutput, JavaCommand } from './installManifest'
@@ -238,10 +238,14 @@ export function resolveProcessors(
     for (const [key, val] of Object.entries(original)) {
       original[key] = val.replace(/'/g, '')
     }
-    const outputIndex =
-      args.indexOf('--output') === -1 ? args.indexOf('--out-jar') : args.indexOf('--output')
-    const outputFile = outputIndex !== -1 ? args[outputIndex + 1] : undefined
-    if (outputFile && !original[outputFile]) {
+    for (const flag of ['--output', '--out-jar']) {
+      const outputIndex = args.indexOf(flag)
+      const outputFile = outputIndex !== -1 ? args[outputIndex + 1] : undefined
+      if (!outputFile || outputFile.startsWith('--') || Object.hasOwn(original, outputFile)) continue
+      // --output is not necessarily a file: BUNDLER_EXTRACT --libraries writes
+      // into a shared directory. It must not be size/checksum validated or
+      // included in failed-output cleanup. --out-jar always denotes a file.
+      if (flag === '--output' && isProcessorOutputDirectory(outputFile, args, minecraft)) continue
       original[outputFile] = ''
     }
     return original
@@ -257,6 +261,20 @@ export function resolveProcessors(
     })
     .filter((proc) => (proc.sides ? proc.sides.indexOf(side) !== -1 : true))
   return processors
+}
+
+function isProcessorOutputDirectory(output: string, args: string[], minecraft: MinecraftFolder) {
+  if (/[\\/]$/.test(output)) return true
+  const taskIndex = args.indexOf('--task')
+  if (taskIndex !== -1 && args[taskIndex + 1] === 'BUNDLER_EXTRACT' && (args.includes('--libraries') || args.includes('--all'))) return true
+  // Profiles mix separator styles and may omit a trailing slash on ROOT or
+  // LIBRARY_DIR. Do not depend on the directory already existing on disk.
+  const normalize = (path: string) => {
+    const normalized = resolve(path.replace(/\\/g, '/'))
+    return process.platform === 'win32' ? normalized.toLowerCase() : normalized
+  }
+  const normalized = normalize(output)
+  return normalized === normalize(minecraft.root) || normalized === normalize(minecraft.libraries)
 }
 
 export async function resolvePostProcessJavaTask(options: {
@@ -331,6 +349,10 @@ export async function resolvePostProcessJavaTask(options: {
       commands,
     ],
     outputs: [...outputs.values()],
+    // A shared directory's existence cannot prove that extraction ran. If any
+    // processor has no tracked file outputs, always execute the strategies,
+    // while still validating the file outputs of the other processors.
+    skipIfOutputsValid: options.processors.every((processor) => Object.keys(processor.outputs ?? {}).length > 0),
     dependsOn: options.dependsOn,
     metadata: {
       telemetryKind: 'postprocess',

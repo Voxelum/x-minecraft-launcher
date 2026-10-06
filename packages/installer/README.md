@@ -75,6 +75,8 @@ An `InstallManifest` contains independent tasks connected by `dependsOn`:
 - `java` tries command strategies in order and validates their outputs.
 - `materialize` applies filesystem operations transactionally and validates outputs before commit.
 
+Manifest outputs describe files, not shared directories. In particular, a Forge/NeoForge processor's `--output` can be an extraction directory; the resolver does not infer a file output for directory targets. Java tasks whose tracked files do not cover every processor use `skipIfOutputsValid: false` so an existing library directory or another processor's cached files cannot skip necessary extraction. File outputs are still validated after execution, and inferred directory targets are not included in failed-output cleanup.
+
 Materialize outputs are postconditions, not cache keys. Materialize operations run whenever their stage is reached so permissions, links, extracted layouts, and removals are restored even when an individual output file already exists.
 
 The `ensure-directory` operation preserves an existing directory and creates it only when absent. Operations that write files already ensure their own parent directories, so workflows emit `ensure-directory` only when the directory itself is part of the required layout.

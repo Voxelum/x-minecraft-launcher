@@ -465,3 +465,68 @@ describe('install manifest executor', () => {
     expect(files.get('b')?.content).toBe('old-b')
   })
 })
+test.each([undefined, true, false])('controls skipping Java with valid outputs (skipIfOutputsValid=%s)', async (skipIfOutputsValid) => {
+  const { runtime, commands } = createRuntime(new Map([
+    ['output', { content: 'valid', mtimeMs: 100 }],
+  ]))
+  await executeInstallManifest({
+    schemaVersion: 1,
+    tasks: [{
+      id: 'untracked-side-effects', type: 'java', skipIfOutputsValid,
+      strategies: [[{ executable: 'java', args: [] }]],
+      outputs: [{ path: 'output', checksum: { algorithm: 'sha1', value: 'valid' } }],
+    }],
+  }, runtime)
+  expect(commands).toHaveLength(skipIfOutputsValid === false ? 1 : 0)
+})
+
+test('the Node runtime never accepts directories as files or removes their contents', async ({ temp }) => {
+  const directory = join(temp, 'not-a-file.jar')
+  await mkdir(directory)
+  const sibling = join(directory, 'keep.txt')
+  await writeFile(sibling, 'keep')
+  const runtime = createNodeInstallRuntime({ runJava: async () => {} })
+  try {
+    expect(await runtime.stat(directory)).toBeUndefined()
+    expect(await runtime.validate(directory, 'file')).toBe(false)
+    expect(await runtime.validate(directory, 'zip')).toBe(false)
+    await expect(executeInstallManifest({
+      schemaVersion: 1,
+      tasks: [{
+        id: 'wrong-output-type', type: 'java',
+        strategies: [[{ executable: 'not-executed', args: [] }]],
+        outputs: [{ path: directory, validator: 'file' }],
+      }],
+    }, runtime)).rejects.toThrow('invalid output')
+    expect(await readFile(sibling, 'utf8')).toBe('keep')
+  } finally {
+    await rm(directory, { recursive: true, force: true })
+  }
+})
+
+test('forcing Java execution still rejects empty, corrupt and checksum-invalid files', async ({ temp }) => {
+  const root = join(temp, 'invalid-java-files')
+  await mkdir(root)
+  try {
+    for (const output of [
+      { path: join(root, 'empty'), validator: 'file' as const, content: '' },
+      { path: join(root, 'corrupt.jar'), validator: 'zip' as const, content: 'not a zip' },
+      { path: join(root, 'empty.jar'), validator: 'zip' as const, content: Buffer.from(`504b0506${'00'.repeat(18)}`, 'hex') },
+      { path: join(root, 'wrong'), checksum: { algorithm: 'sha1', value: 'incorrect' }, content: 'not expected' },
+    ]) {
+      const { content, ...file } = output
+      const runtime = createNodeInstallRuntime({
+        runJava: async () => { await writeFile(file.path, content) },
+      })
+      await expect(executeInstallManifest({
+        schemaVersion: 1,
+        tasks: [{
+          id: 'invalid-file', type: 'java', skipIfOutputsValid: false,
+          strategies: [[{ executable: 'not-executed', args: [] }]], outputs: [file],
+        }],
+      }, runtime)).rejects.toThrow('invalid output')
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
